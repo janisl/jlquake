@@ -57,7 +57,7 @@ unsigned char	d_15to8table[65536];
 
 cvar_t	vid_mode = {"vid_mode","0",false};
  
-static qboolean        mouse_avail;
+static qboolean        mouse_avail = true;
 static qboolean        mouse_active;
 static int   mx, my;
 static int	old_mouse_x, old_mouse_y;
