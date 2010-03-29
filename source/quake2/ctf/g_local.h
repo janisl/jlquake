@@ -466,10 +466,6 @@ extern	spawn_temp_t	st;
 extern	int	sm_meat_index;
 extern	int	snd_fry;
 
-extern	int	jacket_armor_index;
-extern	int	combat_armor_index;
-extern	int	body_armor_index;
-
 
 // means of death
 #define MOD_UNKNOWN			0
@@ -558,10 +554,6 @@ extern	cvar_t	*flood_persecond;
 extern	cvar_t	*flood_waitdelay;
 
 extern	cvar_t	*sv_maplist;
-
-//ZOID
-extern	qboolean	is_quad;
-//ZOID
 
 #define world	(&g_edicts[0])
 
