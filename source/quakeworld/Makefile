@@ -27,7 +27,7 @@ ARCH=i386
 RPMARCH=i386
 endif
 
-MAINDIR=/grog/Projects/QW
+MAINDIR=.
 
 BUILD_DEBUG_DIR=debug$(ARCH)$(GLIBC)
 BUILD_RELEASE_DIR=release$(ARCH)$(GLIBC)
@@ -47,7 +47,7 @@ RELEASE_CFLAGS=$(BASE_CFLAGS) -m486 -O6 -ffast-math -funroll-loops \
 	-fomit-frame-pointer -fexpensive-optimizations -malign-loops=2 \
 	-malign-jumps=2 -malign-functions=2
 endif
-GLCFLAGS=-DGLQUAKE -I/usr/local/src/Mesa-3.0/include -I/usr/include/glide
+GLCFLAGS=-DGLQUAKE -DGL_EXT_SHARED -I/usr/local/src/Mesa-3.0/include -I/usr/include/glide
 
 LDFLAGS=-lm
 SVGALDFLAGS=-lvga
@@ -71,7 +71,7 @@ ifeq ($(ARCH),axp)
 TARGETS=$(BUILDDIR)/qwsv 
 #$(BUILDDIR)/qwcl.x11
 else
-TARGETS=$(BUILDDIR)/qwsv $(BUILDDIR)/qwcl $(BUILDDIR)/qwcl.x11 $(BUILDDIR)/glqwcl $(BUILDDIR)/glqwcl.glx
+TARGETS=$(BUILDDIR)/qwsv $(BUILDDIR)/qwcl.x11 $(BUILDDIR)/glqwcl.glx
 endif
 
 build_debug:
