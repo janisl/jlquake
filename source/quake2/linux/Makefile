@@ -12,7 +12,7 @@ else
 ARCH=i386
 endif
 
-MOUNT_DIR=/grog/NewWork/Quake2/code
+MOUNT_DIR=..
 
 BUILD_DEBUG_DIR=debug$(ARCH)
 BUILD_RELEASE_DIR=release$(ARCH)
@@ -71,11 +71,10 @@ TARGETS=$(BUILDDIR)/quake2 \
 else
 TARGETS=$(BUILDDIR)/quake2 \
 	$(BUILDDIR)/game$(ARCH).$(SHLIBEXT) \
-	$(BUILDDIR)/ref_soft.$(SHLIBEXT) \
 	$(BUILDDIR)/ref_softx.$(SHLIBEXT) \
-	$(BUILDDIR)/ref_gl.$(SHLIBEXT) \
-	$(BUILDDIR)/ctf/game$(ARCH).$(SHLIBEXT) \
-	$(BUILDDIR)/xatrix/game$(ARCH).$(SHLIBEXT)
+	$(BUILDDIR)/ctf/game$(ARCH).$(SHLIBEXT)
+	#$(BUILDDIR)/ref_gl.$(SHLIBEXT)
+	#$(BUILDDIR)/xatrix/game$(ARCH).$(SHLIBEXT)
 endif
 
 build_debug:
@@ -113,6 +112,7 @@ QUAKE2_OBJS = \
 	$(BUILDDIR)/client/cl_input.o \
 	$(BUILDDIR)/client/cl_inv.o \
 	$(BUILDDIR)/client/cl_main.o \
+	$(BUILDDIR)/client/cl_newfx.o \
 	$(BUILDDIR)/client/cl_parse.o \
 	$(BUILDDIR)/client/cl_pred.o \
 	$(BUILDDIR)/client/cl_tent.o \
@@ -183,6 +183,9 @@ $(BUILDDIR)/client/cl_inv.o :     $(CLIENT_DIR)/cl_inv.c
 	$(DO_CC)
 
 $(BUILDDIR)/client/cl_main.o :    $(CLIENT_DIR)/cl_main.c
+	$(DO_CC)
+
+$(BUILDDIR)/client/cl_newfx.o :   $(CLIENT_DIR)/cl_newfx.c
 	$(DO_CC)
 
 $(BUILDDIR)/client/cl_parse.o :   $(CLIENT_DIR)/cl_parse.c
