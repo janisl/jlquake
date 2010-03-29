@@ -125,7 +125,8 @@ ifeq ($(PLATFORM),linux)
   # bk001205 - took out -O to get assertions (NDEBUG)
   # bk001206 - MALLOC_CHECK in addition to ZONE_DEBUG
   # TTimo 03/30/2001 temporary took out -Werror for initial merge
-  DEBUG_CFLAGS = $(BASE_CFLAGS) -g  -Wall -Werror
+  #DEBUG_CFLAGS = $(BASE_CFLAGS) -g  -Wall -Werror
+  DEBUG_CFLAGS = $(BASE_CFLAGS) -g  -Wall
   DEBUG_CFLAGS += -DNO_MOUSEGRAB
   DEBUG_CFLAGS += -O
 #  DEBUG_CFLAGS=$(BASE_CFLAGS) -g  -Wall -O
@@ -514,21 +515,20 @@ Q3OBJ = \
 	\
 	$(B)/client/unix_main.o \
 	$(B)/client/unix_net.o \
-	$(B)/client/unix_shared.o \
-	\
-	$(B)/client/ahoptim.o  \
-	$(B)/client/autohint.o \
-	$(B)/client/ftbase.o   \
-	$(B)/client/ftdebug.o  \
-	$(B)/client/ftglyph.o  \
-	$(B)/client/ftinit.o   \
-	$(B)/client/ftmm.o     \
-	$(B)/client/ftsystem.o \
-	$(B)/client/raster1.o  \
-	$(B)/client/sfnt.o     \
-	$(B)/client/sfobjs.o   \
-	$(B)/client/smooth.o   \
-	$(B)/client/truetype.o
+	$(B)/client/unix_shared.o
+#	\
+#	$(B)/client/ahoptim.o  \
+#	$(B)/client/autohint.o \
+#	$(B)/client/ftbase.o   \
+#	$(B)/client/ftdebug.o  \
+#	$(B)/client/ftglyph.o  \
+#	$(B)/client/ftmm.o     \
+#	$(B)/client/ftsystem.o \
+#	$(B)/client/raster1.o  \
+#	$(B)/client/sfnt.o     \
+#	$(B)/client/sfobjs.o   \
+#	$(B)/client/smooth.o   \
+#	$(B)/client/truetype.o
 #	\
 #	$(B)/client/q_parse.o \
 #	$(B)/client/math_quaternion.o \
@@ -558,6 +558,7 @@ ifeq ($(PLATFORM),freebsd)
 		$(B)/client/linux_common.o \
 		$(B)/client/linux_qgl.o \
 		$(B)/client/linux_glimp.o \
+		$(B)/client/linux_signals.o \
 		$(B)/client/linux_snd.o \
 		$(B)/client/snd_mixa.o \
 		$(B)/client/matha.o   \
@@ -579,6 +580,7 @@ else
 		$(B)/client/linux_qgl.o \
 		$(B)/client/linux_glimp.o \
 		$(B)/client/linux_joystick.o \
+		$(B)/client/linux_signals.o \
 		$(B)/client/linux_snd.o \
 		$(B)/client/snd_mixa.o \
 		$(B)/client/matha.o \
@@ -588,6 +590,7 @@ else
 		$(B)/client/linux_qgl.o \
 		$(B)/client/linux_glimp_smp.o \
 		$(B)/client/linux_joystick.o \
+		$(B)/client/linux_signals.o \
 		$(B)/client/linux_snd.o \
 		$(B)/client/snd_mixa.o \
 		$(B)/client/matha.o
@@ -757,6 +760,7 @@ $(B)/client/linux_glimp_smp.o : $(UDIR)/linux_glimp.c; $(DO_SMP_CC)  $(GL_CFLAGS
 $(B)/client/linux_joystick.o : $(UDIR)/linux_joystick.c; $(DO_CC)  
 $(B)/client/linux_qgl.o : $(UDIR)/linux_qgl.c; $(DO_CC)  $(GL_CFLAGS) 
 $(B)/client/linux_input.o : $(UDIR)/linux_input.c; $(DO_CC) 
+$(B)/client/linux_signals.o : $(UDIR)/linux_signals.c; $(DO_CC) 
 $(B)/client/linux_snd.o : $(UDIR)/linux_snd.c; $(DO_CC) 
 $(B)/client/snd_mixa.o : $(UDIR)/snd_mixa.s; $(DO_AS) 
 $(B)/client/matha.o : $(UDIR)/matha.s; $(DO_AS) 
@@ -909,6 +913,7 @@ Q3DOBJ = \
 	$(B)/ded/l_struct.o \
 	\
 	$(B)/ded/linux_common.o \
+	$(B)/ded/linux_signals.o \
 	$(B)/ded/unix_main.o \
 	$(B)/ded/unix_net.o \
 	$(B)/ded/unix_shared.o \
@@ -985,6 +990,7 @@ $(B)/ded/l_script.o : $(BLIBDIR)/l_script.c; $(DO_BOT_CC)
 $(B)/ded/l_struct.o : $(BLIBDIR)/l_struct.c; $(DO_BOT_CC) 
 
 $(B)/ded/linux_common.o : $(UDIR)/linux_common.c; $(DO_CC)
+$(B)/ded/linux_signals.o : $(UDIR)/linux_signals.c; $(DO_DED_CC)
 $(B)/ded/unix_main.o : $(UDIR)/unix_main.c; $(DO_DED_CC) 
 $(B)/ded/unix_net.o : $(UDIR)/unix_net.c; $(DO_DED_CC) 
 $(B)/ded/unix_shared.o : $(UDIR)/unix_shared.c; $(DO_DED_CC) 
@@ -1410,7 +1416,7 @@ $(B)/baseq3/ui/ui_spskill.o : $(Q3UIDIR)/ui_spskill.c; $(DO_SHLIB_CC)
 $(B)/baseq3/ui/ui_startserver.o : $(Q3UIDIR)/ui_startserver.c; $(DO_SHLIB_CC) 
 $(B)/baseq3/ui/ui_team.o : $(Q3UIDIR)/ui_team.c; $(DO_SHLIB_CC) 
 $(B)/baseq3/ui/ui_teamorders.o : $(Q3UIDIR)/ui_teamorders.c; $(DO_SHLIB_CC) 
-$(B)/baseq3/ui/ui_syscalls.o : $(Q3UIDIR)/ui_syscalls.c; $(DO_SHLIB_CC) 
+$(B)/baseq3/ui/ui_syscalls.o : $(UIDIR)/ui_syscalls.c; $(DO_SHLIB_CC) 
 $(B)/baseq3/ui/ui_video.o : $(Q3UIDIR)/ui_video.c; $(DO_SHLIB_CC) 
 
 # bk001205 - these wre the only SHLIB compiles in 1.17

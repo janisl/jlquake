@@ -1152,28 +1152,20 @@ int	VM_CallCompiled( vm_t *vm, int *args ) {
 	}
 #else
 	{
-		static int memProgramStack;
-		static void *memOpStack;
-		static void *memEntryPoint;
+		/* These registers are used as scratch registers and are destroyed after the
+			* call.  Do not use clobber, so they can be used as input for the asm. */
+		unsigned eax;
+		unsigned ebx;
+		unsigned ecx;
+		unsigned edx;
 
-		memProgramStack	= programStack;
-		memOpStack      = opStack;     
-		memEntryPoint   = entryPoint;  
-		
-		__asm__("	pushal				\r\n" \
-				"	movl %0,%%esi		\r\n" \
-				"	movl %1,%%edi		\r\n" \
-				"	call *%2			\r\n" \
-				"	movl %%esi,%0		\r\n" \
-				"	movl %%edi,%1		\r\n" \
-				"	popal				\r\n" \
-				: "=m" (memProgramStack), "=m" (memOpStack) \
-				: "m" (memEntryPoint), "0" (memProgramStack), "1" (memOpStack) \
-				: "si", "di" \
+		__asm__ volatile(
+			"call *%6"
+			: "+S" (programStack), "+D" (opStack),
+				"=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx)
+			: "mr" (vm->codeBase)
+			: "cc", "memory"
 		);
-
-		programStack = memProgramStack;
-		opStack      = memOpStack;
 	}
 #endif
 
