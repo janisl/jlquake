@@ -257,12 +257,10 @@ extern	float	speedscale;		// for top sky and bottom sky
 void DrawGLWaterPoly (glpoly_t *p);
 void DrawGLWaterPolyLightmap (glpoly_t *p);
 
-#ifdef _WIN32
 lpMTexFUNC glMTexCoord2fSGIS = NULL;
 lpSelTexFUNC glSelectTextureSGIS = NULL;
-#endif
 
-qboolean mtexenabled = FALSE;
+qboolean mtexenabled = false;
 
 void GL_SelectTexture (GLenum target);
 
@@ -271,7 +269,7 @@ void GL_DisableMultitexture(void)
 	if (mtexenabled) {
 		glDisable(GL_TEXTURE_2D);
 		GL_SelectTexture(TEXTURE0_SGIS);
-		mtexenabled = FALSE;
+		mtexenabled = false;
 	}
 }
 
@@ -280,7 +278,7 @@ void GL_EnableMultitexture(void)
 	if (gl_mtexable) {
 		GL_SelectTexture(TEXTURE1_SGIS);
 		glEnable(GL_TEXTURE_2D);
-		mtexenabled = TRUE;
+		mtexenabled = true;
 	}
 }
 

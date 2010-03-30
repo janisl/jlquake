@@ -189,7 +189,9 @@ void Key_Console (int key)
 {
 	char	*cmd, *s;
 	int		i;
+#ifdef _WIN32
 	HANDLE	th;
+#endif
 	char	*clipText, *textCopied;
 	
 	if (key == K_ENTER)

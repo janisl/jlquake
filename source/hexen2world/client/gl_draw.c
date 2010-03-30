@@ -368,9 +368,9 @@ typedef struct
 {
 	char *name;
 	int	minimize, maximize;
-} mode_t;
+} texmode_t;
 
-mode_t modes[] = {
+texmode_t modes[] = {
 	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
 	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
 	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},

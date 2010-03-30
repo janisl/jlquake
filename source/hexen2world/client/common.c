@@ -5,7 +5,9 @@
 #else
 #include "quakedef.h"
 #endif
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 #define MAX_NUM_ARGVS	50
 #define NUM_SAFE_ARGVS	6

@@ -1,6 +1,8 @@
 
 #include "qwsvdef.h"
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 #define	RETURN_EDICT(e) (((int *)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
 #define	RETURN_STRING(s) (((int *)pr_globals)[OFS_RETURN] = s-pr_strings)
@@ -950,8 +952,11 @@ void PF_break (void)
 		DidIt = true;
 
 		Con_Printf ("break statement\n");
+#ifdef _WIN32
 		DebugBreak();
-		//*(int *)-4 = 0;	// dump to debugger
+#else
+		*(int *)-4 = 0;	// dump to debugger
+#endif
 	}
 //	PR_RunError ("break statement");
 }

@@ -230,7 +230,9 @@ void S_Init (void)
 // =======================================================================
 // Shutdown sound engine
 // =======================================================================
+#ifdef _WIN32
 extern HINSTANCE hInstDS;
+#endif
 
 void S_Shutdown(void)
 {
@@ -248,11 +250,13 @@ void S_Shutdown(void)
 	{
 		SNDDMA_Shutdown();
 	}
+#ifdef _WIN32
 	if (hInstDS)
 	{
 		FreeLibrary(hInstDS);
 		hInstDS=NULL;
 	}
+#endif
 
 }
 

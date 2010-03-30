@@ -124,15 +124,33 @@ int Q_strncmp (char *s1, char *s2, int count);
 int	Q_atoi (char *str);
 float Q_atof (char *str);
 */
-_inline int Q_strncasecmp (char *s1, char *s2, int n)
+static __inline int Q_strncasecmp (char *s1, char *s2, int n)
 {
+#ifdef _WIN32
 	return strnicmp (s1, s2, n);
+#else
+	return strncasecmp (s1, s2, n);
+#endif
 }
 
-_inline int Q_strcasecmp (char *s1, char *s2)
+static __inline int Q_strcasecmp (char *s1, char *s2)
 {
+#ifdef _WIN32
 	return stricmp (s1, s2);
+#else
+	return strcasecmp (s1, s2);
+#endif
 }
+#define Q_atoi	atoi
+#define Q_atof	atof
+#define strcmpi	Q_strcasecmp
+#define Q_memset	memset
+#define Q_strcpy	strcpy
+#define Q_strncpy	strncpy
+#define Q_strcmp	strcmp
+#define Q_strrchr	strrchr
+#define _strnicmp	Q_strncasecmp
+#define _stricmp	Q_strcasecmp
 
 //============================================================================
 

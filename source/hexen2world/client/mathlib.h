@@ -33,11 +33,11 @@ void _VectorAdd (vec3_t veca, vec3_t vecb, vec3_t out);
 void _VectorCopy (vec3_t in, vec3_t out);
 
 int VectorCompare (vec3_t v1, vec3_t v2);
-vec_t Length (vec3_t v);
-void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross);
-float VectorNormalize (vec3_t v);		// returns vector length
-void VectorInverse (vec3_t v);
-void VectorScale (vec3_t in, vec_t scale, vec3_t out);
+//vec_t Length (vec3_t v);
+//void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross);
+//float VectorNormalize (vec3_t v);		// returns vector length
+//void VectorInverse (vec3_t v);
+//void VectorScale (vec3_t in, vec_t scale, vec3_t out);
 int Q_log2(int val);
 
 void R_ConcatRotations (float in1[3][3], float in2[3][3], float out[3][3]);
@@ -71,14 +71,14 @@ float	anglemod(float a);
 	:										\
 		BoxOnPlaneSide( (emins), (emaxs), (p)))
 
-__inline void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross)
+static __inline void CrossProduct (vec3_t v1, vec3_t v2, vec3_t cross)
 {
 	cross[0] = v1[1]*v2[2] - v1[2]*v2[1];
 	cross[1] = v1[2]*v2[0] - v1[0]*v2[2];
 	cross[2] = v1[0]*v2[1] - v1[1]*v2[0];
 }
 
-__inline vec_t Length(vec3_t v)
+static __inline vec_t Length(vec3_t v)
 {
 	int		i;
 	float	length;
@@ -91,7 +91,7 @@ __inline vec_t Length(vec3_t v)
 	return length;
 }
 
-__inline float VectorNormalize (vec3_t v)
+static __inline float VectorNormalize (vec3_t v)
 {
 	float	length, ilength;
 
@@ -109,21 +109,21 @@ __inline float VectorNormalize (vec3_t v)
 	return length;
 }
 
-__inline void VectorInverse (vec3_t v)
+static __inline void VectorInverse (vec3_t v)
 {
 	v[0] = -v[0];
 	v[1] = -v[1];
 	v[2] = -v[2];
 }
 
-__inline void VectorScale (vec3_t in, vec_t scale, vec3_t out)
+static __inline void VectorScale (vec3_t in, vec_t scale, vec3_t out)
 {
 	out[0] = in[0]*scale;
 	out[1] = in[1]*scale;
 	out[2] = in[2]*scale;
 }
 
-_inline float fastfabs(float _X)
+static __inline float fastfabs(float _X)
 {
 	*((long*)&_X) &= 0x7fffffff;
 	return (_X);

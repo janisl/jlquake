@@ -7,7 +7,12 @@
 #endif
 
 #ifdef __linux__
-#include <linux/in.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <sys/param.h>
+#include <sys/ioctl.h>
 #endif
 
 // we need to declare some mouse variables here, because the menu system
@@ -1186,6 +1191,8 @@ void Host_Frame (float time)
 	if (oldrealtime > realtime)
 		oldrealtime = 0;
 
+#define max(a, b)	((a) > (b) ? (a) : (b))
+#define min(a, b)	((a) < (b) ? (a) : (b))
 	fps = max(30.0, min(rate.value/80.0, 72.0));
 
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
@@ -1352,7 +1359,7 @@ void Host_Init (quakeparms_t *parms)
 
 	host_initialized = true;
 	
-	Con_Printf ("€ HexenWorld Initialized ‚\n");	
+	Con_Printf ("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ HexenWorld Initialized ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n");	
 }
 
 

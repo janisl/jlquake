@@ -3,11 +3,15 @@
 #pragma warning(disable : 4244)     // MIPS
 #pragma warning(disable : 4136)     // X86
 #pragma warning(disable : 4051)     // ALPHA
-  
-#include <windows.h>
 
-#include <gl\gl.h>
-#include <gl\glu.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#define PROC void*
+#endif
+
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
@@ -38,7 +42,7 @@ extern int			gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for mo
 
 void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qboolean alpha, qboolean sprite);
 void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean alpha, int mode);
-int GL_LoadTexture (char *identifier, int width, int height, byte *data, int mipmap, int alpha, int mode);
+int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode);
 int GL_FindTexture (char *identifier);
 
 typedef struct
@@ -279,12 +283,10 @@ void GL_Bind (int texnum);
 #define    TEXTURE0_SGIS				0x835E
 #define    TEXTURE1_SGIS				0x835F
 
-#ifdef _WIN32
 typedef void (APIENTRY *lpMTexFUNC) (GLenum, GLfloat, GLfloat);
 typedef void (APIENTRY *lpSelTexFUNC) (GLenum);
 extern lpMTexFUNC glMTexCoord2fSGIS;
 extern lpSelTexFUNC glSelectTextureSGIS;
-#endif
 
 extern qboolean gl_mtexable;
 
