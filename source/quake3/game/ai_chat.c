@@ -54,7 +54,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // for the voice chats
 #ifdef MISSIONPACK // bk001205
-#include "../../ui/menudef.h"
+#include "../ui_defs/menudef.h"
 #endif
 
 #define TIME_BETWEENCHATTING	25
