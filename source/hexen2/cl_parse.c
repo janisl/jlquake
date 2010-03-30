@@ -6,7 +6,9 @@
 
 #include "quakedef.h"
 #include "r_shared.h"
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 extern	cvar_t	sv_flypitch;
 extern	cvar_t	sv_walkpitch;

@@ -8,10 +8,14 @@
 #pragma warning(disable : 4136)     // X86
 #pragma warning(disable : 4051)     // ALPHA
   
+#ifdef _WIN32
 #include <windows.h>
+#else
+#define PROC void*
+#endif
 
-#include <gl\gl.h>
-#include <gl\glu.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
@@ -56,7 +60,7 @@ extern int			gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for mo
 
 void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qboolean alpha);
 void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean alpha, int mode);
-int GL_LoadTexture (char *identifier, int width, int height, byte *data, int mipmap, int alpha, int mode);
+int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode);
 int GL_LoadTransTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, byte Alpha);
 int GL_FindTexture (char *identifier);
 
@@ -292,6 +296,24 @@ void R_TranslatePlayerSkin (int playernum);
 void GL_Bind (int texnum);
 
 byte *playerTranslation;
+
+// Multitexture
+#define    TEXTURE0_SGIS				0x835E
+#define    TEXTURE1_SGIS				0x835F
+
+#ifndef _WIN32
+#define APIENTRY /* */
+#endif
+
+typedef void (APIENTRY *lpMTexFUNC) (GLenum, GLfloat, GLfloat);
+typedef void (APIENTRY *lpSelTexFUNC) (GLenum);
+extern lpMTexFUNC qglMTexCoord2fSGIS;
+extern lpSelTexFUNC qglSelectTextureSGIS;
+
+extern qboolean gl_mtexable;
+
+void GL_DisableMultitexture(void);
+void GL_EnableMultitexture(void);
 
 /*
  * $Log: /H2 Mission Pack/glquake.h $

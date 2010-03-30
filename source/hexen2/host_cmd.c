@@ -4,7 +4,9 @@
 
 #include "quakedef.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#endif
 #include <time.h>
 
 extern cvar_t	pausable;
@@ -18,7 +20,7 @@ void Mod_Print (void);
 void SaveGamestate(qboolean ClientsOnly);
 void RestoreClients(void);
 
-UINT	info_mask, info_mask2;
+unsigned int	info_mask, info_mask2;
 
 #define TESTSAVE
 
@@ -549,7 +551,7 @@ void Host_Savegame_f (void)
 	}
 
 	sprintf (name, "%sclients.gip",tempdir);
-	DeleteFile(name);
+	remove(name);
 
 	sprintf (name, "%s*.gip", tempdir);
 	sprintf (dest, "%s/%s/",com_savedir, Cmd_Argv(1));

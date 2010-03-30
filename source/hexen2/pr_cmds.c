@@ -5,11 +5,13 @@
 
 #include "quakedef.h"
 #include "menu.h"
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 #define	RETURN_EDICT(e) (((int *)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
 
-extern UINT info_mask, info_mask2;
+extern unsigned int info_mask, info_mask2;
 
 extern int	*pr_info_string_index;
 extern char	*pr_global_info_strings;
@@ -759,8 +761,11 @@ void PF_break (void)
 		DidIt = true;
 
 		Con_Printf ("break statement\n");
+#ifdef _WIN32
 		DebugBreak();
-		//*(int *)-4 = 0;	// dump to debugger
+#else
+		*(int *)-4 = 0;	// dump to debugger
+#endif
 	}
 //	PR_RunError ("break statement");
 }

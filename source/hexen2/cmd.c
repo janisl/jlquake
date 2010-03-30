@@ -5,7 +5,11 @@
  */
 
 #include "quakedef.h"
+#ifdef _WIN32
 #include "winquake.h"
+#endif
+
+extern qboolean	LegitCopy;
 
 void Cmd_ForwardToServer (void);
 void ListCommands (char *prefix);

@@ -1875,7 +1875,11 @@ void M_Menu_Options_f (void)
 	m_state = m_options;
 	m_entersound = true;
 
+#ifdef _WIN32
 	if ((options_cursor == OPT_USEMOUSE) && (modestate != MS_WINDOWED))
+#else
+	if ((options_cursor == OPT_USEMOUSE))
+#endif
 		options_cursor = 0;
 }
 

@@ -794,7 +794,7 @@ void Cache_Print (qboolean write_file)
 		sum += cd->size;
 
 		strcpy(temp,cd->name);
-		strlwr(temp);
+		//strlwr(temp);
 		if (strstr(temp,".mdl")) 
 		{
 		   num_mod++;

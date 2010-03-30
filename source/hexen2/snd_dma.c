@@ -235,7 +235,9 @@ void S_Init (void)
 
 void S_Shutdown(void)
 {
+#ifdef _WIN32
 extern 	HINSTANCE hInstDS;	//from snd_win
+#endif
 
 	if (!sound_started)
 		return;
@@ -250,11 +252,13 @@ extern 	HINSTANCE hInstDS;	//from snd_win
 	{
 		SNDDMA_Shutdown();
 	}
+#ifdef _WIN32
 	if (hInstDS)
 	{
 		FreeLibrary(hInstDS);
 		hInstDS=NULL;
 	}
+#endif
 }
 
 

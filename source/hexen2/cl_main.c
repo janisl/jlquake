@@ -6,7 +6,11 @@
 
 #include "quakedef.h"
 
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include <dirent.h>
+#endif
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -84,27 +88,45 @@ void CL_ClearState (void)
 	SB_InvReset();
 }
 
+static qboolean IsGip(const char* name)
+{
+	int l = strlen(name);
+	if (l < 4)
+	{
+		return false;
+	}
+	return !strcmp(name + l - 4, ".gip");
+}
+
 void CL_RemoveGIPFiles (char *path)
 {
+	
 	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
 	int i;
+#ifdef _WIN32
 	HANDLE handle;
 	WIN32_FIND_DATA filedata;
 	BOOL retval;
+#else
+	DIR* current_dir;
+	struct dirent *de;
+	qboolean error;
+#endif
 
 	if (path)
 	{
-		sprintf(tempdir,"%s\\",path);
+		sprintf(tempdir,"%s/",path);
 	}
 	else
 	{
 		i = GetTempPath(sizeof(tempdir),tempdir);
 		if (!i) 
 		{
-			sprintf(tempdir,"%s\\",com_gamedir);
+			sprintf(tempdir,"%s/",com_gamedir);
 		}
 	}
 
+#ifdef _WIN32
 	sprintf (name, "%s*.gip", tempdir);
 
 	handle = FindFirstFile(name,&filedata);
@@ -120,10 +142,27 @@ void CL_RemoveGIPFiles (char *path)
 
 	if (handle != INVALID_HANDLE_VALUE)
 		FindClose(handle);
+#else
+	error = false;
+	current_dir = opendir(tempdir);
+	if (current_dir)
+	{
+		while (!error && (de = readdir(current_dir)) != NULL)
+		{
+			if (IsGip(de->d_name))
+			{
+				sprintf(name,"%s%s", tempdir, de->d_name);
+				remove(name);
+			}
+		}
+		closedir(current_dir);
+	}
+#endif
 }
 
 qboolean CL_CopyFiles(char *source, char *pat, char *dest)
 {
+#ifdef _WIN32
 	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
 	HANDLE handle;
 	WIN32_FIND_DATA filedata;
@@ -147,6 +186,43 @@ qboolean CL_CopyFiles(char *source, char *pat, char *dest)
 		FindClose(handle);
 
 	return error;
+#else
+	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
+	DIR* current_dir;
+	struct dirent *de;
+	qboolean error;
+
+	error = false;
+	current_dir = opendir(source);
+	if (current_dir)
+	{
+		while (!error && (de = readdir(current_dir)) != NULL)
+		{
+			if (IsGip(de->d_name))
+			{
+				FILE* f1;
+				FILE* f2;
+				int l;
+				void* b;
+				sprintf(name,"%s%s", source, de->d_name);
+				sprintf(tempdir,"%s%s", dest, de->d_name);
+				f1 = fopen(name, "rb");
+				f2 = fopen(tempdir, "wb");
+				fseek(f1, 0, SEEK_END);
+				l = ftell(f1);
+				fseek(f1, 0, SEEK_SET);
+				b = malloc(l);
+				fread(b, 1, l, f1);
+				fclose(f1);
+				fwrite(b, 1, l, f2);
+				fclose(f2);
+			}
+		}
+		closedir(current_dir);
+	}
+
+	return error;
+#endif
 }
 
 /*

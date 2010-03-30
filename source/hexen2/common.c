@@ -5,7 +5,9 @@
  */
 
 #include "quakedef.h"
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 #define NUM_SAFE_ARGVS  7
 
