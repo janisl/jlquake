@@ -1,0 +1,8 @@
+29.03.2010
+  I stared my Quake project. I'm starting with sources of all first 2 Quake engines and Hexen 2.
+  First step is to made all quake engines compile on Linux.
+  For Quake I removed svgalib and 3dfx versions. GLX version required few changes to make it workable.
+  Quake2 had some build errors in game code. OpenGL driver has only 3dfx version source so currently only software renderer works. It runs with GLX driver from original release (where mouse doesn't work). Crashes whes trying to start a game.
+  Quake3 required a small change I borrowed from another port.
+30.03.2010
+  I made all projects compile on Windows. All project files were updated to Visual Studio 2008. I wasn't able to test anything.
