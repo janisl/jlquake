@@ -219,6 +219,7 @@ qboolean VID_LoadRefresh( char *name )
 	strcat(fn, name);
 
 	// permission checking
+#if 0
 	if (strstr(fn, "softx") == NULL) { // softx doesn't require root
 		if (stat(fn, &st) == -1) {
 			Com_Printf( "LoadLibrary(\"%s\") failed: %s\n", name, strerror(errno));
@@ -234,7 +235,10 @@ qboolean VID_LoadRefresh( char *name )
 			return false;
 		}
 #endif
-	} else {
+	}
+	else
+#endif
+	{
 		// softx requires we give up root now
 		setreuid(getuid(), getuid());
 		setegid(getgid());
