@@ -6,4 +6,4 @@
   Quake3 required a small change I borrowed from another port.
 30.03.2010
   I made all projects compile on Windows. All project files were updated to Visual Studio 2008. I wasn't able to test anything.
-  I made Hexen 2 compile on Linux. All system code is from Quake. It crashes on startup.
+  I made Hexen 2 and Hexen2World compile on Linux. All system code is from Quake.
