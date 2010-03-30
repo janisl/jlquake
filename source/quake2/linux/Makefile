@@ -314,6 +314,7 @@ $(BUILDDIR)/client/net_udp.o :    $(LINUX_DIR)/net_udp.c
 GAME_OBJS = \
 	$(BUILDDIR)/game/g_ai.o \
 	$(BUILDDIR)/game/p_client.o \
+	$(BUILDDIR)/game/g_chase.o \
 	$(BUILDDIR)/game/g_cmds.o \
 	$(BUILDDIR)/game/g_svcmds.o \
 	$(BUILDDIR)/game/g_combat.o \
@@ -367,6 +368,9 @@ $(BUILDDIR)/game/g_ai.o :        $(GAME_DIR)/g_ai.c
 	$(DO_SHLIB_CC)
 
 $(BUILDDIR)/game/p_client.o :    $(GAME_DIR)/p_client.c
+	$(DO_SHLIB_CC)
+
+$(BUILDDIR)/game/g_chase.o :     $(GAME_DIR)/g_chase.c
 	$(DO_SHLIB_CC)
 
 $(BUILDDIR)/game/g_cmds.o :      $(GAME_DIR)/g_cmds.c
