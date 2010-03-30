@@ -35,7 +35,6 @@ typedef int  (APIENTRY *FX_DISPLAY_MODE_EXT)(int);
 typedef void (APIENTRY *FX_SET_PALETTE_EXT)( unsigned long * );
 typedef void (APIENTRY *FX_MARK_PAL_TEXTURE_EXT)( void );
 
-extern	BINDTEXFUNCPTR bindTexFunc;
 extern	DELTEXFUNCPTR delTexFunc;
 extern	TEXSUBIMAGEPTR TexSubImage2DFunc;
 extern  FX_DISPLAY_MODE_EXT fxDisplayModeExtension;

@@ -77,7 +77,7 @@ void GL_Bind (int texnum)
 	if (currenttexture == texnum)
 		return;
 	currenttexture = texnum;
-	bindTexFunc (GL_TEXTURE_2D, texnum);
+	glBindTexture(GL_TEXTURE_2D, texnum);
 }
 
 

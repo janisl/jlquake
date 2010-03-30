@@ -91,8 +91,6 @@ unsigned ColorPercent[16] =
 	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
 };
 
-BINDTEXFUNCPTR bindTexFunc;
-
 byte globalcolormap[VID_GRADES*256];
 
 unsigned char inverse_pal[(1<<INVERSE_PAL_TOTAL_BITS)+1];

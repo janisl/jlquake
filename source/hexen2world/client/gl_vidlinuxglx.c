@@ -82,8 +82,6 @@ byte globalcolormap[VID_GRADES*256];
 
 unsigned	d_8to24TranslucentTable[256];
 
-BINDTEXFUNCPTR bindTexFunc;
-
 /*-----------------------------------------------------------------------*/
 
 //int		texture_mode = GL_NEAREST;

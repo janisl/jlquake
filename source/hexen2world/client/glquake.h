@@ -28,7 +28,6 @@ typedef void (APIENTRY *PRIORTEXFUNCPTR)(GLsizei, const GLuint *,
                     const GLclampf *);
 typedef void (APIENTRY *TEXSUBIMAGEPTR)(int, int, int, int, int, int, int, int, void *);
 
-extern	BINDTEXFUNCPTR bindTexFunc;
 extern	DELTEXFUNCPTR delTexFunc;
 extern	TEXSUBIMAGEPTR TexSubImage2DFunc;
 

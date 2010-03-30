@@ -477,8 +477,6 @@ void VID_UpdateWindowStatus (void)
 
 //====================================
 
-BINDTEXFUNCPTR bindTexFunc;
-
 #define TEXTURE_EXT_STRING "GL_EXT_texture_object"
 
 #define FX_DISPLAY_MODE_EXT_STRING "gl3DfxDisplayModeEXT"
@@ -574,45 +572,6 @@ void Check3DfxMarkPaletteTextureExtension( void )
 }
 */
 
-void CheckTextureExtensions (void)
-{
-	char		*tmp;
-	qboolean	texture_ext;
-	HINSTANCE	hInstGL;
-
-	texture_ext = FALSE;
-	/* check for texture extension */
-	tmp = (unsigned char *)glGetString(GL_EXTENSIONS);
-	while (*tmp)
-	{
-		if (strncmp((const char*)tmp, TEXTURE_EXT_STRING, strlen(TEXTURE_EXT_STRING)) == 0)
-			texture_ext = TRUE;
-		tmp++;
-	}
-
-	if (!texture_ext || COM_CheckParm ("-gl11") )
-	{
-		hInstGL = LoadLibrary("opengl32.dll");
-		
-		if (hInstGL == NULL)
-			Sys_Error ("Couldn't load opengl32.dll\n");
-
-		bindTexFunc = (void *)GetProcAddress(hInstGL,"glBindTexture");
-
-		if (!bindTexFunc)
-			Sys_Error ("No texture objects!");
-		return;
-	}
-
-/* load library and get procedure adresses for texture extension API */
-	if ((bindTexFunc = (BINDTEXFUNCPTR)
-		wglGetProcAddress((LPCSTR) "glBindTextureEXT")) == NULL)
-	{
-		Sys_Error ("GetProcAddress for BindTextureEXT failed");
-		return;
-	}
-}
-
 void CheckArrayExtensions (void)
 {
 	char		*tmp;
@@ -676,8 +635,6 @@ void GL_Init (void)
 	{
 		is_PowerVR = true;
 	}
-
-	CheckTextureExtensions ();
 
     fxDisplayModeExtension = NULL;
 	fxSetPaletteExtension = NULL;
