@@ -886,11 +886,11 @@ qboolean NET_GetPacket (void)
 	ret = recvfrom (net_socket,(char *) huffbuff, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
 	if (ret == -1)
 	{
-		int errno = WSAGetLastError();
+		int err = WSAGetLastError();
 
-		if (errno == WSAEWOULDBLOCK)
+		if (err == WSAEWOULDBLOCK)
 			return false;
-		Sys_Error ("NET_GetPacket: %s", strerror(errno));
+		Sys_Error ("NET_GetPacket: %s", strerror(err));
 	}
 
 	SockadrToNetadr (&from, &net_from);
@@ -930,9 +930,9 @@ void NET_SendPacket (int length, void *data, netadr_t to)
 	ret = sendto (net_socket, (char *) huffbuff, outlen, 0, (struct sockaddr *)&addr, sizeof(addr) );
 	if (ret == -1)
 	{
-		int errno = WSAGetLastError();
+		int err = WSAGetLastError();
 
-		Con_Printf ("NET_SendPacket ERROR: %i", errno);
+		Con_Printf ("NET_SendPacket ERROR: %i", err);
 	}
 }
 
