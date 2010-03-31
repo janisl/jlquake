@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="quake3"
 	ProjectGUID="{81CB51C4-B434-4E12-B69B-BAEE102F2852}"
 	RootNamespace="quake3"
@@ -547,18 +547,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="unix\ChangeLog"
-			>
-		</File>
-		<File
-			RelativePath="unix\Conscript-pk3"
-			>
-		</File>
-		<File
-			RelativePath="Construct"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
