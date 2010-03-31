@@ -6,5 +6,9 @@
   Quake3 required a small change I borrowed from another port.
 30.03.2010
   I made all projects compile on Windows. All project files were updated to Visual Studio 2008. I wasn't able to test anything.
-  I made Hexen 2 and Hexen2World compile on Linux. All system code is from Quake.
-  I created somewhat working OpenGL driver for GLX.
+  I made Hexen 2 and HexenWorld compile on Linux. All system code is from Quake.
+  I created somewhat working OpenGL driver for Quake 2. It renders fine but input doesn't work.
+  I found that build procedure of Quake 2 game was missing a file. It now works. Interestingly my compiled version works only with game I compiled and original version with original game file. One difference I noticed is that source code is version 3.19 but original binaries 3.20.
+31.03.2010
+  I cleaned up source from old text files, DirectX SDK files, DOS version of Quake files and more.
+  In Quake 2 I found that in irix directory there's a fully working GLX driver implementation, so now I have all games working on Linux and OpenGL.
