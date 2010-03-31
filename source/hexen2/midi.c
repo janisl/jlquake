@@ -241,7 +241,9 @@ void MIDI_Stop(void)
    }
 }
 
-MMRESULT mmrRetVal;
+void MIDI_Cleanup(void)
+{
+    MMRESULT mmrRetVal;
 
 	MIDI_Stop();
 
