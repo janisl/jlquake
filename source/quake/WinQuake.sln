@@ -11,25 +11,15 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
-		GL Debug|Win32 = GL Debug|Win32
-		GL Release|Win32 = GL Release|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.Debug|Win32.ActiveCfg = Debug|Win32
 		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.Debug|Win32.Build.0 = Debug|Win32
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.GL Debug|Win32.ActiveCfg = Debug|Win32
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.GL Debug|Win32.Build.0 = Debug|Win32
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.GL Release|Win32.ActiveCfg = Release|Win32
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.GL Release|Win32.Build.0 = Release|Win32
 		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.Release|Win32.ActiveCfg = Release|Win32
 		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.Release|Win32.Build.0 = Release|Win32
 		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.Debug|Win32.Build.0 = Debug|Win32
-		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.GL Debug|Win32.ActiveCfg = GL Debug|Win32
-		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.GL Debug|Win32.Build.0 = GL Debug|Win32
-		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.GL Release|Win32.ActiveCfg = GL Release|Win32
-		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.GL Release|Win32.Build.0 = GL Release|Win32
 		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.Release|Win32.ActiveCfg = Release|Win32
 		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection

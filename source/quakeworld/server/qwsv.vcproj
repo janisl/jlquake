@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="qwsv"
 	ProjectGUID="{9083E67D-9909-407C-ABE1-441C5B45C8C6}"
 	TargetFrameworkVersion="0"
@@ -16,8 +16,8 @@
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory=".\Release"
-			IntermediateDirectory=".\Release"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -45,7 +45,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=".,..\client"
-				PreprocessorDefinitions="NDEBUG;SERVERONLY;WIN32;_CONSOLE"
+				PreprocessorDefinitions="NDEBUG;SERVERONLY;WIN32;_CONSOLE;GLQUAKE"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -105,8 +105,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory=".\Debug"
-			IntermediateDirectory=".\Debug"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
@@ -133,7 +133,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".,..\client"
-				PreprocessorDefinitions="_DEBUG;SERVERONLY;WIN32;_CONSOLE"
+				PreprocessorDefinitions="_DEBUG;SERVERONLY;WIN32;_CONSOLE;GLQUAKE"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/qwsv.pch"
 				AssemblerListingLocation=".\Debug/"
@@ -907,11 +907,11 @@
 				>
 			</File>
 			<File
-				RelativePath="sys.h"
+				RelativePath="..\client\sys.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\sys.h"
+				RelativePath="sys.h"
 				>
 			</File>
 			<File

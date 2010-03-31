@@ -7,7 +7,6 @@
 
 #include "quakedef.h"
 #include "winquake.h"
-#include "dosisms.h"
 
 // mouse variables
 cvar_t	m_filter = {"m_filter","0"};
