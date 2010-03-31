@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <dinput.h>
 #include "quakedef.h"
 #include "winquake.h"
-#include "dosisms.h"
 
 #define DINPUT_BUFFERSIZE           16
 #define iDirectInputCreate(a,b,c,d)	pDirectInputCreate(a,b,c,d)
