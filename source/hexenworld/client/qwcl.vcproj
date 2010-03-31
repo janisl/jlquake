@@ -47,7 +47,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\dxsdk\sdk\inc,..\scitech\include"
+				AdditionalIncludeDirectories="..\scitech\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="true"
 				RuntimeLibrary="0"
@@ -72,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\scitech\lib\win32\vc\mgllt.lib ..\dxsdk\sdk\lib\dxguid.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				AdditionalDependencies="..\scitech\lib\win32\vc\mgllt.lib dxguid.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
 				OutputFile=".\Debug/qwcl.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -141,7 +141,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\dxsdk\sdk\inc,..\scitech\include"
+				AdditionalIncludeDirectories="..\scitech\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;MGNET"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -167,7 +167,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\scitech\lib\win32\vc\mgllt.lib ..\dxsdk\sdk\lib\dxguid.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				AdditionalDependencies="..\scitech\lib\win32\vc\mgllt.lib dxguid.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
 				OutputFile=".\Release/qwcl.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -236,7 +236,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="..\dxsdk\sdk\inc"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;GLQUAKE"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -262,7 +262,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\dxsdk\sdk\lib\dxguid.lib comctl32.lib glu32.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				AdditionalDependencies="dxguid.lib comctl32.lib glu32.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
 				OutputFile=".\GLRelease\glqwcl.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -330,7 +330,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\dxsdk\sdk\inc"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;GLQUAKE"
 				RuntimeLibrary="0"
 				PrecompiledHeaderFile=".\GLDebug/qwcl.pch"
@@ -354,7 +354,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\dxsdk\sdk\lib\dxguid.lib comctl32.lib glu32.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				AdditionalDependencies="dxguid.lib comctl32.lib glu32.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
 				OutputFile=".\GLDebug\glqwcl.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
