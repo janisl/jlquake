@@ -50,15 +50,12 @@ endif
 GLCFLAGS=-DGLQUAKE -DGL_EXT_SHARED -I/usr/local/src/Mesa-3.0/include -I/usr/include/glide
 
 LDFLAGS=-lm
-SVGALDFLAGS=-lvga
-XLDFLAGS=-L/usr/X11R6/lib -lX11 -lXext
-GL_SVGA_LDFLAGS=-L/usr/X11/lib -L/usr/local/src/Mesa-3.0/lib -lm -lMesaGL -lglide2x -lX11 -lXext -lvga
-GL_X11_LDFLAGS=-L/usr/X11/lib -L/usr/local/src/Mesa-3.0/lib -lm -lGL -lX11 -lXext
+GL_X11_LDFLAGS=-L/usr/X11/lib -lm -lGL -lX11 -lXext
 
 DO_CC=$(CC) $(CFLAGS) -o $@ -c $<
 DO_O_CC=$(CC) -O $(CFLAGS) -o $@ -c $<
 DO_GL_CC=$(CC) $(CFLAGS) $(GLCFLAGS) -o $@ -c $<
-DO_SERVER_CC=$(CC) -DSERVERONLY $(CFLAGS) -o $@ -c $<
+DO_SERVER_CC=$(CC) -DSERVERONLY -DGLQUAKE $(CFLAGS) -o $@ -c $<
 
 DO_AS=$(CC) $(CFLAGS) -DELF -x assembler-with-cpp -o $@ -c $<
 DO_GL_AS=$(CC) $(CFLAGS) $(GLCFLAGS) -DELF -x assembler-with-cpp -o $@ -c $<
@@ -71,12 +68,11 @@ ifeq ($(ARCH),axp)
 TARGETS=$(BUILDDIR)/qwsv 
 #$(BUILDDIR)/qwcl.x11
 else
-TARGETS=$(BUILDDIR)/qwsv $(BUILDDIR)/qwcl.x11 $(BUILDDIR)/glqwcl.glx
+TARGETS=$(BUILDDIR)/qwsv $(BUILDDIR)/glqwcl.glx
 endif
 
 build_debug:
 	@-mkdir $(BUILD_DEBUG_DIR) \
-		$(BUILD_DEBUG_DIR)/client \
 		$(BUILD_DEBUG_DIR)/glclient \
 		$(BUILD_DEBUG_DIR)/server 
 	$(MAKE) targets BUILDDIR=$(BUILD_DEBUG_DIR) CFLAGS="$(DEBUG_CFLAGS)"
@@ -206,355 +202,6 @@ $(BUILDDIR)/server/net_udp.o :   $(CLIENT_DIR)/net_udp.c
 	$(DO_SERVER_CC)
 
 #############################################################################
-# CLIENT
-#############################################################################
-
-QWCL_OBJS = \
-	$(BUILDDIR)/client/cl_demo.o \
-	$(BUILDDIR)/client/cl_ents.o \
-	$(BUILDDIR)/client/cl_input.o \
-	$(BUILDDIR)/client/cl_main.o \
-	$(BUILDDIR)/client/cl_parse.o \
-	$(BUILDDIR)/client/cl_pred.o \
-	$(BUILDDIR)/client/cl_tent.o \
-	$(BUILDDIR)/client/cl_cam.o \
-	$(BUILDDIR)/client/cmd.o \
-	$(BUILDDIR)/client/common.o \
-	$(BUILDDIR)/client/console.o \
-	$(BUILDDIR)/client/crc.o \
-	$(BUILDDIR)/client/cvar.o \
-	$(BUILDDIR)/client/d_edge.o \
-	$(BUILDDIR)/client/d_fill.o \
-	$(BUILDDIR)/client/d_init.o \
-	$(BUILDDIR)/client/d_modech.o \
-	$(BUILDDIR)/client/d_part.o \
-	$(BUILDDIR)/client/d_polyse.o \
-	$(BUILDDIR)/client/d_scan.o \
-	$(BUILDDIR)/client/d_sky.o \
-	$(BUILDDIR)/client/d_sprite.o \
-	$(BUILDDIR)/client/d_surf.o \
-	$(BUILDDIR)/client/d_vars.o \
-	$(BUILDDIR)/client/d_zpoint.o \
-	$(BUILDDIR)/client/draw.o \
-	$(BUILDDIR)/client/keys.o \
-	$(BUILDDIR)/client/mathlib.o \
-	$(BUILDDIR)/client/md4.o \
-	$(BUILDDIR)/client/menu.o \
-	$(BUILDDIR)/client/model.o \
-	$(BUILDDIR)/client/net_chan.o \
-	$(BUILDDIR)/client/net_udp.o \
-	$(BUILDDIR)/client/nonintel.o \
-	$(BUILDDIR)/client/pmove.o \
-	$(BUILDDIR)/client/pmovetst.o \
-	$(BUILDDIR)/client/r_aclip.o \
-	$(BUILDDIR)/client/r_alias.o \
-	$(BUILDDIR)/client/r_bsp.o \
-	$(BUILDDIR)/client/r_draw.o \
-	$(BUILDDIR)/client/r_edge.o \
-	$(BUILDDIR)/client/r_efrag.o \
-	$(BUILDDIR)/client/r_light.o \
-	$(BUILDDIR)/client/r_main.o \
-	$(BUILDDIR)/client/r_misc.o \
-	$(BUILDDIR)/client/r_part.o \
-	$(BUILDDIR)/client/r_sky.o \
-	$(BUILDDIR)/client/r_sprite.o \
-	$(BUILDDIR)/client/r_surf.o \
-	$(BUILDDIR)/client/r_vars.o \
-	$(BUILDDIR)/client/sbar.o \
-	$(BUILDDIR)/client/screen.o \
-	$(BUILDDIR)/client/skin.o \
-	$(BUILDDIR)/client/snd_dma.o \
-	$(BUILDDIR)/client/snd_mem.o \
-	$(BUILDDIR)/client/snd_mix.o \
-	$(BUILDDIR)/client/view.o \
-	$(BUILDDIR)/client/wad.o \
-	$(BUILDDIR)/client/zone.o \
-	$(BUILDDIR)/client/cd_linux.o \
-	$(BUILDDIR)/client/sys_linux.o \
-	$(BUILDDIR)/client/snd_linux.o \
-
-ifeq ($(ARCH),i386)
-	QWCL_AS_OBJS = \
-	$(BUILDDIR)/client/d_copy.o \
-	$(BUILDDIR)/client/d_draw.o \
-	$(BUILDDIR)/client/d_draw16.o \
-	$(BUILDDIR)/client/d_parta.o \
-	$(BUILDDIR)/client/d_polysa.o \
-	$(BUILDDIR)/client/d_scana.o \
-	$(BUILDDIR)/client/d_spr8.o \
-	$(BUILDDIR)/client/d_varsa.o \
-	$(BUILDDIR)/client/math.o \
-	$(BUILDDIR)/client/r_aclipa.o \
-	$(BUILDDIR)/client/r_aliasa.o \
-	$(BUILDDIR)/client/r_drawa.o \
-	$(BUILDDIR)/client/r_edgea.o \
-	$(BUILDDIR)/client/r_varsa.o \
-	$(BUILDDIR)/client/snd_mixa.o \
-	$(BUILDDIR)/client/surf16.o \
-	$(BUILDDIR)/client/surf8.o \
-	$(BUILDDIR)/client/sys_dosa.o
-else
-	QWCL_AS_OBJS=
-endif
-
-QWCL_SVGA_OBJS = $(BUILDDIR)/client/vid_svgalib.o
-QWCL_X11_OBJS = $(BUILDDIR)/client/vid_x.o
-
-$(BUILDDIR)/qwcl : $(QWCL_OBJS) $(QWCL_AS_OBJS) $(QWCL_SVGA_OBJS)
-	$(CC) $(CFLAGS) -o $@ $(QWCL_OBJS) $(QWCL_AS_OBJS) $(QWCL_SVGA_OBJS) \
-		$(LDFLAGS) $(SVGALDFLAGS)
-
-$(BUILDDIR)/qwcl.x11 : $(QWCL_OBJS) $(QWCL_AS_OBJS) $(QWCL_X11_OBJS)
-	$(CC) $(CFLAGS) -o $@ $(QWCL_OBJS) $(QWCL_AS_OBJS) $(QWCL_X11_OBJS) \
-		$(LDFLAGS) $(XLDFLAGS)
-
-$(BUILDDIR)/client/cl_demo.o :        $(CLIENT_DIR)/cl_demo.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cl_ents.o :        $(CLIENT_DIR)/cl_ents.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cl_input.o :       $(CLIENT_DIR)/cl_input.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cl_main.o :        $(CLIENT_DIR)/cl_main.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cl_parse.o :       $(CLIENT_DIR)/cl_parse.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cl_pred.o :        $(CLIENT_DIR)/cl_pred.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cl_tent.o :        $(CLIENT_DIR)/cl_tent.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cl_cam.o :         $(CLIENT_DIR)/cl_cam.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cmd.o :            $(CLIENT_DIR)/cmd.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/common.o :         $(CLIENT_DIR)/common.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/console.o :        $(CLIENT_DIR)/console.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/crc.o :            $(CLIENT_DIR)/crc.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cvar.o :           $(CLIENT_DIR)/cvar.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_edge.o :         $(CLIENT_DIR)/d_edge.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_fill.o :         $(CLIENT_DIR)/d_fill.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_init.o :         $(CLIENT_DIR)/d_init.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_modech.o :       $(CLIENT_DIR)/d_modech.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_part.o :         $(CLIENT_DIR)/d_part.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_polyse.o :       $(CLIENT_DIR)/d_polyse.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_scan.o :         $(CLIENT_DIR)/d_scan.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_sky.o :          $(CLIENT_DIR)/d_sky.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_sprite.o :       $(CLIENT_DIR)/d_sprite.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_surf.o :         $(CLIENT_DIR)/d_surf.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_vars.o :         $(CLIENT_DIR)/d_vars.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_zpoint.o :       $(CLIENT_DIR)/d_zpoint.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/draw.o :           $(CLIENT_DIR)/draw.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/keys.o :           $(CLIENT_DIR)/keys.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/mathlib.o :        $(CLIENT_DIR)/mathlib.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/md4.o :            $(CLIENT_DIR)/md4.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/menu.o :           $(CLIENT_DIR)/menu.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/model.o :          $(CLIENT_DIR)/model.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/net_chan.o :       $(CLIENT_DIR)/net_chan.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/net_udp.o :        $(CLIENT_DIR)/net_udp.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/nonintel.o :       $(CLIENT_DIR)/nonintel.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/pmove.o :          $(CLIENT_DIR)/pmove.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/pmovetst.o :       $(CLIENT_DIR)/pmovetst.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_aclip.o :        $(CLIENT_DIR)/r_aclip.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_alias.o :        $(CLIENT_DIR)/r_alias.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_bsp.o :          $(CLIENT_DIR)/r_bsp.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_draw.o :         $(CLIENT_DIR)/r_draw.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_edge.o :         $(CLIENT_DIR)/r_edge.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_efrag.o :        $(CLIENT_DIR)/r_efrag.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_light.o :        $(CLIENT_DIR)/r_light.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_main.o :         $(CLIENT_DIR)/r_main.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_misc.o :         $(CLIENT_DIR)/r_misc.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_part.o :         $(CLIENT_DIR)/r_part.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_sky.o :          $(CLIENT_DIR)/r_sky.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_sprite.o :       $(CLIENT_DIR)/r_sprite.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_surf.o :         $(CLIENT_DIR)/r_surf.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/r_vars.o :         $(CLIENT_DIR)/r_vars.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/sbar.o :           $(CLIENT_DIR)/sbar.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/screen.o :         $(CLIENT_DIR)/screen.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/skin.o :           $(CLIENT_DIR)/skin.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/snd_dma.o :        $(CLIENT_DIR)/snd_dma.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/snd_mem.o :        $(CLIENT_DIR)/snd_mem.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/snd_mix.o :        $(CLIENT_DIR)/snd_mix.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/view.o :           $(CLIENT_DIR)/view.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/wad.o :            $(CLIENT_DIR)/wad.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/zone.o :           $(CLIENT_DIR)/zone.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/cd_linux.o :       $(CLIENT_DIR)/cd_linux.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/sys_linux.o :      $(CLIENT_DIR)/sys_linux.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/snd_linux.o :      $(CLIENT_DIR)/snd_linux.c
-	$(DO_CC)
-                                                                      
-$(BUILDDIR)/client/d_copy.o :         $(CLIENT_DIR)/d_copy.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/d_draw.o :         $(CLIENT_DIR)/d_draw.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/d_draw16.o :       $(CLIENT_DIR)/d_draw16.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/d_parta.o :        $(CLIENT_DIR)/d_parta.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/d_polysa.o :       $(CLIENT_DIR)/d_polysa.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/d_scana.o :        $(CLIENT_DIR)/d_scana.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/d_spr8.o :         $(CLIENT_DIR)/d_spr8.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/d_varsa.o :        $(CLIENT_DIR)/d_varsa.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/math.o :           $(CLIENT_DIR)/math.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/r_aclipa.o :       $(CLIENT_DIR)/r_aclipa.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/r_aliasa.o :       $(CLIENT_DIR)/r_aliasa.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/r_drawa.o :        $(CLIENT_DIR)/r_drawa.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/r_edgea.o :        $(CLIENT_DIR)/r_edgea.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/r_varsa.o :        $(CLIENT_DIR)/r_varsa.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/snd_mixa.o :       $(CLIENT_DIR)/snd_mixa.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/surf16.o :         $(CLIENT_DIR)/surf16.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/surf8.o :          $(CLIENT_DIR)/surf8.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/sys_dosa.o :       $(CLIENT_DIR)/sys_dosa.s
-	$(DO_AS)
-
-$(BUILDDIR)/client/vid_svgalib.o : $(CLIENT_DIR)/vid_svgalib.c
-	$(DO_O_CC)
-
-$(BUILDDIR)/client/vid_x.o : $(CLIENT_DIR)/vid_x.c
-	$(DO_CC)
-
-#############################################################################
 # GL CLIENT
 #############################################################################
 
@@ -578,7 +225,6 @@ GLQWCL_OBJS = \
 	$(BUILDDIR)/glclient/menu.o \
 	$(BUILDDIR)/glclient/net_chan.o \
 	$(BUILDDIR)/glclient/net_udp.o \
-	$(BUILDDIR)/glclient/nonintel.o \
 	$(BUILDDIR)/glclient/pmove.o \
 	$(BUILDDIR)/glclient/pmovetst.o \
 	$(BUILDDIR)/glclient/r_part.o \
@@ -674,9 +320,6 @@ $(BUILDDIR)/glclient/net_chan.o :      $(CLIENT_DIR)/net_chan.c
 	$(DO_GL_CC)
 
 $(BUILDDIR)/glclient/net_udp.o :       $(CLIENT_DIR)/net_udp.c
-	$(DO_GL_CC)
-
-$(BUILDDIR)/glclient/nonintel.o :      $(CLIENT_DIR)/nonintel.c
 	$(DO_GL_CC)
 
 $(BUILDDIR)/glclient/pmove.o :         $(CLIENT_DIR)/pmove.c
