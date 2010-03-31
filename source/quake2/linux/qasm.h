@@ -24,35 +24,17 @@
 #define id386	0
 #endif
 
-// !!! must be kept the same as in d_iface.h !!!
-#define TRANSPARENT_COLOR	255
-
 	.extern C(snd_scaletable)
 	.extern C(paintbuffer)
 	.extern C(snd_linear_count)
 	.extern C(snd_p)
 	.extern C(snd_vol)
 	.extern C(snd_out)
-	.extern C(vright)
-	.extern C(vup)
-	.extern C(vpn)
-	.extern C(BOPS_Error)
 
 //
 // !!! note that this file must match the corresponding C structures at all
 // times !!!
 //
-
-// plane_t structure
-// !!! if this is changed, it must be changed in model.h too !!!
-// !!! if the size of this is changed, the array lookup in SV_HullPointContents
-//     must be changed too !!!
-#define pl_normal	0
-#define pl_dist		12
-#define pl_type		16
-#define pl_signbits	17
-#define pl_pad		18
-#define pl_size		20
 
 // sfxcache_t structure
 // !!! if this is changed, it much be changed in sound.h too !!!
