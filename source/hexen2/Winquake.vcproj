@@ -7532,10 +7532,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="bugs.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

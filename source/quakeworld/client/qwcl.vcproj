@@ -4491,10 +4491,6 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="qe3.ico"
-				>
-			</File>
-			<File
 				RelativePath="quakeworld.bmp"
 				>
 			</File>
