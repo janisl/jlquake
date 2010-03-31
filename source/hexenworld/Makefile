@@ -50,15 +50,12 @@ endif
 GLCFLAGS=-DGLQUAKE -DGL_EXT_SHARED -I/usr/local/src/Mesa-3.0/include -I/usr/include/glide
 
 LDFLAGS=-lm
-SVGALDFLAGS=-lvga
-XLDFLAGS=-L/usr/X11R6/lib -lX11 -lXext
-GL_SVGA_LDFLAGS=-L/usr/X11/lib -L/usr/local/src/Mesa-3.0/lib -lm -lMesaGL -lglide2x -lX11 -lXext -lvga
-GL_X11_LDFLAGS=-L/usr/X11/lib -L/usr/local/src/Mesa-3.0/lib -lm -lGL -lX11 -lXext
+GL_X11_LDFLAGS=-L/usr/X11/lib -lm -lGL -lX11 -lXext
 
 DO_CC=$(CC) $(CFLAGS) -o $@ -c $<
 DO_O_CC=$(CC) -O $(CFLAGS) -o $@ -c $<
 DO_GL_CC=$(CC) $(CFLAGS) $(GLCFLAGS) -o $@ -c $<
-DO_SERVER_CC=$(CC) -DSERVERONLY $(CFLAGS) -o $@ -c $<
+DO_SERVER_CC=$(CC) -DSERVERONLY -DGLQUAKE $(CFLAGS) -o $@ -c $<
 
 DO_AS=$(CC) $(CFLAGS) -DELF -x assembler-with-cpp -o $@ -c $<
 DO_GL_AS=$(CC) $(CFLAGS) $(GLCFLAGS) -DELF -x assembler-with-cpp -o $@ -c $<
