@@ -38,6 +38,8 @@ cvar_t *win_noalttab;
 
 static UINT MSH_MOUSEWHEEL;
 
+refexport_t GetRefAPI (refimport_t rimp);
+
 // Console variables that we need to access from this module
 cvar_t		*vid_gamma;
 cvar_t		*vid_ref;			// Name of Refresh DLL loaded
@@ -47,7 +49,6 @@ cvar_t		*vid_fullscreen;
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
-HINSTANCE	reflib_library;		// Handle to refresh DLL 
 qboolean	reflib_active = 0;
 
 HWND        cl_hwnd;            // Main window handle for life of program
@@ -542,10 +543,7 @@ void VID_NewWindow ( int width, int height)
 
 void VID_FreeReflib (void)
 {
-	if ( !FreeLibrary( reflib_library ) )
-		Com_Error( ERR_FATAL, "Reflib FreeLibrary failed" );
 	memset (&re, 0, sizeof(re));
-	reflib_library = NULL;
 	reflib_active  = false;
 }
 
@@ -557,21 +555,11 @@ VID_LoadRefresh
 qboolean VID_LoadRefresh( char *name )
 {
 	refimport_t	ri;
-	GetRefAPI_t	GetRefAPI;
 	
 	if ( reflib_active )
 	{
 		re.Shutdown();
 		VID_FreeReflib ();
-	}
-
-	Com_Printf( "------- Loading %s -------\n", name );
-
-	if ( ( reflib_library = LoadLibrary( name ) ) == 0 )
-	{
-		Com_Printf( "LoadLibrary(\"%s\") failed\n", name );
-
-		return false;
 	}
 
 	ri.Cmd_AddCommand = Cmd_AddCommand;
@@ -590,9 +578,6 @@ qboolean VID_LoadRefresh( char *name )
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
-
-	if ( ( GetRefAPI = (void *) GetProcAddress( reflib_library, "GetRefAPI" ) ) == 0 )
-		Com_Error( ERR_FATAL, "GetProcAddress failed on %s", name );
 
 	re = GetRefAPI( ri );
 
@@ -614,14 +599,7 @@ qboolean VID_LoadRefresh( char *name )
 
 //======
 //PGM
-	vidref_val = VIDREF_OTHER;
-	if(vid_ref)
-	{
-		if(!strcmp (vid_ref->string, "gl"))
-			vidref_val = VIDREF_GL;
-		else if(!strcmp(vid_ref->string, "soft"))
-			vidref_val = VIDREF_SOFT;
-	}
+	vidref_val = VIDREF_GL;
 //PGM
 //======
 

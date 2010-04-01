@@ -30,8 +30,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctf", "source\quake2\ctf\ct
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "source\quake2\game\game.vcproj", "{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ref_gl", "source\quake2\ref_gl\ref_gl.vcproj", "{0CBC8DE0-B765-4BB6-A1BC-894794119CA5}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "botlib", "source\quake3\botlib\botlib.vcproj", "{A410161F-AE9F-485D-A01F-5294891430A6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "renderer", "source\quake3\renderer\renderer.vcproj", "{AB424155-FBED-4D8D-B007-5B6CF93EA395}"
@@ -91,10 +89,6 @@ Global
 		{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}.Debug|Win32.Build.0 = Debug|Win32
 		{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}.Release|Win32.ActiveCfg = Release|Win32
 		{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}.Release|Win32.Build.0 = Release|Win32
-		{0CBC8DE0-B765-4BB6-A1BC-894794119CA5}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0CBC8DE0-B765-4BB6-A1BC-894794119CA5}.Debug|Win32.Build.0 = Debug|Win32
-		{0CBC8DE0-B765-4BB6-A1BC-894794119CA5}.Release|Win32.ActiveCfg = Release|Win32
-		{0CBC8DE0-B765-4BB6-A1BC-894794119CA5}.Release|Win32.Build.0 = Release|Win32
 		{A410161F-AE9F-485D-A01F-5294891430A6}.Debug|Win32.ActiveCfg = Debug|Win32
 		{A410161F-AE9F-485D-A01F-5294891430A6}.Debug|Win32.Build.0 = Debug|Win32
 		{A410161F-AE9F-485D-A01F-5294891430A6}.Release|Win32.ActiveCfg = Release|Win32
