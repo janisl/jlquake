@@ -225,7 +225,6 @@ GLQWCL_OBJS = \
 	$(BUILDDIR)/glclient/midi.o \
 	$(BUILDDIR)/glclient/net_chan.o \
 	$(BUILDDIR)/glclient/net_udp.o \
-	$(BUILDDIR)/glclient/nonintel.o \
 	$(BUILDDIR)/glclient/pmove.o \
 	$(BUILDDIR)/glclient/pmovetst.o \
 	$(BUILDDIR)/glclient/r_part.o \
