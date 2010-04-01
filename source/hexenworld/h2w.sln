@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hcode", "hcode\hcode.vcproj", "{3C16BC6A-B053-4A5B-8982-B6D77D8902BD}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qwcl", "client\qwcl.vcproj", "{6B74BF6B-91C6-4FE0-AC05-D0BFC7B5DEF1}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qwsv", "server\qwsv.vcproj", "{3918E6E0-AB3C-4A77-AC60-13AB718DCC1F}"
@@ -13,10 +11,6 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{3C16BC6A-B053-4A5B-8982-B6D77D8902BD}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3C16BC6A-B053-4A5B-8982-B6D77D8902BD}.Debug|Win32.Build.0 = Debug|Win32
-		{3C16BC6A-B053-4A5B-8982-B6D77D8902BD}.Release|Win32.ActiveCfg = Release|Win32
-		{3C16BC6A-B053-4A5B-8982-B6D77D8902BD}.Release|Win32.Build.0 = Release|Win32
 		{6B74BF6B-91C6-4FE0-AC05-D0BFC7B5DEF1}.Debug|Win32.ActiveCfg = Debug|Win32
 		{6B74BF6B-91C6-4FE0-AC05-D0BFC7B5DEF1}.Debug|Win32.Build.0 = Debug|Win32
 		{6B74BF6B-91C6-4FE0-AC05-D0BFC7B5DEF1}.Release|Win32.ActiveCfg = Release|Win32
