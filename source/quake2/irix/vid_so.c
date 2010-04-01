@@ -2,8 +2,6 @@
 // is used for both the software and OpenGL rendering versions of the
 // Quake refresh engine.
 
-#define SO_FILE "/etc/quake2.conf"
-
 #include <errno.h>
 #include <assert.h>
 #include <dlfcn.h> // ELF dl loader
@@ -17,9 +15,7 @@
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
 
-#ifdef REF_HARD_LINKED
 refexport_t GetRefAPI (refimport_t rimp);
-#endif
 
 // Console variables that we need to access from this module
 cvar_t		*vid_gamma;
@@ -30,7 +26,6 @@ cvar_t		*vid_fullscreen;
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
-void		*reflib_library;		// Handle to refresh DLL 
 qboolean	reflib_active = 0;
 
 #define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
@@ -156,15 +151,10 @@ void VID_NewWindow ( int width, int height)
 
 void VID_FreeReflib (void)
 {
-	if (reflib_library) {
 		if (KBD_Close_fp)
 			KBD_Close_fp();
 		if (RW_IN_Shutdown_fp)
 			RW_IN_Shutdown_fp();
-#ifndef REF_HARD_LINKED
-		dlclose(reflib_library);
-#endif
-	}
 
 	KBD_Init_fp = NULL;
 	KBD_Update_fp = NULL;
@@ -177,7 +167,6 @@ void VID_FreeReflib (void)
 	RW_IN_Frame_fp = NULL;
 
 	memset (&re, 0, sizeof(re));
-	reflib_library = NULL;
 	reflib_active  = false;
 }
 
@@ -189,9 +178,6 @@ VID_LoadRefresh
 qboolean VID_LoadRefresh( char *name )
 {
 	refimport_t	ri;
-#ifndef REF_HARD_LINKED
-	GetRefAPI_t	GetRefAPI;
-#endif
 	char	fn[MAX_OSPATH];
 	struct stat st;
 	extern uid_t saved_euid;
@@ -211,31 +197,6 @@ qboolean VID_LoadRefresh( char *name )
 		VID_FreeReflib ();
 	}
 
-#ifndef REF_HARD_LINKED
-	getcwd(curpath, sizeof(curpath));
-	
-	Com_Printf( "------- Loading %s -------\n", name );
-
-	// now run through the search paths
-	path = NULL;
-	while (1)
-	{
-		path = FS_NextPath (path);
-		if (!path)
-			return NULL;		// couldn't find one anywhere
-		sprintf (fn, "%s/%s/%s", curpath, path, name);
-		Com_Printf ("Trying to load library (%s)\n", fn);
-
-		reflib_library = dlopen( fn, RTLD_NOW );
-		if (reflib_library)
-		{
-			Com_DPrintf ("LoadLibrary (%s)\n",name);
-			break;
-		}
-	}
-
-#endif
-
 	ri.Cmd_AddCommand = Cmd_AddCommand;
 	ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
 	ri.Cmd_Argc = Cmd_Argc;
@@ -253,10 +214,6 @@ qboolean VID_LoadRefresh( char *name )
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
 
-#ifndef REF_HARD_LINKED
-	if ( ( GetRefAPI = (void *) dlsym( reflib_library, "GetRefAPI" ) ) == 0 )
-		Com_Error( ERR_FATAL, "dlsym failed on %s", name );
-#endif
 	re = GetRefAPI( ri );
 
 	if (re.api_version != API_VERSION)
@@ -271,15 +228,6 @@ qboolean VID_LoadRefresh( char *name )
 	in_state.viewangles = cl.viewangles;
 	in_state.in_strafe_state = &in_strafe.state;
 
-#ifndef REF_HARD_LINKED
-	if ((RW_IN_Init_fp = dlsym(reflib_library, "RW_IN_Init")) == NULL ||
-		(RW_IN_Shutdown_fp = dlsym(reflib_library, "RW_IN_Shutdown")) == NULL ||
-		(RW_IN_Activate_fp = dlsym(reflib_library, "RW_IN_Activate")) == NULL ||
-		(RW_IN_Commands_fp = dlsym(reflib_library, "RW_IN_Commands")) == NULL ||
-		(RW_IN_Move_fp = dlsym(reflib_library, "RW_IN_Move")) == NULL ||
-		(RW_IN_Frame_fp = dlsym(reflib_library, "RW_IN_Frame")) == NULL)
-		Sys_Error("No RW_IN functions in REF.\n");
-#else
 	{
 	    void RW_IN_Init(in_state_t *in_state_p);
 	    void RW_IN_Shutdown(void);
@@ -295,7 +243,6 @@ qboolean VID_LoadRefresh( char *name )
 	    RW_IN_Move_fp = RW_IN_Move;
 	    RW_IN_Frame_fp = RW_IN_Frame;
 	}
-#endif
 
 	if ( re.Init( 0, 0 ) == -1 )
 	{
@@ -309,12 +256,6 @@ qboolean VID_LoadRefresh( char *name )
 	setegid(getgid());
 
 	/* Init KBD */
-#ifndef REF_HARD_LINKED
-	if ((KBD_Init_fp = dlsym(reflib_library, "KBD_Init")) == NULL ||
-		(KBD_Update_fp = dlsym(reflib_library, "KBD_Update")) == NULL ||
-		(KBD_Close_fp = dlsym(reflib_library, "KBD_Close")) == NULL)
-		Sys_Error("No KBD functions in REF.\n");
-#else
 	{
 		void KBD_Init(void);
 		void KBD_Update(void);
@@ -324,7 +265,6 @@ qboolean VID_LoadRefresh( char *name )
 		KBD_Update_fp = KBD_Update;
 		KBD_Close_fp = KBD_Close;
 	}
-#endif
 	KBD_Init_fp(Do_Key_Event);
 	Real_IN_Init();
 

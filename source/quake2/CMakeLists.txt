@@ -10,9 +10,6 @@ set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
 set(LDFLAGS -ldl -lm)
 set(GLLDFLAGS -L/usr/X11R6/lib -lGL -lX11 -lXext -lXxf86dga -lXxf86vm)
 
-#SHLIBCFLAGS=-fPIC
-#SHLIBLDFLAGS=-shared
-
 #############################################################################
 # CLIENT/SERVER
 #############################################################################
@@ -64,6 +61,17 @@ set(QUAKE2_OBJS
 	linux/sys_linux.c
 	linux/glob.c
 	linux/net_udp.c
+	ref_gl/gl_draw.c
+	ref_gl/gl_image.c
+	ref_gl/gl_light.c
+	ref_gl/gl_mesh.c
+	ref_gl/gl_model.c
+	ref_gl/gl_rmain.c
+	ref_gl/gl_rmisc.c
+	ref_gl/gl_rsurf.c
+	ref_gl/gl_warp.c
+	linux/qgl_linux.c
+	linux/gl_glx.c
 )
 
 set(QUAKE2_ASM_FILES
@@ -145,29 +153,3 @@ set_target_properties(q2game PROPERTIES CLEAN_DIRECT_OUTPUT 1 OUTPUT_NAME "game$
 set_target_properties(q2game PROPERTIES PREFIX "")
 set_target_properties(q2game PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
 target_link_libraries(q2game ${LDFLAGS})
-
-#############################################################################
-# REF_GL
-#############################################################################
-
-set(REF_GL_OBJS
-	ref_gl/gl_draw.c
-	ref_gl/gl_image.c
-	ref_gl/gl_light.c
-	ref_gl/gl_mesh.c
-	ref_gl/gl_model.c
-	ref_gl/gl_rmain.c
-	ref_gl/gl_rmisc.c
-	ref_gl/gl_rsurf.c
-	ref_gl/gl_warp.c
-	linux/qgl_linux.c
-	linux/gl_glx.c
-	game/q_shared.c
-	linux/q_shlinux.c
-	linux/glob.c
-)
-
-add_library(ref_gl SHARED ${REF_GL_OBJS})
-set_target_properties(ref_gl PROPERTIES PREFIX "")
-set_target_properties(ref_gl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(ref_gl ${LDFLAGS})

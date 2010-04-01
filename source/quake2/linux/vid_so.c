@@ -2,8 +2,6 @@
 // is used for both the software and OpenGL rendering versions of the
 // Quake refresh engine.
 
-#define SO_FILE "/etc/quake2.conf"
-
 #include <assert.h>
 #include <dlfcn.h> // ELF dl loader
 #include <sys/stat.h>
@@ -17,6 +15,8 @@
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
 
+refexport_t GetRefAPI (refimport_t rimp);
+
 // Console variables that we need to access from this module
 cvar_t		*vid_gamma;
 cvar_t		*vid_ref;			// Name of Refresh DLL loaded
@@ -26,7 +26,6 @@ cvar_t		*vid_fullscreen;
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
-void		*reflib_library;		// Handle to refresh DLL 
 qboolean	reflib_active = 0;
 
 #define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
@@ -152,13 +151,10 @@ void VID_NewWindow ( int width, int height)
 
 void VID_FreeReflib (void)
 {
-	if (reflib_library) {
 		if (KBD_Close_fp)
 			KBD_Close_fp();
 		if (RW_IN_Shutdown_fp)
 			RW_IN_Shutdown_fp();
-		dlclose(reflib_library);
-	}
 
 	KBD_Init_fp = NULL;
 	KBD_Update_fp = NULL;
@@ -171,7 +167,6 @@ void VID_FreeReflib (void)
 	RW_IN_Frame_fp = NULL;
 
 	memset (&re, 0, sizeof(re));
-	reflib_library = NULL;
 	reflib_active  = false;
 }
 
@@ -183,11 +178,8 @@ VID_LoadRefresh
 qboolean VID_LoadRefresh( char *name )
 {
 	refimport_t	ri;
-	GetRefAPI_t	GetRefAPI;
-	char	fn[MAX_OSPATH];
 	struct stat st;
 	extern uid_t saved_euid;
-	FILE *fp;
 	
 	if ( reflib_active )
 	{
@@ -199,55 +191,6 @@ qboolean VID_LoadRefresh( char *name )
 		RW_IN_Shutdown_fp = NULL;
 		re.Shutdown();
 		VID_FreeReflib ();
-	}
-
-	Com_Printf( "------- Loading %s -------\n", name );
-
-	//regain root
-	seteuid(saved_euid);
-
-	if ((fp = fopen(SO_FILE, "r")) == NULL) {
-		Com_Printf( "LoadLibrary(\"%s\") failed: can't open " SO_FILE " (required for location of ref libraries)\n", name);
-		return false;
-	}
-	fgets(fn, sizeof(fn), fp);
-	fclose(fp);
-	if (*fn && fn[strlen(fn) - 1] == '\n')
-		fn[strlen(fn) - 1] = 0;
-
-	strcat(fn, "/");
-	strcat(fn, name);
-
-	// permission checking
-#if 0
-	if (strstr(fn, "softx") == NULL) { // softx doesn't require root
-		if (stat(fn, &st) == -1) {
-			Com_Printf( "LoadLibrary(\"%s\") failed: %s\n", name, strerror(errno));
-			return false;
-		}
-		if (st.st_uid != 0) {
-			Com_Printf( "LoadLibrary(\"%s\") failed: ref is not owned by root\n", name);
-			return false;
-		}
-#if 0
-		if ((st.st_mode & 0777) & ~0700) {
-			Com_Printf( "LoadLibrary(\"%s\") failed: invalid permissions, must be 700 for security considerations\n", name);
-			return false;
-		}
-#endif
-	}
-	else
-#endif
-	{
-		// softx requires we give up root now
-		setreuid(getuid(), getuid());
-		setegid(getgid());
-	}
-
-	if ( ( reflib_library = dlopen( fn, RTLD_NOW ) ) == 0 )
-	{
-		Com_Printf( "LoadLibrary(\"%s\") failed: %s\n", name , dlerror());
-		return false;
 	}
 
 	ri.Cmd_AddCommand = Cmd_AddCommand;
@@ -267,9 +210,6 @@ qboolean VID_LoadRefresh( char *name )
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
 
-	if ( ( GetRefAPI = (void *) dlsym( reflib_library, "GetRefAPI" ) ) == 0 )
-		Com_Error( ERR_FATAL, "dlsym failed on %s", name );
-
 	re = GetRefAPI( ri );
 
 	if (re.api_version != API_VERSION)
@@ -284,13 +224,21 @@ qboolean VID_LoadRefresh( char *name )
 	in_state.viewangles = cl.viewangles;
 	in_state.in_strafe_state = &in_strafe.state;
 
-	if ((RW_IN_Init_fp = dlsym(reflib_library, "RW_IN_Init")) == NULL ||
-		(RW_IN_Shutdown_fp = dlsym(reflib_library, "RW_IN_Shutdown")) == NULL ||
-		(RW_IN_Activate_fp = dlsym(reflib_library, "RW_IN_Activate")) == NULL ||
-		(RW_IN_Commands_fp = dlsym(reflib_library, "RW_IN_Commands")) == NULL ||
-		(RW_IN_Move_fp = dlsym(reflib_library, "RW_IN_Move")) == NULL ||
-		(RW_IN_Frame_fp = dlsym(reflib_library, "RW_IN_Frame")) == NULL)
-		Sys_Error("No RW_IN functions in REF.\n");
+	{
+	    void RW_IN_Init(in_state_t *in_state_p);
+	    void RW_IN_Shutdown(void);
+	    void RW_IN_Commands (void);
+	    void RW_IN_Move (usercmd_t *cmd);
+	    void RW_IN_Frame (void);
+	    void RW_IN_Activate(void);
+
+	    RW_IN_Init_fp = RW_IN_Init;
+	    RW_IN_Shutdown_fp = RW_IN_Shutdown;
+	    RW_IN_Activate_fp = RW_IN_Activate;
+	    RW_IN_Commands_fp = RW_IN_Commands;
+	    RW_IN_Move_fp = RW_IN_Move;
+	    RW_IN_Frame_fp = RW_IN_Frame;
+	}
 
 	Real_IN_Init();
 
@@ -302,12 +250,6 @@ qboolean VID_LoadRefresh( char *name )
 	}
 
 	/* Init KBD */
-#if 1
-	if ((KBD_Init_fp = dlsym(reflib_library, "KBD_Init")) == NULL ||
-		(KBD_Update_fp = dlsym(reflib_library, "KBD_Update")) == NULL ||
-		(KBD_Close_fp = dlsym(reflib_library, "KBD_Close")) == NULL)
-		Sys_Error("No KBD functions in REF.\n");
-#else
 	{
 		void KBD_Init(void);
 		void KBD_Update(void);
@@ -317,12 +259,7 @@ qboolean VID_LoadRefresh( char *name )
 		KBD_Update_fp = KBD_Update;
 		KBD_Close_fp = KBD_Close;
 	}
-#endif
 	KBD_Init_fp(Do_Key_Event);
-
-	// give up root now
-	setreuid(getuid(), getuid());
-	setegid(getgid());
 
 	Com_Printf( "------------------------------------\n");
 	reflib_active = true;
