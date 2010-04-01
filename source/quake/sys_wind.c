@@ -116,7 +116,7 @@ int Sys_FileRead (int handle, void *dest, int count)
 	return fread (dest, 1, count, sys_handles[handle]);
 }
 
-int Sys_FileWrite (int handle, void *data, int count)
+int Sys_FileWrite (int handle, const void *data, int count)
 {
 	return fwrite (data, 1, count, sys_handles[handle]);
 }

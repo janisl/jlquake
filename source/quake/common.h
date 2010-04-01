@@ -44,7 +44,7 @@ void SZ_Alloc (sizebuf_t *buf, int startsize);
 void SZ_Free (sizebuf_t *buf);
 void SZ_Clear (sizebuf_t *buf);
 void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, void *data, int length);
+void SZ_Write (sizebuf_t *buf, const void *data, int length);
 void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
@@ -122,7 +122,7 @@ float MSG_ReadAngle (void);
 //============================================================================
 
 void Q_memset (void *dest, int fill, int count);
-void Q_memcpy (void *dest, void *src, int count);
+void Q_memcpy (void *dest, const void *src, int count);
 int Q_memcmp (void *m1, void *m2, int count);
 void Q_strcpy (char *dest, char *src);
 void Q_strncpy (char *dest, char *src, int count);

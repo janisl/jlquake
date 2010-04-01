@@ -209,7 +209,7 @@ int Sys_FileRead (int handle, void *dest, int count)
 	return x;
 }
 
-int Sys_FileWrite (int handle, void *data, int count)
+int Sys_FileWrite (int handle, const void *data, int count)
 {
 	int		t, x;
 

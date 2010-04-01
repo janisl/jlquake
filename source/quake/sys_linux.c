@@ -220,7 +220,7 @@ int Sys_FileOpenWrite (char *path)
 	return handle;
 }
 
-int Sys_FileWrite (int handle, void *src, int count)
+int Sys_FileWrite (int handle, const void *src, int count)
 {
 	return write (handle, src, count);
 }

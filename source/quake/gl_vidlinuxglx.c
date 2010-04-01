@@ -551,8 +551,8 @@ void CheckMultiTextureExtensions(void)
 			return;
 		}
 
-		qglMTexCoord2fSGIS = (void *) dlsym(prjobj, "glMTexCoord2fSGIS");
-		qglSelectTextureSGIS = (void *) dlsym(prjobj, "glSelectTextureSGIS");
+		qglMTexCoord2fSGIS = (lpMTexFUNC) dlsym(prjobj, "glMTexCoord2fSGIS");
+		qglSelectTextureSGIS = (lpSelTexFUNC) dlsym(prjobj, "glSelectTextureSGIS");
 
 		if (qglMTexCoord2fSGIS && qglSelectTextureSGIS) {
 			Con_Printf("Multitexture extensions found.\n");
@@ -571,14 +571,14 @@ GL_Init
 */
 void GL_Init (void)
 {
-	gl_vendor = glGetString (GL_VENDOR);
+	gl_vendor = (const char*)glGetString (GL_VENDOR);
 	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = glGetString (GL_RENDERER);
+	gl_renderer = (const char*)glGetString (GL_RENDERER);
 	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
 
-	gl_version = glGetString (GL_VERSION);
+	gl_version = (const char*)glGetString (GL_VERSION);
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = glGetString (GL_EXTENSIONS);
+	gl_extensions = (const char*)glGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
 //	Con_Printf ("%s %s\n", gl_renderer, gl_version);
@@ -650,7 +650,7 @@ void VID_Init8bitPalette(void)
 	}
 
 	if (strstr(gl_extensions, "3DFX_set_global_palette") &&
-		(qgl3DfxSetPaletteEXT = dlsym(prjobj, "gl3DfxSetPaletteEXT")) != NULL) {
+		(qgl3DfxSetPaletteEXT = (void (*) (GLuint *))dlsym(prjobj, "gl3DfxSetPaletteEXT")) != NULL) {
 		GLubyte table[256][4];
 		char *oldpal;
 
@@ -668,7 +668,7 @@ void VID_Init8bitPalette(void)
 		is8bit = true;
 
 	} else if (strstr(gl_extensions, "GL_EXT_shared_texture_palette") &&
-		(qglColorTableEXT = dlsym(prjobj, "glColorTableEXT")) != NULL) {
+		(qglColorTableEXT = (void (*)(int, int, int, int, int, const void*))dlsym(prjobj, "glColorTableEXT")) != NULL) {
 		char thePalette[256*3];
 		char *oldPalette, *newPalette;
 

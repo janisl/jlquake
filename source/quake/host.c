@@ -192,7 +192,7 @@ void	Host_FindMaxClients (void)
 	svs.maxclientslimit = svs.maxclients;
 	if (svs.maxclientslimit < 4)
 		svs.maxclientslimit = 4;
-	svs.clients = Hunk_AllocName (svs.maxclientslimit*sizeof(client_t), "clients");
+	svs.clients = (client_t*)Hunk_AllocName (svs.maxclientslimit*sizeof(client_t), "clients");
 
 	if (svs.maxclients > 1)
 		Cvar_SetValue ("deathmatch", 1.0);
@@ -407,7 +407,7 @@ void Host_ShutdownServer(qboolean crash)
 	int		i;
 	int		count;
 	sizebuf_t	buf;
-	char		message[4];
+	byte		message[4];
 	double	start;
 
 	if (!sv.active)
@@ -788,12 +788,12 @@ void Host_InitVCR (quakeparms_t *parms)
 			Sys_Error("Invalid signature in vcr file\n");
 
 		Sys_FileRead (vcrFile, &com_argc, sizeof(int));
-		com_argv = malloc(com_argc * sizeof(char *));
+		com_argv = (char**)malloc(com_argc * sizeof(char *));
 		com_argv[0] = parms->argv[0];
 		for (i = 0; i < com_argc; i++)
 		{
 			Sys_FileRead (vcrFile, &len, sizeof(int));
-			p = malloc(len);
+			p = (char*)malloc(len);
 			Sys_FileRead (vcrFile, p, len);
 			com_argv[i+1] = p;
 		}

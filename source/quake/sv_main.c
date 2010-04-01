@@ -984,7 +984,7 @@ Tell all the clients that the server is changing levels
 */
 void SV_SendReconnect (void)
 {
-	char	data[128];
+	byte	data[128];
 	sizebuf_t	msg;
 
 	msg.data = data;
@@ -1098,7 +1098,7 @@ void SV_SpawnServer (char *server)
 // allocate server memory
 	sv.max_edicts = MAX_EDICTS;
 	
-	sv.edicts = Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
+	sv.edicts = (edict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
 
 	sv.datagram.maxsize = sizeof(sv.datagram_buf);
 	sv.datagram.cursize = 0;

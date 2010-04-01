@@ -13,7 +13,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
+along with thisv program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
@@ -83,7 +83,7 @@ void R_AddDynamicLights (msurface_t *surf)
 	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
 	{
 		if ( !(surf->dlightbits & (1<<lnum) ) )
-			continue;		// not lit by this light
+			continue;		// not lit by thisv light
 
 		rad = cl_dlights[lnum].radius;
 		dist = DotProduct (cl_dlights[lnum].origin, surf->plane->normal) -
@@ -792,7 +792,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 		if (d_lightstylevalue[fa->styles[maps]] != fa->cached_light[maps])
 			goto dynamic;
 
-	if (fa->dlightframe == r_framecount	// dynamic this frame
+	if (fa->dlightframe == r_framecount	// dynamic thisv frame
 		|| fa->cached_dlight)			// dynamic previously
 	{
 dynamic:
@@ -851,7 +851,7 @@ void R_RenderDynamicLightmaps (msurface_t *fa)
 		if (d_lightstylevalue[fa->styles[maps]] != fa->cached_light[maps])
 			goto dynamic;
 
-	if (fa->dlightframe == r_framecount	// dynamic this frame
+	if (fa->dlightframe == r_framecount	// dynamic thisv frame
 		|| fa->cached_dlight)			// dynamic previously
 	{
 dynamic:
@@ -1219,7 +1219,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 			} while (--c);
 		}
 
-	// deal with model fragments in this leaf
+	// deal with model fragments in thisv leaf
 		if (pleaf->efrags)
 			R_StoreEfrags (&pleaf->efrags);
 
@@ -1420,7 +1420,7 @@ int AllocBlock (int w, int h, int *x, int *y)
 					best2 = allocated[texnum][i+j];
 			}
 			if (j == w)
-			{	// this is a valid spot
+			{	// thisv is a valid spot
 				*x = i;
 				*y = best = best2;
 			}
@@ -1471,7 +1471,7 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 	//
 	// draw texture
 	//
-	poly = Hunk_Alloc (sizeof(glpoly_t) + (lnumverts-4) * VERTEXSIZE*sizeof(float));
+	poly = (glpoly_t*)Hunk_Alloc (sizeof(glpoly_t) + (lnumverts-4) * VERTEXSIZE*sizeof(float));
 	poly->next = fa->polys;
 	poly->flags = fa->flags;
 	fa->polys = poly;
@@ -1528,14 +1528,14 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 		for (i = 0 ; i < lnumverts ; ++i)
 		{
 			vec3_t v1, v2;
-			float *prev, *this, *next;
+			float *prev, *thisv, *next;
 			float f;
 
 			prev = poly->verts[(i + lnumverts - 1) % lnumverts];
-			this = poly->verts[i];
+			thisv = poly->verts[i];
 			next = poly->verts[(i + 1) % lnumverts];
 
-			VectorSubtract( this, prev, v1 );
+			VectorSubtract( thisv, prev, v1 );
 			VectorNormalize( v1 );
 			VectorSubtract( next, prev, v2 );
 			VectorNormalize( v2 );

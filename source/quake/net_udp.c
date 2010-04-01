@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/param.h>
 #include <sys/ioctl.h>
 #include <errno.h>
+#include <arpa/inet.h>
 
 #ifdef __sun__
 #include <sys/filio.h>
@@ -140,7 +141,7 @@ int UDP_OpenSocket (int port)
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(port);
-	if( bind (newsocket, (void *)&address, sizeof(address)) == -1)
+	if( bind (newsocket, (void*)&address, sizeof(address)) == -1)
 		goto ErrorReturn;
 
 	return newsocket;
@@ -244,7 +245,7 @@ int UDP_CheckNewConnections (void)
 
 int UDP_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 {
-	int addrlen = sizeof (struct qsockaddr);
+	socklen_t addrlen = sizeof (struct qsockaddr);
 	int ret;
 
 	ret = recvfrom (socket, buf, len, 0, (struct sockaddr *)addr, &addrlen);
@@ -332,7 +333,7 @@ int UDP_StringToAddr (char *string, struct qsockaddr *addr)
 
 int UDP_GetSocketAddr (int socket, struct qsockaddr *addr)
 {
-	int addrlen = sizeof(struct qsockaddr);
+	socklen_t addrlen = sizeof(struct qsockaddr);
 	unsigned int a;
 
 	Q_memset(addr, 0, sizeof(struct qsockaddr));

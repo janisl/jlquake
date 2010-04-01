@@ -6,48 +6,20 @@
 # ELF only
 #
 
-BASEVERSION=1.09
-VERSION=$(BASEVERSION)$(GLIBC)
-
-# RPM release number
-RPM_RELEASE=5
-
-ifneq (,$(findstring libc6,$(shell if [ -e /lib/libc.so.6 ];then echo libc6;fi)))
-GLIBC=-glibc
-else
-GLIBC=
-endif
-
-ifneq (,$(findstring alpha,$(shell uname -m)))
-ARCH=axp
-else
-ARCH=i386
-endif
-NOARCH=noarch
-
 MOUNT_DIR=.
 
-BUILD_DEBUG_DIR=debug$(ARCH)$(GLIBC)
-BUILD_RELEASE_DIR=release$(ARCH)$(GLIBC)
+BUILD_DEBUG_DIR=debug
+BUILD_RELEASE_DIR=release
 
-EGCS=gcc
-CC=$(EGCS)
+CC=gcc
 
-BASE_CFLAGS=-Dstricmp=strcasecmp
+BASE_CFLAGS=-Dstricmp=strcasecmp -DGLQUAKE
 RELEASE_CFLAGS=$(BASE_CFLAGS) -g -march=pentiumpro -O6 -ffast-math -funroll-loops \
 	-fomit-frame-pointer -fexpensive-optimizations
 DEBUG_CFLAGS=$(BASE_CFLAGS) -g
-LDFLAGS=-lm
-
-GLLDFLAGS=-L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm
-GLCFLAGS=-DGLQUAKE
+LDFLAGS=-L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm
 
 DO_GL_CC=$(CC) $(CFLAGS) $(GLCFLAGS) -o $@ -c $<
-DO_GL_DEBUG_CC=$(CC) $(DEBUG_CFLAGS) $(GLCFLAGS) -o $@ -c $<
-DO_X11_CC=$(CC) $(CFLAGS) $(XCFLAGS) -o $@ -c $<
-DO_X11_DEBUG_CC=$(CC) $(DEBUG_CFLAGS) $(XCFLAGS) -o $@ -c $<
-DO_O_CC=$(CC) -O $(CFLAGS) -o $@ -c $<
-DO_AS=$(CC) $(CFLAGS) -DELF -x assembler-with-cpp -o $@ -c $<
 DO_GL_AS=$(CC) $(CFLAGS) $(GLCFLAGS) -DELF -x assembler-with-cpp -o $@ -c $<
 
 #############################################################################
@@ -140,7 +112,7 @@ GLQUAKE_OBJS= \
 GLX_OBJS=$(BUILDDIR)/glquake/gl_vidlinuxglx.o
 
 $(BUILDDIR)/bin/glquake.glx : $(GLQUAKE_OBJS) $(GLX_OBJS)
-	$(CC) $(CFLAGS) -o $@ $(GLQUAKE_OBJS) $(GLX_OBJS) $(GLLDFLAGS) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $(GLQUAKE_OBJS) $(GLX_OBJS) $(LDFLAGS)
 
 $(BUILDDIR)/glquake/cl_demo.o :      $(MOUNT_DIR)/cl_demo.c
 	$(DO_GL_CC)
@@ -164,7 +136,7 @@ $(BUILDDIR)/glquake/cmd.o :          $(MOUNT_DIR)/cmd.c
 	$(DO_GL_CC)
 
 $(BUILDDIR)/glquake/common.o :       $(MOUNT_DIR)/common.c
-	$(DO_GL_DEBUG_CC)
+	$(DO_GL_CC)
 
 $(BUILDDIR)/glquake/console.o :      $(MOUNT_DIR)/console.c
 	$(DO_GL_CC)
@@ -315,20 +287,3 @@ $(BUILDDIR)/glquake/snd_mixa.o :     $(MOUNT_DIR)/snd_mixa.s
 
 $(BUILDDIR)/glquake/sys_dosa.o :     $(MOUNT_DIR)/sys_dosa.s
 	$(DO_GL_AS)
-
-#############################################################################
-# MISC
-#############################################################################
-
-clean: clean-debug clean-release
-	rm -f glquake.spec quake.x11.spec
-
-clean-debug:
-	$(MAKE) clean2 BUILDDIR=$(BUILD_DEBUG_DIR) CFLAGS="$(DEBUG_CFLAGS)"
-
-clean-release:
-	$(MAKE) clean2 BUILDDIR=$(BUILD_RELEASE_DIR) CFLAGS="$(DEBUG_CFLAGS)"
-
-clean2:
-	-rm -f $(X11_OBJS) $(GLQUAKE_OBJS) $(GLX_OBJS)
-

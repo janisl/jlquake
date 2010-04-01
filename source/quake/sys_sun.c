@@ -164,7 +164,7 @@ int Sys_FileRead (int handle, void *dest, int count)
     else return fread (dest, 1, count, sys_handles[handle].hFile);
 }
 
-int Sys_FileWrite (int handle, void *data, int count)
+int Sys_FileWrite (int handle, const void *data, int count)
 {
     if (sys_handles[handle].pMap)
 	Sys_Error( "Attempted to write to read-only file %d!\n", handle );

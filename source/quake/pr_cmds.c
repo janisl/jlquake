@@ -99,7 +99,7 @@ void PF_objerror (void)
 ==============
 PF_makevectors
 
-Writes new values for v_forward, v_up, and v_right based on angles
+Writes len values for v_forward, v_up, and v_right based on angles
 makevectors(vector)
 ==============
 */
@@ -351,21 +351,21 @@ void PF_normalize (void)
 {
 	float	*value1;
 	vec3_t	newvalue;
-	float	new;
+	float	len;
 	
 	value1 = G_VECTOR(OFS_PARM0);
 
-	new = value1[0] * value1[0] + value1[1] * value1[1] + value1[2]*value1[2];
-	new = sqrt(new);
+	len = value1[0] * value1[0] + value1[1] * value1[1] + value1[2]*value1[2];
+	len = sqrt(len);
 	
-	if (new == 0)
+	if (len == 0)
 		newvalue[0] = newvalue[1] = newvalue[2] = 0;
 	else
 	{
-		new = 1/new;
-		newvalue[0] = value1[0] * new;
-		newvalue[1] = value1[1] * new;
-		newvalue[2] = value1[2] * new;
+		len = 1/len;
+		newvalue[0] = value1[0] * len;
+		newvalue[1] = value1[1] * len;
+		newvalue[2] = value1[2] * len;
 	}
 	
 	VectorCopy (newvalue, G_VECTOR(OFS_RETURN));	
@@ -381,14 +381,14 @@ scalar vlen(vector)
 void PF_vlen (void)
 {
 	float	*value1;
-	float	new;
+	float	len;
 	
 	value1 = G_VECTOR(OFS_PARM0);
 
-	new = value1[0] * value1[0] + value1[1] * value1[1] + value1[2]*value1[2];
-	new = sqrt(new);
+	len = value1[0] * value1[0] + value1[1] * value1[1] + value1[2]*value1[2];
+	len = sqrt(len);
 	
-	G_FLOAT(OFS_RETURN) = new;
+	G_FLOAT(OFS_RETURN) = len;
 }
 
 /*
@@ -757,7 +757,7 @@ void PF_checkclient (void)
 	int		l;
 	vec3_t	view;
 	
-// find a new check if on a new frame
+// find a len check if on a len frame
 	if (sv.time - sv.lastchecktime >= 0.1)
 	{
 		sv.lastcheck = PF_newcheckclient (sv.lastcheck);
