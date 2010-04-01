@@ -33,27 +33,6 @@ static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
 
-qboolean	winsock_lib_initialized;
-
-int (PASCAL FAR *pWSAStartup)(WORD wVersionRequired, LPWSADATA lpWSAData);
-int (PASCAL FAR *pWSACleanup)(void);
-int (PASCAL FAR *pWSAGetLastError)(void);
-SOCKET (PASCAL FAR *psocket)(int af, int type, int protocol);
-int (PASCAL FAR *pioctlsocket)(SOCKET s, long cmd, u_long FAR *argp);
-int (PASCAL FAR *psetsockopt)(SOCKET s, int level, int optname,
-							  const char FAR * optval, int optlen);
-int (PASCAL FAR *precvfrom)(SOCKET s, char FAR * buf, int len, int flags,
-							struct sockaddr FAR *from, int FAR * fromlen);
-int (PASCAL FAR *psendto)(SOCKET s, const char FAR * buf, int len, int flags,
-						  const struct sockaddr FAR *to, int tolen);
-int (PASCAL FAR *pclosesocket)(SOCKET s);
-int (PASCAL FAR *pgethostname)(char FAR * name, int namelen);
-struct hostent FAR * (PASCAL FAR *pgethostbyname)(const char FAR * name);
-struct hostent FAR * (PASCAL FAR *pgethostbyaddr)(const char FAR * addr,
-												  int len, int type);
-int (PASCAL FAR *pgetsockname)(SOCKET s, struct sockaddr FAR *name,
-							   int FAR * namelen);
-
 #include "net_wins.h"
 
 int winsock_initialized = 0;
@@ -97,12 +76,12 @@ void WINS_GetLocalAddress()
 	if (myAddr != INADDR_ANY)
 		return;
 
-	if (pgethostname(buff, MAXHOSTNAMELEN) == SOCKET_ERROR)
+	if (gethostname(buff, MAXHOSTNAMELEN) == SOCKET_ERROR)
 		return;
 
 	blocktime = Sys_FloatTime();
 	WSASetBlockingHook(BlockingHook);
-	local = pgethostbyname(buff);
+	local = gethostbyname(buff);
 	WSAUnhookBlockingHook();
 	if (local == NULL)
 		return;
@@ -121,44 +100,6 @@ int WINS_Init (void)
 	char	*p;
 	int		r;
 	WORD	wVersionRequested;
-	HINSTANCE hInst;
-
-// initialize the Winsock function vectors (we do this instead of statically linking
-// so we can run on Win 3.1, where there isn't necessarily Winsock)
-    hInst = LoadLibrary("wsock32.dll");
-	
-	if (hInst == NULL)
-	{
-		Con_SafePrintf ("Failed to load winsock.dll\n");
-		winsock_lib_initialized = false;
-		return -1;
-	}
-
-	winsock_lib_initialized = true;
-
-    pWSAStartup = (void *)GetProcAddress(hInst, "WSAStartup");
-    pWSACleanup = (void *)GetProcAddress(hInst, "WSACleanup");
-    pWSAGetLastError = (void *)GetProcAddress(hInst, "WSAGetLastError");
-    psocket = (void *)GetProcAddress(hInst, "socket");
-    pioctlsocket = (void *)GetProcAddress(hInst, "ioctlsocket");
-    psetsockopt = (void *)GetProcAddress(hInst, "setsockopt");
-    precvfrom = (void *)GetProcAddress(hInst, "recvfrom");
-    psendto = (void *)GetProcAddress(hInst, "sendto");
-    pclosesocket = (void *)GetProcAddress(hInst, "closesocket");
-    pgethostname = (void *)GetProcAddress(hInst, "gethostname");
-    pgethostbyname = (void *)GetProcAddress(hInst, "gethostbyname");
-    pgethostbyaddr = (void *)GetProcAddress(hInst, "gethostbyaddr");
-    pgetsockname = (void *)GetProcAddress(hInst, "getsockname");
-
-    if (!pWSAStartup || !pWSACleanup || !pWSAGetLastError ||
-		!psocket || !pioctlsocket || !psetsockopt ||
-		!precvfrom || !psendto || !pclosesocket ||
-		!pgethostname || !pgethostbyname || !pgethostbyaddr ||
-		!pgetsockname)
-	{
-		Con_SafePrintf ("Couldn't GetProcAddress from winsock.dll\n");
-		return -1;
-	}
 
 	if (COM_CheckParm ("-noudp"))
 		return -1;
@@ -167,7 +108,7 @@ int WINS_Init (void)
 	{
 		wVersionRequested = MAKEWORD(1, 1); 
 
-		r = pWSAStartup (MAKEWORD(1, 1), &winsockdata);
+		r = WSAStartup (MAKEWORD(1, 1), &winsockdata);
 
 		if (r)
 		{
@@ -178,11 +119,11 @@ int WINS_Init (void)
 	winsock_initialized++;
 
 	// determine my name
-	if (pgethostname(buff, MAXHOSTNAMELEN) == SOCKET_ERROR)
+	if (gethostname(buff, MAXHOSTNAMELEN) == SOCKET_ERROR)
 	{
 		Con_DPrintf ("Winsock TCP/IP Initialization failed.\n");
 		if (--winsock_initialized == 0)
-			pWSACleanup ();
+			WSACleanup ();
 		return -1;
 	}
 
@@ -230,7 +171,7 @@ int WINS_Init (void)
 	{
 		Con_Printf("WINS_Init: Unable to open control socket\n");
 		if (--winsock_initialized == 0)
-			pWSACleanup ();
+			WSACleanup ();
 		return -1;
 	}
 
@@ -251,7 +192,7 @@ void WINS_Shutdown (void)
 	WINS_Listen (false);
 	WINS_CloseSocket (net_controlsocket);
 	if (--winsock_initialized == 0)
-		pWSACleanup ();
+		WSACleanup ();
 }
 
 //=============================================================================
@@ -284,21 +225,21 @@ int WINS_OpenSocket (int port)
 	struct sockaddr_in address;
 	u_long _true = 1;
 
-	if ((newsocket = psocket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
+	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 		return -1;
 
-	if (pioctlsocket (newsocket, FIONBIO, &_true) == -1)
+	if (ioctlsocket (newsocket, FIONBIO, &_true) == -1)
 		goto ErrorReturn;
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = myAddr;
 	address.sin_port = htons((unsigned short)port);
-	if( bind (newsocket, (void *)&address, sizeof(address)) == 0)
+	if( bind (newsocket, (sockaddr *)&address, sizeof(address)) == 0)
 		return newsocket;
 
 	Sys_Error ("Unable to bind to %s", WINS_AddrToString((struct qsockaddr *)&address));
 ErrorReturn:
-	pclosesocket (newsocket);
+	closesocket (newsocket);
 	return -1;
 }
 
@@ -308,7 +249,7 @@ int WINS_CloseSocket (int socket)
 {
 	if (socket == net_broadcastsocket)
 		net_broadcastsocket = 0;
-	return pclosesocket (socket);
+	return closesocket (socket);
 }
 
 
@@ -385,7 +326,7 @@ int WINS_CheckNewConnections (void)
 	if (net_acceptsocket == -1)
 		return -1;
 
-	if (precvfrom (net_acceptsocket, buf, sizeof(buf), MSG_PEEK, NULL, NULL) > 0)
+	if (recvfrom (net_acceptsocket, buf, sizeof(buf), MSG_PEEK, NULL, NULL) > 0)
 	{
 		return net_acceptsocket;
 	}
@@ -399,10 +340,10 @@ int WINS_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 	int addrlen = sizeof (struct qsockaddr);
 	int ret;
 
-	ret = precvfrom (socket, buf, len, 0, (struct sockaddr *)addr, &addrlen);
+	ret = recvfrom (socket, (char*)buf, len, 0, (struct sockaddr *)addr, &addrlen);
 	if (ret == -1)
 	{
-		int err = pWSAGetLastError();
+		int err = WSAGetLastError();
 
 		if (errno == WSAEWOULDBLOCK || errno == WSAECONNREFUSED)
 			return 0;
@@ -418,7 +359,7 @@ int WINS_MakeSocketBroadcastCapable (int socket)
 	int	i = 1;
 
 	// make this socket broadcast capable
-	if (psetsockopt(socket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) < 0)
+	if (setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) < 0)
 		return -1;
 	net_broadcastsocket = socket;
 
@@ -453,9 +394,9 @@ int WINS_Write (int socket, byte *buf, int len, struct qsockaddr *addr)
 {
 	int ret;
 
-	ret = psendto (socket, buf, len, 0, (struct sockaddr *)addr, sizeof(struct qsockaddr));
+	ret = sendto (socket, (char*)buf, len, 0, (struct sockaddr *)addr, sizeof(struct qsockaddr));
 	if (ret == -1)
-		if (pWSAGetLastError() == WSAEWOULDBLOCK)
+		if (WSAGetLastError() == WSAEWOULDBLOCK)
 			return 0;
 
 	return ret;
@@ -497,7 +438,7 @@ int WINS_GetSocketAddr (int socket, struct qsockaddr *addr)
 	unsigned int a;
 
 	Q_memset(addr, 0, sizeof(struct qsockaddr));
-	pgetsockname(socket, (struct sockaddr *)addr, &addrlen);
+	getsockname(socket, (struct sockaddr *)addr, &addrlen);
 	a = ((struct sockaddr_in *)addr)->sin_addr.s_addr;
 	if (a == 0 || a == inet_addr("127.0.0.1"))
 		((struct sockaddr_in *)addr)->sin_addr.s_addr = myAddr;
@@ -511,7 +452,7 @@ int WINS_GetNameFromAddr (struct qsockaddr *addr, char *name)
 {
 	struct hostent *hostentry;
 
-	hostentry = pgethostbyaddr ((char *)&((struct sockaddr_in *)addr)->sin_addr, sizeof(struct in_addr), AF_INET);
+	hostentry = gethostbyaddr ((char *)&((struct sockaddr_in *)addr)->sin_addr, sizeof(struct in_addr), AF_INET);
 	if (hostentry)
 	{
 		Q_strncpy (name, (char *)hostentry->h_name, NET_NAMELEN - 1);
@@ -531,7 +472,7 @@ int WINS_GetAddrFromName(char *name, struct qsockaddr *addr)
 	if (name[0] >= '0' && name[0] <= '9')
 		return PartialIPAddress (name, addr);
 	
-	hostentry = pgethostbyname (name);
+	hostentry = gethostbyname (name);
 	if (!hostentry)
 		return -1;
 

@@ -27,11 +27,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DWORD	unsigned long
 #endif
 
+extern "C"
+{
 #define	PAINTBUFFER_SIZE	512
 portable_samplepair_t paintbuffer[PAINTBUFFER_SIZE];
 int		snd_scaletable[32][256];
-int 	*snd_p, snd_linear_count, snd_vol;
+int 	*snd_p;
+int		snd_linear_count, snd_vol;
 short	*snd_out;
+}
 
 #if id386
 extern "C" { void Snd_WriteLinearBlastStereo16 (void); }
@@ -84,8 +88,8 @@ void S_TransferStereo16 (int endtime)
 	{
 		reps = 0;
 
-		while ((hresult = pDSBuf->lpVtbl->Lock(pDSBuf, 0, gSndBufSize, &pbuf, &dwSize, 
-									   &pbuf2, &dwSize2, 0)) != DS_OK)
+		while ((hresult = pDSBuf->Lock(0, gSndBufSize, (void**)&pbuf, &dwSize, 
+									   (void**)&pbuf2, &dwSize2, 0)) != DS_OK)
 		{
 			if (hresult != DSERR_BUFFERLOST)
 			{
@@ -132,7 +136,7 @@ void S_TransferStereo16 (int endtime)
 
 #ifdef _WIN32
 	if (pDSBuf)
-		pDSBuf->lpVtbl->Unlock(pDSBuf, pbuf, dwSize, NULL, 0);
+		pDSBuf->Unlock(pbuf, dwSize, NULL, 0);
 #endif
 }
 
@@ -171,8 +175,8 @@ void S_TransferPaintBuffer(int endtime)
 	{
 		reps = 0;
 
-		while ((hresult = pDSBuf->lpVtbl->Lock(pDSBuf, 0, gSndBufSize, &pbuf, &dwSize, 
-									   &pbuf2,&dwSize2, 0)) != DS_OK)
+		while ((hresult = pDSBuf->Lock(0, gSndBufSize, (void**)&pbuf, &dwSize, 
+									   (void**)&pbuf2,&dwSize2, 0)) != DS_OK)
 		{
 			if (hresult != DSERR_BUFFERLOST)
 			{
@@ -236,9 +240,9 @@ void S_TransferPaintBuffer(int endtime)
 		
 		ir += il;
 
-		pDSBuf->lpVtbl->Unlock(pDSBuf, pbuf, dwSize, NULL, 0);
+		pDSBuf->Unlock(pbuf, dwSize, NULL, 0);
 
-		pDSBuf->lpVtbl->GetCurrentPosition(pDSBuf, &dwNewpos, &dwWrite);
+		pDSBuf->GetCurrentPosition(&dwNewpos, &dwWrite);
 
 //		if ((dwNewpos >= il) && (dwNewpos <= ir))
 //			Con_Printf("%d-%d p %d c\n", il, ir, dwNewpos);

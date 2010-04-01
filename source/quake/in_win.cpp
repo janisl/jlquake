@@ -354,7 +354,8 @@ qboolean IN_InitDInput (void)
 
 	if (!pDirectInputCreate)
 	{
-		pDirectInputCreate = (void *)GetProcAddress(hInstDI,"DirectInputCreateA");
+		pDirectInputCreate = (HRESULT (WINAPI *)(HINSTANCE hinst, DWORD dwVersion,
+	LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter))GetProcAddress(hInstDI,"DirectInputCreateA");
 
 		if (!pDirectInputCreate)
 		{
@@ -372,7 +373,7 @@ qboolean IN_InitDInput (void)
 	}
 
 // obtain an interface to the system mouse device.
-	hr = IDirectInput_CreateDevice(g_pdi, &GUID_SysMouse, &g_pMouse, NULL);
+	hr = IDirectInput_CreateDevice(g_pdi, GUID_SysMouse, &g_pMouse, NULL);
 
 	if (FAILED(hr))
 	{

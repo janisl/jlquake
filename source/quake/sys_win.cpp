@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "errno.h"
 #include "resource.h"
 #include "conproc.h"
+#include <direct.h>
 
 #define MINIMUM_WIN_MEMORY		0x0880000
 #define MAXIMUM_WIN_MEMORY		0x1000000
@@ -52,10 +53,13 @@ static HANDLE	hFile;
 static HANDLE	heventParent;
 static HANDLE	heventChild;
 
+extern "C"
+{
 void MaskExceptions (void);
 void Sys_InitFloatTime (void);
 void Sys_PushFPCW_SetHigh (void);
 void Sys_PopFPCW (void);
+}
 
 volatile int					sys_checksum;
 
@@ -558,8 +562,9 @@ char *Sys_ConsoleInput (void)
 	static int		len;
 	INPUT_RECORD	recs[1024];
 	int		count;
-	int		i, dummy;
-	int		ch, numread, numevents;
+	int		i;
+	DWORD		dummy;
+	DWORD		ch, numread, numevents;
 
 	if (!isDedicated)
 		return NULL;
