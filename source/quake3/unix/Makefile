@@ -60,7 +60,6 @@ BLIBDIR=$(MOUNT_DIR)/botlib
 NDIR=$(MOUNT_DIR)/null
 UIDIR=$(MOUNT_DIR)/ui
 Q3UIDIR=$(MOUNT_DIR)/q3_ui
-FTDIR=$(MOUNT_DIR)/ft2
 JPDIR=$(MOUNT_DIR)/jpeg-6
 SPLNDIR=$(MOUNT_DIR)/splines
 
@@ -174,9 +173,7 @@ ifeq ($(PLATFORM),linux)
 	  $(B)/$(PLATFORM)quake3 \
 	  $(B)/$(PLATFORM)quake3-smp \
 	  $(B)/$(PLATFORM)q3ded \
-	  $(B)/baseq3/cgame$(ARCH).$(SHLIBEXT) \
 	  $(B)/baseq3/qagame$(ARCH).$(SHLIBEXT) \
-	  $(B)/missionpack/cgame$(ARCH).$(SHLIBEXT) \
 	  $(B)/missionpack/qagame$(ARCH).$(SHLIBEXT)
   endif
 
@@ -239,9 +236,7 @@ TARGETS=\
 else
 TARGETS=\
 	$(B)/$(PLATFORM)quake3 \
-	$(B)/baseq3/cgame$(ARCH).$(SHLIBEXT) \
 	$(B)/baseq3/qagame$(ARCH).$(SHLIBEXT) \
-	$(B)/missionpack/cgame$(ARCH).$(SHLIBEXT) \
 	$(B)/missionpack/qagame$(ARCH).$(SHLIBEXT)
 endif
 
@@ -312,13 +307,9 @@ makedirs:
 	@if [ ! -d $(B)/client ];then mkdir $(B)/client;fi
 	@if [ ! -d $(B)/ded ];then mkdir $(B)/ded;fi
 	@if [ ! -d $(B)/ref ];then mkdir $(B)/ref;fi
-	@if [ ! -d $(B)/ft2 ];then mkdir $(B)/ft2;fi
 	@if [ ! -d $(B)/baseq3 ];then mkdir $(B)/baseq3;fi
-	@if [ ! -d $(B)/baseq3/cgame ];then mkdir $(B)/baseq3/cgame;fi
 	@if [ ! -d $(B)/baseq3/game ];then mkdir $(B)/baseq3/game;fi
-	@if [ ! -d $(B)/baseq3/ui ];then mkdir $(B)/baseq3/ui;fi
 	@if [ ! -d $(B)/missionpack ];then mkdir $(B)/missionpack;fi
-	@if [ ! -d $(B)/missionpack/cgame ];then mkdir $(B)/missionpack/cgame;fi
 	@if [ ! -d $(B)/missionpack/game ];then mkdir $(B)/missionpack/game;fi
 	@if [ ! -d $(B)/q3static ];then mkdir $(B)/q3static;fi
 
@@ -963,128 +954,6 @@ ifeq ($(DLL_ONLY),false)
 $(B)/ded/vm_ppc.o : $(CMDIR)/vm_ppc.c; $(DO_DED_CC)
 endif
 endif
-
-
-#############################################################################
-## BASEQ3 CGAME
-#############################################################################
-
-Q3CGOBJ = \
-	$(B)/baseq3/cgame/bg_misc.o \
-	$(B)/baseq3/cgame/bg_pmove.o \
-	$(B)/baseq3/cgame/bg_slidemove.o \
-	$(B)/baseq3/cgame/cg_consolecmds.o \
-	$(B)/baseq3/cgame/cg_draw.o \
-	$(B)/baseq3/cgame/cg_drawtools.o \
-	$(B)/baseq3/cgame/cg_effects.o \
-	$(B)/baseq3/cgame/cg_ents.o \
-	$(B)/baseq3/cgame/cg_event.o \
-	$(B)/baseq3/cgame/cg_info.o \
-	$(B)/baseq3/cgame/cg_localents.o \
-	$(B)/baseq3/cgame/cg_main.o \
-	$(B)/baseq3/cgame/cg_marks.o \
-	$(B)/baseq3/cgame/cg_players.o \
-	$(B)/baseq3/cgame/cg_playerstate.o \
-	$(B)/baseq3/cgame/cg_predict.o \
-	$(B)/baseq3/cgame/cg_scoreboard.o \
-	$(B)/baseq3/cgame/cg_servercmds.o \
-	$(B)/baseq3/cgame/cg_snapshot.o \
-	$(B)/baseq3/cgame/cg_syscalls.o \
-	$(B)/baseq3/cgame/cg_view.o \
-	$(B)/baseq3/cgame/cg_weapons.o \
-	$(B)/baseq3/cgame/q_math.o \
-	$(B)/baseq3/cgame/q_shared.o
-
-$(B)/baseq3/cgame$(ARCH).$(SHLIBEXT) : $(Q3CGOBJ)
-	$(CC)  $(SHLIBLDFLAGS) -o $@ $(Q3CGOBJ)
-
-$(B)/baseq3/cgame/bg_misc.o : $(GDIR)/bg_misc.c; $(DO_SHLIB_CC)         
-$(B)/baseq3/cgame/bg_pmove.o : $(GDIR)/bg_pmove.c; $(DO_SHLIB_CC)        
-$(B)/baseq3/cgame/bg_slidemove.o : $(GDIR)/bg_slidemove.c; $(DO_SHLIB_CC)        
-$(B)/baseq3/cgame/cg_consolecmds.o : $(CGDIR)/cg_consolecmds.c; $(DO_SHLIB_CC)       
-$(B)/baseq3/cgame/cg_draw.o : $(CGDIR)/cg_draw.c; $(DO_SHLIB_CC)             
-$(B)/baseq3/cgame/cg_drawtools.o : $(CGDIR)/cg_drawtools.c; $(DO_SHLIB_CC)        
-$(B)/baseq3/cgame/cg_effects.o : $(CGDIR)/cg_effects.c; $(DO_SHLIB_CC)           
-$(B)/baseq3/cgame/cg_ents.o : $(CGDIR)/cg_ents.c; $(DO_SHLIB_CC)               
-$(B)/baseq3/cgame/cg_event.o : $(CGDIR)/cg_event.c; $(DO_SHLIB_CC)            
-$(B)/baseq3/cgame/cg_info.o : $(CGDIR)/cg_info.c; $(DO_SHLIB_CC)               
-$(B)/baseq3/cgame/cg_localents.o : $(CGDIR)/cg_localents.c; $(DO_SHLIB_CC)           
-$(B)/baseq3/cgame/cg_main.o : $(CGDIR)/cg_main.c; $(DO_SHLIB_CC)                   
-$(B)/baseq3/cgame/cg_marks.o : $(CGDIR)/cg_marks.c; $(DO_SHLIB_CC)                 
-$(B)/baseq3/cgame/cg_players.o : $(CGDIR)/cg_players.c; $(DO_SHLIB_CC)             
-$(B)/baseq3/cgame/cg_playerstate.o : $(CGDIR)/cg_playerstate.c; $(DO_SHLIB_CC)        
-$(B)/baseq3/cgame/cg_predict.o : $(CGDIR)/cg_predict.c; $(DO_SHLIB_CC)        
-$(B)/baseq3/cgame/cg_scoreboard.o : $(CGDIR)/cg_scoreboard.c; $(DO_SHLIB_CC)        
-$(B)/baseq3/cgame/cg_servercmds.o : $(CGDIR)/cg_servercmds.c; $(DO_SHLIB_CC)        
-$(B)/baseq3/cgame/cg_snapshot.o : $(CGDIR)/cg_snapshot.c; $(DO_SHLIB_CC)             
-$(B)/baseq3/cgame/cg_syscalls.o : $(CGDIR)/cg_syscalls.c; $(DO_SHLIB_CC)        
-$(B)/baseq3/cgame/cg_view.o : $(CGDIR)/cg_view.c; $(DO_SHLIB_CC)                     
-$(B)/baseq3/cgame/cg_weapons.o : $(CGDIR)/cg_weapons.c; $(DO_SHLIB_CC)               
-$(B)/baseq3/cgame/q_math.o : $(GDIR)/q_math.c; $(DO_SHLIB_CC)                       
-$(B)/baseq3/cgame/q_shared.o : $(GDIR)/q_shared.c; $(DO_SHLIB_CC)                     
-
-#############################################################################
-## MISSIONPACK CGAME
-#############################################################################
-
-MPCGOBJ = \
-	$(B)/missionpack/cgame/bg_misc.o \
-	$(B)/missionpack/cgame/bg_pmove.o \
-	$(B)/missionpack/cgame/bg_slidemove.o \
-	$(B)/missionpack/cgame/cg_consolecmds.o \
-	$(B)/missionpack/cgame/cg_newdraw.o \
-	$(B)/missionpack/cgame/cg_draw.o \
-	$(B)/missionpack/cgame/cg_drawtools.o \
-	$(B)/missionpack/cgame/cg_effects.o \
-	$(B)/missionpack/cgame/cg_ents.o \
-	$(B)/missionpack/cgame/cg_event.o \
-	$(B)/missionpack/cgame/cg_info.o \
-	$(B)/missionpack/cgame/cg_localents.o \
-	$(B)/missionpack/cgame/cg_main.o \
-	$(B)/missionpack/cgame/cg_marks.o \
-	$(B)/missionpack/cgame/cg_players.o \
-	$(B)/missionpack/cgame/cg_playerstate.o \
-	$(B)/missionpack/cgame/cg_predict.o \
-	$(B)/missionpack/cgame/cg_scoreboard.o \
-	$(B)/missionpack/cgame/cg_servercmds.o \
-	$(B)/missionpack/cgame/cg_snapshot.o \
-	$(B)/missionpack/cgame/cg_syscalls.o \
-	$(B)/missionpack/cgame/cg_view.o \
-	$(B)/missionpack/cgame/cg_weapons.o \
-	$(B)/missionpack/cgame/q_math.o \
-	$(B)/missionpack/cgame/q_shared.o \
-	$(B)/missionpack/cgame/ui_shared.o
-
-$(B)/missionpack/cgame$(ARCH).$(SHLIBEXT) : $(MPCGOBJ)
-	$(CC) $(SHLIBLDFLAGS) -o $@ $(MPCGOBJ)
-
-$(B)/missionpack/cgame/bg_misc.o : $(GDIR)/bg_misc.c; $(DO_SHLIB_CC)     -DMISSIONPACK 
-$(B)/missionpack/cgame/bg_pmove.o : $(GDIR)/bg_pmove.c; $(DO_SHLIB_CC)    -DMISSIONPACK 
-$(B)/missionpack/cgame/bg_slidemove.o : $(GDIR)/bg_slidemove.c; $(DO_SHLIB_CC)   -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_consolecmds.o : $(CGDIR)/cg_consolecmds.c; $(DO_SHLIB_CC)   -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_newdraw.o : $(CGDIR)/cg_newdraw.c; $(DO_SHLIB_CC)         -DMISSIONPACK
-$(B)/missionpack/cgame/cg_draw.o : $(CGDIR)/cg_draw.c; $(DO_SHLIB_CC)    -DMISSIONPACK  
-$(B)/missionpack/cgame/cg_drawtools.o : $(CGDIR)/cg_drawtools.c; $(DO_SHLIB_CC)    -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_effects.o : $(CGDIR)/cg_effects.c; $(DO_SHLIB_CC)       -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_ents.o : $(CGDIR)/cg_ents.c; $(DO_SHLIB_CC)           -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_event.o : $(CGDIR)/cg_event.c; $(DO_SHLIB_CC)        -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_info.o : $(CGDIR)/cg_info.c; $(DO_SHLIB_CC)           -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_localents.o : $(CGDIR)/cg_localents.c; $(DO_SHLIB_CC)   -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_main.o : $(CGDIR)/cg_main.c; $(DO_SHLIB_CC)             -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_marks.o : $(CGDIR)/cg_marks.c; $(DO_SHLIB_CC)          -DMISSIONPACK  
-$(B)/missionpack/cgame/cg_players.o : $(CGDIR)/cg_players.c; $(DO_SHLIB_CC)       -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_playerstate.o : $(CGDIR)/cg_playerstate.c; $(DO_SHLIB_CC)  -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_predict.o : $(CGDIR)/cg_predict.c; $(DO_SHLIB_CC)  -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_scoreboard.o : $(CGDIR)/cg_scoreboard.c; $(DO_SHLIB_CC)  -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_servercmds.o : $(CGDIR)/cg_servercmds.c; $(DO_SHLIB_CC)  -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_snapshot.o : $(CGDIR)/cg_snapshot.c; $(DO_SHLIB_CC)       -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_syscalls.o : $(CGDIR)/cg_syscalls.c; $(DO_SHLIB_CC)  -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_view.o : $(CGDIR)/cg_view.c; $(DO_SHLIB_CC)               -DMISSIONPACK 
-$(B)/missionpack/cgame/cg_weapons.o : $(CGDIR)/cg_weapons.c; $(DO_SHLIB_CC)        -DMISSIONPACK  
-$(B)/missionpack/cgame/q_math.o : $(GDIR)/q_math.c; $(DO_SHLIB_CC)                 -DMISSIONPACK 
-$(B)/missionpack/cgame/q_shared.o : $(GDIR)/q_shared.c; $(DO_SHLIB_CC)             -DMISSIONPACK 
-$(B)/missionpack/cgame/ui_shared.o : $(UIDIR)/ui_shared.c; $(DO_SHLIB_CC)             -DMISSIONPACK 
-
 
 
 #############################################################################
