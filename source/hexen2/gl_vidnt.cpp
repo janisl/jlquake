@@ -94,8 +94,6 @@ cvar_t	gl_ztrick = {"gl_ztrick","1",true};
 
 HWND WINAPI InitializeWindow (HINSTANCE hInstance, int nCmdShow);
 
-viddef_t	vid;				// global video state
-
 unsigned short	d_8to16table[256];
 unsigned	d_8to24table[256];
 unsigned	d_8to24TranslucentTable[256];
@@ -492,7 +490,7 @@ void Check3DfxDisplayModeExtension( void )
 	char *tmp;
 	qboolean display_mode_ext = false;
 
-	tmp = ( unsigned char * )glGetString( GL_EXTENSIONS );
+	tmp = ( char * )glGetString( GL_EXTENSIONS );
 	while( *tmp )
 	{
 		if (strncmp((const char*)tmp, FX_DISPLAY_MODE_EXT_STRING, strlen(FX_DISPLAY_MODE_EXT_STRING)) == 0)
@@ -525,7 +523,7 @@ void CheckSetPaletteExtension( void )
 	if (!search) return;
 
 
-	tmp = ( unsigned char * )glGetString( GL_EXTENSIONS );
+	tmp = ( char * )glGetString( GL_EXTENSIONS );
 	while( *tmp )
 	{
 		if (strncmp((const char*)tmp, search, strlen(search)) == 0)
@@ -577,7 +575,7 @@ void CheckArrayExtensions (void)
 	char		*tmp;
 
 	/* check for texture extension */
-	tmp = (unsigned char *)glGetString(GL_EXTENSIONS);
+	tmp = (char *)glGetString(GL_EXTENSIONS);
 	while (*tmp)
 	{
 		if (strncmp((const char*)tmp, "GL_EXT_vertex_array", strlen("GL_EXT_vertex_array")) == 0)
@@ -615,14 +613,14 @@ GL_Init
 */
 void GL_Init (void)
 {
-	gl_vendor = glGetString (GL_VENDOR);
+	gl_vendor = (char*)glGetString (GL_VENDOR);
 	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = glGetString (GL_RENDERER);
+	gl_renderer = (char*)glGetString (GL_RENDERER);
 	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
 
-	gl_version = glGetString (GL_VERSION);
+	gl_version = (char*)glGetString (GL_VERSION);
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = glGetString (GL_EXTENSIONS);
+	gl_extensions = (char*)glGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
 	if (!Q_strncasecmp ((char *)gl_renderer, "3dfx",4))

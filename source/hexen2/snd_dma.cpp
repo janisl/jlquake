@@ -603,7 +603,7 @@ void S_ClearBuffer (void)
 
 		reps = 0;
 
-		while ((hresult = pDSBuf->lpVtbl->Lock(pDSBuf, 0, gSndBufSize, &pData, &dwSize, NULL, NULL, 0)) != DS_OK)
+		while ((hresult = pDSBuf->Lock(0, gSndBufSize, (void**)&pData, &dwSize, NULL, NULL, 0)) != DS_OK)
 		{
 			if (hresult != DSERR_BUFFERLOST)
 			{
@@ -622,7 +622,7 @@ void S_ClearBuffer (void)
 
 		memset(pData, clear, shm->samples * shm->samplebits/8);
 
-		pDSBuf->lpVtbl->Unlock(pDSBuf, pData, dwSize, NULL, 0);
+		pDSBuf->Unlock(pData, dwSize, NULL, 0);
 	
 	}
 	else
@@ -903,14 +903,14 @@ void S_Update_(void)
 
 		if (pDSBuf)
 		{
-			if (pDSBuf->lpVtbl->GetStatus (pDSBuf, &dwStatus) != DD_OK)
+			if (pDSBuf->GetStatus (&dwStatus) != DD_OK)
 				Con_Printf ("Couldn't get sound buffer status\n");
 			
 			if (dwStatus & DSBSTATUS_BUFFERLOST)
-				pDSBuf->lpVtbl->Restore (pDSBuf);
+				pDSBuf->Restore ();
 			
 			if (!(dwStatus & DSBSTATUS_PLAYING))
-				pDSBuf->lpVtbl->Play(pDSBuf, 0, 0, DSBPLAY_LOOPING);
+				pDSBuf->Play(0, 0, DSBPLAY_LOOPING);
 		}
 	}
 #endif

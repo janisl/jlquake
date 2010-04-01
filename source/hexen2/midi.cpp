@@ -85,7 +85,7 @@ void MIDI_Volume_f (void)
 	if (Cmd_Argc () == 2)
 	{
 		dwVolumePercent = atol(Cmd_Argv(1))*65535/100;
-		midiOutSetVolume(hStream,(dwVolumePercent<<16)+dwVolumePercent);
+		midiOutSetVolume((HMIDIOUT)hStream,(dwVolumePercent<<16)+dwVolumePercent);
 
 /*		dwVolumePercent = atol(Cmd_Argv(1))*10;
 		SetAllChannelVolumes(dwVolumePercent);*/
@@ -166,7 +166,7 @@ void MIDI_Play(char *Name)
 			return;
 		}
 
-		midiOutSetVolume(hStream, (dwVolumePercent<<16)+dwVolumePercent);
+		midiOutSetVolume((HMIDIOUT)hStream, (dwVolumePercent<<16)+dwVolumePercent);
 		bPlaying = TRUE;
 	}
 }
@@ -324,7 +324,7 @@ BOOL StreamBufferSetup(char *Name)
    for(idx=0;idx<NUM_STREAM_BUFFERS;idx++)
    {
       ciStreamBuffers[idx].mhBuffer.dwBufferLength = OUT_BUFFER_SIZE;
-		ciStreamBuffers[idx].mhBuffer.lpData = GlobalAllocPtr(GHND,OUT_BUFFER_SIZE);
+		ciStreamBuffers[idx].mhBuffer.lpData = (LPSTR)GlobalAllocPtr(GHND,OUT_BUFFER_SIZE);
       if(ciStreamBuffers[idx].mhBuffer.lpData == NULL)
       {
          // Buffers we already allocated will be killed by WM_DESTROY

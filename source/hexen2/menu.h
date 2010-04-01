@@ -38,6 +38,8 @@ void M_DrawTextBox2 (int x, int y, int width, int lines, qboolean bottom);
 void M_PrintWhite (int cx, int cy, char *str);
 void M_DrawTransPic (int x, int y, qpic_t *pic);
 
+void ScrollTitle (char *name);
+
 /*
  * $Log: /H3/game/MENU.H $
  * 

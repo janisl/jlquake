@@ -41,9 +41,12 @@ extern model_t *player_models[NUM_CLASSES];
 //
 // view origin
 //
+extern "C"
+{
 vec3_t	vup;
 vec3_t	vpn;
 vec3_t	vright;
+}
 vec3_t	r_origin;
 
 float	r_world_matrix[16];

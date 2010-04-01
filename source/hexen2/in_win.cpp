@@ -84,6 +84,7 @@ static JOYINFOEX	ji;
 void IN_StartupJoystick (void);
 void Joy_AdvancedUpdate_f (void);
 void IN_JoyMove (usercmd_t *cmd);
+qboolean IN_ReadJoystick (void);
 
 /*
 ===========

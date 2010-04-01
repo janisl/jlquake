@@ -11,6 +11,7 @@
 
 #include "midi.h"
 #include "midstuff.h"
+#include "quakedef.h"
 
 // Global stuff which is defined in the main module
 //
@@ -196,7 +197,7 @@ BOOL ConverterInit( LPSTR szInFile )
                                 ++idx, ++ptsTrack )
     {
     if(( ptsTrack->pTrackStart
-            = GlobalAllocPtr( GHND, TRACK_BUFFER_SIZE )) == NULL )
+            = (LPBYTE)GlobalAllocPtr( GHND, TRACK_BUFFER_SIZE )) == NULL )
         {
 		     Con_Printf("MIDI: %s\n", szNoTrackBuffMem);
         goto Init_Cleanup;
@@ -803,7 +804,7 @@ static BOOL GetTrackEvent( INTRACKSTATE *ptsTrack, PTEMPEVENT pteTemp )
             }
 
     // Malloc a temporary memory block to hold the parameter data
-    if(( pteTemp->pLongData = malloc( pteTemp->dwEventLength )) == NULL )
+    if(( pteTemp->pLongData = (LPBYTE)malloc( pteTemp->dwEventLength )) == NULL )
         {
         TRACKERR( ptsTrack, gteNoMem );
         return( TRUE );
@@ -860,7 +861,7 @@ static BOOL GetTrackEvent( INTRACKSTATE *ptsTrack, PTEMPEVENT pteTemp )
                 }
 
     // Malloc a temporary memory block to hold the parameter data
-        if(( pteTemp->pLongData = malloc( pteTemp->dwEventLength ))
+        if(( pteTemp->pLongData = (LPBYTE)malloc( pteTemp->dwEventLength ))
                                         == NULL )
         {
         TRACKERR( ptsTrack, gteNoMem );

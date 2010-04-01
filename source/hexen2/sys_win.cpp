@@ -9,6 +9,8 @@
 #include "winquake.h"
 #include "errno.h"
 #include "resource.h"
+#include <direct.h>
+#include "conproc.h"
 
 #define CRC_A 59461 // "Who's Ridin' With Chaos?"
 #define CRC_B 54866 // "Santa needs a new sled!"
@@ -46,10 +48,13 @@ static HANDLE	hFile;
 static HANDLE	heventParent;
 static HANDLE	heventChild;
 
+extern "C"
+{
 void MaskExceptions (void);
 void Sys_InitFloatTime (void);
 void Sys_PushFPCW_SetHigh (void);
 void Sys_PopFPCW (void);
+}
 
 cvar_t		sys_delay = {"sys_delay","0", true};
 
@@ -593,8 +598,9 @@ char *Sys_ConsoleInput (void)
 	static int		len;
 	INPUT_RECORD	recs[1024];
 	int		count;
-	int		i, dummy;
-	int		ch, numread, numevents;
+	int		i;
+	DWORD	dummy;
+	DWORD	ch, numread, numevents;
 
 	if (!isDedicated)
 		return NULL;

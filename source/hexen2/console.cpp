@@ -6,6 +6,9 @@
 #ifndef _MSC_VER
 #include <unistd.h>
 #endif
+#ifdef _WIN32
+#include <io.h>
+#endif
 #include <fcntl.h>
 #include "quakedef.h"
 
