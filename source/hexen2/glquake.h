@@ -294,7 +294,7 @@ extern	const char *gl_extensions;
 void R_TranslatePlayerSkin (int playernum);
 void GL_Bind (int texnum);
 
-byte *playerTranslation;
+extern byte *playerTranslation;
 
 // Multitexture
 #define    TEXTURE0_SGIS				0x835E
@@ -313,6 +313,33 @@ extern qboolean gl_mtexable;
 
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);
+
+void D_ShowLoadingSize(void);
+model_t *Mod_FindName (char *name);
+void GL_SubdivideSurface (msurface_t *fa);
+void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
+int R_LightPoint (vec3_t p);
+void R_DrawBrushModel (entity_t *e, qboolean Translucent);
+void R_AnimateLight(void);
+void V_CalcBlend (void);
+void R_DrawWorld (void);
+void R_RenderDlights (void);
+void R_DrawParticles (void);
+void R_DrawWaterSurfaces (void);
+void R_RenderBrushPoly (msurface_t *fa, qboolean override);
+void R_InitParticles (void);
+void GL_BuildLightmaps (void);
+void EmitWaterPolys (msurface_t *fa);
+void EmitSkyPolys (msurface_t *fa, qboolean save);
+void EmitBothSkyLayers (msurface_t *fa);
+void R_DrawSkyChain (msurface_t *s);
+qboolean R_CullBox (vec3_t mins, vec3_t maxs);
+void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
+void R_RotateForEntity (entity_t *e);
+void R_StoreEfrags (efrag_t **ppefrag);
+void GL_Set2D (void);
+void SCR_DrawLoading (void);
+int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
 /*
  * $Log: /H2 Mission Pack/glquake.h $

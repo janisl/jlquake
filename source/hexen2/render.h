@@ -122,7 +122,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count);
 void R_RocketTrail (vec3_t start, vec3_t end, int type);
 void R_SunStaffTrail(vec3_t source, vec3_t dest);
 
-#ifdef QUAKE2
+#ifdef QUAKE2RJ
 void R_DarkFieldParticles (entity_t *ent);
 #endif
 void R_RainEffect (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int count);
@@ -150,6 +150,9 @@ void D_FlushCaches (void);
 void D_DeleteSurfaceCache (void);
 void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
+
+void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
+void R_ClearParticles (void);
 
 /*
  * $Log: /H2 Mission Pack/RENDER.H $

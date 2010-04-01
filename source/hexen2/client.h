@@ -369,6 +369,14 @@ void CL_ClearTEnts(void);
 void CL_ParseTEnt(void);
 void CL_UpdateTEnts(void);
 
+void CL_ClearEffects(void);
+void CL_ParseEffect(void);
+void CL_EndEffect(void);
+void SV_UpdateEffects(sizebuf_t *sb);
+
+void CL_RemoveGIPFiles (char *path);
+qboolean CL_CopyFiles(char *source, char *pat, char *dest);
+
 /*
  * $Log: /H2 Mission Pack/CLIENT.H $
  * 

@@ -316,6 +316,12 @@ void SV_SpawnServer (char *server, char *startspot);
 void SV_SpawnServer (char *server);
 #endif
 
+void SV_StopSound (edict_t *entity, int channel);
+void SV_UpdateSoundPos (edict_t *entity, int channel);
+void SV_ParseEffect(sizebuf_t *sb);
+void SV_Edicts(char *Name);
+void SaveGamestate(qboolean ClientsOnly);
+
 /*
  * $Log: /H2 Mission Pack/Server.h $
  * 

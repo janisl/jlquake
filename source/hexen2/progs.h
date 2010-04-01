@@ -131,3 +131,5 @@ eval_t *GetEdictFieldValue(edict_t *ed, char *field);
 extern cvar_t	max_temp_edicts;
 
 extern qboolean ignore_precache;
+
+void ED_ClearEdict (edict_t *e);
