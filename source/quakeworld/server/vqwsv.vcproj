@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="Windows-1252"?>
+<?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="botlib"
-	ProjectGUID="{A410161F-AE9F-485D-A01F-5294891430A6}"
-	RootNamespace="botlib"
-	TargetFrameworkVersion="131072"
+	Name="vqwsv"
+	ProjectGUID="{9083E67D-9909-407C-ABE1-441C5B45C8C6}"
+	TargetFrameworkVersion="0"
 	>
 	<Platforms>
 		<Platform
@@ -19,11 +18,10 @@
 			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -39,18 +37,20 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				TypeLibraryName=".\Release/qwsv.tlb"
+				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;BOTLIB;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories=".,..\client"
+				PreprocessorDefinitions="NDEBUG;SERVERONLY;WIN32;_CONSOLE;GLQUAKE"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\Release/botlib.pch"
-				WarningLevel="4"
+				PrecompiledHeaderFile=".\Release/qwsv.pch"
+				BrowseInformation="1"
 				SuppressStartupBanner="true"
 			/>
 			<Tool
@@ -65,20 +65,33 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -88,11 +101,10 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="4"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -108,17 +120,17 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				TypeLibraryName=".\Debug/qwsv.tlb"
+				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;BOTLIB;DEBUG;_CRT_SECURE_NO_WARNINGS"
-				BasicRuntimeChecks="3"
+				AdditionalIncludeDirectories=".,..\client"
+				PreprocessorDefinitions="_DEBUG;SERVERONLY;WIN32;_CONSOLE;GLQUAKE"
 				RuntimeLibrary="1"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderFile=".\Debug/botlib.pch"
+				PrecompiledHeaderFile=".\Debug/qwsv.pch"
 				BrowseInformation="1"
-				WarningLevel="3"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
@@ -134,20 +146,36 @@
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
-				Name="VCLibrarianTool"
+				Name="VCLinkerTool"
+				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				LinkIncremental="2"
 				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
+				GenerateMapFile="true"
+				MapFileName="$(TargetDir)qwsv.map"
+				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="1"
 			/>
 			<Tool
 				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
 			/>
 			<Tool
 				Name="VCBscMakeTool"
+				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -159,257 +187,282 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
+			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath=".\be_aas_bspq3.c"
+				RelativePath="..\client\cmd.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_cluster.c"
+				RelativePath="..\client\common.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_debug.c"
+				RelativePath="..\client\crc.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_entity.c"
+				RelativePath="..\client\cvar.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_file.c"
+				RelativePath="..\client\mathlib.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_main.c"
+				RelativePath="..\client\md4.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_move.c"
+				RelativePath="model.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_optimize.c"
+				RelativePath="..\..\..\quake\v2\client\net.h"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_reach.c"
+				RelativePath="..\client\net_chan.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_route.c"
+				RelativePath="..\client\net_wins.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_routealt.c"
+				RelativePath="..\client\pmove.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_sample.c"
+				RelativePath="..\client\pmovetst.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_char.c"
+				RelativePath="pr_cmds.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_chat.c"
+				RelativePath="pr_edict.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_gen.c"
+				RelativePath="pr_exec.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_goal.c"
+				RelativePath="sv_ccmds.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_move.c"
+				RelativePath="sv_ents.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_weap.c"
+				RelativePath="sv_init.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_weight.c"
+				RelativePath="sv_main.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ea.c"
+				RelativePath="sv_move.c"
 				>
 			</File>
 			<File
-				RelativePath=".\be_interface.c"
+				RelativePath="sv_nchan.c"
 				>
 			</File>
 			<File
-				RelativePath=".\l_crc.c"
+				RelativePath="sv_phys.c"
 				>
 			</File>
 			<File
-				RelativePath=".\l_libvar.c"
+				RelativePath="sv_send.c"
 				>
 			</File>
 			<File
-				RelativePath=".\l_log.c"
+				RelativePath="sv_user.c"
 				>
 			</File>
 			<File
-				RelativePath=".\l_memory.c"
+				RelativePath="sys_win.c"
 				>
 			</File>
 			<File
-				RelativePath=".\l_precomp.c"
+				RelativePath="world.c"
 				>
 			</File>
 			<File
-				RelativePath=".\l_script.c"
-				>
-			</File>
-			<File
-				RelativePath=".\l_struct.c"
+				RelativePath="..\client\zone.c"
 				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl"
+			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
 			<File
-				RelativePath="aasfile.h"
+				RelativePath="..\client\bothdefs.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_bsp.h"
+				RelativePath="..\client\bspfile.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_cluster.h"
+				RelativePath="..\client\cdaudio.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_debug.h"
+				RelativePath="..\client\client.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_def.h"
+				RelativePath="..\client\cmd.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_entity.h"
+				RelativePath="..\client\common.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_file.h"
+				RelativePath="..\client\console.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_funcs.h"
+				RelativePath="..\client\crc.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_main.h"
+				RelativePath="..\client\cvar.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_move.h"
+				RelativePath="..\client\d_iface.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_optimize.h"
+				RelativePath="..\client\draw.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_reach.h"
+				RelativePath="..\client\input.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_route.h"
+				RelativePath="..\client\keys.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_routealt.h"
+				RelativePath="..\client\mathlib.h"
 				>
 			</File>
 			<File
-				RelativePath="be_aas_sample.h"
+				RelativePath="..\client\menu.h"
 				>
 			</File>
 			<File
-				RelativePath="be_ai_weight.h"
+				RelativePath="..\client\model.h"
 				>
 			</File>
 			<File
-				RelativePath="be_interface.h"
+				RelativePath="..\client\modelgen.h"
 				>
 			</File>
 			<File
-				RelativePath="..\game\bg_public.h"
+				RelativePath="..\client\net.h"
 				>
 			</File>
 			<File
-				RelativePath="..\qcommon\cm_public.h"
+				RelativePath="..\client\pmove.h"
 				>
 			</File>
 			<File
-				RelativePath="..\game\g_public.h"
+				RelativePath="pr_comp.h"
 				>
 			</File>
 			<File
-				RelativePath="l_crc.h"
+				RelativePath="progdefs.h"
 				>
 			</File>
 			<File
-				RelativePath="l_libvar.h"
+				RelativePath="progs.h"
 				>
 			</File>
 			<File
-				RelativePath="l_log.h"
+				RelativePath="..\client\protocol.h"
 				>
 			</File>
 			<File
-				RelativePath="l_memory.h"
+				RelativePath="..\client\quakedef.h"
 				>
 			</File>
 			<File
-				RelativePath="l_precomp.h"
+				RelativePath="qwsvdef.h"
 				>
 			</File>
 			<File
-				RelativePath="l_script.h"
+				RelativePath="..\client\render.h"
 				>
 			</File>
 			<File
-				RelativePath="l_struct.h"
+				RelativePath="..\client\sbar.h"
 				>
 			</File>
 			<File
-				RelativePath="l_utils.h"
+				RelativePath="..\client\screen.h"
 				>
 			</File>
 			<File
-				RelativePath="..\game\q_shared.h"
+				RelativePath="server.h"
 				>
 			</File>
 			<File
-				RelativePath="..\qcommon\qcommon.h"
+				RelativePath="..\client\sound.h"
 				>
 			</File>
 			<File
-				RelativePath="..\qcommon\qfiles.h"
+				RelativePath="..\client\spritegn.h"
 				>
 			</File>
 			<File
-				RelativePath="..\server\server.h"
+				RelativePath="..\client\sys.h"
 				>
 			</File>
 			<File
-				RelativePath="..\game\surfaceflags.h"
+				RelativePath="sys.h"
 				>
 			</File>
+			<File
+				RelativePath="..\client\vid.h"
+				>
+			</File>
+			<File
+				RelativePath="..\client\view.h"
+				>
+			</File>
+			<File
+				RelativePath="..\client\wad.h"
+				>
+			</File>
+			<File
+				RelativePath="..\client\winquake.h"
+				>
+			</File>
+			<File
+				RelativePath="world.h"
+				>
+			</File>
+			<File
+				RelativePath="..\client\zone.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
+			>
 		</Filter>
 	</Files>
 	<Globals>

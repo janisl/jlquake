@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="winquake"
+	Name="vhexen2"
 	ProjectGUID="{0BFA9E1B-695A-485F-916D-86A4A0B5E9D9}"
+	RootNamespace="vhexen2"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -48,15 +49,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories=".\scitech\include"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="NDEBUG;GLQUAKE;WIN32;_WINDOWS;QUAKE2RJ;RJNET"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\release_gl/Winquake.pch"
-				AssemblerListingLocation=".\release_gl/"
-				ObjectFile=".\release_gl/"
-				ProgramDataBaseFileName=".\release_gl/"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -75,7 +72,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib winmm.lib wsock32.lib glu32.lib"
-				OutputFile=".\release_gl\glh2mp.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -97,7 +93,6 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\release_gl/Winquake.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -142,14 +137,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".\scitech\include"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="_DEBUG;GLQUAKE;WIN32;_WINDOWS;QUAKE2RJ;RJNET"
 				MinimalRebuild="true"
 				RuntimeLibrary="0"
-				PrecompiledHeaderFile=".\debug_gl/Winquake.pch"
-				AssemblerListingLocation=".\debug_gl/"
-				ObjectFile=".\debug_gl/"
-				ProgramDataBaseFileName=".\debug_gl/"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
@@ -167,11 +158,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib winmm.lib wsock32.lib glu32.lib"
-				OutputFile=".\debug_gl\glh2mp.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\debug_gl/glh2mp.pdb"
 				SubSystem="2"
 				StackReserveSize="8000000"
 				RandomizedBaseAddress="1"
@@ -190,7 +179,6 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\debug_gl/Winquake.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"

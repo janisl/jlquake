@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="qwcl"
+	Name="vhwcl"
 	ProjectGUID="{6B74BF6B-91C6-4FE0-AC05-D0BFC7B5DEF1}"
+	RootNamespace="qwcl"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -53,10 +54,6 @@
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\GLRelease/qwcl.pch"
-				AssemblerListingLocation=".\GLRelease/"
-				ObjectFile=".\GLRelease/"
-				ProgramDataBaseFileName=".\GLRelease/"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -75,11 +72,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dxguid.lib comctl32.lib glu32.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
-				OutputFile=".\GLRelease\glqwcl.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\GLRelease/glqwcl.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -97,7 +92,6 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\GLRelease/qwcl.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -145,10 +139,6 @@
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;GLQUAKE"
 				RuntimeLibrary="0"
-				PrecompiledHeaderFile=".\GLDebug/qwcl.pch"
-				AssemblerListingLocation=".\GLDebug/"
-				ObjectFile=".\GLDebug/"
-				ProgramDataBaseFileName=".\GLDebug/"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
@@ -167,11 +157,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="dxguid.lib comctl32.lib glu32.lib opengl32.lib wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
-				OutputFile=".\GLDebug\glqwcl.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\GLDebug/glqwcl.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -189,7 +177,6 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\GLDebug/qwcl.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="qwsv"
+	Name="vhwsv"
 	ProjectGUID="{3918E6E0-AB3C-4A77-AC60-13AB718DCC1F}"
 	RootNamespace="qwsv"
 	TargetFrameworkVersion="0"
@@ -50,10 +50,6 @@
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/qwsv.pch"
-				AssemblerListingLocation=".\Release/"
-				ObjectFile=".\Release/"
-				ProgramDataBaseFileName=".\Release/"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="3"
@@ -72,7 +68,6 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\Release/qwsv.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -93,7 +88,6 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Release/qwsv.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -138,10 +132,6 @@
 				PreprocessorDefinitions="_DEBUG;SERVERONLY;WIN32;_CONSOLE;QUAKE2RJ;GLQUAKE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\Debug/qwsv.pch"
-				AssemblerListingLocation=".\Debug/"
-				ObjectFile=".\Debug/"
-				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
@@ -160,13 +150,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib"
-				OutputFile=".\Debug/qwsv.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
-				ProgramDatabaseFile=".\Debug/qwsv.pdb"
-				GenerateMapFile="true"
-				MapFileName=".\Debug/qwsv.map"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -184,7 +170,6 @@
 			<Tool
 				Name="VCBscMakeTool"
 				SuppressStartupBanner="true"
-				OutputFile=".\Debug/qwsv.bsc"
 			/>
 			<Tool
 				Name="VCFxCopTool"
