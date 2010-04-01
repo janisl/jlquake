@@ -33,9 +33,9 @@ int		snd_scaletable[32][256];
 int 	*snd_p, snd_linear_count, snd_vol;
 short	*snd_out;
 
-void Snd_WriteLinearBlastStereo16 (void);
-
-#if	!id386
+#if id386
+extern "C" { void Snd_WriteLinearBlastStereo16 (void); }
+#else
 void Snd_WriteLinearBlastStereo16 (void)
 {
 	int		i;
@@ -255,8 +255,11 @@ CHANNEL MIXING
 ===============================================================================
 */
 
+extern "C"
+{
 void SND_PaintChannelFrom8 (channel_t *ch, sfxcache_t *sc, int endtime);
 void SND_PaintChannelFrom16 (channel_t *ch, sfxcache_t *sc, int endtime);
+}
 
 void S_PaintChannels(int endtime)
 {

@@ -41,8 +41,10 @@ typedef struct
 	edict_t		*passedict;
 } moveclip_t;
 
-
+extern "C"
+{
 int SV_HullPointContents (hull_t *hull, int num, vec3_t p);
+}
 
 /*
 ===============================================================================
