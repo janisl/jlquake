@@ -193,119 +193,119 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="cd_win.c"
+				RelativePath="cd_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="chase.c"
+				RelativePath="chase.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_demo.c"
+				RelativePath="cl_demo.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_input.c"
+				RelativePath="cl_input.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_main.c"
+				RelativePath="cl_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_parse.c"
+				RelativePath="cl_parse.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_tent.c"
+				RelativePath="cl_tent.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cmd.c"
+				RelativePath="cmd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="common.c"
+				RelativePath="common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="conproc.c"
+				RelativePath="conproc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="console.c"
+				RelativePath="console.cpp"
 				>
 			</File>
 			<File
-				RelativePath="crc.c"
+				RelativePath="crc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cvar.c"
+				RelativePath="cvar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_draw.c"
+				RelativePath="gl_draw.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_mesh.c"
+				RelativePath="gl_mesh.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_model.c"
+				RelativePath="gl_model.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_refrag.c"
+				RelativePath="gl_refrag.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_rlight.c"
+				RelativePath="gl_rlight.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_rmain.c"
+				RelativePath="gl_rmain.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_rmisc.c"
+				RelativePath="gl_rmisc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_rsurf.c"
+				RelativePath="gl_rsurf.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_screen.c"
+				RelativePath="gl_screen.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_test.c"
+				RelativePath="gl_test.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_vidnt.c"
+				RelativePath="gl_vidnt.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_warp.c"
+				RelativePath="gl_warp.cpp"
 				>
 			</File>
 			<File
-				RelativePath="host.c"
+				RelativePath="host.cpp"
 				>
 			</File>
 			<File
-				RelativePath="host_cmd.c"
+				RelativePath="host_cmd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="in_win.c"
+				RelativePath="in_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="keys.c"
+				RelativePath="keys.cpp"
 				>
 			</File>
 			<File
@@ -333,71 +333,71 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mathlib.c"
+				RelativePath="mathlib.cpp"
 				>
 			</File>
 			<File
-				RelativePath="menu.c"
+				RelativePath="menu.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_dgrm.c"
+				RelativePath="net_dgrm.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_loop.c"
+				RelativePath="net_loop.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_main.c"
+				RelativePath="net_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_vcr.c"
+				RelativePath="net_vcr.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_win.c"
+				RelativePath="net_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_wins.c"
+				RelativePath="net_wins.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_wipx.c"
+				RelativePath="net_wipx.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_cmds.c"
+				RelativePath="pr_cmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_edict.c"
+				RelativePath="pr_edict.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_exec.c"
+				RelativePath="pr_exec.cpp"
 				>
 			</File>
 			<File
-				RelativePath="r_part.c"
+				RelativePath="r_part.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sbar.c"
+				RelativePath="sbar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="snd_dma.c"
+				RelativePath="snd_dma.cpp"
 				>
 			</File>
 			<File
-				RelativePath="snd_mem.c"
+				RelativePath="snd_mem.cpp"
 				>
 			</File>
 			<File
-				RelativePath="snd_mix.c"
+				RelativePath="snd_mix.cpp"
 				>
 			</File>
 			<File
@@ -425,27 +425,27 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="snd_win.c"
+				RelativePath="snd_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_main.c"
+				RelativePath="sv_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_move.c"
+				RelativePath="sv_move.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_phys.c"
+				RelativePath="sv_phys.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_user.c"
+				RelativePath="sv_user.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sys_win.c"
+				RelativePath="sys_win.cpp"
 				>
 			</File>
 			<File
@@ -473,11 +473,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="view.c"
+				RelativePath="view.cpp"
 				>
 			</File>
 			<File
-				RelativePath="wad.c"
+				RelativePath="wad.cpp"
 				>
 			</File>
 			<File
@@ -485,7 +485,7 @@
 				>
 			</File>
 			<File
-				RelativePath="world.c"
+				RelativePath="world.cpp"
 				>
 			</File>
 			<File
@@ -513,7 +513,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="zone.c"
+				RelativePath="zone.cpp"
 				>
 			</File>
 		</Filter>
