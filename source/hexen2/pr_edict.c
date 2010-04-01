@@ -21,9 +21,11 @@ int             *pr_string_index = NULL;
 char			*pr_global_strings = NULL;
 int				pr_string_count = 0;
 
+#ifdef MISSIONPACK
 int             *pr_info_string_index = NULL;
 char			*pr_global_info_strings = NULL;
 int				pr_info_string_count = 0;
+#endif
 
 qboolean		ignore_precache = false;
 
@@ -1265,11 +1267,14 @@ void PR_LoadProgs (void)
 		for (i=0 ; i<progs->numglobals ; i++)
 			((int *)pr_globals)[i] = LittleLong (((int *)pr_globals)[i]);
 	}
+#ifdef MISSIONPACK
 	// set the cl_playerclass value after pr_global_struct has been created
 	pr_global_struct->cl_playerclass = cl_playerclass.value;
+#endif
 }
 
 
+#ifdef MISSIONPACK
 void PR_LoadInfoStrings(void)
 {
 	int i,count,start,Length;
@@ -1320,6 +1325,7 @@ void PR_LoadInfoStrings(void)
 	pr_info_string_count = count;
 	Con_Printf("Read in %d objectives\n",count);
 }
+#endif
 
 void PR_LoadStrings(void)
 {

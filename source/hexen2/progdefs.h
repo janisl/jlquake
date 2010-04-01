@@ -15,7 +15,9 @@ typedef struct
 	float	randomclass;
 	float	coop;
 	float	teamplay;
+#ifdef MISSIONPACK
 	float	cl_playerclass;
+#endif
 	float	serverflags;
 	float	total_secrets;
 	float	total_monsters;
@@ -54,6 +56,12 @@ typedef struct
 	int	msg_entity;
 	float	cycle_wrapped;
 	float	crouch_cnt;
+#ifndef MISSIONPACK
+	float	modelindex_assassin;
+	float	modelindex_crusader;
+	float	modelindex_paladin;
+	float	modelindex_necromancer;
+#endif
 	float	modelindex_sheep;
 	float	num_players;
 	float	exp_mult;
@@ -211,4 +219,8 @@ typedef struct
 	float	string_index;
 } entvars_t;
 
+#ifdef MISSIONPACK
 #define PROGHEADER_CRC 26905
+#else
+#define PROGHEADER_CRC 38488
+#endif

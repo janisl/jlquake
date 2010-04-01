@@ -35,7 +35,9 @@ kbutton_t	in_up, in_down, in_crouch;
 kbutton_t	in_infoplaque;
 
 int					in_impulse;
+#ifdef MISSIONPACK
 extern qboolean		info_up;
+#endif
 
 void KeyDown (kbutton_t *b)
 {
@@ -451,6 +453,7 @@ void IN_CrouchUp (void)
 	}
 }
 
+#ifdef MISSIONPACK
 void IN_infoPlaqueUp(void)
 {
 	if (key_dest == key_game)
@@ -478,6 +481,7 @@ void IN_infoPlaqueDown(void)
 		KeyDown(&in_infoplaque);
 	}
 }
+#endif
 
 /*
 ============
@@ -525,8 +529,10 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("+crouch", IN_CrouchDown);
 	Cmd_AddCommand ("-crouch", IN_CrouchUp);
 
+#ifdef MISSIONPACK
 	Cmd_AddCommand ("+infoplaque", IN_infoPlaqueDown);
 	Cmd_AddCommand ("-infoplaque", IN_infoPlaqueUp);
+#endif
 }
 
 

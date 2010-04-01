@@ -13,10 +13,6 @@
 
 extern unsigned int info_mask, info_mask2;
 
-extern int	*pr_info_string_index;
-extern char	*pr_global_info_strings;
-extern int	 pr_info_string_count;
-
 /*
 ===============================================================================
 

@@ -671,7 +671,11 @@ void Key_Event (int key, qboolean down)
 
 	if (cl.intermission == 12 && down)
 	{
+#ifdef MISSIONPACK
 		Cbuf_AddText ("map keep1\n");
+#else
+		Cbuf_AddText ("map demo1\n");
+#endif
 	}
 		
 //

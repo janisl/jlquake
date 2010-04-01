@@ -141,13 +141,15 @@ void SV_UserFriction (void)
 	trace = SV_Move (start, vec3_origin, vec3_origin, stop, true, sv_player);
 	sv_player->v.hull = save_hull;
 
+#ifndef MISSIONPACK
+	if(sv_player->v.friction!=1)//reset their friction to 1, only a trigger touching can change it again
+		sv_player->v.friction=1;
+#endif
+
 	if (trace.fraction == 1.0)
 		friction = sv_friction.value*sv_edgefriction.value*sv_player->v.friction;
 	else
 		friction = sv_friction.value*sv_player->v.friction;
-
-//	if(sv_player->v.friction!=1)//reset their friction to 1, only a trigger touching can change it again
-//		sv_player->v.friction=1;
 
 // apply friction	
 	control = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;

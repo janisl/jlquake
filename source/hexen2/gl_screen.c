@@ -127,14 +127,16 @@ static int lines;
 #define MAXLINES 27
 static int StartC[MAXLINES],EndC[MAXLINES];
 
+#ifdef MISSIONPACK
 #define MAX_INFO 1024
 char infomessage[MAX_INFO];
 qboolean info_up = false;
 
 extern int	*pr_info_string_index;
 extern char	*pr_global_info_strings;
-extern int	 pr_info_string_count;
+#endif
 
+#ifdef MISSIONPACK
 void UpdateInfoMessage(void)
 {
 	unsigned int i;
@@ -170,6 +172,7 @@ void UpdateInfoMessage(void)
 		}
 	}
 }
+#endif
 
 void FindTextBreaks(char *message, int Width)
 {
@@ -1231,11 +1234,13 @@ void SCR_UpdateScreen (void)
 		if (errormessage)
 			Plaque_Draw(errormessage,1);
 
+#ifdef MISSIONPACK
 		if (info_up)
 		{
 			UpdateInfoMessage();
 			Info_Plaque_Draw(infomessage);
 		}
+#endif
 	}
 
 	if (loading_stage)

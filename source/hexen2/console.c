@@ -228,7 +228,9 @@ void Con_Init (void)
 	con_initialized = true;
 
 	PR_LoadStrings();
+#ifdef MISSIONPACK
 	PR_LoadInfoStrings();
+#endif
 }
 
 

@@ -4,6 +4,8 @@
  * $Header: /H2 Mission Pack/Quakedef.h 8     3/19/98 12:53p Jmonroe $
  */
 
+//#define MISSIONPACK
+
 //#define	GLTEST			// experimental stuff
 
 #pragma warning(disable:4244)

@@ -2064,7 +2064,9 @@ void COM_InitFilesystem (void)
 // start up with GAMENAME by default (id1)
 //
 	COM_AddGameDirectory (va("%s/"GAMENAME, basedir) );
+#ifdef MISSIONPACK
 	COM_AddGameDirectory (va("%s/portals", basedir) );
+#endif
 
 /*	if (COM_CheckParm ("-rogue"))
 		COM_AddGameDirectory (va("%s/rogue", basedir) );

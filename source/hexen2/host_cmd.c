@@ -756,8 +756,10 @@ void Host_Loadgame_f (void)
 
 	Cvar_SetValue ("_cl_playerclass", ent->v.playerclass);//this better be the same as above...
 
+#ifdef MISSIONPACK
 	// this may be rudundant with the setting in PR_LoadProgs, but not sure so its here too
 	pr_global_struct->cl_playerclass = ent->v.playerclass;
+#endif
 
 	svs.clients->playerclass = ent->v.playerclass;
 
@@ -1241,10 +1243,12 @@ void Host_Class_f (void)
 	{
 		Cvar_SetValue ("_cl_playerclass", newClass);
 
+#ifdef MISSIONPACK
 		// when classes changes after map load, update cl_playerclass, cl_playerclass should 
 		// probably only be used in worldspawn, though
 		if(pr_global_struct)
 			pr_global_struct->cl_playerclass = newClass;
+#endif
 
 		if (cls.state == ca_connected)
 			Cmd_ForwardToServer ();
