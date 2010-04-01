@@ -1,12 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HCode", "hcode\HCode.vcproj", "{46D0965D-DCCA-49D1-AB0F-DDA8A7F90EE8}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winquake", "Winquake.vcproj", "{0BFA9E1B-695A-485F-916D-86A4A0B5E9D9}"
-	ProjectSection(ProjectDependencies) = postProject
-		{46D0965D-DCCA-49D1-AB0F-DDA8A7F90EE8} = {46D0965D-DCCA-49D1-AB0F-DDA8A7F90EE8}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,10 +9,6 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{46D0965D-DCCA-49D1-AB0F-DDA8A7F90EE8}.Debug|Win32.ActiveCfg = Release|Win32
-		{46D0965D-DCCA-49D1-AB0F-DDA8A7F90EE8}.Debug|Win32.Build.0 = Release|Win32
-		{46D0965D-DCCA-49D1-AB0F-DDA8A7F90EE8}.Release|Win32.ActiveCfg = Release|Win32
-		{46D0965D-DCCA-49D1-AB0F-DDA8A7F90EE8}.Release|Win32.Build.0 = Release|Win32
 		{0BFA9E1B-695A-485F-916D-86A4A0B5E9D9}.Debug|Win32.ActiveCfg = Debug|Win32
 		{0BFA9E1B-695A-485F-916D-86A4A0B5E9D9}.Debug|Win32.Build.0 = Debug|Win32
 		{0BFA9E1B-695A-485F-916D-86A4A0B5E9D9}.Release|Win32.ActiveCfg = Release|Win32
