@@ -494,7 +494,7 @@ void Sys_ConsoleInputInit()
               characters  EOF,  EOL,  EOL2, ERASE, KILL, REPRINT,
               STATUS, and WERASE, and buffers by lines.
      ISIG: when any of the characters  INTR,  QUIT,  SUSP,  or
-              DSUSP are received, generate the corresponding sig­
+              DSUSP are received, generate the corresponding sig-
               nal
     */              
     tc.c_lflag &= ~(ECHO | ICANON);
@@ -765,11 +765,7 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
 
       if ( !libHandle )
       {
-#ifndef NDEBUG // bk001206 - in debug abort on failure
-        Com_Error ( ERR_FATAL, "Sys_LoadDll(%s) failed dlopen() completely!\n", name  );
-#else
         Com_Printf ( "Sys_LoadDll(%s) failed dlopen() completely!\n", name );
-#endif
         return NULL;
       } else
         Com_Printf ( "Sys_LoadDll(%s): succeeded ...\n", fn );
