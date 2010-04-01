@@ -12,3 +12,7 @@
 31.03.2010
   I cleaned up source from old text files, DirectX SDK files, DOS version of Quake files and more.
   In Quake 2 I found that in irix directory there's a fully working GLX driver implementation, so now I have all games working on Linux and OpenGL.
+  I removed software renderers from all games that had them.
+01.04.2010
+  I removed game sources from all games except Quake 2. I left it in Quake 2 untill I can figure out why it doesn't run with original DLL file.
+  I got Hexen 2 working with original game and it's progs. Currently it's controlled with preprocessor switch so you need to recompile it for mission pack.
