@@ -31,7 +31,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #define JPEG_INTERNALS
+extern "C"
+{
 #include "../jpeg-6/jpeglib.h"
+}
 
 
 static void LoadBMP( const char *name, byte **pic, int *width, int *height );
@@ -362,7 +365,7 @@ static void R_MipMap2( unsigned *in, int inWidth, int inHeight ) {
 
 	outWidth = inWidth >> 1;
 	outHeight = inHeight >> 1;
-	temp = ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
+	temp = (unsigned*)ri.Hunk_AllocateTempMemory( outWidth * outHeight * 4 );
 
 	inWidthMask = inWidth - 1;
 	inHeightMask = inHeight - 1;
@@ -529,7 +532,7 @@ static void Upload32( unsigned *data,
 		scaled_height >>= 1;
 
 	if ( scaled_width != width || scaled_height != height ) {
-		resampledBuffer = ri.Hunk_AllocateTempMemory( scaled_width * scaled_height * 4 );
+		resampledBuffer = (unsigned*)ri.Hunk_AllocateTempMemory( scaled_width * scaled_height * 4 );
 		ResampleTexture (data, width, height, resampledBuffer, scaled_width, scaled_height);
 		data = resampledBuffer;
 		width = scaled_width;
@@ -565,7 +568,7 @@ static void Upload32( unsigned *data,
 		scaled_height >>= 1;
 	}
 
-	scaledBuffer = ri.Hunk_AllocateTempMemory( sizeof( unsigned ) * scaled_width * scaled_height );
+	scaledBuffer = (unsigned*)ri.Hunk_AllocateTempMemory( sizeof( unsigned ) * scaled_width * scaled_height );
 
 	//
 	// scan the texture for each channel's max values
@@ -741,7 +744,7 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 		ri.Error( ERR_DROP, "R_CreateImage: MAX_DRAWIMAGES hit\n");
 	}
 
-	image = tr.images[tr.numImages] = ri.Hunk_Alloc( sizeof( image_t ), h_low );
+	image = tr.images[tr.numImages] = (image_t*)ri.Hunk_Alloc( sizeof( image_t ), h_low );
 	image->texnum = 1024 + tr.numImages;
 	tr.numImages++;
 
@@ -906,7 +909,7 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 	if ( height )
 		*height = rows;
 
-	bmpRGBA = ri.Malloc( numPixels * 4 );
+	bmpRGBA = (byte*)ri.Malloc( numPixels * 4 );
 	*pic = bmpRGBA;
 
 
@@ -1024,7 +1027,7 @@ static void LoadPCX ( const char *filename, byte **pic, byte **palette, int *wid
 		return;
 	}
 
-	out = ri.Malloc ( (ymax+1) * (xmax+1) );
+	out = (byte*)ri.Malloc ( (ymax+1) * (xmax+1) );
 
 	*pic = out;
 
@@ -1032,7 +1035,7 @@ static void LoadPCX ( const char *filename, byte **pic, byte **palette, int *wid
 
 	if (palette)
 	{
-		*palette = ri.Malloc(768);
+		*palette = (byte*)ri.Malloc(768);
 		Com_Memcpy (*palette, (byte *)pcx + len - 768, 768);
 	}
 
@@ -1091,7 +1094,7 @@ static void LoadPCX32 ( const char *filename, byte **pic, int *width, int *heigh
 	}
 
 	c = (*width) * (*height);
-	pic32 = *pic = ri.Malloc(4 * c );
+	pic32 = *pic = (byte*)ri.Malloc(4 * c );
 	for (i = 0 ; i < c ; i++) {
 		p = pic8[i];
 		pic32[0] = palette[p*3];
@@ -1186,7 +1189,7 @@ static void LoadTGA ( const char *name, byte **pic, int *width, int *height)
 	if (height)
 		*height = rows;
 
-	targa_rgba = ri.Malloc (numPixels*4);
+	targa_rgba = (byte*)ri.Malloc (numPixels*4);
 	*pic = targa_rgba;
 
 	if (targa_header.id_length != 0)
@@ -1440,7 +1443,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
   /* JSAMPLEs per row in output buffer */
   row_stride = cinfo.output_width * cinfo.output_components;
 
-  out = ri.Malloc(cinfo.output_width*cinfo.output_height*cinfo.output_components);
+  out = (byte*)ri.Malloc(cinfo.output_width*cinfo.output_height*cinfo.output_components);
 
   *pic = out;
   *width = cinfo.output_width;
@@ -1738,7 +1741,7 @@ void SaveJPG(char * filename, int quality, int image_width, int image_height, un
    * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
    * requires it in order to write binary files.
    */
-  out = ri.Hunk_AllocateTempMemory(image_width*image_height*4);
+  out = (byte*)ri.Hunk_AllocateTempMemory(image_width*image_height*4);
   jpegDest(&cinfo, out, image_width*image_height*4);
 
   /* Step 3: set parameters for compression */
@@ -2013,7 +2016,7 @@ static void R_CreateFogImage( void ) {
 	float	d;
 	float	borderColor[4];
 
-	data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
+	data = (byte*)ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
 
 	g = 2.0;
 
@@ -2402,7 +2405,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 		return 0;
 	}
 	tr.numSkins++;
-	skin = ri.Hunk_Alloc( sizeof( skin_t ), h_low );
+	skin = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 	tr.skins[hSkin] = skin;
 	Q_strncpyz( skin->name, name, sizeof( skin->name ) );
 	skin->numSurfaces = 0;
@@ -2413,7 +2416,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	// If not a .skin file, load as a single shader
 	if ( strcmp( name + strlen( name ) - 5, ".skin" ) ) {
 		skin->numSurfaces = 1;
-		skin->surfaces[0] = ri.Hunk_Alloc( sizeof(skin->surfaces[0]), h_low );
+		skin->surfaces[0] = (skinSurface_t*)ri.Hunk_Alloc( sizeof(skin->surfaces[0]), h_low );
 		skin->surfaces[0]->shader = R_FindShader( name, LIGHTMAP_NONE, qtrue );
 		return hSkin;
 	}
@@ -2447,7 +2450,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 		// parse the shader name
 		token = CommaParse( &text_p );
 
-		surf = skin->surfaces[ skin->numSurfaces ] = ri.Hunk_Alloc( sizeof( *skin->surfaces[0] ), h_low );
+		surf = skin->surfaces[ skin->numSurfaces ] = (skinSurface_t*)ri.Hunk_Alloc( sizeof( *skin->surfaces[0] ), h_low );
 		Q_strncpyz( surf->name, surfName, sizeof( surf->name ) );
 		surf->shader = R_FindShader( token, LIGHTMAP_NONE, qtrue );
 		skin->numSurfaces++;
@@ -2476,10 +2479,10 @@ void	R_InitSkins( void ) {
 	tr.numSkins = 1;
 
 	// make the default skin have all default shaders
-	skin = tr.skins[0] = ri.Hunk_Alloc( sizeof( skin_t ), h_low );
+	skin = tr.skins[0] = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 	Q_strncpyz( skin->name, "<default skin>", sizeof( skin->name )  );
 	skin->numSurfaces = 1;
-	skin->surfaces[0] = ri.Hunk_Alloc( sizeof( *skin->surfaces ), h_low );
+	skin->surfaces[0] = (skinSurface_t*)ri.Hunk_Alloc( sizeof( *skin->surfaces ), h_low );
 	skin->surfaces[0]->shader = tr.defaultShader;
 }
 

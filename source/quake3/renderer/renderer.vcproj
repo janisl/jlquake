@@ -160,10 +160,6 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath="ref_trin.def"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_animation.cpp"
 				>
 			</File>
@@ -264,7 +260,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\win32\win_qgl.c"
+				RelativePath="..\win32\win_qgl.cpp"
 				>
 			</File>
 		</Filter>
@@ -444,7 +440,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\jpeg-6\jerror.c"
+					RelativePath="..\jpeg-6\jerror.cpp"
 					>
 				</File>
 				<File
@@ -460,7 +456,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\jpeg-6\jmemnobs.c"
+					RelativePath="..\jpeg-6\jmemnobs.cpp"
 					>
 				</File>
 				<File

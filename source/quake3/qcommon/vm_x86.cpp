@@ -56,7 +56,7 @@ static	int		*instructionPointers = NULL;
 #ifdef _WIN32
 
 #if defined( FTOL_PTR )
-int _ftol( float );
+extern "C" int _ftol( float );
 static	int		ftolPtr = (int)_ftol;
 #endif
 

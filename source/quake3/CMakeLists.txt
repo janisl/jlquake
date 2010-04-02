@@ -117,10 +117,10 @@ set(QUAKE3_FILES
 	jpeg-6/jdpostct.c
 	jpeg-6/jdsample.c
 	jpeg-6/jdtrans.c
-	jpeg-6/jerror.c
+	jpeg-6/jerror.cpp
 	jpeg-6/jidctflt.c
 	jpeg-6/jmemmgr.c
-	jpeg-6/jmemnobs.c
+	jpeg-6/jmemnobs.cpp
 	jpeg-6/jutils.c
 	renderer/tr_animation.cpp
 	renderer/tr_backend.cpp
@@ -151,7 +151,7 @@ set(QUAKE3_FILES
 	unix/linux_common.cpp
 	unix/linux_joystick.cpp
 	unix/linux_glimp.cpp
-	unix/linux_qgl.c
+	unix/linux_qgl.cpp
 	unix/linux_signals.cpp
 	unix/linux_snd.cpp
 )
