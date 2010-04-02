@@ -195,195 +195,195 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="win32\cd_win.c"
+				RelativePath="win32\cd_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_cin.c"
+				RelativePath="client\cl_cin.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_ents.c"
+				RelativePath="client\cl_ents.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_fx.c"
+				RelativePath="client\cl_fx.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_input.c"
+				RelativePath="client\cl_input.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_inv.c"
+				RelativePath="client\cl_inv.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_main.c"
+				RelativePath="client\cl_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_newfx.c"
+				RelativePath="client\cl_newfx.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_parse.c"
+				RelativePath="client\cl_parse.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_pred.c"
+				RelativePath="client\cl_pred.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_scrn.c"
+				RelativePath="client\cl_scrn.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_tent.c"
+				RelativePath="client\cl_tent.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\cl_view.c"
+				RelativePath="client\cl_view.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\cmd.c"
+				RelativePath="qcommon\cmd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\cmodel.c"
+				RelativePath="qcommon\cmodel.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\common.c"
+				RelativePath="qcommon\common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\conproc.c"
+				RelativePath="win32\conproc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\console.c"
+				RelativePath="client\console.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\crc.c"
+				RelativePath="qcommon\crc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\cvar.c"
+				RelativePath="qcommon\cvar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\files.c"
+				RelativePath="qcommon\files.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\in_win.c"
+				RelativePath="win32\in_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\keys.c"
+				RelativePath="client\keys.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\m_flash.c"
+				RelativePath="qcommon\m_flash.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\md4.c"
+				RelativePath="qcommon\md4.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\menu.c"
+				RelativePath="client\menu.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\net_chan.c"
+				RelativePath="qcommon\net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\net_wins.c"
+				RelativePath="win32\net_wins.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\pmove.c"
+				RelativePath="qcommon\pmove.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\q_shared.c"
+				RelativePath="qcommon\q_shared.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\q_shwin.c"
+				RelativePath="win32\q_shwin.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\qmenu.c"
+				RelativePath="client\qmenu.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\snd_dma.c"
+				RelativePath="client\snd_dma.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\snd_mem.c"
+				RelativePath="client\snd_mem.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\snd_mix.c"
+				RelativePath="client\snd_mix.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\snd_win.c"
+				RelativePath="win32\snd_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_ccmds.c"
+				RelativePath="server\sv_ccmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_ents.c"
+				RelativePath="server\sv_ents.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_game.c"
+				RelativePath="server\sv_game.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_init.c"
+				RelativePath="server\sv_init.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_main.c"
+				RelativePath="server\sv_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_send.c"
+				RelativePath="server\sv_send.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_user.c"
+				RelativePath="server\sv_user.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_world.c"
+				RelativePath="server\sv_world.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\sys_win.c"
+				RelativePath="win32\sys_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\vid_dll.c"
+				RelativePath="win32\vid_dll.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\vid_menu.c"
+				RelativePath="win32\vid_menu.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\x86.c"
+				RelativePath="client\x86.cpp"
 				>
 			</File>
 		</Filter>
@@ -497,15 +497,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_draw.c"
+				RelativePath=".\ref_gl\gl_draw.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_image.c"
+				RelativePath=".\ref_gl\gl_image.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_light.c"
+				RelativePath=".\ref_gl\gl_light.cpp"
 				>
 			</File>
 			<File
@@ -513,11 +513,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_mesh.c"
+				RelativePath=".\ref_gl\gl_mesh.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_model.c"
+				RelativePath=".\ref_gl\gl_model.cpp"
 				>
 			</File>
 			<File
@@ -525,23 +525,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_rmain.c"
+				RelativePath=".\ref_gl\gl_rmain.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_rmisc.c"
+				RelativePath=".\ref_gl\gl_rmisc.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_rsurf.c"
+				RelativePath=".\ref_gl\gl_rsurf.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_warp.c"
+				RelativePath=".\ref_gl\gl_warp.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\win32\glw_imp.c"
+				RelativePath=".\win32\glw_imp.cpp"
 				>
 			</File>
 			<File

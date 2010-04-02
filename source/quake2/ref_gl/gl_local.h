@@ -236,7 +236,14 @@ extern  cvar_t  *gl_saturatelighting;
 extern  cvar_t  *gl_lockpvs;
 
 extern	cvar_t	*vid_fullscreen;
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 extern	cvar_t	*vid_gamma;
+#ifdef __cplusplus
+}
+#endif
 
 extern	cvar_t		*intensity;
 
@@ -427,7 +434,14 @@ typedef struct
 	unsigned char originalBlueGammaTable[256];
 } glstate_t;
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 extern glconfig_t  gl_config;
+#ifdef __cplusplus
+}
+#endif
 extern glstate_t   gl_state;
 
 /*
@@ -438,7 +452,14 @@ IMPORTED FUNCTIONS
 ====================================================================
 */
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 extern	refimport_t	ri;
+#ifdef __cplusplus
+}
+#endif
 
 
 /*
@@ -455,6 +476,12 @@ int 		GLimp_Init( void *hinstance, void *hWnd );
 void		GLimp_Shutdown( void );
 int     	GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen );
 void		GLimp_AppActivate( qboolean active );
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 void		GLimp_EnableLogging( qboolean enable );
 void		GLimp_LogNewFrame( void );
-
+#ifdef __cplusplus
+}
+#endif
