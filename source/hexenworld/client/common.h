@@ -3,11 +3,7 @@
 typedef unsigned char 		byte;
 #define _DEF_BYTE_
 
-// KJB Undefined true and false defined in SciTech's DEBUG.H header
-#undef true
-#undef false
-
-typedef enum {false, true}	qboolean;
+typedef int	qboolean;
 
 #define	MAX_INFO_STRING	196
 #define	MAX_SERVERINFO_STRING	512

@@ -121,3 +121,5 @@ extern	unsigned int			attLosses;	// Attackers Losses in Siege
 
 extern int			cl_keyholder;
 extern int			cl_doc;
+
+void PR_LoadStrings(void);

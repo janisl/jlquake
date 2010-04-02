@@ -206,9 +206,12 @@ extern	int		c_brush_polys, c_alias_polys;
 //
 // view origin
 //
+extern "C"
+{
 extern	vec3_t	vup;
 extern	vec3_t	vpn;
 extern	vec3_t	vright;
+}
 extern	vec3_t	r_origin;
 
 //
@@ -292,4 +295,38 @@ extern qboolean gl_mtexable;
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);
 
-byte *playerTranslation;
+extern byte *playerTranslation;
+
+void R_DrawName(vec3_t origin, char *Name, int Red);
+void GL_Set2D (void);
+void Draw_Crosshair(void);
+void EmitWaterPolys (msurface_t *fa);
+void EmitSkyPolys (msurface_t *fa);
+void EmitBothSkyLayers (msurface_t *fa);
+void R_DrawSkyChain (msurface_t *s);
+qboolean R_CullBox (vec3_t mins, vec3_t maxs);
+void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
+void R_RotateForEntity (entity_t *e);
+void R_StoreEfrags (efrag_t **ppefrag);
+void R_InitParticles (void);
+void R_ClearParticles (void);
+void GL_BuildLightmaps (void);
+int R_LightPoint (vec3_t p);
+void R_DrawBrushModel (entity_t *e, qboolean Translucent);
+void R_AnimateLight(void);
+void V_CalcBlend (void);
+void R_DrawWorld (void);
+void R_RenderDlights (void);
+void R_DrawParticles (void);
+void R_DrawWaterSurfaces (void);
+int M_DrawBigCharacter (int x, int y, int num, int numNext);
+void Draw_RedString (int x, int y, char *str);
+void GL_SubdivideSurface (msurface_t *fa);
+void R_ParseParticleEffect2 (void);
+void R_ParseParticleEffect3 (void);
+void R_ParseParticleEffect4 (void);
+void R_ParseRainEffect(void);
+void R_NetGraph (void);
+model_t *Mod_FindName (char *name);
+void R_DarkFieldParticles (entity_t *ent);
+void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);

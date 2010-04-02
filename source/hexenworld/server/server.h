@@ -446,3 +446,12 @@ void SV_Status_f (void);
 // sv_ents.c
 //
 void SV_WriteEntitiesToClient (client_t *client, sizebuf_t *msg);
+
+void SV_UpdateSoundPos (edict_t *entity, int channel);
+void SV_StopSound (edict_t *entity, int channel);
+void SV_ParseEffect(sizebuf_t *sb);
+void SV_FlushSignon (void);
+void SV_SetMoveVars(void);
+void ED_ClearEdict (edict_t *e);
+void SV_WriteInventory (client_t *host_client, edict_t *ent, sizebuf_t *msg);
+void SV_SendEffect(sizebuf_t *sb, int index);

@@ -30,9 +30,9 @@ extern cvar_t scr_viewsize;
 extern	int			scr_copytop;
 extern	int			scr_copyeverything;
 
-qboolean	scr_skipupdate;
+extern	qboolean	scr_skipupdate;
 
-qboolean	block_drawing;
+extern	qboolean	block_drawing;
 
 void SCR_UpdateWholeScreen (void);
 

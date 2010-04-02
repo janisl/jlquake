@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="vhwsv"
 	ProjectGUID="{3918E6E0-AB3C-4A77-AC60-13AB718DCC1F}"
 	RootNamespace="qwsv"
@@ -190,111 +190,107 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="..\client\cmd.c"
+				RelativePath="..\client\cmd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\common.c"
+				RelativePath="..\client\common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\crc.c"
+				RelativePath="..\client\crc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\cvar.c"
+				RelativePath="..\client\cvar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\mathlib.c"
+				RelativePath="..\client\mathlib.cpp"
 				>
 			</File>
 			<File
-				RelativePath="model.c"
+				RelativePath="model.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\net_chan.c"
+				RelativePath="..\client\net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\net_wins.c"
+				RelativePath="..\client\net_wins.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmove.c"
+				RelativePath="..\client\pmove.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmovetst.c"
+				RelativePath="..\client\pmovetst.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_cmds.c"
+				RelativePath="pr_cmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_edict.c"
+				RelativePath="pr_edict.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_exec.c"
+				RelativePath="pr_exec.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server.h"
+				RelativePath="..\client\strings.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\strings.c"
+				RelativePath="sv_ccmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_ccmds.c"
+				RelativePath="sv_effect.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_effect.c"
+				RelativePath="sv_ents.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_ents.c"
+				RelativePath="sv_init.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_init.c"
+				RelativePath="sv_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_main.c"
+				RelativePath="sv_move.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_move.c"
+				RelativePath="sv_phys.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_phys.c"
+				RelativePath="sv_send.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_send.c"
+				RelativePath="sv_user.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_user.c"
+				RelativePath="sys_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sys_win.c"
+				RelativePath="world.cpp"
 				>
 			</File>
 			<File
-				RelativePath="world.c"
-				>
-			</File>
-			<File
-				RelativePath="..\client\zone.c"
+				RelativePath="..\client\zone.cpp"
 				>
 			</File>
 		</Filter>
@@ -324,6 +320,10 @@
 			</File>
 			<File
 				RelativePath="qwsvdef.h"
+				>
+			</File>
+			<File
+				RelativePath="server.h"
 				>
 			</File>
 			<File

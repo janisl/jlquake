@@ -152,5 +152,6 @@ void SNDDMA_Submit(void);
 
 void S_AmbientOff (void);
 void S_AmbientOn (void);
+void S_UpdateSoundPos (int entnum, int entchannel, vec3_t origin);
 
 #endif
