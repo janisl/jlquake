@@ -328,7 +328,8 @@ static float LittleFloat (const float *l) { return FloatSwap(l); }
 
 typedef unsigned char 		byte;
 
-typedef enum {qfalse, qtrue}	qboolean;
+enum {qfalse, qtrue};
+typedef int 	qboolean;
 
 typedef int		qhandle_t;
 typedef int		sfxHandle_t;

@@ -162,115 +162,115 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
-				RelativePath=".\be_aas_bspq3.c"
+				RelativePath=".\be_aas_bspq3.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_cluster.c"
+				RelativePath=".\be_aas_cluster.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_debug.c"
+				RelativePath=".\be_aas_debug.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_entity.c"
+				RelativePath=".\be_aas_entity.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_file.c"
+				RelativePath=".\be_aas_file.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_main.c"
+				RelativePath=".\be_aas_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_move.c"
+				RelativePath=".\be_aas_move.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_optimize.c"
+				RelativePath=".\be_aas_optimize.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_reach.c"
+				RelativePath=".\be_aas_reach.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_route.c"
+				RelativePath=".\be_aas_route.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_routealt.c"
+				RelativePath=".\be_aas_routealt.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_aas_sample.c"
+				RelativePath=".\be_aas_sample.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_char.c"
+				RelativePath=".\be_ai_char.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_chat.c"
+				RelativePath=".\be_ai_chat.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_gen.c"
+				RelativePath=".\be_ai_gen.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_goal.c"
+				RelativePath=".\be_ai_goal.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_move.c"
+				RelativePath=".\be_ai_move.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_weap.c"
+				RelativePath=".\be_ai_weap.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ai_weight.c"
+				RelativePath=".\be_ai_weight.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_ea.c"
+				RelativePath=".\be_ea.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\be_interface.c"
+				RelativePath=".\be_interface.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\l_crc.c"
+				RelativePath=".\l_crc.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\l_libvar.c"
+				RelativePath=".\l_libvar.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\l_log.c"
+				RelativePath=".\l_log.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\l_memory.c"
+				RelativePath=".\l_memory.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\l_precomp.c"
+				RelativePath=".\l_precomp.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\l_script.c"
+				RelativePath=".\l_script.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\l_struct.c"
+				RelativePath=".\l_struct.cpp"
 				>
 			</File>
 		</Filter>

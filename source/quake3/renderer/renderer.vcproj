@@ -164,103 +164,103 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_animation.c"
+				RelativePath=".\tr_animation.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_backend.c"
+				RelativePath=".\tr_backend.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_bsp.c"
+				RelativePath=".\tr_bsp.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_cmds.c"
+				RelativePath=".\tr_cmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_curve.c"
+				RelativePath=".\tr_curve.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_flares.c"
+				RelativePath=".\tr_flares.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_font.c"
+				RelativePath=".\tr_font.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_image.c"
+				RelativePath=".\tr_image.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_init.c"
+				RelativePath=".\tr_init.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_light.c"
+				RelativePath=".\tr_light.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_main.c"
+				RelativePath=".\tr_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_marks.c"
+				RelativePath=".\tr_marks.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_mesh.c"
+				RelativePath=".\tr_mesh.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_model.c"
+				RelativePath=".\tr_model.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_noise.c"
+				RelativePath=".\tr_noise.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_scene.c"
+				RelativePath=".\tr_scene.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_shade.c"
+				RelativePath=".\tr_shade.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_shade_calc.c"
+				RelativePath=".\tr_shade_calc.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_shader.c"
+				RelativePath=".\tr_shader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_shadows.c"
+				RelativePath=".\tr_shadows.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_sky.c"
+				RelativePath=".\tr_sky.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_surface.c"
+				RelativePath=".\tr_surface.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\tr_world.c"
+				RelativePath=".\tr_world.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\win32\win_gamma.c"
+				RelativePath="..\win32\win_gamma.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\win32\win_glimp.c"
+				RelativePath="..\win32\win_glimp.cpp"
 				>
 			</File>
 			<File

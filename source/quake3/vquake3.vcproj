@@ -200,203 +200,203 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath=".\client\cl_cgame.c"
+				RelativePath=".\client\cl_cgame.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_cin.c"
+				RelativePath=".\client\cl_cin.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_console.c"
+				RelativePath=".\client\cl_console.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_input.c"
+				RelativePath=".\client\cl_input.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_keys.c"
+				RelativePath=".\client\cl_keys.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_main.c"
+				RelativePath=".\client\cl_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_net_chan.c"
+				RelativePath=".\client\cl_net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_parse.c"
+				RelativePath=".\client\cl_parse.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_scrn.c"
+				RelativePath=".\client\cl_scrn.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\client\cl_ui.c"
+				RelativePath=".\client\cl_ui.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\qcommon\cm_load.c"
+				RelativePath=".\qcommon\cm_load.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\qcommon\cm_patch.c"
+				RelativePath=".\qcommon\cm_patch.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\qcommon\cm_polylib.c"
+				RelativePath=".\qcommon\cm_polylib.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\qcommon\cm_test.c"
+				RelativePath=".\qcommon\cm_test.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\qcommon\cm_trace.c"
+				RelativePath=".\qcommon\cm_trace.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\cmd.c"
+				RelativePath="qcommon\cmd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\common.c"
+				RelativePath="qcommon\common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\cvar.c"
+				RelativePath="qcommon\cvar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\files.c"
+				RelativePath="qcommon\files.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\huffman.c"
+				RelativePath="qcommon\huffman.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\md4.c"
+				RelativePath="qcommon\md4.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\msg.c"
+				RelativePath="qcommon\msg.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\net_chan.c"
+				RelativePath="qcommon\net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="game\q_math.c"
+				RelativePath="game\q_math.cpp"
 				>
 			</File>
 			<File
-				RelativePath="game\q_shared.c"
+				RelativePath="game\q_shared.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\snd_adpcm.c"
+				RelativePath="client\snd_adpcm.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\snd_dma.c"
+				RelativePath="client\snd_dma.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\snd_mem.c"
+				RelativePath="client\snd_mem.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\snd_mix.c"
+				RelativePath="client\snd_mix.cpp"
 				>
 			</File>
 			<File
-				RelativePath="client\snd_wavelet.c"
+				RelativePath="client\snd_wavelet.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_bot.c"
+				RelativePath="server\sv_bot.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_ccmds.c"
+				RelativePath="server\sv_ccmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_client.c"
+				RelativePath="server\sv_client.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_game.c"
+				RelativePath="server\sv_game.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_init.c"
+				RelativePath="server\sv_init.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_main.c"
+				RelativePath="server\sv_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_net_chan.c"
+				RelativePath="server\sv_net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_snapshot.c"
+				RelativePath="server\sv_snapshot.cpp"
 				>
 			</File>
 			<File
-				RelativePath="server\sv_world.c"
+				RelativePath="server\sv_world.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\unzip.c"
+				RelativePath="qcommon\unzip.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\vm.c"
+				RelativePath="qcommon\vm.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\vm_interpreted.c"
+				RelativePath="qcommon\vm_interpreted.cpp"
 				>
 			</File>
 			<File
-				RelativePath="qcommon\vm_x86.c"
+				RelativePath="qcommon\vm_x86.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\win_input.c"
+				RelativePath="win32\win_input.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\win_main.c"
+				RelativePath="win32\win_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\win_net.c"
+				RelativePath="win32\win_net.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\win_shared.c"
+				RelativePath="win32\win_shared.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\win_snd.c"
+				RelativePath="win32\win_snd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\win_syscon.c"
+				RelativePath="win32\win_syscon.cpp"
 				>
 			</File>
 			<File
-				RelativePath="win32\win_wndproc.c"
+				RelativePath="win32\win_wndproc.cpp"
 				>
 			</File>
 		</Filter>
