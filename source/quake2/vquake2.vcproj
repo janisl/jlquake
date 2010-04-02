@@ -287,7 +287,7 @@
 				>
 			</File>
 			<File
-				RelativePath="game\m_flash.c"
+				RelativePath="qcommon\m_flash.c"
 				>
 			</File>
 			<File
@@ -311,7 +311,7 @@
 				>
 			</File>
 			<File
-				RelativePath="game\q_shared.c"
+				RelativePath="qcommon\q_shared.c"
 				>
 			</File>
 			<File
@@ -428,7 +428,7 @@
 				>
 			</File>
 			<File
-				RelativePath="game\q_shared.h"
+				RelativePath="qcommon\q_shared.h"
 				>
 			</File>
 			<File

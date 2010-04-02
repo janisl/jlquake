@@ -34,7 +34,7 @@ set(QUAKE2_OBJS
 	client/snd_mem.c
 	client/snd_mix.c
 	client/qmenu.c
-	game/m_flash.c
+	qcommon/m_flash.c
 	qcommon/cmd.c
 	qcommon/cmodel.c
 	qcommon/common.c
@@ -43,7 +43,7 @@ set(QUAKE2_OBJS
 	qcommon/files.c
 	qcommon/md4.c
 	qcommon/net_chan.c
-	game/q_shared.c
+	qcommon/q_shared.c
 	qcommon/pmove.c
 	server/sv_ccmds.c
 	server/sv_ents.c
