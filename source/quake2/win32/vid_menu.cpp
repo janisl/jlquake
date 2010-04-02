@@ -28,14 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern cvar_t *vid_ref;
 extern cvar_t *vid_fullscreen;
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 extern cvar_t *vid_gamma;
-#ifdef __cplusplus
-}
-#endif
 extern cvar_t *scr_viewsize;
 
 static cvar_t *gl_mode;

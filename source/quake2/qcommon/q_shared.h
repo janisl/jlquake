@@ -218,14 +218,7 @@ void COM_DefaultExtension (char *path, char *extension);
 char *COM_Parse (char **data_p);
 // data is an in/out parm, returns a parsed out token
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 void Com_sprintf (char *dest, int size, char *fmt, ...);
-#ifdef __cplusplus
-}
-#endif
 
 void Com_PageInMemory (byte *buffer, int size);
 

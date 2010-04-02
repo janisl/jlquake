@@ -42,13 +42,6 @@ typedef struct
 	FILE *log_fp;
 } glwstate_t;
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 extern glwstate_t glw_state;
-#ifdef __cplusplus
-}
-#endif
 
 #endif

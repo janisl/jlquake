@@ -30,10 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <GL/gl.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 qboolean QGL_Init( const char *dllname );
 void     QGL_Shutdown( void );
 
@@ -442,9 +438,5 @@ extern BOOL ( WINAPI * qwglSetDeviceGammaRampEXT ) ( const unsigned char *pRed, 
 
 #define GL_TEXTURE0_SGIS					0x835E
 #define GL_TEXTURE1_SGIS					0x835F
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

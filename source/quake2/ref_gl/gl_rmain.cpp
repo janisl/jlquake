@@ -131,14 +131,7 @@ cvar_t	*gl_lockpvs;
 cvar_t	*gl_3dlabs_broken;
 
 cvar_t	*vid_fullscreen;
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 cvar_t	*vid_gamma;
-#ifdef __cplusplus
-}
-#endif
 cvar_t	*vid_ref;
 
 /*

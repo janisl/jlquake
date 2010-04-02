@@ -41,14 +41,7 @@ static UINT MSH_MOUSEWHEEL;
 refexport_t GetRefAPI (refimport_t rimp);
 
 // Console variables that we need to access from this module
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 extern cvar_t		*vid_gamma;
-#ifdef __cplusplus
-}
-#endif
 extern cvar_t		*vid_ref;			// Name of Refresh DLL loaded
 cvar_t		*vid_xpos;			// X coordinate of window position
 cvar_t		*vid_ypos;			// Y coordinate of window position
