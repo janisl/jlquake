@@ -192,119 +192,119 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="cd_win.c"
+				RelativePath="cd_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_cam.c"
+				RelativePath="cl_cam.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_demo.c"
+				RelativePath="cl_demo.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_ents.c"
+				RelativePath="cl_ents.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_input.c"
+				RelativePath="cl_input.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_main.c"
+				RelativePath="cl_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_parse.c"
+				RelativePath="cl_parse.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_pred.c"
+				RelativePath="cl_pred.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cl_tent.c"
+				RelativePath="cl_tent.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cmd.c"
+				RelativePath="cmd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="common.c"
+				RelativePath="common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="console.c"
+				RelativePath="console.cpp"
 				>
 			</File>
 			<File
-				RelativePath="crc.c"
+				RelativePath="crc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="cvar.c"
+				RelativePath="cvar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_draw.c"
+				RelativePath="gl_draw.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_mesh.c"
+				RelativePath="gl_mesh.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_model.c"
+				RelativePath="gl_model.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_ngraph.c"
+				RelativePath="gl_ngraph.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_refrag.c"
+				RelativePath="gl_refrag.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_rlight.c"
+				RelativePath="gl_rlight.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_rmain.c"
+				RelativePath="gl_rmain.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_rmisc.c"
+				RelativePath="gl_rmisc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_rsurf.c"
+				RelativePath="gl_rsurf.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_screen.c"
+				RelativePath="gl_screen.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_test.c"
+				RelativePath="gl_test.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_vidnt.c"
+				RelativePath="gl_vidnt.cpp"
 				>
 			</File>
 			<File
-				RelativePath="gl_warp.c"
+				RelativePath="gl_warp.cpp"
 				>
 			</File>
 			<File
-				RelativePath="in_win.c"
+				RelativePath="in_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="keys.c"
+				RelativePath="keys.cpp"
 				>
 			</File>
 			<File
@@ -330,55 +330,55 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="mathlib.c"
+				RelativePath="mathlib.cpp"
 				>
 			</File>
 			<File
-				RelativePath="md4.c"
+				RelativePath="md4.cpp"
 				>
 			</File>
 			<File
-				RelativePath="menu.c"
+				RelativePath="menu.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_chan.c"
+				RelativePath="net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="net_wins.c"
+				RelativePath="net_wins.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pmove.c"
+				RelativePath="pmove.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pmovetst.c"
+				RelativePath="pmovetst.cpp"
 				>
 			</File>
 			<File
-				RelativePath="r_part.c"
+				RelativePath="r_part.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sbar.c"
+				RelativePath="sbar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="skin.c"
+				RelativePath="skin.cpp"
 				>
 			</File>
 			<File
-				RelativePath="snd_dma.c"
+				RelativePath="snd_dma.cpp"
 				>
 			</File>
 			<File
-				RelativePath="snd_mem.c"
+				RelativePath="snd_mem.cpp"
 				>
 			</File>
 			<File
-				RelativePath="snd_mix.c"
+				RelativePath="snd_mix.cpp"
 				>
 			</File>
 			<File
@@ -404,11 +404,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="snd_win.c"
+				RelativePath="snd_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sys_win.c"
+				RelativePath="sys_win.cpp"
 				>
 			</File>
 			<File
@@ -434,11 +434,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="view.c"
+				RelativePath="view.cpp"
 				>
 			</File>
 			<File
-				RelativePath="wad.c"
+				RelativePath="wad.cpp"
 				>
 			</File>
 			<File
@@ -446,7 +446,7 @@
 				>
 			</File>
 			<File
-				RelativePath="zone.c"
+				RelativePath="zone.cpp"
 				>
 			</File>
 		</Filter>

@@ -190,31 +190,31 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="..\client\cmd.c"
+				RelativePath="..\client\cmd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\common.c"
+				RelativePath="..\client\common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\crc.c"
+				RelativePath="..\client\crc.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\cvar.c"
+				RelativePath="..\client\cvar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\mathlib.c"
+				RelativePath="..\client\mathlib.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\md4.c"
+				RelativePath="..\client\md4.cpp"
 				>
 			</File>
 			<File
-				RelativePath="model.c"
+				RelativePath="model.cpp"
 				>
 			</File>
 			<File
@@ -222,79 +222,79 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\net_chan.c"
+				RelativePath="..\client\net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\net_wins.c"
+				RelativePath="..\client\net_wins.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmove.c"
+				RelativePath="..\client\pmove.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmovetst.c"
+				RelativePath="..\client\pmovetst.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_cmds.c"
+				RelativePath="pr_cmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_edict.c"
+				RelativePath="pr_edict.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_exec.c"
+				RelativePath="pr_exec.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_ccmds.c"
+				RelativePath="sv_ccmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_ents.c"
+				RelativePath="sv_ents.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_init.c"
+				RelativePath="sv_init.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_main.c"
+				RelativePath="sv_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_move.c"
+				RelativePath="sv_move.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_nchan.c"
+				RelativePath="sv_nchan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_phys.c"
+				RelativePath="sv_phys.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_send.c"
+				RelativePath="sv_send.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_user.c"
+				RelativePath="sv_user.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sys_win.c"
+				RelativePath="sys_win.cpp"
 				>
 			</File>
 			<File
-				RelativePath="world.c"
+				RelativePath="world.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\zone.c"
+				RelativePath="..\client\zone.cpp"
 				>
 			</File>
 		</Filter>
