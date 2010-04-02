@@ -159,7 +159,7 @@ qboolean	Sys_GetPacket (netadr_t *net_from, msg_t *net_message)
 {
 	int 	ret;
 	struct sockaddr_in	from;
-	int		fromlen;
+	socklen_t	fromlen;
 	int		net_socket;
 	int		protocol;
 	int		err;
@@ -558,7 +558,7 @@ int NET_IPSocket (char *net_interface, int port)
 
 	address.sin_family = AF_INET;
 
-	if( bind (newsocket, (void *)&address, sizeof(address)) == -1)
+	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
 	{
 		Com_Printf ("ERROR: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
 		close (newsocket);

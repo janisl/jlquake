@@ -107,7 +107,7 @@ LClampDone2:
 #endif
 #else
 // forward declare, implementation somewhere else
-void S_WriteLinearBlastStereo16 (void);
+extern "C" void S_WriteLinearBlastStereo16 (void);
 #endif
 
 void S_TransferStereo16 (unsigned long *pbuf, int endtime)

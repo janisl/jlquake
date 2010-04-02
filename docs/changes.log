@@ -18,3 +18,5 @@
   I got Hexen 2 working with original game and it's progs. Currently it's controlled with preprocessor switch so you need to recompile it for mission pack.
   On Linux I switched to CMake.
   I changed Quake 2 to have OpenGL driver built-in.
+02.04.2010
+  I converted all games to C++.

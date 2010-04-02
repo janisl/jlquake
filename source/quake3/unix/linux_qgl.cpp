@@ -404,13 +404,6 @@ void ( APIENTRY * qglVertex4sv )(const GLshort *v);
 void ( APIENTRY * qglVertexPointer )(GLint size, GLenum type, GLsizei stride, const GLvoid *pointer);
 void ( APIENTRY * qglViewport )(GLint x, GLint y, GLsizei width, GLsizei height);
 
-void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
-void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
-void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
-
-void ( APIENTRY * qglLockArraysEXT)( int, int);
-void ( APIENTRY * qglUnlockArraysEXT) ( void );
-
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
 void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
@@ -3401,12 +3394,12 @@ qboolean QGL_Init( const char *dllname )
 	qfxMesaSwapBuffers           =  GPA("fxMesaSwapBuffers");
 #endif
 
-	qglXChooseVisual             =  GPA("glXChooseVisual");
-	qglXCreateContext            =  GPA("glXCreateContext");
-	qglXDestroyContext           =  GPA("glXDestroyContext");
-	qglXMakeCurrent              =  GPA("glXMakeCurrent");
-	qglXCopyContext              =  GPA("glXCopyContext");
-	qglXSwapBuffers              =  GPA("glXSwapBuffers");
+	qglXChooseVisual             =  (XVisualInfo * (*)( Display *dpy, int screen, int *attribList ))GPA("glXChooseVisual");
+	qglXCreateContext            =  (GLXContext (*)( Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct ))GPA("glXCreateContext");
+	qglXDestroyContext           =  (void (*)( Display *dpy, GLXContext ctx ))GPA("glXDestroyContext");
+	qglXMakeCurrent              =  (Bool (*)( Display *dpy, GLXDrawable drawable, GLXContext ctx))GPA("glXMakeCurrent");
+	qglXCopyContext              =  (void (*)( Display *dpy, GLXContext src, GLXContext dst, GLuint mask ))GPA("glXCopyContext");
+	qglXSwapBuffers              =  (void (*)( Display *dpy, GLXDrawable drawable ))GPA("glXSwapBuffers");
 
 	qglLockArraysEXT = 0;
 	qglUnlockArraysEXT = 0;

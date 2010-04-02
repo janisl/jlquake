@@ -69,22 +69,28 @@ static	int		asmCallPtr = (int)AsmCall;
 // bk001213 - BEWARE: does not work! UI menu etc. broken - stack!
 // bk001119 - added: int gftol( float x ) { return (int)x; }
 
+extern "C"
+{
 int qftol( void );     // bk001213 - label, see unix/ftol.nasm
 int qftol027F( void ); // bk001215 - fixed FPU control variants
 int qftol037F( void );
 int qftol0E7F( void ); // bk010102 - fixed bogus bits (duh)
 int qftol0F7F( void );
+}
 
 
 static	int		ftolPtr = (int)qftol0F7F;
 #endif // FTOL_PTR
 
-void doAsmCall( void );
+extern "C" void doAsmCall( void );
 static	int		asmCallPtr = (int)doAsmCall;
 #endif // !_WIN32
 
 
-static	int		callMask = 0; // bk001213 - init
+extern "C"
+{
+int		callMask = 0; // bk001213 - init
+}
 
 static	int	instruction, pass;
 static	int	lastConst = 0;
@@ -174,7 +180,7 @@ static	int		callProgramStack;
 static	int		*callOpStack;
 static	int		callSyscallNum;
 
-void callAsmCall(void)
+extern "C" void callAsmCall(void)
 {
 	vm_t	*savedVM;
 	int		*callOpStack2;

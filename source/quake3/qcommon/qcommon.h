@@ -965,7 +965,7 @@ void	Sys_Print( const char *msg );
 // any game related timing information should come from event timestamps
 int		Sys_Milliseconds (void);
 
-void	Sys_SnapVector( float *v );
+extern "C" void	Sys_SnapVector( float *v );
 
 // the system console is shown when a dedicated server is running
 void	Sys_DisplaySystemConsole( qboolean show );

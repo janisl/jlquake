@@ -758,7 +758,7 @@ void AxisClear( vec3_t axis[3] );
 void AxisCopy( vec3_t in[3], vec3_t out[3] );
 
 void SetPlaneSignbits( struct cplane_s *out );
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
+extern "C" int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
 
 float	AngleMod(float a);
 float	LerpAngle (float from, float to, float frac);
