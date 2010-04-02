@@ -26,8 +26,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vhwsv", "source\hexenworld\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vquake2", "source\quake2\vquake2.vcproj", "{962B0AFF-71F1-42FA-BD82-C30D155709D4}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctf", "source\quake2\ctf\ctf.vcproj", "{66571990-62A1-45A5-9832-1AA6A302BE6B}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "source\quake2\game\game.vcproj", "{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "botlib", "source\quake3\botlib\botlib.vcproj", "{A410161F-AE9F-485D-A01F-5294891430A6}"
@@ -81,10 +79,6 @@ Global
 		{962B0AFF-71F1-42FA-BD82-C30D155709D4}.Debug|Win32.Build.0 = Debug|Win32
 		{962B0AFF-71F1-42FA-BD82-C30D155709D4}.Release|Win32.ActiveCfg = Release|Win32
 		{962B0AFF-71F1-42FA-BD82-C30D155709D4}.Release|Win32.Build.0 = Release|Win32
-		{66571990-62A1-45A5-9832-1AA6A302BE6B}.Debug|Win32.ActiveCfg = Debug|Win32
-		{66571990-62A1-45A5-9832-1AA6A302BE6B}.Debug|Win32.Build.0 = Debug|Win32
-		{66571990-62A1-45A5-9832-1AA6A302BE6B}.Release|Win32.ActiveCfg = Release|Win32
-		{66571990-62A1-45A5-9832-1AA6A302BE6B}.Release|Win32.Build.0 = Release|Win32
 		{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}.Debug|Win32.ActiveCfg = Debug|Win32
 		{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}.Debug|Win32.Build.0 = Debug|Win32
 		{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}.Release|Win32.ActiveCfg = Release|Win32
