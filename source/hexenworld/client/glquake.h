@@ -330,3 +330,5 @@ void R_NetGraph (void);
 model_t *Mod_FindName (char *name);
 void R_DarkFieldParticles (entity_t *ent);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
+void	VID_LockBuffer (void);
+void	VID_UnlockBuffer (void);

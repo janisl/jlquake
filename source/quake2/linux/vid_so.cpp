@@ -18,11 +18,11 @@ refexport_t	re;
 refexport_t GetRefAPI (refimport_t rimp);
 
 // Console variables that we need to access from this module
-cvar_t		*vid_gamma;
-cvar_t		*vid_ref;			// Name of Refresh DLL loaded
+extern cvar_t		*vid_gamma;
+extern cvar_t		*vid_ref;			// Name of Refresh DLL loaded
 cvar_t		*vid_xpos;			// X coordinate of window position
 cvar_t		*vid_ypos;			// Y coordinate of window position
-cvar_t		*vid_fullscreen;
+extern cvar_t		*vid_fullscreen;
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
@@ -44,7 +44,7 @@ in_state_t in_state;
 
 void (*RW_IN_Init_fp)(in_state_t *in_state_p);
 void (*RW_IN_Shutdown_fp)(void);
-void (*RW_IN_Activate_fp)(qboolean active);
+void (*RW_IN_Activate_fp)();
 void (*RW_IN_Commands_fp)(void);
 void (*RW_IN_Move_fp)(usercmd_t *cmd);
 void (*RW_IN_Frame_fp)(void);
@@ -230,7 +230,7 @@ qboolean VID_LoadRefresh( char *name )
 	    void RW_IN_Commands (void);
 	    void RW_IN_Move (usercmd_t *cmd);
 	    void RW_IN_Frame (void);
-	    void RW_IN_Activate(void);
+	    void RW_IN_Activate();
 
 	    RW_IN_Init_fp = RW_IN_Init;
 	    RW_IN_Shutdown_fp = RW_IN_Shutdown;
@@ -251,7 +251,7 @@ qboolean VID_LoadRefresh( char *name )
 
 	/* Init KBD */
 	{
-		void KBD_Init(void);
+		void KBD_Init(Key_Event_fp_t);
 		void KBD_Update(void);
 		void KBD_Close(void);
 
@@ -420,7 +420,7 @@ void IN_Frame (void)
 void IN_Activate (qboolean active)
 {
 	if (RW_IN_Activate_fp)
-		RW_IN_Activate_fp(active);
+		RW_IN_Activate_fp();
 }
 
 void Do_Key_Event(int key, qboolean down)

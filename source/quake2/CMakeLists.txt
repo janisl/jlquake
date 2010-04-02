@@ -70,7 +70,7 @@ set(QUAKE2_OBJS
 	ref_gl/gl_rmisc.cpp
 	ref_gl/gl_rsurf.cpp
 	ref_gl/gl_warp.cpp
-	linux/qgl_linux.c
+	linux/qgl_linux.cpp
 	linux/gl_glx.cpp
 )
 

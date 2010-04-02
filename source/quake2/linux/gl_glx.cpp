@@ -20,6 +20,8 @@
 #include <X11/keysym.h>
 #include <X11/extensions/XShm.h>
 #include <Xm/MwmUtil.h>
+#include <unistd.h>
+#include <sys/mman.h>
 
 #include <GL/glx.h>
 
@@ -111,9 +113,7 @@ static int     mouse_oldbuttonstate;
 static int   mouse_x, mouse_y;
 static int	old_mouse_x, old_mouse_y;
 static float old_windowed_mouse;
-static int p_mouse_x, p_mouse_y;
 
-static cvar_t	*_windowed_mouse;
 static cvar_t	*m_filter;
 static cvar_t	*in_mouse;
 
@@ -288,7 +288,7 @@ static Cursor CreateNullCursor(Display *display, Window root)
 qboolean GLimp_InitGraphics( qboolean fullscreen )
 {
 	int pnum, i;
-	XVisualInfo template;
+	XVisualInfo templ;
 	int num_visuals;
 	int template_mask;
 
@@ -336,7 +336,7 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	{
 		int screen;
 		screen = XDefaultScreen(x_disp);
-		template.visualid =
+		templ.visualid =
 			XVisualIDFromVisual(XDefaultVisual(x_disp, screen));
 		template_mask = VisualIDMask;
 	}
@@ -398,14 +398,14 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 			&attribs );
 		XStoreName(x_disp, x_win, "Quake II");
 
-		if (x_visinfo->class != TrueColor)
+		if (x_visinfo->c_class != TrueColor)
 			XFreeColormap(x_disp, tmpcmap);
 	}
 
 	if (x_visinfo->depth == 8)
 	{
 	// create and upload the palette
-		if (x_visinfo->class == PseudoColor)
+		if (x_visinfo->c_class == PseudoColor)
 		{
 			x_cmap = XCreateColormap(x_disp, x_win, x_vis, AllocAll);
 			XSetWindowColormap(x_disp, x_win, x_cmap);

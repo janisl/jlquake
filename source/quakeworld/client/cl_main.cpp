@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #else
 #include <netinet/in.h>
 #endif
+#include <ctype.h>
 
 
 // we need to declare some mouse variables here, because the menu system
@@ -1500,7 +1501,7 @@ void Host_Init (quakeparms_t *parms)
 
 	Con_Printf ("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
 
-	Con_Printf ("€ QuakeWorld Initialized ‚\n");	
+	Con_Printf ("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ QuakeWorld Initialized ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n");	
 }
 
 

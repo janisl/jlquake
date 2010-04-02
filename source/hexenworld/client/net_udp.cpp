@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/uio.h>
 #include <arpa/inet.h>
 #include <errno.h>
+#include <unistd.h>
 
 #if defined(sun)
 #include <unistd.h>
@@ -52,9 +53,6 @@ int			net_send_socket;	// blocking, for sends
 
 #define	MAX_UDP_PACKET	8192
 byte		net_message_buffer[MAX_UDP_PACKET];
-
-int gethostname (char *, int);
-int close (int);
 
 //=============================================================================
 
@@ -192,7 +190,7 @@ qboolean NET_GetPacket (void)
 {
 	int 	ret;
 	struct sockaddr_in	from;
-	int		fromlen;
+	socklen_t	fromlen;
 
 	fromlen = sizeof(from);
 	ret = recvfrom (net_socket, net_message_buffer, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
@@ -255,7 +253,7 @@ int UDP_OpenSocket (int port)
 		address.sin_port = 0;
 	else
 		address.sin_port = htons((short)port);
-	if( bind (newsocket, (void *)&address, sizeof(address)) == -1)
+	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
 		Sys_Error ("UDP_OpenSocket: bind: %s", strerror(errno));
 
 	return newsocket;
@@ -265,7 +263,7 @@ void NET_GetLocalAddress (void)
 {
 	char	buff[MAXHOSTNAMELEN];
 	struct sockaddr_in	address;
-	int		namelen;
+	socklen_t	namelen;
 
 	gethostname(buff, MAXHOSTNAMELEN);
 	buff[MAXHOSTNAMELEN-1] = 0;

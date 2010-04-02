@@ -112,6 +112,7 @@ void SV_RemoveGIPFiles (char *path)
 	qboolean error;
 #endif
 
+#ifdef _WIN32
 	if (path)
 	{
 		sprintf(tempdir,"%s\\",path);
@@ -125,7 +126,6 @@ void SV_RemoveGIPFiles (char *path)
 		}
 	}
 
-#ifdef _WIN32
 	sprintf (name, "%s*.gip", tempdir);
 
 	handle = FindFirstFile(name,&filedata);
@@ -142,6 +142,15 @@ void SV_RemoveGIPFiles (char *path)
 	if (handle != INVALID_HANDLE_VALUE)
 		FindClose(handle);
 #else
+	if (path)
+	{
+		sprintf(tempdir,"%s\\",path);
+	}
+	else
+	{
+		sprintf(tempdir,"%s\\",com_gamedir);
+	}
+
 	error = false;
 	current_dir = opendir(tempdir);
 	if (current_dir)
