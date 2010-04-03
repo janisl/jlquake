@@ -1245,6 +1245,8 @@ SV_Frame
 */
 void SV_Frame (float time)
 {
+	try
+	{
 	static double	start, end;
 	
 	start = Sys_DoubleTime ();
@@ -1298,6 +1300,11 @@ void SV_Frame (float time)
 		svs.stats.idle = 0;
 		svs.stats.packets = 0;
 		svs.stats.count = 0;
+	}
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
 	}
 }
 
@@ -1621,6 +1628,8 @@ SV_Init
 */
 void SV_Init (quakeparms_t *parms)
 {
+	try
+	{
 	GLog.AddListener(&MainLog);
 
 	COM_InitArgv (parms->argc, parms->argv);
@@ -1673,4 +1682,9 @@ void SV_Init (quakeparms_t *parms)
 		Cmd_ExecuteString ("map start");
 	if (sv.state == ss_dead)
 		SV_Error ("Couldn't spawn a server");
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }

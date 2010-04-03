@@ -2364,7 +2364,10 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 Com_Init
 =================
 */
-void Com_Init( char *commandLine ) {
+void Com_Init( char *commandLine )
+{
+	try
+	{
 	char	*s;
 
 	Com_Printf( "%s %s %s\n", Q3_VERSION, CPUSTRING, __DATE__ );
@@ -2374,6 +2377,8 @@ void Com_Init( char *commandLine ) {
 	}
 
 	GLog.AddListener(&MainLog);
+
+	Com_InitByteOrder();
 
   // bk001129 - do this before anything else decides to push events
   Com_InitPushEvent();
@@ -2517,6 +2522,11 @@ void Com_Init( char *commandLine ) {
 
 	com_fullyInitialized = qtrue;
 	Com_Printf ("--- Common Initialization Complete ---\n");	
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 //==================================================================
@@ -2650,7 +2660,10 @@ int Com_ModifyMsec( int msec ) {
 Com_Frame
 =================
 */
-void Com_Frame( void ) {
+void Com_Frame( void )
+{
+	try
+	{
 
 	int		msec, minMsec;
 	static int	lastTime;
@@ -2813,6 +2826,11 @@ void Com_Frame( void ) {
 	key = lastTime * 0x87243987;
 
 	com_frameNumber++;
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 /*

@@ -29,6 +29,7 @@
 
 #include "common.h"		//	Basic types and defines
 #include "memory.h"		//	Memory allocation
+#include "endian.h"		//	Endianes handling
 #include "exception.h"	//	Exception handling
 #include "log.h"		//	General logging interface
 

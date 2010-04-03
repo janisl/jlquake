@@ -1228,7 +1228,7 @@ void PR_LoadProgs (void)
 	
 	pr_edict_size = progs->entityfields * 4 + sizeof (edict_t) - sizeof(entvars_t);
 
-	if (bigendien)// byte swap the lumps
+	if (GBigEndian)// byte swap the lumps
 	{
 		for (i=0 ; i<progs->numstatements ; i++)
 		{

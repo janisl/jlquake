@@ -1413,6 +1413,8 @@ Qcommon_Init
 */
 void Qcommon_Init (int argc, char **argv)
 {
+	try
+	{
 	char	*s;
 
 	if (setjmp (abortframe) )
@@ -1426,7 +1428,7 @@ void Qcommon_Init (int argc, char **argv)
 	// cvar and command buffer management
 	COM_InitArgv (argc, argv);
 
-	Swap_Init ();
+	Com_InitByteOrder();
 	Cbuf_Init ();
 
 	Cmd_Init ();
@@ -1499,6 +1501,11 @@ void Qcommon_Init (int argc, char **argv)
 	}
 
 	Com_Printf ("====== Quake2 Initialized ======\n\n");	
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 /*
@@ -1508,6 +1515,8 @@ Qcommon_Frame
 */
 void Qcommon_Frame (int msec)
 {
+	try
+	{
 	char	*s;
 	int		time_before, time_between, time_after;
 
@@ -1594,6 +1603,11 @@ void Qcommon_Frame (int msec)
 		Com_Printf ("all:%3i sv:%3i gm:%3i cl:%3i rf:%3i\n",
 			all, sv, gm, cl, rf);
 	}	
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 /*

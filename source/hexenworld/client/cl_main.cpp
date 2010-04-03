@@ -1193,6 +1193,8 @@ Runs all active servers
 int		nopacketcount;
 void Host_Frame (float time)
 {
+	try
+	{
 	static double		time1 = 0;
 	static double		time2 = 0;
 	static double		time3 = 0;
@@ -1282,6 +1284,11 @@ void Host_Frame (float time)
 
 	host_framecount++;
 	fps_count++;
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 
@@ -1294,6 +1301,8 @@ Host_Init
 */
 void Host_Init (quakeparms_t *parms)
 {
+	try
+	{
 	GLog.AddListener(&MainLog);
 
 	COM_InitArgv (parms->argc, parms->argv);
@@ -1377,6 +1386,11 @@ void Host_Init (quakeparms_t *parms)
 	host_initialized = true;
 	
 	Con_Printf ("������� HexenWorld Initialized �������\n");	
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 

@@ -1659,7 +1659,5 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	re.AppActivate = GLimp_AppActivate;
 
-	Swap_Init ();
-
 	return re;
 }

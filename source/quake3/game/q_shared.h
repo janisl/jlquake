@@ -87,10 +87,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	QDECL
 
-short   ShortSwap (short l);
-int		LongSwap (int l);
-float	FloatSwap (const float *f);
-
 //======================= WIN32 DEFINES =================================
 
 #ifdef WIN32
@@ -116,13 +112,6 @@ float	FloatSwap (const float *f);
 #endif
 
 #define ID_INLINE __inline 
-
-static ID_INLINE short BigShort( short l) { return ShortSwap(l); }
-#define LittleShort
-static ID_INLINE int BigLong(int l) { LongSwap(l); }
-#define LittleLong
-static ID_INLINE float BigFloat(const float *l) { FloatSwap(l); }
-#define LittleFloat
 
 #define	PATH_SEP '\\'
 
@@ -173,13 +162,6 @@ static inline float __fctiw(register float f) {
     return fi;
 }
 
-#define BigShort
-static inline short LittleShort(short l) { return ShortSwap(l); }
-#define BigLong
-static inline int LittleLong (int l) { return LongSwap(l); }
-#define BigFloat
-static inline float LittleFloat (const float l) { return FloatSwap(&l); }
-
 #endif
 
 //======================= MAC DEFINES =================================
@@ -195,13 +177,6 @@ static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 #define	PATH_SEP ':'
 
 void Sys_PumpEvents( void );
-
-#define BigShort
-static inline short LittleShort(short l) { return ShortSwap(l); }
-#define BigLong
-static inline int LittleLong (int l) { return LongSwap(l); }
-#define BigFloat
-static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 
 #endif
 
@@ -227,30 +202,6 @@ static inline float LittleFloat (const float l) { return FloatSwap(&l); }
 
 #define	PATH_SEP '/'
 
-// bk001205 - try
-#ifdef Q3_STATIC
-#define	GAME_HARD_LINKED
-#define	CGAME_HARD_LINKED
-#define	UI_HARD_LINKED
-#define	BOTLIB_HARD_LINKED
-#endif
-
-#if !idppc
-inline static short BigShort( short l) { return ShortSwap(l); }
-#define LittleShort
-inline static int BigLong(int l) { return LongSwap(l); }
-#define LittleLong
-inline static float BigFloat(const float *l) { return FloatSwap(l); }
-#define LittleFloat
-#else
-#define BigShort
-inline static short LittleShort(short l) { return ShortSwap(l); }
-#define BigLong
-inline static int LittleLong (int l) { return LongSwap(l); }
-#define BigFloat
-inline static float LittleFloat (const float *l) { return FloatSwap(l); }
-#endif
-
 #endif
 
 //======================= FreeBSD DEFINES =====================
@@ -270,24 +221,6 @@ inline static float LittleFloat (const float *l) { return FloatSwap(l); }
 #endif
 
 #define	PATH_SEP '/'
-
-// bk010116 - omitted Q3STATIC (see Linux above), broken target
-
-#if !idppc
-static short BigShort( short l) { return ShortSwap(l); }
-#define LittleShort
-static int BigLong(int l) { LongSwap(l); }
-#define LittleLong
-static float BigFloat(const float *l) { FloatSwap(l); }
-#define LittleFloat
-#else
-#define BigShort
-static short LittleShort(short l) { return ShortSwap(l); }
-#define BigLong
-static int LittleLong (int l) { return LongSwap(l); }
-#define BigFloat
-static float LittleFloat (const float *l) { return FloatSwap(l); }
-#endif
 
 #endif
 

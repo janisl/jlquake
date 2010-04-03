@@ -864,6 +864,8 @@ void _Host_Frame (float time)
 
 void Host_Frame (float time)
 {
+	try
+	{
 	double	time1, time2;
 	static double	timetotal;
 	static int		timecount;
@@ -896,6 +898,11 @@ void Host_Frame (float time)
 	}
 
 	Con_Printf ("serverprofile: %2i clients %2i msec\n",  c,  m);
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 //============================================================================
@@ -970,6 +977,8 @@ Host_Init
 */
 void Host_Init (quakeparms_t *parms)
 {
+	try
+	{
 	GLog.AddListener(&MainLog);
 
 //	if (standard_quake)
@@ -1051,6 +1060,11 @@ void Host_Init (quakeparms_t *parms)
 	host_initialized = true;
 	
 	Sys_Printf("======== Hexen II Initialized =========\n");
+	}
+	catch (QException& e)
+	{
+		Sys_Error("%s", e.What());
+	}
 }
 
 
