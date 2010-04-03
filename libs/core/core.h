@@ -27,7 +27,8 @@
 #include <cstdarg>
 #include <cmath>
 
-#include "common.h"
-#include "exception.h"
+#include "common.h"		//	Basic types and defines
+#include "exception.h"	//	Exception handling
+#include "log.h"		//	General logging interface
 
 #endif
