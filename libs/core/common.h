@@ -17,10 +17,44 @@
 //**
 //**************************************************************************
 
-#if !defined BYTE_DEFINED
+//==========================================================================
+//
+//	Basic types
+//
+//==========================================================================
+
+#define MIN_QINT8	((qint8)-128)
+#define MIN_QINT16	((qint16)-32768)
+#define MIN_QINT32	((qint32)-2147483648)
+
+#define MAX_QINT8	((qint8)0x7f)
+#define MAX_QINT16	((qint16)0x7fff)
+#define MAX_QINT32	((qint32)0x7fffffff)
+
+#define MAX_QUINT8	((quint8)0xff)
+#define MAX_QUINT16	((quint16)0xffff)
+#define MAX_QUINT32	((quint32)0xffffffff)
+
 typedef unsigned char 		byte;
-#define BYTE_DEFINED 1
+
+#ifdef HAVE_INTTYPES_H
+#include <inttypes.h>
+typedef int8_t				qint8;
+typedef uint8_t				quint8;
+typedef int16_t				qint16;
+typedef uint16_t			quint16;
+typedef int32_t				qint32;
+typedef uint32_t			quint32;
+#else
+typedef char				qint8;
+typedef unsigned char		quint8;
+typedef short				qint16;
+typedef unsigned short		quint16;
+typedef int					qint32;
+typedef unsigned int		quint32;
 #endif
+
+typedef int					qboolean;
 
 //==========================================================================
 //

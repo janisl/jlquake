@@ -293,23 +293,12 @@ static float LittleFloat (const float *l) { return FloatSwap(l); }
 
 //=============================================================
 
-typedef unsigned char 		byte;
-
 enum {qfalse, qtrue};
-typedef int 	qboolean;
 
 typedef int		qhandle_t;
 typedef int		sfxHandle_t;
 typedef int		fileHandle_t;
 typedef int		clipHandle_t;
-
-
-#ifndef NULL
-#define NULL ((void *)0)
-#endif
-
-#define	MAX_QINT			0x7fffffff
-#define	MIN_QINT			(-MAX_QINT-1)
 
 
 // angle indexes

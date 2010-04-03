@@ -48,14 +48,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define idaxp	0
 #endif
 
-typedef unsigned char 		byte;
-typedef int	                qboolean;
-
-
-#ifndef NULL
-#define NULL ((void *)0)
-#endif
-
 
 // angle indexes
 #define	PITCH				0		// up / down

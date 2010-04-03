@@ -22,6 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
 
+#include "../../../libs/core/core.h"
+
 // q_shared.h -- included first by ALL program modules.
 // these are the definitions that have no dependance on
 // central system services, and can be used by any part
@@ -59,20 +61,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #include <assert.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
 #include <time.h>
 #include <ctype.h>
 #ifdef WIN32				// mac doesn't have malloc.h
 #include <malloc.h>			// for _alloca()
-#endif
-#ifdef _WIN32
-
-//#pragma intrinsic( memset, memcpy )
-
 #endif
 
 
@@ -220,9 +212,7 @@ void Sys_PumpEvents( void );
 
 
   
-typedef enum {qfalse, qtrue}	qboolean;
-
-typedef unsigned char 		byte;
+enum {qfalse, qtrue};
 
 #define	EQUAL_EPSILON	0.001
 
@@ -234,13 +224,6 @@ typedef int		clipHandle_t;
 typedef enum {
 	INVALID_JOINT = -1
 } jointHandle_t;
-
-#ifndef NULL
-#define NULL ((void *)0)
-#endif
-
-#define	MAX_QINT			0x7fffffff
-#define	MIN_QINT			(-MAX_QINT-1)
 
 #ifndef max
 #define max( x, y ) ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) )
