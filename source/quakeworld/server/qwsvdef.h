@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for server
 
+#include "../../../libs/core/core.h"
+
 #define	QUAKE_GAME			// as opposed to utilities
 
 //define	PARANOID			// speed sapping error checking
@@ -27,11 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #pragma warning( disable : 4244 4127 4201 4214 4514 4305 4115 4018)
 #endif
 
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <setjmp.h>
 #include <ctype.h>
 

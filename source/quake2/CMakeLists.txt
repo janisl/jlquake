@@ -91,7 +91,8 @@ endforeach(SRC)
 
 add_executable(vquake2 ${QUAKE2_OBJS})
 set_target_properties(vquake2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake2 ${GLLDFLAGS})
+target_link_libraries(vquake2 core ${GLLDFLAGS})
+add_dependencies(vquake2 core)
 
 #############################################################################
 # GAME

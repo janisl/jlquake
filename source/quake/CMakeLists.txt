@@ -79,4 +79,5 @@ endforeach(SRC)
 
 add_executable(vquake ${GLQUAKE_OBJS})
 set_target_properties(vquake PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -Dstricmp=strcasecmp -DGLQUAKE")
-target_link_libraries(vquake ${LDFLAGS})
+target_link_libraries(vquake core ${LDFLAGS})
+add_dependencies(vquake core)

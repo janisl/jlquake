@@ -81,4 +81,5 @@ endforeach(SRC)
 
 add_executable(vhexen2 ${GLQUAKE_OBJS})
 set_target_properties(vhexen2 PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -Dstricmp=strcasecmp -DQUAKE2RJ -DRJNET -DGLQUAKE")
-target_link_libraries(vhexen2 ${LDFLAGS})
+target_link_libraries(vhexen2 core ${LDFLAGS})
+add_dependencies(vhexen2 core)

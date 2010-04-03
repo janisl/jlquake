@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for client
 
+#include "../../libs/core/core.h"
+
 //#define	GLTEST			// experimental stuff
 
 #define	QUAKE_GAME			// as opposed to utilities
@@ -38,11 +40,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	GAMENAME	"id1"
 #endif
 
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <setjmp.h>
 
 #if defined(_WIN32) && !defined(WINDED)

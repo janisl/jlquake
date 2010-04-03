@@ -43,6 +43,7 @@ set(BOTLIB_SOURCES
 
 add_library(botlib STATIC ${BOTLIB_SOURCES})
 set_target_properties(botlib PROPERTIES COMPILE_FLAGS "-DBOTLIB")
+add_dependencies(botlib core)
 
 set(QUAKE3_FILES
 	client/cl_cgame.cpp
@@ -189,8 +190,8 @@ endforeach(SRC)
 
 add_executable(vquake3 ${QUAKE3_FILES})
 set_target_properties(vquake3 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake3 botlib ${GLLDFLAGS})
-add_dependencies(vquake3 botlib)
+target_link_libraries(vquake3 botlib core ${GLLDFLAGS})
+add_dependencies(vquake3 botlib core)
 
 #add_executable(vquake3-smp ${QUAKE3_FILES})
 #set_target_properties(vquake3-smp PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSMP")
@@ -257,5 +258,5 @@ endforeach(SRC)
 
 add_executable(vquake3ded ${QUAKE3_DEDICATED_FILES})
 set_target_properties(vquake3ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED -DC_ONLY")
-target_link_libraries(vquake3ded botlib ${LDFLAGS})
-add_dependencies(vquake3ded botlib)
+target_link_libraries(vquake3ded botlib core ${LDFLAGS})
+add_dependencies(vquake3ded core botlib)

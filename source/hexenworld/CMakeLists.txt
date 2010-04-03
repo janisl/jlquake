@@ -45,7 +45,8 @@ set(QWSV_OBJS
 
 add_executable(vhwsv ${QWSV_OBJS})
 set_target_properties(vhwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
-target_link_libraries(vhwsv ${SV_LDFLAGS})
+target_link_libraries(vhwsv core ${SV_LDFLAGS})
+add_dependencies(vhwsv core)
 
 #############################################################################
 # GL CLIENT
@@ -120,4 +121,5 @@ endforeach(SRC)
 
 add_executable(vhwcl ${GLQWCL_OBJS})
 set_target_properties(vhwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vhwcl ${LDFLAGS})
+target_link_libraries(vhwcl core ${LDFLAGS})
+add_dependencies(vhwcl core)

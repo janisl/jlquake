@@ -19,13 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h -- primary header for client
 
-//define	PARANOID			// speed sapping error checking
+#include "../../../libs/core/core.h"
 
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
+//define	PARANOID			// speed sapping error checking
 
 #include "ref.h"
 

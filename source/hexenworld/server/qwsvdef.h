@@ -1,14 +1,11 @@
 // quakedef.h -- primary header for server
 
+#include "../../../libs/core/core.h"
+
 #define	QUAKE_GAME			// as opposed to utilities
 
 //define	PARANOID			// speed sapping error checking
 
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <setjmp.h>
 
 #include "bothdefs.h"

@@ -4,6 +4,8 @@
  * $Header: /H2 Mission Pack/Quakedef.h 8     3/19/98 12:53p Jmonroe $
  */
 
+#include "../../libs/core/core.h"
+
 //#define MISSIONPACK
 
 //#define	GLTEST			// experimental stuff
@@ -22,11 +24,6 @@
 #define	GAMENAME	"data1"
 #endif
 
-#include <math.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <setjmp.h>
 
 #if defined(_WIN32) && !defined(WINDED)
