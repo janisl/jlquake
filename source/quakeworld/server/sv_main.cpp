@@ -80,6 +80,22 @@ FILE	*sv_fraglogfile;
 void SV_AcceptClient (netadr_t adr, int userid, char *userinfo);
 void Master_Shutdown (void);
 
+class QMainLog : public QLogListener
+{
+public:
+	void Serialise(const char* Text, bool Devel)
+	{
+		if (Devel)
+		{
+			Con_DPrintf("%s", Text);
+		}
+		else
+		{
+			Con_Printf("%s", Text);
+		}
+	}
+} MainLog;
+
 //============================================================================
 
 qboolean ServerPaused(void)
@@ -1605,6 +1621,8 @@ SV_Init
 */
 void SV_Init (quakeparms_t *parms)
 {
+	GLog.AddListener(&MainLog);
+
 	COM_InitArgv (parms->argc, parms->argv);
 	COM_AddParm ("-game");
 	COM_AddParm ("qw");

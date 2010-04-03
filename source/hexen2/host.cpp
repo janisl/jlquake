@@ -73,6 +73,21 @@ cvar_t	sys_adaptive = {"sys_adaptive","1",true};
 
 cvar_t	temp1 = {"temp1","0"};
 
+class QMainLog : public QLogListener
+{
+public:
+	void Serialise(const char* Text, bool Devel)
+	{
+		if (Devel)
+		{
+			Con_DPrintf("%s", Text);
+		}
+		else
+		{
+			Con_Printf("%s", Text);
+		}
+	}
+} MainLog;
 
 /*
 ================
@@ -955,6 +970,8 @@ Host_Init
 */
 void Host_Init (quakeparms_t *parms)
 {
+	GLog.AddListener(&MainLog);
+
 //	if (standard_quake)
 		minimum_memory = MINIMUM_MEMORY;
 //	else

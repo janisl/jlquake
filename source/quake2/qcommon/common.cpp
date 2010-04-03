@@ -55,6 +55,22 @@ int		time_after_game;
 int		time_before_ref;
 int		time_after_ref;
 
+class QMainLog : public QLogListener
+{
+public:
+	void Serialise(const char* Text, bool Devel)
+	{
+		if (Devel)
+		{
+			Com_DPrintf("%s", Text);
+		}
+		else
+		{
+			Com_Printf("%s", Text);
+		}
+	}
+} MainLog;
+
 /*
 ============================================================================
 
@@ -1401,6 +1417,8 @@ void Qcommon_Init (int argc, char **argv)
 
 	if (setjmp (abortframe) )
 		Sys_Error ("Error during initialization");
+
+	GLog.AddListener(&MainLog);
 
 	z_chain.next = z_chain.prev = &z_chain;
 

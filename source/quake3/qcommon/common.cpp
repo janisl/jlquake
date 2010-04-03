@@ -99,6 +99,22 @@ qboolean	com_fullyInitialized;
 
 char	com_errorMessage[MAXPRINTMSG];
 
+class QMainLog : public QLogListener
+{
+public:
+	void Serialise(const char* Text, bool Devel)
+	{
+		if (Devel)
+		{
+			Com_DPrintf("%s", Text);
+		}
+		else
+		{
+			Com_Printf("%s", Text);
+		}
+	}
+} MainLog;
+
 void Com_WriteConfig_f( void );
 void CIN_CloseAllVideos();
 
@@ -2356,6 +2372,8 @@ void Com_Init( char *commandLine ) {
 	if ( setjmp (abortframe) ) {
 		Sys_Error ("Error during initialization");
 	}
+
+	GLog.AddListener(&MainLog);
 
   // bk001129 - do this before anything else decides to push events
   Com_InitPushEvent();

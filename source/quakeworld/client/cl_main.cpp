@@ -143,6 +143,22 @@ char soundlist_name[] =
 	{ 's'^0xff, 'o'^0xff, 'u'^0xff, 'n'^0xff, 'd'^0xff, 'l'^0xff, 'i'^0xff, 's'^0xff, 't'^0xff, 
 		' '^0xff, '%'^0xff, 'i'^0xff, ' '^0xff, '%'^0xff, 'i'^0xff, 0 };
 
+class QMainLog : public QLogListener
+{
+public:
+	void Serialise(const char* Text, bool Devel)
+	{
+		if (Devel)
+		{
+			Con_DPrintf("%s", Text);
+		}
+		else
+		{
+			Con_Printf("%s", Text);
+		}
+	}
+} MainLog;
+
 /*
 ==================
 CL_Quit_f
@@ -1417,6 +1433,7 @@ Host_Init
 */
 void Host_Init (quakeparms_t *parms)
 {
+	GLog.AddListener(&MainLog);
 	COM_InitArgv (parms->argc, parms->argv);
 	COM_AddParm ("-game");
 	COM_AddParm ("qw");

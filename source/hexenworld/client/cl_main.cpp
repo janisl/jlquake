@@ -114,6 +114,21 @@ void Master_Connect_f (void);
 float	server_version = 0;	// version of server we connected to
 
 
+class QMainLog : public QLogListener
+{
+public:
+	void Serialise(const char* Text, bool Devel)
+	{
+		if (Devel)
+		{
+			Con_DPrintf("%s", Text);
+		}
+		else
+		{
+			Con_Printf("%s", Text);
+		}
+	}
+} MainLog;
 
 /*
 ==================
@@ -1279,6 +1294,8 @@ Host_Init
 */
 void Host_Init (quakeparms_t *parms)
 {
+	GLog.AddListener(&MainLog);
+
 	COM_InitArgv (parms->argc, parms->argv);
 //	COM_AddParm ("-game");
 //	COM_AddParm ("hw");
