@@ -168,12 +168,20 @@
 				RelativePath=".\memory.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\str.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\array.h"
+				>
+			</File>
 			<File
 				RelativePath=".\common.h"
 				>
@@ -196,6 +204,10 @@
 			</File>
 			<File
 				RelativePath=".\memory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\str.h"
 				>
 			</File>
 		</Filter>
