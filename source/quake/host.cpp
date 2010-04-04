@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // host.c -- coordinates spawning and killing of local servers
 
 #include "quakedef.h"
-#include "r_local.h"
 
 /*
 
@@ -917,18 +916,7 @@ void Host_Init (quakeparms_t *parms)
 		Draw_Init ();
 		SCR_Init ();
 		R_Init ();
-#ifndef	_WIN32
-	// on Win32, sound initialization has to come before video initialization, so we
-	// can put up a popup if the sound hardware is in use
 		S_Init ();
-#else
-
-#ifdef	GLQUAKE
-	// FIXME: doesn't use the new one-window approach yet
-		S_Init ();
-#endif
-
-#endif	// _WIN32
 		CDAudio_Init ();
 		Sbar_Init ();
 		CL_Init ();

@@ -50,7 +50,7 @@
 				Optimization="4"
 				FavorSizeOrSpeed="1"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;GLQUAKE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
@@ -133,7 +133,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;GLQUAKE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				RuntimeLibrary="1"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
@@ -317,7 +317,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="mycoolbuild"
-						CommandLine="cl /EP /DGLQUAKE &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -327,7 +327,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="mycoolbuild"
-						CommandLine="cl /EP /DGLQUAKE &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -409,7 +409,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="mycoolbuild"
-						CommandLine="cl /EP /DGLQUAKE &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -419,7 +419,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="mycoolbuild"
-						CommandLine="cl /EP /DGLQUAKE &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -457,7 +457,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="mycoolbuild"
-						CommandLine="cl /EP /DGLQUAKE &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -467,7 +467,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="mycoolbuild"
-						CommandLine="cl /EP /DGLQUAKE &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -497,7 +497,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="mycoolbuild"
-						CommandLine="cl /EP /DGLQUAKE &gt; $(OUTDIR)\$(InputName).spp $(InputPath)&#x0D;&#x0A;gas2masm\debug\gas2masm &lt; $(OUTDIR)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="cl /EP &gt; $(OUTDIR)\$(InputName).spp $(InputPath)&#x0D;&#x0A;gas2masm\debug\gas2masm &lt; $(OUTDIR)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(OUTDIR)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(OUTDIR)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(OUTDIR)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -507,7 +507,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="mycoolbuild"
-						CommandLine="cl /EP /DGLQUAKE &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>

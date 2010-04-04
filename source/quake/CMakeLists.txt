@@ -1,9 +1,9 @@
-set(RELEASE_CFLAGS -g -march=pentiumpro -O6 -ffast-math -funroll-loops
-	-fomit-frame-pointer -fexpensive-optimizations)
-set(DEBUG_CFLAGS -g)
+set(RELEASE_CFLAGS "-g -march=pentiumpro -O6 -ffast-math -funroll-loops
+	-fomit-frame-pointer -fexpensive-optimizations")
+set(DEBUG_CFLAGS "-g")
 set(LDFLAGS -L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm)
 
-set(GLQUAKE_OBJS
+set(QUAKE_FILES
 	cl_demo.cpp
 	cl_input.cpp
 	cl_main.cpp
@@ -59,14 +59,14 @@ set(GLQUAKE_OBJS
 	snd_linux.cpp
 )
 
-set(GLQUAKE_ASM_FILES
+set(QUAKE_ASM_FILES
 	math.s
 	worlda.s
 	snd_mixa.s
 	sys_dosa.s
 )
 
-foreach(SRC ${GLQUAKE_ASM_FILES})
+foreach(SRC ${QUAKE_ASM_FILES})
 	get_filename_component(FILE_BASE ${SRC} NAME_WE)
 	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
 	add_custom_command(OUTPUT ${OBJ}
@@ -74,10 +74,10 @@ foreach(SRC ${GLQUAKE_ASM_FILES})
 		COMMAND ${CMAKE_C_COMPILER} -x assembler-with-cpp -DELF
 			-c ${CMAKE_CURRENT_SOURCE_DIR}/${SRC} -o ${OBJ}
 	)
-	set(GLQUAKE_OBJS ${GLQUAKE_OBJS} ${OBJ})
+	set(QUAKE_FILES ${QUAKE_FILES} ${OBJ})
 endforeach(SRC)
 
-add_executable(vquake ${GLQUAKE_OBJS})
-set_target_properties(vquake PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DGLQUAKE")
+add_executable(vquake ${QUAKE_FILES})
+set_target_properties(vquake PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
 target_link_libraries(vquake core ${LDFLAGS})
 add_dependencies(vquake core)

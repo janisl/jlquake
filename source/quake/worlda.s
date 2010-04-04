@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // x86 assembly-language server testing stuff
 //
 
-#define GLQUAKE	1	// don't include unneeded defs
 #include "asm_i386.h"
 #include "quakeasm.h"
 
