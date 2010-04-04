@@ -16,11 +16,7 @@
 
 //define	PARANOID			// speed sapping error checking
 
-#ifdef QUAKE2
 #define	GAMENAME	"data1"		// directory to look in by default
-#else
-#define	GAMENAME	"data1"
-#endif
 
 #include <setjmp.h>
 

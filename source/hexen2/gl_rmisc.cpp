@@ -393,9 +393,6 @@ void R_NewMap (void)
 		if (!QStr::NCmp(cl.worldmodel->textures[i]->name,"window02_1",10) )
 			mirrortexturenum = i;
 	}
-#ifdef QUAKE2
-	R_LoadSkys ();
-#endif
 }
 
 

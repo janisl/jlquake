@@ -1374,9 +1374,6 @@ qboolean SV_CheckWater (edict_t *ent)
 {
 	vec3_t	point;
 	int		cont;
-#ifdef QUAKE2
-	int		truecont;
-#endif
 
 	point[0] = ent->v.origin[0];
 	point[1] = ent->v.origin[1];
@@ -1387,9 +1384,6 @@ qboolean SV_CheckWater (edict_t *ent)
 	cont = SV_PointContents (point);
 	if (cont <= CONTENTS_WATER)
 	{
-#ifdef QUAKE2
-		truecont = SV_TruePointContents (point);
-#endif
 		ent->v.watertype = cont;
 		ent->v.waterlevel = 1;
 		point[2] = ent->v.origin[2] + (ent->v.mins[2] + ent->v.maxs[2])*0.5;
@@ -1402,22 +1396,6 @@ qboolean SV_CheckWater (edict_t *ent)
 			if (cont <= CONTENTS_WATER)
 				ent->v.waterlevel = 3;
 		}
-#ifdef QUAKE2
-		if (truecont <= CONTENTS_CURRENT_0 && truecont >= CONTENTS_CURRENT_DOWN)
-		{
-			static vec3_t current_table[] =
-			{
-				{1, 0, 0},
-				{0, 1, 0},
-				{-1, 0, 0},
-				{0, -1, 0},
-				{0, 0, 1},
-				{0, 0, -1}
-			};
-
-			VectorMA (ent->v.basevelocity, 150.0*ent->v.waterlevel/3.0, current_table[CONTENTS_CURRENT_0 - truecont], ent->v.basevelocity);
-		}
-#endif
 	}
 	
 	return ent->v.waterlevel > 1;
@@ -1687,14 +1665,7 @@ int save_hull;
 		if (!SV_CheckWater (ent) && ! ((int)ent->v.flags & FL_WATERJUMP) )
 			SV_AddGravity (ent);
 		SV_CheckStuck (ent);
-#ifdef QUAKE2
-		VectorAdd (ent->v.velocity, ent->v.basevelocity, ent->v.velocity);
-#endif
 		SV_WalkMove (ent);
-
-#ifdef QUAKE2
-		VectorSubtract (ent->v.velocity, ent->v.basevelocity, ent->v.velocity);
-#endif
 		break;
 		
 	case MOVETYPE_TOSS:

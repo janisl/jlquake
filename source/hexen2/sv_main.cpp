@@ -1094,9 +1094,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, sizebuf_t *msg
 	int		items;
 	static  int next_update = 0;
 	static	int next_count = 0;
-#ifndef QUAKE2
 	eval_t	*val;
-#endif
 
 //
 // send a damage message
@@ -1842,11 +1840,7 @@ void SV_SendReconnect (void)
 	NET_SendToAll (&msg, 5);
 	
 	if (cls.state != ca_dedicated)
-#ifdef QUAKE2
-		Cbuf_InsertText ("reconnect\n");
-#else
 		Cmd_ExecuteString ("reconnect\n", src_command);
-#endif
 }
 
 

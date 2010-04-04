@@ -1784,10 +1784,6 @@ void R_UpdateParticles (void)
 			break;
 */
 		case pt_grav:
-#ifdef QUAKE2
-			p->vel[2] -= grav * 20;
-			break;
-#endif
 		case pt_slowgrav:
 			p->vel[2] -= grav;
 			break;

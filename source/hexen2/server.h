@@ -123,10 +123,8 @@ typedef struct client_s
 #define	MOVETYPE_NOCLIP			8
 #define	MOVETYPE_FLYMISSILE		9		// extra size to monsters
 #define	MOVETYPE_BOUNCE			10
-//#ifdef QUAKE2
 #define MOVETYPE_BOUNCEMISSILE	11		// bounce w/o gravity
 #define MOVETYPE_FOLLOW			12		// track movement of aiment
-//#endif
 #define MOVETYPE_PUSHPULL		13		// pushable/pullable object
 #define MOVETYPE_SWIM			14		// should keep the object in water
 

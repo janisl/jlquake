@@ -86,10 +86,6 @@ static sfx_t *cl_sfx_ric1;
 static sfx_t *cl_sfx_ric2;
 static sfx_t *cl_sfx_ric3;
 static sfx_t *cl_sfx_r_exp3;
-#ifdef QUAKE2
-static sfx_t *cl_sfx_imp;
-static sfx_t *cl_sfx_rail;
-#endif
 
 // CODE --------------------------------------------------------------------
 
@@ -106,10 +102,6 @@ void CL_InitTEnts(void)
 	cl_sfx_ric2 = S_PrecacheSound ("weapons/ric2.wav");
 	cl_sfx_ric3 = S_PrecacheSound ("weapons/ric3.wav");
 	cl_sfx_r_exp3 = S_PrecacheSound ("weapons/r_exp3.wav");
-#ifdef QUAKE2
-	cl_sfx_imp = S_PrecacheSound ("shambler/sattck1.wav");
-	cl_sfx_rail = S_PrecacheSound ("weapons/lstart.wav");
-#endif
 }
 
 //==========================================================================
@@ -133,9 +125,6 @@ void CL_ParseTEnt(void)
 {
 	int type;
 	vec3_t pos;
-#ifdef QUAKE2
-	vec3_t endpos;
-#endif
 	dlight_t *dl;
 	int rnd;
 	int colorStart, colorLength;
