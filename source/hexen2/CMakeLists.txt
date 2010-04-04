@@ -1,9 +1,9 @@
-set(RELEASE_CFLAGS -g -march=pentiumpro -O6 -ffast-math -funroll-loops
-	-fomit-frame-pointer -fexpensive-optimizations)
-set(DEBUG_CFLAGS -g)
+set(RELEASE_CFLAGS "-g -march=pentiumpro -O6 -ffast-math -funroll-loops
+	-fomit-frame-pointer -fexpensive-optimizations")
+set(DEBUG_CFLAGS "-g")
 set(LDFLAGS -L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm)
 
-set(GLQUAKE_OBJS
+set(HEXEN2_FILES
 	cl_demo.cpp
 	cl_effect.cpp
 	cl_input.cpp
@@ -61,14 +61,14 @@ set(GLQUAKE_OBJS
 	snd_linux.cpp
 )
 
-set(GLQUAKE_ASM_FILES
+set(HEXEN2_ASM_FILES
 	math.s
 	worlda.s
 	snd_mixa.s
 	sys_dosa.s
 )
 
-foreach(SRC ${GLQUAKE_ASM_FILES})
+foreach(SRC ${HEXEN2_ASM_FILES})
 	get_filename_component(FILE_BASE ${SRC} NAME_WE)
 	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
 	add_custom_command(OUTPUT ${OBJ}
@@ -76,10 +76,10 @@ foreach(SRC ${GLQUAKE_ASM_FILES})
 		COMMAND ${CMAKE_C_COMPILER} -x assembler-with-cpp -DELF
 			-c ${CMAKE_CURRENT_SOURCE_DIR}/${SRC} -o ${OBJ}
 	)
-	set(GLQUAKE_OBJS ${GLQUAKE_OBJS} ${OBJ})
+	set(HEXEN2_FILES ${HEXEN2_FILES} ${OBJ})
 endforeach(SRC)
 
-add_executable(vhexen2 ${GLQUAKE_OBJS})
-set_target_properties(vhexen2 PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DQUAKE2RJ -DRJNET -DGLQUAKE")
+add_executable(vhexen2 ${HEXEN2_FILES})
+set_target_properties(vhexen2 PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DQUAKE2RJ -DRJNET")
 target_link_libraries(vhexen2 core ${LDFLAGS})
 add_dependencies(vhexen2 core)

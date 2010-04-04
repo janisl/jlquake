@@ -3,7 +3,6 @@
  */
 
 #include "quakedef.h"
-#include "r_local.h"
 
 #define	SFL_FLUFFY			1	// All largish flakes
 #define	SFL_MIXED			2	// Mixed flakes
@@ -1249,20 +1248,12 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 		
 		p->flags = flags;
 
-#ifdef GLQUAKE
 		if(rand()&0x7f<=1)//have a console variable 'happy_snow' that makes all snowflakes happy snow!
 			p->count = 69;	//happy snow!
 		else if(flags & SFL_FLUFFY || (flags&SFL_MIXED && (rand()&3)))
 			p->count = (rand()&31)+10;//From 10 to 41 scale, will be divided
 		else
 			p->count = 10;
-#else
-		if(flags & SFL_FLUFFY || (flags&SFL_MIXED && (rand()&3)))
-			p->count = (rand()&3)+2;//From 2 to 5 extra
-		else
-			p->count = 1;	//Only one particle
-
-#endif
 
 
 		if(flags&SFL_HALF_BRIGHT)//Start darker
@@ -1360,7 +1351,6 @@ void R_DrawParticles (void)
 	float			vel0, vel1, vel2;
 	vec3_t			save_org;
 
-#ifdef GLQUAKE
 	float			scale;
 
 	GL_Bind(particletexture);
@@ -1371,12 +1361,6 @@ void R_DrawParticles (void)
 
 	VectorScale (vup, 1.5, r_pup);
 	VectorScale (vright, 1.5, r_pright);
-#else
-
-	VectorScale (vright, xscaleshrink, r_pright);
-	VectorScale (vup, yscaleshrink, r_pup);
-	VectorCopy (vpn, r_ppn);
-#endif
 
 	for ( ;; ) 
 	{
@@ -1408,7 +1392,6 @@ void R_DrawParticles (void)
 		
 		if (p->type==pt_rain)
 		{
-#ifdef GLQUAKE
 			// hack a scale up to keep particles from disapearing
 			scale = (p->org[0] - r_origin[0])*vpn[0] + (p->org[1] - r_origin[1])*vpn[1]
 				+ (p->org[2] - r_origin[2])*vpn[2];
@@ -1428,28 +1411,9 @@ void R_DrawParticles (void)
 			glVertex3f (p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
 			glTexCoord2f (0.5,0);
 			glVertex3f (p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
-#else
-			VectorCopy(p->org,save_org);
-
-			vel0 = p->vel[0]*.001;
-			vel1 = p->vel[1]*.001;
-			vel2 = p->vel[2]*.001;
-
-			for(i=0;i<4;i++)
-			{
-				D_DrawParticle(p);
-				p->org[0] += vel0;
-				p->org[1] += vel1;
-				p->org[2] += vel2;
- 			}
-			D_DrawParticle(p);
-
-			VectorCopy(save_org,p->org);//Restore origin
-#endif
 		}
 		else if (p->type==pt_snow)
 		{
-#ifdef GLQUAKE
 //IDEA: Put a snowflake texture on two-sided poly
 //texture comes from glrmisc.c: R_InitParticleTexture 
 			scale = (p->org[0] - r_origin[0])*vpn[0] + (p->org[1] - r_origin[1])*vpn[1]
@@ -1495,48 +1459,9 @@ void R_DrawParticles (void)
 				glTexCoord2f (0.5,0);//middle top
 			
 			glVertex3f (p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
-#else
-			VectorCopy(p->org,save_org);
-			D_DrawParticle (p);
-
-			for(i=1;i<p->count;i++)
-			{
-				switch(i)
-				{//FIXME:  More translucency on outside particles?
-//				case 0:	//original
-//					break;
-				case 1:	//One to right
-					p->org[0] = save_org[0] + vright[0];
-					p->org[1] = save_org[1] + vright[1];
-					p->org[2] = save_org[2] + vright[2];
-					break;
-				case 2: //One above
-					p->org[0] = save_org[0] + vup[0];
-					p->org[1] = save_org[1] + vup[1];
-					p->org[2] = save_org[2] + vup[2];
-					break;
-				case 3:	//One to left
-					p->org[0] = save_org[0] - vright[0];
-					p->org[1] = save_org[1] - vright[1];
-					p->org[2] = save_org[2] - vright[2];
-					break;
-				case 4:	//One below
-					p->org[0] = save_org[0] - vup[0];
-					p->org[1] = save_org[1] - vup[1];					
-					p->org[2] = save_org[2] - vup[2];
-					break;
-				default:
-				   Con_Printf ("count too big!\n");
-					break;
-				}
-				D_DrawParticle (p);
-			}
-			VectorCopy(save_org,p->org);//Restore origin
-#endif
 		}
 		else
 		{
-#ifdef GLQUAKE
 			// hack a scale up to keep particles from disapearing
 			scale = (p->org[0] - r_origin[0])*vpn[0] + (p->org[1] - r_origin[1])*vpn[1]
 				+ (p->org[2] - r_origin[2])*vpn[2];
@@ -1554,17 +1479,12 @@ void R_DrawParticles (void)
 			glVertex3f (p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
 			glTexCoord2f (0.5,0);
 			glVertex3f (p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
-#else
-			D_DrawParticle (p);
-#endif
 		}
 	}
 
-#ifdef GLQUAKE
 	glEnd ();
 	glDisable (GL_BLEND);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-#endif
 }
 
 

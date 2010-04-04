@@ -549,54 +549,6 @@ smoothly scrolled off.
 ================
 */
 
-#ifndef	GLQUAKE
-
-int M_DrawBigCharacter (int x, int y, int num, int numNext)
-{
-	qpic_t	*p;
-	int ypos,xpos,c;
-	byte			*dest;
-	byte			*source;
-	int				add;
-
-	if (num == ' ') return 32;
-
-	if (num == '/') num = 26;
-	else num -= 65;
-
-	if (num < 0 || num >= 27)  // only a-z and /
-		return 0;
-
-	if (numNext == '/') numNext = 26;
-	else numNext -= 65;
-
-	p = Draw_CachePic ("gfx/menu/bigfont.lmp");
-	source = p->data + ((num % 8) * 20) + (num / 8 * p->width * 20);
-
-    for(ypos=0;ypos < 19;ypos++)
-	{
-		dest = vid.buffer + (y+ypos) * vid.rowbytes + x;
-		for(xpos=0;xpos<19;xpos++,dest++,source++)
-		{
-			if (*source) 
-			{
-				*dest = *source;
-			}
-		}
-		source += (p->width - 19);
-	}
-
-	if (numNext < 0 || numNext >= 27) return 0;
-
-	add = 0;
-	if (num == (int)'C'-65 && numNext == (int)'P'-65)
-		add = 3;
-
-	return BigCharWidth[num][numNext] + add;
-}
-
-#endif
-
 void M_DrawBigString(int x, int y, char *string)
 {
 	int c,length;
@@ -1898,16 +1850,6 @@ void M_AdjustSliders (int dir)
 		SB_ViewSizeChanged();
 		vid.recalc_refdef = 1;
 		break;
-#ifndef GLQUAKE
-	case OPT_GAMMA:	// gamma
-		v_gamma.value -= dir * 0.05;
-		if (v_gamma.value < 0.5)
-			v_gamma.value = 0.5;
-		if (v_gamma.value > 1)
-			v_gamma.value = 1;
-		Cvar_SetValue ("gamma", v_gamma.value);
-		break;
-#endif
 	case OPT_MOUSESPEED:	// mouse speed
 		sensitivity.value += dir * 0.5;
 		if (sensitivity.value < 1)
@@ -2049,12 +1991,6 @@ void M_Options_Draw (void)
 	r = (scr_viewsize.value - 30) / (120 - 30);
 	M_DrawSlider (220, 60+(3*8), r);
 
-#ifndef GLQUAKE
-	M_Print (16, 60+(4*8), "            Brightness");
-	r = (1.0 - v_gamma.value) / 0.5;
-	M_DrawSlider (220, 60+(4*8), r);
-#endif
-
 	M_Print (16, 60+(5*8), "           Mouse Speed");
 	r = (sensitivity.value - 1)/10;
 	M_DrawSlider (220, 60+(5*8), r);
@@ -2146,9 +2082,7 @@ void M_Options_Key (int k)
 		if (options_cursor < 0)
 			options_cursor = OPTIONS_ITEMS-1;
 
-#ifdef GLQUAKE	
 		if ((options_cursor == OPT_GAMMA)) options_cursor--;
-#endif
 
 		break;
 
@@ -2158,9 +2092,7 @@ void M_Options_Key (int k)
 		if (options_cursor >= OPTIONS_ITEMS)
 			options_cursor = 0;
 
-#ifdef GLQUAKE	
 		if ((options_cursor == OPT_GAMMA)) options_cursor++;
-#endif
 
 		break;	
 
