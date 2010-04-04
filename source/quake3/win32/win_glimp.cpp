@@ -623,7 +623,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		r.right  = width;
 		r.bottom = height;
 
-		if ( cdsFullscreen || !Q_stricmp( _3DFX_DRIVER_NAME, drivername ) )
+		if ( cdsFullscreen || !QStr::ICmp( _3DFX_DRIVER_NAME, drivername ) )
 		{
 			exstyle = WS_EX_TOPMOST;
 			stylebits = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
@@ -638,7 +638,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		w = r.right - r.left;
 		h = r.bottom - r.top;
 
-		if ( cdsFullscreen || !Q_stricmp( _3DFX_DRIVER_NAME, drivername ) )
+		if ( cdsFullscreen || !QStr::ICmp( _3DFX_DRIVER_NAME, drivername ) )
 		{
 			x = 0;
 			y = 0;
@@ -1169,8 +1169,8 @@ static qboolean GLW_LoadOpenGL( const char *drivername )
 	char buffer[1024];
 	qboolean cdsFullscreen;
 
-	Q_strncpyz( buffer, drivername, sizeof(buffer) );
-	Q_strlwr(buffer);
+	QStr::NCpyZ( buffer, drivername, sizeof(buffer) );
+	QStr::ToLower(buffer);
 
 	//
 	// determine if we're on a standalone driver
@@ -1258,7 +1258,7 @@ void GLimp_EndFrame (void)
 
 
 	// don't flip if drawing to front buffer
-	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
+	if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
 		if ( glConfig.driverType > GLDRV_ICD )
 		{
@@ -1287,11 +1287,11 @@ static void GLW_StartOpenGL( void )
 	//
 	if ( !GLW_LoadOpenGL( r_glDriver->string ) )
 	{
-		if ( !Q_stricmp( r_glDriver->string, OPENGL_DRIVER_NAME ) )
+		if ( !QStr::ICmp( r_glDriver->string, OPENGL_DRIVER_NAME ) )
 		{
 			attemptedOpenGL32 = qtrue;
 		}
-		else if ( !Q_stricmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
+		else if ( !QStr::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
 		{
 			attempted3Dfx = qtrue;
 		}
@@ -1377,23 +1377,23 @@ void GLimp_Init( void )
 	GLW_StartOpenGL();
 
 	// get our config strings
-	Q_strncpyz( glConfig.vendor_string, (char*)qglGetString (GL_VENDOR), sizeof( glConfig.vendor_string ) );
-	Q_strncpyz( glConfig.renderer_string, (char*)qglGetString (GL_RENDERER), sizeof( glConfig.renderer_string ) );
-	Q_strncpyz( glConfig.version_string, (char*)qglGetString (GL_VERSION), sizeof( glConfig.version_string ) );
-	Q_strncpyz( glConfig.extensions_string, (char*)qglGetString (GL_EXTENSIONS), sizeof( glConfig.extensions_string ) );
+	QStr::NCpyZ( glConfig.vendor_string, (char*)qglGetString (GL_VENDOR), sizeof( glConfig.vendor_string ) );
+	QStr::NCpyZ( glConfig.renderer_string, (char*)qglGetString (GL_RENDERER), sizeof( glConfig.renderer_string ) );
+	QStr::NCpyZ( glConfig.version_string, (char*)qglGetString (GL_VERSION), sizeof( glConfig.version_string ) );
+	QStr::NCpyZ( glConfig.extensions_string, (char*)qglGetString (GL_EXTENSIONS), sizeof( glConfig.extensions_string ) );
 
 	//
 	// chipset specific configuration
 	//
-	Q_strncpyz( buf, glConfig.renderer_string, sizeof(buf) );
-	Q_strlwr( buf );
+	QStr::NCpyZ( buf, glConfig.renderer_string, sizeof(buf) );
+	QStr::ToLower( buf );
 
 	//
 	// NOTE: if changing cvars, do it within this block.  This allows them
 	// to be overridden when testing driver fixes, etc. but only sets
 	// them to their default state when the hardware is first installed/run.
 	//
-	if ( Q_stricmp( lastValidRenderer->string, glConfig.renderer_string ) )
+	if ( QStr::ICmp( lastValidRenderer->string, glConfig.renderer_string ) )
 	{
 		glConfig.hardwareType = GLHW_GENERIC;
 

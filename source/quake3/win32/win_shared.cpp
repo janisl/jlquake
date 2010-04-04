@@ -189,7 +189,7 @@ static int Is3DNOW( void )
 	processorString[12] = 0;
 
 //  REMOVED because you can have 3DNow! on non-AMD systems
-//	if ( strcmp( processorString, "AuthenticAMD" ) )
+//	if ( QStr::Cmp( processorString, "AuthenticAMD" ) )
 //		return qfalse;
 
 	// check AMD-specific functions
@@ -285,11 +285,11 @@ char *Sys_GetCurrentUser( void )
 
 
 	if ( !GetUserName( s_userName, &size ) )
-		strcpy( s_userName, "player" );
+		QStr::Cpy( s_userName, "player" );
 
 	if ( !s_userName[0] )
 	{
-		strcpy( s_userName, "player" );
+		QStr::Cpy( s_userName, "player" );
 	}
 
 	return s_userName;

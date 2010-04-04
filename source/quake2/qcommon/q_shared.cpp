@@ -860,7 +860,7 @@ void COM_FileBase (char *in, char *out)
 {
 	char *s, *s2;
 	
-	s = in + strlen(in) - 1;
+	s = in + QStr::Length(in) - 1;
 	
 	while (s != in && *s != '.')
 		s--;
@@ -873,7 +873,7 @@ void COM_FileBase (char *in, char *out)
 	else
 	{
 		s--;
-		strncpy (out,s2+1, s-s2);
+		QStr::NCpy(out,s2+1, s-s2);
 		out[s-s2] = 0;
 	}
 }
@@ -889,12 +889,12 @@ void COM_FilePath (char *in, char *out)
 {
 	char *s;
 	
-	s = in + strlen(in) - 1;
+	s = in + QStr::Length(in) - 1;
 	
 	while (s != in && *s != '/')
 		s--;
 
-	strncpy (out,in, s-in);
+	QStr::NCpy(out,in, s-in);
 	out[s-in] = 0;
 }
 
@@ -911,7 +911,7 @@ void COM_DefaultExtension (char *path, char *extension)
 // if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
-	src = path + strlen(path) - 1;
+	src = path + QStr::Length(path) - 1;
 
 	while (*src != '/' && src != path)
 	{
@@ -920,30 +920,8 @@ void COM_DefaultExtension (char *path, char *extension)
 		src--;
 	}
 
-	strcat (path, extension);
+	QStr::Cat(path, MAX_OSPATH, extension);
 }
-
-/*
-============
-va
-
-does a varargs printf into a temp buffer, so I don't need to have
-varargs versions of all text functions.
-FIXME: make this buffer size safe someday
-============
-*/
-char	*va(char *format, ...)
-{
-	va_list		argptr;
-	static char		string[1024];
-	
-	va_start (argptr, format);
-	vsprintf (string, format,argptr);
-	va_end (argptr);
-
-	return string;	
-}
-
 
 char	com_token[MAX_TOKEN_CHARS];
 
@@ -1061,50 +1039,6 @@ void Com_PageInMemory (byte *buffer, int size)
 ============================================================================
 */
 
-// FIXME: replace all Q_stricmp with Q_strcasecmp
-int Q_stricmp (char *s1, char *s2)
-{
-#if defined(WIN32)
-	return _stricmp (s1, s2);
-#else
-	return strcasecmp (s1, s2);
-#endif
-}
-
-
-int Q_strncasecmp (char *s1, char *s2, int n)
-{
-	int		c1, c2;
-	
-	do
-	{
-		c1 = *s1++;
-		c2 = *s2++;
-
-		if (!n--)
-			return 0;		// strings are equal until end point
-		
-		if (c1 != c2)
-		{
-			if (c1 >= 'a' && c1 <= 'z')
-				c1 -= ('a' - 'A');
-			if (c2 >= 'a' && c2 <= 'z')
-				c2 -= ('a' - 'A');
-			if (c1 != c2)
-				return -1;		// strings not equal
-		}
-	} while (c1);
-	
-	return 0;		// strings are equal
-}
-
-int Q_strcasecmp (char *s1, char *s2)
-{
-	return Q_strncasecmp (s1, s2, 99999);
-}
-
-
-
 void Com_sprintf (char *dest, int size, char *fmt, ...)
 {
 	int		len;
@@ -1116,7 +1050,7 @@ void Com_sprintf (char *dest, int size, char *fmt, ...)
 	va_end (argptr);
 	if (len >= size)
 		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
-	strncpy (dest, bigbuffer, size-1);
+	QStr::NCpy(dest, bigbuffer, size-1);
 }
 
 /*
@@ -1168,7 +1102,7 @@ char *Info_ValueForKey (char *s, char *key)
 		}
 		*o = 0;
 
-		if (!strcmp (key, pkey) )
+		if (!QStr::Cmp(key, pkey) )
 			return value[valueindex];
 
 		if (!*s)
@@ -1214,9 +1148,9 @@ void Info_RemoveKey (char *s, char *key)
 		}
 		*o = 0;
 
-		if (!strcmp (key, pkey) )
+		if (!QStr::Cmp(key, pkey) )
 		{
-			strcpy (start, s);	// remove this part
+			QStr::Cpy(start, s);	// remove this part
 			return;
 		}
 
@@ -1268,25 +1202,25 @@ void Info_SetValueForKey (char *s, char *key, char *value)
 		return;
 	}
 
-	if (strlen(key) > MAX_INFO_KEY-1 || strlen(value) > MAX_INFO_KEY-1)
+	if (QStr::Length(key) > MAX_INFO_KEY-1 || QStr::Length(value) > MAX_INFO_KEY-1)
 	{
 		Com_Printf ("Keys and values must be < 64 characters.\n");
 		return;
 	}
 	Info_RemoveKey (s, key);
-	if (!value || !strlen(value))
+	if (!value || !QStr::Length(value))
 		return;
 
 	Com_sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
 
-	if (strlen(newi) + strlen(s) > maxsize)
+	if (QStr::Length(newi) + QStr::Length(s) > maxsize)
 	{
 		Com_Printf ("Info string length exceeded\n");
 		return;
 	}
 
 	// only copy ascii values
-	s += strlen(s);
+	s += QStr::Length(s);
 	v = newi;
 	while (*v)
 	{

@@ -102,7 +102,7 @@ static void BrightnessCallback( void *s )
 	else
 		s_brightness_slider[0].curvalue = s_brightness_slider[1].curvalue;
 
-	if ( stricmp( vid_ref->string, "soft" ) == 0 )
+	if ( QStr::ICmp( vid_ref->string, "soft" ) == 0 )
 	{
 		float gamma = ( 0.8 - ( slider->curvalue/10.0 - 0.5 ) ) + 0.5;
 
@@ -167,12 +167,12 @@ static void ApplyChanges( void *unused )
 	** update appropriate stuff if we're running OpenGL and gamma
 	** has been modified
 	*/
-	if ( stricmp( vid_ref->string, "gl" ) == 0 )
+	if ( QStr::ICmp( vid_ref->string, "gl" ) == 0 )
 	{
 		if ( vid_gamma->modified )
 		{
 			vid_ref->modified = true;
-			if ( stricmp( gl_driver->string, "3dfxgl" ) == 0 )
+			if ( QStr::ICmp( gl_driver->string, "3dfxgl" ) == 0 )
 			{
 				char envbuffer[1024];
 				float g;
@@ -264,19 +264,19 @@ void VID_MenuInit( void )
 	s_screensize_slider[SOFTWARE_MENU].curvalue = scr_viewsize->value/10;
 	s_screensize_slider[OPENGL_MENU].curvalue = scr_viewsize->value/10;
 
-	if ( strcmp( vid_ref->string, "soft" ) == 0 )
+	if ( QStr::Cmp( vid_ref->string, "soft" ) == 0 )
 	{
 		s_current_menu_index = SOFTWARE_MENU;
 		s_ref_list[0].curvalue = s_ref_list[1].curvalue = REF_SOFT;
 	}
-	else if ( strcmp( vid_ref->string, "gl" ) == 0 )
+	else if ( QStr::Cmp( vid_ref->string, "gl" ) == 0 )
 	{
 		s_current_menu_index = OPENGL_MENU;
-		if ( strcmp( gl_driver->string, "3dfxgl" ) == 0 )
+		if ( QStr::Cmp( gl_driver->string, "3dfxgl" ) == 0 )
 			s_ref_list[s_current_menu_index].curvalue = REF_3DFX;
-		else if ( strcmp( gl_driver->string, "pvrgl" ) == 0 )
+		else if ( QStr::Cmp( gl_driver->string, "pvrgl" ) == 0 )
 			s_ref_list[s_current_menu_index].curvalue = REF_POWERVR;
-		else if ( strcmp( gl_driver->string, "opengl32" ) == 0 )
+		else if ( QStr::Cmp( gl_driver->string, "opengl32" ) == 0 )
 			s_ref_list[s_current_menu_index].curvalue = REF_OPENGL;
 		else
 //			s_ref_list[s_current_menu_index].curvalue = REF_VERITE;

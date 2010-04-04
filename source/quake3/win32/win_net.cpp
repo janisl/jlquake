@@ -175,7 +175,7 @@ qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr ) {
 	memset( sadr, 0, sizeof( *sadr ) );
 
 	// check for an IPX address
-	if( ( strlen( s ) == 21 ) && ( s[8] == '.' ) ) {
+	if( ( QStr::Length( s ) == 21 ) && ( s[8] == '.' ) ) {
 		((struct sockaddr_ipx *)sadr)->sa_family = AF_IPX;
 		((struct sockaddr_ipx *)sadr)->sa_socket = 0;
 		copy[2] = 0;
@@ -499,7 +499,7 @@ int NET_IPSocket( char *net_interface, int port ) {
 		return 0;
 	}
 
-	if( !net_interface || !net_interface[0] || !Q_stricmp(net_interface, "localhost") ) {
+	if( !net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost") ) {
 		address.sin_addr.s_addr = INADDR_ANY;
 	}
 	else {
@@ -623,8 +623,8 @@ void NET_OpenSocks( int port ) {
 		int		plen;
 
 		// build the request
-		ulen = strlen( net_socksUsername->string );
-		plen = strlen( net_socksPassword->string );
+		ulen = QStr::Length( net_socksUsername->string );
+		plen = QStr::Length( net_socksPassword->string );
 
 		buf[0] = 1;		// username/password authentication version
 		buf[1] = ulen;

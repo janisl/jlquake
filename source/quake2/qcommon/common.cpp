@@ -125,12 +125,12 @@ void Com_Printf (char *fmt, ...)
 
 	if (rd_target)
 	{
-		if ((strlen (msg) + strlen(rd_buffer)) > (rd_buffersize - 1))
+		if ((QStr::Length(msg) + QStr::Length(rd_buffer)) > (rd_buffersize - 1))
 		{
 			rd_flush(rd_target, rd_buffer);
 			*rd_buffer = 0;
 		}
-		strcat (rd_buffer, msg);
+		QStr::Cat(rd_buffer, rd_buffersize, msg);
 		return;
 	}
 
@@ -365,7 +365,7 @@ void MSG_WriteString (sizebuf_t *sb, char *s)
 	if (!s)
 		SZ_Write (sb, "", 1);
 	else
-		SZ_Write (sb, s, strlen(s)+1);
+		SZ_Write (sb, s, QStr::Length(s)+1);
 }
 
 void MSG_WriteCoord (sizebuf_t *sb, float f)
@@ -934,7 +934,7 @@ void SZ_Print (sizebuf_t *buf, char *data)
 {
 	int		len;
 	
-	len = strlen(data)+1;
+	len = QStr::Length(data)+1;
 
 	if (buf->cursize)
 	{
@@ -965,7 +965,7 @@ int COM_CheckParm (char *parm)
 	
 	for (i=1 ; i<com_argc ; i++)
 	{
-		if (!strcmp (parm,com_argv[i]))
+		if (!QStr::Cmp(parm,com_argv[i]))
 			return i;
 	}
 		
@@ -1006,7 +1006,7 @@ void COM_InitArgv (int argc, char **argv)
 	com_argc = argc;
 	for (i=0 ; i<argc ; i++)
 	{
-		if (!argv[i] || strlen(argv[i]) >= MAX_TOKEN_CHARS )
+		if (!argv[i] || QStr::Length(argv[i]) >= MAX_TOKEN_CHARS )
 			com_argv[i] = "";
 		else
 			com_argv[i] = argv[i];
@@ -1046,8 +1046,8 @@ char *CopyString (char *in)
 {
 	char	*out;
 	
-	out = (char*)Z_Malloc (strlen(in)+1);
-	strcpy (out, in);
+	out = (char*)Z_Malloc (QStr::Length(in)+1);
+	QStr::Cpy(out, in);
 	return out;
 }
 

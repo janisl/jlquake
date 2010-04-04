@@ -28,7 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <ctype.h>
 
 #define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
 

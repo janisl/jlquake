@@ -211,7 +211,7 @@ BOOL WriteText (LPCTSTR szText)
 		if (*sz == 10)
 			*sz = 13;
 
-		upper = toupper(*sz);
+		upper = QStr::ToUpper(*sz);
 
 		rec.EventType = KEY_EVENT;
 		rec.Event.KeyEvent.bKeyDown = TRUE;
@@ -220,7 +220,7 @@ BOOL WriteText (LPCTSTR szText)
 		rec.Event.KeyEvent.wVirtualScanCode = CharToCode (*sz);
 		rec.Event.KeyEvent.uChar.AsciiChar = *sz;
 		rec.Event.KeyEvent.uChar.UnicodeChar = *sz;
-		rec.Event.KeyEvent.dwControlKeyState = isupper(*sz) ? 0x80 : 0x0; 
+		rec.Event.KeyEvent.dwControlKeyState = QStr::IsUpper(*sz) ? 0x80 : 0x0; 
 
 		WriteConsoleInput(
 			hStdin,
@@ -247,7 +247,7 @@ int CharToCode (char c)
 {
 	char upper;
 		
-	upper = toupper(c);
+	upper = QStr::ToUpper(c);
 
 	switch (c)
 	{
@@ -258,7 +258,7 @@ int CharToCode (char c)
 			break;
 	}
 
-	if (isalpha(c))
+	if (QStr::IsAlpha(c))
 		return (30 + upper - 65); 
 
 	if (isdigit(c))

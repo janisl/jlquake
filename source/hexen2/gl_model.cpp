@@ -183,14 +183,14 @@ model_t *Mod_FindName (char *name)
 // search the currently loaded models
 //
 	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
-		if (!strcmp (mod->name, name) )
+		if (!QStr::Cmp(mod->name, name) )
 			break;
 			
 	if (i == mod_numknown)
 	{
 		if (mod_numknown == MAX_MOD_KNOWN)
 			Sys_Error ("mod_numknown == MAX_MOD_KNOWN");
-		strcpy (mod->name, name);
+		QStr::Cpy(mod->name, name);
 		mod->needload = true;
 		mod_numknown++;
 	}
@@ -369,7 +369,7 @@ void Mod_LoadTextures (lump_t *l)
 		memcpy ( tx+1, mt+1, pixels);
 		
 
-		if (!strncmp(mt->name,"sky",3))	
+		if (!QStr::NCmp(mt->name,"sky",3))	
 			R_InitSky (tx);
 		else
 		{
@@ -420,7 +420,7 @@ void Mod_LoadTextures (lump_t *l)
 			tx2 = loadmodel->textures[j];
 			if (!tx2 || tx2->name[0] != '+')
 				continue;
-			if (strcmp (tx2->name+2, tx->name+2))
+			if (QStr::Cmp(tx2->name+2, tx->name+2))
 				continue;
 
 			num = tx2->name[1];
@@ -786,7 +786,7 @@ void Mod_LoadFaces (lump_t *l)
 		
 	// set the drawing flags flag
 		
-		if (!strncmp(out->texinfo->texture->name,"sky",3))	// sky
+		if (!QStr::NCmp(out->texinfo->texture->name,"sky",3))	// sky
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 #ifndef QUAKE2
@@ -805,8 +805,8 @@ void Mod_LoadFaces (lump_t *l)
 			}
 			GL_SubdivideSurface (out);	// cut up polygon for warps
 
-			if ((!_strnicmp(out->texinfo->texture->name,"*rtex078",8)) ||
-				(!_strnicmp(out->texinfo->texture->name,"*lowlight",9)))
+			if ((!QStr::NICmp(out->texinfo->texture->name,"*rtex078",8)) ||
+				(!QStr::NICmp(out->texinfo->texture->name,"*lowlight",9)))
 				out->flags |= SURF_TRANSLUCENT;
 
 			continue;
@@ -1253,7 +1253,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 			sprintf (name, "*%i", i+1);
 			loadmodel = Mod_FindName (name);
 			*loadmodel = *mod;
-			strcpy (loadmodel->name, name);
+			QStr::Cpy(loadmodel->name, name);
 			mod = loadmodel;
 		}
 	}
@@ -1302,7 +1302,7 @@ void * Mod_LoadAliasFrame (void * pin, maliasframedesc_t *frame)
 
 	pdaliasframe = (daliasframe_t *)pin;
 
-	strcpy (frame->name, pdaliasframe->name);
+	QStr::Cpy(frame->name, pdaliasframe->name);
 	frame->firstpose = posenum;
 	frame->numposes = 1;
 
@@ -1518,31 +1518,31 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int mdl_flags
 
 		s = pheader->skinwidth * pheader->skinheight;
 		// save 8 bit texels for the player model to remap
-		if (!strcmp(loadmodel->name,"models/paladin.mdl"))
+		if (!QStr::Cmp(loadmodel->name,"models/paladin.mdl"))
 		{
 			if (s > sizeof(player_8bit_texels[0]))
 				Sys_Error ("Player skin too large");
 			memcpy (player_8bit_texels[0], (byte *)(pskintype + 1), s);
 		}
-		else if (!strcmp(loadmodel->name,"models/crusader.mdl"))
+		else if (!QStr::Cmp(loadmodel->name,"models/crusader.mdl"))
 		{
 			if (s > sizeof(player_8bit_texels[1]))
 				Sys_Error ("Player skin too large");
 			memcpy (player_8bit_texels[1], (byte *)(pskintype + 1), s);
 		}
-		else if (!strcmp(loadmodel->name,"models/necro.mdl"))
+		else if (!QStr::Cmp(loadmodel->name,"models/necro.mdl"))
 		{
 			if (s > sizeof(player_8bit_texels[2]))
 				Sys_Error ("Player skin too large");
 			memcpy (player_8bit_texels[2], (byte *)(pskintype + 1), s);
 		}
-		else if (!strcmp(loadmodel->name,"models/assassin.mdl"))
+		else if (!QStr::Cmp(loadmodel->name,"models/assassin.mdl"))
 		{
 			if (s > sizeof(player_8bit_texels[3]))
 				Sys_Error ("Player skin too large");
 			memcpy (player_8bit_texels[3], (byte *)(pskintype + 1), s);
 		}
-		else if (!strcmp(loadmodel->name,"models/succubus.mdl"))
+		else if (!QStr::Cmp(loadmodel->name,"models/succubus.mdl"))
 		{
 			if (s > sizeof(player_8bit_texels[4]))
 				Sys_Error ("Player skin too large");

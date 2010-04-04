@@ -12,7 +12,6 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <ctype.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <errno.h>
@@ -53,7 +52,7 @@ void Sys_Printf (char *fmt, ...)
 	vsprintf (text,fmt,argptr);
 	va_end (argptr);
 
-	if (strlen(text) > sizeof(text))
+	if (QStr::Length(text) > sizeof(text))
 		Sys_Error("memory overwrite in Sys_Printf");
 
     if (nostdout && nostdout->value)
@@ -321,7 +320,7 @@ void Sys_CopyProtect(void)
 		Com_Error(ERR_FATAL, "Can't read mount table to determine mounted cd location.");
 
 	while ((ent = getmntent(mnt)) != NULL) {
-		if (strcmp(ent->mnt_type, "iso9660") == 0) {
+		if (QStr::Cmp(ent->mnt_type, "iso9660") == 0) {
 			// found a cd file system
 			found_cd = true;
 			sprintf(path, "%s/%s", ent->mnt_dir, "install/data/quake2.exe");

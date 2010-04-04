@@ -103,7 +103,7 @@ qboolean SV_SetPlayer (void)
 	// numeric values are just slot numbers
 	if (s[0] >= '0' && s[0] <= '9')
 	{
-		idnum = atoi(Cmd_Argv(1));
+		idnum = QStr::Atoi(Cmd_Argv(1));
 		if (idnum < 0 || idnum >= maxclients->value)
 		{
 			Com_Printf ("Bad client slot: %i\n", idnum);
@@ -125,7 +125,7 @@ qboolean SV_SetPlayer (void)
 	{
 		if (!cl->state)
 			continue;
-		if (!strcmp(cl->name, s))
+		if (!QStr::Cmp(cl->name, s))
 		{
 			sv_client = cl;
 			sv_player = sv_client->edict;
@@ -246,21 +246,21 @@ void SV_CopySaveGame (char *src, char *dst)
 	CopyFile (name, name2);
 
 	Com_sprintf (name, sizeof(name), "%s/save/%s/", FS_Gamedir(), src);
-	len = strlen(name);
+	len = QStr::Length(name);
 	Com_sprintf (name, sizeof(name), "%s/save/%s/*.sav", FS_Gamedir(), src);
 	found = Sys_FindFirst(name, 0, 0 );
 	while (found)
 	{
-		strcpy (name+len, found+len);
+		QStr::Cpy(name+len, found+len);
 
 		Com_sprintf (name2, sizeof(name2), "%s/save/%s/%s", FS_Gamedir(), dst, found+len);
 		CopyFile (name, name2);
 
 		// change sav to sv2
-		l = strlen(name);
-		strcpy (name+l-3, "sv2");
-		l = strlen(name2);
-		strcpy (name2+l-3, "sv2");
+		l = QStr::Length(name);
+		QStr::Cpy(name+l-3, "sv2");
+		l = QStr::Length(name2);
+		QStr::Cpy(name2+l-3, "sv2");
 		CopyFile (name, name2);
 
 		found = Sys_FindNext( 0, 0 );
@@ -359,7 +359,7 @@ void SV_WriteServerFile (qboolean autosave)
 		Com_sprintf (comment,sizeof(comment), "%2i:%i%i %2i/%2i  ", newtime->tm_hour
 			, newtime->tm_min/10, newtime->tm_min%10,
 			newtime->tm_mon+1, newtime->tm_mday);
-		strncat (comment, sv.configstrings[CS_NAME], sizeof(comment)-1-strlen(comment) );
+		strncat (comment, sv.configstrings[CS_NAME], sizeof(comment)-1-QStr::Length(comment) );
 	}
 	else
 	{	// autosaved
@@ -377,16 +377,16 @@ void SV_WriteServerFile (qboolean autosave)
 	{
 		if (!(var->flags & CVAR_LATCH))
 			continue;
-		if (strlen(var->name) >= sizeof(name)-1
-			|| strlen(var->string) >= sizeof(string)-1)
+		if (QStr::Length(var->name) >= sizeof(name)-1
+			|| QStr::Length(var->string) >= sizeof(string)-1)
 		{
 			Com_Printf ("Cvar too long: %s = %s\n", var->name, var->string);
 			continue;
 		}
 		memset (name, 0, sizeof(name));
 		memset (string, 0, sizeof(string));
-		strcpy (name, var->name);
-		strcpy (string, var->string);
+		QStr::Cpy(name, var->name);
+		QStr::Cpy(string, var->string);
 		fwrite (name, 1, sizeof(name), f);
 		fwrite (string, 1, sizeof(string), f);
 	}
@@ -442,7 +442,7 @@ void SV_ReadServerFile (void)
 	// start a new game fresh with new cvars
 	SV_InitGame ();
 
-	strcpy (svs.mapcmd, mapcmd);
+	QStr::Cpy(svs.mapcmd, mapcmd);
 
 	// read game state
 	Com_sprintf (name, sizeof(name), "%s/save/current/game.ssv", FS_Gamedir());
@@ -536,7 +536,7 @@ void SV_GameMap_f (void)
 	SV_Map (false, Cmd_Argv(1), false );
 
 	// archive server state
-	strncpy (svs.mapcmd, Cmd_Argv(1), sizeof(svs.mapcmd)-1);
+	QStr::NCpy(svs.mapcmd, Cmd_Argv(1), sizeof(svs.mapcmd)-1);
 
 	// copy off the level to the autosave slot
 	if (!dedicated->value)
@@ -660,7 +660,7 @@ void SV_Savegame_f (void)
 		return;
 	}
 
-	if (!strcmp (Cmd_Argv(1), "current"))
+	if (!QStr::Cmp(Cmd_Argv(1), "current"))
 	{
 		Com_Printf ("Can't save to 'current'\n");
 		return;
@@ -767,7 +767,7 @@ void SV_Status_f (void)
 		}
 
 		Com_Printf ("%s", cl->name);
-		l = 16 - strlen(cl->name);
+		l = 16 - QStr::Length(cl->name);
 		for (j=0 ; j<l ; j++)
 			Com_Printf (" ");
 
@@ -775,7 +775,7 @@ void SV_Status_f (void)
 
 		s = NET_AdrToString ( cl->netchan.remote_address);
 		Com_Printf ("%s", s);
-		l = 22 - strlen(s);
+		l = 22 - QStr::Length(s);
 		for (j=0 ; j<l ; j++)
 			Com_Printf (" ");
 		
@@ -801,16 +801,16 @@ void SV_ConSay_f(void)
 	if (Cmd_Argc () < 2)
 		return;
 
-	strcpy (text, "console: ");
+	QStr::Cpy(text, "console: ");
 	p = Cmd_Args();
 
 	if (*p == '"')
 	{
 		p++;
-		p[strlen(p)-1] = 0;
+		p[QStr::Length(p)-1] = 0;
 	}
 
-	strcat(text, p);
+	QStr::Cat(text, sizeof(text), p);
 
 	for (j = 0, client = svs.clients; j < maxclients->value; j++, client++)
 	{

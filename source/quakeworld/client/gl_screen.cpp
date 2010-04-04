@@ -143,7 +143,7 @@ for a few moments
 */
 void SCR_CenterPrint (char *str)
 {
-	strncpy (scr_centerstring, str, sizeof(scr_centerstring)-1);
+	QStr::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime.value;
 	scr_centertime_start = cl.time;
 
@@ -478,9 +478,9 @@ void SCR_DrawFPS (void)
 	}
 
 	sprintf(st, "%3d FPS", lastfps);
-	x = vid.width - strlen(st) * 8 - 8;
+	x = vid.width - QStr::Length(st) * 8 - 8;
 	y = vid.height - sb_lines - 8;
-//	Draw_TileClear(x, y, strlen(st) * 8, 8);
+//	Draw_TileClear(x, y, QStr::Length(st) * 8, 8);
 	Draw_String(x, y, st);
 }
 
@@ -629,7 +629,7 @@ void SCR_ScreenShot_f (void)
 // 
 // find a file name to save it to 
 // 
-	strcpy(pcxname,"quake00.tga");
+	QStr::Cpy(pcxname,"quake00.tga");
 		
 	for (i=0 ; i<=99 ; i++) 
 	{ 
@@ -854,7 +854,7 @@ void SCR_RSShot_f (void)
 // 
 // find a file name to save it to 
 // 
-	strcpy(pcxname,"mquake00.pcx");
+	QStr::Cpy(pcxname,"mquake00.pcx");
 		
 	for (i=0 ; i<=99 ; i++) 
 	{ 
@@ -928,17 +928,17 @@ void SCR_RSShot_f (void)
 	}
 
 	time(&now);
-	strcpy(st, ctime(&now));
-	st[strlen(st) - 1] = 0;
-	SCR_DrawStringToSnap (st, newbuf, w - strlen(st)*8, h - 1, w);
+	QStr::Cpy(st, ctime(&now));
+	st[QStr::Length(st) - 1] = 0;
+	SCR_DrawStringToSnap (st, newbuf, w - QStr::Length(st)*8, h - 1, w);
 
-	strncpy(st, cls.servername, sizeof(st));
+	QStr::NCpy(st, cls.servername, sizeof(st));
 	st[sizeof(st) - 1] = 0;
-	SCR_DrawStringToSnap (st, newbuf, w - strlen(st)*8, h - 11, w);
+	SCR_DrawStringToSnap (st, newbuf, w - QStr::Length(st)*8, h - 11, w);
 
-	strncpy(st, name.string, sizeof(st));
+	QStr::NCpy(st, name.string, sizeof(st));
 	st[sizeof(st) - 1] = 0;
-	SCR_DrawStringToSnap (st, newbuf, w - strlen(st)*8, h - 21, w);
+	SCR_DrawStringToSnap (st, newbuf, w - QStr::Length(st)*8, h - 21, w);
 
 	WritePCXfile (pcxname, newbuf, w, h, w, host_basepal, true);
 

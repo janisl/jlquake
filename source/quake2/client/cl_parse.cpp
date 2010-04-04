@@ -52,7 +52,7 @@ char *svc_strings[256] =
 
 void CL_DownloadFileName(char *dest, int destlen, char *fn)
 {
-	if (strncmp(fn, "players", 7) == 0)
+	if (QStr::NCmp(fn, "players", 7) == 0)
 		Com_sprintf (dest, destlen, "%s/%s", BASEDIRNAME, fn);
 	else
 		Com_sprintf (dest, destlen, "%s/%s", FS_Gamedir(), fn);
@@ -82,13 +82,13 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 		return true;
 	}
 
-	strcpy (cls.downloadname, filename);
+	QStr::Cpy(cls.downloadname, filename);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
 	COM_StripExtension (cls.downloadname, cls.downloadtempname);
-	strcat (cls.downloadtempname, ".tmp");
+	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 //ZOID
 	// check to see if we already have a tmp for this file, if so, try to resume
@@ -152,14 +152,14 @@ void	CL_Download_f (void)
 		return;
 	}
 
-	strcpy (cls.downloadname, filename);
+	QStr::Cpy(cls.downloadname, filename);
 	Com_Printf ("Downloading %s\n", cls.downloadname);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
 	COM_StripExtension (cls.downloadname, cls.downloadtempname);
-	strcat (cls.downloadtempname, ".tmp");
+	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
 	MSG_WriteString (&cls.netchan.message,
@@ -324,10 +324,10 @@ void CL_ParseServerData (void)
 
 	// game directory
 	str = MSG_ReadString (&net_message);
-	strncpy (cl.gamedir, str, sizeof(cl.gamedir)-1);
+	QStr::NCpy(cl.gamedir, str, sizeof(cl.gamedir)-1);
 
 	// set gamedir
-	if ((*str && (!fs_gamedirvar->string || !*fs_gamedirvar->string || strcmp(fs_gamedirvar->string, str))) || (!*str && (fs_gamedirvar->string || *fs_gamedirvar->string)))
+	if ((*str && (!fs_gamedirvar->string || !*fs_gamedirvar->string || QStr::Cmp(fs_gamedirvar->string, str))) || (!*str && (fs_gamedirvar->string || *fs_gamedirvar->string)))
 		Cvar_Set("game", str);
 
 	// parse player entity number
@@ -387,11 +387,11 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 	char		skin_filename[MAX_QPATH];
 	char		weapon_filename[MAX_QPATH];
 
-	strncpy(ci->cinfo, s, sizeof(ci->cinfo));
+	QStr::NCpy(ci->cinfo, s, sizeof(ci->cinfo));
 	ci->cinfo[sizeof(ci->cinfo)-1] = 0;
 
 	// isolate the player's name
-	strncpy(ci->name, s, sizeof(ci->name));
+	QStr::NCpy(ci->name, s, sizeof(ci->name));
 	ci->name[sizeof(ci->name)-1] = 0;
 	t = strstr (s, "\\");
 	if (t)
@@ -415,7 +415,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 	else
 	{
 		// isolate the model name
-		strcpy (model_name, s);
+		QStr::Cpy(model_name, s);
 		t = strstr(model_name, "/");
 		if (!t)
 			t = strstr(model_name, "\\");
@@ -424,14 +424,14 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		*t = 0;
 
 		// isolate the skin name
-		strcpy (skin_name, s + strlen(model_name) + 1);
+		QStr::Cpy(skin_name, s + QStr::Length(model_name) + 1);
 
 		// model file
 		Com_sprintf (model_filename, sizeof(model_filename), "players/%s/tris.md2", model_name);
 		ci->model = re.RegisterModel (model_filename);
 		if (!ci->model)
 		{
-			strcpy(model_name, "male");
+			QStr::Cpy(model_name, "male");
 			Com_sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
 			ci->model = re.RegisterModel (model_filename);
 		}
@@ -442,10 +442,10 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 
 		// if we don't have the skin and the model wasn't male,
 		// see if the male has it (this is for CTF's skins)
- 		if (!ci->skin && Q_stricmp(model_name, "male"))
+ 		if (!ci->skin && QStr::ICmp(model_name, "male"))
 		{
 			// change model to male
-			strcpy(model_name, "male");
+			QStr::Cpy(model_name, "male");
 			Com_sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
 			ci->model = re.RegisterModel (model_filename);
 
@@ -466,7 +466,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		for (i = 0; i < num_cl_weaponmodels; i++) {
 			Com_sprintf (weapon_filename, sizeof(weapon_filename), "players/%s/%s", model_name, cl_weaponmodels[i]);
 			ci->weaponmodel[i] = re.RegisterModel(weapon_filename);
-			if (!ci->weaponmodel[i] && strcmp(model_name, "cyborg") == 0) {
+			if (!ci->weaponmodel[i] && QStr::Cmp(model_name, "cyborg") == 0) {
 				// try male
 				Com_sprintf (weapon_filename, sizeof(weapon_filename), "players/male/%s", cl_weaponmodels[i]);
 				ci->weaponmodel[i] = re.RegisterModel(weapon_filename);
@@ -525,7 +525,7 @@ void CL_ParseConfigString (void)
 	if (i < 0 || i >= MAX_CONFIGSTRINGS)
 		Com_Error (ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
 	s = MSG_ReadString(&net_message);
-	strcpy (cl.configstrings[i], s);
+	QStr::Cpy(cl.configstrings[i], s);
 
 	// do something apropriate 
 
@@ -534,7 +534,7 @@ void CL_ParseConfigString (void)
 	else if (i == CS_CDTRACK)
 	{
 		if (cl.refresh_prepped)
-			CDAudio_Play (atoi(cl.configstrings[CS_CDTRACK]), true);
+			CDAudio_Play (QStr::Atoi(cl.configstrings[CS_CDTRACK]), true);
 	}
 	else if (i >= CS_MODELS && i < CS_MODELS+MAX_MODELS)
 	{
@@ -781,7 +781,7 @@ void CL_ParseServerMessage (void)
 
 		case svc_layout:
 			s = MSG_ReadString (&net_message);
-			strncpy (cl.layout, s, sizeof(cl.layout)-1);
+			QStr::NCpy(cl.layout, s, sizeof(cl.layout)-1);
 			break;
 
 		case svc_playerinfo:

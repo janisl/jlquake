@@ -114,7 +114,7 @@ lumpinfo_t	*W_GetLumpinfo (char *name)
 	
 	for (lump_p=wad_lumps, i=0 ; i<wad_numlumps ; i++,lump_p++)
 	{
-		if (!strcmp(clean, lump_p->name))
+		if (!QStr::Cmp(clean, lump_p->name))
 			return lump_p;
 	}
 	

@@ -182,7 +182,7 @@ int	Developer_searchpath (int who)
 		if (start == NULL)
 			continue;
 
-		if (strcmp (start ,"xatrix") == 0)
+		if (QStr::Cmp(start ,"xatrix") == 0)
 			return (1);
 */
 	}
@@ -216,7 +216,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 	// check for links first
 	for (link = fs_links ; link ; link=link->next)
 	{
-		if (!strncmp (filename, link->from, link->fromlength))
+		if (!QStr::NCmp(filename, link->from, link->fromlength))
 		{
 			Com_sprintf (netpath, sizeof(netpath), "%s%s",link->to, filename+link->fromlength);
 			*file = fopen (netpath, "rb");
@@ -240,7 +240,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 		// look through all the pak file elements
 			pak = search->pack;
 			for (i=0 ; i<pak->numfiles ; i++)
-				if (!Q_strcasecmp (pak->files[i].name, filename))
+				if (!QStr::ICmp(pak->files[i].name, filename))
 				{	// found it!
 					file_from_pak = 1;
 					Com_DPrintf ("PackFile: %s : %s\n",pak->filename, filename);
@@ -289,7 +289,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 	file_from_pak = 0;
 
 	// get config from directory, everything else from pak
-	if (!strcmp(filename, "config.cfg") || !strncmp(filename, "players/", 8))
+	if (!QStr::Cmp(filename, "config.cfg") || !QStr::NCmp(filename, "players/", 8))
 	{
 		Com_sprintf (netpath, sizeof(netpath), "%s/%s",FS_Gamedir(), filename);
 		
@@ -313,7 +313,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 
 	pak = search->pack;
 	for (i=0 ; i<pak->numfiles ; i++)
-		if (!Q_strcasecmp (pak->files[i].name, filename))
+		if (!QStr::ICmp(pak->files[i].name, filename))
 		{	// found it!
 			file_from_pak = 1;
 			Com_DPrintf ("PackFile: %s : %s\n",pak->filename, filename);
@@ -486,13 +486,13 @@ pack_t *FS_LoadPackFile (char *packfile)
 // parse the directory
 	for (i=0 ; i<numpackfiles ; i++)
 	{
-		strcpy (newfiles[i].name, info[i].name);
+		QStr::Cpy(newfiles[i].name, info[i].name);
 		newfiles[i].filepos = LittleLong(info[i].filepos);
 		newfiles[i].filelen = LittleLong(info[i].filelen);
 	}
 
 	pack = (pack_t*)Z_Malloc (sizeof (pack_t));
-	strcpy (pack->filename, packfile);
+	QStr::Cpy(pack->filename, packfile);
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
@@ -517,13 +517,13 @@ void FS_AddGameDirectory (char *dir)
 	pack_t			*pak;
 	char			pakfile[MAX_OSPATH];
 
-	strcpy (fs_gamedir, dir);
+	QStr::Cpy(fs_gamedir, dir);
 
 	//
 	// add the directory to the search path
 	//
 	search = (searchpath_t*)Z_Malloc (sizeof(searchpath_t));
-	strcpy (search->filename, dir);
+	QStr::Cpy(search->filename, dir);
 	search->next = fs_searchpaths;
 	fs_searchpaths = search;
 
@@ -620,7 +620,7 @@ void FS_SetGamedir (char *dir)
 
 	Com_sprintf (fs_gamedir, sizeof(fs_gamedir), "%s/%s", fs_basedir->string, dir);
 
-	if (!strcmp(dir,BASEDIRNAME) || (*dir == 0))
+	if (!QStr::Cmp(dir,BASEDIRNAME) || (*dir == 0))
 	{
 		Cvar_FullSet ("gamedir", "", CVAR_SERVERINFO|CVAR_NOSET);
 		Cvar_FullSet ("game", "", CVAR_LATCH|CVAR_SERVERINFO);
@@ -656,10 +656,10 @@ void FS_Link_f (void)
 	prev = &fs_links;
 	for (l=fs_links ; l ; l=l->next)
 	{
-		if (!strcmp (l->from, Cmd_Argv(1)))
+		if (!QStr::Cmp(l->from, Cmd_Argv(1)))
 		{
 			Z_Free (l->to);
-			if (!strlen(Cmd_Argv(2)))
+			if (!QStr::Length(Cmd_Argv(2)))
 			{	// delete it
 				*prev = l->next;
 				Z_Free (l->from);
@@ -677,7 +677,7 @@ void FS_Link_f (void)
 	l->next = fs_links;
 	fs_links = l;
 	l->from = CopyString(Cmd_Argv(1));
-	l->fromlength = strlen(l->from);
+	l->fromlength = QStr::Length(l->from);
 	l->to = CopyString(Cmd_Argv(2));
 }
 
@@ -693,7 +693,7 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 	s = Sys_FindFirst( findname, musthave, canthave );
 	while ( s )
 	{
-		if ( s[strlen(s)-1] != '.' )
+		if ( s[QStr::Length(s)-1] != '.' )
 			nfiles++;
 		s = Sys_FindNext( musthave, canthave );
 	}
@@ -712,11 +712,11 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 	nfiles = 0;
 	while ( s )
 	{
-		if ( s[strlen(s)-1] != '.' )
+		if ( s[QStr::Length(s)-1] != '.' )
 		{
 			list[nfiles] = strdup( s );
 #ifdef _WIN32
-			strlwr( list[nfiles] );
+			QStr::ToLower( list[nfiles] );
 #endif
 			nfiles++;
 		}
@@ -740,7 +740,7 @@ void FS_Dir_f( void )
 
 	if ( Cmd_Argc() != 1 )
 	{
-		strcpy( wildcard, Cmd_Argv( 1 ) );
+		QStr::Cpy( wildcard, Cmd_Argv( 1 ) );
 	}
 
 	while ( ( path = FS_NextPath( path ) ) != NULL )
@@ -764,8 +764,8 @@ void FS_Dir_f( void )
 
 			for ( i = 0; i < ndirs-1; i++ )
 			{
-				if ( strrchr( dirnames[i], '/' ) )
-					Com_Printf( "%s\n", strrchr( dirnames[i], '/' ) + 1 );
+				if ( QStr::RChr( dirnames[i], '/' ) )
+					Com_Printf( "%s\n", QStr::RChr( dirnames[i], '/' ) + 1 );
 				else
 					Com_Printf( "%s\n", dirnames[i] );
 

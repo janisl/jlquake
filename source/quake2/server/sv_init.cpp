@@ -37,7 +37,7 @@ int SV_FindIndex (char *name, int start, int max, qboolean create)
 		return 0;
 
 	for (i=1 ; i<max && sv.configstrings[start+i][0] ; i++)
-		if (!strcmp(sv.configstrings[start+i], name))
+		if (!QStr::Cmp(sv.configstrings[start+i], name))
 			return i;
 
 	if (!create)
@@ -46,7 +46,7 @@ int SV_FindIndex (char *name, int start, int max, qboolean create)
 	if (i == max)
 		Com_Error (ERR_DROP, "*Index: overflow");
 
-	strncpy (sv.configstrings[start+i], name, sizeof(sv.configstrings[i]));
+	QStr::NCpy(sv.configstrings[start+i], name, sizeof(sv.configstrings[i]));
 
 	if (sv.state != ss_loading)
 	{	// send the update to everyone
@@ -192,7 +192,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	sv.attractloop = attractloop;
 
 	// save name for levels that don't set message
-	strcpy (sv.configstrings[CS_NAME], server);
+	QStr::Cpy(sv.configstrings[CS_NAME], server);
 	if (Cvar_VariableValue ("deathmatch"))
 	{
 		sprintf(sv.configstrings[CS_AIRACCEL], "%g", sv_airaccelerate->value);
@@ -200,13 +200,13 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	}
 	else
 	{
-		strcpy(sv.configstrings[CS_AIRACCEL], "0");
+		QStr::Cpy(sv.configstrings[CS_AIRACCEL], "0");
 		pm_airaccelerate = 0;
 	}
 
 	SZ_Init (&sv.multicast, sv.multicast_buf, sizeof(sv.multicast_buf));
 
-	strcpy (sv.name, server);
+	QStr::Cpy(sv.name, server);
 
 	// leave slots at start for clients only
 	for (i=0 ; i<maxclients->value ; i++)
@@ -219,8 +219,8 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 
 	sv.time = 1000;
 	
-	strcpy (sv.name, server);
-	strcpy (sv.configstrings[CS_NAME], server);
+	QStr::Cpy(sv.name, server);
+	QStr::Cpy(sv.configstrings[CS_NAME], server);
 
 	if (serverstate != ss_game)
 	{
@@ -403,7 +403,7 @@ void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame)
 	if (sv.state == ss_dead && !sv.loadgame)
 		SV_InitGame ();	// the game is just starting
 
-	strcpy (level, levelstring);
+	QStr::Cpy(level, levelstring);
 
 	// if there is a + in the map, set nextserver to the remainder
 	ch = strstr(level, "+");
@@ -416,7 +416,7 @@ void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame)
 		Cvar_Set ("nextserver", "");
 
 	//ZOID special hack for end game screen in coop mode
-	if (Cvar_VariableValue ("coop") && !Q_stricmp(level, "victory.pcx"))
+	if (Cvar_VariableValue ("coop") && !QStr::ICmp(level, "victory.pcx"))
 		Cvar_Set ("nextserver", "gamemap \"*base1\"");
 
 	// if there is a $, use the remainder as a spawnpoint
@@ -424,29 +424,29 @@ void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame)
 	if (ch)
 	{
 		*ch = 0;
-		strcpy (spawnpoint, ch+1);
+		QStr::Cpy(spawnpoint, ch+1);
 	}
 	else
 		spawnpoint[0] = 0;
 
 	// skip the end-of-unit flag if necessary
 	if (level[0] == '*')
-		strcpy (level, level+1);
+		QStr::Cpy(level, level+1);
 
-	l = strlen(level);
-	if (l > 4 && !strcmp (level+l-4, ".cin") )
+	l = QStr::Length(level);
+	if (l > 4 && !QStr::Cmp(level+l-4, ".cin") )
 	{
 		SCR_BeginLoadingPlaque ();			// for local system
 		SV_BroadcastCommand ("changing\n");
 		SV_SpawnServer (level, spawnpoint, ss_cinematic, attractloop, loadgame);
 	}
-	else if (l > 4 && !strcmp (level+l-4, ".dm2") )
+	else if (l > 4 && !QStr::Cmp(level+l-4, ".dm2") )
 	{
 		SCR_BeginLoadingPlaque ();			// for local system
 		SV_BroadcastCommand ("changing\n");
 		SV_SpawnServer (level, spawnpoint, ss_demo, attractloop, loadgame);
 	}
-	else if (l > 4 && !strcmp (level+l-4, ".pcx") )
+	else if (l > 4 && !QStr::Cmp(level+l-4, ".pcx") )
 	{
 		SCR_BeginLoadingPlaque ();			// for local system
 		SV_BroadcastCommand ("changing\n");

@@ -63,7 +63,7 @@ void Com_BeginParseSession( const char *filename ) {
 	pi = &parseInfo[parseInfoNum];
 
 	pi->lines = 1;
-	Q_strncpyz( pi->parseFile, filename, sizeof( pi->parseFile ) );
+	QStr::NCpyZ( pi->parseFile, filename, sizeof( pi->parseFile ) );
 }
 
 /*
@@ -329,7 +329,7 @@ static char *Com_ParseExt( const char *(*data_p), qboolean allowLineBreaks ) {
 		int		l;
 		int		j;
 
-		l = strlen( *punc );
+		l = QStr::Length( *punc );
 		for ( j = 0 ; j < l ; j++ ) {
 			if ( data[j] != (*punc)[j] ) {
 				break;
@@ -391,7 +391,7 @@ void Com_MatchToken( const char *(*buf_p), const char *match, qboolean warning )
 	const char	*token;
 
 	token = Com_Parse( buf_p );
-	if ( strcmp( token, match ) ) {
+	if ( QStr::Cmp( token, match ) ) {
 		if (warning) {
 			Com_ScriptWarning( "MatchToken: %s != %s", token, match );
 		} else {
@@ -464,9 +464,9 @@ const char *Com_ParseRestOfLine( const char *(*data_p) ) {
 			break;
 		}
 		if ( line[0] ) {
-			Q_strcat( line, sizeof(line), " " );
+			QStr::Cat( line, sizeof(line), " " );
 		}
-		Q_strcat( line, sizeof(line), token );
+		QStr::Cat( line, sizeof(line), token );
 	}
 
 	return line;
@@ -480,7 +480,7 @@ float Com_ParseFloat( const char *(*buf_p) ) {
 	if ( !token[0] ) {
 		return 0;
 	}
-	return atof( token );
+	return QStr::Atof( token );
 }
 
 int Com_ParseInt( const char *(*buf_p) ) {
@@ -490,7 +490,7 @@ int Com_ParseInt( const char *(*buf_p) ) {
 	if ( !token[0] ) {
 		return 0;
 	}
-	return atoi( token );
+	return QStr::Atoi( token );
 }
 
 
@@ -503,7 +503,7 @@ void Com_Parse1DMatrix( const char *(*buf_p), int x, float *m ) {
 
 	for (i = 0 ; i < x ; i++) {
 		token = Com_Parse(buf_p);
-		m[i] = atof(token);
+		m[i] = QStr::Atof(token);
 	}
 
 	Com_MatchToken( buf_p, ")" );

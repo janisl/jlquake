@@ -336,7 +336,7 @@ void CL_SystemInfoChanged( void ) {
 	// when the serverId changes, any further messages we send to the server will use this new serverId
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475
 	// in some cases, outdated cp commands might get sent with this news serverId
-	cl.serverId = atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
+	cl.serverId = QStr::Atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
 
 	// don't set any vars when playing a demo
 	if ( clc.demoplaying ) {
@@ -344,7 +344,7 @@ void CL_SystemInfoChanged( void ) {
 	}
 
 	s = Info_ValueForKey( systemInfo, "sv_cheats" );
-	if ( atoi(s) == 0 ) {
+	if ( QStr::Atoi(s) == 0 ) {
 		Cvar_SetCheatState();
 	}
 
@@ -366,7 +366,7 @@ void CL_SystemInfoChanged( void ) {
 			break;
 		}
 		// ehw!
-		if ( !Q_stricmp( key, "fs_game" ) ) {
+		if ( !QStr::ICmp( key, "fs_game" ) ) {
 			gameSet = qtrue;
 		}
 
@@ -419,7 +419,7 @@ void CL_ParseGamestate( msg_t *msg ) {
 				Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 			}
 			s = MSG_ReadBigString( msg );
-			len = strlen( s );
+			len = QStr::Length( s );
 
 			if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
 				Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
@@ -578,7 +578,7 @@ void CL_ParseCommandString( msg_t *msg ) {
 	clc.serverCommandSequence = seq;
 
 	index = seq & (MAX_RELIABLE_COMMANDS-1);
-	Q_strncpyz( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
+	QStr::NCpyZ( clc.serverCommands[ index ], s, sizeof( clc.serverCommands[ index ] ) );
 }
 
 

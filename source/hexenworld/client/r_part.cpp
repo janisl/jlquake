@@ -53,7 +53,7 @@ void R_InitParticles (void)
 
 	if (i)
 	{
-		r_numparticles = (int)(atoi(com_argv[i+1]));
+		r_numparticles = (int)(QStr::Atoi(com_argv[i+1]));
 		if (r_numparticles < ABSOLUTE_MIN_PARTICLES)
 			r_numparticles = ABSOLUTE_MIN_PARTICLES;
 	}

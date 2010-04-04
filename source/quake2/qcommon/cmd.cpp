@@ -91,14 +91,14 @@ void Cbuf_AddText (char *text)
 {
 	int		l;
 	
-	l = strlen (text);
+	l = QStr::Length(text);
 
 	if (cmd_text.cursize + l >= cmd_text.maxsize)
 	{
 		Com_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
-	SZ_Write (&cmd_text, text, strlen (text));
+	SZ_Write (&cmd_text, text, QStr::Length(text));
 }
 
 
@@ -268,7 +268,7 @@ void Cbuf_AddEarlyCommands (qboolean clear)
 	for (i=0 ; i<COM_Argc() ; i++)
 	{
 		s = COM_Argv(i);
-		if (strcmp (s, "+set"))
+		if (QStr::Cmp(s, "+set"))
 			continue;
 		Cbuf_AddText (va("set %s %s\n", COM_Argv(i+1), COM_Argv(i+2)));
 		if (clear)
@@ -306,7 +306,7 @@ qboolean Cbuf_AddLateCommands (void)
 	argc = COM_Argc();
 	for (i=1 ; i<argc ; i++)
 	{
-		s += strlen (COM_Argv(i)) + 1;
+		s += QStr::Length(COM_Argv(i)) + 1;
 	}
 	if (!s)
 		return false;
@@ -315,9 +315,9 @@ qboolean Cbuf_AddLateCommands (void)
 	text[0] = 0;
 	for (i=1 ; i<argc ; i++)
 	{
-		strcat (text,COM_Argv(i));
+		QStr::Cat(text, s + 1,COM_Argv(i));
 		if (i != argc-1)
-			strcat (text, " ");
+			QStr::Cat(text, s + 1, " ");
 	}
 	
 // pull out the commands
@@ -336,8 +336,8 @@ qboolean Cbuf_AddLateCommands (void)
 			c = text[j];
 			text[j] = 0;
 			
-			strcat (build, text+i);
-			strcat (build, "\n");
+			QStr::Cat(build, s + 1, text+i);
+			QStr::Cat(build, s + 1, "\n");
 			text[j] = c;
 			i = j-1;
 		}
@@ -438,7 +438,7 @@ void Cmd_Alias_f (void)
 	}
 
 	s = Cmd_Argv(1);
-	if (strlen(s) >= MAX_ALIAS_NAME)
+	if (QStr::Length(s) >= MAX_ALIAS_NAME)
 	{
 		Com_Printf ("Alias name is too long\n");
 		return;
@@ -447,7 +447,7 @@ void Cmd_Alias_f (void)
 	// if the alias already exists, reuse it
 	for (a = cmd_alias ; a ; a=a->next)
 	{
-		if (!strcmp(s, a->name))
+		if (!QStr::Cmp(s, a->name))
 		{
 			Z_Free (a->value);
 			break;
@@ -460,18 +460,18 @@ void Cmd_Alias_f (void)
 		a->next = cmd_alias;
 		cmd_alias = a;
 	}
-	strcpy (a->name, s);	
+	QStr::Cpy(a->name, s);	
 
 // copy the rest of the command line
 	cmd[0] = 0;		// start out with a null string
 	c = Cmd_Argc();
 	for (i=2 ; i< c ; i++)
 	{
-		strcat (cmd, Cmd_Argv(i));
+		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 		if (i != (c - 1))
-			strcat (cmd, " ");
+			QStr::Cat(cmd, sizeof(cmd), " ");
 	}
-	strcat (cmd, "\n");
+	QStr::Cat(cmd, sizeof(cmd), "\n");
 	
 	a->value = CopyString (cmd);
 }
@@ -551,7 +551,7 @@ char *Cmd_MacroExpandString (char *text)
 	inquote = false;
 	scan = text;
 
-	len = strlen (scan);
+	len = QStr::Length(scan);
 	if (len >= MAX_STRING_CHARS)
 	{
 		Com_Printf ("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
@@ -576,7 +576,7 @@ char *Cmd_MacroExpandString (char *text)
 	
 		token = Cvar_VariableString (token);
 
-		j = strlen(token);
+		j = QStr::Length(token);
 		len += j;
 		if (len >= MAX_STRING_CHARS)
 		{
@@ -584,11 +584,11 @@ char *Cmd_MacroExpandString (char *text)
 			return NULL;
 		}
 
-		strncpy (temporary, scan, i);
-		strcpy (temporary+i, token);
-		strcpy (temporary+i+j, start);
+		QStr::NCpy(temporary, scan, i);
+		QStr::Cpy(temporary+i, token);
+		QStr::Cpy(temporary+i+j, start);
 
-		strcpy (expanded, temporary);
+		QStr::Cpy(expanded, temporary);
 		scan = expanded;
 		i--;
 
@@ -657,10 +657,10 @@ void Cmd_TokenizeString (char *text, qboolean macroExpand)
 		{
 			int		l;
 
-			strcpy (cmd_args, text);
+			QStr::Cpy(cmd_args, text);
 
 			// strip off any trailing whitespace
-			l = strlen(cmd_args) - 1;
+			l = QStr::Length(cmd_args) - 1;
 			for ( ; l >= 0 ; l--)
 				if (cmd_args[l] <= ' ')
 					cmd_args[l] = 0;
@@ -674,8 +674,8 @@ void Cmd_TokenizeString (char *text, qboolean macroExpand)
 
 		if (cmd_argc < MAX_STRING_TOKENS)
 		{
-			cmd_argv[cmd_argc] = (char*)Z_Malloc (strlen(com_token)+1);
-			strcpy (cmd_argv[cmd_argc], com_token);
+			cmd_argv[cmd_argc] = (char*)Z_Malloc (QStr::Length(com_token)+1);
+			QStr::Cpy(cmd_argv[cmd_argc], com_token);
 			cmd_argc++;
 		}
 	}
@@ -702,7 +702,7 @@ void	Cmd_AddCommand (char *cmd_name, xcommand_t function)
 // fail if the command already exists
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
-		if (!strcmp (cmd_name, cmd->name))
+		if (!QStr::Cmp(cmd_name, cmd->name))
 		{
 			Com_Printf ("Cmd_AddCommand: %s already defined\n", cmd_name);
 			return;
@@ -734,7 +734,7 @@ void	Cmd_RemoveCommand (char *cmd_name)
 			Com_Printf ("Cmd_RemoveCommand: %s not added\n", cmd_name);
 			return;
 		}
-		if (!strcmp (cmd_name, cmd->name))
+		if (!QStr::Cmp(cmd_name, cmd->name))
 		{
 			*back = cmd->next;
 			Z_Free (cmd);
@@ -755,7 +755,7 @@ qboolean	Cmd_Exists (char *cmd_name)
 
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
-		if (!strcmp (cmd_name,cmd->name))
+		if (!QStr::Cmp(cmd_name,cmd->name))
 			return true;
 	}
 
@@ -775,25 +775,25 @@ char *Cmd_CompleteCommand (char *partial)
 	int				len;
 	cmdalias_t		*a;
 	
-	len = strlen(partial);
+	len = QStr::Length(partial);
 	
 	if (!len)
 		return NULL;
 		
 // check for exact match
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!strcmp (partial,cmd->name))
+		if (!QStr::Cmp(partial,cmd->name))
 			return cmd->name;
 	for (a=cmd_alias ; a ; a=a->next)
-		if (!strcmp (partial, a->name))
+		if (!QStr::Cmp(partial, a->name))
 			return a->name;
 
 // check for partial match
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!strncmp (partial,cmd->name, len))
+		if (!QStr::NCmp(partial,cmd->name, len))
 			return cmd->name;
 	for (a=cmd_alias ; a ; a=a->next)
-		if (!strncmp (partial, a->name, len))
+		if (!QStr::NCmp(partial, a->name, len))
 			return a->name;
 
 	return NULL;
@@ -822,7 +822,7 @@ void	Cmd_ExecuteString (char *text)
 	// check functions
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
-		if (!Q_strcasecmp (cmd_argv[0],cmd->name))
+		if (!QStr::ICmp(cmd_argv[0],cmd->name))
 		{
 			if (!cmd->function)
 			{	// forward to server command
@@ -837,7 +837,7 @@ void	Cmd_ExecuteString (char *text)
 	// check alias
 	for (a=cmd_alias ; a ; a=a->next)
 	{
-		if (!Q_strcasecmp (cmd_argv[0], a->name))
+		if (!QStr::ICmp(cmd_argv[0], a->name))
 		{
 			if (++alias_count == ALIAS_LOOP_COUNT)
 			{

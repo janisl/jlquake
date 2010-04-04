@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // GL_RSURF.C: surface-related refresh code
 #include <assert.h>
-#include <ctype.h>
 
 #include "gl_local.h"
 
@@ -343,7 +342,7 @@ void R_BlendLightmaps (void)
 		{
 			if ( gl_monolightmap->string[0] != '0' )
 			{
-				switch ( toupper( gl_monolightmap->string[0] ) )
+				switch ( QStr::ToUpper( gl_monolightmap->string[0] ) )
 				{
 				case 'I':
 					qglBlendFunc (GL_ZERO, GL_SRC_COLOR );
@@ -1608,22 +1607,22 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	** only alpha lightmaps but that can at least support the GL_ALPHA
 	** format then we should change this code to use real alpha maps.
 	*/
-	if ( toupper( gl_monolightmap->string[0] ) == 'A' )
+	if ( QStr::ToUpper( gl_monolightmap->string[0] ) == 'A' )
 	{
 		gl_lms.internal_format = gl_tex_alpha_format;
 	}
 	/*
 	** try to do hacked colored lighting with a blended texture
 	*/
-	else if ( toupper( gl_monolightmap->string[0] ) == 'C' )
+	else if ( QStr::ToUpper( gl_monolightmap->string[0] ) == 'C' )
 	{
 		gl_lms.internal_format = gl_tex_alpha_format;
 	}
-	else if ( toupper( gl_monolightmap->string[0] ) == 'I' )
+	else if ( QStr::ToUpper( gl_monolightmap->string[0] ) == 'I' )
 	{
 		gl_lms.internal_format = GL_INTENSITY8;
 	}
-	else if ( toupper( gl_monolightmap->string[0] ) == 'L' ) 
+	else if ( QStr::ToUpper( gl_monolightmap->string[0] ) == 'L' ) 
 	{
 		gl_lms.internal_format = GL_LUMINANCE8;
 	}

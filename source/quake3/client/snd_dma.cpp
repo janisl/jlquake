@@ -259,7 +259,7 @@ static long S_HashSFXName(const char *name) {
 	hash = 0;
 	i = 0;
 	while (name[i] != '\0') {
-		letter = tolower(name[i]);
+		letter = QStr::ToLower(name[i]);
 		if (letter =='.') break;				// don't include extension
 		if (letter =='\\') letter = '/';		// damn path names
 		hash+=(long)(letter)*(i+119);
@@ -289,7 +289,7 @@ static sfx_t *S_FindName( const char *name ) {
 		Com_Error (ERR_FATAL, "S_FindName: empty name\n");
 	}
 
-	if (strlen(name) >= MAX_QPATH) {
+	if (QStr::Length(name) >= MAX_QPATH) {
 		Com_Error (ERR_FATAL, "Sound name too long: %s", name);
 	}
 
@@ -298,7 +298,7 @@ static sfx_t *S_FindName( const char *name ) {
 	sfx = sfxHash[hash];
 	// see if already loaded
 	while (sfx) {
-		if (!Q_stricmp(sfx->soundName, name) ) {
+		if (!QStr::ICmp(sfx->soundName, name) ) {
 			return sfx;
 		}
 		sfx = sfx->next;
@@ -320,7 +320,7 @@ static sfx_t *S_FindName( const char *name ) {
 	
 	sfx = &s_knownSfx[i];
 	Com_Memset (sfx, 0, sizeof(*sfx));
-	strcpy (sfx->soundName, name);
+	QStr::Cpy(sfx->soundName, name);
 
 	sfx->next = sfxHash[hash];
 	sfxHash[hash] = sfx;
@@ -397,7 +397,7 @@ sfxHandle_t	S_RegisterSound( const char *name, qboolean compressed ) {
 		return 0;
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( QStr::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Sound name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -1306,10 +1306,10 @@ void S_Play_f( void ) {
 	
 	i = 1;
 	while ( i<Cmd_Argc() ) {
-		if ( !Q_strrchr(Cmd_Argv(i), '.') ) {
+		if ( !QStr::RChr(Cmd_Argv(i), '.') ) {
 			Com_sprintf( name, sizeof(name), "%s.wav", Cmd_Argv(1) );
 		} else {
-			Q_strncpyz( name, Cmd_Argv(i), sizeof(name) );
+			QStr::NCpyZ( name, Cmd_Argv(i), sizeof(name) );
 		}
 		h = S_RegisterSound( name, qfalse );
 		if( h ) {
@@ -1343,12 +1343,12 @@ void S_SoundList_f( void ) {
 	char	type[4][16];
 	char	mem[2][16];
 
-	strcpy(type[0], "16bit");
-	strcpy(type[1], "adpcm");
-	strcpy(type[2], "daub4");
-	strcpy(type[3], "mulaw");
-	strcpy(mem[0], "paged out");
-	strcpy(mem[1], "resident ");
+	QStr::Cpy(type[0], "16bit");
+	QStr::Cpy(type[1], "adpcm");
+	QStr::Cpy(type[2], "daub4");
+	QStr::Cpy(type[3], "mulaw");
+	QStr::Cpy(mem[0], "paged out");
+	QStr::Cpy(mem[1], "resident ");
 	total = 0;
 	for (sfx=s_knownSfx, i=0 ; i<s_numSfx ; i++, sfx++) {
 		size = sfx->soundLength;
@@ -1404,7 +1404,7 @@ int S_FindWavChunk( fileHandle_t f, char *chunk ) {
 	len = (len + 1 ) & ~1;		// pad to word boundary
 //	s_nextWavChunk += len + 8;
 
-	if ( strcmp( name, chunk ) ) {
+	if ( QStr::Cmp( name, chunk ) ) {
 		return 0;
 	}
 
@@ -1444,14 +1444,14 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ){
 	}
 	Com_DPrintf( "S_StartBackgroundTrack( %s, %s )\n", intro, loop );
 
-	Q_strncpyz( name, intro, sizeof( name ) - 4 );
+	QStr::NCpyZ( name, intro, sizeof( name ) - 4 );
 	COM_DefaultExtension( name, sizeof( name ), ".wav" );
 
 	if ( !intro[0] ) {
 		return;
 	}
 
-	Q_strncpyz( s_backgroundLoop, loop, sizeof( s_backgroundLoop ) );
+	QStr::NCpyZ( s_backgroundLoop, loop, sizeof( s_backgroundLoop ) );
 
 	// close the background track, but DON'T reset s_rawend
 	// if restarting the same back ground track

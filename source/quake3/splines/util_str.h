@@ -178,9 +178,9 @@ inline idStr::idStr
 
 	if ( text )
 		{
-      len = strlen( text );
+      len = QStr::Length( text );
 		EnsureAlloced ( len + 1 );
-		strcpy( m_data->data, text );
+		QStr::Cpy( m_data->data, text );
       m_data->len = len;
 		}
 	else
@@ -262,9 +262,9 @@ inline idStr::idStr
    int len;
 
    sprintf( text, "%.3f", num );
-   len = strlen( text );
+   len = QStr::Length( text );
    EnsureAlloced( len + 1 );
-   strcpy( m_data->data, text );
+   QStr::Cpy( m_data->data, text );
    m_data->len = len;
    }
 
@@ -278,9 +278,9 @@ inline idStr::idStr
    int len;
 
    sprintf( text, "%d", num );
-   len = strlen( text );
+   len = QStr::Length( text );
    EnsureAlloced( len + 1 );
-   strcpy( m_data->data, text );
+   QStr::Cpy( m_data->data, text );
    m_data->len = len;
    }
 
@@ -294,9 +294,9 @@ inline idStr::idStr
    int len;
 
    sprintf( text, "%u", num );
-   len = strlen( text );
+   len = QStr::Length( text );
    EnsureAlloced( len + 1 );
-   strcpy( m_data->data, text );
+   QStr::Cpy( m_data->data, text );
    m_data->len = len;
    }
 
@@ -329,7 +329,7 @@ inline void idStr::append
 
 	if ( text )
 		{
-		len = length() + strlen( text );
+		len = length() + QStr::Length( text );
 		EnsureAlloced( len + 1 );
 
       strcat( m_data->data, text );
@@ -436,9 +436,9 @@ inline void idStr::operator=
 
    if ( !m_data )
       {
-      len = strlen ( text );
+      len = QStr::Length( text );
       EnsureAlloced( len + 1, false );
-      strcpy ( m_data->data, text );
+      QStr::Cpy ( m_data->data, text );
       m_data->len = len;
       return;
       }
@@ -459,7 +459,7 @@ inline void idStr::operator=
       int diff = text - m_data->data;
       int i;
 
-      assert ( strlen ( text ) < (unsigned) m_data->len );
+      assert ( QStr::Length( text ) < (unsigned) m_data->len );
       
       for ( i = 0; text[i]; i++ )
          {
@@ -473,9 +473,9 @@ inline void idStr::operator=
       return;
       }
 
-	len = strlen( text );
+	len = QStr::Length( text );
    EnsureAlloced ( len + 1, false );
-	strcpy( m_data->data, text );
+	QStr::Cpy( m_data->data, text );
    m_data->len = len;
 	}
 
@@ -602,7 +602,7 @@ inline bool operator==
 	)
 
 	{
-	return ( !strcmp( a.c_str(), b.c_str() ) );
+	return ( !QStr::Cmp( a.c_str(), b.c_str() ) );
 	}
 
 inline bool operator==
@@ -617,7 +617,7 @@ inline bool operator==
 		{
 		return false;
 		}
-	return ( !strcmp( a.c_str(), b ) );
+	return ( !QStr::Cmp( a.c_str(), b ) );
 	}
 
 inline bool operator==
@@ -632,7 +632,7 @@ inline bool operator==
 		{
 		return false;
 		}
-	return ( !strcmp( a, b.c_str() ) );
+	return ( !QStr::Cmp( a, b.c_str() ) );
 	}
 
 inline bool operator!=

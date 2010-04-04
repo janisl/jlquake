@@ -48,9 +48,9 @@ static qboolean VerifyDriver( void )
 {
 	char buffer[1024];
 
-	strcpy( buffer, (char*)qglGetString( GL_RENDERER ) );
-	strlwr( buffer );
-	if ( strcmp( buffer, "gdi generic" ) == 0 )
+	QStr::Cpy( buffer, (char*)qglGetString( GL_RENDERER ) );
+	QStr::ToLower( buffer );
+	if ( QStr::Cmp( buffer, "gdi generic" ) == 0 )
 		if ( !glw_state.mcd_accelerated )
 			return false;
 	return true;
@@ -591,7 +591,7 @@ void GLimp_EndFrame (void)
 	err = qglGetError();
 	assert( err == GL_NO_ERROR );
 
-	if ( stricmp( gl_drawbuffer->string, "GL_BACK" ) == 0 )
+	if ( QStr::ICmp( gl_drawbuffer->string, "GL_BACK" ) == 0 )
 	{
 		if ( !qwglSwapBuffers( glw_state.hDC ) )
 			ri.Sys_Error( ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n" );

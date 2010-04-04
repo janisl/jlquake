@@ -58,7 +58,7 @@ static logfile_t logfile;
 void Log_Open(char *filename)
 {
 	if (!LibVarValue("log", "0")) return;
-	if (!filename || !strlen(filename))
+	if (!filename || !QStr::Length(filename))
 	{
 		botimport.Print(PRT_MESSAGE, "openlog <filename>\n");
 		return;
@@ -74,7 +74,7 @@ void Log_Open(char *filename)
 		botimport.Print(PRT_ERROR, "can't open the log file %s\n", filename);
 		return;
 	} //end if
-	strncpy(logfile.filename, filename, MAX_LOGFILENAMESIZE);
+	QStr::NCpy(logfile.filename, filename, MAX_LOGFILENAMESIZE);
 	botimport.Print(PRT_MESSAGE, "Opened log %s\n", logfile.filename);
 } //end of the function Log_Create
 //===========================================================================

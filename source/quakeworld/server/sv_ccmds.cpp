@@ -53,7 +53,7 @@ void SV_SetMaster_f (void)
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		if (!strcmp(Cmd_Argv(i), "none") || !NET_StringToAdr (Cmd_Argv(i), &master_adr[i-1]))
+		if (!QStr::Cmp(Cmd_Argv(i), "none") || !NET_StringToAdr (Cmd_Argv(i), &master_adr[i-1]))
 		{
 			Con_Printf ("Setting nomaster mode.\n");
 			return;
@@ -168,7 +168,7 @@ qboolean SV_SetPlayer (void)
 	int			i;
 	int			idnum;
 
-	idnum = atoi(Cmd_Argv(1));
+	idnum = QStr::Atoi(Cmd_Argv(1));
 
 	for (i=0,cl=svs.clients ; i<MAX_CLIENTS ; i++,cl++)
 	{
@@ -256,7 +256,7 @@ void SV_Give_f (void)
 		return;
 
 	t = Cmd_Argv(2);
-	v = atoi (Cmd_Argv(3));
+	v = QStr::Atoi(Cmd_Argv(3));
 	
 	switch (t[0])
 	{
@@ -310,13 +310,13 @@ void SV_Map_f (void)
 		Con_Printf ("map <levelname> : continue game on a new level\n");
 		return;
 	}
-	strcpy (level, Cmd_Argv(1));
+	QStr::Cpy(level, Cmd_Argv(1));
 
 #if 0
-	if (!strcmp (level, "e1m8"))
+	if (!QStr::Cmp(level, "e1m8"))
 	{	// QuakeWorld can't go to e1m8
 		SV_BroadcastPrintf (PRINT_HIGH, "can't go to low grav level in QuakeWorld...\n");
-		strcpy (level, "e1m5");
+		QStr::Cpy(level, "e1m5");
 	}
 #endif
 
@@ -352,7 +352,7 @@ void SV_Kick_f (void)
 	client_t	*cl;
 	int			uid;
 
-	uid = atoi(Cmd_Argv(1));
+	uid = QStr::Atoi(Cmd_Argv(1));
 	
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS; i++, cl++)
 	{
@@ -445,12 +445,12 @@ void SV_Status_f (void)
 
 			s = NET_BaseAdrToString ( cl->netchan.remote_address);
 			Con_Printf ("%s", s);
-			l = 16 - strlen(s);
+			l = 16 - QStr::Length(s);
 			for (j=0 ; j<l ; j++)
 				Con_Printf (" ");
 			
 			Con_Printf ("%s", cl->name);
-			l = 16 - strlen(cl->name);
+			l = 16 - QStr::Length(cl->name);
 			for (j=0 ; j<l ; j++)
 				Con_Printf (" ");
 			if (cl->state == cs_connected)
@@ -494,16 +494,16 @@ void SV_ConSay_f(void)
 	if (Cmd_Argc () < 2)
 		return;
 
-	Q_strcpy (text, "console: ");
+	QStr::Cpy(text, "console: ");
 	p = Cmd_Args();
 
 	if (*p == '"')
 	{
 		p++;
-		p[Q_strlen(p)-1] = 0;
+		p[QStr::Length(p)-1] = 0;
 	}
 
-	Q_strcat(text, p);
+	QStr::Cat(text, sizeof(text), p);
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS; j++, client++)
 	{
@@ -572,7 +572,7 @@ void SV_Serverinfo_f (void)
 	{
 		Z_Free (var->string);	// free the old value string	
 		var->string = CopyString (Cmd_Argv(2));
-		var->value = Q_atof (var->string);
+		var->value = QStr::Atof(var->string);
 	}
 
 	SV_SendServerInfoChange(Cmd_Argv(1), Cmd_Argv(2));
@@ -696,9 +696,9 @@ void SV_Floodprot_f (void)
 		return;
 	}
 
-	arg1 = atoi(Cmd_Argv(1));
-	arg2 = atoi(Cmd_Argv(2));
-	arg3 = atoi(Cmd_Argv(3));
+	arg1 = QStr::Atoi(Cmd_Argv(1));
+	arg2 = QStr::Atoi(Cmd_Argv(2));
+	arg3 = QStr::Atoi(Cmd_Argv(3));
 
 	if (arg1<=0 || arg2 <= 0 || arg3<=0) {
 		Con_Printf ("All values must be positive numbers\n");
@@ -796,8 +796,8 @@ void SV_Snap (int uid)
 		
 	for (i=0 ; i<=99 ; i++) 
 	{ 
-		pcxname[strlen(pcxname) - 6] = i/10 + '0'; 
-		pcxname[strlen(pcxname) - 5] = i%10 + '0'; 
+		pcxname[QStr::Length(pcxname) - 6] = i/10 + '0'; 
+		pcxname[QStr::Length(pcxname) - 5] = i%10 + '0'; 
 		sprintf (checkname, "%s/snap/%s", gamedirfile, pcxname);
 		if (Sys_FileTime(checkname) == -1)
 			break;	// file doesn't exist
@@ -807,7 +807,7 @@ void SV_Snap (int uid)
 		Con_Printf ("Snap: Couldn't create a file, clean some out.\n"); 
 		return;
 	}
-	strcpy(cl->uploadfn, checkname);
+	QStr::Cpy(cl->uploadfn, checkname);
 
 	memcpy(&cl->snap_from, &net_from, sizeof(net_from));
 	if (sv_redirected != RD_NONE)
@@ -835,7 +835,7 @@ void SV_Snap_f (void)
 		return;
 	}
 
-	uid = atoi(Cmd_Argv(1));
+	uid = QStr::Atoi(Cmd_Argv(1));
 
 	SV_Snap(uid);
 }

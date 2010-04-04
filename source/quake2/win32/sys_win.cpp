@@ -359,7 +359,7 @@ void Sys_ConsoleOutput (char *string)
 		WriteFile(houtput, text, console_textlen+2, &dummy, NULL);
 	}
 
-	WriteFile(houtput, string, strlen(string), &dummy, NULL);
+	WriteFile(houtput, string, QStr::Length(string), &dummy, NULL);
 
 	if (console_textlen)
 		WriteFile(houtput, console_text, console_textlen, &dummy, NULL);
@@ -412,7 +412,7 @@ char *Sys_GetClipboardData( void )
 			if ( ( cliptext = (char*)GlobalLock( hClipboardData ) ) != 0 ) 
 			{
 				data = (char*)malloc( GlobalSize( hClipboardData ) + 1 );
-				strcpy( data, cliptext );
+				QStr::Cpy( data, cliptext );
 				GlobalUnlock( hClipboardData );
 			}
 		}
@@ -613,7 +613,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 		// don't override a cddir on the command line
 		for (i=0 ; i<argc ; i++)
-			if (!strcmp(argv[i], "cddir"))
+			if (!QStr::Cmp(argv[i], "cddir"))
 				break;
 		if (i == argc)
 		{

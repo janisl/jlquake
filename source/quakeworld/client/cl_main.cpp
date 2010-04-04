@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #else
 #include <netinet/in.h>
 #endif
-#include <ctype.h>
 
 
 // we need to declare some mouse variables here, because the menu system
@@ -235,7 +234,7 @@ void CL_SendConnectPacket (void)
 //	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
 		255, 255, 255, 255,	PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
-	NET_SendPacket (strlen(data), data, adr);
+	NET_SendPacket (QStr::Length(data), data, adr);
 }
 
 /*
@@ -281,7 +280,7 @@ void CL_CheckForResend (void)
 
 	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
-	NET_SendPacket (strlen(data), data, adr);
+	NET_SendPacket (QStr::Length(data), data, adr);
 }
 
 void CL_BeginServerConnect(void)
@@ -310,7 +309,7 @@ void CL_Connect_f (void)
 
 	CL_Disconnect ();
 
-	strncpy (cls.servername, server, sizeof(cls.servername)-1);
+	QStr::NCpy(cls.servername, server, sizeof(cls.servername)-1);
 	CL_BeginServerConnect();
 }
 
@@ -342,22 +341,22 @@ void CL_Rcon_f (void)
 	message[3] = 255;
 	message[4] = 0;
 
-	strcat (message, "rcon ");
+	QStr::Cat(message, sizeof(message), "rcon ");
 
-	strcat (message, rcon_password.string);
-	strcat (message, " ");
+	QStr::Cat(message, sizeof(message), rcon_password.string);
+	QStr::Cat(message, sizeof(message), " ");
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		strcat (message, Cmd_Argv(i));
-		strcat (message, " ");
+		QStr::Cat(message, sizeof(message), Cmd_Argv(i));
+		QStr::Cat(message, sizeof(message), " ");
 	}
 
 	if (cls.state >= ca_connected)
 		to = cls.netchan.remote_address;
 	else
 	{
-		if (!strlen(rcon_address.string))
+		if (!QStr::Length(rcon_address.string))
 		{
 			Con_Printf ("You must either be connected,\n"
 						"or set the 'rcon_address' cvar\n"
@@ -368,7 +367,7 @@ void CL_Rcon_f (void)
 		NET_StringToAdr (rcon_address.string, &to);
 	}
 	
-	NET_SendPacket (strlen(message)+1, message
+	NET_SendPacket (QStr::Length(message)+1, message
 		, to);
 }
 
@@ -442,7 +441,7 @@ void CL_Disconnect (void)
 			CL_Stop_f ();
 
 		final[0] = clc_stringcmd;
-		strcpy ((char*)final+1, "drop");
+		QStr::Cpy((char*)final+1, "drop");
 		Netchan_Transmit (&cls.netchan, 6, final);
 		Netchan_Transmit (&cls.netchan, 6, final);
 		Netchan_Transmit (&cls.netchan, 6, final);
@@ -487,14 +486,14 @@ void CL_User_f (void)
 		return;
 	}
 
-	uid = atoi(Cmd_Argv(1));
+	uid = QStr::Atoi(Cmd_Argv(1));
 
 	for (i=0 ; i<MAX_CLIENTS ; i++)
 	{
 		if (!cl.players[i].name[0])
 			continue;
 		if (cl.players[i].userid == uid
-		|| !strcmp(cl.players[i].name, Cmd_Argv(1)) )
+		|| !QStr::Cmp(cl.players[i].name, Cmd_Argv(1)) )
 		{
 			Info_Print (cl.players[i].userinfo);
 			return;
@@ -546,11 +545,11 @@ void CL_Color_f (void)
 	}
 
 	if (Cmd_Argc() == 2)
-		top = bottom = atoi(Cmd_Argv(1));
+		top = bottom = QStr::Atoi(Cmd_Argv(1));
 	else
 	{
-		top = atoi(Cmd_Argv(1));
-		bottom = atoi(Cmd_Argv(2));
+		top = QStr::Atoi(Cmd_Argv(1));
+		bottom = QStr::Atoi(Cmd_Argv(2));
 	}
 	
 	top &= 15;
@@ -584,10 +583,10 @@ void CL_FullServerinfo_f (void)
 		return;
 	}
 
-	strcpy (cl.serverinfo, Cmd_Argv(1));
+	QStr::Cpy(cl.serverinfo, Cmd_Argv(1));
 
 	if ((p = Info_ValueForKey(cl.serverinfo, "*vesion")) && *p) {
-		v = Q_atof(p);
+		v = QStr::Atof(p);
 		if (v) {
 			if (!server_version)
 				Con_Printf("Version %1.2f Server\n", v);
@@ -642,7 +641,7 @@ void CL_FullInfo_f (void)
 		if (*s)
 			s++;
 
-		if (!stricmp(key, pmodel_name) || !stricmp(key, emodel_name))
+		if (!QStr::ICmp(key, pmodel_name) || !QStr::ICmp(key, emodel_name))
 			continue;
 
 		Info_SetValueForKey (cls.userinfo, key, value, MAX_INFO_STRING);
@@ -668,7 +667,7 @@ void CL_SetInfo_f (void)
 		Con_Printf ("usage: setinfo [ <key> <value> ]\n");
 		return;
 	}
-	if (!stricmp(Cmd_Argv(1), pmodel_name) || !strcmp(Cmd_Argv(1), emodel_name))
+	if (!QStr::ICmp(Cmd_Argv(1), pmodel_name) || !QStr::Cmp(Cmd_Argv(1), emodel_name))
 		return;
 
 	Info_SetValueForKey (cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
@@ -708,7 +707,7 @@ void CL_Packet_f (void)
 	out = send+4;
 	send[0] = send[1] = send[2] = send[3] = 0xff;
 
-	l = strlen (in);
+	l = QStr::Length(in);
 	for (i=0 ; i<l ; i++)
 	{
 		if (in[i] == '\\' && in[i+1] == 'n')
@@ -861,17 +860,17 @@ void CL_ConnectionlessPacket (void)
 #endif
 		s = MSG_ReadString ();
 
-		strncpy(cmdtext, s, sizeof(cmdtext) - 1);
+		QStr::NCpy(cmdtext, s, sizeof(cmdtext) - 1);
 		cmdtext[sizeof(cmdtext) - 1] = 0;
 
 		s = MSG_ReadString ();
 
-		while (*s && isspace(*s))
+		while (*s && QStr::IsSpace(*s))
 			s++;
-		while (*s && isspace(s[strlen(s) - 1]))
-			s[strlen(s) - 1] = 0;
+		while (*s && QStr::IsSpace(s[QStr::Length(s) - 1]))
+			s[QStr::Length(s) - 1] = 0;
 
-		if (!allowremotecmd && (!*localid.string || strcmp(localid.string, s))) {
+		if (!allowremotecmd && (!*localid.string || QStr::Cmp(localid.string, s))) {
 			if (!*localid.string) {
 				Con_Printf("===========================\n");
 				Con_Printf("Command packet received from local host, but no "
@@ -926,7 +925,7 @@ void CL_ConnectionlessPacket (void)
 		Con_Printf ("challenge\n");
 
 		s = MSG_ReadString ();
-		cls.challenge = atoi(s);
+		cls.challenge = QStr::Atoi(s);
 		CL_SendConnectPacket ();
 		return;
 	}
@@ -1036,7 +1035,7 @@ void CL_Download_f (void)
 			break;
 	}
 
-	strcpy(cls.downloadtempname, cls.downloadname);
+	QStr::Cpy(cls.downloadtempname, cls.downloadname);
 	cls.download = fopen (cls.downloadname, "wb");
 	cls.downloadtype = dl_single;
 

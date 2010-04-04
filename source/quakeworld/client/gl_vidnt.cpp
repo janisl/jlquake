@@ -508,7 +508,7 @@ void CheckTextureExtensions (void)
 	tmp = (char *)glGetString(GL_EXTENSIONS);
 	while (*tmp)
 	{
-		if (strncmp((const char*)tmp, TEXTURE_EXT_STRING, strlen(TEXTURE_EXT_STRING)) == 0)
+		if (QStr::NCmp((const char*)tmp, TEXTURE_EXT_STRING, QStr::Length(TEXTURE_EXT_STRING)) == 0)
 			texture_ext = TRUE;
 		tmp++;
 	}
@@ -544,7 +544,7 @@ void CheckArrayExtensions (void)
 	tmp = (char *)glGetString(GL_EXTENSIONS);
 	while (*tmp)
 	{
-		if (strncmp((const char*)tmp, "GL_EXT_vertex_array", strlen("GL_EXT_vertex_array")) == 0)
+		if (QStr::NCmp((const char*)tmp, "GL_EXT_vertex_array", QStr::Length("GL_EXT_vertex_array")) == 0)
 		{
 			if (
 ((glArrayElementEXT = wglGetProcAddress("glArrayElementEXT")) == NULL) ||
@@ -608,10 +608,10 @@ void GL_Init (void)
 
 //	Con_Printf ("%s %s\n", gl_renderer, gl_version);
 
-    if (strnicmp(gl_renderer,"PowerVR",7)==0)
+    if (QStr::NICmp(gl_renderer,"PowerVR",7)==0)
          fullsbardraw = true;
 
-    if (strnicmp(gl_renderer,"Permedia",8)==0)
+    if (QStr::NICmp(gl_renderer,"Permedia",8)==0)
          isPermedia = true;
 
 	CheckTextureExtensions ();
@@ -1265,7 +1265,7 @@ void VID_DescribeMode_f (void)
 {
 	int		t, modenum;
 	
-	modenum = Q_atoi (Cmd_Argv(1));
+	modenum = QStr::Atoi(Cmd_Argv(1));
 
 	t = leavecurrentmode;
 	leavecurrentmode = 0;
@@ -1327,7 +1327,7 @@ void VID_InitDIB (HINSTANCE hInstance)
 	modelist[0].type = MS_WINDOWED;
 
 	if (COM_CheckParm("-width"))
-		modelist[0].width = Q_atoi(com_argv[COM_CheckParm("-width")+1]);
+		modelist[0].width = QStr::Atoi(com_argv[COM_CheckParm("-width")+1]);
 	else
 		modelist[0].width = 640;
 
@@ -1335,7 +1335,7 @@ void VID_InitDIB (HINSTANCE hInstance)
 		modelist[0].width = 320;
 
 	if (COM_CheckParm("-height"))
-		modelist[0].height= Q_atoi(com_argv[COM_CheckParm("-height")+1]);
+		modelist[0].height= QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
 	else
 		modelist[0].height = modelist[0].width * 240/320;
 
@@ -1547,7 +1547,7 @@ static void Check_Gamma (unsigned char *pal)
 		else
 			vid_gamma = 0.7; // default to 0.7 on non-3dfx hardware
 	} else
-		vid_gamma = Q_atof(com_argv[i+1]);
+		vid_gamma = QStr::Atof(com_argv[i+1]);
 
 	for (i=0 ; i<768 ; i++)
 	{
@@ -1629,7 +1629,7 @@ void	VID_Init (unsigned char *palette)
 
 		if (COM_CheckParm("-mode"))
 		{
-			vid_default = Q_atoi(com_argv[COM_CheckParm("-mode")+1]);
+			vid_default = QStr::Atoi(com_argv[COM_CheckParm("-mode")+1]);
 		}
 		else
 		{
@@ -1646,7 +1646,7 @@ void	VID_Init (unsigned char *palette)
 			{
 				if (COM_CheckParm("-width"))
 				{
-					width = Q_atoi(com_argv[COM_CheckParm("-width")+1]);
+					width = QStr::Atoi(com_argv[COM_CheckParm("-width")+1]);
 				}
 				else
 				{
@@ -1655,7 +1655,7 @@ void	VID_Init (unsigned char *palette)
 
 				if (COM_CheckParm("-bpp"))
 				{
-					bpp = Q_atoi(com_argv[COM_CheckParm("-bpp")+1]);
+					bpp = QStr::Atoi(com_argv[COM_CheckParm("-bpp")+1]);
 					findbpp = 0;
 				}
 				else
@@ -1665,7 +1665,7 @@ void	VID_Init (unsigned char *palette)
 				}
 
 				if (COM_CheckParm("-height"))
-					height = Q_atoi(com_argv[COM_CheckParm("-height")+1]);
+					height = QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
 
 			// if they want to force it, add the specified mode to the list
 				if (COM_CheckParm("-force") && (nummodes < MAX_MODE_LIST))
@@ -1705,7 +1705,7 @@ void	VID_Init (unsigned char *palette)
 				{
 					if (COM_CheckParm("-height"))
 					{
-						height = Q_atoi(com_argv[COM_CheckParm("-height")+1]);
+						height = QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
 
 						for (i=1, vid_default=0 ; i<nummodes ; i++)
 						{
@@ -1770,7 +1770,7 @@ void	VID_Init (unsigned char *palette)
 	vid_initialized = true;
 
 	if ((i = COM_CheckParm("-conwidth")) != 0)
-		vid.conwidth = Q_atoi(com_argv[i+1]);
+		vid.conwidth = QStr::Atoi(com_argv[i+1]);
 	else
 		vid.conwidth = 640;
 
@@ -1783,7 +1783,7 @@ void	VID_Init (unsigned char *palette)
 	vid.conheight = vid.conwidth*3 / 4;
 
 	if ((i = COM_CheckParm("-conheight")) != 0)
-		vid.conheight = Q_atoi(com_argv[i+1]);
+		vid.conheight = QStr::Atoi(com_argv[i+1]);
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 
@@ -1821,7 +1821,7 @@ void	VID_Init (unsigned char *palette)
 	vid_menudrawfn = VID_MenuDraw;
 	vid_menukeyfn = VID_MenuKey;
 
-	strcpy (badmode.modedesc, "Bad mode");
+	QStr::Cpy(badmode.modedesc, "Bad mode");
 	vid_canalttab = true;
 
 	if (COM_CheckParm("-fullsbar"))

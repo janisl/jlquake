@@ -75,7 +75,7 @@ void Spk_Printf (const char *text, ...)
 
   va_start (argptr,text);
   vsprintf (buf, text, argptr);
-  write(fh, buf, strlen(buf));
+  write(fh, buf, QStr::Length(buf));
   _commit(fh);
   va_end (argptr);
 
@@ -226,7 +226,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		return;
 	}
 
-	if (strlen(subdirs)) {
+	if (QStr::Length(subdirs)) {
 		Com_sprintf( search, sizeof(search), "%s\\%s\\*", basedir, subdirs );
 	}
 	else {
@@ -240,8 +240,8 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 
 	do {
 		if (findinfo.attrib & _A_SUBDIR) {
-			if (Q_stricmp(findinfo.name, ".") && Q_stricmp(findinfo.name, "..")) {
-				if (strlen(subdirs)) {
+			if (QStr::ICmp(findinfo.name, ".") && QStr::ICmp(findinfo.name, "..")) {
+				if (QStr::Length(subdirs)) {
 					Com_sprintf( newsubdirs, sizeof(newsubdirs), "%s\\%s", subdirs, findinfo.name);
 				}
 				else {
@@ -266,8 +266,8 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 static qboolean strgtr(const char *s0, const char *s1) {
 	int l0, l1, i;
 
-	l0 = strlen(s0);
-	l1 = strlen(s1);
+	l0 = QStr::Length(s0);
+	l1 = QStr::Length(s1);
 
 	if (l1<l0) {
 		l0 = l1;
@@ -477,7 +477,7 @@ char *Sys_GetClipboardData( void ) {
 		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
 			if ( ( cliptext = (char*)GlobalLock( hClipboardData ) ) != 0 ) {
 				data = (char*)Z_Malloc( GlobalSize( hClipboardData ) + 1 );
-				Q_strncpyz( data, cliptext, GlobalSize( hClipboardData ) );
+				QStr::NCpyZ( data, cliptext, GlobalSize( hClipboardData ) );
 				GlobalUnlock( hClipboardData );
 				
 				strtok( data, "\n\r\b" );
@@ -614,7 +614,7 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath , int (QDECL **entryPoi
 	}
 	dllEntry( systemcalls );
 
-	if ( libHandle ) Q_strncpyz ( fqpath , filename , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
+	if ( libHandle ) QStr::NCpyZ( fqpath , filename , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
 	return libHandle;
 }
 
@@ -971,9 +971,9 @@ sysEvent_t Sys_GetEvent( void ) {
 		char	*b;
 		int		len;
 
-		len = strlen( s ) + 1;
+		len = QStr::Length( s ) + 1;
 		b = (char*)Z_Malloc( len );
-		Q_strncpyz( b, s, len-1 );
+		QStr::NCpyZ( b, s, len-1 );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
 
@@ -1096,7 +1096,7 @@ void Sys_Init( void ) {
 	// figure out our CPU
 	//
 	Cvar_Get( "sys_cpustring", "detect", 0 );
-	if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring"), "detect" ) )
+	if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring"), "detect" ) )
 	{
 		Com_Printf( "...detecting CPU, found " );
 
@@ -1133,27 +1133,27 @@ void Sys_Init( void ) {
 	else
 	{
 		Com_Printf( "...forcing CPU type to " );
-		if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "generic" ) )
+		if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "generic" ) )
 		{
 			cpuid = CPUID_GENERIC;
 		}
-		else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "x87" ) )
+		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "x87" ) )
 		{
 			cpuid = CPUID_INTEL_PENTIUM;
 		}
-		else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "mmx" ) )
+		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "mmx" ) )
 		{
 			cpuid = CPUID_INTEL_MMX;
 		}
-		else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "3dnow" ) )
+		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "3dnow" ) )
 		{
 			cpuid = CPUID_AMD_3DNOW;
 		}
-		else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "PentiumIII" ) )
+		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "PentiumIII" ) )
 		{
 			cpuid = CPUID_INTEL_KATMAI;
 		}
-		else if ( !Q_stricmp( Cvar_VariableString( "sys_cpustring" ), "axp" ) )
+		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "axp" ) )
 		{
 			cpuid = CPUID_AXP;
 		}
@@ -1192,7 +1192,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	}
 
 	g_wv.hInstance = hInstance;
-	Q_strncpyz( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
+	QStr::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output
 	Sys_CreateConsole();

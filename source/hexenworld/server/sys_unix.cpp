@@ -134,7 +134,7 @@ void Sys_Printf (char *fmt, ...)
 	vsprintf (text,fmt,argptr);
 	va_end (argptr);
 
-	if (strlen(text) > sizeof(text))
+	if (QStr::Length(text) > sizeof(text))
 		Sys_Error("memory overwrite in Sys_Printf");
 
     if (sys_nostdout.value)
@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
 
 	j = COM_CheckParm("-mem");
 	if (j)
-		parms.memsize = (int) (Q_atof(com_argv[j+1]) * 1024 * 1024);
+		parms.memsize = (int) (QStr::Atof(com_argv[j+1]) * 1024 * 1024);
 	if ((parms.membase = malloc (parms.memsize)) == NULL)
 		Sys_Error("Can't allocate %ld\n", parms.memsize);
 

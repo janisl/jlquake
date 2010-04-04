@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <ctype.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <errno.h>
@@ -82,7 +81,7 @@ void Sys_Printf (char *fmt, ...)
     vsprintf (text,fmt,argptr);
     va_end (argptr);
 
-    l = strlen(text);
+    l = QStr::Length(text);
     t_p = text;
 
 // make sure everything goes through, even though we are non-blocking
@@ -111,7 +110,7 @@ void Sys_Printf (char *fmt, ...)
 	vsprintf (text,fmt,argptr);
 	va_end (argptr);
 
-	if (strlen(text) > sizeof(text))
+	if (QStr::Length(text) > sizeof(text))
 		Sys_Error("memory overwrite in Sys_Printf");
 
     if (nostdout)
@@ -253,7 +252,7 @@ void Sys_DebugLog(char *file, char *fmt, ...)
     va_end(argptr);
 //    fd = open(file, O_WRONLY | O_BINARY | O_CREAT | O_APPEND, 0666);
     fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data, strlen(data));
+    write(fd, data, QStr::Length(data));
     close(fd);
 }
 
@@ -265,7 +264,7 @@ void Sys_EditFile(char *filename)
 	char *editor;
 
 	term = getenv("TERM");
-	if (term && !strcmp(term, "xterm"))
+	if (term && !QStr::Cmp(term, "xterm"))
 	{
 		editor = getenv("VISUAL");
 		if (!editor)
@@ -370,7 +369,7 @@ int main (int c, char **v)
 
 	j = COM_CheckParm("-mem");
 	if (j)
-		parms.memsize = (int) (Q_atof(com_argv[j+1]) * 1024 * 1024);
+		parms.memsize = (int) (QStr::Atof(com_argv[j+1]) * 1024 * 1024);
 	parms.membase = malloc (parms.memsize);
 
 	parms.basedir = basedir;

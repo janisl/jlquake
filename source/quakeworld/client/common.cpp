@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // common.c -- misc functions used in client and server
 
-#include <ctype.h>
-
 #ifdef SERVERONLY 
 #include "qwsvdef.h"
 #else
@@ -176,253 +174,7 @@ int Q_memcmp (void *m1, void *m2, int count)
 	return 0;
 }
 
-void Q_strcpy (char *dest, char *src)
-{
-	while (*src)
-	{
-		*dest++ = *src++;
-	}
-	*dest++ = 0;
-}
-
-void Q_strncpy (char *dest, char *src, int count)
-{
-	while (*src && count--)
-	{
-		*dest++ = *src++;
-	}
-	if (count)
-		*dest++ = 0;
-}
-
-int Q_strlen (char *str)
-{
-	int		count;
-	
-	count = 0;
-	while (str[count])
-		count++;
-
-	return count;
-}
-
-char *Q_strrchr(char *s, char c)
-{
-    int len = Q_strlen(s);
-    s += len;
-    while (len--)
-        if (*--s == c) return s;
-    return 0;
-}
-
-void Q_strcat (char *dest, char *src)
-{
-	dest += Q_strlen(dest);
-	Q_strcpy (dest, src);
-}
-
-int Q_strcmp (char *s1, char *s2)
-{
-	while (1)
-	{
-		if (*s1 != *s2)
-			return -1;		// strings not equal	
-		if (!*s1)
-			return 0;		// strings are equal
-		s1++;
-		s2++;
-	}
-	
-	return -1;
-}
-
-int Q_strncmp (char *s1, char *s2, int count)
-{
-	while (1)
-	{
-		if (!count--)
-			return 0;
-		if (*s1 != *s2)
-			return -1;		// strings not equal	
-		if (!*s1)
-			return 0;		// strings are equal
-		s1++;
-		s2++;
-	}
-	
-	return -1;
-}
-
-int Q_strncasecmp (char *s1, char *s2, int n)
-{
-	int		c1, c2;
-	
-	while (1)
-	{
-		c1 = *s1++;
-		c2 = *s2++;
-
-		if (!n--)
-			return 0;		// strings are equal until end point
-		
-		if (c1 != c2)
-		{
-			if (c1 >= 'a' && c1 <= 'z')
-				c1 -= ('a' - 'A');
-			if (c2 >= 'a' && c2 <= 'z')
-				c2 -= ('a' - 'A');
-			if (c1 != c2)
-				return -1;		// strings not equal
-		}
-		if (!c1)
-			return 0;		// strings are equal
-//		s1++;
-//		s2++;
-	}
-	
-	return -1;
-}
-
-int Q_strcasecmp (char *s1, char *s2)
-{
-	return Q_strncasecmp (s1, s2, 99999);
-}
-
 #endif
-
-int Q_atoi (char *str)
-{
-	int		val;
-	int		sign;
-	int		c;
-	
-	if (*str == '-')
-	{
-		sign = -1;
-		str++;
-	}
-	else
-		sign = 1;
-		
-	val = 0;
-
-//
-// check for hex
-//
-	if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X') )
-	{
-		str += 2;
-		while (1)
-		{
-			c = *str++;
-			if (c >= '0' && c <= '9')
-				val = (val<<4) + c - '0';
-			else if (c >= 'a' && c <= 'f')
-				val = (val<<4) + c - 'a' + 10;
-			else if (c >= 'A' && c <= 'F')
-				val = (val<<4) + c - 'A' + 10;
-			else
-				return val*sign;
-		}
-	}
-	
-//
-// check for character
-//
-	if (str[0] == '\'')
-	{
-		return sign * str[1];
-	}
-	
-//
-// assume decimal
-//
-	while (1)
-	{
-		c = *str++;
-		if (c <'0' || c > '9')
-			return val*sign;
-		val = val*10 + c - '0';
-	}
-	
-	return 0;
-}
-
-
-float Q_atof (char *str)
-{
-	double	val;
-	int		sign;
-	int		c;
-	int		decimal, total;
-	
-	if (*str == '-')
-	{
-		sign = -1;
-		str++;
-	}
-	else
-		sign = 1;
-		
-	val = 0;
-
-//
-// check for hex
-//
-	if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X') )
-	{
-		str += 2;
-		while (1)
-		{
-			c = *str++;
-			if (c >= '0' && c <= '9')
-				val = (val*16) + c - '0';
-			else if (c >= 'a' && c <= 'f')
-				val = (val*16) + c - 'a' + 10;
-			else if (c >= 'A' && c <= 'F')
-				val = (val*16) + c - 'A' + 10;
-			else
-				return val*sign;
-		}
-	}
-	
-//
-// check for character
-//
-	if (str[0] == '\'')
-	{
-		return sign * str[1];
-	}
-	
-//
-// assume decimal
-//
-	decimal = -1;
-	total = 0;
-	while (1)
-	{
-		c = *str++;
-		if (c == '.')
-		{
-			decimal = total;
-			continue;
-		}
-		if (c <'0' || c > '9')
-			break;
-		val = val*10 + c - '0';
-		total++;
-	}
-
-	if (decimal == -1)
-		return val*sign;
-	while (total > decimal)
-	{
-		val /= 10;
-		total--;
-	}
-	
-	return val*sign;
-}
 
 /*
 ==============================================================================
@@ -508,7 +260,7 @@ void MSG_WriteString (sizebuf_t *sb, char *s)
 	if (!s)
 		SZ_Write (sb, "", 1);
 	else
-		SZ_Write (sb, s, Q_strlen(s)+1);
+		SZ_Write (sb, s, QStr::Length(s)+1);
 }
 
 void MSG_WriteCoord (sizebuf_t *sb, float f)
@@ -814,7 +566,7 @@ void SZ_Print (sizebuf_t *buf, char *data)
 {
 	int		len;
 	
-	len = Q_strlen(data)+1;
+	len = QStr::Length(data)+1;
 
 	if (!buf->cursize || buf->data[buf->cursize-1])
 		Q_memcpy ((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
@@ -887,7 +639,7 @@ void COM_FileBase (char *in, char *out)
 {
 	char *s, *s2;
 	
-	s = in + strlen(in) - 1;
+	s = in + QStr::Length(in) - 1;
 	
 	while (s != in && *s != '.')
 		s--;
@@ -896,11 +648,11 @@ void COM_FileBase (char *in, char *out)
 	;
 	
 	if (s-s2 < 2)
-		strcpy (out,"?model?");
+		QStr::Cpy(out,"?model?");
 	else
 	{
 		s--;
-		strncpy (out,s2+1, s-s2);
+		QStr::NCpy(out,s2+1, s-s2);
 		out[s-s2] = 0;
 	}
 }
@@ -918,7 +670,7 @@ void COM_DefaultExtension (char *path, char *extension)
 // if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
-	src = path + strlen(path) - 1;
+	src = path + QStr::Length(path) - 1;
 
 	while (*src != '/' && src != path)
 	{
@@ -927,7 +679,7 @@ void COM_DefaultExtension (char *path, char *extension)
 		src--;
 	}
 
-	strcat (path, extension);
+	QStr::Cat(path, MAX_OSPATH, extension);
 }
 
 //============================================================================
@@ -1020,7 +772,7 @@ int COM_CheckParm (char *parm)
 	{
 		if (!com_argv[i])
 			continue;		// NEXTSTEP sometimes clears appkit vars.
-		if (!Q_strcmp (parm,com_argv[i]))
+		if (!QStr::Cmp(parm,com_argv[i]))
 			return i;
 	}
 		
@@ -1087,7 +839,7 @@ void COM_InitArgv (int argc, char **argv)
 		 com_argc++)
 	{
 		largv[com_argc] = argv[com_argc];
-		if (!Q_strcmp ("-safe", argv[com_argc]))
+		if (!QStr::Cmp("-safe", argv[com_argc]))
 			safe = true;
 	}
 
@@ -1133,28 +885,6 @@ void COM_Init (void)
 
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
-}
-
-
-/*
-============
-va
-
-does a varargs printf into a temp buffer, so I don't need to have
-varargs versions of all text functions.
-FIXME: make this buffer size safe someday
-============
-*/
-char	*va(char *format, ...)
-{
-	va_list		argptr;
-	static char		string[1024];
-	
-	va_start (argptr, format);
-	vsprintf (string, format,argptr);
-	va_end (argptr);
-
-	return string;	
 }
 
 
@@ -1401,7 +1131,7 @@ int COM_FOpenFile (char *filename, FILE **file)
 		// look through all the pak file elements
 			pak = search->pack;
 			for (i=0 ; i<pak->numfiles ; i++)
-				if (!strcmp (pak->files[i].name, filename))
+				if (!QStr::Cmp(pak->files[i].name, filename))
 				{	// found it!
 					Sys_Printf ("PackFile: %s : %s\n",pak->filename, filename);
 				// open a new file on the pakfile
@@ -1590,13 +1320,13 @@ pack_t *COM_LoadPackFile (char *packfile)
 // parse the directory
 	for (i=0 ; i<numpackfiles ; i++)
 	{
-		strcpy (newfiles[i].name, info[i].name);
+		QStr::Cpy(newfiles[i].name, info[i].name);
 		newfiles[i].filepos = LittleLong(info[i].filepos);
 		newfiles[i].filelen = LittleLong(info[i].filelen);
 	}
 
 	pack = (pack_t*)Z_Malloc (sizeof (pack_t));
-	strcpy (pack->filename, packfile);
+	QStr::Cpy(pack->filename, packfile);
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
@@ -1622,17 +1352,17 @@ void COM_AddGameDirectory (char *dir)
 	char			pakfile[MAX_OSPATH];
 	char			*p;
 
-	if ((p = strrchr(dir, '/')) != NULL)
-		strcpy(gamedirfile, ++p);
+	if ((p = QStr::RChr(dir, '/')) != NULL)
+		QStr::Cpy(gamedirfile, ++p);
 	else
-		strcpy(gamedirfile, p);
-	strcpy (com_gamedir, dir);
+		QStr::Cpy(gamedirfile, p);
+	QStr::Cpy(com_gamedir, dir);
 
 //
 // add the directory to the search path
 //
 	search = (searchpath_t*)Hunk_Alloc (sizeof(searchpath_t));
-	strcpy (search->filename, dir);
+	QStr::Cpy(search->filename, dir);
 	search->next = com_searchpaths;
 	com_searchpaths = search;
 
@@ -1674,9 +1404,9 @@ void COM_Gamedir (char *dir)
 		return;
 	}
 
-	if (!strcmp(gamedirfile, dir))
+	if (!QStr::Cmp(gamedirfile, dir))
 		return;		// still the same
-	strcpy (gamedirfile, dir);
+	QStr::Cpy(gamedirfile, dir);
 
 	//
 	// free up any current game dir info
@@ -1699,7 +1429,7 @@ void COM_Gamedir (char *dir)
 	//
 	Cache_Flush ();
 
-	if (!strcmp(dir,"id1") || !strcmp(dir, "qw"))
+	if (!QStr::Cmp(dir,"id1") || !QStr::Cmp(dir, "qw"))
 		return;
 
 	sprintf (com_gamedir, "%s/%s", com_basedir, dir);
@@ -1708,7 +1438,7 @@ void COM_Gamedir (char *dir)
 	// add the directory to the search path
 	//
 	search = (searchpath_t*)Z_Malloc (sizeof(searchpath_t));
-	strcpy (search->filename, com_gamedir);
+	QStr::Cpy(search->filename, com_gamedir);
 	search->next = com_searchpaths;
 	com_searchpaths = search;
 
@@ -1743,9 +1473,9 @@ void COM_InitFilesystem (void)
 //
 	i = COM_CheckParm ("-basedir");
 	if (i && i < com_argc-1)
-		strcpy (com_basedir, com_argv[i+1]);
+		QStr::Cpy(com_basedir, com_argv[i+1]);
 	else
-		strcpy (com_basedir, host_parms.basedir);
+		QStr::Cpy(com_basedir, host_parms.basedir);
 
 //
 // start up with id1 by default
@@ -1808,7 +1538,7 @@ char *Info_ValueForKey (char *s, char *key)
 		}
 		*o = 0;
 
-		if (!strcmp (key, pkey) )
+		if (!QStr::Cmp(key, pkey) )
 			return value[valueindex];
 
 		if (!*s)
@@ -1854,9 +1584,9 @@ void Info_RemoveKey (char *s, char *key)
 		}
 		*o = 0;
 
-		if (!strcmp (key, pkey) )
+		if (!QStr::Cmp(key, pkey) )
 		{
-			strcpy (start, s);	// remove this part
+			QStr::Cpy(start, s);	// remove this part
 			return;
 		}
 
@@ -1931,7 +1661,7 @@ void Info_SetValueForStarKey (char *s, char *key, char *value, int maxsize)
 		return;
 	}
 
-	if (strlen(key) > 63 || strlen(value) > 63)
+	if (QStr::Length(key) > 63 || QStr::Length(value) > 63)
 	{
 		Con_Printf ("Keys and values must be < 64 characters.\n");
 		return;
@@ -1941,38 +1671,38 @@ void Info_SetValueForStarKey (char *s, char *key, char *value, int maxsize)
 	if (*(v = Info_ValueForKey(s, key))) {
 		// key exists, make sure we have enough room for new value, if we don't,
 		// don't change it!
-		if (strlen(value) - strlen(v) + strlen(s) > maxsize) {
+		if (QStr::Length(value) - QStr::Length(v) + QStr::Length(s) > maxsize) {
 			Con_Printf ("Info string length exceeded\n");
 			return;
 		}
 	}
 	Info_RemoveKey (s, key);
-	if (!value || !strlen(value))
+	if (!value || !QStr::Length(value))
 		return;
 
 	sprintf (newv, "\\%s\\%s", key, value);
 
-	if ((int)(strlen(newv) + strlen(s)) > maxsize)
+	if ((int)(QStr::Length(newv) + QStr::Length(s)) > maxsize)
 	{
 		Con_Printf ("Info string length exceeded\n");
 		return;
 	}
 
 	// only copy ascii values
-	s += strlen(s);
+	s += QStr::Length(s);
 	v = newv;
 	while (*v)
 	{
 		c = (unsigned char)*v++;
 #ifndef SERVERONLY
 		// client only allows highbits on name
-		if (stricmp(key, "name") != 0) {
+		if (QStr::ICmp(key, "name") != 0) {
 			c &= 127;
 			if (c < 32 || c > 127)
 				continue;
 			// auto lowercase team
-			if (stricmp(key, "team") == 0)
-				c = tolower(c);
+			if (QStr::ICmp(key, "team") == 0)
+				c = QStr::ToLower(c);
 		}
 #else
 		if (!sv_highchars.value) {
@@ -2183,14 +1913,14 @@ int build_number( void )
 
 	for (m = 0; m < 11; m++)
 	{
-		if (Q_strncasecmp( &date[0], mon[m], 3 ) == 0)
+		if (QStr::NICmp( &date[0], mon[m], 3 ) == 0)
 			break;
 		d += mond[m];
 	}
 
-	d += atoi( &date[4] ) - 1;
+	d += QStr::Atoi( &date[4] ) - 1;
 
-	y = atoi( &date[7] ) - 1900;
+	y = QStr::Atoi( &date[7] ) - 1900;
 
 	b = d + (int)((y - 1) * 365.25);
 

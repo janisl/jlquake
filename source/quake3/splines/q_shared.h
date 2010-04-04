@@ -40,7 +40,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <assert.h>
 #include <time.h>
-#include <ctype.h>
 #ifdef WIN32				// mac doesn't have malloc.h
 #include <malloc.h>			// for _alloca()
 #endif
@@ -153,9 +152,6 @@ void Sys_PumpEvents( void );
 // the mac compiler can't handle >32k of locals, so we
 // just waste space and make big arrays static...
 #ifdef __linux__
-
-// bk001205 - from Makefile
-#define stricmp strcasecmp
 
 #define	MAC_STATIC // bk: FIXME
 
@@ -574,23 +570,6 @@ typedef enum {
 
 //=============================================
 
-int Q_isprint( int c );
-int Q_islower( int c );
-int Q_isupper( int c );
-int Q_isalpha( int c );
-
-// portable case insensitive compare
-int		Q_stricmp (const char *s1, const char *s2);
-int		Q_strncmp (const char *s1, const char *s2, int n);
-int		Q_stricmpn (const char *s1, const char *s2, int n);
-char	*Q_strlwr( char *s1 );
-char	*Q_strupr( char *s1 );
-char	*Q_strrchr( const char* string, int c );
-
-// buffer size safe library replacements
-void	Q_strncpyz( char *dest, const char *src, int destsize );
-void	Q_strcat( char *dest, int size, const char *src );
-
 // strlen that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string
@@ -601,8 +580,6 @@ const char *Com_StringContains( const char *str1, const char *str2, int casesens
 
 
 //=============================================
-
-char	* QDECL va(char *format, ...);
 
 #ifdef __cplusplus
     }

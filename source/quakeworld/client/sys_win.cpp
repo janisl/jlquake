@@ -70,7 +70,7 @@ void Sys_DebugLog(char *file, char *fmt, ...)
     vsprintf(data, fmt, argptr);
     va_end(argptr);
     fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data, strlen(data));
+    write(fd, data, QStr::Length(data));
     close(fd);
 };
 
@@ -363,7 +363,7 @@ void Sys_InitFloatTime (void)
 
 	if (j)
 	{
-		curtime = (double) (Q_atof(com_argv[j+1]));
+		curtime = (double) (QStr::Atof(com_argv[j+1]));
 	}
 	else
 	{
@@ -464,15 +464,15 @@ char *Sys_ConsoleInput (void)
 									clipText = (char*)GlobalLock(th);
 									if (clipText) {
 										textCopied = (char*)malloc(GlobalSize(th)+1);
-										strcpy(textCopied, clipText);
+										QStr::Cpy(textCopied, clipText);
 /* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
-										i = strlen(textCopied);
+										i = QStr::Length(textCopied);
 										if (i+len>=256)
 											i=256-len;
 										if (i>0) {
 											textCopied[i]=0;
 											text[len]=0;
-											strcat(text, textCopied);
+											QStr::Cat(text, sizeof(text), textCopied);
 											len+=dummy;
 											WriteFile(houtput, textCopied, i, &dummy, NULL);
 										}
@@ -577,8 +577,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	if (!GetCurrentDirectory (sizeof(cwd), cwd))
 		Sys_Error ("Couldn't determine current directory");
 
-	if (cwd[Q_strlen(cwd)-1] == '/')
-		cwd[Q_strlen(cwd)-1] = 0;
+	if (cwd[QStr::Length(cwd)-1] == '/')
+		cwd[QStr::Length(cwd)-1] = 0;
 
 	parms.basedir = cwd;
 	parms.cachedir = NULL;
@@ -654,7 +654,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		t = COM_CheckParm("-heapsize") + 1;
 
 		if (t < com_argc)
-			parms.memsize = Q_atoi (com_argv[t]) * 1024;
+			parms.memsize = QStr::Atoi(com_argv[t]) * 1024;
 	}
 
 	parms.membase = malloc (parms.memsize);

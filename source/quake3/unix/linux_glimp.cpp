@@ -151,7 +151,7 @@ static const char *Q_stristr( const char *s, const char *find)
     {
       c -= ('a' - 'A');
     }
-    len = strlen(find);
+    len = QStr::Length(find);
     do
     {
       do
@@ -163,7 +163,7 @@ static const char *Q_stristr( const char *s, const char *find)
           sc -= ('a' - 'A');
         }
       } while (sc != c);
-    } while (Q_stricmpn(s, find, len) != 0);
+    } while (QStr::NICmp(s, find, len) != 0);
     s--;
   }
   return s;
@@ -1005,7 +1005,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
   else
     colorbits = r_colorbits->value;
 
-  if ( !Q_stricmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
+  if ( !QStr::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
     colorbits = 16;
 
   if (!r_depthbits->value)
@@ -1157,8 +1157,8 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
   ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glstring );
 
   // bk010122 - new software token (Indirect)
-  if ( !Q_stricmp( glstring, "Mesa X11")
-       || !Q_stricmp( glstring, "Mesa GLX Indirect") )
+  if ( !QStr::ICmp( glstring, "Mesa X11")
+       || !QStr::ICmp( glstring, "Mesa GLX Indirect") )
   {
     if ( !r_allowSoftwareGL->integer )
     {
@@ -1422,10 +1422,10 @@ void GLimp_Init( void )
   //
   if ( !GLW_LoadOpenGL( r_glDriver->string ) )
   {
-    if ( !Q_stricmp( r_glDriver->string, OPENGL_DRIVER_NAME ) )
+    if ( !QStr::ICmp( r_glDriver->string, OPENGL_DRIVER_NAME ) )
     {
       attemptedlibGL = qtrue;
-    } else if ( !Q_stricmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
+    } else if ( !QStr::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
     {
       attempted3Dfx = qtrue;
     }
@@ -1471,25 +1471,25 @@ void GLimp_Init( void )
   glConfig.hardwareType = GLHW_GENERIC;
 
   // get our config strings
-  Q_strncpyz( glConfig.vendor_string, (char*)qglGetString (GL_VENDOR), sizeof( glConfig.vendor_string ) );
-  Q_strncpyz( glConfig.renderer_string, (char*)qglGetString (GL_RENDERER), sizeof( glConfig.renderer_string ) );
-  if (*glConfig.renderer_string && glConfig.renderer_string[strlen(glConfig.renderer_string) - 1] == '\n')
-    glConfig.renderer_string[strlen(glConfig.renderer_string) - 1] = 0;
-  Q_strncpyz( glConfig.version_string, (char*)qglGetString (GL_VERSION), sizeof( glConfig.version_string ) );
-  Q_strncpyz( glConfig.extensions_string, (char*)qglGetString (GL_EXTENSIONS), sizeof( glConfig.extensions_string ) );
+  QStr::NCpyZ( glConfig.vendor_string, (char*)qglGetString (GL_VENDOR), sizeof( glConfig.vendor_string ) );
+  QStr::NCpyZ( glConfig.renderer_string, (char*)qglGetString (GL_RENDERER), sizeof( glConfig.renderer_string ) );
+  if (*glConfig.renderer_string && glConfig.renderer_string[QStr::Length(glConfig.renderer_string) - 1] == '\n')
+    glConfig.renderer_string[QStr::Length(glConfig.renderer_string) - 1] = 0;
+  QStr::NCpyZ( glConfig.version_string, (char*)qglGetString (GL_VERSION), sizeof( glConfig.version_string ) );
+  QStr::NCpyZ( glConfig.extensions_string, (char*)qglGetString (GL_EXTENSIONS), sizeof( glConfig.extensions_string ) );
 
   //
   // chipset specific configuration
   //
-  strcpy( buf, glConfig.renderer_string );
-  strlwr( buf );
+  QStr::Cpy( buf, glConfig.renderer_string );
+  QStr::ToLower( buf );
 
   //
   // NOTE: if changing cvars, do it within this block.  This allows them
   // to be overridden when testing driver fixes, etc. but only sets
   // them to their default state when the hardware is first installed/run.
   //
-  if ( Q_stricmp( lastValidRenderer->string, glConfig.renderer_string ) )
+  if ( QStr::ICmp( lastValidRenderer->string, glConfig.renderer_string ) )
   {
     glConfig.hardwareType = GLHW_GENERIC;
 
@@ -1558,7 +1558,7 @@ void GLimp_Init( void )
 void GLimp_EndFrame (void)
 {
   // don't flip if drawing to front buffer
-  if ( stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
+  if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
   {
     qglXSwapBuffers(dpy, win);
   }
@@ -1746,7 +1746,7 @@ void IN_Frame (void) {
     // running on the desktop
     // voodoo always counts as full screen
     if (Cvar_VariableValue ("r_fullscreen") == 0
-        && strcmp( Cvar_VariableString("r_glDriver"), _3DFX_DRIVER_NAME ) )
+        && QStr::Cmp( Cvar_VariableString("r_glDriver"), _3DFX_DRIVER_NAME ) )
     {
       IN_DeactivateMouse ();
       return;

@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "util_str.h"
 #include <stdlib.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -63,7 +62,7 @@ char *idStr::toUpper
    s = s1;
 	while( *s )
       {
-      *s = ::toupper( *s );
+      *s = ::QStr::ToUpper( *s );
 		s++;
 	   }
    
@@ -262,7 +261,7 @@ bool idStr::isNumeric
 		}
 
 	dot = false;
-	len = strlen( str );
+	len = QStr::Length( str );
 	for( i = 0; i < len; i++ )
 		{
 		if ( !isdigit( str[ i ] ) )
@@ -408,7 +407,7 @@ void idStr::EnsureDataWritable
    m_data = new strdata;
 
    EnsureAlloced ( len + 1, false );
-   strncpy ( m_data->data, olddata->data, len+1 );
+   QStr::NCpy( m_data->data, olddata->data, len+1 );
    m_data->len = len;
 
    olddata->DelRef ();
@@ -446,7 +445,7 @@ void idStr::EnsureAlloced (int amount, bool keepold) {
 
 	newbuffer = new char[m_data->alloced];
 	if ( wasalloced && keepold ) {
-		strcpy ( newbuffer, m_data->data );
+		QStr::Cpy( newbuffer, m_data->data );
 	}
 
 	if ( m_data->data ) {
@@ -491,7 +490,7 @@ void idStr::snprintf
 	
    assert ( len < size );
 
-   strncpy (dst, buffer, size-1);
+   QStr::NCpy(dst, buffer, size-1);
    }
 
 #ifdef _WIN32

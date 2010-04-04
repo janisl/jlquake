@@ -280,8 +280,8 @@ int main (int argc, char **argv)
 	parms.membase = malloc (parms.memsize);
 
 	_getcwd (cwd, sizeof(cwd));
-	if (cwd[Q_strlen(cwd)-1] == '\\')
-		cwd[Q_strlen(cwd)-1] = 0;
+	if (cwd[QStr::Length(cwd)-1] == '\\')
+		cwd[QStr::Length(cwd)-1] = 0;
 	parms.basedir = cwd; //"f:/quake";
 //	parms.basedir = "f:\\quake";
 

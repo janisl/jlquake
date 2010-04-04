@@ -36,9 +36,9 @@ GetClientState
 static void GetClientState( uiClientState_t *state ) {
 	state->connectPacketCount = clc.connectPacketCount;
 	state->connState = cls.state;
-	Q_strncpyz( state->servername, cls.servername, sizeof( state->servername ) );
-	Q_strncpyz( state->updateInfoString, cls.updateInfoString, sizeof( state->updateInfoString ) );
-	Q_strncpyz( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
+	QStr::NCpyZ( state->servername, cls.servername, sizeof( state->servername ) );
+	QStr::NCpyZ( state->updateInfoString, cls.updateInfoString, sizeof( state->updateInfoString ) );
+	QStr::NCpyZ( state->messageString, clc.serverMessage, sizeof( state->messageString ) );
 	state->clientNum = cl.snap.ps.clientNum;
 }
 
@@ -164,7 +164,7 @@ static int LAN_AddServer(int source, const char *name, const char *address) {
 		}
 		if (i >= *count) {
 			servers[*count].adr = adr;
-			Q_strncpyz(servers[*count].hostName, name, sizeof(servers[*count].hostName));
+			QStr::NCpyZ(servers[*count].hostName, name, sizeof(servers[*count].hostName));
 			servers[*count].visible = qtrue;
 			(*count)++;
 			return 1;
@@ -251,25 +251,25 @@ static void LAN_GetServerAddressString( int source, int n, char *buf, int buflen
 	switch (source) {
 		case AS_LOCAL :
 			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				Q_strncpyz(buf, NET_AdrToString( cls.localServers[n].adr) , buflen );
+				QStr::NCpyZ(buf, NET_AdrToString( cls.localServers[n].adr) , buflen );
 				return;
 			}
 			break;
 		case AS_MPLAYER :
 			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				Q_strncpyz(buf, NET_AdrToString( cls.mplayerServers[n].adr) , buflen );
+				QStr::NCpyZ(buf, NET_AdrToString( cls.mplayerServers[n].adr) , buflen );
 				return;
 			}
 			break;
 		case AS_GLOBAL :
 			if (n >= 0 && n < MAX_GLOBAL_SERVERS) {
-				Q_strncpyz(buf, NET_AdrToString( cls.globalServers[n].adr) , buflen );
+				QStr::NCpyZ(buf, NET_AdrToString( cls.globalServers[n].adr) , buflen );
 				return;
 			}
 			break;
 		case AS_FAVORITES :
 			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				Q_strncpyz(buf, NET_AdrToString( cls.favoriteServers[n].adr) , buflen );
+				QStr::NCpyZ(buf, NET_AdrToString( cls.favoriteServers[n].adr) , buflen );
 				return;
 			}
 			break;
@@ -322,7 +322,7 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 		Info_SetValueForKey( info, "nettype", va("%i",server->netType));
 		Info_SetValueForKey( info, "addr", NET_AdrToString(server->adr));
 		Info_SetValueForKey( info, "punkbuster", va("%i", server->punkbuster));
-		Q_strncpyz(buf, info, buflen);
+		QStr::NCpyZ(buf, info, buflen);
 	} else {
 		if (buf) {
 			buf[0] = '\0';
@@ -414,11 +414,11 @@ static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int
 	res = 0;
 	switch( sortKey ) {
 		case SORT_HOST:
-			res = Q_stricmp( server1->hostName, server2->hostName );
+			res = QStr::ICmp( server1->hostName, server2->hostName );
 			break;
 
 		case SORT_MAP:
-			res = Q_stricmp( server1->mapName, server2->mapName );
+			res = QStr::ICmp( server1->mapName, server2->mapName );
 			break;
 		case SORT_CLIENTS:
 			if (server1->clients < server2->clients) {
@@ -631,7 +631,7 @@ static void GetClipboardData( char *buf, int buflen ) {
 		return;
 	}
 
-	Q_strncpyz( buf, cbd, buflen );
+	QStr::NCpyZ( buf, cbd, buflen );
 
 	Z_Free( cbd );
 }
@@ -642,7 +642,7 @@ Key_KeynumToStringBuf
 ====================
 */
 static void Key_KeynumToStringBuf( int keynum, char *buf, int buflen ) {
-	Q_strncpyz( buf, Key_KeynumToString( keynum ), buflen );
+	QStr::NCpyZ( buf, Key_KeynumToString( keynum ), buflen );
 }
 
 /*
@@ -655,7 +655,7 @@ static void Key_GetBindingBuf( int keynum, char *buf, int buflen ) {
 
 	value = Key_GetBinding( keynum );
 	if ( value ) {
-		Q_strncpyz( buf, value, buflen );
+		QStr::NCpyZ( buf, value, buflen );
 	}
 	else {
 		*buf = 0;
@@ -739,7 +739,7 @@ static int GetConfigString(int index, char *buf, int size)
 		return qfalse;
 	}
 
-	Q_strncpyz( buf, cl.gameState.stringData+offset, size);
+	QStr::NCpyZ( buf, cl.gameState.stringData+offset, size);
  
 	return qtrue;
 }
@@ -1043,7 +1043,8 @@ int CL_UISystemCalls( int *args ) {
 		return 0;
 
 	case UI_STRNCPY:
-		return (int)strncpy( (char*)VMA(1), (char*)VMA(2), args[3] );
+		QStr::NCpy( (char*)VMA(1), (char*)VMA(2), args[3] );
+		return (int)(char*)VMA(1);
 
 	case UI_SIN:
 		return FloatAsInt( sin( VMF(1) ) );

@@ -191,7 +191,7 @@ void CL_SendConnectPacket (void)
 	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cconnect %d \"%s\"\n",
 		255, 255, 255, 255,	com_portals, cls.userinfo);
-	NET_SendPacket (strlen(data), data, adr);
+	NET_SendPacket (QStr::Length(data), data, adr);
 }
 
 /*
@@ -233,7 +233,7 @@ void CL_Connect_f (void)
 
 	CL_Disconnect ();
 
-	strncpy (cls.servername, server, sizeof(cls.servername)-1);
+	QStr::NCpy(cls.servername, server, sizeof(cls.servername)-1);
 	CL_SendConnectPacket ();
 }
 
@@ -265,22 +265,22 @@ void CL_Rcon_f (void)
 	message[3] = 255;
 	message[4] = 0;
 
-	strcat (message, "rcon ");
+	QStr::Cat(message, sizeof(message), "rcon ");
 
-	strcat (message, rcon_password.string);
-	strcat (message, " ");
+	QStr::Cat(message, sizeof(message), rcon_password.string);
+	QStr::Cat(message, sizeof(message), " ");
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		strcat (message, Cmd_Argv(i));
-		strcat (message, " ");
+		QStr::Cat(message, sizeof(message), Cmd_Argv(i));
+		QStr::Cat(message, sizeof(message), " ");
 	}
 
 	if (cls.state >= ca_connected)
 		to = cls.netchan.remote_address;
 	else
 	{
-		if (!strlen(rcon_address.string))
+		if (!QStr::Length(rcon_address.string))
 		{
 			Con_Printf ("You must either be connected,\n"
 						"or set the 'rcon_address' cvar\n"
@@ -295,7 +295,7 @@ void CL_Rcon_f (void)
 		}
 	}
 	
-	NET_SendPacket (strlen(message)+1, message
+	NET_SendPacket (QStr::Length(message)+1, message
 		, to);
 }
 
@@ -375,7 +375,7 @@ void CL_Disconnect (void)
 			CL_Stop_f ();
 
 		final[0] = clc_stringcmd;
-		strcpy ((char*)final+1, "drop");
+		QStr::Cpy((char*)final+1, "drop");
 		Netchan_Transmit (&cls.netchan, 6, final);
 		Netchan_Transmit (&cls.netchan, 6, final);
 		Netchan_Transmit (&cls.netchan, 6, final);
@@ -414,14 +414,14 @@ void CL_User_f (void)
 		return;
 	}
 
-	uid = atoi(Cmd_Argv(1));
+	uid = QStr::Atoi(Cmd_Argv(1));
 
 	for (i=0 ; i<MAX_CLIENTS ; i++)
 	{
 		if (!cl.players[i].name[0])
 			continue;
 		if (cl.players[i].userid == uid
-		|| !strcmp(cl.players[i].name, Cmd_Argv(1)) )
+		|| !QStr::Cmp(cl.players[i].name, Cmd_Argv(1)) )
 		{
 			Info_Print (cl.players[i].userinfo);
 			return;
@@ -473,11 +473,11 @@ void CL_Color_f (void)
 	}
 
 	if (Cmd_Argc() == 2)
-		top = bottom = atoi(Cmd_Argv(1));
+		top = bottom = QStr::Atoi(Cmd_Argv(1));
 	else
 	{
-		top = atoi(Cmd_Argv(1));
-		bottom = atoi(Cmd_Argv(2));
+		top = QStr::Atoi(Cmd_Argv(1));
+		bottom = QStr::Atoi(Cmd_Argv(2));
 	}
 	
 	top &= 15;
@@ -511,10 +511,10 @@ void CL_FullServerinfo_f (void)
 		return;
 	}
 
-	strcpy (cl.serverinfo, Cmd_Argv(1));
+	QStr::Cpy(cl.serverinfo, Cmd_Argv(1));
 
 	if ((p = Info_ValueForKey(cl.serverinfo, "*version")) && *p) {
-		v = atof(p);
+		v = QStr::Atof(p);
 		if (v) 
 		{
 			if (!server_version)
@@ -605,7 +605,7 @@ void CL_SetInfo_f (void)
 		Con_Printf ("usage: setinfo [ <key> <value> ]\n");
 		return;
 	}
-	if (!stricmp(Cmd_Argv(1), "pmodel") || !strcmp(Cmd_Argv(1), "emodel"))
+	if (!QStr::ICmp(Cmd_Argv(1), "pmodel") || !QStr::Cmp(Cmd_Argv(1), "emodel"))
 		return;
 
 	Info_SetValueForKey (cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
@@ -645,7 +645,7 @@ void CL_Packet_f (void)
 	out = send+4;
 	send[0] = send[1] = send[2] = send[3] = 0xff;
 
-	l = strlen (in);
+	l = QStr::Length(in);
 	for (i=0 ; i<l ; i++)
 	{
 		if (in[i] == '\\' && in[i+1] == 'n')
@@ -931,11 +931,11 @@ void CL_Sensitivity_save_f (void)
 		return;
 	}
 
-	if (strcmpi(Cmd_Argv(1),"save") == 0)
+	if (QStr::ICmp(Cmd_Argv(1),"save") == 0)
 	{
 		save_sensitivity = sensitivity.value;
 	}
-	else if (strcmpi(Cmd_Argv(1),"restore") == 0)
+	else if (QStr::ICmp(Cmd_Argv(1),"restore") == 0)
 	{
 		Cvar_SetValue ("sensitivity", save_sensitivity);
 	}

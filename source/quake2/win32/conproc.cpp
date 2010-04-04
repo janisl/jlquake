@@ -73,7 +73,7 @@ int CCheckParm (char *parm)
 	{
 		if (!ccom_argv[i])
 			continue;
-		if (!strcmp (parm,ccom_argv[i]))
+		if (!QStr::Cmp(parm,ccom_argv[i]))
 			return i;
 	}
 		
@@ -96,19 +96,19 @@ void InitConProc (int argc, char **argv)
 	if ((t = CCheckParm ("-HFILE")) > 0)
 	{
 		if (t < argc)
-			hFile = (HANDLE)atoi (ccom_argv[t+1]);
+			hFile = (HANDLE)QStr::Atoi (ccom_argv[t+1]);
 	}
 		
 	if ((t = CCheckParm ("-HPARENT")) > 0)
 	{
 		if (t < argc)
-			heventParent = (HANDLE)atoi (ccom_argv[t+1]);
+			heventParent = (HANDLE)QStr::Atoi (ccom_argv[t+1]);
 	}
 		
 	if ((t = CCheckParm ("-HCHILD")) > 0)
 	{
 		if (t < argc)
-			heventChild = (HANDLE)atoi (ccom_argv[t+1]);
+			heventChild = (HANDLE)QStr::Atoi (ccom_argv[t+1]);
 	}
 
 
@@ -296,7 +296,7 @@ BOOL WriteText (LPCTSTR szText)
 		if (*sz == 10)
 			*sz = 13;
 
-		upper = toupper(*sz);
+		upper = QStr::ToUpper(*sz);
 
 		rec.EventType = KEY_EVENT;
 		rec.Event.KeyEvent.bKeyDown = TRUE;
@@ -305,7 +305,7 @@ BOOL WriteText (LPCTSTR szText)
 		rec.Event.KeyEvent.wVirtualScanCode = CharToCode (*sz);
 		rec.Event.KeyEvent.uChar.AsciiChar = *sz;
 		rec.Event.KeyEvent.uChar.UnicodeChar = *sz;
-		rec.Event.KeyEvent.dwControlKeyState = isupper(*sz) ? 0x80 : 0x0; 
+		rec.Event.KeyEvent.dwControlKeyState = QStr::IsUpper(*sz) ? 0x80 : 0x0; 
 
 		WriteConsoleInput(
 			hStdin,
@@ -332,7 +332,7 @@ int CharToCode (char c)
 {
 	char upper;
 		
-	upper = toupper(c);
+	upper = QStr::ToUpper(c);
 
 	switch (c)
 	{
@@ -343,7 +343,7 @@ int CharToCode (char c)
 			break;
 	}
 
-	if (isalpha(c))
+	if (QStr::IsAlpha(c))
 		return (30 + upper - 65); 
 
 	if (isdigit(c))

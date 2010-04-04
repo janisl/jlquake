@@ -381,7 +381,7 @@ void NET_GetLocalAddress( void ) {
                 inetInterface = (struct ifreq *) ifc.ifc_buf;
                 while ((char *) inetInterface < &ifc.ifc_buf[ifc.ifc_len]) {
                     if (inetInterface->ifr_addr.sa_family == AF_INET &&
-                        !strncmp(inetInterface->ifr_name, linkInterface->ifr_name, sizeof(linkInterface->ifr_name))) {
+                        !QStr::NCmp(inetInterface->ifr_name, linkInterface->ifr_name, sizeof(linkInterface->ifr_name))) {
 
                         for (nameLength = 0; nameLength < IFNAMSIZ; nameLength++)
                             if (!linkInterface->ifr_name[nameLength])
@@ -391,7 +391,7 @@ void NET_GetLocalAddress( void ) {
                         // Skip loopback interfaces
                         if (sdl->sdl_type != IFT_LOOP) {
                             // Get the local interface address
-                            strncpy(ifr.ifr_name, inetInterface->ifr_name, sizeof(ifr.ifr_name));
+                            QStr::NCpy(ifr.ifr_name, inetInterface->ifr_name, sizeof(ifr.ifr_name));
                             if (ioctl(interfaceSocket, OSIOCGIFADDR, (caddr_t)&ifr) < 0) {
                                 Com_Printf("NET_GetLocalAddress: Unable to get local address for interface '%s', errno = %d\n", inetInterface->ifr_name, errno);
                             } else {
@@ -546,7 +546,7 @@ int NET_IPSocket (char *net_interface, int port)
 		return 0;
 	}
 
-	if (!net_interface || !net_interface[0] || !Q_stricmp(net_interface, "localhost"))
+	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
 		address.sin_addr.s_addr = INADDR_ANY;
 	else
 		Sys_StringToSockaddr (net_interface, (struct sockaddr *)&address);

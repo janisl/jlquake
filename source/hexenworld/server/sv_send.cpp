@@ -42,9 +42,9 @@ void SV_FlushRedirect (void)
 		send[2] = 0xff;
 		send[3] = 0xff;
 		send[4] = A2C_PRINT;
-		memcpy (send+5, outputbuf, strlen(outputbuf)+1);
+		memcpy (send+5, outputbuf, QStr::Length(outputbuf)+1);
 
-		NET_SendPacket (strlen(send)+1, send, net_from);
+		NET_SendPacket (QStr::Length(send)+1, send, net_from);
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
@@ -100,9 +100,9 @@ void Con_Printf (char *fmt, ...)
 	// add to redirected message
 	if (sv_redirected)
 	{
-		if (strlen (msg) + strlen(outputbuf) > sizeof(outputbuf) - 1)
+		if (QStr::Length(msg) + QStr::Length(outputbuf) > sizeof(outputbuf) - 1)
 			SV_FlushRedirect ();
-		strcat (outputbuf, msg);
+		QStr::Cat(outputbuf, sizeof(outputbuf), msg);
 		return;
 	}
 
@@ -446,7 +446,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 // find precache number for sound
     for (sound_num=1 ; sound_num<MAX_SOUNDS
         && sv.sound_precache[sound_num] ; sound_num++)
-        if (!strcmp(sample, sv.sound_precache[sound_num]))
+        if (!QStr::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
     if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
@@ -658,25 +658,25 @@ void SV_FindModelNumbers (void)
 	{
 		if (!sv.model_precache[i])
 			break;
-//		if (!strcmp(sv.model_precache[i],"progs/spike.mdl"))
+//		if (!QStr::Cmp(sv.model_precache[i],"progs/spike.mdl"))
 //			sv_nailmodel = i;
-//		if (!strcmp(sv.model_precache[i],"progs/s_spike.mdl"))
+//		if (!QStr::Cmp(sv.model_precache[i],"progs/s_spike.mdl"))
 //			sv_supernailmodel = i;
-		if (!strcmp(sv.model_precache[i],"models/paladin.mdl"))
+		if (!QStr::Cmp(sv.model_precache[i],"models/paladin.mdl"))
 			sv_playermodel[0] = i;
-		if (!strcmp(sv.model_precache[i],"models/crusader.mdl"))
+		if (!QStr::Cmp(sv.model_precache[i],"models/crusader.mdl"))
 			sv_playermodel[1] = i;
-		if (!strcmp(sv.model_precache[i],"models/necro.mdl"))
+		if (!QStr::Cmp(sv.model_precache[i],"models/necro.mdl"))
 			sv_playermodel[2] = i;
-		if (!strcmp(sv.model_precache[i],"models/assassin.mdl"))
+		if (!QStr::Cmp(sv.model_precache[i],"models/assassin.mdl"))
 			sv_playermodel[3] = i;
-		if (!strcmp(sv.model_precache[i],"models/succubus.mdl"))
+		if (!QStr::Cmp(sv.model_precache[i],"models/succubus.mdl"))
 			sv_playermodel[4] = i;
-		if (!strcmp(sv.model_precache[i],"models/ball.mdl"))
+		if (!QStr::Cmp(sv.model_precache[i],"models/ball.mdl"))
 			sv_magicmissmodel = i;
-		if (!strcmp(sv.model_precache[i],"models/ravproj.mdl"))
+		if (!QStr::Cmp(sv.model_precache[i],"models/ravproj.mdl"))
 			sv_ravenmodel = i;
-		if (!strcmp(sv.model_precache[i],"models/vindsht1.mdl"))
+		if (!QStr::Cmp(sv.model_precache[i],"models/vindsht1.mdl"))
 			sv_raven2model = i;
 	}
 }

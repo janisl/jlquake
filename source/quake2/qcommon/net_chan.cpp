@@ -138,7 +138,7 @@ void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...)
 	vsprintf (string, format,argptr);
 	va_end (argptr);
 
-	Netchan_OutOfBand (net_socket, adr, strlen(string), (byte *)string);
+	Netchan_OutOfBand (net_socket, adr, QStr::Length(string), (byte *)string);
 }
 
 

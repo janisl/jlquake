@@ -50,7 +50,7 @@ static long generateHashValue( const char *fname ) {
 	hash = 0;
 	i = 0;
 	while (fname[i] != '\0') {
-		letter = tolower(fname[i]);
+		letter = QStr::ToLower(fname[i]);
 		hash+=(long)(letter)*(i+119);
 		i++;
 	}
@@ -91,7 +91,7 @@ static cvar_t *Cvar_FindVar( const char *var_name ) {
 	hash = generateHashValue(var_name);
 	
 	for (var=hashTable[hash] ; var ; var=var->hashNext) {
-		if (!Q_stricmp(var_name, var->name)) {
+		if (!QStr::ICmp(var_name, var->name)) {
 			return var;
 		}
 	}
@@ -157,7 +157,7 @@ void Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize 
 		*buffer = 0;
 	}
 	else {
-		Q_strncpyz( buffer, var->string, bufsize );
+		QStr::NCpyZ( buffer, var->string, bufsize );
 	}
 }
 
@@ -225,7 +225,7 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 			// we don't have a reset string yet
 			Z_Free( var->resetString );
 			var->resetString = CopyString( var_value );
-		} else if ( var_value[0] && strcmp( var->resetString, var_value ) ) {
+		} else if ( var_value[0] && QStr::Cmp( var->resetString, var_value ) ) {
 			Com_DPrintf( "Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
 				var_name, var->resetString, var_value );
 		}
@@ -261,8 +261,8 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 	var->string = CopyString (var_value);
 	var->modified = qtrue;
 	var->modificationCount = 1;
-	var->value = atof (var->string);
-	var->integer = atoi(var->string);
+	var->value = QStr::Atof(var->string);
+	var->integer = QStr::Atoi(var->string);
 	var->resetString = CopyString( var_value );
 
 	// link the variable in
@@ -317,7 +317,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 		value = var->resetString;
 	}
 
-	if (!strcmp(value,var->string)) {
+	if (!QStr::Cmp(value,var->string)) {
 		return var;
 	}
 	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
@@ -341,13 +341,13 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 		{
 			if (var->latchedString)
 			{
-				if (strcmp(value, var->latchedString) == 0)
+				if (QStr::Cmp(value, var->latchedString) == 0)
 					return var;
 				Z_Free (var->latchedString);
 			}
 			else
 			{
-				if (strcmp(value, var->string) == 0)
+				if (QStr::Cmp(value, var->string) == 0)
 					return var;
 			}
 
@@ -374,7 +374,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 		}
 	}
 
-	if (!strcmp(value, var->string))
+	if (!QStr::Cmp(value, var->string))
 		return var;		// not changed
 
 	var->modified = qtrue;
@@ -383,8 +383,8 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 	Z_Free (var->string);	// free the old value string
 	
 	var->string = CopyString(value);
-	var->value = atof (var->string);
-	var->integer = atoi (var->string);
+	var->value = QStr::Atof(var->string);
+	var->integer = QStr::Atoi(var->string);
 
 	return var;
 }
@@ -454,7 +454,7 @@ void Cvar_SetCheatState( void ) {
         Z_Free(var->latchedString);
         var->latchedString = NULL;
       }
-			if (strcmp(var->resetString,var->string)) {
+			if (QStr::Cmp(var->resetString,var->string)) {
         Cvar_Set( var->name, var->resetString );
 			}
 		}
@@ -534,13 +534,13 @@ void Cvar_Set_f( void ) {
 	combined[0] = 0;
 	l = 0;
 	for ( i = 2 ; i < c ; i++ ) {
-		len = strlen ( Cmd_Argv( i ) + 1 );
+		len = QStr::Length( Cmd_Argv( i ) + 1 );
 		if ( l + len >= MAX_STRING_TOKENS - 2 ) {
 			break;
 		}
-		strcat( combined, Cmd_Argv( i ) );
+		QStr::Cat( combined, sizeof(combined), Cmd_Argv( i ) );
 		if ( i != c-1 ) {
-			strcat( combined, " " );
+			QStr::Cat( combined, sizeof(combined), " " );
 		}
 		l += len;
 	}
@@ -639,7 +639,7 @@ void Cvar_WriteVariables( fileHandle_t f ) {
 	char	buffer[1024];
 
 	for (var = cvar_vars ; var ; var = var->next) {
-		if( Q_stricmp( var->name, "cl_cdkey" ) == 0 ) {
+		if( QStr::ICmp( var->name, "cl_cdkey" ) == 0 ) {
 			continue;
 		}
 		if( var->flags & CVAR_ARCHIVE ) {
@@ -820,7 +820,7 @@ Cvar_InfoStringBuffer
 =====================
 */
 void Cvar_InfoStringBuffer( int bit, char* buff, int buffsize ) {
-	Q_strncpyz(buff,Cvar_InfoString(bit),buffsize);
+	QStr::NCpyZ(buff,Cvar_InfoString(bit),buffsize);
 }
 
 /*
@@ -868,17 +868,17 @@ void	Cvar_Update( vmCvar_t *vmCvar ) {
 	}
 	vmCvar->modificationCount = cv->modificationCount;
 	// bk001129 - mismatches.
-	if ( strlen(cv->string)+1 > MAX_CVAR_VALUE_STRING ) 
+	if ( QStr::Length(cv->string)+1 > MAX_CVAR_VALUE_STRING ) 
 	  Com_Error( ERR_DROP, "Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING",
 		     cv->string, 
-		     strlen(cv->string), 
+		     QStr::Length(cv->string), 
 		     sizeof(vmCvar->string) );
 	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0 
 	// bk001129 - paranoia. Never trust the destination string.
 	// bk001129 - beware, sizeof(char*) is always 4 (for cv->string). 
 	//            sizeof(vmCvar->string) always MAX_CVAR_VALUE_STRING
 	//Q_strncpyz( vmCvar->string, cv->string, sizeof( vmCvar->string ) ); // id
-	Q_strncpyz( vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING ); 
+	QStr::NCpyZ( vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING ); 
 
 	vmCvar->value = cv->value;
 	vmCvar->integer = cv->integer;

@@ -39,7 +39,7 @@ char *PF_VarString (int	first)
 	out[0] = 0;
 	for (i=first ; i<pr_argc ; i++)
 	{
-		strcat (out, G_STRING((OFS_PARM0+i*3)));
+		QStr::Cat(out, sizeof(out), G_STRING((OFS_PARM0+i*3)));
 	}
 	return out;
 }
@@ -172,7 +172,7 @@ void PF_setmodel (void)
 
 // check to see if model was properly precached
 	for (i=0, check = sv.model_precache ; *check ; i++, check++)
-		if (!strcmp(*check, m))
+		if (!QStr::Cmp(*check, m))
 			break;
 
 	if (!*check)
@@ -272,7 +272,7 @@ void PF_centerprint (void)
 		
 	cl = &svs.clients[entnum-1];
 
-	ClientReliableWrite_Begin (cl, svc_centerprint, 2 + strlen(s));
+	ClientReliableWrite_Begin (cl, svc_centerprint, 2 + QStr::Length(s));
 	ClientReliableWrite_String (cl, s);
 }
 
@@ -435,7 +435,7 @@ void PF_ambientsound (void)
 	
 // check to see if samp was properly precached
 	for (soundnum=0, check = sv.sound_precache ; *check ; check++, soundnum++)
-		if (!strcmp(*check,samp))
+		if (!QStr::Cmp(*check,samp))
 			break;
 			
 	if (!*check)
@@ -691,13 +691,13 @@ void PF_stuffcmd (void)
 	
 	cl = &svs.clients[entnum-1];
 
-	if (strcmp(str, "disconnect\n") == 0) {
+	if (QStr::Cmp(str, "disconnect\n") == 0) {
 		// so long and thanks for all the fish
 		cl->drop = true;
 		return;
 	}
 
-	ClientReliableWrite_Begin (cl, svc_stufftext, 2+strlen(str));
+	ClientReliableWrite_Begin (cl, svc_stufftext, 2+QStr::Length(str));
 	ClientReliableWrite_String (cl, str);
 }
 
@@ -868,7 +868,7 @@ void PF_Find (void)
 		t = E_STRING(ed,f);
 		if (!t)
 			continue;
-		if (!strcmp(t,s))
+		if (!QStr::Cmp(t,s))
 		{
 			RETURN_EDICT(ed);
 			return;
@@ -908,7 +908,7 @@ void PF_precache_sound (void)
 			sv.sound_precache[i] = s;
 			return;
 		}
-		if (!strcmp(sv.sound_precache[i], s))
+		if (!QStr::Cmp(sv.sound_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_sound: overflow");
@@ -933,7 +933,7 @@ void PF_precache_model (void)
 			sv.model_precache[i] = s;
 			return;
 		}
-		if (!strcmp(sv.model_precache[i], s))
+		if (!QStr::Cmp(sv.model_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_model: overflow");
@@ -1062,7 +1062,7 @@ void PF_lightstyle (void)
 	for (j=0, client = svs.clients ; j<MAX_CLIENTS ; j++, client++)
 		if ( client->state == cs_spawned )
 		{
-			ClientReliableWrite_Begin (client, svc_lightstyle, strlen(val)+3);
+			ClientReliableWrite_Begin (client, svc_lightstyle, QStr::Length(val)+3);
 			ClientReliableWrite_Char (client, style);
 			ClientReliableWrite_String (client, val);
 		}
@@ -1176,7 +1176,7 @@ void PF_aim (void)
 	if (i>0 && i<MAX_CLIENTS)
 	{
 		noaim = Info_ValueForKey (svs.clients[i-1].userinfo, "noaim");
-		if (atoi(noaim) > 0)
+		if (QStr::Atoi(noaim) > 0)
 		{
 			VectorCopy (pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 			return;
@@ -1416,7 +1416,7 @@ void PF_WriteString (void)
 {
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE) {
 		client_t *cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 1+strlen(G_STRING(OFS_PARM1)));
+		ClientReliableCheckBlock(cl, 1+QStr::Length(G_STRING(OFS_PARM1)));
 		ClientReliableWrite_String(cl, G_STRING(OFS_PARM1));
 	} else
 		MSG_WriteString (WriteDest(), G_STRING(OFS_PARM1));
@@ -1563,13 +1563,18 @@ void PF_infokey (void)
 			!*value)
 			value = Info_ValueForKey(localinfo, key);
 	} else if (e1 <= MAX_CLIENTS) {
-		if (!strcmp(key, "ip"))
-			value = strcpy(ov, NET_BaseAdrToString (svs.clients[e1-1].netchan.remote_address));
-		else if (!strcmp(key, "ping")) {
+		if (!QStr::Cmp(key, "ip"))
+		{
+			QStr::Cpy(ov, NET_BaseAdrToString (svs.clients[e1-1].netchan.remote_address));
+			value = ov;
+		}
+		else if (!QStr::Cmp(key, "ping"))
+		{
 			int ping = SV_CalcPing (&svs.clients[e1-1]);
 			sprintf(ov, "%d", ping);
 			value = ov;
-		} else
+		}
+		else
 			value = Info_ValueForKey (svs.clients[e1-1].userinfo, key);
 	} else
 		value = "";
@@ -1590,7 +1595,7 @@ void PF_stof (void)
 
 	s = G_STRING(OFS_PARM0);
 
-	G_FLOAT(OFS_RETURN) = atof(s);
+	G_FLOAT(OFS_RETURN) = QStr::Atof(s);
 }
 
 

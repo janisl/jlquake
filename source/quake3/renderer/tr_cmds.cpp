@@ -401,7 +401,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		if ( stereoFrame != STEREO_CENTER ) {
 			ri.Error( ERR_FATAL, "RE_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame );
 		}
-		if ( !Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) ) {
+		if ( !QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) ) {
 			cmd->buffer = (int)GL_FRONT;
 		} else {
 			cmd->buffer = (int)GL_BACK;

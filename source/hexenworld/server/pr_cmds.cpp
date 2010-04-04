@@ -31,7 +31,7 @@ char *PF_VarString (int	first)
 	out[0] = 0;
 	for (i=first ; i<pr_argc ; i++)
 	{
-		strcat (out, G_STRING((OFS_PARM0+i*3)));
+		QStr::Cat(out, sizeof(out), G_STRING((OFS_PARM0+i*3)));
 	}
 	return out;
 }
@@ -241,7 +241,7 @@ void PF_setmodel (void)
 
 // check to see if model was properly precached
 	for (i=0, check = sv.model_precache ; *check ; i++, check++)
-		if (!strcmp(*check, m))
+		if (!QStr::Cmp(*check, m))
 			break;
 
 	if (!*check)
@@ -284,7 +284,7 @@ void PF_setpuzzlemodel (void)
 	sprintf(NewName,"models/puzzle/%s.mdl",m);
 // check to see if model was properly precached
 	for (i=0, check = sv.model_precache ; *check ; i++, check++)
-		if (!strcmp(*check, NewName))
+		if (!QStr::Cmp(*check, NewName))
 			break;
 			
 	e->v.model = ED_NewString (NewName) - pr_strings;
@@ -842,7 +842,7 @@ void PF_ambientsound (void)
 	
 // check to see if samp was properly precached
 	for (soundnum=0, check = sv.sound_precache ; *check ; check++, soundnum++)
-		if (!strcmp(*check,samp))
+		if (!QStr::Cmp(*check,samp))
 			break;
 			
 	if (!*check)
@@ -1462,7 +1462,7 @@ void PF_Find (void)
 		t = E_STRING(ed,f);
 		if (!t)
 			continue;
-		if (!strcmp(t,s))
+		if (!QStr::Cmp(t,s))
 		{
 			if (first == (edict_t *)sv.edicts)
 				first = ed;
@@ -1506,7 +1506,7 @@ void PF_Find (void)
 		t = E_STRING(ed,f);
 		if (!t)
 			continue;
-		if (!strcmp(t,s))
+		if (!QStr::Cmp(t,s))
 		{
 			RETURN_EDICT(ed);
 			return;
@@ -1576,7 +1576,7 @@ void PF_precache_sound (void)
 			sv.sound_precache[i] = s;
 			return;
 		}
-		if (!strcmp(sv.sound_precache[i], s))
+		if (!QStr::Cmp(sv.sound_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_sound: overflow");
@@ -1618,7 +1618,7 @@ void PF_precache_model (void)
 //			sv.models[i] = Mod_ForName (s, true);
 			return;
 		}
-		if (!strcmp(sv.model_precache[i], s))
+		if (!QStr::Cmp(sv.model_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_model: overflow");
@@ -1664,7 +1664,7 @@ void PF_precache_puzzle_model (void)
 //			sv.models[i] = Mod_ForName (s, true);
 			return;
 		}
-		if (!strcmp(sv.model_precache[i], s))
+		if (!QStr::Cmp(sv.model_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_puzzle_model: overflow");
@@ -2405,7 +2405,7 @@ void PF_stof (void)
 
 	s = G_STRING(OFS_PARM0);
 
-	G_FLOAT(OFS_RETURN) = atof(s);
+	G_FLOAT(OFS_RETURN) = QStr::Atof(s);
 }
 
 
@@ -2650,7 +2650,7 @@ void PF_AwardExperience(void)
 
 	if (!Amount) return;
 
-	IsPlayer = (strcmpi(ToEnt->v.classname + pr_strings, "player") == 0);
+	IsPlayer = (QStr::ICmp(ToEnt->v.classname + pr_strings, "player") == 0);
 
 	if (FromEnt && Amount == 0.0)
 	{
@@ -2863,7 +2863,7 @@ void PF_setclass (void)
 
 	sprintf(temp,"%d",(int)NewClass);
 	Info_SetValueForKey (host_client->userinfo, "playerclass", temp, MAX_INFO_STRING);
-	strncpy (host_client->name, Info_ValueForKey (host_client->userinfo, "name")
+	QStr::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 		, sizeof(host_client->name)-1);	
 	host_client->sendinfo = true;
 
@@ -2906,7 +2906,7 @@ void PF_setsiegeteam (void)
 //???
 //	sprintf(temp,"%d",(int)NewTeam);
 //	Info_SetValueForKey (host_client->userinfo, "playerclass", temp, MAX_INFO_STRING);
-//	strncpy (host_client->name, Info_ValueForKey (host_client->userinfo, "name")
+//	QStr::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 //		, sizeof(host_client->name)-1);	
 //	host_client->sendinfo = true;
 
@@ -3251,7 +3251,7 @@ void PF_weapon_sound(void)
 
 	for (sound_num=1 ; sound_num<MAX_SOUNDS
         && sv.sound_precache[sound_num] ; sound_num++)
-        if (!strcmp(sample, sv.sound_precache[sound_num]))
+        if (!QStr::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
     if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )

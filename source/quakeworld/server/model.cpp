@@ -172,14 +172,14 @@ model_t *Mod_FindName (char *name)
 // search the currently loaded models
 //
 	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
-		if (!strcmp (mod->name, name) )
+		if (!QStr::Cmp(mod->name, name) )
 			break;
 			
 	if (i == mod_numknown)
 	{
 		if (mod_numknown == MAX_MOD_KNOWN)
 			SV_Error ("mod_numknown == MAX_MOD_KNOWN");
-		strcpy (mod->name, name);
+		QStr::Cpy(mod->name, name);
 		mod->needload = true;
 		mod_numknown++;
 	}
@@ -364,7 +364,7 @@ void Mod_LoadTextures (lump_t *l)
 			tx2 = loadmodel->textures[j];
 			if (!tx2 || tx2->name[0] != '+')
 				continue;
-			if (strcmp (tx2->name+2, tx->name+2))
+			if (QStr::Cmp(tx2->name+2, tx->name+2))
 				continue;
 
 			num = tx2->name[1];
@@ -727,13 +727,13 @@ void Mod_LoadFaces (lump_t *l)
 		
 	// set the drawing flags flag
 		
-		if (!Q_strncmp(out->texinfo->texture->name,"sky",3))	// sky
+		if (!QStr::NCmp(out->texinfo->texture->name,"sky",3))	// sky
 		{
 			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
 			continue;
 		}
 		
-		if (!Q_strncmp(out->texinfo->texture->name,"*",1))		// turbulent
+		if (!QStr::NCmp(out->texinfo->texture->name,"*",1))		// turbulent
 		{
 			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
 			for (i=0 ; i<2 ; i++)
@@ -1129,7 +1129,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 			sprintf (name, "*%i", i+1);
 			loadmodel = Mod_FindName (name);
 			*loadmodel = *mod;
-			strcpy (loadmodel->name, name);
+			QStr::Cpy(loadmodel->name, name);
 			mod = loadmodel;
 		}
 	}

@@ -141,7 +141,7 @@ void UpdateInfoMessage(void)
 	unsigned int check;
 	char *newmessage;
 
-	strcpy(infomessage, "Objectives:");
+	QStr::Cpy(infomessage, "Objectives:");
 
 	if (!pr_global_info_strings)
 		return;
@@ -153,8 +153,8 @@ void UpdateInfoMessage(void)
 		if (cl.info_mask & check)
 		{
 			newmessage = &pr_global_info_strings[pr_info_string_index[i]];
-			strcat(infomessage, "@@");
-			strcat(infomessage, newmessage);
+			QStr::Cat(infomessage, sizeof(infomessage), "@@");
+			QStr::Cat(infomessage, sizeof(infomessage), newmessage);
 		}
 	}
 
@@ -165,8 +165,8 @@ void UpdateInfoMessage(void)
 		if (cl.info_mask2 & check)
 		{
 			newmessage = &pr_global_info_strings[pr_info_string_index[i+32]];
-			strcat(infomessage, "@@");
-			strcat(infomessage, newmessage);
+			QStr::Cat(infomessage, sizeof(infomessage), "@@");
+			QStr::Cat(infomessage, sizeof(infomessage), newmessage);
 		}
 	}
 }
@@ -176,7 +176,7 @@ void FindTextBreaks(char *message, int Width)
 {
 	int length,pos,start,lastspace,oldlast;
 
-	length = strlen(message);
+	length = QStr::Length(message);
 	lines = pos = start = 0;
 	lastspace = -1;
 
@@ -224,7 +224,7 @@ for a few moments
 */
 void SCR_CenterPrint (char *str)
 {
-	strncpy (scr_centerstring, str, sizeof(scr_centerstring)-1);
+	QStr::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime.value;
 	scr_centertime_start = cl.time;
 
@@ -253,9 +253,9 @@ void SCR_DrawCenterString (void)
 	by = ((25-lines) * 8) / 2;
 	for(i=0;i<lines;i++,by+=8)
 	{
-		strncpy(temp,&scr_centerstring[StartC[i]],EndC[i]-StartC[i]);
+		QStr::NCpy(temp,&scr_centerstring[StartC[i]],EndC[i]-StartC[i]);
 		temp[EndC[i]-StartC[i]] = 0;
-		bx = ((40-strlen(temp)) * 8) / 2;
+		bx = ((40-QStr::Length(temp)) * 8) / 2;
 	  	M_Print2 (bx, by, temp);
 	}
 }
@@ -699,7 +699,7 @@ void SCR_ScreenShot_f (void)
 // 
 // find a file name to save it to 
 // 
-	strcpy(pcxname,"shots/hexen00.tga");
+	QStr::Cpy(pcxname,"shots/hexen00.tga");
 		
 	for (i=0 ; i<=99 ; i++) 
 	{ 
@@ -896,9 +896,9 @@ void Plaque_Draw (char *message, qboolean AlwaysDraw)
 
 	for(i=0;i<lines;i++,by+=8)
 	{
-		strncpy(temp,&message[StartC[i]],EndC[i]-StartC[i]);
+		QStr::NCpy(temp,&message[StartC[i]],EndC[i]-StartC[i]);
 		temp[EndC[i]-StartC[i]] = 0;
-		bx = ((40-strlen(temp)) * 8) / 2;
+		bx = ((40-QStr::Length(temp)) * 8) / 2;
 	  	M_Print2 (bx, by, temp);
 	}
 }
@@ -930,9 +930,9 @@ void Info_Plaque_Draw (char *message)
 
 	for(i=0;i<lines;i++,by+=8)
 	{
-		strncpy(temp,&message[StartC[i]],EndC[i]-StartC[i]);
+		QStr::NCpy(temp,&message[StartC[i]],EndC[i]-StartC[i]);
 		temp[EndC[i]-StartC[i]] = 0;
-		bx = ((40-strlen(temp)) * 8) / 2;
+		bx = ((40-QStr::Length(temp)) * 8) / 2;
 	  	M_Print2 (bx, by, temp);
 	}
 }
@@ -970,9 +970,9 @@ void Bottom_Plaque_Draw (char *message)
 
 	for(i=0;i<lines;i++,by+=8)
 	{
-		strncpy(temp,&message[StartC[i]],EndC[i]-StartC[i]);
+		QStr::NCpy(temp,&message[StartC[i]],EndC[i]-StartC[i]);
 		temp[EndC[i]-StartC[i]] = 0;
-		bx = ((40-strlen(temp)) * 8) / 2;
+		bx = ((40-QStr::Length(temp)) * 8) / 2;
 	  	M_Print(bx, by, temp);
 	}
 }
@@ -1088,12 +1088,12 @@ void SB_IntermissionOverlay(void)
 	for(i=0;i<lines;i++,by+=8)
 	{
 		size = EndC[i]-StartC[i];
-		strncpy(temp,&message[StartC[i]],size);
+		QStr::NCpy(temp,&message[StartC[i]],size);
 
 		if (size > elapsed) size = elapsed;
 		temp[size] = 0;
 
-		bx = ((40-strlen(temp)) * 8) / 2;
+		bx = ((40-QStr::Length(temp)) * 8) / 2;
 	  	if (cl.intermission < 6 || cl.intermission > 9)
 			I_Print (bx, by, temp);
 		else

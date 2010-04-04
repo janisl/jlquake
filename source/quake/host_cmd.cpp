@@ -272,13 +272,13 @@ void Host_Map_f (void)
 	cls.mapstring[0] = 0;
 	for (i=0 ; i<Cmd_Argc() ; i++)
 	{
-		strcat (cls.mapstring, Cmd_Argv(i));
-		strcat (cls.mapstring, " ");
+		QStr::Cat(cls.mapstring, sizeof(cls.mapstring), Cmd_Argv(i));
+		QStr::Cat(cls.mapstring, sizeof(cls.mapstring), " ");
 	}
-	strcat (cls.mapstring, "\n");
+	QStr::Cat(cls.mapstring, sizeof(cls.mapstring), "\n");
 
 	svs.serverflags = 0;			// haven't completed an episode yet
-	strcpy (name, Cmd_Argv(1));
+	QStr::Cpy(name, Cmd_Argv(1));
 #ifdef QUAKE2
 	SV_SpawnServer (name, NULL);
 #else
@@ -289,12 +289,12 @@ void Host_Map_f (void)
 	
 	if (cls.state != ca_dedicated)
 	{
-		strcpy (cls.spawnparms, "");
+		QStr::Cpy(cls.spawnparms, "");
 
 		for (i=2 ; i<Cmd_Argc() ; i++)
 		{
-			strcat (cls.spawnparms, Cmd_Argv(i));
-			strcat (cls.spawnparms, " ");
+			QStr::Cat(cls.spawnparms, sizeof(cls.spawnparms), Cmd_Argv(i));
+			QStr::Cat(cls.spawnparms, sizeof(cls.spawnparms), " ");
 		}
 		
 		Cmd_ExecuteString ("connect local", src_command);
@@ -326,12 +326,12 @@ void Host_Changelevel_f (void)
 		return;
 	}
 
-	strcpy (level, Cmd_Argv(1));
+	QStr::Cpy(level, Cmd_Argv(1));
 	if (Cmd_Argc() == 2)
 		startspot = NULL;
 	else
 	{
-		strcpy (_startspot, Cmd_Argv(2));
+		QStr::Cpy(_startspot, Cmd_Argv(2));
 		startspot = _startspot;
 	}
 
@@ -351,7 +351,7 @@ void Host_Changelevel_f (void)
 		return;
 	}
 	SV_SaveSpawnparms ();
-	strcpy (level, Cmd_Argv(1));
+	QStr::Cpy(level, Cmd_Argv(1));
 	SV_SpawnServer (level);
 #endif
 }
@@ -375,10 +375,10 @@ void Host_Restart_f (void)
 
 	if (cmd_source != src_command)
 		return;
-	strcpy (mapname, sv.name);	// must copy out, because it gets cleared
+	QStr::Cpy(mapname, sv.name);	// must copy out, because it gets cleared
 								// in sv_spawnserver
 #ifdef QUAKE2
-	strcpy(startspot, sv.startspot);
+	QStr::Cpy(startspot, sv.startspot);
 	SV_SpawnServer (mapname, startspot);
 #else
 	SV_SpawnServer (mapname);
@@ -416,7 +416,7 @@ void Host_Connect_f (void)
 		CL_StopPlayback ();
 		CL_Disconnect ();
 	}
-	strcpy (name, Cmd_Argv(1));
+	QStr::Cpy(name, Cmd_Argv(1));
 	CL_EstablishConnection (name);
 	Host_Reconnect_f ();
 }
@@ -446,9 +446,9 @@ void Host_SavegameComment (char *text)
 
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
 		text[i] = ' ';
-	memcpy (text, cl.levelname, strlen(cl.levelname));
+	memcpy (text, cl.levelname, QStr::Length(cl.levelname));
 	sprintf (kills,"kills:%3i/%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
-	memcpy (text+22, kills, strlen(kills));
+	memcpy (text+22, kills, QStr::Length(kills));
 // convert space to _ to make stdio happy
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
 		if (text[i] == ' ')
@@ -641,8 +641,8 @@ void Host_Loadgame_f (void)
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
 		fscanf (f, "%s\n", str);
-		sv.lightstyles[i] = (char*)Hunk_Alloc (strlen(str)+1);
-		strcpy (sv.lightstyles[i], str);
+		sv.lightstyles[i] = (char*)Hunk_Alloc (QStr::Length(str)+1);
+		QStr::Cpy(sv.lightstyles[i], str);
 	}
 
 // load the edicts out of the savegame file
@@ -668,7 +668,7 @@ void Host_Loadgame_f (void)
 		start = COM_Parse(str);
 		if (!com_token[0])
 			break;		// end of file
-		if (strcmp(com_token,"{"))
+		if (QStr::Cmp(com_token,"{"))
 			Sys_Error ("First token isn't a brace");
 			
 		if (entnum == -1)
@@ -809,8 +809,8 @@ int LoadGamestate(char *level, char *startspot)
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
 		fscanf (f, "%s\n", str);
-		sv.lightstyles[i] = Hunk_Alloc (strlen(str)+1);
-		strcpy (sv.lightstyles[i], str);
+		sv.lightstyles[i] = Hunk_Alloc (QStr::Length(str)+1);
+		QStr::Cpy(sv.lightstyles[i], str);
 	}
 
 // load the edicts out of the savegame file
@@ -836,7 +836,7 @@ int LoadGamestate(char *level, char *startspot)
 		start = COM_Parse(str);
 		if (!com_token[0])
 			break;		// end of file
-		if (strcmp(com_token,"{"))
+		if (QStr::Cmp(com_token,"{"))
 			Sys_Error ("First token isn't a brace");
 			
 		// parse an edict
@@ -879,12 +879,12 @@ void Host_Changelevel2_f (void)
 		return;
 	}
 
-	strcpy (level, Cmd_Argv(1));
+	QStr::Cpy(level, Cmd_Argv(1));
 	if (Cmd_Argc() == 2)
 		startspot = NULL;
 	else
 	{
-		strcpy (_startspot, Cmd_Argv(2));
+		QStr::Cpy(_startspot, Cmd_Argv(2));
 		startspot = _startspot;
 	}
 
@@ -924,7 +924,7 @@ void Host_Name_f (void)
 
 	if (cmd_source == src_command)
 	{
-		if (Q_strcmp(cl_name.string, newName) == 0)
+		if (QStr::Cmp(cl_name.string, newName) == 0)
 			return;
 		Cvar_Set ("_cl_name", newName);
 		if (cls.state == ca_connected)
@@ -932,10 +932,10 @@ void Host_Name_f (void)
 		return;
 	}
 
-	if (host_client->name[0] && strcmp(host_client->name, "unconnected") )
-		if (Q_strcmp(host_client->name, newName) != 0)
+	if (host_client->name[0] && QStr::Cmp(host_client->name, "unconnected") )
+		if (QStr::Cmp(host_client->name, newName) != 0)
 			Con_Printf ("%s renamed to %s\n", host_client->name, newName);
-	Q_strcpy (host_client->name, newName);
+	QStr::Cpy(host_client->name, newName);
 	host_client->edict->v.netname = host_client->name - pr_strings;
 	
 // send notification to all clients
@@ -961,9 +961,9 @@ void Host_Please_f (void)
 	if (cmd_source != src_command)
 		return;
 
-	if ((Cmd_Argc () == 3) && Q_strcmp(Cmd_Argv(1), "#") == 0)
+	if ((Cmd_Argc () == 3) && QStr::Cmp(Cmd_Argv(1), "#") == 0)
 	{
-		j = Q_atof(Cmd_Argv(2)) - 1;
+		j = QStr::Atof(Cmd_Argv(2)) - 1;
 		if (j < 0 || j >= svs.maxclients)
 			return;
 		if (!svs.clients[j].active)
@@ -987,7 +987,7 @@ void Host_Please_f (void)
 	{
 		if (!cl->active)
 			continue;
-		if (Q_strcasecmp(cl->name, Cmd_Argv(1)) == 0)
+		if (QStr::ICmp(cl->name, Cmd_Argv(1)) == 0)
 		{
 			if (cl->privileged)
 			{
@@ -1038,7 +1038,7 @@ void Host_Say(qboolean teamonly)
 	if (*p == '"')
 	{
 		p++;
-		p[Q_strlen(p)-1] = 0;
+		p[QStr::Length(p)-1] = 0;
 	}
 
 // turn on color set 1
@@ -1047,12 +1047,12 @@ void Host_Say(qboolean teamonly)
 	else
 		sprintf (text, "%c<%s> ", 1, hostname.string);
 
-	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and null terminator
-	if (Q_strlen(p) > j)
+	j = sizeof(text) - 2 - QStr::Length(text);  // -2 for /n and null terminator
+	if (QStr::Length(p) > j)
 		p[j] = 0;
 
-	strcat (text, p);
-	strcat (text, "\n");
+	QStr::Cat(text, sizeof(text), p);
+	QStr::Cat(text, sizeof(text), "\n");
 
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
@@ -1098,8 +1098,8 @@ void Host_Tell_f(void)
 	if (Cmd_Argc () < 3)
 		return;
 
-	Q_strcpy(text, host_client->name);
-	Q_strcat(text, ": ");
+	QStr::Cpy(text, host_client->name);
+	QStr::Cat(text, sizeof(text), ": ");
 
 	p = Cmd_Args();
 
@@ -1107,23 +1107,23 @@ void Host_Tell_f(void)
 	if (*p == '"')
 	{
 		p++;
-		p[Q_strlen(p)-1] = 0;
+		p[QStr::Length(p)-1] = 0;
 	}
 
 // check length & truncate if necessary
-	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and null terminator
-	if (Q_strlen(p) > j)
+	j = sizeof(text) - 2 - QStr::Length(text);  // -2 for /n and null terminator
+	if (QStr::Length(p) > j)
 		p[j] = 0;
 
-	strcat (text, p);
-	strcat (text, "\n");
+	QStr::Cat(text, sizeof(text), p);
+	QStr::Cat(text, sizeof(text), "\n");
 
 	save = host_client;
 	for (j = 0, client = svs.clients; j < svs.maxclients; j++, client++)
 	{
 		if (!client->active || !client->spawned)
 			continue;
-		if (Q_strcasecmp(client->name, Cmd_Argv(1)))
+		if (QStr::ICmp(client->name, Cmd_Argv(1)))
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -1151,11 +1151,11 @@ void Host_Color_f(void)
 	}
 
 	if (Cmd_Argc() == 2)
-		top = bottom = atoi(Cmd_Argv(1));
+		top = bottom = QStr::Atoi(Cmd_Argv(1));
 	else
 	{
-		top = atoi(Cmd_Argv(1));
-		bottom = atoi(Cmd_Argv(2));
+		top = QStr::Atoi(Cmd_Argv(1));
+		bottom = QStr::Atoi(Cmd_Argv(2));
 	}
 	
 	top &= 15;
@@ -1442,9 +1442,9 @@ void Host_Kick_f (void)
 
 	save = host_client;
 
-	if (Cmd_Argc() > 2 && Q_strcmp(Cmd_Argv(1), "#") == 0)
+	if (Cmd_Argc() > 2 && QStr::Cmp(Cmd_Argv(1), "#") == 0)
 	{
-		i = Q_atof(Cmd_Argv(2)) - 1;
+		i = QStr::Atof(Cmd_Argv(2)) - 1;
 		if (i < 0 || i >= svs.maxclients)
 			return;
 		if (!svs.clients[i].active)
@@ -1458,7 +1458,7 @@ void Host_Kick_f (void)
 		{
 			if (!host_client->active)
 				continue;
-			if (Q_strcasecmp(host_client->name, Cmd_Argv(1)) == 0)
+			if (QStr::ICmp(host_client->name, Cmd_Argv(1)) == 0)
 				break;
 		}
 	}
@@ -1485,7 +1485,7 @@ void Host_Kick_f (void)
 				message++;							// skip the #
 				while (*message == ' ')				// skip white space
 					message++;
-				message += Q_strlen(Cmd_Argv(2));	// skip the number
+				message += QStr::Length(Cmd_Argv(2));	// skip the number
 			}
 			while (*message && *message == ' ')
 				message++;
@@ -1529,7 +1529,7 @@ void Host_Give_f (void)
 		return;
 
 	t = Cmd_Argv(1);
-	v = atoi (Cmd_Argv(2));
+	v = QStr::Atoi(Cmd_Argv(2));
 	
 	switch (t[0])
 	{
@@ -1675,7 +1675,7 @@ edict_t	*FindViewthing (void)
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if ( !strcmp (pr_strings + e->v.classname, "viewthing") )
+		if ( !QStr::Cmp(pr_strings + e->v.classname, "viewthing") )
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");
@@ -1723,7 +1723,7 @@ void Host_Viewframe_f (void)
 		return;
 	m = cl.model_precache[(int)e->v.modelindex];
 
-	f = atoi(Cmd_Argv(1));
+	f = QStr::Atoi(Cmd_Argv(1));
 	if (f >= m->numframes)
 		f = m->numframes-1;
 
@@ -1823,7 +1823,7 @@ void Host_Startdemos_f (void)
 	Con_Printf ("%i demo(s) in loop\n", c);
 
 	for (i=1 ; i<c+1 ; i++)
-		strncpy (cls.demos[i-1], Cmd_Argv(i), sizeof(cls.demos[0])-1);
+		QStr::NCpy(cls.demos[i-1], Cmd_Argv(i), sizeof(cls.demos[0])-1);
 
 	if (!sv.active && cls.demonum != -1 && !cls.demoplayback)
 	{

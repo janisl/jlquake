@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/time.h>
-#include <ctype.h>
 
 #include "../linux/glob.h"
 
@@ -102,14 +101,6 @@ void Sys_Mkdir (char *path)
     mkdir (path, 0777);
 }
 
-char *strlwr (char *s)
-{
-	while (*s) {
-		*s = tolower(*s);
-		s++;
-	}
-}
-
 //============================================
 
 static	char	findbase[MAX_OSPATH];
@@ -124,7 +115,7 @@ static qboolean CompareAttributes(char *path, char *name,
 	char fn[MAX_OSPATH];
 
 // . and .. never match
-	if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
+	if (QStr::Cmp(name, ".") == 0 || QStr::Cmp(name, "..") == 0)
 		return false;
 
 	sprintf(fn, "%s/%s", path, name);
@@ -149,16 +140,16 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canhave)
 		Sys_Error ("Sys_BeginFind without close");
 
 //	COM_FilePath (path, findbase);
-	strcpy(findbase, path);
+	QStr::Cpy(findbase, path);
 
-	if ((p = strrchr(findbase, '/')) != NULL) {
+	if ((p = QStr::RChr(findbase, '/')) != NULL) {
 		*p = 0;
-		strcpy(findpattern, p + 1);
+		QStr::Cpy(findpattern, p + 1);
 	} else
-		strcpy(findpattern, "*");
+		QStr::Cpy(findpattern, "*");
 
-	if (strcmp(findpattern, "*.*") == 0)
-		strcpy(findpattern, "*");
+	if (QStr::Cmp(findpattern, "*.*") == 0)
+		QStr::Cpy(findpattern, "*");
 	
 	if ((fdir = opendir(findbase)) == NULL)
 		return NULL;

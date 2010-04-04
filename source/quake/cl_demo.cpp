@@ -224,7 +224,7 @@ void CL_Record_f (void)
 // write the forced cd track number, or -1
 	if (c == 4)
 	{
-		track = atoi(Cmd_Argv(3));
+		track = QStr::Atoi(Cmd_Argv(3));
 		Con_Printf ("Forcing CD track to %i\n", cls.forcetrack);
 	}
 	else
@@ -288,7 +288,7 @@ void CL_PlayDemo_f (void)
 //
 // open the demo file
 //
-	strcpy (name, Cmd_Argv(1));
+	QStr::Cpy(name, Cmd_Argv(1));
 	COM_DefaultExtension (name, ".dem");
 
 	Con_Printf ("Playing demo from %s.\n", name);

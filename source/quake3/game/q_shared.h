@@ -35,7 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <assert.h>
 #include <time.h>
-#include <ctype.h>
 #include <limits.h>
 
 
@@ -92,7 +91,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAC_STATIC
 #define __cdecl
 #define __declspec(x)
-#define stricmp strcasecmp
 #define ID_INLINE inline 
 
 #ifdef __ppc__
@@ -154,9 +152,6 @@ void Sys_PumpEvents( void );
 // just waste space and make big arrays static...
 #ifdef __linux__
 
-// bk001205 - from Makefile
-#define stricmp strcasecmp
-
 #define	MAC_STATIC // bk: FIXME
 #define ID_INLINE inline 
 
@@ -174,8 +169,6 @@ void Sys_PumpEvents( void );
 
 //======================= FreeBSD DEFINES =====================
 #ifdef __FreeBSD__ // rb010123
-
-#define stricmp strcasecmp
 
 #define MAC_STATIC
 #define ID_INLINE inline 
@@ -707,23 +700,6 @@ typedef enum {
 
 //=============================================
 
-int Q_isprint( int c );
-int Q_islower( int c );
-int Q_isupper( int c );
-int Q_isalpha( int c );
-
-// portable case insensitive compare
-int		Q_stricmp (const char *s1, const char *s2);
-int		Q_strncmp (const char *s1, const char *s2, int n);
-int		Q_stricmpn (const char *s1, const char *s2, int n);
-char	*Q_strlwr( char *s1 );
-char	*Q_strupr( char *s1 );
-char	*Q_strrchr( const char* string, int c );
-
-// buffer size safe library replacements
-void	Q_strncpyz( char *dest, const char *src, int destsize );
-void	Q_strcat( char *dest, int size, const char *src );
-
 // strlen that discounts Quake color sequences
 int Q_PrintStrlen( const char *string );
 // removes color sequences from string
@@ -744,21 +720,6 @@ typedef struct
 	byte	b6;
 	byte	b7;
 } qint64;
-
-//=============================================
-/*
-short	BigShort(short l);
-short	LittleShort(short l);
-int		BigLong (int l);
-int		LittleLong (int l);
-qint64  BigLong64 (qint64 l);
-qint64  LittleLong64 (qint64 l);
-float	BigFloat (const float *l);
-float	LittleFloat (const float *l);
-
-void	Swap_Init (void);
-*/
-char	* QDECL va(char *format, ...);
 
 //=============================================
 

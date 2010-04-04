@@ -298,8 +298,8 @@ void VID_CheckChanges (void)
 		sprintf( name, "ref_%s.so", vid_ref->string );
 		if ( !VID_LoadRefresh( name ) )
 		{
-			if ( strcmp (vid_ref->string, "soft") == 0 ||
-				strcmp (vid_ref->string, "softx") == 0 ) {
+			if ( QStr::Cmp(vid_ref->string, "soft") == 0 ||
+				QStr::Cmp(vid_ref->string, "softx") == 0 ) {
 Com_Printf("Refresh failed\n");
 				sw_mode = Cvar_Get( "sw_mode", "0", 0 );
 				if (sw_mode->value != 0) {

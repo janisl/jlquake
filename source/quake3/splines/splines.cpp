@@ -62,7 +62,7 @@ void glLabeledPoint(idVec3_t &color, idVec3_t &point, float size, const char *la
 	v.y += 1;
 	v.z += 1;
 	qglRasterPos3fv (v);
-	qglCallLists (strlen(label), GL_UNSIGNED_BYTE, label);
+	qglCallLists (QStr::Length(label), GL_UNSIGNED_BYTE, label);
 }
 
 
@@ -390,29 +390,29 @@ void idSplineList::parse(const char *(*text)  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !Q_stricmp (token, "}") ) {
+		if ( !QStr::ICmp (token, "}") ) {
 			break;
 		}
 
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !Q_stricmp (token, "(") || !Q_stricmp(token, "}")) {
+			if ( !token[0] || !QStr::ICmp (token, "(") || !QStr::ICmp(token, "}")) {
 				break;
 			}
 
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine(text);
 			const char *token = Com_Parse(text);
-			if (Q_stricmp(key.c_str(), "granularity") == 0) {
-				granularity = atof(token);
-			} else if (Q_stricmp(key.c_str(), "name") == 0) {
+			if (QStr::ICmp(key.c_str(), "granularity") == 0) {
+				granularity = QStr::Atof(token);
+			} else if (QStr::ICmp(key.c_str(), "name") == 0) {
 				name = token;
 			}
 			token = Com_Parse(text);
 
 		} while (1);
 
-		if ( !Q_stricmp (token, "}") ) {
+		if ( !QStr::ICmp (token, "}") ) {
 			break;
 		}
 
@@ -504,7 +504,7 @@ bool idCameraDef::getCameraInfo(long time, idVec3_t &origin, idVec3_t &direction
 				//	ent->ProcessEvent( &EV_Activate, world );
 				//}
 			} else if (events[i]->getType() == idCameraEvent::EVENT_FOV) {
-				//*fv = fov = atof(events[i]->getParam());
+				//*fv = fov = QStr::Atof(events[i]->getParam());
 			} else if (events[i]->getType() == idCameraEvent::EVENT_STOP) {
 				return false;
 			}
@@ -574,8 +574,8 @@ void idCameraDef::buildCamera() {
 				break;
 			}
 			case idCameraEvent::EVENT_WAIT : {
-				waits.Append(atof(events[i]->getParam()));
-				cameraPosition->addVelocity(events[i]->getTime(), atof(events[i]->getParam()) * 1000, 0);
+				waits.Append(QStr::Atof(events[i]->getParam()));
+				cameraPosition->addVelocity(events[i]->getTime(), QStr::Atof(events[i]->getParam()) * 1000, 0);
 				break;
 			}
 			case idCameraEvent::EVENT_TARGETWAIT : {
@@ -585,7 +585,7 @@ void idCameraDef::buildCamera() {
 			case idCameraEvent::EVENT_SPEED : {
 /*
 				// take the average delay between up to the next five segments
-				float adjust = atof(events[i]->getParam());
+				float adjust = QStr::Atof(events[i]->getParam());
 				int index = events[i]->getSegment();
 				total = 0;
 				count = 0;
@@ -663,52 +663,52 @@ void idCameraDef::parse(const char *(*text)  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !Q_stricmp (token, "}") ) {
+		if ( !QStr::ICmp (token, "}") ) {
 			break;
 		}
 
-		if (Q_stricmp(token, "time") == 0) {
+		if (QStr::ICmp(token, "time") == 0) {
 			baseTime = Com_ParseFloat(text);
 		}
 
-		if (Q_stricmp(token, "camera_fixed") == 0) {
+		if (QStr::ICmp(token, "camera_fixed") == 0) {
 			cameraPosition = new idFixedPosition();
 			cameraPosition->parse(text);
 		}
 
-		if (Q_stricmp(token, "camera_interpolated") == 0) {
+		if (QStr::ICmp(token, "camera_interpolated") == 0) {
 			cameraPosition = new idInterpolatedPosition();
 			cameraPosition->parse(text);
 		}
 
-		if (Q_stricmp(token, "camera_spline") == 0) {
+		if (QStr::ICmp(token, "camera_spline") == 0) {
 			cameraPosition = new idSplinePosition();
 			cameraPosition->parse(text);
 		}
 
-		if (Q_stricmp(token, "target_fixed") == 0) {
+		if (QStr::ICmp(token, "target_fixed") == 0) {
 			idFixedPosition *pos = new idFixedPosition();
 			pos->parse(text);
 			targetPositions.Append(pos);
 		}
 		
-		if (Q_stricmp(token, "target_interpolated") == 0) {
+		if (QStr::ICmp(token, "target_interpolated") == 0) {
 			idInterpolatedPosition *pos = new idInterpolatedPosition();
 			pos->parse(text);
 			targetPositions.Append(pos);
 		}
 
-		if (Q_stricmp(token, "target_spline") == 0) {
+		if (QStr::ICmp(token, "target_spline") == 0) {
 			idSplinePosition *pos = new idSplinePosition();
 			pos->parse(text);
 			targetPositions.Append(pos);
 		}
 
-		if (Q_stricmp(token, "fov") == 0) {
+		if (QStr::ICmp(token, "fov") == 0) {
 			fov.parse(text);
 		}
 
-		if (Q_stricmp(token, "event") == 0) {
+		if (QStr::ICmp(token, "event") == 0) {
 			idCameraEvent *event = new idCameraEvent();
 			event->parse(text);
 			addEvent(event);
@@ -814,32 +814,32 @@ void idCameraEvent::parse(const char *(*text)  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp (token, "(") || !strcmp(token, "}")) {
+			if ( !token[0] || !QStr::Cmp (token, "(") || !QStr::Cmp(token, "}")) {
 				break;
 			}
 
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine(text);
 			const char *token = Com_Parse(text);
-			if (Q_stricmp(key.c_str(), "type") == 0) {
-				type = static_cast<idCameraEvent::eventType>(atoi(token));
-			} else if (Q_stricmp(key.c_str(), "param") == 0) {
+			if (QStr::ICmp(key.c_str(), "type") == 0) {
+				type = static_cast<idCameraEvent::eventType>(QStr::Atoi(token));
+			} else if (QStr::ICmp(key.c_str(), "param") == 0) {
 				paramStr = token;
-			} else if (Q_stricmp(key.c_str(), "time") == 0) {
-				time = atoi(token);
+			} else if (QStr::ICmp(key.c_str(), "time") == 0) {
+				time = QStr::Atoi(token);
 			}
 			token = Com_Parse(text);
 
 		} while (1);
 
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
@@ -918,34 +918,34 @@ void idCameraFOV::parse(const char *(*text)  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp (token, "(") || !strcmp(token, "}")) {
+			if ( !token[0] || !QStr::Cmp (token, "(") || !QStr::Cmp(token, "}")) {
 				break;
 			}
 
 			Com_UngetToken();
 			idStr key = Com_ParseOnLine(text);
 			const char *token = Com_Parse(text);
-			if (Q_stricmp(key.c_str(), "fov") == 0) {
-				fov = atof(token);
-			} else if (Q_stricmp(key.c_str(), "startFOV") == 0) {
-				startFOV = atof(token);
-			} else if (Q_stricmp(key.c_str(), "endFOV") == 0) {
-				endFOV = atof(token);
-			} else if (Q_stricmp(key.c_str(), "time") == 0) {
-				time = atoi(token);
+			if (QStr::ICmp(key.c_str(), "fov") == 0) {
+				fov = QStr::Atof(token);
+			} else if (QStr::ICmp(key.c_str(), "startFOV") == 0) {
+				startFOV = QStr::Atof(token);
+			} else if (QStr::ICmp(key.c_str(), "endFOV") == 0) {
+				endFOV = QStr::Atof(token);
+			} else if (QStr::ICmp(key.c_str(), "time") == 0) {
+				time = QStr::Atoi(token);
 			}
 			token = Com_Parse(text);
 
 		} while (1);
 
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
@@ -957,28 +957,28 @@ void idCameraFOV::parse(const char *(*text)  ) {
 
 bool idCameraPosition::parseToken(const char *key, const char *(*text)) {
 	const char *token = Com_Parse(text);
-	if (Q_stricmp(key, "time") == 0) {
+	if (QStr::ICmp(key, "time") == 0) {
 		time = atol(token);
 		return true;
-	} else if (Q_stricmp(key, "type") == 0) {
-		type = static_cast<idCameraPosition::positionType>(atoi(token));
+	} else if (QStr::ICmp(key, "type") == 0) {
+		type = static_cast<idCameraPosition::positionType>(QStr::Atoi(token));
 		return true;
-	} else if (Q_stricmp(key, "velocity") == 0) {
+	} else if (QStr::ICmp(key, "velocity") == 0) {
 		long t = atol(token);
 		token = Com_Parse(text);
 		long d = atol(token);
 		token = Com_Parse(text);
-		float s = atof(token);
+		float s = QStr::Atof(token);
 		addVelocity(t, d, s);
 		return true;
-	} else if (Q_stricmp(key, "baseVelocity") == 0) {
-		baseVelocity = atof(token);
+	} else if (QStr::ICmp(key, "baseVelocity") == 0) {
+		baseVelocity = QStr::Atof(token);
 		return true;
-	} else if (Q_stricmp(key, "name") == 0) {
+	} else if (QStr::ICmp(key, "name") == 0) {
 		name = token;
 		return true;
-	} else if (Q_stricmp(key, "time") == 0) {
-		time = atoi(token);
+	} else if (QStr::ICmp(key, "time") == 0) {
+		time = QStr::Atoi(token);
 		return true;
 	}
 	Com_UngetToken();
@@ -996,14 +996,14 @@ void idFixedPosition::parse(const char *(*text)  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp (token, "(") || !strcmp(token, "}")) {
+			if ( !token[0] || !QStr::Cmp (token, "(") || !QStr::Cmp(token, "}")) {
 				break;
 			}
 
@@ -1011,7 +1011,7 @@ void idFixedPosition::parse(const char *(*text)  ) {
 			idStr key = Com_ParseOnLine(text);
 			
 			const char *token = Com_Parse(text);
-			if (Q_stricmp(key.c_str(), "pos") == 0) {
+			if (QStr::ICmp(key.c_str(), "pos") == 0) {
 				Com_UngetToken();
 				Com_Parse1DMatrix( text, 3, pos );
 			} else {
@@ -1022,7 +1022,7 @@ void idFixedPosition::parse(const char *(*text)  ) {
 
 		} while (1);
 
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
@@ -1041,14 +1041,14 @@ void idInterpolatedPosition::parse(const char *(*text)  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp (token, "(") || !strcmp(token, "}")) {
+			if ( !token[0] || !QStr::Cmp (token, "(") || !QStr::Cmp(token, "}")) {
 				break;
 			}
 
@@ -1056,10 +1056,10 @@ void idInterpolatedPosition::parse(const char *(*text)  ) {
 			idStr key = Com_ParseOnLine(text);
 			
 			const char *token = Com_Parse(text);
-			if (Q_stricmp(key.c_str(), "startPos") == 0) {
+			if (QStr::ICmp(key.c_str(), "startPos") == 0) {
 				Com_UngetToken();
 				Com_Parse1DMatrix( text, 3, startPos );
-			} else if (Q_stricmp(key.c_str(), "endPos") == 0) {
+			} else if (QStr::ICmp(key.c_str(), "endPos") == 0) {
 				Com_UngetToken();
 				Com_Parse1DMatrix( text, 3, endPos );
 			} else {
@@ -1070,7 +1070,7 @@ void idInterpolatedPosition::parse(const char *(*text)  ) {
 
 		} while (1);
 
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
@@ -1090,14 +1090,14 @@ void idSplinePosition::parse(const char *(*text)  ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 
 		// here we may have to jump over brush epairs ( only used in editor )
 		do {
 			// if token is not a brace, it is a key for a key/value pair
-			if ( !token[0] || !strcmp (token, "(") || !strcmp(token, "}")) {
+			if ( !token[0] || !QStr::Cmp (token, "(") || !QStr::Cmp(token, "}")) {
 				break;
 			}
 
@@ -1105,7 +1105,7 @@ void idSplinePosition::parse(const char *(*text)  ) {
 			idStr key = Com_ParseOnLine(text);
 			
 			const char *token = Com_Parse(text);
-			if (Q_stricmp(key.c_str(), "target") == 0) {
+			if (QStr::ICmp(key.c_str(), "target") == 0) {
 				target.parse(text);
 			} else {
 				Com_UngetToken();
@@ -1115,7 +1115,7 @@ void idSplinePosition::parse(const char *(*text)  ) {
 
 		} while (1);
 
-		if ( !strcmp (token, "}") ) {
+		if ( !QStr::Cmp (token, "}") ) {
 			break;
 		}
 

@@ -51,7 +51,7 @@ bind g "cmd use rocket ; +attack ; wait ; -attack ; cmd use blaster"
 */
 void Cmd_Wait_f( void ) {
 	if ( Cmd_Argc() == 2 ) {
-		cmd_wait = atoi( Cmd_Argv( 1 ) );
+		cmd_wait = QStr::Atoi( Cmd_Argv( 1 ) );
 	} else {
 		cmd_wait = 1;
 	}
@@ -88,7 +88,7 @@ Adds command text at the end of the buffer, does NOT add a final \n
 void Cbuf_AddText( const char *text ) {
 	int		l;
 	
-	l = strlen (text);
+	l = QStr::Length(text);
 
 	if (cmd_text.cursize + l >= cmd_text.maxsize)
 	{
@@ -112,7 +112,7 @@ void Cbuf_InsertText( const char *text ) {
 	int		len;
 	int		i;
 
-	len = strlen( text ) + 1;
+	len = QStr::Length( text ) + 1;
 	if ( len + cmd_text.cursize > cmd_text.maxsize ) {
 		Com_Printf( "Cbuf_InsertText overflowed\n" );
 		return;
@@ -143,7 +143,7 @@ void Cbuf_ExecuteText (int exec_when, const char *text)
 	switch (exec_when)
 	{
 	case EXEC_NOW:
-		if (text && strlen(text) > 0) {
+		if (text && QStr::Length(text) > 0) {
 			Cmd_ExecuteString (text);
 		} else {
 			Cbuf_Execute();
@@ -246,7 +246,7 @@ void Cmd_Exec_f( void ) {
 		return;
 	}
 
-	Q_strncpyz( filename, Cmd_Argv(1), sizeof( filename ) );
+	QStr::NCpyZ( filename, Cmd_Argv(1), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" ); 
 	len = FS_ReadFile( filename, (void **)&f);
 	if (!f) {
@@ -351,7 +351,7 @@ they can't have pointers returned to them
 ============
 */
 void	Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength ) {
-	Q_strncpyz( buffer, Cmd_Argv( arg ), bufferLength );
+	QStr::NCpyZ( buffer, Cmd_Argv( arg ), bufferLength );
 }
 
 
@@ -368,9 +368,9 @@ char	*Cmd_Args( void ) {
 
 	cmd_args[0] = 0;
 	for ( i = 1 ; i < cmd_argc ; i++ ) {
-		strcat( cmd_args, cmd_argv[i] );
+		QStr::Cat( cmd_args, sizeof(cmd_args), cmd_argv[i] );
 		if ( i != cmd_argc-1 ) {
-			strcat( cmd_args, " " );
+			QStr::Cat( cmd_args, sizeof(cmd_args), " " );
 		}
 	}
 
@@ -392,9 +392,9 @@ char *Cmd_ArgsFrom( int arg ) {
 	if (arg < 0)
 		arg = 0;
 	for ( i = arg ; i < cmd_argc ; i++ ) {
-		strcat( cmd_args, cmd_argv[i] );
+		QStr::Cat( cmd_args, sizeof(cmd_args), cmd_argv[i] );
 		if ( i != cmd_argc-1 ) {
-			strcat( cmd_args, " " );
+			QStr::Cat( cmd_args, sizeof(cmd_args), " " );
 		}
 	}
 
@@ -410,7 +410,7 @@ they can't have pointers returned to them
 ============
 */
 void	Cmd_ArgsBuffer( char *buffer, int bufferLength ) {
-	Q_strncpyz( buffer, Cmd_Args(), bufferLength );
+	QStr::NCpyZ( buffer, Cmd_Args(), bufferLength );
 }
 
 /*
@@ -455,7 +455,7 @@ void Cmd_TokenizeString( const char *text_in ) {
 		return;
 	}
 	
-	Q_strncpyz( cmd_cmd, text_in, sizeof(cmd_cmd) );
+	QStr::NCpyZ( cmd_cmd, text_in, sizeof(cmd_cmd) );
 
 	text = text_in;
 	textOut = cmd_tokenized;
@@ -552,7 +552,7 @@ void	Cmd_AddCommand( const char *cmd_name, xcommand_t function ) {
 	
 	// fail if the command already exists
 	for ( cmd = cmd_functions ; cmd ; cmd=cmd->next ) {
-		if ( !strcmp( cmd_name, cmd->name ) ) {
+		if ( !QStr::Cmp( cmd_name, cmd->name ) ) {
 			// allow completion-only commands to be silently doubled
 			if ( function != NULL ) {
 				Com_Printf ("Cmd_AddCommand: %s already defined\n", cmd_name);
@@ -584,7 +584,7 @@ void	Cmd_RemoveCommand( const char *cmd_name ) {
 			// command wasn't active
 			return;
 		}
-		if ( !strcmp( cmd_name, cmd->name ) ) {
+		if ( !QStr::Cmp( cmd_name, cmd->name ) ) {
 			*back = cmd->next;
 			if (cmd->name) {
 				Z_Free(cmd->name);
@@ -630,7 +630,7 @@ void	Cmd_ExecuteString( const char *text ) {
 	// check registered command functions	
 	for ( prev = &cmd_functions ; *prev ; prev = &cmd->next ) {
 		cmd = *prev;
-		if ( !Q_stricmp( cmd_argv[0],cmd->name ) ) {
+		if ( !QStr::ICmp( cmd_argv[0],cmd->name ) ) {
 			// rearrange the links so that the command will be
 			// near the head of the list next time it is used
 			*prev = cmd->next;

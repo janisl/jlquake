@@ -1,7 +1,6 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "qwsvdef.h"
-#include <ctype.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -280,7 +279,7 @@ while (1)
 			&& (a->vector[2] == b->vector[2]);
 		break;
 	case OP_EQ_S:
-		c->_float = !strcmp(pr_strings+a->string,pr_strings+b->string);
+		c->_float = !QStr::Cmp(pr_strings+a->string,pr_strings+b->string);
 		break;
 	case OP_EQ_E:
 		c->_float = a->_int == b->_int;
@@ -298,7 +297,7 @@ while (1)
 			|| (a->vector[2] != b->vector[2]);
 		break;
 	case OP_NE_S:
-		c->_float = strcmp(pr_strings+a->string,pr_strings+b->string);
+		c->_float = QStr::Cmp(pr_strings+a->string,pr_strings+b->string);
 		break;
 	case OP_NE_E:
 		c->_float = a->_int != b->_int;
@@ -905,7 +904,7 @@ static void PrintStatement(dstatement_t *s)
 	if((unsigned)s->op < sizeof(pr_opnames)/sizeof(pr_opnames[0]))
 	{
 		Con_Printf("%s ", pr_opnames[s->op]);
-		i = strlen(pr_opnames[s->op]);
+		i = QStr::Length(pr_opnames[s->op]);
 		for(; i < 10; i++)
 		{
 			Con_Printf(" ");
@@ -970,13 +969,13 @@ void PR_Profile_f(void)
 	for(i = 1; i < Cmd_Argc(); i++)
 	{
 		s = Cmd_Argv(i);
-		if(tolower(*s) == 'h')
+		if(QStr::ToLower(*s) == 'h')
 		{ // Sort by HC source file
 			byHC = true;
 		}
-		else if(tolower(*s) == 's')
+		else if(QStr::ToLower(*s) == 's')
 		{ // Save to file
-			if(i+1 < Cmd_Argc() && !isdigit(*Cmd_Argv(i+1)))
+			if(i+1 < Cmd_Argc() && !QStr::IsDigit(*Cmd_Argv(i+1)))
 			{
 				i++;
 				sprintf(saveName, "%s/%s", com_gamedir, Cmd_Argv(i));
@@ -986,9 +985,9 @@ void PR_Profile_f(void)
 				sprintf(saveName, "%s/profile.txt", com_gamedir);
 			}
 		}
-		else if(isdigit(*s))
+		else if(QStr::IsDigit(*s))
 		{ // Specify function count
-			funcCount = atoi(Cmd_Argv(i));
+			funcCount = QStr::Atoi(Cmd_Argv(i));
 			if(funcCount < 1)
 			{
 				funcCount = 1;

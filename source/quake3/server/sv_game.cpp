@@ -129,7 +129,7 @@ void SV_SetBrushModel( sharedEntity_t *ent, const char *name ) {
 	}
 
 
-	ent->s.modelindex = atoi( name + 1 );
+	ent->s.modelindex = QStr::Atoi( name + 1 );
 
 	h = CM_InlineModel( ent->s.modelindex );
 	CM_ModelBounds( h, mins, maxs );
@@ -252,7 +252,7 @@ void SV_GetServerinfo( char *buffer, int bufferSize ) {
 	if ( bufferSize < 1 ) {
 		Com_Error( ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
 	}
-	Q_strncpyz( buffer, Cvar_InfoString( CVAR_SERVERINFO ), bufferSize );
+	QStr::NCpyZ( buffer, Cvar_InfoString( CVAR_SERVERINFO ), bufferSize );
 }
 
 /*
@@ -435,7 +435,7 @@ int SV_GameSystemCalls( int *args ) {
 			const char	*s;
 
 			s = COM_Parse( &sv.entityParsePoint );
-			Q_strncpyz( (char*)VMA(1), s, args[2] );
+			QStr::NCpyZ( (char*)VMA(1), s, args[2] );
 			if ( !sv.entityParsePoint && !s[0] ) {
 				return qfalse;
 			} else {

@@ -187,7 +187,7 @@ ddef_t *ED_FindField (char *name)
 	for (i=0 ; i<progs->numfielddefs ; i++)
 	{
 		def = &pr_fielddefs[i];
-		if (!strcmp(PR_GetString(def->s_name),name) )
+		if (!QStr::Cmp(PR_GetString(def->s_name),name) )
 			return def;
 	}
 	return NULL;
@@ -207,7 +207,7 @@ ddef_t *ED_FindGlobal (char *name)
 	for (i=0 ; i<progs->numglobaldefs ; i++)
 	{
 		def = &pr_globaldefs[i];
-		if (!strcmp(PR_GetString(def->s_name),name) )
+		if (!QStr::Cmp(PR_GetString(def->s_name),name) )
 			return def;
 	}
 	return NULL;
@@ -227,7 +227,7 @@ dfunction_t *ED_FindFunction (char *name)
 	for (i=0 ; i<progs->numfunctions ; i++)
 	{
 		func = &pr_functions[i];
-		if (!strcmp(PR_GetString(func->s_name),name) )
+		if (!QStr::Cmp(PR_GetString(func->s_name),name) )
 			return func;
 	}
 	return NULL;
@@ -241,7 +241,7 @@ eval_t *GetEdictFieldValue(edict_t *ed, char *field)
 
 	for (i=0 ; i<GEFV_CACHESIZE ; i++)
 	{
-		if (!strcmp(field, gefvCache[i].field))
+		if (!QStr::Cmp(field, gefvCache[i].field))
 		{
 			def = gefvCache[i].pcache;
 			goto Done;
@@ -250,10 +250,10 @@ eval_t *GetEdictFieldValue(edict_t *ed, char *field)
 
 	def = ED_FindField (field);
 
-	if (strlen(field) < MAX_FIELD_LEN)
+	if (QStr::Length(field) < MAX_FIELD_LEN)
 	{
 		gefvCache[rep].pcache = def;
-		strcpy (gefvCache[rep].field, field);
+		QStr::Cpy(gefvCache[rep].field, field);
 		rep ^= 1;
 	}
 
@@ -390,10 +390,10 @@ char *PR_GlobalString (int ofs)
 		sprintf (line,"%i(%s)%s", ofs, PR_GetString(def->s_name), s);
 	}
 	
-	i = strlen(line);
+	i = QStr::Length(line);
 	for ( ; i<20 ; i++)
-		strcat (line," ");
-	strcat (line," ");
+		QStr::Cat(line, sizeof(line)," ");
+	QStr::Cat(line, sizeof(line)," ");
 		
 	return line;
 }
@@ -410,10 +410,10 @@ char *PR_GlobalStringNoContents (int ofs)
 	else
 		sprintf (line,"%i(%s)", ofs, PR_GetString(def->s_name));
 	
-	i = strlen(line);
+	i = QStr::Length(line);
 	for ( ; i<20 ; i++)
-		strcat (line," ");
-	strcat (line," ");
+		QStr::Cat(line, sizeof(line)," ");
+	QStr::Cat(line, sizeof(line)," ");
 		
 	return line;
 }
@@ -445,7 +445,7 @@ void ED_Print (edict_t *ed)
 	{
 		d = &pr_fielddefs[i];
 		name = PR_GetString(d->s_name);
-		if (name[strlen(name)-2] == '_')
+		if (name[QStr::Length(name)-2] == '_')
 			continue;	// skip _x, _y, _z vars
 			
 		v = (int *)((char *)&ed->v + d->ofs*4);
@@ -460,7 +460,7 @@ void ED_Print (edict_t *ed)
 			continue;
 	
 		Con_Printf ("%s",name);
-		l = strlen (name);
+		l = QStr::Length(name);
 		while (l++ < 15)
 			Con_Printf (" ");
 
@@ -495,7 +495,7 @@ void ED_Write (FILE *f, edict_t *ed)
 	{
 		d = &pr_fielddefs[i];
 		name = PR_GetString(d->s_name);
-		if (name[strlen(name)-2] == '_')
+		if (name[QStr::Length(name)-2] == '_')
 			continue;	// skip _x, _y, _z vars
 			
 		v = (int *)((char *)&ed->v + d->ofs*4);
@@ -550,7 +550,7 @@ void ED_PrintEdict_f (void)
 {
 	int		i;
 	
-	i = Q_atoi (Cmd_Argv(1));
+	i = QStr::Atoi(Cmd_Argv(1));
 	Con_Printf ("\n EDICT %i:\n",i);
 	ED_PrintNum (i);
 }
@@ -652,7 +652,7 @@ void ED_ParseGlobals (char *data)
 		if (!data)
 			SV_Error ("ED_ParseEntity: EOF without closing brace");
 
-		strcpy (keyname, com_token);
+		QStr::Cpy(keyname, com_token);
 
 	// parse value	
 		data = COM_Parse (data);
@@ -687,7 +687,7 @@ char *ED_NewString (char *string)
 	char	*news, *new_p;
 	int		i,l;
 	
-	l = strlen(string) + 1;
+	l = QStr::Length(string) + 1;
 	news = (char*)Hunk_Alloc (l);
 	new_p = news;
 
@@ -735,11 +735,11 @@ qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
 		break;
 		
 	case ev_float:
-		*(float *)d = atof (s);
+		*(float *)d = QStr::Atof(s);
 		break;
 		
 	case ev_vector:
-		strcpy (string, s);
+		QStr::Cpy(string, s);
 		v = string;
 		w = string;
 		for (i=0 ; i<3 ; i++)
@@ -747,13 +747,13 @@ qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
 			while (*v && *v != ' ')
 				v++;
 			*v = 0;
-			((float *)d)[i] = atof (w);
+			((float *)d)[i] = QStr::Atof(w);
 			w = v = v+1;
 		}
 		break;
 		
 	case ev_entity:
-		*(int *)d = EDICT_TO_PROG(EDICT_NUM(atoi (s)));
+		*(int *)d = EDICT_TO_PROG(EDICT_NUM(QStr::Atoi(s)));
 		break;
 		
 	case ev_field:
@@ -816,19 +816,19 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 		
 // anglehack is to allow QuakeEd to write single scalar angles
 // and allow them to be turned into vectors. (FIXME...)
-if (!strcmp(com_token, "angle"))
+if (!QStr::Cmp(com_token, "angle"))
 {
-	strcpy (com_token, "angles");
+	QStr::Cpy(com_token, "angles");
 	anglehack = true;
 }
 else
 	anglehack = false;
 
 // FIXME: change light to _light to get rid of this hack
-if (!strcmp(com_token, "light"))
-	strcpy (com_token, "light_lev");	// hack for single light def
+if (!QStr::Cmp(com_token, "light"))
+	QStr::Cpy(com_token, "light_lev");	// hack for single light def
 
-		strcpy (keyname, com_token);
+		QStr::Cpy(keyname, com_token);
 		
 	// parse value	
 		data = COM_Parse (data);
@@ -855,7 +855,7 @@ if (!strcmp(com_token, "light"))
 if (anglehack)
 {
 char	temp[32];
-strcpy (temp, com_token);
+QStr::Cpy(temp, com_token);
 sprintf (com_token, "0 %s 0", temp);
 }
 

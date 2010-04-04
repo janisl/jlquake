@@ -292,13 +292,13 @@ qpic_t	*Draw_CachePic (char *path)
 	glpic_t 	*gl;
 
 	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
-		if (!strcmp (path, pic->name))
+		if (!QStr::Cmp(path, pic->name))
 			return &pic->pic;
 
 	if (menu_numcachepics == MAX_CACHED_PICS)
 		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS");
 	menu_numcachepics++;
-	strcpy (pic->name, path);
+	QStr::Cpy(pic->name, path);
 
 //
 // load the pic from disk
@@ -312,15 +312,15 @@ qpic_t	*Draw_CachePic (char *path)
 	// the translatable player picture just for the menu
 	// configuration dialog
 	/* garymct */
-	if (!strcmp (path, "gfx/menu/netp1.lmp"))
+	if (!QStr::Cmp(path, "gfx/menu/netp1.lmp"))
 		memcpy (menuplyr_pixels[0], dat->data, dat->width*dat->height);
-	else if (!strcmp (path, "gfx/menu/netp2.lmp"))
+	else if (!QStr::Cmp(path, "gfx/menu/netp2.lmp"))
 		memcpy (menuplyr_pixels[1], dat->data, dat->width*dat->height);
-	else if (!strcmp (path, "gfx/menu/netp3.lmp"))
+	else if (!QStr::Cmp(path, "gfx/menu/netp3.lmp"))
 		memcpy (menuplyr_pixels[2], dat->data, dat->width*dat->height);
-	else if (!strcmp (path, "gfx/menu/netp4.lmp"))
+	else if (!QStr::Cmp(path, "gfx/menu/netp4.lmp"))
 		memcpy (menuplyr_pixels[3], dat->data, dat->width*dat->height);
-	else if (!strcmp (path, "gfx/menu/netp5.lmp"))
+	else if (!QStr::Cmp(path, "gfx/menu/netp5.lmp"))
 		memcpy (menuplyr_pixels[4], dat->data, dat->width*dat->height);
 
 	pic->pic.width = dat->width;
@@ -405,7 +405,7 @@ void Draw_TextureMode_f (void)
 
 	for (i=0 ; i< 6 ; i++)
 	{
-		if (!Q_strcasecmp (modes[i].name, Cmd_Argv(1) ) )
+		if (!QStr::ICmp(modes[i].name, Cmd_Argv(1) ) )
 			break;
 	}
 	if (i == 6)
@@ -505,8 +505,8 @@ void Draw_Init (void)
 	sprintf (ver, "%4.2f", HEXEN2_VERSION);
 
 //	sprintf (ver, "(gl %4.2f) %4.2f", (float)GLQUAKE_VERSION, (float)VERSION);
-//	dest = cb->data + 320*186 + 320 - 11 - 8*strlen(ver);
-	y = strlen(ver);
+//	dest = cb->data + 320*186 + 320 - 11 - 8*QStr::Length(ver);
+	y = QStr::Length(ver);
 	for (x=0 ; x<y ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<3));
 
@@ -1147,7 +1147,7 @@ int GL_FindTexture (char *identifier)
 
 	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
 	{
-		if (!strcmp (identifier, glt->identifier))
+		if (!QStr::Cmp(identifier, glt->identifier))
 			return gltextures[i].texnum;
 	}
 
@@ -1570,7 +1570,7 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 	{
 		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
 		{
-			if (!strcmp (search, glt->identifier))
+			if (!QStr::Cmp(search, glt->identifier))
 			{
 				if (width != glt->width || height != glt->height)
 					Sys_Error ("GL_LoadTexture: cache mismatch");
@@ -1584,7 +1584,7 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 	}
 	numgltextures++;
 
-	strcpy(glt->identifier, search);
+	QStr::Cpy(glt->identifier, search);
 	glt->texnum = texture_extension_number;
 	glt->width = width;
 	glt->height = height;
@@ -1645,7 +1645,7 @@ GL_LoadTransTexture
 	{
 		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
 		{
-			if (!strcmp (identifier, glt->identifier))
+			if (!QStr::Cmp(identifier, glt->identifier))
 			{
 				if (width != glt->width || height != glt->height)
 					Sys_Error ("GL_LoadTexture: cache mismatch");
@@ -1657,7 +1657,7 @@ GL_LoadTransTexture
 		glt = &gltextures[numgltextures];
 	numgltextures++;
 
-	strcpy (glt->identifier, identifier);
+	QStr::Cpy(glt->identifier, identifier);
 	glt->texnum = texture_extension_number;
 	glt->width = width;
 	glt->height = height;

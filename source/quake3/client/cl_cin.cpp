@@ -1491,7 +1491,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	if (!(systemBits & CIN_system)) {
 		for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-			if (!strcmp(cinTable[i].fileName, name) ) {
+			if (!QStr::Cmp(cinTable[i].fileName, name) ) {
 				return i;
 			}
 		}
@@ -1504,7 +1504,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	cin.currentHandle = currentHandle;
 
-	strcpy(cinTable[currentHandle].fileName, name);
+	QStr::Cpy(cinTable[currentHandle].fileName, name);
 
 	cinTable[currentHandle].ROQSize = 0;
 	cinTable[currentHandle].ROQSize = FS_FOpenFileRead (cinTable[currentHandle].fileName, &cinTable[currentHandle].iFile, qtrue);
@@ -1676,7 +1676,7 @@ void CL_PlayCinematic_f(void) {
 	s = Cmd_Argv(2);
 
 	holdatend = qfalse;
-	if ((s && s[0] == '1') || Q_stricmp(arg,"demoend.roq")==0 || Q_stricmp(arg,"end.roq")==0) {
+	if ((s && s[0] == '1') || QStr::ICmp(arg,"demoend.roq")==0 || QStr::ICmp(arg,"end.roq")==0) {
 		bits |= CIN_hold;
 	}
 	if (s && s[0] == '2') {

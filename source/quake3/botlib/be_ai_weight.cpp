@@ -61,7 +61,7 @@ int ReadValue(source_t *source, float *value)
 	token_t token;
 
 	if (!PC_ExpectAnyToken(source, &token)) return qfalse;
-	if (!strcmp(token.string, "-"))
+	if (!QStr::Cmp(token.string, "-"))
 	{
 		SourceWarning(source, "negative value set to zero\n");
 		if (!PC_ExpectTokenType(source, TT_NUMBER, 0, &token)) return qfalse;
@@ -167,8 +167,8 @@ fuzzyseperator_t *ReadFuzzySeperators_r(source_t *source)
 	if (!PC_ExpectAnyToken(source, &token)) return NULL;
 	do
 	{
-		def = !strcmp(token.string, "default");
-		if (def || !strcmp(token.string, "case"))
+		def = !QStr::Cmp(token.string, "default");
+		if (def || !QStr::Cmp(token.string, "case"))
 		{
 			fs = (fuzzyseperator_t *) GetClearedMemory(sizeof(fuzzyseperator_t));
 			fs->index = index;
@@ -201,7 +201,7 @@ fuzzyseperator_t *ReadFuzzySeperators_r(source_t *source)
 				return NULL;
 			} //end if
 			newindent = qfalse;
-			if (!strcmp(token.string, "{"))
+			if (!QStr::Cmp(token.string, "{"))
 			{
 				newindent = qtrue;
 				if (!PC_ExpectAnyToken(source, &token))
@@ -210,7 +210,7 @@ fuzzyseperator_t *ReadFuzzySeperators_r(source_t *source)
 					return NULL;
 				} //end if
 			} //end if
-			if (!strcmp(token.string, "return"))
+			if (!QStr::Cmp(token.string, "return"))
 			{
 				if (!ReadFuzzyWeight(source, fs))
 				{
@@ -218,7 +218,7 @@ fuzzyseperator_t *ReadFuzzySeperators_r(source_t *source)
 					return NULL;
 				} //end if
 			} //end if
-			else if (!strcmp(token.string, "switch"))
+			else if (!QStr::Cmp(token.string, "switch"))
 			{
 				fs->child = ReadFuzzySeperators_r(source);
 				if (!fs->child)
@@ -252,7 +252,7 @@ fuzzyseperator_t *ReadFuzzySeperators_r(source_t *source)
 			FreeFuzzySeperators_r(firstfs);
 			return NULL;
 		} //end if
-	} while(strcmp(token.string, "}"));
+	} while(QStr::Cmp(token.string, "}"));
 	//
 	if (!founddefault)
 	{
@@ -303,7 +303,7 @@ weightconfig_t *ReadWeightConfig(char *filename)
 				} //end if
 				continue;
 			} //end if
-			if( strcmp( filename, config->filename ) == 0 )
+			if( QStr::Cmp( filename, config->filename ) == 0 )
 			{
 				//botimport.Print( PRT_MESSAGE, "retained %s\n", filename );
 				return config;
@@ -327,11 +327,11 @@ weightconfig_t *ReadWeightConfig(char *filename)
 	//
 	config = (weightconfig_t *) GetClearedMemory(sizeof(weightconfig_t));
 	config->numweights = 0;
-	Q_strncpyz( config->filename, filename, sizeof(config->filename) );
+	QStr::NCpyZ( config->filename, filename, sizeof(config->filename) );
 	//parse the item config file
 	while(PC_ReadToken(source, &token))
 	{
-		if (!strcmp(token.string, "weight"))
+		if (!QStr::Cmp(token.string, "weight"))
 		{
 			if (config->numweights >= MAX_WEIGHTS)
 			{
@@ -345,8 +345,8 @@ weightconfig_t *ReadWeightConfig(char *filename)
 				return NULL;
 			} //end if
 			StripDoubleQuotes(token.string);
-			config->weights[config->numweights].name = (char *) GetClearedMemory(strlen(token.string) + 1);
-			strcpy(config->weights[config->numweights].name, token.string);
+			config->weights[config->numweights].name = (char *) GetClearedMemory(QStr::Length(token.string) + 1);
+			QStr::Cpy(config->weights[config->numweights].name, token.string);
 			if (!PC_ExpectAnyToken(source, &token))
 			{
 				FreeWeightConfig(config);
@@ -354,7 +354,7 @@ weightconfig_t *ReadWeightConfig(char *filename)
 				return NULL;
 			} //end if
 			newindent = qfalse;
-			if (!strcmp(token.string, "{"))
+			if (!QStr::Cmp(token.string, "{"))
 			{
 				newindent = qtrue;
 				if (!PC_ExpectAnyToken(source, &token))
@@ -364,7 +364,7 @@ weightconfig_t *ReadWeightConfig(char *filename)
 					return NULL;
 				} //end if
 			} //end if
-			if (!strcmp(token.string, "switch"))
+			if (!QStr::Cmp(token.string, "switch"))
 			{
 				fs = ReadFuzzySeperators_r(source);
 				if (!fs)
@@ -375,7 +375,7 @@ weightconfig_t *ReadWeightConfig(char *filename)
 				} //end if
 				config->weights[config->numweights].firstseperator = fs;
 			} //end if
-			else if (!strcmp(token.string, "return"))
+			else if (!QStr::Cmp(token.string, "return"))
 			{
 				fs = (fuzzyseperator_t *) GetClearedMemory(sizeof(fuzzyseperator_t));
 				fs->index = 0;
@@ -560,7 +560,7 @@ int FindFuzzyWeight(weightconfig_t *wc, char *name)
 
 	for (i = 0; i < wc->numweights; i++)
 	{
-		if (!strcmp(wc->weights[i].name, name))
+		if (!QStr::Cmp(wc->weights[i].name, name))
 		{
 			return i;
 		} //end if
@@ -771,7 +771,7 @@ void ScaleWeight(weightconfig_t *config, char *name, float scale)
 	else if (scale > 1) scale = 1;
 	for (i = 0; i < config->numweights; i++)
 	{
-		if (!strcmp(name, config->weights[i].name))
+		if (!QStr::Cmp(name, config->weights[i].name))
 		{
 			ScaleFuzzySeperator_r(config->weights[i].firstseperator, scale);
 			break;

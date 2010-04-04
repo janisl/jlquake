@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // r_main.c
 #include "gl_local.h"
-#include <ctype.h>
 
 void R_Clear (void);
 
@@ -1101,7 +1100,6 @@ qboolean R_SetMode (void)
 R_Init
 ===============
 */
-char *strlwr (char *s);
 int R_Init( void *hinstance, void *hWnd )
 {	
 	char renderer_buffer[1000];
@@ -1161,11 +1159,11 @@ int R_Init( void *hinstance, void *hWnd )
 	gl_config.extensions_string = (char*)qglGetString (GL_EXTENSIONS);
 	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
 
-	strcpy( renderer_buffer, gl_config.renderer_string );
-	strlwr( renderer_buffer );
+	QStr::Cpy( renderer_buffer, gl_config.renderer_string );
+	QStr::ToLower( renderer_buffer );
 
-	strcpy( vendor_buffer, gl_config.vendor_string );
-	strlwr( vendor_buffer );
+	QStr::Cpy( vendor_buffer, gl_config.vendor_string );
+	QStr::ToLower( vendor_buffer );
 
 	if ( strstr( renderer_buffer, "voodoo" ) )
 	{
@@ -1191,7 +1189,7 @@ int R_Init( void *hinstance, void *hWnd )
 	else
 		gl_config.renderer = GL_RENDERER_OTHER;
 
-	if ( toupper( gl_monolightmap->string[1] ) != 'F' )
+	if ( QStr::ToUpper( gl_monolightmap->string[1] ) != 'F' )
 	{
 		if ( gl_config.renderer == GL_RENDERER_PERMEDIA2 )
 		{
@@ -1450,7 +1448,7 @@ void R_BeginFrame( float camera_separation )
 
 		if ( gl_state.camera_separation == 0 || !gl_state.stereo_enabled )
 		{
-			if ( Q_stricmp( gl_drawbuffer->string, "GL_FRONT" ) == 0 )
+			if ( QStr::ICmp( gl_drawbuffer->string, "GL_FRONT" ) == 0 )
 				qglDrawBuffer( GL_FRONT );
 			else
 				qglDrawBuffer( GL_BACK );

@@ -223,7 +223,7 @@ void CL_Record_f (void)
 	{
 		if (cl.configstrings[i][0])
 		{
-			if (buf.cursize + strlen (cl.configstrings[i]) + 32 > buf.maxsize)
+			if (buf.cursize + QStr::Length(cl.configstrings[i]) + 32 > buf.maxsize)
 			{	// write it out
 				len = LittleLong (buf.cursize);
 				fwrite (&len, 4, 1, cls.demofile);
@@ -310,13 +310,13 @@ void CL_Setenv_f( void )
 		char buffer[1000];
 		int i;
 
-		strcpy( buffer, Cmd_Argv(1) );
-		strcat( buffer, "=" );
+		QStr::Cpy( buffer, Cmd_Argv(1) );
+		QStr::Cat(buffer, sizeof(buffer), "=" );
 
 		for ( i = 2; i < argc; i++ )
 		{
-			strcat( buffer, Cmd_Argv( i ) );
-			strcat( buffer, " " );
+			QStr::Cat(buffer, sizeof(buffer), Cmd_Argv( i ) );
+			QStr::Cat(buffer, sizeof(buffer), " " );
 		}
 
 		putenv( buffer );
@@ -454,7 +454,7 @@ void CL_CheckForResend (void)
 	if (cls.state == ca_disconnected && Com_ServerState() )
 	{
 		cls.state = ca_connecting;
-		strncpy (cls.servername, "localhost", sizeof(cls.servername)-1);
+		QStr::NCpy(cls.servername, "localhost", sizeof(cls.servername)-1);
 		// we don't need a challenge on the localhost
 		CL_SendConnectPacket ();
 		return;
@@ -517,7 +517,7 @@ void CL_Connect_f (void)
 	CL_Disconnect ();
 
 	cls.state = ca_connecting;
-	strncpy (cls.servername, server, sizeof(cls.servername)-1);
+	QStr::NCpy(cls.servername, server, sizeof(cls.servername)-1);
 	cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
 }
 
@@ -551,22 +551,22 @@ void CL_Rcon_f (void)
 
 	NET_Config (true);		// allow remote
 
-	strcat (message, "rcon ");
+	QStr::Cat(message, sizeof(message), "rcon ");
 
-	strcat (message, rcon_client_password->string);
-	strcat (message, " ");
+	QStr::Cat(message, sizeof(message), rcon_client_password->string);
+	QStr::Cat(message, sizeof(message), " ");
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		strcat (message, Cmd_Argv(i));
-		strcat (message, " ");
+		QStr::Cat(message, sizeof(message), Cmd_Argv(i));
+		QStr::Cat(message, sizeof(message), " ");
 	}
 
 	if (cls.state >= ca_connected)
 		to = cls.netchan.remote_address;
 	else
 	{
-		if (!strlen(rcon_address->string))
+		if (!QStr::Length(rcon_address->string))
 		{
 			Com_Printf ("You must either be connected,\n"
 						"or set the 'rcon_address' cvar\n"
@@ -579,7 +579,7 @@ void CL_Rcon_f (void)
 			to.port = BigShort (PORT_SERVER);
 	}
 	
-	NET_SendPacket (NS_CLIENT, strlen(message)+1, message, to);
+	NET_SendPacket (NS_CLIENT, QStr::Length(message)+1, message, to);
 }
 
 
@@ -643,10 +643,10 @@ void CL_Disconnect (void)
 
 	// send a disconnect message to the server
 	final[0] = clc_stringcmd;
-	strcpy ((char *)final+1, "disconnect");
-	Netchan_Transmit (&cls.netchan, strlen((char *)final), final);
-	Netchan_Transmit (&cls.netchan, strlen((char *)final), final);
-	Netchan_Transmit (&cls.netchan, strlen((char *)final), final);
+	QStr::Cpy((char *)final+1, "disconnect");
+	Netchan_Transmit (&cls.netchan, QStr::Length((char *)final), final);
+	Netchan_Transmit (&cls.netchan, QStr::Length((char *)final), final);
+	Netchan_Transmit (&cls.netchan, QStr::Length((char *)final), final);
 
 	CL_ClearState ();
 
@@ -701,7 +701,7 @@ void CL_Packet_f (void)
 	out = send+4;
 	send[0] = send[1] = send[2] = send[3] = (char)0xff;
 
-	l = strlen (in);
+	l = QStr::Length(in);
 	for (i=0 ; i<l ; i++)
 	{
 		if (in[i] == '\\' && in[i+1] == 'n')
@@ -894,7 +894,7 @@ void CL_ConnectionlessPacket (void)
 	Com_Printf ("%s: %s\n", NET_AdrToString (net_from), c);
 
 	// server connection
-	if (!strcmp(c, "client_connect"))
+	if (!QStr::Cmp(c, "client_connect"))
 	{
 		if (cls.state == ca_connected)
 		{
@@ -909,14 +909,14 @@ void CL_ConnectionlessPacket (void)
 	}
 
 	// server responding to a status broadcast
-	if (!strcmp(c, "info"))
+	if (!QStr::Cmp(c, "info"))
 	{
 		CL_ParseStatusMessage ();
 		return;
 	}
 
 	// remote command from gui front end
-	if (!strcmp(c, "cmd"))
+	if (!QStr::Cmp(c, "cmd"))
 	{
 		if (!NET_IsLocalAddress(net_from))
 		{
@@ -930,7 +930,7 @@ void CL_ConnectionlessPacket (void)
 		return;
 	}
 	// print command from somewhere
-	if (!strcmp(c, "print"))
+	if (!QStr::Cmp(c, "print"))
 	{
 		s = MSG_ReadString (&net_message);
 		Com_Printf ("%s", s);
@@ -938,22 +938,22 @@ void CL_ConnectionlessPacket (void)
 	}
 
 	// ping from somewhere
-	if (!strcmp(c, "ping"))
+	if (!QStr::Cmp(c, "ping"))
 	{
 		Netchan_OutOfBandPrint (NS_CLIENT, net_from, "ack");
 		return;
 	}
 
 	// challenge from the server we are connecting to
-	if (!strcmp(c, "challenge"))
+	if (!QStr::Cmp(c, "challenge"))
 	{
-		cls.challenge = atoi(Cmd_Argv(1));
+		cls.challenge = QStr::Atoi(Cmd_Argv(1));
 		CL_SendConnectPacket ();
 		return;
 	}
 
 	// echo request from server
-	if (!strcmp(c, "echo"))
+	if (!QStr::Cmp(c, "echo"))
 	{
 		Netchan_OutOfBandPrint (NS_CLIENT, net_from, "%s", Cmd_Argv(1) );
 		return;
@@ -1060,12 +1060,12 @@ void CL_FixUpGender(void)
 			return;
 		}
 
-		strncpy(sk, skin->string, sizeof(sk) - 1);
+		QStr::NCpy(sk, skin->string, sizeof(sk) - 1);
 		if ((p = strchr(sk, '/')) != NULL)
 			*p = 0;
-		if (Q_stricmp(sk, "male") == 0 || Q_stricmp(sk, "cyborg") == 0)
+		if (QStr::ICmp(sk, "male") == 0 || QStr::ICmp(sk, "cyborg") == 0)
 			Cvar_Set ("gender", "male");
-		else if (Q_stricmp(sk, "female") == 0 || Q_stricmp(sk, "crackhor") == 0)
+		else if (QStr::ICmp(sk, "female") == 0 || QStr::ICmp(sk, "crackhor") == 0)
 			Cvar_Set ("gender", "female");
 		else
 			Cvar_Set ("gender", "none");
@@ -1245,13 +1245,13 @@ void CL_RequestNextDownload (void)
 					p++;
 				else
 					p = cl.configstrings[CS_PLAYERSKINS+i];
-				strcpy(model, p);
+				QStr::Cpy(model, p);
 				p = strchr(model, '/');
 				if (!p)
 					p = strchr(model, '\\');
 				if (p) {
 					*p++ = 0;
-					strcpy(skin, p);
+					QStr::Cpy(skin, p);
 				} else
 					*skin = 0;
 
@@ -1312,7 +1312,7 @@ void CL_RequestNextDownload (void)
 
 		CM_LoadMap (cl.configstrings[CS_MODELS+1], true, &map_checksum);
 
-		if (map_checksum != atoi(cl.configstrings[CS_MAPCHECKSUM])) {
+		if (map_checksum != QStr::Atoi(cl.configstrings[CS_MAPCHECKSUM])) {
 			Com_Error (ERR_DROP, "Local map version differs from server: %i != '%s'\n",
 				map_checksum, cl.configstrings[CS_MAPCHECKSUM]);
 			return;
@@ -1390,7 +1390,7 @@ void CL_Precache_f (void)
 	}
 
 	precache_check = CS_MODELS;
-	precache_spawncount = atoi(Cmd_Argv(1));
+	precache_spawncount = QStr::Atoi(Cmd_Argv(1));
 	precache_model = 0;
 	precache_model_skin = 0;
 
@@ -1613,7 +1613,7 @@ void CL_FixCvarCheats (void)
 	int			i;
 	cheatvar_t	*var;
 
-	if ( !strcmp(cl.configstrings[CS_MAXCLIENTS], "1") 
+	if ( !QStr::Cmp(cl.configstrings[CS_MAXCLIENTS], "1") 
 		|| !cl.configstrings[CS_MAXCLIENTS][0] )
 		return;		// single player can cheat
 
@@ -1631,7 +1631,7 @@ void CL_FixCvarCheats (void)
 	// make sure they are all set to the proper values
 	for (i=0, var = cheatvars ; i<numcheatvars ; i++, var++)
 	{
-		if ( strcmp (var->var->string, var->value) )
+		if ( QStr::Cmp(var->var->string, var->value) )
 		{
 			Cvar_Set (var->name, var->value);
 		}

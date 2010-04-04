@@ -209,8 +209,8 @@ static void InitOpenGL( void )
 		
 		GLimp_Init();
 
-		strcpy( renderer_buffer, glConfig.renderer_string );
-		Q_strlwr( renderer_buffer );
+		QStr::Cpy( renderer_buffer, glConfig.renderer_string );
+		QStr::ToLower( renderer_buffer );
 
 		// OpenGL driver constants
 		qglGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );
@@ -251,22 +251,22 @@ void GL_CheckErrors( void ) {
     }
     switch( err ) {
         case GL_INVALID_ENUM:
-            strcpy( s, "GL_INVALID_ENUM" );
+            QStr::Cpy( s, "GL_INVALID_ENUM" );
             break;
         case GL_INVALID_VALUE:
-            strcpy( s, "GL_INVALID_VALUE" );
+            QStr::Cpy( s, "GL_INVALID_VALUE" );
             break;
         case GL_INVALID_OPERATION:
-            strcpy( s, "GL_INVALID_OPERATION" );
+            QStr::Cpy( s, "GL_INVALID_OPERATION" );
             break;
         case GL_STACK_OVERFLOW:
-            strcpy( s, "GL_STACK_OVERFLOW" );
+            QStr::Cpy( s, "GL_STACK_OVERFLOW" );
             break;
         case GL_STACK_UNDERFLOW:
-            strcpy( s, "GL_STACK_UNDERFLOW" );
+            QStr::Cpy( s, "GL_STACK_UNDERFLOW" );
             break;
         case GL_OUT_OF_MEMORY:
-            strcpy( s, "GL_OUT_OF_MEMORY" );
+            QStr::Cpy( s, "GL_OUT_OF_MEMORY" );
             break;
         default:
             Com_sprintf( s, sizeof(s), "%i", err);
@@ -464,7 +464,7 @@ void R_TakeScreenshot( int x, int y, int width, int height, char *name, qboolean
 	cmd->y = y;
 	cmd->width = width;
 	cmd->height = height;
-	Q_strncpyz( fileName, name, sizeof(fileName) );
+	QStr::NCpyZ( fileName, name, sizeof(fileName) );
 	cmd->fileName = fileName;
 	cmd->jpeg = jpeg;
 }
@@ -601,12 +601,12 @@ void R_ScreenShot_f (void) {
 	static	int	lastNumber = -1;
 	qboolean	silent;
 
-	if ( !strcmp( ri.Cmd_Argv(1), "levelshot" ) ) {
+	if ( !QStr::Cmp( ri.Cmd_Argv(1), "levelshot" ) ) {
 		R_LevelShot();
 		return;
 	}
 
-	if ( !strcmp( ri.Cmd_Argv(1), "silent" ) ) {
+	if ( !QStr::Cmp( ri.Cmd_Argv(1), "silent" ) ) {
 		silent = qtrue;
 	} else {
 		silent = qfalse;
@@ -654,12 +654,12 @@ void R_ScreenShotJPEG_f (void) {
 	static	int	lastNumber = -1;
 	qboolean	silent;
 
-	if ( !strcmp( ri.Cmd_Argv(1), "levelshot" ) ) {
+	if ( !QStr::Cmp( ri.Cmd_Argv(1), "levelshot" ) ) {
 		R_LevelShot();
 		return;
 	}
 
-	if ( !strcmp( ri.Cmd_Argv(1), "silent" ) ) {
+	if ( !QStr::Cmp( ri.Cmd_Argv(1), "silent" ) ) {
 		silent = qtrue;
 	} else {
 		silent = qfalse;

@@ -210,7 +210,7 @@ void GL_TextureMode( char *string )
 
 	for (i=0 ; i< NUM_GL_MODES ; i++)
 	{
-		if ( !Q_stricmp( modes[i].name, string ) )
+		if ( !QStr::ICmp( modes[i].name, string ) )
 			break;
 	}
 
@@ -246,7 +246,7 @@ void GL_TextureAlphaMode( char *string )
 
 	for (i=0 ; i< NUM_GL_ALPHA_MODES ; i++)
 	{
-		if ( !Q_stricmp( gl_alpha_modes[i].name, string ) )
+		if ( !QStr::ICmp( gl_alpha_modes[i].name, string ) )
 			break;
 	}
 
@@ -270,7 +270,7 @@ void GL_TextureSolidMode( char *string )
 
 	for (i=0 ; i< NUM_GL_SOLID_MODES ; i++)
 	{
-		if ( !Q_stricmp( gl_solid_modes[i].name, string ) )
+		if ( !QStr::ICmp( gl_solid_modes[i].name, string ) )
 			break;
 	}
 
@@ -1249,9 +1249,9 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	}
 	image = &gltextures[i];
 
-	if (strlen(name) >= sizeof(image->name))
+	if (QStr::Length(name) >= sizeof(image->name))
 		ri.Sys_Error (ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name);
-	strcpy (image->name, name);
+	QStr::Cpy(image->name, name);
 	image->registration_sequence = registration_sequence;
 
 	image->width = width;
@@ -1355,14 +1355,14 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 
 	if (!name)
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
-	len = strlen(name);
+	len = QStr::Length(name);
 	if (len<5)
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
 
 	// look for it
 	for (i=0, image=gltextures ; i<numgltextures ; i++,image++)
 	{
-		if (!strcmp(name, image->name))
+		if (!QStr::Cmp(name, image->name))
 		{
 			image->registration_sequence = registration_sequence;
 			return image;
@@ -1374,18 +1374,18 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	//
 	pic = NULL;
 	palette = NULL;
-	if (!strcmp(name+len-4, ".pcx"))
+	if (!QStr::Cmp(name+len-4, ".pcx"))
 	{
 		LoadPCX (name, &pic, &palette, &width, &height);
 		if (!pic)
 			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
 		image = GL_LoadPic (name, pic, width, height, type, 8);
 	}
-	else if (!strcmp(name+len-4, ".wal"))
+	else if (!QStr::Cmp(name+len-4, ".wal"))
 	{
 		image = GL_LoadWal (name);
 	}
-	else if (!strcmp(name+len-4, ".tga"))
+	else if (!QStr::Cmp(name+len-4, ".tga"))
 	{
 		LoadTGA (name, &pic, &width, &height);
 		if (!pic)

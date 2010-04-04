@@ -377,7 +377,7 @@ static	char temp[MAX_PATH+1];
 	if (value == ERROR_SUCCESS && dwType == REG_SZ)
 	{
 		CRC_Init(&crc);
-		dwSize = strlen(temp);
+		dwSize = QStr::Length(temp);
 		for(i=0;i<dwSize;i++)
 		{
 			CRC_ProcessByte(&crc,temp[i]);
@@ -433,11 +433,11 @@ void Sys_Error (char *error, ...)
 		va_end (argptr);
 
 		sprintf (text2, "ERROR: %s\n", text);
-		WriteFile (houtput, text5, strlen (text5), &dummy, NULL);
-		WriteFile (houtput, text4, strlen (text4), &dummy, NULL);
-		WriteFile (houtput, text2, strlen (text2), &dummy, NULL);
-		WriteFile (houtput, text3, strlen (text3), &dummy, NULL);
-		WriteFile (houtput, text4, strlen (text4), &dummy, NULL);
+		WriteFile (houtput, text5, QStr::Length(text5), &dummy, NULL);
+		WriteFile (houtput, text4, QStr::Length(text4), &dummy, NULL);
+		WriteFile (houtput, text2, QStr::Length(text2), &dummy, NULL);
+		WriteFile (houtput, text3, QStr::Length(text3), &dummy, NULL);
+		WriteFile (houtput, text4, QStr::Length(text4), &dummy, NULL);
 
 
 		starttime = Sys_FloatTime ();
@@ -475,7 +475,7 @@ void Sys_Printf (char *fmt, ...)
 		vsprintf (text, fmt, argptr);
 		va_end (argptr);
 
-		WriteFile(houtput, text, strlen (text), &dummy, NULL);	
+		WriteFile(houtput, text, QStr::Length(text), &dummy, NULL);	
 	}
 }
 
@@ -581,7 +581,7 @@ void Sys_InitFloatTime (void)
 
 	if (j)
 	{
-		curtime = (double) (atof(com_argv[j+1]));
+		curtime = (double) (QStr::Atof(com_argv[j+1]));
 	}
 	else
 	{
@@ -765,8 +765,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	if (!GetCurrentDirectory (sizeof(cwd), cwd))
 		Sys_Error ("Couldn't determine current directory");
 
-	if (cwd[strlen(cwd)-1] == '/')
-		cwd[strlen(cwd)-1] = 0;
+	if (cwd[QStr::Length(cwd)-1] == '/')
+		cwd[QStr::Length(cwd)-1] = 0;
 
 	parms.basedir = cwd;
 	parms.cachedir = NULL;
@@ -846,7 +846,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		t = COM_CheckParm("-heapsize") + 1;
 
 		if (t < com_argc)
-			parms.memsize = atoi (com_argv[t]) * 1024;
+			parms.memsize = QStr::Atoi (com_argv[t]) * 1024;
 	}
 
 	parms.membase = malloc (parms.memsize);
@@ -878,19 +878,19 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		if ((t = COM_CheckParm ("-HFILE")) > 0)
 		{
 			if (t < com_argc)
-				hFile = (HANDLE)atoi (com_argv[t+1]);
+				hFile = (HANDLE)QStr::Atoi (com_argv[t+1]);
 		}
 			
 		if ((t = COM_CheckParm ("-HPARENT")) > 0)
 		{
 			if (t < com_argc)
-				heventParent = (HANDLE)atoi (com_argv[t+1]);
+				heventParent = (HANDLE)QStr::Atoi (com_argv[t+1]);
 		}
 			
 		if ((t = COM_CheckParm ("-HCHILD")) > 0)
 		{
 			if (t < com_argc)
-				heventChild = (HANDLE)atoi (com_argv[t+1]);
+				heventChild = (HANDLE)QStr::Atoi (com_argv[t+1]);
 		}
 
 		InitConProc (hFile, heventParent, heventChild);

@@ -421,10 +421,10 @@ V_cshift_f
 */
 void V_cshift_f (void)
 {
-	cshift_empty.destcolor[0] = atoi(Cmd_Argv(1));
-	cshift_empty.destcolor[1] = atoi(Cmd_Argv(2));
-	cshift_empty.destcolor[2] = atoi(Cmd_Argv(3));
-	cshift_empty.percent = atoi(Cmd_Argv(4));
+	cshift_empty.destcolor[0] = QStr::Atoi(Cmd_Argv(1));
+	cshift_empty.destcolor[1] = QStr::Atoi(Cmd_Argv(2));
+	cshift_empty.destcolor[2] = QStr::Atoi(Cmd_Argv(3));
+	cshift_empty.percent = QStr::Atoi(Cmd_Argv(4));
 }
 
 
@@ -1033,7 +1033,7 @@ void V_CalcRefdef (void)
 // roughly equal with different FOV
 
 #if 0
-	if (cl.model_precache[cl.stats[STAT_WEAPON]] && strcmp (cl.model_precache[cl.stats[STAT_WEAPON]]->name,  "progs/v_shot2.mdl"))
+	if (cl.model_precache[cl.stats[STAT_WEAPON]] && QStr::Cmp(cl.model_precache[cl.stats[STAT_WEAPON]]->name,  "progs/v_shot2.mdl"))
 #endif
 	if (scr_viewsize.value == 110)
 		view->origin[2] += 1;

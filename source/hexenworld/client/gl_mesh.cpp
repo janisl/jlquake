@@ -327,9 +327,9 @@ void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 	//
 	// look for a cached version
 	//
-	strcpy (cache, "glhexen/");
-	COM_StripExtension (m->name+strlen("models/"), cache+strlen("glhexen/"));
-	strcat (cache, ".ms2");
+	QStr::Cpy(cache, "glhexen/");
+	COM_StripExtension (m->name+QStr::Length("models/"), cache+QStr::Length("glhexen/"));
+	QStr::Cat(cache, sizeof(cache), ".ms2");
 
 	COM_FOpenFile (cache, &f, true);	
 	if (f)

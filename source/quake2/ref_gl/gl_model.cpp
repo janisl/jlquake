@@ -188,7 +188,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	if (name[0] == '*')
 	{
-		i = atoi(name+1);
+		i = QStr::Atoi(name+1);
 		if (i < 1 || !r_worldmodel || i >= r_worldmodel->numsubmodels)
 			ri.Sys_Error (ERR_DROP, "bad inline model number");
 		return &mod_inline[i];
@@ -201,7 +201,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	{
 		if (!mod->name[0])
 			continue;
-		if (!strcmp (mod->name, name) )
+		if (!QStr::Cmp(mod->name, name) )
 			return mod;
 	}
 	
@@ -219,7 +219,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 			ri.Sys_Error (ERR_DROP, "mod_numknown == MAX_MOD_KNOWN");
 		mod_numknown++;
 	}
-	strcpy (mod->name, name);
+	QStr::Cpy(mod->name, name);
 	
 	//
 	// load the file
@@ -1115,7 +1115,7 @@ void R_BeginRegistration (char *model)
 	// explicitly free the old map if different
 	// this guarantees that mod_known[0] is the world map
 	flushmap = ri.Cvar_Get ("flushmap", "0", 0);
-	if ( strcmp(mod_known[0].name, fullname) || flushmap->value)
+	if ( QStr::Cmp(mod_known[0].name, fullname) || flushmap->value)
 		Mod_Free (&mod_known[0]);
 	r_worldmodel = Mod_ForName(fullname, true);
 

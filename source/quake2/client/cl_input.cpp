@@ -70,7 +70,7 @@ void KeyDown (kbutton_t *b)
 	
 	c = Cmd_Argv(1);
 	if (c[0])
-		k = atoi(c);
+		k = QStr::Atoi(c);
 	else
 		k = -1;		// typed manually at the console for continuous down
 
@@ -92,7 +92,7 @@ void KeyDown (kbutton_t *b)
 
 	// save timestamp
 	c = Cmd_Argv(2);
-	b->downtime = atoi(c);
+	b->downtime = QStr::Atoi(c);
 	if (!b->downtime)
 		b->downtime = sys_frame_time - 100;
 
@@ -107,7 +107,7 @@ void KeyUp (kbutton_t *b)
 
 	c = Cmd_Argv(1);
 	if (c[0])
-		k = atoi(c);
+		k = QStr::Atoi(c);
 	else
 	{ // typed manually at the console, assume for unsticking, so clear all
 		b->down[0] = b->down[1] = 0;
@@ -129,7 +129,7 @@ void KeyUp (kbutton_t *b)
 
 	// save timestamp
 	c = Cmd_Argv(2);
-	uptime = atoi(c);
+	uptime = QStr::Atoi(c);
 	if (uptime)
 		b->msec += uptime - b->downtime;
 	else
@@ -173,7 +173,7 @@ void IN_AttackUp(void) {KeyUp(&in_attack);}
 void IN_UseDown (void) {KeyDown(&in_use);}
 void IN_UseUp (void) {KeyUp(&in_use);}
 
-void IN_Impulse (void) {in_impulse=atoi(Cmd_Argv(1));}
+void IN_Impulse (void) {in_impulse=QStr::Atoi(Cmd_Argv(1));}
 
 /*
 ===============

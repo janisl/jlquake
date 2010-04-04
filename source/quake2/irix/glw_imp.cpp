@@ -320,7 +320,7 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	{
 		if (pnum >= com_argc-1)
 			Sys_Error("VID: -visualid <id#>\n");
-		template.visualid = Q_atoi(com_argv[pnum+1]);
+		template.visualid = QStr::Atoi(com_argv[pnum+1]);
 		template_mask = VisualIDMask;
 	}
 
@@ -489,7 +489,7 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 			char *d = displayname;
 			while (*d && (*d != ':')) d++;
 			if (*d) *d = 0;
-			if (!(!strcasecmp(displayname, "unix") || !*displayname))
+			if (!(!QStr::ICmp(displayname, "unix") || !*displayname))
 				doShm = false;
 		}
 	}

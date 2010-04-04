@@ -219,7 +219,7 @@ weaponconfig_t *LoadWeaponConfig(char *filename)
 		max_projectileinfo = 32;
 		LibVarSet("max_projectileinfo", "32");
 	} //end if
-	strncpy(path, filename, MAX_PATH);
+	QStr::NCpy(path, filename, MAX_PATH);
 	PC_SetBaseFolder(BOTFILESBASEFOLDER);
 	source = LoadSourceFile(path);
 	if (!source)
@@ -239,7 +239,7 @@ weaponconfig_t *LoadWeaponConfig(char *filename)
 	//parse the source file
 	while(PC_ReadToken(source, &token))
 	{
-		if (!strcmp(token.string, "weaponinfo"))
+		if (!QStr::Cmp(token.string, "weaponinfo"))
 		{
 			Com_Memset(&weaponinfo, 0, sizeof(weaponinfo_t));
 			if (!ReadStructure(source, &weaponinfo_struct, (char *) &weaponinfo))
@@ -258,7 +258,7 @@ weaponconfig_t *LoadWeaponConfig(char *filename)
 			Com_Memcpy(&wc->weaponinfo[weaponinfo.number], &weaponinfo, sizeof(weaponinfo_t));
 			wc->weaponinfo[weaponinfo.number].valid = qtrue;
 		} //end if
-		else if (!strcmp(token.string, "projectileinfo"))
+		else if (!QStr::Cmp(token.string, "projectileinfo"))
 		{
 			if (wc->numprojectiles >= max_projectileinfo)
 			{
@@ -304,7 +304,7 @@ weaponconfig_t *LoadWeaponConfig(char *filename)
 		//find the projectile info and copy it to the weapon info
 		for (j = 0; j < wc->numprojectiles; j++)
 		{
-			if (!strcmp(wc->projectileinfo[j].name, wc->weaponinfo[i].projectile))
+			if (!QStr::Cmp(wc->projectileinfo[j].name, wc->weaponinfo[i].projectile))
 			{
 				Com_Memcpy(&wc->weaponinfo[i].proj, &wc->projectileinfo[j], sizeof(projectileinfo_t));
 				break;

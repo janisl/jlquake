@@ -12,7 +12,6 @@
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <ctype.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <errno.h>
@@ -50,7 +49,7 @@ void Sys_Printf (char *fmt, ...)
 	vsprintf (text,fmt,argptr);
 	va_end (argptr);
 
-	if (strlen(text) > sizeof(text))
+	if (QStr::Length(text) > sizeof(text))
 		Sys_Error("memory overwrite in Sys_Printf");
 
     if (nostdout && nostdout->value)

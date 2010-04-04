@@ -17,7 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <ctype.h>
 #ifdef _WIN32
 #include <io.h>
 #endif
@@ -418,8 +417,8 @@ void M_Main_Draw (void)
 		if ( i != m_main_cursor )
 			re.DrawPic( xoffset, ystart + i * 40 + 13, names[i] );
 	}
-	strcpy( litname, names[m_main_cursor] );
-	strcat( litname, "_sel" );
+	QStr::Cpy( litname, names[m_main_cursor] );
+	QStr::Cat( litname, sizeof(litname), "_sel" );
 	re.DrawPic( xoffset, ystart + m_main_cursor * 40 + 13, litname );
 
 	M_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, (int)(cls.realtime / 100)%NUM_CURSOR_FRAMES );
@@ -643,14 +642,14 @@ static void M_UnbindCommand (char *command)
 	int		l;
 	char	*b;
 
-	l = strlen(command);
+	l = QStr::Length(command);
 
 	for (j=0 ; j<256 ; j++)
 	{
 		b = keybindings[j];
 		if (!b)
 			continue;
-		if (!strncmp (b, command, l) )
+		if (!QStr::NCmp(b, command, l) )
 			Key_SetBinding (j, "");
 	}
 }
@@ -663,7 +662,7 @@ static void M_FindKeysForCommand (char *command, int *twokeys)
 	char	*b;
 
 	twokeys[0] = twokeys[1] = -1;
-	l = strlen(command);
+	l = QStr::Length(command);
 	count = 0;
 
 	for (j=0 ; j<256 ; j++)
@@ -671,7 +670,7 @@ static void M_FindKeysForCommand (char *command, int *twokeys)
 		b = keybindings[j];
 		if (!b)
 			continue;
-		if (!strncmp (b, command, l) )
+		if (!QStr::NCmp(b, command, l) )
 		{
 			twokeys[count] = j;
 			count++;
@@ -709,7 +708,7 @@ static void DrawKeyBindingFunc( void *self )
 
 		Menu_DrawString( a->generic.x + a->generic.parent->x + 16, a->generic.y + a->generic.parent->y, name );
 
-		x = strlen(name) * 8;
+		x = QStr::Length(name) * 8;
 
 		if (keys[1] != -1)
 		{
@@ -1788,7 +1787,7 @@ void M_Credits_MenuDraw( void )
 		{
 			int x;
 
-			x = ( viddef.width - strlen( credits[i] ) * 8 - stringoffset * 8 ) / 2 + ( j + stringoffset ) * 8;
+			x = ( viddef.width - QStr::Length( credits[i] ) * 8 - stringoffset * 8 ) / 2 + ( j + stringoffset ) * 8;
 
 			if ( bold )
 				re.DrawChar( x, y, credits[i][j+stringoffset] + 128 );
@@ -2055,7 +2054,7 @@ void Create_Savestrings (void)
 		f = fopen (name, "rb");
 		if (!f)
 		{
-			strcpy (m_savestrings[i], "<EMPTY>");
+			QStr::Cpy (m_savestrings[i], "<EMPTY>");
 			m_savevalid[i] = false;
 		}
 		else
@@ -2237,11 +2236,11 @@ void M_AddToServerList (netadr_t adr, char *info)
 
 	// ignore if duplicated
 	for (i=0 ; i<m_num_servers ; i++)
-		if (!strcmp(info, local_server_names[i]))
+		if (!QStr::Cmp(info, local_server_names[i]))
 			return;
 
 	local_server_netadr[m_num_servers] = adr;
-	strncpy (local_server_names[m_num_servers], info, sizeof(local_server_names[0])-1);
+	QStr::NCpy(local_server_names[m_num_servers], info, sizeof(local_server_names[0])-1);
 	m_num_servers++;
 }
 
@@ -2253,7 +2252,7 @@ void JoinServerFunc( void *self )
 
 	index = ( menuaction_s * ) self - s_joinserver_server_actions;
 
-	if ( Q_stricmp( local_server_names[index], NO_SERVER_STRING ) == 0 )
+	if ( QStr::ICmp( local_server_names[index], NO_SERVER_STRING ) == 0 )
 		return;
 
 	if (index >= m_num_servers)
@@ -2279,7 +2278,7 @@ void SearchLocalGames( void )
 
 	m_num_servers = 0;
 	for (i=0 ; i<MAX_LOCAL_SERVERS ; i++)
-		strcpy (local_server_names[i], NO_SERVER_STRING);
+		QStr::Cpy (local_server_names[i], NO_SERVER_STRING);
 
 	M_DrawTextBox( 8, 120 - 48, 36, 3 );
 	M_Print( 16 + 16, 120 - 48 + 8,  "Searching for local servers, this" );
@@ -2328,7 +2327,7 @@ void JoinServer_MenuInit( void )
 	for ( i = 0; i < MAX_LOCAL_SERVERS; i++ )
 	{
 		s_joinserver_server_actions[i].generic.type	= MTYPE_ACTION;
-		strcpy (local_server_names[i], NO_SERVER_STRING);
+		QStr::Cpy (local_server_names[i], NO_SERVER_STRING);
 		s_joinserver_server_actions[i].generic.name	= local_server_names[i];
 		s_joinserver_server_actions[i].generic.flags	= QMF_LEFT_JUSTIFY;
 		s_joinserver_server_actions[i].generic.x		= 0;
@@ -2406,8 +2405,8 @@ void RulesChangeFunc ( void *self )
 	else if(s_rules_box.curvalue == 1)		// coop				// PGM
 	{
 		s_maxclients_field.generic.statusbar = "4 maximum for cooperative";
-		if (atoi(s_maxclients_field.buffer) > 4)
-			strcpy( s_maxclients_field.buffer, "4" );
+		if (QStr::Atoi(s_maxclients_field.buffer) > 4)
+			QStr::Cpy( s_maxclients_field.buffer, "4" );
 		s_startserver_dmoptions_action.generic.statusbar = "N/A for cooperative";
 	}
 //=====
@@ -2440,11 +2439,11 @@ void StartServerActionFunc( void *self )
 	int		maxclients;
 	char	*spot;
 
-	strcpy( startmap, strchr( mapnames[s_startmap_list.curvalue], '\n' ) + 1 );
+	QStr::Cpy( startmap, strchr( mapnames[s_startmap_list.curvalue], '\n' ) + 1 );
 
-	maxclients  = atoi( s_maxclients_field.buffer );
-	timelimit	= atoi( s_timelimit_field.buffer );
-	fraglimit	= atoi( s_fraglimit_field.buffer );
+	maxclients  = QStr::Atoi( s_maxclients_field.buffer );
+	timelimit	= QStr::Atoi( s_timelimit_field.buffer );
+	fraglimit	= QStr::Atoi( s_fraglimit_field.buffer );
 
 	Cvar_SetValue( "maxclients", ClampCvar( 0, maxclients, maxclients ) );
 	Cvar_SetValue ("timelimit", ClampCvar( 0, timelimit, timelimit ) );
@@ -2471,21 +2470,21 @@ void StartServerActionFunc( void *self )
 	spot = NULL;
 	if (s_rules_box.curvalue == 1)		// PGM
 	{
- 		if(Q_stricmp(startmap, "bunk1") == 0)
+ 		if(QStr::ICmp(startmap, "bunk1") == 0)
   			spot = "start";
- 		else if(Q_stricmp(startmap, "mintro") == 0)
+ 		else if(QStr::ICmp(startmap, "mintro") == 0)
   			spot = "start";
- 		else if(Q_stricmp(startmap, "fact1") == 0)
+ 		else if(QStr::ICmp(startmap, "fact1") == 0)
   			spot = "start";
- 		else if(Q_stricmp(startmap, "power1") == 0)
+ 		else if(QStr::ICmp(startmap, "power1") == 0)
   			spot = "pstart";
- 		else if(Q_stricmp(startmap, "biggun") == 0)
+ 		else if(QStr::ICmp(startmap, "biggun") == 0)
   			spot = "bstart";
- 		else if(Q_stricmp(startmap, "hangar1") == 0)
+ 		else if(QStr::ICmp(startmap, "hangar1") == 0)
   			spot = "unitstart";
- 		else if(Q_stricmp(startmap, "city1") == 0)
+ 		else if(QStr::ICmp(startmap, "city1") == 0)
   			spot = "unitstart";
- 		else if(Q_stricmp(startmap, "boss1") == 0)
+ 		else if(QStr::ICmp(startmap, "boss1") == 0)
 			spot = "bosstart";
 	}
 
@@ -2577,15 +2576,15 @@ void StartServer_MenuInit( void )
 		char  scratch[200];
 		int		j, l;
 
-		strcpy( shortname, COM_Parse( &s ) );
-		l = strlen(shortname);
+		QStr::Cpy( shortname, COM_Parse( &s ) );
+		l = QStr::Length(shortname);
 		for (j=0 ; j<l ; j++)
-			shortname[j] = toupper(shortname[j]);
-		strcpy( longname, COM_Parse( &s ) );
+			shortname[j] = QStr::ToUpper(shortname[j]);
+		QStr::Cpy( longname, COM_Parse( &s ) );
 		Com_sprintf( scratch, sizeof( scratch ), "%s\n%s", longname, shortname );
 
-		mapnames[i] = (char*)malloc( strlen( scratch ) + 1 );
-		strcpy( mapnames[i], scratch );
+		mapnames[i] = (char*)malloc( QStr::Length( scratch ) + 1 );
+		QStr::Cpy( mapnames[i], scratch );
 	}
 	mapnames[nummaps] = 0;
 
@@ -2637,7 +2636,7 @@ void StartServer_MenuInit( void )
 	s_timelimit_field.generic.statusbar = "0 = no limit";
 	s_timelimit_field.length = 3;
 	s_timelimit_field.visible_length = 3;
-	strcpy( s_timelimit_field.buffer, Cvar_VariableString("timelimit") );
+	QStr::Cpy( s_timelimit_field.buffer, Cvar_VariableString("timelimit") );
 
 	s_fraglimit_field.generic.type = MTYPE_FIELD;
 	s_fraglimit_field.generic.name = "frag limit";
@@ -2647,7 +2646,7 @@ void StartServer_MenuInit( void )
 	s_fraglimit_field.generic.statusbar = "0 = no limit";
 	s_fraglimit_field.length = 3;
 	s_fraglimit_field.visible_length = 3;
-	strcpy( s_fraglimit_field.buffer, Cvar_VariableString("fraglimit") );
+	QStr::Cpy( s_fraglimit_field.buffer, Cvar_VariableString("fraglimit") );
 
 	/*
 	** maxclients determines the maximum number of players that can join
@@ -2664,9 +2663,9 @@ void StartServer_MenuInit( void )
 	s_maxclients_field.length = 3;
 	s_maxclients_field.visible_length = 3;
 	if ( Cvar_VariableValue( "maxclients" ) == 1 )
-		strcpy( s_maxclients_field.buffer, "8" );
+		QStr::Cpy( s_maxclients_field.buffer, "8" );
 	else 
-		strcpy( s_maxclients_field.buffer, Cvar_VariableString("maxclients") );
+		QStr::Cpy( s_maxclients_field.buffer, Cvar_VariableString("maxclients") );
 
 	s_hostname_field.generic.type = MTYPE_FIELD;
 	s_hostname_field.generic.name = "hostname";
@@ -2676,7 +2675,7 @@ void StartServer_MenuInit( void )
 	s_hostname_field.generic.statusbar = NULL;
 	s_hostname_field.length = 12;
 	s_hostname_field.visible_length = 12;
-	strcpy( s_hostname_field.buffer, Cvar_VariableString("hostname") );
+	QStr::Cpy( s_hostname_field.buffer, Cvar_VariableString("hostname") );
 
 	s_startserver_dmoptions_action.generic.type = MTYPE_ACTION;
 	s_startserver_dmoptions_action.generic.name	= " deathmatch flags";
@@ -3311,7 +3310,7 @@ void AddressBook_MenuInit( void )
 		s_addressbook_fields[i].length			= 60;
 		s_addressbook_fields[i].visible_length	= 30;
 
-		strcpy( s_addressbook_fields[i].buffer, adr->string );
+		QStr::Cpy( s_addressbook_fields[i].buffer, adr->string );
 
 		Menu_AddItem( &s_addressbook_menu, &s_addressbook_fields[i] );
 	}
@@ -3425,13 +3424,13 @@ static qboolean IconOfSkinExists( char *skin, char **pcxfiles, int npcxfiles )
 	int i;
 	char scratch[1024];
 
-	strcpy( scratch, skin );
-	*strrchr( scratch, '.' ) = 0;
-	strcat( scratch, "_i.pcx" );
+	QStr::Cpy( scratch, skin );
+	*QStr::RChr( scratch, '.' ) = 0;
+	QStr::Cat( scratch, sizeof(scratch), "_i.pcx" );
 
 	for ( i = 0; i < npcxfiles; i++ )
 	{
-		if ( strcmp( pcxfiles[i], scratch ) == 0 )
+		if ( QStr::Cmp( pcxfiles[i], scratch ) == 0 )
 			return true;
 	}
 
@@ -3486,8 +3485,8 @@ static qboolean PlayerConfig_ScanDirectories( void )
 			continue;
 
 		// verify the existence of tris.md2
-		strcpy( scratch, dirnames[i] );
-		strcat( scratch, "/tris.md2" );
+		QStr::Cpy( scratch, dirnames[i] );
+		QStr::Cat( scratch, sizeof(scratch), "/tris.md2" );
 		if ( !Sys_FindFirst( scratch, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM ) )
 		{
 			free( dirnames[i] );
@@ -3498,8 +3497,8 @@ static qboolean PlayerConfig_ScanDirectories( void )
 		Sys_FindClose();
 
 		// verify the existence of at least one pcx skin
-		strcpy( scratch, dirnames[i] );
-		strcat( scratch, "/*.pcx" );
+		QStr::Cpy( scratch, dirnames[i] );
+		QStr::Cat( scratch, sizeof(scratch), "/*.pcx" );
 		pcxnames = FS_ListFiles( scratch, &npcxfiles, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM );
 
 		if ( !pcxnames )
@@ -3535,18 +3534,18 @@ static qboolean PlayerConfig_ScanDirectories( void )
 			{
 				if ( IconOfSkinExists( pcxnames[k], pcxnames, npcxfiles - 1 ) )
 				{
-					a = strrchr( pcxnames[k], '/' );
-					b = strrchr( pcxnames[k], '\\' );
+					a = QStr::RChr( pcxnames[k], '/' );
+					b = QStr::RChr( pcxnames[k], '\\' );
 
 					if ( a > b )
 						c = a;
 					else
 						c = b;
 
-					strcpy( scratch, c + 1 );
+					QStr::Cpy( scratch, c + 1 );
 
-					if ( strrchr( scratch, '.' ) )
-						*strrchr( scratch, '.' ) = 0;
+					if ( QStr::RChr( scratch, '.' ) )
+						*QStr::RChr( scratch, '.' ) = 0;
 
 					skinnames[s] = strdup( scratch );
 					s++;
@@ -3559,16 +3558,16 @@ static qboolean PlayerConfig_ScanDirectories( void )
 		s_pmi[s_numplayermodels].skindisplaynames = skinnames;
 
 		// make short name for the model
-		a = strrchr( dirnames[i], '/' );
-		b = strrchr( dirnames[i], '\\' );
+		a = QStr::RChr( dirnames[i], '/' );
+		b = QStr::RChr( dirnames[i], '\\' );
 
 		if ( a > b )
 			c = a;
 		else
 			c = b;
 
-		strncpy( s_pmi[s_numplayermodels].displayname, c + 1, MAX_DISPLAYNAME-1 );
-		strcpy( s_pmi[s_numplayermodels].directory, c + 1 );
+		QStr::NCpy( s_pmi[s_numplayermodels].displayname, c + 1, MAX_DISPLAYNAME-1 );
+		QStr::Cpy( s_pmi[s_numplayermodels].directory, c + 1 );
 
 		FreeFileList( pcxnames, npcxfiles );
 
@@ -3586,17 +3585,17 @@ static int pmicmpfnc( const void *_a, const void *_b )
 	/*
 	** sort by male, female, then alphabetical
 	*/
-	if ( strcmp( a->directory, "male" ) == 0 )
+	if ( QStr::Cmp( a->directory, "male" ) == 0 )
 		return -1;
-	else if ( strcmp( b->directory, "male" ) == 0 )
+	else if ( QStr::Cmp( b->directory, "male" ) == 0 )
 		return 1;
 
-	if ( strcmp( a->directory, "female" ) == 0 )
+	if ( QStr::Cmp( a->directory, "female" ) == 0 )
 		return -1;
-	else if ( strcmp( b->directory, "female" ) == 0 )
+	else if ( QStr::Cmp( b->directory, "female" ) == 0 )
 		return 1;
 
-	return strcmp( a->directory, b->directory );
+	return QStr::Cmp( a->directory, b->directory );
 }
 
 
@@ -3624,22 +3623,22 @@ qboolean PlayerConfig_MenuInit( void )
 	if ( hand->value < 0 || hand->value > 2 )
 		Cvar_SetValue( "hand", 0 );
 
-	strcpy( currentdirectory, skin->string );
+	QStr::Cpy( currentdirectory, skin->string );
 
 	if ( strchr( currentdirectory, '/' ) )
 	{
-		strcpy( currentskin, strchr( currentdirectory, '/' ) + 1 );
+		QStr::Cpy( currentskin, strchr( currentdirectory, '/' ) + 1 );
 		*strchr( currentdirectory, '/' ) = 0;
 	}
 	else if ( strchr( currentdirectory, '\\' ) )
 	{
-		strcpy( currentskin, strchr( currentdirectory, '\\' ) + 1 );
+		QStr::Cpy( currentskin, strchr( currentdirectory, '\\' ) + 1 );
 		*strchr( currentdirectory, '\\' ) = 0;
 	}
 	else
 	{
-		strcpy( currentdirectory, "male" );
-		strcpy( currentskin, "grunt" );
+		QStr::Cpy( currentdirectory, "male" );
+		QStr::Cpy( currentskin, "grunt" );
 	}
 
 	qsort( s_pmi, s_numplayermodels, sizeof( s_pmi[0] ), pmicmpfnc );
@@ -3648,7 +3647,7 @@ qboolean PlayerConfig_MenuInit( void )
 	for ( i = 0; i < s_numplayermodels; i++ )
 	{
 		s_pmnames[i] = s_pmi[i].displayname;
-		if ( Q_stricmp( s_pmi[i].directory, currentdirectory ) == 0 )
+		if ( QStr::ICmp( s_pmi[i].directory, currentdirectory ) == 0 )
 		{
 			int j;
 
@@ -3656,7 +3655,7 @@ qboolean PlayerConfig_MenuInit( void )
 
 			for ( j = 0; j < s_pmi[i].nskins; j++ )
 			{
-				if ( Q_stricmp( s_pmi[i].skindisplaynames[j], currentskin ) == 0 )
+				if ( QStr::ICmp( s_pmi[i].skindisplaynames[j], currentskin ) == 0 )
 				{
 					currentskinindex = j;
 					break;
@@ -3676,8 +3675,8 @@ qboolean PlayerConfig_MenuInit( void )
 	s_player_name_field.generic.y		= 0;
 	s_player_name_field.length	= 20;
 	s_player_name_field.visible_length = 20;
-	strcpy( s_player_name_field.buffer, name->string );
-	s_player_name_field.cursor = strlen( name->string );
+	QStr::Cpy( s_player_name_field.buffer, name->string );
+	s_player_name_field.cursor = QStr::Length( name->string );
 
 	s_player_model_title.generic.type = MTYPE_SEPARATOR;
 	s_player_model_title.generic.name = "model";

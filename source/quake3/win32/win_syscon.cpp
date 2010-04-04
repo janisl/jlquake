@@ -114,7 +114,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 		if ( ( com_dedicated && com_dedicated->integer ) )
 		{
 			cmdString = CopyString( "quit" );
-			Sys_QueEvent( 0, SE_CONSOLE, 0, 0, strlen( cmdString ) + 1, cmdString );
+			Sys_QueEvent( 0, SE_CONSOLE, 0, 0, QStr::Length( cmdString ) + 1, cmdString );
 		}
 		else if ( s_wcd.quitOnClose )
 		{
@@ -177,7 +177,7 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			else
 			{
 				cmdString = CopyString( "quit" );
-				Sys_QueEvent( 0, SE_CONSOLE, 0, 0, strlen( cmdString ) + 1, cmdString );
+				Sys_QueEvent( 0, SE_CONSOLE, 0, 0, QStr::Length( cmdString ) + 1, cmdString );
 			}
 		}
 		else if ( wParam == CLEAR_ID )
@@ -276,8 +276,8 @@ LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		if ( wParam == 13 )
 		{
 			GetWindowText( s_wcd.hwndInputLine, inputBuffer, sizeof( inputBuffer ) );
-			strncat( s_wcd.consoleText, inputBuffer, sizeof( s_wcd.consoleText ) - strlen( s_wcd.consoleText ) - 5 );
-			strcat( s_wcd.consoleText, "\n" );
+			strncat( s_wcd.consoleText, inputBuffer, sizeof( s_wcd.consoleText ) - QStr::Length( s_wcd.consoleText ) - 5 );
+			QStr::Cat( s_wcd.consoleText, sizeof(s_wcd.consoleText), "\n" );
 			SetWindowText( s_wcd.hwndInputLine, "" );
 
 			Sys_Print( va( "]%s\n", inputBuffer ) );
@@ -484,7 +484,7 @@ char *Sys_ConsoleInput( void )
 		return NULL;
 	}
 		
-	strcpy( s_wcd.returnedText, s_wcd.consoleText );
+	QStr::Cpy( s_wcd.returnedText, s_wcd.consoleText );
 	s_wcd.consoleText[0] = 0;
 	
 	return s_wcd.returnedText;
@@ -507,9 +507,9 @@ void Conbuf_AppendText( const char *pMsg )
 	//
 	// if the message is REALLY long, use just the last portion of it
 	//
-	if ( strlen( pMsg ) > CONSOLE_BUFFER_SIZE - 1 )
+	if ( QStr::Length( pMsg ) > CONSOLE_BUFFER_SIZE - 1 )
 	{
-		msg = pMsg + strlen( pMsg ) - CONSOLE_BUFFER_SIZE + 1;
+		msg = pMsg + QStr::Length( pMsg ) - CONSOLE_BUFFER_SIZE + 1;
 	}
 	else
 	{
@@ -578,7 +578,7 @@ void Conbuf_AppendText( const char *pMsg )
 */
 void Sys_SetErrorText( const char *buf )
 {
-	Q_strncpyz( s_wcd.errorString, buf, sizeof( s_wcd.errorString ) );
+	QStr::NCpyZ( s_wcd.errorString, buf, sizeof( s_wcd.errorString ) );
 
 	if ( !s_wcd.hwndErrorBox )
 	{

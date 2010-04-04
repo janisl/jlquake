@@ -189,7 +189,7 @@ void PS_CreatePunctuationTable(script_t *script, punctuation_t *punctuations)
 		//sort the punctuations in this table entry on length (longer punctuations first)
 		for (p = script->punctuationtable[(unsigned int) newp->p[0]]; p; p = p->next)
 		{
-			if (strlen(p->p) < strlen(newp->p))
+			if (QStr::Length(p->p) < QStr::Length(newp->p))
 			{
 				newp->next = p;
 				if (lastp) lastp->next = newp;
@@ -797,14 +797,14 @@ int PS_ReadPunctuation(script_t *script, token_t *token)
 		punc = &script->punctuations[i];
 #endif //PUNCTABLE
 		p = punc->p;
-		len = strlen(p);
+		len = QStr::Length(p);
 		//if the script contains at least as much characters as the punctuation
 		if (script->script_p + len <= script->end_p)
 		{
 			//if the script contains the punctuation
-			if (!strncmp(script->script_p, p, len))
+			if (!QStr::NCmp(script->script_p, p, len))
 			{
-				strncpy(token->string, p, MAX_TOKEN);
+				QStr::NCpy(token->string, p, MAX_TOKEN);
 				script->script_p += len;
 				token->type = TT_PUNCTUATION;
 				//sub type is the number of the punctuation
@@ -931,7 +931,7 @@ int PS_ExpectTokenString(script_t *script, char *string)
 		return 0;
 	} //end if
 
-	if (strcmp(token.string, string))
+	if (QStr::Cmp(token.string, string))
 	{
 		ScriptError(script, "expected %s, found %s", string, token.string);
 		return 0;
@@ -956,11 +956,11 @@ int PS_ExpectTokenType(script_t *script, int type, int subtype, token_t *token)
 
 	if (token->type != type)
 	{
-		if (type == TT_STRING) strcpy(str, "string");
-		if (type == TT_LITERAL) strcpy(str, "literal");
-		if (type == TT_NUMBER) strcpy(str, "number");
-		if (type == TT_NAME) strcpy(str, "name");
-		if (type == TT_PUNCTUATION) strcpy(str, "punctuation");
+		if (type == TT_STRING) QStr::Cpy(str, "string");
+		if (type == TT_LITERAL) QStr::Cpy(str, "literal");
+		if (type == TT_NUMBER) QStr::Cpy(str, "number");
+		if (type == TT_NAME) QStr::Cpy(str, "name");
+		if (type == TT_PUNCTUATION) QStr::Cpy(str, "punctuation");
 		ScriptError(script, "expected a %s, found %s", str, token->string);
 		return 0;
 	} //end if
@@ -968,14 +968,14 @@ int PS_ExpectTokenType(script_t *script, int type, int subtype, token_t *token)
 	{
 		if ((token->subtype & subtype) != subtype)
 		{
-			if (subtype & TT_DECIMAL) strcpy(str, "decimal");
-			if (subtype & TT_HEX) strcpy(str, "hex");
-			if (subtype & TT_OCTAL) strcpy(str, "octal");
-			if (subtype & TT_BINARY) strcpy(str, "binary");
-			if (subtype & TT_LONG) strcat(str, " long");
-			if (subtype & TT_UNSIGNED) strcat(str, " unsigned");
-			if (subtype & TT_FLOAT) strcat(str, " float");
-			if (subtype & TT_INTEGER) strcat(str, " integer");
+			if (subtype & TT_DECIMAL) QStr::Cpy(str, "decimal");
+			if (subtype & TT_HEX) QStr::Cpy(str, "hex");
+			if (subtype & TT_OCTAL) QStr::Cpy(str, "octal");
+			if (subtype & TT_BINARY) QStr::Cpy(str, "binary");
+			if (subtype & TT_LONG) QStr::Cat(str, sizeof(str), " long");
+			if (subtype & TT_UNSIGNED) QStr::Cat(str, sizeof(str), " unsigned");
+			if (subtype & TT_FLOAT) QStr::Cat(str, sizeof(str), " float");
+			if (subtype & TT_INTEGER) QStr::Cat(str, sizeof(str), " integer");
 			ScriptError(script, "expected %s, found %s", str, token->string);
 			return 0;
 		} //end if
@@ -1026,7 +1026,7 @@ int PS_CheckTokenString(script_t *script, char *string)
 
 	if (!PS_ReadToken(script, &tok)) return 0;
 	//if the token is available
-	if (!strcmp(tok.string, string)) return 1;
+	if (!QStr::Cmp(tok.string, string)) return 1;
 	//token not available
 	script->script_p = script->lastscript_p;
 	return 0;
@@ -1065,7 +1065,7 @@ int PS_SkipUntilString(script_t *script, char *string)
 
 	while(PS_ReadToken(script, &token))
 	{
-		if (!strcmp(token.string, string)) return 1;
+		if (!QStr::Cmp(token.string, string)) return 1;
 	} //end while
 	return 0;
 } //end of the function PS_SkipUntilString
@@ -1118,11 +1118,11 @@ void StripDoubleQuotes(char *string)
 {
 	if (*string == '\"')
 	{
-		strcpy(string, string+1);
+		QStr::Cpy(string, string+1);
 	} //end if
-	if (string[strlen(string)-1] == '\"')
+	if (string[QStr::Length(string)-1] == '\"')
 	{
-		string[strlen(string)-1] = '\0';
+		string[QStr::Length(string)-1] = '\0';
 	} //end if
 } //end of the function StripDoubleQuotes
 //============================================================================
@@ -1135,11 +1135,11 @@ void StripSingleQuotes(char *string)
 {
 	if (*string == '\'')
 	{
-		strcpy(string, string+1);
+		QStr::Cpy(string, string+1);
 	} //end if
-	if (string[strlen(string)-1] == '\'')
+	if (string[QStr::Length(string)-1] == '\'')
 	{
-		string[strlen(string)-1] = '\0';
+		string[QStr::Length(string)-1] = '\0';
 	} //end if
 } //end of the function StripSingleQuotes
 //============================================================================
@@ -1154,7 +1154,7 @@ long double ReadSignedFloat(script_t *script)
 	long double sign = 1;
 
 	PS_ExpectAnyToken(script, &token);
-	if (!strcmp(token.string, "-"))
+	if (!QStr::Cmp(token.string, "-"))
 	{
 		sign = -1;
 		PS_ExpectTokenType(script, TT_NUMBER, 0, &token);
@@ -1177,7 +1177,7 @@ signed long int ReadSignedInt(script_t *script)
 	signed long int sign = 1;
 
 	PS_ExpectAnyToken(script, &token);
-	if (!strcmp(token.string, "-"))
+	if (!QStr::Cmp(token.string, "-"))
 	{
 		sign = -1;
 		PS_ExpectTokenType(script, TT_NUMBER, TT_INTEGER, &token);
@@ -1265,13 +1265,13 @@ int ScriptSkipTo(script_t *script, char *value)
 	char firstchar;
 
 	firstchar = *value;
-	len = strlen(value);
+	len = QStr::Length(value);
 	do
 	{
 		if (!PS_ReadWhiteSpace(script)) return 0;
 		if (*script->script_p == firstchar)
 		{
-			if (!strncmp(script->script_p, value, len))
+			if (!QStr::NCmp(script->script_p, value, len))
 			{
 				return 1;
 			} //end if
@@ -1318,7 +1318,7 @@ script_t *LoadScriptFile(const char *filename)
 	script_t *script;
 
 #ifdef BOTLIB
-	if (strlen(basefolder))
+	if (QStr::Length(basefolder))
 		Com_sprintf(pathname, sizeof(pathname), "%s/%s", basefolder, filename);
 	else
 		Com_sprintf(pathname, sizeof(pathname), "%s", filename);
@@ -1334,7 +1334,7 @@ script_t *LoadScriptFile(const char *filename)
 	buffer = GetClearedMemory(sizeof(script_t) + length + 1);
 	script = (script_t *) buffer;
 	Com_Memset(script, 0, sizeof(script_t));
-	strcpy(script->filename, filename);
+	QStr::Cpy(script->filename, filename);
 	script->buffer = (char *) buffer + sizeof(script_t);
 	script->buffer[length] = 0;
 	script->length = length;
@@ -1382,7 +1382,7 @@ script_t *LoadScriptMemory(char *ptr, int length, char *name)
 	buffer = GetClearedMemory(sizeof(script_t) + length + 1);
 	script = (script_t *) buffer;
 	Com_Memset(script, 0, sizeof(script_t));
-	strcpy(script->filename, name);
+	QStr::Cpy(script->filename, name);
 	script->buffer = (char *) buffer + sizeof(script_t);
 	script->buffer[length] = 0;
 	script->length = length;

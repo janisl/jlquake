@@ -149,13 +149,13 @@ qboolean	NET_StringToSockaddr (char *s, struct sockaddr *sadr)
 	
 	((struct sockaddr_in *)sadr)->sin_port = 0;
 
-	strcpy (copy, s);
+	QStr::Cpy(copy, s);
 	// strip off a trailing :port if present
 	for (colon = copy ; *colon ; colon++)
 		if (*colon == ':')
 		{
 			*colon = 0;
-			((struct sockaddr_in *)sadr)->sin_port = htons((short)atoi(colon+1));	
+			((struct sockaddr_in *)sadr)->sin_port = htons((short)QStr::Atoi(colon+1));	
 		}
 	
 	if (copy[0] >= '0' && copy[0] <= '9')
@@ -187,7 +187,7 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 {
 	struct sockaddr_in sadr;
 	
-	if (!strcmp (s, "localhost"))
+	if (!QStr::Cmp(s, "localhost"))
 	{
 		memset (a, 0, sizeof(*a));
 		a->type = NA_LOOPBACK;
@@ -469,7 +469,7 @@ int NET_Socket (char *net_interface, int port)
 		return 0;
 	}
 
-	if (!net_interface || !net_interface[0] || !stricmp(net_interface, "localhost"))
+	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
 		address.sin_addr.s_addr = INADDR_ANY;
 	else
 		NET_StringToSockaddr (net_interface, (struct sockaddr *)&address);

@@ -581,23 +581,23 @@ void Con_DrawConsole (int lines)
 	// draw the download bar
 	// figure out width
 	if (cls.download) {
-		if ((text = strrchr(cls.downloadname, '/')) != NULL)
+		if ((text = QStr::RChr(cls.downloadname, '/')) != NULL)
 			text++;
 		else
 			text = cls.downloadname;
 
 		x = con_linewidth - ((con_linewidth * 7) / 40);
-		y = x - strlen(text) - 8;
+		y = x - QStr::Length(text) - 8;
 		i = con_linewidth/3;
-		if (strlen(text) > i) {
+		if (QStr::Length(text) > i) {
 			y = x - i - 11;
-			strncpy(dlbar, text, i);
+			QStr::NCpy(dlbar, text, i);
 			dlbar[i] = 0;
-			strcat(dlbar, "...");
+			QStr::Cat(dlbar, sizeof(dlbar), "...");
 		} else
-			strcpy(dlbar, text);
-		strcat(dlbar, ": ");
-		i = strlen(dlbar);
+			QStr::Cpy(dlbar, text);
+		QStr::Cat(dlbar, sizeof(dlbar), ": ");
+		i = QStr::Length(dlbar);
 		dlbar[i++] = '\x80';
 		// where's the dot go?
 		if (cls.downloadpercent == 0)
@@ -613,11 +613,11 @@ void Con_DrawConsole (int lines)
 		dlbar[i++] = '\x82';
 		dlbar[i] = 0;
 
-		sprintf(dlbar + strlen(dlbar), " %02d%%", cls.downloadpercent);
+		sprintf(dlbar + QStr::Length(dlbar), " %02d%%", cls.downloadpercent);
 
 		// draw it
 		y = con_vislines-22 + 8;
-		for (i = 0; i < strlen(dlbar); i++)
+		for (i = 0; i < QStr::Length(dlbar); i++)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
 

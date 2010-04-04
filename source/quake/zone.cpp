@@ -375,7 +375,7 @@ void Hunk_Print (qboolean all)
 	// print the total
 	//
 		if (next == endlow || next == endhigh || 
-		strncmp (h->name, next->name, 8) )
+		QStr::NCmp(h->name, next->name, 8) )
 		{
 			if (!all)
 				Con_Printf ("          :%8i %8s (TOTAL)\n",sum, name);
@@ -421,7 +421,7 @@ void *Hunk_AllocName (int size, char *name)
 	
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	Q_strncpy (h->name, name, 8);
+	QStr::NCpy(h->name, name, 8);
 	
 	return (void *)(h+1);
 }
@@ -512,7 +512,7 @@ void *Hunk_HighAllocName (int size, char *name)
 	memset (h, 0, size);
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	Q_strncpy (h->name, name, 8);
+	QStr::NCpy(h->name, name, 8);
 
 	return (void *)(h+1);
 }
@@ -886,7 +886,7 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 		cs = Cache_TryAlloc (size, false);
 		if (cs)
 		{
-			strncpy (cs->name, name, sizeof(cs->name)-1);
+			QStr::NCpy(cs->name, name, sizeof(cs->name)-1);
 			c->data = (void *)(cs+1);
 			cs->user = c;
 			break;
@@ -925,7 +925,7 @@ void Memory_Init (void *buf, int size)
 	if (p)
 	{
 		if (p < com_argc-1)
-			zonesize = Q_atoi (com_argv[p+1]) * 1024;
+			zonesize = QStr::Atoi(com_argv[p+1]) * 1024;
 		else
 			Sys_Error ("Memory_Init: you must specify a size in KB after -zone");
 	}

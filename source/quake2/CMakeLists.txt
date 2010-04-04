@@ -1,6 +1,6 @@
 set(ARCH i386)
 
-set(BASE_CFLAGS "-Dstricmp=strcasecmp")
+set(BASE_CFLAGS "")
 
 set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
 	-fomit-frame-pointer -fexpensive-optimizations -malign-loops=2

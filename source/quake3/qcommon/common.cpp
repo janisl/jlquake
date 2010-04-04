@@ -166,11 +166,11 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 	va_end (argptr);
 
 	if ( rd_buffer ) {
-		if ((strlen (msg) + strlen(rd_buffer)) > (rd_buffersize - 1)) {
+		if ((QStr::Length(msg) + QStr::Length(rd_buffer)) > (rd_buffersize - 1)) {
 			rd_flush(rd_buffer);
 			*rd_buffer = 0;
 		}
-		Q_strcat(rd_buffer, rd_buffersize, msg);
+		QStr::Cat(rd_buffer, rd_buffersize, msg);
     // TTimo nooo .. that would defeat the purpose
 		//rd_flush(rd_buffer);			
 		//*rd_buffer = 0;
@@ -209,7 +209,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
       opening_qconsole = qfalse;
 		}
 		if ( logfile && FS_Initialized()) {
-			FS_Write(msg, strlen(msg), logfile);
+			FS_Write(msg, QStr::Length(msg), logfile);
 		}
 	}
 }
@@ -414,8 +414,8 @@ qboolean Com_SafeMode( void ) {
 
 	for ( i = 0 ; i < com_numConsoleLines ; i++ ) {
 		Cmd_TokenizeString( com_consoleLines[i] );
-		if ( !Q_stricmp( Cmd_Argv(0), "safe" )
-			|| !Q_stricmp( Cmd_Argv(0), "cvar_restart" ) ) {
+		if ( !QStr::ICmp( Cmd_Argv(0), "safe" )
+			|| !QStr::ICmp( Cmd_Argv(0), "cvar_restart" ) ) {
 			com_consoleLines[i][0] = 0;
 			return qtrue;
 		}
@@ -442,12 +442,12 @@ void Com_StartupVariable( const char *match ) {
 
 	for (i=0 ; i < com_numConsoleLines ; i++) {
 		Cmd_TokenizeString( com_consoleLines[i] );
-		if ( strcmp( Cmd_Argv(0), "set" ) ) {
+		if ( QStr::Cmp( Cmd_Argv(0), "set" ) ) {
 			continue;
 		}
 
 		s = Cmd_Argv(1);
-		if ( !match || !strcmp( s, match ) ) {
+		if ( !match || !QStr::Cmp( s, match ) ) {
 			Cvar_Set( s, Cmd_Argv(2) );
 			cv = Cvar_Get( s, "", 0 );
 			cv->flags |= CVAR_USER_CREATED;
@@ -480,7 +480,7 @@ qboolean Com_AddStartupCommands( void ) {
 		}
 
 		// set commands won't override menu startup
-		if ( Q_stricmpn( com_consoleLines[i], "set", 3 ) ) {
+		if ( QStr::NICmp( com_consoleLines[i], "set", 3 ) ) {
 			added = qtrue;
 		}
 		Cbuf_AddText( com_consoleLines[i] );
@@ -543,7 +543,7 @@ Com_StringContains
 char *Com_StringContains(char *str1, char *str2, int casesensitive) {
 	int len, i, j;
 
-	len = strlen(str1) - strlen(str2);
+	len = QStr::Length(str1) - QStr::Length(str2);
 	for (i = 0; i <= len; i++, str1++) {
 		for (j = 0; str2[j]; j++) {
 			if (casesensitive) {
@@ -552,7 +552,7 @@ char *Com_StringContains(char *str1, char *str2, int casesensitive) {
 				}
 			}
 			else {
-				if (toupper(str1[j]) != toupper(str2[j])) {
+				if (QStr::ToUpper(str1[j]) != QStr::ToUpper(str2[j])) {
 					break;
 				}
 			}
@@ -584,10 +584,10 @@ int Com_Filter(char *filter, char *name, int casesensitive)
 				filter++;
 			}
 			buf[i] = '\0';
-			if (strlen(buf)) {
+			if (QStr::Length(buf)) {
 				ptr = Com_StringContains(name, buf, casesensitive);
 				if (!ptr) return qfalse;
-				name = ptr + strlen(buf);
+				name = ptr + QStr::Length(buf);
 			}
 		}
 		else if (*filter == '?') {
@@ -607,8 +607,8 @@ int Com_Filter(char *filter, char *name, int casesensitive)
 						if (*name >= *filter && *name <= *(filter+2)) found = qtrue;
 					}
 					else {
-						if (toupper(*name) >= toupper(*filter) &&
-							toupper(*name) <= toupper(*(filter+2))) found = qtrue;
+						if (QStr::ToUpper(*name) >= QStr::ToUpper(*filter) &&
+							QStr::ToUpper(*name) <= QStr::ToUpper(*(filter+2))) found = qtrue;
 					}
 					filter += 3;
 				}
@@ -617,7 +617,7 @@ int Com_Filter(char *filter, char *name, int casesensitive)
 						if (*filter == *name) found = qtrue;
 					}
 					else {
-						if (toupper(*filter) == toupper(*name)) found = qtrue;
+						if (QStr::ToUpper(*filter) == QStr::ToUpper(*name)) found = qtrue;
 					}
 					filter++;
 				}
@@ -635,7 +635,7 @@ int Com_Filter(char *filter, char *name, int casesensitive)
 				if (*filter != *name) return qfalse;
 			}
 			else {
-				if (toupper(*filter) != toupper(*name)) return qfalse;
+				if (QStr::ToUpper(*filter) != QStr::ToUpper(*name)) return qfalse;
 			}
 			filter++;
 			name++;
@@ -1080,7 +1080,7 @@ void Z_LogZoneHeap( memzone_t *zone, char *name ) {
 		return;
 	size = allocSize = numBlocks = 0;
 	Com_sprintf(buf, sizeof(buf), "\r\n================\r\n%s log\r\n================\r\n", name);
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 	for (block = zone->blocklist.next ; block->next != &zone->blocklist; block = block->next) {
 		if (block->tag) {
 #ifdef ZONE_DEBUG
@@ -1096,7 +1096,7 @@ void Z_LogZoneHeap( memzone_t *zone, char *name ) {
 			}
 			dump[j] = '\0';
 			Com_sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s) [%s]\r\n", block->d.allocSize, block->d.file, block->d.line, block->d.label, dump);
-			FS_Write(buf, strlen(buf), logfile);
+			FS_Write(buf, QStr::Length(buf), logfile);
 			allocSize += block->d.allocSize;
 #endif
 			size += block->size;
@@ -1110,9 +1110,9 @@ void Z_LogZoneHeap( memzone_t *zone, char *name ) {
 	allocSize = numBlocks * sizeof(memblock_t); // + 32 bit alignment
 #endif
 	Com_sprintf(buf, sizeof(buf), "%d %s memory in %d blocks\r\n", size, name, numBlocks);
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 	Com_sprintf(buf, sizeof(buf), "%d %s memory overhead\r\n", size - allocSize, name);
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 }
 
 /*
@@ -1166,8 +1166,8 @@ char *CopyString( const char *in ) {
 			return ((char *)&numberstring[in[0]-'0']) + sizeof(memblock_t);
 		}
 	}
-	out = (char*)S_Malloc (strlen(in)+1);
-	strcpy (out, in);
+	out = (char*)S_Malloc (QStr::Length(in)+1);
+	QStr::Cpy(out, in);
 	return out;
 }
 
@@ -1435,19 +1435,19 @@ void Hunk_Log( void) {
 	size = 0;
 	numBlocks = 0;
 	Com_sprintf(buf, sizeof(buf), "\r\n================\r\nHunk log\r\n================\r\n");
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 	for (block = hunkblocks ; block; block = block->next) {
 #ifdef HUNK_DEBUG
 		Com_sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", block->size, block->file, block->line, block->label);
-		FS_Write(buf, strlen(buf), logfile);
+		FS_Write(buf, QStr::Length(buf), logfile);
 #endif
 		size += block->size;
 		numBlocks++;
 	}
 	Com_sprintf(buf, sizeof(buf), "%d Hunk memory\r\n", size);
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 	Com_sprintf(buf, sizeof(buf), "%d hunk blocks\r\n", numBlocks);
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 }
 
 /*
@@ -1468,7 +1468,7 @@ void Hunk_SmallLog( void) {
 	size = 0;
 	numBlocks = 0;
 	Com_sprintf(buf, sizeof(buf), "\r\n================\r\nHunk Small log\r\n================\r\n");
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 	for (block = hunkblocks; block; block = block->next) {
 		if (block->printed) {
 			continue;
@@ -1478,7 +1478,7 @@ void Hunk_SmallLog( void) {
 			if (block->line != block2->line) {
 				continue;
 			}
-			if (Q_stricmp(block->file, block2->file)) {
+			if (QStr::ICmp(block->file, block2->file)) {
 				continue;
 			}
 			size += block2->size;
@@ -1487,15 +1487,15 @@ void Hunk_SmallLog( void) {
 		}
 #ifdef HUNK_DEBUG
 		Com_sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", locsize, block->file, block->line, block->label);
-		FS_Write(buf, strlen(buf), logfile);
+		FS_Write(buf, QStr::Length(buf), logfile);
 #endif
 		size += block->size;
 		numBlocks++;
 	}
 	Com_sprintf(buf, sizeof(buf), "%d Hunk memory\r\n", size);
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 	Com_sprintf(buf, sizeof(buf), "%d hunk blocks\r\n", numBlocks);
-	FS_Write(buf, strlen(buf), logfile);
+	FS_Write(buf, QStr::Length(buf), logfile);
 }
 
 /*
@@ -2228,7 +2228,7 @@ static void Com_Freeze_f (void) {
 		Com_Printf( "freeze <seconds>\n" );
 		return;
 	}
-	s = atof( Cmd_Argv(1) );
+	s = QStr::Atof( Cmd_Argv(1) );
 
 	start = Com_Milliseconds();
 
@@ -2275,7 +2275,7 @@ void Com_ReadCDKey( const char *filename ) {
 
 	FS_SV_FOpenFileRead( fbuffer, &f );
 	if ( !f ) {
-		Q_strncpyz( cl_cdkey, "                ", 17 );
+		QStr::NCpyZ( cl_cdkey, "                ", 17 );
 		return;
 	}
 
@@ -2285,9 +2285,9 @@ void Com_ReadCDKey( const char *filename ) {
 	FS_FCloseFile( f );
 
 	if (CL_CDKeyValidate(buffer, NULL)) {
-		Q_strncpyz( cl_cdkey, buffer, 17 );
+		QStr::NCpyZ( cl_cdkey, buffer, 17 );
 	} else {
-		Q_strncpyz( cl_cdkey, "                ", 17 );
+		QStr::NCpyZ( cl_cdkey, "                ", 17 );
 	}
 }
 
@@ -2305,7 +2305,7 @@ void Com_AppendCDKey( const char *filename ) {
 
 	FS_SV_FOpenFileRead( fbuffer, &f );
 	if (!f) {
-		Q_strncpyz( &cl_cdkey[16], "                ", 17 );
+		QStr::NCpyZ( &cl_cdkey[16], "                ", 17 );
 		return;
 	}
 
@@ -2315,9 +2315,9 @@ void Com_AppendCDKey( const char *filename ) {
 	FS_FCloseFile( f );
 
 	if (CL_CDKeyValidate(buffer, NULL)) {
-		strcat( &cl_cdkey[16], buffer );
+		QStr::Cat( &cl_cdkey[16], sizeof(cl_cdkey) - 16, buffer );
 	} else {
-		Q_strncpyz( &cl_cdkey[16], "                ", 17 );
+		QStr::NCpyZ( &cl_cdkey[16], "                ", 17 );
 	}
 }
 
@@ -2336,7 +2336,7 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 	sprintf(fbuffer, "%s/q3key", filename);
 
 
-	Q_strncpyz( key, ikey, 17 );
+	QStr::NCpyZ( key, ikey, 17 );
 
 	if(!CL_CDKeyValidate(key, NULL) ) {
 		return;
@@ -2598,7 +2598,7 @@ void Com_WriteConfig_f( void ) {
 		return;
 	}
 
-	Q_strncpyz( filename, Cmd_Argv(1), sizeof( filename ) );
+	QStr::NCpyZ( filename, Cmd_Argv(1), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename );
@@ -3229,18 +3229,18 @@ FindMatches
 static void FindMatches( const char *s ) {
 	int		i;
 
-	if ( Q_stricmpn( s, completionString, strlen( completionString ) ) ) {
+	if ( QStr::NICmp( s, completionString, QStr::Length( completionString ) ) ) {
 		return;
 	}
 	matchCount++;
 	if ( matchCount == 1 ) {
-		Q_strncpyz( shortestMatch, s, sizeof( shortestMatch ) );
+		QStr::NCpyZ( shortestMatch, s, sizeof( shortestMatch ) );
 		return;
 	}
 
 	// cut shortestMatch to the amount common with s
 	for ( i = 0 ; s[i] ; i++ ) {
-		if ( tolower(shortestMatch[i]) != tolower(s[i]) ) {
+		if ( QStr::ToLower(shortestMatch[i]) != QStr::ToLower(s[i]) ) {
 			shortestMatch[i] = 0;
 		}
 	}
@@ -3253,7 +3253,7 @@ PrintMatches
 ===============
 */
 static void PrintMatches( const char *s ) {
-	if ( !Q_stricmpn( s, shortestMatch, strlen( shortestMatch ) ) ) {
+	if ( !QStr::NICmp( s, shortestMatch, QStr::Length( shortestMatch ) ) ) {
 		Com_Printf( "    %s\n", s );
 	}
 }
@@ -3263,18 +3263,18 @@ static void keyConcatArgs( void ) {
 	char	*arg;
 
 	for ( i = 1 ; i < Cmd_Argc() ; i++ ) {
-		Q_strcat( completionField->buffer, sizeof( completionField->buffer ), " " );
+		QStr::Cat( completionField->buffer, sizeof( completionField->buffer ), " " );
 		arg = Cmd_Argv( i );
 		while (*arg) {
 			if (*arg == ' ') {
-				Q_strcat( completionField->buffer, sizeof( completionField->buffer ),  "\"");
+				QStr::Cat( completionField->buffer, sizeof( completionField->buffer ),  "\"");
 				break;
 			}
 			arg++;
 		}
-		Q_strcat( completionField->buffer, sizeof( completionField->buffer ),  Cmd_Argv( i ) );
+		QStr::Cat( completionField->buffer, sizeof( completionField->buffer ),  Cmd_Argv( i ) );
 		if (*arg == ' ') {
-			Q_strcat( completionField->buffer, sizeof( completionField->buffer ),  "\"");
+			QStr::Cat( completionField->buffer, sizeof( completionField->buffer ),  "\"");
 		}
 	}
 }
@@ -3288,8 +3288,8 @@ static void ConcatRemaining( const char *src, const char *start ) {
 		return;
 	}
 
-	str += strlen(start);
-	Q_strcat( completionField->buffer, sizeof( completionField->buffer ), str);
+	str += QStr::Length(start);
+	QStr::Cat( completionField->buffer, sizeof( completionField->buffer ), str);
 }
 
 /*
@@ -3316,7 +3316,7 @@ void Field_CompleteCommand( field_t *field ) {
 	matchCount = 0;
 	shortestMatch[0] = 0;
 
-	if ( strlen( completionString ) == 0 ) {
+	if ( QStr::Length( completionString ) == 0 ) {
 		return;
 	}
 
@@ -3332,17 +3332,17 @@ void Field_CompleteCommand( field_t *field ) {
 	if ( matchCount == 1 ) {
 		Com_sprintf( completionField->buffer, sizeof( completionField->buffer ), "\\%s", shortestMatch );
 		if ( Cmd_Argc() == 1 ) {
-			Q_strcat( completionField->buffer, sizeof( completionField->buffer ), " " );
+			QStr::Cat( completionField->buffer, sizeof( completionField->buffer ), " " );
 		} else {
 			ConcatRemaining( temp.buffer, completionString );
 		}
-		completionField->cursor = strlen( completionField->buffer );
+		completionField->cursor = QStr::Length( completionField->buffer );
 		return;
 	}
 
 	// multiple matches, complete to shortest
 	Com_sprintf( completionField->buffer, sizeof( completionField->buffer ), "\\%s", shortestMatch );
-	completionField->cursor = strlen( completionField->buffer );
+	completionField->cursor = QStr::Length( completionField->buffer );
 	ConcatRemaining( temp.buffer, completionString );
 
 	Com_Printf( "]%s\n", completionField->buffer );

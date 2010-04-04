@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "client.h"
-#include <ctype.h>
 
 /*
 
@@ -176,8 +175,8 @@ void CompleteCommand (void)
 	if (cmd)
 	{
 		key_lines[edit_line][1] = '/';
-		strcpy (key_lines[edit_line]+2, cmd);
-		key_linepos = strlen(cmd)+2;
+		QStr::Cpy(key_lines[edit_line]+2, cmd);
+		key_linepos = QStr::Length(cmd)+2;
 		key_lines[edit_line][key_linepos] = ' ';
 		key_linepos++;
 		key_lines[edit_line][key_linepos] = 0;
@@ -241,7 +240,7 @@ void Key_Console (int key)
 		break;
 	}
 
-	if ( ( toupper( key ) == 'V' && keydown[K_CTRL] ) ||
+	if ( ( QStr::ToUpper( key ) == 'V' && keydown[K_CTRL] ) ||
 		 ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keydown[K_SHIFT] ) )
 	{
 		char *cbd;
@@ -252,14 +251,14 @@ void Key_Console (int key)
 
 			strtok( cbd, "\n\r\b" );
 
-			i = strlen( cbd );
+			i = QStr::Length( cbd );
 			if ( i + key_linepos >= MAXCMDLINE)
 				i= MAXCMDLINE - key_linepos;
 
 			if ( i > 0 )
 			{
 				cbd[i]=0;
-				strcat( key_lines[edit_line], cbd );
+				QStr::Cat( key_lines[edit_line], sizeof(key_lines[edit_line]), cbd );
 				key_linepos += i;
 			}
 			free( cbd );
@@ -319,8 +318,8 @@ void Key_Console (int key)
 				&& !key_lines[history_line][1]);
 		if (history_line == edit_line)
 			history_line = (edit_line+1)&31;
-		strcpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = strlen(key_lines[edit_line]);
+		QStr::Cpy(key_lines[edit_line], key_lines[history_line]);
+		key_linepos = QStr::Length(key_lines[edit_line]);
 		return;
 	}
 
@@ -341,8 +340,8 @@ void Key_Console (int key)
 		}
 		else
 		{
-			strcpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = strlen(key_lines[edit_line]);
+			QStr::Cpy(key_lines[edit_line], key_lines[history_line]);
+			key_linepos = QStr::Length(key_lines[edit_line]);
 		}
 		return;
 	}
@@ -460,7 +459,7 @@ int Key_StringToKeynum (char *str)
 
 	for (kn=keynames ; kn->name ; kn++)
 	{
-		if (!Q_strcasecmp(str,kn->name))
+		if (!QStr::ICmp(str,kn->name))
 			return kn->keynum;
 	}
 	return -1;
@@ -518,9 +517,9 @@ void Key_SetBinding (int keynum, char *binding)
 	}
 			
 // allocate memory for new binding
-	l = strlen (binding);	
+	l = QStr::Length(binding);	
 	newb = (char*)Z_Malloc (l+1);
-	strcpy (newb, binding);
+	QStr::Cpy(newb, binding);
 	newb[l] = 0;
 	keybindings[keynum] = newb;
 }
@@ -597,9 +596,9 @@ void Key_Bind_f (void)
 	cmd[0] = 0;		// start out with a null string
 	for (i=2 ; i< c ; i++)
 	{
-		strcat (cmd, Cmd_Argv(i));
+		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 		if (i != (c-1))
-			strcat (cmd, " ");
+			QStr::Cat(cmd, sizeof(cmd), " ");
 	}
 
 	Key_SetBinding (b, cmd);

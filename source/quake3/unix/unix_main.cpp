@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <ctype.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
 #include <errno.h>
@@ -300,7 +299,7 @@ void Sys_Printf (char *fmt, ...)
   vsprintf (text,fmt,argptr);
   va_end (argptr);
 
-  if (strlen(text) > sizeof(text))
+  if (QStr::Length(text) > sizeof(text))
     Sys_Error("memory overwrite in Sys_Printf");
 
   for (p = (unsigned char *)text; *p; p++)
@@ -542,7 +541,7 @@ char *Sys_ConsoleInput(void)
         {
           // push it in history
           Hist_Add(&tty_con);
-          strcpy(text, tty_con.buffer);
+          QStr::Cpy(text, tty_con.buffer);
           Field_Clear(&tty_con);
           key = '\n';
           write(1, &key, 1);
@@ -555,7 +554,7 @@ char *Sys_ConsoleInput(void)
           // Field_CompleteCommand does weird things to the string, do a cleanup
           //   it adds a '\' at the beginning of the string
           //   cursor doesn't reflect actual length of the string that's sent back
-          tty_con.cursor = strlen(tty_con.buffer);
+          tty_con.cursor = QStr::Length(tty_con.buffer);
           if (tty_con.cursor>0)
           {
             if (tty_con.buffer[0] == '\\')
@@ -790,7 +789,7 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
   Com_Printf ( "Sys_LoadDll(%s) found **vmMain** at  %p  \n", name, *entryPoint ); // bk001212
   dllEntry( systemcalls );
   Com_Printf ( "Sys_LoadDll(%s) succeeded!\n", name );
-  if ( libHandle ) Q_strncpyz ( fqpath , fn , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
+  if ( libHandle ) QStr::NCpyZ( fqpath , fn , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
   return libHandle;
 }
 
@@ -1089,9 +1088,9 @@ sysEvent_t Sys_GetEvent( void ) {
     char  *b;
     int   len;
 
-    len = strlen( s ) + 1;
+    len = QStr::Length( s ) + 1;
     b = (char*)Z_Malloc( len );
-    strcpy( b, s );
+    QStr::Cpy( b, s );
     Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
   }
 
@@ -1201,8 +1200,8 @@ void Sys_ParseArgs( int argc, char* argv[] ) {
 
   if ( argc==2 )
   {
-    if ( (!strcmp( argv[1], "--version" ))
-         || ( !strcmp( argv[1], "-v" )) )
+    if ( (!QStr::Cmp( argv[1], "--version" ))
+         || ( !QStr::Cmp( argv[1], "-v" )) )
     {
       Sys_PrintBinVersion( argv[0] );
       Sys_Exit(0);
@@ -1230,14 +1229,14 @@ int main ( int argc, char* argv[] )
 
   // merge the command line, this is kinda silly
   for (len = 1, i = 1; i < argc; i++)
-    len += strlen(argv[i]) + 1;
+    len += QStr::Length(argv[i]) + 1;
   cmdline = (char*)malloc(len);
   *cmdline = 0;
   for (i = 1; i < argc; i++)
   {
     if (i > 1)
-      strcat(cmdline, " ");
-    strcat(cmdline, argv[i]);
+      QStr::Cat(cmdline, len, " ");
+    QStr::Cat(cmdline, len, argv[i]);
   }
 
   // bk000306 - clear queues

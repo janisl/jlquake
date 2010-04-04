@@ -19,7 +19,7 @@ cvar_t *Cvar_FindVar (char *var_name)
 	cvar_t	*var;
 	
 	for (var=cvar_vars ; var ; var=var->next)
-		if (!strcmp (var_name, var->name))
+		if (!QStr::Cmp(var_name, var->name))
 			return var;
 
 	return NULL;
@@ -37,7 +37,7 @@ float	Cvar_VariableValue (char *var_name)
 	var = Cvar_FindVar (var_name);
 	if (!var)
 		return 0;
-	return atof (var->string);
+	return QStr::Atof(var->string);
 }
 
 
@@ -67,19 +67,19 @@ char *Cvar_CompleteVariable (char *partial)
 	cvar_t		*cvar;
 	int			len;
 	
-	len = strlen(partial);
+	len = QStr::Length(partial);
 	
 	if (!len)
 		return NULL;
 		
 	// check exact match
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!strcmp (partial,cvar->name))
+		if (!QStr::Cmp(partial,cvar->name))
 			return cvar->name;
 
 	// check partial match
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!strncmp (partial,cvar->name, len))
+		if (!QStr::NCmp(partial,cvar->name, len))
 			return cvar->name;
 
 	return NULL;
@@ -122,9 +122,9 @@ void Cvar_Set (char *var_name, char *value)
 	
 	Z_Free (var->string);	// free the old value string
 	
-	var->string = (char*)Z_Malloc (strlen(value)+1);
-	strcpy (var->string, value);
-	var->value = atof (var->string);
+	var->string = (char*)Z_Malloc (QStr::Length(value)+1);
+	QStr::Cpy(var->string, value);
+	var->value = QStr::Atof(var->string);
 }
 
 /*
@@ -171,7 +171,7 @@ void Cvar_RegisterVariable (cvar_t *variable)
 	cvar_vars = variable;
 
 // copy the value off, because future sets will Z_Free it
-	strcpy (value, variable->string);
+	QStr::Cpy(value, variable->string);
 	variable->string = (char*)Z_Malloc (1);	
 	
 // set it through the function to be consistant

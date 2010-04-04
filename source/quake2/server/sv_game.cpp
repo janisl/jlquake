@@ -198,7 +198,7 @@ void PF_Configstring (int index, char *val)
 		val = "";
 
 	// change the string in sv
-	strcpy (sv.configstrings[index], val);
+	QStr::Cpy(sv.configstrings[index], val);
 	
 	if (sv.state != ss_loading)
 	{	// send the update to everyone

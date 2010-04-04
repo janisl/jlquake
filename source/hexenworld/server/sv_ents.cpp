@@ -322,14 +322,14 @@ void SV_WriteDelta (entity_state_t *from, entity_state_t *to, sizebuf_t *msg, qb
 	temp_index = to->modelindex;
 	if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
 	{
-		strcpy(NewName,ent->v.model + pr_strings);
+		QStr::Cpy(NewName,ent->v.model + pr_strings);
 		if (client->playerclass <= 0 || client->playerclass > MAX_PLAYER_CLASS)
 		{
-			NewName[strlen(NewName)-5] = '1';
+			NewName[QStr::Length(NewName)-5] = '1';
 		}
 		else
 		{
-			NewName[strlen(NewName)-5] = client->playerclass + 48;
+			NewName[QStr::Length(NewName)-5] = client->playerclass + 48;
 		}
 		temp_index = SV_ModelIndex (NewName);
 	}

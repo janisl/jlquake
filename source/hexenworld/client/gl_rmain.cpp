@@ -436,13 +436,13 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 		}
 		else
 		{
-			strncpy(client_team, Info_ValueForKey(cl.players[cl.playernum].userinfo, "team"), 16);
+			QStr::NCpy(client_team, Info_ValueForKey(cl.players[cl.playernum].userinfo, "team"), 16);
 			client_team[15] = 0;
 			if (client_team[0])
 			{
-				strncpy(this_team, Info_ValueForKey(cl.players[i].userinfo, "team"), 16);
+				QStr::NCpy(this_team, Info_ValueForKey(cl.players[i].userinfo, "team"), 16);
 				this_team[15] = 0;
-				if (strcmpi(client_team, this_team) == 0)
+				if (QStr::ICmp(client_team, this_team) == 0)
 				{
 					OnTeam = true;
 					ColorShade = r_teamcolor.value;
@@ -1704,7 +1704,7 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 	u = (int)(r_refdef.vrect.width / 2 * (zi * Out.x + 1) ) + r_refdef.vrect.x;
 	v = (int)(r_refdef.vrect.height / 2 * (zi * (-Out.y) + 1) ) + r_refdef.vrect.y;
 
-	u -= strlen(Name) * 4;
+	u -= QStr::Length(Name) * 4;
 
 	if(cl_siege)
 	{

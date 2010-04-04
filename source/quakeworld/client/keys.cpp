@@ -166,9 +166,9 @@ qboolean CheckForCommand (void)
 	command[i] = 0;
 
 	cmd = Cmd_CompleteCommand (command);
-	if (!cmd || strcmp (cmd, command))
+	if (!cmd || QStr::Cmp(cmd, command))
 		cmd = Cvar_CompleteVariable (command);
-	if (!cmd  || strcmp (cmd, command) )
+	if (!cmd  || QStr::Cmp(cmd, command) )
 		return false;		// just a chat message
 	return true;
 }
@@ -187,8 +187,8 @@ void CompleteCommand (void)
 	if (cmd)
 	{
 		key_lines[edit_line][1] = '/';
-		Q_strcpy (key_lines[edit_line]+2, cmd);
-		key_linepos = Q_strlen(cmd)+2;
+		QStr::Cpy(key_lines[edit_line]+2, cmd);
+		key_linepos = QStr::Length(cmd)+2;
 		key_lines[edit_line][key_linepos] = ' ';
 		key_linepos++;
 		key_lines[edit_line][key_linepos] = 0;
@@ -259,8 +259,8 @@ void Key_Console (int key)
 				&& !key_lines[history_line][1]);
 		if (history_line == edit_line)
 			history_line = (edit_line+1)&31;
-		Q_strcpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = Q_strlen(key_lines[edit_line]);
+		QStr::Cpy(key_lines[edit_line], key_lines[history_line]);
+		key_linepos = QStr::Length(key_lines[edit_line]);
 		return;
 	}
 
@@ -280,8 +280,8 @@ void Key_Console (int key)
 		}
 		else
 		{
-			Q_strcpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = Q_strlen(key_lines[edit_line]);
+			QStr::Cpy(key_lines[edit_line], key_lines[history_line]);
+			key_linepos = QStr::Length(key_lines[edit_line]);
 		}
 		return;
 	}
@@ -320,14 +320,14 @@ void Key_Console (int key)
 				clipText = (char*)GlobalLock(th);
 				if (clipText) {
 					textCopied = (char*)malloc(GlobalSize(th)+1);
-					strcpy(textCopied, clipText);
+					QStr::Cpy(textCopied, clipText);
 	/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
-					i = strlen(textCopied);
+					i = QStr::Length(textCopied);
 					if (i+key_linepos>=MAXCMDLINE)
 						i=MAXCMDLINE-key_linepos;
 					if (i>0) {
 						textCopied[i]=0;
-						strcat(key_lines[edit_line], textCopied);
+						QStr::Cat(key_lines[edit_line], sizeof(key_lines[edit_line]), textCopied);
 						key_linepos+=i;;
 					}
 					free(textCopied);
@@ -427,7 +427,7 @@ int Key_StringToKeynum (char *str)
 
 	for (kn=keynames ; kn->name ; kn++)
 	{
-		if (!Q_strcasecmp(str,kn->name))
+		if (!QStr::ICmp(str,kn->name))
 			return kn->keynum;
 	}
 	return -1;
@@ -485,9 +485,9 @@ void Key_SetBinding (int keynum, char *binding)
 	}
 			
 // allocate memory for new binding
-	l = Q_strlen (binding);	
+	l = QStr::Length(binding);	
 	newb = (char*)Z_Malloc (l+1);
-	Q_strcpy (newb, binding);
+	QStr::Cpy(newb, binding);
 	newb[l] = 0;
 	keybindings[keynum] = newb;
 }
@@ -564,9 +564,9 @@ void Key_Bind_f (void)
 	cmd[0] = 0;		// start out with a null string
 	for (i=2 ; i< c ; i++)
 	{
-		strcat (cmd, Cmd_Argv(i));
+		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 		if (i != (c-1))
-			strcat (cmd, " ");
+			QStr::Cat(cmd, sizeof(cmd), " ");
 	}
 
 	Key_SetBinding (b, cmd);

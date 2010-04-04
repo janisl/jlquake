@@ -735,7 +735,7 @@ void CL_PlayDemo_f (void)
 //
 // open the demo file
 //
-	strcpy (name, Cmd_Argv(1));
+	QStr::Cpy(name, Cmd_Argv(1));
 	COM_DefaultExtension (name, ".qwd");
 
 	Con_Printf ("Playing demo from %s.\n", name);

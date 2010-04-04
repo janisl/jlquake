@@ -457,7 +457,7 @@ void CL_LinkPacketEntities (void)
 	
 		// set colormap
 		if (s1->colormap && (s1->colormap < MAX_CLIENTS) 
-			&& !strcmp(ent->model->name,"progs/player.mdl") )
+			&& !QStr::Cmp(ent->model->name,"progs/player.mdl") )
 		{
 			ent->colormap = cl.players[s1->colormap-1].translations;
 			ent->scoreboard = &cl.players[s1->colormap-1];

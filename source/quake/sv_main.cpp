@@ -138,7 +138,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 // find precache number for sound
     for (sound_num=1 ; sound_num<MAX_SOUNDS
         && sv.sound_precache[sound_num] ; sound_num++)
-        if (!strcmp(sample, sv.sound_precache[sound_num]))
+        if (!QStr::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
     if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
@@ -265,7 +265,7 @@ void SV_ConnectClient (int clientnum)
 	memset (client, 0, sizeof(*client));
 	client->netconnection = netconnection;
 
-	strcpy (client->name, "unconnected");
+	QStr::Cpy(client->name, "unconnected");
 	client->active = true;
 	client->spawned = false;
 	client->edict = ent;
@@ -909,7 +909,7 @@ int SV_ModelIndex (char *name)
 		return 0;
 
 	for (i=0 ; i<MAX_MODELS && sv.model_precache[i] ; i++)
-		if (!strcmp(sv.model_precache[i], name))
+		if (!QStr::Cmp(sv.model_precache[i], name))
 			return i;
 	if (i==MAX_MODELS || !sv.model_precache[i])
 		Sys_Error ("SV_ModelIndex: model %s not precached", name);
@@ -1086,10 +1086,10 @@ void SV_SpawnServer (char *server)
 
 	memset (&sv, 0, sizeof(sv));
 
-	strcpy (sv.name, server);
+	QStr::Cpy(sv.name, server);
 #ifdef QUAKE2
 	if (startspot)
-		strcpy(sv.startspot, startspot);
+		QStr::Cpy(sv.startspot, startspot);
 #endif
 
 // load progs to get entity field count
@@ -1125,7 +1125,7 @@ void SV_SpawnServer (char *server)
 
 	sv.time = 1.0;
 	
-	strcpy (sv.name, server);
+	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 	sv.worldmodel = Mod_ForName (sv.modelname, false);
 	if (!sv.worldmodel)

@@ -17,9 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <string.h>
-#include <ctype.h>
-
 #include "client.h"
 #include "qmenu.h"
 
@@ -91,7 +88,7 @@ void Field_Draw( menufield_s *f )
 	if ( f->generic.name )
 		Menu_DrawStringR2LDark( f->generic.x + f->generic.parent->x + LCOLUMN_OFFSET, f->generic.y + f->generic.parent->y, f->generic.name );
 
-	strncpy( tempbuffer, f->buffer + f->visible_offset, f->visible_length );
+	QStr::NCpy( tempbuffer, f->buffer + f->visible_offset, f->visible_length );
 
 	Draw_Char( f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y - 4, 18 );
 	Draw_Char( f->generic.x + f->generic.parent->x + 16, f->generic.y + f->generic.parent->y + 4, 24 );
@@ -194,7 +191,7 @@ qboolean Field_Key( menufield_s *f, int key )
 	/*
 	** support pasting from the clipboard
 	*/
-	if ( ( toupper( key ) == 'V' && keydown[K_CTRL] ) ||
+	if ( ( QStr::ToUpper( key ) == 'V' && keydown[K_CTRL] ) ||
 		 ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keydown[K_SHIFT] ) )
 	{
 		char *cbd;
@@ -203,8 +200,8 @@ qboolean Field_Key( menufield_s *f, int key )
 		{
 			strtok( cbd, "\n\r\b" );
 
-			strncpy( f->buffer, cbd, f->length - 1 );
-			f->cursor = strlen( f->buffer );
+			QStr::NCpy( f->buffer, cbd, f->length - 1 );
+			f->cursor = QStr::Length( f->buffer );
 			f->visible_offset = f->cursor - f->visible_length;
 			if ( f->visible_offset < 0 )
 				f->visible_offset = 0;
@@ -221,7 +218,7 @@ qboolean Field_Key( menufield_s *f, int key )
 	case K_BACKSPACE:
 		if ( f->cursor > 0 )
 		{
-			memmove( &f->buffer[f->cursor-1], &f->buffer[f->cursor], strlen( &f->buffer[f->cursor] ) + 1 );
+			memmove( &f->buffer[f->cursor-1], &f->buffer[f->cursor], QStr::Length( &f->buffer[f->cursor] ) + 1 );
 			f->cursor--;
 
 			if ( f->visible_offset )
@@ -233,7 +230,7 @@ qboolean Field_Key( menufield_s *f, int key )
 
 	case K_KP_DEL:
 	case K_DEL:
-		memmove( &f->buffer[f->cursor], &f->buffer[f->cursor+1], strlen( &f->buffer[f->cursor+1] ) + 1 );
+		memmove( &f->buffer[f->cursor], &f->buffer[f->cursor+1], QStr::Length( &f->buffer[f->cursor+1] ) + 1 );
 		break;
 
 	case K_KP_ENTER:
@@ -244,7 +241,7 @@ qboolean Field_Key( menufield_s *f, int key )
 
 	case K_SPACE:
 	default:
-		if ( !isdigit( key ) && ( f->generic.flags & QMF_NUMBERSONLY ) )
+		if ( !QStr::IsDigit( key ) && ( f->generic.flags & QMF_NUMBERSONLY ) )
 			return false;
 
 		if ( f->cursor < f->length )
@@ -417,7 +414,7 @@ void Menu_DrawStatusBar( const char *string )
 {
 	if ( string )
 	{
-		int l = strlen( string );
+		int l = QStr::Length( string );
 		int maxrow = VID_HEIGHT / 8;
 		int maxcol = VID_WIDTH / 8;
 		int col = maxcol / 2 - l / 2;
@@ -435,7 +432,7 @@ void Menu_DrawString( int x, int y, const char *string )
 {
 	unsigned i;
 
-	for ( i = 0; i < strlen( string ); i++ )
+	for ( i = 0; i < QStr::Length( string ); i++ )
 	{
 		Draw_Char( ( x + i*8 ), y, string[i] );
 	}
@@ -445,7 +442,7 @@ void Menu_DrawStringDark( int x, int y, const char *string )
 {
 	unsigned i;
 
-	for ( i = 0; i < strlen( string ); i++ )
+	for ( i = 0; i < QStr::Length( string ); i++ )
 	{
 		Draw_Char( ( x + i*8 ), y, string[i] + 128 );
 	}
@@ -455,9 +452,9 @@ void Menu_DrawStringR2L( int x, int y, const char *string )
 {
 	unsigned i;
 
-	for ( i = 0; i < strlen( string ); i++ )
+	for ( i = 0; i < QStr::Length( string ); i++ )
 	{
-		Draw_Char( ( x - i*8 ), y, string[strlen(string)-i-1] );
+		Draw_Char( ( x - i*8 ), y, string[QStr::Length(string)-i-1] );
 	}
 }
 
@@ -465,9 +462,9 @@ void Menu_DrawStringR2LDark( int x, int y, const char *string )
 {
 	unsigned i;
 
-	for ( i = 0; i < strlen( string ); i++ )
+	for ( i = 0; i < QStr::Length( string ); i++ )
 	{
-		Draw_Char( ( x - i*8 ), y, string[strlen(string)-i-1]+128 );
+		Draw_Char( ( x - i*8 ), y, string[QStr::Length(string)-i-1]+128 );
 	}
 }
 
@@ -664,10 +661,10 @@ void SpinControl_Draw( menulist_s *s )
 	}
 	else
 	{
-		strcpy( buffer, s->itemnames[s->curvalue] );
+		QStr::Cpy( buffer, s->itemnames[s->curvalue] );
 		*strchr( buffer, '\n' ) = 0;
 		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y, buffer );
-		strcpy( buffer, strchr( s->itemnames[s->curvalue], '\n' ) + 1 );
+		QStr::Cpy( buffer, strchr( s->itemnames[s->curvalue], '\n' ) + 1 );
 		Menu_DrawString( RCOLUMN_OFFSET + s->generic.x + s->generic.parent->x, s->generic.y + s->generic.parent->y + 10, buffer );
 	}
 }

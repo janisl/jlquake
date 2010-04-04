@@ -138,7 +138,7 @@ int VM_SymbolToValue( vm_t *vm, const char *symbol ) {
 	vmSymbol_t	*sym;
 
 	for ( sym = vm->symbols ; sym ; sym = sym->next ) {
-		if ( !strcmp( symbol, sym->symName ) ) {
+		if ( !QStr::Cmp( symbol, sym->symName ) ) {
 			return sym->symValue;
 		}
 	}
@@ -264,7 +264,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
-		chars = strlen( token );
+		chars = QStr::Length( token );
 		sym = (vmSymbol_t*)Hunk_Alloc( sizeof( *sym ) + chars, h_high );
 		*prev = sym;
 		prev = &sym->next;
@@ -276,7 +276,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 		}
 
 		sym->symValue = value;
-		Q_strncpyz( sym->symName, token, chars + 1 );
+		QStr::NCpyZ( sym->symName, token, chars + 1 );
 
 		count++;
 	}
@@ -365,7 +365,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 	    int			(*systemCall)( int *parms );
 		
 		systemCall = vm->systemCall;	
-		Q_strncpyz( name, vm->name, sizeof( name ) );
+		QStr::NCpyZ( name, vm->name, sizeof( name ) );
 
 		VM_Free( vm );
 
@@ -449,7 +449,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 
 	// see if we already have the VM
 	for ( i = 0 ; i < MAX_VM ; i++ ) {
-		if (!Q_stricmp(vmTable[i].name, module)) {
+		if (!QStr::ICmp(vmTable[i].name, module)) {
 			vm = &vmTable[i];
 			return vm;
 		}
@@ -468,7 +468,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 
 	vm = &vmTable[i];
 
-	Q_strncpyz( vm->name, module, sizeof( vm->name ) );
+	QStr::NCpyZ( vm->name, module, sizeof( vm->name ) );
 	vm->systemCall = systemCalls;
 
 	// never allow dll loading with a demo

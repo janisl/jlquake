@@ -342,7 +342,7 @@ void BotQueueConsoleMessage(int chatstate, int type, char *message)
 	m->handle = cs->handle;
 	m->time = AAS_Time();
 	m->type = type;
-	strncpy(m->message, message, MAX_MESSAGE_SIZE);
+	QStr::NCpy(m->message, message, MAX_MESSAGE_SIZE);
 	m->next = NULL;
 	if (cs->lastmessage)
 	{
@@ -427,7 +427,7 @@ void BotRemoveTildes(char *message)
 	{
 		if (message[i] == '~')
 		{
-			memmove(&message[i], &message[i+1], strlen(&message[i+1])+1);
+			memmove(&message[i], &message[i+1], QStr::Length(&message[i+1])+1);
 		} //end if
 	} //end for
 } //end of the function BotRemoveTildes
@@ -450,7 +450,7 @@ void UnifyWhiteSpaces(char *string)
 			//write only one space
 			if (oldptr > string && *ptr) *oldptr++ = ' ';
 			//remove all other white spaces
-			if (ptr > oldptr) memmove(oldptr, ptr, strlen(ptr)+1);
+			if (ptr > oldptr) memmove(oldptr, ptr, QStr::Length(ptr)+1);
 		} //end if
 		while(*ptr && !IsWhiteSpace(*ptr)) ptr++;
 	} //end while
@@ -467,7 +467,7 @@ int StringContains(char *str1, char *str2, int casesensitive)
 
 	if (str1 == NULL || str2 == NULL) return -1;
 
-	len = strlen(str1) - strlen(str2);
+	len = QStr::Length(str1) - QStr::Length(str2);
 	index = 0;
 	for (i = 0; i <= len; i++, str1++, index++)
 	{
@@ -479,7 +479,7 @@ int StringContains(char *str1, char *str2, int casesensitive)
 			} //end if
 			else
 			{
-				if (toupper(str1[j]) != toupper(str2[j])) break;
+				if (QStr::ToUpper(str1[j]) != QStr::ToUpper(str2[j])) break;
 			} //end else
 		} //end for
 		if (!str2[j]) return index;
@@ -496,7 +496,7 @@ char *StringContainsWord(char *str1, char *str2, int casesensitive)
 {
 	int len, i, j;
 
-	len = strlen(str1) - strlen(str2);
+	len = QStr::Length(str1) - QStr::Length(str2);
 	for (i = 0; i <= len; i++, str1++)
 	{
 		//if not at the start of the string
@@ -516,7 +516,7 @@ char *StringContainsWord(char *str1, char *str2, int casesensitive)
 			} //end if
 			else
 			{
-				if (toupper(str1[j]) != toupper(str2[j])) break;
+				if (QStr::ToUpper(str1[j]) != QStr::ToUpper(str2[j])) break;
 			} //end else
 		} //end for
 		//if there was a word match
@@ -548,17 +548,17 @@ void StringReplaceWords(char *string, char *synonym, char *replacement)
 		str2 = StringContainsWord(string, replacement, qfalse);
 		while(str2)
 		{
-			if (str2 <= str && str < str2 + strlen(replacement)) break;
+			if (str2 <= str && str < str2 + QStr::Length(replacement)) break;
 			str2 = StringContainsWord(str2+1, replacement, qfalse);
 		} //end while
 		if (!str2)
 		{
-			memmove(str + strlen(replacement), str+strlen(synonym), strlen(str+strlen(synonym))+1);
+			memmove(str + QStr::Length(replacement), str+QStr::Length(synonym), QStr::Length(str+QStr::Length(synonym))+1);
 			//append the synonum replacement
-			Com_Memcpy(str, replacement, strlen(replacement));
+			Com_Memcpy(str, replacement, QStr::Length(replacement));
 		} //end if
 		//find the next synonym in the string
-		str = StringContainsWord(str+strlen(replacement), synonym, qfalse);
+		str = StringContainsWord(str+QStr::Length(replacement), synonym, qfalse);
 	} //end if
 } //end of the function StringReplaceWords
 //===========================================================================
@@ -646,7 +646,7 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename)
 			} //end if
 			else if (token.type == TT_PUNCTUATION)
 			{
-				if (!strcmp(token.string, "}"))
+				if (!QStr::Cmp(token.string, "}"))
 				{
 					contextlevel--;
 					if (contextlevel < 0)
@@ -657,7 +657,7 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename)
 					} //end if
 					context &= ~contextstack[contextlevel];
 				} //end if
-				else if (!strcmp(token.string, "["))
+				else if (!QStr::Cmp(token.string, "["))
 				{
 					size += sizeof(bot_synonymlist_t);
 					if (pass)
@@ -682,20 +682,20 @@ bot_synonymlist_t *BotLoadSynonyms(char *filename)
 							return NULL;
 						} //end if
 						StripDoubleQuotes(token.string);
-						if (strlen(token.string) <= 0)
+						if (QStr::Length(token.string) <= 0)
 						{
 							SourceError(source, "empty string", token.string);
 							FreeSource(source);
 							return NULL;
 						} //end if
-						size += sizeof(bot_synonym_t) + strlen(token.string) + 1;
+						size += sizeof(bot_synonym_t) + QStr::Length(token.string) + 1;
 						if (pass)
 						{
 							synonym = (bot_synonym_t *) ptr;
 							ptr += sizeof(bot_synonym_t);
 							synonym->string = ptr;
-							ptr += strlen(token.string) + 1;
-							strcpy(synonym->string, token.string);
+							ptr += QStr::Length(token.string) + 1;
+							QStr::Cpy(synonym->string, token.string);
 							//
 							if (lastsynonym) lastsynonym->next = synonym;
 							else syn->firstsynonym = synonym;
@@ -838,10 +838,10 @@ void BotReplaceReplySynonyms(char *string, unsigned long int context)
 				str2 = StringContainsWord(str1, replacement, qfalse);
 				if (str2 && str2 == str1) continue;
 				//
-				memmove(str1 + strlen(replacement), str1+strlen(synonym->string),
-							strlen(str1+strlen(synonym->string)) + 1);
+				memmove(str1 + QStr::Length(replacement), str1+QStr::Length(synonym->string),
+							QStr::Length(str1+QStr::Length(synonym->string)) + 1);
 				//append the synonum replacement
-				Com_Memcpy(str1, replacement, strlen(replacement));
+				Com_Memcpy(str1, replacement, QStr::Length(replacement));
 				//
 				break;
 			} //end for
@@ -874,32 +874,32 @@ int BotLoadChatMessage(source_t *source, char *chatmessagestring)
 		if (token.type == TT_STRING)
 		{
 			StripDoubleQuotes(token.string);
-			if (strlen(ptr) + strlen(token.string) + 1 > MAX_MESSAGE_SIZE)
+			if (QStr::Length(ptr) + QStr::Length(token.string) + 1 > MAX_MESSAGE_SIZE)
 			{
 				SourceError(source, "chat message too long\n");
 				return qfalse;
 			} //end if
-			strcat(ptr, token.string);
+			QStr::Cat(ptr, MAX_MESSAGE_SIZE, token.string);
 		} //end else if
 		//variable string
 		else if (token.type == TT_NUMBER && (token.subtype & TT_INTEGER))
 		{
-			if (strlen(ptr) + 7 > MAX_MESSAGE_SIZE)
+			if (QStr::Length(ptr) + 7 > MAX_MESSAGE_SIZE)
 			{
 				SourceError(source, "chat message too long\n");
 				return qfalse;
 			} //end if
-			sprintf(&ptr[strlen(ptr)], "%cv%ld%c", ESCAPE_CHAR, token.intvalue, ESCAPE_CHAR);
+			sprintf(&ptr[QStr::Length(ptr)], "%cv%ld%c", ESCAPE_CHAR, token.intvalue, ESCAPE_CHAR);
 		} //end if
 		//random string
 		else if (token.type == TT_NAME)
 		{
-			if (strlen(ptr) + 7 > MAX_MESSAGE_SIZE)
+			if (QStr::Length(ptr) + 7 > MAX_MESSAGE_SIZE)
 			{
 				SourceError(source, "chat message too long\n");
 				return qfalse;
 			} //end if
-			sprintf(&ptr[strlen(ptr)], "%cr%s%c", ESCAPE_CHAR, token.string, ESCAPE_CHAR);
+			sprintf(&ptr[QStr::Length(ptr)], "%cr%s%c", ESCAPE_CHAR, token.string, ESCAPE_CHAR);
 		} //end else if
 		else
 		{
@@ -984,14 +984,14 @@ bot_randomlist_t *BotLoadRandomStrings(char *filename)
 				FreeSource(source);
 				return NULL;
 			} //end if
-			size += sizeof(bot_randomlist_t) + strlen(token.string) + 1;
+			size += sizeof(bot_randomlist_t) + QStr::Length(token.string) + 1;
 			if (pass)
 			{
 				random = (bot_randomlist_t *) ptr;
 				ptr += sizeof(bot_randomlist_t);
 				random->string = ptr;
-				ptr += strlen(token.string) + 1;
-				strcpy(random->string, token.string);
+				ptr += QStr::Length(token.string) + 1;
+				QStr::Cpy(random->string, token.string);
 				random->firstrandomstring = NULL;
 				random->numstrings = 0;
 				//
@@ -1012,14 +1012,14 @@ bot_randomlist_t *BotLoadRandomStrings(char *filename)
 					FreeSource(source);
 					return NULL;
 				} //end if
-				size += sizeof(bot_randomstring_t) + strlen(chatmessagestring) + 1;
+				size += sizeof(bot_randomstring_t) + QStr::Length(chatmessagestring) + 1;
 				if (pass)
 				{
 					randomstring = (bot_randomstring_t *) ptr;
 					ptr += sizeof(bot_randomstring_t);
 					randomstring->string = ptr;
-					ptr += strlen(chatmessagestring) + 1;
-					strcpy(randomstring->string, chatmessagestring);
+					ptr += QStr::Length(chatmessagestring) + 1;
+					QStr::Cpy(randomstring->string, chatmessagestring);
 					//
 					random->numstrings++;
 					randomstring->next = random->firstrandomstring;
@@ -1053,7 +1053,7 @@ char *RandomString(char *name)
 
 	for (random = randomstrings; random; random = random->next)
 	{
-		if (!strcmp(random->string, name))
+		if (!QStr::Cmp(random->string, name))
 		{
 			i = random() * random->numstrings;
 			for (rs = random->firstrandomstring; rs; rs = rs->next)
@@ -1203,10 +1203,10 @@ bot_matchpiece_t *BotLoadMatchPieces(source_t *source, char *endtoken)
 					} //end if
 				} //end if
 				StripDoubleQuotes(token.string);
-				matchstring = (bot_matchstring_t *) GetClearedHunkMemory(sizeof(bot_matchstring_t) + strlen(token.string) + 1);
+				matchstring = (bot_matchstring_t *) GetClearedHunkMemory(sizeof(bot_matchstring_t) + QStr::Length(token.string) + 1);
 				matchstring->string = (char *) matchstring + sizeof(bot_matchstring_t);
-				strcpy(matchstring->string, token.string);
-				if (!strlen(token.string)) emptystring = qtrue;
+				QStr::Cpy(matchstring->string, token.string);
+				if (!QStr::Length(token.string)) emptystring = qtrue;
 				matchstring->next = NULL;
 				if (lastmatchstring) lastmatchstring->next = matchstring;
 				else matchpiece->firststring = matchstring;
@@ -1294,7 +1294,7 @@ bot_matchtemplate_t *BotLoadMatchTemplates(char *matchfile)
 		//
 		while(PC_ReadToken(source, &token))
 		{
-			if (!strcmp(token.string, "}")) break;
+			if (!QStr::Cmp(token.string, "}")) break;
 			//
 			PC_UnreadLastToken(source);
 			//
@@ -1375,7 +1375,7 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match)
 			newstrptr = NULL;
 			for (ms = mp->firststring; ms; ms = ms->next)
 			{
-				if (!strlen(ms->string))
+				if (!QStr::Length(ms->string))
 				{
 					newstrptr = strptr;
 					break;
@@ -1401,7 +1401,7 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match)
 				} //end if
 			} //end for
 			if (!newstrptr) return qfalse;
-			strptr = newstrptr + strlen(ms->string);
+			strptr = newstrptr + QStr::Length(ms->string);
 		} //end if
 		//if it is a variable piece of string
 		else if (mp->type == MT_VARIABLE)
@@ -1412,14 +1412,14 @@ int StringsMatch(bot_matchpiece_t *pieces, bot_match_t *match)
 		} //end else if
 	} //end for
 	//if a match was found
-	if (!mp && (lastvariable >= 0 || !strlen(strptr)))
+	if (!mp && (lastvariable >= 0 || !QStr::Length(strptr)))
 	{
 		//if the last piece was a variable string
 		if (lastvariable >= 0)
 		{
         		assert( match->variables[lastvariable].offset >= 0 ); // bk001204
 			match->variables[lastvariable].length =
-				strlen(&match->string[ (int) match->variables[lastvariable].offset]);
+				QStr::Length(&match->string[ (int) match->variables[lastvariable].offset]);
 		} //end if
 		return qtrue;
 	} //end if
@@ -1436,12 +1436,12 @@ int BotFindMatch(char *str, bot_match_t *match, unsigned long int context)
 	int i;
 	bot_matchtemplate_t *ms;
 
-	strncpy(match->string, str, MAX_MESSAGE_SIZE);
+	QStr::NCpy(match->string, str, MAX_MESSAGE_SIZE);
 	//remove any trailing enters
-	while(strlen(match->string) &&
-			match->string[strlen(match->string)-1] == '\n')
+	while(QStr::Length(match->string) &&
+			match->string[QStr::Length(match->string)-1] == '\n')
 	{
-		match->string[strlen(match->string)-1] = '\0';
+		match->string[QStr::Length(match->string)-1] = '\0';
 	} //end while
 	//compare the string with all the match strings
 	for (ms = matchtemplates; ms; ms = ms->next)
@@ -1470,7 +1470,7 @@ void BotMatchVariable(bot_match_t *match, int variable, char *buf, int size)
 	if (variable < 0 || variable >= MAX_MATCHVARIABLES)
 	{
 		botimport.Print(PRT_FATAL, "BotMatchVariable: variable out of range\n");
-		strcpy(buf, "");
+		QStr::Cpy(buf, "");
 		return;
 	} //end if
 
@@ -1479,12 +1479,12 @@ void BotMatchVariable(bot_match_t *match, int variable, char *buf, int size)
 		if (match->variables[variable].length < size)
 			size = match->variables[variable].length+1;
 		assert( match->variables[variable].offset >= 0 ); // bk001204
-		strncpy(buf, &match->string[ (int) match->variables[variable].offset], size-1);
+		QStr::NCpy(buf, &match->string[ (int) match->variables[variable].offset], size-1);
 		buf[size-1] = '\0';
 	} //end if
 	else
 	{
-		strcpy(buf, "");
+		QStr::Cpy(buf, "");
 	} //end else
 	return;
 } //end of the function BotMatchVariable
@@ -1500,7 +1500,7 @@ bot_stringlist_t *BotFindStringInList(bot_stringlist_t *list, char *string)
 
 	for (s = list; s; s = s->next)
 	{
-		if (!strcmp(s->string, string)) return s;
+		if (!QStr::Cmp(s->string, string)) return s;
 	} //end for
 	return NULL;
 } //end of the function BotFindStringInList
@@ -1552,9 +1552,9 @@ bot_stringlist_t *BotCheckChatMessageIntegrety(char *message, bot_stringlist_t *
 						if (!BotFindStringInList(stringlist, temp))
 						{
 							Log_Write("%s = {\"%s\"} //MISSING RANDOM\r\n", temp, temp);
-							s = (bot_stringlist_t*)GetClearedMemory(sizeof(bot_stringlist_t) + strlen(temp) + 1);
+							s = (bot_stringlist_t*)GetClearedMemory(sizeof(bot_stringlist_t) + QStr::Length(temp) + 1);
 							s->string = (char *) s + sizeof(bot_stringlist_t);
-							strcpy(s->string, temp);
+							QStr::Cpy(s->string, temp);
 							s->next = stringlist;
 							stringlist = s;
 						} //end if
@@ -1847,7 +1847,7 @@ bot_replychat_t *BotLoadReplyChat(char *filename)
 	//
 	while(PC_ReadToken(source, &token))
 	{
-		if (strcmp(token.string, "["))
+		if (QStr::Cmp(token.string, "["))
 		{
 			SourceError(source, "expected [, found %s", token.string);
 			BotFreeReplyChat(replychatlist);
@@ -1890,7 +1890,7 @@ bot_replychat_t *BotLoadReplyChat(char *filename)
 			else if (PC_CheckTokenString(source, "<")) //bot names
 			{
 				key->flags |= RCKFL_BOTNAMES;
-				strcpy(namebuffer, "");
+				QStr::Cpy(namebuffer, "");
 				do
 				{
 					if (!PC_ExpectTokenType(source, TT_STRING, 0, &token))
@@ -1900,8 +1900,8 @@ bot_replychat_t *BotLoadReplyChat(char *filename)
 						return NULL;
 					} //end if
 					StripDoubleQuotes(token.string);
-					if (strlen(namebuffer)) strcat(namebuffer, "\\");
-					strcat(namebuffer, token.string);
+					if (QStr::Length(namebuffer)) QStr::Cat(namebuffer, sizeof(namebuffer), "\\");
+					QStr::Cat(namebuffer, sizeof(namebuffer), token.string);
 				} while(PC_CheckTokenString(source, ","));
 				if (!PC_ExpectTokenString(source, ">"))
 				{
@@ -1909,8 +1909,8 @@ bot_replychat_t *BotLoadReplyChat(char *filename)
 					FreeSource(source);
 					return NULL;
 				} //end if
-				key->string = (char *) GetClearedHunkMemory(strlen(namebuffer) + 1);
-				strcpy(key->string, namebuffer);
+				key->string = (char *) GetClearedHunkMemory(QStr::Length(namebuffer) + 1);
+				QStr::Cpy(key->string, namebuffer);
 			} //end else if
 			else //normal string key
 			{
@@ -1922,8 +1922,8 @@ bot_replychat_t *BotLoadReplyChat(char *filename)
 					return NULL;
 				} //end if
 				StripDoubleQuotes(token.string);
-				key->string = (char *) GetClearedHunkMemory(strlen(token.string) + 1);
-				strcpy(key->string, token.string);
+				key->string = (char *) GetClearedHunkMemory(QStr::Length(token.string) + 1);
+				QStr::Cpy(key->string, token.string);
 			} //end else
 			//
 			PC_CheckTokenString(source, ",");
@@ -1956,9 +1956,9 @@ bot_replychat_t *BotLoadReplyChat(char *filename)
 				FreeSource(source);
 				return NULL;
 			} //end if
-			chatmessage = (bot_chatmessage_t *) GetClearedHunkMemory(sizeof(bot_chatmessage_t) + strlen(chatmessagestring) + 1);
+			chatmessage = (bot_chatmessage_t *) GetClearedHunkMemory(sizeof(bot_chatmessage_t) + QStr::Length(chatmessagestring) + 1);
 			chatmessage->chatmessage = (char *) chatmessage + sizeof(bot_chatmessage_t);
-			strcpy(chatmessage->chatmessage, chatmessagestring);
+			QStr::Cpy(chatmessage->chatmessage, chatmessagestring);
 			chatmessage->time = -2*CHATMESSAGE_RECENTTIME;
 			chatmessage->next = replychat->firstchatmessage;
 			//add the chat message to the reply chat
@@ -2051,7 +2051,7 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname)
 		//
 		while(PC_ReadToken(source, &token))
 		{
-			if (!strcmp(token.string, "chat"))
+			if (!QStr::Cmp(token.string, "chat"))
 			{
 				if (!PC_ExpectTokenType(source, TT_STRING, 0, &token))
 				{
@@ -2066,7 +2066,7 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname)
 					return NULL;
 				} //end if
 				//if the chat name is found
-				if (!Q_stricmp(token.string, chatname))
+				if (!QStr::ICmp(token.string, chatname))
 				{
 					foundchat = qtrue;
 					//read the chat types
@@ -2077,8 +2077,8 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname)
 							FreeSource(source);
 							return NULL;
 						} //end if
-						if (!strcmp(token.string, "}")) break;
-						if (strcmp(token.string, "type"))
+						if (!QStr::Cmp(token.string, "}")) break;
+						if (QStr::Cmp(token.string, "type"))
 						{
 							SourceError(source, "expected type found %s\n", token.string);
 							FreeSource(source);
@@ -2095,7 +2095,7 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname)
 						if (pass)
 						{
 							chattype = (bot_chattype_t *) ptr;
-							strncpy(chattype->name, token.string, MAX_CHATTYPE_NAME);
+							QStr::NCpy(chattype->name, token.string, MAX_CHATTYPE_NAME);
 							chattype->firstchatmessage = NULL;
 							//add the chat type to the chat
 							chattype->next = chat->types;
@@ -2122,12 +2122,12 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname)
 								//store the chat message
 								ptr += sizeof(bot_chatmessage_t);
 								chatmessage->chatmessage = ptr;
-								strcpy(chatmessage->chatmessage, chatmessagestring);
-								ptr += strlen(chatmessagestring) + 1;
+								QStr::Cpy(chatmessage->chatmessage, chatmessagestring);
+								ptr += QStr::Length(chatmessagestring) + 1;
 								//the number of chat messages increased
 								chattype->numchatmessages++;
 							} //end if
-							size += sizeof(bot_chatmessage_t) + strlen(chatmessagestring) + 1;
+							size += sizeof(bot_chatmessage_t) + QStr::Length(chatmessagestring) + 1;
 						} //end if
 					} //end while
 				} //end if
@@ -2141,8 +2141,8 @@ bot_chat_t *BotLoadInitialChat(char *chatfile, char *chatname)
 							FreeSource(source);
 							return NULL;
 						} //end if
-						if (!strcmp(token.string, "{")) indent++;
-						else if (!strcmp(token.string, "}")) indent--;
+						if (!QStr::Cmp(token.string, "{")) indent++;
+						else if (!QStr::Cmp(token.string, "}")) indent--;
 					} //end while
 				} //end else
 			} //end if
@@ -2216,10 +2216,10 @@ int BotLoadChatFile(int chatstate, char *chatfile, char *chatname)
 				}
 				continue;
 			}
-			if( strcmp( chatfile, ichatdata[n]->filename ) != 0 ) { 
+			if( QStr::Cmp( chatfile, ichatdata[n]->filename ) != 0 ) { 
 				continue;
 			}
-			if( strcmp( chatname, ichatdata[n]->chatname ) != 0 ) { 
+			if( QStr::Cmp( chatname, ichatdata[n]->chatname ) != 0 ) { 
 				continue;
 			}
 			cs->chat = ichatdata[n]->chat;
@@ -2243,8 +2243,8 @@ int BotLoadChatFile(int chatstate, char *chatfile, char *chatname)
 	{
 		ichatdata[avail] = (bot_ichatdata_t*)GetClearedMemory( sizeof(bot_ichatdata_t) );
 		ichatdata[avail]->chat = cs->chat;
-		Q_strncpyz( ichatdata[avail]->chatname, chatname, sizeof(ichatdata[avail]->chatname) );
-		Q_strncpyz( ichatdata[avail]->filename, chatfile, sizeof(ichatdata[avail]->filename) );
+		QStr::NCpyZ( ichatdata[avail]->chatname, chatname, sizeof(ichatdata[avail]->chatname) );
+		QStr::NCpyZ( ichatdata[avail]->filename, chatfile, sizeof(ichatdata[avail]->filename) );
 	} //end if
 
 	return BLERR_NOERROR;
@@ -2310,13 +2310,13 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 							BotReplaceSynonyms(temp, vcontext);
 						} //end else
 						//
-						if (len + strlen(temp) >= MAX_MESSAGE_SIZE)
+						if (len + QStr::Length(temp) >= MAX_MESSAGE_SIZE)
 						{
 							botimport.Print(PRT_ERROR, "BotConstructChat: message %s too long\n", message);
 							return qfalse;
 						} //end if
-						strcpy(&outputbuf[len], temp);
-						len += strlen(temp);
+						QStr::Cpy(&outputbuf[len], temp);
+						len += QStr::Length(temp);
 					} //end if
 					break;
 				} //end case
@@ -2337,13 +2337,13 @@ int BotExpandChatMessage(char *outmessage, char *message, unsigned long mcontext
 						botimport.Print(PRT_ERROR, "BotConstructChat: unknown random string %s\n", temp);
 						return qfalse;
 					} //end if
-					if (len + strlen(ptr) >= MAX_MESSAGE_SIZE)
+					if (len + QStr::Length(ptr) >= MAX_MESSAGE_SIZE)
 					{
 						botimport.Print(PRT_ERROR, "BotConstructChat: message \"%s\" too long\n", message);
 						return qfalse;
 					} //end if
-					strcpy(&outputbuf[len], ptr);
-					len += strlen(ptr);
+					QStr::Cpy(&outputbuf[len], ptr);
+					len += QStr::Length(ptr);
 					expansion = qtrue;
 					break;
 				} //end case
@@ -2382,14 +2382,14 @@ void BotConstructChatMessage(bot_chatstate_t *chatstate, char *message, unsigned
 	int i;
 	char srcmessage[MAX_MESSAGE_SIZE];
 
-	strcpy(srcmessage, message);
+	QStr::Cpy(srcmessage, message);
 	for (i = 0; i < 10; i++)
 	{
 		if (!BotExpandChatMessage(chatstate->chatmessage, srcmessage, mcontext, match, vcontext, reply))
 		{
 			break;
 		} //end if
-		strcpy(srcmessage, chatstate->chatmessage);
+		QStr::Cpy(srcmessage, chatstate->chatmessage);
 	} //end for
 	if (i >= 10)
 	{
@@ -2415,7 +2415,7 @@ char *BotChooseInitialChatMessage(bot_chatstate_t *cs, char *type)
 	chat = cs->chat;
 	for (t = chat->types; t; t = t->next)
 	{
-		if (!Q_stricmp(t->name, type))
+		if (!QStr::ICmp(t->name, type))
 		{
 			numchatmessages = 0;
 			for (m = t->firstchatmessage; m; m = m->next)
@@ -2472,7 +2472,7 @@ int BotNumInitialChats(int chatstate, char *type)
 
 	for (t = cs->chat->types; t; t = t->next)
 	{
-		if (!Q_stricmp(t->name, type))
+		if (!QStr::ICmp(t->name, type))
 		{
 			if (LibVarGetValue("bot_testichat")) {
 				botimport.Print(PRT_MESSAGE, "%s has %d chat lines\n", type, t->numchatmessages);
@@ -2514,52 +2514,52 @@ void BotInitialChat(int chatstate, char *type, int mcontext, char *var0, char *v
 	Com_Memset(&match, 0, sizeof(match));
 	index = 0;
 	if( var0 ) {
-		strcat(match.string, var0);
+		QStr::Cat(match.string, sizeof(match.string), var0);
 		match.variables[0].offset = index;
-		match.variables[0].length = strlen(var0);
-		index += strlen(var0);
+		match.variables[0].length = QStr::Length(var0);
+		index += QStr::Length(var0);
 	}
 	if( var1 ) {
-		strcat(match.string, var1);
+		QStr::Cat(match.string, sizeof(match.string), var1);
 		match.variables[1].offset = index;
-		match.variables[1].length = strlen(var1);
-		index += strlen(var1);
+		match.variables[1].length = QStr::Length(var1);
+		index += QStr::Length(var1);
 	}
 	if( var2 ) {
-		strcat(match.string, var2);
+		QStr::Cat(match.string, sizeof(match.string), var2);
 		match.variables[2].offset = index;
-		match.variables[2].length = strlen(var2);
-		index += strlen(var2);
+		match.variables[2].length = QStr::Length(var2);
+		index += QStr::Length(var2);
 	}
 	if( var3 ) {
-		strcat(match.string, var3);
+		QStr::Cat(match.string, sizeof(match.string), var3);
 		match.variables[3].offset = index;
-		match.variables[3].length = strlen(var3);
-		index += strlen(var3);
+		match.variables[3].length = QStr::Length(var3);
+		index += QStr::Length(var3);
 	}
 	if( var4 ) {
-		strcat(match.string, var4);
+		QStr::Cat(match.string, sizeof(match.string), var4);
 		match.variables[4].offset = index;
-		match.variables[4].length = strlen(var4);
-		index += strlen(var4);
+		match.variables[4].length = QStr::Length(var4);
+		index += QStr::Length(var4);
 	}
 	if( var5 ) {
-		strcat(match.string, var5);
+		QStr::Cat(match.string, sizeof(match.string), var5);
 		match.variables[5].offset = index;
-		match.variables[5].length = strlen(var5);
-		index += strlen(var5);
+		match.variables[5].length = QStr::Length(var5);
+		index += QStr::Length(var5);
 	}
 	if( var6 ) {
-		strcat(match.string, var6);
+		QStr::Cat(match.string, sizeof(match.string), var6);
 		match.variables[6].offset = index;
-		match.variables[6].length = strlen(var6);
-		index += strlen(var6);
+		match.variables[6].length = QStr::Length(var6);
+		index += QStr::Length(var6);
 	}
 	if( var7 ) {
-		strcat(match.string, var7);
+		QStr::Cat(match.string, sizeof(match.string), var7);
 		match.variables[7].offset = index;
-		match.variables[7].length = strlen(var7);
-		index += strlen(var7);
+		match.variables[7].length = QStr::Length(var7);
+		index += QStr::Length(var7);
 	}
  	//
 	BotConstructChatMessage(cs, message, mcontext, &match, 0, qfalse);
@@ -2623,7 +2623,7 @@ int BotReplyChat(int chatstate, char *message, int mcontext, int vcontext, char 
 	cs = BotChatStateFromHandle(chatstate);
 	if (!cs) return qfalse;
 	Com_Memset(&match, 0, sizeof(bot_match_t));
-	strcpy(match.string, message);
+	QStr::Cpy(match.string, message);
 	bestpriority = -1;
 	bestchatmessage = NULL;
 	bestrchat = NULL;
@@ -2695,54 +2695,54 @@ int BotReplyChat(int chatstate, char *message, int mcontext, int vcontext, char 
 	} //end for
 	if (bestchatmessage)
 	{
-		index = strlen(bestmatch.string);
+		index = QStr::Length(bestmatch.string);
 		if( var0 ) {
-			strcat(bestmatch.string, var0);
+			QStr::Cat(bestmatch.string, sizeof(bestmatch.string), var0);
 			bestmatch.variables[0].offset = index;
-			bestmatch.variables[0].length = strlen(var0);
-			index += strlen(var0);
+			bestmatch.variables[0].length = QStr::Length(var0);
+			index += QStr::Length(var0);
 		}
 		if( var1 ) {
-			strcat(bestmatch.string, var1);
+			QStr::Cat(bestmatch.string, sizeof(bestmatch.string), var1);
 			bestmatch.variables[1].offset = index;
-			bestmatch.variables[1].length = strlen(var1);
-			index += strlen(var1);
+			bestmatch.variables[1].length = QStr::Length(var1);
+			index += QStr::Length(var1);
 		}
 		if( var2 ) {
-			strcat(bestmatch.string, var2);
+			QStr::Cat(bestmatch.string, sizeof(bestmatch.string), var2);
 			bestmatch.variables[2].offset = index;
-			bestmatch.variables[2].length = strlen(var2);
-			index += strlen(var2);
+			bestmatch.variables[2].length = QStr::Length(var2);
+			index += QStr::Length(var2);
 		}
 		if( var3 ) {
-			strcat(bestmatch.string, var3);
+			QStr::Cat(bestmatch.string, sizeof(bestmatch.string), var3);
 			bestmatch.variables[3].offset = index;
-			bestmatch.variables[3].length = strlen(var3);
-			index += strlen(var3);
+			bestmatch.variables[3].length = QStr::Length(var3);
+			index += QStr::Length(var3);
 		}
 		if( var4 ) {
-			strcat(bestmatch.string, var4);
+			QStr::Cat(bestmatch.string, sizeof(bestmatch.string), var4);
 			bestmatch.variables[4].offset = index;
-			bestmatch.variables[4].length = strlen(var4);
-			index += strlen(var4);
+			bestmatch.variables[4].length = QStr::Length(var4);
+			index += QStr::Length(var4);
 		}
 		if( var5 ) {
-			strcat(bestmatch.string, var5);
+			QStr::Cat(bestmatch.string, sizeof(bestmatch.string), var5);
 			bestmatch.variables[5].offset = index;
-			bestmatch.variables[5].length = strlen(var5);
-			index += strlen(var5);
+			bestmatch.variables[5].length = QStr::Length(var5);
+			index += QStr::Length(var5);
 		}
 		if( var6 ) {
-			strcat(bestmatch.string, var6);
+			QStr::Cat(bestmatch.string, sizeof(bestmatch.string), var6);
 			bestmatch.variables[6].offset = index;
-			bestmatch.variables[6].length = strlen(var6);
-			index += strlen(var6);
+			bestmatch.variables[6].length = QStr::Length(var6);
+			index += QStr::Length(var6);
 		}
 		if( var7 ) {
-			strcat(bestmatch.string, var7);
+			QStr::Cat(bestmatch.string, sizeof(bestmatch.string), var7);
 			bestmatch.variables[7].offset = index;
-			bestmatch.variables[7].length = strlen(var7);
-			index += strlen(var7);
+			bestmatch.variables[7].length = QStr::Length(var7);
+			index += QStr::Length(var7);
 		}
 		if (LibVarGetValue("bot_testrchat"))
 		{
@@ -2774,7 +2774,7 @@ int BotChatLength(int chatstate)
 
 	cs = BotChatStateFromHandle(chatstate);
 	if (!cs) return 0;
-	return strlen(cs->chatmessage);
+	return QStr::Length(cs->chatmessage);
 } //end of the function BotChatLength
 //===========================================================================
 //
@@ -2789,7 +2789,7 @@ void BotEnterChat(int chatstate, int clientto, int sendto)
 	cs = BotChatStateFromHandle(chatstate);
 	if (!cs) return;
 
-	if (strlen(cs->chatmessage))
+	if (QStr::Length(cs->chatmessage))
 	{
 		BotRemoveTildes(cs->chatmessage);
 		if (LibVarGetValue("bot_testichat")) {
@@ -2809,7 +2809,7 @@ void BotEnterChat(int chatstate, int clientto, int sendto)
 			}
 		}
 		//clear the chat message from the state
-		strcpy(cs->chatmessage, "");
+		QStr::Cpy(cs->chatmessage, "");
 	} //end if
 } //end of the function BotEnterChat
 //===========================================================================
@@ -2826,10 +2826,10 @@ void BotGetChatMessage(int chatstate, char *buf, int size)
 	if (!cs) return;
 
 	BotRemoveTildes(cs->chatmessage);
-	strncpy(buf, cs->chatmessage, size-1);
+	QStr::NCpy(buf, cs->chatmessage, size-1);
 	buf[size-1] = '\0';
 	//clear the chat message from the state
-	strcpy(cs->chatmessage, "");
+	QStr::Cpy(cs->chatmessage, "");
 } //end of the function BotGetChatMessage
 //===========================================================================
 //
@@ -2864,7 +2864,7 @@ void BotSetChatName(int chatstate, char *name, int client)
 	if (!cs) return;
 	cs->client = client;
 	Com_Memset(cs->name, 0, sizeof(cs->name));
-	strncpy(cs->name, name, sizeof(cs->name));
+	QStr::NCpy(cs->name, name, sizeof(cs->name));
 	cs->name[sizeof(cs->name)-1] = '\0';
 } //end of the function BotSetChatName
 //===========================================================================

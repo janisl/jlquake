@@ -105,13 +105,13 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 	
 	sadr.sin_port = 0;
 
-	strcpy (copy, s);
+	QStr::Cpy(copy, s);
 	// strip off a trailing :port if present
 	for (colon = copy ; *colon ; colon++)
 		if (*colon == ':')
 		{
 			*colon = 0;
-			sadr.sin_port = htons((short)atoi(colon+1));	
+			sadr.sin_port = htons((short)QStr::Atoi(colon+1));	
 		}
 	
 	if (copy[0] >= '0' && copy[0] <= '9')

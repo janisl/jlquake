@@ -88,7 +88,7 @@ static long generateHashValue( const char *fname ) {
 	hash = 0;
 	i = 0;
 	while (fname[i] != '\0') {
-		letter = tolower(fname[i]);
+		letter = QStr::ToLower(fname[i]);
 		if (letter =='.') break;				// don't include extension
 		if (letter =='\\') letter = '/';		// damn path names
 		hash+=(long)(letter)*(i+119);
@@ -108,7 +108,7 @@ void GL_TextureMode( const char *string ) {
 	image_t	*glt;
 
 	for ( i=0 ; i< 6 ; i++ ) {
-		if ( !Q_stricmp( modes[i].name, string ) ) {
+		if ( !QStr::ICmp( modes[i].name, string ) ) {
 			break;
 		}
 	}
@@ -733,10 +733,10 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	qboolean	isLightmap = qfalse;
 	long		hash;
 
-	if (strlen(name) >= MAX_QPATH ) {
+	if (QStr::Length(name) >= MAX_QPATH ) {
 		ri.Error (ERR_DROP, "R_CreateImage: \"%s\" is too long\n", name);
 	}
-	if ( !strncmp( name, "*lightmap", 9 ) ) {
+	if ( !QStr::NCmp( name, "*lightmap", 9 ) ) {
 		isLightmap = qtrue;
 	}
 
@@ -751,7 +751,7 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 	image->mipmap = mipmap;
 	image->allowPicmip = allowPicmip;
 
-	strcpy (image->imgName, name);
+	QStr::Cpy(image->imgName, name);
 
 	image->width = width;
 	image->height = height;
@@ -1822,27 +1822,27 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
 	*width = 0;
 	*height = 0;
 
-	len = strlen(name);
+	len = QStr::Length(name);
 	if (len<5) {
 		return;
 	}
 
-	if ( !Q_stricmp( name+len-4, ".tga" ) ) {
+	if ( !QStr::ICmp( name+len-4, ".tga" ) ) {
 	  LoadTGA( name, pic, width, height );            // try tga first
     if (!*pic) {                                    //
 		  char altname[MAX_QPATH];                      // try jpg in place of tga 
-      strcpy( altname, name );                      
-      len = strlen( altname );                  
+      QStr::Cpy( altname, name );                      
+      len = QStr::Length( altname );                  
       altname[len-3] = 'j';
       altname[len-2] = 'p';
       altname[len-1] = 'g';
 			LoadJPG( altname, pic, width, height );
 		}
-  } else if ( !Q_stricmp(name+len-4, ".pcx") ) {
+  } else if ( !QStr::ICmp(name+len-4, ".pcx") ) {
     LoadPCX32( name, pic, width, height );
-	} else if ( !Q_stricmp( name+len-4, ".bmp" ) ) {
+	} else if ( !QStr::ICmp( name+len-4, ".bmp" ) ) {
 		LoadBMP( name, pic, width, height );
-	} else if ( !Q_stricmp( name+len-4, ".jpg" ) ) {
+	} else if ( !QStr::ICmp( name+len-4, ".jpg" ) ) {
 		LoadJPG( name, pic, width, height );
 	}
 }
@@ -1872,9 +1872,9 @@ image_t	*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	// see if the image is already loaded
 	//
 	for (image=hashTable[hash]; image; image=image->next) {
-		if ( !strcmp( name, image->imgName ) ) {
+		if ( !QStr::Cmp( name, image->imgName ) ) {
 			// the white image can be used with any set of parms, but other mismatches are errors
-			if ( strcmp( name, "*white" ) ) {
+			if ( QStr::Cmp( name, "*white" ) ) {
 				if ( image->mipmap != mipmap ) {
 					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
 				}
@@ -1896,11 +1896,11 @@ image_t	*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	if ( pic == NULL ) {                                    // if we dont get a successful load
 	  char altname[MAX_QPATH];                              // copy the name
     int len;                                              //  
-    strcpy( altname, name );                              //
-    len = strlen( altname );                              // 
-    altname[len-3] = toupper(altname[len-3]);             // and try upper case extension for unix systems
-    altname[len-2] = toupper(altname[len-2]);             //
-    altname[len-1] = toupper(altname[len-1]);             //
+    QStr::Cpy( altname, name );                              //
+    len = QStr::Length( altname );                              // 
+    altname[len-3] = QStr::ToUpper(altname[len-3]);             // and try upper case extension for unix systems
+    altname[len-2] = QStr::ToUpper(altname[len-2]);             //
+    altname[len-1] = QStr::ToUpper(altname[len-1]);             //
 		ri.Printf( PRINT_ALL, "trying %s...\n", altname );    // 
 	  R_LoadImage( altname, &pic, &width, &height );        //
     if (pic == NULL) {                                    // if that fails
@@ -2382,7 +2382,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 		return 0;
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( QStr::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Skin name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -2391,7 +2391,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	// see if the skin is already loaded
 	for ( hSkin = 1; hSkin < tr.numSkins ; hSkin++ ) {
 		skin = tr.skins[hSkin];
-		if ( !Q_stricmp( skin->name, name ) ) {
+		if ( !QStr::ICmp( skin->name, name ) ) {
 			if( skin->numSurfaces == 0 ) {
 				return 0;		// default skin
 			}
@@ -2407,14 +2407,14 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	tr.numSkins++;
 	skin = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
 	tr.skins[hSkin] = skin;
-	Q_strncpyz( skin->name, name, sizeof( skin->name ) );
+	QStr::NCpyZ( skin->name, name, sizeof( skin->name ) );
 	skin->numSurfaces = 0;
 
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
 	// If not a .skin file, load as a single shader
-	if ( strcmp( name + strlen( name ) - 5, ".skin" ) ) {
+	if ( QStr::Cmp( name + QStr::Length( name ) - 5, ".skin" ) ) {
 		skin->numSurfaces = 1;
 		skin->surfaces[0] = (skinSurface_t*)ri.Hunk_Alloc( sizeof(skin->surfaces[0]), h_low );
 		skin->surfaces[0]->shader = R_FindShader( name, LIGHTMAP_NONE, qtrue );
@@ -2431,13 +2431,13 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	while ( text_p && *text_p ) {
 		// get surface name
 		token = CommaParse( &text_p );
-		Q_strncpyz( surfName, token, sizeof( surfName ) );
+		QStr::NCpyZ( surfName, token, sizeof( surfName ) );
 
 		if ( !token[0] ) {
 			break;
 		}
 		// lowercase the surface name so skin compares are faster
-		Q_strlwr( surfName );
+		QStr::ToLower( surfName );
 
 		if ( *text_p == ',' ) {
 			text_p++;
@@ -2451,7 +2451,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 		token = CommaParse( &text_p );
 
 		surf = skin->surfaces[ skin->numSurfaces ] = (skinSurface_t*)ri.Hunk_Alloc( sizeof( *skin->surfaces[0] ), h_low );
-		Q_strncpyz( surf->name, surfName, sizeof( surf->name ) );
+		QStr::NCpyZ( surf->name, surfName, sizeof( surf->name ) );
 		surf->shader = R_FindShader( token, LIGHTMAP_NONE, qtrue );
 		skin->numSurfaces++;
 	}
@@ -2480,7 +2480,7 @@ void	R_InitSkins( void ) {
 
 	// make the default skin have all default shaders
 	skin = tr.skins[0] = (skin_t*)ri.Hunk_Alloc( sizeof( skin_t ), h_low );
-	Q_strncpyz( skin->name, "<default skin>", sizeof( skin->name )  );
+	QStr::NCpyZ( skin->name, "<default skin>", sizeof( skin->name )  );
 	skin->numSurfaces = 1;
 	skin->surfaces[0] = (skinSurface_t*)ri.Hunk_Alloc( sizeof( *skin->surfaces ), h_low );
 	skin->surfaces[0]->shader = tr.defaultShader;

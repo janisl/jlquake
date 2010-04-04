@@ -333,7 +333,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 	cm.cursize = 0;
 #endif
 	
-	if (strcmpi(sample,"misc/null.wav") == 0)
+	if (QStr::ICmp(sample,"misc/null.wav") == 0)
 	{
 		SV_StopSound(entity,channel);
 		return;
@@ -354,7 +354,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 // find precache number for sound
     for (sound_num=1 ; sound_num<MAX_SOUNDS
         && sv.sound_precache[sound_num] ; sound_num++)
-        if (!strcmp(sample, sv.sound_precache[sound_num]))
+        if (!QStr::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
     if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
@@ -542,7 +542,7 @@ void SV_ConnectClient (int clientnum)
 	client->send_all_v = true;
 	client->netconnection = netconnection;
 
-	strcpy (client->name, "unconnected");
+	QStr::Cpy(client->name, "unconnected");
 	client->active = true;
 	client->spawned = false;
 	client->edict = ent;
@@ -928,8 +928,8 @@ void SV_WriteEntitiesToClient (client_t *client, edict_t	*clent, sizebuf_t *msg)
 		temp_index = ent->v.modelindex;
 		if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
 		{
-			strcpy(NewName,ent->v.model + pr_strings);
-			NewName[strlen(NewName)-5] = client->playerclass + 48;
+			QStr::Cpy(NewName,ent->v.model + pr_strings);
+			NewName[QStr::Length(NewName)-5] = client->playerclass + 48;
 			temp_index = SV_ModelIndex (NewName);
 		}
 
@@ -1359,8 +1359,8 @@ skipA:
 		temp_index = ent->v.modelindex;
 		if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
 		{
-			strcpy(NewName,ent->v.model + pr_strings);
-			NewName[strlen(NewName)-5] = client->playerclass + 48;
+			QStr::Cpy(NewName,ent->v.model + pr_strings);
+			NewName[QStr::Length(NewName)-5] = client->playerclass + 48;
 			temp_index = SV_ModelIndex (NewName);
 		}
 
@@ -2140,7 +2140,7 @@ int SV_ModelIndex (char *name)
 		return 0;
 
 	for (i=0 ; i<MAX_MODELS && sv.model_precache[i] ; i++)
-		if (!strcmp(sv.model_precache[i], name))
+		if (!QStr::Cmp(sv.model_precache[i], name))
 			return i;
 	if (i==MAX_MODELS || !sv.model_precache[i])
 	{
@@ -2381,10 +2381,10 @@ void SV_SpawnServer (char *server)
 
 	//memset (&sv, 0, sizeof(sv));
 
-	strcpy (sv.name, server);
+	QStr::Cpy(sv.name, server);
 #ifdef QUAKE2RJ
 	if (startspot)
-		strcpy(sv.startspot, startspot);
+		QStr::Cpy(sv.startspot, startspot);
 #endif
 
 // load progs to get entity field count
@@ -2445,7 +2445,7 @@ void SV_SpawnServer (char *server)
 
 	sv.time = 1.0;
 	
-	strcpy (sv.name, server);
+	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 
 	sv.worldmodel = Mod_ForName (sv.modelname, false);

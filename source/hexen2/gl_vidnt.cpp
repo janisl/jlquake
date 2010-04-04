@@ -493,7 +493,7 @@ void Check3DfxDisplayModeExtension( void )
 	tmp = ( char * )glGetString( GL_EXTENSIONS );
 	while( *tmp )
 	{
-		if (strncmp((const char*)tmp, FX_DISPLAY_MODE_EXT_STRING, strlen(FX_DISPLAY_MODE_EXT_STRING)) == 0)
+		if (QStr::NCmp((const char*)tmp, FX_DISPLAY_MODE_EXT_STRING, QStr::Length(FX_DISPLAY_MODE_EXT_STRING)) == 0)
 			display_mode_ext = TRUE;
 		tmp++;
 	}
@@ -526,7 +526,7 @@ void CheckSetPaletteExtension( void )
 	tmp = ( char * )glGetString( GL_EXTENSIONS );
 	while( *tmp )
 	{
-		if (strncmp((const char*)tmp, search, strlen(search)) == 0)
+		if (QStr::NCmp((const char*)tmp, search, QStr::Length(search)) == 0)
 		{
 			Con_Printf("Using palettized textures!\n");
 			set_palette_ext = TRUE;
@@ -553,7 +553,7 @@ void Check3DfxMarkPaletteTextureExtension( void )
 	tmp = ( unsigned char * )glGetString( GL_EXTENSIONS );
 	while( *tmp )
 	{
-		if (strncmp((const char*)tmp, FX_SET_PALETTE_EXT_STRING, strlen(FX_SET_PALETTE_EXT_STRING)) == 0)
+		if (QStr::NCmp((const char*)tmp, FX_SET_PALETTE_EXT_STRING, QStr::Length(FX_SET_PALETTE_EXT_STRING)) == 0)
 			found_ext = TRUE;
 		tmp++;
 	}
@@ -578,7 +578,7 @@ void CheckArrayExtensions (void)
 	tmp = (char *)glGetString(GL_EXTENSIONS);
 	while (*tmp)
 	{
-		if (strncmp((const char*)tmp, "GL_EXT_vertex_array", strlen("GL_EXT_vertex_array")) == 0)
+		if (QStr::NCmp((const char*)tmp, "GL_EXT_vertex_array", QStr::Length("GL_EXT_vertex_array")) == 0)
 		{
 			if (
 ((glArrayElementEXT = wglGetProcAddress("glArrayElementEXT")) == NULL) ||
@@ -623,13 +623,13 @@ void GL_Init (void)
 	gl_extensions = (char*)glGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
-	if (!Q_strncasecmp ((char *)gl_renderer, "3dfx",4))
+	if (!QStr::NICmp((char *)gl_renderer, "3dfx",4))
 	{
 		is_3dfx = true;
 	}
 
-	if (!Q_strncasecmp ((char *)gl_renderer, "PowerVR PCX1",12) ||
-		!Q_strncasecmp ((char *)gl_renderer, "PowerVR PCX2",12))
+	if (!QStr::NICmp((char *)gl_renderer, "PowerVR PCX1",12) ||
+		!QStr::NICmp((char *)gl_renderer, "PowerVR PCX2",12))
 	{
 		is_PowerVR = true;
 	}
@@ -1351,7 +1351,7 @@ void VID_DescribeMode_f (void)
 {
 	int		t, modenum;
 	
-	modenum = atoi (Cmd_Argv(1));
+	modenum = QStr::Atoi (Cmd_Argv(1));
 
 	t = leavecurrentmode;
 	leavecurrentmode = 0;
@@ -1365,7 +1365,7 @@ void VID_Switch_f (void)
 {
 	int newmode;
 
-	newmode = atoi (Cmd_Argv(1));
+	newmode = QStr::Atoi (Cmd_Argv(1));
 	if( !fxDisplayModeExtension )
 		return;
 
@@ -1427,7 +1427,7 @@ void VID_InitDIB (HINSTANCE hInstance)
 	modelist[0].type = MS_WINDOWED;
 
 	if (COM_CheckParm("-width"))
-		modelist[0].width = atoi(com_argv[COM_CheckParm("-width")+1]);
+		modelist[0].width = QStr::Atoi(com_argv[COM_CheckParm("-width")+1]);
 	else
 		modelist[0].width = 640;
 
@@ -1435,7 +1435,7 @@ void VID_InitDIB (HINSTANCE hInstance)
 		modelist[0].width = 320;
 
 	if (COM_CheckParm("-height"))
-		modelist[0].height= atoi(com_argv[COM_CheckParm("-height")+1]);
+		modelist[0].height= QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
 	else
 		modelist[0].height = modelist[0].width * 240/320;
 
@@ -1665,7 +1665,7 @@ void	VID_Init (unsigned char *palette)
 
 		if (COM_CheckParm("-mode"))
 		{
-			vid_default = atoi(com_argv[COM_CheckParm("-mode")+1]);
+			vid_default = QStr::Atoi(com_argv[COM_CheckParm("-mode")+1]);
 		}
 		else
 		{
@@ -1682,7 +1682,7 @@ void	VID_Init (unsigned char *palette)
 			{
 				if (COM_CheckParm("-width"))
 				{
-					width = atoi(com_argv[COM_CheckParm("-width")+1]);
+					width = QStr::Atoi(com_argv[COM_CheckParm("-width")+1]);
 				}
 				else
 				{
@@ -1691,7 +1691,7 @@ void	VID_Init (unsigned char *palette)
 
 				if (COM_CheckParm("-bpp"))
 				{
-					bpp = atoi(com_argv[COM_CheckParm("-bpp")+1]);
+					bpp = QStr::Atoi(com_argv[COM_CheckParm("-bpp")+1]);
 					findbpp = 0;
 				}
 				else
@@ -1701,7 +1701,7 @@ void	VID_Init (unsigned char *palette)
 				}
 
 				if (COM_CheckParm("-height"))
-					height = atoi(com_argv[COM_CheckParm("-height")+1]);
+					height = QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
 
 			// if they want to force it, add the specified mode to the list
 				if (COM_CheckParm("-force") && (nummodes < MAX_MODE_LIST))
@@ -1741,7 +1741,7 @@ void	VID_Init (unsigned char *palette)
 				{
 					if (COM_CheckParm("-height"))
 					{
-						height = atoi(com_argv[COM_CheckParm("-height")+1]);
+						height = QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
 
 						for (i=1, vid_default=0 ; i<nummodes ; i++)
 						{
@@ -1839,7 +1839,7 @@ void	VID_Init (unsigned char *palette)
 	vid_menudrawfn = VID_MenuDraw;
 	vid_menukeyfn = VID_MenuKey;
 
-	strcpy (badmode.modedesc, "Bad mode");
+	QStr::Cpy(badmode.modedesc, "Bad mode");
 }
 
 

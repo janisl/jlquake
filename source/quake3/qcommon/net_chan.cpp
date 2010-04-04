@@ -660,7 +660,7 @@ void QDECL NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const char *format, 
 	va_end( argptr );
 
 	// send the datagram
-	NET_SendPacket( sock, strlen( string ), string, adr );
+	NET_SendPacket( sock, QStr::Length( string ), string, adr );
 }
 
 /*
@@ -704,14 +704,14 @@ qboolean	NET_StringToAdr( const char *s, netadr_t *a ) {
 	char	base[MAX_STRING_CHARS];
 	char	*port;
 
-	if (!strcmp (s, "localhost")) {
+	if (!QStr::Cmp(s, "localhost")) {
 		Com_Memset (a, 0, sizeof(*a));
 		a->type = NA_LOOPBACK;
 		return qtrue;
 	}
 
 	// look for a port number
-	Q_strncpyz( base, s, sizeof( base ) );
+	QStr::NCpyZ( base, s, sizeof( base ) );
 	port = strstr( base, ":" );
 	if ( port ) {
 		*port = 0;
@@ -732,7 +732,7 @@ qboolean	NET_StringToAdr( const char *s, netadr_t *a ) {
 	}
 
 	if ( port ) {
-		a->port = BigShort( (short)atoi( port ) );
+		a->port = BigShort( (short)QStr::Atoi( port ) );
 	} else {
 		a->port = BigShort( PORT_SERVER );
 	}

@@ -68,11 +68,11 @@ void MIDI_Loop_f (void)
 {
 	if (Cmd_Argc () == 2)
 	{
-      if (strcmpi(Cmd_Argv(1),"on") == 0 || strcmpi(Cmd_Argv(1),"1") == 0) 
+      if (QStr::ICmp(Cmd_Argv(1),"on") == 0 || QStr::ICmp(Cmd_Argv(1),"1") == 0) 
 			MIDI_Loop(1);
-		else if (strcmpi(Cmd_Argv(1),"off") == 0 || strcmpi(Cmd_Argv(1),"0") == 0) 
+		else if (QStr::ICmp(Cmd_Argv(1),"off") == 0 || QStr::ICmp(Cmd_Argv(1),"0") == 0) 
 			MIDI_Loop(0);
-		else if (strcmpi(Cmd_Argv(1),"toggle") == 0) 
+		else if (QStr::ICmp(Cmd_Argv(1),"toggle") == 0) 
 			MIDI_Loop(2);
 	}
 

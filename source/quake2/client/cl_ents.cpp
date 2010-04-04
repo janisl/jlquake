@@ -794,7 +794,7 @@ struct model_s *S_RegisterSexedModel (entity_state_t *ent, char *base)
 		if (p)
 		{
 			p += 1;
-			strcpy(model, p);
+			QStr::Cpy(model, p);
 			p = strchr(model, '/');
 			if (p)
 				*p = 0;
@@ -802,7 +802,7 @@ struct model_s *S_RegisterSexedModel (entity_state_t *ent, char *base)
 	}
 	// if we can't figure it out, they're male
 	if (!model[0])
-		strcpy(model, "male");
+		QStr::Cpy(model, "male");
 
 	Com_sprintf (buffer, sizeof(buffer), "players/%s/%s", model, base+1);
 	mdl = re.RegisterModel(buffer);
@@ -949,17 +949,17 @@ void CL_AddPacketEntities (frame_t *frame)
 //PGM
 				if (renderfx & RF_USE_DISGUISE)
 				{
-					if(!strncmp((char *)ent.skin, "players/male", 12))
+					if(!QStr::NCmp((char *)ent.skin, "players/male", 12))
 					{
 						ent.skin = re.RegisterSkin ("players/male/disguise.pcx");
 						ent.model = re.RegisterModel ("players/male/tris.md2");
 					}
-					else if(!strncmp((char *)ent.skin, "players/female", 14))
+					else if(!QStr::NCmp((char *)ent.skin, "players/female", 14))
 					{
 						ent.skin = re.RegisterSkin ("players/female/disguise.pcx");
 						ent.model = re.RegisterModel ("players/female/tris.md2");
 					}
-					else if(!strncmp((char *)ent.skin, "players/cyborg", 14))
+					else if(!QStr::NCmp((char *)ent.skin, "players/cyborg", 14))
 					{
 						ent.skin = re.RegisterSkin ("players/cyborg/disguise.pcx");
 						ent.model = re.RegisterModel ("players/cyborg/tris.md2");

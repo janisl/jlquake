@@ -204,7 +204,7 @@ void CL_ConfigstringModified( void ) {
 	gameState_t	oldGs;
 	int			len;
 
-	index = atoi( Cmd_Argv(1) );
+	index = QStr::Atoi( Cmd_Argv(1) );
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
 		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 	}
@@ -212,7 +212,7 @@ void CL_ConfigstringModified( void ) {
 	s = Cmd_ArgsFrom(2);
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
-	if ( !strcmp( old, s ) ) {
+	if ( !QStr::Cmp( old, s ) ) {
 		return;		// unchanged
 	}
 
@@ -234,7 +234,7 @@ void CL_ConfigstringModified( void ) {
 			continue;		// leave with the default empty string
 		}
 
-		len = strlen( dup );
+		len = QStr::Length( dup );
 
 		if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
 			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
@@ -292,7 +292,7 @@ rescan:
 	cmd = Cmd_Argv(0);
 	argc = Cmd_Argc();
 
-	if ( !strcmp( cmd, "disconnect" ) ) {
+	if ( !QStr::Cmp( cmd, "disconnect" ) ) {
 		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=552
 		// allow server to indicate why they were disconnected
 		if ( argc >= 2 )
@@ -301,39 +301,39 @@ rescan:
 			Com_Error (ERR_SERVERDISCONNECT,"Server disconnected\n");
 	}
 
-	if ( !strcmp( cmd, "bcs0" ) ) {
+	if ( !QStr::Cmp( cmd, "bcs0" ) ) {
 		Com_sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv(1), Cmd_Argv(2) );
 		return qfalse;
 	}
 
-	if ( !strcmp( cmd, "bcs1" ) ) {
+	if ( !QStr::Cmp( cmd, "bcs1" ) ) {
 		s = Cmd_Argv(2);
-		if( strlen(bigConfigString) + strlen(s) >= BIG_INFO_STRING ) {
+		if( QStr::Length(bigConfigString) + QStr::Length(s) >= BIG_INFO_STRING ) {
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
-		strcat( bigConfigString, s );
+		QStr::Cat( bigConfigString, sizeof(bigConfigString), s );
 		return qfalse;
 	}
 
-	if ( !strcmp( cmd, "bcs2" ) ) {
+	if ( !QStr::Cmp( cmd, "bcs2" ) ) {
 		s = Cmd_Argv(2);
-		if( strlen(bigConfigString) + strlen(s) + 1 >= BIG_INFO_STRING ) {
+		if( QStr::Length(bigConfigString) + QStr::Length(s) + 1 >= BIG_INFO_STRING ) {
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
-		strcat( bigConfigString, s );
-		strcat( bigConfigString, "\"" );
+		QStr::Cat( bigConfigString, sizeof(bigConfigString), s );
+		QStr::Cat( bigConfigString, sizeof(bigConfigString), "\"" );
 		s = bigConfigString;
 		goto rescan;
 	}
 
-	if ( !strcmp( cmd, "cs" ) ) {
+	if ( !QStr::Cmp( cmd, "cs" ) ) {
 		CL_ConfigstringModified();
 		// reparse the string, because CL_ConfigstringModified may have done another Cmd_TokenizeString()
 		Cmd_TokenizeString( s );
 		return qtrue;
 	}
 
-	if ( !strcmp( cmd, "map_restart" ) ) {
+	if ( !QStr::Cmp( cmd, "map_restart" ) ) {
 		// clear notify lines and outgoing commands before passing
 		// the restart to the cgame
 		Con_ClearNotify();
@@ -346,7 +346,7 @@ rescan:
 	// point of levels for the menu system to use
 	// we pass it along to the cgame to make apropriate adjustments,
 	// but we also clear the console and notify lines here
-	if ( !strcmp( cmd, "clientLevelShot" ) ) {
+	if ( !QStr::Cmp( cmd, "clientLevelShot" ) ) {
 		// don't do it if we aren't running the server locally,
 		// otherwise malicious remote servers could overwrite
 		// the existing thumbnails
@@ -623,7 +623,8 @@ int CL_CgameSystemCalls( int *args ) {
 		Com_Memcpy( VMA(1), VMA(2), args[3] );
 		return 0;
 	case CG_STRNCPY:
-		return (int)strncpy( (char*)VMA(1), (char*)VMA(2), args[3] );
+		QStr::NCpy( (char*)VMA(1), (char*)VMA(2), args[3] );
+		return (int)(char*)VMA(1);
 	case CG_SIN:
 		return FloatAsInt( sin( VMF(1) ) );
 	case CG_COS:

@@ -584,7 +584,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 #endif
 	Com_DPrintf( "CM_LoadMap( %s, %i )\n", name, clientload );
 
-	if ( !strcmp( cm.name, name ) && clientload ) {
+	if ( !QStr::Cmp( cm.name, name ) && clientload ) {
 		*checksum = last_checksum;
 		return;
 	}
@@ -653,7 +653,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 
 	// allow this to be cached if it is loaded by the server
 	if ( !clientload ) {
-		Q_strncpyz( cm.name, name, sizeof( cm.name ) );
+		QStr::NCpyZ( cm.name, name, sizeof( cm.name ) );
 	}
 }
 

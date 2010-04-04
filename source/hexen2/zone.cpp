@@ -369,7 +369,7 @@ void Hunk_Print (qboolean all, qboolean write_file)
 	// print the total
 	//
 		if (next == endlow || next == endhigh || 
-		strncmp (h->name, next->name, 8) )
+		QStr::NCmp(h->name, next->name, 8) )
 		{
 			if (!all)
 			{
@@ -421,7 +421,7 @@ void *Hunk_AllocName (int size, char *name)
 	
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	strncpy (h->name, name, 20);
+	QStr::NCpy(h->name, name, 20);
 	
 	return (void *)(h+1);
 }
@@ -512,7 +512,7 @@ void *Hunk_HighAllocName (int size, char *name)
 	memset (h, 0, size);
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	strncpy (h->name, name, 8);
+	QStr::NCpy(h->name, name, 8);
 
 	return (void *)(h+1);
 }
@@ -793,8 +793,8 @@ void Cache_Print (qboolean write_file)
 		count++;
 		sum += cd->size;
 
-		strcpy(temp,cd->name);
-		//strlwr(temp);
+		QStr::Cpy(temp,cd->name);
+		QStr::ToLower(temp);
 		if (strstr(temp,".mdl")) 
 		{
 		   num_mod++;
@@ -926,7 +926,7 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 		cs = Cache_TryAlloc (size, false);
 		if (cs)
 		{
-			strncpy (cs->name, name, sizeof(cs->name)-1);
+			QStr::NCpy(cs->name, name, sizeof(cs->name)-1);
 			c->data = (void *)(cs+1);
 			cs->user = c;
 			break;
@@ -955,8 +955,8 @@ void Memory_Display_f(void)
 	NumItems = Cmd_Argc();
 	for(counter=1;counter<NumItems;counter++)
 	{
-		if (strcmpi(Cmd_Argv(counter),"short") == 0) all = false;
-		else if (strcmpi(Cmd_Argv(counter),"save") == 0) write_file = true;
+		if (QStr::ICmp(Cmd_Argv(counter),"short") == 0) all = false;
+		else if (QStr::ICmp(Cmd_Argv(counter),"save") == 0) write_file = true;
 	}
 
    Hunk_Print(all,write_file);
@@ -972,7 +972,7 @@ void Cache_Display_f(void)
 	NumItems = Cmd_Argc();
 	for(counter=1;counter<NumItems;counter++)
 	{
-		if (strcmpi(Cmd_Argv(counter),"save") == 0) write_file = true;
+		if (QStr::ICmp(Cmd_Argv(counter),"save") == 0) write_file = true;
 	}
 
    Cache_Print(write_file);
@@ -1016,7 +1016,7 @@ void Memory_Stats_f(void)
 	NumItems = Cmd_Argc();
 	for(counter=1;counter<NumItems;counter++)
 	{
-		if (strcmpi(Cmd_Argv(counter),"save") == 0) write_file = true;
+		if (QStr::ICmp(Cmd_Argv(counter),"save") == 0) write_file = true;
 	}
 
 	memset(GroupCount,0,sizeof(GroupCount));
@@ -1043,7 +1043,7 @@ void Memory_Stats_f(void)
 
 		for(counter=0;counter<NUM_GROUPS;counter++)
 		{
-			if (strcmpi(h->name,MemoryGroups[counter]) == 0)
+			if (QStr::ICmp(h->name,MemoryGroups[counter]) == 0)
 			{
 				GroupCount[counter]++;
 				GroupSum[counter] += h->size;
@@ -1106,7 +1106,7 @@ void Memory_Init (void *buf, int size)
 	if (p)
 	{
 		if (p < com_argc-1)
-			zonesize = atoi (com_argv[p+1]) * 1024;
+			zonesize = QStr::Atoi(com_argv[p+1]) * 1024;
 		else
 			Sys_Error ("Memory_Init: you must specify a size in KB after -zone");
 	}

@@ -650,7 +650,7 @@ void VID_CheckChanges (void)
 		Com_sprintf( name, sizeof(name), "ref_%s.dll", vid_ref->string );
 		if ( !VID_LoadRefresh( name ) )
 		{
-			if ( strcmp (vid_ref->string, "soft") == 0 )
+			if ( QStr::Cmp(vid_ref->string, "soft") == 0 )
 				Com_Error (ERR_FATAL, "Couldn't fall back to software refresh!");
 			Cvar_Set( "vid_ref", "soft" );
 
@@ -705,7 +705,7 @@ void VID_Init (void)
 		cvar_t *gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
 		cvar_t *gl_mode = Cvar_Get( "gl_mode", "3", 0 );
 
-		if ( stricmp( gl_driver->string, "3dfxgl" ) == 0 )
+		if ( QStr::ICmp( gl_driver->string, "3dfxgl" ) == 0 )
 		{
 			Cvar_SetValue( "gl_mode", 3 );
 			viddef.width  = 640;

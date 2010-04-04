@@ -96,7 +96,7 @@ void SV_RankBegin( char *gamekey )
 	}
 
 	// only allow official game key on pure servers
-	if( strcmp(gamekey, GR_GAMEKEY) == 0 )
+	if( QStr::Cmp(gamekey, GR_GAMEKEY) == 0 )
 	{
 /*
 		if( Cvar_VariableValue("sv_pure") != 1 )
@@ -139,7 +139,7 @@ void SV_RankBegin( char *gamekey )
 	// initialize rankings
 	GRankLogLevel( GRLOG_OFF );
 	memset(SV_RankGameKey,0,sizeof(SV_RankGameKey));
-	strncpy(SV_RankGameKey,gamekey,sizeof(SV_RankGameKey)-1);
+	QStr::NCpy(SV_RankGameKey,gamekey,sizeof(SV_RankGameKey)-1);
 	init = GRankInit( 1, SV_RankGameKey, GR_OPT_POLL, GR_OPT_END );
 	s_server_context = init.context;
 	s_rankings_contexts++;
@@ -148,7 +148,7 @@ void SV_RankBegin( char *gamekey )
 	Com_DPrintf( "SV_RankBegin(); s_server_context=%d\n",init.context );
 
 	// new game
-	if(!strlen(Cvar_VariableString( "sv_leagueName" )))
+	if(!QStr::Length(Cvar_VariableString( "sv_leagueName" )))
 	{
 		status = GRankNewGameAsync
 			( 			
@@ -550,11 +550,11 @@ qboolean SV_RankUserValidate( int index, const char* player_id, const char* key,
 		SV_RankDecodePlayerKey(key, ranked_player->token);
 		
 		// save name and check for duplicates
-		Q_strncpyz( ranked_player->name, name, sizeof(ranked_player->name) );
+		QStr::NCpyZ( ranked_player->name, name, sizeof(ranked_player->name) );
 		for( i = 0; i < sv_maxclients->value; i++ )
 		{
 			if( (i != index) && (s_ranked_players[i].grank_status == QGR_STATUS_ACTIVE) && 
-				(strcmp( s_ranked_players[i].name, name ) == 0) )
+				(QStr::Cmp( s_ranked_players[i].name, name ) == 0) )
 			{
 				Com_DPrintf( "SV_RankUserValidate: Duplicate login\n" );
 				ranked_player->grank_status = QGR_STATUS_NO_USER;
@@ -1460,7 +1460,7 @@ static uint64_t SV_RankDecodePlayerID( const char* string )
 
 	assert( string != NULL );
 	
-	len = strlen (string) ;
+	len = QStr::Length(string) ;
 	Com_DPrintf( "SV_RankDecodePlayerID: string length %d\n",len );
 	SV_RankAsciiDecode( buffer, string, len );
 	player_id = LittleLong64(*(qint64*)buffer);
@@ -1478,7 +1478,7 @@ static void SV_RankDecodePlayerKey( const char* string, GR_PLAYER_TOKEN key )
 	int len;
 	assert( string != NULL );
 
-	len = strlen (string) ;
+	len = QStr::Length(string) ;
 	Com_DPrintf( "SV_RankDecodePlayerKey: string length %d\n",len );
 	
 	memset(key,0,sizeof(GR_PLAYER_TOKEN));

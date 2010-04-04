@@ -47,7 +47,7 @@ static void WIN_DisableAltTab( void )
 	if ( s_alttab_disabled )
 		return;
 
-	if ( !Q_stricmp( Cvar_VariableString( "arch" ), "winnt" ) )
+	if ( !QStr::ICmp( Cvar_VariableString( "arch" ), "winnt" ) )
 	{
 		RegisterHotKey( 0, 0, MOD_ALT, VK_TAB );
 	}
@@ -64,7 +64,7 @@ static void WIN_EnableAltTab( void )
 {
 	if ( s_alttab_disabled )
 	{
-		if ( !Q_stricmp( Cvar_VariableString( "arch" ), "winnt" ) )
+		if ( !QStr::ICmp( Cvar_VariableString( "arch" ), "winnt" ) )
 		{
 			UnregisterHotKey( 0, 0 );
 		}

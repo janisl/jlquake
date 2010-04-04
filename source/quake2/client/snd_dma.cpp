@@ -212,12 +212,12 @@ sfx_t *S_FindName (char *name, qboolean create)
 	if (!name[0])
 		Com_Error (ERR_FATAL, "S_FindName: empty name\n");
 
-	if (strlen(name) >= MAX_QPATH)
+	if (QStr::Length(name) >= MAX_QPATH)
 		Com_Error (ERR_FATAL, "Sound name too long: %s", name);
 
 	// see if already loaded
 	for (i=0 ; i < num_sfx ; i++)
-		if (!strcmp(known_sfx[i].name, name))
+		if (!QStr::Cmp(known_sfx[i].name, name))
 		{
 			return &known_sfx[i];
 		}
@@ -240,7 +240,7 @@ sfx_t *S_FindName (char *name, qboolean create)
 	
 	sfx = &known_sfx[i];
 	memset (sfx, 0, sizeof(*sfx));
-	strcpy (sfx->name, name);
+	QStr::Cpy(sfx->name, name);
 	sfx->registration_sequence = s_registration_sequence;
 	
 	return sfx;
@@ -260,7 +260,7 @@ sfx_t *S_AliasName (char *aliasname, char *truename)
 	int		i;
 
 	s = (char*)Z_Malloc (MAX_QPATH);
-	strcpy (s, truename);
+	QStr::Cpy(s, truename);
 
 	// find a free sfx
 	for (i=0 ; i < num_sfx ; i++)
@@ -276,7 +276,7 @@ sfx_t *S_AliasName (char *aliasname, char *truename)
 	
 	sfx = &known_sfx[i];
 	memset (sfx, 0, sizeof(*sfx));
-	strcpy (sfx->name, aliasname);
+	QStr::Cpy(sfx->name, aliasname);
 	sfx->registration_sequence = s_registration_sequence;
 	sfx->truename = s;
 
@@ -603,7 +603,7 @@ struct sfx_s *S_RegisterSexedSound (entity_state_t *ent, char *base)
 		if (p)
 		{
 			p += 1;
-			strcpy(model, p);
+			QStr::Cpy(model, p);
 			p = strchr(model, '/');
 			if (p)
 				*p = 0;
@@ -611,7 +611,7 @@ struct sfx_s *S_RegisterSexedSound (entity_state_t *ent, char *base)
 	}
 	// if we can't figure it out, they're male
 	if (!model[0])
-		strcpy(model, "male");
+		QStr::Cpy(model, "male");
 
 	// see if we already know of the model specific sound
 	Com_sprintf (sexedFilename, sizeof(sexedFilename), "#players/%s/%s", model, base+1);
@@ -1165,13 +1165,13 @@ void S_Play(void)
 	i = 1;
 	while (i<Cmd_Argc())
 	{
-		if (!strrchr(Cmd_Argv(i), '.'))
+		if (!QStr::RChr(Cmd_Argv(i), '.'))
 		{
-			strcpy(name, Cmd_Argv(i));
-			strcat(name, ".wav");
+			QStr::Cpy(name, Cmd_Argv(i));
+			QStr::Cat(name, sizeof(name), ".wav");
 		}
 		else
-			strcpy(name, Cmd_Argv(i));
+			QStr::Cpy(name, Cmd_Argv(i));
 		sfx = S_RegisterSound(name);
 		S_StartSound(NULL, cl.playernum+1, 0, sfx, 1.0, 1.0, 0);
 		i++;

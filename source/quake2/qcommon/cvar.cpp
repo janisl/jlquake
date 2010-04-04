@@ -49,7 +49,7 @@ static cvar_t *Cvar_FindVar (char *var_name)
 	cvar_t	*var;
 	
 	for (var=cvar_vars ; var ; var=var->next)
-		if (!strcmp (var_name, var->name))
+		if (!QStr::Cmp(var_name, var->name))
 			return var;
 
 	return NULL;
@@ -67,7 +67,7 @@ float Cvar_VariableValue (char *var_name)
 	var = Cvar_FindVar (var_name);
 	if (!var)
 		return 0;
-	return atof (var->string);
+	return QStr::Atof(var->string);
 }
 
 
@@ -97,19 +97,19 @@ char *Cvar_CompleteVariable (char *partial)
 	cvar_t		*cvar;
 	int			len;
 	
-	len = strlen(partial);
+	len = QStr::Length(partial);
 	
 	if (!len)
 		return NULL;
 		
 	// check exact match
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!strcmp (partial,cvar->name))
+		if (!QStr::Cmp(partial,cvar->name))
 			return cvar->name;
 
 	// check partial match
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!strncmp (partial,cvar->name, len))
+		if (!QStr::NCmp(partial,cvar->name, len))
 			return cvar->name;
 
 	return NULL;
@@ -160,7 +160,7 @@ cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
 	var->name = CopyString (var_name);
 	var->string = CopyString (var_value);
 	var->modified = true;
-	var->value = atof (var->string);
+	var->value = QStr::Atof(var->string);
 
 	// link the variable in
 	var->next = cvar_vars;
@@ -207,13 +207,13 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 		{
 			if (var->latched_string)
 			{
-				if (strcmp(value, var->latched_string) == 0)
+				if (QStr::Cmp(value, var->latched_string) == 0)
 					return var;
 				Z_Free (var->latched_string);
 			}
 			else
 			{
-				if (strcmp(value, var->string) == 0)
+				if (QStr::Cmp(value, var->string) == 0)
 					return var;
 			}
 
@@ -225,8 +225,8 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 			else
 			{
 				var->string = CopyString(value);
-				var->value = atof (var->string);
-				if (!strcmp(var->name, "game"))
+				var->value = QStr::Atof(var->string);
+				if (!QStr::Cmp(var->name, "game"))
 				{
 					FS_SetGamedir (var->string);
 					FS_ExecAutoexec ();
@@ -244,7 +244,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 		}
 	}
 
-	if (!strcmp(value, var->string))
+	if (!QStr::Cmp(value, var->string))
 		return var;		// not changed
 
 	var->modified = true;
@@ -255,7 +255,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 	Z_Free (var->string);	// free the old value string
 	
 	var->string = CopyString(value);
-	var->value = atof (var->string);
+	var->value = QStr::Atof(var->string);
 
 	return var;
 }
@@ -303,7 +303,7 @@ cvar_t *Cvar_FullSet (char *var_name, char *value, int flags)
 	Z_Free (var->string);	// free the old value string
 	
 	var->string = CopyString(value);
-	var->value = atof (var->string);
+	var->value = QStr::Atof(var->string);
 	var->flags = flags;
 
 	return var;
@@ -344,8 +344,8 @@ void Cvar_GetLatchedVars (void)
 		Z_Free (var->string);
 		var->string = var->latched_string;
 		var->latched_string = NULL;
-		var->value = atof(var->string);
-		if (!strcmp(var->name, "game"))
+		var->value = QStr::Atof(var->string);
+		if (!QStr::Cmp(var->name, "game"))
 		{
 			FS_SetGamedir (var->string);
 			FS_ExecAutoexec ();
@@ -402,9 +402,9 @@ void Cvar_Set_f (void)
 
 	if (c == 4)
 	{
-		if (!strcmp(Cmd_Argv(3), "u"))
+		if (!QStr::Cmp(Cmd_Argv(3), "u"))
 			flags = CVAR_USERINFO;
-		else if (!strcmp(Cmd_Argv(3), "s"))
+		else if (!QStr::Cmp(Cmd_Argv(3), "s"))
 			flags = CVAR_SERVERINFO;
 		else
 		{

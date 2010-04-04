@@ -222,7 +222,7 @@ void Con_Init (void)
 
 	if (con_debuglog)
 	{
-		if (strlen (com_gamedir) < (MAXGAMEDIRLEN - strlen (t2)))
+		if (QStr::Length(com_gamedir) < (MAXGAMEDIRLEN - QStr::Length(t2)))
 		{
 			sprintf (temp, "%s%s", com_gamedir, t2);
 			unlink (temp);
@@ -363,7 +363,7 @@ void Con_DebugLog(char *file, char *fmt, ...)
     vsprintf(data, fmt, argptr);
     va_end(argptr);
     fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data, strlen(data));
+    write(fd, data, QStr::Length(data));
     close(fd);
 }
 

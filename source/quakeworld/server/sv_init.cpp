@@ -41,7 +41,7 @@ int SV_ModelIndex (char *name)
 		return 0;
 
 	for (i=0 ; i<MAX_MODELS && sv.model_precache[i] ; i++)
-		if (!strcmp(sv.model_precache[i], name))
+		if (!QStr::Cmp(sv.model_precache[i], name))
 			return i;
 	if (i==MAX_MODELS || !sv.model_precache[i])
 		SV_Error ("SV_ModelIndex: model %s not precached", name);
@@ -315,7 +315,7 @@ void SV_SpawnServer (char *server)
 	sv.signon.data = sv.signon_buffers[0];
 	sv.num_signon_buffers = 1;
 
-	strcpy (sv.name, server);
+	QStr::Cpy(sv.name, server);
 
 	// load progs to get entity field count
 	// which determines how big each edict is
@@ -336,7 +336,7 @@ void SV_SpawnServer (char *server)
 
 	sv.time = 1.0;
 	
-	strcpy (sv.name, server);
+	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 	sv.worldmodel = Mod_ForName (sv.modelname, true);
 	SV_CalcPHS ();

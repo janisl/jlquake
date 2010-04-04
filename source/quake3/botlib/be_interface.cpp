@@ -231,7 +231,7 @@ int Export_BotLibVarGet(char *var_name, char *value, int size)
 	char *varvalue;
 
 	varvalue = LibVarGetString(var_name);
-	strncpy(value, varvalue, size-1);
+	QStr::NCpy(value, varvalue, size-1);
 	value[size-1] = '\0';
 	return BLERR_NOERROR;
 } //end of the function Export_BotLibVarGet

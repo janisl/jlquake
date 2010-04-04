@@ -46,7 +46,7 @@ void KeyDown (kbutton_t *b)
 
 	c = Cmd_Argv(1);
 	if (c[0])
-		k = atoi(c);
+		k = QStr::Atoi(c);
 	else
 		k = -1;		// typed manually at the console for continuous down
 
@@ -75,7 +75,7 @@ void KeyUp (kbutton_t *b)
 	
 	c = Cmd_Argv(1);
 	if (c[0])
-		k = atoi(c);
+		k = QStr::Atoi(c);
 	else
 	{ // typed manually at the console, assume for unsticking, so clear all
 		b->down[0] = b->down[1] = 0;
@@ -140,7 +140,7 @@ void IN_UseUp (void) {KeyUp(&in_use);}
 void IN_JumpDown (void) {KeyDown(&in_jump);}
 void IN_JumpUp (void) {KeyUp(&in_jump);}
 
-void IN_Impulse (void) {in_impulse=atoi(Cmd_Argv(1));}
+void IN_Impulse (void) {in_impulse=QStr::Atoi(Cmd_Argv(1));}
 
 /*
 ===============
@@ -475,7 +475,7 @@ void IN_infoPlaqueDown(void)
 	{
 		//They want to see the plaque
 		/*if (infomessage[0] == '\0')
-			strcpy(infomessage, "Objectives:");*/
+			QStr::Cpy(infomessage, "Objectives:");*/
 
 		info_up = 1;
 		KeyDown(&in_infoplaque);

@@ -1701,7 +1701,7 @@ void R_LoadEntities( lump_t *l ) {
 
 	// store for reference by the cgame
 	w->entityString = (char*)ri.Hunk_Alloc( l->filelen + 1, h_low );
-	strcpy( w->entityString, p );
+	QStr::Cpy( w->entityString, p );
 	w->entityParsePoint = w->entityString;
 
 	token = COM_ParseExt( &p, qtrue );
@@ -1717,7 +1717,7 @@ void R_LoadEntities( lump_t *l ) {
 		if ( !*token || *token == '}' ) {
 			break;
 		}
-		Q_strncpyz(keyname, token, sizeof(keyname));
+		QStr::NCpyZ(keyname, token, sizeof(keyname));
 
 		// parse value
 		token = COM_ParseExt( &p, qtrue );
@@ -1725,11 +1725,11 @@ void R_LoadEntities( lump_t *l ) {
 		if ( !*token || *token == '}' ) {
 			break;
 		}
-		Q_strncpyz(value, token, sizeof(value));
+		QStr::NCpyZ(value, token, sizeof(value));
 
 		// check for remapping of shaders for vertex lighting
 		s = "vertexremapshader";
-		if (!Q_strncmp(keyname, s, strlen(s)) ) {
+		if (!QStr::NCmp(keyname, s, QStr::Length(s)) ) {
 			s = strchr(value, ';');
 			if (!s) {
 				ri.Printf( PRINT_WARNING, "WARNING: no semi colon in vertexshaderremap '%s'\n", value );
@@ -1743,7 +1743,7 @@ void R_LoadEntities( lump_t *l ) {
 		}
 		// check for remapping of shaders
 		s = "remapshader";
-		if (!Q_strncmp(keyname, s, strlen(s)) ) {
+		if (!QStr::NCmp(keyname, s, QStr::Length(s)) ) {
 			s = strchr(value, ';');
 			if (!s) {
 				ri.Printf( PRINT_WARNING, "WARNING: no semi colon in shaderremap '%s'\n", value );
@@ -1754,7 +1754,7 @@ void R_LoadEntities( lump_t *l ) {
 			continue;
 		}
 		// check for a different grid size
-		if (!Q_stricmp(keyname, "gridsize")) {
+		if (!QStr::ICmp(keyname, "gridsize")) {
 			sscanf(value, "%f %f %f", &w->lightGridSize[0], &w->lightGridSize[1], &w->lightGridSize[2] );
 			continue;
 		}
@@ -1770,7 +1770,7 @@ qboolean R_GetEntityToken( char *buffer, int size ) {
 	const char	*s;
 
 	s = COM_Parse( &s_worldData.entityParsePoint );
-	Q_strncpyz( buffer, s, size );
+	QStr::NCpyZ( buffer, s, size );
 	if ( !s_worldData.entityParsePoint || !s[0] ) {
 		s_worldData.entityParsePoint = s_worldData.entityString;
 		return qfalse;
@@ -1817,9 +1817,9 @@ void RE_LoadWorldMap( const char *name ) {
 	tr.world = NULL;
 
 	Com_Memset( &s_worldData, 0, sizeof( s_worldData ) );
-	Q_strncpyz( s_worldData.name, name, sizeof( s_worldData.name ) );
+	QStr::NCpyZ( s_worldData.name, name, sizeof( s_worldData.name ) );
 
-	Q_strncpyz( s_worldData.baseName, COM_SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );
+	QStr::NCpyZ( s_worldData.baseName, COM_SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );
 	COM_StripExtension( s_worldData.baseName, s_worldData.baseName );
 
 	startMarker = (byte*)ri.Hunk_Alloc(0, h_low);

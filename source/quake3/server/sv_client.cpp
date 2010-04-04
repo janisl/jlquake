@@ -121,10 +121,10 @@ void SV_GetChallenge( netadr_t from ) {
 
 		Com_DPrintf( "sending getIpAuthorize for %s\n", NET_AdrToString( from ));
 		
-		strcpy(game, BASEGAME);
+		QStr::Cpy(game, BASEGAME);
 		fs = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
 		if (fs && fs->string[0] != 0) {
-			strcpy(game, fs->string);
+			QStr::Cpy(game, fs->string);
 		}
 		
 		// the 0 is for backwards compatibility with obsolete sv_allowanonymous flags
@@ -156,7 +156,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		return;
 	}
 
-	challenge = atoi( Cmd_Argv( 1 ) );
+	challenge = QStr::Atoi( Cmd_Argv( 1 ) );
 
 	for (i = 0 ; i < MAX_CHALLENGES ; i++) {
 		if ( svs.challenges[i].challenge == challenge ) {
@@ -173,7 +173,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 	s = Cmd_Argv( 2 );
 	r = Cmd_Argv( 3 );			// reason
 
-	if ( !Q_stricmp( s, "demo" ) ) {
+	if ( !QStr::ICmp( s, "demo" ) ) {
 		if ( Cvar_VariableValue( "fs_restrict" ) ) {
 			// a demo client connecting to a demo server
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, 
@@ -186,12 +186,12 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 		Com_Memset( &svs.challenges[i], 0, sizeof( svs.challenges[i] ) );
 		return;
 	}
-	if ( !Q_stricmp( s, "accept" ) ) {
+	if ( !QStr::ICmp( s, "accept" ) ) {
 		NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, 
 			"challengeResponse %i", svs.challenges[i].challenge );
 		return;
 	}
-	if ( !Q_stricmp( s, "unknown" ) ) {
+	if ( !QStr::ICmp( s, "unknown" ) ) {
 		if (!r) {
 			NET_OutOfBandPrint( NS_SERVER, svs.challenges[i].adr, "print\nAwaiting CD key authorization\n" );
 		} else {
@@ -244,17 +244,17 @@ void SV_DirectConnect( netadr_t from ) {
 
 	Com_DPrintf ("SVC_DirectConnect ()\n");
 
-	Q_strncpyz( userinfo, Cmd_Argv(1), sizeof(userinfo) );
+	QStr::NCpyZ( userinfo, Cmd_Argv(1), sizeof(userinfo) );
 
-	version = atoi( Info_ValueForKey( userinfo, "protocol" ) );
+	version = QStr::Atoi( Info_ValueForKey( userinfo, "protocol" ) );
 	if ( version != PROTOCOL_VERSION ) {
 		NET_OutOfBandPrint( NS_SERVER, from, "print\nServer uses protocol version %i.\n", PROTOCOL_VERSION );
 		Com_DPrintf ("    rejected connect from version %i\n", version);
 		return;
 	}
 
-	challenge = atoi( Info_ValueForKey( userinfo, "challenge" ) );
-	qport = atoi( Info_ValueForKey( userinfo, "qport" ) );
+	challenge = QStr::Atoi( Info_ValueForKey( userinfo, "challenge" ) );
+	qport = QStr::Atoi( Info_ValueForKey( userinfo, "qport" ) );
 
 	// quick reject
 	for (i=0,cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++) {
@@ -353,7 +353,7 @@ void SV_DirectConnect( netadr_t from ) {
 
 	// check for privateClient password
 	password = Info_ValueForKey( userinfo, "password" );
-	if ( !strcmp( password, sv_privatePassword->string ) ) {
+	if ( !QStr::Cmp( password, sv_privatePassword->string ) ) {
 		startIndex = 0;
 	} else {
 		// skip past the reserved slots
@@ -417,7 +417,7 @@ gotnewcl:
 	newcl->netchan_end_queue = &newcl->netchan_start_queue;
 
 	// save the userinfo
-	Q_strncpyz( newcl->userinfo, userinfo, sizeof(newcl->userinfo) );
+	QStr::NCpyZ( newcl->userinfo, userinfo, sizeof(newcl->userinfo) );
 
 	// get the game a chance to reject this connection or modify the userinfo
 	denied = (char *)VM_Call( gvm, GAME_CLIENT_CONNECT, clientNum, qtrue, qfalse ); // firstTime = qtrue
@@ -706,7 +706,7 @@ the same as cl->downloadClientBlock
 */
 void SV_NextDownload_f( client_t *cl )
 {
-	int block = atoi( Cmd_Argv(1) );
+	int block = QStr::Atoi( Cmd_Argv(1) );
 
 	if (block == cl->downloadClientBlock) {
 		Com_DPrintf( "clientDownload: %d : client acknowledge of block %d\n", cl - svs.clients, block );
@@ -740,7 +740,7 @@ void SV_BeginDownload_f( client_t *cl ) {
 
 	// cl->downloadName is non-zero now, SV_WriteDownloadToClient will see this and open
 	// the file itself
-	Q_strncpyz( cl->downloadName, Cmd_Argv(1), sizeof(cl->downloadName) );
+	QStr::NCpyZ( cl->downloadName, Cmd_Argv(1), sizeof(cl->downloadName) );
 }
 
 /*
@@ -978,7 +978,7 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 			// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=475
 			// we may get incoming cp sequences from a previous checksumFeed, which we need to ignore
 			// since serverId is a frame count, it always goes up
-			if (atoi(pArg) < sv.checksumFeedServerId)
+			if (QStr::Atoi(pArg) < sv.checksumFeedServerId)
 			{
 				Com_DPrintf("ignoring outdated cp command from client %s\n", cl->name);
 				return;
@@ -996,13 +996,13 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 			}
 			// verify first to be the cgame checksum
 			pArg = Cmd_Argv(nCurArg++);
-			if (!pArg || *pArg == '@' || atoi(pArg) != nChkSum1 ) {
+			if (!pArg || *pArg == '@' || QStr::Atoi(pArg) != nChkSum1 ) {
 				bGood = qfalse;
 				break;
 			}
 			// verify the second to be the ui checksum
 			pArg = Cmd_Argv(nCurArg++);
-			if (!pArg || *pArg == '@' || atoi(pArg) != nChkSum2 ) {
+			if (!pArg || *pArg == '@' || QStr::Atoi(pArg) != nChkSum2 ) {
 				bGood = qfalse;
 				break;
 			}
@@ -1014,7 +1014,7 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 			}
 			// store checksums since tokenization is not re-entrant
 			for (i = 0; nCurArg < nClientPaks; i++) {
-				nClientChkSum[i] = atoi(Cmd_Argv(nCurArg++));
+				nClientChkSum[i] = QStr::Atoi(Cmd_Argv(nCurArg++));
 			}
 
 			// store number to compare against (minus one cause the last is the number of checksums)
@@ -1045,7 +1045,7 @@ static void SV_VerifyPaks_f( client_t *cl ) {
 				nServerPaks = 1024;
 
 			for (i = 0; i < nServerPaks; i++) {
-				nServerChkSum[i] = atoi(Cmd_Argv(i));
+				nServerChkSum[i] = QStr::Atoi(Cmd_Argv(i));
 			}
 
 			// check if the client has provided any pure checksums of pk3 files not loaded by the server
@@ -1117,7 +1117,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	int		i;
 
 	// name for C code
-	Q_strncpyz( cl->name, Info_ValueForKey (cl->userinfo, "name"), sizeof(cl->name) );
+	QStr::NCpyZ( cl->name, Info_ValueForKey (cl->userinfo, "name"), sizeof(cl->name) );
 
 	// rate command
 
@@ -1127,8 +1127,8 @@ void SV_UserinfoChanged( client_t *cl ) {
 		cl->rate = 99999;	// lans should not rate limit
 	} else {
 		val = Info_ValueForKey (cl->userinfo, "rate");
-		if (strlen(val)) {
-			i = atoi(val);
+		if (QStr::Length(val)) {
+			i = QStr::Atoi(val);
 			cl->rate = i;
 			if (cl->rate < 1000) {
 				cl->rate = 1000;
@@ -1140,17 +1140,17 @@ void SV_UserinfoChanged( client_t *cl ) {
 		}
 	}
 	val = Info_ValueForKey (cl->userinfo, "handicap");
-	if (strlen(val)) {
-		i = atoi(val);
-		if (i<=0 || i>100 || strlen(val) > 4) {
+	if (QStr::Length(val)) {
+		i = QStr::Atoi(val);
+		if (i<=0 || i>100 || QStr::Length(val) > 4) {
 			Info_SetValueForKey( cl->userinfo, "handicap", "100" );
 		}
 	}
 
 	// snaps command
 	val = Info_ValueForKey (cl->userinfo, "snaps");
-	if (strlen(val)) {
-		i = atoi(val);
+	if (QStr::Length(val)) {
+		i = QStr::Atoi(val);
 		if ( i < 1 ) {
 			i = 1;
 		} else if ( i > 30 ) {
@@ -1184,7 +1184,7 @@ SV_UpdateUserinfo_f
 ==================
 */
 static void SV_UpdateUserinfo_f( client_t *cl ) {
-	Q_strncpyz( cl->userinfo, Cmd_Argv(1), sizeof(cl->userinfo) );
+	QStr::NCpyZ( cl->userinfo, Cmd_Argv(1), sizeof(cl->userinfo) );
 
 	SV_UserinfoChanged( cl );
 	// call prog code to allow overrides
@@ -1224,7 +1224,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK ) {
 
 	// see if it is a server level command
 	for (u=ucmds ; u->name ; u++) {
-		if (!strcmp (Cmd_Argv(0), u->name) ) {
+		if (!QStr::Cmp(Cmd_Argv(0), u->name) ) {
 			u->func( cl );
 			bProcessed = qtrue;
 			break;

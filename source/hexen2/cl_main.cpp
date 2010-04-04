@@ -90,12 +90,12 @@ void CL_ClearState (void)
 
 static qboolean IsGip(const char* name)
 {
-	int l = strlen(name);
+	int l = QStr::Length(name);
 	if (l < 4)
 	{
 		return false;
 	}
-	return !strcmp(name + l - 4, ".gip");
+	return !QStr::Cmp(name + l - 4, ".gip");
 }
 
 void CL_RemoveGIPFiles (char *path)
@@ -976,9 +976,9 @@ void CL_Sensitivity_save_f (void)
 		return;
 	}
 
-	if (strcmpi(Cmd_Argv(1),"save") == 0)
+	if (QStr::ICmp(Cmd_Argv(1),"save") == 0)
 		save_sensitivity = sensitivity.value;
-	else if (strcmpi(Cmd_Argv(1),"restore") == 0)
+	else if (QStr::ICmp(Cmd_Argv(1),"restore") == 0)
 		Cvar_SetValue ("sensitivity", save_sensitivity);
 }
 /*

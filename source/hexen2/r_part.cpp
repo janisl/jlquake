@@ -59,7 +59,7 @@ void R_LeakColor_f(void)
 {
 	int		newLeakColor;
 	
-	newLeakColor = atoi (Cmd_Argv(1));
+	newLeakColor = QStr::Atoi (Cmd_Argv(1));
 	if (newLeakColor < 0 || newLeakColor > 255)
 	{
 	   Con_Printf ("Leak color is out of range!\n");
@@ -87,7 +87,7 @@ void R_InitParticles (void)
 
 	if (i)
 	{
-		r_numparticles = (int)(atoi(com_argv[i+1]));
+		r_numparticles = (int)(QStr::Atoi(com_argv[i+1]));
 		if (r_numparticles < ABSOLUTE_MIN_PARTICLES)
 			r_numparticles = ABSOLUTE_MIN_PARTICLES;
 	}

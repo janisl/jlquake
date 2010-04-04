@@ -96,7 +96,7 @@ int WINS_Init (void)
 		myAddr = *(int *)local->h_addr_list[0];
 
 		// if the quake hostname isn't set, set it to the machine name
-		if (strcmp(hostname.string, "UNNAMED") == 0)
+		if (QStr::Cmp(hostname.string, "UNNAMED") == 0)
 		{
 			// see if it's a text IP address (well, close enough)
 			for (p = buff; *p; p++)
@@ -128,8 +128,8 @@ int WINS_Init (void)
 	((struct sockaddr_in *)&broadcastaddr)->sin_port = htons((unsigned short)net_hostport);
 
 	WINS_GetSocketAddr (net_controlsocket, &addr);
-	strcpy(my_tcpip_address,  WINS_AddrToString (&addr));
-	p = strrchr (my_tcpip_address, ':');
+	QStr::Cpy(my_tcpip_address,  WINS_AddrToString (&addr));
+	p = QStr::RChr(my_tcpip_address, ':');
 	if (p)
 		*p = 0;
 
@@ -229,7 +229,7 @@ static int PartialIPAddress (char *in, struct qsockaddr *hostaddr)
 	
 	buff[0] = '.';
 	b = buff;
-	strcpy(buff+1, in);
+	QStr::Cpy(buff+1, in);
 	if (buff[1] == '.')
 		b++;
 
@@ -255,7 +255,7 @@ static int PartialIPAddress (char *in, struct qsockaddr *hostaddr)
 	}
 	
 	if (*b++ == ':')
-		port = atoi(b);
+		port = QStr::Atoi(b);
 	else
 		port = net_hostport;
 
@@ -409,11 +409,11 @@ int WINS_GetNameFromAddr (struct qsockaddr *addr, char *name)
 	hostentry = gethostbyaddr ((char *)&((struct sockaddr_in *)addr)->sin_addr, sizeof(struct in_addr), AF_INET);
 	if (hostentry)
 	{
-		strncpy (name, (char *)hostentry->h_name, NET_NAMELEN - 1);
+		QStr::NCpy(name, (char *)hostentry->h_name, NET_NAMELEN - 1);
 		return 0;
 	}
 
-	strcpy (name, WINS_AddrToString (addr));
+	QStr::Cpy(name, WINS_AddrToString (addr));
 	return 0;
 }
 

@@ -192,8 +192,8 @@ void CMod_LoadSurfaces (lump_t *l)
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
-		strncpy (out->c.name, in->texture, sizeof(out->c.name)-1);
-		strncpy (out->rname, in->texture, sizeof(out->rname)-1);
+		QStr::NCpy(out->c.name, in->texture, sizeof(out->c.name)-1);
+		QStr::NCpy(out->rname, in->texture, sizeof(out->rname)-1);
 		out->c.flags = LittleLong (in->flags);
 		out->c.value = LittleLong (in->value);
 	}
@@ -555,7 +555,7 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 
 	map_noareas = Cvar_Get ("map_noareas", "0", 0);
 
-	if (  !strcmp (map_name, name) && (clientload || !Cvar_VariableValue ("flushmap")) )
+	if (  !QStr::Cmp(map_name, name) && (clientload || !Cvar_VariableValue ("flushmap")) )
 	{
 		*checksum = last_checksum;
 		if (!clientload)
@@ -626,7 +626,7 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 	memset (portalopen, 0, sizeof(portalopen));
 	FloodAreaConnections ();
 
-	strcpy (map_name, name);
+	QStr::Cpy(map_name, name);
 
 	return &map_cmodels[0];
 }
@@ -642,7 +642,7 @@ cmodel_t	*CM_InlineModel (char *name)
 
 	if (!name || name[0] != '*')
 		Com_Error (ERR_DROP, "CM_InlineModel: bad name");
-	num = atoi (name+1);
+	num = QStr::Atoi(name+1);
 	if (num < 1 || num >= numcmodels)
 		Com_Error (ERR_DROP, "CM_InlineModel: bad number");
 

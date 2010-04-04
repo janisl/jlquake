@@ -42,7 +42,7 @@ void SV_SetConfigstring (int index, const char *val) {
 	}
 
 	// don't bother broadcasting an update if no change
-	if ( !strcmp( val, sv.configstrings[ index ] ) ) {
+	if ( !QStr::Cmp( val, sv.configstrings[ index ] ) ) {
 		return;
 	}
 
@@ -64,7 +64,7 @@ void SV_SetConfigstring (int index, const char *val) {
 				continue;
 			}
 
-			len = strlen( val );
+			len = QStr::Length( val );
 			if( len >= maxChunkSize ) {
 				int		sent = 0;
 				int		remaining = len;
@@ -81,7 +81,7 @@ void SV_SetConfigstring (int index, const char *val) {
 					else {
 						cmd = "bcs1";
 					}
-					Q_strncpyz( buf, &val[sent], maxChunkSize );
+					QStr::NCpyZ( buf, &val[sent], maxChunkSize );
 
 					SV_SendServerCommand( client, "%s %i \"%s\"\n", cmd, index, buf );
 
@@ -116,7 +116,7 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize ) {
 		return;
 	}
 
-	Q_strncpyz( buffer, sv.configstrings[index], bufferSize );
+	QStr::NCpyZ( buffer, sv.configstrings[index], bufferSize );
 }
 
 
@@ -135,8 +135,8 @@ void SV_SetUserinfo( int index, const char *val ) {
 		val = "";
 	}
 
-	Q_strncpyz( svs.clients[index].userinfo, val, sizeof( svs.clients[ index ].userinfo ) );
-	Q_strncpyz( svs.clients[index].name, Info_ValueForKey( val, "name" ), sizeof(svs.clients[index].name) );
+	QStr::NCpyZ( svs.clients[index].userinfo, val, sizeof( svs.clients[ index ].userinfo ) );
+	QStr::NCpyZ( svs.clients[index].name, Info_ValueForKey( val, "name" ), sizeof(svs.clients[index].name) );
 }
 
 
@@ -154,7 +154,7 @@ void SV_GetUserinfo( int index, char *buffer, int bufferSize ) {
 	if ( index < 0 || index >= sv_maxclients->integer ) {
 		Com_Error (ERR_DROP, "SV_GetUserinfo: bad index %i\n", index);
 	}
-	Q_strncpyz( buffer, svs.clients[ index ].userinfo, bufferSize );
+	QStr::NCpyZ( buffer, svs.clients[ index ].userinfo, bufferSize );
 }
 
 
@@ -504,7 +504,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 		// load pk3s also loaded at the server
 		p = FS_LoadedPakChecksums();
 		Cvar_Set( "sv_paks", p );
-		if (strlen(p) == 0) {
+		if (QStr::Length(p) == 0) {
 			Com_Printf( "WARNING: sv_pure set but no PK3 files loaded\n" );
 		}
 		p = FS_LoadedPakNames();
@@ -528,7 +528,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	Cvar_Set( "sv_referencedPakNames", p );
 
 	// save systeminfo and serverinfo strings
-	Q_strncpyz( systemInfo, Cvar_InfoString_Big( CVAR_SYSTEMINFO ), sizeof( systemInfo ) );
+	QStr::NCpyZ( systemInfo, Cvar_InfoString_Big( CVAR_SYSTEMINFO ), sizeof( systemInfo ) );
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	SV_SetConfigstring( CS_SYSTEMINFO, systemInfo );
 

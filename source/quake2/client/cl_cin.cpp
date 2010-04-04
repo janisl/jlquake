@@ -585,7 +585,7 @@ void SCR_PlayCinematic (char *arg)
 
 	cl.cinematicframe = 0;
 	dot = strstr (arg, ".");
-	if (dot && !strcmp (dot, ".pcx"))
+	if (dot && !QStr::Cmp(dot, ".pcx"))
 	{	// static pcx image
 		Com_sprintf (name, sizeof(name), "pics/%s", arg);
 		SCR_LoadPCX (name, &cin.pic, &palette, &cin.width, &cin.height);

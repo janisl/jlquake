@@ -68,14 +68,14 @@ void Cbuf_AddText (char *text)
 {
 	int		l;
 	
-	l = strlen (text);
+	l = QStr::Length(text);
 
 	if (cmd_text.cursize + l >= cmd_text.maxsize)
 	{
 		Con_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
-	SZ_Write (&cmd_text, text, strlen (text));
+	SZ_Write (&cmd_text, text, QStr::Length(text));
 }
 
 
@@ -202,7 +202,7 @@ void Cmd_StuffCmds_f (void)
 	{
 		if (!com_argv[i])
 			continue;		// NEXTSTEP nulls out -NXHost
-		s += strlen (com_argv[i]) + 1;
+		s += QStr::Length(com_argv[i]) + 1;
 	}
 	if (!s)
 		return;
@@ -213,9 +213,9 @@ void Cmd_StuffCmds_f (void)
 	{
 		if (!com_argv[i])
 			continue;		// NEXTSTEP nulls out -NXHost
-		strcat (text,com_argv[i]);
+		QStr::Cat(text, s + 1,com_argv[i]);
 		if (i != com_argc-1)
-			strcat (text, " ");
+			QStr::Cat(text, s + 1, " ");
 	}
 	
 // pull out the commands
@@ -234,8 +234,8 @@ void Cmd_StuffCmds_f (void)
 			c = text[j];
 			text[j] = 0;
 			
-			strcat (build, text+i);
-			strcat (build, "\n");
+			QStr::Cat(build, s + 1, text+i);
+			QStr::Cat(build, s + 1, "\n");
 			text[j] = c;
 			i = j-1;
 		}
@@ -309,8 +309,8 @@ char *CopyString (char *in)
 {
 	char	*out;
 	
-	out = (char*)Z_Malloc (strlen(in)+1);
-	strcpy (out, in);
+	out = (char*)Z_Malloc (QStr::Length(in)+1);
+	QStr::Cpy(out, in);
 	return out;
 }
 
@@ -330,7 +330,7 @@ void Cmd_Alias_f (void)
 	}
 
 	s = Cmd_Argv(1);
-	if (strlen(s) >= MAX_ALIAS_NAME)
+	if (QStr::Length(s) >= MAX_ALIAS_NAME)
 	{
 		Con_Printf ("Alias name is too long\n");
 		return;
@@ -339,7 +339,7 @@ void Cmd_Alias_f (void)
 	// if the alias allready exists, reuse it
 	for (a = cmd_alias ; a ; a=a->next)
 	{
-		if (!strcmp(s, a->name))
+		if (!QStr::Cmp(s, a->name))
 		{
 			Z_Free (a->value);
 			break;
@@ -352,18 +352,18 @@ void Cmd_Alias_f (void)
 		a->next = cmd_alias;
 		cmd_alias = a;
 	}
-	strcpy (a->name, s);	
+	QStr::Cpy(a->name, s);	
 
 // copy the rest of the command line
 	cmd[0] = 0;		// start out with a null string
 	c = Cmd_Argc();
 	for (i=2 ; i< c ; i++)
 	{
-		strcat (cmd, Cmd_Argv(i));
+		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 		if (i != c)
-			strcat (cmd, " ");
+			QStr::Cat(cmd, sizeof(cmd), " ");
 	}
-	strcat (cmd, "\n");
+	QStr::Cat(cmd, sizeof(cmd), "\n");
 	
 	a->value = CopyString (cmd);
 }
@@ -476,8 +476,8 @@ void Cmd_TokenizeString (char *text)
 
 		if (cmd_argc < MAX_ARGS)
 		{
-			cmd_argv[cmd_argc] = (char*)Z_Malloc (strlen(com_token)+1);
-			strcpy (cmd_argv[cmd_argc], com_token);
+			cmd_argv[cmd_argc] = (char*)Z_Malloc (QStr::Length(com_token)+1);
+			QStr::Cpy(cmd_argv[cmd_argc], com_token);
 			cmd_argc++;
 		}
 	}
@@ -507,7 +507,7 @@ void	Cmd_AddCommand (char *cmd_name, xcommand_t function)
 // fail if the command already exists
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
-		if (!strcmp (cmd_name, cmd->name))
+		if (!QStr::Cmp(cmd_name, cmd->name))
 		{
 			Con_Printf ("Cmd_AddCommand: %s already defined\n", cmd_name);
 			return;
@@ -532,7 +532,7 @@ qboolean	Cmd_Exists (char *cmd_name)
 
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
-		if (!strcmp (cmd_name,cmd->name))
+		if (!QStr::Cmp(cmd_name,cmd->name))
 			return true;
 	}
 
@@ -552,25 +552,25 @@ char *Cmd_CompleteCommand (char *partial)
 	int				len;
 	cmdalias_t		*a;
 	
-	len = strlen(partial);
+	len = QStr::Length(partial);
 	
 	if (!len)
 		return NULL;
 		
 // check for exact match
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!strcmp (partial,cmd->name))
+		if (!QStr::Cmp(partial,cmd->name))
 			return cmd->name;
 	for (a=cmd_alias ; a ; a=a->next)
-		if (!strcmp (partial, a->name))
+		if (!QStr::Cmp(partial, a->name))
 			return a->name;
 
 // check for partial match
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!strncmp (partial,cmd->name, len))
+		if (!QStr::NCmp(partial,cmd->name, len))
 			return cmd->name;
 	for (a=cmd_alias ; a ; a=a->next)
-		if (!strncmp (partial, a->name, len))
+		if (!QStr::NCmp(partial, a->name, len))
 			return a->name;
 
 	return NULL;
@@ -652,7 +652,7 @@ void	Cmd_ExecuteString (char *text)
 // check functions
 	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
 	{
-		if (!Q_strcasecmp (cmd_argv[0],cmd->name))
+		if (!QStr::ICmp(cmd_argv[0],cmd->name))
 		{
 			if (!cmd->function)
 				Cmd_ForwardToServer ();
@@ -665,7 +665,7 @@ void	Cmd_ExecuteString (char *text)
 // check alias
 	for (a=cmd_alias ; a ; a=a->next)
 	{
-		if (!Q_strcasecmp (cmd_argv[0], a->name))
+		if (!QStr::ICmp(cmd_argv[0], a->name))
 		{
 			Cbuf_InsertText (a->value);
 			return;
@@ -696,7 +696,7 @@ int Cmd_CheckParm (char *parm)
 		Sys_Error ("Cmd_CheckParm: NULL");
 
 	for (i = 1; i < Cmd_Argc (); i++)
-		if (! Q_strcasecmp (parm, Cmd_Argv (i)))
+		if (! QStr::ICmp(parm, Cmd_Argv (i)))
 			return i;
 			
 	return 0;

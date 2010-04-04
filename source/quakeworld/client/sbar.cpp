@@ -405,7 +405,7 @@ void Sbar_SortTeams (void)
 // request new ping times every two second
 	scoreboardteams = 0;
 
-	teamplay = atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 	if (!teamplay)
 		return;
 
@@ -423,18 +423,18 @@ void Sbar_SortTeams (void)
 
 		// find his team in the list
 		t[16] = 0;
-		strncpy(t, Info_ValueForKey(s->userinfo, "team"), 16);
+		QStr::NCpy(t, Info_ValueForKey(s->userinfo, "team"), 16);
 		if (!t || !t[0])
 			continue; // not on team
 		for (j = 0; j < scoreboardteams; j++)
-			if (!strcmp(teams[j].team, t)) {
+			if (!QStr::Cmp(teams[j].team, t)) {
 				teams[j].frags += s->frags;
 				teams[j].players++;
 				goto addpinginfo;
 			}
 		if (j == scoreboardteams) { // must add him
 			j = scoreboardteams++;
-			strcpy(teams[j].team, t);
+			QStr::Cpy(teams[j].team, t);
 			teams[j].frags = s->frags;
 			teams[j].players = 1;
 addpinginfo:
@@ -819,7 +819,7 @@ void Sbar_Draw (void)
 // main screen deathmatch rankings
 	// if we're dead show team scores in team games
 	if (cl.stats[STAT_HEALTH] <= 0 && !cl.spectator)
-		if (atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 &&
+		if (QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 &&
 			!sb_showscores)
 			Sbar_TeamOverlay();
 		else
@@ -907,7 +907,7 @@ void Sbar_TeamOverlay (void)
 	int plow, phigh, pavg;
 
 // request new ping times every two second
-	teamplay = atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 
 	if (!teamplay) {
 		Sbar_DeathmatchOverlay(0);
@@ -958,7 +958,7 @@ void Sbar_TeamOverlay (void)
 
 	// draw team
 		team[4] = 0;
-		strncpy (team, tm->team, 4);
+		QStr::NCpy(team, tm->team, 4);
 		Draw_String (x + 104, y, team);
 
 	// draw total
@@ -969,7 +969,7 @@ void Sbar_TeamOverlay (void)
 		sprintf (num, "%5i", tm->players);
 		Draw_String (x + 104 + 88, y, num);
 		
-		if (!strncmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
+		if (!QStr::NCmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
 			"team"), tm->team, 16)) {
 			Draw_Character ( x + 104 - 8, y, 16);
 			Draw_Character ( x + 104 + 32, y, 17);
@@ -1014,7 +1014,7 @@ void Sbar_DeathmatchOverlay (int start)
 		SZ_Print (&cls.netchan.message, "pings");
 	}
 
-	teamplay = atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 
 	scr_copyeverything = 1;
 	scr_fullupdate = 0;
@@ -1129,7 +1129,7 @@ void Sbar_DeathmatchOverlay (int start)
 		if (teamplay)
 		{
 			team[4] = 0;
-			strncpy (team, Info_ValueForKey(s->userinfo, "team"), 4);
+			QStr::NCpy(team, Info_ValueForKey(s->userinfo, "team"), 4);
 			Draw_String (x+152, y, team);
 		}
 
@@ -1171,7 +1171,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 	if (vid.width < 512 || !sb_lines)
 		return; // not enuff room
 
-	teamplay = atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 
 	scr_copyeverything = 1;
 	scr_fullupdate = 0;
@@ -1241,13 +1241,13 @@ void Sbar_MiniDeathmatchOverlay (void)
 		if (teamplay)
 		{
 			team[4] = 0;
-			strncpy (team, Info_ValueForKey(s->userinfo, "team"), 4);
+			QStr::NCpy(team, Info_ValueForKey(s->userinfo, "team"), 4);
 			Draw_String (x+48, y, team);
 		}
 
 	// draw name
 		name[16] = 0;
-		strncpy(name, s->name, 16);
+		QStr::NCpy(name, s->name, 16);
 		if (teamplay)
 			Draw_String (x+48+40, y, name);
 		else
@@ -1274,14 +1274,14 @@ void Sbar_MiniDeathmatchOverlay (void)
 
 	// draw pings
 		team[4] = 0;
-		strncpy (team, tm->team, 4);
+		QStr::NCpy(team, tm->team, 4);
 		Draw_String (x, y, team);
 
 	// draw total
 		sprintf (num, "%5i", tm->frags);
 		Draw_String (x + 40, y, num);
 		
-		if (!strncmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
+		if (!QStr::NCmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
 			"team"), tm->team, 16)) {
 			Draw_Character ( x - 8, y, 16);
 			Draw_Character ( x + 32, y, 17);
@@ -1304,7 +1304,7 @@ void Sbar_IntermissionOverlay (void)
 	scr_copyeverything = 1;
 	scr_fullupdate = 0;
 
-	if (atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 && !sb_showscores)
+	if (QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 && !sb_showscores)
 		Sbar_TeamOverlay ();
 	else
 		Sbar_DeathmatchOverlay (0);

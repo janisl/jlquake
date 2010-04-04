@@ -199,7 +199,7 @@ void SCR_CenterPrint (char *str)
 	char	line[64];
 	int		i, j, l;
 
-	strncpy (scr_centerstring, str, sizeof(scr_centerstring)-1);
+	QStr::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime->value;
 	scr_centertime_start = cl.time;
 
@@ -379,14 +379,14 @@ void SCR_Sky_f (void)
 		return;
 	}
 	if (Cmd_Argc() > 2)
-		rotate = atof(Cmd_Argv(2));
+		rotate = QStr::Atof(Cmd_Argv(2));
 	else
 		rotate = 0;
 	if (Cmd_Argc() == 6)
 	{
-		axis[0] = atof(Cmd_Argv(3));
-		axis[1] = atof(Cmd_Argv(4));
-		axis[2] = atof(Cmd_Argv(5));
+		axis[0] = QStr::Atof(Cmd_Argv(3));
+		axis[1] = QStr::Atof(Cmd_Argv(4));
+		axis[2] = QStr::Atof(Cmd_Argv(5));
 	}
 	else
 	{
@@ -884,7 +884,7 @@ void SCR_DrawField (int x, int y, int color, int width, int value)
 	SCR_AddDirtyPoint (x+width*CHAR_WIDTH+2, y+23);
 
 	Com_sprintf (num, sizeof(num), "%i", value);
-	l = strlen(num);
+	l = QStr::Length(num);
 	if (l > width)
 		l = width;
 	x += 2 + CHAR_WIDTH*(width - l);
@@ -960,48 +960,48 @@ void SCR_ExecuteLayoutString (char *s)
 	while (s)
 	{
 		token = COM_Parse (&s);
-		if (!strcmp(token, "xl"))
+		if (!QStr::Cmp(token, "xl"))
 		{
 			token = COM_Parse (&s);
-			x = atoi(token);
+			x = QStr::Atoi(token);
 			continue;
 		}
-		if (!strcmp(token, "xr"))
+		if (!QStr::Cmp(token, "xr"))
 		{
 			token = COM_Parse (&s);
-			x = viddef.width + atoi(token);
+			x = viddef.width + QStr::Atoi(token);
 			continue;
 		}
-		if (!strcmp(token, "xv"))
+		if (!QStr::Cmp(token, "xv"))
 		{
 			token = COM_Parse (&s);
-			x = viddef.width/2 - 160 + atoi(token);
-			continue;
-		}
-
-		if (!strcmp(token, "yt"))
-		{
-			token = COM_Parse (&s);
-			y = atoi(token);
-			continue;
-		}
-		if (!strcmp(token, "yb"))
-		{
-			token = COM_Parse (&s);
-			y = viddef.height + atoi(token);
-			continue;
-		}
-		if (!strcmp(token, "yv"))
-		{
-			token = COM_Parse (&s);
-			y = viddef.height/2 - 120 + atoi(token);
+			x = viddef.width/2 - 160 + QStr::Atoi(token);
 			continue;
 		}
 
-		if (!strcmp(token, "pic"))
+		if (!QStr::Cmp(token, "yt"))
+		{
+			token = COM_Parse (&s);
+			y = QStr::Atoi(token);
+			continue;
+		}
+		if (!QStr::Cmp(token, "yb"))
+		{
+			token = COM_Parse (&s);
+			y = viddef.height + QStr::Atoi(token);
+			continue;
+		}
+		if (!QStr::Cmp(token, "yv"))
+		{
+			token = COM_Parse (&s);
+			y = viddef.height/2 - 120 + QStr::Atoi(token);
+			continue;
+		}
+
+		if (!QStr::Cmp(token, "pic"))
 		{	// draw a pic from a stat number
 			token = COM_Parse (&s);
-			value = cl.frame.playerstate.stats[atoi(token)];
+			value = cl.frame.playerstate.stats[QStr::Atoi(token)];
 			if (value >= MAX_IMAGES)
 				Com_Error (ERR_DROP, "Pic >= MAX_IMAGES");
 			if (cl.configstrings[CS_IMAGES+value])
@@ -1013,31 +1013,31 @@ void SCR_ExecuteLayoutString (char *s)
 			continue;
 		}
 
-		if (!strcmp(token, "client"))
+		if (!QStr::Cmp(token, "client"))
 		{	// draw a deathmatch client block
 			int		score, ping, time;
 
 			token = COM_Parse (&s);
-			x = viddef.width/2 - 160 + atoi(token);
+			x = viddef.width/2 - 160 + QStr::Atoi(token);
 			token = COM_Parse (&s);
-			y = viddef.height/2 - 120 + atoi(token);
+			y = viddef.height/2 - 120 + QStr::Atoi(token);
 			SCR_AddDirtyPoint (x, y);
 			SCR_AddDirtyPoint (x+159, y+31);
 
 			token = COM_Parse (&s);
-			value = atoi(token);
+			value = QStr::Atoi(token);
 			if (value >= MAX_CLIENTS || value < 0)
 				Com_Error (ERR_DROP, "client >= MAX_CLIENTS");
 			ci = &cl.clientinfo[value];
 
 			token = COM_Parse (&s);
-			score = atoi(token);
+			score = QStr::Atoi(token);
 
 			token = COM_Parse (&s);
-			ping = atoi(token);
+			ping = QStr::Atoi(token);
 
 			token = COM_Parse (&s);
-			time = atoi(token);
+			time = QStr::Atoi(token);
 
 			DrawAltString (x+32, y, ci->name);
 			DrawString (x+32, y+8,  "Score: ");
@@ -1051,29 +1051,29 @@ void SCR_ExecuteLayoutString (char *s)
 			continue;
 		}
 
-		if (!strcmp(token, "ctf"))
+		if (!QStr::Cmp(token, "ctf"))
 		{	// draw a ctf client block
 			int		score, ping;
 			char	block[80];
 
 			token = COM_Parse (&s);
-			x = viddef.width/2 - 160 + atoi(token);
+			x = viddef.width/2 - 160 + QStr::Atoi(token);
 			token = COM_Parse (&s);
-			y = viddef.height/2 - 120 + atoi(token);
+			y = viddef.height/2 - 120 + QStr::Atoi(token);
 			SCR_AddDirtyPoint (x, y);
 			SCR_AddDirtyPoint (x+159, y+31);
 
 			token = COM_Parse (&s);
-			value = atoi(token);
+			value = QStr::Atoi(token);
 			if (value >= MAX_CLIENTS || value < 0)
 				Com_Error (ERR_DROP, "client >= MAX_CLIENTS");
 			ci = &cl.clientinfo[value];
 
 			token = COM_Parse (&s);
-			score = atoi(token);
+			score = QStr::Atoi(token);
 
 			token = COM_Parse (&s);
-			ping = atoi(token);
+			ping = QStr::Atoi(token);
 			if (ping > 999)
 				ping = 999;
 
@@ -1086,7 +1086,7 @@ void SCR_ExecuteLayoutString (char *s)
 			continue;
 		}
 
-		if (!strcmp(token, "picn"))
+		if (!QStr::Cmp(token, "picn"))
 		{	// draw a pic from a name
 			token = COM_Parse (&s);
 			SCR_AddDirtyPoint (x, y);
@@ -1095,17 +1095,17 @@ void SCR_ExecuteLayoutString (char *s)
 			continue;
 		}
 
-		if (!strcmp(token, "num"))
+		if (!QStr::Cmp(token, "num"))
 		{	// draw a number
 			token = COM_Parse (&s);
-			width = atoi(token);
+			width = QStr::Atoi(token);
 			token = COM_Parse (&s);
-			value = cl.frame.playerstate.stats[atoi(token)];
+			value = cl.frame.playerstate.stats[QStr::Atoi(token)];
 			SCR_DrawField (x, y, 0, width, value);
 			continue;
 		}
 
-		if (!strcmp(token, "hnum"))
+		if (!QStr::Cmp(token, "hnum"))
 		{	// health number
 			int		color;
 
@@ -1125,7 +1125,7 @@ void SCR_ExecuteLayoutString (char *s)
 			continue;
 		}
 
-		if (!strcmp(token, "anum"))
+		if (!QStr::Cmp(token, "anum"))
 		{	// ammo number
 			int		color;
 
@@ -1145,7 +1145,7 @@ void SCR_ExecuteLayoutString (char *s)
 			continue;
 		}
 
-		if (!strcmp(token, "rnum"))
+		if (!QStr::Cmp(token, "rnum"))
 		{	// armor number
 			int		color;
 
@@ -1164,10 +1164,10 @@ void SCR_ExecuteLayoutString (char *s)
 		}
 
 
-		if (!strcmp(token, "stat_string"))
+		if (!QStr::Cmp(token, "stat_string"))
 		{
 			token = COM_Parse (&s);
-			index = atoi(token);
+			index = QStr::Atoi(token);
 			if (index < 0 || index >= MAX_CONFIGSTRINGS)
 				Com_Error (ERR_DROP, "Bad stat_string index");
 			index = cl.frame.playerstate.stats[index];
@@ -1177,41 +1177,41 @@ void SCR_ExecuteLayoutString (char *s)
 			continue;
 		}
 
-		if (!strcmp(token, "cstring"))
+		if (!QStr::Cmp(token, "cstring"))
 		{
 			token = COM_Parse (&s);
 			DrawHUDString (token, x, y, 320, 0);
 			continue;
 		}
 
-		if (!strcmp(token, "string"))
+		if (!QStr::Cmp(token, "string"))
 		{
 			token = COM_Parse (&s);
 			DrawString (x, y, token);
 			continue;
 		}
 
-		if (!strcmp(token, "cstring2"))
+		if (!QStr::Cmp(token, "cstring2"))
 		{
 			token = COM_Parse (&s);
 			DrawHUDString (token, x, y, 320,0x80);
 			continue;
 		}
 
-		if (!strcmp(token, "string2"))
+		if (!QStr::Cmp(token, "string2"))
 		{
 			token = COM_Parse (&s);
 			DrawAltString (x, y, token);
 			continue;
 		}
 
-		if (!strcmp(token, "if"))
+		if (!QStr::Cmp(token, "if"))
 		{	// draw a number
 			token = COM_Parse (&s);
-			value = cl.frame.playerstate.stats[atoi(token)];
+			value = cl.frame.playerstate.stats[QStr::Atoi(token)];
 			if (!value)
 			{	// skip to endif
-				while (s && strcmp(token, "endif") )
+				while (s && QStr::Cmp(token, "endif") )
 				{
 					token = COM_Parse (&s);
 				}

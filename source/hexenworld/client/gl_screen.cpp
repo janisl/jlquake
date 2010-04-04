@@ -119,7 +119,7 @@ void FindTextBreaks(char *message, int Width)
 {
 	int length,pos,start,lastspace,oldlast;
 
-	length = strlen(message);
+	length = QStr::Length(message);
 	lines = pos = start = 0;
 	lastspace = -1;
 
@@ -166,7 +166,7 @@ for a few moments
 */
 void SCR_CenterPrint (char *str)
 {
-	strncpy (scr_centerstring, str, sizeof(scr_centerstring)-1);
+	QStr::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime.value;
 	scr_centertime_start = cl.time;
 
@@ -194,9 +194,9 @@ void SCR_DrawCenterString (void)
 	by = ((25-lines) * 8) / 2;
 	for(i=0;i<lines;i++,by+=8)
 	{
-		strncpy(temp,&scr_centerstring[StartC[i]],EndC[i]-StartC[i]);
+		QStr::NCpy(temp,&scr_centerstring[StartC[i]],EndC[i]-StartC[i]);
 		temp[EndC[i]-StartC[i]] = 0;
-		bx = ((40-strlen(temp)) * 8) / 2;
+		bx = ((40-QStr::Length(temp)) * 8) / 2;
 	  	M_Print2 (bx, by, temp);
 	}
 }
@@ -448,9 +448,9 @@ void SCR_DrawFPS (void)
 	}
 
 	sprintf(st, "%3d FPS", lastfps);
-	x = vid.width - strlen(st) * 8 - 8;
+	x = vid.width - QStr::Length(st) * 8 - 8;
 	y = vid.height - sb_lines - 8;
-//	Draw_TileClear(x, y, strlen(st) * 8, 8);
+//	Draw_TileClear(x, y, QStr::Length(st) * 8, 8);
 	Draw_String(x, y, st);
 }
 
@@ -632,7 +632,7 @@ void SCR_ScreenShot_f (void)
 // 
 // find a file name to save it to 
 // 
-	strcpy(pcxname,"shots/hw00.tga");
+	QStr::Cpy(pcxname,"shots/hw00.tga");
 		
 	for (i=0 ; i<=99 ; i++) 
 	{ 
@@ -819,9 +819,9 @@ void Plaque_Draw (char *message, qboolean AlwaysDraw)
 
 	for(i=0;i<lines;i++,by+=8)
 	{
-		strncpy(temp,&message[StartC[i]],EndC[i]-StartC[i]);
+		QStr::NCpy(temp,&message[StartC[i]],EndC[i]-StartC[i]);
 		temp[EndC[i]-StartC[i]] = 0;
-		bx = ((40-strlen(temp)) * 8) / 2;
+		bx = ((40-QStr::Length(temp)) * 8) / 2;
 	  	M_Print2 (bx, by, temp);
 	}
 }
@@ -939,12 +939,12 @@ void SB_IntermissionOverlay(void)
 	for(i=0;i<lines;i++,by+=8)
 	{
 		size = EndC[i]-StartC[i];
-		strncpy(temp,&message[StartC[i]],size);
+		QStr::NCpy(temp,&message[StartC[i]],size);
 
 		if (size > elapsed) size = elapsed;
 		temp[size] = 0;
 
-		bx = ((40-strlen(temp)) * 8) / 2;
+		bx = ((40-QStr::Length(temp)) * 8) / 2;
 	  	if (cl.intermission < 6)
 			I_Print (bx, by, temp);
 		else

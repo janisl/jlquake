@@ -198,8 +198,8 @@ void BotDefaultCharacteristics(bot_character_t *ch, bot_character_t *defaultch)
 		else if (defaultch->c[i].type == CT_STRING)
 		{
 			ch->c[i].type = CT_STRING;
-			ch->c[i].value.string = (char *) GetMemory(strlen(defaultch->c[i].value.string)+1);
-			strcpy(ch->c[i].value.string, defaultch->c[i].value.string);
+			ch->c[i].value.string = (char *) GetMemory(QStr::Length(defaultch->c[i].value.string)+1);
+			QStr::Cpy(ch->c[i].value.string, defaultch->c[i].value.string);
 		} //end else if
 	} //end for
 } //end of the function BotDefaultCharacteristics
@@ -227,10 +227,10 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 	} //end if
 	ch = (bot_character_t *) GetClearedMemory(sizeof(bot_character_t) +
 					MAX_CHARACTERISTICS * sizeof(bot_characteristic_t));
-	strcpy(ch->filename, charfile);
+	QStr::Cpy(ch->filename, charfile);
 	while(PC_ReadToken(source, &token))
 	{
-		if (!strcmp(token.string, "skill"))
+		if (!QStr::Cmp(token.string, "skill"))
 		{
 			if (!PC_ExpectTokenType(source, TT_NUMBER, 0, &token))
 			{
@@ -253,7 +253,7 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 				ch->skill = token.intvalue;
 				while(PC_ExpectAnyToken(source, &token))
 				{
-					if (!strcmp(token.string, "}")) break;
+					if (!QStr::Cmp(token.string, "}")) break;
 					if (token.type != TT_NUMBER || !(token.subtype & TT_INTEGER))
 					{
 						SourceError(source, "expected integer index, found %s\n", token.string);
@@ -302,8 +302,8 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 					else if (token.type == TT_STRING)
 					{
 						StripDoubleQuotes(token.string);
-						ch->c[index].value.string = (char*)GetMemory(strlen(token.string)+1);
-						strcpy(ch->c[index].value.string, token.string);
+						ch->c[index].value.string = (char*)GetMemory(QStr::Length(token.string)+1);
+						QStr::Cpy(ch->c[index].value.string, token.string);
 						ch->c[index].type = CT_STRING;
 					} //end else if
 					else
@@ -329,8 +329,8 @@ bot_character_t *BotLoadCharacterFromFile(char *charfile, int skill)
 						FreeMemory(ch);
 						return NULL;
 					} //end if
-					if (!strcmp(token.string, "{")) indent++;
-					else if (!strcmp(token.string, "}")) indent--;
+					if (!QStr::Cmp(token.string, "{")) indent++;
+					else if (!QStr::Cmp(token.string, "}")) indent--;
 				} //end while
 			} //end else
 		} //end if
@@ -366,7 +366,7 @@ int BotFindCachedCharacter(char *charfile, float skill)
 	for (handle = 1; handle <= MAX_CLIENTS; handle++)
 	{
 		if ( !botcharacters[handle] ) continue;
-		if ( strcmp( botcharacters[handle]->filename, charfile ) == 0 &&
+		if ( QStr::Cmp( botcharacters[handle]->filename, charfile ) == 0 &&
 			(skill < 0 || fabs(botcharacters[handle]->skill - skill) < 0.01) )
 		{
 			return handle;
@@ -532,7 +532,7 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill)
 	out = (bot_character_t *) GetClearedMemory(sizeof(bot_character_t) +
 					MAX_CHARACTERISTICS * sizeof(bot_characteristic_t));
 	out->skill = desiredskill;
-	strcpy(out->filename, ch1->filename);
+	QStr::Cpy(out->filename, ch1->filename);
 	botcharacters[handle] = out;
 
 	scale = (float) (desiredskill - ch1->skill) / (ch2->skill - ch1->skill);
@@ -553,8 +553,8 @@ int BotInterpolateCharacters(int handle1, int handle2, float desiredskill)
 		else if (ch1->c[i].type == CT_STRING)
 		{
 			out->c[i].type = CT_STRING;
-			out->c[i].value.string = (char *) GetMemory(strlen(ch1->c[i].value.string)+1);
-			strcpy(out->c[i].value.string, ch1->c[i].value.string);
+			out->c[i].value.string = (char *) GetMemory(QStr::Length(ch1->c[i].value.string)+1);
+			QStr::Cpy(out->c[i].value.string, ch1->c[i].value.string);
 		} //end else if
 	} //end for
 	return handle;
@@ -758,7 +758,7 @@ void Characteristic_String(int character, int index, char *buf, int size)
 	//an integer will be converted to a float
 	if (ch->c[index].type == CT_STRING)
 	{
-		strncpy(buf, ch->c[index].value.string, size-1);
+		QStr::NCpy(buf, ch->c[index].value.string, size-1);
 		buf[size-1] = '\0';
 		return;
 	} //end if

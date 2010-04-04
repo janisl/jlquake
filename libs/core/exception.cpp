@@ -47,7 +47,7 @@
 
 QException::QException(const char *text)
 {
-	strncpy(message, text, MAX_ERROR_TEXT_SIZE - 1);
+	QStr::NCpy(message, text, MAX_ERROR_TEXT_SIZE - 1);
 	message[MAX_ERROR_TEXT_SIZE - 1] = 0;
 }
 

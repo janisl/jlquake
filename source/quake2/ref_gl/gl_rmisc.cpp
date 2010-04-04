@@ -112,7 +112,7 @@ void GL_ScreenShot_f (void)
 // 
 // find a file name to save it to 
 // 
-	strcpy(picname,"quake00.tga");
+	QStr::Cpy(picname,"quake00.tga");
 
 	for (i=0 ; i<=99 ; i++) 
 	{ 

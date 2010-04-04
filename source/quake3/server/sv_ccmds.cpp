@@ -62,13 +62,13 @@ static client_t *SV_GetPlayerByName( void ) {
 		if ( !cl->state ) {
 			continue;
 		}
-		if ( !Q_stricmp( cl->name, s ) ) {
+		if ( !QStr::ICmp( cl->name, s ) ) {
 			return cl;
 		}
 
-		Q_strncpyz( cleanName, cl->name, sizeof(cleanName) );
+		QStr::NCpyZ( cleanName, cl->name, sizeof(cleanName) );
 		Q_CleanStr( cleanName );
-		if ( !Q_stricmp( cleanName, s ) ) {
+		if ( !QStr::ICmp( cleanName, s ) ) {
 			return cl;
 		}
 	}
@@ -109,7 +109,7 @@ static client_t *SV_GetPlayerByNum( void ) {
 			return NULL;
 		}
 	}
-	idnum = atoi( s );
+	idnum = QStr::Atoi( s );
 	if ( idnum < 0 || idnum >= sv_maxclients->integer ) {
 		Com_Printf( "Bad client slot: %i\n", idnum );
 		return NULL;
@@ -159,7 +159,7 @@ static void SV_Map_f( void ) {
 	Cvar_Get ("g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH );
 
 	cmd = Cmd_Argv(0);
-	if( Q_stricmpn( cmd, "sp", 2 ) == 0 ) {
+	if( QStr::NICmp( cmd, "sp", 2 ) == 0 ) {
 		Cvar_SetValue( "g_gametype", GT_SINGLE_PLAYER );
 		Cvar_SetValue( "g_doWarmup", 0 );
 		// may not set sv_maxclients directly, always set latched
@@ -169,7 +169,7 @@ static void SV_Map_f( void ) {
 		killBots = qtrue;
 	}
 	else {
-		if ( !Q_stricmp( cmd, "devmap" ) || !Q_stricmp( cmd, "spdevmap" ) ) {
+		if ( !QStr::ICmp( cmd, "devmap" ) || !QStr::ICmp( cmd, "spdevmap" ) ) {
 			cheat = qtrue;
 			killBots = qtrue;
 		} else {
@@ -183,7 +183,7 @@ static void SV_Map_f( void ) {
 
 	// save the map name here cause on a map restart we reload the q3config.cfg
 	// and thus nuke the arguments of the map command
-	Q_strncpyz(mapname, map, sizeof(mapname));
+	QStr::NCpyZ(mapname, map, sizeof(mapname));
 
 	// start up the map
 	SV_SpawnServer( mapname, killBots );
@@ -230,7 +230,7 @@ static void SV_MapRestart_f( void ) {
 	}
 
 	if (Cmd_Argc() > 1 ) {
-		delay = atoi( Cmd_Argv(1) );
+		delay = QStr::Atoi( Cmd_Argv(1) );
 	}
 	else {
 		delay = 5;
@@ -248,7 +248,7 @@ static void SV_MapRestart_f( void ) {
 
 		Com_Printf( "variable change -- restarting.\n" );
 		// restart the map the slow way
-		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
+		QStr::NCpyZ( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
 		SV_SpawnServer( mapname, qfalse );
 		return;
@@ -344,7 +344,7 @@ static void SV_Kick_f( void ) {
 
 	cl = SV_GetPlayerByName();
 	if ( !cl ) {
-		if ( !Q_stricmp(Cmd_Argv(1), "all") ) {
+		if ( !QStr::ICmp(Cmd_Argv(1), "all") ) {
 			for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
 				if ( !cl->state ) {
 					continue;
@@ -356,7 +356,7 @@ static void SV_Kick_f( void ) {
 				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 			}
 		}
-		else if ( !Q_stricmp(Cmd_Argv(1), "allbots") ) {
+		else if ( !QStr::ICmp(Cmd_Argv(1), "allbots") ) {
 			for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
 				if ( !cl->state ) {
 					continue;
@@ -567,7 +567,7 @@ static void SV_Status_f( void ) {
     // TTimo adding a ^7 to reset the color
     // NOTE: colored names in status breaks the padding (WONTFIX)
     Com_Printf ("^7");
-		l = 16 - strlen(cl->name);
+		l = 16 - QStr::Length(cl->name);
 		for (j=0 ; j<l ; j++)
 			Com_Printf (" ");
 
@@ -575,7 +575,7 @@ static void SV_Status_f( void ) {
 
 		s = NET_AdrToString( cl->netchan.remoteAddress );
 		Com_Printf ("%s", s);
-		l = 22 - strlen(s);
+		l = 22 - QStr::Length(s);
 		for (j=0 ; j<l ; j++)
 			Com_Printf (" ");
 		
@@ -607,15 +607,15 @@ static void SV_ConSay_f(void) {
 		return;
 	}
 
-	strcpy (text, "console: ");
+	QStr::Cpy(text, "console: ");
 	p = Cmd_Args();
 
 	if ( *p == '"' ) {
 		p++;
-		p[strlen(p)-1] = 0;
+		p[QStr::Length(p)-1] = 0;
 	}
 
-	strcat(text, p);
+	QStr::Cat(text, sizeof(text), p);
 
 	SV_SendServerCommand(NULL, "chat \"%s\n\"", text);
 }

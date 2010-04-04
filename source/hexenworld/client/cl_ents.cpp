@@ -677,7 +677,7 @@ void CL_LinkPacketEntities (void)
 		
 /*		// set colormap
 		if (s1->colormap && (s1->colormap < MAX_CLIENTS) 
-			&& !strcmp(ent->model->name,"models/paladin.mdl") )
+			&& !QStr::Cmp(ent->model->name,"models/paladin.mdl") )
 		{
 			ent->colormap = cl.players[s1->colormap-1].translations;
 			ent->scoreboard = &cl.players[s1->colormap-1];
@@ -1596,7 +1596,7 @@ void CL_SetSolidPlayers (int playernum)
 		pent->model = 0;
 		VectorCopy(pplayer->origin, pent->origin);
 /*shitbox
-		if(!stricmp(cl.model_precache[cl.players[playernum].modelindex]->name,"models/yakman.mdl"))
+		if(!QStr::ICmp(cl.model_precache[cl.players[playernum].modelindex]->name,"models/yakman.mdl"))
 		{//use golem hull
 			Sys_Error("Using beast model");
 			VectorCopy(beast_mins, pent->mins);

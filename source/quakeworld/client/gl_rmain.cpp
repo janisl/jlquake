@@ -494,12 +494,12 @@ void R_DrawAliasModel (entity_t *e)
 		shadelight = 192 - ambientlight;
 
 	// ZOID: never allow players to go totally black
-	if (!strcmp(clmodel->name, "progs/player.mdl")) {
+	if (!QStr::Cmp(clmodel->name, "progs/player.mdl")) {
 		if (ambientlight < 8)
 			ambientlight = shadelight = 8;
 
-	} else if (!strcmp (clmodel->name, "progs/flame2.mdl")
-		|| !strcmp (clmodel->name, "progs/flame.mdl") )
+	} else if (!QStr::Cmp(clmodel->name, "progs/flame2.mdl")
+		|| !QStr::Cmp(clmodel->name, "progs/flame.mdl") )
 		// HACK HACK HACK -- no fullbright colors, so make torches full light
 		ambientlight = shadelight = 256;
 
@@ -528,7 +528,7 @@ void R_DrawAliasModel (entity_t *e)
     glPushMatrix ();
 	R_RotateForEntity (e);
 
-	if (!strcmp (clmodel->name, "progs/eyes.mdl") ) {
+	if (!QStr::Cmp(clmodel->name, "progs/eyes.mdl") ) {
 		glTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2] - (22 + 8));
 	// double size of eyes, since they are really hard to see in gl
 		glScalef (paliashdr->scale[0]*2, paliashdr->scale[1]*2, paliashdr->scale[2]*2);
@@ -809,7 +809,7 @@ void R_SetupFrame (void)
 // don't allow cheats in multiplayer
 	r_fullbright.value = 0;
 	r_lightmap.value = 0;
-	if (!atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
+	if (!QStr::Atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
 		r_wateralpha.value = 1;
 
 	R_AnimateLight ();

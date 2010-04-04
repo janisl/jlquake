@@ -92,7 +92,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 		return 0;
 	}
 
-	if ( strlen( name ) >= MAX_QPATH ) {
+	if ( QStr::Length( name ) >= MAX_QPATH ) {
 		Com_Printf( "Model name exceeds MAX_QPATH\n" );
 		return 0;
 	}
@@ -102,7 +102,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	//
 	for ( hModel = 1 ; hModel < tr.numModels; hModel++ ) {
 		mod = tr.models[hModel];
-		if ( !strcmp( mod->name, name ) ) {
+		if ( !QStr::Cmp( mod->name, name ) ) {
 			if( mod->type == MOD_BAD ) {
 				return 0;
 			}
@@ -118,7 +118,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	}
 
 	// only set the name after the model has been successfully loaded
-	Q_strncpyz( mod->name, name, sizeof( mod->name ) );
+	QStr::NCpyZ( mod->name, name, sizeof( mod->name ) );
 
 
 	// make sure the render thread is stopped
@@ -134,16 +134,16 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	for ( lod = MD3_MAX_LODS - 1 ; lod >= 0 ; lod-- ) {
 		char filename[1024];
 
-		strcpy( filename, name );
+		QStr::Cpy( filename, name );
 
 		if ( lod != 0 ) {
 			char namebuf[80];
 
-			if ( strrchr( filename, '.' ) ) {
-				*strrchr( filename, '.' ) = 0;
+			if ( QStr::RChr( filename, '.' ) ) {
+				*QStr::RChr( filename, '.' ) = 0;
 			}
 			sprintf( namebuf, "_%d.md3", lod );
-			strcat( filename, namebuf );
+			QStr::Cat( filename, sizeof(filename), namebuf );
 		}
 
 		ri.FS_ReadFile( filename, (void **)&buf );
@@ -309,11 +309,11 @@ static qboolean R_LoadMD3 (model_t *mod, int lod, void *buffer, const char *mod_
 		surf->ident = SF_MD3;
 
 		// lowercase the surface name so skin compares are faster
-		Q_strlwr( surf->name );
+		QStr::ToLower( surf->name );
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess
-		j = strlen( surf->name );
+		j = QStr::Length( surf->name );
 		if ( j > 2 && surf->name[j-2] == '_' ) {
 			surf->name[j-2] = 0;
 		}
@@ -459,7 +459,7 @@ static qboolean R_LoadMD4( model_t *mod, void *buffer, const char *mod_name ) {
 			surf->ident = SF_MD4;
 
 			// lowercase the surface name so skin compares are faster
-			Q_strlwr( surf->name );
+			QStr::ToLower( surf->name );
 		
 			// register the shaders
 			sh = R_FindShader( surf->shader, LIGHTMAP_NONE, qtrue );
@@ -616,7 +616,7 @@ static md3Tag_t *R_GetTag( md3Header_t *mod, int frame, const char *tagName ) {
 
 	tag = (md3Tag_t *)((byte *)mod + mod->ofsTags) + frame * mod->numTags;
 	for ( i = 0 ; i < mod->numTags ; i++, tag++ ) {
-		if ( !strcmp( tag->name, tagName ) ) {
+		if ( !QStr::Cmp( tag->name, tagName ) ) {
 			return tag;	// found it
 		}
 	}

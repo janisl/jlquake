@@ -162,18 +162,6 @@ void	Sys_Mkdir( const char *path )
     mkdir (path, 0777);
 }
 
-char *strlwr (char *s) {
-  if ( s==NULL ) { // bk001204 - paranoia
-    assert(0);
-    return s;
-  }
-  while (*s) {
-    *s = tolower(*s);
-    s++;
-  }
-  return s; // bk001204 - duh
-}
-
 //============================================
 
 #define	MAX_FOUND_FILES	0x1000
@@ -190,7 +178,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		return;
 	}
 
-	if (strlen(subdirs)) {
+	if (QStr::Length(subdirs)) {
 		Com_sprintf( search, sizeof(search), "%s/%s", basedir, subdirs );
 	}
 	else {
@@ -207,8 +195,8 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 			continue;
 
 		if (st.st_mode & S_IFDIR) {
-			if (Q_stricmp(d->d_name, ".") && Q_stricmp(d->d_name, "..")) {
-				if (strlen(subdirs)) {
+			if (QStr::ICmp(d->d_name, ".") && QStr::ICmp(d->d_name, "..")) {
+				if (QStr::Length(subdirs)) {
 					Com_sprintf( newsubdirs, sizeof(newsubdirs), "%s/%s", subdirs, d->d_name);
 				}
 				else {
@@ -276,7 +264,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		dironly = qtrue;
 	}
 
-	extLen = strlen( extension );
+	extLen = QStr::Length( extension );
 	
 	// search
 	nfiles = 0;
@@ -295,9 +283,9 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 			continue;
 
 		if (*extension) {
-			if ( strlen( d->d_name ) < strlen( extension ) ||
-				Q_stricmp( 
-					d->d_name + strlen( d->d_name ) - strlen( extension ),
+			if ( QStr::Length( d->d_name ) < QStr::Length( extension ) ||
+				QStr::ICmp( 
+					d->d_name + QStr::Length( d->d_name ) - QStr::Length( extension ),
 					extension ) ) {
 				continue; // didn't match
 			}
@@ -355,7 +343,7 @@ char *Sys_Cwd( void )
 
 void Sys_SetDefaultCDPath(const char *path)
 {
-	Q_strncpyz(cdPath, path, sizeof(cdPath));
+	QStr::NCpyZ(cdPath, path, sizeof(cdPath));
 }
 
 char *Sys_DefaultCDPath(void)
@@ -365,7 +353,7 @@ char *Sys_DefaultCDPath(void)
 
 void Sys_SetDefaultInstallPath(const char *path)
 {
-	Q_strncpyz(installPath, path, sizeof(installPath));
+	QStr::NCpyZ(installPath, path, sizeof(installPath));
 }
 
 char *Sys_DefaultInstallPath(void)
@@ -378,7 +366,7 @@ char *Sys_DefaultInstallPath(void)
 
 void Sys_SetDefaultHomePath(const char *path)
 {
-	Q_strncpyz(homePath, path, sizeof(homePath));
+	QStr::NCpyZ(homePath, path, sizeof(homePath));
 }
 
 char *Sys_DefaultHomePath(void)
@@ -389,11 +377,11 @@ char *Sys_DefaultHomePath(void)
             return homePath;
             
 	if ((p = getenv("HOME")) != NULL) {
-		Q_strncpyz(homePath, p, sizeof(homePath));
+		QStr::NCpyZ(homePath, p, sizeof(homePath));
 #ifdef MACOS_X
-		Q_strcat(homePath, sizeof(homePath), "/Library/Application Support/Quake3");
+		QStr::Cat(homePath, sizeof(homePath), "/Library/Application Support/Quake3");
 #else
-		Q_strcat(homePath, sizeof(homePath), "/.q3a");
+		QStr::Cat(homePath, sizeof(homePath), "/.q3a");
 #endif
 		if (mkdir(homePath, 0777)) {
 			if (errno != EEXIST) 

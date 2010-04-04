@@ -97,28 +97,6 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 #define Q_memset(d, f, c) memset((d), (f), (c))
 #define Q_memcpy(d, s, c) memcpy((d), (s), (c))
 #define Q_memcmp(m1, m2, c) memcmp((m1), (m2), (c))
-#define Q_strcpy(d, s) strcpy((d), (s))
-#define Q_strncpy(d, s, n) strncpy((d), (s), (n))
-#define Q_strlen(s) ((int)strlen(s))
-#define Q_strrchr(s, c) strrchr((s), (c))
-#define Q_strcat(d, s) strcat((d), (s))
-#define Q_strcmp(s1, s2) strcmp((s1), (s2))
-#define Q_strncmp(s1, s2, n) strncmp((s1), (s2), (n))
-
-#ifdef _WIN32
-
-#define Q_strcasecmp(s1, s2) _stricmp((s1), (s2))
-#define Q_strncasecmp(s1, s2, n) _strnicmp((s1), (s2), (n))
-
-#else
-
-#define Q_strcasecmp(s1, s2) strcasecmp((s1), (s2))
-#define Q_strncasecmp(s1, s2, n) strncasecmp((s1), (s2), (n))
-
-#endif
-
-int	Q_atoi (char *str);
-float Q_atof (char *str);
 
 
 
@@ -143,9 +121,6 @@ char *COM_SkipPath (char *pathname);
 void COM_StripExtension (char *in, char *out);
 void COM_FileBase (char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
-
-char	*va(char *format, ...);
-// does a varargs printf into a temp buffer
 
 
 //============================================================================

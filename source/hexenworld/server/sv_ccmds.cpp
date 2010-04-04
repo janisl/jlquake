@@ -32,7 +32,7 @@ void SV_SetMaster_f (void)
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		if (!strcmp(Cmd_Argv(i), "none") || !NET_StringToAdr (Cmd_Argv(i), &master_adr[i-1]))
+		if (!QStr::Cmp(Cmd_Argv(i), "none") || !NET_StringToAdr (Cmd_Argv(i), &master_adr[i-1]))
 		{
 			Con_Printf ("Setting nomaster mode.\n");
 			return;
@@ -147,7 +147,7 @@ qboolean SV_SetPlayer (void)
 	int			i;
 	int			idnum;
 
-	idnum = atoi(Cmd_Argv(1));
+	idnum = QStr::Atoi(Cmd_Argv(1));
 
 	for (i=0,cl=svs.clients ; i<MAX_CLIENTS ; i++,cl++)
 	{
@@ -235,7 +235,7 @@ void SV_Give_f (void)
 		return;
 
 	t = Cmd_Argv(2);
-	v = atoi (Cmd_Argv(3));
+	v = QStr::Atoi (Cmd_Argv(3));
 	
 	switch (t[0])
 	{
@@ -291,22 +291,22 @@ void SV_Map_f (void)
 		Con_Printf ("map <levelname> : continue game on a new level\n");
 		return;
 	}
-	strcpy (level, Cmd_Argv(1));
+	QStr::Cpy(level, Cmd_Argv(1));
 	if (Cmd_Argc() == 2)
 	{
 		startspot = NULL;
 	}
 	else
 	{
-		strcpy (_startspot, Cmd_Argv(2));
+		QStr::Cpy(_startspot, Cmd_Argv(2));
 		startspot = _startspot;
 	}
 
 #if 0
-	if (!strcmp (level, "e1m8"))
+	if (!QStr::Cmp(level, "e1m8"))
 	{	// QuakeWorld can't go to e1m8
 		SV_BroadcastPrintf (PRINT_HIGH, "can't go to low grav level in HexenWorld...\n");
-		strcpy (level, "e1m5");
+		QStr::Cpy(level, "e1m5");
 	}
 #endif
 
@@ -344,7 +344,7 @@ void SV_Kick_f (void)
 	client_t	*cl;
 	int			uid;
 
-	uid = atoi(Cmd_Argv(1));
+	uid = QStr::Atoi(Cmd_Argv(1));
 	
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS; i++, cl++)
 	{
@@ -381,7 +381,7 @@ void SV_Smite_f (void)
 	int			uid;
 	int		old_self;
 
-	uid = atoi(Cmd_Argv(1));
+	uid = QStr::Atoi(Cmd_Argv(1));
 	
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS; i++, cl++)
 	{
@@ -506,12 +506,12 @@ void SV_Status_f (void)
 
 			s = NET_BaseAdrToString ( cl->netchan.remote_address);
 			Con_Printf ("%s", s);
-			l = 16 - strlen(s);
+			l = 16 - QStr::Length(s);
 			for (j=0 ; j<l ; j++)
 				Con_Printf (" ");
 			
 			Con_Printf ("%s", cl->name);
-			l = 16 - strlen(cl->name);
+			l = 16 - QStr::Length(cl->name);
 			for (j=0 ; j<l ; j++)
 				Con_Printf (" ");
 			if (cl->state == cs_connected)
@@ -603,19 +603,19 @@ void SV_ConSay_f(void)
 		return;
 
 	if(dmMode.value==DM_SIEGE)
-		strcpy (text, "GOD SAYS: ");
+		QStr::Cpy(text, "GOD SAYS: ");
 	else
-		strcpy (text, "ServerAdmin: ");
+		QStr::Cpy(text, "ServerAdmin: ");
 
 	p = Cmd_Args();
 
 	if (*p == '"')
 	{
 		p++;
-		p[strlen(p)-1] = 0;
+		p[QStr::Length(p)-1] = 0;
 	}
 
-	strcat(text, p);
+	QStr::Cat(text, sizeof(text), p);
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS; j++, client++)
 	{
@@ -675,7 +675,7 @@ void SV_Serverinfo_f (void)
 	{
 		Z_Free (var->string);	// free the old value string	
 		var->string = CopyString (Cmd_Argv(2));
-		var->value = atof (var->string);
+		var->value = QStr::Atof(var->string);
 	}
 
 	SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.info);
@@ -801,9 +801,9 @@ void SV_Floodprot_f (void)
 		return;
 	}
 
-	arg1 = atoi(Cmd_Argv(1));
-	arg2 = atoi(Cmd_Argv(2));
-	arg3 = atoi(Cmd_Argv(3));
+	arg1 = QStr::Atoi(Cmd_Argv(1));
+	arg2 = QStr::Atoi(Cmd_Argv(2));
+	arg3 = QStr::Atoi(Cmd_Argv(3));
 
 	if (arg1<=0 || arg2 <= 0 || arg3<=0) {
 		Con_Printf ("All values must be positive numbers\n");

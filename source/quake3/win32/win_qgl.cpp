@@ -784,25 +784,25 @@ static const char * PrimToString( GLenum mode )
 	static char prim[1024];
 
 	if ( mode == GL_TRIANGLES )
-		strcpy( prim, "GL_TRIANGLES" );
+		QStr::Cpy( prim, "GL_TRIANGLES" );
 	else if ( mode == GL_TRIANGLE_STRIP )
-		strcpy( prim, "GL_TRIANGLE_STRIP" );
+		QStr::Cpy( prim, "GL_TRIANGLE_STRIP" );
 	else if ( mode == GL_TRIANGLE_FAN )
-		strcpy( prim, "GL_TRIANGLE_FAN" );
+		QStr::Cpy( prim, "GL_TRIANGLE_FAN" );
 	else if ( mode == GL_QUADS )
-		strcpy( prim, "GL_QUADS" );
+		QStr::Cpy( prim, "GL_QUADS" );
 	else if ( mode == GL_QUAD_STRIP )
-		strcpy( prim, "GL_QUAD_STRIP" );
+		QStr::Cpy( prim, "GL_QUAD_STRIP" );
 	else if ( mode == GL_POLYGON )
-		strcpy( prim, "GL_POLYGON" );
+		QStr::Cpy( prim, "GL_POLYGON" );
 	else if ( mode == GL_POINTS )
-		strcpy( prim, "GL_POINTS" );
+		QStr::Cpy( prim, "GL_POINTS" );
 	else if ( mode == GL_LINES )
-		strcpy( prim, "GL_LINES" );
+		QStr::Cpy( prim, "GL_LINES" );
 	else if ( mode == GL_LINE_STRIP )
-		strcpy( prim, "GL_LINE_STRIP" );
+		QStr::Cpy( prim, "GL_LINE_STRIP" );
 	else if ( mode == GL_LINE_LOOP )
-		strcpy( prim, "GL_LINE_LOOP" );
+		QStr::Cpy( prim, "GL_LINE_LOOP" );
 	else
 		sprintf( prim, "0x%x", mode );
 
@@ -914,25 +914,25 @@ static void BlendToName( char *n, GLenum f )
 	switch ( f )
 	{
 	case GL_ONE:
-		strcpy( n, "GL_ONE" );
+		QStr::Cpy( n, "GL_ONE" );
 		break;
 	case GL_ZERO:
-		strcpy( n, "GL_ZERO" );
+		QStr::Cpy( n, "GL_ZERO" );
 		break;
 	case GL_SRC_ALPHA:
-		strcpy( n, "GL_SRC_ALPHA" );
+		QStr::Cpy( n, "GL_SRC_ALPHA" );
 		break;
 	case GL_ONE_MINUS_SRC_ALPHA:
-		strcpy( n, "GL_ONE_MINUS_SRC_ALPHA" );
+		QStr::Cpy( n, "GL_ONE_MINUS_SRC_ALPHA" );
 		break;
 	case GL_DST_COLOR:
-		strcpy( n, "GL_DST_COLOR" );
+		QStr::Cpy( n, "GL_DST_COLOR" );
 		break;
 	case GL_ONE_MINUS_DST_COLOR:
-		strcpy( n, "GL_ONE_MINUS_DST_COLOR" );
+		QStr::Cpy( n, "GL_ONE_MINUS_DST_COLOR" );
 		break;
 	case GL_DST_ALPHA:
-		strcpy( n, "GL_DST_ALPHA" );
+		QStr::Cpy( n, "GL_DST_ALPHA" );
 		break;
 	default:
 		sprintf( n, "0x%x", f );
@@ -3259,7 +3259,7 @@ qboolean QGL_Init( const char *dllname )
 	}
 	else
 	{
-		Q_strncpyz( libName, dllname, sizeof( libName ) );
+		QStr::NCpyZ( libName, dllname, sizeof( libName ) );
 	}
 
 	ri.Printf( PRINT_ALL, "...calling LoadLibrary( '%s.dll' ): ", libName );

@@ -621,12 +621,12 @@ void VID_Init(unsigned char *palette)
 
 // set vid parameters
 	if ((i = COM_CheckParm("-width")) != 0)
-		width = atoi(com_argv[i+1]);
+		width = QStr::Atoi(com_argv[i+1]);
 	if ((i = COM_CheckParm("-height")) != 0)
-		height = atoi(com_argv[i+1]);
+		height = QStr::Atoi(com_argv[i+1]);
 
 	if ((i = COM_CheckParm("-conwidth")) != 0)
-		vid.conwidth = Q_atoi(com_argv[i+1]);
+		vid.conwidth = QStr::Atoi(com_argv[i+1]);
 	else
 		vid.conwidth = 640;
 
@@ -639,7 +639,7 @@ void VID_Init(unsigned char *palette)
 	vid.conheight = vid.conwidth*3 / 4;
 
 	if ((i = COM_CheckParm("-conheight")) != 0)
-		vid.conheight = Q_atoi(com_argv[i+1]);
+		vid.conheight = QStr::Atoi(com_argv[i+1]);
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 

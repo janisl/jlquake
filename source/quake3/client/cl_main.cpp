@@ -140,7 +140,7 @@ void CL_AddReliableCommand( const char *cmd ) {
 	}
 	clc.reliableSequence++;
 	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	Q_strncpyz( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
+	QStr::NCpyZ( clc.reliableCommands[ index ], cmd, sizeof( clc.reliableCommands[ index ] ) );
 }
 
 /*
@@ -153,7 +153,7 @@ void CL_ChangeReliableCommand( void ) {
 
 	r = clc.reliableSequence - (random() * 5);
 	index = clc.reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	l = strlen(clc.reliableCommands[ index ]);
+	l = QStr::Length(clc.reliableCommands[ index ]);
 	if ( l >= MAX_STRING_CHARS - 1 ) {
 		l = MAX_STRING_CHARS - 2;
 	}
@@ -287,7 +287,7 @@ void CL_Record_f( void ) {
 
 	if ( Cmd_Argc() == 2 ) {
 		s = Cmd_Argv(1);
-		Q_strncpyz( demoName, s, sizeof( demoName ) );
+		QStr::NCpyZ( demoName, s, sizeof( demoName ) );
 		Com_sprintf (name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	} else {
 		int		number;
@@ -320,7 +320,7 @@ void CL_Record_f( void ) {
 	}
 
 
-	Q_strncpyz( clc.demoName, demoName, sizeof( clc.demoName ) );
+	QStr::NCpyZ( clc.demoName, demoName, sizeof( clc.demoName ) );
 
 	// don't start saving messages until a non-delta compressed message is received
 	clc.demowaiting = qtrue;
@@ -513,10 +513,10 @@ void CL_PlayDemo_f( void ) {
 	arg = Cmd_Argv(1);
 	
 	// check for an extension .dm_?? (?? is protocol)
-	ext_test = arg + strlen(arg) - 6;
-	if ((strlen(arg) > 6) && (ext_test[0] == '.') && ((ext_test[1] == 'd') || (ext_test[1] == 'D')) && ((ext_test[2] == 'm') || (ext_test[2] == 'M')) && (ext_test[3] == '_'))
+	ext_test = arg + QStr::Length(arg) - 6;
+	if ((QStr::Length(arg) > 6) && (ext_test[0] == '.') && ((ext_test[1] == 'd') || (ext_test[1] == 'D')) && ((ext_test[2] == 'm') || (ext_test[2] == 'M')) && (ext_test[3] == '_'))
 	{
-		protocol = atoi(ext_test+4);
+		protocol = QStr::Atoi(ext_test+4);
 		i=0;
 		while(demo_protocols[i])
 		{
@@ -530,8 +530,8 @@ void CL_PlayDemo_f( void ) {
 			FS_FOpenFileRead( name, &clc.demofile, qtrue );
 		} else {
 			Com_Printf("Protocol %d not supported for demos\n", protocol);
-			Q_strncpyz(retry, arg, sizeof(retry));
-			retry[strlen(retry)-6] = 0;
+			QStr::NCpyZ(retry, arg, sizeof(retry));
+			retry[QStr::Length(retry)-6] = 0;
 			CL_WalkDemoExt( retry, name, &clc.demofile );
 		}
 	} else {
@@ -542,13 +542,13 @@ void CL_PlayDemo_f( void ) {
 		Com_Error( ERR_DROP, "couldn't open %s", name);
 		return;
 	}
-	Q_strncpyz( clc.demoName, Cmd_Argv(1), sizeof( clc.demoName ) );
+	QStr::NCpyZ( clc.demoName, Cmd_Argv(1), sizeof( clc.demoName ) );
 
 	Con_Close();
 
 	cls.state = CA_CONNECTED;
 	clc.demoplaying = qtrue;
-	Q_strncpyz( cls.servername, Cmd_Argv(1), sizeof( cls.servername ) );
+	QStr::NCpyZ( cls.servername, Cmd_Argv(1), sizeof( cls.servername ) );
 
 	// read demo messages until connected
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED ) {
@@ -584,7 +584,7 @@ If the "nextdemo" cvar is set, that command will be issued
 void CL_NextDemo( void ) {
 	char	v[MAX_STRING_CHARS];
 
-	Q_strncpyz( v, Cvar_VariableString ("nextdemo"), sizeof(v) );
+	QStr::NCpyZ( v, Cvar_VariableString ("nextdemo"), sizeof(v) );
 	v[MAX_STRING_CHARS-1] = 0;
 	Com_DPrintf("CL_NextDemo: %s\n", v );
 	if (!v[0]) {
@@ -672,7 +672,7 @@ void CL_MapLoading( void ) {
 	cls.keyCatchers = 0;
 
 	// if we are already connected to the local host, stay connected
-	if ( cls.state >= CA_CONNECTED && !Q_stricmp( cls.servername, "localhost" ) ) {
+	if ( cls.state >= CA_CONNECTED && !QStr::ICmp( cls.servername, "localhost" ) ) {
 		cls.state = CA_CONNECTED;		// so the connect screen is drawn
 		Com_Memset( cls.updateInfoString, 0, sizeof( cls.updateInfoString ) );
 		Com_Memset( clc.serverMessage, 0, sizeof( clc.serverMessage ) );
@@ -683,7 +683,7 @@ void CL_MapLoading( void ) {
 		// clear nextmap so the cinematic shutdown doesn't execute it
 		Cvar_Set( "nextmap", "" );
 		CL_Disconnect( qtrue );
-		Q_strncpyz( cls.servername, "localhost", sizeof(cls.servername) );
+		QStr::NCpyZ( cls.servername, "localhost", sizeof(cls.servername) );
 		cls.state = CA_CHALLENGING;		// so the connect screen is drawn
 		cls.keyCatchers = 0;
 		SCR_UpdateScreen();
@@ -905,11 +905,11 @@ void CL_RequestAuthorization( void ) {
 	}
 
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
-		Q_strncpyz( nums, "demota", sizeof( nums ) );
+		QStr::NCpyZ( nums, "demota", sizeof( nums ) );
 	} else {
 		// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
 		j = 0;
-		l = strlen( cl_cdkey );
+		l = QStr::Length( cl_cdkey );
 		if ( l > 32 ) {
 			l = 32;
 		}
@@ -969,12 +969,12 @@ void CL_Setenv_f( void ) {
 		char buffer[1024];
 		int i;
 
-		strcpy( buffer, Cmd_Argv(1) );
-		strcat( buffer, "=" );
+		QStr::Cpy( buffer, Cmd_Argv(1) );
+		QStr::Cat( buffer, sizeof(buffer), "=" );
 
 		for ( i = 2; i < argc; i++ ) {
-			strcat( buffer, Cmd_Argv( i ) );
-			strcat( buffer, " " );
+			QStr::Cat( buffer, sizeof(buffer), Cmd_Argv( i ) );
+			QStr::Cat( buffer, sizeof(buffer), " " );
 		}
 
 		putenv( buffer );
@@ -1011,7 +1011,7 @@ CL_Reconnect_f
 ================
 */
 void CL_Reconnect_f( void ) {
-	if ( !strlen( cls.servername ) || !strcmp( cls.servername, "localhost" ) ) {
+	if ( !QStr::Length( cls.servername ) || !QStr::Cmp( cls.servername, "localhost" ) ) {
 		Com_Printf( "Can't reconnect to localhost.\n" );
 		return;
 	}
@@ -1043,7 +1043,7 @@ void CL_Connect_f( void ) {
 
 	server = Cmd_Argv (1);
 
-	if ( com_sv_running->integer && !strcmp( server, "localhost" ) ) {
+	if ( com_sv_running->integer && !QStr::Cmp( server, "localhost" ) ) {
 		// if running a local server, kill it
 		SV_Shutdown( "Server quit\n" );
 	}
@@ -1059,7 +1059,7 @@ void CL_Connect_f( void ) {
 	CL_FlushMemory( );
 	*/
 
-	Q_strncpyz( cls.servername, server, sizeof(cls.servername) );
+	QStr::NCpyZ( cls.servername, server, sizeof(cls.servername) );
 
 	if (!NET_StringToAdr( cls.servername, &clc.serverAddress) ) {
 		Com_Printf ("Bad server address\n");
@@ -1115,18 +1115,18 @@ void CL_Rcon_f( void ) {
 	message[3] = -1;
 	message[4] = 0;
 
-	strcat (message, "rcon ");
+	QStr::Cat(message, sizeof(message), "rcon ");
 
-	strcat (message, rcon_client_password->string);
-	strcat (message, " ");
+	QStr::Cat(message, sizeof(message), rcon_client_password->string);
+	QStr::Cat(message, sizeof(message), " ");
 
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=543
-	strcat (message, Cmd_Cmd()+5);
+	QStr::Cat(message, sizeof(message), Cmd_Cmd()+5);
 
 	if ( cls.state >= CA_CONNECTED ) {
 		to = clc.netchan.remoteAddress;
 	} else {
-		if (!strlen(rconAddress->string)) {
+		if (!QStr::Length(rconAddress->string)) {
 			Com_Printf ("You must either be connected,\n"
 						"or set the 'rconAddress' cvar\n"
 						"to issue rcon commands\n");
@@ -1139,7 +1139,7 @@ void CL_Rcon_f( void ) {
 		}
 	}
 	
-	NET_SendPacket (NS_CLIENT, strlen(message)+1, message, to);
+	NET_SendPacket (NS_CLIENT, QStr::Length(message)+1, message, to);
 }
 
 /*
@@ -1158,8 +1158,8 @@ void CL_SendPureChecksums( void ) {
 	// "cp"
 	// "Yf"
 	Com_sprintf(cMsg, sizeof(cMsg), "Yf ");
-	Q_strcat(cMsg, sizeof(cMsg), va("%d ", cl.serverId) );
-	Q_strcat(cMsg, sizeof(cMsg), pChecksums);
+	QStr::Cat(cMsg, sizeof(cMsg), va("%d ", cl.serverId) );
+	QStr::Cat(cMsg, sizeof(cMsg), pChecksums);
 	for (i = 0; i < 2; i++) {
 		cMsg[i] += 10;
 	}
@@ -1381,7 +1381,7 @@ void CL_BeginDownload( const char *localName, const char *remoteName ) {
 				"Remotename: %s\n"
 				"****************************\n", localName, remoteName);
 
-	Q_strncpyz ( clc.downloadName, localName, sizeof(clc.downloadName) );
+	QStr::NCpyZ ( clc.downloadName, localName, sizeof(clc.downloadName) );
 	Com_sprintf( clc.downloadTempName, sizeof(clc.downloadTempName), "%s.tmp", localName );
 
 	// Set so UI gets access to it
@@ -1428,14 +1428,14 @@ void CL_NextDownload(void) {
 		if ( (s = strchr(s, '@')) != NULL )
 			*s++ = 0;
 		else
-			s = localName + strlen(localName); // point at the nul byte
+			s = localName + QStr::Length(localName); // point at the nul byte
 
 		CL_BeginDownload( localName, remoteName );
 
 		clc.downloadRestart = qtrue;
 
 		// move over the rest
-		memmove( clc.downloadList, s, strlen(s) + 1);
+		memmove( clc.downloadList, s, QStr::Length(s) + 1);
 
 		return;
 	}
@@ -1526,17 +1526,17 @@ void CL_CheckForResend( void ) {
 		// sending back the challenge
 		port = Cvar_VariableValue ("net_qport");
 
-		Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
+		QStr::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
 		Info_SetValueForKey( info, "protocol", va("%i", PROTOCOL_VERSION ) );
 		Info_SetValueForKey( info, "qport", va("%i", port ) );
 		Info_SetValueForKey( info, "challenge", va("%i", clc.challenge ) );
 		
-		strcpy(data, "connect ");
+		QStr::Cpy(data, "connect ");
     // TTimo adding " " around the userinfo string to avoid truncated userinfo on the server
     //   (Com_TokenizeString tokenizes around spaces)
     data[8] = '"';
 
-		for(i=0;i<strlen(info);i++) {
+		for(i=0;i<QStr::Length(info);i++) {
 			data[9+i] = info[i];	// + (clc.challenge)&0x3;
 		}
     data[9+i] = '"';
@@ -1606,13 +1606,13 @@ void CL_MotdPacket( netadr_t from ) {
 
 	// check challenge
 	challenge = Info_ValueForKey( info, "challenge" );
-	if ( strcmp( challenge, cls.updateChallenge ) ) {
+	if ( QStr::Cmp( challenge, cls.updateChallenge ) ) {
 		return;
 	}
 
 	challenge = Info_ValueForKey( info, "motd" );
 
-	Q_strncpyz( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
+	QStr::NCpyZ( cls.updateInfoString, info, sizeof( cls.updateInfoString ) );
 	Cvar_Set( "cl_motdString", challenge );
 }
 
@@ -1784,12 +1784,12 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	Com_DPrintf ("CL packet %s: %s\n", NET_AdrToString(from), c);
 
 	// challenge from the server we are connecting to
-	if ( !Q_stricmp(c, "challengeResponse") ) {
+	if ( !QStr::ICmp(c, "challengeResponse") ) {
 		if ( cls.state != CA_CONNECTING ) {
 			Com_Printf( "Unwanted challenge response received.  Ignored.\n" );
 		} else {
 			// start sending challenge repsonse instead of challenge request packets
-			clc.challenge = atoi(Cmd_Argv(1));
+			clc.challenge = QStr::Atoi(Cmd_Argv(1));
 			cls.state = CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -1803,7 +1803,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	}
 
 	// server connection
-	if ( !Q_stricmp(c, "connectResponse") ) {
+	if ( !QStr::ICmp(c, "connectResponse") ) {
 		if ( cls.state >= CA_CONNECTED ) {
 			Com_Printf ("Dup connect received.  Ignored.\n");
 			return;
@@ -1825,52 +1825,52 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 	}
 
 	// server responding to an info broadcast
-	if ( !Q_stricmp(c, "infoResponse") ) {
+	if ( !QStr::ICmp(c, "infoResponse") ) {
 		CL_ServerInfoPacket( from, msg );
 		return;
 	}
 
 	// server responding to a get playerlist
-	if ( !Q_stricmp(c, "statusResponse") ) {
+	if ( !QStr::ICmp(c, "statusResponse") ) {
 		CL_ServerStatusResponse( from, msg );
 		return;
 	}
 
 	// a disconnect message from the server, which will happen if the server
 	// dropped the connection but it is still getting packets from us
-	if (!Q_stricmp(c, "disconnect")) {
+	if (!QStr::ICmp(c, "disconnect")) {
 		CL_DisconnectPacket( from );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp(c, "echo") ) {
+	if ( !QStr::ICmp(c, "echo") ) {
 		NET_OutOfBandPrint( NS_CLIENT, from, "%s", Cmd_Argv(1) );
 		return;
 	}
 
 	// cd check
-	if ( !Q_stricmp(c, "keyAuthorize") ) {
+	if ( !QStr::ICmp(c, "keyAuthorize") ) {
 		// we don't use these now, so dump them on the floor
 		return;
 	}
 
 	// global MOTD from id
-	if ( !Q_stricmp(c, "motd") ) {
+	if ( !QStr::ICmp(c, "motd") ) {
 		CL_MotdPacket( from );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_stricmp(c, "print") ) {
+	if ( !QStr::ICmp(c, "print") ) {
 		s = MSG_ReadString( msg );
-		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
+		QStr::NCpyZ( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 		Com_Printf( "%s", s );
 		return;
 	}
 
 	// echo request from server
-	if ( !Q_strncmp(c, "getserversResponse", 18) ) {
+	if ( !QStr::NCmp(c, "getserversResponse", 18) ) {
 		CL_ServersResponsePacket( from, msg );
 		return;
 	}
@@ -2461,16 +2461,16 @@ void CL_Shutdown( void ) {
 static void CL_SetServerInfo(serverInfo_t *server, const char *info, int ping) {
 	if (server) {
 		if (info) {
-			server->clients = atoi(Info_ValueForKey(info, "clients"));
-			Q_strncpyz(server->hostName,Info_ValueForKey(info, "hostname"), MAX_NAME_LENGTH);
-			Q_strncpyz(server->mapName, Info_ValueForKey(info, "mapname"), MAX_NAME_LENGTH);
-			server->maxClients = atoi(Info_ValueForKey(info, "sv_maxclients"));
-			Q_strncpyz(server->game,Info_ValueForKey(info, "game"), MAX_NAME_LENGTH);
-			server->gameType = atoi(Info_ValueForKey(info, "gametype"));
-			server->netType = atoi(Info_ValueForKey(info, "nettype"));
-			server->minPing = atoi(Info_ValueForKey(info, "minping"));
-			server->maxPing = atoi(Info_ValueForKey(info, "maxping"));
-			server->punkbuster = atoi(Info_ValueForKey(info, "punkbuster"));
+			server->clients = QStr::Atoi(Info_ValueForKey(info, "clients"));
+			QStr::NCpyZ(server->hostName,Info_ValueForKey(info, "hostname"), MAX_NAME_LENGTH);
+			QStr::NCpyZ(server->mapName, Info_ValueForKey(info, "mapname"), MAX_NAME_LENGTH);
+			server->maxClients = QStr::Atoi(Info_ValueForKey(info, "sv_maxclients"));
+			QStr::NCpyZ(server->game,Info_ValueForKey(info, "game"), MAX_NAME_LENGTH);
+			server->gameType = QStr::Atoi(Info_ValueForKey(info, "gametype"));
+			server->netType = QStr::Atoi(Info_ValueForKey(info, "nettype"));
+			server->minPing = QStr::Atoi(Info_ValueForKey(info, "minping"));
+			server->maxPing = QStr::Atoi(Info_ValueForKey(info, "maxping"));
+			server->punkbuster = QStr::Atoi(Info_ValueForKey(info, "punkbuster"));
 		}
 		server->ping = ping;
 	}
@@ -2520,7 +2520,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	infoString = MSG_ReadString( msg );
 
 	// if this isn't the correct protocol version, ignore it
-	prot = atoi( Info_ValueForKey( infoString, "protocol" ) );
+	prot = QStr::Atoi( Info_ValueForKey( infoString, "protocol" ) );
 	if ( prot != PROTOCOL_VERSION ) {
 		Com_DPrintf( "Different protocol info packet: %s\n", infoString );
 		return;
@@ -2536,7 +2536,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[i].time, NET_AdrToString( from ) );
 
 			// save of info
-			Q_strncpyz( cl_pinglist[i].info, infoString, sizeof( cl_pinglist[i].info ) );
+			QStr::NCpyZ( cl_pinglist[i].info, infoString, sizeof( cl_pinglist[i].info ) );
 
 			// tack on the net type
 			// NOTE: make sure these types are in sync with the netnames strings in the UI
@@ -2603,9 +2603,9 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	cls.localServers[i].netType = from.type;
 	cls.localServers[i].punkbuster = 0;
 									 
-	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
-	if (strlen(info)) {
-		if (info[strlen(info)-1] != '\n') {
+	QStr::NCpyZ( info, MSG_ReadString( msg ), MAX_INFO_STRING );
+	if (QStr::Length(info)) {
+		if (info[QStr::Length(info)-1] != '\n') {
 			strncat(info, "\n", sizeof(info));
 		}
 		Com_Printf( "%s: %s", NET_AdrToString( from ), info );
@@ -2680,7 +2680,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 	if ( NET_CompareAdr( to, serverStatus->address) ) {
 		// if we recieved an response for this server status request
 		if (!serverStatus->pending) {
-			Q_strncpyz(serverStatusString, serverStatus->string, maxLen);
+			QStr::NCpyZ(serverStatusString, serverStatus->string, maxLen);
 			serverStatus->retrieved = qtrue;
 			serverStatus->startTime = 0;
 			return qtrue;
@@ -2767,7 +2767,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 		}
 	}
 
-	len = strlen(serverStatus->string);
+	len = QStr::Length(serverStatus->string);
 	Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\");
 
 	if (serverStatus->print) {
@@ -2776,7 +2776,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 	}
 	for (i = 0, s = MSG_ReadStringLine( msg ); *s; s = MSG_ReadStringLine( msg ), i++) {
 
-		len = strlen(serverStatus->string);
+		len = QStr::Length(serverStatus->string);
 		Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\%s", s);
 
 		if (serverStatus->print) {
@@ -2792,7 +2792,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 			Com_Printf("%-2d   %-3d    %-3d   %s\n", i, score, ping, s );
 		}
 	}
-	len = strlen(serverStatus->string);
+	len = QStr::Length(serverStatus->string);
 	Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\");
 
 	serverStatus->time = Com_Milliseconds();
@@ -2840,10 +2840,10 @@ void CL_LocalServers_f( void ) {
 			to.port = BigShort( (short)(PORT_SERVER + j) );
 
 			to.type = NA_BROADCAST;
-			NET_SendPacket( NS_CLIENT, strlen( message ), message, to );
+			NET_SendPacket( NS_CLIENT, QStr::Length( message ), message, to );
 
 			to.type = NA_BROADCAST_IPX;
-			NET_SendPacket( NS_CLIENT, strlen( message ), message, to );
+			NET_SendPacket( NS_CLIENT, QStr::Length( message ), message, to );
 		}
 	}
 }
@@ -2865,7 +2865,7 @@ void CL_GlobalServers_f( void ) {
 		return;	
 	}
 
-	cls.masterNum = atoi( Cmd_Argv(1) );
+	cls.masterNum = QStr::Atoi( Cmd_Argv(1) );
 
 	Com_Printf( "Requesting servers from the master...\n");
 
@@ -2888,7 +2888,7 @@ void CL_GlobalServers_f( void ) {
 	sprintf( command, "getservers %s", Cmd_Argv(2) );
 
 	// tack on keywords
-	buffptr = command + strlen( command );
+	buffptr = command + QStr::Length( command );
 	count   = Cmd_Argc();
 	for (i=3; i<count; i++)
 		buffptr += sprintf( buffptr, " %s", Cmd_Argv(i) );
@@ -2922,7 +2922,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 	}
 
 	str = NET_AdrToString( cl_pinglist[n].adr );
-	Q_strncpyz( buf, str, buflen );
+	QStr::NCpyZ( buf, str, buflen );
 
 	time = cl_pinglist[n].time;
 	if (!time)
@@ -2975,7 +2975,7 @@ void CL_GetPingInfo( int n, char *buf, int buflen )
 		return;
 	}
 
-	Q_strncpyz( buf, cl_pinglist[n].info, buflen );
+	QStr::NCpyZ( buf, cl_pinglist[n].info, buflen );
 }
 
 /*
@@ -3268,12 +3268,12 @@ qboolean CL_CDKeyValidate( const char *key, const char *checksum ) {
 	char	chs[3];
 	int i, len;
 
-	len = strlen(key);
+	len = QStr::Length(key);
 	if( len != CDKEY_LEN ) {
 		return qfalse;
 	}
 
-	if( checksum && strlen( checksum ) != CDCHKSUM_LEN ) {
+	if( checksum && QStr::Length( checksum ) != CDCHKSUM_LEN ) {
 		return qfalse;
 	}
 
@@ -3310,7 +3310,7 @@ qboolean CL_CDKeyValidate( const char *key, const char *checksum ) {
 
 	sprintf(chs, "%02x", sum);
 	
-	if (checksum && !Q_stricmp(chs, checksum)) {
+	if (checksum && !QStr::ICmp(chs, checksum)) {
 		return qtrue;
 	}
 

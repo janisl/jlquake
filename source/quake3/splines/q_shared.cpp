@@ -118,7 +118,7 @@ Com_StringContains
 const char *Com_StringContains( const char *str1, const char *str2, int casesensitive) {
 	int len, i, j;
 
-	len = strlen(str1) - strlen(str2);
+	len = QStr::Length(str1) - QStr::Length(str2);
 	for (i = 0; i <= len; i++, str1++) {
 		for (j = 0; str2[j]; j++) {
 			if (casesensitive) {
@@ -127,7 +127,7 @@ const char *Com_StringContains( const char *str1, const char *str2, int casesens
 				}
 			}
 			else {
-				if (toupper(str1[j]) != toupper(str2[j])) {
+				if (QStr::ToUpper(str1[j]) != QStr::ToUpper(str2[j])) {
 					break;
 				}
 			}
@@ -159,10 +159,10 @@ int Com_Filter( const char *filter, const char *name, int casesensitive)
 				filter++;
 			}
 			buf[i] = '\0';
-			if (strlen(buf)) {
+			if (QStr::Length(buf)) {
 				ptr = Com_StringContains(name, buf, casesensitive);
 				if (!ptr) return qfalse;
-				name = ptr + strlen(buf);
+				name = ptr + QStr::Length(buf);
 			}
 		}
 		else if (*filter == '?') {
@@ -182,8 +182,8 @@ int Com_Filter( const char *filter, const char *name, int casesensitive)
 						if (*name >= *filter && *name <= *(filter+2)) found = qtrue;
 					}
 					else {
-						if (toupper(*name) >= toupper(*filter) &&
-							toupper(*name) <= toupper(*(filter+2))) found = qtrue;
+						if (QStr::ToUpper(*name) >= QStr::ToUpper(*filter) &&
+							QStr::ToUpper(*name) <= QStr::ToUpper(*(filter+2))) found = qtrue;
 					}
 					filter += 3;
 				}
@@ -192,7 +192,7 @@ int Com_Filter( const char *filter, const char *name, int casesensitive)
 						if (*filter == *name) found = qtrue;
 					}
 					else {
-						if (toupper(*filter) == toupper(*name)) found = qtrue;
+						if (QStr::ToUpper(*filter) == QStr::ToUpper(*name)) found = qtrue;
 					}
 					filter++;
 				}
@@ -210,7 +210,7 @@ int Com_Filter( const char *filter, const char *name, int casesensitive)
 				if (*filter != *name) return qfalse;
 			}
 			else {
-				if (toupper(*filter) != toupper(*name)) return qfalse;
+				if (QStr::ToUpper(*filter) != QStr::ToUpper(*name)) return qfalse;
 			}
 			filter++;
 			name++;
@@ -234,7 +234,7 @@ int Com_HashString( const char *fname ) {
 	hash = 0;
 	i = 0;
 	while (fname[i] != '\0') {
-		letter = tolower(fname[i]);
+		letter = QStr::ToLower(fname[i]);
 		if (letter =='.') break;				// don't include extension
 		if (letter =='\\') letter = '/';		// damn path names
 		hash+=(long)(letter)*(i+119);
@@ -290,7 +290,7 @@ void Com_DefaultExtension (char *path, int maxSize, const char *extension ) {
 // if path doesn't have a .EXT, append extension
 // (extension should include the .)
 //
-	src = path + strlen(path) - 1;
+	src = path + QStr::Length(path) - 1;
 
 	while (*src != '/' && src != path) {
 		if ( *src == '.' ) {
@@ -299,7 +299,7 @@ void Com_DefaultExtension (char *path, int maxSize, const char *extension ) {
 		src--;
 	}
 
-	Q_strncpyz( oldPath, path, sizeof( oldPath ) );
+	QStr::NCpyZ( oldPath, path, sizeof( oldPath ) );
 	Com_sprintf( path, maxSize, "%s%s", oldPath, extension );
 }
 
@@ -320,7 +320,7 @@ int Com_ParseInfos( const char *buf, int max, char infos[][MAX_INFO_STRING] ) {
 		if ( !token[0] ) {
 			break;
 		}
-		if ( strcmp( token, "{" ) ) {
+		if ( QStr::Cmp( token, "{" ) ) {
 			Com_Printf( "Missing { in info file\n" );
 			break;
 		}
@@ -337,10 +337,10 @@ int Com_ParseInfos( const char *buf, int max, char infos[][MAX_INFO_STRING] ) {
 				Com_Printf( "Unexpected end of info file\n" );
 				break;
 			}
-			if ( !strcmp( token, "}" ) ) {
+			if ( !QStr::Cmp( token, "}" ) ) {
 				break;
 			}
-			Q_strncpyz( key, token, sizeof( key ) );
+			QStr::NCpyZ( key, token, sizeof( key ) );
 
 			token = Com_ParseOnLine( &buf );
 			if ( !token[0] ) {
@@ -363,159 +363,6 @@ int Com_ParseInfos( const char *buf, int max, char infos[][MAX_INFO_STRING] ) {
 
 ============================================================================
 */
-
-int Q_isprint( int c )
-{
-	if ( c >= 0x20 && c <= 0x7E )
-		return ( 1 );
-	return ( 0 );
-}
-
-int Q_islower( int c )
-{
-	if (c >= 'a' && c <= 'z')
-		return ( 1 );
-	return ( 0 );
-}
-
-int Q_isupper( int c )
-{
-	if (c >= 'A' && c <= 'Z')
-		return ( 1 );
-	return ( 0 );
-}
-
-int Q_isalpha( int c )
-{
-	if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'))
-		return ( 1 );
-	return ( 0 );
-}
-
-char* Q_strrchr( const char* string, int c )
-{
-	char cc = c;
-	char *s;
-	char *sp=(char *)0;
-
-	s = (char*)string;
-
-	while (*s)
-	{
-		if (*s == cc)
-			sp = s;
-		s++;
-	}
-	if (cc == 0)
-		sp = s;
-
-	return sp;
-}
-
-/*
-=============
-Q_strncpyz
- 
-Safe strncpy that ensures a trailing zero
-=============
-*/
-void Q_strncpyz( char *dest, const char *src, int destsize ) {
-	if ( !src ) {
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src" );
-	}
-	if ( destsize < 1 ) {
-		Com_Error(ERR_FATAL,"Q_strncpyz: destsize < 1" ); 
-	}
-
-	strncpy( dest, src, destsize-1 );
-    dest[destsize-1] = 0;
-}
-                 
-int Q_stricmpn (const char *s1, const char *s2, int n) {
-	int		c1, c2;
-	
-	do {
-		c1 = *s1++;
-		c2 = *s2++;
-
-		if (!n--) {
-			return 0;		// strings are equal until end point
-		}
-		
-		if (c1 != c2) {
-			if (c1 >= 'a' && c1 <= 'z') {
-				c1 -= ('a' - 'A');
-			}
-			if (c2 >= 'a' && c2 <= 'z') {
-				c2 -= ('a' - 'A');
-			}
-			if (c1 != c2) {
-				return c1 < c2 ? -1 : 1;
-			}
-		}
-	} while (c1);
-	
-	return 0;		// strings are equal
-}
-
-int Q_strncmp (const char *s1, const char *s2, int n) {
-	int		c1, c2;
-	
-	do {
-		c1 = *s1++;
-		c2 = *s2++;
-
-		if (!n--) {
-			return 0;		// strings are equal until end point
-		}
-		
-		if (c1 != c2) {
-			return c1 < c2 ? -1 : 1;
-		}
-	} while (c1);
-	
-	return 0;		// strings are equal
-}
-
-int Q_stricmp (const char *s1, const char *s2) {
-	return Q_stricmpn (s1, s2, 99999);
-}
-
-
-char *Q_strlwr( char *s1 ) {
-    char	*s;
-
-    s = s1;
-	while ( *s ) {
-		*s = tolower(*s);
-		s++;
-	}
-    return s1;
-}
-
-char *Q_strupr( char *s1 ) {
-    char	*s;
-
-    s = s1;
-	while ( *s ) {
-		*s = toupper(*s);
-		s++;
-	}
-    return s1;
-}
-
-
-// never goes past bounds or leaves without a terminating 0
-void Q_strcat( char *dest, int size, const char *src ) {
-	int		l1;
-
-	l1 = strlen( dest );
-	if ( l1 >= size ) {
-		Com_Error( ERR_FATAL, "Q_strcat: already overflowed" );
-	}
-	Q_strncpyz( dest + l1, src, size - l1 );
-}
-
 
 int Q_PrintStrlen( const char *string ) {
 	int			len;
@@ -576,33 +423,7 @@ void QDECL Com_sprintf( char *dest, int size, const char *fmt, ...) {
 	if (len >= size) {
 		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
 	}
-	Q_strncpyz (dest, bigbuffer, size );
-}
-
-
-/*
-============
-va
-
-does a varargs printf into a temp buffer, so I don't need to have
-varargs versions of all text functions.
-FIXME: make this buffer size safe someday
-============
-*/
-char	* QDECL va( char *format, ... ) {
-	va_list		argptr;
-	static char		string[2][32000];	// in case va is called by nested functions
-	static int		index = 0;
-	char	*buf;
-
-	buf = string[index & 1];
-	index++;
-
-	va_start (argptr, format);
-	vsprintf (buf, format,argptr);
-	va_end (argptr);
-
-	return buf;
+	QStr::NCpyZ(dest, bigbuffer, size );
 }
 
 
@@ -634,7 +455,7 @@ char *Info_ValueForKey( const char *s, const char *key ) {
 		return "";
 	}
 
-	if ( strlen( s ) >= MAX_INFO_STRING ) {
+	if ( QStr::Length( s ) >= MAX_INFO_STRING ) {
 		Com_Error( ERR_DROP, "Info_ValueForKey: oversize infostring" );
 	}
 
@@ -661,7 +482,7 @@ char *Info_ValueForKey( const char *s, const char *key ) {
 		}
 		*o = 0;
 
-		if (!Q_stricmp (key, pkey) )
+		if (!QStr::ICmp(key, pkey) )
 			return value[valueindex];
 
 		if (!*s)
@@ -725,7 +546,7 @@ void Info_RemoveKey( char *s, const char *key ) {
 	char	value[MAX_INFO_VALUE];
 	char	*o;
 
-	if ( strlen( s ) >= MAX_INFO_STRING ) {
+	if ( QStr::Length( s ) >= MAX_INFO_STRING ) {
 		Com_Error( ERR_DROP, "Info_RemoveKey: oversize infostring" );
 	}
 
@@ -757,9 +578,9 @@ void Info_RemoveKey( char *s, const char *key ) {
 		}
 		*o = 0;
 
-		if (!strcmp (key, pkey) )
+		if (!QStr::Cmp(key, pkey) )
 		{
-			strcpy (start, s);	// remove this part
+			QStr::Cpy(start, s);	// remove this part
 			return;
 		}
 
@@ -798,7 +619,7 @@ Changes or adds a key/value pair
 void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 	char	newi[MAX_INFO_STRING];
 
-	if ( strlen( s ) >= MAX_INFO_STRING ) {
+	if ( QStr::Length( s ) >= MAX_INFO_STRING ) {
 		Com_Error( ERR_DROP, "Info_SetValueForKey: oversize infostring" );
 	}
 
@@ -821,18 +642,18 @@ void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 	}
 
 	Info_RemoveKey (s, key);
-	if (!value || !strlen(value))
+	if (!value || !QStr::Length(value))
 		return;
 
 	Com_sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
 
-	if (strlen(newi) + strlen(s) > MAX_INFO_STRING)
+	if (QStr::Length(newi) + QStr::Length(s) > MAX_INFO_STRING)
 	{
 		Com_Printf ("Info string length exceeded\n");
 		return;
 	}
 
-	strcat (s, newi);
+	QStr::Cat(s, MAX_INFO_STRING, newi);
 }
 
 //====================================================================
