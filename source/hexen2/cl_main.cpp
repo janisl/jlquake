@@ -712,10 +712,8 @@ void CL_RelinkEntities (void)
 		c++;
 //		if (ent->effects & EF_BRIGHTFIELD);
 //			R_EntityParticles (ent);
-#ifdef QUAKE2RJ
 		if (ent->effects & EF_DARKFIELD)
 			R_DarkFieldParticles (ent);
-#endif
 		if (ent->effects & EF_MUZZLEFLASH)
 		{
 			vec3_t		fv, rv, uv;
@@ -754,7 +752,6 @@ void CL_RelinkEntities (void)
 				dl->die = cl.time + 0.001;
 			}
 		}
-#ifdef QUAKE2RJ
 		if (ent->effects & EF_DARKLIGHT)
 		{			
 			if (cl_prettylights.value)
@@ -776,7 +773,6 @@ void CL_RelinkEntities (void)
 				dl->die = cl.time + 0.001;
 			}
 		}
-#endif
 
 		if (ent->model->flags & EF_GIB)
 			R_RocketTrail (oldorg, ent->origin, 2);
@@ -864,10 +860,8 @@ void CL_RelinkEntities (void)
 		if (i == cl.viewentity && !chase_active.value)
 			continue;
 
-#ifdef QUAKE2RJ
 		if ( ent->effects & EF_NODRAW )
 			continue;
-#endif
 		if (cl_numvisedicts < MAX_VISEDICTS)
 		{
 			cl_visedicts[cl_numvisedicts] = ent;

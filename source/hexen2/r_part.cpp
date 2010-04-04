@@ -118,7 +118,6 @@ void R_InitParticles (void)
 
 }	
 
-#ifdef QUAKE2RJ
 void R_DarkFieldParticles (entity_t *ent)
 {
 	int			i, j, k;
@@ -155,7 +154,6 @@ void R_DarkFieldParticles (entity_t *ent)
 				VectorScale (dir, vel, p->vel);
 			}
 }
-#endif
 
 //==========================================================================
 //

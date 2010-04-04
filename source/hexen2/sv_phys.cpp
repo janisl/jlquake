@@ -32,9 +32,7 @@ cvar_t	sv_nostep = {"sv_nostep","0"};
 cvar_t	sv_flypitch={"sv_flypitch","20"};
 cvar_t	sv_walkpitch={"sv_walkpitch","0"};
 
-#ifdef QUAKE2RJ
 static	vec3_t	vec_origin = {0.0, 0.0, 0.0};
-#endif
 
 #define	MOVE_EPSILON	0.01
 
@@ -633,7 +631,6 @@ void SV_PushMove (edict_t *pusher, float movetime, qboolean update_time)
 	
 }
 
-#ifdef QUAKE2RJ
 /*
 ============
 SV_PushRotate
@@ -772,10 +769,8 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 	
 }
 */
-#endif
 
 
-#ifdef QUAKE2RJ
 /*
 ============
 SV_PushRotate
@@ -1146,7 +1141,6 @@ for (i=0; i<slaves_moved; i++)
 Con_DPrintf("\n");
 #endif
 }
-#endif
 
 /*
 ================
@@ -1174,14 +1168,12 @@ void SV_Physics_Pusher (edict_t *ent)
 
 	if (movetime)
 	{
-#ifdef QUAKE2RJ
 		if (ent->v.avelocity[0] || ent->v.avelocity[1] || ent->v.avelocity[2])
 		{
 			//SV_PushMove (ent, movetime, false);
 			SV_PushRotate (ent, movetime);
 		}
 		else
-#endif
 			SV_PushMove (ent, movetime, true);	// advances ent->v.ltime if not blocked
 	}
 		

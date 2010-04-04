@@ -263,11 +263,7 @@ void Host_Map_f (void)
 
 	svs.serverflags = 0;			// haven't completed an episode yet
 	QStr::Cpy (name, Cmd_Argv(1));
-#ifdef QUAKE2RJ
 	SV_SpawnServer (name, NULL);
-#else
-	SV_SpawnServer (name);
-#endif
 	if (!sv.active)
 		return;
 	
@@ -296,7 +292,6 @@ Goes to a new map, taking all clients along
 */
 void Host_Changelevel_f (void)
 {
-#ifdef QUAKE2RJ
 	char	level[MAX_QPATH];
 	char	_startspot[MAX_QPATH];
 	char	*startspot;
@@ -325,23 +320,6 @@ void Host_Changelevel_f (void)
 	SV_SpawnServer (level, startspot);
 	
 	//updatePlaqueMessage();
-#else
-	char	level[MAX_QPATH];
-
-	if (Cmd_Argc() != 2)
-	{
-		Con_Printf ("changelevel <levelname> : continue game on a new level\n");
-		return;
-	}
-	if (!sv.active || cls.demoplayback)
-	{
-		Con_Printf ("Only the server may changelevel\n");
-		return;
-	}
-	SV_SaveSpawnparms ();
-	QStr::Cpy (level, Cmd_Argv(1));
-	SV_SpawnServer (level);
-#endif
 }
 
 /*
@@ -681,12 +659,10 @@ void Host_Loadgame_f (void)
 	current_skill = (int)(tfloat + 0.1);
 	Cvar_SetValue ("skill", (float)current_skill);
 
-#ifdef QUAKE2RJ
 	Cvar_SetValue ("deathmatch", 0);
 	Cvar_SetValue ("coop", 0);
 	Cvar_SetValue ("teamplay", 0);
 	Cvar_SetValue ("randomclass", 0);
-#endif
 
 	fscanf (f, "%s\n",mapname);
 	fscanf (f, "%f\n",&time);
@@ -778,7 +754,6 @@ void Host_Loadgame_f (void)
 	}
 }
 
-#ifdef QUAKE2RJ
 void SaveGamestate(qboolean ClientsOnly)
 {
 //	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
@@ -1166,7 +1141,6 @@ void Host_Changelevel2_f (void)
 		RestoreClients();
 	}
 }
-#endif
 
 
 //============================================================================
@@ -2426,9 +2400,7 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("map", Host_Map_f);
 	Cmd_AddCommand ("restart", Host_Restart_f);
 	Cmd_AddCommand ("changelevel", Host_Changelevel_f);
-#ifdef QUAKE2RJ
 	Cmd_AddCommand ("changelevel2", Host_Changelevel2_f);
-#endif
 	Cmd_AddCommand ("connect", Host_Connect_f);
 	Cmd_AddCommand ("reconnect", Host_Reconnect_f);
 	Cmd_AddCommand ("name", Host_Name_f);

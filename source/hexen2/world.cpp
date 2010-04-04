@@ -413,7 +413,6 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 
 // set the abs box
 
-#ifdef QUAKE2RJ
 	if (ent->v.solid == SOLID_BSP && 
 	(ent->v.angles[0] || ent->v.angles[1] || ent->v.angles[2]) )
 	{	// expand for rotation
@@ -437,7 +436,6 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 		}
 	}
 	else
-#endif
 	{
 		VectorAdd (ent->v.origin, ent->v.mins, ent->v.absmin);	
 		VectorAdd (ent->v.origin, ent->v.maxs, ent->v.absmax);
@@ -555,16 +553,12 @@ SV_PointContents
 */
 int SV_PointContents (vec3_t p)
 {
-#ifdef QUAKE2RJ
 	int		cont;
 
 	cont = SV_HullPointContents (&sv.worldmodel->hulls[0], 0, p);
 	if (cont <= CONTENTS_CURRENT_0 && cont >= CONTENTS_CURRENT_DOWN)
 		cont = CONTENTS_WATER;
 	return cont;
-#else
-	return SV_HullPointContents (&sv.worldmodel->hulls[0], 0, p);
-#endif
 }
 
 int SV_TruePointContents (vec3_t p)

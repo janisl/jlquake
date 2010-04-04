@@ -126,9 +126,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count);
 void R_RocketTrail (vec3_t start, vec3_t end, int type);
 void R_SunStaffTrail(vec3_t source, vec3_t dest);
 
-#ifdef QUAKE2RJ
 void R_DarkFieldParticles (entity_t *ent);
-#endif
 void R_RainEffect (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int count);
 void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count);
 void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter);

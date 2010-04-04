@@ -750,7 +750,6 @@ void SV_WriteEntitiesToClient (client_t *client, edict_t	*clent, sizebuf_t *msg)
 	ent = NEXT_EDICT(sv.edicts);
 	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
-#ifdef QUAKE2RJ
 		// don't send if flagged for NODRAW and there are no lighting effects
 		if (ent->v.effects == EF_NODRAW)
 		{
@@ -767,7 +766,6 @@ void SV_WriteEntitiesToClient (client_t *client, edict_t	*clent, sizebuf_t *msg)
 			continue;
 #endif
 		}
-#endif
 
 // ignore if not touching a PV leaf
 		if (ent != clent)	// clent is ALLWAYS sent
@@ -2326,11 +2324,7 @@ This is called at the start of each level
 */
 extern float		scr_centertime_off;
 
-#ifdef QUAKE2RJ
 void SV_SpawnServer (char *server, char *startspot)
-#else
-void SV_SpawnServer (char *server)
-#endif
 {
 	edict_t		*ent;
 	int			i;
@@ -2345,9 +2339,7 @@ void SV_SpawnServer (char *server)
 	if (svs.changelevel_issued)
 	{
 		stats_restored = true;
-#ifdef QUAKE2RJ
 		SaveGamestate(true);
-#endif
 	}
 	else 
 		stats_restored = false;
@@ -2382,10 +2374,8 @@ void SV_SpawnServer (char *server)
 	//memset (&sv, 0, sizeof(sv));
 
 	QStr::Cpy(sv.name, server);
-#ifdef QUAKE2RJ
 	if (startspot)
 		QStr::Cpy(sv.startspot, startspot);
-#endif
 
 // load progs to get entity field count
 
@@ -2493,9 +2483,7 @@ void SV_SpawnServer (char *server)
 	pr_global_struct->randomclass = randomclass.value;
 
 	pr_global_struct->mapname = sv.name - pr_strings;
-#ifdef QUAKE2RJ
 	pr_global_struct->startspot = sv.startspot - pr_strings;
-#endif
 
 	// serverflags are for cross level information (sigils)
 	pr_global_struct->serverflags = svs.serverflags;

@@ -568,10 +568,8 @@ void SV_ReadClientMove (usercmd_t *move)
 	if (i)
 		host_client->edict->v.impulse = i;
 
-#ifdef QUAKE2RJ
 // read light level
 	host_client->edict->v.light_level = MSG_ReadByte ();
-#endif
 }
 
 /*

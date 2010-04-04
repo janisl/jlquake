@@ -1141,9 +1141,7 @@ void R_DrawViewModel (void)
 			ambientlight += add;
 	}
 
-#ifdef QUAKE2RJ
 	cl.light_level = ambientlight;
-#endif
 
 	ambient[0] = ambient[1] = ambient[2] = ambient[3] = (float)ambientlight / 128;
 	diffuse[0] = diffuse[1] = diffuse[2] = diffuse[3] = (float)shadelight / 128;

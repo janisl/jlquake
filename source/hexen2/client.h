@@ -12,9 +12,7 @@ typedef struct
 	float	forwardmove;
 	float	sidemove;
 	float	upmove;
-#ifdef QUAKE2RJ
 	byte	lightlevel;
-#endif
 } usercmd_t;
 
 typedef struct
@@ -64,9 +62,7 @@ typedef struct
 	float	decay;				// drop this each second
 	float	minlight;			// don't add when contributing less
 	int		key;
-#ifdef QUAKE2RJ
 	qboolean	dark;			// subtracts light instead of adding
-#endif
 } dlight_t;
 
 #define	MAX_EFRAGS		640
@@ -219,12 +215,10 @@ typedef struct
 // frag scoreboard
 	scoreboard_t	*scores;		// [cl.maxclients]
 
-#ifdef QUAKE2RJ
 // light level at player's position including dlights
 // this is sent back to the server each frame
 // architectually ugly but it works
 	int			light_level;
-#endif
 
 	client_frames2_t frames[3]; // 0 = base, 1 = building, 2 = 0 & 1 merged
 	short RemoveList[MAX_CLIENT_STATES],NumToRemove;
