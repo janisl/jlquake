@@ -10,7 +10,6 @@ server_t		sv;
 server_static_t	svs;
 char	localmodels[MAX_MODELS][5];			// inline model names for precache
 
-#if RJNET
 cvar_t	sv_sound_distance = {"sv_sound_distance","800", true};
 
 cvar_t	sv_update_player	= {"sv_update_player","1", true};
@@ -20,8 +19,6 @@ cvar_t	sv_update_misc		= {"sv_update_misc","1", true};
 
 cvar_t	sv_ce_scale			= {"sv_ce_scale","0", true};
 cvar_t	sv_ce_max_size		= {"sv_ce_max_size","0", true};
-
-#endif
 
 extern unsigned int	info_mask, info_mask2;
 int		sv_kingofhill;
@@ -68,7 +65,6 @@ void SV_Init (void)
 	Cvar_RegisterVariable (&sv_nostep);
 	Cvar_RegisterVariable (&sv_walkpitch);
 	Cvar_RegisterVariable (&sv_flypitch);
-#if RJNET
 	Cvar_RegisterVariable (&sv_sound_distance);
 	Cvar_RegisterVariable (&sv_update_player);
 	Cvar_RegisterVariable (&sv_update_monsters);
@@ -76,7 +72,6 @@ void SV_Init (void)
 	Cvar_RegisterVariable (&sv_update_misc);
 	Cvar_RegisterVariable (&sv_ce_scale);
 	Cvar_RegisterVariable (&sv_ce_max_size);
-#endif
 
 	Cmd_AddCommand ("sv_edicts", Sv_Edicts_f);	
 
@@ -321,7 +316,6 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
     int			field_mask;
     int			i;
 	int			ent;
-#if RJNET
 	sizebuf_t   cm;
 	byte		datagram_buf[MAX_DATAGRAM];
 	client_t	*client;
@@ -331,7 +325,6 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 	cm.data = datagram_buf;
 	cm.maxsize = sizeof(datagram_buf);
 	cm.cursize = 0;
-#endif
 	
 	if (QStr::ICmp(sample,"misc/null.wav") == 0)
 	{
@@ -378,40 +371,6 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 		sound_num -= 255;
 	}
 
-#if RJNETa
-	MSG_WriteByte (&cm, svc_sound);
-	MSG_WriteByte (&cm, field_mask);
-	if (field_mask & SND_VOLUME)
-		MSG_WriteByte (&cm, volume);
-	if (field_mask & SND_ATTENUATION)
-		MSG_WriteByte (&cm, attenuation*64);
-	MSG_WriteShort (&cm, channel);
-	MSG_WriteByte (&cm, sound_num);
-	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord (&cm, entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
-
-	for (i=0, client = svs.clients ; i<svs.maxclients ; i++, client++)
-	{
-		if (!client->active)
-			continue;
-
-		VectorAdd(entity->v.absmax,entity->v.absmin,diff);
-		diff[0] /= 2;
-		diff[1] /= 2;
-		diff[2] /= 2;
-
-		VectorSubtract(client->edict->v.origin,diff,diff);
-
-		distance = Length(diff);
-
-		if (!sv_sound_distance.value || distance < sv_sound_distance.value)
-		{	// rjr this gets put in a reliable packet - should be unreliable
-			SZ_Write (&client->message, cm.data, cm.cursize);
-		}
-	}
-
-#else
-
 // directed messages go only to the entity the are targeted on
 	MSG_WriteByte (&sv.datagram, svc_sound);
 	MSG_WriteByte (&sv.datagram, field_mask);
@@ -423,9 +382,6 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 	MSG_WriteByte (&sv.datagram, sound_num);
 	for (i=0 ; i<3 ; i++)
 		MSG_WriteCoord (&sv.datagram, entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
-
-#endif
-
 }           
 
 /*
@@ -520,10 +476,8 @@ void SV_ConnectClient (int clientnum)
 	struct qsocket_s *netconnection;
 	int				i;
 	float			spawn_parms[NUM_SPAWN_PARMS];
-#if RJNET
 	int				entnum;
 	edict_t			*svent;
-#endif
 
 	client = svs.clients + clientnum;
 
@@ -555,15 +509,12 @@ void SV_ConnectClient (int clientnum)
 	client->datagram.maxsize = sizeof(client->datagram_buf);
 	client->datagram.allowoverflow = false;
 
-#if RJNET
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
 	{
 		svent = EDICT_NUM(entnum);
 //		memcpy(&svent->baseline[clientnum],&svent->baseline[MAX_BASELINES-1],sizeof(entity_state_t));
 	}
 	memset(&sv.states[clientnum],0,sizeof(client_state2_t ));
-
-#endif
 
 #ifdef IDGODS
 	client->privileged = IsID(&client->netconnection->addr);
@@ -715,352 +666,6 @@ byte *SV_FatPVS (vec3_t org)
 SV_WriteEntitiesToClient
 
 =============
-*/
-/*
-void SV_WriteEntitiesToClient (client_t *client, edict_t	*clent, sizebuf_t *msg)
-{
-	int		e, i;
-	int		bits;
-	byte	*pvs;
-	vec3_t	org;
-	float	miss;
-	edict_t	*ent;
-	int		temp_index;
-	char	NewName[MAX_QPATH];
-	long	flagtest;
-
-#if RJNET
-	int client_num;
-
-	client_num = client-svs.clients;
-#endif
-
-// find the client's PVS
-	if (clent->v.cameramode)
-	{
-		ent = PROG_TO_EDICT(clent->v.cameramode);
-		VectorCopy(ent->v.origin, org);
-	}
-	else
-		VectorAdd (clent->v.origin, clent->v.view_ofs, org);
-
-	pvs = SV_FatPVS (org);
-
-// send over all entities (excpet the client) that touch the pvs
-	ent = NEXT_EDICT(sv.edicts);
-	for (e=1 ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
-	{
-		// don't send if flagged for NODRAW and there are no lighting effects
-		if (ent->v.effects == EF_NODRAW)
-		{
-#if RJNET
-			if (ent->baseline[client_num].flags & BASE_ENT_ON)
-			{
-					ent->baseline[client_num].flags &= ~BASE_ENT_ON;
-					bits = U_ENT_OFF;
-					goto skip;
-			}
-			else
-				continue;
-#else
-			continue;
-#endif
-		}
-
-// ignore if not touching a PV leaf
-		if (ent != clent)	// clent is ALLWAYS sent
-		{
-// ignore ents without visible models
-			if (!ent->v.modelindex || !pr_strings[ent->v.model])
-			{
-#if RJNET
-				if (ent->baseline[client_num].flags & BASE_ENT_ON)
-				{
-					ent->baseline[client_num].flags &= ~BASE_ENT_ON;
-					bits = U_ENT_OFF;
-					goto skip;
-				}
-				else
-					continue;
-#else
-				continue;
-#endif
-			}
-
-			for (i=0 ; i < ent->num_leafs ; i++)
-				if (pvs[ent->leafnums[i] >> 3] & (1 << (ent->leafnums[i]&7) ))
-					break;
-				
-			if (i == ent->num_leafs)
-			{
-#if RJNET
-				if (ent->baseline[client_num].flags & BASE_ENT_ON)
-				{
-					ent->baseline[client_num].flags &= ~BASE_ENT_ON;
-					bits = U_ENT_OFF;
-					goto skip;
-				}
-				else
-					continue;
-#else
-				continue;
-#endif
-			}
-		}
-
-		if (msg->maxsize - msg->cursize < 16)
-		{
-			Con_Printf ("packet overflow\n");
-			return;
-		}
-
-// send an update
-		bits = 0;
-		
-		for (i=0 ; i<3 ; i++)
-		{
-#if RJNET
-			miss = ent->v.origin[i] - ent->baseline[client_num].origin[i];
-			if ( miss < -0.1 || miss > 0.1 )
-			{
-				bits |= U_ORIGIN1<<i;
-				ent->baseline[client_num].origin[i] = ent->v.origin[i];
-			}
-#else
-			miss = ent->v.origin[i] - ent->baseline.origin[i];
-			if ( miss < -0.1 || miss > 0.1 )
-				bits |= U_ORIGIN1<<i;
-#endif
-		}
-
-#if RJNET
-		if ( ent->v.angles[0] != ent->baseline[client_num].angles[0] )
-		{
-			bits |= U_ANGLE1;
-			ent->baseline[client_num].angles[0] = ent->v.angles[0];
-		}
-#else
-		if ( ent->v.angles[0] != ent->baseline.angles[0] )
-			bits |= U_ANGLE1;
-#endif
-			
-#if RJNET
-		if ( ent->v.angles[1] != ent->baseline[client_num].angles[1] )
-		{
-			bits |= U_ANGLE2;
-			ent->baseline[client_num].angles[1] = ent->v.angles[1];
-		}
-#else
-		if ( ent->v.angles[1] != ent->baseline.angles[1] )
-			bits |= U_ANGLE2;
-#endif
-			
-#if RJNET
-		if ( ent->v.angles[2] != ent->baseline[client_num].angles[2] )
-		{
-			bits |= U_ANGLE3;
-			ent->baseline[client_num].angles[2] = ent->v.angles[2];
-		}
-#else
-		if ( ent->v.angles[2] != ent->baseline.angles[2] )
-			bits |= U_ANGLE3;
-#endif
-			
-		if (ent->v.movetype == MOVETYPE_STEP)
-			bits |= U_NOLERP;	// don't mess up the step animation
-	
-#if RJNET
-		if (ent->baseline[client_num].colormap != ent->v.colormap)
-		{
-			bits |= U_COLORMAP;
-			ent->baseline[client_num].colormap = ent->v.colormap;
-		}
-#else
-		if (ent->baseline.colormap != ent->v.colormap)
-			bits |= U_COLORMAP;
-#endif
-			
-#if RJNET
-		if (ent->baseline[client_num].skin != ent->v.skin
-			|| ent->baseline[client_num].drawflags != ent->v.drawflags)
-		{
-			bits |= U_SKIN;
-			ent->baseline[client_num].skin = ent->v.skin;
-			ent->baseline[client_num].drawflags = ent->v.drawflags;
-		}
-#else
-		if (ent->baseline.skin != ent->v.skin
-			|| ent->baseline.drawflags != ent->v.drawflags)
-			bits |= U_SKIN;
-#endif
-
-#if RJNET
-		if (ent->baseline[client_num].frame != ent->v.frame)
-		{
-			bits |= U_FRAME;
-			ent->baseline[client_num].frame = ent->v.frame;
-		}
-#else
-		if (ent->baseline.frame != ent->v.frame)
-			bits |= U_FRAME;
-#endif
-		
-#if RJNET
-		if (ent->baseline[client_num].effects != ent->v.effects)
-		{
-			bits |= U_EFFECTS;
-			ent->baseline[client_num].effects = ent->v.effects;
-		}
-#else
-		if (ent->baseline.effects != ent->v.effects)
-			bits |= U_EFFECTS;
-#endif
-
-		flagtest = (long)ent->v.flags;
-		if (flagtest & 0xff000000)
-		{
-			Host_Error("Invalid flags setting for class %s",ent->v.classname + pr_strings);
-			return;
-		}
-
-		temp_index = ent->v.modelindex;
-		if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
-		{
-			QStr::Cpy(NewName,ent->v.model + pr_strings);
-			NewName[QStr::Length(NewName)-5] = client->playerclass + 48;
-			temp_index = SV_ModelIndex (NewName);
-		}
-
-#if RJNET
-		if (ent->baseline[client_num].modelindex != temp_index)
-		{
-			bits |= U_MODEL;
-			ent->baseline[client_num].modelindex = temp_index;
-		}
-#else
-		if (ent->baseline.modelindex != temp_index)
-			bits |= U_MODEL;
-#endif
-
-#if RJNET
-		if (ent->baseline[client_num].scale != ((int)(ent->v.scale*100.0)&255)
-			|| ent->baseline[client_num].abslight != (int)(ent->v.abslight*255.0)&255)
-		{
-			bits |= U_SCALE;
-			ent->baseline[client_num].scale = ((int)(ent->v.scale*100.0)&255);
-			ent->baseline[client_num].abslight = (int)(ent->v.abslight*255.0)&255;
-		}
-#else
-		if (ent->baseline.scale != ((int)(ent->v.scale*100.0)&255)
-			|| ent->baseline.abslight != (int)(ent->v.abslight*255.0)&255)
-			bits |= U_SCALE;
-#endif
-
-#if RJNET
-		if (!(ent->baseline[client_num].flags & BASE_ENT_ON))
-		{
-			ent->baseline[client_num].flags |= BASE_ENT_ON;
-			bits |= U_ENT_ON;
-		}
-#endif
-
-skip:
-#if RJNET
-		if (!bits) continue;
-
-		if (!(ent->baseline[client_num].flags & BASE_ENT_SENT))
-		{
-			ent->baseline[client_num].flags |= BASE_ENT_SENT;
-			bits |= U_CLEAR_ENT;
-		}
-		if (e >= 256)
-			bits |= U_LONGENTITY;
-
-		if (bits >= 256)
-			bits |= U_MOREBITS;
-
-		if (bits >= 65536)
-			bits |= U_MOREBITS2;
-#else
-		if (e >= 256)
-			bits |= U_LONGENTITY;
-
-		if (bits >= 256)
-			bits |= U_MOREBITS;
-#endif
-
-
-	//
-	// write the message
-	//
-		MSG_WriteByte (msg,bits | U_SIGNAL);
-		
-		if (bits & U_MOREBITS)
-			MSG_WriteByte (msg, bits>>8);
-#if RJNET
-		if (bits & U_MOREBITS2)
-			MSG_WriteByte (msg, bits>>16);
-#endif
-
-		if (bits & U_LONGENTITY)
-			MSG_WriteShort (msg,e);
-		else
-			MSG_WriteByte (msg,e);
-
-		if (bits & U_MODEL)
-			MSG_WriteShort (msg, temp_index);
-		if (bits & U_FRAME)
-			MSG_WriteByte (msg, ent->v.frame);
-		if (bits & U_COLORMAP)
-			MSG_WriteByte (msg, ent->v.colormap);
-		if(bits & U_SKIN)
-		{ // Used for skin and drawflags
-			MSG_WriteByte(msg, ent->v.skin);
-			MSG_WriteByte(msg, ent->v.drawflags);
-		}
-		if (bits & U_EFFECTS)
-			MSG_WriteByte (msg, ent->v.effects);
-		if (bits & U_ORIGIN1)
-			MSG_WriteCoord (msg, ent->v.origin[0]);		
-		if (bits & U_ANGLE1)
-			MSG_WriteAngle(msg, ent->v.angles[0]);
-		if (bits & U_ORIGIN2)
-			MSG_WriteCoord (msg, ent->v.origin[1]);
-		if (bits & U_ANGLE2)
-			MSG_WriteAngle(msg, ent->v.angles[1]);
-		if (bits & U_ORIGIN3)
-			MSG_WriteCoord (msg, ent->v.origin[2]);
-		if (bits & U_ANGLE3)
-			MSG_WriteAngle(msg, ent->v.angles[2]);
-		if(bits & U_SCALE)
-		{ // Used for scale and abslight
-			MSG_WriteByte(msg, (int)(ent->v.scale*100.0)&255);
-			MSG_WriteByte(msg, (int)(ent->v.abslight*255.0)&255);
-		}
-	}
-}
-
-*/
-
-/*entity_state2_t *FindEntInList(int index)
-{
-	int i,frame;
-
-	frame = -1;
-	for(i=0;i<MAX_FRAMES;i++)
-	{
-		if (find_client->current_frame == frames[client_num][i].frame)
-			frame = i;
-	}
-
-	if (frame == -1) return NULL;
-
-	for(i=0;i<frames[client_num][frame].count;i++)
-		if (frames[client_num][frame].states[i].index == index)
-			return &frames[client_num][frame].states[i];
-
-	return NULL;
-}
 */
 
 #define CLIENT_FRAME_INIT	255
@@ -2160,9 +1765,7 @@ void SV_CreateBaseline (void)
 	int			i;
 	edict_t			*svent;
 	int				entnum;	
-#if RJNET
 //	int client_num = 1<<(MAX_BASELINES-1);
-#endif
 		
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
 	{
@@ -2176,7 +1779,6 @@ void SV_CreateBaseline (void)
 	//
 	// create entity baseline
 	//
-#if RJNET
 		VectorCopy (svent->v.origin, svent->baseline.origin);
 		VectorCopy (svent->v.angles, svent->baseline.angles);
 		svent->baseline.frame = svent->v.frame;
@@ -2215,45 +1817,6 @@ void SV_CreateBaseline (void)
 			MSG_WriteCoord(&sv.signon, svent->baseline.origin[i]);
 			MSG_WriteAngle(&sv.signon, svent->baseline.angles[i]);
 		}
-#else
-		VectorCopy (svent->v.origin, svent->baseline.origin);
-		VectorCopy (svent->v.angles, svent->baseline.angles);
-		svent->baseline.frame = svent->v.frame;
-		svent->baseline.skin = svent->v.skin;
-		svent->baseline.scale = (int)(svent->v.scale*100.0)&255;
-		svent->baseline.drawflags = svent->v.drawflags;
-		svent->baseline.abslight = (int)(svent->v.abslight*255.0)&255;
-		if (entnum > 0 && entnum <= svs.maxclients)
-		{
-			svent->baseline.colormap = entnum;
-			svent->baseline.modelindex = 0;//SV_ModelIndex("models/paladin.mdl");
-		}
-		else
-		{
-			svent->baseline.colormap = 0;
-			svent->baseline.modelindex =
-				SV_ModelIndex(pr_strings + svent->v.model);
-		}
-		
-	//
-	// add to the message
-	//
-		MSG_WriteByte (&sv.signon,svc_spawnbaseline);
-		MSG_WriteShort (&sv.signon,entnum);
-
-		MSG_WriteShort (&sv.signon, svent->baseline.modelindex);
-		MSG_WriteByte (&sv.signon, svent->baseline.frame);
-		MSG_WriteByte (&sv.signon, svent->baseline.colormap);
-		MSG_WriteByte (&sv.signon, svent->baseline.skin);
-		MSG_WriteByte (&sv.signon, svent->baseline.scale);
-		MSG_WriteByte (&sv.signon, svent->baseline.drawflags);
-		MSG_WriteByte (&sv.signon, svent->baseline.abslight);
-		for (i=0 ; i<3 ; i++)
-		{
-			MSG_WriteCoord(&sv.signon, svent->baseline.origin[i]);
-			MSG_WriteAngle(&sv.signon, svent->baseline.angles[i]);
-		}
-#endif
 	}
 }
 

@@ -652,11 +652,7 @@ void CL_RelinkEntities (void)
 		}
 
 // if the object wasn't included in the last packet, remove it
-#if RJNET
 		if (ent->msgtime != cl.mtime[0] && !(ent->baseline.flags & BE_ON))
-#else
-		if (ent->msgtime != cl.mtime[0])
-#endif
 		{
 			ent->model = NULL;
 			continue;
@@ -664,11 +660,7 @@ void CL_RelinkEntities (void)
 
 		VectorCopy (ent->origin, oldorg);
 
-#if RJNET
 		if (ent->forcelink || ent->msgtime != cl.mtime[0])
-#else
-		if (ent->forcelink)
-#endif
 		{	// the entity was not updated in the last message
 			// so move to the final spot
 			VectorCopy (ent->msg_origins[0], ent->origin);

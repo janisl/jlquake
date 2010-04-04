@@ -73,9 +73,7 @@ Sets everything to NULL
 void ED_ClearEdict (edict_t *e)
 {
 	memset (&e->v, 0, progs->entityfields * 4);
-#if RJNET
 	memset (&e->baseline, 0, sizeof(e->baseline));
-#endif
 	e->free = false;
 }
 

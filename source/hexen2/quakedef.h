@@ -199,10 +199,7 @@ typedef struct
 	byte	scale;
 	byte	drawflags;
 	byte	abslight;
-
-#if RJNET
 	byte	ClearCount[32];
-#endif
 } entity_state_t;
 
 typedef struct

@@ -80,6 +80,6 @@ foreach(SRC ${HEXEN2_ASM_FILES})
 endforeach(SRC)
 
 add_executable(vhexen2 ${HEXEN2_FILES})
-set_target_properties(vhexen2 PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DRJNET")
+set_target_properties(vhexen2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
 target_link_libraries(vhexen2 core ${LDFLAGS})
 add_dependencies(vhexen2 core)
