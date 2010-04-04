@@ -21,9 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern	cvar_t		v_gamma;
 extern	cvar_t		lcd_x;
-#ifdef GLQUAKE
 extern float v_blend[4];
-#endif
 
 void V_Init (void);
 void V_RenderView (void);

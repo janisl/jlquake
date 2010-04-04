@@ -1,7 +1,7 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/client)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
-set(BASE_CFLAGS "-Wall -DGLQUAKE -DGL_EXT_SHARED")
+set(BASE_CFLAGS "-Wall -DGL_EXT_SHARED")
 set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
 set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
 	-fomit-frame-pointer -fexpensive-optimizations -malign-loops=2
