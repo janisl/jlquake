@@ -631,14 +631,6 @@ const char *Com_StringContains( const char *str1, const char *str2, int casesens
 
 //=============================================
 
-short	BigShort(short l);
-short	LittleShort(short l);
-int		BigLong (int l);
-int		LittleLong (int l);
-float	BigFloat (float l);
-float	LittleFloat (float l);
-
-void	Swap_Init (void);
 char	* QDECL va(char *format, ...);
 
 #ifdef __cplusplus

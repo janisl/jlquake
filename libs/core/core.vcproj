@@ -153,6 +153,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\endian.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\exception.cpp"
 				>
 			</File>
@@ -176,6 +180,10 @@
 			</File>
 			<File
 				RelativePath=".\core.h"
+				>
+			</File>
+			<File
+				RelativePath=".\endian.h"
 				>
 			</File>
 			<File

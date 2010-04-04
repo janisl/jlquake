@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="vhwcl"
 	ProjectGUID="{6B74BF6B-91C6-4FE0-AC05-D0BFC7B5DEF1}"
 	RootNamespace="qwcl"
@@ -138,7 +138,7 @@
 				Optimization="0"
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;GLQUAKE"
-				RuntimeLibrary="0"
+				RuntimeLibrary="1"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
