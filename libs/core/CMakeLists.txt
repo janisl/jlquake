@@ -1,4 +1,5 @@
 add_library(core STATIC
+	array.h
 	common.cpp
 	common.h
 	core.h
@@ -10,4 +11,6 @@ add_library(core STATIC
 	log.h
 	memory.cpp
 	memory.h
+	str.cpp
+	str.h
 )

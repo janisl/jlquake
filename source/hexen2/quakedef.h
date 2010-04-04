@@ -10,8 +10,6 @@
 
 //#define	GLTEST			// experimental stuff
 
-#pragma warning(disable:4244)
-
 #define	QUAKE_GAME			// as opposed to utilities
 
 #define HEXEN2_VERSION		1.12
@@ -28,10 +26,6 @@
 
 #if defined(_WIN32) && !defined(WINDED)
 
-#if defined(_M_IX86)
-#define __i386__	1
-#endif
-
 void	VID_LockBuffer (void);
 void	VID_UnlockBuffer (void);
 
@@ -40,12 +34,6 @@ void	VID_UnlockBuffer (void);
 #define	VID_LockBuffer()
 #define	VID_UnlockBuffer()
 
-#endif
-
-#ifdef __i386__
-#define id386	1
-#else
-#define id386	0
 #endif
 
 #if id386

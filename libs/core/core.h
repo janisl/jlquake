@@ -32,5 +32,7 @@
 #include "endian.h"		//	Endianes handling
 #include "exception.h"	//	Exception handling
 #include "log.h"		//	General logging interface
+#include "array.h"		//	Dynamic array
+#include "str.h"		//	Strings
 
 #endif

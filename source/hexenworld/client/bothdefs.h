@@ -6,12 +6,6 @@
 #define LINUX_VERSION 0.94
 
 
-#if (defined(_M_IX86) || defined(__i386__)) && !defined(id386)
-#define id386	1
-#else
-#define id386	0
-#endif
-
 #ifdef SERVERONLY		// no asm in dedicated server
 #undef id386
 #endif

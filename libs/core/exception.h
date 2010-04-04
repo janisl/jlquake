@@ -34,3 +34,5 @@ public:
 	explicit QException(const char *text);
 	virtual const char* What() const;
 };
+
+#define qassert(x)		if (x) {} else throw QException("Assertion failed");

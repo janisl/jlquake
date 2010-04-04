@@ -25,10 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //define	PARANOID			// speed sapping error checking
 
-#ifdef _WIN32
-#pragma warning( disable : 4244 4127 4201 4214 4514 4305 4115 4018)
-#endif
-
 
 #include <setjmp.h>
 #include <time.h>
