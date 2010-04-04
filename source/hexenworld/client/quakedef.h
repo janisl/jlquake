@@ -32,14 +32,7 @@
 #include "render.h"
 #include "cl_effect.h"
 #include "client.h"
-
-#ifdef GLQUAKE
 #include "gl_model.h"
-#else
-#include "model.h"
-#include "d_iface.h"
-#endif
-
 #include "input.h"
 #include "keys.h"
 #include "console.h"
@@ -49,10 +42,7 @@
 #include "cdaudio.h"
 #include "pmove.h"
 #include "mididef.h"
-
-#ifdef GLQUAKE
 #include "glquake.h"
-#endif
 
 //=============================================================================
 

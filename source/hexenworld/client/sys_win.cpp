@@ -9,13 +9,8 @@
 #include <direct.h>
 #include <conio.h>
 
-#ifdef GLQUAKE
-	#define MINIMUM_WIN_MEMORY		0x1000000
-	#define MAXIMUM_WIN_MEMORY		0x1600000
-#else
-	#define MINIMUM_WIN_MEMORY		0x0C00000
-	#define MAXIMUM_WIN_MEMORY		0x1600000
-#endif
+#define MINIMUM_WIN_MEMORY		0x1000000
+#define MAXIMUM_WIN_MEMORY		0x1600000
 
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP	20				// sleep time when not focus

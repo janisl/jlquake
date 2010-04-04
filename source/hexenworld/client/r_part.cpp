@@ -1,6 +1,5 @@
 
 #include "quakedef.h"
-#include "r_local.h"
 
 #define MAX_PARTICLES			2048	// default max # of particles at one
 										//  time
@@ -1497,15 +1496,12 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 	}
 }
 
-#ifdef GLQUAKE
 static qboolean		alphaTestEnabled;
 static vec3_t		up, right;
-#endif
 
 
 void R_RenderParticle(particle_t *p)
 {
-#ifdef GLQUAKE
 	float			scale;
 	unsigned char	*at;
 	unsigned char	theAlpha;
@@ -1549,16 +1545,6 @@ void R_RenderParticle(particle_t *p)
 	glVertex3f (p->org[0] + up[0]*scale, p->org[1] + up[1]*scale, p->org[2] + up[2]*scale);
 	glTexCoord2f (0,1);
 	glVertex3f (p->org[0] + right[0]*scale, p->org[1] + right[1]*scale, p->org[2] + right[2]*scale);
-
-#else
-	if (p->color < 0 || p->color > 511)
-	{
-		Con_Printf("Invalid color for particle type %d\n",(int)p->type);
-		return;
-	}
-
-	D_DrawParticle (p);
-#endif
 }
 
 /*
@@ -1579,7 +1565,6 @@ void R_DrawParticles (void)
 	unsigned char	temp[4];
 	vec3_t			diff;
     
-#ifdef GLQUAKE
 	GL_Bind(particletexture);
 	alphaTestEnabled = glIsEnabled(GL_ALPHA_TEST);
 	
@@ -1592,13 +1577,6 @@ void R_DrawParticles (void)
 
 	VectorScale (vup, 1.5, up);
 	VectorScale (vright, 1.5, right);
-#else
-	D_StartParticles ();
-
-	VectorScale (vright, xscaleshrink, r_pright);
-	VectorScale (vup, yscaleshrink, r_pup);
-	VectorCopy (vpn, r_ppn);
-#endif
 
 	frametime = host_frametime;
 	time4 = frametime * 20;
@@ -1954,14 +1932,10 @@ void R_DrawParticles (void)
 		}
 	}
 
-#ifdef GLQUAKE
 	glEnd ();
 	glDisable (GL_BLEND);
 	if (alphaTestEnabled)
 		glEnable(GL_ALPHA_TEST);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-#else
-	D_EndParticles ();
-#endif
 }
 

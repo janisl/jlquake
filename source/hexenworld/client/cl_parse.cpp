@@ -1,7 +1,6 @@
 // cl_parse.c  -- parse a message received from the server
 
 #include "quakedef.h"
-#include "r_shared.h"
 
 char *svc_strings[] =
 {
@@ -814,55 +813,10 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
-#ifdef GLQUAKE
 	if (slot > MAX_CLIENTS)
 		Sys_Error ("CL_NewTranslation: slot > MAX_CLIENTS");
 
 	R_TranslatePlayerSkin(slot);
-#else
-
-	int				i, j;
-	int				top, bottom;
-	byte			*dest, *source, *sourceA, *sourceB, *colorA, *colorB;
-	player_info_t	*player;
-
-	if (slot > MAX_CLIENTS)
-		Sys_Error ("CL_NewTranslation: slot > MAX_CLIENTS");
-
-	player = &cl.players[slot];
-	if (!player->playerclass)
-		return;
-
-	dest = player->translations;
-	source = vid.colormap;
-	memcpy (dest, vid.colormap, sizeof(player->translations));
-
-	top = player->topcolor;
-	if (top > 10 || top < 0)
-		top = 10;
-
-	bottom = player->bottomcolor;
-	if (bottom > 10 || bottom < 0)
-		bottom = 10;
-
-	top -= 1;
-	bottom -= 1;
-
-	for (i=0 ; i<VID_GRADES ; i++, dest += 256, source+=256)
-	{
-		colorA = playerTranslation + 256 + color_offsets[(int)player->playerclass-1];
-		colorB = colorA + 256;
-		sourceA = colorB + 256 + (top * 256);
-		sourceB = colorB + 256 + (bottom * 256);
-		for(j=0;j<256;j++,colorA++,colorB++,sourceA++,sourceB++)
-		{
-			if (top >= 0 && (*colorA != 255)) 
-				dest[j] = source[*sourceA];
-			if (bottom >= 0 && (*colorB != 255)) 
-				dest[j] = source[*sourceB];
-		}
-	}
-#endif
 }
 
 /*
@@ -947,11 +901,9 @@ void CL_MuzzleFlash (void)
 	if ((unsigned)(i-1) >= MAX_CLIENTS)
 		return;
 
-#ifdef GLQUAKE
 	// don't draw our own muzzle flash in gl if flashblending
 	if (i-1 == cl.playernum && gl_flashblend.value)
 		return;
-#endif
 
 	pl = &cl.frames[parsecountmod].playerstate[i-1];
 

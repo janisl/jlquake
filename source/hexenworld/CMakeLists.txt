@@ -1,7 +1,7 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/client)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
-set(BASE_CFLAGS "-Wall -DGLQUAKE -DGL_EXT_SHARED")
+set(BASE_CFLAGS "-Wall -DGL_EXT_SHARED")
 set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
 set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
 	-fomit-frame-pointer -fexpensive-optimizations -malign-loops=2
@@ -14,7 +14,7 @@ set(LDFLAGS -L/usr/X11/lib -lm -lGL -lX11 -lXext)
 # SERVER
 #############################################################################
 
-set(QWSV_OBJS
+set(HWSV_FILES
 	server/pr_cmds.cpp 
 	server/pr_edict.cpp
 	server/pr_exec.cpp
@@ -43,7 +43,7 @@ set(QWSV_OBJS
 	client/net_udp.cpp
 )
 
-add_executable(vhwsv ${QWSV_OBJS})
+add_executable(vhwsv ${HWSV_FILES})
 set_target_properties(vhwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
 target_link_libraries(vhwsv core ${SV_LDFLAGS})
 add_dependencies(vhwsv core)
@@ -52,7 +52,7 @@ add_dependencies(vhwsv core)
 # GL CLIENT
 #############################################################################
 
-set(GLQWCL_OBJS
+set(HWCL_FILES
 	client/cl_demo.cpp
 	client/cl_effect.cpp
 	client/cl_ents.cpp
@@ -102,13 +102,13 @@ set(GLQWCL_OBJS
 	client/gl_warp.cpp
 )
 
-set(QWCL_ASM_FILES
+set(HWCL_ASM_FILES
 	client/math.s
 	client/snd_mixa.s
 	client/sys_dosa.s
 )
 
-foreach(SRC ${QWCL_ASM_FILES})
+foreach(SRC ${HWCL_ASM_FILES})
 	get_filename_component(FILE_BASE ${SRC} NAME_WE)
 	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
 	add_custom_command(OUTPUT ${OBJ}
@@ -116,10 +116,10 @@ foreach(SRC ${QWCL_ASM_FILES})
 		COMMAND ${CMAKE_C_COMPILER} -x assembler-with-cpp -DELF
 			-c ${CMAKE_CURRENT_SOURCE_DIR}/${SRC} -o ${OBJ}
 	)
-	set(GLQWCL_OBJS ${GLQWCL_OBJS} ${OBJ})
+	set(HWCL_FILES ${HWCL_FILES} ${OBJ})
 endforeach(SRC)
 
-add_executable(vhwcl ${GLQWCL_OBJS})
+add_executable(vhwcl ${HWCL_FILES})
 set_target_properties(vhwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
 target_link_libraries(vhwcl core ${LDFLAGS})
 add_dependencies(vhwcl core)
