@@ -533,7 +533,6 @@ qboolean VID_Is8bit(void)
 	return is8bit;
 }
 
-#ifdef GL_EXT_SHARED
 void VID_Init8bitPalette() 
 {
 	// Check for 8bit Extensions and initialize them.
@@ -557,34 +556,6 @@ void VID_Init8bitPalette()
 	glColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
 	is8bit = true;
 }
-
-#else
-extern void gl3DfxSetPaletteEXT(GLuint *pal);
-
-void VID_Init8bitPalette(void) 
-{
-	// Check for 8bit Extensions and initialize them.
-	int i;
-	GLubyte table[256][4];
-	char *oldpal;
-
-	if (strstr(gl_extensions, "3DFX_set_global_palette") == NULL)
-		return;
-
-	Con_SafePrintf("8-bit GL extensions enabled.\n");
-	glEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
-	oldpal = (char *) d_8to24table; //d_8to24table3dfx;
-	for (i=0;i<256;i++) {
-		table[i][2] = *oldpal++;
-		table[i][1] = *oldpal++;
-		table[i][0] = *oldpal++;
-		table[i][3] = 255;
-		oldpal++;
-	}
-	gl3DfxSetPaletteEXT((GLuint *)table);
-	is8bit = true;
-}
-#endif
 
 void VID_Init(unsigned char *palette)
 {
