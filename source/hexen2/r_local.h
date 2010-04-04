@@ -307,22 +307,3 @@ void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
 extern int TransCount;
 
 #endif
-
-/*
- * $Log: /H2 Mission Pack/R_LOCAL.H $
- * 
- * 2     3/10/98 6:42p Jmonroe
- * first pass of new model fmt, fully in view render needs work
- * 
- * 6     6/14/97 9:48p Rjohnson
- * Forgot to make the variable available to other modules
- * 
- * 5     6/03/97 5:50p Rjohnson
- * Added translucent water
- * 
- * 4     4/23/97 11:39a Rjohnson
- * Merged the translucent span drawing into assembly
- * 
- * 3     2/19/97 11:46a Rjohnson
- * Id Updates
- */

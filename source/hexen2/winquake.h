@@ -82,13 +82,3 @@ void VID_SetDefaultMode (void);
 
 LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void IN_Accumulate (void);
-
-/*
- * $Log: /H3/game/WINQUAKE.H $
- * 
- * 5     7/17/97 2:00p Rjohnson
- * Added a security means to control the running of the game
- * 
- * 4     3/07/97 2:34p Rjohnson
- * Id Updates
- */

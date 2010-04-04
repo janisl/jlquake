@@ -616,20 +616,3 @@ void MIDI_Stop(void)
 {
 }
 #endif
-
-/*
- * $Log: /H2 Mission Pack/midi.c $
- * 
- * 3     2/12/98 12:26a Jmonroe
- * finished -nomidi to not try to play
- * 
- * 2     1/15/98 10:04p Jmonroe
- * added stub mpack menu stuff
- * 
- * 3     4/24/97 3:32p Bgokey
- * 
- * 2     4/24/97 12:13p Bgokey
- * 
- * 1     2/27/97 4:04p Rjohnson
- * Initial Revision
- */

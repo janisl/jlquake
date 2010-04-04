@@ -84,15 +84,3 @@ void    ConverterCleanup( void );
 int ConvertToBuffer( DWORD, LPCONVERTINFO );
 
 #endif /* __MSTREAM_INCLUDED__ */
-
-/*
- * $Log: /HexenWorld/Client/midi.h $
- * 
- * 2     2/19/98 3:42p Rjohnson
- * Midi Music - Yeah!
- * 
- * 1     2/19/98 3:23p Rjohnson
- * 
- * 1     2/27/97 4:04p Rjohnson
- * Initial Revision
- */

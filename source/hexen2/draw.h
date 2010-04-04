@@ -28,16 +28,3 @@ void Draw_SmallCharacter(int x, int y, int num);
 void Draw_SmallString(int x, int y, char *str);
 qpic_t *Draw_PicFromWad (char *name);
 qpic_t *Draw_CachePic (char *path);
-
-/*
- * $Log: /H3/game/DRAW.H $
- * 
- * 5     8/20/97 2:05p Rjohnson
- * fix for internationalization
- * 
- * 4     6/15/97 7:44p Rjohnson
- * Added new pause and loading graphics
- * 
- * 3     2/19/97 11:25a Rjohnson
- * Id Updates
- */

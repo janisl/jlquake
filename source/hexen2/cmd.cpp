@@ -743,22 +743,3 @@ void ListCommands (char *prefix)
 			Con_Printf ("%s\n", cmd->name);
 	}
 }
-
-/*
- * $Log: /H2 Mission Pack/CMD.C $
- * 
- * 3     3/01/98 8:20p Jmonroe
- * removed the slow "quake" version of common functions
- * 
- * 6     9/23/97 8:56p Rjohnson
- * Updates
- * 
- * 5     8/31/97 3:45p Rjohnson
- * Memory changes
- * 
- * 4     7/17/97 2:00p Rjohnson
- * Added a security means to control the running of the game
- * 
- * 3     3/07/97 12:28p Rjohnson
- * Id Updates
- */

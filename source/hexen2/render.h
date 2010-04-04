@@ -157,38 +157,3 @@ void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
 void R_ClearParticles (void);
-
-/*
- * $Log: /H2 Mission Pack/RENDER.H $
- * 
- * 4     3/05/98 7:54p Jmonroe
- * fixed startRain, optimized particle struct
- * 
- * 15    8/29/97 2:49p Rjohnson
- * Network updates
- * 
- * 14    8/17/97 3:28p Rjohnson
- * Fix for color selection
- * 
- * 13    7/28/97 2:44p Rjohnson
- * Fix for tinting
- * 
- * 12    7/24/97 4:37p Rjohnson
- * Color Tinting for models
- * 
- * 11    5/23/97 12:23p Bgokey
- * 
- * 10    5/14/97 2:40p Bgokey
- * 
- * 9     5/13/97 4:29p Bgokey
- * 
- * 8     4/28/97 11:58a Mgummelt
- * 
- * 7     4/22/97 3:50p Rjohnson
- * Added some more particle commands to cut back on the networking
- * 
- * 6     4/15/97 9:02p Bgokey
- * 
- * 5     2/19/97 11:51a Rjohnson
- * Id Updates
- */

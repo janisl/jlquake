@@ -84,10 +84,3 @@ void    ConverterCleanup( void );
 int ConvertToBuffer( DWORD, LPCONVERTINFO );
 
 #endif /* __MSTREAM_INCLUDED__ */
-
-/*
- * $Log: /H3/game/midi.h $
- * 
- * 1     2/27/97 4:04p Rjohnson
- * Initial Revision
- */

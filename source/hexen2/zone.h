@@ -113,11 +113,3 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name);
 // wasn't enough room.
 
 void Cache_Report (void);
-
-
-/*
- * $Log: /H3/game/ZONE.H $
- * 
- * 2     3/06/97 10:29a Rjohnson
- * Added memory statistics
- */

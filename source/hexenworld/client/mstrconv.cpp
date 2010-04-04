@@ -1187,16 +1187,3 @@ static void ShowTrackError( PINTRACKSTATE ptsTrack, LPSTR lpszErr )
     }
 
 #endif
-
-
-/*
- * $Log: /HexenWorld/Client/mstrconv.c $
- * 
- * 2     2/19/98 3:42p Rjohnson
- * Midi Music - Yeah!
- * 
- * 1     2/19/98 3:23p Rjohnson
- * 
- * 1     2/27/97 4:04p Rjohnson
- * Initial Revision
- */

@@ -143,16 +143,3 @@ extern byte *playerTranslation;
 #endif	// _R_SHARED_H_
 
 #endif	// GLQUAKE
-
-/*
- * $Log: /H3/game/R_SHARED.H $
- * 
- * 5     3/28/97 10:08a Rjohnson
- * Added transparent models
- * 
- * 4     2/19/97 11:48a Rjohnson
- * Id Updates
- * 
- * 3     2/11/97 1:15p Rjohnson
- * Added transparent sprites
- */

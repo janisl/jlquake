@@ -1117,16 +1117,3 @@ void Memory_Init (void *buf, int size)
   	Cmd_AddCommand ("sys_cache", Cache_Display_f);
   	Cmd_AddCommand ("sys_stats", Memory_Stats_f);
 }
-
-/*
- * $Log: /H2 Mission Pack/ZONE.C $
- * 
- * 2     3/01/98 8:20p Jmonroe
- * removed the slow "quake" version of common functions
- * 
- * 3     8/31/97 3:45p Rjohnson
- * Memory changes
- * 
- * 2     3/06/97 10:29a Rjohnson
- * Added memory statistics
- */

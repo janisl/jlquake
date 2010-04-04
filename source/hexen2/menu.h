@@ -39,17 +39,3 @@ void M_PrintWhite (int cx, int cy, char *str);
 void M_DrawTransPic (int x, int y, qpic_t *pic);
 
 void ScrollTitle (char *name);
-
-/*
- * $Log: /H3/game/MENU.H $
- * 
- * 5     9/04/97 4:44p Rjohnson
- * Updates
- * 
- * 4     4/17/97 3:42p Rjohnson
- * Modifications for the gl version for menus
- * 
- * 3     2/19/97 11:29a Rjohnson
- * Id Updates
- */
-

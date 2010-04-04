@@ -1185,11 +1185,3 @@ static void ShowTrackError( PINTRACKSTATE ptsTrack, LPSTR lpszErr )
     }
 
 #endif
-
-
-/*
- * $Log: /H3/game/mstrconv.c $
- * 
- * 1     2/27/97 4:04p Rjohnson
- * Initial Revision
- */

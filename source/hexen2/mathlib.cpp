@@ -450,20 +450,3 @@ fixed16_t Invert24To16(fixed16_t val)
 }
 
 #endif
-
-
-/*
- * $Log: /H2 Mission Pack/MATHLIB.C $
- * 
- * 4     2/06/98 7:17p Jmonroe
- * removed fastsqrt (not fast)
- * 
- * 3     2/05/98 8:00p Jmonroe
- * fast sqrt is partially in, need to do tests to verify it
- * 
- * 2     1/26/98 7:26p Jmonroe
- * inline math funcs
- * 
- * 2     3/10/97 1:35p Rjohnson
- * Fixed a screwy VC5.0 compiler bug
- */

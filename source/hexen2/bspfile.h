@@ -310,13 +310,3 @@ void 	GetVectorForKey (entity_t *ent, char *key, vec3_t vec);
 epair_t *ParseEpair (void);
 
 #endif
-
-/*
- * $Log: /H3/game/BSPFILE.H $
- * 
- * 4     2/19/97 11:17a Rjohnson
- * Id Updates
- * 
- * 3     2/10/97 2:59p Rjohnson
- * Changed max_map_hulls to 8 and added a 5th hull
- */

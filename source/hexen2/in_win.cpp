@@ -953,30 +953,3 @@ void IN_JoyMove (usercmd_t *cmd)
 	if (cl.viewangles[PITCH] < -70.0)
 		cl.viewangles[PITCH] = -70.0;
 }
-
-/*
- * $Log: /H2 Mission Pack/IN_WIN.C $
- * 
- * 3     3/01/98 8:20p Jmonroe
- * removed the slow "quake" version of common functions
- * 
- * 2     2/04/98 12:53a Jmonroe
- * added fastfabs
- * 
- * 10    9/01/97 4:29a Rjohnson
- * Joystick fix
- * 
- * 9     8/27/97 12:11p Rjohnson
- * Hardcoded speeds
- * 
- * 8     8/26/97 11:38a Rlove
- * 
- * 7     7/15/97 1:59p Rjohnson
- * Fix for mouse and client
- * 
- * 6     3/25/97 11:28a Rlove
- * New camera entity
- * 
- * 5     3/07/97 1:46p Rjohnson
- * Id Updates
- */

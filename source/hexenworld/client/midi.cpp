@@ -638,34 +638,3 @@ void MIDI_Stop(void)
 {
 }
 #endif
-
-/*
- * $Log: /HexenWorld/Client/midi.c $
- * 
- * 7     3/27/98 6:22p Jmonroe
- * just made nomidi more clean
- * 
- * 6     3/07/98 6:20p Rjohnson
- * added a -nomidi command line parameter
- * 
- * 5     3/04/98 5:01p Rjohnson
- * Midi won't initialize if -nosound
- * 
- * 4     3/03/98 3:20p Rjohnson
- * Midi support for starting a map
- * 
- * 3     3/02/98 3:23p Rjohnson
- * Vid Updates
- * 
- * 2     2/19/98 3:42p Rjohnson
- * Midi Music - Yeah!
- * 
- * 1     2/19/98 3:23p Rjohnson
- * 
- * 3     4/24/97 3:32p Bgokey
- * 
- * 2     4/24/97 12:13p Bgokey
- * 
- * 1     2/27/97 4:04p Rjohnson
- * Initial Revision
- */

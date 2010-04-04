@@ -1033,33 +1033,3 @@ void S_BeginPrecaching (void)
 void S_EndPrecaching (void)
 {
 }
-
-/*
- * $Log: /H2 Mission Pack/SND_DMA.C $
- * 
- * 9     4/01/98 6:43p Jmonroe
- * fixed boundschecker errors
- * 
- * 8     3/20/98 3:45p Jmonroe
- * fixed -nosound or precache 0 bugs!!!
- * 
- * 7     3/17/98 4:06p Mgummelt
- * 
- * 6     3/13/98 2:41a Jmonroe
- * added updatesoundPos and stopsound builtins
- * 
- * 5     3/12/98 4:18p Jmonroe
- * 
- * 4     3/03/98 12:08p Jmonroe
- * fixed broken stopsound code
- * 
- * 3     3/02/98 11:04p Jmonroe
- * changed start sound back to byte, added stopsound, put in a hack fix
- * for touchtriggers area getting removed
- * 
- * 2     3/01/98 8:20p Jmonroe
- * removed the slow "quake" version of common functions
- * 
- * 4     3/03/97 4:03p Rjohnson
- * Added cd specifications to the world-spawn entity
- */
