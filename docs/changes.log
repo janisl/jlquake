@@ -20,3 +20,8 @@
   I changed Quake 2 to have OpenGL driver built-in.
 02.04.2010
   I converted all games to C++.
+03.04.2010
+  I created core library that will serve as a common base for all games. There I added memory mnager from my other project, this will eventually replace old memory management that uses big memory block and does management there, which even Quake 3 uses to some extent.
+04.04.2010
+  I added dynamic string and array classes to core. In string class I added static methods to replace standard string methods, changed all games to use them.
+  I did some code cleanup.
