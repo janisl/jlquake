@@ -1,6 +1,3 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/source/quake3/jpeg-6)
-
 add_library(jpeg STATIC
 	jcapimin.c
 	jcapistd.c

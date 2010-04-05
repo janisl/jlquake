@@ -8,9 +8,6 @@ set(THREAD_LDFLAGS -lpthread)
 set(LDFLAGS -ldl -lm)
 set(GLLDFLAGS ${LDFLAGS} -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm)
 
-include_directories(${CMAKE_SOURCE_DIR}/libs/jpeg)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/jpeg-6)
-
 #############################################################################
 # CLIENT/SERVER
 #############################################################################
