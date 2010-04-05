@@ -37,6 +37,7 @@ add_library(jpeg STATIC
 	jdpostct.c
 	jdsample.c
 	jdtrans.c
+	jerror.c
 	jerror.h
 	jfdctflt.c
 	jfdctfst.c

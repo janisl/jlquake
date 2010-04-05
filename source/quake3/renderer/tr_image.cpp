@@ -1360,6 +1360,38 @@ static void LoadTGA ( const char *name, byte **pic, int *width, int *height)
   ri.FS_FreeFile (buffer);
 }
 
+/*
+=========================================================
+
+JPEG LOADING
+
+=========================================================
+*/
+
+static void my_jpeg_error_exit(j_common_ptr cinfo)
+{
+	char buffer[JMSG_LENGTH_MAX];
+
+	/* Create the message */
+	(*cinfo->err->format_message) (cinfo, buffer);
+
+	/* Let the memory manager delete any temp files before we die */
+	jpeg_destroy(cinfo);
+
+	ri.Error( ERR_FATAL, "%s\n", buffer );
+}
+
+static void my_jpeg_output_message(j_common_ptr cinfo)
+{
+	char buffer[JMSG_LENGTH_MAX];
+
+	/* Create the message */
+	(*cinfo->err->format_message) (cinfo, buffer);
+
+	/* Send it to stderr, adding a newline */
+	ri.Printf(PRINT_ALL, "%s\n", buffer);
+}
+
 static void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height ) {
   /* This struct contains the JPEG decompression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
@@ -1404,6 +1436,8 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
    * address which we place into the link field in cinfo.
    */
   cinfo.err = jpeg_std_error(&jerr);
+  cinfo.err->error_exit = my_jpeg_error_exit;
+  cinfo.err->output_message = my_jpeg_output_message;
 
   /* Now we can initialize the JPEG decompression object. */
   jpeg_create_decompress(&cinfo);

@@ -60,7 +60,6 @@ set(QUAKE3_FILES
 	game/q_shared.cpp
 	game/q_math.cpp
 	jpeg-6/jdatasrc.c
-	jpeg-6/jerror.cpp
 	renderer/tr_animation.cpp
 	renderer/tr_backend.cpp
 	renderer/tr_bsp.cpp
