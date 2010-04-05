@@ -1566,11 +1566,13 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
   /* Here we use the library's state variable cinfo.output_scanline as the
    * loop counter, so that we don't have to keep track ourselves.
    */
-	JSAMPROW ScanLine = new JSAMPLE[cinfo.output_width * cinfo.output_components];
-	JSAMPARRAY buffer = &ScanLine;
+	QArray<JSAMPLE> ScanLine;
+	ScanLine.SetNum(cinfo.output_width * cinfo.output_components);
+	JSAMPROW RowPtr = ScanLine.Ptr();
+	JSAMPARRAY buffer = &RowPtr;
 	while (cinfo.output_scanline < cinfo.output_height)
 	{
-		JSAMPROW pSrc = ScanLine;
+		JSAMPROW pSrc = ScanLine.Ptr();
 		byte* pDst = out + (row_stride * cinfo.output_scanline);
 		jpeg_read_scanlines(&cinfo, buffer, 1);
 		for (int i = 0; i < cinfo.output_width; i++, pSrc += cinfo.output_components, pDst += 4)
@@ -1582,7 +1584,6 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
 			pDst[3] = 255;
 		}
 	}
-	delete[] ScanLine;
 
   /* Step 7: Finish decompression */
 
