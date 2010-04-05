@@ -58,9 +58,7 @@ start_pass_fdctmgr (j_compress_ptr cinfo)
   int ci, qtblno, i;
   jpeg_component_info *compptr;
   JQUANT_TBL * qtbl;
-#ifdef DCT_ISLOW_SUPPORTED
   DCTELEM * dtbl;
-#endif
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -179,7 +177,6 @@ start_pass_fdctmgr (j_compress_ptr cinfo)
  * blocks. The quantized coefficients are returned in coef_blocks[].
  */
 
-#if 0 // bk001204
 METHODDEF void
 forward_DCT (j_compress_ptr cinfo, jpeg_component_info * compptr,
 	     JSAMPARRAY sample_data, JBLOCKROW coef_blocks,
@@ -266,7 +263,7 @@ forward_DCT (j_compress_ptr cinfo, jpeg_component_info * compptr,
     }
   }
 }
-#endif // 0
+
 
 #ifdef DCT_FLOAT_SUPPORTED
 

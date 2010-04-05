@@ -84,10 +84,8 @@ GLOBAL void
 jpeg_calc_output_dimensions (j_decompress_ptr cinfo)
 /* Do computations that are needed before master selection phase */
 {
-#if 0	// JDC: commented out to remove warning
   int ci;
   jpeg_component_info *compptr;
-#endif
 
   /* Prevent application from calling me at wrong times */
   if (cinfo->global_state != DSTATE_READY)

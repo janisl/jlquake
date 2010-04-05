@@ -13,7 +13,6 @@
 #ifndef JPEGLIB_H
 #define JPEGLIB_H
 
-typedef unsigned char boolean;
 /*
  * First we include the configuration files that record how this
  * installation of the JPEG library is set up.  jconfig.h can be
@@ -22,9 +21,9 @@ typedef unsigned char boolean;
  */
 
 #ifndef JCONFIG_INCLUDED	/* in case jinclude.h already did */
-#include "../jpeg-6/jconfig.h"		/* widely used configuration options */
+#include "jconfig.h"		/* widely used configuration options */
 #endif
-#include "../jpeg-6/jmorecfg.h"		/* seldom changed options */
+#include "jmorecfg.h"		/* seldom changed options */
 
 
 /* Version ID for the JPEG library.
@@ -1044,8 +1043,8 @@ struct jpeg_color_quantizer { long dummy; };
  */
 
 #ifdef JPEG_INTERNALS
-#include "../jpeg-6/jpegint.h"		/* fetch private declarations */
-#include "../jpeg-6/jerror.h"		/* fetch error codes too */
+#include "jpegint.h"		/* fetch private declarations */
+#include "jerror.h"		/* fetch error codes too */
 #endif
 
 #endif /* JPEGLIB_H */

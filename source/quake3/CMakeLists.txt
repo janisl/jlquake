@@ -8,6 +8,9 @@ set(THREAD_LDFLAGS -lpthread)
 set(LDFLAGS -ldl -lm)
 set(GLLDFLAGS ${LDFLAGS} -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm)
 
+include_directories(${CMAKE_SOURCE_DIR}/libs/jpeg)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/jpeg-6)
+
 #############################################################################
 # CLIENT/SERVER
 #############################################################################
@@ -56,40 +59,10 @@ set(QUAKE3_FILES
 	qcommon/vm_x86.cpp
 	game/q_shared.cpp
 	game/q_math.cpp
-	jpeg-6/jcapimin.c
-	jpeg-6/jchuff.c
-	jpeg-6/jcinit.c
-	jpeg-6/jccoefct.c
-	jpeg-6/jccolor.c
-	jpeg-6/jfdctflt.c
 	jpeg-6/jcdctmgr.c
-	jpeg-6/jcmainct.c
-	jpeg-6/jcmarker.c
-	jpeg-6/jcmaster.c
-	jpeg-6/jcomapi.c
-	jpeg-6/jcparam.c
-	jpeg-6/jcprepct.c
-	jpeg-6/jcsample.c
-	jpeg-6/jdapimin.c
-	jpeg-6/jdapistd.c
 	jpeg-6/jdatasrc.c
-	jpeg-6/jdcoefct.c
-	jpeg-6/jdcolor.c
-	jpeg-6/jcphuff.c
-	jpeg-6/jddctmgr.c
-	jpeg-6/jdhuff.c
-	jpeg-6/jdinput.c
-	jpeg-6/jdmainct.c
-	jpeg-6/jdmarker.c
-	jpeg-6/jdmaster.c
-	jpeg-6/jdpostct.c
-	jpeg-6/jdsample.c
-	jpeg-6/jdtrans.c
 	jpeg-6/jerror.cpp
-	jpeg-6/jidctflt.c
-	jpeg-6/jmemmgr.c
 	jpeg-6/jmemnobs.cpp
-	jpeg-6/jutils.c
 	renderer/tr_animation.cpp
 	renderer/tr_backend.cpp
 	renderer/tr_bsp.cpp
@@ -157,13 +130,13 @@ endforeach(SRC)
 
 add_executable(vquake3 ${QUAKE3_FILES})
 set_target_properties(vquake3 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake3 botlib core zlib ${GLLDFLAGS})
-add_dependencies(vquake3 botlib core zlib)
+target_link_libraries(vquake3 botlib core jpeg zlib ${GLLDFLAGS})
+add_dependencies(vquake3 botlib core jpeg zlib)
 
 #add_executable(vquake3-smp ${QUAKE3_FILES})
 #set_target_properties(vquake3-smp PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSMP")
-#target_link_libraries(vquake3-smp botlib ${THREAD_LDFLAGS} ${GLLDFLAGS})
-#add_dependencies(vquake3-smp botlib)
+#target_link_libraries(vquake3-smp botlib core jpeg zlib ${THREAD_LDFLAGS} ${GLLDFLAGS})
+#add_dependencies(vquake3-smp botlib core jpeg zlib)
 
 #############################################################################
 # DEDICATED SERVER                        

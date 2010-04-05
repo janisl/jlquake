@@ -149,10 +149,6 @@ typedef unsigned short UINT16;
 typedef unsigned int UINT16;
 #endif /* HAVE_UNSIGNED_SHORT */
 
-#ifndef _BASETSD_H_
-typedef long INT32;
-#endif
-
 /* INT16 must hold at least the values -32768..32767. */
 
 #ifndef XMD_H			/* X11/xmd.h correctly defines INT16 */
@@ -161,9 +157,9 @@ typedef short INT16;
 
 /* INT32 must hold at least signed 32-bit values. */
 
-//#ifndef XMD_H			/* X11/xmd.h correctly defines INT32 */
-//typedef long INT32;
-//#endif
+#ifndef XMD_H			/* X11/xmd.h correctly defines INT32 */
+typedef long INT32;
+#endif
 
 /* Datatype used for image dimensions.  The JPEG standard only supports
  * images up to 64K*64K due to 16-bit fields in SOF markers.  Therefore
@@ -196,10 +192,8 @@ typedef unsigned int JDIMENSION;
  */
 
 #ifdef NEED_FAR_POINTERS
-#undef FAR
 #define FAR  far
 #else
-#undef FAR
 #define FAR
 #endif
 
@@ -211,9 +205,9 @@ typedef unsigned int JDIMENSION;
  * Defining HAVE_BOOLEAN before including jpeglib.h should make it work.
  */
 
-//#ifndef HAVE_BOOLEAN
-//typedef int boolean;
-//#endif
+#ifndef HAVE_BOOLEAN
+typedef int boolean;
+#endif
 #ifndef FALSE			/* in case these macros already exist */
 #define FALSE	0		/* values of boolean */
 #endif

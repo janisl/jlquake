@@ -1,0 +1,53 @@
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/source/quake3/jpeg-6)
+
+add_library(jpeg STATIC
+	jcapimin.c
+	jcapistd.c
+	jccoefct.c
+	jccolor.c
+	jchuff.c
+	jchuff.h
+	jcinit.c
+	jcmainct.c
+	jcmarker.c
+	jcmaster.c
+	jcomapi.c
+	jcparam.c
+	jcphuff.c
+	jcprepct.c
+	jcsample.c
+	jctrans.c
+	jdapimin.c
+	jdapistd.c
+	jdatadst.c
+	jdcoefct.c
+	jdcolor.c
+	jdct.h
+	jddctmgr.c
+	jdhuff.c
+	jdhuff.h
+	jdinput.c
+	jdmainct.c
+	jdmarker.c
+	jdmaster.c
+	jdmerge.c
+	jdphuff.c
+	jdpostct.c
+	jdsample.c
+	jdtrans.c
+	jerror.h
+	jfdctflt.c
+	jfdctfst.c
+	jfdctint.c
+	jidctflt.c
+	jidctfst.c
+	jidctint.c
+	jidctred.c
+	jinclude.h
+	jmemmgr.c
+	jmemsys.h
+	jquant1.c
+	jquant2.c
+	jutils.c
+)
