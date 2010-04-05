@@ -6,6 +6,7 @@ add_library(jpeg STATIC
 	jcapistd.c
 	jccoefct.c
 	jccolor.c
+	jcdctmgr.c
 	jchuff.c
 	jchuff.h
 	jcinit.c
@@ -46,6 +47,7 @@ add_library(jpeg STATIC
 	jidctred.c
 	jinclude.h
 	jmemmgr.c
+	jmemnobs.c
 	jmemsys.h
 	jquant1.c
 	jquant2.c
