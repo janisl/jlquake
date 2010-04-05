@@ -1490,12 +1490,10 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
    */
   struct jpeg_error_mgr jerr;
   /* More stuff */
-  JSAMPARRAY buffer;		/* Output row buffer */
   int row_stride;		/* physical row width in output buffer */
   unsigned char *out;
   byte	*fbuffer;
-  byte  *bbuf;
-
+ 
   /* In this example we want to open the input file before doing anything else,
    * so that the setjmp() error recovery below can assume the file is open.
    * VERY IMPORTANT: use "b" option to fopen() if you are on a machine that
@@ -1554,9 +1552,9 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
    * In this example, we need to make an output work buffer of the right size.
    */ 
   /* JSAMPLEs per row in output buffer */
-  row_stride = cinfo.output_width * cinfo.output_components;
+  row_stride = cinfo.output_width * 4;
 
-  out = (byte*)ri.Malloc(cinfo.output_width*cinfo.output_height*cinfo.output_components);
+  out = (byte*)ri.Malloc(cinfo.output_width * cinfo.output_height * 4);
 
   *pic = out;
   *width = cinfo.output_width;
@@ -1568,28 +1566,23 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
   /* Here we use the library's state variable cinfo.output_scanline as the
    * loop counter, so that we don't have to keep track ourselves.
    */
-  while (cinfo.output_scanline < cinfo.output_height) {
-    /* jpeg_read_scanlines expects an array of pointers to scanlines.
-     * Here the array is only one element long, but you could ask for
-     * more than one scanline at a time if that's more convenient.
-     */
-	bbuf = ((out+(row_stride*cinfo.output_scanline)));
-	buffer = &bbuf;
-    (void) jpeg_read_scanlines(&cinfo, buffer, 1);
-  }
-
-  // clear all the alphas to 255
-  {
-	  int	i, j;
-		byte	*buf;
-
-		buf = *pic;
-
-	  j = cinfo.output_width * cinfo.output_height * 4;
-	  for ( i = 3 ; i < j ; i+=4 ) {
-		  buf[i] = 255;
-	  }
-  }
+	JSAMPROW ScanLine = new JSAMPLE[cinfo.output_width * cinfo.output_components];
+	JSAMPARRAY buffer = &ScanLine;
+	while (cinfo.output_scanline < cinfo.output_height)
+	{
+		JSAMPROW pSrc = ScanLine;
+		byte* pDst = out + (row_stride * cinfo.output_scanline);
+		jpeg_read_scanlines(&cinfo, buffer, 1);
+		for (int i = 0; i < cinfo.output_width; i++, pSrc += cinfo.output_components, pDst += 4)
+		{
+			pDst[0] = pSrc[0];
+			pDst[1] = pSrc[1];
+			pDst[2] = pSrc[2];
+			// clear all the alphas to 255
+			pDst[3] = 255;
+		}
+	}
+	delete[] ScanLine;
 
   /* Step 7: Finish decompression */
 
