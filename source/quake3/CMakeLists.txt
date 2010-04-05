@@ -59,7 +59,6 @@ set(QUAKE3_FILES
 	qcommon/vm_x86.cpp
 	game/q_shared.cpp
 	game/q_math.cpp
-	jpeg-6/jdatasrc.c
 	renderer/tr_animation.cpp
 	renderer/tr_backend.cpp
 	renderer/tr_bsp.cpp

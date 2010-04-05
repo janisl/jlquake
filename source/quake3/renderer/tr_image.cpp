@@ -33,7 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define JPEG_INTERNALS
 extern "C"
 {
-#include "../jpeg-6/jpeglib.h"
+#include "../../../libs/jpeg/jpeglib.h"
 }
 
 
@@ -1392,6 +1392,85 @@ static void my_jpeg_output_message(j_common_ptr cinfo)
 	ri.Printf(PRINT_ALL, "%s\n", buffer);
 }
 
+struct my_source_mgr
+{
+	jpeg_source_mgr	pub;
+
+	unsigned char*	infile;
+	JOCTET*			buffer;
+	bool			start_of_file;
+};
+
+typedef my_source_mgr * my_src_ptr;
+
+#define INPUT_BUF_SIZE  4096	/* choose an efficiently fread'able size */
+
+static void my_jpeg_init_source(j_decompress_ptr cinfo)
+{
+	my_src_ptr src = (my_src_ptr)cinfo->src;
+	src->start_of_file = TRUE;
+}
+
+static boolean my_jpeg_fill_input_buffer(j_decompress_ptr cinfo)
+{
+	my_src_ptr src = (my_src_ptr)cinfo->src;
+
+	memcpy(src->buffer, src->infile, INPUT_BUF_SIZE);
+
+	src->infile += INPUT_BUF_SIZE;
+
+	src->pub.next_input_byte = src->buffer;
+	src->pub.bytes_in_buffer = INPUT_BUF_SIZE;
+	src->start_of_file = FALSE;
+
+	return TRUE;
+}
+
+static void my_jpeg_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
+{
+	my_src_ptr src = (my_src_ptr) cinfo->src;
+	if (num_bytes > 0)
+	{
+		while (num_bytes > (long)src->pub.bytes_in_buffer)
+		{
+			num_bytes -= (long)src->pub.bytes_in_buffer;
+			(void)my_jpeg_fill_input_buffer(cinfo);
+		}
+		src->pub.next_input_byte += (size_t)num_bytes;
+		src->pub.bytes_in_buffer -= (size_t)num_bytes;
+	}
+}
+
+static void my_jpeg_term_source(j_decompress_ptr cinfo)
+{
+}
+
+static void my_jpeg_src(j_decompress_ptr cinfo, unsigned char *infile)
+{
+	my_src_ptr src;
+
+	if (cinfo->src == NULL)
+	{
+		cinfo->src = (struct jpeg_source_mgr *)
+			(*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+			sizeof(my_source_mgr));
+		src = (my_src_ptr) cinfo->src;
+		src->buffer = (JOCTET *)
+			(*cinfo->mem->alloc_small) ((j_common_ptr) cinfo, JPOOL_PERMANENT,
+			INPUT_BUF_SIZE * sizeof(JOCTET));
+	}
+
+	src = (my_src_ptr) cinfo->src;
+	src->pub.init_source = my_jpeg_init_source;
+	src->pub.fill_input_buffer = my_jpeg_fill_input_buffer;
+	src->pub.skip_input_data = my_jpeg_skip_input_data;
+	src->pub.resync_to_restart = jpeg_resync_to_restart;
+	src->pub.term_source = my_jpeg_term_source;
+	src->infile = infile;
+	src->pub.bytes_in_buffer = 0;
+	src->pub.next_input_byte = NULL;
+}
+
 static void LoadJPG( const char *filename, unsigned char **pic, int *width, int *height ) {
   /* This struct contains the JPEG decompression parameters and pointers to
    * working space (which is allocated as needed by the JPEG library).
@@ -1444,7 +1523,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
 
   /* Step 2: specify data source (eg, a file) */
 
-  jpeg_stdio_src(&cinfo, fbuffer);
+  my_jpeg_src(&cinfo, fbuffer);
 
   /* Step 3: read file parameters with jpeg_read_header() */
 

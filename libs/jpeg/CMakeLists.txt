@@ -22,6 +22,7 @@ add_library(jpeg STATIC
 	jdapimin.c
 	jdapistd.c
 	jdatadst.c
+	jdatasrc.c
 	jdcoefct.c
 	jdcolor.c
 	jdct.h
@@ -50,7 +51,10 @@ add_library(jpeg STATIC
 	jmemmgr.c
 	jmemnobs.c
 	jmemsys.h
+	jpegint.h
+	jpeglib.h
 	jquant1.c
 	jquant2.c
 	jutils.c
+	jversion.h
 )

@@ -14,7 +14,6 @@
  * than 8 bits on your machine, you may need to do some tweaking.
  */
 
-
 /* this is not a core library module, so it doesn't define JPEG_INTERNALS */
 #include "jinclude.h"
 #include "jpeglib.h"
@@ -26,7 +25,7 @@
 typedef struct {
   struct jpeg_source_mgr pub;	/* public fields */
 
-  unsigned char *infile;		/* source stream */
+  FILE * infile;		/* source stream */
   JOCTET * buffer;		/* start of buffer */
   boolean start_of_file;	/* have we gotten any data yet? */
 } my_source_mgr;
@@ -91,13 +90,22 @@ METHODDEF boolean
 fill_input_buffer (j_decompress_ptr cinfo)
 {
   my_src_ptr src = (my_src_ptr) cinfo->src;
+  size_t nbytes;
 
-  memcpy( src->buffer, src->infile, INPUT_BUF_SIZE );
+  nbytes = JFREAD(src->infile, src->buffer, INPUT_BUF_SIZE);
 
-  src->infile += INPUT_BUF_SIZE;
+  if (nbytes <= 0) {
+    if (src->start_of_file)	/* Treat empty input file as fatal error */
+      ERREXIT(cinfo, JERR_INPUT_EMPTY);
+    WARNMS(cinfo, JWRN_JPEG_EOF);
+    /* Insert a fake EOI marker */
+    src->buffer[0] = (JOCTET) 0xFF;
+    src->buffer[1] = (JOCTET) JPEG_EOI;
+    nbytes = 2;
+  }
 
   src->pub.next_input_byte = src->buffer;
-  src->pub.bytes_in_buffer = INPUT_BUF_SIZE;
+  src->pub.bytes_in_buffer = nbytes;
   src->start_of_file = FALSE;
 
   return TRUE;
@@ -171,7 +179,7 @@ term_source (j_decompress_ptr cinfo)
  */
 
 GLOBAL void
-jpeg_stdio_src (j_decompress_ptr cinfo, unsigned char *infile)
+jpeg_stdio_src (j_decompress_ptr cinfo, FILE * infile)
 {
   my_src_ptr src;
 
