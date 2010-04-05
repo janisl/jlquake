@@ -33,6 +33,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define JPEG_INTERNALS
 extern "C"
 {
+#ifdef _WIN32
+#define XMD_H
+#define HAVE_BOOLEAN
+#undef FAR
+#endif
 #include "../../../libs/jpeg/jpeglib.h"
 }
 
