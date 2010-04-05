@@ -1,3 +1,5 @@
+add_subdirectory(botlib)
+
 set(BASE_CFLAGS "-pipe -fsigned-char -I/usr/X11R6/include")
 set(DEBUG_CFLAGS "${BASE_CFLAGS} -g  -Wall -DNO_MOUSEGRAB -O")
 set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium -fomit-frame-pointer -pipe -ffast-math -malign-loops=2 -malign-jumps=2 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce")
@@ -9,41 +11,6 @@ set(GLLDFLAGS ${LDFLAGS} -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm)
 #############################################################################
 # CLIENT/SERVER
 #############################################################################
-
-set(BOTLIB_SOURCES
-	botlib/be_aas_bspq3.cpp
-	botlib/be_aas_cluster.cpp
-	botlib/be_aas_debug.cpp
-	botlib/be_aas_entity.cpp
-	botlib/be_aas_file.cpp
-	botlib/be_aas_main.cpp
-	botlib/be_aas_move.cpp
-	botlib/be_aas_optimize.cpp
-	botlib/be_aas_reach.cpp
-	botlib/be_aas_route.cpp
-	botlib/be_aas_routealt.cpp
-	botlib/be_aas_sample.cpp
-	botlib/be_ai_char.cpp
-	botlib/be_ai_chat.cpp
-	botlib/be_ai_gen.cpp
-	botlib/be_ai_goal.cpp
-	botlib/be_ai_move.cpp
-	botlib/be_ai_weap.cpp
-	botlib/be_ai_weight.cpp
-	botlib/be_ea.cpp
-	botlib/be_interface.cpp
-	botlib/l_crc.cpp
-	botlib/l_libvar.cpp
-	botlib/l_log.cpp
-	botlib/l_memory.cpp
-	botlib/l_precomp.cpp
-	botlib/l_script.cpp
-	botlib/l_struct.cpp
-)
-
-add_library(botlib STATIC ${BOTLIB_SOURCES})
-set_target_properties(botlib PROPERTIES COMPILE_FLAGS "-DBOTLIB")
-add_dependencies(botlib core)
 
 set(QUAKE3_FILES
 	client/cl_cgame.cpp
