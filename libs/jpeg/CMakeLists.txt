@@ -14,6 +14,7 @@ add_library(jpeg STATIC
 	jcmarker.c
 	jcmaster.c
 	jcomapi.c
+	jconfig.h
 	jcparam.c
 	jcphuff.c
 	jcprepct.c
@@ -51,6 +52,7 @@ add_library(jpeg STATIC
 	jmemmgr.c
 	jmemnobs.c
 	jmemsys.h
+	jmorecfg.h
 	jpegint.h
 	jpeglib.h
 	jquant1.c
