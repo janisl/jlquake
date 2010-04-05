@@ -283,8 +283,6 @@ void Host_InitLocal (void)
 	host_time = 1.0;		// so a think at time 0 won't get called
 }
 
-extern qboolean	LegitCopy;
-
 /*
 ===============
 Host_WriteConfiguration
@@ -295,9 +293,6 @@ Writes key bindings and archived cvars to config.cfg
 void Host_WriteConfiguration (char *fname)
 {
 	FILE	*f;
-
-	if (!LegitCopy)
-		return;
 
 // dedicated servers initialize the host but don't parse and set the
 // config.cfg cvars

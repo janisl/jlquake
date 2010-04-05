@@ -46,7 +46,6 @@ extern HWND			mainwindow;
 extern qboolean		ActiveApp, Minimized;
 
 extern qboolean	Win32AtLeastV4, WinNT;
-extern qboolean	LegitCopy;
 
 int VID_ForceUnlockedAndReturnState (void);
 void VID_ForceLockState (int lk);

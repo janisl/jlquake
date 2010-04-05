@@ -51,94 +51,6 @@ char	**com_argv;
 #define CMDLINE_LENGTH	256
 char	com_cmdline[CMDLINE_LENGTH];
 
-#ifdef ACTIVISION
-	byte *EncryptKey;
-	int KeySize = 0;
-#endif
-
-//qboolean		standard_quake = true, rogue, hipnotic;
-
-// Build Version
-//    BUILD_RAVEN      
-//       Internal version we build everyday
-//    BUILD_ACTIVISION_1            2/6/1997 
-//       Version was sent to activision
-//    BUILD_ID_1					3/21/1997 
-//       Version was sent to activision
-//    BUILD_ID_2					4/14/1997 
-//       Version was sent to activision
-//    BUILD_ACTIVISION_2            6/17/1997 
-//       Version was sent to activision for e3
-//    BUILD_RAVEN_2					6/19/1997 
-//       Post E3 Raven build
-//    BUILD_ACTIVISION_3            7/23/1997 
-//       Alpha 2 sent to activision
-//    BUILD_RAVEN_3					7/23/1997 
-//       Post Alpha 2 Raven build
-//    BUILD_ACTIVISION_4            7/30/1997 
-//       Network fix for activision
-//    BUILD_RAVEN_4					7/30/1997 
-//       Post Network fix
-//    BUILD_ACTIVISION_5            8/1/1997 
-//       "Beta" version
-//    BUILD_RAVEN_5					8/1/1997 
-//       Post "Beta"
-//    BUILD_ACTIVISION_6            8/5/1997 
-//       IPX Networking Update
-//    BUILD_RAVEN_6					8/6/1997 
-//       Post Networking fix
-//    BUILD_ACTIVISION_7            8/9/1997 
-//       Beta 2
-//    BUILD_RAVEN_7					8/11/1997 
-//       Post Networking fix
-//    BUILD_ACTIVISION_8            8/16/1997 
-//       Beta 3
-//    BUILD_RAVEN_8					8/16/1997 
-//       Post Beta 3
-//    BUILD_ACTIVISION_9            8/18/1997 
-//       Demo Beta 2
-//    BUILD_ACTIVISION_10           8/19/1997 
-//       Demo Beta 3
-//    BUILD_RAVEN_9					8/20/1997 
-//       Post Beta 3
-//    BUILD_ACTIVISION_11           8/21/1997 
-//       Demo Beta 4
-//    BUILD_ACTIVISION_12           8/21/1997 
-//       Beta 4
-//    BUILD_ACTIVISION_13           8/25/1997 
-//       Demo Beta 5
-//    BUILD_ACTIVISION_14           3/5/1998
-//       Press release MP
-
-char H3_VERSION[] = "BUILD_ACTIVISION_14";
-
-// Build Number
-//    0 - BUILD_RAVEN
-//    1 - BUILD_ACTIVISION_1
-//    2 - BUILD_ID_1
-//    3 - BUILD_ACTIVISION_2
-//    4 - BUILD_RAVEN_2
-//    5 - BUILD_ACTIVISION_3
-//    6 - BUILD_RAVEN_3
-//    7 - BUILD_ACTIVISION_4
-//    8 - BUILD_RAVEN_4
-//    9 - BUILD_ACTIVISION_5
-//   10 - BUILD_RAVEN_5
-//   11 - BUILD_ACTIVISION_6
-//   12 - BUILD_RAVEN_6
-//   13 - BUILD_ACTIVISION_7
-//   14 - BUILD_RAVEN_7
-//   15 - BUILD_ACTIVISION_8
-//   16 - BUILD_RAVEN_8
-//   17 - BUILD_ACTIVISION_9
-//   18 - BUILD_ACTIVISION_10
-//   19 - BUILD_RAVEN_9
-//   20 - BUILD_ACTIVISION_11
-//   21 - BUILD_ACTIVISION_12
-//   22 - BUILD_ACTIVISION_13
-//   22 - BUILD_ACTIVISION_14
-int H3_BUILD = 23;
-
 // this graphic needs to be in the pak file to use registered features
 unsigned short pop[] =
 {
@@ -159,10 +71,6 @@ unsigned short pop[] =
 ,0x0000,0x0000,0x0000,0x0000,0x6500,0x0000,0x0000,0x0000
 ,0x0000,0x0000,0x0000,0x0000,0x6400,0x0000,0x0000,0x0000
 };
-
-#ifdef ACTIVISION
-	void DecryptFile(char *FileName, byte *Buffer, int BufSize);
-#endif
 
 /*
 All of Quake's data access is through a hierchal file system, but the contents of the 
@@ -827,10 +735,6 @@ void COM_CheckRegistered (void)
 	Sys_FileRead (h, check, sizeof(check));
 	COM_CloseFile (h);
 
-#ifdef ACTIVISION
-	DecryptFile("gfx/pop.lmp", (byte *)check, sizeof(check));
-#endif
-	
 	for (i=0 ; i<128 ; i++)
 		if (pop[i] != (unsigned short)BigShort (check[i]))
 			Sys_Error ("Corrupted data file.");
@@ -913,127 +817,6 @@ void COM_InitArgv (int argc, char **argv)
 	}
 */
 }
-
-extern qboolean	LegitCopy;
-
-#ifdef ACTIVISION
-
-qboolean ReadEncryption(char *Position)
-{
-	FILE *FH;
-	char temp[MAX_PATH];
-
-	sprintf(temp,"%sinstall\\data2.cab",Position);
-	
-	FH = fopen(temp,"rb");
-	if (!FH)
-	{
-		KeySize = 0;
-		return false;
-	}
-	fseek(FH,0,SEEK_END);
-	KeySize = ftell(FH);
-	fseek(FH,0,SEEK_SET);
-
-	EncryptKey = (byte *)malloc(KeySize);
-	if (!EncryptKey)
-	{
-		Con_Printf("Could not alloc %d bytes\n",KeySize);
-		KeySize = 0;
-		fclose(FH);
-
-		return false;
-	}
-
-	fread(EncryptKey,1,KeySize,FH);
-	fclose(FH);
-
-	return true;
-}
-
-void FindEncryption(void)
-{
-	char Drives[2048],*Position;
-	char VolumeName[MAX_PATH],FileSystemName[MAX_PATH];
-	DWORD VolumeSerialNumber,MaximumComponentLength,FileSystemFlags;
-	int DriveType;
-	BOOL Result;
-
-	GetLogicalDriveStrings(sizeof(Drives),Drives);
-
-	Position = Drives;
-	while(QStr::Length(Position) != 0)
-	{
-		DriveType = GetDriveType(Position);
-		if (DriveType == DRIVE_CDROM)
-		{
-			Result = GetVolumeInformation(Position,VolumeName,sizeof(VolumeName),&VolumeSerialNumber,
-				&MaximumComponentLength,&FileSystemFlags,FileSystemName,sizeof(FileSystemName));
-
-			if (Result && QStr::ICmp(VolumeName,"Hexen II") == 0)
-			    //&& VolumeSerialNumber == 0x24214a8b)
-			{
-				if (ReadEncryption(Position))
-					return;
-			}
-		}
-		Position += QStr::Length(Position)+1;
-	}
-
-	KeySize = 1024;
-	EncryptKey = (byte *)malloc(1024);
-
-	LegitCopy = false;
-}
-#endif
-
-#ifdef SECURE
-void FindCD(void)
-{
-	char Drives[2048],*Position;
-	char VolumeName[MAX_PATH],FileSystemName[MAX_PATH];
-	DWORD VolumeSerialNumber,MaximumComponentLength,FileSystemFlags;
-	int DriveType;
-	BOOL Result;
-
-
-	GetLogicalDriveStrings(sizeof(Drives),Drives);
-
-	Position = Drives;
-	while(QStr::Length(Position) != 0)
-	{
-		DriveType = GetDriveType(Position);
-		if (DriveType == DRIVE_CDROM)
-		{
-			Result = GetVolumeInformation(Position,VolumeName,sizeof(VolumeName),&VolumeSerialNumber,
-				&MaximumComponentLength,&FileSystemFlags,FileSystemName,sizeof(FileSystemName));
-
-//			if (Result && QStr::ICmp(VolumeName,"Hexen II") == 0)
-//			if (Result && QStr::ICmp(VolumeName,"m3D_2") == 0)
-//			if (Result && QStr::ICmp(VolumeName,"dkreign") == 0)
-			if (Result && QStr::ICmp(VolumeName,"H2MP") == 0)
-			    //&& VolumeSerialNumber == 0x24214a8b)
-			{
-				FILE *FH;
-				char temp[MAX_PATH];
-				sprintf(temp,"%sInstall\\Cdrom.spd",Position);
-				
-				FH = fopen(temp,"rb");
-				if (FH)
-				{
-					fclose(FH);
-					return;
-				}
-			}
-		}
-		Position += QStr::Length(Position)+1;
-	}
-
-	errormessage = "You need to have the Hexen 2 Mission Pack CD in order to play!";
-
-	LegitCopy = false;
-}
-#endif
 
 /*
 ================
@@ -1395,47 +1178,6 @@ void COM_CloseFile (int h)
 	Sys_FileClose (h);
 }
 
-#ifdef ACTIVISION
-
-#define MAX_LIST 6
-
-char *FileList[MAX_LIST] =
-{
-	".mdl",
-	".bsp",
-	".spr",
-	".lmp",
-	".wad",
-	".wav"
-};
-
-void DecryptFile(char *FileName, byte *Buffer, int BufSize)
-{
-	int Length,i,Value,Previous;
-
-	Length = QStr::Length(FileName);
-	if (Length < 4) return;
-	
-	for(i=0;i<MAX_LIST;i++)
-		if (QStr::ICmp(&FileName[Length-4],FileList[i]) == 0)
-			break;
-
-	if (i >= MAX_LIST)
-		return;
-
-	Previous = 0;
-	for(i=0;i<BufSize;i++)
-	{
-		Value = Buffer[i];
-
-		Value = Value - Previous - EncryptKey[i % KeySize] - BufSize;
-
-		Buffer[i] = Value & 255;
-		Previous = Buffer[i];
-	}
-}
-#endif
-
 /*
 ============
 COM_LoadFile
@@ -1491,9 +1233,6 @@ byte *COM_LoadFile (char *path, int usehunk, int *size)
 	Draw_BeginDisc ();
 	Sys_FileRead (h, buf, len);                     
 	COM_CloseFile (h);
-#ifdef ACTIVISION
-	DecryptFile(path, buf, len);
-#endif
 	Draw_EndDisc ();
 
 	return buf;

@@ -9,8 +9,6 @@
 #include "winquake.h"
 #endif
 
-extern qboolean	LegitCopy;
-
 void Cmd_ForwardToServer (void);
 void ListCommands (char *prefix);
 
@@ -542,9 +540,6 @@ void	Cmd_AddCommand (char *cmd_name, xcommand_t function)
 {
 	cmd_function_t	*cmd;
 
-	if (!LegitCopy && QStr::Cmp(cmd_name,"quit"))
-		return;
-	
 	if (host_initialized)	// because hunk allocation would get stomped
 		Sys_Error ("Cmd_AddCommand after host_initialized");
 		

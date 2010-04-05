@@ -26,7 +26,6 @@
 int			starttime;
 qboolean	ActiveApp, Minimized;
 qboolean	Win32AtLeastV4, WinNT;
-qboolean	LegitCopy = true;
 
 static double		pfreq;
 static double		curtime = 0.0;
@@ -286,24 +285,6 @@ void MaskExceptions (void)
 
 #endif
 
-#ifdef SECURE_TIME
-#include <time.h>
-#define BuildTime 889138800
-void CheckTime()
-{
-	time_t now;
-	int    days;
-
-	time( &now );
-	if ((now < BuildTime) || (now> BuildTime+26*24*60*60))
-	{
-		errormessage = "This version has expired.@Please contact Activision for a new version";
-		LegitCopy = false;
-	}
-}
-
-#endif
-
 /*
 ================
 Sys_Init
@@ -361,47 +342,6 @@ static	char temp[MAX_PATH+1];
 		WinNT = true;
 	else
 		WinNT = false;
-
-#ifdef SECURE
-	dwSize = sizeof(temp);
-    RegOpenKeyEx(HKEY_LOCAL_MACHINE,
-                 "SYSTEM\\CurrentControlSet\\Control\\ComputerName\\ComputerName",
-                 0, KEY_READ, &hKey);
-    value = RegQueryValueEx(hKey,"RAID2",NULL,&dwType,temp,&dwSize);
-
-	if (value == ERROR_SUCCESS && dwType == REG_SZ)
-	{
-		CRC_Init(&crc);
-		dwSize = QStr::Length(temp);
-		for(i=0;i<dwSize;i++)
-		{
-			CRC_ProcessByte(&crc,temp[i]);
-		}
-		i = CRC_Value(crc);
-//		Con_Printf("CRC is %d\n",i);
-
-		if (i != CRC_A && i != CRC_B)
-			LegitCopy = false;
-	}
-	else LegitCopy = false;
-
-	if (!LegitCopy)
-		errormessage = "You need to re-install Hexen 2 on this computer!";
-
-#else
-	LegitCopy = true;
-#endif
-
-#ifdef ACTIVISION
-	FindEncryption();
-#endif
-
-#ifdef SECURE
-	FindCD();
-#endif
-#ifdef SECURE_TIME
-	CheckTime();
-#endif
 }
 
 

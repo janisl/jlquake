@@ -27,8 +27,6 @@ char *cachedir = "/tmp";
 
 cvar_t  sys_linerefresh = {"sys_linerefresh","0"};// set for entity display
 
-qboolean	LegitCopy = true;
-
 // =======================================================================
 // General routines
 // =======================================================================
