@@ -1,7 +1,8 @@
 /*
  * jerror.h
  *
- * Copyright (C) 1994-1995, Thomas G. Lane.
+ * Copyright (C) 1994-1997, Thomas G. Lane.
+ * Modified 1997-2009 by Guido Vollbeding.
  * This file is part of the Independent JPEG Group's software.
  * For conditions of distribution and use, see the accompanying README file.
  *
@@ -39,16 +40,21 @@ typedef enum {
 JMESSAGE(JMSG_NOMESSAGE, "Bogus message code %d") /* Must be first entry! */
 
 /* For maintenance convenience, list is alphabetical by message code name */
-JMESSAGE(JERR_ARITH_NOTIMPL,
-	 "Sorry, there are legal restrictions on arithmetic coding")
 JMESSAGE(JERR_BAD_ALIGN_TYPE, "ALIGN_TYPE is wrong, please fix")
 JMESSAGE(JERR_BAD_ALLOC_CHUNK, "MAX_ALLOC_CHUNK is wrong, please fix")
 JMESSAGE(JERR_BAD_BUFFER_MODE, "Bogus buffer control mode")
 JMESSAGE(JERR_BAD_COMPONENT_ID, "Invalid component ID %d in SOS")
-JMESSAGE(JERR_BAD_DCTSIZE, "IDCT output block size %d not supported")
+JMESSAGE(JERR_BAD_CROP_SPEC, "Invalid crop request")
+JMESSAGE(JERR_BAD_DCT_COEF, "DCT coefficient out of range")
+JMESSAGE(JERR_BAD_DCTSIZE, "DCT scaled block size %dx%d not supported")
+JMESSAGE(JERR_BAD_DROP_SAMPLING,
+	 "Component index %d: mismatching sampling ratio %d:%d, %d:%d, %c")
+JMESSAGE(JERR_BAD_HUFF_TABLE, "Bogus Huffman table definition")
 JMESSAGE(JERR_BAD_IN_COLORSPACE, "Bogus input colorspace")
 JMESSAGE(JERR_BAD_J_COLORSPACE, "Bogus JPEG colorspace")
 JMESSAGE(JERR_BAD_LENGTH, "Bogus marker length")
+JMESSAGE(JERR_BAD_LIB_VERSION,
+	 "Wrong JPEG library version: library is %d, caller expects %d")
 JMESSAGE(JERR_BAD_MCU_SIZE, "Sampling factors too large for interleaved scan")
 JMESSAGE(JERR_BAD_POOL_ID, "Invalid memory pool code %d")
 JMESSAGE(JERR_BAD_PRECISION, "Unsupported JPEG data precision %d")
@@ -59,6 +65,8 @@ JMESSAGE(JERR_BAD_PROG_SCRIPT,
 JMESSAGE(JERR_BAD_SAMPLING, "Bogus sampling factors")
 JMESSAGE(JERR_BAD_SCAN_SCRIPT, "Invalid scan script at entry %d")
 JMESSAGE(JERR_BAD_STATE, "Improper call to JPEG library in state %d")
+JMESSAGE(JERR_BAD_STRUCT_SIZE,
+	 "JPEG parameter struct mismatch: library thinks size is %u, caller expects %u")
 JMESSAGE(JERR_BAD_VIRTUAL_ACCESS, "Bogus virtual array access")
 JMESSAGE(JERR_BUFFER_SIZE, "Buffer passed to JPEG library is too small")
 JMESSAGE(JERR_CANT_SUSPEND, "Suspension not allowed here")
@@ -67,7 +75,6 @@ JMESSAGE(JERR_COMPONENT_COUNT, "Too many color components: %d, max %d")
 JMESSAGE(JERR_CONVERSION_NOTIMPL, "Unsupported color conversion request")
 JMESSAGE(JERR_DAC_INDEX, "Bogus DAC index %d")
 JMESSAGE(JERR_DAC_VALUE, "Bogus DAC value 0x%x")
-JMESSAGE(JERR_DHT_COUNTS, "Bogus DHT counts")
 JMESSAGE(JERR_DHT_INDEX, "Bogus DHT index %d")
 JMESSAGE(JERR_DQT_INDEX, "Bogus DQT index %d")
 JMESSAGE(JERR_EMPTY_IMAGE, "Empty JPEG image (DNL not supported)")
@@ -88,6 +95,7 @@ JMESSAGE(JERR_MISSING_DATA, "Scan script does not transmit all data")
 JMESSAGE(JERR_MODE_CHANGE, "Invalid color quantization mode change")
 JMESSAGE(JERR_NOTIMPL, "Not implemented yet")
 JMESSAGE(JERR_NOT_COMPILED, "Requested feature was omitted at compile time")
+JMESSAGE(JERR_NO_ARITH_TABLE, "Arithmetic table 0x%02x was not defined")
 JMESSAGE(JERR_NO_BACKING_STORE, "Backing store not supported")
 JMESSAGE(JERR_NO_HUFF_TABLE, "Huffman table 0x%02x was not defined")
 JMESSAGE(JERR_NO_IMAGE, "JPEG datastream contains no image")
@@ -130,12 +138,13 @@ JMESSAGE(JTRC_EMS_CLOSE, "Freed EMS handle %u")
 JMESSAGE(JTRC_EMS_OPEN, "Obtained EMS handle %u")
 JMESSAGE(JTRC_EOI, "End Of Image")
 JMESSAGE(JTRC_HUFFBITS, "        %3d %3d %3d %3d %3d %3d %3d %3d")
-JMESSAGE(JTRC_JFIF, "JFIF APP0 marker, density %dx%d  %d")
+JMESSAGE(JTRC_JFIF, "JFIF APP0 marker: version %d.%02d, density %dx%d  %d")
 JMESSAGE(JTRC_JFIF_BADTHUMBNAILSIZE,
 	 "Warning: thumbnail image size does not match data length %u")
-JMESSAGE(JTRC_JFIF_MINOR, "Unknown JFIF minor revision number %d.%02d")
+JMESSAGE(JTRC_JFIF_EXTENSION,
+	 "JFIF extension marker: type 0x%02x, length %u")
 JMESSAGE(JTRC_JFIF_THUMBNAIL, "    with %d x %d thumbnail image")
-JMESSAGE(JTRC_MISC_MARKER, "Skipping marker 0x%02x, length %u")
+JMESSAGE(JTRC_MISC_MARKER, "Miscellaneous marker 0x%02x, length %u")
 JMESSAGE(JTRC_PARMLESS_MARKER, "Unexpected marker 0x%02x")
 JMESSAGE(JTRC_QUANTVALS, "        %4u %4u %4u %4u %4u %4u %4u %4u")
 JMESSAGE(JTRC_QUANT_3_NCOLORS, "Quantizing to %d = %d*%d*%d colors")
@@ -153,11 +162,18 @@ JMESSAGE(JTRC_SOS_COMPONENT, "    Component %d: dc=%d ac=%d")
 JMESSAGE(JTRC_SOS_PARAMS, "  Ss=%d, Se=%d, Ah=%d, Al=%d")
 JMESSAGE(JTRC_TFILE_CLOSE, "Closed temporary file %s")
 JMESSAGE(JTRC_TFILE_OPEN, "Opened temporary file %s")
+JMESSAGE(JTRC_THUMB_JPEG,
+	 "JFIF extension marker: JPEG-compressed thumbnail image, length %u")
+JMESSAGE(JTRC_THUMB_PALETTE,
+	 "JFIF extension marker: palette thumbnail image, length %u")
+JMESSAGE(JTRC_THUMB_RGB,
+	 "JFIF extension marker: RGB thumbnail image, length %u")
 JMESSAGE(JTRC_UNKNOWN_IDS,
 	 "Unrecognized component IDs %d %d %d, assuming YCbCr")
 JMESSAGE(JTRC_XMS_CLOSE, "Freed XMS handle %u")
 JMESSAGE(JTRC_XMS_OPEN, "Obtained XMS handle %u")
 JMESSAGE(JWRN_ADOBE_XFORM, "Unknown Adobe color transform code %d")
+JMESSAGE(JWRN_ARITH_BAD_CODE, "Corrupt JPEG data: bad arithmetic code")
 JMESSAGE(JWRN_BOGUS_PROGRESSION,
 	 "Inconsistent progression sequence for component %d coefficient %d")
 JMESSAGE(JWRN_EXTRANEOUS_DATA,
@@ -215,6 +231,15 @@ JMESSAGE(JWRN_TOO_MUCH_DATA, "Application transferred too many scanlines")
    (cinfo)->err->msg_parm.i[2] = (p3), \
    (cinfo)->err->msg_parm.i[3] = (p4), \
    (*(cinfo)->err->error_exit) ((j_common_ptr) (cinfo)))
+#define ERREXIT6(cinfo,code,p1,p2,p3,p4,p5,p6)  \
+  ((cinfo)->err->msg_code = (code), \
+   (cinfo)->err->msg_parm.i[0] = (p1), \
+   (cinfo)->err->msg_parm.i[1] = (p2), \
+   (cinfo)->err->msg_parm.i[2] = (p3), \
+   (cinfo)->err->msg_parm.i[3] = (p4), \
+   (cinfo)->err->msg_parm.i[4] = (p5), \
+   (cinfo)->err->msg_parm.i[5] = (p6), \
+   (*(cinfo)->err->error_exit) ((j_common_ptr) (cinfo)))
 #define ERREXITS(cinfo,code,str)  \
   ((cinfo)->err->msg_code = (code), \
    strncpy((cinfo)->err->msg_parm.s, (str), JMSG_STR_PARM_MAX), \
@@ -257,6 +282,12 @@ JMESSAGE(JWRN_TOO_MUCH_DATA, "Application transferred too many scanlines")
 #define TRACEMS4(cinfo,lvl,code,p1,p2,p3,p4)  \
   MAKESTMT(int * _mp = (cinfo)->err->msg_parm.i; \
 	   _mp[0] = (p1); _mp[1] = (p2); _mp[2] = (p3); _mp[3] = (p4); \
+	   (cinfo)->err->msg_code = (code); \
+	   (*(cinfo)->err->emit_message) ((j_common_ptr) (cinfo), (lvl)); )
+#define TRACEMS5(cinfo,lvl,code,p1,p2,p3,p4,p5)  \
+  MAKESTMT(int * _mp = (cinfo)->err->msg_parm.i; \
+	   _mp[0] = (p1); _mp[1] = (p2); _mp[2] = (p3); _mp[3] = (p4); \
+	   _mp[4] = (p5); \
 	   (cinfo)->err->msg_code = (code); \
 	   (*(cinfo)->err->emit_message) ((j_common_ptr) (cinfo), (lvl)); )
 #define TRACEMS8(cinfo,lvl,code,p1,p2,p3,p4,p5,p6,p7,p8)  \

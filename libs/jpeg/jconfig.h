@@ -1,19 +1,25 @@
-/* jconfig.wat --- jconfig.h for Watcom C/C++ on MS-DOS or OS/2. */
-/* see jconfig.doc for explanations */
+/* jconfig.vc --- jconfig.h for Microsoft Visual C++ on Windows 95 or NT. */
+/* see jconfig.txt for explanations */
 
 #define HAVE_PROTOTYPES
 #define HAVE_UNSIGNED_CHAR
 #define HAVE_UNSIGNED_SHORT
 /* #define void char */
 /* #define const */
-#define CHAR_IS_UNSIGNED
+#undef CHAR_IS_UNSIGNED
 #define HAVE_STDDEF_H
 #define HAVE_STDLIB_H
 #undef NEED_BSD_STRINGS
 #undef NEED_SYS_TYPES_H
-#undef NEED_FAR_POINTERS	/* Watcom uses flat 32-bit addressing */
+#undef NEED_FAR_POINTERS	/* we presume a 32-bit flat memory model */
 #undef NEED_SHORT_EXTERNAL_NAMES
 #undef INCOMPLETE_TYPES_BROKEN
+
+/* Define "boolean" as unsigned char, not int, per Windows custom */
+#ifndef __RPCNDR_H__		/* don't conflict if rpcndr.h already read */
+typedef unsigned char boolean;
+#endif
+#define HAVE_BOOLEAN		/* prevent jmorecfg.h from redefining it */
 
 #define JDCT_DEFAULT  JDCT_FLOAT
 #define JDCT_FASTEST  JDCT_FLOAT
@@ -32,9 +38,9 @@
 #undef RLE_SUPPORTED		/* Utah RLE image file format */
 #define TARGA_SUPPORTED		/* Targa image file format */
 
-#undef TWO_FILE_COMMANDLINE	/* optional */
-#define USE_SETMODE		/* Needed to make one-file style work in Watcom */
-#undef NEED_SIGNAL_CATCHER	/* Define this if you use jmemname.c */
+#define TWO_FILE_COMMANDLINE	/* optional */
+#define USE_SETMODE		/* Microsoft has setmode() */
+#undef NEED_SIGNAL_CATCHER
 #undef DONT_USE_B_MODE
 #undef PROGRESS_REPORT		/* optional */
 

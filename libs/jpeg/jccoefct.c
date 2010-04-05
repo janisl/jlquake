@@ -1,7 +1,7 @@
 /*
  * jccoefct.c
  *
- * Copyright (C) 1994-1995, Thomas G. Lane.
+ * Copyright (C) 1994-1997, Thomas G. Lane.
  * This file is part of the Independent JPEG Group's software.
  * For conditions of distribution and use, see the accompanying README file.
  *
@@ -58,17 +58,17 @@ typedef my_coef_controller * my_coef_ptr;
 
 
 /* Forward declarations */
-METHODDEF boolean compress_data
+METHODDEF(boolean) compress_data
     JPP((j_compress_ptr cinfo, JSAMPIMAGE input_buf));
 #ifdef FULL_COEF_BUFFER_SUPPORTED
-METHODDEF boolean compress_first_pass
+METHODDEF(boolean) compress_first_pass
     JPP((j_compress_ptr cinfo, JSAMPIMAGE input_buf));
-METHODDEF boolean compress_output
+METHODDEF(boolean) compress_output
     JPP((j_compress_ptr cinfo, JSAMPIMAGE input_buf));
 #endif
 
 
-LOCAL void
+LOCAL(void)
 start_iMCU_row (j_compress_ptr cinfo)
 /* Reset within-iMCU-row counters for a new row */
 {
@@ -96,7 +96,7 @@ start_iMCU_row (j_compress_ptr cinfo)
  * Initialize for a processing pass.
  */
 
-METHODDEF void
+METHODDEF(void)
 start_pass_coef (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
@@ -135,11 +135,11 @@ start_pass_coef (j_compress_ptr cinfo, J_BUF_MODE pass_mode)
  * per call, ie, v_samp_factor block rows for each component in the image.
  * Returns TRUE if the iMCU row is completed, FALSE if suspended.
  *
- * NB: input_buf contains a plane for each component in image.
- * For single pass, this is the same as the components in the scan.
+ * NB: input_buf contains a plane for each component in image,
+ * which we index according to the component's SOF position.
  */
 
-METHODDEF boolean
+METHODDEF(boolean)
 compress_data (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
@@ -149,6 +149,7 @@ compress_data (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
   int blkn, bi, ci, yindex, yoffset, blockcnt;
   JDIMENSION ypos, xpos;
   jpeg_component_info *compptr;
+  forward_DCT_ptr forward_DCT;
 
   /* Loop to write as much as one whole iMCU row */
   for (yoffset = coef->MCU_vert_offset; yoffset < coef->MCU_rows_per_iMCU_row;
@@ -167,16 +168,19 @@ compress_data (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
       blkn = 0;
       for (ci = 0; ci < cinfo->comps_in_scan; ci++) {
 	compptr = cinfo->cur_comp_info[ci];
+	forward_DCT = cinfo->fdct->forward_DCT[compptr->component_index];
 	blockcnt = (MCU_col_num < last_MCU_col) ? compptr->MCU_width
 						: compptr->last_col_width;
 	xpos = MCU_col_num * compptr->MCU_sample_width;
-	ypos = yoffset * DCTSIZE; /* ypos == (yoffset+yindex) * DCTSIZE */
+	ypos = yoffset * compptr->DCT_v_scaled_size;
+	/* ypos == (yoffset+yindex) * DCTSIZE */
 	for (yindex = 0; yindex < compptr->MCU_height; yindex++) {
 	  if (coef->iMCU_row_num < last_iMCU_row ||
 	      yoffset+yindex < compptr->last_row_height) {
-	    (*cinfo->fdct->forward_DCT) (cinfo, compptr,
-					 input_buf[ci], coef->MCU_buffer[blkn],
-					 ypos, xpos, (JDIMENSION) blockcnt);
+	    (*forward_DCT) (cinfo, compptr,
+			    input_buf[compptr->component_index],
+			    coef->MCU_buffer[blkn],
+			    ypos, xpos, (JDIMENSION) blockcnt);
 	    if (blockcnt < compptr->MCU_width) {
 	      /* Create some dummy blocks at the right edge of the image. */
 	      jzero_far((void FAR *) coef->MCU_buffer[blkn + blockcnt],
@@ -194,7 +198,7 @@ compress_data (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 	    }
 	  }
 	  blkn += compptr->MCU_width;
-	  ypos += DCTSIZE;
+	  ypos += compptr->DCT_v_scaled_size;
 	}
       }
       /* Try to write the MCU.  In event of a suspension failure, we will
@@ -240,7 +244,7 @@ compress_data (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  * at the scan-dependent variables (MCU dimensions, etc).
  */
 
-METHODDEF boolean
+METHODDEF(boolean)
 compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
@@ -251,6 +255,7 @@ compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
   jpeg_component_info *compptr;
   JBLOCKARRAY buffer;
   JBLOCKROW thisblockrow, lastblockrow;
+  forward_DCT_ptr forward_DCT;
 
   for (ci = 0, compptr = cinfo->comp_info; ci < cinfo->num_components;
        ci++, compptr++) {
@@ -273,15 +278,15 @@ compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
     ndummy = (int) (blocks_across % h_samp_factor);
     if (ndummy > 0)
       ndummy = h_samp_factor - ndummy;
+    forward_DCT = cinfo->fdct->forward_DCT[ci];
     /* Perform DCT for all non-dummy blocks in this iMCU row.  Each call
      * on forward_DCT processes a complete horizontal row of DCT blocks.
      */
     for (block_row = 0; block_row < block_rows; block_row++) {
       thisblockrow = buffer[block_row];
-      (*cinfo->fdct->forward_DCT) (cinfo, compptr,
-				   input_buf[ci], thisblockrow,
-				   (JDIMENSION) (block_row * DCTSIZE),
-				   (JDIMENSION) 0, blocks_across);
+      (*forward_DCT) (cinfo, compptr, input_buf[ci], thisblockrow,
+		      (JDIMENSION) (block_row * compptr->DCT_v_scaled_size),
+		      (JDIMENSION) 0, blocks_across);
       if (ndummy > 0) {
 	/* Create dummy blocks at the right edge of the image. */
 	thisblockrow += blocks_across; /* => first dummy block */
@@ -336,7 +341,7 @@ compress_first_pass (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  * NB: input_buf is ignored; it is likely to be a NULL pointer.
  */
 
-METHODDEF boolean
+METHODDEF(boolean)
 compress_output (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
 {
   my_coef_ptr coef = (my_coef_ptr) cinfo->coef;
@@ -400,7 +405,7 @@ compress_output (j_compress_ptr cinfo, JSAMPIMAGE input_buf)
  * Initialize coefficient buffer controller.
  */
 
-GLOBAL void
+GLOBAL(void)
 jinit_c_coef_controller (j_compress_ptr cinfo, boolean need_full_buffer)
 {
   my_coef_ptr coef;

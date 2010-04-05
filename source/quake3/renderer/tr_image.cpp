@@ -31,15 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #define JPEG_INTERNALS
-extern "C"
-{
-#ifdef _WIN32
-#define XMD_H
-#define HAVE_BOOLEAN
-#undef FAR
-#endif
 #include "../../../libs/jpeg/jpeglib.h"
-}
 
 
 static void LoadBMP( const char *name, byte **pic, int *width, int *height );
@@ -1687,8 +1679,7 @@ boolean empty_output_buffer (j_compress_ptr cinfo)
  * wrong thing.
  */
 
-GLOBAL void
-jpeg_start_compress (j_compress_ptr cinfo, boolean write_all_tables)
+static void my_jpeg_start_compress (j_compress_ptr cinfo, boolean write_all_tables)
 {
   if (cinfo->global_state != CSTATE_START)
     ERREXIT1(cinfo, JERR_BAD_STATE, cinfo->global_state);
@@ -1726,8 +1717,7 @@ jpeg_start_compress (j_compress_ptr cinfo, boolean write_all_tables)
  * when using a multiple-scanline buffer.
  */
 
-GLOBAL JDIMENSION
-jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
+static JDIMENSION my_jpeg_write_scanlines (j_compress_ptr cinfo, JSAMPARRAY scanlines,
 		      JDIMENSION num_lines)
 {
   JDIMENSION row_ctr, rows_left;
@@ -1880,7 +1870,7 @@ void SaveJPG(char * filename, int quality, int image_width, int image_height, un
   /* TRUE ensures that we will write a complete interchange-JPEG file.
    * Pass TRUE unless you are very sure of what you're doing.
    */
-  jpeg_start_compress(&cinfo, TRUE);
+  my_jpeg_start_compress(&cinfo, TRUE);
 
   /* Step 5: while (scan lines remain to be written) */
   /*           jpeg_write_scanlines(...); */
@@ -1898,7 +1888,7 @@ void SaveJPG(char * filename, int quality, int image_width, int image_height, un
      * more than one scanline at a time if that's more convenient.
      */
     row_pointer[0] = & image_buffer[((cinfo.image_height-1)*row_stride)-cinfo.next_scanline * row_stride];
-    (void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
+    (void) my_jpeg_write_scanlines(&cinfo, row_pointer, 1);
   }
 
   /* Step 6: Finish compression */

@@ -25,3 +25,5 @@
 04.04.2010
   I added dynamic string and array classes to core. In string class I added static methods to replace standard string methods, changed all games to use them.
   I did some code cleanup.
+05.04.2010
+  I changed Quake 3 to use zlib and libjpeg as standalone libraries, updated them to latest versions.

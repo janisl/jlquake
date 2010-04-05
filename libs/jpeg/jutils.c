@@ -1,7 +1,8 @@
 /*
  * jutils.c
  *
- * Copyright (C) 1991-1995, Thomas G. Lane.
+ * Copyright (C) 1991-1996, Thomas G. Lane.
+ * Modified 2009 by Guido Vollbeding.
  * This file is part of the Independent JPEG Group's software.
  * For conditions of distribution and use, see the accompanying README file.
  *
@@ -21,6 +22,8 @@
  * of a DCT block read in natural order (left to right, top to bottom).
  */
 
+#if 0				/* This table is not actually needed in v6a */
+
 const int jpeg_zigzag_order[DCTSIZE2] = {
    0,  1,  5,  6, 14, 15, 27, 28,
    2,  4,  7, 13, 16, 26, 29, 42,
@@ -31,6 +34,8 @@ const int jpeg_zigzag_order[DCTSIZE2] = {
   21, 34, 37, 47, 50, 56, 59, 61,
   35, 36, 48, 49, 57, 58, 62, 63
 };
+
+#endif
 
 /*
  * jpeg_natural_order[i] is the natural-order position of the i'th element
@@ -59,12 +64,63 @@ const int jpeg_natural_order[DCTSIZE2+16] = {
  63, 63, 63, 63, 63, 63, 63, 63
 };
 
+const int jpeg_natural_order7[7*7+16] = {
+  0,  1,  8, 16,  9,  2,  3, 10,
+ 17, 24, 32, 25, 18, 11,  4,  5,
+ 12, 19, 26, 33, 40, 48, 41, 34,
+ 27, 20, 13,  6, 14, 21, 28, 35,
+ 42, 49, 50, 43, 36, 29, 22, 30,
+ 37, 44, 51, 52, 45, 38, 46, 53,
+ 54,
+ 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
+ 63, 63, 63, 63, 63, 63, 63, 63
+};
+
+const int jpeg_natural_order6[6*6+16] = {
+  0,  1,  8, 16,  9,  2,  3, 10,
+ 17, 24, 32, 25, 18, 11,  4,  5,
+ 12, 19, 26, 33, 40, 41, 34, 27,
+ 20, 13, 21, 28, 35, 42, 43, 36,
+ 29, 37, 44, 45,
+ 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
+ 63, 63, 63, 63, 63, 63, 63, 63
+};
+
+const int jpeg_natural_order5[5*5+16] = {
+  0,  1,  8, 16,  9,  2,  3, 10,
+ 17, 24, 32, 25, 18, 11,  4, 12,
+ 19, 26, 33, 34, 27, 20, 28, 35,
+ 36,
+ 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
+ 63, 63, 63, 63, 63, 63, 63, 63
+};
+
+const int jpeg_natural_order4[4*4+16] = {
+  0,  1,  8, 16,  9,  2,  3, 10,
+ 17, 24, 25, 18, 11, 19, 26, 27,
+ 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
+ 63, 63, 63, 63, 63, 63, 63, 63
+};
+
+const int jpeg_natural_order3[3*3+16] = {
+  0,  1,  8, 16,  9,  2, 10, 17,
+ 18,
+ 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
+ 63, 63, 63, 63, 63, 63, 63, 63
+};
+
+const int jpeg_natural_order2[2*2+16] = {
+  0,  1,  8,  9,
+ 63, 63, 63, 63, 63, 63, 63, 63, /* extra entries for safety in decoder */
+ 63, 63, 63, 63, 63, 63, 63, 63
+};
+
 
 /*
  * Arithmetic utilities
  */
 
-GLOBAL long
+GLOBAL(long)
 jdiv_round_up (long a, long b)
 /* Compute a/b rounded up to next integer, ie, ceil(a/b) */
 /* Assumes a >= 0, b > 0 */
@@ -73,7 +129,7 @@ jdiv_round_up (long a, long b)
 }
 
 
-GLOBAL long
+GLOBAL(long)
 jround_up (long a, long b)
 /* Compute a rounded up to next multiple of b, ie, ceil(a/b)*b */
 /* Assumes a >= 0, b > 0 */
@@ -103,7 +159,7 @@ jround_up (long a, long b)
 #endif
 
 
-GLOBAL void
+GLOBAL(void)
 jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
 		   JSAMPARRAY output_array, int dest_row,
 		   int num_rows, JDIMENSION num_cols)
@@ -137,7 +193,7 @@ jcopy_sample_rows (JSAMPARRAY input_array, int source_row,
 }
 
 
-GLOBAL void
+GLOBAL(void)
 jcopy_block_row (JBLOCKROW input_row, JBLOCKROW output_row,
 		 JDIMENSION num_blocks)
 /* Copy a row of coefficient blocks from one place to another. */
@@ -157,7 +213,7 @@ jcopy_block_row (JBLOCKROW input_row, JBLOCKROW output_row,
 }
 
 
-GLOBAL void
+GLOBAL(void)
 jzero_far (void FAR * target, size_t bytestozero)
 /* Zero out a chunk of FAR memory. */
 /* This might be sample-array data, block-array data, or alloc_large data. */
