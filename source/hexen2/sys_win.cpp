@@ -44,10 +44,7 @@ static HANDLE	heventChild;
 
 extern "C"
 {
-void MaskExceptions (void);
 void Sys_InitFloatTime (void);
-void Sys_PushFPCW_SetHigh (void);
-void Sys_PopFPCW (void);
 }
 
 cvar_t		sys_delay = {"sys_delay","0", true};
@@ -265,26 +262,6 @@ void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 }
 
 
-#ifndef _M_IX86
-
-void Sys_SetFPCW (void)
-{
-}
-
-void Sys_PushFPCW_SetHigh (void)
-{
-}
-
-void Sys_PopFPCW (void)
-{
-}
-
-void MaskExceptions (void)
-{
-}
-
-#endif
-
 /*
 ================
 Sys_Init
@@ -300,9 +277,6 @@ static	char temp[MAX_PATH+1];
 	HKEY hKey;
     DWORD dwSize,dwType;
 	unsigned short crc;
-
-	MaskExceptions ();
-	Sys_SetFPCW ();
 
 	if (!QueryPerformanceFrequency (&PerformanceFreq))
 		Sys_Error ("No hardware timer available");
@@ -448,8 +422,6 @@ double Sys_FloatTime (void)
 	unsigned int		temp, t2;
 	double				time;
 
-	Sys_PushFPCW_SetHigh ();
-
 	QueryPerformanceCounter (&PerformanceCount);
 
 	temp = ((unsigned int)PerformanceCount.LowPart >> lowshift) |
@@ -494,8 +466,6 @@ double Sys_FloatTime (void)
 			lastcurtime = curtime;
 		}
 	}
-
-	Sys_PopFPCW ();
 
     return curtime;
 }

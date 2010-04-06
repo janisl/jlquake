@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="vquake"
 	ProjectGUID="{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}"
 	RootNamespace="winquake"
@@ -447,30 +447,6 @@
 			<File
 				RelativePath="sys_win.cpp"
 				>
-			</File>
-			<File
-				RelativePath="sys_wina.s"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="mycoolbuild"
-						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="mycoolbuild"
-						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="view.cpp"

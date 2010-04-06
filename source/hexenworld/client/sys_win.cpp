@@ -34,13 +34,6 @@ UINT	uMSG_MOUSEWHEEL;
 
 void Sys_InitFloatTime (void);
 
-extern "C"
-{
-void MaskExceptions (void);
-void Sys_PopFPCW (void);
-void Sys_PushFPCW_SetHigh (void);
-}
-
 void Sys_DebugLog(char *file, char *fmt, ...)
 {
     va_list argptr; 
@@ -165,9 +158,6 @@ void Sys_Init (void)
         "hwcl"); /* Semaphore name      */
 #endif
 
-	MaskExceptions ();
-	Sys_SetFPCW ();
-
 	if (!QueryPerformanceFrequency (&PerformanceFreq))
 		Sys_Error ("No hardware timer available");
 
@@ -267,8 +257,6 @@ double Sys_DoubleTime (void)
 	unsigned int		temp, t2;
 	double				time;
 
-	Sys_PushFPCW_SetHigh ();
-
 	QueryPerformanceCounter (&PerformanceCount);
 
 	temp = ((unsigned int)PerformanceCount.LowPart >> lowshift) |
@@ -313,8 +301,6 @@ double Sys_DoubleTime (void)
 			lastcurtime = curtime;
 		}
 	}
-
-	Sys_PopFPCW ();
 
     return curtime;
 }
