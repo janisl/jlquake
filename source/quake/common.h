@@ -82,7 +82,7 @@ float MSG_ReadAngle (void);
 
 //============================================================================
 
-void Q_memset (void *dest, int fill, int count);
+void Com_Memset(void *dest, int fill, size_t count);
 void Q_memcpy (void *dest, const void *src, int count);
 int Q_memcmp (void *m1, void *m2, int count);
 

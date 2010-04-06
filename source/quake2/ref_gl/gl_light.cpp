@@ -535,7 +535,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	{
 		int maps;
 
-		memset( s_blocklights, 0, sizeof( s_blocklights[0] ) * size * 3 );
+		Com_Memset( s_blocklights, 0, sizeof( s_blocklights[0] ) * size * 3 );
 
 		for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 			 maps++)

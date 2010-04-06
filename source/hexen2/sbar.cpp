@@ -1636,7 +1636,7 @@ void SB_InvChanged(void)
 	qboolean examined[INV_MAX_CNT];
 	qboolean ForceUpdate = false;
 
-	memset(examined,0,sizeof(examined)); // examined[x] = false
+	Com_Memset(examined,0,sizeof(examined)); // examined[x] = false
 
 	if(cl.inv_selected >= 0 &&
 	   (&cl.v.cnt_torch)[cl.inv_order[cl.inv_selected]] == 0)

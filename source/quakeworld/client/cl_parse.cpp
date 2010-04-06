@@ -288,7 +288,7 @@ void Sound_NextDownload (void)
 	}
 
 	// done with sounds, request models now
-	memset (cl.model_precache, 0, sizeof(cl.model_precache));
+	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));
 	cl_playerindex = -1;
 	cl_spikeindex = -1;
 	cl_flagindex = -1;
@@ -599,7 +599,7 @@ void CL_ParseServerData (void)
 	Con_Printf ("%c%s\n", 2, str);
 
 	// ask for the sound list next
-	memset(cl.sound_name, 0, sizeof(cl.sound_name));
+	Com_Memset(cl.sound_name, 0, sizeof(cl.sound_name));
 	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
 //	MSG_WriteString (&cls.netchan.message, va("soundlist %i 0", cl.servercount));
 	MSG_WriteString (&cls.netchan.message, va(soundlist_name, cl.servercount, 0));
@@ -620,7 +620,7 @@ void CL_ParseSoundlist (void)
 	int n;
 
 // precache sounds
-//	memset (cl.sound_precache, 0, sizeof(cl.sound_precache));
+//	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
 
 	numsounds = MSG_ReadByte();
 

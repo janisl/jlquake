@@ -432,7 +432,7 @@ void Sbar_UpdateScoreboard (void)
 	Sbar_SortFrags ();
 
 // draw the text
-	memset (scoreboardtext, 0, sizeof(scoreboardtext));
+	Com_Memset(scoreboardtext, 0, sizeof(scoreboardtext));
 
 	for (i=0 ; i<scoreboardlines; i++)
 	{

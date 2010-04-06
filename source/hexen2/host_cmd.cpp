@@ -1041,7 +1041,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 		else
 		{
 			ent = EDICT_NUM(entnum);
-			memset (&ent->v, 0, progs->entityfields * 4);
+			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 			//ent->free = false;
 			ED_ParseEdict (start, ent);
 		
@@ -1281,7 +1281,7 @@ float time1,time2,r1,r2;
 	for (i=repcount;i;i--)
 	{
 		char buf[2048];
-		Q_memset(buf,i,2048);
+		Com_Memset(buf,i,2048);
 	}
 	time2 = Sys_FloatTime( );
 	r1 = time2-time1;
@@ -1291,7 +1291,7 @@ float time1,time2,r1,r2;
 	for (i=repcount;i;i--)
 	{
 		char buf[2048];
-		memset(buf,i,2048);
+		Com_Memset(buf,i,2048);
 	}
 	time2 = Sys_FloatTime( );
 	r2 = time2-time1;
@@ -1675,7 +1675,7 @@ void Host_Spawn_f (void)
 
 		if (!ent->v.stats_restored || deathmatch.value)
 		{
-			memset (&ent->v, 0, progs->entityfields * 4);
+			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		
 			//ent->v.colormap = NUM_FOR_EDICT(ent);
 			ent->v.team = (host_client->colors & 15) + 1;

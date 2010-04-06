@@ -253,12 +253,12 @@ void Huff1TableInit (void)
 	int		numhnodes;
 
 	cin.hnodes1 = (int*)Z_Malloc (256*256*2*4);
-	memset (cin.hnodes1, 0, 256*256*2*4);
+	Com_Memset(cin.hnodes1, 0, 256*256*2*4);
 
 	for (prev=0 ; prev<256 ; prev++)
 	{
-		memset (cin.h_count,0,sizeof(cin.h_count));
-		memset (cin.h_used,0,sizeof(cin.h_used));
+		Com_Memset(cin.h_count,0,sizeof(cin.h_count));
+		Com_Memset(cin.h_used,0,sizeof(cin.h_used));
 
 		// read a row of counts
 		FS_Read (counts, sizeof(counts), cl.cinematic_file);

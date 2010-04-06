@@ -550,7 +550,7 @@ static float HuffFreq[256]=
 static int freqs[256];
 void ZeroFreq(void)
 {
-	memset(freqs, 0, 256*sizeof(int));
+	Com_Memset(freqs, 0, 256*sizeof(int));
 }
 
 
@@ -785,7 +785,7 @@ void HuffEncode(unsigned char *in,unsigned char *out,int inlen,int *outlen)
 
 void NetadrToSockadr (netadr_t *a, struct sockaddr_in *s)
 {
-	memset (s, 0, sizeof(*s));
+	Com_Memset(s, 0, sizeof(*s));
 	s->sin_family = AF_INET;
 
 	*(int *)&s->sin_addr = *(int *)&a->ip;
@@ -842,7 +842,7 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 	char	copy[128];
 	
 	
-	memset (&sadr, 0, sizeof(sadr));
+	Com_Memset(&sadr, 0, sizeof(sadr));
 	sadr.sin_family = AF_INET;
 	
 	sadr.sin_port = 0;

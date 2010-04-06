@@ -79,7 +79,7 @@ void Skin_Find (player_info_t *sc)
 	sc->skin = skin;
 	numskins++;
 
-	memset (skin, 0, sizeof(*skin));
+	Com_Memset(skin, 0, sizeof(*skin));
 	QStr::NCpy(skin->name, name, sizeof(skin->name) - 1);
 }
 
@@ -154,7 +154,7 @@ byte	*Skin_Cache (skin_t *skin)
 		Sys_Error ("Skin_Cache: couldn't allocate");
 
 	pix = out;
-	memset (out, 0, 320*200);
+	Com_Memset(out, 0, 320*200);
 
 	for (y=0 ; y<pcx->ymax ; y++, pix += 320)
 	{

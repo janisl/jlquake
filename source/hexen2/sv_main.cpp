@@ -492,7 +492,7 @@ void SV_ConnectClient (int clientnum)
 	
 	if (sv.loadgame)
 		memcpy (spawn_parms, client->spawn_parms, sizeof(spawn_parms));
-	memset (client, 0, sizeof(*client));
+	Com_Memset(client, 0, sizeof(*client));
 	client->send_all_v = true;
 	client->netconnection = netconnection;
 
@@ -514,7 +514,7 @@ void SV_ConnectClient (int clientnum)
 		svent = EDICT_NUM(entnum);
 //		memcpy(&svent->baseline[clientnum],&svent->baseline[MAX_BASELINES-1],sizeof(entity_state_t));
 	}
-	memset(&sv.states[clientnum],0,sizeof(client_state2_t ));
+	Com_Memset(&sv.states[clientnum],0,sizeof(client_state2_t ));
 
 #ifdef IDGODS
 	client->privileged = IsID(&client->netconnection->addr);
@@ -653,7 +653,7 @@ given point.
 byte *SV_FatPVS (vec3_t org)
 {
 	fatbytes = (sv.worldmodel->numleafs+31)>>3;
-	memset (fatpvs, 0, fatbytes);
+	Com_Memset(fatpvs, 0, fatbytes);
 	SV_AddToFatPVS (org, sv.worldmodel->nodes);
 	return fatpvs;
 }
@@ -755,7 +755,7 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, sizebuf_t *msg)
 		DoMisc = (client->current_sequence % ((int)sv_update_misc.value)) == 0;
 
 	build = &state->frames[client->current_frame];
-	memset(build,0,sizeof(*build));
+	Com_Memset(build,0,sizeof(*build));
 	client->last_frame = CLIENT_FRAME_RESET;
 
 	NumToRemove = 0;
@@ -886,7 +886,7 @@ skipA:
 		build->count++;
 		if (ent->baseline.ClearCount[client_num] < CLEAR_LIMIT)
 		{
-			memset(ref_ent,0,sizeof(*ref_ent));
+			Com_Memset(ref_ent,0,sizeof(*ref_ent));
 			ref_ent->index = e;
 		}
 		*set_ent = *ref_ent;
@@ -1795,7 +1795,7 @@ void SV_CreateBaseline (void)
 			svent->baseline.modelindex =
 				SV_ModelIndex(pr_strings + svent->v.model);
 		}
-		memset(svent->baseline.ClearCount,99,sizeof(svent->baseline.ClearCount));
+		Com_Memset(svent->baseline.ClearCount,99,sizeof(svent->baseline.ClearCount));
 		
 	//
 	// add to the message
@@ -1928,7 +1928,7 @@ void SV_SpawnServer (char *server, char *startspot)
 //
 	Host_ClearMemory ();
 
-	//memset (&sv, 0, sizeof(sv));
+	//Com_Memset(&sv, 0, sizeof(sv));
 
 	QStr::Cpy(sv.name, server);
 	if (startspot)
@@ -1948,10 +1948,10 @@ void SV_SpawnServer (char *server, char *startspot)
 	D_ShowLoadingSize();
 
 // allocate server memory
-	memset(sv.Effects,0,sizeof(sv.Effects));
+	Com_Memset(sv.Effects,0,sizeof(sv.Effects));
 
 	sv.states = (client_state2_t*)Hunk_AllocName (svs.maxclients * sizeof(client_state2_t), "states");
-	memset(sv.states,0,svs.maxclients * sizeof(client_state2_t));
+	Com_Memset(sv.states,0,svs.maxclients * sizeof(client_state2_t));
 
 	sv.max_edicts = MAX_EDICTS;
 	
@@ -2025,7 +2025,7 @@ void SV_SpawnServer (char *server, char *startspot)
 // load the rest of the entities
 //	
 	ent = EDICT_NUM(0);
-	memset (&ent->v, 0, progs->entityfields * 4);
+	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
 	ent->v.model = sv.worldmodel->name - pr_strings;
 	ent->v.modelindex = 1;		// world model

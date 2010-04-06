@@ -231,7 +231,7 @@ void SV_Spawn_f (void)
 	// set up the edict
 	ent = host_client->edict;
 
-	memset (&ent->v, 0, progs->entityfields * 4);
+	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->v.colormap = NUM_FOR_EDICT(ent);
 	if(dmMode.value==DM_SIEGE)
 		ent->v.team = ent->v.siege_team;	// FIXME
@@ -271,7 +271,7 @@ void SV_Spawn_f (void)
 //
 // force stats to be updated
 //
-	memset (host_client->stats, 0, sizeof(host_client->stats));
+	Com_Memset(host_client->stats, 0, sizeof(host_client->stats));
 	
 	MSG_WriteByte (&host_client->netchan.message, svc_updatestatlong);
 	MSG_WriteByte (&host_client->netchan.message, STAT_TOTALSECRETS);
@@ -1111,7 +1111,7 @@ byte playertouch[(MAX_EDICTS+7)/8];
 
 void SV_PreRunCmd(void)
 {
-	memset(playertouch, 0, sizeof(playertouch));
+	Com_Memset(playertouch, 0, sizeof(playertouch));
 }
 
 /*

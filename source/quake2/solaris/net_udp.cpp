@@ -45,7 +45,7 @@ char *NET_ErrorString (void);
 
 void NetadrToSockadr (netadr_t *a, struct sockaddr_in *s)
 {
-	memset (s, 0, sizeof(*s));
+	Com_Memset(s, 0, sizeof(*s));
 
 	if (a->type == NA_BROADCAST)
 	{
@@ -143,7 +143,7 @@ qboolean	NET_StringToSockaddr (char *s, struct sockaddr *sadr)
 	char	*colon;
 	char	copy[128];
 	
-	memset (sadr, 0, sizeof(*sadr));
+	Com_Memset(sadr, 0, sizeof(*sadr));
 	((struct sockaddr_in *)sadr)->sin_family = AF_INET;
 	
 	((struct sockaddr_in *)sadr)->sin_port = 0;
@@ -188,7 +188,7 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 	
 	if (!QStr::Cmp(s, "localhost"))
 	{
-		memset (a, 0, sizeof(*a));
+		Com_Memset(a, 0, sizeof(*a));
 		a->type = NA_LOOPBACK;
 		return true;
 	}

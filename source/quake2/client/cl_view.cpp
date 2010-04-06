@@ -185,7 +185,7 @@ void V_TestEntities (void)
 	entity_t	*ent;
 
 	r_numentities = 32;
-	memset (r_entities, 0, sizeof(r_entities));
+	Com_Memset(r_entities, 0, sizeof(r_entities));
 
 	for (i=0 ; i<r_numentities ; i++)
 	{
@@ -217,7 +217,7 @@ void V_TestLights (void)
 	dlight_t	*dl;
 
 	r_numdlights = 32;
-	memset (r_dlights, 0, sizeof(r_dlights));
+	Com_Memset(r_dlights, 0, sizeof(r_dlights));
 
 	for (i=0 ; i<r_numdlights ; i++)
 	{

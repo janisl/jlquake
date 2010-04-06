@@ -560,7 +560,7 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 		*checksum = last_checksum;
 		if (!clientload)
 		{
-			memset (portalopen, 0, sizeof(portalopen));
+			Com_Memset(portalopen, 0, sizeof(portalopen));
 			FloodAreaConnections ();
 		}
 		return &map_cmodels[0];		// still have the right version
@@ -623,7 +623,7 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 
 	CM_InitBoxHull ();
 
-	memset (portalopen, 0, sizeof(portalopen));
+	Com_Memset(portalopen, 0, sizeof(portalopen));
 	FloodAreaConnections ();
 
 	QStr::Cpy(map_name, name);
@@ -1358,7 +1358,7 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 	c_traces++;			// for statistics, may be zeroed
 
 	// fill in a default trace
-	memset (&trace_trace, 0, sizeof(trace_trace));
+	Com_Memset(&trace_trace, 0, sizeof(trace_trace));
 	trace_trace.fraction = 1;
 	trace_trace.surface = &(nullsurface.c);
 
@@ -1575,7 +1575,7 @@ byte	phsrow[MAX_MAP_LEAFS/8];
 byte	*CM_ClusterPVS (int cluster)
 {
 	if (cluster == -1)
-		memset (pvsrow, 0, (numclusters+7)>>3);
+		Com_Memset(pvsrow, 0, (numclusters+7)>>3);
 	else
 		CM_DecompressVis (map_visibility + map_vis->bitofs[cluster][DVIS_PVS], pvsrow);
 	return pvsrow;
@@ -1584,7 +1584,7 @@ byte	*CM_ClusterPVS (int cluster)
 byte	*CM_ClusterPHS (int cluster)
 {
 	if (cluster == -1)
-		memset (phsrow, 0, (numclusters+7)>>3);
+		Com_Memset(phsrow, 0, (numclusters+7)>>3);
 	else
 		CM_DecompressVis (map_visibility + map_vis->bitofs[cluster][DVIS_PHS], phsrow);
 	return phsrow;
@@ -1693,11 +1693,11 @@ int CM_WriteAreaBits (byte *buffer, int area)
 
 	if (map_noareas->value)
 	{	// for debugging, send everything
-		memset (buffer, 255, bytes);
+		Com_Memset(buffer, 255, bytes);
 	}
 	else
 	{
-		memset (buffer, 0, bytes);
+		Com_Memset(buffer, 0, bytes);
 
 		floodnum = map_areas[area].floodnum;
 		for (i=0 ; i<numareas ; i++)

@@ -526,7 +526,7 @@ void CL_ParseSoundlist (void)
 	char	*str;
 
 // precache sounds
-	memset (cl.sound_precache, 0, sizeof(cl.sound_precache));
+	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
 	for (numsounds=1 ; ; numsounds++)
 	{
 		str = MSG_ReadString ();
@@ -553,7 +553,7 @@ void CL_ParseModellist (void)
 	char	*str;
 
 // precache models and note certain default indexes
-	memset (cl.model_precache, 0, sizeof(cl.model_precache));
+	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));
 	cl_playerindex[0] = -1;
 	cl_playerindex[1] = -1;
 	cl_playerindex[2] = -1;

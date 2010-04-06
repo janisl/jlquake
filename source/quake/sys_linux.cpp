@@ -364,7 +364,7 @@ int main (int c, char **v)
 //	signal(SIGFPE, floating_point_exception_handler);
 	signal(SIGFPE, SIG_IGN);
 
-	memset(&parms, 0, sizeof(parms));
+	Com_Memset(&parms, 0, sizeof(parms));
 
 	COM_InitArgv(c, v);
 	parms.argc = com_argc;

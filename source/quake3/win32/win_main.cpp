@@ -1000,7 +1000,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
 	// create an empty event to return
 
-	memset( &ev, 0, sizeof( ev ) );
+	Com_Memset( &ev, 0, sizeof( ev ) );
 	ev.evTime = timeGetTime();
 
 	return ev;

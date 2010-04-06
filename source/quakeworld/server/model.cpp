@@ -49,7 +49,7 @@ Mod_Init
 */
 void Mod_Init (void)
 {
-	memset (mod_novis, 0xff, sizeof(mod_novis));
+	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 }
 
 /*
@@ -335,8 +335,8 @@ void Mod_LoadTextures (lump_t *l)
 			continue;	// allready sequenced
 
 	// find the number of frames in the animation
-		memset (anims, 0, sizeof(anims));
-		memset (altanims, 0, sizeof(altanims));
+		Com_Memset(anims, 0, sizeof(anims));
+		Com_Memset(altanims, 0, sizeof(altanims));
 
 		max = tx->name[1];
 		altmax = 0;

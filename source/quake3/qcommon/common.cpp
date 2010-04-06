@@ -1994,7 +1994,7 @@ Com_InitPushEvent
 void Com_InitPushEvent( void ) {
   // clear the static buffer array
   // this requires SE_NONE to be accepted as a valid but NOP event
-  memset( com_pushedEvents, 0, sizeof(com_pushedEvents) );
+  Com_Memset( com_pushedEvents, 0, sizeof(com_pushedEvents) );
   // reset counters while we are at it
   // beware: GetEvent might still return an SE_NONE from the buffer
   com_pushedEventsHead = 0;
@@ -3209,7 +3209,7 @@ Field_Clear
 ==================
 */
 void Field_Clear( field_t *edit ) {
-  memset(edit->buffer, 0, MAX_EDIT_LINE);
+  Com_Memset(edit->buffer, 0, MAX_EDIT_LINE);
 	edit->cursor = 0;
 	edit->scroll = 0;
 }

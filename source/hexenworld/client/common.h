@@ -73,12 +73,11 @@ void MSG_ReadUsercmd (struct usercmd_s *cmd, qboolean long_msg);
 //============================================================================
 
 /*
-void Q_memset (void *dest, int fill, int count);
 void Q_memcpy (void *dest, void *src, int count);
 int Q_memcmp (void *m1, void *m2, int count);
 */
 
-#define Q_memset	memset
+#define Com_Memset	memset
 
 //============================================================================
 

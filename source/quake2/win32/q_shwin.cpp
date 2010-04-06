@@ -47,7 +47,7 @@ void *Hunk_Begin (int maxsize)
 	membase = (byte*)VirtualAlloc (NULL, maxsize, MEM_RESERVE, PAGE_NOACCESS);
 #else
 	membase = malloc (maxsize);
-	memset (membase, 0, maxsize);
+	Com_Memset(membase, 0, maxsize);
 #endif
 	if (!membase)
 		Sys_Error ("VirtualAlloc reserve failed");

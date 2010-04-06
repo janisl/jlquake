@@ -274,7 +274,7 @@ int main (int argc, char **argv)
 	double			time, oldtime;
 	static	char	cwd[1024];
 
-	memset (&parms, 0, sizeof(parms));
+	Com_Memset(&parms, 0, sizeof(parms));
 
 	parms.memsize = 16384*1024;
 	parms.membase = malloc (parms.memsize);

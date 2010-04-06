@@ -63,7 +63,7 @@ char *NET_ErrorString (void);
 
 void NetadrToSockadr (netadr_t *a, struct sockaddr_in *s)
 {
-	memset (s, 0, sizeof(*s));
+	Com_Memset(s, 0, sizeof(*s));
 
 	if (a->type == NA_BROADCAST)
 	{
@@ -110,7 +110,7 @@ qboolean	Sys_StringToSockaddr (const char *s, struct sockaddr *sadr)
 	struct hostent	*h;
 	//char	*colon; // bk001204 - unused
 	
-	memset (sadr, 0, sizeof(*sadr));
+	Com_Memset(sadr, 0, sizeof(*sadr));
 	((struct sockaddr_in *)sadr)->sin_family = AF_INET;
 	
 	((struct sockaddr_in *)sadr)->sin_port = 0;

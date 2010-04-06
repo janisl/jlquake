@@ -125,7 +125,7 @@ BOOL ConverterInit( LPSTR szInFile )
 
     // Initialize things we'll try to free later if we fail
     //
-    memset( &ifs, 0, sizeof(INFILESTATE));
+    Com_Memset( &ifs, 0, sizeof(INFILESTATE));
     ifs.cbFileLength = 0;
     ifs.pitsTracks = NULL;
 
@@ -472,7 +472,7 @@ int ConvertToBuffer( DWORD dwFlags, LPCONVERTINFO lpciInfo )
     {
     dwProgressBytes = 0;
     dwStatus = 0;
-    memset( &teTemp, 0, sizeof(TEMPEVENT));
+    Com_Memset( &teTemp, 0, sizeof(TEMPEVENT));
     ptsTrack = ptsFound = NULL;
     }
     // If we were already done, then return with a warning...
@@ -699,7 +699,7 @@ static BOOL GetTrackEvent( INTRACKSTATE *ptsTrack, PTEMPEVENT pteTemp )
     UINT    dwEventLength;
 
     // Clear out the temporary event structure to get rid of old data...
-    memset( pteTemp, 0, sizeof(TEMPEVENT));
+    Com_Memset( pteTemp, 0, sizeof(TEMPEVENT));
 
     // Already at end of track? There's nothing to read.
     //

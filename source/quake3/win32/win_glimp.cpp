@@ -589,7 +589,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 	{
 		WNDCLASS wc;
 
-		memset( &wc, 0, sizeof( wc ) );
+		Com_Memset( &wc, 0, sizeof( wc ) );
 
 		wc.style         = 0;
 		wc.lpfnWndProc   = (WNDPROC) glw_state.wndproc;
@@ -797,7 +797,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 	// do a CDS if needed
 	if ( cdsFullscreen )
 	{
-		memset( &dm, 0, sizeof( dm ) );
+		Com_Memset( &dm, 0, sizeof( dm ) );
 		
 		dm.dmSize = sizeof( dm );
 		
@@ -942,7 +942,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 	//
 	// success, now check display frequency, although this won't be valid on Voodoo(2)
 	//
-	memset( &dm, 0, sizeof( dm ) );
+	Com_Memset( &dm, 0, sizeof( dm ) );
 	dm.dmSize = sizeof( dm );
 	if ( EnumDisplaySettings( NULL, ENUM_CURRENT_SETTINGS, &dm ) )
 	{
@@ -1535,8 +1535,8 @@ void GLimp_Shutdown( void )
 	// shutdown QGL subsystem
 	QGL_Shutdown();
 
-	memset( &glConfig, 0, sizeof( glConfig ) );
-	memset( &glState, 0, sizeof( glState ) );
+	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
+	Com_Memset( &glState, 0, sizeof( glState ) );
 }
 
 /*

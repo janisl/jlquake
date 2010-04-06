@@ -69,7 +69,7 @@ Sets everything to NULL
 */
 void ED_ClearEdict (edict_t *e)
 {
-	memset (&e->v, 0, progs->entityfields * 4);
+	Com_Memset(&e->v, 0, progs->entityfields * 4);
 	e->free = false;
 }
 
@@ -811,7 +811,7 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 
 // clear it
 	if (ent != sv.edicts)	// hack
-		memset (&ent->v, 0, progs->entityfields * 4);
+		Com_Memset(&ent->v, 0, progs->entityfields * 4);
 
 // go through all the dictionary pairs
 	while (1)

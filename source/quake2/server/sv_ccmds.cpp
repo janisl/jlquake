@@ -51,7 +51,7 @@ void SV_SetMaster_f (void)
 	Cvar_Set ("public", "1");
 
 	for (i=1 ; i<MAX_MASTERS ; i++)
-		memset (&master_adr[i], 0, sizeof(master_adr[i]));
+		Com_Memset(&master_adr[i], 0, sizeof(master_adr[i]));
 
 	slot = 1;		// slot 0 will always contain the id master
 	for (i=1 ; i<Cmd_Argc() ; i++)
@@ -350,7 +350,7 @@ void SV_WriteServerFile (qboolean autosave)
 		return;
 	}
 	// write the comment field
-	memset (comment, 0, sizeof(comment));
+	Com_Memset(comment, 0, sizeof(comment));
 
 	if (!autosave)
 	{
@@ -383,8 +383,8 @@ void SV_WriteServerFile (qboolean autosave)
 			Com_Printf ("Cvar too long: %s = %s\n", var->name, var->string);
 			continue;
 		}
-		memset (name, 0, sizeof(name));
-		memset (string, 0, sizeof(string));
+		Com_Memset(name, 0, sizeof(name));
+		Com_Memset(string, 0, sizeof(string));
 		QStr::Cpy(name, var->name);
 		QStr::Cpy(string, var->string);
 		fwrite (name, 1, sizeof(name), f);

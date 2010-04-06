@@ -83,8 +83,8 @@ int WIPX_Init (void)
 	}
 
 	((struct sockaddr_ipx *)&broadcastaddr)->sa_family = AF_IPX;
-	memset(((struct sockaddr_ipx *)&broadcastaddr)->sa_netnum, 0, 4);
-	memset(((struct sockaddr_ipx *)&broadcastaddr)->sa_nodenum, 0xff, 6);
+	Com_Memset(((struct sockaddr_ipx *)&broadcastaddr)->sa_netnum, 0, 4);
+	Com_Memset(((struct sockaddr_ipx *)&broadcastaddr)->sa_nodenum, 0xff, 6);
 	((struct sockaddr_ipx *)&broadcastaddr)->sa_socket = htons((unsigned short)net_hostport);
 
 	WIPX_GetSocketAddr (net_controlsocket, &addr);
@@ -157,8 +157,8 @@ int WIPX_OpenSocket (int port)
 		goto ErrorReturn;
 
 	address.sa_family = AF_IPX;
-	memset(address.sa_netnum, 0, 4);
-	memset(address.sa_nodenum, 0, 6);;
+	Com_Memset(address.sa_netnum, 0, 4);
+	Com_Memset(address.sa_nodenum, 0, 6);;
 	address.sa_socket = htons((unsigned short)port);
 	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == 0)
 	{
@@ -300,7 +300,7 @@ int WIPX_StringToAddr (char *string, struct qsockaddr *addr)
 	char buf[3];
 
 	buf[2] = 0;
-	memset(addr, 0, sizeof(struct qsockaddr));
+	Com_Memset(addr, 0, sizeof(struct qsockaddr));
 	addr->sa_family = AF_IPX;
 
 #define DO(src,dest)	\
@@ -336,7 +336,7 @@ int WIPX_GetSocketAddr (int handle, struct qsockaddr *addr)
 	int addrlen = sizeof(struct qsockaddr);
 	unsigned int a;
 
-	memset(addr, 0, sizeof(struct qsockaddr));
+	Com_Memset(addr, 0, sizeof(struct qsockaddr));
 	if(getsockname(socket, (struct sockaddr *)addr, &addrlen) != 0)
 	{
 		int err = WSAGetLastError();

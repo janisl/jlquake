@@ -91,7 +91,7 @@ void Con_ToggleConsole_f (void)
 		key_dest = key_console;
 	
 	SCR_EndLoadingPlaque ();
-	memset (con_times, 0, sizeof(con_times));
+	Com_Memset(con_times, 0, sizeof(con_times));
 }
 
 /*
@@ -102,7 +102,7 @@ Con_Clear_f
 void Con_Clear_f (void)
 {
 	if (con_text)
-		Q_memset (con_text, ' ', CON_TEXTSIZE);
+		Com_Memset(con_text, ' ', CON_TEXTSIZE);
 }
 
 						
@@ -168,7 +168,7 @@ void Con_CheckResize (void)
 		width = 38;
 		con_linewidth = width;
 		con_totallines = CON_TEXTSIZE / con_linewidth;
-		Q_memset (con_text, ' ', CON_TEXTSIZE);
+		Com_Memset(con_text, ' ', CON_TEXTSIZE);
 	}
 	else
 	{
@@ -187,7 +187,7 @@ void Con_CheckResize (void)
 			numchars = con_linewidth;
 
 		Q_memcpy (tbuf, con_text, CON_TEXTSIZE);
-		Q_memset (con_text, ' ', CON_TEXTSIZE);
+		Com_Memset(con_text, ' ', CON_TEXTSIZE);
 
 		for (i=0 ; i<numlines ; i++)
 		{
@@ -230,7 +230,7 @@ void Con_Init (void)
 	}
 
 	con_text = (char*)Hunk_AllocName (CON_TEXTSIZE, "context");
-	Q_memset (con_text, ' ', CON_TEXTSIZE);
+	Com_Memset(con_text, ' ', CON_TEXTSIZE);
 	con_linewidth = -1;
 	Con_CheckResize ();
 	
@@ -258,7 +258,7 @@ void Con_Linefeed (void)
 {
 	con_x = 0;
 	con_current++;
-	Q_memset (&con_text[(con_current%con_totallines)*con_linewidth]
+	Com_Memset(&con_text[(con_current%con_totallines)*con_linewidth]
 	, ' ', con_linewidth);
 }
 

@@ -162,7 +162,7 @@ Mod_Init
 */
 void Mod_Init (void)
 {
-	memset (mod_novis, 0xff, sizeof(mod_novis));
+	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 }
 
 
@@ -229,7 +229,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	{
 		if (crash)
 			ri.Sys_Error (ERR_DROP, "Mod_NumForName: %s not found", mod->name);
-		memset (mod->name, 0, sizeof(mod->name));
+		Com_Memset(mod->name, 0, sizeof(mod->name));
 		return NULL;
 	}
 	
@@ -1203,7 +1203,7 @@ Mod_Free
 void Mod_Free (model_t *mod)
 {
 	Hunk_Free (mod->extradata);
-	memset (mod, 0, sizeof(*mod));
+	Com_Memset(mod, 0, sizeof(*mod));
 }
 
 /*

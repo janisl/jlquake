@@ -363,7 +363,7 @@ void CL_ParseBaseline (void)
 	int				newnum;
 	entity_state_t	nullstate;
 
-	memset (&nullstate, 0, sizeof(nullstate));
+	Com_Memset(&nullstate, 0, sizeof(nullstate));
 
 	newnum = CL_ParseEntityBits (&bits);
 	es = &cl_entities[newnum].baseline;
@@ -407,7 +407,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		Com_sprintf (skin_filename, sizeof(skin_filename), "players/male/grunt.pcx");
 		Com_sprintf (ci->iconname, sizeof(ci->iconname), "/players/male/grunt_i.pcx");
 		ci->model = re.RegisterModel (model_filename);
-		memset(ci->weaponmodel, 0, sizeof(ci->weaponmodel));
+		Com_Memset(ci->weaponmodel, 0, sizeof(ci->weaponmodel));
 		ci->weaponmodel[0] = re.RegisterModel (weapon_filename);
 		ci->skin = re.RegisterSkin (skin_filename);
 		ci->icon = re.RegisterPic (ci->iconname);

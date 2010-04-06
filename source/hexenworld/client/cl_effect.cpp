@@ -141,8 +141,8 @@ void CL_InitEffects(void)
 
 void CL_ClearEffects(void)
 {
-	memset(cl.Effects,0,sizeof(cl.Effects));
-	memset(EntityUsed,0,sizeof(EntityUsed));
+	Com_Memset(cl.Effects,0,sizeof(cl.Effects));
+	Com_Memset(EntityUsed,0,sizeof(EntityUsed));
 	EffectEntityCount = 0;
 }
 
@@ -280,7 +280,7 @@ void CL_FreeEffect(int index)
 			break;
 	}
 
-	memset(&cl.Effects[index],0,sizeof(struct EffectT));
+	Com_Memset(&cl.Effects[index],0,sizeof(struct EffectT));
 }
 
 //==========================================================================
@@ -310,7 +310,7 @@ void CL_ParseEffect(void)
 	if (cl.Effects[index].type)
 		CL_FreeEffect(index);
 
-	memset(&cl.Effects[index],0,sizeof(struct EffectT));
+	Com_Memset(&cl.Effects[index],0,sizeof(struct EffectT));
 
 	cl.Effects[index].type = MSG_ReadByte();
 
@@ -1701,7 +1701,7 @@ void CL_UpdateEffects(void)
 				R_RunParticleEffect2 (cl.Effects[index].Fountain.pos,mymin,mymax,
 					                  cl.Effects[index].Fountain.color,2,cl.Effects[index].Fountain.cnt);
 
-/*				memset(&test,0,sizeof(test));
+/*				Com_Memset(&test,0,sizeof(test));
 				trace = SV_Move (cl.Effects[index].Fountain.pos, mymin, mymax, mymin, false, &test);
 				Con_Printf("Fraction is %f\n",trace.fraction);*/
 				break;
@@ -2403,7 +2403,7 @@ static int NewEffectEntity(void)
 	EntityUsed[counter] = true;
 	EffectEntityCount++;
 	ent = &EffectEntities[counter];
-	memset(ent, 0, sizeof(*ent));
+	Com_Memset(ent, 0, sizeof(*ent));
 	ent->colormap = vid.colormap;
 
 	return counter;

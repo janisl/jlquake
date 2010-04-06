@@ -29,7 +29,7 @@ qboolean SNDDMA_Init(void)
 
 	size = 16384 + sizeof(dma_t);
 	shm = malloc (size);
-	memset((void*)shm, 0, size);
+	Com_Memset((void*)shm, 0, size);
 
 	shm->buffer = (char*)shm + sizeof(dma_t);
 	shm->channels = 2;

@@ -52,7 +52,7 @@ dlight_t *CL_AllocDlight (int key)
 		{
 			if (dl->key == key)
 			{
-				memset (dl, 0, sizeof(*dl));
+				Com_Memset(dl, 0, sizeof(*dl));
 				dl->key = key;
 				return dl;
 			}
@@ -65,14 +65,14 @@ dlight_t *CL_AllocDlight (int key)
 	{
 		if (dl->die < cl.time)
 		{
-			memset (dl, 0, sizeof(*dl));
+			Com_Memset(dl, 0, sizeof(*dl));
 			dl->key = key;
 			return dl;
 		}
 	}
 
 	dl = &cl_dlights[0];
-	memset (dl, 0, sizeof(*dl));
+	Com_Memset(dl, 0, sizeof(*dl));
 	dl->key = key;
 	return dl;
 }
@@ -232,7 +232,7 @@ void FlushEntityPacket (void)
 
 	Con_DPrintf ("FlushEntityPacket\n");
 
-	memset (&olde, 0, sizeof(olde));
+	Com_Memset(&olde, 0, sizeof(olde));
 
 	cl.validsequence = 0;		// can't render a frame
 	cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].invalid = true;

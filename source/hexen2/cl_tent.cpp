@@ -112,7 +112,7 @@ void CL_InitTEnts(void)
 
 void CL_ClearTEnts(void)
 {
-	memset(cl_Streams, 0, sizeof(cl_Streams));
+	Com_Memset(cl_Streams, 0, sizeof(cl_Streams));
 }
 
 //==========================================================================
@@ -676,7 +676,7 @@ static entity_t *NewStreamEntity(void)
 		return NULL;
 	}
 	ent = &StreamEntities[StreamEntityCount++];
-	memset(ent, 0, sizeof(*ent));
+	Com_Memset(ent, 0, sizeof(*ent));
 	cl_visedicts[cl_numvisedicts++] = ent;
 	ent->colormap = vid.colormap;
 	return ent;

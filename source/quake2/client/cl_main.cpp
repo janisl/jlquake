@@ -239,7 +239,7 @@ void CL_Record_f (void)
 	}
 
 	// baselines
-	memset (&nullstate, 0, sizeof(nullstate));
+	Com_Memset(&nullstate, 0, sizeof(nullstate));
 	for (i=0; i<MAX_EDICTS ; i++)
 	{
 		ent = &cl_entities[i].baseline;
@@ -596,8 +596,8 @@ void CL_ClearState (void)
 	CL_ClearTEnts ();
 
 // wipe the entire cl structure
-	memset (&cl, 0, sizeof(cl));
-	memset (&cl_entities, 0, sizeof(cl_entities));
+	Com_Memset(&cl, 0, sizeof(cl));
+	Com_Memset(&cl_entities, 0, sizeof(cl_entities));
 
 	SZ_Clear (&cls.netchan.message);
 

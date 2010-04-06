@@ -322,7 +322,7 @@ Translates a skin texture by the per-player color lookup
 		byte *out2;
 
 		out2 = (byte *)pixels;
-		memset(pixels, 0, sizeof(pixels));
+		Com_Memset(pixels, 0, sizeof(pixels));
 		fracstep = tinwidth*0x10000/scaled_width;
 		for (i=0 ; i<scaled_height ; i++, out2 += scaled_width)
 		{
@@ -349,7 +349,7 @@ Translates a skin texture by the per-player color lookup
 		translate32[i] = d_8to24table[translate[i]];
 
 	out = pixels;
-	memset(pixels, 0, sizeof(pixels));
+	Com_Memset(pixels, 0, sizeof(pixels));
 	fracstep = tinwidth*0x10000/scaled_width;
 	for (i=0 ; i<scaled_height ; i++, out += scaled_width)
 	{
@@ -531,7 +531,7 @@ void R_NewMap (void)
 	for (i=0 ; i<256 ; i++)
 		d_lightstylevalue[i] = 264;		// normal light value
 
-	memset (&r_worldentity, 0, sizeof(r_worldentity));
+	Com_Memset(&r_worldentity, 0, sizeof(r_worldentity));
 	r_worldentity.model = cl.worldmodel;
 
 // clear out efrags in case the level hasn't been reloaded

@@ -1444,7 +1444,7 @@ void GL_FreeUnusedImages (void)
 			continue;		// don't free pics
 		// free it
 		qglDeleteTextures (1, (GLuint*)&image->texnum);
-		memset (image, 0, sizeof(*image));
+		Com_Memset(image, 0, sizeof(*image));
 	}
 }
 
@@ -1565,7 +1565,7 @@ void	GL_ShutdownImages (void)
 			continue;		// free image_t slot
 		// free it
 		qglDeleteTextures (1, (GLuint*)&image->texnum);
-		memset (image, 0, sizeof(*image));
+		Com_Memset(image, 0, sizeof(*image));
 	}
 }
 

@@ -104,7 +104,7 @@ static qboolean DS_CreateBuffers( void )
 	WAVEFORMATEX	pformat, format;
 	DWORD			dwWrite;
 
-	memset (&format, 0, sizeof(format));
+	Com_Memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
     format.nChannels = dma.channels;
     format.wBitsPerSample = dma.samplebits;
@@ -126,13 +126,13 @@ static qboolean DS_CreateBuffers( void )
 
 // get access to the primary buffer, if possible, so we can set the
 // sound hardware format
-	memset (&dsbuf, 0, sizeof(dsbuf));
+	Com_Memset(&dsbuf, 0, sizeof(dsbuf));
 	dsbuf.dwSize = sizeof(DSBUFFERDESC);
 	dsbuf.dwFlags = DSBCAPS_PRIMARYBUFFER;
 	dsbuf.dwBufferBytes = 0;
 	dsbuf.lpwfxFormat = NULL;
 
-	memset(&dsbcaps, 0, sizeof(dsbcaps));
+	Com_Memset(&dsbcaps, 0, sizeof(dsbcaps));
 	dsbcaps.dwSize = sizeof(dsbcaps);
 	primary_format_set = false;
 
@@ -161,13 +161,13 @@ static qboolean DS_CreateBuffers( void )
 	if ( !primary_format_set || !s_primary->value)
 	{
 	// create the secondary buffer we'll actually work with
-		memset (&dsbuf, 0, sizeof(dsbuf));
+		Com_Memset(&dsbuf, 0, sizeof(dsbuf));
 		dsbuf.dwSize = sizeof(DSBUFFERDESC);
 		dsbuf.dwFlags = DSBCAPS_CTRLFREQUENCY | DSBCAPS_LOCSOFTWARE;
 		dsbuf.dwBufferBytes = SECONDARY_BUFFER_SIZE;
 		dsbuf.lpwfxFormat = &format;
 
-		memset(&dsbcaps, 0, sizeof(dsbcaps));
+		Com_Memset(&dsbcaps, 0, sizeof(dsbcaps));
 		dsbcaps.dwSize = sizeof(dsbcaps);
 
 		Com_DPrintf( "...creating secondary buffer: " );
@@ -462,7 +462,7 @@ qboolean SNDDMA_InitWav (void)
 	else
 		dma.speed = 11025;
 
-	memset (&format, 0, sizeof(format));
+	Com_Memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
 	format.nChannels = dma.channels;
 	format.wBitsPerSample = dma.samplebits;
@@ -522,7 +522,7 @@ qboolean SNDDMA_InitWav (void)
 		FreeSound ();
 		return false; 
 	} 
-	memset (lpData, 0, gSndBufSize);
+	Com_Memset(lpData, 0, gSndBufSize);
 	Com_DPrintf( "ok\n" );
 
 	/* 
@@ -551,7 +551,7 @@ qboolean SNDDMA_InitWav (void)
 		FreeSound ();
 		return false; 
 	}
-	memset (lpWaveHdr, 0, sizeof(WAVEHDR) * WAV_BUFFERS);
+	Com_Memset(lpWaveHdr, 0, sizeof(WAVEHDR) * WAV_BUFFERS);
 	Com_DPrintf( "ok\n" );
 
 	/* After allocation, set up and prepare headers. */ 
@@ -594,7 +594,7 @@ int SNDDMA_Init(void)
 {
 	sndinitstat	stat;
 
-	memset ((void *)&dma, 0, sizeof (dma));
+	Com_Memset((void *)&dma, 0, sizeof (dma));
 
 	s_wavonly = Cvar_Get ("s_wavonly", "0", 0);
 

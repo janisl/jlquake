@@ -891,7 +891,7 @@ void MSG_ReadData (sizebuf_t *msg_read, void *data, int len)
 
 void SZ_Init (sizebuf_t *buf, byte *data, int length)
 {
-	memset (buf, 0, sizeof(*buf));
+	Com_Memset(buf, 0, sizeof(*buf));
 	buf->data = data;
 	buf->maxsize = length;
 }
@@ -1071,7 +1071,7 @@ void Info_Print (char *s)
 		l = o - key;
 		if (l < 20)
 		{
-			memset (o, ' ', 20-l);
+			Com_Memset(o, ' ', 20-l);
 			key[20] = 0;
 		}
 		else
@@ -1184,7 +1184,7 @@ void *Z_TagMalloc (int size, int tag)
 	z = (zhead_t*)malloc(size);
 	if (!z)
 		Com_Error (ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes",size);
-	memset (z, 0, size);
+	Com_Memset(z, 0, size);
 	z_count++;
 	z_bytes += size;
 	z->magic = Z_MAGIC;

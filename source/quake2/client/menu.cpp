@@ -2565,7 +2565,7 @@ void StartServer_MenuInit( void )
 		Com_Error( ERR_DROP, "no maps in maps.lst\n" );
 
 	mapnames = (char**)malloc( sizeof( char * ) * ( nummaps + 1 ) );
-	memset( mapnames, 0, sizeof( char * ) * ( nummaps + 1 ) );
+	Com_Memset( mapnames, 0, sizeof( char * ) * ( nummaps + 1 ) );
 
 	s = buffer;
 
@@ -3523,7 +3523,7 @@ static qboolean PlayerConfig_ScanDirectories( void )
 			continue;
 
 		skinnames = (char**)malloc( sizeof( char * ) * ( nskins + 1 ) );
-		memset( skinnames, 0, sizeof( char * ) * ( nskins + 1 ) );
+		Com_Memset( skinnames, 0, sizeof( char * ) * ( nskins + 1 ) );
 
 		// copy the valid skins
 		for ( s = 0, k = 0; k < npcxfiles-1; k++ )
@@ -3643,7 +3643,7 @@ qboolean PlayerConfig_MenuInit( void )
 
 	qsort( s_pmi, s_numplayermodels, sizeof( s_pmi[0] ), pmicmpfnc );
 
-	memset( s_pmnames, 0, sizeof( s_pmnames ) );
+	Com_Memset( s_pmnames, 0, sizeof( s_pmnames ) );
 	for ( i = 0; i < s_numplayermodels; i++ )
 	{
 		s_pmnames[i] = s_pmi[i].displayname;
@@ -3768,7 +3768,7 @@ void PlayerConfig_MenuDraw( void )
 	refdef_t refdef;
 	char scratch[MAX_QPATH];
 
-	memset( &refdef, 0, sizeof( refdef ) );
+	Com_Memset( &refdef, 0, sizeof( refdef ) );
 
 	refdef.x = viddef.width / 2;
 	refdef.y = viddef.height / 2 - 72;
@@ -3784,7 +3784,7 @@ void PlayerConfig_MenuDraw( void )
 		int maxframe = 29;
 		entity_t entity;
 
-		memset( &entity, 0, sizeof( entity ) );
+		Com_Memset( &entity, 0, sizeof( entity ) );
 
 		Com_sprintf( scratch, sizeof( scratch ), "players/%s/tris.md2", s_pmi[s_player_model_box.curvalue].directory );
 		entity.model = re.RegisterModel( scratch );

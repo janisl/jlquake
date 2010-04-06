@@ -134,7 +134,7 @@ SV_ClearWorld
 */
 void SV_ClearWorld (void)
 {
-	memset (sv_areanodes, 0, sizeof(sv_areanodes));
+	Com_Memset(sv_areanodes, 0, sizeof(sv_areanodes));
 	sv_numareanodes = 0;
 	SV_CreateAreaNode (0, sv.models[1]->mins, sv.models[1]->maxs);
 }
@@ -630,7 +630,7 @@ trace_t SV_Trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *p
 	if (!maxs)
 		maxs = vec3_origin;
 
-	memset ( &clip, 0, sizeof ( moveclip_t ) );
+	Com_Memset( &clip, 0, sizeof ( moveclip_t ) );
 
 	// clip to world
 	clip.trace = CM_BoxTrace (start, end, mins, maxs, 0, contentmask);

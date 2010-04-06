@@ -114,14 +114,14 @@ static int EffectEntityCount;
 
 void CL_ClearEffects(void)
 {
-	memset(cl.Effects,0,sizeof(cl.Effects));
-	memset(EntityUsed,0,sizeof(EntityUsed));
+	Com_Memset(cl.Effects,0,sizeof(cl.Effects));
+	Com_Memset(EntityUsed,0,sizeof(EntityUsed));
 	EffectEntityCount = 0;
 }
 
 void SV_ClearEffects(void)
 {
-	memset(sv.Effects,0,sizeof(sv.Effects));
+	Com_Memset(sv.Effects,0,sizeof(sv.Effects));
 }
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
@@ -513,7 +513,7 @@ void SV_ParseEffect(sizebuf_t *sb)
 
 //	Con_Printf("Effect #%d\n",index);
 
-	memset(&sv.Effects[index],0,sizeof(struct EffectT));
+	Com_Memset(&sv.Effects[index],0,sizeof(struct EffectT));
 
 	sv.Effects[index].type = effect;
 	G_FLOAT(OFS_RETURN) = index;
@@ -1201,7 +1201,7 @@ void CL_FreeEffect(int index)
 
 	}
 
-	memset(&cl.Effects[index],0,sizeof(struct EffectT));
+	Com_Memset(&cl.Effects[index],0,sizeof(struct EffectT));
 }
 
 //==========================================================================
@@ -1228,7 +1228,7 @@ void CL_ParseEffect(void)
 	if (cl.Effects[index].type)
 		CL_FreeEffect(index);
 
-	memset(&cl.Effects[index],0,sizeof(struct EffectT));
+	Com_Memset(&cl.Effects[index],0,sizeof(struct EffectT));
 
 	cl.Effects[index].type = MSG_ReadByte();
 
@@ -2080,7 +2080,7 @@ void CL_UpdateEffects(void)
 				R_RunParticleEffect2 (cl.Effects[index].Fountain.pos,mymin,mymax,
 					                  cl.Effects[index].Fountain.color,2,cl.Effects[index].Fountain.cnt);
 
-/*				memset(&test,0,sizeof(test));
+/*				Com_Memset(&test,0,sizeof(test));
 				trace = SV_Move (cl.Effects[index].Fountain.pos, mymin, mymax, mymin, false, &test);
 				Con_Printf("Fraction is %f\n",trace.fraction);*/
 				break;
@@ -2508,7 +2508,7 @@ static int NewEffectEntity(void)
 	EntityUsed[counter] = true;
 	EffectEntityCount++;
 	ent = &EffectEntities[counter];
-	memset(ent, 0, sizeof(*ent));
+	Com_Memset(ent, 0, sizeof(*ent));
 	ent->colormap = vid.colormap;
 
 	return counter;

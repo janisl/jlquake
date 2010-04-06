@@ -117,7 +117,7 @@ called to open a channel to a remote system
 */
 void Netchan_Setup (netchan_t *chan, netadr_t adr)
 {
-	memset (chan, 0, sizeof(*chan));
+	Com_Memset(chan, 0, sizeof(*chan));
 	
 	chan->remote_address = adr;
 	chan->last_received = realtime;

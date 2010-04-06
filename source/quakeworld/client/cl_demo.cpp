@@ -423,7 +423,7 @@ void CL_Record_f (void)
 
 // serverdata
 	// send the info about the new client to all connected clients
-	memset(&buf, 0, sizeof(buf));
+	Com_Memset(&buf, 0, sizeof(buf));
 	buf.data = buf_data;
 	buf.maxsize = sizeof(buf_data);
 
@@ -552,7 +552,7 @@ void CL_Record_f (void)
 
 // baselines
 
-	memset(&blankes, 0, sizeof(blankes));
+	Com_Memset(&blankes, 0, sizeof(blankes));
 	for (i = 0; i < MAX_EDICTS; i++) {
 		es = cl_baselines + i;
 

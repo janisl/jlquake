@@ -188,7 +188,7 @@ sndinitstat SNDDMA_InitDirect (void)
 	HRESULT			hresult;
 	int				reps;
 
-	memset ((void *)&sn, 0, sizeof (sn));
+	Com_Memset((void *)&sn, 0, sizeof (sn));
 
 	shm = &sn;
 
@@ -196,7 +196,7 @@ sndinitstat SNDDMA_InitDirect (void)
 	shm->samplebits = 16;
 	shm->speed = 11025;
 
-	memset (&format, 0, sizeof(format));
+	Com_Memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
     format.nChannels = shm->channels;
     format.wBitsPerSample = shm->samplebits;
@@ -269,13 +269,13 @@ sndinitstat SNDDMA_InitDirect (void)
 
 // get access to the primary buffer, if possible, so we can set the
 // sound hardware format
-	memset (&dsbuf, 0, sizeof(dsbuf));
+	Com_Memset(&dsbuf, 0, sizeof(dsbuf));
 	dsbuf.dwSize = sizeof(DSBUFFERDESC);
 	dsbuf.dwFlags = DSBCAPS_PRIMARYBUFFER;
 	dsbuf.dwBufferBytes = 0;
 	dsbuf.lpwfxFormat = NULL;
 
-	memset(&dsbcaps, 0, sizeof(dsbcaps));
+	Com_Memset(&dsbcaps, 0, sizeof(dsbcaps));
 	dsbcaps.dwSize = sizeof(dsbcaps);
 	primary_format_set = false;
 
@@ -303,13 +303,13 @@ sndinitstat SNDDMA_InitDirect (void)
 	if (!primary_format_set || !COM_CheckParm ("-primarysound"))
 	{
 	// create the secondary buffer we'll actually work with
-		memset (&dsbuf, 0, sizeof(dsbuf));
+		Com_Memset(&dsbuf, 0, sizeof(dsbuf));
 		dsbuf.dwSize = sizeof(DSBUFFERDESC);
 		dsbuf.dwFlags = DSBCAPS_CTRLFREQUENCY | DSBCAPS_LOCSOFTWARE;
 		dsbuf.dwBufferBytes = SECONDARY_BUFFER_SIZE;
 		dsbuf.lpwfxFormat = &format;
 
-		memset(&dsbcaps, 0, sizeof(dsbcaps));
+		Com_Memset(&dsbcaps, 0, sizeof(dsbcaps));
 		dsbcaps.dwSize = sizeof(dsbcaps);
 
 		if (DS_OK != pDS->CreateSoundBuffer(&dsbuf, &pDSBuf, NULL))
@@ -384,7 +384,7 @@ sndinitstat SNDDMA_InitDirect (void)
 
 	}
 
-	memset(lpData, 0, dwSize);
+	Com_Memset(lpData, 0, dwSize);
 //		lpData[4] = lpData[5] = 0x7f;	// force a pop for debugging
 
 	pDSBuf->Unlock(lpData, dwSize, NULL, 0);
@@ -432,7 +432,7 @@ qboolean SNDDMA_InitWav (void)
 	shm->samplebits = 16;
 	shm->speed = 11025;
 
-	memset (&format, 0, sizeof(format));
+	Com_Memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
 	format.nChannels = shm->channels;
 	format.wBitsPerSample = shm->samplebits;
@@ -487,7 +487,7 @@ qboolean SNDDMA_InitWav (void)
 		FreeSound ();
 		return false; 
 	} 
-	memset (lpData, 0, gSndBufSize);
+	Com_Memset(lpData, 0, gSndBufSize);
 
 	/* 
 	 * Allocate and lock memory for the header. This memory must 
@@ -513,7 +513,7 @@ qboolean SNDDMA_InitWav (void)
 		return false; 
 	}
 
-	memset (lpWaveHdr, 0, sizeof(WAVEHDR) * WAV_BUFFERS);
+	Com_Memset(lpWaveHdr, 0, sizeof(WAVEHDR) * WAV_BUFFERS);
 
 	/* After allocation, set up and prepare headers. */ 
 	for (i=0 ; i<WAV_BUFFERS ; i++)

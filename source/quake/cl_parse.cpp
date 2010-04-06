@@ -250,7 +250,7 @@ void CL_ParseServerInfo (void)
 //
 
 // precache models
-	memset (cl.model_precache, 0, sizeof(cl.model_precache));
+	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));
 	for (nummodels=1 ; ; nummodels++)
 	{
 		str = MSG_ReadString ();
@@ -266,7 +266,7 @@ void CL_ParseServerInfo (void)
 	}
 
 // precache sounds
-	memset (cl.sound_precache, 0, sizeof(cl.sound_precache));
+	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
 	for (numsounds=1 ; ; numsounds++)
 	{
 		str = MSG_ReadString ();

@@ -388,7 +388,7 @@ void SV_DropClient (client_t *drop)
 	drop->old_frags = 0;
 	drop->edict->v.frags = 0;
 	drop->name[0] = 0;
-	memset (drop->userinfo, 0, sizeof(drop->userinfo));
+	Com_Memset(drop->userinfo, 0, sizeof(drop->userinfo));
 
 // send notification to all remaining clients
 	SV_FullClientUpdate (drop, &sv.reliable_datagram);
@@ -668,7 +668,7 @@ void SVC_DirectConnect (void)
 	userid++;	// so every client gets a unique id
 
 	newcl = &temp;
-	memset (newcl, 0, sizeof(client_t));
+	Com_Memset(newcl, 0, sizeof(client_t));
 
 	newcl->userid = userid;
 	newcl->portals = atol(Cmd_Argv(1));

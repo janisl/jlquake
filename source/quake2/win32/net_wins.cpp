@@ -52,7 +52,7 @@ char *NET_ErrorString (void);
 
 void NetadrToSockadr (netadr_t *a, struct sockaddr *s)
 {
-	memset (s, 0, sizeof(*s));
+	Com_Memset(s, 0, sizeof(*s));
 
 	if (a->type == NA_BROADCAST)
 	{
@@ -76,8 +76,8 @@ void NetadrToSockadr (netadr_t *a, struct sockaddr *s)
 	else if (a->type == NA_BROADCAST_IPX)
 	{
 		((struct sockaddr_ipx *)s)->sa_family = AF_IPX;
-		memset(((struct sockaddr_ipx *)s)->sa_netnum, 0, 4);
-		memset(((struct sockaddr_ipx *)s)->sa_nodenum, 0xff, 6);
+		Com_Memset(((struct sockaddr_ipx *)s)->sa_netnum, 0, 4);
+		Com_Memset(((struct sockaddr_ipx *)s)->sa_nodenum, 0xff, 6);
 		((struct sockaddr_ipx *)s)->sa_socket = a->port;
 	}
 }
@@ -192,7 +192,7 @@ qboolean	NET_StringToSockaddr (char *s, struct sockaddr *sadr)
 	int		val;
 	char	copy[128];
 	
-	memset (sadr, 0, sizeof(*sadr));
+	Com_Memset(sadr, 0, sizeof(*sadr));
 
 	if ((QStr::Length(s) >= 23) && (s[8] == ':') && (s[21] == ':'))	// check for an IPX address
 	{
@@ -260,7 +260,7 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 	
 	if (!QStr::Cmp(s, "localhost"))
 	{
-		memset (a, 0, sizeof(*a));
+		Com_Memset(a, 0, sizeof(*a));
 		a->type = NA_LOOPBACK;
 		return true;
 	}
@@ -305,7 +305,7 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_me
 
 	memcpy (net_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
 	net_message->cursize = loop->msgs[i].datalen;
-	memset (net_from, 0, sizeof(*net_from));
+	Com_Memset(net_from, 0, sizeof(*net_from));
 	net_from->type = NA_LOOPBACK;
 	return true;
 
@@ -604,8 +604,8 @@ int NET_IPXSocket (int port)
 	}
 
 	address.sa_family = AF_IPX;
-	memset (address.sa_netnum, 0, 4);
-	memset (address.sa_nodenum, 0, 6);
+	Com_Memset(address.sa_netnum, 0, 4);
+	Com_Memset(address.sa_nodenum, 0, 6);
 	if (port == PORT_ANY)
 		address.sa_socket = 0;
 	else

@@ -442,7 +442,7 @@ void M_BuildBigCharWidth (void)
 
 	for(numA = 0; numA < 27; numA++)
 	{
-		memset(After,20,sizeof(After));
+		Com_Memset(After,20,sizeof(After));
 		source = p->data + ((numA % 8) * 20) + (numA / 8 * p->width * 20);
 		biggestX = 0;
 
@@ -462,7 +462,7 @@ void M_BuildBigCharWidth (void)
 
 		for(numB = 0; numB < 27; numB++)
 		{
-			memset(Before,0,sizeof(Before));
+			Com_Memset(Before,0,sizeof(Before));
 			source = p->data + ((numB % 8) * 20) + (numB / 8 * p->width * 20);
 			adjustment = 0;
 

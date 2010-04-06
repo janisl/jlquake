@@ -107,7 +107,7 @@ void SV_New_f (void)
 		ent = EDICT_NUM(playernum+1);
 		ent->s.number = playernum+1;
 		sv_client->edict = ent;
-		memset (&sv_client->lastcmd, 0, sizeof(sv_client->lastcmd));
+		Com_Memset(&sv_client->lastcmd, 0, sizeof(sv_client->lastcmd));
 
 		// begin fetching configstrings
 		MSG_WriteByte (&sv_client->netchan.message, svc_stufftext);
@@ -200,7 +200,7 @@ void SV_Baselines_f (void)
 	
 	start = QStr::Atoi(Cmd_Argv(2));
 
-	memset (&nullstate, 0, sizeof(nullstate));
+	Com_Memset(&nullstate, 0, sizeof(nullstate));
 
 	// write a packet full of data
 
@@ -595,7 +595,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 				}
 			}
 
-			memset (&nullcmd, 0, sizeof(nullcmd));
+			Com_Memset(&nullcmd, 0, sizeof(nullcmd));
 			MSG_ReadDeltaUsercmd (&net_message, &nullcmd, &oldest);
 			MSG_ReadDeltaUsercmd (&net_message, &oldest, &oldcmd);
 			MSG_ReadDeltaUsercmd (&net_message, &oldcmd, &newcmd);

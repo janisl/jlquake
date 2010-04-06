@@ -508,7 +508,7 @@ void IN_StartupJoystick (void)
 	// cycle through the joystick ids for the first valid one
 	for (joy_id=0 ; joy_id<numdevs ; joy_id++)
 	{
-		memset (&ji, 0, sizeof(ji));
+		Com_Memset(&ji, 0, sizeof(ji));
 		ji.dwSize = sizeof(ji);
 		ji.dwFlags = JOY_RETURNCENTERED;
 
@@ -525,7 +525,7 @@ void IN_StartupJoystick (void)
 
 	// get the capabilities of the selected joystick
 	// abort startup if command fails
-	memset (&jc, 0, sizeof(jc));
+	Com_Memset(&jc, 0, sizeof(jc));
 	if ((mmr = joyGetDevCaps (joy_id, &jc, sizeof(jc))) != JOYERR_NOERROR)
 	{
 		Com_Printf ("\njoystick not found -- invalid joystick capabilities (%x)\n\n", mmr); 
@@ -724,7 +724,7 @@ IN_ReadJoystick
 qboolean IN_ReadJoystick (void)
 {
 
-	memset (&ji, 0, sizeof(ji));
+	Com_Memset(&ji, 0, sizeof(ji));
 	ji.dwSize = sizeof(ji);
 	ji.dwFlags = joy_flags;
 

@@ -1250,7 +1250,7 @@ void Pmove (pmove_t *pmove)
 	pm->waterlevel = 0;
 
 	// clear all pmove local vars
-	memset (&pml, 0, sizeof(pml));
+	Com_Memset(&pml, 0, sizeof(pml));
 
 	// convert origin and velocity to float values
 	pml.origin[0] = pm->s.origin[0]*0.125;

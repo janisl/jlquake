@@ -159,7 +159,7 @@ void CL_AddProjectiles (void)
 	projectile_t	*pr;
 	entity_t		ent;
 
-	memset (&ent, 0, sizeof(ent));
+	Com_Memset(&ent, 0, sizeof(ent));
 
 	for (i=0, pr=cl_projectiles ; i < MAX_PROJECTILES ; i++, pr++)
 	{
@@ -525,7 +525,7 @@ void CL_ParsePlayerstate (frame_t *oldframe, frame_t *newframe)
 	if (oldframe)
 		*state = oldframe->playerstate;
 	else
-		memset (state, 0, sizeof(*state));
+		Com_Memset(state, 0, sizeof(*state));
 
 	flags = MSG_ReadShort (&net_message);
 
@@ -666,7 +666,7 @@ void CL_ParseFrame (void)
 	int			len;
 	frame_t		*old;
 
-	memset (&cl.frame, 0, sizeof(cl.frame));
+	Com_Memset(&cl.frame, 0, sizeof(cl.frame));
 
 #if 0
 	CL_ClearProjectiles(); // clear projectiles for new frame
@@ -849,7 +849,7 @@ void CL_AddPacketEntities (frame_t *frame)
 	// brush models can auto animate their frames
 	autoanim = 2*cl.time/1000;
 
-	memset (&ent, 0, sizeof(ent));
+	Com_Memset(&ent, 0, sizeof(ent));
 
 	for (pnum = 0 ; pnum<frame->num_entities ; pnum++)
 	{
@@ -1303,7 +1303,7 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 	if (ps->fov > 90)
 		return;
 
-	memset (&gun, 0, sizeof(gun));
+	Com_Memset(&gun, 0, sizeof(gun));
 
 	if (gun_model)
 		gun.model = gun_model;	// development tool

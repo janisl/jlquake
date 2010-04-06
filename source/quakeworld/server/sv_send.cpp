@@ -522,7 +522,7 @@ void SV_UpdateClientStats (client_t *client)
 	int		i;
 	
 	ent = client->edict;
-	memset (stats, 0, sizeof(stats));
+	Com_Memset(stats, 0, sizeof(stats));
 	
 	// if we are a spectator and we are tracking a player, we get his stats
 	// so our status bar reflects his
@@ -739,7 +739,7 @@ void SV_SendClientMessages (void)
 
 				c->num_backbuf--;
 				if (c->num_backbuf) {
-					memset(&c->backbuf, 0, sizeof(c->backbuf));
+					Com_Memset(&c->backbuf, 0, sizeof(c->backbuf));
 					c->backbuf.data = c->backbuf_data[c->num_backbuf - 1];
 					c->backbuf.cursize = c->backbuf_size[c->num_backbuf - 1];
 					c->backbuf.maxsize = sizeof(c->backbuf_data[c->num_backbuf - 1]);

@@ -376,7 +376,7 @@ pmtrace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	vec3_t		mins, maxs;
 
 // fill in a default trace
-	memset (&total, 0, sizeof(pmtrace_t));
+	Com_Memset(&total, 0, sizeof(pmtrace_t));
 	total.fraction = 1;
 	total.ent = -1;
 	VectorCopy (end, total.endpos);
@@ -448,7 +448,7 @@ pmtrace_t PM_PlayerMove (vec3_t start, vec3_t end)
 		end_l[2] -= hull->clip_mins[2];
 
 	// fill in a default trace
-		memset (&trace, 0, sizeof(pmtrace_t));
+		Com_Memset(&trace, 0, sizeof(pmtrace_t));
 		trace.fraction = 1;
 		trace.allsolid = true;
 //		trace.startsolid = true;

@@ -110,7 +110,7 @@ char *NET_ErrorString( void ) {
 }
 
 void NetadrToSockadr( netadr_t *a, struct sockaddr *s ) {
-	memset( s, 0, sizeof(*s) );
+	Com_Memset( s, 0, sizeof(*s) );
 
 	if( a->type == NA_BROADCAST ) {
 		((struct sockaddr_in *)s)->sin_family = AF_INET;
@@ -130,8 +130,8 @@ void NetadrToSockadr( netadr_t *a, struct sockaddr *s ) {
 	}
 	else if( a->type == NA_BROADCAST_IPX ) {
 		((struct sockaddr_ipx *)s)->sa_family = AF_IPX;
-		memset( ((struct sockaddr_ipx *)s)->sa_netnum, 0, 4 );
-		memset( ((struct sockaddr_ipx *)s)->sa_nodenum, 0xff, 6 );
+		Com_Memset( ((struct sockaddr_ipx *)s)->sa_netnum, 0, 4 );
+		Com_Memset( ((struct sockaddr_ipx *)s)->sa_nodenum, 0xff, 6 );
 		((struct sockaddr_ipx *)s)->sa_socket = a->port;
 	}
 }
@@ -172,7 +172,7 @@ qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr ) {
 	int		val;
 	char	copy[MAX_STRING_CHARS];
 	
-	memset( sadr, 0, sizeof( *sadr ) );
+	Com_Memset( sadr, 0, sizeof( *sadr ) );
 
 	// check for an IPX address
 	if( ( QStr::Length( s ) == 21 ) && ( s[8] == '.' ) ) {
@@ -274,7 +274,7 @@ qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message ) {
 		}
 
 		if ( net_socket == ip_socket ) {
-			memset( ((struct sockaddr_in *)&from)->sin_zero, 0, 8 );
+			Com_Memset( ((struct sockaddr_in *)&from)->sin_zero, 0, 8 );
 		}
 
 		if ( usingSocks && net_socket == ip_socket && memcmp( &from, &socksRelayAddr, fromlen ) == 0 ) {
@@ -696,7 +696,7 @@ void NET_OpenSocks( int port ) {
 	((struct sockaddr_in *)&socksRelayAddr)->sin_family = AF_INET;
 	((struct sockaddr_in *)&socksRelayAddr)->sin_addr.s_addr = *(int *)&buf[4];
 	((struct sockaddr_in *)&socksRelayAddr)->sin_port = *(short *)&buf[8];
-	memset( ((struct sockaddr_in *)&socksRelayAddr)->sin_zero, 0, 8 );
+	Com_Memset( ((struct sockaddr_in *)&socksRelayAddr)->sin_zero, 0, 8 );
 
 	usingSocks = qtrue;
 }
@@ -811,8 +811,8 @@ int NET_IPXSocket( int port ) {
 	}
 
 	address.sa_family = AF_IPX;
-	memset( address.sa_netnum, 0, 4 );
-	memset( address.sa_nodenum, 0, 6 );
+	Com_Memset( address.sa_netnum, 0, 4 );
+	Com_Memset( address.sa_nodenum, 0, 6 );
 	if( port == PORT_ANY ) {
 		address.sa_socket = 0;
 	}

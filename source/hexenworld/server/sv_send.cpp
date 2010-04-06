@@ -752,7 +752,7 @@ void SV_UpdateClientStats (client_t *client)
 	int		i;
 	
 	ent = client->edict;
-	memset (stats, 0, sizeof(stats));
+	Com_Memset(stats, 0, sizeof(stats));
 	
 	// if we are a spectator and we are tracking a player, we get his stats
 	// so our status bar reflects his

@@ -298,7 +298,7 @@ void CL_BaseMove (usercmd_t *cmd)
 {	
 	CL_AdjustAngles ();
 	
-	memset (cmd, 0, sizeof(*cmd));
+	Com_Memset(cmd, 0, sizeof(*cmd));
 
 	if (cl.v.cameramode)	// Stuck in a different camera so don't move
 	{

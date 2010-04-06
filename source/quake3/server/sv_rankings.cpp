@@ -138,7 +138,7 @@ void SV_RankBegin( char *gamekey )
 
 	// initialize rankings
 	GRankLogLevel( GRLOG_OFF );
-	memset(SV_RankGameKey,0,sizeof(SV_RankGameKey));
+	Com_Memset(SV_RankGameKey,0,sizeof(SV_RankGameKey));
 	QStr::NCpy(SV_RankGameKey,gamekey,sizeof(SV_RankGameKey)-1);
 	init = GRankInit( 1, SV_RankGameKey, GR_OPT_POLL, GR_OPT_END );
 	s_server_context = init.context;
@@ -187,7 +187,7 @@ void SV_RankBegin( char *gamekey )
 	// allocate rankings info for each player
 	s_ranked_players = Z_Malloc( sv_maxclients->value * 
 		sizeof(ranked_player_t) );
-	memset( (void*)s_ranked_players, 0 ,sv_maxclients->value 
+	Com_Memset( (void*)s_ranked_players, 0 ,sv_maxclients->value 
 		* sizeof(ranked_player_t));
 }
 
@@ -980,11 +980,11 @@ static void SV_RankNewGameCBF( GR_NEWGAME* gr_newgame, void* cbf_arg )
 		s_rankings_game_id = gr_newgame->game_id;
 		
 		// encode gameid 
-		memset(gameid,0,sizeof(gameid));
+		Com_Memset(gameid,0,sizeof(gameid));
 		SV_RankEncodeGameID(s_rankings_game_id,gameid,sizeof(gameid));
 		
 		// set CS_GRANK rankingsGameID to pass to client
-		memset(info,0,sizeof(info));
+		Com_Memset(info,0,sizeof(info));
 		Info_SetValueForKey( info, "rankingsGameKey", s_rankings_game_key );
 		Info_SetValueForKey( info, "rankingsGameID", gameid );
 		SV_SetConfigstring( CS_GRANK, info );
@@ -1278,7 +1278,7 @@ static void SV_RankCloseContext( ranked_player_t* ranked_player )
 		ranked_player->context = 0;
 		ranked_player->match = 0;
 		ranked_player->player_id = 0;
-		memset( ranked_player->token, 0, sizeof(GR_PLAYER_TOKEN) );
+		Com_Memset( ranked_player->token, 0, sizeof(GR_PLAYER_TOKEN) );
 		ranked_player->grank_status = ranked_player->final_status;
 		ranked_player->final_status = QGR_STATUS_NEW;
 		ranked_player->name[0] = '\0';
@@ -1388,7 +1388,7 @@ static int SV_RankAsciiDecode( unsigned char* dest, const char* src,
 	if( !s_init )
 	{
 		// initialize lookup table for decoding
-		memset( s_inverse_encoding, 255, sizeof(s_inverse_encoding) );
+		Com_Memset( s_inverse_encoding, 255, sizeof(s_inverse_encoding) );
 		for( i = 0; i < 64; i++ )
 		{
 			s_inverse_encoding[s_ascii_encoding[i]] = i;
@@ -1481,8 +1481,8 @@ static void SV_RankDecodePlayerKey( const char* string, GR_PLAYER_TOKEN key )
 	len = QStr::Length(string) ;
 	Com_DPrintf( "SV_RankDecodePlayerKey: string length %d\n",len );
 	
-	memset(key,0,sizeof(GR_PLAYER_TOKEN));
-	memset(buffer,0,sizeof(buffer));
+	Com_Memset(key,0,sizeof(GR_PLAYER_TOKEN));
+	Com_Memset(buffer,0,sizeof(buffer));
 	memcpy( key, buffer, SV_RankAsciiDecode( buffer, string, len ) );
 }
 

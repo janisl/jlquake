@@ -147,7 +147,7 @@ Z_CheckHeap ();	// DEBUG
 	buf = Z_TagMalloc (size, 1);
 	if (!buf)
 		Sys_Error ("Z_Malloc: failed on allocation of %i bytes",size);
-	Q_memset (buf, 0, size);
+	Com_Memset(buf, 0, size);
 
 	return buf;
 }
@@ -422,7 +422,7 @@ void *Hunk_AllocName (int size, char *name)
 
 	Cache_FreeLow (hunk_low_used);
 
-	memset (h, 0, size);
+	Com_Memset(h, 0, size);
 	
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
@@ -450,7 +450,7 @@ void Hunk_FreeToLowMark (int mark)
 {
 	if (mark < 0 || mark > hunk_low_used)
 		Sys_Error ("Hunk_FreeToLowMark: bad mark %i", mark);
-	memset (hunk_base + mark, 0, hunk_low_used - mark);
+	Com_Memset(hunk_base + mark, 0, hunk_low_used - mark);
 	hunk_low_used = mark;
 }
 
@@ -474,7 +474,7 @@ void Hunk_FreeToHighMark (int mark)
 	}
 	if (mark < 0 || mark > hunk_high_used)
 		Sys_Error ("Hunk_FreeToHighMark: bad mark %i", mark);
-	memset (hunk_base + hunk_size - hunk_high_used, 0, hunk_high_used - mark);
+	Com_Memset(hunk_base + hunk_size - hunk_high_used, 0, hunk_high_used - mark);
 	hunk_high_used = mark;
 }
 
@@ -514,7 +514,7 @@ void *Hunk_HighAllocName (int size, char *name)
 
 	h = (hunk_t *)(hunk_base + hunk_size - hunk_high_used);
 
-	memset (h, 0, size);
+	Com_Memset(h, 0, size);
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
 	QStr::NCpy(h->name, name, 8);
@@ -694,7 +694,7 @@ cache_system_t *Cache_TryAlloc (int size, qboolean nobottom)
 			Sys_Error ("Cache_TryAlloc: %i is greater then free hunk", size);
 
 		newc = (cache_system_t *) (hunk_base + hunk_low_used);
-		memset (newc, 0, sizeof(*newc));
+		Com_Memset(newc, 0, sizeof(*newc));
 		newc->size = size;
 
 		cache_head.prev = cache_head.next = newc;
@@ -715,7 +715,7 @@ cache_system_t *Cache_TryAlloc (int size, qboolean nobottom)
 		{
 			if ( (byte *)cs - (byte *)newc >= size)
 			{	// found space
-				memset (newc, 0, sizeof(*newc));
+				Com_Memset(newc, 0, sizeof(*newc));
 				newc->size = size;
 				
 				newc->next = cs;
@@ -738,7 +738,7 @@ cache_system_t *Cache_TryAlloc (int size, qboolean nobottom)
 // try to allocate one at the very end
 	if ( hunk_base + hunk_size - hunk_high_used - (byte *)newc >= size)
 	{
-		memset (newc, 0, sizeof(*newc));
+		Com_Memset(newc, 0, sizeof(*newc));
 		newc->size = size;
 		
 		newc->next = &cache_head;

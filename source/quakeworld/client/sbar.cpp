@@ -410,7 +410,7 @@ void Sbar_SortTeams (void)
 		return;
 
 // sort the teams
-	memset(teams, 0, sizeof(teams));
+	Com_Memset(teams, 0, sizeof(teams));
 	for (i = 0; i < MAX_CLIENTS; i++)
 		teams[i].plow = 999;
 

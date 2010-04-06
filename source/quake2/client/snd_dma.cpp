@@ -185,7 +185,7 @@ void S_Shutdown(void)
 			continue;
 		if (sfx->cache)
 			Z_Free (sfx->cache);
-		memset (sfx, 0, sizeof(*sfx));
+		Com_Memset(sfx, 0, sizeof(*sfx));
 	}
 
 	num_sfx = 0;
@@ -239,7 +239,7 @@ sfx_t *S_FindName (char *name, qboolean create)
 	}
 	
 	sfx = &known_sfx[i];
-	memset (sfx, 0, sizeof(*sfx));
+	Com_Memset(sfx, 0, sizeof(*sfx));
 	QStr::Cpy(sfx->name, name);
 	sfx->registration_sequence = s_registration_sequence;
 	
@@ -275,7 +275,7 @@ sfx_t *S_AliasName (char *aliasname, char *truename)
 	}
 	
 	sfx = &known_sfx[i];
-	memset (sfx, 0, sizeof(*sfx));
+	Com_Memset(sfx, 0, sizeof(*sfx));
 	QStr::Cpy(sfx->name, aliasname);
 	sfx->registration_sequence = s_registration_sequence;
 	sfx->truename = s;
@@ -340,7 +340,7 @@ void S_EndRegistration (void)
 		{	// don't need this sound
 			if (sfx->cache)	// it is possible to have a leftover
 				Z_Free (sfx->cache);	// from a server that didn't finish loading
-			memset (sfx, 0, sizeof(*sfx));
+			Com_Memset(sfx, 0, sizeof(*sfx));
 		}
 		else
 		{	// make sure it is paged in
@@ -410,7 +410,7 @@ channel_t *S_PickChannel(int entnum, int entchannel)
 		return NULL;
 
 	ch = &channels[first_to_die];
-	memset (ch, 0, sizeof(*ch));
+	Com_Memset(ch, 0, sizeof(*ch));
 
     return ch;
 }       
@@ -773,7 +773,7 @@ void S_ClearBuffer (void)
 
 	SNDDMA_BeginPainting ();
 	if (dma.buffer)
-		memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
+		Com_Memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
 	SNDDMA_Submit ();
 }
 
@@ -790,7 +790,7 @@ void S_StopAllSounds(void)
 		return;
 
 	// clear all the playsounds
-	memset(s_playsounds, 0, sizeof(s_playsounds));
+	Com_Memset(s_playsounds, 0, sizeof(s_playsounds));
 	s_freeplays.next = s_freeplays.prev = &s_freeplays;
 	s_pendingplays.next = s_pendingplays.prev = &s_pendingplays;
 
@@ -803,7 +803,7 @@ void S_StopAllSounds(void)
 	}
 
 	// clear all the channels
-	memset(channels, 0, sizeof(channels));
+	Com_Memset(channels, 0, sizeof(channels));
 
 	S_ClearBuffer ();
 }
@@ -1044,13 +1044,13 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 			continue;
 		if (ch->autosound)
 		{	// autosounds are regenerated fresh each frame
-			memset (ch, 0, sizeof(*ch));
+			Com_Memset(ch, 0, sizeof(*ch));
 			continue;
 		}
 		S_Spatialize(ch);         // respatialize channel
 		if (!ch->leftvol && !ch->rightvol)
 		{
-			memset (ch, 0, sizeof(*ch));
+			Com_Memset(ch, 0, sizeof(*ch));
 			continue;
 		}
 	}

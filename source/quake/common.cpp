@@ -135,7 +135,7 @@ void InsertLinkAfter (link_t *l, link_t *after)
 ============================================================================
 */
 
-void Q_memset (void *dest, int fill, int count)
+void Com_Memset(void *dest, int fill, size_t count)
 {
 	int             i;
 	

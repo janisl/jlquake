@@ -784,7 +784,7 @@ void R_DrawBrushModel (entity_t *e, qboolean Translucent)
 		return;
 
 	glColor3f (1,1,1);
-	memset (lightmap_polys, 0, sizeof(lightmap_polys));
+	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
 	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
 	if (rotated)
@@ -990,7 +990,7 @@ void R_DrawWorld (void)
 	entity_t	ent;
 	int			i;
 
-	memset (&ent, 0, sizeof(ent));
+	Com_Memset(&ent, 0, sizeof(ent));
 	ent.model = cl.worldmodel;
 
 	VectorCopy (r_refdef.vieworg, modelorg);
@@ -999,7 +999,7 @@ void R_DrawWorld (void)
 	currenttexture = -1;
 
 	glColor3f (1,1,1);
-	memset (lightmap_polys, 0, sizeof(lightmap_polys));
+	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
 	R_RecursiveWorldNode (cl.worldmodel->nodes);
 
@@ -1034,7 +1034,7 @@ void R_MarkLeaves (void)
 	if (r_novis.value)
 	{
 		vis = solid;
-		memset (solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
+		Com_Memset(solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
 	}
 	else
 		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
@@ -1269,7 +1269,7 @@ void GL_BuildLightmaps (void)
 	int		i, j;
 	model_t	*m;
 
-	memset (allocated, 0, sizeof(allocated));
+	Com_Memset(allocated, 0, sizeof(allocated));
 
 	r_framecount = 1;		// no dlightcache
 

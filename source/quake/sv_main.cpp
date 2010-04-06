@@ -262,7 +262,7 @@ void SV_ConnectClient (int clientnum)
 	
 	if (sv.loadgame)
 		memcpy (spawn_parms, client->spawn_parms, sizeof(spawn_parms));
-	memset (client, 0, sizeof(*client));
+	Com_Memset(client, 0, sizeof(*client));
 	client->netconnection = netconnection;
 
 	QStr::Cpy(client->name, "unconnected");
@@ -410,7 +410,7 @@ given point.
 byte *SV_FatPVS (vec3_t org)
 {
 	fatbytes = (sv.worldmodel->numleafs+31)>>3;
-	Q_memset (fatpvs, 0, fatbytes);
+	Com_Memset(fatpvs, 0, fatbytes);
 	SV_AddToFatPVS (org, sv.worldmodel->nodes);
 	return fatpvs;
 }
@@ -1064,7 +1064,7 @@ void SV_SpawnServer (char *server)
 //
 	Host_ClearMemory ();
 
-	memset (&sv, 0, sizeof(sv));
+	Com_Memset(&sv, 0, sizeof(sv));
 
 	QStr::Cpy(sv.name, server);
 
@@ -1131,7 +1131,7 @@ void SV_SpawnServer (char *server)
 // load the rest of the entities
 //	
 	ent = EDICT_NUM(0);
-	memset (&ent->v, 0, progs->entityfields * 4);
+	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
 	ent->v.model = sv.worldmodel->name - pr_strings;
 	ent->v.modelindex = 1;		// world model

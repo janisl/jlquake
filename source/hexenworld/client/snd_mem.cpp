@@ -233,7 +233,7 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 	int     format;
 	int		samples;
 
-	memset (&info, 0, sizeof(info));
+	Com_Memset(&info, 0, sizeof(info));
 
 	if (!wav)
 		return info;

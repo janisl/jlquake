@@ -94,7 +94,7 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 
 //============================================================================
 
-#define Q_memset(d, f, c) memset((d), (f), (c))
+#define Com_Memset(d, f, c)     memset((d), (f), (c))
 #define Q_memcpy(d, s, c) memcpy((d), (s), (c))
 #define Q_memcmp(m1, m2, c) memcmp((m1), (m2), (c))
 

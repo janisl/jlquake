@@ -86,10 +86,10 @@ Con_Clear_f
 */
 void Con_Clear_f (void)
 {
-	memset (con_main.text, ' ', CON_TEXTSIZE);
-	memset (con_main.text_attr, 0, CON_TEXTSIZE);
-	memset (con_chat.text, ' ', CON_TEXTSIZE);
-	memset (con_chat.text_attr, 0, CON_TEXTSIZE);
+	Com_Memset(con_main.text, ' ', CON_TEXTSIZE);
+	Com_Memset(con_main.text_attr, 0, CON_TEXTSIZE);
+	Com_Memset(con_chat.text, ' ', CON_TEXTSIZE);
+	Com_Memset(con_chat.text_attr, 0, CON_TEXTSIZE);
 }
 
 						
@@ -150,8 +150,8 @@ void Con_Resize (console_t *con)
 		width = 38;
 		con_linewidth = width;
 		con_totallines = CON_TEXTSIZE / con_linewidth;
-		memset (con->text, ' ', CON_TEXTSIZE);
-		memset (con->text_attr, 0, CON_TEXTSIZE);
+		Com_Memset(con->text, ' ', CON_TEXTSIZE);
+		Com_Memset(con->text_attr, 0, CON_TEXTSIZE);
 	}
 	else
 	{
@@ -171,8 +171,8 @@ void Con_Resize (console_t *con)
 
 		memcpy (tbuf, con->text, CON_TEXTSIZE);
 		memcpy (tbuf_attr, con->text_attr, CON_TEXTSIZE);
-		memset (con->text, ' ', CON_TEXTSIZE);
-		memset (con->text_attr, 0, CON_TEXTSIZE);
+		Com_Memset(con->text, ' ', CON_TEXTSIZE);
+		Com_Memset(con->text_attr, 0, CON_TEXTSIZE);
 
 		for (i=0 ; i<numlines ; i++)
 		{
@@ -249,8 +249,8 @@ void Con_Linefeed (void)
 	if (con->display == con->current)
 		con->display++;
 	con->current++;
-	memset (&con->text[(con->current%con_totallines)*con_linewidth], ' ', con_linewidth);
-	memset (&con->text_attr[(con->current%con_totallines)*con_linewidth], 0, con_linewidth);
+	Com_Memset(&con->text[(con->current%con_totallines)*con_linewidth], ' ', con_linewidth);
+	Com_Memset(&con->text_attr[(con->current%con_totallines)*con_linewidth], 0, con_linewidth);
 }
 
 /*

@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
     struct timeval timeout;
 	int j;
 
-	memset (&parms, 0, sizeof(parms));
+	Com_Memset(&parms, 0, sizeof(parms));
 
 	COM_InitArgv (argc, argv);	
 	parms.argc = com_argc;

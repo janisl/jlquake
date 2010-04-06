@@ -234,7 +234,7 @@ void CL_PredictMovement (void)
 	}
 
 	// copy current state to pmove
-	memset (&pm, 0, sizeof(pm));
+	Com_Memset(&pm, 0, sizeof(pm));
 	pm.trace = CL_PMTrace;
 	pm.pointcontents = CL_PMpointcontents;
 

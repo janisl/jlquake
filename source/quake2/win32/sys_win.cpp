@@ -353,7 +353,7 @@ void Sys_ConsoleOutput (char *string)
 	if (console_textlen)
 	{
 		text[0] = '\r';
-		memset(&text[1], ' ', console_textlen);
+		Com_Memset(&text[1], ' ', console_textlen);
 		text[console_textlen+1] = '\r';
 		text[console_textlen+2] = 0;
 		WriteFile(houtput, text, console_textlen+2, &dummy, NULL);

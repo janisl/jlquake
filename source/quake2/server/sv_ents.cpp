@@ -228,7 +228,7 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, size
 	ps = &to->ps;
 	if (!from)
 	{
-		memset (&dummy, 0, sizeof(dummy));
+		Com_Memset(&dummy, 0, sizeof(dummy));
 		ops = &dummy;
 	}
 	else
@@ -689,7 +689,7 @@ void SV_RecordDemoMessage (void)
 	if (!svs.demofile)
 		return;
 
-	memset (&nostate, 0, sizeof(nostate));
+	Com_Memset(&nostate, 0, sizeof(nostate));
 	SZ_Init (&buf, buf_data, sizeof(buf_data));
 
 	// write a frame message that doesn't contain a player_state_t

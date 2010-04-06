@@ -272,7 +272,7 @@ void CL_ParseServerInfo (void)
 //
 
 // precache models
-	memset (cl.model_precache, 0, sizeof(cl.model_precache));
+	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));
 	for (nummodels=1 ; ; nummodels++)
 	{
 		str = MSG_ReadString ();
@@ -288,7 +288,7 @@ void CL_ParseServerInfo (void)
 	}
 
 // precache sounds
-	memset (cl.sound_precache, 0, sizeof(cl.sound_precache));
+	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
 	for (numsounds=1 ; ; numsounds++)
 	{
 		str = MSG_ReadString ();
@@ -384,7 +384,7 @@ void CL_ParseServerInfo (void)
 		SV_ClearWorld ();
 
 		ent = EDICT_NUM(0);
-		memset (&ent->v, 0, progs->entityfields * 4);
+		Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		ent->free = false;
 		ent->v.model = sv.worldmodel->name - pr_strings;
 		ent->v.modelindex = 1;		// world model
@@ -503,8 +503,8 @@ void CL_ParseUpdate (int bits)
 
 	if (bits & U_CLEAR_ENT)
 	{
-		memset(ent, 0, sizeof(entity_t));
-		memset(ref_ent, 0, sizeof(*ref_ent));
+		Com_Memset(ent, 0, sizeof(entity_t));
+		Com_Memset(ref_ent, 0, sizeof(*ref_ent));
 		ref_ent->index = num;
 	}
 

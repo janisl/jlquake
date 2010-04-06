@@ -33,7 +33,7 @@ Mod_Init
 void Mod_Init (void)
 {
 	Cvar_RegisterVariable (&gl_subdivide_size);
-	memset (mod_novis, 0xff, sizeof(mod_novis));
+	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 }
 
 /*
@@ -385,8 +385,8 @@ void Mod_LoadTextures (lump_t *l)
 			continue;	// allready sequenced
 
 	// find the number of frames in the animation
-		memset (anims, 0, sizeof(anims));
-		memset (altanims, 0, sizeof(altanims));
+		Com_Memset(anims, 0, sizeof(anims));
+		Com_Memset(altanims, 0, sizeof(altanims));
 
 		max = tx->name[1];
 		altmax = 0;
@@ -1992,7 +1992,7 @@ void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int framenum)
 
 	pspriteframe = (mspriteframe_t*)Hunk_AllocName (sizeof (mspriteframe_t),loadname);
 
-	memset (pspriteframe, 0, sizeof (mspriteframe_t));
+	Com_Memset(pspriteframe, 0, sizeof (mspriteframe_t));
 
 	*ppframe = pspriteframe;
 

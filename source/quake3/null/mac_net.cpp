@@ -37,7 +37,7 @@ idnewt:28000
 qboolean	NET_StringToAdr (char *s, netadr_t *a)
 {	
 	if (!QStr::Cmp(s, "localhost")) {
-		memset (a, 0, sizeof(*a));
+		Com_Memset(a, 0, sizeof(*a));
 		a->type = NA_LOOPBACK;
 		return true;
 	}

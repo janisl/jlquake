@@ -261,7 +261,7 @@ void S_PaintChannels(int endtime)
 		if (s_rawend < paintedtime)
 		{
 //			Com_Printf ("clear\n");
-			memset(paintbuffer, 0, (end - paintedtime) * sizeof(portable_samplepair_t));
+			Com_Memset(paintbuffer, 0, (end - paintedtime) * sizeof(portable_samplepair_t));
 		}
 		else
 		{	// copy from the streaming sound source

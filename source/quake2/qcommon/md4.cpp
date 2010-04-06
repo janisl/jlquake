@@ -1,6 +1,7 @@
 /* GLOBAL.H - RSAREF types and constants */
 
 #include <string.h>
+#define Com_Memset      memset
 
 /* POINTER defines a generic pointer type */
 typedef unsigned char *POINTER;
@@ -162,7 +163,7 @@ void MD4Final (unsigned char digest[16], MD4_CTX *context)
 	Encode (digest, context->state, 16);
 
 	/* Zeroize sensitive information.*/
-	memset ((POINTER)context, 0, sizeof (*context));
+	Com_Memset((POINTER)context, 0, sizeof (*context));
 }
 
 
@@ -233,7 +234,7 @@ state[2] += c;
 state[3] += d;
 
 	/* Zeroize sensitive information.*/
-	memset ((POINTER)x, 0, sizeof (x));
+	Com_Memset((POINTER)x, 0, sizeof (x));
 }
 
 

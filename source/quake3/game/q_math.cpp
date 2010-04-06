@@ -377,7 +377,7 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point,
 	im[2][0] = m[0][2];
 	im[2][1] = m[1][2];
 
-	memset( zrot, 0, sizeof( zrot ) );
+	Com_Memset( zrot, 0, sizeof( zrot ) );
 	zrot[0][0] = zrot[1][1] = zrot[2][2] = 1.0F;
 
 	rad = DEG2RAD( degrees );

@@ -543,7 +543,7 @@ void VID_NewWindow ( int width, int height)
 
 void VID_FreeReflib (void)
 {
-	memset (&re, 0, sizeof(re));
+	Com_Memset(&re, 0, sizeof(re));
 	reflib_active  = false;
 }
 

@@ -129,7 +129,7 @@ Con_Clear_f
 */
 void Con_Clear_f (void)
 {
-	memset (con.text, ' ', CON_TEXTSIZE);
+	Com_Memset(con.text, ' ', CON_TEXTSIZE);
 }
 
 						
@@ -257,7 +257,7 @@ void Con_CheckResize (void)
 		width = 38;
 		con.linewidth = width;
 		con.totallines = CON_TEXTSIZE / con.linewidth;
-		memset (con.text, ' ', CON_TEXTSIZE);
+		Com_Memset(con.text, ' ', CON_TEXTSIZE);
 	}
 	else
 	{
@@ -276,7 +276,7 @@ void Con_CheckResize (void)
 			numchars = con.linewidth;
 
 		memcpy (tbuf, con.text, CON_TEXTSIZE);
-		memset (con.text, ' ', CON_TEXTSIZE);
+		Com_Memset(con.text, ' ', CON_TEXTSIZE);
 
 		for (i=0 ; i<numlines ; i++)
 		{
@@ -335,7 +335,7 @@ void Con_Linefeed (void)
 	if (con.display == con.current)
 		con.display++;
 	con.current++;
-	memset (&con.text[(con.current%con.totallines)*con.linewidth]
+	Com_Memset(&con.text[(con.current%con.totallines)*con.linewidth]
 	, ' ', con.linewidth);
 }
 
@@ -433,7 +433,7 @@ void Con_CenteredPrint (char *text)
 	l = (con.linewidth-l)/2;
 	if (l < 0)
 		l = 0;
-	memset (buffer, ' ', l);
+	Com_Memset(buffer, ' ', l);
 	QStr::Cpy(buffer+l, text);
 	QStr::Cat(buffer, sizeof(buffer), "\n");
 	Con_Print (buffer);

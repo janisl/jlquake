@@ -302,7 +302,7 @@ void Sys_CreateConsole( void )
 	int swidth, sheight;
 	int DEDSTYLE = WS_POPUPWINDOW | WS_CAPTION | WS_MINIMIZEBOX;
 
-	memset( &wc, 0, sizeof( wc ) );
+	Com_Memset( &wc, 0, sizeof( wc ) );
 
 	wc.style         = 0;
 	wc.lpfnWndProc   = (WNDPROC) ConWndProc;

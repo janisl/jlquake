@@ -296,7 +296,7 @@ void SV_SpawnServer (char *server)
 	Hunk_FreeToLowMark (host_hunklevel);
 
 	// wipe the entire per-level structure
-	memset (&sv, 0, sizeof(sv));
+	Com_Memset(&sv, 0, sizeof(sv));
 
 	sv.datagram.maxsize = sizeof(sv.datagram_buf);
 	sv.datagram.data = sv.datagram_buf;

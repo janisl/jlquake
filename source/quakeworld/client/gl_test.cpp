@@ -50,7 +50,7 @@ plane_t	*HitPlane (vec3_t start, vec3_t end)
 	trace_t		trace;
 
 // fill in a default trace
-	memset (&trace, 0, sizeof(trace_t));
+	Com_Memset(&trace, 0, sizeof(trace_t));
 	trace.fraction = 1;
 	trace.allsolid = true;
 	VectorCopy (end, trace.endpos);

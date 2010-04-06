@@ -239,7 +239,7 @@ void SV_ClearWorld (void)
 {
 	SV_InitBoxHull ();
 	
-	memset (sv_areanodes, 0, sizeof(sv_areanodes));
+	Com_Memset(sv_areanodes, 0, sizeof(sv_areanodes));
 	sv_numareanodes = 0;
 	SV_CreateAreaNode (0, sv.worldmodel->mins, sv.worldmodel->maxs);
 }
@@ -716,7 +716,7 @@ trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t max
 	hull_t		*hull;
 
 // fill in a default trace
-	memset (&trace, 0, sizeof(trace_t));
+	Com_Memset(&trace, 0, sizeof(trace_t));
 	trace.fraction = 1;
 	trace.allsolid = true;
 	VectorCopy (end, trace.endpos);
@@ -920,7 +920,7 @@ trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, e
 	moveclip_t	clip;
 	int			i;
 
-	memset ( &clip, 0, sizeof ( moveclip_t ) );
+	Com_Memset( &clip, 0, sizeof ( moveclip_t ) );
 
 	move_type = type;
 // clip to world

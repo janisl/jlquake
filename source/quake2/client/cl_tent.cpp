@@ -212,13 +212,13 @@ CL_ClearTEnts
 */
 void CL_ClearTEnts (void)
 {
-	memset (cl_beams, 0, sizeof(cl_beams));
-	memset (cl_explosions, 0, sizeof(cl_explosions));
-	memset (cl_lasers, 0, sizeof(cl_lasers));
+	Com_Memset(cl_beams, 0, sizeof(cl_beams));
+	Com_Memset(cl_explosions, 0, sizeof(cl_explosions));
+	Com_Memset(cl_lasers, 0, sizeof(cl_lasers));
 
 //ROGUE
-	memset (cl_playerbeams, 0, sizeof(cl_playerbeams));
-	memset (cl_sustains, 0, sizeof(cl_sustains));
+	Com_Memset(cl_playerbeams, 0, sizeof(cl_playerbeams));
+	Com_Memset(cl_sustains, 0, sizeof(cl_sustains));
 //ROGUE
 }
 
@@ -237,7 +237,7 @@ explosion_t *CL_AllocExplosion (void)
 	{
 		if (cl_explosions[i].type == ex_free)
 		{
-			memset (&cl_explosions[i], 0, sizeof (cl_explosions[i]));
+			Com_Memset(&cl_explosions[i], 0, sizeof (cl_explosions[i]));
 			return &cl_explosions[i];
 		}
 	}
@@ -251,7 +251,7 @@ explosion_t *CL_AllocExplosion (void)
 			time = cl_explosions[i].start;
 			index = i;
 		}
-	memset (&cl_explosions[index], 0, sizeof (cl_explosions[index]));
+	Com_Memset(&cl_explosions[index], 0, sizeof (cl_explosions[index]));
 	return &cl_explosions[index];
 }
 
@@ -1261,7 +1261,7 @@ void CL_AddBeams (void)
 	// add new entities for the beams
 		d = VectorNormalize(dist);
 
-		memset (&ent, 0, sizeof(ent));
+		Com_Memset(&ent, 0, sizeof(ent));
 		if (b->model == cl_mod_lightning)
 		{
 			model_length = 35.0;
@@ -1513,7 +1513,7 @@ void CL_AddPlayerBeams (void)
 	// add new entities for the beams
 		d = VectorNormalize(dist);
 
-		memset (&ent, 0, sizeof(ent));
+		Com_Memset(&ent, 0, sizeof(ent));
 		if (b->model == cl_mod_heatbeam)
 		{
 			model_length = 32.0;
@@ -1601,7 +1601,7 @@ void CL_AddExplosions (void)
 	float		frac;
 	int			f;
 
-	memset (&ent, 0, sizeof(ent));
+	Com_Memset(&ent, 0, sizeof(ent));
 
 	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
 	{

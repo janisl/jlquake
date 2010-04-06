@@ -983,7 +983,7 @@ void R_DrawBrushModel (entity_t *e)
 		return;
 
 	qglColor3f (1,1,1);
-	memset (gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
+	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 
 	VectorSubtract (r_newrefdef.vieworg, e->origin, modelorg);
 	if (rotated)
@@ -1206,14 +1206,14 @@ void R_DrawWorld (void)
 	VectorCopy (r_newrefdef.vieworg, modelorg);
 
 	// auto cycle the world frame for texture animation
-	memset (&ent, 0, sizeof(ent));
+	Com_Memset(&ent, 0, sizeof(ent));
 	ent.frame = (int)(r_newrefdef.time*2);
 	currententity = &ent;
 
 	gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
 
 	qglColor3f (1,1,1);
-	memset (gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
+	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 	R_ClearSkyBox ();
 
 	if ( qglMTexCoord2fSGIS )
@@ -1350,7 +1350,7 @@ void R_MarkLeaves (void)
 
 static void LM_InitBlock( void )
 {
-	memset( gl_lms.allocated, 0, sizeof( gl_lms.allocated ) );
+	Com_Memset( gl_lms.allocated, 0, sizeof( gl_lms.allocated ) );
 }
 
 static void LM_UploadBlock( qboolean dynamic )
@@ -1565,7 +1565,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	int				i;
 	unsigned		dummy[128*128];
 
-	memset( gl_lms.allocated, 0, sizeof(gl_lms.allocated) );
+	Com_Memset( gl_lms.allocated, 0, sizeof(gl_lms.allocated) );
 
 	r_framecount = 1;		// no dlightcache
 

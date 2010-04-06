@@ -186,7 +186,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 		ri.Con_Printf( PRINT_ALL, "...attempting fullscreen\n" );
 
-		memset( &dm, 0, sizeof( dm ) );
+		Com_Memset( &dm, 0, sizeof( dm ) );
 
 		dm.dmSize = sizeof( dm );
 

@@ -322,14 +322,14 @@ void CL_ClearState (void)
 	CL_ClearEffects();
 
 // wipe the entire cl structure
-	memset (&cl, 0, sizeof(cl));
+	Com_Memset(&cl, 0, sizeof(cl));
 
 	SZ_Clear (&cls.netchan.message);
 
 // clear other arrays	
-	memset (cl_efrags, 0, sizeof(cl_efrags));
-	memset (cl_dlights, 0, sizeof(cl_dlights));
-	memset (cl_lightstyle, 0, sizeof(cl_lightstyle));
+	Com_Memset(cl_efrags, 0, sizeof(cl_efrags));
+	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
+	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
 
 //
 // allocate the efrags and chain together into a free list

@@ -277,9 +277,9 @@ CL_ClearTEnts
 */
 void CL_ClearTEnts (void)
 {
-	memset (&cl_beams, 0, sizeof(cl_beams));
-	memset (&cl_explosions, 0, sizeof(cl_explosions));
-	memset(cl_Streams, 0, sizeof(cl_Streams));
+	Com_Memset(&cl_beams, 0, sizeof(cl_beams));
+	Com_Memset(&cl_explosions, 0, sizeof(cl_explosions));
+	Com_Memset(cl_Streams, 0, sizeof(cl_Streams));
 }
 
 /*
@@ -324,7 +324,7 @@ explosion_t *CL_AllocExplosion (void)
 	}
 
 	//zero out velocity and acceleration, funcs
-	memset (&cl_explosions[index], 0, sizeof(explosion_t));
+	Com_Memset(&cl_explosions[index], 0, sizeof(explosion_t));
 
 	return &cl_explosions[index];
 }
@@ -3580,7 +3580,7 @@ entity_t *CL_NewTempEntity (void)
 	cl_numvisedicts++;
 	ent->keynum = 0;
 	
-	memset (ent, 0, sizeof(*ent));
+	Com_Memset(ent, 0, sizeof(*ent));
 
 	ent->colormap = vid.colormap;
 	return ent;

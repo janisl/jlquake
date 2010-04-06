@@ -426,7 +426,7 @@ void SV_DropClient (qboolean crash)
 	host_client->active = false;
 	host_client->name[0] = 0;
 	host_client->old_frags = -999999;
-	memset(&host_client->old_v,0,sizeof(host_client->old_v));
+	Com_Memset(&host_client->old_v,0,sizeof(host_client->old_v));
 	ED_ClearEdict(host_client->edict);
 	host_client->send_all_v = true;
 	net_activeconnections--;
@@ -514,8 +514,8 @@ void Host_ShutdownServer(qboolean crash)
 //
 // clear structures
 //
-	memset (&sv, 0, sizeof(sv));
-	memset (svs.clients, 0, svs.maxclientslimit*sizeof(client_t));
+	Com_Memset(&sv, 0, sizeof(sv));
+	Com_Memset(svs.clients, 0, svs.maxclientslimit*sizeof(client_t));
 }
 
 
@@ -536,8 +536,8 @@ void Host_ClearMemory (void)
 		Hunk_FreeToLowMark (host_hunklevel);
 
 	cls.signon = 0;
-	memset (&sv, 0, sizeof(sv));
-	memset (&cl, 0, sizeof(cl));
+	Com_Memset(&sv, 0, sizeof(sv));
+	Com_Memset(&cl, 0, sizeof(cl));
 }
 
 

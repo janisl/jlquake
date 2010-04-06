@@ -1121,7 +1121,7 @@ sysEvent_t Sys_GetEvent( void ) {
 
   // create an empty event to return
 
-  memset( &ev, 0, sizeof( ev ) );
+  Com_Memset( &ev, 0, sizeof( ev ) );
   ev.evTime = Sys_Milliseconds();
 
   return ev;
@@ -1240,8 +1240,8 @@ int main ( int argc, char* argv[] )
   }
 
   // bk000306 - clear queues
-  memset( &eventQue[0], 0, MAX_QUED_EVENTS*sizeof(sysEvent_t) ); 
-  memset( &sys_packetReceived[0], 0, MAX_MSGLEN*sizeof(byte) );
+  Com_Memset( &eventQue[0], 0, MAX_QUED_EVENTS*sizeof(sysEvent_t) ); 
+  Com_Memset( &sys_packetReceived[0], 0, MAX_MSGLEN*sizeof(byte) );
 
   Com_Init(cmdline);
   NET_Init();

@@ -800,8 +800,8 @@ void GLimp_Shutdown( void )
   win = 0;
   ctx = NULL;
 
-  memset( &glConfig, 0, sizeof( glConfig ) );
-  memset( &glState, 0, sizeof( glState ) );
+  Com_Memset( &glConfig, 0, sizeof( glConfig ) );
+  Com_Memset( &glState, 0, sizeof( glState ) );
 
   QGL_Shutdown();
 }

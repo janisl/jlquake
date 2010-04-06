@@ -232,7 +232,7 @@ void BuildTris (void)
 	//
 	numorder = 0;
 	numcommands = 0;
-	memset (used, 0, sizeof(used));
+	Com_Memset(used, 0, sizeof(used));
 	for (i=0 ; i<pheader->numtris ; i++)
 	{
 		// pick an unused triangle and start the trifan

@@ -331,7 +331,7 @@ void SVC_DirectConnect (void)
 	}
 
 	newcl = &temp;
-	memset (newcl, 0, sizeof(client_t));
+	Com_Memset(newcl, 0, sizeof(client_t));
 
 	// if there is already a slot for this ip, reuse it
 	for (i=0,cl=svs.clients ; i<maxclients->value ; i++,cl++)
@@ -1040,7 +1040,7 @@ void SV_Shutdown (char *finalmsg, qboolean reconnect)
 	// free current level
 	if (sv.demofile)
 		fclose (sv.demofile);
-	memset (&sv, 0, sizeof(sv));
+	Com_Memset(&sv, 0, sizeof(sv));
 	Com_SetServerState (sv.state);
 
 	// free server static data
@@ -1050,6 +1050,6 @@ void SV_Shutdown (char *finalmsg, qboolean reconnect)
 		Z_Free (svs.client_entities);
 	if (svs.demofile)
 		fclose (svs.demofile);
-	memset (&svs, 0, sizeof(svs));
+	Com_Memset(&svs, 0, sizeof(svs));
 }
 

@@ -40,7 +40,7 @@ extern cvar_t sv_ce_max_size;
 
 void SV_ClearEffects(void)
 {
-	memset(sv.Effects,0,sizeof(sv.Effects));
+	Com_Memset(sv.Effects,0,sizeof(sv.Effects));
 }
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
@@ -511,7 +511,7 @@ void SV_ParseEffect(sizebuf_t *sb)
 
 //	Con_Printf("Effect #%d\n",index);
 
-	memset(&sv.Effects[index],0,sizeof(struct EffectT));
+	Com_Memset(&sv.Effects[index],0,sizeof(struct EffectT));
 
 	sv.Effects[index].type = effect;
 	G_FLOAT(OFS_RETURN) = index;

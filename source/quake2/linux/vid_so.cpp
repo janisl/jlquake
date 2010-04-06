@@ -166,7 +166,7 @@ void VID_FreeReflib (void)
 	RW_IN_Move_fp = NULL;
 	RW_IN_Frame_fp = NULL;
 
-	memset (&re, 0, sizeof(re));
+	Com_Memset(&re, 0, sizeof(re));
 	reflib_active  = false;
 }
 

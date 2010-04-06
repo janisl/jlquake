@@ -102,7 +102,7 @@ void SNDDMA_Shutdown( void ) {
 	pDSBuf = NULL;
 	pDSPBuf = NULL;
 	dsound_init = qfalse;
-	memset ((void *)&dma, 0, sizeof (dma));
+	Com_Memset((void *)&dma, 0, sizeof (dma));
 	CoUninitialize( );
 }
 
@@ -116,7 +116,7 @@ Returns false if failed
 */
 qboolean SNDDMA_Init(void) {
 
-	memset ((void *)&dma, 0, sizeof (dma));
+	Com_Memset((void *)&dma, 0, sizeof (dma));
 	dsound_init = 0;
 
 	CoInitialize(NULL);
@@ -195,7 +195,7 @@ int SNDDMA_InitDS ()
 //		dma.speed = 11025;
 
 	dma.speed = 22050;
-	memset (&format, 0, sizeof(format));
+	Com_Memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
     format.nChannels = dma.channels;
     format.wBitsPerSample = dma.samplebits;
@@ -204,7 +204,7 @@ int SNDDMA_InitDS ()
     format.cbSize = 0;
     format.nAvgBytesPerSec = format.nSamplesPerSec*format.nBlockAlign; 
 
-	memset (&dsbuf, 0, sizeof(dsbuf));
+	Com_Memset(&dsbuf, 0, sizeof(dsbuf));
 	dsbuf.dwSize = sizeof(DSBUFFERDESC);
 
 	// Micah: take advantage of 2D hardware.if available.
@@ -215,7 +215,7 @@ int SNDDMA_InitDS ()
 	dsbuf.dwBufferBytes = SECONDARY_BUFFER_SIZE;
 	dsbuf.lpwfxFormat = &format;
 	
-	memset(&dsbcaps, 0, sizeof(dsbcaps));
+	Com_Memset(&dsbcaps, 0, sizeof(dsbcaps));
 	dsbcaps.dwSize = sizeof(dsbcaps);
 	
 	Com_DPrintf( "...creating secondary buffer: " );
@@ -263,7 +263,7 @@ int SNDDMA_InitDS ()
 
 	SNDDMA_BeginPainting ();
 	if (dma.buffer)
-		memset(dma.buffer, 0, dma.samples * dma.samplebits/8);
+		Com_Memset(dma.buffer, 0, dma.samples * dma.samplebits/8);
 	SNDDMA_Submit ();
 	return 1;
 }
