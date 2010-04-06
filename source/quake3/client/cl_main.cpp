@@ -3096,7 +3096,7 @@ void CL_Ping_f( void ) {
 
 	pingptr = CL_GetFreePing();
 
-	memcpy( &pingptr->adr, &to, sizeof (netadr_t) );
+	Com_Memcpy( &pingptr->adr, &to, sizeof (netadr_t) );
 	pingptr->start = cls.realtime;
 	pingptr->time  = 0;
 
@@ -3170,7 +3170,7 @@ qboolean CL_UpdateVisiblePings_f(int source) {
 								break;
 							}
 						}
-						memcpy(&cl_pinglist[j].adr, &server[i].adr, sizeof(netadr_t));
+						Com_Memcpy(&cl_pinglist[j].adr, &server[i].adr, sizeof(netadr_t));
 						cl_pinglist[j].start = cls.realtime;
 						cl_pinglist[j].time = 0;
 						NET_OutOfBandPrint( NS_CLIENT, cl_pinglist[j].adr, "getinfo xxx" );

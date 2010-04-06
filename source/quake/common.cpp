@@ -151,7 +151,7 @@ void Com_Memset(void *dest, int fill, size_t count)
 			((byte *)dest)[i] = fill;
 }
 
-void Q_memcpy (void *dest, const void *src, int count)
+void Com_Memcpy(void *dest, const void *src, int count)
 {
 	int             i;
 	
@@ -459,7 +459,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 
 void SZ_Write (sizebuf_t *buf, const void *data, int length)
 {
-	Q_memcpy (SZ_GetSpace(buf,length),data,length);         
+	Com_Memcpy(SZ_GetSpace(buf,length),data,length);         
 }
 
 void SZ_Print (sizebuf_t *buf, char *data)
@@ -470,9 +470,9 @@ void SZ_Print (sizebuf_t *buf, char *data)
 
 // byte * cast to keep VC++ happy
 	if (buf->data[buf->cursize-1])
-		Q_memcpy ((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
+		Com_Memcpy((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
 	else
-		Q_memcpy ((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
+		Com_Memcpy((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
 }
 
 

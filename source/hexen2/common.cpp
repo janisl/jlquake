@@ -141,21 +141,6 @@ void InsertLinkAfter (link_t *l, link_t *after)
 */
 
 /*
-void Q_memcpy (void *dest, void *src, int count)
-{
-	int             i;
-	
-	if (( ( (long)dest | (long)src | count) & 3) == 0 )
-	{
-		count>>=2;
-		for (i=0 ; i<count ; i++)
-			((int *)dest)[i] = ((int *)src)[i];
-	}
-	else
-		for (i=0 ; i<count ; i++)
-			((byte *)dest)[i] = ((byte *)src)[i];
-}
-
 int Q_memcmp (void *m1, void *m2, int count)
 {
 	while(count)
@@ -458,7 +443,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 
 void SZ_Write (sizebuf_t *buf, const void *data, int length)
 {
-	memcpy (SZ_GetSpace(buf,length),data,length);         
+	Com_Memcpy(SZ_GetSpace(buf,length),data,length);         
 }
 
 void SZ_Print (sizebuf_t *buf, char *data)
@@ -469,9 +454,9 @@ void SZ_Print (sizebuf_t *buf, char *data)
 
 // byte * cast to keep VC++ happy
 	if (buf->data[buf->cursize-1])
-		memcpy ((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
+		Com_Memcpy((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
 	else
-		memcpy ((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
+		Com_Memcpy((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
 }
 
 

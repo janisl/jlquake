@@ -290,7 +290,7 @@ int main (int argc, char **argv)
 	// dedicated server ONLY!
 	if (!COM_CheckParm ("-dedicated"))
 	{
-		memcpy (newargv, argv, argc*4);
+		Com_Memcpy(newargv, argv, argc*4);
 		newargv[argc] = "-dedicated";
 		argc++;
 		argv = newargv;

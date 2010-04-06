@@ -251,7 +251,7 @@ void M_BuildTranslationTable(int top, int bottom)
 		identityTable[j] = j;
 	dest = translationTable;
 	source = identityTable;
-	memcpy (dest, source, 256);
+	Com_Memcpy(dest, source, 256);
 
 	if (top > 10) top = 0;
 	if (bottom > 10) bottom = 0;
@@ -4211,9 +4211,9 @@ void M_ServerList_Draw (void)
 				for (j = i+1; j < hostCacheCount; j++)
 					if (QStr::Cmp(hostcache[j].name, hostcache[i].name) < 0)
 					{
-						memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
-						memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
-						memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
+						Com_Memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
+						Com_Memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
+						Com_Memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
 					}
 		}
 		slist_sorted = true;

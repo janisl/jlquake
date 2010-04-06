@@ -213,7 +213,7 @@ void DumpChunks(void)
 	data_p=iff_data;
 	do
 	{
-		memcpy (str, data_p, 4);
+		Com_Memcpy(str, data_p, 4);
 		data_p += 4;
 		iff_chunk_len = GetLittleLong();
 		Con_Printf ("0x%x : %s (%d)\n", (int)(data_p - 4), str, iff_chunk_len);

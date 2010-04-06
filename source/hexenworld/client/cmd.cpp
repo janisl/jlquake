@@ -98,7 +98,7 @@ void Cbuf_InsertText (char *text)
 	if (templen)
 	{
 		temp = (char*)Z_Malloc (templen);
-		memcpy (temp, cmd_text.data, templen);
+		Com_Memcpy(temp, cmd_text.data, templen);
 		SZ_Clear (&cmd_text);
 	}
 	else
@@ -144,7 +144,7 @@ void Cbuf_Execute (void)
 		}
 			
 				
-		memcpy (line, text, i);
+		Com_Memcpy(line, text, i);
 		line[i] = 0;
 		
 // delete the text from the command buffer and move remaining commands down
@@ -157,7 +157,7 @@ void Cbuf_Execute (void)
 		{
 			i++;
 			cmd_text.cursize -= i;
-			memcpy (text, text+i, cmd_text.cursize);
+			Com_Memcpy(text, text+i, cmd_text.cursize);
 		}
 
 // execute the command line

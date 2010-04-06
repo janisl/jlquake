@@ -347,7 +347,7 @@ void GL_DrawAliasShadow (dmdl_t *paliashdr, int posenum)
 			point[2] = verts[order[2]].v[2] * frame->scale[2] + frame->translate[2];
 */
 
-			memcpy( point, s_lerped[order[2]], sizeof( point )  );
+			Com_Memcpy( point, s_lerped[order[2]], sizeof( point )  );
 
 			point[0] -= shadevector[0]*(point[2]+lheight);
 			point[1] -= shadevector[1]*(point[2]+lheight);

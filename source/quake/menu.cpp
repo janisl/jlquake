@@ -155,16 +155,16 @@ void M_BuildTranslationTable(int top, int bottom)
 		identityTable[j] = j;
 	dest = translationTable;
 	source = identityTable;
-	memcpy (dest, source, 256);
+	Com_Memcpy(dest, source, 256);
 
 	if (top < 128)	// the artists made some backwards ranges.  sigh.
-		memcpy (dest + TOP_RANGE, source + top, 16);
+		Com_Memcpy(dest + TOP_RANGE, source + top, 16);
 	else
 		for (j=0 ; j<16 ; j++)
 			dest[TOP_RANGE+j] = source[top+15-j];
 
 	if (bottom < 128)
-		memcpy (dest + BOTTOM_RANGE, source + bottom, 16);
+		Com_Memcpy(dest + BOTTOM_RANGE, source + bottom, 16);
 	else
 		for (j=0 ; j<16 ; j++)
 			dest[BOTTOM_RANGE+j] = source[bottom+15-j];
@@ -2925,9 +2925,9 @@ void M_ServerList_Draw (void)
 				for (j = i+1; j < hostCacheCount; j++)
 					if (QStr::Cmp(hostcache[j].name, hostcache[i].name) < 0)
 					{
-						Q_memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
-						Q_memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
-						Q_memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
+						Com_Memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
+						Com_Memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
+						Com_Memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
 					}
 		}
 		slist_sorted = true;

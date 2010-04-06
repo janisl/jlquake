@@ -251,7 +251,7 @@ int WIPX_Read (int handle, byte *buf, int len, struct qsockaddr *addr)
 	
 	// remove sequence number, it's only needed for DOS IPX
 	ret -= 4;
-	memcpy(buf, packetBuffer+4, ret);
+	Com_Memcpy(buf, packetBuffer+4, ret);
 
 	return ret;
 }
@@ -273,7 +273,7 @@ int WIPX_Write (int handle, byte *buf, int len, struct qsockaddr *addr)
 	// build packet with sequence number
 	*(int *)(&packetBuffer[0]) = sequence[handle];
 	sequence[handle]++;
-	memcpy(&packetBuffer[4], buf, len);
+	Com_Memcpy(&packetBuffer[4], buf, len);
 	len += 4;
 
 	ret = sendto (socket, packetBuffer, len, 0, (struct sockaddr *)addr, sizeof(struct qsockaddr));

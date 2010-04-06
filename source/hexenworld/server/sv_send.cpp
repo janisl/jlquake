@@ -42,7 +42,7 @@ void SV_FlushRedirect (void)
 		send[2] = 0xff;
 		send[3] = 0xff;
 		send[4] = A2C_PRINT;
-		memcpy (send+5, outputbuf, QStr::Length(outputbuf)+1);
+		Com_Memcpy(send+5, outputbuf, QStr::Length(outputbuf)+1);
 
 		NET_SendPacket (QStr::Length(send)+1, send, net_from);
 	}

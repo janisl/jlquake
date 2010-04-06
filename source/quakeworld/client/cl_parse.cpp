@@ -452,7 +452,7 @@ void CL_NextUpload(void)
 	r = upload_size - upload_pos;
 	if (r > 768)
 		r = 768;
-	memcpy(buffer, upload_data + upload_pos, r);
+	Com_Memcpy(buffer, upload_data + upload_pos, r);
 	MSG_WriteByte (&cls.netchan.message, clc_upload);
 	MSG_WriteShort (&cls.netchan.message, r);
 
@@ -488,7 +488,7 @@ void CL_StartUpload (byte *data, int size)
 Con_DPrintf("Upload starting of %d...\n", size);
 
 	upload_data = (byte*)malloc(size);
-	memcpy(upload_data, data, size);
+	Com_Memcpy(upload_data, data, size);
 	upload_size = size;
 	upload_pos = 0;
 

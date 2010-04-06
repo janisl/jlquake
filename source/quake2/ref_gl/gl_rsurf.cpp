@@ -1294,7 +1294,7 @@ void R_MarkLeaves (void)
 	// may have to combine two clusters because of solid water boundaries
 	if (r_viewcluster2 != r_viewcluster)
 	{
-		memcpy (fatvis, vis, (r_worldmodel->numleafs+7)/8);
+		Com_Memcpy(fatvis, vis, (r_worldmodel->numleafs+7)/8);
 		vis = Mod_ClusterPVS (r_viewcluster2, r_worldmodel);
 		c = (r_worldmodel->numleafs+31)/32;
 		for (i=0 ; i<c ; i++)

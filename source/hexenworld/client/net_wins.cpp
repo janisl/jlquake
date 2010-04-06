@@ -714,7 +714,7 @@ void HuffDecode(unsigned char *in,unsigned char *out,int inlen,int *outlen)
 	huffnode_t *tmp;	
 	if (*in==0xff)
 	{
-		memcpy(out,in+1,inlen-1);
+		Com_Memcpy(out,in+1,inlen-1);
 		*outlen=inlen-1;
 		return;
 	}
@@ -757,7 +757,7 @@ void HuffEncode(unsigned char *in,unsigned char *out,int inlen,int *outlen)
 	if(*outlen >= inlen+1)
 	{
 		*out=0xff;
-		memcpy(out+1,in,inlen);
+		Com_Memcpy(out+1,in,inlen);
 		*outlen=inlen+1;
 	}
 #if _DEBUG

@@ -105,7 +105,7 @@ void SCR_LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *h
 	if (palette)
 	{
 		*palette = (byte*)Z_Malloc(768);
-		memcpy (*palette, (byte *)pcx + len - 768, 768);
+		Com_Memcpy(*palette, (byte *)pcx + len - 768, 768);
 	}
 
 	if (width)
@@ -600,7 +600,7 @@ void SCR_PlayCinematic (char *arg)
 		}
 		else
 		{
-			memcpy (cl.cinematicpalette, palette, sizeof(cl.cinematicpalette));
+			Com_Memcpy(cl.cinematicpalette, palette, sizeof(cl.cinematicpalette));
 			Z_Free (palette);
 		}
 		return;

@@ -263,7 +263,7 @@ qpic_t	*Draw_CachePic (char *path)
 	// the translatable player picture just for the menu
 	// configuration dialog
 	if (!QStr::Cmp(path, "gfx/menuplyr.lmp"))
-		memcpy (menuplyr_pixels, dat->data, dat->width*dat->height);
+		Com_Memcpy(menuplyr_pixels, dat->data, dat->width*dat->height);
 
 	pic->pic.width = dat->width;
 	pic->pic.height = dat->height;
@@ -430,7 +430,7 @@ void Draw_Init (void)
 	{
 		src = cb->data + cb->width * (y*cb->height/vid.conheight);
 		if (vid.conwidth == cb->width)
-			memcpy (dest, src, vid.conwidth);
+			Com_Memcpy(dest, src, vid.conwidth);
 		else
 		{
 			f = 0;
@@ -1127,7 +1127,7 @@ texels += scaled_width * scaled_height;
 			glTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 			goto done;
 		}
-		memcpy (scaled, data, width*height*4);
+		Com_Memcpy(scaled, data, width*height*4);
 	}
 	else
 		GL_ResampleTexture (data, width, height, scaled, scaled_width, scaled_height);
@@ -1217,7 +1217,7 @@ void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboole
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_COLOR_INDEX8_EXT, scaled_width, scaled_height, 0, GL_COLOR_INDEX , GL_UNSIGNED_BYTE, data);
 			goto done;
 		}
-		memcpy (scaled, data, width*height);
+		Com_Memcpy(scaled, data, width*height);
 	}
 	else
 		GL_Resample8BitTexture (data, width, height, scaled, scaled_width, scaled_height);

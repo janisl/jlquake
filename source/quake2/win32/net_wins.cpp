@@ -69,8 +69,8 @@ void NetadrToSockadr (netadr_t *a, struct sockaddr *s)
 	else if (a->type == NA_IPX)
 	{
 		((struct sockaddr_ipx *)s)->sa_family = AF_IPX;
-		memcpy(((struct sockaddr_ipx *)s)->sa_netnum, &a->ipx[0], 4);
-		memcpy(((struct sockaddr_ipx *)s)->sa_nodenum, &a->ipx[4], 6);
+		Com_Memcpy(((struct sockaddr_ipx *)s)->sa_netnum, &a->ipx[0], 4);
+		Com_Memcpy(((struct sockaddr_ipx *)s)->sa_nodenum, &a->ipx[4], 6);
 		((struct sockaddr_ipx *)s)->sa_socket = a->port;
 	}
 	else if (a->type == NA_BROADCAST_IPX)
@@ -93,8 +93,8 @@ void SockadrToNetadr (struct sockaddr *s, netadr_t *a)
 	else if (s->sa_family == AF_IPX)
 	{
 		a->type = NA_IPX;
-		memcpy(&a->ipx[0], ((struct sockaddr_ipx *)s)->sa_netnum, 4);
-		memcpy(&a->ipx[4], ((struct sockaddr_ipx *)s)->sa_nodenum, 6);
+		Com_Memcpy(&a->ipx[0], ((struct sockaddr_ipx *)s)->sa_netnum, 4);
+		Com_Memcpy(&a->ipx[4], ((struct sockaddr_ipx *)s)->sa_nodenum, 6);
 		a->port = ((struct sockaddr_ipx *)s)->sa_socket;
 	}
 }
@@ -303,7 +303,7 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_me
 	i = loop->get & (MAX_LOOPBACK-1);
 	loop->get++;
 
-	memcpy (net_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
+	Com_Memcpy(net_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
 	net_message->cursize = loop->msgs[i].datalen;
 	Com_Memset(net_from, 0, sizeof(*net_from));
 	net_from->type = NA_LOOPBACK;
@@ -322,7 +322,7 @@ void NET_SendLoopPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	i = loop->send & (MAX_LOOPBACK-1);
 	loop->send++;
 
-	memcpy (loop->msgs[i].data, data, length);
+	Com_Memcpy(loop->msgs[i].data, data, length);
 	loop->msgs[i].datalen = length;
 }
 

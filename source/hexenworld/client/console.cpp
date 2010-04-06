@@ -169,8 +169,8 @@ void Con_Resize (console_t *con)
 		if (con_linewidth < numchars)
 			numchars = con_linewidth;
 
-		memcpy (tbuf, con->text, CON_TEXTSIZE);
-		memcpy (tbuf_attr, con->text_attr, CON_TEXTSIZE);
+		Com_Memcpy(tbuf, con->text, CON_TEXTSIZE);
+		Com_Memcpy(tbuf_attr, con->text_attr, CON_TEXTSIZE);
 		Com_Memset(con->text, ' ', CON_TEXTSIZE);
 		Com_Memset(con->text_attr, 0, CON_TEXTSIZE);
 

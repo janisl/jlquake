@@ -275,7 +275,7 @@ void Con_CheckResize (void)
 		if (con.linewidth < numchars)
 			numchars = con.linewidth;
 
-		memcpy (tbuf, con.text, CON_TEXTSIZE);
+		Com_Memcpy(tbuf, con.text, CON_TEXTSIZE);
 		Com_Memset(con.text, ' ', CON_TEXTSIZE);
 
 		for (i=0 ; i<numlines ; i++)

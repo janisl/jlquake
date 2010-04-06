@@ -495,7 +495,7 @@ void SV_FatPVS (vec3_t org)
 	for (i=0 ; i<count ; i++)
 		leafs[i] = CM_LeafCluster(leafs[i]);
 
-	memcpy (fatpvs, CM_ClusterPVS(leafs[0]), longs<<2);
+	Com_Memcpy(fatpvs, CM_ClusterPVS(leafs[0]), longs<<2);
 	// or in all the other leaf bits
 	for (i=1 ; i<count ; i++)
 	{

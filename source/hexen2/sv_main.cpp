@@ -491,7 +491,7 @@ void SV_ConnectClient (int clientnum)
 	netconnection = client->netconnection;
 	
 	if (sv.loadgame)
-		memcpy (spawn_parms, client->spawn_parms, sizeof(spawn_parms));
+		Com_Memcpy(spawn_parms, client->spawn_parms, sizeof(spawn_parms));
 	Com_Memset(client, 0, sizeof(*client));
 	client->send_all_v = true;
 	client->netconnection = netconnection;
@@ -512,7 +512,7 @@ void SV_ConnectClient (int clientnum)
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
 	{
 		svent = EDICT_NUM(entnum);
-//		memcpy(&svent->baseline[clientnum],&svent->baseline[MAX_BASELINES-1],sizeof(entity_state_t));
+//		Com_Memcpy(&svent->baseline[clientnum],&svent->baseline[MAX_BASELINES-1],sizeof(entity_state_t));
 	}
 	Com_Memset(&sv.states[clientnum],0,sizeof(client_state2_t ));
 
@@ -523,7 +523,7 @@ void SV_ConnectClient (int clientnum)
 #endif
 
 	if (sv.loadgame)
-		memcpy (client->spawn_parms, spawn_parms, sizeof(spawn_parms));
+		Com_Memcpy(client->spawn_parms, spawn_parms, sizeof(spawn_parms));
 //	else
 //	{
 	// call the progs to get default spawn parms for the new client
@@ -1521,7 +1521,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, sizebuf_t *msg
 	}
 
 end:
-	memcpy(&client->old_v,&ent->v,sizeof(client->old_v));
+	Com_Memcpy(&client->old_v,&ent->v,sizeof(client->old_v));
 }
 
 /*

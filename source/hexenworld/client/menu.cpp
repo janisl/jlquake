@@ -245,7 +245,7 @@ void M_BuildTranslationTable(int top, int bottom)
 		identityTable[j] = j;
 	dest = translationTable;
 	source = identityTable;
-	memcpy (dest, source, 256);
+	Com_Memcpy(dest, source, 256);
 
 	if (top > 10) top = 0;
 	if (bottom > 10) bottom = 0;

@@ -476,7 +476,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 	if (palette)
 	{
 		*palette = (byte*)malloc(768);
-		memcpy (*palette, (byte *)pcx + len - 768, 768);
+		Com_Memcpy(*palette, (byte *)pcx + len - 768, 768);
 	}
 
 	if (width)
@@ -1059,7 +1059,7 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 			}
 			goto done;
 		}
-		memcpy (scaled, data, width*height*4);
+		Com_Memcpy(scaled, data, width*height*4);
 	}
 	else
 		GL_ResampleTexture (data, width, height, scaled, scaled_width, scaled_height);

@@ -157,7 +157,7 @@ int Sys_FileRead (int handle, void *dest, int count)
 	if (count < 0) count = 0;
 	if (nPos + count > sys_handles[handle].nLen)
 	    count = sys_handles[handle].nLen - nPos;
-	memcpy( dest, &sys_handles[handle].pMap[nPos], count );
+	Com_Memcpy( dest, &sys_handles[handle].pMap[nPos], count );
 	sys_handles[handle].nPos = nPos + count;
 	return( count );
     }

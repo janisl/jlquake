@@ -295,7 +295,7 @@ void Mod_LoadLighting (lump_t *l)
 		return;
 	}
 	loadmodel->lightdata = (byte*)Hunk_Alloc ( l->filelen);	
-	memcpy (loadmodel->lightdata, mod_base + l->fileofs, l->filelen);
+	Com_Memcpy(loadmodel->lightdata, mod_base + l->fileofs, l->filelen);
 }
 
 
@@ -314,7 +314,7 @@ void Mod_LoadVisibility (lump_t *l)
 		return;
 	}
 	loadmodel->vis = (dvis_t*)Hunk_Alloc ( l->filelen);	
-	memcpy (loadmodel->vis, mod_base + l->fileofs, l->filelen);
+	Com_Memcpy(loadmodel->vis, mod_base + l->fileofs, l->filelen);
 
 	loadmodel->vis->numclusters = LittleLong (loadmodel->vis->numclusters);
 	for (i=0 ; i<loadmodel->vis->numclusters ; i++)
@@ -1005,14 +1005,14 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 		poutframe = (daliasframe_t *) ((byte *)pheader 
 			+ pheader->ofs_frames + i * pheader->framesize);
 
-		memcpy (poutframe->name, pinframe->name, sizeof(poutframe->name));
+		Com_Memcpy(poutframe->name, pinframe->name, sizeof(poutframe->name));
 		for (j=0 ; j<3 ; j++)
 		{
 			poutframe->scale[j] = LittleFloat (pinframe->scale[j]);
 			poutframe->translate[j] = LittleFloat (pinframe->translate[j]);
 		}
 		// verts are all 8 bit, so no swapping needed
-		memcpy (poutframe->verts, pinframe->verts, 
+		Com_Memcpy(poutframe->verts, pinframe->verts, 
 			pheader->num_xyz*sizeof(dtrivertx_t));
 
 	}
@@ -1029,7 +1029,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 
 	// register all skins
-	memcpy ((char *)pheader + pheader->ofs_skins, (char *)pinmodel + pheader->ofs_skins,
+	Com_Memcpy((char *)pheader + pheader->ofs_skins, (char *)pinmodel + pheader->ofs_skins,
 		pheader->num_skins*MAX_SKINNAME);
 	for (i=0 ; i<pheader->num_skins ; i++)
 	{
@@ -1085,7 +1085,7 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		sprout->frames[i].height = LittleLong (sprin->frames[i].height);
 		sprout->frames[i].origin_x = LittleLong (sprin->frames[i].origin_x);
 		sprout->frames[i].origin_y = LittleLong (sprin->frames[i].origin_y);
-		memcpy (sprout->frames[i].name, sprin->frames[i].name, MAX_SKINNAME);
+		Com_Memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SKINNAME);
 		mod->skins[i] = GL_FindImage (sprout->frames[i].name,
 			it_sprite);
 	}

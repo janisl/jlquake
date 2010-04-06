@@ -1126,7 +1126,7 @@ static void SV_RankJoinGameCBF( GR_JOINGAME* gr_joingame, void* cbf_arg )
 		int i;
 		// save user id
 		ranked_player->player_id = gr_joingame->player_id;
-		memcpy(ranked_player->token,gr_joingame->token,
+		Com_Memcpy(ranked_player->token,gr_joingame->token,
 			sizeof(GR_PLAYER_TOKEN)) ;
 		match = GRankStartMatch( ranked_player->context );
 		ranked_player->match = match.match;
@@ -1483,7 +1483,7 @@ static void SV_RankDecodePlayerKey( const char* string, GR_PLAYER_TOKEN key )
 	
 	Com_Memset(key,0,sizeof(GR_PLAYER_TOKEN));
 	Com_Memset(buffer,0,sizeof(buffer));
-	memcpy( key, buffer, SV_RankAsciiDecode( buffer, string, len ) );
+	Com_Memcpy( key, buffer, SV_RankAsciiDecode( buffer, string, len ) );
 }
 
 /*

@@ -809,7 +809,7 @@ void SV_Snap (int uid)
 	}
 	QStr::Cpy(cl->uploadfn, checkname);
 
-	memcpy(&cl->snap_from, &net_from, sizeof(net_from));
+	Com_Memcpy(&cl->snap_from, &net_from, sizeof(net_from));
 	if (sv_redirected != RD_NONE)
 		cl->remote_snap = true;
 	else

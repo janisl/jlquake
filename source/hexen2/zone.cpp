@@ -582,9 +582,9 @@ void Cache_Move ( cache_system_t *c)
 	{
 //		Con_Printf ("cache_move ok\n");
 
-		memcpy ( newc+1, c+1, c->size - sizeof(cache_system_t) );
+		Com_Memcpy( newc+1, c+1, c->size - sizeof(cache_system_t) );
 		newc->user = c->user;
-		memcpy (newc->name, c->name, sizeof(newc->name));
+		Com_Memcpy(newc->name, c->name, sizeof(newc->name));
 		Cache_Free (c->user);
 		newc->user->data = (void *)(newc+1);
 	}

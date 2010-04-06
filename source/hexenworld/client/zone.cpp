@@ -348,7 +348,7 @@ void Hunk_Print (qboolean all)
 	//
 	// print the single block
 	//
-		memcpy (name, h->name, 8);
+		Com_Memcpy(name, h->name, 8);
 		if (all)
 			Con_Printf ("%8p :%8i %8s\n",h, h->size, name);
 			
@@ -568,9 +568,9 @@ void Cache_Move ( cache_system_t *c)
 	{
 //		Con_Printf ("cache_move ok\n");
 
-		memcpy ( newc+1, c+1, c->size - sizeof(cache_system_t) );
+		Com_Memcpy( newc+1, c+1, c->size - sizeof(cache_system_t) );
 		newc->user = c->user;
-		memcpy (newc->name, c->name, sizeof(newc->name));
+		Com_Memcpy(newc->name, c->name, sizeof(newc->name));
 		Cache_Free (c->user);
 		newc->user->data = (void *)(newc+1);
 	}

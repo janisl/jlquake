@@ -124,8 +124,8 @@ void NetadrToSockadr( netadr_t *a, struct sockaddr *s ) {
 	}
 	else if( a->type == NA_IPX ) {
 		((struct sockaddr_ipx *)s)->sa_family = AF_IPX;
-		memcpy( ((struct sockaddr_ipx *)s)->sa_netnum, &a->ipx[0], 4 );
-		memcpy( ((struct sockaddr_ipx *)s)->sa_nodenum, &a->ipx[4], 6 );
+		Com_Memcpy( ((struct sockaddr_ipx *)s)->sa_netnum, &a->ipx[0], 4 );
+		Com_Memcpy( ((struct sockaddr_ipx *)s)->sa_nodenum, &a->ipx[4], 6 );
 		((struct sockaddr_ipx *)s)->sa_socket = a->port;
 	}
 	else if( a->type == NA_BROADCAST_IPX ) {
@@ -145,8 +145,8 @@ void SockadrToNetadr( struct sockaddr *s, netadr_t *a ) {
 	}
 	else if( s->sa_family == AF_IPX ) {
 		a->type = NA_IPX;
-		memcpy( &a->ipx[0], ((struct sockaddr_ipx *)s)->sa_netnum, 4 );
-		memcpy( &a->ipx[4], ((struct sockaddr_ipx *)s)->sa_nodenum, 6 );
+		Com_Memcpy( &a->ipx[0], ((struct sockaddr_ipx *)s)->sa_netnum, 4 );
+		Com_Memcpy( &a->ipx[4], ((struct sockaddr_ipx *)s)->sa_nodenum, 6 );
 		a->port = ((struct sockaddr_ipx *)s)->sa_socket;
 	}
 }
@@ -350,7 +350,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to ) {
 		socksBuf[3] = 1;	// address type: IPV4
 		*(int *)&socksBuf[4] = ((struct sockaddr_in *)&addr)->sin_addr.s_addr;
 		*(short *)&socksBuf[8] = ((struct sockaddr_in *)&addr)->sin_port;
-		memcpy( &socksBuf[10], data, length );
+		Com_Memcpy( &socksBuf[10], data, length );
 		ret = sendto( net_socket, socksBuf, length+10, 0, &socksRelayAddr, sizeof(socksRelayAddr) );
 	}
 	else {
@@ -629,11 +629,11 @@ void NET_OpenSocks( int port ) {
 		buf[0] = 1;		// username/password authentication version
 		buf[1] = ulen;
 		if ( ulen ) {
-			memcpy( &buf[2], net_socksUsername->string, ulen );
+			Com_Memcpy( &buf[2], net_socksUsername->string, ulen );
 		}
 		buf[2 + ulen] = plen;
 		if ( plen ) {
-			memcpy( &buf[3 + ulen], net_socksPassword->string, plen );
+			Com_Memcpy( &buf[3 + ulen], net_socksPassword->string, plen );
 		}
 
 		// send it

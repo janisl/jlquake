@@ -95,7 +95,7 @@ BOOL ReadFile2(LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBy
 		return FALSE;
 	}
 
-   memcpy(lpBuffer,MidiData+MidiOffset,nNumberOfBytesToRead);
+   Com_Memcpy(lpBuffer,MidiData+MidiOffset,nNumberOfBytesToRead);
    MidiOffset += nNumberOfBytesToRead;
    *lpNumberOfBytesRead = nNumberOfBytesToRead;
 

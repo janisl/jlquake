@@ -121,7 +121,7 @@ void Cbuf_InsertText (char *text)
 	if (templen)
 	{
 		temp = (char*)Z_Malloc (templen);
-		memcpy (temp, cmd_text.data, templen);
+		Com_Memcpy(temp, cmd_text.data, templen);
 		SZ_Clear (&cmd_text);
 	}
 	else
@@ -146,7 +146,7 @@ Cbuf_CopyToDefer
 */
 void Cbuf_CopyToDefer (void)
 {
-	memcpy(defer_text_buf, cmd_text_buf, cmd_text.cursize);
+	Com_Memcpy(defer_text_buf, cmd_text_buf, cmd_text.cursize);
 	defer_text_buf[cmd_text.cursize] = 0;
 	cmd_text.cursize = 0;
 }
@@ -217,7 +217,7 @@ void Cbuf_Execute (void)
 		}
 			
 				
-		memcpy (line, text, i);
+		Com_Memcpy(line, text, i);
 		line[i] = 0;
 		
 // delete the text from the command buffer and move remaining commands down
@@ -389,7 +389,7 @@ void Cmd_Exec_f (void)
 	
 	// the file doesn't have a trailing 0, so we need to copy it off
 	f2 = (char*)Z_Malloc(len+1);
-	memcpy (f2, f, len);
+	Com_Memcpy(f2, f, len);
 	f2[len] = 0;
 
 	Cbuf_InsertText (f2);

@@ -169,7 +169,7 @@ void Con_CheckResize (void)
 		if (con_linewidth < numchars)
 			numchars = con_linewidth;
 
-		memcpy (tbuf, con_text, CON_TEXTSIZE<<1);
+		Com_Memcpy(tbuf, con_text, CON_TEXTSIZE<<1);
 		Con_Clear_f();
 
 		for (i=0 ; i<numlines ; i++)

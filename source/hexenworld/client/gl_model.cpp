@@ -105,7 +105,7 @@ byte *Mod_DecompressVis (byte *in, model_t *model)
 	out = decompressed;
 
 #if 0
-	memcpy (out, in, row);
+	Com_Memcpy(out, in, row);
 #else
 	if (!in)
 	{	// no vis info, so make all visible
@@ -354,13 +354,13 @@ void Mod_LoadTextures (lump_t *l)
 		tx = (texture_t*)Hunk_AllocName (sizeof(texture_t) +pixels, loadname );
 		loadmodel->textures[i] = tx;
 
-		memcpy (tx->name, mt->name, sizeof(tx->name));
+		Com_Memcpy(tx->name, mt->name, sizeof(tx->name));
 		tx->width = mt->width;
 		tx->height = mt->height;
 		for (j=0 ; j<MIPLEVELS ; j++)
 			tx->offsets[j] = mt->offsets[j] + sizeof(texture_t) - sizeof(miptex_t);
 		// the pixels immediately follow the structures
-		memcpy ( tx+1, mt+1, pixels);
+		Com_Memcpy( tx+1, mt+1, pixels);
 		
 
 		if (!QStr::NCmp(mt->name,"sky",3))	
@@ -480,7 +480,7 @@ void Mod_LoadLighting (lump_t *l)
 		return;
 	}
 	loadmodel->lightdata = (byte*)Hunk_AllocName ( l->filelen, loadname);	
-	memcpy (loadmodel->lightdata, mod_base + l->fileofs, l->filelen);
+	Com_Memcpy(loadmodel->lightdata, mod_base + l->fileofs, l->filelen);
 }
 
 
@@ -497,7 +497,7 @@ void Mod_LoadVisibility (lump_t *l)
 		return;
 	}
 	loadmodel->visdata = (byte*)Hunk_AllocName ( l->filelen, loadname);	
-	memcpy (loadmodel->visdata, mod_base + l->fileofs, l->filelen);
+	Com_Memcpy(loadmodel->visdata, mod_base + l->fileofs, l->filelen);
 }
 
 
@@ -514,7 +514,7 @@ void Mod_LoadEntities (lump_t *l)
 		return;
 	}
 	loadmodel->entities = (char*)Hunk_AllocName ( l->filelen, loadname);	
-	memcpy (loadmodel->entities, mod_base + l->fileofs, l->filelen);
+	Com_Memcpy(loadmodel->entities, mod_base + l->fileofs, l->filelen);
 }
 
 
@@ -1538,37 +1538,37 @@ void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int mdl_flags
 			{
 				if (s > sizeof(player_8bit_texels[0]))
 					Sys_Error ("Player skin too large");
-				memcpy (player_8bit_texels[0], (byte *)(pskintype + 1), s);
+				Com_Memcpy(player_8bit_texels[0], (byte *)(pskintype + 1), s);
 			}
 			else if (!QStr::Cmp(loadmodel->name,"models/crusader.mdl"))
 			{
 				if (s > sizeof(player_8bit_texels[1]))
 					Sys_Error ("Player skin too large");
-				memcpy (player_8bit_texels[1], (byte *)(pskintype + 1), s);
+				Com_Memcpy(player_8bit_texels[1], (byte *)(pskintype + 1), s);
 			}
 			else if (!QStr::Cmp(loadmodel->name,"models/necro.mdl"))
 			{
 				if (s > sizeof(player_8bit_texels[2]))
 					Sys_Error ("Player skin too large");
-				memcpy (player_8bit_texels[2], (byte *)(pskintype + 1), s);
+				Com_Memcpy(player_8bit_texels[2], (byte *)(pskintype + 1), s);
 			}
 			else if (!QStr::Cmp(loadmodel->name,"models/assassin.mdl"))
 			{
 				if (s > sizeof(player_8bit_texels[3]))
 					Sys_Error ("Player skin too large");
-				memcpy (player_8bit_texels[3], (byte *)(pskintype + 1), s);
+				Com_Memcpy(player_8bit_texels[3], (byte *)(pskintype + 1), s);
 			}
 			else if (!QStr::Cmp(loadmodel->name,"models/succubus.mdl"))
 			{
 				if (s > sizeof(player_8bit_texels[4]))
 					Sys_Error ("Player skin too large");
-				memcpy (player_8bit_texels[4], (byte *)(pskintype + 1), s);
+				Com_Memcpy(player_8bit_texels[4], (byte *)(pskintype + 1), s);
 			}
 			else if (!QStr::Cmp(loadmodel->name,"models/hank.mdl"))
 			{
 				if (s > sizeof(player_8bit_texels[5]))
 					Sys_Error ("Player skin too large");
-				memcpy (player_8bit_texels[5], (byte *)(pskintype + 1), s);
+				Com_Memcpy(player_8bit_texels[5], (byte *)(pskintype + 1), s);
 			}
 
 			sprintf (name, "%s_%i", loadmodel->name, i);
@@ -1788,7 +1788,7 @@ void Mod_LoadAliasModelNew (model_t *mod, void *buffer)
 	Cache_Alloc (&mod->cache, total, loadname);
 	if (!mod->cache.data)
 		return;
-	memcpy (mod->cache.data, pheader, total);
+	Com_Memcpy(mod->cache.data, pheader, total);
 
 	Hunk_FreeToLowMark (start);
 }
@@ -1963,7 +1963,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	Cache_Alloc (&mod->cache, total, loadname);
 	if (!mod->cache.data)
 		return;
-	memcpy (mod->cache.data, pheader, total);
+	Com_Memcpy(mod->cache.data, pheader, total);
 
 	Hunk_FreeToLowMark (start);
 }

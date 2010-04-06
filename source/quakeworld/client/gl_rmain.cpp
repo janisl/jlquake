@@ -1038,7 +1038,7 @@ void R_Mirror (void)
 	if (!mirror)
 		return;
 
-	memcpy (r_base_world_matrix, r_world_matrix, sizeof(r_base_world_matrix));
+	Com_Memcpy(r_base_world_matrix, r_world_matrix, sizeof(r_base_world_matrix));
 
 	d = DotProduct (r_refdef.vieworg, mirror_plane->normal) - mirror_plane->dist;
 	VectorMA (r_refdef.vieworg, -2*d, mirror_plane->normal, r_refdef.vieworg);

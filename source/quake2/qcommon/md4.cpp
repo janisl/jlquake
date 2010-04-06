@@ -2,6 +2,7 @@
 
 #include <string.h>
 #define Com_Memset      memset
+#define Com_Memcpy      memcpy
 
 /* POINTER defines a generic pointer type */
 typedef unsigned char *POINTER;
@@ -126,7 +127,7 @@ void MD4Update (MD4_CTX *context, unsigned char *input, unsigned int inputLen)
 	/* Transform as many times as possible.*/
 	if (inputLen >= partLen)
 	{
- 		memcpy((POINTER)&context->buffer[index], (POINTER)input, partLen);
+ 		Com_Memcpy((POINTER)&context->buffer[index], (POINTER)input, partLen);
  		MD4Transform (context->state, context->buffer);
 
  		for (i = partLen; i + 63 < inputLen; i += 64)
@@ -138,7 +139,7 @@ void MD4Update (MD4_CTX *context, unsigned char *input, unsigned int inputLen)
  		i = 0;
 
 	/* Buffer remaining input */
-	memcpy ((POINTER)&context->buffer[index], (POINTER)&input[i], inputLen-i);
+	Com_Memcpy((POINTER)&context->buffer[index], (POINTER)&input[i], inputLen-i);
 }
 
 

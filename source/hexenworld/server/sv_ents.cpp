@@ -788,7 +788,7 @@ void SV_WriteInventory (client_t *host_client, edict_t *ent, sizebuf_t *msg)
 		MSG_WriteFloat(msg, ent->v.flags);
 
 end:
-	memcpy(&host_client->old_v,&ent->v,sizeof(host_client->old_v));
+	Com_Memcpy(&host_client->old_v,&ent->v,sizeof(host_client->old_v));
 }
 
 
