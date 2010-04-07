@@ -321,11 +321,11 @@ void R_ParseParticleEffect (void)
 	int			i, count, msgcount, color;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord ();
+		org[i] = net_message.ReadCoord ();
 	for (i=0 ; i<3 ; i++)
-		dir[i] = MSG_ReadChar () * (1.0/16);
-	msgcount = MSG_ReadByte ();
-	color = MSG_ReadByte ();
+		dir[i] = net_message.ReadChar() * (1.0/16);
+	msgcount = net_message.ReadByte ();
+	color = net_message.ReadByte ();
 
 if (msgcount == 255)
 	count = 1024;
@@ -348,14 +348,14 @@ void R_ParseParticleEffect2 (void)
 	int			i, msgcount, color, effect;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord ();
+		org[i] = net_message.ReadCoord ();
 	for (i=0 ; i<3 ; i++)
-		dmin[i] = MSG_ReadFloat ();
+		dmin[i] = net_message.ReadFloat();
 	for (i=0 ; i<3 ; i++)
-		dmax[i] = MSG_ReadFloat ();
-	color = MSG_ReadShort ();
-	msgcount = MSG_ReadByte ();
-	effect = MSG_ReadByte ();
+		dmax[i] = net_message.ReadFloat();
+	color = net_message.ReadShort ();
+	msgcount = net_message.ReadByte ();
+	effect = net_message.ReadByte ();
 
 	R_RunParticleEffect2 (org, dmin, dmax, color, effect, msgcount);
 }
@@ -373,12 +373,12 @@ void R_ParseParticleEffect3 (void)
 	int			i, msgcount, color, effect;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord ();
+		org[i] = net_message.ReadCoord ();
 	for (i=0 ; i<3 ; i++)
-		box[i] = MSG_ReadByte ();
-	color = MSG_ReadShort ();
-	msgcount = MSG_ReadByte ();
-	effect = MSG_ReadByte ();
+		box[i] = net_message.ReadByte ();
+	color = net_message.ReadShort ();
+	msgcount = net_message.ReadByte ();
+	effect = net_message.ReadByte ();
 
 	R_RunParticleEffect3 (org, box, color, effect, msgcount);
 }
@@ -397,11 +397,11 @@ void R_ParseParticleEffect4 (void)
 	float		radius;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord ();
-	radius = MSG_ReadByte();
-	color = MSG_ReadShort ();
-	msgcount = MSG_ReadByte ();
-	effect = MSG_ReadByte ();
+		org[i] = net_message.ReadCoord ();
+	radius = net_message.ReadByte();
+	color = net_message.ReadShort ();
+	msgcount = net_message.ReadByte ();
+	effect = net_message.ReadByte ();
 
 	R_RunParticleEffect4 (org, radius, color, effect, msgcount);
 }

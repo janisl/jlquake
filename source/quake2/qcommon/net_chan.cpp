@@ -113,13 +113,13 @@ void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data)
 	byte		send_buf[MAX_MSGLEN];
 
 // write the packet header
-	SZ_Init (&send, send_buf, sizeof(send_buf));
+	send.InitOOB(send_buf, sizeof(send_buf));
 	
-	MSG_WriteLong (&send, -1);	// -1 sequence means out of band
-	SZ_Write (&send, data, length);
+	send.WriteLong(-1);	// -1 sequence means out of band
+	send.WriteData(data, length);
 
 // send the datagram
-	NET_SendPacket ((netsrc_t)net_socket, send.cursize, send.data, adr);
+	NET_SendPacket ((netsrc_t)net_socket, send.cursize, send._data, adr);
 }
 
 /*
@@ -160,7 +160,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport)
 	chan->incoming_sequence = 0;
 	chan->outgoing_sequence = 1;
 
-	SZ_Init (&chan->message, chan->message_buf, sizeof(chan->message_buf));
+	chan->message.InitOOB(chan->message_buf, sizeof(chan->message_buf));
 	chan->message.allowoverflow = true;
 }
 
@@ -238,7 +238,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 
 
 // write the packet header
-	SZ_Init (&send, send_buf, sizeof(send_buf));
+	send.InitOOB(send_buf, sizeof(send_buf));
 
 	w1 = ( chan->outgoing_sequence & ~(1<<31) ) | (send_reliable<<31);
 	w2 = ( chan->incoming_sequence & ~(1<<31) ) | (chan->incoming_reliable_sequence<<31);
@@ -246,28 +246,28 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	chan->outgoing_sequence++;
 	chan->last_sent = curtime;
 
-	MSG_WriteLong (&send, w1);
-	MSG_WriteLong (&send, w2);
+	send.WriteLong(w1);
+	send.WriteLong(w2);
 
 	// send the qport if we are a client
 	if (chan->sock == NS_CLIENT)
-		MSG_WriteShort (&send, qport->value);
+		send.WriteShort(qport->value);
 
 // copy the reliable message to the packet first
 	if (send_reliable)
 	{
-		SZ_Write (&send, chan->reliable_buf, chan->reliable_length);
+		send.WriteData(chan->reliable_buf, chan->reliable_length);
 		chan->last_reliable_sequence = chan->outgoing_sequence;
 	}
 	
 // add the unreliable part if space is available
 	if (send.maxsize - send.cursize >= length)
-		SZ_Write (&send, data, length);
+		send.WriteData(data, length);
 	else
 		Com_Printf ("Netchan_Transmit: dumped unreliable\n");
 
 // send the datagram
-	NET_SendPacket (chan->sock, send.cursize, send.data, chan->remote_address);
+	NET_SendPacket (chan->sock, send.cursize, send._data, chan->remote_address);
 
 	if (showpackets->value)
 	{
@@ -302,13 +302,13 @@ qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
 	int			qport;
 
 // get sequence numbers		
-	MSG_BeginReading (msg);
-	sequence = MSG_ReadLong (msg);
-	sequence_ack = MSG_ReadLong (msg);
+	msg->BeginReadingOOB();
+	sequence = msg->ReadLong();
+	sequence_ack = msg->ReadLong();
 
 	// read the qport if we are a server
 	if (chan->sock == NS_SERVER)
-		qport = MSG_ReadShort (msg);
+		qport = msg->ReadShort();
 
 	reliable_message = sequence >> 31;
 	reliable_ack = sequence_ack >> 31;

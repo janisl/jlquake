@@ -283,64 +283,64 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 			else continue;
 		}
 		
-		MSG_WriteByte (sb, svc_start_effect);
-		MSG_WriteByte (sb, index);
-		MSG_WriteByte (sb, sv.Effects[index].type);
+		sb->WriteByte(svc_start_effect);
+		sb->WriteByte(index);
+		sb->WriteByte(sv.Effects[index].type);
 		
 		switch(sv.Effects[index].type)
 		{
 			case CE_RAIN:
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.min_org[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.min_org[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.min_org[2]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.max_org[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.max_org[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.max_org[2]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.e_size[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.e_size[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.e_size[2]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.dir[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.dir[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.dir[2]);
-				MSG_WriteShort(sb, sv.Effects[index].Rain.color);
-				MSG_WriteShort(sb, sv.Effects[index].Rain.count);
-				MSG_WriteFloat(sb, sv.Effects[index].Rain.wait);
+				sb->WriteCoord(sv.Effects[index].Rain.min_org[0]);
+				sb->WriteCoord(sv.Effects[index].Rain.min_org[1]);
+				sb->WriteCoord(sv.Effects[index].Rain.min_org[2]);
+				sb->WriteCoord(sv.Effects[index].Rain.max_org[0]);
+				sb->WriteCoord(sv.Effects[index].Rain.max_org[1]);
+				sb->WriteCoord(sv.Effects[index].Rain.max_org[2]);
+				sb->WriteCoord(sv.Effects[index].Rain.e_size[0]);
+				sb->WriteCoord(sv.Effects[index].Rain.e_size[1]);
+				sb->WriteCoord(sv.Effects[index].Rain.e_size[2]);
+				sb->WriteCoord(sv.Effects[index].Rain.dir[0]);
+				sb->WriteCoord(sv.Effects[index].Rain.dir[1]);
+				sb->WriteCoord(sv.Effects[index].Rain.dir[2]);
+				sb->WriteShort(sv.Effects[index].Rain.color);
+				sb->WriteShort(sv.Effects[index].Rain.count);
+				sb->WriteFloat(sv.Effects[index].Rain.wait);
 				break;
 				
 			case CE_SNOW:
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.min_org[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.min_org[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.min_org[2]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.max_org[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.max_org[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.max_org[2]);
-				MSG_WriteByte(sb, sv.Effects[index].Rain.flags);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.dir[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.dir[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Rain.dir[2]);
-				MSG_WriteByte(sb, sv.Effects[index].Rain.count);
-				//MSG_WriteShort(sb, sv.Effects[index].Rain.veer);
+				sb->WriteCoord(sv.Effects[index].Rain.min_org[0]);
+				sb->WriteCoord(sv.Effects[index].Rain.min_org[1]);
+				sb->WriteCoord(sv.Effects[index].Rain.min_org[2]);
+				sb->WriteCoord(sv.Effects[index].Rain.max_org[0]);
+				sb->WriteCoord(sv.Effects[index].Rain.max_org[1]);
+				sb->WriteCoord(sv.Effects[index].Rain.max_org[2]);
+				sb->WriteByte(sv.Effects[index].Rain.flags);
+				sb->WriteCoord(sv.Effects[index].Rain.dir[0]);
+				sb->WriteCoord(sv.Effects[index].Rain.dir[1]);
+				sb->WriteCoord(sv.Effects[index].Rain.dir[2]);
+				sb->WriteByte(sv.Effects[index].Rain.count);
+				//sb->WriteShort(sv.Effects[index].Rain.veer);
 				break;
 				
 			case CE_FOUNTAIN:
-				MSG_WriteCoord(sb, sv.Effects[index].Fountain.pos[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Fountain.pos[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Fountain.pos[2]);
-				MSG_WriteAngle(sb, sv.Effects[index].Fountain.angle[0]);
-				MSG_WriteAngle(sb, sv.Effects[index].Fountain.angle[1]);
-				MSG_WriteAngle(sb, sv.Effects[index].Fountain.angle[2]);
-				MSG_WriteCoord(sb, sv.Effects[index].Fountain.movedir[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Fountain.movedir[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Fountain.movedir[2]);
-				MSG_WriteShort(sb, sv.Effects[index].Fountain.color);
-				MSG_WriteByte(sb, sv.Effects[index].Fountain.cnt);
+				sb->WriteCoord(sv.Effects[index].Fountain.pos[0]);
+				sb->WriteCoord(sv.Effects[index].Fountain.pos[1]);
+				sb->WriteCoord(sv.Effects[index].Fountain.pos[2]);
+				sb->WriteAngle(sv.Effects[index].Fountain.angle[0]);
+				sb->WriteAngle(sv.Effects[index].Fountain.angle[1]);
+				sb->WriteAngle(sv.Effects[index].Fountain.angle[2]);
+				sb->WriteCoord(sv.Effects[index].Fountain.movedir[0]);
+				sb->WriteCoord(sv.Effects[index].Fountain.movedir[1]);
+				sb->WriteCoord(sv.Effects[index].Fountain.movedir[2]);
+				sb->WriteShort(sv.Effects[index].Fountain.color);
+				sb->WriteByte(sv.Effects[index].Fountain.cnt);
 				break;
 				
 			case CE_QUAKE:
-				MSG_WriteCoord(sb, sv.Effects[index].Quake.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Quake.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Quake.origin[2]);
-				MSG_WriteFloat(sb, sv.Effects[index].Quake.radius);
+				sb->WriteCoord(sv.Effects[index].Quake.origin[0]);
+				sb->WriteCoord(sv.Effects[index].Quake.origin[1]);
+				sb->WriteCoord(sv.Effects[index].Quake.origin[2]);
+				sb->WriteFloat(sv.Effects[index].Quake.radius);
 				break;
 				
 			case CE_WHITE_SMOKE:
@@ -357,14 +357,14 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 			case CE_FLAMEWALL:
 			case CE_FLAMEWALL2:
 			case CE_ONFIRE:
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[2]);
-				MSG_WriteFloat(sb, sv.Effects[index].Smoke.velocity[0]);
-				MSG_WriteFloat(sb, sv.Effects[index].Smoke.velocity[1]);
-				MSG_WriteFloat(sb, sv.Effects[index].Smoke.velocity[2]);
-				MSG_WriteFloat(sb, sv.Effects[index].Smoke.framelength);
-				MSG_WriteFloat(sb, sv.Effects[index].Smoke.frame);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[0]);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[1]);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[2]);
+				sb->WriteFloat(sv.Effects[index].Smoke.velocity[0]);
+				sb->WriteFloat(sv.Effects[index].Smoke.velocity[1]);
+				sb->WriteFloat(sv.Effects[index].Smoke.velocity[2]);
+				sb->WriteFloat(sv.Effects[index].Smoke.framelength);
+				sb->WriteFloat(sv.Effects[index].Smoke.frame);
 				break;
 				
 			case CE_SM_WHITE_FLASH:
@@ -400,76 +400,76 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 			case CE_BOMB:
 			case CE_BRN_BOUNCE:
 			case CE_LSHOCK:
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[2]);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[0]);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[1]);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[2]);
 				break;
 				
 			case CE_WHITE_FLASH:
 			case CE_BLUE_FLASH:
 			case CE_SM_BLUE_FLASH:
 			case CE_RED_FLASH:
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Smoke.origin[2]);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[0]);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[1]);
+				sb->WriteCoord(sv.Effects[index].Smoke.origin[2]);
 				break;
 								
 			case CE_RIDER_DEATH:
-				MSG_WriteCoord(sb, sv.Effects[index].RD.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].RD.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].RD.origin[2]);
+				sb->WriteCoord(sv.Effects[index].RD.origin[0]);
+				sb->WriteCoord(sv.Effects[index].RD.origin[1]);
+				sb->WriteCoord(sv.Effects[index].RD.origin[2]);
 				break;
 				
 			case CE_TELEPORTERPUFFS:
-				MSG_WriteCoord(sb, sv.Effects[index].Teleporter.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Teleporter.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Teleporter.origin[2]);
+				sb->WriteCoord(sv.Effects[index].Teleporter.origin[0]);
+				sb->WriteCoord(sv.Effects[index].Teleporter.origin[1]);
+				sb->WriteCoord(sv.Effects[index].Teleporter.origin[2]);
 				break;
 				
 			case CE_TELEPORTERBODY:
-				MSG_WriteCoord(sb, sv.Effects[index].Teleporter.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Teleporter.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Teleporter.origin[2]);
-				MSG_WriteFloat(sb, sv.Effects[index].Teleporter.velocity[0][0]);
-				MSG_WriteFloat(sb, sv.Effects[index].Teleporter.velocity[0][1]);
-				MSG_WriteFloat(sb, sv.Effects[index].Teleporter.velocity[0][2]);
-				MSG_WriteFloat(sb, sv.Effects[index].Teleporter.skinnum);
+				sb->WriteCoord(sv.Effects[index].Teleporter.origin[0]);
+				sb->WriteCoord(sv.Effects[index].Teleporter.origin[1]);
+				sb->WriteCoord(sv.Effects[index].Teleporter.origin[2]);
+				sb->WriteFloat(sv.Effects[index].Teleporter.velocity[0][0]);
+				sb->WriteFloat(sv.Effects[index].Teleporter.velocity[0][1]);
+				sb->WriteFloat(sv.Effects[index].Teleporter.velocity[0][2]);
+				sb->WriteFloat(sv.Effects[index].Teleporter.skinnum);
 				break;
 
 			case CE_BONESHARD:
 			case CE_BONESHRAPNEL:
-				MSG_WriteCoord(sb, sv.Effects[index].Missile.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Missile.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Missile.origin[2]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.velocity[0]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.velocity[1]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.velocity[2]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.angle[0]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.angle[1]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.angle[2]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.avelocity[0]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.avelocity[1]);
-				MSG_WriteFloat(sb, sv.Effects[index].Missile.avelocity[2]);
+				sb->WriteCoord(sv.Effects[index].Missile.origin[0]);
+				sb->WriteCoord(sv.Effects[index].Missile.origin[1]);
+				sb->WriteCoord(sv.Effects[index].Missile.origin[2]);
+				sb->WriteFloat(sv.Effects[index].Missile.velocity[0]);
+				sb->WriteFloat(sv.Effects[index].Missile.velocity[1]);
+				sb->WriteFloat(sv.Effects[index].Missile.velocity[2]);
+				sb->WriteFloat(sv.Effects[index].Missile.angle[0]);
+				sb->WriteFloat(sv.Effects[index].Missile.angle[1]);
+				sb->WriteFloat(sv.Effects[index].Missile.angle[2]);
+				sb->WriteFloat(sv.Effects[index].Missile.avelocity[0]);
+				sb->WriteFloat(sv.Effects[index].Missile.avelocity[1]);
+				sb->WriteFloat(sv.Effects[index].Missile.avelocity[2]);
 				
 				break;
 
 			case CE_GRAVITYWELL:
-				MSG_WriteCoord(sb, sv.Effects[index].RD.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].RD.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].RD.origin[2]);
-				MSG_WriteShort(sb, sv.Effects[index].RD.color);
-				MSG_WriteFloat(sb, sv.Effects[index].RD.lifetime);
+				sb->WriteCoord(sv.Effects[index].RD.origin[0]);
+				sb->WriteCoord(sv.Effects[index].RD.origin[1]);
+				sb->WriteCoord(sv.Effects[index].RD.origin[2]);
+				sb->WriteShort(sv.Effects[index].RD.color);
+				sb->WriteFloat(sv.Effects[index].RD.lifetime);
 				break;
 
 			case CE_CHUNK:
-				MSG_WriteCoord(sb, sv.Effects[index].Chunk.origin[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Chunk.origin[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Chunk.origin[2]);
-				MSG_WriteByte (sb, sv.Effects[index].Chunk.type);
-				MSG_WriteCoord(sb, sv.Effects[index].Chunk.srcVel[0]);
-				MSG_WriteCoord(sb, sv.Effects[index].Chunk.srcVel[1]);
-				MSG_WriteCoord(sb, sv.Effects[index].Chunk.srcVel[2]);
-				MSG_WriteByte (sb, sv.Effects[index].Chunk.numChunks);
+				sb->WriteCoord(sv.Effects[index].Chunk.origin[0]);
+				sb->WriteCoord(sv.Effects[index].Chunk.origin[1]);
+				sb->WriteCoord(sv.Effects[index].Chunk.origin[2]);
+				sb->WriteByte(sv.Effects[index].Chunk.type);
+				sb->WriteCoord(sv.Effects[index].Chunk.srcVel[0]);
+				sb->WriteCoord(sv.Effects[index].Chunk.srcVel[1]);
+				sb->WriteCoord(sv.Effects[index].Chunk.srcVel[2]);
+				sb->WriteByte(sv.Effects[index].Chunk.numChunks);
 
 				//Con_Printf("Adding %d chunks on server...\n",sv.Effects[index].Chunk.numChunks);
 				break;
@@ -1224,61 +1224,61 @@ void CL_ParseEffect(void)
 
 	ImmediateFree = false;
 
-	index = MSG_ReadByte();
+	index = net_message.ReadByte();
 	if (cl.Effects[index].type)
 		CL_FreeEffect(index);
 
 	Com_Memset(&cl.Effects[index],0,sizeof(struct EffectT));
 
-	cl.Effects[index].type = MSG_ReadByte();
+	cl.Effects[index].type = net_message.ReadByte();
 
 	switch(cl.Effects[index].type)
 	{
 		case CE_RAIN:
-			cl.Effects[index].Rain.min_org[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.min_org[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.min_org[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.e_size[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.e_size[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.e_size[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.dir[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.dir[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.dir[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.color = MSG_ReadShort();
-			cl.Effects[index].Rain.count = MSG_ReadShort();
-			cl.Effects[index].Rain.wait = MSG_ReadFloat();
+			cl.Effects[index].Rain.min_org[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.min_org[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.min_org[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.e_size[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.e_size[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.e_size[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.dir[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.dir[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.dir[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.color = net_message.ReadShort();
+			cl.Effects[index].Rain.count = net_message.ReadShort();
+			cl.Effects[index].Rain.wait = net_message.ReadFloat();
 			break;
 
 		case CE_SNOW:
-			cl.Effects[index].Rain.min_org[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.min_org[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.min_org[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.flags = MSG_ReadByte();
-			cl.Effects[index].Rain.dir[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.dir[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.dir[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.count = MSG_ReadByte();
-			//cl.Effects[index].Rain.veer = MSG_ReadShort();
+			cl.Effects[index].Rain.min_org[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.min_org[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.min_org[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.flags = net_message.ReadByte();
+			cl.Effects[index].Rain.dir[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.dir[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.dir[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.count = net_message.ReadByte();
+			//cl.Effects[index].Rain.veer = net_message.ReadShort();
 			break;
 
 		case CE_FOUNTAIN:
-			cl.Effects[index].Fountain.pos[0] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.pos[1] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.pos[2] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.angle[0] = MSG_ReadAngle ();
-			cl.Effects[index].Fountain.angle[1] = MSG_ReadAngle ();
-			cl.Effects[index].Fountain.angle[2] = MSG_ReadAngle ();
-			cl.Effects[index].Fountain.movedir[0] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.movedir[1] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.movedir[2] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.color = MSG_ReadShort ();
-			cl.Effects[index].Fountain.cnt = MSG_ReadByte ();
+			cl.Effects[index].Fountain.pos[0] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.pos[1] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.pos[2] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.angle[0] = net_message.ReadAngle ();
+			cl.Effects[index].Fountain.angle[1] = net_message.ReadAngle ();
+			cl.Effects[index].Fountain.angle[2] = net_message.ReadAngle ();
+			cl.Effects[index].Fountain.movedir[0] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.movedir[1] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.movedir[2] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.color = net_message.ReadShort ();
+			cl.Effects[index].Fountain.cnt = net_message.ReadByte ();
 			AngleVectors (cl.Effects[index].Fountain.angle, 
 						  cl.Effects[index].Fountain.vforward,
 						  cl.Effects[index].Fountain.vright,
@@ -1286,10 +1286,10 @@ void CL_ParseEffect(void)
 			break;
 
 		case CE_QUAKE:
-			cl.Effects[index].Quake.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Quake.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Quake.origin[2] = MSG_ReadCoord ();
-			cl.Effects[index].Quake.radius = MSG_ReadFloat ();
+			cl.Effects[index].Quake.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Quake.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Quake.origin[2] = net_message.ReadCoord ();
+			cl.Effects[index].Quake.radius = net_message.ReadFloat ();
 			break;
 
 		case CE_WHITE_SMOKE:
@@ -1306,16 +1306,16 @@ void CL_ParseEffect(void)
 		case CE_FLAMEWALL:
 		case CE_FLAMEWALL2:
 		case CE_ONFIRE:
-			cl.Effects[index].Smoke.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Smoke.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Smoke.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Smoke.velocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Smoke.velocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Smoke.velocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Smoke.velocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Smoke.velocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Smoke.velocity[2] = net_message.ReadFloat ();
 
-			cl.Effects[index].Smoke.framelength = MSG_ReadFloat ();
-			cl.Effects[index].Smoke.frame = MSG_ReadFloat ();
+			cl.Effects[index].Smoke.framelength = net_message.ReadFloat ();
+			cl.Effects[index].Smoke.frame = net_message.ReadFloat ();
 
 			if ((cl.Effects[index].Smoke.entity_index = NewEffectEntity()) != -1)
 			{
@@ -1419,9 +1419,9 @@ void CL_ParseEffect(void)
 		case CE_FIREWALL_SMALL:
 		case CE_FIREWALL_MEDIUM:
 		case CE_FIREWALL_LARGE:
-			cl.Effects[index].Smoke.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Smoke.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Smoke.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
 			if ((cl.Effects[index].Smoke.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Smoke.entity_index];
@@ -1516,9 +1516,9 @@ void CL_ParseEffect(void)
 		case CE_BLUE_FLASH:
 		case CE_SM_BLUE_FLASH:
 		case CE_RED_FLASH:
-			cl.Effects[index].Flash.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Flash.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Flash.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Flash.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Flash.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Flash.origin[2] = net_message.ReadCoord ();
 			cl.Effects[index].Flash.reverse = 0;
 			if ((cl.Effects[index].Flash.entity_index = NewEffectEntity()) != -1)
 			{
@@ -1544,23 +1544,23 @@ void CL_ParseEffect(void)
 			break;
 
 		case CE_RIDER_DEATH:
-			cl.Effects[index].RD.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].RD.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].RD.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].RD.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].RD.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].RD.origin[2] = net_message.ReadCoord ();
 			break;
 
 		case CE_GRAVITYWELL:
-			cl.Effects[index].RD.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].RD.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].RD.origin[2] = MSG_ReadCoord ();
-			cl.Effects[index].RD.color = MSG_ReadShort ();
-			cl.Effects[index].RD.lifetime = MSG_ReadFloat ();
+			cl.Effects[index].RD.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].RD.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].RD.origin[2] = net_message.ReadCoord ();
+			cl.Effects[index].RD.color = net_message.ReadShort ();
+			cl.Effects[index].RD.lifetime = net_message.ReadFloat ();
 			break;
 
 		case CE_TELEPORTERPUFFS:
-			cl.Effects[index].Teleporter.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Teleporter.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Teleporter.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
 				
 			cl.Effects[index].Teleporter.framelength = .05;
 			dir = 0;
@@ -1588,15 +1588,15 @@ void CL_ParseEffect(void)
 			break;
 
 		case CE_TELEPORTERBODY:
-			cl.Effects[index].Teleporter.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Teleporter.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Teleporter.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Teleporter.velocity[0][0] = MSG_ReadFloat ();
-			cl.Effects[index].Teleporter.velocity[0][1] = MSG_ReadFloat ();
-			cl.Effects[index].Teleporter.velocity[0][2] = MSG_ReadFloat ();
+			cl.Effects[index].Teleporter.velocity[0][0] = net_message.ReadFloat ();
+			cl.Effects[index].Teleporter.velocity[0][1] = net_message.ReadFloat ();
+			cl.Effects[index].Teleporter.velocity[0][2] = net_message.ReadFloat ();
 
-			skinnum = MSG_ReadFloat ();
+			skinnum = net_message.ReadFloat ();
 			
 			cl.Effects[index].Teleporter.framelength = .05;
 			dir = 0;
@@ -1614,21 +1614,21 @@ void CL_ParseEffect(void)
 
 		case CE_BONESHARD:
 		case CE_BONESHRAPNEL:
-			cl.Effects[index].Missile.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Missile.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Missile.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Missile.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Missile.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Missile.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Missile.velocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.velocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.velocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Missile.velocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.velocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.velocity[2] = net_message.ReadFloat ();
 
-			cl.Effects[index].Missile.angle[0] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.angle[1] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.angle[2] = MSG_ReadFloat ();
+			cl.Effects[index].Missile.angle[0] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.angle[1] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.angle[2] = net_message.ReadFloat ();
 
-			cl.Effects[index].Missile.avelocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.avelocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.avelocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Missile.avelocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.avelocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.avelocity[2] = net_message.ReadFloat ();
 
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
 			{
@@ -1644,17 +1644,17 @@ void CL_ParseEffect(void)
 			break;
 
 		case CE_CHUNK:
-			cl.Effects[index].Chunk.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Chunk.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Chunk.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Chunk.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Chunk.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Chunk.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Chunk.type = MSG_ReadByte ();
+			cl.Effects[index].Chunk.type = net_message.ReadByte ();
 
-			cl.Effects[index].Chunk.srcVel[0] = MSG_ReadCoord ();
-			cl.Effects[index].Chunk.srcVel[1] = MSG_ReadCoord ();
-			cl.Effects[index].Chunk.srcVel[2] = MSG_ReadCoord ();
+			cl.Effects[index].Chunk.srcVel[0] = net_message.ReadCoord ();
+			cl.Effects[index].Chunk.srcVel[1] = net_message.ReadCoord ();
+			cl.Effects[index].Chunk.srcVel[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Chunk.numChunks = MSG_ReadByte ();
+			cl.Effects[index].Chunk.numChunks = net_message.ReadByte ();
 
 			cl.Effects[index].Chunk.time_amount = 4.0;
 
@@ -1956,7 +1956,7 @@ void CL_EndEffect(void)
 {
 	int index;
 
-	index = MSG_ReadByte();
+	index = net_message.ReadByte();
 
 	CL_FreeEffect(index);
 }

@@ -129,29 +129,29 @@ void CL_ParseTEnt(void)
 	int rnd;
 	int colorStart, colorLength;
 
-	type = MSG_ReadByte();
+	type = net_message.ReadByte();
 	switch(type)
 	{
 	case TE_WIZSPIKE:			// spike hitting wall
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 		R_RunParticleEffect (pos, vec3_origin, 20, 30);
 //		S_StartSound (-1, 0, cl_sfx_wizhit, pos, 1, 1);
 		break;
 		
 	case TE_KNIGHTSPIKE:			// spike hitting wall
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 		R_RunParticleEffect (pos, vec3_origin, 226, 20);
 //		S_StartSound (-1, 0, cl_sfx_knighthit, pos, 1, 1);
 		break;
 		
 	case TE_SPIKE:			// spike hitting wall
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 #ifdef GLTEST
 		Test_Spawn (pos);
 #else
@@ -171,9 +171,9 @@ void CL_ParseTEnt(void)
 		}
 		break;
 	case TE_SUPERSPIKE:			// super spike hitting wall
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 
 		if ( rand() % 5 )
@@ -191,16 +191,16 @@ void CL_ParseTEnt(void)
 		break;
 		
 	case TE_GUNSHOT:			// bullet hitting wall
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		break;
 		
 	case TE_EXPLOSION:			// rocket explosion
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 		R_ParticleExplosion (pos);
 		break;
 		dl = CL_AllocDlight (0);
@@ -212,9 +212,9 @@ void CL_ParseTEnt(void)
 		break;
 /*	//jfm:not used
 	case TE_TAREXPLOSION:			// tarbaby explosion
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 		R_BlobExplosion (pos);
 
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
@@ -223,13 +223,13 @@ void CL_ParseTEnt(void)
 	case TE_LIGHTNING1:
 	case TE_LIGHTNING2:
 	case TE_LIGHTNING3:
-		MSG_ReadShort();
-		MSG_ReadCoord();
-		MSG_ReadCoord();
-		MSG_ReadCoord();
-		MSG_ReadCoord();
-		MSG_ReadCoord();
-		MSG_ReadCoord();
+		net_message.ReadShort();
+		net_message.ReadCoord();
+		net_message.ReadCoord();
+		net_message.ReadCoord();
+		net_message.ReadCoord();
+		net_message.ReadCoord();
+		net_message.ReadCoord();
 		break;
 
 	case TE_STREAM_CHAIN:
@@ -245,25 +245,25 @@ void CL_ParseTEnt(void)
 		break;
 
 	case TE_LAVASPLASH:
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 		R_LavaSplash (pos);
 		break;
 
 	case TE_TELEPORT:
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
 		R_TeleportSplash (pos);
 		break;
 /*	//jfm:not used
 	case TE_EXPLOSION2:				// color mapped explosion
-		pos[0] = MSG_ReadCoord ();
-		pos[1] = MSG_ReadCoord ();
-		pos[2] = MSG_ReadCoord ();
-		colorStart = MSG_ReadByte ();
-		colorLength = MSG_ReadByte ();
+		pos[0] = net_message.ReadCoord ();
+		pos[1] = net_message.ReadCoord ();
+		pos[2] = net_message.ReadCoord ();
+		colorStart = net_message.ReadByte ();
+		colorLength = net_message.ReadByte ();
 		R_ParticleExplosion2 (pos, colorStart, colorLength);
 		dl = CL_AllocDlight (0);
 		VectorCopy (pos, dl->origin);
@@ -296,21 +296,21 @@ static void ParseStream(int type)
 	float duration;
 	model_t *models[4];
 
-	ent = MSG_ReadShort();
-	flags = MSG_ReadByte();
+	ent = net_message.ReadShort();
+	flags = net_message.ReadByte();
 	tag = flags&15;
-	duration = (float)MSG_ReadByte()*0.05;
+	duration = (float)net_message.ReadByte()*0.05;
 	skin = 0;
 	if(type == TE_STREAM_COLORBEAM)
 	{
-		skin = MSG_ReadByte();
+		skin = net_message.ReadByte();
 	}
-	source[0] = MSG_ReadCoord();
-	source[1] = MSG_ReadCoord();
-	source[2] = MSG_ReadCoord();
-	dest[0] = MSG_ReadCoord();
-	dest[1] = MSG_ReadCoord();
-	dest[2] = MSG_ReadCoord();
+	source[0] = net_message.ReadCoord();
+	source[1] = net_message.ReadCoord();
+	source[2] = net_message.ReadCoord();
+	dest[0] = net_message.ReadCoord();
+	dest[1] = net_message.ReadCoord();
+	dest[2] = net_message.ReadCoord();
 
 	models[1] = models[2] = models[3] = NULL;
 	switch(type)

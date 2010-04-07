@@ -118,7 +118,7 @@ void CL_WriteDemoMessage (void)
 	len = net_message.cursize-8;
 	swlen = LittleLong(len);
 	fwrite (&swlen, 4, 1, cls.demofile);
-	fwrite (net_message.data+8,	len, 1, cls.demofile);
+	fwrite (net_message._data+8,	len, 1, cls.demofile);
 }
 
 
@@ -206,17 +206,17 @@ void CL_Record_f (void)
 	//
 	// write out messages to hold the startup information
 	//
-	SZ_Init (&buf, buf_data, sizeof(buf_data));
+	buf.InitOOB(buf_data, sizeof(buf_data));
 
 	// send the serverdata
-	MSG_WriteByte (&buf, svc_serverdata);
-	MSG_WriteLong (&buf, PROTOCOL_VERSION);
-	MSG_WriteLong (&buf, 0x10000 + cl.servercount);
-	MSG_WriteByte (&buf, 1);	// demos are always attract loops
-	MSG_WriteString (&buf, cl.gamedir);
-	MSG_WriteShort (&buf, cl.playernum);
+	buf.WriteByte(svc_serverdata);
+	buf.WriteLong(PROTOCOL_VERSION);
+	buf.WriteLong(0x10000 + cl.servercount);
+	buf.WriteByte(1);	// demos are always attract loops
+	buf.WriteString2(cl.gamedir);
+	buf.WriteShort(cl.playernum);
 
-	MSG_WriteString (&buf, cl.configstrings[CS_NAME]);
+	buf.WriteString2(cl.configstrings[CS_NAME]);
 
 	// configstrings
 	for (i=0 ; i<MAX_CONFIGSTRINGS ; i++)
@@ -227,13 +227,13 @@ void CL_Record_f (void)
 			{	// write it out
 				len = LittleLong (buf.cursize);
 				fwrite (&len, 4, 1, cls.demofile);
-				fwrite (buf.data, buf.cursize, 1, cls.demofile);
+				fwrite (buf._data, buf.cursize, 1, cls.demofile);
 				buf.cursize = 0;
 			}
 
-			MSG_WriteByte (&buf, svc_configstring);
-			MSG_WriteShort (&buf, i);
-			MSG_WriteString (&buf, cl.configstrings[i]);
+			buf.WriteByte(svc_configstring);
+			buf.WriteShort(i);
+			buf.WriteString2(cl.configstrings[i]);
 		}
 
 	}
@@ -250,22 +250,22 @@ void CL_Record_f (void)
 		{	// write it out
 			len = LittleLong (buf.cursize);
 			fwrite (&len, 4, 1, cls.demofile);
-			fwrite (buf.data, buf.cursize, 1, cls.demofile);
+			fwrite (buf._data, buf.cursize, 1, cls.demofile);
 			buf.cursize = 0;
 		}
 
-		MSG_WriteByte (&buf, svc_spawnbaseline);		
+		buf.WriteByte(svc_spawnbaseline);		
 		MSG_WriteDeltaEntity (&nullstate, &cl_entities[i].baseline, &buf, true, true);
 	}
 
-	MSG_WriteByte (&buf, svc_stufftext);
-	MSG_WriteString (&buf, "precache\n");
+	buf.WriteByte(svc_stufftext);
+	buf.WriteString2("precache\n");
 
 	// write it to the demo file
 
 	len = LittleLong (buf.cursize);
 	fwrite (&len, 4, 1, cls.demofile);
-	fwrite (buf.data, buf.cursize, 1, cls.demofile);
+	fwrite (buf._data, buf.cursize, 1, cls.demofile);
 
 	// the rest of the demo file will be individual frames
 }
@@ -292,7 +292,7 @@ void Cmd_ForwardToServer (void)
 		return;
 	}
 
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+	cls.netchan.message.WriteByte(clc_stringcmd);
 	SZ_Print (&cls.netchan.message, cmd);
 	if (Cmd_Argc() > 1)
 	{
@@ -353,7 +353,7 @@ void CL_ForwardToServer_f (void)
 	// don't forward the first argument
 	if (Cmd_Argc() > 1)
 	{
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		cls.netchan.message.WriteByte(clc_stringcmd);
 		SZ_Print (&cls.netchan.message, Cmd_Args());
 	}
 }
@@ -599,7 +599,7 @@ void CL_ClearState (void)
 	Com_Memset(&cl, 0, sizeof(cl));
 	Com_Memset(&cl_entities, 0, sizeof(cl_entities));
 
-	SZ_Clear (&cls.netchan.message);
+	cls.netchan.message.Clear();
 
 }
 
@@ -756,8 +756,8 @@ void CL_Reconnect_f (void)
 	if (cls.state == ca_connected) {
 		Com_Printf ("reconnecting...\n");
 		cls.state = ca_connected;
-		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
-		MSG_WriteString (&cls.netchan.message, "new");		
+		cls.netchan.message.WriteChar(clc_stringcmd);
+		cls.netchan.message.WriteString2("new");		
 		return;
 	}
 
@@ -782,12 +782,12 @@ Handle a reply from a ping
 */
 void CL_ParseStatusMessage (void)
 {
-	char	*s;
+	const char	*s;
 
-	s = MSG_ReadString(&net_message);
+	s = net_message.ReadString2();
 
 	Com_Printf ("%s\n", s);
-	M_AddToServerList (net_from, s);
+	M_AddToServerList (net_from, const_cast<char*>(s));
 }
 
 
@@ -882,10 +882,10 @@ void CL_ConnectionlessPacket (void)
 	char	*s;
 	char	*c;
 	
-	MSG_BeginReading (&net_message);
-	MSG_ReadLong (&net_message);	// skip the -1
+	net_message.BeginReadingOOB();
+	net_message.ReadLong();	// skip the -1
 
-	s = MSG_ReadStringLine (&net_message);
+	s = const_cast<char*>(net_message.ReadStringLine2());
 
 	Cmd_TokenizeString (s, false);
 
@@ -902,8 +902,8 @@ void CL_ConnectionlessPacket (void)
 			return;
 		}
 		Netchan_Setup (NS_CLIENT, &cls.netchan, net_from, cls.quakePort);
-		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
-		MSG_WriteString (&cls.netchan.message, "new");	
+		cls.netchan.message.WriteChar(clc_stringcmd);
+		cls.netchan.message.WriteString2("new");	
 		cls.state = ca_connected;
 		return;
 	}
@@ -924,7 +924,7 @@ void CL_ConnectionlessPacket (void)
 			return;
 		}
 		Sys_AppActivate ();
-		s = MSG_ReadString (&net_message);
+		s = const_cast<char*>(net_message.ReadString2());
 		Cbuf_AddText (s);
 		Cbuf_AddText ("\n");
 		return;
@@ -932,7 +932,7 @@ void CL_ConnectionlessPacket (void)
 	// print command from somewhere
 	if (!QStr::Cmp(c, "print"))
 	{
-		s = MSG_ReadString (&net_message);
+		s = const_cast<char*>(net_message.ReadString2());
 		Com_Printf ("%s", s);
 		return;
 	}
@@ -992,7 +992,7 @@ void CL_ReadPackets (void)
 		//
 		// remote command packet
 		//
-		if (*(int *)net_message.data == -1)
+		if (*(int *)net_message._data == -1)
 		{
 			CL_ConnectionlessPacket ();
 			continue;
@@ -1364,8 +1364,8 @@ void CL_RequestNextDownload (void)
 	CL_RegisterSounds ();
 	CL_PrepRefresh ();
 
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-	MSG_WriteString (&cls.netchan.message, va("begin %i\n", precache_spawncount) );
+	cls.netchan.message.WriteByte(clc_stringcmd);
+	cls.netchan.message.WriteString2(va("begin %i\n", precache_spawncount) );
 }
 
 /*
@@ -1795,8 +1795,7 @@ void CL_Init (void)
 	
 	V_Init ();
 	
-	net_message.data = net_message_buffer;
-	net_message.maxsize = sizeof(net_message_buffer);
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
 
 	M_Init ();	
 	

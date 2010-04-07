@@ -210,11 +210,11 @@ void R_ParseParticleEffect (void)
 	int			i, count, msgcount, color;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord ();
+		org[i] = net_message.ReadCoord();
 	for (i=0 ; i<3 ; i++)
-		dir[i] = MSG_ReadChar () * (1.0/16);
-	msgcount = MSG_ReadByte ();
-	color = MSG_ReadByte ();
+		dir[i] = net_message.ReadChar () * (1.0/16);
+	msgcount = net_message.ReadByte ();
+	color = net_message.ReadByte ();
 
 if (msgcount == 255)
 	count = 1024;

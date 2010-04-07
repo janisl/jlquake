@@ -319,16 +319,16 @@ void SV_FinalMessage (char *message)
 	int			i;
 	client_t	*cl;
 	
-	SZ_Clear (&net_message);
-	MSG_WriteByte (&net_message, svc_print);
-	MSG_WriteByte (&net_message, PRINT_HIGH);
-	MSG_WriteString (&net_message, message);
-	MSG_WriteByte (&net_message, svc_disconnect);
+	net_message.Clear();
+	net_message.WriteByte(svc_print);
+	net_message.WriteByte(PRINT_HIGH);
+	net_message.WriteString2(message);
+	net_message.WriteByte(svc_disconnect);
 
 	for (i=0, cl = svs.clients ; i<MAX_CLIENTS ; i++, cl++)
 		if (cl->state >= cs_spawned)
 			Netchan_Transmit (&cl->netchan, net_message.cursize
-			, net_message.data);
+			, net_message._data);
 }
 
 /*
@@ -344,7 +344,7 @@ void SV_DropClient (client_t *drop)
 {
 
 	// add the disconnect
-	MSG_WriteByte (&drop->netchan.message, svc_disconnect);
+	drop->netchan.message.WriteByte(svc_disconnect);
 
 	if (drop->state == cs_spawned)
 		if (!drop->spectator)
@@ -446,44 +446,44 @@ void SV_FullClientUpdate (client_t *client, sizebuf_t *buf)
 
 //Sys_Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
 
-	MSG_WriteByte (buf, svc_updatedminfo);
-	MSG_WriteByte (buf, i);
-	MSG_WriteShort (buf, client->old_frags);
-	MSG_WriteByte (buf, (client->playerclass<<5)|((int)client->edict->v.level&31));
+	buf->WriteByte(svc_updatedminfo);
+	buf->WriteByte(i);
+	buf->WriteShort(client->old_frags);
+	buf->WriteByte((client->playerclass<<5)|((int)client->edict->v.level&31));
 	
 	if(dmMode.value==DM_SIEGE)
 	{
-		MSG_WriteByte (buf, svc_updatesiegeinfo);
-		MSG_WriteByte (buf, (int)ceil(timelimit.value));
-		MSG_WriteByte (buf, (int)ceil(fraglimit.value));
+		buf->WriteByte(svc_updatesiegeinfo);
+		buf->WriteByte((int)ceil(timelimit.value));
+		buf->WriteByte((int)ceil(fraglimit.value));
 
-		MSG_WriteByte (buf, svc_updatesiegeteam);
-		MSG_WriteByte (buf, i);
-		MSG_WriteByte (buf, client->siege_team);
+		buf->WriteByte(svc_updatesiegeteam);
+		buf->WriteByte(i);
+		buf->WriteByte(client->siege_team);
 
-		MSG_WriteByte (buf, svc_updatesiegelosses);
-		MSG_WriteByte (buf, pr_global_struct->defLosses);
-		MSG_WriteByte (buf, pr_global_struct->attLosses);
+		buf->WriteByte(svc_updatesiegelosses);
+		buf->WriteByte(pr_global_struct->defLosses);
+		buf->WriteByte(pr_global_struct->attLosses);
 
-		MSG_WriteByte (buf, svc_time);//send server time upon connection
-		MSG_WriteFloat (buf, sv.time);
+		buf->WriteByte(svc_time);//send server time upon connection
+		buf->WriteFloat(sv.time);
 	}
 
-	MSG_WriteByte (buf, svc_updateping);
-	MSG_WriteByte (buf, i);
-	MSG_WriteShort (buf, SV_CalcPing (client));
+	buf->WriteByte(svc_updateping);
+	buf->WriteByte(i);
+	buf->WriteShort(SV_CalcPing (client));
 	
-	MSG_WriteByte (buf, svc_updateentertime);
-	MSG_WriteByte (buf, i);
-	MSG_WriteFloat (buf, realtime - client->connection_started);
+	buf->WriteByte(svc_updateentertime);
+	buf->WriteByte(i);
+	buf->WriteFloat(realtime - client->connection_started);
 
 	QStr::Cpy(info, client->userinfo);
 	Info_RemovePrefixedKeys (info, '_');	// server passwords, etc
 
-	MSG_WriteByte (buf, svc_updateuserinfo);
-	MSG_WriteByte (buf, i);
-	MSG_WriteLong (buf, client->userid);
-	MSG_WriteString (buf, info);
+	buf->WriteByte(svc_updateuserinfo);
+	buf->WriteByte(i);
+	buf->WriteLong(client->userid);
+	buf->WriteString2(info);
 }
 
 
@@ -754,9 +754,8 @@ void SVC_DirectConnect (void)
 
 	newcl->state = cs_connected;
 	
+	newcl->datagram.InitOOB(newcl->datagram_buf, sizeof(newcl->datagram_buf));
 	newcl->datagram.allowoverflow = true;
-	newcl->datagram.data = newcl->datagram_buf;
-	newcl->datagram.maxsize = sizeof(newcl->datagram_buf);
 
 	// spectator mode can ONLY be set at join time
 	newcl->spectator = spectator;
@@ -819,10 +818,10 @@ void SVC_RemoteCommand (void)
 
 	if (i == 0)
 		Con_Printf ("Bad rcon from %s:\n%s\n"
-			, NET_AdrToString (net_from), net_message.data+4);
+			, NET_AdrToString (net_from), net_message._data+4);
 	if (i == 1)
 		Con_Printf ("Rcon from %s:\n%s\n"
-			, NET_AdrToString (net_from), net_message.data+4);
+			, NET_AdrToString (net_from), net_message._data+4);
 
 	SV_BeginRedirect (RD_PACKET);
 
@@ -862,10 +861,10 @@ void SV_ConnectionlessPacket (void)
 	char	*s;
 	char	*c;
 
-	MSG_BeginReading ();
-	MSG_ReadLong ();		// skip the -1 marker
+	net_message.BeginReadingOOB();
+	net_message.ReadLong();		// skip the -1 marker
 
-	s = MSG_ReadStringLine ();
+	s = const_cast<char*>(net_message.ReadStringLine2());
 
 	Cmd_TokenizeString (s);
 
@@ -883,7 +882,7 @@ void SV_ConnectionlessPacket (void)
 	}
 	else if (c[0] == A2S_ECHO)
 	{
-		NET_SendPacket (net_message.cursize, net_message.data, net_from);
+		NET_SendPacket (net_message.cursize, net_message._data, net_from);
 		return;
 	}
 	else if (!QStr::Cmp(c,"status"))
@@ -1160,7 +1159,7 @@ void SV_ReadPackets (void)
 		}
 
 		// check for connectionless packet (0xffffffff) first
-		if (*(int *)net_message.data == -1)
+		if (*(int *)net_message._data == -1)
 		{
 			SV_ConnectionlessPacket ();
 			continue;
@@ -1451,13 +1450,9 @@ void SV_InitLocal (void)
 	// init fraglog stuff
 	svs.logsequence = 1;
 	svs.logtime = realtime;
-	svs.log[0].data = svs.log_buf[0];
-	svs.log[0].maxsize = sizeof(svs.log_buf[0]);
-	svs.log[0].cursize = 0;
+	svs.log[0].InitOOB(svs.log_buf[0], sizeof(svs.log_buf[0]));
 	svs.log[0].allowoverflow = true;
-	svs.log[1].data = svs.log_buf[1];
-	svs.log[1].maxsize = sizeof(svs.log_buf[1]);
-	svs.log[1].cursize = 0;
+	svs.log[1].InitOOB(svs.log_buf[1], sizeof(svs.log_buf[1]));
 	svs.log[1].allowoverflow = true;
 }
 

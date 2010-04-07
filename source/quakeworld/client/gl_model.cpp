@@ -1534,7 +1534,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 			st, MAX_INFO_STRING);
 
 		if (cls.state >= ca_connected) {
-			MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+			cls.netchan.message.WriteByte(clc_stringcmd);
 			sprintf(st, "setinfo %s %d", 
 				!QStr::Cmp(loadmodel->name, "progs/player.mdl") ? pmodel_name : emodel_name,
 				(int)crc);

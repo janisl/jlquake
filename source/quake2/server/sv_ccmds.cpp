@@ -920,41 +920,41 @@ void SV_ServerRecord_f (void)
 	}
 
 	// setup a buffer to catch all multicasts
-	SZ_Init (&svs.demo_multicast, svs.demo_multicast_buf, sizeof(svs.demo_multicast_buf));
+	svs.demo_multicast.InitOOB(svs.demo_multicast_buf, sizeof(svs.demo_multicast_buf));
 
 	//
 	// write a single giant fake message with all the startup info
 	//
-	SZ_Init (&buf, buf_data, sizeof(buf_data));
+	buf.InitOOB(buf_data, sizeof(buf_data));
 
 	//
 	// serverdata needs to go over for all types of servers
 	// to make sure the protocol is right, and to set the gamedir
 	//
 	// send the serverdata
-	MSG_WriteByte (&buf, svc_serverdata);
-	MSG_WriteLong (&buf, PROTOCOL_VERSION);
-	MSG_WriteLong (&buf, svs.spawncount);
+	buf.WriteByte(svc_serverdata);
+	buf.WriteLong(PROTOCOL_VERSION);
+	buf.WriteLong(svs.spawncount);
 	// 2 means server demo
-	MSG_WriteByte (&buf, 2);	// demos are always attract loops
-	MSG_WriteString (&buf, Cvar_VariableString ("gamedir"));
-	MSG_WriteShort (&buf, -1);
+	buf.WriteByte(2);	// demos are always attract loops
+	buf.WriteString2(Cvar_VariableString ("gamedir"));
+	buf.WriteShort(-1);
 	// send full levelname
-	MSG_WriteString (&buf, sv.configstrings[CS_NAME]);
+	buf.WriteString2(sv.configstrings[CS_NAME]);
 
 	for (i=0 ; i<MAX_CONFIGSTRINGS ; i++)
 		if (sv.configstrings[i][0])
 		{
-			MSG_WriteByte (&buf, svc_configstring);
-			MSG_WriteShort (&buf, i);
-			MSG_WriteString (&buf, sv.configstrings[i]);
+			buf.WriteByte(svc_configstring);
+			buf.WriteShort(i);
+			buf.WriteString2(sv.configstrings[i]);
 		}
 
 	// write it to the demo file
 	Com_DPrintf ("signon message length: %i\n", buf.cursize);
 	len = LittleLong (buf.cursize);
 	fwrite (&len, 4, 1, svs.demofile);
-	fwrite (buf.data, buf.cursize, 1, svs.demofile);
+	fwrite (buf._data, buf.cursize, 1, svs.demofile);
 
 	// the rest of the demo file will be individual frames
 }

@@ -232,7 +232,7 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_me
 	i = loop->get & (MAX_LOOPBACK-1);
 	loop->get++;
 
-	Com_Memcpy(net_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
+	Com_Memcpy(net_message->_data, loop->msgs[i].data, loop->msgs[i].datalen);
 	net_message->cursize = loop->msgs[i].datalen;
 	*net_from = net_local_adr;
 	return true;
@@ -279,7 +279,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 			continue;
 
 		fromlen = sizeof(from);
-		ret = recvfrom (net_socket, net_message->data, net_message->maxsize
+		ret = recvfrom (net_socket, net_message->_data, net_message->maxsize
 			, 0, (struct sockaddr *)&from, &fromlen);
 		if (ret == -1)
 		{

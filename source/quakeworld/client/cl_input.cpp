@@ -418,19 +418,17 @@ void CL_SendCmd (void)
 
 // send this and the previous cmds in the message, so
 // if the last packet was dropped, it can be recovered
-	buf.maxsize = 128;
-	buf.cursize = 0;
-	buf.data = data;
+	buf.InitOOB(data, 128);
 
-	MSG_WriteByte (&buf, clc_move);
+	buf.WriteByte(clc_move);
 
 	// save the position for a checksum byte
 	checksumIndex = buf.cursize;
-	MSG_WriteByte (&buf, 0);
+	buf.WriteByte(0);
 
 	// write our lossage percentage
 	lost = CL_CalcNet();
-	MSG_WriteByte (&buf, (byte)lost);
+	buf.WriteByte((byte)lost);
 
 	i = (cls.netchan.outgoing_sequence-2) & UPDATE_MASK;
 	cmd = &cl.frames[i].cmd;
@@ -447,8 +445,8 @@ void CL_SendCmd (void)
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
-	buf.data[checksumIndex] = COM_BlockSequenceCRCByte(
-		buf.data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
+	buf._data[checksumIndex] = COM_BlockSequenceCRCByte(
+		buf._data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
 		seq_hash);
 
 	// request delta compression of entities
@@ -459,8 +457,8 @@ void CL_SendCmd (void)
 		!cls.demorecording)
 	{
 		cl.frames[cls.netchan.outgoing_sequence&UPDATE_MASK].delta_sequence = cl.validsequence;
-		MSG_WriteByte (&buf, clc_delta);
-		MSG_WriteByte (&buf, cl.validsequence&255);
+		buf.WriteByte(clc_delta);
+		buf.WriteByte(cl.validsequence&255);
 	}
 	else
 		cl.frames[cls.netchan.outgoing_sequence&UPDATE_MASK].delta_sequence = -1;
@@ -471,7 +469,7 @@ void CL_SendCmd (void)
 //
 // deliver the message
 //
-	Netchan_Transmit (&cls.netchan, buf.cursize, buf.data);	
+	Netchan_Transmit (&cls.netchan, buf.cursize, buf._data);	
 }
 
 

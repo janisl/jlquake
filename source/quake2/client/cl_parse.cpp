@@ -107,13 +107,13 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 
 		// give the server an offset to start the download
 		Com_Printf ("Resuming %s\n", cls.downloadname);
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-		MSG_WriteString (&cls.netchan.message,
+		cls.netchan.message.WriteByte(clc_stringcmd);
+		cls.netchan.message.WriteString2(
 			va("download %s %i", cls.downloadname, len));
 	} else {
 		Com_Printf ("Downloading %s\n", cls.downloadname);
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-		MSG_WriteString (&cls.netchan.message,
+		cls.netchan.message.WriteByte(clc_stringcmd);
+		cls.netchan.message.WriteString2(
 			va("download %s", cls.downloadname));
 	}
 
@@ -161,8 +161,8 @@ void	CL_Download_f (void)
 	COM_StripExtension (cls.downloadname, cls.downloadtempname);
 	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-	MSG_WriteString (&cls.netchan.message,
+	cls.netchan.message.WriteByte(clc_stringcmd);
+	cls.netchan.message.WriteString2(
 		va("download %s", cls.downloadname));
 
 	cls.downloadnumber++;
@@ -204,8 +204,8 @@ void CL_ParseDownload (void)
 	int		r;
 
 	// read the data
-	size = MSG_ReadShort (&net_message);
-	percent = MSG_ReadByte (&net_message);
+	size = net_message.ReadShort();
+	percent = net_message.ReadByte ();
 	if (size == -1)
 	{
 		Com_Printf ("Server does not have this file.\n");
@@ -236,7 +236,7 @@ void CL_ParseDownload (void)
 		}
 	}
 
-	fwrite (net_message.data + net_message.readcount, 1, size, cls.download);
+	fwrite (net_message._data + net_message.readcount, 1, size, cls.download);
 	net_message.readcount += size;
 
 	if (percent != 100)
@@ -253,7 +253,7 @@ void CL_ParseDownload (void)
 #endif
 		cls.downloadpercent = percent;
 
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		cls.netchan.message.WriteByte(clc_stringcmd);
 		SZ_Print (&cls.netchan.message, "nextdl");
 	}
 	else
@@ -309,7 +309,7 @@ void CL_ParseServerData (void)
 	cls.state = ca_connected;
 
 // parse protocol version number
-	i = MSG_ReadLong (&net_message);
+	i = net_message.ReadLong();
 	cls.serverProtocol = i;
 
 	// BIG HACK to let demos from release work with the 3.0x patch!!!
@@ -319,11 +319,11 @@ void CL_ParseServerData (void)
 	else if (i != PROTOCOL_VERSION)
 		Com_Error (ERR_DROP,"Server returned version %i, not %i", i, PROTOCOL_VERSION);
 
-	cl.servercount = MSG_ReadLong (&net_message);
-	cl.attractloop = MSG_ReadByte (&net_message);
+	cl.servercount = net_message.ReadLong();
+	cl.attractloop = net_message.ReadByte ();
 
 	// game directory
-	str = MSG_ReadString (&net_message);
+	str = const_cast<char*>(net_message.ReadString2());
 	QStr::NCpy(cl.gamedir, str, sizeof(cl.gamedir)-1);
 
 	// set gamedir
@@ -331,10 +331,10 @@ void CL_ParseServerData (void)
 		Cvar_Set("game", str);
 
 	// parse player entity number
-	cl.playernum = MSG_ReadShort (&net_message);
+	cl.playernum = net_message.ReadShort();
 
 	// get the full level name
-	str = MSG_ReadString (&net_message);
+	str = const_cast<char*>(net_message.ReadString2());
 
 	if (cl.playernum == -1)
 	{	// playing a cinematic or showing a pic, not a level
@@ -521,10 +521,10 @@ void CL_ParseConfigString (void)
 	int		i;
 	char	*s;
 
-	i = MSG_ReadShort (&net_message);
+	i = net_message.ReadShort();
 	if (i < 0 || i >= MAX_CONFIGSTRINGS)
 		Com_Error (ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
-	s = MSG_ReadString(&net_message);
+	s = const_cast<char*>(net_message.ReadString2());
 	QStr::Cpy(cl.configstrings[i], s);
 
 	// do something apropriate 
@@ -589,27 +589,27 @@ void CL_ParseStartSoundPacket(void)
 	int		flags;
 	float	ofs;
 
-	flags = MSG_ReadByte (&net_message);
-	sound_num = MSG_ReadByte (&net_message);
+	flags = net_message.ReadByte ();
+	sound_num = net_message.ReadByte ();
 
     if (flags & SND_VOLUME)
-		volume = MSG_ReadByte (&net_message) / 255.0;
+		volume = net_message.ReadByte () / 255.0;
 	else
 		volume = DEFAULT_SOUND_PACKET_VOLUME;
 	
     if (flags & SND_ATTENUATION)
-		attenuation = MSG_ReadByte (&net_message) / 64.0;
+		attenuation = net_message.ReadByte () / 64.0;
 	else
 		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;	
 
     if (flags & SND_OFFSET)
-		ofs = MSG_ReadByte (&net_message) / 1000.0;
+		ofs = net_message.ReadByte () / 1000.0;
 	else
 		ofs = 0;
 
 	if (flags & SND_ENT)
 	{	// entity reletive
-		channel = MSG_ReadShort(&net_message); 
+		channel = net_message.ReadShort(); 
 		ent = channel>>3;
 		if (ent > MAX_EDICTS)
 			Com_Error (ERR_DROP,"CL_ParseStartSoundPacket: ent = %i", ent);
@@ -675,7 +675,7 @@ void CL_ParseServerMessage (void)
 			break;
 		}
 
-		cmd = MSG_ReadByte (&net_message);
+		cmd = net_message.ReadByte ();
 
 		if (cmd == -1)
 		{
@@ -718,22 +718,22 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_print:
-			i = MSG_ReadByte (&net_message);
+			i = net_message.ReadByte ();
 			if (i == PRINT_CHAT)
 			{
 				S_StartLocalSound ("misc/talk.wav");
 				con.ormask = 128;
 			}
-			Com_Printf ("%s", MSG_ReadString (&net_message));
+			Com_Printf ("%s", net_message.ReadString2());
 			con.ormask = 0;
 			break;
 			
 		case svc_centerprint:
-			SCR_CenterPrint (MSG_ReadString (&net_message));
+			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
 		case svc_stufftext:
-			s = MSG_ReadString (&net_message);
+			s = const_cast<char*>(net_message.ReadString2());
 			Com_DPrintf ("stufftext: %s\n", s);
 			Cbuf_AddText (s);
 			break;
@@ -780,7 +780,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_layout:
-			s = MSG_ReadString (&net_message);
+			s = const_cast<char*>(net_message.ReadString2());
 			QStr::NCpy(cl.layout, s, sizeof(cl.layout)-1);
 			break;
 

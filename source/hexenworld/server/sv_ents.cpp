@@ -104,8 +104,8 @@ void SV_EmitNailUpdate (sizebuf_t *msg)
 	if (!numnails)
 		return;
 
-	MSG_WriteByte (msg, svc_nails);
-	MSG_WriteByte (msg, numnails);
+	msg->WriteByte(svc_nails);
+	msg->WriteByte(numnails);
 
 	for (n=0 ; n<numnails ; n++)
 	{
@@ -124,7 +124,7 @@ void SV_EmitNailUpdate (sizebuf_t *msg)
 		bits[5] = yaw;
 
 		for (i=0 ; i<6 ; i++)
-			MSG_WriteByte (msg, bits[i]);
+			msg->WriteByte(bits[i]);
 	}
 }
 */
@@ -177,8 +177,8 @@ void SV_EmitMissileUpdate (sizebuf_t *msg)
 	if (!nummissiles)
 		return;
 
-	MSG_WriteByte (msg, svc_packmissile);
-	MSG_WriteByte (msg, nummissiles);
+	msg->WriteByte(svc_packmissile);
+	msg->WriteByte(nummissiles);
 
 	for (n=0 ; n<nummissiles ; n++)
 	{
@@ -198,7 +198,7 @@ void SV_EmitMissileUpdate (sizebuf_t *msg)
 		bits[4] = (z>>8) | (type<<4);
 
 		for (i=0 ; i<5 ; i++)
-			MSG_WriteByte (msg, bits[i]);
+			msg->WriteByte(bits[i]);
 	}
 }
 
@@ -212,8 +212,8 @@ void SV_EmitRavenUpdate (sizebuf_t *msg)
 	if ((!numravens) && (!numraven2s))
 		return;
 
-	MSG_WriteByte (msg, svc_nails);	//svc nails overloaded for ravens
-	MSG_WriteByte (msg, numravens);
+	msg->WriteByte(svc_nails);	//svc nails overloaded for ravens
+	msg->WriteByte(numravens);
 
 	for (n=0 ; n<numravens ; n++)
 	{
@@ -233,9 +233,9 @@ void SV_EmitRavenUpdate (sizebuf_t *msg)
 		bits[5] = yaw | (frame<<5);
 
 		for (i=0 ; i<6 ; i++)
-			MSG_WriteByte (msg, bits[i]);
+			msg->WriteByte(bits[i]);
 	}
-	MSG_WriteByte (msg, numraven2s);
+	msg->WriteByte(numraven2s);
 
 	for (n=0 ; n<numraven2s ; n++)
 	{
@@ -254,7 +254,7 @@ void SV_EmitRavenUpdate (sizebuf_t *msg)
 		bits[5] = yaw;
 
 		for (i=0 ; i<6 ; i++)
-			MSG_WriteByte (msg, bits[i]);
+			msg->WriteByte(bits[i]);
 	}
 }
 
@@ -377,51 +377,51 @@ void SV_WriteDelta (entity_state_t *from, entity_state_t *to, sizebuf_t *msg, qb
 	i = to->number | (bits&~511);
 	if (i & U_REMOVE)
 		Sys_Error ("U_REMOVE");
-	MSG_WriteShort (msg, i & 0xffff);
+	msg->WriteShort(i & 0xffff);
 	
 	if (bits & U_MOREBITS)
-		MSG_WriteByte (msg, bits&255);
+		msg->WriteByte(bits&255);
 	if (bits & U_MOREBITS2)
-		MSG_WriteByte (msg, (bits >> 16) & 0xff);
+		msg->WriteByte((bits >> 16) & 0xff);
 	if (bits & U_MODEL)
 	{
 		if (bits & U_MODEL16)
 		{
-			MSG_WriteShort (msg, temp_index);
+			msg->WriteShort(temp_index);
 		}
 		else
 		{
-			MSG_WriteByte (msg,	temp_index);
+			msg->WriteByte(temp_index);
 		}
 	}
 	if (bits & U_FRAME)
-		MSG_WriteByte (msg, to->frame);
+		msg->WriteByte(to->frame);
 	if (bits & U_COLORMAP)
-		MSG_WriteByte (msg, to->colormap);
+		msg->WriteByte(to->colormap);
 	if (bits & U_SKIN)
-		MSG_WriteByte (msg, to->skinnum);
+		msg->WriteByte(to->skinnum);
 	if (bits & U_DRAWFLAGS)
-		MSG_WriteByte (msg, to->drawflags);
+		msg->WriteByte(to->drawflags);
 	if (bits & U_EFFECTS)
-		MSG_WriteLong (msg, to->effects);
+		msg->WriteLong(to->effects);
 	if (bits & U_ORIGIN1)
-		MSG_WriteCoord (msg, to->origin[0]);		
+		msg->WriteCoord(to->origin[0]);		
 	if (bits & U_ANGLE1)
-		MSG_WriteAngle(msg, to->angles[0]);
+		msg->WriteAngle(to->angles[0]);
 	if (bits & U_ORIGIN2)
-		MSG_WriteCoord (msg, to->origin[1]);
+		msg->WriteCoord(to->origin[1]);
 	if (bits & U_ANGLE2)
-		MSG_WriteAngle(msg, to->angles[1]);
+		msg->WriteAngle(to->angles[1]);
 	if (bits & U_ORIGIN3)
-		MSG_WriteCoord (msg, to->origin[2]);
+		msg->WriteCoord(to->origin[2]);
 	if (bits & U_ANGLE3)
-		MSG_WriteAngle(msg, to->angles[2]);
+		msg->WriteAngle(to->angles[2]);
 	if (bits & U_SCALE)
-		MSG_WriteByte (msg, to->scale);
+		msg->WriteByte(to->scale);
 	if (bits & U_ABSLIGHT)
-		MSG_WriteByte (msg, to->abslight);
+		msg->WriteByte(to->abslight);
 	if (bits & U_SOUND)
-		MSG_WriteShort (msg, to->wpn_sound);
+		msg->WriteShort(to->wpn_sound);
 }
 
 /*
@@ -448,15 +448,15 @@ void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, sizebuf_t *
 		from = &fromframe->entities;
 		oldmax = from->num_entities;
 
-		MSG_WriteByte (msg, svc_deltapacketentities);
-		MSG_WriteByte (msg, client->delta_sequence);
+		msg->WriteByte(svc_deltapacketentities);
+		msg->WriteByte(client->delta_sequence);
 	}
 	else
 	{
 		oldmax = 0;	// no delta update
 		from = NULL;
 
-		MSG_WriteByte (msg, svc_packetentities);
+		msg->WriteByte(svc_packetentities);
 	}
 
 	newindex = 0;
@@ -489,13 +489,13 @@ void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, sizebuf_t *
 		if (newnum > oldnum)
 		{	// the old entity isn't present in the new message
 //Con_Printf ("remove %i\n", oldnum);
-			MSG_WriteShort (msg, oldnum | U_REMOVE);
+			msg->WriteShort(oldnum | U_REMOVE);
 			oldindex++;
 			continue;
 		}
 	}
 
-	MSG_WriteShort (msg, 0);	// end of packetentities
+	msg->WriteShort(0);	// end of packetentities
 }
 
 
@@ -639,7 +639,7 @@ void SV_WriteInventory (client_t *host_client, edict_t *ent, sizebuf_t *msg)
 	if (!sc1 && !sc2)
 		goto end;
 
-	MSG_WriteByte (msg, svc_update_inv);
+	msg->WriteByte(svc_update_inv);
 	test = 0;
 	if (sc1 & 0x000000ff)
 		test |= 1;
@@ -658,134 +658,134 @@ void SV_WriteInventory (client_t *host_client, edict_t *ent, sizebuf_t *msg)
 	if (sc2 & 0xff000000)
 		test |= 128;
 
-	MSG_WriteByte (msg, test);
+	msg->WriteByte(test);
 
 	if (test & 1)
-		MSG_WriteByte (msg, sc1 & 0xff);
+		msg->WriteByte(sc1 & 0xff);
 	if (test & 2)
-		MSG_WriteByte (msg, (sc1 >> 8) & 0xff);
+		msg->WriteByte((sc1 >> 8) & 0xff);
 	if (test & 4)
-		MSG_WriteByte (msg, (sc1 >> 16) & 0xff);
+		msg->WriteByte((sc1 >> 16) & 0xff);
 	if (test & 8)
-		MSG_WriteByte (msg, (sc1 >> 24) & 0xff);
+		msg->WriteByte((sc1 >> 24) & 0xff);
 	if (test & 16)
-		MSG_WriteByte (msg, sc2 & 0xff);
+		msg->WriteByte(sc2 & 0xff);
 	if (test & 32)
-		MSG_WriteByte (msg, (sc2 >> 8) & 0xff);
+		msg->WriteByte((sc2 >> 8) & 0xff);
 	if (test & 64)
-		MSG_WriteByte (msg, (sc2 >> 16) & 0xff);
+		msg->WriteByte((sc2 >> 16) & 0xff);
 	if (test & 128)
-		MSG_WriteByte (msg, (sc2 >> 24) & 0xff);
+		msg->WriteByte((sc2 >> 24) & 0xff);
 
 	if (sc1 & SC1_HEALTH)
-		MSG_WriteShort (msg, ent->v.health);
+		msg->WriteShort(ent->v.health);
 	if (sc1 & SC1_LEVEL)
-		MSG_WriteByte(msg, ent->v.level);
+		msg->WriteByte(ent->v.level);
 	if (sc1 & SC1_INTELLIGENCE)
-		MSG_WriteByte(msg, ent->v.intelligence);
+		msg->WriteByte(ent->v.intelligence);
 	if (sc1 & SC1_WISDOM)
-		MSG_WriteByte(msg, ent->v.wisdom);
+		msg->WriteByte(ent->v.wisdom);
 	if (sc1 & SC1_STRENGTH)
-		MSG_WriteByte(msg, ent->v.strength);
+		msg->WriteByte(ent->v.strength);
 	if (sc1 & SC1_DEXTERITY)
-		MSG_WriteByte(msg, ent->v.dexterity);
+		msg->WriteByte(ent->v.dexterity);
 //	if (sc1 & SC1_WEAPON)
-//		MSG_WriteByte (msg, ent->v.weapon);
+//		msg->WriteByte(ent->v.weapon);
 	if (sc1 & SC1_BLUEMANA)
-		MSG_WriteByte (msg, ent->v.bluemana);
+		msg->WriteByte(ent->v.bluemana);
 	if (sc1 & SC1_GREENMANA)
-		MSG_WriteByte (msg, ent->v.greenmana);
+		msg->WriteByte(ent->v.greenmana);
 	if (sc1 & SC1_EXPERIENCE)
-		MSG_WriteLong (msg, ent->v.experience);
+		msg->WriteLong(ent->v.experience);
 	if (sc1 & SC1_CNT_TORCH)
-		MSG_WriteByte (msg, ent->v.cnt_torch);
+		msg->WriteByte(ent->v.cnt_torch);
 	if (sc1 & SC1_CNT_H_BOOST)
-		MSG_WriteByte (msg, ent->v.cnt_h_boost);
+		msg->WriteByte(ent->v.cnt_h_boost);
 	if (sc1 & SC1_CNT_SH_BOOST)
-		MSG_WriteByte (msg, ent->v.cnt_sh_boost);
+		msg->WriteByte(ent->v.cnt_sh_boost);
 	if (sc1 & SC1_CNT_MANA_BOOST)
-		MSG_WriteByte (msg, ent->v.cnt_mana_boost);
+		msg->WriteByte(ent->v.cnt_mana_boost);
 	if (sc1 & SC1_CNT_TELEPORT)
-		MSG_WriteByte (msg, ent->v.cnt_teleport);
+		msg->WriteByte(ent->v.cnt_teleport);
 	if (sc1 & SC1_CNT_TOME)
-		MSG_WriteByte (msg, ent->v.cnt_tome);
+		msg->WriteByte(ent->v.cnt_tome);
 	if (sc1 & SC1_CNT_SUMMON)
-		MSG_WriteByte (msg, ent->v.cnt_summon);
+		msg->WriteByte(ent->v.cnt_summon);
 	if (sc1 & SC1_CNT_INVISIBILITY)
-		MSG_WriteByte (msg, ent->v.cnt_invisibility);
+		msg->WriteByte(ent->v.cnt_invisibility);
 	if (sc1 & SC1_CNT_GLYPH)
-		MSG_WriteByte (msg, ent->v.cnt_glyph);
+		msg->WriteByte(ent->v.cnt_glyph);
 	if (sc1 & SC1_CNT_HASTE)
-		MSG_WriteByte (msg, ent->v.cnt_haste);
+		msg->WriteByte(ent->v.cnt_haste);
 	if (sc1 & SC1_CNT_BLAST)
-		MSG_WriteByte (msg, ent->v.cnt_blast);
+		msg->WriteByte(ent->v.cnt_blast);
 	if (sc1 & SC1_CNT_POLYMORPH)
-		MSG_WriteByte (msg, ent->v.cnt_polymorph);
+		msg->WriteByte(ent->v.cnt_polymorph);
 	if (sc1 & SC1_CNT_FLIGHT)
-		MSG_WriteByte (msg, ent->v.cnt_flight);
+		msg->WriteByte(ent->v.cnt_flight);
 	if (sc1 & SC1_CNT_CUBEOFFORCE)
-		MSG_WriteByte (msg, ent->v.cnt_cubeofforce);
+		msg->WriteByte(ent->v.cnt_cubeofforce);
 	if (sc1 & SC1_CNT_INVINCIBILITY)
-		MSG_WriteByte (msg, ent->v.cnt_invincibility);
+		msg->WriteByte(ent->v.cnt_invincibility);
 	if (sc1 & SC1_ARTIFACT_ACTIVE)
-		MSG_WriteByte (msg, ent->v.artifact_active);
+		msg->WriteByte(ent->v.artifact_active);
 	if (sc1 & SC1_ARTIFACT_LOW)
-		MSG_WriteByte (msg, ent->v.artifact_low);
+		msg->WriteByte(ent->v.artifact_low);
 	if (sc1 & SC1_MOVETYPE)
-		MSG_WriteByte (msg, ent->v.movetype);
+		msg->WriteByte(ent->v.movetype);
 	if (sc1 & SC1_CAMERAMODE)
-		MSG_WriteByte (msg, ent->v.cameramode);
+		msg->WriteByte(ent->v.cameramode);
 	if (sc1 & SC1_HASTED)
-		MSG_WriteFloat (msg, ent->v.hasted);
+		msg->WriteFloat(ent->v.hasted);
 	if (sc1 & SC1_INVENTORY)
-		MSG_WriteByte (msg, ent->v.inventory);
+		msg->WriteByte(ent->v.inventory);
 	if (sc1 & SC1_RINGS_ACTIVE)
-		MSG_WriteByte (msg, ent->v.rings_active);
+		msg->WriteByte(ent->v.rings_active);
 
 	if (sc2 & SC2_RINGS_LOW)
-		MSG_WriteByte (msg, ent->v.rings_low);
+		msg->WriteByte(ent->v.rings_low);
 	if (sc2 & SC2_AMULET)
-		MSG_WriteByte(msg, ent->v.armor_amulet);
+		msg->WriteByte(ent->v.armor_amulet);
 	if (sc2 & SC2_BRACER)
-		MSG_WriteByte(msg, ent->v.armor_bracer);
+		msg->WriteByte(ent->v.armor_bracer);
 	if (sc2 & SC2_BREASTPLATE)
-		MSG_WriteByte(msg, ent->v.armor_breastplate);
+		msg->WriteByte(ent->v.armor_breastplate);
 	if (sc2 & SC2_HELMET)
-		MSG_WriteByte(msg, ent->v.armor_helmet);
+		msg->WriteByte(ent->v.armor_helmet);
 	if (sc2 & SC2_FLIGHT_T)
-		MSG_WriteByte(msg, ent->v.ring_flight);
+		msg->WriteByte(ent->v.ring_flight);
 	if (sc2 & SC2_WATER_T)
-		MSG_WriteByte(msg, ent->v.ring_water);
+		msg->WriteByte(ent->v.ring_water);
 	if (sc2 & SC2_TURNING_T)
-		MSG_WriteByte(msg, ent->v.ring_turning);
+		msg->WriteByte(ent->v.ring_turning);
 	if (sc2 & SC2_REGEN_T)
-		MSG_WriteByte(msg, ent->v.ring_regeneration);
+		msg->WriteByte(ent->v.ring_regeneration);
 //	if (sc2 & SC2_HASTE_T)
-//		MSG_WriteFloat(msg, ent->v.haste_time);
+//		msg->WriteFloat(ent->v.haste_time);
 //	if (sc2 & SC2_TOME_T)
-//		MSG_WriteFloat(msg, ent->v.tome_time);
+//		msg->WriteFloat(ent->v.tome_time);
 	if (sc2 & SC2_PUZZLE1)
-		MSG_WriteString(msg, pr_strings+ent->v.puzzle_inv1);
+		msg->WriteString2(pr_strings+ent->v.puzzle_inv1);
 	if (sc2 & SC2_PUZZLE2)
-		MSG_WriteString(msg, pr_strings+ent->v.puzzle_inv2);
+		msg->WriteString2(pr_strings+ent->v.puzzle_inv2);
 	if (sc2 & SC2_PUZZLE3)
-		MSG_WriteString(msg, pr_strings+ent->v.puzzle_inv3);
+		msg->WriteString2(pr_strings+ent->v.puzzle_inv3);
 	if (sc2 & SC2_PUZZLE4)
-		MSG_WriteString(msg, pr_strings+ent->v.puzzle_inv4);
+		msg->WriteString2(pr_strings+ent->v.puzzle_inv4);
 	if (sc2 & SC2_PUZZLE5)
-		MSG_WriteString(msg, pr_strings+ent->v.puzzle_inv5);
+		msg->WriteString2(pr_strings+ent->v.puzzle_inv5);
 	if (sc2 & SC2_PUZZLE6)
-		MSG_WriteString(msg, pr_strings+ent->v.puzzle_inv6);
+		msg->WriteString2(pr_strings+ent->v.puzzle_inv6);
 	if (sc2 & SC2_PUZZLE7)
-		MSG_WriteString(msg, pr_strings+ent->v.puzzle_inv7);
+		msg->WriteString2(pr_strings+ent->v.puzzle_inv7);
 	if (sc2 & SC2_PUZZLE8)
-		MSG_WriteString(msg, pr_strings+ent->v.puzzle_inv8);
+		msg->WriteString2(pr_strings+ent->v.puzzle_inv8);
 	if (sc2 & SC2_MAXHEALTH)
-		MSG_WriteShort(msg, ent->v.max_health);
+		msg->WriteShort(ent->v.max_health);
 	if (sc2 & SC2_MAXMANA)
-		MSG_WriteByte(msg, ent->v.max_mana);
+		msg->WriteByte(ent->v.max_mana);
 	if (sc2 & SC2_FLAGS)
-		MSG_WriteFloat(msg, ent->v.flags);
+		msg->WriteFloat(ent->v.flags);
 
 end:
 	Com_Memcpy(&host_client->old_v,&ent->v,sizeof(host_client->old_v));
@@ -896,11 +896,11 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 		{//ok to send weaponsound
 			if(ent->v.wpn_sound)
 			{
-				MSG_WriteByte (msg, svc_player_sound);
-				MSG_WriteByte (msg, j);
+				msg->WriteByte(svc_player_sound);
+				msg->WriteByte(j);
 				for (i=0 ; i<3 ; i++)
-					MSG_WriteCoord (msg, ent->v.origin[i]);
-				MSG_WriteShort (msg, ent->v.wpn_sound);
+					msg->WriteCoord(ent->v.origin[i]);
+				msg->WriteShort(ent->v.wpn_sound);
 			}
 		}
 		if(invis_level>0)
@@ -992,8 +992,8 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 
 		if(cl->skipsend)
 		{//still 2 bytes, but what ya gonna do?
-			MSG_WriteByte (msg, svc_playerskipped);
-			MSG_WriteByte (msg, j);
+			msg->WriteByte(svc_playerskipped);
+			msg->WriteByte(j);
 			continue;
 		}
 
@@ -1059,21 +1059,21 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 			pflags |= PF_SOUND;
 		}
 
-		MSG_WriteByte (msg, svc_playerinfo);
-		MSG_WriteByte (msg, j);
-		MSG_WriteShort (msg, pflags);
+		msg->WriteByte(svc_playerinfo);
+		msg->WriteByte(j);
+		msg->WriteShort(pflags);
 
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteCoord (msg, ent->v.origin[i]);
+			msg->WriteCoord(ent->v.origin[i]);
 		
-		MSG_WriteByte (msg, ent->v.frame);
+		msg->WriteByte(ent->v.frame);
 
 		if (pflags & PF_MSEC)
 		{
 			msec = 1000*(sv.time - cl->localtime);
 			if (msec > 255)
 				msec = 255;
-			MSG_WriteByte (msg, msec);
+			msg->WriteByte(msec);
 		}
 		
 		if (pflags & PF_COMMAND)
@@ -1094,39 +1094,39 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 
 		for (i=0 ; i<3 ; i++)
 			if (pflags & (PF_VELOCITY1<<i) )
-				MSG_WriteShort (msg, ent->v.velocity[i]);
+				msg->WriteShort(ent->v.velocity[i]);
 
 //rjr
 		if (pflags & PF_MODEL)
-			MSG_WriteShort (msg, ent->v.modelindex);
+			msg->WriteShort(ent->v.modelindex);
 
 		if (pflags & PF_SKINNUM)
-			MSG_WriteByte (msg, ent->v.skin);
+			msg->WriteByte(ent->v.skin);
 
 		if (pflags & PF_EFFECTS)
-			MSG_WriteByte (msg, ((long)ent->v.effects & 0xff));
+			msg->WriteByte(((long)ent->v.effects & 0xff));
 
 		if (pflags & PF_EFFECTS2)
-			MSG_WriteByte(msg, ((long)ent->v.effects & 0xff00)>>8);
+			msg->WriteByte(((long)ent->v.effects & 0xff00)>>8);
 
 		if (pflags & PF_WEAPONFRAME)
-			MSG_WriteByte (msg, ent->v.weaponframe);
+			msg->WriteByte(ent->v.weaponframe);
 
 		if (pflags & PF_DRAWFLAGS)
 		{
-			MSG_WriteByte (msg, ent->v.drawflags);
+			msg->WriteByte(ent->v.drawflags);
 		}
 		if (pflags & PF_SCALE)
 		{
-			MSG_WriteByte (msg, (int)(ent->v.scale*100.0)&255);
+			msg->WriteByte((int)(ent->v.scale*100.0)&255);
 		}
 		if (pflags & PF_ABSLIGHT)
 		{
-			MSG_WriteByte (msg, (int)(ent->v.abslight*100.0)&255);
+			msg->WriteByte((int)(ent->v.abslight*100.0)&255);
 		}
 		if (pflags & PF_SOUND)
 		{
-			MSG_WriteShort (msg, ent->v.wpn_sound);
+			msg->WriteShort(ent->v.wpn_sound);
 		}
 	}
 }
@@ -1188,11 +1188,11 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 		{//ok to send weaponsound
 			if(ent->v.wpn_sound)
 			{
-				MSG_WriteByte (msg, svc_player_sound);
-				MSG_WriteByte (msg, j);
+				msg->WriteByte(svc_player_sound);
+				msg->WriteByte(j);
 				for (i=0 ; i<3 ; i++)
-					MSG_WriteCoord (msg, ent->v.origin[i]);
-				MSG_WriteShort (msg, ent->v.wpn_sound);
+					msg->WriteCoord(ent->v.origin[i]);
+				msg->WriteShort(ent->v.wpn_sound);
 			}
 		}
 		if(invis_level>0)
@@ -1258,21 +1258,21 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 			pflags |= PF_SOUND;
 		}
 
-		MSG_WriteByte (msg, svc_playerinfo);
-		MSG_WriteByte (msg, j);
-		MSG_WriteShort (msg, pflags);
+		msg->WriteByte(svc_playerinfo);
+		msg->WriteByte(j);
+		msg->WriteShort(pflags);
 
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteCoord (msg, ent->v.origin[i]);
+			msg->WriteCoord(ent->v.origin[i]);
 		
-		MSG_WriteByte (msg, ent->v.frame);
+		msg->WriteByte(ent->v.frame);
 
 		if (pflags & PF_MSEC)
 		{
 			msec = 1000*(sv.time - cl->localtime);
 			if (msec > 255)
 				msec = 255;
-			MSG_WriteByte (msg, msec);
+			msg->WriteByte(msec);
 		}
 		
 		if (pflags & PF_COMMAND)
@@ -1293,39 +1293,39 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 
 		for (i=0 ; i<3 ; i++)
 			if (pflags & (PF_VELOCITY1<<i) )
-				MSG_WriteShort (msg, ent->v.velocity[i]);
+				msg->WriteShort(ent->v.velocity[i]);
 
 //rjr
 		if (pflags & PF_MODEL)
-			MSG_WriteShort (msg, ent->v.modelindex);
+			msg->WriteShort(ent->v.modelindex);
 
 		if (pflags & PF_SKINNUM)
-			MSG_WriteByte (msg, ent->v.skin);
+			msg->WriteByte(ent->v.skin);
 
 		if (pflags & PF_EFFECTS)
-			MSG_WriteByte (msg, ((long)ent->v.effects & 0xff));
+			msg->WriteByte(((long)ent->v.effects & 0xff));
 
 		if (pflags & PF_EFFECTS2)
-			MSG_WriteByte(msg, ((long)ent->v.effects & 0xff00)>>8);
+			msg->WriteByte(((long)ent->v.effects & 0xff00)>>8);
 
 		if (pflags & PF_WEAPONFRAME)
-			MSG_WriteByte (msg, ent->v.weaponframe);
+			msg->WriteByte(ent->v.weaponframe);
 
 		if (pflags & PF_DRAWFLAGS)
 		{
-			MSG_WriteByte (msg, ent->v.drawflags);
+			msg->WriteByte(ent->v.drawflags);
 		}
 		if (pflags & PF_SCALE)
 		{
-			MSG_WriteByte (msg, (int)(ent->v.scale*100.0)&255);
+			msg->WriteByte((int)(ent->v.scale*100.0)&255);
 		}
 		if (pflags & PF_ABSLIGHT)
 		{
-			MSG_WriteByte (msg, (int)(ent->v.abslight*100.0)&255);
+			msg->WriteByte((int)(ent->v.abslight*100.0)&255);
 		}
 		if (pflags & PF_SOUND)
 		{
-			MSG_WriteShort (msg, ent->v.wpn_sound);
+			msg->WriteShort(ent->v.wpn_sound);
 		}
 	}
 }

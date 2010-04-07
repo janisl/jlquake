@@ -52,9 +52,9 @@ static void CL_Netchan_Encode( msg_t *msg ) {
         msg->readcount = 0;
         msg->oob = 0;
         
-        serverId = MSG_ReadLong(msg);
-	messageAcknowledge = MSG_ReadLong(msg);
-	reliableAcknowledge = MSG_ReadLong(msg);
+        serverId = msg->ReadLong();
+	messageAcknowledge = msg->ReadLong();
+	reliableAcknowledge = msg->ReadLong();
 
         msg->oob = soob;
         msg->bit = sbit;
@@ -76,7 +76,7 @@ static void CL_Netchan_Encode( msg_t *msg ) {
 		}
 		index++;
 		// encode the data with this key
-		*(msg->data + i) = (*(msg->data + i)) ^ key;
+		*(msg->_data + i) = (*(msg->_data + i)) ^ key;
 	}
 }
 
@@ -100,7 +100,7 @@ static void CL_Netchan_Decode( msg_t *msg ) {
         
         msg->oob = 0;
         
-	reliableAcknowledge = MSG_ReadLong(msg);
+	reliableAcknowledge = msg->ReadLong();
 
         msg->oob = soob;
         msg->bit = sbit;
@@ -109,7 +109,7 @@ static void CL_Netchan_Decode( msg_t *msg ) {
 	string = (byte*)clc.reliableCommands[ reliableAcknowledge & (MAX_RELIABLE_COMMANDS-1) ];
 	index = 0;
 	// xor the client challenge with the netchan sequence number (need something that changes every message)
-	key = clc.challenge ^ LittleLong( *(unsigned *)msg->data );
+	key = clc.challenge ^ LittleLong( *(unsigned *)msg->_data );
 	for (i = msg->readcount + CL_DECODE_START; i < msg->cursize; i++) {
 		// modify the key with the last sent and with this message acknowledged client command
 		if (!string[index])
@@ -122,7 +122,7 @@ static void CL_Netchan_Decode( msg_t *msg ) {
 		}
 		index++;
 		// decode the data with this key
-		*(msg->data + i) = *(msg->data + i) ^ key;
+		*(msg->_data + i) = *(msg->_data + i) ^ key;
 	}
 }
 
@@ -141,10 +141,10 @@ CL_Netchan_Transmit
 ================
 */
 void CL_Netchan_Transmit( netchan_t *chan, msg_t* msg ) {
-	MSG_WriteByte( msg, clc_EOF );
+	msg->WriteByte(clc_EOF );
 
 	CL_Netchan_Encode( msg );
-	Netchan_Transmit( chan, msg->cursize, msg->data );
+	Netchan_Transmit( chan, msg->cursize, msg->_data );
 }
 
 extern 	int oldsize;

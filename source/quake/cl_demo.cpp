@@ -76,7 +76,7 @@ void CL_WriteDemoMessage (void)
 		f = LittleFloat (cl.viewangles[i]);
 		fwrite (&f, 4, 1, cls.demofile);
 	}
-	fwrite (net_message.data, net_message.cursize, 1, cls.demofile);
+	fwrite (net_message._data, net_message.cursize, 1, cls.demofile);
 	fflush (cls.demofile);
 }
 
@@ -125,7 +125,7 @@ int CL_GetMessage (void)
 		net_message.cursize = LittleLong (net_message.cursize);
 		if (net_message.cursize > MAX_MSGLEN)
 			Sys_Error ("Demo message > MAX_MSGLEN");
-		r = fread (net_message.data, net_message.cursize, 1, cls.demofile);
+		r = fread (net_message._data, net_message.cursize, 1, cls.demofile);
 		if (r != 1)
 		{
 			CL_StopPlayback ();
@@ -143,7 +143,7 @@ int CL_GetMessage (void)
 			return r;
 	
 	// discard nop keepalive message
-		if (net_message.cursize == 1 && net_message.data[0] == svc_nop)
+		if (net_message.cursize == 1 && net_message._data[0] == svc_nop)
 			Con_Printf ("<-- server to client keepalive\n");
 		else
 			break;
@@ -175,8 +175,8 @@ void CL_Stop_f (void)
 	}
 
 // write a disconnect message to the demo file
-	SZ_Clear (&net_message);
-	MSG_WriteByte (&net_message, svc_disconnect);
+	net_message.Clear();
+	net_message.WriteByte(svc_disconnect);
 	CL_WriteDemoMessage ();
 
 // finish up

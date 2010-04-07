@@ -188,8 +188,8 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	COM_StripExtension (cls.downloadname, cls.downloadtempname);
 	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-	MSG_WriteString (&cls.netchan.message, va("download %s", cls.downloadname));
+	cls.netchan.message.WriteByte(clc_stringcmd);
+	cls.netchan.message.WriteString2(va("download %s", cls.downloadname));
 
 	cls.downloadnumber++;
 
@@ -249,9 +249,9 @@ void Model_NextDownload (void)
 	Hunk_Check ();		// make sure nothing is hurt
 
 	// done with modellist, request first of static signon messages
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-//	MSG_WriteString (&cls.netchan.message, va("prespawn %i 0 %i", cl.servercount, cl.worldmodel->checksum2));
-	MSG_WriteString (&cls.netchan.message, va(prespawn_name, cl.servercount, cl.worldmodel->checksum2));
+	cls.netchan.message.WriteByte(clc_stringcmd);
+//	cls.netchan.message.WriteString2(va("prespawn %i 0 %i", cl.servercount, cl.worldmodel->checksum2));
+	cls.netchan.message.WriteString2(va(prespawn_name, cl.servercount, cl.worldmodel->checksum2));
 }
 
 /*
@@ -292,9 +292,9 @@ void Sound_NextDownload (void)
 	cl_playerindex = -1;
 	cl_spikeindex = -1;
 	cl_flagindex = -1;
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-//	MSG_WriteString (&cls.netchan.message, va("modellist %i 0", cl.servercount));
-	MSG_WriteString (&cls.netchan.message, va(modellist_name, cl.servercount, 0));
+	cls.netchan.message.WriteByte(clc_stringcmd);
+//	cls.netchan.message.WriteString2(va("modellist %i 0", cl.servercount));
+	cls.netchan.message.WriteString2(va(modellist_name, cl.servercount, 0));
 }
 
 
@@ -339,12 +339,12 @@ void CL_ParseDownload (void)
 
 
 	// read the data
-	size = MSG_ReadShort ();
-	percent = MSG_ReadByte ();
+	size = net_message.ReadShort ();
+	percent = net_message.ReadByte ();
 
 	if (cls.demoplayback) {
 		if (size > 0)
-			msg_readcount += size;
+			net_message.readcount += size;
 		return; // not in demo playback
 	}
 
@@ -374,15 +374,15 @@ void CL_ParseDownload (void)
 		cls.download = fopen (name, "wb");
 		if (!cls.download)
 		{
-			msg_readcount += size;
+			net_message.readcount += size;
 			Con_Printf ("Failed to open %s\n", cls.downloadtempname);
 			CL_RequestNextDownload ();
 			return;
 		}
 	}
 
-	fwrite (net_message.data + msg_readcount, 1, size, cls.download);
-	msg_readcount += size;
+	fwrite (net_message._data + net_message.readcount, 1, size, cls.download);
+	net_message.readcount += size;
 
 	if (percent != 100)
 	{
@@ -398,7 +398,7 @@ void CL_ParseDownload (void)
 #endif
 		cls.downloadpercent = percent;
 
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		cls.netchan.message.WriteByte(clc_stringcmd);
 		SZ_Print (&cls.netchan.message, "nextdl");
 	}
 	else
@@ -453,16 +453,16 @@ void CL_NextUpload(void)
 	if (r > 768)
 		r = 768;
 	Com_Memcpy(buffer, upload_data + upload_pos, r);
-	MSG_WriteByte (&cls.netchan.message, clc_upload);
-	MSG_WriteShort (&cls.netchan.message, r);
+	cls.netchan.message.WriteByte(clc_upload);
+	cls.netchan.message.WriteShort(r);
 
 	upload_pos += r;
 	size = upload_size;
 	if (!size)
 		size = 1;
 	percent = upload_pos*100/size;
-	MSG_WriteByte (&cls.netchan.message, percent);
-	SZ_Write (&cls.netchan.message, buffer, r);
+	cls.netchan.message.WriteByte(percent);
+	cls.netchan.message.WriteData(buffer, r);
 
 Con_DPrintf ("UPLOAD: %6d: %d written\n", upload_pos - r, r);
 
@@ -539,15 +539,15 @@ void CL_ParseServerData (void)
 
 // parse protocol version number
 // allow 2.2 and 2.29 demos to play
-	protover = MSG_ReadLong ();
+	protover = net_message.ReadLong ();
 	if (protover != PROTOCOL_VERSION && 
 		!(cls.demoplayback && (protover == 26 || protover == 27 || protover == 28)))
 		Host_EndGame ("Server returned version %i, not %i\nYou probably need to upgrade.\nCheck http://www.quakeworld.net/", protover, PROTOCOL_VERSION);
 
-	cl.servercount = MSG_ReadLong ();
+	cl.servercount = net_message.ReadLong ();
 
 	// game directory
-	str = MSG_ReadString ();
+	str = const_cast<char*>(net_message.ReadString2());
 
 	if (QStr::ICmp(gamedirfile, str)) {
 		// save current config
@@ -571,7 +571,7 @@ void CL_ParseServerData (void)
 	}
 
 	// parse player slot, high bit means spectator
-	cl.playernum = MSG_ReadByte ();
+	cl.playernum = net_message.ReadByte ();
 	if (cl.playernum & 128)
 	{
 		cl.spectator = true;
@@ -579,20 +579,20 @@ void CL_ParseServerData (void)
 	}
 
 	// get the full level name
-	str = MSG_ReadString ();
+	str = const_cast<char*>(net_message.ReadString2());
 	QStr::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
 
 	// get the movevars
-	movevars.gravity			= MSG_ReadFloat();
-	movevars.stopspeed          = MSG_ReadFloat();
-	movevars.maxspeed           = MSG_ReadFloat();
-	movevars.spectatormaxspeed  = MSG_ReadFloat();
-	movevars.accelerate         = MSG_ReadFloat();
-	movevars.airaccelerate      = MSG_ReadFloat();
-	movevars.wateraccelerate    = MSG_ReadFloat();
-	movevars.friction           = MSG_ReadFloat();
-	movevars.waterfriction      = MSG_ReadFloat();
-	movevars.entgravity         = MSG_ReadFloat();
+	movevars.gravity			= net_message.ReadFloat();
+	movevars.stopspeed          = net_message.ReadFloat();
+	movevars.maxspeed           = net_message.ReadFloat();
+	movevars.spectatormaxspeed  = net_message.ReadFloat();
+	movevars.accelerate         = net_message.ReadFloat();
+	movevars.airaccelerate      = net_message.ReadFloat();
+	movevars.wateraccelerate    = net_message.ReadFloat();
+	movevars.friction           = net_message.ReadFloat();
+	movevars.waterfriction      = net_message.ReadFloat();
+	movevars.entgravity         = net_message.ReadFloat();
 
 	// seperate the printfs so the server message can have a color
 	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
@@ -600,9 +600,9 @@ void CL_ParseServerData (void)
 
 	// ask for the sound list next
 	Com_Memset(cl.sound_name, 0, sizeof(cl.sound_name));
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-//	MSG_WriteString (&cls.netchan.message, va("soundlist %i 0", cl.servercount));
-	MSG_WriteString (&cls.netchan.message, va(soundlist_name, cl.servercount, 0));
+	cls.netchan.message.WriteByte(clc_stringcmd);
+//	cls.netchan.message.WriteString2(va("soundlist %i 0", cl.servercount));
+	cls.netchan.message.WriteString2(va(soundlist_name, cl.servercount, 0));
 
 	// now waiting for downloads, etc
 	cls.state = ca_onserver;
@@ -622,10 +622,10 @@ void CL_ParseSoundlist (void)
 // precache sounds
 //	Com_Memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
 
-	numsounds = MSG_ReadByte();
+	numsounds = net_message.ReadByte();
 
 	for (;;) {
-		str = MSG_ReadString ();
+		str = const_cast<char*>(net_message.ReadString2());
 		if (!str[0])
 			break;
 		numsounds++;
@@ -634,12 +634,12 @@ void CL_ParseSoundlist (void)
 		QStr::Cpy(cl.sound_name[numsounds], str);
 	}
 
-	n = MSG_ReadByte();
+	n = net_message.ReadByte();
 
 	if (n) {
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-//		MSG_WriteString (&cls.netchan.message, va("soundlist %i %i", cl.servercount, n));
-		MSG_WriteString (&cls.netchan.message, va(soundlist_name, cl.servercount, n));
+		cls.netchan.message.WriteByte(clc_stringcmd);
+//		cls.netchan.message.WriteString2(va("soundlist %i %i", cl.servercount, n));
+		cls.netchan.message.WriteString2(va(soundlist_name, cl.servercount, n));
 		return;
 	}
 
@@ -660,11 +660,11 @@ void CL_ParseModellist (void)
 	int n;
 
 // precache models and note certain default indexes
-	nummodels = MSG_ReadByte();
+	nummodels = net_message.ReadByte();
 
 	for (;;)
 	{
-		str = MSG_ReadString ();
+		str = const_cast<char*>(net_message.ReadString2());
 		if (!str[0])
 			break;
 		nummodels++;
@@ -680,12 +680,12 @@ void CL_ParseModellist (void)
 			cl_flagindex = nummodels;
 	}
 
-	n = MSG_ReadByte();
+	n = net_message.ReadByte();
 
 	if (n) {
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-//		MSG_WriteString (&cls.netchan.message, va("modellist %i %i", cl.servercount, n));
-		MSG_WriteString (&cls.netchan.message, va(modellist_name, cl.servercount, n));
+		cls.netchan.message.WriteByte(clc_stringcmd);
+//		cls.netchan.message.WriteString2(va("modellist %i %i", cl.servercount, n));
+		cls.netchan.message.WriteString2(va(modellist_name, cl.servercount, n));
 		return;
 	}
 
@@ -703,14 +703,14 @@ void CL_ParseBaseline (entity_state_t *es)
 {
 	int			i;
 	
-	es->modelindex = MSG_ReadByte ();
-	es->frame = MSG_ReadByte ();
-	es->colormap = MSG_ReadByte();
-	es->skinnum = MSG_ReadByte();
+	es->modelindex = net_message.ReadByte ();
+	es->frame = net_message.ReadByte ();
+	es->colormap = net_message.ReadByte();
+	es->skinnum = net_message.ReadByte();
 	for (i=0 ; i<3 ; i++)
 	{
-		es->origin[i] = MSG_ReadCoord ();
-		es->angles[i] = MSG_ReadAngle ();
+		es->origin[i] = net_message.ReadCoord();
+		es->angles[i] = net_message.ReadAngle();
 	}
 }
 
@@ -762,10 +762,10 @@ void CL_ParseStaticSound (void)
 	int			i;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord ();
-	sound_num = MSG_ReadByte ();
-	vol = MSG_ReadByte ();
-	atten = MSG_ReadByte ();
+		org[i] = net_message.ReadCoord ();
+	sound_num = net_message.ReadByte ();
+	vol = net_message.ReadByte ();
+	atten = net_message.ReadByte ();
 	
 	S_StaticSound (cl.sound_precache[sound_num], org, vol, atten);
 }
@@ -794,22 +794,22 @@ void CL_ParseStartSoundPacket(void)
     float 	attenuation;  
  	int		i;
 	           
-    channel = MSG_ReadShort(); 
+    channel = net_message.ReadShort(); 
 
     if (channel & SND_VOLUME)
-		volume = MSG_ReadByte ();
+		volume = net_message.ReadByte ();
 	else
 		volume = DEFAULT_SOUND_PACKET_VOLUME;
 	
     if (channel & SND_ATTENUATION)
-		attenuation = MSG_ReadByte () / 64.0;
+		attenuation = net_message.ReadByte () / 64.0;
 	else
 		attenuation = DEFAULT_SOUND_PACKET_ATTENUATION;
 	
-	sound_num = MSG_ReadByte ();
+	sound_num = net_message.ReadByte ();
 
 	for (i=0 ; i<3 ; i++)
-		pos[i] = MSG_ReadCoord ();
+		pos[i] = net_message.ReadCoord ();
  
 	ent = (channel>>3)&1023;
 	channel &= 7;
@@ -908,13 +908,13 @@ void CL_UpdateUserinfo (void)
 	int		slot;
 	player_info_t	*player;
 
-	slot = MSG_ReadByte ();
+	slot = net_message.ReadByte ();
 	if (slot >= MAX_CLIENTS)
 		Host_EndGame ("CL_ParseServerMessage: svc_updateuserinfo > MAX_SCOREBOARD");
 
 	player = &cl.players[slot];
-	player->userid = MSG_ReadLong ();
-	QStr::NCpy(player->userinfo, MSG_ReadString(), sizeof(player->userinfo)-1);
+	player->userid = net_message.ReadLong ();
+	QStr::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo)-1);
 
 	CL_ProcessUserInfo (slot, player);
 }
@@ -931,15 +931,15 @@ void CL_SetInfo (void)
 	char key[MAX_MSGLEN];
 	char value[MAX_MSGLEN];
 
-	slot = MSG_ReadByte ();
+	slot = net_message.ReadByte ();
 	if (slot >= MAX_CLIENTS)
 		Host_EndGame ("CL_ParseServerMessage: svc_setinfo > MAX_SCOREBOARD");
 
 	player = &cl.players[slot];
 
-	QStr::NCpy(key, MSG_ReadString(), sizeof(key) - 1);
+	QStr::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
 	key[sizeof(key) - 1] = 0;
-	QStr::NCpy(value, MSG_ReadString(), sizeof(value) - 1);
+	QStr::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
 	key[sizeof(value) - 1] = 0;
 
 	Con_DPrintf("SETINFO %s: %s=%s\n", player->name, key, value);
@@ -961,9 +961,9 @@ void CL_ServerInfo (void)
 	char key[MAX_MSGLEN];
 	char value[MAX_MSGLEN];
 
-	QStr::NCpy(key, MSG_ReadString(), sizeof(key) - 1);
+	QStr::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
 	key[sizeof(key) - 1] = 0;
-	QStr::NCpy(value, MSG_ReadString(), sizeof(value) - 1);
+	QStr::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
 	key[sizeof(value) - 1] = 0;
 
 	Con_DPrintf("SERVERINFO: %s=%s\n", key, value);
@@ -1007,7 +1007,7 @@ void CL_MuzzleFlash (void)
 	int			i;
 	player_state_t	*pl;
 
-	i = MSG_ReadShort ();
+	i = net_message.ReadShort ();
 
 	if ((unsigned)(i-1) >= MAX_CLIENTS)
 		return;
@@ -1033,7 +1033,7 @@ void CL_MuzzleFlash (void)
 }
 
 
-#define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", msg_readcount-1, x);
+#define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", net_message.readcount-1, x);
 /*
 =====================
 CL_ParseServerMessage
@@ -1066,17 +1066,17 @@ void CL_ParseServerMessage (void)
 //
 	while (1)
 	{
-		if (msg_badread)
+		if (net_message.badread)
 		{
 			Host_EndGame ("CL_ParseServerMessage: Bad server message");
 			break;
 		}
 
-		cmd = MSG_ReadByte ();
+		cmd = net_message.ReadByte ();
 
 		if (cmd == -1)
 		{
-			msg_readcount++;	// so the EOM showner has the right value
+			net_message.readcount++;	// so the EOM showner has the right value
 			SHOWNET("END OF MESSAGE");
 			break;
 		}
@@ -1103,22 +1103,22 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_print:
-			i = MSG_ReadByte ();
+			i = net_message.ReadByte ();
 			if (i == PRINT_CHAT)
 			{
 				S_LocalSound ("misc/talk.wav");
 				con_ormask = 128;
 			}
-			Con_Printf ("%s", MSG_ReadString ());
+			Con_Printf ("%s", net_message.ReadString2 ());
 			con_ormask = 0;
 			break;
 			
 		case svc_centerprint:
-			SCR_CenterPrint (MSG_ReadString ());
+			SCR_CenterPrint(const_cast<char*>(net_message.ReadString2()));
 			break;
 			
 		case svc_stufftext:
-			s = MSG_ReadString ();
+			s = const_cast<char*>(net_message.ReadString2());
 			Con_DPrintf ("stufftext: %s\n", s);
 			Cbuf_AddText (s);
 			break;
@@ -1135,15 +1135,15 @@ void CL_ParseServerMessage (void)
 			
 		case svc_setangle:
 			for (i=0 ; i<3 ; i++)
-				cl.viewangles[i] = MSG_ReadAngle ();
+				cl.viewangles[i] = net_message.ReadAngle();
 //			cl.viewangles[PITCH] = cl.viewangles[ROLL] = 0;
 			break;
 			
 		case svc_lightstyle:
-			i = MSG_ReadByte ();
+			i = net_message.ReadByte ();
 			if (i >= MAX_LIGHTSTYLES)
 				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");
-			QStr::Cpy(cl_lightstyle[i].map,  MSG_ReadString());
+			QStr::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
 			cl_lightstyle[i].length = QStr::Length(cl_lightstyle[i].map);
 			break;
 			
@@ -1152,42 +1152,42 @@ void CL_ParseServerMessage (void)
 			break;
 			
 		case svc_stopsound:
-			i = MSG_ReadShort();
+			i = net_message.ReadShort();
 			S_StopSound(i>>3, i&7);
 			break;
 		
 		case svc_updatefrags:
 			Sbar_Changed ();
-			i = MSG_ReadByte ();
+			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
-			cl.players[i].frags = MSG_ReadShort ();
+			cl.players[i].frags = net_message.ReadShort ();
 			break;			
 
 		case svc_updateping:
-			i = MSG_ReadByte ();
+			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updateping > MAX_SCOREBOARD");
-			cl.players[i].ping = MSG_ReadShort ();
+			cl.players[i].ping = net_message.ReadShort ();
 			break;
 			
 		case svc_updatepl:
-			i = MSG_ReadByte ();
+			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updatepl > MAX_SCOREBOARD");
-			cl.players[i].pl = MSG_ReadByte ();
+			cl.players[i].pl = net_message.ReadByte ();
 			break;
 			
 		case svc_updateentertime:
 		// time is sent over as seconds ago
-			i = MSG_ReadByte ();
+			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updateentertime > MAX_SCOREBOARD");
-			cl.players[i].entertime = realtime - MSG_ReadFloat ();
+			cl.players[i].entertime = realtime - net_message.ReadFloat ();
 			break;
 			
 		case svc_spawnbaseline:
-			i = MSG_ReadShort ();
+			i = net_message.ReadShort ();
 			CL_ParseBaseline (&cl_baselines[i]);
 			break;
 		case svc_spawnstatic:
@@ -1206,13 +1206,13 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_updatestat:
-			i = MSG_ReadByte ();
-			j = MSG_ReadByte ();
+			i = net_message.ReadByte ();
+			j = net_message.ReadByte ();
 			CL_SetStat (i, j);
 			break;
 		case svc_updatestatlong:
-			i = MSG_ReadByte ();
-			j = MSG_ReadLong ();
+			i = net_message.ReadByte ();
+			j = net_message.ReadLong ();
 			CL_SetStat (i, j);
 			break;
 			
@@ -1221,7 +1221,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_cdtrack:
-			cl.cdtrack = MSG_ReadByte ();
+			cl.cdtrack = net_message.ReadByte ();
 			CDAudio_Play ((byte)cl.cdtrack, true);
 			break;
 
@@ -1230,9 +1230,9 @@ void CL_ParseServerMessage (void)
 			cl.completed_time = realtime;
 			vid.recalc_refdef = true;	// go to full screen
 			for (i=0 ; i<3 ; i++)
-				cl.simorg[i] = MSG_ReadCoord ();			
+				cl.simorg[i] = net_message.ReadCoord ();			
 			for (i=0 ; i<3 ; i++)
-				cl.simangles[i] = MSG_ReadAngle ();
+				cl.simangles[i] = net_message.ReadAngle();
 			VectorCopy (vec3_origin, cl.simvel);
 			break;
 
@@ -1240,7 +1240,7 @@ void CL_ParseServerMessage (void)
 			cl.intermission = 2;
 			cl.completed_time = realtime;
 			vid.recalc_refdef = true;	// go to full screen
-			SCR_CenterPrint (MSG_ReadString ());			
+			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
 		case svc_sellscreen:
@@ -1283,7 +1283,7 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_chokecount:		// some preceding packets were choked
-			i = MSG_ReadByte ();
+			i = net_message.ReadByte ();
 			for (j=0 ; j<i ; j++)
 				cl.frames[ (cls.netchan.incoming_acknowledged-1-j)&UPDATE_MASK ].receivedtime = -2;
 			break;
@@ -1305,15 +1305,15 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_maxspeed :
-			movevars.maxspeed = MSG_ReadFloat();
+			movevars.maxspeed = net_message.ReadFloat();
 			break;
 
 		case svc_entgravity :
-			movevars.entgravity = MSG_ReadFloat();
+			movevars.entgravity = net_message.ReadFloat();
 			break;
 
 		case svc_setpause:
-			cl.paused = MSG_ReadByte ();
+			cl.paused = net_message.ReadByte ();
 			if (cl.paused)
 				CDAudio_Pause ();
 			else

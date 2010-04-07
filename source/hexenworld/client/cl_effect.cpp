@@ -306,46 +306,46 @@ void CL_ParseEffect(void)
 
 	ImmediateFree = false;
 
-	index = MSG_ReadByte();
+	index = net_message.ReadByte();
 	if (cl.Effects[index].type)
 		CL_FreeEffect(index);
 
 	Com_Memset(&cl.Effects[index],0,sizeof(struct EffectT));
 
-	cl.Effects[index].type = MSG_ReadByte();
+	cl.Effects[index].type = net_message.ReadByte();
 
 	switch(cl.Effects[index].type)
 	{
 		case CE_RAIN:
-			cl.Effects[index].Rain.min_org[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.min_org[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.min_org[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.max_org[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.e_size[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.e_size[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.e_size[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.dir[0] = MSG_ReadCoord();
-			cl.Effects[index].Rain.dir[1] = MSG_ReadCoord();
-			cl.Effects[index].Rain.dir[2] = MSG_ReadCoord();
-			cl.Effects[index].Rain.color = MSG_ReadShort();
-			cl.Effects[index].Rain.count = MSG_ReadShort();
-			cl.Effects[index].Rain.wait = MSG_ReadFloat();
+			cl.Effects[index].Rain.min_org[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.min_org[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.min_org[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.max_org[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.e_size[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.e_size[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.e_size[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.dir[0] = net_message.ReadCoord();
+			cl.Effects[index].Rain.dir[1] = net_message.ReadCoord();
+			cl.Effects[index].Rain.dir[2] = net_message.ReadCoord();
+			cl.Effects[index].Rain.color = net_message.ReadShort();
+			cl.Effects[index].Rain.count = net_message.ReadShort();
+			cl.Effects[index].Rain.wait = net_message.ReadFloat();
 			break;
 
 		case CE_FOUNTAIN:
-			cl.Effects[index].Fountain.pos[0] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.pos[1] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.pos[2] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.angle[0] = MSG_ReadAngle ();
-			cl.Effects[index].Fountain.angle[1] = MSG_ReadAngle ();
-			cl.Effects[index].Fountain.angle[2] = MSG_ReadAngle ();
-			cl.Effects[index].Fountain.movedir[0] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.movedir[1] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.movedir[2] = MSG_ReadCoord ();
-			cl.Effects[index].Fountain.color = MSG_ReadShort ();
-			cl.Effects[index].Fountain.cnt = MSG_ReadByte ();
+			cl.Effects[index].Fountain.pos[0] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.pos[1] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.pos[2] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.angle[0] = net_message.ReadAngle ();
+			cl.Effects[index].Fountain.angle[1] = net_message.ReadAngle ();
+			cl.Effects[index].Fountain.angle[2] = net_message.ReadAngle ();
+			cl.Effects[index].Fountain.movedir[0] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.movedir[1] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.movedir[2] = net_message.ReadCoord ();
+			cl.Effects[index].Fountain.color = net_message.ReadShort ();
+			cl.Effects[index].Fountain.cnt = net_message.ReadByte ();
 			AngleVectors (cl.Effects[index].Fountain.angle, 
 						  cl.Effects[index].Fountain.vforward,
 						  cl.Effects[index].Fountain.vright,
@@ -353,10 +353,10 @@ void CL_ParseEffect(void)
 			break;
 
 		case CE_QUAKE:
-			cl.Effects[index].Quake.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Quake.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Quake.origin[2] = MSG_ReadCoord ();
-			cl.Effects[index].Quake.radius = MSG_ReadFloat ();
+			cl.Effects[index].Quake.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Quake.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Quake.origin[2] = net_message.ReadCoord ();
+			cl.Effects[index].Quake.radius = net_message.ReadFloat ();
 			break;
 
 		case CE_WHITE_SMOKE:
@@ -374,15 +374,15 @@ void CL_ParseEffect(void)
 		case CE_FLAMEWALL2:
 		case CE_ONFIRE:
 		case CE_RIPPLE:
-			cl.Effects[index].Smoke.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Smoke.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Smoke.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Smoke.velocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Smoke.velocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Smoke.velocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Smoke.velocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Smoke.velocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Smoke.velocity[2] = net_message.ReadFloat ();
 
-			cl.Effects[index].Smoke.framelength = MSG_ReadFloat ();
+			cl.Effects[index].Smoke.framelength = net_message.ReadFloat ();
 
 			if ((cl.Effects[index].Smoke.entity_index = NewEffectEntity()) != -1)
 			{
@@ -521,9 +521,9 @@ void CL_ParseEffect(void)
 		case CE_FIREWALL_MEDIUM:
 		case CE_FIREWALL_LARGE:
 
-			cl.Effects[index].Smoke.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Smoke.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Smoke.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Smoke.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Smoke.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Smoke.origin[2] = net_message.ReadCoord ();
 			if ((cl.Effects[index].Smoke.entity_index = NewEffectEntity()) != -1)
 			{
 				ent = &EffectEntities[cl.Effects[index].Smoke.entity_index];
@@ -629,9 +629,9 @@ void CL_ParseEffect(void)
 		case CE_SM_BLUE_FLASH:
 		case CE_HWSPLITFLASH:
 		case CE_RED_FLASH:
-			cl.Effects[index].Flash.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Flash.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Flash.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Flash.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Flash.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Flash.origin[2] = net_message.ReadCoord ();
 			cl.Effects[index].Flash.reverse = 0;
 			if ((cl.Effects[index].Flash.entity_index = NewEffectEntity()) != -1)
 			{
@@ -661,15 +661,15 @@ void CL_ParseEffect(void)
 			break;
 
 		case CE_RIDER_DEATH:
-			cl.Effects[index].RD.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].RD.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].RD.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].RD.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].RD.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].RD.origin[2] = net_message.ReadCoord ();
 			break;
 
 		case CE_TELEPORTERPUFFS:
-			cl.Effects[index].Teleporter.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Teleporter.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Teleporter.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
 				
 			cl.Effects[index].Teleporter.framelength = .05;
 			dir = 0;
@@ -697,15 +697,15 @@ void CL_ParseEffect(void)
 			break;
 
 		case CE_TELEPORTERBODY:
-			cl.Effects[index].Teleporter.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Teleporter.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Teleporter.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Teleporter.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Teleporter.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Teleporter.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Teleporter.velocity[0][0] = MSG_ReadFloat ();
-			cl.Effects[index].Teleporter.velocity[0][1] = MSG_ReadFloat ();
-			cl.Effects[index].Teleporter.velocity[0][2] = MSG_ReadFloat ();
+			cl.Effects[index].Teleporter.velocity[0][0] = net_message.ReadFloat ();
+			cl.Effects[index].Teleporter.velocity[0][1] = net_message.ReadFloat ();
+			cl.Effects[index].Teleporter.velocity[0][2] = net_message.ReadFloat ();
 
-			skinnum = MSG_ReadFloat ();
+			skinnum = net_message.ReadFloat ();
 			
 			cl.Effects[index].Teleporter.framelength = .05;
 			dir = 0;
@@ -723,21 +723,21 @@ void CL_ParseEffect(void)
 
 		case CE_BONESHRAPNEL:
 		case CE_HWBONEBALL:
-			cl.Effects[index].Missile.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Missile.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Missile.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Missile.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Missile.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Missile.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Missile.velocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.velocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.velocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Missile.velocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.velocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.velocity[2] = net_message.ReadFloat ();
 
-			cl.Effects[index].Missile.angle[0] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.angle[1] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.angle[2] = MSG_ReadFloat ();
+			cl.Effects[index].Missile.angle[0] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.angle[1] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.angle[2] = net_message.ReadFloat ();
 
-			cl.Effects[index].Missile.avelocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.avelocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.avelocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Missile.avelocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.avelocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.avelocity[2] = net_message.ReadFloat ();
 
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
 			{
@@ -759,13 +759,13 @@ void CL_ParseEffect(void)
 		case CE_BONESHARD:
 		case CE_HWRAVENSTAFF:
 		case CE_HWRAVENPOWER:
-			cl.Effects[index].Missile.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Missile.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Missile.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Missile.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Missile.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Missile.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Missile.velocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.velocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Missile.velocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Missile.velocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.velocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Missile.velocity[2] = net_message.ReadFloat ();
 			vectoangles(cl.Effects[index].Missile.velocity, cl.Effects[index].Missile.angle);
 
 			if ((cl.Effects[index].Missile.entity_index = NewEffectEntity()) != -1)
@@ -794,28 +794,28 @@ void CL_ParseEffect(void)
 				ImmediateFree = true;
 			break;
 		case CE_DEATHBUBBLES:
-			cl.Effects[index].Bubble.owner = MSG_ReadShort();
-			cl.Effects[index].Bubble.offset[0] = MSG_ReadByte();
-			cl.Effects[index].Bubble.offset[1] = MSG_ReadByte();
-			cl.Effects[index].Bubble.offset[2] = MSG_ReadByte();
-			cl.Effects[index].Bubble.count = MSG_ReadByte();//num of bubbles
+			cl.Effects[index].Bubble.owner = net_message.ReadShort();
+			cl.Effects[index].Bubble.offset[0] = net_message.ReadByte();
+			cl.Effects[index].Bubble.offset[1] = net_message.ReadByte();
+			cl.Effects[index].Bubble.offset[2] = net_message.ReadByte();
+			cl.Effects[index].Bubble.count = net_message.ReadByte();//num of bubbles
 			cl.Effects[index].Bubble.time_amount = 0;
 			break;
 		case CE_HWXBOWSHOOT:
-			origin[0] = MSG_ReadCoord ();
-			origin[1] = MSG_ReadCoord ();
-			origin[2] = MSG_ReadCoord ();
+			origin[0] = net_message.ReadCoord ();
+			origin[1] = net_message.ReadCoord ();
+			origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Xbow.angle[0] = MSG_ReadAngle ();
-			cl.Effects[index].Xbow.angle[1] = MSG_ReadAngle ();
-			cl.Effects[index].Xbow.angle[2] = 0;//MSG_ReadFloat ();
+			cl.Effects[index].Xbow.angle[0] = net_message.ReadAngle ();
+			cl.Effects[index].Xbow.angle[1] = net_message.ReadAngle ();
+			cl.Effects[index].Xbow.angle[2] = 0;//net_message.ReadFloat ();
 
-			cl.Effects[index].Xbow.bolts = MSG_ReadByte();
-			cl.Effects[index].Xbow.randseed = MSG_ReadByte();
+			cl.Effects[index].Xbow.bolts = net_message.ReadByte();
+			cl.Effects[index].Xbow.randseed = net_message.ReadByte();
 
-			cl.Effects[index].Xbow.turnedbolts = MSG_ReadByte();
+			cl.Effects[index].Xbow.turnedbolts = net_message.ReadByte();
 
-			cl.Effects[index].Xbow.activebolts= MSG_ReadByte();
+			cl.Effects[index].Xbow.activebolts= net_message.ReadByte();
 
 			setseed(cl.Effects[index].Xbow.randseed);
 
@@ -841,11 +841,11 @@ void CL_ParseEffect(void)
 
 				if ((1<<i)&	cl.Effects[index].Xbow.turnedbolts)
 				{
-					cl.Effects[index].Xbow.origin[i][0]=MSG_ReadCoord();
-					cl.Effects[index].Xbow.origin[i][1]=MSG_ReadCoord();
-					cl.Effects[index].Xbow.origin[i][2]=MSG_ReadCoord();
-					vtemp[0]=MSG_ReadAngle();
-					vtemp[1]=MSG_ReadAngle();
+					cl.Effects[index].Xbow.origin[i][0]=net_message.ReadCoord();
+					cl.Effects[index].Xbow.origin[i][1]=net_message.ReadCoord();
+					cl.Effects[index].Xbow.origin[i][2]=net_message.ReadCoord();
+					vtemp[0]=net_message.ReadAngle();
+					vtemp[1]=net_message.ReadAngle();
 					vtemp[2]=0;
 					AngleVectors (vtemp, forward2, right2, up2);
 					VectorScale(forward2, 800 + seedrand()*500, cl.Effects[index].Xbow.vel[i]);
@@ -880,17 +880,17 @@ void CL_ParseEffect(void)
 
 			break;
 		case CE_HWSHEEPINATOR:
-			origin[0] = MSG_ReadCoord ();
-			origin[1] = MSG_ReadCoord ();
-			origin[2] = MSG_ReadCoord ();
+			origin[0] = net_message.ReadCoord ();
+			origin[1] = net_message.ReadCoord ();
+			origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Xbow.angle[0] = MSG_ReadAngle ();
-			cl.Effects[index].Xbow.angle[1] = MSG_ReadAngle ();
-			cl.Effects[index].Xbow.angle[2] = 0;//MSG_ReadFloat ();
+			cl.Effects[index].Xbow.angle[0] = net_message.ReadAngle ();
+			cl.Effects[index].Xbow.angle[1] = net_message.ReadAngle ();
+			cl.Effects[index].Xbow.angle[2] = 0;//net_message.ReadFloat ();
 
-			cl.Effects[index].Xbow.turnedbolts = MSG_ReadByte();
+			cl.Effects[index].Xbow.turnedbolts = net_message.ReadByte();
 
-			cl.Effects[index].Xbow.activebolts= MSG_ReadByte();
+			cl.Effects[index].Xbow.activebolts= net_message.ReadByte();
 
 			cl.Effects[index].Xbow.bolts = 5;
 			cl.Effects[index].Xbow.randseed = 0;
@@ -910,11 +910,11 @@ void CL_ParseEffect(void)
 
 				if ((1<<i)&	cl.Effects[index].Xbow.turnedbolts)
 				{
-					cl.Effects[index].Xbow.origin[i][0]=MSG_ReadCoord();
-					cl.Effects[index].Xbow.origin[i][1]=MSG_ReadCoord();
-					cl.Effects[index].Xbow.origin[i][2]=MSG_ReadCoord();
-					vtemp[0]=MSG_ReadAngle();
-					vtemp[1]=MSG_ReadAngle();
+					cl.Effects[index].Xbow.origin[i][0]=net_message.ReadCoord();
+					cl.Effects[index].Xbow.origin[i][1]=net_message.ReadCoord();
+					cl.Effects[index].Xbow.origin[i][2]=net_message.ReadCoord();
+					vtemp[0]=net_message.ReadAngle();
+					vtemp[1]=net_message.ReadAngle();
 					vtemp[2]=0;
 					AngleVectors (vtemp, forward2, right2, up2);
 					VectorScale(forward2, 700, cl.Effects[index].Xbow.vel[i]);
@@ -938,15 +938,15 @@ void CL_ParseEffect(void)
 
 			break;
 		case CE_HWDRILLA:
-			cl.Effects[index].Missile.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Missile.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Missile.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Missile.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Missile.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Missile.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Missile.angle[0] = MSG_ReadAngle ();
-			cl.Effects[index].Missile.angle[1] = MSG_ReadAngle ();
+			cl.Effects[index].Missile.angle[0] = net_message.ReadAngle ();
+			cl.Effects[index].Missile.angle[1] = net_message.ReadAngle ();
 			cl.Effects[index].Missile.angle[2] = 0;
 
-			cl.Effects[index].Missile.speed = MSG_ReadShort();
+			cl.Effects[index].Missile.speed = net_message.ReadShort();
 
 			S_StartSound (TempSoundChannel(), 1, cl_fxsfx_drillashoot, cl.Effects[index].Missile.origin, 1, 1);
 
@@ -965,15 +965,15 @@ void CL_ParseEffect(void)
 				ImmediateFree = true;
 			break;
 		case CE_SCARABCHAIN:
-			cl.Effects[index].Chain.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Chain.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Chain.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Chain.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Chain.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Chain.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Chain.owner = MSG_ReadShort ();
-			cl.Effects[index].Chain.tag = MSG_ReadByte();
+			cl.Effects[index].Chain.owner = net_message.ReadShort ();
+			cl.Effects[index].Chain.tag = net_message.ReadByte();
 			cl.Effects[index].Chain.material = cl.Effects[index].Chain.owner>>12;
 			cl.Effects[index].Chain.owner &= 0x0fff;
-			cl.Effects[index].Chain.height = 16;//MSG_ReadByte ();
+			cl.Effects[index].Chain.height = 16;//net_message.ReadByte ();
 
 			cl.Effects[index].Chain.sound_time = cl.time;
 
@@ -991,13 +991,13 @@ void CL_ParseEffect(void)
 				ImmediateFree = true;
 			break;
 		case CE_TRIPMINE:
-			cl.Effects[index].Chain.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Chain.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Chain.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Chain.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Chain.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Chain.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Chain.velocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Chain.velocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Chain.velocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Chain.velocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Chain.velocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Chain.velocity[2] = net_message.ReadFloat ();
 
 			if ((cl.Effects[index].Chain.ent1 = NewEffectEntity()) != -1)
 			{
@@ -1010,13 +1010,13 @@ void CL_ParseEffect(void)
 			break;
 		case CE_TRIPMINESTILL:
 //			Con_DPrintf("Allocating chain effect...\n");
-			cl.Effects[index].Chain.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Chain.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Chain.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Chain.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Chain.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Chain.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Chain.velocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Chain.velocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Chain.velocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Chain.velocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Chain.velocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Chain.velocity[2] = net_message.ReadFloat ();
 
 			if ((cl.Effects[index].Chain.ent1 = NewEffectEntity()) != -1)
 			{
@@ -1032,13 +1032,13 @@ void CL_ParseEffect(void)
 			break;
 		case CE_HWMISSILESTAR:
 		case CE_HWEIDOLONSTAR:
-			cl.Effects[index].Star.origin[0] = MSG_ReadCoord ();
-			cl.Effects[index].Star.origin[1] = MSG_ReadCoord ();
-			cl.Effects[index].Star.origin[2] = MSG_ReadCoord ();
+			cl.Effects[index].Star.origin[0] = net_message.ReadCoord ();
+			cl.Effects[index].Star.origin[1] = net_message.ReadCoord ();
+			cl.Effects[index].Star.origin[2] = net_message.ReadCoord ();
 
-			cl.Effects[index].Star.velocity[0] = MSG_ReadFloat ();
-			cl.Effects[index].Star.velocity[1] = MSG_ReadFloat ();
-			cl.Effects[index].Star.velocity[2] = MSG_ReadFloat ();
+			cl.Effects[index].Star.velocity[0] = net_message.ReadFloat ();
+			cl.Effects[index].Star.velocity[1] = net_message.ReadFloat ();
+			cl.Effects[index].Star.velocity[2] = net_message.ReadFloat ();
 			vectoangles(cl.Effects[index].Star.velocity, cl.Effects[index].Star.angle);
 			cl.Effects[index].Missile.avelocity[2] = 300 + rand()%300;
 
@@ -1107,7 +1107,7 @@ void CL_EndEffect(void)
 	int index;
 	entity_t *ent;
 
-	index = MSG_ReadByte();
+	index = net_message.ReadByte();
 
 	switch(cl.Effects[index].type )
 	{
@@ -1173,14 +1173,14 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 	entity_state_t	*es;
 
 
-	index = MSG_ReadByte ();
-	type = MSG_ReadByte ();
+	index = net_message.ReadByte ();
+	type = net_message.ReadByte ();
 
 	if (cl.Effects[index].type==type)
 		switch(type)
 		{
 		case CE_SCARABCHAIN://attach to new guy or retract if new guy is world
-			curEnt = MSG_ReadShort();
+			curEnt = net_message.ReadShort();
 			if (cl.Effects[index].type==type)
 			{
 				cl.Effects[index].Chain.material = curEnt>>12;
@@ -1202,7 +1202,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 			}
 			break;
 		case CE_HWXBOWSHOOT:
-			revisionCode = MSG_ReadByte();
+			revisionCode = net_message.ReadByte();
 			//this is one packed byte!
 			//highest bit: for impact revision, indicates whether damage is done
 			//				for redirect revision, indicates whether new origin was sent
@@ -1215,7 +1215,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 			if (revisionCode & 1)//impact effect: 
 			{
 				cl.Effects[index].Xbow.activebolts &= ~(1<<curEnt);
-				dist = MSG_ReadCoord();
+				dist = net_message.ReadCoord();
 				if (cl.Effects[index].Xbow.ent[curEnt]!= -1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[curEnt]];
@@ -1269,20 +1269,20 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				if (cl.Effects[index].Xbow.ent[curEnt]!=-1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[curEnt]];
-					ent->angles[0] = MSG_ReadAngle();
+					ent->angles[0] = net_message.ReadAngle();
 					if (ent->angles[0] < 0)
 						ent->angles[0] += 360;
 					ent->angles[0]*=-1;
-					ent->angles[1] = MSG_ReadAngle();
+					ent->angles[1] = net_message.ReadAngle();
 					if (ent->angles[1] < 0)
 						ent->angles[1] += 360;
 					ent->angles[2] = 0;
 
 					if (revisionCode &128)//new origin
 					{
-						cl.Effects[index].Xbow.origin[curEnt][0]=MSG_ReadCoord();
-						cl.Effects[index].Xbow.origin[curEnt][1]=MSG_ReadCoord();
-						cl.Effects[index].Xbow.origin[curEnt][2]=MSG_ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][0]=net_message.ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][1]=net_message.ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][2]=net_message.ReadCoord();
 					}
 
 					AngleVectors(ent->angles,forward,right,up);
@@ -1292,20 +1292,20 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				}
 				else
 				{
-					pos[0] = MSG_ReadAngle();
+					pos[0] = net_message.ReadAngle();
 					if (pos[0] < 0)
 						pos[0] += 360;
 					pos[0]*=-1;
-					pos[1] = MSG_ReadAngle();
+					pos[1] = net_message.ReadAngle();
 					if (pos[1] < 0)
 						pos[1] += 360;
 					pos[2] = 0;
 
 					if (revisionCode &128)//new origin
 					{
-						cl.Effects[index].Xbow.origin[curEnt][0]=MSG_ReadCoord();
-						cl.Effects[index].Xbow.origin[curEnt][1]=MSG_ReadCoord();
-						cl.Effects[index].Xbow.origin[curEnt][2]=MSG_ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][0]=net_message.ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][1]=net_message.ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][2]=net_message.ReadCoord();
 					}
 
 					AngleVectors(pos,forward,right,up);
@@ -1316,11 +1316,11 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 			break;
 
 		case CE_HWSHEEPINATOR:
-			revisionCode = MSG_ReadByte();
+			revisionCode = net_message.ReadByte();
 			curEnt = (revisionCode>>4)&7;
 			if (revisionCode & 1)//impact
 			{
-				dist = MSG_ReadCoord();
+				dist = net_message.ReadCoord();
 				cl.Effects[index].Xbow.activebolts &= ~(1<<curEnt);
 				if (cl.Effects[index].Xbow.ent[curEnt] != -1)
 				{
@@ -1339,20 +1339,20 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				if (cl.Effects[index].Xbow.ent[curEnt] != -1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[curEnt]];
-					ent->angles[0] = MSG_ReadAngle();
+					ent->angles[0] = net_message.ReadAngle();
 					if (ent->angles[0] < 0)
 						ent->angles[0] += 360;
 					ent->angles[0]*=-1;
-					ent->angles[1] = MSG_ReadAngle();
+					ent->angles[1] = net_message.ReadAngle();
 					if (ent->angles[1] < 0)
 						ent->angles[1] += 360;
 					ent->angles[2] = 0;
 
 					if (revisionCode &128)//new origin
 					{
-						cl.Effects[index].Xbow.origin[curEnt][0]=MSG_ReadCoord();
-						cl.Effects[index].Xbow.origin[curEnt][1]=MSG_ReadCoord();
-						cl.Effects[index].Xbow.origin[curEnt][2]=MSG_ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][0]=net_message.ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][1]=net_message.ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][2]=net_message.ReadCoord();
 					}
 
 					AngleVectors(ent->angles,forward,right,up);
@@ -1362,20 +1362,20 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				}
 				else
 				{
-					pos[0] = MSG_ReadAngle();
+					pos[0] = net_message.ReadAngle();
 					if (pos[0] < 0)
 						pos[0] += 360;
 					pos[0]*=-1;
-					pos[1] = MSG_ReadAngle();
+					pos[1] = net_message.ReadAngle();
 					if (pos[1] < 0)
 						pos[1] += 360;
 					pos[2] = 0;
 
 					if (revisionCode &128)//new origin
 					{
-						cl.Effects[index].Xbow.origin[curEnt][0]=MSG_ReadCoord();
-						cl.Effects[index].Xbow.origin[curEnt][1]=MSG_ReadCoord();
-						cl.Effects[index].Xbow.origin[curEnt][2]=MSG_ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][0]=net_message.ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][1]=net_message.ReadCoord();
+						cl.Effects[index].Xbow.origin[curEnt][2]=net_message.ReadCoord();
 					}
 
 					AngleVectors(pos,forward,right,up);
@@ -1387,13 +1387,13 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 
 
 		case CE_HWDRILLA:
-			revisionCode = MSG_ReadByte();
+			revisionCode = net_message.ReadByte();
 			if (revisionCode == 0)//impact
 			{
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				material = MSG_ReadByte();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				material = net_message.ReadByte();
 
 				//throw lil bits of victim at entry
 				XbowImpactPuff(pos,material);
@@ -1417,18 +1417,18 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				if (cl.Effects[index].Missile.entity_index!=-1)
 				{
 					ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
-					ent->angles[0] = MSG_ReadAngle();
+					ent->angles[0] = net_message.ReadAngle();
 					if (ent->angles[0] < 0)
 						ent->angles[0] += 360;
 					ent->angles[0]*=-1;
-					ent->angles[1] = MSG_ReadAngle();
+					ent->angles[1] = net_message.ReadAngle();
 					if (ent->angles[1] < 0)
 						ent->angles[1] += 360;
 					ent->angles[2] = 0;
 
-					cl.Effects[index].Missile.origin[0]=MSG_ReadCoord();
-					cl.Effects[index].Missile.origin[1]=MSG_ReadCoord();
-					cl.Effects[index].Missile.origin[2]=MSG_ReadCoord();
+					cl.Effects[index].Missile.origin[0]=net_message.ReadCoord();
+					cl.Effects[index].Missile.origin[1]=net_message.ReadCoord();
+					cl.Effects[index].Missile.origin[2]=net_message.ReadCoord();
 
 					AngleVectors(ent->angles,forward,right,up);
 					speed = Length(cl.Effects[index].Missile.velocity);
@@ -1437,18 +1437,18 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 				}
 				else
 				{
-					pos[0] = MSG_ReadAngle();
+					pos[0] = net_message.ReadAngle();
 					if (pos[0] < 0)
 						pos[0] += 360;
 					pos[0]*=-1;
-					pos[1] = MSG_ReadAngle();
+					pos[1] = net_message.ReadAngle();
 					if (pos[1] < 0)
 						pos[1] += 360;
 					pos[2] = 0;
 
-					cl.Effects[index].Missile.origin[0]=MSG_ReadCoord();
-					cl.Effects[index].Missile.origin[1]=MSG_ReadCoord();
-					cl.Effects[index].Missile.origin[2]=MSG_ReadCoord();
+					cl.Effects[index].Missile.origin[0]=net_message.ReadCoord();
+					cl.Effects[index].Missile.origin[1]=net_message.ReadCoord();
+					cl.Effects[index].Missile.origin[2]=net_message.ReadCoord();
 
 					AngleVectors(pos,forward,right,up);
 					speed = Length(cl.Effects[index].Missile.velocity);
@@ -1463,76 +1463,76 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 		switch(type)
 		{
 		case CE_SCARABCHAIN://attach to new guy or retract if new guy is world
-			curEnt = MSG_ReadShort();
+			curEnt = net_message.ReadShort();
 			break;
 		case CE_HWXBOWSHOOT:
-			revisionCode = MSG_ReadByte();
+			revisionCode = net_message.ReadByte();
 
 			curEnt = (revisionCode>>4)&7;
 			if (revisionCode & 1)//impact effect: 
 			{
-				MSG_ReadCoord();
+				net_message.ReadCoord();
 			}
 			else
 			{
-				MSG_ReadAngle();
-				MSG_ReadAngle();
+				net_message.ReadAngle();
+				net_message.ReadAngle();
 				if (revisionCode &128)//new origin
 				{
-					MSG_ReadCoord();
-					MSG_ReadCoord();
-					MSG_ReadCoord();
+					net_message.ReadCoord();
+					net_message.ReadCoord();
+					net_message.ReadCoord();
 
 					// create a clc message to retrieve effect information
-//					MSG_WriteByte (&cls.netchan.message, clc_get_effect);
-//					MSG_WriteByte (&cls.netchan.message, index);
+//					cls.netchan.message.WriteByte(clc_get_effect);
+//					cls.netchan.message.WriteByte(index);
 				}
 			}
 			break;
 		case CE_HWSHEEPINATOR:
-			revisionCode = MSG_ReadByte();
+			revisionCode = net_message.ReadByte();
 			curEnt = (revisionCode>>4)&7;
 			if (revisionCode & 1)//impact
 			{
-				MSG_ReadCoord();
+				net_message.ReadCoord();
 			}
 			else//direction change
 			{
-				MSG_ReadAngle();
-				MSG_ReadAngle();
+				net_message.ReadAngle();
+				net_message.ReadAngle();
 				if (revisionCode &128)//new origin
 				{
-					MSG_ReadCoord();
-					MSG_ReadCoord();
-					MSG_ReadCoord();
+					net_message.ReadCoord();
+					net_message.ReadCoord();
+					net_message.ReadCoord();
 
 					// create a clc message to retrieve effect information
-//					MSG_WriteByte (&cls.netchan.message, clc_get_effect);
-//					MSG_WriteByte (&cls.netchan.message, index);
+//					cls.netchan.message.WriteByte(clc_get_effect);
+//					cls.netchan.message.WriteByte(index);
 				}
 			}
 			break;
 		case CE_HWDRILLA:
-			revisionCode = MSG_ReadByte();
+			revisionCode = net_message.ReadByte();
 			if (revisionCode == 0)//impact
 			{
-				MSG_ReadCoord();
-				MSG_ReadCoord();
-				MSG_ReadCoord();
-				MSG_ReadByte();
+				net_message.ReadCoord();
+				net_message.ReadCoord();
+				net_message.ReadCoord();
+				net_message.ReadByte();
 			}
 			else//turn
 			{
-				MSG_ReadAngle();
-				MSG_ReadAngle();
+				net_message.ReadAngle();
+				net_message.ReadAngle();
 
-				MSG_ReadCoord();
-				MSG_ReadCoord();
-				MSG_ReadCoord();
+				net_message.ReadCoord();
+				net_message.ReadCoord();
+				net_message.ReadCoord();
 
 				// create a clc message to retrieve effect information
-//				MSG_WriteByte (&cls.netchan.message, clc_get_effect);
-//				MSG_WriteByte (&cls.netchan.message, index);
+//				cls.netchan.message.WriteByte(clc_get_effect);
+//				cls.netchan.message.WriteByte(index);
 
 			}
 			break;
@@ -1559,14 +1559,14 @@ void CL_TurnEffect(void)
 	vec3_t pos, vel;
 	float time;
 
-	index = MSG_ReadByte ();
-	time = MSG_ReadFloat ();
-	pos[0] = MSG_ReadCoord();
-	pos[1] = MSG_ReadCoord();
-	pos[2] = MSG_ReadCoord();
-	vel[0] = MSG_ReadCoord();
-	vel[1] = MSG_ReadCoord();
-	vel[2] = MSG_ReadCoord();
+	index = net_message.ReadByte ();
+	time = net_message.ReadFloat ();
+	pos[0] = net_message.ReadCoord();
+	pos[1] = net_message.ReadCoord();
+	pos[2] = net_message.ReadCoord();
+	vel[0] = net_message.ReadCoord();
+	vel[1] = net_message.ReadCoord();
+	vel[2] = net_message.ReadCoord();
 	switch(cl.Effects[index].type)
 	{
 	case CE_HWRAVENSTAFF:
@@ -1593,8 +1593,8 @@ void CL_TurnEffect(void)
 		break;
 	case 0:
 		// create a clc message to retrieve effect information
-//		MSG_WriteByte (&cls.netchan.message, clc_get_effect);
-//		MSG_WriteByte (&cls.netchan.message, index);
+//		cls.netchan.message.WriteByte(clc_get_effect);
+//		cls.netchan.message.WriteByte(index);
 //		Con_Printf("CL_TurnEffect: null effect %d\n", index);
 		break;
 	default:
@@ -2339,19 +2339,19 @@ void CL_ParseMultiEffect(void)
 	vec3_t	orig, vel, right;
 	entity_t *ent;
 
-	type = MSG_ReadByte();
+	type = net_message.ReadByte();
 	switch(type)
 	{
 	case CE_HWRAVENPOWER:
-		orig[0] = MSG_ReadCoord();
-		orig[1] = MSG_ReadCoord();
-		orig[2] = MSG_ReadCoord();
-		vel[0] = MSG_ReadCoord();
-		vel[1] = MSG_ReadCoord();
-		vel[2] = MSG_ReadCoord();
+		orig[0] = net_message.ReadCoord();
+		orig[1] = net_message.ReadCoord();
+		orig[2] = net_message.ReadCoord();
+		vel[0] = net_message.ReadCoord();
+		vel[1] = net_message.ReadCoord();
+		vel[2] = net_message.ReadCoord();
 		for(count=0;count<3;count++)
 		{
-			index = MSG_ReadByte();
+			index = net_message.ReadByte();
 			// create the effect
 			cl.Effects[index].type = type;
 			VectorCopy(orig, cl.Effects[index].Missile.origin);

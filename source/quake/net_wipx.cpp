@@ -369,7 +369,7 @@ int WIPX_GetNameFromAddr (struct qsockaddr *addr, char *name)
 
 //=============================================================================
 
-int WIPX_GetAddrFromName(char *name, struct qsockaddr *addr)
+int WIPX_GetAddrFromName(const char *name, struct qsockaddr *addr)
 {
 	int n;
 	char buf[32];

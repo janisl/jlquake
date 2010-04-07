@@ -341,15 +341,15 @@ void CL_ParseBeam (model_t *m)
 	beam_t	*b;
 	int		i;
 	
-	ent = MSG_ReadShort ();
+	ent = net_message.ReadShort ();
 	
-	start[0] = MSG_ReadCoord ();
-	start[1] = MSG_ReadCoord ();
-	start[2] = MSG_ReadCoord ();
+	start[0] = net_message.ReadCoord ();
+	start[1] = net_message.ReadCoord ();
+	start[2] = net_message.ReadCoord ();
 	
-	end[0] = MSG_ReadCoord ();
-	end[1] = MSG_ReadCoord ();
-	end[2] = MSG_ReadCoord ();
+	end[0] = net_message.ReadCoord ();
+	end[1] = net_message.ReadCoord ();
+	end[2] = net_message.ReadCoord ();
 
 	if (!m)
 	{
@@ -662,21 +662,21 @@ static void ParseStream(int type)
 	model_t			*models[4];
 	entity_state_t	*state;
 
-	ent = MSG_ReadShort();
-	flags = MSG_ReadByte();
+	ent = net_message.ReadShort();
+	flags = net_message.ReadByte();
 	tag = flags&15;
-	duration = (float)MSG_ReadByte()*0.05;
+	duration = (float)net_message.ReadByte()*0.05;
 	skin = 0;
 	if(type == TE_STREAM_COLORBEAM)
 	{
-		skin = MSG_ReadByte();
+		skin = net_message.ReadByte();
 	}
-	source[0] = MSG_ReadCoord();
-	source[1] = MSG_ReadCoord();
-	source[2] = MSG_ReadCoord();
-	dest[0] = MSG_ReadCoord();
-	dest[1] = MSG_ReadCoord();
-	dest[2] = MSG_ReadCoord();
+	source[0] = net_message.ReadCoord();
+	source[1] = net_message.ReadCoord();
+	source[2] = net_message.ReadCoord();
+	dest[0] = net_message.ReadCoord();
+	dest[1] = net_message.ReadCoord();
+	dest[2] = net_message.ReadCoord();
 
 	models[1] = models[2] = models[3] = NULL;
 	switch(type)
@@ -807,29 +807,29 @@ void CL_ParseTEnt (void)
 	float	volume, scale;
 	float dir, cosval, sinval;
 
-	type = MSG_ReadByte ();
+	type = net_message.ReadByte ();
 	switch (type)
 	{
 		case TE_WIZSPIKE:			// spike hitting wall
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 20, 30);
 //			S_StartSound (-1, 0, cl_sfx_wizhit, pos, 1, 1);
 			break;
 			
 		case TE_KNIGHTSPIKE:			// spike hitting wall
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 226, 20);
 //			S_StartSound (-1, 0, cl_sfx_knighthit, pos, 1, 1);
 			break;
 			
 		case TE_SPIKE:			// spike hitting wall
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 0, 10);
 
 			if ( rand() % 5 )
@@ -846,9 +846,9 @@ void CL_ParseTEnt (void)
 			}
 			break;
 		case TE_SUPERSPIKE:			// super spike hitting wall
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 0, 20);
 
 			if ( rand() % 5 )
@@ -867,9 +867,9 @@ void CL_ParseTEnt (void)
 
 		case TE_DRILLA_EXPLODE:
 		// particles
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			ex = CL_AllocExplosion();
 			VectorCopy(pos,ex->origin);
 
@@ -884,9 +884,9 @@ void CL_ParseTEnt (void)
 			
 		case TE_EXPLOSION:			// rocket explosion
 		// particles
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_ParticleExplosion (pos);
 			
 		// light
@@ -905,9 +905,9 @@ void CL_ParseTEnt (void)
 			break;
 			
 		case TE_TAREXPLOSION:			// tarbaby explosion
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_BlobExplosion (pos);
 
 			S_StartSound (TempSoundChannel(), 0, cl_sfx_r_exp3, pos, 1, 1);
@@ -938,46 +938,46 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_LAVASPLASH:	
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_LavaSplash (pos);
 			break;
 		
 		case TE_TELEPORT:
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_TeleportSplash (pos);
 			break;
 
 		case TE_GUNSHOT:			// bullet hitting wall
-			cnt = MSG_ReadByte ();
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			cnt = net_message.ReadByte ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 0, 20*cnt);
 			break;
 			
 		case TE_BLOOD:				// bullets hitting body
-			cnt = MSG_ReadByte ();
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			cnt = net_message.ReadByte ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 73, 20*cnt);
 			break;
 
 		case TE_LIGHTNINGBLOOD:		// lightning hitting body
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 225, 50);
 			break;
 
 		case TE_BIGGRENADE:	// effect for big grenade
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos,pos,225,1024);
 			ex = CL_AllocExplosion();
 			VectorCopy(pos,ex->origin);
@@ -994,17 +994,17 @@ void CL_ParseTEnt (void)
 		case TE_CHUNK:		//directed chunks
 		case TE_CHUNK2:		//volume based chunks
 
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
-			vel[0] = MSG_ReadCoord();	//vel for CHUNK, volume for CHUNK2
-			vel[1] = MSG_ReadCoord();
-			vel[2] = MSG_ReadCoord();
-			chType = MSG_ReadByte();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
+			vel[0] = net_message.ReadCoord();	//vel for CHUNK, volume for CHUNK2
+			vel[1] = net_message.ReadCoord();
+			vel[2] = net_message.ReadCoord();
+			chType = net_message.ReadByte();
 
 			if(type == TE_CHUNK)
 			{
-				cnt	= MSG_ReadByte();
+				cnt	= net_message.ReadByte();
 			}
 			else
 			{
@@ -1343,14 +1343,14 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_XBOWHIT:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
-			vel[0] = MSG_ReadCoord();
-			vel[1] = MSG_ReadCoord();
-			vel[2] = MSG_ReadCoord();
-			chType = MSG_ReadByte();
-			damage = MSG_ReadByte();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
+			vel[0] = net_message.ReadCoord();
+			vel[1] = net_message.ReadCoord();
+			vel[2] = net_message.ReadCoord();
+			chType = net_message.ReadByte();
+			damage = net_message.ReadByte();
 
 			// do a particle effect here, with the color depending on chType
 
@@ -1403,9 +1403,9 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_METEORHIT:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			// always make 8 meteors
 			i = (host_frametime < .07) ? 0 : 4;	// based on framerate
@@ -1493,13 +1493,13 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_HWBONEPOWER:
-			cnt = MSG_ReadByte ();
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
-			movedir[0] = MSG_ReadCoord ();
-			movedir[1] = MSG_ReadCoord ();
-			movedir[2] = MSG_ReadCoord ();
+			cnt = net_message.ReadByte ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
+			movedir[0] = net_message.ReadCoord ();
+			movedir[1] = net_message.ReadCoord ();
+			movedir[2] = net_message.ReadCoord ();
 			R_RunParticleEffect4 (pos, 50, 368 + rand() % 16, pt_grav, 10);
 
 			// particle4 (50, rand(368-384), grav, 10);
@@ -1561,10 +1561,10 @@ void CL_ParseTEnt (void)
 
 			break;
 		case TE_HWBONEPOWER2:
-			cnt2 = MSG_ReadByte ();		//did it hit? changes sound
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			cnt2 = net_message.ReadByte ();		//did it hit? changes sound
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 
 			// white smoke
 			ex = CL_AllocExplosion ();
@@ -1587,9 +1587,9 @@ void CL_ParseTEnt (void)
 //			particle4(self.origin,3,random(368,384),PARTICLETYPE_GRAV,self.dmg/2);
 			break;
 		case TE_HWRAVENDIE:
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
@@ -1617,9 +1617,9 @@ void CL_ParseTEnt (void)
 			S_StartSound(TempSoundChannel(), 1, cl_sfx_ravendie, pos, 1, 1);
 			break;
 		case TE_HWRAVENEXPLODE:
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
 
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
@@ -1648,11 +1648,11 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_ICEHIT:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
-			cnt2 = MSG_ReadByte();	// 0 for person, 1 for wall
+			cnt2 = net_message.ReadByte();	// 0 for person, 1 for wall
 
 			if(cnt2)
 			{
@@ -1740,7 +1740,7 @@ void CL_ParseTEnt (void)
 				entity_state_t	*state;
 				static float	playIceSound = .6;
 
-				ent = MSG_ReadShort();
+				ent = net_message.ReadShort();
 
 				state = FindState(ent);
 				if (state)
@@ -1788,11 +1788,11 @@ void CL_ParseTEnt (void)
 
 			break;
 		case TE_HWMISSILEFLASH:
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
-			vel[0] = MSG_ReadCoord ();	//angles
-			vel[1] = MSG_ReadCoord ();
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
+			vel[0] = net_message.ReadCoord ();	//angles
+			vel[1] = net_message.ReadCoord ();
 			vel[2] = rand() % 360;
 
 			ex = CL_AllocExplosion ();
@@ -1825,8 +1825,8 @@ void CL_ParseTEnt (void)
 				model_t			*models[4];
 
 
-				ent = MSG_ReadShort();
-				reflect_count = MSG_ReadByte();
+				ent = net_message.ReadShort();
+				reflect_count = net_message.ReadByte();
 
 				state = FindState(ent);
 				if (state)
@@ -1834,14 +1834,14 @@ void CL_ParseTEnt (void)
 					// read in up to 4 points for up to 3 beams
 					for(i = 0; i < 3; i++)
 					{
-						tempVal = MSG_ReadCoord();
+						tempVal = net_message.ReadCoord();
 						points[0][i] = tempVal;
 					}
 					for(i = 1; i < 2 + reflect_count; i++)
 					{
 						for(j = 0; j < 3; j++)
 						{
-							tempVal = MSG_ReadCoord();
+							tempVal = net_message.ReadCoord();
 							points[i][j] = tempVal;
 						}
 					}
@@ -1893,7 +1893,7 @@ void CL_ParseTEnt (void)
 				{	// read in everything to keep everything in sync
 					for(i = 0; i < (2 + reflect_count)*3; i++)
 					{
-						tempVal = MSG_ReadShort();
+						tempVal = net_message.ReadShort();
 					}
 				}
 			}
@@ -1907,7 +1907,7 @@ void CL_ParseTEnt (void)
 				model_t			*models[2];
 				entity_state_t	*state;
 
-				ent = MSG_ReadShort();
+				ent = net_message.ReadShort();
 
 				state = FindState(ent);
 
@@ -1954,10 +1954,10 @@ void CL_ParseTEnt (void)
 			}
 			break;
 		case TE_HWTELEPORT:
-			pos[0] = MSG_ReadCoord ();
-			pos[1] = MSG_ReadCoord ();
-			pos[2] = MSG_ReadCoord ();
-			cnt = MSG_ReadShort();  //skin#
+			pos[0] = net_message.ReadCoord ();
+			pos[1] = net_message.ReadCoord ();
+			pos[2] = net_message.ReadCoord ();
+			cnt = net_message.ReadShort();  //skin#
 			S_StartSound (TempSoundChannel(), 0, cl_sfx_teleport[rand() % 5], pos, 1, 1);
 
 			ex = CL_AllocExplosion ();
@@ -2005,10 +2005,10 @@ void CL_ParseTEnt (void)
 				model_t			*models[2];
 				entity_state_t	*state;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				ent = MSG_ReadShort();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				ent = net_message.ReadShort();
 
 				state = FindState(ent);
 
@@ -2068,9 +2068,9 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_AXE_BOUNCE:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
@@ -2087,9 +2087,9 @@ void CL_ParseTEnt (void)
 
 		case TE_AXE_EXPLODE:
 
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			i = (host_frametime < .07) ? 0 : 3;	// based on framerate
 			for( ; i < 5; i++)
@@ -2134,9 +2134,9 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_TIME_BOMB:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			i = (host_frametime < .07) ? 0 : 14;	// based on framerate
 			for(; i < 20; i++)
@@ -2176,9 +2176,9 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_FIREBALL:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
@@ -2208,14 +2208,14 @@ void CL_ParseTEnt (void)
 				model_t			*models[4];
 				entity_state_t	*state;
 
-				ent = MSG_ReadShort();
+				ent = net_message.ReadShort();
 
-				vel[0] = MSG_ReadCoord();
-				vel[1] = MSG_ReadCoord();
-				vel[2] = MSG_ReadCoord();
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
+				vel[0] = net_message.ReadCoord();
+				vel[1] = net_message.ReadCoord();
+				vel[2] = net_message.ReadCoord();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
 
 				for(i = 0; i < 2; i++)
 				{
@@ -2293,9 +2293,9 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_PURIFY2_EXPLODE:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
@@ -2356,14 +2356,14 @@ void CL_ParseTEnt (void)
 				int				style;
 				float			throwPower, curAng, curPitch;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
 
-				angle = MSG_ReadByte();
-				pitch = MSG_ReadByte();
-				force = MSG_ReadByte();
-				style = MSG_ReadByte();
+				angle = net_message.ReadByte();
+				pitch = net_message.ReadByte();
+				force = net_message.ReadByte();
+				style = net_message.ReadByte();
 
 
 				i = (host_frametime < 0.07) ? 0 : 8;
@@ -2445,13 +2445,13 @@ void CL_ParseTEnt (void)
 				float	dist;
 				vec3_t	endPos;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
 
-				angle = MSG_ReadByte()*6.28/256.0;
-				pitch = MSG_ReadByte()*6.28/256.0;
-				dist = MSG_ReadShort();
+				angle = net_message.ReadByte()*6.28/256.0;
+				pitch = net_message.ReadByte()*6.28/256.0;
+				dist = net_message.ReadShort();
 
 				endPos[0] = pos[0] + dist * cos(angle) * cos(pitch);
 				endPos[1] = pos[1] + dist * sin(angle) * cos(pitch);
@@ -2479,11 +2479,11 @@ void CL_ParseTEnt (void)
 		case TE_TELEPORT_LINGER:
 			{
 				float duration;
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
 
-				duration = MSG_ReadCoord();
+				duration = net_message.ReadCoord();
 
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
@@ -2505,12 +2505,12 @@ void CL_ParseTEnt (void)
 				vec3_t	endPos,midPos,curPos,distVec;
 				float ratio;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				endPos[0] = MSG_ReadCoord();
-				endPos[1] = MSG_ReadCoord();
-				endPos[2] = MSG_ReadCoord();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				endPos[0] = net_message.ReadCoord();
+				endPos[1] = net_message.ReadCoord();
+				endPos[2] = net_message.ReadCoord();
 
 				VectorAdd(pos,endPos,midPos);
 				VectorScale(midPos,0.5,midPos);
@@ -2587,10 +2587,10 @@ void CL_ParseTEnt (void)
 			{
 				float	maxDist;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				maxDist = MSG_ReadLong();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				maxDist = net_message.ReadLong();
 
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
@@ -2606,9 +2606,9 @@ void CL_ParseTEnt (void)
 			break;
 			
 		case TE_ACIDBALL:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			i = (host_frametime < 0.07) ? 0 : 2;
 			for( ; i < 5; i++)
@@ -2640,9 +2640,9 @@ void CL_ParseTEnt (void)
 			break;
 
 		case TE_ACIDBLOB:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			i = (host_frametime < 0.07) ? 0 : 7;
 			for( ; i < 12; i++)
@@ -2726,12 +2726,12 @@ void CL_ParseTEnt (void)
 				vec3_t				endPos, curPos, posAdd;
 				mleaf_t				*l;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				fireCounts = MSG_ReadByte();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				fireCounts = net_message.ReadByte();
 
 				dlx = CL_AllocDlight (0);
 				VectorCopy (pos,  dlx->origin);
@@ -2801,9 +2801,9 @@ void CL_ParseTEnt (void)
 			
 		case TE_FIREWALL_IMPACT:
 			// Add in the actual explosion
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
 
 			i = (host_frametime < 0.07) ? 0 : 8;
 			for( ; i < 12; i++)
@@ -2822,10 +2822,10 @@ void CL_ParseTEnt (void)
 
 			break;
 		case TE_HWBONERIC:
-			pos[0] = MSG_ReadCoord();
-			pos[1] = MSG_ReadCoord();
-			pos[2] = MSG_ReadCoord();
-			cnt = MSG_ReadByte ();
+			pos[0] = net_message.ReadCoord();
+			pos[1] = net_message.ReadCoord();
+			pos[2] = net_message.ReadCoord();
+			cnt = net_message.ReadByte ();
 			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_grav, cnt);
 			rnd = rand() % 100;
 			if (rnd > 95)
@@ -2847,13 +2847,13 @@ void CL_ParseTEnt (void)
 				float				cVal, sVal;
 				float				svTime;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				fireCounts = MSG_ReadByte();
-				svTime = MSG_ReadLong();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				fireCounts = net_message.ReadByte();
+				svTime = net_message.ReadLong();
 
 				angles[0] = travelPitch*360/(2*M_PI);
 				angles[1] = travelAng*360/(2*M_PI);
@@ -2934,13 +2934,13 @@ void CL_ParseTEnt (void)
 				unsigned char		health;
 				vec3_t				angles, forward, right, up;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte();
-				health = MSG_ReadByte();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte();
+				health = net_message.ReadByte();
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 800;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 800;
@@ -3004,12 +3004,12 @@ void CL_ParseTEnt (void)
 				vec3_t				vel;
 				vec3_t				angles, forward, right, up;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte() * .01;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 1100;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1100;
@@ -3049,12 +3049,12 @@ void CL_ParseTEnt (void)
 				vec3_t				vel;
 				vec3_t				angles, forward, right, up;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte() * .01;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 1000;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1000;
@@ -3081,12 +3081,12 @@ void CL_ParseTEnt (void)
 				vec3_t				vel;
 				vec3_t				angles, forward, right, up;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte() * .01;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 1200;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1200;
@@ -3115,12 +3115,12 @@ void CL_ParseTEnt (void)
 				vec3_t				vel;
 				explosion_t			*ex2;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte() * .01;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 1200;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1200;
@@ -3173,12 +3173,12 @@ void CL_ParseTEnt (void)
 				float trailLen;
 				vec3_t				vel;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte() * .01;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 1000;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1000;
@@ -3211,13 +3211,13 @@ void CL_ParseTEnt (void)
 				vec3_t				vel;
 				float				speed;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				speed = MSG_ReadShort();
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				speed = net_message.ReadShort();
+				trailLen = net_message.ReadByte() * .01;
 
 				// light
 				dl = CL_AllocDlight (0);
@@ -3260,12 +3260,12 @@ void CL_ParseTEnt (void)
 				float	trailLen;
 				vec3_t	vel;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte() * .01;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 1600;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1600;
@@ -3309,18 +3309,18 @@ void CL_ParseTEnt (void)
 
 				type = TE_STREAM_COLORBEAM;
 
-				ent = MSG_ReadShort();
-				ent2 = MSG_ReadShort();
+				ent = net_message.ReadShort();
+				ent2 = net_message.ReadShort();
 				flags = 0;
 				tag = 0;
 				duration = 0.1;
 				skin = rand()%5;
-//				source[0] = MSG_ReadCoord();
-//				source[1] = MSG_ReadCoord();
-//				source[2] = MSG_ReadCoord();
-//				dest[0] = MSG_ReadCoord();
-//				dest[1] = MSG_ReadCoord();
-//				dest[2] = MSG_ReadCoord();
+//				source[0] = net_message.ReadCoord();
+//				source[1] = net_message.ReadCoord();
+//				source[2] = net_message.ReadCoord();
+//				dest[0] = net_message.ReadCoord();
+//				dest[1] = net_message.ReadCoord();
+//				dest[2] = net_message.ReadCoord();
 
 				state = FindState(ent);
 				state2 = FindState(ent2);
@@ -3366,12 +3366,12 @@ void CL_ParseTEnt (void)
 				entity_state_t	*state;
 				float			tempAng, tempPitch;
 
-				ent = MSG_ReadShort();
+				ent = net_message.ReadShort();
 
 				state = FindState(ent);
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
 
 				if(rand()&1)
 				{
@@ -3418,12 +3418,12 @@ void CL_ParseTEnt (void)
 				float trailLen;
 				vec3_t				vel;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte() * .01;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 850;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 850;
@@ -3448,12 +3448,12 @@ void CL_ParseTEnt (void)
 				float trailLen;
 				vec3_t				vel;
 
-				pos[0] = MSG_ReadCoord();
-				pos[1] = MSG_ReadCoord();
-				pos[2] = MSG_ReadCoord();
-				travelAng = MSG_ReadByte()*6.28/256.0;
-				travelPitch = MSG_ReadByte()*6.28/256.0;
-				trailLen = MSG_ReadByte() * .01;
+				pos[0] = net_message.ReadCoord();
+				pos[1] = net_message.ReadCoord();
+				pos[2] = net_message.ReadCoord();
+				travelAng = net_message.ReadByte()*6.28/256.0;
+				travelPitch = net_message.ReadByte()*6.28/256.0;
+				trailLen = net_message.ReadByte() * .01;
 
 				vel[0] = cos(travelAng) * cos(travelPitch) * 1000;
 				vel[1] = sin(travelAng) * cos(travelPitch) * 1000;
@@ -3491,13 +3491,13 @@ void CL_ParseTEnt (void)
 				float			duration;
 				model_t			*models[2];
 
-				ent = MSG_ReadShort();
+				ent = net_message.ReadShort();
 
 				do
 				{
-					points[numTargs][0] = MSG_ReadCoord();
-					points[numTargs][1] = MSG_ReadCoord();
-					points[numTargs][2] = MSG_ReadCoord();
+					points[numTargs][0] = net_message.ReadCoord();
+					points[numTargs][1] = net_message.ReadCoord();
+					points[numTargs][2] = net_message.ReadCoord();
 
 					oldNum = numTargs;
 

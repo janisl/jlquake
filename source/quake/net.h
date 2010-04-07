@@ -171,7 +171,7 @@ typedef struct
 	int 		(*StringToAddr) (char *string, struct qsockaddr *addr);
 	int 		(*GetSocketAddr) (int socket, struct qsockaddr *addr);
 	int 		(*GetNameFromAddr) (struct qsockaddr *addr, char *name);
-	int 		(*GetAddrFromName) (char *name, struct qsockaddr *addr);
+	int 		(*GetAddrFromName) (const char *name, struct qsockaddr *addr);
 	int			(*AddrCompare) (struct qsockaddr *addr1, struct qsockaddr *addr2);
 	int			(*GetSocketPort) (struct qsockaddr *addr);
 	int			(*SetSocketPort) (struct qsockaddr *addr, int port);

@@ -90,7 +90,7 @@ int VCR_GetMessage (qsocket_t *sock)
 	}
 
 	Sys_FileRead(vcrFile, &net_message.cursize, sizeof(int));
-	Sys_FileRead(vcrFile, net_message.data, net_message.cursize);
+	Sys_FileRead(vcrFile, net_message._data, net_message.cursize);
 
 	VCR_ReadNext ();
 

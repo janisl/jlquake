@@ -72,8 +72,7 @@ Cbuf_Init
 */
 void Cbuf_Init (void)
 {
-	cmd_text.data = cmd_text_buf;
-	cmd_text.maxsize = sizeof(cmd_text_buf);
+	cmd_text.InitOOB(cmd_text_buf, sizeof(cmd_text_buf));
 }
 
 /*
@@ -94,7 +93,7 @@ void Cbuf_AddText (char *text)
 		Con_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
-	SZ_Write (&cmd_text, text, QStr::Length(text));
+	cmd_text.WriteData(text, QStr::Length(text));
 }
 
 
@@ -117,19 +116,19 @@ void Cbuf_InsertText (char *text)
 	if (templen)
 	{
 		temp = (char*)Z_Malloc (templen);
-		Com_Memcpy(temp, cmd_text.data, templen);
-		SZ_Clear (&cmd_text);
+		Com_Memcpy(temp, cmd_text._data, templen);
+		cmd_text.Clear();
 	}
 	else
 		temp = NULL;	// shut up compiler
 		
 // add the entire text of the file
 	Cbuf_AddText (text);
-	SZ_Write (&cmd_text, "\n", 1);
+	cmd_text.WriteData("\n", 1);
 // add the copied off data
 	if (templen)
 	{
-		SZ_Write (&cmd_text, temp, templen);
+		cmd_text.WriteData(temp, templen);
 		Z_Free (temp);
 	}
 }
@@ -149,7 +148,7 @@ void Cbuf_Execute (void)
 	while (cmd_text.cursize)
 	{
 // find a \n or ; line break
-		text = (char *)cmd_text.data;
+		text = (char *)cmd_text._data;
 
 		quotes = 0;
 		for (i=0 ; i< cmd_text.cursize ; i++)
@@ -616,7 +615,7 @@ void Cmd_ForwardToServer (void)
 	if (cls.demoplayback)
 		return;		// not really connected
 
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+	cls.netchan.message.WriteByte(clc_stringcmd);
 	SZ_Print (&cls.netchan.message, Cmd_Argv(0));
 	if (Cmd_Argc() > 1)
 	{
@@ -644,7 +643,7 @@ void Cmd_ForwardToServer_f (void)
 
 	if (Cmd_Argc() > 1)
 	{
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		cls.netchan.message.WriteByte(clc_stringcmd);
 		SZ_Print (&cls.netchan.message, Cmd_Args());
 	}
 }

@@ -171,7 +171,7 @@ this lets you type only as much of the net address as required, using
 the local network components to fill in the rest
 ============
 */
-static int PartialIPAddress (char *in, struct qsockaddr *hostaddr)
+static int PartialIPAddress (const char *in, struct qsockaddr *hostaddr)
 {
 	char buff[256];
 	char *b;
@@ -365,7 +365,7 @@ int UDP_GetNameFromAddr (struct qsockaddr *addr, char *name)
 
 //=============================================================================
 
-int UDP_GetAddrFromName(char *name, struct qsockaddr *addr)
+int UDP_GetAddrFromName(const char *name, struct qsockaddr *addr)
 {
 	struct hostent *hostentry;
 

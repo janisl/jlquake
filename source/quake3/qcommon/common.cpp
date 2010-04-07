@@ -2153,7 +2153,7 @@ int Com_EventLoop( void ) {
 				Com_Printf("Com_EventLoop: oversize packet\n");
 				continue;
 			}
-			Com_Memcpy( buf.data, (byte *)((netadr_t *)ev.evPtr + 1), buf.cursize );
+			Com_Memcpy( buf._data, (byte *)((netadr_t *)ev.evPtr + 1), buf.cursize );
 			if ( com_sv_running->integer ) {
 				Com_RunAndTimeServerPacket( &evFrom, &buf );
 			} else {
@@ -2826,6 +2826,10 @@ void Com_Frame( void )
 	key = lastTime * 0x87243987;
 
 	com_frameNumber++;
+	}
+	catch (QDropException& e)
+	{
+		Com_Error(ERR_DROP, "%s", e.What());
 	}
 	catch (QException& e)
 	{

@@ -53,49 +53,49 @@ void SV_New_f (void)
 		gamedir = "hw";
 
 	// send the serverdata
-	MSG_WriteByte (&host_client->netchan.message, svc_serverdata);
-	MSG_WriteLong (&host_client->netchan.message, PROTOCOL_VERSION);
-	MSG_WriteLong (&host_client->netchan.message, svs.spawncount);
-	MSG_WriteString (&host_client->netchan.message, gamedir);
+	host_client->netchan.message.WriteByte(svc_serverdata);
+	host_client->netchan.message.WriteLong(PROTOCOL_VERSION);
+	host_client->netchan.message.WriteLong(svs.spawncount);
+	host_client->netchan.message.WriteString2(gamedir);
 
 	playernum = NUM_FOR_EDICT(host_client->edict)-1;
 	if (host_client->spectator)
 		playernum |= 128;
-	MSG_WriteByte (&host_client->netchan.message, playernum);
+	host_client->netchan.message.WriteByte(playernum);
 
 	// send full levelname
 	if (sv.edicts->v.message > 0 && sv.edicts->v.message <= pr_string_count)
 	{
-		MSG_WriteString (&host_client->netchan.message,&pr_global_strings[pr_string_index[(int)sv.edicts->v.message-1]]);
+		host_client->netchan.message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->v.message-1]]);
 	}
 	else 
 	{//Use netname on map if there is one, so they don't have to edit strings.txt
-	//	MSG_WriteString(&host_client->netchan.message,"");
-		MSG_WriteString(&host_client->netchan.message,sv.edicts->v.netname + pr_strings);
+	//	host_client->netchan.message.WriteString2("");
+		host_client->netchan.message.WriteString2(sv.edicts->v.netname + pr_strings);
 	}
 
 	// send the movevars
-	MSG_WriteFloat(&host_client->netchan.message, movevars.gravity);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.stopspeed);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.maxspeed);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.spectatormaxspeed);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.accelerate);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.airaccelerate);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.wateraccelerate);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.friction);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.waterfriction);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.entgravity);
+	host_client->netchan.message.WriteFloat(movevars.gravity);
+	host_client->netchan.message.WriteFloat(movevars.stopspeed);
+	host_client->netchan.message.WriteFloat(movevars.maxspeed);
+	host_client->netchan.message.WriteFloat(movevars.spectatormaxspeed);
+	host_client->netchan.message.WriteFloat(movevars.accelerate);
+	host_client->netchan.message.WriteFloat(movevars.airaccelerate);
+	host_client->netchan.message.WriteFloat(movevars.wateraccelerate);
+	host_client->netchan.message.WriteFloat(movevars.friction);
+	host_client->netchan.message.WriteFloat(movevars.waterfriction);
+	host_client->netchan.message.WriteFloat(movevars.entgravity);
 
 	// send music
-	MSG_WriteByte (&host_client->netchan.message, svc_cdtrack);
-	MSG_WriteByte (&host_client->netchan.message, sv.edicts->v.soundtype);
+	host_client->netchan.message.WriteByte(svc_cdtrack);
+	host_client->netchan.message.WriteByte(sv.edicts->v.soundtype);
 
-	MSG_WriteByte (&host_client->netchan.message, svc_midi_name);
-	MSG_WriteString (&host_client->netchan.message, sv.midi_name);
+	host_client->netchan.message.WriteByte(svc_midi_name);
+	host_client->netchan.message.WriteString2(sv.midi_name);
 
 	// send server info string
-	MSG_WriteByte (&host_client->netchan.message, svc_stufftext);
-	MSG_WriteString (&host_client->netchan.message, va("fullserverinfo \"%s\"\n", svs.info) );
+	host_client->netchan.message.WriteByte(svc_stufftext);
+	host_client->netchan.message.WriteString2(va("fullserverinfo \"%s\"\n", svs.info) );
 }
 
 /*
@@ -121,10 +121,10 @@ void SV_Soundlist_f (void)
 		return;
 	}
 	
-	MSG_WriteByte (&host_client->netchan.message, svc_soundlist);
+	host_client->netchan.message.WriteByte(svc_soundlist);
 	for (s = sv.sound_precache+1 ; *s ; s++)
-		MSG_WriteString (&host_client->netchan.message, *s);
-	MSG_WriteByte (&host_client->netchan.message, 0);
+		host_client->netchan.message.WriteString2(*s);
+	host_client->netchan.message.WriteByte(0);
 }
 
 /*
@@ -150,10 +150,10 @@ void SV_Modellist_f (void)
 		return;
 	}
 
-	MSG_WriteByte (&host_client->netchan.message, svc_modellist);
+	host_client->netchan.message.WriteByte(svc_modellist);
 	for (s = sv.model_precache+1 ; *s ; s++)
-		MSG_WriteString (&host_client->netchan.message, *s);
-	MSG_WriteByte (&host_client->netchan.message, 0);
+		host_client->netchan.message.WriteString2(*s);
+	host_client->netchan.message.WriteByte(0);
 }
 
 /*
@@ -183,20 +183,20 @@ void SV_PreSpawn_f (void)
 	if (buf >= sv.num_signon_buffers)
 		buf = 0;
 
-	SZ_Write (&host_client->netchan.message, 
+	host_client->netchan.message.WriteData(
 		sv.signon_buffers[buf],
 		sv.signon_buffer_size[buf]);
 
 	buf++;
 	if (buf == sv.num_signon_buffers)
 	{	// all done prespawning
-		MSG_WriteByte (&host_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&host_client->netchan.message, va("cmd spawn %i\n",svs.spawncount) );
+		host_client->netchan.message.WriteByte(svc_stufftext);
+		host_client->netchan.message.WriteString2(va("cmd spawn %i\n",svs.spawncount) );
 	}
 	else
 	{	// need to prespawn more
-		MSG_WriteByte (&host_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&host_client->netchan.message, 
+		host_client->netchan.message.WriteByte(svc_stufftext);
+		host_client->netchan.message.WriteString2(
 			va("cmd prespawn %i %i\n", svs.spawncount, buf) );
 	}
 }
@@ -253,7 +253,7 @@ void SV_Spawn_f (void)
 
 // send all current names, colors, and frag counts
 	// FIXME: is this a good thing?
-	SZ_Clear (&host_client->netchan.message);
+	host_client->netchan.message.Clear();
 
 // send current status of all other players
 
@@ -263,9 +263,9 @@ void SV_Spawn_f (void)
 // send all current light styles
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
-		MSG_WriteByte (&host_client->netchan.message, svc_lightstyle);
-		MSG_WriteByte (&host_client->netchan.message, (char)i);
-		MSG_WriteString (&host_client->netchan.message, sv.lightstyles[i]);
+		host_client->netchan.message.WriteByte(svc_lightstyle);
+		host_client->netchan.message.WriteByte((char)i);
+		host_client->netchan.message.WriteString2(sv.lightstyles[i]);
 	}
 
 //
@@ -273,27 +273,27 @@ void SV_Spawn_f (void)
 //
 	Com_Memset(host_client->stats, 0, sizeof(host_client->stats));
 	
-	MSG_WriteByte (&host_client->netchan.message, svc_updatestatlong);
-	MSG_WriteByte (&host_client->netchan.message, STAT_TOTALSECRETS);
-	MSG_WriteLong (&host_client->netchan.message, pr_global_struct->total_secrets);
+	host_client->netchan.message.WriteByte(svc_updatestatlong);
+	host_client->netchan.message.WriteByte(STAT_TOTALSECRETS);
+	host_client->netchan.message.WriteLong(pr_global_struct->total_secrets);
 
-	MSG_WriteByte (&host_client->netchan.message, svc_updatestatlong);
-	MSG_WriteByte (&host_client->netchan.message, STAT_TOTALMONSTERS);
-	MSG_WriteLong (&host_client->netchan.message, pr_global_struct->total_monsters);
+	host_client->netchan.message.WriteByte(svc_updatestatlong);
+	host_client->netchan.message.WriteByte(STAT_TOTALMONSTERS);
+	host_client->netchan.message.WriteLong(pr_global_struct->total_monsters);
 
-	MSG_WriteByte (&host_client->netchan.message, svc_updatestatlong);
-	MSG_WriteByte (&host_client->netchan.message, STAT_SECRETS);
-	MSG_WriteLong (&host_client->netchan.message, pr_global_struct->found_secrets);
+	host_client->netchan.message.WriteByte(svc_updatestatlong);
+	host_client->netchan.message.WriteByte(STAT_SECRETS);
+	host_client->netchan.message.WriteLong(pr_global_struct->found_secrets);
 
-	MSG_WriteByte (&host_client->netchan.message, svc_updatestatlong);
-	MSG_WriteByte (&host_client->netchan.message, STAT_MONSTERS);
-	MSG_WriteLong (&host_client->netchan.message, pr_global_struct->killed_monsters);
+	host_client->netchan.message.WriteByte(svc_updatestatlong);
+	host_client->netchan.message.WriteByte(STAT_MONSTERS);
+	host_client->netchan.message.WriteLong(pr_global_struct->killed_monsters);
 
 	
 	// get the client to check and download skins
 	// when that is completed, a begin command will be issued
-	MSG_WriteByte (&host_client->netchan.message, svc_stufftext);
-	MSG_WriteString (&host_client->netchan.message, va("skins\n") );
+	host_client->netchan.message.WriteByte(svc_stufftext);
+	host_client->netchan.message.WriteString2(va("skins\n") );
 
 }
 
@@ -390,10 +390,10 @@ void SV_Begin_f (void)
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
 	ent = EDICT_NUM( 1 + (host_client - svs.clients) );
-	MSG_WriteByte (&host_client->netchan.message, svc_setangle);
+	host_client->netchan.message.WriteByte(svc_setangle);
 	for (i=0 ; i < 2 ; i++)
-		MSG_WriteAngle (&host_client->netchan.message, ent->v.angles[i] );
-	MSG_WriteAngle (&host_client->netchan.message, 0 );
+		host_client->netchan.message.WriteAngle(ent->v.angles[i] );
+	host_client->netchan.message.WriteAngle(0 );
 #endif
 }
 
@@ -418,16 +418,16 @@ void SV_NextDownload_f (void)
 	if (r > 1024)
 		r = 1024;
 	r = fread (buffer, 1, r, host_client->download);
-	MSG_WriteByte (&host_client->netchan.message, svc_download);
-	MSG_WriteShort (&host_client->netchan.message, r);
+	host_client->netchan.message.WriteByte(svc_download);
+	host_client->netchan.message.WriteShort(r);
 
 	host_client->downloadcount += r;
 	size = host_client->downloadsize;
 	if (!size)
 		size = 1;
 	percent = host_client->downloadcount*100/size;
-	MSG_WriteByte (&host_client->netchan.message, percent);
-	SZ_Write (&host_client->netchan.message, buffer, r);
+	host_client->netchan.message.WriteByte(percent);
+	host_client->netchan.message.WriteData(buffer, r);
 
 	if (host_client->downloadcount != host_client->downloadsize)
 		return;
@@ -471,9 +471,9 @@ void SV_BeginDownload_f(void)
 		// MUST be in a subdirectory	
 		|| !strstr (name, "/") )	
 	{	// don't allow anything with .. path
-		MSG_WriteByte (&host_client->netchan.message, svc_download);
-		MSG_WriteShort (&host_client->netchan.message, -1);
-		MSG_WriteByte (&host_client->netchan.message, 0);
+		host_client->netchan.message.WriteByte(svc_download);
+		host_client->netchan.message.WriteShort(-1);
+		host_client->netchan.message.WriteByte(0);
 		return;
 	}
 
@@ -505,9 +505,9 @@ void SV_BeginDownload_f(void)
 		}
 
 		Sys_Printf ("Couldn't download %s to %s\n", name, host_client->name);
-		MSG_WriteByte (&host_client->netchan.message, svc_download);
-		MSG_WriteShort (&host_client->netchan.message, -1);
-		MSG_WriteByte (&host_client->netchan.message, 0);
+		host_client->netchan.message.WriteByte(svc_download);
+		host_client->netchan.message.WriteShort(-1);
+		host_client->netchan.message.WriteByte(0);
 		return;
 	}
 
@@ -701,9 +701,9 @@ void SV_Pings_f (void)
 		if (client->state != cs_spawned)
 			continue;
 
-		MSG_WriteByte (&host_client->netchan.message, svc_updateping);
-		MSG_WriteByte (&host_client->netchan.message, j);
-		MSG_WriteShort (&host_client->netchan.message, SV_CalcPing(client));
+		host_client->netchan.message.WriteByte(svc_updateping);
+		host_client->netchan.message.WriteByte(j);
+		host_client->netchan.message.WriteShort(SV_CalcPing(client));
 	}
 }
 
@@ -1347,14 +1347,14 @@ void SV_ExecuteClientMessage (client_t *cl)
 	cl->delta_sequence = -1;	// no delta unless requested
 	while (1)
 	{
-		if (msg_badread)
+		if (net_message.badread)
 		{
 			Con_Printf ("SV_ReadClientMessage: badread\n");
 			SV_DropClient (cl);
 			return;
 		}	
 
-		c = MSG_ReadByte ();
+		c = net_message.ReadByte ();
 		if (c == -1)
 			break;
 				
@@ -1369,7 +1369,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 		case clc_delta:
-			cl->delta_sequence = MSG_ReadByte ();
+			cl->delta_sequence = net_message.ReadByte ();
 			break;
 
 		case clc_move:
@@ -1404,14 +1404,14 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 
 		case clc_stringcmd:	
-			s = MSG_ReadString ();
+			s = const_cast<char*>(net_message.ReadString2());
 			SV_ExecuteUserCommand (s);
 			break;
 
 		case clc_tmove:
-			o[0] = MSG_ReadCoord();
-			o[1] = MSG_ReadCoord();
-			o[2] = MSG_ReadCoord();
+			o[0] = net_message.ReadCoord();
+			o[1] = net_message.ReadCoord();
+			o[2] = net_message.ReadCoord();
 			// only allowed by spectators
 			if (host_client->spectator) {
 				VectorCopy(o, sv_player->v.origin);
@@ -1420,11 +1420,11 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 		case clc_inv_select:
-			cl->edict->v.inventory = MSG_ReadByte();
+			cl->edict->v.inventory = net_message.ReadByte();
 			break;
 
 		case clc_get_effect:
-			c = MSG_ReadByte();
+			c = net_message.ReadByte();
 			if (sv.Effects[c].type)
 			{
 				Con_Printf("Getting effect %d\n",(int)c);

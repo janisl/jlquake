@@ -14,7 +14,7 @@
   In Quake 2 I found that in irix directory there's a fully working GLX driver implementation, so now I have all games working on Linux and OpenGL.
   I removed software renderers from all games that had them.
 01.04.2010
-  I removed game sources from all games except Quake 2. I left it in Quake 2 untill I can figure out why it doesn't run with original DLL file.
+  I removed game sources from all games except Quake 2. I left it in Quake 2 untill I can figure out why it doesn't run with original SO file.
   I got Hexen 2 working with original game and it's progs. Currently it's controlled with preprocessor switch so you need to recompile it for mission pack.
   On Linux I switched to CMake.
   I changed Quake 2 to have OpenGL driver built-in.
@@ -27,3 +27,7 @@
   I did some code cleanup.
 05.04.2010
   I changed Quake 3 to use zlib and libjpeg as standalone libraries, updated them to latest versions.
+06.04.2010
+  I started creating common network message class.
+07.04.2010
+  I did more work on message class. It's almost complete now.

@@ -705,24 +705,24 @@ void CL_WritePacket( void ) {
 
 	MSG_Init( &buf, data, sizeof(data) );
 
-	MSG_Bitstream( &buf );
+	buf.Bitstream();
 	// write the current serverId so the server
 	// can tell if this is from the current gameState
-	MSG_WriteLong( &buf, cl.serverId );
+	buf.WriteLong(cl.serverId );
 
 	// write the last message we received, which can
 	// be used for delta compression, and is also used
 	// to tell if we dropped a gamestate
-	MSG_WriteLong( &buf, clc.serverMessageSequence );
+	buf.WriteLong(clc.serverMessageSequence );
 
 	// write the last reliable message we received
-	MSG_WriteLong( &buf, clc.serverCommandSequence );
+	buf.WriteLong(clc.serverCommandSequence );
 
 	// write any unacknowledged clientCommands
 	for ( i = clc.reliableAcknowledge + 1 ; i <= clc.reliableSequence ; i++ ) {
-		MSG_WriteByte( &buf, clc_clientCommand );
-		MSG_WriteLong( &buf, i );
-		MSG_WriteString( &buf, clc.reliableCommands[ i & (MAX_RELIABLE_COMMANDS-1) ] );
+		buf.WriteByte(clc_clientCommand );
+		buf.WriteLong(i );
+		buf.WriteString(clc.reliableCommands[ i & (MAX_RELIABLE_COMMANDS-1) ] );
 	}
 
 	// we want to send all the usercmds that were generated in the last
@@ -747,13 +747,13 @@ void CL_WritePacket( void ) {
 		// begin a client move command
 		if ( cl_nodelta->integer || !cl.snap.valid || clc.demowaiting
 			|| clc.serverMessageSequence != cl.snap.messageNum ) {
-			MSG_WriteByte (&buf, clc_moveNoDelta);
+			buf.WriteByte(clc_moveNoDelta);
 		} else {
-			MSG_WriteByte (&buf, clc_move);
+			buf.WriteByte(clc_move);
 		}
 
 		// write the command count
-		MSG_WriteByte( &buf, count );
+		buf.WriteByte(count );
 
 		// use the checksum feed in the key
 		key = clc.checksumFeed;

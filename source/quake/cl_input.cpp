@@ -332,25 +332,23 @@ void CL_SendMove (usercmd_t *cmd)
 	sizebuf_t	buf;
 	byte	data[128];
 	
-	buf.maxsize = 128;
-	buf.cursize = 0;
-	buf.data = data;
+	buf.InitOOB(data, 128);
 	
 	cl.cmd = *cmd;
 
 //
 // send the movement message
 //
-    MSG_WriteByte (&buf, clc_move);
+    buf.WriteByte(clc_move);
 
-	MSG_WriteFloat (&buf, cl.mtime[0]);	// so server can get ping times
+	buf.WriteFloat(cl.mtime[0]);	// so server can get ping times
 
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteAngle (&buf, cl.viewangles[i]);
+		buf.WriteAngle(cl.viewangles[i]);
 	
-    MSG_WriteShort (&buf, cmd->forwardmove);
-    MSG_WriteShort (&buf, cmd->sidemove);
-    MSG_WriteShort (&buf, cmd->upmove);
+    buf.WriteShort(cmd->forwardmove);
+    buf.WriteShort(cmd->sidemove);
+    buf.WriteShort(cmd->upmove);
 
 //
 // send button bits
@@ -365,9 +363,9 @@ void CL_SendMove (usercmd_t *cmd)
 		bits |= 2;
 	in_jump.state &= ~2;
 	
-    MSG_WriteByte (&buf, bits);
+    buf.WriteByte(bits);
 
-    MSG_WriteByte (&buf, in_impulse);
+    buf.WriteByte(in_impulse);
 	in_impulse = 0;
 
 //

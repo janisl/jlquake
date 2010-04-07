@@ -29,7 +29,7 @@ char	*cvar_null_string = "";
 Cvar_FindVar
 ============
 */
-cvar_t *Cvar_FindVar (char *var_name)
+cvar_t *Cvar_FindVar (const char *var_name)
 {
 	cvar_t	*var;
 	

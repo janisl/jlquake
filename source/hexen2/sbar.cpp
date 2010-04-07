@@ -1361,8 +1361,8 @@ void Inv_Update(qboolean force)
 		}
 
 		// This will cause the server to set the client's edict's inventory value
-		MSG_WriteByte (&cls.message, clc_inv_select);
-		MSG_WriteByte (&cls.message, cl.v.inventory);
+		cls.message.WriteByte(clc_inv_select);
+		cls.message.WriteByte(cl.v.inventory);
 	}
 }
 

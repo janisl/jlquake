@@ -294,100 +294,11 @@ vec3_t	bytedirs[NUMVERTEXNORMALS] =
 // writing functions
 //
 
-void MSG_WriteChar (sizebuf_t *sb, int c)
-{
-	byte	*buf;
-	
-#ifdef PARANOID
-	if (c < -128 || c > 127)
-		Com_Error (ERR_FATAL, "MSG_WriteChar: range error");
-#endif
-
-	buf = (byte*)SZ_GetSpace (sb, 1);
-	buf[0] = c;
-}
-
-void MSG_WriteByte (sizebuf_t *sb, int c)
-{
-	byte	*buf;
-	
-#ifdef PARANOID
-	if (c < 0 || c > 255)
-		Com_Error (ERR_FATAL, "MSG_WriteByte: range error");
-#endif
-
-	buf = (byte*)SZ_GetSpace (sb, 1);
-	buf[0] = c;
-}
-
-void MSG_WriteShort (sizebuf_t *sb, int c)
-{
-	byte	*buf;
-	
-#ifdef PARANOID
-	if (c < ((short)0x8000) || c > (short)0x7fff)
-		Com_Error (ERR_FATAL, "MSG_WriteShort: range error");
-#endif
-
-	buf = (byte*)SZ_GetSpace (sb, 2);
-	buf[0] = c&0xff;
-	buf[1] = c>>8;
-}
-
-void MSG_WriteLong (sizebuf_t *sb, int c)
-{
-	byte	*buf;
-	
-	buf = (byte*)SZ_GetSpace (sb, 4);
-	buf[0] = c&0xff;
-	buf[1] = (c>>8)&0xff;
-	buf[2] = (c>>16)&0xff;
-	buf[3] = c>>24;
-}
-
-void MSG_WriteFloat (sizebuf_t *sb, float f)
-{
-	union
-	{
-		float	f;
-		int	l;
-	} dat;
-	
-	
-	dat.f = f;
-	dat.l = LittleLong (dat.l);
-	
-	SZ_Write (sb, &dat.l, 4);
-}
-
-void MSG_WriteString (sizebuf_t *sb, char *s)
-{
-	if (!s)
-		SZ_Write (sb, "", 1);
-	else
-		SZ_Write (sb, s, QStr::Length(s)+1);
-}
-
-void MSG_WriteCoord (sizebuf_t *sb, float f)
-{
-	MSG_WriteShort (sb, (int)(f*8));
-}
-
 void MSG_WritePos (sizebuf_t *sb, vec3_t pos)
 {
-	MSG_WriteShort (sb, (int)(pos[0]*8));
-	MSG_WriteShort (sb, (int)(pos[1]*8));
-	MSG_WriteShort (sb, (int)(pos[2]*8));
-}
-
-void MSG_WriteAngle (sizebuf_t *sb, float f)
-{
-	MSG_WriteByte (sb, (int)(f*256/360) & 255);
-}
-
-void MSG_WriteAngle16 (sizebuf_t *sb, float f)
-{
-	MSG_WriteShort (sb, ANGLE2SHORT(f));
+	sb->WriteShort((int)(pos[0]*8));
+	sb->WriteShort((int)(pos[1]*8));
+	sb->WriteShort((int)(pos[2]*8));
 }
 
 
@@ -416,29 +327,29 @@ void MSG_WriteDeltaUsercmd (sizebuf_t *buf, usercmd_t *from, usercmd_t *cmd)
 	if (cmd->impulse != from->impulse)
 		bits |= CM_IMPULSE;
 
-    MSG_WriteByte (buf, bits);
+    buf->WriteByte(bits);
 
 	if (bits & CM_ANGLE1)
-		MSG_WriteShort (buf, cmd->angles[0]);
+		buf->WriteShort(cmd->angles[0]);
 	if (bits & CM_ANGLE2)
-		MSG_WriteShort (buf, cmd->angles[1]);
+		buf->WriteShort(cmd->angles[1]);
 	if (bits & CM_ANGLE3)
-		MSG_WriteShort (buf, cmd->angles[2]);
+		buf->WriteShort(cmd->angles[2]);
 	
 	if (bits & CM_FORWARD)
-		MSG_WriteShort (buf, cmd->forwardmove);
+		buf->WriteShort(cmd->forwardmove);
 	if (bits & CM_SIDE)
-	  	MSG_WriteShort (buf, cmd->sidemove);
+	  	buf->WriteShort(cmd->sidemove);
 	if (bits & CM_UP)
-		MSG_WriteShort (buf, cmd->upmove);
+		buf->WriteShort(cmd->upmove);
 
  	if (bits & CM_BUTTONS)
-	  	MSG_WriteByte (buf, cmd->buttons);
+	  	buf->WriteByte(cmd->buttons);
  	if (bits & CM_IMPULSE)
-	    MSG_WriteByte (buf, cmd->impulse);
+	    buf->WriteByte(cmd->impulse);
 
-    MSG_WriteByte (buf, cmd->msec);
-	MSG_WriteByte (buf, cmd->lightlevel);
+    buf->WriteByte(cmd->msec);
+	buf->WriteByte(cmd->lightlevel);
 }
 
 
@@ -449,7 +360,7 @@ void MSG_WriteDir (sizebuf_t *sb, vec3_t dir)
 	
 	if (!dir)
 	{
-		MSG_WriteByte (sb, 0);
+		sb->WriteByte(0);
 		return;
 	}
 
@@ -464,7 +375,7 @@ void MSG_WriteDir (sizebuf_t *sb, vec3_t dir)
 			best = i;
 		}
 	}
-	MSG_WriteByte (sb, best);
+	sb->WriteByte(best);
 }
 
 
@@ -472,7 +383,7 @@ void MSG_ReadDir (sizebuf_t *sb, vec3_t dir)
 {
 	int		b;
 
-	b = MSG_ReadByte (sb);
+	b = sb->ReadByte();
 	if (b >= NUMVERTEXNORMALS)
 		Com_Error (ERR_DROP, "MSF_ReadDir: out of range");
 	VectorCopy (bytedirs[b], dir);
@@ -591,94 +502,94 @@ void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, sizebuf_t *
 	else if (bits & 0x0000ff00)
 		bits |= U_MOREBITS1;
 
-	MSG_WriteByte (msg,	bits&255 );
+	msg->WriteByte(bits&255 );
 
 	if (bits & 0xff000000)
 	{
-		MSG_WriteByte (msg,	(bits>>8)&255 );
-		MSG_WriteByte (msg,	(bits>>16)&255 );
-		MSG_WriteByte (msg,	(bits>>24)&255 );
+		msg->WriteByte((bits>>8)&255 );
+		msg->WriteByte((bits>>16)&255 );
+		msg->WriteByte((bits>>24)&255 );
 	}
 	else if (bits & 0x00ff0000)
 	{
-		MSG_WriteByte (msg,	(bits>>8)&255 );
-		MSG_WriteByte (msg,	(bits>>16)&255 );
+		msg->WriteByte((bits>>8)&255 );
+		msg->WriteByte((bits>>16)&255 );
 	}
 	else if (bits & 0x0000ff00)
 	{
-		MSG_WriteByte (msg,	(bits>>8)&255 );
+		msg->WriteByte((bits>>8)&255 );
 	}
 
 	//----------
 
 	if (bits & U_NUMBER16)
-		MSG_WriteShort (msg, to->number);
+		msg->WriteShort(to->number);
 	else
-		MSG_WriteByte (msg,	to->number);
+		msg->WriteByte(to->number);
 
 	if (bits & U_MODEL)
-		MSG_WriteByte (msg,	to->modelindex);
+		msg->WriteByte(to->modelindex);
 	if (bits & U_MODEL2)
-		MSG_WriteByte (msg,	to->modelindex2);
+		msg->WriteByte(to->modelindex2);
 	if (bits & U_MODEL3)
-		MSG_WriteByte (msg,	to->modelindex3);
+		msg->WriteByte(to->modelindex3);
 	if (bits & U_MODEL4)
-		MSG_WriteByte (msg,	to->modelindex4);
+		msg->WriteByte(to->modelindex4);
 
 	if (bits & U_FRAME8)
-		MSG_WriteByte (msg, to->frame);
+		msg->WriteByte(to->frame);
 	if (bits & U_FRAME16)
-		MSG_WriteShort (msg, to->frame);
+		msg->WriteShort(to->frame);
 
 	if ((bits & U_SKIN8) && (bits & U_SKIN16))		//used for laser colors
-		MSG_WriteLong (msg, to->skinnum);
+		msg->WriteLong(to->skinnum);
 	else if (bits & U_SKIN8)
-		MSG_WriteByte (msg, to->skinnum);
+		msg->WriteByte(to->skinnum);
 	else if (bits & U_SKIN16)
-		MSG_WriteShort (msg, to->skinnum);
+		msg->WriteShort(to->skinnum);
 
 
 	if ( (bits & (U_EFFECTS8|U_EFFECTS16)) == (U_EFFECTS8|U_EFFECTS16) )
-		MSG_WriteLong (msg, to->effects);
+		msg->WriteLong(to->effects);
 	else if (bits & U_EFFECTS8)
-		MSG_WriteByte (msg, to->effects);
+		msg->WriteByte(to->effects);
 	else if (bits & U_EFFECTS16)
-		MSG_WriteShort (msg, to->effects);
+		msg->WriteShort(to->effects);
 
 	if ( (bits & (U_RENDERFX8|U_RENDERFX16)) == (U_RENDERFX8|U_RENDERFX16) )
-		MSG_WriteLong (msg, to->renderfx);
+		msg->WriteLong(to->renderfx);
 	else if (bits & U_RENDERFX8)
-		MSG_WriteByte (msg, to->renderfx);
+		msg->WriteByte(to->renderfx);
 	else if (bits & U_RENDERFX16)
-		MSG_WriteShort (msg, to->renderfx);
+		msg->WriteShort(to->renderfx);
 
 	if (bits & U_ORIGIN1)
-		MSG_WriteCoord (msg, to->origin[0]);		
+		msg->WriteCoord(to->origin[0]);		
 	if (bits & U_ORIGIN2)
-		MSG_WriteCoord (msg, to->origin[1]);
+		msg->WriteCoord(to->origin[1]);
 	if (bits & U_ORIGIN3)
-		MSG_WriteCoord (msg, to->origin[2]);
+		msg->WriteCoord(to->origin[2]);
 
 	if (bits & U_ANGLE1)
-		MSG_WriteAngle(msg, to->angles[0]);
+		msg->WriteAngle(to->angles[0]);
 	if (bits & U_ANGLE2)
-		MSG_WriteAngle(msg, to->angles[1]);
+		msg->WriteAngle(to->angles[1]);
 	if (bits & U_ANGLE3)
-		MSG_WriteAngle(msg, to->angles[2]);
+		msg->WriteAngle(to->angles[2]);
 
 	if (bits & U_OLDORIGIN)
 	{
-		MSG_WriteCoord (msg, to->old_origin[0]);
-		MSG_WriteCoord (msg, to->old_origin[1]);
-		MSG_WriteCoord (msg, to->old_origin[2]);
+		msg->WriteCoord(to->old_origin[0]);
+		msg->WriteCoord(to->old_origin[1]);
+		msg->WriteCoord(to->old_origin[2]);
 	}
 
 	if (bits & U_SOUND)
-		MSG_WriteByte (msg, to->sound);
+		msg->WriteByte(to->sound);
 	if (bits & U_EVENT)
-		MSG_WriteByte (msg, to->event);
+		msg->WriteByte(to->event);
 	if (bits & U_SOLID)
-		MSG_WriteShort (msg, to->solid);
+		msg->WriteShort(to->solid);
 }
 
 
@@ -688,155 +599,11 @@ void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, sizebuf_t *
 // reading functions
 //
 
-void MSG_BeginReading (sizebuf_t *msg)
-{
-	msg->readcount = 0;
-}
-
-// returns -1 if no more characters are available
-int MSG_ReadChar (sizebuf_t *msg_read)
-{
-	int	c;
-	
-	if (msg_read->readcount+1 > msg_read->cursize)
-		c = -1;
-	else
-		c = (signed char)msg_read->data[msg_read->readcount];
-	msg_read->readcount++;
-	
-	return c;
-}
-
-int MSG_ReadByte (sizebuf_t *msg_read)
-{
-	int	c;
-	
-	if (msg_read->readcount+1 > msg_read->cursize)
-		c = -1;
-	else
-		c = (unsigned char)msg_read->data[msg_read->readcount];
-	msg_read->readcount++;
-	
-	return c;
-}
-
-int MSG_ReadShort (sizebuf_t *msg_read)
-{
-	int	c;
-	
-	if (msg_read->readcount+2 > msg_read->cursize)
-		c = -1;
-	else		
-		c = (short)(msg_read->data[msg_read->readcount]
-		+ (msg_read->data[msg_read->readcount+1]<<8));
-	
-	msg_read->readcount += 2;
-	
-	return c;
-}
-
-int MSG_ReadLong (sizebuf_t *msg_read)
-{
-	int	c;
-	
-	if (msg_read->readcount+4 > msg_read->cursize)
-		c = -1;
-	else
-		c = msg_read->data[msg_read->readcount]
-		+ (msg_read->data[msg_read->readcount+1]<<8)
-		+ (msg_read->data[msg_read->readcount+2]<<16)
-		+ (msg_read->data[msg_read->readcount+3]<<24);
-	
-	msg_read->readcount += 4;
-	
-	return c;
-}
-
-float MSG_ReadFloat (sizebuf_t *msg_read)
-{
-	union
-	{
-		byte	b[4];
-		float	f;
-		int	l;
-	} dat;
-	
-	if (msg_read->readcount+4 > msg_read->cursize)
-		dat.f = -1;
-	else
-	{
-		dat.b[0] =	msg_read->data[msg_read->readcount];
-		dat.b[1] =	msg_read->data[msg_read->readcount+1];
-		dat.b[2] =	msg_read->data[msg_read->readcount+2];
-		dat.b[3] =	msg_read->data[msg_read->readcount+3];
-	}
-	msg_read->readcount += 4;
-	
-	dat.l = LittleLong (dat.l);
-
-	return dat.f;	
-}
-
-char *MSG_ReadString (sizebuf_t *msg_read)
-{
-	static char	string[2048];
-	int		l,c;
-	
-	l = 0;
-	do
-	{
-		c = MSG_ReadChar (msg_read);
-		if (c == -1 || c == 0)
-			break;
-		string[l] = c;
-		l++;
-	} while (l < sizeof(string)-1);
-	
-	string[l] = 0;
-	
-	return string;
-}
-
-char *MSG_ReadStringLine (sizebuf_t *msg_read)
-{
-	static char	string[2048];
-	int		l,c;
-	
-	l = 0;
-	do
-	{
-		c = MSG_ReadChar (msg_read);
-		if (c == -1 || c == 0 || c == '\n')
-			break;
-		string[l] = c;
-		l++;
-	} while (l < sizeof(string)-1);
-	
-	string[l] = 0;
-	
-	return string;
-}
-
-float MSG_ReadCoord (sizebuf_t *msg_read)
-{
-	return MSG_ReadShort(msg_read) * (1.0/8);
-}
-
 void MSG_ReadPos (sizebuf_t *msg_read, vec3_t pos)
 {
-	pos[0] = MSG_ReadShort(msg_read) * (1.0/8);
-	pos[1] = MSG_ReadShort(msg_read) * (1.0/8);
-	pos[2] = MSG_ReadShort(msg_read) * (1.0/8);
-}
-
-float MSG_ReadAngle (sizebuf_t *msg_read)
-{
-	return MSG_ReadChar(msg_read) * (360.0/256);
-}
-
-float MSG_ReadAngle16 (sizebuf_t *msg_read)
-{
-	return SHORT2ANGLE(MSG_ReadShort(msg_read));
+	pos[0] = msg_read->ReadShort() * (1.0/8);
+	pos[1] = msg_read->ReadShort() * (1.0/8);
+	pos[2] = msg_read->ReadShort() * (1.0/8);
 }
 
 void MSG_ReadDeltaUsercmd (sizebuf_t *msg_read, usercmd_t *from, usercmd_t *move)
@@ -845,62 +612,40 @@ void MSG_ReadDeltaUsercmd (sizebuf_t *msg_read, usercmd_t *from, usercmd_t *move
 
 	Com_Memcpy(move, from, sizeof(*move));
 
-	bits = MSG_ReadByte (msg_read);
+	bits = msg_read->ReadByte();
 		
 // read current angles
 	if (bits & CM_ANGLE1)
-		move->angles[0] = MSG_ReadShort (msg_read);
+		move->angles[0] = msg_read->ReadShort();
 	if (bits & CM_ANGLE2)
-		move->angles[1] = MSG_ReadShort (msg_read);
+		move->angles[1] = msg_read->ReadShort();
 	if (bits & CM_ANGLE3)
-		move->angles[2] = MSG_ReadShort (msg_read);
+		move->angles[2] = msg_read->ReadShort();
 		
 // read movement
 	if (bits & CM_FORWARD)
-		move->forwardmove = MSG_ReadShort (msg_read);
+		move->forwardmove = msg_read->ReadShort();
 	if (bits & CM_SIDE)
-		move->sidemove = MSG_ReadShort (msg_read);
+		move->sidemove = msg_read->ReadShort();
 	if (bits & CM_UP)
-		move->upmove = MSG_ReadShort (msg_read);
+		move->upmove = msg_read->ReadShort();
 	
 // read buttons
 	if (bits & CM_BUTTONS)
-		move->buttons = MSG_ReadByte (msg_read);
+		move->buttons = msg_read->ReadByte();
 
 	if (bits & CM_IMPULSE)
-		move->impulse = MSG_ReadByte (msg_read);
+		move->impulse = msg_read->ReadByte();
 
 // read time to run command
-	move->msec = MSG_ReadByte (msg_read);
+	move->msec = msg_read->ReadByte();
 
 // read the light level
-	move->lightlevel = MSG_ReadByte (msg_read);
-}
-
-
-void MSG_ReadData (sizebuf_t *msg_read, void *data, int len)
-{
-	int		i;
-
-	for (i=0 ; i<len ; i++)
-		((byte *)data)[i] = MSG_ReadByte (msg_read);
+	move->lightlevel = msg_read->ReadByte();
 }
 
 
 //===========================================================================
-
-void SZ_Init (sizebuf_t *buf, byte *data, int length)
-{
-	Com_Memset(buf, 0, sizeof(*buf));
-	buf->data = data;
-	buf->maxsize = length;
-}
-
-void SZ_Clear (sizebuf_t *buf)
-{
-	buf->cursize = 0;
-	buf->overflowed = false;
-}
 
 void *SZ_GetSpace (sizebuf_t *buf, int length)
 {
@@ -915,19 +660,14 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 			Com_Error (ERR_FATAL, "SZ_GetSpace: %i is > full buffer size", length);
 			
 		Com_Printf ("SZ_GetSpace: overflow\n");
-		SZ_Clear (buf); 
+		buf->Clear(); 
 		buf->overflowed = true;
 	}
 
-	data = buf->data + buf->cursize;
+	data = buf->_data + buf->cursize;
 	buf->cursize += length;
 	
 	return data;
-}
-
-void SZ_Write (sizebuf_t *buf, const void *data, int length)
-{
-	Com_Memcpy(SZ_GetSpace(buf,length),data,length);		
 }
 
 void SZ_Print (sizebuf_t *buf, char *data)
@@ -938,7 +678,7 @@ void SZ_Print (sizebuf_t *buf, char *data)
 
 	if (buf->cursize)
 	{
-		if (buf->data[buf->cursize-1])
+		if (buf->_data[buf->cursize-1])
 			Com_Memcpy((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
 		else
 			Com_Memcpy((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0

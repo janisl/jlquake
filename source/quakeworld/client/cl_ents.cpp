@@ -169,7 +169,7 @@ void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int bits)
 
 	if (bits & U_MOREBITS)
 	{	// read in the low order bits
-		i = MSG_ReadByte ();
+		i = net_message.ReadByte ();
 		bits |= i;
 	}
 
@@ -181,37 +181,37 @@ void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int bits)
 	to->flags = bits;
 	
 	if (bits & U_MODEL)
-		to->modelindex = MSG_ReadByte ();
+		to->modelindex = net_message.ReadByte ();
 		
 	if (bits & U_FRAME)
-		to->frame = MSG_ReadByte ();
+		to->frame = net_message.ReadByte ();
 
 	if (bits & U_COLORMAP)
-		to->colormap = MSG_ReadByte();
+		to->colormap = net_message.ReadByte();
 
 	if (bits & U_SKIN)
-		to->skinnum = MSG_ReadByte();
+		to->skinnum = net_message.ReadByte();
 
 	if (bits & U_EFFECTS)
-		to->effects = MSG_ReadByte();
+		to->effects = net_message.ReadByte();
 
 	if (bits & U_ORIGIN1)
-		to->origin[0] = MSG_ReadCoord ();
+		to->origin[0] = net_message.ReadCoord ();
 		
 	if (bits & U_ANGLE1)
-		to->angles[0] = MSG_ReadAngle();
+		to->angles[0] = net_message.ReadAngle();
 
 	if (bits & U_ORIGIN2)
-		to->origin[1] = MSG_ReadCoord ();
+		to->origin[1] = net_message.ReadCoord ();
 		
 	if (bits & U_ANGLE2)
-		to->angles[1] = MSG_ReadAngle();
+		to->angles[1] = net_message.ReadAngle();
 
 	if (bits & U_ORIGIN3)
-		to->origin[2] = MSG_ReadCoord ();
+		to->origin[2] = net_message.ReadCoord ();
 		
 	if (bits & U_ANGLE3)
-		to->angles[2] = MSG_ReadAngle();
+		to->angles[2] = net_message.ReadAngle();
 
 	if (bits & U_SOLID)
 	{
@@ -240,8 +240,8 @@ void FlushEntityPacket (void)
 	// read it all, but ignore it
 	while (1)
 	{
-		word = (unsigned short)MSG_ReadShort ();
-		if (msg_badread)
+		word = (unsigned short)net_message.ReadShort ();
+		if (net_message.badread)
 		{	// something didn't parse right...
 			Host_EndGame ("msg_badread in packetentities");
 			return;
@@ -277,7 +277,7 @@ void CL_ParsePacketEntities (qboolean delta)
 
 	if (delta)
 	{
-		from = MSG_ReadByte ();
+		from = net_message.ReadByte ();
 
 		oldpacket = cl.frames[newpacket].delta_sequence;
 
@@ -312,8 +312,8 @@ void CL_ParsePacketEntities (qboolean delta)
 
 	while (1)
 	{
-		word = (unsigned short)MSG_ReadShort ();
-		if (msg_badread)
+		word = (unsigned short)net_message.ReadShort ();
+		if (net_message.badread)
 		{	// something didn't parse right...
 			Host_EndGame ("msg_badread in packetentities");
 			return;
@@ -587,11 +587,11 @@ void CL_ParseProjectiles (void)
 	byte	bits[6];
 	projectile_t	*pr;
 
-	c = MSG_ReadByte ();
+	c = net_message.ReadByte ();
 	for (i=0 ; i<c ; i++)
 	{
 		for (j=0 ; j<6 ; j++)
-			bits[j] = MSG_ReadByte ();
+			bits[j] = net_message.ReadByte ();
 
 		if (cl_num_projectiles == MAX_PROJECTILES)
 			continue;
@@ -663,7 +663,7 @@ void CL_ParsePlayerinfo (void)
 	int			num;
 	int			i;
 
-	num = MSG_ReadByte ();
+	num = net_message.ReadByte ();
 	if (num > MAX_CLIENTS)
 		Sys_Error ("CL_ParsePlayerinfo: bad num");
 
@@ -671,21 +671,21 @@ void CL_ParsePlayerinfo (void)
 
 	state = &cl.frames[parsecountmod].playerstate[num];
 
-	flags = state->flags = MSG_ReadShort ();
+	flags = state->flags = net_message.ReadShort ();
 
 	state->messagenum = cl.parsecount;
-	state->origin[0] = MSG_ReadCoord ();
-	state->origin[1] = MSG_ReadCoord ();
-	state->origin[2] = MSG_ReadCoord ();
+	state->origin[0] = net_message.ReadCoord ();
+	state->origin[1] = net_message.ReadCoord ();
+	state->origin[2] = net_message.ReadCoord ();
 
-	state->frame = MSG_ReadByte ();
+	state->frame = net_message.ReadByte ();
 
 	// the other player's last move was likely some time
 	// before the packet was sent out, so accurately track
 	// the exact time it was valid at
 	if (flags & PF_MSEC)
 	{
-		msec = MSG_ReadByte ();
+		msec = net_message.ReadByte ();
 		state->state_time = parsecounttime - msec*0.001;
 	}
 	else
@@ -697,27 +697,27 @@ void CL_ParsePlayerinfo (void)
 	for (i=0 ; i<3 ; i++)
 	{
 		if (flags & (PF_VELOCITY1<<i) )
-			state->velocity[i] = MSG_ReadShort();
+			state->velocity[i] = net_message.ReadShort();
 		else
 			state->velocity[i] = 0;
 	}
 	if (flags & PF_MODEL)
-		state->modelindex = MSG_ReadByte ();
+		state->modelindex = net_message.ReadByte ();
 	else
 		state->modelindex = cl_playerindex;
 
 	if (flags & PF_SKINNUM)
-		state->skinnum = MSG_ReadByte ();
+		state->skinnum = net_message.ReadByte ();
 	else
 		state->skinnum = 0;
 
 	if (flags & PF_EFFECTS)
-		state->effects = MSG_ReadByte ();
+		state->effects = net_message.ReadByte ();
 	else
 		state->effects = 0;
 
 	if (flags & PF_WEAPONFRAME)
-		state->weaponframe = MSG_ReadByte ();
+		state->weaponframe = net_message.ReadByte ();
 	else
 		state->weaponframe = 0;
 

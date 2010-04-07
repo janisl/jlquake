@@ -50,10 +50,10 @@ int SV_FindIndex (char *name, int start, int max, qboolean create)
 
 	if (sv.state != ss_loading)
 	{	// send the update to everyone
-		SZ_Clear (&sv.multicast);
-		MSG_WriteChar (&sv.multicast, svc_configstring);
-		MSG_WriteShort (&sv.multicast, start+i);
-		MSG_WriteString (&sv.multicast, name);
+		sv.multicast.Clear();
+		sv.multicast.WriteChar(svc_configstring);
+		sv.multicast.WriteShort(start+i);
+		sv.multicast.WriteString2(name);
 		SV_Multicast (vec3_origin, MULTICAST_ALL_R);
 	}
 
@@ -204,7 +204,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 		pm_airaccelerate = 0;
 	}
 
-	SZ_Init (&sv.multicast, sv.multicast_buf, sizeof(sv.multicast_buf));
+	sv.multicast.InitOOB(sv.multicast_buf, sizeof(sv.multicast_buf));
 
 	QStr::Cpy(sv.name, server);
 

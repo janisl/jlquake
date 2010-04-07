@@ -33,7 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	YAW					1		// left / right
 #define	ROLL				2		// fall over
 
-#define	MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
 #define	MAX_STRING_TOKENS	80		// max tokens resulting from Cmd_TokenizeString
 #define	MAX_TOKEN_CHARS		128		// max length of an individual token
 
@@ -1029,9 +1028,6 @@ ROGUE - VERSIONS
 
 ==========================================================
 */
-
-#define	ANGLE2SHORT(x)	((int)((x)*65536/360) & 65535)
-#define	SHORT2ANGLE(x)	((x)*(360.0/65536))
 
 
 //

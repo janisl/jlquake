@@ -129,3 +129,14 @@ class QInterface
 public:
 	virtual ~QInterface();
 };
+
+// the game guarantees that no string from the network will ever
+// exceed MAX_STRING_CHARS
+#define	MAX_STRING_CHARS	1024	// max length of a string passed to Cmd_TokenizeString
+
+#define	BIG_INFO_STRING		8192  // used for system info key only
+#define	BIG_INFO_KEY		8192
+#define	BIG_INFO_VALUE		8192
+
+#define	ANGLE2SHORT(x)		((int)((x)*65536/360) & 65535)
+#define	SHORT2ANGLE(x)		((x)*(360.0/65536))

@@ -1008,7 +1008,7 @@ void Sbar_DeathmatchOverlay (int start)
 	if (realtime - cl.last_ping_request > 2)
 	{
 		cl.last_ping_request = realtime;
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		cls.netchan.message.WriteByte(clc_stringcmd);
 		SZ_Print (&cls.netchan.message, "pings");
 	}
 

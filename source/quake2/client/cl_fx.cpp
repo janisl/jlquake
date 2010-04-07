@@ -245,11 +245,11 @@ void CL_ParseMuzzleFlash (void)
 	float		volume;
 	char		soundname[64];
 
-	i = MSG_ReadShort (&net_message);
+	i = net_message.ReadShort();
 	if (i < 1 || i >= MAX_EDICTS)
 		Com_Error (ERR_DROP, "CL_ParseMuzzleFlash: bad entity");
 
-	weapon = MSG_ReadByte (&net_message);
+	weapon = net_message.ReadByte ();
 	silenced = weapon & MZ_SILENCED;
 	weapon &= ~MZ_SILENCED;
 
@@ -435,11 +435,11 @@ void CL_ParseMuzzleFlash2 (void)
 	vec3_t		forward, right;
 	char		soundname[64];
 
-	ent = MSG_ReadShort (&net_message);
+	ent = net_message.ReadShort();
 	if (ent < 1 || ent >= MAX_EDICTS)
 		Com_Error (ERR_DROP, "CL_ParseMuzzleFlash2: bad entity");
 
-	flash_number = MSG_ReadByte (&net_message);
+	flash_number = net_message.ReadByte ();
 
 	// locate the origin
 	AngleVectors (cl_entities[ent].current.angles, forward, right, NULL);

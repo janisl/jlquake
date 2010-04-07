@@ -460,11 +460,9 @@ void CL_SendCmd (void)
 
 // send this and the previous cmds in the message, so
 // if the last packet was dropped, it can be recovered
-	buf.maxsize = 128;
-	buf.cursize = 0;
-	buf.data = data;
+	buf.InitOOB(data, 128);
 
-	MSG_WriteByte (&buf, clc_move);
+	buf.WriteByte(clc_move);
 	i = (cls.netchan.outgoing_sequence-2) & UPDATE_MASK;
 	MSG_WriteUsercmd (&buf, &cl.frames[i].cmd, false);
 	i = (cls.netchan.outgoing_sequence-1) & UPDATE_MASK;
@@ -482,8 +480,8 @@ void CL_SendCmd (void)
 		!cls.demorecording)
 	{
 		cl.frames[cls.netchan.outgoing_sequence&UPDATE_MASK].delta_sequence = cl.validsequence;
-		MSG_WriteByte (&buf, clc_delta);
-		MSG_WriteByte (&buf, cl.validsequence&255);
+		buf.WriteByte(clc_delta);
+		buf.WriteByte(cl.validsequence&255);
 	}
 	else
 		cl.frames[cls.netchan.outgoing_sequence&UPDATE_MASK].delta_sequence = -1;
@@ -494,7 +492,7 @@ void CL_SendCmd (void)
 //
 // deliver the message
 //
-	Netchan_Transmit (&cls.netchan, buf.cursize, buf.data);	
+	Netchan_Transmit (&cls.netchan, buf.cursize, buf._data);	
 }
 
 

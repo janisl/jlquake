@@ -476,7 +476,7 @@ void CL_SendCmd (void)
 	if ( cls.state == ca_connected)
 	{
 		if (cls.netchan.message.cursize	|| curtime - cls.netchan.last_sent > 1000 )
-			Netchan_Transmit (&cls.netchan, 0, buf.data);	
+			Netchan_Transmit (&cls.netchan, 0, buf._data);	
 		return;
 	}
 
@@ -485,11 +485,11 @@ void CL_SendCmd (void)
 	{
 		CL_FixUpGender();
 		userinfo_modified = false;
-		MSG_WriteByte (&cls.netchan.message, clc_userinfo);
-		MSG_WriteString (&cls.netchan.message, Cvar_Userinfo() );
+		cls.netchan.message.WriteByte(clc_userinfo);
+		cls.netchan.message.WriteString2(Cvar_Userinfo() );
 	}
 
-	SZ_Init (&buf, data, sizeof(data));
+	buf.InitOOB(data, sizeof(data));
 
 	if (cmd->buttons && cl.cinematictime > 0 && !cl.attractloop 
 		&& cls.realtime - cl.cinematictime > 1000)
@@ -498,18 +498,18 @@ void CL_SendCmd (void)
 	}
 
 	// begin a client move command
-	MSG_WriteByte (&buf, clc_move);
+	buf.WriteByte(clc_move);
 
 	// save the position for a checksum byte
 	checksumIndex = buf.cursize;
-	MSG_WriteByte (&buf, 0);
+	buf.WriteByte(0);
 
 	// let the server know what the last frame we
 	// got was, so the next message can be delta compressed
 	if (cl_nodelta->value || !cl.frame.valid || cls.demowaiting)
-		MSG_WriteLong (&buf, -1);	// no compression
+		buf.WriteLong(-1);	// no compression
 	else
-		MSG_WriteLong (&buf, cl.frame.serverframe);
+		buf.WriteLong(cl.frame.serverframe);
 
 	// send this and the previous cmds in the message, so
 	// if the last packet was dropped, it can be recovered
@@ -529,14 +529,14 @@ void CL_SendCmd (void)
 	MSG_WriteDeltaUsercmd (&buf, oldcmd, cmd);
 
 	// calculate a checksum over the move commands
-	buf.data[checksumIndex] = COM_BlockSequenceCRCByte(
-		buf.data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
+	buf._data[checksumIndex] = COM_BlockSequenceCRCByte(
+		buf._data + checksumIndex + 1, buf.cursize - checksumIndex - 1,
 		cls.netchan.outgoing_sequence);
 
 	//
 	// deliver the message
 	//
-	Netchan_Transmit (&cls.netchan, buf.cursize, buf.data);	
+	Netchan_Transmit (&cls.netchan, buf.cursize, buf._data);	
 }
 
 

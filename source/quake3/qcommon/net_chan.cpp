@@ -194,11 +194,11 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 	// write the packet header
 	MSG_InitOOB (&send, send_buf, sizeof(send_buf));				// <-- only do the oob here
 
-	MSG_WriteLong( &send, chan->outgoingSequence | FRAGMENT_BIT );
+	send.WriteLong(chan->outgoingSequence | FRAGMENT_BIT );
 
 	// send the qport if we are a client
 	if ( chan->sock == NS_CLIENT ) {
-		MSG_WriteShort( &send, qport->integer );
+		send.WriteShort(qport->integer );
 	}
 
 	// copy the reliable message to the packet first
@@ -207,12 +207,12 @@ void Netchan_TransmitNextFragment( netchan_t *chan ) {
 		fragmentLength = chan->unsentLength - chan->unsentFragmentStart;
 	}
 
-	MSG_WriteShort( &send, chan->unsentFragmentStart );
-	MSG_WriteShort( &send, fragmentLength );
-	MSG_WriteData( &send, chan->unsentBuffer + chan->unsentFragmentStart, fragmentLength );
+	send.WriteShort(chan->unsentFragmentStart );
+	send.WriteShort(fragmentLength );
+	send.WriteData(chan->unsentBuffer + chan->unsentFragmentStart, fragmentLength );
 
 	// send the datagram
-	NET_SendPacket( chan->sock, send.cursize, send.data, chan->remoteAddress );
+	NET_SendPacket( chan->sock, send.cursize, send._data, chan->remoteAddress );
 
 	if ( showpackets->integer ) {
 		Com_Printf ("%s send %4i : s=%i fragment=%i,%i\n"
@@ -267,18 +267,18 @@ void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
 	// write the packet header
 	MSG_InitOOB (&send, send_buf, sizeof(send_buf));
 
-	MSG_WriteLong( &send, chan->outgoingSequence );
+	send.WriteLong(chan->outgoingSequence );
 	chan->outgoingSequence++;
 
 	// send the qport if we are a client
 	if ( chan->sock == NS_CLIENT ) {
-		MSG_WriteShort( &send, qport->integer );
+		send.WriteShort(qport->integer );
 	}
 
-	MSG_WriteData( &send, data, length );
+	send.WriteData(data, length );
 
 	// send the datagram
-	NET_SendPacket( chan->sock, send.cursize, send.data, chan->remoteAddress );
+	NET_SendPacket( chan->sock, send.cursize, send._data, chan->remoteAddress );
 
 	if ( showpackets->integer ) {
 		Com_Printf( "%s send %4i : s=%i ack=%i\n"
@@ -311,8 +311,8 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 //	Netchan_UnScramblePacket( msg );
 
 	// get sequence numbers		
-	MSG_BeginReadingOOB( msg );
-	sequence = MSG_ReadLong( msg );
+	msg->BeginReadingOOB();
+	sequence = msg->ReadLong();
 
 	// check for fragment information
 	if ( sequence & FRAGMENT_BIT ) {
@@ -324,13 +324,13 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 
 	// read the qport if we are a server
 	if ( chan->sock == NS_SERVER ) {
-		qport = MSG_ReadShort( msg );
+		qport = msg->ReadShort();
 	}
 
 	// read the fragment information
 	if ( fragmented ) {
-		fragmentStart = MSG_ReadShort( msg );
-		fragmentLength = MSG_ReadShort( msg );
+		fragmentStart = msg->ReadShort();
+		fragmentLength = msg->ReadShort();
 	} else {
 		fragmentStart = 0;		// stop warning message
 		fragmentLength = 0;
@@ -416,7 +416,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 		}
 
 		Com_Memcpy( chan->fragmentBuffer + chan->fragmentLength, 
-			msg->data + msg->readcount, fragmentLength );
+			msg->_data + msg->readcount, fragmentLength );
 
 		chan->fragmentLength += fragmentLength;
 
@@ -435,9 +435,9 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
 		// copy the full message over the partial fragment
 
 		// make sure the sequence number is still there
-		*(int *)msg->data = LittleLong( sequence );
+		*(int *)msg->_data = LittleLong( sequence );
 
-		Com_Memcpy( msg->data + 4, chan->fragmentBuffer, chan->fragmentLength );
+		Com_Memcpy( msg->_data + 4, chan->fragmentBuffer, chan->fragmentLength );
 		msg->cursize = chan->fragmentLength + 4;
 		chan->fragmentLength = 0;
 		msg->readcount = 4;	// past the sequence number
@@ -590,7 +590,7 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, msg_t *net_messag
 	i = loop->get & (MAX_LOOPBACK-1);
 	loop->get++;
 
-	Com_Memcpy (net_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
+	Com_Memcpy (net_message->_data, loop->msgs[i].data, loop->msgs[i].datalen);
 	net_message->cursize = loop->msgs[i].datalen;
 	Com_Memset (net_from, 0, sizeof(*net_from));
 	net_from->type = NA_LOOPBACK;
@@ -685,11 +685,11 @@ void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len
 		string[i+4] = format[i];
 	}
 
-	mbuf.data = string;
+	mbuf._data = string;
 	mbuf.cursize = len+4;
 	Huff_Compress( &mbuf, 12);
 	// send the datagram
-	NET_SendPacket( sock, mbuf.cursize, mbuf.data, adr );
+	NET_SendPacket( sock, mbuf.cursize, mbuf._data, adr );
 }
 
 /*

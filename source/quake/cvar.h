@@ -92,6 +92,6 @@ void 	Cvar_WriteVariables (FILE *f);
 // Writes lines containing "set variable value" for all variables
 // with the archive flag set to true.
 
-cvar_t *Cvar_FindVar (char *var_name);
+cvar_t *Cvar_FindVar (const char *var_name);
 
 extern cvar_t	*cvar_vars;

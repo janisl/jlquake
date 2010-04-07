@@ -157,10 +157,10 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count)
 
 	if (sv.datagram.cursize > MAX_DATAGRAM-16)
 		return;	
-	MSG_WriteByte (&sv.datagram, svc_particle);
-	MSG_WriteCoord (&sv.datagram, org[0]);
-	MSG_WriteCoord (&sv.datagram, org[1]);
-	MSG_WriteCoord (&sv.datagram, org[2]);
+	sv.datagram.WriteByte(svc_particle);
+	sv.datagram.WriteCoord(org[0]);
+	sv.datagram.WriteCoord(org[1]);
+	sv.datagram.WriteCoord(org[2]);
 	for (i=0 ; i<3 ; i++)
 	{
 		v = dir[i]*16;
@@ -168,10 +168,10 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count)
 			v = 127;
 		else if (v < -128)
 			v = -128;
-		MSG_WriteChar (&sv.datagram, v);
+		sv.datagram.WriteChar(v);
 	}
-	MSG_WriteByte (&sv.datagram, count);
-	MSG_WriteByte (&sv.datagram, color);
+	sv.datagram.WriteByte(count);
+	sv.datagram.WriteByte(color);
 }           
 
 /*  
@@ -187,20 +187,20 @@ void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int eff
 
 	if (sv.datagram.cursize > MAX_DATAGRAM-36)
 		return;	
-	MSG_WriteByte (&sv.datagram, svc_particle2);
-	MSG_WriteCoord (&sv.datagram, org[0]);
-	MSG_WriteCoord (&sv.datagram, org[1]);
-	MSG_WriteCoord (&sv.datagram, org[2]);
-	MSG_WriteFloat (&sv.datagram, dmin[0]);
-	MSG_WriteFloat (&sv.datagram, dmin[1]);
-	MSG_WriteFloat (&sv.datagram, dmin[2]);
-	MSG_WriteFloat (&sv.datagram, dmax[0]);
-	MSG_WriteFloat (&sv.datagram, dmax[1]);
-	MSG_WriteFloat (&sv.datagram, dmax[2]);
+	sv.datagram.WriteByte(svc_particle2);
+	sv.datagram.WriteCoord(org[0]);
+	sv.datagram.WriteCoord(org[1]);
+	sv.datagram.WriteCoord(org[2]);
+	sv.datagram.WriteFloat(dmin[0]);
+	sv.datagram.WriteFloat(dmin[1]);
+	sv.datagram.WriteFloat(dmin[2]);
+	sv.datagram.WriteFloat(dmax[0]);
+	sv.datagram.WriteFloat(dmax[1]);
+	sv.datagram.WriteFloat(dmax[2]);
 
-	MSG_WriteShort (&sv.datagram, color);
-	MSG_WriteByte (&sv.datagram, count);
-	MSG_WriteByte (&sv.datagram, effect);
+	sv.datagram.WriteShort(color);
+	sv.datagram.WriteByte(count);
+	sv.datagram.WriteByte(effect);
 }           
 
 /*  
@@ -216,17 +216,17 @@ void SV_StartParticle3 (vec3_t org, vec3_t box, int color, int effect, int count
 
 	if (sv.datagram.cursize > MAX_DATAGRAM-15)
 		return;	
-	MSG_WriteByte (&sv.datagram, svc_particle3);
-	MSG_WriteCoord (&sv.datagram, org[0]);
-	MSG_WriteCoord (&sv.datagram, org[1]);
-	MSG_WriteCoord (&sv.datagram, org[2]);
-	MSG_WriteByte (&sv.datagram, box[0]);
-	MSG_WriteByte (&sv.datagram, box[1]);
-	MSG_WriteByte (&sv.datagram, box[2]);
+	sv.datagram.WriteByte(svc_particle3);
+	sv.datagram.WriteCoord(org[0]);
+	sv.datagram.WriteCoord(org[1]);
+	sv.datagram.WriteCoord(org[2]);
+	sv.datagram.WriteByte(box[0]);
+	sv.datagram.WriteByte(box[1]);
+	sv.datagram.WriteByte(box[2]);
 
-	MSG_WriteShort (&sv.datagram, color);
-	MSG_WriteByte (&sv.datagram, count);
-	MSG_WriteByte (&sv.datagram, effect);
+	sv.datagram.WriteShort(color);
+	sv.datagram.WriteByte(count);
+	sv.datagram.WriteByte(effect);
 }           
 
 /*  
@@ -242,15 +242,15 @@ void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int cou
 
 	if (sv.datagram.cursize > MAX_DATAGRAM-13)
 		return;	
-	MSG_WriteByte (&sv.datagram, svc_particle4);
-	MSG_WriteCoord (&sv.datagram, org[0]);
-	MSG_WriteCoord (&sv.datagram, org[1]);
-	MSG_WriteCoord (&sv.datagram, org[2]);
-	MSG_WriteByte (&sv.datagram, radius);
+	sv.datagram.WriteByte(svc_particle4);
+	sv.datagram.WriteCoord(org[0]);
+	sv.datagram.WriteCoord(org[1]);
+	sv.datagram.WriteCoord(org[2]);
+	sv.datagram.WriteByte(radius);
 
-	MSG_WriteShort (&sv.datagram, color);
-	MSG_WriteByte (&sv.datagram, count);
-	MSG_WriteByte (&sv.datagram, effect);
+	sv.datagram.WriteShort(color);
+	sv.datagram.WriteByte(count);
+	sv.datagram.WriteByte(effect);
 }           
 
 /*  
@@ -268,8 +268,8 @@ void SV_StopSound (edict_t *entity, int channel)
 	ent = NUM_FOR_EDICT(entity);
 	channel = (ent<<3) | channel;
 
-	MSG_WriteByte (&sv.datagram, svc_stopsound);
-	MSG_WriteShort (&sv.datagram, channel);
+	sv.datagram.WriteByte(svc_stopsound);
+	sv.datagram.WriteShort(channel);
 }
 
 /*  
@@ -288,10 +288,10 @@ void SV_UpdateSoundPos (edict_t *entity, int channel)
 	ent = NUM_FOR_EDICT(entity);
 	channel = (ent<<3) | channel;
 
-	MSG_WriteByte (&sv.datagram, svc_sound_update_pos);
-	MSG_WriteShort (&sv.datagram, channel);
+	sv.datagram.WriteByte(svc_sound_update_pos);
+	sv.datagram.WriteShort(channel);
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord (&sv.datagram, entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
+		sv.datagram.WriteCoord(entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
 }
 
 /*  
@@ -322,9 +322,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 	vec_t		distance;
 	vec3_t		diff;
 
-	cm.data = datagram_buf;
-	cm.maxsize = sizeof(datagram_buf);
-	cm.cursize = 0;
+	cm.InitOOB(datagram_buf, sizeof(datagram_buf));
 	
 	if (QStr::ICmp(sample,"misc/null.wav") == 0)
 	{
@@ -372,16 +370,16 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 	}
 
 // directed messages go only to the entity the are targeted on
-	MSG_WriteByte (&sv.datagram, svc_sound);
-	MSG_WriteByte (&sv.datagram, field_mask);
+	sv.datagram.WriteByte(svc_sound);
+	sv.datagram.WriteByte(field_mask);
 	if (field_mask & SND_VOLUME)
-		MSG_WriteByte (&sv.datagram, volume);
+		sv.datagram.WriteByte(volume);
 	if (field_mask & SND_ATTENUATION)
-		MSG_WriteByte (&sv.datagram, attenuation*64);
-	MSG_WriteShort (&sv.datagram, channel);
-	MSG_WriteByte (&sv.datagram, sound_num);
+		sv.datagram.WriteByte(attenuation*64);
+	sv.datagram.WriteShort(channel);
+	sv.datagram.WriteByte(sound_num);
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord (&sv.datagram, entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
+		sv.datagram.WriteCoord(entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
 }           
 
 /*
@@ -405,56 +403,56 @@ void SV_SendServerinfo (client_t *client)
 	char			**s;
 	char			message[2048];
 
-	MSG_WriteByte (&client->message, svc_print);
+	client->message.WriteByte(svc_print);
 	sprintf (message, "%c\nVERSION %4.2f SERVER (%i CRC)", 2, HEXEN2_VERSION, pr_crc);
-	MSG_WriteString (&client->message,message);
+	client->message.WriteString2(message);
 
-	MSG_WriteByte (&client->message, svc_serverinfo);
-	MSG_WriteLong (&client->message, PROTOCOL_VERSION);
-	MSG_WriteByte (&client->message, svs.maxclients);
+	client->message.WriteByte(svc_serverinfo);
+	client->message.WriteLong(PROTOCOL_VERSION);
+	client->message.WriteByte(svs.maxclients);
 
 	if (!coop.value && deathmatch.value)
 	{
-		MSG_WriteByte (&client->message, GAME_DEATHMATCH);
-		MSG_WriteShort (&client->message, sv_kingofhill);
+		client->message.WriteByte(GAME_DEATHMATCH);
+		client->message.WriteShort(sv_kingofhill);
 	}
 	else
-		MSG_WriteByte (&client->message, GAME_COOP);
+		client->message.WriteByte(GAME_COOP);
 
 	if (sv.edicts->v.message > 0 && sv.edicts->v.message <= pr_string_count)
 	{
-		MSG_WriteString (&client->message,&pr_global_strings[pr_string_index[(int)sv.edicts->v.message-1]]);
+		client->message.WriteString2(&pr_global_strings[pr_string_index[(int)sv.edicts->v.message-1]]);
 	}
 	else
 	{
-//		MSG_WriteString(&client->message,"");
-		MSG_WriteString(&client->message,sv.edicts->v.netname + pr_strings);
+//		client->message.WriteString2("");
+		client->message.WriteString2(sv.edicts->v.netname + pr_strings);
 	}
 
 	for (s = sv.model_precache+1 ; *s ; s++)
-		MSG_WriteString (&client->message, *s);
-	MSG_WriteByte (&client->message, 0);
+		client->message.WriteString2(*s);
+	client->message.WriteByte(0);
 
 	for (s = sv.sound_precache+1 ; *s ; s++)
-		MSG_WriteString (&client->message, *s);
-	MSG_WriteByte (&client->message, 0);
+		client->message.WriteString2(*s);
+	client->message.WriteByte(0);
 
 // send music
-	MSG_WriteByte (&client->message, svc_cdtrack);
-//	MSG_WriteByte (&client->message, sv.edicts->v.soundtype);
-//	MSG_WriteByte (&client->message, sv.edicts->v.soundtype);
-	MSG_WriteByte (&client->message, sv.cd_track);
-	MSG_WriteByte (&client->message, sv.cd_track);
+	client->message.WriteByte(svc_cdtrack);
+//	client->message.WriteByte(sv.edicts->v.soundtype);
+//	client->message.WriteByte(sv.edicts->v.soundtype);
+	client->message.WriteByte(sv.cd_track);
+	client->message.WriteByte(sv.cd_track);
 
-	MSG_WriteByte (&client->message, svc_midi_name);
-	MSG_WriteString (&client->message, sv.midi_name);
+	client->message.WriteByte(svc_midi_name);
+	client->message.WriteString2(sv.midi_name);
 
 // set view	
-	MSG_WriteByte (&client->message, svc_setview);
-	MSG_WriteShort (&client->message, NUM_FOR_EDICT(client->edict));
+	client->message.WriteByte(svc_setview);
+	client->message.WriteShort(NUM_FOR_EDICT(client->edict));
 
-	MSG_WriteByte (&client->message, svc_signonnum);
-	MSG_WriteByte (&client->message, 1);
+	client->message.WriteByte(svc_signonnum);
+	client->message.WriteByte(1);
 
 	client->sendsignon = true;
 	client->spawned = false;		// need prespawn, spawn, etc
@@ -501,13 +499,10 @@ void SV_ConnectClient (int clientnum)
 	client->spawned = false;
 	client->edict = ent;
 
-	client->message.data = client->msgbuf;
-	client->message.maxsize = sizeof(client->msgbuf);
+	client->message.InitOOB(client->msgbuf, sizeof(client->msgbuf));
 	client->message.allowoverflow = true;		// we can catch it
 
-	client->datagram.data = client->datagram_buf;
-	client->datagram.maxsize = sizeof(client->datagram_buf);
-	client->datagram.allowoverflow = false;
+	client->datagram.InitOOB(client->datagram_buf, sizeof(client->datagram_buf));
 
 	for (entnum = 0; entnum < sv.num_edicts ; entnum++)
 	{
@@ -590,7 +585,7 @@ SV_ClearDatagram
 */
 void SV_ClearDatagram (void)
 {
-	SZ_Clear (&sv.datagram);
+	sv.datagram.Clear();
 }
 
 /*
@@ -759,9 +754,9 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, sizebuf_t *msg)
 	client->last_frame = CLIENT_FRAME_RESET;
 
 	NumToRemove = 0;
-	MSG_WriteByte (msg, svc_reference);
-	MSG_WriteByte (msg, client->current_frame);
-	MSG_WriteByte (msg, client->current_sequence);
+	msg->WriteByte(svc_reference);
+	msg->WriteByte(client->current_frame);
+	msg->WriteByte(client->current_sequence);
 
 	// find the client's PVS
 	if (clent->v.cameramode)
@@ -1007,57 +1002,57 @@ skipA:
 	//
 	// write the message
 	//
-		MSG_WriteByte (msg,bits | U_SIGNAL);
+		msg->WriteByte(bits | U_SIGNAL);
 		
 		if (bits & U_MOREBITS)
-			MSG_WriteByte (msg, bits>>8);
+			msg->WriteByte(bits>>8);
 		if (bits & U_MOREBITS2)
-			MSG_WriteByte (msg, bits>>16);
+			msg->WriteByte(bits>>16);
 
 		if (bits & U_LONGENTITY)
-			MSG_WriteShort (msg,e);
+			msg->WriteShort(e);
 		else
-			MSG_WriteByte (msg,e);
+			msg->WriteByte(e);
 
 		if (bits & U_MODEL)
-			MSG_WriteShort (msg, temp_index);
+			msg->WriteShort(temp_index);
 		if (bits & U_FRAME)
-			MSG_WriteByte (msg, ent->v.frame);
+			msg->WriteByte(ent->v.frame);
 		if (bits & U_COLORMAP)
-			MSG_WriteByte (msg, ent->v.colormap);
+			msg->WriteByte(ent->v.colormap);
 		if(bits & U_SKIN)
 		{ // Used for skin and drawflags
-			MSG_WriteByte(msg, ent->v.skin);
-			MSG_WriteByte(msg, ent->v.drawflags);
+			msg->WriteByte(ent->v.skin);
+			msg->WriteByte(ent->v.drawflags);
 		}
 		if (bits & U_EFFECTS)
-			MSG_WriteByte (msg, ent->v.effects);
+			msg->WriteByte(ent->v.effects);
 		if (bits & U_ORIGIN1)
-			MSG_WriteCoord (msg, ent->v.origin[0]);		
+			msg->WriteCoord(ent->v.origin[0]);		
 		if (bits & U_ANGLE1)
-			MSG_WriteAngle(msg, ent->v.angles[0]);
+			msg->WriteAngle(ent->v.angles[0]);
 		if (bits & U_ORIGIN2)
-			MSG_WriteCoord (msg, ent->v.origin[1]);
+			msg->WriteCoord(ent->v.origin[1]);
 		if (bits & U_ANGLE2)
-			MSG_WriteAngle(msg, ent->v.angles[1]);
+			msg->WriteAngle(ent->v.angles[1]);
 		if (bits & U_ORIGIN3)
-			MSG_WriteCoord (msg, ent->v.origin[2]);
+			msg->WriteCoord(ent->v.origin[2]);
 		if (bits & U_ANGLE3)
-			MSG_WriteAngle(msg, ent->v.angles[2]);
+			msg->WriteAngle(ent->v.angles[2]);
 		if(bits & U_SCALE)
 		{ // Used for scale and abslight
-			MSG_WriteByte(msg, (int)(ent->v.scale*100.0)&255);
-			MSG_WriteByte(msg, (int)(ent->v.abslight*255.0)&255);
+			msg->WriteByte((int)(ent->v.scale*100.0)&255);
+			msg->WriteByte((int)(ent->v.abslight*255.0)&255);
 		}
 
 		if (build->count >= MAX_CLIENT_STATES)
 			break;
 	}
 
-	MSG_WriteByte(msg, svc_clear_edicts);
-	MSG_WriteByte(msg, NumToRemove);
+	msg->WriteByte(svc_clear_edicts);
+	msg->WriteByte(NumToRemove);
 	for(i=0;i<NumToRemove;i++)
-		MSG_WriteShort(msg,RemoveList[i]);
+		msg->WriteShort(RemoveList[i]);
 }
 
 /*
@@ -1102,11 +1097,11 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, sizebuf_t *msg
 	if (ent->v.dmg_take || ent->v.dmg_save)
 	{
 		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
-		MSG_WriteByte (msg, svc_damage);
-		MSG_WriteByte (msg, ent->v.dmg_save);
-		MSG_WriteByte (msg, ent->v.dmg_take);
+		msg->WriteByte(svc_damage);
+		msg->WriteByte(ent->v.dmg_save);
+		msg->WriteByte(ent->v.dmg_take);
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteCoord (msg, other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
+			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
 	
 		ent->v.dmg_take = 0;
 		ent->v.dmg_save = 0;
@@ -1120,9 +1115,9 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, sizebuf_t *msg
 // a fixangle might get lost in a dropped packet.  Oh well.
 	if ( ent->v.fixangle )
 	{
-		MSG_WriteByte (msg, svc_setangle);
+		msg->WriteByte(svc_setangle);
 		for (i=0 ; i < 3 ; i++)
-			MSG_WriteAngle (msg, ent->v.angles[i] );
+			msg->WriteAngle(ent->v.angles[i] );
 		ent->v.fixangle = 0;
 	}
 
@@ -1208,32 +1203,32 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, sizebuf_t *msg
 		}
 	}
 
-	MSG_WriteByte (msg, svc_clientdata);
-	MSG_WriteShort (msg, bits);
+	msg->WriteByte(svc_clientdata);
+	msg->WriteShort(bits);
 	
 	if (bits & SU_VIEWHEIGHT)
-		MSG_WriteChar (msg, ent->v.view_ofs[2]);
+		msg->WriteChar(ent->v.view_ofs[2]);
 
 	if (bits & SU_IDEALPITCH)
-		MSG_WriteChar (msg, ent->v.idealpitch);
+		msg->WriteChar(ent->v.idealpitch);
 
 	if (bits & SU_IDEALROLL)
-		MSG_WriteChar (msg, ent->v.idealroll);
+		msg->WriteChar(ent->v.idealroll);
 
 	for (i=0 ; i<3 ; i++)
 	{
 		if (bits & (SU_PUNCH1<<i))
-			MSG_WriteChar (msg, ent->v.punchangle[i]);
+			msg->WriteChar(ent->v.punchangle[i]);
 		if (bits & (SU_VELOCITY1<<i))
-			MSG_WriteChar (msg, ent->v.velocity[i]/16);
+			msg->WriteChar(ent->v.velocity[i]/16);
 	}
 
 	if (bits & SU_WEAPONFRAME)
-		MSG_WriteByte (msg, ent->v.weaponframe);
+		msg->WriteByte(ent->v.weaponframe);
 	if (bits & SU_ARMOR)
-		MSG_WriteByte (msg, ent->v.armorvalue);
+		msg->WriteByte(ent->v.armorvalue);
 	if (bits & SU_WEAPON)
-		MSG_WriteShort (msg, SV_ModelIndex(pr_strings+ent->v.weaponmodel));
+		msg->WriteShort(SV_ModelIndex(pr_strings+ent->v.weaponmodel));
 
 	if (host_client->send_all_v) 
 	{
@@ -1362,7 +1357,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, sizebuf_t *msg
 	if (!sc1 && !sc2)
 		goto end;
 
-	MSG_WriteByte (&host_client->message, svc_update_inv);
+	host_client->message.WriteByte(svc_update_inv);
 	test = 0;
 	if (sc1 & 0x000000ff)
 		test |= 1;
@@ -1381,142 +1376,142 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, sizebuf_t *msg
 	if (sc2 & 0xff000000)
 		test |= 128;
 
-	MSG_WriteByte (&host_client->message, test);
+	host_client->message.WriteByte(test);
 
 	if (test & 1)
-		MSG_WriteByte (&host_client->message, sc1 & 0xff);
+		host_client->message.WriteByte(sc1 & 0xff);
 	if (test & 2)
-		MSG_WriteByte (&host_client->message, (sc1 >> 8) & 0xff);
+		host_client->message.WriteByte((sc1 >> 8) & 0xff);
 	if (test & 4)
-		MSG_WriteByte (&host_client->message, (sc1 >> 16) & 0xff);
+		host_client->message.WriteByte((sc1 >> 16) & 0xff);
 	if (test & 8)
-		MSG_WriteByte (&host_client->message, (sc1 >> 24) & 0xff);
+		host_client->message.WriteByte((sc1 >> 24) & 0xff);
 	if (test & 16)
-		MSG_WriteByte (&host_client->message, sc2 & 0xff);
+		host_client->message.WriteByte(sc2 & 0xff);
 	if (test & 32)
-		MSG_WriteByte (&host_client->message, (sc2 >> 8) & 0xff);
+		host_client->message.WriteByte((sc2 >> 8) & 0xff);
 	if (test & 64)
-		MSG_WriteByte (&host_client->message, (sc2 >> 16) & 0xff);
+		host_client->message.WriteByte((sc2 >> 16) & 0xff);
 	if (test & 128)
-		MSG_WriteByte (&host_client->message, (sc2 >> 24) & 0xff);
+		host_client->message.WriteByte((sc2 >> 24) & 0xff);
 
 	if (sc1 & SC1_HEALTH)
-		MSG_WriteShort (&host_client->message, ent->v.health);
+		host_client->message.WriteShort(ent->v.health);
 	if (sc1 & SC1_LEVEL)
-		MSG_WriteByte(&host_client->message, ent->v.level);
+		host_client->message.WriteByte(ent->v.level);
 	if (sc1 & SC1_INTELLIGENCE)
-		MSG_WriteByte(&host_client->message, ent->v.intelligence);
+		host_client->message.WriteByte(ent->v.intelligence);
 	if (sc1 & SC1_WISDOM)
-		MSG_WriteByte(&host_client->message, ent->v.wisdom);
+		host_client->message.WriteByte(ent->v.wisdom);
 	if (sc1 & SC1_STRENGTH)
-		MSG_WriteByte(&host_client->message, ent->v.strength);
+		host_client->message.WriteByte(ent->v.strength);
 	if (sc1 & SC1_DEXTERITY)
-		MSG_WriteByte(&host_client->message, ent->v.dexterity);
+		host_client->message.WriteByte(ent->v.dexterity);
 	if (sc1 & SC1_WEAPON)
-		MSG_WriteByte (&host_client->message, ent->v.weapon);
+		host_client->message.WriteByte(ent->v.weapon);
 	if (sc1 & SC1_BLUEMANA)
-		MSG_WriteByte (&host_client->message, ent->v.bluemana);
+		host_client->message.WriteByte(ent->v.bluemana);
 	if (sc1 & SC1_GREENMANA)
-		MSG_WriteByte (&host_client->message, ent->v.greenmana);
+		host_client->message.WriteByte(ent->v.greenmana);
 	if (sc1 & SC1_EXPERIENCE)
-		MSG_WriteLong (&host_client->message, ent->v.experience);
+		host_client->message.WriteLong(ent->v.experience);
 	if (sc1 & SC1_CNT_TORCH)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_torch);
+		host_client->message.WriteByte(ent->v.cnt_torch);
 	if (sc1 & SC1_CNT_H_BOOST)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_h_boost);
+		host_client->message.WriteByte(ent->v.cnt_h_boost);
 	if (sc1 & SC1_CNT_SH_BOOST)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_sh_boost);
+		host_client->message.WriteByte(ent->v.cnt_sh_boost);
 	if (sc1 & SC1_CNT_MANA_BOOST)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_mana_boost);
+		host_client->message.WriteByte(ent->v.cnt_mana_boost);
 	if (sc1 & SC1_CNT_TELEPORT)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_teleport);
+		host_client->message.WriteByte(ent->v.cnt_teleport);
 	if (sc1 & SC1_CNT_TOME)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_tome);
+		host_client->message.WriteByte(ent->v.cnt_tome);
 	if (sc1 & SC1_CNT_SUMMON)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_summon);
+		host_client->message.WriteByte(ent->v.cnt_summon);
 	if (sc1 & SC1_CNT_INVISIBILITY)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_invisibility);
+		host_client->message.WriteByte(ent->v.cnt_invisibility);
 	if (sc1 & SC1_CNT_GLYPH)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_glyph);
+		host_client->message.WriteByte(ent->v.cnt_glyph);
 	if (sc1 & SC1_CNT_HASTE)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_haste);
+		host_client->message.WriteByte(ent->v.cnt_haste);
 	if (sc1 & SC1_CNT_BLAST)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_blast);
+		host_client->message.WriteByte(ent->v.cnt_blast);
 	if (sc1 & SC1_CNT_POLYMORPH)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_polymorph);
+		host_client->message.WriteByte(ent->v.cnt_polymorph);
 	if (sc1 & SC1_CNT_FLIGHT)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_flight);
+		host_client->message.WriteByte(ent->v.cnt_flight);
 	if (sc1 & SC1_CNT_CUBEOFFORCE)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_cubeofforce);
+		host_client->message.WriteByte(ent->v.cnt_cubeofforce);
 	if (sc1 & SC1_CNT_INVINCIBILITY)
-		MSG_WriteByte (&host_client->message, ent->v.cnt_invincibility);
+		host_client->message.WriteByte(ent->v.cnt_invincibility);
 	if (sc1 & SC1_ARTIFACT_ACTIVE)
-		MSG_WriteFloat (&host_client->message, ent->v.artifact_active);
+		host_client->message.WriteFloat(ent->v.artifact_active);
 	if (sc1 & SC1_ARTIFACT_LOW)
-		MSG_WriteFloat (&host_client->message, ent->v.artifact_low);
+		host_client->message.WriteFloat(ent->v.artifact_low);
 	if (sc1 & SC1_MOVETYPE)
-		MSG_WriteByte (&host_client->message, ent->v.movetype);
+		host_client->message.WriteByte(ent->v.movetype);
 	if (sc1 & SC1_CAMERAMODE)
-		MSG_WriteByte (&host_client->message, ent->v.cameramode);
+		host_client->message.WriteByte(ent->v.cameramode);
 	if (sc1 & SC1_HASTED)
-		MSG_WriteFloat (&host_client->message, ent->v.hasted);
+		host_client->message.WriteFloat(ent->v.hasted);
 	if (sc1 & SC1_INVENTORY)
-		MSG_WriteByte (&host_client->message, ent->v.inventory);
+		host_client->message.WriteByte(ent->v.inventory);
 	if (sc1 & SC1_RINGS_ACTIVE)
-		MSG_WriteFloat (&host_client->message, ent->v.rings_active);
+		host_client->message.WriteFloat(ent->v.rings_active);
 
 	if (sc2 & SC2_RINGS_LOW)
-		MSG_WriteFloat (&host_client->message, ent->v.rings_low);
+		host_client->message.WriteFloat(ent->v.rings_low);
 	if (sc2 & SC2_AMULET)
-		MSG_WriteByte(&host_client->message, ent->v.armor_amulet);
+		host_client->message.WriteByte(ent->v.armor_amulet);
 	if (sc2 & SC2_BRACER)
-		MSG_WriteByte(&host_client->message, ent->v.armor_bracer);
+		host_client->message.WriteByte(ent->v.armor_bracer);
 	if (sc2 & SC2_BREASTPLATE)
-		MSG_WriteByte(&host_client->message, ent->v.armor_breastplate);
+		host_client->message.WriteByte(ent->v.armor_breastplate);
 	if (sc2 & SC2_HELMET)
-		MSG_WriteByte(&host_client->message, ent->v.armor_helmet);
+		host_client->message.WriteByte(ent->v.armor_helmet);
 	if (sc2 & SC2_FLIGHT_T)
-		MSG_WriteByte(&host_client->message, ent->v.ring_flight);
+		host_client->message.WriteByte(ent->v.ring_flight);
 	if (sc2 & SC2_WATER_T)
-		MSG_WriteByte(&host_client->message, ent->v.ring_water);
+		host_client->message.WriteByte(ent->v.ring_water);
 	if (sc2 & SC2_TURNING_T)
-		MSG_WriteByte(&host_client->message, ent->v.ring_turning);
+		host_client->message.WriteByte(ent->v.ring_turning);
 	if (sc2 & SC2_REGEN_T)
-		MSG_WriteByte(&host_client->message, ent->v.ring_regeneration);
+		host_client->message.WriteByte(ent->v.ring_regeneration);
 	if (sc2 & SC2_HASTE_T)
-		MSG_WriteFloat(&host_client->message, ent->v.haste_time);
+		host_client->message.WriteFloat(ent->v.haste_time);
 	if (sc2 & SC2_TOME_T)
-		MSG_WriteFloat(&host_client->message, ent->v.tome_time);
+		host_client->message.WriteFloat(ent->v.tome_time);
 	if (sc2 & SC2_PUZZLE1)
-		MSG_WriteString(&host_client->message, pr_strings+ent->v.puzzle_inv1);
+		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv1);
 	if (sc2 & SC2_PUZZLE2)
-		MSG_WriteString(&host_client->message, pr_strings+ent->v.puzzle_inv2);
+		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv2);
 	if (sc2 & SC2_PUZZLE3)
-		MSG_WriteString(&host_client->message, pr_strings+ent->v.puzzle_inv3);
+		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv3);
 	if (sc2 & SC2_PUZZLE4)
-		MSG_WriteString(&host_client->message, pr_strings+ent->v.puzzle_inv4);
+		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv4);
 	if (sc2 & SC2_PUZZLE5)
-		MSG_WriteString(&host_client->message, pr_strings+ent->v.puzzle_inv5);
+		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv5);
 	if (sc2 & SC2_PUZZLE6)
-		MSG_WriteString(&host_client->message, pr_strings+ent->v.puzzle_inv6);
+		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv6);
 	if (sc2 & SC2_PUZZLE7)
-		MSG_WriteString(&host_client->message, pr_strings+ent->v.puzzle_inv7);
+		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv7);
 	if (sc2 & SC2_PUZZLE8)
-		MSG_WriteString(&host_client->message, pr_strings+ent->v.puzzle_inv8);
+		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv8);
 	if (sc2 & SC2_MAXHEALTH)
-		MSG_WriteShort(&host_client->message, ent->v.max_health);
+		host_client->message.WriteShort(ent->v.max_health);
 	if (sc2 & SC2_MAXMANA)
-		MSG_WriteByte(&host_client->message, ent->v.max_mana);
+		host_client->message.WriteByte(ent->v.max_mana);
 	if (sc2 & SC2_FLAGS)
-		MSG_WriteFloat(&host_client->message, ent->v.flags);
+		host_client->message.WriteFloat(ent->v.flags);
 	if (sc2 & SC2_OBJ)
 	{
-		MSG_WriteLong(&host_client->message, info_mask);
+		host_client->message.WriteLong(info_mask);
 		client->info_mask = info_mask;
 	}
 	if (sc2 & SC2_OBJ2)
 	{
-		MSG_WriteLong(&host_client->message, info_mask2);
+		host_client->message.WriteLong(info_mask2);
 		client->info_mask2 = info_mask2;
 	}
 
@@ -1534,12 +1529,10 @@ qboolean SV_SendClientDatagram (client_t *client)
 	byte		buf[NET_MAXMESSAGE];
 	sizebuf_t	msg;
 	
-	msg.data = buf;
-	msg.maxsize = sizeof(buf);
-	msg.cursize = 0;
+	msg.InitOOB(buf, sizeof(buf));
 
-	MSG_WriteByte (&msg, svc_time);
-	MSG_WriteFloat (&msg, sv.time);
+	msg.WriteByte(svc_time);
+	msg.WriteFloat(sv.time);
 
 // add the client specific data to the datagram
 	SV_WriteClientdataToMessage (client, client->edict, &msg);
@@ -1553,12 +1546,12 @@ qboolean SV_SendClientDatagram (client_t *client)
 
 // copy the server datagram if there is space
 	if (msg.cursize + sv.datagram.cursize < msg.maxsize)
-		SZ_Write (&msg, sv.datagram.data, sv.datagram.cursize);
+		msg.WriteData(sv.datagram._data, sv.datagram.cursize);
 
 	if (msg.cursize + client->datagram.cursize < msg.maxsize)
-		SZ_Write (&msg, client->datagram.data, client->datagram.cursize);
+		msg.WriteData(client->datagram._data, client->datagram.cursize);
 
-	SZ_Clear(&client->datagram);
+	client->datagram.Clear();
 
 	//if (msg.cursize > 300)
 	//{
@@ -1599,9 +1592,9 @@ void SV_UpdateToReliableMessages (void)
 				if (!client->active)
 					continue;
 
-				MSG_WriteByte (&client->message, svc_updatefrags);
-				MSG_WriteByte (&client->message, i);
-				MSG_WriteShort (&client->message, host_client->edict->v.frags);
+				client->message.WriteByte(svc_updatefrags);
+				client->message.WriteByte(i);
+				client->message.WriteShort(host_client->edict->v.frags);
 			}
 
 			host_client->old_frags = ent->v.frags;
@@ -1612,10 +1605,10 @@ void SV_UpdateToReliableMessages (void)
 	{
 		if (!client->active)
 			continue;
-		SZ_Write (&client->message, sv.reliable_datagram.data, sv.reliable_datagram.cursize);
+		client->message.WriteData(sv.reliable_datagram._data, sv.reliable_datagram.cursize);
 	}
 
-	SZ_Clear (&sv.reliable_datagram);
+	sv.reliable_datagram.Clear();
 }
 
 
@@ -1632,11 +1625,9 @@ void SV_SendNop (client_t *client)
 	sizebuf_t	msg;
 	byte		buf[4];
 	
-	msg.data = buf;
-	msg.maxsize = sizeof(buf);
-	msg.cursize = 0;
+	msg.InitOOB(buf, sizeof(buf));
 
-	MSG_WriteChar (&msg, svc_nop);
+	msg.WriteChar(svc_nop);
 
 	if (NET_SendUnreliableMessage (client->netconnection, &msg) == -1)
 		SV_DropClient (true);	// if the message couldn't send, kick off
@@ -1706,7 +1697,7 @@ void SV_SendClientMessages (void)
 				if (NET_SendMessage (host_client->netconnection
 				, &host_client->message) == -1)
 					SV_DropClient (true);	// if the message couldn't send, kick off
-				SZ_Clear (&host_client->message);
+				host_client->message.Clear();
 				host_client->last_message = realtime;
 				host_client->sendsignon = false;
 			}
@@ -1800,20 +1791,20 @@ void SV_CreateBaseline (void)
 	//
 	// add to the message
 	//
-		MSG_WriteByte (&sv.signon,svc_spawnbaseline);
-		MSG_WriteShort (&sv.signon,entnum);
+		sv.signon.WriteByte(svc_spawnbaseline);
+		sv.signon.WriteShort(entnum);
 
-		MSG_WriteShort (&sv.signon, svent->baseline.modelindex);
-		MSG_WriteByte (&sv.signon, svent->baseline.frame);
-		MSG_WriteByte (&sv.signon, svent->baseline.colormap);
-		MSG_WriteByte (&sv.signon, svent->baseline.skin);
-		MSG_WriteByte (&sv.signon, svent->baseline.scale);
-		MSG_WriteByte (&sv.signon, svent->baseline.drawflags);
-		MSG_WriteByte (&sv.signon, svent->baseline.abslight);
+		sv.signon.WriteShort(svent->baseline.modelindex);
+		sv.signon.WriteByte(svent->baseline.frame);
+		sv.signon.WriteByte(svent->baseline.colormap);
+		sv.signon.WriteByte(svent->baseline.skin);
+		sv.signon.WriteByte(svent->baseline.scale);
+		sv.signon.WriteByte(svent->baseline.drawflags);
+		sv.signon.WriteByte(svent->baseline.abslight);
 		for (i=0 ; i<3 ; i++)
 		{
-			MSG_WriteCoord(&sv.signon, svent->baseline.origin[i]);
-			MSG_WriteAngle(&sv.signon, svent->baseline.angles[i]);
+			sv.signon.WriteCoord(svent->baseline.origin[i]);
+			sv.signon.WriteAngle(svent->baseline.angles[i]);
 		}
 	}
 }
@@ -1831,12 +1822,10 @@ void SV_SendReconnect (void)
 	byte	data[128];
 	sizebuf_t	msg;
 
-	msg.data = data;
-	msg.cursize = 0;
-	msg.maxsize = sizeof(data);
+	msg.InitOOB(data, sizeof(data));
 
-	MSG_WriteChar (&msg, svc_stufftext);
-	MSG_WriteString (&msg, "reconnect\n");
+	msg.WriteChar(svc_stufftext);
+	msg.WriteString2("reconnect\n");
 	NET_SendToAll (&msg, 5);
 	
 	if (cls.state != ca_dedicated)
@@ -1957,17 +1946,11 @@ void SV_SpawnServer (char *server, char *startspot)
 	
 	sv.edicts = (edict_t*)Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
 
-	sv.datagram.maxsize = sizeof(sv.datagram_buf);
-	sv.datagram.cursize = 0;
-	sv.datagram.data = sv.datagram_buf;
+	sv.datagram.InitOOB(sv.datagram_buf, sizeof(sv.datagram_buf));
 	
-	sv.reliable_datagram.maxsize = sizeof(sv.reliable_datagram_buf);
-	sv.reliable_datagram.cursize = 0;
-	sv.reliable_datagram.data = sv.reliable_datagram_buf;
+	sv.reliable_datagram.InitOOB(sv.reliable_datagram_buf, sizeof(sv.reliable_datagram_buf));
 	
-	sv.signon.maxsize = sizeof(sv.signon_buf);
-	sv.signon.cursize = 0;
-	sv.signon.data = sv.signon_buf;
+	sv.signon.InitOOB(sv.signon_buf, sizeof(sv.signon_buf));
 	
 // leave slots at start for clients only
 	sv.num_edicts = svs.maxclients+1+max_temp_edicts.value;

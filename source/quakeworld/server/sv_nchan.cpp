@@ -29,10 +29,8 @@ void ClientReliableCheckBlock(client_t *cl, int maxsize)
 		cl->netchan.message.maxsize - maxsize - 1) {
 		// we would probably overflow the buffer, save it for next
 		if (!cl->num_backbuf) {
-			Com_Memset(&cl->backbuf, 0, sizeof(cl->backbuf));
+			cl->backbuf.InitOOB(cl->backbuf_data[0], sizeof(cl->backbuf_data[0]));
 			cl->backbuf.allowoverflow = true;
-			cl->backbuf.data = cl->backbuf_data[0];
-			cl->backbuf.maxsize = sizeof(cl->backbuf_data[0]);
 			cl->backbuf_size[0] = 0;
 			cl->num_backbuf++;
 		}
@@ -44,10 +42,8 @@ void ClientReliableCheckBlock(client_t *cl, int maxsize)
 				cl->netchan.message.overflowed = true; // this will drop the client
 				return;
 			}
-			Com_Memset(&cl->backbuf, 0, sizeof(cl->backbuf));
+			cl->backbuf.InitOOB(cl->backbuf_data[cl->num_backbuf], sizeof(cl->backbuf_data[cl->num_backbuf]));
 			cl->backbuf.allowoverflow = true;
-			cl->backbuf.data = cl->backbuf_data[cl->num_backbuf];
-			cl->backbuf.maxsize = sizeof(cl->backbuf_data[cl->num_backbuf]);
 			cl->backbuf_size[cl->num_backbuf] = 0;
 			cl->num_backbuf++;
 		}
@@ -76,90 +72,90 @@ void ClientReliable_FinishWrite(client_t *cl)
 void ClientReliableWrite_Angle(client_t *cl, float f)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteAngle(&cl->backbuf, f);
+		cl->backbuf.WriteAngle(f);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteAngle(&cl->netchan.message, f);
+		cl->netchan.message.WriteAngle(f);
 }
 
 void ClientReliableWrite_Angle16(client_t *cl, float f)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteAngle16(&cl->backbuf, f);
+		cl->backbuf.WriteAngle16(f);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteAngle16(&cl->netchan.message, f);
+		cl->netchan.message.WriteAngle16(f);
 }
 
 void ClientReliableWrite_Byte(client_t *cl, int c)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteByte(&cl->backbuf, c);
+		cl->backbuf.WriteByte(c);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteByte(&cl->netchan.message, c);
+		cl->netchan.message.WriteByte(c);
 }
 
 void ClientReliableWrite_Char(client_t *cl, int c)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteChar(&cl->backbuf, c);
+		cl->backbuf.WriteChar(c);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteChar(&cl->netchan.message, c);
+		cl->netchan.message.WriteChar(c);
 }
 
 void ClientReliableWrite_Float(client_t *cl, float f)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteFloat(&cl->backbuf, f);
+		cl->backbuf.WriteFloat(f);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteFloat(&cl->netchan.message, f);
+		cl->netchan.message.WriteFloat(f);
 }
 
 void ClientReliableWrite_Coord(client_t *cl, float f)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteCoord(&cl->backbuf, f);
+		cl->backbuf.WriteCoord(f);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteCoord(&cl->netchan.message, f);
+		cl->netchan.message.WriteCoord(f);
 }
 
 void ClientReliableWrite_Long(client_t *cl, int c)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteLong(&cl->backbuf, c);
+		cl->backbuf.WriteLong(c);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteLong(&cl->netchan.message, c);
+		cl->netchan.message.WriteLong(c);
 }
 
 void ClientReliableWrite_Short(client_t *cl, int c)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteShort(&cl->backbuf, c);
+		cl->backbuf.WriteShort(c);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteShort(&cl->netchan.message, c);
+		cl->netchan.message.WriteShort(c);
 }
 
 void ClientReliableWrite_String(client_t *cl, char *s)
 {
 	if (cl->num_backbuf) {
-		MSG_WriteString(&cl->backbuf, s);
+		cl->backbuf.WriteString2(s);
 		ClientReliable_FinishWrite(cl);
 	} else
-		MSG_WriteString(&cl->netchan.message, s);
+		cl->netchan.message.WriteString2(s);
 }
 
 void ClientReliableWrite_SZ(client_t *cl, void *data, int len)
 {
 	if (cl->num_backbuf) {
-		SZ_Write(&cl->backbuf, data, len);
+		cl->backbuf.WriteData(data, len);
 		ClientReliable_FinishWrite(cl);
 	} else
-		SZ_Write(&cl->netchan.message, data, len);
+		cl->netchan.message.WriteData(data, len);
 }
 

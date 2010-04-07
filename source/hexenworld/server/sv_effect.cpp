@@ -209,49 +209,49 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 			break;
 	}
 
-	MSG_WriteByte (&sv.multicast, svc_start_effect);
-	MSG_WriteByte (&sv.multicast, index);
-	MSG_WriteByte (&sv.multicast, sv.Effects[index].type);
+	sv.multicast.WriteByte(svc_start_effect);
+	sv.multicast.WriteByte(index);
+	sv.multicast.WriteByte(sv.Effects[index].type);
 
 	switch(sv.Effects[index].type)
 	{
 		case CE_RAIN:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.min_org[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.min_org[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.min_org[2]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.max_org[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.max_org[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.max_org[2]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.e_size[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.e_size[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.e_size[2]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.dir[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.dir[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Rain.dir[2]);
-			MSG_WriteShort(&sv.multicast, sv.Effects[index].Rain.color);
-			MSG_WriteShort(&sv.multicast, sv.Effects[index].Rain.count);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Rain.wait);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.min_org[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.min_org[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.min_org[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.max_org[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.max_org[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.max_org[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.e_size[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.e_size[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.e_size[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.dir[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.dir[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Rain.dir[2]);
+			sv.multicast.WriteShort(sv.Effects[index].Rain.color);
+			sv.multicast.WriteShort(sv.Effects[index].Rain.count);
+			sv.multicast.WriteFloat(sv.Effects[index].Rain.wait);
 			break;
 
 		case CE_FOUNTAIN:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Fountain.pos[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Fountain.pos[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Fountain.pos[2]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Fountain.angle[0]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Fountain.angle[1]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Fountain.angle[2]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Fountain.movedir[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Fountain.movedir[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Fountain.movedir[2]);
-			MSG_WriteShort(&sv.multicast, sv.Effects[index].Fountain.color);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Fountain.cnt);
+			sv.multicast.WriteCoord(sv.Effects[index].Fountain.pos[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Fountain.pos[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Fountain.pos[2]);
+			sv.multicast.WriteAngle(sv.Effects[index].Fountain.angle[0]);
+			sv.multicast.WriteAngle(sv.Effects[index].Fountain.angle[1]);
+			sv.multicast.WriteAngle(sv.Effects[index].Fountain.angle[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Fountain.movedir[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Fountain.movedir[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Fountain.movedir[2]);
+			sv.multicast.WriteShort(sv.Effects[index].Fountain.color);
+			sv.multicast.WriteByte(sv.Effects[index].Fountain.cnt);
 			break;
 
 		case CE_QUAKE:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Quake.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Quake.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Quake.origin[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Quake.radius);
+			sv.multicast.WriteCoord(sv.Effects[index].Quake.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Quake.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Quake.origin[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Quake.radius);
 			break;
 
 		case CE_WHITE_SMOKE:
@@ -269,13 +269,13 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 		case CE_FLAMEWALL2:
 		case CE_ONFIRE:
 		case CE_RIPPLE:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Smoke.velocity[0]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Smoke.velocity[1]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Smoke.velocity[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Smoke.framelength);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Smoke.velocity[0]);
+			sv.multicast.WriteFloat(sv.Effects[index].Smoke.velocity[1]);
+			sv.multicast.WriteFloat(sv.Effects[index].Smoke.velocity[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Smoke.framelength);
 			break;
 
 		case CE_SM_WHITE_FLASH:
@@ -312,9 +312,9 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 		case CE_BRN_BOUNCE:
 		case CE_LSHOCK:
 
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[2]);
 			break;
 
 		case CE_WHITE_FLASH:
@@ -322,47 +322,47 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 		case CE_SM_BLUE_FLASH:			
 		case CE_HWSPLITFLASH:
 		case CE_RED_FLASH:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Smoke.origin[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Smoke.origin[2]);
 			break;
 
 
 		case CE_RIDER_DEATH:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].RD.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].RD.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].RD.origin[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].RD.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].RD.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].RD.origin[2]);
 			break;
 
 		case CE_TELEPORTERPUFFS:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Teleporter.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Teleporter.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Teleporter.origin[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Teleporter.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Teleporter.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Teleporter.origin[2]);
 			break;
 
 		case CE_TELEPORTERBODY:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Teleporter.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Teleporter.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Teleporter.origin[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Teleporter.velocity[0][0]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Teleporter.velocity[0][1]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Teleporter.velocity[0][2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Teleporter.skinnum);
+			sv.multicast.WriteCoord(sv.Effects[index].Teleporter.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Teleporter.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Teleporter.origin[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Teleporter.velocity[0][0]);
+			sv.multicast.WriteFloat(sv.Effects[index].Teleporter.velocity[0][1]);
+			sv.multicast.WriteFloat(sv.Effects[index].Teleporter.velocity[0][2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Teleporter.skinnum);
 			break;
 		case CE_BONESHRAPNEL:
 		case CE_HWBONEBALL:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.velocity[0]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.velocity[1]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.velocity[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.angle[0]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.angle[1]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.angle[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.avelocity[0]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.avelocity[1]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.avelocity[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.velocity[0]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.velocity[1]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.velocity[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.angle[0]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.angle[1]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.angle[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.avelocity[0]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.avelocity[1]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.avelocity[2]);
 
 			break;
 		case CE_BONESHARD:
@@ -370,88 +370,88 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 		case CE_HWMISSILESTAR:
 		case CE_HWEIDOLONSTAR:
 		case CE_HWRAVENPOWER:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.velocity[0]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.velocity[1]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Missile.velocity[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.velocity[0]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.velocity[1]);
+			sv.multicast.WriteFloat(sv.Effects[index].Missile.velocity[2]);
 			break;
 		case CE_HWDRILLA:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Missile.origin[2]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Missile.angle[0]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Missile.angle[1]);
-			MSG_WriteShort(&sv.multicast, sv.Effects[index].Missile.speed);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Missile.origin[2]);
+			sv.multicast.WriteAngle(sv.Effects[index].Missile.angle[0]);
+			sv.multicast.WriteAngle(sv.Effects[index].Missile.angle[1]);
+			sv.multicast.WriteShort(sv.Effects[index].Missile.speed);
 			break;
 		case CE_DEATHBUBBLES:
-			MSG_WriteShort(&sv.multicast, sv.Effects[index].Bubble.owner);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Bubble.offset[0]);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Bubble.offset[1]);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Bubble.offset[2]);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Bubble.count);
+			sv.multicast.WriteShort(sv.Effects[index].Bubble.owner);
+			sv.multicast.WriteByte(sv.Effects[index].Bubble.offset[0]);
+			sv.multicast.WriteByte(sv.Effects[index].Bubble.offset[1]);
+			sv.multicast.WriteByte(sv.Effects[index].Bubble.offset[2]);
+			sv.multicast.WriteByte(sv.Effects[index].Bubble.count);
 			break;
 		case CE_SCARABCHAIN:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Chain.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Chain.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Chain.origin[2]);
-			MSG_WriteShort(&sv.multicast, sv.Effects[index].Chain.owner+sv.Effects[index].Chain.material);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Chain.tag);
+			sv.multicast.WriteCoord(sv.Effects[index].Chain.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Chain.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Chain.origin[2]);
+			sv.multicast.WriteShort(sv.Effects[index].Chain.owner+sv.Effects[index].Chain.material);
+			sv.multicast.WriteByte(sv.Effects[index].Chain.tag);
 			break;
 		case CE_TRIPMINESTILL:
 		case CE_TRIPMINE:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Chain.origin[0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Chain.origin[1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Chain.origin[2]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Chain.velocity[0]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Chain.velocity[1]);
-			MSG_WriteFloat(&sv.multicast, sv.Effects[index].Chain.velocity[2]);
+			sv.multicast.WriteCoord(sv.Effects[index].Chain.origin[0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Chain.origin[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Chain.origin[2]);
+			sv.multicast.WriteFloat(sv.Effects[index].Chain.velocity[0]);
+			sv.multicast.WriteFloat(sv.Effects[index].Chain.velocity[1]);
+			sv.multicast.WriteFloat(sv.Effects[index].Chain.velocity[2]);
 			break;
 		case CE_HWSHEEPINATOR:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[5][0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[5][1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[5][2]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Xbow.angle[0]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Xbow.angle[1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[5][0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[5][1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[5][2]);
+			sv.multicast.WriteAngle(sv.Effects[index].Xbow.angle[0]);
+			sv.multicast.WriteAngle(sv.Effects[index].Xbow.angle[1]);
 
 			//now send the guys that have turned
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Xbow.turnedbolts);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Xbow.activebolts);
+			sv.multicast.WriteByte(sv.Effects[index].Xbow.turnedbolts);
+			sv.multicast.WriteByte(sv.Effects[index].Xbow.activebolts);
 			for (i=0;i<5;i++)
 			{
 				if ((1<<i)&sv.Effects[index].Xbow.turnedbolts)
 				{
-					MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[i][0]);
-					MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[i][1]);
-					MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[i][2]);
-					MSG_WriteAngle(&sv.multicast, sv.Effects[index].Xbow.vel[i][0]);
-					MSG_WriteAngle(&sv.multicast, sv.Effects[index].Xbow.vel[i][1]);
+					sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[i][0]);
+					sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[i][1]);
+					sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[i][2]);
+					sv.multicast.WriteAngle(sv.Effects[index].Xbow.vel[i][0]);
+					sv.multicast.WriteAngle(sv.Effects[index].Xbow.vel[i][1]);
 				}
 			}
 			break;
 		case CE_HWXBOWSHOOT:
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[5][0]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[5][1]);
-			MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[5][2]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Xbow.angle[0]);
-			MSG_WriteAngle(&sv.multicast, sv.Effects[index].Xbow.angle[1]);
-//				MSG_WriteFloat(&sv.multicast, sv.Effects[index].Xbow.angle[2]);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Xbow.bolts);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Xbow.randseed);
+			sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[5][0]);
+			sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[5][1]);
+			sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[5][2]);
+			sv.multicast.WriteAngle(sv.Effects[index].Xbow.angle[0]);
+			sv.multicast.WriteAngle(sv.Effects[index].Xbow.angle[1]);
+//				sv.multicast.WriteFloat(sv.Effects[index].Xbow.angle[2]);
+			sv.multicast.WriteByte(sv.Effects[index].Xbow.bolts);
+			sv.multicast.WriteByte(sv.Effects[index].Xbow.randseed);
 
 			//now send the guys that have turned
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Xbow.turnedbolts);
-			MSG_WriteByte(&sv.multicast, sv.Effects[index].Xbow.activebolts);
+			sv.multicast.WriteByte(sv.Effects[index].Xbow.turnedbolts);
+			sv.multicast.WriteByte(sv.Effects[index].Xbow.activebolts);
 			for (i=0;i<5;i++)
 			{
 				if ((1<<i)&sv.Effects[index].Xbow.turnedbolts)
 				{
-					MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[i][0]);
-					MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[i][1]);
-					MSG_WriteCoord(&sv.multicast, sv.Effects[index].Xbow.origin[i][2]);
-					MSG_WriteAngle(&sv.multicast, sv.Effects[index].Xbow.vel[i][0]);
-					MSG_WriteAngle(&sv.multicast, sv.Effects[index].Xbow.vel[i][1]);
+					sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[i][0]);
+					sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[i][1]);
+					sv.multicast.WriteCoord(sv.Effects[index].Xbow.origin[i][2]);
+					sv.multicast.WriteAngle(sv.Effects[index].Xbow.vel[i][0]);
+					sv.multicast.WriteAngle(sv.Effects[index].Xbow.vel[i][1]);
 				}
 			}
 			break;
@@ -463,8 +463,8 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 
 	if (sb)
 	{
-		SZ_Write (sb, sv.multicast.data, sv.multicast.cursize);
-		SZ_Clear (&sv.multicast);
+		sb->WriteData(sv.multicast._data, sv.multicast.cursize);
+		sv.multicast.Clear();
 	}
 	else
 	{
@@ -1215,17 +1215,17 @@ void SV_ParseMultiEffect(sizebuf_t *sb)
 	case CE_HWRAVENPOWER:
 		// need to set aside 3 effect ids
 		
-		MSG_WriteByte (sb, svc_multieffect);
-		MSG_WriteByte (sb, effect);
+		sb->WriteByte(svc_multieffect);
+		sb->WriteByte(effect);
 
 		VectorCopy(G_VECTOR(OFS_PARM1), orig);
-		MSG_WriteCoord(sb, orig[0]);
-		MSG_WriteCoord(sb, orig[1]);
-		MSG_WriteCoord(sb, orig[2]);
+		sb->WriteCoord(orig[0]);
+		sb->WriteCoord(orig[1]);
+		sb->WriteCoord(orig[2]);
 		VectorCopy(G_VECTOR(OFS_PARM2), vel);
-		MSG_WriteCoord(sb, vel[0]);
-		MSG_WriteCoord(sb, vel[1]);
-		MSG_WriteCoord(sb, vel[2]);
+		sb->WriteCoord(vel[0]);
+		sb->WriteCoord(vel[1]);
+		sb->WriteCoord(vel[2]);
 		for(count=0;count<3;count++)
 		{
 			for(index=0;index<MAX_EFFECTS;index++)
@@ -1237,7 +1237,7 @@ void SV_ParseMultiEffect(sizebuf_t *sb)
 				PR_RunError ("MAX_EFFECTS reached");
 				return;
 			}
-			MSG_WriteByte(sb, index);
+			sb->WriteByte(index);
 			sv.Effects[index].type = CE_HWRAVENPOWER;
 			VectorCopy(orig, sv.Effects[index].Missile.origin);
 			VectorCopy(vel, sv.Effects[index].Missile.velocity);

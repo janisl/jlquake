@@ -446,14 +446,14 @@ void PF_ambientsound (void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	MSG_WriteByte (&sv.signon,svc_spawnstaticsound);
+	sv.signon.WriteByte(svc_spawnstaticsound);
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord(&sv.signon, pos[i]);
+		sv.signon.WriteCoord(pos[i]);
 
-	MSG_WriteByte (&sv.signon, soundnum);
+	sv.signon.WriteByte(soundnum);
 
-	MSG_WriteByte (&sv.signon, vol*255);
-	MSG_WriteByte (&sv.signon, attenuation*64);
+	sv.signon.WriteByte(vol*255);
+	sv.signon.WriteByte(attenuation*64);
 
 }
 
@@ -1359,17 +1359,21 @@ void PF_WriteByte (void)
 		ClientReliableCheckBlock(cl, 1);
 		ClientReliableWrite_Byte(cl, G_FLOAT(OFS_PARM1));
 	} else
-		MSG_WriteByte (WriteDest(), G_FLOAT(OFS_PARM1));
+		WriteDest()->WriteByte(G_FLOAT(OFS_PARM1));
 }
 
-void PF_WriteChar (void)
+void PF_WriteChar()
 {
-	if (G_FLOAT(OFS_PARM0) == MSG_ONE) {
-		client_t *cl = Write_GetClient();
+	if (G_FLOAT(OFS_PARM0) == MSG_ONE)
+	{
+		client_t* cl = Write_GetClient();
 		ClientReliableCheckBlock(cl, 1);
 		ClientReliableWrite_Char(cl, G_FLOAT(OFS_PARM1));
-	} else
-		MSG_WriteChar (WriteDest(), G_FLOAT(OFS_PARM1));
+	}
+	else
+	{
+		WriteDest()->WriteChar(G_FLOAT(OFS_PARM1));
+	}
 }
 
 void PF_WriteShort (void)
@@ -1379,7 +1383,7 @@ void PF_WriteShort (void)
 		ClientReliableCheckBlock(cl, 2);
 		ClientReliableWrite_Short(cl, G_FLOAT(OFS_PARM1));
 	} else
-		MSG_WriteShort (WriteDest(), G_FLOAT(OFS_PARM1));
+		WriteDest()->WriteShort(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteLong (void)
@@ -1389,7 +1393,7 @@ void PF_WriteLong (void)
 		ClientReliableCheckBlock(cl, 4);
 		ClientReliableWrite_Long(cl, G_FLOAT(OFS_PARM1));
 	} else
-		MSG_WriteLong (WriteDest(), G_FLOAT(OFS_PARM1));
+		WriteDest()->WriteLong(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteAngle (void)
@@ -1399,7 +1403,7 @@ void PF_WriteAngle (void)
 		ClientReliableCheckBlock(cl, 1);
 		ClientReliableWrite_Angle(cl, G_FLOAT(OFS_PARM1));
 	} else
-		MSG_WriteAngle (WriteDest(), G_FLOAT(OFS_PARM1));
+		WriteDest()->WriteAngle(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteCoord (void)
@@ -1409,7 +1413,7 @@ void PF_WriteCoord (void)
 		ClientReliableCheckBlock(cl, 2);
 		ClientReliableWrite_Coord(cl, G_FLOAT(OFS_PARM1));
 	} else
-		MSG_WriteCoord (WriteDest(), G_FLOAT(OFS_PARM1));
+		WriteDest()->WriteCoord(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteString (void)
@@ -1419,7 +1423,7 @@ void PF_WriteString (void)
 		ClientReliableCheckBlock(cl, 1+QStr::Length(G_STRING(OFS_PARM1)));
 		ClientReliableWrite_String(cl, G_STRING(OFS_PARM1));
 	} else
-		MSG_WriteString (WriteDest(), G_STRING(OFS_PARM1));
+		WriteDest()->WriteString2(G_STRING(OFS_PARM1));
 }
 
 
@@ -1430,7 +1434,7 @@ void PF_WriteEntity (void)
 		ClientReliableCheckBlock(cl, 2);
 		ClientReliableWrite_Short(cl, G_EDICTNUM(OFS_PARM1));
 	} else
-		MSG_WriteShort (WriteDest(), G_EDICTNUM(OFS_PARM1));
+		WriteDest()->WriteShort(G_EDICTNUM(OFS_PARM1));
 }
 
 //=============================================================================
@@ -1444,17 +1448,17 @@ void PF_makestatic (void)
 	
 	ent = G_EDICT(OFS_PARM0);
 
-	MSG_WriteByte (&sv.signon,svc_spawnstatic);
+	sv.signon.WriteByte(svc_spawnstatic);
 
-	MSG_WriteByte (&sv.signon, SV_ModelIndex(PR_GetString(ent->v.model)));
+	sv.signon.WriteByte(SV_ModelIndex(PR_GetString(ent->v.model)));
 
-	MSG_WriteByte (&sv.signon, ent->v.frame);
-	MSG_WriteByte (&sv.signon, ent->v.colormap);
-	MSG_WriteByte (&sv.signon, ent->v.skin);
+	sv.signon.WriteByte(ent->v.frame);
+	sv.signon.WriteByte(ent->v.colormap);
+	sv.signon.WriteByte(ent->v.skin);
 	for (i=0 ; i<3 ; i++)
 	{
-		MSG_WriteCoord(&sv.signon, ent->v.origin[i]);
-		MSG_WriteAngle(&sv.signon, ent->v.angles[i]);
+		sv.signon.WriteCoord(ent->v.origin[i]);
+		sv.signon.WriteAngle(ent->v.angles[i]);
 	}
 
 // throw the entity away now

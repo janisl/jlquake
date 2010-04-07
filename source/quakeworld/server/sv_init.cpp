@@ -64,7 +64,7 @@ void SV_FlushSignon (void)
 		SV_Error ("sv.num_signon_buffers == MAX_SIGNON_BUFFERS-1");
 
 	sv.signon_buffer_size[sv.num_signon_buffers-1] = sv.signon.cursize;
-	sv.signon.data = sv.signon_buffers[sv.num_signon_buffers];
+	sv.signon._data = sv.signon_buffers[sv.num_signon_buffers];
 	sv.num_signon_buffers++;
 	sv.signon.cursize = 0;
 }
@@ -122,17 +122,17 @@ void SV_CreateBaseline (void)
 		//
 		// add to the message
 		//
-		MSG_WriteByte (&sv.signon,svc_spawnbaseline);		
-		MSG_WriteShort (&sv.signon,entnum);
+		sv.signon.WriteByte(svc_spawnbaseline);		
+		sv.signon.WriteShort(entnum);
 
-		MSG_WriteByte (&sv.signon, svent->baseline.modelindex);
-		MSG_WriteByte (&sv.signon, svent->baseline.frame);
-		MSG_WriteByte (&sv.signon, svent->baseline.colormap);
-		MSG_WriteByte (&sv.signon, svent->baseline.skinnum);
+		sv.signon.WriteByte(svent->baseline.modelindex);
+		sv.signon.WriteByte(svent->baseline.frame);
+		sv.signon.WriteByte(svent->baseline.colormap);
+		sv.signon.WriteByte(svent->baseline.skinnum);
 		for (i=0 ; i<3 ; i++)
 		{
-			MSG_WriteCoord(&sv.signon, svent->baseline.origin[i]);
-			MSG_WriteAngle(&sv.signon, svent->baseline.angles[i]);
+			sv.signon.WriteCoord(svent->baseline.origin[i]);
+			sv.signon.WriteAngle(svent->baseline.angles[i]);
 		}
 	}
 }
@@ -298,21 +298,16 @@ void SV_SpawnServer (char *server)
 	// wipe the entire per-level structure
 	Com_Memset(&sv, 0, sizeof(sv));
 
-	sv.datagram.maxsize = sizeof(sv.datagram_buf);
-	sv.datagram.data = sv.datagram_buf;
+	sv.datagram.InitOOB(sv.datagram_buf, sizeof(sv.datagram_buf));
 	sv.datagram.allowoverflow = true;
 
-	sv.reliable_datagram.maxsize = sizeof(sv.reliable_datagram_buf);
-	sv.reliable_datagram.data = sv.reliable_datagram_buf;
+	sv.reliable_datagram.InitOOB(sv.reliable_datagram_buf, sizeof(sv.reliable_datagram_buf));
 	
-	sv.multicast.maxsize = sizeof(sv.multicast_buf);
-	sv.multicast.data = sv.multicast_buf;
+	sv.multicast.InitOOB(sv.multicast_buf, sizeof(sv.multicast_buf));
 	
-	sv.master.maxsize = sizeof(sv.master_buf);
-	sv.master.data = sv.master_buf;
+	sv.master.InitOOB(sv.master_buf, sizeof(sv.master_buf));
 	
-	sv.signon.maxsize = sizeof(sv.signon_buffers[0]);
-	sv.signon.data = sv.signon_buffers[0];
+	sv.signon.InitOOB(sv.signon_buffers[0], sizeof(sv.signon_buffers[0]));
 	sv.num_signon_buffers = 1;
 
 	QStr::Cpy(sv.name, server);

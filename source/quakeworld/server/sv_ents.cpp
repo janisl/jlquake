@@ -117,8 +117,8 @@ void SV_EmitNailUpdate (sizebuf_t *msg)
 	if (!numnails)
 		return;
 
-	MSG_WriteByte (msg, svc_nails);
-	MSG_WriteByte (msg, numnails);
+	msg->WriteByte(svc_nails);
+	msg->WriteByte(numnails);
 
 	for (n=0 ; n<numnails ; n++)
 	{
@@ -137,7 +137,7 @@ void SV_EmitNailUpdate (sizebuf_t *msg)
 		bits[5] = yaw;
 
 		for (i=0 ; i<6 ; i++)
-			MSG_WriteByte (msg, bits[i]);
+			msg->WriteByte(bits[i]);
 	}
 }
 
@@ -211,32 +211,32 @@ void SV_WriteDelta (entity_state_t *from, entity_state_t *to, sizebuf_t *msg, qb
 	i = to->number | (bits&~511);
 	if (i & U_REMOVE)
 		Sys_Error ("U_REMOVE");
-	MSG_WriteShort (msg, i);
+	msg->WriteShort(i);
 	
 	if (bits & U_MOREBITS)
-		MSG_WriteByte (msg, bits&255);
+		msg->WriteByte(bits&255);
 	if (bits & U_MODEL)
-		MSG_WriteByte (msg,	to->modelindex);
+		msg->WriteByte(to->modelindex);
 	if (bits & U_FRAME)
-		MSG_WriteByte (msg, to->frame);
+		msg->WriteByte(to->frame);
 	if (bits & U_COLORMAP)
-		MSG_WriteByte (msg, to->colormap);
+		msg->WriteByte(to->colormap);
 	if (bits & U_SKIN)
-		MSG_WriteByte (msg, to->skinnum);
+		msg->WriteByte(to->skinnum);
 	if (bits & U_EFFECTS)
-		MSG_WriteByte (msg, to->effects);
+		msg->WriteByte(to->effects);
 	if (bits & U_ORIGIN1)
-		MSG_WriteCoord (msg, to->origin[0]);		
+		msg->WriteCoord(to->origin[0]);		
 	if (bits & U_ANGLE1)
-		MSG_WriteAngle(msg, to->angles[0]);
+		msg->WriteAngle(to->angles[0]);
 	if (bits & U_ORIGIN2)
-		MSG_WriteCoord (msg, to->origin[1]);
+		msg->WriteCoord(to->origin[1]);
 	if (bits & U_ANGLE2)
-		MSG_WriteAngle(msg, to->angles[1]);
+		msg->WriteAngle(to->angles[1]);
 	if (bits & U_ORIGIN3)
-		MSG_WriteCoord (msg, to->origin[2]);
+		msg->WriteCoord(to->origin[2]);
 	if (bits & U_ANGLE3)
-		MSG_WriteAngle(msg, to->angles[2]);
+		msg->WriteAngle(to->angles[2]);
 }
 
 /*
@@ -263,15 +263,15 @@ void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, sizebuf_t *
 		from = &fromframe->entities;
 		oldmax = from->num_entities;
 
-		MSG_WriteByte (msg, svc_deltapacketentities);
-		MSG_WriteByte (msg, client->delta_sequence);
+		msg->WriteByte(svc_deltapacketentities);
+		msg->WriteByte(client->delta_sequence);
 	}
 	else
 	{
 		oldmax = 0;	// no delta update
 		from = NULL;
 
-		MSG_WriteByte (msg, svc_packetentities);
+		msg->WriteByte(svc_packetentities);
 	}
 
 	newindex = 0;
@@ -304,13 +304,13 @@ void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, sizebuf_t *
 		if (newnum > oldnum)
 		{	// the old entity isn't present in the new message
 //Con_Printf ("remove %i\n", oldnum);
-			MSG_WriteShort (msg, oldnum | U_REMOVE);
+			msg->WriteShort(oldnum | U_REMOVE);
 			oldindex++;
 			continue;
 		}
 	}
 
-	MSG_WriteShort (msg, 0);	// end of packetentities
+	msg->WriteShort(0);	// end of packetentities
 }
 
 /*
@@ -381,21 +381,21 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 			ent->v.weaponframe) 
 			pflags |= PF_WEAPONFRAME;
 
-		MSG_WriteByte (msg, svc_playerinfo);
-		MSG_WriteByte (msg, j);
-		MSG_WriteShort (msg, pflags);
+		msg->WriteByte(svc_playerinfo);
+		msg->WriteByte(j);
+		msg->WriteShort(pflags);
 
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteCoord (msg, ent->v.origin[i]);
+			msg->WriteCoord(ent->v.origin[i]);
 		
-		MSG_WriteByte (msg, ent->v.frame);
+		msg->WriteByte(ent->v.frame);
 
 		if (pflags & PF_MSEC)
 		{
 			msec = 1000*(sv.time - cl->localtime);
 			if (msec > 255)
 				msec = 255;
-			MSG_WriteByte (msg, msec);
+			msg->WriteByte(msec);
 		}
 		
 		if (pflags & PF_COMMAND)
@@ -417,19 +417,19 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizeb
 
 		for (i=0 ; i<3 ; i++)
 			if (pflags & (PF_VELOCITY1<<i) )
-				MSG_WriteShort (msg, ent->v.velocity[i]);
+				msg->WriteShort(ent->v.velocity[i]);
 
 		if (pflags & PF_MODEL)
-			MSG_WriteByte (msg, ent->v.modelindex);
+			msg->WriteByte(ent->v.modelindex);
 
 		if (pflags & PF_SKINNUM)
-			MSG_WriteByte (msg, ent->v.skin);
+			msg->WriteByte(ent->v.skin);
 
 		if (pflags & PF_EFFECTS)
-			MSG_WriteByte (msg, ent->v.effects);
+			msg->WriteByte(ent->v.effects);
 
 		if (pflags & PF_WEAPONFRAME)
-			MSG_WriteByte (msg, ent->v.weaponframe);
+			msg->WriteByte(ent->v.weaponframe);
 	}
 }
 

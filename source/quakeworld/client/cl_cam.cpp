@@ -112,8 +112,8 @@ qboolean Cam_DrawPlayer(int playernum)
 void Cam_Unlock(void)
 {
 	if (autocam) {
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-		MSG_WriteString (&cls.netchan.message, "ptrack");
+		cls.netchan.message.WriteByte(clc_stringcmd);
+		cls.netchan.message.WriteString2("ptrack");
 		autocam = CAM_NONE;
 		locked = false;
 		Sbar_Changed();
@@ -125,8 +125,8 @@ void Cam_Lock(int playernum)
 	char st[40];
 
 	sprintf(st, "ptrack %i", playernum);
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
-	MSG_WriteString (&cls.netchan.message, st);
+	cls.netchan.message.WriteByte(clc_stringcmd);
+	cls.netchan.message.WriteString2(st);
 	spec_track = playernum;
 	cam_forceview = true;
 	locked = false;
@@ -360,10 +360,10 @@ void Cam_Track(usercmd_t *cmd)
 		VectorCopy(player->viewangles, cl.viewangles);
 		VectorCopy(player->origin, desired_position);
 		if (memcmp(&desired_position, &self->origin, sizeof(desired_position)) != 0) {
-			MSG_WriteByte (&cls.netchan.message, clc_tmove);
-			MSG_WriteCoord (&cls.netchan.message, desired_position[0]);
-			MSG_WriteCoord (&cls.netchan.message, desired_position[1]);
-			MSG_WriteCoord (&cls.netchan.message, desired_position[2]);
+			cls.netchan.message.WriteByte(clc_tmove);
+			cls.netchan.message.WriteCoord(desired_position[0]);
+			cls.netchan.message.WriteCoord(desired_position[1]);
+			cls.netchan.message.WriteCoord(desired_position[2]);
 			// move there locally immediately
 			VectorCopy(desired_position, self->origin);
 		}
@@ -376,10 +376,10 @@ void Cam_Track(usercmd_t *cmd)
 		len = vlen(vec);
 		cmd->forwardmove = cmd->sidemove = cmd->upmove = 0;
 		if (len > 16) { // close enough?
-			MSG_WriteByte (&cls.netchan.message, clc_tmove);
-			MSG_WriteCoord (&cls.netchan.message, desired_position[0]);
-			MSG_WriteCoord (&cls.netchan.message, desired_position[1]);
-			MSG_WriteCoord (&cls.netchan.message, desired_position[2]);
+			cls.netchan.message.WriteByte(clc_tmove);
+			cls.netchan.message.WriteCoord(desired_position[0]);
+			cls.netchan.message.WriteCoord(desired_position[1]);
+			cls.netchan.message.WriteCoord(desired_position[2]);
 		}
 
 		// move there locally immediately

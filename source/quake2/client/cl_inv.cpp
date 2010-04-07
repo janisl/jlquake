@@ -31,7 +31,7 @@ void CL_ParseInventory (void)
 	int		i;
 
 	for (i=0 ; i<MAX_ITEMS ; i++)
-		cl.inventory[i] = MSG_ReadShort (&net_message);
+		cl.inventory[i] = net_message.ReadShort();
 }
 
 

@@ -304,8 +304,8 @@ void PF_sprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	MSG_WriteChar (&client->message,svc_print);
-	MSG_WriteString (&client->message, s );
+	client->message.WriteChar(svc_print);
+	client->message.WriteString2(s);
 }
 
 
@@ -335,8 +335,8 @@ void PF_centerprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	MSG_WriteChar (&client->message,svc_centerprint);
-	MSG_WriteString (&client->message, s );
+	client->message.WriteChar(svc_centerprint);
+	client->message.WriteString2(s);
 }
 
 
@@ -529,14 +529,14 @@ void PF_ambientsound (void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	MSG_WriteByte (&sv.signon,svc_spawnstaticsound);
+	sv.signon.WriteByte(svc_spawnstaticsound);
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord(&sv.signon, pos[i]);
+		sv.signon.WriteCoord(pos[i]);
 
-	MSG_WriteByte (&sv.signon, soundnum);
+	sv.signon.WriteByte(soundnum);
 
-	MSG_WriteByte (&sv.signon, vol*255);
-	MSG_WriteByte (&sv.signon, attenuation*64);
+	sv.signon.WriteByte(vol*255);
+	sv.signon.WriteByte(attenuation*64);
 
 }
 
@@ -1150,9 +1150,9 @@ void PF_lightstyle (void)
 	for (j=0, client = svs.clients ; j<svs.maxclients ; j++, client++)
 		if (client->active || client->spawned)
 		{
-			MSG_WriteChar (&client->message, svc_lightstyle);
-			MSG_WriteChar (&client->message,style);
-			MSG_WriteString (&client->message, val);
+			client->message.WriteChar(svc_lightstyle);
+			client->message.WriteChar(style);
+			client->message.WriteString2(val);
 		}
 }
 
@@ -1406,43 +1406,43 @@ sizebuf_t *WriteDest (void)
 
 void PF_WriteByte (void)
 {
-	MSG_WriteByte (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteByte(G_FLOAT(OFS_PARM1));
 }
 
-void PF_WriteChar (void)
+void PF_WriteChar()
 {
-	MSG_WriteChar (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteChar(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteShort (void)
 {
-	MSG_WriteShort (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteShort(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteLong (void)
 {
-	MSG_WriteLong (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteLong(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteAngle (void)
 {
-	MSG_WriteAngle (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteAngle(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteCoord (void)
 {
-	MSG_WriteCoord (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteCoord(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteString (void)
 {
-	MSG_WriteString (WriteDest(), G_STRING(OFS_PARM1));
+	WriteDest()->WriteString2(G_STRING(OFS_PARM1));
 }
 
 
 void PF_WriteEntity (void)
 {
-	MSG_WriteShort (WriteDest(), G_EDICTNUM(OFS_PARM1));
+	WriteDest()->WriteShort(G_EDICTNUM(OFS_PARM1));
 }
 
 //=============================================================================
@@ -1456,17 +1456,17 @@ void PF_makestatic (void)
 	
 	ent = G_EDICT(OFS_PARM0);
 
-	MSG_WriteByte (&sv.signon,svc_spawnstatic);
+	sv.signon.WriteByte(svc_spawnstatic);
 
-	MSG_WriteByte (&sv.signon, SV_ModelIndex(pr_strings + ent->v.model));
+	sv.signon.WriteByte(SV_ModelIndex(pr_strings + ent->v.model));
 
-	MSG_WriteByte (&sv.signon, ent->v.frame);
-	MSG_WriteByte (&sv.signon, ent->v.colormap);
-	MSG_WriteByte (&sv.signon, ent->v.skin);
+	sv.signon.WriteByte(ent->v.frame);
+	sv.signon.WriteByte(ent->v.colormap);
+	sv.signon.WriteByte(ent->v.skin);
 	for (i=0 ; i<3 ; i++)
 	{
-		MSG_WriteCoord(&sv.signon, ent->v.origin[i]);
-		MSG_WriteAngle(&sv.signon, ent->v.angles[i]);
+		sv.signon.WriteCoord(ent->v.origin[i]);
+		sv.signon.WriteAngle(ent->v.angles[i]);
 	}
 
 // throw the entity away now

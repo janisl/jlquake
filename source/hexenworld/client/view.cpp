@@ -302,9 +302,9 @@ V_ParseTarget
 
 void V_ParseTarget(void)
 {
-	v_targAngle = MSG_ReadByte();
-	v_targPitch = MSG_ReadByte();
-	v_targDist = MSG_ReadByte();
+	v_targAngle = net_message.ReadByte();
+	v_targPitch = net_message.ReadByte();
+	v_targDist = net_message.ReadByte();
 }
 
 
@@ -386,10 +386,10 @@ void V_ParseDamage (void)
 	float	side;
 	float	count;
 	
-	armor = MSG_ReadByte ();
-	blood = MSG_ReadByte ();
+	armor = net_message.ReadByte ();
+	blood = net_message.ReadByte ();
 	for (i=0 ; i<3 ; i++)
-		from[i] = MSG_ReadCoord ();
+		from[i] = net_message.ReadCoord();
 
 	count = blood*0.5 + armor*0.5;
 	if (count < 10)

@@ -1125,7 +1125,7 @@ void Sbar_DeathmatchOverlay(void)
 	if (realtime - cl.last_ping_request > 2)
 	{
 		cl.last_ping_request = realtime;
-		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		cls.netchan.message.WriteByte(clc_stringcmd);
 		SZ_Print (&cls.netchan.message, "pings");
 	}
 
@@ -1716,8 +1716,8 @@ void Inv_Update(qboolean force)
 
 		if (cls.state == ca_active)
 		{	// This will cause the server to set the client's edict's inventory value
-			MSG_WriteByte (&cls.netchan.message, clc_inv_select);
-			MSG_WriteByte (&cls.netchan.message, cl.v.inventory);
+			cls.netchan.message.WriteByte(clc_inv_select);
+			cls.netchan.message.WriteByte(cl.v.inventory);
 		}
 	}
 }

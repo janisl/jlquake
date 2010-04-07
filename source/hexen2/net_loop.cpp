@@ -116,8 +116,8 @@ int Loop_GetMessage (qsocket_t *sock)
 	ret = sock->receiveMessage[0];
 	length = sock->receiveMessage[1] + (sock->receiveMessage[2] << 8);
 	// alignment byte skipped here
-	SZ_Clear (&net_message);
-	SZ_Write (&net_message, &sock->receiveMessage[4], length);
+	net_message.Clear();
+	net_message.WriteData(&sock->receiveMessage[4], length);
 
 	length = IntAlign(length + 4);
 	sock->receiveMessageLength -= length;
@@ -158,7 +158,7 @@ int Loop_SendMessage (qsocket_t *sock, sizebuf_t *data)
 	buffer++;
 
 	// message
-	Com_Memcpy(buffer, data->data, data->cursize);
+	Com_Memcpy(buffer, data->_data, data->cursize);
 	*bufferLength = IntAlign(*bufferLength + data->cursize + 4);
 
 	sock->canSend = false;
@@ -192,7 +192,7 @@ int Loop_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 	buffer++;
 
 	// message
-	Com_Memcpy(buffer, data->data, data->cursize);
+	Com_Memcpy(buffer, data->_data, data->cursize);
 	*bufferLength = IntAlign(*bufferLength + data->cursize + 4);
 	return 1;
 }

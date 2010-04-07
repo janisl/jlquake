@@ -443,26 +443,26 @@ void SV_ReadClientMove (usercmd_t *move)
 	
 // read ping time
 	host_client->ping_times[host_client->num_pings%NUM_PING_TIMES]
-		= sv.time - MSG_ReadFloat ();
+		= sv.time - net_message.ReadFloat();
 	host_client->num_pings++;
 
 // read current angles	
 	for (i=0 ; i<3 ; i++)
-		angle[i] = MSG_ReadAngle ();
+		angle[i] = net_message.ReadAngle();
 
 	VectorCopy (angle, host_client->edict->v.v_angle);
 		
 // read movement
-	move->forwardmove = MSG_ReadShort ();
-	move->sidemove = MSG_ReadShort ();
-	move->upmove = MSG_ReadShort ();
+	move->forwardmove = net_message.ReadShort ();
+	move->sidemove = net_message.ReadShort ();
+	move->upmove = net_message.ReadShort ();
 	
 // read buttons
-	bits = MSG_ReadByte ();
+	bits = net_message.ReadByte ();
 	host_client->edict->v.button0 = bits & 1;
 	host_client->edict->v.button2 = (bits & 2)>>1;
 
-	i = MSG_ReadByte ();
+	i = net_message.ReadByte ();
 	if (i)
 		host_client->edict->v.impulse = i;
 }
@@ -478,7 +478,7 @@ qboolean SV_ReadClientMessage (void)
 {
 	int		ret;
 	int		cmd;
-	char		*s;
+	const char		*s;
 	
 	do
 	{
@@ -492,20 +492,20 @@ nextmsg:
 		if (!ret)
 			return true;
 					
-		MSG_BeginReading ();
+		net_message.BeginReadingOOB();
 		
 		while (1)
 		{
 			if (!host_client->active)
 				return false;	// a command caused an error
 
-			if (msg_badread)
+			if (net_message.badread)
 			{
 				Sys_Printf ("SV_ReadClientMessage: badread\n");
 				return false;
 			}	
 	
-			cmd = MSG_ReadChar ();
+			cmd = net_message.ReadChar();
 			
 			switch (cmd)
 			{
@@ -521,7 +521,7 @@ nextmsg:
 				break;
 				
 			case clc_stringcmd:	
-				s = MSG_ReadString ();
+				s = net_message.ReadString2();
 				if (host_client->privileged)
 					ret = 2;
 				else

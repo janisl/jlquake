@@ -48,9 +48,9 @@ void SV_FlushRedirect (void)
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
-		MSG_WriteByte (&host_client->netchan.message, svc_print);
-		MSG_WriteByte (&host_client->netchan.message, PRINT_HIGH);
-		MSG_WriteString (&host_client->netchan.message, outputbuf);
+		host_client->netchan.message.WriteByte(svc_print);
+		host_client->netchan.message.WriteByte(PRINT_HIGH);
+		host_client->netchan.message.WriteString2(outputbuf);
 	}
 
 	// clear it
@@ -161,9 +161,9 @@ void SV_ClientPrintf (client_t *cl, int level, char *fmt, ...)
 	vsprintf (string, fmt,argptr);
 	va_end (argptr);
 	
-	MSG_WriteByte (&cl->netchan.message, svc_print);
-	MSG_WriteByte (&cl->netchan.message, level);
-	MSG_WriteString (&cl->netchan.message, string);
+	cl->netchan.message.WriteByte(svc_print);
+	cl->netchan.message.WriteByte(level);
+	cl->netchan.message.WriteString2(string);
 }
 
 
@@ -193,9 +193,9 @@ void SV_BroadcastPrintf (int level, char *fmt, ...)
 			continue;
 		if (!cl->state)
 			continue;
-		MSG_WriteByte (&cl->netchan.message, svc_print);
-		MSG_WriteByte (&cl->netchan.message, level);
-		MSG_WriteString (&cl->netchan.message, string);
+		cl->netchan.message.WriteByte(svc_print);
+		cl->netchan.message.WriteByte(level);
+		cl->netchan.message.WriteString2(string);
 	}
 }
 
@@ -217,8 +217,8 @@ void SV_BroadcastCommand (char *fmt, ...)
 	vsprintf (string, fmt,argptr);
 	va_end (argptr);
 
-	MSG_WriteByte (&sv.reliable_datagram, svc_stufftext);
-	MSG_WriteString (&sv.reliable_datagram, string);
+	sv.reliable_datagram.WriteByte(svc_stufftext);
+	sv.reliable_datagram.WriteString2(string);
 }
 
 
@@ -304,12 +304,12 @@ void SV_Multicast (vec3_t origin, int to)
 		clients_multicast |= 1l << j;
 
 		if (reliable)
-			SZ_Write (&client->netchan.message, sv.multicast.data, sv.multicast.cursize);
+			client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
 		else
-			SZ_Write (&client->datagram, sv.multicast.data, sv.multicast.cursize);
+			client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
 	}
 
-	SZ_Clear (&sv.multicast);
+	sv.multicast.Clear();
 }
 
 /*
@@ -338,13 +338,13 @@ void SV_MulticastSpecific (unsigned clients, qboolean reliable)
 			clients_multicast |= 1l << j;
 
 			if (reliable)
-				SZ_Write (&client->netchan.message, sv.multicast.data, sv.multicast.cursize);
+				client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
 			else
-				SZ_Write (&client->datagram, sv.multicast.data, sv.multicast.cursize);
+				client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
 		}
 	}
 
-	SZ_Clear (&sv.multicast);
+	sv.multicast.Clear();
 }
 
 /*  
@@ -371,8 +371,8 @@ void SV_StopSound (edict_t *entity, int channel)
 		VectorCopy (entity->v.origin, origin);
 	}
 
-	MSG_WriteByte (&sv.multicast, svc_stopsound);
-	MSG_WriteShort (&sv.multicast, channel);
+	sv.multicast.WriteByte(svc_stopsound);
+	sv.multicast.WriteShort(channel);
 	SV_Multicast (origin, MULTICAST_ALL_R);
 }
 
@@ -401,10 +401,10 @@ void SV_UpdateSoundPos (edict_t *entity, int channel)
 		VectorCopy (entity->v.origin, origin);
 	}
 
-	MSG_WriteByte (&sv.multicast, svc_sound_update_pos);
-	MSG_WriteShort (&sv.multicast, channel);
+	sv.multicast.WriteByte(svc_sound_update_pos);
+	sv.multicast.WriteShort(channel);
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord (&sv.multicast, entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
+		sv.multicast.WriteCoord(entity->v.origin[i]+0.5*(entity->v.mins[i]+entity->v.maxs[i]));
 	SV_Multicast (origin, MULTICAST_PHS);
 }
 
@@ -489,15 +489,15 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 		VectorCopy (entity->v.origin, origin);
 	}
 
-	MSG_WriteByte (&sv.multicast, svc_sound);
-	MSG_WriteShort (&sv.multicast, channel);
+	sv.multicast.WriteByte(svc_sound);
+	sv.multicast.WriteShort(channel);
 	if (channel & SND_VOLUME)
-		MSG_WriteByte (&sv.multicast, volume);
+		sv.multicast.WriteByte(volume);
 	if (channel & SND_ATTENUATION)
-		MSG_WriteByte (&sv.multicast, attenuation*32);
-	MSG_WriteByte (&sv.multicast, sound_num);
+		sv.multicast.WriteByte(attenuation*32);
+	sv.multicast.WriteByte(sound_num);
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord (&sv.multicast, origin[i]);
+		sv.multicast.WriteCoord(origin[i]);
 
 	if (use_phs)
 		SV_Multicast (origin, reliable ? MULTICAST_PHS_R : MULTICAST_PHS);
@@ -517,10 +517,10 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count)
 {
 	int		i, v;
 
-	MSG_WriteByte (&sv.multicast, svc_particle);
-	MSG_WriteCoord (&sv.multicast, org[0]);
-	MSG_WriteCoord (&sv.multicast, org[1]);
-	MSG_WriteCoord (&sv.multicast, org[2]);
+	sv.multicast.WriteByte(svc_particle);
+	sv.multicast.WriteCoord(org[0]);
+	sv.multicast.WriteCoord(org[1]);
+	sv.multicast.WriteCoord(org[2]);
 	for (i=0 ; i<3 ; i++)
 	{
 		v = dir[i]*16;
@@ -528,10 +528,10 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count)
 			v = 127;
 		else if (v < -128)
 			v = -128;
-		MSG_WriteChar (&sv.multicast, v);
+		sv.multicast.WriteChar(v);
 	}
-	MSG_WriteByte (&sv.multicast, count);
-	MSG_WriteByte (&sv.multicast, color);
+	sv.multicast.WriteByte(count);
+	sv.multicast.WriteByte(color);
 
 	SV_Multicast (org, MULTICAST_PVS);
 }           
@@ -545,20 +545,20 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count)
 {
-	MSG_WriteByte (&sv.multicast, svc_particle2);
-	MSG_WriteCoord (&sv.multicast, org[0]);
-	MSG_WriteCoord (&sv.multicast, org[1]);
-	MSG_WriteCoord (&sv.multicast, org[2]);
-	MSG_WriteFloat (&sv.multicast, dmin[0]);
-	MSG_WriteFloat (&sv.multicast, dmin[1]);
-	MSG_WriteFloat (&sv.multicast, dmin[2]);
-	MSG_WriteFloat (&sv.multicast, dmax[0]);
-	MSG_WriteFloat (&sv.multicast, dmax[1]);
-	MSG_WriteFloat (&sv.multicast, dmax[2]);
+	sv.multicast.WriteByte(svc_particle2);
+	sv.multicast.WriteCoord(org[0]);
+	sv.multicast.WriteCoord(org[1]);
+	sv.multicast.WriteCoord(org[2]);
+	sv.multicast.WriteFloat(dmin[0]);
+	sv.multicast.WriteFloat(dmin[1]);
+	sv.multicast.WriteFloat(dmin[2]);
+	sv.multicast.WriteFloat(dmax[0]);
+	sv.multicast.WriteFloat(dmax[1]);
+	sv.multicast.WriteFloat(dmax[2]);
 
-	MSG_WriteShort (&sv.multicast, color);
-	MSG_WriteByte (&sv.multicast, count);
-	MSG_WriteByte (&sv.multicast, effect);
+	sv.multicast.WriteShort(color);
+	sv.multicast.WriteByte(count);
+	sv.multicast.WriteByte(effect);
 
 	SV_Multicast (org, MULTICAST_PVS);
 }           
@@ -572,17 +572,17 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle3 (vec3_t org, vec3_t box, int color, int effect, int count)
 {
-	MSG_WriteByte (&sv.multicast, svc_particle3);
-	MSG_WriteCoord (&sv.multicast, org[0]);
-	MSG_WriteCoord (&sv.multicast, org[1]);
-	MSG_WriteCoord (&sv.multicast, org[2]);
-	MSG_WriteByte (&sv.multicast, box[0]);
-	MSG_WriteByte (&sv.multicast, box[1]);
-	MSG_WriteByte (&sv.multicast, box[2]);
+	sv.multicast.WriteByte(svc_particle3);
+	sv.multicast.WriteCoord(org[0]);
+	sv.multicast.WriteCoord(org[1]);
+	sv.multicast.WriteCoord(org[2]);
+	sv.multicast.WriteByte(box[0]);
+	sv.multicast.WriteByte(box[1]);
+	sv.multicast.WriteByte(box[2]);
 
-	MSG_WriteShort (&sv.multicast, color);
-	MSG_WriteByte (&sv.multicast, count);
-	MSG_WriteByte (&sv.multicast, effect);
+	sv.multicast.WriteShort(color);
+	sv.multicast.WriteByte(count);
+	sv.multicast.WriteByte(effect);
 
 	SV_Multicast (org, MULTICAST_PVS);
 }           
@@ -596,32 +596,32 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int count)
 {
-	MSG_WriteByte (&sv.multicast, svc_particle4);
-	MSG_WriteCoord (&sv.multicast, org[0]);
-	MSG_WriteCoord (&sv.multicast, org[1]);
-	MSG_WriteCoord (&sv.multicast, org[2]);
-	MSG_WriteByte (&sv.multicast, radius);
+	sv.multicast.WriteByte(svc_particle4);
+	sv.multicast.WriteCoord(org[0]);
+	sv.multicast.WriteCoord(org[1]);
+	sv.multicast.WriteCoord(org[2]);
+	sv.multicast.WriteByte(radius);
 
-	MSG_WriteShort (&sv.multicast, color);
-	MSG_WriteByte (&sv.multicast, count);
-	MSG_WriteByte (&sv.multicast, effect);
+	sv.multicast.WriteShort(color);
+	sv.multicast.WriteByte(count);
+	sv.multicast.WriteByte(effect);
 
 	SV_Multicast (org, MULTICAST_PVS);
 }           
 
 void SV_StartRainEffect (vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count)
 {
-	MSG_WriteByte (&sv.multicast, svc_raineffect);
-	MSG_WriteCoord (&sv.multicast, org[0]);
-	MSG_WriteCoord (&sv.multicast, org[1]);
-	MSG_WriteCoord (&sv.multicast, org[2]);
-	MSG_WriteCoord (&sv.multicast, e_size[0]);
-	MSG_WriteCoord (&sv.multicast, e_size[1]);
-	MSG_WriteCoord (&sv.multicast, e_size[2]);
-	MSG_WriteAngle (&sv.multicast, x_dir);	
-	MSG_WriteAngle (&sv.multicast, y_dir);	
-	MSG_WriteShort (&sv.multicast, color);
-	MSG_WriteShort (&sv.multicast, count);
+	sv.multicast.WriteByte(svc_raineffect);
+	sv.multicast.WriteCoord(org[0]);
+	sv.multicast.WriteCoord(org[1]);
+	sv.multicast.WriteCoord(org[2]);
+	sv.multicast.WriteCoord(e_size[0]);
+	sv.multicast.WriteCoord(e_size[1]);
+	sv.multicast.WriteCoord(e_size[2]);
+	sv.multicast.WriteAngle(x_dir);	
+	sv.multicast.WriteAngle(y_dir);	
+	sv.multicast.WriteShort(color);
+	sv.multicast.WriteShort(count);
 
 	SV_Multicast (org, MULTICAST_PVS);
 }
@@ -699,8 +699,8 @@ void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg)
 	// send the chokecount for r_netgraph
 	if (client->chokecount)
 	{
-		MSG_WriteByte (msg, svc_chokecount);
-		MSG_WriteByte (msg, client->chokecount);
+		msg->WriteByte(svc_chokecount);
+		msg->WriteByte(client->chokecount);
 		client->chokecount = 0;
 	}
 
@@ -708,11 +708,11 @@ void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg)
 	if (ent->v.dmg_take || ent->v.dmg_save)
 	{
 		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
-		MSG_WriteByte (msg, svc_damage);
-		MSG_WriteByte (msg, ent->v.dmg_save);
-		MSG_WriteByte (msg, ent->v.dmg_take);
+		msg->WriteByte(svc_damage);
+		msg->WriteByte(ent->v.dmg_save);
+		msg->WriteByte(ent->v.dmg_take);
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteCoord (msg, other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
+			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
 	
 		ent->v.dmg_take = 0;
 		ent->v.dmg_save = 0;
@@ -721,19 +721,19 @@ void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg)
 	// a fixangle might get lost in a dropped packet.  Oh well.
 	if ( ent->v.fixangle )
 	{
-		MSG_WriteByte (msg, svc_setangle);
+		msg->WriteByte(svc_setangle);
 		for (i=0 ; i < 3 ; i++)
-			MSG_WriteAngle (msg, ent->v.angles[i] );
+			msg->WriteAngle(ent->v.angles[i] );
 		ent->v.fixangle = 0;
 	}
 
 	// if the player has a target, send its info...
 	if (ent->v.targDist)
 	{
-		MSG_WriteByte(msg, svc_targetupdate);
-		MSG_WriteByte(msg, ent->v.targAng);
-		MSG_WriteByte(msg, ent->v.targPitch);
-		MSG_WriteByte(msg, (ent->v.targDist < 255.0) ? (int)(ent->v.targDist) : 255);
+		msg->WriteByte(svc_targetupdate);
+		msg->WriteByte(ent->v.targAng);
+		msg->WriteByte(ent->v.targPitch);
+		msg->WriteByte((ent->v.targDist < 255.0) ? (int)(ent->v.targDist) : 255);
 	}
 }
 
@@ -778,15 +778,15 @@ void SV_UpdateClientStats (client_t *client)
 			client->stats[i] = stats[i];
 			if (stats[i] >=0 && stats[i] <= 255)
 			{
-				MSG_WriteByte (&client->netchan.message,  svc_updatestat);
-				MSG_WriteByte (&client->netchan.message, i);
-				MSG_WriteByte (&client->netchan.message,  stats[i]);
+				client->netchan.message.WriteByte(svc_updatestat);
+				client->netchan.message.WriteByte(i);
+				client->netchan.message.WriteByte(stats[i]);
 			}
 			else
 			{
-				MSG_WriteByte (&client->netchan.message,  svc_updatestatlong);
-				MSG_WriteByte (&client->netchan.message, i);
-				MSG_WriteLong (&client->netchan.message,  stats[i]);
+				client->netchan.message.WriteByte(svc_updatestatlong);
+				client->netchan.message.WriteByte(i);
+				client->netchan.message.WriteLong(stats[i]);
 			}
 		}
 }
@@ -801,11 +801,8 @@ qboolean SV_SendClientDatagram (client_t *client)
 	byte		buf[MAX_DATAGRAM];
 	sizebuf_t	msg;
 
-	msg.data = buf;
-	msg.maxsize = sizeof(buf);
-	msg.cursize = 0;
+	msg.InitOOB(buf, sizeof(buf));
 	msg.allowoverflow = true;
-	msg.overflowed = false;
 
 	// add the client specific data to the datagram
 	SV_WriteClientdataToMessage (client, &msg);
@@ -820,8 +817,8 @@ qboolean SV_SendClientDatagram (client_t *client)
 	if (client->datagram.overflowed)
 		Con_Printf ("WARNING: datagram overflowed for %s\n", client->name);
 	else
-		SZ_Write (&msg, client->datagram.data, client->datagram.cursize);
-	SZ_Clear (&client->datagram);
+		msg.WriteData(client->datagram._data, client->datagram.cursize);
+	client->datagram.Clear();
 
 	// send deltas over reliable stream
 	if (Netchan_CanReliable (&client->netchan))
@@ -830,7 +827,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 	if (msg.overflowed)
 	{
 		Con_Printf ("WARNING: msg overflowed for %s\n", client->name);
-		SZ_Clear (&msg);
+		msg.Clear();
 	}
 
 	// send the datagram
@@ -939,16 +936,16 @@ void SV_UpdateToReliableMessages (void)
 				if (client->state < cs_connected)
 					continue;
 //Sys_Printf("SV_UpdateToReliableMessages:  Updated frags for client %d to %d\n", i, j);
-				MSG_WriteByte (&client->netchan.message, svc_updatedminfo);
-				MSG_WriteByte (&client->netchan.message, i);
-				MSG_WriteShort (&client->netchan.message, host_client->edict->v.frags);
-				MSG_WriteByte (&client->netchan.message, (host_client->playerclass<<5)|((int)host_client->edict->v.level&31));
+				client->netchan.message.WriteByte(svc_updatedminfo);
+				client->netchan.message.WriteByte(i);
+				client->netchan.message.WriteShort(host_client->edict->v.frags);
+				client->netchan.message.WriteByte((host_client->playerclass<<5)|((int)host_client->edict->v.level&31));
 
 				if(dmMode.value==DM_SIEGE)
 				{
-					MSG_WriteByte (&client->netchan.message, svc_updatesiegelosses);
-					MSG_WriteByte (&client->netchan.message, pr_global_struct->defLosses);
-					MSG_WriteByte (&client->netchan.message, pr_global_struct->attLosses);
+					client->netchan.message.WriteByte(svc_updatesiegelosses);
+					client->netchan.message.WriteByte(pr_global_struct->defLosses);
+					client->netchan.message.WriteByte(pr_global_struct->attLosses);
 				}
 			}
 
@@ -959,8 +956,8 @@ void SV_UpdateToReliableMessages (void)
 
 		if (CheckPIV && host_client->PIV != host_client->LastPIV)
 		{
-			MSG_WriteByte (&host_client->netchan.message, svc_update_piv);
-			MSG_WriteLong (&host_client->netchan.message, host_client->PIV);
+			host_client->netchan.message.WriteByte(svc_update_piv);
+			host_client->netchan.message.WriteLong(host_client->PIV);
 			host_client->LastPIV = host_client->PIV;
 		}
 
@@ -970,39 +967,39 @@ void SV_UpdateToReliableMessages (void)
 		val = GetEdictFieldValue(ent, "gravity");
 		if (val && host_client->entgravity != val->_float) {
 			host_client->entgravity = val->_float;
-			MSG_WriteByte(&host_client->netchan.message, svc_entgravity);
-			MSG_WriteFloat(&host_client->netchan.message, host_client->entgravity);
+			host_client->netchan.message.WriteByte(svc_entgravity);
+			host_client->netchan.message.WriteFloat(host_client->entgravity);
 		}
 		val = GetEdictFieldValue(ent, "maxspeed");
 		if (val && host_client->maxspeed != val->_float) {
 			host_client->maxspeed = val->_float;
-			MSG_WriteByte(&host_client->netchan.message, svc_maxspeed);
-			MSG_WriteFloat(&host_client->netchan.message, host_client->maxspeed);
+			host_client->netchan.message.WriteByte(svc_maxspeed);
+			host_client->netchan.message.WriteFloat(host_client->maxspeed);
 		}
 
 	}
 
 	if (sv.datagram.overflowed)
-		SZ_Clear (&sv.datagram);
+		sv.datagram.Clear();
 
 	// append the broadcast messages to each client messages
 	for (j=0, client = svs.clients ; j<MAX_CLIENTS ; j++, client++)
 	{
 		if (client->state < cs_connected)
 			continue;	// reliables go to all connected or spawned
-		SZ_Write (&client->netchan.message
-			, sv.reliable_datagram.data
+		client->netchan.message.WriteData(
+			sv.reliable_datagram._data
 			, sv.reliable_datagram.cursize);
 
 		if (client->state != cs_spawned)
 			continue;	// datagrams only go to spawned
-		SZ_Write (&client->datagram
-			, sv.datagram.data
+		client->datagram.WriteData(
+			sv.datagram._data
 			, sv.datagram.cursize);
 	}
 
-	SZ_Clear (&sv.reliable_datagram);
-	SZ_Clear (&sv.datagram);
+	sv.reliable_datagram.Clear();
+	sv.datagram.Clear();
 }
 
 
@@ -1048,8 +1045,8 @@ void SV_SendClientMessages (void)
 		// drop the client
 		if (c->netchan.message.overflowed)
 		{
-			SZ_Clear (&c->netchan.message);
-			SZ_Clear (&c->datagram);
+			c->netchan.message.Clear();
+			c->datagram.Clear();
 			SV_BroadcastPrintf (PRINT_HIGH, "%s overflowed\n", c->name);
 			Con_Printf ("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient (c);

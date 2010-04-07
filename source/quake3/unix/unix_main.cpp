@@ -1108,7 +1108,7 @@ sysEvent_t Sys_GetEvent( void ) {
     len = sizeof( netadr_t ) + netmsg.cursize;
     buf = (netadr_t*)Z_Malloc( len );
     *buf = adr;
-    memcpy( buf+1, netmsg.data, netmsg.cursize );
+    memcpy( buf+1, netmsg._data, netmsg.cursize );
     Sys_QueEvent( 0, SE_PACKET, 0, 0, len, buf );
   }
 

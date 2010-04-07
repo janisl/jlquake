@@ -50,7 +50,7 @@ static void SV_Netchan_Encode( client_t *client, msg_t *msg ) {
         msg->readcount = 0;
         msg->oob = 0;
         
-	reliableAcknowledge = MSG_ReadLong(msg);
+	reliableAcknowledge = msg->ReadLong();
 
         msg->oob = soob;
         msg->bit = sbit;
@@ -72,7 +72,7 @@ static void SV_Netchan_Encode( client_t *client, msg_t *msg ) {
 		}
 		index++;
 		// encode the data with this key
-		*(msg->data + i) = *(msg->data + i) ^ key;
+		*(msg->_data + i) = *(msg->_data + i) ^ key;
 	}
 }
 
@@ -98,9 +98,9 @@ static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
         
         msg->oob = 0;
         
-        serverId = MSG_ReadLong(msg);
-	messageAcknowledge = MSG_ReadLong(msg);
-	reliableAcknowledge = MSG_ReadLong(msg);
+        serverId = msg->ReadLong();
+	messageAcknowledge = msg->ReadLong();
+	reliableAcknowledge = msg->ReadLong();
 
         msg->oob = soob;
         msg->bit = sbit;
@@ -122,7 +122,7 @@ static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
 		}
 		index++;
 		// decode the data with this key
-		*(msg->data + i) = *(msg->data + i) ^ key;
+		*(msg->_data + i) = *(msg->_data + i) ^ key;
 	}
 }
 
@@ -145,7 +145,7 @@ void SV_Netchan_TransmitNextFragment( client_t *client ) {
 			Com_DPrintf("#462 Netchan_TransmitNextFragment: popping a queued message for transmit\n");
 			netbuf = client->netchan_start_queue;
 			SV_Netchan_Encode( client, &netbuf->msg );
-			Netchan_Transmit( &client->netchan, netbuf->msg.cursize, netbuf->msg.data );
+			Netchan_Transmit( &client->netchan, netbuf->msg.cursize, netbuf->msg._data );
 			// pop from queue
 			client->netchan_start_queue = netbuf->next;
 			if (!client->netchan_start_queue) {
@@ -172,13 +172,13 @@ then buffer them and make sure they get sent in correct order
 */
 
 void SV_Netchan_Transmit( client_t *client, msg_t *msg) {	//int length, const byte *data ) {
-	MSG_WriteByte( msg, svc_EOF );
+	msg->WriteByte(svc_EOF );
 	if (client->netchan.unsentFragments) {
 		netchan_buffer_t *netbuf;
 		Com_DPrintf("#462 SV_Netchan_Transmit: unsent fragments, stacked\n");
 		netbuf = (netchan_buffer_t *)Z_Malloc(sizeof(netchan_buffer_t));
 		// store the msg, we can't store it encoded, as the encoding depends on stuff we still have to finish sending
-		MSG_Copy(&netbuf->msg, netbuf->msgBuffer, sizeof( netbuf->msgBuffer ), msg);
+		netbuf->msg.Copy(netbuf->msgBuffer, sizeof(netbuf->msgBuffer), *msg);
 		netbuf->next = NULL;
 		// insert it in the queue, the message will be encoded and sent later
 		*client->netchan_end_queue = netbuf;
@@ -187,7 +187,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg) {	//int length, const by
 		Netchan_TransmitNextFragment(&client->netchan);
 	} else {
 		SV_Netchan_Encode( client, msg );
-		Netchan_Transmit( &client->netchan, msg->cursize, msg->data );
+		Netchan_Transmit( &client->netchan, msg->cursize, msg->_data );
 	}
 }
 

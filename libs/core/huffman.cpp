@@ -1,33 +1,58 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
+//**************************************************************************
+//**
+//**	$Id$
+//**
+//**	Copyright (C) 1996-2005 Id Software, Inc.
+//**	Copyright (C) 2010 Jānis Legzdiņš
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 2
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//**  GNU General Public License for more details.
+//**
+//**************************************************************************
+//**
+//**	This is based on the Adaptive Huffman algorithm described in
+//**  Sayood's Data Compression book.  The ranks are not actually stored,
+//**  but implicitly defined by the location of a node within a
+//**  doubly-linked list
+//**
+//**************************************************************************
 
-This file is part of Quake III Arena source code.
+// HEADER FILES ------------------------------------------------------------
 
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
+#include "core.h"
 
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+// MACROS ------------------------------------------------------------------
 
-You should have received a copy of the GNU General Public License
-along with Foobar; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
+// TYPES -------------------------------------------------------------------
 
-/* This is based on the Adaptive Huffman algorithm described in Sayood's Data
- * Compression book.  The ranks are not actually stored, but implicitly defined
- * by the location of a node within a doubly-linked list */
+// EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-#include "../game/q_shared.h"
-#include "qcommon.h"
+// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
+
+// PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
+
+// EXTERNAL DATA DECLARATIONS ----------------------------------------------
+
+// PUBLIC DATA DEFINITIONS -------------------------------------------------
+
+// PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static int			bloc = 0;
+
+// CODE --------------------------------------------------------------------
+
+//==========================================================================
+//
+//	Huff_putBit
+//
+//==========================================================================
 
 void	Huff_putBit( int bit, byte *fout, int *offset) {
 	bloc = *offset;
@@ -321,20 +346,41 @@ void Huff_offsetTransmit (huff_t *huff, int ch, byte *fout, int *offset) {
 	*offset = bloc;
 }
 
-void Huff_Decompress(msg_t *mbuf, int offset) {
+void Huff_Init(huffman_t *huff) {
+
+	memset(&huff->compressor, 0, sizeof(huff_t));
+	memset(&huff->decompressor, 0, sizeof(huff_t));
+
+	// Initialize the tree & list with the NYT node 
+	huff->decompressor.tree = huff->decompressor.lhead = huff->decompressor.ltail = huff->decompressor.loc[NYT] = &(huff->decompressor.nodeList[huff->decompressor.blocNode++]);
+	huff->decompressor.tree->symbol = NYT;
+	huff->decompressor.tree->weight = 0;
+	huff->decompressor.lhead->next = huff->decompressor.lhead->prev = NULL;
+	huff->decompressor.tree->parent = huff->decompressor.tree->left = huff->decompressor.tree->right = NULL;
+
+	// Add the NYT (not yet transmitted) node into the tree/list */
+	huff->compressor.tree = huff->compressor.lhead = huff->compressor.loc[NYT] =  &(huff->compressor.nodeList[huff->compressor.blocNode++]);
+	huff->compressor.tree->symbol = NYT;
+	huff->compressor.tree->weight = 0;
+	huff->compressor.lhead->next = huff->compressor.lhead->prev = NULL;
+	huff->compressor.tree->parent = huff->compressor.tree->left = huff->compressor.tree->right = NULL;
+	huff->compressor.loc[NYT] = huff->compressor.tree;
+}
+
+void Huff_Decompress(QMsg *mbuf, int offset) {
 	int			ch, cch, i, j, size;
 	byte		seq[65536];
 	byte*		buffer;
 	huff_t		huff;
 
 	size = mbuf->cursize - offset;
-	buffer = mbuf->data + offset;
+	buffer = mbuf->_data + offset;
 
 	if ( size <= 0 ) {
 		return;
 	}
 
-	Com_Memset(&huff, 0, sizeof(huff_t));
+	memset(&huff, 0, sizeof(huff_t));
 	// Initialize the tree & list with the NYT node 
 	huff.tree = huff.lhead = huff.ltail = huff.loc[NYT] = &(huff.nodeList[huff.blocNode++]);
 	huff.tree->symbol = NYT;
@@ -370,25 +416,25 @@ void Huff_Decompress(msg_t *mbuf, int offset) {
 		Huff_addRef(&huff, (byte)ch);								/* Increment node */
 	}
 	mbuf->cursize = cch + offset;
-	Com_Memcpy(mbuf->data + offset, seq, cch);
+	memcpy(mbuf->_data + offset, seq, cch);
 }
 
 extern 	int oldsize;
 
-void Huff_Compress(msg_t *mbuf, int offset) {
+void Huff_Compress(QMsg *mbuf, int offset) {
 	int			i, ch, size;
 	byte		seq[65536];
 	byte*		buffer;
 	huff_t		huff;
 
 	size = mbuf->cursize - offset;
-	buffer = mbuf->data+ + offset;
+	buffer = mbuf->_data+ + offset;
 
 	if (size<=0) {
 		return;
 	}
 
-	Com_Memset(&huff, 0, sizeof(huff_t));
+	memset(&huff, 0, sizeof(huff_t));
 	// Add the NYT (not yet transmitted) node into the tree/list */
 	huff.tree = huff.lhead = huff.loc[NYT] =  &(huff.nodeList[huff.blocNode++]);
 	huff.tree->symbol = NYT;
@@ -411,27 +457,5 @@ void Huff_Compress(msg_t *mbuf, int offset) {
 	bloc += 8;												// next byte
 
 	mbuf->cursize = (bloc>>3) + offset;
-	Com_Memcpy(mbuf->data+offset, seq, (bloc>>3));
+	memcpy(mbuf->_data+offset, seq, (bloc>>3));
 }
-
-void Huff_Init(huffman_t *huff) {
-
-	Com_Memset(&huff->compressor, 0, sizeof(huff_t));
-	Com_Memset(&huff->decompressor, 0, sizeof(huff_t));
-
-	// Initialize the tree & list with the NYT node 
-	huff->decompressor.tree = huff->decompressor.lhead = huff->decompressor.ltail = huff->decompressor.loc[NYT] = &(huff->decompressor.nodeList[huff->decompressor.blocNode++]);
-	huff->decompressor.tree->symbol = NYT;
-	huff->decompressor.tree->weight = 0;
-	huff->decompressor.lhead->next = huff->decompressor.lhead->prev = NULL;
-	huff->decompressor.tree->parent = huff->decompressor.tree->left = huff->decompressor.tree->right = NULL;
-
-	// Add the NYT (not yet transmitted) node into the tree/list */
-	huff->compressor.tree = huff->compressor.lhead = huff->compressor.loc[NYT] =  &(huff->compressor.nodeList[huff->compressor.blocNode++]);
-	huff->compressor.tree->symbol = NYT;
-	huff->compressor.tree->weight = 0;
-	huff->compressor.lhead->next = huff->compressor.lhead->prev = NULL;
-	huff->compressor.tree->parent = huff->compressor.tree->left = huff->compressor.tree->right = NULL;
-	huff->compressor.loc[NYT] = huff->compressor.tree;
-}
-

@@ -584,7 +584,7 @@ int	NET_GetMessage (qsocket_t *sock)
 			vcrGetMessage.ret = ret;
 			vcrGetMessage.len = net_message.cursize;
 			Sys_FileWrite (vcrFile, &vcrGetMessage, 24);
-			Sys_FileWrite (vcrFile, net_message.data, net_message.cursize);
+			Sys_FileWrite (vcrFile, net_message._data, net_message.cursize);
 		}
 	}
 	else
@@ -848,7 +848,7 @@ void NET_Init (void)
 	}
 
 	// allocate space for network message buffer
-	SZ_Alloc (&net_message, NET_MAXMESSAGE);
+	net_message.Alloc(NET_MAXMESSAGE);
 
 	Cvar_RegisterVariable (&net_messagetimeout);
 	Cvar_RegisterVariable (&hostname);

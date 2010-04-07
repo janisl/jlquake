@@ -77,7 +77,7 @@ Cbuf_Init
 */
 void Cbuf_Init (void)
 {
-	SZ_Init (&cmd_text, cmd_text_buf, sizeof(cmd_text_buf));
+	cmd_text.InitOOB(cmd_text_buf, sizeof(cmd_text_buf));
 }
 
 /*
@@ -98,7 +98,7 @@ void Cbuf_AddText (char *text)
 		Com_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
-	SZ_Write (&cmd_text, text, QStr::Length(text));
+	cmd_text.WriteData(text, QStr::Length(text));
 }
 
 
@@ -121,8 +121,8 @@ void Cbuf_InsertText (char *text)
 	if (templen)
 	{
 		temp = (char*)Z_Malloc (templen);
-		Com_Memcpy(temp, cmd_text.data, templen);
-		SZ_Clear (&cmd_text);
+		Com_Memcpy(temp, cmd_text._data, templen);
+		cmd_text.Clear();
 	}
 	else
 		temp = NULL;	// shut up compiler
@@ -133,7 +133,7 @@ void Cbuf_InsertText (char *text)
 // add the copied off data
 	if (templen)
 	{
-		SZ_Write (&cmd_text, temp, templen);
+		cmd_text.WriteData(temp, templen);
 		Z_Free (temp);
 	}
 }
@@ -203,7 +203,7 @@ void Cbuf_Execute (void)
 	while (cmd_text.cursize)
 	{
 // find a \n or ; line break
-		text = (char *)cmd_text.data;
+		text = (char *)cmd_text._data;
 
 		quotes = 0;
 		for (i=0 ; i< cmd_text.cursize ; i++)

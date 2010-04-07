@@ -7,10 +7,14 @@ add_library(core STATIC
 	endian.h
 	exception.cpp
 	exception.h
+	huffman.cpp
+	huffman.h
 	log.cpp
 	log.h
 	memory.cpp
 	memory.h
+	message.cpp
+	message.h
 	str.cpp
 	str.h
 )

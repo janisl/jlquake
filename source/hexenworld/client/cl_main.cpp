@@ -324,7 +324,7 @@ void CL_ClearState (void)
 // wipe the entire cl structure
 	Com_Memset(&cl, 0, sizeof(cl));
 
-	SZ_Clear (&cls.netchan.message);
+	cls.netchan.message.Clear();
 
 // clear other arrays	
 	Com_Memset(cl_efrags, 0, sizeof(cl_efrags));
@@ -723,8 +723,8 @@ void CL_Reconnect_f (void)
 
 	if (cls.state == ca_connected) {
 		Con_Printf ("reconnecting...\n");
-		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
-		MSG_WriteString (&cls.netchan.message, "new");
+		cls.netchan.message.WriteChar(clc_stringcmd);
+		cls.netchan.message.WriteString2("new");
 		return;
 	}
 
@@ -749,13 +749,13 @@ void CL_ConnectionlessPacket (void)
 	char	*s;
 	int		c;
 
-    MSG_BeginReading ();
-    MSG_ReadLong ();        // skip the -1
+    net_message.BeginReadingOOB();
+    net_message.ReadLong();        // skip the -1
 
-	c = MSG_ReadByte ();
+	c = net_message.ReadByte ();
 	if (!cls.demoplayback)
 		Con_Printf ("%s:\n", NET_AdrToString (net_from));
-	Con_DPrintf ("%s", net_message.data + 5);
+	Con_DPrintf ("%s", net_message._data + 5);
 	if (c == S2C_CONNECTION)
 	{
 		if (cls.state == ca_connected)
@@ -765,8 +765,8 @@ void CL_ConnectionlessPacket (void)
 			return;
 		}
 		Netchan_Setup (&cls.netchan, net_from);
-		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
-		MSG_WriteString (&cls.netchan.message, "new");	
+		cls.netchan.message.WriteChar(clc_stringcmd);
+		cls.netchan.message.WriteString2("new");	
 		cls.state = ca_connected;
 		Con_Printf ("Connected.\n");
 		return;
@@ -784,14 +784,14 @@ void CL_ConnectionlessPacket (void)
 		ShowWindow (mainwindow, SW_RESTORE);
 		SetForegroundWindow (mainwindow);
 #endif
-		s = MSG_ReadString ();
+		s = const_cast<char*>(net_message.ReadString2());
 		Cbuf_AddText (s);
 		return;
 	}
 	// print command from somewhere
 	if (c == A2C_PRINT)
 	{
-		s = MSG_ReadString ();
+		s = const_cast<char*>(net_message.ReadString2());
 		Con_Printf (s);
 		return;
 	}
@@ -834,7 +834,7 @@ void CL_ReadPackets (void)
 		//
 		// remote command packet
 		//
-		if (*(int *)net_message.data == -1)
+		if (*(int *)net_message._data == -1)
 		{
 			CL_ConnectionlessPacket ();
 			continue;
@@ -902,7 +902,7 @@ void CL_Download_f (void)
 	cls.download = fopen (cls.downloadname, "wb");
 	cls.downloadtype = dl_single;
 
-	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+	cls.netchan.message.WriteByte(clc_stringcmd);
 	SZ_Print (&cls.netchan.message, va("download %s\n",Cmd_Argv(1)));
 }
 

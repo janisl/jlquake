@@ -60,7 +60,7 @@ void Host_Status_f (void)
 	int			minutes;
 	int			hours = 0;
 	int			j;
-	void		(*print) (char *fmt, ...);
+	void		(*print) (const char *fmt, ...);
 	
 	if (cmd_source == src_command)
 	{
@@ -523,7 +523,8 @@ void Host_Loadgame_f (void)
 	FILE	*f;
 	char	mapname[MAX_QPATH];
 	float	time, tfloat;
-	char	str[32768], *start;
+	char	str[32768];
+	const char *start;
 	int		i, r;
 	edict_t	*ent;
 	int		entnum;
@@ -674,7 +675,7 @@ void Host_Name_f (void)
 	if (Cmd_Argc () == 2)
 		newName = Cmd_Argv(1);	
 	else
-		newName = Cmd_Args();
+		newName = const_cast<char*>(Cmd_Args());
 	newName[15] = 0;
 
 	if (cmd_source == src_command)
@@ -695,9 +696,9 @@ void Host_Name_f (void)
 	
 // send notification to all clients
 	
-	MSG_WriteByte (&sv.reliable_datagram, svc_updatename);
-	MSG_WriteByte (&sv.reliable_datagram, host_client - svs.clients);
-	MSG_WriteString (&sv.reliable_datagram, host_client->name);
+	sv.reliable_datagram.WriteByte(svc_updatename);
+	sv.reliable_datagram.WriteByte(host_client - svs.clients);
+	sv.reliable_datagram.WriteString2(host_client->name);
 }
 
 	
@@ -788,7 +789,7 @@ void Host_Say(qboolean teamonly)
 
 	save = host_client;
 
-	p = Cmd_Args();
+	p = const_cast<char*>(Cmd_Args());
 // remove quotes if present
 	if (*p == '"')
 	{
@@ -856,7 +857,7 @@ void Host_Tell_f(void)
 	QStr::Cpy(text, host_client->name);
 	QStr::Cat(text, sizeof(text), ": ");
 
-	p = Cmd_Args();
+	p = const_cast<char*>(Cmd_Args());
 
 // remove quotes if present
 	if (*p == '"')
@@ -934,9 +935,9 @@ void Host_Color_f(void)
 	host_client->edict->v.team = bottom + 1;
 
 // send notification to all clients
-	MSG_WriteByte (&sv.reliable_datagram, svc_updatecolors);
-	MSG_WriteByte (&sv.reliable_datagram, host_client - svs.clients);
-	MSG_WriteByte (&sv.reliable_datagram, host_client->colors);
+	sv.reliable_datagram.WriteByte(svc_updatecolors);
+	sv.reliable_datagram.WriteByte(host_client - svs.clients);
+	sv.reliable_datagram.WriteByte(host_client->colors);
 }
 
 /*
@@ -993,8 +994,8 @@ void Host_Pause_f (void)
 		}
 
 	// send notification to all clients
-		MSG_WriteByte (&sv.reliable_datagram, svc_setpause);
-		MSG_WriteByte (&sv.reliable_datagram, sv.paused);
+		sv.reliable_datagram.WriteByte(svc_setpause);
+		sv.reliable_datagram.WriteByte(sv.paused);
 	}
 }
 
@@ -1020,9 +1021,9 @@ void Host_PreSpawn_f (void)
 		return;
 	}
 	
-	SZ_Write (&host_client->message, sv.signon.data, sv.signon.cursize);
-	MSG_WriteByte (&host_client->message, svc_signonnum);
-	MSG_WriteByte (&host_client->message, 2);
+	host_client->message.WriteData(sv.signon._data, sv.signon.cursize);
+	host_client->message.WriteByte(svc_signonnum);
+	host_client->message.WriteByte(2);
 	host_client->sendsignon = true;
 }
 
@@ -1084,51 +1085,51 @@ void Host_Spawn_f (void)
 
 
 // send all current names, colors, and frag counts
-	SZ_Clear (&host_client->message);
+	host_client->message.Clear();
 
 // send time of update
-	MSG_WriteByte (&host_client->message, svc_time);
-	MSG_WriteFloat (&host_client->message, sv.time);
+	host_client->message.WriteByte(svc_time);
+	host_client->message.WriteFloat(sv.time);
 
 	for (i=0, client = svs.clients ; i<svs.maxclients ; i++, client++)
 	{
-		MSG_WriteByte (&host_client->message, svc_updatename);
-		MSG_WriteByte (&host_client->message, i);
-		MSG_WriteString (&host_client->message, client->name);
-		MSG_WriteByte (&host_client->message, svc_updatefrags);
-		MSG_WriteByte (&host_client->message, i);
-		MSG_WriteShort (&host_client->message, client->old_frags);
-		MSG_WriteByte (&host_client->message, svc_updatecolors);
-		MSG_WriteByte (&host_client->message, i);
-		MSG_WriteByte (&host_client->message, client->colors);
+		host_client->message.WriteByte(svc_updatename);
+		host_client->message.WriteByte(i);
+		host_client->message.WriteString2(client->name);
+		host_client->message.WriteByte(svc_updatefrags);
+		host_client->message.WriteByte(i);
+		host_client->message.WriteShort(client->old_frags);
+		host_client->message.WriteByte(svc_updatecolors);
+		host_client->message.WriteByte(i);
+		host_client->message.WriteByte(client->colors);
 	}
 	
 // send all current light styles
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
-		MSG_WriteByte (&host_client->message, svc_lightstyle);
-		MSG_WriteByte (&host_client->message, (char)i);
-		MSG_WriteString (&host_client->message, sv.lightstyles[i]);
+		host_client->message.WriteByte(svc_lightstyle);
+		host_client->message.WriteByte((char)i);
+		host_client->message.WriteString2(sv.lightstyles[i]);
 	}
 
 //
 // send some stats
 //
-	MSG_WriteByte (&host_client->message, svc_updatestat);
-	MSG_WriteByte (&host_client->message, STAT_TOTALSECRETS);
-	MSG_WriteLong (&host_client->message, pr_global_struct->total_secrets);
+	host_client->message.WriteByte(svc_updatestat);
+	host_client->message.WriteByte(STAT_TOTALSECRETS);
+	host_client->message.WriteLong(pr_global_struct->total_secrets);
 
-	MSG_WriteByte (&host_client->message, svc_updatestat);
-	MSG_WriteByte (&host_client->message, STAT_TOTALMONSTERS);
-	MSG_WriteLong (&host_client->message, pr_global_struct->total_monsters);
+	host_client->message.WriteByte(svc_updatestat);
+	host_client->message.WriteByte(STAT_TOTALMONSTERS);
+	host_client->message.WriteLong(pr_global_struct->total_monsters);
 
-	MSG_WriteByte (&host_client->message, svc_updatestat);
-	MSG_WriteByte (&host_client->message, STAT_SECRETS);
-	MSG_WriteLong (&host_client->message, pr_global_struct->found_secrets);
+	host_client->message.WriteByte(svc_updatestat);
+	host_client->message.WriteByte(STAT_SECRETS);
+	host_client->message.WriteLong(pr_global_struct->found_secrets);
 
-	MSG_WriteByte (&host_client->message, svc_updatestat);
-	MSG_WriteByte (&host_client->message, STAT_MONSTERS);
-	MSG_WriteLong (&host_client->message, pr_global_struct->killed_monsters);
+	host_client->message.WriteByte(svc_updatestat);
+	host_client->message.WriteByte(STAT_MONSTERS);
+	host_client->message.WriteLong(pr_global_struct->killed_monsters);
 
 	
 //
@@ -1138,15 +1139,15 @@ void Host_Spawn_f (void)
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
 	ent = EDICT_NUM( 1 + (host_client - svs.clients) );
-	MSG_WriteByte (&host_client->message, svc_setangle);
+	host_client->message.WriteByte(svc_setangle);
 	for (i=0 ; i < 2 ; i++)
-		MSG_WriteAngle (&host_client->message, ent->v.angles[i] );
-	MSG_WriteAngle (&host_client->message, 0 );
+		host_client->message.WriteAngle(ent->v.angles[i] );
+	host_client->message.WriteAngle(0);
 
 	SV_WriteClientdataToMessage (sv_player, &host_client->message);
 
-	MSG_WriteByte (&host_client->message, svc_signonnum);
-	MSG_WriteByte (&host_client->message, 3);
+	host_client->message.WriteByte(svc_signonnum);
+	host_client->message.WriteByte(3);
 	host_client->sendsignon = true;
 }
 
@@ -1179,7 +1180,7 @@ Kicks a user off of the server
 void Host_Kick_f (void)
 {
 	char		*who;
-	char		*message = NULL;
+	const char	*message = NULL;
 	client_t	*save;
 	int			i;
 	qboolean	byNumber = false;

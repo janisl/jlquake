@@ -128,7 +128,7 @@ void CL_WriteDemoMessage (sizebuf_t *msg)
 
 	len = LittleLong (msg->cursize);
 	fwrite (&len, 4, 1, cls.demofile);
-	fwrite (msg->data, msg->cursize, 1, cls.demofile);
+	fwrite (msg->_data, msg->cursize, 1, cls.demofile);
 
 	fflush (cls.demofile);
 }
@@ -225,7 +225,7 @@ qboolean CL_GetDemoMessage (void)
 	//Con_Printf("read: %ld bytes\n", net_message.cursize);
 		if (net_message.cursize > MAX_MSGLEN)
 			Sys_Error ("Demo message > MAX_MSGLEN");
-		r = fread (net_message.data, net_message.cursize, 1, cls.demofile);
+		r = fread (net_message._data, net_message.cursize, 1, cls.demofile);
 		if (r != 1)
 		{
 			CL_StopPlayback ();
@@ -286,10 +286,10 @@ void CL_Stop_f (void)
 	}
 
 // write a disconnect message to the demo file
-	SZ_Clear (&net_message);
-	MSG_WriteLong (&net_message, -1);	// -1 sequence means out of band
-	MSG_WriteByte (&net_message, svc_disconnect);
-	MSG_WriteString (&net_message, "EndOfDemo");
+	net_message.Clear();
+	net_message.WriteLong(-1);	// -1 sequence means out of band
+	net_message.WriteByte(svc_disconnect);
+	net_message.WriteString2("EndOfDemo");
 	CL_WriteDemoMessage (&net_message);
 
 // finish up
@@ -332,7 +332,7 @@ void CL_WriteRecordDemoMessage (sizebuf_t *msg, int seq)
 	fwrite (&i, 4, 1, cls.demofile);
 	fwrite (&i, 4, 1, cls.demofile);
 
-	fwrite (msg->data, msg->cursize, 1, cls.demofile);
+	fwrite (msg->_data, msg->cursize, 1, cls.demofile);
 
 	fflush (cls.demofile);
 }
@@ -423,98 +423,96 @@ void CL_Record_f (void)
 
 // serverdata
 	// send the info about the new client to all connected clients
-	Com_Memset(&buf, 0, sizeof(buf));
-	buf.data = buf_data;
-	buf.maxsize = sizeof(buf_data);
+	buf.InitOOB(buf_data, sizeof(buf_data));
 
 // send the serverdata
-	MSG_WriteByte (&buf, svc_serverdata);
-	MSG_WriteLong (&buf, PROTOCOL_VERSION);
-	MSG_WriteLong (&buf, cl.servercount);
-	MSG_WriteString (&buf, gamedirfile);
+	buf.WriteByte(svc_serverdata);
+	buf.WriteLong(PROTOCOL_VERSION);
+	buf.WriteLong(cl.servercount);
+	buf.WriteString2(gamedirfile);
 
 	if (cl.spectator)
-		MSG_WriteByte (&buf, cl.playernum | 128);
+		buf.WriteByte(cl.playernum | 128);
 	else
-		MSG_WriteByte (&buf, cl.playernum);
+		buf.WriteByte(cl.playernum);
 
 	// send full levelname
-	MSG_WriteString (&buf, cl.levelname);
+	buf.WriteString2(cl.levelname);
 
 	// send the movevars
-	MSG_WriteFloat(&buf, movevars.gravity);
-	MSG_WriteFloat(&buf, movevars.stopspeed);
-	MSG_WriteFloat(&buf, movevars.maxspeed);
-	MSG_WriteFloat(&buf, movevars.spectatormaxspeed);
-	MSG_WriteFloat(&buf, movevars.accelerate);
-	MSG_WriteFloat(&buf, movevars.airaccelerate);
-	MSG_WriteFloat(&buf, movevars.wateraccelerate);
-	MSG_WriteFloat(&buf, movevars.friction);
-	MSG_WriteFloat(&buf, movevars.waterfriction);
-	MSG_WriteFloat(&buf, movevars.entgravity);
+	buf.WriteFloat(movevars.gravity);
+	buf.WriteFloat(movevars.stopspeed);
+	buf.WriteFloat(movevars.maxspeed);
+	buf.WriteFloat(movevars.spectatormaxspeed);
+	buf.WriteFloat(movevars.accelerate);
+	buf.WriteFloat(movevars.airaccelerate);
+	buf.WriteFloat(movevars.wateraccelerate);
+	buf.WriteFloat(movevars.friction);
+	buf.WriteFloat(movevars.waterfriction);
+	buf.WriteFloat(movevars.entgravity);
 
 	// send music
-	MSG_WriteByte (&buf, svc_cdtrack);
-	MSG_WriteByte (&buf, 0); // none in demos
+	buf.WriteByte(svc_cdtrack);
+	buf.WriteByte(0); // none in demos
 
 	// send server info string
-	MSG_WriteByte (&buf, svc_stufftext);
-	MSG_WriteString (&buf, va("fullserverinfo \"%s\"\n", cl.serverinfo) );
+	buf.WriteByte(svc_stufftext);
+	buf.WriteString2(va("fullserverinfo \"%s\"\n", cl.serverinfo) );
 
 	// flush packet
 	CL_WriteRecordDemoMessage (&buf, seq++);
-	SZ_Clear (&buf); 
+	buf.Clear(); 
 
 // soundlist
-	MSG_WriteByte (&buf, svc_soundlist);
-	MSG_WriteByte (&buf, 0);
+	buf.WriteByte(svc_soundlist);
+	buf.WriteByte(0);
 
 	n = 0;
 	s = cl.sound_name[n+1];
 	while (*s) {
-		MSG_WriteString (&buf, s);
+		buf.WriteString2(s);
 		if (buf.cursize > MAX_MSGLEN/2) {
-			MSG_WriteByte (&buf, 0);
-			MSG_WriteByte (&buf, n);
+			buf.WriteByte(0);
+			buf.WriteByte(n);
 			CL_WriteRecordDemoMessage (&buf, seq++);
-			SZ_Clear (&buf); 
-			MSG_WriteByte (&buf, svc_soundlist);
-			MSG_WriteByte (&buf, n + 1);
+			buf.Clear(); 
+			buf.WriteByte(svc_soundlist);
+			buf.WriteByte(n + 1);
 		}
 		n++;
 		s = cl.sound_name[n+1];
 	}
 	if (buf.cursize) {
-		MSG_WriteByte (&buf, 0);
-		MSG_WriteByte (&buf, 0);
+		buf.WriteByte(0);
+		buf.WriteByte(0);
 		CL_WriteRecordDemoMessage (&buf, seq++);
-		SZ_Clear (&buf); 
+		buf.Clear(); 
 	}
 
 // modellist
-	MSG_WriteByte (&buf, svc_modellist);
-	MSG_WriteByte (&buf, 0);
+	buf.WriteByte(svc_modellist);
+	buf.WriteByte(0);
 
 	n = 0;
 	s = cl.model_name[n+1];
 	while (*s) {
-		MSG_WriteString (&buf, s);
+		buf.WriteString2(s);
 		if (buf.cursize > MAX_MSGLEN/2) {
-			MSG_WriteByte (&buf, 0);
-			MSG_WriteByte (&buf, n);
+			buf.WriteByte(0);
+			buf.WriteByte(n);
 			CL_WriteRecordDemoMessage (&buf, seq++);
-			SZ_Clear (&buf); 
-			MSG_WriteByte (&buf, svc_modellist);
-			MSG_WriteByte (&buf, n + 1);
+			buf.Clear(); 
+			buf.WriteByte(svc_modellist);
+			buf.WriteByte(n + 1);
 		}
 		n++;
 		s = cl.model_name[n+1];
 	}
 	if (buf.cursize) {
-		MSG_WriteByte (&buf, 0);
-		MSG_WriteByte (&buf, 0);
+		buf.WriteByte(0);
+		buf.WriteByte(0);
 		CL_WriteRecordDemoMessage (&buf, seq++);
-		SZ_Clear (&buf); 
+		buf.Clear(); 
 	}
 
 // spawnstatic
@@ -522,28 +520,28 @@ void CL_Record_f (void)
 	for (i = 0; i < cl.num_statics; i++) {
 		ent = cl_static_entities + i;
 
-		MSG_WriteByte (&buf, svc_spawnstatic);
+		buf.WriteByte(svc_spawnstatic);
 
 		for (j = 1; j < MAX_MODELS; j++)
 			if (ent->model == cl.model_precache[j])
 				break;
 		if (j == MAX_MODELS)
-			MSG_WriteByte (&buf, 0);
+			buf.WriteByte(0);
 		else
-			MSG_WriteByte (&buf, j);
+			buf.WriteByte(j);
 
-		MSG_WriteByte (&buf, ent->frame);
-		MSG_WriteByte (&buf, 0);
-		MSG_WriteByte (&buf, ent->skinnum);
+		buf.WriteByte(ent->frame);
+		buf.WriteByte(0);
+		buf.WriteByte(ent->skinnum);
 		for (j=0 ; j<3 ; j++)
 		{
-			MSG_WriteCoord (&buf, ent->origin[j]);
-			MSG_WriteAngle (&buf, ent->angles[j]);
+			buf.WriteCoord(ent->origin[j]);
+			buf.WriteAngle(ent->angles[j]);
 		}
 
 		if (buf.cursize > MAX_MSGLEN/2) {
 			CL_WriteRecordDemoMessage (&buf, seq++);
-			SZ_Clear (&buf); 
+			buf.Clear(); 
 		}
 	}
 
@@ -557,32 +555,32 @@ void CL_Record_f (void)
 		es = cl_baselines + i;
 
 		if (memcmp(es, &blankes, sizeof(blankes))) {
-			MSG_WriteByte (&buf,svc_spawnbaseline);		
-			MSG_WriteShort (&buf, i);
+			buf.WriteByte(svc_spawnbaseline);		
+			buf.WriteShort(i);
 
-			MSG_WriteByte (&buf, es->modelindex);
-			MSG_WriteByte (&buf, es->frame);
-			MSG_WriteByte (&buf, es->colormap);
-			MSG_WriteByte (&buf, es->skinnum);
+			buf.WriteByte(es->modelindex);
+			buf.WriteByte(es->frame);
+			buf.WriteByte(es->colormap);
+			buf.WriteByte(es->skinnum);
 			for (j=0 ; j<3 ; j++)
 			{
-				MSG_WriteCoord(&buf, es->origin[j]);
-				MSG_WriteAngle(&buf, es->angles[j]);
+				buf.WriteCoord(es->origin[j]);
+				buf.WriteAngle(es->angles[j]);
 			}
 
 			if (buf.cursize > MAX_MSGLEN/2) {
 				CL_WriteRecordDemoMessage (&buf, seq++);
-				SZ_Clear (&buf); 
+				buf.Clear(); 
 			}
 		}
 	}
 
-	MSG_WriteByte (&buf, svc_stufftext);
-	MSG_WriteString (&buf, va("cmd spawn %i 0\n", cl.servercount) );
+	buf.WriteByte(svc_stufftext);
+	buf.WriteString2(va("cmd spawn %i 0\n", cl.servercount) );
 
 	if (buf.cursize) {
 		CL_WriteRecordDemoMessage (&buf, seq++);
-		SZ_Clear (&buf); 
+		buf.Clear(); 
 	}
 
 // send current status of all other players
@@ -590,69 +588,69 @@ void CL_Record_f (void)
 	for (i = 0; i < MAX_CLIENTS; i++) {
 		player = cl.players + i;
 
-		MSG_WriteByte (&buf, svc_updatefrags);
-		MSG_WriteByte (&buf, i);
-		MSG_WriteShort (&buf, player->frags);
+		buf.WriteByte(svc_updatefrags);
+		buf.WriteByte(i);
+		buf.WriteShort(player->frags);
 		
-		MSG_WriteByte (&buf, svc_updateping);
-		MSG_WriteByte (&buf, i);
-		MSG_WriteShort (&buf, player->ping);
+		buf.WriteByte(svc_updateping);
+		buf.WriteByte(i);
+		buf.WriteShort(player->ping);
 		
-		MSG_WriteByte (&buf, svc_updatepl);
-		MSG_WriteByte (&buf, i);
-		MSG_WriteByte (&buf, player->pl);
+		buf.WriteByte(svc_updatepl);
+		buf.WriteByte(i);
+		buf.WriteByte(player->pl);
 		
-		MSG_WriteByte (&buf, svc_updateentertime);
-		MSG_WriteByte (&buf, i);
-		MSG_WriteFloat (&buf, player->entertime);
+		buf.WriteByte(svc_updateentertime);
+		buf.WriteByte(i);
+		buf.WriteFloat(player->entertime);
 
-		MSG_WriteByte (&buf, svc_updateuserinfo);
-		MSG_WriteByte (&buf, i);
-		MSG_WriteLong (&buf, player->userid);
-		MSG_WriteString (&buf, player->userinfo);
+		buf.WriteByte(svc_updateuserinfo);
+		buf.WriteByte(i);
+		buf.WriteLong(player->userid);
+		buf.WriteString2(player->userinfo);
 
 		if (buf.cursize > MAX_MSGLEN/2) {
 			CL_WriteRecordDemoMessage (&buf, seq++);
-			SZ_Clear (&buf); 
+			buf.Clear(); 
 		}
 	}
 	
 // send all current light styles
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
-		MSG_WriteByte (&buf, svc_lightstyle);
-		MSG_WriteByte (&buf, (char)i);
-		MSG_WriteString (&buf, cl_lightstyle[i].map);
+		buf.WriteByte(svc_lightstyle);
+		buf.WriteByte((char)i);
+		buf.WriteString2(cl_lightstyle[i].map);
 	}
 
 	for (i = 0; i < MAX_CL_STATS; i++) {
-		MSG_WriteByte (&buf, svc_updatestatlong);
-		MSG_WriteByte (&buf, i);
-		MSG_WriteLong (&buf, cl.stats[i]);
+		buf.WriteByte(svc_updatestatlong);
+		buf.WriteByte(i);
+		buf.WriteLong(cl.stats[i]);
 		if (buf.cursize > MAX_MSGLEN/2) {
 			CL_WriteRecordDemoMessage (&buf, seq++);
-			SZ_Clear (&buf); 
+			buf.Clear(); 
 		}
 	}
 
 #if 0
-	MSG_WriteByte (&buf, svc_updatestatlong);
-	MSG_WriteByte (&buf, STAT_TOTALMONSTERS);
-	MSG_WriteLong (&buf, cl.stats[STAT_TOTALMONSTERS]);
+	buf.WriteByte(svc_updatestatlong);
+	buf.WriteByte(STAT_TOTALMONSTERS);
+	buf.WriteLong(cl.stats[STAT_TOTALMONSTERS]);
 
-	MSG_WriteByte (&buf, svc_updatestatlong);
-	MSG_WriteByte (&buf, STAT_SECRETS);
-	MSG_WriteLong (&buf, cl.stats[STAT_SECRETS]);
+	buf.WriteByte(svc_updatestatlong);
+	buf.WriteByte(STAT_SECRETS);
+	buf.WriteLong(cl.stats[STAT_SECRETS]);
 
-	MSG_WriteByte (&buf, svc_updatestatlong);
-	MSG_WriteByte (&buf, STAT_MONSTERS);
-	MSG_WriteLong (&buf, cl.stats[STAT_MONSTERS]);
+	buf.WriteByte(svc_updatestatlong);
+	buf.WriteByte(STAT_MONSTERS);
+	buf.WriteLong(cl.stats[STAT_MONSTERS]);
 #endif
 
 	// get the client to check and download skins
 	// when that is completed, a begin command will be issued
-	MSG_WriteByte (&buf, svc_stufftext);
-	MSG_WriteString (&buf, va("skins\n") );
+	buf.WriteByte(svc_stufftext);
+	buf.WriteString2(va("skins\n") );
 
 	CL_WriteRecordDemoMessage (&buf, seq++);
 

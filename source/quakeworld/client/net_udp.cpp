@@ -293,8 +293,7 @@ void NET_Init (int port)
 	//
 	// init the message buffer
 	//
-	net_message.maxsize = sizeof(net_message_buffer);
-	net_message.data = net_message_buffer;
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
 
 	//
 	// determine my name & address

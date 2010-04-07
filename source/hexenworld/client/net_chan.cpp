@@ -72,19 +72,17 @@ void Netchan_OutOfBand (netadr_t adr, int length, byte *data)
 	byte		send_buf[MAX_MSGLEN + PACKET_HEADER];
 
 // write the packet header
-	send.data = send_buf;
-	send.maxsize = sizeof(send_buf);
-	send.cursize = 0;
-	
-	MSG_WriteLong (&send, -1);	// -1 sequence means out of band
-	SZ_Write (&send, data, length);
+	send.InitOOB(send_buf, sizeof(send_buf));
+
+	send.WriteLong(-1);	// -1 sequence means out of band
+	send.WriteData(data, length);
 
 // send the datagram
 	//zoid, no input in demo playback mode
 #ifndef SERVERONLY
 	if (!cls.demoplayback)
 #endif
-		NET_SendPacket (send.cursize, send.data, adr);
+		NET_SendPacket (send.cursize, send._data, adr);
 }
 
 /*
@@ -122,9 +120,8 @@ void Netchan_Setup (netchan_t *chan, netadr_t adr)
 	chan->remote_address = adr;
 	chan->last_received = realtime;
 	
-	chan->message.data = chan->message_buf;
+	chan->message.InitOOB(chan->message_buf, sizeof(chan->message_buf));
 	chan->message.allowoverflow = true;
-	chan->message.maxsize = sizeof(chan->message_buf);
 	
 	chan->rate = 1.0/2500;
 }
@@ -206,28 +203,26 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	}
 
 // write the packet header
-	send.data = send_buf;
-	send.maxsize = sizeof(send_buf);
-	send.cursize = 0;
+	send.InitOOB(send_buf, sizeof(send_buf));
 
 	w1 = chan->outgoing_sequence | (send_reliable<<31);
 	w2 = chan->incoming_sequence | (chan->incoming_reliable_sequence<<31);
 
 	chan->outgoing_sequence++;
 
-	MSG_WriteLong (&send, w1);
-	MSG_WriteLong (&send, w2);
+	send.WriteLong(w1);
+	send.WriteLong(w2);
 
 // copy the reliable message to the packet first
 	if (send_reliable)
 	{
-		SZ_Write (&send, chan->reliable_buf, chan->reliable_length);
+		send.WriteData(chan->reliable_buf, chan->reliable_length);
 		chan->last_reliable_sequence = chan->outgoing_sequence;
 	}
 	
 // add the unreliable part if space is available
 	if (send.maxsize - send.cursize >= length)
-		SZ_Write (&send, data, length);
+		send.WriteData(data, length);
 
 // send the datagram
 	i = chan->outgoing_sequence & (MAX_LATENT-1);
@@ -238,7 +233,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 #ifndef SERVERONLY
 	if (!cls.demoplayback)
 #endif
-		NET_SendPacket (send.cursize, send.data, chan->remote_address);
+		NET_SendPacket (send.cursize, send._data, chan->remote_address);
 
 	if (chan->cleartime < realtime)
 		chan->cleartime = realtime + send.cursize*chan->rate;
@@ -278,9 +273,9 @@ qboolean Netchan_Process (netchan_t *chan)
 		return false;
 	
 // get sequence numbers		
-	MSG_BeginReading ();
-	sequence = MSG_ReadLong ();
-	sequence_ack = MSG_ReadLong ();
+	net_message.BeginReadingOOB();
+	sequence = net_message.ReadLong();
+	sequence_ack = net_message.ReadLong();
 
 	reliable_message = sequence >> 31;
 	reliable_ack = sequence_ack >> 31;

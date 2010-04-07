@@ -62,7 +62,7 @@ Cbuf_Init
 */
 void Cbuf_Init (void)
 {
-	SZ_Alloc (&cmd_text, 8192);		// space for commands and script files
+	cmd_text.Alloc(8192);		// space for commands and script files
 }
 
 
@@ -84,7 +84,7 @@ void Cbuf_AddText (char *text)
 		Con_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
-	SZ_Write (&cmd_text, text, l);
+	cmd_text.WriteData(text, l);
 }
 
 
@@ -107,8 +107,8 @@ void Cbuf_InsertText (char *text)
 	if (templen)
 	{
 		temp = (char*)Z_Malloc (templen);
-		Com_Memcpy(temp, cmd_text.data, templen);
-		SZ_Clear (&cmd_text);
+		Com_Memcpy(temp, cmd_text._data, templen);
+		cmd_text.Clear();
 	}
 	else
 		temp = NULL;	// shut up compiler
@@ -119,7 +119,7 @@ void Cbuf_InsertText (char *text)
 // add the copied off data
 	if (templen)
 	{
-		SZ_Write (&cmd_text, temp, templen);
+		cmd_text.WriteData(temp, templen);
 		Z_Free (temp);
 	}
 }
@@ -139,7 +139,7 @@ void Cbuf_Execute (void)
 	while (cmd_text.cursize)
 	{
 // find a \n or ; line break
-		text = (char *)cmd_text.data;
+		text = (char *)cmd_text._data;
 
 		quotes = 0;
 		for (i=0 ; i< cmd_text.cursize ; i++)
@@ -683,7 +683,7 @@ void Cmd_ForwardToServer (void)
 	if (cls.demoplayback)
 		return;		// not really connected
 
-	MSG_WriteByte (&cls.message, clc_stringcmd);
+	cls.message.WriteByte(clc_stringcmd);
 	if (QStr::ICmp(Cmd_Argv(0), "cmd") != 0)
 	{
 		SZ_Print (&cls.message, Cmd_Argv(0));

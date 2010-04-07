@@ -529,9 +529,9 @@ void SV_SendServerInfoChange(char *key, char *value)
 	if (!sv.state)
 		return;
 
-	MSG_WriteByte (&sv.reliable_datagram, svc_serverinfo);
-	MSG_WriteString (&sv.reliable_datagram, key);
-	MSG_WriteString (&sv.reliable_datagram, value);
+	sv.reliable_datagram.WriteByte(svc_serverinfo);
+	sv.reliable_datagram.WriteString2(key);
+	sv.reliable_datagram.WriteString2(value);
 }
 
 /*

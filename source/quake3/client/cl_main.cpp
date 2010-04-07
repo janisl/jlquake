@@ -188,7 +188,7 @@ void CL_WriteDemoMessage ( msg_t *msg, int headerBytes ) {
 	len = msg->cursize - headerBytes;
 	swlen = LittleLong(len);
 	FS_Write (&swlen, 4, clc.demofile);
-	FS_Write ( msg->data + headerBytes, len, clc.demofile );
+	FS_Write ( msg->_data + headerBytes, len, clc.demofile );
 }
 
 
@@ -327,13 +327,13 @@ void CL_Record_f( void ) {
 
 	// write out the gamestate message
 	MSG_Init (&buf, bufData, sizeof(bufData));
-	MSG_Bitstream(&buf);
+	buf.Bitstream();
 
 	// NOTE, MRE: all server->client messages now acknowledge
-	MSG_WriteLong( &buf, clc.reliableSequence );
+	buf.WriteLong(clc.reliableSequence );
 
-	MSG_WriteByte (&buf, svc_gamestate);
-	MSG_WriteLong (&buf, clc.serverCommandSequence );
+	buf.WriteByte(svc_gamestate);
+	buf.WriteLong(clc.serverCommandSequence );
 
 	// configstrings
 	for ( i = 0 ; i < MAX_CONFIGSTRINGS ; i++ ) {
@@ -341,9 +341,9 @@ void CL_Record_f( void ) {
 			continue;
 		}
 		s = cl.gameState.stringData + cl.gameState.stringOffsets[i];
-		MSG_WriteByte (&buf, svc_configstring);
-		MSG_WriteShort (&buf, i);
-		MSG_WriteBigString (&buf, s);
+		buf.WriteByte(svc_configstring);
+		buf.WriteShort(i);
+		buf.WriteBigString(s);
 	}
 
 	// baselines
@@ -353,21 +353,21 @@ void CL_Record_f( void ) {
 		if ( !ent->number ) {
 			continue;
 		}
-		MSG_WriteByte (&buf, svc_baseline);		
+		buf.WriteByte(svc_baseline);		
 		MSG_WriteDeltaEntity (&buf, &nullstate, ent, qtrue );
 	}
 
-	MSG_WriteByte( &buf, svc_EOF );
+	buf.WriteByte(svc_EOF );
 	
 	// finished writing the gamestate stuff
 
 	// write the client num
-	MSG_WriteLong(&buf, clc.clientNum);
+	buf.WriteLong(clc.clientNum);
 	// write the checksum feed
-	MSG_WriteLong(&buf, clc.checksumFeed);
+	buf.WriteLong(clc.checksumFeed);
 
 	// finished writing the client packet
-	MSG_WriteByte( &buf, svc_EOF );
+	buf.WriteByte(svc_EOF );
 
 	// write it to the demo file
 	len = LittleLong( clc.serverMessageSequence - 1 );
@@ -375,7 +375,7 @@ void CL_Record_f( void ) {
 
 	len = LittleLong (buf.cursize);
 	FS_Write (&len, 4, clc.demofile);
-	FS_Write (buf.data, buf.cursize, clc.demofile);
+	FS_Write (buf._data, buf.cursize, clc.demofile);
 
 	// the rest of the demo file will be copied from net messages
 }
@@ -449,7 +449,7 @@ void CL_ReadDemoMessage( void ) {
 	if ( buf.cursize > buf.maxsize ) {
 		Com_Error (ERR_DROP, "CL_ReadDemoMessage: demoMsglen > MAX_MSGLEN");
 	}
-	r = FS_Read( buf.data, buf.cursize, clc.demofile );
+	r = FS_Read( buf._data, buf.cursize, clc.demofile );
 	if ( r != buf.cursize ) {
 		Com_Printf( "Demo file was truncated.\n");
 		CL_DemoCompleted ();
@@ -1668,7 +1668,7 @@ void CL_ServersResponsePacket( netadr_t from, msg_t *msg ) {
 
 	// parse through server response string
 	numservers = 0;
-	buffptr    = msg->data;
+	buffptr    = msg->_data;
 	buffend    = buffptr + msg->cursize;
 	while (buffptr+1 < buffend) {
 		// advance to initial token
@@ -1769,13 +1769,13 @@ Responses to broadcasts, etc
 =================
 */
 void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
-	char	*s;
+	const char	*s;
 	char	*c;
 
-	MSG_BeginReadingOOB( msg );
-	MSG_ReadLong( msg );	// skip the -1
+	msg->BeginReadingOOB();
+	msg->ReadLong();	// skip the -1
 
-	s = MSG_ReadStringLine( msg );
+	s = msg->ReadStringLine();
 
 	Cmd_TokenizeString( s );
 
@@ -1863,7 +1863,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 
 	// echo request from server
 	if ( !QStr::ICmp(c, "print") ) {
-		s = MSG_ReadString( msg );
+		s = msg->ReadString();
 		QStr::NCpyZ( clc.serverMessage, s, sizeof( clc.serverMessage ) );
 		Com_Printf( "%s", s );
 		return;
@@ -1891,7 +1891,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg ) {
 
 	clc.lastPacketTime = cls.realtime;
 
-	if ( msg->cursize >= 4 && *(int *)msg->data == -1 ) {
+	if ( msg->cursize >= 4 && *(int *)msg->_data == -1 ) {
 		CL_ConnectionlessPacket( from, msg );
 		return;
 	}
@@ -1925,7 +1925,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg ) {
 	// track the last message received so it can be returned in 
 	// client messages, allowing the server to detect a dropped
 	// gamestate
-	clc.serverMessageSequence = LittleLong( *(int *)msg->data );
+	clc.serverMessageSequence = LittleLong( *(int *)msg->_data );
 
 	clc.lastPacketTime = cls.realtime;
 	CL_ParseServerMessage( msg );
@@ -2514,10 +2514,10 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	int		i, type;
 	char	info[MAX_INFO_STRING];
 	char*	str;
-	char	*infoString;
+	const char	*infoString;
 	int		prot;
 
-	infoString = MSG_ReadString( msg );
+	infoString = msg->ReadString();
 
 	// if this isn't the correct protocol version, ignore it
 	prot = QStr::Atoi( Info_ValueForKey( infoString, "protocol" ) );
@@ -2603,7 +2603,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg ) {
 	cls.localServers[i].netType = from.type;
 	cls.localServers[i].punkbuster = 0;
 									 
-	QStr::NCpyZ( info, MSG_ReadString( msg ), MAX_INFO_STRING );
+	QStr::NCpyZ( info, msg->ReadString(), MAX_INFO_STRING );
 	if (QStr::Length(info)) {
 		if (info[QStr::Length(info)-1] != '\n') {
 			strncat(info, "\n", sizeof(info));
@@ -2716,7 +2716,7 @@ CL_ServerStatusResponse
 ===================
 */
 void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
-	char	*s;
+	const char	*s;
 	char	info[MAX_INFO_STRING];
 	int		i, l, score, ping;
 	int		len;
@@ -2734,7 +2734,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 		return;
 	}
 
-	s = MSG_ReadStringLine( msg );
+	s = msg->ReadStringLine();
 
 	len = 0;
 	Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "%s", s);
@@ -2774,7 +2774,7 @@ void CL_ServerStatusResponse( netadr_t from, msg_t *msg ) {
 		Com_Printf("\nPlayers:\n");
 		Com_Printf("num: score: ping: name:\n");
 	}
-	for (i = 0, s = MSG_ReadStringLine( msg ); *s; s = MSG_ReadStringLine( msg ), i++) {
+	for (i = 0, s = msg->ReadStringLine(); *s; s = msg->ReadStringLine(), i++) {
 
 		len = QStr::Length(serverStatus->string);
 		Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\%s", s);

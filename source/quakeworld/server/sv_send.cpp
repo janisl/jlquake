@@ -235,8 +235,8 @@ void SV_BroadcastCommand (char *fmt, ...)
 	vsprintf (string, fmt,argptr);
 	va_end (argptr);
 
-	MSG_WriteByte (&sv.reliable_datagram, svc_stufftext);
-	MSG_WriteString (&sv.reliable_datagram, string);
+	sv.reliable_datagram.WriteByte(svc_stufftext);
+	sv.reliable_datagram.WriteString2(string);
 }
 
 
@@ -322,12 +322,12 @@ void SV_Multicast (vec3_t origin, int to)
 inrange:
 		if (reliable) {
 			ClientReliableCheckBlock(client, sv.multicast.cursize);
-			ClientReliableWrite_SZ(client, sv.multicast.data, sv.multicast.cursize);
+			ClientReliableWrite_SZ(client, sv.multicast._data, sv.multicast.cursize);
 		} else
-			SZ_Write (&client->datagram, sv.multicast.data, sv.multicast.cursize);
+			client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
 	}
 
-	SZ_Clear (&sv.multicast);
+	sv.multicast.Clear();
 }
 
 
@@ -412,15 +412,15 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
 		VectorCopy (entity->v.origin, origin);
 	}
 
-	MSG_WriteByte (&sv.multicast, svc_sound);
-	MSG_WriteShort (&sv.multicast, channel);
+	sv.multicast.WriteByte(svc_sound);
+	sv.multicast.WriteShort(channel);
 	if (channel & SND_VOLUME)
-		MSG_WriteByte (&sv.multicast, volume);
+		sv.multicast.WriteByte(volume);
 	if (channel & SND_ATTENUATION)
-		MSG_WriteByte (&sv.multicast, attenuation*64);
-	MSG_WriteByte (&sv.multicast, sound_num);
+		sv.multicast.WriteByte(attenuation*64);
+	sv.multicast.WriteByte(sound_num);
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord (&sv.multicast, origin[i]);
+		sv.multicast.WriteCoord(origin[i]);
 
 	if (use_phs)
 		SV_Multicast (origin, reliable ? MULTICAST_PHS_R : MULTICAST_PHS);
@@ -478,8 +478,8 @@ void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg)
 	// send the chokecount for r_netgraph
 	if (client->chokecount)
 	{
-		MSG_WriteByte (msg, svc_chokecount);
-		MSG_WriteByte (msg, client->chokecount);
+		msg->WriteByte(svc_chokecount);
+		msg->WriteByte(client->chokecount);
 		client->chokecount = 0;
 	}
 
@@ -487,11 +487,11 @@ void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg)
 	if (ent->v.dmg_take || ent->v.dmg_save)
 	{
 		other = PROG_TO_EDICT(ent->v.dmg_inflictor);
-		MSG_WriteByte (msg, svc_damage);
-		MSG_WriteByte (msg, ent->v.dmg_save);
-		MSG_WriteByte (msg, ent->v.dmg_take);
+		msg->WriteByte(svc_damage);
+		msg->WriteByte(ent->v.dmg_save);
+		msg->WriteByte(ent->v.dmg_take);
 		for (i=0 ; i<3 ; i++)
-			MSG_WriteCoord (msg, other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
+			msg->WriteCoord(other->v.origin[i] + 0.5*(other->v.mins[i] + other->v.maxs[i]));
 	
 		ent->v.dmg_take = 0;
 		ent->v.dmg_save = 0;
@@ -500,9 +500,9 @@ void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg)
 	// a fixangle might get lost in a dropped packet.  Oh well.
 	if ( ent->v.fixangle )
 	{
-		MSG_WriteByte (msg, svc_setangle);
+		msg->WriteByte(svc_setangle);
 		for (i=0 ; i < 3 ; i++)
-			MSG_WriteAngle (msg, ent->v.angles[i] );
+			msg->WriteAngle(ent->v.angles[i] );
 		ent->v.fixangle = 0;
 	}
 }
@@ -571,11 +571,8 @@ qboolean SV_SendClientDatagram (client_t *client)
 	byte		buf[MAX_DATAGRAM];
 	sizebuf_t	msg;
 
-	msg.data = buf;
-	msg.maxsize = sizeof(buf);
-	msg.cursize = 0;
+	msg.InitOOB(buf, sizeof(buf));
 	msg.allowoverflow = true;
-	msg.overflowed = false;
 
 	// add the client specific data to the datagram
 	SV_WriteClientdataToMessage (client, &msg);
@@ -590,8 +587,8 @@ qboolean SV_SendClientDatagram (client_t *client)
 	if (client->datagram.overflowed)
 		Con_Printf ("WARNING: datagram overflowed for %s\n", client->name);
 	else
-		SZ_Write (&msg, client->datagram.data, client->datagram.cursize);
-	SZ_Clear (&client->datagram);
+		msg.WriteData(client->datagram._data, client->datagram.cursize);
+	client->datagram.Clear();
 
 	// send deltas over reliable stream
 	if (Netchan_CanReliable (&client->netchan))
@@ -600,7 +597,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 	if (msg.overflowed)
 	{
 		Con_Printf ("WARNING: msg overflowed for %s\n", client->name);
-		SZ_Clear (&msg);
+		msg.Clear();
 	}
 
 	// send the datagram
@@ -664,7 +661,7 @@ void SV_UpdateToReliableMessages (void)
 	}
 
 	if (sv.datagram.overflowed)
-		SZ_Clear (&sv.datagram);
+		sv.datagram.Clear();
 
 	// append the broadcast messages to each client messages
 	for (j=0, client = svs.clients ; j<MAX_CLIENTS ; j++, client++)
@@ -673,17 +670,15 @@ void SV_UpdateToReliableMessages (void)
 			continue;	// reliables go to all connected or spawned
 
 		ClientReliableCheckBlock(client, sv.reliable_datagram.cursize);
-		ClientReliableWrite_SZ(client, sv.reliable_datagram.data, sv.reliable_datagram.cursize);
+		ClientReliableWrite_SZ(client, sv.reliable_datagram._data, sv.reliable_datagram.cursize);
 
 		if (client->state != cs_spawned)
 			continue;	// datagrams only go to spawned
-		SZ_Write (&client->datagram
-			, sv.datagram.data
-			, sv.datagram.cursize);
+		client->datagram.WriteData(sv.datagram._data, sv.datagram.cursize);
 	}
 
-	SZ_Clear (&sv.reliable_datagram);
-	SZ_Clear (&sv.datagram);
+	sv.reliable_datagram.Clear();
+	sv.datagram.Clear();
 }
 
 #ifdef _WIN32
@@ -727,7 +722,7 @@ void SV_SendClientMessages (void)
 					c->name, c->backbuf_size[0]);
 
 				// it'll fit
-				SZ_Write(&c->netchan.message, c->backbuf_data[0],
+				c->netchan.message.WriteData(c->backbuf_data[0],
 					c->backbuf_size[0]);
 				
 				//move along, move along
@@ -739,10 +734,8 @@ void SV_SendClientMessages (void)
 
 				c->num_backbuf--;
 				if (c->num_backbuf) {
-					Com_Memset(&c->backbuf, 0, sizeof(c->backbuf));
-					c->backbuf.data = c->backbuf_data[c->num_backbuf - 1];
+					c->backbuf.InitOOB(c->backbuf_data[c->num_backbuf - 1], sizeof(c->backbuf_data[c->num_backbuf - 1]));
 					c->backbuf.cursize = c->backbuf_size[c->num_backbuf - 1];
-					c->backbuf.maxsize = sizeof(c->backbuf_data[c->num_backbuf - 1]);
 				}
 			}
 		}
@@ -751,8 +744,8 @@ void SV_SendClientMessages (void)
 		// drop the client
 		if (c->netchan.message.overflowed)
 		{
-			SZ_Clear (&c->netchan.message);
-			SZ_Clear (&c->datagram);
+			c->netchan.message.Clear();
+			c->datagram.Clear();
 			SV_BroadcastPrintf (PRINT_HIGH, "%s overflowed\n", c->name);
 			Con_Printf ("WARNING: reliable overflow for %s\n",c->name);
 			SV_DropClient (c);

@@ -83,20 +83,20 @@ void SV_New_f (void)
 	gamedir = Cvar_VariableString ("gamedir");
 
 	// send the serverdata
-	MSG_WriteByte (&sv_client->netchan.message, svc_serverdata);
-	MSG_WriteLong (&sv_client->netchan.message, PROTOCOL_VERSION);
-	MSG_WriteLong (&sv_client->netchan.message, svs.spawncount);
-	MSG_WriteByte (&sv_client->netchan.message, sv.attractloop);
-	MSG_WriteString (&sv_client->netchan.message, gamedir);
+	sv_client->netchan.message.WriteByte(svc_serverdata);
+	sv_client->netchan.message.WriteLong(PROTOCOL_VERSION);
+	sv_client->netchan.message.WriteLong(svs.spawncount);
+	sv_client->netchan.message.WriteByte(sv.attractloop);
+	sv_client->netchan.message.WriteString2(gamedir);
 
 	if (sv.state == ss_cinematic || sv.state == ss_pic)
 		playernum = -1;
 	else
 		playernum = sv_client - svs.clients;
-	MSG_WriteShort (&sv_client->netchan.message, playernum);
+	sv_client->netchan.message.WriteShort(playernum);
 
 	// send full levelname
-	MSG_WriteString (&sv_client->netchan.message, sv.configstrings[CS_NAME]);
+	sv_client->netchan.message.WriteString2(sv.configstrings[CS_NAME]);
 
 	//
 	// game server
@@ -110,8 +110,8 @@ void SV_New_f (void)
 		Com_Memset(&sv_client->lastcmd, 0, sizeof(sv_client->lastcmd));
 
 		// begin fetching configstrings
-		MSG_WriteByte (&sv_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&sv_client->netchan.message, va("cmd configstrings %i 0\n",svs.spawncount) );
+		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteString2(va("cmd configstrings %i 0\n",svs.spawncount) );
 	}
 
 }
@@ -150,9 +150,9 @@ void SV_Configstrings_f (void)
 	{
 		if (sv.configstrings[start][0])
 		{
-			MSG_WriteByte (&sv_client->netchan.message, svc_configstring);
-			MSG_WriteShort (&sv_client->netchan.message, start);
-			MSG_WriteString (&sv_client->netchan.message, sv.configstrings[start]);
+			sv_client->netchan.message.WriteByte(svc_configstring);
+			sv_client->netchan.message.WriteShort(start);
+			sv_client->netchan.message.WriteString2(sv.configstrings[start]);
 		}
 		start++;
 	}
@@ -161,13 +161,13 @@ void SV_Configstrings_f (void)
 
 	if (start == MAX_CONFIGSTRINGS)
 	{
-		MSG_WriteByte (&sv_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&sv_client->netchan.message, va("cmd baselines %i 0\n",svs.spawncount) );
+		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteString2(va("cmd baselines %i 0\n",svs.spawncount) );
 	}
 	else
 	{
-		MSG_WriteByte (&sv_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&sv_client->netchan.message, va("cmd configstrings %i %i\n",svs.spawncount, start) );
+		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteString2(va("cmd configstrings %i %i\n",svs.spawncount, start) );
 	}
 }
 
@@ -210,7 +210,7 @@ void SV_Baselines_f (void)
 		base = &sv.baselines[start];
 		if (base->modelindex || base->sound || base->effects)
 		{
-			MSG_WriteByte (&sv_client->netchan.message, svc_spawnbaseline);
+			sv_client->netchan.message.WriteByte(svc_spawnbaseline);
 			MSG_WriteDeltaEntity (&nullstate, base, &sv_client->netchan.message, true, true);
 		}
 		start++;
@@ -220,13 +220,13 @@ void SV_Baselines_f (void)
 
 	if (start == MAX_EDICTS)
 	{
-		MSG_WriteByte (&sv_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&sv_client->netchan.message, va("precache %i\n", svs.spawncount) );
+		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteString2(va("precache %i\n", svs.spawncount) );
 	}
 	else
 	{
-		MSG_WriteByte (&sv_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&sv_client->netchan.message, va("cmd baselines %i %i\n",svs.spawncount, start) );
+		sv_client->netchan.message.WriteByte(svc_stufftext);
+		sv_client->netchan.message.WriteString2(va("cmd baselines %i %i\n",svs.spawncount, start) );
 	}
 }
 
@@ -275,16 +275,16 @@ void SV_NextDownload_f (void)
 	if (r > 1024)
 		r = 1024;
 
-	MSG_WriteByte (&sv_client->netchan.message, svc_download);
-	MSG_WriteShort (&sv_client->netchan.message, r);
+	sv_client->netchan.message.WriteByte(svc_download);
+	sv_client->netchan.message.WriteShort(r);
 
 	sv_client->downloadcount += r;
 	size = sv_client->downloadsize;
 	if (!size)
 		size = 1;
 	percent = sv_client->downloadcount*100/size;
-	MSG_WriteByte (&sv_client->netchan.message, percent);
-	SZ_Write (&sv_client->netchan.message,
+	sv_client->netchan.message.WriteByte(percent);
+	sv_client->netchan.message.WriteData(
 		sv_client->download + sv_client->downloadcount - r, r);
 
 	if (sv_client->downloadcount != sv_client->downloadsize)
@@ -333,9 +333,9 @@ void SV_BeginDownload_f(void)
 		// MUST be in a subdirectory	
 		|| !strstr (name, "/") )	
 	{	// don't allow anything with .. path
-		MSG_WriteByte (&sv_client->netchan.message, svc_download);
-		MSG_WriteShort (&sv_client->netchan.message, -1);
-		MSG_WriteByte (&sv_client->netchan.message, 0);
+		sv_client->netchan.message.WriteByte(svc_download);
+		sv_client->netchan.message.WriteShort(-1);
+		sv_client->netchan.message.WriteByte(0);
 		return;
 	}
 
@@ -360,9 +360,9 @@ void SV_BeginDownload_f(void)
 			sv_client->download = NULL;
 		}
 
-		MSG_WriteByte (&sv_client->netchan.message, svc_download);
-		MSG_WriteShort (&sv_client->netchan.message, -1);
-		MSG_WriteByte (&sv_client->netchan.message, 0);
+		sv_client->netchan.message.WriteByte(svc_download);
+		sv_client->netchan.message.WriteShort(-1);
+		sv_client->netchan.message.WriteByte(0);
 		return;
 	}
 
@@ -560,7 +560,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			return;
 		}	
 
-		c = MSG_ReadByte (&net_message);
+		c = net_message.ReadByte();
 		if (c == -1)
 			break;
 				
@@ -575,7 +575,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 		case clc_userinfo:
-			QStr::NCpy(cl->userinfo, MSG_ReadString (&net_message), sizeof(cl->userinfo)-1);
+			QStr::NCpy(cl->userinfo, net_message.ReadString2(), sizeof(cl->userinfo)-1);
 			SV_UserinfoChanged (cl);
 			break;
 
@@ -585,8 +585,8 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 			move_issued = true;
 			checksumIndex = net_message.readcount;
-			checksum = MSG_ReadByte (&net_message);
-			lastframe = MSG_ReadLong (&net_message);
+			checksum = net_message.ReadByte();
+			lastframe = net_message.ReadLong();
 			if (lastframe != cl->lastframe) {
 				cl->lastframe = lastframe;
 				if (cl->lastframe > 0) {
@@ -608,7 +608,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 			// if the checksum fails, ignore the rest of the packet
 			calculatedChecksum = COM_BlockSequenceCRCByte (
-				net_message.data + checksumIndex + 1,
+				net_message._data + checksumIndex + 1,
 				net_message.readcount - checksumIndex - 1,
 				cl->netchan.incoming_sequence);
 
@@ -649,7 +649,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 		case clc_stringcmd:	
-			s = MSG_ReadString (&net_message);
+			s = const_cast<char*>(net_message.ReadString2());
 
 			// malicious users may try using too many string commands
 			if (++stringCmdCount < MAX_STRINGCMDS)

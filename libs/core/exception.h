@@ -23,7 +23,7 @@
 //
 //==========================================================================
 
-class QException : QInterface
+class QException : public QInterface
 {
 private:
 	enum { MAX_ERROR_TEXT_SIZE		= 1024 };
@@ -33,6 +33,13 @@ private:
 public:
 	explicit QException(const char *text);
 	virtual const char* What() const;
+};
+
+class QDropException : public QException
+{
+public:
+	QDropException(const char* text) : QException(text)
+	{}
 };
 
 #define qassert(x)		if (x) {} else throw QException("Assertion failed");

@@ -72,20 +72,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-typedef struct sizebuf_s
+typedef struct sizebuf_s : QMsg
 {
-	qboolean	allowoverflow;	// if false, do a Com_Error
-	qboolean	overflowed;		// set to true if the buffer size failed
-	byte	*data;
-	int		maxsize;
-	int		cursize;
-	int		readcount;
 } sizebuf_t;
 
-void SZ_Init (sizebuf_t *buf, byte *data, int length);
-void SZ_Clear (sizebuf_t *buf);
 void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, const void *data, int length);
 void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
@@ -93,40 +84,16 @@ void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
 struct usercmd_s;
 struct entity_state_s;
 
-void MSG_WriteChar (sizebuf_t *sb, int c);
-void MSG_WriteByte (sizebuf_t *sb, int c);
-void MSG_WriteShort (sizebuf_t *sb, int c);
-void MSG_WriteLong (sizebuf_t *sb, int c);
-void MSG_WriteFloat (sizebuf_t *sb, float f);
-void MSG_WriteString (sizebuf_t *sb, char *s);
-void MSG_WriteCoord (sizebuf_t *sb, float f);
 void MSG_WritePos (sizebuf_t *sb, vec3_t pos);
-void MSG_WriteAngle (sizebuf_t *sb, float f);
-void MSG_WriteAngle16 (sizebuf_t *sb, float f);
 void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
 void MSG_WriteDeltaEntity (struct entity_state_s *from, struct entity_state_s *to, sizebuf_t *msg, qboolean force, qboolean newentity);
 void MSG_WriteDir (sizebuf_t *sb, vec3_t vector);
 
 
-void	MSG_BeginReading (sizebuf_t *sb);
-
-int		MSG_ReadChar (sizebuf_t *sb);
-int		MSG_ReadByte (sizebuf_t *sb);
-int		MSG_ReadShort (sizebuf_t *sb);
-int		MSG_ReadLong (sizebuf_t *sb);
-float	MSG_ReadFloat (sizebuf_t *sb);
-char	*MSG_ReadString (sizebuf_t *sb);
-char	*MSG_ReadStringLine (sizebuf_t *sb);
-
-float	MSG_ReadCoord (sizebuf_t *sb);
 void	MSG_ReadPos (sizebuf_t *sb, vec3_t pos);
-float	MSG_ReadAngle (sizebuf_t *sb);
-float	MSG_ReadAngle16 (sizebuf_t *sb);
 void	MSG_ReadDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
 
 void	MSG_ReadDir (sizebuf_t *sb, vec3_t vector);
-
-void	MSG_ReadData (sizebuf_t *sb, void *buffer, int size);
 
 //============================================================================
 

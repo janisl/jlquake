@@ -351,29 +351,27 @@ void CL_SendMove (usercmd_t *cmd)
 	sizebuf_t	buf;
 	byte	data[128];
 	
-	buf.maxsize = 128;
-	buf.cursize = 0;
-	buf.data = data;
+	buf.InitOOB(data, 128);
 	
 	cl.cmd = *cmd;
 
 //
 // send the movement message
 //
-	MSG_WriteByte (&buf, clc_frame);
-	MSG_WriteByte (&buf, cl.reference_frame);
-	MSG_WriteByte (&buf, cl.current_sequence);
+	buf.WriteByte(clc_frame);
+	buf.WriteByte(cl.reference_frame);
+	buf.WriteByte(cl.current_sequence);
 
-	MSG_WriteByte (&buf, clc_move);
+	buf.WriteByte(clc_move);
 
-	MSG_WriteFloat (&buf, cl.mtime[0]);	// so server can get ping times
+	buf.WriteFloat(cl.mtime[0]);	// so server can get ping times
 
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteAngle (&buf, cl.viewangles[i]);
+		buf.WriteAngle(cl.viewangles[i]);
 	
-    MSG_WriteShort (&buf, cmd->forwardmove);
-    MSG_WriteShort (&buf, cmd->sidemove);
-    MSG_WriteShort (&buf, cmd->upmove);
+    buf.WriteShort(cmd->forwardmove);
+    buf.WriteShort(cmd->sidemove);
+    buf.WriteShort(cmd->upmove);
 
 //
 // send button bits
@@ -391,15 +389,15 @@ void CL_SendMove (usercmd_t *cmd)
 	if (in_crouch.state & 1)
 		bits |= 4;
 
-    MSG_WriteByte (&buf, bits);
+    buf.WriteByte(bits);
 
-    MSG_WriteByte (&buf, in_impulse);
+    buf.WriteByte(in_impulse);
 	in_impulse = 0;
 
 //
 // light level
 //
-	MSG_WriteByte (&buf, cmd->lightlevel);
+	buf.WriteByte(cmd->lightlevel);
 
 //
 // deliver the message

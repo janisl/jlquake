@@ -138,7 +138,7 @@ void Cvar_Set (char *var_name, char *value)
 		Info_SetValueForKey (cls.userinfo, var_name, value, MAX_INFO_STRING);
 		if (cls.state >= ca_connected)
 		{
-			MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+			cls.netchan.message.WriteByte(clc_stringcmd);
 			SZ_Print (&cls.netchan.message, va("setinfo \"%s\" \"%s\"\n", var_name, value));
 		}
 	}

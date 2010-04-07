@@ -333,8 +333,8 @@ void PF_sprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	MSG_WriteChar (&client->message,svc_print);
-	MSG_WriteString (&client->message, s );
+	client->message.WriteChar(svc_print);
+	client->message.WriteString2(s );
 }
 
 
@@ -364,8 +364,8 @@ void PF_centerprint (void)
 		
 	client = &svs.clients[entnum-1];
 		
-	MSG_WriteChar (&client->message,svc_centerprint);
-	MSG_WriteString (&client->message, s );
+	client->message.WriteChar(svc_centerprint);
+	client->message.WriteString2(s );
 }
 
 
@@ -648,14 +648,14 @@ void PF_ambientsound (void)
 
 // add an svc_spawnambient command to the level signon packet
 
-	MSG_WriteByte (&sv.signon,svc_spawnstaticsound);
+	sv.signon.WriteByte(svc_spawnstaticsound);
 	for (i=0 ; i<3 ; i++)
-		MSG_WriteCoord(&sv.signon, pos[i]);
+		sv.signon.WriteCoord(pos[i]);
 
-	MSG_WriteShort (&sv.signon, soundnum);
+	sv.signon.WriteShort(soundnum);
 
-	MSG_WriteByte (&sv.signon, vol*255);
-	MSG_WriteByte (&sv.signon, attenuation*64);
+	sv.signon.WriteByte(vol*255);
+	sv.signon.WriteByte(attenuation*64);
 
 }
 
@@ -1815,9 +1815,9 @@ void PF_lightstyle (void)
 	for (j=0, client = svs.clients ; j<svs.maxclients ; j++, client++)
 		if (client->active || client->spawned)
 		{
-			MSG_WriteChar (&client->message, svc_lightstyle);
-			MSG_WriteChar (&client->message,style);
-			MSG_WriteString (&client->message, val);
+			client->message.WriteChar(svc_lightstyle);
+			client->message.WriteChar(style);
+			client->message.WriteString2(val);
 		}
 }
 
@@ -1893,9 +1893,9 @@ void PF_lightstylestatic(void)
 	{
 		if(client->active || client->spawned)
 		{
-			MSG_WriteChar(&client->message, svc_lightstyle);
-			MSG_WriteChar(&client->message, styleNumber);
-			MSG_WriteString(&client->message, styleString);
+			client->message.WriteChar(svc_lightstyle);
+			client->message.WriteChar(styleNumber);
+			client->message.WriteString2(styleString);
 		}
 	}
 }
@@ -2174,43 +2174,43 @@ sizebuf_t *WriteDest (void)
 
 void PF_WriteByte (void)
 {
-	MSG_WriteByte (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteByte(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteChar (void)
 {
-	MSG_WriteChar (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteChar(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteShort (void)
 {
-	MSG_WriteShort (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteShort(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteLong (void)
 {
-	MSG_WriteLong (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteLong(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteAngle (void)
 {
-	MSG_WriteAngle (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteAngle(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteCoord (void)
 {
-	MSG_WriteCoord (WriteDest(), G_FLOAT(OFS_PARM1));
+	WriteDest()->WriteCoord(G_FLOAT(OFS_PARM1));
 }
 
 void PF_WriteString (void)
 {
-	MSG_WriteString (WriteDest(), G_STRING(OFS_PARM1));
+	WriteDest()->WriteString2(G_STRING(OFS_PARM1));
 }
 
 
 void PF_WriteEntity (void)
 {
-	MSG_WriteShort (WriteDest(), G_EDICTNUM(OFS_PARM1));
+	WriteDest()->WriteShort(G_EDICTNUM(OFS_PARM1));
 }
 
 //=============================================================================
@@ -2224,21 +2224,21 @@ void PF_makestatic (void)
 	
 	ent = G_EDICT(OFS_PARM0);
 
-	MSG_WriteByte (&sv.signon,svc_spawnstatic);
+	sv.signon.WriteByte(svc_spawnstatic);
 
-	MSG_WriteShort (&sv.signon, SV_ModelIndex(pr_strings + ent->v.model));
+	sv.signon.WriteShort(SV_ModelIndex(pr_strings + ent->v.model));
 
-	MSG_WriteByte (&sv.signon, ent->v.frame);
-	MSG_WriteByte (&sv.signon, ent->v.colormap);
-	MSG_WriteByte (&sv.signon, ent->v.skin);
-	MSG_WriteByte (&sv.signon, (int)(ent->v.scale*100.0)&255);
-	MSG_WriteByte (&sv.signon, ent->v.drawflags);
-	MSG_WriteByte (&sv.signon, (int)(ent->v.abslight*255.0)&255);
+	sv.signon.WriteByte(ent->v.frame);
+	sv.signon.WriteByte(ent->v.colormap);
+	sv.signon.WriteByte(ent->v.skin);
+	sv.signon.WriteByte((int)(ent->v.scale*100.0)&255);
+	sv.signon.WriteByte(ent->v.drawflags);
+	sv.signon.WriteByte((int)(ent->v.abslight*255.0)&255);
 
 	for (i=0 ; i<3 ; i++)
 	{
-		MSG_WriteCoord(&sv.signon, ent->v.origin[i]);
-		MSG_WriteAngle(&sv.signon, ent->v.angles[i]);
+		sv.signon.WriteCoord(ent->v.origin[i]);
+		sv.signon.WriteAngle(ent->v.angles[i]);
 	}
 
 // throw the entity away now
@@ -2317,8 +2317,8 @@ void PF_plaque_draw (void)
 	if (Index > pr_string_count)
 		PR_RunError ("PF_plaque_draw: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
 
-	MSG_WriteByte (WriteDest(), svc_plaque);
-	MSG_WriteShort (WriteDest(), Index);
+	WriteDest()->WriteByte(svc_plaque);
+	WriteDest()->WriteShort(Index);
 }
 
 void PF_rain_go (void)
@@ -2349,17 +2349,17 @@ void PF_rain_go (void)
 //	R_RainEffect(org,org2,x_dir,y_dir,color,count);	//DUH!
 //void SV_StartRainEffect (vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count)
 {
-	MSG_WriteByte (&sv.datagram, svc_raineffect);
-	MSG_WriteCoord (&sv.datagram, org[0]);
-	MSG_WriteCoord (&sv.datagram, org[1]);
-	MSG_WriteCoord (&sv.datagram, org[2]);
-	MSG_WriteCoord (&sv.datagram, e_size[0]);
-	MSG_WriteCoord (&sv.datagram, e_size[1]);
-	MSG_WriteCoord (&sv.datagram, e_size[2]);
-	MSG_WriteAngle (&sv.datagram, x_dir);	
-	MSG_WriteAngle (&sv.datagram, y_dir);	
-	MSG_WriteShort (&sv.datagram, color);
-	MSG_WriteShort (&sv.datagram, count);
+	sv.datagram.WriteByte(svc_raineffect);
+	sv.datagram.WriteCoord(org[0]);
+	sv.datagram.WriteCoord(org[1]);
+	sv.datagram.WriteCoord(org[2]);
+	sv.datagram.WriteCoord(e_size[0]);
+	sv.datagram.WriteCoord(e_size[1]);
+	sv.datagram.WriteCoord(e_size[2]);
+	sv.datagram.WriteAngle(x_dir);
+	sv.datagram.WriteAngle(y_dir);
+	sv.datagram.WriteShort(color);
+	sv.datagram.WriteShort(count);
 
 //	SV_Multicast (org, MULTICAST_PVS);
 }
@@ -2376,13 +2376,13 @@ void PF_particleexplosion (void)
 	radius = G_FLOAT(OFS_PARM2);
 	counter = G_FLOAT(OFS_PARM3);
 
-	MSG_WriteByte(&sv.datagram, svc_particle_explosion);
-	MSG_WriteCoord(&sv.datagram, org[0]);
-	MSG_WriteCoord(&sv.datagram, org[1]);
-	MSG_WriteCoord(&sv.datagram, org[2]);
-	MSG_WriteShort(&sv.datagram, color);
-	MSG_WriteShort(&sv.datagram, radius);
-	MSG_WriteShort(&sv.datagram, counter);
+	sv.datagram.WriteByte(svc_particle_explosion);
+	sv.datagram.WriteCoord(org[0]);
+	sv.datagram.WriteCoord(org[1]);
+	sv.datagram.WriteCoord(org[2]);
+	sv.datagram.WriteShort(color);
+	sv.datagram.WriteShort(radius);
+	sv.datagram.WriteShort(counter);
 }
 
 void PF_movestep (void)
@@ -2571,8 +2571,8 @@ void PF_AwardExperience(void)
 
 				sprintf(temp,"You are now level %d\n",AfterLevel);
 	
-				MSG_WriteChar (&client->message,svc_print);
-				MSG_WriteString (&client->message, temp );
+				client->message.WriteChar(svc_print);
+				client->message.WriteString2(temp );
 */
 
 void PF_Cos(void)
@@ -2743,8 +2743,8 @@ void PF_endeffect (void)
 	if (!sv.Effects[index].type) return;
 
 	sv.Effects[index].type = 0;
-	MSG_WriteByte (&sv.reliable_datagram, svc_end_effect);
-	MSG_WriteByte (&sv.reliable_datagram, index);
+	sv.reliable_datagram.WriteByte(svc_end_effect);
+	sv.reliable_datagram.WriteByte(index);
 }
 
 void PF_randomrange(void)

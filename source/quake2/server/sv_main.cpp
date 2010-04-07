@@ -70,7 +70,7 @@ or crashing.
 void SV_DropClient (client_t *drop)
 {
 	// add the disconnect
-	MSG_WriteByte (&drop->netchan.message, svc_disconnect);
+	drop->netchan.message.WriteByte(svc_disconnect);
 
 	if (drop->state == cs_spawned)
 	{
@@ -404,7 +404,7 @@ gotnewcl:
 
 	newcl->state = cs_connected;
 	
-	SZ_Init (&newcl->datagram, newcl->datagram_buf, sizeof(newcl->datagram_buf) );
+	newcl->datagram.InitOOB(newcl->datagram_buf, sizeof(newcl->datagram_buf) );
 	newcl->datagram.allowoverflow = true;
 	newcl->lastmessage = svs.realtime;	// don't timeout
 	newcl->lastconnect = svs.realtime;
@@ -438,9 +438,9 @@ void SVC_RemoteCommand (void)
 	i = Rcon_Validate ();
 
 	if (i == 0)
-		Com_Printf ("Bad rcon from %s:\n%s\n", NET_AdrToString (net_from), net_message.data+4);
+		Com_Printf ("Bad rcon from %s:\n%s\n", NET_AdrToString (net_from), net_message._data+4);
 	else
-		Com_Printf ("Rcon from %s:\n%s\n", NET_AdrToString (net_from), net_message.data+4);
+		Com_Printf ("Rcon from %s:\n%s\n", NET_AdrToString (net_from), net_message._data+4);
 
 	Com_BeginRedirect (RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, (void*)SV_FlushRedirect);
 
@@ -479,10 +479,10 @@ void SV_ConnectionlessPacket (void)
 	char	*s;
 	char	*c;
 
-	MSG_BeginReading (&net_message);
-	MSG_ReadLong (&net_message);		// skip the -1 marker
+	net_message.BeginReadingOOB();
+	net_message.ReadLong();		// skip the -1 marker
 
-	s = MSG_ReadStringLine (&net_message);
+	s = const_cast<char*>(net_message.ReadStringLine2());
 
 	Cmd_TokenizeString (s, false);
 
@@ -603,7 +603,7 @@ void SV_ReadPackets (void)
 	while (NET_GetPacket (NS_SERVER, &net_from, &net_message))
 	{
 		// check for connectionless packet (0xffffffff) first
-		if (*(int *)net_message.data == -1)
+		if (*(int *)net_message._data == -1)
 		{
 			SV_ConnectionlessPacket ();
 			continue;
@@ -611,10 +611,10 @@ void SV_ReadPackets (void)
 
 		// read the qport out of the message so we can fix up
 		// stupid address translating routers
-		MSG_BeginReading (&net_message);
-		MSG_ReadLong (&net_message);		// sequence number
-		MSG_ReadLong (&net_message);		// sequence number
-		qport = MSG_ReadShort (&net_message) & 0xffff;
+		net_message.BeginReadingOOB();
+		net_message.ReadLong();		// sequence number
+		net_message.ReadLong();		// sequence number
+		qport = net_message.ReadShort() & 0xffff;
 
 		// check for packets from connected clients
 		for (i=0, cl=svs.clients ; i<maxclients->value ; i++,cl++)
@@ -977,7 +977,7 @@ void SV_Init (void)
 
 	sv_reconnect_limit = Cvar_Get ("sv_reconnect_limit", "3", CVAR_ARCHIVE);
 
-	SZ_Init (&net_message, net_message_buffer, sizeof(net_message_buffer));
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
 }
 
 /*
@@ -995,15 +995,15 @@ void SV_FinalMessage (char *message, qboolean reconnect)
 	int			i;
 	client_t	*cl;
 	
-	SZ_Clear (&net_message);
-	MSG_WriteByte (&net_message, svc_print);
-	MSG_WriteByte (&net_message, PRINT_HIGH);
-	MSG_WriteString (&net_message, message);
+	net_message.Clear();
+	net_message.WriteByte(svc_print);
+	net_message.WriteByte(PRINT_HIGH);
+	net_message.WriteString2(message);
 
 	if (reconnect)
-		MSG_WriteByte (&net_message, svc_reconnect);
+		net_message.WriteByte(svc_reconnect);
 	else
-		MSG_WriteByte (&net_message, svc_disconnect);
+		net_message.WriteByte(svc_disconnect);
 
 	// send it twice
 	// stagger the packets to crutch operating system limited buffers
@@ -1011,12 +1011,12 @@ void SV_FinalMessage (char *message, qboolean reconnect)
 	for (i=0, cl = svs.clients ; i<maxclients->value ; i++, cl++)
 		if (cl->state >= cs_connected)
 			Netchan_Transmit (&cl->netchan, net_message.cursize
-			, net_message.data);
+			, net_message._data);
 
 	for (i=0, cl = svs.clients ; i<maxclients->value ; i++, cl++)
 		if (cl->state >= cs_connected)
 			Netchan_Transmit (&cl->netchan, net_message.cursize
-			, net_message.data);
+			, net_message._data);
 }
 
 

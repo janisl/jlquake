@@ -78,42 +78,42 @@ void SV_New_f (void)
 	if (host_client->num_backbuf) {
 		Con_Printf("WARNING %s: [SV_New] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize); 
 		host_client->num_backbuf = 0;
-		SZ_Clear(&host_client->netchan.message);
+		host_client->netchan.message.Clear();
 	}
 
 	// send the serverdata
-	MSG_WriteByte (&host_client->netchan.message, svc_serverdata);
-	MSG_WriteLong (&host_client->netchan.message, PROTOCOL_VERSION);
-	MSG_WriteLong (&host_client->netchan.message, svs.spawncount);
-	MSG_WriteString (&host_client->netchan.message, gamedir);
+	host_client->netchan.message.WriteByte(svc_serverdata);
+	host_client->netchan.message.WriteLong(PROTOCOL_VERSION);
+	host_client->netchan.message.WriteLong(svs.spawncount);
+	host_client->netchan.message.WriteString2(gamedir);
 
 	playernum = NUM_FOR_EDICT(host_client->edict)-1;
 	if (host_client->spectator)
 		playernum |= 128;
-	MSG_WriteByte (&host_client->netchan.message, playernum);
+	host_client->netchan.message.WriteByte(playernum);
 
 	// send full levelname
-	MSG_WriteString (&host_client->netchan.message, PR_GetString(sv.edicts->v.message));
+	host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->v.message));
 
 	// send the movevars
-	MSG_WriteFloat(&host_client->netchan.message, movevars.gravity);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.stopspeed);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.maxspeed);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.spectatormaxspeed);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.accelerate);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.airaccelerate);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.wateraccelerate);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.friction);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.waterfriction);
-	MSG_WriteFloat(&host_client->netchan.message, movevars.entgravity);
+	host_client->netchan.message.WriteFloat(movevars.gravity);
+	host_client->netchan.message.WriteFloat(movevars.stopspeed);
+	host_client->netchan.message.WriteFloat(movevars.maxspeed);
+	host_client->netchan.message.WriteFloat(movevars.spectatormaxspeed);
+	host_client->netchan.message.WriteFloat(movevars.accelerate);
+	host_client->netchan.message.WriteFloat(movevars.airaccelerate);
+	host_client->netchan.message.WriteFloat(movevars.wateraccelerate);
+	host_client->netchan.message.WriteFloat(movevars.friction);
+	host_client->netchan.message.WriteFloat(movevars.waterfriction);
+	host_client->netchan.message.WriteFloat(movevars.entgravity);
 
 	// send music
-	MSG_WriteByte (&host_client->netchan.message, svc_cdtrack);
-	MSG_WriteByte (&host_client->netchan.message, sv.edicts->v.sounds);
+	host_client->netchan.message.WriteByte(svc_cdtrack);
+	host_client->netchan.message.WriteByte(sv.edicts->v.sounds);
 
 	// send server info string
-	MSG_WriteByte (&host_client->netchan.message, svc_stufftext);
-	MSG_WriteString (&host_client->netchan.message, va("fullserverinfo \"%s\"\n", svs.info) );
+	host_client->netchan.message.WriteByte(svc_stufftext);
+	host_client->netchan.message.WriteString2(va("fullserverinfo \"%s\"\n", svs.info) );
 }
 
 /*
@@ -147,23 +147,23 @@ void SV_Soundlist_f (void)
 	if (host_client->num_backbuf) {
 		Con_Printf("WARNING %s: [SV_Soundlist] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize); 
 		host_client->num_backbuf = 0;
-		SZ_Clear(&host_client->netchan.message);
+		host_client->netchan.message.Clear();
 	}
 
-	MSG_WriteByte (&host_client->netchan.message, svc_soundlist);
-	MSG_WriteByte (&host_client->netchan.message, n);
+	host_client->netchan.message.WriteByte(svc_soundlist);
+	host_client->netchan.message.WriteByte(n);
 	for (s = sv.sound_precache+1 + n ; 
 		*s && host_client->netchan.message.cursize < (MAX_MSGLEN/2); 
 		s++, n++)
-		MSG_WriteString (&host_client->netchan.message, *s);
+		host_client->netchan.message.WriteString2(*s);
 
-	MSG_WriteByte (&host_client->netchan.message, 0);
+	host_client->netchan.message.WriteByte(0);
 
 	// next msg
 	if (*s)
-		MSG_WriteByte (&host_client->netchan.message, n);
+		host_client->netchan.message.WriteByte(n);
 	else
-		MSG_WriteByte (&host_client->netchan.message, 0);
+		host_client->netchan.message.WriteByte(0);
 }
 
 /*
@@ -197,22 +197,22 @@ void SV_Modellist_f (void)
 	if (host_client->num_backbuf) {
 		Con_Printf("WARNING %s: [SV_Modellist] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize); 
 		host_client->num_backbuf = 0;
-		SZ_Clear(&host_client->netchan.message);
+		host_client->netchan.message.Clear();
 	}
 
-	MSG_WriteByte (&host_client->netchan.message, svc_modellist);
-	MSG_WriteByte (&host_client->netchan.message, n);
+	host_client->netchan.message.WriteByte(svc_modellist);
+	host_client->netchan.message.WriteByte(n);
 	for (s = sv.model_precache+1+n ; 
 		*s && host_client->netchan.message.cursize < (MAX_MSGLEN/2); 
 		s++, n++)
-		MSG_WriteString (&host_client->netchan.message, *s);
-	MSG_WriteByte (&host_client->netchan.message, 0);
+		host_client->netchan.message.WriteString2(*s);
+	host_client->netchan.message.WriteByte(0);
 
 	// next msg
 	if (*s)
-		MSG_WriteByte (&host_client->netchan.message, n);
+		host_client->netchan.message.WriteByte(n);
 	else
-		MSG_WriteByte (&host_client->netchan.message, 0);
+		host_client->netchan.message.WriteByte(0);
 }
 
 /*
@@ -266,23 +266,23 @@ void SV_PreSpawn_f (void)
 	if (host_client->num_backbuf) {
 		Con_Printf("WARNING %s: [SV_PreSpawn] Back buffered (%d0, clearing", host_client->name, host_client->netchan.message.cursize); 
 		host_client->num_backbuf = 0;
-		SZ_Clear(&host_client->netchan.message);
+		host_client->netchan.message.Clear();
 	}
 
-	SZ_Write (&host_client->netchan.message, 
+	host_client->netchan.message.WriteData(
 		sv.signon_buffers[buf],
 		sv.signon_buffer_size[buf]);
 
 	buf++;
 	if (buf == sv.num_signon_buffers)
 	{	// all done prespawning
-		MSG_WriteByte (&host_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&host_client->netchan.message, va("cmd spawn %i 0\n",svs.spawncount) );
+		host_client->netchan.message.WriteByte(svc_stufftext);
+		host_client->netchan.message.WriteString2(va("cmd spawn %i 0\n",svs.spawncount) );
 	}
 	else
 	{	// need to prespawn more
-		MSG_WriteByte (&host_client->netchan.message, svc_stufftext);
-		MSG_WriteString (&host_client->netchan.message, 
+		host_client->netchan.message.WriteByte(svc_stufftext);
+		host_client->netchan.message.WriteString2(
 			va("cmd prespawn %i %i\n", svs.spawncount, buf) );
 	}
 }
@@ -328,7 +328,7 @@ void SV_Spawn_f (void)
 	
 // send all current names, colors, and frag counts
 	// FIXME: is this a good thing?
-	SZ_Clear (&host_client->netchan.message);
+	host_client->netchan.message.Clear();
 
 // send current status of all other players
 
@@ -502,10 +502,10 @@ void SV_Begin_f (void)
 // and it won't happen if the game was just loaded, so you wind up
 // with a permanent head tilt
 	ent = EDICT_NUM( 1 + (host_client - svs.clients) );
-	MSG_WriteByte (&host_client->netchan.message, svc_setangle);
+	host_client->netchan.message.WriteByte(svc_setangle);
 	for (i=0 ; i < 2 ; i++)
-		MSG_WriteAngle (&host_client->netchan.message, ent->v.angles[i] );
-	MSG_WriteAngle (&host_client->netchan.message, 0 );
+		host_client->netchan.message.WriteAngle(ent->v.angles[i] );
+	host_client->netchan.message.WriteAngle(0 );
 #endif
 }
 
@@ -585,13 +585,13 @@ void SV_NextUpload (void)
 		ClientReliableWrite_String (host_client, "stopul");
 
 		// suck out rest of packet
-		size = MSG_ReadShort ();	MSG_ReadByte ();
-		msg_readcount += size;
+		size = net_message.ReadShort();	net_message.ReadByte ();
+		net_message.readcount += size;
 		return;
 	}
 
-	size = MSG_ReadShort ();
-	percent = MSG_ReadByte ();
+	size = net_message.ReadShort();
+	percent = net_message.ReadByte ();
 
 	if (!host_client->upload)
 	{
@@ -608,8 +608,8 @@ void SV_NextUpload (void)
 			OutofBandPrintf(host_client->snap_from, "Server receiving %s from %d...\n", host_client->uploadfn, host_client->userid);
 	}
 
-	fwrite (net_message.data + msg_readcount, 1, size, host_client->upload);
-	msg_readcount += size;
+	fwrite (net_message._data + net_message.readcount, 1, size, host_client->upload);
+	net_message.readcount += size;
 
 Con_DPrintf ("UPLOAD: %d received\n", size);
 
@@ -1090,10 +1090,10 @@ void SV_SetInfo_f (void)
 	SV_ExtractFromUserinfo (host_client);
 
 	i = host_client - svs.clients;
-	MSG_WriteByte (&sv.reliable_datagram, svc_setinfo);
-	MSG_WriteByte (&sv.reliable_datagram, i);
-	MSG_WriteString (&sv.reliable_datagram, Cmd_Argv(1));
-	MSG_WriteString (&sv.reliable_datagram, Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
+	sv.reliable_datagram.WriteByte(svc_setinfo);
+	sv.reliable_datagram.WriteByte(i);
+	sv.reliable_datagram.WriteString2(Cmd_Argv(1));
+	sv.reliable_datagram.WriteString2(Info_ValueForKey(host_client->userinfo, Cmd_Argv(1)));
 }
 
 /*
@@ -1580,14 +1580,14 @@ void SV_ExecuteClientMessage (client_t *cl)
 	cl->delta_sequence = -1;	// no delta unless requested
 	while (1)
 	{
-		if (msg_badread)
+		if (net_message.badread)
 		{
 			Con_Printf ("SV_ReadClientMessage: badread\n");
 			SV_DropClient (cl);
 			return;
 		}	
 
-		c = MSG_ReadByte ();
+		c = net_message.ReadByte ();
 		if (c == -1)
 			break;
 				
@@ -1602,7 +1602,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 		case clc_delta:
-			cl->delta_sequence = MSG_ReadByte ();
+			cl->delta_sequence = net_message.ReadByte ();
 			break;
 
 		case clc_move:
@@ -1611,11 +1611,11 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 			move_issued = true;
 
-			checksumIndex = MSG_GetReadCount();
-			checksum = (byte)MSG_ReadByte ();
+			checksumIndex = net_message.GetReadCount();
+			checksum = (byte)net_message.ReadByte ();
 
 			// read loss percentage
-			cl->lossage = MSG_ReadByte();
+			cl->lossage = net_message.ReadByte();
 
 			MSG_ReadDeltaUsercmd (&nullcmd, &oldest);
 			MSG_ReadDeltaUsercmd (&oldest, &oldcmd);
@@ -1626,8 +1626,8 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 			// if the checksum fails, ignore the rest of the packet
 			calculatedChecksum = COM_BlockSequenceCRCByte(
-				net_message.data + checksumIndex + 1,
-				MSG_GetReadCount() - checksumIndex - 1,
+				net_message._data + checksumIndex + 1,
+				net_message.GetReadCount() - checksumIndex - 1,
 				seq_hash);
 
 			if (calculatedChecksum != checksum)
@@ -1663,14 +1663,14 @@ void SV_ExecuteClientMessage (client_t *cl)
 
 
 		case clc_stringcmd:	
-			s = MSG_ReadString ();
+			s = const_cast<char*>(net_message.ReadString2());
 			SV_ExecuteUserCommand (s);
 			break;
 
 		case clc_tmove:
-			o[0] = MSG_ReadCoord();
-			o[1] = MSG_ReadCoord();
-			o[2] = MSG_ReadCoord();
+			o[0] = net_message.ReadCoord();
+			o[1] = net_message.ReadCoord();
+			o[2] = net_message.ReadCoord();
 			// only allowed by spectators
 			if (host_client->spectator) {
 				VectorCopy(o, sv_player->v.origin);

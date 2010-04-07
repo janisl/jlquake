@@ -72,7 +72,7 @@ Cbuf_Init
 */
 void Cbuf_Init (void)
 {
-	SZ_Alloc (&cmd_text, 8192);		// space for commands and script files
+	cmd_text.Alloc(8192);		// space for commands and script files
 }
 
 
@@ -83,7 +83,7 @@ Cbuf_AddText
 Adds command text at the end of the buffer
 ============
 */
-void Cbuf_AddText (char *text)
+void Cbuf_AddText (const char *text)
 {
 	int		l;
 	
@@ -95,7 +95,7 @@ void Cbuf_AddText (char *text)
 		return;
 	}
 
-	SZ_Write (&cmd_text, text, QStr::Length(text));
+	cmd_text.WriteData(text, QStr::Length(text));
 }
 
 
@@ -108,7 +108,7 @@ Adds a \n to the text
 FIXME: actually change the command buffer to do less copying
 ============
 */
-void Cbuf_InsertText (char *text)
+void Cbuf_InsertText (const char *text)
 {
 	char	*temp;
 	int		templen;
@@ -118,8 +118,8 @@ void Cbuf_InsertText (char *text)
 	if (templen)
 	{
 		temp = (char*)Z_Malloc (templen);
-		Com_Memcpy(temp, cmd_text.data, templen);
-		SZ_Clear (&cmd_text);
+		Com_Memcpy(temp, cmd_text._data, templen);
+		cmd_text.Clear();
 	}
 	else
 		temp = NULL;	// shut up compiler
@@ -130,7 +130,7 @@ void Cbuf_InsertText (char *text)
 // add the copied off data
 	if (templen)
 	{
-		SZ_Write (&cmd_text, temp, templen);
+		cmd_text.WriteData(temp, templen);
 		Z_Free (temp);
 	}
 }
@@ -150,7 +150,7 @@ void Cbuf_Execute (void)
 	while (cmd_text.cursize)
 	{
 // find a \n or ; line break
-		text = (char *)cmd_text.data;
+		text = (char *)cmd_text._data;
 
 		quotes = 0;
 		for (i=0 ; i< cmd_text.cursize ; i++)
@@ -413,7 +413,7 @@ typedef struct cmd_function_s
 static	int			cmd_argc;
 static	char		*cmd_argv[MAX_ARGS];
 static	char		*cmd_null_string = "";
-static	char		*cmd_args = NULL;
+static	const char	*cmd_args = NULL;
 
 cmd_source_t	cmd_source;
 
@@ -465,7 +465,7 @@ char	*Cmd_Argv (int arg)
 Cmd_Args
 ============
 */
-char		*Cmd_Args (void)
+const char		*Cmd_Args (void)
 {
 	return cmd_args;
 }
@@ -478,7 +478,7 @@ Cmd_TokenizeString
 Parses the given string into command line tokens.
 ============
 */
-void Cmd_TokenizeString (char *text)
+void Cmd_TokenizeString (const char *text)
 {
 	int		i;
 	
@@ -611,7 +611,7 @@ A complete command line has been parsed, so try to execute it
 FIXME: lookupnoadd the token to speed search?
 ============
 */
-void	Cmd_ExecuteString (char *text, cmd_source_t src)
+void	Cmd_ExecuteString (const char *text, cmd_source_t src)
 {	
 	cmd_function_t	*cmd;
 	cmdalias_t		*a;
@@ -668,7 +668,7 @@ void Cmd_ForwardToServer (void)
 	if (cls.demoplayback)
 		return;		// not really connected
 
-	MSG_WriteByte (&cls.message, clc_stringcmd);
+	cls.message.WriteByte(clc_stringcmd);
 	if (QStr::ICmp(Cmd_Argv(0), "cmd") != 0)
 	{
 		SZ_Print (&cls.message, Cmd_Argv(0));

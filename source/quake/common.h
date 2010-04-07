@@ -21,21 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-typedef struct sizebuf_s
+typedef struct sizebuf_s : QMsg
 {
-	qboolean	allowoverflow;	// if false, do a Sys_Error
-	qboolean	overflowed;		// set to true if the buffer size failed
-	byte	*data;
-	int		maxsize;
-	int		cursize;
 } sizebuf_t;
 
-void SZ_Alloc (sizebuf_t *buf, int startsize);
-void SZ_Free (sizebuf_t *buf);
-void SZ_Clear (sizebuf_t *buf);
 void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, const void *data, int length);
-void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
+void SZ_Print (sizebuf_t *buf, const char *data);	// strcats onto the sizebuf
 
 //============================================================================
 
@@ -57,31 +48,6 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-void MSG_WriteChar (sizebuf_t *sb, int c);
-void MSG_WriteByte (sizebuf_t *sb, int c);
-void MSG_WriteShort (sizebuf_t *sb, int c);
-void MSG_WriteLong (sizebuf_t *sb, int c);
-void MSG_WriteFloat (sizebuf_t *sb, float f);
-void MSG_WriteString (sizebuf_t *sb, char *s);
-void MSG_WriteCoord (sizebuf_t *sb, float f);
-void MSG_WriteAngle (sizebuf_t *sb, float f);
-
-extern	int			msg_readcount;
-extern	qboolean	msg_badread;		// set if a read goes beyond end of message
-
-void MSG_BeginReading (void);
-int MSG_ReadChar (void);
-int MSG_ReadByte (void);
-int MSG_ReadShort (void);
-int MSG_ReadLong (void);
-float MSG_ReadFloat (void);
-char *MSG_ReadString (void);
-
-float MSG_ReadCoord (void);
-float MSG_ReadAngle (void);
-
-//============================================================================
-
 void Com_Memset(void *dest, int fill, size_t count);
 void Com_Memcpy(void *dest, const void *src, int count);
 int Q_memcmp (void *m1, void *m2, int count);
@@ -91,7 +57,7 @@ int Q_memcmp (void *m1, void *m2, int count);
 extern	char		com_token[1024];
 extern	qboolean	com_eof;
 
-char *COM_Parse (char *data);
+const char *COM_Parse (const char *data);
 
 
 extern	int		com_argc;

@@ -294,9 +294,9 @@ void CL_ParseParticles (void)
 	MSG_ReadPos (&net_message, pos);
 	MSG_ReadDir (&net_message, dir);
 
-	color = MSG_ReadByte (&net_message);
+	color = net_message.ReadByte ();
 
-	count = MSG_ReadByte (&net_message);
+	count = net_message.ReadByte ();
 
 	CL_ParticleEffect (pos, dir, color, count);
 }
@@ -313,7 +313,7 @@ int CL_ParseBeam (struct model_s *model)
 	beam_t	*b;
 	int		i;
 	
-	ent = MSG_ReadShort (&net_message);
+	ent = net_message.ReadShort();
 	
 	MSG_ReadPos (&net_message, start);
 	MSG_ReadPos (&net_message, end);
@@ -361,7 +361,7 @@ int CL_ParseBeam2 (struct model_s *model)
 	beam_t	*b;
 	int		i;
 	
-	ent = MSG_ReadShort (&net_message);
+	ent = net_message.ReadShort();
 	
 	MSG_ReadPos (&net_message, start);
 	MSG_ReadPos (&net_message, end);
@@ -415,7 +415,7 @@ int CL_ParsePlayerBeam (struct model_s *model)
 	beam_t	*b;
 	int		i;
 	
-	ent = MSG_ReadShort (&net_message);
+	ent = net_message.ReadShort();
 	
 	MSG_ReadPos (&net_message, start);
 	MSG_ReadPos (&net_message, end);
@@ -479,8 +479,8 @@ int CL_ParseLightning (struct model_s *model)
 	beam_t	*b;
 	int		i;
 	
-	srcEnt = MSG_ReadShort (&net_message);
-	destEnt = MSG_ReadShort (&net_message);
+	srcEnt = net_message.ReadShort();
+	destEnt = net_message.ReadShort();
 
 	MSG_ReadPos (&net_message, start);
 	MSG_ReadPos (&net_message, end);
@@ -564,7 +564,7 @@ void CL_ParseSteam (void)
 	int		magnitude;
 	cl_sustain_t	*s, *free_sustain;
 
-	id = MSG_ReadShort (&net_message);		// an id of -1 is an instant effect
+	id = net_message.ReadShort();		// an id of -1 is an instant effect
 	if (id != -1) // sustains
 	{
 //			Com_Printf ("Sustain effect id %d\n", id);
@@ -580,13 +580,13 @@ void CL_ParseSteam (void)
 		if (free_sustain)
 		{
 			s->id = id;
-			s->count = MSG_ReadByte (&net_message);
+			s->count = net_message.ReadByte ();
 			MSG_ReadPos (&net_message, s->org);
 			MSG_ReadDir (&net_message, s->dir);
-			r = MSG_ReadByte (&net_message);
+			r = net_message.ReadByte ();
 			s->color = r & 0xff;
-			s->magnitude = MSG_ReadShort (&net_message);
-			s->endtime = cl.time + MSG_ReadLong (&net_message);
+			s->magnitude = net_message.ReadShort();
+			s->endtime = cl.time + net_message.ReadLong();
 			s->think = CL_ParticleSteamEffect2;
 			s->thinkinterval = 100;
 			s->nextthink = cl.time;
@@ -595,21 +595,21 @@ void CL_ParseSteam (void)
 		{
 //				Com_Printf ("No free sustains!\n");
 			// FIXME - read the stuff anyway
-			cnt = MSG_ReadByte (&net_message);
+			cnt = net_message.ReadByte ();
 			MSG_ReadPos (&net_message, pos);
 			MSG_ReadDir (&net_message, dir);
-			r = MSG_ReadByte (&net_message);
-			magnitude = MSG_ReadShort (&net_message);
-			magnitude = MSG_ReadLong (&net_message); // really interval
+			r = net_message.ReadByte ();
+			magnitude = net_message.ReadShort();
+			magnitude = net_message.ReadLong(); // really interval
 		}
 	}
 	else // instant
 	{
-		cnt = MSG_ReadByte (&net_message);
+		cnt = net_message.ReadByte ();
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		r = MSG_ReadByte (&net_message);
-		magnitude = MSG_ReadShort (&net_message);
+		r = net_message.ReadByte ();
+		magnitude = net_message.ReadShort();
 		color = r & 0xff;
 		CL_ParticleSteamEffect (pos, dir, color, cnt, magnitude);
 //		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
@@ -622,7 +622,7 @@ void CL_ParseWidow (void)
 	int		id, i;
 	cl_sustain_t	*s, *free_sustain;
 
-	id = MSG_ReadShort (&net_message);
+	id = net_message.ReadShort();
 
 	free_sustain = NULL;
 	for (i=0, s=cl_sustains; i<MAX_SUSTAINS; i++, s++)
@@ -702,7 +702,7 @@ void CL_ParseTEnt (void)
 	int		ent;
 	int		magnitude;
 
-	type = MSG_ReadByte (&net_message);
+	type = net_message.ReadByte ();
 
 	switch (type)
 	{
@@ -758,10 +758,10 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_SPLASH:			// bullet hitting water
-		cnt = MSG_ReadByte (&net_message);
+		cnt = net_message.ReadByte ();
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		r = MSG_ReadByte (&net_message);
+		r = net_message.ReadByte ();
 		if (r > 6)
 			color = 0x00;
 		else
@@ -781,10 +781,10 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_LASER_SPARKS:
-		cnt = MSG_ReadByte (&net_message);
+		cnt = net_message.ReadByte ();
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		color = MSG_ReadByte (&net_message);
+		color = net_message.ReadByte ();
 		CL_ParticleEffect2 (pos, dir, color, cnt);
 		break;
 
@@ -958,10 +958,10 @@ void CL_ParseTEnt (void)
 
 	// RAFAEL
 	case TE_WELDING_SPARKS:
-		cnt = MSG_ReadByte (&net_message);
+		cnt = net_message.ReadByte ();
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		color = MSG_ReadByte (&net_message);
+		color = net_message.ReadByte ();
 		CL_ParticleEffect2 (pos, dir, color, cnt);
 
 		ex = CL_AllocExplosion ();
@@ -987,10 +987,10 @@ void CL_ParseTEnt (void)
 
 	// RAFAEL
 	case TE_TUNNEL_SPARKS:
-		cnt = MSG_ReadByte (&net_message);
+		cnt = net_message.ReadByte ();
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-		color = MSG_ReadByte (&net_message);
+		color = net_message.ReadByte ();
 		CL_ParticleEffect3 (pos, dir, color, cnt);
 		break;
 
@@ -1083,14 +1083,14 @@ void CL_ParseTEnt (void)
 
 	case TE_FLASHLIGHT:
 		MSG_ReadPos(&net_message, pos);
-		ent = MSG_ReadShort(&net_message);
+		ent = net_message.ReadShort();
 		CL_Flashlight(ent, pos);
 		break;
 
 	case TE_FORCEWALL:
 		MSG_ReadPos(&net_message, pos);
 		MSG_ReadPos(&net_message, pos2);
-		color = MSG_ReadByte (&net_message);
+		color = net_message.ReadByte ();
 		CL_ForceWall(pos, pos2, color);
 		break;
 
@@ -1103,12 +1103,12 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_HEATBEAM_SPARKS:
-//		cnt = MSG_ReadByte (&net_message);
+//		cnt = net_message.ReadByte ();
 		cnt = 50;
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-//		r = MSG_ReadByte (&net_message);
-//		magnitude = MSG_ReadShort (&net_message);
+//		r = net_message.ReadByte ();
+//		magnitude = net_message.ReadShort();
 		r = 8;
 		magnitude = 60;
 		color = r & 0xff;
@@ -1117,12 +1117,12 @@ void CL_ParseTEnt (void)
 		break;
 	
 	case TE_HEATBEAM_STEAM:
-//		cnt = MSG_ReadByte (&net_message);
+//		cnt = net_message.ReadByte ();
 		cnt = 20;
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadDir (&net_message, dir);
-//		r = MSG_ReadByte (&net_message);
-//		magnitude = MSG_ReadShort (&net_message);
+//		r = net_message.ReadByte ();
+//		magnitude = net_message.ReadShort();
 //		color = r & 0xff;
 		color = 0xe0;
 		magnitude = 60;
@@ -1135,7 +1135,7 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_BUBBLETRAIL2:
-//		cnt = MSG_ReadByte (&net_message);
+//		cnt = net_message.ReadByte ();
 		cnt = 8;
 		MSG_ReadPos (&net_message, pos);
 		MSG_ReadPos (&net_message, pos2);

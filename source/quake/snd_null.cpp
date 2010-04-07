@@ -42,7 +42,7 @@ void S_Shutdown (void)
 {
 }
 
-void S_TouchSound (char *sample)
+void S_TouchSound (const char *sample)
 {
 }
 

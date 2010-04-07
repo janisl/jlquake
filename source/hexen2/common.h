@@ -2,22 +2,11 @@
 
 //============================================================================
 
-typedef struct sizebuf_s
+typedef struct sizebuf_s : QMsg
 {
-	qboolean	allowoverflow;	// if false, do a Sys_Error
-	qboolean	overflowed;		// set to true if the buffer size failed
-	byte		*data;
-	int			maxsize;
-	int			cursize;
-	int			effectsize;
-	qboolean	effectdata;
 } sizebuf_t;
 
-void SZ_Alloc (sizebuf_t *buf, int startsize);
-void SZ_Free (sizebuf_t *buf);
-void SZ_Clear (sizebuf_t *buf);
 void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, const void *data, int length);
 void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
@@ -37,31 +26,6 @@ void InsertLinkAfter (link_t *l, link_t *after);
 // ent = STRUCT_FROM_LINK(link,entity_t,order)
 // FIXME: remove this mess!
 #define	STRUCT_FROM_LINK(l,t,m) ((t *)((byte *)l - (int)&(((t *)0)->m)))
-
-//============================================================================
-
-void MSG_WriteChar (sizebuf_t *sb, int c);
-void MSG_WriteByte (sizebuf_t *sb, int c);
-void MSG_WriteShort (sizebuf_t *sb, int c);
-void MSG_WriteLong (sizebuf_t *sb, int c);
-void MSG_WriteFloat (sizebuf_t *sb, float f);
-void MSG_WriteString (sizebuf_t *sb, char *s);
-void MSG_WriteCoord (sizebuf_t *sb, float f);
-void MSG_WriteAngle (sizebuf_t *sb, float f);
-
-extern	int			msg_readcount;
-extern	qboolean	msg_badread;		// set if a read goes beyond end of message
-
-void MSG_BeginReading (void);
-int MSG_ReadChar (void);
-int MSG_ReadByte (void);
-int MSG_ReadShort (void);
-int MSG_ReadLong (void);
-float MSG_ReadFloat (void);
-char *MSG_ReadString (void);
-
-float MSG_ReadCoord (void);
-float MSG_ReadAngle (void);
 
 //============================================================================
 

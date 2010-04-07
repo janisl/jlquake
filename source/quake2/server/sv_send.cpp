@@ -39,9 +39,9 @@ void SV_FlushRedirect (int sv_redirected, char *outputbuf)
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
-		MSG_WriteByte (&sv_client->netchan.message, svc_print);
-		MSG_WriteByte (&sv_client->netchan.message, PRINT_HIGH);
-		MSG_WriteString (&sv_client->netchan.message, outputbuf);
+		sv_client->netchan.message.WriteByte(svc_print);
+		sv_client->netchan.message.WriteByte(PRINT_HIGH);
+		sv_client->netchan.message.WriteString2(outputbuf);
 	}
 }
 
@@ -74,9 +74,9 @@ void SV_ClientPrintf (client_t *cl, int level, char *fmt, ...)
 	vsprintf (string, fmt,argptr);
 	va_end (argptr);
 	
-	MSG_WriteByte (&cl->netchan.message, svc_print);
-	MSG_WriteByte (&cl->netchan.message, level);
-	MSG_WriteString (&cl->netchan.message, string);
+	cl->netchan.message.WriteByte(svc_print);
+	cl->netchan.message.WriteByte(level);
+	cl->netchan.message.WriteString2(string);
 }
 
 /*
@@ -116,9 +116,9 @@ void SV_BroadcastPrintf (int level, char *fmt, ...)
 			continue;
 		if (cl->state != cs_spawned)
 			continue;
-		MSG_WriteByte (&cl->netchan.message, svc_print);
-		MSG_WriteByte (&cl->netchan.message, level);
-		MSG_WriteString (&cl->netchan.message, string);
+		cl->netchan.message.WriteByte(svc_print);
+		cl->netchan.message.WriteByte(level);
+		cl->netchan.message.WriteString2(string);
 	}
 }
 
@@ -140,8 +140,8 @@ void SV_BroadcastCommand (char *fmt, ...)
 	vsprintf (string, fmt,argptr);
 	va_end (argptr);
 
-	MSG_WriteByte (&sv.multicast, svc_stufftext);
-	MSG_WriteString (&sv.multicast, string);
+	sv.multicast.WriteByte(svc_stufftext);
+	sv.multicast.WriteString2(string);
 	SV_Multicast (NULL, MULTICAST_ALL_R);
 }
 
@@ -182,7 +182,7 @@ void SV_Multicast (vec3_t origin, multicast_t to)
 
 	// if doing a serverrecord, store everything
 	if (svs.demofile)
-		SZ_Write (&svs.demo_multicast, sv.multicast.data, sv.multicast.cursize);
+		svs.demo_multicast.WriteData(sv.multicast._data, sv.multicast.cursize);
 	
 	switch (to)
 	{
@@ -234,12 +234,12 @@ void SV_Multicast (vec3_t origin, multicast_t to)
 		}
 
 		if (reliable)
-			SZ_Write (&client->netchan.message, sv.multicast.data, sv.multicast.cursize);
+			client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
 		else
-			SZ_Write (&client->datagram, sv.multicast.data, sv.multicast.cursize);
+			client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
 	}
 
-	SZ_Clear (&sv.multicast);
+	sv.multicast.Clear();
 }
 
 
@@ -338,19 +338,19 @@ void SV_StartSound (vec3_t origin, edict_t *entity, int channel,
 		}
 	}
 
-	MSG_WriteByte (&sv.multicast, svc_sound);
-	MSG_WriteByte (&sv.multicast, flags);
-	MSG_WriteByte (&sv.multicast, soundindex);
+	sv.multicast.WriteByte(svc_sound);
+	sv.multicast.WriteByte(flags);
+	sv.multicast.WriteByte(soundindex);
 
 	if (flags & SND_VOLUME)
-		MSG_WriteByte (&sv.multicast, volume*255);
+		sv.multicast.WriteByte(volume*255);
 	if (flags & SND_ATTENUATION)
-		MSG_WriteByte (&sv.multicast, attenuation*64);
+		sv.multicast.WriteByte(attenuation*64);
 	if (flags & SND_OFFSET)
-		MSG_WriteByte (&sv.multicast, timeofs*1000);
+		sv.multicast.WriteByte(timeofs*1000);
 
 	if (flags & SND_ENT)
-		MSG_WriteShort (&sv.multicast, sendchan);
+		sv.multicast.WriteShort(sendchan);
 
 	if (flags & SND_POS)
 		MSG_WritePos (&sv.multicast, origin);
@@ -399,7 +399,7 @@ qboolean SV_SendClientDatagram (client_t *client)
 
 	SV_BuildClientFrame (client);
 
-	SZ_Init (&msg, msg_buf, sizeof(msg_buf));
+	msg.InitOOB(msg_buf, sizeof(msg_buf));
 	msg.allowoverflow = true;
 
 	// send over all the relevant entity_state_t
@@ -413,17 +413,17 @@ qboolean SV_SendClientDatagram (client_t *client)
 	if (client->datagram.overflowed)
 		Com_Printf ("WARNING: datagram overflowed for %s\n", client->name);
 	else
-		SZ_Write (&msg, client->datagram.data, client->datagram.cursize);
-	SZ_Clear (&client->datagram);
+		msg.WriteData(client->datagram._data, client->datagram.cursize);
+	client->datagram.Clear();
 
 	if (msg.overflowed)
 	{	// must have room left for the packet header
 		Com_Printf ("WARNING: msg overflowed for %s\n", client->name);
-		SZ_Clear (&msg);
+		msg.Clear();
 	}
 
 	// send the datagram
-	Netchan_Transmit (&client->netchan, msg.cursize, msg.data);
+	Netchan_Transmit (&client->netchan, msg.cursize, msg._data);
 
 	// record the size for rate estimation
 	client->message_size[sv.framenum % RATE_MESSAGES] = msg.cursize;
@@ -537,8 +537,8 @@ void SV_SendClientMessages (void)
 		// drop the client
 		if (c->netchan.message.overflowed)
 		{
-			SZ_Clear (&c->netchan.message);
-			SZ_Clear (&c->datagram);
+			c->netchan.message.Clear();
+			c->datagram.Clear();
 			SV_BroadcastPrintf (PRINT_HIGH, "%s overflowed\n", c->name);
 			SV_DropClient (c);
 		}

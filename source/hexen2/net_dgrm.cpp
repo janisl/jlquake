@@ -154,7 +154,7 @@ int Datagram_SendMessage (qsocket_t *sock, sizebuf_t *data)
 		Sys_Error("SendMessage: called with canSend == false\n");
 #endif
 
-	Com_Memcpy(sock->sendMessage, data->data, data->cursize);
+	Com_Memcpy(sock->sendMessage, data->_data, data->cursize);
 	sock->sendMessageLength = data->cursize;
 
 	if (data->cursize <= MAX_DATAGRAM)
@@ -281,7 +281,7 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 
 	packetBuffer.length = BigLong(packetLen | NETFLAG_UNRELIABLE);
 	packetBuffer.sequence = BigLong(sock->unreliableSendSequence++);
-	Com_Memcpy(packetBuffer.data, data->data, data->cursize);
+	Com_Memcpy(packetBuffer.data, data->_data, data->cursize);
 
 	if (sfunc.Write (sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
 		return -1;
@@ -364,8 +364,8 @@ int	Datagram_GetMessage (qsocket_t *sock)
 
 			length -= NET_HEADERSIZE;
 
-			SZ_Clear (&net_message);
-			SZ_Write (&net_message, packetBuffer.data, length);
+			net_message.Clear();
+			net_message.WriteData(packetBuffer.data, length);
 
 			ret = 2;
 			break;
@@ -420,9 +420,9 @@ int	Datagram_GetMessage (qsocket_t *sock)
 
 			if (flags & NETFLAG_EOM)
 			{
-				SZ_Clear(&net_message);
-				SZ_Write(&net_message, sock->receiveMessage, sock->receiveMessageLength);
-				SZ_Write(&net_message, packetBuffer.data, length);
+				net_message.Clear();
+				net_message.WriteData(sock->receiveMessage, sock->receiveMessageLength);
+				net_message.WriteData(packetBuffer.data, length);
 				sock->receiveMessageLength = 0;
 
 				ret = 1;
@@ -514,15 +514,15 @@ static void Test_Poll(void)
 
 	while (1)
 	{
-		len = dfunc.Read (testSocket, net_message.data, net_message.maxsize, &clientaddr);
+		len = dfunc.Read (testSocket, net_message._data, net_message.maxsize, &clientaddr);
 		if (len < sizeof(int))
 			break;
 
 		net_message.cursize = len;
 
-		MSG_BeginReading ();
-		control = BigLong(*((int *)net_message.data));
-		MSG_ReadLong();
+		net_message.BeginReadingOOB();
+		control = BigLong(*((int *)net_message._data));
+		net_message.ReadLong();
 		if (control == -1)
 			break;
 		if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
@@ -530,15 +530,15 @@ static void Test_Poll(void)
 		if ((control & NETFLAG_LENGTH_MASK) != len)
 			break;
 
-		if (MSG_ReadByte() != CCREP_PLAYER_INFO)
+		if (net_message.ReadByte() != CCREP_PLAYER_INFO)
 			Sys_Error("Unexpected repsonse to Player Info request\n");
 
-		playerNumber = MSG_ReadByte();
-		QStr::Cpy(name, MSG_ReadString());
-		colors = MSG_ReadLong();
-		frags = MSG_ReadLong();
-		connectTime = MSG_ReadLong();
-		QStr::Cpy(address, MSG_ReadString());
+		playerNumber = net_message.ReadByte();
+		QStr::Cpy(name, net_message.ReadString2());
+		colors = net_message.ReadLong();
+		frags = net_message.ReadLong();
+		connectTime = net_message.ReadLong();
+		QStr::Cpy(address, net_message.ReadString2());
 
 		Con_Printf("%s\n  frags:%3i  colors:%u %u  time:%u\n  %s\n", name, frags, colors >> 4, colors & 0x0f, connectTime / 60, address);
 	}
@@ -606,15 +606,15 @@ JustDoIt:
 
 	for (n = 0; n < max; n++)
 	{
-		SZ_Clear(&net_message);
+		net_message.Clear();
 		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREQ_PLAYER_INFO);
-		MSG_WriteByte(&net_message, n);
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | 	(net_message.cursize & NETFLAG_LENGTH_MASK));
-		dfunc.Write (testSocket, net_message.data, net_message.cursize, &sendaddr);
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREQ_PLAYER_INFO);
+		net_message.WriteByte(n);
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | 	(net_message.cursize & NETFLAG_LENGTH_MASK));
+		dfunc.Write (testSocket, net_message._data, net_message.cursize, &sendaddr);
 	}
-	SZ_Clear(&net_message);
+	net_message.Clear();
 	SchedulePollProcedure(&testPollProcedure, 0.1);
 }
 
@@ -637,15 +637,15 @@ static void Test2_Poll(void)
 	net_landriverlevel = test2Driver;
 	name[0] = 0;
 
-	len = dfunc.Read (test2Socket, net_message.data, net_message.maxsize, &clientaddr);
+	len = dfunc.Read (test2Socket, net_message._data, net_message.maxsize, &clientaddr);
 	if (len < sizeof(int))
 		goto Reschedule;
 
 	net_message.cursize = len;
 
-	MSG_BeginReading ();
-	control = BigLong(*((int *)net_message.data));
-	MSG_ReadLong();
+	net_message.BeginReadingOOB();
+	control = BigLong(*((int *)net_message._data));
+	net_message.ReadLong();
 	if (control == -1)
 		goto Error;
 	if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
@@ -653,24 +653,24 @@ static void Test2_Poll(void)
 	if ((control & NETFLAG_LENGTH_MASK) != len)
 		goto Error;
 
-	if (MSG_ReadByte() != CCREP_RULE_INFO)
+	if (net_message.ReadByte() != CCREP_RULE_INFO)
 		goto Error;
 
-	QStr::Cpy(name, MSG_ReadString());
+	QStr::Cpy(name, net_message.ReadString2());
 	if (name[0] == 0)
 		goto Done;
-	QStr::Cpy(value, MSG_ReadString());
+	QStr::Cpy(value, net_message.ReadString2());
 
 	Con_Printf("%-16.16s  %-16.16s\n", name, value);
 
-	SZ_Clear(&net_message);
+	net_message.Clear();
 	// save space for the header, filled in later
-	MSG_WriteLong(&net_message, 0);
-	MSG_WriteByte(&net_message, CCREQ_RULE_INFO);
-	MSG_WriteString(&net_message, name);
-	*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	dfunc.Write (test2Socket, net_message.data, net_message.cursize, &clientaddr);
-	SZ_Clear(&net_message);
+	net_message.WriteLong(0);
+	net_message.WriteByte(CCREQ_RULE_INFO);
+	net_message.WriteString2(name);
+	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+	dfunc.Write (test2Socket, net_message._data, net_message.cursize, &clientaddr);
+	net_message.Clear();
 
 Reschedule:
 	SchedulePollProcedure(&test2PollProcedure, 0.05);
@@ -730,14 +730,14 @@ JustDoIt:
 	test2InProgress = true;
 	test2Driver = net_landriverlevel;
 
-	SZ_Clear(&net_message);
+	net_message.Clear();
 	// save space for the header, filled in later
-	MSG_WriteLong(&net_message, 0);
-	MSG_WriteByte(&net_message, CCREQ_RULE_INFO);
-	MSG_WriteString(&net_message, "");
-	*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	dfunc.Write (test2Socket, net_message.data, net_message.cursize, &sendaddr);
-	SZ_Clear(&net_message);
+	net_message.WriteLong(0);
+	net_message.WriteByte(CCREQ_RULE_INFO);
+	net_message.WriteString2("");
+	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+	dfunc.Write (test2Socket, net_message._data, net_message.cursize, &sendaddr);
+	net_message.Clear();
 	SchedulePollProcedure(&test2PollProcedure, 0.05);
 }
 
@@ -823,16 +823,16 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	if (acceptsock == -1)
 		return NULL;
 
-	SZ_Clear(&net_message);
+	net_message.Clear();
 
-	len = dfunc.Read (acceptsock, net_message.data, net_message.maxsize, &clientaddr);
+	len = dfunc.Read (acceptsock, net_message._data, net_message.maxsize, &clientaddr);
 	if (len < sizeof(int))
 		return NULL;
 	net_message.cursize = len;
 
-	MSG_BeginReading ();
-	control = BigLong(*((int *)net_message.data));
-	MSG_ReadLong();
+	net_message.BeginReadingOOB();
+	control = BigLong(*((int *)net_message._data));
+	net_message.ReadLong();
 	if (control == -1)
 		return NULL;
 	if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
@@ -840,26 +840,26 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	if ((control & NETFLAG_LENGTH_MASK) != len)
 		return NULL;
 
-	command = MSG_ReadByte();
+	command = net_message.ReadByte();
 	if (command == CCREQ_SERVER_INFO)
 	{
-		if (QStr::Cmp(MSG_ReadString(), NET_NAME_ID) != 0)
+		if (QStr::Cmp(net_message.ReadString2(), NET_NAME_ID) != 0)
 			return NULL;
 
-		SZ_Clear(&net_message);
+		net_message.Clear();
 		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREP_SERVER_INFO);
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREP_SERVER_INFO);
 		dfunc.GetSocketAddr(acceptsock, &newaddr);
-		MSG_WriteString(&net_message, dfunc.AddrToString(&newaddr));
-		MSG_WriteString(&net_message, hostname.string);
-		MSG_WriteString(&net_message, sv.name);
-		MSG_WriteByte(&net_message, net_activeconnections);
-		MSG_WriteByte(&net_message, svs.maxclients);
-		MSG_WriteByte(&net_message, NET_PROTOCOL_VERSION);
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
-		SZ_Clear(&net_message);
+		net_message.WriteString2(dfunc.AddrToString(&newaddr));
+		net_message.WriteString2(hostname.string);
+		net_message.WriteString2(sv.name);
+		net_message.WriteByte(net_activeconnections);
+		net_message.WriteByte(svs.maxclients);
+		net_message.WriteByte(NET_PROTOCOL_VERSION);
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		dfunc.Write (acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		net_message.Clear();
 		return NULL;
 	}
 
@@ -870,7 +870,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		int			clientNumber;
 		client_t	*client;
 		
-		playerNumber = MSG_ReadByte();
+		playerNumber = net_message.ReadByte();
 		activeNumber = -1;
 		for (clientNumber = 0, client = svs.clients; clientNumber < svs.maxclients; clientNumber++, client++)
 		{
@@ -884,19 +884,19 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		if (clientNumber == svs.maxclients)
 			return NULL;
 
-		SZ_Clear(&net_message);
+		net_message.Clear();
 		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREP_PLAYER_INFO);
-		MSG_WriteByte(&net_message, playerNumber);
-		MSG_WriteString(&net_message, client->name);
-		MSG_WriteLong(&net_message, client->colors);
-		MSG_WriteLong(&net_message, (int)client->edict->v.frags);
-		MSG_WriteLong(&net_message, (int)(net_time - client->netconnection->connecttime));
-		MSG_WriteString(&net_message, client->netconnection->address);
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
-		SZ_Clear(&net_message);
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREP_PLAYER_INFO);
+		net_message.WriteByte(playerNumber);
+		net_message.WriteString2(client->name);
+		net_message.WriteLong(client->colors);
+		net_message.WriteLong((int)client->edict->v.frags);
+		net_message.WriteLong((int)(net_time - client->netconnection->connecttime));
+		net_message.WriteString2(client->netconnection->address);
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		dfunc.Write (acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		net_message.Clear();
 
 		return NULL;
 	}
@@ -907,7 +907,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		cvar_t	*var;
 
 		// find the search start location
-		prevCvarName = MSG_ReadString();
+		prevCvarName = const_cast<char*>(net_message.ReadString2());
 		if (*prevCvarName)
 		{
 			var = Cvar_FindVar (prevCvarName);
@@ -928,18 +928,18 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 		// send the response
 
-		SZ_Clear(&net_message);
+		net_message.Clear();
 		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREP_RULE_INFO);
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREP_RULE_INFO);
 		if (var)
 		{
-			MSG_WriteString(&net_message, var->name);
-			MSG_WriteString(&net_message, var->string);
+			net_message.WriteString2(var->name);
+			net_message.WriteString2(var->string);
 		}
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
-		SZ_Clear(&net_message);
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		dfunc.Write (acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		net_message.Clear();
 
 		return NULL;
 	}
@@ -947,19 +947,19 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	if (command != CCREQ_CONNECT)
 		return NULL;
 
-	if (QStr::Cmp(MSG_ReadString(), NET_NAME_ID) != 0)
+	if (QStr::Cmp(net_message.ReadString2(), NET_NAME_ID) != 0)
 		return NULL;
 
-	if (MSG_ReadByte() != NET_PROTOCOL_VERSION)
+	if (net_message.ReadByte() != NET_PROTOCOL_VERSION)
 	{
-		SZ_Clear(&net_message);
+		net_message.Clear();
 		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREP_REJECT);
-		MSG_WriteString(&net_message, "Incompatible version.\n");
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
-		SZ_Clear(&net_message);
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREP_REJECT);
+		net_message.WriteString2("Incompatible version.\n");
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		dfunc.Write (acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		net_message.Clear();
 		return NULL;
 	}
 
@@ -971,14 +971,14 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		testAddr = ((struct sockaddr_in *)&clientaddr)->sin_addr.s_addr;
 		if ((testAddr & banMask) == banAddr)
 		{
-			SZ_Clear(&net_message);
+			net_message.Clear();
 			// save space for the header, filled in later
-			MSG_WriteLong(&net_message, 0);
-			MSG_WriteByte(&net_message, CCREP_REJECT);
-			MSG_WriteString(&net_message, "You have been banned.\n");
-			*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-			dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
-			SZ_Clear(&net_message);
+			net_message.WriteLong(0);
+			net_message.WriteByte(CCREP_REJECT);
+			net_message.WriteString2("You have been banned.\n");
+			*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+			dfunc.Write (acceptsock, net_message._data, net_message.cursize, &clientaddr);
+			net_message.Clear();
 			return NULL;
 		}
 	}
@@ -996,15 +996,15 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 			if (ret == 0 && net_time - s->connecttime < 2.0)
 			{
 				// yes, so send a duplicate reply
-				SZ_Clear(&net_message);
+				net_message.Clear();
 				// save space for the header, filled in later
-				MSG_WriteLong(&net_message, 0);
-				MSG_WriteByte(&net_message, CCREP_ACCEPT);
+				net_message.WriteLong(0);
+				net_message.WriteByte(CCREP_ACCEPT);
 				dfunc.GetSocketAddr(s->socket, &newaddr);
-				MSG_WriteLong(&net_message, dfunc.GetSocketPort(&newaddr));
-				*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-				dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
-				SZ_Clear(&net_message);
+				net_message.WriteLong(dfunc.GetSocketPort(&newaddr));
+				*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+				dfunc.Write (acceptsock, net_message._data, net_message.cursize, &clientaddr);
+				net_message.Clear();
 				return NULL;
 			}
 			// it's somebody coming back in from a crash/disconnect
@@ -1019,14 +1019,14 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	if (sock == NULL)
 	{
 		// no room; try to let him know
-		SZ_Clear(&net_message);
+		net_message.Clear();
 		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREP_REJECT);
-		MSG_WriteString(&net_message, "Server is full.\n");
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
-		SZ_Clear(&net_message);
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREP_REJECT);
+		net_message.WriteString2("Server is full.\n");
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		dfunc.Write (acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		net_message.Clear();
 		return NULL;
 	}
 
@@ -1053,16 +1053,16 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	QStr::Cpy(sock->address, dfunc.AddrToString(&clientaddr));
 
 	// send him back the info about the server connection he has been allocated
-	SZ_Clear(&net_message);
+	net_message.Clear();
 	// save space for the header, filled in later
-	MSG_WriteLong(&net_message, 0);
-	MSG_WriteByte(&net_message, CCREP_ACCEPT);
+	net_message.WriteLong(0);
+	net_message.WriteByte(CCREP_ACCEPT);
 	dfunc.GetSocketAddr(newsock, &newaddr);
-	MSG_WriteLong(&net_message, dfunc.GetSocketPort(&newaddr));
-//	MSG_WriteString(&net_message, dfunc.AddrToString(&newaddr));
-	*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	dfunc.Write (acceptsock, net_message.data, net_message.cursize, &clientaddr);
-	SZ_Clear(&net_message);
+	net_message.WriteLong(dfunc.GetSocketPort(&newaddr));
+//	net_message.WriteString2(dfunc.AddrToString(&newaddr));
+	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+	dfunc.Write (acceptsock, net_message._data, net_message.cursize, &clientaddr);
+	net_message.Clear();
 
 	return sock;
 }
@@ -1091,18 +1091,18 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 	dfunc.GetSocketAddr (dfunc.controlSock, &myaddr);
 	if (xmit)
 	{
-		SZ_Clear(&net_message);
+		net_message.Clear();
 		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREQ_SERVER_INFO);
-		MSG_WriteString(&net_message, NET_NAME_ID);
-		MSG_WriteByte(&net_message, NET_PROTOCOL_VERSION);
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		dfunc.Broadcast(dfunc.controlSock, net_message.data, net_message.cursize);
-		SZ_Clear(&net_message);
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREQ_SERVER_INFO);
+		net_message.WriteString2(NET_NAME_ID);
+		net_message.WriteByte(NET_PROTOCOL_VERSION);
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		dfunc.Broadcast(dfunc.controlSock, net_message._data, net_message.cursize);
+		net_message.Clear();
 	}
 
-	while ((ret = dfunc.Read (dfunc.controlSock, net_message.data, net_message.maxsize, &readaddr)) > 0)
+	while ((ret = dfunc.Read (dfunc.controlSock, net_message._data, net_message.maxsize, &readaddr)) > 0)
 	{
 		if (ret < sizeof(int))
 			continue;
@@ -1116,9 +1116,9 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		if (hostCacheCount == HOSTCACHESIZE)
 			continue;
 
-		MSG_BeginReading ();
-		control = BigLong(*((int *)net_message.data));
-		MSG_ReadLong();
+		net_message.BeginReadingOOB();
+		control = BigLong(*((int *)net_message._data));
+		net_message.ReadLong();
 		if (control == -1)
 			continue;
 		if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
@@ -1126,10 +1126,10 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		if ((control & NETFLAG_LENGTH_MASK) != ret)
 			continue;
 
-		if (MSG_ReadByte() != CCREP_SERVER_INFO)
+		if (net_message.ReadByte() != CCREP_SERVER_INFO)
 			continue;
 
-		dfunc.GetAddrFromName(MSG_ReadString(), &readaddr);
+		dfunc.GetAddrFromName(const_cast<char*>(net_message.ReadString2()), &readaddr);
 		// search the cache for this server
 		for (n = 0; n < hostCacheCount; n++)
 			if (dfunc.AddrCompare(&readaddr, &hostcache[n].addr) == 0)
@@ -1141,11 +1141,11 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 
 		// add it
 		hostCacheCount++;
-		QStr::Cpy(hostcache[n].name, MSG_ReadString());
-		QStr::Cpy(hostcache[n].map, MSG_ReadString());
-		hostcache[n].users = MSG_ReadByte();
-		hostcache[n].maxusers = MSG_ReadByte();
-		if (MSG_ReadByte() != NET_PROTOCOL_VERSION)
+		QStr::Cpy(hostcache[n].name, net_message.ReadString2());
+		QStr::Cpy(hostcache[n].map, net_message.ReadString2());
+		hostcache[n].users = net_message.ReadByte();
+		hostcache[n].maxusers = net_message.ReadByte();
+		if (net_message.ReadByte() != NET_PROTOCOL_VERSION)
 		{
 			QStr::Cpy(hostcache[n].cname, hostcache[n].name);
 			hostcache[n].cname[14] = 0;
@@ -1226,18 +1226,18 @@ static qsocket_t *_Datagram_Connect (char *host)
 
 	for (reps = 0; reps < 3; reps++)
 	{
-		SZ_Clear(&net_message);
+		net_message.Clear();
 		// save space for the header, filled in later
-		MSG_WriteLong(&net_message, 0);
-		MSG_WriteByte(&net_message, CCREQ_CONNECT);
-		MSG_WriteString(&net_message, NET_NAME_ID);
-		MSG_WriteByte(&net_message, NET_PROTOCOL_VERSION);
-		*((int *)net_message.data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		dfunc.Write (newsock, net_message.data, net_message.cursize, &sendaddr);
-		SZ_Clear(&net_message);
+		net_message.WriteLong(0);
+		net_message.WriteByte(CCREQ_CONNECT);
+		net_message.WriteString2(NET_NAME_ID);
+		net_message.WriteByte(NET_PROTOCOL_VERSION);
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		dfunc.Write (newsock, net_message._data, net_message.cursize, &sendaddr);
+		net_message.Clear();
 		do
 		{
-			ret = dfunc.Read (newsock, net_message.data, net_message.maxsize, &readaddr);
+			ret = dfunc.Read (newsock, net_message._data, net_message.maxsize, &readaddr);
 			// if we got something, validate it
 			if (ret > 0)
 			{
@@ -1261,10 +1261,10 @@ static qsocket_t *_Datagram_Connect (char *host)
 				}
 
 				net_message.cursize = ret;
-				MSG_BeginReading ();
+				net_message.BeginReadingOOB();
 
-				control = BigLong(*((int *)net_message.data));
-				MSG_ReadLong();
+				control = BigLong(*((int *)net_message._data));
+				net_message.ReadLong();
 				if (control == -1)
 				{
 					ret = 0;
@@ -1305,10 +1305,10 @@ static qsocket_t *_Datagram_Connect (char *host)
 		goto ErrorReturn;
 	}
 
-	ret = MSG_ReadByte();
+	ret = net_message.ReadByte();
 	if (ret == CCREP_REJECT)
 	{
-		reason = MSG_ReadString();
+		reason = const_cast<char*>(net_message.ReadString2());
 		Con_Printf(reason);
 		QStr::NCpy(m_return_reason, reason, 31);
 		goto ErrorReturn;
@@ -1317,7 +1317,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 	if (ret == CCREP_ACCEPT)
 	{
 		Com_Memcpy(&sock->addr, &sendaddr, sizeof(struct qsockaddr));
-		dfunc.SetSocketPort (&sock->addr, MSG_ReadLong());
+		dfunc.SetSocketPort (&sock->addr, net_message.ReadLong());
 	}
 	else
 	{

@@ -274,7 +274,7 @@ S_FindName
 
 ==================
 */
-sfx_t *S_FindName (char *name)
+sfx_t *S_FindName (const char *name)
 {
 	int		i;
 	sfx_t	*sfx;
@@ -310,7 +310,7 @@ S_TouchSound
 
 ==================
 */
-void S_TouchSound (char *name)
+void S_TouchSound (const char *name)
 {
 	sfx_t	*sfx;
 	

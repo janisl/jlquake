@@ -46,11 +46,11 @@ void PF_Unicast (edict_t *ent, qboolean reliable)
 	client = svs.clients + (p-1);
 
 	if (reliable)
-		SZ_Write (&client->netchan.message, sv.multicast.data, sv.multicast.cursize);
+		client->netchan.message.WriteData(sv.multicast._data, sv.multicast.cursize);
 	else
-		SZ_Write (&client->datagram, sv.multicast.data, sv.multicast.cursize);
+		client->datagram.WriteData(sv.multicast._data, sv.multicast.cursize);
 
-	SZ_Clear (&sv.multicast);
+	sv.multicast.Clear();
 }
 
 
@@ -126,8 +126,8 @@ void PF_centerprintf (edict_t *ent, char *fmt, ...)
 	vsprintf (msg, fmt, argptr);
 	va_end (argptr);
 
-	MSG_WriteByte (&sv.multicast,svc_centerprint);
-	MSG_WriteString (&sv.multicast,msg);
+	sv.multicast.WriteByte(svc_centerprint);
+	sv.multicast.WriteString2(msg);
 	PF_Unicast (ent, true);
 }
 
@@ -202,10 +202,10 @@ void PF_Configstring (int index, char *val)
 	
 	if (sv.state != ss_loading)
 	{	// send the update to everyone
-		SZ_Clear (&sv.multicast);
-		MSG_WriteChar (&sv.multicast, svc_configstring);
-		MSG_WriteShort (&sv.multicast, index);
-		MSG_WriteString (&sv.multicast, val);
+		sv.multicast.Clear();
+		sv.multicast.WriteChar(svc_configstring);
+		sv.multicast.WriteShort(index);
+		sv.multicast.WriteString2(val);
 
 		SV_Multicast (vec3_origin, MULTICAST_ALL_R);
 	}
@@ -213,15 +213,15 @@ void PF_Configstring (int index, char *val)
 
 
 
-void PF_WriteChar (int c) {MSG_WriteChar (&sv.multicast, c);}
-void PF_WriteByte (int c) {MSG_WriteByte (&sv.multicast, c);}
-void PF_WriteShort (int c) {MSG_WriteShort (&sv.multicast, c);}
-void PF_WriteLong (int c) {MSG_WriteLong (&sv.multicast, c);}
-void PF_WriteFloat (float f) {MSG_WriteFloat (&sv.multicast, f);}
-void PF_WriteString (char *s) {MSG_WriteString (&sv.multicast, s);}
+void PF_WriteChar (int c) {sv.multicast.WriteChar(c);}
+void PF_WriteByte (int c) {sv.multicast.WriteByte(c);}
+void PF_WriteShort (int c) {sv.multicast.WriteShort(c);}
+void PF_WriteLong (int c) {sv.multicast.WriteLong(c);}
+void PF_WriteFloat (float f) {sv.multicast.WriteFloat(f);}
+void PF_WriteString (char *s) {sv.multicast.WriteString2(s);}
 void PF_WritePos (vec3_t pos) {MSG_WritePos (&sv.multicast, pos);}
 void PF_WriteDir (vec3_t dir) {MSG_WriteDir (&sv.multicast, dir);}
-void PF_WriteAngle (float f) {MSG_WriteAngle (&sv.multicast, f);}
+void PF_WriteAngle (float f) {sv.multicast.WriteAngle(f);}
 
 
 /*
