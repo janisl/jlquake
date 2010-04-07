@@ -110,6 +110,7 @@ typedef struct
 	int			signon;			// 0 to SIGNONS
 	struct qsocket_s	*netcon;
 	QMsg		message;		// writing buffer to send to server
+	byte		message_buf[1024];
 	
 } client_static_t;
 

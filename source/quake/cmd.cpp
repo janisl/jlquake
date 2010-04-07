@@ -64,6 +64,7 @@ void Cmd_Wait_f (void)
 */
 
 QMsg		cmd_text;
+byte		cmd_text_buf[8192];
 
 /*
 ============
@@ -72,7 +73,7 @@ Cbuf_Init
 */
 void Cbuf_Init (void)
 {
-	cmd_text.Alloc(8192);		// space for commands and script files
+	cmd_text.InitOOB(cmd_text_buf, sizeof(cmd_text_buf));		// space for commands and script files
 }
 
 

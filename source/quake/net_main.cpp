@@ -56,6 +56,7 @@ PollProcedure	slistPollProcedure = {NULL, 0.0, Slist_Poll};
 
 
 QMsg			net_message;
+byte			net_message_buf[NET_MAXMESSAGE];
 int				net_activeconnections = 0;
 
 int messagesSent = 0;
@@ -848,7 +849,7 @@ void NET_Init (void)
 	}
 
 	// allocate space for network message buffer
-	net_message.Alloc(NET_MAXMESSAGE);
+	net_message.InitOOB(net_message_buf, NET_MAXMESSAGE);
 
 	Cvar_RegisterVariable (&net_messagetimeout);
 	Cvar_RegisterVariable (&hostname);

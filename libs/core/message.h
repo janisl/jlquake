@@ -30,8 +30,6 @@ public:
 	int			readcount;
 	int			bit;			// for bitwise reads and writes
 
-	void Alloc(int StartSize);
-	void Free();
 	void Init(byte* NewData, int Length);
 	void InitOOB(byte* NewData, int Length);
 	void Clear();

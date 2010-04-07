@@ -691,7 +691,7 @@ CL_Init
 */
 void CL_Init (void)
 {	
-	cls.message.Alloc(1024);
+	cls.message.InitOOB(cls.message_buf, sizeof(cls.message_buf));
 
 	CL_InitInput ();
 	CL_InitTEnts ();
