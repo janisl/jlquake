@@ -17,7 +17,7 @@
 //**
 //**************************************************************************
 
-class QSizeBuf
+class QMsg
 {
 public:
 	qboolean	allowoverflow;	// if false, do a Sys_Error
@@ -35,11 +35,6 @@ public:
 	void Init(byte* NewData, int Length);
 	void InitOOB(byte* NewData, int Length);
 	void Clear();
-};
-
-class QMsg : public QSizeBuf
-{
-public:
 	void Bitstream();
 	void Copy(byte* NewData, int Length, QMsg& Src);
 

@@ -51,11 +51,11 @@ huffman_t		msgHuff;
 
 //==========================================================================
 //
-//	QSizeBuf::Alloc
+//	QMsg::Alloc
 //
 //==========================================================================
 
-void QSizeBuf::Alloc(int StartSize)
+void QMsg::Alloc(int StartSize)
 {
 	memset(this, 0, sizeof(*this));
 	if (StartSize < 256)
@@ -70,11 +70,11 @@ void QSizeBuf::Alloc(int StartSize)
 
 //==========================================================================
 //
-//	QSizeBuf::Free
+//	QMsg::Free
 //
 //==========================================================================
 
-void QSizeBuf::Free()
+void QMsg::Free()
 {
 	delete[] _data;
 	_data = NULL;
@@ -84,11 +84,11 @@ void QSizeBuf::Free()
 
 //==========================================================================
 //
-//	QSizeBuf::Init
+//	QMsg::Init
 //
 //==========================================================================
 
-void QSizeBuf::Init(byte* NewData, int Length)
+void QMsg::Init(byte* NewData, int Length)
 {
 	memset(this, 0, sizeof(*this));
 	_data = NewData;
@@ -97,11 +97,11 @@ void QSizeBuf::Init(byte* NewData, int Length)
 
 //==========================================================================
 //
-//	QSizeBuf::InitOOB
+//	QMsg::InitOOB
 //
 //==========================================================================
 
-void QSizeBuf::InitOOB(byte* NewData, int Length)
+void QMsg::InitOOB(byte* NewData, int Length)
 {
 	memset(this, 0, sizeof(*this));
 	_data = NewData;
@@ -111,11 +111,11 @@ void QSizeBuf::InitOOB(byte* NewData, int Length)
 
 //==========================================================================
 //
-//	QSizeBuf::Clear
+//	QMsg::Clear
 //
 //==========================================================================
 
-void QSizeBuf::Clear()
+void QMsg::Clear()
 {
 	cursize = 0;
 	overflowed = false;
