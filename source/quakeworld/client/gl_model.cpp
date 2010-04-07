@@ -1538,7 +1538,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 			sprintf(st, "setinfo %s %d", 
 				!QStr::Cmp(loadmodel->name, "progs/player.mdl") ? pmodel_name : emodel_name,
 				(int)crc);
-			SZ_Print (&cls.netchan.message, st);
+			cls.netchan.message.WriteString2(st);
 		}
 	}
 	

@@ -61,6 +61,7 @@ public:
 	void WriteAngle(float F);
 	void WriteAngle16(float F);
 	void WriteData(const void* Buffer, int Length);
+	void Print(const char* S);
 
 	//	Reading functions
 	int ReadChar();

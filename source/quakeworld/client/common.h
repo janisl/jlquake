@@ -25,11 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-void *SZ_GetSpace (QMsg *buf, int length);
-void SZ_Print (QMsg *buf, char *data);	// strcats onto the sizebuf
-
-//============================================================================
-
 typedef struct link_s
 {
 	struct link_s	*prev, *next;

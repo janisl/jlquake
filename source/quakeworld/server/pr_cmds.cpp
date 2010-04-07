@@ -1535,8 +1535,9 @@ void PF_logfrag (void)
 	
 	s = va("\\%s\\%s\\\n",svs.clients[e1-1].name, svs.clients[e2-1].name);
 
-	SZ_Print (&svs.log[svs.logsequence&1], s);
-	if (sv_fraglogfile) {
+	svs.log[svs.logsequence&1].Print(s);
+	if (sv_fraglogfile)
+	{
 		fprintf (sv_fraglogfile, s);
 		fflush (sv_fraglogfile);
 	}

@@ -115,7 +115,7 @@ void Cvar_Set (char *var_name, char *value)
 		if (cls.state >= ca_connected)
 		{
 			cls.netchan.message.WriteByte(clc_stringcmd);
-			SZ_Print (&cls.netchan.message, va("setinfo \"%s\" \"%s\"\n", var_name, value));
+			cls.netchan.message.WriteString2(va("setinfo \"%s\" \"%s\"\n", var_name, value));
 		}
 	}
 #endif

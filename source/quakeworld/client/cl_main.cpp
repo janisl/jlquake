@@ -1040,7 +1040,7 @@ void CL_Download_f (void)
 	cls.downloadtype = dl_single;
 
 	cls.netchan.message.WriteByte(clc_stringcmd);
-	SZ_Print (&cls.netchan.message, va("download %s\n",Cmd_Argv(1)));
+	cls.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));
 }
 
 #ifdef _WINDOWS

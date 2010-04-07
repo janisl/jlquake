@@ -263,44 +263,6 @@ void MSG_ReadUsercmd (usercmd_t *move, qboolean long_msg)
 }
 
 
-//===========================================================================
-
-void *SZ_GetSpace (QMsg *buf, int length)
-{
-	void	*data;
-	
-	if (buf->cursize + length > buf->maxsize)
-	{
-		if (!buf->allowoverflow)
-			Sys_Error ("SZ_GetSpace: overflow without allowoverflow set");
-		
-		if (length > buf->maxsize)
-			Sys_Error ("SZ_GetSpace: %i is > full buffer size", length);
-			
-		Sys_Printf ("SZ_GetSpace: overflow %d\n",buf->maxsize);	// because Con_Printf may be redirected
-		buf->Clear(); 
-		buf->overflowed = true;
-	}
-
-	data = buf->_data + buf->cursize;
-	buf->cursize += length;
-	
-	return data;
-}
-
-void SZ_Print (QMsg *buf, char *data)
-{
-	int		len;
-	
-	len = QStr::Length(data)+1;
-
-	if (!buf->cursize || buf->_data[buf->cursize-1])
-		Com_Memcpy((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
-	else
-		Com_Memcpy((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
-}
-
-
 //============================================================================
 
 

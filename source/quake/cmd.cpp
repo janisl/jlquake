@@ -671,13 +671,13 @@ void Cmd_ForwardToServer (void)
 	cls.message.WriteByte(clc_stringcmd);
 	if (QStr::ICmp(Cmd_Argv(0), "cmd") != 0)
 	{
-		SZ_Print (&cls.message, Cmd_Argv(0));
-		SZ_Print (&cls.message, " ");
+		cls.message.Print(Cmd_Argv(0));
+		cls.message.Print(" ");
 	}
 	if (Cmd_Argc() > 1)
-		SZ_Print (&cls.message, Cmd_Args());
+		cls.message.Print(Cmd_Args());
 	else
-		SZ_Print (&cls.message, "\n");
+		cls.message.Print("\n");
 }
 
 

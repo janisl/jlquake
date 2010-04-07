@@ -293,11 +293,11 @@ void Cmd_ForwardToServer (void)
 	}
 
 	cls.netchan.message.WriteByte(clc_stringcmd);
-	SZ_Print (&cls.netchan.message, cmd);
+	cls.netchan.message.Print(cmd);
 	if (Cmd_Argc() > 1)
 	{
-		SZ_Print (&cls.netchan.message, " ");
-		SZ_Print (&cls.netchan.message, Cmd_Args());
+		cls.netchan.message.Print(" ");
+		cls.netchan.message.Print(Cmd_Args());
 	}
 }
 
@@ -354,7 +354,7 @@ void CL_ForwardToServer_f (void)
 	if (Cmd_Argc() > 1)
 	{
 		cls.netchan.message.WriteByte(clc_stringcmd);
-		SZ_Print (&cls.netchan.message, Cmd_Args());
+		cls.netchan.message.WriteString2(Cmd_Args());
 	}
 }
 

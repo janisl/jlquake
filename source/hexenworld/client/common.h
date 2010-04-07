@@ -6,11 +6,6 @@
 
 //============================================================================
 
-void *SZ_GetSpace (QMsg *buf, int length);
-void SZ_Print (QMsg *buf, char *data);	// strcats onto the sizebuf
-
-//============================================================================
-
 typedef struct link_s
 {
 	struct link_s	*prev, *next;

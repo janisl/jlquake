@@ -179,45 +179,6 @@ int Q_memcmp (void *m1, void *m2, int count)
 
 //===========================================================================
 
-void *SZ_GetSpace (QMsg *buf, int length)
-{
-	void    *data;
-	
-	if (buf->cursize + length > buf->maxsize)
-	{
-		if (!buf->allowoverflow)
-			Sys_Error ("SZ_GetSpace: overflow without allowoverflow set");
-		
-		if (length > buf->maxsize)
-			Sys_Error ("SZ_GetSpace: %i is > full buffer size", length);
-			
-		Con_Printf ("SZ_GetSpace: overflow");
-		buf->Clear(); 
-		buf->overflowed = true;
-	}
-
-	data = buf->_data + buf->cursize;
-	buf->cursize += length;
-	
-	return data;
-}
-
-void SZ_Print (QMsg *buf, const char *data)
-{
-	int             len;
-	
-	len = QStr::Length(data)+1;
-
-// byte * cast to keep VC++ happy
-	if (buf->_data[buf->cursize-1])
-		Com_Memcpy((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
-	else
-		Com_Memcpy((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
-}
-
-
-//============================================================================
-
 
 /*
 ============

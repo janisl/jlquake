@@ -1009,7 +1009,7 @@ void Sbar_DeathmatchOverlay (int start)
 	{
 		cl.last_ping_request = realtime;
 		cls.netchan.message.WriteByte(clc_stringcmd);
-		SZ_Print (&cls.netchan.message, "pings");
+		cls.netchan.message.WriteString2("pings");
 	}
 
 	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));

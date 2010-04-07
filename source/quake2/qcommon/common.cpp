@@ -645,49 +645,6 @@ void MSG_ReadDeltaUsercmd (QMsg *msg_read, usercmd_t *from, usercmd_t *move)
 }
 
 
-//===========================================================================
-
-void *SZ_GetSpace (QMsg *buf, int length)
-{
-	void	*data;
-	
-	if (buf->cursize + length > buf->maxsize)
-	{
-		if (!buf->allowoverflow)
-			Com_Error (ERR_FATAL, "SZ_GetSpace: overflow without allowoverflow set");
-		
-		if (length > buf->maxsize)
-			Com_Error (ERR_FATAL, "SZ_GetSpace: %i is > full buffer size", length);
-			
-		Com_Printf ("SZ_GetSpace: overflow\n");
-		buf->Clear(); 
-		buf->overflowed = true;
-	}
-
-	data = buf->_data + buf->cursize;
-	buf->cursize += length;
-	
-	return data;
-}
-
-void SZ_Print (QMsg *buf, char *data)
-{
-	int		len;
-	
-	len = QStr::Length(data)+1;
-
-	if (buf->cursize)
-	{
-		if (buf->_data[buf->cursize-1])
-			Com_Memcpy((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
-		else
-			Com_Memcpy((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
-	}
-	else
-		Com_Memcpy((byte *)SZ_GetSpace(buf, len),data,len);
-}
-
-
 //============================================================================
 
 

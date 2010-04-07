@@ -366,7 +366,7 @@ void CL_ParseDownload (void)
 		cls.downloadpercent = percent;
 
 		cls.netchan.message.WriteByte(clc_stringcmd);
-		SZ_Print (&cls.netchan.message, "nextdl");
+		cls.netchan.message.WriteString2("nextdl");
 	}
 	else
 	{

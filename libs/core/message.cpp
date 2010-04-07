@@ -592,6 +592,24 @@ void QMsg::WriteData(const void* Buffer, int Length)
 
 //==========================================================================
 //
+//	QMsg::Print
+//
+//	strcats onto the sizebuf
+//
+//==========================================================================
+
+void QMsg::Print(const char* S)
+{
+	if (!_data[cursize - 1])
+	{
+		// write over trailing 0
+		cursize--;
+	}
+	WriteString2(S);
+}
+
+//==========================================================================
+//
 //	QMsg::ReadByte
 //
 //	Returns -1 if no more characters are available

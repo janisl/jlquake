@@ -199,7 +199,7 @@ void SCR_FinishCinematic (void)
 {
 	// tell the server to advance to the next map / cinematic
 	cls.netchan.message.WriteByte(clc_stringcmd);
-	SZ_Print (&cls.netchan.message, va("nextserver %i\n", cl.servercount));
+	cls.netchan.message.WriteString2(va("nextserver %i\n", cl.servercount));
 }
 
 //==========================================================================
