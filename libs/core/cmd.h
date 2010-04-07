@@ -17,25 +17,14 @@
 //**
 //**************************************************************************
 
-#ifndef _CORE_H
-#define _CORE_H
+class QCmd
+{
+public:
+	byte*		data;
+	int			maxsize;
+	int			cursize;
 
-//	C headers
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cstdarg>
-#include <cmath>
-
-#include "common.h"		//	Basic types and defines
-#include "memory.h"		//	Memory allocation
-#include "endian.h"		//	Endianes handling
-#include "exception.h"	//	Exception handling
-#include "log.h"		//	General logging interface
-#include "array.h"		//	Dynamic array
-#include "str.h"		//	Strings
-#include "message.h"
-#include "huffman.h"
-#include "cmd.h"
-
-#endif
+	void Init(byte* NewData, int Length);
+	void Clear();
+	void WriteData(const void* Buffer, int Length);
+};

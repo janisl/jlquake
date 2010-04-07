@@ -1,5 +1,7 @@
 add_library(core STATIC
 	array.h
+	cmd.cpp
+	cmd.h
 	common.cpp
 	common.h
 	core.h

@@ -63,7 +63,7 @@ void Cmd_Wait_f (void)
 =============================================================================
 */
 
-QMsg		cmd_text;
+QCmd		cmd_text;
 byte		cmd_text_buf[8192];
 
 /*
@@ -73,7 +73,7 @@ Cbuf_Init
 */
 void Cbuf_Init (void)
 {
-	cmd_text.InitOOB(cmd_text_buf, sizeof(cmd_text_buf));		// space for commands and script files
+	cmd_text.Init(cmd_text_buf, sizeof(cmd_text_buf));		// space for commands and script files
 }
 
 
@@ -119,7 +119,7 @@ void Cbuf_InsertText (const char *text)
 	if (templen)
 	{
 		temp = (char*)Z_Malloc (templen);
-		Com_Memcpy(temp, cmd_text._data, templen);
+		Com_Memcpy(temp, cmd_text.data, templen);
 		cmd_text.Clear();
 	}
 	else
@@ -151,7 +151,7 @@ void Cbuf_Execute (void)
 	while (cmd_text.cursize)
 	{
 // find a \n or ; line break
-		text = (char *)cmd_text._data;
+		text = (char *)cmd_text.data;
 
 		quotes = 0;
 		for (i=0 ; i< cmd_text.cursize ; i++)
