@@ -79,7 +79,7 @@ int VCR_GetMessage (qsocket_t *sock)
 }
 
 
-int VCR_SendMessage (qsocket_t *sock, sizebuf_t *data)
+int VCR_SendMessage (qsocket_t *sock, QMsg *data)
 {
 	int	ret;
 

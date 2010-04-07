@@ -91,7 +91,7 @@ CL_WriteDemoMessage
 Dumps the current net message, prefixed by the length and view angles
 ====================
 */
-void CL_WriteDemoMessage (sizebuf_t *msg)
+void CL_WriteDemoMessage (QMsg *msg)
 {
 	int		len;
 	int		i;

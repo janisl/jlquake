@@ -348,7 +348,7 @@ void CL_SendMove (usercmd_t *cmd)
 {
 	int		i;
 	int		bits;
-	sizebuf_t	buf;
+	QMsg	buf;
 	byte	data[128];
 	
 	buf.InitOOB(data, 128);

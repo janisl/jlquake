@@ -294,7 +294,7 @@ vec3_t	bytedirs[NUMVERTEXNORMALS] =
 // writing functions
 //
 
-void MSG_WritePos (sizebuf_t *sb, vec3_t pos)
+void MSG_WritePos (QMsg *sb, vec3_t pos)
 {
 	sb->WriteShort((int)(pos[0]*8));
 	sb->WriteShort((int)(pos[1]*8));
@@ -302,7 +302,7 @@ void MSG_WritePos (sizebuf_t *sb, vec3_t pos)
 }
 
 
-void MSG_WriteDeltaUsercmd (sizebuf_t *buf, usercmd_t *from, usercmd_t *cmd)
+void MSG_WriteDeltaUsercmd (QMsg *buf, usercmd_t *from, usercmd_t *cmd)
 {
 	int		bits;
 
@@ -353,7 +353,7 @@ void MSG_WriteDeltaUsercmd (sizebuf_t *buf, usercmd_t *from, usercmd_t *cmd)
 }
 
 
-void MSG_WriteDir (sizebuf_t *sb, vec3_t dir)
+void MSG_WriteDir (QMsg *sb, vec3_t dir)
 {
 	int		i, best;
 	float	d, bestd;
@@ -379,7 +379,7 @@ void MSG_WriteDir (sizebuf_t *sb, vec3_t dir)
 }
 
 
-void MSG_ReadDir (sizebuf_t *sb, vec3_t dir)
+void MSG_ReadDir (QMsg *sb, vec3_t dir)
 {
 	int		b;
 
@@ -398,7 +398,7 @@ Writes part of a packetentities message.
 Can delta from either a baseline or a previous packet_entity
 ==================
 */
-void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, sizebuf_t *msg, qboolean force, qboolean newentity)
+void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, QMsg *msg, qboolean force, qboolean newentity)
 {
 	int		bits;
 
@@ -599,14 +599,14 @@ void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, sizebuf_t *
 // reading functions
 //
 
-void MSG_ReadPos (sizebuf_t *msg_read, vec3_t pos)
+void MSG_ReadPos (QMsg *msg_read, vec3_t pos)
 {
 	pos[0] = msg_read->ReadShort() * (1.0/8);
 	pos[1] = msg_read->ReadShort() * (1.0/8);
 	pos[2] = msg_read->ReadShort() * (1.0/8);
 }
 
-void MSG_ReadDeltaUsercmd (sizebuf_t *msg_read, usercmd_t *from, usercmd_t *move)
+void MSG_ReadDeltaUsercmd (QMsg *msg_read, usercmd_t *from, usercmd_t *move)
 {
 	int bits;
 
@@ -647,7 +647,7 @@ void MSG_ReadDeltaUsercmd (sizebuf_t *msg_read, usercmd_t *from, usercmd_t *move
 
 //===========================================================================
 
-void *SZ_GetSpace (sizebuf_t *buf, int length)
+void *SZ_GetSpace (QMsg *buf, int length)
 {
 	void	*data;
 	
@@ -670,7 +670,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 	return data;
 }
 
-void SZ_Print (sizebuf_t *buf, char *data)
+void SZ_Print (QMsg *buf, char *data)
 {
 	int		len;
 	

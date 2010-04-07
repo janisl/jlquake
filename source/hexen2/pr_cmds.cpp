@@ -2139,7 +2139,7 @@ MESSAGE WRITING
 #define	MSG_ALL			2		// reliable to all
 #define	MSG_INIT		3		// write to the init string
 
-sizebuf_t *WriteDest (void)
+QMsg *WriteDest (void)
 {
 	int		entnum;
 	int		dest;

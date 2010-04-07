@@ -60,6 +60,6 @@ Sys_GetPacket
 Never called by the game logic, just the system event queing
 ==================
 */
-qboolean	Sys_GetPacket ( netadr_t *net_from, msg_t *net_message ) {
+qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message ) {
 	return false;
 }

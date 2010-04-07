@@ -68,7 +68,7 @@ Sends an out-of-band datagram
 */
 void Netchan_OutOfBand (netadr_t adr, int length, byte *data)
 {
-	sizebuf_t	send;
+	QMsg		send;
 	byte		send_buf[MAX_MSGLEN + PACKET_HEADER];
 
 // write the packet header
@@ -170,7 +170,7 @@ A 0 length will still generate a packet and deal with the reliable messages.
 */
 void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 {
-	sizebuf_t	send;
+	QMsg		send;
 	byte		send_buf[MAX_MSGLEN + PACKET_HEADER];
 	qboolean	send_reliable;
 	unsigned	w1, w2;

@@ -395,7 +395,7 @@ SV_SendClientDatagram
 qboolean SV_SendClientDatagram (client_t *client)
 {
 	byte		msg_buf[MAX_MSGLEN];
-	sizebuf_t	msg;
+	QMsg		msg;
 
 	SV_BuildClientFrame (client);
 

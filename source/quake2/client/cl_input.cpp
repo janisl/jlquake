@@ -452,7 +452,7 @@ CL_SendCmd
 */
 void CL_SendCmd (void)
 {
-	sizebuf_t	buf;
+	QMsg		buf;
 	byte		data[128];
 	int			i;
 	usercmd_t	*cmd, *oldcmd;

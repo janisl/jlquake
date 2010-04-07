@@ -30,7 +30,7 @@ typedef struct
 
 extern	netadr_t	net_local_adr;
 extern	netadr_t	net_from;		// address of who sent the packet
-extern	sizebuf_t	net_message;
+extern	QMsg		net_message;
 
 extern	cvar_t	hostname;
 
@@ -87,7 +87,7 @@ typedef struct
 	int			last_reliable_sequence;		// sequence number of last send
 
 // reliable staging and holding areas
-	sizebuf_t	message;		// writing buffer to send to server
+	QMsg		message;		// writing buffer to send to server
 	byte		message_buf[MAX_MSGLEN];
 
 	int			reliable_length;

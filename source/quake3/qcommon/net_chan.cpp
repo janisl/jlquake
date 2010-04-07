@@ -104,7 +104,7 @@ more difficult.
 ==============
 */
 #define	SCRAMBLE_START	6
-static void Netchan_ScramblePacket( msg_t *buf ) {
+static void Netchan_ScramblePacket( QMsg *buf ) {
 	unsigned	seed;
 	int			i, j, c, mask, temp;
 	int			seq[MAX_PACKETLEN];
@@ -141,7 +141,7 @@ static void Netchan_ScramblePacket( msg_t *buf ) {
 	}
 }
 
-static void Netchan_UnScramblePacket( msg_t *buf ) {
+static void Netchan_UnScramblePacket( QMsg *buf ) {
 	unsigned	seed;
 	int			i, j, c, mask, temp;
 	int			seq[MAX_PACKETLEN];
@@ -187,7 +187,7 @@ Send one fragment of the current message
 =================
 */
 void Netchan_TransmitNextFragment( netchan_t *chan ) {
-	msg_t		send;
+	QMsg		send;
 	byte		send_buf[MAX_PACKETLEN];
 	int			fragmentLength;
 
@@ -244,7 +244,7 @@ A 0 length will still generate a packet.
 ================
 */
 void Netchan_Transmit( netchan_t *chan, int length, const byte *data ) {
-	msg_t		send;
+	QMsg		send;
 	byte		send_buf[MAX_PACKETLEN];
 
 	if ( length > MAX_MSGLEN ) {
@@ -301,7 +301,7 @@ final fragment of a multi-part message, the entire thing will be
 copied out.
 =================
 */
-qboolean Netchan_Process( netchan_t *chan, msg_t *msg ) {
+qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	int			sequence;
 	int			qport;
 	int			fragmentStart, fragmentLength;
@@ -574,7 +574,7 @@ typedef struct {
 loopback_t	loopbacks[2];
 
 
-qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, msg_t *net_message)
+qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 {
 	int		i;
 	loopback_t	*loop;
@@ -673,7 +673,7 @@ Sends a data message in an out-of-band datagram (only used for "connect")
 void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len ) {
 	byte		string[MAX_MSGLEN*2];
 	int			i;
-	msg_t		mbuf;
+	QMsg		mbuf;
 
 	// set the header
 	string[0] = 0xff;

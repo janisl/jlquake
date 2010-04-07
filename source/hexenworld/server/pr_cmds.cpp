@@ -7,7 +7,7 @@
 #define	RETURN_EDICT(e) (((int *)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
 #define	RETURN_STRING(s) (((int *)pr_globals)[OFS_RETURN] = s-pr_strings)
 
-sizebuf_t *WriteDest (void);
+QMsg *WriteDest (void);
 
 #define	MSG_BROADCAST	0		// unreliable to all
 #define	MSG_ONE			1		// reliable to one (msg_entity)
@@ -2029,7 +2029,7 @@ MESSAGE WRITING
 ===============================================================================
 */
 
-sizebuf_t *WriteDest (void)
+QMsg *WriteDest (void)
 {
 	int		entnum;
 	int		dest;
@@ -3072,7 +3072,7 @@ void PF_v_factorrange(void)
 void SV_setseed(int seed);
 float SV_seedrand(void);
 float SV_GetMultiEffectId(void);
-void SV_ParseMultiEffect(sizebuf_t *sb);
+void SV_ParseMultiEffect(QMsg *sb);
 
 
 void PF_setseed(void)

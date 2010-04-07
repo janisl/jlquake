@@ -79,7 +79,7 @@ cvar_t		*showdrop;
 cvar_t		*qport;
 
 netadr_t	net_from;
-sizebuf_t	net_message;
+QMsg		net_message;
 byte		net_message_buffer[MAX_MSGLEN];
 
 /*
@@ -109,7 +109,7 @@ Sends an out-of-band datagram
 */
 void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data)
 {
-	sizebuf_t	send;
+	QMsg		send;
 	byte		send_buf[MAX_MSGLEN];
 
 // write the packet header
@@ -212,7 +212,7 @@ A 0 length will still generate a packet and deal with the reliable messages.
 */
 void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 {
-	sizebuf_t	send;
+	QMsg		send;
 	byte		send_buf[MAX_MSGLEN];
 	qboolean	send_reliable;
 	unsigned	w1, w2;
@@ -295,7 +295,7 @@ called when the current net_message is from remote_address
 modifies net_message so that it points to the packet payload
 =================
 */
-qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg)
+qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 {
 	unsigned	sequence, sequence_ack;
 	unsigned	reliable_ack, reliable_message;

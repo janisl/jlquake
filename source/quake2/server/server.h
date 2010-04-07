@@ -59,7 +59,7 @@ typedef struct
 
 	// the multicast buffer is used to send a message to a set of clients
 	// it is only used to marshall data until SV_Multicast is called
-	sizebuf_t	multicast;
+	QMsg		multicast;
 	byte		multicast_buf[MAX_MSGLEN];
 
 	// demo server information
@@ -118,7 +118,7 @@ typedef struct client_s
 
 	// The datagram is written to by sound calls, prints, temp ents, etc.
 	// It can be harmlessly overflowed.
-	sizebuf_t		datagram;
+	QMsg			datagram;
 	byte			datagram_buf[MAX_MSGLEN];
 
 	client_frame_t	frames[UPDATE_BACKUP];	// updates can be delta'd from here
@@ -177,14 +177,14 @@ typedef struct
 
 	// serverrecord values
 	FILE		*demofile;
-	sizebuf_t	demo_multicast;
+	QMsg		demo_multicast;
 	byte		demo_multicast_buf[MAX_MSGLEN];
 } server_static_t;
 
 //=============================================================================
 
 extern	netadr_t	net_from;
-extern	sizebuf_t	net_message;
+extern	QMsg	net_message;
 
 extern	netadr_t	master_adr[MAX_MASTERS];	// address of the master server
 
@@ -213,7 +213,7 @@ int SV_ModelIndex (char *name);
 int SV_SoundIndex (char *name);
 int SV_ImageIndex (char *name);
 
-void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg);
+void SV_WriteClientdataToMessage (client_t *client, QMsg *msg);
 
 void SV_ExecuteUserCommand (char *s);
 void SV_InitOperatorCommands (void);
@@ -273,7 +273,7 @@ void SV_Status_f (void);
 //
 // sv_ents.c
 //
-void SV_WriteFrameToClient (client_t *client, sizebuf_t *msg);
+void SV_WriteFrameToClient (client_t *client, QMsg *msg);
 void SV_RecordDemoMessage (void);
 void SV_BuildClientFrame (client_t *client);
 

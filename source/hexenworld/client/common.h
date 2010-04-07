@@ -6,12 +6,8 @@
 
 //============================================================================
 
-typedef struct sizebuf_s : QMsg
-{
-} sizebuf_t;
-
-void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
+void *SZ_GetSpace (QMsg *buf, int length);
+void SZ_Print (QMsg *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
 
@@ -35,7 +31,7 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 struct usercmd_s;
 
-void MSG_WriteUsercmd (sizebuf_t *sb, struct usercmd_s *cmd, qboolean long_msg);
+void MSG_WriteUsercmd (QMsg *sb, struct usercmd_s *cmd, qboolean long_msg);
 
 void MSG_ReadUsercmd (struct usercmd_s *cmd, qboolean long_msg);
 

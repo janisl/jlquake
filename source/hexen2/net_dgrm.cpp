@@ -137,7 +137,7 @@ void NET_Ban_f (void)
 #endif
 
 
-int Datagram_SendMessage (qsocket_t *sock, sizebuf_t *data)
+int Datagram_SendMessage (qsocket_t *sock, QMsg *data)
 {
 	unsigned int	packetLen;
 	unsigned int	dataLen;
@@ -265,7 +265,7 @@ qboolean Datagram_CanSendUnreliableMessage (qsocket_t *sock)
 }
 
 
-int Datagram_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
+int Datagram_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
 {
 	int 	packetLen;
 

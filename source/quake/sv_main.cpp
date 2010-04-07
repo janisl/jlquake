@@ -423,7 +423,7 @@ SV_WriteEntitiesToClient
 
 =============
 */
-void SV_WriteEntitiesToClient (edict_t	*clent, sizebuf_t *msg)
+void SV_WriteEntitiesToClient (edict_t	*clent, QMsg *msg)
 {
 	int		e, i;
 	int		bits;
@@ -566,7 +566,7 @@ SV_WriteClientdataToMessage
 
 ==================
 */
-void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg)
+void SV_WriteClientdataToMessage (edict_t *ent, QMsg *msg)
 {
 	int		bits;
 	int		i;
@@ -707,7 +707,7 @@ SV_SendClientDatagram
 qboolean SV_SendClientDatagram (client_t *client)
 {
 	byte		buf[MAX_DATAGRAM];
-	sizebuf_t	msg;
+	QMsg		msg;
 	
 	msg.InitOOB(buf, sizeof(buf));
 
@@ -782,7 +782,7 @@ message buffer
 */
 void SV_SendNop (client_t *client)
 {
-	sizebuf_t	msg;
+	QMsg		msg;
 	byte		buf[4];
 
 	msg.InitOOB(buf, sizeof(buf));
@@ -968,7 +968,7 @@ Tell all the clients that the server is changing levels
 void SV_SendReconnect (void)
 {
 	byte	data[128];
-	sizebuf_t	msg;
+	QMsg	msg;
 
 	msg.InitOOB(data, sizeof(data));
 

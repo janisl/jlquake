@@ -546,7 +546,7 @@ the wrong gamestate.
 void SV_SendClientGameState( client_t *client ) {
 	int			start;
 	entityState_t	*base, nullstate;
-	msg_t		msg;
+	QMsg		msg;
 	byte		msgBuffer[MAX_MSGLEN];
 
  	Com_DPrintf ("SV_SendClientGameState() for %s\n", client->name);
@@ -751,7 +751,7 @@ Check to see if the client wants a file, open it if needed and start pumping the
 Fill up msg with data 
 ==================
 */
-void SV_WriteDownloadToClient( client_t *cl , msg_t *msg )
+void SV_WriteDownloadToClient( client_t *cl , QMsg *msg )
 {
 	int curindex;
 	int rate;
@@ -1246,7 +1246,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK ) {
 SV_ClientCommand
 ===============
 */
-static qboolean SV_ClientCommand( client_t *cl, msg_t *msg ) {
+static qboolean SV_ClientCommand( client_t *cl, QMsg *msg ) {
 	int		seq;
 	const char	*s;
 	qboolean clientOk = qtrue;
@@ -1329,7 +1329,7 @@ On very fast clients, there may be multiple usercmd packed into
 each of the backup packets.
 ==================
 */
-static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta ) {
+static void SV_UserMove( client_t *cl, QMsg *msg, qboolean delta ) {
 	int			i, key;
 	int			cmdCount;
 	usercmd_t	nullcmd;
@@ -1441,7 +1441,7 @@ SV_ExecuteClientMessage
 Parse a client packet
 ===================
 */
-void SV_ExecuteClientMessage( client_t *cl, msg_t *msg ) {
+void SV_ExecuteClientMessage( client_t *cl, QMsg *msg ) {
 	int			c;
 	int			serverId;
 

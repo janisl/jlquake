@@ -43,7 +43,7 @@ void Cmd_Wait_f (void)
 =============================================================================
 */
 
-sizebuf_t	cmd_text;
+QMsg		cmd_text;
 byte		cmd_text_buf[8192];
 
 /*

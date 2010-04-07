@@ -155,7 +155,7 @@ int Q_memcmp (void *m1, void *m2, int count)
 
 //===========================================================================
 
-void *SZ_GetSpace (sizebuf_t *buf, int length)
+void *SZ_GetSpace (QMsg *buf, int length)
 {
 	void    *data;
 	
@@ -178,7 +178,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 	return data;
 }
 
-void SZ_Print (sizebuf_t *buf, char *data)
+void SZ_Print (QMsg *buf, char *data)
 {
 	int             len;
 	

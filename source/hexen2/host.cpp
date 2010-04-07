@@ -459,7 +459,7 @@ void Host_ShutdownServer(qboolean crash)
 {
 	int		i;
 	int		count;
-	sizebuf_t	buf;
+	QMsg		buf;
 	byte		message[4];
 	double	start;
 

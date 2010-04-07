@@ -54,7 +54,7 @@ qboolean SV_AddProjectileUpdate (edict_t *ent)
 	return true;
 }
 
-void SV_EmitProjectileUpdate (sizebuf_t *msg)
+void SV_EmitProjectileUpdate (QMsg *msg)
 {
 	byte	bits[16];	// [modelindex] [48 bits] xyz p y 12 12 12 8 8 [entitynum] [e2]
 	int		n, i;
@@ -122,7 +122,7 @@ SV_EmitPacketEntities
 Writes a delta update of an entity_state_t list to the message.
 =============
 */
-void SV_EmitPacketEntities (client_frame_t *from, client_frame_t *to, sizebuf_t *msg)
+void SV_EmitPacketEntities (client_frame_t *from, client_frame_t *to, QMsg *msg)
 {
 	entity_state_t	*oldent, *newent;
 	int		oldindex, newindex;
@@ -217,7 +217,7 @@ SV_WritePlayerstateToClient
 
 =============
 */
-void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, sizebuf_t *msg)
+void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, QMsg *msg)
 {
 	int				i;
 	int				pflags;
@@ -410,7 +410,7 @@ void SV_WritePlayerstateToClient (client_frame_t *from, client_frame_t *to, size
 SV_WriteFrameToClient
 ==================
 */
-void SV_WriteFrameToClient (client_t *client, sizebuf_t *msg)
+void SV_WriteFrameToClient (client_t *client, QMsg *msg)
 {
 	client_frame_t		*frame, *oldframe;
 	int					lastframe;
@@ -682,7 +682,7 @@ void SV_RecordDemoMessage (void)
 	int			e;
 	edict_t		*ent;
 	entity_state_t	nostate;
-	sizebuf_t	buf;
+	QMsg	buf;
 	byte		buf_data[32768];
 	int			len;
 

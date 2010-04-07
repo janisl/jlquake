@@ -12,7 +12,7 @@ void		VCR_SearchForHosts (qboolean xmit);
 qsocket_t 	*VCR_Connect (char *host);
 qsocket_t 	*VCR_CheckNewConnections (void);
 int			VCR_GetMessage (qsocket_t *sock);
-int			VCR_SendMessage (qsocket_t *sock, sizebuf_t *data);
+int			VCR_SendMessage (qsocket_t *sock, QMsg *data);
 qboolean	VCR_CanSendMessage (qsocket_t *sock);
 void		VCR_Close (qsocket_t *sock);
 void		VCR_Shutdown (void);

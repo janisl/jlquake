@@ -589,7 +589,7 @@ void PrintFreqs(void)
 netadr_t	net_local_adr;
 
 netadr_t	net_from;
-sizebuf_t	net_message;
+QMsg		net_message;
 int			net_socket;
 
 #define	MAX_UDP_PACKET	(MAX_MSGLEN+9)	// one more than msg + header

@@ -41,7 +41,7 @@ extern int oldsize;
 
 void MSG_initHuffman();
 
-void MSG_Init( msg_t *buf, byte *data, int length ) {
+void MSG_Init( QMsg *buf, byte *data, int length ) {
 	if (!msgInit) {
 		MSG_initHuffman();
 	}
@@ -49,7 +49,7 @@ void MSG_Init( msg_t *buf, byte *data, int length ) {
 	buf->allowoverflow = true;
 }
 
-void MSG_InitOOB( msg_t *buf, byte *data, int length ) {
+void MSG_InitOOB( QMsg *buf, byte *data, int length ) {
 	if (!msgInit) {
 		MSG_initHuffman();
 	}
@@ -81,7 +81,7 @@ extern cvar_t *cl_shownet;
 
 #define	LOG(x) if( cl_shownet->integer == 4 ) { Com_Printf("%s ", x ); };
 
-void MSG_WriteDelta( msg_t *msg, int oldV, int newV, int bits ) {
+void MSG_WriteDelta( QMsg *msg, int oldV, int newV, int bits ) {
 	if ( oldV == newV ) {
 		msg->WriteBits(0, 1 );
 		return;
@@ -90,14 +90,14 @@ void MSG_WriteDelta( msg_t *msg, int oldV, int newV, int bits ) {
 	msg->WriteBits(newV, bits );
 }
 
-int	MSG_ReadDelta( msg_t *msg, int oldV, int bits ) {
+int	MSG_ReadDelta( QMsg *msg, int oldV, int bits ) {
 	if ( msg->ReadBits(1 ) ) {
 		return msg->ReadBits(bits );
 	}
 	return oldV;
 }
 
-void MSG_WriteDeltaFloat( msg_t *msg, float oldV, float newV ) {
+void MSG_WriteDeltaFloat( QMsg *msg, float oldV, float newV ) {
 	if ( oldV == newV ) {
 		msg->WriteBits(0, 1 );
 		return;
@@ -106,7 +106,7 @@ void MSG_WriteDeltaFloat( msg_t *msg, float oldV, float newV ) {
 	msg->WriteBits(*(int *)&newV, 32 );
 }
 
-float MSG_ReadDeltaFloat( msg_t *msg, float oldV ) {
+float MSG_ReadDeltaFloat( QMsg *msg, float oldV ) {
 	if ( msg->ReadBits(1 ) ) {
 		float	newV;
 
@@ -135,7 +135,7 @@ int kbitmask[32] = {
 	0x1FFFFFFF,	0x3FFFFFFF,	0x7FFFFFFF,	0xFFFFFFFF,
 };
 
-void MSG_WriteDeltaKey( msg_t *msg, int key, int oldV, int newV, int bits ) {
+void MSG_WriteDeltaKey( QMsg *msg, int key, int oldV, int newV, int bits ) {
 	if ( oldV == newV ) {
 		msg->WriteBits(0, 1 );
 		return;
@@ -144,14 +144,14 @@ void MSG_WriteDeltaKey( msg_t *msg, int key, int oldV, int newV, int bits ) {
 	msg->WriteBits(newV ^ key, bits );
 }
 
-int	MSG_ReadDeltaKey( msg_t *msg, int key, int oldV, int bits ) {
+int	MSG_ReadDeltaKey( QMsg *msg, int key, int oldV, int bits ) {
 	if ( msg->ReadBits(1 ) ) {
 		return msg->ReadBits(bits ) ^ (key & kbitmask[bits]);
 	}
 	return oldV;
 }
 
-void MSG_WriteDeltaKeyFloat( msg_t *msg, int key, float oldV, float newV ) {
+void MSG_WriteDeltaKeyFloat( QMsg *msg, int key, float oldV, float newV ) {
 	if ( oldV == newV ) {
 		msg->WriteBits(0, 1 );
 		return;
@@ -160,7 +160,7 @@ void MSG_WriteDeltaKeyFloat( msg_t *msg, int key, float oldV, float newV ) {
 	msg->WriteBits((*(int *)&newV) ^ key, 32 );
 }
 
-float MSG_ReadDeltaKeyFloat( msg_t *msg, int key, float oldV ) {
+float MSG_ReadDeltaKeyFloat( QMsg *msg, int key, float oldV ) {
 	if ( msg->ReadBits(1 ) ) {
 		float	newV;
 
@@ -194,7 +194,7 @@ usercmd_t communication
 MSG_WriteDeltaUsercmd
 =====================
 */
-void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to ) {
+void MSG_WriteDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits(1, 1 );
 		msg->WriteBits(to->serverTime - from->serverTime, 8 );
@@ -218,7 +218,7 @@ void MSG_WriteDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to ) {
 MSG_ReadDeltaUsercmd
 =====================
 */
-void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to ) {
+void MSG_ReadDeltaUsercmd( QMsg *msg, usercmd_t *from, usercmd_t *to ) {
 	if ( msg->ReadBits(1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits(8 );
 	} else {
@@ -239,7 +239,7 @@ void MSG_ReadDeltaUsercmd( msg_t *msg, usercmd_t *from, usercmd_t *to ) {
 MSG_WriteDeltaUsercmd
 =====================
 */
-void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to ) {
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to ) {
 	if ( to->serverTime - from->serverTime < 256 ) {
 		msg->WriteBits(1, 1 );
 		msg->WriteBits(to->serverTime - from->serverTime, 8 );
@@ -277,7 +277,7 @@ void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *
 MSG_ReadDeltaUsercmd
 =====================
 */
-void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to ) {
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to ) {
 	if ( msg->ReadBits(1 ) ) {
 		to->serverTime = from->serverTime + msg->ReadBits(8 );
 	} else {
@@ -410,7 +410,7 @@ If force is not set, then nothing at all will be generated if the entity is
 identical, under the assumption that the in-order delta code will catch it.
 ==================
 */
-void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to, 
+void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to, 
 						   qboolean force ) {
 	int			i, lc;
 	int			numFields;
@@ -529,7 +529,7 @@ Can go from either a baseline or a previous packet_entity
 */
 extern	cvar_t	*cl_shownet;
 
-void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, 
+void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to, 
 						 int number) {
 	int			i, lc;
 	int			numFields;
@@ -711,7 +711,7 @@ MSG_WriteDeltaPlayerstate
 
 =============
 */
-void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to ) {
+void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to ) {
 	int				i;
 	playerState_t	dummy;
 	int				statsbits;
@@ -867,7 +867,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 MSG_ReadDeltaPlayerstate
 ===================
 */
-void MSG_ReadDeltaPlayerstate (msg_t *msg, playerState_t *from, playerState_t *to ) {
+void MSG_ReadDeltaPlayerstate (QMsg *msg, playerState_t *from, playerState_t *to ) {
 	int			i, lc;
 	int			bits;
 	netField_t	*field;

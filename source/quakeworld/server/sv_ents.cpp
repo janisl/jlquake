@@ -107,7 +107,7 @@ qboolean SV_AddNailUpdate (edict_t *ent)
 	return true;
 }
 
-void SV_EmitNailUpdate (sizebuf_t *msg)
+void SV_EmitNailUpdate (QMsg *msg)
 {
 	byte	bits[6];	// [48 bits] xyzpy 12 12 12 4 8 
 	int		n, i;
@@ -152,7 +152,7 @@ Writes part of a packetentities message.
 Can delta from either a baseline or a previous packet_entity
 ==================
 */
-void SV_WriteDelta (entity_state_t *from, entity_state_t *to, sizebuf_t *msg, qboolean force)
+void SV_WriteDelta (entity_state_t *from, entity_state_t *to, QMsg *msg, qboolean force)
 {
 	int		bits;
 	int		i;
@@ -247,7 +247,7 @@ Writes a delta update of a packet_entities_t to the message.
 
 =============
 */
-void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, sizebuf_t *msg)
+void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, QMsg *msg)
 {
 	edict_t	*ent;
 	client_frame_t	*fromframe;
@@ -319,7 +319,7 @@ SV_WritePlayersToClient
 
 =============
 */
-void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizebuf_t *msg)
+void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg *msg)
 {
 	int			i, j;
 	client_t	*cl;
@@ -444,7 +444,7 @@ a svc_nails message and
 svc_playerinfo messages
 =============
 */
-void SV_WriteEntitiesToClient (client_t *client, sizebuf_t *msg)
+void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 {
 	int		e, i;
 	byte	*pvs;

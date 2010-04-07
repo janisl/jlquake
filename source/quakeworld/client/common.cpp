@@ -158,7 +158,7 @@ Handles byte ordering and avoids alignment errors
 // writing functions
 //
 
-void MSG_WriteDeltaUsercmd (sizebuf_t *buf, usercmd_t *from, usercmd_t *cmd)
+void MSG_WriteDeltaUsercmd (QMsg *buf, usercmd_t *from, usercmd_t *cmd)
 {
 	int		bits;
 
@@ -249,7 +249,7 @@ void MSG_ReadDeltaUsercmd (usercmd_t *from, usercmd_t *move)
 
 //===========================================================================
 
-void *SZ_GetSpace (sizebuf_t *buf, int length)
+void *SZ_GetSpace (QMsg *buf, int length)
 {
 	void	*data;
 	
@@ -272,7 +272,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 	return data;
 }
 
-void SZ_Print (sizebuf_t *buf, char *data)
+void SZ_Print (QMsg *buf, char *data)
 {
 	int		len;
 	

@@ -129,7 +129,7 @@ typedef struct
 // connection information
 	int			signon;			// 0 to SIGNONS
 	struct qsocket_s	*netcon;
-	sizebuf_t	message;		// writing buffer to send to server
+	QMsg		message;		// writing buffer to send to server
 	
 } client_static_t;
 

@@ -429,7 +429,7 @@ Shift down the remaining args
 Redirect all printfs
 ===============
 */
-void SVC_RemoteCommand( netadr_t from, msg_t *msg ) {
+void SVC_RemoteCommand( netadr_t from, QMsg *msg ) {
 	qboolean	valid;
 	unsigned int time;
 	char		remaining[1024];
@@ -499,7 +499,7 @@ Clients that are in the game can still send
 connectionless packets.
 =================
 */
-void SV_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
+void SV_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 	const char	*s;
 	char	*c;
 
@@ -545,7 +545,7 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg ) {
 SV_ReadPackets
 =================
 */
-void SV_PacketEvent( netadr_t from, msg_t *msg ) {
+void SV_PacketEvent( netadr_t from, QMsg *msg ) {
 	int			i;
 	client_t	*cl;
 	int			qport;

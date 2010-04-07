@@ -2051,7 +2051,7 @@ sysEvent_t	Com_GetEvent( void ) {
 Com_RunAndTimeServerPacket
 =================
 */
-void Com_RunAndTimeServerPacket( netadr_t *evFrom, msg_t *buf ) {
+void Com_RunAndTimeServerPacket( netadr_t *evFrom, QMsg *buf ) {
 	int		t1, t2, msec;
 
 	t1 = 0;
@@ -2082,7 +2082,7 @@ int Com_EventLoop( void ) {
 	sysEvent_t	ev;
 	netadr_t	evFrom;
 	byte		bufData[MAX_MSGLEN];
-	msg_t		buf;
+	QMsg		buf;
 
 	MSG_Init( &buf, bufData, sizeof( bufData ) );
 

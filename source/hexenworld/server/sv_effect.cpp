@@ -45,7 +45,7 @@ void SV_ClearEffects(void)
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
 // SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
-void SV_SendEffect(sizebuf_t *sb, int index)
+void SV_SendEffect(QMsg *sb, int index)
 {
 	qboolean	DoTest;
 	vec3_t		TestO;
@@ -480,7 +480,7 @@ void SV_SendEffect(sizebuf_t *sb, int index)
 	}
 }
 
-void SV_UpdateEffects(sizebuf_t *sb)
+void SV_UpdateEffects(QMsg *sb)
 {
 	int index;
 
@@ -491,7 +491,7 @@ void SV_UpdateEffects(sizebuf_t *sb)
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
 // SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
-void SV_ParseEffect(sizebuf_t *sb)
+void SV_ParseEffect(QMsg *sb)
 {
 	int index;
 	byte effect;
@@ -1202,7 +1202,7 @@ float SV_seedrand(void)
 static float MultiEffectIds[10];
 static int MultiEffectIdCount;
 
-void SV_ParseMultiEffect(sizebuf_t *sb)
+void SV_ParseMultiEffect(QMsg *sb)
 {
 	int index, count;
 	byte effect;

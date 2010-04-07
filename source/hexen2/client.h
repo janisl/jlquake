@@ -109,7 +109,7 @@ typedef struct
 // connection information
 	int			signon;			// 0 to SIGNONS
 	struct qsocket_s	*netcon;
-	sizebuf_t	message;		// writing buffer to send to server
+	QMsg		message;		// writing buffer to send to server
 	
 } client_static_t;
 
@@ -366,7 +366,7 @@ void CL_UpdateTEnts(void);
 void CL_ClearEffects(void);
 void CL_ParseEffect(void);
 void CL_EndEffect(void);
-void SV_UpdateEffects(sizebuf_t *sb);
+void SV_UpdateEffects(QMsg *sb);
 
 void CL_RemoveGIPFiles (char *path);
 qboolean CL_CopyFiles(char *source, char *pat, char *dest);

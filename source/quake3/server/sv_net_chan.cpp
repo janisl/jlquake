@@ -33,7 +33,7 @@ SV_Netchan_Encode
 
 ==============
 */
-static void SV_Netchan_Encode( client_t *client, msg_t *msg ) {
+static void SV_Netchan_Encode( client_t *client, QMsg *msg ) {
 	long reliableAcknowledge, i, index;
 	byte key, *string;
         int	srdc, sbit, soob;
@@ -87,7 +87,7 @@ SV_Netchan_Decode
 
 ==============
 */
-static void SV_Netchan_Decode( client_t *client, msg_t *msg ) {
+static void SV_Netchan_Decode( client_t *client, QMsg *msg ) {
 	int serverId, messageAcknowledge, reliableAcknowledge;
 	int i, index, srdc, sbit, soob;
 	byte key, *string;
@@ -171,7 +171,7 @@ then buffer them and make sure they get sent in correct order
 ================
 */
 
-void SV_Netchan_Transmit( client_t *client, msg_t *msg) {	//int length, const byte *data ) {
+void SV_Netchan_Transmit( client_t *client, QMsg *msg) {	//int length, const byte *data ) {
 	msg->WriteByte(svc_EOF );
 	if (client->netchan.unsentFragments) {
 		netchan_buffer_t *netbuf;
@@ -196,7 +196,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg) {	//int length, const by
 Netchan_SV_Process
 =================
 */
-qboolean SV_Netchan_Process( client_t *client, msg_t *msg ) {
+qboolean SV_Netchan_Process( client_t *client, QMsg *msg ) {
 	int ret;
 	ret = Netchan_Process( &client->netchan, msg );
 	if (!ret)

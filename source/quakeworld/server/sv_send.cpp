@@ -467,7 +467,7 @@ SV_WriteClientdataToMessage
 
 ==================
 */
-void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg)
+void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 {
 	int		i;
 	edict_t	*other;
@@ -569,7 +569,7 @@ SV_SendClientDatagram
 qboolean SV_SendClientDatagram (client_t *client)
 {
 	byte		buf[MAX_DATAGRAM];
-	sizebuf_t	msg;
+	QMsg		msg;
 
 	msg.InitOOB(buf, sizeof(buf));
 	msg.allowoverflow = true;

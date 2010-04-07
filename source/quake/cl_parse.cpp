@@ -148,7 +148,7 @@ void CL_KeepaliveMessage (void)
 	float	time;
 	static float lastmsg;
 	int		ret;
-	sizebuf_t	old;
+	QMsg	old;
 	byte		olddata[8192];
 	
 	if (sv.active)
@@ -157,9 +157,8 @@ void CL_KeepaliveMessage (void)
 		return;
 
 // read messages from server, should just be nops
-	old = net_message;
-	Com_Memcpy(olddata, net_message._data, net_message.cursize);
-	
+	old.Copy(olddata, sizeof(olddata), net_message);
+
 	do
 	{
 		ret = CL_GetMessage ();

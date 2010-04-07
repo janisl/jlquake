@@ -152,7 +152,7 @@ Handles byte ordering and avoids alignment errors
 // writing functions
 //
 
-void MSG_WriteUsercmd (sizebuf_t *buf, usercmd_t *cmd, qboolean long_msg)
+void MSG_WriteUsercmd (QMsg *buf, usercmd_t *cmd, qboolean long_msg)
 {
 	int		bits;
 
@@ -265,7 +265,7 @@ void MSG_ReadUsercmd (usercmd_t *move, qboolean long_msg)
 
 //===========================================================================
 
-void *SZ_GetSpace (sizebuf_t *buf, int length)
+void *SZ_GetSpace (QMsg *buf, int length)
 {
 	void	*data;
 	
@@ -288,7 +288,7 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 	return data;
 }
 
-void SZ_Print (sizebuf_t *buf, char *data)
+void SZ_Print (QMsg *buf, char *data)
 {
 	int		len;
 	

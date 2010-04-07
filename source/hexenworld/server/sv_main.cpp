@@ -436,7 +436,7 @@ Writes all update values to a sizebuf
 */
 unsigned int defLosses;	// Defenders losses in Siege
 unsigned int attLosses;	// Attackers Losses in Siege
-void SV_FullClientUpdate (client_t *client, sizebuf_t *buf)
+void SV_FullClientUpdate (client_t *client, QMsg *buf)
 {
 	int		i;
 	char	info[MAX_INFO_STRING];
@@ -539,7 +539,7 @@ SV_CheckLog
 #define	LOG_FLUSH		10*60
 void SV_CheckLog (void)
 {
-	sizebuf_t	*sz;
+	QMsg	*sz;
 
 	sz = &svs.log[svs.logsequence&1];
 

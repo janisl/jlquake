@@ -32,31 +32,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // msg.c
 //
-struct msg_t : QMsg
-{
-};
-
-void MSG_Init (msg_t *buf, byte *data, int length);
-void MSG_InitOOB( msg_t *buf, byte *data, int length );
+void MSG_Init (QMsg *buf, byte *data, int length);
+void MSG_InitOOB( QMsg *buf, byte *data, int length );
 
 struct usercmd_s;
 struct entityState_s;
 struct playerState_s;
 
 
-void MSG_WriteDeltaUsercmd( msg_t *msg, struct usercmd_s *from, struct usercmd_s *to );
-void MSG_ReadDeltaUsercmd( msg_t *msg, struct usercmd_s *from, struct usercmd_s *to );
+void MSG_WriteDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
+void MSG_ReadDeltaUsercmd( QMsg *msg, struct usercmd_s *from, struct usercmd_s *to );
 
-void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
-void MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
+void MSG_WriteDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
+void MSG_ReadDeltaUsercmdKey( QMsg *msg, int key, usercmd_t *from, usercmd_t *to );
 
-void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entityState_s *to
+void MSG_WriteDeltaEntity( QMsg *msg, struct entityState_s *from, struct entityState_s *to
 						   , qboolean force );
-void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, 
+void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to, 
 						 int number );
 
-void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
-void MSG_ReadDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
+void MSG_WriteDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
+void MSG_ReadDeltaPlayerstate( QMsg *msg, struct playerState_s *from, struct playerState_s *to );
 
 
 void MSG_ReportChangeVectors_f( void );
@@ -119,7 +115,7 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b);
 qboolean	NET_IsLocalAddress (netadr_t adr);
 const char	*NET_AdrToString (netadr_t a);
 qboolean	NET_StringToAdr ( const char *s, netadr_t *a);
-qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, msg_t *net_message);
+qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message);
 void		NET_Sleep(int msec);
 
 
@@ -165,7 +161,7 @@ void Netchan_Setup( netsrc_t sock, netchan_t *chan, netadr_t adr, int qport );
 void Netchan_Transmit( netchan_t *chan, int length, const byte *data );
 void Netchan_TransmitNextFragment( netchan_t *chan );
 
-qboolean Netchan_Process( netchan_t *chan, msg_t *msg );
+qboolean Netchan_Process( netchan_t *chan, QMsg *msg );
 
 
 /*
@@ -798,7 +794,7 @@ void CL_MouseEvent( int dx, int dy, int time );
 
 void CL_JoystickEvent( int axis, int value, int time );
 
-void CL_PacketEvent( netadr_t from, msg_t *msg );
+void CL_PacketEvent( netadr_t from, QMsg *msg );
 
 void CL_ConsolePrint( char *text );
 
@@ -840,7 +836,7 @@ void SCR_DebugGraph (float value, int color);	// FIXME: move logging to common?
 void SV_Init( void );
 void SV_Shutdown( char *finalmsg );
 void SV_Frame( int msec );
-void SV_PacketEvent( netadr_t from, msg_t *msg );
+void SV_PacketEvent( netadr_t from, QMsg *msg );
 qboolean SV_GameCommand( void );
 
 

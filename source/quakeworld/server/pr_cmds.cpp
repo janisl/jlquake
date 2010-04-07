@@ -1298,7 +1298,7 @@ MESSAGE WRITING
 #define	MSG_INIT		3		// write to the init string
 #define	MSG_MULTICAST	4		// for multicast()
 
-sizebuf_t *WriteDest (void)
+QMsg *WriteDest (void)
 {
 	int		entnum;
 	int		dest;

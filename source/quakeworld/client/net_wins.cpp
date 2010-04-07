@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 netadr_t	net_local_adr;
 
 netadr_t	net_from;
-sizebuf_t	net_message;
+QMsg		net_message;
 int			net_socket;
 
 #define	MAX_UDP_PACKET	(MAX_MSGLEN*2)	// one more than msg + header

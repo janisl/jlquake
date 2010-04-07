@@ -883,7 +883,7 @@ void SV_ServerRecord_f (void)
 {
 	char	name[MAX_OSPATH];
 	byte	buf_data[32768];
-	sizebuf_t	buf;
+	QMsg	buf;
 	int		len;
 	int		i;
 

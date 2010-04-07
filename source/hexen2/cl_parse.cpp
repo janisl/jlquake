@@ -166,7 +166,7 @@ void CL_KeepaliveMessage (void)
 	float	time;
 	static float lastmsg;
 	int		ret;
-	sizebuf_t	old;
+	QMsg		old;
 	byte		olddata[NET_MAXMESSAGE];
 	
 	if (sv.active)

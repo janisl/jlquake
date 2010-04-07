@@ -94,7 +94,7 @@ qboolean SV_AddNailUpdate (edict_t *ent)
 	return true;
 }
 
-void SV_EmitNailUpdate (sizebuf_t *msg)
+void SV_EmitNailUpdate (QMsg *msg)
 {
 	byte	bits[6];	// [48 bits] xyzpy 12 12 12 4 8 
 	int		n, i;
@@ -167,7 +167,7 @@ qboolean SV_AddMissileUpdate (edict_t *ent)
 	return false;
 }
 
-void SV_EmitMissileUpdate (sizebuf_t *msg)
+void SV_EmitMissileUpdate (QMsg *msg)
 {
 	byte	bits[5];	// [40 bits] xyz type 12 12 12 4
 	int		n, i;
@@ -202,7 +202,7 @@ void SV_EmitMissileUpdate (sizebuf_t *msg)
 	}
 }
 
-void SV_EmitRavenUpdate (sizebuf_t *msg)
+void SV_EmitRavenUpdate (QMsg *msg)
 {
 	byte	bits[6];	// [48 bits] xyzpy 12 12 12 4 8 
 	int		n, i;
@@ -258,7 +258,7 @@ void SV_EmitRavenUpdate (sizebuf_t *msg)
 	}
 }
 
-void SV_EmitPackedEntities(sizebuf_t *msg)
+void SV_EmitPackedEntities(QMsg *msg)
 {
 	SV_EmitMissileUpdate(msg);
 	SV_EmitRavenUpdate(msg);
@@ -275,7 +275,7 @@ Writes part of a packetentities message.
 Can delta from either a baseline or a previous packet_entity
 ==================
 */
-void SV_WriteDelta (entity_state_t *from, entity_state_t *to, sizebuf_t *msg, qboolean force, edict_t *ent, client_t *client)
+void SV_WriteDelta (entity_state_t *from, entity_state_t *to, QMsg *msg, qboolean force, edict_t *ent, client_t *client)
 {
 	int		bits;
 	int		i;
@@ -432,7 +432,7 @@ Writes a delta update of a packet_entities_t to the message.
 
 =============
 */
-void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, sizebuf_t *msg)
+void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, QMsg *msg)
 {
 	edict_t	*ent;
 	client_frame_t	*fromframe;
@@ -504,7 +504,7 @@ void SV_EmitPacketEntities (client_t *client, packet_entities_t *to, sizebuf_t *
 
 
 
-void SV_WriteInventory (client_t *host_client, edict_t *ent, sizebuf_t *msg)
+void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg)
 {
 	int		sc1,sc2;
 	byte	test;
@@ -840,7 +840,7 @@ SV_WritePlayersToClient
 
 =============
 */
-void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizebuf_t *msg)
+void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg *msg)
 {
 	int			i, j, k, l;
 	client_t	*cl;
@@ -1138,7 +1138,7 @@ SV_WritePlayersToClient
 
 =============
 */
-void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, sizebuf_t *msg)
+void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg *msg)
 {
 	int			i, j;
 	client_t	*cl;
@@ -1341,7 +1341,7 @@ a svc_nails message and
 svc_playerinfo messages
 =============
 */
-void SV_WriteEntitiesToClient (client_t *client, sizebuf_t *msg)
+void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 {
 	int		e, i;
 	byte	*pvs;

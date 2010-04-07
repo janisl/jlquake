@@ -109,7 +109,7 @@ CL_WriteDemoMessage
 Dumps the current net message, prefixed by the length and view angles
 ====================
 */
-void CL_WriteDemoMessage (sizebuf_t *msg)
+void CL_WriteDemoMessage (QMsg *msg)
 {
 	int		len;
 	float	fl;
@@ -307,7 +307,7 @@ CL_WriteDemoMessage
 Dumps the current net message, prefixed by the length and view angles
 ====================
 */
-void CL_WriteRecordDemoMessage (sizebuf_t *msg, int seq)
+void CL_WriteRecordDemoMessage (QMsg *msg, int seq)
 {
 	int		len;
 	int		i;
@@ -377,7 +377,7 @@ void CL_Record_f (void)
 {
 	int		c;
 	char	name[MAX_OSPATH];
-	sizebuf_t	buf;
+	QMsg	buf;
 	byte	buf_data[MAX_MSGLEN];
 	int n, i, j;
 	char *s;

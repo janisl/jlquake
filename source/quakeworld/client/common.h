@@ -25,12 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-typedef struct sizebuf_s : QMsg
-{
-} sizebuf_t;
-
-void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
+void *SZ_GetSpace (QMsg *buf, int length);
+void SZ_Print (QMsg *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
 
@@ -56,7 +52,7 @@ struct usercmd_s;
 
 extern struct usercmd_s nullcmd;
 
-void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
+void MSG_WriteDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
 
 void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 

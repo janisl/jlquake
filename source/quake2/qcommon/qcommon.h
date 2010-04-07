@@ -72,28 +72,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-typedef struct sizebuf_s : QMsg
-{
-} sizebuf_t;
-
-void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
+void *SZ_GetSpace (QMsg *buf, int length);
+void SZ_Print (QMsg *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
 
 struct usercmd_s;
 struct entity_state_s;
 
-void MSG_WritePos (sizebuf_t *sb, vec3_t pos);
-void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
-void MSG_WriteDeltaEntity (struct entity_state_s *from, struct entity_state_s *to, sizebuf_t *msg, qboolean force, qboolean newentity);
-void MSG_WriteDir (sizebuf_t *sb, vec3_t vector);
+void MSG_WritePos (QMsg *sb, vec3_t pos);
+void MSG_WriteDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
+void MSG_WriteDeltaEntity (struct entity_state_s *from, struct entity_state_s *to, QMsg *msg, qboolean force, qboolean newentity);
+void MSG_WriteDir (QMsg *sb, vec3_t vector);
 
 
-void	MSG_ReadPos (sizebuf_t *sb, vec3_t pos);
-void	MSG_ReadDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercmd_s *cmd);
+void	MSG_ReadPos (QMsg *sb, vec3_t pos);
+void	MSG_ReadDeltaUsercmd (QMsg *sb, struct usercmd_s *from, struct usercmd_s *cmd);
 
-void	MSG_ReadDir (sizebuf_t *sb, vec3_t vector);
+void	MSG_ReadDir (QMsg *sb, vec3_t vector);
 
 //============================================================================
 
@@ -502,7 +498,7 @@ void		NET_Shutdown (void);
 
 void		NET_Config (qboolean multiplayer);
 
-qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message);
+qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message);
 void		NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to);
 
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b);
@@ -544,7 +540,7 @@ typedef struct
 	int			last_reliable_sequence;		// sequence number of last send
 
 // reliable staging and holding areas
-	sizebuf_t	message;		// writing buffer to send to server
+	QMsg	message;		// writing buffer to send to server
 	byte		message_buf[MAX_MSGLEN-16];		// leave space for header
 
 // message is copied to this buffer when it is first transfered
@@ -553,7 +549,7 @@ typedef struct
 } netchan_t;
 
 extern	netadr_t	net_from;
-extern	sizebuf_t	net_message;
+extern	QMsg	net_message;
 extern	byte		net_message_buffer[MAX_MSGLEN];
 
 
@@ -564,7 +560,7 @@ qboolean Netchan_NeedReliable (netchan_t *chan);
 void Netchan_Transmit (netchan_t *chan, int length, byte *data);
 void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data);
 void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...);
-qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg);
+qboolean Netchan_Process (netchan_t *chan, QMsg *msg);
 
 qboolean Netchan_CanReliable (netchan_t *chan);
 

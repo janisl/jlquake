@@ -2,12 +2,8 @@
 
 //============================================================================
 
-typedef struct sizebuf_s : QMsg
-{
-} sizebuf_t;
-
-void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
+void *SZ_GetSpace (QMsg *buf, int length);
+void SZ_Print (QMsg *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
 

@@ -161,7 +161,7 @@ void CL_Record_f (void)
 {
 	char	name[MAX_OSPATH];
 	byte	buf_data[MAX_MSGLEN];
-	sizebuf_t	buf;
+	QMsg	buf;
 	int		i;
 	int		len;
 	entity_state_t	*ent;

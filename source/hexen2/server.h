@@ -49,13 +49,13 @@ typedef struct
 									// be used to reference the world ent
 	server_state_t	state;			// some actions are only valid during load
 
-	sizebuf_t	datagram;
+	QMsg		datagram;
 	byte		datagram_buf[NET_MAXMESSAGE];
 
-	sizebuf_t	reliable_datagram;	// copied to all clients at end of frame
+	QMsg		reliable_datagram;	// copied to all clients at end of frame
 	byte		reliable_datagram_buf[NET_MAXMESSAGE];
 
-	sizebuf_t	signon;
+	QMsg		signon;
 	byte		signon_buf[NET_MAXMESSAGE];
 } server_t;
 
@@ -79,11 +79,11 @@ typedef struct client_s
  	usercmd_t		cmd;				// movement
 	vec3_t			wishdir;			// intended motion calced from cmd
 
-	sizebuf_t		message;			// can be added to at any time,
+	QMsg			message;			// can be added to at any time,
 										// copied and clear once per frame
 	byte			msgbuf[MAX_MSGLEN];
 
-	sizebuf_t		datagram;
+	QMsg			datagram;
 	byte			datagram_buf[NET_MAXMESSAGE];
 
 	edict_t			*edict;				// EDICT_NUM(clientnum+1)
@@ -293,7 +293,7 @@ qboolean SV_CheckBottom (edict_t *ent);
 qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noenemy,
 					  qboolean set_trace);
 
-void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, sizebuf_t *msg);
+void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg);
 
 void SV_MoveToGoal (void);
 
@@ -304,6 +304,6 @@ void SV_SpawnServer (char *server, char *startspot);
 
 void SV_StopSound (edict_t *entity, int channel);
 void SV_UpdateSoundPos (edict_t *entity, int channel);
-void SV_ParseEffect(sizebuf_t *sb);
+void SV_ParseEffect(QMsg *sb);
 void SV_Edicts(char *Name);
 void SaveGamestate(qboolean ClientsOnly);

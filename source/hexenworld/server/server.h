@@ -48,26 +48,26 @@ typedef struct
 	byte		*pvs, *phs;			// fully expanded and decompressed
 
 	// added to every client's unreliable buffer each frame, then cleared
-	sizebuf_t	datagram;
+	QMsg		datagram;
 	byte		datagram_buf[MAX_DATAGRAM];
 
 	// added to every client's reliable buffer each frame, then cleared
-	sizebuf_t	reliable_datagram;
+	QMsg		reliable_datagram;
 	byte		reliable_datagram_buf[MAX_MSGLEN];
 
 	// the multicast buffer is used to send a message to a set of clients
-	sizebuf_t	multicast;
+	QMsg		multicast;
 	byte		multicast_buf[MAX_MSGLEN];
 
 	// the master buffer is used for building log packets
-	sizebuf_t	master;
+	QMsg		master;
 	byte		master_buf[MAX_DATAGRAM];
 
 	// the signon buffer will be sent to each client as they connect
 	// includes the entity baselines, the static entities, etc
 	// large levels will have >MAX_DATAGRAM sized signons, so 
 	// multiple signon messages are kept
-	sizebuf_t	signon;
+	QMsg		signon;
 	int			num_signon_buffers;
 	int			signon_buffer_size[MAX_SIGNON_BUFFERS];
 	byte		signon_buffers[MAX_SIGNON_BUFFERS][MAX_DATAGRAM];
@@ -124,7 +124,7 @@ typedef struct client_s
 
 	// the datagram is written to after every frame, but only cleared
 	// when it is sent out to the client.  overflow is tolerated.
-	sizebuf_t		datagram;
+	QMsg			datagram;
 	byte			datagram_buf[MAX_DATAGRAM];
 
 	double			connection_started;	// or time of disconnect for zombies
@@ -202,7 +202,7 @@ typedef struct
 	// log messages are used so that fraglog processes can get stats
 	int			logsequence;	// the message currently being filled
 	double		logtime;		// time of last swap
-	sizebuf_t	log[2];
+	QMsg		log[2];
 	byte		log_buf[2][MAX_DATAGRAM];
 } server_static_t;
 
@@ -354,14 +354,14 @@ void SV_FinalMessage (char *message);
 void SV_DropClient (client_t *drop);
 
 int SV_CalcPing (client_t *cl);
-void SV_FullClientUpdate (client_t *client, sizebuf_t *buf);
+void SV_FullClientUpdate (client_t *client, QMsg *buf);
 
 int SV_ModelIndex (char *name);
 
 qboolean SV_CheckBottom (edict_t *ent);
 qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noenemy, qboolean set_trace);
 
-void SV_WriteClientdataToMessage (client_t *client, sizebuf_t *msg);
+void SV_WriteClientdataToMessage (client_t *client, QMsg *msg);
 
 void SV_MoveToGoal (void);
 
@@ -441,13 +441,13 @@ void SV_Status_f (void);
 //
 // sv_ents.c
 //
-void SV_WriteEntitiesToClient (client_t *client, sizebuf_t *msg);
+void SV_WriteEntitiesToClient (client_t *client, QMsg *msg);
 
 void SV_UpdateSoundPos (edict_t *entity, int channel);
 void SV_StopSound (edict_t *entity, int channel);
-void SV_ParseEffect(sizebuf_t *sb);
+void SV_ParseEffect(QMsg *sb);
 void SV_FlushSignon (void);
 void SV_SetMoveVars(void);
 void ED_ClearEdict (edict_t *e);
-void SV_WriteInventory (client_t *host_client, edict_t *ent, sizebuf_t *msg);
-void SV_SendEffect(sizebuf_t *sb, int index);
+void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg);
+void SV_SendEffect(QMsg *sb, int index);

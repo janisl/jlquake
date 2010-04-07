@@ -239,7 +239,7 @@ Never called by the game logic, just the system event queing
 */
 int	recvfromCount;
 
-qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message ) {
+qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 	int 	ret;
 	struct sockaddr from;
 	int		fromlen;

@@ -47,7 +47,7 @@ void	Sys_DestroyConsole( void );
 
 char	*Sys_ConsoleInput (void);
 
-qboolean	Sys_GetPacket ( netadr_t *net_from, msg_t *net_message );
+qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 
 // Input subsystem
 
