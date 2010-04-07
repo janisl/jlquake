@@ -81,7 +81,6 @@ set(QUAKE3_FILES
 	unix/unix_main.cpp
 	unix/unix_net.cpp
 	unix/unix_shared.cpp
-	unix/linux_common.cpp
 	unix/linux_joystick.cpp
 	unix/linux_glimp.cpp
 	unix/linux_qgl.cpp
@@ -161,7 +160,6 @@ set(QUAKE3_DEDICATED_FILES
 	qcommon/unzip.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
-	unix/linux_common.cpp
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
 	unix/unix_net.cpp

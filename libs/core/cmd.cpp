@@ -76,6 +76,6 @@ void QCmd::WriteData(const void* Buffer, int Length)
 		throw QException("QCmd::WriteData: overflow");
 	}
 
-	memcpy(data + cursize, Buffer, Length);
+	Com_Memcpy(data + cursize, Buffer, Length);
 	cursize += Length;
 }

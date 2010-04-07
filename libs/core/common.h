@@ -140,3 +140,12 @@ public:
 
 #define	ANGLE2SHORT(x)		((int)((x)*65536/360) & 65535)
 #define	SHORT2ANGLE(x)		((x)*(360.0/65536))
+
+//==========================================================================
+//
+//	Library method replacements.
+//
+//==========================================================================
+
+void Com_Memset(void* dest, const int val, const size_t count);
+void Com_Memcpy(void* dest, const void* src, const size_t count);

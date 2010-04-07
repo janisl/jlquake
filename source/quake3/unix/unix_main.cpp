@@ -974,7 +974,7 @@ int Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f )
     {
       copy = remaining;
     }
-    memcpy( dest, stream.buffer + bufferPoint, copy );
+    Com_Memcpy( dest, stream.buffer + bufferPoint, copy );
     stream.streamPosition += copy;
     dest += copy;
     remaining -= copy;
@@ -1108,7 +1108,7 @@ sysEvent_t Sys_GetEvent( void ) {
     len = sizeof( netadr_t ) + netmsg.cursize;
     buf = (netadr_t*)Z_Malloc( len );
     *buf = adr;
-    memcpy( buf+1, netmsg._data, netmsg.cursize );
+    Com_Memcpy( buf+1, netmsg._data, netmsg.cursize );
     Sys_QueEvent( 0, SE_PACKET, 0, 0, len, buf );
   }
 

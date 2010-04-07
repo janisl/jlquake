@@ -20,15 +20,6 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-/*
-int Q_memcmp (void *m1, void *m2, int count);
-*/
-
-#define Com_Memset	memset
-#define Com_Memcpy  memcpy
-
-//============================================================================
-
 extern	char		com_token[1024];
 extern	qboolean	com_eof;
 

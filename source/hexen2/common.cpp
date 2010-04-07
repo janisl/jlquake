@@ -132,27 +132,6 @@ void InsertLinkAfter (link_t *l, link_t *after)
 	l->next->prev = l;
 }
 
-/*
-============================================================================
-
-					LIBRARY REPLACEMENT FUNCTIONS
-
-============================================================================
-*/
-
-/*
-int Q_memcmp (void *m1, void *m2, int count)
-{
-	while(count)
-	{
-		count--;
-		if (((byte *)m1)[count] != ((byte *)m2)[count])
-			return -1;
-	}
-	return 0;
-}
-*/
-
 //============================================================================
 
 

@@ -57,7 +57,7 @@ huffman_t		msgHuff;
 
 void QMsg::Init(byte* NewData, int Length)
 {
-	memset(this, 0, sizeof(*this));
+	Com_Memset(this, 0, sizeof(*this));
 	_data = NewData;
 	maxsize = Length;
 }
@@ -70,7 +70,7 @@ void QMsg::Init(byte* NewData, int Length)
 
 void QMsg::InitOOB(byte* NewData, int Length)
 {
-	memset(this, 0, sizeof(*this));
+	Com_Memset(this, 0, sizeof(*this));
 	_data = NewData;
 	maxsize = Length;
 	oob = true;
@@ -117,9 +117,9 @@ void QMsg::Copy(byte* NewData, int Length, QMsg& Src)
 	{
 		throw QDropException("QMsg::Copy: can't copy into a smaller QMsg buffer");
 	}
-	memcpy(this, &Src, sizeof(QMsg));
+	Com_Memcpy(this, &Src, sizeof(QMsg));
 	_data = NewData;
-	memcpy(_data, Src._data, Src.cursize);
+	Com_Memcpy(_data, Src._data, Src.cursize);
 }
 
 //==========================================================================

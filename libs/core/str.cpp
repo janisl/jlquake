@@ -383,7 +383,7 @@ QStr QStr::Replace(const char* Search, const char* Replacement) const
 			// just copy the data and avoid memory allocations.
 			if (SLen == RLen)
 			{
-				memcpy(Ret.Str + i, Replacement, RLen);
+				Com_Memcpy(Ret.Str + i, Replacement, RLen);
 			}
 			else
 			{
@@ -432,7 +432,7 @@ QStr QStr::Replace(const QStr& Search, const QStr& Replacement) const
 			// just copy the data and avoid memory allocations.
 			if (SLen == RLen)
 			{
-				memcpy(Ret.Str + i, *Replacement, RLen);
+				Com_Memcpy(Ret.Str + i, *Replacement, RLen);
 			}
 			else
 			{

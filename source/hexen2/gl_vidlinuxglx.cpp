@@ -760,7 +760,7 @@ static void Check_Gamma (unsigned char *pal)
 		palette[i] = inf;
 	}
 
-	memcpy (pal, palette, sizeof(palette));
+	Com_Memcpy(pal, palette, sizeof(palette));
 }
 
 void VID_Init(unsigned char *palette)

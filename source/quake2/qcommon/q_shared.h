@@ -25,9 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <assert.h>
 #include <time.h>
 
-#define Com_Memset      memset
-#define Com_Memcpy      memcpy
-
 // angle indexes
 #define	PITCH				0		// up / down
 #define	YAW					1		// left / right

@@ -53,14 +53,6 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 
 //============================================================================
 
-#define Com_Memset(d, f, c)     memset((d), (f), (c))
-#define Com_Memcpy(d, s, c)     memcpy((d), (s), (c))
-#define Q_memcmp(m1, m2, c) memcmp((m1), (m2), (c))
-
-
-
-//============================================================================
-
 extern	char		com_token[1024];
 extern	qboolean	com_eof;
 

@@ -217,7 +217,7 @@ void* QMemHeap::SmallAlloc(size_t Bytes)
 	{
 		PageSize = 65536 - sizeof(QPage);
 
-		memset(SmallFirstFree, 0, sizeof(SmallFirstFree));
+		Com_Memset(SmallFirstFree, 0, sizeof(SmallFirstFree));
 		SmallPage = AllocPage(PageSize);
 		SmallOffset = 0;
 		SmallUsedPages = NULL;
@@ -389,7 +389,9 @@ void *Mem_Alloc(int size, const char* FileName, int LineNumber)
 
 void *Mem_ClearedAlloc(int size, const char* FileName, int LineNumber)
 {
-	return memset(Mem_Alloc(size, FileName, LineNumber), 0, size);
+	void* P = Mem_Alloc(size, FileName, LineNumber);
+	Com_Memset(P, 0, size);
+	return P;
 }
 
 //==========================================================================
@@ -467,7 +469,9 @@ void *Mem_Alloc(int size)
 
 void *Mem_ClearedAlloc(int size)
 {
-	return memset(Mem_Alloc(size), 0, size);
+	void* P = Mem_Alloc(size);
+	Com_Memset(P, 0, size);
+	return P;
 }
 
 //==========================================================================

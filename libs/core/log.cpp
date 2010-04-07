@@ -49,7 +49,7 @@ QLog			GLog;
 
 QLog::QLog()
 {
-	memset(Listeners, 0, sizeof(Listeners));
+	Com_Memset(Listeners, 0, sizeof(Listeners));
 }
 
 //==========================================================================
