@@ -180,7 +180,7 @@ R_MarkLights
 */
 void R_MarkLights (dlight_t *light, int bit, mnode_t *node)
 {
-	mplane_t	*splitplane;
+	cplane_t	*splitplane;
 	float		dist;
 	msurface_t	*surf;
 	int			i;
@@ -253,7 +253,7 @@ LIGHT SAMPLING
 =============================================================================
 */
 
-mplane_t		*lightplane;
+cplane_t		*lightplane;
 vec3_t			lightspot;
 
 int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
@@ -261,7 +261,7 @@ int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
 	int			r;
 	float		front, back, frac;
 	int			side;
-	mplane_t	*plane;
+	cplane_t	*plane;
 	vec3_t		mid;
 	msurface_t	*surf;
 	int			s, t, ds, dt;

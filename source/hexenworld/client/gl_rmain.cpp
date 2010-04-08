@@ -12,7 +12,7 @@ entity_t	*currententity;
 int			r_visframecount;	// bumped when going to a new PVS
 int			r_framecount;		// used for dlight push checking
 
-mplane_t	frustum[4];
+cplane_t	frustum[4];
 
 int			c_brush_polys, c_alias_polys;
 
@@ -28,7 +28,7 @@ int			gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
 int			mirrortexturenum;	// quake texturenum, not gltexturenum
 qboolean	mirror;
-mplane_t	*mirror_plane;
+cplane_t	*mirror_plane;
 
 float		model_constant_alpha;
 
@@ -1206,7 +1206,7 @@ void R_PolyBlend (void)
 }
 
 
-int SignbitsForPlane (mplane_t *out)
+int SignbitsForPlane (cplane_t *out)
 {
 	int	bits, j;
 

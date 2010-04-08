@@ -38,7 +38,7 @@ void SV_AddToFatPVS (vec3_t org, mnode_t *node)
 {
 	int		i;
 	byte	*pvs;
-	mplane_t	*plane;
+	cplane_t	*plane;
 	float	d;
 
 	while (1)

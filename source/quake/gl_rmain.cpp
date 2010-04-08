@@ -31,7 +31,7 @@ entity_t	*currententity;
 int			r_visframecount;	// bumped when going to a new PVS
 int			r_framecount;		// used for dlight push checking
 
-mplane_t	frustum[4];
+cplane_t	frustum[4];
 
 int			c_brush_polys, c_alias_polys;
 
@@ -46,7 +46,7 @@ int			playertextures;		// up to 16 color translated skins
 
 int			mirrortexturenum;	// quake texturenum, not gltexturenum
 qboolean	mirror;
-mplane_t	*mirror_plane;
+cplane_t	*mirror_plane;
 
 //
 // view origin
@@ -753,7 +753,7 @@ void R_PolyBlend (void)
 }
 
 
-int SignbitsForPlane (mplane_t *out)
+int SignbitsForPlane (cplane_t *out)
 {
 	int	bits, j;
 

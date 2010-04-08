@@ -1092,7 +1092,7 @@ void R_DrawBrushModel (entity_t *e)
 	vec3_t		mins, maxs;
 	msurface_t	*psurf;
 	float		dot;
-	mplane_t	*pplane;
+	cplane_t	*pplane;
 	model_t		*clmodel;
 	qboolean	rotated;
 
@@ -1200,7 +1200,7 @@ R_RecursiveWorldNode
 void R_RecursiveWorldNode (mnode_t *node)
 {
 	int			c, side;
-	mplane_t	*plane;
+	cplane_t	*plane;
 	msurface_t	*surf, **mark;
 	mleaf_t		*pleaf;
 	double		dot;

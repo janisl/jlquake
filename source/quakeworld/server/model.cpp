@@ -61,7 +61,7 @@ mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 {
 	mnode_t		*node;
 	float		d;
-	mplane_t	*plane;
+	cplane_t	*plane;
 	
 	if (!model || !model->nodes)
 		SV_Error ("Mod_PointInLeaf: bad model");
@@ -1006,7 +1006,7 @@ Mod_LoadPlanes
 void Mod_LoadPlanes (lump_t *l)
 {
 	int			i, j;
-	mplane_t	*out;
+	cplane_t	*out;
 	dplane_t 	*in;
 	int			count;
 	int			bits;
@@ -1015,7 +1015,7 @@ void Mod_LoadPlanes (lump_t *l)
 	if (l->filelen % sizeof(*in))
 		SV_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (mplane_t*)Hunk_AllocName ( count*2*sizeof(*out), loadname);	
+	out = (cplane_t*)Hunk_AllocName ( count*2*sizeof(*out), loadname);	
 	
 	loadmodel->planes = out;
 	loadmodel->numplanes = count;

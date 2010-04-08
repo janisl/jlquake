@@ -71,7 +71,7 @@ typedef struct mplane_s
 	byte	type;			// for texture axis selection and fast side tests
 	byte	signbits;		// signx + signy<<1 + signz<<1
 	byte	pad[2];
-} mplane_t;
+} cplane_t;
 
 typedef struct texture_s
 {
@@ -125,7 +125,7 @@ typedef struct msurface_s
 {
 	int			visframe;		// should be drawn when node is crossed
 
-	mplane_t	*plane;
+	cplane_t	*plane;
 	int			flags;
 
 	int			firstedge;	// look up in model->surfedges[], negative numbers
@@ -163,7 +163,7 @@ typedef struct mnode_s
 	struct mnode_s	*parent;
 
 // node specific
-	mplane_t	*plane;
+	cplane_t	*plane;
 	struct mnode_s	*children[2];	
 
 	unsigned short		firstsurface;
@@ -196,7 +196,7 @@ typedef struct mleaf_s
 typedef struct
 {
 	dclipnode_t	*clipnodes;
-	mplane_t	*planes;
+	cplane_t	*planes;
 	int			firstclipnode;
 	int			lastclipnode;
 	vec3_t		clip_mins;
@@ -371,7 +371,7 @@ typedef struct model_s
 	dmodel_t	*submodels;
 
 	int			numplanes;
-	mplane_t	*planes;
+	cplane_t	*planes;
 
 	int			numleafs;		// number of visible leafs, not counting 0
 	mleaf_t		*leafs;

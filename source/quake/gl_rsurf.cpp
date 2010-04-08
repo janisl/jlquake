@@ -1079,7 +1079,7 @@ void R_DrawBrushModel (entity_t *e)
 	int			i, numsurfaces;
 	msurface_t	*psurf;
 	float		dot;
-	mplane_t	*pplane;
+	cplane_t	*pplane;
 	model_t		*clmodel;
 	qboolean	rotated;
 
@@ -1188,7 +1188,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 {
 	int			i, c, side, *pindex;
 	vec3_t		acceptpt, rejectpt;
-	mplane_t	*plane;
+	cplane_t	*plane;
 	msurface_t	*surf, **mark;
 	mleaf_t		*pleaf;
 	double		d, dot;
@@ -1449,7 +1449,7 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 	unsigned	mask;
 	vec3_t		local, transformed;
 	medge_t		*pedges, *r_pedge;
-	mplane_t	*pplane;
+	cplane_t	*pplane;
 	int			vertpage, newverts, newpage, lastvert;
 	qboolean	visible;
 	float		*vec;

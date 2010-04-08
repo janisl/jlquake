@@ -71,7 +71,7 @@ R_SplitEntityOnNode
 void R_SplitEntityOnNode (mnode_t *node)
 {
 	efrag_t		*ef;
-	mplane_t	*splitplane;
+	cplane_t	*splitplane;
 	mleaf_t		*leaf;
 	int			sides;
 	

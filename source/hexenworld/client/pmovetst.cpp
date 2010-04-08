@@ -2,7 +2,7 @@
 
 static	hull_t		box_hull;
 static	dclipnode_t	box_clipnodes[6];
-static	mplane_t	box_planes[6];
+static	cplane_t	box_planes[6];
 
 extern	vec3_t player_mins;
 extern	vec3_t player_maxs;
@@ -78,7 +78,7 @@ int PM_HullPointContents (hull_t *hull, int num, vec3_t p)
 {
 	float		d;
 	dclipnode_t	*node;
-	mplane_t	*plane;
+	cplane_t	*plane;
 
 	while (num >= 0)
 	{
@@ -111,7 +111,7 @@ int PM_PointContents (vec3_t p)
 {
 	float		d;
 	dclipnode_t	*node;
-	mplane_t	*plane;
+	cplane_t	*plane;
 	hull_t		*hull;
 	int			num;
 
@@ -160,7 +160,7 @@ PM_RecursiveHullCheck
 qboolean PM_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, pmtrace_t *trace)
 {
 	dclipnode_t	*node;
-	mplane_t	*plane;
+	cplane_t	*plane;
 	float		t1, t2;
 	float		frac;
 	int			i;
