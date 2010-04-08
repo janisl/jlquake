@@ -44,7 +44,7 @@ void COM_InitFilesystem (void);
 #define PAK2_COUNT              183
 #define PAK2_CRC                4807
 
-char	com_token[1024];
+static char	com_token[1024];
 int		com_argc;
 char	**com_argv;
 
@@ -142,23 +142,31 @@ COM_Parse
 Parse a token out of a string
 ==============
 */
-char *COM_Parse (char *data)
+char *COM_Parse (const char **data_p)
 {
 	int             c;
 	int             len;
+	const char*		data;
 	
+	data = *data_p;
 	len = 0;
 	com_token[0] = 0;
 	
 	if (!data)
-		return NULL;
+	{
+		*data_p = NULL;
+		return "";
+	}
 		
 // skip whitespace
 skipwhite:
 	while ( (c = *data) <= ' ')
 	{
 		if (c == 0)
-			return NULL;                    // end of file;
+		{
+			*data_p = NULL;                    // end of file;
+			return "";
+		}
 		data++;
 	}
 	
@@ -181,7 +189,8 @@ skipwhite:
 			if (c=='\"' || !c)
 			{
 				com_token[len] = 0;
-				return data;
+				*data_p = data;
+				return com_token;
 			}
 			com_token[len] = c;
 			len++;
@@ -194,7 +203,8 @@ skipwhite:
 		com_token[len] = c;
 		len++;
 		com_token[len] = 0;
-		return data+1;
+		*data_p = data+1;
+		return com_token;
 	}
 
 // parse a regular word
@@ -209,7 +219,8 @@ skipwhite:
 	} while (c>32);
 	
 	com_token[len] = 0;
-	return data;
+	*data_p = data;
+	return com_token;
 }
 
 

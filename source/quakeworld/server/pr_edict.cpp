@@ -638,7 +638,7 @@ void ED_WriteGlobals (FILE *f)
 ED_ParseGlobals
 =============
 */
-void ED_ParseGlobals (char *data)
+void ED_ParseGlobals (const char *data)
 {
 	char	keyname[64];
 	ddef_t	*key;
@@ -646,20 +646,20 @@ void ED_ParseGlobals (char *data)
 	while (1)
 	{	
 	// parse key
-		data = COM_Parse (data);
-		if (com_token[0] == '}')
+		char* token = COM_Parse (&data);
+		if (token[0] == '}')
 			break;
 		if (!data)
 			SV_Error ("ED_ParseEntity: EOF without closing brace");
 
-		QStr::Cpy(keyname, com_token);
+		QStr::Cpy(keyname, token);
 
 	// parse value	
-		data = COM_Parse (data);
+		token = COM_Parse (&data);
 		if (!data)
 			SV_Error ("ED_ParseEntity: EOF without closing brace");
 
-		if (com_token[0] == '}')
+		if (token[0] == '}')
 			SV_Error ("ED_ParseEntity: closing brace without data");
 
 		key = ED_FindGlobal (keyname);
@@ -669,7 +669,7 @@ void ED_ParseGlobals (char *data)
 			continue;
 		}
 
-		if (!ED_ParseEpair ((void *)pr_globals, key, com_token))
+		if (!ED_ParseEpair ((void *)pr_globals, key, token))
 			SV_Error ("ED_ParseGlobals: parse error");
 	}
 }
@@ -791,7 +791,7 @@ ed should be a properly initialized empty edict.
 Used for initial level load and for savegames.
 ====================
 */
-char *ED_ParseEdict (char *data, edict_t *ent)
+const char *ED_ParseEdict (const char *data, edict_t *ent)
 {
 	ddef_t		*key;
 	qboolean	anglehack;
@@ -808,34 +808,34 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 	while (1)
 	{	
 	// parse key
-		data = COM_Parse (data);
-		if (com_token[0] == '}')
+		char* token = COM_Parse (&data);
+		if (token[0] == '}')
 			break;
 		if (!data)
 			SV_Error ("ED_ParseEntity: EOF without closing brace");
 		
 // anglehack is to allow QuakeEd to write single scalar angles
 // and allow them to be turned into vectors. (FIXME...)
-if (!QStr::Cmp(com_token, "angle"))
+if (!QStr::Cmp(token, "angle"))
 {
-	QStr::Cpy(com_token, "angles");
+	QStr::Cpy(token, "angles");
 	anglehack = true;
 }
 else
 	anglehack = false;
 
 // FIXME: change light to _light to get rid of this hack
-if (!QStr::Cmp(com_token, "light"))
-	QStr::Cpy(com_token, "light_lev");	// hack for single light def
+if (!QStr::Cmp(token, "light"))
+	QStr::Cpy(token, "light_lev");	// hack for single light def
 
-		QStr::Cpy(keyname, com_token);
+		QStr::Cpy(keyname, token);
 		
 	// parse value	
-		data = COM_Parse (data);
+		token = COM_Parse (&data);
 		if (!data)
 			SV_Error ("ED_ParseEntity: EOF without closing brace");
 
-		if (com_token[0] == '}')
+		if (token[0] == '}')
 			SV_Error ("ED_ParseEntity: closing brace without data");
 
 		init = true;	
@@ -855,11 +855,11 @@ if (!QStr::Cmp(com_token, "light"))
 if (anglehack)
 {
 char	temp[32];
-QStr::Cpy(temp, com_token);
-sprintf (com_token, "0 %s 0", temp);
+QStr::Cpy(temp, token);
+sprintf (token, "0 %s 0", temp);
 }
 
-		if (!ED_ParseEpair ((void *)&ent->v, key, com_token))
+		if (!ED_ParseEpair ((void *)&ent->v, key, token))
 			SV_Error ("ED_ParseEdict: parse error");
 	}
 
@@ -885,7 +885,7 @@ Used for both fresh maps and savegame loads.  A fresh map would also need
 to call ED_CallSpawnFunctions () to let the objects initialize themselves.
 ================
 */
-void ED_LoadFromFile (char *data)
+void ED_LoadFromFile (const char *data)
 {	
 	edict_t		*ent;
 	int			inhibit;
@@ -899,11 +899,11 @@ void ED_LoadFromFile (char *data)
 	while (1)
 	{
 // parse the opening brace	
-		data = COM_Parse (data);
+		char* token = COM_Parse (&data);
 		if (!data)
 			break;
-		if (com_token[0] != '{')
-			SV_Error ("ED_LoadFromFile: found %s when expecting {",com_token);
+		if (token[0] != '{')
+			SV_Error ("ED_LoadFromFile: found %s when expecting {",token);
 
 		if (!ent)
 			ent = EDICT_NUM(0);

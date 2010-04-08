@@ -59,7 +59,7 @@ void Host_Status_f (void)
 	int			minutes;
 	int			hours = 0;
 	int			j;
-	void		(*print) (char *fmt, ...);
+	void		(*print) (const char *fmt, ...);
 	
 	if (cmd_source == src_command)
 	{
@@ -926,7 +926,8 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 	FILE	*f;
 	char	mapname[MAX_QPATH];
 	float	time, sk;
-	char	str[32768], *start;
+	char	str[32768];
+	const char *start;
 	int		i, r;
 	edict_t	*ent;
 	int		entnum;
@@ -1024,10 +1025,10 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 			Sys_Error ("Loadgame buffer overflow");
 		str[i] = 0;
 		start = str;
-		start = COM_Parse(str);
-		if (!com_token[0])
+		char* token = COM_Parse(&start);
+		if (!token[0])
 			break;		// end of file
-		if (QStr::Cmp(com_token,"{"))
+		if (QStr::Cmp(token,"{"))
 			Sys_Error ("First token isn't a brace");
 			
 		// parse an edict
@@ -1939,7 +1940,7 @@ Kicks a user off of the server
 void Host_Kick_f (void)
 {
 	char		*who;
-	char		*message = NULL;
+	const char	*message = NULL;
 	client_t	*save;
 	int			i;
 	qboolean	byNumber = false;
@@ -1994,7 +1995,8 @@ void Host_Kick_f (void)
 
 		if (Cmd_Argc() > 2)
 		{
-			message = COM_Parse(Cmd_Args());
+			message = Cmd_Args();
+			COM_Parse(&message);
 			if (byNumber)
 			{
 				message++;							// skip the #
