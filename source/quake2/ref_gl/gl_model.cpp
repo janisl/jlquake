@@ -467,7 +467,7 @@ void Mod_LoadTexinfo (lump_t *l)
 			out->next = loadmodel->texinfo + next;
 		else
 		    out->next = NULL;
-		Com_sprintf (name, sizeof(name), "textures/%s.wal", in->texture);
+		QStr::Sprintf (name, sizeof(name), "textures/%s.wal", in->texture);
 
 		out->image = GL_FindImage (name, it_wall);
 		if (!out->image)
@@ -1106,7 +1106,7 @@ void R_BeginRegistration (char *model)
 	registration_sequence++;
 	r_oldviewcluster = -1;		// force markleafs
 
-	Com_sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
+	QStr::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
 
 	// explicitly free the old map if different
 	// this guarantees that mod_known[0] is the world map

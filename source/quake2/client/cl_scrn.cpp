@@ -883,7 +883,7 @@ void SCR_DrawField (int x, int y, int color, int width, int value)
 	SCR_AddDirtyPoint (x, y);
 	SCR_AddDirtyPoint (x+width*CHAR_WIDTH+2, y+23);
 
-	Com_sprintf (num, sizeof(num), "%i", value);
+	QStr::Sprintf (num, sizeof(num), "%i", value);
 	l = QStr::Length(num);
 	if (l > width)
 		l = width;
@@ -925,7 +925,7 @@ void SCR_TouchPics (void)
 		if (crosshair->value > 3 || crosshair->value < 0)
 			crosshair->value = 3;
 
-		Com_sprintf (crosshair_pic, sizeof(crosshair_pic), "ch%i", (int)(crosshair->value));
+		QStr::Sprintf (crosshair_pic, sizeof(crosshair_pic), "ch%i", (int)(crosshair->value));
 		re.DrawGetPicSize (&crosshair_width, &crosshair_height, crosshair_pic);
 		if (!crosshair_width)
 			crosshair_pic[0] = 0;

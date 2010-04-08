@@ -416,9 +416,9 @@ void Cvar_SetValue( const char *var_name, float value) {
 	char	val[32];
 
 	if ( value == (int)value ) {
-		Com_sprintf (val, sizeof(val), "%i",(int)value);
+		QStr::Sprintf (val, sizeof(val), "%i",(int)value);
 	} else {
-		Com_sprintf (val, sizeof(val), "%f",value);
+		QStr::Sprintf (val, sizeof(val), "%f",value);
 	}
 	Cvar_Set (var_name, val);
 }
@@ -645,9 +645,9 @@ void Cvar_WriteVariables( fileHandle_t f ) {
 		if( var->flags & CVAR_ARCHIVE ) {
 			// write the latched value, even if it hasn't taken effect yet
 			if ( var->latchedString ) {
-				Com_sprintf (buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->latchedString);
+				QStr::Sprintf (buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->latchedString);
 			} else {
-				Com_sprintf (buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->string);
+				QStr::Sprintf (buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->string);
 			}
 			FS_Printf (f, "%s", buffer);
 		}

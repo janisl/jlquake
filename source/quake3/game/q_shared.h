@@ -203,13 +203,6 @@ typedef int		clipHandle_t;
 #define	MAX_INFO_VALUE		1024
 
 
-#define	MAX_QPATH			64		// max length of a quake game pathname
-#ifdef PATH_MAX
-#define MAX_OSPATH			PATH_MAX
-#else
-#define	MAX_OSPATH			256		// max length of a filesystem pathname
-#endif
-
 #define	MAX_NAME_LENGTH		32		// max length of a client name
 
 #define	MAX_SAY_TEXT	150
@@ -395,10 +388,6 @@ float	Q_crandom( int *seed );
 
 float Com_Clamp( float min, float max, float value );
 
-char	*COM_SkipPath( char *pathname );
-void	COM_StripExtension( const char *in, char *out );
-void	COM_DefaultExtension( char *path, int maxSize, const char *extension );
-
 void	COM_BeginParseSession( const char *name );
 int		COM_GetCurrentParseLine( void );
 char	*COM_Parse( char **data_p );
@@ -438,8 +427,6 @@ void SkipRestOfLine ( char **data );
 void Parse1DMatrix (char **buf_p, int x, float *m);
 void Parse2DMatrix (char **buf_p, int y, int x, float *m);
 void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m);
-
-void	QDECL Com_sprintf (char *dest, int size, const char *fmt, ...);
 
 
 // mode parm for FS_FOpenFile

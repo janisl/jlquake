@@ -138,6 +138,13 @@ public:
 #define	BIG_INFO_KEY		8192
 #define	BIG_INFO_VALUE		8192
 
+#define	MAX_QPATH			64		// max length of a quake game pathname
+#ifdef PATH_MAX
+#define MAX_OSPATH			PATH_MAX
+#else
+#define	MAX_OSPATH			256		// max length of a filesystem pathname
+#endif
+
 #define	ANGLE2SHORT(x)		((int)((x)*65536/360) & 65535)
 #define	SHORT2ANGLE(x)		((x)*(360.0/65536))
 

@@ -218,7 +218,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 	{
 		if (!QStr::NCmp(filename, link->from, link->fromlength))
 		{
-			Com_sprintf (netpath, sizeof(netpath), "%s%s",link->to, filename+link->fromlength);
+			QStr::Sprintf (netpath, sizeof(netpath), "%s%s",link->to, filename+link->fromlength);
 			*file = fopen (netpath, "rb");
 			if (*file)
 			{		
@@ -256,7 +256,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 		{		
 	// check a file in the directory tree
 			
-			Com_sprintf (netpath, sizeof(netpath), "%s/%s",search->filename, filename);
+			QStr::Sprintf (netpath, sizeof(netpath), "%s/%s",search->filename, filename);
 			
 			*file = fopen (netpath, "rb");
 			if (!*file)
@@ -291,7 +291,7 @@ int FS_FOpenFile (char *filename, FILE **file)
 	// get config from directory, everything else from pak
 	if (!QStr::Cmp(filename, "config.cfg") || !QStr::NCmp(filename, "players/", 8))
 	{
-		Com_sprintf (netpath, sizeof(netpath), "%s/%s",FS_Gamedir(), filename);
+		QStr::Sprintf (netpath, sizeof(netpath), "%s/%s",FS_Gamedir(), filename);
 		
 		*file = fopen (netpath, "rb");
 		if (!*file)
@@ -532,7 +532,7 @@ void FS_AddGameDirectory (char *dir)
 	//
 	for (i=0; i<10; i++)
 	{
-		Com_sprintf (pakfile, sizeof(pakfile), "%s/pak%i.pak", dir, i);
+		QStr::Sprintf (pakfile, sizeof(pakfile), "%s/pak%i.pak", dir, i);
 		pak = FS_LoadPackFile (pakfile);
 		if (!pak)
 			continue;
@@ -569,9 +569,9 @@ void FS_ExecAutoexec (void)
 
 	dir = Cvar_VariableString("gamedir");
 	if (*dir)
-		Com_sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basedir->string, dir); 
+		QStr::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basedir->string, dir); 
 	else
-		Com_sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basedir->string, BASEDIRNAME); 
+		QStr::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basedir->string, BASEDIRNAME); 
 	if (Sys_FindFirst(name, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM))
 		Cbuf_AddText ("exec autoexec.cfg\n");
 	Sys_FindClose();
@@ -618,7 +618,7 @@ void FS_SetGamedir (char *dir)
 	if (dedicated && !dedicated->value)
 		Cbuf_AddText ("vid_restart\nsnd_restart\n");
 
-	Com_sprintf (fs_gamedir, sizeof(fs_gamedir), "%s/%s", fs_basedir->string, dir);
+	QStr::Sprintf (fs_gamedir, sizeof(fs_gamedir), "%s/%s", fs_basedir->string, dir);
 
 	if (!QStr::Cmp(dir,BASEDIRNAME) || (*dir == 0))
 	{
@@ -747,7 +747,7 @@ void FS_Dir_f( void )
 	{
 		char *tmp = findname;
 
-		Com_sprintf( findname, sizeof(findname), "%s/%s", path, wildcard );
+		QStr::Sprintf( findname, sizeof(findname), "%s/%s", path, wildcard );
 
 		while ( *tmp != 0 )
 		{

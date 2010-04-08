@@ -251,7 +251,7 @@ void R_TranslatePlayerSkin (int playernum)
 		return;
 
 	QStr::Cpy(s, Info_ValueForKey(player->userinfo, "skin"));
-	COM_StripExtension(s, s);
+	QStr::StripExtension(s, s);
 	if (player->skin && !QStr::ICmp(s, player->skin->name))
 		player->skin = NULL;
 

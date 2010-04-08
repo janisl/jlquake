@@ -509,15 +509,15 @@ void Cmd_TokenizeString (const char *text)
 	
 		if (cmd_argc == 1)
 			 cmd_args = text;
-			
-		text = COM_Parse (text);
+
+		const char* token = COM_Parse (&text);
 		if (!text)
 			return;
 
 		if (cmd_argc < MAX_ARGS)
 		{
-			cmd_argv[cmd_argc] = (char*)Z_Malloc (QStr::Length(com_token)+1);
-			QStr::Cpy(cmd_argv[cmd_argc], com_token);
+			cmd_argv[cmd_argc] = (char*)Z_Malloc (QStr::Length(token)+1);
+			QStr::Cpy(cmd_argv[cmd_argc], token);
 			cmd_argc++;
 		}
 	}

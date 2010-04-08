@@ -227,10 +227,10 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 	}
 
 	if (QStr::Length(subdirs)) {
-		Com_sprintf( search, sizeof(search), "%s\\%s\\*", basedir, subdirs );
+		QStr::Sprintf( search, sizeof(search), "%s\\%s\\*", basedir, subdirs );
 	}
 	else {
-		Com_sprintf( search, sizeof(search), "%s\\*", basedir );
+		QStr::Sprintf( search, sizeof(search), "%s\\*", basedir );
 	}
 
 	findhandle = _findfirst (search, &findinfo);
@@ -242,10 +242,10 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		if (findinfo.attrib & _A_SUBDIR) {
 			if (QStr::ICmp(findinfo.name, ".") && QStr::ICmp(findinfo.name, "..")) {
 				if (QStr::Length(subdirs)) {
-					Com_sprintf( newsubdirs, sizeof(newsubdirs), "%s\\%s", subdirs, findinfo.name);
+					QStr::Sprintf( newsubdirs, sizeof(newsubdirs), "%s\\%s", subdirs, findinfo.name);
 				}
 				else {
-					Com_sprintf( newsubdirs, sizeof(newsubdirs), "%s", findinfo.name);
+					QStr::Sprintf( newsubdirs, sizeof(newsubdirs), "%s", findinfo.name);
 				}
 				Sys_ListFilteredFiles( basedir, newsubdirs, filter, list, numfiles );
 			}
@@ -253,7 +253,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		if ( *numfiles >= MAX_FOUND_FILES - 1 ) {
 			break;
 		}
-		Com_sprintf( filename, sizeof(filename), "%s\\%s", subdirs, findinfo.name );
+		QStr::Sprintf( filename, sizeof(filename), "%s\\%s", subdirs, findinfo.name );
 		if (!Com_FilterPath( filter, filename, qfalse ))
 			continue;
 		list[ *numfiles ] = CopyString( filename );
@@ -326,7 +326,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 		flag = _A_SUBDIR;
 	}
 
-	Com_sprintf( search, sizeof(search), "%s\\*%s", directory, extension );
+	QStr::Sprintf( search, sizeof(search), "%s\\*%s", directory, extension );
 
 	// search
 	nfiles = 0;
@@ -543,7 +543,7 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath , int (QDECL **entryPoi
 
 	*fqpath = 0 ;		// added 7/20/02 by T.Ray
 
-	Com_sprintf( filename, sizeof( filename ), "%sx86.dll", name );
+	QStr::Sprintf( filename, sizeof( filename ), "%sx86.dll", name );
 
 #ifdef NDEBUG
 	timestamp = Sys_Milliseconds();

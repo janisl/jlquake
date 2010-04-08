@@ -179,10 +179,10 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 	}
 
 	if (QStr::Length(subdirs)) {
-		Com_sprintf( search, sizeof(search), "%s/%s", basedir, subdirs );
+		QStr::Sprintf( search, sizeof(search), "%s/%s", basedir, subdirs );
 	}
 	else {
-		Com_sprintf( search, sizeof(search), "%s", basedir );
+		QStr::Sprintf( search, sizeof(search), "%s", basedir );
 	}
 
 	if ((fdir = opendir(search)) == NULL) {
@@ -190,17 +190,17 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 	}
 
 	while ((d = readdir(fdir)) != NULL) {
-		Com_sprintf(filename, sizeof(filename), "%s/%s", search, d->d_name);
+		QStr::Sprintf(filename, sizeof(filename), "%s/%s", search, d->d_name);
 		if (stat(filename, &st) == -1)
 			continue;
 
 		if (st.st_mode & S_IFDIR) {
 			if (QStr::ICmp(d->d_name, ".") && QStr::ICmp(d->d_name, "..")) {
 				if (QStr::Length(subdirs)) {
-					Com_sprintf( newsubdirs, sizeof(newsubdirs), "%s/%s", subdirs, d->d_name);
+					QStr::Sprintf( newsubdirs, sizeof(newsubdirs), "%s/%s", subdirs, d->d_name);
 				}
 				else {
-					Com_sprintf( newsubdirs, sizeof(newsubdirs), "%s", d->d_name);
+					QStr::Sprintf( newsubdirs, sizeof(newsubdirs), "%s", d->d_name);
 				}
 				Sys_ListFilteredFiles( basedir, newsubdirs, filter, list, numfiles );
 			}
@@ -208,7 +208,7 @@ void Sys_ListFilteredFiles( const char *basedir, char *subdirs, char *filter, ch
 		if ( *numfiles >= MAX_FOUND_FILES - 1 ) {
 			break;
 		}
-		Com_sprintf( filename, sizeof(filename), "%s/%s", subdirs, d->d_name );
+		QStr::Sprintf( filename, sizeof(filename), "%s/%s", subdirs, d->d_name );
 		if (!Com_FilterPath( filter, filename, qfalse ))
 			continue;
 		list[ *numfiles ] = CopyString( filename );
@@ -275,7 +275,7 @@ char **Sys_ListFiles( const char *directory, const char *extension, char *filter
 	}
 
 	while ((d = readdir(fdir)) != NULL) {
-		Com_sprintf(search, sizeof(search), "%s/%s", directory, d->d_name);
+		QStr::Sprintf(search, sizeof(search), "%s/%s", directory, d->d_name);
 		if (stat(search, &st) == -1)
 			continue;
 		if ((dironly && !(st.st_mode & S_IFDIR)) ||

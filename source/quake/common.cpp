@@ -131,134 +131,37 @@ void InsertLinkAfter (link_t *l, link_t *after)
 
 
 /*
-============
-COM_SkipPath
-============
-*/
-char *COM_SkipPath (char *pathname)
-{
-	char    *last;
-	
-	last = pathname;
-	while (*pathname)
-	{
-		if (*pathname=='/')
-			last = pathname+1;
-		pathname++;
-	}
-	return last;
-}
-
-/*
-============
-COM_StripExtension
-============
-*/
-void COM_StripExtension (char *in, char *out)
-{
-	while (*in && *in != '.')
-		*out++ = *in++;
-	*out = 0;
-}
-
-/*
-============
-COM_FileExtension
-============
-*/
-char *COM_FileExtension (char *in)
-{
-	static char exten[8];
-	int             i;
-
-	while (*in && *in != '.')
-		in++;
-	if (!*in)
-		return "";
-	in++;
-	for (i=0 ; i<7 && *in ; i++,in++)
-		exten[i] = *in;
-	exten[i] = 0;
-	return exten;
-}
-
-/*
-============
-COM_FileBase
-============
-*/
-void COM_FileBase (char *in, char *out)
-{
-	char *s, *s2;
-	
-	s = in + QStr::Length(in) - 1;
-	
-	while (s != in && *s != '.')
-		s--;
-	
-	for (s2 = s ; *s2 && *s2 != '/' ; s2--)
-	;
-	
-	if (s-s2 < 2)
-		QStr::Cpy(out,"?model?");
-	else
-	{
-		s--;
-		QStr::NCpy(out,s2+1, s-s2);
-		out[s-s2] = 0;
-	}
-}
-
-
-/*
-==================
-COM_DefaultExtension
-==================
-*/
-void COM_DefaultExtension (char *path, char *extension)
-{
-	char    *src;
-//
-// if path doesn't have a .EXT, append extension
-// (extension should include the .)
-//
-	src = path + QStr::Length(path) - 1;
-
-	while (*src != '/' && src != path)
-	{
-		if (*src == '.')
-			return;                 // it has an extension
-		src--;
-	}
-
-	QStr::Cat(path, MAX_OSPATH, extension);
-}
-
-
-/*
 ==============
 COM_Parse
 
 Parse a token out of a string
 ==============
 */
-const char *COM_Parse (const char *data)
+char *COM_Parse (const char **data_p)
 {
 	int             c;
 	int             len;
-	
+	const char*		data;
+
+	data = *data_p;
 	len = 0;
 	com_token[0] = 0;
-	
+
 	if (!data)
-		return NULL;
-		
+	{
+		*data_p = NULL;
+		return "";
+	}
+
 // skip whitespace
 skipwhite:
 	while ( (c = *data) <= ' ')
 	{
 		if (c == 0)
-			return NULL;                    // end of file;
+		{
+			*data_p = NULL;
+			return "";
+		}
 		data++;
 	}
 	
@@ -269,7 +172,6 @@ skipwhite:
 			data++;
 		goto skipwhite;
 	}
-	
 
 // handle quoted strings specially
 	if (c == '\"')
@@ -281,10 +183,14 @@ skipwhite:
 			if (c=='\"' || !c)
 			{
 				com_token[len] = 0;
-				return data;
+				*data_p = data;
+				return com_token;
 			}
-			com_token[len] = c;
-			len++;
+			if (len < sizeof(com_token))
+			{
+				com_token[len] = c;
+				len++;
+			}
 		}
 	}
 
@@ -294,22 +200,31 @@ skipwhite:
 		com_token[len] = c;
 		len++;
 		com_token[len] = 0;
-		return data+1;
+		*data_p = data+1;
+		return com_token;
 	}
 
 // parse a regular word
 	do
 	{
-		com_token[len] = c;
+		if (len < sizeof(com_token))
+		{
+			com_token[len] = c;
+			len++;
+		}
 		data++;
-		len++;
 		c = *data;
-	if (c=='{' || c=='}'|| c==')'|| c=='(' || c=='\'' || c==':')
+		if (c=='{' || c=='}'|| c==')'|| c=='(' || c=='\'' || c==':')
 			break;
 	} while (c>32);
-	
+
+	if (len == sizeof(com_token))
+	{
+		len = 0;
+	}
 	com_token[len] = 0;
-	return data;
+	*data_p = data;
+	return com_token;
 }
 
 
@@ -834,7 +749,7 @@ byte *COM_LoadFile (char *path, int usehunk)
 		return NULL;
 	
 // extract the filename base name for hunk tag
-	COM_FileBase (path, base);
+	QStr::FileBase (path, base);
 	
 	if (usehunk == 1)
 		buf = (byte*)Hunk_AllocName (len+1, base);
@@ -1096,7 +1011,7 @@ void COM_InitFilesystem (void)
 				break;
 			
 			search = (searchpath_t*)Hunk_Alloc (sizeof(searchpath_t));
-			if ( !QStr::Cmp(COM_FileExtension(com_argv[i]), "pak") )
+			if ( !QStr::Cmp(QStr::FileExtension(com_argv[i]), "pak") )
 			{
 				search->pack = COM_LoadPackFile (com_argv[i]);
 				if (!search->pack)

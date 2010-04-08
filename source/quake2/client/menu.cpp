@@ -316,14 +316,14 @@ void M_DrawCursor( int x, int y, int f )
 
 		for ( i = 0; i < NUM_CURSOR_FRAMES; i++ )
 		{
-			Com_sprintf( cursorname, sizeof( cursorname ), "m_cursor%d", i );
+			QStr::Sprintf( cursorname, sizeof( cursorname ), "m_cursor%d", i );
 
 			re.RegisterPic( cursorname );
 		}
 		cached = true;
 	}
 
-	Com_sprintf( cursorname, sizeof(cursorname), "m_cursor%d", f );
+	QStr::Sprintf( cursorname, sizeof(cursorname), "m_cursor%d", f );
 	re.DrawPic( x, y, cursorname );
 }
 
@@ -972,7 +972,7 @@ static const char *Keys_MenuKey( int key )
 		{
 			char cmd[1024];
 
-			Com_sprintf (cmd, sizeof(cmd), "bind \"%s\" \"%s\"\n", Key_KeynumToString(key), bindnames[item->generic.localdata[0]][0]);
+			QStr::Sprintf (cmd, sizeof(cmd), "bind \"%s\" \"%s\"\n", Key_KeynumToString(key), bindnames[item->generic.localdata[0]][0]);
 			Cbuf_InsertText (cmd);
 		}
 		
@@ -2050,7 +2050,7 @@ void Create_Savestrings (void)
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
-		Com_sprintf (name, sizeof(name), "%s/save/save%i/server.ssv", FS_Gamedir(), i);
+		QStr::Sprintf (name, sizeof(name), "%s/save/save%i/server.ssv", FS_Gamedir(), i);
 		f = fopen (name, "rb");
 		if (!f)
 		{
@@ -2258,7 +2258,7 @@ void JoinServerFunc( void *self )
 	if (index >= m_num_servers)
 		return;
 
-	Com_sprintf (buffer, sizeof(buffer), "connect %s\n", NET_AdrToString (local_server_netadr[index]));
+	QStr::Sprintf (buffer, sizeof(buffer), "connect %s\n", NET_AdrToString (local_server_netadr[index]));
 	Cbuf_AddText (buffer);
 	M_ForceMenuOff ();
 }
@@ -2532,7 +2532,7 @@ void StartServer_MenuInit( void )
 	/*
 	** load the list of map names
 	*/
-	Com_sprintf( mapsname, sizeof( mapsname ), "%s/maps.lst", FS_Gamedir() );
+	QStr::Sprintf( mapsname, sizeof( mapsname ), "%s/maps.lst", FS_Gamedir() );
 	if ( ( fp = fopen( mapsname, "rb" ) ) == 0 )
 	{
 		if ( ( length = FS_LoadFile( "maps.lst", ( void ** ) &buffer ) ) == -1 )
@@ -2581,7 +2581,7 @@ void StartServer_MenuInit( void )
 		for (j=0 ; j<l ; j++)
 			shortname[j] = QStr::ToUpper(shortname[j]);
 		QStr::Cpy( longname, COM_Parse( &s ) );
-		Com_sprintf( scratch, sizeof( scratch ), "%s\n%s", longname, shortname );
+		QStr::Sprintf( scratch, sizeof( scratch ), "%s\n%s", longname, shortname );
 
 		mapnames[i] = (char*)malloc( QStr::Length( scratch ) + 1 );
 		QStr::Cpy( mapnames[i], scratch );
@@ -2910,7 +2910,7 @@ static void DMFlagCallback( void *self )
 setvalue:
 	Cvar_SetValue ("dmflags", flags);
 
-	Com_sprintf( dmoptions_statusbar, sizeof( dmoptions_statusbar ), "dmflags = %d", flags );
+	QStr::Sprintf( dmoptions_statusbar, sizeof( dmoptions_statusbar ), "dmflags = %d", flags );
 
 }
 
@@ -3296,7 +3296,7 @@ void AddressBook_MenuInit( void )
 		cvar_t *adr;
 		char buffer[20];
 
-		Com_sprintf( buffer, sizeof( buffer ), "adr%d", i );
+		QStr::Sprintf( buffer, sizeof( buffer ), "adr%d", i );
 
 		adr = Cvar_Get( buffer, "", CVAR_ARCHIVE );
 
@@ -3325,7 +3325,7 @@ const char *AddressBook_MenuKey( int key )
 
 		for ( index = 0; index < NUM_ADDRESSBOOK_ENTRIES; index++ )
 		{
-			Com_sprintf( buffer, sizeof( buffer ), "adr%d", index );
+			QStr::Sprintf( buffer, sizeof( buffer ), "adr%d", index );
 			Cvar_Set( buffer, s_addressbook_fields[index].buffer );
 		}
 	}
@@ -3456,7 +3456,7 @@ static qboolean PlayerConfig_ScanDirectories( void )
 	do 
 	{
 		path = FS_NextPath( path );
-		Com_sprintf( findname, sizeof(findname), "%s/players/*.*", path );
+		QStr::Sprintf( findname, sizeof(findname), "%s/players/*.*", path );
 
 		if ( ( dirnames = FS_ListFiles( findname, &ndirs, SFF_SUBDIR, 0 ) ) != 0 )
 			break;
@@ -3786,9 +3786,9 @@ void PlayerConfig_MenuDraw( void )
 
 		Com_Memset( &entity, 0, sizeof( entity ) );
 
-		Com_sprintf( scratch, sizeof( scratch ), "players/%s/tris.md2", s_pmi[s_player_model_box.curvalue].directory );
+		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/tris.md2", s_pmi[s_player_model_box.curvalue].directory );
 		entity.model = re.RegisterModel( scratch );
-		Com_sprintf( scratch, sizeof( scratch ), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
+		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
 		entity.skin = re.RegisterSkin( scratch );
 		entity.flags = RF_FULLBRIGHT;
 		entity.origin[0] = 80;
@@ -3815,7 +3815,7 @@ void PlayerConfig_MenuDraw( void )
 
 		re.RenderFrame( &refdef );
 
-		Com_sprintf( scratch, sizeof( scratch ), "/players/%s/%s_i.pcx", 
+		QStr::Sprintf( scratch, sizeof( scratch ), "/players/%s/%s_i.pcx", 
 			s_pmi[s_player_model_box.curvalue].directory,
 			s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
 		re.DrawPic( s_player_config_menu.x - 40, refdef.y, scratch );
@@ -3832,7 +3832,7 @@ const char *PlayerConfig_MenuKey (int key)
 
 		Cvar_Set( "name", s_player_name_field.buffer );
 
-		Com_sprintf( scratch, sizeof( scratch ), "%s/%s", 
+		QStr::Sprintf( scratch, sizeof( scratch ), "%s/%s", 
 			s_pmi[s_player_model_box.curvalue].directory, 
 			s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
 

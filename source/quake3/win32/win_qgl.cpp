@@ -3255,7 +3255,7 @@ qboolean QGL_Init( const char *dllname )
 
 	if ( dllname[0] != '!' )
 	{
-		Com_sprintf( libName, sizeof( libName ), "%s\\%s", systemDir, dllname );
+		QStr::Sprintf( libName, sizeof( libName ), "%s\\%s", systemDir, dllname );
 	}
 	else
 	{
@@ -3679,7 +3679,7 @@ void QGL_EnableLogging( qboolean enable )
 			asctime( newtime );
 
 			basedir = ri.Cvar_Get( "fs_basepath", "", 0 );
-			Com_sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
+			QStr::Sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
 			glw_state.log_fp = fopen( buffer, "wt" );
 
 			fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );

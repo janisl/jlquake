@@ -804,19 +804,19 @@ struct model_s *S_RegisterSexedModel (entity_state_t *ent, char *base)
 	if (!model[0])
 		QStr::Cpy(model, "male");
 
-	Com_sprintf (buffer, sizeof(buffer), "players/%s/%s", model, base+1);
+	QStr::Sprintf (buffer, sizeof(buffer), "players/%s/%s", model, base+1);
 	mdl = re.RegisterModel(buffer);
 	if (!mdl) {
 		// not found, try default weapon model
-		Com_sprintf (buffer, sizeof(buffer), "players/%s/weapon.md2", model);
+		QStr::Sprintf (buffer, sizeof(buffer), "players/%s/weapon.md2", model);
 		mdl = re.RegisterModel(buffer);
 		if (!mdl) {
 			// no, revert to the male model
-			Com_sprintf (buffer, sizeof(buffer), "players/%s/%s", "male", base+1);
+			QStr::Sprintf (buffer, sizeof(buffer), "players/%s/%s", "male", base+1);
 			mdl = re.RegisterModel(buffer);
 			if (!mdl) {
 				// last try, default male weapon.md2
-				Com_sprintf (buffer, sizeof(buffer), "players/male/weapon.md2");
+				QStr::Sprintf (buffer, sizeof(buffer), "players/male/weapon.md2");
 				mdl = re.RegisterModel(buffer);
 			}
 		} 

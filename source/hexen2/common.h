@@ -33,11 +33,6 @@ int COM_CheckParm (char *parm);
 void COM_Init (char *path);
 void COM_InitArgv (int argc, char **argv);
 
-char *COM_SkipPath (char *pathname);
-void COM_StripExtension (char *in, char *out);
-void COM_FileBase (char *in, char *out);
-void COM_DefaultExtension (char *path, char *extension);
-
 
 //============================================================================
 

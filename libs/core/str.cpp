@@ -1252,6 +1252,37 @@ float QStr::Atof(const char* Str)
 
 //==========================================================================
 //
+//	QStr::Sprintf
+//
+//==========================================================================
+
+void QStr::Sprintf(char* Dest, int Size, const char* Fmt, ...)
+{
+	va_list		ArgPtr;
+	char		BigBuffer[32000];	// big, but small enough to fit in PPC stack
+
+	va_start(ArgPtr, Fmt);
+	int Len = vsprintf(BigBuffer, Fmt, ArgPtr);
+	va_end(ArgPtr);
+	if (Len >= sizeof(BigBuffer))
+	{
+		throw QException("QStr::Sprintf: overflowed bigbuffer");
+	}
+	if (Len >= Size)
+	{
+		GLog.WriteLine("QStr::Sprintf: overflow of %i in %i", Len, Size);
+#if defined _DEBUG && defined _MSC_VER
+		__asm
+		{
+			int 3;
+		}
+#endif
+	}
+	NCpyZ(Dest, BigBuffer, Size);
+}
+
+//==========================================================================
+//
 //	QStr::IsPrint
 //
 //==========================================================================
@@ -1368,6 +1399,169 @@ char QStr::ToLower(char C)
 		return C + ('a' - 'A');
 	}
 	return C;
+}
+
+//==========================================================================
+//
+//	QStr::SkipPath
+//
+//==========================================================================
+
+char* QStr::SkipPath(char* PathName)
+{
+	char* Last = PathName;
+	while (*PathName)
+	{
+		if (*PathName == '/')
+		{
+			Last = PathName + 1;
+		}
+		PathName++;
+	}
+	return Last;
+}
+
+//==========================================================================
+//
+//	QStr::SkipPath
+//
+//==========================================================================
+
+const char* QStr::SkipPath(const char* PathName)
+{
+	const char* Last = PathName;
+	while (*PathName)
+	{
+		if (*PathName == '/')
+		{
+			Last = PathName + 1;
+		}
+		PathName++;
+	}
+	return Last;
+}
+
+//==========================================================================
+//
+//	QStr::StripExtension
+//
+//==========================================================================
+
+void QStr::StripExtension(const char* In, char* Out)
+{
+	while (*In && *In != '.')
+	{
+		*Out++ = *In++;
+	}
+	*Out = 0;
+}
+
+//==========================================================================
+//
+//	QStr::DefaultExtension
+//
+//==========================================================================
+
+void QStr::DefaultExtension(char* Path, int MaxSize, const char* Extension)
+{
+	char	OldPath[MAX_QPATH];
+	char*	Src;
+
+	//
+	// if path doesn't have a .EXT, append extension
+	// (extension should include the .)
+	//
+	Src = Path + Length(Path) - 1;
+
+	while (*Src != '/' && Src != Path)
+	{
+		if (*Src == '.')
+		{
+			// it has an extension
+			return;
+		}
+		Src--;
+	}
+
+	NCpyZ(OldPath, Path, sizeof(OldPath));
+	Sprintf(Path, MaxSize, "%s%s", OldPath, Extension);
+}
+
+//==========================================================================
+//
+//	QStr::FilePath
+//
+//	Returns the path up to, but not including the last /
+//
+//==========================================================================
+
+void QStr::FilePath(const char* In, char* Out)
+{
+	const char* S = In + Length(In) - 1;
+	
+	while (S != In && *S != '/')
+		S--;
+
+	NCpy(Out, In, S - In);
+	Out[S - In] = 0;
+}
+
+//==========================================================================
+//
+//	QStr::FileBase
+//
+//==========================================================================
+
+void QStr::FileBase(const char* In, char* Out)
+{
+	const char* S2;
+
+	const char* S = In + Length(In) - 1;
+	
+	while (S != In && *S != '.')
+		S--;
+
+	for (S2 = S; S2 != In && *S2 != '/'; S2--)
+	;
+
+	if (S - S2 < 2)
+	{
+		Out[0] = 0;
+	}
+	else
+	{
+		S--;
+		NCpy(Out, S2 + 1, S - S2);
+		Out[S - S2] = 0;
+	}
+}
+
+//==========================================================================
+//
+//	QStr::FileExtension
+//
+//==========================================================================
+
+const char* QStr::FileExtension(const char* In)
+{
+	static char		Exten[8];
+
+	while (*In && *In != '.')
+	{
+		In++;
+	}
+	if (!*In)
+	{
+		return "";
+	}
+	In++;
+	int i;
+	for (i = 0; i < 7 && *In; i++, In++)
+	{
+		Exten[i] = *In;
+	}
+	Exten[i] = 0;
+	return Exten;
 }
 
 //==========================================================================

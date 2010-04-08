@@ -185,7 +185,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	COM_StripExtension (cls.downloadname, cls.downloadtempname);
+	QStr::StripExtension (cls.downloadname, cls.downloadtempname);
 	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 	cls.netchan.message.WriteByte(clc_stringcmd);

@@ -1321,7 +1321,7 @@ static	void R_LoadSubmodels( lump_t *l ) {
 
 		model->type = MOD_BRUSH;
 		model->bmodel = out;
-		Com_sprintf( model->name, sizeof( model->name ), "*%d", i );
+		QStr::Sprintf( model->name, sizeof( model->name ), "*%d", i );
 
 		for (j=0 ; j<3 ; j++) {
 			out->bounds[0][j] = LittleFloat (in->mins[j]);
@@ -1817,8 +1817,8 @@ void RE_LoadWorldMap( const char *name ) {
 	Com_Memset( &s_worldData, 0, sizeof( s_worldData ) );
 	QStr::NCpyZ( s_worldData.name, name, sizeof( s_worldData.name ) );
 
-	QStr::NCpyZ( s_worldData.baseName, COM_SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );
-	COM_StripExtension( s_worldData.baseName, s_worldData.baseName );
+	QStr::NCpyZ( s_worldData.baseName, QStr::SkipPath( s_worldData.name ), sizeof( s_worldData.name ) );
+	QStr::StripExtension( s_worldData.baseName, s_worldData.baseName );
 
 	startMarker = (byte*)ri.Hunk_Alloc(0, h_low);
 	c_gridVerts = 0;

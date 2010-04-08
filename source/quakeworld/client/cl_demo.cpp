@@ -407,7 +407,7 @@ void CL_Record_f (void)
 //
 // open the demo file
 //
-	COM_DefaultExtension (name, ".qwd");
+	QStr::DefaultExtension (name, sizeof(name), ".qwd");
 
 	cls.demofile = fopen (name, "wb");
 	if (!cls.demofile)
@@ -691,7 +691,7 @@ void CL_ReRecord_f (void)
 //
 // open the demo file
 //
-	COM_DefaultExtension (name, ".qwd");
+	QStr::DefaultExtension (name, sizeof(name), ".qwd");
 
 	cls.demofile = fopen (name, "wb");
 	if (!cls.demofile)
@@ -734,7 +734,7 @@ void CL_PlayDemo_f (void)
 // open the demo file
 //
 	QStr::Cpy(name, Cmd_Argv(1));
-	COM_DefaultExtension (name, ".qwd");
+	QStr::DefaultExtension (name, sizeof(name), ".qwd");
 
 	Con_Printf ("Playing demo from %s.\n", name);
 	COM_FOpenFile (name, &cls.demofile);

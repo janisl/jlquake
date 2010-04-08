@@ -100,7 +100,7 @@ const char *VM_ValueToSymbol( vm_t *vm, int value ) {
 		return sym->symName;
 	}
 
-	Com_sprintf( text, sizeof( text ), "%s+%i", sym->symName, value - sym->symValue );
+	QStr::Sprintf( text, sizeof( text ), "%s+%i", sym->symName, value - sym->symValue );
 
 	return text;
 }
@@ -225,8 +225,8 @@ void VM_LoadSymbols( vm_t *vm ) {
 		return;
 	}
 
-	COM_StripExtension( vm->name, name );
-	Com_sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
+	QStr::StripExtension( vm->name, name );
+	QStr::Sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
 	len = FS_ReadFile( symbols, (void **)&mapfile );
 	if ( !mapfile ) {
 		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
@@ -375,7 +375,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 
 	// load the image
 	Com_Printf( "VM_Restart()\n", filename );
-	Com_sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
+	QStr::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
 	Com_Printf( "Loading vm file %s.\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
 	if ( !header ) {
@@ -491,7 +491,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	}
 
 	// load the image
-	Com_sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
+	QStr::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
 	Com_Printf( "Loading vm file %s.\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
 	if ( !header ) {

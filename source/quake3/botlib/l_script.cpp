@@ -1319,9 +1319,9 @@ script_t *LoadScriptFile(const char *filename)
 
 #ifdef BOTLIB
 	if (QStr::Length(basefolder))
-		Com_sprintf(pathname, sizeof(pathname), "%s/%s", basefolder, filename);
+		QStr::Sprintf(pathname, sizeof(pathname), "%s/%s", basefolder, filename);
 	else
-		Com_sprintf(pathname, sizeof(pathname), "%s", filename);
+		QStr::Sprintf(pathname, sizeof(pathname), "%s", filename);
 	length = botimport.FS_FOpenFile( pathname, &fp, FS_READ );
 	if (!fp) return NULL;
 #else
@@ -1428,6 +1428,6 @@ void PS_SetBaseFolder(char *path)
 #ifdef BSPC
 	sprintf(basefolder, path);
 #else
-	Com_sprintf(basefolder, sizeof(basefolder), path);
+	QStr::Sprintf(basefolder, sizeof(basefolder), path);
 #endif
 } //end of the function PS_SetBaseFolder

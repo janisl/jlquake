@@ -53,9 +53,9 @@ char *svc_strings[256] =
 void CL_DownloadFileName(char *dest, int destlen, char *fn)
 {
 	if (QStr::NCmp(fn, "players", 7) == 0)
-		Com_sprintf (dest, destlen, "%s/%s", BASEDIRNAME, fn);
+		QStr::Sprintf (dest, destlen, "%s/%s", BASEDIRNAME, fn);
 	else
-		Com_sprintf (dest, destlen, "%s/%s", FS_Gamedir(), fn);
+		QStr::Sprintf (dest, destlen, "%s/%s", FS_Gamedir(), fn);
 }
 
 /*
@@ -87,7 +87,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	COM_StripExtension (cls.downloadname, cls.downloadtempname);
+	QStr::StripExtension (cls.downloadname, cls.downloadtempname);
 	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 //ZOID
@@ -138,7 +138,7 @@ void	CL_Download_f (void)
 		return;
 	}
 
-	Com_sprintf(filename, sizeof(filename), "%s", Cmd_Argv(1));
+	QStr::Sprintf(filename, sizeof(filename), "%s", Cmd_Argv(1));
 
 	if (strstr (filename, ".."))
 	{
@@ -158,7 +158,7 @@ void	CL_Download_f (void)
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	COM_StripExtension (cls.downloadname, cls.downloadtempname);
+	QStr::StripExtension (cls.downloadname, cls.downloadtempname);
 	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 	cls.netchan.message.WriteByte(clc_stringcmd);
@@ -402,10 +402,10 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 
 	if (cl_noskins->value || *s == 0)
 	{
-		Com_sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
-		Com_sprintf (weapon_filename, sizeof(weapon_filename), "players/male/weapon.md2");
-		Com_sprintf (skin_filename, sizeof(skin_filename), "players/male/grunt.pcx");
-		Com_sprintf (ci->iconname, sizeof(ci->iconname), "/players/male/grunt_i.pcx");
+		QStr::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
+		QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/male/weapon.md2");
+		QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/male/grunt.pcx");
+		QStr::Sprintf (ci->iconname, sizeof(ci->iconname), "/players/male/grunt_i.pcx");
 		ci->model = re.RegisterModel (model_filename);
 		Com_Memset(ci->weaponmodel, 0, sizeof(ci->weaponmodel));
 		ci->weaponmodel[0] = re.RegisterModel (weapon_filename);
@@ -427,17 +427,17 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		QStr::Cpy(skin_name, s + QStr::Length(model_name) + 1);
 
 		// model file
-		Com_sprintf (model_filename, sizeof(model_filename), "players/%s/tris.md2", model_name);
+		QStr::Sprintf (model_filename, sizeof(model_filename), "players/%s/tris.md2", model_name);
 		ci->model = re.RegisterModel (model_filename);
 		if (!ci->model)
 		{
 			QStr::Cpy(model_name, "male");
-			Com_sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
+			QStr::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
 			ci->model = re.RegisterModel (model_filename);
 		}
 
 		// skin file
-		Com_sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
+		QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
 		ci->skin = re.RegisterSkin (skin_filename);
 
 		// if we don't have the skin and the model wasn't male,
@@ -446,11 +446,11 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		{
 			// change model to male
 			QStr::Cpy(model_name, "male");
-			Com_sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
+			QStr::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
 			ci->model = re.RegisterModel (model_filename);
 
 			// see if the skin exists for the male model
-			Com_sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
+			QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
 			ci->skin = re.RegisterSkin (skin_filename);
 		}
 
@@ -458,17 +458,17 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		// it, so default to grunt
 		if (!ci->skin) {
 			// see if the skin exists for the male model
-			Com_sprintf (skin_filename, sizeof(skin_filename), "players/%s/grunt.pcx", model_name, skin_name);
+			QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/grunt.pcx", model_name, skin_name);
 			ci->skin = re.RegisterSkin (skin_filename);
 		}
 
 		// weapon file
 		for (i = 0; i < num_cl_weaponmodels; i++) {
-			Com_sprintf (weapon_filename, sizeof(weapon_filename), "players/%s/%s", model_name, cl_weaponmodels[i]);
+			QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/%s/%s", model_name, cl_weaponmodels[i]);
 			ci->weaponmodel[i] = re.RegisterModel(weapon_filename);
 			if (!ci->weaponmodel[i] && QStr::Cmp(model_name, "cyborg") == 0) {
 				// try male
-				Com_sprintf (weapon_filename, sizeof(weapon_filename), "players/male/%s", cl_weaponmodels[i]);
+				QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/male/%s", cl_weaponmodels[i]);
 				ci->weaponmodel[i] = re.RegisterModel(weapon_filename);
 			}
 			if (!cl_vwep->value)
@@ -476,7 +476,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		}
 
 		// icon file
-		Com_sprintf (ci->iconname, sizeof(ci->iconname), "/players/%s/%s_i.pcx", model_name, skin_name);
+		QStr::Sprintf (ci->iconname, sizeof(ci->iconname), "/players/%s/%s_i.pcx", model_name, skin_name);
 		ci->icon = re.RegisterPic (ci->iconname);
 	}
 

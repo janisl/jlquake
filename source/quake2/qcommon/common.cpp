@@ -146,7 +146,7 @@ void Com_Printf (char *fmt, ...)
 		
 		if (!logfile)
 		{
-			Com_sprintf (name, sizeof(name), "%s/qconsole.log", FS_Gamedir ());
+			QStr::Sprintf(name, sizeof(name), "%s/qconsole.log", FS_Gamedir ());
 			logfile = fopen (name, "w");
 		}
 		if (logfile)

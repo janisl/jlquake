@@ -489,7 +489,7 @@ void Console_Key (int key) {
 			char	temp[MAX_STRING_CHARS];
 
 			QStr::NCpyZ( temp, g_consoleField.buffer, sizeof( temp ) );
-			Com_sprintf( g_consoleField.buffer, sizeof( g_consoleField.buffer ), "\\%s", temp );
+			QStr::Sprintf( g_consoleField.buffer, sizeof( g_consoleField.buffer ), "\\%s", temp );
 			g_consoleField.cursor++;
 		}
 
@@ -624,13 +624,13 @@ void Message_Key( int key ) {
 		if ( chatField.buffer[0] && cls.state == CA_ACTIVE ) {
 			if (chat_playerNum != -1 )
 
-				Com_sprintf( buffer, sizeof( buffer ), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer );
+				QStr::Sprintf( buffer, sizeof( buffer ), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer );
 
 			else if (chat_team)
 
-				Com_sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
+				QStr::Sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
 			else
-				Com_sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
+				QStr::Sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
 
 
 
@@ -991,7 +991,7 @@ void CL_AddKeyUpCommands( int key, char *kb ) {
 			if ( button[0] == '+') {
 				// button commands add keynum and time as parms so that multiple
 				// sources can be discriminated and subframe corrected
-				Com_sprintf (cmd, sizeof(cmd), "-%s %i %i\n", button+1, key, time);
+				QStr::Sprintf (cmd, sizeof(cmd), "-%s %i %i\n", button+1, key, time);
 				Cbuf_AddText (cmd);
 				keyevent = qtrue;
 			} else {
@@ -1170,7 +1170,7 @@ void CL_KeyEvent (int key, qboolean down, unsigned time) {
 					if ( button[0] == '+') {
 						// button commands add keynum and time as parms so that multiple
 						// sources can be discriminated and subframe corrected
-						Com_sprintf (cmd, sizeof(cmd), "%s %i %i\n", button, key, time);
+						QStr::Sprintf (cmd, sizeof(cmd), "%s %i %i\n", button, key, time);
 						Cbuf_AddText (cmd);
 					} else {
 						// down-only command

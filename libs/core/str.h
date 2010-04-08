@@ -341,6 +341,7 @@ public:
 	static char* RChr(const char* String, int C);
 	static int Atoi(const char* Str);
 	static float Atof(const char* Str);
+	static void Sprintf(char* Dest, int Size, const char* Fmt, ...);
 
 	//	Replacements for standard character functions.
 	static int IsPrint(int C);
@@ -351,6 +352,14 @@ public:
 	static int IsDigit(int C);
 	static char ToUpper(char C);
 	static char ToLower(char C);
+
+	static char* SkipPath(char* PathName);
+	static const char* SkipPath(const char *PathName);
+	static void StripExtension(const char* In, char* Out);
+	static void DefaultExtension(char* Path, int MaxSize, const char* Extension);
+	static void FilePath(const char* In, char* Out);
+	static void FileBase(const char* In, char* Out);
+	static const char* FileExtension(const char* In);
 };
 
 char* va(const char* Format, ...) __attribute__ ((format(printf, 1, 2)));

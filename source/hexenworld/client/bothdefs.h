@@ -34,9 +34,6 @@
 #define	SOUND_CHANNELS		8
 
 
-#define	MAX_QPATH		64			// max length of a quake game pathname
-#define	MAX_OSPATH		128			// max length of a filesystem pathname
-
 #define	ON_EPSILON		0.1			// point on plane side epsilon
 
 #define	MAX_MSGLEN		7500		// max length of a reliable message

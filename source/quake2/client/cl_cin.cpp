@@ -587,7 +587,7 @@ void SCR_PlayCinematic (char *arg)
 	dot = strstr (arg, ".");
 	if (dot && !QStr::Cmp(dot, ".pcx"))
 	{	// static pcx image
-		Com_sprintf (name, sizeof(name), "pics/%s", arg);
+		QStr::Sprintf (name, sizeof(name), "pics/%s", arg);
 		SCR_LoadPCX (name, &cin.pic, &palette, &cin.width, &cin.height);
 		cl.cinematicframe = -1;
 		cl.cinematictime = 1;
@@ -606,7 +606,7 @@ void SCR_PlayCinematic (char *arg)
 		return;
 	}
 
-	Com_sprintf (name, sizeof(name), "video/%s", arg);
+	QStr::Sprintf (name, sizeof(name), "video/%s", arg);
 	FS_FOpenFile (name, &cl.cinematic_file);
 	if (!cl.cinematic_file)
 	{

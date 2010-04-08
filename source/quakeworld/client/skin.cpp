@@ -57,7 +57,7 @@ void Skin_Find (player_info_t *sc)
 	if (strstr (name, "..") || *name == '.')
 		QStr::Cpy(name, "base");
 
-	COM_StripExtension (name, name);
+	QStr::StripExtension (name, name);
 
 	for (i=0 ; i<numskins ; i++)
 	{

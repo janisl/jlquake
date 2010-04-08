@@ -92,7 +92,7 @@ char	*NET_BaseAdrToString (netadr_t a)
 {
 	static	char	s[64];
 	
-	Com_sprintf (s, sizeof(s), "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
+	QStr::Sprintf(s, sizeof(s), "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
 
 	return s;
 }

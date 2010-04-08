@@ -241,7 +241,7 @@ void CL_Record_f (void)
 //
 // open the demo file
 //
-	COM_DefaultExtension (name, ".dem");
+	QStr::DefaultExtension(name, sizeof(name), ".dem");
 
 	Con_Printf ("recording to %s.\n", name);
 	cls.demofile = fopen (name, "wb");
@@ -289,7 +289,7 @@ void CL_PlayDemo_f (void)
 // open the demo file
 //
 	QStr::Cpy(name, Cmd_Argv(1));
-	COM_DefaultExtension (name, ".dem");
+	QStr::DefaultExtension(name, sizeof(name), ".dem");
 
 	Con_Printf ("Playing demo from %s.\n", name);
 	COM_FOpenFile (name, &cls.demofile);

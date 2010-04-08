@@ -3451,7 +3451,7 @@ void QGL_EnableLogging( qboolean enable ) {
       
       basedir = ri.Cvar_Get( "fs_basepath", "", 0 ); // FIXME: userdir?
       assert(basedir);
-      Com_sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
+      QStr::Sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
       glw_state.log_fp = fopen( buffer, "wt" );
       assert(glw_state.log_fp);
       ri.Printf(PRINT_ALL, "QGL_EnableLogging(%d): writing %s\n", r_logFile->integer, buffer );

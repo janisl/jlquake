@@ -19,132 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "q_shared.h"
 
-//====================================================================================
-
-/*
-============
-COM_SkipPath
-============
-*/
-char *COM_SkipPath (char *pathname)
-{
-	char	*last;
-	
-	last = pathname;
-	while (*pathname)
-	{
-		if (*pathname=='/')
-			last = pathname+1;
-		pathname++;
-	}
-	return last;
-}
-
-/*
-============
-COM_StripExtension
-============
-*/
-void COM_StripExtension (char *in, char *out)
-{
-	while (*in && *in != '.')
-		*out++ = *in++;
-	*out = 0;
-}
-
-/*
-============
-COM_FileExtension
-============
-*/
-char *COM_FileExtension (char *in)
-{
-	static char exten[8];
-	int		i;
-
-	while (*in && *in != '.')
-		in++;
-	if (!*in)
-		return "";
-	in++;
-	for (i=0 ; i<7 && *in ; i++,in++)
-		exten[i] = *in;
-	exten[i] = 0;
-	return exten;
-}
-
-/*
-============
-COM_FileBase
-============
-*/
-void COM_FileBase (char *in, char *out)
-{
-	char *s, *s2;
-	
-	s = in + QStr::Length(in) - 1;
-	
-	while (s != in && *s != '.')
-		s--;
-	
-	for (s2 = s ; s2 != in && *s2 != '/' ; s2--)
-	;
-	
-	if (s-s2 < 2)
-		out[0] = 0;
-	else
-	{
-		s--;
-		QStr::NCpy(out,s2+1, s-s2);
-		out[s-s2] = 0;
-	}
-}
-
-/*
-============
-COM_FilePath
-
-Returns the path up to, but not including the last /
-============
-*/
-void COM_FilePath (char *in, char *out)
-{
-	char *s;
-	
-	s = in + QStr::Length(in) - 1;
-	
-	while (s != in && *s != '/')
-		s--;
-
-	QStr::NCpy(out,in, s-in);
-	out[s-in] = 0;
-}
-
-
-/*
-==================
-COM_DefaultExtension
-==================
-*/
-void COM_DefaultExtension (char *path, char *extension)
-{
-	char    *src;
-//
-// if path doesn't have a .EXT, append extension
-// (extension should include the .)
-//
-	src = path + QStr::Length(path) - 1;
-
-	while (*src != '/' && src != path)
-	{
-		if (*src == '.')
-			return;                 // it has an extension
-		src--;
-	}
-
-	QStr::Cat(path, MAX_OSPATH, extension);
-}
-
 char	com_token[MAX_TOKEN_CHARS];
 
 /*
@@ -252,28 +126,6 @@ void Com_PageInMemory (byte *buffer, int size)
 }
 
 
-
-/*
-============================================================================
-
-					LIBRARY REPLACEMENT FUNCTIONS
-
-============================================================================
-*/
-
-void Com_sprintf (char *dest, int size, char *fmt, ...)
-{
-	int		len;
-	va_list		argptr;
-	char	bigbuffer[0x10000];
-
-	va_start (argptr,fmt);
-	len = vsprintf (bigbuffer,fmt,argptr);
-	va_end (argptr);
-	if (len >= size)
-		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
-	QStr::NCpy(dest, bigbuffer, size-1);
-}
 
 /*
 =====================================================================
@@ -433,7 +285,7 @@ void Info_SetValueForKey (char *s, char *key, char *value)
 	if (!value || !QStr::Length(value))
 		return;
 
-	Com_sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
+	QStr::Sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
 
 	if (QStr::Length(newi) + QStr::Length(s) > maxsize)
 	{

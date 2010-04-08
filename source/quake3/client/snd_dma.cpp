@@ -1307,7 +1307,7 @@ void S_Play_f( void ) {
 	i = 1;
 	while ( i<Cmd_Argc() ) {
 		if ( !QStr::RChr(Cmd_Argv(i), '.') ) {
-			Com_sprintf( name, sizeof(name), "%s.wav", Cmd_Argv(1) );
+			QStr::Sprintf( name, sizeof(name), "%s.wav", Cmd_Argv(1) );
 		} else {
 			QStr::NCpyZ( name, Cmd_Argv(i), sizeof(name) );
 		}
@@ -1445,7 +1445,7 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ){
 	Com_DPrintf( "S_StartBackgroundTrack( %s, %s )\n", intro, loop );
 
 	QStr::NCpyZ( name, intro, sizeof( name ) - 4 );
-	COM_DefaultExtension( name, sizeof( name ), ".wav" );
+	QStr::DefaultExtension( name, sizeof( name ), ".wav" );
 
 	if ( !intro[0] ) {
 		return;

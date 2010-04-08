@@ -35,64 +35,6 @@ float Com_Clamp( float min, float max, float value ) {
 
 
 /*
-============
-COM_SkipPath
-============
-*/
-char *COM_SkipPath (char *pathname)
-{
-	char	*last;
-	
-	last = pathname;
-	while (*pathname)
-	{
-		if (*pathname=='/')
-			last = pathname+1;
-		pathname++;
-	}
-	return last;
-}
-
-/*
-============
-COM_StripExtension
-============
-*/
-void COM_StripExtension( const char *in, char *out ) {
-	while ( *in && *in != '.' ) {
-		*out++ = *in++;
-	}
-	*out = 0;
-}
-
-
-/*
-==================
-COM_DefaultExtension
-==================
-*/
-void COM_DefaultExtension (char *path, int maxSize, const char *extension ) {
-	char	oldPath[MAX_QPATH];
-	char    *src;
-
-//
-// if path doesn't have a .EXT, append extension
-// (extension should include the .)
-//
-	src = path + QStr::Length(path) - 1;
-
-	while (*src != '/' && src != path) {
-		if ( *src == '.' ) {
-			return;                 // it has an extension
-		}
-		src--;
-	}
-
-	QStr::NCpyZ( oldPath, path, sizeof( oldPath ) );
-	Com_sprintf( path, maxSize, "%s%s", oldPath, extension );
-}
-
-/*
 ============================================================================
 
 PARSING
@@ -107,7 +49,7 @@ static	int		com_lines;
 void COM_BeginParseSession( const char *name )
 {
 	com_lines = 0;
-	Com_sprintf(com_parsename, sizeof(com_parsename), "%s", name);
+	QStr::Sprintf(com_parsename, sizeof(com_parsename), "%s", name);
 }
 
 int COM_GetCurrentParseLine( void )
@@ -559,28 +501,6 @@ char *Q_CleanStr( char *string ) {
 }
 
 
-void QDECL Com_sprintf( char *dest, int size, const char *fmt, ...) {
-	int		len;
-	va_list		argptr;
-	char	bigbuffer[32000];	// big, but small enough to fit in PPC stack
-
-	va_start (argptr,fmt);
-	len = vsprintf (bigbuffer,fmt,argptr);
-	va_end (argptr);
-	if ( len >= sizeof( bigbuffer ) ) {
-		Com_Error( ERR_FATAL, "Com_sprintf: overflowed bigbuffer" );
-	}
-	if (len >= size) {
-		Com_Printf ("Com_sprintf: overflow of %i in %i\n", len, size);
-#ifdef	_DEBUG
-		__asm {
-			int 3;
-		}
-#endif
-	}
-	QStr::NCpyZ(dest, bigbuffer, size );
-}
-
 
 /*
 =====================================================================
@@ -857,7 +777,7 @@ void Info_SetValueForKey( char *s, const char *key, const char *value ) {
 	if (!value || !QStr::Length(value))
 		return;
 
-	Com_sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
+	QStr::Sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
 
 	if (QStr::Length(newi) + QStr::Length(s) > MAX_INFO_STRING)
 	{
@@ -905,7 +825,7 @@ void Info_SetValueForKey_Big( char *s, const char *key, const char *value ) {
 	if (!value || !QStr::Length(value))
 		return;
 
-	Com_sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
+	QStr::Sprintf (newi, sizeof(newi), "\\%s\\%s", key, value);
 
 	if (QStr::Length(newi) + QStr::Length(s) > BIG_INFO_STRING)
 	{

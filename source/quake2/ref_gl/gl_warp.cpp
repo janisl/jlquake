@@ -639,9 +639,9 @@ void R_SetSky (char *name, float rotate, vec3_t axis)
 			gl_picmip->value++;
 
 		if ( qglColorTableEXT && gl_ext_palettedtexture->value )
-			Com_sprintf (pathname, sizeof(pathname), "env/%s%s.pcx", skyname, suf[i]);
+			QStr::Sprintf (pathname, sizeof(pathname), "env/%s%s.pcx", skyname, suf[i]);
 		else
-			Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
+			QStr::Sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
 
 		sky_images[i] = GL_FindImage (pathname, it_sky);
 		if (!sky_images[i])

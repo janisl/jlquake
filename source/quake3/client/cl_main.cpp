@@ -227,7 +227,7 @@ void CL_DemoFilename( int number, char *fileName ) {
 	int		a,b,c,d;
 
 	if ( number < 0 || number > 9999 ) {
-		Com_sprintf( fileName, MAX_OSPATH, "demo9999.tga" );
+		QStr::Sprintf( fileName, MAX_OSPATH, "demo9999.tga" );
 		return;
 	}
 
@@ -239,7 +239,7 @@ void CL_DemoFilename( int number, char *fileName ) {
 	number -= c*10;
 	d = number;
 
-	Com_sprintf( fileName, MAX_OSPATH, "demo%i%i%i%i"
+	QStr::Sprintf( fileName, MAX_OSPATH, "demo%i%i%i%i"
 		, a, b, c, d );
 }
 
@@ -288,14 +288,14 @@ void CL_Record_f( void ) {
 	if ( Cmd_Argc() == 2 ) {
 		s = Cmd_Argv(1);
 		QStr::NCpyZ( demoName, s, sizeof( demoName ) );
-		Com_sprintf (name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
+		QStr::Sprintf (name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	} else {
 		int		number;
 
 		// scan for a free demo name
 		for ( number = 0 ; number <= 9999 ; number++ ) {
 			CL_DemoFilename( number, demoName );
-			Com_sprintf (name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
+			QStr::Sprintf (name, sizeof(name), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 
 			len = FS_ReadFile( name, NULL );
 			if ( len <= 0 ) {
@@ -472,7 +472,7 @@ static void CL_WalkDemoExt(char *arg, char *name, int *demofile)
 	*demofile = 0;
 	while(demo_protocols[i])
 	{
-		Com_sprintf (name, MAX_OSPATH, "demos/%s.dm_%d", arg, demo_protocols[i]);
+		QStr::Sprintf (name, MAX_OSPATH, "demos/%s.dm_%d", arg, demo_protocols[i]);
 		FS_FOpenFileRead( name, demofile, qtrue );
 		if (*demofile)
 		{
@@ -526,7 +526,7 @@ void CL_PlayDemo_f( void ) {
 		}
 		if (demo_protocols[i])
 		{
-			Com_sprintf (name, sizeof(name), "demos/%s", arg);
+			QStr::Sprintf (name, sizeof(name), "demos/%s", arg);
 			FS_FOpenFileRead( name, &clc.demofile, qtrue );
 		} else {
 			Com_Printf("Protocol %d not supported for demos\n", protocol);
@@ -835,7 +835,7 @@ void CL_RequestMotd( void ) {
   // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=382
   // NOTE: the Com_Milliseconds xoring only affects the lower 16-bit word,
   //   but I decided it was enough randomization
-	Com_sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", ((rand() << 16) ^ rand()) ^ Com_Milliseconds());
+	QStr::Sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", ((rand() << 16) ^ rand()) ^ Com_Milliseconds());
 
 	Info_SetValueForKey( info, "challenge", cls.updateChallenge );
 	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string );
@@ -1157,7 +1157,7 @@ void CL_SendPureChecksums( void ) {
 
 	// "cp"
 	// "Yf"
-	Com_sprintf(cMsg, sizeof(cMsg), "Yf ");
+	QStr::Sprintf(cMsg, sizeof(cMsg), "Yf ");
 	QStr::Cat(cMsg, sizeof(cMsg), va("%d ", cl.serverId) );
 	QStr::Cat(cMsg, sizeof(cMsg), pChecksums);
 	for (i = 0; i < 2; i++) {
@@ -1382,7 +1382,7 @@ void CL_BeginDownload( const char *localName, const char *remoteName ) {
 				"****************************\n", localName, remoteName);
 
 	QStr::NCpyZ ( clc.downloadName, localName, sizeof(clc.downloadName) );
-	Com_sprintf( clc.downloadTempName, sizeof(clc.downloadTempName), "%s.tmp", localName );
+	QStr::Sprintf( clc.downloadTempName, sizeof(clc.downloadTempName), "%s.tmp", localName );
 
 	// Set so UI gets access to it
 	Cvar_Set( "cl_downloadName", remoteName );
@@ -2737,7 +2737,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 	s = msg->ReadStringLine();
 
 	len = 0;
-	Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "%s", s);
+	QStr::Sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "%s", s);
 
 	if (serverStatus->print) {
 		Com_Printf("Server settings:\n");
@@ -2768,7 +2768,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 	}
 
 	len = QStr::Length(serverStatus->string);
-	Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\");
+	QStr::Sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\");
 
 	if (serverStatus->print) {
 		Com_Printf("\nPlayers:\n");
@@ -2777,7 +2777,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 	for (i = 0, s = msg->ReadStringLine(); *s; s = msg->ReadStringLine(), i++) {
 
 		len = QStr::Length(serverStatus->string);
-		Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\%s", s);
+		QStr::Sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\%s", s);
 
 		if (serverStatus->print) {
 			score = ping = 0;
@@ -2793,7 +2793,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 		}
 	}
 	len = QStr::Length(serverStatus->string);
-	Com_sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\");
+	QStr::Sprintf(&serverStatus->string[len], sizeof(serverStatus->string)-len, "\\");
 
 	serverStatus->time = Com_Milliseconds();
 	serverStatus->address = from;

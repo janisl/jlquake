@@ -356,7 +356,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
     return;
   }
 
-	Com_sprintf(name, sizeof(name), "fonts/fontImage_%i.dat",pointSize);
+	QStr::Sprintf(name, sizeof(name), "fonts/fontImage_%i.dat",pointSize);
 	for (i = 0; i < registeredFontCount; i++) {
 		if (QStr::ICmp(name, registeredFont[i].name) == 0) {
 			Com_Memcpy(font, &registeredFont[i], sizeof(fontInfo_t));
@@ -480,12 +480,12 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
         imageBuff[left++] = ((float)out[k] * max);
       }
 
-			Com_sprintf (name, sizeof(name), "fonts/fontImage_%i_%i.tga", imageNumber++, pointSize);
+			QStr::Sprintf (name, sizeof(name), "fonts/fontImage_%i_%i.tga", imageNumber++, pointSize);
 			if (r_saveFontData->integer) { 
 			  WriteTGA(name, imageBuff, 256, 256);
 			}
 
-    	//Com_sprintf (name, sizeof(name), "fonts/fontImage_%i_%i", imageNumber++, pointSize);
+    	//QStr::Sprintf (name, sizeof(name), "fonts/fontImage_%i_%i", imageNumber++, pointSize);
       image = R_CreateImage(name, imageBuff, 256, 256, qfalse, qfalse, GL_CLAMP);
       h = RE_RegisterShaderFromImage(name, LIGHTMAP_2D, image, qfalse);
       for (j = lastStart; j < i; j++) {
