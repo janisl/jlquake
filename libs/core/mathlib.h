@@ -171,3 +171,53 @@ void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
 float AngleMod(float a);
 
 void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
+
+// plane types are used to speed some tests
+// 0-2 are axial planes
+#define PLANE_X			0
+#define PLANE_Y			1
+#define PLANE_Z			2
+#define PLANE_NON_AXIAL	3
+
+// 3-5 are non-axial planes snapped to the nearest
+#define PLANE_ANYX		3
+#define PLANE_ANYY		4
+#define PLANE_ANYZ		5
+
+// plane_t structure
+// !!! if this is changed, it must be changed in asm code too !!!
+struct cplane_t
+{
+	vec3_t	normal;
+	float	dist;
+	byte	type;			// for fast side tests: 0,1,2 = axial, 3 = nonaxial
+	byte	signbits;		// signx + (signy<<1) + (signz<<2), used as lookup during collision
+	byte	pad[2];
+};
+
+/*
+=================
+PlaneTypeForNormal
+=================
+*/
+
+#define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL) ) )
+
+void SetPlaneSignbits(cplane_t* out);
+extern "C" int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, cplane_t *plane);
+
+#define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
+	(((p)->type < 3)?						\
+	(										\
+		((p)->dist <= (emins)[(p)->type])?	\
+			1								\
+		:									\
+		(									\
+			((p)->dist >= (emaxs)[(p)->type])?\
+				2							\
+			:								\
+				3							\
+		)									\
+	)										\
+	:										\
+		BoxOnPlaneSide( (emins), (emaxs), (p)))

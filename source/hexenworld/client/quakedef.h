@@ -15,7 +15,6 @@
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"
-#include "mathlib.h"
 #include "wad.h"
 #include "draw.h"
 #include "cvar.h"

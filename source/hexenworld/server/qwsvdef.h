@@ -14,7 +14,6 @@
 #include "bspfile.h"
 #include "sys.h"
 #include "zone.h"
-#include "mathlib.h"
 
 #include "cvar.h"
 #include "net.h"

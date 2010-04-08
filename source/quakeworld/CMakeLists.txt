@@ -34,7 +34,6 @@ set(QWSV_OBJS
 	client/common.cpp
 	client/crc.cpp
 	client/cvar.cpp
-	client/mathlib.cpp
 	client/md4.cpp
 	client/zone.cpp
 	client/pmove.cpp
@@ -67,7 +66,6 @@ set(GLQWCL_OBJS
 	client/crc.cpp
 	client/cvar.cpp
 	client/keys.cpp
-	client/mathlib.cpp
 	client/md4.cpp
 	client/menu.cpp
 	client/net_chan.cpp
@@ -101,7 +99,6 @@ set(GLQWCL_OBJS
 )
 
 set(QWCL_ASM_FILES
-	client/math.s
 	client/snd_mixa.s
 	client/sys_dosa.s
 )

@@ -34,7 +34,6 @@ set(HWSV_FILES
 	client/common.cpp
 	client/crc.cpp
 	client/cvar.cpp
-	client/mathlib.cpp
 	client/strings.cpp
 	client/zone.cpp
 	client/pmove.cpp
@@ -68,7 +67,6 @@ set(HWCL_FILES
 	client/crc.cpp
 	client/cvar.cpp
 	client/keys.cpp
-	client/mathlib.cpp
 	client/menu.cpp
 	client/midi.cpp
 	client/net_chan.cpp
@@ -103,7 +101,6 @@ set(HWCL_FILES
 )
 
 set(HWCL_ASM_FILES
-	client/math.s
 	client/snd_mixa.s
 	client/sys_dosa.s
 )

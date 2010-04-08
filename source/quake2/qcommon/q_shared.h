@@ -81,8 +81,6 @@ MATHLIB
 ==============================================================
 */
 
-struct cplane_s;
-
 #if !defined C_ONLY && !defined __linux__ && !defined __sgi
 extern long Q_ftol( float f );
 #else
@@ -92,24 +90,7 @@ extern long Q_ftol( float f );
 void ClearBounds (vec3_t mins, vec3_t maxs);
 void AddPointToBounds (vec3_t v, vec3_t mins, vec3_t maxs);
 
-int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
 float LerpAngle (float a1, float a2, float frac);
-
-#define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
-	(((p)->type < 3)?						\
-	(										\
-		((p)->dist <= (emins)[(p)->type])?	\
-			1								\
-		:									\
-		(									\
-			((p)->dist >= (emaxs)[(p)->type])?\
-				2							\
-			:								\
-				3							\
-		)									\
-	)										\
-	:										\
-		BoxOnPlaneSide( (emins), (emaxs), (p)))
 
 void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
 
@@ -287,27 +268,6 @@ COLLISION DETECTION
 #define	AREA_SOLID		1
 #define	AREA_TRIGGERS	2
 
-
-// plane_t structure
-// !!! if this is changed, it must be changed in asm code too !!!
-typedef struct cplane_s
-{
-	vec3_t	normal;
-	float	dist;
-	byte	type;			// for fast side tests
-	byte	signbits;		// signx + (signy<<1) + (signz<<1)
-	byte	pad[2];
-} cplane_t;
-
-// structure offset for asm code
-#define CPLANE_NORMAL_X			0
-#define CPLANE_NORMAL_Y			4
-#define CPLANE_NORMAL_Z			8
-#define CPLANE_DIST				12
-#define CPLANE_TYPE				16
-#define CPLANE_SIGNBITS			17
-#define CPLANE_PAD0				18
-#define CPLANE_PAD1				19
 
 typedef struct cmodel_s
 {

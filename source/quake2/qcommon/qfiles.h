@@ -303,16 +303,6 @@ typedef struct
 } dvertex_t;
 
 
-// 0-2 are axial planes
-#define	PLANE_X			0
-#define	PLANE_Y			1
-#define	PLANE_Z			2
-
-// 3-5 are non-axial planes snapped to the nearest
-#define	PLANE_ANYX		3
-#define	PLANE_ANYY		4
-#define	PLANE_ANYZ		5
-
 // planes (x&~1) and (x&~1)+1 are always opposites
 
 typedef struct

@@ -32,7 +32,6 @@ set(HEXEN2_FILES
 	host_cmd.cpp
 	keys.cpp
 	menu.cpp
-	mathlib.cpp
 	midi.cpp
 	net_dgrm.cpp
 	net_loop.cpp
@@ -62,7 +61,6 @@ set(HEXEN2_FILES
 )
 
 set(HEXEN2_ASM_FILES
-	math.s
 	worlda.s
 	snd_mixa.s
 	sys_dosa.s

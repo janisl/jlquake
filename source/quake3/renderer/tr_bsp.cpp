@@ -1489,12 +1489,12 @@ static	void R_LoadMarksurfaces (lump_t *l)
 R_LoadPlanes
 =================
 */
-static	void R_LoadPlanes( lump_t *l ) {
+static	void R_LoadPlanes( lump_t *l )
+{
 	int			i, j;
 	cplane_t	*out;
 	dplane_t 	*in;
 	int			count;
-	int			bits;
 	
 	in = (dplane_t*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -1505,18 +1505,16 @@ static	void R_LoadPlanes( lump_t *l ) {
 	s_worldData.planes = out;
 	s_worldData.numplanes = count;
 
-	for ( i=0 ; i<count ; i++, in++, out++) {
-		bits = 0;
-		for (j=0 ; j<3 ; j++) {
+	for ( i=0 ; i<count ; i++, in++, out++)
+	{
+		for (j=0 ; j<3 ; j++)
+		{
 			out->normal[j] = LittleFloat (in->normal[j]);
-			if (out->normal[j] < 0) {
-				bits |= 1<<j;
-			}
 		}
 
 		out->dist = LittleFloat (in->dist);
 		out->type = PlaneTypeForNormal( out->normal );
-		out->signbits = bits;
+		SetPlaneSignbits(out);
 	}
 }
 

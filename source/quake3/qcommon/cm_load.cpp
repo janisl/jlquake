@@ -23,24 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cm_local.h"
 
-#ifdef BSPC
-
-#include "../bspc/l_qfiles.h"
-
-void SetPlaneSignbits (cplane_t *out) {
-	int	bits, j;
-
-	// for fast box on planeside test
-	bits = 0;
-	for (j=0 ; j<3 ; j++) {
-		if (out->normal[j] < 0) {
-			bits |= 1<<j;
-		}
-	}
-	out->signbits = bits;
-}
-#endif //BSPC
-
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
 #define	BOX_BRUSHES		1
@@ -315,7 +297,6 @@ void CMod_LoadPlanes (lump_t *l)
 	cplane_t	*out;
 	dplane_t 	*in;
 	int			count;
-	int			bits;
 	
 	in = (dplane_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -331,17 +312,14 @@ void CMod_LoadPlanes (lump_t *l)
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
-		bits = 0;
 		for (j=0 ; j<3 ; j++)
 		{
 			out->normal[j] = LittleFloat (in->normal[j]);
-			if (out->normal[j] < 0)
-				bits |= 1<<j;
 		}
-
 		out->dist = LittleFloat (in->dist);
 		out->type = PlaneTypeForNormal( out->normal );
-		out->signbits = bits;
+
+		SetPlaneSignbits(out);
 	}
 }
 

@@ -188,7 +188,6 @@ void	VID_UnlockBuffer (void);
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"
-#include "mathlib.h"
 
 typedef struct
 {

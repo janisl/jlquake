@@ -169,7 +169,6 @@ void	VID_UnlockBuffer (void);
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"
-#include "mathlib.h"
 
 //#define BASE_ENT_ON		1
 //#define BASE_ENT_SENT	2

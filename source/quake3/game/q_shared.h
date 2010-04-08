@@ -376,8 +376,6 @@ extern vec4_t	g_color_table[8];
 #define DEG2RAD( a ) ( ( (a) * M_PI ) / 180.0F )
 #define RAD2DEG( a ) ( ( (a) * 180.0f ) / M_PI )
 
-struct cplane_s;
-
 extern	vec3_t	axisDefault[3];
 
 signed char ClampChar( int i );
@@ -411,9 +409,6 @@ void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
 
 void AxisClear( vec3_t axis[3] );
 void AxisCopy( vec3_t in[3], vec3_t out[3] );
-
-void SetPlaneSignbits( struct cplane_s *out );
-extern "C" int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
 
 float	LerpAngle (float from, float to, float frac);
 float	AngleSubtract( float a1, float a2 );
@@ -605,33 +600,6 @@ COLLISION DETECTION
 */
 
 #include "surfaceflags.h"			// shared with the q3map utility
-
-// plane types are used to speed some tests
-// 0-2 are axial planes
-#define	PLANE_X			0
-#define	PLANE_Y			1
-#define	PLANE_Z			2
-#define	PLANE_NON_AXIAL	3
-
-
-/*
-=================
-PlaneTypeForNormal
-=================
-*/
-
-#define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL) ) )
-
-// plane_t structure
-// !!! if this is changed, it must be changed in asm code too !!!
-typedef struct cplane_s {
-	vec3_t	normal;
-	float	dist;
-	byte	type;			// for fast side tests: 0,1,2 = axial, 3 = nonaxial
-	byte	signbits;		// signx + (signy<<1) + (signz<<2), used as lookup during collision
-	byte	pad[2];
-} cplane_t;
-
 
 // a trace is returned when a box is swept through the world
 typedef struct {

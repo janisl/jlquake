@@ -90,7 +90,6 @@ set(QUAKE3_FILES
 
 set(QUAKE3_ASM_FILES
 	unix/snd_mixa.s
-	unix/matha.s
 )
 
 foreach(SRC ${QUAKE3_ASM_FILES})

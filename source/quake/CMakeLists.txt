@@ -31,7 +31,6 @@ set(QUAKE_FILES
 	host_cmd.cpp
 	keys.cpp
 	menu.cpp
-	mathlib.cpp
 	net_dgrm.cpp
 	net_loop.cpp
 	net_main.cpp
@@ -60,7 +59,6 @@ set(QUAKE_FILES
 )
 
 set(QUAKE_ASM_FILES
-	math.s
 	worlda.s
 	snd_mixa.s
 	sys_dosa.s

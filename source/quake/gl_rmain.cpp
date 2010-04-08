@@ -753,22 +753,6 @@ void R_PolyBlend (void)
 }
 
 
-int SignbitsForPlane (cplane_t *out)
-{
-	int	bits, j;
-
-	// for fast box on planeside test
-
-	bits = 0;
-	for (j=0 ; j<3 ; j++)
-	{
-		if (out->normal[j] < 0)
-			bits |= 1<<j;
-	}
-	return bits;
-}
-
-
 void R_SetFrustum (void)
 {
 	int		i;
@@ -799,7 +783,7 @@ void R_SetFrustum (void)
 	{
 		frustum[i].type = PLANE_ANYZ;
 		frustum[i].dist = DotProduct (r_origin, frustum[i].normal);
-		frustum[i].signbits = SignbitsForPlane (&frustum[i]);
+		SetPlaneSignbits(&frustum[i]);
 	}
 }
 
