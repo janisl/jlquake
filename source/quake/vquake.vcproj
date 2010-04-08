@@ -365,10 +365,6 @@
 				>
 			</File>
 			<File
-				RelativePath="net_wipx.cpp"
-				>
-			</File>
-			<File
 				RelativePath="pr_cmds.cpp"
 				>
 			</File>
@@ -599,10 +595,6 @@
 			</File>
 			<File
 				RelativePath="net_wins.h"
-				>
-			</File>
-			<File
-				RelativePath="net_wipx.h"
 				>
 			</File>
 			<File

@@ -403,10 +403,6 @@
 				>
 			</File>
 			<File
-				RelativePath="net_wipx.cpp"
-				>
-			</File>
-			<File
 				RelativePath="pr_cmds.cpp"
 				>
 			</File>
