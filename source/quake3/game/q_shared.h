@@ -373,14 +373,6 @@ extern vec4_t	g_color_table[8];
 #define	MAKERGB( v, r, g, b ) v[0]=r;v[1]=g;v[2]=b
 #define	MAKERGBA( v, r, g, b, a ) v[0]=r;v[1]=g;v[2]=b;v[3]=a
 
-#define DEG2RAD( a ) ( ( (a) * M_PI ) / 180.0F )
-#define RAD2DEG( a ) ( ( (a) * 180.0f ) / M_PI )
-
-extern	vec3_t	axisDefault[3];
-
-signed char ClampChar( int i );
-signed short ClampShort( int i );
-
 // this isn't a real cheap function to call!
 int DirToByte( vec3_t dir );
 void ByteToDir( int b, vec3_t dir );
@@ -390,13 +382,6 @@ unsigned ColorBytes4 (float r, float g, float b, float a);
 
 float NormalizeColor( const vec3_t in, vec3_t out );
 
-float RadiusFromBounds( const vec3_t mins, const vec3_t maxs );
-void ClearBounds( vec3_t mins, vec3_t maxs );
-void AddPointToBounds( const vec3_t v, vec3_t mins, vec3_t maxs );
-
-void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
-void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
-
 int		Q_rand( int *seed );
 float	Q_random( int *seed );
 float	Q_crandom( int *seed );
@@ -404,26 +389,6 @@ float	Q_crandom( int *seed );
 #define random()	((rand () & 0x7fff) / ((float)0x7fff))
 #define crandom()	(2.0 * (random() - 0.5))
 
-void vectoangles( const vec3_t value1, vec3_t angles);
-void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
-
-void AxisClear( vec3_t axis[3] );
-void AxisCopy( vec3_t in[3], vec3_t out[3] );
-
-float	LerpAngle (float from, float to, float frac);
-float	AngleSubtract( float a1, float a2 );
-void	AnglesSubtract( vec3_t v1, vec3_t v2, vec3_t v3 );
-
-float AngleNormalize360 ( float angle );
-float AngleNormalize180 ( float angle );
-float AngleDelta ( float angle1, float angle2 );
-
-qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
-void RotateAroundDirection( vec3_t axis[3], float yaw );
-void MakeNormalVectors( const vec3_t forward, vec3_t right, vec3_t up );
-// perpendicular vector could be replaced by this
-
-//int	PlaneTypeForNormal (vec3_t normal);
 
 
 //=============================================

@@ -23,8 +23,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define DEG2RAD( a ) ( a * M_PI ) / 180.0F
-
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -37,7 +35,10 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+//	Should be const
 vec3_t				vec3_origin = {0, 0, 0};
+
+const vec3_t		axisDefault[3] = { { 1, 0, 0 }, { 0, 1, 0 }, { 0, 0, 1 } };
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -129,6 +130,63 @@ float Q_acos(float c)
 		return (float)M_PI;
 	}
 	return angle;
+}
+
+//==========================================================================
+//
+//	Q_ftol
+//
+//==========================================================================
+
+#if id386 && defined _MSC_VER
+#pragma warning (disable:4035)
+__declspec(naked) long Q_ftol(float f)
+{
+	static int tmp;
+	__asm fld dword ptr [esp+4]
+	__asm fistp tmp
+	__asm mov eax, tmp
+	__asm ret
+}
+#pragma warning (default:4035)
+#endif
+
+//==========================================================================
+//
+//	ClampChar
+//
+//==========================================================================
+
+qint8 ClampChar(int i)
+{
+	if (i < MIN_QINT8)
+	{
+		return MIN_QINT8;
+	}
+	if (i > MAX_QINT8)
+	{
+		return MAX_QINT8;
+	}
+	return i;
+}
+
+//==========================================================================
+//
+//	ClampShort
+//
+//==========================================================================
+
+qint16 ClampShort(int i)
+{
+	if (i < MIN_QINT16)
+	{
+		return MIN_QINT16;
+	}
+	if (i > MAX_QINT16)
+	{
+		return MAX_QINT16;
+	}
+	return i;
 }
 
 //==========================================================================
@@ -401,11 +459,106 @@ void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point,
 
 //==========================================================================
 //
+//	VectorRotate
+//
+//==========================================================================
+
+void VectorRotate(const vec3_t in, const vec3_t matrix[3], vec3_t out)
+{
+	out[0] = DotProduct(in, matrix[0]);
+	out[1] = DotProduct(in, matrix[1]);
+	out[2] = DotProduct(in, matrix[2]);
+}
+
+//==========================================================================
+//
+//	Vector4Scale
+//
+//==========================================================================
+
+void Vector4Scale(const vec4_t in, vec_t scale, vec4_t out)
+{
+	out[0] = in[0]*scale;
+	out[1] = in[1]*scale;
+	out[2] = in[2]*scale;
+	out[3] = in[3]*scale;
+}
+
+//==========================================================================
+//
+//	ClearBounds
+//
+//==========================================================================
+
+void ClearBounds(vec3_t mins, vec3_t maxs)
+{
+	mins[0] = mins[1] = mins[2] = 99999;
+	maxs[0] = maxs[1] = maxs[2] = -99999;
+}
+
+//==========================================================================
+//
+//	AddPointToBounds
+//
+//==========================================================================
+
+void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs)
+{
+	if (v[0] < mins[0])
+	{
+		mins[0] = v[0];
+	}
+	if (v[0] > maxs[0])
+	{
+		maxs[0] = v[0];
+	}
+
+	if (v[1] < mins[1])
+	{
+		mins[1] = v[1];
+	}
+	if (v[1] > maxs[1])
+	{
+		maxs[1] = v[1];
+	}
+
+	if (v[2] < mins[2])
+	{
+		mins[2] = v[2];
+	}
+	if (v[2] > maxs[2])
+	{
+		maxs[2] = v[2];
+	}
+}
+
+//==========================================================================
+//
+//	RadiusFromBounds
+//
+//==========================================================================
+
+float RadiusFromBounds(const vec3_t mins, const vec3_t maxs)
+{
+	vec3_t	corner;
+
+	for (int i = 0; i < 3; i++)
+	{
+		float a = fabs(mins[i]);
+		float b = fabs(maxs[i]);
+		corner[i] = a > b ? a : b;
+	}
+
+	return VectorLength(corner);
+}
+
+//==========================================================================
+//
 //	MatrixMultiply
 //
 //==========================================================================
 
-void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3])
+void MatrixMultiply(const float in1[3][3], const float in2[3][3], float out[3][3])
 {
 	out[0][0] = in1[0][0] * in2[0][0] + in1[0][1] * in2[1][0] +
 				in1[0][2] * in2[2][0];
@@ -429,14 +582,104 @@ void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3])
 
 //==========================================================================
 //
-//	AngleMod
+//	AngleNormalize360
+//
+//	returns angle normalized to the range [0 <= angle < 360]
 //
 //==========================================================================
 
-float AngleMod(float a)
+float AngleNormalize360(float angle)
 {
-	a = (360.0/65536) * ((int)(a*(65536/360.0)) & 65535);
+	return (360.0 / 65536) * ((int)(angle * (65536 / 360.0)) & 65535);
+}
+
+//==========================================================================
+//
+//	AngleNormalize180
+//
+//	returns angle normalized to the range [-180 < angle <= 180]
+//
+//==========================================================================
+
+float AngleNormalize180(float angle)
+{
+	angle = AngleNormalize360(angle);
+	if (angle > 180.0)
+	{
+		angle -= 360.0;
+	}
+	return angle;
+}
+
+//==========================================================================
+//
+//	LerpAngle
+//
+//==========================================================================
+
+float LerpAngle(float from, float to, float frac)
+{
+	float	a;
+
+	if (to - from > 180)
+	{
+		to -= 360;
+	}
+	if (to - from < -180)
+	{
+		to += 360;
+	}
+	a = from + frac * (to - from);
+
 	return a;
+}
+
+//==========================================================================
+//
+//	AngleSubtract
+//
+//	Always returns a value from -180 to 180
+//
+//==========================================================================
+
+float AngleSubtract(float a1, float a2)
+{
+	float a = a1 - a2;
+	while (a > 180)
+	{
+		a -= 360;
+	}
+	while (a < -180)
+	{
+		a += 360;
+	}
+	return a;
+}
+
+//==========================================================================
+//
+//	AnglesSubtract
+//
+//==========================================================================
+
+void AnglesSubtract(const  vec3_t v1, const vec3_t v2, vec3_t v3)
+{
+	v3[0] = AngleSubtract(v1[0], v2[0]);
+	v3[1] = AngleSubtract(v1[1], v2[1]);
+	v3[2] = AngleSubtract(v1[2], v2[2]);
+}
+
+//==========================================================================
+//
+//	AngleDelta
+//
+//	returns the normalized delta from angle1 to angle2
+//
+//==========================================================================
+
+float AngleDelta(float angle1, float angle2)
+{
+	return AngleNormalize180(angle1 - angle2);
 }
 
 //==========================================================================
@@ -507,9 +750,9 @@ void SetPlaneSignbits(cplane_t* out)
 //
 //==========================================================================
 
-#if id386 && defined _MSC_VER && !defined __VECTORC
+#if id386 && defined _MSC_VER
 #pragma warning( disable: 4035 )
-__declspec( naked ) int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, cplane_t *p)
+__declspec( naked ) int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t *p)
 {
 	static int bops_initialized;
 	static int Ljmptab[8];
@@ -740,7 +983,7 @@ Lerror:
 }
 #pragma warning( default: 4035 )
 #elif !id386
-int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, cplane_t *p)
+int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t* p)
 {
 	float	dist1, dist2;
 	int		sides;
@@ -804,3 +1047,179 @@ int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, cplane_t *p)
 	return sides;
 }
 #endif
+
+//==========================================================================
+//
+//	PlaneFromPoints
+//
+//	Returns false if the triangle is degenrate.
+//	The normal will point out of the clock for clockwise ordered points
+//
+//==========================================================================
+
+bool PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c)
+{
+	vec3_t	d1, d2;
+
+	VectorSubtract(b, a, d1);
+	VectorSubtract(c, a, d2);
+	CrossProduct(d2, d1, plane);
+	if (VectorNormalize(plane) == 0)
+	{
+		return false;
+	}
+
+	plane[3] = DotProduct(a, plane);
+	return true;
+}
+
+//==========================================================================
+//
+//	Q_rsqrt
+//
+//==========================================================================
+
+void VecToAngles(const vec3_t value1, vec3_t angles)
+{
+	float	forward;
+	float	yaw, pitch;
+	
+	if (value1[1] == 0 && value1[0] == 0)
+	{
+		yaw = 0;
+		if (value1[2] > 0)
+		{
+			pitch = 90;
+		}
+		else
+		{
+			pitch = 270;
+		}
+	}
+	else
+	{
+		if (value1[0])
+		{
+			yaw = (atan2(value1[1], value1[0]) * 180 / M_PI);
+		}
+		else if (value1[1] > 0)
+		{
+			yaw = 90;
+		}
+		else
+		{
+			yaw = 270;
+		}
+		if (yaw < 0)
+		{
+			yaw += 360;
+		}
+
+		forward = sqrt(value1[0] * value1[0] + value1[1] * value1[1]);
+		pitch = (atan2(value1[2], forward) * 180 / M_PI);
+		if (pitch < 0)
+		{
+			pitch += 360;
+		}
+	}
+
+	angles[PITCH] = -pitch;
+	angles[YAW] = yaw;
+	angles[ROLL] = 0;
+}
+
+//==========================================================================
+//
+//	AnglesToAxis
+//
+//==========================================================================
+
+void AnglesToAxis(const vec3_t angles, vec3_t axis[3])
+{
+	vec3_t	right;
+
+	// angle vectors returns "right" instead of "y axis"
+	AngleVectors(angles, axis[0], right, axis[2]);
+	VectorSubtract(vec3_origin, right, axis[1]);
+}
+
+//==========================================================================
+//
+//	AxisClear
+//
+//==========================================================================
+
+void AxisClear(vec3_t axis[3])
+{
+	axis[0][0] = 1;
+	axis[0][1] = 0;
+	axis[0][2] = 0;
+	axis[1][0] = 0;
+	axis[1][1] = 1;
+	axis[1][2] = 0;
+	axis[2][0] = 0;
+	axis[2][1] = 0;
+	axis[2][2] = 1;
+}
+
+//==========================================================================
+//
+//	AxisCopy
+//
+//==========================================================================
+
+void AxisCopy(const  vec3_t in[3], vec3_t out[3])
+{
+	VectorCopy(in[0], out[0]);
+	VectorCopy(in[1], out[1]);
+	VectorCopy(in[2], out[2]);
+}
+
+//==========================================================================
+//
+//	RotateAroundDirection
+//
+//==========================================================================
+
+void RotateAroundDirection(vec3_t axis[3], float yaw)
+{
+	// create an arbitrary axis[1] 
+	PerpendicularVector(axis[1], axis[0]);
+
+	// rotate it around axis[0] by yaw
+	if (yaw)
+	{
+		vec3_t	temp;
+
+		VectorCopy(axis[1], temp);
+		RotatePointAroundVector(axis[1], axis[0], temp, yaw);
+	}
+
+	// cross to get axis[2]
+	CrossProduct(axis[0], axis[1], axis[2]);
+}
+
+//==========================================================================
+//
+//	MakeNormalVectors
+//
+//	Given a normalized forward vector, create two
+//	other perpendicular vectors
+//
+//==========================================================================
+
+void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up)
+{
+	float		d;
+
+	// this rotate and negate guarantees a vector
+	// not colinear with the original
+	right[1] = -forward[0];
+	right[2] = forward[1];
+	right[0] = forward[2];
+
+	d = DotProduct(right, forward);
+	VectorMA(right, -d, forward, right);
+	VectorNormalize(right);
+	CrossProduct(right, forward, up);
+}

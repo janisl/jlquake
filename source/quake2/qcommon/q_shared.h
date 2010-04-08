@@ -73,28 +73,6 @@ MULTICAST_PVS_R
 } multicast_t;
 
 
-/*
-==============================================================
-
-MATHLIB
-
-==============================================================
-*/
-
-#if !defined C_ONLY && !defined __linux__ && !defined __sgi
-extern long Q_ftol( float f );
-#else
-#define Q_ftol( f ) ( long ) (f)
-#endif
-
-void ClearBounds (vec3_t mins, vec3_t maxs);
-void AddPointToBounds (vec3_t v, vec3_t mins, vec3_t maxs);
-
-float LerpAngle (float a1, float a2, float frac);
-
-void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
-
-
 //=============================================
 
 char *COM_SkipPath (char *pathname);

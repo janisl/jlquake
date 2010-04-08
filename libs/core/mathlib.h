@@ -47,8 +47,16 @@ float Q_rsqrt(float f);		// reciprocal square root
 #endif
 int Q_log2(int val);
 float Q_acos(float c);
+#if id386 && defined _MSC_VER
+extern long Q_ftol(float f);
+#else
+#define Q_ftol(f)		(long)(f)
+#endif
 
-#define SQRTFAST( x ) ( (x) * Q_rsqrt( x ) )
+#define SQRTFAST(x)		((x) * Q_rsqrt(x))
+
+qint8 ClampChar(int i);
+qint16 ClampShort(int i);
 
 // angle indexes
 #define	PITCH				0		// up / down
@@ -69,7 +77,7 @@ typedef	int	fixed16_t;
 #define M_PI		3.14159265358979323846	// matches value in gcc v2 math.h
 #endif
 
-extern vec3_t vec3_origin;
+extern vec3_t		vec3_origin;
 
 #define nanmask					(255<<23)
 
@@ -90,10 +98,10 @@ extern vec3_t vec3_origin;
 #define	SnapVector(v)			{v[0]=((int)(v[0]));v[1]=((int)(v[1]));v[2]=((int)(v[2]));}
 
 // just in case you do't want to use the macros
-vec_t _DotProduct(vec3_t v1, vec3_t v2);
-void _VectorSubtract(vec3_t veca, vec3_t vecb, vec3_t out);
-void _VectorAdd(vec3_t veca, vec3_t vecb, vec3_t out);
-void _VectorCopy(vec3_t in, vec3_t out);
+vec_t _DotProduct(const vec3_t v1, const vec3_t v2);
+void _VectorSubtract(const vec3_t veca, const vec3_t vecb, vec3_t out);
+void _VectorAdd(const vec3_t veca, const vec3_t vecb, vec3_t out);
+void _VectorCopy(const vec3_t in, vec3_t out);
 void _VectorScale(const vec3_t in, float scale, vec3_t out);
 void _VectorMA(const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc);
 
@@ -159,16 +167,32 @@ inline void CrossProduct(const vec3_t v1, const vec3_t v2, vec3_t cross)
 	cross[2] = v1[0] * v2[1] - v1[1] * v2[0];
 }
 
-vec_t VectorNormalize (vec3_t v);		// returns vector length
-vec_t VectorNormalize2( const vec3_t v, vec3_t out );
+vec_t VectorNormalize(vec3_t v);		// returns vector length
+vec_t VectorNormalize2(const vec3_t v, vec3_t out);
 
 void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal);
 void PerpendicularVector(vec3_t dst, const vec3_t src);
 void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
+void VectorRotate(const vec3_t in, const vec3_t matrix[3], vec3_t out);
 
-void MatrixMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
+void Vector4Scale(const vec4_t in, vec_t scale, vec4_t out);
 
-float AngleMod(float a);
+void ClearBounds(vec3_t mins, vec3_t maxs);
+void AddPointToBounds(const vec3_t v, vec3_t mins, vec3_t maxs);
+float RadiusFromBounds(const vec3_t mins, const vec3_t maxs);
+
+void MatrixMultiply(const float in1[3][3], const float in2[3][3], float out[3][3]);
+
+#define DEG2RAD(a)		(((a) * M_PI) / 180.0f)
+#define RAD2DEG(a)		(((a) * 180.0f) / M_PI)
+
+#define AngleMod(a)		AngleNormalize360(a)
+float AngleNormalize360(float angle);
+float AngleNormalize180(float angle);
+float LerpAngle(float a1, float a2, float frac);
+float AngleSubtract(float a1, float a2);
+void AnglesSubtract(const vec3_t v1, const vec3_t v2, vec3_t v3);
+float AngleDelta(float angle1, float angle2);
 
 void AngleVectors(const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up);
 
@@ -204,7 +228,8 @@ PlaneTypeForNormal
 #define PlaneTypeForNormal(x) (x[0] == 1.0 ? PLANE_X : (x[1] == 1.0 ? PLANE_Y : (x[2] == 1.0 ? PLANE_Z : PLANE_NON_AXIAL) ) )
 
 void SetPlaneSignbits(cplane_t* out);
-extern "C" int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, cplane_t *plane);
+extern "C" int BoxOnPlaneSide(const vec3_t emins, const vec3_t emaxs, const cplane_t *plane);
+bool PlaneFromPoints(vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c);
 
 #define BOX_ON_PLANE_SIDE(emins, emaxs, p)	\
 	(((p)->type < 3)?						\
@@ -221,3 +246,15 @@ extern "C" int BoxOnPlaneSide(vec3_t emins, vec3_t emaxs, cplane_t *plane);
 	)										\
 	:										\
 		BoxOnPlaneSide( (emins), (emaxs), (p)))
+
+void VecToAngles(const vec3_t value1, vec3_t angles);
+void AnglesToAxis(const vec3_t angles, vec3_t axis[3]);
+
+void AxisClear(vec3_t axis[3]);
+void AxisCopy(const  vec3_t in[3], vec3_t out[3]);
+
+void RotateAroundDirection(vec3_t axis[3], float yaw);
+void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up);
+// perpendicular vector could be replaced by this
+
+extern const vec3_t		axisDefault[3];
