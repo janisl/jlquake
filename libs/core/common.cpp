@@ -279,43 +279,6 @@ skipA:
 	}
 }
 
-qboolean Com_Memcmp (const void *src0, const void *src1, const unsigned int count)
-{
-	unsigned int i;
-	// MMX version anyone?
-
-	if (count >= 16)
-	{
-		unsigned int *dw = (unsigned int*)(src0);
-		unsigned int *sw = (unsigned int*)(src1);
-
-		unsigned int nm2 = count/16;
-		for (i = 0; i < nm2; i+=4)
-		{
-			unsigned int tmp = (dw[i+0]-sw[i+0])|(dw[i+1]-sw[i+1])|
-						  (dw[i+2]-sw[i+2])|(dw[i+3]-sw[i+3]);
-			if (tmp)
-            {
-				return false;
-            }
-		}
-	}
-	if (count & 15)
-	{
-		byte *d = (byte*)src0;
-		byte *s = (byte*)src1;
-		for (i = count & 0xfffffff0; i < count; i++)
-        {
-		    if (d[i]!=s[i])
-            {
-			    return false;
-            }
-        }
-	}
-
-	return true;
-}
-
 void Com_Prefetch (const void *s, const unsigned int bytes, e_prefetch type)
 {
 	// write buffer prefetching is performed only if
