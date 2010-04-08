@@ -274,7 +274,7 @@ void SV_FlightMove (void)
 	for (i=0 ; i<3 ; i++)
 		wishvel[i] = forward[i]*cmd.forwardmove + right[i]*cmd.sidemove + up[i]* cmd.upmove;
 
-	wishspeed = Length(wishvel);
+	wishspeed = VectorLength(wishvel);
 	if (wishspeed > sv_maxspeed.value)
 	{
 		VectorScale (wishvel, sv_maxspeed.value/wishspeed, wishvel);
@@ -284,7 +284,7 @@ void SV_FlightMove (void)
 //
 // water friction
 //
-	speed = Length (velocity);
+	speed = VectorLength(velocity);
 	if (speed)
 	{
 		newspeed = speed - host_frametime * speed * sv_friction.value;
@@ -338,7 +338,7 @@ void SV_WaterMove (void)
 	else
 		wishvel[2] += cmd.upmove;
 
-	wishspeed = Length(wishvel);
+	wishspeed = VectorLength(wishvel);
 	if (wishspeed > sv_maxspeed.value)
 	{
 		VectorScale (wishvel, sv_maxspeed.value/wishspeed, wishvel);
@@ -366,7 +366,7 @@ void SV_WaterMove (void)
 //
 // water friction
 //
-	speed = Length (velocity);
+	speed = VectorLength(velocity);
 	if (speed)
 	{
 		newspeed = speed - host_frametime * speed * sv_friction.value;

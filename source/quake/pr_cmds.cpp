@@ -869,7 +869,7 @@ void PF_findradius (void)
 			continue;
 		for (j=0 ; j<3 ; j++)
 			eorg[j] = org[j] - (ent->v.origin[j] + (ent->v.mins[j] + ent->v.maxs[j])*0.5);			
-		if (Length(eorg) > rad)
+		if (VectorLength(eorg) > rad)
 			continue;
 			
 		ent->v.chain = EDICT_TO_PROG(chain);
@@ -1327,7 +1327,7 @@ void PF_changeyaw (void)
 	float		ideal, current, move, speed;
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
-	current = anglemod( ent->v.angles[1] );
+	current = AngleMod( ent->v.angles[1] );
 	ideal = ent->v.ideal_yaw;
 	speed = ent->v.yaw_speed;
 	
@@ -1355,7 +1355,7 @@ void PF_changeyaw (void)
 			move = -speed;
 	}
 	
-	ent->v.angles[1] = anglemod (current + move);
+	ent->v.angles[1] = AngleMod(current + move);
 }
 
 /*

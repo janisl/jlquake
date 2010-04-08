@@ -66,15 +66,6 @@ void	VID_UnlockBuffer (void);
 
 #define MAX_NUM_ARGVS	50
 
-// up / down
-#define	PITCH	0
-
-// left / right
-#define	YAW		1
-
-// fall over
-#define	ROLL	2
-
 
 #define	MAX_QPATH		64			// max length of a quake game pathname
 #define	MAX_OSPATH		128			// max length of a filesystem pathname

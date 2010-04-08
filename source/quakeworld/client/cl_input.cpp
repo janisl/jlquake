@@ -242,7 +242,7 @@ void CL_AdjustAngles (void)
 	{
 		cl.viewangles[YAW] -= speed*cl_yawspeed.value*CL_KeyState (&in_right);
 		cl.viewangles[YAW] += speed*cl_yawspeed.value*CL_KeyState (&in_left);
-		cl.viewangles[YAW] = anglemod(cl.viewangles[YAW]);
+		cl.viewangles[YAW] = AngleMod(cl.viewangles[YAW]);
 	}
 	if (in_klook.state & 1)
 	{

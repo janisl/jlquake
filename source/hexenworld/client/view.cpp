@@ -65,7 +65,7 @@ float V_CalcRoll (vec3_t angles, vec3_t velocity)
 	AngleVectors (angles, forward, right, up);
 	side = DotProduct (velocity, right);
 	sign = side < 0 ? -1 : 1;
-	side = fastfabs(side);
+	side = Q_fabs(side);
 	
 	value = cl_rollangle.value;
 
@@ -178,7 +178,7 @@ void V_DriftPitch (void)
 // don't count small mouse motion
 	if (cl.nodrift)
 	{
-		if ( fastfabs(cl.frames[(cls.netchan.outgoing_sequence-1)&UPDATE_MASK].cmd.forwardmove) < (cl.v.hasted*cl_forwardspeed.value)-10 || lookspring.value == 0.0)
+		if ( Q_fabs(cl.frames[(cls.netchan.outgoing_sequence-1)&UPDATE_MASK].cmd.forwardmove) < (cl.v.hasted*cl_forwardspeed.value)-10 || lookspring.value == 0.0)
 			cl.driftmove = 0;
 		else
 			cl.driftmove += host_frametime;
@@ -716,7 +716,7 @@ void V_UpdatePalette (void)
 
 float angledelta (float a)
 {
-	a = anglemod(a);
+	a = AngleMod(a);
 	if (a > 180)
 		a -= 360;
 	return a;

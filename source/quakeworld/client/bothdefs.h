@@ -42,15 +42,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	MINIMUM_MEMORY	0x550000
 
-// up / down
-#define	PITCH	0
-
-// left / right
-#define	YAW		1
-
-// fall over
-#define	ROLL	2
-
 
 #define	MAX_SCOREBOARD		16		// max numbers of players
 

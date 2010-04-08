@@ -34,6 +34,7 @@
 #include "log.h"		//	General logging interface
 #include "array.h"		//	Dynamic array
 #include "str.h"		//	Strings
+#include "mathlib.h"
 #include "message.h"
 #include "huffman.h"
 #include "cmd.h"

@@ -635,8 +635,8 @@ void Mod_LoadTexinfo (lump_t *l)
 	{
 		for (j=0 ; j<8 ; j++)
 			out->vecs[0][j] = LittleFloat (in->vecs[0][j]);
-		len1 = Length (out->vecs[0]);
-		len2 = Length (out->vecs[1]);
+		len1 = VectorLength(out->vecs[0]);
+		len2 = VectorLength(out->vecs[1]);
 		len1 = (len1 + len2)/2;
 		if (len1 < 0.32)
 			out->mipadjust = 4;
@@ -1162,10 +1162,10 @@ float RadiusFromBounds (vec3_t mins, vec3_t maxs)
 
 	for (i=0 ; i<3 ; i++)
 	{
-		corner[i] = fastfabs(mins[i]) > fastfabs(maxs[i]) ? fastfabs(mins[i]) : fastfabs(maxs[i]);
+		corner[i] = Q_fabs(mins[i]) > Q_fabs(maxs[i]) ? Q_fabs(mins[i]) : Q_fabs(maxs[i]);
 	}
 
-	return Length (corner);
+	return VectorLength(corner);
 }
 
 /*

@@ -564,8 +564,8 @@ void Mod_LoadTexinfo (lump_t *l)
 	{
 		for (j=0 ; j<8 ; j++)
 			out->vecs[0][j] = LittleFloat (in->vecs[0][j]);
-		len1 = Length (in->vecs[0]);
-		len2 = Length (in->vecs[1]);
+		len1 = VectorLength(in->vecs[0]);
+		len2 = VectorLength(in->vecs[1]);
 		if (len1 + len2 < 0.001)
 			out->mipadjust = 1;
 		else

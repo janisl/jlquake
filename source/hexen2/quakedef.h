@@ -48,15 +48,6 @@ void	VID_UnlockBuffer (void);
 
 #define MAX_NUM_ARGVS	50
 
-// up / down
-#define	PITCH	0
-
-// left / right
-#define	YAW		1
-
-// fall over
-#define	ROLL	2
-
 
 // Timing macros
 #define HX_FRAME_TIME		0.05

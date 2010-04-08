@@ -303,7 +303,7 @@ void SV_Multicast (vec3_t origin, int to)
 		if (to == MULTICAST_PHS_R || to == MULTICAST_PHS) {
 			vec3_t delta;
 			VectorSubtract(origin, client->edict->v.origin, delta);
-			if (Length(delta) <= 1024)
+			if (VectorLength(delta) <= 1024)
 				goto inrange;
 		}
 

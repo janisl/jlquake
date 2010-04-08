@@ -639,7 +639,7 @@ void CL_RelinkEntities (void)
 		}
 	}
 	
-	//bobjrotate = anglemod(100*(cl.time+ent->origin[0]+ent->origin[1]));
+	//bobjrotate = AngleMod(100*(cl.time+ent->origin[0]+ent->origin[1]));
 	
 // start on the entity after the world
 	for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
@@ -696,7 +696,7 @@ void CL_RelinkEntities (void)
 // BG: Moved to r_alias.c / gl_rmain.c
 		//if(ent->model->flags&EF_ROTATE)
 		//{
-		//	ent->angles[1] = anglemod(ent->origin[0]+ent->origin[1]
+		//	ent->angles[1] = AngleMod(ent->origin[0]+ent->origin[1]
 		//		+(100*cl.time));
 		//}
 

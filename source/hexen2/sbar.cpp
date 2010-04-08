@@ -380,7 +380,7 @@ static qboolean SetChainPosition(float health, float maxHealth)
 		health = maxHealth;
 	}
 	chainTargetPosition = (health*195)/maxHealth;
-	if(fastfabs(ChainPosition-chainTargetPosition) < 0.1)
+	if(Q_fabs(ChainPosition-chainTargetPosition) < 0.1)
 	{
 		return false;
 	}

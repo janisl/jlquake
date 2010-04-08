@@ -175,7 +175,7 @@ static void R_RotateForEntity2(entity_t *e)
 	{
 		if (e->model->flags & EF_ROTATE)
 		{
-			glRotatef(anglemod((e->origin[0]+e->origin[1])*0.8
+			glRotatef(AngleMod((e->origin[0]+e->origin[1])*0.8
 				+(108*cl.time)), 0, 0, 1);
 		}
 		else
@@ -652,7 +652,7 @@ void R_DrawAliasModel (entity_t *e)
 			VectorSubtract (currententity->origin,
 							cl_dlights[lnum].origin,
 							dist);
-			add = cl_dlights[lnum].radius - Length(dist);
+			add = cl_dlights[lnum].radius - VectorLength(dist);
 
 			if (add > 0) {
 				ambientlight += add;
@@ -1145,7 +1145,7 @@ void R_DrawViewModel (void)
 			continue;
 
 		VectorSubtract (currententity->origin, dl->origin, dist);
-		add = dl->radius - Length(dist);
+		add = dl->radius - VectorLength(dist);
 		if (add > 0)
 			ambientlight += add;
 	}

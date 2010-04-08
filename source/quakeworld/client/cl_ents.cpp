@@ -420,7 +420,7 @@ void CL_LinkPacketEntities (void)
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
 
-	autorotate = anglemod(100*cl.time);
+	autorotate = AngleMod(100*cl.time);
 
 	f = 0;		// FIXME: no interpolation right now
 
@@ -776,7 +776,7 @@ void CL_AddFlagModels (entity_t *ent, int team)
 		newent->origin[i] = ent->origin[i] - f*v_forward[i] + 22*v_right[i];
 	newent->origin[2] -= 16;
 
-	VectorCopy (ent->angles, newent->angles)
+	VectorCopy (ent->angles, newent->angles);
 	newent->angles[2] -= 45;
 }
 

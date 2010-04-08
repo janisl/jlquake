@@ -1286,7 +1286,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					}
 
 					AngleVectors(ent->angles,forward,right,up);
-					speed = Length(cl.Effects[index].Xbow.vel[curEnt]);
+					speed = VectorLength(cl.Effects[index].Xbow.vel[curEnt]);
 					VectorScale(forward,speed,cl.Effects[index].Xbow.vel[curEnt]);
 					VectorCopy(cl.Effects[index].Xbow.origin[curEnt],ent->origin);
 				}
@@ -1309,7 +1309,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					}
 
 					AngleVectors(pos,forward,right,up);
-					speed = Length(cl.Effects[index].Xbow.vel[curEnt]);
+					speed = VectorLength(cl.Effects[index].Xbow.vel[curEnt]);
 					VectorScale(forward,speed,cl.Effects[index].Xbow.vel[curEnt]);
 				}
 			}
@@ -1356,7 +1356,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					}
 
 					AngleVectors(ent->angles,forward,right,up);
-					speed = Length(cl.Effects[index].Xbow.vel[curEnt]);
+					speed = VectorLength(cl.Effects[index].Xbow.vel[curEnt]);
 					VectorScale(forward,speed,cl.Effects[index].Xbow.vel[curEnt]);
 					VectorCopy(cl.Effects[index].Xbow.origin[curEnt],ent->origin);
 				}
@@ -1379,7 +1379,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					}
 
 					AngleVectors(pos,forward,right,up);
-					speed = Length(cl.Effects[index].Xbow.vel[curEnt]);
+					speed = VectorLength(cl.Effects[index].Xbow.vel[curEnt]);
 					VectorScale(forward,speed,cl.Effects[index].Xbow.vel[curEnt]);
 				}
 			}
@@ -1431,7 +1431,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					cl.Effects[index].Missile.origin[2]=net_message.ReadCoord();
 
 					AngleVectors(ent->angles,forward,right,up);
-					speed = Length(cl.Effects[index].Missile.velocity);
+					speed = VectorLength(cl.Effects[index].Missile.velocity);
 					VectorScale(forward,speed,cl.Effects[index].Missile.velocity);
 					VectorCopy(cl.Effects[index].Missile.origin,ent->origin);
 				}
@@ -1451,7 +1451,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					cl.Effects[index].Missile.origin[2]=net_message.ReadCoord();
 
 					AngleVectors(pos,forward,right,up);
-					speed = Length(cl.Effects[index].Missile.velocity);
+					speed = VectorLength(cl.Effects[index].Missile.velocity);
 					VectorScale(forward,speed,cl.Effects[index].Missile.velocity);
 				}
 			}

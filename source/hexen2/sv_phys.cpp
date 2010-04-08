@@ -1016,13 +1016,13 @@ Con_DPrintf("%f %f %f\n", pusher->v.angles[0], pusher->v.angles[1], pusher->v.an
 					VectorSubtract(check->v.origin,testmove,check->v.origin);
 					testmove[0]=0;
 					testmove[1]=0;
-					testmove[2]=org[2]*3;//was: +org[2]*(fastfabs(org[1])+fastfabs(org[2]));
+					testmove[2]=org[2]*3;//was: +org[2]*(Q_fabs(org[1])+Q_fabs(org[2]));
 					break;
 				case 10:
 				//Try normalized org xy * 2 only
 					VectorSubtract(check->v.origin,testmove,check->v.origin);
-					testmove[0]=org[0]*2;//was: +org[0]*fastfabs(org[2]);
-					testmove[1]=org[1]*2;//was: +org[1]*fastfabs(org[2]);
+					testmove[0]=org[0]*2;//was: +org[0]*Q_fabs(org[2]);
+					testmove[1]=org[1]*2;//was: +org[1]*Q_fabs(org[2]);
 					testmove[2]=0;
 					break;
 				case 11:
@@ -1346,8 +1346,8 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 		ent->v. velocity[2] = 0;
 		clip = SV_FlyMove (ent, 0.1, &steptrace);
 
-		if ( fastfabs(oldorg[1] - ent->v.origin[1]) > 4
-		|| fastfabs(oldorg[0] - ent->v.origin[0]) > 4 )
+		if ( Q_fabs(oldorg[1] - ent->v.origin[1]) > 4
+		|| Q_fabs(oldorg[0] - ent->v.origin[0]) > 4 )
 		{
 //			Con_DPrintf ("unstuck!\n");
 			return clip;
@@ -1430,8 +1430,8 @@ void SV_WalkMove (edict_t *ent)
 // in the clipping hulls
 	if (clip)
 	{
-		if ( fastfabs(oldorg[1] - ent->v.origin[1]) < 0.03125
-		&& fastfabs(oldorg[0] - ent->v.origin[0]) < 0.03125 )
+		if ( Q_fabs(oldorg[1] - ent->v.origin[1]) < 0.03125
+		&& Q_fabs(oldorg[0] - ent->v.origin[0]) < 0.03125 )
 		{	// stepping up didn't make any progress
 			clip = SV_TryUnstick (ent, oldvel);
 		}

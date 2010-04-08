@@ -844,7 +844,7 @@ void CL_AddPacketEntities (frame_t *frame)
 	unsigned int		effects, renderfx;
 
 	// bonus items rotate at a fixed rate
-	autorotate = anglemod(cl.time/10);
+	autorotate = AngleMod(cl.time/10);
 
 	// brush models can auto animate their frames
 	autoanim = 2*cl.time/1000;
@@ -997,7 +997,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		else if (effects & EF_SPINNINGLIGHTS)
 		{
 			ent.angles[0] = 0;
-			ent.angles[1] = anglemod(cl.time/2) + s1->angles[1];
+			ent.angles[1] = AngleMod(cl.time/2) + s1->angles[1];
 			ent.angles[2] = 180;
 			{
 				vec3_t forward;

@@ -611,7 +611,7 @@ VectorCopy (ent->v.origin, oldorg);
 			return;
 VectorSubtract (ent->v.origin, oldorg, move);
 
-l = Length(move);
+l = VectorLength(move);
 if (l > 1.0/64)
 {
 //	Con_Printf ("**** snap: %f\n", Length (l));

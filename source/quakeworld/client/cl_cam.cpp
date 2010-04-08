@@ -396,8 +396,8 @@ static float adjustang(float current, float ideal, float speed)
 {
 	float move;
 
-	current = anglemod(current);
-	ideal = anglemod(ideal);
+	current = AngleMod(current);
+	ideal = AngleMod(ideal);
 
 	if (current == ideal)
 		return current;
@@ -425,7 +425,7 @@ static float adjustang(float current, float ideal, float speed)
 	}
 
 //Con_Printf("c/i: %4.2f/%4.2f move: %4.2f\n", current, ideal, move);
-	return anglemod (current + move);
+	return AngleMod(current + move);
 }
 #endif
 

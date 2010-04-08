@@ -13,6 +13,8 @@ add_library(core STATIC
 	huffman.h
 	log.cpp
 	log.h
+	mathlib.cpp
+	mathlib.h
 	memory.cpp
 	memory.h
 	message.cpp

@@ -23,15 +23,6 @@
 
 #define	MINIMUM_MEMORY	0x550000
 
-// up / down
-#define	PITCH	0
-
-// left / right
-#define	YAW		1
-
-// fall over
-#define	ROLL	2
-
 
 // Timing macros
 #define HX_FRAME_TIME		0.05
