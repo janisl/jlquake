@@ -261,7 +261,7 @@ qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 
 		fromlen = sizeof(from);
 		recvfromCount++;		// performance check
-		ret = recvfrom( net_socket, (char*)net_message->data, net_message->maxsize, 0, (struct sockaddr *)&from, &fromlen );
+		ret = recvfrom( net_socket, (char*)net_message->_data, net_message->maxsize, 0, (struct sockaddr *)&from, &fromlen );
 		if (ret == SOCKET_ERROR)
 		{
 			err = WSAGetLastError();
@@ -278,15 +278,15 @@ qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 		}
 
 		if ( usingSocks && net_socket == ip_socket && memcmp( &from, &socksRelayAddr, fromlen ) == 0 ) {
-			if ( ret < 10 || net_message->data[0] != 0 || net_message->data[1] != 0 || net_message->data[2] != 0 || net_message->data[3] != 1 ) {
+			if ( ret < 10 || net_message->_data[0] != 0 || net_message->_data[1] != 0 || net_message->_data[2] != 0 || net_message->_data[3] != 1 ) {
 				continue;
 			}
 			net_from->type = NA_IP;
-			net_from->ip[0] = net_message->data[4];
-			net_from->ip[1] = net_message->data[5];
-			net_from->ip[2] = net_message->data[6];
-			net_from->ip[3] = net_message->data[7];
-			net_from->port = *(short *)&net_message->data[8];
+			net_from->ip[0] = net_message->_data[4];
+			net_from->ip[1] = net_message->_data[5];
+			net_from->ip[2] = net_message->_data[6];
+			net_from->ip[3] = net_message->_data[7];
+			net_from->port = *(short *)&net_message->_data[8];
 			net_message->readcount = 10;
 		}
 		else {

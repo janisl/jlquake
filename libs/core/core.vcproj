@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="core"
 	ProjectGUID="{0E31D872-F284-45B8-B4FD-11009667B854}"
 	RootNamespace="core"
@@ -149,6 +149,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\cmd.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\common.cpp"
 				>
 			</File>
@@ -161,11 +165,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\huffman.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\log.cpp"
 				>
 			</File>
 			<File
+				RelativePath=".\mathlib.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\memory.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\message.cpp"
 				>
 			</File>
 			<File
@@ -180,6 +196,10 @@
 			>
 			<File
 				RelativePath=".\array.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cmd.h"
 				>
 			</File>
 			<File
@@ -199,11 +219,23 @@
 				>
 			</File>
 			<File
+				RelativePath=".\huffman.h"
+				>
+			</File>
+			<File
 				RelativePath=".\log.h"
 				>
 			</File>
 			<File
+				RelativePath=".\mathlib.h"
+				>
+			</File>
+			<File
 				RelativePath=".\memory.h"
+				>
+			</File>
+			<File
+				RelativePath=".\message.h"
 				>
 			</File>
 			<File

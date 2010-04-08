@@ -387,7 +387,7 @@ int WIPX_GetAddrFromName(const char *name, struct qsockaddr *addr)
 		return WIPX_StringToAddr (buf, addr);
 	}
 	if (n > 21 && n <= 27)
-		return WIPX_StringToAddr (name, addr);
+		return WIPX_StringToAddr (const_cast<char*>(name), addr);
 
 	return -1;
 }

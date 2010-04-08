@@ -295,7 +295,9 @@ qboolean Com_Memcmp (const void *src0, const void *src1, const unsigned int coun
 			unsigned int tmp = (dw[i+0]-sw[i+0])|(dw[i+1]-sw[i+1])|
 						  (dw[i+2]-sw[i+2])|(dw[i+3]-sw[i+3]);
 			if (tmp)
-				return qfalse;
+            {
+				return false;
+            }
 		}
 	}
 	if (count & 15)
@@ -303,11 +305,15 @@ qboolean Com_Memcmp (const void *src0, const void *src1, const unsigned int coun
 		byte *d = (byte*)src0;
 		byte *s = (byte*)src1;
 		for (i = count & 0xfffffff0; i < count; i++)
-		if (d[i]!=s[i])
-			return qfalse;
+        {
+		    if (d[i]!=s[i])
+            {
+			    return false;
+            }
+        }
 	}
 
-	return qtrue;
+	return true;
 }
 
 void Com_Prefetch (const void *s, const unsigned int bytes, e_prefetch type)

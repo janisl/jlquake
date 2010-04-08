@@ -303,7 +303,7 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message
 	i = loop->get & (MAX_LOOPBACK-1);
 	loop->get++;
 
-	Com_Memcpy(net_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
+	Com_Memcpy(net_message->_data, loop->msgs[i].data, loop->msgs[i].datalen);
 	net_message->cursize = loop->msgs[i].datalen;
 	Com_Memset(net_from, 0, sizeof(*net_from));
 	net_from->type = NA_LOOPBACK;
@@ -351,7 +351,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 			continue;
 
 		fromlen = sizeof(from);
-		ret = recvfrom (net_socket, (char*)net_message->data, net_message->maxsize
+		ret = recvfrom (net_socket, (char*)net_message->_data, net_message->maxsize
 			, 0, (struct sockaddr *)&from, &fromlen);
 		if (ret == -1)
 		{
