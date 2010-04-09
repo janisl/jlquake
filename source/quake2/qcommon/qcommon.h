@@ -72,10 +72,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-void *SZ_GetSpace (QMsg *buf, int length);
-
-//============================================================================
-
 struct usercmd_s;
 struct entity_state_s;
 
