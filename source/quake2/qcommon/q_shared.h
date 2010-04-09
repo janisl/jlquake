@@ -28,9 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	MAX_STRING_TOKENS	80		// max tokens resulting from Cmd_TokenizeString
 #define	MAX_TOKEN_CHARS		128		// max length of an individual token
 
-#define	MAX_QPATH			64		// max length of a quake game pathname
-#define	MAX_OSPATH			128		// max length of a filesystem pathname
-
 //
 // per-level limits
 //
@@ -74,9 +71,6 @@ MULTICAST_PVS_R
 
 
 //=============================================
-
-char *COM_Parse (char **data_p);
-// data is an in/out parm, returns a parsed out token
 
 void Com_PageInMemory (byte *buffer, int size);
 

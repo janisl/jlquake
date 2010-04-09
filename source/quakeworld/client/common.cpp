@@ -227,86 +227,8 @@ void MSG_ReadDeltaUsercmd (usercmd_t *from, usercmd_t *move)
 
 //============================================================================
 
-static char		com_token[1024];
 int		com_argc;
 char	**com_argv;
-
-
-/*
-==============
-COM_Parse
-
-Parse a token out of a string
-==============
-*/
-char *COM_Parse (const char** data_p)
-{
-	int		c;
-	int		len;
-	const char*	data;
-	
-	data = *data_p;
-	len = 0;
-	com_token[0] = 0;
-	
-	if (!data)
-	{
-		*data_p = NULL;
-		return "";
-	}
-		
-// skip whitespace
-skipwhite:
-	while ( (c = *data) <= ' ')
-	{
-		if (c == 0)
-		{
-			*data_p = NULL;			// end of file;
-			return "";
-		}
-		data++;
-	}
-	
-// skip // comments
-	if (c=='/' && data[1] == '/')
-	{
-		while (*data && *data != '\n')
-			data++;
-		goto skipwhite;
-	}
-	
-
-// handle quoted strings specially
-	if (c == '\"')
-	{
-		data++;
-		while (1)
-		{
-			c = *data++;
-			if (c=='\"' || !c)
-			{
-				com_token[len] = 0;
-				*data_p = data;
-				return com_token;
-			}
-			com_token[len] = c;
-			len++;
-		}
-	}
-
-// parse a regular word
-	do
-	{
-		com_token[len] = c;
-		data++;
-		len++;
-		c = *data;
-	} while (c>32);
-	
-	com_token[len] = 0;
-	*data_p = data;
-	return com_token;
-}
 
 
 /*

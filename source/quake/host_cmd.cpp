@@ -615,7 +615,7 @@ void Host_Loadgame_f (void)
 			Sys_Error ("Loadgame buffer overflow");
 		str[i] = 0;
 		start = str;
-		const char* token = COM_Parse(&start);
+		const char* token = QStr::Parse1(&start);
 		if (!start)
 			break;		// end of file
 		if (QStr::Cmp(token,"{"))
@@ -1236,7 +1236,7 @@ void Host_Kick_f (void)
 		if (Cmd_Argc() > 2)
 		{
 			message = Cmd_Args();
-			COM_Parse(&message);
+			QStr::Parse1(&message);
 			if (byNumber)
 			{
 				message++;							// skip the #

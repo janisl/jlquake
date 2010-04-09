@@ -46,7 +46,6 @@ void COM_InitFilesystem (void);
 #define PAK0_COUNT              339
 #define PAK0_CRC                32981
 
-char	com_token[1024];
 int		com_argc;
 char	**com_argv;
 
@@ -128,104 +127,6 @@ void InsertLinkAfter (link_t *l, link_t *after)
 }
 
 //===========================================================================
-
-
-/*
-==============
-COM_Parse
-
-Parse a token out of a string
-==============
-*/
-char *COM_Parse (const char **data_p)
-{
-	int             c;
-	int             len;
-	const char*		data;
-
-	data = *data_p;
-	len = 0;
-	com_token[0] = 0;
-
-	if (!data)
-	{
-		*data_p = NULL;
-		return "";
-	}
-
-// skip whitespace
-skipwhite:
-	while ( (c = *data) <= ' ')
-	{
-		if (c == 0)
-		{
-			*data_p = NULL;
-			return "";
-		}
-		data++;
-	}
-	
-// skip // comments
-	if (c=='/' && data[1] == '/')
-	{
-		while (*data && *data != '\n')
-			data++;
-		goto skipwhite;
-	}
-
-// handle quoted strings specially
-	if (c == '\"')
-	{
-		data++;
-		while (1)
-		{
-			c = *data++;
-			if (c=='\"' || !c)
-			{
-				com_token[len] = 0;
-				*data_p = data;
-				return com_token;
-			}
-			if (len < sizeof(com_token))
-			{
-				com_token[len] = c;
-				len++;
-			}
-		}
-	}
-
-// parse single characters
-	if (c=='{' || c=='}'|| c==')'|| c=='(' || c=='\'' || c==':')
-	{
-		com_token[len] = c;
-		len++;
-		com_token[len] = 0;
-		*data_p = data+1;
-		return com_token;
-	}
-
-// parse a regular word
-	do
-	{
-		if (len < sizeof(com_token))
-		{
-			com_token[len] = c;
-			len++;
-		}
-		data++;
-		c = *data;
-		if (c=='{' || c=='}'|| c==')'|| c=='(' || c=='\'' || c==':')
-			break;
-	} while (c>32);
-
-	if (len == sizeof(com_token))
-	{
-		len = 0;
-	}
-	com_token[len] = 0;
-	*data_p = data;
-	return com_token;
-}
 
 
 /*

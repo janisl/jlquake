@@ -1025,7 +1025,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 			Sys_Error ("Loadgame buffer overflow");
 		str[i] = 0;
 		start = str;
-		char* token = COM_Parse(&start);
+		char* token = QStr::Parse1(&start);
 		if (!token[0])
 			break;		// end of file
 		if (QStr::Cmp(token,"{"))
@@ -1996,7 +1996,7 @@ void Host_Kick_f (void)
 		if (Cmd_Argc() > 2)
 		{
 			message = Cmd_Args();
-			COM_Parse(&message);
+			QStr::Parse1(&message);
 			if (byNumber)
 			{
 				message++;							// skip the #

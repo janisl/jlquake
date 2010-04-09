@@ -1364,7 +1364,7 @@ script_t *LoadScriptFile(const char *filename)
 	fclose(fp);
 #endif
 	//
-	script->length = COM_Compress(script->buffer);
+	script->length = QStr::Compress(script->buffer);
 
 	return script;
 } //end of the function LoadScriptFile

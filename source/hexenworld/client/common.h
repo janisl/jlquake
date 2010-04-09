@@ -32,9 +32,6 @@ void MSG_ReadUsercmd (struct usercmd_s *cmd, qboolean long_msg);
 
 //============================================================================
 
-char *COM_Parse (const char **data);
-
-
 extern	int		com_argc;
 extern	char	**com_argv;
 

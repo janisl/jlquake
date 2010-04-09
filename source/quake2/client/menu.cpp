@@ -2524,7 +2524,7 @@ void StartServer_MenuInit( void )
 //=======
 	char *buffer;
 	char  mapsname[1024];
-	char *s;
+	const char *s;
 	int length;
 	int i;
 	FILE *fp;
@@ -2576,11 +2576,11 @@ void StartServer_MenuInit( void )
 		char  scratch[200];
 		int		j, l;
 
-		QStr::Cpy( shortname, COM_Parse( &s ) );
+		QStr::Cpy( shortname, QStr::Parse2( &s ) );
 		l = QStr::Length(shortname);
 		for (j=0 ; j<l ; j++)
 			shortname[j] = QStr::ToUpper(shortname[j]);
-		QStr::Cpy( longname, COM_Parse( &s ) );
+		QStr::Cpy( longname, QStr::Parse2( &s ) );
 		QStr::Sprintf( scratch, sizeof( scratch ), "%s\n%s", longname, shortname );
 
 		mapnames[i] = (char*)malloc( QStr::Length( scratch ) + 1 );

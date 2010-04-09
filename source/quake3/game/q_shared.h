@@ -388,15 +388,6 @@ float	Q_crandom( int *seed );
 
 float Com_Clamp( float min, float max, float value );
 
-void	COM_BeginParseSession( const char *name );
-int		COM_GetCurrentParseLine( void );
-char	*COM_Parse( char **data_p );
-char	*COM_ParseExt( char **data_p, qboolean allowLineBreak );
-int		COM_Compress( char *data_p );
-void	COM_ParseError( char *format, ... );
-void	COM_ParseWarning( char *format, ... );
-//int		COM_ParseInfos( char *buf, int max, char infos[][MAX_INFO_STRING] );
-
 #define MAX_TOKENLENGTH		1024
 
 #ifndef TT_STRING
@@ -418,16 +409,6 @@ typedef struct pc_token_s
 } pc_token_t;
 
 // data is an in/out parm, returns a parsed out token
-
-void	COM_MatchToken( char**buf_p, char *match );
-
-void SkipBracedSection (char **program);
-void SkipRestOfLine ( char **data );
-
-void Parse1DMatrix (char **buf_p, int x, float *m);
-void Parse2DMatrix (char **buf_p, int y, int x, float *m);
-void Parse3DMatrix (char **buf_p, int z, int y, int x, float *m);
-
 
 // mode parm for FS_FOpenFile
 typedef enum {

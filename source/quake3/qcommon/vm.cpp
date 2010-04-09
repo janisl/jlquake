@@ -210,7 +210,7 @@ VM_LoadSymbols
 */
 void VM_LoadSymbols( vm_t *vm ) {
 	int		len;
-	char	*mapfile, *text_p, *token;
+	char	*mapfile, *token;
 	char	name[MAX_QPATH];
 	char	symbols[MAX_QPATH];
 	vmSymbol_t	**prev, *sym;
@@ -236,30 +236,30 @@ void VM_LoadSymbols( vm_t *vm ) {
 	numInstructions = vm->instructionPointersLength >> 2;
 
 	// parse the symbols
-	text_p = mapfile;
+	const char* text_p = mapfile;
 	prev = &vm->symbols;
 	count = 0;
 
 	while ( 1 ) {
-		token = COM_Parse( &text_p );
+		token = QStr::Parse3( &text_p );
 		if ( !token[0] ) {
 			break;
 		}
 		segment = ParseHex( token );
 		if ( segment ) {
-			COM_Parse( &text_p );
-			COM_Parse( &text_p );
+			QStr::Parse3( &text_p );
+			QStr::Parse3( &text_p );
 			continue;		// only load code segment values
 		}
 
-		token = COM_Parse( &text_p );
+		token = QStr::Parse3( &text_p );
 		if ( !token[0] ) {
 			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 		value = ParseHex( token );
 
-		token = COM_Parse( &text_p );
+		token = QStr::Parse3( &text_p );
 		if ( !token[0] ) {
 			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;

@@ -39,8 +39,6 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-char *COM_Parse (const char **data);
-
 
 extern	int		com_argc;
 extern	char	**com_argv;

@@ -434,7 +434,7 @@ int SV_GameSystemCalls( int *args ) {
 		{
 			const char	*s;
 
-			s = COM_Parse( &sv.entityParsePoint );
+			s = QStr::Parse3( const_cast<const char**>(&sv.entityParsePoint) );
 			QStr::NCpyZ( (char*)VMA(1), s, args[2] );
 			if ( !sv.entityParsePoint && !s[0] ) {
 				return qfalse;

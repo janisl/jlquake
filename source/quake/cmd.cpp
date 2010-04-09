@@ -510,7 +510,7 @@ void Cmd_TokenizeString (const char *text)
 		if (cmd_argc == 1)
 			 cmd_args = text;
 
-		const char* token = COM_Parse (&text);
+		const char* token = QStr::Parse1(&text);
 		if (!text)
 			return;
 

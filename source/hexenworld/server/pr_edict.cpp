@@ -694,7 +694,7 @@ void ED_ParseGlobals (const char *data)
 	while (1)
 	{	
 	// parse key
-		char* token = COM_Parse (&data);
+		char* token = QStr::Parse2(&data);
 		if (token[0] == '}')
 			break;
 		if (!data)
@@ -703,7 +703,7 @@ void ED_ParseGlobals (const char *data)
 		QStr::Cpy (keyname, token);
 
 	// parse value	
-		token = COM_Parse (&data);
+		token = QStr::Parse2(&data);
 		if (!data)
 			SV_Error ("ED_ParseEntity: EOF without closing brace");
 
@@ -857,7 +857,7 @@ const char *ED_ParseEdict (const char *data, edict_t *ent)
 	while (1)
 	{	
 	// parse key
-		char* token = COM_Parse (&data);
+		char* token = QStr::Parse2(&data);
 		if (token[0] == '}')
 			break;
 		if (!data)
@@ -888,7 +888,7 @@ if (!QStr::Cmp(token, "light"))
 		}
 		
 	// parse value	
-		token = COM_Parse (&data);
+		token = QStr::Parse2(&data);
 		if (!data)
 			SV_Error ("ED_ParseEntity: EOF without closing brace");
 
@@ -968,7 +968,7 @@ void ED_LoadFromFile (const char *data)
 	while (1)
 	{
 // parse the opening brace	
-		char* token = COM_Parse (&data);
+		char* token = QStr::Parse2(&data);
 		if (!data)
 			break;
 		if (token[0] != '{')

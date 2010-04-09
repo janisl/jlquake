@@ -46,6 +46,8 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+static char		com_token[1024];
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -1562,6 +1564,504 @@ const char* QStr::FileExtension(const char* In)
 	}
 	Exten[i] = 0;
 	return Exten;
+}
+
+//==========================================================================
+//
+//	QStr::Parse1
+//
+//	Parse a token out of a string
+//	data is an in/out parm, returns a parsed out token
+//
+//==========================================================================
+
+char* QStr::Parse1(const char **data_p)
+{
+	int             c;
+	int             len;
+	const char*		data;
+
+	data = *data_p;
+	len = 0;
+	com_token[0] = 0;
+
+	if (!data)
+	{
+		*data_p = NULL;
+		return com_token;
+	}
+
+	// skip whitespace
+skipwhite:
+	while ( (c = *data) <= ' ')
+	{
+		if (c == 0)
+		{
+			*data_p = NULL;
+			return com_token;
+		}
+		data++;
+	}
+
+	// skip // comments
+	if (c=='/' && data[1] == '/')
+	{
+		while (*data && *data != '\n')
+		{
+			data++;
+		}
+		goto skipwhite;
+	}
+
+	// handle quoted strings specially
+	if (c == '\"')
+	{
+		data++;
+		while (1)
+		{
+			c = *data++;
+			if (c=='\"' || !c)
+			{
+				com_token[len] = 0;
+				*data_p = data;
+				return com_token;
+			}
+			if (len < sizeof(com_token))
+			{
+				com_token[len] = c;
+				len++;
+			}
+		}
+	}
+
+	// parse single characters
+	if (c=='{' || c=='}'|| c==')'|| c=='(' || c=='\'' || c==':')
+	{
+		com_token[len] = c;
+		len++;
+		com_token[len] = 0;
+		*data_p = data+1;
+		return com_token;
+	}
+
+	// parse a regular word
+	do
+	{
+		if (len < sizeof(com_token))
+		{
+			com_token[len] = c;
+			len++;
+		}
+		data++;
+		c = *data;
+		if (c=='{' || c=='}'|| c==')'|| c=='(' || c=='\'' || c==':')
+		{
+			break;
+		}
+	} while (c > 32);
+
+	if (len == sizeof(com_token))
+	{
+		len = 0;
+	}
+	com_token[len] = 0;
+	*data_p = data;
+	return com_token;
+}
+
+//==========================================================================
+//
+//	QStr::Parse2
+//
+//	Parse a token out of a string
+//
+//==========================================================================
+
+char* QStr::Parse2(const char** data_p)
+{
+	int				c;
+	int				len;
+	const char*		data;
+
+	data = *data_p;
+	len = 0;
+	com_token[0] = 0;
+
+	if (!data)
+	{
+		*data_p = NULL;
+		return com_token;
+	}
+
+	// skip whitespace
+skipwhite:
+	while ( (c = *data) <= ' ')
+	{
+		if (c == 0)
+		{
+			*data_p = NULL;
+			return com_token;
+		}
+		data++;
+	}
+
+	// skip // comments
+	if (c=='/' && data[1] == '/')
+	{
+		while (*data && *data != '\n')
+			data++;
+		goto skipwhite;
+	}
+
+	// handle quoted strings specially
+	if (c == '\"')
+	{
+		data++;
+		while (1)
+		{
+			c = *data++;
+			if (c=='\"' || !c)
+			{
+				com_token[len] = 0;
+				*data_p = data;
+				return com_token;
+			}
+			if (len < sizeof(com_token))
+			{
+				com_token[len] = c;
+				len++;
+			}
+		}
+	}
+
+	// parse a regular word
+	do
+	{
+		if (len < sizeof(com_token))
+		{
+			com_token[len] = c;
+			len++;
+		}
+		data++;
+		c = *data;
+	} while (c > 32);
+
+	if (len == sizeof(com_token))
+	{
+//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+		len = 0;
+	}
+	com_token[len] = 0;
+
+	*data_p = data;
+	return com_token;
+}
+
+//==========================================================================
+//
+//	QStr::Parse3
+//
+//	Parse a token out of a string
+//	Will never return NULL, just empty strings
+//
+//	If "allowLineBreaks" is qtrue then an empty string will be returned if
+// the next token is a newline.
+//
+//==========================================================================
+
+char* QStr::Parse3(const char** data_p)
+{
+	return ParseExt(data_p, true);
+}
+
+//==========================================================================
+//
+//	SkipWhitespace
+//
+//==========================================================================
+
+static const char* SkipWhitespace(const char *data, bool* hasNewLines)
+{
+	int c;
+
+	while ((c = *data) <= ' ')
+	{
+		if (!c)
+		{
+			return NULL;
+		}
+		if (c == '\n')
+		{
+			*hasNewLines = true;
+		}
+		data++;
+	}
+
+	return data;
+}
+
+//==========================================================================
+//
+//	QStr::ParseExt
+//
+//==========================================================================
+
+char* QStr::ParseExt(const char** data_p, bool allowLineBreaks)
+{
+	int c = 0, len;
+	bool hasNewLines = false;
+	const char *data;
+
+	data = *data_p;
+	len = 0;
+	com_token[0] = 0;
+
+	// make sure incoming data is valid
+	if ( !data )
+	{
+		*data_p = NULL;
+		return com_token;
+	}
+
+	while ( 1 )
+	{
+		// skip whitespace
+		data = SkipWhitespace( data, &hasNewLines );
+		if ( !data )
+		{
+			*data_p = NULL;
+			return com_token;
+		}
+		if ( hasNewLines && !allowLineBreaks )
+		{
+			*data_p = data;
+			return com_token;
+		}
+
+		c = *data;
+
+		// skip double slash comments
+		if ( c == '/' && data[1] == '/' )
+		{
+			data += 2;
+			while (*data && *data != '\n') {
+				data++;
+			}
+		}
+		// skip /* */ comments
+		else if ( c=='/' && data[1] == '*' ) 
+		{
+			data += 2;
+			while ( *data && ( *data != '*' || data[1] != '/' ) ) 
+			{
+				data++;
+			}
+			if ( *data ) 
+			{
+				data += 2;
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// handle quoted strings
+	if (c == '\"')
+	{
+		data++;
+		while (1)
+		{
+			c = *data++;
+			if (c=='\"' || !c)
+			{
+				com_token[len] = 0;
+				*data_p = ( char * ) data;
+				return com_token;
+			}
+			if (len < sizeof(com_token))
+			{
+				com_token[len] = c;
+				len++;
+			}
+		}
+	}
+
+	// parse a regular word
+	do
+	{
+		if (len < sizeof(com_token))
+		{
+			com_token[len] = c;
+			len++;
+		}
+		data++;
+		c = *data;
+	} while (c>32);
+
+	if (len == sizeof(com_token))
+	{
+//		Com_Printf ("Token exceeded %i chars, discarded.\n", MAX_TOKEN_CHARS);
+		len = 0;
+	}
+	com_token[len] = 0;
+
+	*data_p = ( char * ) data;
+	return com_token;
+}
+
+//==========================================================================
+//
+//	QStr::Compress
+//
+//==========================================================================
+
+int QStr::Compress(char *data_p)
+{
+	char *in, *out;
+	int c;
+	bool newline = false, whitespace = false;
+
+	in = out = data_p;
+	if (in)
+	{
+		while ((c = *in) != 0)
+		{
+			// skip double slash comments
+			if (c == '/' && in[1] == '/')
+			{
+				while (*in && *in != '\n')
+				{
+					in++;
+				}
+			}
+			// skip /* */ comments
+			else if (c == '/' && in[1] == '*')
+			{
+				while (*in && ( *in != '*' || in[1] != '/')) 
+					in++;
+				if (*in) 
+					in += 2;
+			}
+			// record when we hit a newline
+			else if (c == '\n' || c == '\r')
+			{
+				newline = true;
+				in++;
+			}
+			// record when we hit whitespace
+			else if (c == ' ' || c == '\t')
+			{
+				whitespace = true;
+				in++;
+			}
+			// an actual token
+			else
+			{
+				// if we have a pending newline, emit it (and it counts as whitespace)
+				if (newline)
+				{
+					*out++ = '\n';
+					newline = false;
+					whitespace = false;
+				}
+				if (whitespace)
+				{
+					*out++ = ' ';
+					whitespace = false;
+				}
+
+				// copy quoted strings unmolested
+				if (c == '"')
+				{
+					*out++ = c;
+					in++;
+					while (1)
+					{
+						c = *in;
+						if (c && c != '"')
+						{
+							*out++ = c;
+							in++;
+						}
+						else
+						{
+							break;
+						}
+					}
+					if (c == '"')
+					{
+						*out++ = c;
+						in++;
+					}
+				}
+				else
+				{
+					*out = c;
+					out++;
+					in++;
+				}
+			}
+		}
+	}
+	*out = 0;
+	return out - data_p;
+}
+
+//==========================================================================
+//
+//	QStr::SkipBracedSection
+//
+//	The next token should be an open brace. Skips until a matching close
+// brace is found. Internal brace depths are properly skipped.
+//
+//==========================================================================
+
+void QStr::SkipBracedSection(const char** program)
+{
+	const char*		token;
+	int				depth;
+
+	depth = 0;
+	do
+	{
+		token = ParseExt(program, true);
+		if (token[1] == 0)
+		{
+			if (token[0] == '{')
+			{
+				depth++;
+			}
+			else if (token[0] == '}')
+			{
+				depth--;
+			}
+		}
+	} while(depth && *program);
+}
+
+//==========================================================================
+//
+//	QStr::SkipRestOfLine
+//
+//==========================================================================
+
+void QStr::SkipRestOfLine(const char **data)
+{
+	const char	*p;
+	int			c;
+
+	p = *data;
+	while ((c = *p++) != 0)
+	{
+		if (c == '\n')
+		{
+			break;
+		}
+	}
+
+	*data = p;
 }
 
 //==========================================================================
