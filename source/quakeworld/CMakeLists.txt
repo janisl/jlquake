@@ -33,7 +33,6 @@ set(QWSV_OBJS
 	client/cmd.cpp
 	client/common.cpp
 	client/cvar.cpp
-	client/md4.cpp
 	client/zone.cpp
 	client/pmove.cpp
 	client/pmovetst.cpp
@@ -64,7 +63,6 @@ set(GLQWCL_OBJS
 	client/console.cpp
 	client/cvar.cpp
 	client/keys.cpp
-	client/md4.cpp
 	client/menu.cpp
 	client/net_chan.cpp
 	client/net_udp.cpp

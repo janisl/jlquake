@@ -5,6 +5,8 @@ set(CORE_FILES
 	common.cpp
 	common.h
 	core.h
+	crc.cpp
+	crc.h
 	endian.cpp
 	endian.h
 	exception.cpp
@@ -15,6 +17,8 @@ set(CORE_FILES
 	log.h
 	mathlib.cpp
 	mathlib.h
+	md4.cpp
+	md4.h
 	memory.cpp
 	memory.h
 	message.cpp

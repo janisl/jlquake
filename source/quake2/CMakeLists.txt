@@ -40,7 +40,6 @@ set(QUAKE2_OBJS
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
-	qcommon/md4.cpp
 	qcommon/net_chan.cpp
 	qcommon/q_shared.cpp
 	qcommon/pmove.cpp

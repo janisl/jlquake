@@ -91,8 +91,6 @@ void Info_SetValueForKey (char *s, char *key, char *value, int maxsize);
 void Info_SetValueForStarKey (char *s, char *key, char *value, int maxsize);
 void Info_Print (char *s);
 
-unsigned Com_BlockChecksum (void *buffer, int length);
-void Com_BlockFullChecksum (void *buffer, int len, unsigned char *outbuf);
 byte	COM_BlockSequenceCheckByte (byte *base, int length, int sequence, unsigned mapchecksum);
 byte	COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 

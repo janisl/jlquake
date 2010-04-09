@@ -39,5 +39,6 @@
 #include "huffman.h"
 #include "cmd.h"
 #include "crc.h"
+#include "md4.h"
 
 #endif

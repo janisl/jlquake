@@ -276,10 +276,6 @@
 				>
 			</File>
 			<File
-				RelativePath="qcommon\md4.cpp"
-				>
-			</File>
-			<File
 				RelativePath="qcommon\msg.cpp"
 				>
 			</File>

@@ -1,18 +1,15 @@
 /* GLOBAL.H - RSAREF types and constants */
 
-#include <string.h>
-#if defined(_WIN32)
-#pragma warning(disable : 4711)		// selected for automatic inline expansion
-#endif
+#include "core.h"
 
 /* POINTER defines a generic pointer type */
 typedef unsigned char *POINTER;
 
 /* UINT2 defines a two byte word */
-typedef unsigned short int UINT2;
+typedef quint16 UINT2;
 
 /* UINT4 defines a four byte word */
-typedef unsigned long int UINT4;
+typedef quint32 UINT4;
 
   
 /* MD4.H - header file for MD4C.C */
@@ -34,17 +31,9 @@ typedef struct {
 	unsigned char buffer[64]; 			/* input buffer */
 } MD4_CTX;
 
-void MD4Init (MD4_CTX *);
-void MD4Update (MD4_CTX *, const unsigned char *, unsigned int);
-void MD4Final (unsigned char [16], MD4_CTX *);
-
-#ifndef __VECTORC  
-void Com_Memset (void* dest, const int val, const size_t count);
-void Com_Memcpy (void* dest, const void* src, const size_t count);
-#else
-#define Com_Memset memset
-#define Com_Memcpy memcpy
-#endif
+static void MD4Init (MD4_CTX *);
+static void MD4Update (MD4_CTX *, const unsigned char *, unsigned int);
+static void MD4Final (unsigned char [16], MD4_CTX *);
 
 /* MD4C.C - RSA Data Security, Inc., MD4 message-digest algorithm */
 /* Copyright (C) 1990-2, RSA Data Security, Inc. All rights reserved.
@@ -100,7 +89,7 @@ static unsigned char PADDING[64] = {
 
 
 /* MD4 initialization. Begins an MD4 operation, writing a new context. */
-void MD4Init (MD4_CTX *context)
+static void MD4Init (MD4_CTX *context)
 {
 	context->count[0] = context->count[1] = 0;
 
@@ -112,7 +101,7 @@ context->state[3] = 0x10325476;
 }
 
 /* MD4 block update operation. Continues an MD4 message-digest operation, processing another message block, and updating the context. */
-void MD4Update (MD4_CTX *context, const unsigned char *input, unsigned int inputLen)
+static void MD4Update (MD4_CTX *context, const unsigned char *input, unsigned int inputLen)
 {
 	unsigned int i, index, partLen;
 
@@ -147,7 +136,7 @@ void MD4Update (MD4_CTX *context, const unsigned char *input, unsigned int input
 
 
 /* MD4 finalization. Ends an MD4 message-digest operation, writing the the message digest and zeroizing the context. */
-void MD4Final (unsigned char digest[16], MD4_CTX *context)
+static void MD4Final (unsigned char digest[16], MD4_CTX *context)
 {
 	unsigned char bits[8];
 	unsigned int index, padLen;
@@ -267,14 +256,14 @@ for (i = 0, j = 0; j < len; i++, j += 4)
 
 //===================================================================
 
-unsigned Com_BlockChecksum (const void *buffer, int length)
+unsigned Com_BlockChecksum(const void *buffer, int length)
 {
 	int			digest[4];
 	unsigned	val;
 	MD4_CTX		ctx;
 
 	MD4Init (&ctx);
-	MD4Update (&ctx, (unsigned char *)buffer, length);
+	MD4Update (&ctx, (const unsigned char *)buffer, length);
 	MD4Final ( (unsigned char *)digest, &ctx);
 	
 	val = digest[0] ^ digest[1] ^ digest[2] ^ digest[3];
@@ -282,7 +271,7 @@ unsigned Com_BlockChecksum (const void *buffer, int length)
 	return val;
 }
 
-unsigned Com_BlockChecksumKey (void *buffer, int length, int key)
+unsigned Com_BlockChecksumKey(const void *buffer, int length, int key)
 {
 	int			digest[4];
 	unsigned	val;
@@ -290,10 +279,19 @@ unsigned Com_BlockChecksumKey (void *buffer, int length, int key)
 
 	MD4Init (&ctx);
 	MD4Update (&ctx, (unsigned char *)&key, 4);
-	MD4Update (&ctx, (unsigned char *)buffer, length);
+	MD4Update (&ctx, (const unsigned char *)buffer, length);
 	MD4Final ( (unsigned char *)digest, &ctx);
 	
 	val = digest[0] ^ digest[1] ^ digest[2] ^ digest[3];
 
 	return val;
+}
+
+void Com_BlockFullChecksum(const void *buffer, int len, unsigned char *outbuf)
+{
+	MD4_CTX		ctx;
+
+	MD4Init (&ctx);
+	MD4Update (&ctx, (const unsigned char *)buffer, len);
+	MD4Final ( outbuf, &ctx);
 }

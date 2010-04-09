@@ -202,10 +202,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\md4.cpp"
-				>
-			</File>
-			<File
 				RelativePath="model.cpp"
 				>
 			</File>

@@ -181,6 +181,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\md4.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\memory.cpp"
 				>
 			</File>
@@ -236,6 +240,10 @@
 			</File>
 			<File
 				RelativePath=".\mathlib.h"
+				>
+			</File>
+			<File
+				RelativePath=".\md4.h"
 				>
 			</File>
 			<File

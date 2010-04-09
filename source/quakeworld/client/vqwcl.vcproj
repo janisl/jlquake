@@ -304,10 +304,6 @@
 				>
 			</File>
 			<File
-				RelativePath="md4.cpp"
-				>
-			</File>
-			<File
 				RelativePath="menu.cpp"
 				>
 			</File>

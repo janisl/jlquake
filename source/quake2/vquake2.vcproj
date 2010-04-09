@@ -287,10 +287,6 @@
 				>
 			</File>
 			<File
-				RelativePath="qcommon\md4.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\menu.cpp"
 				>
 			</File>
