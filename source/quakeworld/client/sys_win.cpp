@@ -596,10 +596,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	parms.argv = argv;
 
-	COM_InitArgv (parms.argc, parms.argv);
-
-	parms.argc = com_argc;
-	parms.argv = com_argv;
+	COM_InitArgv2(parms.argc, parms.argv);
 
 	hwnd_dialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, NULL);
 
@@ -639,7 +636,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	{
 		t = COM_CheckParm("-heapsize") + 1;
 
-		if (t < com_argc)
+		if (t < COM_Argc())
 			parms.memsize = QStr::Atoi(com_argv[t]) * 1024;
 	}
 

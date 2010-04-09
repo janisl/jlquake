@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_SAFE_ARGVS  7
 
-static char     *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
 static char     *argvdummy = " ";
 
 static char     *safeargvs[NUM_SAFE_ARGVS] =
@@ -45,9 +44,6 @@ void COM_InitFilesystem (void);
 // if a packfile directory differs from this, it is assumed to be hacked
 #define PAK0_COUNT              339
 #define PAK0_CRC                32981
-
-int		com_argc;
-char	**com_argv;
 
 #define CMDLINE_LENGTH	256
 char	com_cmdline[CMDLINE_LENGTH];
@@ -131,29 +127,6 @@ void InsertLinkAfter (link_t *l, link_t *after)
 
 /*
 ================
-COM_CheckParm
-
-Returns the position (1 to argc-1) in the program's argument list
-where the given parameter apears, or 0 if not present
-================
-*/
-int COM_CheckParm (char *parm)
-{
-	int             i;
-	
-	for (i=1 ; i<com_argc ; i++)
-	{
-		if (!com_argv[i])
-			continue;               // NEXTSTEP sometimes clears appkit vars.
-		if (!QStr::Cmp(parm,com_argv[i]))
-			return i;
-	}
-		
-	return 0;
-}
-
-/*
-================
 COM_CheckRegistered
 
 Looks for the pop.txt file and verifies it.
@@ -204,15 +177,14 @@ void COM_Path_f (void);
 COM_InitArgv
 ================
 */
-void COM_InitArgv (int argc, char **argv)
+void COM_InitArgv2(int argc, char **argv)
 {
-	qboolean        safe;
 	int             i, j, n;
 
 // reconstitute the command line for the cmdline externally visible cvar
 	n = 0;
 
-	for (j=0 ; (j<MAX_NUM_ARGVS) && (j< argc) ; j++)
+	for (j=0 ; (j< argc) ; j++)
 	{
 		i = 0;
 
@@ -229,29 +201,17 @@ void COM_InitArgv (int argc, char **argv)
 
 	com_cmdline[n] = 0;
 
-	safe = false;
+	COM_InitArgv(argc, const_cast<const char**>(argv));
 
-	for (com_argc=0 ; (com_argc<MAX_NUM_ARGVS) && (com_argc < argc) ;
-		 com_argc++)
-	{
-		largv[com_argc] = argv[com_argc];
-		if (!QStr::Cmp("-safe", argv[com_argc]))
-			safe = true;
-	}
-
-	if (safe)
+	if (COM_CheckParm ("-safe"))
 	{
 	// force all the safe-mode switches. Note that we reserved extra space in
 	// case we need to add these, so we don't need an overflow check
 		for (i=0 ; i<NUM_SAFE_ARGVS ; i++)
 		{
-			largv[com_argc] = safeargvs[i];
-			com_argc++;
+			COM_AddParm(safeargvs[i]);
 		}
 	}
-
-	largv[com_argc] = argvdummy;
-	com_argv = largv;
 
 	if (COM_CheckParm ("-rogue"))
 	{
@@ -845,8 +805,8 @@ void COM_InitFilesystem (void)
 // Overrides the system supplied base directory (under GAMENAME)
 //
 	i = COM_CheckParm ("-basedir");
-	if (i && i < com_argc-1)
-		QStr::Cpy(basedir, com_argv[i+1]);
+	if (i && i < COM_Argc()-1)
+		QStr::Cpy(basedir, COM_Argv(i+1));
 	else
 		QStr::Cpy(basedir, host_parms.basedir);
 
@@ -864,12 +824,12 @@ void COM_InitFilesystem (void)
 // -cachedir - will disable caching.
 //
 	i = COM_CheckParm ("-cachedir");
-	if (i && i < com_argc-1)
+	if (i && i < COM_Argc()-1)
 	{
-		if (com_argv[i+1][0] == '-')
+		if (COM_Argv(i+1)[0] == '-')
 			com_cachedir[0] = 0;
 		else
-			QStr::Cpy(com_cachedir, com_argv[i+1]);
+			QStr::Cpy(com_cachedir, COM_Argv(i+1));
 	}
 	else if (host_parms.cachedir)
 		QStr::Cpy(com_cachedir, host_parms.cachedir);
@@ -891,10 +851,10 @@ void COM_InitFilesystem (void)
 // Adds basedir/gamedir as an override game
 //
 	i = COM_CheckParm ("-game");
-	if (i && i < com_argc-1)
+	if (i && i < COM_Argc()-1)
 	{
 		com_modified = true;
-		COM_AddGameDirectory (va("%s/%s", basedir, com_argv[i+1]));
+		COM_AddGameDirectory (va("%s/%s", basedir, COM_Argv(i+1)));
 	}
 
 //
@@ -906,20 +866,20 @@ void COM_InitFilesystem (void)
 	{
 		com_modified = true;
 		com_searchpaths = NULL;
-		while (++i < com_argc)
+		while (++i < COM_Argc())
 		{
-			if (!com_argv[i] || com_argv[i][0] == '+' || com_argv[i][0] == '-')
+			if (COM_Argv(i)[0] == '+' || COM_Argv(i)[0] == '-')
 				break;
 			
 			search = (searchpath_t*)Hunk_Alloc (sizeof(searchpath_t));
-			if ( !QStr::Cmp(QStr::FileExtension(com_argv[i]), "pak") )
+			if ( !QStr::Cmp(QStr::FileExtension(COM_Argv(i)), "pak") )
 			{
-				search->pack = COM_LoadPackFile (com_argv[i]);
+				search->pack = COM_LoadPackFile (const_cast<char*>(COM_Argv(i)));
 				if (!search->pack)
-					Sys_Error ("Couldn't load packfile: %s", com_argv[i]);
+					Sys_Error ("Couldn't load packfile: %s", COM_Argv(i));
 			}
 			else
-				QStr::Cpy(search->filename, com_argv[i]);
+				QStr::Cpy(search->filename, COM_Argv(i));
 			search->next = com_searchpaths;
 			com_searchpaths = search;
 		}

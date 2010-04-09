@@ -37,8 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 int demo_protocols[] =
 { 66, 67, 68, 0 };
 
-#define MAX_NUM_ARGVS	50
-
 #define MIN_DEDICATED_COMHUNKMEGS 1
 #define MIN_COMHUNKMEGS 56
 #ifdef MACOS_X
@@ -48,9 +46,6 @@ int demo_protocols[] =
 #define DEF_COMHUNKMEGS "56"
 #define DEF_COMZONEMEGS "16"
 #endif
-
-int		com_argc;
-char	*com_argv[MAX_NUM_ARGVS+1];
 
 jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 

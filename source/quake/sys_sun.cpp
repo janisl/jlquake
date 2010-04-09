@@ -323,10 +323,10 @@ int main (int argc, char **argv)
     parms.basedir = ".";
     parms.cachedir = NULL;
 
-    COM_InitArgv (argc, argv);
+    COM_InitArgv2(argc, argv);
 
-    parms.argc = com_argc;
-    parms.argv = com_argv;
+    parms.argc = c;
+    parms.argv = v;
 
     printf ("Host_Init\n");
     Host_Init (&parms);

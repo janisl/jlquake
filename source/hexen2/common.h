@@ -20,12 +20,8 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-extern	int		com_argc;
-extern	char	**com_argv;
-
-int COM_CheckParm (char *parm);
 void COM_Init (char *path);
-void COM_InitArgv (int argc, char **argv);
+void COM_InitArgv2(int argc, char **argv);
 
 
 //============================================================================

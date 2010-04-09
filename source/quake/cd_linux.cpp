@@ -376,8 +376,8 @@ int CDAudio_Init(void)
 	if (COM_CheckParm("-nocdaudio"))
 		return -1;
 
-	if ((i = COM_CheckParm("-cddev")) != 0 && i < com_argc - 1) {
-		QStr::NCpy(cd_dev, com_argv[i + 1], sizeof(cd_dev));
+	if ((i = COM_CheckParm("-cddev")) != 0 && i < COM_Argc() - 1) {
+		QStr::NCpy(cd_dev, COM_Argv(i + 1), sizeof(cd_dev));
 		cd_dev[sizeof(cd_dev) - 1] = 0;
 	}
 

@@ -149,7 +149,7 @@ int WINS_Init (void)
 	i = COM_CheckParm ("-ip");
 	if (i)
 	{
-		if (i < com_argc-1)
+		if (i < COM_Argc()-1)
 		{
 			myAddr = inet_addr(com_argv[i+1]);
 			if (myAddr == INADDR_NONE)

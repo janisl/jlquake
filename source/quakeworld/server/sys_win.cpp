@@ -202,19 +202,19 @@ int main (int argc, char **argv)
 	fd_set			fdset;
 	int				t;
 
-	COM_InitArgv (argc, argv);
+	COM_InitArgv2(argc, argv);
 	
-	parms.argc = com_argc;
-	parms.argv = com_argv;
+	parms.argc = argc;
+	parms.argv = argv;
 
 	parms.memsize = 16*1024*1024;
 
 	if ((t = COM_CheckParm ("-heapsize")) != 0 &&
-		t + 1 < com_argc)
+		t + 1 < COM_Argc())
 		parms.memsize = QStr::Atoi(com_argv[t + 1]) * 1024;
 
 	if ((t = COM_CheckParm ("-mem")) != 0 &&
-		t + 1 < com_argc)
+		t + 1 < COM_Argc())
 		parms.memsize = QStr::Atoi(com_argv[t + 1]) * 1024 * 1024;
 
 	parms.membase = malloc (parms.memsize);

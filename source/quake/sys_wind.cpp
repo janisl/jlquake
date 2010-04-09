@@ -285,7 +285,7 @@ int main (int argc, char **argv)
 	parms.basedir = cwd; //"f:/quake";
 //	parms.basedir = "f:\\quake";
 
-	COM_InitArgv (argc, argv);
+	COM_InitArgv2(argc, argv);
 
 	// dedicated server ONLY!
 	if (!COM_CheckParm ("-dedicated"))
@@ -294,7 +294,7 @@ int main (int argc, char **argv)
 		newargv[argc] = "-dedicated";
 		argc++;
 		argv = newargv;
-		COM_InitArgv (argc, argv);
+		COM_InitArgv2(argc, argv);
 	}
 
 	parms.argc = argc;

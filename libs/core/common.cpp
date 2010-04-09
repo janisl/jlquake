@@ -23,6 +23,8 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define MAX_NUM_ARGVS	50
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -36,6 +38,9 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+static int			com_argc;
+static const char*	com_argv[MAX_NUM_ARGVS+1];
 
 // CODE --------------------------------------------------------------------
 
@@ -629,3 +634,105 @@ void Com_Memset (void* dest, const int val, const size_t count)
 	memset(dest, val, count);
 }
 #endif // bk001208 - memset/memcpy assembly, Q_acos needed (RC4)
+
+//==========================================================================
+//
+//	COM_Argc
+//
+//==========================================================================
+
+int COM_Argc()
+{
+	return com_argc;
+}
+
+//==========================================================================
+//
+//	COM_Argv
+//
+//==========================================================================
+
+const char* COM_Argv(int arg)
+{
+	if (arg < 0 || arg >= com_argc || !com_argv[arg])
+	{
+		return "";
+	}
+	return com_argv[arg];
+}
+
+//==========================================================================
+//
+//	COM_InitArgv
+//
+//==========================================================================
+
+void COM_InitArgv(int argc, const char** argv)
+{
+	if (argc > MAX_NUM_ARGVS)
+	{
+		throw QException("argc > MAX_NUM_ARGVS");
+	}
+	com_argc = argc;
+	for (int i = 0; i < argc; i++)
+	{
+		if (!argv[i])// || QStr::Length(argv[i]) >= MAX_TOKEN_CHARS)
+			com_argv[i] = "";
+		else
+			com_argv[i] = argv[i];
+	}
+}
+
+//==========================================================================
+//
+//	COM_AddParm
+//
+//	Adds the given string at the end of the current argument list
+//
+//==========================================================================
+
+void COM_AddParm(const char* parm)
+{
+	if (com_argc == MAX_NUM_ARGVS)
+	{
+		throw QException("COM_AddParm: MAX_NUM)ARGS");
+	}
+	com_argv[com_argc++] = parm;
+}
+
+//==========================================================================
+//
+//	COM_ClearArgv
+//
+//==========================================================================
+
+void COM_ClearArgv(int arg)
+{
+	if (arg < 0 || arg >= com_argc || !com_argv[arg])
+	{
+		return;
+	}
+	com_argv[arg] = "";
+}
+
+//==========================================================================
+//
+//	COM_CheckParm
+//
+//	Returns the position (1 to argc-1) in the program's argument list
+// where the given parameter apears, or 0 if not present
+//
+//==========================================================================
+
+int COM_CheckParm(const char *parm)
+{
+	for (int i = 1; i < com_argc; i++)
+	{
+		if (!QStr::Cmp(parm, com_argv[i]))
+		{
+			return i;
+		}
+	}
+
+	return 0;
+}

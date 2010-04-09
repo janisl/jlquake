@@ -23,11 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	MAXPRINTMSG	4096
 
-#define MAX_NUM_ARGVS	50
-
-
-int		com_argc;
-char	*com_argv[MAX_NUM_ARGVS+1];
 
 int		realtime;
 
@@ -647,86 +642,6 @@ void MSG_ReadDeltaUsercmd (QMsg *msg_read, usercmd_t *from, usercmd_t *move)
 
 //============================================================================
 
-
-/*
-================
-COM_CheckParm
-
-Returns the position (1 to argc-1) in the program's argument list
-where the given parameter apears, or 0 if not present
-================
-*/
-int COM_CheckParm (char *parm)
-{
-	int		i;
-	
-	for (i=1 ; i<com_argc ; i++)
-	{
-		if (!QStr::Cmp(parm,com_argv[i]))
-			return i;
-	}
-		
-	return 0;
-}
-
-int COM_Argc (void)
-{
-	return com_argc;
-}
-
-char *COM_Argv (int arg)
-{
-	if (arg < 0 || arg >= com_argc || !com_argv[arg])
-		return "";
-	return com_argv[arg];
-}
-
-void COM_ClearArgv (int arg)
-{
-	if (arg < 0 || arg >= com_argc || !com_argv[arg])
-		return;
-	com_argv[arg] = "";
-}
-
-
-/*
-================
-COM_InitArgv
-================
-*/
-void COM_InitArgv (int argc, char **argv)
-{
-	int		i;
-
-	if (argc > MAX_NUM_ARGVS)
-		Com_Error (ERR_FATAL, "argc > MAX_NUM_ARGVS");
-	com_argc = argc;
-	for (i=0 ; i<argc ; i++)
-	{
-		if (!argv[i] || QStr::Length(argv[i]) >= MAX_TOKEN_CHARS )
-			com_argv[i] = "";
-		else
-			com_argv[i] = argv[i];
-	}
-}
-
-/*
-================
-COM_AddParm
-
-Adds the given string at the end of the current argument list
-================
-*/
-void COM_AddParm (char *parm)
-{
-	if (com_argc == MAX_NUM_ARGVS)
-		Com_Error (ERR_FATAL, "COM_AddParm: MAX_NUM)ARGS");
-	com_argv[com_argc++] = parm;
-}
-
-
-
-
 /// just for debugging
 int	memsearch (byte *start, int count, int search)
 {
@@ -1123,7 +1038,7 @@ void Qcommon_Init (int argc, char **argv)
 
 	// prepare enough of the subsystems to handle
 	// cvar and command buffer management
-	COM_InitArgv (argc, argv);
+	COM_InitArgv (argc, const_cast<const char**>(argv));
 
 	Com_InitByteOrder();
 	Cbuf_Init ();

@@ -1442,7 +1442,7 @@ void Host_Init (quakeparms_t *parms)
 	try
 	{
 	GLog.AddListener(&MainLog);
-	COM_InitArgv (parms->argc, parms->argv);
+	COM_InitArgv2(parms->argc, parms->argv);
 	COM_AddParm ("-game");
 	COM_AddParm ("qw");
 

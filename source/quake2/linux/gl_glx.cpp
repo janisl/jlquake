@@ -324,9 +324,9 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 // specify a visual id
 	if ((pnum=COM_CheckParm("-visualid")))
 	{
-		if (pnum >= com_argc-1)
+		if (pnum >= COM_Argc()-1)
 			Sys_Error("VID: -visualid <id#>\n");
-		template.visualid = QStr::Atoi(com_argv[pnum+1]);
+		template.visualid = QStr::Atoi(COM_Argv(pnum+1));
 		template_mask = VisualIDMask;
 	}
 

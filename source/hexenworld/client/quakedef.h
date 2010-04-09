@@ -61,8 +61,6 @@ typedef struct
 
 //=============================================================================
 
-#define MAX_NUM_ARGVS	50
-
 
 extern qboolean noclip_anglehack;
 

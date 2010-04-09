@@ -366,15 +366,15 @@ int main (int c, char **v)
 
 	Com_Memset(&parms, 0, sizeof(parms));
 
-	COM_InitArgv(c, v);
-	parms.argc = com_argc;
-	parms.argv = com_argv;
+	COM_InitArgv2(c, v);
+	parms.argc = c;
+	parms.argv = v;
 
 	parms.memsize = 16*1024*1024;
 
 	j = COM_CheckParm("-mem");
 	if (j)
-		parms.memsize = (int) (QStr::Atof(com_argv[j+1]) * 1024 * 1024);
+		parms.memsize = (int) (QStr::Atof(COM_Argv(j+1)) * 1024 * 1024);
 	parms.membase = malloc (parms.memsize);
 
 	parms.basedir = basedir;

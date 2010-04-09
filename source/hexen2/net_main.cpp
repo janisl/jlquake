@@ -804,8 +804,8 @@ void NET_Init (void)
 
 	if (i)
 	{
-		if (i < com_argc-1)
-			DEFAULTnet_hostport = QStr::Atoi (com_argv[i+1]);
+		if (i < COM_Argc()-1)
+			DEFAULTnet_hostport = QStr::Atoi (COM_Argv(i+1));
 		else
 			Sys_Error ("NET_Init: you must specify a number after -port");
 	}

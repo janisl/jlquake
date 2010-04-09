@@ -25,12 +25,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #endif
 
-#define MAX_NUM_ARGVS	50
 #define NUM_SAFE_ARGVS	6
 
 usercmd_t nullcmd; // guarenteed to be zero
 
-static char	*largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
 static char	*argvdummy = " ";
 
 static char	*safeargvs[NUM_SAFE_ARGVS] =
@@ -227,33 +225,6 @@ void MSG_ReadDeltaUsercmd (usercmd_t *from, usercmd_t *move)
 
 //============================================================================
 
-int		com_argc;
-char	**com_argv;
-
-
-/*
-================
-COM_CheckParm
-
-Returns the position (1 to argc-1) in the program's argument list
-where the given parameter apears, or 0 if not present
-================
-*/
-int COM_CheckParm (char *parm)
-{
-	int		i;
-	
-	for (i=1 ; i<com_argc ; i++)
-	{
-		if (!com_argv[i])
-			continue;		// NEXTSTEP sometimes clears appkit vars.
-		if (!QStr::Cmp(parm,com_argv[i]))
-			return i;
-	}
-		
-	return 0;
-}
-
 /*
 ================
 COM_CheckRegistered
@@ -303,48 +274,20 @@ void COM_CheckRegistered (void)
 COM_InitArgv
 ================
 */
-void COM_InitArgv (int argc, char **argv)
+void COM_InitArgv2(int argc, char **argv)
 {
-	qboolean	safe;
-	int			i;
+	COM_InitArgv(argc, const_cast<const char**>(argv));
 
-	safe = false;
-
-	for (com_argc=0 ; (com_argc<MAX_NUM_ARGVS) && (com_argc < argc) ;
-		 com_argc++)
-	{
-		largv[com_argc] = argv[com_argc];
-		if (!QStr::Cmp("-safe", argv[com_argc]))
-			safe = true;
-	}
-
-	if (safe)
+	if (COM_CheckParm ("-safe"))
 	{
 	// force all the safe-mode switches. Note that we reserved extra space in
 	// case we need to add these, so we don't need an overflow check
-		for (i=0 ; i<NUM_SAFE_ARGVS ; i++)
+		for (int i=0 ; i<NUM_SAFE_ARGVS ; i++)
 		{
-			largv[com_argc] = safeargvs[i];
-			com_argc++;
+			COM_AddParm(safeargvs[i]);
 		}
 	}
-
-	largv[com_argc] = argvdummy;
-	com_argv = largv;
 }
-
-/*
-================
-COM_AddParm
-
-Adds the given string at the end of the current argument list
-================
-*/
-void COM_AddParm (char *parm)
-{
-	largv[com_argc++] = parm;
-}
-
 
 /*
 ================
@@ -947,8 +890,8 @@ void COM_InitFilesystem (void)
 // Overrides the system supplied base directory (under id1)
 //
 	i = COM_CheckParm ("-basedir");
-	if (i && i < com_argc-1)
-		QStr::Cpy(com_basedir, com_argv[i+1]);
+	if (i && i < COM_Argc()-1)
+		QStr::Cpy(com_basedir, COM_Argv(i+1));
 	else
 		QStr::Cpy(com_basedir, host_parms.basedir);
 

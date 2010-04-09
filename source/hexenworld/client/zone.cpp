@@ -910,8 +910,8 @@ void Memory_Init (void *buf, int size)
 	p = COM_CheckParm ("-zone");
 	if (p)
 	{
-		if (p < com_argc-1)
-			zonesize = QStr::Atoi(com_argv[p+1]) * 1024;
+		if (p < COM_Argc()-1)
+			zonesize = QStr::Atoi(COM_Argv(p+1)) * 1024;
 		else
 			Sys_Error ("Memory_Init: you must specify a size in KB after -zone");
 	}

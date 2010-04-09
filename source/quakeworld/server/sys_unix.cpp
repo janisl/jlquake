@@ -223,15 +223,15 @@ int main(int argc, char *argv[])
 
 	Com_Memset(&parms, 0, sizeof(parms));
 
-	COM_InitArgv (argc, argv);	
-	parms.argc = com_argc;
-	parms.argv = com_argv;
+	COM_InitArgv2(argc, argv);	
+	parms.argc = argc;
+	parms.argv = argv;
 
 	parms.memsize = 16*1024*1024;
 
 	j = COM_CheckParm("-mem");
 	if (j)
-		parms.memsize = (int) (QStr::Atof(com_argv[j+1]) * 1024 * 1024);
+		parms.memsize = (int) (QStr::Atof(COM_Argv(j+1)) * 1024 * 1024);
 	if ((parms.membase = malloc (parms.memsize)) == NULL)
 		Sys_Error("Can't allocate %ld\n", parms.memsize);
 

@@ -197,23 +197,19 @@ void Cmd_StuffCmds_f (void)
 		
 // build the combined string to parse from
 	s = 0;
-	for (i=1 ; i<com_argc ; i++)
+	for (i=1 ; i<COM_Argc() ; i++)
 	{
-		if (!com_argv[i])
-			continue;		// NEXTSTEP nulls out -NXHost
-		s += QStr::Length(com_argv[i]) + 1;
+		s += QStr::Length(COM_Argv(i)) + 1;
 	}
 	if (!s)
 		return;
 		
 	text = (char*)Z_Malloc (s+1);
 	text[0] = 0;
-	for (i=1 ; i<com_argc ; i++)
+	for (i=1 ; i<COM_Argc() ; i++)
 	{
-		if (!com_argv[i])
-			continue;		// NEXTSTEP nulls out -NXHost
-		QStr::Cat(text, s + 1,com_argv[i]);
-		if (i != com_argc-1)
+		QStr::Cat(text, s + 1,COM_Argv(i));
+		if (i != COM_Argc()-1)
 			QStr::Cat(text, s + 1, " ");
 	}
 	

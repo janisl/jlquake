@@ -53,14 +53,8 @@ void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
 
 //============================================================================
 
-extern	int		com_argc;
-extern	char	**com_argv;
-
-int COM_CheckParm (char *parm);
-void COM_AddParm (char *parm);
-
 void COM_Init (void);
-void COM_InitArgv (int argc, char **argv);
+void COM_InitArgv2(int argc, char **argv);
 
 
 //============================================================================

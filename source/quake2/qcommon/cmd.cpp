@@ -262,8 +262,8 @@ Other commands are added late, after all initialization is complete.
 */
 void Cbuf_AddEarlyCommands (qboolean clear)
 {
-	int		i;
-	char	*s;
+	int			i;
+	const char	*s;
 
 	for (i=0 ; i<COM_Argc() ; i++)
 	{

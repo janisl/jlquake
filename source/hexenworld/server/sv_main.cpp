@@ -1664,9 +1664,9 @@ void SV_InitNet (void)
 
 	port = PORT_SERVER;
 	p = COM_CheckParm ("-port");
-	if (p && p < com_argc)
+	if (p && p < COM_Argc())
 	{
-		port = QStr::Atoi(com_argv[p+1]);
+		port = QStr::Atoi(COM_Argv(p+1));
 		Con_Printf ("Port: %i\n", port);
 	}
 	NET_Init (port);
@@ -1691,7 +1691,7 @@ void SV_Init (quakeparms_t *parms)
 	{
 	GLog.AddListener(&MainLog);
 
-	COM_InitArgv (parms->argc, parms->argv);
+	COM_InitArgv2(parms->argc, parms->argv);
 //	COM_AddParm ("-game");
 //	COM_AddParm ("hw");
 

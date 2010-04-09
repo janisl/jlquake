@@ -88,15 +88,7 @@ void	MSG_ReadDir (QMsg *sb, vec3_t vector);
 
 //============================================================================
 
-
-int	COM_Argc (void);
-char *COM_Argv (int arg);	// range and null checked
-void COM_ClearArgv (int arg);
-int COM_CheckParm (char *parm);
-void COM_AddParm (char *parm);
-
 void COM_Init (void);
-void COM_InitArgv (int argc, char **argv);
 
 char *CopyString (char *in);
 

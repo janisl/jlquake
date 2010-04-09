@@ -717,10 +717,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	parms.argv = argv;
 
-	COM_InitArgv (parms.argc, parms.argv);
-
-	parms.argc = com_argc;
-	parms.argv = com_argv;
+	COM_InitArgv2(parms.argc, parms.argv);
 
 	isDedicated = (COM_CheckParm ("-dedicated") != 0);
 
@@ -765,7 +762,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	{
 		t = COM_CheckParm("-heapsize") + 1;
 
-		if (t < com_argc)
+		if (t < COM_Argc())
 			parms.memsize = QStr::Atoi(com_argv[t]) * 1024;
 	}
 
@@ -794,19 +791,19 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	// give QHOST a chance to hook into the console
 		if ((t = COM_CheckParm ("-HFILE")) > 0)
 		{
-			if (t < com_argc)
+			if (t < COM_Argc())
 				hFile = (HANDLE)QStr::Atoi(com_argv[t+1]);
 		}
 			
 		if ((t = COM_CheckParm ("-HPARENT")) > 0)
 		{
-			if (t < com_argc)
+			if (t < COM_Argc())
 				heventParent = (HANDLE)QStr::Atoi(com_argv[t+1]);
 		}
 			
 		if ((t = COM_CheckParm ("-HCHILD")) > 0)
 		{
-			if (t < com_argc)
+			if (t < COM_Argc())
 				heventChild = (HANDLE)QStr::Atoi(com_argv[t+1]);
 		}
 
