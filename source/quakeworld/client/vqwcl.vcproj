@@ -240,10 +240,6 @@
 				>
 			</File>
 			<File
-				RelativePath="crc.cpp"
-				>
-			</File>
-			<File
 				RelativePath="cvar.cpp"
 				>
 			</File>
@@ -444,10 +440,6 @@
 			</File>
 			<File
 				RelativePath="console.h"
-				>
-			</File>
-			<File
-				RelativePath="crc.h"
 				>
 			</File>
 			<File

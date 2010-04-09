@@ -38,7 +38,6 @@ set(QUAKE2_OBJS
 	qcommon/cmd.cpp
 	qcommon/cmodel.cpp
 	qcommon/common.cpp
-	qcommon/crc.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp
 	qcommon/md4.cpp

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="vquake2"
 	ProjectGUID="{962B0AFF-71F1-42FA-BD82-C30D155709D4}"
 	RootNamespace="quake2"
@@ -264,10 +264,6 @@
 			</File>
 			<File
 				RelativePath="client\console.cpp"
-				>
-			</File>
-			<File
-				RelativePath="qcommon\crc.cpp"
 				>
 			</File>
 			<File

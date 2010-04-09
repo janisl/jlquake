@@ -198,10 +198,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\crc.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\client\cvar.cpp"
 				>
 			</File>
@@ -324,10 +320,6 @@
 			</File>
 			<File
 				RelativePath="..\client\console.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\crc.h"
 				>
 			</File>
 			<File

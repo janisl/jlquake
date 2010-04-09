@@ -14,7 +14,6 @@ set(HEXEN2_FILES
 	cmd.cpp
 	common.cpp
 	console.cpp
-	crc.cpp
 	cvar.cpp
 	gl_draw.cpp
 	gl_mesh.cpp

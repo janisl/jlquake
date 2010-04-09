@@ -198,10 +198,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\crc.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\client\cvar.cpp"
 				>
 			</File>

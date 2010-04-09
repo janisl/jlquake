@@ -37,7 +37,6 @@
 #include "console.h"
 #include "view.h"
 #include "menu.h"
-#include "crc.h"
 #include "cdaudio.h"
 #include "pmove.h"
 #include "mididef.h"

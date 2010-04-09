@@ -17,27 +17,7 @@
 //**
 //**************************************************************************
 
-#ifndef _CORE_H
-#define _CORE_H
-
-//	C headers
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <cstdarg>
-#include <cmath>
-
-#include "common.h"		//	Basic types and defines
-#include "memory.h"		//	Memory allocation
-#include "endian.h"		//	Endianes handling
-#include "exception.h"	//	Exception handling
-#include "log.h"		//	General logging interface
-#include "array.h"		//	Dynamic array
-#include "str.h"		//	Strings
-#include "mathlib.h"
-#include "message.h"
-#include "huffman.h"
-#include "cmd.h"
-#include "crc.h"
-
-#endif
+void CRC_Init(unsigned short* crcvalue);
+void CRC_ProcessByte(unsigned short* crcvalue, byte data);
+unsigned short CRC_Value(unsigned short crcvalue);
+unsigned short CRC_Block(const byte *start, int count);

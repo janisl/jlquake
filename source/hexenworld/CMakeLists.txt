@@ -32,7 +32,6 @@ set(HWSV_FILES
 	server/model.cpp
 	client/cmd.cpp
 	client/common.cpp
-	client/crc.cpp
 	client/cvar.cpp
 	client/strings.cpp
 	client/zone.cpp
@@ -64,7 +63,6 @@ set(HWCL_FILES
 	client/cmd.cpp
 	client/common.cpp
 	client/console.cpp
-	client/crc.cpp
 	client/cvar.cpp
 	client/keys.cpp
 	client/menu.cpp

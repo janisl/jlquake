@@ -157,6 +157,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\crc.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\endian.cpp"
 				>
 			</File>
@@ -208,6 +212,10 @@
 			</File>
 			<File
 				RelativePath=".\core.h"
+				>
+			</File>
+			<File
+				RelativePath=".\crc.h"
 				>
 			</File>
 			<File

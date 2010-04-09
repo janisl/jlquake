@@ -40,7 +40,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "cmd.h"
 typedef void efrag_t;
 #include "gl_model.h"
-#include "crc.h"
 #include "progs.h"
 
 #include "server.h"

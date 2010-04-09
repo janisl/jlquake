@@ -21,7 +21,6 @@
 #include "cmd.h"
 typedef void efrag_t;
 #include "gl_model.h"
-#include "crc.h"
 #include "cl_effect.h"
 #include "progs.h"
 

@@ -32,7 +32,6 @@ set(QWSV_OBJS
 	server/model.cpp
 	client/cmd.cpp
 	client/common.cpp
-	client/crc.cpp
 	client/cvar.cpp
 	client/md4.cpp
 	client/zone.cpp
@@ -63,7 +62,6 @@ set(GLQWCL_OBJS
 	client/cmd.cpp
 	client/common.cpp
 	client/console.cpp
-	client/crc.cpp
 	client/cvar.cpp
 	client/keys.cpp
 	client/md4.cpp
