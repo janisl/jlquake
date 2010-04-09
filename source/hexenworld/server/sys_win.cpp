@@ -196,11 +196,11 @@ int main (int argc, char **argv)
 
 	if ((t = COM_CheckParm ("-heapsize")) != 0 &&
 		t + 1 < COM_Argc())
-		parms.memsize = QStr::Atoi (com_argv[t + 1]) * 1024;
+		parms.memsize = QStr::Atoi (COM_Argv(t + 1)) * 1024;
 
 	if ((t = COM_CheckParm ("-mem")) != 0 &&
 		t + 1 < COM_Argc())
-		parms.memsize = QStr::Atoi (com_argv[t + 1]) * 1024 * 1024;
+		parms.memsize = QStr::Atoi (COM_Argv(t + 1)) * 1024 * 1024;
 
 	parms.membase = malloc (parms.memsize);
 

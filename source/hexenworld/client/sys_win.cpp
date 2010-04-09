@@ -321,7 +321,7 @@ void Sys_InitFloatTime (void)
 
 	if (j)
 	{
-		curtime = (double) (QStr::Atof(com_argv[j+1]));
+		curtime = (double) (QStr::Atof(COM_Argv(j+1)));
 	}
 	else
 	{
@@ -579,7 +579,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		t = COM_CheckParm("-heapsize") + 1;
 
 		if (t < COM_Argc())
-			parms.memsize = QStr::Atoi (com_argv[t]) * 1024;
+			parms.memsize = QStr::Atoi (COM_Argv(t)) * 1024;
 	}
 
 	parms.membase = malloc (parms.memsize);

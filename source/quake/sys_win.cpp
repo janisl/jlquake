@@ -512,7 +512,7 @@ void Sys_InitFloatTime (void)
 
 	if (j)
 	{
-		curtime = (double) (QStr::Atof(com_argv[j+1]));
+		curtime = (double) (QStr::Atof(COM_Argv(j+1)));
 	}
 	else
 	{
@@ -763,7 +763,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		t = COM_CheckParm("-heapsize") + 1;
 
 		if (t < COM_Argc())
-			parms.memsize = QStr::Atoi(com_argv[t]) * 1024;
+			parms.memsize = QStr::Atoi(COM_Argv(t)) * 1024;
 	}
 
 	parms.membase = malloc (parms.memsize);
@@ -792,19 +792,19 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		if ((t = COM_CheckParm ("-HFILE")) > 0)
 		{
 			if (t < COM_Argc())
-				hFile = (HANDLE)QStr::Atoi(com_argv[t+1]);
+				hFile = (HANDLE)QStr::Atoi(COM_Argv(t+1));
 		}
 			
 		if ((t = COM_CheckParm ("-HPARENT")) > 0)
 		{
 			if (t < COM_Argc())
-				heventParent = (HANDLE)QStr::Atoi(com_argv[t+1]);
+				heventParent = (HANDLE)QStr::Atoi(COM_Argv(t+1));
 		}
 			
 		if ((t = COM_CheckParm ("-HCHILD")) > 0)
 		{
 			if (t < COM_Argc())
-				heventChild = (HANDLE)QStr::Atoi(com_argv[t+1]);
+				heventChild = (HANDLE)QStr::Atoi(COM_Argv(t+1));
 		}
 
 		InitConProc (hFile, heventParent, heventChild);

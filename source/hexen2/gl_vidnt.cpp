@@ -1427,7 +1427,7 @@ void VID_InitDIB (HINSTANCE hInstance)
 	modelist[0].type = MS_WINDOWED;
 
 	if (COM_CheckParm("-width"))
-		modelist[0].width = QStr::Atoi(com_argv[COM_CheckParm("-width")+1]);
+		modelist[0].width = QStr::Atoi(COM_Argv(COM_CheckParm("-width")+1));
 	else
 		modelist[0].width = 640;
 
@@ -1435,7 +1435,7 @@ void VID_InitDIB (HINSTANCE hInstance)
 		modelist[0].width = 320;
 
 	if (COM_CheckParm("-height"))
-		modelist[0].height= QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
+		modelist[0].height= QStr::Atoi(COM_Argv(COM_CheckParm("-height")+1));
 	else
 		modelist[0].height = modelist[0].width * 240/320;
 
@@ -1665,7 +1665,7 @@ void	VID_Init (unsigned char *palette)
 
 		if (COM_CheckParm("-mode"))
 		{
-			vid_default = QStr::Atoi(com_argv[COM_CheckParm("-mode")+1]);
+			vid_default = QStr::Atoi(COM_Argv(COM_CheckParm("-mode")+1));
 		}
 		else
 		{
@@ -1682,7 +1682,7 @@ void	VID_Init (unsigned char *palette)
 			{
 				if (COM_CheckParm("-width"))
 				{
-					width = QStr::Atoi(com_argv[COM_CheckParm("-width")+1]);
+					width = QStr::Atoi(COM_Argv(COM_CheckParm("-width")+1));
 				}
 				else
 				{
@@ -1691,7 +1691,7 @@ void	VID_Init (unsigned char *palette)
 
 				if (COM_CheckParm("-bpp"))
 				{
-					bpp = QStr::Atoi(com_argv[COM_CheckParm("-bpp")+1]);
+					bpp = QStr::Atoi(COM_Argv(COM_CheckParm("-bpp")+1));
 					findbpp = 0;
 				}
 				else
@@ -1701,7 +1701,7 @@ void	VID_Init (unsigned char *palette)
 				}
 
 				if (COM_CheckParm("-height"))
-					height = QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
+					height = QStr::Atoi(COM_Argv(COM_CheckParm("-height")+1));
 
 			// if they want to force it, add the specified mode to the list
 				if (COM_CheckParm("-force") && (nummodes < MAX_MODE_LIST))
@@ -1741,7 +1741,7 @@ void	VID_Init (unsigned char *palette)
 				{
 					if (COM_CheckParm("-height"))
 					{
-						height = QStr::Atoi(com_argv[COM_CheckParm("-height")+1]);
+						height = QStr::Atoi(COM_Argv(COM_CheckParm("-height")+1));
 
 						for (i=1, vid_default=0 ; i<nummodes ; i++)
 						{
