@@ -30,7 +30,7 @@ int					r_numparticles;
 vec3_t				r_pright, r_pup, r_ppn;
 static vec3_t		rider_origin;
 
-cvar_t				leak_color = {"leak_color","251", true};
+cvar_t				leak_color = {"leak_color","251", NULL,0,false,0,NULL,true};
 
 
 static particle_t *AllocParticle(void);

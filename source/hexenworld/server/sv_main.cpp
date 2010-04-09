@@ -47,38 +47,38 @@ cvar_t sv_namedistance = {"sv_namedistance", "600"};
 //
 // game rules mirrored in svs.info
 //
-cvar_t	fraglimit = {"fraglimit","0",false,true};
-cvar_t	timelimit = {"timelimit","0",false,true};
-cvar_t	teamplay = {"teamplay","0",false,true};
-cvar_t	samelevel = {"samelevel","0", false, true};
-cvar_t	maxclients = {"maxclients","8", false, true};
-cvar_t	maxspectators = {"maxspectators","8", false, true};
-cvar_t	skill = {"skill","1", false, false};						// 0 - 3
-cvar_t	deathmatch = {"deathmatch","1", false, true};			// 0, 1, or 2
-cvar_t	coop = {"coop","0", false, true};			// 0, 1, or 2
-cvar_t	randomclass = {"randomclass","0", false, true};	
-cvar_t	damageScale = {"damagescale","1.0", false, true};
-cvar_t	shyRespawn = {"shyRespawn", "0", false, true};
-cvar_t	spartanPrint = {"spartanPrint", "1.0", false, true};
-cvar_t	meleeDamScale = {"meleeDamScale","0.66666", false, true};
-cvar_t	manaScale = {"manascale", "1.0", false, true};
-cvar_t	tomeMode = {"tomemode", "0", false, true};
-cvar_t	tomeRespawn = {"tomerespawn", "0", false, true};
-cvar_t	w2Respawn = {"w2respawn", "0", false, true};
-cvar_t	altRespawn = {"altrespawn", "0", false, true};
-cvar_t	fixedLevel = {"fixedlevel", "0", false, true};
-cvar_t	autoItems = {"autoitems", "0", false, true};
-cvar_t	dmMode = {"dmmode", "0", false, true};
-cvar_t	easyFourth = {"easyfourth", "0", false, true};
-cvar_t	patternRunner= {"patternrunner", "0", false, true};
-cvar_t	spawn = {"spawn","0", false, true};
+cvar_t	fraglimit = {"fraglimit","0",NULL,0,false,0,NULL,false,true};
+cvar_t	timelimit = {"timelimit","0",NULL,0,false,0,NULL,false,true};
+cvar_t	teamplay = {"teamplay","0",NULL,0,false,0,NULL,false,true};
+cvar_t	samelevel = {"samelevel","0", NULL,0,false,0,NULL,false, true};
+cvar_t	maxclients = {"maxclients","8", NULL,0,false,0,NULL,false, true};
+cvar_t	maxspectators = {"maxspectators","8", NULL,0,false,0,NULL,false, true};
+cvar_t	skill = {"skill","1", NULL,0,false,0,NULL,false, false};						// 0 - 3
+cvar_t	deathmatch = {"deathmatch","1", NULL,0,false,0,NULL,false, true};			// 0, 1, or 2
+cvar_t	coop = {"coop","0", NULL,0,false,0,NULL,false, true};			// 0, 1, or 2
+cvar_t	randomclass = {"randomclass","0", NULL,0,false,0,NULL,false, true};	
+cvar_t	damageScale = {"damagescale","1.0", NULL,0,false,0,NULL,false, true};
+cvar_t	shyRespawn = {"shyRespawn", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	spartanPrint = {"spartanPrint", "1.0", NULL,0,false,0,NULL,false, true};
+cvar_t	meleeDamScale = {"meleeDamScale","0.66666", NULL,0,false,0,NULL,false, true};
+cvar_t	manaScale = {"manascale", "1.0", NULL,0,false,0,NULL,false, true};
+cvar_t	tomeMode = {"tomemode", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	tomeRespawn = {"tomerespawn", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	w2Respawn = {"w2respawn", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	altRespawn = {"altrespawn", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	fixedLevel = {"fixedlevel", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	autoItems = {"autoitems", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	dmMode = {"dmmode", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	easyFourth = {"easyfourth", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	patternRunner= {"patternrunner", "0", NULL,0,false,0,NULL,false, true};
+cvar_t	spawn = {"spawn","0", NULL,0,false,0,NULL,false, true};
 
-cvar_t	hostname = {"hostname","unnamed", false, true};
+cvar_t	hostname = {"hostname","unnamed", NULL,0,false,0,NULL,false, true};
 
-cvar_t	sv_ce_scale			= {"sv_ce_scale","1", true};
-cvar_t	sv_ce_max_size		= {"sv_ce_max_size","0", true};
+cvar_t	sv_ce_scale			= {"sv_ce_scale","1", NULL,0,false,0,NULL,true};
+cvar_t	sv_ce_max_size		= {"sv_ce_max_size","0", NULL,0,false,0,NULL,true};
 
-cvar_t	noexit = {"noexit", "0", false, true};
+cvar_t	noexit = {"noexit", "0", NULL,0,false,0,NULL,false, true};
 
 FILE	*sv_logfile;
 FILE	*sv_fraglogfile;

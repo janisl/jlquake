@@ -97,8 +97,8 @@ static float BarHeight;
 static float BarTargetHeight;
 cvar_t BarSpeed = { "barspeed", "5" };
 cvar_t sbtemp = { "sbtemp", "5" };
-cvar_t DMMode = { "dm_mode", "1", true };
-cvar_t sbtrans = { "sbtrans", "0", true };
+cvar_t DMMode = { "dm_mode", "1", NULL,0,false,0,NULL,true };
+cvar_t sbtrans = { "sbtrans", "0", NULL,0,false,0,NULL,true };
 
 static qpic_t *sb_nums[11];
 static qpic_t *sb_colon, *sb_slash;

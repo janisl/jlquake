@@ -404,7 +404,6 @@ void Cvar_SetLatched( const char *var_name, const char *value);
 void	Cvar_SetValue( const char *var_name, float value );
 // expands value to a string and calls Cvar_Set
 
-float	Cvar_VariableValue( const char *var_name );
 int		Cvar_VariableIntegerValue( const char *var_name );
 // returns 0 if not defined or non numeric
 

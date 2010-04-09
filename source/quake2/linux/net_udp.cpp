@@ -370,8 +370,8 @@ void NET_OpenIP (void)
 {
 	cvar_t	*port, *ip;
 
-	port = Cvar_Get ("port", va("%i", PORT_SERVER), CVAR_NOSET);
-	ip = Cvar_Get ("ip", "localhost", CVAR_NOSET);
+	port = Cvar_Get ("port", va("%i", PORT_SERVER), CVAR_INIT);
+	ip = Cvar_Get ("ip", "localhost", CVAR_INIT);
 
 	if (!ip_sockets[NS_SERVER])
 		ip_sockets[NS_SERVER] = NET_Socket (ip->string, port->value);

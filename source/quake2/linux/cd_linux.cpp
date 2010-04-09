@@ -360,7 +360,7 @@ int CDAudio_Init(void)
 	cvar_t			*cv;
 	extern uid_t saved_euid;
 
-	cv = Cvar_Get ("nocdaudio", "0", CVAR_NOSET);
+	cv = Cvar_Get ("nocdaudio", "0", CVAR_INIT);
 	if (cv->value)
 		return -1;
 

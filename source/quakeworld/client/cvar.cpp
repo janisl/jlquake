@@ -25,40 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #endif
 
-cvar_t	*cvar_vars;
 char	*cvar_null_string = "";
-
-/*
-============
-Cvar_FindVar
-============
-*/
-cvar_t *Cvar_FindVar (char *var_name)
-{
-	cvar_t	*var;
-	
-	for (var=cvar_vars ; var ; var=var->next)
-		if (!QStr::Cmp(var_name, var->name))
-			return var;
-
-	return NULL;
-}
-
-/*
-============
-Cvar_VariableValue
-============
-*/
-float	Cvar_VariableValue (char *var_name)
-{
-	cvar_t	*var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return 0;
-	return QStr::Atof(var->string);
-}
-
 
 /*
 ============
@@ -126,14 +93,14 @@ void Cvar_Set (char *var_name, char *value)
 	}
 
 #ifdef SERVERONLY
-	if (var->info)
+	if (var->flags & CVAR_SERVERINFO)
 	{
 		Info_SetValueForKey (svs.info, var_name, value, MAX_SERVERINFO_STRING);
 		SV_SendServerInfoChange(var_name, value);
 //		SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.info);
 	}
 #else
-	if (var->info)
+	if (var->flags & CVAR_USERINFO)
 	{
 		Info_SetValueForKey (cls.userinfo, var_name, value, MAX_INFO_STRING);
 		if (cls.state >= ca_connected)
@@ -144,9 +111,9 @@ void Cvar_Set (char *var_name, char *value)
 	}
 #endif
 	
-	Z_Free (var->string);	// free the old value string
+	Mem_Free (var->string);	// free the old value string
 	
-	var->string = (char*)Z_Malloc (QStr::Length(value)+1);
+	var->string = (char*)Mem_Alloc (QStr::Length(value)+1);
 	QStr::Cpy(var->string, value);
 	var->value = QStr::Atof(var->string);
 }
@@ -194,10 +161,24 @@ void Cvar_RegisterVariable (cvar_t *variable)
 	variable->next = cvar_vars;
 	cvar_vars = variable;
 
+	if (variable->archive)
+		variable->flags |= CVAR_ARCHIVE;
+#ifdef SERVERONLY
+	if (variable->info)
+		variable->flags |= CVAR_SERVERINFO;
+#else
+	if (variable->info)
+		variable->flags |= CVAR_USERINFO;
+#endif
+
 // copy the value off, because future sets will Z_Free it
 	QStr::Cpy(value, variable->string);
-	variable->string = (char*)Z_Malloc (1);	
-	
+	variable->string = (char*)Mem_Alloc (1);	
+
+	long hash = Cvar_GenerateHashValue(variable->name);
+	variable->hashNext = cvar_hashTable[hash];
+	cvar_hashTable[hash] = variable;
+
 // set it through the function to be consistant
 	Cvar_Set (variable->name, value);
 }
@@ -243,7 +224,7 @@ void Cvar_WriteVariables (FILE *f)
 	cvar_t	*var;
 	
 	for (var = cvar_vars ; var ; var = var->next)
-		if (var->archive)
+		if (var->flags & CVAR_ARCHIVE)
 			fprintf (f, "%s \"%s\"\n", var->name, var->string);
 }
 

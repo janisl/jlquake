@@ -10,15 +10,15 @@ server_t		sv;
 server_static_t	svs;
 char	localmodels[MAX_MODELS][5];			// inline model names for precache
 
-cvar_t	sv_sound_distance = {"sv_sound_distance","800", true};
+cvar_t	sv_sound_distance = {"sv_sound_distance","800", NULL,0,false,0,NULL,true};
 
-cvar_t	sv_update_player	= {"sv_update_player","1", true};
-cvar_t	sv_update_monsters	= {"sv_update_monsters","1", true};
-cvar_t	sv_update_missiles	= {"sv_update_missiles","1", true};
-cvar_t	sv_update_misc		= {"sv_update_misc","1", true};
+cvar_t	sv_update_player	= {"sv_update_player","1", NULL,0,false,0,NULL,true};
+cvar_t	sv_update_monsters	= {"sv_update_monsters","1", NULL,0,false,0,NULL,true};
+cvar_t	sv_update_missiles	= {"sv_update_missiles","1", NULL,0,false,0,NULL,true};
+cvar_t	sv_update_misc		= {"sv_update_misc","1", NULL,0,false,0,NULL,true};
 
-cvar_t	sv_ce_scale			= {"sv_ce_scale","0", true};
-cvar_t	sv_ce_max_size		= {"sv_ce_max_size","0", true};
+cvar_t	sv_ce_scale			= {"sv_ce_scale","0", NULL,0,false,0,NULL,true};
+cvar_t	sv_ce_max_size		= {"sv_ce_max_size","0", NULL,0,false,0,NULL,true};
 
 extern unsigned int	info_mask, info_mask2;
 int		sv_kingofhill;

@@ -2169,16 +2169,16 @@ void M_MultiPlayer_Key (int key)
 #define MAX_HOST_SIZE 80
 char save_names[MAX_HOST_NAMES][MAX_HOST_SIZE];
 
-cvar_t	hostname1 = {"host1","equalizer.ravensoft.com", true};
-cvar_t	hostname2 = {"host2","", true};
-cvar_t	hostname3 = {"host3","", true};
-cvar_t	hostname4 = {"host4","", true};
-cvar_t	hostname5 = {"host5","", true};
-cvar_t	hostname6 = {"host6","", true};
-cvar_t	hostname7 = {"host7","", true};
-cvar_t	hostname8 = {"host8","", true};
-cvar_t	hostname9 = {"host9","", true};
-cvar_t	hostname10 = {"host10","", true};
+cvar_t	hostname1 = {"host1","equalizer.ravensoft.com", NULL,0,false,0,NULL,true};
+cvar_t	hostname2 = {"host2","", NULL,0,false,0,NULL,true};
+cvar_t	hostname3 = {"host3","", NULL,0,false,0,NULL,true};
+cvar_t	hostname4 = {"host4","", NULL,0,false,0,NULL,true};
+cvar_t	hostname5 = {"host5","", NULL,0,false,0,NULL,true};
+cvar_t	hostname6 = {"host6","", NULL,0,false,0,NULL,true};
+cvar_t	hostname7 = {"host7","", NULL,0,false,0,NULL,true};
+cvar_t	hostname8 = {"host8","", NULL,0,false,0,NULL,true};
+cvar_t	hostname9 = {"host9","", NULL,0,false,0,NULL,true};
+cvar_t	hostname10 = {"host10","", NULL,0,false,0,NULL,true};
 
 int connect_cursor = 0;
 #define MAX_CONNECT_CMDS 11

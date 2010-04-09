@@ -2,7 +2,7 @@
 #include "winquake.h"
 
 cvar_t	cl_nopred = {"cl_nopred","0"};
-cvar_t	cl_pushlatency = {"pushlatency","-50", true};
+cvar_t	cl_pushlatency = {"pushlatency","-50", NULL,0,false,0,NULL,true};
 
 extern	frame_t		*view_frame;
 qboolean player_crouching;

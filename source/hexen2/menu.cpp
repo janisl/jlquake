@@ -9,7 +9,7 @@
 
 extern	float introTime;
 extern	cvar_t	crosshair;
-cvar_t m_oldmission = {"m_oldmission","0",true};
+cvar_t m_oldmission = {"m_oldmission","0",NULL,0,false,0,NULL,true};
 
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);

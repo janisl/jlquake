@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 qboolean	noclip_anglehack;		// remnant from old quake
 
 
-cvar_t	rcon_password = {"rcon_password", "", false};
+cvar_t	rcon_password = {"rcon_password", ""};
 
 cvar_t	rcon_address = {"rcon_address", ""};
 
@@ -42,15 +42,15 @@ cvar_t	cl_timeout = {"cl_timeout", "60"};
 
 cvar_t	cl_shownet = {"cl_shownet","0"};	// can be 0, 1, or 2
 
-cvar_t	cl_sbar		= {"cl_sbar", "0", true};
-cvar_t	cl_hudswap	= {"cl_hudswap", "0", true};
-cvar_t	cl_maxfps	= {"cl_maxfps", "0", true};
+cvar_t	cl_sbar		= {"cl_sbar", "0", NULL,0,false,0,NULL,true};
+cvar_t	cl_hudswap	= {"cl_hudswap", "0", NULL,0,false,0,NULL,true};
+cvar_t	cl_maxfps	= {"cl_maxfps", "0", NULL,0,false,0,NULL,true};
 
-cvar_t	lookspring = {"lookspring","0", true};
-cvar_t	lookstrafe = {"lookstrafe","0", true};
-cvar_t	sensitivity = {"sensitivity","3", true};
+cvar_t	lookspring = {"lookspring","0", NULL,0,false,0,NULL,true};
+cvar_t	lookstrafe = {"lookstrafe","0", NULL,0,false,0,NULL,true};
+cvar_t	sensitivity = {"sensitivity","3", NULL,0,false,0,NULL,true};
 
-cvar_t	m_pitch = {"m_pitch","0.022", true};
+cvar_t	m_pitch = {"m_pitch","0.022", NULL,0,false,0,NULL,true};
 cvar_t	m_yaw = {"m_yaw","0.022"};
 cvar_t	m_forward = {"m_forward","1"};
 cvar_t	m_side = {"m_side","0.8"};
@@ -67,16 +67,16 @@ static qboolean allowremotecmd = true;
 //
 // info mirrors
 //
-cvar_t	password = {"password", "", false, true};
-cvar_t	spectator = {"spectator", "", false, true};
-cvar_t	name = {"name","unnamed", true, true};
-cvar_t	team = {"team","", true, true};
-cvar_t	skin = {"skin","", true, true};
-cvar_t	topcolor = {"topcolor","0", true, true};
-cvar_t	bottomcolor = {"bottomcolor","0", true, true};
-cvar_t	rate = {"rate","2500", true, true};
-cvar_t	noaim = {"noaim","0", true, true};
-cvar_t	msg = {"msg","1", true, true};
+cvar_t	password = {"password", "", NULL,0,false,0,NULL,false, true};
+cvar_t	spectator = {"spectator", "", NULL,0,false,0,NULL,false, true};
+cvar_t	name = {"name","unnamed", NULL,0,false,0,NULL,true, true};
+cvar_t	team = {"team","", NULL,0,false,0,NULL,true, true};
+cvar_t	skin = {"skin","", NULL,0,false,0,NULL,true, true};
+cvar_t	topcolor = {"topcolor","0", NULL,0,false,0,NULL,true, true};
+cvar_t	bottomcolor = {"bottomcolor","0", NULL,0,false,0,NULL,true, true};
+cvar_t	rate = {"rate","2500", NULL,0,false,0,NULL,true, true};
+cvar_t	noaim = {"noaim","0", NULL,0,false,0,NULL,true, true};
+cvar_t	msg = {"msg","1", NULL,0,false,0,NULL,true, true};
 
 extern cvar_t cl_hightrack;
 

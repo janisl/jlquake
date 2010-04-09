@@ -219,6 +219,8 @@ Z_Print
 void Z_Print (memzone_t *zone)
 {
 	memblock_t	*block;
+	int NumBlocks = 0;
+	int Size = 0;
 	
 	Con_Printf ("zone size: %i  location: %p\n",mainzone->size,mainzone);
 	
@@ -235,7 +237,13 @@ void Z_Print (memzone_t *zone)
 			Con_Printf ("ERROR: next block doesn't have proper back link\n");
 		if (!block->tag && !block->next->tag)
 			Con_Printf ("ERROR: two consecutive free blocks\n");
+		if (block->tag)
+		{
+			NumBlocks++;
+			Size += block->size;
+		}
 	}
+	Con_Printf("%d blocks, %d bytes\n", NumBlocks, Size);
 }
 
 
@@ -904,6 +912,10 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name)
 
 //============================================================================
 
+void MemPrint_f()
+{
+	Z_Print(mainzone);
+}
 
 /*
 ========================
@@ -931,5 +943,7 @@ void Memory_Init (void *buf, int size)
 	}
 	mainzone = (memzone_t*)Hunk_AllocName (zonesize, "zone" );
 	Z_ClearZone (mainzone, zonesize);
+
+	Cmd_AddCommand("memprint", MemPrint_f);
 }
 

@@ -68,14 +68,14 @@ cvar_t	net_messagetimeout = {"net_messagetimeout","300"};
 cvar_t	hostname = {"hostname", "UNNAMED"};
 
 qboolean	configRestored = false;
-cvar_t	config_com_port = {"_config_com_port", "0x3f8", true};
-cvar_t	config_com_irq = {"_config_com_irq", "4", true};
-cvar_t	config_com_baud = {"_config_com_baud", "57600", true};
-cvar_t	config_com_modem = {"_config_com_modem", "1", true};
-cvar_t	config_modem_dialtype = {"_config_modem_dialtype", "T", true};
-cvar_t	config_modem_clear = {"_config_modem_clear", "ATZ", true};
-cvar_t	config_modem_init = {"_config_modem_init", "", true};
-cvar_t	config_modem_hangup = {"_config_modem_hangup", "AT H", true};
+cvar_t	config_com_port = {"_config_com_port", "0x3f8", NULL,0,false,0,NULL,true};
+cvar_t	config_com_irq = {"_config_com_irq", "4", NULL,0,false,0,NULL,true};
+cvar_t	config_com_baud = {"_config_com_baud", "57600", NULL,0,false,0,NULL,true};
+cvar_t	config_com_modem = {"_config_com_modem", "1", NULL,0,false,0,NULL,true};
+cvar_t	config_modem_dialtype = {"_config_modem_dialtype", "T", NULL,0,false,0,NULL,true};
+cvar_t	config_modem_clear = {"_config_modem_clear", "ATZ", NULL,0,false,0,NULL,true};
+cvar_t	config_modem_init = {"_config_modem_init", "", NULL,0,false,0,NULL,true};
+cvar_t	config_modem_hangup = {"_config_modem_hangup", "AT H", NULL,0,false,0,NULL,true};
 
 #ifdef IDGODS
 cvar_t	idgods = {"idgods", "0"};

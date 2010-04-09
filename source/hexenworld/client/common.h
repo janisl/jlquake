@@ -55,8 +55,8 @@ void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 void COM_CreatePath (char *path);
 void COM_Gamedir (char *dir);
 
-extern	struct cvar_s	registered;
-extern	struct cvar_s	oem;
+extern	cvar_t	registered;
+extern	cvar_t	oem;
 extern qboolean		standard_quake, rogue, hipnotic;
 extern qboolean		com_portals;
 

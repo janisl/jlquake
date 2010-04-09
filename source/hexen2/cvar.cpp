@@ -5,40 +5,7 @@
 #include "winquake.h"
 #endif
 
-cvar_t	*cvar_vars;
 char	*cvar_null_string = "";
-
-/*
-============
-Cvar_FindVar
-============
-*/
-cvar_t *Cvar_FindVar (char *var_name)
-{
-	cvar_t	*var;
-	
-	for (var=cvar_vars ; var ; var=var->next)
-		if (!QStr::Cmp(var_name, var->name))
-			return var;
-
-	return NULL;
-}
-
-/*
-============
-Cvar_VariableValue
-============
-*/
-float	Cvar_VariableValue (char *var_name)
-{
-	cvar_t	*var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return 0;
-	return QStr::Atof(var->string);
-}
-
 
 /*
 ============
@@ -99,12 +66,12 @@ void Cvar_Set (char *var_name, char *value)
 
 	changed = QStr::Cmp(var->string, value);
 	
-	Z_Free (var->string);	// free the old value string
+	Mem_Free (var->string);	// free the old value string
 	
-	var->string = (char*)Z_Malloc (QStr::Length(value)+1);
+	var->string = (char*)Mem_Alloc (QStr::Length(value)+1);
 	QStr::Cpy(var->string, value);
 	var->value = QStr::Atof(var->string);
-	if (var->server && changed)
+	if ((var->flags & CVAR_SERVERINFO) && changed)
 	{
 		if (sv.active)
 			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
@@ -152,13 +119,22 @@ void Cvar_RegisterVariable (cvar_t *variable)
 		
 // copy the value off, because future sets will Z_Free it
 	oldstr = variable->string;
-	variable->string = (char*)Z_Malloc (QStr::Length(variable->string)+1);	
+	variable->string = (char*)Mem_Alloc (QStr::Length(variable->string)+1);	
 	QStr::Cpy(variable->string, oldstr);
 	variable->value = QStr::Atof(variable->string);
 	
+	if (variable->archive)
+		variable->flags |= CVAR_ARCHIVE;
+	if (variable->info)
+		variable->flags |= CVAR_SERVERINFO;
+
 // link the variable in
 	variable->next = cvar_vars;
 	cvar_vars = variable;
+
+	long hash = Cvar_GenerateHashValue(variable->name);
+	variable->hashNext = cvar_hashTable[hash];
+	cvar_hashTable[hash] = variable;
 }
 
 /*
@@ -202,7 +178,7 @@ void Cvar_WriteVariables (FILE *f)
 	cvar_t	*var;
 	
 	for (var = cvar_vars ; var ; var = var->next)
-		if (var->archive)
+		if (var->flags & CVAR_ARCHIVE)
 			fprintf (f, "%s \"%s\"\n", var->name, var->string);
 }
 

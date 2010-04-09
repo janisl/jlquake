@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qcommon.h"
 
-cvar_t	*cvar_vars;
+char* __CopyString(const char* in);
 
 /*
 ============
@@ -38,38 +38,6 @@ static qboolean Cvar_InfoValidate (char *s)
 		return false;
 	return true;
 }
-
-/*
-============
-Cvar_FindVar
-============
-*/
-static cvar_t *Cvar_FindVar (char *var_name)
-{
-	cvar_t	*var;
-	
-	for (var=cvar_vars ; var ; var=var->next)
-		if (!QStr::Cmp(var_name, var->name))
-			return var;
-
-	return NULL;
-}
-
-/*
-============
-Cvar_VariableValue
-============
-*/
-float Cvar_VariableValue (char *var_name)
-{
-	cvar_t	*var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return 0;
-	return QStr::Atof(var->string);
-}
-
 
 /*
 ============
@@ -157,8 +125,8 @@ cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
 	}
 
 	var = (cvar_t*)Z_Malloc (sizeof(*var));
-	var->name = CopyString (var_name);
-	var->string = CopyString (var_value);
+	var->name = __CopyString (var_name);
+	var->string = __CopyString (var_value);
 	var->modified = true;
 	var->value = QStr::Atof(var->string);
 
@@ -167,6 +135,10 @@ cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
 	cvar_vars = var;
 
 	var->flags = flags;
+
+	long hash = Cvar_GenerateHashValue(var_name);
+	var->hashNext = cvar_hashTable[hash];
+	cvar_hashTable[hash] = var;
 
 	return var;
 }
@@ -197,7 +169,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 
 	if (!force)
 	{
-		if (var->flags & CVAR_NOSET)
+		if (var->flags & CVAR_INIT)
 		{
 			Com_Printf ("%s is write protected.\n", var_name);
 			return var;
@@ -205,11 +177,11 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 
 		if (var->flags & CVAR_LATCH)
 		{
-			if (var->latched_string)
+			if (var->latchedString)
 			{
-				if (QStr::Cmp(value, var->latched_string) == 0)
+				if (QStr::Cmp(value, var->latchedString) == 0)
 					return var;
-				Z_Free (var->latched_string);
+				Z_Free (var->latchedString);
 			}
 			else
 			{
@@ -220,11 +192,11 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 			if (Com_ServerState())
 			{
 				Com_Printf ("%s will be changed for next game.\n", var_name);
-				var->latched_string = CopyString(value);
+				var->latchedString = __CopyString(value);
 			}
 			else
 			{
-				var->string = CopyString(value);
+				var->string = __CopyString(value);
 				var->value = QStr::Atof(var->string);
 				if (!QStr::Cmp(var->name, "game"))
 				{
@@ -237,10 +209,10 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 	}
 	else
 	{
-		if (var->latched_string)
+		if (var->latchedString)
 		{
-			Z_Free (var->latched_string);
-			var->latched_string = NULL;
+			Z_Free (var->latchedString);
+			var->latchedString = NULL;
 		}
 	}
 
@@ -254,7 +226,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 	
 	Z_Free (var->string);	// free the old value string
 	
-	var->string = CopyString(value);
+	var->string = __CopyString(value);
 	var->value = QStr::Atof(var->string);
 
 	return var;
@@ -302,7 +274,7 @@ cvar_t *Cvar_FullSet (char *var_name, char *value, int flags)
 	
 	Z_Free (var->string);	// free the old value string
 	
-	var->string = CopyString(value);
+	var->string = __CopyString(value);
 	var->value = QStr::Atof(var->string);
 	var->flags = flags;
 
@@ -339,11 +311,11 @@ void Cvar_GetLatchedVars (void)
 
 	for (var = cvar_vars ; var ; var = var->next)
 	{
-		if (!var->latched_string)
+		if (!var->latchedString)
 			continue;
 		Z_Free (var->string);
-		var->string = var->latched_string;
-		var->latched_string = NULL;
+		var->string = var->latchedString;
+		var->latchedString = NULL;
 		var->value = QStr::Atof(var->string);
 		if (!QStr::Cmp(var->name, "game"))
 		{
@@ -470,7 +442,7 @@ void Cvar_List_f (void)
 			Com_Printf ("S");
 		else
 			Com_Printf (" ");
-		if (var->flags & CVAR_NOSET)
+		if (var->flags & CVAR_INIT)
 			Com_Printf ("-");
 		else if (var->flags & CVAR_LATCH)
 			Com_Printf ("L");

@@ -56,8 +56,8 @@ unsigned short	d_8to16table[256];
 unsigned		d_8to24table[256];
 unsigned char	d_15to8table[65536];
 
-cvar_t	_windowed_mouse = {"_windowed_mouse","0", true};
-cvar_t	vid_mode = {"vid_mode","0",false};
+cvar_t	_windowed_mouse = {"_windowed_mouse","0", NULL,0,false,0,NULL,true};
+cvar_t	vid_mode = {"vid_mode","0"};
  
 static float   mouse_x, mouse_y;
 static float	old_mouse_x, old_mouse_y;

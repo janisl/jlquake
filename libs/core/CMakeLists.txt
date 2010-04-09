@@ -7,6 +7,8 @@ set(CORE_FILES
 	core.h
 	crc.cpp
 	crc.h
+	cvar.cpp
+	cvar.h
 	endian.cpp
 	endian.h
 	exception.cpp

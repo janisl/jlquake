@@ -74,10 +74,10 @@ cvar_t	r_fullbright = {"r_fullbright","0"};
 cvar_t	r_lightmap = {"r_lightmap","0"};
 cvar_t	r_shadows = {"r_shadows","0"};
 cvar_t	r_mirroralpha = {"r_mirroralpha","1"};
-cvar_t	r_wateralpha = {"r_wateralpha",".4", true};
+cvar_t	r_wateralpha = {"r_wateralpha",".4", NULL,0,false,0,NULL,true};
 cvar_t	r_dynamic = {"r_dynamic","1"};
 cvar_t	r_novis = {"r_novis","0"};
-cvar_t	r_wholeframe = {"r_wholeframe", "1", true};
+cvar_t	r_wholeframe = {"r_wholeframe", "1", NULL,0,false,0,NULL,true};
 
 cvar_t	gl_clear = {"gl_clear","0"};
 cvar_t	gl_cull = {"gl_cull","1"};
@@ -88,7 +88,7 @@ cvar_t	gl_polyblend = {"gl_polyblend","1"};
 cvar_t	gl_flashblend = {"gl_flashblend","0"};
 cvar_t	gl_playermip = {"gl_playermip","0"};
 cvar_t	gl_nocolors = {"gl_nocolors","0"};
-cvar_t	gl_keeptjunctions = {"gl_keeptjunctions","1",true};
+cvar_t	gl_keeptjunctions = {"gl_keeptjunctions","1",NULL,0,false,0,NULL,true};
 cvar_t	gl_reporttjunctions = {"gl_reporttjunctions","0"};
 
 extern	cvar_t	gl_ztrick;

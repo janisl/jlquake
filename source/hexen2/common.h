@@ -44,5 +44,5 @@ byte *COM_LoadHunkFile2 (char *path, int *size);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 
 
-extern	struct cvar_s	registered;
-extern	struct cvar_s	oem;
+extern	cvar_t	registered;
+extern	cvar_t	oem;

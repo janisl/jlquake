@@ -23,7 +23,7 @@ int		mod_numknown;
 
 static vec3_t	mins,maxs;
 
-cvar_t gl_subdivide_size = {"gl_subdivide_size", "128", true};
+cvar_t gl_subdivide_size = {"gl_subdivide_size", "128", NULL,0,false,0,NULL,true};
 
 /*
 ===============

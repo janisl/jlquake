@@ -29,7 +29,7 @@ typedef struct {
 
 static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
 
-cvar_t	max_temp_edicts = {"max_temp_edicts", "30", true};
+cvar_t	max_temp_edicts = {"max_temp_edicts", "30", NULL,0,false,0,NULL,true};
 
 static char field_name[256], class_name[256];
 static qboolean RemoveBadReferences;

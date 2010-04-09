@@ -810,7 +810,7 @@ void CL_PingServers_f (void)
 	// send a broadcast packet
 	Com_Printf ("pinging broadcast...\n");
 
-	noudp = Cvar_Get ("noudp", "0", CVAR_NOSET);
+	noudp = Cvar_Get ("noudp", "0", CVAR_INIT);
 	if (!noudp->value)
 	{
 		adr.type = NA_BROADCAST;
@@ -818,7 +818,7 @@ void CL_PingServers_f (void)
 		Netchan_OutOfBandPrint (NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
 	}
 
-	noipx = Cvar_Get ("noipx", "0", CVAR_NOSET);
+	noipx = Cvar_Get ("noipx", "0", CVAR_INIT);
 	if (!noipx->value)
 	{
 		adr.type = NA_BROADCAST_IPX;

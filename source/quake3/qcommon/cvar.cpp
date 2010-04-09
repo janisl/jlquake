@@ -24,39 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "qcommon.h"
 
-cvar_t		*cvar_vars;
-cvar_t		*cvar_cheats;
-int			cvar_modifiedFlags;
-
-#define	MAX_CVARS	1024
-cvar_t		cvar_indexes[MAX_CVARS];
-int			cvar_numIndexes;
-
-#define FILE_HASH_SIZE		256
-static	cvar_t*		hashTable[FILE_HASH_SIZE];
-
 cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force);
 
-/*
-================
-return a hash value for the filename
-================
-*/
-static long generateHashValue( const char *fname ) {
-	int		i;
-	long	hash;
-	char	letter;
-
-	hash = 0;
-	i = 0;
-	while (fname[i] != '\0') {
-		letter = QStr::ToLower(fname[i]);
-		hash+=(long)(letter)*(i+119);
-		i++;
-	}
-	hash &= (FILE_HASH_SIZE-1);
-	return hash;
-}
+char* __CopyString(const char* in);
 
 /*
 ============
@@ -77,40 +47,6 @@ static qboolean Cvar_ValidateString( const char *s ) {
 		return qfalse;
 	}
 	return qtrue;
-}
-
-/*
-============
-Cvar_FindVar
-============
-*/
-static cvar_t *Cvar_FindVar( const char *var_name ) {
-	cvar_t	*var;
-	long hash;
-
-	hash = generateHashValue(var_name);
-	
-	for (var=hashTable[hash] ; var ; var=var->hashNext) {
-		if (!QStr::ICmp(var_name, var->name)) {
-			return var;
-		}
-	}
-
-	return NULL;
-}
-
-/*
-============
-Cvar_VariableValue
-============
-*/
-float Cvar_VariableValue( const char *var_name ) {
-	cvar_t	*var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return 0;
-	return var->value;
 }
 
 
@@ -186,7 +122,6 @@ The flags will be or'ed in if the variable exists.
 */
 cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 	cvar_t	*var;
-	long	hash;
 
   if ( !var_name || ! var_value ) {
 		Com_Error( ERR_FATAL, "Cvar_Get: NULL parameter" );
@@ -212,7 +147,7 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 			&& var_value[0] ) {
 			var->flags &= ~CVAR_USER_CREATED;
 			Z_Free( var->resetString );
-			var->resetString = CopyString( var_value );
+			var->resetString = __CopyString( var_value );
 
 			// ZOID--needs to be set so that cvars the game sets as 
 			// SERVERINFO get sent to clients
@@ -224,7 +159,7 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 		if ( !var->resetString[0] ) {
 			// we don't have a reset string yet
 			Z_Free( var->resetString );
-			var->resetString = CopyString( var_value );
+			var->resetString = __CopyString( var_value );
 		} else if ( var_value[0] && QStr::Cmp( var->resetString, var_value ) ) {
 			Com_DPrintf( "Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
 				var_name, var->resetString, var_value );
@@ -255,15 +190,18 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 	if ( cvar_numIndexes >= MAX_CVARS ) {
 		Com_Error( ERR_FATAL, "MAX_CVARS" );
 	}
-	var = &cvar_indexes[cvar_numIndexes];
+	var = new QCvar;
+	Com_Memset(var, 0, sizeof(*var));
+	cvar_indexes[cvar_numIndexes] = var;
+	var->Handle = cvar_numIndexes;
 	cvar_numIndexes++;
-	var->name = CopyString (var_name);
-	var->string = CopyString (var_value);
+	var->name = __CopyString (var_name);
+	var->string = __CopyString (var_value);
 	var->modified = qtrue;
 	var->modificationCount = 1;
 	var->value = QStr::Atof(var->string);
 	var->integer = QStr::Atoi(var->string);
-	var->resetString = CopyString( var_value );
+	var->resetString = __CopyString( var_value );
 
 	// link the variable in
 	var->next = cvar_vars;
@@ -271,9 +209,9 @@ cvar_t *Cvar_Get( const char *var_name, const char *var_value, int flags ) {
 
 	var->flags = flags;
 
-	hash = generateHashValue(var_name);
-	var->hashNext = hashTable[hash];
-	hashTable[hash] = var;
+	long hash = Cvar_GenerateHashValue(var_name);
+	var->hashNext = cvar_hashTable[hash];
+	cvar_hashTable[hash] = var;
 
 	return var;
 }
@@ -352,7 +290,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 			}
 
 			Com_Printf ("%s will be changed upon restarting.\n", var_name);
-			var->latchedString = CopyString(value);
+			var->latchedString = __CopyString(value);
 			var->modified = qtrue;
 			var->modificationCount++;
 			return var;
@@ -382,7 +320,7 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, qboolean force ) {
 	
 	Z_Free (var->string);	// free the old value string
 	
-	var->string = CopyString(value);
+	var->string = __CopyString(value);
 	var->value = QStr::Atof(var->string);
 	var->integer = QStr::Atoi(var->string);
 
@@ -833,11 +771,28 @@ basically a slightly modified Cvar_Get for the interpreted modules
 void	Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags ) {
 	cvar_t	*cv;
 
+	//	For Quake 2 compatibility some flags have been moved around,
+	// so map them to new values. Also clear unknown flags.
+	int TmpFlags = flags;
+	flags &= 0x07c7;
+	if (TmpFlags & 8)
+	{
+		flags |= CVAR_SYSTEMINFO;
+	}
+	if (TmpFlags & 16)
+	{
+		flags |= CVAR_INIT;
+	}
+	if (TmpFlags & 32)
+	{
+		flags |= CVAR_LATCH;
+	}
+
 	cv = Cvar_Get( varName, defaultValue, flags );
 	if ( !vmCvar ) {
 		return;
 	}
-	vmCvar->handle = cv - cvar_indexes;
+	vmCvar->handle = cv->Handle;
 	vmCvar->modificationCount = -1;
 	Cvar_Update( vmCvar );
 }
@@ -858,7 +813,11 @@ void	Cvar_Update( vmCvar_t *vmCvar ) {
 		Com_Error( ERR_DROP, "Cvar_Update: handle out of range" );
 	}
 
-	cv = cvar_indexes + vmCvar->handle;
+	cv = cvar_indexes[vmCvar->handle];
+	if (!cv)
+	{
+		return;
+	}
 
 	if ( cv->modificationCount == vmCvar->modificationCount ) {
 		return;

@@ -274,7 +274,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	SV_CheckForSavegame ();
 
 	// set serverinfo variable
-	Cvar_FullSet ("mapname", sv.name, CVAR_SERVERINFO | CVAR_NOSET);
+	Cvar_FullSet ("mapname", sv.name, CVAR_SERVERINFO | CVAR_INIT);
 
 	Com_Printf ("-------------------------------------\n");
 }

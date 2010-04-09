@@ -390,8 +390,6 @@ Cvars are restricted from having the same names as commands to keep this
 interface from being ambiguous.
 */
 
-extern	cvar_t	*cvar_vars;
-
 cvar_t *Cvar_Get (char *var_name, char *value, int flags);
 // creates the variable if it doesn't exist, or returns the existing one
 // if it exists, the value will not be changed, but flags will be ORed in
@@ -407,9 +405,6 @@ cvar_t 	*Cvar_FullSet (char *var_name, char *value, int flags);
 
 void	Cvar_SetValue (char *var_name, float value);
 // expands value to a string and calls Cvar_Set
-
-float	Cvar_VariableValue (char *var_name);
-// returns 0 if not defined or non numeric
 
 char	*Cvar_VariableString (char *var_name);
 // returns an empty string if not defined

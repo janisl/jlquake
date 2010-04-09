@@ -29,7 +29,7 @@ static char     *safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
 cvar_t  registered = {"registered","0"};
-cvar_t  cmdline = {"cmdline","0", false, true};
+cvar_t  cmdline = {"cmdline","0", NULL,0,false,0,NULL,false, true};
 
 qboolean        com_modified;   // set true if using non-id files
 
