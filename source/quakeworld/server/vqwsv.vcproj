@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="vqwsv"
 	ProjectGUID="{9083E67D-9909-407C-ABE1-441C5B45C8C6}"
 	TargetFrameworkVersion="0"
@@ -203,10 +203,6 @@
 			</File>
 			<File
 				RelativePath="..\client\cvar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\client\mathlib.cpp"
 				>
 			</File>
 			<File
@@ -427,11 +423,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\sys.h"
+				RelativePath="sys.h"
 				>
 			</File>
 			<File
-				RelativePath="sys.h"
+				RelativePath="..\client\sys.h"
 				>
 			</File>
 			<File

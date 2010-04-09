@@ -317,32 +317,6 @@
 				>
 			</File>
 			<File
-				RelativePath="math.asm"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(TargetDir)$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(TargetDir)$(InputName).obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(TargetDir)$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(TargetDir)$(InputName).obj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="mathlib.cpp"
-				>
-			</File>
-			<File
 				RelativePath="menu.cpp"
 				>
 			</File>
@@ -527,10 +501,6 @@
 			</File>
 			<File
 				RelativePath="keys.h"
-				>
-			</File>
-			<File
-				RelativePath="mathlib.h"
 				>
 			</File>
 			<File

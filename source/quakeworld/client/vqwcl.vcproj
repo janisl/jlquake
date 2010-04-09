@@ -308,32 +308,6 @@
 				>
 			</File>
 			<File
-				RelativePath="math.s"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="mathlib.cpp"
-				>
-			</File>
-			<File
 				RelativePath="md4.cpp"
 				>
 			</File>
@@ -502,10 +476,6 @@
 			</File>
 			<File
 				RelativePath="keys.h"
-				>
-			</File>
-			<File
-				RelativePath="mathlib.h"
 				>
 			</File>
 			<File

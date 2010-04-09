@@ -206,10 +206,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\mathlib.cpp"
-				>
-			</File>
-			<File
 				RelativePath="model.cpp"
 				>
 			</File>

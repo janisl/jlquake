@@ -39,6 +39,7 @@
 #pragma warning(disable : 4702)		// unreachable code
 #pragma warning(disable : 4711)		// selected for automatic inline expansion
 #pragma warning(disable : 4220)		// varargs matches remaining parameters
+#pragma warning(disable : 4291)     // no matching operator delete found
 #endif
 
 #ifndef __GNUC__
