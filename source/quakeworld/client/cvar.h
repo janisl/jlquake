@@ -57,19 +57,6 @@ void 	Cvar_RegisterVariable (cvar_t *variable);
 // registers a cvar that allready has the name, string, and optionally the
 // archive elements set.
 
-void 	Cvar_Set (char *var_name, char *value);
-// equivelant to "<name> <variable>" typed at the console
-
-void	Cvar_SetValue (char *var_name, float value);
-// expands value to a string and calls Cvar_Set
-
-char	*Cvar_VariableString (char *var_name);
-// returns an empty string if not defined
-
-char 	*Cvar_CompleteVariable (char *partial);
-// attempts to match a partial variable name for command line completion
-// returns NULL if nothing fits
-
 qboolean Cvar_Command (void);
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
 // command.  Returns true if the command was a variable reference that

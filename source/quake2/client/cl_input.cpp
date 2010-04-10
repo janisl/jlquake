@@ -481,10 +481,10 @@ void CL_SendCmd (void)
 	}
 
 	// send a userinfo update if needed
-	if (userinfo_modified)
+	if (cvar_modifiedFlags & CVAR_USERINFO)
 	{
 		CL_FixUpGender();
-		userinfo_modified = false;
+		cvar_modifiedFlags &= ~CVAR_USERINFO;
 		cls.netchan.message.WriteByte(clc_userinfo);
 		cls.netchan.message.WriteString2(Cvar_Userinfo() );
 	}

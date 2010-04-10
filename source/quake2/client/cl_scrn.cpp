@@ -319,9 +319,9 @@ static void SCR_CalcVrect (void)
 
 	// bound viewsize
 	if (scr_viewsize->value < 40)
-		Cvar_Set ("viewsize","40");
+		Cvar_SetLatched("viewsize","40");
 	if (scr_viewsize->value > 100)
-		Cvar_Set ("viewsize","100");
+		Cvar_SetLatched("viewsize","100");
 
 	size = scr_viewsize->value;
 

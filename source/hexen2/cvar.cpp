@@ -9,50 +9,10 @@ char	*cvar_null_string = "";
 
 /*
 ============
-Cvar_VariableString
-============
-*/
-char *Cvar_VariableString (char *var_name)
-{
-	cvar_t *var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return cvar_null_string;
-	return var->string;
-}
-
-
-/*
-============
-Cvar_CompleteVariable
-============
-*/
-char *Cvar_CompleteVariable (char *partial)
-{
-	cvar_t		*cvar;
-	int			len;
-	
-	len = QStr::Length(partial);
-	
-	if (!len)
-		return NULL;
-		
-// check functions
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!QStr::NCmp(partial,cvar->name, len))
-			return cvar->name;
-
-	return NULL;
-}
-
-
-/*
-============
 Cvar_Set
 ============
 */
-void Cvar_Set (char *var_name, char *value)
+cvar_t *Cvar_Set2( const char *var_name, const char *value, bool force )
 {
 	cvar_t	*var;
 	qboolean changed;
@@ -61,7 +21,7 @@ void Cvar_Set (char *var_name, char *value)
 	if (!var)
 	{	// there is an error in C code if this happens
 		Con_Printf ("Cvar_Set: variable %s not found\n", var_name);
-		return;
+		return var;
 	}
 
 	changed = QStr::Cmp(var->string, value);
@@ -71,26 +31,14 @@ void Cvar_Set (char *var_name, char *value)
 	var->string = (char*)Mem_Alloc (QStr::Length(value)+1);
 	QStr::Cpy(var->string, value);
 	var->value = QStr::Atof(var->string);
+	var->integer = QStr::Atoi(var->string);
 	if ((var->flags & CVAR_SERVERINFO) && changed)
 	{
 		if (sv.active)
 			SV_BroadcastPrintf ("\"%s\" changed to \"%s\"\n", var->name, var->string);
 	}
+    return var;
 }
-
-/*
-============
-Cvar_SetValue
-============
-*/
-void Cvar_SetValue (char *var_name, float value)
-{
-	char	val[32];
-	
-	sprintf (val, "%f",value);
-	Cvar_Set (var_name, val);
-}
-
 
 /*
 ============
@@ -122,6 +70,7 @@ void Cvar_RegisterVariable (cvar_t *variable)
 	variable->string = (char*)Mem_Alloc (QStr::Length(variable->string)+1);	
 	QStr::Cpy(variable->string, oldstr);
 	variable->value = QStr::Atof(variable->string);
+	variable->integer = QStr::Atoi(variable->string);
 	
 	if (variable->archive)
 		variable->flags |= CVAR_ARCHIVE;

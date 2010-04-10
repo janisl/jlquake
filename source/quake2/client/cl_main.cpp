@@ -432,7 +432,7 @@ void CL_SendConnectPacket (void)
 		adr.port = BigShort (PORT_SERVER);
 
 	port = Cvar_VariableValue ("qport");
-	userinfo_modified = false;
+	cvar_modifiedFlags &= ~CVAR_USERINFO;
 
 	Netchan_OutOfBandPrint (NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
 		PROTOCOL_VERSION, port, cls.challenge, Cvar_Userinfo() );
@@ -801,7 +801,7 @@ void CL_PingServers_f (void)
 	int			i;
 	netadr_t	adr;
 	char		name[32];
-	char		*adrstring;
+	const char	*adrstring;
 	cvar_t		*noudp;
 	cvar_t		*noipx;
 
@@ -835,7 +835,7 @@ void CL_PingServers_f (void)
 			continue;
 
 		Com_Printf ("pinging %s...\n", adrstring);
-		if (!NET_StringToAdr (adrstring, &adr))
+		if (!NET_StringToAdr (const_cast<char*>(adrstring), &adr))
 		{
 			Com_Printf ("Bad address: %s\n", adrstring);
 			continue;
@@ -1064,11 +1064,11 @@ void CL_FixUpGender(void)
 		if ((p = strchr(sk, '/')) != NULL)
 			*p = 0;
 		if (QStr::ICmp(sk, "male") == 0 || QStr::ICmp(sk, "cyborg") == 0)
-			Cvar_Set ("gender", "male");
+			Cvar_SetLatched("gender", "male");
 		else if (QStr::ICmp(sk, "female") == 0 || QStr::ICmp(sk, "crackhor") == 0)
-			Cvar_Set ("gender", "female");
+			Cvar_SetLatched("gender", "female");
 		else
-			Cvar_Set ("gender", "none");
+			Cvar_SetLatched("gender", "none");
 		gender->modified = false;
 	}
 }
@@ -1633,7 +1633,7 @@ void CL_FixCvarCheats (void)
 	{
 		if ( QStr::Cmp(var->var->string, var->value) )
 		{
-			Cvar_Set (var->name, var->value);
+			Cvar_SetLatched(var->name, var->value);
 		}
 	}
 }

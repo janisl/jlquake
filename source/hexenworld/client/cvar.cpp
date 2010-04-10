@@ -10,55 +10,10 @@ char	*cvar_null_string = "";
 
 /*
 ============
-Cvar_VariableString
-============
-*/
-char *Cvar_VariableString (char *var_name)
-{
-	cvar_t *var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return cvar_null_string;
-	return var->string;
-}
-
-
-/*
-============
-Cvar_CompleteVariable
-============
-*/
-char *Cvar_CompleteVariable (char *partial)
-{
-	cvar_t		*cvar;
-	int			len;
-	
-	len = QStr::Length(partial);
-	
-	if (!len)
-		return NULL;
-		
-	// check exact match
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!QStr::Cmp(partial,cvar->name))
-			return cvar->name;
-
-	// check partial match
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!QStr::NCmp(partial,cvar->name, len))
-			return cvar->name;
-
-	return NULL;
-}
-
-
-/*
-============
 Cvar_Set
 ============
 */
-void Cvar_Set (char *var_name, char *value)
+cvar_t *Cvar_Set2( const char *var_name, const char *value, bool force )
 {
 	cvar_t	*var;
 	
@@ -66,19 +21,19 @@ void Cvar_Set (char *var_name, char *value)
 	if (!var)
 	{	// there is an error in C code if this happens
 		Con_Printf ("Cvar_Set: variable %s not found\n", var_name);
-		return;
+		return var;
 	}
 
 #ifdef SERVERONLY
 	if (var->flags & CVAR_SERVERINFO)
 	{
-		Info_SetValueForKey (svs.info, var_name, value, MAX_SERVERINFO_STRING);
+		Info_SetValueForKey (svs.info, const_cast<char*>(var_name), const_cast<char*>(value), MAX_SERVERINFO_STRING);
 		SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.info);
 	}
 #else
 	if (var->flags & CVAR_USERINFO)
 	{
-		Info_SetValueForKey (cls.userinfo, var_name, value, MAX_INFO_STRING);
+		Info_SetValueForKey (cls.userinfo, const_cast<char*>(var_name), const_cast<char*>(value), MAX_INFO_STRING);
 		if (cls.state >= ca_connected)
 		{
 			cls.netchan.message.WriteByte(clc_stringcmd);
@@ -92,21 +47,9 @@ void Cvar_Set (char *var_name, char *value)
 	var->string = (char*)Mem_Alloc (QStr::Length(value)+1);
 	QStr::Cpy(var->string, value);
 	var->value = QStr::Atof(var->string);
+	var->integer = QStr::Atoi(var->string);
+    return var;
 }
-
-/*
-============
-Cvar_SetValue
-============
-*/
-void Cvar_SetValue (char *var_name, float value)
-{
-	char	val[32];
-	
-	sprintf (val, "%f",value);
-	Cvar_Set (var_name, val);
-}
-
 
 /*
 ============

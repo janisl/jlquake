@@ -62,12 +62,36 @@ struct QCvar
 	int			Handle;
 };
 
+QCvar* Cvar_Get(const char* VarName, const char* Value, int flags);
+// creates the variable if it doesn't exist, or returns the existing one
+// if it exists, the value will not be changed, but flags will be ORed in
+// that allows variables to be unarchived without needing bitflags
+// if value is "", the value will not override a previously set value.
+
 long Cvar_GenerateHashValue(const char* VarName);
 
 QCvar* Cvar_FindVar(const char* VarName);
 
 float Cvar_VariableValue(const char* VarName);
+int	Cvar_VariableIntegerValue(const char* VarName);
 // returns 0 if not defined or non numeric
+
+const char* Cvar_VariableString(const char* VarName);
+void Cvar_VariableStringBuffer(const char* VarName, char* Buffer, int BufSize);
+// returns an empty string if not defined
+
+QCvar* Cvar_Set(const char* VarName, const char* Value);
+// will create the variable with no flags if it doesn't exist
+
+QCvar* Cvar_SetLatched(const char* VarName, const char* Value);
+// don't set the cvar immediately
+
+void Cvar_SetValue(const char* VarName, float value);
+// expands value to a string and calls Cvar_Set
+
+const char* Cvar_CompleteVariable(const char* Partial);
+// attempts to match a partial variable name for command line completion
+// returns NULL if nothing fits
 
 typedef QCvar cvar_t;
 

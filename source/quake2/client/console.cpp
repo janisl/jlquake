@@ -86,7 +86,7 @@ void Con_ToggleConsole_f (void)
 	if (cls.key_dest == key_console)
 	{
 		M_ForceMenuOff ();
-		Cvar_Set ("paused", "0");
+		Cvar_SetLatched("paused", "0");
 	}
 	else
 	{
@@ -95,7 +95,7 @@ void Con_ToggleConsole_f (void)
 
 		if (Cvar_VariableValue ("maxclients") == 1 
 			&& Com_ServerState ())
-			Cvar_Set ("paused", "1");
+			Cvar_SetLatched("paused", "1");
 	}
 }
 

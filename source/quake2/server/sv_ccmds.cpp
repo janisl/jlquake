@@ -48,7 +48,7 @@ void SV_SetMaster_f (void)
 	}
 
 	// make sure the server is listed public
-	Cvar_Set ("public", "1");
+	Cvar_SetLatched("public", "1");
 
 	for (i=1 ; i<MAX_MASTERS ; i++)
 		Com_Memset(&master_adr[i], 0, sizeof(master_adr[i]));
@@ -434,7 +434,7 @@ void SV_ReadServerFile (void)
 			break;
 		FS_Read (string, sizeof(string), f);
 		Com_DPrintf ("Set %s = %s\n", name, string);
-		Cvar_ForceSet (name, string);
+		Cvar_Set(name, string);
 	}
 
 	fclose (f);

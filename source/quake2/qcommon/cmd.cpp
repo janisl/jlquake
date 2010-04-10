@@ -546,7 +546,7 @@ char *Cmd_MacroExpandString (char *text)
 	char	*scan;
 	static	char	expanded[MAX_STRING_CHARS];
 	char	temporary[MAX_STRING_CHARS];
-	char	*token;
+	const char	*token;
 	const char*	start;
 
 	inquote = false;

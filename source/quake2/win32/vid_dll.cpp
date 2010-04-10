@@ -573,7 +573,7 @@ qboolean VID_LoadRefresh( char *name )
 	ri.FS_FreeFile = FS_FreeFile;
 	ri.FS_Gamedir = FS_Gamedir;
 	ri.Cvar_Get = Cvar_Get;
-	ri.Cvar_Set = Cvar_Set;
+	ri.Cvar_Set = Cvar_SetLatched;
 	ri.Cvar_SetValue = Cvar_SetValue;
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
@@ -652,7 +652,7 @@ void VID_CheckChanges (void)
 		{
 			if ( QStr::Cmp(vid_ref->string, "soft") == 0 )
 				Com_Error (ERR_FATAL, "Couldn't fall back to software refresh!");
-			Cvar_Set( "vid_ref", "soft" );
+			Cvar_SetLatched( "vid_ref", "soft" );
 
 			/*
 			** drop the console if we fail to load a refresh

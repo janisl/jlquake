@@ -135,7 +135,7 @@ qboolean CheckForCommand (void)
 {
 	char	command[128];
 	char	temp[1024];
-	char	*cmd, *s;
+	const char	*cmd, *s;
 	int		i;
 
 	s = key_lines[edit_line]+1;
@@ -157,7 +157,8 @@ qboolean CheckForCommand (void)
 
 void CompleteCommand (void)
 {
-	char	*cmd, *s;
+	const char	*cmd;
+    char *s;
 
 	s = key_lines[edit_line]+1;
 	if (*s == '\\' || *s == '/')

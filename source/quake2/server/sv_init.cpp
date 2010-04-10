@@ -172,7 +172,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	unsigned	checksum;
 
 	if (attractloop)
-		Cvar_Set ("paused", "0");
+		Cvar_SetLatched("paused", "0");
 
 	Com_Printf ("------- Server Initialization -------\n");
 
@@ -410,14 +410,14 @@ void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame)
 	if (ch)
 	{
 		*ch = 0;
-			Cvar_Set ("nextserver", va("gamemap \"%s\"", ch+1));
+			Cvar_SetLatched("nextserver", va("gamemap \"%s\"", ch+1));
 	}
 	else
-		Cvar_Set ("nextserver", "");
+		Cvar_SetLatched("nextserver", "");
 
 	//ZOID special hack for end game screen in coop mode
 	if (Cvar_VariableValue ("coop") && !QStr::ICmp(level, "victory.pcx"))
-		Cvar_Set ("nextserver", "gamemap \"*base1\"");
+		Cvar_SetLatched("nextserver", "gamemap \"*base1\"");
 
 	// if there is a $, use the remainder as a spawnpoint
 	ch = strstr(level, "$");

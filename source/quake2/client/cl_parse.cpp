@@ -328,7 +328,7 @@ void CL_ParseServerData (void)
 
 	// set gamedir
 	if ((*str && (!fs_gamedirvar->string || !*fs_gamedirvar->string || QStr::Cmp(fs_gamedirvar->string, str))) || (!*str && (fs_gamedirvar->string || *fs_gamedirvar->string)))
-		Cvar_Set("game", str);
+		Cvar_SetLatched("game", str);
 
 	// parse player entity number
 	cl.playernum = net_message.ReadShort();

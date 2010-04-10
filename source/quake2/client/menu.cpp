@@ -85,7 +85,7 @@ void M_PushMenu ( void (*draw) (void), const char *(*key) (int k) )
 
 	if (Cvar_VariableValue ("maxclients") == 1 
 		&& Com_ServerState ())
-		Cvar_Set ("paused", "1");
+		Cvar_SetLatched("paused", "1");
 
 	// if this menu is already present, drop back to that level
 	// to avoid stacking menus by hotkeys
@@ -120,7 +120,7 @@ void M_ForceMenuOff (void)
 	cls.key_dest = key_game;
 	m_menudepth = 0;
 	Key_ClearStates ();
-	Cvar_Set ("paused", "0");
+	Cvar_SetLatched("paused", "0");
 }
 
 void M_PopMenu (void)
@@ -1905,19 +1905,19 @@ static void StartGame( void )
 
 static void EasyGameFunc( void *data )
 {
-	Cvar_ForceSet( "skill", "0" );
+	Cvar_Set( "skill", "0" );
 	StartGame();
 }
 
 static void MediumGameFunc( void *data )
 {
-	Cvar_ForceSet( "skill", "1" );
+	Cvar_Set( "skill", "1" );
 	StartGame();
 }
 
 static void HardGameFunc( void *data )
 {
-	Cvar_ForceSet( "skill", "2" );
+	Cvar_Set( "skill", "2" );
 	StartGame();
 }
 
@@ -2448,7 +2448,7 @@ void StartServerActionFunc( void *self )
 	Cvar_SetValue( "maxclients", ClampCvar( 0, maxclients, maxclients ) );
 	Cvar_SetValue ("timelimit", ClampCvar( 0, timelimit, timelimit ) );
 	Cvar_SetValue ("fraglimit", ClampCvar( 0, fraglimit, fraglimit ) );
-	Cvar_Set("hostname", s_hostname_field.buffer );
+	Cvar_SetLatched("hostname", s_hostname_field.buffer );
 //	Cvar_SetValue ("deathmatch", !s_rules_box.curvalue );
 //	Cvar_SetValue ("coop", s_rules_box.curvalue );
 
@@ -3326,7 +3326,7 @@ const char *AddressBook_MenuKey( int key )
 		for ( index = 0; index < NUM_ADDRESSBOOK_ENTRIES; index++ )
 		{
 			QStr::Sprintf( buffer, sizeof( buffer ), "adr%d", index );
-			Cvar_Set( buffer, s_addressbook_fields[index].buffer );
+			Cvar_SetLatched( buffer, s_addressbook_fields[index].buffer );
 		}
 	}
 	return Default_MenuKey( &s_addressbook_menu, key );
@@ -3830,13 +3830,13 @@ const char *PlayerConfig_MenuKey (int key)
 	{
 		char scratch[1024];
 
-		Cvar_Set( "name", s_player_name_field.buffer );
+		Cvar_SetLatched( "name", s_player_name_field.buffer );
 
 		QStr::Sprintf( scratch, sizeof( scratch ), "%s/%s", 
 			s_pmi[s_player_model_box.curvalue].directory, 
 			s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
 
-		Cvar_Set( "skin", scratch );
+		Cvar_SetLatched( "skin", scratch );
 
 		for ( i = 0; i < s_numplayermodels; i++ )
 		{

@@ -371,8 +371,8 @@ void SV_InitGameProgs (void)
 	import.FreeTags = Z_FreeTags;
 
 	import.cvar = Cvar_Get;
-	import.cvar_set = Cvar_Set;
-	import.cvar_forceset = Cvar_ForceSet;
+	import.cvar_set = Cvar_SetLatched;
+	import.cvar_forceset = Cvar_Set;
 
 	import.argc = Cmd_Argc;
 	import.argv = Cmd_Argv;

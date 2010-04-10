@@ -21,151 +21,42 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qcommon.h"
 
+cvar_t *Cvar_Set2( const char *var_name, const char *value, bool force);
+
 char* __CopyString(const char* in);
+bool Cvar_ValidateString( const char *s );
 
-/*
-============
-Cvar_InfoValidate
-============
-*/
-static qboolean Cvar_InfoValidate (char *s)
-{
-	if (strstr (s, "\\"))
-		return false;
-	if (strstr (s, "\""))
-		return false;
-	if (strstr (s, ";"))
-		return false;
-	return true;
-}
-
-/*
-============
-Cvar_VariableString
-============
-*/
-char *Cvar_VariableString (char *var_name)
-{
-	cvar_t *var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return "";
-	return var->string;
-}
-
-
-/*
-============
-Cvar_CompleteVariable
-============
-*/
-char *Cvar_CompleteVariable (char *partial)
-{
-	cvar_t		*cvar;
-	int			len;
-	
-	len = QStr::Length(partial);
-	
-	if (!len)
-		return NULL;
-		
-	// check exact match
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!QStr::Cmp(partial,cvar->name))
-			return cvar->name;
-
-	// check partial match
-	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!QStr::NCmp(partial,cvar->name, len))
-			return cvar->name;
-
-	return NULL;
-}
-
-
-/*
-============
-Cvar_Get
-
-If the variable already exists, the value will not be set
-The flags will be or'ed in if the variable exists.
-============
-*/
-cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
-{
-	cvar_t	*var;
-	
-	if (flags & (CVAR_USERINFO | CVAR_SERVERINFO))
-	{
-		if (!Cvar_InfoValidate (var_name))
-		{
-			Com_Printf("invalid info cvar name\n");
-			return NULL;
-		}
-	}
-
-	var = Cvar_FindVar (var_name);
-	if (var)
-	{
-		var->flags |= flags;
-		return var;
-	}
-
-	if (!var_value)
-		return NULL;
-
-	if (flags & (CVAR_USERINFO | CVAR_SERVERINFO))
-	{
-		if (!Cvar_InfoValidate (var_value))
-		{
-			Com_Printf("invalid info cvar value\n");
-			return NULL;
-		}
-	}
-
-    var = (cvar_t*)Mem_ClearedAlloc(sizeof(*var));
-	var->name = __CopyString (var_name);
-	var->string = __CopyString (var_value);
-	var->modified = true;
-	var->value = QStr::Atof(var->string);
-
-	// link the variable in
-	var->next = cvar_vars;
-	cvar_vars = var;
-
-	var->flags = flags;
-
-	long hash = Cvar_GenerateHashValue(var_name);
-	var->hashNext = cvar_hashTable[hash];
-	cvar_hashTable[hash] = var;
-
-	return var;
-}
 
 /*
 ============
 Cvar_Set2
 ============
 */
-cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
+cvar_t *Cvar_Set2( const char *var_name, const char *value, bool force )
 {
 	cvar_t	*var;
 
 	var = Cvar_FindVar (var_name);
 	if (!var)
 	{	// create it
-		return Cvar_Get (var_name, value, 0);
+		return Cvar_Get (const_cast<char*>(var_name), const_cast<char*>(value), 0);
 	}
 
 	if (var->flags & (CVAR_USERINFO | CVAR_SERVERINFO))
 	{
-		if (!Cvar_InfoValidate (value))
+		if (!Cvar_ValidateString (value))
 		{
 			Com_Printf("invalid info cvar value\n");
 			return var;
 		}
 	}
+
+	if (!QStr::Cmp(value,var->string) && !var->latchedString)
+    {
+		return var;
+	}
+	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
+	cvar_modifiedFlags |= var->flags;
 
 	if (!force)
 	{
@@ -221,35 +112,13 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 
 	var->modified = true;
 
-	if (var->flags & CVAR_USERINFO)
-		userinfo_modified = true;	// transmit at next oportunity
-	
 	Mem_Free (var->string);	// free the old value string
 	
 	var->string = __CopyString(value);
 	var->value = QStr::Atof(var->string);
+	var->integer = QStr::Atoi(var->string);
 
 	return var;
-}
-
-/*
-============
-Cvar_ForceSet
-============
-*/
-cvar_t *Cvar_ForceSet (char *var_name, char *value)
-{
-	return Cvar_Set2 (var_name, value, true);
-}
-
-/*
-============
-Cvar_Set
-============
-*/
-cvar_t *Cvar_Set (char *var_name, char *value)
-{
-	return Cvar_Set2 (var_name, value, false);
 }
 
 /*
@@ -269,34 +138,17 @@ cvar_t *Cvar_FullSet (char *var_name, char *value, int flags)
 
 	var->modified = true;
 
-	if (var->flags & CVAR_USERINFO)
-		userinfo_modified = true;	// transmit at next oportunity
+    cvar_modifiedFlags |= var->flags;
 	
 	Mem_Free (var->string);	// free the old value string
 	
 	var->string = __CopyString(value);
 	var->value = QStr::Atof(var->string);
+	var->integer = QStr::Atoi(var->string);
 	var->flags = flags;
 
 	return var;
 }
-
-/*
-============
-Cvar_SetValue
-============
-*/
-void Cvar_SetValue (char *var_name, float value)
-{
-	char	val[32];
-
-	if (value == (int)value)
-		QStr::Sprintf (val, sizeof(val), "%i",(int)value);
-	else
-		QStr::Sprintf (val, sizeof(val), "%f",value);
-	Cvar_Set (var_name, val);
-}
-
 
 /*
 ============
@@ -348,7 +200,7 @@ qboolean Cvar_Command (void)
 		return true;
 	}
 
-	Cvar_Set (v->name, Cmd_Argv(1));
+	Cvar_SetLatched(v->name, Cmd_Argv(1));
 	return true;
 }
 
@@ -386,7 +238,7 @@ void Cvar_Set_f (void)
 		Cvar_FullSet (Cmd_Argv(1), Cmd_Argv(2), flags);
 	}
 	else
-		Cvar_Set (Cmd_Argv(1), Cmd_Argv(2));
+		Cvar_SetLatched(Cmd_Argv(1), Cmd_Argv(2));
 }
 
 
@@ -453,8 +305,6 @@ void Cvar_List_f (void)
 	Com_Printf ("%i cvars\n", i);
 }
 
-
-qboolean userinfo_modified;
 
 
 char	*Cvar_BitInfo (int bit)
