@@ -14,10 +14,10 @@ extern qboolean	vid_initialized;
 
 #define MAX_DISC 18
 
-cvar_t		gl_nobind = {"gl_nobind", "0"};
-cvar_t		gl_max_size = {"gl_max_size", "1024"};
+QCvar*		gl_nobind;
+QCvar*		gl_max_size;
+QCvar*		gl_picmip;
 cvar_t		gl_round_down = {"gl_round_down", "0"};
-cvar_t		gl_picmip = {"gl_picmip", "0"};
 
 byte		*draw_chars;				// 8*8 graphic characters
 byte		*draw_smallchars;			// Small characters for status bar
@@ -68,7 +68,7 @@ int GL_LoadPicTexture (qpic_t *pic);
 
 void GL_Bind (int texnum)
 {
-	if (gl_nobind.value)
+	if (gl_nobind->value)
 		texnum = char_texture;
 	if (currenttexture == texnum)
 		return;
@@ -444,10 +444,10 @@ void Draw_Init (void)
 	glpic_t *gl;
 	char temp[MAX_QPATH];
 
-	Cvar_RegisterVariable (&gl_nobind);
-	Cvar_RegisterVariable (&gl_max_size);
+    gl_nobind = Cvar_Get("gl_nobind", "0", 0);
+    gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
+    gl_picmip = Cvar_Get("gl_picmip", "0", 0);
 	Cvar_RegisterVariable (&gl_round_down);
-	Cvar_RegisterVariable (&gl_picmip);
 
 	// 3dfx can only handle 256 wide textures
 	if (is_3dfx || is_PowerVR)
@@ -1284,17 +1284,17 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qbool
 	if (gl_round_down.value && scaled_height > height)
 		scaled_height >>= 1;
 
-	if ((scaled_width >> (int)gl_picmip.value) &&
-		(scaled_height >> (int)gl_picmip.value))
+	if ((scaled_width >> (int)gl_picmip->value) &&
+		(scaled_height >> (int)gl_picmip->value))
 	{
-		scaled_width >>= (int)gl_picmip.value;
-		scaled_height >>= (int)gl_picmip.value;
+		scaled_width >>= (int)gl_picmip->value;
+		scaled_height >>= (int)gl_picmip->value;
 	}
 
-	if (scaled_width > gl_max_size.value)
-		scaled_width = gl_max_size.value;
-	if (scaled_height > gl_max_size.value)
-		scaled_height = gl_max_size.value;
+	if (scaled_width > gl_max_size->value)
+		scaled_width = gl_max_size->value;
+	if (scaled_height > gl_max_size->value)
+		scaled_height = gl_max_size->value;
 
 	if (scaled_width * scaled_height > sizeof(scaled)/4)
 		Sys_Error ("GL_LoadTexture: too big");
@@ -1503,7 +1503,7 @@ void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean a
 				else if( p & 1 )
 				{
 					trans[i] &= 0x00ffffff;
-					trans[i] |= ( ( int )( 255 * r_wateralpha.value ) ) << 24;
+					trans[i] |= ( ( int )( 255 * r_wateralpha->value ) ) << 24;
 				}
 				else
 				{

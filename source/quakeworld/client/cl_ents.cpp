@@ -813,7 +813,7 @@ void CL_LinkPlayers (void)
 			continue;	// not present this frame
 
 		// spawn light flashes, even ones coming from invisible objects
-		if (!gl_flashblend.value || j != cl.playernum) {
+		if (!gl_flashblend->value || j != cl.playernum) {
 			if ((state->effects & (EF_BLUE | EF_RED)) == (EF_BLUE | EF_RED))
 				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 3);
 			else if (state->effects & EF_BLUE)

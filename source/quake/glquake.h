@@ -187,39 +187,36 @@ extern	int	playertextures;
 
 extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 
-extern	cvar_t	r_norefresh;
-extern	cvar_t	r_drawentities;
-extern	cvar_t	r_drawworld;
-extern	cvar_t	r_drawviewmodel;
-extern	cvar_t	r_speeds;
-extern	cvar_t	r_waterwarp;
-extern	cvar_t	r_fullbright;
-extern	cvar_t	r_lightmap;
-extern	cvar_t	r_shadows;
-extern	cvar_t	r_mirroralpha;
-extern	cvar_t	r_wateralpha;
-extern	cvar_t	r_dynamic;
-extern	cvar_t	r_novis;
+extern	QCvar*	r_norefresh;
+extern	QCvar*	r_drawentities;
+extern	QCvar*	r_drawviewmodel;
+extern	QCvar*	r_speeds;
+extern	QCvar*	r_fullbright;
+extern	QCvar*	r_lightmap;
+extern	QCvar*	r_shadows;
+extern	QCvar*	r_mirroralpha;
+extern	QCvar*	r_wateralpha;
+extern	QCvar*	r_dynamic;
+extern	QCvar*	r_novis;
 
-extern	cvar_t	gl_clear;
-extern	cvar_t	gl_cull;
-extern	cvar_t	gl_poly;
-extern	cvar_t	gl_texsort;
-extern	cvar_t	gl_smoothmodels;
-extern	cvar_t	gl_affinemodels;
-extern	cvar_t	gl_polyblend;
-extern	cvar_t	gl_keeptjunctions;
-extern	cvar_t	gl_reporttjunctions;
-extern	cvar_t	gl_flashblend;
-extern	cvar_t	gl_nocolors;
+extern	QCvar*	gl_clear;
+extern	QCvar*	gl_cull;
+extern	QCvar*	gl_texsort;
+extern	QCvar*	gl_smoothmodels;
+extern	QCvar*	gl_affinemodels;
+extern	QCvar*	gl_polyblend;
+extern	QCvar*	gl_flashblend;
+extern	QCvar*	gl_playermip;
+extern	QCvar*	gl_nocolors;
+extern	QCvar*	gl_keeptjunctions;
+extern	QCvar*	gl_reporttjunctions;
 extern	cvar_t	gl_doubleeyes;
 
 extern	int		gl_lightmap_format;
 extern	int		gl_solid_format;
 extern	int		gl_alpha_format;
 
-extern	cvar_t	gl_max_size;
-extern	cvar_t	gl_playermip;
+extern	QCvar*	gl_max_size;
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;

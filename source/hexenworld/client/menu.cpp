@@ -860,12 +860,12 @@ void M_AdjustSliders (int dir)
 		vid.recalc_refdef = 1;
 		break;
 	case OPT_MOUSESPEED:	// mouse speed
-		sensitivity.value += dir * 0.5;
-		if (sensitivity.value < 1)
-			sensitivity.value = 1;
-		if (sensitivity.value > 11)
-			sensitivity.value = 11;
-		Cvar_SetValue ("sensitivity", sensitivity.value);
+		sensitivity->value += dir * 0.5;
+		if (sensitivity->value < 1)
+			sensitivity->value = 1;
+		if (sensitivity->value > 11)
+			sensitivity->value = 11;
+		Cvar_SetValue ("sensitivity", sensitivity->value);
 		break;
 	case OPT_MUSICTYPE: // bgm type
 		if (QStr::ICmp(bgmtype.string,"midi") == 0)
@@ -909,7 +909,7 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("volume", volume.value);
 		break;
 	case OPT_ALWAYRUN:	// allways run
-		if (cl_forwardspeed.value > 200)
+		if (cl_forwardspeed->value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
 			Cvar_SetValue ("cl_backspeed", 200);
@@ -922,15 +922,15 @@ void M_AdjustSliders (int dir)
 		break;
 	
 	case OPT_INVMOUSE:	// invert mouse
-		Cvar_SetValue ("m_pitch", -m_pitch.value);
+		Cvar_SetValue ("m_pitch", -m_pitch->value);
 		break;
 	
 	case OPT_LOOKSPRING:	// lookspring
-		Cvar_SetValue ("lookspring", !lookspring.value);
+		Cvar_SetValue ("lookspring", !lookspring->value);
 		break;
 	
 	case OPT_LOOKSTRAFE:	// lookstrafe
-		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
+		Cvar_SetValue ("lookstrafe", !lookstrafe->value);
 		break;
 
 	case OPT_CROSSHAIR:	
@@ -952,7 +952,7 @@ void M_AdjustSliders (int dir)
 
 	case OPT_USEMOUSE:	// _windowed_mouse
 #ifdef _WIN32
-		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse.value);
+		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse->value);
 #endif
 		break;
 	}
@@ -1004,7 +1004,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 60+(3*8), r);
 
 	M_Print (16, 60+(5*8), "           Mouse Speed");
-	r = (sensitivity.value - 1)/10;
+	r = (sensitivity->value - 1)/10;
 	M_DrawSlider (220, 60+(5*8), r);
 
 	M_Print (16, 60+(6*8), "            Music Type");
@@ -1024,16 +1024,16 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 60+(8*8), r);
 
 	M_Print (16, 60+(9*8),				"            Always Run");
-	M_DrawCheckbox (220, 60+(9*8), cl_forwardspeed.value > 200);
+	M_DrawCheckbox (220, 60+(9*8), cl_forwardspeed->value > 200);
 
 	M_Print (16, 60+(OPT_INVMOUSE*8),	"          Invert Mouse");
-	M_DrawCheckbox (220, 60+(OPT_INVMOUSE*8), m_pitch.value < 0);
+	M_DrawCheckbox (220, 60+(OPT_INVMOUSE*8), m_pitch->value < 0);
 
 	M_Print (16, 60+(OPT_LOOKSPRING*8),	"            Lookspring");
-	M_DrawCheckbox (220, 60+(OPT_LOOKSPRING*8), lookspring.value);
+	M_DrawCheckbox (220, 60+(OPT_LOOKSPRING*8), lookspring->value);
 
 	M_Print (16, 60+(OPT_LOOKSTRAFE*8),	"            Lookstrafe");
-	M_DrawCheckbox (220, 60+(OPT_LOOKSTRAFE*8), lookstrafe.value);
+	M_DrawCheckbox (220, 60+(OPT_LOOKSTRAFE*8), lookstrafe->value);
 
 	M_Print (16, 60+(OPT_CROSSHAIR*8),	"        Show Crosshair");
 	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair.value);
@@ -1048,7 +1048,7 @@ void M_Options_Draw (void)
 	if (modestate == MS_WINDOWED)
 	{
 		M_Print (16, 60+(OPT_USEMOUSE*8), "             Use Mouse");
-		M_DrawCheckbox (220, 60+(OPT_USEMOUSE*8), _windowed_mouse.value);
+		M_DrawCheckbox (220, 60+(OPT_USEMOUSE*8), _windowed_mouse->value);
 	}
 #endif
 

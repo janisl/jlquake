@@ -66,32 +66,32 @@ int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 void R_MarkLeaves (void);
 
-cvar_t	r_norefresh = {"r_norefresh","0"};
-cvar_t	r_drawentities = {"r_drawentities","1"};
-cvar_t	r_drawviewmodel = {"r_drawviewmodel","1"};
-cvar_t	r_speeds = {"r_speeds","0"};
-cvar_t	r_fullbright = {"r_fullbright","0"};
-cvar_t	r_lightmap = {"r_lightmap","0"};
-cvar_t	r_shadows = {"r_shadows","0"};
-cvar_t	r_mirroralpha = {"r_mirroralpha","1"};
-cvar_t	r_wateralpha = {"r_wateralpha",".4", NULL,0,false,0,NULL,true};
-cvar_t	r_dynamic = {"r_dynamic","1"};
-cvar_t	r_novis = {"r_novis","0"};
+QCvar*	r_norefresh;
+QCvar*	r_drawentities;
+QCvar*	r_drawviewmodel;
+QCvar*	r_speeds;
+QCvar*	r_fullbright;
+QCvar*	r_lightmap;
+QCvar*	r_shadows;
+QCvar*	r_mirroralpha;
+QCvar*	r_wateralpha;
+QCvar*	r_dynamic;
+QCvar*	r_novis;
 cvar_t	r_wholeframe = {"r_wholeframe", "1", NULL,0,false,0,NULL,true};
 
-cvar_t	gl_clear = {"gl_clear","0"};
-cvar_t	gl_cull = {"gl_cull","1"};
-cvar_t	gl_texsort = {"gl_texsort","1"};
-cvar_t	gl_smoothmodels = {"gl_smoothmodels","1"};
-cvar_t	gl_affinemodels = {"gl_affinemodels","0"};
-cvar_t	gl_polyblend = {"gl_polyblend","1"};
-cvar_t	gl_flashblend = {"gl_flashblend","0"};
-cvar_t	gl_playermip = {"gl_playermip","0"};
-cvar_t	gl_nocolors = {"gl_nocolors","0"};
-cvar_t	gl_keeptjunctions = {"gl_keeptjunctions","1",NULL,0,false,0,NULL,true};
-cvar_t	gl_reporttjunctions = {"gl_reporttjunctions","0"};
+QCvar*	gl_clear;
+QCvar*	gl_cull;
+QCvar*	gl_texsort;
+QCvar*	gl_smoothmodels;
+QCvar*	gl_affinemodels;
+QCvar*	gl_polyblend;
+QCvar*	gl_flashblend;
+QCvar*	gl_playermip;
+QCvar*	gl_nocolors;
+QCvar*	gl_keeptjunctions;
+QCvar*	gl_reporttjunctions;
 
-extern	cvar_t	gl_ztrick;
+extern	QCvar*	gl_ztrick;
 static qboolean AlwaysDrawModel;
 
 static void R_RotateForEntity2(entity_t *e);
@@ -281,7 +281,7 @@ void R_DrawSpriteModel (entity_t *e)
 		// rjr
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glEnable( GL_BLEND );
-		glColor4f (1,1,1,r_wateralpha.value);
+		glColor4f (1,1,1,r_wateralpha->value);
 	}
 	else if (currententity->model->flags & EF_TRANSPARENT)
 	{
@@ -824,7 +824,7 @@ void R_DrawAliasModel (entity_t *e)
 		glEnable (GL_BLEND);
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //		glColor4f( 1,1,1,r_wateralpha.value);
-		model_constant_alpha = r_wateralpha.value;
+		model_constant_alpha = r_wateralpha->value;
 	}
 	else if ((currententity->model->flags & EF_TRANSPARENT))
 	{
@@ -874,7 +874,7 @@ void R_DrawAliasModel (entity_t *e)
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
 	
-		if (currententity->colormap != vid.colormap && !gl_nocolors.value)
+		if (currententity->colormap != vid.colormap && !gl_nocolors->value)
 		{
 			if (currententity->model == player_models[0] ||
 			    currententity->model == player_models[1] ||
@@ -889,11 +889,11 @@ void R_DrawAliasModel (entity_t *e)
 		}
 	}
 
-	if (gl_smoothmodels.value)
+	if (gl_smoothmodels->value)
 		glShadeModel (GL_SMOOTH);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-	if (gl_affinemodels.value)
+	if (gl_affinemodels->value)
 		glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
 	R_SetupAliasFrame (currententity->frame, paliashdr);
@@ -916,12 +916,12 @@ void R_DrawAliasModel (entity_t *e)
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 	glShadeModel (GL_FLAT);
-	if (gl_affinemodels.value)
+	if (gl_affinemodels->value)
 		glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	glPopMatrix ();
 
-	if (r_shadows.value)
+	if (r_shadows->value)
 	{
 		glPushMatrix ();
 		R_RotateForEntity2(e);
@@ -964,7 +964,7 @@ void R_DrawEntitiesOnList (void)
 	cl_numtransvisedicts=0;
 	cl_numtranswateredicts=0;
 
-	if (!r_drawentities.value)
+	if (!r_drawentities->value)
 		return;
 
 	// draw sprites seperately, because of alpha blending
@@ -1095,7 +1095,7 @@ void R_DrawViewModel (void)
 	dlight_t	*dl;
 	int			ambientlight, shadelight;
 
-	if (!r_drawviewmodel.value)
+	if (!r_drawviewmodel->value)
 		return;
 
 	if (chase_active.value)
@@ -1104,7 +1104,7 @@ void R_DrawViewModel (void)
 	if (envmap)
 		return;
 
-	if (!r_drawentities.value)
+	if (!r_drawentities->value)
 		return;
 
 	if (cl.items & IT_INVISIBILITY)
@@ -1162,7 +1162,7 @@ R_PolyBlend
 */
 void R_PolyBlend (void)
 {
-	if (!gl_polyblend.value)
+	if (!gl_polyblend->value)
 		return;
 	if (!v_blend[3])
 		return;
@@ -1342,7 +1342,7 @@ void R_SetupGL (void)
 	//
 	// set drawing parms
 	//
-	if (gl_cull.value)
+	if (gl_cull->value)
 		glEnable(GL_CULL_FACE);
 	else
 		glDisable(GL_CULL_FACE);
@@ -1399,9 +1399,9 @@ R_Clear
 */
 void R_Clear (void)
 {
-	if (r_mirroralpha.value != 1.0)
+	if (r_mirroralpha->value != 1.0)
 	{
-		if (gl_clear.value)
+		if (gl_clear->value)
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		else
 			glClear (GL_DEPTH_BUFFER_BIT);
@@ -1409,11 +1409,11 @@ void R_Clear (void)
 		gldepthmax = 0.5;
 		glDepthFunc (GL_LEQUAL);
 	}
-	else if (gl_ztrick.value)
+	else if (gl_ztrick->value)
 	{
 		static int trickframe;
 
-		if (gl_clear.value)
+		if (gl_clear->value)
 			glClear (GL_COLOR_BUFFER_BIT);
 
 		trickframe++;
@@ -1432,7 +1432,7 @@ void R_Clear (void)
 	}
 	else
 	{
-		if (gl_clear.value)
+		if (gl_clear->value)
 			glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		else
 			glClear (GL_DEPTH_BUFFER_BIT);
@@ -1511,7 +1511,7 @@ void R_Mirror (void)
 
 	glLoadMatrixf (r_base_world_matrix);
 
-	glColor4f (1,1,1,r_mirroralpha.value);
+	glColor4f (1,1,1,r_mirroralpha->value);
 	s = cl.worldmodel->textures[mirrortexturenum]->texturechain;
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s, true);
@@ -1550,13 +1550,13 @@ void R_RenderView (void)
 {
 	double	time1, time2;
 
-	if (r_norefresh.value)
+	if (r_norefresh->value)
 		return;
 
 	if (!r_worldentity.model || !cl.worldmodel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
-	if (r_speeds.value)
+	if (r_speeds->value)
 	{
 		glFinish ();
 		if (r_wholeframe.value)
@@ -1593,6 +1593,6 @@ void R_RenderView (void)
 
 	R_PolyBlend ();
 
-	if (r_speeds.value)
+	if (r_speeds->value)
 		R_PrintTimes ();
 }

@@ -32,15 +32,15 @@ cvar_t	cl_shownet = {"cl_shownet","0"};	// can be 0, 1, or 2
 cvar_t	cl_sbar		= {"cl_sbar", "0", NULL,0,false,0,NULL,true};
 cvar_t	cl_hudswap	= {"cl_hudswap", "0", NULL,0,false,0,NULL,true};
 
-cvar_t	lookspring = {"lookspring","0", NULL,0,false,0,NULL,true};
-cvar_t	lookstrafe = {"lookstrafe","0", NULL,0,false,0,NULL,true};
-cvar_t	sensitivity = {"sensitivity","3", NULL,0,false,0,NULL,true};
-cvar_t	mwheelthreshold = {"mwheelthreshold","120", NULL,0,false,0,NULL,true};
+QCvar*	lookspring;
+QCvar*	lookstrafe;
+QCvar*	sensitivity;
+QCvar*	mwheelthreshold;
 
-cvar_t	m_pitch = {"m_pitch","0.022", NULL,0,false,0,NULL,true};
-cvar_t	m_yaw = {"m_yaw","0.022"};
-cvar_t	m_forward = {"m_forward","1"};
-cvar_t	m_side = {"m_side","0.8"};
+QCvar*	m_pitch;
+QCvar*	m_yaw;
+QCvar*	m_forward;
+QCvar*	m_side;
 
 cvar_t	entlatency = {"entlatency", "20"};
 cvar_t	cl_predict_players = {"cl_predict_players", "1"};
@@ -933,7 +933,7 @@ void CL_Sensitivity_save_f (void)
 
 	if (QStr::ICmp(Cmd_Argv(1),"save") == 0)
 	{
-		save_sensitivity = sensitivity.value;
+		save_sensitivity = sensitivity->value;
 	}
 	else if (QStr::ICmp(Cmd_Argv(1),"restore") == 0)
 	{
@@ -978,27 +978,27 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&developer);
 
 	Cvar_RegisterVariable (&cl_warncmd);
-	Cvar_RegisterVariable (&cl_upspeed);
-	Cvar_RegisterVariable (&cl_forwardspeed);
-	Cvar_RegisterVariable (&cl_backspeed);
-	Cvar_RegisterVariable (&cl_sidespeed);
-	Cvar_RegisterVariable (&cl_movespeedkey);
-	Cvar_RegisterVariable (&cl_yawspeed);
-	Cvar_RegisterVariable (&cl_pitchspeed);
-	Cvar_RegisterVariable (&cl_anglespeedkey);
+    cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
+    cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);
+    cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
+    cl_sidespeed = Cvar_Get("cl_sidespeed","225", 0);
+    cl_movespeedkey = Cvar_Get("cl_movespeedkey", "2.0", 0);
+    cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
+    cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
+    cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	Cvar_RegisterVariable (&cl_shownet);
 	Cvar_RegisterVariable (&cl_sbar);
 	Cvar_RegisterVariable (&cl_hudswap);
 	Cvar_RegisterVariable (&cl_timeout);
-	Cvar_RegisterVariable (&lookspring);
-	Cvar_RegisterVariable (&lookstrafe);
-	Cvar_RegisterVariable (&sensitivity);
-	Cvar_RegisterVariable (&mwheelthreshold);
+    lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
+    lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
+    sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
+    mwheelthreshold = Cvar_Get("mwheelthreshold", "120", CVAR_ARCHIVE);
 
-	Cvar_RegisterVariable (&m_pitch);
-	Cvar_RegisterVariable (&m_yaw);
-	Cvar_RegisterVariable (&m_forward);
-	Cvar_RegisterVariable (&m_side);
+    m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
+    m_yaw = Cvar_Get("m_yaw", "0.022", 0);
+    m_forward = Cvar_Get("m_forward", "1", 0);
+    m_side = Cvar_Get("m_side", "0.8", 0);
 
 	Cvar_RegisterVariable (&rcon_password);
 	Cvar_RegisterVariable (&rcon_address);

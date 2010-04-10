@@ -397,12 +397,12 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("gamma", v_gamma.value);
 		break;
 	case 5:	// mouse speed
-		sensitivity.value += dir * 0.5;
-		if (sensitivity.value < 1)
-			sensitivity.value = 1;
-		if (sensitivity.value > 11)
-			sensitivity.value = 11;
-		Cvar_SetValue ("sensitivity", sensitivity.value);
+		sensitivity->value += dir * 0.5;
+		if (sensitivity->value < 1)
+			sensitivity->value = 1;
+		if (sensitivity->value > 11)
+			sensitivity->value = 11;
+		Cvar_SetValue ("sensitivity", sensitivity->value);
 		break;
 	case 6:	// music volume
 #ifdef _WIN32
@@ -426,7 +426,7 @@ void M_AdjustSliders (int dir)
 		break;
 		
 	case 8:	// allways run
-		if (cl_forwardspeed.value > 200)
+		if (cl_forwardspeed->value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
 			Cvar_SetValue ("cl_backspeed", 200);
@@ -439,15 +439,15 @@ void M_AdjustSliders (int dir)
 		break;
 	
 	case 9:	// invert mouse
-		Cvar_SetValue ("m_pitch", -m_pitch.value);
+		Cvar_SetValue ("m_pitch", -m_pitch->value);
 		break;
 	
 	case 10:	// lookspring
-		Cvar_SetValue ("lookspring", !lookspring.value);
+		Cvar_SetValue ("lookspring", !lookspring->value);
 		break;
 	
 	case 11:	// lookstrafe
-		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
+		Cvar_SetValue ("lookstrafe", !lookstrafe->value);
 		break;
 
 	case 12:
@@ -458,7 +458,7 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("cl_hudswap", !cl_hudswap.value);
 
 	case 15:	// _windowed_mouse
-		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse.value);
+		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse->value);
 		break;
 	}
 }
@@ -515,7 +515,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 64, r);
 
 	M_Print (16, 72, "           Mouse Speed");
-	r = (sensitivity.value - 1)/10;
+	r = (sensitivity->value - 1)/10;
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");
@@ -527,16 +527,16 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 88, r);
 
 	M_Print (16, 96,  "            Always Run");
-	M_DrawCheckbox (220, 96, cl_forwardspeed.value > 200);
+	M_DrawCheckbox (220, 96, cl_forwardspeed->value > 200);
 
 	M_Print (16, 104, "          Invert Mouse");
-	M_DrawCheckbox (220, 104, m_pitch.value < 0);
+	M_DrawCheckbox (220, 104, m_pitch->value < 0);
 
 	M_Print (16, 112, "            Lookspring");
-	M_DrawCheckbox (220, 112, lookspring.value);
+	M_DrawCheckbox (220, 112, lookspring->value);
 
 	M_Print (16, 120, "            Lookstrafe");
-	M_DrawCheckbox (220, 120, lookstrafe.value);
+	M_DrawCheckbox (220, 120, lookstrafe->value);
 
 	M_Print (16, 128, "    Use old status bar");
 	M_DrawCheckbox (220, 128, cl_sbar.value);
@@ -552,7 +552,7 @@ void M_Options_Draw (void)
 	{
 #endif
 		M_Print (16, 152, "             Use Mouse");
-		M_DrawCheckbox (220, 152, _windowed_mouse.value);
+		M_DrawCheckbox (220, 152, _windowed_mouse->value);
 #ifdef _WIN32
 	}
 #endif

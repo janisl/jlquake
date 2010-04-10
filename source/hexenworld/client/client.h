@@ -337,31 +337,31 @@ typedef struct
 // cvars
 //
 extern  cvar_t	cl_warncmd;
-extern	cvar_t	cl_upspeed;
-extern	cvar_t	cl_forwardspeed;
-extern	cvar_t	cl_backspeed;
-extern	cvar_t	cl_sidespeed;
+extern	QCvar*	cl_upspeed;
+extern	QCvar*	cl_forwardspeed;
+extern	QCvar*	cl_backspeed;
+extern	QCvar*	cl_sidespeed;
 
-extern	cvar_t	cl_movespeedkey;
+extern	QCvar*	cl_movespeedkey;
 
-extern	cvar_t	cl_yawspeed;
-extern	cvar_t	cl_pitchspeed;
+extern	QCvar*	cl_yawspeed;
+extern	QCvar*	cl_pitchspeed;
 
-extern	cvar_t	cl_anglespeedkey;
+extern	QCvar*	cl_anglespeedkey;
 
 extern	cvar_t	cl_shownet;
 extern	cvar_t	cl_sbar;
 extern	cvar_t	cl_hudswap;
 
 extern	cvar_t	cl_pitchdriftspeed;
-extern	cvar_t	lookspring;
-extern	cvar_t	lookstrafe;
-extern	cvar_t	sensitivity;
+extern	QCvar*	lookspring;
+extern	QCvar*	lookstrafe;
+extern	QCvar*	sensitivity;
 
-extern	cvar_t	m_pitch;
-extern	cvar_t	m_yaw;
-extern	cvar_t	m_forward;
-extern	cvar_t	m_side;
+extern	QCvar*	m_pitch;
+extern	QCvar*	m_yaw;
+extern	QCvar*	m_forward;
+extern	QCvar*	m_side;
 
 extern	cvar_t	playerclass;
 extern	cvar_t	spectator;

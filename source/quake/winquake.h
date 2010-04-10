@@ -71,7 +71,7 @@ void IN_RestoreOriginalMouseState (void);
 void IN_SetQuakeMouseState (void);
 void IN_MouseEvent (int mstate);
 
-extern cvar_t		_windowed_mouse;
+extern QCvar*		_windowed_mouse;
 
 extern int		window_center_x, window_center_y;
 extern RECT		window_rect;

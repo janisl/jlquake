@@ -130,7 +130,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	lightmap = surf->samples;
 
 // set to full bright if no light data
-	if (r_fullbright.value || !cl.worldmodel->lightdata)
+	if (r_fullbright->value || !cl.worldmodel->lightdata)
 	{
 		for (i=0 ; i<size ; i++)
 			blocklights[i] = 255*256;
@@ -278,7 +278,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		{
 			glEnable (GL_BLEND);
 //			glColor4f (1,1,1,r_wateralpha.value);
-			alpha_val = r_wateralpha.value;
+			alpha_val = r_wateralpha->value;
 
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			intensity = 1;
@@ -464,9 +464,9 @@ void R_BlendLightmaps (qboolean Translucent)
 	glpoly_t	*p;
 	float		*v;
 
-	if (r_fullbright.value)
+	if (r_fullbright->value)
 		return;
-	if (!gl_texsort.value)
+	if (!gl_texsort->value)
 		return;
 
 	if (!Translucent)
@@ -481,7 +481,7 @@ void R_BlendLightmaps (qboolean Translucent)
 		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	if (!r_lightmap.value)
+	if (!r_lightmap->value)
 	{
 		glEnable (GL_BLEND);
 	}
@@ -561,7 +561,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 	{
 		glEnable (GL_BLEND);
 		//			glColor4f (1,1,1,r_wateralpha.value);
-		alpha_val = r_wateralpha.value;
+		alpha_val = r_wateralpha->value;
 		// rjr
 
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -615,7 +615,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 		|| fa->cached_dlight)			// dynamic previously
 	{
 dynamic:
-		if (r_dynamic.value)
+		if (r_dynamic->value)
 		{
 			lightmap_modified[fa->lightmaptexturenum] = true;
 			base = lightmaps + fa->lightmaptexturenum*lightmap_bytes*BLOCK_WIDTH*BLOCK_HEIGHT;
@@ -660,7 +660,7 @@ void R_DrawWaterSurfaces (void)
 	msurface_t	*s;
 	texture_t	*t;
 
-	if (r_wateralpha.value == 1.0)
+	if (r_wateralpha->value == 1.0)
 		return;
 
 //	glDepthMask( 0 );
@@ -685,7 +685,7 @@ void R_DrawWaterSurfaces (void)
 			continue;
 
 		if (s->flags & SURF_TRANSLUCENT)
-			glColor4f (1,1,1,r_wateralpha.value);
+			glColor4f (1,1,1,r_wateralpha->value);
 		else
 			glColor4f (1,1,1,1);
 
@@ -726,14 +726,14 @@ void DrawTextureChains (void)
 			continue;
 		if (i == skytexturenum)
 			R_DrawSkyChain (s);
-		else if (i == mirrortexturenum && r_mirroralpha.value != 1.0)
+		else if (i == mirrortexturenum && r_mirroralpha->value != 1.0)
 		{
 			R_MirrorChain (s);
 			continue;
 		}
 		else
 		{
-			if ((s->flags & SURF_DRAWTURB) && r_wateralpha.value != 1.0)
+			if ((s->flags & SURF_DRAWTURB) && r_wateralpha->value != 1.0)
 				continue;	// draw translucent water later
 			for ( ; s ; s=s->texturechain)
 				R_RenderBrushPoly (s, false);
@@ -803,7 +803,7 @@ void R_DrawBrushModel (entity_t *e, qboolean Translucent)
 
 // calculate dynamic lighting for bmodel if it's not an
 // instanced model
-	if (clmodel->firstmodelsurface != 0 && !gl_flashblend.value)
+	if (clmodel->firstmodelsurface != 0 && !gl_flashblend->value)
 	{
 		for (k=0 ; k<MAX_DLIGHTS ; k++)
 		{
@@ -837,7 +837,7 @@ e->angles[2] = -e->angles[2];	// stupid quake bug
 		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
-			if (gl_texsort.value)
+			if (gl_texsort->value)
 				R_RenderBrushPoly (psurf, false);
 			else
 				R_DrawSequentialPoly (psurf);
@@ -957,7 +957,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 					continue;		// wrong side
 
 				// if sorting by texture, just store it out
-				if (gl_texsort.value)
+				if (gl_texsort->value)
 				{
 					if (!mirror
 					|| surf->texinfo->texture != cl.worldmodel->textures[mirrortexturenum])
@@ -1003,7 +1003,7 @@ void R_DrawWorld (void)
 
 	R_RecursiveWorldNode (cl.worldmodel->nodes);
 
-	if (gl_texsort.value)
+	if (gl_texsort->value)
 		DrawTextureChains ();
 
 	R_BlendLightmaps (false);
@@ -1022,7 +1022,7 @@ void R_MarkLeaves (void)
 	int		i;
 	byte	solid[4096];
 
-	if (r_oldviewleaf == r_viewleaf && !r_novis.value)
+	if (r_oldviewleaf == r_viewleaf && !r_novis->value)
 		return;
 	
 	if (mirror)
@@ -1031,7 +1031,7 @@ void R_MarkLeaves (void)
 	r_visframecount++;
 	r_oldviewleaf = r_viewleaf;
 
-	if (r_novis.value)
+	if (r_novis->value)
 	{
 		vis = solid;
 		Com_Memset(solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
@@ -1192,7 +1192,7 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 	//
 	// remove co-linear points - Ed
 	//
-	if (!gl_keeptjunctions.value && !(fa->flags & SURF_UNDERWATER) )
+	if (!gl_keeptjunctions->value && !(fa->flags & SURF_UNDERWATER) )
 	{
 		for (i = 0 ; i < lnumverts ; ++i)
 		{

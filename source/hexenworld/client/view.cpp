@@ -178,7 +178,7 @@ void V_DriftPitch (void)
 // don't count small mouse motion
 	if (cl.nodrift)
 	{
-		if ( Q_fabs(cl.frames[(cls.netchan.outgoing_sequence-1)&UPDATE_MASK].cmd.forwardmove) < (cl.v.hasted*cl_forwardspeed.value)-10 || lookspring.value == 0.0)
+		if ( Q_fabs(cl.frames[(cls.netchan.outgoing_sequence-1)&UPDATE_MASK].cmd.forwardmove) < (cl.v.hasted*cl_forwardspeed->value)-10 || lookspring->value == 0.0)
 			cl.driftmove = 0;
 		else
 			cl.driftmove += host_frametime;

@@ -9,9 +9,9 @@ extern unsigned ColorPercent[16];
 
 extern unsigned char d_15to8table[65536];
 
-cvar_t		gl_nobind = {"gl_nobind", "0"};
-cvar_t		gl_max_size = {"gl_max_size", "1024"};
-cvar_t		gl_picmip = {"gl_picmip", "0"};
+QCvar*		gl_nobind;
+QCvar*		gl_max_size;
+QCvar*		gl_picmip;
 cvar_t		gl_spritemip = {"gl_spritemip", "0"};
 
 byte		*draw_chars;				// 8*8 graphic characters
@@ -74,7 +74,7 @@ int GL_LoadPicTexture (qpic_t *pic);
 
 void GL_Bind (int texnum)
 {
-	if (gl_nobind.value)
+	if (gl_nobind->value)
 		texnum = char_texture;
 	if (currenttexture == texnum)
 		return;
@@ -447,9 +447,9 @@ void Draw_Init (void)
 	int		f, fstep;
 	char	temp[MAX_QPATH];
 
-	Cvar_RegisterVariable (&gl_nobind);
-	Cvar_RegisterVariable (&gl_max_size);
-	Cvar_RegisterVariable (&gl_picmip);
+    gl_nobind = Cvar_Get("gl_nobind", "0", 0);
+    gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
+    gl_picmip = Cvar_Get("gl_picmip", "0", 0);
 	Cvar_RegisterVariable (&gl_spritemip);
 
 	// rjr - handle powervr
@@ -1548,8 +1548,8 @@ static	unsigned	scaled[1024*512];	// [512*256];
 	}
 	else
 	{
-		scaled_width >>= (int)gl_picmip.value;
-		scaled_height >>= (int)gl_picmip.value;
+		scaled_width >>= (int)gl_picmip->value;
+		scaled_height >>= (int)gl_picmip->value;
 	}
 	if (scaled_width < 1)
 	{
@@ -1560,10 +1560,10 @@ static	unsigned	scaled[1024*512];	// [512*256];
 		scaled_height = 1;
 	}
 
-	if (scaled_width > gl_max_size.value)
-		scaled_width = gl_max_size.value;
-	if (scaled_height > gl_max_size.value)
-		scaled_height = gl_max_size.value;
+	if (scaled_width > gl_max_size->value)
+		scaled_width = gl_max_size->value;
+	if (scaled_height > gl_max_size->value)
+		scaled_height = gl_max_size->value;
 
 	// 3dfx has some aspect ratio constraints. . . can't go beyond 8 to 1 or below 1 to 8.
 	if( is_3dfx )
@@ -1681,8 +1681,8 @@ void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboole
 	}
 	else
 	{
-		scaled_width >>= (int)gl_picmip.value;
-		scaled_height >>= (int)gl_picmip.value;
+		scaled_width >>= (int)gl_picmip->value;
+		scaled_height >>= (int)gl_picmip->value;
 	}
 	if (scaled_width < 1)
 	{
@@ -1693,10 +1693,10 @@ void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboole
 		scaled_height = 1;
 	}
 
-	if (scaled_width > gl_max_size.value)
-		scaled_width = gl_max_size.value;
-	if (scaled_height > gl_max_size.value)
-		scaled_height = gl_max_size.value;
+	if (scaled_width > gl_max_size->value)
+		scaled_width = gl_max_size->value;
+	if (scaled_height > gl_max_size->value)
+		scaled_height = gl_max_size->value;
 
 	// 3dfx has some aspect ratio constraints. . . can't go beyond 8 to 1 or below 1 to 8.
 	if( is_3dfx )
@@ -1873,7 +1873,7 @@ static	unsigned	trans[640*480];		// FIXME, temporary
 				else if( p & 1 )
 				{
 					trans[i] &= 0x00ffffff;
-					trans[i] |= ( ( int )( 255 * r_wateralpha.value ) ) << 24;
+					trans[i] |= ( ( int )( 255 * r_wateralpha->value ) ) << 24;
 				}
 				else
 				{

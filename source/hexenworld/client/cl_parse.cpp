@@ -902,7 +902,7 @@ void CL_MuzzleFlash (void)
 		return;
 
 	// don't draw our own muzzle flash in gl if flashblending
-	if (i-1 == cl.playernum && gl_flashblend.value)
+	if (i-1 == cl.playernum && gl_flashblend->value)
 		return;
 
 	pl = &cl.frames[parsecountmod].playerstate[i-1];
