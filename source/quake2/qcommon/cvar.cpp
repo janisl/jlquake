@@ -124,7 +124,7 @@ cvar_t *Cvar_Get (char *var_name, char *var_value, int flags)
 		}
 	}
 
-	var = (cvar_t*)Z_Malloc (sizeof(*var));
+    var = (cvar_t*)Mem_ClearedAlloc(sizeof(*var));
 	var->name = __CopyString (var_name);
 	var->string = __CopyString (var_value);
 	var->modified = true;
@@ -181,7 +181,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 			{
 				if (QStr::Cmp(value, var->latchedString) == 0)
 					return var;
-				Z_Free (var->latchedString);
+				Mem_Free (var->latchedString);
 			}
 			else
 			{
@@ -211,7 +211,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 	{
 		if (var->latchedString)
 		{
-			Z_Free (var->latchedString);
+			Mem_Free (var->latchedString);
 			var->latchedString = NULL;
 		}
 	}
@@ -224,7 +224,7 @@ cvar_t *Cvar_Set2 (char *var_name, char *value, qboolean force)
 	if (var->flags & CVAR_USERINFO)
 		userinfo_modified = true;	// transmit at next oportunity
 	
-	Z_Free (var->string);	// free the old value string
+	Mem_Free (var->string);	// free the old value string
 	
 	var->string = __CopyString(value);
 	var->value = QStr::Atof(var->string);
@@ -272,7 +272,7 @@ cvar_t *Cvar_FullSet (char *var_name, char *value, int flags)
 	if (var->flags & CVAR_USERINFO)
 		userinfo_modified = true;	// transmit at next oportunity
 	
-	Z_Free (var->string);	// free the old value string
+	Mem_Free (var->string);	// free the old value string
 	
 	var->string = __CopyString(value);
 	var->value = QStr::Atof(var->string);
@@ -313,7 +313,7 @@ void Cvar_GetLatchedVars (void)
 	{
 		if (!var->latchedString)
 			continue;
-		Z_Free (var->string);
+		Mem_Free (var->string);
 		var->string = var->latchedString;
 		var->latchedString = NULL;
 		var->value = QStr::Atof(var->string);
