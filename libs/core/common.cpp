@@ -54,7 +54,7 @@ QInterface::~QInterface()
 {
 }
 
-#if id386 && defined _MSC_VER && !defined __VECTORC
+#if 0//id386 && defined _MSC_VER && !defined __VECTORC
 typedef enum
 {
 	PRE_READ,									// prefetch assuming that buffer is used for reading only
