@@ -90,7 +90,7 @@ HDC		maindc;
 
 glvert_t glv;
 
-cvar_t	gl_ztrick = {"gl_ztrick","1",true};
+cvar_t	gl_ztrick = {"gl_ztrick","1",NULL,0,false,0,NULL,true};
 
 HWND WINAPI InitializeWindow (HINSTANCE hInstance, int nCmdShow);
 
@@ -119,18 +119,18 @@ PROC glVertexPointerEXT;
 
 //====================================
 
-cvar_t		vid_mode = {"vid_mode","0", false};
+cvar_t		vid_mode = {"vid_mode","0"};
 // Note that 0 is MODE_WINDOWED
-cvar_t		_vid_default_mode = {"_vid_default_mode","0", true};
+cvar_t		_vid_default_mode = {"_vid_default_mode","0", NULL,0,false,0,NULL,true};
 // Note that 3 is MODE_FULLSCREEN_DEFAULT
-cvar_t		_vid_default_mode_win = {"_vid_default_mode_win","3", true};
+cvar_t		_vid_default_mode_win = {"_vid_default_mode_win","3", NULL,0,false,0,NULL,true};
 cvar_t		vid_wait = {"vid_wait","0"};
-cvar_t		vid_nopageflip = {"vid_nopageflip","0", true};
-cvar_t		_vid_wait_override = {"_vid_wait_override", "0", true};
-cvar_t		vid_config_x = {"vid_config_x","800", true};
-cvar_t		vid_config_y = {"vid_config_y","600", true};
-cvar_t		vid_stretch_by_2 = {"vid_stretch_by_2","1", true};
-cvar_t		_windowed_mouse = {"_windowed_mouse","0", true};
+cvar_t		vid_nopageflip = {"vid_nopageflip","0", NULL,0,false,0,NULL,true};
+cvar_t		_vid_wait_override = {"_vid_wait_override", "0", NULL,0,false,0,NULL,true};
+cvar_t		vid_config_x = {"vid_config_x","800", NULL,0,false,0,NULL,true};
+cvar_t		vid_config_y = {"vid_config_y","600", NULL,0,false,0,NULL,true};
+cvar_t		vid_stretch_by_2 = {"vid_stretch_by_2","1", NULL,0,false,0,NULL,true};
+cvar_t		_windowed_mouse = {"_windowed_mouse","0", NULL,0,false,0,NULL,true};
 
 int			window_center_x, window_center_y, window_x, window_y, window_width, window_height;
 RECT		window_rect;

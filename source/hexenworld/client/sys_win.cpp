@@ -15,6 +15,8 @@
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP	20				// sleep time when not focus
 
+#define MAX_NUM_ARGVS	50
+
 int		starttime;
 int		ActiveApp;
 int		Minimized;

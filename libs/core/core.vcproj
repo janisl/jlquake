@@ -161,6 +161,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cvar.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\endian.cpp"
 				>
 			</File>
@@ -220,6 +224,10 @@
 			</File>
 			<File
 				RelativePath=".\crc.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cvar.h"
 				>
 			</File>
 			<File

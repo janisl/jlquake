@@ -151,10 +151,10 @@ int WINS_Init (void)
 	{
 		if (i < COM_Argc()-1)
 		{
-			myAddr = inet_addr(com_argv[i+1]);
+			myAddr = inet_addr(COM_Argv(i+1));
 			if (myAddr == INADDR_NONE)
-				Sys_Error ("%s is not a valid IP address", com_argv[i+1]);
-			QStr::Cpy(my_tcpip_address, com_argv[i+1]);
+				Sys_Error ("%s is not a valid IP address", COM_Argv(i+1));
+			QStr::Cpy(my_tcpip_address, COM_Argv(i+1));
 		}
 		else
 		{
