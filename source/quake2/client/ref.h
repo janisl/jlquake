@@ -194,7 +194,7 @@ typedef struct
 	void	(*Cmd_RemoveCommand) (const char *name);
 	int		(*Cmd_Argc) (void);
 	char	*(*Cmd_Argv) (int i);
-	void	(*Cmd_ExecuteText) (int exec_when, char *text);
+	void	(*Cmd_ExecuteText) (int exec_when, const char *text);
 
 	void	(*Con_Printf) (int print_level, char *str, ...);
 

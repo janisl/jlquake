@@ -278,50 +278,9 @@ void	VM_Debug( int level );
 void	*VM_ArgPtr( int intValue );
 void	*VM_ExplicitArgPtr( vm_t *vm, int intValue );
 
-/*
-==============================================================
-
-CMD
-
-Command text buffering and command execution
-
-==============================================================
-*/
-
-/*
-
-Any number of commands can be added in a frame, from several different sources.
-Most commands come from either keybindings or console line input, but entire text
-files can be execed.
-
-*/
-
-void Cbuf_Init (void);
-// allocates an initial text buffer that will grow as needed
-
-void Cbuf_AddText( const char *text );
-// Adds command text at the end of the buffer, does NOT add a final \n
-
-void Cbuf_ExecuteText( int exec_when, const char *text );
-// this can be used in place of either Cbuf_AddText or Cbuf_InsertText
-
-void Cbuf_Execute (void);
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
-// Do not call inside a command function, or current args will be destroyed.
-
 //===========================================================================
 
-/*
-
-Command execution takes a null terminated string, breaks it into tokens,
-then searches for a command or variable that matches the first token.
-
-*/
-
 void	Cmd_Init (void);
-
 
 /*
 ==============================================================

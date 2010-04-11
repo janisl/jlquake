@@ -260,74 +260,7 @@ enum clc_ops_e
 #define	U_SOLID		(1<<27)
 
 
-/*
-==============================================================
-
-CMD
-
-Command text buffering and command execution
-
-==============================================================
-*/
-
-/*
-
-Any number of commands can be added in a frame, from several different sources.
-Most commands come from either keybindings or console line input, but remote
-servers can also send across commands and entire text files can be execed.
-
-The + command line options are also added to the command buffer.
-
-The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
-
-*/
-
-#define	EXEC_NOW	0		// don't return until completed
-#define	EXEC_INSERT	1		// insert at current position, but don't run yet
-#define	EXEC_APPEND	2		// add to end of the command buffer
-
-void Cbuf_Init (void);
-// allocates an initial text buffer that will grow as needed
-
-void Cbuf_AddText (char *text);
-// as new commands are generated from the console or keybindings,
-// the text is added to the end of the command buffer.
-
-void Cbuf_InsertText (char *text);
-// when a command wants to issue other commands immediately, the text is
-// inserted at the beginning of the buffer, before any remaining unexecuted
-// commands.
-
-void Cbuf_ExecuteText (int exec_when, char *text);
-// this can be used in place of either Cbuf_AddText or Cbuf_InsertText
-
-void Cbuf_AddEarlyCommands (qboolean clear);
-// adds all the +set commands from the command line
-
-qboolean Cbuf_AddLateCommands (void);
-// adds all the remaining + commands from the command line
-// Returns true if any late commands were added, which
-// will keep the demoloop from immediately starting
-
-void Cbuf_Execute (void);
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
-// Do not call inside a command function!
-
-void Cbuf_CopyToDefer (void);
-void Cbuf_InsertFromDefer (void);
-// These two functions are used to defer any pending commands while a map
-// is being loaded
-
 //===========================================================================
-
-/*
-
-Command execution takes a null terminated string, breaks it into tokens,
-then searches for a command or variable that matches the first token.
-
-*/
 
 void	Cmd_Init (void);
 

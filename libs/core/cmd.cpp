@@ -23,6 +23,8 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define	MAX_CMD_LINE	1024
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -65,19 +67,6 @@ char*		cmd_args;
 
 //==========================================================================
 //
-//	QCmd::Init
-//
-//==========================================================================
-
-void QCmd::Init(byte* NewData, int Length)
-{
-	data = NewData;
-	maxsize = Length;
-	cursize = 0;
-}
-
-//==========================================================================
-//
 //	QCmd::Clear
 //
 //==========================================================================
@@ -111,6 +100,293 @@ void QCmd::WriteData(const void* Buffer, int Length)
 
 =============================================================================
 */
+
+/*
+============
+Cbuf_Init
+============
+*/
+void Cbuf_Init (void)
+{
+	cmd_text.data = cmd_text_buf;
+	cmd_text.maxsize = MAX_CMD_BUFFER;
+	cmd_text.cursize = 0;
+}
+
+/*
+============
+Cbuf_AddText
+
+Adds command text at the end of the buffer, does NOT add a final \n
+============
+*/
+void Cbuf_AddText(const char *text)
+{
+	int		l;
+	
+	l = QStr::Length(text);
+
+	if (cmd_text.cursize + l >= cmd_text.maxsize)
+	{
+		GLog.Write("Cbuf_AddText: overflow\n");
+		return;
+	}
+	Com_Memcpy(&cmd_text.data[cmd_text.cursize], text, l);
+	cmd_text.cursize += l;
+}
+
+/*
+============
+Cbuf_InsertText
+
+Adds command text immediately after the current command
+Adds a \n to the text
+============
+*/
+void Cbuf_InsertText( const char *text ) {
+	int		len;
+	int		i;
+
+	len = QStr::Length( text ) + 1;
+	if ( len + cmd_text.cursize > cmd_text.maxsize ) {
+		GLog.Write("Cbuf_InsertText overflowed\n");
+		return;
+	}
+
+	// move the existing command text
+	for ( i = cmd_text.cursize - 1 ; i >= 0 ; i-- ) {
+		cmd_text.data[ i + len ] = cmd_text.data[ i ];
+	}
+
+	// copy the new text in
+	Com_Memcpy( cmd_text.data, text, len - 1 );
+
+	// add a \n
+	cmd_text.data[ len - 1 ] = '\n';
+
+	cmd_text.cursize += len;
+}
+
+/*
+============
+Cbuf_ExecuteText
+============
+*/
+void Cbuf_ExecuteText (int exec_when, const char *text)
+{
+	switch (exec_when)
+	{
+	case EXEC_NOW:
+		if (text && QStr::Length(text) > 0) {
+			Cmd_ExecuteString (text);
+		} else {
+			Cbuf_Execute();
+		}
+		break;
+	case EXEC_INSERT:
+		Cbuf_InsertText (text);
+		break;
+	case EXEC_APPEND:
+		Cbuf_AddText (text);
+		break;
+	default:
+		throw QException("Cbuf_ExecuteText: bad exec_when");
+	}
+}
+
+/*
+============
+Cbuf_Execute
+============
+*/
+void Cbuf_Execute (void)
+{
+	int		i;
+	char	*text;
+	char	line[MAX_CMD_LINE];
+	int		quotes;
+
+	alias_count = 0;		// don't allow infinite alias loops
+
+	while (cmd_text.cursize)
+	{
+		if (cmd_wait)
+		{
+			// skip out while text still remains in buffer, leaving it
+			// for next frame
+			cmd_wait--;
+			break;
+		}
+
+		// find a \n or ; line break
+		text = (char *)cmd_text.data;
+
+		quotes = 0;
+		for (i=0 ; i< cmd_text.cursize ; i++)
+		{
+			if (text[i] == '"')
+				quotes++;
+			if ( !(quotes&1) &&  text[i] == ';')
+				break;	// don't break if inside a quoted string
+			if (text[i] == '\n' || text[i] == '\r' )
+				break;
+		}
+
+		if (i >= (MAX_CMD_LINE - 1))
+		{
+			i = MAX_CMD_LINE - 1;
+		}
+
+		Com_Memcpy(line, text, i);
+		line[i] = 0;
+
+// delete the text from the command buffer and move remaining commands down
+// this is necessary because commands (exec) can insert data at the
+// beginning of the text buffer
+
+		if (i == cmd_text.cursize)
+			cmd_text.cursize = 0;
+		else
+		{
+			i++;
+			cmd_text.cursize -= i;
+			memmove (text, text+i, cmd_text.cursize);
+		}
+
+// execute the command line
+
+		Cmd_ExecuteString (line);		
+	}
+}
+
+/*
+============
+Cbuf_CopyToDefer
+============
+*/
+void Cbuf_CopyToDefer (void)
+{
+	Com_Memcpy(defer_text_buf, cmd_text_buf, cmd_text.cursize);
+	defer_text_buf[cmd_text.cursize] = 0;
+	cmd_text.cursize = 0;
+}
+
+/*
+============
+Cbuf_InsertFromDefer
+============
+*/
+void Cbuf_InsertFromDefer (void)
+{
+	Cbuf_InsertText ((char*)defer_text_buf);
+	defer_text_buf[0] = 0;
+}
+
+/*
+===============
+Cbuf_AddEarlyCommands
+
+Adds command line parameters as script statements
+Commands lead with a +, and continue until another +
+
+Set commands are added early, so they are guaranteed to be set before
+the client and server initialize for the first time.
+
+Other commands are added late, after all initialization is complete.
+===============
+*/
+void Cbuf_AddEarlyCommands(bool clear)
+{
+	int			i;
+	const char	*s;
+
+	for (i=0 ; i<COM_Argc() ; i++)
+	{
+		s = COM_Argv(i);
+		if (QStr::Cmp(s, "+set"))
+			continue;
+		Cbuf_AddText (va("set %s %s\n", COM_Argv(i+1), COM_Argv(i+2)));
+		if (clear)
+		{
+			COM_ClearArgv(i);
+			COM_ClearArgv(i+1);
+			COM_ClearArgv(i+2);
+		}
+		i+=2;
+	}
+}
+
+/*
+=================
+Cbuf_AddLateCommands
+
+Adds command line parameters as script statements
+Commands lead with a + and continue until another + or -
+quake +vid_ref gl +map amlev1
+
+Returns true if any late commands were added, which
+will keep the demoloop from immediately starting
+=================
+*/
+bool Cbuf_AddLateCommands()
+{
+	int		i, j;
+	int		s;
+	char	*text, *build, c;
+	int		argc;
+	qboolean	ret;
+
+// build the combined string to parse from
+	s = 0;
+	argc = COM_Argc();
+	for (i=1 ; i<argc ; i++)
+	{
+		s += QStr::Length(COM_Argv(i)) + 1;
+	}
+	if (!s)
+		return false;
+		
+	text = new char[s+1];
+	text[0] = 0;
+	for (i=1 ; i<argc ; i++)
+	{
+		QStr::Cat(text, s + 1,COM_Argv(i));
+		if (i != argc-1)
+			QStr::Cat(text, s + 1, " ");
+	}
+	
+// pull out the commands
+	build = new char[s+1];
+	build[0] = 0;
+	
+	for (i=0 ; i<s-1 ; i++)
+	{
+		if (text[i] == '+')
+		{
+			i++;
+
+			for (j=i ; (text[j] != '+') && (text[j] != '-') && (text[j] != 0) ; j++)
+				;
+
+			c = text[j];
+			text[j] = 0;
+			
+			QStr::Cat(build, s + 1, text+i);
+			QStr::Cat(build, s + 1, "\n");
+			text[j] = c;
+			i = j-1;
+		}
+	}
+
+	ret = (build[0] != 0);
+	if (ret)
+		Cbuf_AddText (build);
+	
+	delete[] text;
+	delete[] build;
+
+	return ret;
+}
 
 /*
 ==============================================================================
@@ -587,6 +863,6 @@ void Cmd_CommandCompletion(void(*callback)(const char* s))
 	}
 	for (cmdalias_t* a = cmd_alias; a; a = a->next)
     {
-		callback(cmd->name);
+		callback(a->name);
 	}
 }

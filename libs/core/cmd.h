@@ -16,6 +16,18 @@
 //**  GNU General Public License for more details.
 //**
 //**************************************************************************
+//**
+//**	Command text buffering and command execution
+//**
+//**************************************************************************
+
+/*
+
+Any number of commands can be added in a frame, from several different sources.
+Most commands come from either keybindings or console line input, but entire text
+files can be execed.
+
+*/
 
 class QCmd
 {
@@ -28,6 +40,57 @@ public:
 	void Clear();
 	void WriteData(const void* Buffer, int Length);
 };
+
+// paramters for command buffer stuffing
+enum cbufExec_t
+{
+	EXEC_NOW,			// don't return until completed, a VM should NEVER use this,
+						// because some commands might cause the VM to be unloaded...
+	EXEC_INSERT,		// insert at current position, but don't run yet
+	EXEC_APPEND			// add to end of the command buffer (normal case)
+};
+
+void Cbuf_Init();
+// allocates an initial text buffer that will grow as needed
+
+void Cbuf_AddText(const char* Text);
+// Adds command text at the end of the buffer, does NOT add a final \n
+
+void Cbuf_InsertText(const char* Text);
+// when a command wants to issue other commands immediately, the text is
+// inserted at the beginning of the buffer, before any remaining unexecuted
+// commands.
+
+void Cbuf_ExecuteText(int ExecWhen, const char* Text);
+// this can be used in place of either Cbuf_AddText or Cbuf_InsertText
+
+void Cbuf_Execute();
+// Pulls off \n terminated lines of text from the command buffer and sends
+// them through Cmd_ExecuteString.  Stops when the buffer is empty.
+// Normally called once per frame, but may be explicitly invoked.
+// Do not call inside a command function, or current args will be destroyed.
+
+void Cbuf_CopyToDefer();
+void Cbuf_InsertFromDefer();
+// These two functions are used to defer any pending commands while a map
+// is being loaded
+
+void Cbuf_AddEarlyCommands(bool clear);
+// adds all the +set commands from the command line
+
+bool Cbuf_AddLateCommands();
+// adds all the remaining + commands from the command line
+// Returns true if any late commands were added, which
+// will keep the demoloop from immediately starting
+
+//===========================================================================
+
+/*
+
+Command execution takes a null terminated string, breaks it into tokens,
+then searches for a command or variable that matches the first token.
+
+*/
 
 typedef void (*xcommand_t) (void);
 
