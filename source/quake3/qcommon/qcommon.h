@@ -552,8 +552,6 @@ void 		Com_Quit_f( void );
 int			Com_EventLoop( void );
 int			Com_Milliseconds( void );	// will be journaled properly
 int			Com_HashKey(char *string, int maxlen);
-int			Com_Filter(char *filter, char *name, int casesensitive);
-int			Com_FilterPath(char *filter, char *name, int casesensitive);
 int			Com_RealTime(qtime_t *qtime);
 qboolean	Com_SafeMode( void );
 

@@ -1797,23 +1797,6 @@ int strdiff(char *s1, char *s2)
 	return i;
 }
 
-void Host_Commands_f(void)
-{
-	FILE*	FH;
-	QCvar*	var;
-
-	FH = fopen("commands.txt","w");
-
-	fprintf(FH,"\n\nConsole Commands:\n");
-	WriteCommands (FH);
-	
-	fprintf(FH,"\n\nConsole Variables:\n");
-	for (var = cvar_vars ; var ; var = var->next)
-		fprintf (FH, "   %s\n", var->name);
-
-	fclose(FH);
-}
-
 void Host_Create_f(void)
 {
 	char *FindName;
@@ -2439,6 +2422,4 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("mcache", Mod_Print);
 
 	Cmd_AddCommand ("create", Host_Create_f);
-	Cmd_AddCommand ("commands", Host_Commands_f);
-
 }

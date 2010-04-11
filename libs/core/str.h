@@ -368,6 +368,9 @@ public:
 	static int Compress(char* data_p);
 	static void SkipBracedSection(const char **program);
 	static void SkipRestOfLine(const char **data);
+
+	static bool Filter(const char* Filter, const char* Name, bool CaseSensitive);
+	static bool FilterPath(const char* Filter, const char* Name, bool CaseSensitive);
 };
 
 char* va(const char* Format, ...) __attribute__ ((format(printf, 1, 2)));

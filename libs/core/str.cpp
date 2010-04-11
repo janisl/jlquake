@@ -2064,6 +2064,147 @@ void QStr::SkipRestOfLine(const char **data)
 	*data = p;
 }
 
+/*
+============
+Com_StringContains
+============
+*/
+static const char *Com_StringContains(const char *str1, const char *str2, bool casesensitive) {
+	int len, i, j;
+
+	len = QStr::Length(str1) - QStr::Length(str2);
+	for (i = 0; i <= len; i++, str1++) {
+		for (j = 0; str2[j]; j++) {
+			if (casesensitive) {
+				if (str1[j] != str2[j]) {
+					break;
+				}
+			}
+			else {
+				if (QStr::ToUpper(str1[j]) != QStr::ToUpper(str2[j])) {
+					break;
+				}
+			}
+		}
+		if (!str2[j]) {
+			return str1;
+		}
+	}
+	return NULL;
+}
+
+/*
+============
+Com_Filter
+============
+*/
+bool QStr::Filter(const char *filter, const char *name, bool casesensitive)
+{
+	char buf[1024];
+	const char *ptr;
+	int i, found;
+
+	while(*filter) {
+		if (*filter == '*') {
+			filter++;
+			for (i = 0; *filter; i++) {
+				if (*filter == '*' || *filter == '?') break;
+				buf[i] = *filter;
+				filter++;
+			}
+			buf[i] = '\0';
+			if (QStr::Length(buf)) {
+				ptr = Com_StringContains(name, buf, casesensitive);
+				if (!ptr) return false;
+				name = ptr + QStr::Length(buf);
+			}
+		}
+		else if (*filter == '?') {
+			filter++;
+			name++;
+		}
+		else if (*filter == '[' && *(filter+1) == '[') {
+			filter++;
+		}
+		else if (*filter == '[') {
+			filter++;
+			found = false;
+			while(*filter && !found) {
+				if (*filter == ']' && *(filter+1) != ']') break;
+				if (*(filter+1) == '-' && *(filter+2) && (*(filter+2) != ']' || *(filter+3) == ']')) {
+					if (casesensitive) {
+						if (*name >= *filter && *name <= *(filter+2)) found = true;
+					}
+					else {
+						if (QStr::ToUpper(*name) >= QStr::ToUpper(*filter) &&
+							QStr::ToUpper(*name) <= QStr::ToUpper(*(filter+2))) found = true;
+					}
+					filter += 3;
+				}
+				else {
+					if (casesensitive) {
+						if (*filter == *name) found = true;
+					}
+					else {
+						if (QStr::ToUpper(*filter) == QStr::ToUpper(*name)) found = true;
+					}
+					filter++;
+				}
+			}
+			if (!found) return false;
+			while(*filter) {
+				if (*filter == ']' && *(filter+1) != ']') break;
+				filter++;
+			}
+			filter++;
+			name++;
+		}
+		else {
+			if (casesensitive) {
+				if (*filter != *name) return false;
+			}
+			else {
+				if (QStr::ToUpper(*filter) != QStr::ToUpper(*name)) return false;
+			}
+			filter++;
+			name++;
+		}
+	}
+	return true;
+}
+
+/*
+============
+Com_FilterPath
+============
+*/
+bool QStr::FilterPath(const char *filter, const char *name, bool casesensitive)
+{
+	int i;
+	char new_filter[MAX_QPATH];
+	char new_name[MAX_QPATH];
+
+	for (i = 0; i < MAX_QPATH-1 && filter[i]; i++) {
+		if ( filter[i] == '\\' || filter[i] == ':' ) {
+			new_filter[i] = '/';
+		}
+		else {
+			new_filter[i] = filter[i];
+		}
+	}
+	new_filter[i] = '\0';
+	for (i = 0; i < MAX_QPATH-1 && name[i]; i++) {
+		if ( name[i] == '\\' || name[i] == ':' ) {
+			new_name[i] = '/';
+		}
+		else {
+			new_name[i] = name[i];
+		}
+	}
+	new_name[i] = '\0';
+	return Filter(new_filter, new_name, casesensitive);
+}
+
 //==========================================================================
 //
 //	va

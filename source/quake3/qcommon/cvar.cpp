@@ -376,7 +376,7 @@ void Cvar_List_f( void ) {
 	i = 0;
 	for (var = cvar_vars ; var ; var = var->next, i++)
 	{
-		if (match && !Com_Filter(match, var->name, qfalse)) continue;
+		if (match && !QStr::Filter(match, var->name, qfalse)) continue;
 
 		if (var->flags & CVAR_SERVERINFO) {
 			Com_Printf("S");

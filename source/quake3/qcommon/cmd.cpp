@@ -24,26 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "qcommon.h"
 
-//=============================================================================
-
-/*
-============
-Cmd_Wait_f
-
-Causes execution of the remainder of the command buffer to be delayed until
-next frame.  This allows commands like:
-bind g "cmd use rocket ; +attack ; wait ; -attack ; cmd use blaster"
-============
-*/
-void Cmd_Wait_f( void ) {
-	if ( Cmd_Argc() == 2 ) {
-		cmd_wait = QStr::Atoi( Cmd_Argv( 1 ) );
-	} else {
-		cmd_wait = 1;
-	}
-}
-
-
 /*
 ==============================================================================
 
@@ -80,43 +60,6 @@ void Cmd_Exec_f( void ) {
 	Cbuf_InsertText (f);
 
 	FS_FreeFile (f);
-}
-
-
-/*
-===============
-Cmd_Vstr_f
-
-Inserts the current value of a variable as command text
-===============
-*/
-void Cmd_Vstr_f( void ) {
-	const char	*v;
-
-	if (Cmd_Argc () != 2) {
-		Com_Printf ("vstr <variablename> : execute a variable command\n");
-		return;
-	}
-
-	v = Cvar_VariableString( Cmd_Argv( 1 ) );
-	Cbuf_InsertText( va("%s\n", v ) );
-}
-
-
-/*
-===============
-Cmd_Echo_f
-
-Just prints the rest of the line to the console
-===============
-*/
-void Cmd_Echo_f (void)
-{
-	int		i;
-	
-	for (i=1 ; i<Cmd_Argc() ; i++)
-		Com_Printf ("%s ",Cmd_Argv(i));
-	Com_Printf ("\n");
 }
 
 
@@ -158,41 +101,11 @@ void Cmd_HandleUnknownCommand()
 
 /*
 ============
-Cmd_List_f
-============
-*/
-void Cmd_List_f (void)
-{
-	cmd_function_t	*cmd;
-	int				i;
-	char			*match;
-
-	if ( Cmd_Argc() > 1 ) {
-		match = Cmd_Argv( 1 );
-	} else {
-		match = NULL;
-	}
-
-	i = 0;
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next) {
-		if (match && !Com_Filter(match, cmd->name, qfalse)) continue;
-
-		Com_Printf ("%s\n", cmd->name);
-		i++;
-	}
-	Com_Printf ("%i commands\n", i);
-}
-
-/*
-============
 Cmd_Init
 ============
 */
 void Cmd_Init (void) {
-	Cmd_AddCommand ("cmdlist",Cmd_List_f);
+	Cmd_SharedInit(false);
 	Cmd_AddCommand ("exec",Cmd_Exec_f);
-	Cmd_AddCommand ("vstr",Cmd_Vstr_f);
-	Cmd_AddCommand ("echo",Cmd_Echo_f);
-	Cmd_AddCommand ("wait", Cmd_Wait_f);
 }
 

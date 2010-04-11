@@ -181,3 +181,5 @@ void Cmd_CommandCompletion(void(*callback)(const char* s));
 void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
 // Parses a single line of text into arguments and tries to execute it
 // as if it was typed at the console
+
+void Cmd_SharedInit(bool MacroExpand);

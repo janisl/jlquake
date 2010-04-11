@@ -401,12 +401,243 @@ bool Cbuf_AddLateCommands()
 */
 
 /*
+============
+Cmd_Wait_f
+
+Causes execution of the remainder of the command buffer to be delayed until
+next frame.  This allows commands like:
+bind g "cmd use rocket ; +attack ; wait ; -attack ; cmd use blaster"
+============
+*/
+void Cmd_Wait_f()
+{
+	if ( Cmd_Argc() == 2 ) {
+		cmd_wait = QStr::Atoi( Cmd_Argv( 1 ) );
+	} else {
+		cmd_wait = 1;
+	}
+}
+
+/*
+===============
+Cmd_StuffCmds_f
+
+Adds command line parameters as script statements
+Commands lead with a +, and continue until a - or another +
+quake +prog jctest.qp +cmd amlev1
+quake -nosound +cmd amlev1
+===============
+*/
+void Cmd_StuffCmds_f (void)
+{
+	int		i, j;
+	int		s;
+	char	*text, *build, c;
+		
+// build the combined string to parse from
+	s = 0;
+	for (i=1 ; i<COM_Argc(); i++)
+	{
+		s += QStr::Length(COM_Argv(i)) + 1;
+	}
+	if (!s)
+		return;
+		
+	text = new char[s+1];
+	text[0] = 0;
+	for (i=1 ; i<COM_Argc() ; i++)
+	{
+		QStr::Cat(text, s + 1, COM_Argv(i));
+		if (i != COM_Argc()-1)
+			QStr::Cat(text, s + 1, " ");
+	}
+	
+// pull out the commands
+	build = new char[s+1];
+	build[0] = 0;
+	
+	for (i=0 ; i<s-1 ; i++)
+	{
+		if (text[i] == '+')
+		{
+			i++;
+
+			for (j=i ; (text[j] != '+') && (text[j] != '-') && (text[j] != 0) ; j++)
+				;
+
+			c = text[j];
+			text[j] = 0;
+			
+			QStr::Cat(build, s + 1, text+i);
+			QStr::Cat(build, s + 1, "\n");
+			text[j] = c;
+			i = j-1;
+		}
+	}
+	
+	if (build[0])
+		Cbuf_InsertText (build);
+	
+	delete[] text;
+	delete[] build;
+}
+
+/*
+===============
+Cmd_Echo_f
+
+Just prints the rest of the line to the console
+===============
+*/
+void Cmd_Echo_f()
+{
+	int		i;
+
+	for (i=1 ; i<Cmd_Argc() ; i++)
+		GLog.Write("%s ",Cmd_Argv(i));
+	GLog.Write("\n");
+}
+
+/*
+===============
+Cmd_Alias_f
+
+Creates a new command that executes a command string (possibly ; seperated)
+===============
+*/
+
+void Cmd_Alias_f (void)
+{
+	cmdalias_t	*a;
+	char		cmd[1024];
+	int			i, c;
+	char		*s;
+
+	if (Cmd_Argc() == 1)
+	{
+		GLog.Write("Current alias commands:\n");
+		for (a = cmd_alias ; a ; a=a->next)
+			GLog.Write("%s : %s\n", a->name, a->value);
+		return;
+	}
+
+	s = Cmd_Argv(1);
+	if (QStr::Length(s) >= MAX_ALIAS_NAME)
+	{
+		GLog.Write("Alias name is too long\n");
+		return;
+	}
+
+	// if the alias already exists, reuse it
+	for (a = cmd_alias ; a ; a=a->next)
+	{
+		if (!QStr::Cmp(s, a->name))
+		{
+			Mem_Free(a->value);
+			break;
+		}
+	}
+
+	if (!a)
+	{
+		a = new cmdalias_t;
+		a->next = cmd_alias;
+		cmd_alias = a;
+	}
+	QStr::Cpy(a->name, s);	
+
+	// copy the rest of the command line
+	cmd[0] = 0;		// start out with a null string
+	c = Cmd_Argc();
+	for (i=2 ; i< c ; i++)
+	{
+		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
+		if (i != (c - 1))
+			QStr::Cat(cmd, sizeof(cmd), " ");
+	}
+	QStr::Cat(cmd, sizeof(cmd), "\n");
+
+	a->value = __CopyString(cmd);
+}
+
+/*
+===============
+Cmd_Vstr_f
+
+Inserts the current value of a variable as command text
+===============
+*/
+void Cmd_Vstr_f( void )
+{
+	const char	*v;
+
+	if (Cmd_Argc () != 2) {
+		GLog.Write("vstr <variablename> : execute a variable command\n");
+		return;
+	}
+
+	v = Cvar_VariableString( Cmd_Argv( 1 ) );
+	Cbuf_InsertText( va("%s\n", v ) );
+}
+
+/*
+============
+Cmd_List_f
+============
+*/
+void Cmd_List_f()
+{
+	cmd_function_t	*cmd;
+	int				i;
+	char			*match;
+
+	if (Cmd_Argc() > 1)
+	{
+		match = Cmd_Argv(1);
+	}
+	else
+	{
+		match = NULL;
+	}
+
+	i = 0;
+	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
+	{
+		if (match && !QStr::Filter(match, cmd->name, false))
+			continue;
+
+		GLog.Write("%s\n", cmd->name);
+		i++;
+	}
+	GLog.Write("%i commands\n", i);
+}
+
+/*
 =============================================================================
 
 					COMMAND EXECUTION
 
 =============================================================================
 */
+
+/*
+============
+Cmd_Init
+============
+*/
+void Cmd_SharedInit(bool MacroExpand)
+{
+	cmd_macroExpand = MacroExpand;
+	//
+	// register our commands
+	//
+	Cmd_AddCommand("wait", Cmd_Wait_f);
+	Cmd_AddCommand("echo", Cmd_Echo_f);
+	Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
+	Cmd_AddCommand("alias", Cmd_Alias_f);
+	Cmd_AddCommand("cmdlist", Cmd_List_f);
+	Cmd_AddCommand("vstr", Cmd_Vstr_f);
+}
 
 /*
 ============
