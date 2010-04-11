@@ -1164,7 +1164,7 @@ void Host_Name_f (void)
 	if (Cmd_Argc () == 2)
 		newName = Cmd_Argv(1);	
 	else
-		newName = Cmd_Args();
+		newName = Cmd_ArgsUnmodified();
 	newName[15] = 0;
 
 	//this is for the fuckers who put braces in the name causing loadgame to crash.
@@ -1215,7 +1215,7 @@ void Host_Class_f (void)
 	if (Cmd_Argc () == 2)
 		newClass = QStr::Atof(Cmd_Argv(1));	
 	else
-		newClass = QStr::Atof(Cmd_Args());
+		newClass = QStr::Atof(Cmd_ArgsUnmodified());
 
 //	if (!registered.value && !oem.value && (newClass == CLASS_CLERIC || newClass == CLASS_NECROMANCER))
 //	{
@@ -1397,7 +1397,7 @@ void Host_Say(qboolean teamonly)
 
 	save = host_client;
 
-	p = Cmd_Args();
+	p = Cmd_ArgsUnmodified();
 // remove quotes if present
 	if (*p == '"')
 	{
@@ -1465,7 +1465,7 @@ void Host_Tell_f(void)
 	QStr::Cpy(text, host_client->name);
 	QStr::Cat(text, sizeof(text), ": ");
 
-	p = Cmd_Args();
+	p = Cmd_ArgsUnmodified();
 
 // remove quotes if present
 	if (*p == '"')
@@ -1995,7 +1995,7 @@ void Host_Kick_f (void)
 
 		if (Cmd_Argc() > 2)
 		{
-			message = Cmd_Args();
+			message = Cmd_ArgsUnmodified();
 			QStr::Parse1(&message);
 			if (byNumber)
 			{

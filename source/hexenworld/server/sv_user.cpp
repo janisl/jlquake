@@ -577,7 +577,7 @@ void SV_Say (qboolean team)
 		host_client->whensaid[host_client->whensaidhead] = realtime;
 	}
 
-	p = Cmd_Args();
+	p = Cmd_ArgsUnmodified();
 
 	if (*p == '"')
 	{

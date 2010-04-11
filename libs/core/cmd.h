@@ -28,3 +28,93 @@ public:
 	void Clear();
 	void WriteData(const void* Buffer, int Length);
 };
+
+typedef void (*xcommand_t) (void);
+
+enum cmd_source_t
+{
+	src_command,	// from the command buffer
+	src_client,		// came in over a net connection as a clc_stringcmd
+					// host_client will be valid during this state.
+};
+
+extern	cmd_source_t	cmd_source;
+extern bool             cmd_macroExpand;
+
+#define	MAX_ALIAS_NAME	32
+
+struct cmdalias_t
+{
+	cmdalias_t	*next;
+	char	name[MAX_ALIAS_NAME];
+	char	*value;
+};
+
+extern cmdalias_t	*cmd_alias;
+
+#define	ALIAS_LOOP_COUNT	16
+extern int		alias_count;		// for detecting runaway loops
+
+extern int			cmd_wait;
+
+#define	MAX_CMD_BUFFER	16384
+
+extern QCmd		cmd_text;
+extern byte		cmd_text_buf[MAX_CMD_BUFFER];
+
+extern byte		defer_text_buf[MAX_CMD_BUFFER];
+
+struct cmd_function_t
+{
+	cmd_function_t*         next;
+	char*                   name;
+	xcommand_t				function;
+};
+
+extern cmd_function_t	*cmd_functions;		// possible commands to execute
+
+#define	MAX_ARGS		1024
+
+extern	int			cmd_argc;
+extern	char		*cmd_argv[MAX_ARGS];
+extern	char		cmd_tokenized[8192+1024];	// will have 0 bytes inserted
+extern	char		cmd_cmd[8192]; // the original command we received (no token processing)
+extern	char*		cmd_args;
+
+void Cmd_AddCommand(const char* CmdName, xcommand_t Function);
+// called by the init functions of other parts of the program to
+// register commands and functions to call for them.
+// The cmd_name is referenced later, so it should not be in temp memory
+// if function is NULL, the command will be forwarded to the server
+// as a clc_clientCommand instead of executed locally
+
+void Cmd_RemoveCommand(const char* CmdName);
+
+int Cmd_Argc();
+char* Cmd_Argv(int Arg);
+void Cmd_ArgvBuffer(int Arg, char* Buffer, int BufferLength);
+char* Cmd_ArgsUnmodified();
+char* Cmd_Args();
+char* Cmd_ArgsFrom(int Arg);
+void Cmd_ArgsBuffer(char* Buffer, int BufferLength);
+char* Cmd_Cmd();
+// The functions that execute commands get their parameters with these
+// functions. Cmd_Argv () will return an empty string, not a NULL
+// if arg > argc, so string operations are allways safe.
+
+const char* Cmd_MacroExpandString(const char *text);
+
+void Cmd_TokenizeString(const char* Text, bool MacroExpand = false);
+// Takes a null terminated string.  Does not need to be /n terminated.
+// breaks the string up into arg tokens.
+
+char* Cmd_CompleteCommand(const char* partial);
+// attempts to match a partial command for automatic command line completion
+// returns NULL if nothing fits
+
+void Cmd_CommandCompletion(void(*callback)(const char* s));
+// callback with each valid string
+
+void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
+// Parses a single line of text into arguments and tries to execute it
+// as if it was typed at the console

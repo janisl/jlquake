@@ -23,19 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void Cmd_ForwardToServer (void);
 
-#define	MAX_ALIAS_NAME	32
-
-typedef struct cmdalias_s
-{
-	struct cmdalias_s	*next;
-	char	name[MAX_ALIAS_NAME];
-	char	*value;
-} cmdalias_t;
-
-cmdalias_t	*cmd_alias;
-
-qboolean	cmd_wait;
-
 QCvar* cl_warncmd;
 
 //=============================================================================
@@ -61,9 +48,6 @@ void Cmd_Wait_f (void)
 
 =============================================================================
 */
-
-QCmd		cmd_text;
-byte		cmd_text_buf[8192];
 
 /*
 ============
@@ -145,6 +129,8 @@ void Cbuf_Execute (void)
 	char	line[1024];
 	int		quotes;
 	
+	alias_count = 0;		// don't allow infinite alias loops
+
 	while (cmd_text.cursize)
 	{
 // find a \n or ; line break
@@ -390,206 +376,6 @@ void Cmd_Alias_f (void)
 =============================================================================
 */
 
-typedef struct cmd_function_s
-{
-	struct cmd_function_s	*next;
-	char					*name;
-	xcommand_t				function;
-} cmd_function_t;
-
-
-#define	MAX_ARGS		80
-
-static	int			cmd_argc;
-static	char		*cmd_argv[MAX_ARGS];
-static	char		*cmd_null_string = "";
-static	char		*cmd_args = NULL;
-
-
-
-static	cmd_function_t	*cmd_functions;		// possible commands to execute
-
-/*
-============
-Cmd_Argc
-============
-*/
-int		Cmd_Argc (void)
-{
-	return cmd_argc;
-}
-
-/*
-============
-Cmd_Argv
-============
-*/
-char	*Cmd_Argv (int arg)
-{
-	if ( arg >= cmd_argc )
-		return cmd_null_string;
-	return cmd_argv[arg];	
-}
-
-/*
-============
-Cmd_Args
-
-Returns a single string containing argv(1) to argv(argc()-1)
-============
-*/
-char		*Cmd_Args (void)
-{
-	if (!cmd_args)
-		return "";
-	return cmd_args;
-}
-
-
-/*
-============
-Cmd_TokenizeString
-
-Parses the given string into command line tokens.
-============
-*/
-void Cmd_TokenizeString (const char *text)
-{
-	int		i;
-	
-// clear the args from the last string
-	for (i=0 ; i<cmd_argc ; i++)
-		Z_Free (cmd_argv[i]);
-		
-	cmd_argc = 0;
-	cmd_args = NULL;
-	
-	while (1)
-	{
-// skip whitespace up to a /n
-		while (*text && *text <= ' ' && *text != '\n')
-		{
-			text++;
-		}
-		
-		if (*text == '\n')
-		{	// a newline seperates commands in the buffer
-			text++;
-			break;
-		}
-
-		if (!*text)
-			return;
-	
-		if (cmd_argc == 1)
-			 cmd_args = const_cast<char*>(text);
-			
-		const char* token = QStr::Parse2(&text);
-		if (!text)
-			return;
-
-		if (cmd_argc < MAX_ARGS)
-		{
-			cmd_argv[cmd_argc] = (char*)Z_Malloc (QStr::Length(token)+1);
-			QStr::Cpy(cmd_argv[cmd_argc], token);
-			cmd_argc++;
-		}
-	}
-	
-}
-
-
-/*
-============
-Cmd_AddCommand
-============
-*/
-void	Cmd_AddCommand (char *cmd_name, xcommand_t function)
-{
-	cmd_function_t	*cmd;
-	
-	if (host_initialized)	// because hunk allocation would get stomped
-		Sys_Error ("Cmd_AddCommand after host_initialized");
-		
-// fail if the command is a variable name
-	if (Cvar_VariableString(cmd_name)[0])
-	{
-		Con_Printf ("Cmd_AddCommand: %s already defined as a var\n", cmd_name);
-		return;
-	}
-	
-// fail if the command already exists
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-	{
-		if (!QStr::Cmp(cmd_name, cmd->name))
-		{
-			Con_Printf ("Cmd_AddCommand: %s already defined\n", cmd_name);
-			return;
-		}
-	}
-
-	cmd = (cmd_function_t*)Hunk_Alloc (sizeof(cmd_function_t));
-	cmd->name = cmd_name;
-	cmd->function = function;
-	cmd->next = cmd_functions;
-	cmd_functions = cmd;
-}
-
-/*
-============
-Cmd_Exists
-============
-*/
-qboolean	Cmd_Exists (char *cmd_name)
-{
-	cmd_function_t	*cmd;
-
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-	{
-		if (!QStr::Cmp(cmd_name,cmd->name))
-			return true;
-	}
-
-	return false;
-}
-
-
-
-/*
-============
-Cmd_CompleteCommand
-============
-*/
-char *Cmd_CompleteCommand (char *partial)
-{
-	cmd_function_t	*cmd;
-	int				len;
-	cmdalias_t		*a;
-	
-	len = QStr::Length(partial);
-	
-	if (!len)
-		return NULL;
-		
-// check for exact match
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!QStr::Cmp(partial,cmd->name))
-			return cmd->name;
-	for (a=cmd_alias ; a ; a=a->next)
-		if (!QStr::Cmp(partial, a->name))
-			return a->name;
-
-// check for partial match
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!QStr::NCmp(partial,cmd->name, len))
-			return cmd->name;
-	for (a=cmd_alias ; a ; a=a->next)
-		if (!QStr::NCmp(partial, a->name, len))
-			return a->name;
-
-	return NULL;
-}
-
 #ifndef SERVERONLY		// FIXME
 /*
 ===================
@@ -649,34 +435,62 @@ void Cmd_ForwardToServer (void)
 }
 #endif
 
+bool Cmd_HandleNullCommand(const char* text)
+{
+	Cmd_ForwardToServer();
+    return true;
+}
+
+void Cmd_HandleUnknownCommand()
+{
+    if (cl_warncmd->value || developer->value)
+		Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
+}
+
 /*
 ============
 Cmd_ExecuteString
 
 A complete command line has been parsed, so try to execute it
-FIXME: lookupnoadd the token to speed search?
 ============
 */
-void	Cmd_ExecuteString (char *text)
+void	Cmd_ExecuteString (const char *text, cmd_source_t src)
 {	
-	cmd_function_t	*cmd;
+	cmd_function_t	*cmd, **prev;
 	cmdalias_t		*a;
 
-	Cmd_TokenizeString (text);
-			
-// execute the command line
+	// execute the command line
+	cmd_source = src;
+	Cmd_TokenizeString(text, cmd_macroExpand);		
 	if (!Cmd_Argc())
+    {
 		return;		// no tokens
+	}
 
-// check functions
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-	{
+	// check registered command functions	
+	for (prev = &cmd_functions; *prev; prev = &cmd->next)
+    {
+		cmd = *prev;
 		if (!QStr::ICmp(cmd_argv[0],cmd->name))
 		{
+			// rearrange the links so that the command will be
+			// near the head of the list next time it is used
+			*prev = cmd->next;
+			cmd->next = cmd_functions;
+			cmd_functions = cmd;
+
+			// perform the action
 			if (!cmd->function)
-				Cmd_ForwardToServer ();
+            {
+				if (!Cmd_HandleNullCommand(text))
+                {
+                    break;
+                }
+            }
 			else
+            {
 				cmd->function ();
+            }
 			return;
 		}
 	}
@@ -686,15 +500,23 @@ void	Cmd_ExecuteString (char *text)
 	{
 		if (!QStr::ICmp(cmd_argv[0], a->name))
 		{
+			if (++alias_count == ALIAS_LOOP_COUNT)
+			{
+                GLog.Write("ALIAS_LOOP_COUNT\n");
+				return;
+			}
 			Cbuf_InsertText (a->value);
 			return;
 		}
 	}
 	
-// check cvars
-	if (!Cvar_Command () && (cl_warncmd->value || developer->value))
-		Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
-	
+    // check cvars
+	if (Cvar_Command())
+    {
+        return;
+    }
+
+    Cmd_HandleUnknownCommand();
 }
 
 

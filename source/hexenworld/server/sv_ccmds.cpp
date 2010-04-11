@@ -607,7 +607,7 @@ void SV_ConSay_f(void)
 	else
 		QStr::Cpy(text, "ServerAdmin: ");
 
-	p = Cmd_Args();
+	p = Cmd_ArgsUnmodified();
 
 	if (*p == '"')
 	{

@@ -376,7 +376,7 @@ void SV_InitGameProgs (void)
 
 	import.argc = Cmd_Argc;
 	import.argv = Cmd_Argv;
-	import.args = Cmd_Args;
+	import.args = Cmd_ArgsUnmodified;
 	import.AddCommandString = Cbuf_AddText;
 
 	import.DebugGraph = SCR_DebugGraph;

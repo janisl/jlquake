@@ -675,7 +675,7 @@ void Host_Name_f (void)
 	if (Cmd_Argc () == 2)
 		newName = Cmd_Argv(1);	
 	else
-		newName = const_cast<char*>(Cmd_Args());
+		newName = Cmd_ArgsUnmodified();
 	newName[15] = 0;
 
 	if (cmd_source == src_command)
@@ -789,7 +789,7 @@ void Host_Say(qboolean teamonly)
 
 	save = host_client;
 
-	p = const_cast<char*>(Cmd_Args());
+	p = Cmd_ArgsUnmodified();
 // remove quotes if present
 	if (*p == '"')
 	{
@@ -857,7 +857,7 @@ void Host_Tell_f(void)
 	QStr::Cpy(text, host_client->name);
 	QStr::Cat(text, sizeof(text), ": ");
 
-	p = const_cast<char*>(Cmd_Args());
+	p = Cmd_ArgsUnmodified();
 
 // remove quotes if present
 	if (*p == '"')
@@ -1235,7 +1235,7 @@ void Host_Kick_f (void)
 
 		if (Cmd_Argc() > 2)
 		{
-			message = Cmd_Args();
+			message = Cmd_ArgsUnmodified();
 			QStr::Parse1(&message);
 			if (byNumber)
 			{

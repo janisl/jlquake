@@ -495,7 +495,7 @@ void SV_ConSay_f(void)
 		return;
 
 	QStr::Cpy(text, "console: ");
-	p = Cmd_Args();
+	p = Cmd_ArgsUnmodified();
 
 	if (*p == '"')
 	{
