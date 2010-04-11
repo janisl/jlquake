@@ -327,7 +327,7 @@ void PF_bprint (void)
 
 	s = PF_VarString(1);
 
-	if (spartanPrint.value == 1 && level < 2)
+	if (spartanPrint->value == 1 && level < 2)
 		return;
 
 	SV_BroadcastPrintf (level, "%s", s);
@@ -362,7 +362,7 @@ void PF_sprint (void)
 		
 	client = &svs.clients[entnum-1];
 
-	if (spartanPrint.value == 1 && level < 2)
+	if (spartanPrint->value == 1 && level < 2)
 		return;
 
 	
@@ -388,7 +388,7 @@ void PF_name_print (void)
 	Style = ((int)G_FLOAT(OFS_PARM1));
 
 
-	if (spartanPrint.value == 1 && Style < 2)
+	if (spartanPrint->value == 1 && Style < 2)
 		return;
 
 	if (Index <= 0)
@@ -451,7 +451,7 @@ void PF_print_indexed (void)
 	Index = ((int)G_FLOAT(OFS_PARM2));
 	Style = ((int)G_FLOAT(OFS_PARM1));
 
-	if (spartanPrint.value == 1 && Style < 2)
+	if (spartanPrint->value == 1 && Style < 2)
 		return;
 
 	if (Index <= 0)
@@ -1497,7 +1497,7 @@ void PF_precache_sound (void)
 
 void PF_precache_sound2 (void)
 {
-	if (!registered.value)
+	if (!registered->value)
 		return;
 
 	PF_precache_sound();
@@ -1505,7 +1505,7 @@ void PF_precache_sound2 (void)
 
 void PF_precache_sound3 (void)
 {
-	if (!registered.value && !oem.value)
+	if (!registered->value && !oem->value)
 		return;
 
 	PF_precache_sound();
@@ -1539,7 +1539,7 @@ void PF_precache_model (void)
 
 void PF_precache_model2 (void)
 {
-	if (!registered.value)
+	if (!registered->value)
 		return;
 
 	PF_precache_model();
@@ -1547,7 +1547,7 @@ void PF_precache_model2 (void)
 
 void PF_precache_model3 (void)
 {
-	if (!registered.value && !oem.value)
+	if (!registered->value && !oem->value)
 		return;
 
 	PF_precache_model();
@@ -1882,7 +1882,7 @@ Pick a vector for the player to shoot along
 vector aim(entity, missilespeed)
 =============
 */
-cvar_t	sv_aim = {"sv_aim", "0.93"};
+QCvar*	sv_aim;
 void PF_aim (void)
 {
 	edict_t	*ent, *check, *bestent;
@@ -1910,7 +1910,7 @@ void PF_aim (void)
 	tr = SV_Move (start, vec3_origin, vec3_origin, end, false, ent);
 	ent->v.hull = save_hull;
 	if (tr.ent && tr.ent->v.takedamage == DAMAGE_YES
-	&& (!teamplay.value || ent->v.team <=0 || ent->v.team != tr.ent->v.team) )
+	&& (!teamplay->value || ent->v.team <=0 || ent->v.team != tr.ent->v.team) )
 	{
 		VectorCopy (pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 		return;
@@ -1919,7 +1919,7 @@ void PF_aim (void)
 
 // try all possible entities
 	VectorCopy (dir, bestdir);
-	bestdist = sv_aim.value;
+	bestdist = sv_aim->value;
 	bestent = NULL;
 	
 	check = NEXT_EDICT(sv.edicts);
@@ -1929,7 +1929,7 @@ void PF_aim (void)
 			continue;
 		if (check == ent)
 			continue;
-		if (teamplay.value && ent->v.team > 0 && ent->v.team == check->v.team)
+		if (teamplay->value && ent->v.team > 0 && ent->v.team == check->v.team)
 			continue;	// don't aim at teammate
 		for (j=0 ; j<3 ; j++)
 			end[j] = check->v.origin[j]
@@ -2711,7 +2711,7 @@ void PF_setclass (void)
 	old = host_client;
 	host_client = client;
 
-	if(NewClass>CLASS_DEMON&&dmMode.value!=DM_SIEGE)
+	if(NewClass>CLASS_DEMON&&dmMode->value!=DM_SIEGE)
 		NewClass = CLASS_PALADIN;
 
 	e->v.playerclass = NewClass;
@@ -2783,8 +2783,8 @@ client_t	*client;
 		if (client->state < cs_connected)
 			continue;
 		client->netchan.message.WriteByte(svc_updatesiegeinfo);
-		client->netchan.message.WriteByte((int)ceil(timelimit.value));
-		client->netchan.message.WriteByte((int)ceil(fraglimit.value));
+		client->netchan.message.WriteByte((int)ceil(timelimit->value));
+		client->netchan.message.WriteByte((int)ceil(fraglimit->value));
 	}
 }
 

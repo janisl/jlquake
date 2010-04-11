@@ -872,7 +872,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteByte(CCREP_SERVER_INFO);
 		dfunc.GetSocketAddr(acceptsock, &newaddr);
 		net_message.WriteString2(dfunc.AddrToString(&newaddr));
-		net_message.WriteString2(hostname.string);
+		net_message.WriteString2(hostname->string);
 		net_message.WriteString2(sv.name);
 		net_message.WriteByte(net_activeconnections);
 		net_message.WriteByte(svs.maxclients);
@@ -924,7 +924,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	if (command == CCREQ_RULE_INFO)
 	{
 		const char	*prevCvarName;
-		cvar_t	*var;
+		QCvar*		var;
 
 		// find the search start location
 		prevCvarName = net_message.ReadString2();

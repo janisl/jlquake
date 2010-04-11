@@ -1164,7 +1164,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 		{
 			if ((int)ent->v.effects & EF_NODRAW)
 			{
-				if(dmMode.value==DM_SIEGE&&clent->v.playerclass==CLASS_DWARF)
+				if(dmMode->value==DM_SIEGE&&clent->v.playerclass==CLASS_DWARF)
 					invis_level = false;
 				else
 					invis_level = true;//still can hear
@@ -1219,7 +1219,7 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 			pflags |= PF_EFFECTS2;
 		if (ent->v.skin)
 		{
-			if(dmMode.value==DM_SIEGE&&playermodel&&ent->v.skin==1);
+			if(dmMode->value==DM_SIEGE&&playermodel&&ent->v.skin==1);
 			//in siege, don't send skin if 2nd skin and using
 			//playermodel, it will know on other side- saves
 			//us 1 byte per client per frame!

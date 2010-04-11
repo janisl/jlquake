@@ -39,7 +39,7 @@ char	outputbuf[8000];
 
 redirect_t	sv_redirected;
 
-extern cvar_t sv_phs;
+extern QCvar* sv_phs;
 
 /*
 ==================
@@ -138,7 +138,7 @@ void Con_DPrintf (char *fmt, ...)
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
 
-	if (!developer.value)
+	if (!developer->value)
 		return;
 
 	va_start (argptr,fmt);
@@ -380,7 +380,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
     
 	ent = NUM_FOR_EDICT(entity);
 
-	if ((channel & 8) || !sv_phs.value)	// no PHS flag
+	if ((channel & 8) || !sv_phs->value)	// no PHS flag
 	{
 		if (channel & 8)
 			reliable = true; // sounds that break the phs are reliable

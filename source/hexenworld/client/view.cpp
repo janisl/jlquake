@@ -11,32 +11,30 @@ when crossing a water boudnary.
 
 */
 
-cvar_t	lcd_x = {"lcd_x", "0"};	// FIXME: make this work sometime...
+QCvar*	cl_rollspeed;
+QCvar*	cl_rollangle;
 
-cvar_t	cl_rollspeed = {"cl_rollspeed", "200"};
-cvar_t	cl_rollangle = {"cl_rollangle", "2.0"};
+QCvar*	cl_bob;
+QCvar*	cl_bobcycle;
+QCvar*	cl_bobup;
 
-cvar_t	cl_bob = {"cl_bob","0.02"};
-cvar_t	cl_bobcycle = {"cl_bobcycle","0.6"};
-cvar_t	cl_bobup = {"cl_bobup","0.5"};
+QCvar*	v_kicktime;
+QCvar*	v_kickroll;
+QCvar*	v_kickpitch;
 
-cvar_t	v_kicktime = {"v_kicktime", "0.5"};
-cvar_t	v_kickroll = {"v_kickroll", "0.6"};
-cvar_t	v_kickpitch = {"v_kickpitch", "0.6"};
+QCvar*	v_iyaw_cycle;
+QCvar*	v_iroll_cycle;
+QCvar*	v_ipitch_cycle;
+QCvar*	v_iyaw_level;
+QCvar*	v_iroll_level;
+QCvar*	v_ipitch_level;
 
-cvar_t	v_iyaw_cycle = {"v_iyaw_cycle", "2"};
-cvar_t	v_iroll_cycle = {"v_iroll_cycle", "0.5"};
-cvar_t	v_ipitch_cycle = {"v_ipitch_cycle", "1"};
-cvar_t	v_iyaw_level = {"v_iyaw_level", "0.3"};
-cvar_t	v_iroll_level = {"v_iroll_level", "0.1"};
-cvar_t	v_ipitch_level = {"v_ipitch_level", "0.3"};
+QCvar*	v_idlescale;
 
-cvar_t	v_idlescale = {"v_idlescale", "0"};
+QCvar*	crosshair;
 
-cvar_t	crosshair = {"crosshair", "0", NULL,0,false,0,NULL,true};
-
-cvar_t  cl_crossx = {"cl_crossx", "0", NULL,0,false,0,NULL,true};
-cvar_t  cl_crossy = {"cl_crossy", "0", NULL,0,false,0,NULL,true};
+QCvar*  cl_crossx;
+QCvar*  cl_crossy;
 
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
@@ -67,10 +65,10 @@ float V_CalcRoll (vec3_t angles, vec3_t velocity)
 	sign = side < 0 ? -1 : 1;
 	side = Q_fabs(side);
 	
-	value = cl_rollangle.value;
+	value = cl_rollangle->value;
 
-	if (side < cl_rollspeed.value)
-		side = side * value / cl_rollspeed.value;
+	if (side < cl_rollspeed->value)
+		side = side * value / cl_rollspeed->value;
 	else
 		side = value;
 	
@@ -98,18 +96,18 @@ float V_CalcBob (void)
 //		return bob;		// just use old value
 
 //	bobtime += host_frametime;
-//	cycle = bobtime - (int)(bobtime/cl_bobcycle.value)*cl_bobcycle.value;
-	cycle = cl.time - (int)(cl.time/cl_bobcycle.value)*cl_bobcycle.value;
-	cycle /= cl_bobcycle.value;
-	if (cycle < cl_bobup.value)
-		cycle = M_PI * cycle / cl_bobup.value;
+//	cycle = bobtime - (int)(bobtime/cl_bobcycle->value)*cl_bobcycle->value;
+	cycle = cl.time - (int)(cl.time/cl_bobcycle->value)*cl_bobcycle->value;
+	cycle /= cl_bobcycle->value;
+	if (cycle < cl_bobup->value)
+		cycle = M_PI * cycle / cl_bobup->value;
 	else
-		cycle = M_PI + M_PI*(cycle-cl_bobup.value)/(1.0 - cl_bobup.value);
+		cycle = M_PI + M_PI*(cycle-cl_bobup->value)/(1.0 - cl_bobup->value);
 
 // bob is proportional to simulated velocity in the xy plane
 // (don't count Z, or jumping messes it up)
 
-	bob = sqrt(cl.simvel[0]*cl.simvel[0] + cl.simvel[1]*cl.simvel[1]) * cl_bob.value;
+	bob = sqrt(cl.simvel[0]*cl.simvel[0] + cl.simvel[1]*cl.simvel[1]) * cl_bob->value;
 	bob = bob*0.3 + bob*0.7*sin(cycle);
 	if (bob > 4)
 		bob = 4;
@@ -123,10 +121,10 @@ float V_CalcBob (void)
 //=============================================================================
 
 
-cvar_t	v_centermove = {"v_centermove", "0.15", false};
-cvar_t	v_centerspeed = {"v_centerspeed","500"};
+QCvar*	v_centermove;
+QCvar*	v_centerspeed;
 
-cvar_t	v_centerrollspeed = {"v_centerrollspeed","125"};
+QCvar*	v_centerrollspeed;
 
 void V_StartPitchDrift (void)
 {
@@ -138,7 +136,7 @@ void V_StartPitchDrift (void)
 #endif
 	if (cl.nodrift || !cl.pitchvel)
 	{
-		cl.pitchvel = v_centerspeed.value;
+		cl.pitchvel = v_centerspeed->value;
 		cl.nodrift = false;
 		cl.driftmove = 0;
 	}
@@ -188,7 +186,7 @@ void V_DriftPitch (void)
 			cl.driftmove = 0;
 		}
 
-		if ( cl.driftmove > v_centermove.value)
+		if ( cl.driftmove > v_centermove->value)
 		{
 			V_StartPitchDrift ();
 		}
@@ -204,7 +202,7 @@ void V_DriftPitch (void)
 	}
 
 	move = host_frametime * cl.pitchvel;
-	cl.pitchvel += host_frametime * v_centerspeed.value;
+	cl.pitchvel += host_frametime * v_centerspeed->value;
 	
 //Con_Printf ("move: %f (%f)\n", move, host_frametime);
 
@@ -257,9 +255,9 @@ void V_DriftRoll (void)
 
 
 	if(cl.v.movetype != MOVETYPE_FLY)
-		rollspeed = v_centerrollspeed.value;
+		rollspeed = v_centerrollspeed->value;
 	else
-		rollspeed = v_centerrollspeed.value * .5;	//slower roll when flying
+		rollspeed = v_centerrollspeed->value * .5;	//slower roll when flying
 
 	delta = cl.idealroll - cl.viewangles[ROLL];
 
@@ -322,7 +320,7 @@ cshift_t	cshift_water = { {130,80,50}, 128 };
 cshift_t	cshift_slime = { {0,25,5}, 150 };
 cshift_t	cshift_lava = { {255,80,0}, 150 };
 
-cvar_t		v_gamma = {"gamma", "1", NULL,0,false,0,NULL,true};
+QCvar*		v_gamma;
 
 byte		gammatable[256];	// palette is sent through this
 
@@ -361,11 +359,11 @@ qboolean V_CheckGamma (void)
 {
 	static float oldgammavalue;
 	
-	if (v_gamma.value == oldgammavalue)
+	if (v_gamma->value == oldgammavalue)
 		return false;
-	oldgammavalue = v_gamma.value;
+	oldgammavalue = v_gamma->value;
 	
-	BuildGammaTable (v_gamma.value);
+	BuildGammaTable (v_gamma->value);
 	vid.recalc_refdef = 1;				// force a surface cache flush
 	
 	return true;
@@ -431,12 +429,12 @@ void V_ParseDamage (void)
 	AngleVectors (cl.simangles, forward, right, up);
 
 	side = DotProduct (from, right);
-	v_dmg_roll = count*side*v_kickroll.value;
+	v_dmg_roll = count*side*v_kickroll->value;
 	
 	side = DotProduct (from, forward);
-	v_dmg_pitch = count*side*v_kickpitch.value;
+	v_dmg_pitch = count*side*v_kickpitch->value;
 
-	v_dmg_time = v_kicktime.value;
+	v_dmg_time = v_kicktime->value;
 }
 
 
@@ -775,9 +773,9 @@ void CalcGunAngle (void)
 	cl.viewent.angles[YAW] = r_refdef.viewangles[YAW] + yaw;
 	cl.viewent.angles[PITCH] = - (r_refdef.viewangles[PITCH] + pitch);
 
-	cl.viewent.angles[ROLL] -= v_idlescale.value * sin(cl.time*v_iroll_cycle.value) * v_iroll_level.value;
-	cl.viewent.angles[PITCH] -= v_idlescale.value * sin(cl.time*v_ipitch_cycle.value) * v_ipitch_level.value;
-	cl.viewent.angles[YAW] -= v_idlescale.value * sin(cl.time*v_iyaw_cycle.value) * v_iyaw_level.value;
+	cl.viewent.angles[ROLL] -= v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
+	cl.viewent.angles[PITCH] -= v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
+	cl.viewent.angles[YAW] -= v_idlescale->value * sin(cl.time*v_iyaw_cycle->value) * v_iyaw_level->value;
 }
 
 /*
@@ -813,13 +811,13 @@ Idle swaying
 */
 void V_AddIdle (void)
 {
-	r_refdef.viewangles[ROLL] += v_idlescale.value * sin(cl.time*v_iroll_cycle.value) * v_iroll_level.value;
-	r_refdef.viewangles[PITCH] += v_idlescale.value * sin(cl.time*v_ipitch_cycle.value) * v_ipitch_level.value;
-	r_refdef.viewangles[YAW] += v_idlescale.value * sin(cl.time*v_iyaw_cycle.value) * v_iyaw_level.value;
+	r_refdef.viewangles[ROLL] += v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
+	r_refdef.viewangles[PITCH] += v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
+	r_refdef.viewangles[YAW] += v_idlescale->value * sin(cl.time*v_iyaw_cycle->value) * v_iyaw_level->value;
 
-//	cl.viewent.angles[ROLL] -= v_idlescale.value * sin(cl.time*v_iroll_cycle.value) * v_iroll_level.value;
-//	cl.viewent.angles[PITCH] -= v_idlescale.value * sin(cl.time*v_ipitch_cycle.value) * v_ipitch_level.value;
-//	cl.viewent.angles[YAW] -= v_idlescale.value * sin(cl.time*v_iyaw_cycle.value) * v_iyaw_level.value;
+//	cl.viewent.angles[ROLL] -= v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
+//	cl.viewent.angles[PITCH] -= v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
+//	cl.viewent.angles[YAW] -= v_idlescale->value * sin(cl.time*v_iyaw_cycle->value) * v_iyaw_level->value;
 }
 
 
@@ -839,8 +837,8 @@ void V_CalcViewRoll (void)
 
 	if (v_dmg_time > 0)
 	{
-		r_refdef.viewangles[ROLL] += v_dmg_time/v_kicktime.value*v_dmg_roll;
-		r_refdef.viewangles[PITCH] += v_dmg_time/v_kicktime.value*v_dmg_pitch;
+		r_refdef.viewangles[ROLL] += v_dmg_time/v_kicktime->value*v_dmg_roll;
+		r_refdef.viewangles[PITCH] += v_dmg_time/v_kicktime->value*v_dmg_pitch;
 		v_dmg_time -= host_frametime;
 	}
 
@@ -871,10 +869,10 @@ void V_CalcIntermissionRefdef (void)
 	view->model = NULL;
 
 // allways idle in intermission
-	old = v_idlescale.value;
-	v_idlescale.value = 1;
+	old = v_idlescale->value;
+	v_idlescale->value = 1;
 	V_AddIdle ();
-	v_idlescale.value = old;
+	v_idlescale->value = old;
 }
 
 /*
@@ -960,13 +958,13 @@ void V_CalcRefdef (void)
 
 // fudge position around to keep amount of weapon visible
 // roughly equal with different FOV
-	if (scr_viewsize.value == 110)
+	if (scr_viewsize->value == 110)
 		view->origin[2] += 1;
-	else if (scr_viewsize.value == 100)
+	else if (scr_viewsize->value == 100)
 		view->origin[2] += 2;
-	else if (scr_viewsize.value == 90)
+	else if (scr_viewsize->value == 90)
 		view->origin[2] += 1;
-	else if (scr_viewsize.value == 80)
+	else if (scr_viewsize->value == 80)
 		view->origin[2] += 0.5;
 
 	if (view_message->flags & (PF_DEAD) )
@@ -1075,34 +1073,32 @@ void V_Init (void)
 	Cmd_AddCommand ("df", V_DarkFlash_f);
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
 
-	Cvar_RegisterVariable (&v_centermove);
-	Cvar_RegisterVariable (&v_centerspeed);
-	Cvar_RegisterVariable (&v_centerrollspeed);
+	v_centermove = Cvar_Get("v_centermove", "0.15", 0);
+	v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
+	v_centerrollspeed = Cvar_Get("v_centerrollspeed","125", 0);
 
-	Cvar_RegisterVariable (&v_iyaw_cycle);
-	Cvar_RegisterVariable (&v_iroll_cycle);
-	Cvar_RegisterVariable (&v_ipitch_cycle);
-	Cvar_RegisterVariable (&v_iyaw_level);
-	Cvar_RegisterVariable (&v_iroll_level);
-	Cvar_RegisterVariable (&v_ipitch_level);
+	v_iyaw_cycle = Cvar_Get("v_iyaw_cycle", "2", 0);
+	v_iroll_cycle = Cvar_Get("v_iroll_cycle", "0.5", 0);
+	v_ipitch_cycle = Cvar_Get("v_ipitch_cycle", "1", 0);
+	v_iyaw_level = Cvar_Get("v_iyaw_level", "0.3", 0);
+	v_iroll_level = Cvar_Get("v_iroll_level", "0.1", 0);
+	v_ipitch_level = Cvar_Get("v_ipitch_level", "0.3", 0);
 
-	Cvar_RegisterVariable (&v_idlescale);
-	Cvar_RegisterVariable (&crosshair);
-	Cvar_RegisterVariable (&cl_crossx);
-	Cvar_RegisterVariable (&cl_crossy);
+	v_idlescale = Cvar_Get("v_idlescale", "0", 0);
+	crosshair = Cvar_Get("crosshair", "0", CVAR_ARCHIVE);
+	cl_crossx = Cvar_Get("cl_crossx", "0", CVAR_ARCHIVE);
+	cl_crossy = Cvar_Get("cl_crossy", "0", CVAR_ARCHIVE);
 
-	Cvar_RegisterVariable (&cl_rollspeed);
-	Cvar_RegisterVariable (&cl_rollangle);
-	Cvar_RegisterVariable (&cl_bob);
-	Cvar_RegisterVariable (&cl_bobcycle);
-	Cvar_RegisterVariable (&cl_bobup);
+	cl_rollspeed = Cvar_Get("cl_rollspeed", "200", 0);
+	cl_rollangle = Cvar_Get("cl_rollangle", "2.0", 0);
+	cl_bob = Cvar_Get("cl_bob","0.02", 0);
+	cl_bobcycle = Cvar_Get("cl_bobcycle","0.6", 0);
+	cl_bobup = Cvar_Get("cl_bobup","0.5", 0);
 
-	Cvar_RegisterVariable (&v_kicktime);
-	Cvar_RegisterVariable (&v_kickroll);
-	Cvar_RegisterVariable (&v_kickpitch);	
+	v_kicktime = Cvar_Get("v_kicktime", "0.5", 0);
+	v_kickroll = Cvar_Get("v_kickroll", "0.6", 0);
+	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);
 
 	BuildGammaTable (1.0);	// no gamma yet
-	Cvar_RegisterVariable (&v_gamma);
+	v_gamma = Cvar_Get("gamma", "1", CVAR_ARCHIVE);
 }
-
-

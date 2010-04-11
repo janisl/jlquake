@@ -24,7 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 extern unsigned char d_15to8table[65536];
-extern cvar_t crosshair, cl_crossx, cl_crossy, crosshaircolor;
+extern QCvar*	crosshair;
+extern QCvar*	cl_crossx;
+extern QCvar*	cl_crossy;
+extern QCvar*	crosshaircolor;
 
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
@@ -564,12 +567,12 @@ void Draw_Crosshair(void)
 	extern vrect_t		scr_vrect;
 	unsigned char *pColor;
 
-	if (crosshair.value == 2) {
-		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx.value; 
-		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy.value;
+	if (crosshair->value == 2) {
+		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx->value; 
+		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy->value;
 
 		glTexEnvf ( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-		pColor = (unsigned char *) &d_8to24table[(byte) crosshaircolor.value];
+		pColor = (unsigned char *) &d_8to24table[(byte) crosshaircolor->value];
 		glColor4ubv ( pColor );
 		GL_Bind (cs_texture);
 
@@ -585,9 +588,9 @@ void Draw_Crosshair(void)
 		glEnd ();
 		
 		glTexEnvf ( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-	} else if (crosshair.value)
-		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx.value, 
-			scr_vrect.y + scr_vrect.height/2-4 + cl_crossy.value, 
+	} else if (crosshair->value)
+		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx->value, 
+			scr_vrect.y + scr_vrect.height/2-4 + cl_crossy->value, 
 			'+');
 }
 

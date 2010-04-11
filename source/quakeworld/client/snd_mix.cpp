@@ -77,7 +77,7 @@ void S_TransferStereo16 (int endtime)
 	HRESULT	hresult;
 #endif
 	
-	snd_vol = volume.value*256;
+	snd_vol = volume->value*256;
 
 	snd_p = (int *) paintbuffer;
 	lpaintedtime = paintedtime;
@@ -167,7 +167,7 @@ void S_TransferPaintBuffer(int endtime)
 	out_mask = shm->samples - 1; 
 	out_idx = paintedtime * shm->channels & out_mask;
 	step = 3 - shm->channels;
-	snd_vol = volume.value*256;
+	snd_vol = volume->value*256;
 
 #ifdef _WIN32
 	if (pDSBuf)

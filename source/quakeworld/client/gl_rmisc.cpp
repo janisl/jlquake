@@ -173,40 +173,40 @@ void R_Init (void)
 	Cmd_AddCommand ("envmap", R_Envmap_f);	
 	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);	
 
-    r_norefresh = Cvar_Get("r_norefresh", "0", 0);
-    r_drawentities = Cvar_Get("r_drawentities", "1", 0);
-    r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
-    r_speeds = Cvar_Get("r_speeds", "0", 0);
-    r_fullbright = Cvar_Get("r_fullbright", "0", 0);
-    r_lightmap = Cvar_Get("r_lightmap", "0", 0);
-    r_shadows = Cvar_Get("r_shadows", "0", 0);
-    r_mirroralpha = Cvar_Get("r_mirroralpha", "1", 0);
-    r_wateralpha = Cvar_Get("r_wateralpha","0.4", CVAR_ARCHIVE);
-    r_dynamic = Cvar_Get("r_dynamic", "1", 0);
-    r_novis = Cvar_Get("r_novis", "0", 0);
-	Cvar_RegisterVariable (&r_netgraph);
+	r_norefresh = Cvar_Get("r_norefresh", "0", 0);
+	r_drawentities = Cvar_Get("r_drawentities", "1", 0);
+	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
+	r_speeds = Cvar_Get("r_speeds", "0", 0);
+	r_fullbright = Cvar_Get("r_fullbright", "0", 0);
+	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
+	r_shadows = Cvar_Get("r_shadows", "0", 0);
+	r_mirroralpha = Cvar_Get("r_mirroralpha", "1", 0);
+	r_wateralpha = Cvar_Get("r_wateralpha","0.4", CVAR_ARCHIVE);
+	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
+	r_novis = Cvar_Get("r_novis", "0", 0);
+	r_netgraph = Cvar_Get("r_netgraph", "0", 0);
 
-    gl_clear = Cvar_Get("gl_clear", "0", 0);
-    gl_texsort = Cvar_Get("gl_texsort", "1", 0);
+	gl_clear = Cvar_Get("gl_clear", "0", 0);
+	gl_texsort = Cvar_Get("gl_texsort", "1", 0);
 
- 	if (gl_mtexable)
+	if (gl_mtexable)
 		Cvar_SetValue ("gl_texsort", 0.0);
 
-    gl_cull = Cvar_Get("gl_cull", "1", 0);
-    gl_smoothmodels = Cvar_Get("gl_smoothmodels", "1", 0);
-    gl_affinemodels = Cvar_Get("gl_affinemodels", "0", 0);
-    gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
-    gl_flashblend = Cvar_Get("gl_flashblend", "0", 0);
-    gl_playermip = Cvar_Get("gl_playermip", "0", 0);
-    gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
+	gl_cull = Cvar_Get("gl_cull", "1", 0);
+	gl_smoothmodels = Cvar_Get("gl_smoothmodels", "1", 0);
+	gl_affinemodels = Cvar_Get("gl_affinemodels", "0", 0);
+	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
+	gl_flashblend = Cvar_Get("gl_flashblend", "0", 0);
+	gl_playermip = Cvar_Get("gl_playermip", "0", 0);
+	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
 
-    gl_keeptjunctions = Cvar_Get("gl_keeptjunctions", "1", CVAR_ARCHIVE);
-    gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
+	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions", "1", CVAR_ARCHIVE);
+	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
-	Cvar_RegisterVariable (&gl_finish);
+	gl_finish = Cvar_Get("gl_finish", "0", 0);
 
 	R_InitBubble();
-	
+
 	R_InitParticles ();
 	R_InitParticleTexture ();
 

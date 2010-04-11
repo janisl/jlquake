@@ -95,10 +95,10 @@ static int sb_updates; // if >= vid.numpages, no update needed
 
 static float BarHeight;
 static float BarTargetHeight;
-cvar_t BarSpeed = { "barspeed", "5" };
-cvar_t sbtemp = { "sbtemp", "5" };
-cvar_t DMMode = { "dm_mode", "1", NULL,0,false,0,NULL,true };
-cvar_t sbtrans = { "sbtrans", "0", NULL,0,false,0,NULL,true };
+static QCvar* BarSpeed;
+static QCvar* sbtemp;
+static QCvar* DMMode;
+static QCvar* sbtrans;
 
 static qpic_t *sb_nums[11];
 static qpic_t *sb_colon, *sb_slash;
@@ -212,11 +212,11 @@ void Sbar_Init(void)
 	Cmd_AddCommand("invdrop", InvDrop_f);
 	Cmd_AddCommand("invoff", InvOff_f);
 	Cmd_AddCommand("toggle_dm", ToggleDM_f);
-	Cvar_RegisterVariable(&DMMode);
-	Cvar_RegisterVariable(&sbtrans);
 
-	Cvar_RegisterVariable(&BarSpeed);
-	Cvar_RegisterVariable(&sbtemp);
+	BarSpeed = Cvar_Get("barspeed", "5", 0);
+	sbtemp = Cvar_Get("sbtemp", "5", 0);
+	DMMode = Cvar_Get("dm_mode", "1", CVAR_ARCHIVE);
+	sbtrans = Cvar_Get("sbtrans", "0", CVAR_ARCHIVE);
 	BarHeight = BarTargetHeight = BAR_TOP_HEIGHT;
 }
 
@@ -308,7 +308,7 @@ void Sbar_Draw(void)
 //rjr		else
 //rjr			Sbar_NormalOverlay();
 		}
-		else if (DMMode.value)
+		else if (DMMode->value)
 		{
 			Sbar_SmallDeathmatchOverlay();
 		}
@@ -316,7 +316,7 @@ void Sbar_Draw(void)
 		return;
 	}
 
-	trans_level = (int)sbtrans.value;
+	trans_level = (int)sbtrans->value;
 	if (trans_level < 0 || trans_level > 2)
 	{
 		trans_level = 0;
@@ -334,7 +334,7 @@ void Sbar_Draw(void)
 
 	if(BarHeight < BarTargetHeight)
 	{
-		delta = ((BarTargetHeight-BarHeight)*BarSpeed.value)
+		delta = ((BarTargetHeight-BarHeight)*BarSpeed->value)
 			*host_frametime;
 		if(delta < 0.5)
 		{
@@ -349,7 +349,7 @@ void Sbar_Draw(void)
 	}
 	else if(BarHeight > BarTargetHeight)
 	{
-		delta = ((BarHeight-BarTargetHeight)*BarSpeed.value)
+		delta = ((BarHeight-BarTargetHeight)*BarSpeed->value)
 			*host_frametime;
 		if(delta < 0.5)
 		{
@@ -468,7 +468,7 @@ void Sbar_Draw(void)
 //rjr		else
 //rjr			Sbar_NormalOverlay();
 	}
-	else if (DMMode.value)
+	else if (DMMode->value)
 	{
 		Sbar_SmallDeathmatchOverlay();
 	}
@@ -597,7 +597,7 @@ static void DrawLowerBar(void)
 	int ringhealth;
 
 	playerClass = cl.players[cl.playernum].playerclass;
-//	playerClass = playerclass.value;
+//	playerClass = playerclass->value;
 	if(playerClass < 1 || playerClass > MAX_PLAYER_CLASS)
 	{ // Default to paladin
 		playerClass = 1;
@@ -1424,10 +1424,10 @@ void Sbar_SmallDeathmatchOverlay(void)
 //	unsigned char	num[12];
 	player_info_t	*s;
 
-	if (DMMode.value >= 2 && BarHeight != BAR_TOP_HEIGHT)
+	if (DMMode->value >= 2 && BarHeight != BAR_TOP_HEIGHT)
 		return;
 
-	trans_level = (int)((DMMode.value-floor(DMMode.value)+1E-3)*10);
+	trans_level = (int)((DMMode->value-floor(DMMode->value)+1E-3)*10);
 	if (trans_level > 2) 
 	{
 		trans_level = 0;
@@ -1443,7 +1443,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 	l = scoreboardlines;
 
 	x = 10;
-	if ((int)DMMode.value == 1)
+	if ((int)DMMode->value == 1)
 	{
 		i = (vid.height - 120) / 10;
 
@@ -1452,7 +1452,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 
 		y = 46;
 	}
-	else if ((int)DMMode.value == 2)
+	else if ((int)DMMode->value == 2)
 	{
 		if (l > 4) 
 			l = 4;
@@ -1504,7 +1504,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 		}
 		else
 		{
-			if ((int)DMMode.value == 2)
+			if ((int)DMMode->value == 2)
 			{
 			}
 			// draw background
@@ -1880,7 +1880,7 @@ static void ShowInfoDown_f(void)
 
 static void ShowInfoUp_f(void)
 {
-	if(cl.intermission || (scr_viewsize.value >= 110.0 && !sbtrans.value))
+	if(cl.intermission || (scr_viewsize->value >= 110.0 && !sbtrans->value))
 	{
 		BarTargetHeight = 0.0-BAR_BUMP_HEIGHT;
 	}
@@ -2020,9 +2020,9 @@ static void InvOff_f(void)
 
 static void ToggleDM_f(void)
 {
-	DMMode.value += 1;
-	if (DMMode.value > 2)
-		DMMode.value = 0;
+	DMMode->value += 1;
+	if (DMMode->value > 2)
+		DMMode->value = 0;
 }
 
 //==========================================================================
@@ -2113,7 +2113,7 @@ void SB_InvReset(void)
 
 void SB_ViewSizeChanged(void)
 {
-	if(cl.intermission || (scr_viewsize.value >= 110.0 && !sbtrans.value))
+	if(cl.intermission || (scr_viewsize->value >= 110.0 && !sbtrans->value))
 	{
 		BarTargetHeight = 0.0-BAR_BUMP_HEIGHT;
 	}

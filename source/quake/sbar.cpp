@@ -833,8 +833,8 @@ void Sbar_DrawFace (void)
 // PGM 03/02/97 - fixed so color swatch only appears in CTF modes
 	if (rogue &&
         (cl.maxclients != 1) &&
-        (teamplay.value>3) &&
-        (teamplay.value<7))
+        (teamplay->value>3) &&
+        (teamplay->value<7))
 	{
 		int				top, bottom;
 		int				xofs;

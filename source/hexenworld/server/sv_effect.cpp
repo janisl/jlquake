@@ -28,8 +28,8 @@ static void FreeEffectEntity(int index);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
-extern cvar_t sv_ce_scale;
-extern cvar_t sv_ce_max_size;
+extern QCvar* sv_ce_scale;
+extern QCvar* sv_ce_max_size;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
@@ -52,7 +52,7 @@ void SV_SendEffect(QMsg *sb, int index)
 	int			TestDistance;
 	int			i;
 
-	if (sv_ce_scale.value > 0)
+	if (sv_ce_scale->value > 0)
 		DoTest = true;
 	else
 		DoTest = false;

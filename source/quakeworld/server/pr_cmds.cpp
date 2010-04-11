@@ -1153,8 +1153,7 @@ Pick a vector for the player to shoot along
 vector aim(entity, missilespeed)
 =============
 */
-//cvar_t	sv_aim = {"sv_aim", "0.93"};
-cvar_t	sv_aim = {"sv_aim", "2"};
+QCvar*	sv_aim;
 void PF_aim (void)
 {
 	edict_t	*ent, *check, *bestent;
@@ -1188,7 +1187,7 @@ void PF_aim (void)
 	VectorMA (start, 2048, dir, end);
 	tr = SV_Move (start, vec3_origin, vec3_origin, end, false, ent);
 	if (tr.ent && tr.ent->v.takedamage == DAMAGE_AIM
-	&& (!teamplay.value || ent->v.team <=0 || ent->v.team != tr.ent->v.team) )
+	&& (!teamplay->value || ent->v.team <=0 || ent->v.team != tr.ent->v.team) )
 	{
 		VectorCopy (pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 		return;
@@ -1197,7 +1196,7 @@ void PF_aim (void)
 
 // try all possible entities
 	VectorCopy (dir, bestdir);
-	bestdist = sv_aim.value;
+	bestdist = sv_aim->value;
 	bestent = NULL;
 	
 	check = NEXT_EDICT(sv.edicts);
@@ -1207,7 +1206,7 @@ void PF_aim (void)
 			continue;
 		if (check == ent)
 			continue;
-		if (teamplay.value && ent->v.team > 0 && ent->v.team == check->v.team)
+		if (teamplay->value && ent->v.team > 0 && ent->v.team == check->v.team)
 			continue;	// don't aim at teammate
 		for (j=0 ; j<3 ; j++)
 			end[j] = check->v.origin[j]

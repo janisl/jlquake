@@ -10,15 +10,15 @@ server_t		sv;
 server_static_t	svs;
 char	localmodels[MAX_MODELS][5];			// inline model names for precache
 
-cvar_t	sv_sound_distance = {"sv_sound_distance","800", NULL,0,false,0,NULL,true};
+QCvar*	sv_sound_distance;
 
-cvar_t	sv_update_player	= {"sv_update_player","1", NULL,0,false,0,NULL,true};
-cvar_t	sv_update_monsters	= {"sv_update_monsters","1", NULL,0,false,0,NULL,true};
-cvar_t	sv_update_missiles	= {"sv_update_missiles","1", NULL,0,false,0,NULL,true};
-cvar_t	sv_update_misc		= {"sv_update_misc","1", NULL,0,false,0,NULL,true};
+QCvar*	sv_update_player;
+QCvar*	sv_update_monsters;
+QCvar*	sv_update_missiles;
+QCvar*	sv_update_misc;
 
-cvar_t	sv_ce_scale			= {"sv_ce_scale","0", NULL,0,false,0,NULL,true};
-cvar_t	sv_ce_max_size		= {"sv_ce_max_size","0", NULL,0,false,0,NULL,true};
+QCvar*	sv_ce_scale;
+QCvar*	sv_ce_max_size;
 
 extern unsigned int	info_mask, info_mask2;
 int		sv_kingofhill;
@@ -38,40 +38,40 @@ SV_Init
 void SV_Init (void)
 {
 	int		i;
-	extern	cvar_t	sv_maxvelocity;
-	extern	cvar_t	sv_gravity;
-	extern	cvar_t	sv_nostep;
-	extern	cvar_t	sv_friction;
-	extern	cvar_t	sv_edgefriction;
-	extern	cvar_t	sv_stopspeed;
-	extern	cvar_t	sv_maxspeed;
-	extern	cvar_t	sv_accelerate;
-	extern	cvar_t	sv_idealpitchscale;
-	extern	cvar_t	sv_idealrollscale;
-	extern	cvar_t	sv_aim;
-	extern	cvar_t	sv_walkpitch;
-	extern	cvar_t	sv_flypitch;
+	extern	QCvar*	sv_maxvelocity;
+	extern	QCvar*	sv_gravity;
+	extern	QCvar*	sv_nostep;
+	extern	QCvar*	sv_friction;
+	extern	QCvar*	sv_edgefriction;
+	extern	QCvar*	sv_stopspeed;
+	extern	QCvar*	sv_maxspeed;
+	extern	QCvar*	sv_accelerate;
+	extern	QCvar*	sv_idealpitchscale;
+	extern	QCvar*	sv_idealrollscale;
+	extern	QCvar*	sv_aim;
+	extern	QCvar*	sv_walkpitch;
+	extern	QCvar*	sv_flypitch;
 
-	Cvar_RegisterVariable (&sv_maxvelocity);
-	Cvar_RegisterVariable (&sv_gravity);
-	Cvar_RegisterVariable (&sv_friction);
-	Cvar_RegisterVariable (&sv_edgefriction);
-	Cvar_RegisterVariable (&sv_stopspeed);
-	Cvar_RegisterVariable (&sv_maxspeed);
-	Cvar_RegisterVariable (&sv_accelerate);
-	Cvar_RegisterVariable (&sv_idealpitchscale);
-	Cvar_RegisterVariable (&sv_idealrollscale);
-	Cvar_RegisterVariable (&sv_aim);
-	Cvar_RegisterVariable (&sv_nostep);
-	Cvar_RegisterVariable (&sv_walkpitch);
-	Cvar_RegisterVariable (&sv_flypitch);
-	Cvar_RegisterVariable (&sv_sound_distance);
-	Cvar_RegisterVariable (&sv_update_player);
-	Cvar_RegisterVariable (&sv_update_monsters);
-	Cvar_RegisterVariable (&sv_update_missiles);
-	Cvar_RegisterVariable (&sv_update_misc);
-	Cvar_RegisterVariable (&sv_ce_scale);
-	Cvar_RegisterVariable (&sv_ce_max_size);
+	sv_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
+	sv_gravity = Cvar_Get("sv_gravity", "800", CVAR_SERVERINFO);
+	sv_friction = Cvar_Get("sv_friction", "4", CVAR_SERVERINFO);
+	sv_edgefriction = Cvar_Get("edgefriction", "2", 0);
+	sv_stopspeed = Cvar_Get("sv_stopspeed", "100", 0);
+	sv_maxspeed = Cvar_Get("sv_maxspeed", "640", CVAR_SERVERINFO);
+	sv_accelerate = Cvar_Get("sv_accelerate", "10", 0);
+	sv_idealpitchscale = Cvar_Get("sv_idealpitchscale","0.8", 0);
+	sv_idealrollscale = Cvar_Get("sv_idealrollscale","0.8", 0);
+	sv_aim = Cvar_Get("sv_aim", "0.93", 0);
+	sv_nostep = Cvar_Get("sv_nostep", "0", 0);
+	sv_walkpitch = Cvar_Get("sv_walkpitch", "0", 0);
+	sv_flypitch = Cvar_Get("sv_flypitch", "20", 0);
+	sv_sound_distance = Cvar_Get("sv_sound_distance","800", CVAR_ARCHIVE);
+	sv_update_player	= Cvar_Get("sv_update_player","1", CVAR_ARCHIVE);
+	sv_update_monsters	= Cvar_Get("sv_update_monsters","1", CVAR_ARCHIVE);
+	sv_update_missiles	= Cvar_Get("sv_update_missiles","1", CVAR_ARCHIVE);
+	sv_update_misc		= Cvar_Get("sv_update_misc","1", CVAR_ARCHIVE);
+	sv_ce_scale			= Cvar_Get("sv_ce_scale","0", CVAR_ARCHIVE);
+	sv_ce_max_size		= Cvar_Get("sv_ce_max_size","0", CVAR_ARCHIVE);
 
 	Cmd_AddCommand ("sv_edicts", Sv_Edicts_f);	
 
@@ -411,7 +411,7 @@ void SV_SendServerinfo (client_t *client)
 	client->message.WriteLong(PROTOCOL_VERSION);
 	client->message.WriteByte(svs.maxclients);
 
-	if (!coop.value && deathmatch.value)
+	if (!coop->value && deathmatch->value)
 	{
 		client->message.WriteByte(GAME_DEATHMATCH);
 		client->message.WriteShort(sv_kingofhill);
@@ -740,14 +740,14 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 
 	DoPlayer = DoMonsters = DoMissiles = DoMisc = false;
 
-	if ((int)sv_update_player.value)
-		DoPlayer = (client->current_sequence % ((int)sv_update_player.value)) == 0;
-	if ((int)sv_update_monsters.value)
-		DoMonsters = (client->current_sequence % ((int)sv_update_monsters.value)) == 0;
-	if ((int)sv_update_missiles.value)
-		DoMissiles = (client->current_sequence % ((int)sv_update_missiles.value)) == 0;
-	if ((int)sv_update_misc.value)
-		DoMisc = (client->current_sequence % ((int)sv_update_misc.value)) == 0;
+	if ((int)sv_update_player->value)
+		DoPlayer = (client->current_sequence % ((int)sv_update_player->value)) == 0;
+	if ((int)sv_update_monsters->value)
+		DoMonsters = (client->current_sequence % ((int)sv_update_monsters->value)) == 0;
+	if ((int)sv_update_missiles->value)
+		DoMissiles = (client->current_sequence % ((int)sv_update_missiles->value)) == 0;
+	if ((int)sv_update_misc->value)
+		DoMisc = (client->current_sequence % ((int)sv_update_misc->value)) == 0;
 
 	build = &state->frames[client->current_frame];
 	Com_Memset(build,0,sizeof(*build));
@@ -1877,7 +1877,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	qboolean	stats_restored;
 
 	// let's not have any servers with no name
-	if (hostname.string[0] == 0)
+	if (hostname->string[0] == 0)
 		Cvar_Set ("hostname", "UNNAMED");
 	scr_centertime_off = 0;
 
@@ -1901,10 +1901,10 @@ void SV_SpawnServer (char *server, char *startspot)
 //
 // make cvars consistant
 //
-	if (coop.value)
+	if (coop->value)
 		Cvar_SetValue ("deathmatch", 0);
 
-	current_skill = (int)(skill.value + 0.1);
+	current_skill = (int)(skill->value + 0.1);
 	if (current_skill < 0)
 		current_skill = 0;
 	if (current_skill > 4)
@@ -1953,7 +1953,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	sv.signon.InitOOB(sv.signon_buf, sizeof(sv.signon_buf));
 	
 // leave slots at start for clients only
-	sv.num_edicts = svs.maxclients+1+max_temp_edicts.value;
+	sv.num_edicts = svs.maxclients+1+max_temp_edicts->value;
 	for (i=0 ; i<svs.maxclients ; i++)
 	{
 		ent = EDICT_NUM(i+1);
@@ -1961,7 +1961,7 @@ void SV_SpawnServer (char *server, char *startspot)
 		svs.clients[i].send_all_v = true;
 	}
 
-	for (i=0 ; i < max_temp_edicts.value ; i++)
+	for (i=0 ; i < max_temp_edicts->value ; i++)
 	{
 		ent = EDICT_NUM(i+svs.maxclients+1);
 		ED_ClearEdict(ent);
@@ -2015,12 +2015,12 @@ void SV_SpawnServer (char *server, char *startspot)
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
 
-	if (coop.value)
-		pr_global_struct->coop = coop.value;
+	if (coop->value)
+		pr_global_struct->coop = coop->value;
 	else
-		pr_global_struct->deathmatch = deathmatch.value;
+		pr_global_struct->deathmatch = deathmatch->value;
 
-	pr_global_struct->randomclass = randomclass.value;
+	pr_global_struct->randomclass = randomclass->value;
 
 	pr_global_struct->mapname = sv.name - pr_strings;
 	pr_global_struct->startspot = sv.startspot - pr_strings;

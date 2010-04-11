@@ -16,8 +16,8 @@ static char	*argvdummy = " ";
 static char	*safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
 
-cvar_t	registered = {"registered","0"};
-cvar_t  oem = {"oem","0"};
+QCvar*	registered;
+QCvar*	oem;
 
 qboolean	com_modified;	// set true if using non-id files
 qboolean	com_portals = false;
@@ -315,8 +315,8 @@ void COM_Init (char *basedir)
 {
 	Com_InitByteOrder();
 
-	Cvar_RegisterVariable (&registered);
-	Cvar_RegisterVariable (&oem);
+	registered = Cvar_Get("registered", "0", 0);
+	oem = Cvar_Get("oem", "0", 0);
 	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();
@@ -1093,7 +1093,7 @@ void Info_SetValueForStarKey (char *s, char *key, char *value, int maxsize)
 	char	newv[1024], *v;
 	int		c;
 #ifdef SERVERONLY
-	extern cvar_t sv_highchars;
+	extern QCvar* sv_highchars;
 #endif
 
 	if (strstr (key, "\\") || strstr (value, "\\") )
@@ -1142,7 +1142,7 @@ void Info_SetValueForStarKey (char *s, char *key, char *value, int maxsize)
 				c = QStr::ToLower(c);
 		}
 #else
-		if (!sv_highchars.value) {
+		if (!sv_highchars->value) {
 			c &= 127;
 			if (c < 32 || c > 127)
 				continue;

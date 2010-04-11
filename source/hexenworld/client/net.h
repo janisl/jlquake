@@ -13,7 +13,7 @@ extern	netadr_t	net_local_adr;
 extern	netadr_t	net_from;		// address of who sent the packet
 extern	QMsg		net_message;
 
-extern	cvar_t	hostname;
+extern	QCvar*	hostname;
 
 extern	int		net_socket;
 

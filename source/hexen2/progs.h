@@ -122,7 +122,7 @@ void ED_PrintNum (int ent);
 
 eval_t *GetEdictFieldValue(edict_t *ed, char *field);
 
-extern cvar_t	max_temp_edicts;
+extern QCvar*	max_temp_edicts;
 
 extern qboolean ignore_precache;
 

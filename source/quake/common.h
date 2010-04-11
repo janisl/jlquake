@@ -60,6 +60,6 @@ byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 
 
-extern	cvar_t		registered;
+extern	QCvar*		registered;
 
 extern qboolean		standard_quake, rogue, hipnotic;

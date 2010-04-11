@@ -226,8 +226,8 @@ typedef struct
 //
 // cvars
 //
-extern	cvar_t	cl_name;
-extern	cvar_t	cl_color;
+extern	QCvar*	cl_name;
+extern	QCvar*	cl_color;
 
 extern	QCvar*	cl_upspeed;
 extern	QCvar*	cl_forwardspeed;
@@ -241,12 +241,9 @@ extern	QCvar*	cl_pitchspeed;
 
 extern	QCvar*	cl_anglespeedkey;
 
-extern	cvar_t	cl_autofire;
+extern	QCvar*	cl_shownet;
+extern	QCvar*	cl_nolerp;
 
-extern	cvar_t	cl_shownet;
-extern	cvar_t	cl_nolerp;
-
-extern	cvar_t	cl_pitchdriftspeed;
 extern	QCvar*	lookspring;
 extern	QCvar*	lookstrafe;
 extern	QCvar*	sensitivity;

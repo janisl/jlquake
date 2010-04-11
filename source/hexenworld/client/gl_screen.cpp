@@ -61,16 +61,16 @@ float           scr_con_current;
 float           scr_conlines;           // lines of console to display
 
 float           oldscreensize, oldfov;
-cvar_t          scr_viewsize = {"viewsize","100", NULL,0,false,0,NULL,true};
-cvar_t          scr_fov = {"fov","90"}; // 10 - 170
-cvar_t          scr_conspeed = {"scr_conspeed","300"};
-cvar_t          scr_centertime = {"scr_centertime","4"};
-cvar_t          scr_showram = {"showram","1"};
-cvar_t          scr_showturtle = {"showturtle","0"};
-cvar_t          scr_showpause = {"showpause","1"};
-cvar_t          scr_printspeed = {"scr_printspeed","8"};
-cvar_t		gl_triplebuffer = {"gl_triplebuffer", "0", NULL,0,false,0,NULL,true };
-extern  cvar_t  crosshair;
+QCvar*          scr_viewsize;
+QCvar*          scr_fov;
+QCvar*          scr_conspeed;
+QCvar*          scr_centertime;
+QCvar*          scr_showram;
+QCvar*          scr_showturtle;
+QCvar*          scr_showpause;
+QCvar*          scr_printspeed;
+QCvar*		gl_triplebuffer;
+extern  QCvar*	crosshair;
 
 qboolean        scr_initialized;                // ready to draw
 
@@ -167,7 +167,7 @@ for a few moments
 void SCR_CenterPrint (char *str)
 {
 	QStr::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
-	scr_centertime_off = scr_centertime.value;
+	scr_centertime_off = scr_centertime->value;
 	scr_centertime_start = cl.time;
 
 	FindTextBreaks(scr_centerstring, 38);
@@ -183,7 +183,7 @@ void SCR_DrawCenterString (void)
 
 // the finale prints the characters one at a time
 	if (cl.intermission)
-		remaining = scr_printspeed.value * (cl.time - scr_centertime_start);
+		remaining = scr_printspeed->value * (cl.time - scr_centertime_start);
 	else
 		remaining = 9999;
 
@@ -244,22 +244,22 @@ static void SCR_CalcRefdef (void)
 //========================================
 	
 // bound viewsize
-	if (scr_viewsize.value < 30)
+	if (scr_viewsize->value < 30)
 		Cvar_Set ("viewsize","30");
-	if (scr_viewsize.value > 120)
+	if (scr_viewsize->value > 120)
 		Cvar_Set ("viewsize","120");
 
 // bound field of view
-	if (scr_fov.value < 10)
+	if (scr_fov->value < 10)
 		Cvar_Set ("fov","10");
-	if (scr_fov.value > 170)
+	if (scr_fov->value > 170)
 		Cvar_Set ("fov","170");
 
 // intermission is always full screen	
 	if (cl.intermission)
 		size = 110;
 	else
-		size = scr_viewsize.value;
+		size = scr_viewsize->value;
 
 //	if (size >= 120)
 //		sb_lines = 0;		// no status bar at all
@@ -277,7 +277,7 @@ static void SCR_CalcRefdef (void)
 		sb_lines = 36;
 	}
 
-	size = scr_viewsize.value > 100 ? 100 : scr_viewsize.value;
+	size = scr_viewsize->value > 100 ? 100 : scr_viewsize->value;
 	if (cl.intermission)
 	{
 		size = 100;
@@ -313,9 +313,9 @@ Keybinding command
 */
 void SCR_SizeUp_f (void)
 {
-	if (scr_viewsize.value < 110)
+	if (scr_viewsize->value < 110)
 	{
-		Cvar_SetValue ("viewsize",scr_viewsize.value+10);
+		Cvar_SetValue ("viewsize",scr_viewsize->value+10);
 		vid.recalc_refdef = 1;
 		SB_ViewSizeChanged();
 	}
@@ -331,7 +331,7 @@ Keybinding command
 */
 void SCR_SizeDown_f (void)
 {
-	Cvar_SetValue ("viewsize",scr_viewsize.value-10);
+	Cvar_SetValue ("viewsize",scr_viewsize->value-10);
 	vid.recalc_refdef = 1;
 	SB_ViewSizeChanged();
 }
@@ -345,15 +345,15 @@ SCR_Init
 */
 void SCR_Init (void)
 {
-	Cvar_RegisterVariable (&scr_fov);
-	Cvar_RegisterVariable (&scr_viewsize);
-	Cvar_RegisterVariable (&scr_conspeed);
-	Cvar_RegisterVariable (&scr_showram);
-	Cvar_RegisterVariable (&scr_showturtle);
-	Cvar_RegisterVariable (&scr_showpause);
-	Cvar_RegisterVariable (&scr_centertime);
-	Cvar_RegisterVariable (&scr_printspeed);
-	Cvar_RegisterVariable (&gl_triplebuffer);
+	scr_viewsize = Cvar_Get("viewsize","100", CVAR_ARCHIVE);
+	scr_fov = Cvar_Get("fov", "90", 0); // 10 - 170
+	scr_conspeed = Cvar_Get("scr_conspeed", "300", 0);
+	scr_centertime = Cvar_Get("scr_centertime", "4", 0);
+	scr_showram = Cvar_Get("showram", "1", 0);
+	scr_showturtle = Cvar_Get("showturtle", "0", 0);
+	scr_showpause = Cvar_Get("showpause", "1", 0);
+	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
+	gl_triplebuffer = Cvar_Get("gl_triplebuffer", "0", CVAR_ARCHIVE);
 
 //
 // register our commands
@@ -378,7 +378,7 @@ SCR_DrawRam
 */
 void SCR_DrawRam (void)
 {
-	if (!scr_showram.value)
+	if (!scr_showram->value)
 		return;
 
 	if (!r_cache_thrash)
@@ -396,7 +396,7 @@ void SCR_DrawTurtle (void)
 {
 	static int      count;
 	
-	if (!scr_showturtle.value)
+	if (!scr_showturtle->value)
 		return;
 
 	if (host_frametime < 0.1)
@@ -429,7 +429,7 @@ void SCR_DrawNet (void)
 
 void SCR_DrawFPS (void)
 {
-	extern cvar_t show_fps;
+	extern QCvar* show_fps;
 	static double lastframetime;
 	double t;
 	extern int fps_count;
@@ -437,7 +437,7 @@ void SCR_DrawFPS (void)
 	int x, y;
 	char st[80];
 
-	if (!show_fps.value)
+	if (!show_fps->value)
 		return;
 
 	t = Sys_DoubleTime();
@@ -468,7 +468,7 @@ void SCR_DrawPause (void)
 	int finaly;
 	static float LogoPercent,LogoTargetPercent;
 
-	if (!scr_showpause.value)		// turn off for screenshots
+	if (!scr_showpause->value)		// turn off for screenshots
 		return;
 
 	if (!cl.paused)
@@ -553,14 +553,14 @@ void SCR_SetUpToDrawConsole (void)
 	
 	if (scr_conlines < scr_con_current)
 	{
-		scr_con_current -= scr_conspeed.value*host_frametime;
+		scr_con_current -= scr_conspeed->value*host_frametime;
 		if (scr_conlines > scr_con_current)
 			scr_con_current = scr_conlines;
 
 	}
 	else if (scr_conlines > scr_con_current)
 	{
-		scr_con_current += scr_conspeed.value*host_frametime;
+		scr_con_current += scr_conspeed->value*host_frametime;
 		if (scr_conlines < scr_con_current)
 			scr_con_current = scr_conlines;
 	}
@@ -997,7 +997,7 @@ void SCR_UpdateScreen (void)
 	if (block_drawing)
 		return;
 
-	vid.numpages = 2 + gl_triplebuffer.value;
+	vid.numpages = 2 + gl_triplebuffer->value;
 
 	scr_copytop = 0;
 	scr_copyeverything = 0;
@@ -1017,8 +1017,8 @@ void SCR_UpdateScreen (void)
 		return;                         // not initialized yet
 
 
-	if (oldsbar != cl_sbar.value) {
-		oldsbar = cl_sbar.value;
+	if (oldsbar != cl_sbar->value) {
+		oldsbar = cl_sbar->value;
 		vid.recalc_refdef = true;
 	}
 
@@ -1047,7 +1047,7 @@ void SCR_UpdateScreen (void)
 	//
 	SCR_TileClear ();
 
-	if (r_netgraph.value)
+	if (r_netgraph->value)
 		R_NetGraph ();
 
 	if (scr_drawdialog)
@@ -1074,7 +1074,7 @@ void SCR_UpdateScreen (void)
 	}
 	else
 	{
-		if (crosshair.value)
+		if (crosshair->value)
 			Draw_Crosshair();
 		
 		SCR_DrawRam ();

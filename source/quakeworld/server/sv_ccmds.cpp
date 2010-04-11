@@ -24,8 +24,8 @@ qboolean	sv_allow_cheats;
 
 int fp_messages=4, fp_persecond=4, fp_secondsdead=10;
 char fp_msg[255] = { 0 };
-extern cvar_t cl_warncmd;
-	extern		redirect_t	sv_redirected;
+extern QCvar* cl_warncmd;
+extern		redirect_t	sv_redirected;
 
 
 /*
@@ -544,7 +544,7 @@ SV_Serverinfo_f
 char *CopyString(char *s);
 void SV_Serverinfo_f (void)
 {
-	cvar_t	*var;
+	QCvar*	var;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -896,5 +896,5 @@ void SV_InitOperatorCommands (void)
 	Cmd_AddCommand ("floodprot", SV_Floodprot_f);
 	Cmd_AddCommand ("floodprotmsg", SV_Floodprotmsg_f);
 
-	cl_warncmd.value = 1;
+	cl_warncmd->value = 1;
 }

@@ -43,8 +43,6 @@ int nostdout = 0;
 char *basedir = ".";
 char *cachedir = "/tmp";
 
-cvar_t  sys_linerefresh = {"sys_linerefresh","0"};// set for entity display
-
 // =======================================================================
 // General routines
 // =======================================================================
@@ -305,10 +303,6 @@ static volatile int oktogo;
 void alarm_handler(int x)
 {
 	oktogo=1;
-}
-
-void Sys_LineRefresh(void)
-{
 }
 
 void floating_point_exception_handler(int whatever)

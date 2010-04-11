@@ -20,19 +20,16 @@ solid_edge items only clip against bsp models.
 
 */
 
-cvar_t	sv_maxvelocity			= {"sv_maxvelocity","2000"}; 
-cvar_t	sv_nostep				= {"sv_nostep","0"};
-cvar_t	sv_gravity				= { "sv_gravity", "800"};    
-cvar_t	sv_stopspeed			= { "sv_stopspeed", "100"};    
-cvar_t	sv_maxspeed				= { "sv_maxspeed", "360", false, true};    
-cvar_t	sv_spectatormaxspeed	= { "sv_spectatormaxspeed", "500"};
-cvar_t	sv_accelerate			= { "sv_accelerate", "10"};     
-cvar_t	sv_airaccelerate		= { "sv_airaccelerate", "0.7"};    
-cvar_t	sv_wateraccelerate		= { "sv_wateraccelerate", "10"};     
-cvar_t	sv_friction				= { "sv_friction", "4"};      
-cvar_t	sv_waterfriction		= { "sv_waterfriction", "1"};      
-cvar_t	sv_flypitch				= {"sv_flypitch","20"};
-cvar_t	sv_walkpitch			= {"sv_walkpitch","0"};
+QCvar*	sv_maxvelocity;
+QCvar*	sv_gravity;
+QCvar*	sv_stopspeed;
+QCvar*	sv_maxspeed;
+QCvar*	sv_spectatormaxspeed;
+QCvar*	sv_accelerate;
+QCvar*	sv_airaccelerate;
+QCvar*	sv_wateraccelerate;
+QCvar*	sv_friction;
+QCvar*	sv_waterfriction;
 
 
 static	vec3_t	vec_origin = {0.0, 0.0, 0.0};
@@ -92,10 +89,10 @@ void SV_CheckVelocity (edict_t *ent)
 			Con_Printf ("Got a NaN origin on %s\n", pr_strings + ent->v.classname);
 			ent->v.origin[i] = 0;
 		}
-		if (ent->v.velocity[i] > sv_maxvelocity.value)
-			ent->v.velocity[i] = sv_maxvelocity.value;
-		else if (ent->v.velocity[i] < -sv_maxvelocity.value)
-			ent->v.velocity[i] = -sv_maxvelocity.value;
+		if (ent->v.velocity[i] > sv_maxvelocity->value)
+			ent->v.velocity[i] = sv_maxvelocity->value;
+		else if (ent->v.velocity[i] < -sv_maxvelocity->value)
+			ent->v.velocity[i] = -sv_maxvelocity->value;
 	}
 }
 
@@ -1527,9 +1524,6 @@ void SV_WalkMove (edict_t *ent)
 	if (ent->v.movetype != MOVETYPE_WALK)
 		return;		// gibbed by a trigger
 	
-	if (sv_nostep.value)
-		return;
-	
 	if ( (int)sv_player->v.flags & FL_WATERJUMP )
 		return;
 
@@ -2041,10 +2035,10 @@ void SV_Physics (void)
 
 // don't bother running a frame if sys_ticrate seconds haven't passed
 	host_frametime = realtime - old_time;
-	if (host_frametime < sv_mintic.value)
+	if (host_frametime < sv_mintic->value)
 		return;
-	if (host_frametime > sv_maxtic.value)
-		host_frametime = sv_maxtic.value;
+	if (host_frametime > sv_maxtic->value)
+		host_frametime = sv_maxtic->value;
 	old_time = realtime;
 
 	pr_global_struct->frametime = host_frametime;
@@ -2083,14 +2077,14 @@ void SV_Physics (void)
 
 void SV_SetMoveVars(void)
 {
-	movevars.gravity			= sv_gravity.value; 
-	movevars.stopspeed		    = sv_stopspeed.value;		 
-	movevars.maxspeed			= sv_maxspeed.value;			 
-	movevars.spectatormaxspeed  = sv_spectatormaxspeed.value; 
-	movevars.accelerate		    = sv_accelerate.value;		 
-	movevars.airaccelerate	    = sv_airaccelerate.value;	 
-	movevars.wateraccelerate	= sv_wateraccelerate.value;	   
-	movevars.friction			= sv_friction.value;			 
-	movevars.waterfriction	    = sv_waterfriction.value;	 
+	movevars.gravity			= sv_gravity->value;
+	movevars.stopspeed		    = sv_stopspeed->value;
+	movevars.maxspeed			= sv_maxspeed->value; 
+	movevars.spectatormaxspeed  = sv_spectatormaxspeed->value;
+	movevars.accelerate		    = sv_accelerate->value; 
+	movevars.airaccelerate	    = sv_airaccelerate->value;
+	movevars.wateraccelerate	= sv_wateraccelerate->value;
+	movevars.friction			= sv_friction->value;
+	movevars.waterfriction	    = sv_waterfriction->value;
 	movevars.entgravity			= 1.0;
 }

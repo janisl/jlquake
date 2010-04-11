@@ -43,10 +43,10 @@ int			r_numparticles;
 vec3_t			r_pright, r_pup, r_ppn;
 static vec3_t		rider_origin;
 
-cvar_t		leak_color = {"leak_color","251", NULL,0,false,0,NULL,true};
+QCvar*		leak_color;
 
-cvar_t		snow_flurry= {"snow_flurry","1", NULL,0,false,0,NULL,true};
-cvar_t		snow_active= {"snow_active","1", NULL,0,false,0,NULL,true};
+QCvar*		snow_flurry;
+QCvar*		snow_active;
 
 static particle_t *AllocParticle(void);
 
@@ -98,11 +98,11 @@ void R_InitParticles (void)
 	particles = (particle_t *)
 			Hunk_AllocName (r_numparticles * sizeof(particle_t), "particles");
 
-	Cvar_RegisterVariable (&leak_color);
+	leak_color = Cvar_Get("leak_color", "251", CVAR_ARCHIVE);
 
 	//JFM: snow test
-	Cvar_RegisterVariable (&snow_flurry);
-	Cvar_RegisterVariable (&snow_active);
+	snow_flurry = Cvar_Get("snow_flurry", "1", CVAR_ARCHIVE);
+	snow_active = Cvar_Get("snow_active", "1", CVAR_ARCHIVE);
 
 	transTable = (byte *)malloc(65536);
 	if (!transTable)
@@ -1340,7 +1340,7 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 R_DrawParticles
 ===============
 */
-extern	cvar_t	sv_gravity;
+extern	QCvar*	sv_gravity;
 
 void R_DrawParticles (void)
 {
@@ -1511,8 +1511,8 @@ void R_UpdateParticles (void)
 	time3 = frametime * 15;
 	time2 = frametime * 10;
 	time1 = frametime * 5;
-	grav = frametime * sv_gravity.value * 0.05;
-	grav2 = frametime * sv_gravity.value * 0.025;
+	grav = frametime * sv_gravity->value * 0.05;
+	grav2 = frametime * sv_gravity->value * 0.025;
 	dvel = 4*frametime;
 	percent = (frametime / HX_FRAME_TIME);
 	

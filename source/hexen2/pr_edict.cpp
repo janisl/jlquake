@@ -37,18 +37,18 @@ int		type_size[8] = {1,sizeof(string_t)/4,1,3,1,1,sizeof(func_t)/4,sizeof(void *
 ddef_t *ED_FieldAtOfs (int ofs);
 qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s);
 
-cvar_t	nomonsters = {"nomonsters", "0"};
-cvar_t	gamecfg = {"gamecfg", "0"};
-cvar_t	scratch1 = {"scratch1", "0"};
-cvar_t	scratch2 = {"scratch2", "0"};
-cvar_t	scratch3 = {"scratch3", "0"};
-cvar_t	scratch4 = {"scratch4", "0"};
-cvar_t	savedgamecfg = {"savedgamecfg", "0", NULL,0,false,0,NULL,true};
-cvar_t	saved1 = {"saved1", "0", NULL,0,false,0,NULL,true};
-cvar_t	saved2 = {"saved2", "0", NULL,0,false,0,NULL,true};
-cvar_t	saved3 = {"saved3", "0", NULL,0,false,0,NULL,true};
-cvar_t	saved4 = {"saved4", "0", NULL,0,false,0,NULL,true};
-cvar_t	max_temp_edicts = {"max_temp_edicts", "30", NULL,0,false,0,NULL,true};
+QCvar*	nomonsters;
+QCvar*	gamecfg;
+QCvar*	scratch1;
+QCvar*	scratch2;
+QCvar*	scratch3;
+QCvar*	scratch4;
+QCvar*	savedgamecfg;
+QCvar*	saved1;
+QCvar*	saved2;
+QCvar*	saved3;
+QCvar*	saved4;
+QCvar*	max_temp_edicts;
 
 static char field_name[256], class_name[256];
 static qboolean RemoveBadReferences;
@@ -93,7 +93,7 @@ edict_t *ED_Alloc (void)
 	int			i;
 	edict_t		*e;
 
-	for ( i=svs.maxclients+1+max_temp_edicts.value ; i<sv.num_edicts ; i++)
+	for ( i=svs.maxclients+1+max_temp_edicts->value ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
@@ -127,7 +127,7 @@ edict_t *ED_Alloc_Temp (void)
 
 	LeastTime = -1;
 	LeastSet = false;
-	for ( i=svs.maxclients+1,j=0 ; j < max_temp_edicts.value ; i++,j++)
+	for ( i=svs.maxclients+1,j=0 ; j < max_temp_edicts->value ; i++,j++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
@@ -1039,7 +1039,7 @@ void ED_LoadFromFile (const char *data)
 #endif
 
 // remove things from different skill levels or deathmatch
-		if (deathmatch.value)
+		if (deathmatch->value)
 		{
 			if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_DEATHMATCH))
 			{
@@ -1048,7 +1048,7 @@ void ED_LoadFromFile (const char *data)
 				continue;
 			}
 		}
-		else if (coop.value)
+		else if (coop->value)
 		{
 			if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_COOP))
 			{
@@ -1068,7 +1068,7 @@ void ED_LoadFromFile (const char *data)
 
 			skip = 0;
 
-			switch ((int)cl_playerclass.value)
+			switch ((int)cl_playerclass->value)
 			{		
 			case CLASS_PALADIN:
 				if ((int)ent->v.spawnflags & SPAWNFLAG_NOT_PALADIN)
@@ -1387,18 +1387,18 @@ void PR_Init (void)
 	Cmd_AddCommand ("edicts", ED_PrintEdicts);
 	Cmd_AddCommand ("edictcount", ED_Count);
 	Cmd_AddCommand ("profile", PR_Profile_f);
-	Cvar_RegisterVariable (&nomonsters);
-	Cvar_RegisterVariable (&gamecfg);
-	Cvar_RegisterVariable (&scratch1);
-	Cvar_RegisterVariable (&scratch2);
-	Cvar_RegisterVariable (&scratch3);
-	Cvar_RegisterVariable (&scratch4);
-	Cvar_RegisterVariable (&savedgamecfg);
-	Cvar_RegisterVariable (&saved1);
-	Cvar_RegisterVariable (&saved2);
-	Cvar_RegisterVariable (&saved3);
-	Cvar_RegisterVariable (&saved4);
-	Cvar_RegisterVariable (&max_temp_edicts);
+	nomonsters = Cvar_Get("nomonsters", "0", 0);
+	gamecfg = Cvar_Get("gamecfg", "0", 0);
+	scratch1 = Cvar_Get("scratch1", "0", 0);
+	scratch2 = Cvar_Get("scratch2", "0", 0);
+	scratch3 = Cvar_Get("scratch3", "0", 0);
+	scratch4 = Cvar_Get("scratch4", "0", 0);
+	savedgamecfg = Cvar_Get("savedgamecfg", "0", CVAR_ARCHIVE);
+	saved1 = Cvar_Get("saved1", "0", CVAR_ARCHIVE);
+	saved2 = Cvar_Get("saved2", "0", CVAR_ARCHIVE);
+	saved3 = Cvar_Get("saved3", "0", CVAR_ARCHIVE);
+	saved4 = Cvar_Get("saved4", "0", CVAR_ARCHIVE);
+	max_temp_edicts = Cvar_Get("max_temp_edicts", "30", CVAR_ARCHIVE);
 }
 
 

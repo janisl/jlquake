@@ -77,7 +77,7 @@ QCvar*	r_mirroralpha;
 QCvar*	r_wateralpha;
 QCvar*	r_dynamic;
 QCvar*	r_novis;
-cvar_t	r_wholeframe = {"r_wholeframe", "1", NULL,0,false,0,NULL,true};
+QCvar*	r_wholeframe;
 
 QCvar*	gl_clear;
 QCvar*	gl_cull;
@@ -1098,7 +1098,7 @@ void R_DrawViewModel (void)
 	if (!r_drawviewmodel->value)
 		return;
 
-	if (chase_active.value)
+	if (chase_active->value)
 		return;
 
 	if (envmap)
@@ -1558,8 +1558,8 @@ void R_RenderView (void)
 
 	if (r_speeds->value)
 	{
-		glFinish ();
-		if (r_wholeframe.value)
+		glFinish();
+		if (r_wholeframe->value)
 		   r_time1 = r_lasttime1;
 	   else
 		   r_time1 = Sys_FloatTime ();

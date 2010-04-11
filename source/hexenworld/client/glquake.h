@@ -242,9 +242,9 @@ extern	QCvar*	r_mirroralpha;
 extern	QCvar*	r_wateralpha;
 extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
-extern	cvar_t	r_netgraph;
-extern	cvar_t	r_entdistance;
-extern	cvar_t	r_teamcolor;
+extern	QCvar*	r_netgraph;
+extern	QCvar*	r_entdistance;
+extern	QCvar*	r_teamcolor;
 
 extern	QCvar*	gl_clear;
 extern	QCvar*	gl_cull;

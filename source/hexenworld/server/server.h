@@ -298,35 +298,36 @@ typedef struct
 
 //============================================================================
 
-extern	cvar_t	sv_mintic, sv_maxtic;
-extern	cvar_t	sv_maxspeed;
+extern	QCvar*	sv_mintic;
+extern	QCvar*	sv_maxtic;
+extern	QCvar*	sv_maxspeed;
 
 extern	netadr_t	master_adr[MAX_MASTERS];	// address of the master server
 
-extern	cvar_t	spawn;
-extern	cvar_t	teamplay;
-extern  cvar_t  skill;
-extern	cvar_t	deathmatch;
-extern	cvar_t	coop;
-extern	cvar_t	maxclients;
-extern	cvar_t	randomclass;
-extern	cvar_t	damageScale;
-extern	cvar_t	meleeDamScale;
-extern	cvar_t	shyRespawn;
-extern	cvar_t	spartanPrint;
-extern	cvar_t	manaScale;
-extern	cvar_t	tomeMode;
-extern	cvar_t	tomeRespawn;
-extern	cvar_t	w2Respawn;
-extern	cvar_t	altRespawn;
-extern	cvar_t	fixedLevel;
-extern	cvar_t	autoItems;
-extern	cvar_t	dmMode;
-extern	cvar_t	easyFourth;
-extern	cvar_t	patternRunner;
-extern	cvar_t	fraglimit;
-extern	cvar_t	timelimit;
-extern	cvar_t	noexit;
+extern	QCvar*	spawn;
+extern	QCvar*	teamplay;
+extern  QCvar*  skill;
+extern	QCvar*	deathmatch;
+extern	QCvar*	coop;
+extern	QCvar*	maxclients;
+extern	QCvar*	randomclass;
+extern	QCvar*	damageScale;
+extern	QCvar*	meleeDamScale;
+extern	QCvar*	shyRespawn;
+extern	QCvar*	spartanPrint;
+extern	QCvar*	manaScale;
+extern	QCvar*	tomeMode;
+extern	QCvar*	tomeRespawn;
+extern	QCvar*	w2Respawn;
+extern	QCvar*	altRespawn;
+extern	QCvar*	fixedLevel;
+extern	QCvar*	autoItems;
+extern	QCvar*	dmMode;
+extern	QCvar*	easyFourth;
+extern	QCvar*	patternRunner;
+extern	QCvar*	fraglimit;
+extern	QCvar*	timelimit;
+extern	QCvar*	noexit;
 
 extern	server_static_t	svs;				// persistant server info
 extern	server_t		sv;					// local server

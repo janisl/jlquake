@@ -315,16 +315,17 @@ typedef struct
 
 //============================================================================
 
-extern	cvar_t	sv_mintic, sv_maxtic;
-extern	cvar_t	sv_maxspeed;
+extern	QCvar*	sv_mintic;
+extern	QCvar*	sv_maxtic;
+extern	QCvar*	sv_maxspeed;
 
 extern	netadr_t	master_adr[MAX_MASTERS];	// address of the master server
 
-extern	cvar_t	spawn;
-extern	cvar_t	teamplay;
-extern	cvar_t	deathmatch;
-extern	cvar_t	fraglimit;
-extern	cvar_t	timelimit;
+extern	QCvar*	spawn;
+extern	QCvar*	teamplay;
+extern	QCvar*	deathmatch;
+extern	QCvar*	fraglimit;
+extern	QCvar*	timelimit;
 
 extern	server_static_t	svs;				// persistant server info
 extern	server_t		sv;					// local server

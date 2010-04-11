@@ -210,7 +210,7 @@ extern	QCvar*	gl_playermip;
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
-extern	cvar_t	gl_doubleeyes;
+extern	QCvar*	gl_doubleeyes;
 
 extern	int		gl_lightmap_format;
 extern	int		gl_solid_format;

@@ -55,16 +55,16 @@ unsigned short	d_8to16table[256];
 unsigned		d_8to24table[256];
 unsigned char	d_15to8table[65536];
 
-cvar_t	vid_mode = {"vid_mode","0",false};
+QCvar*	vid_mode;
  
 static qboolean        mouse_avail = true;
 static qboolean        mouse_active;
 static int   mx, my;
 static int	old_mouse_x, old_mouse_y;
 
-static cvar_t in_mouse = {"in_mouse", "1", false};
-static cvar_t in_dgamouse = {"in_dgamouse", "1", false};
-static cvar_t m_filter = {"m_filter", "0"};
+static QCvar* in_mouse;
+static QCvar* in_dgamouse;
+static QCvar* m_filter;
 
 qboolean dgamouse = false;
 qboolean vidmode_ext = false;
@@ -112,7 +112,7 @@ int		texture_extension_number = 1;
 
 float		gldepthmin, gldepthmax;
 
-cvar_t	gl_ztrick = {"gl_ztrick","1"};
+QCvar*	gl_ztrick;
 
 const char *gl_vendor;
 const char *gl_renderer;
@@ -303,13 +303,13 @@ static void install_grabs(void)
 				 None,
 				 CurrentTime);
 
-	if (in_dgamouse.value) {
+	if (in_dgamouse->value) {
 		int MajorVersion, MinorVersion;
 
 		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
 			// unable to query, probalby not supported
 			Con_Printf( "Failed to detect XF86DGA Mouse\n" );
-			in_dgamouse.value = 0;
+			in_dgamouse->value = 0;
 		} else {
 			dgamouse = true;
 			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
@@ -659,8 +659,6 @@ GL_BeginRendering
 */
 void GL_BeginRendering (int *x, int *y, int *width, int *height)
 {
-	extern cvar_t gl_clear;
-
 	*x = *y = 0;
 	*width = scr_width;
 	*height = scr_height;
@@ -785,11 +783,11 @@ void VID_Init(unsigned char *palette)
 	int MajorVersion, MinorVersion;
 	int actualWidth, actualHeight;
 
-	Cvar_RegisterVariable (&vid_mode);
-	Cvar_RegisterVariable (&in_mouse);
-	Cvar_RegisterVariable (&in_dgamouse);
-	Cvar_RegisterVariable (&m_filter);
-	Cvar_RegisterVariable (&gl_ztrick);
+	vid_mode = Cvar_Get("vid_mode", "0", 0);
+	in_mouse = Cvar_Get("in_mouse", "1", 0);
+	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
+	m_filter = Cvar_Get("m_filter", "0", 0);
+	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 	
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
@@ -998,7 +996,7 @@ void IN_MouseMove (usercmd_t *cmd)
 	if (!mouse_avail)
 		return;
    
-	if (m_filter.value)
+	if (m_filter->value)
 	{
 		mx = (mx + old_mouse_x) * 0.5;
 		my = (my + old_mouse_y) * 0.5;
@@ -1006,21 +1004,21 @@ void IN_MouseMove (usercmd_t *cmd)
 	old_mouse_x = mx;
 	old_mouse_y = my;
 
-	mx *= sensitivity.value;
-	my *= sensitivity.value;
+	mx *= sensitivity->value;
+	my *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
-	if ( (in_strafe.state & 1) || (lookstrafe.value && (in_mlook.state & 1) ))
-		cmd->sidemove += m_side.value * mx;
+	if ( (in_strafe.state & 1) || (lookstrafe->value && (in_mlook.state & 1) ))
+		cmd->sidemove += m_side->value * mx;
 	else
-		cl.viewangles[YAW] -= m_yaw.value * mx;
+		cl.viewangles[YAW] -= m_yaw->value * mx;
 	
 	if (in_mlook.state & 1)
 		V_StopPitchDrift ();
 		
 	if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
 	{
-		cl.viewangles[PITCH] += m_pitch.value * my;
+		cl.viewangles[PITCH] += m_pitch->value * my;
 		if (cl.viewangles[PITCH] > 80)
 			cl.viewangles[PITCH] = 80;
 		if (cl.viewangles[PITCH] < -70)
@@ -1029,9 +1027,9 @@ void IN_MouseMove (usercmd_t *cmd)
 	else
 	{
 		if ((in_strafe.state & 1) && noclip_anglehack)
-			cmd->upmove -= m_forward.value * my;
+			cmd->upmove -= m_forward->value * my;
 		else
-			cmd->forwardmove -= m_forward.value * my;
+			cmd->forwardmove -= m_forward->value * my;
 	}
 	mx = my = 0;
 }

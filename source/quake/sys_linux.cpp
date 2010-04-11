@@ -25,8 +25,6 @@ int nostdout = 0;
 char *basedir = ".";
 char *cachedir = "/tmp";
 
-cvar_t  sys_linerefresh = {"sys_linerefresh","0"};// set for entity display
-
 // =======================================================================
 // General routines
 // =======================================================================
@@ -403,24 +401,20 @@ int main (int c, char **v)
 
         if (cls.state == ca_dedicated)
         {   // play vcrfiles at max speed
-            if (time < sys_ticrate.value && (vcrFile == -1 || recording) )
+            if (time < sys_ticrate->value && (vcrFile == -1 || recording) )
             {
 				usleep(1);
                 continue;       // not time to run a server only tic yet
             }
-            time = sys_ticrate.value;
+            time = sys_ticrate->value;
         }
 
-        if (time > sys_ticrate.value*2)
+        if (time > sys_ticrate->value*2)
             oldtime = newtime;
         else
             oldtime += time;
 
         Host_Frame (time);
-
-// graphic debugging aids
-        if (sys_linerefresh.value)
-            Sys_LineRefresh ();
     }
 
 }

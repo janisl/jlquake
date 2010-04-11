@@ -88,7 +88,7 @@ QCvar*	r_wateralpha;
 QCvar*	r_dynamic;
 QCvar*	r_novis;
 
-cvar_t	gl_finish = {"gl_finish","0"};
+QCvar*	gl_finish;
 QCvar*	gl_clear;
 QCvar*	gl_cull;
 QCvar*	gl_texsort;
@@ -100,7 +100,7 @@ QCvar*	gl_playermip;
 QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
-cvar_t	gl_doubleeyes = {"gl_doubleeys", "1"};
+QCvar*	gl_doubleeyes;
 
 extern	QCvar*	gl_ztrick;
 
@@ -541,7 +541,7 @@ void R_DrawAliasModel (entity_t *e)
     glPushMatrix ();
 	R_RotateForEntity (e);
 
-	if (!QStr::Cmp(clmodel->name, "progs/eyes.mdl") && gl_doubleeyes.value) {
+	if (!QStr::Cmp(clmodel->name, "progs/eyes.mdl") && gl_doubleeyes->value) {
 		glTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2] - (22 + 8));
 // double size of eyes, since they are really hard to see in gl
 		glScalef (paliashdr->scale[0]*2, paliashdr->scale[1]*2, paliashdr->scale[2]*2);
@@ -660,7 +660,7 @@ void R_DrawViewModel (void)
 	if (!r_drawviewmodel->value)
 		return;
 
-	if (chase_active.value)
+	if (chase_active->value)
 		return;
 
 	if (envmap)
@@ -1109,7 +1109,7 @@ void R_RenderView (void)
 
 	mirror = false;
 
-	if (gl_finish.value)
+	if (gl_finish->value)
 		glFinish ();
 
 	R_Clear ();

@@ -705,10 +705,10 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
   void  (*dllEntry)( int (*syscallptr)(int, ...) );
   char  curpath[MAX_OSPATH];
   char  fname[MAX_OSPATH];
-  char  *basepath;
-  char  *homepath;
+  const char  *basepath;
+  const char  *homepath;
   char  *pwdpath;
-  char  *gamedir;
+  const char  *gamedir;
   char  *fn;
   const char*  err = NULL;
 	

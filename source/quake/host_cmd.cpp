@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-extern cvar_t	pausable;
+extern QCvar*	pausable;
 
 int	current_skill;
 
@@ -669,7 +669,7 @@ void Host_Name_f (void)
 
 	if (Cmd_Argc () == 1)
 	{
-		Con_Printf ("\"name\" is \"%s\"\n", cl_name.string);
+		Con_Printf ("\"name\" is \"%s\"\n", cl_name->string);
 		return;
 	}
 	if (Cmd_Argc () == 2)
@@ -680,7 +680,7 @@ void Host_Name_f (void)
 
 	if (cmd_source == src_command)
 	{
-		if (QStr::Cmp(cl_name.string, newName) == 0)
+		if (QStr::Cmp(cl_name->string, newName) == 0)
 			return;
 		Cvar_Set ("_cl_name", newName);
 		if (cls.state == ca_connected)
@@ -801,7 +801,7 @@ void Host_Say(qboolean teamonly)
 	if (!fromServer)
 		sprintf (text, "%c%s: ", 1, save->name);
 	else
-		sprintf (text, "%c<%s> ", 1, hostname.string);
+		sprintf (text, "%c<%s> ", 1, hostname->string);
 
 	j = sizeof(text) - 2 - QStr::Length(text);  // -2 for /n and null terminator
 	if (QStr::Length(p) > j)
@@ -814,7 +814,7 @@ void Host_Say(qboolean teamonly)
 	{
 		if (!client || !client->active || !client->spawned)
 			continue;
-		if (teamplay.value && teamonly && client->edict->v.team != save->edict->v.team)
+		if (teamplay->value && teamonly && client->edict->v.team != save->edict->v.team)
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -901,7 +901,7 @@ void Host_Color_f(void)
 	
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("\"color\" is \"%i %i\"\n", ((int)cl_color.value) >> 4, ((int)cl_color.value) & 0x0f);
+		Con_Printf ("\"color\" is \"%i %i\"\n", ((int)cl_color->value) >> 4, ((int)cl_color->value) & 0x0f);
 		Con_Printf ("color <0-13> [0-13]\n");
 		return;
 	}
@@ -978,7 +978,7 @@ void Host_Pause_f (void)
 		Cmd_ForwardToServer ();
 		return;
 	}
-	if (!pausable.value)
+	if (!pausable->value)
 		SV_ClientPrintf ("Pause not allowed.\n");
 	else
 	{
@@ -1225,7 +1225,7 @@ void Host_Kick_f (void)
 			if (cls.state == ca_dedicated)
 				who = "Console";
 			else
-				who = cl_name.string;
+				who = cl_name->string;
 		else
 			who = save->name;
 

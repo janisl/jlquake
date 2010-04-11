@@ -53,10 +53,6 @@ Cvars are restricted from having the same names as commands to keep this
 interface from being ambiguous.
 */
 
-void 	Cvar_RegisterVariable (cvar_t *variable);
-// registers a cvar that allready has the name, string, and optionally the
-// archive elements set.
-
 qboolean Cvar_Command (void);
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
 // command.  Returns true if the command was a variable reference that

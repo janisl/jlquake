@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 edict_t	*sv_player;
 
-extern	cvar_t	sv_friction;
-cvar_t	sv_edgefriction = {"edgefriction", "2"};
-extern	cvar_t	sv_stopspeed;
+extern	QCvar*	sv_friction;
+QCvar*	sv_edgefriction;
+extern	QCvar*	sv_stopspeed;
 
 static	vec3_t		forward, right, up;
 
@@ -41,7 +41,7 @@ qboolean	onground;
 
 usercmd_t	cmd;
 
-cvar_t	sv_idealpitchscale = {"sv_idealpitchscale","0.8"};
+QCvar*	sv_idealpitchscale;
 
 
 /*
@@ -109,7 +109,7 @@ void SV_SetIdealPitch (void)
 	
 	if (steps < 2)
 		return;
-	sv_player->v.idealpitch = -dir * sv_idealpitchscale.value;
+	sv_player->v.idealpitch = -dir * sv_idealpitchscale->value;
 }
 
 
@@ -142,12 +142,12 @@ void SV_UserFriction (void)
 	trace = SV_Move (start, vec3_origin, vec3_origin, stop, true, sv_player);
 
 	if (trace.fraction == 1.0)
-		friction = sv_friction.value*sv_edgefriction.value;
+		friction = sv_friction->value*sv_edgefriction->value;
 	else
-		friction = sv_friction.value;
+		friction = sv_friction->value;
 
 // apply friction	
-	control = speed < sv_stopspeed.value ? sv_stopspeed.value : speed;
+	control = speed < sv_stopspeed->value ? sv_stopspeed->value : speed;
 	newspeed = speed - host_frametime*control*friction;
 	
 	if (newspeed < 0)
@@ -164,8 +164,8 @@ void SV_UserFriction (void)
 SV_Accelerate
 ==============
 */
-cvar_t	sv_maxspeed = {"sv_maxspeed", "320", NULL,0,false,0,NULL,false, true};
-cvar_t	sv_accelerate = {"sv_accelerate", "10"};
+QCvar*	sv_maxspeed;
+QCvar*	sv_accelerate;
 #if 0
 void SV_Accelerate (vec3_t wishvel)
 {
@@ -196,7 +196,7 @@ void SV_Accelerate (void)
 	addspeed = wishspeed - currentspeed;
 	if (addspeed <= 0)
 		return;
-	accelspeed = sv_accelerate.value*host_frametime*wishspeed;
+	accelspeed = sv_accelerate->value*host_frametime*wishspeed;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 	
@@ -217,7 +217,7 @@ void SV_AirAccelerate (vec3_t wishveloc)
 	if (addspeed <= 0)
 		return;
 //	accelspeed = sv_accelerate.value * host_frametime;
-	accelspeed = sv_accelerate.value*wishspeed * host_frametime;
+	accelspeed = sv_accelerate->value*wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 	
@@ -264,10 +264,10 @@ void SV_WaterMove (void)
 		wishvel[2] += cmd.upmove;
 
 	wishspeed = VectorLength(wishvel);
-	if (wishspeed > sv_maxspeed.value)
+	if (wishspeed > sv_maxspeed->value)
 	{
-		VectorScale (wishvel, sv_maxspeed.value/wishspeed, wishvel);
-		wishspeed = sv_maxspeed.value;
+		VectorScale (wishvel, sv_maxspeed->value/wishspeed, wishvel);
+		wishspeed = sv_maxspeed->value;
 	}
 	wishspeed *= 0.7;
 
@@ -277,7 +277,7 @@ void SV_WaterMove (void)
 	speed = VectorLength(velocity);
 	if (speed)
 	{
-		newspeed = speed - host_frametime * speed * sv_friction.value;
+		newspeed = speed - host_frametime * speed * sv_friction->value;
 		if (newspeed < 0)
 			newspeed = 0;	
 		VectorScale (velocity, newspeed/speed, velocity);
@@ -296,7 +296,7 @@ void SV_WaterMove (void)
 		return;
 
 	VectorNormalize (wishvel);
-	accelspeed = sv_accelerate.value * wishspeed * host_frametime;
+	accelspeed = sv_accelerate->value * wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
 
@@ -348,10 +348,10 @@ void SV_AirMove (void)
 
 	VectorCopy (wishvel, wishdir);
 	wishspeed = VectorNormalize(wishdir);
-	if (wishspeed > sv_maxspeed.value)
+	if (wishspeed > sv_maxspeed->value)
 	{
-		VectorScale (wishvel, sv_maxspeed.value/wishspeed, wishvel);
-		wishspeed = sv_maxspeed.value;
+		VectorScale (wishvel, sv_maxspeed->value/wishspeed, wishvel);
+		wishspeed = sv_maxspeed->value;
 	}
 	
 	if ( sv_player->v.movetype == MOVETYPE_NOCLIP)

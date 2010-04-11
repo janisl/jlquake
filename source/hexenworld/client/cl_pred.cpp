@@ -1,8 +1,8 @@
 #include "quakedef.h"
 #include "winquake.h"
 
-cvar_t	cl_nopred = {"cl_nopred","0"};
-cvar_t	cl_pushlatency = {"pushlatency","-50", NULL,0,false,0,NULL,true};
+QCvar*	cl_nopred;
+QCvar*	cl_pushlatency;
 
 extern	frame_t		*view_frame;
 qboolean player_crouching;
@@ -104,10 +104,10 @@ void CL_PredictMove (void)
 	frame_t		*from, *to = NULL;
 	int			oldphysent;
 
-	if (cl_pushlatency.value > 0)
+	if (cl_pushlatency->value > 0)
 		Cvar_Set ("pushlatency", "0");
 
-	cl.time = realtime - cls.latency - cl_pushlatency.value*0.001;
+	cl.time = realtime - cls.latency - cl_pushlatency->value*0.001;
 	if (cl.time > realtime)
 		cl.time = realtime;
 
@@ -138,7 +138,7 @@ void CL_PredictMove (void)
 #endif
 	}
 
-	if (cl_nopred.value)
+	if (cl_nopred->value)
 	{
 		VectorCopy (from->playerstate[cl.playernum].velocity, cl.simvel);
 		VectorCopy (from->playerstate[cl.playernum].origin, cl.simorg);
@@ -213,7 +213,7 @@ CL_InitPrediction
 */
 void CL_InitPrediction (void)
 {
-	Cvar_RegisterVariable (&cl_pushlatency);
-	Cvar_RegisterVariable (&cl_nopred);
+	cl_nopred = Cvar_Get("cl_nopred","0", 0);
+	cl_pushlatency = Cvar_Get("pushlatency","-50", CVAR_ARCHIVE);
 }
 

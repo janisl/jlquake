@@ -260,7 +260,7 @@ extern	QCvar*	r_mirroralpha;
 extern	QCvar*	r_wateralpha;
 extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
-extern	cvar_t	r_wholeframe;
+extern	QCvar*	r_wholeframe;
 
 extern	QCvar*	gl_clear;
 extern	QCvar*	gl_cull;

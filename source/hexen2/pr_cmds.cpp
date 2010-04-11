@@ -1586,7 +1586,7 @@ void PF_precache_sound (void)
 
 void PF_precache_sound2 (void)
 {
-	if (!registered.value)
+	if (!registered->value)
 		return;
 
 	PF_precache_sound();
@@ -1594,7 +1594,7 @@ void PF_precache_sound2 (void)
 
 void PF_precache_sound3 (void)
 {
-	if (!registered.value && !oem.value)
+	if (!registered->value && !oem->value)
 		return;
 
 	PF_precache_sound();
@@ -1602,7 +1602,7 @@ void PF_precache_sound3 (void)
 
 void PF_precache_sound4 (void)
 {//mission pack only
-	if (!registered.value)
+	if (!registered->value)
 		return;
 
 	PF_precache_sound();
@@ -1639,7 +1639,7 @@ void PF_precache_model (void)
 
 void PF_precache_model2 (void)
 {
-	if (!registered.value)
+	if (!registered->value)
 		return;
 
 	PF_precache_model();
@@ -1647,7 +1647,7 @@ void PF_precache_model2 (void)
 
 void PF_precache_model3 (void)
 {
-	if (!registered.value && !oem.value)
+	if (!registered->value && !oem->value)
 		return;
 
 	PF_precache_model();
@@ -1655,7 +1655,7 @@ void PF_precache_model3 (void)
 
 void PF_precache_model4 (void)
 {
-	if (!registered.value)
+	if (!registered->value)
 		return;
 	PF_precache_model();
 }
@@ -1985,7 +1985,7 @@ Pick a vector for the player to shoot along
 vector aim(entity, missilespeed)
 =============
 */
-cvar_t	sv_aim = {"sv_aim", "0.93"};
+QCvar*	sv_aim;
 void PF_aim (void)
 {
 	edict_t	*ent, *check, *bestent;
@@ -2015,7 +2015,7 @@ void PF_aim (void)
 	ent->v.hull = save_hull;
 
 	if (tr.ent && tr.ent->v.takedamage == DAMAGE_YES
-	&& (!teamplay.value || ent->v.team <=0 || ent->v.team != tr.ent->v.team) )
+	&& (!teamplay->value || ent->v.team <=0 || ent->v.team != tr.ent->v.team) )
 	{
 		VectorCopy (pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 		return;
@@ -2024,7 +2024,7 @@ void PF_aim (void)
 
 // try all possible entities
 	VectorCopy (dir, bestdir);
-	bestdist = sv_aim.value;
+	bestdist = sv_aim->value;
 	bestent = NULL;
 	
 	check = NEXT_EDICT(sv.edicts);
@@ -2034,7 +2034,7 @@ void PF_aim (void)
 			continue;
 		if (check == ent)
 			continue;
-		if (teamplay.value && ent->v.team > 0 && ent->v.team == check->v.team)
+		if (teamplay->value && ent->v.team > 0 && ent->v.team == check->v.team)
 			continue;	// don't aim at teammate
 		for (j=0 ; j<3 ; j++)
 			end[j] = check->v.origin[j]

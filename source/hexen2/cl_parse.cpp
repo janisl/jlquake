@@ -9,9 +9,8 @@
 #include <windows.h>
 #endif
 
-extern	cvar_t	sv_flypitch;
-extern	cvar_t	sv_walkpitch;
-extern 	cvar_t	bgmtype;
+extern	QCvar*	sv_flypitch;
+extern	QCvar*	sv_walkpitch;
 
 model_t *player_models[NUM_CLASSES];
 
@@ -81,7 +80,7 @@ char *svc_strings[] =
 
 char *puzzle_strings;
 int LastServerMessageSize;
-extern cvar_t precache;
+extern QCvar* precache;
 
 //=============================================================================
 
@@ -307,7 +306,7 @@ void CL_ParseServerInfo (void)
 // now we try to load everything else until a cache allocation fails
 //
 
-	if (precache.value)
+	if (precache->value)
 	{
 		total_loading_size = nummodels + numsounds;
 		current_loading_size = 1;
@@ -318,7 +317,7 @@ void CL_ParseServerInfo (void)
 	cl.model_precache[1] = Mod_ForName (model_precache[1], false);
 	for (i=2 ; i<nummodels ; i++)
 	{
-		if (precache.value)
+		if (precache->value)
 		{
 			cl.model_precache[i] = Mod_ForName (model_precache[i], false);
 			current_loading_size++;
@@ -345,7 +344,7 @@ void CL_ParseServerInfo (void)
 	for (i=1 ; i<numsounds ; i++)
 	{
 		cl.sound_precache[i] = S_PrecacheSound (sound_precache[i]);
-		if (precache.value)
+		if (precache->value)
 		{
 			current_loading_size++;
 			D_ShowLoadingSize();
@@ -1089,7 +1088,7 @@ void CL_ParseRainEffect(void)
 	R_RainEffect(org,e_size,x_dir,y_dir,color,count);
 }
 
-#define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", net_message.readcount-1, x);
+#define SHOWNET(x) if(cl_shownet->value==2)Con_Printf ("%3i:%s\n", net_message.readcount-1, x);
 
 /*
 =====================
@@ -1120,12 +1119,12 @@ void CL_ParseServerMessage (void)
 	{
 		LastServerMessageSize = net_message.cursize;
 	}
-	if (cl_shownet.value == 1)
+	if (cl_shownet->value == 1)
 	{
 		Con_Printf ("Time: %2.2f Pck: %i ",host_time-lasttime,net_message.cursize);
 		lasttime = host_time;
 	}
-	else if (cl_shownet.value == 2)
+	else if (cl_shownet->value == 2)
 		Con_Printf ("------------------\n");
 	
 	cl.onground = false;	// unless the server says otherwise	
@@ -1143,7 +1142,7 @@ void CL_ParseServerMessage (void)
 
 		if (cmd == -1)
 		{
-			if (cl_shownet.value == 1)
+			if (cl_shownet->value == 1)
 				Con_Printf ("Ent: %i (%i bytes)",EntityCount,EntitySize);
 
 			SHOWNET("END OF MESSAGE");
@@ -1434,7 +1433,7 @@ void CL_ParseServerMessage (void)
 		case svc_cdtrack:
 			cl.cdtrack = net_message.ReadByte ();
 			cl.looptrack = net_message.ReadByte ();
-			if (QStr::ICmp(bgmtype.string,"cd") == 0)
+			if (QStr::ICmp(bgmtype->string,"cd") == 0)
 			{
 				if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
 					CDAudio_Play ((byte)cls.forcetrack, true);
@@ -1447,7 +1446,7 @@ void CL_ParseServerMessage (void)
 
 		case svc_midi_name:
 			QStr::Cpy(cl.midi_name,net_message.ReadString2 ());
-			if (QStr::ICmp(bgmtype.string,"midi") == 0)
+			if (QStr::ICmp(bgmtype->string,"midi") == 0)
 				MIDI_Play(cl.midi_name);
 			else 
 				MIDI_Stop();
@@ -1460,7 +1459,7 @@ void CL_ParseServerMessage (void)
 			cl.intermission = net_message.ReadByte();
 			cl.completed_time = cl.time;
 			vid.recalc_refdef = true;	// go to full screen
-			if (oem.value && cl.intermission == 1)
+			if (oem->value && cl.intermission == 1)
 			{
 				cl.intermission = 9;
 			}

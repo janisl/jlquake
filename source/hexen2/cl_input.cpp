@@ -205,7 +205,7 @@ QCvar*	cl_pitchspeed;
 
 QCvar*	cl_anglespeedkey;
 
-cvar_t	cl_prettylights = {"cl_prettylights","1"};
+QCvar*	cl_prettylights;
 
 /*
 ================

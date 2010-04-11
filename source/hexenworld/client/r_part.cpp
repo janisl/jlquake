@@ -30,7 +30,7 @@ int					r_numparticles;
 vec3_t				r_pright, r_pup, r_ppn;
 static vec3_t		rider_origin;
 
-cvar_t				leak_color = {"leak_color","251", NULL,0,false,0,NULL,true};
+QCvar*				leak_color;
 
 
 static particle_t *AllocParticle(void);
@@ -64,7 +64,7 @@ void R_InitParticles (void)
 	particles = (particle_t *)
 			Hunk_AllocName (r_numparticles * sizeof(particle_t), "particles");
 
-	Cvar_RegisterVariable (&leak_color);
+	leak_color = Cvar_Get("leak_color","251", CVAR_ARCHIVE);
 
 	transTable = (byte *)malloc(65536);
 	if (!transTable)

@@ -33,8 +33,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/dir.h>
 #endif
 
-cvar_t	sys_nostdout = {"sys_nostdout","0"};
-cvar_t	sys_extrasleep = {"sys_extrasleep","0"};
+QCvar*	sys_nostdout;
+QCvar*	sys_extrasleep;
 
 qboolean	stdin_ready;
 
@@ -137,7 +137,7 @@ void Sys_Printf (char *fmt, ...)
 	if (QStr::Length(text) > sizeof(text))
 		Sys_Error("memory overwrite in Sys_Printf");
 
-    if (sys_nostdout.value)
+    if (sys_nostdout->value)
         return;
 
 	for (p = (unsigned char *)text; *p; p++) {
@@ -203,8 +203,8 @@ is marked
 */
 void Sys_Init (void)
 {
-	Cvar_RegisterVariable (&sys_nostdout);
-	Cvar_RegisterVariable (&sys_extrasleep);
+	sys_nostdout = Cvar_Get("sys_nostdout", "0", 0);
+	sys_extrasleep = Cvar_Get("sys_extrasleep","0", 0);
 }
 
 /*
@@ -276,8 +276,8 @@ int main(int argc, char *argv[])
 		SV_Frame (time);		
 		
 	// extrasleep is just a way to generate a fucked up connection on purpose
-		if (sys_extrasleep.value)
-			usleep (sys_extrasleep.value);
+		if (sys_extrasleep->value)
+			usleep (sys_extrasleep->value);
 	}
 	return 0;
 }

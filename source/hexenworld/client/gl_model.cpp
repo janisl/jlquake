@@ -23,7 +23,7 @@ int		mod_numknown;
 
 static vec3_t	mins,maxs;
 
-cvar_t gl_subdivide_size = {"gl_subdivide_size", "128", NULL,0,false,0,NULL,true};
+QCvar* gl_subdivide_size;
 
 /*
 ===============
@@ -32,7 +32,7 @@ Mod_Init
 */
 void Mod_Init (void)
 {
-	Cvar_RegisterVariable (&gl_subdivide_size);
+	gl_subdivide_size = Cvar_Get("gl_subdivide_size", "128", CVAR_ARCHIVE);
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 }
 

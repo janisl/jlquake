@@ -39,11 +39,11 @@ solid_edge items only clip against bsp models.
 
 */
 
-cvar_t	sv_friction = {"sv_friction","4",NULL,0,false,0,NULL,false,true};
-cvar_t	sv_stopspeed = {"sv_stopspeed","100"};
-cvar_t	sv_gravity = {"sv_gravity","800",NULL,0,false,0,NULL,false,true};
-cvar_t	sv_maxvelocity = {"sv_maxvelocity","2000"};
-cvar_t	sv_nostep = {"sv_nostep","0"};
+QCvar*	sv_friction;
+QCvar*	sv_stopspeed;
+QCvar*	sv_gravity;
+QCvar*	sv_maxvelocity;
+QCvar*	sv_nostep;
 
 #define	MOVE_EPSILON	0.01
 
@@ -99,10 +99,10 @@ void SV_CheckVelocity (edict_t *ent)
 			Con_Printf ("Got a NaN origin on %s\n", pr_strings + ent->v.classname);
 			ent->v.origin[i] = 0;
 		}
-		if (ent->v.velocity[i] > sv_maxvelocity.value)
-			ent->v.velocity[i] = sv_maxvelocity.value;
-		else if (ent->v.velocity[i] < -sv_maxvelocity.value)
-			ent->v.velocity[i] = -sv_maxvelocity.value;
+		if (ent->v.velocity[i] > sv_maxvelocity->value)
+			ent->v.velocity[i] = sv_maxvelocity->value;
+		else if (ent->v.velocity[i] < -sv_maxvelocity->value)
+			ent->v.velocity[i] = -sv_maxvelocity->value;
 	}
 }
 
@@ -372,7 +372,7 @@ void SV_AddGravity (edict_t *ent)
 		ent_gravity = val->_float;
 	else
 		ent_gravity = 1.0;
-	ent->v.velocity[2] -= ent_gravity * sv_gravity.value * host_frametime;
+	ent->v.velocity[2] -= ent_gravity * sv_gravity->value * host_frametime;
 }
 
 
@@ -801,7 +801,7 @@ void SV_WalkMove (edict_t *ent)
 	if (ent->v.movetype != MOVETYPE_WALK)
 		return;		// gibbed by a trigger
 	
-	if (sv_nostep.value)
+	if (sv_nostep->value)
 		return;
 	
 	if ( (int)sv_player->v.flags & FL_WATERJUMP )
@@ -1107,7 +1107,7 @@ void SV_Physics_Step (edict_t *ent)
 // freefall if not onground
 	if ( ! ((int)ent->v.flags & (FL_ONGROUND | FL_FLY | FL_SWIM) ) )
 	{
-		if (ent->v.velocity[2] < sv_gravity.value*-0.1)
+		if (ent->v.velocity[2] < sv_gravity->value*-0.1)
 			hitsound = true;
 		else
 			hitsound = false;

@@ -21,9 +21,9 @@ static qboolean locked = false;
 static int oldbuttons;
 
 // track high fragger
-cvar_t cl_hightrack = {"cl_hightrack", "0" };
-//cvar_t cl_camera_maxpitch = {"cl_camera_maxpitch", "10" };
-//cvar_t cl_camera_maxyaw = {"cl_camera_maxyaw", "30" };
+QCvar* cl_hightrack;
+//QCvar* cl_camera_maxpitch;
+//QCvar* cl_camera_maxyaw;
 
 qboolean cam_forceview;
 vec3_t cam_viewangles;
@@ -280,7 +280,7 @@ void Cam_Track(usercmd_t *cmd)
 	if (!cl.spectator)
 		return;
 	
-	if (cl_hightrack.value && !locked)
+	if (cl_hightrack->value && !locked)
 		Cam_CheckHighTarget();
 
 	if (!autocam || cls.state != ca_active)
@@ -288,7 +288,7 @@ void Cam_Track(usercmd_t *cmd)
 
 	if (locked && (!cl.players[spec_track].name[0] || cl.players[spec_track].spectator)) {
 		locked = false;
-		if (cl_hightrack.value)
+		if (cl_hightrack->value)
 			Cam_CheckHighTarget();
 		else
 			Cam_Unlock();
@@ -395,8 +395,8 @@ void Cam_SetView(void)
 		vectoangles(vec, vec2);
 		vec2[PITCH] = -vec2[PITCH];
 
-		cam_viewangles[PITCH] = adjustang(cam_viewangles[PITCH], vec2[PITCH], cl_camera_maxpitch.value);
-		cam_viewangles[YAW] = adjustang(cam_viewangles[YAW], vec2[YAW], cl_camera_maxyaw.value);
+		cam_viewangles[PITCH] = adjustang(cam_viewangles[PITCH], vec2[PITCH], cl_camera_maxpitch->value);
+		cam_viewangles[YAW] = adjustang(cam_viewangles[YAW], vec2[YAW], cl_camera_maxyaw->value);
 	}
 	VectorCopy(cam_viewangles, cl.viewangles);
 	VectorCopy(cl.viewangles, cl.simangles);
@@ -430,8 +430,8 @@ void Cam_FinishMove(usercmd_t *cmd)
 			vectoangles(vec, vec2);
 			vec2[PITCH] = -vec2[PITCH];
 
-			cam_viewangles[PITCH] = adjustang(cam_viewangles[PITCH], vec2[PITCH], cl_camera_maxpitch.value);
-			cam_viewangles[YAW] = adjustang(cam_viewangles[YAW], vec2[YAW], cl_camera_maxyaw.value);
+			cam_viewangles[PITCH] = adjustang(cam_viewangles[PITCH], vec2[PITCH], cl_camera_maxpitch->value);
+			cam_viewangles[YAW] = adjustang(cam_viewangles[YAW], vec2[YAW], cl_camera_maxyaw->value);
 		}
 		VectorCopy(cam_viewangles, cl.viewangles);
 	}
@@ -456,7 +456,7 @@ void Cam_FinishMove(usercmd_t *cmd)
 			return;
 	}
 
-	if (autocam && cl_hightrack.value) {
+	if (autocam && cl_hightrack->value) {
 		Cam_CheckHighTarget();
 		return;
 	}
@@ -506,9 +506,9 @@ void Cam_Reset(void)
 
 void CL_InitCam(void)
 {
-	Cvar_RegisterVariable (&cl_hightrack);
-//	Cvar_RegisterVariable (&cl_camera_maxpitch);
-//	Cvar_RegisterVariable (&cl_camera_maxyaw);
+	cl_hightrack = Cvar_Get("cl_hightrack", "0", 0);
+	//cl_camera_maxpitch = Cvar_Get("cl_camera_maxpitch", "10", 0);
+	//cl_camera_maxyaw = Cvar_Get("cl_camera_maxyaw", "30", 0);
 }
 
 

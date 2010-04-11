@@ -2,7 +2,7 @@
 
 #include "quakedef.h"
 
-cvar_t	cl_nodelta = {"cl_nodelta","0"};
+QCvar*	cl_nodelta;
 
 /*
 ===============================================================================
@@ -475,7 +475,7 @@ void CL_SendCmd (void)
 	if (cls.netchan.outgoing_sequence - cl.validsequence >= UPDATE_BACKUP-1)
 		cl.validsequence = 0;
 
-	if (cl.validsequence && !cl_nodelta.value && cls.state == ca_active &&
+	if (cl.validsequence && !cl_nodelta->value && cls.state == ca_active &&
 		!cls.demorecording)
 	{
 		cl.frames[cls.netchan.outgoing_sequence&UPDATE_MASK].delta_sequence = cl.validsequence;
@@ -541,7 +541,7 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("+crouch", IN_CrouchDown);
 	Cmd_AddCommand ("-crouch", IN_CrouchUp);
 
-	Cvar_RegisterVariable (&cl_nodelta);
+	cl_nodelta = Cvar_Get("cl_nodelta","0", 0);
 }
 
 /*

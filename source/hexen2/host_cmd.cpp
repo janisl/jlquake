@@ -9,9 +9,9 @@
 #endif
 #include <time.h>
 
-extern cvar_t	pausable;
-extern	cvar_t	sv_flypitch;
-extern	cvar_t	sv_walkpitch;
+extern QCvar*	pausable;
+extern QCvar*	sv_flypitch;
+extern QCvar*	sv_walkpitch;
 
 int	current_skill;
 static double		old_time;
@@ -118,7 +118,7 @@ void Host_God_f (void)
 	}
 
 	if ((pr_global_struct->deathmatch ||
-		 pr_global_struct->coop || skill.value > 2) && !host_client->privileged)
+		 pr_global_struct->coop || skill->value > 2) && !host_client->privileged)
 		return;
 
 	sv_player->v.flags = (int)sv_player->v.flags ^ FL_GODMODE;
@@ -136,7 +136,7 @@ void Host_Notarget_f (void)
 		return;
 	}
 
-	if ((pr_global_struct->deathmatch || skill.value > 2)&& !host_client->privileged)
+	if ((pr_global_struct->deathmatch || skill->value > 2)&& !host_client->privileged)
 		return;
 
 	sv_player->v.flags = (int)sv_player->v.flags ^ FL_NOTARGET;
@@ -157,7 +157,7 @@ void Host_Noclip_f (void)
 	}
 
 	if ((pr_global_struct->deathmatch ||
-		 pr_global_struct->coop|| skill.value > 2) && !host_client->privileged)
+		 pr_global_struct->coop|| skill->value > 2) && !host_client->privileged)
 		return;
 
 	if (sv_player->v.movetype != MOVETYPE_NOCLIP)
@@ -248,7 +248,7 @@ void Host_Map_f (void)
 	SCR_BeginLoadingPlaque ();
 
 	info_mask = 0;
-	if (!coop.value && deathmatch.value)
+	if (!coop->value && deathmatch->value)
 		info_mask2 = 0x80000000;
 	else
 		info_mask2 = 0;
@@ -371,7 +371,7 @@ This is sent just before a server changes levels
 void Host_Reconnect_f (void)
 {
 	R_ClearParticles ();	//jfm: for restarts which didn't use to clear parts.
-	if (oem.value && cl.intermission == 9)
+	if (oem->value && cl.intermission == 9)
 	{
 		CL_Disconnect();
 		return;
@@ -557,11 +557,11 @@ void Host_Savegame_f (void)
 	fprintf (f, "%s\n", sv.name);
 	fprintf (f, "%f\n",sv.time);
 	fprintf (f, "%d\n",svs.maxclients);
-	fprintf (f, "%f\n",deathmatch.value);
-	fprintf (f, "%f\n",coop.value);
-	fprintf (f, "%f\n",teamplay.value);
-	fprintf (f, "%f\n",randomclass.value);
-	fprintf (f, "%f\n",cl_playerclass.value);
+	fprintf (f, "%f\n",deathmatch->value);
+	fprintf (f, "%f\n",coop->value);
+	fprintf (f, "%f\n",teamplay->value);
+	fprintf (f, "%f\n",randomclass->value);
+	fprintf (f, "%f\n",cl_playerclass->value);
 	fprintf (f, "%d\n",info_mask);
 	fprintf (f, "%d\n",info_mask2);
 	
@@ -810,7 +810,7 @@ retry:
 		fprintf (f, "%s\n", comment);
 	//	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
 	//		fprintf (f, "%f\n", svs.clients->spawn_parms[i]);
-		fprintf (f, "%f\n", skill.value);
+		fprintf (f, "%f\n", skill->value);
 		fprintf (f, "%s\n", sv.name);
 		fprintf (f, "%f\n", sv.time);
 
@@ -1158,7 +1158,7 @@ void Host_Name_f (void)
 
 	if (Cmd_Argc () == 1)
 	{
-		Con_Printf ("\"name\" is \"%s\"\n", cl_name.string);
+		Con_Printf ("\"name\" is \"%s\"\n", cl_name->string);
 		return;
 	}
 	if (Cmd_Argc () == 2)
@@ -1177,7 +1177,7 @@ void Host_Name_f (void)
 
 	if (cmd_source == src_command)
 	{
-		if (QStr::Cmp(cl_name.string, newName) == 0)
+		if (QStr::Cmp(cl_name->string, newName) == 0)
 			return;
 		Cvar_Set ("_cl_name", newName);
 		if (cls.state == ca_connected)
@@ -1206,10 +1206,10 @@ void Host_Class_f (void)
 
 	if (Cmd_Argc () == 1)
 	{
-		if (!(int)cl_playerclass.value)
-			Con_Printf ("\"playerclass\" is %d (\"unknown\")\n", (int)cl_playerclass.value);
+		if (!(int)cl_playerclass->value)
+			Con_Printf ("\"playerclass\" is %d (\"unknown\")\n", (int)cl_playerclass->value);
 		else
-			Con_Printf ("\"playerclass\" is %d (\"%s\")\n", (int)cl_playerclass.value,ClassNames[(int)cl_playerclass.value-1]);
+			Con_Printf ("\"playerclass\" is %d (\"%s\")\n", (int)cl_playerclass->value,ClassNames[(int)cl_playerclass->value-1]);
 		return;
 	}
 	if (Cmd_Argc () == 2)
@@ -1409,7 +1409,7 @@ void Host_Say(qboolean teamonly)
 	if (!fromServer)
 		sprintf (text, "%c%s: ", 1, save->name);
 	else
-		sprintf (text, "%c<%s> ", 1, hostname.string);
+		sprintf (text, "%c<%s> ", 1, hostname->string);
 
 	j = sizeof(text) - 2 - QStr::Length(text);  // -2 for /n and null terminator
 	if (QStr::Length(p) > j)
@@ -1422,7 +1422,7 @@ void Host_Say(qboolean teamonly)
 	{
 		if (!client || !client->active || !client->spawned)
 			continue;
-		if (teamplay.value && teamonly && client->edict->v.team != save->edict->v.team)
+		if (teamplay->value && teamonly && client->edict->v.team != save->edict->v.team)
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -1510,7 +1510,7 @@ void Host_Color_f(void)
 	
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("\"color\" is \"%i %i\"\n", ((int)cl_color.value) >> 4, ((int)cl_color.value) & 0x0f);
+		Con_Printf ("\"color\" is \"%i %i\"\n", ((int)cl_color->value) >> 4, ((int)cl_color->value) & 0x0f);
 		Con_Printf ("color <0-10> [0-10]\n");
 		return;
 	}
@@ -1587,7 +1587,7 @@ void Host_Pause_f (void)
 		Cmd_ForwardToServer ();
 		return;
 	}
-	if (!pausable.value)
+	if (!pausable->value)
 		SV_ClientPrintf ("Pause not allowed.\n");
 	else
 	{
@@ -1674,7 +1674,7 @@ void Host_Spawn_f (void)
 		ent = host_client->edict;
 		sv.paused = false;
 
-		if (!ent->v.stats_restored || deathmatch.value)
+		if (!ent->v.stats_restored || deathmatch->value)
 		{
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		
@@ -1799,8 +1799,8 @@ int strdiff(char *s1, char *s2)
 
 void Host_Commands_f(void)
 {
-	FILE *FH;
-	cvar_t	*var;
+	FILE*	FH;
+	QCvar*	var;
 
 	FH = fopen("commands.txt","w");
 
@@ -1828,7 +1828,7 @@ void Host_Create_f(void)
 		return;
 	}
 
-	if ((svs.maxclients != 1) || (skill.value >2))
+	if ((svs.maxclients != 1) || (skill->value >2))
 	{
 		Con_Printf("can't cheat anymore!\n");
 		return;
@@ -1985,7 +1985,7 @@ void Host_Kick_f (void)
 			if (cls.state == ca_dedicated)
 				who = "Console";
 			else
-				who = cl_name.string;
+				who = cl_name->string;
 		else
 			who = save->name;
 
@@ -2042,7 +2042,7 @@ void Host_Give_f (void)
 		return;
 	}
 
-	if ((pr_global_struct->deathmatch|| skill.value > 2) && !host_client->privileged)
+	if ((pr_global_struct->deathmatch|| skill->value > 2) && !host_client->privileged)
 		return;
 
 	t = Cmd_Argv(1);

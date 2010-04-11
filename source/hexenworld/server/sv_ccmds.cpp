@@ -5,7 +5,7 @@ qboolean	sv_allow_cheats;
 
 int fp_messages=4, fp_persecond=4, fp_secondsdead=10;
 char fp_msg[255] = { 0 };
-extern cvar_t cl_warncmd;
+extern QCvar* cl_warncmd;
 
 /*
 ===============================================================================
@@ -438,7 +438,7 @@ void SV_Status_f (void)
 	Con_Printf ("packets/frame    : %5.2f\n", pak);
 	t_limit = Cvar_VariableValue("timelimit");
 	f_limit = Cvar_VariableValue("fraglimit");
-	if(dmMode.value==DM_SIEGE)
+	if(dmMode->value==DM_SIEGE)
 	{
 		num_min = floor((t_limit*60)-sv.time);
 		num_sec = (int)(t_limit - num_min)%60;
@@ -602,7 +602,7 @@ void SV_ConSay_f(void)
 	if (Cmd_Argc () < 2)
 		return;
 
-	if(dmMode.value==DM_SIEGE)
+	if(dmMode->value==DM_SIEGE)
 		QStr::Cpy(text, "GOD SAYS: ");
 	else
 		QStr::Cpy(text, "ServerAdmin: ");
@@ -647,7 +647,7 @@ SV_Serverinfo_f
 char *CopyString(char *s);
 void SV_Serverinfo_f (void)
 {
-	cvar_t	*var;
+	QCvar*	var;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -692,7 +692,7 @@ SV_Serverinfo_f
 char *CopyString(char *s);
 void SV_Localinfo_f (void)
 {
-	cvar_t	*var;
+	QCvar	*var;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -907,5 +907,5 @@ void SV_InitOperatorCommands (void)
 	Cmd_AddCommand ("floodprot", SV_Floodprot_f);
 	Cmd_AddCommand ("floodprotmsg", SV_Floodprotmsg_f);
 
-	cl_warncmd.value = 1;
+	cl_warncmd->value = 1;
 }

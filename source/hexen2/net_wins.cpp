@@ -3,7 +3,7 @@
 #include "quakedef.h"
 #include "winquake.h"
 
-extern cvar_t hostname;
+extern QCvar* hostname;
 
 #define MAXHOSTNAMELEN		256
 
@@ -96,7 +96,7 @@ int WINS_Init (void)
 		myAddr = *(int *)local->h_addr_list[0];
 
 		// if the quake hostname isn't set, set it to the machine name
-		if (QStr::Cmp(hostname.string, "UNNAMED") == 0)
+		if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
 		{
 			// see if it's a text IP address (well, close enough)
 			for (p = buff; *p; p++)

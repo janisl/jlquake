@@ -5,7 +5,7 @@
 #include "quakedef.h"
 #include "winquake.h"
 
-extern	cvar_t	crosshair;
+extern	QCvar*	crosshair;
 
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
@@ -850,12 +850,12 @@ void M_AdjustSliders (int dir)
 	switch (options_cursor)
 	{
 	case OPT_SCRSIZE:	// screen size
-		scr_viewsize.value += dir * 10;
-		if (scr_viewsize.value < 30)
-			scr_viewsize.value = 30;
-		if (scr_viewsize.value > 120)
-			scr_viewsize.value = 120;
-		Cvar_SetValue ("viewsize", scr_viewsize.value);
+		scr_viewsize->value += dir * 10;
+		if (scr_viewsize->value < 30)
+			scr_viewsize->value = 30;
+		if (scr_viewsize->value > 120)
+			scr_viewsize->value = 120;
+		Cvar_SetValue ("viewsize", scr_viewsize->value);
 		SB_ViewSizeChanged();
 		vid.recalc_refdef = 1;
 		break;
@@ -868,14 +868,14 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("sensitivity", sensitivity->value);
 		break;
 	case OPT_MUSICTYPE: // bgm type
-		if (QStr::ICmp(bgmtype.string,"midi") == 0)
+		if (QStr::ICmp(bgmtype->string,"midi") == 0)
 		{
 			if (dir < 0)
 				Cvar_Set("bgmtype","none");
 			else
 				Cvar_Set("bgmtype","cd");
 		}
-		else if (QStr::ICmp(bgmtype.string,"cd") == 0)
+		else if (QStr::ICmp(bgmtype->string,"cd") == 0)
 		{
 			if (dir < 0)
 				Cvar_Set("bgmtype","midi");
@@ -892,21 +892,21 @@ void M_AdjustSliders (int dir)
 		break;
 
 	case OPT_MUSICVOL:	// music volume
-		bgmvolume.value += dir * 0.1;
+		bgmvolume->value += dir * 0.1;
 
-		if (bgmvolume.value < 0)
-			bgmvolume.value = 0;
-		if (bgmvolume.value > 1)
-			bgmvolume.value = 1;
-		Cvar_SetValue ("bgmvolume", bgmvolume.value);
+		if (bgmvolume->value < 0)
+			bgmvolume->value = 0;
+		if (bgmvolume->value > 1)
+			bgmvolume->value = 1;
+		Cvar_SetValue ("bgmvolume", bgmvolume->value);
 		break;
 	case OPT_SNDVOL:	// sfx volume
-		volume.value += dir * 0.1;
-		if (volume.value < 0)
-			volume.value = 0;
-		if (volume.value > 1)
-			volume.value = 1;
-		Cvar_SetValue ("volume", volume.value);
+		volume->value += dir * 0.1;
+		if (volume->value < 0)
+			volume->value = 0;
+		if (volume->value > 1)
+			volume->value = 1;
+		Cvar_SetValue ("volume", volume->value);
 		break;
 	case OPT_ALWAYRUN:	// allways run
 		if (cl_forwardspeed->value > 200)
@@ -934,7 +934,7 @@ void M_AdjustSliders (int dir)
 		break;
 
 	case OPT_CROSSHAIR:	
-		Cvar_SetValue ("crosshair", !crosshair.value);
+		Cvar_SetValue ("crosshair", !crosshair->value);
 		break;
 
 	case OPT_ALWAYSMLOOK:	
@@ -947,7 +947,7 @@ void M_AdjustSliders (int dir)
 		break;
 
 	case OPT_VIDEO:
-		Cvar_SetValue ("cl_sbar", !cl_sbar.value);
+		Cvar_SetValue ("cl_sbar", !cl_sbar->value);
 		break;
 
 	case OPT_USEMOUSE:	// _windowed_mouse
@@ -1000,7 +1000,7 @@ void M_Options_Draw (void)
 	M_Print (16, 60+(2*8), "     Reset to defaults");
 
 	M_Print (16, 60+(3*8), "           Screen size");
-	r = (scr_viewsize.value - 30) / (120 - 30);
+	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider (220, 60+(3*8), r);
 
 	M_Print (16, 60+(5*8), "           Mouse Speed");
@@ -1008,19 +1008,19 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 60+(5*8), r);
 
 	M_Print (16, 60+(6*8), "            Music Type");
-	if (QStr::ICmp(bgmtype.string,"midi") == 0)
+	if (QStr::ICmp(bgmtype->string,"midi") == 0)
 		M_Print (220, 60+(6*8), "MIDI");
-	else if (QStr::ICmp(bgmtype.string,"cd") == 0)
+	else if (QStr::ICmp(bgmtype->string,"cd") == 0)
 		M_Print (220, 60+(6*8), "CD");
 	else
 		M_Print (220, 60+(6*8), "None");
 
 	M_Print (16, 60+(7*8), "          Music Volume");
-	r = bgmvolume.value;
+	r = bgmvolume->value;
 	M_DrawSlider (220, 60+(7*8), r);
 
 	M_Print (16, 60+(8*8), "          Sound Volume");
-	r = volume.value;
+	r = volume->value;
 	M_DrawSlider (220, 60+(8*8), r);
 
 	M_Print (16, 60+(9*8),				"            Always Run");
@@ -1036,7 +1036,7 @@ void M_Options_Draw (void)
 	M_DrawCheckbox (220, 60+(OPT_LOOKSTRAFE*8), lookstrafe->value);
 
 	M_Print (16, 60+(OPT_CROSSHAIR*8),	"        Show Crosshair");
-	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair.value);
+	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair->value);
 
 	M_Print (16,60+(OPT_ALWAYSMLOOK*8),	"            Mouse Look");
 	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), in_mlook.state & 1);
@@ -2169,16 +2169,16 @@ void M_MultiPlayer_Key (int key)
 #define MAX_HOST_SIZE 80
 char save_names[MAX_HOST_NAMES][MAX_HOST_SIZE];
 
-cvar_t	hostname1 = {"host1","equalizer.ravensoft.com", NULL,0,false,0,NULL,true};
-cvar_t	hostname2 = {"host2","", NULL,0,false,0,NULL,true};
-cvar_t	hostname3 = {"host3","", NULL,0,false,0,NULL,true};
-cvar_t	hostname4 = {"host4","", NULL,0,false,0,NULL,true};
-cvar_t	hostname5 = {"host5","", NULL,0,false,0,NULL,true};
-cvar_t	hostname6 = {"host6","", NULL,0,false,0,NULL,true};
-cvar_t	hostname7 = {"host7","", NULL,0,false,0,NULL,true};
-cvar_t	hostname8 = {"host8","", NULL,0,false,0,NULL,true};
-cvar_t	hostname9 = {"host9","", NULL,0,false,0,NULL,true};
-cvar_t	hostname10 = {"host10","", NULL,0,false,0,NULL,true};
+QCvar*	hostname1;
+QCvar*	hostname2;
+QCvar*	hostname3;
+QCvar*	hostname4;
+QCvar*	hostname5;
+QCvar*	hostname6;
+QCvar*	hostname7;
+QCvar*	hostname8;
+QCvar*	hostname9;
+QCvar*	hostname10;
 
 int connect_cursor = 0;
 #define MAX_CONNECT_CMDS 11
@@ -2208,16 +2208,16 @@ void M_Menu_Connect_f (void)
 
 	message = NULL;
 
-	QStr::Cpy(save_names[0],hostname1.string);
-	QStr::Cpy(save_names[1],hostname2.string);
-	QStr::Cpy(save_names[2],hostname3.string);
-	QStr::Cpy(save_names[3],hostname4.string);
-	QStr::Cpy(save_names[4],hostname5.string);
-	QStr::Cpy(save_names[5],hostname6.string);
-	QStr::Cpy(save_names[6],hostname7.string);
-	QStr::Cpy(save_names[7],hostname8.string);
-	QStr::Cpy(save_names[8],hostname9.string);
-	QStr::Cpy(save_names[9],hostname10.string);
+	QStr::Cpy(save_names[0],hostname1->string);
+	QStr::Cpy(save_names[1],hostname2->string);
+	QStr::Cpy(save_names[2],hostname3->string);
+	QStr::Cpy(save_names[3],hostname4->string);
+	QStr::Cpy(save_names[4],hostname5->string);
+	QStr::Cpy(save_names[5],hostname6->string);
+	QStr::Cpy(save_names[6],hostname7->string);
+	QStr::Cpy(save_names[7],hostname8->string);
+	QStr::Cpy(save_names[8],hostname9->string);
+	QStr::Cpy(save_names[9],hostname10->string);
 }
 
 void M_Connect_Draw (void)
@@ -2367,28 +2367,28 @@ int		class_limit;
 
 #define	NUM_SETUP_CMDS	7
 
-extern cvar_t	name;
-extern cvar_t	topcolor;
-extern cvar_t	bottomcolor;
+extern QCvar*	name;
+extern QCvar*	topcolor;
+extern QCvar*	bottomcolor;
 
 void M_Menu_Setup_f (void)
 {
 	key_dest = key_menu;
 	m_state = m_setup;
 	m_entersound = true;
-	QStr::Cpy(setup_myname, name.string);
-	setup_top = setup_oldtop = (int)topcolor.value;
-	setup_bottom = setup_oldbottom = (int)bottomcolor.value;
+	QStr::Cpy(setup_myname, name->string);
+	setup_top = setup_oldtop = (int)topcolor->value;
+	setup_bottom = setup_oldbottom = (int)bottomcolor->value;
 
 
 	if(!com_portals)
-		if(playerclass.value==CLASS_DEMON)
-			playerclass.value = 0;
+		if(playerclass->value==CLASS_DEMON)
+			playerclass->value = 0;
 	if(QStr::ICmp(com_gamedir, "siege"))
-		if(playerclass.value==CLASS_DWARF)
-			playerclass.value = 0;
+		if(playerclass->value==CLASS_DWARF)
+			playerclass->value = 0;
 
-	setup_class = playerclass.value;
+	setup_class = playerclass->value;
 
 //	if (com_portals||cl_siege)//FIXME!!!
 //	{
@@ -2418,7 +2418,7 @@ void M_Setup_Draw (void)
 	M_PrintWhite (168, 56, setup_myname);
 
 	M_Print (64, 72, "Spectator: ");
-	if (spectator.value)
+	if (spectator->value)
 	{
 		M_PrintWhite (64 + 12*8, 72, "YES");
 	}
@@ -2535,7 +2535,7 @@ void M_Setup_Key (int k)
 		S_LocalSound ("raven/menu3.wav");
 		if (setup_cursor == 2)
 		{
-			if (spectator.value)
+			if (spectator->value)
 			{
 				Cvar_Set("spectator","0");
 //				spectator.value = 0;
@@ -2545,7 +2545,7 @@ void M_Setup_Key (int k)
 				Cvar_Set("spectator","1");
 //				spectator.value = 1;
 			}
-			cl.spectator = spectator.value;
+			cl.spectator = spectator->value;
 		}
 		if (setup_cursor == 3)
 		{
@@ -2568,7 +2568,7 @@ forward:
 		S_LocalSound ("raven/menu3.wav");
 		if (setup_cursor == 2)
 		{
-			if (spectator.value)
+			if (spectator->value)
 			{
 				Cvar_Set("spectator","0");
 //				spectator.value = 0;
@@ -2578,7 +2578,7 @@ forward:
 				Cvar_Set("spectator","1");
 //				spectator.value = 1;
 			}
-			cl.spectator = spectator.value;
+			cl.spectator = spectator->value;
 
 		}
 		if (setup_cursor == 3)
@@ -2603,7 +2603,7 @@ forward:
 		if (setup_cursor == 2 || setup_cursor == 3 || setup_cursor == 4 || setup_cursor == 5)
 			goto forward;
 
-		if (QStr::Cmp(name.string, setup_myname) != 0)
+		if (QStr::Cmp(name->string, setup_myname) != 0)
 			Cbuf_AddText ( va ("name \"%s\"\n", setup_myname) );
 		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
 			Cbuf_AddText( va ("color %i %i\n", setup_top, setup_bottom) );
@@ -2665,16 +2665,16 @@ void M_Init (void)
 	Cmd_AddCommand ("menu_class", M_Menu_Class2_f);
 	Cmd_AddCommand ("menu_connect" , M_Menu_Connect_f);
 
-	Cvar_RegisterVariable (&hostname1);
-	Cvar_RegisterVariable (&hostname2);
-	Cvar_RegisterVariable (&hostname3);
-	Cvar_RegisterVariable (&hostname4);
-	Cvar_RegisterVariable (&hostname5);
-	Cvar_RegisterVariable (&hostname6);
-	Cvar_RegisterVariable (&hostname7);
-	Cvar_RegisterVariable (&hostname8);
-	Cvar_RegisterVariable (&hostname9);
-	Cvar_RegisterVariable (&hostname10);
+	hostname1 = Cvar_Get("host1","equalizer.ravensoft.com", CVAR_ARCHIVE);
+	hostname2 = Cvar_Get("host2","", CVAR_ARCHIVE);
+	hostname3 = Cvar_Get("host3","", CVAR_ARCHIVE);
+	hostname4 = Cvar_Get("host4","", CVAR_ARCHIVE);
+	hostname5 = Cvar_Get("host5","", CVAR_ARCHIVE);
+	hostname6 = Cvar_Get("host6","", CVAR_ARCHIVE);
+	hostname7 = Cvar_Get("host7","", CVAR_ARCHIVE);
+	hostname8 = Cvar_Get("host8","", CVAR_ARCHIVE);
+	hostname9 = Cvar_Get("host9","", CVAR_ARCHIVE);
+	hostname10 = Cvar_Get("host10","", CVAR_ARCHIVE);
 
 	M_BuildBigCharWidth();
 }

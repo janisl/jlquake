@@ -91,9 +91,9 @@ static int sb_updates; // if >= vid.numpages, no update needed
 
 static float BarHeight;
 static float BarTargetHeight;
-cvar_t BarSpeed = { "barspeed", "5" };
-cvar_t sbtemp = { "sbtemp", "5" };
-cvar_t DMMode = { "dm_mode", "1", NULL,0,false,0,NULL,true };
+QCvar* BarSpeed;
+QCvar* sbtemp;
+QCvar* DMMode;
 
 static qpic_t *sb_nums[11];
 static qpic_t *sb_colon, *sb_slash;
@@ -182,10 +182,10 @@ void SB_Init(void)
 	Cmd_AddCommand("invuse", InvUse_f);
 	Cmd_AddCommand("invoff", InvOff_f);
 	Cmd_AddCommand("toggle_dm", ToggleDM_f);
-	Cvar_RegisterVariable(&DMMode);
 
-	Cvar_RegisterVariable(&BarSpeed);
-	Cvar_RegisterVariable(&sbtemp);
+	BarSpeed = Cvar_Get("barspeed", "5", 0);
+	sbtemp = Cvar_Get("sbtemp", "5", 0);
+	DMMode = Cvar_Get("dm_mode", "1", CVAR_ARCHIVE);
 	BarHeight = BarTargetHeight = BAR_TOP_HEIGHT;
 }
 
@@ -227,7 +227,7 @@ void SB_Draw(void)
 
 	if(BarHeight < BarTargetHeight)
 	{
-		delta = ((BarTargetHeight-BarHeight)*BarSpeed.value)
+		delta = ((BarTargetHeight-BarHeight)*BarSpeed->value)
 			*host_frametime;
 		if(delta < 0.5)
 		{
@@ -242,7 +242,7 @@ void SB_Draw(void)
 	}
 	else if(BarHeight > BarTargetHeight)
 	{
-		delta = ((BarHeight-BarTargetHeight)*BarSpeed.value)
+		delta = ((BarHeight-BarTargetHeight)*BarSpeed->value)
 			*host_frametime;
 		if(delta < 0.5)
 		{
@@ -355,7 +355,7 @@ void SB_Draw(void)
 		else
 			Sbar_NormalOverlay();
 	}
-	else if (cl.gametype == GAME_DEATHMATCH && DMMode.value)
+	else if (cl.gametype == GAME_DEATHMATCH && DMMode->value)
 		Sbar_SmallDeathmatchOverlay();
 
 }
@@ -483,7 +483,7 @@ static void DrawLowerBar(void)
 	int ringhealth;
 
 	//playerClass = cl.v.playerclass;
-	playerClass = cl_playerclass.value;
+	playerClass = cl_playerclass->value;
 	if(playerClass < 1 || playerClass > NUM_CLASSES)
 	{ // Default to demoness
 		playerClass = NUM_CLASSES-1;
@@ -647,7 +647,7 @@ static int CalcAC(void)
 	int playerClass;
 
 	//playerClass = cl.v.playerclass;
-	playerClass = cl_playerclass.value -1 ;
+	playerClass = cl_playerclass->value -1 ;
 	if(playerClass < 0 || playerClass >= NUM_CLASSES)
 	{
 		playerClass = NUM_CLASSES-1;
@@ -1161,7 +1161,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 	unsigned char	num[12];
 	scoreboard_t	*s;
 
-	if (DMMode.value == 2 && BarHeight != BAR_TOP_HEIGHT)
+	if (DMMode->value == 2 && BarHeight != BAR_TOP_HEIGHT)
 		return;
 
 	scr_copyeverything = 1;
@@ -1173,13 +1173,13 @@ void Sbar_SmallDeathmatchOverlay(void)
 // draw the text
 	l = scoreboardlines;
 
-	if (DMMode.value == 1)
+	if (DMMode->value == 1)
 	{
 		if (l > 8) 
 			l = 8;
 		y = 46;
 	}
-	else if (DMMode.value == 2)
+	else if (DMMode->value == 2)
 	{
 		if (l > 4) 
 			l = 4;
@@ -1194,7 +1194,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 		if (!s->name[0])
 			continue;
 
-		if (DMMode.value == 2)
+		if (DMMode->value == 2)
 		{
 		}
 		// draw background
@@ -1499,7 +1499,7 @@ static void ShowInfoDown_f(void)
 
 static void ShowInfoUp_f(void)
 {
-	if(cl.intermission || scr_viewsize.value >= 110.0)
+	if(cl.intermission || scr_viewsize->value >= 110.0)
 	{
 		BarTargetHeight = 0.0-BAR_BUMP_HEIGHT;
 	}
@@ -1619,9 +1619,9 @@ static void InvOff_f(void)
 
 static void ToggleDM_f(void)
 {
-	DMMode.value += 1;
-	if (DMMode.value > 2)
-		DMMode.value = 0;
+	DMMode->value += 1;
+	if (DMMode->value > 2)
+		DMMode->value = 0;
 }
 
 //==========================================================================
@@ -1712,7 +1712,7 @@ void SB_InvReset(void)
 
 void SB_ViewSizeChanged(void)
 {
-	if(cl.intermission || scr_viewsize.value >= 110.0)
+	if(cl.intermission || scr_viewsize->value >= 110.0)
 	{
 		BarTargetHeight = 0.0-BAR_BUMP_HEIGHT;
 	}

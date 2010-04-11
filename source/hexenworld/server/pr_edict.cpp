@@ -29,7 +29,7 @@ typedef struct {
 
 static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
 
-cvar_t	max_temp_edicts = {"max_temp_edicts", "30", NULL,0,false,0,NULL,true};
+QCvar*	max_temp_edicts;
 
 static char field_name[256], class_name[256];
 static qboolean RemoveBadReferences;
@@ -68,7 +68,7 @@ edict_t *ED_Alloc (void)
 	int			i;
 	edict_t		*e;
 
-	for ( i=MAX_CLIENTS+max_temp_edicts.value+1 ; i<sv.num_edicts ; i++)
+	for ( i=MAX_CLIENTS+max_temp_edicts->value+1 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
@@ -104,7 +104,7 @@ edict_t *ED_Alloc_Temp (void)
 
 	LeastTime = -1;
 	LeastSet = false;
-	for ( i=MAX_CLIENTS+1,j=0 ; j < max_temp_edicts.value ; i++,j++)
+	for ( i=MAX_CLIENTS+1,j=0 ; j < max_temp_edicts->value ; i++,j++)
 	{
 		e = EDICT_NUM(i);
 		// the first couple seconds of server time can involve a lot of
@@ -981,7 +981,7 @@ void ED_LoadFromFile (const char *data)
 		data = ED_ParseEdict (data, ent);
 		
 // remove things from different skill levels or deathmatch
-		if (deathmatch.value)
+		if (deathmatch->value)
 		{
 			if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_DEATHMATCH))
 			{
@@ -990,7 +990,7 @@ void ED_LoadFromFile (const char *data)
 				continue;
 			}
 		}
-		else if (coop.value)
+		else if (coop->value)
 		{
 			if (((int)ent->v.spawnflags & SPAWNFLAG_NOT_COOP))
 			{
@@ -1222,7 +1222,7 @@ void PR_Init (void)
 	Cmd_AddCommand ("edicts", ED_PrintEdicts);
 	Cmd_AddCommand ("edictcount", ED_Count);
 	Cmd_AddCommand ("profile", PR_Profile_f);
-	Cvar_RegisterVariable (&max_temp_edicts);
+	max_temp_edicts = Cvar_Get("max_temp_edicts", "30", CVAR_ARCHIVE);
 }
 
 

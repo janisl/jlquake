@@ -5,7 +5,6 @@
 #include "quakedef.h"
 
 extern	HWND	mainwindow;
-extern	cvar_t	bgmvolume;
 
 static qboolean cdValid = false;
 static qboolean	playing = false;
@@ -392,11 +391,11 @@ void CDAudio_Update(void)
 	if (!enabled)
 		return;
 
-	if (bgmvolume.value != cdvolume)
-		CD_SetVolume(bgmvolume.value * 0xffff);
+	if (bgmvolume->value != cdvolume)
+		CD_SetVolume(bgmvolume->value * 0xffff);
 
-	if ((!bgmvolume.value && cdvolume) ||
-		(bgmvolume.value && !cdvolume))
+	if ((!bgmvolume->value && cdvolume) ||
+		(bgmvolume->value && !cdvolume))
 	{
 		if (cdvolume)
 		{
@@ -409,7 +408,7 @@ void CDAudio_Update(void)
 			CDAudio_Resume ();
 		}
 	}
-	cdvolume = bgmvolume.value;
+	cdvolume = bgmvolume->value;
 }
 
 

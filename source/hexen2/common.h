@@ -44,5 +44,5 @@ byte *COM_LoadHunkFile2 (char *path, int *size);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
 
 
-extern	cvar_t	registered;
-extern	cvar_t	oem;
+extern	QCvar*	registered;
+extern	QCvar*	oem;

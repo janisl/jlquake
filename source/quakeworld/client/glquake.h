@@ -194,7 +194,7 @@ extern	QCvar*	r_mirroralpha;
 extern	QCvar*	r_wateralpha;
 extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
-extern	cvar_t	r_netgraph;
+extern	QCvar*	r_netgraph;
 
 extern	QCvar*	gl_clear;
 extern	QCvar*	gl_cull;
@@ -207,7 +207,7 @@ extern	QCvar*	gl_playermip;
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
-extern	cvar_t	gl_finish;
+extern	QCvar*	gl_finish;
 
 extern	int		gl_lightmap_format;
 extern	int		gl_solid_format;

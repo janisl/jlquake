@@ -696,10 +696,10 @@ void M_Menu_Setup_f (void)
 	key_dest = key_menu;
 	m_state = m_setup;
 	m_entersound = true;
-	QStr::Cpy(setup_myname, cl_name.string);
-	QStr::Cpy(setup_hostname, hostname.string);
-	setup_top = setup_oldtop = ((int)cl_color.value) >> 4;
-	setup_bottom = setup_oldbottom = ((int)cl_color.value) & 15;
+	QStr::Cpy(setup_myname, cl_name->string);
+	QStr::Cpy(setup_hostname, hostname->string);
+	setup_top = setup_oldtop = ((int)cl_color->value) >> 4;
+	setup_bottom = setup_oldbottom = ((int)cl_color->value) & 15;
 }
 
 
@@ -793,9 +793,9 @@ forward:
 			goto forward;
 
 		// setup_cursor == 4 (OK)
-		if (QStr::Cmp(cl_name.string, setup_myname) != 0)
+		if (QStr::Cmp(cl_name->string, setup_myname) != 0)
 			Cbuf_AddText ( va ("name \"%s\"\n", setup_myname) );
-		if (QStr::Cmp(hostname.string, setup_hostname) != 0)
+		if (QStr::Cmp(hostname->string, setup_hostname) != 0)
 			Cvar_Set("hostname", setup_hostname);
 		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
 			Cbuf_AddText( va ("color %i %i\n", setup_top, setup_bottom) );
@@ -1067,12 +1067,12 @@ void M_AdjustSliders (int dir)
 	switch (options_cursor)
 	{
 	case 3:	// screen size
-		scr_viewsize.value += dir * 10;
-		if (scr_viewsize.value < 30)
-			scr_viewsize.value = 30;
-		if (scr_viewsize.value > 120)
-			scr_viewsize.value = 120;
-		Cvar_SetValue ("viewsize", scr_viewsize.value);
+		scr_viewsize->value += dir * 10;
+		if (scr_viewsize->value < 30)
+			scr_viewsize->value = 30;
+		if (scr_viewsize->value > 120)
+			scr_viewsize->value = 120;
+		Cvar_SetValue ("viewsize", scr_viewsize->value);
 		break;
 	case 4:	// gamma
 		v_gamma->value -= dir * 0.05;
@@ -1092,23 +1092,23 @@ void M_AdjustSliders (int dir)
 		break;
 	case 6:	// music volume
 #ifdef _WIN32
-		bgmvolume.value += dir * 1.0;
+		bgmvolume->value += dir * 1.0;
 #else
-		bgmvolume.value += dir * 0.1;
+		bgmvolume->value += dir * 0.1;
 #endif
-		if (bgmvolume.value < 0)
-			bgmvolume.value = 0;
-		if (bgmvolume.value > 1)
-			bgmvolume.value = 1;
-		Cvar_SetValue ("bgmvolume", bgmvolume.value);
+		if (bgmvolume->value < 0)
+			bgmvolume->value = 0;
+		if (bgmvolume->value > 1)
+			bgmvolume->value = 1;
+		Cvar_SetValue ("bgmvolume", bgmvolume->value);
 		break;
 	case 7:	// sfx volume
-		volume.value += dir * 0.1;
-		if (volume.value < 0)
-			volume.value = 0;
-		if (volume.value > 1)
-			volume.value = 1;
-		Cvar_SetValue ("volume", volume.value);
+		volume->value += dir * 0.1;
+		if (volume->value < 0)
+			volume->value = 0;
+		if (volume->value > 1)
+			volume->value = 1;
+		Cvar_SetValue ("volume", volume->value);
 		break;
 
 	case 8:	// allways run
@@ -1188,7 +1188,7 @@ void M_Options_Draw (void)
 	M_Print (16, 48, "     Reset to defaults");
 
 	M_Print (16, 56, "           Screen size");
-	r = (scr_viewsize.value - 30) / (120 - 30);
+	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider (220, 56, r);
 
 	M_Print (16, 64, "            Brightness");
@@ -1200,11 +1200,11 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");
-	r = bgmvolume.value;
+	r = bgmvolume->value;
 	M_DrawSlider (220, 80, r);
 
 	M_Print (16, 88, "          Sound Volume");
-	r = volume.value;
+	r = volume->value;
 	M_DrawSlider (220, 88, r);
 
 	M_Print (16, 96,  "            Always Run");
@@ -2559,7 +2559,7 @@ void M_GameOptions_Draw (void)
 	M_Print (160, 56, va("%i", maxplayers) );
 
 	M_Print (0, 64, "        Game Type");
-	if (coop.value)
+	if (coop->value)
 		M_Print (160, 64, "Cooperative");
 	else
 		M_Print (160, 64, "Deathmatch");
@@ -2569,7 +2569,7 @@ void M_GameOptions_Draw (void)
 	{
 		char *msg;
 
-		switch((int)teamplay.value)
+		switch((int)teamplay->value)
 		{
 			case 1: msg = "No Friendly Fire"; break;
 			case 2: msg = "Friendly Fire"; break;
@@ -2585,7 +2585,7 @@ void M_GameOptions_Draw (void)
 	{
 		char *msg;
 
-		switch((int)teamplay.value)
+		switch((int)teamplay->value)
 		{
 			case 1: msg = "No Friendly Fire"; break;
 			case 2: msg = "Friendly Fire"; break;
@@ -2595,26 +2595,26 @@ void M_GameOptions_Draw (void)
 	}
 
 	M_Print (0, 80, "            Skill");
-	if (skill.value == 0)
+	if (skill->value == 0)
 		M_Print (160, 80, "Easy difficulty");
-	else if (skill.value == 1)
+	else if (skill->value == 1)
 		M_Print (160, 80, "Normal difficulty");
-	else if (skill.value == 2)
+	else if (skill->value == 2)
 		M_Print (160, 80, "Hard difficulty");
 	else
 		M_Print (160, 80, "Nightmare difficulty");
 
 	M_Print (0, 88, "       Frag Limit");
-	if (fraglimit.value == 0)
+	if (fraglimit->value == 0)
 		M_Print (160, 88, "none");
 	else
-		M_Print (160, 88, va("%i frags", (int)fraglimit.value));
+		M_Print (160, 88, va("%i frags", (int)fraglimit->value));
 
 	M_Print (0, 96, "       Time Limit");
-	if (timelimit.value == 0)
+	if (timelimit->value == 0)
 		M_Print (160, 96, "none");
 	else
-		M_Print (160, 96, va("%i minutes", (int)timelimit.value));
+		M_Print (160, 96, va("%i minutes", (int)timelimit->value));
 
 	M_Print (0, 112, "         Episode");
    //MED 01/06/97 added hipnotic episodes
@@ -2687,7 +2687,7 @@ void M_NetStart_Change (int dir)
 		break;
 
 	case 2:
-		Cvar_SetValue ("coop", coop.value ? 0 : 1);
+		Cvar_SetValue ("coop", coop->value ? 0 : 1);
 		break;
 
 	case 3:
@@ -2696,34 +2696,34 @@ void M_NetStart_Change (int dir)
 		else
 			count = 2;
 
-		Cvar_SetValue ("teamplay", teamplay.value + dir);
-		if (teamplay.value > count)
+		Cvar_SetValue ("teamplay", teamplay->value + dir);
+		if (teamplay->value > count)
 			Cvar_SetValue ("teamplay", 0);
-		else if (teamplay.value < 0)
+		else if (teamplay->value < 0)
 			Cvar_SetValue ("teamplay", count);
 		break;
 
 	case 4:
-		Cvar_SetValue ("skill", skill.value + dir);
-		if (skill.value > 3)
+		Cvar_SetValue ("skill", skill->value + dir);
+		if (skill->value > 3)
 			Cvar_SetValue ("skill", 0);
-		if (skill.value < 0)
+		if (skill->value < 0)
 			Cvar_SetValue ("skill", 3);
 		break;
 
 	case 5:
-		Cvar_SetValue ("fraglimit", fraglimit.value + dir*10);
-		if (fraglimit.value > 100)
+		Cvar_SetValue ("fraglimit", fraglimit->value + dir*10);
+		if (fraglimit->value > 100)
 			Cvar_SetValue ("fraglimit", 0);
-		if (fraglimit.value < 0)
+		if (fraglimit->value < 0)
 			Cvar_SetValue ("fraglimit", 100);
 		break;
 
 	case 6:
-		Cvar_SetValue ("timelimit", timelimit.value + dir*5);
-		if (timelimit.value > 60)
+		Cvar_SetValue ("timelimit", timelimit->value + dir*5);
+		if (timelimit->value > 60)
 			Cvar_SetValue ("timelimit", 0);
-		if (timelimit.value < 0)
+		if (timelimit->value < 0)
 			Cvar_SetValue ("timelimit", 60);
 		break;
 
@@ -2736,7 +2736,7 @@ void M_NetStart_Change (int dir)
 	//PGM 03/02/97 added 1 for dmatch episode
 		else if (rogue)
 			count = 4;
-		else if (registered.value)
+		else if (registered->value)
 			count = 7;
 		else
 			count = 2;

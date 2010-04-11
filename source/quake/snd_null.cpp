@@ -22,10 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-cvar_t bgmvolume = {"bgmvolume", "1", NULL,0,false,0,NULL,true};
-cvar_t volume = {"volume", "0.7", NULL,0,false,0,NULL,true};
-
- 
 void S_Init (void)
 {
 }

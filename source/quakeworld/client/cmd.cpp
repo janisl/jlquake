@@ -36,7 +36,7 @@ cmdalias_t	*cmd_alias;
 
 qboolean	cmd_wait;
 
-cvar_t cl_warncmd = {"cl_warncmd", "0"};
+QCvar* cl_warncmd;
 
 //=============================================================================
 
@@ -287,7 +287,7 @@ void Cmd_Exec_f (void)
 		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
 		return;
 	}
-	if (!Cvar_Command () && (cl_warncmd.value || developer.value))
+	if (!Cvar_Command () && (cl_warncmd->value || developer->value))
 		Con_Printf ("execing %s\n",Cmd_Argv(1));
 	
 	Cbuf_InsertText (f);
@@ -692,7 +692,7 @@ void	Cmd_ExecuteString (char *text)
 	}
 	
 // check cvars
-	if (!Cvar_Command () && (cl_warncmd.value || developer.value))
+	if (!Cvar_Command () && (cl_warncmd->value || developer->value))
 		Con_Printf ("Unknown command \"%s\"\n", Cmd_Argv(0));
 	
 }
@@ -739,5 +739,7 @@ void Cmd_Init (void)
 #ifndef SERVERONLY
 	Cmd_AddCommand ("cmd", Cmd_ForwardToServer_f);
 #endif
+
+	cl_warncmd = Cvar_Get("cl_warncmd", "0", 0);
 }
 

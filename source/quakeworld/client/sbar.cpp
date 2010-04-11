@@ -506,8 +506,8 @@ void Sbar_DrawInventory (void)
 	qboolean	headsup;
 	qboolean    hudswap;
 
-	headsup = !(cl_sbar.value || scr_viewsize.value<100);
-	hudswap = cl_hudswap.value; // Get that nasty float out :)
+	headsup = !(cl_sbar->value || scr_viewsize->value<100);
+	hudswap = cl_hudswap->value; // Get that nasty float out :)
 
 	if (!headsup)
 		Sbar_DrawPic (0, -24, sb_ibar);
@@ -718,7 +718,7 @@ Sbar_DrawNormal
 */
 void Sbar_DrawNormal (void)
 {
-	if (cl_sbar.value || scr_viewsize.value<100)
+	if (cl_sbar->value || scr_viewsize->value<100)
 	Sbar_DrawPic (0, 0, sb_sbar);
 
 // armor
@@ -770,7 +770,7 @@ void Sbar_Draw (void)
 	qboolean headsup;
 	char st[512];
 
-	headsup = !(cl_sbar.value || scr_viewsize.value<100);
+	headsup = !(cl_sbar->value || scr_viewsize->value<100);
 	if ((sb_updates >= vid.numpages) && !headsup)
 		return;
 

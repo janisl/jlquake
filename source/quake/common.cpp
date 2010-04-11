@@ -28,8 +28,8 @@ static char     *argvdummy = " ";
 static char     *safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
-cvar_t  registered = {"registered","0"};
-cvar_t  cmdline = {"cmdline","0", NULL,0,false,0,NULL,false, true};
+QCvar*  registered;
+QCvar*  cmdline;
 
 qboolean        com_modified;   // set true if using non-id files
 
@@ -236,8 +236,8 @@ void COM_Init (char *basedir)
 {
 	Com_InitByteOrder();
 
-	Cvar_RegisterVariable (&registered);
-	Cvar_RegisterVariable (&cmdline);
+	registered = Cvar_Get("registered", "0", 0);
+	cmdline = Cvar_Get("cmdline", "0", CVAR_SERVERINFO);
 	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();

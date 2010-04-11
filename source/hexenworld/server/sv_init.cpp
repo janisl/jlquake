@@ -298,7 +298,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	sv.edicts = (edict_t*)Hunk_AllocName (MAX_EDICTS*pr_edict_size, "edicts");
 	
 	// leave slots at start for clients only
-	sv.num_edicts = MAX_CLIENTS+1+max_temp_edicts.value;
+	sv.num_edicts = MAX_CLIENTS+1+max_temp_edicts->value;
 	for (i=0 ; i<MAX_CLIENTS ; i++)
 	{
 		ent = EDICT_NUM(i+1);
@@ -345,31 +345,31 @@ void SV_SpawnServer (char *server, char *startspot)
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
 
-	if (coop.value)
+	if (coop->value)
 		Cvar_SetValue ("deathmatch", 0);
 
-	pr_global_struct->coop = coop.value;
-	pr_global_struct->deathmatch = deathmatch.value;
-	pr_global_struct->randomclass = randomclass.value;
-	pr_global_struct->damageScale = damageScale.value;
-	pr_global_struct->shyRespawn = shyRespawn.value;
-	pr_global_struct->spartanPrint = spartanPrint.value;
-	pr_global_struct->meleeDamScale = meleeDamScale.value;
-	pr_global_struct->manaScale = manaScale.value;
-	pr_global_struct->tomeMode = tomeMode.value;
-	pr_global_struct->tomeRespawn = tomeRespawn.value;
-	pr_global_struct->w2Respawn = w2Respawn.value;
-	pr_global_struct->altRespawn = altRespawn.value;
-	pr_global_struct->fixedLevel = fixedLevel.value;
-	pr_global_struct->autoItems = autoItems.value;
-	pr_global_struct->dmMode = dmMode.value;
-	pr_global_struct->easyFourth = easyFourth.value;
-	pr_global_struct->patternRunner = patternRunner.value;
-	pr_global_struct->max_players = maxclients.value;
+	pr_global_struct->coop = coop->value;
+	pr_global_struct->deathmatch = deathmatch->value;
+	pr_global_struct->randomclass = randomclass->value;
+	pr_global_struct->damageScale = damageScale->value;
+	pr_global_struct->shyRespawn = shyRespawn->value;
+	pr_global_struct->spartanPrint = spartanPrint->value;
+	pr_global_struct->meleeDamScale = meleeDamScale->value;
+	pr_global_struct->manaScale = manaScale->value;
+	pr_global_struct->tomeMode = tomeMode->value;
+	pr_global_struct->tomeRespawn = tomeRespawn->value;
+	pr_global_struct->w2Respawn = w2Respawn->value;
+	pr_global_struct->altRespawn = altRespawn->value;
+	pr_global_struct->fixedLevel = fixedLevel->value;
+	pr_global_struct->autoItems = autoItems->value;
+	pr_global_struct->dmMode = dmMode->value;
+	pr_global_struct->easyFourth = easyFourth->value;
+	pr_global_struct->patternRunner = patternRunner->value;
+	pr_global_struct->max_players = maxclients->value;
 
 	pr_global_struct->startspot = sv.startspot - pr_strings;
 
-	sv.current_skill = (int)(skill.value + 0.5);
+	sv.current_skill = (int)(skill->value + 0.5);
 	if (sv.current_skill < 0)
 		sv.current_skill = 0;
 	if (sv.current_skill > 3)

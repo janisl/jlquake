@@ -19,66 +19,65 @@ netadr_t	idmaster_adr;				// for global logging
 
 client_t	*host_client;			// current client
 
-cvar_t	sv_mintic = {"sv_mintic","0.03"};	// bound the size of the
-cvar_t	sv_maxtic = {"sv_maxtic","0.1"};	// physics time tic 
+QCvar*	sv_mintic;
+QCvar*	sv_maxtic;
 
-cvar_t	developer = {"developer","0"};		// show extra messages
+QCvar*	developer;
 
-cvar_t	timeout = {"timeout","65"};		// seconds without any message
-cvar_t	zombietime = {"zombietime", "2"};	// seconds to sink messages
-											// after disconnect
+QCvar*	timeout;
+QCvar*	zombietime;
 
-cvar_t	rcon_password = {"rcon_password", ""};	// password for remote server commands
-cvar_t	password = {"password", ""};	// password for entering the game
-cvar_t	spectator_password = {"spectator_password", ""};	// password for entering as a sepctator
+QCvar*	rcon_password;
+QCvar*	password;
+QCvar*	spectator_password;
 
-cvar_t	allow_download = {"allow_download", "1"};
-cvar_t	allow_download_skins = {"allow_download_skins", "1"};
-cvar_t	allow_download_models = {"allow_download_models", "1"};
-cvar_t	allow_download_sounds = {"allow_download_sounds", "1"};
-cvar_t	allow_download_maps = {"allow_download_maps", "1"};
+QCvar*	allow_download;
+QCvar*	allow_download_skins;
+QCvar*	allow_download_models;
+QCvar*	allow_download_sounds;
+QCvar*	allow_download_maps;
 
-cvar_t sv_highchars = {"sv_highchars", "1"};
+QCvar* sv_highchars;
 
-cvar_t sv_phs = {"sv_phs", "1"};
-cvar_t sv_namedistance = {"sv_namedistance", "600"};
+QCvar* sv_phs;
+QCvar* sv_namedistance;
 
 
 //
 // game rules mirrored in svs.info
 //
-cvar_t	fraglimit = {"fraglimit","0",NULL,0,false,0,NULL,false,true};
-cvar_t	timelimit = {"timelimit","0",NULL,0,false,0,NULL,false,true};
-cvar_t	teamplay = {"teamplay","0",NULL,0,false,0,NULL,false,true};
-cvar_t	samelevel = {"samelevel","0", NULL,0,false,0,NULL,false, true};
-cvar_t	maxclients = {"maxclients","8", NULL,0,false,0,NULL,false, true};
-cvar_t	maxspectators = {"maxspectators","8", NULL,0,false,0,NULL,false, true};
-cvar_t	skill = {"skill","1", NULL,0,false,0,NULL,false, false};						// 0 - 3
-cvar_t	deathmatch = {"deathmatch","1", NULL,0,false,0,NULL,false, true};			// 0, 1, or 2
-cvar_t	coop = {"coop","0", NULL,0,false,0,NULL,false, true};			// 0, 1, or 2
-cvar_t	randomclass = {"randomclass","0", NULL,0,false,0,NULL,false, true};	
-cvar_t	damageScale = {"damagescale","1.0", NULL,0,false,0,NULL,false, true};
-cvar_t	shyRespawn = {"shyRespawn", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	spartanPrint = {"spartanPrint", "1.0", NULL,0,false,0,NULL,false, true};
-cvar_t	meleeDamScale = {"meleeDamScale","0.66666", NULL,0,false,0,NULL,false, true};
-cvar_t	manaScale = {"manascale", "1.0", NULL,0,false,0,NULL,false, true};
-cvar_t	tomeMode = {"tomemode", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	tomeRespawn = {"tomerespawn", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	w2Respawn = {"w2respawn", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	altRespawn = {"altrespawn", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	fixedLevel = {"fixedlevel", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	autoItems = {"autoitems", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	dmMode = {"dmmode", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	easyFourth = {"easyfourth", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	patternRunner= {"patternrunner", "0", NULL,0,false,0,NULL,false, true};
-cvar_t	spawn = {"spawn","0", NULL,0,false,0,NULL,false, true};
+QCvar*	fraglimit;
+QCvar*	timelimit;
+QCvar*	teamplay;
+QCvar*	samelevel;
+QCvar*	maxclients;
+QCvar*	maxspectators;
+QCvar*	skill;
+QCvar*	deathmatch;
+QCvar*	coop;
+QCvar*	randomclass;
+QCvar*	damageScale;
+QCvar*	shyRespawn;
+QCvar*	spartanPrint;
+QCvar*	meleeDamScale;
+QCvar*	manaScale;
+QCvar*	tomeMode;
+QCvar*	tomeRespawn;
+QCvar*	w2Respawn;
+QCvar*	altRespawn;
+QCvar*	fixedLevel;
+QCvar*	autoItems;
+QCvar*	dmMode;
+QCvar*	easyFourth;
+QCvar*	patternRunner;
+QCvar*	spawn;
 
-cvar_t	hostname = {"hostname","unnamed", NULL,0,false,0,NULL,false, true};
+QCvar*	hostname;
 
-cvar_t	sv_ce_scale			= {"sv_ce_scale","1", NULL,0,false,0,NULL,true};
-cvar_t	sv_ce_max_size		= {"sv_ce_max_size","0", NULL,0,false,0,NULL,true};
+QCvar*	sv_ce_scale;
+QCvar*	sv_ce_max_size;
 
-cvar_t	noexit = {"noexit", "0", NULL,0,false,0,NULL,false, true};
+QCvar*	noexit;
 
 FILE	*sv_logfile;
 FILE	*sv_fraglogfile;
@@ -361,7 +360,7 @@ void SV_DropClient (client_t *drop)
 			pr_global_struct->self = EDICT_TO_PROG(drop->edict);
 			PR_ExecuteProgram (SpectatorDisconnect);
 		}
-	else if(dmMode.value==DM_SIEGE)
+	else if(dmMode->value==DM_SIEGE)
 		if(QStr::ICmp(drop->edict->v.puzzle_inv1+pr_strings,""))
 		{
 			//this guy has a puzzle piece, call this function anyway
@@ -451,11 +450,11 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 	buf->WriteShort(client->old_frags);
 	buf->WriteByte((client->playerclass<<5)|((int)client->edict->v.level&31));
 	
-	if(dmMode.value==DM_SIEGE)
+	if(dmMode->value==DM_SIEGE)
 	{
 		buf->WriteByte(svc_updatesiegeinfo);
-		buf->WriteByte((int)ceil(timelimit.value));
-		buf->WriteByte((int)ceil(fraglimit.value));
+		buf->WriteByte((int)ceil(timelimit->value));
+		buf->WriteByte((int)ceil(fraglimit->value));
 
 		buf->WriteByte(svc_updatesiegeteam);
 		buf->WriteByte(i);
@@ -637,9 +636,9 @@ void SVC_DirectConnect (void)
 	s = Info_ValueForKey (userinfo, "spectator");
 	if (s[0] && QStr::Cmp(s, "0"))
 	{
-		if (spectator_password.string[0] && 
-			QStr::ICmp(spectator_password.string, "none") &&
-			QStr::Cmp(spectator_password.string, s) )
+		if (spectator_password->string[0] && 
+			QStr::ICmp(spectator_password->string, "none") &&
+			QStr::Cmp(spectator_password->string, s) )
 		{	// failed
 			Con_Printf ("%s:spectator password failed\n", NET_AdrToString (net_from));
 			Netchan_OutOfBandPrint (net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
@@ -652,9 +651,9 @@ void SVC_DirectConnect (void)
 	else
 	{
 		s = Info_ValueForKey (userinfo, "password");
-		if (password.string[0] && 
-			QStr::ICmp(password.string, "none") &&
-			QStr::Cmp(password.string, s) )
+		if (password->string[0] && 
+			QStr::ICmp(password->string, "none") &&
+			QStr::Cmp(password->string, s) )
 		{
 			Con_Printf ("%s:password failed\n", NET_AdrToString (net_from));
 			Netchan_OutOfBandPrint (net_from, "%c\nserver requires a password\n\n", A2C_PRINT);
@@ -674,7 +673,7 @@ void SVC_DirectConnect (void)
 	newcl->portals = atol(Cmd_Argv(1));
 
 	// works properly
-	if (!sv_highchars.value) {
+	if (!sv_highchars->value) {
 		char *p, *q;
 
 		for (p = newcl->userinfo, q = userinfo; *q; q++)
@@ -710,14 +709,14 @@ void SVC_DirectConnect (void)
 	}
 
 	// if at server limits, refuse connection
-	if ( maxclients.value > MAX_CLIENTS )
+	if ( maxclients->value > MAX_CLIENTS )
 		Cvar_SetValue ("maxclients", MAX_CLIENTS);
-	if (maxspectators.value > MAX_CLIENTS)
+	if (maxspectators->value > MAX_CLIENTS)
 		Cvar_SetValue ("maxspectators", MAX_CLIENTS);
-	if (maxspectators.value + maxclients.value > MAX_CLIENTS)
-		Cvar_SetValue ("maxspectators", MAX_CLIENTS - maxspectators.value + maxclients.value);
-	if ( (spectator && spectators >= (int)maxspectators.value)
-		|| (!spectator && clients >= (int)maxclients.value) )
+	if (maxspectators->value + maxclients->value > MAX_CLIENTS)
+		Cvar_SetValue ("maxspectators", MAX_CLIENTS - maxspectators->value + maxclients->value);
+	if ( (spectator && spectators >= (int)maxspectators->value)
+		|| (!spectator && clients >= (int)maxclients->value) )
 	{
 		Con_Printf ("%s:full connect\n", NET_AdrToString (adr));
 		Netchan_OutOfBandPrint (adr, "%c\nserver is full\n\n", A2C_PRINT);
@@ -791,10 +790,10 @@ int Rcon_Validate (void)
 		&& !QStr::Cmp(Cmd_Argv(1), "rjr") )
 		return 2;
 
-	if (!QStr::Length(rcon_password.string))
+	if (!QStr::Length(rcon_password->string))
 		return 0;
 
-	if (QStr::Cmp(Cmd_Argv(1), rcon_password.string) )
+	if (QStr::Cmp(Cmd_Argv(1), rcon_password->string) )
 		return 0;
 
 	return 1;
@@ -950,7 +949,7 @@ typedef struct
 ipfilter_t	ipfilters[MAX_IPFILTERS];
 int			numipfilters;
 
-cvar_t	filterban = {"filterban", "1"};
+QCvar*	filterban;
 
 /*
 =================
@@ -1131,9 +1130,9 @@ qboolean SV_FilterPacket (void)
 
 	for (i=0 ; i<numipfilters ; i++)
 		if ( (in & ipfilters[i].mask) == ipfilters[i].compare)
-			return filterban.value;
+			return filterban->value;
 
-	return !filterban.value;
+	return !filterban->value;
 }
 
 //============================================================================
@@ -1210,7 +1209,7 @@ void SV_CheckTimeouts (void)
 	client_t	*cl;
 	float	droptime;
 	
-	droptime = realtime - timeout.value;
+	droptime = realtime - timeout->value;
 
 	for (i=0,cl=svs.clients ; i<MAX_CLIENTS ; i++,cl++)
 	{
@@ -1222,7 +1221,7 @@ void SV_CheckTimeouts (void)
 			cl->state = cs_free;	// don't bother with zombie state
 		}
 		if (cl->state == cs_zombie
-		&& realtime - cl->connection_started > zombietime.value)
+		&& realtime - cl->connection_started > zombietime->value)
 		{
 			cl->state = cs_free;	// can now be reused
 		}
@@ -1260,10 +1259,10 @@ void SV_CheckVars (void)
 	static char *pw, *spw;
 	int			v;
 
-	if (password.string == pw && spectator_password.string == spw)
+	if (password->string == pw && spectator_password->string == spw)
 		return;
-	pw = password.string;
-	spw = spectator_password.string;
+	pw = password->string;
+	spw = spectator_password->string;
 
 	v = 0;
 	if (pw && pw[0] && QStr::Cmp(pw, "none"))
@@ -1354,88 +1353,89 @@ SV_InitLocal
 void SV_InitLocal (void)
 {
 	int		i;
-	extern	cvar_t	sv_maxvelocity;
-	extern	cvar_t	sv_gravity;
-	extern	cvar_t	sv_aim;
-	extern	cvar_t	sv_stopspeed;
-	extern	cvar_t	sv_spectatormaxspeed;
-	extern	cvar_t	sv_accelerate;
-	extern	cvar_t	sv_airaccelerate;
-	extern	cvar_t	sv_wateraccelerate;
-	extern	cvar_t	sv_friction;
-	extern	cvar_t	sv_waterfriction;
+	extern	QCvar*	sv_maxvelocity;
+	extern	QCvar*	sv_gravity;
+	extern	QCvar*	sv_aim;
+	extern	QCvar*	sv_stopspeed;
+	extern	QCvar*	sv_spectatormaxspeed;
+	extern	QCvar*	sv_accelerate;
+	extern	QCvar*	sv_airaccelerate;
+	extern	QCvar*	sv_wateraccelerate;
+	extern	QCvar*	sv_friction;
+	extern	QCvar*	sv_waterfriction;
 
 	SV_InitOperatorCommands	();
 	SV_UserInit ();
-	
-	Cvar_RegisterVariable (&rcon_password);
-	Cvar_RegisterVariable (&password);
-	Cvar_RegisterVariable (&spectator_password);
 
-	Cvar_RegisterVariable (&sv_mintic);
-	Cvar_RegisterVariable (&sv_maxtic);
+	rcon_password = Cvar_Get("rcon_password", "", 0);	// password for remote server commands
+	password = Cvar_Get("password", "", 0);	// password for entering the game
+	spectator_password = Cvar_Get("spectator_password", "", 0);	// password for entering as a sepctator
 
-	Cvar_RegisterVariable (&fraglimit);
-	Cvar_RegisterVariable (&timelimit);
-	Cvar_RegisterVariable (&teamplay);
-	Cvar_RegisterVariable (&samelevel);
-	Cvar_RegisterVariable (&maxclients);
-	Cvar_RegisterVariable (&maxspectators);
-	Cvar_RegisterVariable (&hostname);
-	Cvar_RegisterVariable (&skill);
-	Cvar_RegisterVariable (&deathmatch);
-	Cvar_RegisterVariable (&coop);
-	Cvar_RegisterVariable (&randomclass);
-	Cvar_RegisterVariable (&damageScale);
-	Cvar_RegisterVariable (&meleeDamScale);
-	Cvar_RegisterVariable (&shyRespawn);
-	Cvar_RegisterVariable (&spartanPrint);
-	Cvar_RegisterVariable (&manaScale);
-	Cvar_RegisterVariable (&tomeMode);
-	Cvar_RegisterVariable (&tomeRespawn);
-	Cvar_RegisterVariable (&w2Respawn);
-	Cvar_RegisterVariable (&altRespawn);
-	Cvar_RegisterVariable (&fixedLevel);
-	Cvar_RegisterVariable (&autoItems);
-	Cvar_RegisterVariable (&dmMode);
-	Cvar_RegisterVariable (&easyFourth);
-	Cvar_RegisterVariable (&patternRunner);
-	Cvar_RegisterVariable (&spawn);
-	Cvar_RegisterVariable (&noexit);
+	sv_mintic = Cvar_Get("sv_mintic", "0.03", 0);	// bound the size of the
+	sv_maxtic = Cvar_Get("sv_maxtic", "0.1", 0);	// physics time tic 
 
-	Cvar_RegisterVariable (&developer);
+	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
+	timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
+	teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
+	samelevel = Cvar_Get("samelevel", "0", CVAR_SERVERINFO);
+	maxclients = Cvar_Get("maxclients", "8", CVAR_SERVERINFO);
+	maxspectators = Cvar_Get("maxspectators", "8", CVAR_SERVERINFO);
+	skill = Cvar_Get("skill", "1", 0);						// 0 - 3
+	deathmatch = Cvar_Get("deathmatch", "1", CVAR_SERVERINFO);			// 0, 1, or 2
+	coop = Cvar_Get("coop", "0", CVAR_SERVERINFO);			// 0, 1, or 2
+	randomclass = Cvar_Get("randomclass", "0", CVAR_SERVERINFO);
+	damageScale = Cvar_Get("damagescale", "1.0", CVAR_SERVERINFO);
+	shyRespawn = Cvar_Get("shyRespawn", "0", CVAR_SERVERINFO);
+	spartanPrint = Cvar_Get("spartanPrint", "1.0", CVAR_SERVERINFO);
+	meleeDamScale = Cvar_Get("meleeDamScale", "0.66666", CVAR_SERVERINFO);
+	manaScale = Cvar_Get("manascale", "1.0", CVAR_SERVERINFO);
+	tomeMode = Cvar_Get("tomemode", "0", CVAR_SERVERINFO);
+	tomeRespawn = Cvar_Get("tomerespawn", "0", CVAR_SERVERINFO);
+	w2Respawn = Cvar_Get("w2respawn", "0", CVAR_SERVERINFO);
+	altRespawn = Cvar_Get("altrespawn", "0", CVAR_SERVERINFO);
+	fixedLevel = Cvar_Get("fixedlevel", "0", CVAR_SERVERINFO);
+	autoItems = Cvar_Get("autoitems", "0", CVAR_SERVERINFO);
+	dmMode = Cvar_Get("dmmode", "0", CVAR_SERVERINFO);
+	easyFourth = Cvar_Get("easyfourth", "0", CVAR_SERVERINFO);
+	patternRunner= Cvar_Get("patternrunner", "0", CVAR_SERVERINFO);
+	spawn = Cvar_Get("spawn", "0", CVAR_SERVERINFO);
+	hostname = Cvar_Get("hostname", "unnamed", CVAR_SERVERINFO);
+	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
 
-	Cvar_RegisterVariable (&timeout);
-	Cvar_RegisterVariable (&zombietime);
+	developer = Cvar_Get("developer", "0", 0);		// show extra messages
 
-	Cvar_RegisterVariable (&sv_maxvelocity);
-	Cvar_RegisterVariable (&sv_gravity);
-	Cvar_RegisterVariable (&sv_stopspeed);
-	Cvar_RegisterVariable (&sv_maxspeed);
-	Cvar_RegisterVariable (&sv_spectatormaxspeed);
-	Cvar_RegisterVariable (&sv_accelerate);
-	Cvar_RegisterVariable (&sv_airaccelerate);
-	Cvar_RegisterVariable (&sv_wateraccelerate);
-	Cvar_RegisterVariable (&sv_friction);
-	Cvar_RegisterVariable (&sv_waterfriction);
+	timeout = Cvar_Get("timeout", "65", 0);		// seconds without any message
+	zombietime = Cvar_Get("zombietime", "2", 0);	// seconds to sink messages
+												// after disconnect
 
-	Cvar_RegisterVariable (&sv_aim);
+	sv_maxvelocity			= Cvar_Get("sv_maxvelocity", "2000", 0);
+	sv_gravity				= Cvar_Get("sv_gravity", "800", 0);
+	sv_stopspeed			= Cvar_Get("sv_stopspeed", "100", 0);
+	sv_maxspeed				= Cvar_Get("sv_maxspeed", "360", CVAR_SERVERINFO);
+	sv_spectatormaxspeed	= Cvar_Get("sv_spectatormaxspeed", "500", 0);
+	sv_accelerate			= Cvar_Get("sv_accelerate", "10", 0);
+	sv_airaccelerate		= Cvar_Get("sv_airaccelerate", "0.7", 0);
+	sv_wateraccelerate		= Cvar_Get("sv_wateraccelerate", "10", 0);
+	sv_friction				= Cvar_Get("sv_friction", "4", 0);      
+	sv_waterfriction		= Cvar_Get("sv_waterfriction", "1", 0);
 
-	Cvar_RegisterVariable (&filterban);
-	
-	Cvar_RegisterVariable (&allow_download);
-	Cvar_RegisterVariable (&allow_download_skins);
-	Cvar_RegisterVariable (&allow_download_models);
-	Cvar_RegisterVariable (&allow_download_sounds);
-	Cvar_RegisterVariable (&allow_download_maps);
+	sv_aim = Cvar_Get("sv_aim", "0.93", 0);
 
-	Cvar_RegisterVariable (&sv_highchars);
+	filterban = Cvar_Get("filterban", "1", 0);
 
-	Cvar_RegisterVariable (&sv_phs);
-	Cvar_RegisterVariable (&sv_namedistance);
+	allow_download = Cvar_Get("allow_download", "1", 0);
+	allow_download_skins = Cvar_Get("allow_download_skins", "1", 0);
+	allow_download_models = Cvar_Get("allow_download_models", "1", 0);
+	allow_download_sounds = Cvar_Get("allow_download_sounds", "1", 0);
+	allow_download_maps = Cvar_Get("allow_download_maps", "1", 0);
 
-	Cvar_RegisterVariable (&sv_ce_scale);
-	Cvar_RegisterVariable (&sv_ce_max_size);
+	sv_highchars = Cvar_Get("sv_highchars", "1", 0);
+
+	sv_phs = Cvar_Get("sv_phs", "1", 0);
+	sv_namedistance = Cvar_Get("sv_namedistance", "600", 0);
+
+	sv_ce_scale = Cvar_Get("sv_ce_scale", "1", CVAR_ARCHIVE);
+	sv_ce_max_size = Cvar_Get("sv_ce_max_size", "0", CVAR_ARCHIVE);
 
 	Cmd_AddCommand ("addip", SV_AddIP_f);
 	Cmd_AddCommand ("removeip", SV_RemoveIP_f);
@@ -1625,7 +1625,7 @@ void SV_ExtractFromUserinfo (client_t *cl)
 	if (QStr::Length(val))
 	{
 		i = QStr::Atoi(val);
-		if(i>CLASS_DEMON&&dmMode.value!=DM_SIEGE)
+		if(i>CLASS_DEMON&&dmMode->value!=DM_SIEGE)
 			i = CLASS_PALADIN;
 		if (i < 0 || i > MAX_PLAYER_CLASS || (!cl->portals && i == CLASS_DEMON))
 		{

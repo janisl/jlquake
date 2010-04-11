@@ -336,7 +336,7 @@ typedef struct
 //
 // cvars
 //
-extern  cvar_t	cl_warncmd;
+extern  QCvar*	cl_warncmd;
 extern	QCvar*	cl_upspeed;
 extern	QCvar*	cl_forwardspeed;
 extern	QCvar*	cl_backspeed;
@@ -349,11 +349,10 @@ extern	QCvar*	cl_pitchspeed;
 
 extern	QCvar*	cl_anglespeedkey;
 
-extern	cvar_t	cl_shownet;
-extern	cvar_t	cl_sbar;
-extern	cvar_t	cl_hudswap;
+extern	QCvar*	cl_shownet;
+extern	QCvar*	cl_sbar;
+extern	QCvar*	cl_hudswap;
 
-extern	cvar_t	cl_pitchdriftspeed;
 extern	QCvar*	lookspring;
 extern	QCvar*	lookstrafe;
 extern	QCvar*	sensitivity;
@@ -363,8 +362,8 @@ extern	QCvar*	m_yaw;
 extern	QCvar*	m_forward;
 extern	QCvar*	m_side;
 
-extern	cvar_t	playerclass;
-extern	cvar_t	spectator;
+extern	QCvar*	playerclass;
+extern	QCvar*	spectator;
 
 
 #define	MAX_STATIC_ENTITIES	256			// torches, etc

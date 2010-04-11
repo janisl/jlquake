@@ -92,9 +92,9 @@ static int NewEffectEntity(void);
 static void FreeEffectEntity(int index);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
-extern cvar_t sv_ce_scale;
-extern cvar_t sv_ce_max_size;
 
+extern QCvar* sv_ce_scale;
+extern QCvar* sv_ce_max_size;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
@@ -133,7 +133,7 @@ void SV_SendEffect(QMsg *sb, int index)
 	float		Size,TestDistance;
 	int			i,count;
 
-	if (sb == &sv.reliable_datagram && sv_ce_scale.value > 0)
+	if (sb == &sv.reliable_datagram && sv_ce_scale->value > 0)
 		DoTest = true;
 	else
 		DoTest = false;
@@ -259,7 +259,7 @@ void SV_SendEffect(QMsg *sb, int index)
 	else 
 	{
 		count = svs.maxclients;
-		TestDistance = (float)TestDistance * sv_ce_scale.value;
+		TestDistance = (float)TestDistance * sv_ce_scale->value;
 		TestDistance *= TestDistance;
 	}
 
@@ -277,7 +277,7 @@ void SV_SendEffect(QMsg *sb, int index)
 				if (Size > TestDistance)
 					continue;
 				
-				if (sv_ce_max_size.value > 0 && sb->cursize > sv_ce_max_size.value)
+				if (sv_ce_max_size->value > 0 && sb->cursize > sv_ce_max_size->value)
 					continue;
 			}
 			else continue;

@@ -6,10 +6,10 @@ edict_t	*sv_player;
 
 usercmd_t	cmd;
 
-cvar_t	cl_rollspeed = {"cl_rollspeed", "200"};
-cvar_t	cl_rollangle = {"cl_rollangle", "2.0"};
-cvar_t	sv_spectalk = {"sv_spectalk", "1"};
-cvar_t	sv_allowtaunts = {"sv_allowtaunts", "1"};
+QCvar*	cl_rollspeed;
+QCvar*	cl_rollangle;
+QCvar*	sv_spectalk;
+QCvar*	sv_allowtaunts;
 
 extern	vec3_t	player_mins;
 
@@ -233,7 +233,7 @@ void SV_Spawn_f (void)
 
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->v.colormap = NUM_FOR_EDICT(ent);
-	if(dmMode.value==DM_SIEGE)
+	if(dmMode->value==DM_SIEGE)
 		ent->v.team = ent->v.siege_team;	// FIXME
 	else
 		ent->v.team = 0;	// FIXME
@@ -246,10 +246,10 @@ void SV_Spawn_f (void)
 	val = GetEdictFieldValue(ent, "gravity");
 	if (val)
 		val->_float = 1.0;
-	host_client->maxspeed = sv_maxspeed.value;
+	host_client->maxspeed = sv_maxspeed->value;
 	val = GetEdictFieldValue(ent, "maxspeed");
 	if (val)
-		val->_float = sv_maxspeed.value;
+		val->_float = sv_maxspeed->value;
 
 // send all current names, colors, and frag counts
 	// FIXME: is this a good thing?
@@ -445,29 +445,29 @@ SV_BeginDownload_f
 void SV_BeginDownload_f(void)
 {
 	char	*name;
-	extern	cvar_t	allow_download;
-	extern	cvar_t	allow_download_skins;
-	extern	cvar_t	allow_download_models;
-	extern	cvar_t	allow_download_sounds;
-	extern	cvar_t	allow_download_maps;
+	extern	QCvar*	allow_download;
+	extern	QCvar*	allow_download_skins;
+	extern	QCvar*	allow_download_models;
+	extern	QCvar*	allow_download_sounds;
+	extern	QCvar*	allow_download_maps;
 	extern	int		file_from_pak; // ZOID did file come from pak?
 
 	name = Cmd_Argv(1);
 // hacked by zoid to allow more conrol over download
 		// first off, no .. or global allow check
-	if (strstr (name, "..") || !allow_download.value
+	if (strstr (name, "..") || !allow_download->value
 		// leading dot is no good
 		|| *name == '.' 
 		// leading slash bad as well, must be in subdir
 		|| *name == '/'
 		// next up, skin check
-		|| (QStr::NCmp(name, "skins/", 6) == 0 && !allow_download_skins.value)
+		|| (QStr::NCmp(name, "skins/", 6) == 0 && !allow_download_skins->value)
 		// now models
-		|| (QStr::NCmp(name, "progs/", 6) == 0 && !allow_download_models.value)
+		|| (QStr::NCmp(name, "progs/", 6) == 0 && !allow_download_models->value)
 		// now sounds
-		|| (QStr::NCmp(name, "sound/", 6) == 0 && !allow_download_sounds.value)
+		|| (QStr::NCmp(name, "sound/", 6) == 0 && !allow_download_sounds->value)
 		// now maps (note special case for maps, must not be in pak)
-		|| (QStr::NCmp(name, "maps/", 6) == 0 && !allow_download_maps.value)
+		|| (QStr::NCmp(name, "maps/", 6) == 0 && !allow_download_maps->value)
 		// MUST be in a subdirectory	
 		|| !strstr (name, "/") )	
 	{	// don't allow anything with .. path
@@ -541,7 +541,7 @@ void SV_Say (qboolean team)
 		t1[31] = 0;
 	}
 
-	if (host_client->spectator && (!sv_spectalk.value || team))
+	if (host_client->spectator && (!sv_spectalk->value || team))
 		sprintf (text, "[SPEC] %s: ", host_client->name);
 	else if (team)
 		sprintf (text, "(%s): ", host_client->name);
@@ -592,7 +592,7 @@ void SV_Say (qboolean team)
 		IsRaven = true;
 	}
 
-	if (p[0] == '`' && ((!host_client->spectator && sv_allowtaunts.value) || IsRaven) )
+	if (p[0] == '`' && ((!host_client->spectator && sv_allowtaunts->value) || IsRaven) )
 	{
 		speaknum = atol(&p[1]);
 		if (speaknum <= 0 || speaknum > 255-PRINT_SOUND) 
@@ -618,7 +618,7 @@ void SV_Say (qboolean team)
 	{
 		if (client->state != cs_spawned)
 			continue;
-		if (host_client->spectator && !sv_spectalk.value)
+		if (host_client->spectator && !sv_spectalk->value)
 			if (!client->spectator)
 				continue;
 
@@ -633,7 +633,7 @@ void SV_Say (qboolean team)
 			else 
 			{
 				t2 = Info_ValueForKey (client->userinfo, "team");
-				if(dmMode.value==DM_SIEGE)
+				if(dmMode->value==DM_SIEGE)
 				{
 					if((host_client->edict->v.skin==102&&client->edict->v.skin!=102)||(client->edict->v.skin==102&&host_client->edict->v.skin!=102))
 						continue;//noteam players can team chat with each other, cannot recieve team chat of other players
@@ -647,7 +647,7 @@ void SV_Say (qboolean team)
 		}
 		if (speaknum == -1)
 		{
-			if(dmMode.value==DM_SIEGE&&host_client->siege_team!=client->siege_team)//other team speaking
+			if(dmMode->value==DM_SIEGE&&host_client->siege_team!=client->siege_team)//other team speaking
 				SV_ClientPrintf(client, PRINT_CHAT, "%s", text);//fixme: print biege
 			else
 				SV_ClientPrintf(client, PRINT_CHAT, "%s", text);
@@ -960,10 +960,10 @@ float V_CalcRoll (vec3_t angles, vec3_t velocity)
 	sign = side < 0 ? -1 : 1;
 	side = Q_fabs(side);
 	
-	value = cl_rollangle.value;
+	value = cl_rollangle->value;
 
-	if (side < cl_rollspeed.value)
-		side = side * value / cl_rollspeed.value;
+	if (side < cl_rollspeed->value)
+		side = side * value / cl_rollspeed->value;
 	else
 		side = value;
 	
@@ -1443,10 +1443,10 @@ SV_UserInit
 */
 void SV_UserInit (void)
 {
-	Cvar_RegisterVariable (&cl_rollspeed);
-	Cvar_RegisterVariable (&cl_rollangle);
-	Cvar_RegisterVariable (&sv_spectalk);
-	Cvar_RegisterVariable (&sv_allowtaunts);
+	cl_rollspeed = Cvar_Get("cl_rollspeed", "200", 0);
+	cl_rollangle = Cvar_Get("cl_rollangle", "2.0", 0);
+	sv_spectalk = Cvar_Get("sv_spectalk", "1", 0);
+	sv_allowtaunts = Cvar_Get("sv_allowtaunts", "1", 0);
 }
 
 

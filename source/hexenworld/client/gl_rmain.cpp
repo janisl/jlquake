@@ -73,8 +73,8 @@ QCvar*	r_mirroralpha;
 QCvar*	r_wateralpha;
 QCvar*	r_dynamic;
 QCvar*	r_novis;
-cvar_t	r_netgraph = {"r_netgraph","0"};
-cvar_t	r_entdistance = {"r_entdistance", "0", NULL,0,false,0,NULL,true};
+QCvar*	r_netgraph;
+QCvar*	r_entdistance;
 QCvar*	gl_clear;
 QCvar*	gl_cull;
 QCvar*	gl_texsort;
@@ -86,10 +86,10 @@ QCvar*	gl_playermip;
 QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
-cvar_t	r_teamcolor = {"r_teamcolor", "187", NULL,0,false,0,NULL,true};
+QCvar*	r_teamcolor;
 
 extern	QCvar*	gl_ztrick;
-extern	cvar_t	scr_fov;
+extern	QCvar*	scr_fov;
 static qboolean AlwaysDrawModel;
 
 /*
@@ -445,7 +445,7 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 				if (QStr::ICmp(client_team, this_team) == 0)
 				{
 					OnTeam = true;
-					ColorShade = r_teamcolor.value;
+					ColorShade = r_teamcolor->value;
 				}
 			}
 		}
@@ -948,13 +948,13 @@ void R_DrawEntitiesOnList (void)
 	if (!r_drawentities->value)
 		return;
 
-	if (r_entdistance.value <= 0)
+	if (r_entdistance->value <= 0)
 	{
 		test_length = 9999*9999;
 	}
 	else
 	{
-		test_length = r_entdistance.value * r_entdistance.value;
+		test_length = r_entdistance->value * r_entdistance->value;
 	}
 
 	// draw sprites seperately, because of alpha blending
@@ -1374,7 +1374,7 @@ void R_SetupGL (void)
     screenaspect = (float)r_refdef.vrect.width/r_refdef.vrect.height;
 //	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*180/M_PI;
 //	yfov = (2.0 * tan (scr_fov.value/360*M_PI)) / screenaspect;
-	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*(scr_fov.value*2)/M_PI;
+	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*(scr_fov->value*2)/M_PI;
     MYgluPerspective (yfov,  screenaspect,  4,  4096);
 
 	if (mirror)

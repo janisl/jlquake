@@ -8,8 +8,8 @@
 #endif
 
 extern	float introTime;
-extern	cvar_t	crosshair;
-cvar_t m_oldmission = {"m_oldmission","0",NULL,0,false,0,NULL,true};
+extern	QCvar*	crosshair;
+QCvar* m_oldmission;
 
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
@@ -758,7 +758,7 @@ void M_Difficulty_Draw (void)
 
 	ScrollTitle("gfx/menu/title5.lmp");
 
-	setup_class = cl_playerclass.value;
+	setup_class = cl_playerclass->value;
 
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 		setup_class = NUM_CLASSES;
@@ -935,7 +935,7 @@ void M_SinglePlayer_Draw (void)
 	M_DrawBigString (72,60+(0*20),"NEW MISSION");
 	M_DrawBigString (72,60+(1*20),"LOAD");
 	M_DrawBigString (72,60+(2*20),"SAVE");
-	if (m_oldmission.value)
+	if (m_oldmission->value)
 		M_DrawBigString (72,60+(3*20),"OLD MISSION");
 	M_DrawBigString (72,60+(4*20),"VIEW INTRO");
 	
@@ -956,7 +956,7 @@ void M_SinglePlayer_Key (int key)
 		S_LocalSound ("raven/menu1.wav");
 		if (++m_singleplayer_cursor >= SINGLEPLAYER_ITEMS)
 			m_singleplayer_cursor = 0;
-		if (!m_oldmission.value)
+		if (!m_oldmission->value)
 		{
 			if (m_singleplayer_cursor ==3)
 				m_singleplayer_cursor =4;
@@ -967,7 +967,7 @@ void M_SinglePlayer_Key (int key)
 		S_LocalSound ("raven/menu1.wav");
 		if (--m_singleplayer_cursor < 0)
 			m_singleplayer_cursor = SINGLEPLAYER_ITEMS - 1;
-		if (!m_oldmission.value)
+		if (!m_oldmission->value)
 		{
 			if (m_singleplayer_cursor ==3)
 				m_singleplayer_cursor =2;
@@ -1430,11 +1430,11 @@ void M_Menu_Setup_f (void)
 	key_dest = key_menu;
 	m_state = m_setup;
 	m_entersound = true;
-	QStr::Cpy(setup_myname, cl_name.string);
-	QStr::Cpy(setup_hostname, hostname.string);
-	setup_top = setup_oldtop = ((int)cl_color.value) >> 4;
-	setup_bottom = setup_oldbottom = ((int)cl_color.value) & 15;
-	setup_class = cl_playerclass.value;
+	QStr::Cpy(setup_myname, cl_name->string);
+	QStr::Cpy(setup_hostname, hostname->string);
+	setup_top = setup_oldtop = ((int)cl_color->value) >> 4;
+	setup_bottom = setup_oldbottom = ((int)cl_color->value) & 15;
+	setup_class = cl_playerclass->value;
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 		setup_class = NUM_CLASSES;
 }
@@ -1548,9 +1548,9 @@ forward:
 		if (setup_cursor == 2 || setup_cursor == 3 || setup_cursor == 4)
 			goto forward;
 
-		if (QStr::Cmp(cl_name.string, setup_myname) != 0)
+		if (QStr::Cmp(cl_name->string, setup_myname) != 0)
 			Cbuf_AddText ( va ("name \"%s\"\n", setup_myname) );
-		if (QStr::Cmp(hostname.string, setup_hostname) != 0)
+		if (QStr::Cmp(hostname->string, setup_hostname) != 0)
 			Cvar_Set("hostname", setup_hostname);
 		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
 			Cbuf_AddText( va ("color %i %i\n", setup_top, setup_bottom) );
@@ -1841,12 +1841,12 @@ void M_AdjustSliders (int dir)
 	switch (options_cursor)
 	{
 	case OPT_SCRSIZE:	// screen size
-		scr_viewsize.value += dir * 10;
-		if (scr_viewsize.value < 30)
-			scr_viewsize.value = 30;
-		if (scr_viewsize.value > 120)
-			scr_viewsize.value = 120;
-		Cvar_SetValue ("viewsize", scr_viewsize.value);
+		scr_viewsize->value += dir * 10;
+		if (scr_viewsize->value < 30)
+			scr_viewsize->value = 30;
+		if (scr_viewsize->value > 120)
+			scr_viewsize->value = 120;
+		Cvar_SetValue ("viewsize", scr_viewsize->value);
 		SB_ViewSizeChanged();
 		vid.recalc_refdef = 1;
 		break;
@@ -1859,14 +1859,14 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("sensitivity", sensitivity->value);
 		break;
 	case OPT_MUSICTYPE: // bgm type
-		if (QStr::ICmp(bgmtype.string,"midi") == 0)
+		if (QStr::ICmp(bgmtype->string,"midi") == 0)
 		{
 			if (dir < 0)
 				Cvar_Set("bgmtype","none");
 			else
 				Cvar_Set("bgmtype","cd");
 		}
-		else if (QStr::ICmp(bgmtype.string,"cd") == 0)
+		else if (QStr::ICmp(bgmtype->string,"cd") == 0)
 		{
 			if (dir < 0)
 				Cvar_Set("bgmtype","midi");
@@ -1883,21 +1883,21 @@ void M_AdjustSliders (int dir)
 		break;
 
 	case OPT_MUSICVOL:	// music volume
-		bgmvolume.value += dir * 0.1;
+		bgmvolume->value += dir * 0.1;
 
-		if (bgmvolume.value < 0)
-			bgmvolume.value = 0;
-		if (bgmvolume.value > 1)
-			bgmvolume.value = 1;
-		Cvar_SetValue ("bgmvolume", bgmvolume.value);
+		if (bgmvolume->value < 0)
+			bgmvolume->value = 0;
+		if (bgmvolume->value > 1)
+			bgmvolume->value = 1;
+		Cvar_SetValue ("bgmvolume", bgmvolume->value);
 		break;
 	case OPT_SNDVOL:	// sfx volume
-		volume.value += dir * 0.1;
-		if (volume.value < 0)
-			volume.value = 0;
-		if (volume.value > 1)
-			volume.value = 1;
-		Cvar_SetValue ("volume", volume.value);
+		volume->value += dir * 0.1;
+		if (volume->value < 0)
+			volume->value = 0;
+		if (volume->value > 1)
+			volume->value = 1;
+		Cvar_SetValue ("volume", volume->value);
 		break;
 		
 	case OPT_ALWAYRUN:	// allways run
@@ -1926,7 +1926,7 @@ void M_AdjustSliders (int dir)
 		break;
 
 	case OPT_CROSSHAIR:	
-		Cvar_SetValue ("crosshair", !crosshair.value);
+		Cvar_SetValue ("crosshair", !crosshair->value);
 		break;
 
 	case OPT_ALWAYSMLOOK:	
@@ -1988,7 +1988,7 @@ void M_Options_Draw (void)
 	M_Print (16, 60+(2*8), "     Reset to defaults");
 
 	M_Print (16, 60+(3*8), "           Screen size");
-	r = (scr_viewsize.value - 30) / (120 - 30);
+	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider (220, 60+(3*8), r);
 
 	M_Print (16, 60+(5*8), "           Mouse Speed");
@@ -1996,19 +1996,19 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 60+(5*8), r);
 
 	M_Print (16, 60+(6*8), "            Music Type");
-	if (QStr::ICmp(bgmtype.string,"midi") == 0)
+	if (QStr::ICmp(bgmtype->string,"midi") == 0)
 		M_Print (220, 60+(6*8), "MIDI");
-	else if (QStr::ICmp(bgmtype.string,"cd") == 0)
+	else if (QStr::ICmp(bgmtype->string,"cd") == 0)
 		M_Print (220, 60+(6*8), "CD");
 	else
 		M_Print (220, 60+(6*8), "None");
 
 	M_Print (16, 60+(7*8), "          Music Volume");
-	r = bgmvolume.value;
+	r = bgmvolume->value;
 	M_DrawSlider (220, 60+(7*8), r);
 
 	M_Print (16, 60+(8*8), "          Sound Volume");
-	r = volume.value;
+	r = volume->value;
 	M_DrawSlider (220, 60+(8*8), r);
 
 	M_Print (16, 60+(9*8),				"            Always Run");
@@ -2024,7 +2024,7 @@ void M_Options_Draw (void)
 	M_DrawCheckbox (220, 60+(OPT_LOOKSTRAFE*8), lookstrafe->value);
 
 	M_Print (16, 60+(OPT_CROSSHAIR*8),	"        Show Crosshair");
-	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair.value);
+	M_DrawCheckbox (220, 60+(OPT_CROSSHAIR*8), crosshair->value);
 
 	M_Print (16,60+(OPT_ALWAYSMLOOK*8),	"            Mouse Look");
 	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), in_mlook.state & 1);
@@ -3401,7 +3401,7 @@ void M_Menu_LanConfig_f (void)
 	m_return_onerror = false;
 	m_return_reason[0] = 0;
 
-	setup_class = cl_playerclass.value;
+	setup_class = cl_playerclass->value;
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 		setup_class = NUM_CLASSES;
 	setup_class--;
@@ -3759,18 +3759,18 @@ void M_Menu_GameOptions_f (void)
 	if (maxplayers < 2)
 		maxplayers = svs.maxclientslimit;
 
-	setup_class = cl_playerclass.value;
+	setup_class = cl_playerclass->value;
 	if (setup_class < 1 || setup_class > NUM_CLASSES)
 		setup_class = NUM_CLASSES;
 	setup_class--;
 
-	if (oem.value && startepisode < OEM_START)
+	if (oem->value && startepisode < OEM_START)
 		startepisode = OEM_START;
 
-	if (registered.value && (startepisode < REG_START || startepisode >= OEM_START))
+	if (registered->value && (startepisode < REG_START || startepisode >= OEM_START))
 		startepisode = REG_START;
 
-	if (coop.value)
+	if (coop->value)
 	{
 		startlevel = 0;
 		if (startepisode == 1)
@@ -3780,7 +3780,7 @@ void M_Menu_GameOptions_f (void)
 		if (gameoptions_cursor >= NUM_GAMEOPTIONS-1)
 			gameoptions_cursor = 0;
 	}
-	if (!m_oldmission.value)
+	if (!m_oldmission->value)
 	{
 		startepisode = MP_START;
 	}
@@ -3800,7 +3800,7 @@ void M_GameOptions_Draw (void)
 	M_Print (160+8, 84, va("%i", maxplayers) );
 
 	M_Print (0+8, 92, "        Game Type");
-	if (coop.value)
+	if (coop->value)
 		M_Print (160+8, 92, "Cooperative");
 	else
 		M_Print (160+8, 92, "Deathmatch");
@@ -3826,7 +3826,7 @@ void M_GameOptions_Draw (void)
 */	{
 		char *msg;
 
-		switch((int)teamplay.value)
+		switch((int)teamplay->value)
 		{
 			case 1: msg = "No Friendly Fire"; break;
 			case 2: msg = "Friendly Fire"; break;
@@ -3840,22 +3840,22 @@ void M_GameOptions_Draw (void)
 
 	M_Print (0+8, 116, "       Difficulty");
 
-	M_Print (160+8, 116, DiffNames[setup_class][(int)skill.value]);
+	M_Print (160+8, 116, DiffNames[setup_class][(int)skill->value]);
 
 	M_Print (0+8, 124, "       Frag Limit");
-	if (fraglimit.value == 0)
+	if (fraglimit->value == 0)
 		M_Print (160+8, 124, "none");
 	else
-		M_Print (160+8, 124, va("%i frags", (int)fraglimit.value));
+		M_Print (160+8, 124, va("%i frags", (int)fraglimit->value));
 
 	M_Print (0+8, 132, "       Time Limit");
-	if (timelimit.value == 0)
+	if (timelimit->value == 0)
 		M_Print (160+8, 132, "none");
 	else
-		M_Print (160+8, 132, va("%i minutes", (int)timelimit.value));
+		M_Print (160+8, 132, va("%i minutes", (int)timelimit->value));
 
 	M_Print (0+8, 140, "     Random Class");
-	if (randomclass.value)
+	if (randomclass->value)
 		M_Print (160+8, 140, "on");
 	else
 		M_Print (160+8, 140, "off");
@@ -3910,15 +3910,15 @@ void M_NetStart_Change (int dir)
 		break;
 
 	case 2:
-		Cvar_SetValue ("coop", coop.value ? 0 : 1);
-		if (coop.value)
+		Cvar_SetValue ("coop", coop->value ? 0 : 1);
+		if (coop->value)
 		{
 			startlevel = 0;
 			if (startepisode == 1)
 				startepisode = 0;
 			else if (startepisode == DM_START)
 				startepisode = REG_START;
-			if (!m_oldmission.value)
+			if (!m_oldmission->value)
 			{
 				startepisode = MP_START;
 			}
@@ -3931,10 +3931,10 @@ void M_NetStart_Change (int dir)
 //		else
 			count = 2;
 
-		Cvar_SetValue ("teamplay", teamplay.value + dir);
-		if (teamplay.value > count)
+		Cvar_SetValue ("teamplay", teamplay->value + dir);
+		if (teamplay->value > count)
 			Cvar_SetValue ("teamplay", 0);
-		else if (teamplay.value < 0)
+		else if (teamplay->value < 0)
 			Cvar_SetValue ("teamplay", count);
 		break;
 
@@ -3951,31 +3951,31 @@ void M_NetStart_Change (int dir)
 		break;
 
 	case 5:
-		Cvar_SetValue ("skill", skill.value + dir);
-		if (skill.value > 3)
+		Cvar_SetValue ("skill", skill->value + dir);
+		if (skill->value > 3)
 			Cvar_SetValue ("skill", 0);
-		if (skill.value < 0)
+		if (skill->value < 0)
 			Cvar_SetValue ("skill", 3);
 		break;
 
 	case 6:
-		Cvar_SetValue ("fraglimit", fraglimit.value + dir*10);
-		if (fraglimit.value > 100)
+		Cvar_SetValue ("fraglimit", fraglimit->value + dir*10);
+		if (fraglimit->value > 100)
 			Cvar_SetValue ("fraglimit", 0);
-		if (fraglimit.value < 0)
+		if (fraglimit->value < 0)
 			Cvar_SetValue ("fraglimit", 100);
 		break;
 
 	case 7:
-		Cvar_SetValue ("timelimit", timelimit.value + dir*5);
-		if (timelimit.value > 60)
+		Cvar_SetValue ("timelimit", timelimit->value + dir*5);
+		if (timelimit->value > 60)
 			Cvar_SetValue ("timelimit", 0);
-		if (timelimit.value < 0)
+		if (timelimit->value < 0)
 			Cvar_SetValue ("timelimit", 60);
 		break;
 
 	case 8:
-		if (randomclass.value)
+		if (randomclass->value)
 			Cvar_SetValue ("randomclass", 0);
 		else
 			Cvar_SetValue ("randomclass", 1);
@@ -3984,14 +3984,14 @@ void M_NetStart_Change (int dir)
 	case 9:
 		startepisode += dir;
 
-		if (registered.value)
+		if (registered->value)
 		{
 			count = DM_START;
-			if (!coop.value)
+			if (!coop->value)
 				count++;
 			else
 			{
-				if (!m_oldmission.value)
+				if (!m_oldmission->value)
 				{
 					startepisode = MP_START;
 				}
@@ -4004,7 +4004,7 @@ void M_NetStart_Change (int dir)
 
 			startlevel = 0;
 		}
-		else if (oem.value)
+		else if (oem->value)
 		{
 			count = 10;
 
@@ -4031,7 +4031,7 @@ void M_NetStart_Change (int dir)
 		break;
 
 	case 10:
-		if (coop.value)
+		if (coop->value)
 		{
 			startlevel = 0;
 			break;
@@ -4062,7 +4062,7 @@ void M_GameOptions_Key (int key)
 		if (gameoptions_cursor < 0)
 		{
 			gameoptions_cursor = NUM_GAMEOPTIONS-1;
-			if (coop.value)
+			if (coop->value)
 				gameoptions_cursor--;
 		}
 		break;
@@ -4070,7 +4070,7 @@ void M_GameOptions_Key (int key)
 	case K_DOWNARROW:
 		S_LocalSound ("raven/menu1.wav");
 		gameoptions_cursor++;
-		if (coop.value)
+		if (coop->value)
 		{
 			if (gameoptions_cursor >= NUM_GAMEOPTIONS-1)
 				gameoptions_cursor = 0;
@@ -4306,7 +4306,7 @@ void M_Init (void)
 	Cmd_AddCommand ("menu_class", M_Menu_Class2_f);
 
 	M_BuildBigCharWidth();
-	Cvar_RegisterVariable (&m_oldmission);
+	m_oldmission = Cvar_Get("m_oldmission", "0", CVAR_ARCHIVE);
 }
 
 

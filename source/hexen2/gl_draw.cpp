@@ -17,7 +17,7 @@ extern qboolean	vid_initialized;
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
 QCvar*		gl_picmip;
-cvar_t		gl_round_down = {"gl_round_down", "0"};
+QCvar*		gl_round_down;
 
 byte		*draw_chars;				// 8*8 graphic characters
 byte		*draw_smallchars;			// Small characters for status bar
@@ -444,10 +444,10 @@ void Draw_Init (void)
 	glpic_t *gl;
 	char temp[MAX_QPATH];
 
-    gl_nobind = Cvar_Get("gl_nobind", "0", 0);
-    gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
-    gl_picmip = Cvar_Get("gl_picmip", "0", 0);
-	Cvar_RegisterVariable (&gl_round_down);
+	gl_nobind = Cvar_Get("gl_nobind", "0", 0);
+	gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
+	gl_picmip = Cvar_Get("gl_picmip", "0", 0);
+	gl_round_down = Cvar_Get("gl_round_down", "0", 0);
 
 	// 3dfx can only handle 256 wide textures
 	if (is_3dfx || is_PowerVR)
@@ -1277,11 +1277,11 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qbool
 
 	for (scaled_width = 1 ; scaled_width < width ; scaled_width<<=1)
 		;
-	if (gl_round_down.value && scaled_width > width)
+	if (gl_round_down->value && scaled_width > width)
 		scaled_width >>= 1;
 	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
 		;
-	if (gl_round_down.value && scaled_height > height)
+	if (gl_round_down->value && scaled_height > height)
 		scaled_height >>= 1;
 
 	if ((scaled_width >> (int)gl_picmip->value) &&

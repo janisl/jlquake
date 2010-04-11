@@ -49,7 +49,7 @@ extern "C"
 void Sys_InitFloatTime (void);
 }
 
-cvar_t		sys_delay = {"sys_delay","0", NULL,0,false,0,NULL,true};
+QCvar*		sys_delay;
 
 volatile int					sys_checksum;
 
@@ -791,7 +791,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	oldtime = Sys_FloatTime ();
 
-	Cvar_RegisterVariable (&sys_delay);
+	sys_delay = Cvar_Get("sys_delay", "0", CVAR_ARCHIVE);
 
     /* main window message loop */
 	while (1)
@@ -826,8 +826,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 			time = newtime - oldtime;
 		}
 
-		if (sys_delay.value) 
-			Sleep(sys_delay.value);
+		if (sys_delay->value) 
+			Sleep(sys_delay->value);
 
 		Host_Frame (time);
 		oldtime = newtime;

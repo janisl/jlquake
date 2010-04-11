@@ -23,8 +23,8 @@ char	outputbuf[8000];
 
 redirect_t	sv_redirected;
 
-extern cvar_t sv_phs;
-extern cvar_t sv_namedistance;
+extern QCvar* sv_phs;
+extern QCvar* sv_namedistance;
 
 /*
 ==================
@@ -123,7 +123,7 @@ void Con_DPrintf (char *fmt, ...)
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
 
-	if (!developer.value)
+	if (!developer->value)
 		return;
 
 	va_start (argptr,fmt);
@@ -457,7 +457,7 @@ void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
     
 	ent = NUM_FOR_EDICT(entity);
 
-	if ((channel & PHS_OVERRIDE_R) || !sv_phs.value)	// no PHS flag
+	if ((channel & PHS_OVERRIDE_R) || !sv_phs->value)	// no PHS flag
 	{
 		if (channel & PHS_OVERRIDE_R)//PHS_OVERRIDE_R = 8
 			reliable = true; // sounds that break the phs are reliable
@@ -876,7 +876,7 @@ static void UpdatePIV(void)
 			
 			VectorSubtract(client->edict->v.origin, host_client->edict->v.origin, distvec);
 			dist = VectorNormalize(distvec);
-			if(dist > sv_namedistance.value)
+			if(dist > sv_namedistance->value)
 			{
 //				Con_Printf("dist %f\n", dist);
 				continue;
@@ -941,7 +941,7 @@ void SV_UpdateToReliableMessages (void)
 				client->netchan.message.WriteShort(host_client->edict->v.frags);
 				client->netchan.message.WriteByte((host_client->playerclass<<5)|((int)host_client->edict->v.level&31));
 
-				if(dmMode.value==DM_SIEGE)
+				if(dmMode->value==DM_SIEGE)
 				{
 					client->netchan.message.WriteByte(svc_updatesiegelosses);
 					client->netchan.message.WriteByte(pr_global_struct->defLosses);

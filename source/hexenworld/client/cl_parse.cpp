@@ -997,7 +997,7 @@ void CL_ParticleExplosion(void)
 }
 
 
-#define SHOWNET(x) if(cl_shownet.value==2)Con_Printf ("%3i:%s\n", net_message.readcount-1, x);
+#define SHOWNET(x) if(cl_shownet->value==2)Con_Printf ("%3i:%s\n", net_message.readcount-1, x);
 /*
 =====================
 CL_ParseServerMessage
@@ -1033,9 +1033,9 @@ void CL_ParseServerMessage (void)
 //
 // if recording demos, copy the message out
 //
-	if (cl_shownet.value == 1)
+	if (cl_shownet->value == 1)
 		Con_Printf ("%i ",net_message.cursize);
-	else if (cl_shownet.value == 2)
+	else if (cl_shownet->value == 2)
 		Con_Printf ("------------------\n");
 
 
@@ -1087,7 +1087,7 @@ void CL_ParseServerMessage (void)
 			}
 			else if (i >= PRINT_SOUND)
 			{
-				if (talksounds.value)
+				if (talksounds->value)
 				{
 					sprintf(temp,"taunt/taunt%.3d.wav",i-PRINT_SOUND+1);
 					S_LocalSound (temp);
@@ -1597,7 +1597,7 @@ void CL_ParseServerMessage (void)
 
 		case svc_midi_name:
 			QStr::Cpy(cl.midi_name,net_message.ReadString2 ());
-			if (QStr::ICmp(bgmtype.string,"midi") == 0)
+			if (QStr::ICmp(bgmtype->string,"midi") == 0)
 				MIDI_Play(cl.midi_name);
 			else 
 				MIDI_Stop();

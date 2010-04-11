@@ -312,7 +312,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		{
 			glEnable (GL_BLEND);
 //			glColor4f (1,1,1,r_wateralpha.value);
-			alpha_val = r_wateralpha.value;
+			alpha_val = r_wateralpha->value;
 
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			intensity = 1;

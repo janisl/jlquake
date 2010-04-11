@@ -381,20 +381,20 @@ void M_AdjustSliders (int dir)
 	switch (options_cursor)
 	{
 	case 3:	// screen size
-		scr_viewsize.value += dir * 10;
-		if (scr_viewsize.value < 30)
-			scr_viewsize.value = 30;
-		if (scr_viewsize.value > 120)
-			scr_viewsize.value = 120;
-		Cvar_SetValue ("viewsize", scr_viewsize.value);
+		scr_viewsize->value += dir * 10;
+		if (scr_viewsize->value < 30)
+			scr_viewsize->value = 30;
+		if (scr_viewsize->value > 120)
+			scr_viewsize->value = 120;
+		Cvar_SetValue ("viewsize", scr_viewsize->value);
 		break;
 	case 4:	// gamma
-		v_gamma.value -= dir * 0.05;
-		if (v_gamma.value < 0.5)
-			v_gamma.value = 0.5;
-		if (v_gamma.value > 1)
-			v_gamma.value = 1;
-		Cvar_SetValue ("gamma", v_gamma.value);
+		v_gamma->value -= dir * 0.05;
+		if (v_gamma->value < 0.5)
+			v_gamma->value = 0.5;
+		if (v_gamma->value > 1)
+			v_gamma->value = 1;
+		Cvar_SetValue ("gamma", v_gamma->value);
 		break;
 	case 5:	// mouse speed
 		sensitivity->value += dir * 0.5;
@@ -406,23 +406,23 @@ void M_AdjustSliders (int dir)
 		break;
 	case 6:	// music volume
 #ifdef _WIN32
-		bgmvolume.value += dir * 1.0;
+		bgmvolume->value += dir * 1.0;
 #else
-		bgmvolume.value += dir * 0.1;
+		bgmvolume->value += dir * 0.1;
 #endif
-		if (bgmvolume.value < 0)
-			bgmvolume.value = 0;
-		if (bgmvolume.value > 1)
-			bgmvolume.value = 1;
-		Cvar_SetValue ("bgmvolume", bgmvolume.value);
+		if (bgmvolume->value < 0)
+			bgmvolume->value = 0;
+		if (bgmvolume->value > 1)
+			bgmvolume->value = 1;
+		Cvar_SetValue ("bgmvolume", bgmvolume->value);
 		break;
 	case 7:	// sfx volume
-		volume.value += dir * 0.1;
-		if (volume.value < 0)
-			volume.value = 0;
-		if (volume.value > 1)
-			volume.value = 1;
-		Cvar_SetValue ("volume", volume.value);
+		volume->value += dir * 0.1;
+		if (volume->value < 0)
+			volume->value = 0;
+		if (volume->value > 1)
+			volume->value = 1;
+		Cvar_SetValue ("volume", volume->value);
 		break;
 		
 	case 8:	// allways run
@@ -451,11 +451,11 @@ void M_AdjustSliders (int dir)
 		break;
 
 	case 12:
-		Cvar_SetValue ("cl_sbar", !cl_sbar.value);
+		Cvar_SetValue ("cl_sbar", !cl_sbar->value);
 		break;
 
 	case 13:
-		Cvar_SetValue ("cl_hudswap", !cl_hudswap.value);
+		Cvar_SetValue ("cl_hudswap", !cl_hudswap->value);
 
 	case 15:	// _windowed_mouse
 		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse->value);
@@ -507,11 +507,11 @@ void M_Options_Draw (void)
 	M_Print (16, 48, "     Reset to defaults");
 
 	M_Print (16, 56, "           Screen size");
-	r = (scr_viewsize.value - 30) / (120 - 30);
+	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider (220, 56, r);
 
 	M_Print (16, 64, "            Brightness");
-	r = (1.0 - v_gamma.value) / 0.5;
+	r = (1.0 - v_gamma->value) / 0.5;
 	M_DrawSlider (220, 64, r);
 
 	M_Print (16, 72, "           Mouse Speed");
@@ -519,11 +519,11 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 72, r);
 
 	M_Print (16, 80, "       CD Music Volume");
-	r = bgmvolume.value;
+	r = bgmvolume->value;
 	M_DrawSlider (220, 80, r);
 
 	M_Print (16, 88, "          Sound Volume");
-	r = volume.value;
+	r = volume->value;
 	M_DrawSlider (220, 88, r);
 
 	M_Print (16, 96,  "            Always Run");
@@ -539,10 +539,10 @@ void M_Options_Draw (void)
 	M_DrawCheckbox (220, 120, lookstrafe->value);
 
 	M_Print (16, 128, "    Use old status bar");
-	M_DrawCheckbox (220, 128, cl_sbar.value);
+	M_DrawCheckbox (220, 128, cl_sbar->value);
 
 	M_Print (16, 136, "      HUD on left side");
-	M_DrawCheckbox (220, 136, cl_hudswap.value);
+	M_DrawCheckbox (220, 136, cl_hudswap->value);
 
 	if (vid_menudrawfn)
 		M_Print (16, 144, "         Video Options");

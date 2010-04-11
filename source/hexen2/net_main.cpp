@@ -45,23 +45,23 @@ int messagesReceived = 0;
 int unreliableMessagesSent = 0;
 int unreliableMessagesReceived = 0;
 
-cvar_t	net_messagetimeout = {"net_messagetimeout","300"};
-cvar_t	hostname = {"hostname", "UNNAMED"};
+QCvar*	net_messagetimeout;
+QCvar*	hostname;
 
 qboolean	configRestored = false;
-cvar_t	config_com_port = {"_config_com_port", "0x3f8", NULL,0,false,0,NULL,true};
-cvar_t	config_com_irq = {"_config_com_irq", "4", NULL,0,false,0,NULL,true};
-cvar_t	config_com_baud = {"_config_com_baud", "57600", NULL,0,false,0,NULL,true};
-cvar_t	config_com_modem = {"_config_com_modem", "1", NULL,0,false,0,NULL,true};
-cvar_t	config_modem_dialtype = {"_config_modem_dialtype", "T", NULL,0,false,0,NULL,true};
-cvar_t	config_modem_clear = {"_config_modem_clear", "ATZ", NULL,0,false,0,NULL,true};
-cvar_t	config_modem_init = {"_config_modem_init", "", NULL,0,false,0,NULL,true};
-cvar_t	config_modem_hangup = {"_config_modem_hangup", "AT H", NULL,0,false,0,NULL,true};
+QCvar*	config_com_port;
+QCvar*	config_com_irq;
+QCvar*	config_com_baud;
+QCvar*	config_com_modem;
+QCvar*	config_modem_dialtype;
+QCvar*	config_modem_clear;
+QCvar*	config_modem_init;
+QCvar*	config_modem_hangup;
 
-cvar_t	net_allowmultiple = {"net_allowmultiple", "0", NULL,0,false,0,NULL,true};
+QCvar*	net_allowmultiple;
 
 #ifdef IDGODS
-cvar_t	idgods = {"idgods", "0"};
+QCvar*	idgods;
 #endif
 
 int	vcrFile = -1;
@@ -537,7 +537,7 @@ int	NET_GetMessage (qsocket_t *sock)
 	// see if this connection has timed out
 	if (ret == 0 && sock->driver)
 	{
-		if (net_time - sock->lastMessageTime > net_messagetimeout.value)
+		if (net_time - sock->lastMessageTime > net_messagetimeout->value)
 		{
 			NET_Close(sock);
 			return -1;
@@ -830,21 +830,20 @@ void NET_Init (void)
 	// allocate space for network message buffer
 	net_message.InitOOB(net_message_buf, NET_MAXMESSAGE);
 
-	Cvar_RegisterVariable (&net_messagetimeout);
-	Cvar_RegisterVariable (&hostname);
-	Cvar_RegisterVariable (&config_com_port);
-	Cvar_RegisterVariable (&config_com_irq);
-	Cvar_RegisterVariable (&config_com_baud);
-	Cvar_RegisterVariable (&config_com_modem);
-	Cvar_RegisterVariable (&config_modem_dialtype);
-	Cvar_RegisterVariable (&config_modem_clear);
-	Cvar_RegisterVariable (&config_modem_init);
-	Cvar_RegisterVariable (&config_modem_hangup);
+	net_messagetimeout = Cvar_Get("net_messagetimeout", "300", 0);
+	hostname = Cvar_Get("hostname", "UNNAMED", 0);
+	config_com_port = Cvar_Get("_config_com_port", "0x3f8", CVAR_ARCHIVE);
+	config_com_irq = Cvar_Get("_config_com_irq", "4", CVAR_ARCHIVE);
+	config_com_baud = Cvar_Get("_config_com_baud", "57600", CVAR_ARCHIVE);
+	config_com_modem = Cvar_Get("_config_com_modem", "1", CVAR_ARCHIVE);
+	config_modem_dialtype = Cvar_Get("_config_modem_dialtype", "T", CVAR_ARCHIVE);
+	config_modem_clear = Cvar_Get("_config_modem_clear", "ATZ", CVAR_ARCHIVE);
+	config_modem_init = Cvar_Get("_config_modem_init", "", CVAR_ARCHIVE);
+	config_modem_hangup = Cvar_Get("_config_modem_hangup", "AT H", CVAR_ARCHIVE);
+	net_allowmultiple = Cvar_Get("net_allowmultiple", "0", CVAR_ARCHIVE);
 #ifdef IDGODS
-	Cvar_RegisterVariable (&idgods);
+	idgods = Cvar_Get("idgods", "0", 0);
 #endif
-
-	Cvar_RegisterVariable (&net_allowmultiple);
 
 	Cmd_AddCommand ("slist", NET_Slist_f);
 	Cmd_AddCommand ("listen", NET_Listen_f);
@@ -915,12 +914,12 @@ void NET_Poll(void)
 	{
 		if (serialAvailable)
 		{
-			if (config_com_modem.value == 1.0)
+			if (config_com_modem->value == 1.0)
 				useModem = true;
 			else
 				useModem = false;
-			SetComPortConfig (0, (int)config_com_port.value, (int)config_com_irq.value, (int)config_com_baud.value, useModem);
-			SetModemConfig (0, config_modem_dialtype.string, config_modem_clear.string, config_modem_init.string, config_modem_hangup.string);
+			SetComPortConfig (0, (int)config_com_port->value, (int)config_com_irq->value, (int)config_com_baud->value, useModem);
+			SetModemConfig (0, config_modem_dialtype->string, config_modem_clear->string, config_modem_init->string, config_modem_hangup->string);
 		}
 		configRestored = true;
 	}
@@ -966,7 +965,7 @@ void SchedulePollProcedure(PollProcedure *proc, double timeOffset)
 
 qboolean IsID(struct qsockaddr *addr)
 {
-	if (idgods.value == 0.0)
+	if (idgods->value == 0.0)
 		return false;
 
 	if (addr->sa_family != 2)

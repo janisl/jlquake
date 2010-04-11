@@ -42,52 +42,6 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, bool force )
 
 /*
 ============
-Cvar_RegisterVariable
-
-Adds a freestanding variable to the variable list.
-============
-*/
-void Cvar_RegisterVariable (cvar_t *variable)
-{
-	char	*oldstr;
-
-// first check to see if it has allready been defined
-	if (Cvar_FindVar (variable->name))
-	{
-		Con_Printf ("Can't register variable %s, allready defined\n", variable->name);
-		return;
-	}
-	
-// check for overlap with a command
-	if (Cmd_Exists (variable->name))
-	{
-		Con_Printf ("Cvar_RegisterVariable: %s is a command\n", variable->name);
-		return;
-	}
-		
-// copy the value off, because future sets will Z_Free it
-	oldstr = variable->string;
-	variable->string = (char*)Mem_Alloc (QStr::Length(variable->string)+1);	
-	QStr::Cpy(variable->string, oldstr);
-	variable->value = QStr::Atof(variable->string);
-	variable->integer = QStr::Atoi(variable->string);
-	
-	if (variable->archive)
-		variable->flags |= CVAR_ARCHIVE;
-	if (variable->info)
-		variable->flags |= CVAR_SERVERINFO;
-
-// link the variable in
-	variable->next = cvar_vars;
-	cvar_vars = variable;
-
-	long hash = Cvar_GenerateHashValue(variable->name);
-	variable->hashNext = cvar_hashTable[hash];
-	cvar_hashTable[hash] = variable;
-}
-
-/*
-============
 Cvar_Command
 
 Handles variable inspection and changing from the console

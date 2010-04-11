@@ -36,27 +36,28 @@ SV_Init
 void SV_Init (void)
 {
 	int		i;
-	extern	cvar_t	sv_maxvelocity;
-	extern	cvar_t	sv_gravity;
-	extern	cvar_t	sv_nostep;
-	extern	cvar_t	sv_friction;
-	extern	cvar_t	sv_edgefriction;
-	extern	cvar_t	sv_stopspeed;
-	extern	cvar_t	sv_maxspeed;
-	extern	cvar_t	sv_accelerate;
-	extern	cvar_t	sv_idealpitchscale;
-	extern	cvar_t	sv_aim;
+	extern	QCvar*	sv_maxvelocity;
+	extern	QCvar*	sv_gravity;
+	extern	QCvar*	sv_nostep;
+	extern	QCvar*	sv_friction;
+	extern	QCvar*	sv_edgefriction;
+	extern	QCvar*	sv_stopspeed;
+	extern	QCvar*	sv_maxspeed;
+	extern	QCvar*	sv_accelerate;
+	extern	QCvar*	sv_idealpitchscale;
+	extern	QCvar*	sv_aim;
 
-	Cvar_RegisterVariable (&sv_maxvelocity);
-	Cvar_RegisterVariable (&sv_gravity);
-	Cvar_RegisterVariable (&sv_friction);
-	Cvar_RegisterVariable (&sv_edgefriction);
-	Cvar_RegisterVariable (&sv_stopspeed);
-	Cvar_RegisterVariable (&sv_maxspeed);
-	Cvar_RegisterVariable (&sv_accelerate);
-	Cvar_RegisterVariable (&sv_idealpitchscale);
-	Cvar_RegisterVariable (&sv_aim);
-	Cvar_RegisterVariable (&sv_nostep);
+
+	sv_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
+	sv_gravity = Cvar_Get("sv_gravity", "800", CVAR_SERVERINFO);
+	sv_friction = Cvar_Get("sv_friction", "4", CVAR_SERVERINFO);
+	sv_edgefriction = Cvar_Get("edgefriction", "2", 0);
+	sv_stopspeed = Cvar_Get("sv_stopspeed","100", 0);
+	sv_maxspeed = Cvar_Get("sv_maxspeed", "320", CVAR_SERVERINFO);
+	sv_accelerate = Cvar_Get("sv_accelerate", "10", 0);
+	sv_idealpitchscale = Cvar_Get("sv_idealpitchscale", "0.8", 0);
+	sv_aim = Cvar_Get("sv_aim", "0.93", 0);
+	sv_nostep = Cvar_Get("sv_nostep", "0", 0);
 
 	for (i=0 ; i<MAX_MODELS ; i++)
 		sprintf (localmodels[i], "*%i", i);
@@ -199,7 +200,7 @@ void SV_SendServerinfo (client_t *client)
 	client->message.WriteLong(PROTOCOL_VERSION);
 	client->message.WriteByte(svs.maxclients);
 
-	if (!coop.value && deathmatch.value)
+	if (!coop->value && deathmatch->value)
 		client->message.WriteByte(GAME_DEATHMATCH);
 	else
 		client->message.WriteByte(GAME_COOP);
@@ -1024,7 +1025,7 @@ void SV_SpawnServer (char *server)
 	int			i;
 
 	// let's not have any servers with no name
-	if (hostname.string[0] == 0)
+	if (hostname->string[0] == 0)
 		Cvar_Set ("hostname", "UNNAMED");
 	scr_centertime_off = 0;
 
@@ -1042,9 +1043,9 @@ void SV_SpawnServer (char *server)
 //
 // make cvars consistant
 //
-	if (coop.value)
+	if (coop->value)
 		Cvar_SetValue ("deathmatch", 0);
-	current_skill = (int)(skill.value + 0.5);
+	current_skill = (int)(skill->value + 0.5);
 	if (current_skill < 0)
 		current_skill = 0;
 	if (current_skill > 3)
@@ -1125,10 +1126,10 @@ void SV_SpawnServer (char *server)
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
 
-	if (coop.value)
-		pr_global_struct->coop = coop.value;
+	if (coop->value)
+		pr_global_struct->coop = coop->value;
 	else
-		pr_global_struct->deathmatch = deathmatch.value;
+		pr_global_struct->deathmatch = deathmatch->value;
 
 	pr_global_struct->mapname = sv.name - pr_strings;
 

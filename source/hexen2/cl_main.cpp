@@ -16,12 +16,12 @@
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-cvar_t	cl_name = {"_cl_name", "player", NULL,0,false,0,NULL,true};
-cvar_t	cl_color = {"_cl_color", "0", NULL,0,false,0,NULL,true};
-cvar_t	cl_playerclass = {"_cl_playerclass", "5", NULL,0,false,0,NULL,true};
+QCvar*	cl_name;
+QCvar*	cl_color;
+QCvar*	cl_playerclass;
 
-cvar_t	cl_shownet = {"cl_shownet","0"};	// can be 0, 1, or 2
-cvar_t	cl_nolerp = {"cl_nolerp","0"};
+QCvar*	cl_shownet;
+QCvar*	cl_nolerp;
 
 QCvar*	lookspring;
 QCvar*	lookstrafe;
@@ -336,13 +336,13 @@ Con_DPrintf ("CL_SignonReply: %i\n", cls.signon);
 		
 	case 2:		
 		cls.message.WriteByte(clc_stringcmd);
-		cls.message.WriteString2(va("name \"%s\"\n", cl_name.string));
+		cls.message.WriteString2(va("name \"%s\"\n", cl_name->string));
 	
 		cls.message.WriteByte(clc_stringcmd);
-		cls.message.WriteString2(va("playerclass %i\n", (int)cl_playerclass.value));
+		cls.message.WriteString2(va("playerclass %i\n", (int)cl_playerclass->value));
 
 		cls.message.WriteByte(clc_stringcmd);
-		cls.message.WriteString2(va("color %i %i\n", ((int)cl_color.value)>>4, ((int)cl_color.value)&15));
+		cls.message.WriteString2(va("color %i %i\n", ((int)cl_color->value)>>4, ((int)cl_color->value)&15));
 
 		cls.message.WriteByte(clc_stringcmd);
 		sprintf (str, "spawn %s", cls.spawnparms);
@@ -555,7 +555,7 @@ float	CL_LerpPoint (void)
 
 	f = cl.mtime[0] - cl.mtime[1];
 	
-	if (!f || cl_nolerp.value || cls.timedemo || sv.active)
+	if (!f || cl_nolerp->value || cls.timedemo || sv.active)
 	{
 		cl.time = cl.mtime[0];
 		return 1;
@@ -710,7 +710,7 @@ void CL_RelinkEntities (void)
 		{
 			vec3_t		fv, rv, uv;
 
-			if (cl_prettylights.value)
+			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
@@ -725,7 +725,7 @@ void CL_RelinkEntities (void)
 		}
 		if (ent->effects & EF_BRIGHTLIGHT)
 		{			
-			if (cl_prettylights.value)
+			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
@@ -736,7 +736,7 @@ void CL_RelinkEntities (void)
 		}
 		if (ent->effects & EF_DIMLIGHT)
 		{			
-			if (cl_prettylights.value)
+			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
@@ -746,7 +746,7 @@ void CL_RelinkEntities (void)
 		}
 		if (ent->effects & EF_DARKLIGHT)
 		{			
-			if (cl_prettylights.value)
+			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
@@ -757,7 +757,7 @@ void CL_RelinkEntities (void)
 		}
 		if (ent->effects & EF_LIGHT)
 		{			
-			if (cl_prettylights.value)
+			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin,  dl->origin);
@@ -787,7 +787,7 @@ void CL_RelinkEntities (void)
 		else if (ent->model->flags & EF_FIREBALL)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_fireball);
-			if (cl_prettylights.value)
+			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
@@ -798,7 +798,7 @@ void CL_RelinkEntities (void)
 		else if (ent->model->flags & EF_ACIDBALL)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_acidball);
-			if (cl_prettylights.value)
+			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
@@ -813,7 +813,7 @@ void CL_RelinkEntities (void)
 		else if (ent->model->flags & EF_SPIT)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_spit);
-			if (cl_prettylights.value)
+			if (cl_prettylights->value)
 			{
 				dl = CL_AllocDlight (i);
 				VectorCopy (ent->origin, dl->origin);
@@ -849,7 +849,7 @@ void CL_RelinkEntities (void)
 
 		ent->forcelink = false;
 
-		if (i == cl.viewentity && !chase_active.value)
+		if (i == cl.viewentity && !chase_active->value)
 			continue;
 
 		if ( ent->effects & EF_NODRAW )
@@ -895,7 +895,7 @@ int CL_ReadFromServer (void)
 		CL_ParseServerMessage ();
 	} while (ret && cls.state == ca_connected);
 	
-	if (cl_shownet.value)
+	if (cl_shownet->value)
 		Con_Printf ("\n");
 
 	CL_RelinkEntities ();
@@ -983,31 +983,29 @@ void CL_Init (void)
 //
 // register our commands
 //
-	Cvar_RegisterVariable (&cl_name);
-	Cvar_RegisterVariable (&cl_color);
-	Cvar_RegisterVariable (&cl_playerclass);
-    cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
-    cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);
-    cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
-    cl_sidespeed = Cvar_Get("cl_sidespeed","225", 0);
-    cl_movespeedkey = Cvar_Get("cl_movespeedkey", "2.0", 0);
-    cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
-    cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
-    cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
-	Cvar_RegisterVariable (&cl_shownet);
-	Cvar_RegisterVariable (&cl_nolerp);
-    lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
-    lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
-    sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
+	cl_name = Cvar_Get("_cl_name", "player", CVAR_ARCHIVE);
+	cl_color = Cvar_Get("_cl_color", "0", CVAR_ARCHIVE);
+	cl_playerclass = Cvar_Get("_cl_playerclass", "5", CVAR_ARCHIVE);
+	cl_upspeed = Cvar_Get("cl_upspeed", "200", 0);
+	cl_forwardspeed = Cvar_Get("cl_forwardspeed", "200", CVAR_ARCHIVE);
+	cl_backspeed = Cvar_Get("cl_backspeed", "200", CVAR_ARCHIVE);
+	cl_sidespeed = Cvar_Get("cl_sidespeed","225", 0);
+	cl_movespeedkey = Cvar_Get("cl_movespeedkey", "2.0", 0);
+	cl_yawspeed = Cvar_Get("cl_yawspeed", "140", 0);
+	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
+	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
+	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
+	cl_nolerp = Cvar_Get("cl_nolerp", "0", 0);
+	lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
+	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
+	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
 
-    m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
-    m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
-    m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
-    m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
-	Cvar_RegisterVariable (&cl_prettylights);
+	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
+	m_yaw = Cvar_Get("m_yaw", "0.022", CVAR_ARCHIVE);
+	m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
+	m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
+	cl_prettylights = Cvar_Get("cl_prettylights", "1", 0);
 
-//	Cvar_RegisterVariable (&cl_autofire);
-	
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand ("record", CL_Record_f);

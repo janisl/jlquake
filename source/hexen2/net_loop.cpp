@@ -31,10 +31,10 @@ void Loop_SearchForHosts (qboolean xmit)
 		return;
 
 	hostCacheCount = 1;
-	if (QStr::Cmp(hostname.string, "UNNAMED") == 0)
+	if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
 		QStr::Cpy(hostcache[0].name, "local");
 	else
-		QStr::Cpy(hostcache[0].name, hostname.string);
+		QStr::Cpy(hostcache[0].name, hostname->string);
 	QStr::Cpy(hostcache[0].map, sv.name);
 	hostcache[0].users = net_activeconnections;
 	hostcache[0].maxusers = svs.maxclients;

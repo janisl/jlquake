@@ -84,7 +84,7 @@ QCvar*	r_mirroralpha;
 QCvar*	r_wateralpha;
 QCvar*	r_dynamic;
 QCvar*	r_novis;
-cvar_t	r_netgraph = {"r_netgraph","0"};
+QCvar*	r_netgraph;
 
 QCvar*	gl_clear;
 QCvar*	gl_cull;
@@ -97,10 +97,10 @@ QCvar*	gl_playermip;
 QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
-cvar_t	gl_finish = {"gl_finish","0"};
+QCvar*	gl_finish;
 
 extern	QCvar*	gl_ztrick;
-extern	cvar_t	scr_fov;
+extern	QCvar*	scr_fov;
 /*
 =================
 R_CullBox
@@ -1104,7 +1104,7 @@ void R_RenderView (void)
 
 	mirror = false;
 
-	if (gl_finish.value)
+	if (gl_finish->value)
 		glFinish ();
 
 	R_Clear ();

@@ -15,7 +15,7 @@ line of sight checks trace->crosscontent, but bullets don't
 
 */
 
-cvar_t	sys_quake2 = {"sys_quake2","1",NULL,0,false,0,NULL,true};
+QCvar*	sys_quake2;
 
 typedef struct
 {
@@ -791,7 +791,7 @@ trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t max
 	VectorSubtract (start, offset, start_l);
 	VectorSubtract (end, offset, end_l);
 
-	if (sys_quake2.value)
+	if (sys_quake2->value)
 	{
 		// rotate start and end into the models frame of reference
 		if (ent->v.solid == SOLID_BSP && 
@@ -826,7 +826,7 @@ trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t max
 		}
 	}
 
-	if (sys_quake2.value)
+	if (sys_quake2->value)
 	{
 		// rotate endpos back to world frame of reference
 		if (ent->v.solid == SOLID_BSP && 

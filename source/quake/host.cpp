@@ -53,28 +53,28 @@ jmp_buf 	host_abortserver;
 byte		*host_basepal;
 byte		*host_colormap;
 
-cvar_t	host_framerate = {"host_framerate","0"};	// set for slow motion
-cvar_t	host_speeds = {"host_speeds","0"};			// set for running times
+QCvar*	host_framerate;	// set for slow motion
+QCvar*	host_speeds;			// set for running times
 
-cvar_t	sys_ticrate = {"sys_ticrate","0.05"};
-cvar_t	serverprofile = {"serverprofile","0"};
+QCvar*	sys_ticrate;
+QCvar*	serverprofile;
 
-cvar_t	fraglimit = {"fraglimit","0",false,true};
-cvar_t	timelimit = {"timelimit","0",false,true};
-cvar_t	teamplay = {"teamplay","0",false,true};
+QCvar*	fraglimit;
+QCvar*	timelimit;
+QCvar*	teamplay;
 
-cvar_t	samelevel = {"samelevel","0"};
-cvar_t	noexit = {"noexit","0",false,true};
+QCvar*	samelevel;
+QCvar*	noexit;
 
-cvar_t	developer = {"developer","0"};
+QCvar*	developer;
 
-cvar_t	skill = {"skill","1"};						// 0 - 3
-cvar_t	deathmatch = {"deathmatch","0"};			// 0, 1, or 2
-cvar_t	coop = {"coop","0"};			// 0 or 1
+QCvar*	skill;						// 0 - 3
+QCvar*	deathmatch;			// 0, 1, or 2
+QCvar*	coop;			// 0 or 1
 
-cvar_t	pausable = {"pausable","1"};
+QCvar*	pausable;
 
-cvar_t	temp1 = {"temp1","0"};
+QCvar*	temp1;
 
 
 class QMainLog : public QLogListener
@@ -221,26 +221,27 @@ Host_InitLocal
 void Host_InitLocal (void)
 {
 	Host_InitCommands ();
-	
-	Cvar_RegisterVariable (&host_framerate);
-	Cvar_RegisterVariable (&host_speeds);
 
-	Cvar_RegisterVariable (&sys_ticrate);
-	Cvar_RegisterVariable (&serverprofile);
+	host_framerate = Cvar_Get("host_framerate", "0", 0);	// set for slow motion
+	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 
-	Cvar_RegisterVariable (&fraglimit);
-	Cvar_RegisterVariable (&timelimit);
-	Cvar_RegisterVariable (&teamplay);
-	Cvar_RegisterVariable (&samelevel);
-	Cvar_RegisterVariable (&noexit);
-	Cvar_RegisterVariable (&skill);
-	Cvar_RegisterVariable (&developer);
-	Cvar_RegisterVariable (&deathmatch);
-	Cvar_RegisterVariable (&coop);
+	sys_ticrate = Cvar_Get("sys_ticrate", "0.05", 0);
+	serverprofile = Cvar_Get("serverprofile", "0", 0);
 
-	Cvar_RegisterVariable (&pausable);
+	fraglimit = Cvar_Get("fraglimit", "0", CVAR_SERVERINFO);
+	timelimit = Cvar_Get("timelimit", "0", CVAR_SERVERINFO);
+	teamplay = Cvar_Get("teamplay", "0", CVAR_SERVERINFO);
+	samelevel = Cvar_Get("samelevel", "0", 0);
+	noexit = Cvar_Get("noexit", "0", CVAR_SERVERINFO);
+	skill = Cvar_Get("skill", "1", 0);			// 0 - 3
+	deathmatch = Cvar_Get("deathmatch", "0", 0);	// 0, 1, or 2
+	coop = Cvar_Get("coop", "0", 0);			// 0 or 1
 
-	Cvar_RegisterVariable (&temp1);
+	developer = Cvar_Get("developer", "0", 0);
+
+	pausable = Cvar_Get("pausable", "1", 0);
+
+	temp1 = Cvar_Get("temp1", "0", 0);
 
 	Host_FindMaxClients ();
 	
@@ -518,8 +519,8 @@ qboolean Host_FilterTime (float time)
 	host_frametime = realtime - oldrealtime;
 	oldrealtime = realtime;
 
-	if (host_framerate.value > 0)
-		host_frametime = host_framerate.value;
+	if (host_framerate->value > 0)
+		host_frametime = host_framerate->value;
 	else
 	{	// don't allow really long or short frames
 		if (host_frametime > 0.1)
@@ -704,12 +705,12 @@ void _Host_Frame (float time)
 	}
 
 // update video
-	if (host_speeds.value)
+	if (host_speeds->value)
 		time1 = Sys_FloatTime ();
 		
 	SCR_UpdateScreen ();
 
-	if (host_speeds.value)
+	if (host_speeds->value)
 		time2 = Sys_FloatTime ();
 		
 // update audio
@@ -723,7 +724,7 @@ void _Host_Frame (float time)
 	
 	CDAudio_Update();
 
-	if (host_speeds.value)
+	if (host_speeds->value)
 	{
 		pass1 = (time1 - time3)*1000;
 		time3 = Sys_FloatTime ();
@@ -745,7 +746,7 @@ void Host_Frame (float time)
 	static int		timecount;
 	int		i, c, m;
 
-	if (!serverprofile.value)
+	if (!serverprofile->value)
 	{
 		_Host_Frame (time);
 		return;

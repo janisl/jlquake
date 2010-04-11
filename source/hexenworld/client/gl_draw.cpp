@@ -12,7 +12,7 @@ extern unsigned char d_15to8table[65536];
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
 QCvar*		gl_picmip;
-cvar_t		gl_spritemip = {"gl_spritemip", "0"};
+QCvar*		gl_spritemip;
 
 byte		*draw_chars;				// 8*8 graphic characters
 byte		*draw_smallchars;			// Small characters for status bar
@@ -447,10 +447,10 @@ void Draw_Init (void)
 	int		f, fstep;
 	char	temp[MAX_QPATH];
 
-    gl_nobind = Cvar_Get("gl_nobind", "0", 0);
-    gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
-    gl_picmip = Cvar_Get("gl_picmip", "0", 0);
-	Cvar_RegisterVariable (&gl_spritemip);
+	gl_nobind = Cvar_Get("gl_nobind", "0", 0);
+	gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
+	gl_picmip = Cvar_Get("gl_picmip", "0", 0);
+	gl_spritemip = Cvar_Get("gl_spritemip", "0", 0);
 
 	// rjr - handle powervr
 	// 3dfx can only handle 256 wide textures
@@ -670,13 +670,15 @@ void Draw_Red_String (int x, int y, char *str)
 
 void Draw_Crosshair(void)
 {
-	extern cvar_t crosshair, cl_crossx, cl_crossy;
+	extern QCvar* crosshair;
+	extern QCvar* cl_crossx;
+	extern QCvar* cl_crossy;
 	int x, y;
 	extern vrect_t		scr_vrect;
 
-	if (crosshair.value == 2) {
-		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx.value; 
-		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy.value;
+	if (crosshair->value == 2) {
+		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx->value; 
+		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy->value;
 		GL_Bind (cs_texture);
 
 		glBegin (GL_QUADS);
@@ -689,9 +691,9 @@ void Draw_Crosshair(void)
 		glTexCoord2f (0, 1);
 		glVertex2f (x - 4, y+12);
 		glEnd ();
-	} else if (crosshair.value)
-		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx.value, 
-			scr_vrect.y + scr_vrect.height/2-4 + cl_crossy.value, 
+	} else if (crosshair->value)
+		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx->value, 
+			scr_vrect.y + scr_vrect.height/2-4 + cl_crossy->value, 
 			'+');
 }
 
@@ -1543,8 +1545,8 @@ static	unsigned	scaled[1024*512];	// [512*256];
 
 	if (sprite)
 	{
-		scaled_width >>= (int)gl_spritemip.value;
-		scaled_height >>= (int)gl_spritemip.value;
+		scaled_width >>= (int)gl_spritemip->value;
+		scaled_height >>= (int)gl_spritemip->value;
 	}
 	else
 	{
@@ -1676,8 +1678,8 @@ void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboole
 
 	if (sprite)
 	{
-		scaled_width >>= (int)gl_spritemip.value;
-		scaled_height >>= (int)gl_spritemip.value;
+		scaled_width >>= (int)gl_spritemip->value;
+		scaled_height >>= (int)gl_spritemip->value;
 	}
 	else
 	{
