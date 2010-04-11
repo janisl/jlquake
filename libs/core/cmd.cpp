@@ -332,7 +332,7 @@ Returns true if any late commands were added, which
 will keep the demoloop from immediately starting
 =================
 */
-bool Cbuf_AddLateCommands()
+bool Cbuf_AddLateCommands(bool Insert)
 {
 	int		i, j;
 	int		s;
@@ -384,7 +384,16 @@ bool Cbuf_AddLateCommands()
 
 	ret = (build[0] != 0);
 	if (ret)
-		Cbuf_AddText (build);
+	{
+		if (Insert)
+		{
+			Cbuf_InsertText(build);
+		}
+		else
+		{
+			Cbuf_AddText(build);
+		}
+	}
 	
 	delete[] text;
 	delete[] build;
@@ -430,56 +439,7 @@ quake -nosound +cmd amlev1
 */
 void Cmd_StuffCmds_f (void)
 {
-	int		i, j;
-	int		s;
-	char	*text, *build, c;
-		
-// build the combined string to parse from
-	s = 0;
-	for (i=1 ; i<COM_Argc(); i++)
-	{
-		s += QStr::Length(COM_Argv(i)) + 1;
-	}
-	if (!s)
-		return;
-		
-	text = new char[s+1];
-	text[0] = 0;
-	for (i=1 ; i<COM_Argc() ; i++)
-	{
-		QStr::Cat(text, s + 1, COM_Argv(i));
-		if (i != COM_Argc()-1)
-			QStr::Cat(text, s + 1, " ");
-	}
-	
-// pull out the commands
-	build = new char[s+1];
-	build[0] = 0;
-	
-	for (i=0 ; i<s-1 ; i++)
-	{
-		if (text[i] == '+')
-		{
-			i++;
-
-			for (j=i ; (text[j] != '+') && (text[j] != '-') && (text[j] != 0) ; j++)
-				;
-
-			c = text[j];
-			text[j] = 0;
-			
-			QStr::Cat(build, s + 1, text+i);
-			QStr::Cat(build, s + 1, "\n");
-			text[j] = c;
-			i = j-1;
-		}
-	}
-	
-	if (build[0])
-		Cbuf_InsertText (build);
-	
-	delete[] text;
-	delete[] build;
+	Cbuf_AddLateCommands(true);
 }
 
 /*

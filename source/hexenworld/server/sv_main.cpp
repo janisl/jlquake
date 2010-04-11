@@ -1730,7 +1730,7 @@ void SV_Init (quakeparms_t *parms)
 	Con_Printf ("======== HexenWorld Initialized ========\n");
 	
 // process command line arguments
-	Cbuf_ExecuteText(EXEC_NOW, "stuffcmds");
+	Cbuf_AddLateCommands();
 	Cbuf_Execute ();
 
 // if a map wasn't specified on the command line, spawn start.map
