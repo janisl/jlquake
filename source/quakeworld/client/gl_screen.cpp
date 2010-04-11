@@ -92,6 +92,7 @@ QCvar*          scr_showpause;
 QCvar*          scr_printspeed;
 QCvar*			scr_allowsnap;
 QCvar*			gl_triplebuffer;
+QCvar*	        show_fps;
 extern QCvar*	crosshair;
 
 qboolean        scr_initialized;                // ready to draw
@@ -396,6 +397,9 @@ void SCR_Init (void)
 	scr_net = Draw_PicFromWad ("net");
 	scr_turtle = Draw_PicFromWad ("turtle");
 
+	show_fps = Cvar_Get("show_fps", "0", 0);			// set for running times
+	cl_sbar		= Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
+
 	scr_initialized = true;
 }
 
@@ -459,7 +463,6 @@ void SCR_DrawNet (void)
 
 void SCR_DrawFPS (void)
 {
-	extern QCvar* show_fps;
 	static double lastframetime;
 	double t;
 	extern int fps_count;
@@ -1087,7 +1090,7 @@ void SCR_UpdateScreen (void)
 	if (block_drawing)
 		return;
 
-	vid.numpages = 2 + gl_triplebuffer->value;
+    vid.numpages = 2 + (gl_triplebuffer ? gl_triplebuffer->value : 0);
 
 	scr_copytop = 0;
 	scr_copyeverything = 0;

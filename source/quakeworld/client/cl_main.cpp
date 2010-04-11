@@ -115,7 +115,6 @@ byte		*host_colormap;
 netadr_t	master_adr;				// address of the master server
 
 QCvar*	host_speeds;
-QCvar*	show_fps;
 QCvar*	developer;
 
 int			fps_count;
@@ -1086,7 +1085,6 @@ void CL_Init (void)
 	//
 	// register our commands
 	//
-	show_fps = Cvar_Get("show_fps", "0", 0);			// set for running times
 	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 	developer = Cvar_Get("developer", "0", 0);
 
@@ -1099,7 +1097,6 @@ void CL_Init (void)
 	cl_pitchspeed = Cvar_Get("cl_pitchspeed", "150", 0);
 	cl_anglespeedkey = Cvar_Get("cl_anglespeedkey", "1.5", 0);
 	cl_shownet = Cvar_Get("cl_shownet", "0", 0);	// can be 0, 1, or 2
-	cl_sbar		= Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
 	cl_hudswap	= Cvar_Get("cl_hudswap", "0", CVAR_ARCHIVE);
 	cl_maxfps	= Cvar_Get("cl_maxfps", "0", CVAR_ARCHIVE);
 	cl_timeout = Cvar_Get("cl_timeout", "60", 0);

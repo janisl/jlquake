@@ -823,7 +823,7 @@ void SCR_UpdateScreen (void)
 	if (block_drawing)
 		return;
 
-	vid.numpages = 2 + gl_triplebuffer->value;
+    vid.numpages = 2 + (gl_triplebuffer ? gl_triplebuffer->value : 0);
 
 	scr_copytop = 0;
 	scr_copyeverything = 0;
