@@ -77,34 +77,6 @@ cvar_t *Cvar_Set2( const char *var_name, const char *value, bool force )
 
 /*
 ============
-Cvar_Command
-
-Handles variable inspection and changing from the console
-============
-*/
-qboolean	Cvar_Command (void)
-{
-	cvar_t			*v;
-
-// check variables
-	v = Cvar_FindVar (Cmd_Argv(0));
-	if (!v)
-		return false;
-		
-// perform a variable print or set
-	if (Cmd_Argc() == 1)
-	{
-		Con_Printf ("\"%s\" is \"%s\"\n", v->name, v->string);
-		return true;
-	}
-
-	Cvar_Set (v->name, Cmd_Argv(1));
-	return true;
-}
-
-
-/*
-============
 Cvar_WriteVariables
 
 Writes lines containing "set variable value" for all variables

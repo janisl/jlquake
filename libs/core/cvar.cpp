@@ -358,3 +358,38 @@ const char *Cvar_CompleteVariable (const char *partial)
 
 	return NULL;
 }
+
+/*
+============
+Cvar_Command
+
+Handles variable inspection and changing from the console
+============
+*/
+bool Cvar_Command()
+{
+	cvar_t			*v;
+
+	// check variables
+	v = Cvar_FindVar (Cmd_Argv(0));
+	if (!v)
+	{
+		return false;
+	}
+
+	// perform a variable print or set
+	if (Cmd_Argc() == 1)
+	{
+		GLog.Write("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
+			v->name, v->string, v->resetString);
+		if (v->latchedString)
+		{
+			GLog.Write("latched: \"%s\"\n", v->latchedString);
+		}
+		return true;
+	}
+
+	// set the value if forcing isn't required
+	Cvar_Set2(v->name, Cmd_Argv(1), false);
+	return true;
+}

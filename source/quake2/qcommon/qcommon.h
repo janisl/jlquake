@@ -296,11 +296,6 @@ cvar_t 	*Cvar_FullSet (char *var_name, char *value, int flags);
 void	Cvar_GetLatchedVars (void);
 // any CVAR_LATCHED variables that have been set will now take effect
 
-qboolean Cvar_Command (void);
-// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
-// command.  Returns true if the command was a variable reference that
-// was handled. (print or change)
-
 void 	Cvar_WriteVariables (char *path);
 // appends lines containing "set variable value" for all variables
 // with the archive flag set to true.

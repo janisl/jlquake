@@ -93,6 +93,11 @@ const char* Cvar_CompleteVariable(const char* Partial);
 // attempts to match a partial variable name for command line completion
 // returns NULL if nothing fits
 
+bool Cvar_Command();
+// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
+// command.  Returns true if the command was a variable reference that
+// was handled. (print or change)
+
 typedef QCvar cvar_t;
 
 extern QCvar*		cvar_vars;

@@ -197,37 +197,6 @@ void Cvar_SetCheatState( void ) {
 
 /*
 ============
-Cvar_Command
-
-Handles variable inspection and changing from the console
-============
-*/
-qboolean Cvar_Command( void ) {
-	cvar_t			*v;
-
-	// check variables
-	v = Cvar_FindVar (Cmd_Argv(0));
-	if (!v) {
-		return qfalse;
-	}
-
-	// perform a variable print or set
-	if ( Cmd_Argc() == 1 ) {
-		Com_Printf ("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n", v->name, v->string, v->resetString );
-		if ( v->latchedString ) {
-			Com_Printf( "latched: \"%s\"\n", v->latchedString );
-		}
-		return qtrue;
-	}
-
-	// set the value if forcing isn't required
-	Cvar_Set2 (v->name, Cmd_Argv(1), qfalse);
-	return qtrue;
-}
-
-
-/*
-============
 Cvar_Toggle_f
 
 Toggles a cvar for easy single key binding

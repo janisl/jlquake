@@ -179,34 +179,6 @@ void Cvar_GetLatchedVars (void)
 
 /*
 ============
-Cvar_Command
-
-Handles variable inspection and changing from the console
-============
-*/
-qboolean Cvar_Command (void)
-{
-	cvar_t			*v;
-
-// check variables
-	v = Cvar_FindVar (Cmd_Argv(0));
-	if (!v)
-		return false;
-		
-// perform a variable print or set
-	if (Cmd_Argc() == 1)
-	{
-		Com_Printf ("\"%s\" is \"%s\"\n", v->name, v->string);
-		return true;
-	}
-
-	Cvar_SetLatched(v->name, Cmd_Argv(1));
-	return true;
-}
-
-
-/*
-============
 Cvar_Set_f
 
 Allows setting and defining of arbitrary cvars from console
