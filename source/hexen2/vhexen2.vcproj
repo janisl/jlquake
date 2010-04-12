@@ -258,8 +258,8 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(TargetDir)$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(TargetDir)$(InputName).obj"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)/$(InputName).obj"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -267,8 +267,8 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(TargetDir)$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(TargetDir)$(InputName).obj"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)/$(InputName).obj"
 					/>
 				</FileConfiguration>
 			</File>
@@ -412,8 +412,8 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(TargetDir)$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(TargetDir)$(InputName).obj"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)/$(InputName).obj"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -421,8 +421,8 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(TargetDir)$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(TargetDir)$(InputName).obj"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)/$(InputName).obj"
 					/>
 				</FileConfiguration>
 			</File>
@@ -470,8 +470,8 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(TargetDir)$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(TargetDir)$(InputName).obj"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)/$(InputName).obj"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -479,8 +479,8 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(TargetDir)$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(TargetDir)$(InputName).obj"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)/$(InputName).obj"
 					/>
 				</FileConfiguration>
 			</File>

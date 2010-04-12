@@ -348,14 +348,14 @@
 				>
 			</File>
 			<File
-				RelativePath="snd_mixa.s"
+				RelativePath=".\snd_mixa.asm"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -364,7 +364,7 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="cl /EP &gt; $(IntDir)\$(InputName).spp $(InputPath)&#x0D;&#x0A;$(OutDir)\gas2masm &lt; $(IntDir)\$(InputName).spp &gt;                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;ml /c /Cp /coff /Fo$(IntDir)\$(InputName).obj /Zm /Zi                                                                                                                                                                                                    $(OUTDIR)\$(InputName).asm&#x0D;&#x0A;del $(IntDir)\$(InputName).spp&#x0D;&#x0A;"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>

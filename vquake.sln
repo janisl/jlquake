@@ -1,23 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gas2masm", "source\quake\gas2masm\gas2masm.vcproj", "{D2A02411-6347-4D10-8EAD-B495D9348CB6}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vquake", "source\quake\vquake.vcproj", "{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6} = {D2A02411-6347-4D10-8EAD-B495D9348CB6}
 		{0E31D872-F284-45B8-B4FD-11009667B854} = {0E31D872-F284-45B8-B4FD-11009667B854}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vqwcl", "source\quakeworld\client\vqwcl.vcproj", "{D4534779-D8AA-4694-8119-7A899AEFA0F3}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6} = {D2A02411-6347-4D10-8EAD-B495D9348CB6}
 		{0E31D872-F284-45B8-B4FD-11009667B854} = {0E31D872-F284-45B8-B4FD-11009667B854}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vqwsv", "source\quakeworld\server\vqwsv.vcproj", "{9083E67D-9909-407C-ABE1-441C5B45C8C6}"
 	ProjectSection(ProjectDependencies) = postProject
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6} = {D2A02411-6347-4D10-8EAD-B495D9348CB6}
 		{0E31D872-F284-45B8-B4FD-11009667B854} = {0E31D872-F284-45B8-B4FD-11009667B854}
 	EndProjectSection
 EndProject
@@ -75,10 +70,6 @@ Global
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.Debug|Win32.ActiveCfg = Debug|Win32
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.Debug|Win32.Build.0 = Debug|Win32
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.Release|Win32.ActiveCfg = Release|Win32
-		{D2A02411-6347-4D10-8EAD-B495D9348CB6}.Release|Win32.Build.0 = Release|Win32
 		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.Debug|Win32.ActiveCfg = Debug|Win32
 		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.Debug|Win32.Build.0 = Debug|Win32
 		{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}.Release|Win32.ActiveCfg = Release|Win32
