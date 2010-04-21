@@ -75,17 +75,17 @@ static	joystickInfo_t	joy;
 
 
 
-cvar_t	*in_midi;
-cvar_t	*in_midiport;
-cvar_t	*in_midichannel;
-cvar_t	*in_mididevice;
+QCvar	*in_midi;
+QCvar	*in_midiport;
+QCvar	*in_midichannel;
+QCvar	*in_mididevice;
 
-cvar_t	*in_mouse;
-cvar_t  *in_logitechbug;
-cvar_t	*in_joystick;
-cvar_t	*in_joyBallScale;
-cvar_t	*in_debugJoystick;
-cvar_t	*joy_threshold;
+QCvar	*in_mouse;
+QCvar  *in_logitechbug;
+QCvar	*in_joystick;
+QCvar	*in_joyBallScale;
+QCvar	*in_debugJoystick;
+QCvar	*joy_threshold;
 
 qboolean	in_appactive;
 

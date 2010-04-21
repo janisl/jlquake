@@ -871,20 +871,12 @@ void M_Class_Key (int key)
 		S_LocalSound ("raven/menu1.wav");
 		if (++m_class_cursor >= CLASS_ITEMS)
 			m_class_cursor = 0;
-
-//		if ((!registered.value && !oem.value) && m_class_cursor >= 1 && m_class_cursor <= 2)
-//			m_class_cursor = CLASS_ITEMS - 1;
-
 		break;
 
 	case K_UPARROW:
 		S_LocalSound ("raven/menu1.wav");
 		if (--m_class_cursor < 0)
 			m_class_cursor = CLASS_ITEMS - 1;
-
-//		if ((!registered.value && !oem.value) && m_class_cursor >= 1 && m_class_cursor <= 2)
-//			m_class_cursor = 0;
-
 		break;
 
 	case K_ENTER:
@@ -1023,19 +1015,21 @@ void M_ScanSaves (void)
 {
 	int		i, j;
 	char	name[MAX_OSPATH];
-	FILE	*f;
+	fileHandle_t	f;
 	int		version;
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
 		QStr::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
 		loadable[i] = false;
-		sprintf (name, "%s/s%i/info.dat", com_gamedir, i);
-		f = fopen (name, "r");
+		sprintf (name, "s%i/info.dat", i);
+		if (!FS_FileExists(name))
+			continue;
+		FS_FOpenFileRead(name, &f, true);
 		if (!f)
 			continue;
-		fscanf (f, "%i\n", &version);
-		fscanf (f, "%79s\n", name);
+		FS_Scanf(f, "%i\n", &version);
+		FS_Scanf(f, "%79s\n", name);
 		QStr::NCpy(m_filenames[i], name, sizeof(m_filenames[i])-1);
 
 	// change _ back to space
@@ -1043,7 +1037,7 @@ void M_ScanSaves (void)
 			if (m_filenames[i][j] == '_')
 				m_filenames[i][j] = ' ';
 		loadable[i] = true;
-		fclose (f);			
+		FS_FCloseFile(f);
 	}
 }
 
@@ -1187,19 +1181,21 @@ void M_ScanMSaves (void)
 {
 	int		i, j;
 	char	name[MAX_OSPATH];
-	FILE	*f;
+	fileHandle_t	f;
 	int		version;
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
 		QStr::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
 		loadable[i] = false;
-		sprintf (name, "%s/ms%i/info.dat", com_gamedir, i);
-		f = fopen (name, "r");
+		sprintf (name, "ms%i/info.dat", i);
+		if (!FS_FileExists(name))
+			continue;
+		FS_FOpenFileRead(name, &f, true);
 		if (!f)
 			continue;
-		fscanf (f, "%i\n", &version);
-		fscanf (f, "%79s\n", name);
+		FS_Scanf(f, "%i\n", &version);
+		FS_Scanf(f, "%79s\n", name);
 		QStr::NCpy(m_filenames[i], name, sizeof(m_filenames[i])-1);
 
 	// change _ back to space
@@ -1207,7 +1203,7 @@ void M_ScanMSaves (void)
 			if (m_filenames[i][j] == '_')
 				m_filenames[i][j] = ' ';
 		loadable[i] = true;
-		fclose (f);			
+		FS_FCloseFile(f);
 	}
 }
 
@@ -1512,9 +1508,6 @@ void M_Setup_Key (int k)
 			setup_class--;
 			if (setup_class < 1) 
 				setup_class = NUM_CLASSES;
-
-//			if ((!registered.value && !oem.value) && setup_class >= 2 && setup_class < NUM_CLASSES)
-//				setup_class = 5;
 		}
 		if (setup_cursor == 3)
 			setup_top = setup_top - 1;
@@ -1531,9 +1524,6 @@ forward:
 			setup_class++;
 			if (setup_class > NUM_CLASSES) 
 				setup_class = 1;
-
-//			if ((!registered.value && !oem.value) && setup_class >= 2 && setup_class < NUM_CLASSES)
-//				setup_class = NUM_CLASSES;
 		}
 		if (setup_cursor == 3)
 			setup_top = setup_top + 1;
@@ -3764,9 +3754,6 @@ void M_Menu_GameOptions_f (void)
 		setup_class = NUM_CLASSES;
 	setup_class--;
 
-	if (oem->value && startepisode < OEM_START)
-		startepisode = OEM_START;
-
 	if (registered->value && (startepisode < REG_START || startepisode >= OEM_START))
 		startepisode = REG_START;
 
@@ -3940,10 +3927,6 @@ void M_NetStart_Change (int dir)
 
 	case 4:
 		setup_class += dir;
-//		if ((!registered.value && !oem.value) && setup_class == 1)
-//			setup_class = NUM_CLASSES - 1;
-//		if ((!registered.value && !oem.value) && setup_class == 2)
-//			setup_class = 0;
 		if (setup_class < 0) 
 			setup_class = NUM_CLASSES - 1;
 		if (setup_class > NUM_CLASSES - 1) 
@@ -4001,18 +3984,6 @@ void M_NetStart_Change (int dir)
 
 			if (startepisode >= count)
 				startepisode = REG_START;
-
-			startlevel = 0;
-		}
-		else if (oem->value)
-		{
-			count = 10;
-
-			if (startepisode < 8)
-				startepisode = count - 1;
-
-			if (startepisode >= count)
-				startepisode = 8;
 
 			startlevel = 0;
 		}

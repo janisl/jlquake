@@ -68,70 +68,70 @@ refdef_t	r_newrefdef;
 
 int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
-cvar_t	*r_norefresh;
-cvar_t	*r_drawentities;
-cvar_t	*r_drawworld;
-cvar_t	*r_speeds;
-cvar_t	*r_fullbright;
-cvar_t	*r_novis;
-cvar_t	*r_nocull;
-cvar_t	*r_lerpmodels;
-cvar_t	*r_lefthand;
+QCvar	*r_norefresh;
+QCvar	*r_drawentities;
+QCvar	*r_drawworld;
+QCvar	*r_speeds;
+QCvar	*r_fullbright;
+QCvar	*r_novis;
+QCvar	*r_nocull;
+QCvar	*r_lerpmodels;
+QCvar	*r_lefthand;
 
-cvar_t	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
+QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
-cvar_t	*gl_nosubimage;
-cvar_t	*gl_allow_software;
+QCvar	*gl_nosubimage;
+QCvar	*gl_allow_software;
 
-cvar_t	*gl_vertex_arrays;
+QCvar	*gl_vertex_arrays;
 
-cvar_t	*gl_particle_min_size;
-cvar_t	*gl_particle_max_size;
-cvar_t	*gl_particle_size;
-cvar_t	*gl_particle_att_a;
-cvar_t	*gl_particle_att_b;
-cvar_t	*gl_particle_att_c;
+QCvar	*gl_particle_min_size;
+QCvar	*gl_particle_max_size;
+QCvar	*gl_particle_size;
+QCvar	*gl_particle_att_a;
+QCvar	*gl_particle_att_b;
+QCvar	*gl_particle_att_c;
 
-cvar_t	*gl_ext_swapinterval;
-cvar_t	*gl_ext_palettedtexture;
-cvar_t	*gl_ext_multitexture;
-cvar_t	*gl_ext_pointparameters;
-cvar_t	*gl_ext_compiled_vertex_array;
+QCvar	*gl_ext_swapinterval;
+QCvar	*gl_ext_palettedtexture;
+QCvar	*gl_ext_multitexture;
+QCvar	*gl_ext_pointparameters;
+QCvar	*gl_ext_compiled_vertex_array;
 
-cvar_t	*gl_log;
-cvar_t	*gl_bitdepth;
-cvar_t	*gl_drawbuffer;
-cvar_t  *gl_driver;
-cvar_t	*gl_lightmap;
-cvar_t	*gl_shadows;
-cvar_t	*gl_mode;
-cvar_t	*gl_dynamic;
-cvar_t  *gl_monolightmap;
-cvar_t	*gl_modulate;
-cvar_t	*gl_nobind;
-cvar_t	*gl_round_down;
-cvar_t	*gl_picmip;
-cvar_t	*gl_skymip;
-cvar_t	*gl_showtris;
-cvar_t	*gl_ztrick;
-cvar_t	*gl_finish;
-cvar_t	*gl_clear;
-cvar_t	*gl_cull;
-cvar_t	*gl_polyblend;
-cvar_t	*gl_flashblend;
-cvar_t	*gl_playermip;
-cvar_t  *gl_saturatelighting;
-cvar_t	*gl_swapinterval;
-cvar_t	*gl_texturemode;
-cvar_t	*gl_texturealphamode;
-cvar_t	*gl_texturesolidmode;
-cvar_t	*gl_lockpvs;
+QCvar	*gl_log;
+QCvar	*gl_bitdepth;
+QCvar	*gl_drawbuffer;
+QCvar  *gl_driver;
+QCvar	*gl_lightmap;
+QCvar	*gl_shadows;
+QCvar	*gl_mode;
+QCvar	*gl_dynamic;
+QCvar  *gl_monolightmap;
+QCvar	*gl_modulate;
+QCvar	*gl_nobind;
+QCvar	*gl_round_down;
+QCvar	*gl_picmip;
+QCvar	*gl_skymip;
+QCvar	*gl_showtris;
+QCvar	*gl_ztrick;
+QCvar	*gl_finish;
+QCvar	*gl_clear;
+QCvar	*gl_cull;
+QCvar	*gl_polyblend;
+QCvar	*gl_flashblend;
+QCvar	*gl_playermip;
+QCvar  *gl_saturatelighting;
+QCvar	*gl_swapinterval;
+QCvar	*gl_texturemode;
+QCvar	*gl_texturealphamode;
+QCvar	*gl_texturesolidmode;
+QCvar	*gl_lockpvs;
 
-cvar_t	*gl_3dlabs_broken;
+QCvar	*gl_3dlabs_broken;
 
-cvar_t	*vid_fullscreen;
-cvar_t	*vid_gamma;
-cvar_t	*vid_ref;
+QCvar	*vid_fullscreen;
+QCvar	*vid_gamma;
+QCvar	*vid_ref;
 
 /*
 =================
@@ -1368,7 +1368,7 @@ void R_BeginFrame( float camera_separation )
 	*/
 	if ( gl_mode->modified || vid_fullscreen->modified )
 	{	// FIXME: only restart if CDS is required
-		cvar_t	*ref;
+		QCvar	*ref;
 
 		ref = ri.Cvar_Get ("vid_ref", "gl", 0);
 		ref->modified = true;

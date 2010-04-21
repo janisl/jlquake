@@ -25,45 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "qcommon.h"
 
 /*
-==============================================================================
-
-						SCRIPT COMMANDS
-
-==============================================================================
-*/
-
-
-/*
-===============
-Cmd_Exec_f
-===============
-*/
-void Cmd_Exec_f( void ) {
-	char	*f;
-	int		len;
-	char	filename[MAX_QPATH];
-
-	if (Cmd_Argc () != 2) {
-		Com_Printf ("exec <filename> : execute a script file\n");
-		return;
-	}
-
-	QStr::NCpyZ( filename, Cmd_Argv(1), sizeof( filename ) );
-	QStr::DefaultExtension( filename, sizeof( filename ), ".cfg" ); 
-	len = FS_ReadFile( filename, (void **)&f);
-	if (!f) {
-		Com_Printf ("couldn't exec %s\n",Cmd_Argv(1));
-		return;
-	}
-	Com_Printf ("execing %s\n",Cmd_Argv(1));
-	
-	Cbuf_InsertText (f);
-
-	FS_FreeFile (f);
-}
-
-
-/*
 =============================================================================
 
 					COMMAND EXECUTION
@@ -104,8 +65,7 @@ void Cmd_HandleUnknownCommand()
 Cmd_Init
 ============
 */
-void Cmd_Init (void) {
+void Cmd_Init (void)
+{
 	Cmd_SharedInit(false);
-	Cmd_AddCommand ("exec",Cmd_Exec_f);
 }
-

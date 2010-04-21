@@ -29,18 +29,18 @@ int		realtime;
 jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 
-FILE	*log_stats_file;
+fileHandle_t		log_stats_file;
 
-cvar_t	*host_speeds;
-cvar_t	*log_stats;
-cvar_t	*developer;
-cvar_t	*timescale;
-cvar_t	*fixedtime;
-cvar_t	*logfile_active;	// 1 = buffer log, 2 = flush after each print
-cvar_t	*showtrace;
-cvar_t	*dedicated;
+QCvar	*host_speeds;
+QCvar	*log_stats;
+QCvar	*developer;
+QCvar	*timescale;
+QCvar	*fixedtime;
+QCvar	*logfile_active;	// 1 = buffer log, 2 = flush after each print
+QCvar	*showtrace;
+QCvar	*dedicated;
 
-FILE	*logfile;
+static fileHandle_t		logfile;
 
 int			server_state;
 
@@ -137,17 +137,14 @@ void Com_Printf (char *fmt, ...)
 	// logfile
 	if (logfile_active && logfile_active->value)
 	{
-		char	name[MAX_QPATH];
-		
 		if (!logfile)
 		{
-			QStr::Sprintf(name, sizeof(name), "%s/qconsole.log", FS_Gamedir ());
-			logfile = fopen (name, "w");
+			logfile = FS_FOpenFileWrite("qconsole.log");
 		}
 		if (logfile)
-			fprintf (logfile, "%s", msg);
+			FS_Printf(logfile, "%s", msg);
 		if (logfile_active->value > 1)
-			fflush (logfile);		// force it to save every time
+			FS_Flush(logfile);		// force it to save every time
 	}
 }
 
@@ -219,8 +216,8 @@ void Com_Error (int code, char *fmt, ...)
 
 	if (logfile)
 	{
-		fclose (logfile);
-		logfile = NULL;
+		FS_FCloseFile(logfile);
+		logfile = 0;
 	}
 
 	Sys_Error ("%s", msg);
@@ -242,8 +239,8 @@ void Com_Quit (void)
 
 	if (logfile)
 	{
-		fclose (logfile);
-		logfile = NULL;
+		FS_FCloseFile(logfile);
+		logfile = 0;
 	}
 
 	Sys_Quit ();
@@ -665,50 +662,6 @@ char *CopyString (char *in)
 
 
 
-void Info_Print (char *s)
-{
-	char	key[512];
-	char	value[512];
-	char	*o;
-	int		l;
-
-	if (*s == '\\')
-		s++;
-	while (*s)
-	{
-		o = key;
-		while (*s && *s != '\\')
-			*o++ = *s++;
-
-		l = o - key;
-		if (l < 20)
-		{
-			Com_Memset(o, ' ', 20-l);
-			key[20] = 0;
-		}
-		else
-			*o = 0;
-		Com_Printf ("%s", key);
-
-		if (!*s)
-		{
-			Com_Printf ("MISSING VALUE\n");
-			return;
-		}
-
-		o = value;
-		s++;
-		while (*s && *s != '\\')
-			*o++ = *s++;
-		*o = 0;
-
-		if (*s)
-			s++;
-		Com_Printf ("%s\n", value);
-	}
-}
-
-
 /*
 ==============================================================================
 
@@ -1032,6 +985,7 @@ void Qcommon_Init (int argc, char **argv)
 	if (setjmp (abortframe) )
 		Sys_Error ("Error during initialization");
 
+	Sys_SetHomePathSuffix("vquake2");
 	GLog.AddListener(&MainLog);
 
 	z_chain.next = z_chain.prev = &z_chain;
@@ -1142,18 +1096,18 @@ void Qcommon_Frame (int msec)
 		{
 			if ( log_stats_file )
 			{
-				fclose( log_stats_file );
+				FS_FCloseFile(log_stats_file);
 				log_stats_file = 0;
 			}
-			log_stats_file = fopen( "stats.log", "w" );
+			log_stats_file = FS_FOpenFileWrite("stats.log");
 			if ( log_stats_file )
-				fprintf( log_stats_file, "entities,dlights,parts,frame time\n" );
+				FS_Printf(log_stats_file, "entities,dlights,parts,frame time\n");
 		}
 		else
 		{
 			if ( log_stats_file )
 			{
-				fclose( log_stats_file );
+				FS_FCloseFile( log_stats_file );
 				log_stats_file = 0;
 			}
 		}

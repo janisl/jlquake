@@ -58,9 +58,9 @@ static int             joy_fd = -1;
 
 
 // bk001130 - from linux_glimp.c
-extern cvar_t *  in_joystick;
-extern cvar_t *  in_joystickDebug;
-extern cvar_t *  joy_threshold;
+extern QCvar *  in_joystick;
+extern QCvar *  in_joystickDebug;
+extern QCvar *  joy_threshold;
 
 
 /**********************************************/

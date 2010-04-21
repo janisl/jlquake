@@ -21,9 +21,9 @@ Returns true and fills in the "dma" structure with information for the mixer.
 
 #define UST_TO_BUFFPOS(ust) ((int)((ust) & (QSND_BUFFER_FRAMES - 1)) << 1)
 
-cvar_t *s_loadas8bit;
-cvar_t *s_khz;
-cvar_t *sndchannels;
+QCvar *s_loadas8bit;
+QCvar *s_khz;
+QCvar *sndchannels;
 
 short int dma_buffer[QSND_BUFFER_SIZE];
 ALport sgisnd_aport = NULL;

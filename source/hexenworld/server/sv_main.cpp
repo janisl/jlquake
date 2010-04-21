@@ -79,8 +79,8 @@ QCvar*	sv_ce_max_size;
 
 QCvar*	noexit;
 
-FILE	*sv_logfile;
-FILE	*sv_fraglogfile;
+fileHandle_t	sv_logfile;
+fileHandle_t	sv_fraglogfile;
 
 void SV_AcceptClient (netadr_t adr, int userid, char *userinfo);
 void Master_Shutdown (void);
@@ -101,152 +101,11 @@ public:
 	}
 } MainLog;
 
+void S_ClearSoundBuffer()
+{
+}
+
 //============================================================================
-
-static qboolean IsGip(const char* name)
-{
-	int l = QStr::Length(name);
-	if (l < 4)
-	{
-		return false;
-	}
-	return !QStr::Cmp(name + l - 4, ".gip");
-}
-
-void SV_RemoveGIPFiles (char *path)
-{
-	char			name[MAX_OSPATH],tempdir[MAX_OSPATH];
-	int				i;
-#ifdef _WIN32
-	HANDLE			handle;
-	WIN32_FIND_DATA filedata;
-	BOOL			retval;
-#else
-	DIR* current_dir;
-	struct dirent *de;
-	qboolean error;
-#endif
-
-#ifdef _WIN32
-	if (path)
-	{
-		sprintf(tempdir,"%s\\",path);
-	}
-	else
-	{
-		i = GetTempPath(sizeof(tempdir),tempdir);
-		if (!i) 
-		{
-			sprintf(tempdir,"%s\\",com_gamedir);
-		}
-	}
-
-	sprintf (name, "%s*.gip", tempdir);
-
-	handle = FindFirstFile(name,&filedata);
-	retval = TRUE;
-
-	while (handle != INVALID_HANDLE_VALUE && retval)
-	{
-		sprintf(name,"%s%s", tempdir,filedata.cFileName);
-		DeleteFile(name);
-
-		retval = FindNextFile(handle,&filedata);
-	}
-
-	if (handle != INVALID_HANDLE_VALUE)
-		FindClose(handle);
-#else
-	if (path)
-	{
-		sprintf(tempdir,"%s\\",path);
-	}
-	else
-	{
-		sprintf(tempdir,"%s\\",com_gamedir);
-	}
-
-	error = false;
-	current_dir = opendir(tempdir);
-	if (current_dir)
-	{
-		while (!error && (de = readdir(current_dir)) != NULL)
-		{
-			if (IsGip(de->d_name))
-			{
-				sprintf(name,"%s%s", tempdir, de->d_name);
-				remove(name);
-			}
-		}
-		closedir(current_dir);
-	}
-#endif
-}
-
-qboolean SV_CopyFiles(char *source, char *pat, char *dest)
-{
-#ifdef _WIN32
-	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
-	HANDLE handle;
-	WIN32_FIND_DATA filedata;
-	BOOL retval,error;
-
-	handle = FindFirstFile(pat,&filedata);
-	retval = TRUE;
-	error = false;
-
-	while (handle != INVALID_HANDLE_VALUE && retval)
-	{
-		sprintf(name,"%s%s", source, filedata.cFileName);
-		sprintf(tempdir,"%s%s", dest, filedata.cFileName);
-		if (!CopyFile(name,tempdir,FALSE))
-			error = true;
-
-		retval = FindNextFile(handle,&filedata);
-	}
-
-	if (handle != INVALID_HANDLE_VALUE)
-		FindClose(handle);
-
-	return error;
-#else
-	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
-	DIR* current_dir;
-	struct dirent *de;
-	qboolean error;
-
-	error = false;
-	current_dir = opendir(source);
-	if (current_dir)
-	{
-		while (!error && (de = readdir(current_dir)) != NULL)
-		{
-			if (IsGip(de->d_name))
-			{
-				FILE* f1;
-				FILE* f2;
-				int l;
-				void* b;
-				sprintf(name,"%s%s", source, de->d_name);
-				sprintf(tempdir,"%s%s", dest, de->d_name);
-				f1 = fopen(name, "rb");
-				f2 = fopen(tempdir, "wb");
-				fseek(f1, 0, SEEK_END);
-				l = ftell(f1);
-				fseek(f1, 0, SEEK_SET);
-				b = malloc(l);
-				fread(b, 1, l, f1);
-				fclose(f1);
-				fwrite(b, 1, l, f2);
-				fclose(f2);
-			}
-		}
-		closedir(current_dir);
-	}
-
-	return error;
-#endif
-}
 
 /*
 ================
@@ -260,13 +119,13 @@ void SV_Shutdown (void)
 	Master_Shutdown ();
 	if (sv_logfile)
 	{
-		fclose (sv_logfile);
-		sv_logfile = NULL;
+		FS_FCloseFile(sv_logfile);
+		sv_logfile = 0;
 	}
 	if (sv_fraglogfile)
 	{
-		fclose (sv_fraglogfile);
-		sv_logfile = NULL;
+		FS_FCloseFile(sv_fraglogfile);
+		sv_fraglogfile = 0;
 	}
 	NET_Shutdown ();
 }
@@ -377,8 +236,8 @@ void SV_DropClient (client_t *drop)
 
 	if (drop->download)
 	{
-		fclose (drop->download);
-		drop->download = NULL;
+		FS_FCloseFile (drop->download);
+		drop->download = 0;
 	}
 
 	drop->state = cs_zombie;		// become free in a few seconds
@@ -477,7 +336,7 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 	buf->WriteFloat(realtime - client->connection_started);
 
 	QStr::Cpy(info, client->userinfo);
-	Info_RemovePrefixedKeys (info, '_');	// server passwords, etc
+	Info_RemovePrefixedKeys (info, '_', MAX_INFO_STRING);	// server passwords, etc
 
 	buf->WriteByte(svc_updateuserinfo);
 	buf->WriteByte(i);
@@ -626,7 +485,7 @@ void SVC_DirectConnect (void)
 	client_t	temp;
 	edict_t		*ent;
 	int			edictnum;
-	char		*s;
+	const char	*s;
 	int			clients, spectators;
 	qboolean	spectator;
 
@@ -644,9 +503,9 @@ void SVC_DirectConnect (void)
 			Netchan_OutOfBandPrint (net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
 			return;
 		}
-		Info_SetValueForStarKey (userinfo, "*spectator", "1", MAX_INFO_STRING);
+		Info_SetValueForKey(userinfo, "*spectator", "1", MAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		spectator = true;
-		Info_RemoveKey (userinfo, "spectator"); // remove passwd
+		Info_RemoveKey (userinfo, "spectator", MAX_INFO_STRING); // remove passwd
 	}
 	else
 	{
@@ -660,7 +519,7 @@ void SVC_DirectConnect (void)
 			return;
 		}
 		spectator = false;
-		Info_RemoveKey (userinfo, "password"); // remove passwd
+		Info_RemoveKey (userinfo, "password", MAX_INFO_STRING); // remove passwd
 	}
 
 	adr = net_from;
@@ -1074,16 +933,16 @@ SV_WriteIP_f
 */
 void SV_WriteIP_f (void)
 {
-	FILE	*f;
+	fileHandle_t	f;
 	char	name[MAX_OSPATH];
 	byte	b[4];
 	int		i;
 
-	sprintf (name, "%s/listip.cfg", com_gamedir);
+	sprintf (name, "listip.cfg");
 
 	Con_Printf ("Writing %s.\n", name);
 
-	f = fopen (name, "wb");
+	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
 		Con_Printf ("Couldn't open %s\n", name);
@@ -1093,10 +952,10 @@ void SV_WriteIP_f (void)
 	for (i=0 ; i<numipfilters ; i++)
 	{
 		*(unsigned *)b = ipfilters[i].compare;
-		fprintf (f, "addip %i.%i.%i.%i\n", b[0], b[1], b[2], b[3]);
+		FS_Printf (f, "addip %i.%i.%i.%i\n", b[0], b[1], b[2], b[3]);
 	}
 	
-	fclose (f);
+	FS_FCloseFile (f);
 }
 
 /*
@@ -1272,9 +1131,9 @@ void SV_CheckVars (void)
 
 	Con_Printf ("Updated needpass.\n");
 	if (!v)
-		Info_SetValueForKey (svs.info, "needpass", "", MAX_SERVERINFO_STRING);
+		Info_SetValueForKey(svs.info, "needpass", "", MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 	else
-		Info_SetValueForKey (svs.info, "needpass", va("%i",v), MAX_SERVERINFO_STRING);
+		Info_SetValueForKey(svs.info, "needpass", va("%i",v), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 }
 
 /*
@@ -1445,7 +1304,7 @@ void SV_InitLocal (void)
 	for (i=0 ; i<MAX_MODELS ; i++)
 		sprintf (localmodels[i], "*%i", i);
 
-	Info_SetValueForStarKey (svs.info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING);
+	Info_SetValueForKey(svs.info, "*version", va("%4.2f", VERSION), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 
 	// init fraglog stuff
 	svs.logsequence = 1;
@@ -1545,7 +1404,8 @@ into a more C freindly form.
 */
 void SV_ExtractFromUserinfo (client_t *cl)
 {
-	char		*val, *p, *q;
+	const char	*val;
+	char		*p, *q;
 	int			i;
 	client_t	*client;
 	int			dupc = 1;
@@ -1571,12 +1431,12 @@ void SV_ExtractFromUserinfo (client_t *cl)
 	p[1] = 0;
 
 	if (QStr::Cmp(val, newname)) {
-		Info_SetValueForKey (cl->userinfo, "name", newname, MAX_INFO_STRING);
+		Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		val = Info_ValueForKey (cl->userinfo, "name");
 	}
 
 	if (!val[0] || !QStr::ICmp(val, "console")) {
-		Info_SetValueForKey (cl->userinfo, "name", "unnamed", MAX_INFO_STRING);
+		Info_SetValueForKey(cl->userinfo, "name", "unnamed", MAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		val = Info_ValueForKey (cl->userinfo, "name");
 	}
 
@@ -1588,19 +1448,22 @@ void SV_ExtractFromUserinfo (client_t *cl)
 			if (!QStr::ICmp(client->name, val))
 				break;
 		}
-		if (i != MAX_CLIENTS) { // dup name
+		if (i != MAX_CLIENTS)
+		{ // dup name
+			char tmp[80];
+			QStr::NCpyZ(tmp, val, sizeof(tmp));
 			if (QStr::Length(val) > sizeof(cl->name) - 1)
-				val[sizeof(cl->name) - 4] = 0;
-			p = val;
+				tmp[sizeof(cl->name) - 4] = 0;
+			p = tmp;
 
-			if (val[0] == '(')
-				if (val[2] == ')')
-					p = val + 3;
-				else if (val[3] == ')')
-					p = val + 4;
+			if (tmp[0] == '(')
+				if (tmp[2] == ')')
+					p = tmp + 3;
+				else if (tmp[3] == ')')
+					p = tmp + 4;
 
 			sprintf(newname, "(%d)%-0.40s", dupc++, p);
-			Info_SetValueForKey (cl->userinfo, "name", newname, MAX_INFO_STRING);
+			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
 			val = Info_ValueForKey (cl->userinfo, "name");
 		} else
 			break;
@@ -1636,7 +1499,7 @@ void SV_ExtractFromUserinfo (client_t *cl)
 		if (cl->edict->v.health > 0)
 		{
 			sprintf(newname,"%d",cl->playerclass);
-			Info_SetValueForKey (cl->userinfo, "playerclass", newname, MAX_INFO_STRING);
+			Info_SetValueForKey(cl->userinfo, "playerclass", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		}
 	}
 
@@ -1689,6 +1552,7 @@ void SV_Init (quakeparms_t *parms)
 {
 	try
 	{
+	Sys_SetHomePathSuffix("vhexen2");
 	GLog.AddListener(&MainLog);
 
 	COM_InitArgv2(parms->argc, parms->argv);
@@ -1706,6 +1570,7 @@ void SV_Init (quakeparms_t *parms)
 	Memory_Init (parms->membase, parms->memsize);
 	Cbuf_Init ();
 	Cmd_Init ();	
+	Cvar_Init();
 
 	COM_Init (parms->basedir);
 	

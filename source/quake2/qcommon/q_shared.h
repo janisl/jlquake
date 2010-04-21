@@ -83,11 +83,6 @@ void Com_PageInMemory (byte *buffer, int size);
 #define	MAX_INFO_VALUE		64
 #define	MAX_INFO_STRING		512
 
-char *Info_ValueForKey (char *s, char *key);
-void Info_RemoveKey (char *s, char *key);
-void Info_SetValueForKey (char *s, char *key, char *value);
-qboolean Info_Validate (char *s);
-
 /*
 ==============================================================
 
@@ -99,7 +94,6 @@ SYSTEM SPECIFIC
 extern	int	curtime;		// time returned by last Sys_Milliseconds
 
 int		Sys_Milliseconds (void);
-void	Sys_Mkdir (char *path);
 
 // large block stack allocation routines
 void	*Hunk_Begin (int maxsize);

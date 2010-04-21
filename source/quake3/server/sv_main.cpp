@@ -26,32 +26,32 @@ serverStatic_t	svs;				// persistant server info
 server_t		sv;					// local server
 vm_t			*gvm = NULL;				// game virtual machine // bk001212 init
 
-cvar_t	*sv_fps;				// time rate for running non-clients
-cvar_t	*sv_timeout;			// seconds without any message
-cvar_t	*sv_zombietime;			// seconds to sink messages after disconnect
-cvar_t	*sv_rconPassword;		// password for remote server commands
-cvar_t	*sv_privatePassword;	// password for the privateClient slots
-cvar_t	*sv_allowDownload;
-cvar_t	*sv_maxclients;
+QCvar	*sv_fps;				// time rate for running non-clients
+QCvar	*sv_timeout;			// seconds without any message
+QCvar	*sv_zombietime;			// seconds to sink messages after disconnect
+QCvar	*sv_rconPassword;		// password for remote server commands
+QCvar	*sv_privatePassword;	// password for the privateClient slots
+QCvar	*sv_allowDownload;
+QCvar	*sv_maxclients;
 
-cvar_t	*sv_privateClients;		// number of clients reserved for password
-cvar_t	*sv_hostname;
-cvar_t	*sv_master[MAX_MASTER_SERVERS];		// master server ip address
-cvar_t	*sv_reconnectlimit;		// minimum seconds between connect messages
-cvar_t	*sv_showloss;			// report when usercmds are lost
-cvar_t	*sv_padPackets;			// add nop bytes to messages
-cvar_t	*sv_killserver;			// menu system can set to 1 to shut server down
-cvar_t	*sv_mapname;
-cvar_t	*sv_mapChecksum;
-cvar_t	*sv_serverid;
-cvar_t	*sv_maxRate;
-cvar_t	*sv_minPing;
-cvar_t	*sv_maxPing;
-cvar_t	*sv_gametype;
-cvar_t	*sv_pure;
-cvar_t	*sv_floodProtect;
-cvar_t	*sv_lanForceRate; // dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
-cvar_t	*sv_strictAuth;
+QCvar	*sv_privateClients;		// number of clients reserved for password
+QCvar	*sv_hostname;
+QCvar	*sv_master[MAX_MASTER_SERVERS];		// master server ip address
+QCvar	*sv_reconnectlimit;		// minimum seconds between connect messages
+QCvar	*sv_showloss;			// report when usercmds are lost
+QCvar	*sv_padPackets;			// add nop bytes to messages
+QCvar	*sv_killserver;			// menu system can set to 1 to shut server down
+QCvar	*sv_mapname;
+QCvar	*sv_mapChecksum;
+QCvar	*sv_serverid;
+QCvar	*sv_maxRate;
+QCvar	*sv_minPing;
+QCvar	*sv_maxPing;
+QCvar	*sv_gametype;
+QCvar	*sv_pure;
+QCvar	*sv_floodProtect;
+QCvar	*sv_lanForceRate; // dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
+QCvar	*sv_strictAuth;
 
 /*
 =============================================================================
@@ -319,11 +319,11 @@ void SVC_Status( netadr_t from ) {
 		return;
 	}
 
-	QStr::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO ) );
+	QStr::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv(1) );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING);
 
 	// add "demo" to the sv_keywords if restricted
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
@@ -331,7 +331,7 @@ void SVC_Status( netadr_t from ) {
 
 		QStr::Sprintf( keywords, sizeof( keywords ), "demo %s",
 			Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords );
+		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING);
 	}
 
 	status[0] = 0;
@@ -385,26 +385,26 @@ void SVC_Info( netadr_t from ) {
 
 	// echo back the parameter to status. so servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv(1) );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv(1), MAX_INFO_STRING);
 
-	Info_SetValueForKey( infostring, "protocol", va("%i", PROTOCOL_VERSION) );
-	Info_SetValueForKey( infostring, "hostname", sv_hostname->string );
-	Info_SetValueForKey( infostring, "mapname", sv_mapname->string );
-	Info_SetValueForKey( infostring, "clients", va("%i", count) );
+	Info_SetValueForKey( infostring, "protocol", va("%i", PROTOCOL_VERSION), MAX_INFO_STRING);
+	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, MAX_INFO_STRING);
+	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, MAX_INFO_STRING);
+	Info_SetValueForKey( infostring, "clients", va("%i", count), MAX_INFO_STRING);
 	Info_SetValueForKey( infostring, "sv_maxclients", 
-		va("%i", sv_maxclients->integer - sv_privateClients->integer ) );
-	Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ) );
-	Info_SetValueForKey( infostring, "pure", va("%i", sv_pure->integer ) );
+		va("%i", sv_maxclients->integer - sv_privateClients->integer ), MAX_INFO_STRING);
+	Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ), MAX_INFO_STRING);
+	Info_SetValueForKey( infostring, "pure", va("%i", sv_pure->integer ), MAX_INFO_STRING);
 
 	if( sv_minPing->integer ) {
-		Info_SetValueForKey( infostring, "minPing", va("%i", sv_minPing->integer) );
+		Info_SetValueForKey( infostring, "minPing", va("%i", sv_minPing->integer), MAX_INFO_STRING);
 	}
 	if( sv_maxPing->integer ) {
-		Info_SetValueForKey( infostring, "maxPing", va("%i", sv_maxPing->integer) );
+		Info_SetValueForKey( infostring, "maxPing", va("%i", sv_maxPing->integer), MAX_INFO_STRING);
 	}
 	gamedir = Cvar_VariableString( "fs_game" );
 	if( *gamedir ) {
-		Info_SetValueForKey( infostring, "game", gamedir );
+		Info_SetValueForKey( infostring, "game", gamedir, MAX_INFO_STRING);
 	}
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
@@ -809,11 +809,11 @@ void SV_Frame( int msec ) {
 
 	// update infostrings if anything has been changed
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO ) {
-		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO ) );
+		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	}
 	if ( cvar_modifiedFlags & CVAR_SYSTEMINFO ) {
-		SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString_Big( CVAR_SYSTEMINFO ) );
+		SV_SetConfigstring(CS_SYSTEMINFO, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING));
 		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	}
 

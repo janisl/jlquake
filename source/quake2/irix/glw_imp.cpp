@@ -81,15 +81,15 @@ int keyq_tail=0;
 
 static int		mx, my;
 static int p_mouse_x, p_mouse_y;
-static cvar_t	*_windowed_mouse;
+static QCvar	*_windowed_mouse;
 
-static cvar_t *sensitivity;
-static cvar_t *lookstrafe;
-static cvar_t *m_side;
-static cvar_t *m_yaw;
-static cvar_t *m_pitch;
-static cvar_t *m_forward;
-static cvar_t *freelook;
+static QCvar *sensitivity;
+static QCvar *lookstrafe;
+static QCvar *m_side;
+static QCvar *m_yaw;
+static QCvar *m_pitch;
+static QCvar *m_forward;
+static QCvar *freelook;
 
 int config_notify=0;
 int config_notify_width;
@@ -113,9 +113,9 @@ static int	old_mouse_x, old_mouse_y;
 static float old_windowed_mouse;
 static int p_mouse_x, p_mouse_y;
 
-static cvar_t	*_windowed_mouse;
-static cvar_t	*m_filter;
-static cvar_t	*in_mouse;
+static QCvar	*_windowed_mouse;
+static QCvar	*m_filter;
+static QCvar	*in_mouse;
 
 static qboolean	mlooking;
 

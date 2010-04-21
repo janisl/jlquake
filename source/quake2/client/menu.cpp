@@ -1011,8 +1011,8 @@ CONTROLS MENU
 
 =======================================================================
 */
-static cvar_t *win_noalttab;
-extern cvar_t *in_joystick;
+static QCvar *win_noalttab;
+extern QCvar *in_joystick;
 
 static menuframework_s	s_options_menu;
 static menuaction_s		s_options_defaults_action;
@@ -1815,8 +1815,6 @@ const char *M_Credits_Key( int key )
 
 }
 
-extern int Developer_searchpath (int who);
-
 void M_Menu_Credits_f( void )
 {
 	int		n;
@@ -1825,7 +1823,7 @@ void M_Menu_Credits_f( void )
 	int		isdeveloper = 0;
 
 	creditsBuffer = NULL;
-	count = FS_LoadFile ("credits", (void**)&creditsBuffer);
+	count = FS_ReadFile("credits", (void**)&creditsBuffer);
 	if (count != -1)
 	{
 		p = creditsBuffer;
@@ -1853,7 +1851,7 @@ void M_Menu_Credits_f( void )
 	}
 	else
 	{
-		isdeveloper = Developer_searchpath (1);
+		isdeveloper = FS_GetQuake2GameType();
 		
 		if (isdeveloper == 1)			// xatrix
 			credits = xatcredits;
@@ -2045,22 +2043,22 @@ qboolean	m_savevalid[MAX_SAVEGAMES];
 void Create_Savestrings (void)
 {
 	int		i;
-	FILE	*f;
+	fileHandle_t	f;
 	char	name[MAX_OSPATH];
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
-		QStr::Sprintf (name, sizeof(name), "%s/save/save%i/server.ssv", FS_Gamedir(), i);
-		f = fopen (name, "rb");
-		if (!f)
+		QStr::Sprintf (name, sizeof(name), "save/save%i/server.ssv", i);
+		if (!FS_FileExists(name))
 		{
 			QStr::Cpy (m_savestrings[i], "<EMPTY>");
 			m_savevalid[i] = false;
 		}
 		else
 		{
-			FS_Read (m_savestrings[i], sizeof(m_savestrings[i]), f);
-			fclose (f);
+			FS_FOpenFileRead(name, &f, true);
+			FS_Read(m_savestrings[i], sizeof(m_savestrings[i]), f);
+			FS_FCloseFile(f);
 			m_savevalid[i] = true;
 		}
 	}
@@ -2412,7 +2410,7 @@ void RulesChangeFunc ( void *self )
 //=====
 //PGM
 	// ROGUE GAMES
-	else if(Developer_searchpath(2) == 2)
+	else if(FS_GetQuake2GameType() == 2)
 	{
 		if (s_rules_box.curvalue == 2)			// tag	
 		{
@@ -2453,7 +2451,7 @@ void StartServerActionFunc( void *self )
 //	Cvar_SetValue ("coop", s_rules_box.curvalue );
 
 //PGM
-	if((s_rules_box.curvalue < 2) || (Developer_searchpath(2) != 2))
+	if((s_rules_box.curvalue < 2) || (FS_GetQuake2GameType() != 2))
 	{
 		Cvar_SetValue ("deathmatch", !s_rules_box.curvalue );
 		Cvar_SetValue ("coop", s_rules_box.curvalue );
@@ -2523,33 +2521,15 @@ void StartServer_MenuInit( void )
 //PGM
 //=======
 	char *buffer;
-	char  mapsname[1024];
 	const char *s;
 	int length;
 	int i;
-	FILE *fp;
 
 	/*
 	** load the list of map names
 	*/
-	QStr::Sprintf( mapsname, sizeof( mapsname ), "%s/maps.lst", FS_Gamedir() );
-	if ( ( fp = fopen( mapsname, "rb" ) ) == 0 )
-	{
-		if ( ( length = FS_LoadFile( "maps.lst", ( void ** ) &buffer ) ) == -1 )
-			Com_Error( ERR_DROP, "couldn't find maps.lst\n" );
-	}
-	else
-	{
-#ifdef _WIN32
-		length = filelength( fileno( fp  ) );
-#else
-		fseek(fp, 0, SEEK_END);
-		length = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
-#endif
-		buffer = (char*)malloc( length );
-		fread( buffer, length, 1, fp );
-	}
+	if ( ( length = FS_ReadFile("maps.lst", ( void ** ) &buffer ) ) == -1 )
+		Com_Error( ERR_DROP, "couldn't find maps.lst\n" );
 
 	s = buffer;
 
@@ -2588,15 +2568,7 @@ void StartServer_MenuInit( void )
 	}
 	mapnames[nummaps] = 0;
 
-	if ( fp != 0 )
-	{
-		fp = 0;
-		free( buffer );
-	}
-	else
-	{
-		FS_FreeFile( buffer );
-	}
+	FS_FreeFile( buffer );
 
 	/*
 	** initialize the menu stuff
@@ -2616,7 +2588,7 @@ void StartServer_MenuInit( void )
 	s_rules_box.generic.name	= "rules";
 	
 //PGM - rogue games only available with rogue DLL.
-	if(Developer_searchpath(2) == 2)
+	if(FS_GetQuake2GameType() == 2)
 		s_rules_box.itemnames = dm_coop_names_rogue;
 	else
 		s_rules_box.itemnames = dm_coop_names;
@@ -2877,7 +2849,7 @@ static void DMFlagCallback( void *self )
 
 //=======
 //ROGUE
-	else if (Developer_searchpath(2) == 2)
+	else if (FS_GetQuake2GameType() == 2)
 	{
 		if ( f == &s_no_mines_box)
 		{
@@ -3051,7 +3023,7 @@ void DMOptions_MenuInit( void )
 
 //============
 //ROGUE
-	if(Developer_searchpath(2) == 2)
+	if(FS_GetQuake2GameType() == 2)
 	{
 		s_no_mines_box.generic.type = MTYPE_SPINCONTROL;
 		s_no_mines_box.generic.x	= 0;
@@ -3107,7 +3079,7 @@ void DMOptions_MenuInit( void )
 
 //=======
 //ROGUE
-	if(Developer_searchpath(2) == 2)
+	if(FS_GetQuake2GameType() == 2)
 	{
 		Menu_AddItem( &s_dmoptions_menu, &s_no_mines_box );
 		Menu_AddItem( &s_dmoptions_menu, &s_no_nukes_box );
@@ -3293,7 +3265,7 @@ void AddressBook_MenuInit( void )
 
 	for ( i = 0; i < NUM_ADDRESSBOOK_ENTRIES; i++ )
 	{
-		cvar_t *adr;
+		QCvar *adr;
 		char buffer[20];
 
 		QStr::Sprintf( buffer, sizeof( buffer ), "adr%d", i );
@@ -3437,6 +3409,7 @@ static qboolean IconOfSkinExists( char *skin, char **pcxfiles, int npcxfiles )
 	return false;
 }
 
+extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
 static qboolean PlayerConfig_ScanDirectories( void )
 {
 	char findname[1024];
@@ -3445,8 +3418,6 @@ static qboolean PlayerConfig_ScanDirectories( void )
 	char **dirnames;
 	char *path = NULL;
 	int i;
-
-	extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
 
 	s_numplayermodels = 0;
 
@@ -3601,9 +3572,9 @@ static int pmicmpfnc( const void *_a, const void *_b )
 
 qboolean PlayerConfig_MenuInit( void )
 {
-	extern cvar_t *name;
-	extern cvar_t *team;
-	extern cvar_t *skin;
+	extern QCvar *name;
+	extern QCvar *team;
+	extern QCvar *skin;
 	char currentdirectory[1024];
 	char currentskin[1024];
 	int i = 0;
@@ -3611,7 +3582,7 @@ qboolean PlayerConfig_MenuInit( void )
 	int currentdirectoryindex = 0;
 	int currentskinindex = 0;
 
-	cvar_t *hand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
+	QCvar *hand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 
 	static const char *handedness[] = { "right", "left", "center", 0 };
 

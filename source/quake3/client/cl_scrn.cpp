@@ -25,11 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 qboolean	scr_initialized;		// ready to draw
 
-cvar_t		*cl_timegraph;
-cvar_t		*cl_debuggraph;
-cvar_t		*cl_graphheight;
-cvar_t		*cl_graphscale;
-cvar_t		*cl_graphshift;
+QCvar		*cl_timegraph;
+QCvar		*cl_debuggraph;
+QCvar		*cl_graphheight;
+QCvar		*cl_graphscale;
+QCvar		*cl_graphshift;
 
 /*
 ================

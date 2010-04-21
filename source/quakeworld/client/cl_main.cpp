@@ -226,7 +226,7 @@ void CL_SendConnectPacket (void)
 
 	cls.qport = Cvar_VariableValue("qport");
 
-	Info_SetValueForStarKey (cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
+	Info_SetValueForKey(cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING, 64, 64, true, false);
 
 //	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
@@ -449,8 +449,9 @@ void CL_Disconnect (void)
 	}
 	Cam_Reset();
 
-	if (cls.download) {
-		fclose(cls.download);
+	if (cls.download)
+	{
+		FS_FCloseFile(cls.download);
 		cls.download = NULL;
 	}
 
@@ -571,7 +572,7 @@ Sent by server when serverinfo changes
 */
 void CL_FullServerinfo_f (void)
 {
-	char *p;
+	const char *p;
 	float v;
 
 	if (Cmd_Argc() != 2)
@@ -641,7 +642,14 @@ void CL_FullInfo_f (void)
 		if (!QStr::ICmp(key, pmodel_name) || !QStr::ICmp(key, emodel_name))
 			continue;
 
-		Info_SetValueForKey (cls.userinfo, key, value, MAX_INFO_STRING);
+		if (key[0] == '*')
+		{
+			Con_Printf ("Can't set * keys\n");
+			continue;
+		}
+
+		Info_SetValueForKey(cls.userinfo, key, value, MAX_INFO_STRING, 64, 64,
+			QStr::ICmp(key, "name") != 0, QStr::ICmp(key, "team") == 0);
 	}
 }
 
@@ -667,7 +675,14 @@ void CL_SetInfo_f (void)
 	if (!QStr::ICmp(Cmd_Argv(1), pmodel_name) || !QStr::Cmp(Cmd_Argv(1), emodel_name))
 		return;
 
-	Info_SetValueForKey (cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
+	if (Cmd_Argv(1)[0] == '*')
+	{
+		Con_Printf ("Can't set * keys\n");
+		return;
+	}
+
+	Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING, 64, 64,
+		QStr::ICmp(Cmd_Argv(1), "name") != 0, QStr::ICmp(Cmd_Argv(1), "team") == 0);
 	if (cls.state >= ca_connected)
 		Cmd_ForwardToServer ();
 }
@@ -1005,8 +1020,6 @@ CL_Download_f
 */
 void CL_Download_f (void)
 {
-	char *p, *q;
-
 	if (cls.state == ca_disconnected)
 	{
 		Con_Printf ("Must be connected.\n");
@@ -1019,21 +1032,10 @@ void CL_Download_f (void)
 		return;
 	}
 
-	sprintf (cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
-
-	p = cls.downloadname;
-	for (;;) {
-		if ((q = strchr(p, '/')) != NULL) {
-			*q = 0;
-			Sys_mkdir(cls.downloadname);
-			*q = '/';
-			p = q + 1;
-		} else
-			break;
-	}
-
+	QStr::NCpyZ(cls.downloadname, Cmd_Argv(1), sizeof(cls.downloadname));
 	QStr::Cpy(cls.downloadtempname, cls.downloadname);
-	cls.download = fopen (cls.downloadname, "wb");
+
+	cls.download = FS_FOpenFileWrite(cls.downloadname);
 	cls.downloadtype = dl_single;
 
 	cls.netchan.message.WriteByte(clc_stringcmd);
@@ -1068,13 +1070,13 @@ void CL_Init (void)
 
 	cls.state = ca_disconnected;
 
-	Info_SetValueForKey (cls.userinfo, "name", "unnamed", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "topcolor", "0", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "rate", "2500", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "msg", "1", MAX_INFO_STRING);
+	Info_SetValueForKey(cls.userinfo, "name", "unnamed", MAX_INFO_STRING, 64, 64, false, false);
+	Info_SetValueForKey(cls.userinfo, "topcolor", "0", MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "rate", "2500", MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "msg", "1", MAX_INFO_STRING, 64, 64, true, false);
 	sprintf (st, "%4.2f-%04d", VERSION, build_number());
-	Info_SetValueForStarKey (cls.userinfo, "*ver", st, MAX_INFO_STRING);
+	Info_SetValueForKey(cls.userinfo, "*ver", st, MAX_INFO_STRING, 64, 64, true, false);
 
 	CL_InitInput ();
 	CL_InitTEnts ();
@@ -1252,11 +1254,9 @@ Writes key bindings and archived cvars to config.cfg
 */
 void Host_WriteConfiguration (void)
 {
-	FILE	*f;
-
 	if (host_initialized)
 	{
-		f = fopen (va("%s/config.cfg",com_gamedir), "w");
+		fileHandle_t f = FS_FOpenFileWrite("config.cfg");
 		if (!f)
 		{
 			Con_Printf ("Couldn't write config.cfg.\n");
@@ -1266,7 +1266,7 @@ void Host_WriteConfiguration (void)
 		Key_WriteBindings (f);
 		Cvar_WriteVariables (f);
 
-		fclose (f);
+		FS_FCloseFile (f);
 	}
 }
 
@@ -1434,12 +1434,11 @@ void Host_Init (quakeparms_t *parms)
 {
 	try
 	{
+	Sys_SetHomePathSuffix("vquake");
 	GLog.AddListener(&MainLog);
 	COM_InitArgv2(parms->argc, parms->argv);
 	COM_AddParm ("-game");
 	COM_AddParm ("qw");
-
-	Sys_mkdir("qw");
 
 	if (COM_CheckParm ("-minmemory"))
 		parms->memsize = MINIMUM_MEMORY;
@@ -1452,6 +1451,7 @@ void Host_Init (quakeparms_t *parms)
 	Memory_Init (parms->membase, parms->memsize);
 	Cbuf_Init ();
 	Cmd_Init ();
+	Cvar_Init();
 	V_Init ();
 
 	COM_Init ();

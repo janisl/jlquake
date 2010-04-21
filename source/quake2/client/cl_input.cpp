@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-cvar_t	*cl_nodelta;
+QCvar	*cl_nodelta;
 
 extern	unsigned	sys_frame_time;
 unsigned	frame_msec;
@@ -219,16 +219,16 @@ float CL_KeyState (kbutton_t *key)
 
 //==========================================================================
 
-cvar_t	*cl_upspeed;
-cvar_t	*cl_forwardspeed;
-cvar_t	*cl_sidespeed;
+QCvar	*cl_upspeed;
+QCvar	*cl_forwardspeed;
+QCvar	*cl_sidespeed;
 
-cvar_t	*cl_yawspeed;
-cvar_t	*cl_pitchspeed;
+QCvar	*cl_yawspeed;
+QCvar	*cl_pitchspeed;
 
-cvar_t	*cl_run;
+QCvar	*cl_run;
 
-cvar_t	*cl_anglespeedkey;
+QCvar	*cl_anglespeedkey;
 
 
 /*
@@ -486,7 +486,8 @@ void CL_SendCmd (void)
 		CL_FixUpGender();
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
 		cls.netchan.message.WriteByte(clc_userinfo);
-		cls.netchan.message.WriteString2(Cvar_Userinfo() );
+		cls.netchan.message.WriteString2(Cvar_InfoString(
+			CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY, MAX_INFO_VALUE, true, false));
 	}
 
 	buf.InitOOB(data, sizeof(data));

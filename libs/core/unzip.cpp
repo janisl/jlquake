@@ -7,7 +7,7 @@
  *
  *****************************************************************************/
 
-#include "../client/client.h"
+#include "core.h"
 #include "unzip.h"
 
 
@@ -66,10 +66,10 @@
 #endif
 
 #ifndef ALLOC
-# define ALLOC(size) (Z_Malloc(size))
+# define ALLOC(size) (Mem_Alloc(size))
 #endif
 #ifndef TRYFREE
-# define TRYFREE(p) {if (p) Z_Free(p);}
+# define TRYFREE(p) {if (p) Mem_Free(p);}
 #endif
 
 #define SIZECENTRALDIRITEM (0x2e)

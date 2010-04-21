@@ -29,36 +29,6 @@ QCvar*	sys_nostdout;
 
 /*
 ================
-Sys_FileTime
-================
-*/
-int	Sys_FileTime (char *path)
-{
-	FILE	*f;
-	
-	f = fopen(path, "rb");
-	if (f)
-	{
-		fclose(f);
-		return 1;
-	}
-	
-	return -1;
-}
-
-/*
-================
-Sys_mkdir
-================
-*/
-void Sys_mkdir (char *path)
-{
-	_mkdir(path);
-}
-
-
-/*
-================
 Sys_Error
 ================
 */

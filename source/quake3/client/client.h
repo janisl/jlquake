@@ -312,42 +312,42 @@ extern	refexport_t		re;		// interface to refresh .dll
 //
 // cvars
 //
-extern	cvar_t	*cl_nodelta;
-extern	cvar_t	*cl_debugMove;
-extern	cvar_t	*cl_noprint;
-extern	cvar_t	*cl_timegraph;
-extern	cvar_t	*cl_maxpackets;
-extern	cvar_t	*cl_packetdup;
-extern	cvar_t	*cl_shownet;
-extern	cvar_t	*cl_showSend;
-extern	cvar_t	*cl_timeNudge;
-extern	cvar_t	*cl_showTimeDelta;
-extern	cvar_t	*cl_freezeDemo;
+extern	QCvar	*cl_nodelta;
+extern	QCvar	*cl_debugMove;
+extern	QCvar	*cl_noprint;
+extern	QCvar	*cl_timegraph;
+extern	QCvar	*cl_maxpackets;
+extern	QCvar	*cl_packetdup;
+extern	QCvar	*cl_shownet;
+extern	QCvar	*cl_showSend;
+extern	QCvar	*cl_timeNudge;
+extern	QCvar	*cl_showTimeDelta;
+extern	QCvar	*cl_freezeDemo;
 
-extern	cvar_t	*cl_yawspeed;
-extern	cvar_t	*cl_pitchspeed;
-extern	cvar_t	*cl_run;
-extern	cvar_t	*cl_anglespeedkey;
+extern	QCvar	*cl_yawspeed;
+extern	QCvar	*cl_pitchspeed;
+extern	QCvar	*cl_run;
+extern	QCvar	*cl_anglespeedkey;
 
-extern	cvar_t	*cl_sensitivity;
-extern	cvar_t	*cl_freelook;
+extern	QCvar	*cl_sensitivity;
+extern	QCvar	*cl_freelook;
 
-extern	cvar_t	*cl_mouseAccel;
-extern	cvar_t	*cl_showMouseRate;
+extern	QCvar	*cl_mouseAccel;
+extern	QCvar	*cl_showMouseRate;
 
-extern	cvar_t	*m_pitch;
-extern	cvar_t	*m_yaw;
-extern	cvar_t	*m_forward;
-extern	cvar_t	*m_side;
-extern	cvar_t	*m_filter;
+extern	QCvar	*m_pitch;
+extern	QCvar	*m_yaw;
+extern	QCvar	*m_forward;
+extern	QCvar	*m_side;
+extern	QCvar	*m_filter;
 
-extern	cvar_t	*cl_timedemo;
+extern	QCvar	*cl_timedemo;
 
-extern	cvar_t	*cl_activeAction;
+extern	QCvar	*cl_activeAction;
 
-extern	cvar_t	*cl_allowDownload;
-extern	cvar_t	*cl_conXOffset;
-extern	cvar_t	*cl_inGameVideo;
+extern	QCvar	*cl_allowDownload;
+extern	QCvar	*cl_conXOffset;
+extern	QCvar	*cl_inGameVideo;
 
 //=================================================
 

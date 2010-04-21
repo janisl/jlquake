@@ -30,14 +30,14 @@ static qboolean	winsockInitialized = qfalse;
 static qboolean usingSocks = qfalse;
 static qboolean networkingEnabled = qfalse;
 
-static cvar_t	*net_noudp;
-static cvar_t	*net_noipx;
+static QCvar	*net_noudp;
+static QCvar	*net_noipx;
 
-static cvar_t	*net_socksEnabled;
-static cvar_t	*net_socksServer;
-static cvar_t	*net_socksPort;
-static cvar_t	*net_socksUsername;
-static cvar_t	*net_socksPassword;
+static QCvar	*net_socksEnabled;
+static QCvar	*net_socksServer;
+static QCvar	*net_socksPort;
+static QCvar	*net_socksUsername;
+static QCvar	*net_socksPassword;
 static struct sockaddr	socksRelayAddr;
 
 static SOCKET	ip_socket;
@@ -754,7 +754,7 @@ NET_OpenIP
 ====================
 */
 void NET_OpenIP( void ) {
-	cvar_t	*ip;
+	QCvar	*ip;
 	int		port;
 	int		i;
 

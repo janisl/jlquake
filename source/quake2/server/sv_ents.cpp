@@ -35,7 +35,7 @@ Encode a client frame onto the network channel
 #define	MAX_PROJECTILES		64
 edict_t	*projectiles[MAX_PROJECTILES];
 int		numprojs;
-cvar_t  *sv_projectiles;
+QCvar  *sv_projectiles;
 
 qboolean SV_AddProjectileUpdate (edict_t *ent)
 {
@@ -721,7 +721,7 @@ void SV_RecordDemoMessage (void)
 
 	// now write the entire message to the file, prefixed by the length
 	len = LittleLong (buf.cursize);
-	fwrite (&len, 4, 1, svs.demofile);
-	fwrite (buf._data, buf.cursize, 1, svs.demofile);
+	FS_Write(&len, 4, svs.demofile);
+	FS_Write(buf._data, buf.cursize, svs.demofile);
 }
 

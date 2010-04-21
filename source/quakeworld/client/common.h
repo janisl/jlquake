@@ -62,28 +62,14 @@ void COM_InitArgv2(int argc, char **argv);
 extern int com_filesize;
 struct cache_user_s;
 
-extern	char	com_gamedir[MAX_OSPATH];
-
-void COM_WriteFile (char *filename, void *data, int len);
-int COM_FOpenFile (char *filename, FILE **file);
-void COM_CloseFile (FILE *h);
-
 byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
 byte *COM_LoadTempFile (char *path);
 byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
-void COM_CreatePath (char *path);
 void COM_Gamedir (char *dir);
 
 extern	QCvar*		registered;
 extern qboolean		standard_quake, rogue, hipnotic;
-
-char *Info_ValueForKey (char *s, char *key);
-void Info_RemoveKey (char *s, char *key);
-void Info_RemovePrefixedKeys (char *start, char prefix);
-void Info_SetValueForKey (char *s, char *key, char *value, int maxsize);
-void Info_SetValueForStarKey (char *s, char *key, char *value, int maxsize);
-void Info_Print (char *s);
 
 byte	COM_BlockSequenceCheckByte (byte *base, int length, int sequence, unsigned mapchecksum);
 byte	COM_BlockSequenceCRCByte (byte *base, int length, int sequence);

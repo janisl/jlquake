@@ -78,14 +78,14 @@ void SV_Logfile_f (void)
 	if (sv_logfile)
 	{
 		Con_Printf ("File logging off.\n");
-		fclose (sv_logfile);
+		FS_FCloseFile (sv_logfile);
 		sv_logfile = NULL;
 		return;
 	}
 
-	sprintf (name, "%s/qconsole.log", com_gamedir);
+	sprintf(name, "qconsole.log");
 	Con_Printf ("Logging text to %s.\n", name);
-	sv_logfile = fopen (name, "w");
+	sv_logfile = FS_FOpenFileWrite(name);
 	if (!sv_logfile)
 		Con_Printf ("failed.\n");
 }
@@ -104,7 +104,7 @@ void SV_Fraglogfile_f (void)
 	if (sv_fraglogfile)
 	{
 		Con_Printf ("Frag file logging off.\n");
-		fclose (sv_fraglogfile);
+		FS_FCloseFile(sv_fraglogfile);
 		sv_fraglogfile = NULL;
 		return;
 	}
@@ -112,16 +112,17 @@ void SV_Fraglogfile_f (void)
 	// find an unused name
 	for (i=0 ; i<1000 ; i++)
 	{
-		sprintf (name, "%s/frag_%i.log", com_gamedir, i);
-		sv_fraglogfile = fopen (name, "r");
+		sprintf(name, "frag_%i.log", i);
+		FS_FOpenFileRead(name, &sv_fraglogfile, true);
 		if (!sv_fraglogfile)
-		{	// can't read it, so create this one
-			sv_fraglogfile = fopen (name, "w");
+		{
+			// can't read it, so create this one
+			sv_fraglogfile = FS_FOpenFileWrite(name);
 			if (!sv_fraglogfile)
 				i=1000;	// give error
 			break;
 		}
-		fclose (sv_fraglogfile);
+		FS_FCloseFile (sv_fraglogfile);
 	}
 	if (i==1000)
 	{
@@ -282,7 +283,7 @@ void SV_Map_f (void)
 {
 	char	level[MAX_QPATH];
 	char	expanded[MAX_QPATH];
-	FILE	*f;
+	fileHandle_t	f;
 	char	_startspot[MAX_QPATH];
 	char	*startspot;
 
@@ -312,13 +313,13 @@ void SV_Map_f (void)
 
 	// check to make sure the level exists
 	sprintf (expanded, "maps/%s.bsp", level);
-	COM_FOpenFile (expanded, &f, false);
+	FS_FOpenFileRead (expanded, &f, true);
 	if (!f)
 	{
 		Con_Printf ("Can't find %s\n", expanded);
 		return;
 	}
-	fclose (f);
+	FS_FCloseFile (f);
 
 	SV_BroadcastCommand ("changing\n");
 	SV_SendMessagesToAll ();
@@ -667,7 +668,7 @@ void SV_Serverinfo_f (void)
 		Con_Printf ("Star variables cannot be changed.\n");
 		return;
 	}
-	Info_SetValueForKey (svs.info, Cmd_Argv(1), Cmd_Argv(2), MAX_SERVERINFO_STRING);
+	Info_SetValueForKey(svs.info, Cmd_Argv(1), Cmd_Argv(2), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value, false);
 
 	// if this is a cvar, change it too	
 	var = Cvar_FindVar (Cmd_Argv(1));
@@ -712,7 +713,7 @@ void SV_Localinfo_f (void)
 		Con_Printf ("Star variables cannot be changed.\n");
 		return;
 	}
-	Info_SetValueForKey (localinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_LOCALINFO_STRING);
+	Info_SetValueForKey(localinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_LOCALINFO_STRING, 64, 64, !sv_highchars->value, false);
 }
 
 
@@ -769,7 +770,7 @@ void SV_Gamedir (void)
 		return;
 	}
 
-	Info_SetValueForStarKey (svs.info, "*gamedir", dir, MAX_SERVERINFO_STRING);
+	Info_SetValueForKey(svs.info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 }
 
 /*
@@ -846,7 +847,7 @@ void SV_Gamedir_f (void)
 
 	if (Cmd_Argc() == 1)
 	{
-		Con_Printf ("Current gamedir: %s\n", com_gamedir);
+		Con_Printf ("Current gamedir: %s\n", fs_gamedir);
 		return;
 	}
 
@@ -866,7 +867,7 @@ void SV_Gamedir_f (void)
 	}
 
 	COM_Gamedir (dir);
-	Info_SetValueForStarKey (svs.info, "*gamedir", dir, MAX_SERVERINFO_STRING);
+	Info_SetValueForKey(svs.info, "*gamedir", dir, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 }
 
 
@@ -880,7 +881,7 @@ void SV_InitOperatorCommands (void)
 	if (COM_CheckParm ("-cheats"))
 	{
 		sv_allow_cheats = true;
-		Info_SetValueForStarKey (svs.info, "*cheats", "ON", MAX_SERVERINFO_STRING);
+		Info_SetValueForKey(svs.info, "*cheats", "ON", MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 	}
 
 	Cmd_AddCommand ("logfile", SV_Logfile_f);

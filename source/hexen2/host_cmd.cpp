@@ -371,11 +371,6 @@ This is sent just before a server changes levels
 void Host_Reconnect_f (void)
 {
 	R_ClearParticles ();	//jfm: for restarts which didn't use to clear parts.
-	if (oem->value && cl.intermission == 9)
-	{
-		CL_Disconnect();
-		return;
-	}
 
 	//updatePlaqueMessage();
 
@@ -419,8 +414,6 @@ LOAD / SAVE GAME
 #define ShortTime "%m/%d/%Y %H:%M"
 
 
-char	name[MAX_OSPATH],dest[MAX_OSPATH],tempdir[MAX_OSPATH];
-
 /*
 ===============
 Host_SavegameComment
@@ -459,12 +452,10 @@ Host_Savegame_f
 */
 void Host_Savegame_f (void)
 {
-	FILE	*f;
+	fileHandle_t	f;
 	int		i;
 	char	comment[SAVEGAME_COMMENT_LENGTH+1];
-//	char	name[MAX_OSPATH],dest[MAX_OSPATH],tempdir[MAX_OSPATH];
-	qboolean error_state = false;
-	int attempts = 0;
+	char	dest[MAX_OSPATH];
 	char *message;
 
 	if (cmd_source != src_command)
@@ -512,77 +503,44 @@ void Host_Savegame_f (void)
 	}
 
 
-
 	SaveGamestate(false);
 
-	retry:
-	attempts++;
+	CL_RemoveGIPFiles(Cmd_Argv(1));
 
-	sprintf (name, "%s/%s", com_savedir, Cmd_Argv(1));
-	Sys_mkdir (name);
+	char* netname = FS_BuildOSPath(fs_homepath->string, fs_gamedir, "clients.gip");
+	FS_Remove(netname);
 
-	CL_RemoveGIPFiles(name);
+	sprintf(dest, "%s/", Cmd_Argv(1));
+	Con_Printf ("Saving game to %s...\n", Cmd_Argv(1));
 
-#ifdef _WIN32
-	i = GetTempPath(sizeof(tempdir),tempdir);
-	if (!i) 
-#endif
-	{
-		sprintf(tempdir,"%s\\",com_savedir);
-	}
+	CL_CopyFiles("", ".gip", dest);
 
-	sprintf (name, "%sclients.gip",tempdir);
-	remove(name);
-
-	sprintf (name, "%s*.gip", tempdir);
-	sprintf (dest, "%s/%s/",com_savedir, Cmd_Argv(1));
-	Con_Printf ("Saving game to %s...\n", dest);
-
-	error_state = CL_CopyFiles(tempdir, name, dest);
-
-	sprintf(dest,"%s/%s/info.dat",com_savedir, Cmd_Argv(1));
-	f = fopen (dest, "w");
+	sprintf(dest,"%s/info.dat", Cmd_Argv(1));
+	f = FS_FOpenFileWrite(dest);
 	if (!f)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		return;
 	}
-	
-	fprintf (f, "%i\n", SAVEGAME_VERSION);
+
+	FS_Printf(f, "%i\n", SAVEGAME_VERSION);
 	Host_SavegameComment (comment);
-	fprintf (f, "%s\n", comment);
+	FS_Printf(f, "%s\n", comment);
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-		fprintf (f, "%f\n", svs.clients->spawn_parms[i]);
-	fprintf (f, "%d\n", current_skill);
-	fprintf (f, "%s\n", sv.name);
-	fprintf (f, "%f\n",sv.time);
-	fprintf (f, "%d\n",svs.maxclients);
-	fprintf (f, "%f\n",deathmatch->value);
-	fprintf (f, "%f\n",coop->value);
-	fprintf (f, "%f\n",teamplay->value);
-	fprintf (f, "%f\n",randomclass->value);
-	fprintf (f, "%f\n",cl_playerclass->value);
-	fprintf (f, "%d\n",info_mask);
-	fprintf (f, "%d\n",info_mask2);
-	
-	if (ferror(f))
-		error_state = true;
+		FS_Printf(f, "%f\n", svs.clients->spawn_parms[i]);
+	FS_Printf(f, "%d\n", current_skill);
+	FS_Printf(f, "%s\n", sv.name);
+	FS_Printf(f, "%f\n",sv.time);
+	FS_Printf(f, "%d\n",svs.maxclients);
+	FS_Printf(f, "%f\n",deathmatch->value);
+	FS_Printf(f, "%f\n",coop->value);
+	FS_Printf(f, "%f\n",teamplay->value);
+	FS_Printf(f, "%f\n",randomclass->value);
+	FS_Printf(f, "%f\n",cl_playerclass->value);
+	FS_Printf(f, "%d\n",info_mask);
+	FS_Printf(f, "%d\n",info_mask2);
 
-	fclose(f);
-
-	if (error_state)
-	{
-		if (attempts == 1)
-			message = "The game could not be saved properly.  You may be out of hard drive space!  You can ALT-TAB out to try and free up some space.  Type 'Y' if you want to try and re-save the game, otherwise 'N' to ignore.";
-		else
-			message = "The game could not be saved properly on the previous attempt.  You may be out of hard drive space!  You can ALT-TAB out to try and free up some space.  Type 'Y' if you want to try and re-save the game, otherwise 'N' to ignore.";
-
-		key_lastpress = 0;
-		if (SCR_ModalMessage(message))
-		{
-			goto retry;
-		}
-	}
+	FS_FCloseFile(f);
 }
 
 
@@ -593,7 +551,7 @@ Host_Loadgame_f
 */
 void Host_Loadgame_f (void)
 {
-	FILE	*f;
+	fileHandle_t	f;
 	char	mapname[MAX_QPATH];
 	float	time, tfloat;
 	char	str[32768], *start;
@@ -604,8 +562,7 @@ void Host_Loadgame_f (void)
 	float	tempf;
 	int		tempi;
 	float			spawn_parms[NUM_SPAWN_PARMS];
-//	char	name[MAX_OSPATH],dest[MAX_OSPATH],tempdir[MAX_OSPATH];
-	qboolean error_state = false;
+	char	dest[MAX_OSPATH];
 	int attempts = 0;
 	char *message;
 
@@ -622,40 +579,30 @@ void Host_Loadgame_f (void)
 	CL_Disconnect();
 	CL_RemoveGIPFiles(NULL);
 
-	sprintf (name, "%s/%s", com_savedir, Cmd_Argv(1));
+	Con_Printf ("Loading game from %s...\n", Cmd_Argv(1));
 
-	Con_Printf ("Loading game from %s...\n", name);
+	sprintf(dest,"%s/info.dat",Cmd_Argv(1));
 
-#ifdef _WIN32
-	i = GetTempPath(sizeof(tempdir),tempdir);
-	if (!i) 
-#endif
-	{
-		sprintf(tempdir,"%s\\",com_savedir);
-	}
-
-	sprintf(dest,"%s/info.dat",name);
-
-	f = fopen (dest, "r");
+	FS_FOpenFileRead(dest, &f, true);
 	if (!f)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		return;
 	}
 
-	fscanf (f, "%i\n", &version);
+	FS_Scanf (f, "%i\n", &version);
 
 	if (version != SAVEGAME_VERSION)
 	{
-		fclose (f);
+		FS_FCloseFile(f);
 		Con_Printf ("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return;
 	}
-	fscanf (f, "%s\n", str);
+	FS_Scanf (f, "%s\n", str);
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-		fscanf (f, "%f\n", &spawn_parms[i]);
+		FS_Scanf (f, "%f\n", &spawn_parms[i]);
 // this silliness is so we can load 1.06 save files, which have float skill values
-	fscanf (f, "%f\n", &tfloat);
+	FS_Scanf (f, "%f\n", &tfloat);
 	current_skill = (int)(tfloat + 0.1);
 	Cvar_SetValue ("skill", (float)current_skill);
 
@@ -664,71 +611,50 @@ void Host_Loadgame_f (void)
 	Cvar_SetValue ("teamplay", 0);
 	Cvar_SetValue ("randomclass", 0);
 
-	fscanf (f, "%s\n",mapname);
-	fscanf (f, "%f\n",&time);
+	FS_Scanf (f, "%s\n",mapname);
+	FS_Scanf (f, "%f\n",&time);
 
 	tempi = -1;
-	fscanf (f, "%d\n",&tempi);
+	FS_Scanf (f, "%d\n",&tempi);
 	if (tempi >= 1)
 		svs.maxclients = tempi;
 
 	tempf = -1;
-	fscanf (f, "%f\n",&tempf);
+	FS_Scanf (f, "%f\n",&tempf);
 	if (tempf >= 0)
 		Cvar_SetValue ("deathmatch", tempf);
 
 	tempf = -1;
-	fscanf (f, "%f\n",&tempf);
+	FS_Scanf (f, "%f\n",&tempf);
 	if (tempf >= 0)
 		Cvar_SetValue ("coop", tempf);
 
 	tempf = -1;
-	fscanf (f, "%f\n",&tempf);
+	FS_Scanf (f, "%f\n",&tempf);
 	if (tempf >= 0)
 		Cvar_SetValue ("teamplay", tempf);
 
 	tempf = -1;
-	fscanf (f, "%f\n",&tempf);
+	FS_Scanf (f, "%f\n",&tempf);
 	if (tempf >= 0)
 		Cvar_SetValue ("randomclass", tempf);
 
 	tempf = -1;
-	fscanf (f, "%f\n",&tempf);
+	FS_Scanf (f, "%f\n",&tempf);
 	if (tempf >= 0)
 		Cvar_SetValue ("_cl_playerclass", tempf);
 
-	fscanf (f, "%d\n",&info_mask);
-	fscanf (f, "%d\n",&info_mask2);
+	FS_Scanf (f, "%d\n",&info_mask);
+	FS_Scanf (f, "%d\n",&info_mask2);
 
-	fclose (f);
-
-	CL_RemoveGIPFiles(tempdir);
+	FS_FCloseFile(f);
 
 	retry:
 	attempts++;
 
-	sprintf (name, "%s/%s/*.gip", com_savedir, Cmd_Argv(1));
-	sprintf (dest, "%s/%s/",com_savedir, Cmd_Argv(1));
-	QStr::Cat(tempdir, sizeof(tempdir),"/");
+	sprintf(dest, "%s/", Cmd_Argv(1));
+	CL_CopyFiles(dest, ".gip", "");
 
-	error_state = CL_CopyFiles(dest, name, tempdir);
-
-	if (error_state)
-	{
-		if (attempts == 1)
-			message = "The game could not be loaded properly.  You may be out of hard drive space!  You can ALT-TAB out to try and free up some space.  Type 'Y' if you want to try and re-load the game, otherwise 'N' to abort.";
-		else
-			message = "The game could not be loaded properly on the previous attempt.  You may be out of hard drive space!  You can ALT-TAB out to try and free up some space.  Type 'Y' if you want to try and re-load the game, otherwise 'N' to abort.";
-
-		key_lastpress = 0;
-		if (SCR_ModalMessage(message))
-		{
-			goto retry;
-		}
-		else
-			return;
-	}
-	
 	LoadGamestate (mapname, NULL, 2);
 
 	SV_SaveSpawnparms ();
@@ -756,84 +682,60 @@ void Host_Loadgame_f (void)
 
 void SaveGamestate(qboolean ClientsOnly)
 {
-//	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
-	FILE	*f;
+	char	name[MAX_OSPATH];
+	fileHandle_t	f;
 	int		i;
 	char	comment[SAVEGAME_COMMENT_LENGTH+1];
 	edict_t	*ent;
 	int start,end;
-	qboolean error_state = false;
-	int attempts = 0;
 	char *message;
-
-retry:
-
-	attempts++;
-
-#ifdef _WIN32
-	i = GetTempPath(sizeof(tempdir),tempdir);
-	if (!i) 
-#endif
-	{
-		sprintf(tempdir,"%s\\",com_savedir);
-	}
 
 	if (ClientsOnly)
 	{
 		start = 1;
 		end = svs.maxclients+1;
 
-		sprintf (name, "%sclients.gip",tempdir);
+		sprintf (name, "clients.gip");
 	}
 	else
 	{
 		start = 1;
 		end = sv.num_edicts;
 
-		sprintf (name, "%s%s.gip", tempdir, sv.name);
+		sprintf (name, "%s.gip", sv.name);
 		
 //		Con_Printf ("Saving game to %s...\n", name);
 	}
 
-	f = fopen (name, "w");
+	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		return;
 	}
 	
-	fprintf (f, "%i\n", SAVEGAME_VERSION);
+	FS_Printf(f, "%i\n", SAVEGAME_VERSION);
 
 	if (!ClientsOnly)
 	{
 		Host_SavegameComment (comment);
-		fprintf (f, "%s\n", comment);
-	//	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-	//		fprintf (f, "%f\n", svs.clients->spawn_parms[i]);
-		fprintf (f, "%f\n", skill->value);
-		fprintf (f, "%s\n", sv.name);
-		fprintf (f, "%f\n", sv.time);
+		FS_Printf(f, "%s\n", comment);
+		FS_Printf(f, "%f\n", skill->value);
+		FS_Printf(f, "%s\n", sv.name);
+		FS_Printf(f, "%f\n", sv.time);
 
-//		fprintf (f, "%d\n", info_mask);
-//		fprintf (f, "%d\n", info_mask2);
-
-	// write the light styles
+		// write the light styles
 
 		for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 		{
 			if (sv.lightstyles[i])
-				fprintf (f, "%s\n", sv.lightstyles[i]);
+				FS_Printf(f, "%s\n", sv.lightstyles[i]);
 			else
-				fprintf (f,"m\n");
+				FS_Printf(f,"m\n");
 		}
 		SV_SaveEffects(f);
-		fprintf(f,"-1\n");
+		FS_Printf(f,"-1\n");
 		ED_WriteGlobals (f);
-	}
-	else
-	{
-		/*fprintf(f, "%d\n", info_mask);
-		fprintf(f, "%d\n", info_mask2);*/
 	}
 
 	host_client = svs.clients;
@@ -849,39 +751,21 @@ retry:
 		{
 			if (host_client->active)
 			{
-				fprintf (f, "%i\n",i);
+				FS_Printf(f, "%i\n",i);
 				ED_Write (f, ent);
-				fflush (f);
+				FS_Flush (f);
 			}
 			host_client++;
 		}
 		else
 		{
-			fprintf (f, "%i\n",i);
+			FS_Printf(f, "%i\n",i);
 			ED_Write (f, ent);
-			fflush (f);
+			FS_Flush(f);
 		}
 	}
 
-	if (ferror(f))
-	{
-		error_state = true;
-	}
-	fclose (f);
-
-	if (error_state)
-	{
-		if (attempts == 1)
-			message = "The level could not be saved properly.  You may be out of hard drive space!  You can ALT-TAB out to try and free up some space.  Type 'Y' if you want to try and re-save the level, otherwise 'N' to ignore.";
-		else
-			message = "The level could not be saved properly on the previous attempt.  You may be out of hard drive space!  You can ALT-TAB out to try and free up some space.  Type 'Y' if you want to try and re-save the level, otherwise 'N' to ignore.";
-
-		key_lastpress = 0;
-		if (SCR_ModalMessage(message))
-		{
-			goto retry;
-		}
-	}
+	FS_FCloseFile(f);
 }
 
 void RestoreClients(void)
@@ -922,40 +806,32 @@ void RestoreClients(void)
 
 int LoadGamestate(char *level, char *startspot, int ClientsMode)
 {
-//	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
-	FILE	*f;
+	char	name[MAX_OSPATH];
+	fileHandle_t	f;
 	char	mapname[MAX_QPATH];
 	float	time, sk;
 	char	str[32768];
 	const char *start;
-	int		i, r;
+	int		i;
 	edict_t	*ent;
 	int		entnum;
 	int		version;
 //	float	spawn_parms[NUM_SPAWN_PARMS];
 	qboolean auto_correct = false;
 
-#ifdef _WIN32
-	i = GetTempPath(sizeof(tempdir),tempdir);
-	if (!i) 
-#endif
-	{
-		sprintf(tempdir,"%s\\",com_savedir);
-	}
-
 	if (ClientsMode == 1)
 	{
-		sprintf (name, "%sclients.gip",tempdir);
+		sprintf(name, "clients.gip");
 	}
 	else
 	{
-		sprintf (name, "%s%s.gip", tempdir, level);
+		sprintf(name, "%s.gip", level);
 	
 		if (ClientsMode != 2 && ClientsMode != 3)
 			Con_Printf ("Loading game from %s...\n", name);
 	}
 
-	f = fopen (name, "r");
+	int len = FS_FOpenFileRead(name, &f, true);
 	if (!f)
 	{
 		if (ClientsMode == 2)
@@ -964,25 +840,25 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 		return -1;
 	}
 
-	fscanf (f, "%i\n", &version);
+	FS_Scanf (f, "%i\n", &version);
 
 	if (version != SAVEGAME_VERSION)
 	{
-		fclose (f);
+		FS_FCloseFile(f);
 		Con_Printf ("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return -1;
 	}
 
 	if (ClientsMode != 1)
 	{
-		fscanf (f, "%s\n", str);
+		FS_Scanf (f, "%s\n", str);
 	//	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-	//		fscanf (f, "%f\n", &spawn_parms[i]);
-		fscanf (f, "%f\n", &sk);
+	//		FS_Scanf (f, "%f\n", &spawn_parms[i]);
+		FS_Scanf (f, "%f\n", &sk);
 		Cvar_SetValue ("skill", sk);
 
-		fscanf (f, "%s\n",mapname);
-		fscanf (f, "%f\n",&time);
+		FS_Scanf (f, "%s\n",mapname);
+		FS_Scanf (f, "%f\n",&time);
 				
 		SV_SpawnServer (mapname, startspot);
 
@@ -992,13 +868,13 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 			return -1;
 		}
 
-//		fscanf (f, "%d\n",&info_mask);
-//		fscanf (f, "%d\n",&info_mask2);
+//		FS_Scanf (f, "%d\n",&info_mask);
+//		FS_Scanf (f, "%d\n",&info_mask2);
 
 	// load the light styles
 		for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 		{
-			fscanf (f, "%s\n", str);
+			FS_Scanf (f, "%s\n", str);
 			sv.lightstyles[i] = (char*)Hunk_Alloc (QStr::Length(str)+1);
 			QStr::Cpy (sv.lightstyles[i], str);
 		}
@@ -1006,13 +882,15 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 	}
 
 // load the edicts out of the savegame file
-	while (!feof(f))
+	while (len > FS_FTell(f))
 	{
-		fscanf (f, "%i\n",&entnum);
+		FS_Scanf (f, "%i\n",&entnum);
 		for (i=0 ; i<sizeof(str)-1 ; i++)
 		{
-			r = fgetc (f);
-			if (r == EOF || !r)
+			char r;
+			if (!FS_Read(&r, 1, f))
+				break;
+			if (!r)
 				break;
 			str[i] = r;
 			if (r == '}')
@@ -1066,7 +944,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 		}
 	}
 
-	fclose (f);
+	FS_FCloseFile(f);
 	
 //	sv.num_edicts = entnum;
 	if (ClientsMode == 0)
@@ -1216,12 +1094,6 @@ void Host_Class_f (void)
 		newClass = QStr::Atof(Cmd_Argv(1));	
 	else
 		newClass = QStr::Atof(Cmd_ArgsUnmodified());
-
-//	if (!registered.value && !oem.value && (newClass == CLASS_CLERIC || newClass == CLASS_NECROMANCER))
-//	{
-//		Con_Printf("That class is not available in the demo version.\n");
-//		return;
-//	}
 
 	if (cmd_source == src_command)
 	{

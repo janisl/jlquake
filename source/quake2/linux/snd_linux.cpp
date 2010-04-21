@@ -15,10 +15,10 @@
 int audio_fd;
 int snd_inited;
 
-cvar_t *sndbits;
-cvar_t *sndspeed;
-cvar_t *sndchannels;
-cvar_t *snddevice;
+QCvar *sndbits;
+QCvar *sndspeed;
+QCvar *sndchannels;
+QCvar *snddevice;
 
 static int tryrates[] = { 11025, 22051, 44100, 8000 };
 

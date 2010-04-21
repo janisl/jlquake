@@ -65,7 +65,7 @@ qboolean stdin_active = qtrue;
 
 // enable/disabled tty input mode
 // NOTE TTimo this is used during startup, cannot be changed during run
-static cvar_t *ttycon = NULL;
+static QCvar *ttycon = NULL;
 // general flag to tell about tty console mode
 static qboolean ttycon_on = qfalse;
 // when printing general stuff to stdout stderr (Sys_Printf)
@@ -695,19 +695,16 @@ changed the load procedure to match VFS logic, and allow developer use
 #3 look in fs_basepath
 =================
 */
-extern char   *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
-
 void *Sys_LoadDll( const char *name, char *fqpath ,
                    int (**entryPoint)(int, ...),
                    int (*systemcalls)(int, ...) ) 
 {
   void *libHandle;
   void  (*dllEntry)( int (*syscallptr)(int, ...) );
-  char  curpath[MAX_OSPATH];
   char  fname[MAX_OSPATH];
   const char  *basepath;
   const char  *homepath;
-  char  *pwdpath;
+  const char  *pwdpath;
   const char  *gamedir;
   char  *fn;
   const char*  err = NULL;
@@ -717,7 +714,6 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
   // bk001206 - let's have some paranoia
   assert( name );
 
-  getcwd(curpath, sizeof(curpath));
 #if defined __i386__
   snprintf (fname, sizeof(fname), "%si386.so", name);
 #elif defined __powerpc__   //rcg010207 - PPC support.
@@ -792,212 +788,6 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
   if ( libHandle ) QStr::NCpyZ( fqpath , fn , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
   return libHandle;
 }
-
-/*
-========================================================================
-
-BACKGROUND FILE STREAMING
-
-========================================================================
-*/
-
-#if 1
-
-void Sys_InitStreamThread( void ) {
-}
-
-void Sys_ShutdownStreamThread( void ) {
-}
-
-void Sys_BeginStreamedFile( fileHandle_t f, int readAhead ) {
-}
-
-void Sys_EndStreamedFile( fileHandle_t f ) {
-}
-
-int Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f ) {
-  return FS_Read( buffer, size * count, f );
-}
-
-void Sys_StreamSeek( fileHandle_t f, int offset, int origin ) {
-  FS_Seek( f, offset, origin );
-}
-
-#else
-
-typedef struct
-{
-  fileHandle_t file;
-  byte  *buffer;
-  qboolean  eof;
-  int   bufferSize;
-  int   streamPosition; // next byte to be returned by Sys_StreamRead
-  int   threadPosition; // next byte to be read from file
-} streamState_t;
-
-streamState_t stream;
-
-/*
-===============
-Sys_StreamThread
-
-A thread will be sitting in this loop forever
-================
-*/
-void Sys_StreamThread( void ) 
-{
-  int   buffer;
-  int   count;
-  int   readCount;
-  int   bufferPoint;
-  int   r;
-
-  // if there is any space left in the buffer, fill it up
-  if ( !stream.eof )
-  {
-    count = stream.bufferSize - (stream.threadPosition - stream.streamPosition);
-    if ( count )
-    {
-      bufferPoint = stream.threadPosition % stream.bufferSize;
-      buffer = stream.bufferSize - bufferPoint;
-      readCount = buffer < count ? buffer : count;
-      r = FS_Read ( stream.buffer + bufferPoint, readCount, stream.file );
-      stream.threadPosition += r;
-
-      if ( r != readCount )
-        stream.eof = qtrue;
-    }
-  }
-}
-
-/*
-===============
-Sys_InitStreamThread
-
-================
-*/
-void Sys_InitStreamThread( void ) 
-{
-}
-
-/*
-===============
-Sys_ShutdownStreamThread
-
-================
-*/
-void Sys_ShutdownStreamThread( void ) 
-{
-}
-
-
-/*
-===============
-Sys_BeginStreamedFile
-
-================
-*/
-void Sys_BeginStreamedFile( fileHandle_t f, int readAhead ) 
-{
-  if ( stream.file )
-  {
-    Com_Error( ERR_FATAL, "Sys_BeginStreamedFile: unclosed stream");
-  }
-
-  stream.file = f;
-  stream.buffer = Z_Malloc( readAhead );
-  stream.bufferSize = readAhead;
-  stream.streamPosition = 0;
-  stream.threadPosition = 0;
-  stream.eof = qfalse;
-}
-
-/*
-===============
-Sys_EndStreamedFile
-
-================
-*/
-void Sys_EndStreamedFile( fileHandle_t f ) 
-{
-  if ( f != stream.file )
-  {
-    Com_Error( ERR_FATAL, "Sys_EndStreamedFile: wrong file");
-  }
-
-  stream.file = 0;
-  Z_Free( stream.buffer );
-}
-
-
-/*
-===============
-Sys_StreamedRead
-
-================
-*/
-int Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f ) 
-{
-  int   available;
-  int   remaining;
-  int   sleepCount;
-  int   copy;
-  int   bufferCount;
-  int   bufferPoint;
-  byte  *dest;
-
-  dest = (byte *)buffer;
-  remaining = size * count;
-
-  if ( remaining <= 0 )
-  {
-    Com_Error( ERR_FATAL, "Streamed read with non-positive size" );
-  }
-
-  sleepCount = 0;
-  while ( remaining > 0 )
-  {
-    available = stream.threadPosition - stream.streamPosition;
-    if ( !available )
-    {
-      if (stream.eof)
-        break;
-      Sys_StreamThread();
-      continue;
-    }
-
-    bufferPoint = stream.streamPosition % stream.bufferSize;
-    bufferCount = stream.bufferSize - bufferPoint;
-
-    copy = available < bufferCount ? available : bufferCount;
-    if ( copy > remaining )
-    {
-      copy = remaining;
-    }
-    Com_Memcpy( dest, stream.buffer + bufferPoint, copy );
-    stream.streamPosition += copy;
-    dest += copy;
-    remaining -= copy;
-  }
-
-  return(count * size - remaining) / size;
-}
-
-/*
-===============
-Sys_StreamSeek
-
-================
-*/
-void Sys_StreamSeek( fileHandle_t f, int offset, int origin ) {
-  // clear to that point
-  FS_Seek( f, offset, origin );
-  stream.streamPosition = 0;
-  stream.threadPosition = 0;
-  stream.eof = qfalse;
-}
-
-#endif
 
 /*
 ========================================================================
@@ -1217,15 +1007,12 @@ int main ( int argc, char* argv[] )
   // int 	oldtime, newtime; // bk001204 - unused
   int   len, i;
   char  *cmdline;
-  void Sys_SetDefaultCDPath(const char *path);
 
   // go back to real user for config loads
   saved_euid = geteuid();
   seteuid(getuid());
 
   Sys_ParseArgs( argc, argv );  // bk010104 - added this for support
-
-  Sys_SetDefaultCDPath(argv[0]);
 
   // merge the command line, this is kinda silly
   for (len = 1, i = 1; i < argc; i++)

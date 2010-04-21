@@ -67,10 +67,10 @@ char	*ED_NewString (char *string);
 // returns a copy of the string allocated from the server's string heap
 
 void ED_Print (edict_t *ed);
-void ED_Write (FILE *f, edict_t *ed);
+void ED_Write (fileHandle_t f, edict_t *ed);
 const char *ED_ParseEdict (const char *data, edict_t *ent);
 
-void ED_WriteGlobals (FILE *f);
+void ED_WriteGlobals (fileHandle_t f);
 void ED_ParseGlobals (const char *data);
 
 void ED_LoadFromFile (const char *data);

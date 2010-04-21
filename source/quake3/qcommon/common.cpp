@@ -52,32 +52,29 @@ jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 FILE *debuglogfile;
 static fileHandle_t logfile;
-fileHandle_t	com_journalFile;			// events are written here
-fileHandle_t	com_journalDataFile;		// config files are written here
 
-cvar_t	*com_viewlog;
-cvar_t	*com_speeds;
-cvar_t	*com_developer;
-cvar_t	*com_dedicated;
-cvar_t	*com_timescale;
-cvar_t	*com_fixedtime;
-cvar_t	*com_dropsim;		// 0.0 to 1.0, simulated packet drops
-cvar_t	*com_journal;
-cvar_t	*com_maxfps;
-cvar_t	*com_timedemo;
-cvar_t	*com_sv_running;
-cvar_t	*com_cl_running;
-cvar_t	*com_logfile;		// 1 = buffer log, 2 = flush after each print
-cvar_t	*com_showtrace;
-cvar_t	*com_version;
-cvar_t	*com_blood;
-cvar_t	*com_buildScript;	// for automated data building scripts
-cvar_t	*com_introPlayed;
-cvar_t	*cl_paused;
-cvar_t	*sv_paused;
-cvar_t	*com_cameraMode;
+QCvar	*com_viewlog;
+QCvar	*com_speeds;
+QCvar	*com_developer;
+QCvar	*com_dedicated;
+QCvar	*com_timescale;
+QCvar	*com_fixedtime;
+QCvar	*com_dropsim;		// 0.0 to 1.0, simulated packet drops
+QCvar	*com_maxfps;
+QCvar	*com_timedemo;
+QCvar	*com_sv_running;
+QCvar	*com_cl_running;
+QCvar	*com_logfile;		// 1 = buffer log, 2 = flush after each print
+QCvar	*com_showtrace;
+QCvar	*com_version;
+QCvar	*com_blood;
+QCvar	*com_buildScript;	// for automated data building scripts
+QCvar	*com_introPlayed;
+QCvar	*cl_paused;
+QCvar	*sv_paused;
+QCvar	*com_cameraMode;
 #if defined(_WIN32) && defined(_DEBUG)
-cvar_t	*com_noErrorInterrupt;
+QCvar	*com_noErrorInterrupt;
 #endif
 
 // com_speeds times
@@ -333,11 +330,12 @@ do the apropriate things.
 */
 void Com_Quit_f( void ) {
 	// don't try to shutdown if we are in a recursive error
-	if ( !com_errorEntered ) {
+	if ( !com_errorEntered )
+	{
 		SV_Shutdown ("Server quit\n");
 		CL_Shutdown ();
 		Com_Shutdown ();
-		FS_Shutdown(qtrue);
+		FS_Shutdown();
 	}
 	Sys_Quit ();
 }
@@ -433,7 +431,7 @@ be after execing the config and default.
 void Com_StartupVariable( const char *match ) {
 	int		i;
 	char	*s;
-	cvar_t	*cv;
+	QCvar	*cv;
 
 	for (i=0 ; i < com_numConsoleLines ; i++) {
 		Cmd_TokenizeString( com_consoleLines[i] );
@@ -487,48 +485,6 @@ qboolean Com_AddStartupCommands( void ) {
 
 
 //============================================================================
-
-void Info_Print( const char *s ) {
-	char	key[512];
-	char	value[512];
-	char	*o;
-	int		l;
-
-	if (*s == '\\')
-		s++;
-	while (*s)
-	{
-		o = key;
-		while (*s && *s != '\\')
-			*o++ = *s++;
-
-		l = o - key;
-		if (l < 20)
-		{
-			Com_Memset (o, ' ', 20-l);
-			key[20] = 0;
-		}
-		else
-			*o = 0;
-		Com_Printf ("%s", key);
-
-		if (!*s)
-		{
-			Com_Printf ("MISSING VALUE\n");
-			return;
-		}
-
-		o = value;
-		s++;
-		while (*s && *s != '\\')
-			*o++ = *s++;
-		*o = 0;
-
-		if (*s)
-			s++;
-		Com_Printf ("%s\n", value);
-	}
-}
 
 /*
 ============
@@ -1255,7 +1211,7 @@ void Com_InitSmallZoneMemory( void ) {
 }
 
 void Com_InitZoneMemory( void ) {
-	cvar_t	*cv;
+	QCvar	*cv;
 	// allocate the random block zone
 	cv = Cvar_Get( "com_zoneMegs", DEF_COMZONEMEGS, CVAR_LATCH | CVAR_ARCHIVE );
 
@@ -1358,7 +1314,7 @@ Com_InitZoneMemory
 =================
 */
 void Com_InitHunkMemory( void ) {
-	cvar_t	*cv;
+	QCvar	*cv;
 	int nMinAlloc;
 	char *pMsg = NULL;
 
@@ -2230,6 +2186,7 @@ void Com_Init( char *commandLine )
 		Sys_Error ("Error during initialization");
 	}
 
+	Sys_SetHomePathSuffix("vquake3");
 	GLog.AddListener(&MainLog);
 
 	Com_InitByteOrder();
@@ -2374,6 +2331,7 @@ void Com_Init( char *commandLine )
 	// make sure single player is off by default
 	Cvar_Set("ui_singlePlayerActive", "0");
 
+	fs_ProtectKeyFile = true;
 	com_fullyInitialized = qtrue;
 	Com_Printf ("--- Common Initialization Complete ---\n");	
 	}
@@ -2410,7 +2368,7 @@ Writes key bindings and archived cvars to config file if modified
 */
 void Com_WriteConfiguration( void ) {
 #ifndef DEDICATED // bk001204
-	cvar_t	*fs;
+	QCvar	*fs;
 #endif
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything

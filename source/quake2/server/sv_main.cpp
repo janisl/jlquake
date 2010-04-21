@@ -24,33 +24,33 @@ netadr_t	master_adr[MAX_MASTERS];	// address of group servers
 
 client_t	*sv_client;			// current client
 
-cvar_t	*sv_paused;
-cvar_t	*sv_timedemo;
+QCvar	*sv_paused;
+QCvar	*sv_timedemo;
 
-cvar_t	*sv_enforcetime;
+QCvar	*sv_enforcetime;
 
-cvar_t	*timeout;				// seconds without any message
-cvar_t	*zombietime;			// seconds to sink messages after disconnect
+QCvar	*timeout;				// seconds without any message
+QCvar	*zombietime;			// seconds to sink messages after disconnect
 
-cvar_t	*rcon_password;			// password for remote server commands
+QCvar	*rcon_password;			// password for remote server commands
 
-cvar_t	*allow_download;
-cvar_t *allow_download_players;
-cvar_t *allow_download_models;
-cvar_t *allow_download_sounds;
-cvar_t *allow_download_maps;
+QCvar	*allow_download;
+QCvar *allow_download_players;
+QCvar *allow_download_models;
+QCvar *allow_download_sounds;
+QCvar *allow_download_maps;
 
-cvar_t *sv_airaccelerate;
+QCvar *sv_airaccelerate;
 
-cvar_t	*sv_noreload;			// don't reload level state when reentering
+QCvar	*sv_noreload;			// don't reload level state when reentering
 
-cvar_t	*maxclients;			// FIXME: rename sv_maxclients
-cvar_t	*sv_showclamp;
+QCvar	*maxclients;			// FIXME: rename sv_maxclients
+QCvar	*sv_showclamp;
 
-cvar_t	*hostname;
-cvar_t	*public_server;			// should heartbeats be sent
+QCvar	*hostname;
+QCvar	*public_server;			// should heartbeats be sent
 
-cvar_t	*sv_reconnect_limit;	// minimum seconds between connect messages
+QCvar	*sv_reconnect_limit;	// minimum seconds between connect messages
 
 void Master_Shutdown (void);
 
@@ -115,7 +115,8 @@ char	*SV_StatusString (void)
 	int		statusLength;
 	int		playerLength;
 
-	QStr::Cpy(status, Cvar_Serverinfo());
+	QStr::Cpy(status, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
+		MAX_INFO_VALUE, true, false));
 	QStr::Cat(status, sizeof(status), "\n");
 	statusLength = QStr::Length(status);
 
@@ -297,7 +298,8 @@ void SVC_DirectConnect (void)
 	userinfo[sizeof(userinfo) - 1] = 0;
 
 	// force the IP key/value pair so the game can filter based on ip
-	Info_SetValueForKey (userinfo, "ip", NET_AdrToString(net_from));
+	Info_SetValueForKey (userinfo, "ip", NET_AdrToString(net_from), MAX_INFO_STRING, MAX_INFO_KEY,
+		MAX_INFO_VALUE, true, false);
 
 	// attractloop servers are ONLY for local clients
 	if (sv.attractloop)
@@ -897,7 +899,7 @@ into a more C freindly form.
 */
 void SV_UserinfoChanged (client_t *cl)
 {
-	char	*val;
+	const char	*val;
 	int		i;
 
 	// call prog code to allow overrides
@@ -1039,7 +1041,7 @@ void SV_Shutdown (char *finalmsg, qboolean reconnect)
 
 	// free current level
 	if (sv.demofile)
-		fclose (sv.demofile);
+		FS_FCloseFile (sv.demofile);
 	Com_Memset(&sv, 0, sizeof(sv));
 	Com_SetServerState (sv.state);
 
@@ -1049,7 +1051,7 @@ void SV_Shutdown (char *finalmsg, qboolean reconnect)
 	if (svs.client_entities)
 		Z_Free (svs.client_entities);
 	if (svs.demofile)
-		fclose (svs.demofile);
+		FS_FCloseFile(svs.demofile);
 	Com_Memset(&svs, 0, sizeof(svs));
 }
 

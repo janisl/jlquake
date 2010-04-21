@@ -15,7 +15,6 @@
 #include "sys.h"
 #include "zone.h"
 
-#include "cvar.h"
 #include "net.h"
 #include "protocol.h"
 #include "cmd.h"

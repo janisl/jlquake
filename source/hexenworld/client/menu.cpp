@@ -760,20 +760,12 @@ void M_Class_Key (int key)
 		S_LocalSound ("raven/menu1.wav");
 		if (++m_class_cursor >= CLASS_ITEMS)
 			m_class_cursor = 0;
-
-//		if ((!registered.value && !oem.value) && m_class_cursor >= 1 && m_class_cursor <= 2)
-//			m_class_cursor = 3;
-
 		break;
 
 	case K_UPARROW:
 		S_LocalSound ("raven/menu1.wav");
 		if (--m_class_cursor < 0)
 			m_class_cursor = CLASS_ITEMS - 1;
-
-//		if ((!registered.value && !oem.value) && m_class_cursor >= 1 && m_class_cursor <= 2)
-//			m_class_cursor = 0;
-
 		break;
 
 	case K_ENTER:
@@ -2384,7 +2376,7 @@ void M_Menu_Setup_f (void)
 	if(!com_portals)
 		if(playerclass->value==CLASS_DEMON)
 			playerclass->value = 0;
-	if(QStr::ICmp(com_gamedir, "siege"))
+	if(QStr::ICmp(fs_gamedir, "siege"))
 		if(playerclass->value==CLASS_DWARF)
 			playerclass->value = 0;
 
@@ -2432,7 +2424,7 @@ void M_Setup_Draw (void)
 	if(!com_portals)
 		if(setup_class==CLASS_DEMON)
 			setup_class = 0;
-	if(QStr::ICmp(com_gamedir, "siege"))
+	if(QStr::ICmp(fs_gamedir, "siege"))
 		if(setup_class==CLASS_DWARF)
 			setup_class = 0;
 	switch(setup_class)
@@ -2462,7 +2454,7 @@ void M_Setup_Draw (void)
 		{
 			if(!com_portals)
 			{//not succubus
-				if(QStr::ICmp(com_gamedir, "siege"))
+				if(QStr::ICmp(fs_gamedir, "siege"))
 					which_class = (rand() % CLASS_THEIF) + 1;
 				else
 				{
@@ -2473,7 +2465,7 @@ void M_Setup_Draw (void)
 			}
 			else
 			{
-				if(QStr::ICmp(com_gamedir, "siege"))
+				if(QStr::ICmp(fs_gamedir, "siege"))
 					which_class = (rand() % CLASS_DEMON) + 1;
 				else
 					which_class = (rand() % class_limit) + 1;
@@ -2552,9 +2544,6 @@ void M_Setup_Key (int k)
 			setup_class--;
 			if (setup_class < 0) 
 				setup_class = class_limit;
-
-//			if ((!registered.value && !oem.value) && setup_class >= 2 && setup_class <= 3)
-//				setup_class = 1;
 		}
 		if (setup_cursor == 4)
 			setup_top = setup_top - 1;
@@ -2586,9 +2575,6 @@ forward:
 			setup_class++;
 			if (setup_class > class_limit) 
 				setup_class = 0;
-
-//			if ((!registered.value && !oem.value) && setup_class >= 2 && setup_class <= 3)
-//				setup_class = 4;
 		}
 		if (setup_cursor == 4)
 			setup_top = setup_top + 1;

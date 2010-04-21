@@ -47,39 +47,6 @@ qboolean	stdin_ready;
 */
 
 /*
-============
-Sys_FileTime
-
-returns -1 if not present
-============
-*/
-int	Sys_FileTime (char *path)
-{
-	struct	stat	buf;
-	
-	if (stat (path,&buf) == -1)
-		return -1;
-	
-	return buf.st_mtime;
-}
-
-
-/*
-============
-Sys_mkdir
-
-============
-*/
-void Sys_mkdir (char *path)
-{
-	if (mkdir (path, 0777) != -1)
-		return;
-	if (errno != EEXIST)
-		Sys_Error ("mkdir %s: %s",path, strerror(errno)); 
-}
-
-
-/*
 ================
 Sys_DoubleTime
 ================
@@ -236,12 +203,6 @@ int main(int argc, char *argv[])
 		Sys_Error("Can't allocate %ld\n", parms.memsize);
 
 	parms.basedir = ".";
-
-/*
-	if (Sys_FileTime ("id1/pak0.pak") != -1)
-	else
-		parms.basedir = "/raid/quake/v2";
-*/
 
 	SV_Init (&parms);
 

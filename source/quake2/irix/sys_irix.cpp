@@ -23,7 +23,7 @@
 
 #include "../linux/rw_linux.h"
 
-cvar_t *nostdout;
+QCvar *nostdout;
 
 unsigned	sys_frame_time;
 
@@ -298,85 +298,3 @@ int main (int argc, char **argv)
     }
 
 }
-
-void Sys_CopyProtect(void)
-{
-	FILE *mnt;
-	struct mntent *ent;
-	char path[MAX_OSPATH];
-	struct stat st;
-	qboolean found_cd = false;
-
-	static qboolean checked = false;
-
-	if (checked)
-		return;
-
-        Com_Printf("XXX - Sys_CopyProtect disabled\n");
-	checked = true;
-	return;
-
-	if ((mnt = setmntent("/etc/mtab", "r")) == NULL)
-		Com_Error(ERR_FATAL, "Can't read mount table to determine mounted cd location.");
-
-	while ((ent = getmntent(mnt)) != NULL) {
-		if (QStr::Cmp(ent->mnt_type, "iso9660") == 0) {
-			// found a cd file system
-			found_cd = true;
-			sprintf(path, "%s/%s", ent->mnt_dir, "install/data/quake2.exe");
-			if (stat(path, &st) == 0) {
-				// found it
-				checked = true;
-				endmntent(mnt);
-				return;
-			}
-			sprintf(path, "%s/%s", ent->mnt_dir, "Install/Data/quake2.exe");
-			if (stat(path, &st) == 0) {
-				// found it
-				checked = true;
-				endmntent(mnt);
-				return;
-			}
-			sprintf(path, "%s/%s", ent->mnt_dir, "quake2.exe");
-			if (stat(path, &st) == 0) {
-				// found it
-				checked = true;
-				endmntent(mnt);
-				return;
-			}
-		}
-	}
-	endmntent(mnt);
-
-	if (found_cd)
-		Com_Error (ERR_FATAL, "Could not find a Quake2 CD in your CD drive.");
-	Com_Error (ERR_FATAL, "Unable to find a mounted iso9660 file system.\n"
-		"You must mount the Quake2 CD in a cdrom drive in order to play.");
-}
-
-#if 0
-/*
-================
-Sys_MakeCodeWriteable
-================
-*/
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-
-	int r;
-	unsigned long addr;
-	int psize = getpagesize();
-
-	addr = (startaddr & ~(psize-1)) - psize;
-
-//	fprintf(stderr, "writable code %lx(%lx)-%lx, length=%lx\n", startaddr,
-//			addr, startaddr+length, length);
-
-	r = mprotect((char*)addr, length + startaddr - addr + psize, 7);
-
-	if (r < 0)
-    		Sys_Error("Protection change failed\n");
-
-}
-
-#endif

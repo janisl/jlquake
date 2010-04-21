@@ -24,50 +24,50 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "client.h"
 #include <limits.h>
 
-cvar_t	*cl_nodelta;
-cvar_t	*cl_debugMove;
+QCvar	*cl_nodelta;
+QCvar	*cl_debugMove;
 
-cvar_t	*cl_noprint;
-cvar_t	*cl_motd;
+QCvar	*cl_noprint;
+QCvar	*cl_motd;
 
-cvar_t	*rcon_client_password;
-cvar_t	*rconAddress;
+QCvar	*rcon_client_password;
+QCvar	*rconAddress;
 
-cvar_t	*cl_timeout;
-cvar_t	*cl_maxpackets;
-cvar_t	*cl_packetdup;
-cvar_t	*cl_timeNudge;
-cvar_t	*cl_showTimeDelta;
-cvar_t	*cl_freezeDemo;
+QCvar	*cl_timeout;
+QCvar	*cl_maxpackets;
+QCvar	*cl_packetdup;
+QCvar	*cl_timeNudge;
+QCvar	*cl_showTimeDelta;
+QCvar	*cl_freezeDemo;
 
-cvar_t	*cl_shownet;
-cvar_t	*cl_showSend;
-cvar_t	*cl_timedemo;
-cvar_t	*cl_avidemo;
-cvar_t	*cl_forceavidemo;
+QCvar	*cl_shownet;
+QCvar	*cl_showSend;
+QCvar	*cl_timedemo;
+QCvar	*cl_avidemo;
+QCvar	*cl_forceavidemo;
 
-cvar_t	*cl_freelook;
-cvar_t	*cl_sensitivity;
+QCvar	*cl_freelook;
+QCvar	*cl_sensitivity;
 
-cvar_t	*cl_mouseAccel;
-cvar_t	*cl_showMouseRate;
+QCvar	*cl_mouseAccel;
+QCvar	*cl_showMouseRate;
 
-cvar_t	*m_pitch;
-cvar_t	*m_yaw;
-cvar_t	*m_forward;
-cvar_t	*m_side;
-cvar_t	*m_filter;
+QCvar	*m_pitch;
+QCvar	*m_yaw;
+QCvar	*m_forward;
+QCvar	*m_side;
+QCvar	*m_filter;
 
-cvar_t	*cl_activeAction;
+QCvar	*cl_activeAction;
 
-cvar_t	*cl_motdString;
+QCvar	*cl_motdString;
 
-cvar_t	*cl_allowDownload;
-cvar_t	*cl_conXOffset;
-cvar_t	*cl_inGameVideo;
+QCvar	*cl_allowDownload;
+QCvar	*cl_conXOffset;
+QCvar	*cl_inGameVideo;
 
-cvar_t	*cl_serverStatusResendTime;
-cvar_t	*cl_trn;
+QCvar	*cl_serverStatusResendTime;
+QCvar	*cl_trn;
 
 clientActive_t		cl;
 clientConnection_t	clc;
@@ -837,9 +837,9 @@ void CL_RequestMotd( void ) {
   //   but I decided it was enough randomization
 	QStr::Sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ), "%i", ((rand() << 16) ^ rand()) ^ Com_Milliseconds());
 
-	Info_SetValueForKey( info, "challenge", cls.updateChallenge );
-	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string );
-	Info_SetValueForKey( info, "version", com_version->string );
+	Info_SetValueForKey( info, "challenge", cls.updateChallenge, MAX_INFO_STRING);
+	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, MAX_INFO_STRING);
+	Info_SetValueForKey( info, "version", com_version->string, MAX_INFO_STRING);
 
 	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd \"%s\"\n", info );
 }
@@ -885,7 +885,7 @@ in anyway.
 void CL_RequestAuthorization( void ) {
 	char	nums[64];
 	int		i, j, l;
-	cvar_t	*fs;
+	QCvar	*fs;
 
 	if ( !cls.authorizeServer.port ) {
 		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );
@@ -1303,7 +1303,7 @@ void CL_Clientinfo_f( void ) {
 	Com_Printf( "state: %i\n", cls.state );
 	Com_Printf( "Server: %s\n", cls.servername );
 	Com_Printf ("User info settings:\n");
-	Info_Print( Cvar_InfoString( CVAR_USERINFO ) );
+	Info_Print( Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING) );
 	Com_Printf( "--------------------------------------\n" );
 }
 
@@ -1526,10 +1526,10 @@ void CL_CheckForResend( void ) {
 		// sending back the challenge
 		port = Cvar_VariableValue ("net_qport");
 
-		QStr::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
-		Info_SetValueForKey( info, "protocol", va("%i", PROTOCOL_VERSION ) );
-		Info_SetValueForKey( info, "qport", va("%i", port ) );
-		Info_SetValueForKey( info, "challenge", va("%i", clc.challenge ) );
+		QStr::NCpyZ( info, Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING), sizeof( info ) );
+		Info_SetValueForKey( info, "protocol", va("%i", PROTOCOL_VERSION ), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "qport", va("%i", port ), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "challenge", va("%i", clc.challenge ), MAX_INFO_STRING);
 		
 		QStr::Cpy(data, "connect ");
     // TTimo adding " " around the userinfo string to avoid truncated userinfo on the server
@@ -1594,7 +1594,7 @@ CL_MotdPacket
 ===================
 */
 void CL_MotdPacket( netadr_t from ) {
-	char	*challenge;
+	const char	*challenge;
 	char	*info;
 
 	// if not from our server, ignore it
@@ -1983,7 +1983,7 @@ void CL_CheckUserinfo( void ) {
 	// send a reliable userinfo update if needed
 	if ( cvar_modifiedFlags & CVAR_USERINFO ) {
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		CL_AddReliableCommand( va("userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO ) ) );
+		CL_AddReliableCommand( va("userinfo \"%s\"", Cvar_InfoString( CVAR_USERINFO, MAX_INFO_STRING) ) );
 	}
 
 }
@@ -2559,7 +2559,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 					type = 0;
 					break;
 			}
-			Info_SetValueForKey( cl_pinglist[i].info, "nettype", va("%d", type) );
+			Info_SetValueForKey( cl_pinglist[i].info, "nettype", va("%d", type), MAX_INFO_STRING);
 			CL_SetServerInfoByAddress(from, infoString, cl_pinglist[i].time);
 
 			return;

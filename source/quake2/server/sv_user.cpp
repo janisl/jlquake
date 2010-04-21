@@ -42,7 +42,7 @@ void SV_BeginDemoserver (void)
 	char		name[MAX_OSPATH];
 
 	QStr::Sprintf (name, sizeof(name), "demos/%s", sv.name);
-	FS_FOpenFile (name, &sv.demofile);
+	FS_FOpenFileRead(name, &sv.demofile, true);
 	if (!sv.demofile)
 		Com_Error (ERR_DROP, "Couldn't open %s\n", name);
 }
@@ -302,12 +302,11 @@ SV_BeginDownload_f
 void SV_BeginDownload_f(void)
 {
 	char	*name;
-	extern	cvar_t *allow_download;
-	extern	cvar_t *allow_download_players;
-	extern	cvar_t *allow_download_models;
-	extern	cvar_t *allow_download_sounds;
-	extern	cvar_t *allow_download_maps;
-	extern	int		file_from_pak; // ZOID did file come from pak?
+	extern	QCvar *allow_download;
+	extern	QCvar *allow_download_players;
+	extern	QCvar *allow_download_models;
+	extern	QCvar *allow_download_sounds;
+	extern	QCvar *allow_download_maps;
 	int offset = 0;
 
 	name = Cmd_Argv(1);
@@ -343,7 +342,7 @@ void SV_BeginDownload_f(void)
 	if (sv_client->download)
 		FS_FreeFile (sv_client->download);
 
-	sv_client->downloadsize = FS_LoadFile (name, (void **)&sv_client->download);
+	sv_client->downloadsize = FS_ReadFile(name, (void **)&sv_client->download);
 	sv_client->downloadcount = offset;
 
 	if (offset > sv_client->downloadsize)
@@ -352,7 +351,7 @@ void SV_BeginDownload_f(void)
 	if (!sv_client->download
 		// special check for maps, if it came from a pak file, don't allow
 		// download  ZOID
-		|| (QStr::NCmp(name, "maps/", 5) == 0 && file_from_pak))
+		|| (QStr::NCmp(name, "maps/", 5) == 0 && FS_FileIsInPAK(name, NULL) == 1))
 	{
 		Com_DPrintf ("Couldn't download %s to %s\n", name, sv_client->name);
 		if (sv_client->download) {
@@ -398,7 +397,8 @@ Dumps the serverinfo info string
 */
 void SV_ShowServerinfo_f (void)
 {
-	Info_Print (Cvar_Serverinfo());
+	Info_Print (Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
+		MAX_INFO_VALUE, true, false));
 }
 
 

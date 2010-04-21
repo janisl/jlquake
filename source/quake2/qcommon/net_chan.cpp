@@ -74,9 +74,9 @@ then a packet only needs to be delivered if there is something in the
 unacknowledged reliable
 */
 
-cvar_t		*showpackets;
-cvar_t		*showdrop;
-cvar_t		*qport;
+QCvar		*showpackets;
+QCvar		*showdrop;
+QCvar		*qport;
 
 netadr_t	net_from;
 QMsg		net_message;

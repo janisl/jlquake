@@ -82,15 +82,15 @@ int			s_numSfx = 0;
 #define		LOOP_HASH		128
 static	sfx_t		*sfxHash[LOOP_HASH];
 
-cvar_t		*s_volume;
-cvar_t		*s_testsound;
-cvar_t		*s_khz;
-cvar_t		*s_show;
-cvar_t		*s_mixahead;
-cvar_t		*s_mixPreStep;
-cvar_t		*s_musicVolume;
-cvar_t		*s_separation;
-cvar_t		*s_doppler;
+QCvar		*s_volume;
+QCvar		*s_testsound;
+QCvar		*s_khz;
+QCvar		*s_show;
+QCvar		*s_mixahead;
+QCvar		*s_mixPreStep;
+QCvar		*s_musicVolume;
+QCvar		*s_separation;
+QCvar		*s_doppler;
 
 static loopSound_t		loopSounds[MAX_GENTITIES];
 static	channel_t		*freelist = NULL;
@@ -137,7 +137,7 @@ S_Init
 ================
 */
 void S_Init( void ) {
-	cvar_t	*cv;
+	QCvar	*cv;
 	qboolean	r;
 
 	Com_Printf("\n------- sound initialization -------\n");
@@ -1420,7 +1420,6 @@ void S_StopBackgroundTrack( void ) {
 	if ( !s_backgroundFile ) {
 		return;
 	}
-	Sys_EndStreamedFile( s_backgroundFile );
 	FS_FCloseFile( s_backgroundFile );
 	s_backgroundFile = 0;
 	s_rawend = 0;
@@ -1456,7 +1455,6 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ){
 	// close the background track, but DON'T reset s_rawend
 	// if restarting the same back ground track
 	if ( s_backgroundFile ) {
-		Sys_EndStreamedFile( s_backgroundFile );
 		FS_FCloseFile( s_backgroundFile );
 		s_backgroundFile = 0;
 	}
@@ -1510,11 +1508,6 @@ void S_StartBackgroundTrack( const char *intro, const char *loop ){
 	s_backgroundInfo.samples = len / (s_backgroundInfo.width * s_backgroundInfo.channels);
 
 	s_backgroundSamples = s_backgroundInfo.samples;
-
-	//
-	// start the background streaming
-	//
-	Sys_BeginStreamedFile( s_backgroundFile, 0x10000 );
 }
 
 /*
@@ -1565,7 +1558,7 @@ void S_UpdateBackgroundTrack( void ) {
 			fileSamples = fileBytes / (s_backgroundInfo.width * s_backgroundInfo.channels);
 		}
 
-		r = Sys_StreamedRead( raw, 1, fileBytes, s_backgroundFile );
+		r = FS_Read(raw, fileBytes, s_backgroundFile);
 		if ( r != fileBytes ) {
 			Com_Printf("StreamedRead failure on music track\n");
 			S_StopBackgroundTrack();
@@ -1583,7 +1576,6 @@ void S_UpdateBackgroundTrack( void ) {
 		if ( !s_backgroundSamples ) {
 			// loop
 			if (s_backgroundLoop[0]) {
-				Sys_EndStreamedFile( s_backgroundFile );
 				FS_FCloseFile( s_backgroundFile );
 				s_backgroundFile = 0;
 				S_StartBackgroundTrack( s_backgroundLoop, s_backgroundLoop );

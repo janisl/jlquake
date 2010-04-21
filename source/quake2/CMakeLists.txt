@@ -8,7 +8,7 @@ set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
 
 set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
 set(LDFLAGS -ldl -lm)
-set(GLLDFLAGS -L/usr/X11R6/lib -lGL -lX11 -lXext -lXxf86dga -lXxf86vm)
+set(GLLDFLAGS -L/usr/X11R6/lib -lGL -lX11 -lXext -lXxf86dga -lXxf86vm -lasound)
 
 #############################################################################
 # CLIENT/SERVER
@@ -55,7 +55,8 @@ set(QUAKE2_OBJS
 	linux/q_shlinux.cpp
 	linux/vid_menu.cpp
 	linux/vid_so.cpp
-	linux/snd_linux.cpp
+	linux/snd_alsa.cpp
+	#linux/snd_linux.cpp
 	linux/sys_linux.cpp
 	linux/glob.cpp
 	linux/net_udp.cpp
@@ -89,7 +90,7 @@ endforeach(SRC)
 
 add_executable(vquake2 ${QUAKE2_OBJS})
 set_target_properties(vquake2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake2 core ${GLLDFLAGS})
+target_link_libraries(vquake2 core zlib ${GLLDFLAGS})
 add_dependencies(vquake2 core)
 
 #############################################################################

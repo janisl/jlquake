@@ -45,7 +45,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #import <net/if_dl.h>         // for 'struct sockaddr_dl'
 #endif
 
-static cvar_t	*noudp;
+static QCvar	*noudp;
 
 netadr_t	net_local_adr;
 
@@ -473,7 +473,7 @@ NET_OpenIP
 int NET_IPSocket (char *net_interface, int port);
 void NET_OpenIP (void)
 {
-	cvar_t	*ip;
+	QCvar	*ip;
 	int		port;
 	int		i;
 

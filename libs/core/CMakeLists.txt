@@ -13,8 +13,12 @@ set(CORE_FILES
 	endian.h
 	exception.cpp
 	exception.h
+	files.cpp
+	files.h
 	huffman.cpp
 	huffman.h
+	infostr.cpp
+	infostr.h
 	log.cpp
 	log.h
 	mathlib.cpp
@@ -27,6 +31,10 @@ set(CORE_FILES
 	message.h
 	str.cpp
 	str.h
+	system.h
+	system_unix.cpp
+	unzip.cpp
+	unzip.h
 )
 
 set(CORE_ASM_FILES
@@ -45,3 +53,4 @@ foreach(SRC ${CORE_ASM_FILES})
 endforeach(SRC)
 
 add_library(core STATIC ${CORE_FILES})
+add_dependencies(core zlib)

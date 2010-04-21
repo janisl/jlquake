@@ -138,14 +138,14 @@ extern	playsound_t	s_pendingplays;
 #define	MAX_RAW_SAMPLES	8192
 extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
-extern cvar_t	*s_volume;
-extern cvar_t	*s_nosound;
-extern cvar_t	*s_loadas8bit;
-extern cvar_t	*s_khz;
-extern cvar_t	*s_show;
-extern cvar_t	*s_mixahead;
-extern cvar_t	*s_testsound;
-extern cvar_t	*s_primary;
+extern QCvar	*s_volume;
+extern QCvar	*s_nosound;
+extern QCvar	*s_loadas8bit;
+extern QCvar	*s_khz;
+extern QCvar	*s_show;
+extern QCvar	*s_mixahead;
+extern QCvar	*s_testsound;
+extern QCvar	*s_primary;
 
 wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength);
 

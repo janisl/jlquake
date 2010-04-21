@@ -455,12 +455,6 @@ void CL_ParseUpdate (int bits)
 
 	ent->baseline.flags |= BE_ON;
 
-/*	if (num == 2)
-	{
-		FH = fopen("c.txt","r+");
-		fseek(FH,0,SEEK_END);
-	}
-*/
 	ref_ent = NULL;
 
 	for(i=0;i<cl.frames[0].count;i++)
@@ -1459,10 +1453,6 @@ void CL_ParseServerMessage (void)
 			cl.intermission = net_message.ReadByte();
 			cl.completed_time = cl.time;
 			vid.recalc_refdef = true;	// go to full screen
-			if (oem->value && cl.intermission == 1)
-			{
-				cl.intermission = 9;
-			}
 			break;
 
 /*		case svc_finale:

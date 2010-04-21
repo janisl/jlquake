@@ -140,7 +140,7 @@ typedef struct client_s
 
 	client_frame_t	frames[UPDATE_BACKUP];	// updates can be deltad from here
 
-	FILE			*download;			// file being downloaded
+	fileHandle_t	download;			// file being downloaded
 	int				downloadsize;		// total bytes
 	int				downloadcount;		// bytes sent
 
@@ -301,6 +301,7 @@ typedef struct
 extern	QCvar*	sv_mintic;
 extern	QCvar*	sv_maxtic;
 extern	QCvar*	sv_maxspeed;
+extern QCvar* sv_highchars;
 
 extern	netadr_t	master_adr[MAX_MASTERS];	// address of the master server
 
@@ -341,8 +342,8 @@ extern	char		localmodels[MAX_MODELS][5];	// inline model names for precache
 extern	char		localinfo[MAX_LOCALINFO_STRING+1];
 
 extern	int			host_hunklevel;
-extern	FILE		*sv_logfile;
-extern	FILE		*sv_fraglogfile;
+extern	fileHandle_t	sv_logfile;
+extern	fileHandle_t	sv_fraglogfile;
 
 //===========================================================
 

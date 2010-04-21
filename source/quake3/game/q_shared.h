@@ -78,10 +78,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 #endif
 
-#define ID_INLINE __inline 
-
-#define	PATH_SEP '\\'
-
 #endif
 
 //======================= MAC OS X DEFINES =====================
@@ -91,7 +87,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAC_STATIC
 #define __cdecl
 #define __declspec(x)
-#define ID_INLINE inline 
 
 #ifdef __ppc__
 #define CPUSTRING	"MacOSX-ppc"
@@ -100,8 +95,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #else
 #define CPUSTRING	"MacOSX-other"
 #endif
-
-#define	PATH_SEP	'/'
 
 #define __rlwimi(out, in, shift, maskBegin, maskEnd) asm("rlwimi %0,%1,%2,%3,%4" : "=r" (out) : "r" (in), "i" (shift), "i" (maskBegin), "i" (maskEnd))
 #define __dcbt(addr, offset) asm("dcbt %0,%1" : : "b" (addr), "r" (offset))
@@ -136,11 +129,8 @@ static inline float __fctiw(register float f) {
 
 #include <MacTypes.h>
 #define	MAC_STATIC
-#define ID_INLINE inline 
 
 #define	CPUSTRING	"MacOS-PPC"
-
-#define	PATH_SEP ':'
 
 void Sys_PumpEvents( void );
 
@@ -153,7 +143,6 @@ void Sys_PumpEvents( void );
 #ifdef __linux__
 
 #define	MAC_STATIC // bk: FIXME
-#define ID_INLINE inline 
 
 #ifdef __i386__
 #define	CPUSTRING	"linux-i386"
@@ -163,15 +152,12 @@ void Sys_PumpEvents( void );
 #define	CPUSTRING	"linux-other"
 #endif
 
-#define	PATH_SEP '/'
-
 #endif
 
 //======================= FreeBSD DEFINES =====================
 #ifdef __FreeBSD__ // rb010123
 
 #define MAC_STATIC
-#define ID_INLINE inline 
 
 #ifdef __i386__
 #define CPUSTRING       "freebsd-i386"
@@ -181,8 +167,6 @@ void Sys_PumpEvents( void );
 #define CPUSTRING       "freebsd-other"
 #endif
 
-#define	PATH_SEP '/'
-
 #endif
 
 //=============================================================
@@ -191,7 +175,6 @@ enum {qfalse, qtrue};
 
 typedef int		qhandle_t;
 typedef int		sfxHandle_t;
-typedef int		fileHandle_t;
 typedef int		clipHandle_t;
 
 
@@ -379,20 +362,6 @@ typedef struct pc_token_s
 
 // data is an in/out parm, returns a parsed out token
 
-// mode parm for FS_FOpenFile
-typedef enum {
-	FS_READ,
-	FS_WRITE,
-	FS_APPEND,
-	FS_APPEND_SYNC
-} fsMode_t;
-
-typedef enum {
-	FS_SEEK_CUR,
-	FS_SEEK_END,
-	FS_SEEK_SET
-} fsOrigin_t;
-
 //=============================================
 
 // strlen that discounts Quake color sequences
@@ -418,46 +387,10 @@ typedef struct
 
 //=============================================
 
-//
-// key / value info strings
-//
-char *Info_ValueForKey( const char *s, const char *key );
-void Info_RemoveKey( char *s, const char *key );
-void Info_RemoveKey_big( char *s, const char *key );
-void Info_SetValueForKey( char *s, const char *key, const char *value );
-void Info_SetValueForKey_Big( char *s, const char *key, const char *value );
-qboolean Info_Validate( const char *s );
-void Info_NextPair( const char **s, char *key, char *value );
-
 // this is only here so the functions in q_shared.c and bg_*.c can link
 void	QDECL Com_Error( int level, const char *error, ... );
 void	QDECL Com_Printf( const char *msg, ... );
 
-
-/*
-==========================================================
-
-CVARS (console variables)
-
-Many variables can be used for cheating purposes, so when
-cheats is zero, force all unspecified variables to their
-default values.
-==========================================================
-*/
-
-#define	MAX_CVAR_VALUE_STRING	256
-
-typedef int	cvarHandle_t;
-
-// the modules that run in the virtual machine can't access the cvar_t directly,
-// so they must ask for structured updates
-typedef struct {
-	cvarHandle_t	handle;
-	int			modificationCount;
-	float		value;
-	int			integer;
-	char		string[MAX_CVAR_VALUE_STRING];
-} vmCvar_t;
 
 /*
 ==============================================================

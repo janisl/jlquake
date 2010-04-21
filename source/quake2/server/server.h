@@ -24,7 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //define	PARANOID			// speed sapping error checking
 
 #include "../qcommon/qcommon.h"
+#define cvar_t	QCvar
 #include "../game/game.h"
+#undef cvar_t
 
 //=============================================================================
 
@@ -63,7 +65,7 @@ typedef struct
 	byte		multicast_buf[MAX_MSGLEN];
 
 	// demo server information
-	FILE		*demofile;
+	fileHandle_t	demofile;
 	qboolean	timedemo;		// don't time sync
 } server_t;
 
@@ -176,7 +178,7 @@ typedef struct
 	challenge_t	challenges[MAX_CHALLENGES];	// to prevent invalid IPs from connecting
 
 	// serverrecord values
-	FILE		*demofile;
+	fileHandle_t	demofile;
 	QMsg		demo_multicast;
 	byte		demo_multicast_buf[MAX_MSGLEN];
 } server_static_t;
@@ -191,12 +193,12 @@ extern	netadr_t	master_adr[MAX_MASTERS];	// address of the master server
 extern	server_static_t	svs;				// persistant server info
 extern	server_t		sv;					// local server
 
-extern	cvar_t		*sv_paused;
-extern	cvar_t		*maxclients;
-extern	cvar_t		*sv_noreload;			// don't reload level state when reentering
-extern	cvar_t		*sv_airaccelerate;		// don't reload level state when reentering
+extern	QCvar		*sv_paused;
+extern	QCvar		*maxclients;
+extern	QCvar		*sv_noreload;			// don't reload level state when reentering
+extern	QCvar		*sv_airaccelerate;		// don't reload level state when reentering
 											// development tool
-extern	cvar_t		*sv_enforcetime;
+extern	QCvar		*sv_enforcetime;
 
 extern	client_t	*sv_client;
 extern	edict_t		*sv_player;

@@ -42,7 +42,7 @@ set(QWSV_OBJS
 
 add_executable(vqwsv ${QWSV_OBJS})
 set_target_properties(vqwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
-target_link_libraries(vqwsv core ${SV_LDFLAGS})
+target_link_libraries(vqwsv core zlib ${SV_LDFLAGS})
 add_dependencies(vqwsv core)
 
 #############################################################################
@@ -96,7 +96,6 @@ set(GLQWCL_OBJS
 
 set(QWCL_ASM_FILES
 	client/snd_mixa.s
-	client/sys_dosa.s
 )
 
 foreach(SRC ${QWCL_ASM_FILES})
@@ -112,5 +111,5 @@ endforeach(SRC)
 
 add_executable(vqwcl ${GLQWCL_OBJS})
 set_target_properties(vqwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vqwcl core ${LDFLAGS})
+target_link_libraries(vqwcl core zlib ${LDFLAGS})
 add_dependencies(vqwcl core)

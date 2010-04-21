@@ -130,9 +130,6 @@ void Sys_Quit (void)
 
 void Sys_Init(void)
 {
-#if id386
-	Sys_SetFPCW();
-#endif
 }
 
 void Sys_Error (char *error, ...)
@@ -163,96 +160,6 @@ void Sys_Warn (char *warning, ...)
     va_end (argptr);
 	fprintf(stderr, "Warning: %s", string);
 } 
-
-/*
-============
-Sys_FileTime
-
-returns -1 if not present
-============
-*/
-int	Sys_FileTime (char *path)
-{
-	struct	stat	buf;
-	
-	if (stat (path,&buf) == -1)
-		return -1;
-	
-	return buf.st_mtime;
-}
-
-
-void Sys_mkdir (char *path)
-{
-    mkdir (path, 0777);
-}
-
-int Sys_FileOpenRead (char *path, int *handle)
-{
-	int	h;
-	struct stat	fileinfo;
-    
-	
-	h = open (path, O_RDONLY, 0666);
-	*handle = h;
-	if (h == -1)
-		return -1;
-	
-	if (fstat (h,&fileinfo) == -1)
-		Sys_Error ("Error fstating %s", path);
-
-	return fileinfo.st_size;
-}
-
-int Sys_FileOpenWrite (char *path)
-{
-	int     handle;
-
-	umask (0);
-	
-	handle = open(path,O_RDWR | O_CREAT | O_TRUNC
-	, 0666);
-
-	if (handle == -1)
-		Sys_Error ("Error opening %s: %s", path,strerror(errno));
-
-	return handle;
-}
-
-int Sys_FileWrite (int handle, void *src, int count)
-{
-	return write (handle, src, count);
-}
-
-void Sys_FileClose (int handle)
-{
-	close (handle);
-}
-
-void Sys_FileSeek (int handle, int position)
-{
-	lseek (handle, position, SEEK_SET);
-}
-
-int Sys_FileRead (int handle, void *dest, int count)
-{
-    return read (handle, dest, count);
-}
-
-void Sys_DebugLog(char *file, char *fmt, ...)
-{
-    va_list argptr; 
-    static char data[1024];
-    int fd;
-    
-    va_start(argptr, fmt);
-    vsprintf(data, fmt, argptr);
-    va_end(argptr);
-//    fd = open(file, O_WRONLY | O_BINARY | O_CREAT | O_APPEND, 0666);
-    fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data, QStr::Length(data));
-    close(fd);
-}
 
 void Sys_EditFile(char *filename)
 {
@@ -329,16 +236,6 @@ char *Sys_ConsoleInput(void)
 	return NULL;
 }
 
-#if !id386
-void Sys_HighFPPrecision (void)
-{
-}
-
-void Sys_LowFPPrecision (void)
-{
-}
-#endif
-
 int		skipframes;
 
 int main (int c, char **v)
@@ -393,29 +290,3 @@ int main (int c, char **v)
     }
 
 }
-
-
-/*
-================
-Sys_MakeCodeWriteable
-================
-*/
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-
-	int r;
-	unsigned long addr;
-	int psize = getpagesize();
-
-	addr = (startaddr & ~(psize-1)) - psize;
-
-//	fprintf(stderr, "writable code %lx(%lx)-%lx, length=%lx\n", startaddr,
-//			addr, startaddr+length, length);
-
-	r = mprotect((char*)addr, length + startaddr - addr + psize, 7);
-
-	if (r < 0)
-    		Sys_Error("Protection change failed\n");
-
-}
-

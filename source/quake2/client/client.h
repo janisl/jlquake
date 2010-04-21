@@ -136,7 +136,7 @@ typedef struct
 	//
 	// non-gameserver infornamtion
 	// FIXME: move this cinematic stuff into the cin_t structure
-	FILE		*cinematic_file;
+	fileHandle_t	cinematic_file;
 	int			cinematictime;		// cls.realtime for first cinematic frame
 	int			cinematicframe;
 	char		cinematicpalette[768];
@@ -221,7 +221,7 @@ typedef struct
 
 	int			challenge;			// from the server to use for connecting
 
-	FILE		*download;			// file transfer from server
+	fileHandle_t	download;			// file transfer from server
 	char		downloadtempname[MAX_OSPATH];
 	char		downloadname[MAX_OSPATH];
 	int			downloadnumber;
@@ -231,7 +231,7 @@ typedef struct
 // demo recording info must be here, so it isn't cleared on level change
 	qboolean	demorecording;
 	qboolean	demowaiting;	// don't record until a non-delta message is received
-	FILE		*demofile;
+	fileHandle_t	demofile;
 } client_static_t;
 
 extern client_static_t	cls;
@@ -241,51 +241,51 @@ extern client_static_t	cls;
 //
 // cvars
 //
-extern	cvar_t	*cl_stereo_separation;
-extern	cvar_t	*cl_stereo;
+extern	QCvar	*cl_stereo_separation;
+extern	QCvar	*cl_stereo;
 
-extern	cvar_t	*cl_gun;
-extern	cvar_t	*cl_add_blend;
-extern	cvar_t	*cl_add_lights;
-extern	cvar_t	*cl_add_particles;
-extern	cvar_t	*cl_add_entities;
-extern	cvar_t	*cl_predict;
-extern	cvar_t	*cl_footsteps;
-extern	cvar_t	*cl_noskins;
-extern	cvar_t	*cl_autoskins;
+extern	QCvar	*cl_gun;
+extern	QCvar	*cl_add_blend;
+extern	QCvar	*cl_add_lights;
+extern	QCvar	*cl_add_particles;
+extern	QCvar	*cl_add_entities;
+extern	QCvar	*cl_predict;
+extern	QCvar	*cl_footsteps;
+extern	QCvar	*cl_noskins;
+extern	QCvar	*cl_autoskins;
 
-extern	cvar_t	*cl_upspeed;
-extern	cvar_t	*cl_forwardspeed;
-extern	cvar_t	*cl_sidespeed;
+extern	QCvar	*cl_upspeed;
+extern	QCvar	*cl_forwardspeed;
+extern	QCvar	*cl_sidespeed;
 
-extern	cvar_t	*cl_yawspeed;
-extern	cvar_t	*cl_pitchspeed;
+extern	QCvar	*cl_yawspeed;
+extern	QCvar	*cl_pitchspeed;
 
-extern	cvar_t	*cl_run;
+extern	QCvar	*cl_run;
 
-extern	cvar_t	*cl_anglespeedkey;
+extern	QCvar	*cl_anglespeedkey;
 
-extern	cvar_t	*cl_shownet;
-extern	cvar_t	*cl_showmiss;
-extern	cvar_t	*cl_showclamp;
+extern	QCvar	*cl_shownet;
+extern	QCvar	*cl_showmiss;
+extern	QCvar	*cl_showclamp;
 
-extern	cvar_t	*lookspring;
-extern	cvar_t	*lookstrafe;
-extern	cvar_t	*sensitivity;
+extern	QCvar	*lookspring;
+extern	QCvar	*lookstrafe;
+extern	QCvar	*sensitivity;
 
-extern	cvar_t	*m_pitch;
-extern	cvar_t	*m_yaw;
-extern	cvar_t	*m_forward;
-extern	cvar_t	*m_side;
+extern	QCvar	*m_pitch;
+extern	QCvar	*m_yaw;
+extern	QCvar	*m_forward;
+extern	QCvar	*m_side;
 
-extern	cvar_t	*freelook;
+extern	QCvar	*freelook;
 
-extern	cvar_t	*cl_lightlevel;	// FIXME HACK
+extern	QCvar	*cl_lightlevel;	// FIXME HACK
 
-extern	cvar_t	*cl_paused;
-extern	cvar_t	*cl_timedemo;
+extern	QCvar	*cl_paused;
+extern	QCvar	*cl_timedemo;
 
-extern	cvar_t	*cl_vwep;
+extern	QCvar	*cl_vwep;
 
 typedef struct
 {

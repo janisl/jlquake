@@ -3671,7 +3671,7 @@ void QGL_EnableLogging( qboolean enable )
 			struct tm *newtime;
 			time_t aclock;
 			char buffer[1024];
-			cvar_t	*basedir;
+			QCvar	*basedir;
 
 			time( &aclock );
 			newtime = localtime( &aclock );

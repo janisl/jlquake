@@ -44,20 +44,20 @@ int			scr_draw_loading;
 vrect_t		scr_vrect;		// position of render window on screen
 
 
-cvar_t		*scr_viewsize;
-cvar_t		*scr_conspeed;
-cvar_t		*scr_centertime;
-cvar_t		*scr_showturtle;
-cvar_t		*scr_showpause;
-cvar_t		*scr_printspeed;
+QCvar		*scr_viewsize;
+QCvar		*scr_conspeed;
+QCvar		*scr_centertime;
+QCvar		*scr_showturtle;
+QCvar		*scr_showpause;
+QCvar		*scr_printspeed;
 
-cvar_t		*scr_netgraph;
-cvar_t		*scr_timegraph;
-cvar_t		*scr_debuggraph;
-cvar_t		*scr_graphheight;
-cvar_t		*scr_graphscale;
-cvar_t		*scr_graphshift;
-cvar_t		*scr_drawall;
+QCvar		*scr_netgraph;
+QCvar		*scr_timegraph;
+QCvar		*scr_debuggraph;
+QCvar		*scr_graphheight;
+QCvar		*scr_graphscale;
+QCvar		*scr_graphshift;
+QCvar		*scr_drawall;
 
 typedef struct
 {

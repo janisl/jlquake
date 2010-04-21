@@ -75,7 +75,7 @@ void SCR_LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *h
 	//
 	// load the file
 	//
-	len = FS_LoadFile (filename, (void **)&raw);
+	len = FS_ReadFile(filename, (void **)&raw);
 	if (!raw)
 		return;	// Com_Printf ("Bad pcx file %s\n", filename);
 
@@ -170,7 +170,7 @@ void SCR_StopCinematic (void)
 	}
 	if (cl.cinematic_file)
 	{
-		fclose (cl.cinematic_file);
+		FS_FCloseFile (cl.cinematic_file);
 		cl.cinematic_file = NULL;
 	}
 	if (cin.hnodes1)
@@ -436,11 +436,11 @@ byte *SCR_ReadNextFrame (void)
 	int		start, end, count;
 
 	// read the next frame
-	r = fread (&command, 4, 1, cl.cinematic_file);
+	r = FS_Read (&command, 4, cl.cinematic_file);
 	if (r == 0)		// we'll give it one more chance
-		r = fread (&command, 4, 1, cl.cinematic_file);
+		r = FS_Read (&command, 4, cl.cinematic_file);
 
-	if (r != 1)
+	if (r != 4)
 		return NULL;
 	command = LittleLong(command);
 	if (command == 2)
@@ -607,7 +607,7 @@ void SCR_PlayCinematic (char *arg)
 	}
 
 	QStr::Sprintf (name, sizeof(name), "video/%s", arg);
-	FS_FOpenFile (name, &cl.cinematic_file);
+	FS_FOpenFileRead(name, &cl.cinematic_file, true);
 	if (!cl.cinematic_file)
 	{
 //		Com_Error (ERR_DROP, "Cinematic %s not found.\n", name);

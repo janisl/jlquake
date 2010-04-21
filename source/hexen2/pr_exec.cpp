@@ -966,7 +966,7 @@ void PR_Profile_f(void)
 	int funcCount;
 	qboolean byHC;
 	char saveName[128];
-	FILE *saveFile;
+	fileHandle_t saveFile;
 	int currentFile;
 	int bestFile;
 	int tally;
@@ -987,11 +987,11 @@ void PR_Profile_f(void)
 			if(i+1 < Cmd_Argc() && !QStr::IsDigit(*Cmd_Argv(i+1)))
 			{
 				i++;
-				sprintf(saveName, "%s/%s", com_gamedir, Cmd_Argv(i));
+				sprintf(saveName, "%s", Cmd_Argv(i));
 			}
 			else
 			{
-				sprintf(saveName, "%s/profile.txt", com_gamedir);
+				QStr::Cpy(saveName, "profile.txt");
 			}
 		}
 		else if(QStr::IsDigit(*s))
@@ -1012,7 +1012,7 @@ void PR_Profile_f(void)
 
 	if(*saveName)
 	{ // Create the output file
-		if((saveFile = fopen(saveName, "w")) == NULL)
+		if((saveFile = FS_FOpenFileWrite(saveName)) == NULL)
 		{
 			Con_Printf("Could not open %s\n", saveName);
 			return;
@@ -1052,7 +1052,7 @@ void PR_Profile_f(void)
 				{
 					if(*saveName)
 					{
-						fprintf(saveFile, "%05.2f %s\n",
+						FS_Printf(saveFile, "%05.2f %s\n",
 							((float)bestFunc->profile/(float)total)*100.0,
 							pr_strings+bestFunc->s_name);
 					}
@@ -1069,7 +1069,7 @@ void PR_Profile_f(void)
 		} while(bestFunc);
 		if(*saveName)
 		{
-			fclose(saveFile);
+			FS_FCloseFile(saveFile);
 		}
 		return;
 	}
@@ -1098,7 +1098,7 @@ void PR_Profile_f(void)
 		{
 			if(*saveName)
 			{
-				fprintf(saveFile, "\"%s\"\n", pr_strings+currentFile);
+				FS_Printf(saveFile, "\"%s\"\n", pr_strings+currentFile);
 			}
 			else
 			{
@@ -1124,7 +1124,7 @@ void PR_Profile_f(void)
 					{
 						if(*saveName)
 						{
-							fprintf(saveFile, "   %05.2f %s\n",
+							FS_Printf(saveFile, "   %05.2f %s\n",
 								((float)bestFunc->profile
 								/(float)total)*100.0,
 								pr_strings+bestFunc->s_name);
@@ -1145,7 +1145,7 @@ void PR_Profile_f(void)
 	} while(currentFile != MAX_QINT32);
 	if(*saveName)
 	{
-		fclose(saveFile);
+		FS_FCloseFile(saveFile);
 	}
 }
 

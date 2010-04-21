@@ -17,7 +17,6 @@
 #include "zone.h"
 #include "wad.h"
 #include "draw.h"
-#include "cvar.h"
 #include "screen.h"
 #include "net.h"
 #include "protocol.h"

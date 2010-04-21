@@ -46,7 +46,7 @@ R_InitParticles
 void R_InitParticles (void)
 {
 	int		i;
-	FILE	*f;
+	fileHandle_t	f;
 
 	i = COM_CheckParm ("-particles");
 
@@ -70,12 +70,12 @@ void R_InitParticles (void)
 	if (!transTable)
 		Sys_Error ("Couldn't load gfx/tinttab.lmp");
 
-	COM_FOpenFile ("gfx/tinttab.lmp", &f, false);	
+	FS_FOpenFileRead ("gfx/tinttab.lmp", &f, true);	
 
 	if (f)
 	{
-		fread(transTable,1,65536,f);
-		fclose(f);
+		FS_Read(transTable,65536,f);
+		FS_FCloseFile(f);
 	}
 }
 
@@ -283,7 +283,7 @@ void R_ClearParticles (void)
 
 
 
-void R_ReadPointFile_f (void)
+/*void R_ReadPointFile_f (void)
 {
 	FILE	*f;
 	vec3_t	org;
@@ -328,7 +328,7 @@ void R_ReadPointFile_f (void)
 
 	fclose (f);
 	Con_Printf ("%i points read\n", c);
-}
+}*/
 
 /*
 ===============

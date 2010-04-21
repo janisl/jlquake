@@ -23,25 +23,6 @@ int filelength (FILE *f)
 }
 
 
-int	Sys_FileTime (char *path)
-{
-	FILE	*f;
-	
-	f = fopen(path, "rb");
-	if (f)
-	{
-		fclose(f);
-		return 1;
-	}
-	
-	return -1;
-}
-
-void Sys_mkdir (char *path)
-{
-}
-
-
 /*
 ===============================================================================
 
@@ -49,15 +30,6 @@ SYSTEM IO
 
 ===============================================================================
 */
-
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-}
-
-
-void Sys_DebugLog(char *file, char *fmt, ...)
-{
-}
 
 void Sys_Error (char *error, ...)
 {
@@ -105,14 +77,6 @@ void Sys_Sleep (void)
 }
 
 void Sys_SendKeyEvents (void)
-{
-}
-
-void Sys_HighFPPrecision (void)
-{
-}
-
-void Sys_LowFPPrecision (void)
 {
 }
 

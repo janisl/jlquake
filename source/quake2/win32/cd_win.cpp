@@ -36,9 +36,9 @@ static byte		cdrom;
 static byte		playTrack;
 static byte		maxTrack;
 
-cvar_t *cd_nocd;
-cvar_t *cd_loopcount;
-cvar_t *cd_looptrack;
+QCvar *cd_nocd;
+QCvar *cd_loopcount;
+QCvar *cd_looptrack;
 
 UINT	wDeviceID;
 int		loopcounter;

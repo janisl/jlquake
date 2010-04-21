@@ -109,7 +109,7 @@ int			floodvalid;
 qboolean	portalopen[MAX_MAP_AREAPORTALS];
 
 
-cvar_t		*map_noareas;
+QCvar		*map_noareas;
 
 void	CM_InitBoxHull (void);
 void	FloodAreaConnections (void);
@@ -584,7 +584,7 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 	//
 	// load the file
 	//
-	length = FS_LoadFile (name, (void **)&buf);
+	length = FS_ReadFile(name, (void **)&buf);
 	if (!buf)
 		Com_Error (ERR_DROP, "Couldn't load %s", name);
 
@@ -1714,9 +1714,9 @@ CM_WritePortalState
 Writes the portal state to a savegame file
 ===================
 */
-void	CM_WritePortalState (FILE *f)
+void	CM_WritePortalState (fileHandle_t f)
 {
-	fwrite (portalopen, sizeof(portalopen), 1, f);
+	FS_Write(portalopen, sizeof(portalopen), f);
 }
 
 /*
@@ -1727,9 +1727,9 @@ Reads the portal state from a savegame file
 and recalculates the area connections
 ===================
 */
-void	CM_ReadPortalState (FILE *f)
+void	CM_ReadPortalState (fileHandle_t f)
 {
-	FS_Read (portalopen, sizeof(portalopen), f);
+	FS_Read(portalopen, sizeof(portalopen), f);
 	FloodAreaConnections ();
 }
 

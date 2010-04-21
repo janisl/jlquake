@@ -1100,36 +1100,6 @@ void PR_LoadProgs (void)
 
 	QStr::Cpy(finalprogname, "hwprogs.dat");
 
-/*	don't need this anymore - JFM
-
-	COM_FOpenFile ("maplist.txt", &FH, false);	
-	if (FH)
-	{
-		fgets(build, sizeof(build), FH);
-		j = atol(build);
-		for(i=0;i<j;i++)
-		{
-			test = fgets (build, sizeof(build), FH);
-			if (test)
-			{
-				build[QStr::Length(build)-2] = 0;
-				test = strchr(build, ' ');
-				if (test)
-				{
-					*test = 0;
-					QStr::Cpy(mapname, build);
-					QStr::Cpy(progname, test+1);
-					if (QStr::ICmp(mapname, sv.name) == 0)
-					{
-						QStr::Cpy(finalprogname, progname);
-						break;
-					}
-				}
-			}
-		}
-		fclose (FH);
-	}
-*/
 	progs = (dprograms_t *)COM_LoadHunkFile (finalprogname);
 	if (!progs)
 		progs = (dprograms_t *)COM_LoadHunkFile ("progs.dat");
@@ -1139,7 +1109,7 @@ void PR_LoadProgs (void)
 
 // add prog crc to the serverinfo
 	sprintf (num, "%i", CRC_Block ((byte *)progs, com_filesize));
-	Info_SetValueForStarKey (svs.info, "*progs", num, MAX_SERVERINFO_STRING);
+	Info_SetValueForKey(svs.info, "*progs", num, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 
 // byte swap the header
 	for (i=0 ; i<sizeof(*progs)/4 ; i++)

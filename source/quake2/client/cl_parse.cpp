@@ -68,16 +68,13 @@ to start a download from the server.
 */
 qboolean	CL_CheckOrDownloadFile (char *filename)
 {
-	FILE *fp;
-	char	name[MAX_OSPATH];
-
 	if (strstr (filename, ".."))
 	{
 		Com_Printf ("Refusing to download a path with ..\n");
 		return true;
 	}
 
-	if (FS_LoadFile (filename, NULL) != -1)
+	if (FS_ReadFile(filename, NULL) != -1)
 	{	// it exists, no need to download
 		return true;
 	}
@@ -90,32 +87,10 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	QStr::StripExtension (cls.downloadname, cls.downloadtempname);
 	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
-//ZOID
-	// check to see if we already have a tmp for this file, if so, try to resume
-	// open the file if not opened yet
-	CL_DownloadFileName(name, sizeof(name), cls.downloadtempname);
-
-//	FS_CreatePath (name);
-
-	fp = fopen (name, "r+b");
-	if (fp) { // it exists
-		int len;
-		fseek(fp, 0, SEEK_END);
-		len = ftell(fp);
-
-		cls.download = fp;
-
-		// give the server an offset to start the download
-		Com_Printf ("Resuming %s\n", cls.downloadname);
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2(
-			va("download %s %i", cls.downloadname, len));
-	} else {
-		Com_Printf ("Downloading %s\n", cls.downloadname);
-		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.WriteString2(
-			va("download %s", cls.downloadname));
-	}
+	Com_Printf ("Downloading %s\n", cls.downloadname);
+	cls.netchan.message.WriteByte(clc_stringcmd);
+	cls.netchan.message.WriteString2(
+		va("download %s", cls.downloadname));
 
 	cls.downloadnumber++;
 
@@ -146,7 +121,7 @@ void	CL_Download_f (void)
 		return;
 	}
 
-	if (FS_LoadFile (filename, NULL) != -1)
+	if (FS_ReadFile(filename, NULL) != -1)
 	{	// it exists, no need to download
 		Com_Printf("File already exists.\n");
 		return;
@@ -212,7 +187,7 @@ void CL_ParseDownload (void)
 		if (cls.download)
 		{
 			// if here, we tried to resume a file but the server said no
-			fclose (cls.download);
+			FS_FCloseFile(cls.download);
 			cls.download = NULL;
 		}
 		CL_RequestNextDownload ();
@@ -224,9 +199,7 @@ void CL_ParseDownload (void)
 	{
 		CL_DownloadFileName(name, sizeof(name), cls.downloadtempname);
 
-		FS_CreatePath (name);
-
-		cls.download = fopen (name, "wb");
+		cls.download = FS_SV_FOpenFileWrite(name);
 		if (!cls.download)
 		{
 			net_message.readcount += size;
@@ -236,7 +209,7 @@ void CL_ParseDownload (void)
 		}
 	}
 
-	fwrite (net_message._data + net_message.readcount, 1, size, cls.download);
+	FS_Write(net_message._data + net_message.readcount, size, cls.download);
 	net_message.readcount += size;
 
 	if (percent != 100)
@@ -263,7 +236,7 @@ void CL_ParseDownload (void)
 
 //		Com_Printf ("100%%\n");
 
-		fclose (cls.download);
+		FS_FCloseFile(cls.download);
 
 		// rename the temp file to it's final name
 		CL_DownloadFileName(oldn, sizeof(oldn), cls.downloadtempname);
@@ -297,7 +270,7 @@ CL_ParseServerData
 */
 void CL_ParseServerData (void)
 {
-	extern cvar_t	*fs_gamedirvar;
+	extern QCvar	*fs_gamedirvar;
 	char	*str;
 	int		i;
 	
@@ -708,10 +681,11 @@ void CL_ParseServerMessage (void)
 
 		case svc_reconnect:
 			Com_Printf ("Server disconnected, reconnecting\n");
-			if (cls.download) {
+			if (cls.download)
+			{
 				//ZOID, close download
-				fclose (cls.download);
-				cls.download = NULL;
+				FS_FCloseFile(cls.download);
+				cls.download = 0;
 			}
 			cls.state = ca_connecting;
 			cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately

@@ -55,20 +55,6 @@ static HANDLE	tevent;
 
 void Sys_InitFloatTime (void);
 
-void Sys_DebugLog(char *file, char *fmt, ...)
-{
-    va_list argptr; 
-    static char data[1024];
-    int fd;
-    
-    va_start(argptr, fmt);
-    vsprintf(data, fmt, argptr);
-    va_end(argptr);
-    fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data, QStr::Length(data));
-    close(fd);
-};
-
 /*
 ===============================================================================
 
@@ -96,35 +82,6 @@ int filelength (FILE *f)
 }
 
 
-int	Sys_FileTime (char *path)
-{
-	FILE	*f;
-	int		t, retval;
-
-	t = VID_ForceUnlockedAndReturnState ();
-	
-	f = fopen(path, "rb");
-
-	if (f)
-	{
-		fclose(f);
-		retval = 1;
-	}
-	else
-	{
-		retval = -1;
-	}
-	
-	VID_ForceLockState (t);
-	return retval;
-}
-
-void Sys_mkdir (char *path)
-{
-	_mkdir (path);
-}
-
-
 /*
 ===============================================================================
 
@@ -132,21 +89,6 @@ SYSTEM IO
 
 ===============================================================================
 */
-
-/*
-================
-Sys_MakeCodeWriteable
-================
-*/
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-	DWORD  flOldProtect;
-
-//@@@ copy on write or just read-write?
-	if (!VirtualProtect((LPVOID)startaddr, length, PAGE_READWRITE, &flOldProtect))
-   		Sys_Error("Protection change failed\n");
-}
-
 
 /*
 ================

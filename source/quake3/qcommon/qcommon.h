@@ -285,67 +285,6 @@ void	Cmd_Init (void);
 /*
 ==============================================================
 
-CVAR
-
-==============================================================
-*/
-
-/*
-
-cvar_t variables are used to hold scalar or string variables that can be changed
-or displayed at the console or prog code as well as accessed directly
-in C code.
-
-The user can access cvars from the console in three ways:
-r_draworder			prints the current value
-r_draworder 0		sets the current value to 0
-set r_draworder 0	as above, but creates the cvar if not present
-
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
-
-The are also occasionally used to communicated information between different
-modules of the program.
-
-*/
-
-void	Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
-// basically a slightly modified Cvar_Get for the interpreted modules
-
-void	Cvar_Update( vmCvar_t *vmCvar );
-// updates an interpreted modules' version of a cvar
-
-void	Cvar_CommandCompletion( void(*callback)(const char *s) );
-// callback with each valid string
-
-void 	Cvar_Reset( const char *var_name );
-
-void	Cvar_SetCheatState( void );
-// reset all testing vars to a safe value
-
-void 	Cvar_WriteVariables( fileHandle_t f );
-// writes lines containing "set variable value" for all variables
-// with the archive flag set to true.
-
-void	Cvar_Init( void );
-
-char	*Cvar_InfoString( int bit );
-char	*Cvar_InfoString_Big( int bit );
-// returns an info string containing all the cvars that have the given bit set
-// in their flags ( CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc )
-void	Cvar_InfoStringBuffer( int bit, char *buff, int buffsize );
-
-void	Cvar_Restart_f( void );
-
-extern	int			cvar_modifiedFlags;
-// whenever a cvar is modifed, its flags will be OR'd into this, so
-// a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
-// etc, variables have been modified since the last check.  The bit
-// can then be cleared to allow another change detection.
-
-/*
-==============================================================
-
 FILESYSTEM
 
 No stdio calls should be used by any part of the game, because
@@ -354,134 +293,15 @@ issues.
 ==============================================================
 */
 
-// referenced flags
-// these are in loop specific order so don't change the order
-#define FS_GENERAL_REF	0x01
-#define FS_UI_REF		0x02
-#define FS_CGAME_REF	0x04
-#define FS_QAGAME_REF	0x08
-// number of id paks that will never be autodownloaded from baseq3
-#define NUM_ID_PAKS		9
-
-#define	MAX_FILE_HANDLES	64
-
 #define BASEGAME "baseq3"
 
-qboolean FS_Initialized();
-
-void	FS_InitFilesystem (void);
-void	FS_Shutdown( qboolean closemfp );
+void FS_InitFilesystem();
 
 qboolean	FS_ConditionalRestart( int checksumFeed );
 void	FS_Restart( int checksumFeed );
 // shutdown and restart the filesystem so changes to fs_gamedir can take effect
 
-char	**FS_ListFiles( const char *directory, const char *extension, int *numfiles );
-// directory should not have either a leading or trailing /
-// if extension is "/", only subdirectories will be returned
-// the returned files will not include any directories or /
-
-void	FS_FreeFileList( char **list );
-
-qboolean FS_FileExists( const char *file );
-
 int		FS_LoadStack();
-
-int		FS_GetFileList(  const char *path, const char *extension, char *listbuf, int bufsize );
-int		FS_GetModList(  char *listbuf, int bufsize );
-
-fileHandle_t	FS_FOpenFileWrite( const char *qpath );
-// will properly create any needed paths and deal with seperater character issues
-
-int		FS_filelength( fileHandle_t f );
-fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
-int		FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp );
-void	FS_SV_Rename( const char *from, const char *to );
-int		FS_FOpenFileRead( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
-// if uniqueFILE is true, then a new FILE will be fopened even if the file
-// is found in an already open pak file.  If uniqueFILE is false, you must call
-// FS_FCloseFile instead of fclose, otherwise the pak FILE would be improperly closed
-// It is generally safe to always set uniqueFILE to true, because the majority of
-// file IO goes through FS_ReadFile, which Does The Right Thing already.
-
-int		FS_FileIsInPAK(const char *filename, int *pChecksum );
-// returns 1 if a file is in the PAK file, otherwise -1
-
-int		FS_Write( const void *buffer, int len, fileHandle_t f );
-
-int		FS_Read2( void *buffer, int len, fileHandle_t f );
-int		FS_Read( void *buffer, int len, fileHandle_t f );
-// properly handles partial reads and reads from other dlls
-
-void	FS_FCloseFile( fileHandle_t f );
-// note: you can't just fclose from another DLL, due to MS libc issues
-
-int		FS_ReadFile( const char *qpath, void **buffer );
-// returns the length of the file
-// a null buffer will just return the file length without loading
-// as a quick check for existance. -1 length == not present
-// A 0 byte will always be appended at the end, so string ops are safe.
-// the buffer should be considered read-only, because it may be cached
-// for other uses.
-
-void	FS_ForceFlush( fileHandle_t f );
-// forces flush on files we're writing to.
-
-void	FS_FreeFile( void *buffer );
-// frees the memory returned by FS_ReadFile
-
-void	FS_WriteFile( const char *qpath, const void *buffer, int size );
-// writes a complete file, creating any subdirectories needed
-
-int		FS_filelength( fileHandle_t f );
-// doesn't work for files that are opened from a pack file
-
-int		FS_FTell( fileHandle_t f );
-// where are we?
-
-void	FS_Flush( fileHandle_t f );
-
-void 	QDECL FS_Printf( fileHandle_t f, const char *fmt, ... );
-// like fprintf
-
-int		FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode );
-// opens a file for reading, writing, or appending depending on the value of mode
-
-int		FS_Seek( fileHandle_t f, long offset, int origin );
-// seek on a file (doesn't work for zip files!!!!!!!!)
-
-qboolean FS_FilenameCompare( const char *s1, const char *s2 );
-
-const char *FS_GamePureChecksum( void );
-// Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-
-const char *FS_LoadedPakNames( void );
-const char *FS_LoadedPakChecksums( void );
-const char *FS_LoadedPakPureChecksums( void );
-// Returns a space separated string containing the checksums of all loaded pk3 files.
-// Servers with sv_pure set will get this string and pass it to clients.
-
-const char *FS_ReferencedPakNames( void );
-const char *FS_ReferencedPakChecksums( void );
-const char *FS_ReferencedPakPureChecksums( void );
-// Returns a space separated string containing the checksums of all loaded 
-// AND referenced pk3 files. Servers with sv_pure set will get this string 
-// back from clients for pure validation 
-
-void FS_ClearPakReferences( int flags );
-// clears referenced booleans on loaded pk3s
-
-void FS_PureServerSetReferencedPaks( const char *pakSums, const char *pakNames );
-void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames );
-// If the string is empty, all data sources will be allowed.
-// If not empty, only pk3 files that match one of the space
-// separated checksums will be checked for files, with the
-// sole exception of .cfg files.
-
-qboolean FS_idPak( char *pak, char *base );
-qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
-
-void FS_Rename( const char *from, const char *to );
 
 /*
 ==============================================================
@@ -510,16 +330,6 @@ MISC
 ==============================================================
 */
 
-// TTimo
-// vsnprintf is ISO/IEC 9899:1999
-// abstracting this to make it portable
-#ifdef WIN32
-#define Q_vsnprintf _vsnprintf
-#else
-// TODO: do we need Mac define?
-#define Q_vsnprintf vsnprintf
-#endif
-
 // centralizing the declarations for cl_cdkey
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=470
 extern char cl_cdkey[34];
@@ -536,12 +346,7 @@ extern char cl_cdkey[34];
 
 #define CPUID_AMD_3DNOW			0x30			// AMD K6 3DNOW!
 
-// TTimo
-// centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
-#define	MAXPRINTMSG	4096
-
 char		*CopyString( const char *in );
-void		Info_Print( const char *s );
 
 void		Com_BeginRedirect (char *buffer, int buffersize, void (*flush)(char *));
 void		Com_EndRedirect( void );
@@ -561,22 +366,21 @@ void		Com_StartupVariable( const char *match );
 // only a set with the exact name.  Only used during startup.
 
 
-extern	cvar_t	*com_developer;
-extern	cvar_t	*com_dedicated;
-extern	cvar_t	*com_speeds;
-extern	cvar_t	*com_timescale;
-extern	cvar_t	*com_sv_running;
-extern	cvar_t	*com_cl_running;
-extern	cvar_t	*com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
-extern	cvar_t	*com_version;
-extern	cvar_t	*com_blood;
-extern	cvar_t	*com_buildScript;		// for building release pak files
-extern	cvar_t	*com_journal;
-extern	cvar_t	*com_cameraMode;
+extern	QCvar	*com_developer;
+extern	QCvar	*com_dedicated;
+extern	QCvar	*com_speeds;
+extern	QCvar	*com_timescale;
+extern	QCvar	*com_sv_running;
+extern	QCvar	*com_cl_running;
+extern	QCvar	*com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
+extern	QCvar	*com_version;
+extern	QCvar	*com_blood;
+extern	QCvar	*com_buildScript;		// for building release pak files
+extern	QCvar	*com_cameraMode;
 
 // both client and server must agree to pause
-extern	cvar_t	*cl_paused;
-extern	cvar_t	*sv_paused;
+extern	QCvar	*cl_paused;
+extern	QCvar	*sv_paused;
 
 // com_speeds times
 extern	int		time_game;
@@ -587,9 +391,6 @@ extern	int		com_frameTime;
 extern	int		com_frameMsec;
 
 extern	qboolean	com_errorEntered;
-
-extern	fileHandle_t	com_journalFile;
-extern	fileHandle_t	com_journalDataFile;
 
 typedef enum {
 	TAG_FREE,
@@ -819,11 +620,6 @@ void	Sys_DisplaySystemConsole( qboolean show );
 
 int		Sys_GetProcessorId( void );
 
-void	Sys_BeginStreamedFile( fileHandle_t f, int readahead );
-void	Sys_EndStreamedFile( fileHandle_t f );
-int		Sys_StreamedRead( void *buffer, int size, int count, fileHandle_t f );
-void	Sys_StreamSeek( fileHandle_t f, int offset, int origin );
-
 void	Sys_ShowConsole( int level, qboolean quitOnClose );
 void	Sys_SetErrorText( const char *text );
 
@@ -836,18 +632,6 @@ qboolean	Sys_IsLANAddress (netadr_t adr);
 void		Sys_ShowIP(void);
 
 qboolean	Sys_CheckCD( void );
-
-void	Sys_Mkdir( const char *path );
-char	*Sys_Cwd( void );
-void	Sys_SetDefaultCDPath(const char *path);
-char	*Sys_DefaultCDPath(void);
-void	Sys_SetDefaultInstallPath(const char *path);
-char	*Sys_DefaultInstallPath(void);
-void  Sys_SetDefaultHomePath(const char *path);
-char	*Sys_DefaultHomePath(void);
-
-char **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs );
-void	Sys_FreeFileList( char **list );
 
 void	Sys_BeginProfiling( void );
 void	Sys_EndProfiling( void );

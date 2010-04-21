@@ -126,12 +126,9 @@ void SV_CheckForSavegame (void)
 	if (Cvar_VariableValue ("deathmatch"))
 		return;
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/%s.sav", FS_Gamedir(), sv.name);
-	f = fopen (name, "rb");
-	if (!f)
+	QStr::Sprintf (name, sizeof(name), "save/current/%s.sav", sv.name);
+	if (!FS_FileExists(name))
 		return;		// no savegame
-
-	fclose (f);
 
 	SV_ClearWorld ();
 
@@ -178,7 +175,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 
 	Com_DPrintf ("SpawnServer: %s\n",server);
 	if (sv.demofile)
-		fclose (sv.demofile);
+		FS_FCloseFile (sv.demofile);
 
 	svs.spawncount++;		// any partially connected client will be
 							// restarted
@@ -274,7 +271,8 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	SV_CheckForSavegame ();
 
 	// set serverinfo variable
-	Cvar_FullSet ("mapname", sv.name, CVAR_SERVERINFO | CVAR_INIT);
+	Cvar_Get("mapname", "", CVAR_SERVERINFO | CVAR_INIT);
+	Cvar_Set("mapname", sv.name);
 
 	Com_Printf ("-------------------------------------\n");
 }
@@ -312,7 +310,7 @@ void SV_InitGame (void)
 	if (Cvar_VariableValue ("coop") && Cvar_VariableValue ("deathmatch"))
 	{
 		Com_Printf("Deathmatch and Coop both set, disabling Coop\n");
-		Cvar_FullSet ("coop", "0",  CVAR_SERVERINFO | CVAR_LATCH);
+		Cvar_Set ("coop", "0");
 	}
 
 	// dedicated servers are can't be single player and are usually DM
@@ -320,33 +318,25 @@ void SV_InitGame (void)
 	if (dedicated->value)
 	{
 		if (!Cvar_VariableValue ("coop"))
-			Cvar_FullSet ("deathmatch", "1",  CVAR_SERVERINFO | CVAR_LATCH);
+			Cvar_Set ("deathmatch", "1");
 	}
 
 	// init clients
 	if (Cvar_VariableValue ("deathmatch"))
 	{
 		if (maxclients->value <= 1)
-			Cvar_FullSet ("maxclients", "8", CVAR_SERVERINFO | CVAR_LATCH);
+			Cvar_Set("maxclients", "8");
 		else if (maxclients->value > MAX_CLIENTS)
-			Cvar_FullSet ("maxclients", va("%i", MAX_CLIENTS), CVAR_SERVERINFO | CVAR_LATCH);
+			Cvar_Set("maxclients", va("%i", MAX_CLIENTS));
 	}
 	else if (Cvar_VariableValue ("coop"))
 	{
 		if (maxclients->value <= 1 || maxclients->value > 4)
-			Cvar_FullSet ("maxclients", "4", CVAR_SERVERINFO | CVAR_LATCH);
-#ifdef COPYPROTECT
-		if (!sv.attractloop && !dedicated->value)
-			Sys_CopyProtect ();
-#endif
+			Cvar_Set("maxclients", "4");
 	}
 	else	// non-deathmatch, non-coop is one player
 	{
-		Cvar_FullSet ("maxclients", "1", CVAR_SERVERINFO | CVAR_LATCH);
-#ifdef COPYPROTECT
-		if (!sv.attractloop)
-			Sys_CopyProtect ();
-#endif
+		Cvar_Set("maxclients", "1");
 	}
 
 	svs.spawncount = rand();

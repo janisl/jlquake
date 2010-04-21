@@ -424,7 +424,6 @@ Host_Savegame_f
 void Host_Savegame_f (void)
 {
 	char	name[256];
-	FILE	*f;
 	int		i;
 	char	comment[SAVEGAME_COMMENT_LENGTH+1];
 
@@ -470,44 +469,44 @@ void Host_Savegame_f (void)
 		}
 	}
 
-	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
-	QStr::DefaultExtension (name, sizeof(name), ".sav");
+	QStr::NCpyZ(name, Cmd_Argv(1), sizeof(name));
+	QStr::DefaultExtension(name, sizeof(name), ".sav");
 	
 	Con_Printf ("Saving game to %s...\n", name);
-	f = fopen (name, "w");
+	fileHandle_t f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
 		return;
 	}
-	
-	fprintf (f, "%i\n", SAVEGAME_VERSION);
-	Host_SavegameComment (comment);
-	fprintf (f, "%s\n", comment);
+
+	FS_Printf(f, "%i\n", SAVEGAME_VERSION);
+	Host_SavegameComment(comment);
+	FS_Printf(f, "%s\n", comment);
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-		fprintf (f, "%f\n", svs.clients->spawn_parms[i]);
-	fprintf (f, "%d\n", current_skill);
-	fprintf (f, "%s\n", sv.name);
-	fprintf (f, "%f\n",sv.time);
+		FS_Printf(f, "%f\n", svs.clients->spawn_parms[i]);
+	FS_Printf(f, "%d\n", current_skill);
+	FS_Printf(f, "%s\n", sv.name);
+	FS_Printf(f, "%f\n",sv.time);
 
 // write the light styles
 
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
 		if (sv.lightstyles[i])
-			fprintf (f, "%s\n", sv.lightstyles[i]);
+			FS_Printf(f, "%s\n", sv.lightstyles[i]);
 		else
-			fprintf (f,"m\n");
+			FS_Printf(f,"m\n");
 	}
 
 
-	ED_WriteGlobals (f);
+	ED_WriteGlobals(f);
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
-		ED_Write (f, EDICT_NUM(i));
-		fflush (f);
+		ED_Write(f, EDICT_NUM(i));
+		FS_Flush(f);
 	}
-	fclose (f);
+	FS_FCloseFile(f);
 	Con_Printf ("done.\n");
 }
 
@@ -520,12 +519,12 @@ Host_Loadgame_f
 void Host_Loadgame_f (void)
 {
 	char	name[MAX_OSPATH];
-	FILE	*f;
+	fileHandle_t	f;
 	char	mapname[MAX_QPATH];
 	float	time, tfloat;
 	char	str[32768];
 	const char *start;
-	int		i, r;
+	int		i;
 	edict_t	*ent;
 	int		entnum;
 	int		version;
@@ -542,38 +541,38 @@ void Host_Loadgame_f (void)
 
 	cls.demonum = -1;		// stop demo loop in case this fails
 
-	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
-	QStr::DefaultExtension (name, sizeof(name), ".sav");
+	QStr::NCpyZ(name, Cmd_Argv(1), sizeof(name));
+	QStr::DefaultExtension(name, sizeof(name), ".sav");
 	
 // we can't call SCR_BeginLoadingPlaque, because too much stack space has
 // been used.  The menu calls it before stuffing loadgame command
 //	SCR_BeginLoadingPlaque ();
 
 	Con_Printf ("Loading game from %s...\n", name);
-	f = fopen (name, "r");
+	int FileLen = FS_FOpenFileRead(name, &f, true);
 	if (!f)
 	{
-		Con_Printf ("ERROR: couldn't open.\n");
+		Con_Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
-	fscanf (f, "%i\n", &version);
+	FS_Scanf(f, "%i\n", &version);
 	if (version != SAVEGAME_VERSION)
 	{
-		fclose (f);
+		FS_FCloseFile(f);
 		Con_Printf ("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return;
 	}
-	fscanf (f, "%s\n", str);
+	FS_Scanf(f, "%s\n", str);
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-		fscanf (f, "%f\n", &spawn_parms[i]);
+		FS_Scanf(f, "%f\n", &spawn_parms[i]);
 // this silliness is so we can load 1.06 save files, which have float skill values
-	fscanf (f, "%f\n", &tfloat);
+	FS_Scanf(f, "%f\n", &tfloat);
 	current_skill = (int)(tfloat + 0.1);
 	Cvar_SetValue ("skill", (float)current_skill);
 
-	fscanf (f, "%s\n",mapname);
-	fscanf (f, "%f\n",&time);
+	FS_Scanf(f, "%s\n",mapname);
+	FS_Scanf(f, "%f\n",&time);
 
 	CL_Disconnect_f ();
 	
@@ -590,19 +589,21 @@ void Host_Loadgame_f (void)
 
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
-		fscanf (f, "%s\n", str);
+		FS_Scanf(f, "%s\n", str);
 		sv.lightstyles[i] = (char*)Hunk_Alloc (QStr::Length(str)+1);
 		QStr::Cpy(sv.lightstyles[i], str);
 	}
 
 // load the edicts out of the savegame file
 	entnum = -1;		// -1 is the globals
-	while (!feof(f))
+	while (FS_FTell(f) < FileLen)
 	{
 		for (i=0 ; i<sizeof(str)-1 ; i++)
 		{
-			r = fgetc (f);
-			if (r == EOF || !r)
+			char r;
+			if (!FS_Read(&r, 1, f))
+				break;
+			if (!r)
 				break;
 			str[i] = r;
 			if (r == '}')
@@ -644,7 +645,7 @@ void Host_Loadgame_f (void)
 	sv.num_edicts = entnum;
 	sv.time = time;
 
-	fclose (f);
+	FS_FCloseFile(f);
 
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
 		svs.clients->spawn_parms[i] = spawn_parms[i];

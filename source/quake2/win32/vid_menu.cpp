@@ -26,19 +26,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define REF_POWERVR	3
 #define REF_VERITE	4
 
-extern cvar_t *vid_ref;
-extern cvar_t *vid_fullscreen;
-extern cvar_t *vid_gamma;
-extern cvar_t *scr_viewsize;
+extern QCvar *vid_ref;
+extern QCvar *vid_fullscreen;
+extern QCvar *vid_gamma;
+extern QCvar *scr_viewsize;
 
-static cvar_t *gl_mode;
-static cvar_t *gl_driver;
-static cvar_t *gl_picmip;
-static cvar_t *gl_ext_palettedtexture;
-static cvar_t *gl_finish;
+static QCvar *gl_mode;
+static QCvar *gl_driver;
+static QCvar *gl_picmip;
+static QCvar *gl_ext_palettedtexture;
+static QCvar *gl_finish;
 
-static cvar_t *sw_mode;
-static cvar_t *sw_stipplealpha;
+static QCvar *sw_mode;
+static QCvar *sw_stipplealpha;
 
 extern void M_ForceMenuOff( void );
 

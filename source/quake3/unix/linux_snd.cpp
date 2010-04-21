@@ -41,11 +41,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 int audio_fd;
 int snd_inited=0;
 
-cvar_t *sndbits;
-cvar_t *sndspeed;
-cvar_t *sndchannels;
+QCvar *sndbits;
+QCvar *sndspeed;
+QCvar *sndchannels;
 
-cvar_t *snddevice;
+QCvar *snddevice;
 
 /* Some devices may work only with 48000 */
 static int tryrates[] = { 22050, 11025, 44100, 48000, 8000 };

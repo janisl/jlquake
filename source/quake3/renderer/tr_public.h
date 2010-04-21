@@ -127,8 +127,8 @@ typedef struct {
 	void	*(*Malloc)( int bytes );
 	void	(*Free)( void *buf );
 
-	cvar_t	*(*Cvar_Get)( const char *name, const char *value, int flags );
-	QCvar*	(*Cvar_Set)( const char *name, const char *value );
+	QCvar	*(*Cvar_Get)( const char *name, const char *value, int flags );
+	QCvar	*(*Cvar_Set)( const char *name, const char *value );
 
 	void	(*Cmd_AddCommand)( const char *name, void(*cmd)(void) );
 	void	(*Cmd_RemoveCommand)( const char *name );
@@ -149,7 +149,7 @@ typedef struct {
 	char **	(*FS_ListFiles)( const char *name, const char *extension, int *numfilesfound );
 	void	(*FS_FreeFileList)( char **filelist );
 	void	(*FS_WriteFile)( const char *qpath, const void *buffer, int size );
-	qboolean (*FS_FileExists)( const char *file );
+	bool    (*FS_FileExists)( const char *file );
 
 	// cinematic stuff
 	void	(*CIN_UploadCinematic)(int handle);

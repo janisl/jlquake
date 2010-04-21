@@ -35,7 +35,7 @@ This will be sent on the initial connection and upon each server load.
 */
 void SV_New_f (void)
 {
-	char		*gamedir;
+	const char	*gamedir;
 	int			playernum;
 
 	if (host_client->state == cs_spawned)
@@ -417,7 +417,7 @@ void SV_NextDownload_f (void)
 	r = host_client->downloadsize - host_client->downloadcount;
 	if (r > 1024)
 		r = 1024;
-	r = fread (buffer, 1, r, host_client->download);
+	r = FS_Read (buffer, r, host_client->download);
 	host_client->netchan.message.WriteByte(svc_download);
 	host_client->netchan.message.WriteShort(r);
 
@@ -432,7 +432,7 @@ void SV_NextDownload_f (void)
 	if (host_client->downloadcount != host_client->downloadsize)
 		return;
 
-	fclose (host_client->download);
+	FS_FCloseFile (host_client->download);
 	host_client->download = NULL;
 
 }
@@ -450,7 +450,6 @@ void SV_BeginDownload_f(void)
 	extern	QCvar*	allow_download_models;
 	extern	QCvar*	allow_download_sounds;
 	extern	QCvar*	allow_download_maps;
-	extern	int		file_from_pak; // ZOID did file come from pak?
 
 	name = Cmd_Argv(1);
 // hacked by zoid to allow more conrol over download
@@ -478,7 +477,7 @@ void SV_BeginDownload_f(void)
 	}
 
 	if (host_client->download) {
-		fclose (host_client->download);
+		FS_FCloseFile (host_client->download);
 		host_client->download = NULL;
 	}
 
@@ -491,17 +490,17 @@ void SV_BeginDownload_f(void)
 	}
 
 
-	host_client->downloadsize = COM_FOpenFile (name, &host_client->download, false);
+	host_client->downloadsize = FS_FOpenFileRead (name, &host_client->download, true);
 	host_client->downloadcount = 0;
 
 	if (!host_client->download
 		// special check for maps, if it came from a pak file, don't allow
 		// download  ZOID
-		|| (QStr::NCmp(name, "maps/", 5) == 0 && file_from_pak))
+		|| (QStr::NCmp(name, "maps/", 5) == 0 && FS_FileIsInPAK(name, NULL) == 1))
 	{
 		if (host_client->download) {
-			fclose(host_client->download);
-			host_client->download = NULL;
+			FS_FCloseFile(host_client->download);
+			host_client->download = 0;
 		}
 
 		Sys_Printf ("Couldn't download %s to %s\n", name, host_client->name);
@@ -528,7 +527,8 @@ void SV_Say (qboolean team)
 	int			j, tmp;
 	char		*p;
 	char		text[2048];
-	char		t1[32], *t2;
+	char		t1[32];
+	const char	*t2;
 	int			speaknum = -1;
 	qboolean	IsRaven = false;
 
@@ -846,7 +846,7 @@ void SV_SetInfo_f (void)
 	if (Cmd_Argv(1)[0] == '*')
 		return;		// don't set priveledged values
 
-	Info_SetValueForKey (host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
+	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING, 64, 64, !sv_highchars->value, false);
 	QStr::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 		, sizeof(host_client->name)-1);	
 //	SV_FullClientUpdate (host_client, &sv.reliable_datagram);

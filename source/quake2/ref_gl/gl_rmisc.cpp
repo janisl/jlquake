@@ -101,35 +101,27 @@ void GL_ScreenShot_f (void)
 {
 	byte		*buffer;
 	char		picname[80]; 
-	char		checkname[MAX_OSPATH];
 	int			i, c, temp;
-	FILE		*f;
 
-	// create the scrnshots directory if it doesn't exist
-	QStr::Sprintf (checkname, sizeof(checkname), "%s/scrnshot", ri.FS_Gamedir());
-	Sys_Mkdir (checkname);
+	// 
+	// find a file name to save it to 
+	// 
+	QStr::Cpy(picname, "scrnshot/quake00.tga");
 
-// 
-// find a file name to save it to 
-// 
-	QStr::Cpy(picname,"quake00.tga");
-
-	for (i=0 ; i<=99 ; i++) 
-	{ 
-		picname[5] = i/10 + '0'; 
-		picname[6] = i%10 + '0'; 
-		QStr::Sprintf (checkname, sizeof(checkname), "%s/scrnshot/%s", ri.FS_Gamedir(), picname);
-		f = fopen (checkname, "rb");
-		if (!f)
+	for (i = 0; i <= 99; i++) 
+	{
+		picname[14] = i/10 + '0';
+		picname[15] = i%10 + '0';
+		if (!FS_FileExists(picname))
+		{
 			break;	// file doesn't exist
-		fclose (f);
+		}
 	} 
 	if (i==100) 
 	{
-		ri.Con_Printf (PRINT_ALL, "SCR_ScreenShot_f: Couldn't create a file\n"); 
+		ri.Con_Printf(PRINT_ALL, "SCR_ScreenShot_f: Couldn't create a file\n");
 		return;
- 	}
-
+	}
 
 	buffer = (byte*)malloc(vid.width*vid.height*3 + 18);
 	Com_Memset(buffer, 0, 18);
@@ -140,23 +132,23 @@ void GL_ScreenShot_f (void)
 	buffer[15] = vid.height>>8;
 	buffer[16] = 24;	// pixel size
 
-	qglReadPixels (0, 0, vid.width, vid.height, GL_RGB, GL_UNSIGNED_BYTE, buffer+18 ); 
+	qglReadPixels(0, 0, vid.width, vid.height, GL_RGB, GL_UNSIGNED_BYTE, buffer + 18);
 
 	// swap rgb to bgr
-	c = 18+vid.width*vid.height*3;
-	for (i=18 ; i<c ; i+=3)
+	c = 18 + vid.width * vid.height * 3;
+	for (i = 18; i < c; i += 3)
 	{
 		temp = buffer[i];
-		buffer[i] = buffer[i+2];
-		buffer[i+2] = temp;
+		buffer[i] = buffer[i + 2];
+		buffer[i + 2] = temp;
 	}
 
-	f = fopen (checkname, "wb");
-	fwrite (buffer, 1, c, f);
-	fclose (f);
+	fileHandle_t f = FS_FOpenFileWrite(picname);
+	FS_Write(buffer, c, f);
+	FS_FCloseFile(f);
 
-	free (buffer);
-	ri.Con_Printf (PRINT_ALL, "Wrote %s\n", picname);
+	free(buffer);
+	ri.Con_Printf(PRINT_ALL, "Wrote %s\n", picname);
 } 
 
 /*

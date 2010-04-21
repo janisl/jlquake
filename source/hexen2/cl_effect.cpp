@@ -682,7 +682,7 @@ void SV_ParseEffect(QMsg *sb)
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
 // SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
-void SV_SaveEffects(FILE *FH)
+void SV_SaveEffects(fileHandle_t FH)
 {
 	int index,count;
 
@@ -690,67 +690,67 @@ void SV_SaveEffects(FILE *FH)
 		if (sv.Effects[index].type)
 			count++;
 
-	fprintf(FH,"Effects: %d\n",count);
+	FS_Printf(FH,"Effects: %d\n",count);
 
 	for(index=count=0;index<MAX_EFFECTS;index++)
 		if (sv.Effects[index].type)
 		{
-			fprintf(FH,"Effect: %d %d %f: ",index,sv.Effects[index].type,sv.Effects[index].expire_time);
+			FS_Printf(FH,"Effect: %d %d %f: ",index,sv.Effects[index].type,sv.Effects[index].expire_time);
 
 			switch(sv.Effects[index].type)
 			{
 				case CE_RAIN:
-					fprintf(FH, "%f ", sv.Effects[index].Rain.min_org[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.min_org[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.min_org[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.max_org[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.max_org[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.max_org[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.e_size[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.e_size[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.e_size[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.dir[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.dir[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.dir[2]);
-					fprintf(FH, "%d ", sv.Effects[index].Rain.color);
-					fprintf(FH, "%d ", sv.Effects[index].Rain.count);
-					fprintf(FH, "%f\n", sv.Effects[index].Rain.wait);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.max_org[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.max_org[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.max_org[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.e_size[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.e_size[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.e_size[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.dir[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.dir[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.dir[2]);
+					FS_Printf(FH, "%d ", sv.Effects[index].Rain.color);
+					FS_Printf(FH, "%d ", sv.Effects[index].Rain.count);
+					FS_Printf(FH, "%f\n", sv.Effects[index].Rain.wait);
 					break;
 
 				case CE_SNOW:
-					fprintf(FH, "%f ", sv.Effects[index].Rain.min_org[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.min_org[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.min_org[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.max_org[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.max_org[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.max_org[2]);
-					fprintf(FH, "%d ", sv.Effects[index].Rain.flags);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.dir[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.dir[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Rain.dir[2]);
-					fprintf(FH, "%d ", sv.Effects[index].Rain.count);
-					//fprintf(FH, "%d ", sv.Effects[index].Rain.veer);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.min_org[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.max_org[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.max_org[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.max_org[2]);
+					FS_Printf(FH, "%d ", sv.Effects[index].Rain.flags);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.dir[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.dir[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Rain.dir[2]);
+					FS_Printf(FH, "%d ", sv.Effects[index].Rain.count);
+					//FS_Printf(FH, "%d ", sv.Effects[index].Rain.veer);
 					break;
 
 				case CE_FOUNTAIN:
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.pos[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.pos[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.pos[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.angle[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.angle[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.angle[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.movedir[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.movedir[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Fountain.movedir[2]);
-					fprintf(FH, "%d ", sv.Effects[index].Fountain.color);
-					fprintf(FH, "%d\n", sv.Effects[index].Fountain.cnt);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.pos[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.pos[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.pos[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.angle[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.angle[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.angle[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.movedir[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.movedir[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Fountain.movedir[2]);
+					FS_Printf(FH, "%d ", sv.Effects[index].Fountain.color);
+					FS_Printf(FH, "%d\n", sv.Effects[index].Fountain.cnt);
 					break;
 
 				case CE_QUAKE:
-					fprintf(FH, "%f ", sv.Effects[index].Quake.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Quake.origin[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Quake.origin[2]);
-					fprintf(FH, "%f\n", sv.Effects[index].Quake.radius);
+					FS_Printf(FH, "%f ", sv.Effects[index].Quake.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Quake.origin[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Quake.origin[2]);
+					FS_Printf(FH, "%f\n", sv.Effects[index].Quake.radius);
 					break;
 
 				case CE_WHITE_SMOKE:
@@ -767,14 +767,14 @@ void SV_SaveEffects(FILE *FH)
 				case CE_FLAMEWALL:
 				case CE_FLAMEWALL2:
 				case CE_ONFIRE:
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.origin[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.origin[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.velocity[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.velocity[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.velocity[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.framelength);
-					fprintf(FH, "%f\n", sv.Effects[index].Smoke.frame);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.velocity[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.velocity[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.velocity[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.framelength);
+					FS_Printf(FH, "%f\n", sv.Effects[index].Smoke.frame);
 					break;
 
 				case CE_SM_WHITE_FLASH:
@@ -810,70 +810,70 @@ void SV_SaveEffects(FILE *FH)
 				case CE_FIREWALL_LARGE:
 				case CE_FBOOM:
 				case CE_BOMB:
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Smoke.origin[1]);
-					fprintf(FH, "%f\n", sv.Effects[index].Smoke.origin[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Smoke.origin[1]);
+					FS_Printf(FH, "%f\n", sv.Effects[index].Smoke.origin[2]);
 					break;
 
 				case CE_WHITE_FLASH:
 				case CE_BLUE_FLASH:
 				case CE_SM_BLUE_FLASH:
 				case CE_RED_FLASH:
-					fprintf(FH, "%f ", sv.Effects[index].Flash.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Flash.origin[1]);
-					fprintf(FH, "%f\n", sv.Effects[index].Flash.origin[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Flash.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Flash.origin[1]);
+					FS_Printf(FH, "%f\n", sv.Effects[index].Flash.origin[2]);
 					break;
 
 				case CE_RIDER_DEATH:
-					fprintf(FH, "%f ", sv.Effects[index].RD.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].RD.origin[1]);
-					fprintf(FH, "%f\n", sv.Effects[index].RD.origin[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].RD.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].RD.origin[1]);
+					FS_Printf(FH, "%f\n", sv.Effects[index].RD.origin[2]);
 					break;
 
 				case CE_GRAVITYWELL:
-					fprintf(FH, "%f ", sv.Effects[index].RD.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].RD.origin[1]);
-					fprintf(FH, "%f", sv.Effects[index].RD.origin[2]);
-					fprintf(FH, "%d", sv.Effects[index].RD.color);
-					fprintf(FH, "%f\n", sv.Effects[index].RD.lifetime);
+					FS_Printf(FH, "%f ", sv.Effects[index].RD.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].RD.origin[1]);
+					FS_Printf(FH, "%f", sv.Effects[index].RD.origin[2]);
+					FS_Printf(FH, "%d", sv.Effects[index].RD.color);
+					FS_Printf(FH, "%f\n", sv.Effects[index].RD.lifetime);
 					break;
 				case CE_TELEPORTERPUFFS:
-					fprintf(FH, "%f ", sv.Effects[index].Teleporter.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Teleporter.origin[1]);
-					fprintf(FH, "%f\n", sv.Effects[index].Teleporter.origin[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Teleporter.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Teleporter.origin[1]);
+					FS_Printf(FH, "%f\n", sv.Effects[index].Teleporter.origin[2]);
 					break;
 
 				case CE_TELEPORTERBODY:
-					fprintf(FH, "%f ", sv.Effects[index].Teleporter.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Teleporter.origin[1]);
-					fprintf(FH, "%f\n", sv.Effects[index].Teleporter.origin[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Teleporter.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Teleporter.origin[1]);
+					FS_Printf(FH, "%f\n", sv.Effects[index].Teleporter.origin[2]);
 					break;
 
 				case CE_BONESHARD:
 				case CE_BONESHRAPNEL:
-					fprintf(FH, "%f ", sv.Effects[index].Missile.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.origin[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.origin[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.velocity[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.velocity[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.velocity[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.angle[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.angle[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.angle[2]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.avelocity[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.avelocity[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Missile.avelocity[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.origin[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.origin[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.velocity[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.velocity[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.velocity[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.angle[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.angle[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.angle[2]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.avelocity[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.avelocity[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Missile.avelocity[2]);
 					break;
 
 				case CE_CHUNK:
-					fprintf(FH, "%f ", sv.Effects[index].Chunk.origin[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Chunk.origin[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Chunk.origin[2]);
-					fprintf(FH, "%d ", sv.Effects[index].Chunk.type);
-					fprintf(FH, "%f ", sv.Effects[index].Chunk.srcVel[0]);
-					fprintf(FH, "%f ", sv.Effects[index].Chunk.srcVel[1]);
-					fprintf(FH, "%f ", sv.Effects[index].Chunk.srcVel[2]);
-					fprintf(FH, "%d ", sv.Effects[index].Chunk.numChunks);
+					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.origin[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.origin[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.origin[2]);
+					FS_Printf(FH, "%d ", sv.Effects[index].Chunk.type);
+					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.srcVel[0]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.srcVel[1]);
+					FS_Printf(FH, "%f ", sv.Effects[index].Chunk.srcVel[2]);
+					FS_Printf(FH, "%d ", sv.Effects[index].Chunk.numChunks);
 					break;
 
 				default:
@@ -886,7 +886,7 @@ void SV_SaveEffects(FILE *FH)
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
 // SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
-void SV_LoadEffects(FILE *FH)
+void SV_LoadEffects(fileHandle_t FH)
 {
 	int index,Total,count;
 
@@ -894,67 +894,67 @@ void SV_LoadEffects(FILE *FH)
 	// the loading
 	SV_ClearEffects();
 
-	fscanf(FH,"Effects: %d\n",&Total);
+	FS_Scanf(FH,"Effects: %d\n",&Total);
 
 	for(count=0;count<Total;count++)
 	{
-		fscanf(FH,"Effect: %d ",&index);
-		fscanf(FH,"%d %f: ",&sv.Effects[index].type,&sv.Effects[index].expire_time);
+		FS_Scanf(FH,"Effect: %d ",&index);
+		FS_Scanf(FH,"%d %f: ",&sv.Effects[index].type,&sv.Effects[index].expire_time);
 
 		switch(sv.Effects[index].type)
 		{
 			case CE_RAIN:
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.min_org[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.min_org[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.min_org[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.max_org[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.max_org[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.max_org[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.e_size[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.e_size[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.e_size[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.dir[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.dir[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.dir[2]);
-				fscanf(FH, "%d ", &sv.Effects[index].Rain.color);
-				fscanf(FH, "%d ", &sv.Effects[index].Rain.count);
-				fscanf(FH, "%f\n", &sv.Effects[index].Rain.wait);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.e_size[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.e_size[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.e_size[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[2]);
+				FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.color);
+				FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.count);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].Rain.wait);
 				break;
 
 			case CE_SNOW:
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.min_org[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.min_org[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.min_org[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.max_org[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.max_org[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.max_org[2]);
-				fscanf(FH, "%d ", &sv.Effects[index].Rain.flags);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.dir[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.dir[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Rain.dir[2]);
-				fscanf(FH, "%d ", &sv.Effects[index].Rain.count);
-				//fscanf(FH, "%d ", &sv.Effects[index].Rain.veer);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[2]);
+				FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.flags);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[2]);
+				FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.count);
+				//FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.veer);
 				break;
 
 			case CE_FOUNTAIN:
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.pos[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.pos[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.pos[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.angle[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.angle[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.angle[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[2]);
-				fscanf(FH, "%d ", &sv.Effects[index].Fountain.color);
-				fscanf(FH, "%d\n", &sv.Effects[index].Fountain.cnt);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.pos[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.pos[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.pos[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.angle[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.angle[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.angle[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[2]);
+				FS_Scanf(FH, "%d ", &sv.Effects[index].Fountain.color);
+				FS_Scanf(FH, "%d\n", &sv.Effects[index].Fountain.cnt);
 				break;
 
 			case CE_QUAKE:
-				fscanf(FH, "%f ", &sv.Effects[index].Quake.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Quake.origin[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Quake.origin[2]);
-				fscanf(FH, "%f\n", &sv.Effects[index].Quake.radius);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Quake.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Quake.origin[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Quake.origin[2]);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].Quake.radius);
 				break;
 
 			case CE_WHITE_SMOKE:
@@ -971,14 +971,14 @@ void SV_LoadEffects(FILE *FH)
 			case CE_FLAMEWALL:
 			case CE_FLAMEWALL2:
 			case CE_ONFIRE:
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.origin[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.origin[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.framelength);
-				fscanf(FH, "%f\n", &sv.Effects[index].Smoke.frame);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.framelength);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].Smoke.frame);
 				break;
 
 			case CE_SM_WHITE_FLASH:
@@ -1014,71 +1014,71 @@ void SV_LoadEffects(FILE *FH)
 			case CE_FIREWALL_MEDIUM:
 			case CE_FIREWALL_LARGE:
 			case CE_BOMB:
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Smoke.origin[1]);
-				fscanf(FH, "%f\n", &sv.Effects[index].Smoke.origin[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[1]);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].Smoke.origin[2]);
 				break;
 
 			case CE_WHITE_FLASH:
 			case CE_BLUE_FLASH:
 			case CE_SM_BLUE_FLASH:
 			case CE_RED_FLASH:
-				fscanf(FH, "%f ", &sv.Effects[index].Flash.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Flash.origin[1]);
-				fscanf(FH, "%f\n", &sv.Effects[index].Flash.origin[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Flash.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Flash.origin[1]);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].Flash.origin[2]);
 				break;
 
 			case CE_RIDER_DEATH:
-				fscanf(FH, "%f ", &sv.Effects[index].RD.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].RD.origin[1]);
-				fscanf(FH, "%f\n", &sv.Effects[index].RD.origin[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].RD.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].RD.origin[1]);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].RD.origin[2]);
 				break;
 
 			case CE_GRAVITYWELL:
-				fscanf(FH, "%f ", &sv.Effects[index].RD.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].RD.origin[1]);
-				fscanf(FH, "%f", &sv.Effects[index].RD.origin[2]);
-				fscanf(FH, "%d", &sv.Effects[index].RD.color);
-				fscanf(FH, "%f\n", &sv.Effects[index].RD.lifetime);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].RD.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].RD.origin[1]);
+				FS_Scanf(FH, "%f", &sv.Effects[index].RD.origin[2]);
+				FS_Scanf(FH, "%d", &sv.Effects[index].RD.color);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].RD.lifetime);
 				break;
 
 			case CE_TELEPORTERPUFFS:
-				fscanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[1]);
-				fscanf(FH, "%f\n", &sv.Effects[index].Teleporter.origin[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[1]);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].Teleporter.origin[2]);
 				break;
 
 			case CE_TELEPORTERBODY:
-				fscanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[1]);
-				fscanf(FH, "%f\n", &sv.Effects[index].Teleporter.origin[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[1]);
+				FS_Scanf(FH, "%f\n", &sv.Effects[index].Teleporter.origin[2]);
 				break;
 
 			case CE_BONESHARD:
 			case CE_BONESHRAPNEL:
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.origin[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.origin[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.velocity[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.velocity[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.velocity[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.angle[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.angle[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.angle[2]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.origin[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.origin[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.velocity[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.velocity[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.velocity[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.angle[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.angle[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.angle[2]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[2]);
 				break;
 
 			case CE_CHUNK:
-				fscanf(FH, "%f ", &sv.Effects[index].Chunk.origin[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Chunk.origin[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Chunk.origin[2]);
-				fscanf(FH, "%d ", &sv.Effects[index].Chunk.type);
-				fscanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[0]);
-				fscanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[1]);
-				fscanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[2]);
-				fscanf(FH, "%d ", &sv.Effects[index].Chunk.numChunks);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.origin[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.origin[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.origin[2]);
+				FS_Scanf(FH, "%d ", &sv.Effects[index].Chunk.type);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[0]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[1]);
+				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[2]);
+				FS_Scanf(FH, "%d ", &sv.Effects[index].Chunk.numChunks);
 				break;
 
 			default:

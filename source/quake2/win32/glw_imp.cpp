@@ -41,8 +41,8 @@ qboolean GLimp_InitGL (void);
 
 glwstate_t glw_state;
 
-extern cvar_t *vid_fullscreen;
-extern cvar_t *vid_ref;
+extern QCvar *vid_fullscreen;
+extern QCvar *vid_ref;
 
 static qboolean VerifyDriver( void )
 {
@@ -65,7 +65,7 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 {
 	WNDCLASS		wc;
 	RECT			r;
-	cvar_t			*vid_xpos, *vid_ypos;
+	QCvar			*vid_xpos, *vid_ypos;
 	int				stylebits;
 	int				x, y, w, h;
 	int				exstyle;
@@ -411,7 +411,7 @@ qboolean GLimp_InitGL (void)
 		0, 0, 0							// layer masks ignored
     };
     int  pixelformat;
-	cvar_t *stereo;
+	QCvar *stereo;
 	
 	stereo = ri.Cvar_Get( "cl_stereo", "0", 0 );
 
@@ -479,7 +479,7 @@ qboolean GLimp_InitGL (void)
 
 		if ( !( pfd.dwFlags & PFD_GENERIC_ACCELERATED ) )
 		{
-			extern cvar_t *gl_allow_software;
+			extern QCvar *gl_allow_software;
 
 			if ( gl_allow_software->value )
 				glw_state.mcd_accelerated = true;

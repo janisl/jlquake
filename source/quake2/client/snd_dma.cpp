@@ -71,13 +71,13 @@ playsound_t	s_pendingplays;
 
 int			s_beginofs;
 
-cvar_t		*s_volume;
-cvar_t		*s_testsound;
-cvar_t		*s_loadas8bit;
-cvar_t		*s_khz;
-cvar_t		*s_show;
-cvar_t		*s_mixahead;
-cvar_t		*s_primary;
+QCvar		*s_volume;
+QCvar		*s_testsound;
+QCvar		*s_loadas8bit;
+QCvar		*s_khz;
+QCvar		*s_show;
+QCvar		*s_mixahead;
+QCvar		*s_primary;
 
 
 int		s_rawend;
@@ -115,7 +115,7 @@ S_Init
 */
 void S_Init (void)
 {
-	cvar_t	*cv;
+	QCvar	*cv;
 
 	Com_Printf("\n------- sound initialization -------\n");
 
@@ -589,7 +589,7 @@ struct sfx_s *S_RegisterSexedSound (entity_state_t *ent, char *base)
 	int				n;
 	char			*p;
 	struct sfx_s	*sfx;
-	FILE			*f;
+	fileHandle_t	f;
 	char			model[MAX_QPATH];
 	char			sexedFilename[MAX_QPATH];
 	char			maleFilename[MAX_QPATH];
@@ -620,7 +620,7 @@ struct sfx_s *S_RegisterSexedSound (entity_state_t *ent, char *base)
 	if (!sfx)
 	{
 		// no, so see if it exists
-		FS_FOpenFile (&sexedFilename[1], &f);
+		FS_FOpenFileRead(&sexedFilename[1], &f, false);
 		if (f)
 		{
 			// yes, close the file and register it
@@ -754,10 +754,10 @@ void S_StartLocalSound (char *sound)
 
 /*
 ==================
-S_ClearBuffer
+S_ClearSoundBuffer
 ==================
 */
-void S_ClearBuffer (void)
+void S_ClearSoundBuffer (void)
 {
 	int		clear;
 		
@@ -805,7 +805,7 @@ void S_StopAllSounds(void)
 	// clear all the channels
 	Com_Memset(channels, 0, sizeof(channels));
 
-	S_ClearBuffer ();
+	S_ClearSoundBuffer ();
 }
 
 /*
@@ -1021,7 +1021,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	// dma buffer while loading
 	if (cls.disable_screen)
 	{
-		S_ClearBuffer ();
+		S_ClearSoundBuffer ();
 		return;
 	}
 

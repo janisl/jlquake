@@ -18,11 +18,11 @@ refexport_t	re;
 refexport_t GetRefAPI (refimport_t rimp);
 
 // Console variables that we need to access from this module
-cvar_t		*vid_gamma;
-cvar_t		*vid_ref;			// Name of Refresh DLL loaded
-cvar_t		*vid_xpos;			// X coordinate of window position
-cvar_t		*vid_ypos;			// Y coordinate of window position
-cvar_t		*vid_fullscreen;
+QCvar		*vid_gamma;
+QCvar		*vid_ref;			// Name of Refresh DLL loaded
+QCvar		*vid_xpos;			// X coordinate of window position
+QCvar		*vid_ypos;			// Y coordinate of window position
+QCvar		*vid_fullscreen;
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
@@ -204,7 +204,7 @@ qboolean VID_LoadRefresh( char *name )
 	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
 	ri.Con_Printf = VID_Printf;
 	ri.Sys_Error = VID_Error;
-	ri.FS_LoadFile = FS_LoadFile;
+	ri.FS_ReadFile = FS_ReadFile;
 	ri.FS_FreeFile = FS_FreeFile;
 	ri.FS_Gamedir = FS_Gamedir;
 	ri.Cvar_Get = Cvar_Get;
@@ -285,7 +285,7 @@ update the rendering DLL and/or video mode to match.
 void VID_CheckChanges (void)
 {
 	char name[100];
-	cvar_t *sw_mode;
+	QCvar *sw_mode;
 
 	if ( vid_ref->modified )
 	{
@@ -381,7 +381,7 @@ void VID_Shutdown (void)
 /* INPUT                                                                     */
 /*****************************************************************************/
 
-cvar_t	*in_joystick;
+QCvar	*in_joystick;
 
 // This if fake, it's acutally done by the Refresh load
 void IN_Init (void)

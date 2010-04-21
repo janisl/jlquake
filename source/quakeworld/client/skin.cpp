@@ -41,7 +41,8 @@ void Skin_Find (player_info_t *sc)
 {
 	skin_t		*skin;
 	int			i;
-	char		name[128], *s;
+	char		name[128];
+	const char*	s;
 
 	if (allskins[0])
 		QStr::Cpy(name, allskins);

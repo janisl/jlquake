@@ -368,7 +368,7 @@ NET_OpenIP
 */
 void NET_OpenIP (void)
 {
-	cvar_t	*port, *ip;
+	QCvar	*port, *ip;
 
 	port = Cvar_Get ("port", va("%i", PORT_SERVER), CVAR_INIT);
 	ip = Cvar_Get ("ip", "localhost", CVAR_INIT);
@@ -521,7 +521,7 @@ void NET_Sleep(int msec)
 {
     struct timeval timeout;
 	fd_set	fdset;
-	extern cvar_t *dedicated;
+	extern QCvar *dedicated;
 	extern qboolean stdin_active;
 
 	if (!ip_sockets[NS_SERVER] || (dedicated && !dedicated->value))

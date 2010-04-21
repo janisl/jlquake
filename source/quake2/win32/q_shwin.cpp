@@ -132,11 +132,6 @@ int Sys_Milliseconds (void)
 	return curtime;
 }
 
-void Sys_Mkdir (char *path)
-{
-	_mkdir (path);
-}
-
 //============================================
 
 char	findbase[MAX_OSPATH];

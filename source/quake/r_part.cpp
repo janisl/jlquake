@@ -149,9 +149,9 @@ void R_ClearParticles (void)
 }
 
 
-void R_ReadPointFile_f (void)
+/*void R_ReadPointFile_f (void)
 {
-	FILE	*f;
+	fileHandle_t	f;
 	vec3_t	org;
 	int		r;
 	int		c;
@@ -160,7 +160,7 @@ void R_ReadPointFile_f (void)
 	
 	sprintf (name,"maps/%s.pts", sv.name);
 
-	COM_FOpenFile (name, &f);
+	FS_FOpenFileRead (name, &f);
 	if (!f)
 	{
 		Con_Printf ("couldn't open %s\n", name);
@@ -195,7 +195,7 @@ void R_ReadPointFile_f (void)
 
 	fclose (f);
 	Con_Printf ("%i points read\n", c);
-}
+}*/
 
 /*
 ===============

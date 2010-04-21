@@ -1162,7 +1162,7 @@ void PF_aim (void)
 	trace_t	tr;
 	float	dist, bestdist;
 	float	speed;
-	char	*noaim;
+	const char	*noaim;
 
 	ent = G_EDICT(OFS_PARM0);
 	speed = G_FLOAT(OFS_PARM1);
@@ -1537,8 +1537,8 @@ void PF_logfrag (void)
 	svs.log[svs.logsequence&1].Print(s);
 	if (sv_fraglogfile)
 	{
-		fprintf (sv_fraglogfile, s);
-		fflush (sv_fraglogfile);
+		FS_Printf(sv_fraglogfile, s);
+		FS_Flush(sv_fraglogfile);
 	}
 }
 
@@ -1554,7 +1554,7 @@ void PF_infokey (void)
 {
 	edict_t	*e;
 	int		e1;
-	char	*value;
+	const char	*value;
 	char	*key;
 	static	char ov[256];
 

@@ -1,7 +1,7 @@
 set(RELEASE_CFLAGS "-g -march=pentiumpro -O6 -ffast-math -funroll-loops
 	-fomit-frame-pointer -fexpensive-optimizations")
 set(DEBUG_CFLAGS "-g")
-set(LDFLAGS -L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm)
+set(LDFLAGS -L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm -lasound)
 
 set(HEXEN2_FILES
 	cl_demo.cpp
@@ -35,7 +35,6 @@ set(HEXEN2_FILES
 	net_dgrm.cpp
 	net_loop.cpp
 	net_main.cpp
-	net_vcr.cpp
 	net_udp.cpp
 	net_bsd.cpp
 	pr_cmds.cpp
@@ -56,13 +55,13 @@ set(HEXEN2_FILES
 	snd_dma.cpp
 	snd_mem.cpp
 	snd_mix.cpp
-	snd_linux.cpp
+#	snd_linux.cpp
+	snd_alsa.cpp
 )
 
 set(HEXEN2_ASM_FILES
 	worlda.s
 	snd_mixa.s
-	sys_dosa.s
 )
 
 foreach(SRC ${HEXEN2_ASM_FILES})
@@ -78,5 +77,5 @@ endforeach(SRC)
 
 add_executable(vhexen2 ${HEXEN2_FILES})
 set_target_properties(vhexen2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vhexen2 core ${LDFLAGS})
+target_link_libraries(vhexen2 core zlib ${LDFLAGS})
 add_dependencies(vhexen2 core)

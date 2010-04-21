@@ -35,7 +35,7 @@ void CL_StopPlayback (void)
 	intro_playing=false;
 	num_intro_msg=0;
 
-	fclose (cls.demofile);
+	FS_FCloseFile (cls.demofile);
 	cls.demoplayback = false;
 	cls.demofile = NULL;
 	cls.state = ca_disconnected;
@@ -58,16 +58,16 @@ void CL_WriteDemoMessage (void)
 	float	f;
 
 	len = LittleLong (net_message.cursize);
-	fwrite (&len, 4, 1, cls.demofile);
+	FS_Write (&len, 4, cls.demofile);
 //	fwrite (&len, 4, 1, cls.introdemofile);
 	for (i=0 ; i<3 ; i++)
 	{
 		f = LittleFloat (cl.viewangles[i]);
-		fwrite (&f, 4, 1, cls.demofile);
+		FS_Write (&f, 4, cls.demofile);
 //		fwrite (&f, 4, 1, cls.introdemofile);
 	}
-	fwrite (net_message._data, net_message.cursize, 1, cls.demofile);
-	fflush (cls.demofile);
+	FS_Write (net_message._data, net_message.cursize, cls.demofile);
+	FS_Flush (cls.demofile);
 //	fwrite (net_message.data, net_message.cursize, 1, cls.introdemofile);
 //	fflush (cls.introdemofile);
 }
@@ -143,11 +143,11 @@ int CL_GetMessage (void)
 		}
 		else
 		{*/
-			fread (&net_message.cursize, 4, 1, cls.demofile);
+			FS_Read (&net_message.cursize, 4, cls.demofile);
 			VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
 			for (i=0 ; i<3 ; i++)
 			{
-				r = fread (&f, 4, 1, cls.demofile);
+				r = FS_Read (&f, 4, cls.demofile);
 				cl.mviewangles[0][i] = LittleFloat (f);
 			}
 			
@@ -155,8 +155,8 @@ int CL_GetMessage (void)
 			num_intro_msg++;
 			if (net_message.cursize > MAX_MSGLEN)
 				Sys_Error ("Demo message > MAX_MSGLEN");
-			r = fread (net_message._data, net_message.cursize, 1, cls.demofile);
-			if (r != 1)
+			r = FS_Read (net_message._data, net_message.cursize, cls.demofile);
+			if (r != net_message.cursize)
 			{
 				CL_StopPlayback ();
 				return 0;
@@ -218,7 +218,7 @@ void CL_Stop_f (void)
 // finish up
 //	fclose (cls.introdemofile);
 //	cls.introdemofile = NULL;
-	fclose (cls.demofile);
+	FS_FCloseFile (cls.demofile);
 	cls.demofile = NULL;
 	cls.demorecording = false;
 	Con_Printf ("Completed demo\n");
@@ -268,7 +268,7 @@ void CL_Record_f (void)
 	else
 		track = -1;	
 
-	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
+	QStr::Cpy(name, Cmd_Argv(1));
 	
 //
 // start the map up
@@ -282,7 +282,7 @@ void CL_Record_f (void)
 	QStr::DefaultExtension (name, sizeof(name), ".dem");
 
 	Con_Printf ("recording to %s.\n", name);
-	cls.demofile = fopen (name, "wb");
+	cls.demofile = FS_FOpenFileWrite (name);
 	if (!cls.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
@@ -290,7 +290,7 @@ void CL_Record_f (void)
 	}
 
 	cls.forcetrack = track;
-	fprintf (cls.demofile, "%i\n", cls.forcetrack);
+	FS_Printf (cls.demofile, "%i\n", cls.forcetrack);
 	
 	cls.demorecording = true;
 }
@@ -328,19 +328,13 @@ void CL_PlayDemo_f (void)
 	if(!QStr::ICmp(name,"t9"))
 	{
 		intro_playing=true;
-//		skip_start=true;
 	}
 	else
 		intro_playing=false;
 	QStr::DefaultExtension (name, sizeof(name), ".dem");
 
 	Con_Printf ("Playing demo from %s.\n", name);
-/*	if(intro_playing)
-	{
-		cls.demorecording = true;
-		cls.introdemofile=fopen("t9.dem","wb");
-	}
-*/	COM_FOpenFile (name, &cls.demofile, false);
+	FS_FOpenFileRead (name, &cls.demofile, true);
 	if (!cls.demofile)
 	{
 		Con_Printf ("ERROR: couldn't open.\n");
@@ -350,7 +344,24 @@ void CL_PlayDemo_f (void)
 
 	cls.demoplayback = true;
 	cls.state = ca_connected;
-	fscanf (cls.demofile, "%i\n", &cls.forcetrack);
+	cls.forcetrack = 0;
+
+	bool neg = false;
+	char c;
+	FS_Read(&c, 1, cls.demofile);
+	while (c != '\n')
+	{
+		if (c == '-')
+			neg = true;
+		else
+			cls.forcetrack = cls.forcetrack * 10 + (c - '0');
+		FS_Read(&c, 1, cls.demofile);
+	}
+
+	if (neg)
+		cls.forcetrack = -cls.forcetrack;
+// ZOID, fscanf is evil
+//	fscanf (cls.demofile, "%i\n", &cls.forcetrack);
 }
 
 /*

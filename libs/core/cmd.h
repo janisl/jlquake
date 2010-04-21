@@ -21,28 +21,16 @@
 //**
 //**************************************************************************
 
-/*
-
-Any number of commands can be added in a frame, from several different sources.
-Most commands come from either keybindings or console line input, but entire text
-files can be execed.
-
-*/
-
-class QCmd
-{
-public:
-	byte*		data;
-	int			maxsize;
-	int			cursize;
-
-	void Init(byte* NewData, int Length);
-	void Clear();
-	void WriteData(const void* Buffer, int Length);
-};
+//==========================================================================
+//
+//	Any number of commands can be added in a frame, from several different
+// sources. Most commands come from either keybindings or console line input,
+// but entire text files can be execed.
+//
+//==========================================================================
 
 // paramters for command buffer stuffing
-enum cbufExec_t
+enum
 {
 	EXEC_NOW,			// don't return until completed, a VM should NEVER use this,
 						// because some commands might cause the VM to be unloaded...
@@ -83,14 +71,12 @@ bool Cbuf_AddLateCommands(bool Insert = false);
 // Returns true if any late commands were added, which
 // will keep the demoloop from immediately starting
 
-//===========================================================================
-
-/*
-
-Command execution takes a null terminated string, breaks it into tokens,
-then searches for a command or variable that matches the first token.
-
-*/
+//==========================================================================
+//
+//	Command execution takes a null terminated string, breaks it into tokens,
+// then searches for a command or variable that matches the first token.
+//
+//==========================================================================
 
 typedef void (*xcommand_t) (void);
 
@@ -100,49 +86,6 @@ enum cmd_source_t
 	src_client,		// came in over a net connection as a clc_stringcmd
 					// host_client will be valid during this state.
 };
-
-extern	cmd_source_t	cmd_source;
-extern bool             cmd_macroExpand;
-
-#define	MAX_ALIAS_NAME	32
-
-struct cmdalias_t
-{
-	cmdalias_t	*next;
-	char	name[MAX_ALIAS_NAME];
-	char	*value;
-};
-
-extern cmdalias_t	*cmd_alias;
-
-#define	ALIAS_LOOP_COUNT	16
-extern int		alias_count;		// for detecting runaway loops
-
-extern int			cmd_wait;
-
-#define	MAX_CMD_BUFFER	16384
-
-extern QCmd		cmd_text;
-extern byte		cmd_text_buf[MAX_CMD_BUFFER];
-
-extern byte		defer_text_buf[MAX_CMD_BUFFER];
-
-struct cmd_function_t
-{
-	cmd_function_t*         next;
-	char*                   name;
-	xcommand_t				function;
-};
-
-extern cmd_function_t	*cmd_functions;		// possible commands to execute
-
-#define	MAX_ARGS		1024
-
-extern	int			cmd_argc;
-extern	char		*cmd_argv[MAX_ARGS];
-extern	char		cmd_tokenized[8192+1024];	// will have 0 bytes inserted
-extern	char		cmd_cmd[8192]; // the original command we received (no token processing)
-extern	char*		cmd_args;
 
 void Cmd_AddCommand(const char* CmdName, xcommand_t Function);
 // called by the init functions of other parts of the program to
@@ -165,8 +108,6 @@ char* Cmd_Cmd();
 // functions. Cmd_Argv () will return an empty string, not a NULL
 // if arg > argc, so string operations are allways safe.
 
-const char* Cmd_MacroExpandString(const char *text);
-
 void Cmd_TokenizeString(const char* Text, bool MacroExpand = false);
 // Takes a null terminated string.  Does not need to be /n terminated.
 // breaks the string up into arg tokens.
@@ -183,3 +124,5 @@ void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
 // as if it was typed at the console
 
 void Cmd_SharedInit(bool MacroExpand);
+
+extern	cmd_source_t	cmd_source;

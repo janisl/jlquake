@@ -341,6 +341,20 @@ void Con_Print (char *txt)
 }
 
 
+static void Con_DebugLog(char *file, char *fmt, ...)
+{
+	va_list argptr; 
+	static char data[1024];
+	fileHandle_t fd;
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(data, sizeof(data), fmt, argptr);
+	va_end(argptr);
+	FS_FOpenFileByMode(file, &fd, FS_APPEND);
+	FS_Write(data, QStr::Length(data), fd);
+	FS_FCloseFile(fd);
+}
+
 /*
 ================
 Con_Printf
@@ -365,8 +379,8 @@ void Con_Printf (char *fmt, ...)
 
 // log all messages to file
 	if (con_debuglog)
-		Sys_DebugLog(va("%s/qconsole.log",com_gamedir), "%s", msg);
-		
+		Con_DebugLog("qconsole.log", "%s", msg);
+
 	if (!con_initialized)
 		return;
 		

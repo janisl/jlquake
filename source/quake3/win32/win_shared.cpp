@@ -294,13 +294,3 @@ char *Sys_GetCurrentUser( void )
 
 	return s_userName;
 }
-
-char	*Sys_DefaultHomePath(void) {
-	return NULL;
-}
-
-char *Sys_DefaultInstallPath(void)
-{
-	return Sys_Cwd();
-}
-

@@ -305,5 +305,5 @@ void SV_SpawnServer (char *server, char *startspot);
 void SV_StopSound (edict_t *entity, int channel);
 void SV_UpdateSoundPos (edict_t *entity, int channel);
 void SV_ParseEffect(QMsg *sb);
-void SV_Edicts(char *Name);
+void SV_Edicts(const char *Name);
 void SaveGamestate(qboolean ClientsOnly);

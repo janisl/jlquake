@@ -43,7 +43,7 @@ set(HWSV_FILES
 
 add_executable(vhwsv ${HWSV_FILES})
 set_target_properties(vhwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
-target_link_libraries(vhwsv core ${SV_LDFLAGS})
+target_link_libraries(vhwsv core zlib ${SV_LDFLAGS})
 add_dependencies(vhwsv core)
 
 #############################################################################
@@ -100,7 +100,6 @@ set(HWCL_FILES
 
 set(HWCL_ASM_FILES
 	client/snd_mixa.s
-	client/sys_dosa.s
 )
 
 foreach(SRC ${HWCL_ASM_FILES})
@@ -116,5 +115,5 @@ endforeach(SRC)
 
 add_executable(vhwcl ${HWCL_FILES})
 set_target_properties(vhwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vhwcl core ${LDFLAGS})
+target_link_libraries(vhwcl core zlib ${LDFLAGS})
 add_dependencies(vhwcl core)

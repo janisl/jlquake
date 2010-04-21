@@ -499,7 +499,7 @@ Sent by server when serverinfo changes
 */
 void CL_FullServerinfo_f (void)
 {
-	char *p;
+	const char *p;
 	float v;
 
 	if (Cmd_Argc() != 2)
@@ -577,7 +577,14 @@ void CL_FullInfo_f (void)
 		if (*s)
 			s++;
 
-		Info_SetValueForKey (cls.userinfo, key, value, MAX_INFO_STRING);
+		if (key[0] == '*')
+		{
+			Con_Printf ("Can't set * keys\n");
+			continue;
+		}
+
+		Info_SetValueForKey(cls.userinfo, key, value, MAX_INFO_STRING, 64, 64,
+			QStr::ICmp(key, "name") != 0, QStr::ICmp(key, "team") == 0);
 	}
 }
 
@@ -605,7 +612,14 @@ void CL_SetInfo_f (void)
 	if (!QStr::ICmp(Cmd_Argv(1), "pmodel") || !QStr::Cmp(Cmd_Argv(1), "emodel"))
 		return;
 
-	Info_SetValueForKey (cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
+	if (Cmd_Argv(1)[0] == '*')
+	{
+		Con_Printf ("Can't set * keys\n");
+		return;
+	}
+
+	Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING, 64, 64,
+		QStr::ICmp(Cmd_Argv(1), "name") != 0, QStr::ICmp(Cmd_Argv(1), "team") == 0);
 	if (cls.state >= ca_connected)
 		Cmd_ForwardToServer ();
 }
@@ -895,8 +909,8 @@ void CL_Download_f (void)
 		return;
 	}
 
-	sprintf (cls.downloadname, "%s/%s", com_gamedir, Cmd_Argv(1));
-	cls.download = fopen (cls.downloadname, "wb");
+	QStr::Cpy(cls.downloadname, Cmd_Argv(1));
+	cls.download = FS_FOpenFileWrite (cls.downloadname);
 	cls.downloadtype = dl_single;
 
 	cls.netchan.message.WriteByte(clc_stringcmd);
@@ -951,12 +965,12 @@ void CL_Init (void)
 
 	cls.state = ca_disconnected;
 
-	Info_SetValueForKey (cls.userinfo, "name", "unnamed", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "playerclass", "0", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "topcolor", "0", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "rate", "2500", MAX_INFO_STRING);
-	Info_SetValueForKey (cls.userinfo, "msg", "1", MAX_INFO_STRING);
+	Info_SetValueForKey(cls.userinfo, "name", "unnamed", MAX_INFO_STRING, 64, 64, false, false);
+	Info_SetValueForKey(cls.userinfo, "playerclass", "0", MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "topcolor", "0", MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "rate", "2500", MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "msg", "1", MAX_INFO_STRING, 64, 64, true, false);
 
 	CL_InitInput ();
 	CL_InitTEnts ();
@@ -1135,11 +1149,9 @@ Writes key bindings and archived cvars to config.cfg
 */
 void Host_WriteConfiguration (char *fname)
 {
-	FILE	*f;
-
 	if (host_initialized)
 	{
-		f = fopen (va("%s/%s",com_gamedir,fname), "w");
+		fileHandle_t f = FS_FOpenFileWrite(fname);
 		if (!f)
 		{
 			Con_Printf ("Couldn't write %s.\n",fname);
@@ -1150,9 +1162,9 @@ void Host_WriteConfiguration (char *fname)
 		Cvar_WriteVariables (f);
 
 		if (in_mlook.state & 1)		//if mlook was down, keep it that way
-			fprintf (f, "+mlook\n");
+			FS_Printf(f, "+mlook\n");
 
-		fclose (f);
+		FS_FCloseFile(f);
 	}
 }
 
@@ -1296,13 +1308,12 @@ void Host_Init (quakeparms_t *parms)
 {
 	try
 	{
+	Sys_SetHomePathSuffix("vhexen2");
 	GLog.AddListener(&MainLog);
 
 	COM_InitArgv2(parms->argc, parms->argv);
 //	COM_AddParm ("-game");
 //	COM_AddParm ("hw");
-
-	Sys_mkdir("hw");
 
 	if (COM_CheckParm ("-minmemory"))
 		parms->memsize = MINIMUM_MEMORY;
@@ -1315,6 +1326,7 @@ void Host_Init (quakeparms_t *parms)
 	Memory_Init (parms->membase, parms->memsize);
 	Cbuf_Init ();
 	Cmd_Init ();
+	Cvar_Init();
 	V_Init ();
 
 	COM_Init (parms->basedir);

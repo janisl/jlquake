@@ -18,12 +18,7 @@ static char     *safeargvs[NUM_SAFE_ARGVS] =
 
 QCvar*  registered;
 QCvar*  sv_gamedir;
-QCvar*  oem;
 QCvar*  cmdline;
-
-qboolean        com_modified;   // set true if using non-id files
-
-qboolean		proghack;
 
 int             static_registered = 1;  // only for startup check, then set
 
@@ -143,28 +138,25 @@ being registered.
 */
 void COM_CheckRegistered (void)
 {
-	int             h;
+	fileHandle_t	f;
 	unsigned short  check[128];
 	int                     i;
 
-	COM_OpenFile("gfx/pop.lmp", &h);
+	FS_FOpenFileRead("gfx/pop.lmp", &f, true);
 	static_registered = 0;
 
 //-basedir c:\h3\test -game data1 +exec rick.cfg
-	if (h == -1)
+	if (!f)
 	{
 #if WINDED
 	Sys_Error ("This dedicated server requires a full registered copy of Hexen II");
 #endif
 		Con_Printf ("Playing demo version.\n");
-
-		if (com_modified)
-			Sys_Error ("You must have the full version to use modified games");
 		return;
 	}
 
-	Sys_FileRead (h, check, sizeof(check));
-	COM_CloseFile (h);
+	FS_Read(check, sizeof(check), f);
+	FS_FCloseFile(f);
 
 	for (i=0 ; i<128 ; i++)
 		if (pop[i] != (unsigned short)BigShort (check[i]))
@@ -176,9 +168,6 @@ void COM_CheckRegistered (void)
 	Cvar_Set ("registered", "1");
 	Con_Printf ("Playing retail version.\n");
 }
-
-
-void COM_Path_f (void);
 
 
 /*
@@ -234,9 +223,7 @@ void COM_Init (char *basedir)
 
 	registered = Cvar_Get("registered", "0", 0);
 	sv_gamedir = Cvar_Get("*gamedir", "portals", CVAR_SERVERINFO);
-	oem = Cvar_Get("oem", "0", 0);
 	cmdline = Cvar_Get("cmdline","0", CVAR_SERVERINFO);
-	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
@@ -265,324 +252,6 @@ QUAKE FILESYSTEM
 int     com_filesize;
 
 
-//
-// in memory
-//
-
-typedef struct
-{
-	char    name[MAX_QPATH];
-	int             filepos, filelen;
-} packfile_t;
-
-typedef struct pack_s
-{
-	char    filename[MAX_OSPATH];
-	int             handle;
-	int             numfiles;
-	packfile_t      *files;
-} pack_t;
-
-//
-// on disk
-//
-typedef struct
-{
-	char    name[56];
-	int             filepos, filelen;
-} dpackfile_t;
-
-typedef struct
-{
-	char    id[4];
-	int             dirofs;
-	int             dirlen;
-} dpackheader_t;
-
-#define MAX_FILES_IN_PACK       2048
-
-char    com_cachedir[MAX_OSPATH];
-char    com_gamedir[MAX_OSPATH];
-char    com_savedir[MAX_OSPATH];
-
-typedef struct searchpath_s
-{
-	char    filename[MAX_OSPATH];
-	pack_t  *pack;          // only one of filename / pack will be used
-	struct searchpath_s *next;
-} searchpath_t;
-
-searchpath_t    *com_searchpaths;
-
-/*
-============
-COM_Path_f
-
-============
-*/
-void COM_Path_f (void)
-{
-	searchpath_t    *s;
-	
-	Con_Printf ("Current search path:\n");
-	for (s=com_searchpaths ; s ; s=s->next)
-	{
-		if (s->pack)
-		{
-			Con_Printf ("%s (%i files)\n", s->pack->filename, s->pack->numfiles);
-		}
-		else
-			Con_Printf ("%s\n", s->filename);
-	}
-}
-
-/*
-============
-COM_WriteFile
-
-The filename will be prefixed by the current game directory
-============
-*/
-void COM_WriteFile (char *filename, void *data, int len)
-{
-	int             handle;
-	char    name[MAX_OSPATH];
-	
-	sprintf (name, "%s/%s", com_gamedir, filename);
-
-	handle = Sys_FileOpenWrite (name);
-	if (handle == -1)
-	{
-		Sys_Printf ("COM_WriteFile: failed on %s\n", name);
-		return;
-	}
-	
-	Sys_Printf ("COM_WriteFile: %s\n", name);
-	Sys_FileWrite (handle, data, len);
-	Sys_FileClose (handle);
-}
-
-
-/*
-============
-COM_CreatePath
-
-Only used for CopyFile
-============
-*/
-void    COM_CreatePath (char *path)
-{
-	char    *ofs;
-	
-	for (ofs = path+1 ; *ofs ; ofs++)
-	{
-		if (*ofs == '/')
-		{       // create the directory
-			*ofs = 0;
-			Sys_mkdir (path);
-			*ofs = '/';
-		}
-	}
-}
-
-
-/*
-===========
-COM_CopyFile
-
-Copies a file over from the net to the local cache, creating any directories
-needed.  This is for the convenience of developers using ISDN from home.
-===========
-*/
-void COM_CopyFile (char *netpath, char *cachepath)
-{
-	int             in, out;
-	int             remaining, count;
-	char    buf[4096];
-	
-	remaining = Sys_FileOpenRead (netpath, &in);            
-	COM_CreatePath (cachepath);     // create directories up to the cache file
-	out = Sys_FileOpenWrite (cachepath);
-	
-	while (remaining)
-	{
-		if (remaining < sizeof(buf))
-			count = remaining;
-		else
-			count = sizeof(buf);
-		Sys_FileRead (in, buf, count);
-		Sys_FileWrite (out, buf, count);
-		remaining -= count;
-	}
-
-	Sys_FileClose (in);
-	Sys_FileClose (out);    
-}
-
-/*
-===========
-COM_FindFile
-
-Finds the file in the search path.
-Sets com_filesize and one of handle or file
-===========
-*/
-int COM_FindFile (char *filename, int *handle, FILE **file, qboolean override_pack)
-{
-	searchpath_t    *search;
-	char            netpath[MAX_OSPATH];
-	char            cachepath[MAX_OSPATH];
-	pack_t          *pak;
-	int                     i;
-	int                     findtime, cachetime;
-
-	if (file && handle)
-		Sys_Error ("COM_FindFile: both handle and file set");
-	if (!file && !handle)
-		Sys_Error ("COM_FindFile: neither handle or file set");
-		
-//
-// search through the path, one element at a time
-//
-	search = com_searchpaths;
-	if (proghack)
-	{	// gross hack to use quake 1 progs with quake 2 maps
-		if (!QStr::Cmp(filename, "progs.dat"))
-			search = search->next;
-	}
-
-	for ( ; search ; search = search->next)
-	{
-	// is the element a pak file?
-		if (search->pack)
-		{
-		// look through all the pak file elements
-			pak = search->pack;
-			for (i=0 ; i<pak->numfiles ; i++)
-				if (!QStr::Cmp(pak->files[i].name, filename))
-				{       // found it!
-					Sys_Printf ("PackFile: %s : %s\n",pak->filename, filename);
-					if (handle)
-					{
-						*handle = pak->handle;
-						Sys_FileSeek (pak->handle, pak->files[i].filepos);
-					}
-					else
-					{       // open a new file on the pakfile
-						*file = fopen (pak->filename, "rb");
-						if (*file)
-							fseek (*file, pak->files[i].filepos, SEEK_SET);
-					}
-					com_filesize = pak->files[i].filelen;
-					return com_filesize;
-				}
-		}
-		else
-		{               
-	// check a file in the directory tree
-			if (!static_registered && !override_pack)
-			{       // if not a registered version, don't ever go beyond base
-				if ( strchr (filename, '/') || strchr (filename,'\\'))
-					continue;
-			}
-			
-			sprintf (netpath, "%s/%s",search->filename, filename);
-			
-			findtime = Sys_FileTime (netpath);
-			if (findtime == -1)
-				continue;
-				
-		// see if the file needs to be updated in the cache
-			if (!com_cachedir[0])
-				QStr::Cpy(cachepath, netpath);
-			else
-			{	
-#if defined(_WIN32)
-				if ((QStr::Length(netpath) < 2) || (netpath[1] != ':'))
-					sprintf (cachepath,"%s%s", com_cachedir, netpath);
-				else
-					sprintf (cachepath,"%s%s", com_cachedir, netpath+2);
-#else
-				sprintf (cachepath,"%s%s", com_cachedir, netpath);
-#endif
-
-				cachetime = Sys_FileTime (cachepath);
-			
-				if (cachetime < findtime)
-					COM_CopyFile (netpath, cachepath);
-				QStr::Cpy(netpath, cachepath);
-			}	
-
-			Sys_Printf ("FindFile: %s\n",netpath);
-			com_filesize = Sys_FileOpenRead (netpath, &i);
-			if (handle)
-				*handle = i;
-			else
-			{
-				Sys_FileClose (i);
-				*file = fopen (netpath, "rb");
-			}
-			return com_filesize;
-		}
-		
-	}
-	
-	Sys_Printf ("FindFile: can't find %s\n", filename);
-	
-	if (handle)
-		*handle = -1;
-	else
-		*file = NULL;
-	com_filesize = -1;
-	return -1;
-}
-
-
-/*
-===========
-COM_OpenFile
-
-filename never has a leading slash, but may contain directory walks
-returns a handle and a length
-it may actually be inside a pak file
-===========
-*/
-int COM_OpenFile (char *filename, int *handle)
-{
-	return COM_FindFile (filename, handle, NULL, false);
-}
-
-/*
-===========
-COM_FOpenFile
-
-If the requested file is inside a packfile, a new FILE * will be opened
-into the file.
-===========
-*/
-int COM_FOpenFile (char *filename, FILE **file, qboolean override_pack)
-{
-	return COM_FindFile (filename, NULL, file, override_pack);
-}
-
-/*
-============
-COM_CloseFile
-
-If it is a pak file handle, don't really close it
-============
-*/
-void COM_CloseFile (int h)
-{
-	searchpath_t    *s;
-	
-	for (s = com_searchpaths ; s ; s=s->next)
-		if (s->pack && s->pack->handle == h)
-			return;
-			
-	Sys_FileClose (h);
-}
-
 /*
 ============
 COM_LoadFile
@@ -596,7 +265,7 @@ byte    *loadbuf;
 int             loadsize;
 byte *COM_LoadFile (char *path, int usehunk, int *size)
 {
-	int             h;
+	fileHandle_t	f;
 	byte    *buf;
 	char    base[32];
 	int             len;
@@ -604,9 +273,10 @@ byte *COM_LoadFile (char *path, int usehunk, int *size)
 	buf = NULL;     // quiet compiler warning
 
 // look for it in the filesystem or pack files
-	len = COM_OpenFile (path, &h);
+	com_filesize = FS_FOpenFileRead (path, &f, true);
+	len = com_filesize;
 	if (size) *size = len;
-	if (h == -1)
+	if (!f)
 		return NULL;
 	
 // extract the filename base name for hunk tag
@@ -636,8 +306,8 @@ byte *COM_LoadFile (char *path, int usehunk, int *size)
 	((byte *)buf)[len] = 0;
 
 	Draw_BeginDisc ();
-	Sys_FileRead (h, buf, len);                     
-	COM_CloseFile (h);
+	FS_Read(buf, len, f);
+	FS_FCloseFile(f);
 	Draw_EndDisc ();
 
 	return buf;
@@ -677,178 +347,49 @@ byte *COM_LoadStackFile (char *path, void *buffer, int bufsize)
 }
 
 /*
-=================
-COM_LoadPackFile
-
-Takes an explicit (not game tree related) path to a pak file.
-
-Loads the header and directory, adding the files at the beginning
-of the list so they override previous pack files.
-=================
-*/
-pack_t *COM_LoadPackFile (char *packfile)
-{
-	dpackheader_t   header;
-	int                             i;
-	packfile_t              *newfiles;
-	int                             numpackfiles;
-	pack_t                  *pack;
-	int                             packhandle;
-	dpackfile_t             info[MAX_FILES_IN_PACK];
-	unsigned short          crc;
-
-	if (Sys_FileOpenRead (packfile, &packhandle) == -1)
-	{
-//              Con_Printf ("Couldn't open %s\n", packfile);
-		return NULL;
-	}
-	Sys_FileRead (packhandle, (void *)&header, sizeof(header));
-	if (header.id[0] != 'P' || header.id[1] != 'A'
-	|| header.id[2] != 'C' || header.id[3] != 'K')
-		Sys_Error ("%s is not a packfile", packfile);
-	header.dirofs = LittleLong (header.dirofs);
-	header.dirlen = LittleLong (header.dirlen);
-
-	numpackfiles = header.dirlen / sizeof(dpackfile_t);
-
-	if (numpackfiles > MAX_FILES_IN_PACK)
-		Sys_Error ("%s has %i files", packfile, numpackfiles);
-
-	if (numpackfiles != PAK0_COUNT && numpackfiles != PAK2_COUNT)
-		com_modified = true;    // not the original file
-
-	Sys_FileSeek (packhandle, header.dirofs);
-	Sys_FileRead (packhandle, (void *)info, header.dirlen);
-
-// crc the directory to check for modifications
-	CRC_Init (&crc);
-	for (i=0 ; i<header.dirlen ; i++)
-		CRC_ProcessByte (&crc, ((byte *)info)[i]);
-	if (crc != PAK0_CRC && crc != PAK2_CRC)
-		com_modified = true;
-
-	newfiles = (packfile_t*)Hunk_AllocName (numpackfiles * sizeof(packfile_t), "packfile");
-
-// parse the directory
-	for (i=0 ; i<numpackfiles ; i++)
-	{
-		QStr::Cpy(newfiles[i].name, info[i].name);
-		newfiles[i].filepos = LittleLong(info[i].filepos);
-		newfiles[i].filelen = LittleLong(info[i].filelen);
-	}
-
-	pack = (pack_t*)Hunk_Alloc (sizeof (pack_t));
-	QStr::Cpy(pack->filename, packfile);
-	pack->handle = packhandle;
-	pack->numfiles = numpackfiles;
-	pack->files = newfiles;
-	
-	Con_Printf ("Added packfile %s (%i files)\n", packfile, numpackfiles);
-	return pack;
-}
-
-
-/*
-================
-COM_AddGameDirectory
-
-Sets com_gamedir, adds the directory to the head of the path,
-then loads and adds pak1.pak pak2.pak ... 
-================
-*/
-void COM_AddGameDirectory (char *dir)
-{
-	int				i;
-	searchpath_t    *search;
-	pack_t			*pak;
-	char			pakfile[MAX_OSPATH];
-
-	QStr::Cpy(com_gamedir, dir);
-
-//
-// add any pak files in the format pak0.pak pak1.pak, ...
-//
-	for (i=0 ; i < 10; i++)
-	{
-		sprintf (pakfile, "%s/pak%i.pak", dir, i);
-		pak = COM_LoadPackFile (pakfile);
-		if (!pak)
-			continue;
-		if (i == 2)
-			Cvar_Set ("oem", "1");
-		search = (searchpath_t*)Hunk_Alloc (sizeof(searchpath_t));
-		search->pack = pak;
-		search->next = com_searchpaths;
-		com_searchpaths = search;               
-	}
-
-//
-// add the directory to the search path
-//
-	search = (searchpath_t*)Hunk_Alloc (sizeof(searchpath_t));
-	QStr::Cpy(search->filename, dir);
-	search->next = com_searchpaths;
-	com_searchpaths = search;
-
-//
-// add the contents of the parms.txt file to the end of the command line
-//
-
-}
-
-/*
 ================
 COM_InitFilesystem
 ================
 */
 void COM_InitFilesystem (void)
 {
-	int             i, j;
 	char    basedir[MAX_OSPATH];
-	searchpath_t    *search;
 
-//
-// -basedir <path>
-// Overrides the system supplied base directory (under GAMENAME)
-//
-	i = COM_CheckParm ("-basedir");
-	if (i && i < COM_Argc()-1)
-		QStr::Cpy(basedir, COM_Argv(i+1));
+	//
+	// -basedir <path>
+	// Overrides the system supplied base directory (under GAMENAME)
+	//
+	int i = COM_CheckParm("-basedir");
+	if (i && i < COM_Argc() - 1)
+	{
+		QStr::Cpy(basedir, COM_Argv(i + 1));
+	}
 	else
+	{
 		QStr::Cpy(basedir, host_parms.basedir);
-
-	j = QStr::Length(basedir);
-
+	}
+	int j = QStr::Length(basedir);
 	if (j > 0)
 	{
-		if ((basedir[j-1] == '\\') || (basedir[j-1] == '/'))
-			basedir[j-1] = 0;
+		if ((basedir[j - 1] == '\\') || (basedir[j - 1] == '/'))
+		{
+			basedir[j - 1] = 0;
+		}
 	}
+	Cvar_Set("fs_basepath", basedir);
 
-//
-// -cachedir <path>
-// Overrides the system supplied cache directory (NULL or /qcache)
-// -cachedir - will disable caching.
-//
-	i = COM_CheckParm ("-cachedir");
-	if (i && i < COM_Argc()-1)
-	{
-		if (COM_Argv(i+1)[0] == '-')
-			com_cachedir[0] = 0;
-		else
-			QStr::Cpy(com_cachedir, COM_Argv(i+1));
-	}
-	else if (host_parms.cachedir)
-		QStr::Cpy(com_cachedir, host_parms.cachedir);
-	else
-		com_cachedir[0] = 0;
+	FS_SharedStartup();
 
 //
 // start up with GAMENAME by default (id1)
 //
-	COM_AddGameDirectory (va("%s/"GAMENAME, basedir) );
+	FS_AddGameDirectory (basedir, GAMENAME, ADDPACKS_First10);
+	if (fs_homepath->string[0])
+		FS_AddGameDirectory(fs_homepath->string, GAMENAME, ADDPACKS_First10);
 #ifdef MISSIONPACK
-	COM_AddGameDirectory (va("%s/portals", basedir) );
+	FS_AddGameDirectory (basedir, "portals", ADDPACKS_First10);
+	if (fs_homepath->string[0])
+		FS_AddGameDirectory(fs_homepath->string, "portals", ADDPACKS_First10);
 #endif
 
 /*	if (COM_CheckParm ("-rogue"))
@@ -862,51 +403,15 @@ void COM_InitFilesystem (void)
 	i = COM_CheckParm ("-game");
 	if (i && i < COM_Argc()-1)
 	{
-		com_modified = true;
-		COM_AddGameDirectory (va("%s/%s", basedir, COM_Argv(i+1)));
-	}
-
-//
-// -path <dir or packfile> [<dir or packfile>] ...
-// Fully specifies the exact serach path, overriding the generated one
-//
-	i = COM_CheckParm ("-path");
-	if (i)
-	{
-		com_modified = true;
-		com_searchpaths = NULL;
-		while (++i < COM_Argc())
-		{
-			if (COM_Argv(i)[0] == '+' || COM_Argv(i)[0] == '-')
-				break;
-			
-			search = (searchpath_t*)Hunk_Alloc (sizeof(searchpath_t));
-			if ( !QStr::Cmp(QStr::FileExtension(COM_Argv(i)), "pak") )
-			{
-				search->pack = COM_LoadPackFile (const_cast<char*>(COM_Argv(i)));
-				if (!search->pack)
-					Sys_Error ("Couldn't load packfile: %s", COM_Argv(i));
-			}
-			else
-				QStr::Cpy(search->filename, COM_Argv(i));
-			search->next = com_searchpaths;
-			com_searchpaths = search;
-		}
-	}
-
-	if (COM_CheckParm ("-proghack"))
-		proghack = true;
-
-	i = COM_CheckParm ("-savedir");
-	if (i)
-	{
-		sprintf(com_savedir,"%s/"GAMENAME, basedir);
-	}
-	else
-	{
-		QStr::Cpy(com_savedir,com_gamedir);
+		FS_AddGameDirectory (basedir, COM_Argv(i+1), ADDPACKS_First10);
+		if (fs_homepath->string[0])
+			FS_AddGameDirectory(fs_homepath->string, COM_Argv(i + 1), ADDPACKS_First10);
 	}
 
 //Mimic qw style cvar to help gamespy, do we really need a way to change it?
 //	Cvar_Set ("*gamedir", com_gamedir);	//removed to prevent full path
+}
+
+void FS_Restart(int checksumFeed)
+{
 }

@@ -143,5 +143,5 @@ extern char *pr_strtbl[MAX_PRSTR];
 extern int num_prstr;
 
 char *PR_GetString(int num);
-int PR_SetString(char *s);
+int PR_SetString(const char *s);
 

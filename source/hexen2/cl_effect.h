@@ -107,6 +107,6 @@ struct EffectT
 	};
 };
 
-void SV_SaveEffects(FILE *FH);
-void SV_LoadEffects(FILE *FH);
+void SV_SaveEffects(fileHandle_t FH);
+void SV_LoadEffects(fileHandle_t FH);
 

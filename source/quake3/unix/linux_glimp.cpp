@@ -105,18 +105,18 @@ static int mx = 0, my = 0;
 static int mouseResetTime = 0;
 #define MOUSE_RESET_DELAY 50
 
-static cvar_t *in_mouse;
-static cvar_t *in_dgamouse; // user pref for dga mouse
-cvar_t *in_subframe;
-cvar_t *in_nograb; // this is strictly for developers
+static QCvar *in_mouse;
+static QCvar *in_dgamouse; // user pref for dga mouse
+QCvar *in_subframe;
+QCvar *in_nograb; // this is strictly for developers
 
 // bk001130 - from cvs1.17 (mkv), but not static
-cvar_t   *in_joystick      = NULL;
-cvar_t   *in_joystickDebug = NULL;
-cvar_t   *joy_threshold    = NULL;
+QCvar   *in_joystick      = NULL;
+QCvar   *in_joystickDebug = NULL;
+QCvar   *joy_threshold    = NULL;
 
-cvar_t  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
-cvar_t  *r_previousglDriver;
+QCvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
+QCvar  *r_previousglDriver;
 
 qboolean vidmode_ext = qfalse;
 static int vidmode_MajorVersion = 0, vidmode_MinorVersion = 0; // major and minor of XF86VidExtensions
@@ -1389,7 +1389,7 @@ void GLimp_Init( void )
   qboolean attempted3Dfx = qfalse;
   qboolean success = qfalse;
   char  buf[1024];
-  cvar_t *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
+  QCvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
 
   // guarded, as this is only relevant to SMP renderer thread
 #ifdef SMP

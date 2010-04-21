@@ -252,7 +252,7 @@ void SV_GetServerinfo( char *buffer, int bufferSize ) {
 	if ( bufferSize < 1 ) {
 		Com_Error( ERR_DROP, "SV_GetServerinfo: bufferSize == %i", bufferSize );
 	}
-	QStr::NCpyZ( buffer, Cvar_InfoString( CVAR_SERVERINFO ), bufferSize );
+	QStr::NCpyZ( buffer, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING), bufferSize );
 }
 
 /*
@@ -350,7 +350,7 @@ int SV_GameSystemCalls( int *args ) {
 	case G_FS_FOPEN_FILE:
 		return FS_FOpenFileByMode( (char*)VMA(1), (fileHandle_t*)VMA(2), (fsMode_t)args[3] );
 	case G_FS_READ:
-		FS_Read2( VMA(1), args[2], args[3] );
+		FS_Read( VMA(1), args[2], args[3] );
 		return 0;
 	case G_FS_WRITE:
 		FS_Write( VMA(1), args[2], args[3] );
@@ -942,7 +942,7 @@ Called on a normal map change, not on a map_restart
 ===============
 */
 void SV_InitGameProgs( void ) {
-	cvar_t	*var;
+	QCvar	*var;
 	//FIXME these are temp while I make bots run in vm
 	extern int	bot_enable;
 

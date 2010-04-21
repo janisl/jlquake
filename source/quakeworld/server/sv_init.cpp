@@ -400,7 +400,7 @@ void SV_SpawnServer (char *server)
 	SV_CreateBaseline ();
 	sv.signon_buffer_size[sv.num_signon_buffers-1] = sv.signon.cursize;
 
-	Info_SetValueForKey (svs.info, "map", sv.name, MAX_SERVERINFO_STRING);
+	Info_SetValueForKey(svs.info, "map", sv.name, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 	Con_DPrintf ("Server spawned.\n");
 }
 

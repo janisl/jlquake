@@ -155,7 +155,7 @@ to start a download from the server.
 */
 qboolean	CL_CheckOrDownloadFile (char *filename)
 {
-	FILE	*f;
+	fileHandle_t	f;
 
 	if (strstr (filename, ".."))
 	{
@@ -163,10 +163,10 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 		return true;
 	}
 
-	COM_FOpenFile (filename, &f);
+	FS_FOpenFileRead (filename, &f, true);
 	if (f)
 	{	// it exists, no need to download
-		fclose (f);
+		FS_FCloseFile (f);
 		return true;
 	}
 
@@ -354,24 +354,26 @@ void CL_ParseDownload (void)
 		if (cls.download)
 		{
 			Con_Printf ("cls.download shouldn't have been set\n");
-			fclose (cls.download);
+			FS_FCloseFile(cls.download);
 			cls.download = NULL;
 		}
-		CL_RequestNextDownload ();
+		CL_RequestNextDownload();
 		return;
 	}
 
 	// open the file if not opened yet
 	if (!cls.download)
 	{
-		if (QStr::NCmp(cls.downloadtempname,"skins/",6))
-			sprintf (name, "%s/%s", com_gamedir, cls.downloadtempname);
+		if (QStr::NCmp(cls.downloadtempname, "skins/", 6))
+		{
+			cls.download = FS_FOpenFileWrite(cls.downloadtempname);
+		}
 		else
-			sprintf (name, "qw/%s", cls.downloadtempname);
+		{
+			sprintf(name, "qw/%s", cls.downloadtempname);
+			cls.download = FS_SV_FOpenFileWrite(name);
+		}
 
-		COM_CreatePath (name);
-
-		cls.download = fopen (name, "wb");
 		if (!cls.download)
 		{
 			net_message.readcount += size;
@@ -381,7 +383,7 @@ void CL_ParseDownload (void)
 		}
 	}
 
-	fwrite (net_message._data + net_message.readcount, 1, size, cls.download);
+	FS_Write(net_message._data + net_message.readcount, size, cls.download);
 	net_message.readcount += size;
 
 	if (percent != 100)
@@ -410,20 +412,21 @@ void CL_ParseDownload (void)
 		Con_Printf ("100%%\n");
 #endif
 
-		fclose (cls.download);
+		FS_FCloseFile(cls.download);
 
 		// rename the temp file to it's final name
-		if (QStr::Cmp(cls.downloadtempname, cls.downloadname)) {
-			if (QStr::NCmp(cls.downloadtempname,"skins/",6)) {
-				sprintf (oldn, "%s/%s", com_gamedir, cls.downloadtempname);
-				sprintf (newn, "%s/%s", com_gamedir, cls.downloadname);
-			} else {
-				sprintf (oldn, "qw/%s", cls.downloadtempname);
-				sprintf (newn, "qw/%s", cls.downloadname);
+		if (QStr::Cmp(cls.downloadtempname, cls.downloadname))
+		{
+			if (QStr::NCmp(cls.downloadtempname,"skins/",6))
+			{
+				FS_Rename(cls.downloadtempname, cls.downloadname);
 			}
-			r = rename (oldn, newn);
-			if (r)
-				Con_Printf ("failed to rename.\n");
+			else
+			{
+				sprintf(oldn, "qw/%s", cls.downloadtempname);
+				sprintf(newn, "qw/%s", cls.downloadname);
+				FS_SV_Rename(oldn, newn);
+			}
 		}
 
 		cls.download = NULL;
@@ -526,7 +529,6 @@ void CL_ParseServerData (void)
 {
 	char	*str;
 	FILE	*f;
-	char	fn[MAX_OSPATH];
 	qboolean	cflag = false;
 	extern	char	gamedirfile[MAX_OSPATH];
 	int protover;
@@ -559,9 +561,10 @@ void CL_ParseServerData (void)
 
 	//ZOID--run the autoexec.cfg in the gamedir
 	//if it exists
-	if (cflag) {
-		sprintf(fn, "%s/%s", com_gamedir, "config.cfg");
-		if ((f = fopen(fn, "r")) != NULL) {
+	if (cflag)
+	{
+		if (FS_FileExists("config.cfg"))
+		{
 			fclose(f);
 			Cbuf_AddText ("cl_warncmd 0\n");
 			Cbuf_AddText("exec config.cfg\n");
@@ -944,7 +947,11 @@ void CL_SetInfo (void)
 
 	Con_DPrintf("SETINFO %s: %s=%s\n", player->name, key, value);
 
-	Info_SetValueForKey (player->userinfo, key, value, MAX_INFO_STRING);
+	if (key[0] != '*')
+	{
+		Info_SetValueForKey(player->userinfo, key, value, MAX_INFO_STRING, 64, 64,
+			QStr::ICmp(key, "name") != 0, QStr::ICmp(key, "team") == 0);
+	}
 
 	CL_ProcessUserInfo (slot, player);
 }
@@ -968,7 +975,11 @@ void CL_ServerInfo (void)
 
 	Con_DPrintf("SERVERINFO: %s=%s\n", key, value);
 
-	Info_SetValueForKey (cl.serverinfo, key, value, MAX_SERVERINFO_STRING);
+	if (key[0] != '*')
+	{
+		Info_SetValueForKey(cl.serverinfo, key, value, MAX_SERVERINFO_STRING, 64, 64,
+			QStr::ICmp(key, "name") != 0, QStr::ICmp(key, "team") == 0);
+	}
 }
 
 /*

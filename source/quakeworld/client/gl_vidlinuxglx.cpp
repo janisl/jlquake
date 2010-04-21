@@ -391,8 +391,7 @@ void	VID_SetPalette (unsigned char *palette)
 	int		k;
 	unsigned short i;
 	unsigned	*table;
-	FILE *f;
-	char s[255];
+	fileHandle_t	f;
 	float dist, bestdist;
 	static qboolean palflag = false;
 
@@ -423,10 +422,10 @@ void	VID_SetPalette (unsigned char *palette)
 		return;
 	palflag = true;
 
-	COM_FOpenFile("glquake/15to8.pal", &f);
+	FS_FOpenFileRead("glquake/15to8.pal", &f, true);
 	if (f) {
-		fread(d_15to8table, 1<<15, 1, f);
-		fclose(f);
+		FS_Read(d_15to8table, 1<<15, f);
+		FS_FCloseFile(f);
 	} else {
 		for (i=0; i < (1<<15); i++) {
 			/* Maps
@@ -451,12 +450,9 @@ void	VID_SetPalette (unsigned char *palette)
 			}
 			d_15to8table[i]=k;
 		}
-		sprintf(s, "%s/glquake", com_gamedir);
- 		Sys_mkdir (s);
-		sprintf(s, "%s/glquake/15to8.pal", com_gamedir);
-		if ((f = fopen(s, "wb")) != NULL) {
-			fwrite(d_15to8table, 1<<15, 1, f);
-			fclose(f);
+		if ((f = FS_FOpenFileWrite("glquake/15to8.pal")) != 0) {
+			FS_Write(d_15to8table, 1<<15, f);
+			FS_FCloseFile(f);
 		}
 	}
 }
@@ -567,7 +563,6 @@ void VID_Init(unsigned char *palette)
 		GLX_DEPTH_SIZE, 1,
 		None
 	};
-	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
 	int scrnum;
 	XSetWindowAttributes attr;
@@ -662,9 +657,6 @@ void VID_Init(unsigned char *palette)
 	InitSig(); // trap evil signals
 
 	GL_Init();
-
-	sprintf (gldir, "%s/glquake", com_gamedir);
-	Sys_mkdir (gldir);
 
 	VID_SetPalette(palette);
 

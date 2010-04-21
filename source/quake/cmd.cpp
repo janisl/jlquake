@@ -22,45 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 /*
-==============================================================================
-
-						SCRIPT COMMANDS
-
-==============================================================================
-*/
-
-
-/*
-===============
-Cmd_Exec_f
-===============
-*/
-void Cmd_Exec_f (void)
-{
-	char	*f;
-	int		mark;
-
-	if (Cmd_Argc () != 2)
-	{
-		Con_Printf ("exec <filename> : execute a script file\n");
-		return;
-	}
-
-	mark = Hunk_LowMark ();
-	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
-	if (!f)
-	{
-		Con_Printf ("couldn't exec %s\n",Cmd_Argv(1));
-		return;
-	}
-	Con_Printf ("execing %s\n",Cmd_Argv(1));
-	
-	Cbuf_InsertText (f);
-	Hunk_FreeToLowMark (mark);
-}
-
-
-/*
 =============================================================================
 
 					COMMAND EXECUTION
@@ -77,7 +38,6 @@ Cmd_Init
 void Cmd_Init (void)
 {
 	Cmd_SharedInit(false);
-	Cmd_AddCommand ("exec",Cmd_Exec_f);
 	Cmd_AddCommand ("cmd", Cmd_ForwardToServer);
 }
 

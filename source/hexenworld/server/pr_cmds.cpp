@@ -1505,7 +1505,7 @@ void PF_precache_sound2 (void)
 
 void PF_precache_sound3 (void)
 {
-	if (!registered->value && !oem->value)
+	if (!registered->value)
 		return;
 
 	PF_precache_sound();
@@ -1547,7 +1547,7 @@ void PF_precache_model2 (void)
 
 void PF_precache_model3 (void)
 {
-	if (!registered->value && !oem->value)
+	if (!registered->value)
 		return;
 
 	PF_precache_model();
@@ -2214,7 +2214,7 @@ void PF_logfrag (void)
 
 	svs.log[svs.logsequence&1].Print(s);
 	if (sv_fraglogfile)
-		fprintf (sv_fraglogfile, s);
+		FS_Printf(sv_fraglogfile, s);
 }
 
 
@@ -2229,7 +2229,7 @@ void PF_infokey (void)
 {
 	edict_t	*e;
 	int		e1;
-	char	*value;
+	const char	*value;
 	char	*key;
 
 	e = G_EDICT(OFS_PARM0);
@@ -2718,7 +2718,7 @@ void PF_setclass (void)
 	host_client->playerclass = NewClass;
 
 	sprintf(temp,"%d",(int)NewClass);
-	Info_SetValueForKey (host_client->userinfo, "playerclass", temp, MAX_INFO_STRING);
+	Info_SetValueForKey(host_client->userinfo, "playerclass", temp, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
 	QStr::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 		, sizeof(host_client->name)-1);	
 	host_client->sendinfo = true;

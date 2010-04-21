@@ -155,68 +155,31 @@ Delete save/<XXX>/
 */
 void SV_WipeSavegame (char *savename)
 {
-	char	name[MAX_OSPATH];
-	char	*s;
-
 	Com_DPrintf("SV_WipeSaveGame(%s)\n", savename);
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/server.ssv", FS_Gamedir (), savename);
-	remove (name);
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/game.ssv", FS_Gamedir (), savename);
-	remove (name);
+	char* name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/server.ssv", savename));
+	FS_Remove(name);
+	name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/game.ssv", savename));
+	FS_Remove(name);
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/*.sav", FS_Gamedir (), savename);
-	s = Sys_FindFirst( name, 0, 0 );
-	while (s)
+	name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s", savename));
+	int NumSysFiles;
+	char** SysFiles = Sys_ListFiles(name, ".sav", NULL, &NumSysFiles, false);
+	for (int i = 0 ; i < NumSysFiles; i++)
 	{
-		remove (s);
-		s = Sys_FindNext( 0, 0 );
+		name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/%s", savename, SysFiles[i]));
+		FS_Remove(name);
 	}
-	Sys_FindClose ();
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/*.sv2", FS_Gamedir (), savename);
-	s = Sys_FindFirst(name, 0, 0 );
-	while (s)
+	Sys_FreeFileList(SysFiles);
+
+	name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s", savename));
+	SysFiles = Sys_ListFiles(name, ".sv2", NULL, &NumSysFiles, false);
+	for (int i = 0 ; i < NumSysFiles; i++)
 	{
-		remove (s);
-		s = Sys_FindNext( 0, 0 );
+		name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/%s", savename, SysFiles[i]));
+		FS_Remove(name);
 	}
-	Sys_FindClose ();
-}
-
-
-/*
-================
-CopyFile
-================
-*/
-void CopyFile (char *src, char *dst)
-{
-	FILE	*f1, *f2;
-	int		l;
-	byte	buffer[65536];
-
-	Com_DPrintf ("CopyFile (%s, %s)\n", src, dst);
-
-	f1 = fopen (src, "rb");
-	if (!f1)
-		return;
-	f2 = fopen (dst, "wb");
-	if (!f2)
-	{
-		fclose (f1);
-		return;
-	}
-
-	while (1)
-	{
-		l = fread (buffer, 1, sizeof(buffer), f1);
-		if (!l)
-			break;
-		fwrite (buffer, 1, l, f2);
-	}
-
-	fclose (f1);
-	fclose (f2);
+	Sys_FreeFileList(SysFiles);
 }
 
 
@@ -227,45 +190,36 @@ SV_CopySaveGame
 */
 void SV_CopySaveGame (char *src, char *dst)
 {
-	char	name[MAX_OSPATH], name2[MAX_OSPATH];
-	int		l, len;
-	char	*found;
-
 	Com_DPrintf("SV_CopySaveGame(%s, %s)\n", src, dst);
 
 	SV_WipeSavegame (dst);
 
 	// copy the savegame over
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/server.ssv", FS_Gamedir(), src);
-	QStr::Sprintf (name2, sizeof(name2), "%s/save/%s/server.ssv", FS_Gamedir(), dst);
-	FS_CreatePath (name2);
-	CopyFile (name, name2);
+	char* name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/server.ssv", src));
+	char* name2 = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/server.ssv", dst));
+	FS_CopyFile(name, name2);
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/game.ssv", FS_Gamedir(), src);
-	QStr::Sprintf (name2, sizeof(name2), "%s/save/%s/game.ssv", FS_Gamedir(), dst);
-	CopyFile (name, name2);
+	name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/game.ssv", src));
+	name2 = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/game.ssv", dst));
+	FS_CopyFile(name, name2);
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/", FS_Gamedir(), src);
-	len = QStr::Length(name);
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/*.sav", FS_Gamedir(), src);
-	found = Sys_FindFirst(name, 0, 0 );
-	while (found)
+	name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s", src));
+	int NumSysFiles;
+	char** SysFiles = Sys_ListFiles(name, ".sav", NULL, &NumSysFiles, false);
+	for (int i = 0 ; i < NumSysFiles; i++)
 	{
-		QStr::Cpy(name+len, found+len);
-
-		QStr::Sprintf (name2, sizeof(name2), "%s/save/%s/%s", FS_Gamedir(), dst, found+len);
-		CopyFile (name, name2);
+		name = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/%s", src, SysFiles[i]));
+		name2 = FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/%s/%s", dst, SysFiles[i]));
+		FS_CopyFile(name, name2);
 
 		// change sav to sv2
-		l = QStr::Length(name);
-		QStr::Cpy(name+l-3, "sv2");
+		int l = QStr::Length(name);
+		QStr::Cpy(name + l - 3, "sv2");
 		l = QStr::Length(name2);
-		QStr::Cpy(name2+l-3, "sv2");
-		CopyFile (name, name2);
-
-		found = Sys_FindNext( 0, 0 );
+		QStr::Cpy(name2 + l - 3, "sv2");
+		FS_CopyFile(name, name2);
 	}
-	Sys_FindClose ();
+	Sys_FreeFileList(SysFiles);
 }
 
 
@@ -278,23 +232,23 @@ SV_WriteLevelFile
 void SV_WriteLevelFile (void)
 {
 	char	name[MAX_OSPATH];
-	FILE	*f;
+	fileHandle_t	f;
 
 	Com_DPrintf("SV_WriteLevelFile()\n");
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/%s.sv2", FS_Gamedir(), sv.name);
-	f = fopen(name, "wb");
+	QStr::Sprintf(name, sizeof(name), "save/current/%s.sv2", sv.name);
+	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
 		Com_Printf ("Failed to open %s\n", name);
 		return;
 	}
-	fwrite (sv.configstrings, sizeof(sv.configstrings), 1, f);
-	CM_WritePortalState (f);
-	fclose (f);
+	FS_Write(sv.configstrings, sizeof(sv.configstrings), f);
+	CM_WritePortalState(f);
+	FS_FCloseFile(f);
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/%s.sav", FS_Gamedir(), sv.name);
-	ge->WriteLevel (name);
+	QStr::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/current/%s.sav", sv.name)));
+	ge->WriteLevel(name);
 }
 
 /*
@@ -306,23 +260,23 @@ SV_ReadLevelFile
 void SV_ReadLevelFile (void)
 {
 	char	name[MAX_OSPATH];
-	FILE	*f;
+	fileHandle_t	f;
 
 	Com_DPrintf("SV_ReadLevelFile()\n");
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/%s.sv2", FS_Gamedir(), sv.name);
-	f = fopen(name, "rb");
+	QStr::Sprintf (name, sizeof(name), "save/current/%s.sv2", sv.name);
+	FS_FOpenFileRead(name, &f, true);
 	if (!f)
 	{
 		Com_Printf ("Failed to open %s\n", name);
 		return;
 	}
-	FS_Read (sv.configstrings, sizeof(sv.configstrings), f);
+	FS_Read(sv.configstrings, sizeof(sv.configstrings), f);
 	CM_ReadPortalState (f);
-	fclose (f);
+	FS_FCloseFile(f);
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/%s.sav", FS_Gamedir(), sv.name);
-	ge->ReadLevel (name);
+	QStr::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/current/%s.sav", sv.name)));
+	ge->ReadLevel(name);
 }
 
 /*
@@ -333,8 +287,8 @@ SV_WriteServerFile
 */
 void SV_WriteServerFile (qboolean autosave)
 {
-	FILE	*f;
-	cvar_t	*var;
+	fileHandle_t	f;
+	QCvar	*var;
 	char	name[MAX_OSPATH], string[128];
 	char	comment[32];
 	time_t	aclock;
@@ -342,8 +296,8 @@ void SV_WriteServerFile (qboolean autosave)
 
 	Com_DPrintf("SV_WriteServerFile(%s)\n", autosave ? "true" : "false");
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/server.ssv", FS_Gamedir());
-	f = fopen (name, "wb");
+	QStr::Sprintf (name, sizeof(name), "save/current/server.ssv");
+	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
 		Com_Printf ("Couldn't write %s\n", name);
@@ -366,10 +320,10 @@ void SV_WriteServerFile (qboolean autosave)
 		QStr::Sprintf (comment, sizeof(comment), "ENTERING %s", sv.configstrings[CS_NAME]);
 	}
 
-	fwrite (comment, 1, sizeof(comment), f);
+	FS_Write(comment, sizeof(comment), f);
 
 	// write the mapcmd
-	fwrite (svs.mapcmd, 1, sizeof(svs.mapcmd), f);
+	FS_Write(svs.mapcmd, sizeof(svs.mapcmd), f);
 
 	// write all CVAR_LATCH cvars
 	// these will be things like coop, skill, deathmatch, etc
@@ -387,14 +341,14 @@ void SV_WriteServerFile (qboolean autosave)
 		Com_Memset(string, 0, sizeof(string));
 		QStr::Cpy(name, var->name);
 		QStr::Cpy(string, var->string);
-		fwrite (name, 1, sizeof(name), f);
-		fwrite (string, 1, sizeof(string), f);
+		FS_Write(name, sizeof(name), f);
+		FS_Write(string, sizeof(string), f);
 	}
 
-	fclose (f);
+	FS_FCloseFile(f);
 
 	// write game state
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/game.ssv", FS_Gamedir());
+	QStr::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), "save/current/game.ssv"));
 	ge->WriteGame (name, autosave);
 }
 
@@ -406,15 +360,14 @@ SV_ReadServerFile
 */
 void SV_ReadServerFile (void)
 {
-	FILE	*f;
+	fileHandle_t	f;
 	char	name[MAX_OSPATH], string[128];
 	char	comment[32];
 	char	mapcmd[MAX_TOKEN_CHARS];
 
 	Com_DPrintf("SV_ReadServerFile()\n");
 
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/server.ssv", FS_Gamedir());
-	f = fopen (name, "rb");
+	FS_FOpenFileRead("save/current/server.ssv", &f, true);
 	if (!f)
 	{
 		Com_Printf ("Couldn't read %s\n", name);
@@ -430,14 +383,14 @@ void SV_ReadServerFile (void)
 	// these will be things like coop, skill, deathmatch, etc
 	while (1)
 	{
-		if (!fread (name, 1, sizeof(name), f))
+		if (!FS_Read (name, sizeof(name), f))
 			break;
 		FS_Read (string, sizeof(string), f);
 		Com_DPrintf ("Set %s = %s\n", name, string);
 		Cvar_Set(name, string);
 	}
 
-	fclose (f);
+	FS_FCloseFile (f);
 
 	// start a new game fresh with new cvars
 	SV_InitGame ();
@@ -445,8 +398,8 @@ void SV_ReadServerFile (void)
 	QStr::Cpy(svs.mapcmd, mapcmd);
 
 	// read game state
-	QStr::Sprintf (name, sizeof(name), "%s/save/current/game.ssv", FS_Gamedir());
-	ge->ReadGame (name);
+	QStr::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), "save/current/game.ssv"));
+	ge->ReadGame(name);
 }
 
 
@@ -499,8 +452,6 @@ void SV_GameMap_f (void)
 	}
 
 	Com_DPrintf("SV_GameMap(%s)\n", Cmd_Argv(1));
-
-	FS_CreatePath (va("%s/save/current/", FS_Gamedir()));
 
 	// check for clearing the current savegame
 	map = Cmd_Argv(1);
@@ -564,7 +515,7 @@ void SV_Map_f (void)
 	if (!strstr (map, "."))
 	{
 		QStr::Sprintf (expanded, sizeof(expanded), "maps/%s.bsp", map);
-		if (FS_LoadFile (expanded, NULL) == -1)
+		if (FS_ReadFile(expanded, NULL) == -1)
 		{
 			Com_Printf ("Can't find %s\n", expanded);
 			return;
@@ -594,7 +545,7 @@ SV_Loadgame_f
 void SV_Loadgame_f (void)
 {
 	char	name[MAX_OSPATH];
-	FILE	*f;
+	fileHandle_t	f;
 	char	*dir;
 
 	if (Cmd_Argc() != 2)
@@ -612,14 +563,14 @@ void SV_Loadgame_f (void)
 	}
 
 	// make sure the server.ssv file exists
-	QStr::Sprintf (name, sizeof(name), "%s/save/%s/server.ssv", FS_Gamedir(), Cmd_Argv(1));
-	f = fopen (name, "rb");
+	QStr::Sprintf (name, sizeof(name), "save/%s/server.ssv", Cmd_Argv(1));
+	FS_FOpenFileRead(name, &f, true);
 	if (!f)
 	{
 		Com_Printf ("No such savegame: %s\n", name);
 		return;
 	}
-	fclose (f);
+	FS_FCloseFile(f);
 
 	SV_CopySaveGame (Cmd_Argv(1), "current");
 
@@ -842,7 +793,8 @@ SV_Serverinfo_f
 void SV_Serverinfo_f (void)
 {
 	Com_Printf ("Server info settings:\n");
-	Info_Print (Cvar_Serverinfo());
+	Info_Print (Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
+		MAX_INFO_VALUE, true, false));
 }
 
 
@@ -908,11 +860,10 @@ void SV_ServerRecord_f (void)
 	//
 	// open the demo file
 	//
-	QStr::Sprintf (name, sizeof(name), "%s/demos/%s.dm2", FS_Gamedir(), Cmd_Argv(1));
+	QStr::Sprintf (name, sizeof(name), "demos/%s.dm2", Cmd_Argv(1));
 
 	Com_Printf ("recording to %s.\n", name);
-	FS_CreatePath (name);
-	svs.demofile = fopen (name, "wb");
+	svs.demofile = FS_FOpenFileWrite(name);
 	if (!svs.demofile)
 	{
 		Com_Printf ("ERROR: couldn't open.\n");
@@ -953,8 +904,8 @@ void SV_ServerRecord_f (void)
 	// write it to the demo file
 	Com_DPrintf ("signon message length: %i\n", buf.cursize);
 	len = LittleLong (buf.cursize);
-	fwrite (&len, 4, 1, svs.demofile);
-	fwrite (buf._data, buf.cursize, 1, svs.demofile);
+	FS_Write(&len, 4, svs.demofile);
+	FS_Write(buf._data, buf.cursize, svs.demofile);
 
 	// the rest of the demo file will be individual frames
 }
@@ -974,8 +925,8 @@ void SV_ServerStop_f (void)
 		Com_Printf ("Not doing a serverrecord.\n");
 		return;
 	}
-	fclose (svs.demofile);
-	svs.demofile = NULL;
+	FS_FCloseFile(svs.demofile);
+	svs.demofile = 0;
 	Com_Printf ("Recording completed.\n");
 }
 

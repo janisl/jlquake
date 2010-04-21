@@ -81,34 +81,34 @@ void SV_Init (void)
 	sv_kingofhill=0;//Initialize King of Hill to world
 }
 
-void SV_Edicts(char *Name)
+void SV_Edicts(const char *Name)
 {
-	FILE *FH;
+	fileHandle_t FH;
 	int i;
 	edict_t *e;
 
-	FH = fopen(Name,"w");
+	FH = FS_FOpenFileWrite(Name);
 	if (!FH)
 	{
 		Con_Printf("Could not open %s\n",Name);
 		return;
 	}
 
-	fprintf(FH,"Number of Edicts: %d\n",sv.num_edicts);
-	fprintf(FH,"Server Time: %f\n",sv.time);
-	fprintf(FH,"\n");
-	fprintf(FH,"Num.     Time Class Name                     Model                          Think                                    Touch                                    Use\n");
-	fprintf(FH,"---- -------- ------------------------------ ------------------------------ ---------------------------------------- ---------------------------------------- ----------------------------------------\n");
+	FS_Printf(FH,"Number of Edicts: %d\n",sv.num_edicts);
+	FS_Printf(FH,"Server Time: %f\n",sv.time);
+	FS_Printf(FH,"\n");
+	FS_Printf(FH,"Num.     Time Class Name                     Model                          Think                                    Touch                                    Use\n");
+	FS_Printf(FH,"---- -------- ------------------------------ ------------------------------ ---------------------------------------- ---------------------------------------- ----------------------------------------\n");
 
 	for ( i=1 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		fprintf(FH,"%3d. %8.2f %-30s %-30s %-40s %-40s %-40s\n",
+		FS_Printf(FH,"%3d. %8.2f %-30s %-30s %-40s %-40s %-40s\n",
 			i,e->v.nextthink,e->v.classname+pr_strings,e->v.model+pr_strings,
 			pr_functions[e->v.think].s_name+pr_strings,pr_functions[e->v.touch].s_name+pr_strings,
 			pr_functions[e->v.use].s_name+pr_strings);
 	}
-	fclose(FH);
+	FS_FCloseFile(FH);
 }
 
 void Sv_Edicts_f(void)

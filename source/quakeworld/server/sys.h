@@ -19,10 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // sys.h -- non-portable functions
 
-int	Sys_FileTime (char *path);
-
-void Sys_mkdir (char *path);
-
 void Sys_Error (char *error, ...);
 // an error will cause the entire program to exit
 

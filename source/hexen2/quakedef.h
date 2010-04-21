@@ -246,7 +246,6 @@ typedef struct
 
 #include "wad.h"
 #include "draw.h"
-#include "cvar.h"
 #include "screen.h"
 #include "net.h"
 #include "protocol.h"
@@ -277,7 +276,6 @@ typedef struct
 typedef struct
 {
 	char	*basedir;
-	char	*cachedir;		// for development over ISDN lines
 	int		argc;
 	char	**argv;
 	void	*membase;

@@ -974,7 +974,7 @@ void PR_LoadProgs (void)
 
 // add prog crc to the serverinfo
 	sprintf (num, "%i", CRC_Block ((byte *)progs, com_filesize));
-	Info_SetValueForStarKey (svs.info, "*progs", num, MAX_SERVERINFO_STRING);
+	Info_SetValueForKey(svs.info, "*progs", num, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 
 // byte swap the header
 	for (i=0 ; i<sizeof(*progs)/4 ; i++)

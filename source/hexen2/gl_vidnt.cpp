@@ -1608,7 +1608,6 @@ void	VID_Init (unsigned char *palette)
 	int		i, existingmode;
 	int		basenummodes, width, height, bpp, findbpp, done;
 	byte	*ptmp;
-	char	gldir[MAX_OSPATH];
 	HDC		hdc;
 	DEVMODE	devmode;
 
@@ -1822,13 +1821,6 @@ void	VID_Init (unsigned char *palette)
 		Sys_Error ("wglMakeCurrent failed");
 
 	GL_Init ();
-
-	sprintf (gldir, "%s/glhexen", com_gamedir);
-	Sys_mkdir (gldir);
-	sprintf (gldir, "%s/glhexen/boss", com_gamedir);
-	Sys_mkdir (gldir);
-	sprintf (gldir, "%s/glhexen/puzzle", com_gamedir);
-	Sys_mkdir (gldir);
 
 	vid_realmode = vid_modenum;
 

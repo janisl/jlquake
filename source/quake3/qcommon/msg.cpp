@@ -77,7 +77,7 @@ delta functions
 =============================================================================
 */
 
-extern cvar_t *cl_shownet;
+extern QCvar *cl_shownet;
 
 #define	LOG(x) if( cl_shownet->integer == 4 ) { Com_Printf("%s ", x ); };
 
@@ -527,7 +527,7 @@ If the delta removes the entity, entityState_t->number will be set to MAX_GENTIT
 Can go from either a baseline or a previous packet_entity
 ==================
 */
-extern	cvar_t	*cl_shownet;
+extern	QCvar	*cl_shownet;
 
 void MSG_ReadDeltaEntity( QMsg *msg, entityState_t *from, entityState_t *to, 
 						 int number) {

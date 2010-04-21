@@ -92,11 +92,6 @@ void COM_Init (void);
 
 char *CopyString (char *in);
 
-//============================================================================
-
-void Info_Print (char *s);
-
-
 /*
 ==============================================================
 
@@ -278,35 +273,8 @@ CVAR
 ==============================================================
 */
 
-/*
-
-cvar_t variables are used to hold scalar or string variables that can be changed or displayed at the console or prog code as well as accessed directly
-in C code.
-
-The user can access cvars from the console in three ways:
-r_draworder			prints the current value
-r_draworder 0		sets the current value to 0
-set r_draworder 0	as above, but creates the cvar if not present
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
-*/
-
-cvar_t 	*Cvar_FullSet (char *var_name, char *value, int flags);
-
 void	Cvar_GetLatchedVars (void);
 // any CVAR_LATCHED variables that have been set will now take effect
-
-void 	Cvar_WriteVariables (char *path);
-// appends lines containing "set variable value" for all variables
-// with the archive flag set to true.
-
-void	Cvar_Init (void);
-
-char	*Cvar_Userinfo (void);
-// returns an info string containing all the CVAR_USERINFO cvars
-
-char	*Cvar_Serverinfo (void);
-// returns an info string containing all the CVAR_SERVERINFO cvars
 
 /*
 ==============================================================
@@ -463,8 +431,8 @@ qboolean	CM_AreasConnected (int area1, int area2);
 int			CM_WriteAreaBits (byte *buffer, int area);
 qboolean	CM_HeadnodeVisible (int headnode, byte *visbits);
 
-void		CM_WritePortalState (FILE *f);
-void		CM_ReadPortalState (FILE *f);
+void		CM_WritePortalState (fileHandle_t f);
+void		CM_ReadPortalState (fileHandle_t f);
 
 /*
 ==============================================================
@@ -491,23 +459,7 @@ FILESYSTEM
 void	FS_InitFilesystem (void);
 void	FS_SetGamedir (char *dir);
 char	*FS_Gamedir (void);
-char	*FS_NextPath (char *prevpath);
 void	FS_ExecAutoexec (void);
-
-int		FS_FOpenFile (char *filename, FILE **file);
-void	FS_FCloseFile (FILE *f);
-// note: this can't be called from another DLL, due to MS libc issues
-
-int		FS_LoadFile (char *path, void **buffer);
-// a null buffer will just return the file length without loading
-// a -1 length is not present
-
-void	FS_Read (void *buffer, int len, FILE *f);
-// properly handles partial reads
-
-void	FS_FreeFile (void *buffer);
-
-void	FS_CreatePath (char *path);
 
 
 /*
@@ -545,12 +497,12 @@ byte		COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 float	frand(void);	// 0 ti 1
 float	crand(void);	// -1 to 1
 
-extern	cvar_t	*developer;
-extern	cvar_t	*dedicated;
-extern	cvar_t	*host_speeds;
-extern	cvar_t	*log_stats;
+extern	QCvar	*developer;
+extern	QCvar	*dedicated;
+extern	QCvar	*host_speeds;
+extern	QCvar	*log_stats;
 
-extern	FILE *log_stats_file;
+extern	fileHandle_t	log_stats_file;
 
 // host_speeds times
 extern	int		time_before_game;
@@ -596,7 +548,6 @@ void	Sys_SendKeyEvents (void);
 void	Sys_Error (char *error, ...);
 void	Sys_Quit (void);
 char	*Sys_GetClipboardData( void );
-void	Sys_CopyProtect (void);
 
 /*
 ==============================================================

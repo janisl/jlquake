@@ -99,8 +99,7 @@ typedef struct
 	qboolean	demoplayback;
 	qboolean	timedemo;
 	int			forcetrack;			// -1 = use normal cd track
-	FILE		*demofile;
-	FILE		*introdemofile;
+	fileHandle_t	demofile;
 	int			td_lastframe;		// to meter out one message a frame
 	int			td_startframe;		// host_framecount at start
 	float		td_starttime;		// realtime at second frame of timedemo
@@ -367,5 +366,5 @@ void CL_ParseEffect(void);
 void CL_EndEffect(void);
 void SV_UpdateEffects(QMsg *sb);
 
-void CL_RemoveGIPFiles (char *path);
-qboolean CL_CopyFiles(char *source, char *pat, char *dest);
+void CL_RemoveGIPFiles(const char *path);
+void CL_CopyFiles(const char* source, const char* ext, const char* dest);

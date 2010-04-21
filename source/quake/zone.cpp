@@ -917,6 +917,11 @@ void MemPrint_f()
 	Z_Print(mainzone);
 }
 
+static void Hunk_Print_f()
+{
+	Hunk_Print (true);
+}
+
 /*
 ========================
 Memory_Init
@@ -945,5 +950,7 @@ void Memory_Init (void *buf, int size)
 	Z_ClearZone (mainzone, zonesize);
 
 	Cmd_AddCommand("memprint", MemPrint_f);
+	Cmd_AddCommand("hunkprint", Hunk_Print_f);
+	Cmd_AddCommand("cacheprint", Cache_Print);
 }
 

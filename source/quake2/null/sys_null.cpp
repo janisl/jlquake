@@ -8,10 +8,6 @@ int	curtime;
 unsigned	sys_frame_time;
 
 
-void Sys_mkdir (char *path)
-{
-}
-
 void Sys_Error (char *error, ...)
 {
 	va_list		argptr;
@@ -56,10 +52,6 @@ void Sys_AppActivate (void)
 {
 }
 
-void Sys_CopyProtect (void)
-{
-}
-
 char *Sys_GetClipboardData( void )
 {
 	return NULL;
@@ -87,10 +79,6 @@ int		Hunk_End (void)
 int		Sys_Milliseconds (void)
 {
 	return 0;
-}
-
-void	Sys_Mkdir (char *path)
-{
 }
 
 char	*Sys_FindFirst (char *path, unsigned musthave, unsigned canthave)

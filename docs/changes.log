@@ -44,3 +44,13 @@
 11.04.2010
   I changed q1 games to use new style of registering cvars.
   I moved command buffer and command execution to core.
+13.04.2010
+  I started work on unifying file systems. This should be last of the core subsystems that's used everywhere.
+15.04.2010
+  I fixed a bug I introduced in command parsing that caused Quake 3 to loose network key sync.
+18.04.2010
+  Work on file access has been completed and most remaining file system code is unifid too.
+19.04.2010
+  In Hexen 2 I added support for maplist.txt file that specifies alternate progs file for specific levels. Now boss levels work.
+20.04.2010
+  I finished replacing use of stdio with use of file system for game created files like savegames, config files, screenshots etc. and made them all to be created in home directory.

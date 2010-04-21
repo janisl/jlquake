@@ -38,9 +38,9 @@ typedef struct
 } loopback_t;
 
 
-cvar_t		*net_shownet;
-static cvar_t	*noudp;
-static cvar_t	*noipx;
+QCvar		*net_shownet;
+static QCvar	*noudp;
+static QCvar	*noipx;
 
 loopback_t	loopbacks[2];
 int			ip_sockets[2];
@@ -524,7 +524,7 @@ NET_OpenIP
 */
 void NET_OpenIP (void)
 {
-	cvar_t	*ip;
+	QCvar	*ip;
 	int		port;
 	int		dedicated;
 
@@ -715,7 +715,7 @@ void NET_Sleep(int msec)
 {
     struct timeval timeout;
 	fd_set	fdset;
-	extern cvar_t *dedicated;
+	extern QCvar *dedicated;
 	int i;
 
 	if (!dedicated || !dedicated->value)

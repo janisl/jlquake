@@ -310,18 +310,18 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 	}
 	if (server && buf) {
 		buf[0] = '\0';
-		Info_SetValueForKey( info, "hostname", server->hostName);
-		Info_SetValueForKey( info, "mapname", server->mapName);
-		Info_SetValueForKey( info, "clients", va("%i",server->clients));
-		Info_SetValueForKey( info, "sv_maxclients", va("%i",server->maxClients));
-		Info_SetValueForKey( info, "ping", va("%i",server->ping));
-		Info_SetValueForKey( info, "minping", va("%i",server->minPing));
-		Info_SetValueForKey( info, "maxping", va("%i",server->maxPing));
-		Info_SetValueForKey( info, "game", server->game);
-		Info_SetValueForKey( info, "gametype", va("%i",server->gameType));
-		Info_SetValueForKey( info, "nettype", va("%i",server->netType));
-		Info_SetValueForKey( info, "addr", NET_AdrToString(server->adr));
-		Info_SetValueForKey( info, "punkbuster", va("%i", server->punkbuster));
+		Info_SetValueForKey( info, "hostname", server->hostName, MAX_INFO_STRING);
+		Info_SetValueForKey( info, "mapname", server->mapName, MAX_INFO_STRING);
+		Info_SetValueForKey( info, "clients", va("%i",server->clients), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "sv_maxclients", va("%i",server->maxClients), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "ping", va("%i",server->ping), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "minping", va("%i",server->minPing), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "maxping", va("%i",server->maxPing), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "game", server->game, MAX_INFO_STRING);
+		Info_SetValueForKey( info, "gametype", va("%i",server->gameType), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "nettype", va("%i",server->netType), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "addr", NET_AdrToString(server->adr), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "punkbuster", va("%i", server->punkbuster), MAX_INFO_STRING);
 		QStr::NCpyZ(buf, info, buflen);
 	} else {
 		if (buf) {
@@ -687,7 +687,7 @@ CLUI_GetCDKey
 ====================
 */
 static void CLUI_GetCDKey( char *buf, int buflen ) {
-	cvar_t	*fs;
+	QCvar	*fs;
 	fs = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
 	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0) {
 		Com_Memcpy( buf, &cl_cdkey[16], 16);
@@ -705,7 +705,7 @@ CLUI_SetCDKey
 ====================
 */
 static void CLUI_SetCDKey( char *buf ) {
-	cvar_t	*fs;
+	QCvar	*fs;
 	fs = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
 	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0) {
 		Com_Memcpy( &cl_cdkey[16], buf, 16 );
@@ -813,7 +813,7 @@ int CL_UISystemCalls( int *args ) {
 		return 0;
 
 	case UI_CVAR_INFOSTRINGBUFFER:
-		Cvar_InfoStringBuffer( args[1], (char*)VMA(2), args[3] );
+		Cvar_InfoStringBuffer( args[1], MAX_INFO_STRING, (char*)VMA(2), args[3] );
 		return 0;
 
 	case UI_ARGC:
@@ -831,7 +831,7 @@ int CL_UISystemCalls( int *args ) {
 		return FS_FOpenFileByMode( (char*)VMA(1), (fileHandle_t*)VMA(2), (fsMode_t)args[3] );
 
 	case UI_FS_READ:
-		FS_Read2( VMA(1), args[2], args[3] );
+		FS_Read( VMA(1), args[2], args[3] );
 		return 0;
 
 	case UI_FS_WRITE:

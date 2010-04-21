@@ -1594,7 +1594,7 @@ void PF_precache_sound2 (void)
 
 void PF_precache_sound3 (void)
 {
-	if (!registered->value && !oem->value)
+	if (!registered->value)
 		return;
 
 	PF_precache_sound();
@@ -1647,7 +1647,7 @@ void PF_precache_model2 (void)
 
 void PF_precache_model3 (void)
 {
-	if (!registered->value && !oem->value)
+	if (!registered->value)
 		return;
 
 	PF_precache_model();

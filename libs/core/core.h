@@ -34,12 +34,20 @@
 #include "log.h"		//	General logging interface
 #include "array.h"		//	Dynamic array
 #include "str.h"		//	Strings
+#include "infostr.h"
 #include "mathlib.h"
 #include "message.h"
 #include "huffman.h"
+#include "files.h"
 #include "cmd.h"
+#include "cvar.h"
 #include "crc.h"
 #include "md4.h"
-#include "cvar.h"
+#include "system.h"
+
+extern	QCvar	*com_journal;
+
+extern	fileHandle_t	com_journalFile;
+extern	fileHandle_t	com_journalDataFile;
 
 #endif

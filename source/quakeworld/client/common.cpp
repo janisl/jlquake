@@ -36,14 +36,11 @@ static char	*safeargvs[NUM_SAFE_ARGVS] =
 
 QCvar*	registered;
 
-qboolean	com_modified;	// set true if using non-id files
-
 int		static_registered = 1;	// only for startup check, then set
 
 qboolean		msg_suppress_1 = 0;
 
 void COM_InitFilesystem (void);
-void COM_Path_f (void);
 
 
 // if a packfile directory differs from this, it is assumed to be hacked
@@ -237,26 +234,21 @@ being registered.
 */
 void COM_CheckRegistered (void)
 {
-	FILE		*h;
+	fileHandle_t	h;
 	unsigned short	check[128];
 	int			i;
 
-	COM_FOpenFile("gfx/pop.lmp", &h);
+	FS_FOpenFileRead("gfx/pop.lmp", &h, true);
 	static_registered = 0;
 
 	if (!h)
 	{
 		Con_Printf ("Playing shareware version.\n");
-#ifndef SERVERONLY
-// FIXME DEBUG -- only temporary
-		if (com_modified)
-			Sys_Error ("You must have the registered version to play QuakeWorld");
-#endif
 		return;
 	}
 
-	fread (check, 1, sizeof(check), h);
-	fclose (h);
+	FS_Read (check, sizeof(check), h);
+	FS_FCloseFile (h);
 	
 	for (i=0 ; i<128 ; i++)
 		if (pop[i] != (unsigned short)BigShort (check[i]))
@@ -299,7 +291,6 @@ void COM_Init (void)
 	Com_InitByteOrder();
 
 	registered = Cvar_Get("registered", "0", 0);
-	Cmd_AddCommand ("path", COM_Path_f);
 
 	COM_InitFilesystem ();
 	COM_CheckRegistered ();
@@ -328,270 +319,6 @@ QUAKE FILESYSTEM
 int	com_filesize;
 
 
-//
-// in memory
-//
-
-typedef struct
-{
-	char	name[MAX_QPATH];
-	int		filepos, filelen;
-} packfile_t;
-
-typedef struct pack_s
-{
-	char	filename[MAX_OSPATH];
-	FILE	*handle;
-	int		numfiles;
-	packfile_t	*files;
-} pack_t;
-
-//
-// on disk
-//
-typedef struct
-{
-	char	name[56];
-	int		filepos, filelen;
-} dpackfile_t;
-
-typedef struct
-{
-	char	id[4];
-	int		dirofs;
-	int		dirlen;
-} dpackheader_t;
-
-#define	MAX_FILES_IN_PACK	2048
-
-char	com_gamedir[MAX_OSPATH];
-char	com_basedir[MAX_OSPATH];
-
-typedef struct searchpath_s
-{
-	char	filename[MAX_OSPATH];
-	pack_t	*pack;		// only one of filename / pack will be used
-	struct searchpath_s *next;
-} searchpath_t;
-
-searchpath_t	*com_searchpaths;
-searchpath_t	*com_base_searchpaths;	// without gamedirs
-
-/*
-================
-COM_filelength
-================
-*/
-int COM_filelength (FILE *f)
-{
-	int		pos;
-	int		end;
-
-	pos = ftell (f);
-	fseek (f, 0, SEEK_END);
-	end = ftell (f);
-	fseek (f, pos, SEEK_SET);
-
-	return end;
-}
-
-int COM_FileOpenRead (char *path, FILE **hndl)
-{
-	FILE	*f;
-
-	f = fopen(path, "rb");
-	if (!f)
-	{
-		*hndl = NULL;
-		return -1;
-	}
-	*hndl = f;
-	
-	return COM_filelength(f);
-}
-
-/*
-============
-COM_Path_f
-
-============
-*/
-void COM_Path_f (void)
-{
-	searchpath_t	*s;
-	
-	Con_Printf ("Current search path:\n");
-	for (s=com_searchpaths ; s ; s=s->next)
-	{
-		if (s == com_base_searchpaths)
-			Con_Printf ("----------\n");
-		if (s->pack)
-			Con_Printf ("%s (%i files)\n", s->pack->filename, s->pack->numfiles);
-		else
-			Con_Printf ("%s\n", s->filename);
-	}
-}
-
-/*
-============
-COM_WriteFile
-
-The filename will be prefixed by the current game directory
-============
-*/
-void COM_WriteFile (char *filename, void *data, int len)
-{
-	FILE	*f;
-	char	name[MAX_OSPATH];
-	
-	sprintf (name, "%s/%s", com_gamedir, filename);
-	
-	f = fopen (name, "wb");
-	if (!f) {
-		Sys_mkdir(com_gamedir);
-		f = fopen (name, "wb");
-		if (!f)
-			Sys_Error ("Error opening %s", filename);
-	}
-	
-	Sys_Printf ("COM_WriteFile: %s\n", name);
-	fwrite (data, 1, len, f);
-	fclose (f);
-}
-
-
-/*
-============
-COM_CreatePath
-
-Only used for CopyFile and download
-============
-*/
-void	COM_CreatePath (char *path)
-{
-	char	*ofs;
-	
-	for (ofs = path+1 ; *ofs ; ofs++)
-	{
-		if (*ofs == '/')
-		{	// create the directory
-			*ofs = 0;
-			Sys_mkdir (path);
-			*ofs = '/';
-		}
-	}
-}
-
-
-/*
-===========
-COM_CopyFile
-
-Copies a file over from the net to the local cache, creating any directories
-needed.  This is for the convenience of developers using ISDN from home.
-===========
-*/
-void COM_CopyFile (char *netpath, char *cachepath)
-{
-	FILE	*in, *out;
-	int		remaining, count;
-	char	buf[4096];
-	
-	remaining = COM_FileOpenRead (netpath, &in);		
-	COM_CreatePath (cachepath);	// create directories up to the cache file
-	out = fopen(cachepath, "wb");
-	if (!out)
-		Sys_Error ("Error opening %s", cachepath);
-	
-	while (remaining)
-	{
-		if (remaining < sizeof(buf))
-			count = remaining;
-		else
-			count = sizeof(buf);
-		fread (buf, 1, count, in);
-		fwrite (buf, 1, count, out);
-		remaining -= count;
-	}
-
-	fclose (in);
-	fclose (out);
-}
-
-/*
-===========
-COM_FindFile
-
-Finds the file in the search path.
-Sets com_filesize and one of handle or file
-===========
-*/
-int file_from_pak; // global indicating file came from pack file ZOID
-
-int COM_FOpenFile (char *filename, FILE **file)
-{
-	searchpath_t	*search;
-	char		netpath[MAX_OSPATH];
-	pack_t		*pak;
-	int			i;
-	int			findtime;
-
-	file_from_pak = 0;
-		
-//
-// search through the path, one element at a time
-//
-	for (search = com_searchpaths ; search ; search = search->next)
-	{
-	// is the element a pak file?
-		if (search->pack)
-		{
-		// look through all the pak file elements
-			pak = search->pack;
-			for (i=0 ; i<pak->numfiles ; i++)
-				if (!QStr::Cmp(pak->files[i].name, filename))
-				{	// found it!
-					Sys_Printf ("PackFile: %s : %s\n",pak->filename, filename);
-				// open a new file on the pakfile
-					*file = fopen (pak->filename, "rb");
-					if (!*file)
-						Sys_Error ("Couldn't reopen %s", pak->filename);	
-					fseek (*file, pak->files[i].filepos, SEEK_SET);
-					com_filesize = pak->files[i].filelen;
-					file_from_pak = 1;
-					return com_filesize;
-				}
-		}
-		else
-		{		
-	// check a file in the directory tree
-			if (!static_registered)
-			{	// if not a registered version, don't ever go beyond base
-				if ( strchr (filename, '/') || strchr (filename,'\\'))
-					continue;
-			}
-			
-			sprintf (netpath, "%s/%s",search->filename, filename);
-			
-			findtime = Sys_FileTime (netpath);
-			if (findtime == -1)
-				continue;
-				
-			Sys_Printf ("FindFile: %s\n",netpath);
-
-			*file = fopen (netpath, "rb");
-			return COM_filelength (*file);
-		}
-		
-	}
-	
-	Sys_Printf ("FindFile: can't find %s\n", filename);
-	
-	*file = NULL;
-	com_filesize = -1;
-	return -1;
-}
-
 /*
 ============
 COM_LoadFile
@@ -605,7 +332,7 @@ byte	*loadbuf;
 int		loadsize;
 byte *COM_LoadFile (char *path, int usehunk)
 {
-	FILE	*h;
+	fileHandle_t	h;
 	byte	*buf;
 	char	base[32];
 	int		len;
@@ -613,7 +340,7 @@ byte *COM_LoadFile (char *path, int usehunk)
 	buf = NULL;	// quiet compiler warning
 
 // look for it in the filesystem or pack files
-	len = com_filesize = COM_FOpenFile (path, &h);
+	len = com_filesize = FS_FOpenFileRead (path, &h, true);
 	if (!h)
 		return NULL;
 	
@@ -645,8 +372,8 @@ byte *COM_LoadFile (char *path, int usehunk)
 #ifndef SERVERONLY
 	Draw_BeginDisc ();
 #endif
-	fread (buf, 1, len, h);
-	fclose (h);
+	FS_Read (buf, len, h);
+	FS_FCloseFile (h);
 #ifndef SERVERONLY
 	Draw_EndDisc ();
 #endif
@@ -683,125 +410,6 @@ byte *COM_LoadStackFile (char *path, void *buffer, int bufsize)
 }
 
 /*
-=================
-COM_LoadPackFile
-
-Takes an explicit (not game tree related) path to a pak file.
-
-Loads the header and directory, adding the files at the beginning
-of the list so they override previous pack files.
-=================
-*/
-pack_t *COM_LoadPackFile (char *packfile)
-{
-	dpackheader_t	header;
-	int				i;
-	packfile_t		*newfiles;
-	int				numpackfiles;
-	pack_t			*pack;
-	FILE			*packhandle;
-	dpackfile_t		info[MAX_FILES_IN_PACK];
-	unsigned short		crc;
-
-	if (COM_FileOpenRead (packfile, &packhandle) == -1)
-		return NULL;
-
-	fread (&header, 1, sizeof(header), packhandle);
-	if (header.id[0] != 'P' || header.id[1] != 'A'
-	|| header.id[2] != 'C' || header.id[3] != 'K')
-		Sys_Error ("%s is not a packfile", packfile);
-	header.dirofs = LittleLong (header.dirofs);
-	header.dirlen = LittleLong (header.dirlen);
-
-	numpackfiles = header.dirlen / sizeof(dpackfile_t);
-
-	if (numpackfiles > MAX_FILES_IN_PACK)
-		Sys_Error ("%s has %i files", packfile, numpackfiles);
-
-	if (numpackfiles != PAK0_COUNT)
-		com_modified = true;	// not the original file
-
-	newfiles = (packfile_t*)Z_Malloc (numpackfiles * sizeof(packfile_t));
-
-	fseek (packhandle, header.dirofs, SEEK_SET);
-	fread (&info, 1, header.dirlen, packhandle);
-
-// crc the directory to check for modifications
-	crc = CRC_Block((byte *)info, header.dirlen);
-
-//	CRC_Init (&crc);
-//	for (i=0 ; i<header.dirlen ; i++)
-//		CRC_ProcessByte (&crc, ((byte *)info)[i]);
-	if (crc != PAK0_CRC)
-		com_modified = true;
-
-// parse the directory
-	for (i=0 ; i<numpackfiles ; i++)
-	{
-		QStr::Cpy(newfiles[i].name, info[i].name);
-		newfiles[i].filepos = LittleLong(info[i].filepos);
-		newfiles[i].filelen = LittleLong(info[i].filelen);
-	}
-
-	pack = (pack_t*)Z_Malloc (sizeof (pack_t));
-	QStr::Cpy(pack->filename, packfile);
-	pack->handle = packhandle;
-	pack->numfiles = numpackfiles;
-	pack->files = newfiles;
-	
-	Con_Printf ("Added packfile %s (%i files)\n", packfile, numpackfiles);
-	return pack;
-}
-
-
-/*
-================
-COM_AddGameDirectory
-
-Sets com_gamedir, adds the directory to the head of the path,
-then loads and adds pak1.pak pak2.pak ... 
-================
-*/
-void COM_AddGameDirectory (char *dir)
-{
-	int				i;
-	searchpath_t	*search;
-	pack_t			*pak;
-	char			pakfile[MAX_OSPATH];
-	char			*p;
-
-	if ((p = QStr::RChr(dir, '/')) != NULL)
-		QStr::Cpy(gamedirfile, ++p);
-	else
-		QStr::Cpy(gamedirfile, p);
-	QStr::Cpy(com_gamedir, dir);
-
-//
-// add the directory to the search path
-//
-	search = (searchpath_t*)Hunk_Alloc (sizeof(searchpath_t));
-	QStr::Cpy(search->filename, dir);
-	search->next = com_searchpaths;
-	com_searchpaths = search;
-
-//
-// add any pak files in the format pak0.pak pak1.pak, ...
-//
-	for (i=0 ; ; i++)
-	{
-		sprintf (pakfile, "%s/pak%i.pak", dir, i);
-		pak = COM_LoadPackFile (pakfile);
-		if (!pak)
-			break;
-		search = (searchpath_t*)Hunk_Alloc (sizeof(searchpath_t));
-		search->pack = pak;
-		search->next = com_searchpaths;
-		com_searchpaths = search;		
-	}
-
-}
-
-/*
 ================
 COM_Gamedir
 
@@ -810,13 +418,8 @@ Sets the gamedir and path to a different directory.
 */
 void COM_Gamedir (char *dir)
 {
-	searchpath_t	*search, *next;
-	int				i;
-	pack_t			*pak;
-	char			pakfile[MAX_OSPATH];
-
-	if (strstr(dir, "..") || strstr(dir, "/")
-		|| strstr(dir, "\\") || strstr(dir, ":") )
+	if (strstr(dir, "..") || strstr(dir, "/") ||
+		strstr(dir, "\\") || strstr(dir, ":") )
 	{
 		Con_Printf ("Gamedir should be a single filename, not a path\n");
 		return;
@@ -829,18 +432,7 @@ void COM_Gamedir (char *dir)
 	//
 	// free up any current game dir info
 	//
-	while (com_searchpaths != com_base_searchpaths)
-	{
-		if (com_searchpaths->pack)
-		{
-			fclose (com_searchpaths->pack->handle);
-			Z_Free (com_searchpaths->pack->files);
-			Z_Free (com_searchpaths->pack);
-		}
-		next = com_searchpaths->next;
-		Z_Free (com_searchpaths);
-		com_searchpaths = next;
-	}
+	FS_ResetSearchPathToBase();
 
 	//
 	// flush all data, so it will be forced to reload
@@ -850,29 +442,10 @@ void COM_Gamedir (char *dir)
 	if (!QStr::Cmp(dir,"id1") || !QStr::Cmp(dir, "qw"))
 		return;
 
-	sprintf (com_gamedir, "%s/%s", com_basedir, dir);
-
-	//
-	// add the directory to the search path
-	//
-	search = (searchpath_t*)Z_Malloc (sizeof(searchpath_t));
-	QStr::Cpy(search->filename, com_gamedir);
-	search->next = com_searchpaths;
-	com_searchpaths = search;
-
-	//
-	// add any pak files in the format pak0.pak pak1.pak, ...
-	//
-	for (i=0 ; ; i++)
+	FS_AddGameDirectory(fs_basepath->string, dir, ADDPACKS_UntilMissing);
+	if (fs_homepath->string[0])
 	{
-		sprintf (pakfile, "%s/pak%i.pak", com_gamedir, i);
-		pak = COM_LoadPackFile (pakfile);
-		if (!pak)
-			break;
-		search = (searchpath_t*)Z_Malloc (sizeof(searchpath_t));
-		search->pack = pak;
-		search->next = com_searchpaths;
-		com_searchpaths = search;		
+		FS_AddGameDirectory(fs_homepath->string, dir, ADDPACKS_UntilMissing);
 	}
 }
 
@@ -884,311 +457,36 @@ COM_InitFilesystem
 void COM_InitFilesystem (void)
 {
 	int		i;
+	char	com_basedir[MAX_OSPATH];
 
-//
-// -basedir <path>
-// Overrides the system supplied base directory (under id1)
-//
+	//
+	// -basedir <path>
+	// Overrides the system supplied base directory (under id1)
+	//
 	i = COM_CheckParm ("-basedir");
 	if (i && i < COM_Argc()-1)
 		QStr::Cpy(com_basedir, COM_Argv(i+1));
 	else
 		QStr::Cpy(com_basedir, host_parms.basedir);
+	Cvar_Set("fs_basepath", com_basedir);
 
-//
-// start up with id1 by default
-//
-	COM_AddGameDirectory (va("%s/id1", com_basedir) );
-	COM_AddGameDirectory (va("%s/qw", com_basedir) );
+	FS_SharedStartup();
+
+	//
+	// start up with id1 by default
+	//
+	FS_AddGameDirectory (fs_basepath->string, "id1", ADDPACKS_UntilMissing);
+	if (fs_homepath->string[0])
+		FS_AddGameDirectory(fs_homepath->string, "id1", ADDPACKS_UntilMissing);
+	FS_AddGameDirectory (fs_basepath->string, "qw", ADDPACKS_UntilMissing);
+	if (fs_homepath->string[0])
+		FS_AddGameDirectory(fs_homepath->string, "qw", ADDPACKS_UntilMissing);
 
 	// any set gamedirs will be freed up to here
-	com_base_searchpaths = com_searchpaths;
+	FS_SetSearchPathBase();
 }
 
 
-
-/*
-=====================================================================
-
-  INFO STRINGS
-
-=====================================================================
-*/
-
-/*
-===============
-Info_ValueForKey
-
-Searches the string for the given
-key and returns the associated value, or an empty string.
-===============
-*/
-char *Info_ValueForKey (char *s, char *key)
-{
-	char	pkey[512];
-	static	char value[4][512];	// use two buffers so compares
-								// work without stomping on each other
-	static	int	valueindex;
-	char	*o;
-	
-	valueindex = (valueindex + 1) % 4;
-	if (*s == '\\')
-		s++;
-	while (1)
-	{
-		o = pkey;
-		while (*s != '\\')
-		{
-			if (!*s)
-				return "";
-			*o++ = *s++;
-		}
-		*o = 0;
-		s++;
-
-		o = value[valueindex];
-
-		while (*s != '\\' && *s)
-		{
-			if (!*s)
-				return "";
-			*o++ = *s++;
-		}
-		*o = 0;
-
-		if (!QStr::Cmp(key, pkey) )
-			return value[valueindex];
-
-		if (!*s)
-			return "";
-		s++;
-	}
-}
-
-void Info_RemoveKey (char *s, char *key)
-{
-	char	*start;
-	char	pkey[512];
-	char	value[512];
-	char	*o;
-
-	if (strstr (key, "\\"))
-	{
-		Con_Printf ("Can't use a key with a \\\n");
-		return;
-	}
-
-	while (1)
-	{
-		start = s;
-		if (*s == '\\')
-			s++;
-		o = pkey;
-		while (*s != '\\')
-		{
-			if (!*s)
-				return;
-			*o++ = *s++;
-		}
-		*o = 0;
-		s++;
-
-		o = value;
-		while (*s != '\\' && *s)
-		{
-			if (!*s)
-				return;
-			*o++ = *s++;
-		}
-		*o = 0;
-
-		if (!QStr::Cmp(key, pkey) )
-		{
-			QStr::Cpy(start, s);	// remove this part
-			return;
-		}
-
-		if (!*s)
-			return;
-	}
-
-}
-
-void Info_RemovePrefixedKeys (char *start, char prefix)
-{
-	char	*s;
-	char	pkey[512];
-	char	value[512];
-	char	*o;
-
-	s = start;
-
-	while (1)
-	{
-		if (*s == '\\')
-			s++;
-		o = pkey;
-		while (*s != '\\')
-		{
-			if (!*s)
-				return;
-			*o++ = *s++;
-		}
-		*o = 0;
-		s++;
-
-		o = value;
-		while (*s != '\\' && *s)
-		{
-			if (!*s)
-				return;
-			*o++ = *s++;
-		}
-		*o = 0;
-
-		if (pkey[0] == prefix)
-		{
-			Info_RemoveKey (start, pkey);
-			s = start;
-		}
-
-		if (!*s)
-			return;
-	}
-
-}
-
-
-void Info_SetValueForStarKey (char *s, char *key, char *value, int maxsize)
-{
-	char	newv[1024], *v;
-	int		c;
-#ifdef SERVERONLY
-	extern QCvar* sv_highchars;
-#endif
-
-	if (strstr (key, "\\") || strstr (value, "\\") )
-	{
-		Con_Printf ("Can't use keys or values with a \\\n");
-		return;
-	}
-
-	if (strstr (key, "\"") || strstr (value, "\"") )
-	{
-		Con_Printf ("Can't use keys or values with a \"\n");
-		return;
-	}
-
-	if (QStr::Length(key) > 63 || QStr::Length(value) > 63)
-	{
-		Con_Printf ("Keys and values must be < 64 characters.\n");
-		return;
-	}
-
-	// this next line is kinda trippy
-	if (*(v = Info_ValueForKey(s, key))) {
-		// key exists, make sure we have enough room for new value, if we don't,
-		// don't change it!
-		if (QStr::Length(value) - QStr::Length(v) + QStr::Length(s) > maxsize) {
-			Con_Printf ("Info string length exceeded\n");
-			return;
-		}
-	}
-	Info_RemoveKey (s, key);
-	if (!value || !QStr::Length(value))
-		return;
-
-	sprintf (newv, "\\%s\\%s", key, value);
-
-	if ((int)(QStr::Length(newv) + QStr::Length(s)) > maxsize)
-	{
-		Con_Printf ("Info string length exceeded\n");
-		return;
-	}
-
-	// only copy ascii values
-	s += QStr::Length(s);
-	v = newv;
-	while (*v)
-	{
-		c = (unsigned char)*v++;
-#ifndef SERVERONLY
-		// client only allows highbits on name
-		if (QStr::ICmp(key, "name") != 0) {
-			c &= 127;
-			if (c < 32 || c > 127)
-				continue;
-			// auto lowercase team
-			if (QStr::ICmp(key, "team") == 0)
-				c = QStr::ToLower(c);
-		}
-#else
-		if (!sv_highchars->value) {
-			c &= 127;
-			if (c < 32 || c > 127)
-				continue;
-		}
-#endif
-//		c &= 127;		// strip high bits
-		if (c > 13) // && c < 127)
-			*s++ = c;
-	}
-	*s = 0;
-}
-
-void Info_SetValueForKey (char *s, char *key, char *value, int maxsize)
-{
-	if (key[0] == '*')
-	{
-		Con_Printf ("Can't set * keys\n");
-		return;
-	}
-
-	Info_SetValueForStarKey (s, key, value, maxsize);
-}
-
-void Info_Print (char *s)
-{
-	char	key[512];
-	char	value[512];
-	char	*o;
-	int		l;
-
-	if (*s == '\\')
-		s++;
-	while (*s)
-	{
-		o = key;
-		while (*s && *s != '\\')
-			*o++ = *s++;
-
-		l = o - key;
-		if (l < 20)
-		{
-			Com_Memset(o, ' ', 20-l);
-			key[20] = 0;
-		}
-		else
-			*o = 0;
-		Con_Printf ("%s", key);
-
-		if (!*s)
-		{
-			Con_Printf ("MISSING VALUE\n");
-			return;
-		}
-
-		o = value;
-		s++;
-		while (*s && *s != '\\')
-			*o++ = *s++;
-		*o = 0;
-
-		if (*s)
-			s++;
-		Con_Printf ("%s\n", value);
-	}
-}
 
 static byte chktbl[1024 + 4] = {
 0x78,0xd2,0x94,0xe3,0x41,0xec,0xd6,0xd5,0xcb,0xfc,0xdb,0x8a,0x4b,0xcc,0x85,0x01,
@@ -1231,52 +529,6 @@ static byte chktbl[1024 + 4] = {
 static byte chkbuf[16 + 60 + 4];
 
 static unsigned last_mapchecksum = 0;
-
-#if 0
-/*
-====================
-COM_BlockSequenceCheckByte
-
-For proxy protecting
-====================
-*/
-byte	COM_BlockSequenceCheckByte (byte *base, int length, int sequence, unsigned mapchecksum)
-{
-	int		checksum;
-	byte	*p;
-
-	if (last_mapchecksum != mapchecksum) {
-		last_mapchecksum = mapchecksum;
-		chktbl[1024] = (mapchecksum & 0xff000000) >> 24;
-		chktbl[1025] = (mapchecksum & 0x00ff0000) >> 16;
-		chktbl[1026] = (mapchecksum & 0x0000ff00) >> 8;
-		chktbl[1027] = (mapchecksum & 0x000000ff);
-
-		Com_BlockFullChecksum (chktbl, sizeof(chktbl), chkbuf);
-	}
-
-	p = chktbl + (sequence % (sizeof(chktbl) - 8));
-
-	if (length > 60)
-		length = 60;
-	Com_Memcpy(chkbuf + 16, base, length);
-
-	length += 16;
-
-	chkbuf[length] = (sequence & 0xff) ^ p[0];
-	chkbuf[length+1] = p[1];
-	chkbuf[length+2] = ((sequence>>8) & 0xff) ^ p[2];
-	chkbuf[length+3] = p[3];
-
-	length += 4;
-
-	checksum = LittleLong(Com_BlockChecksum (chkbuf, length));
-
-	checksum &= 0xff;
-
-	return checksum;
-}
-#endif
 
 /*
 ====================
@@ -1352,3 +604,7 @@ int build_number( void )
 	return b;
 }
 
+
+void FS_Restart(int checksumFeed)
+{
+}

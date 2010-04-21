@@ -23,9 +23,34 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define	MAX_CMD_LINE	1024
+#define MAX_CMD_LINE		1024
+#define MAX_ARGS			1024
+#define MAX_CMD_BUFFER		16384
+#define MAX_ALIAS_NAME		32
+#define ALIAS_LOOP_COUNT	16
 
 // TYPES -------------------------------------------------------------------
+
+struct QCmd
+{
+	byte*				data;
+	int					maxsize;
+	int					cursize;
+};
+
+struct cmdalias_t
+{
+	cmdalias_t*			next;
+	char				name[MAX_ALIAS_NAME];
+	char*				value;
+};
+
+struct cmd_function_t
+{
+	cmd_function_t*		next;
+	char*				name;
+	xcommand_t			function;
+};
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -43,59 +68,32 @@ char* __CopyString(const char* in);
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-cmd_source_t	cmd_source;
-bool            cmd_macroExpand;
+cmd_source_t			cmd_source;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-cmdalias_t	*cmd_alias;
+static bool				cmd_macroExpand;
 
-int		alias_count;		// for detecting runaway loops
+static cmdalias_t*		cmd_alias;
 
-int			cmd_wait;
+static int				alias_count;		// for detecting runaway loops
 
-QCmd		cmd_text;
-byte		cmd_text_buf[MAX_CMD_BUFFER];
+static int				cmd_wait;
 
-byte		defer_text_buf[MAX_CMD_BUFFER];
+static QCmd				cmd_text;
+static byte				cmd_text_buf[MAX_CMD_BUFFER];
 
-cmd_function_t	*cmd_functions;		// possible commands to execute
+static byte				defer_text_buf[MAX_CMD_BUFFER];
 
-int			cmd_argc;
-char		*cmd_argv[MAX_ARGS];		// points into cmd_tokenized
-char		cmd_tokenized[8192+1024];	// will have 0 bytes inserted
-char		cmd_cmd[8192]; // the original command we received (no token processing)
-char*		cmd_args;
+static cmd_function_t*	cmd_functions;		// possible commands to execute
+
+static int				cmd_argc;
+static char*			cmd_argv[MAX_ARGS];			// points into cmd_tokenized
+static char				cmd_tokenized[8192+1024];	// will have 0 bytes inserted
+static char				cmd_cmd[8192]; // the original command we received (no token processing)
+static char				cmd_args[8192];
 
 // CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	QCmd::Clear
-//
-//==========================================================================
-
-void QCmd::Clear()
-{
-	cursize = 0;
-}
-
-//==========================================================================
-//
-//	QCmd::WriteData
-//
-//==========================================================================
-
-void QCmd::WriteData(const void* Buffer, int Length)
-{
-	if (maxsize - cursize < Length)
-	{
-		throw QException("QCmd::WriteData: overflow");
-	}
-
-	Com_Memcpy(data + cursize, Buffer, Length);
-	cursize += Length;
-}
 
 /*
 =============================================================================
@@ -105,110 +103,113 @@ void QCmd::WriteData(const void* Buffer, int Length)
 =============================================================================
 */
 
-/*
-============
-Cbuf_Init
-============
-*/
-void Cbuf_Init (void)
+//==========================================================================
+//
+//	Cbuf_Init
+//
+//==========================================================================
+
+void Cbuf_Init()
 {
 	cmd_text.data = cmd_text_buf;
 	cmd_text.maxsize = MAX_CMD_BUFFER;
 	cmd_text.cursize = 0;
 }
 
-/*
-============
-Cbuf_AddText
+//==========================================================================
+//
+//	Cbuf_AddText
+//
+//	Adds command text at the end of the buffer, does NOT add a final \n
+//
+//==========================================================================
 
-Adds command text at the end of the buffer, does NOT add a final \n
-============
-*/
-void Cbuf_AddText(const char *text)
+void Cbuf_AddText(const char* Text)
 {
-	int		l;
-	
-	l = QStr::Length(text);
+	int L = QStr::Length(Text);
 
-	if (cmd_text.cursize + l >= cmd_text.maxsize)
+	if (cmd_text.cursize + L >= cmd_text.maxsize)
 	{
 		GLog.Write("Cbuf_AddText: overflow\n");
 		return;
 	}
-	Com_Memcpy(&cmd_text.data[cmd_text.cursize], text, l);
-	cmd_text.cursize += l;
+	Com_Memcpy(&cmd_text.data[cmd_text.cursize], Text, L);
+	cmd_text.cursize += L;
 }
 
-/*
-============
-Cbuf_InsertText
+//==========================================================================
+//
+//	Cbuf_InsertText
+//
+//	Adds command text immediately after the current command
+//	Adds a \n to the text
+//
+//==========================================================================
 
-Adds command text immediately after the current command
-Adds a \n to the text
-============
-*/
-void Cbuf_InsertText( const char *text ) {
-	int		len;
-	int		i;
-
-	len = QStr::Length( text ) + 1;
-	if ( len + cmd_text.cursize > cmd_text.maxsize ) {
+void Cbuf_InsertText(const char* Text)
+{
+	int Len = QStr::Length(Text) + 1;
+	if (Len + cmd_text.cursize > cmd_text.maxsize)
+	{
 		GLog.Write("Cbuf_InsertText overflowed\n");
 		return;
 	}
 
 	// move the existing command text
-	for ( i = cmd_text.cursize - 1 ; i >= 0 ; i-- ) {
-		cmd_text.data[ i + len ] = cmd_text.data[ i ];
+	for (int i = cmd_text.cursize - 1; i >= 0; i--)
+	{
+		cmd_text.data[i + Len] = cmd_text.data[i];
 	}
 
 	// copy the new text in
-	Com_Memcpy( cmd_text.data, text, len - 1 );
+	Com_Memcpy(cmd_text.data, Text, Len - 1);
 
 	// add a \n
-	cmd_text.data[ len - 1 ] = '\n';
+	cmd_text.data[Len - 1] = '\n';
 
-	cmd_text.cursize += len;
+	cmd_text.cursize += Len;
 }
 
-/*
-============
-Cbuf_ExecuteText
-============
-*/
-void Cbuf_ExecuteText (int exec_when, const char *text)
+//==========================================================================
+//
+//	Cbuf_ExecuteText
+//
+//==========================================================================
+
+void Cbuf_ExecuteText(int ExecWhen, const char* Text)
 {
-	switch (exec_when)
+	switch (ExecWhen)
 	{
 	case EXEC_NOW:
-		if (text && QStr::Length(text) > 0) {
-			Cmd_ExecuteString (text);
-		} else {
+		if (Text && QStr::Length(Text) > 0)
+		{
+			Cmd_ExecuteString(Text);
+		}
+		else
+		{
 			Cbuf_Execute();
 		}
 		break;
 	case EXEC_INSERT:
-		Cbuf_InsertText (text);
+		Cbuf_InsertText(Text);
 		break;
 	case EXEC_APPEND:
-		Cbuf_AddText (text);
+		Cbuf_AddText(Text);
 		break;
 	default:
 		throw QException("Cbuf_ExecuteText: bad exec_when");
 	}
 }
 
-/*
-============
-Cbuf_Execute
-============
-*/
-void Cbuf_Execute (void)
+//==========================================================================
+//
+//	Cbuf_Execute
+//
+//==========================================================================
+
+void Cbuf_Execute()
 {
-	int		i;
-	char	*text;
-	char	line[MAX_CMD_LINE];
-	int		quotes;
+	char	Line[MAX_CMD_LINE];
 
 	alias_count = 0;		// don't allow infinite alias loops
 
@@ -223,17 +224,24 @@ void Cbuf_Execute (void)
 		}
 
 		// find a \n or ; line break
-		text = (char *)cmd_text.data;
+		char* text = (char*)cmd_text.data;
 
-		quotes = 0;
-		for (i=0 ; i< cmd_text.cursize ; i++)
+		int quotes = 0;
+		int i;
+		for (i = 0; i < cmd_text.cursize; i++)
 		{
 			if (text[i] == '"')
+			{
 				quotes++;
-			if ( !(quotes&1) &&  text[i] == ';')
+			}
+			if (!(quotes & 1) &&  text[i] == ';')
+			{
 				break;	// don't break if inside a quoted string
-			if (text[i] == '\n' || text[i] == '\r' )
+			}
+			if (text[i] == '\n' || text[i] == '\r')
+			{
 				break;
+			}
 		}
 
 		if (i >= (MAX_CMD_LINE - 1))
@@ -241,164 +249,167 @@ void Cbuf_Execute (void)
 			i = MAX_CMD_LINE - 1;
 		}
 
-		Com_Memcpy(line, text, i);
-		line[i] = 0;
+		Com_Memcpy(Line, text, i);
+		Line[i] = 0;
 
-// delete the text from the command buffer and move remaining commands down
-// this is necessary because commands (exec) can insert data at the
-// beginning of the text buffer
+		//	Delete the text from the command buffer and move remaining commands
+		// down. This is necessary because commands (exec) can insert data at
+		// the beginning of the text buffer.
 
 		if (i == cmd_text.cursize)
+		{
 			cmd_text.cursize = 0;
+		}
 		else
 		{
 			i++;
 			cmd_text.cursize -= i;
-			memmove (text, text+i, cmd_text.cursize);
+			memmove(text, text + i, cmd_text.cursize);
 		}
 
-// execute the command line
-
-		Cmd_ExecuteString (line);		
+		// execute the command line
+		Cmd_ExecuteString(Line);
 	}
 }
 
-/*
-============
-Cbuf_CopyToDefer
-============
-*/
-void Cbuf_CopyToDefer (void)
+//==========================================================================
+//
+//	Cbuf_CopyToDefer
+//
+//==========================================================================
+
+void Cbuf_CopyToDefer()
 {
 	Com_Memcpy(defer_text_buf, cmd_text_buf, cmd_text.cursize);
 	defer_text_buf[cmd_text.cursize] = 0;
 	cmd_text.cursize = 0;
 }
 
-/*
-============
-Cbuf_InsertFromDefer
-============
-*/
-void Cbuf_InsertFromDefer (void)
+//==========================================================================
+//
+//	Cbuf_InsertFromDefer
+//
+//==========================================================================
+
+void Cbuf_InsertFromDefer()
 {
-	Cbuf_InsertText ((char*)defer_text_buf);
+	Cbuf_InsertText((char*)defer_text_buf);
 	defer_text_buf[0] = 0;
 }
 
-/*
-===============
-Cbuf_AddEarlyCommands
+//==========================================================================
+//
+//	Cbuf_AddEarlyCommands
+//
+//	Adds command line parameters as script statements
+//	Commands lead with a +, and continue until another +
+//
+//	Set commands are added early, so they are guaranteed to be set before
+// the client and server initialize for the first time.
+//
+//	Other commands are added late, after all initialization is complete.
+//
+//==========================================================================
 
-Adds command line parameters as script statements
-Commands lead with a +, and continue until another +
-
-Set commands are added early, so they are guaranteed to be set before
-the client and server initialize for the first time.
-
-Other commands are added late, after all initialization is complete.
-===============
-*/
-void Cbuf_AddEarlyCommands(bool clear)
+void Cbuf_AddEarlyCommands(bool Clear)
 {
-	int			i;
-	const char	*s;
-
-	for (i=0 ; i<COM_Argc() ; i++)
+	for (int i = 0; i < COM_Argc(); i++)
 	{
-		s = COM_Argv(i);
+		const char* s = COM_Argv(i);
 		if (QStr::Cmp(s, "+set"))
+		{
 			continue;
-		Cbuf_AddText (va("set %s %s\n", COM_Argv(i+1), COM_Argv(i+2)));
-		if (clear)
+		}
+		Cbuf_AddText(va("set %s %s\n", COM_Argv(i + 1), COM_Argv(i + 2)));
+		if (Clear)
 		{
 			COM_ClearArgv(i);
-			COM_ClearArgv(i+1);
-			COM_ClearArgv(i+2);
+			COM_ClearArgv(i + 1);
+			COM_ClearArgv(i + 2);
 		}
-		i+=2;
+		i += 2;
 	}
 }
 
-/*
-=================
-Cbuf_AddLateCommands
+//==========================================================================
+//
+//	Cbuf_AddLateCommands
+//
+//	Adds command line parameters as script statements. Commands lead with
+// a + and continue until another + or -
+//	quake +vid_ref gl +map amlev1
+//
+//	Returns true if any late commands were added, which will keep the
+// demoloop from immediately starting
+//
+//==========================================================================
 
-Adds command line parameters as script statements
-Commands lead with a + and continue until another + or -
-quake +vid_ref gl +map amlev1
-
-Returns true if any late commands were added, which
-will keep the demoloop from immediately starting
-=================
-*/
 bool Cbuf_AddLateCommands(bool Insert)
 {
-	int		i, j;
-	int		s;
-	char	*text, *build, c;
-	int		argc;
-	qboolean	ret;
-
-// build the combined string to parse from
-	s = 0;
-	argc = COM_Argc();
-	for (i=1 ; i<argc ; i++)
+	// build the combined string to parse from
+	int s = 0;
+	int argc = COM_Argc();
+	for (int i = 1; i < argc; i++)
 	{
 		s += QStr::Length(COM_Argv(i)) + 1;
 	}
 	if (!s)
+	{
 		return false;
-		
-	text = new char[s+1];
-	text[0] = 0;
-	for (i=1 ; i<argc ; i++)
-	{
-		QStr::Cat(text, s + 1,COM_Argv(i));
-		if (i != argc-1)
-			QStr::Cat(text, s + 1, " ");
 	}
-	
-// pull out the commands
-	build = new char[s+1];
-	build[0] = 0;
-	
-	for (i=0 ; i<s-1 ; i++)
+
+	char* Text = new char[s + 1];
+	Text[0] = 0;
+	for (int i = 1; i < argc; i++)
 	{
-		if (text[i] == '+')
+		QStr::Cat(Text, s + 1, COM_Argv(i));
+		if (i != argc - 1)
+		{
+			QStr::Cat(Text, s + 1, " ");
+		}
+	}
+
+	// pull out the commands
+	char* Build = new char[s + 1];
+	Build[0] = 0;
+
+	for (int i = 0; i < s - 1; i++)
+	{
+		if (Text[i] == '+')
 		{
 			i++;
 
-			for (j=i ; (text[j] != '+') && (text[j] != '-') && (text[j] != 0) ; j++)
+			int j;
+			for (j = i; (Text[j] != '+') && (Text[j] != '-') && (Text[j] != 0); j++)
 				;
 
-			c = text[j];
-			text[j] = 0;
-			
-			QStr::Cat(build, s + 1, text+i);
-			QStr::Cat(build, s + 1, "\n");
-			text[j] = c;
-			i = j-1;
+			char c = Text[j];
+			Text[j] = 0;
+
+			QStr::Cat(Build, s + 1, Text + i);
+			QStr::Cat(Build, s + 1, "\n");
+			Text[j] = c;
+			i = j - 1;
 		}
 	}
 
-	ret = (build[0] != 0);
-	if (ret)
+	bool Ret = (Build[0] != 0);
+	if (Ret)
 	{
 		if (Insert)
 		{
-			Cbuf_InsertText(build);
+			Cbuf_InsertText(Build);
 		}
 		else
 		{
-			Cbuf_AddText(build);
+			Cbuf_AddText(Build);
 		}
 	}
 	
-	delete[] text;
-	delete[] build;
+	delete[] Text;
+	delete[] Build;
 
-	return ret;
+	return Ret;
 }
 
 /*
@@ -409,79 +420,85 @@ bool Cbuf_AddLateCommands(bool Insert)
 ==============================================================================
 */
 
-/*
-============
-Cmd_Wait_f
+//==========================================================================
+//
+//	Cmd_Wait_f
+//
+//	Causes execution of the remainder of the command buffer to be delayed
+// until next frame.  This allows commands like:
+//	bind g "cmd use rocket ; +attack ; wait ; -attack ; cmd use blaster"
+//
+//==========================================================================
 
-Causes execution of the remainder of the command buffer to be delayed until
-next frame.  This allows commands like:
-bind g "cmd use rocket ; +attack ; wait ; -attack ; cmd use blaster"
-============
-*/
-void Cmd_Wait_f()
+static void Cmd_Wait_f()
 {
-	if ( Cmd_Argc() == 2 ) {
-		cmd_wait = QStr::Atoi( Cmd_Argv( 1 ) );
-	} else {
+	if (Cmd_Argc() == 2)
+	{
+		cmd_wait = QStr::Atoi(Cmd_Argv(1));
+	}
+	else
+	{
 		cmd_wait = 1;
 	}
 }
 
-/*
-===============
-Cmd_StuffCmds_f
+//==========================================================================
+//
+//	Cmd_StuffCmds_f
+//
+//	Adds command line parameters as script statements. Commands lead with
+// a +, and continue until a - or another +
+//	quake +prog jctest.qp +cmd amlev1
+//	quake -nosound +cmd amlev1
+//
+//==========================================================================
 
-Adds command line parameters as script statements
-Commands lead with a +, and continue until a - or another +
-quake +prog jctest.qp +cmd amlev1
-quake -nosound +cmd amlev1
-===============
-*/
-void Cmd_StuffCmds_f (void)
+static void Cmd_StuffCmds_f()
 {
 	Cbuf_AddLateCommands(true);
 }
 
-/*
-===============
-Cmd_Echo_f
+//==========================================================================
+//
+//	Cmd_Echo_f
+//
+//	Just prints the rest of the line to the console
+//
+//==========================================================================
 
-Just prints the rest of the line to the console
-===============
-*/
-void Cmd_Echo_f()
+static void Cmd_Echo_f()
 {
-	int		i;
-
-	for (i=1 ; i<Cmd_Argc() ; i++)
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
 		GLog.Write("%s ",Cmd_Argv(i));
+	}
 	GLog.Write("\n");
 }
 
-/*
-===============
-Cmd_Alias_f
+//==========================================================================
+//
+//	Cmd_Alias_f
+//
+//	Creates a new command that executes a command string (possibly ; seperated)
+//
+//==========================================================================
 
-Creates a new command that executes a command string (possibly ; seperated)
-===============
-*/
-
-void Cmd_Alias_f (void)
+static void Cmd_Alias_f()
 {
 	cmdalias_t	*a;
 	char		cmd[1024];
-	int			i, c;
-	char		*s;
 
 	if (Cmd_Argc() == 1)
 	{
 		GLog.Write("Current alias commands:\n");
-		for (a = cmd_alias ; a ; a=a->next)
+		for (a = cmd_alias; a; a = a->next)
+		{
 			GLog.Write("%s : %s\n", a->name, a->value);
+		}
 		return;
 	}
 
-	s = Cmd_Argv(1);
+	const char* s = Cmd_Argv(1);
 	if (QStr::Length(s) >= MAX_ALIAS_NAME)
 	{
 		GLog.Write("Alias name is too long\n");
@@ -489,7 +506,7 @@ void Cmd_Alias_f (void)
 	}
 
 	// if the alias already exists, reuse it
-	for (a = cmd_alias ; a ; a=a->next)
+	for (a = cmd_alias; a; a = a->next)
 	{
 		if (!QStr::Cmp(s, a->name))
 		{
@@ -504,51 +521,82 @@ void Cmd_Alias_f (void)
 		a->next = cmd_alias;
 		cmd_alias = a;
 	}
-	QStr::Cpy(a->name, s);	
+	QStr::Cpy(a->name, s);
 
 	// copy the rest of the command line
 	cmd[0] = 0;		// start out with a null string
-	c = Cmd_Argc();
-	for (i=2 ; i< c ; i++)
+	int c = Cmd_Argc();
+	for (int i = 2; i < c; i++)
 	{
 		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 		if (i != (c - 1))
+		{
 			QStr::Cat(cmd, sizeof(cmd), " ");
+		}
 	}
 	QStr::Cat(cmd, sizeof(cmd), "\n");
 
 	a->value = __CopyString(cmd);
 }
 
-/*
-===============
-Cmd_Vstr_f
+//==========================================================================
+//
+//	Cmd_Vstr_f
+//
+//	Inserts the current value of a variable as command text
+//
+//==========================================================================
 
-Inserts the current value of a variable as command text
-===============
-*/
-void Cmd_Vstr_f( void )
+static void Cmd_Vstr_f()
 {
-	const char	*v;
-
-	if (Cmd_Argc () != 2) {
+	if (Cmd_Argc () != 2)
+	{
 		GLog.Write("vstr <variablename> : execute a variable command\n");
 		return;
 	}
 
-	v = Cvar_VariableString( Cmd_Argv( 1 ) );
-	Cbuf_InsertText( va("%s\n", v ) );
+	const char* v = Cvar_VariableString(Cmd_Argv(1));
+	Cbuf_InsertText(va("%s\n", v));
 }
 
-/*
-============
-Cmd_List_f
-============
-*/
-void Cmd_List_f()
+//==========================================================================
+//
+//	Cmd_Exec_f
+//
+//==========================================================================
+
+static void Cmd_Exec_f()
 {
-	cmd_function_t	*cmd;
-	int				i;
+	if (Cmd_Argc() != 2)
+	{
+		GLog.Write("exec <filename> : execute a script file\n");
+		return;
+	}
+
+	char filename[MAX_QPATH];
+	QStr::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
+	QStr::DefaultExtension(filename, sizeof(filename), ".cfg");
+
+	QArray<byte> Buffer;
+	FS_ReadFile(filename, Buffer);
+	if (!Buffer.Num())
+	{
+		GLog.Write("couldn't exec %s\n", Cmd_Argv(1));
+		return;
+	}
+	GLog.Write("execing %s\n", Cmd_Argv(1));
+
+	Cbuf_InsertText((char*)Buffer.Ptr());
+}
+
+//==========================================================================
+//
+//	Cmd_List_f
+//
+//==========================================================================
+
+static void Cmd_List_f()
+{
 	char			*match;
 
 	if (Cmd_Argc() > 1)
@@ -560,11 +608,13 @@ void Cmd_List_f()
 		match = NULL;
 	}
 
-	i = 0;
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
+	int i = 0;
+	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
 		if (match && !QStr::Filter(match, cmd->name, false))
+		{
 			continue;
+		}
 
 		GLog.Write("%s\n", cmd->name);
 		i++;
@@ -580,14 +630,16 @@ void Cmd_List_f()
 =============================================================================
 */
 
-/*
-============
-Cmd_Init
-============
-*/
+//==========================================================================
+//
+//	Cmd_Init
+//
+//==========================================================================
+
 void Cmd_SharedInit(bool MacroExpand)
 {
 	cmd_macroExpand = MacroExpand;
+
 	//
 	// register our commands
 	//
@@ -595,63 +647,64 @@ void Cmd_SharedInit(bool MacroExpand)
 	Cmd_AddCommand("echo", Cmd_Echo_f);
 	Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
 	Cmd_AddCommand("alias", Cmd_Alias_f);
-	Cmd_AddCommand("cmdlist", Cmd_List_f);
+	Cmd_AddCommand("exec",Cmd_Exec_f);
 	Cmd_AddCommand("vstr", Cmd_Vstr_f);
+	Cmd_AddCommand("cmdlist", Cmd_List_f);
 }
 
-/*
-============
-Cmd_AddCommand
-============
-*/
-void	Cmd_AddCommand( const char *cmd_name, xcommand_t function )
+//==========================================================================
+//
+//	Cmd_AddCommand
+//
+//==========================================================================
+
+void Cmd_AddCommand(const char* CmdName, xcommand_t Function)
 {
-	cmd_function_t	*cmd;
-	
-	// fail if the command already exists
-	for (cmd = cmd_functions; cmd; cmd=cmd->next)
-    {
-		if (!QStr::Cmp(cmd_name, cmd->name))
-        {
-			// allow completion-only commands to be silently doubled
-			if (function != NULL)
-            {
-                GLog.Write("Cmd_AddCommand: %s already defined\n", cmd_name);
+	cmd_function_t*		cmd;
+
+	//	Fail if the command already exists.
+	for (cmd = cmd_functions; cmd; cmd = cmd->next)
+	{
+		if (!QStr::Cmp(CmdName, cmd->name))
+		{
+			//	Allow completion-only commands to be silently doubled.
+			if (Function != NULL)
+			{
+				GLog.Write("Cmd_AddCommand: %s already defined\n", CmdName);
 			}
 			return;
 		}
 	}
 
 	cmd = new cmd_function_t;
-	cmd->name = __CopyString(cmd_name);
-	cmd->function = function;
+	cmd->name = __CopyString(CmdName);
+	cmd->function = Function;
 	cmd->next = cmd_functions;
 	cmd_functions = cmd;
 }
 
-/*
-============
-Cmd_RemoveCommand
-============
-*/
-void Cmd_RemoveCommand(const char *cmd_name)
-{
-	cmd_function_t	*cmd, **back;
+//==========================================================================
+//
+//	Cmd_RemoveCommand
+//
+//==========================================================================
 
-	back = &cmd_functions;
+void Cmd_RemoveCommand(const char* CmdName)
+{
+	cmd_function_t** back = &cmd_functions;
 	while (1)
-    {
-		cmd = *back;
+	{
+		cmd_function_t* cmd = *back;
 		if (!cmd)
-        {
+		{
 			// command wasn't active
 			return;
 		}
-		if (!QStr::Cmp(cmd_name, cmd->name))
-        {
+		if (!QStr::Cmp(CmdName, cmd->name))
+		{
 			*back = cmd->next;
 			if (cmd->name)
-            {
+			{
 				Mem_Free(cmd->name);
 			}
 			delete cmd;
@@ -661,280 +714,292 @@ void Cmd_RemoveCommand(const char *cmd_name)
 	}
 }
 
-/*
-============
-Cmd_Argc
-============
-*/
-int		Cmd_Argc( void ) {
+//==========================================================================
+//
+//	Cmd_Argc
+//
+//==========================================================================
+
+int Cmd_Argc()
+{
 	return cmd_argc;
 }
 
-/*
-============
-Cmd_Argv
-============
-*/
-char	*Cmd_Argv( int arg ) {
-	if ( (unsigned)arg >= cmd_argc ) {
+//==========================================================================
+//
+//	Cmd_Argv
+//
+//==========================================================================
+
+char* Cmd_Argv(int Arg)
+{
+	if ((unsigned)Arg >= cmd_argc)
+	{
 		return "";
 	}
-	return cmd_argv[arg];	
+	return cmd_argv[Arg];
 }
 
-/*
-============
-Cmd_ArgvBuffer
+//==========================================================================
+//
+//	Cmd_ArgvBuffer
+//
+//	The interpreted versions use this because they can't have pointers
+// returned to them
+//
+//==========================================================================
 
-The interpreted versions use this because
-they can't have pointers returned to them
-============
-*/
-void	Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength ) {
-	QStr::NCpyZ( buffer, Cmd_Argv( arg ), bufferLength );
+void Cmd_ArgvBuffer(int Arg, char* Buffer, int BufferLength)
+{
+	QStr::NCpyZ(Buffer, Cmd_Argv(Arg), BufferLength);
 }
 
-/*
-============
-Cmd_Args
+//==========================================================================
+//
+//	Cmd_ArgsUnmodified
+//
+//	Returns a single string containing argv(1) to argv(argc()-1)
+//
+//==========================================================================
 
-Returns a single string containing argv(1) to argv(argc()-1)
-============
-*/
 char* Cmd_ArgsUnmodified()
 {
 	return cmd_args;
 }
 
-/*
-============
-Cmd_Args
+//==========================================================================
+//
+//	Cmd_Args
+//
+//	Returns a single string containing argv(1) to argv(argc()-1)
+//
+//==========================================================================
 
-Returns a single string containing argv(1) to argv(argc()-1)
-============
-*/
-char	*Cmd_Args( void ) {
-	static	char		cmd_args[MAX_STRING_CHARS];
-	int		i;
+char* Cmd_Args()
+{
+	static	char	cmd_args[MAX_STRING_CHARS];
 
 	cmd_args[0] = 0;
-	for ( i = 1 ; i < cmd_argc ; i++ ) {
-		QStr::Cat( cmd_args, sizeof(cmd_args), cmd_argv[i] );
-		if ( i != cmd_argc-1 ) {
-			QStr::Cat( cmd_args, sizeof(cmd_args), " " );
+	for (int i = 1; i < cmd_argc; i++)
+	{
+		QStr::Cat(cmd_args, sizeof(cmd_args), cmd_argv[i]);
+		if (i != cmd_argc - 1)
+		{
+			QStr::Cat(cmd_args, sizeof(cmd_args), " ");
 		}
 	}
 
 	return cmd_args;
 }
 
-/*
-============
-Cmd_Args
+//==========================================================================
+//
+//	Cmd_ArgsFrom
+//
+//	Returns a single string containing argv(arg) to argv(argc()-1)
+//
+//==========================================================================
 
-Returns a single string containing argv(arg) to argv(argc()-1)
-============
-*/
-char *Cmd_ArgsFrom( int arg ) {
-	static	char		cmd_args[BIG_INFO_STRING];
-	int		i;
+char* Cmd_ArgsFrom(int Arg)
+{
+	static char		cmd_args[BIG_INFO_STRING];
 
 	cmd_args[0] = 0;
-	if (arg < 0)
-		arg = 0;
-	for ( i = arg ; i < cmd_argc ; i++ ) {
-		QStr::Cat( cmd_args, sizeof(cmd_args), cmd_argv[i] );
-		if ( i != cmd_argc-1 ) {
-			QStr::Cat( cmd_args, sizeof(cmd_args), " " );
+	if (Arg < 0)
+	{
+		Arg = 0;
+	}
+	for (int i = Arg; i < cmd_argc; i++)
+	{
+		QStr::Cat(cmd_args, sizeof(cmd_args), cmd_argv[i]);
+		if (i != cmd_argc - 1)
+		{
+			QStr::Cat(cmd_args, sizeof(cmd_args), " ");
 		}
 	}
 
 	return cmd_args;
 }
 
-/*
-============
-Cmd_ArgsBuffer
+//==========================================================================
+//
+//	Cmd_ArgsBuffer
+//
+//	The interpreted versions use this because they can't have pointers
+// returned to them
+//
+//==========================================================================
 
-The interpreted versions use this because
-they can't have pointers returned to them
-============
-*/
-void	Cmd_ArgsBuffer( char *buffer, int bufferLength ) {
-	QStr::NCpyZ( buffer, Cmd_Args(), bufferLength );
+void Cmd_ArgsBuffer(char* Buffer, int BufferLength)
+{
+	QStr::NCpyZ(Buffer, Cmd_Args(), BufferLength);
 }
 
-/*
-============
-Cmd_Cmd
+//==========================================================================
+//
+//	Cmd_Cmd
+//
+//	Retrieve the unmodified command string. For rcon use when you want to
+// transmit without altering quoting.
+//
+//==========================================================================
 
-Retrieve the unmodified command string
-For rcon use when you want to transmit without altering quoting
-https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=543
-============
-*/
-char *Cmd_Cmd()
+char* Cmd_Cmd()
 {
 	return cmd_cmd;
 }
 
-/*
-======================
-Cmd_MacroExpandString
-======================
-*/
-const char* Cmd_MacroExpandString(const char *text)
+//==========================================================================
+//
+//	Cmd_MacroExpandString
+//
+//==========================================================================
+
+static const char* Cmd_MacroExpandString(const char* Text)
 {
-	int		i, j, count, len;
-	qboolean	inquote;
-	const char	*scan;
-	static	char	expanded[MAX_STRING_CHARS];
-	char	temporary[MAX_STRING_CHARS];
-	const char	*token;
-	const char*	start;
+	static char		Expanded[MAX_STRING_CHARS];
 
-	inquote = false;
-	scan = text;
+	bool InQuote = false;
+	const char* Scan = Text;
 
-	len = QStr::Length(scan);
-	if (len >= MAX_STRING_CHARS)
+	int Len = QStr::Length(Scan);
+	if (Len >= MAX_STRING_CHARS)
 	{
-        GLog.Write("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
+		GLog.Write("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
 		return NULL;
 	}
 
-	count = 0;
+	int Count = 0;
 
-	for (i=0 ; i<len ; i++)
+	for (int i = 0; i < Len; i++)
 	{
-		if (scan[i] == '"')
-			inquote ^= 1;
-		if (inquote)
+		if (Scan[i] == '"')
+		{
+			InQuote ^= 1;
+		}
+		if (InQuote)
+		{
 			continue;	// don't expand inside quotes
-		if (scan[i] != '$')
+		}
+		if (Scan[i] != '$')
+		{
 			continue;
+		}
 		// scan out the complete macro
-		start = scan+i+1;
-		token = QStr::Parse2 (&start);
-		if (!start)
+		const char* Start = Scan + i + 1;
+		const char* Token = QStr::Parse2(&Start);
+		if (!Start)
+		{
 			continue;
-	
-		token = Cvar_VariableString (token);
+		}
 
-		j = QStr::Length(token);
-		len += j;
-		if (len >= MAX_STRING_CHARS)
+		Token = Cvar_VariableString(Token);
+
+		int j = QStr::Length(Token);
+		Len += j;
+		if (Len >= MAX_STRING_CHARS)
 		{
 			GLog.Write("Expanded line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
 			return NULL;
 		}
 
-		QStr::NCpy(temporary, scan, i);
-		QStr::Cpy(temporary+i, token);
-		QStr::Cpy(temporary+i+j, start);
+		char Temporary[MAX_STRING_CHARS];
+		QStr::NCpy(Temporary, Scan, i);
+		QStr::Cpy(Temporary + i, Token);
+		QStr::Cpy(Temporary + i + j, Start);
 
-		QStr::Cpy(expanded, temporary);
-		scan = expanded;
+		QStr::Cpy(Expanded, Temporary);
+		Scan = Expanded;
 		i--;
 
-		if (++count == 100)
+		if (++Count == 100)
 		{
 			GLog.Write("Macro expansion loop, discarded.\n");
 			return NULL;
 		}
 	}
 
-	if (inquote)
+	if (InQuote)
 	{
 		GLog.Write("Line has unmatched quote, discarded.\n");
 		return NULL;
 	}
 
-	return scan;
+	return Scan;
 }
 
-/*
-============
-Cmd_TokenizeString
+//==========================================================================
+//
+//	Cmd_TokenizeString
+//
+//	Parses the given string into command line tokens. The text is copied to
+// a seperate buffer and 0 characters are inserted in the apropriate place.
+// The argv array will point into this temporary buffer. $Cvars will be
+// expanded unless they are in a quoted token
+//
+//==========================================================================
 
-Parses the given string into command line tokens.
-The text is copied to a seperate buffer and 0 characters
-are inserted in the apropriate place, The argv array
-will point into this temporary buffer.
-$Cvars will be expanded unless they are in a quoted token
-============
-*/
-// NOTE TTimo define that to track tokenization issues
-//#define TKN_DBG
-void Cmd_TokenizeString(const char *text_in, bool MacroExpand )
+void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 {
-	const char	*text;
-	char	*textOut;
-
-#ifdef TKN_DBG
-    // FIXME TTimo blunt hook to try to find the tokenization of userinfo
-    Com_DPrintf("Cmd_TokenizeString: %s\n", text_in);
-#endif
-
 	// clear previous args
 	cmd_argc = 0;
-	cmd_args = "";
+	cmd_args[0] = 0;
 
 	// macro expand the text
 	if (MacroExpand)
-    {
-		text_in = Cmd_MacroExpandString(text_in);
-    }
-	if (!text_in)
-    {
+	{
+		TextIn = Cmd_MacroExpandString(TextIn);
+	}
+	if (!TextIn)
+	{
 		return;
 	}
-	
-	QStr::NCpyZ( cmd_cmd, text_in, sizeof(cmd_cmd) );
 
-	text = text_in;
-	textOut = cmd_tokenized;
+	QStr::NCpyZ(cmd_cmd, TextIn, sizeof(cmd_cmd));
+
+	const char* Text = TextIn;
+	char* TextOut = cmd_tokenized;
 
 	while (1)
-    {
+	{
 		if (cmd_argc == MAX_ARGS)
-        {
+		{
 			return;			// this is usually something malicious
 		}
 
 		while (1)
-        {
+		{
 			// skip whitespace
-			while (*text && *text <= ' ')
-            {
-				text++;
+			while (*Text && *Text <= ' ')
+			{
+				Text++;
 			}
-			if (!*text)
-            {
+			if (!*Text)
+			{
 				return;			// all tokens parsed
 			}
 
 			// skip // comments
-			if (text[0] == '/' && text[1] == '/')
-            {
+			if (Text[0] == '/' && Text[1] == '/')
+			{
 				return;			// all tokens parsed
 			}
 
 			// skip /* */ comments
-			if (text[0] == '/' && text[1] =='*')
-            {
-				while (*text && ( text[0] != '*' || text[1] != '/'))
-                {
-					text++;
+			if (Text[0] == '/' && Text[1] =='*')
+			{
+				while (*Text && (Text[0] != '*' || Text[1] != '/'))
+				{
+					Text++;
 				}
-				if (!*text)
-                {
+				if (!*Text)
+				{
 					return;		// all tokens parsed
 				}
-				text += 2;
+				Text += 2;
 			}
-            else
-            {
+			else
+			{
 				break;			// we are ready to parse a token
 			}
 		}
@@ -942,152 +1007,171 @@ void Cmd_TokenizeString(const char *text_in, bool MacroExpand )
 		// set cmd_args to everything after the first arg
 		if (cmd_argc == 1)
 		{
-			int		l;
-
-			cmd_args = const_cast<char*>(text);
+			QStr::Cpy(cmd_args, Text);
 
 			// strip off any trailing whitespace
-			l = QStr::Length(cmd_args) - 1;
-			for ( ; l >= 0 ; l--)
+			int l = QStr::Length(cmd_args) - 1;
+			for (; l >= 0; l--)
+			{
 				if (cmd_args[l] <= ' ')
+				{
 					cmd_args[l] = 0;
+				}
 				else
+				{
 					break;
+				}
+			}
 		}
 
 		// handle quoted strings
-        // NOTE TTimo this doesn't handle \" escaping
-		if (*text == '"')
-        {
-			cmd_argv[cmd_argc] = textOut;
+		// NOTE TTimo this doesn't handle \" escaping
+		if (*Text == '"')
+		{
+			cmd_argv[cmd_argc] = TextOut;
 			cmd_argc++;
-			text++;
-			while (*text && *text != '"')
-            {
-				*textOut++ = *text++;
+			Text++;
+			while (*Text && *Text != '"')
+			{
+				*TextOut++ = *Text++;
 			}
-			*textOut++ = 0;
-			if (!*text)
-            {
+			*TextOut++ = 0;
+			if (!*Text)
+			{
 				return;		// all tokens parsed
 			}
-			text++;
+			Text++;
 			continue;
 		}
 
 		// regular token
-		cmd_argv[cmd_argc] = textOut;
+		cmd_argv[cmd_argc] = TextOut;
 		cmd_argc++;
 
 		// skip until whitespace, quote, or comment
-		while (*text > ' ')
-        {
-			if (text[0] == '"')
-            {
+		while (*Text > ' ')
+		{
+			if (Text[0] == '"')
+			{
 				break;
 			}
 
-			if (text[0] == '/' && text[1] == '/')
-            {
+			if (Text[0] == '/' && Text[1] == '/')
+			{
 				break;
 			}
 
 			// skip /* */ comments
-			if (text[0] == '/' && text[1] =='*')
-            {
+			if (Text[0] == '/' && Text[1] =='*')
+			{
 				break;
 			}
 
-			*textOut++ = *text++;
+			*TextOut++ = *Text++;
 		}
 
-		*textOut++ = 0;
+		*TextOut++ = 0;
 
-		if (!*text)
-        {
+		if (!*Text)
+		{
 			return;		// all tokens parsed
 		}
 	}
 }
 
-/*
-============
-Cmd_CompleteCommand
-============
-*/
-char *Cmd_CompleteCommand (const char *partial)
-{
-	cmd_function_t	*cmd;
-	int				len;
-	cmdalias_t		*a;
-	
-	len = QStr::Length(partial);
-	
-	if (!len)
-		return NULL;
-		
-// check for exact match
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!QStr::Cmp(partial,cmd->name))
-			return cmd->name;
-	for (a=cmd_alias ; a ; a=a->next)
-		if (!QStr::Cmp(partial, a->name))
-			return a->name;
+//==========================================================================
+//
+//	Cmd_CompleteCommand
+//
+//==========================================================================
 
-// check for partial match
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-		if (!QStr::NCmp(partial,cmd->name, len))
+char* Cmd_CompleteCommand(const char* Partial)
+{
+	int Len = QStr::Length(Partial);
+
+	if (!Len)
+	{
+		return NULL;
+	}
+
+	// check for exact match
+	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
+	{
+		if (!QStr::Cmp(Partial, cmd->name))
+		{
 			return cmd->name;
-	for (a=cmd_alias ; a ; a=a->next)
-		if (!QStr::NCmp(partial, a->name, len))
+		}
+	}
+	for (cmdalias_t* a = cmd_alias; a; a = a->next)
+	{
+		if (!QStr::Cmp(Partial, a->name))
+		{
 			return a->name;
+		}
+	}
+
+	// check for partial match
+	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
+	{
+		if (!QStr::NCmp(Partial, cmd->name, Len))
+		{
+			return cmd->name;
+		}
+	}
+	for (cmdalias_t* a = cmd_alias; a; a = a->next)
+	{
+		if (!QStr::NCmp(Partial, a->name, Len))
+		{
+			return a->name;
+		}
+	}
 
 	return NULL;
 }
 
-/*
-============
-Cmd_CommandCompletion
-============
-*/
+//==========================================================================
+//
+//	Cmd_CommandCompletion
+//
+//==========================================================================
+
 void Cmd_CommandCompletion(void(*callback)(const char* s))
 {
 	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
-    {
+	{
 		callback(cmd->name);
 	}
 	for (cmdalias_t* a = cmd_alias; a; a = a->next)
-    {
+	{
 		callback(a->name);
 	}
 }
 
-/*
-============
-Cmd_ExecuteString
+//==========================================================================
+//
+//	Cmd_ExecuteString
+//
+//	A complete command line has been parsed, so try to execute it
+//
+//==========================================================================
 
-A complete command line has been parsed, so try to execute it
-============
-*/
-void	Cmd_ExecuteString( const char *text, cmd_source_t src)
-{	
-	cmd_function_t	*cmd, **prev;
-	cmdalias_t		*a;
-
+void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
+{
 	// execute the command line
-	cmd_source = src;
-	Cmd_TokenizeString(text, cmd_macroExpand);		
+	cmd_source = Src;
+	Cmd_TokenizeString(Text, cmd_macroExpand);
 	if (!Cmd_Argc())
-    {
+	{
 		return;		// no tokens
 	}
 
-	// check registered command functions	
-	for (prev = &cmd_functions; *prev; prev = &cmd->next)
-    {
+	// check registered command functions
+	cmd_function_t* cmd;
+	for (cmd_function_t** prev = &cmd_functions; *prev; prev = &cmd->next)
+	{
 		cmd = *prev;
 		if (!QStr::ICmp(cmd_argv[0], cmd->name))
-        {
+		{
 			// rearrange the links so that the command will be
 			// near the head of the list next time it is used
 			*prev = cmd->next;
@@ -1096,14 +1180,14 @@ void	Cmd_ExecuteString( const char *text, cmd_source_t src)
 
 			// perform the action
 			if (!cmd->function)
-            {
-				if (!Cmd_HandleNullCommand(text))
-                {
-                    break;
-                }
+			{
+				if (!Cmd_HandleNullCommand(Text))
+				{
+					break;
+				}
 			}
-            else
-            {
+			else
+			{
 				cmd->function();
 			}
 			return;
@@ -1111,25 +1195,25 @@ void	Cmd_ExecuteString( const char *text, cmd_source_t src)
 	}
 
 	// check alias
-	for (a=cmd_alias ; a ; a=a->next)
+	for (cmdalias_t* a = cmd_alias; a; a = a->next)
 	{
 		if (!QStr::ICmp(cmd_argv[0], a->name))
 		{
 			if (++alias_count == ALIAS_LOOP_COUNT)
 			{
-                GLog.Write("ALIAS_LOOP_COUNT\n");
+				GLog.Write("ALIAS_LOOP_COUNT\n");
 				return;
 			}
-			Cbuf_InsertText (a->value);
+			Cbuf_InsertText(a->value);
 			return;
 		}
 	}
-	
+
 	// check cvars
 	if (Cvar_Command())
-    {
+	{
 		return;
 	}
 
-    Cmd_HandleUnknownCommand();
+	Cmd_HandleUnknownCommand();
 }

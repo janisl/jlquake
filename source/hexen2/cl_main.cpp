@@ -98,140 +98,51 @@ static qboolean IsGip(const char* name)
 	return !QStr::Cmp(name + l - 4, ".gip");
 }
 
-void CL_RemoveGIPFiles (char *path)
+void CL_RemoveGIPFiles(const char *path)
 {
-	
-	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
-	int i;
-#ifdef _WIN32
-	HANDLE handle;
-	WIN32_FIND_DATA filedata;
-	BOOL retval;
-#else
-	DIR* current_dir;
-	struct dirent *de;
-	qboolean error;
-#endif
-
-#ifdef _WIN32
+	char* netpath;
 	if (path)
 	{
-		sprintf(tempdir,"%s/",path);
+		netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, path);
 	}
 	else
 	{
-		i = GetTempPath(sizeof(tempdir),tempdir);
-		if (!i) 
+		netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, "");
+		netpath[QStr::Length(netpath) - 1] = 0;
+	}
+	int numSysFiles;
+	char** sysFiles = Sys_ListFiles(netpath, ".gip", NULL, &numSysFiles, false);
+	for (int i = 0 ; i < numSysFiles; i++)
+	{
+		if (path)
 		{
-			sprintf(tempdir,"%s/",com_gamedir);
+			netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s/%s", path, sysFiles[i]));
 		}
-	}
-
-	sprintf (name, "%s*.gip", tempdir);
-
-	handle = FindFirstFile(name,&filedata);
-	retval = TRUE;
-
-	while (handle != INVALID_HANDLE_VALUE && retval)
-	{
-		sprintf(name,"%s%s", tempdir,filedata.cFileName);
-		DeleteFile(name);
-
-		retval = FindNextFile(handle,&filedata);
-	}
-
-	if (handle != INVALID_HANDLE_VALUE)
-		FindClose(handle);
-#else
-	if (path)
-	{
-		sprintf(tempdir,"%s/",path);
-	}
-	else
-	{
-		sprintf(tempdir,"%s/",com_gamedir);
-	}
-
-	error = false;
-	current_dir = opendir(tempdir);
-	if (current_dir)
-	{
-		while (!error && (de = readdir(current_dir)) != NULL)
+		else
 		{
-			if (IsGip(de->d_name))
-			{
-				sprintf(name,"%s%s", tempdir, de->d_name);
-				remove(name);
-			}
+			netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, sysFiles[i]);
 		}
-		closedir(current_dir);
+		FS_Remove(netpath);
 	}
-#endif
+	Sys_FreeFileList(sysFiles);
 }
 
-qboolean CL_CopyFiles(char *source, char *pat, char *dest)
+void CL_CopyFiles(const char* source, const char* ext, const char* dest)
 {
-#ifdef _WIN32
-	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
-	HANDLE handle;
-	WIN32_FIND_DATA filedata;
-	BOOL retval,error;
-
-	handle = FindFirstFile(pat,&filedata);
-	retval = TRUE;
-	error = false;
-
-	while (handle != INVALID_HANDLE_VALUE && retval)
+	char* netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, source);
+	if (!source[0])
 	{
-		sprintf(name,"%s%s", source, filedata.cFileName);
-		sprintf(tempdir,"%s%s", dest, filedata.cFileName);
-		if (!CopyFile(name,tempdir,FALSE))
-			error = true;
-
-		retval = FindNextFile(handle,&filedata);
+		netpath[QStr::Length(netpath) - 1] = 0;
 	}
-
-	if (handle != INVALID_HANDLE_VALUE)
-		FindClose(handle);
-
-	return error;
-#else
-	char	name[MAX_OSPATH],tempdir[MAX_OSPATH];
-	DIR* current_dir;
-	struct dirent *de;
-	qboolean error;
-
-	error = false;
-	current_dir = opendir(source);
-	if (current_dir)
+	int numSysFiles;
+	char** sysFiles = Sys_ListFiles(netpath, ext, NULL, &numSysFiles, false);
+	for (int i = 0 ; i < numSysFiles; i++)
 	{
-		while (!error && (de = readdir(current_dir)) != NULL)
-		{
-			if (IsGip(de->d_name))
-			{
-				FILE* f1;
-				FILE* f2;
-				int l;
-				void* b;
-				sprintf(name,"%s%s", source, de->d_name);
-				sprintf(tempdir,"%s%s", dest, de->d_name);
-				f1 = fopen(name, "rb");
-				f2 = fopen(tempdir, "wb");
-				fseek(f1, 0, SEEK_END);
-				l = ftell(f1);
-				fseek(f1, 0, SEEK_SET);
-				b = malloc(l);
-				fread(b, 1, l, f1);
-				fclose(f1);
-				fwrite(b, 1, l, f2);
-				fclose(f2);
-			}
-		}
-		closedir(current_dir);
+		char* srcpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s%s", source, sysFiles[i]));
+		char* dstpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, va("%s%s", dest, sysFiles[i]));
+		FS_CopyFile(srcpath, dstpath);
 	}
-
-	return error;
-#endif
+	Sys_FreeFileList(sysFiles);
 }
 
 /*

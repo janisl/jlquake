@@ -45,6 +45,7 @@ qboolean SNDDMA_Init(void)
 	struct audio_buf_info info;
 	int caps;
 
+	shm = &sn;
 	snd_inited = 0;
 
 // open /dev/dsp, confirm capability to mmap, and get size of dma buffer
@@ -89,7 +90,6 @@ qboolean SNDDMA_Init(void)
 		return 0;
     }
     
-	shm = &sn;
     shm->splitbuffer = 0;
 
 // set sample bits & speed

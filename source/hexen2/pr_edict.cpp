@@ -542,7 +542,7 @@ ED_Write
 For savegames
 =============
 */
-void ED_Write (FILE *f, edict_t *ed)
+void ED_Write (fileHandle_t f, edict_t *ed)
 {
 	ddef_t	*d;
 	int		*v;
@@ -551,11 +551,11 @@ void ED_Write (FILE *f, edict_t *ed)
 	int		type;
 	int		length;
 
-	fprintf (f, "{\n");
+	FS_Printf(f, "{\n");
 
 	if (ed->free)
 	{
-		fprintf (f, "}\n");
+		FS_Printf(f, "}\n");
 		return;
 	}
 	
@@ -585,14 +585,14 @@ void ED_Write (FILE *f, edict_t *ed)
 			continue;
 
 		QStr::Cpy(field_name,name);
-		fprintf (f,"\"%s\" ",name);
-		fprintf (f,"\"%s\"\n", PR_UglyValueString((etype_t)d->type, (eval_t *)v));		
+		FS_Printf(f,"\"%s\" ",name);
+		FS_Printf(f,"\"%s\"\n", PR_UglyValueString((etype_t)d->type, (eval_t *)v));		
 	}
 
 	field_name[0] = 0;
 	class_name[0] = 0;
 
-	fprintf (f, "}\n");
+	FS_Printf(f, "}\n");
 
 	RemoveBadReferences = false;
 }
@@ -688,14 +688,14 @@ FIXME: need to tag constants, doesn't really work
 ED_WriteGlobals
 =============
 */
-void ED_WriteGlobals (FILE *f)
+void ED_WriteGlobals (fileHandle_t f)
 {
 	ddef_t		*def;
 	int			i;
 	char		*name;
 	int			type;
 
-	fprintf (f,"{\n");
+	FS_Printf(f,"{\n");
 	for (i=0 ; i<progs->numglobaldefs ; i++)
 	{
 		def = &pr_globaldefs[i];
@@ -710,10 +710,10 @@ void ED_WriteGlobals (FILE *f)
 			continue;
 
 		name = pr_strings + def->s_name;		
-		fprintf (f,"\"%s\" ", name);
-		fprintf (f,"\"%s\"\n", PR_UglyValueString((etype_t)type, (eval_t *)&pr_globals[def->ofs]));		
+		FS_Printf(f,"\"%s\" ", name);
+		FS_Printf(f,"\"%s\"\n", PR_UglyValueString((etype_t)type, (eval_t *)&pr_globals[def->ofs]));		
 	}
-	fprintf (f,"}\n");
+	FS_Printf(f,"}\n");
 }
 
 /*
@@ -1146,6 +1146,28 @@ void ED_LoadFromFile (const char *data)
 	Con_DPrintf ("%i entities inhibited\n", inhibit);
 }
 
+static void GetProgsName(char* finalprogname)
+{
+	QStr::Cpy(finalprogname, "progs.dat");
+	QArray<byte> MapList;
+	FS_ReadFile("maplist.txt", MapList);
+	const char* p = (char*)MapList.Ptr();
+	const char* token = QStr::Parse2(&p);
+	int NumMaps = QStr::Atoi(token);
+	for (int i = 0; i < NumMaps; i++)
+	{
+		token = QStr::Parse2(&p);
+		if (!QStr::ICmp(token, sv.name))
+		{
+			token = QStr::Parse2(&p);
+			QStr::Cpy(finalprogname, token);
+		}
+		else
+		{
+			token = QStr::Parse2(&p);
+		}
+	}
+}
 
 /*
 ===============
@@ -1154,8 +1176,7 @@ PR_LoadProgs
 */
 void PR_LoadProgs (void)
 {
-	int		i,j;
-	FILE	*f;
+	int		i;
 	char	mapname[MAX_QPATH], progname[MAX_OSPATH], finalprogname[MAX_OSPATH];
 
 // flush the non-C variable lookup cache
@@ -1164,40 +1185,8 @@ void PR_LoadProgs (void)
 
 	CRC_Init (&pr_crc);
 
-	QStr::Cpy(finalprogname, "progs.dat");
+	GetProgsName(finalprogname);
 
-/*	don't need this anymore - JFM
-
-	COM_FOpenFile ("maplist.txt", &f, true);
-	if (f)
-	{
-		char	build[2048], *test;
-
-		fgets(build, sizeof(build), f);
-		j = atol(build);
-		for(i=0;i<j;i++)
-		{
-			test = fgets (build, sizeof(build), f);
-			if (test)
-			{
-				build[QStr::Length(build)-2] = 0;
-				test = strchr(build, ' ');
-				if (test)
-				{
-					*test = 0;
-					QStr::Cpy(mapname, build);
-					QStr::Cpy(progname, test+1);
-					if (QStr::ICmp(mapname, sv.name) == 0)
-					{
-						QStr::Cpy(finalprogname, progname);
-						break;
-					}
-				}
-			}
-		}
-		fclose (f);
-	}
-*/
 	progs = (dprograms_t *)COM_LoadHunkFile (finalprogname);
 	if (!progs)
 		Sys_Error ("PR_LoadProgs: couldn't load %s",finalprogname);

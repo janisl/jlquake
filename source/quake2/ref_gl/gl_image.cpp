@@ -27,7 +27,7 @@ int			base_textureid;		// gltextures[i] = base_textureid+i
 static byte			 intensitytable[256];
 static unsigned char gammatable[256];
 
-cvar_t		*intensity;
+QCvar		*intensity;
 
 unsigned	d_8to24table[256];
 
@@ -433,7 +433,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 	//
 	// load the file
 	//
-	len = ri.FS_LoadFile (filename, (void **)&raw);
+	len = ri.FS_ReadFile(filename, (void **)&raw);
 	if (!raw)
 	{
 		ri.Con_Printf (PRINT_DEVELOPER, "Bad pcx file %s\n", filename);
@@ -553,7 +553,7 @@ void LoadTGA (char *name, byte **pic, int *width, int *height)
 	//
 	// load the file
 	//
-	length = ri.FS_LoadFile (name, (void **)&buffer);
+	length = ri.FS_ReadFile(name, (void **)&buffer);
 	if (!buffer)
 	{
 		ri.Con_Printf (PRINT_DEVELOPER, "Bad tga file %s\n", name);
@@ -1321,7 +1321,7 @@ image_t *GL_LoadWal (char *name)
 	int			width, height, ofs;
 	image_t		*image;
 
-	ri.FS_LoadFile (name, (void **)&mt);
+	ri.FS_ReadFile(name, (void **)&mt);
 	if (!mt)
 	{
 		ri.Con_Printf (PRINT_ALL, "GL_FindImage: can't load %s\n", name);
@@ -1511,7 +1511,7 @@ void	GL_InitImages (void)
 
 	if ( qglColorTableEXT )
 	{
-		ri.FS_LoadFile( "pics/16to8.dat", (void**)&gl_state.d_16to8table );
+		ri.FS_ReadFile( "pics/16to8.dat", (void**)&gl_state.d_16to8table );
 		if ( !gl_state.d_16to8table )
 			ri.Sys_Error( ERR_FATAL, "Couldn't load pics/16to8.pcx");
 	}

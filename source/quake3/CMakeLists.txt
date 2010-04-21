@@ -6,7 +6,7 @@ set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium 
 
 set(THREAD_LDFLAGS -lpthread)
 set(LDFLAGS -ldl -lm)
-set(GLLDFLAGS ${LDFLAGS} -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm)
+set(GLLDFLAGS ${LDFLAGS} -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -lasound)
 
 #############################################################################
 # CLIENT/SERVER
@@ -48,7 +48,6 @@ set(QUAKE3_FILES
 	qcommon/files.cpp
 	qcommon/msg.cpp
 	qcommon/net_chan.cpp
-	qcommon/unzip.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
 	qcommon/vm_x86.cpp
@@ -85,6 +84,7 @@ set(QUAKE3_FILES
 	unix/linux_qgl.cpp
 	unix/linux_signals.cpp
 	unix/linux_snd.cpp
+#	unix/snd_alsa.cpp
 )
 
 set(QUAKE3_ASM_FILES
@@ -154,7 +154,6 @@ set(QUAKE3_DEDICATED_FILES
 	qcommon/net_chan.cpp
 	game/q_math.cpp
 	game/q_shared.cpp
-	qcommon/unzip.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
 	unix/linux_signals.cpp

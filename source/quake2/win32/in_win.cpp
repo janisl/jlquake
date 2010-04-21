@@ -51,8 +51,8 @@ DWORD	dwAxisMap[JOY_MAX_AXES];
 DWORD	dwControlMap[JOY_MAX_AXES];
 PDWORD	pdwRawValue[JOY_MAX_AXES];
 
-cvar_t	*in_mouse;
-cvar_t	*in_joystick;
+QCvar	*in_mouse;
+QCvar	*in_joystick;
 
 
 // none of these cvars are saved over a session
@@ -60,24 +60,24 @@ cvar_t	*in_joystick;
 // each time.  this avoids any problems with getting back to a default usage
 // or when changing from one controller to another.  this way at least something
 // works.
-cvar_t	*joy_name;
-cvar_t	*joy_advanced;
-cvar_t	*joy_advaxisx;
-cvar_t	*joy_advaxisy;
-cvar_t	*joy_advaxisz;
-cvar_t	*joy_advaxisr;
-cvar_t	*joy_advaxisu;
-cvar_t	*joy_advaxisv;
-cvar_t	*joy_forwardthreshold;
-cvar_t	*joy_sidethreshold;
-cvar_t	*joy_pitchthreshold;
-cvar_t	*joy_yawthreshold;
-cvar_t	*joy_forwardsensitivity;
-cvar_t	*joy_sidesensitivity;
-cvar_t	*joy_pitchsensitivity;
-cvar_t	*joy_yawsensitivity;
-cvar_t	*joy_upthreshold;
-cvar_t	*joy_upsensitivity;
+QCvar	*joy_name;
+QCvar	*joy_advanced;
+QCvar	*joy_advaxisx;
+QCvar	*joy_advaxisy;
+QCvar	*joy_advaxisz;
+QCvar	*joy_advaxisr;
+QCvar	*joy_advaxisu;
+QCvar	*joy_advaxisv;
+QCvar	*joy_forwardthreshold;
+QCvar	*joy_sidethreshold;
+QCvar	*joy_pitchthreshold;
+QCvar	*joy_yawthreshold;
+QCvar	*joy_forwardsensitivity;
+QCvar	*joy_sidesensitivity;
+QCvar	*joy_pitchsensitivity;
+QCvar	*joy_yawsensitivity;
+QCvar	*joy_upthreshold;
+QCvar	*joy_upsensitivity;
 
 qboolean	joy_avail, joy_advancedinit, joy_haspov;
 DWORD		joy_oldbuttonstate, joy_oldpovstate;
@@ -104,7 +104,7 @@ void IN_JoyMove (usercmd_t *cmd);
 */
 
 // mouse variables
-cvar_t	*m_filter;
+QCvar	*m_filter;
 
 qboolean	mlooking;
 
@@ -221,7 +221,7 @@ IN_StartupMouse
 */
 void IN_StartupMouse (void)
 {
-	cvar_t		*cv;
+	QCvar		*cv;
 
 	cv = Cvar_Get ("in_initmouse", "1", CVAR_INIT);
 	if ( !cv->value ) 
@@ -334,8 +334,8 @@ VIEW CENTERING
 =========================================================================
 */
 
-cvar_t	*v_centermove;
-cvar_t	*v_centerspeed;
+QCvar	*v_centermove;
+QCvar	*v_centerspeed;
 
 
 /*
@@ -488,7 +488,7 @@ void IN_StartupJoystick (void)
 	int			numdevs;
 	JOYCAPS		jc;
 	MMRESULT	mmr;
-	cvar_t		*cv;
+	QCvar		*cv;
 
  	// assume no joystick
 	joy_avail = false; 

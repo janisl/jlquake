@@ -2,8 +2,8 @@
 
 #include "../client/client.h"
 
-cvar_t	*in_mouse;
-cvar_t	*in_joystick;
+QCvar	*in_mouse;
+QCvar	*in_joystick;
 
 void IN_Init (void)
 {

@@ -75,7 +75,7 @@ redo:
 
 void SND_setup() {
 	sndBuffer *p, *q;
-	cvar_t	*cv;
+	QCvar	*cv;
 	int scs;
 
 	cv = Cvar_Get( "com_soundMegs", DEF_COMSOUNDMEGS, CVAR_LATCH | CVAR_ARCHIVE );

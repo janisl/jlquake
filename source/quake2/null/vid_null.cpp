@@ -102,7 +102,7 @@ void	VID_Init (void)
     ri.Cmd_ExecuteText = Cbuf_ExecuteText;
     ri.Con_Printf = VID_Printf;
     ri.Sys_Error = VID_Error;
-    ri.FS_LoadFile = FS_LoadFile;
+    ri.FS_ReadFile = FS_ReadFile;
     ri.FS_FreeFile = FS_FreeFile;
     ri.FS_Gamedir = FS_Gamedir;
 	ri.Vid_NewWindow = VID_NewWindow;

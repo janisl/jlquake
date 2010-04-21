@@ -46,6 +46,7 @@ qboolean SNDDMA_Init(void)
 	int caps;
 
 	snd_inited = 0;
+	shm = &sn;
 
 // open /dev/dsp, confirm capability to mmap, and get size of dma buffer
 
@@ -89,7 +90,6 @@ qboolean SNDDMA_Init(void)
 		return 0;
     }
     
-	shm = &sn;
     shm->splitbuffer = 0;
 
 // set sample bits & speed
@@ -97,7 +97,7 @@ qboolean SNDDMA_Init(void)
     s = getenv("QUAKE_SOUND_SAMPLEBITS");
     if (s) shm->samplebits = QStr::Atoi(s);
 	else if ((i = COM_CheckParm("-sndbits")) != 0)
-		shm->samplebits = QStr::Atoi(com_argv[i+1]);
+		shm->samplebits = QStr::Atoi(COM_Argv(i+1));
 	if (shm->samplebits != 16 && shm->samplebits != 8)
     {
         ioctl(audio_fd, SNDCTL_DSP_GETFMTS, &fmt);
@@ -108,7 +108,7 @@ qboolean SNDDMA_Init(void)
     s = getenv("QUAKE_SOUND_SPEED");
     if (s) shm->speed = QStr::Atoi(s);
 	else if ((i = COM_CheckParm("-sndspeed")) != 0)
-		shm->speed = QStr::Atoi(com_argv[i+1]);
+		shm->speed = QStr::Atoi(COM_Argv(i+1));
     else
     {
         for (i=0 ; i<sizeof(tryrates)/4 ; i++)

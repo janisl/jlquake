@@ -258,23 +258,21 @@ Writes key bindings and archived cvars to config.cfg
 */
 void Host_WriteConfiguration (void)
 {
-	FILE	*f;
-
-// dedicated servers initialize the host but don't parse and set the
-// config.cfg cvars
+	// dedicated servers initialize the host but don't parse and set the
+	// config.cfg cvars
 	if (host_initialized & !isDedicated)
 	{
-		f = fopen (va("%s/config.cfg",com_gamedir), "w");
+		fileHandle_t f = FS_FOpenFileWrite("config.cfg");
 		if (!f)
 		{
-			Con_Printf ("Couldn't write config.cfg.\n");
+			Con_Printf("Couldn't write config.cfg.\n");
 			return;
 		}
 		
-		Key_WriteBindings (f);
-		Cvar_WriteVariables (f);
+		Key_WriteBindings(f);
+		Cvar_WriteVariables(f);
 
-		fclose (f);
+		FS_FCloseFile(f);
 	}
 }
 
@@ -791,6 +789,7 @@ void Host_Init (quakeparms_t *parms)
 {
 	try
 	{
+	Sys_SetHomePathSuffix("vquake");
 	GLog.AddListener(&MainLog);
 
 	if (standard_quake)
@@ -809,6 +808,7 @@ void Host_Init (quakeparms_t *parms)
 	Memory_Init (parms->membase, parms->memsize);
 	Cbuf_Init ();
 	Cmd_Init ();	
+	Cvar_Init();
 	V_Init ();
 	Chase_Init ();
 	COM_Init (parms->basedir);

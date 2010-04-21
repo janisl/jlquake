@@ -21,71 +21,71 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-cvar_t	*freelook;
+QCvar	*freelook;
 
-cvar_t	*adr0;
-cvar_t	*adr1;
-cvar_t	*adr2;
-cvar_t	*adr3;
-cvar_t	*adr4;
-cvar_t	*adr5;
-cvar_t	*adr6;
-cvar_t	*adr7;
-cvar_t	*adr8;
+QCvar	*adr0;
+QCvar	*adr1;
+QCvar	*adr2;
+QCvar	*adr3;
+QCvar	*adr4;
+QCvar	*adr5;
+QCvar	*adr6;
+QCvar	*adr7;
+QCvar	*adr8;
 
-cvar_t	*cl_stereo_separation;
-cvar_t	*cl_stereo;
+QCvar	*cl_stereo_separation;
+QCvar	*cl_stereo;
 
-cvar_t	*rcon_client_password;
-cvar_t	*rcon_address;
+QCvar	*rcon_client_password;
+QCvar	*rcon_address;
 
-cvar_t	*cl_noskins;
-cvar_t	*cl_autoskins;
-cvar_t	*cl_footsteps;
-cvar_t	*cl_timeout;
-cvar_t	*cl_predict;
-//cvar_t	*cl_minfps;
-cvar_t	*cl_maxfps;
-cvar_t	*cl_gun;
+QCvar	*cl_noskins;
+QCvar	*cl_autoskins;
+QCvar	*cl_footsteps;
+QCvar	*cl_timeout;
+QCvar	*cl_predict;
+//QCvar	*cl_minfps;
+QCvar	*cl_maxfps;
+QCvar	*cl_gun;
 
-cvar_t	*cl_add_particles;
-cvar_t	*cl_add_lights;
-cvar_t	*cl_add_entities;
-cvar_t	*cl_add_blend;
+QCvar	*cl_add_particles;
+QCvar	*cl_add_lights;
+QCvar	*cl_add_entities;
+QCvar	*cl_add_blend;
 
-cvar_t	*cl_shownet;
-cvar_t	*cl_showmiss;
-cvar_t	*cl_showclamp;
+QCvar	*cl_shownet;
+QCvar	*cl_showmiss;
+QCvar	*cl_showclamp;
 
-cvar_t	*cl_paused;
-cvar_t	*cl_timedemo;
+QCvar	*cl_paused;
+QCvar	*cl_timedemo;
 
-cvar_t	*lookspring;
-cvar_t	*lookstrafe;
-cvar_t	*sensitivity;
+QCvar	*lookspring;
+QCvar	*lookstrafe;
+QCvar	*sensitivity;
 
-cvar_t	*m_pitch;
-cvar_t	*m_yaw;
-cvar_t	*m_forward;
-cvar_t	*m_side;
+QCvar	*m_pitch;
+QCvar	*m_yaw;
+QCvar	*m_forward;
+QCvar	*m_side;
 
-cvar_t	*cl_lightlevel;
+QCvar	*cl_lightlevel;
 
 //
 // userinfo
 //
-cvar_t	*info_password;
-cvar_t	*info_spectator;
-cvar_t	*name;
-cvar_t	*skin;
-cvar_t	*rate;
-cvar_t	*fov;
-cvar_t	*msg;
-cvar_t	*hand;
-cvar_t	*gender;
-cvar_t	*gender_auto;
+QCvar	*info_password;
+QCvar	*info_spectator;
+QCvar	*name;
+QCvar	*skin;
+QCvar	*rate;
+QCvar	*fov;
+QCvar	*msg;
+QCvar	*hand;
+QCvar	*gender;
+QCvar	*gender_auto;
 
-cvar_t	*cl_vwep;
+QCvar	*cl_vwep;
 
 client_static_t	cls;
 client_state_t	cl;
@@ -94,11 +94,11 @@ centity_t		cl_entities[MAX_EDICTS];
 
 entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 
-extern	cvar_t *allow_download;
-extern	cvar_t *allow_download_players;
-extern	cvar_t *allow_download_models;
-extern	cvar_t *allow_download_sounds;
-extern	cvar_t *allow_download_maps;
+extern	QCvar *allow_download;
+extern	QCvar *allow_download_players;
+extern	QCvar *allow_download_models;
+extern	QCvar *allow_download_sounds;
+extern	QCvar *allow_download_maps;
 
 //======================================================================
 
@@ -117,8 +117,8 @@ void CL_WriteDemoMessage (void)
 	// the first eight bytes are just packet sequencing stuff
 	len = net_message.cursize-8;
 	swlen = LittleLong(len);
-	fwrite (&swlen, 4, 1, cls.demofile);
-	fwrite (net_message._data+8,	len, 1, cls.demofile);
+	FS_Write(&swlen, 4, cls.demofile);
+	FS_Write(net_message._data+8, len, cls.demofile);
 }
 
 
@@ -141,8 +141,8 @@ void CL_Stop_f (void)
 
 // finish up
 	len = -1;
-	fwrite (&len, 4, 1, cls.demofile);
-	fclose (cls.demofile);
+	FS_Write(&len, 4, cls.demofile);
+	FS_FCloseFile(cls.demofile);
 	cls.demofile = NULL;
 	cls.demorecording = false;
 	Com_Printf ("Stopped demo.\n");
@@ -188,11 +188,10 @@ void CL_Record_f (void)
 	//
 	// open the demo file
 	//
-	QStr::Sprintf (name, sizeof(name), "%s/demos/%s.dm2", FS_Gamedir(), Cmd_Argv(1));
+	QStr::Sprintf (name, sizeof(name), "demos/%s.dm2", Cmd_Argv(1));
 
 	Com_Printf ("recording to %s.\n", name);
-	FS_CreatePath (name);
-	cls.demofile = fopen (name, "wb");
+	cls.demofile = FS_FOpenFileWrite(name);
 	if (!cls.demofile)
 	{
 		Com_Printf ("ERROR: couldn't open.\n");
@@ -226,8 +225,8 @@ void CL_Record_f (void)
 			if (buf.cursize + QStr::Length(cl.configstrings[i]) + 32 > buf.maxsize)
 			{	// write it out
 				len = LittleLong (buf.cursize);
-				fwrite (&len, 4, 1, cls.demofile);
-				fwrite (buf._data, buf.cursize, 1, cls.demofile);
+				FS_Write(&len, 4, cls.demofile);
+				FS_Write(buf._data, buf.cursize, cls.demofile);
 				buf.cursize = 0;
 			}
 
@@ -249,8 +248,8 @@ void CL_Record_f (void)
 		if (buf.cursize + 64 > buf.maxsize)
 		{	// write it out
 			len = LittleLong (buf.cursize);
-			fwrite (&len, 4, 1, cls.demofile);
-			fwrite (buf._data, buf.cursize, 1, cls.demofile);
+			FS_Write(&len, 4, cls.demofile);
+			FS_Write(buf._data, buf.cursize, cls.demofile);
 			buf.cursize = 0;
 		}
 
@@ -264,8 +263,8 @@ void CL_Record_f (void)
 	// write it to the demo file
 
 	len = LittleLong (buf.cursize);
-	fwrite (&len, 4, 1, cls.demofile);
-	fwrite (buf._data, buf.cursize, 1, cls.demofile);
+	FS_Write(&len, 4, cls.demofile);
+	FS_Write(buf._data, buf.cursize, cls.demofile);
 
 	// the rest of the demo file will be individual frames
 }
@@ -435,7 +434,9 @@ void CL_SendConnectPacket (void)
 	cvar_modifiedFlags &= ~CVAR_USERINFO;
 
 	Netchan_OutOfBandPrint (NS_CLIENT, adr, "connect %i %i %i \"%s\"\n",
-		PROTOCOL_VERSION, port, cls.challenge, Cvar_Userinfo() );
+		PROTOCOL_VERSION, port, cls.challenge,
+		Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
+		MAX_INFO_VALUE, true, false));
 }
 
 /*
@@ -651,9 +652,10 @@ void CL_Disconnect (void)
 	CL_ClearState ();
 
 	// stop download
-	if (cls.download) {
-		fclose(cls.download);
-		cls.download = NULL;
+	if (cls.download)
+	{
+		FS_FCloseFile(cls.download);
+		cls.download = 0;
 	}
 
 	cls.state = ca_disconnected;
@@ -802,8 +804,8 @@ void CL_PingServers_f (void)
 	netadr_t	adr;
 	char		name[32];
 	const char	*adrstring;
-	cvar_t		*noudp;
-	cvar_t		*noipx;
+	QCvar		*noudp;
+	QCvar		*noipx;
 
 	NET_Config (true);		// allow remote
 
@@ -1081,7 +1083,8 @@ CL_Userinfo_f
 void CL_Userinfo_f (void)
 {
 	Com_Printf ("User info settings:\n");
-	Info_Print (Cvar_Userinfo());
+	Info_Print (Cvar_InfoString(CVAR_USERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
+		MAX_INFO_VALUE, true, false));
 }
 
 /*
@@ -1153,7 +1156,7 @@ void CL_RequestNextDownload (void)
 				// checking for skins in the model
 				if (!precache_model) {
 
-					FS_LoadFile (cl.configstrings[precache_check], (void **)&precache_model);
+					FS_ReadFile(cl.configstrings[precache_check], (void **)&precache_model);
 					if (!precache_model) {
 						precache_model_skin = 0;
 						precache_check++;
@@ -1553,27 +1556,24 @@ CL_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void CL_WriteConfiguration (void)
+void CL_WriteConfiguration()
 {
-	FILE	*f;
-	char	path[MAX_QPATH];
-
 	if (cls.state == ca_uninitialized)
-		return;
-
-	QStr::Sprintf (path, sizeof(path),"%s/config.cfg",FS_Gamedir());
-	f = fopen (path, "w");
-	if (!f)
 	{
-		Com_Printf ("Couldn't write config.cfg.\n");
 		return;
 	}
 
-	fprintf (f, "// generated by quake, do not modify\n");
-	Key_WriteBindings (f);
-	fclose (f);
+	fileHandle_t f = FS_FOpenFileWrite("config.cfg");
+	if (!f)
+	{
+		Com_Printf("Couldn't write config.cfg.\n");
+		return;
+	}
 
-	Cvar_WriteVariables (path);
+	FS_Printf(f, "// generated by quake, do not modify\n");
+	Key_WriteBindings(f);
+	Cvar_WriteVariables(f);
+	FS_FCloseFile(f);
 }
 
 
@@ -1588,7 +1588,7 @@ typedef struct
 {
 	char	*name;
 	char	*value;
-	cvar_t	*var;
+	QCvar	*var;
 } cheatvar_t;
 
 cheatvar_t	cheatvars[] = {
@@ -1755,14 +1755,14 @@ void CL_Frame (int msec)
 			{
 				lasttimecalled = Sys_Milliseconds();
 				if ( log_stats_file )
-					fprintf( log_stats_file, "0\n" );
+					FS_Printf( log_stats_file, "0\n" );
 			}
 			else
 			{
 				int now = Sys_Milliseconds();
 
 				if ( log_stats_file )
-					fprintf( log_stats_file, "%d\n", now - lasttimecalled );
+					FS_Printf(log_stats_file, "%d\n", now - lasttimecalled);
 				lasttimecalled = now;
 			}
 		}

@@ -32,9 +32,9 @@ WinVars_t	g_wv;
 static UINT MSH_MOUSEWHEEL;
 
 // Console variables that we need to access from this module
-cvar_t		*vid_xpos;			// X coordinate of window position
-cvar_t		*vid_ypos;			// Y coordinate of window position
-extern cvar_t		*r_fullscreen;
+QCvar		*vid_xpos;			// X coordinate of window position
+QCvar		*vid_ypos;			// Y coordinate of window position
+extern QCvar		*r_fullscreen;
 
 #define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
 
@@ -221,8 +221,8 @@ MainWndProc
 main window procedure
 ====================
 */
-extern cvar_t *in_mouse;
-extern cvar_t *in_logitechbug;
+extern QCvar *in_mouse;
+extern QCvar *in_logitechbug;
 LONG WINAPI MainWndProc (
     HWND    hWnd,
     UINT    uMsg,

@@ -42,7 +42,7 @@ void S_TouchSound (const char *sample)
 {
 }
 
-void S_ClearBuffer (void)
+void S_ClearSoundBuffer (void)
 {
 }
 

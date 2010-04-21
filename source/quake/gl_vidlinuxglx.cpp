@@ -728,7 +728,6 @@ void VID_Init(unsigned char *palette)
 		GLX_DEPTH_SIZE, 1,
 		None
 	};
-	char	gldir[MAX_OSPATH];
 	int width = 640, height = 480;
 	XSetWindowAttributes attr;
 	unsigned long mask;
@@ -891,9 +890,6 @@ void VID_Init(unsigned char *palette)
 	InitSig(); // trap evil signals
 
 	GL_Init();
-
-	sprintf (gldir, "%s/glquake", com_gamedir);
-	Sys_mkdir (gldir);
 
 	VID_SetPalette(palette);
 

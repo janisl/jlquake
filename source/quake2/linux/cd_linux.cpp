@@ -31,9 +31,9 @@ static int cdfile = -1;
 
 //static char cd_dev[64] = "/dev/cdrom";
 
-cvar_t	*cd_volume;
-cvar_t *cd_nocd;
-cvar_t *cd_dev;
+QCvar	*cd_volume;
+QCvar *cd_nocd;
+QCvar *cd_dev;
 
 void CDAudio_Pause(void);
 
@@ -357,7 +357,7 @@ void CDAudio_Update(void)
 int CDAudio_Init(void)
 {
 	int i;
-	cvar_t			*cv;
+	QCvar			*cv;
 	extern uid_t saved_euid;
 
 	cv = Cvar_Get ("nocdaudio", "0", CVAR_INIT);

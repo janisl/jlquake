@@ -26,32 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /*
 ========================================================================
 
-The .pak files are just a linear collapse of a directory tree
-
-========================================================================
-*/
-
-#define IDPAKHEADER		(('K'<<24)+('C'<<16)+('A'<<8)+'P')
-
-typedef struct
-{
-	char	name[56];
-	int		filepos, filelen;
-} dpackfile_t;
-
-typedef struct
-{
-	int		ident;		// == IDPAKHEADER
-	int		dirofs;
-	int		dirlen;
-} dpackheader_t;
-
-#define	MAX_FILES_IN_PACK	4096
-
-
-/*
-========================================================================
-
 PCX files are used for as many images as possible
 
 ========================================================================

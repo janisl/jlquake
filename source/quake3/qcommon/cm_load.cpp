@@ -40,9 +40,9 @@ int			c_traces, c_brush_traces, c_patch_traces;
 
 byte		*cmod_base;
 
-cvar_t		*cm_noAreas;
-cvar_t		*cm_noCurves;
-cvar_t		*cm_playerCurveClip;
+QCvar		*cm_noAreas;
+QCvar		*cm_noCurves;
+QCvar		*cm_playerCurveClip;
 
 cmodel_t	box_model;
 cplane_t	*box_planes;

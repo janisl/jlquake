@@ -79,8 +79,8 @@ void     QGL_Shutdown( void );
 //
 glwstate_t glw_state;
 
-cvar_t	*r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
-cvar_t	*r_maskMinidriver;		// allow a different dll name to be treated as if it were opengl32.dll
+QCvar	*r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
+QCvar	*r_maskMinidriver;		// allow a different dll name to be treated as if it were opengl32.dll
 
 
 
@@ -577,7 +577,7 @@ static qboolean GLW_InitDriver( const char *drivername, int colorbits )
 static qboolean GLW_CreateWindow( const char *drivername, int width, int height, int colorbits, qboolean cdsFullscreen )
 {
 	RECT			r;
-	cvar_t			*vid_xpos, *vid_ypos;
+	QCvar			*vid_xpos, *vid_ypos;
 	int				stylebits;
 	int				x, y, w, h;
 	int				exstyle;
@@ -1350,8 +1350,8 @@ static void GLW_StartOpenGL( void )
 void GLimp_Init( void )
 {
 	char	buf[1024];
-	cvar_t *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
-	cvar_t	*cv;
+	QCvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
+	QCvar	*cv;
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
 

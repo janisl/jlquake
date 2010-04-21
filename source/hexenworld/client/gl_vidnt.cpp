@@ -665,8 +665,7 @@ void	VID_SetPalette (unsigned char *palette)
 	int		j,k,l,m;
 	unsigned short i, p, c;
 	unsigned	*table, *table3dfx;
-	FILE *f;
-	char s[255];
+	fileHandle_t	f;
 	HWND hDlg, hProgress;
 
 //
@@ -716,11 +715,11 @@ void	VID_SetPalette (unsigned char *palette)
 	// JACK: 3D distance calcs - k is last closest, l is the distance.
 	// FIXME: Precalculate this and cache to disk.
 
-	COM_FOpenFile("glhexen/15to8.pal", &f, true);
+	FS_FOpenFileRead("glhexen/15to8.pal", &f, true);
 	if (f)
 	{
-		fread(d_15to8table, 1<<15, 1, f);
-		fclose(f);
+		FS_Read(d_15to8table, 1<<15, f);
+		FS_FCloseFile(f);
 	} 
 	else 
 	{
@@ -772,13 +771,10 @@ void	VID_SetPalette (unsigned char *palette)
 				m=0;
 			}
 		}
-		sprintf(s, "%s/glhexen", com_gamedir);
- 		Sys_mkdir (s);
-		sprintf(s, "%s/glhexen/15to8.pal", com_gamedir);
-		if (f = fopen(s, "wb"))
+		if (f = FS_FOpenFileWrite("glhexen/15to8.pal"))
 		{
-			fwrite(d_15to8table, 1<<15, 1, f);
-			fclose(f);
+			FS_Write(d_15to8table, 1<<15, f);
+			FS_FCloseFile(f);
 		}
 		DestroyWindow(hDlg);
 	}
@@ -1586,7 +1582,6 @@ void	VID_Init (unsigned char *palette)
 	int		i, existingmode;
 	int		basenummodes, width, height, bpp, findbpp, done;
 	byte	*ptmp;
-	char	gldir[MAX_OSPATH];
 	HDC		hdc;
 	DEVMODE	devmode;
 
@@ -1820,13 +1815,6 @@ void	VID_Init (unsigned char *palette)
 		Sys_Error ("wglMakeCurrent failed");
 
 	GL_Init ();
-
-	sprintf (gldir, "%s/glhexen", com_gamedir);
-	Sys_mkdir (gldir);
-	sprintf (gldir, "%s/glhexen/boss", com_gamedir);
-	Sys_mkdir (gldir);
-	sprintf (gldir, "%s/glhexen/puzzle", com_gamedir);
-	Sys_mkdir (gldir);
 
 	vid_realmode = vid_modenum;
 

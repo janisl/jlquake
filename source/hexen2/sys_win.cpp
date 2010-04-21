@@ -125,123 +125,6 @@ int filelength (FILE *f)
 	return end;
 }
 
-int Sys_FileOpenRead (char *path, int *hndl)
-{
-	FILE	*f;
-	int		i, retval;
-	int		t;
-
-	t = VID_ForceUnlockedAndReturnState ();
-
-	i = findhandle ();
-
-	f = fopen(path, "rb");
-
-	if (!f)
-	{
-		*hndl = -1;
-		retval = -1;
-	}
-	else
-	{
-		sys_handles[i] = f;
-		*hndl = i;
-		retval = filelength(f);
-	}
-
-	VID_ForceLockState (t);
-
-	return retval;
-}
-
-int Sys_FileOpenWrite (char *path)
-{
-	FILE	*f;
-	int		i;
-	int		t;
-
-	t = VID_ForceUnlockedAndReturnState ();
-	
-	i = findhandle ();
-
-	f = fopen(path, "wb");
-	if (!f)
-		Sys_Error ("Error opening %s: %s", path,strerror(errno));
-	sys_handles[i] = f;
-	
-	VID_ForceLockState (t);
-
-	return i;
-}
-
-void Sys_FileClose (int handle)
-{
-	int		t;
-
-	t = VID_ForceUnlockedAndReturnState ();
-	fclose (sys_handles[handle]);
-	sys_handles[handle] = NULL;
-	VID_ForceLockState (t);
-}
-
-void Sys_FileSeek (int handle, int position)
-{
-	int		t;
-
-	t = VID_ForceUnlockedAndReturnState ();
-	fseek (sys_handles[handle], position, SEEK_SET);
-	VID_ForceLockState (t);
-}
-
-int Sys_FileRead (int handle, void *dest, int count)
-{
-	int		t, x;
-
-	t = VID_ForceUnlockedAndReturnState ();
-	x = fread (dest, 1, count, sys_handles[handle]);
-	VID_ForceLockState (t);
-	return x;
-}
-
-int Sys_FileWrite (int handle, const void *data, int count)
-{
-	int		t, x;
-
-	t = VID_ForceUnlockedAndReturnState ();
-	x = fwrite (data, 1, count, sys_handles[handle]);
-	VID_ForceLockState (t);
-	return x;
-}
-
-int	Sys_FileTime (char *path)
-{
-	FILE	*f;
-	int		t, retval;
-
-	t = VID_ForceUnlockedAndReturnState ();
-	
-	f = fopen(path, "rb");
-
-	if (f)
-	{
-		fclose(f);
-		retval = 1;
-	}
-	else
-	{
-		retval = -1;
-	}
-	
-	VID_ForceLockState (t);
-	return retval;
-}
-
-void Sys_mkdir (char *path)
-{
-	_mkdir (path);
-}
-
-
 /*
 ===============================================================================
 
@@ -249,20 +132,6 @@ SYSTEM IO
 
 ===============================================================================
 */
-
-/*
-================
-Sys_MakeCodeWriteable
-================
-*/
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-	DWORD  flOldProtect;
-
-	if (!VirtualProtect((LPVOID)startaddr, length, PAGE_READWRITE, &flOldProtect))
-   		Sys_Error("Protection change failed\n");
-}
-
 
 /*
 ================
@@ -580,7 +449,7 @@ char *Sys_ConsoleInput (void)
 	return NULL;
 }
 
-void Sys_Sleep (void)
+static void Sys_Sleep (void)
 {
 	Sleep (1);
 }
@@ -667,7 +536,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		cwd[QStr::Length(cwd)-1] = 0;
 
 	parms.basedir = cwd;
-	parms.cachedir = NULL;
 
 	parms.argc = 1;
 	argv[0] = empty_string;

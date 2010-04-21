@@ -1234,7 +1234,7 @@ void CM_TracePointThroughPatchCollide( traceWork_t *tw, const struct patchCollid
 	int			i, j, k;
 	float		offset;
 	float		d1, d2;
-	static cvar_t *cv;
+	static QCvar *cv;
 
 	if ( !cm_playerCurveClip->integer || !tw->isPoint ) {
 		return;
@@ -1372,7 +1372,7 @@ void CM_TraceThroughPatchCollide( traceWork_t *tw, const struct patchCollide_s *
 	facet_t	*facet;
 	float plane[4], bestplane[4];
 	vec3_t startp, endp;
-	static cvar_t *cv;
+	static QCvar *cv;
 
 	if (tw->isPoint) {
 		CM_TracePointThroughPatchCollide( tw, pc );
@@ -1599,8 +1599,8 @@ Called from the renderer
 void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
 
 void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *points) ) {
-	static cvar_t	*cv;
-	static cvar_t	*cv2;
+	static QCvar	*cv;
+	static QCvar	*cv2;
 	const patchCollide_t	*pc;
 	facet_t			*facet;
 	winding_t		*w;

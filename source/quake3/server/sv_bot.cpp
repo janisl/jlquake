@@ -94,7 +94,7 @@ BotDrawDebugPolygons
 ==================
 */
 void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value) {
-	static cvar_t *bot_debug, *bot_groundonly, *bot_reachability, *bot_highlightarea;
+	static QCvar *bot_debug, *bot_groundonly, *bot_reachability, *bot_highlightarea;
 	bot_debugpoly_t *poly;
 	int i, parm0;
 
@@ -518,10 +518,6 @@ SV_BotInitBotLib
 void SV_BotInitBotLib(void) {
 	botlib_import_t	botlib_import;
 
-	if ( !Cvar_VariableValue("fs_restrict") && !Sys_CheckCD() ) {
-		Com_Error( ERR_NEED_CD, "Game CD not in drive" );
-	}
-
 	if (debugpolygons) Z_Free(debugpolygons);
 	bot_maxdebugpolys = Cvar_VariableIntegerValue("bot_maxdebugpolys");
 	debugpolygons = (bot_debugpoly_t*)Z_Malloc(sizeof(bot_debugpoly_t) * bot_maxdebugpolys);
@@ -543,7 +539,7 @@ void SV_BotInitBotLib(void) {
 
 	// file system access
 	botlib_import.FS_FOpenFile = FS_FOpenFileByMode;
-	botlib_import.FS_Read = FS_Read2;
+	botlib_import.FS_Read = FS_Read;
 	botlib_import.FS_Write = FS_Write;
 	botlib_import.FS_FCloseFile = FS_FCloseFile;
 	botlib_import.FS_Seek = FS_Seek;

@@ -224,7 +224,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	// load the file
 	//
-	modfilelen = ri.FS_LoadFile (mod->name, (void**)&buf);
+	modfilelen = ri.FS_ReadFile(mod->name, (void**)&buf);
 	if (!buf)
 	{
 		if (crash)
@@ -1101,7 +1101,7 @@ Specifies the model that will be used as the world
 void R_BeginRegistration (char *model)
 {
 	char	fullname[MAX_QPATH];
-	cvar_t	*flushmap;
+	QCvar	*flushmap;
 
 	registration_sequence++;
 	r_oldviewcluster = -1;		// force markleafs

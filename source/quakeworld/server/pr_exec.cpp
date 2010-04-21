@@ -677,7 +677,7 @@ char *PR_GetString(int num)
 	return pr_strings + num;
 }
 
-int PR_SetString(char *s)
+int PR_SetString(const char *s)
 {
 	int i;
 
@@ -690,7 +690,7 @@ int PR_SetString(char *s)
 		if (num_prstr == MAX_PRSTR - 1)
 			Sys_Error("MAX_PRSTR");
 		num_prstr++;
-		pr_strtbl[num_prstr] = s;
+		pr_strtbl[num_prstr] = const_cast<char*>(s);
 //Con_DPrintf("SET:%d == %s\n", -num_prstr, s);
 		return -num_prstr;
 	}

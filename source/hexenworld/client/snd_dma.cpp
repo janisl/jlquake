@@ -569,7 +569,7 @@ void S_StopAllSounds(qboolean clear)
 	Com_Memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
 
 	if (clear)
-		S_ClearBuffer ();
+		S_ClearSoundBuffer ();
 }
 
 void S_StopAllSoundsC (void)
@@ -577,7 +577,7 @@ void S_StopAllSoundsC (void)
 	S_StopAllSounds (true);
 }
 
-void S_ClearBuffer (void)
+void S_ClearSoundBuffer (void)
 {
 	int		clear;
 		
@@ -607,14 +607,14 @@ void S_ClearBuffer (void)
 		{
 			if (hresult != DSERR_BUFFERLOST)
 			{
-				Con_Printf ("S_ClearBuffer: DS::Lock Sound Buffer Failed\n");
+				Con_Printf ("S_ClearSoundBuffer: DS::Lock Sound Buffer Failed\n");
 				S_Shutdown ();
 				return;
 			}
 
 			if (++reps > 10000)
 			{
-				Con_Printf ("S_ClearBuffer: DS: couldn't restore buffer\n");
+				Con_Printf ("S_ClearSoundBuffer: DS: couldn't restore buffer\n");
 				S_Shutdown ();
 				return;
 			}

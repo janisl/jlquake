@@ -28,124 +28,124 @@ glstate_t	glState;
 
 static void GfxInfo_f( void );
 
-cvar_t	*r_flareSize;
-cvar_t	*r_flareFade;
+QCvar	*r_flareSize;
+QCvar	*r_flareFade;
 
-cvar_t	*r_railWidth;
-cvar_t	*r_railCoreWidth;
-cvar_t	*r_railSegmentLength;
+QCvar	*r_railWidth;
+QCvar	*r_railCoreWidth;
+QCvar	*r_railSegmentLength;
 
-cvar_t	*r_ignoreFastPath;
+QCvar	*r_ignoreFastPath;
 
-cvar_t	*r_verbose;
-cvar_t	*r_ignore;
+QCvar	*r_verbose;
+QCvar	*r_ignore;
 
-cvar_t	*r_displayRefresh;
+QCvar	*r_displayRefresh;
 
-cvar_t	*r_detailTextures;
+QCvar	*r_detailTextures;
 
-cvar_t	*r_znear;
+QCvar	*r_znear;
 
-cvar_t	*r_smp;
-cvar_t	*r_showSmp;
-cvar_t	*r_skipBackEnd;
+QCvar	*r_smp;
+QCvar	*r_showSmp;
+QCvar	*r_skipBackEnd;
 
-cvar_t	*r_ignorehwgamma;
-cvar_t	*r_measureOverdraw;
+QCvar	*r_ignorehwgamma;
+QCvar	*r_measureOverdraw;
 
-cvar_t	*r_inGameVideo;
-cvar_t	*r_fastsky;
-cvar_t	*r_drawSun;
-cvar_t	*r_dynamiclight;
-cvar_t	*r_dlightBacks;
+QCvar	*r_inGameVideo;
+QCvar	*r_fastsky;
+QCvar	*r_drawSun;
+QCvar	*r_dynamiclight;
+QCvar	*r_dlightBacks;
 
-cvar_t	*r_lodbias;
-cvar_t	*r_lodscale;
+QCvar	*r_lodbias;
+QCvar	*r_lodscale;
 
-cvar_t	*r_norefresh;
-cvar_t	*r_drawentities;
-cvar_t	*r_drawworld;
-cvar_t	*r_speeds;
-cvar_t	*r_fullbright;
-cvar_t	*r_novis;
-cvar_t	*r_nocull;
-cvar_t	*r_facePlaneCull;
-cvar_t	*r_showcluster;
-cvar_t	*r_nocurves;
+QCvar	*r_norefresh;
+QCvar	*r_drawentities;
+QCvar	*r_drawworld;
+QCvar	*r_speeds;
+QCvar	*r_fullbright;
+QCvar	*r_novis;
+QCvar	*r_nocull;
+QCvar	*r_facePlaneCull;
+QCvar	*r_showcluster;
+QCvar	*r_nocurves;
 
-cvar_t	*r_allowExtensions;
+QCvar	*r_allowExtensions;
 
-cvar_t	*r_ext_compressed_textures;
-cvar_t	*r_ext_gamma_control;
-cvar_t	*r_ext_multitexture;
-cvar_t	*r_ext_compiled_vertex_array;
-cvar_t	*r_ext_texture_env_add;
+QCvar	*r_ext_compressed_textures;
+QCvar	*r_ext_gamma_control;
+QCvar	*r_ext_multitexture;
+QCvar	*r_ext_compiled_vertex_array;
+QCvar	*r_ext_texture_env_add;
 
-cvar_t	*r_ignoreGLErrors;
-cvar_t	*r_logFile;
+QCvar	*r_ignoreGLErrors;
+QCvar	*r_logFile;
 
-cvar_t	*r_stencilbits;
-cvar_t	*r_depthbits;
-cvar_t	*r_colorbits;
-cvar_t	*r_stereo;
-cvar_t	*r_primitives;
-cvar_t	*r_texturebits;
+QCvar	*r_stencilbits;
+QCvar	*r_depthbits;
+QCvar	*r_colorbits;
+QCvar	*r_stereo;
+QCvar	*r_primitives;
+QCvar	*r_texturebits;
 
-cvar_t	*r_drawBuffer;
-cvar_t  *r_glDriver;
-cvar_t	*r_lightmap;
-cvar_t	*r_vertexLight;
-cvar_t	*r_uiFullScreen;
-cvar_t	*r_shadows;
-cvar_t	*r_flares;
-cvar_t	*r_mode;
-cvar_t	*r_nobind;
-cvar_t	*r_singleShader;
-cvar_t	*r_roundImagesDown;
-cvar_t	*r_colorMipLevels;
-cvar_t	*r_picmip;
-cvar_t	*r_showtris;
-cvar_t	*r_showsky;
-cvar_t	*r_shownormals;
-cvar_t	*r_finish;
-cvar_t	*r_clear;
-cvar_t	*r_swapInterval;
-cvar_t	*r_textureMode;
-cvar_t	*r_offsetFactor;
-cvar_t	*r_offsetUnits;
-cvar_t	*r_gamma;
-cvar_t	*r_intensity;
-cvar_t	*r_lockpvs;
-cvar_t	*r_noportals;
-cvar_t	*r_portalOnly;
+QCvar	*r_drawBuffer;
+QCvar  *r_glDriver;
+QCvar	*r_lightmap;
+QCvar	*r_vertexLight;
+QCvar	*r_uiFullScreen;
+QCvar	*r_shadows;
+QCvar	*r_flares;
+QCvar	*r_mode;
+QCvar	*r_nobind;
+QCvar	*r_singleShader;
+QCvar	*r_roundImagesDown;
+QCvar	*r_colorMipLevels;
+QCvar	*r_picmip;
+QCvar	*r_showtris;
+QCvar	*r_showsky;
+QCvar	*r_shownormals;
+QCvar	*r_finish;
+QCvar	*r_clear;
+QCvar	*r_swapInterval;
+QCvar	*r_textureMode;
+QCvar	*r_offsetFactor;
+QCvar	*r_offsetUnits;
+QCvar	*r_gamma;
+QCvar	*r_intensity;
+QCvar	*r_lockpvs;
+QCvar	*r_noportals;
+QCvar	*r_portalOnly;
 
-cvar_t	*r_subdivisions;
-cvar_t	*r_lodCurveError;
+QCvar	*r_subdivisions;
+QCvar	*r_lodCurveError;
 
-cvar_t	*r_fullscreen;
+QCvar	*r_fullscreen;
 
-cvar_t	*r_customwidth;
-cvar_t	*r_customheight;
-cvar_t	*r_customaspect;
+QCvar	*r_customwidth;
+QCvar	*r_customheight;
+QCvar	*r_customaspect;
 
-cvar_t	*r_overBrightBits;
-cvar_t	*r_mapOverBrightBits;
+QCvar	*r_overBrightBits;
+QCvar	*r_mapOverBrightBits;
 
-cvar_t	*r_debugSurface;
-cvar_t	*r_simpleMipMaps;
+QCvar	*r_debugSurface;
+QCvar	*r_simpleMipMaps;
 
-cvar_t	*r_showImages;
+QCvar	*r_showImages;
 
-cvar_t	*r_ambientScale;
-cvar_t	*r_directedScale;
-cvar_t	*r_debugLight;
-cvar_t	*r_debugSort;
-cvar_t	*r_printShaders;
-cvar_t	*r_saveFontData;
+QCvar	*r_ambientScale;
+QCvar	*r_directedScale;
+QCvar	*r_debugLight;
+QCvar	*r_debugSort;
+QCvar	*r_printShaders;
+QCvar	*r_saveFontData;
 
-cvar_t	*r_maxpolys;
+QCvar	*r_maxpolys;
 int		max_polys;
-cvar_t	*r_maxpolyverts;
+QCvar	*r_maxpolyverts;
 int		max_polyverts;
 
 void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
@@ -155,7 +155,7 @@ void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
 void ( APIENTRY * qglLockArraysEXT)( GLint, GLint);
 void ( APIENTRY * qglUnlockArraysEXT) ( void );
 
-static void AssertCvarRange( cvar_t *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
+static void AssertCvarRange( QCvar *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
 {
 	if ( shouldBeIntegral )
 	{
@@ -757,7 +757,7 @@ GfxInfo_f
 */
 void GfxInfo_f( void ) 
 {
-	cvar_t *sys_cpustring = ri.Cvar_Get( "sys_cpustring", "", 0 );
+	QCvar *sys_cpustring = ri.Cvar_Get( "sys_cpustring", "", 0 );
 	const char *enablestrings[] =
 	{
 		"disabled",

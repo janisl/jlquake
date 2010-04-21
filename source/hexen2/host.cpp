@@ -293,26 +293,24 @@ Writes key bindings and archived cvars to config.cfg
 */
 void Host_WriteConfiguration (char *fname)
 {
-	FILE	*f;
-
-// dedicated servers initialize the host but don't parse and set the
-// config.cfg cvars
+	// dedicated servers initialize the host but don't parse and set the
+	// config.cfg cvars
 	if (host_initialized & !isDedicated)
 	{
-		f = fopen (va("%s/%s",com_gamedir,fname), "w");
+		fileHandle_t f = FS_FOpenFileWrite(fname);
 		if (!f)
 		{
 			Con_Printf ("Couldn't write %s.\n",fname);
 			return;
 		}
 		
-		Key_WriteBindings (f);
-		Cvar_WriteVariables (f);
+		Key_WriteBindings(f);
+		Cvar_WriteVariables(f);
 		
 		if (in_mlook.state & 1)		//if mlook was down, keep it that way
-			fprintf (f, "+mlook\n");
+			FS_Printf(f, "+mlook\n");
 
-		fclose (f);
+		FS_FCloseFile(f);
 	}
 }
 
@@ -906,6 +904,7 @@ void Host_Init (quakeparms_t *parms)
 {
 	try
 	{
+	Sys_SetHomePathSuffix("vhexen2");
 	GLog.AddListener(&MainLog);
 
 //	if (standard_quake)
@@ -924,6 +923,7 @@ void Host_Init (quakeparms_t *parms)
 	Memory_Init (parms->membase, parms->memsize);
 	Cbuf_Init ();
 	Cmd_Init ();	
+	Cvar_Init();
 	V_Init ();
 	Chase_Init ();
 	COM_Init (parms->basedir);

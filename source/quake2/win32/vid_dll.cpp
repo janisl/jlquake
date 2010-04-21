@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
 
-cvar_t *win_noalttab;
+QCvar *win_noalttab;
 
 #ifndef WM_MOUSEWHEEL
 #define WM_MOUSEWHEEL (WM_MOUSELAST+1)  // message that will be supported by the OS 
@@ -41,11 +41,11 @@ static UINT MSH_MOUSEWHEEL;
 refexport_t GetRefAPI (refimport_t rimp);
 
 // Console variables that we need to access from this module
-extern cvar_t		*vid_gamma;
-extern cvar_t		*vid_ref;			// Name of Refresh DLL loaded
-cvar_t		*vid_xpos;			// X coordinate of window position
-cvar_t		*vid_ypos;			// Y coordinate of window position
-extern cvar_t		*vid_fullscreen;
+extern QCvar		*vid_gamma;
+extern QCvar		*vid_ref;			// Name of Refresh DLL loaded
+QCvar		*vid_xpos;			// X coordinate of window position
+QCvar		*vid_ypos;			// Y coordinate of window position
+extern QCvar		*vid_fullscreen;
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
@@ -569,7 +569,7 @@ qboolean VID_LoadRefresh( char *name )
 	ri.Cmd_ExecuteText = Cbuf_ExecuteText;
 	ri.Con_Printf = VID_Printf;
 	ri.Sys_Error = VID_Error;
-	ri.FS_LoadFile = FS_LoadFile;
+	ri.FS_ReadFile = FS_ReadFile;
 	ri.FS_FreeFile = FS_FreeFile;
 	ri.FS_Gamedir = FS_Gamedir;
 	ri.Cvar_Get = Cvar_Get;
@@ -702,8 +702,8 @@ void VID_Init (void)
 	*/
 #if 0
 	{
-		cvar_t *gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
-		cvar_t *gl_mode = Cvar_Get( "gl_mode", "3", 0 );
+		QCvar *gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
+		QCvar *gl_mode = Cvar_Get( "gl_mode", "3", 0 );
 
 		if ( QStr::ICmp( gl_driver->string, "3dfxgl" ) == 0 )
 		{

@@ -169,7 +169,7 @@ void Snd_ReleaseBuffer (void)
 
 		if (snd_buffer_count == 0)
 		{
-			S_ClearBuffer ();
+			S_ClearSoundBuffer ();
 			S_Shutdown ();
 		}
 	}

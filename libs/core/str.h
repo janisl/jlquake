@@ -396,3 +396,13 @@ char* va(const char* Format, ...) __attribute__ ((format(printf, 1, 2)));
 #define S_COLOR_CYAN	"^5"
 #define S_COLOR_MAGENTA	"^6"
 #define S_COLOR_WHITE	"^7"
+
+// TTimo
+// vsnprintf is ISO/IEC 9899:1999
+// abstracting this to make it portable
+#ifdef WIN32
+#define Q_vsnprintf _vsnprintf
+#else
+// TODO: do we need Mac define?
+#define Q_vsnprintf vsnprintf
+#endif

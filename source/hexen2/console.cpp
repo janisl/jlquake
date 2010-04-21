@@ -1,15 +1,5 @@
 // console.c
 
-#ifdef NeXT
-#include <libc.h>
-#endif
-#ifndef _MSC_VER
-#include <unistd.h>
-#endif
-#ifdef _WIN32
-#include <io.h>
-#endif
-#include <fcntl.h>
 #include "quakedef.h"
 
 int 		con_linewidth;
@@ -197,19 +187,13 @@ Con_Init
 */
 void Con_Init (void)
 {
-#define MAXGAMEDIRLEN	1000
-	char	temp[MAXGAMEDIRLEN+1];
-	char	*t2 = "/qconsole.log";
+	char	*t2 = "qconsole.log";
 
 	con_debuglog = COM_CheckParm("-condebug");
 
 	if (con_debuglog)
 	{
-		if (QStr::Length(com_gamedir) < (MAXGAMEDIRLEN - QStr::Length(t2)))
-		{
-			sprintf (temp, "%s%s", com_gamedir, t2);
-			unlink (temp);
-		}
+		FS_FCloseFile(FS_FOpenFileWrite(t2));
 	}
 
 	con_text = (short*)Hunk_AllocName (CON_TEXTSIZE<<1, "context");
@@ -347,16 +331,16 @@ Con_DebugLog
 */
 void Con_DebugLog(char *file, char *fmt, ...)
 {
-    va_list argptr; 
-    static char data[1024];
-    int fd;
-    
-    va_start(argptr, fmt);
-    vsprintf(data, fmt, argptr);
-    va_end(argptr);
-    fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data, QStr::Length(data));
-    close(fd);
+	va_list argptr; 
+	static char data[1024];
+	fileHandle_t fd;
+
+	va_start(argptr, fmt);
+	Q_vsnprintf(data, sizeof(data), fmt, argptr);
+	va_end(argptr);
+	FS_FOpenFileByMode(file, &fd, FS_APPEND);
+	FS_Write(data, QStr::Length(data), fd);
+	FS_FCloseFile(fd);
 }
 
 
@@ -384,7 +368,7 @@ void Con_Printf (const char *fmt, ...)
 
 // log all messages to file
 	if (con_debuglog)
-		Con_DebugLog(va("%s/qconsole.log",com_gamedir), "%s", msg);
+		Con_DebugLog("qconsole.log", "%s", msg);
 
 	if (!con_initialized)
 		return;
@@ -421,7 +405,7 @@ void Con_DPrintf (const char *fmt, ...)
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
 		
-	if (!developer->value)
+	if (!developer || !developer->value)
 		return;			// don't confuse non-developers with techie stuff...
 
 	va_start (argptr,fmt);

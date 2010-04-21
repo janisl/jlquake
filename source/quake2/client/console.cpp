@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 console_t	con;
 
-cvar_t		*con_notifytime;
+QCvar		*con_notifytime;
 
 
 #define		MAXCMDLINE	256
@@ -144,7 +144,7 @@ void Con_Dump_f (void)
 {
 	int		l, x;
 	char	*line;
-	FILE	*f;
+	fileHandle_t	f;
 	char	buffer[1024];
 	char	name[MAX_OSPATH];
 
@@ -154,11 +154,10 @@ void Con_Dump_f (void)
 		return;
 	}
 
-	QStr::Sprintf (name, sizeof(name), "%s/%s.txt", FS_Gamedir(), Cmd_Argv(1));
+	QStr::Sprintf (name, sizeof(name), "%s.txt", Cmd_Argv(1));
 
 	Com_Printf ("Dumped console text to %s.\n", name);
-	FS_CreatePath (name);
-	f = fopen (name, "w");
+	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
 		Com_Printf ("ERROR: couldn't open.\n");
@@ -192,10 +191,10 @@ void Con_Dump_f (void)
 		for (x=0; buffer[x]; x++)
 			buffer[x] &= 0x7f;
 
-		fprintf (f, "%s\n", buffer);
+		FS_Printf (f, "%s\n", buffer);
 	}
 
-	fclose (f);
+	FS_FCloseFile(f);
 }
 
 						
