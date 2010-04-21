@@ -24,7 +24,6 @@ set(BOTLIB_SOURCES
 	be_ai_weight.cpp
 	be_ea.cpp
 	be_interface.cpp
-	l_crc.cpp
 	l_libvar.cpp
 	l_log.cpp
 	l_memory.cpp

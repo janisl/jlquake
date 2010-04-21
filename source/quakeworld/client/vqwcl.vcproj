@@ -355,7 +355,7 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -364,7 +364,7 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)"
+						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
 						Outputs="$(IntDir)\$(InputName).obj"
 					/>
 				</FileConfiguration>
@@ -436,10 +436,6 @@
 			</File>
 			<File
 				RelativePath="console.h"
-				>
-			</File>
-			<File
-				RelativePath="cvar.h"
 				>
 			</File>
 			<File

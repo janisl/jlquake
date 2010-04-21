@@ -330,10 +330,6 @@
 				>
 			</File>
 			<File
-				RelativePath="net_vcr.cpp"
-				>
-			</File>
-			<File
 				RelativePath="net_win.cpp"
 				>
 			</File>
@@ -467,10 +463,6 @@
 				>
 			</File>
 			<File
-				RelativePath="cvar.h"
-				>
-			</File>
-			<File
 				RelativePath="draw.h"
 				>
 			</File>
@@ -512,14 +504,6 @@
 			</File>
 			<File
 				RelativePath="net_loop.h"
-				>
-			</File>
-			<File
-				RelativePath="net_ser.h"
-				>
-			</File>
-			<File
-				RelativePath="net_vcr.h"
 				>
 			</File>
 			<File

@@ -323,7 +323,7 @@ void GLimp_Shutdown( void )
 
 	if ( glw_state.log_fp )
 	{
-		fclose( glw_state.log_fp );
+		FS_FCloseFile( glw_state.log_fp );
 		glw_state.log_fp = 0;
 	}
 

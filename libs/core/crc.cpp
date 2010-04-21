@@ -132,6 +132,19 @@ unsigned short CRC_Block(const byte* start, int count)
 	{
 		crc = (crc << 8) ^ crctable[(crc >> 8) ^ *start++];
 	}
-	return crc;
+	return CRC_Value(crc);
 }
 
+//==========================================================================
+//
+//	CRC_ContinueProcessString
+//
+//==========================================================================
+
+void CRC_ContinueProcessString(unsigned short* crc, char* data, int length)
+{
+	for (int i = 0; i < length; i++)
+	{
+		*crc = (*crc << 8) ^ crctable[(*crc >> 8) ^ data[i]];
+	}
+}

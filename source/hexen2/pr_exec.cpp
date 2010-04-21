@@ -1022,7 +1022,7 @@ void PR_Profile_f(void)
 #ifdef TIMESNAP_ACTIVE
 	if(*saveName)
 	{
-		fprintf(saveFile, "(Timesnap Profile)\n");
+		FS_Printf(saveFile, "(Timesnap Profile)\n");
 	}
 	else
 	{

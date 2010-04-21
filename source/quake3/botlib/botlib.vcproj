@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="botlib"
 	ProjectGUID="{A410161F-AE9F-485D-A01F-5294891430A6}"
 	RootNamespace="botlib"
@@ -243,10 +243,6 @@
 			</File>
 			<File
 				RelativePath=".\be_interface.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\l_crc.cpp"
 				>
 			</File>
 			<File

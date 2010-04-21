@@ -33,7 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "l_utils.h"
 #include "l_memory.h"
 #include "l_log.h"
-#include "l_crc.h"
 #include "l_libvar.h"
 #include "l_script.h"
 #include "l_precomp.h"
@@ -973,8 +972,8 @@ void AAS_WriteRouteCache(void)
 	routecacheheader.version = RCVERSION;
 	routecacheheader.numareas = aasworld.numareas;
 	routecacheheader.numclusters = aasworld.numclusters;
-	routecacheheader.areacrc = CRC_ProcessString( (unsigned char *)aasworld.areas, sizeof(aas_area_t) * aasworld.numareas );
-	routecacheheader.clustercrc = CRC_ProcessString( (unsigned char *)aasworld.clusters, sizeof(aas_cluster_t) * aasworld.numclusters );
+	routecacheheader.areacrc = CRC_Block( (unsigned char *)aasworld.areas, sizeof(aas_area_t) * aasworld.numareas );
+	routecacheheader.clustercrc = CRC_Block( (unsigned char *)aasworld.clusters, sizeof(aas_cluster_t) * aasworld.numclusters );
 	routecacheheader.numportalcache = numportalcache;
 	routecacheheader.numareacache = numareacache;
 	//write the header
@@ -1083,13 +1082,13 @@ int AAS_ReadRouteCache(void)
 		return qfalse;
 	} //end if
 	if (routecacheheader.areacrc !=
-		CRC_ProcessString( (unsigned char *)aasworld.areas, sizeof(aas_area_t) * aasworld.numareas ))
+		CRC_Block( (unsigned char *)aasworld.areas, sizeof(aas_area_t) * aasworld.numareas ))
 	{
 		//AAS_Error("route cache dump area CRC incorrect\n");
 		return qfalse;
 	} //end if
 	if (routecacheheader.clustercrc !=
-		CRC_ProcessString( (unsigned char *)aasworld.clusters, sizeof(aas_cluster_t) * aasworld.numclusters ))
+		CRC_Block( (unsigned char *)aasworld.clusters, sizeof(aas_cluster_t) * aasworld.numclusters ))
 	{
 		//AAS_Error("route cache dump cluster CRC incorrect\n");
 		return qfalse;

@@ -173,7 +173,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\files.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\huffman.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\infostr.cpp"
 				>
 			</File>
 			<File
@@ -198,6 +206,14 @@
 			</File>
 			<File
 				RelativePath=".\str.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\system_win.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\unzip.cpp"
 				>
 			</File>
 		</Filter>
@@ -239,7 +255,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\files.h"
+				>
+			</File>
+			<File
 				RelativePath=".\huffman.h"
+				>
+			</File>
+			<File
+				RelativePath=".\infostr.h"
 				>
 			</File>
 			<File
@@ -264,6 +288,14 @@
 			</File>
 			<File
 				RelativePath=".\str.h"
+				>
+			</File>
+			<File
+				RelativePath=".\system.h"
+				>
+			</File>
+			<File
+				RelativePath=".\unzip.h"
 				>
 			</File>
 		</Filter>

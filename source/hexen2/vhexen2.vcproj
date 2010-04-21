@@ -361,10 +361,6 @@
 				>
 			</File>
 			<File
-				RelativePath="net_vcr.cpp"
-				>
-			</File>
-			<File
 				RelativePath="net_win.cpp"
 				>
 			</File>
@@ -534,10 +530,6 @@
 				>
 			</File>
 			<File
-				RelativePath="Cvar.h"
-				>
-			</File>
-			<File
 				RelativePath="Draw.h"
 				>
 			</File>
@@ -591,10 +583,6 @@
 			</File>
 			<File
 				RelativePath="Net_ser.h"
-				>
-			</File>
-			<File
-				RelativePath="Net_vcr.h"
 				>
 			</File>
 			<File

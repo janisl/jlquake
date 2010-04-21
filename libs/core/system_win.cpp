@@ -20,6 +20,10 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
+//#define WIN32_LEAN_AND_MEAN
+//#include <windows.h>
+#include <direct.h>
+#include <io.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -150,7 +154,7 @@ static void Sys_ListFilteredFiles(const char* basedir, char* subdirs, char* filt
 			break;
 		}
 		QStr::Sprintf(filename, sizeof(filename), "%s\\%s", subdirs, findinfo.name);
-		if (!Com_FilterPath(filter, filename, false))
+		if (!QStr::FilterPath(filter, filename, false))
 		{
 			continue;
 		}
@@ -159,6 +163,36 @@ static void Sys_ListFilteredFiles(const char* basedir, char* subdirs, char* filt
 	} while (_findnext(findhandle, &findinfo) != -1);
 
 	_findclose(findhandle);
+}
+
+//==========================================================================
+//
+//	strgtr
+//
+//==========================================================================
+
+static bool strgtr(const char *s0, const char *s1)
+{
+	int l0 = QStr::Length(s0);
+	int l1 = QStr::Length(s1);
+
+	if (l1 < l0)
+	{
+		l0 = l1;
+	}
+
+	for (int i = 0; i < l0; i++)
+	{
+		if (s1[i] > s0[i])
+		{
+			return true;
+		}
+		if (s1[i] < s0[i])
+		{
+			return false;
+		}
+	}
+	return false;
 }
 
 //==========================================================================

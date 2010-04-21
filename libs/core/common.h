@@ -142,6 +142,9 @@ public:
 #define	ANGLE2SHORT(x)		((int)((x)*65536/360) & 65535)
 #define	SHORT2ANGLE(x)		((x)*(360.0/65536))
 
+#define random()	((rand () & 0x7fff) / ((float)0x7fff))
+#define crandom()	(2.0 * (random() - 0.5))
+
 //==========================================================================
 //
 //	Library method replacements.

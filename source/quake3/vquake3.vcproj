@@ -348,10 +348,6 @@
 				>
 			</File>
 			<File
-				RelativePath="qcommon\unzip.cpp"
-				>
-			</File>
-			<File
 				RelativePath="qcommon\vm.cpp"
 				>
 			</File>
@@ -486,10 +482,6 @@
 			</File>
 			<File
 				RelativePath="ui\ui_public.h"
-				>
-			</File>
-			<File
-				RelativePath="qcommon\unzip.h"
 				>
 			</File>
 			<File

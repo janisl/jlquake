@@ -1807,11 +1807,15 @@ void FS_Printf(fileHandle_t h, const char *fmt, ...)
 
 void FS_Scanf(fileHandle_t h, const char *fmt, ...)
 {
+#ifdef _WIN32
+	throw QException("Not implemented");
+#else
 	va_list		argptr;
 
 	va_start(argptr, fmt);
 	vfscanf(FS_FileForHandle(h), fmt, argptr);
 	va_end(argptr);
+#endif
 }
 
 //==========================================================================

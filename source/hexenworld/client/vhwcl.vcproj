@@ -468,10 +468,6 @@
 				>
 			</File>
 			<File
-				RelativePath="cvar.h"
-				>
-			</File>
-			<File
 				RelativePath="draw.h"
 				>
 			</File>

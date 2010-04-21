@@ -763,10 +763,6 @@ void	VID_SetPalette (unsigned char *palette)
 			d_15to8table[i]=k;
 			if (m >= 1000)
 			{
-#ifdef _DEBUG
-				sprintf(s, "Done - %d\n", i);
-				OutputDebugString(s);
-#endif
 				SendMessage(hProgress, PBM_STEPIT, 0, 0);
 				m=0;
 			}
