@@ -2,8 +2,6 @@
 
 #include "../../../libs/core/core.h"
 
-#define	QUAKE_GAME			// as opposed to utilities
-
 //define	PARANOID			// speed sapping error checking
 
 #include <setjmp.h>
@@ -20,6 +18,7 @@
 #include "cmd.h"
 typedef void efrag_t;
 #include "gl_model.h"
+#include "../../quake/cmodel.h"
 #include "cl_effect.h"
 #include "progs.h"
 

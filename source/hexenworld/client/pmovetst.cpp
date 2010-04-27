@@ -1,7 +1,8 @@
 #include "quakedef.h"
+#include "../../quake/cm_local.h"
 
-static	hull_t		box_hull;
-static	dclipnode_t	box_clipnodes[6];
+static	chull_t		box_hull;
+static	bsp29_dclipnode_t	box_clipnodes[6];
 static	cplane_t	box_planes[6];
 
 extern	vec3_t player_mins;
@@ -15,7 +16,7 @@ extern	vec3_t beast_maxs;
 PM_InitBoxHull
 
 Set up the planes and clipnodes so that the six floats of a bounding box
-can just be stored out and get a proper hull_t structure.
+can just be stored out and get a proper chull_t structure.
 ===================
 */
 void PM_InitBoxHull (void)
@@ -55,7 +56,7 @@ To keep everything totally uniform, bounding boxes are turned into small
 BSP trees instead of being compared directly.
 ===================
 */
-hull_t	*PM_HullForBox (vec3_t mins, vec3_t maxs)
+chull_t	*PM_HullForBox (vec3_t mins, vec3_t maxs)
 {
 	box_planes[0].dist = maxs[0];
 	box_planes[1].dist = mins[0];
@@ -74,10 +75,10 @@ PM_HullPointContents
 
 ==================
 */
-int PM_HullPointContents (hull_t *hull, int num, vec3_t p)
+int PM_HullPointContents (chull_t *hull, int num, vec3_t p)
 {
 	float		d;
-	dclipnode_t	*node;
+	bsp29_dclipnode_t	*node;
 	cplane_t	*plane;
 
 	while (num >= 0)
@@ -110,9 +111,9 @@ PM_PointContents
 int PM_PointContents (vec3_t p)
 {
 	float		d;
-	dclipnode_t	*node;
+	bsp29_dclipnode_t	*node;
 	cplane_t	*plane;
-	hull_t		*hull;
+	chull_t		*hull;
 	int			num;
 
 	hull = &pmove.physents[0].model->hulls[0];
@@ -157,9 +158,9 @@ PM_RecursiveHullCheck
 
 ==================
 */
-qboolean PM_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, pmtrace_t *trace)
+qboolean PM_RecursiveHullCheck (chull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, pmtrace_t *trace)
 {
-	dclipnode_t	*node;
+	bsp29_dclipnode_t	*node;
 	cplane_t	*plane;
 	float		t1, t2;
 	float		frac;
@@ -302,7 +303,7 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 	int			i;
 	physent_t	*pe;
 	vec3_t		mins, maxs, test;
-	hull_t		*hull;
+	chull_t		*hull;
 	pmtrace_t	trace;
 
 	trace = PM_PlayerMove (pos, pos);
@@ -370,7 +371,7 @@ pmtrace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	pmtrace_t	trace, total;
 	vec3_t		offset;
 	vec3_t		start_l, end_l;
-	hull_t		*hull;
+	chull_t		*hull;
 	int			i;
 	physent_t	*pe;
 	vec3_t		mins, maxs;

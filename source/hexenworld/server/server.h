@@ -32,11 +32,11 @@ typedef struct
 
 	char		startspot[64];
 	char		modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
-	struct model_s 	*worldmodel;
+	struct cmodel_t	*worldmodel;
 	char		*model_precache[MAX_MODELS];	// NULL terminated
 	char		*sound_precache[MAX_SOUNDS];	// NULL terminated
 	char		*lightstyles[MAX_LIGHTSTYLES];
-	struct model_s		*models[MAX_MODELS];
+	struct cmodel_t		*models[MAX_MODELS];
 
 	struct EffectT Effects[MAX_EFFECTS];
 

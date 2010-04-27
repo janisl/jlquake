@@ -225,7 +225,7 @@ void PF_setmodel (void)
 {
 	edict_t	*e;
 	char	*m, **check;
-	model_t	*mod;
+	cmodel_t	*mod;
 	int		i;
 
 	e = G_EDICT(OFS_PARM0);
@@ -246,16 +246,23 @@ void PF_setmodel (void)
 	mod = sv.models[ (int)e->v.modelindex];  // Mod_ForName (m, true);
 	
 	if (mod)
-		SetMinMaxSize (e, mod->mins, mod->maxs, true);
+	{
+		vec3_t mins;
+		vec3_t maxs;
+		CM_ModelBounds(mod, mins, maxs);
+		SetMinMaxSize(e, mins, maxs, true);
+	}
 	else
-		SetMinMaxSize (e, vec3_origin, vec3_origin, true);
+	{
+		SetMinMaxSize(e, vec3_origin, vec3_origin, true);
+	}
 }
 
 void PF_setpuzzlemodel (void)
 {
 	edict_t	*e;
 	char	*m, **check;
-	model_t	*mod;
+	cmodel_t	*mod;
 	int		i;
 	char	NewName[256];
 
@@ -277,7 +284,7 @@ void PF_setpuzzlemodel (void)
 		Con_Printf("**** %s\n",NewName);
 
 		sv.model_precache[i] = e->v.model + pr_strings;
-		sv.models[i] = Mod_ForName (NewName, true);
+		sv.models[i] = CM_PrecacheModel(NewName);
 	}
 		
 	e->v.modelindex = i; //SV_ModelIndex (m);
@@ -285,9 +292,16 @@ void PF_setpuzzlemodel (void)
 	mod = sv.models[ (int)e->v.modelindex];  // Mod_ForName (m, true);
 	
 	if (mod)
-		SetMinMaxSize (e, mod->mins, mod->maxs, true);
+	{
+		vec3_t mins;
+		vec3_t maxs;
+		CM_ModelBounds(mod, mins, maxs);
+		SetMinMaxSize(e, mins, maxs, true);
+	}
 	else
-		SetMinMaxSize (e, vec3_origin, vec3_origin, true);
+	{
+		SetMinMaxSize(e, vec3_origin, vec3_origin, true);
+	}
 }
 
 /*
@@ -1155,14 +1169,13 @@ void PF_checkpos (void)
 
 //============================================================================
 
-byte	checkpvs[MAX_MAP_LEAFS/8];
+byte	checkpvs[BSP29_MAX_MAP_LEAFS/8];
 
 int PF_newcheckclient (int check)
 {
 	int		i;
 	byte	*pvs;
 	edict_t	*ent;
-	mleaf_t	*leaf;
 	vec3_t	org;
 
 // cycle to the next one
@@ -1198,11 +1211,11 @@ int PF_newcheckclient (int check)
 		break;
 	}
 
-// get the PVS for the entity
+	// get the PVS for the entity
 	VectorAdd (ent->v.origin, ent->v.view_ofs, org);
-	leaf = Mod_PointInLeaf (org, sv.worldmodel);
-	pvs = Mod_LeafPVS (leaf, sv.worldmodel);
-	Com_Memcpy(checkpvs, pvs, (sv.worldmodel->numleafs+7)>>3 );
+	int leaf = CM_PointLeafnum(org);
+	pvs = CM_ClusterPVS(CM_LeafCluster(leaf));
+	Com_Memcpy(checkpvs, pvs, (CM_NumClusters() + 7) >> 3);
 
 	return i;
 }
@@ -1227,8 +1240,6 @@ int c_invis, c_notvis;
 void PF_checkclient (void)
 {
 	edict_t	*ent, *self;
-	mleaf_t	*leaf;
-	int		l;
 	vec3_t	view;
 	
 // find a new check if on a new frame
@@ -1249,9 +1260,9 @@ void PF_checkclient (void)
 // if current entity can't possibly see the check entity, return 0
 	self = PROG_TO_EDICT(pr_global_struct->self);
 	VectorAdd (self->v.origin, self->v.view_ofs, view);
-	leaf = Mod_PointInLeaf (view, sv.worldmodel);
-	l = (leaf - sv.worldmodel->leafs) - 1;
-	if ( (l<0) || !(checkpvs[l>>3] & (1<<(l&7)) ) )
+	int leaf = CM_PointLeafnum(view);
+	int l = CM_LeafCluster(leaf);
+	if ((l < 0) || !(checkpvs[l >> 3] & (1 << (l & 7))))
 	{
 c_notvis++;
 		RETURN_EDICT(sv.edicts);
@@ -1625,7 +1636,7 @@ void PF_precache_model (void)
 		if (!sv.model_precache[i])
 		{
 			sv.model_precache[i] = s;
-			sv.models[i] = Mod_ForName (s, true);
+			sv.models[i] = CM_PrecacheModel(s);
 			return;
 		}
 		if (!QStr::Cmp(sv.model_precache[i], s))
@@ -1681,7 +1692,7 @@ void PF_precache_puzzle_model (void)
 		if (!sv.model_precache[i])
 		{
 			sv.model_precache[i] = s;
-			sv.models[i] = Mod_ForName (s, true);
+			sv.models[i] = CM_PrecacheModel(s);
 			return;
 		}
 		if (!QStr::Cmp(sv.model_precache[i], s))

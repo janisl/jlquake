@@ -884,9 +884,51 @@ void SV_SaveEffects(fileHandle_t FH)
 		}
 }
 
+static int GetInt(char*& Data)
+{
+	//	Skip whitespace.
+	while (*Data && *Data <= ' ')
+		Data++;
+	char Tmp[32];
+	int Len = 0;
+	while ((*Data >= '0' && *Data <= '9') || *Data == '-')
+	{
+		if (Len >= sizeof(Tmp) - 1)
+		{
+			Tmp[31] = 0;
+			Sys_Error("Number too long %s", Tmp);
+		}
+		Tmp[Len] = *Data++;
+		Len++;
+	}
+	Tmp[Len] = 0;
+	return QStr::Atoi(Tmp);
+}
+
+static float GetFloat(char*& Data)
+{
+	//	Skip whitespace.
+	while (*Data && *Data <= ' ')
+		Data++;
+	char Tmp[32];
+	int Len = 0;
+	while ((*Data >= '0' && *Data <= '9') || *Data == '-' || *Data == '.')
+	{
+		if (Len >= sizeof(Tmp) - 1)
+		{
+			Tmp[31] = 0;
+			Sys_Error("Number too long %s", Tmp);
+		}
+		Tmp[Len] = *Data++;
+		Len++;
+	}
+	Tmp[Len] = 0;
+	return QStr::Atof(Tmp);
+}
+
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
 // SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
-void SV_LoadEffects(fileHandle_t FH)
+char* SV_LoadEffects(char* Data)
 {
 	int index,Total,count;
 
@@ -894,67 +936,79 @@ void SV_LoadEffects(fileHandle_t FH)
 	// the loading
 	SV_ClearEffects();
 
-	FS_Scanf(FH,"Effects: %d\n",&Total);
+	if (QStr::NCmp(Data, "Effects: ", 9))
+		throw QDropException("Effects expected");
+	Data += 9;
+	Total = GetInt(Data);
 
 	for(count=0;count<Total;count++)
 	{
-		FS_Scanf(FH,"Effect: %d ",&index);
-		FS_Scanf(FH,"%d %f: ",&sv.Effects[index].type,&sv.Effects[index].expire_time);
+		//	Skip whitespace.
+		while (*Data && *Data <= ' ')
+			Data++;
+		if (QStr::NCmp(Data, "Effect: ", 8))
+			Sys_Error("Effect expected");
+		Data += 8;
+		index = GetInt(Data);
+		sv.Effects[index].type = GetInt(Data);
+		sv.Effects[index].expire_time = GetFloat(Data);
+		if (*Data != ':')
+			Sys_Error("Colon expected");
+		Data++;
 
 		switch(sv.Effects[index].type)
 		{
 			case CE_RAIN:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.e_size[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.e_size[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.e_size[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[2]);
-				FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.color);
-				FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.count);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].Rain.wait);
+				sv.Effects[index].Rain.min_org[0] = GetFloat(Data);
+				sv.Effects[index].Rain.min_org[1] = GetFloat(Data);
+				sv.Effects[index].Rain.min_org[2] = GetFloat(Data);
+				sv.Effects[index].Rain.max_org[0] = GetFloat(Data);
+				sv.Effects[index].Rain.max_org[1] = GetFloat(Data);
+				sv.Effects[index].Rain.max_org[2] = GetFloat(Data);
+				sv.Effects[index].Rain.e_size[0] = GetFloat(Data);
+				sv.Effects[index].Rain.e_size[1] = GetFloat(Data);
+				sv.Effects[index].Rain.e_size[2] = GetFloat(Data);
+				sv.Effects[index].Rain.dir[0] = GetFloat(Data);
+				sv.Effects[index].Rain.dir[1] = GetFloat(Data);
+				sv.Effects[index].Rain.dir[2] = GetFloat(Data);
+				sv.Effects[index].Rain.color = GetInt(Data);
+				sv.Effects[index].Rain.count = GetInt(Data);
+				sv.Effects[index].Rain.wait = GetFloat(Data);
 				break;
 
 			case CE_SNOW:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.min_org[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.max_org[2]);
-				FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.flags);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Rain.dir[2]);
-				FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.count);
-				//FS_Scanf(FH, "%d ", &sv.Effects[index].Rain.veer);
+				sv.Effects[index].Rain.min_org[0] = GetFloat(Data);
+				sv.Effects[index].Rain.min_org[1] = GetFloat(Data);
+				sv.Effects[index].Rain.min_org[2] = GetFloat(Data);
+				sv.Effects[index].Rain.max_org[0] = GetFloat(Data);
+				sv.Effects[index].Rain.max_org[1] = GetFloat(Data);
+				sv.Effects[index].Rain.max_org[2] = GetFloat(Data);
+				sv.Effects[index].Rain.flags = GetInt(Data);
+				sv.Effects[index].Rain.dir[0] = GetFloat(Data);
+				sv.Effects[index].Rain.dir[1] = GetFloat(Data);
+				sv.Effects[index].Rain.dir[2] = GetFloat(Data);
+				sv.Effects[index].Rain.count = GetInt(Data);
 				break;
 
 			case CE_FOUNTAIN:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.pos[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.pos[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.pos[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.angle[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.angle[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.angle[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Fountain.movedir[2]);
-				FS_Scanf(FH, "%d ", &sv.Effects[index].Fountain.color);
-				FS_Scanf(FH, "%d\n", &sv.Effects[index].Fountain.cnt);
+				sv.Effects[index].Fountain.pos[0] = GetFloat(Data);
+				sv.Effects[index].Fountain.pos[1] = GetFloat(Data);
+				sv.Effects[index].Fountain.pos[2] = GetFloat(Data);
+				sv.Effects[index].Fountain.angle[0] = GetFloat(Data);
+				sv.Effects[index].Fountain.angle[1] = GetFloat(Data);
+				sv.Effects[index].Fountain.angle[2] = GetFloat(Data);
+				sv.Effects[index].Fountain.movedir[0] = GetFloat(Data);
+				sv.Effects[index].Fountain.movedir[1] = GetFloat(Data);
+				sv.Effects[index].Fountain.movedir[2] = GetFloat(Data);
+				sv.Effects[index].Fountain.color = GetInt(Data);
+				sv.Effects[index].Fountain.cnt = GetInt(Data);
 				break;
 
 			case CE_QUAKE:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Quake.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Quake.origin[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Quake.origin[2]);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].Quake.radius);
+				sv.Effects[index].Quake.origin[0] = GetFloat(Data);
+				sv.Effects[index].Quake.origin[1] = GetFloat(Data);
+				sv.Effects[index].Quake.origin[2] = GetFloat(Data);
+				sv.Effects[index].Quake.radius = GetFloat(Data);
 				break;
 
 			case CE_WHITE_SMOKE:
@@ -971,14 +1025,14 @@ void SV_LoadEffects(fileHandle_t FH)
 			case CE_FLAMEWALL:
 			case CE_FLAMEWALL2:
 			case CE_ONFIRE:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.velocity[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.framelength);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].Smoke.frame);
+				sv.Effects[index].Smoke.origin[0] = GetFloat(Data);
+				sv.Effects[index].Smoke.origin[1] = GetFloat(Data);
+				sv.Effects[index].Smoke.origin[2] = GetFloat(Data);
+				sv.Effects[index].Smoke.velocity[0] = GetFloat(Data);
+				sv.Effects[index].Smoke.velocity[1] = GetFloat(Data);
+				sv.Effects[index].Smoke.velocity[2] = GetFloat(Data);
+				sv.Effects[index].Smoke.framelength = GetFloat(Data);
+				sv.Effects[index].Smoke.frame = GetFloat(Data);
 				break;
 
 			case CE_SM_WHITE_FLASH:
@@ -1014,71 +1068,71 @@ void SV_LoadEffects(fileHandle_t FH)
 			case CE_FIREWALL_MEDIUM:
 			case CE_FIREWALL_LARGE:
 			case CE_BOMB:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Smoke.origin[1]);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].Smoke.origin[2]);
+				sv.Effects[index].Smoke.origin[0] = GetFloat(Data);
+				sv.Effects[index].Smoke.origin[1] = GetFloat(Data);
+				sv.Effects[index].Smoke.origin[2] = GetFloat(Data);
 				break;
 
 			case CE_WHITE_FLASH:
 			case CE_BLUE_FLASH:
 			case CE_SM_BLUE_FLASH:
 			case CE_RED_FLASH:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Flash.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Flash.origin[1]);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].Flash.origin[2]);
+				sv.Effects[index].Flash.origin[0] = GetFloat(Data);
+				sv.Effects[index].Flash.origin[1] = GetFloat(Data);
+				sv.Effects[index].Flash.origin[2] = GetFloat(Data);
 				break;
 
 			case CE_RIDER_DEATH:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].RD.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].RD.origin[1]);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].RD.origin[2]);
+				sv.Effects[index].RD.origin[0] = GetFloat(Data);
+				sv.Effects[index].RD.origin[1] = GetFloat(Data);
+				sv.Effects[index].RD.origin[2] = GetFloat(Data);
 				break;
 
 			case CE_GRAVITYWELL:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].RD.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].RD.origin[1]);
-				FS_Scanf(FH, "%f", &sv.Effects[index].RD.origin[2]);
-				FS_Scanf(FH, "%d", &sv.Effects[index].RD.color);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].RD.lifetime);
+				sv.Effects[index].RD.origin[0] = GetFloat(Data);
+				sv.Effects[index].RD.origin[1] = GetFloat(Data);
+				sv.Effects[index].RD.origin[2] = GetFloat(Data);
+				sv.Effects[index].RD.color = GetInt(Data);
+				sv.Effects[index].RD.lifetime = GetFloat(Data);
 				break;
 
 			case CE_TELEPORTERPUFFS:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[1]);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].Teleporter.origin[2]);
+				sv.Effects[index].Teleporter.origin[0] = GetFloat(Data);
+				sv.Effects[index].Teleporter.origin[1] = GetFloat(Data);
+				sv.Effects[index].Teleporter.origin[2] = GetFloat(Data);
 				break;
 
 			case CE_TELEPORTERBODY:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Teleporter.origin[1]);
-				FS_Scanf(FH, "%f\n", &sv.Effects[index].Teleporter.origin[2]);
+				sv.Effects[index].Teleporter.origin[0] = GetFloat(Data);
+				sv.Effects[index].Teleporter.origin[1] = GetFloat(Data);
+				sv.Effects[index].Teleporter.origin[2] = GetFloat(Data);
 				break;
 
 			case CE_BONESHARD:
 			case CE_BONESHRAPNEL:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.origin[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.origin[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.velocity[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.velocity[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.velocity[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.angle[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.angle[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.angle[2]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Missile.avelocity[2]);
+				sv.Effects[index].Missile.origin[0] = GetFloat(Data);
+				sv.Effects[index].Missile.origin[1] = GetFloat(Data);
+				sv.Effects[index].Missile.origin[2] = GetFloat(Data);
+				sv.Effects[index].Missile.velocity[0] = GetFloat(Data);
+				sv.Effects[index].Missile.velocity[1] = GetFloat(Data);
+				sv.Effects[index].Missile.velocity[2] = GetFloat(Data);
+				sv.Effects[index].Missile.angle[0] = GetFloat(Data);
+				sv.Effects[index].Missile.angle[1] = GetFloat(Data);
+				sv.Effects[index].Missile.angle[2] = GetFloat(Data);
+				sv.Effects[index].Missile.avelocity[0] = GetFloat(Data);
+				sv.Effects[index].Missile.avelocity[1] = GetFloat(Data);
+				sv.Effects[index].Missile.avelocity[2] = GetFloat(Data);
 				break;
 
 			case CE_CHUNK:
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.origin[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.origin[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.origin[2]);
-				FS_Scanf(FH, "%d ", &sv.Effects[index].Chunk.type);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[0]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[1]);
-				FS_Scanf(FH, "%f ", &sv.Effects[index].Chunk.srcVel[2]);
-				FS_Scanf(FH, "%d ", &sv.Effects[index].Chunk.numChunks);
+				sv.Effects[index].Chunk.origin[0] = GetFloat(Data);
+				sv.Effects[index].Chunk.origin[1] = GetFloat(Data);
+				sv.Effects[index].Chunk.origin[2] = GetFloat(Data);
+				sv.Effects[index].Chunk.type = GetInt(Data);
+				sv.Effects[index].Chunk.srcVel[0] = GetFloat(Data);
+				sv.Effects[index].Chunk.srcVel[1] = GetFloat(Data);
+				sv.Effects[index].Chunk.srcVel[2] = GetFloat(Data);
+				sv.Effects[index].Chunk.numChunks = GetInt(Data);
 				break;
 
 			default:
@@ -1086,6 +1140,7 @@ void SV_LoadEffects(fileHandle_t FH)
 				break;
 		}
 	}
+	return Data;
 }
 
 void CL_FreeEffect(int index)

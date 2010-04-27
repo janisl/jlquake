@@ -17,21 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+// models.c -- model loading and caching
 
-#include "../../libs/core/bsp29file.h"
+// models are the only shared resource between a client and server running
+// on the same machine.
 
-#define	CONTENTS_EMPTY		-1
-#define	CONTENTS_SOLID		-2
-#define	CONTENTS_WATER		-3
-#define	CONTENTS_SLIME		-4
-#define	CONTENTS_LAVA		-5
-#define	CONTENTS_SKY		-6
-#define	CONTENTS_ORIGIN		-7		// removed at csg time
-#define	CONTENTS_CLIP		-8		// changed to contents_solid
+#include "quakedef.h"
 
-#define	CONTENTS_CURRENT_0		-9
-#define	CONTENTS_CURRENT_90		-10
-#define	CONTENTS_CURRENT_180	-11
-#define	CONTENTS_CURRENT_270	-12
-#define	CONTENTS_CURRENT_UP		-13
-#define	CONTENTS_CURRENT_DOWN	-14
+#include "../../quake/cmodel_shared.cpp"

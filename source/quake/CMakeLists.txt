@@ -11,6 +11,8 @@ set(QUAKE_FILES
 	cl_tent.cpp
 	chase.cpp
 	cmd.cpp
+	cmodel.cpp
+	cmodel.h
 	common.cpp
 	console.cpp
 	cvar.cpp
@@ -23,7 +25,6 @@ set(QUAKE_FILES
 	gl_rmisc.cpp
 	gl_rsurf.cpp
 	gl_screen.cpp
-	gl_test.cpp
 	gl_vidlinuxglx.cpp
 	gl_warp.cpp
 	host.cpp

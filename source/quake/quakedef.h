@@ -21,10 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../../libs/core/core.h"
 
-//#define	GLTEST			// experimental stuff
-
-#define	QUAKE_GAME			// as opposed to utilities
-
 #define	VERSION				1.09
 #define	GLQUAKE_VERSION		1.00
 #define	D3DQUAKE_VERSION	0.01
@@ -207,8 +203,9 @@ typedef struct
 #include "render.h"
 #include "client.h"
 #include "progs.h"
-#include "server.h"
 #include "gl_model.h"
+#include "cmodel.h"
+#include "server.h"
 #include "input.h"
 #include "world.h"
 #include "keys.h"

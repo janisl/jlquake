@@ -165,7 +165,7 @@ void PF_setmodel (void)
 	edict_t	*e;
 	char	*m, **check;
 	int		i;
-	model_t	*mod;
+	cmodel_t	*mod;
 
 	e = G_EDICT(OFS_PARM0);
 	m = G_STRING(OFS_PARM1);
@@ -184,11 +184,10 @@ void PF_setmodel (void)
 // if it is an inline model, get the size information for it
 	if (m[0] == '*')
 	{
-		mod = Mod_ForName (m, true);
-		VectorCopy (mod->mins, e->v.mins);
-		VectorCopy (mod->maxs, e->v.maxs);
-		VectorSubtract (mod->maxs, mod->mins, e->v.size);
-		SV_LinkEdict (e, false);
+		mod = CM_InlineModel(m);
+		CM_ModelBounds(mod, e->v.mins, e->v.maxs);
+		VectorSubtract(e->v.maxs, e->v.mins, e->v.size);
+		SV_LinkEdict(e, false);
 	}
 
 }
@@ -558,14 +557,13 @@ void PF_checkpos (void)
 
 //============================================================================
 
-byte	checkpvs[MAX_MAP_LEAFS/8];
+byte	checkpvs[BSP29_MAX_MAP_LEAFS/8];
 
 int PF_newcheckclient (int check)
 {
 	int		i;
 	byte	*pvs;
 	edict_t	*ent;
-	mleaf_t	*leaf;
 	vec3_t	org;
 
 // cycle to the next one
@@ -601,11 +599,11 @@ int PF_newcheckclient (int check)
 		break;
 	}
 
-// get the PVS for the entity
+	// get the PVS for the entity
 	VectorAdd (ent->v.origin, ent->v.view_ofs, org);
-	leaf = Mod_PointInLeaf (org, sv.worldmodel);
-	pvs = Mod_LeafPVS (leaf, sv.worldmodel);
-	Com_Memcpy(checkpvs, pvs, (sv.worldmodel->numleafs+7)>>3 );
+	int leaf = CM_PointLeafnum(org);
+	pvs = CM_ClusterPVS(CM_LeafCluster(leaf));
+	Com_Memcpy(checkpvs, pvs, (CM_NumClusters() + 7) >> 3);
 
 	return i;
 }
@@ -630,8 +628,6 @@ int c_invis, c_notvis;
 void PF_checkclient (void)
 {
 	edict_t	*ent, *self;
-	mleaf_t	*leaf;
-	int		l;
 	vec3_t	view;
 	
 // find a new check if on a new frame
@@ -652,9 +648,9 @@ void PF_checkclient (void)
 // if current entity can't possibly see the check entity, return 0
 	self = PROG_TO_EDICT(pr_global_struct->self);
 	VectorAdd (self->v.origin, self->v.view_ofs, view);
-	leaf = Mod_PointInLeaf (view, sv.worldmodel);
-	l = (leaf - sv.worldmodel->leafs) - 1;
-	if ( (l<0) || !(checkpvs[l>>3] & (1<<(l&7)) ) )
+	int leaf = CM_PointLeafnum(view);
+	int l = CM_LeafCluster(leaf);
+	if ((l < 0) || !(checkpvs[l >> 3] & (1 << (l & 7))))
 	{
 c_notvis++;
 		RETURN_EDICT(sv.edicts);

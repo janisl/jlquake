@@ -360,6 +360,7 @@ void CL_ParseServerInfo (void)
 
 // local state
 	cl_entities[0].model = cl.worldmodel = cl.model_precache[1];
+	cl.worldcmodel = CM_LoadMap(model_precache[1], true, NULL);
 /*	rjr experimental client side physics - suspect memory is caching out
 	if (!sv.active)
 	{

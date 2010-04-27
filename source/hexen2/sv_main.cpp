@@ -5,6 +5,7 @@
  */
 
 #include "quakedef.h"
+#include "../quake/cm_local.h"
 
 server_t		sv;
 server_static_t	svs;
@@ -600,9 +601,9 @@ crosses a waterline.
 */
 
 int		fatbytes;
-byte	fatpvs[MAX_MAP_LEAFS/8];
+byte	fatpvs[BSP29_MAX_MAP_LEAFS/8];
 
-void SV_AddToFatPVS (vec3_t org, mnode_t *node)
+void SV_AddToFatPVS (vec3_t org, cnode_t *node)
 {
 	int		i;
 	byte	*pvs;
@@ -616,7 +617,7 @@ void SV_AddToFatPVS (vec3_t org, mnode_t *node)
 		{
 			if (node->contents != CONTENTS_SOLID)
 			{
-				pvs = Mod_LeafPVS ( (mleaf_t *)node, sv.worldmodel);
+				pvs = CM_ClusterPVS(CM_LeafCluster((cleaf_t*)node - sv.worldmodel->leafs));
 				for (i=0 ; i<fatbytes ; i++)
 					fatpvs[i] |= pvs[i];
 			}
@@ -647,7 +648,7 @@ given point.
 */
 byte *SV_FatPVS (vec3_t org)
 {
-	fatbytes = (sv.worldmodel->numleafs+31)>>3;
+	fatbytes = (CM_NumClusters() + 31) >> 3;
 	Com_Memset(fatpvs, 0, fatbytes);
 	SV_AddToFatPVS (org, sv.worldmodel->nodes);
 	return fatpvs;
@@ -1978,7 +1979,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 
-	sv.worldmodel = Mod_ForName (sv.modelname, false);
+	sv.worldmodel = CM_LoadMap(sv.modelname, false, NULL);
 	if (!sv.worldmodel)
 	{
 		Con_Printf ("Couldn't spawn server %s\n", sv.modelname);
@@ -1998,10 +1999,10 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	sv.model_precache[0] = pr_strings;
 	sv.model_precache[1] = sv.modelname;
-	for (i=1 ; i<sv.worldmodel->numsubmodels ; i++)
+	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
 		sv.model_precache[1+i] = localmodels[i];
-		sv.models[i+1] = Mod_ForName (localmodels[i], false);
+		sv.models[i+1] = CM_InlineModel(localmodels[i]);
 	}
 
 //
@@ -2010,7 +2011,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	ent = EDICT_NUM(0);
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
-	ent->v.model = sv.worldmodel->name - pr_strings;
+	ent->v.model = sv.modelname - pr_strings;
 	ent->v.modelindex = 1;		// world model
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
@@ -2030,7 +2031,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	
 	current_loading_size += 5;
 	D_ShowLoadingSize();
-	ED_LoadFromFile (sv.worldmodel->entities);
+	ED_LoadFromFile(CM_EntityString());
 
 	sv.active = true;
 

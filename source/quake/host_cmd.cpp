@@ -510,6 +510,26 @@ void Host_Savegame_f (void)
 	Con_Printf ("done.\n");
 }
 
+static char* GetLine(char*& ReadPos)
+{
+	char* Line = ReadPos;
+	while (*ReadPos)
+	{
+		if (*ReadPos == '\r')
+		{
+			*ReadPos = 0;
+			ReadPos++;
+		}
+		if (*ReadPos == '\n')
+		{
+			*ReadPos = 0;
+			ReadPos++;
+			break;
+		}
+		ReadPos++;
+	}
+	return Line;
+}
 
 /*
 ===============
@@ -518,20 +538,19 @@ Host_Loadgame_f
 */
 void Host_Loadgame_f (void)
 {
-	char	name[MAX_OSPATH];
-	fileHandle_t	f;
-	char	mapname[MAX_QPATH];
-	float	time, tfloat;
-	char	str[32768];
-	const char *start;
-	int		i;
-	edict_t	*ent;
-	int		entnum;
-	int		version;
-	float			spawn_parms[NUM_SPAWN_PARMS];
+	char		name[MAX_OSPATH];
+	char		mapname[MAX_QPATH];
+	float		time;
+	int			i;
+	edict_t	*	ent;
+	int			entnum;
+	int			version;
+	float		spawn_parms[NUM_SPAWN_PARMS];
 
 	if (cmd_source != src_command)
+	{
 		return;
+	}
 
 	if (Cmd_Argc() != 2)
 	{
@@ -548,83 +567,68 @@ void Host_Loadgame_f (void)
 // been used.  The menu calls it before stuffing loadgame command
 //	SCR_BeginLoadingPlaque ();
 
+	QArray<byte> Buffer;
 	Con_Printf ("Loading game from %s...\n", name);
-	int FileLen = FS_FOpenFileRead(name, &f, true);
-	if (!f)
+	int FileLen = FS_ReadFile(name, Buffer);
+	if (FileLen <= 0)
 	{
 		Con_Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
-	FS_Scanf(f, "%i\n", &version);
+	char* ReadPos = (char*)Buffer.Ptr();
+	version = QStr::Atoi(GetLine(ReadPos));
 	if (version != SAVEGAME_VERSION)
 	{
-		FS_FCloseFile(f);
-		Con_Printf ("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
+		Con_Printf("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return;
 	}
-	FS_Scanf(f, "%s\n", str);
+	GetLine(ReadPos);
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-		FS_Scanf(f, "%f\n", &spawn_parms[i]);
-// this silliness is so we can load 1.06 save files, which have float skill values
-	FS_Scanf(f, "%f\n", &tfloat);
-	current_skill = (int)(tfloat + 0.1);
+	{
+		spawn_parms[i] = QStr::Atof(GetLine(ReadPos));
+	}
+	// this silliness is so we can load 1.06 save files, which have float skill values
+	current_skill = (int)(QStr::Atof(GetLine(ReadPos)) + 0.1);
 	Cvar_SetValue ("skill", (float)current_skill);
 
-	FS_Scanf(f, "%s\n",mapname);
-	FS_Scanf(f, "%f\n",&time);
+	QStr::Cpy(mapname, GetLine(ReadPos));
+	time = QStr::Atof(GetLine(ReadPos));
 
-	CL_Disconnect_f ();
+	CL_Disconnect_f();
 	
-	SV_SpawnServer (mapname);
+	SV_SpawnServer(mapname);
 	if (!sv.active)
 	{
-		Con_Printf ("Couldn't load map\n");
+		Con_Printf("Couldn't load map\n");
 		return;
 	}
 	sv.paused = true;		// pause until all clients connect
 	sv.loadgame = true;
 
-// load the light styles
+	// load the light styles
 
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
-		FS_Scanf(f, "%s\n", str);
-		sv.lightstyles[i] = (char*)Hunk_Alloc (QStr::Length(str)+1);
-		QStr::Cpy(sv.lightstyles[i], str);
+		char* Style = GetLine(ReadPos);
+		sv.lightstyles[i] = (char*)Hunk_Alloc(QStr::Length(Style) + 1);
+		QStr::Cpy(sv.lightstyles[i], Style);
 	}
 
-// load the edicts out of the savegame file
+	// load the edicts out of the savegame file
 	entnum = -1;		// -1 is the globals
-	while (FS_FTell(f) < FileLen)
+	const char* start = ReadPos;
+	while (start)
 	{
-		for (i=0 ; i<sizeof(str)-1 ; i++)
-		{
-			char r;
-			if (!FS_Read(&r, 1, f))
-				break;
-			if (!r)
-				break;
-			str[i] = r;
-			if (r == '}')
-			{
-				i++;
-				break;
-			}
-		}
-		if (i == sizeof(str)-1)
-			Sys_Error ("Loadgame buffer overflow");
-		str[i] = 0;
-		start = str;
 		const char* token = QStr::Parse1(&start);
 		if (!start)
 			break;		// end of file
 		if (QStr::Cmp(token,"{"))
-			Sys_Error ("First token isn't a brace");
+			Sys_Error("First token isn't a brace %s", token);
 			
 		if (entnum == -1)
 		{	// parse the global vars
-			ED_ParseGlobals (start);
+			start = ED_ParseGlobals(start);
 		}
 		else
 		{	// parse an edict
@@ -632,7 +636,7 @@ void Host_Loadgame_f (void)
 			ent = EDICT_NUM(entnum);
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 			ent->free = false;
-			ED_ParseEdict (start, ent);
+			start = ED_ParseEdict(start, ent);
 	
 		// link it into the bsp tree
 			if (!ent->free)
@@ -644,8 +648,6 @@ void Host_Loadgame_f (void)
 	
 	sv.num_edicts = entnum;
 	sv.time = time;
-
-	FS_FCloseFile(f);
 
 	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
 		svs.clients->spawn_parms[i] = spawn_parms[i];

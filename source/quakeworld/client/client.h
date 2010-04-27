@@ -276,7 +276,10 @@ typedef struct
 	char		levelname[40];	// for display on solo scoreboard
 	int			playernum;
 
-// refresh related state
+	struct cmodel_t		*clip_models[MAX_MODELS];
+	struct cmodel_t	*worldcmodel;	// cl_entitites[0].model
+
+	// refresh related state
 	struct model_s	*worldmodel;	// cl_entitites[0].model
 	struct efrag_s	*free_efrags;
 	int			num_entities;	// stored bottom up in cl_entities array

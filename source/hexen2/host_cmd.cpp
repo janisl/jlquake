@@ -544,6 +544,27 @@ void Host_Savegame_f (void)
 }
 
 
+static char* GetLine(char*& ReadPos)
+{
+	char* Line = ReadPos;
+	while (*ReadPos)
+	{
+		if (*ReadPos == '\r')
+		{
+			*ReadPos = 0;
+			ReadPos++;
+		}
+		if (*ReadPos == '\n')
+		{
+			*ReadPos = 0;
+			ReadPos++;
+			break;
+		}
+		ReadPos++;
+	}
+	return Line;
+}
+
 /*
 ===============
 Host_Loadgame_f
@@ -551,27 +572,27 @@ Host_Loadgame_f
 */
 void Host_Loadgame_f (void)
 {
-	fileHandle_t	f;
-	char	mapname[MAX_QPATH];
-	float	time, tfloat;
-	char	str[32768], *start;
-	int		i, r;
-	edict_t	*ent;
-	int		entnum;
-	int		version;
-	float	tempf;
-	int		tempi;
-	float			spawn_parms[NUM_SPAWN_PARMS];
-	char	dest[MAX_OSPATH];
-	int attempts = 0;
-	char *message;
+	char		mapname[MAX_QPATH];
+	float		time;
+	int			i, r;
+	edict_t*	ent;
+	int			entnum;
+	int			version;
+	float		tempf;
+	int			tempi;
+	float		spawn_parms[NUM_SPAWN_PARMS];
+	char		dest[MAX_OSPATH];
+	int			attempts = 0;
+	char*		message;
 
 	if (cmd_source != src_command)
+	{
 		return;
+	}
 
 	if (Cmd_Argc() != 2)
 	{
-		Con_Printf ("load <savename> : load a game\n");
+		Con_Printf("load <savename> : load a game\n");
 		return;
 	}
 
@@ -579,89 +600,81 @@ void Host_Loadgame_f (void)
 	CL_Disconnect();
 	CL_RemoveGIPFiles(NULL);
 
-	Con_Printf ("Loading game from %s...\n", Cmd_Argv(1));
+	Con_Printf("Loading game from %s...\n", Cmd_Argv(1));
 
-	sprintf(dest,"%s/info.dat",Cmd_Argv(1));
+	sprintf(dest, "%s/info.dat", Cmd_Argv(1));
 
-	FS_FOpenFileRead(dest, &f, true);
-	if (!f)
+	QArray<byte> Buffer;
+	int Len = FS_ReadFile(dest, Buffer);
+	if (Len <= 0)
 	{
-		Con_Printf ("ERROR: couldn't open.\n");
+		Con_Printf("ERROR: couldn't open.\n");
 		return;
 	}
 
-	FS_Scanf (f, "%i\n", &version);
+	char* ReadPos = (char*)Buffer.Ptr();
+	version = QStr::Atoi(GetLine(ReadPos));
 
 	if (version != SAVEGAME_VERSION)
 	{
-		FS_FCloseFile(f);
 		Con_Printf ("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return;
 	}
-	FS_Scanf (f, "%s\n", str);
-	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-		FS_Scanf (f, "%f\n", &spawn_parms[i]);
-// this silliness is so we can load 1.06 save files, which have float skill values
-	FS_Scanf (f, "%f\n", &tfloat);
-	current_skill = (int)(tfloat + 0.1);
-	Cvar_SetValue ("skill", (float)current_skill);
+	GetLine(ReadPos);
+	for (i = 0; i < NUM_SPAWN_PARMS; i++)
+	{
+		spawn_parms[i] = QStr::Atof(GetLine(ReadPos));
+	}
+	// this silliness is so we can load 1.06 save files, which have float skill values
+	current_skill = (int)(QStr::Atof(GetLine(ReadPos)) + 0.1);
+	Cvar_SetValue("skill", (float)current_skill);
 
-	Cvar_SetValue ("deathmatch", 0);
-	Cvar_SetValue ("coop", 0);
-	Cvar_SetValue ("teamplay", 0);
-	Cvar_SetValue ("randomclass", 0);
+	Cvar_SetValue("deathmatch", 0);
+	Cvar_SetValue("coop", 0);
+	Cvar_SetValue("teamplay", 0);
+	Cvar_SetValue("randomclass", 0);
 
-	FS_Scanf (f, "%s\n",mapname);
-	FS_Scanf (f, "%f\n",&time);
+	QStr::Cpy(mapname, GetLine(ReadPos));
+	time = QStr::Atof(GetLine(ReadPos));
 
 	tempi = -1;
-	FS_Scanf (f, "%d\n",&tempi);
+	tempi = QStr::Atoi(GetLine(ReadPos));
 	if (tempi >= 1)
 		svs.maxclients = tempi;
 
-	tempf = -1;
-	FS_Scanf (f, "%f\n",&tempf);
+	tempf = QStr::Atof(GetLine(ReadPos));
 	if (tempf >= 0)
 		Cvar_SetValue ("deathmatch", tempf);
 
-	tempf = -1;
-	FS_Scanf (f, "%f\n",&tempf);
+	tempf = QStr::Atof(GetLine(ReadPos));
 	if (tempf >= 0)
 		Cvar_SetValue ("coop", tempf);
 
-	tempf = -1;
-	FS_Scanf (f, "%f\n",&tempf);
+	tempf = QStr::Atof(GetLine(ReadPos));
 	if (tempf >= 0)
 		Cvar_SetValue ("teamplay", tempf);
 
-	tempf = -1;
-	FS_Scanf (f, "%f\n",&tempf);
+	tempf = QStr::Atof(GetLine(ReadPos));
 	if (tempf >= 0)
 		Cvar_SetValue ("randomclass", tempf);
 
-	tempf = -1;
-	FS_Scanf (f, "%f\n",&tempf);
+	tempf = QStr::Atof(GetLine(ReadPos));
 	if (tempf >= 0)
 		Cvar_SetValue ("_cl_playerclass", tempf);
 
-	FS_Scanf (f, "%d\n",&info_mask);
-	FS_Scanf (f, "%d\n",&info_mask2);
-
-	FS_FCloseFile(f);
-
-	retry:
-	attempts++;
+	info_mask = QStr::Atoi(GetLine(ReadPos));
+	info_mask2 = QStr::Atoi(GetLine(ReadPos));
 
 	sprintf(dest, "%s/", Cmd_Argv(1));
 	CL_CopyFiles(dest, ".gip", "");
 
-	LoadGamestate (mapname, NULL, 2);
+	LoadGamestate(mapname, NULL, 2);
 
 	SV_SaveSpawnparms ();
 
 	ent = EDICT_NUM(1);
 
-	Cvar_SetValue ("_cl_playerclass", ent->v.playerclass);//this better be the same as above...
+	Cvar_SetValue("_cl_playerclass", ent->v.playerclass);//this better be the same as above...
 
 #ifdef MISSIONPACK
 	// this may be rudundant with the setting in PR_LoadProgs, but not sure so its here too
@@ -675,8 +688,8 @@ void Host_Loadgame_f (void)
 
 	if (cls.state != ca_dedicated)
 	{
-		CL_EstablishConnection ("local");
-		Host_Reconnect_f ();
+		CL_EstablishConnection("local");
+		Host_Reconnect_f();
 	}
 }
 
@@ -806,18 +819,15 @@ void RestoreClients(void)
 
 int LoadGamestate(char *level, char *startspot, int ClientsMode)
 {
-	char	name[MAX_OSPATH];
-	fileHandle_t	f;
-	char	mapname[MAX_QPATH];
-	float	time, sk;
-	char	str[32768];
-	const char *start;
-	int		i;
-	edict_t	*ent;
-	int		entnum;
-	int		version;
+	char		name[MAX_OSPATH];
+	char		mapname[MAX_QPATH];
+	float		time, sk;
+	int			i;
+	edict_t*	ent;
+	int			entnum;
+	int			version;
 //	float	spawn_parms[NUM_SPAWN_PARMS];
-	qboolean auto_correct = false;
+	qboolean 	auto_correct = false;
 
 	if (ClientsMode == 1)
 	{
@@ -831,8 +841,9 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 			Con_Printf ("Loading game from %s...\n", name);
 	}
 
-	int len = FS_FOpenFileRead(name, &f, true);
-	if (!f)
+	QArray<byte> Buffer;
+	int len = FS_ReadFile(name, Buffer);
+	if (len <= 0)
 	{
 		if (ClientsMode == 2)
 			Con_Printf ("ERROR: couldn't open.\n");
@@ -840,27 +851,25 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 		return -1;
 	}
 
-	FS_Scanf (f, "%i\n", &version);
+	char* ReadPos = (char*)Buffer.Ptr();
+	version = QStr::Atoi(GetLine(ReadPos));
 
 	if (version != SAVEGAME_VERSION)
 	{
-		FS_FCloseFile(f);
 		Con_Printf ("Savegame is version %i, not %i\n", version, SAVEGAME_VERSION);
 		return -1;
 	}
 
 	if (ClientsMode != 1)
 	{
-		FS_Scanf (f, "%s\n", str);
-	//	for (i=0 ; i<NUM_SPAWN_PARMS ; i++)
-	//		FS_Scanf (f, "%f\n", &spawn_parms[i]);
-		FS_Scanf (f, "%f\n", &sk);
+		GetLine(ReadPos);
+		sk = QStr::Atof(GetLine(ReadPos));
 		Cvar_SetValue ("skill", sk);
 
-		FS_Scanf (f, "%s\n",mapname);
-		FS_Scanf (f, "%f\n",&time);
-				
-		SV_SpawnServer (mapname, startspot);
+		QStr::Cpy(mapname, GetLine(ReadPos));
+		time = QStr::Atof(GetLine(ReadPos));
+
+		SV_SpawnServer(mapname, startspot);
 
 		if (!sv.active)
 		{
@@ -868,52 +877,33 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 			return -1;
 		}
 
-//		FS_Scanf (f, "%d\n",&info_mask);
-//		FS_Scanf (f, "%d\n",&info_mask2);
-
-	// load the light styles
+		// load the light styles
 		for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 		{
-			FS_Scanf (f, "%s\n", str);
-			sv.lightstyles[i] = (char*)Hunk_Alloc (QStr::Length(str)+1);
-			QStr::Cpy (sv.lightstyles[i], str);
+			char* Style = GetLine(ReadPos);
+			sv.lightstyles[i] = (char*)Hunk_Alloc(QStr::Length(Style) + 1);
+			QStr::Cpy(sv.lightstyles[i], Style);
 		}
-		SV_LoadEffects(f);
+		ReadPos = SV_LoadEffects(ReadPos);
 	}
 
-// load the edicts out of the savegame file
-	while (len > FS_FTell(f))
+	// load the edicts out of the savegame file
+	const char* start = ReadPos;
+	while (start)
 	{
-		FS_Scanf (f, "%i\n",&entnum);
-		for (i=0 ; i<sizeof(str)-1 ; i++)
-		{
-			char r;
-			if (!FS_Read(&r, 1, f))
-				break;
-			if (!r)
-				break;
-			str[i] = r;
-			if (r == '}')
-			{
-				i++;
-				break;
-			}
-		}
-		if (i == sizeof(str)-1)
-			Sys_Error ("Loadgame buffer overflow");
-		str[i] = 0;
-		start = str;
 		char* token = QStr::Parse1(&start);
-		if (!token[0])
+		if (!start)
 			break;		// end of file
-		if (QStr::Cmp(token,"{"))
-			Sys_Error ("First token isn't a brace");
+		entnum = QStr::Atoi(token);
+		token = QStr::Parse1(&start);
+		if (QStr::Cmp(token, "{"))
+			Sys_Error("First token isn't a brace");
 			
 		// parse an edict
 
 		if (entnum == -1)
 		{
-			ED_ParseGlobals (start);
+			start = ED_ParseGlobals(start);
 			// Need to restore this
 			pr_global_struct->startspot = sv.startspot - pr_strings;
 		}
@@ -922,7 +912,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 			ent = EDICT_NUM(entnum);
 			Com_Memset(&ent->v, 0, progs->entityfields * 4);
 			//ent->free = false;
-			ED_ParseEdict (start, ent);
+			start = ED_ParseEdict(start, ent);
 		
 			if (ClientsMode == 1 || ClientsMode == 2 || ClientsMode == 3)
 				ent->v.stats_restored = true;
@@ -944,9 +934,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 		}
 	}
 
-	FS_FCloseFile(f);
-	
-//	sv.num_edicts = entnum;
+	//sv.num_edicts = entnum;
 	if (ClientsMode == 0)
 	{
 		sv.time = time;

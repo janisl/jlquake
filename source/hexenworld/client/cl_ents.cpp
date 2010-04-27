@@ -1,6 +1,7 @@
 // cl_ents.c -- entity parsing and management
 
 #include "quakedef.h"
+#include "../../quake/cm_local.h"
 
 extern	QCvar*	cl_predict_players;
 extern	QCvar*	cl_predict_players2;
@@ -1445,7 +1446,7 @@ void CL_SetSolidEntities (void)
 	int				msec;
 	double			enttime, playertime;
 
-	pmove.physents[0].model = cl.worldmodel;
+	pmove.physents[0].model = cl.worldcmodel;
 	VectorCopy (vec3_origin, pmove.physents[0].origin);
 	pmove.physents[0].info = 0;
 	pmove.numphysent = 1;
@@ -1459,12 +1460,11 @@ void CL_SetSolidEntities (void)
 
 		if (!state->modelindex)
 			continue;
-		if (!cl.model_precache[state->modelindex])
+		if (!cl.clip_models[state->modelindex])
 			continue;
-		if ( cl.model_precache[state->modelindex]->hulls[1].firstclipnode 
-			|| cl.model_precache[state->modelindex]->clipbox )
+		if (cl.clip_models[state->modelindex]->hulls[1].firstclipnode)
 		{
-			pmove.physents[pmove.numphysent].model = cl.model_precache[state->modelindex];
+			pmove.physents[pmove.numphysent].model = cl.clip_models[state->modelindex];
 			VectorCopy (state->origin, pmove.physents[pmove.numphysent].origin);
 			VectorCopy (state->angles, pmove.physents[pmove.numphysent].angles);
 			pmove.numphysent++;

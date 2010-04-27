@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../../../libs/core/core.h"
 
-#define	QUAKE_GAME			// as opposed to utilities
-
 //define	PARANOID			// speed sapping error checking
 
 
@@ -47,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "render.h"
 #include "client.h"
 #include "gl_model.h"
+#include "../../quake/cmodel.h"
 #include "input.h"
 #include "keys.h"
 #include "console.h"

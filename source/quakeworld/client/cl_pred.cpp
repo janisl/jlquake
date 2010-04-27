@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "quakedef.h"
+#include "../../quake/cm_local.h"
 #include "winquake.h"
 
 QCvar*	cl_nopred;
@@ -39,7 +40,7 @@ void CL_NudgePosition (void)
 	vec3_t	base;
 	int		x, y;
 
-	if (PM_HullPointContents (&cl.model_precache[1]->hulls[1], 0, pmove.origin) == CONTENTS_EMPTY)
+	if (PM_HullPointContents (&cl.worldcmodel->hulls[1], 0, pmove.origin) == CONTENTS_EMPTY)
 		return;
 
 	VectorCopy (pmove.origin, base);
@@ -49,7 +50,7 @@ void CL_NudgePosition (void)
 		{
 			pmove.origin[0] = base[0] + x * 1.0/8;
 			pmove.origin[1] = base[1] + y * 1.0/8;
-			if (PM_HullPointContents (&cl.model_precache[1]->hulls[1], 0, pmove.origin) == CONTENTS_EMPTY)
+			if (PM_HullPointContents (&cl.worldcmodel->hulls[1], 0, pmove.origin) == CONTENTS_EMPTY)
 				return;
 		}
 	}

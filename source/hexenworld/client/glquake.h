@@ -87,35 +87,6 @@ void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
 texture_t *R_TextureAnimation (texture_t *base);
 
-typedef struct surfcache_s
-{
-	struct surfcache_s	*next;
-	struct surfcache_s 	**owner;		// NULL is an empty chunk of memory
-	int					lightadj[MAXLIGHTMAPS]; // checked for strobe flush
-	int					dlight;
-	int					size;		// including header
-	unsigned			width;
-	unsigned			height;		// DEBUG only needed for debug
-	float				mipscale;
-	struct texture_s	*texture;	// checked for animating textures
-	byte				data[4];	// width*height elements
-} surfcache_t;
-
-
-typedef struct
-{
-	pixel_t		*surfdat;	// destination for generated surface
-	int			rowbytes;	// destination logical width in bytes
-	msurface_t	*surf;		// description for surface to generate
-	fixed8_t	lightadj[MAXLIGHTMAPS];
-							// adjust for lightmap levels for dynamic lighting
-	texture_t	*texture;	// corrected for animating textures
-	int			surfmip;	// mipmapped ratio of surface texels / world pixels
-	int			surfwidth;	// in mipmapped texels
-	int			surfheight;	// in mipmapped texels
-} drawsurf_t;
-
-
 // Changes to ptype_t must also be made in d_iface.h
 typedef enum {
 	pt_static,

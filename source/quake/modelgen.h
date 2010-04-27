@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #define ALIAS_VERSION	6
+#define ALIAS_NEWVERSION	50
 
 #define ALIAS_ONSEAM				0x0020
 
@@ -73,6 +74,26 @@ typedef struct {
 	int			flags;
 	float		size;
 } mdl_t;
+
+typedef struct
+{
+	int			ident;
+	int			version;
+	vec3_t		scale;
+	vec3_t		scale_origin;
+	float		boundingradius;
+	vec3_t		eyeposition;
+	int			numskins;
+	int			skinwidth;
+	int			skinheight;
+	int			numverts;
+	int			numtris;
+	int			numframes;
+	synctype_t	synctype;
+	int			flags;
+	float		size;
+	int			num_st_verts;
+} newmdl_t;
 
 // TODO: could be shorts
 
@@ -131,4 +152,4 @@ typedef struct {
 
 #define IDPOLYHEADER	(('O'<<24)+('P'<<16)+('D'<<8)+'I')
 														// little-endian "IDPO"
-
+#define RAPOLYHEADER	(('O'<<24)+('P'<<16)+('A'<<8)+'R')

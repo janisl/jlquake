@@ -59,6 +59,7 @@ set(GLQWCL_OBJS
 	client/cl_tent.cpp
 	client/cl_cam.cpp
 	client/cmd.cpp
+	client/cmodel.cpp
 	client/common.cpp
 	client/console.cpp
 	client/cvar.cpp

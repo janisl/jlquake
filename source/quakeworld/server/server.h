@@ -51,11 +51,11 @@ typedef struct
 	
 	char		name[64];			// map name
 	char		modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
-	struct model_s 	*worldmodel;
+	cmodel_t 	*worldmodel;
 	char		*model_precache[MAX_MODELS];	// NULL terminated
 	char		*sound_precache[MAX_SOUNDS];	// NULL terminated
 	char		*lightstyles[MAX_LIGHTSTYLES];
-	struct model_s		*models[MAX_MODELS];
+	cmodel_t	*models[MAX_MODELS];
 
 	int			num_edicts;			// increases towards MAX_EDICTS
 	edict_t		*edicts;			// can NOT be array indexed, because

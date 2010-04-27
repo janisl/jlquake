@@ -40,7 +40,7 @@ typedef struct
 typedef struct
 {
 	vec3_t	origin;
-	model_t	*model;		// only for bsp models
+	cmodel_t	*model;		// only for bsp models
 	vec3_t	mins, maxs;	// only for non-bsp models
 	int		info;		// for client or server to identify
 } physent_t;
@@ -94,7 +94,7 @@ extern	int		watertype;
 void PlayerMove (void);
 void Pmove_Init (void);
 
-int PM_HullPointContents (hull_t *hull, int num, vec3_t p);
+int PM_HullPointContents (chull_t *hull, int num, vec3_t p);
 
 int PM_PointContents (vec3_t point);
 qboolean PM_TestPlayerPosition (vec3_t point);

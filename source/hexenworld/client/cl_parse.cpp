@@ -202,6 +202,14 @@ void Model_NextDownload (void)
 		if (!cl.model_name[i][0])
 			break;
 		cl.model_precache[i] = Mod_ForName (cl.model_name[i], false);
+		if (i == 1)
+		{
+			cl.clip_models[i] = CM_LoadMap(cl.model_name[i], true, NULL);
+		}
+		else if (cl.model_name[i][0] == '*')
+		{
+			cl.clip_models[i] = CM_InlineModel(cl.model_name[i]);
+		}
 		if (!cl.model_precache[i])
 		{
 			Con_Printf ("\nThe required model file '%s' could not be found or downloaded.\n\n"
@@ -215,6 +223,7 @@ void Model_NextDownload (void)
 
 	// all done
 	cl.worldmodel = cl.model_precache[1];	
+	cl.worldcmodel = cl.clip_models[1];	
 	R_NewMap ();
 
 	PR_LoadStrings();

@@ -1013,10 +1013,10 @@ int		loadable[MAX_SAVEGAMES];
 
 void M_ScanSaves (void)
 {
-	int		i, j;
-	char	name[MAX_OSPATH];
+	int				i, j;
+	char			name[MAX_OSPATH];
 	fileHandle_t	f;
-	int		version;
+	int				version;
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
@@ -1028,9 +1028,22 @@ void M_ScanSaves (void)
 		FS_FOpenFileRead(name, &f, true);
 		if (!f)
 			continue;
-		FS_Scanf(f, "%i\n", &version);
-		FS_Scanf(f, "%79s\n", name);
-		QStr::NCpy(m_filenames[i], name, sizeof(m_filenames[i])-1);
+		FS_Read(name, 80, f);
+		name[80] = 0;
+		//	Skip version
+		char* Ptr = name;
+		while (*Ptr && *Ptr != '\n')
+			Ptr++;
+		if (*Ptr == '\n')
+		{
+			*Ptr = 0;
+			Ptr++;
+		}
+		char* SaveName = Ptr;
+		while (*Ptr && *Ptr != '\n')
+			Ptr++;
+		*Ptr = 0;
+		QStr::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i])-1);
 
 	// change _ back to space
 		for (j=0 ; j<SAVEGAME_COMMENT_LENGTH ; j++)
@@ -1194,9 +1207,22 @@ void M_ScanMSaves (void)
 		FS_FOpenFileRead(name, &f, true);
 		if (!f)
 			continue;
-		FS_Scanf(f, "%i\n", &version);
-		FS_Scanf(f, "%79s\n", name);
-		QStr::NCpy(m_filenames[i], name, sizeof(m_filenames[i])-1);
+		FS_Read(name, 80, f);
+		name[80] = 0;
+		//	Skip version
+		char* Ptr = name;
+		while (*Ptr && *Ptr != '\n')
+			Ptr++;
+		if (*Ptr == '\n')
+		{
+			*Ptr = 0;
+			Ptr++;
+		}
+		char* SaveName = Ptr;
+		while (*Ptr && *Ptr != '\n')
+			Ptr++;
+		*Ptr = 0;
+		QStr::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i])-1);
 
 	// change _ back to space
 		for (j=0 ; j<SAVEGAME_COMMENT_LENGTH ; j++)

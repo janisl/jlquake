@@ -12,6 +12,7 @@ set(HEXEN2_FILES
 	cl_tent.cpp
 	chase.cpp
 	cmd.cpp
+	cmodel.cpp
 	common.cpp
 	console.cpp
 	cvar.cpp
@@ -24,7 +25,6 @@ set(HEXEN2_FILES
 	gl_rmisc.cpp
 	gl_rsurf.cpp
 	gl_screen.cpp
-	gl_test.cpp
 	gl_vidlinuxglx.cpp
 	gl_warp.cpp
 	host.cpp

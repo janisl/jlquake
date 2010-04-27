@@ -312,6 +312,7 @@ void CL_ClearState (void)
 	Con_DPrintf ("Clearing memory\n");
 	D_FlushCaches ();
 	Mod_ClearAll ();
+	CM_ClearAll();
 	if (host_hunklevel)	// FIXME: check this...
 		Hunk_FreeToLowMark (host_hunklevel);
 
@@ -1339,6 +1340,8 @@ void Host_Init (quakeparms_t *parms)
 	Con_Init ();	
 	M_Init ();	
 	Mod_Init ();
+	CM_Init ();
+
 	
 //	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 	Con_Printf ("%4.1f megs RAM used.\n",parms->memsize/ (1024*1024.0));

@@ -6,20 +6,20 @@
 #include "quakedef.h"
 
 model_t	*loadmodel;
-char	loadname[32];	// for hunk tags
+static char	loadname[32];	// for hunk tags
 
-void Mod_LoadSpriteModel (model_t *mod, void *buffer);
-void Mod_LoadBrushModel (model_t *mod, void *buffer);
-void Mod_LoadAliasModel (model_t *mod, void *buffer);
-void Mod_LoadAliasModelNew (model_t *mod, void *buffer);
+static void Mod_LoadSpriteModel (model_t *mod, void *buffer);
+static void Mod_LoadBrushModel (model_t *mod, void *buffer);
+static void Mod_LoadAliasModel (model_t *mod, void *buffer);
+static void Mod_LoadAliasModelNew (model_t *mod, void *buffer);
 
-model_t *Mod_LoadModel (model_t *mod, qboolean crash);
+static model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
-byte	mod_novis[MAX_MAP_LEAFS/8];
+static byte	mod_novis[BSP29_MAX_MAP_LEAFS/8];
 
 #define	MAX_MOD_KNOWN	1500
-model_t	mod_known[MAX_MOD_KNOWN];
-int		mod_numknown;
+static model_t	mod_known[MAX_MOD_KNOWN];
+static int		mod_numknown;
 
 static vec3_t	mins,maxs;
 
@@ -94,9 +94,9 @@ mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 Mod_DecompressVis
 ===================
 */
-byte *Mod_DecompressVis (byte *in, model_t *model)
+static byte *Mod_DecompressVis (byte *in, model_t *model)
 {
-	static byte	decompressed[MAX_MAP_LEAFS/8];
+	static byte	decompressed[BSP29_MAX_MAP_LEAFS/8];
 	int		c;
 	byte	*out;
 	int		row;
@@ -219,7 +219,7 @@ Mod_LoadModel
 Loads a model into the cache
 ==================
 */
-model_t *Mod_LoadModel (model_t *mod, qboolean crash)
+static model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 {
 	void	*d;
 	unsigned *buf;
@@ -308,7 +308,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 ===============================================================================
 */
 
-byte	*mod_base;
+static byte	*mod_base;
 
 
 /*
@@ -316,21 +316,21 @@ byte	*mod_base;
 Mod_LoadTextures
 =================
 */
-void Mod_LoadTextures (lump_t *l)
+static void Mod_LoadTextures (bsp29_lump_t *l)
 {
 	int		i, j, pixels, num, max, altmax;
-	miptex_t	*mt;
+	bsp29_miptex_t	*mt;
 	texture_t	*tx, *tx2;
 	texture_t	*anims[10];
 	texture_t	*altanims[10];
-	dmiptexlump_t *m;
+	bsp29_dmiptexlump_t *m;
 
 	if (!l->filelen)
 	{
 		loadmodel->textures = NULL;
 		return;
 	}
-	m = (dmiptexlump_t *)(mod_base + l->fileofs);
+	m = (bsp29_dmiptexlump_t *)(mod_base + l->fileofs);
 	
 	m->nummiptex = LittleLong (m->nummiptex);
 	
@@ -342,10 +342,10 @@ void Mod_LoadTextures (lump_t *l)
 		m->dataofs[i] = LittleLong(m->dataofs[i]);
 		if (m->dataofs[i] == -1)
 			continue;
-		mt = (miptex_t *)((byte *)m + m->dataofs[i]);
+		mt = (bsp29_miptex_t *)((byte *)m + m->dataofs[i]);
 		mt->width = LittleLong (mt->width);
 		mt->height = LittleLong (mt->height);
-		for (j=0 ; j<MIPLEVELS ; j++)
+		for (j=0 ; j<BSP29_MIPLEVELS ; j++)
 			mt->offsets[j] = LittleLong (mt->offsets[j]);
 		
 		if ( (mt->width & 15) || (mt->height & 15) )
@@ -357,8 +357,8 @@ void Mod_LoadTextures (lump_t *l)
 		Com_Memcpy(tx->name, mt->name, sizeof(tx->name));
 		tx->width = mt->width;
 		tx->height = mt->height;
-		for (j=0 ; j<MIPLEVELS ; j++)
-			tx->offsets[j] = mt->offsets[j] + sizeof(texture_t) - sizeof(miptex_t);
+		for (j=0 ; j<BSP29_MIPLEVELS ; j++)
+			tx->offsets[j] = mt->offsets[j] + sizeof(texture_t) - sizeof(bsp29_miptex_t);
 		// the pixels immediately follow the structures
 		Com_Memcpy( tx+1, mt+1, pixels);
 		
@@ -472,7 +472,7 @@ void Mod_LoadTextures (lump_t *l)
 Mod_LoadLighting
 =================
 */
-void Mod_LoadLighting (lump_t *l)
+static void Mod_LoadLighting (bsp29_lump_t *l)
 {
 	if (!l->filelen)
 	{
@@ -489,7 +489,7 @@ void Mod_LoadLighting (lump_t *l)
 Mod_LoadVisibility
 =================
 */
-void Mod_LoadVisibility (lump_t *l)
+static void Mod_LoadVisibility (bsp29_lump_t *l)
 {
 	if (!l->filelen)
 	{
@@ -506,7 +506,7 @@ void Mod_LoadVisibility (lump_t *l)
 Mod_LoadEntities
 =================
 */
-void Mod_LoadEntities (lump_t *l)
+static void Mod_LoadEntities (bsp29_lump_t *l)
 {
 	if (!l->filelen)
 	{
@@ -523,13 +523,13 @@ void Mod_LoadEntities (lump_t *l)
 Mod_LoadVertexes
 =================
 */
-void Mod_LoadVertexes (lump_t *l)
+static void Mod_LoadVertexes (bsp29_lump_t *l)
 {
-	dvertex_t	*in;
+	bsp29_dvertex_t	*in;
 	mvertex_t	*out;
 	int			i, count;
 
-	in = (dvertex_t*)(mod_base + l->fileofs);
+	in = (bsp29_dvertex_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -551,17 +551,17 @@ void Mod_LoadVertexes (lump_t *l)
 Mod_LoadSubmodels
 =================
 */
-void Mod_LoadSubmodels (lump_t *l)
+static void Mod_LoadSubmodels (bsp29_lump_t *l)
 {
-	dmodel_t	*in;
-	dmodel_t	*out;
+	bsp29_dmodel_h2_t	*in;
+	bsp29_dmodel_h2_t	*out;
 	int			i, j, count;
 
-	in = (dmodel_t*)(mod_base + l->fileofs);
+	in = (bsp29_dmodel_h2_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (dmodel_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (bsp29_dmodel_h2_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	loadmodel->submodels = out;
 	loadmodel->numsubmodels = count;
@@ -574,7 +574,7 @@ void Mod_LoadSubmodels (lump_t *l)
 			out->maxs[j] = LittleFloat (in->maxs[j]) + 1;
 			out->origin[j] = LittleFloat (in->origin[j]);
 		}
-		for (j=0 ; j<MAX_MAP_HULLS ; j++)
+		for (j=0 ; j<BSP29_MAX_MAP_HULLS_H2 ; j++)
 			out->headnode[j] = LittleLong (in->headnode[j]);
 		out->visleafs = LittleLong (in->visleafs);
 		out->firstface = LittleLong (in->firstface);
@@ -587,13 +587,13 @@ void Mod_LoadSubmodels (lump_t *l)
 Mod_LoadEdges
 =================
 */
-void Mod_LoadEdges (lump_t *l)
+static void Mod_LoadEdges (bsp29_lump_t *l)
 {
-	dedge_t *in;
+	bsp29_dedge_t *in;
 	medge_t *out;
 	int 	i, count;
 
-	in = (dedge_t*)(mod_base + l->fileofs);
+	in = (bsp29_dedge_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -614,15 +614,15 @@ void Mod_LoadEdges (lump_t *l)
 Mod_LoadTexinfo
 =================
 */
-void Mod_LoadTexinfo (lump_t *l)
+static void Mod_LoadTexinfo (bsp29_lump_t *l)
 {
-	texinfo_t *in;
+	bsp29_texinfo_t *in;
 	mtexinfo_t *out;
 	int 	i, j, count;
 	int		miptex;
 	float	len1, len2;
 
-	in = (texinfo_t*)(mod_base + l->fileofs);
+	in = (bsp29_texinfo_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -682,7 +682,7 @@ CalcSurfaceExtents
 Fills in s->texturemins[] and s->extents[]
 ================
 */
-void CalcSurfaceExtents (msurface_t *s)
+static void CalcSurfaceExtents (msurface_t *s)
 {
 	float	mins[2], maxs[2], val;
 	int		i,j, e;
@@ -723,7 +723,7 @@ void CalcSurfaceExtents (msurface_t *s)
 
 		s->texturemins[i] = bmins[i] * 16;
 		s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
-		if ( !(tex->flags & TEX_SPECIAL) && s->extents[i] > 512 /* 256 */ )
+		if ( !(tex->flags & BSP29TEX_SPECIAL) && s->extents[i] > 512 /* 256 */ )
 			Sys_Error ("Bad surface extents");
 	}
 }
@@ -734,14 +734,14 @@ void CalcSurfaceExtents (msurface_t *s)
 Mod_LoadFaces
 =================
 */
-void Mod_LoadFaces (lump_t *l)
+static void Mod_LoadFaces (bsp29_lump_t *l)
 {
-	dface_t		*in;
+	bsp29_dface_t		*in;
 	msurface_t 	*out;
 	int			i, count, surfnum;
 	int			planenum, side;
 
-	in = (dface_t*)(mod_base + l->fileofs);
+	in = (bsp29_dface_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -769,7 +769,7 @@ void Mod_LoadFaces (lump_t *l)
 				
 	// lighting info
 
-		for (i=0 ; i<MAXLIGHTMAPS ; i++)
+		for (i=0 ; i<BSP29_MAXLIGHTMAPS ; i++)
 			out->styles[i] = in->styles[i];
 		i = LittleLong(in->lightofs);
 		if (i == -1)
@@ -813,7 +813,7 @@ void Mod_LoadFaces (lump_t *l)
 Mod_SetParent
 =================
 */
-void Mod_SetParent (mnode_t *node, mnode_t *parent)
+static void Mod_SetParent (mnode_t *node, mnode_t *parent)
 {
 	node->parent = parent;
 	if (node->contents < 0)
@@ -827,13 +827,13 @@ void Mod_SetParent (mnode_t *node, mnode_t *parent)
 Mod_LoadNodes
 =================
 */
-void Mod_LoadNodes (lump_t *l)
+static void Mod_LoadNodes (bsp29_lump_t *l)
 {
 	int			i, j, count, p;
-	dnode_t		*in;
+	bsp29_dnode_t		*in;
 	mnode_t 	*out;
 
-	in = (dnode_t*)(mod_base + l->fileofs);
+	in = (bsp29_dnode_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -874,15 +874,15 @@ void Mod_LoadNodes (lump_t *l)
 Mod_LoadLeafs
 =================
 */
-void Mod_LoadLeafs (lump_t *l)
+static void Mod_LoadLeafs (bsp29_lump_t *l)
 {
-	dleaf_t 	*in;
+	bsp29_dleaf_t 	*in;
 	mleaf_t 	*out;
 	int			i, j, count, p;
 	char s[80];
 	qboolean isnotmap = true;
 
-	in = (dleaf_t*)(mod_base + l->fileofs);
+	in = (bsp29_dleaf_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -937,17 +937,17 @@ void Mod_LoadLeafs (lump_t *l)
 Mod_LoadClipnodes
 =================
 */
-void Mod_LoadClipnodes (lump_t *l)
+static void Mod_LoadClipnodes (bsp29_lump_t *l)
 {
-	dclipnode_t *in, *out;
+	bsp29_dclipnode_t *in, *out;
 	int			i, count;
 	hull_t		*hull;
 
-	in = (dclipnode_t*)(mod_base + l->fileofs);
+	in = (bsp29_dclipnode_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (dclipnode_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (bsp29_dclipnode_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	loadmodel->clipnodes = out;
 	loadmodel->numclipnodes = count;
@@ -1027,10 +1027,10 @@ Mod_MakeHull0
 Deplicate the drawing hull structure as a clipping hull
 =================
 */
-void Mod_MakeHull0 (void)
+static void Mod_MakeHull0 (void)
 {
 	mnode_t		*in, *child;
-	dclipnode_t *out;
+	bsp29_dclipnode_t *out;
 	int			i, j, count;
 	hull_t		*hull;
 	
@@ -1038,7 +1038,7 @@ void Mod_MakeHull0 (void)
 	
 	in = loadmodel->nodes;
 	count = loadmodel->numnodes;
-	out = (dclipnode_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (bsp29_dclipnode_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	hull->clipnodes = out;
 	hull->firstclipnode = 0;
@@ -1064,7 +1064,7 @@ void Mod_MakeHull0 (void)
 Mod_LoadMarksurfaces
 =================
 */
-void Mod_LoadMarksurfaces (lump_t *l)
+static void Mod_LoadMarksurfaces (bsp29_lump_t *l)
 {	
 	int		i, j, count;
 	short		*in;
@@ -1093,7 +1093,7 @@ void Mod_LoadMarksurfaces (lump_t *l)
 Mod_LoadSurfedges
 =================
 */
-void Mod_LoadSurfedges (lump_t *l)
+static void Mod_LoadSurfedges (bsp29_lump_t *l)
 {	
 	int		i, count;
 	int		*in, *out;
@@ -1117,14 +1117,14 @@ void Mod_LoadSurfedges (lump_t *l)
 Mod_LoadPlanes
 =================
 */
-void Mod_LoadPlanes (lump_t *l)
+static void Mod_LoadPlanes (bsp29_lump_t *l)
 {
 	int			i, j;
 	cplane_t	*out;
-	dplane_t 	*in;
+	bsp29_dplane_t 	*in;
 	int			count;
 	
-	in = (dplane_t*)(mod_base + l->fileofs);
+	in = (bsp29_dplane_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -1151,7 +1151,7 @@ void Mod_LoadPlanes (lump_t *l)
 RadiusFromBounds
 =================
 */
-float RadiusFromBounds (vec3_t mins, vec3_t maxs)
+static float RadiusFromBounds (vec3_t mins, vec3_t maxs)
 {
 	int		i;
 	vec3_t	corner;
@@ -1169,43 +1169,43 @@ float RadiusFromBounds (vec3_t mins, vec3_t maxs)
 Mod_LoadBrushModel
 =================
 */
-void Mod_LoadBrushModel (model_t *mod, void *buffer)
+static void Mod_LoadBrushModel (model_t *mod, void *buffer)
 {
 	int			i, j;
-	dheader_t	*header;
-	dmodel_t 	*bm;
+	bsp29_dheader_t	*header;
+	bsp29_dmodel_h2_t	*bm;
 	
 	loadmodel->type = mod_brush;
 	
-	header = (dheader_t *)buffer;
+	header = (bsp29_dheader_t *)buffer;
 
 	i = LittleLong (header->version);
-	if (i != BSPVERSION)
-		Sys_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
+	if (i != BSP29_VERSION)
+		Sys_Error ("Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSP29_VERSION);
 
 // swap all the lumps
 	mod_base = (byte *)header;
 
-	for (i=0 ; i<sizeof(dheader_t)/4 ; i++)
+	for (i=0 ; i<sizeof(bsp29_dheader_t)/4 ; i++)
 		((int *)header)[i] = LittleLong ( ((int *)header)[i]);
 
 // load into heap
 	
-	Mod_LoadVertexes (&header->lumps[LUMP_VERTEXES]);
-	Mod_LoadEdges (&header->lumps[LUMP_EDGES]);
-	Mod_LoadSurfedges (&header->lumps[LUMP_SURFEDGES]);
-	Mod_LoadTextures (&header->lumps[LUMP_TEXTURES]);
-	Mod_LoadLighting (&header->lumps[LUMP_LIGHTING]);
-	Mod_LoadPlanes (&header->lumps[LUMP_PLANES]);
-	Mod_LoadTexinfo (&header->lumps[LUMP_TEXINFO]);
-	Mod_LoadFaces (&header->lumps[LUMP_FACES]);
-	Mod_LoadMarksurfaces (&header->lumps[LUMP_MARKSURFACES]);
-	Mod_LoadVisibility (&header->lumps[LUMP_VISIBILITY]);
-	Mod_LoadLeafs (&header->lumps[LUMP_LEAFS]);
-	Mod_LoadNodes (&header->lumps[LUMP_NODES]);
-	Mod_LoadClipnodes (&header->lumps[LUMP_CLIPNODES]);
-	Mod_LoadEntities (&header->lumps[LUMP_ENTITIES]);
-	Mod_LoadSubmodels (&header->lumps[LUMP_MODELS]);
+	Mod_LoadVertexes (&header->lumps[BSP29LUMP_VERTEXES]);
+	Mod_LoadEdges (&header->lumps[BSP29LUMP_EDGES]);
+	Mod_LoadSurfedges (&header->lumps[BSP29LUMP_SURFEDGES]);
+	Mod_LoadTextures (&header->lumps[BSP29LUMP_TEXTURES]);
+	Mod_LoadLighting (&header->lumps[BSP29LUMP_LIGHTING]);
+	Mod_LoadPlanes (&header->lumps[BSP29LUMP_PLANES]);
+	Mod_LoadTexinfo (&header->lumps[BSP29LUMP_TEXINFO]);
+	Mod_LoadFaces (&header->lumps[BSP29LUMP_FACES]);
+	Mod_LoadMarksurfaces (&header->lumps[BSP29LUMP_MARKSURFACES]);
+	Mod_LoadVisibility (&header->lumps[BSP29LUMP_VISIBILITY]);
+	Mod_LoadLeafs (&header->lumps[BSP29LUMP_LEAFS]);
+	Mod_LoadNodes (&header->lumps[BSP29LUMP_NODES]);
+	Mod_LoadClipnodes (&header->lumps[BSP29LUMP_CLIPNODES]);
+	Mod_LoadEntities (&header->lumps[BSP29LUMP_ENTITIES]);
+	Mod_LoadSubmodels (&header->lumps[BSP29LUMP_MODELS]);
 
 	Mod_MakeHull0 ();
 	
@@ -1219,7 +1219,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		bm = &mod->submodels[i];
 
 		mod->hulls[0].firstclipnode = bm->headnode[0];
-		for (j=1 ; j<MAX_MAP_HULLS ; j++)
+		for (j=1 ; j<BSP29_MAX_MAP_HULLS_H2 ; j++)
 		{
 			mod->hulls[j].firstclipnode = bm->headnode[j];
 			mod->hulls[j].lastclipnode = mod->numclipnodes-1;
@@ -1264,13 +1264,13 @@ mtriangle_t	triangles[MAXALIASTRIS];
 // a pose is a single set of vertexes.  a frame may be
 // an animating sequence of poses
 trivertx_t	*poseverts[MAXALIASFRAMES];
-int			posenum;
+static int			posenum;
 
 byte		player_8bit_texels[MAX_PLAYER_CLASS][620*245];
 
 static float	aliastransform[3][4];
 
-void R_AliasTransformVector (vec3_t in, vec3_t out)
+static void R_AliasTransformVector (vec3_t in, vec3_t out)
 {
 	out[0] = DotProduct(in, aliastransform[0]) + aliastransform[0][3];
 	out[1] = DotProduct(in, aliastransform[1]) + aliastransform[1][3];
@@ -1282,7 +1282,7 @@ void R_AliasTransformVector (vec3_t in, vec3_t out)
 Mod_LoadAliasFrame
 =================
 */
-void * Mod_LoadAliasFrame (void * pin, maliasframedesc_t *frame)
+static void * Mod_LoadAliasFrame (void * pin, maliasframedesc_t *frame)
 {
 	trivertx_t		*pframe, *pinframe;
 	int				i, j;
@@ -1344,7 +1344,7 @@ void * Mod_LoadAliasFrame (void * pin, maliasframedesc_t *frame)
 Mod_LoadAliasGroup
 =================
 */
-void *Mod_LoadAliasGroup (void * pin,  maliasframedesc_t *frame)
+static void *Mod_LoadAliasGroup (void * pin,  maliasframedesc_t *frame)
 {
 	daliasgroup_t		*pingroup;
 	int					i, j, k, numframes;
@@ -1443,7 +1443,7 @@ extern unsigned d_8to24table[];
 	else if (pos[off] != 255) fdc = pos[off]; \
 }
 
-void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
+static void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
 {
 	byte				fillcolor = *skin; // assume this is the pixel to fill
 	floodfill_t			fifo[FLOODFILL_FIFO_SIZE];
@@ -1494,7 +1494,7 @@ void Mod_FloodFillSkin( byte *skin, int skinwidth, int skinheight )
 Mod_LoadAllSkins
 ===============
 */
-void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int mdl_flags)
+static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int mdl_flags)
 {
 	int		i, j, k;
 	char	name[32];
@@ -1615,7 +1615,7 @@ Mod_LoadAliasModelNew
 reads extra field for num ST verts, and extra index list of them
 =================
 */
-void Mod_LoadAliasModelNew (model_t *mod, void *buffer)
+static void Mod_LoadAliasModelNew (model_t *mod, void *buffer)
 {
 	int					i, j;
 	newmdl_t			*pinmodel;
@@ -1794,7 +1794,7 @@ void Mod_LoadAliasModelNew (model_t *mod, void *buffer)
 Mod_LoadAliasModel
 =================
 */
-void Mod_LoadAliasModel (model_t *mod, void *buffer)
+static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 {
 	int					i, j;
 	mdl_t				*pinmodel;
@@ -1971,7 +1971,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 Mod_LoadSpriteFrame
 =================
 */
-void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int framenum)
+static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int framenum)
 {
 	dspriteframe_t		*pinframe;
 	mspriteframe_t		*pspriteframe;
@@ -2014,7 +2014,7 @@ void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int framenum)
 Mod_LoadSpriteGroup
 =================
 */
-void * Mod_LoadSpriteGroup (void * pin, mspriteframe_t **ppframe, int framenum)
+static void * Mod_LoadSpriteGroup (void * pin, mspriteframe_t **ppframe, int framenum)
 {
 	dspritegroup_t		*pingroup;
 	mspritegroup_t		*pspritegroup;
@@ -2066,7 +2066,7 @@ void * Mod_LoadSpriteGroup (void * pin, mspriteframe_t **ppframe, int framenum)
 Mod_LoadSpriteModel
 =================
 */
-void Mod_LoadSpriteModel (model_t *mod, void *buffer)
+static void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 {
 	int					i;
 	int					version;

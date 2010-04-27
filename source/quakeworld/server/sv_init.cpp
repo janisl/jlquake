@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "qwsvdef.h"
+#include "../../quake/cm_local.h"
 
 server_static_t	svs;				// persistant server info
 server_t		sv;					// local server
@@ -201,8 +202,7 @@ void SV_CalcPHS (void)
 	vcount = 0;
 	for (i=0 ; i<num ; i++, scan+=rowbytes)
 	{
-		Com_Memcpy(scan, Mod_LeafPVS(sv.worldmodel->leafs+i, sv.worldmodel),
-			rowbytes);
+		Com_Memcpy(scan, CM_ClusterPVS(CM_LeafCluster(i)), rowbytes);
 		if (i == 0)
 			continue;
 		for (j=0 ; j<num ; j++)
@@ -292,7 +292,7 @@ void SV_SpawnServer (char *server)
 
 	sv.state = ss_dead;
 
-	Mod_ClearAll ();
+	CM_ClearAll ();
 	Hunk_FreeToLowMark (host_hunklevel);
 
 	// wipe the entire per-level structure
@@ -333,7 +333,7 @@ void SV_SpawnServer (char *server)
 	
 	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
-	sv.worldmodel = Mod_ForName (sv.modelname, true);
+	sv.worldmodel = CM_LoadMap(sv.modelname, false, NULL);
 	SV_CalcPHS ();
 
 	//
@@ -346,10 +346,10 @@ void SV_SpawnServer (char *server)
 	sv.model_precache[0] = pr_strings;
 	sv.model_precache[1] = sv.modelname;
 	sv.models[1] = sv.worldmodel;
-	for (i=1 ; i<sv.worldmodel->numsubmodels ; i++)
+	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
-		sv.model_precache[1+i] = localmodels[i];
-		sv.models[i+1] = Mod_ForName (localmodels[i], false);
+		sv.model_precache[1 + i] = localmodels[i];
+		sv.models[i + 1] = CM_InlineModel(localmodels[i]);
 	}
 
 	//check player/eyes models for hacks
@@ -366,7 +366,7 @@ void SV_SpawnServer (char *server)
 
 	ent = EDICT_NUM(0);
 	ent->free = false;
-	ent->v.model = PR_SetString(sv.worldmodel->name);
+	ent->v.model = PR_SetString(sv.modelname);
 	ent->v.modelindex = 1;		// world model
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
@@ -379,7 +379,7 @@ void SV_SpawnServer (char *server)
 	SV_ProgStartFrame ();
 
 	// load and spawn all other entities
-	ED_LoadFromFile (sv.worldmodel->entities);
+	ED_LoadFromFile(CM_EntityString());
 
 	// look up some model indexes for specialized message compression
 	SV_FindModelNumbers ();

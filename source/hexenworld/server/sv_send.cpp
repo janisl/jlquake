@@ -238,19 +238,14 @@ void SV_Multicast (vec3_t origin, int to)
 {
 	client_t	*client;
 	byte		*mask;
-	mleaf_t		*leaf;
 	int			leafnum;
 	int			j;
 	qboolean	reliable;
 	vec3_t		adjust_origin;
 
 	clients_multicast = 0;
-	
-	leaf = Mod_PointInLeaf (origin, sv.worldmodel);
-	if (!leaf)
-		leafnum = 0;
-	else
-		leafnum = leaf - sv.worldmodel->leafs;
+
+	leafnum = CM_PointLeafnum(origin);
 
 	reliable = false;
 
@@ -265,13 +260,13 @@ void SV_Multicast (vec3_t origin, int to)
 	case MULTICAST_PHS_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_PHS:
-		mask = sv.phs + leafnum * 4*((sv.worldmodel->numleafs+31)>>5);
+		mask = sv.phs + leafnum * 4 * ((CM_NumClusters() + 31) >> 5);
 		break;
 
 	case MULTICAST_PVS_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_PVS:
-		mask = sv.pvs + leafnum * 4*((sv.worldmodel->numleafs+31)>>5);
+		mask = sv.pvs + leafnum * 4*((CM_NumClusters() + 31) >> 5);
 		break;
 
 	default:
@@ -287,14 +282,12 @@ void SV_Multicast (vec3_t origin, int to)
 
 		VectorCopy(client->edict->v.origin, adjust_origin);
 		adjust_origin[2] += 16;
-		leaf = Mod_PointInLeaf (adjust_origin, sv.worldmodel);
-		if (leaf)// && leaf != sv.worldmodel->leafs)
+		leafnum = CM_PointLeafnum(adjust_origin);
+		// if (leaf != sv.worldmodel->leafs)
 		{
-			// -1 is because pvs rows are 1 based, not 0 based like leafs
-			leafnum = leaf - sv.worldmodel->leafs - 1;
-			if ( !(mask[leafnum>>3] & (1<<(leafnum&7)) ))
+			leafnum = CM_LeafCluster(leafnum);
+			if (leafnum < 0 || !(mask[leafnum >> 3] & (1 << (leafnum & 7))))
 			{
-//				Con_Printf ("supressed multicast\n");
 				if (mask == sv.pvs)
 					Sys_Printf("supressed multicast to all!!!\n");
 				continue;

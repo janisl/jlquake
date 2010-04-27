@@ -121,8 +121,6 @@ int FS_Write(const void* buffer, int len, fileHandle_t f);
 void FS_Printf(fileHandle_t f, const char *fmt, ...);
 // like fprintf
 
-void FS_Scanf(fileHandle_t h, const char *fmt, ...);
-
 void FS_Flush(fileHandle_t f);
 
 int FS_Seek(fileHandle_t f, long offset, int origin);

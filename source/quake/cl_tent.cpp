@@ -135,11 +135,7 @@ void CL_ParseTEnt (void)
 		pos[0] = net_message.ReadCoord ();
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
-#ifdef GLTEST
-		Test_Spawn (pos);
-#else
 		R_RunParticleEffect (pos, vec3_origin, 0, 10);
-#endif
 		if ( rand() % 5 )
 			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
 		else

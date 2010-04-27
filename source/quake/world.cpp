@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // world.c -- world query functions
 
 #include "quakedef.h"
+#include "cm_local.h"
 
 /*
 
@@ -43,7 +44,7 @@ typedef struct
 
 extern "C"
 {
-int SV_HullPointContents (hull_t *hull, int num, vec3_t p);
+int SV_HullPointContents (chull_t *hull, int num, vec3_t p);
 }
 
 /*
@@ -55,8 +56,8 @@ HULL BOXES
 */
 
 
-static	hull_t		box_hull;
-static	dclipnode_t	box_clipnodes[6];
+static	chull_t		box_hull;
+static	bsp29_dclipnode_t	box_clipnodes[6];
 static	cplane_t	box_planes[6];
 
 /*
@@ -64,7 +65,7 @@ static	cplane_t	box_planes[6];
 SV_InitBoxHull
 
 Set up the planes and clipnodes so that the six floats of a bounding box
-can just be stored out and get a proper hull_t structure.
+can just be stored out and get a proper chull_t structure.
 ===================
 */
 void SV_InitBoxHull (void)
@@ -104,7 +105,7 @@ To keep everything totally uniform, bounding boxes are turned into small
 BSP trees instead of being compared directly.
 ===================
 */
-hull_t	*SV_HullForBox (vec3_t mins, vec3_t maxs)
+chull_t	*SV_HullForBox (vec3_t mins, vec3_t maxs)
 {
 	box_planes[0].dist = maxs[0];
 	box_planes[1].dist = mins[0];
@@ -128,12 +129,12 @@ Offset is filled in to contain the adjustment that must be added to the
 testing object's origin to get a point to use with the returned hull.
 ================
 */
-hull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
+chull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
 {
-	model_t		*model;
+	cmodel_t	*model;
 	vec3_t		size;
 	vec3_t		hullmins, hullmaxs;
-	hull_t		*hull;
+	chull_t		*hull;
 
 // decide which clipping hull to use, based on the size
 	if (ent->v.solid == SOLID_BSP)
@@ -327,10 +328,10 @@ SV_FindTouchedLeafs
 
 ===============
 */
-void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
+void SV_FindTouchedLeafs (edict_t *ent, cnode_t *node)
 {
 	cplane_t	*splitplane;
-	mleaf_t		*leaf;
+	cleaf_t		*leaf;
 	int			sides;
 	int			leafnum;
 
@@ -344,7 +345,7 @@ void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
 		if (ent->num_leafs == MAX_ENT_LEAFS)
 			return;
 
-		leaf = (mleaf_t *)node;
+		leaf = (cleaf_t *)node;
 		leafnum = leaf - sv.worldmodel->leafs - 1;
 
 		ent->leafnums[ent->num_leafs] = leafnum;
@@ -463,7 +464,7 @@ SV_HullPointContents
 
 ==================
 */
-int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
+int SV_HullPointContents (chull_t *hull, int num, vec3_t p)
 {
 	float		d;
 	dclipnode_t	*node;
@@ -553,9 +554,9 @@ SV_RecursiveHullCheck
 
 ==================
 */
-qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t *trace)
+qboolean SV_RecursiveHullCheck (chull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t *trace)
 {
-	dclipnode_t	*node;
+	bsp29_dclipnode_t	*node;
 	cplane_t	*plane;
 	float		t1, t2;
 	float		frac;
@@ -699,7 +700,7 @@ trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t max
 	trace_t		trace;
 	vec3_t		offset;
 	vec3_t		start_l, end_l;
-	hull_t		*hull;
+	chull_t		*hull;
 
 // fill in a default trace
 	Com_Memset(&trace, 0, sizeof(trace_t));

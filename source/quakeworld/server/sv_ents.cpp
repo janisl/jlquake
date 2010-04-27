@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "qwsvdef.h"
+#include "../../quake/cm_local.h"
 
 /*
 =============================================================================
@@ -32,9 +33,9 @@ crosses a waterline.
 */
 
 int		fatbytes;
-byte	fatpvs[MAX_MAP_LEAFS/8];
+byte	fatpvs[BSP29_MAX_MAP_LEAFS/8];
 
-void SV_AddToFatPVS (vec3_t org, mnode_t *node)
+void SV_AddToFatPVS (vec3_t org, cnode_t *node)
 {
 	int		i;
 	byte	*pvs;
@@ -48,7 +49,7 @@ void SV_AddToFatPVS (vec3_t org, mnode_t *node)
 		{
 			if (node->contents != CONTENTS_SOLID)
 			{
-				pvs = Mod_LeafPVS ( (mleaf_t *)node, sv.worldmodel);
+				pvs = CM_ClusterPVS(CM_LeafCluster((cleaf_t*)node - sv.worldmodel->leafs));
 				for (i=0 ; i<fatbytes ; i++)
 					fatpvs[i] |= pvs[i];
 			}
@@ -79,7 +80,7 @@ given point.
 */
 byte *SV_FatPVS (vec3_t org)
 {
-	fatbytes = (sv.worldmodel->numleafs+31)>>3;
+	fatbytes = (CM_NumClusters() + 31) >> 3;
 	Com_Memset(fatpvs, 0, fatbytes);
 	SV_AddToFatPVS (org, sv.worldmodel->nodes);
 	return fatpvs;

@@ -21,7 +21,7 @@ typedef struct
 typedef struct
 {
 	vec3_t	origin;
-	model_t	*model;		// only for bsp models
+	cmodel_t	*model;		// only for bsp models
 	vec3_t	mins, maxs;	// only for non-bsp models
 	vec3_t	angles;
 	int		info;		// for client or server to identify
@@ -83,4 +83,4 @@ void Pmove_Init (void);
 int PM_PointContents (vec3_t point);
 qboolean PM_TestPlayerPosition (vec3_t point);
 pmtrace_t PM_PlayerMove (vec3_t start, vec3_t stop);
-int PM_HullPointContents (hull_t *hull, int num, vec3_t p);
+int PM_HullPointContents (chull_t *hull, int num, vec3_t p);

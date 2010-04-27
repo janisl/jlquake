@@ -8,10 +8,6 @@
 
 //#define MISSIONPACK
 
-//#define	GLTEST			// experimental stuff
-
-#define	QUAKE_GAME			// as opposed to utilities
-
 #define HEXEN2_VERSION		1.12
 
 //define	PARANOID			// speed sapping error checking
@@ -258,6 +254,7 @@ typedef struct
 #include "client.h"
 #include "server.h"
 #include "gl_model.h"
+#include "../quake/cmodel.h"
 #include "input.h"
 #include "world.h"
 #include "keys.h"

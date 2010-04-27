@@ -2,8 +2,6 @@
 
 #include "../../../libs/core/core.h"
 
-#define	QUAKE_GAME			// as opposed to utilities
-
 //define	PARANOID			// speed sapping error checking
 
 #include <setjmp.h>
@@ -31,6 +29,7 @@
 #include "cl_effect.h"
 #include "client.h"
 #include "gl_model.h"
+#include "../../quake/cmodel.h"
 #include "input.h"
 #include "keys.h"
 #include "console.h"

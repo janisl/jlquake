@@ -46,9 +46,9 @@ typedef struct
 	
 	char		name[64];			// map name
 	char		modelname[64];		// maps/<name>.bsp, for model_precache[0]
-	struct model_s 	*worldmodel;
+	cmodel_t 	*worldmodel;
 	char		*model_precache[MAX_MODELS];	// NULL terminated
-	struct model_s	*models[MAX_MODELS];
+	cmodel_t	*models[MAX_MODELS];
 	char		*sound_precache[MAX_SOUNDS];	// NULL terminated
 	char		*lightstyles[MAX_LIGHTSTYLES];
 	int			num_edicts;

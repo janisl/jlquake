@@ -64,7 +64,7 @@ int   		paintedtime; 	// sample PAIRS
 sfx_t		*known_sfx;		// hunk allocated [MAX_SFX]
 int			num_sfx;
 
-sfx_t		*ambient_sfx[NUM_AMBIENTS];
+sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
 
 int 		desired_speed = 11025;
 int 		desired_bits = 16;
@@ -237,8 +237,8 @@ void S_Init (void)
 //	if (shm->buffer)
 //		shm->buffer[4] = shm->buffer[5] = 0x7f;	// force a pop for debugging
 
-	ambient_sfx[AMBIENT_WATER] = S_PrecacheSound ("ambience/water1.wav");
-	ambient_sfx[AMBIENT_SKY] = S_PrecacheSound ("ambience/wind2.wav");
+	ambient_sfx[BSP29AMBIENT_WATER] = S_PrecacheSound ("ambience/water1.wav");
+	ambient_sfx[BSP29AMBIENT_SKY] = S_PrecacheSound ("ambience/wind2.wav");
 
 	S_StopAllSounds (true);
 }
@@ -363,7 +363,7 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 // Check for replacement sound, or find the best one to replace
     first_to_die = -1;
     life_left = 0x7fffffff;
-    for (ch_idx=NUM_AMBIENTS ; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++)
+    for (ch_idx=BSP29_NUM_AMBIENTS ; ch_idx < BSP29_NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++)
     {
 		if (entchannel != 0		// channel 0 never overrides
 		&& channels[ch_idx].entnum == entnum
@@ -501,8 +501,8 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 
 // if an identical sound has also been started this frame, offset the pos
 // a bit to keep it from just making the first one louder
-	check = &channels[NUM_AMBIENTS];
-    for (ch_idx=NUM_AMBIENTS ; ch_idx < NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++, check++)
+	check = &channels[BSP29_NUM_AMBIENTS];
+    for (ch_idx=BSP29_NUM_AMBIENTS ; ch_idx < BSP29_NUM_AMBIENTS + MAX_DYNAMIC_CHANNELS ; ch_idx++, check++)
     {
 		if (check == target_chan)
 			continue;
@@ -542,7 +542,7 @@ void S_StopAllSounds(qboolean clear)
 	if (!sound_started)
 		return;
 
-	total_channels = MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;	// no statics
+	total_channels = MAX_DYNAMIC_CHANNELS + BSP29_NUM_AMBIENTS;	// no statics
 
 	for (i=0 ; i<MAX_CHANNELS ; i++)
 		if (channels[i].sfx)
@@ -666,7 +666,6 @@ S_UpdateAmbientSounds
 */
 void S_UpdateAmbientSounds (void)
 {
-	mleaf_t		*l;
 	float		vol;
 	int			ambient_channel;
 	channel_t	*chan;
@@ -674,24 +673,21 @@ void S_UpdateAmbientSounds (void)
 	if (!snd_ambient)
 		return;
 
-// calc ambient sound levels
-	if (!cl.worldmodel)
-		return;
-
-	l = Mod_PointInLeaf (listener_origin, cl.worldmodel);
-	if (!l || !ambient_level->value)
+	// calc ambient sound levels
+	byte* ambient_sound_level = CM_LeafAmbientSoundLevel(CM_PointLeafnum(listener_origin));
+	if (!ambient_sound_level || !ambient_level->value)
 	{
-		for (ambient_channel = 0 ; ambient_channel< NUM_AMBIENTS ; ambient_channel++)
+		for (ambient_channel = 0 ; ambient_channel< BSP29_NUM_AMBIENTS ; ambient_channel++)
 			channels[ambient_channel].sfx = NULL;
 		return;
 	}
 
-	for (ambient_channel = 0 ; ambient_channel< NUM_AMBIENTS ; ambient_channel++)
+	for (ambient_channel = 0 ; ambient_channel< BSP29_NUM_AMBIENTS ; ambient_channel++)
 	{
 		chan = &channels[ambient_channel];	
 		chan->sfx = ambient_sfx[ambient_channel];
 	
-		vol = ambient_level->value * l->ambient_sound_level[ambient_channel];
+		vol = ambient_level->value * ambient_sound_level[ambient_channel];
 		if (vol < 8)
 			vol = 0;
 
@@ -742,8 +738,8 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	combine = NULL;
 
 // update spatialization for static and dynamic sounds	
-	ch = channels+NUM_AMBIENTS;
-	for (i=NUM_AMBIENTS ; i<total_channels; i++, ch++)
+	ch = channels+BSP29_NUM_AMBIENTS;
+	for (i=BSP29_NUM_AMBIENTS ; i<total_channels; i++, ch++)
 	{
 		if (!ch->sfx)
 			continue;
@@ -754,7 +750,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	// try to combine static sounds with a previous channel of the same
 	// sound effect so we don't mix five torches every frame
 	
-		if (i >= MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS)
+		if (i >= MAX_DYNAMIC_CHANNELS + BSP29_NUM_AMBIENTS)
 		{
 		// see if it can just use the last one
 			if (combine && combine->sfx == ch->sfx)
@@ -765,8 +761,8 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 				continue;
 			}
 		// search for one
-			combine = channels+MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS;
-			for (j=MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS ; j<i; j++, combine++)
+			combine = channels+MAX_DYNAMIC_CHANNELS + BSP29_NUM_AMBIENTS;
+			for (j=MAX_DYNAMIC_CHANNELS + BSP29_NUM_AMBIENTS ; j<i; j++, combine++)
 				if (combine->sfx == ch->sfx)
 					break;
 					

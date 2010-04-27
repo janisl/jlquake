@@ -646,7 +646,7 @@ void ED_WriteGlobals (fileHandle_t f)
 ED_ParseGlobals
 =============
 */
-void ED_ParseGlobals (const char *data)
+const char* ED_ParseGlobals(const char* data)
 {
 	char	keyname[64];
 	ddef_t	*key;
@@ -680,6 +680,7 @@ void ED_ParseGlobals (const char *data)
 		if (!ED_ParseEpair ((void *)pr_globals, key, token))
 			Host_Error ("ED_ParseGlobals: parse error");
 	}
+	return data;
 }
 
 //============================================================================
