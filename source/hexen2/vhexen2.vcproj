@@ -235,6 +235,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cmodel.cpp"
+				>
+			</File>
+			<File
 				RelativePath="common.cpp"
 				>
 			</File>
@@ -306,10 +310,6 @@
 			</File>
 			<File
 				RelativePath="gl_screen.cpp"
-				>
-			</File>
-			<File
-				RelativePath="gl_test.cpp"
 				>
 			</File>
 			<File
@@ -459,28 +459,6 @@
 				>
 			</File>
 			<File
-				RelativePath="worlda.asm"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(IntDir)/$(InputName).obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(IntDir)/$(InputName).obj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="zone.cpp"
 				>
 			</File>
@@ -495,10 +473,6 @@
 			</File>
 			<File
 				RelativePath="Anorms.h"
-				>
-			</File>
-			<File
-				RelativePath="Bspfile.h"
 				>
 			</File>
 			<File

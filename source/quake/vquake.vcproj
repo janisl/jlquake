@@ -234,6 +234,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cmodel.cpp"
+				>
+			</File>
+			<File
 				RelativePath="common.cpp"
 				>
 			</File>
@@ -283,10 +287,6 @@
 			</File>
 			<File
 				RelativePath="gl_screen.cpp"
-				>
-			</File>
-			<File
-				RelativePath="gl_test.cpp"
 				>
 			</File>
 			<File
@@ -414,10 +414,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\worlda.asm"
-				>
-			</File>
-			<File
 				RelativePath="zone.cpp"
 				>
 			</File>
@@ -432,10 +428,6 @@
 			</File>
 			<File
 				RelativePath="anorms.h"
-				>
-			</File>
-			<File
-				RelativePath="bspfile.h"
 				>
 			</File>
 			<File

@@ -149,6 +149,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\cm29_load.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\cmd.cpp"
 				>
 			</File>
@@ -224,6 +228,14 @@
 			>
 			<File
 				RelativePath=".\array.h"
+				>
+			</File>
+			<File
+				RelativePath=".\bsp29file.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cm29_local.h"
 				>
 			</File>
 			<File
