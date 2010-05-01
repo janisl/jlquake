@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // chase.c -- chase camera code
 
 #include "quakedef.h"
-#include "cm_local.h"
 
 QCvar*	chase_back;
 QCvar*	chase_up;
@@ -53,7 +52,7 @@ void TraceLine (vec3_t start, vec3_t end, vec3_t impact)
 	trace_t	trace;
 
 	Com_Memset(&trace, 0, sizeof(trace));
-	SV_RecursiveHullCheck (cl.worldcmodel->hulls, 0, 0, 1, start, end, &trace);
+	CM_TraceLine(start, end, &trace);
 
 	VectorCopy (trace.endpos, impact);
 }

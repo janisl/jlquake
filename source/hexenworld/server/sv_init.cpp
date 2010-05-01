@@ -1,6 +1,5 @@
 
 #include "qwsvdef.h"
-#include "../../quake/cm_local.h"
 
 server_static_t	svs;				// persistant server info
 server_t		sv;					// local server
@@ -164,85 +163,6 @@ void SV_SaveSpawnparms (void)
 
 /*
 ================
-SV_CalcPHS
-
-Expands the PVS and calculates the PHS
-(Potentially Hearable Set)
-================
-*/
-void SV_CalcPHS (void)
-{
-	int		rowbytes, rowwords;
-	int		i, j, k, l, index, num;
-	int		bitbyte;
-	unsigned	*dest, *src;
-	byte	*scan;
-	int		count, vcount;
-
-	Con_Printf ("Building PHS...\n");
-
-	num = sv.worldmodel->numleafs;
-	rowwords = (num+31)>>5;
-	rowbytes = rowwords*4;
-
-	sv.pvs = (byte*)Hunk_Alloc (rowbytes*num);
-	scan = sv.pvs;
-	vcount = 0;
-	for (i=0 ; i<num ; i++, scan+=rowbytes)
-	{
-		Com_Memcpy(scan, CM_ClusterPVS(CM_LeafCluster(i)), rowbytes);
-		if (i == 0)
-			continue;
-		for (j=0 ; j<num ; j++)
-		{
-			if ( scan[j>>3] & (1<<(j&7)) )
-			{
-				vcount++;
-			}
-		}
-	}
-
-
-	sv.phs = (byte*)Hunk_Alloc (rowbytes*num);
-	count = 0;
-	scan = sv.pvs;
-	dest = (unsigned *)sv.phs;
-	for (i=0 ; i<num ; i++, dest += rowwords, scan += rowbytes)
-	{
-		Com_Memcpy(dest, scan, rowbytes);
-		for (j=0 ; j<rowbytes ; j++)
-		{
-			bitbyte = scan[j];
-			if (!bitbyte)
-				continue;
-			for (k=0 ; k<8 ; k++)
-			{
-				if (! (bitbyte & (1<<k)) )
-					continue;
-				// or this pvs row into the phs
-				// +1 because pvs is 1 based
-				index = ((j<<3)+k+1);
-				if (index >= num)
-					continue;
-				src = (unsigned *)sv.pvs + index*rowwords;
-				for (l=0 ; l<rowwords ; l++)
-					dest[l] |= src[l];
-			}
-		}
-
-		if (i == 0)
-			continue;
-		for (j=0 ; j<num ; j++)
-			if ( ((byte *)dest)[j>>3] & (1<<(j&7)) )
-				count++;
-	}
-
-	Con_Printf ("Average leafs visible / hearable / total: %i / %i / %i\n"
-		, vcount/num, count/num, num);
-}
-
-/*
-================
 SV_SpawnServer
 
 Change the server to a new map, taking all connected
@@ -265,7 +185,6 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	sv.state = ss_dead;
 
-	CM_ClearAll ();
 	Hunk_FreeToLowMark (host_hunklevel);
 
 	// wipe the entire per-level structure
@@ -312,7 +231,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 	sv.worldmodel = CM_LoadMap(sv.modelname, false, NULL);
-	SV_CalcPHS ();
+	CM_CalcPHS();
 
 	//
 	// clear physics interaction links

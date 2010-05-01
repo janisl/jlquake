@@ -19,7 +19,7 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "cm_local.h"
+#include "../../libs/core/cm29_local.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -31,11 +31,10 @@
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
-static void CM_LoadBrushModel(cmodel_t* mod, void* buffer);
-static void CM_LoadBrushModelNonMap(cmodel_t* mod, void* buffer);
 static void CM_LoadAliasModel(cmodel_t* mod, void* buffer);
 static void CM_LoadAliasModelNew(cmodel_t* mod, void* buffer);
 static void CM_LoadSpriteModel(cmodel_t* mod, void* buffer);
+static void CM_InitBoxHull();
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -43,18 +42,17 @@ static void CM_LoadSpriteModel(cmodel_t* mod, void* buffer);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static cmodel_t	*loadcmodel;
+static byte			mod_novis[BSP29_MAX_MAP_LEAFS/8];
 
-static byte		mod_novis[BSP29_MAX_MAP_LEAFS/8];
-
-#define	MAX_MAP_MODELS		256
-static cmodel_t	cm_map_models[MAX_MAP_MODELS];
+static QClipMap29*	CMap;
 
 #define MAX_MOD_KNOWN	2048
-static cmodel_t	mod_known[MAX_MOD_KNOWN];
-static int		mod_numknown;
+static QClipMap29*	cm_known[MAX_MOD_KNOWN];
+static int			mod_numknown;
 
-static byte*	mod_base;
+chull_t		box_hull;
+bsp29_dclipnode_t	box_clipnodes[6];
+cplane_t	box_planes[6];
 
 // CODE --------------------------------------------------------------------
 
@@ -77,17 +75,17 @@ void CM_Init()
 
 int CM_PointLeafnum(const vec3_t p)
 {
-	if (!cm_map_models[0].numplanes)
+	if (!CMap)
 	{
 		return 0;		// sound may call this without map loaded
 	}
 
-	cnode_t* node = cm_map_models[0].nodes;
+	cnode_t* node = CMap->map_models[0].nodes;
 	while (1)
 	{
 		if (node->contents < 0)
 		{
-			return (cleaf_t*)node - cm_map_models[0].leafs;
+			return (cleaf_t*)node - CMap->map_models[0].leafs;
 		}
 		cplane_t* plane = node->plane;
 		float d = DotProduct(p, plane->normal) - plane->dist;
@@ -155,70 +153,19 @@ byte* CM_ClusterPVS(int Cluster)
 	{
 		return mod_novis;
 	}
-	return CM_DecompressVis(cm_map_models[0].leafs[Cluster + 1].compressed_vis,
-		&cm_map_models[0]);
+	return CM_DecompressVis(CMap->map_models[0].leafs[Cluster + 1].compressed_vis,
+		&CMap->map_models[0]);
 }
 
 //==========================================================================
 //
-//	CM_ClearAll
+//	CM_ClusterPHS
 //
 //==========================================================================
 
-void CM_ClearAll()
+byte* CM_ClusterPHS(int Cluster)
 {
-	cmodel_t* mod = mod_known;
-	for (int i = 0; i < mod_numknown; i++, mod++)
-	{
-		if (mod->type != mod_alias)
-		{
-			mod->needload = true;
-		}
-		mod->Free();
-	}
-	cm_map_models[0].Free();
-	Com_Memset(cm_map_models, 0, sizeof(cm_map_models));
-}
-
-//==========================================================================
-//
-//	CM_FindName
-//
-//==========================================================================
-
-static cmodel_t* CM_FindName(const char* name)
-{
-	int		i;
-	cmodel_t	*mod;
-
-	if (!name[0])
-	{
-		Sys_Error("CM_ForName: NULL name");
-	}
-
-	//
-	// search the currently loaded models
-	//
-	for (i = 0, mod = mod_known; i < mod_numknown; i++, mod++)
-	{
-		if (!QStr::Cmp(mod->name, name))
-		{
-			break;
-		}
-	}
-
-	if (i == mod_numknown)
-	{
-		if (mod_numknown == MAX_MOD_KNOWN)
-		{
-			Sys_Error("mod_numknown == MAX_MOD_KNOWN");
-		}
-		QStr::Cpy(mod->name, name);
-		mod->needload = true;
-		mod_numknown++;
-	}
-
-	return mod;
+	return CMap->map_models[0].phs + (Cluster + 1) * 4 * ((CM_NumClusters() + 31) >> 5);
 }
 
 //==========================================================================
@@ -234,26 +181,22 @@ cmodel_t* CM_LoadMap(const char* name, bool clientload, int* checksum)
 		Sys_Error("CM_ForName: NULL name");
 	}
 
-	//
-	// search the currently loaded models
-	//
-	cmodel_t* mod = &cm_map_models[0];
-	if (!QStr::Cmp(mod->name, name))
+	if (CMap)
 	{
-		if (mod->needload)
+		if (!QStr::Cmp(CMap->map_models[0].name, name))
 		{
-			throw QException("Curent map not loaded");
+			//	Already got it.
+			return &CMap->map_models[0];
 		}
-		return mod;
+
+		CMap->map_models[0].Free();
+		delete CMap;
 	}
 
+	CMap = new QClipMap29;
+	Com_Memset(CMap->map_models, 0, sizeof(CMap->map_models));
+	cmodel_t* mod = &CMap->map_models[0];
 	QStr::Cpy(mod->name, name);
-	mod->needload = true;
-
-	if (!mod->needload)
-	{
-		return mod;
-	}
 
 	//
 	// load the file
@@ -264,19 +207,10 @@ cmodel_t* CM_LoadMap(const char* name, bool clientload, int* checksum)
 		return NULL;
 	}
 
-	//
-	// allocate a new model
-	//
-	loadcmodel = mod;
+	CMap->LoadBrushModel(mod, Buffer.Ptr());
 
-	//
-	// fill it in
-	//
+	CM_InitBoxHull();
 
-	// call the apropriate loader
-	mod->needload = false;
-
-	CM_LoadBrushModel(mod, Buffer.Ptr());
 	return mod;
 }
 
@@ -293,11 +227,11 @@ cmodel_t* CM_InlineModel(const char* name)
 		throw QDropException("Submodel name mus start with *");
 	}
 	int i = QStr::Atoi(name + 1);
-	if (i < 1 || i > cm_map_models[0].numsubmodels)
+	if (i < 1 || i > CMap->map_models[0].numsubmodels)
 	{
 		throw QDropException("Bad submodel index");
 	}
-	return &cm_map_models[i];
+	return &CMap->map_models[i];
 }
 
 //==========================================================================
@@ -308,12 +242,32 @@ cmodel_t* CM_InlineModel(const char* name)
 
 cmodel_t* CM_PrecacheModel(const char* name)
 {
-	cmodel_t* mod = CM_FindName(name);
-
-	if (!mod->needload)
+	if (!name[0])
 	{
-		return mod;
+		Sys_Error("CM_ForName: NULL name");
 	}
+
+	//
+	// search the currently loaded models
+	//
+	for (int i = 0; i < mod_numknown; i++)
+	{
+		if (!QStr::Cmp(cm_known[i]->map_models[0].name, name))
+		{
+			return &cm_known[i]->map_models[0];
+		}
+	}
+
+	if (mod_numknown == MAX_MOD_KNOWN)
+	{
+		Sys_Error("mod_numknown == MAX_MOD_KNOWN");
+	}
+	cm_known[mod_numknown] = new QClipMap29;
+	Com_Memset(cm_known[mod_numknown]->map_models, 0, sizeof(cm_known[mod_numknown]->map_models));
+	cmodel_t* mod = &cm_known[mod_numknown]->map_models[0];
+	QStr::Cpy(mod->name, name);
+	QClipMap29* LoadCMap = cm_known[mod_numknown];
+	mod_numknown++;
 
 	//
 	// load the file
@@ -324,14 +278,7 @@ cmodel_t* CM_PrecacheModel(const char* name)
 		Sys_Error("CM_PrecacheModel: %s not found", mod->name);
 	}
 
-	//
-	// allocate a new model
-	//
-	loadcmodel = mod;
-
 	// call the apropriate loader
-	mod->needload = false;
-
 	switch (LittleLong(*(unsigned*)Buffer.Ptr()))
 	{
 	case RAPOLYHEADER:
@@ -347,11 +294,23 @@ cmodel_t* CM_PrecacheModel(const char* name)
 		break;
 
 	default:
-		CM_LoadBrushModelNonMap(mod, Buffer.Ptr());
+		LoadCMap->LoadBrushModelNonMap(mod, Buffer.Ptr());
 		break;
 	}
 
 	return mod;
+}
+
+//==========================================================================
+//
+//	CM_MapChecksums
+//
+//==========================================================================
+
+void CM_MapChecksums(int& checksum, int& checksum2)
+{
+	checksum = CMap->map_models[0].checksum;
+	checksum2 = CMap->map_models[0].checksum2;
 }
 
 //==========================================================================
@@ -374,7 +333,7 @@ void CM_ModelBounds(cmodel_t* model, vec3_t mins, vec3_t maxs)
 
 int CM_NumClusters()
 {
-	return cm_map_models[0].numleafs;
+	return CMap->map_models[0].numleafs;
 }
 
 //==========================================================================
@@ -385,7 +344,7 @@ int CM_NumClusters()
 
 int CM_NumInlineModels()
 {
-	return cm_map_models[0].numsubmodels;
+	return CMap->map_models[0].numsubmodels;
 }
 
 //==========================================================================
@@ -396,7 +355,7 @@ int CM_NumInlineModels()
 
 const char* CM_EntityString()
 {
-	return cm_map_models[0].entities;
+	return CMap->map_models[0].entities;
 }
 
 //==========================================================================
@@ -419,11 +378,11 @@ int CM_LeafCluster(int LeafNum)
 
 byte* CM_LeafAmbientSoundLevel(int LeafNum)
 {
-	if (!cm_map_models[0].numplanes)
+	if (!CMap)
 	{
 		return NULL;		// sound may call this without map loaded
 	}
-	return cm_map_models[0].leafs[LeafNum].ambient_sound_level;
+	return CMap->map_models[0].leafs[LeafNum].ambient_sound_level;
 }
 
 //==========================================================================
@@ -448,520 +407,8 @@ void cmodel_t::Free()
 	clipnodes = NULL;
 	delete[] hulls[0].clipnodes;
 	hulls[0].clipnodes = NULL;
-	delete[] submodels;
-	submodels = NULL;
-}
-
-//**************************************************************************
-//
-//	BRUSHMODEL LOADING
-//
-//**************************************************************************
-
-//==========================================================================
-//
-//	CM_LoadVisibility
-//
-//==========================================================================
-
-static void CM_LoadVisibility(bsp29_lump_t* l)
-{
-	if (!l->filelen)
-	{
-		loadcmodel->visdata = NULL;
-		return;
-	}
-	loadcmodel->visdata = new byte[l->filelen];
-	Com_Memcpy(loadcmodel->visdata, mod_base + l->fileofs, l->filelen);
-}
-
-//==========================================================================
-//
-//	CM_LoadEntities
-//
-//==========================================================================
-
-static void CM_LoadEntities(bsp29_lump_t* l)
-{
-	if (!l->filelen)
-	{
-		loadcmodel->entities = NULL;
-		return;
-	}
-	loadcmodel->entities = new char[l->filelen];
-	Com_Memcpy(loadcmodel->entities, mod_base + l->fileofs, l->filelen);
-}
-
-//==========================================================================
-//
-//	CM_LoadPlanes
-//
-//==========================================================================
-
-static void CM_LoadPlanes(bsp29_lump_t* l)
-{
-	int			i, j;
-	cplane_t	*out;
-	bsp29_dplane_t 	*in;
-	int			count;
-
-	in = (bsp29_dplane_t*)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadcmodel->name);
-	count = l->filelen / sizeof(*in);
-	out = new cplane_t[count];
-
-	loadcmodel->planes = out;
-	loadcmodel->numplanes = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
-	{
-		for (j=0 ; j<3 ; j++)
-		{
-			out->normal[j] = LittleFloat (in->normal[j]);
-		}
-		out->dist = LittleFloat (in->dist);
-		out->type = LittleLong (in->type);
-
-		SetPlaneSignbits(out);
-	}
-}
-
-//==========================================================================
-//
-//	CM_LoadNodes
-//
-//==========================================================================
-
-static void CM_LoadNodes(bsp29_lump_t* l)
-{
-	int			i, j, count, p;
-	bsp29_dnode_t		*in;
-	cnode_t 	*out;
-
-	in = (bsp29_dnode_t*)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadcmodel->name);
-	count = l->filelen / sizeof(*in);
-	out = new cnode_t[count];
-
-	loadcmodel->nodes = out;
-	loadcmodel->numnodes = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
-	{
-		out->contents = 0;
-		p = LittleLong(in->planenum);
-		out->plane = loadcmodel->planes + p;
-
-		for (j=0 ; j<2 ; j++)
-		{
-			p = LittleShort (in->children[j]);
-			if (p >= 0)
-				out->children[j] = loadcmodel->nodes + p;
-			else
-				out->children[j] = (cnode_t *)(loadcmodel->leafs + (-1 - p));
-		}
-	}
-}
-
-//==========================================================================
-//
-//	CM_LoadLeafs
-//
-//==========================================================================
-
-static void CM_LoadLeafs(bsp29_lump_t* l)
-{
-	bsp29_dleaf_t 	*in;
-	cleaf_t 	*out;
-	int			i, j, count, p;
-
-	in = (bsp29_dleaf_t*)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadcmodel->name);
-	count = l->filelen / sizeof(*in);
-	out = new cleaf_t[count];
-
-	loadcmodel->leafs = out;
-	loadcmodel->numleafs = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
-	{
-		p = LittleLong(in->contents);
-		out->contents = p;
-
-		p = LittleLong(in->visofs);
-		if (p == -1)
-			out->compressed_vis = NULL;
-		else
-			out->compressed_vis = loadcmodel->visdata + p;
-		
-		for (j=0 ; j<4 ; j++)
-			out->ambient_sound_level[j] = in->ambient_level[j];
-	}
-}
-
-//==========================================================================
-//
-//	CM_LoadClipnodes
-//
-//==========================================================================
-
-static void CM_LoadClipnodes(bsp29_lump_t* l)
-{
-	bsp29_dclipnode_t* in = (bsp29_dclipnode_t*)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-	{
-		Sys_Error("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name);
-	}
-	int count = l->filelen / sizeof(*in);
-	bsp29_dclipnode_t* out = new bsp29_dclipnode_t[count];
-
-	loadcmodel->clipnodes = out;
-	loadcmodel->numclipnodes = count;
-
-	for (int i = 0; i < count; i++, out++, in++)
-	{
-		out->planenum = LittleLong(in->planenum);
-		out->children[0] = LittleShort(in->children[0]);
-		out->children[1] = LittleShort(in->children[1]);
-	}
-}
-
-//==========================================================================
-//
-//	CM_MakeHull0
-//
-//	Deplicate the drawing hull structure as a clipping hull
-//
-//==========================================================================
-
-static void CM_MakeHull0()
-{
-	chull_t* hull = &loadcmodel->hulls[0];
-
-	cnode_t* in = loadcmodel->nodes;
-	int count = loadcmodel->numnodes;
-	bsp29_dclipnode_t* out = new bsp29_dclipnode_t[count];
-
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count - 1;
-	hull->planes = loadcmodel->planes;
-
-	for (int i = 0; i < count; i++, out++, in++)
-	{
-		out->planenum = in->plane - loadcmodel->planes;
-		for (int j = 0; j < 2; j++)
-		{
-			cnode_t* child = in->children[j];
-			if (child->contents < 0)
-			{
-				out->children[j] = child->contents;
-			}
-			else
-			{
-				out->children[j] = child - loadcmodel->nodes;
-			}
-		}
-	}
-}
-
-//==========================================================================
-//
-//	CM_MakeHulls
-//
-//==========================================================================
-
-static void CM_MakeHulls()
-{
-	for (int j = 1; j < MAX_MAP_HULLS_; j++)
-	{
-		loadcmodel->hulls[j].clipnodes = loadcmodel->clipnodes;
-		loadcmodel->hulls[j].firstclipnode = 0;
-		loadcmodel->hulls[j].lastclipnode = loadcmodel->numclipnodes - 1;
-		loadcmodel->hulls[j].planes = loadcmodel->planes;
-	}
-
-	chull_t* hull = &loadcmodel->hulls[1];
-	hull->clip_mins[0] = -16;
-	hull->clip_mins[1] = -16;
-	hull->clip_mins[2] = -24;
-	hull->clip_maxs[0] = 16;
-	hull->clip_maxs[1] = 16;
-	hull->clip_maxs[2] = 32;
-
-	hull = &loadcmodel->hulls[2];
-#if defined HEXEN2_HULLS || defined HEXENWORLD_HULLS
-	hull->clip_mins[0] = -24;
-	hull->clip_mins[1] = -24;
-	hull->clip_mins[2] = -20;
-	hull->clip_maxs[0] = 24;
-	hull->clip_maxs[1] = 24;
-	hull->clip_maxs[2] = 20;
-
-	hull = &loadcmodel->hulls[3];
-	hull->clip_mins[0] = -16;
-	hull->clip_mins[1] = -16;
-	hull->clip_mins[2] = -12;
-	hull->clip_maxs[0] = 16;
-	hull->clip_maxs[1] = 16;
-	hull->clip_maxs[2] = 16;
-
-	hull = &loadcmodel->hulls[4];
-	//	In Hexen 2 this was #if 0. After looking in progs source I found that
-	// it was changed for mission pack.
-#if defined HEXENWORLD_HULLS || !defined MISSIONPACK
-	hull->clip_mins[0] = -40;
-	hull->clip_mins[1] = -40;
-	hull->clip_mins[2] = -42;
-	hull->clip_maxs[0] = 40;
-	hull->clip_maxs[1] = 40;
-	hull->clip_maxs[2] = 42;
-#else
-	hull->clip_mins[0] = -8;
-	hull->clip_mins[1] = -8;
-	hull->clip_mins[2] = -8;
-	hull->clip_maxs[0] = 8;
-	hull->clip_maxs[1] = 8;
-	hull->clip_maxs[2] = 8;
-#endif
-
-	hull = &loadcmodel->hulls[5];
-	hull->clip_mins[0] = -48;
-	hull->clip_mins[1] = -48;
-	hull->clip_mins[2] = -50;
-	hull->clip_maxs[0] = 48;
-	hull->clip_maxs[1] = 48;
-	hull->clip_maxs[2] = 50;
-#else
-	hull->clip_mins[0] = -32;
-	hull->clip_mins[1] = -32;
-	hull->clip_mins[2] = -24;
-	hull->clip_maxs[0] = 32;
-	hull->clip_maxs[1] = 32;
-	hull->clip_maxs[2] = 64;
-#endif
-}
-
-//==========================================================================
-//
-//	CM_LoadSubmodels
-//
-//==========================================================================
-
-static void CM_LoadSubmodels(bsp29_lump_t* l)
-{
-	int			i, j, count;
-
-#if defined HEXEN2_HULLS || defined HEXENWORLD_HULLS
-	bsp29_dmodel_h2_t* in = (bsp29_dmodel_h2_t*)(mod_base + l->fileofs);
-#else
-	bsp29_dmodel_q1_t* in = (bsp29_dmodel_q1_t*)(mod_base + l->fileofs);
-#endif
-	if (l->filelen % sizeof(*in))
-		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadcmodel->name);
-	count = l->filelen / sizeof(*in);
-	bsp29_dmodel_h2_t* out = new bsp29_dmodel_h2_t[count];
-
-	loadcmodel->submodels = out;
-	loadcmodel->numsubmodels = count;
-
-	for ( i=0 ; i<count ; i++, in++, out++)
-	{
-		for (j=0 ; j<3 ; j++)
-		{	// spread the mins / maxs by a pixel
-			out->mins[j] = LittleFloat (in->mins[j]) - 1;
-			out->maxs[j] = LittleFloat (in->maxs[j]) + 1;
-			out->origin[j] = LittleFloat (in->origin[j]);
-		}
-#if defined HEXEN2_HULLS || defined HEXENWORLD_HULLS
-		for (j=0 ; j<BSP29_MAX_MAP_HULLS_H2 ; j++)
-#else
-		for (j=0 ; j<BSP29_MAX_MAP_HULLS_Q1 ; j++)
-#endif
-			out->headnode[j] = LittleLong (in->headnode[j]);
-		out->visleafs = LittleLong (in->visleafs);
-		out->firstface = LittleLong (in->firstface);
-		out->numfaces = LittleLong (in->numfaces);
-	}
-}
-
-//==========================================================================
-//
-//	CM_LoadBrushModel
-//
-//==========================================================================
-
-static void CM_LoadBrushModel(cmodel_t* mod, void* buffer)
-{
-	loadcmodel->type = mod_brush;
-
-	bsp29_dheader_t* header = (bsp29_dheader_t*)buffer;
-
-	int version = LittleLong(header->version);
-	if (version != BSP29_VERSION)
-	{
-		Sys_Error("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
-			mod->name, version, BSP29_VERSION);
-	}
-
-	// swap all the lumps
-	mod_base = (byte *)header;
-
-	for (int i = 0; i < sizeof(bsp29_dheader_t) / 4; i++)
-	{
-		((int*)header)[i] = LittleLong(((int*)header)[i]);
-	}
-
-	mod->checksum = 0;
-	mod->checksum2 = 0;
-
-	// checksum all of the map, except for entities
-	for (int i = 0; i < BSP29_HEADER_LUMPS; i++)
-	{
-		if (i == BSP29LUMP_ENTITIES)
-		{
-			continue;
-		}
-		mod->checksum ^= LittleLong(Com_BlockChecksum(mod_base + header->lumps[i].fileofs, 
-			header->lumps[i].filelen));
-
-		if (i == BSP29LUMP_VISIBILITY || i == BSP29LUMP_LEAFS || i == BSP29LUMP_NODES)
-		{
-			continue;
-		}
-		mod->checksum2 ^= LittleLong(Com_BlockChecksum(mod_base + header->lumps[i].fileofs, 
-			header->lumps[i].filelen));
-	}
-
-	// load into heap
-	CM_LoadPlanes(&header->lumps[BSP29LUMP_PLANES]);
-	CM_LoadVisibility(&header->lumps[BSP29LUMP_VISIBILITY]);
-	CM_LoadLeafs(&header->lumps[BSP29LUMP_LEAFS]);
-	CM_LoadNodes(&header->lumps[BSP29LUMP_NODES]);
-	CM_LoadClipnodes(&header->lumps[BSP29LUMP_CLIPNODES]);
-	CM_LoadEntities(&header->lumps[BSP29LUMP_ENTITIES]);
-
-	CM_MakeHull0();
-	CM_MakeHulls();
-
-	CM_LoadSubmodels(&header->lumps[BSP29LUMP_MODELS]);
-
-	//
-	// set up the submodels (FIXME: this is confusing)
-	//
-	for (int i = 0; i < mod->numsubmodels; i++)
-	{
-		bsp29_dmodel_h2_t* bm = &mod->submodels[i];
-
-#if defined HEXEN2_HULLS || defined HEXENWORLD_HULLS
-		for (int j = 0; j < BSP29_MAX_MAP_HULLS_H2; j++)
-#else
-		for (int j = 0; j < BSP29_MAX_MAP_HULLS_Q1; j++)
-#endif
-		{
-			mod->hulls[j].firstclipnode = bm->headnode[j];
-		}
-
-		VectorCopy(bm->maxs, mod->maxs);
-		VectorCopy(bm->mins, mod->mins);
-
-		mod->numleafs = bm->visleafs;
-
-		if (i < mod->numsubmodels - 1)
-		{
-			// duplicate the basic information
-			char	name[10];
-
-			sprintf(name, "*%i", i + 1);
-			loadcmodel = &cm_map_models[i + 1];
-			*loadcmodel = *mod;
-			QStr::Cpy(loadcmodel->name, name);
-			mod = loadcmodel;
-		}
-	}
-}
-
-//==========================================================================
-//
-//	CM_LoadSubmodelsNonMap
-//
-//==========================================================================
-
-static void CM_LoadSubmodelsNonMap(bsp29_lump_t* l)
-{
-#if defined HEXEN2_HULLS || defined HEXENWORLD_HULLS
-	bsp29_dmodel_h2_t* in = (bsp29_dmodel_h2_t*)(mod_base + l->fileofs);
-#else
-	bsp29_dmodel_q1_t* in = (bsp29_dmodel_q1_t*)(mod_base + l->fileofs);
-#endif
-	if (l->filelen % sizeof(*in))
-	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
-	}
-	if (l->filelen != sizeof(*in))
-	{
-		GLog.WriteLine("Non-map BSP models are not supposed to have submodels");
-	}
-
-	for (int j = 0; j < 3; j++)
-	{
-		// spread the mins / maxs by a pixel
-		loadcmodel->mins[j] = LittleFloat(in->mins[j]) - 1;
-		loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
-	}
-#if defined HEXEN2_HULLS || defined HEXENWORLD_HULLS
-	for (int j = 0; j < BSP29_MAX_MAP_HULLS_H2; j++)
-#else
-	for (int j = 0; j < BSP29_MAX_MAP_HULLS_Q1; j++)
-#endif
-	{
-		loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
-	}
-	loadcmodel->numleafs = LittleLong(in->visleafs);
-}
-
-//==========================================================================
-//
-//	CM_LoadBrushModelNonMap
-//
-//==========================================================================
-
-static void CM_LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
-{
-	loadcmodel->type = mod_brush;
-
-	bsp29_dheader_t* header = (bsp29_dheader_t*)buffer;
-
-	int version = LittleLong(header->version);
-	if (version != BSP29_VERSION)
-	{
-		Sys_Error("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
-			mod->name, version, BSP29_VERSION);
-	}
-
-	// swap all the lumps
-	mod_base = (byte *)header;
-
-	for (int i = 0; i < sizeof(bsp29_dheader_t) / 4; i++)
-	{
-		((int*)header)[i] = LittleLong(((int*)header)[i]);
-	}
-
-	// load into heap
-	CM_LoadPlanes(&header->lumps[BSP29LUMP_PLANES]);
-	CM_LoadVisibility(&header->lumps[BSP29LUMP_VISIBILITY]);
-	CM_LoadLeafs(&header->lumps[BSP29LUMP_LEAFS]);
-	CM_LoadNodes(&header->lumps[BSP29LUMP_NODES]);
-	CM_LoadClipnodes(&header->lumps[BSP29LUMP_CLIPNODES]);
-	CM_LoadEntities(&header->lumps[BSP29LUMP_ENTITIES]);
-
-	CM_MakeHull0();
-	CM_MakeHulls();
-
-	CM_LoadSubmodelsNonMap(&header->lumps[BSP29LUMP_MODELS]);
+	delete[] phs;
+	phs = NULL;
 }
 
 //**************************************************************************
@@ -1140,7 +587,7 @@ static void CM_LoadAliasModelNew(cmodel_t* mod, void* buffer)
 		}
 	}
 
-	mod->type = mod_alias;
+	mod->type = cmod_alias;
 
 	mod->mins[0] = mins[0] - 10;
 	mod->mins[1] = mins[1] - 10;
@@ -1203,7 +650,7 @@ static void CM_LoadAliasModel(cmodel_t* mod, void* buffer)
 		}
 	}
 
-	mod->type = mod_alias;
+	mod->type = cmod_alias;
 
 	mod->mins[0] = mins[0] - 10;
 	mod->mins[1] = mins[1] - 10;
@@ -1221,7 +668,7 @@ static void CM_LoadAliasModel(cmodel_t* mod, void* buffer)
 
 static void CM_LoadAliasModelNew(cmodel_t* mod, void* buffer)
 {
-	mod->type = mod_alias;
+	mod->type = cmod_alias;
 	mod->mins[0] = mod->mins[1] = mod->mins[2] = -16;
 	mod->maxs[0] = mod->maxs[1] = mod->maxs[2] = 16;
 }
@@ -1234,7 +681,7 @@ static void CM_LoadAliasModelNew(cmodel_t* mod, void* buffer)
 
 static void CM_LoadAliasModel(cmodel_t* mod, void* buffer)
 {
-	mod->type = mod_alias;
+	mod->type = cmod_alias;
 	mod->mins[0] = mod->mins[1] = mod->mins[2] = -16;
 	mod->maxs[0] = mod->maxs[1] = mod->maxs[2] = 16;
 }
@@ -1258,10 +705,470 @@ static void CM_LoadSpriteModel(cmodel_t* mod, void* buffer)
 		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, version, SPRITE_VERSION);
 	}
 
-	mod->type = mod_sprite;
+	mod->type = cmod_sprite;
 
 	mod->mins[0] = mod->mins[1] = -LittleLong(pin->width) / 2;
 	mod->maxs[0] = mod->maxs[1] = LittleLong(pin->width) / 2;
 	mod->mins[2] = -LittleLong(pin->height) / 2;
 	mod->maxs[2] = LittleLong(pin->height) / 2;
+}
+
+//==========================================================================
+//
+//	CM_HullPointContents
+//
+//==========================================================================
+
+int CM_HullPointContents(chull_t* hull, int num, vec3_t p)
+{
+	while (num >= 0)
+	{
+		if (num < hull->firstclipnode || num > hull->lastclipnode)
+		{
+			throw QException("SV_HullPointContents: bad node number");
+		}
+	
+		bsp29_dclipnode_t* node = hull->clipnodes + num;
+		cplane_t* plane = hull->planes + node->planenum;
+
+		float d;
+		if (plane->type < 3)
+		{
+			d = p[plane->type] - plane->dist;
+		}
+		else
+		{
+			d = DotProduct(plane->normal, p) - plane->dist;
+		}
+		if (d < 0)
+		{
+			num = node->children[1];
+		}
+		else
+		{
+			num = node->children[0];
+		}
+	}
+
+	return num;
+}
+
+//==========================================================================
+//
+//	CM_HullPointContents
+//
+//==========================================================================
+
+int CM_HullPointContents(chull_t* hull, vec3_t p)
+{
+	return CM_HullPointContents(hull, hull->firstclipnode, p);
+}
+
+//==========================================================================
+//
+//	CM_PointContents
+//
+//==========================================================================
+
+int CM_PointContents(vec3_t p, int HullNum)
+{
+	chull_t* hull = &CMap->map_models[0].hulls[HullNum];
+	return CM_HullPointContents(hull, hull->firstclipnode, p);
+}
+
+//==========================================================================
+//
+//	CM_InitBoxHull
+//
+//	Set up the planes and clipnodes so that the six floats of a bounding box
+// can just be stored out and get a proper chull_t structure.
+//
+//==========================================================================
+
+static void CM_InitBoxHull()
+{
+	box_hull.clipnodes = box_clipnodes;
+	box_hull.planes = box_planes;
+	box_hull.firstclipnode = 0;
+	box_hull.lastclipnode = 5;
+
+	for (int i = 0; i < 6; i++)
+	{
+		box_clipnodes[i].planenum = i;
+
+		int side = i & 1;
+
+		box_clipnodes[i].children[side] = BSP29CONTENTS_EMPTY;
+		if (i != 5)
+		{
+			box_clipnodes[i].children[side ^ 1] = i + 1;
+		}
+		else
+		{
+			box_clipnodes[i].children[side ^ 1] = BSP29CONTENTS_SOLID;
+		}
+
+		box_planes[i].type = i >> 1;
+		box_planes[i].normal[i >> 1] = 1;
+	}
+}
+
+//==========================================================================
+//
+//	CM_HullForBox
+//
+//	To keep everything totally uniform, bounding boxes are turned into small
+// BSP trees instead of being compared directly.
+//
+//==========================================================================
+
+chull_t* CM_HullForBox(vec3_t mins, vec3_t maxs)
+{
+	box_planes[0].dist = maxs[0];
+	box_planes[1].dist = mins[0];
+	box_planes[2].dist = maxs[1];
+	box_planes[3].dist = mins[1];
+	box_planes[4].dist = maxs[2];
+	box_planes[5].dist = mins[2];
+
+	return &box_hull;
+}
+
+//==========================================================================
+//
+//	CM_RecursiveHullCheck
+//
+//==========================================================================
+
+// 1/32 epsilon to keep floating point happy
+#define	DIST_EPSILON	(0.03125)
+
+bool CM_RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
+	vec3_t p1, vec3_t p2, trace_t* trace)
+{
+	// check for empty
+	if (num < 0)
+	{
+		if (num != BSP29CONTENTS_SOLID)
+		{
+			trace->allsolid = false;
+			if (num == BSP29CONTENTS_EMPTY)
+			{
+				trace->inopen = true;
+			}
+			else
+			{
+				trace->inwater = true;
+			}
+		}
+		else
+		{
+			trace->startsolid = true;
+		}
+		return true;		// empty
+	}
+
+	if (num < hull->firstclipnode || num > hull->lastclipnode)
+	{
+		Sys_Error("SV_RecursiveHullCheck: bad node number");
+	}
+
+	//
+	// find the point distances
+	//
+	bsp29_dclipnode_t* node = hull->clipnodes + num;
+	cplane_t* plane = hull->planes + node->planenum;
+
+	float t1, t2;
+	if (plane->type < 3)
+	{
+		t1 = p1[plane->type] - plane->dist;
+		t2 = p2[plane->type] - plane->dist;
+	}
+	else
+	{
+		t1 = DotProduct(plane->normal, p1) - plane->dist;
+		t2 = DotProduct(plane->normal, p2) - plane->dist;
+	}
+
+	if (t1 >= 0 && t2 >= 0)
+	{
+		return CM_RecursiveHullCheck(hull, node->children[0], p1f, p2f, p1, p2, trace);
+	}
+	if (t1 < 0 && t2 < 0)
+	{
+		return CM_RecursiveHullCheck(hull, node->children[1], p1f, p2f, p1, p2, trace);
+	}
+
+	// put the crosspoint DIST_EPSILON pixels on the near side
+	float frac;
+	if (t1 < 0)
+	{
+		frac = (t1 + DIST_EPSILON) / (t1 - t2);
+	}
+	else
+	{
+		frac = (t1 - DIST_EPSILON)/ (t1 - t2);
+	}
+	if (frac < 0)
+	{
+		frac = 0;
+	}
+	if (frac > 1)
+	{
+		frac = 1;
+	}
+
+	float midf = p1f + (p2f - p1f)*frac;
+	vec3_t mid;
+	for (int i = 0; i < 3; i++)
+	{
+		mid[i] = p1[i] + frac * (p2[i] - p1[i]);
+	}
+
+	int side = (t1 < 0);
+
+	// move up to the node
+	if (!CM_RecursiveHullCheck(hull, node->children[side], p1f, midf, p1, mid, trace))
+	{
+		return false;
+	}
+
+#ifdef PARANOID
+	if (CM_HullPointContents(hull, node->children[side], mid) == BSP29CONTENTS_SOLID)
+	{
+		GLog.Write("mid PointInHullSolid\n");
+		return false;
+	}
+#endif
+
+	if (CM_HullPointContents(hull, node->children[side ^ 1], mid) != BSP29CONTENTS_SOLID)
+	{
+		// go past the node
+		return CM_RecursiveHullCheck (hull, node->children[side^1], midf, p2f, mid, p2, trace);
+	}
+
+	if (trace->allsolid)
+	{
+		return false;		// never got out of the solid area
+	}
+
+	//==================
+	// the other side of the node is solid, this is the impact point
+	//==================
+	if (!side)
+	{
+		VectorCopy(plane->normal, trace->plane.normal);
+		trace->plane.dist = plane->dist;
+	}
+	else
+	{
+		VectorSubtract(vec3_origin, plane->normal, trace->plane.normal);
+		trace->plane.dist = -plane->dist;
+	}
+
+	while (CM_HullPointContents (hull, hull->firstclipnode, mid) == BSP29CONTENTS_SOLID)
+	{
+		// shouldn't really happen, but does occasionally
+		frac -= 0.1;
+		if (frac < 0)
+		{
+			trace->fraction = midf;
+			VectorCopy(mid, trace->endpos);
+			GLog.DWrite("backup past 0\n");
+			return false;
+		}
+		midf = p1f + (p2f - p1f) * frac;
+		for (int i = 0; i < 3; i++)
+		{
+			mid[i] = p1[i] + frac*(p2[i] - p1[i]);
+		}
+	}
+
+	trace->fraction = midf;
+	VectorCopy(mid, trace->endpos);
+
+	return false;
+}
+
+//==========================================================================
+//
+//	CM_HullCheck
+//
+//==========================================================================
+
+bool CM_HullCheck(chull_t* hull, vec3_t p1, vec3_t p2, trace_t* trace)
+{
+	return CM_RecursiveHullCheck(hull, hull->firstclipnode, 0, 1, p1, p2, trace);
+}
+
+//==========================================================================
+//
+//	CM_TraceLine
+//
+//==========================================================================
+
+int CM_TraceLine(vec3_t start, vec3_t end, trace_t* trace)
+{
+	return CM_RecursiveHullCheck(&CMap->map_models[0].hulls[0], 0, 0, 1, start, end, trace);
+}
+
+//==========================================================================
+//
+//	CM_ModelHull
+//
+//==========================================================================
+
+chull_t* CM_ModelHull(cmodel_t* model, int HullNum, vec3_t clip_mins, vec3_t clip_maxs)
+{
+	if (!model || model->type != mod_brush)
+	{
+		throw QException("Non bsp model");
+	}
+	VectorCopy(model->hulls[HullNum].clip_mins, clip_mins);
+	VectorCopy(model->hulls[HullNum].clip_maxs, clip_maxs);
+	return &model->hulls[HullNum];
+}
+
+//==========================================================================
+//
+//	CM_BoxLeafnums_r
+//
+//==========================================================================
+
+static int leaf_count;
+static int* leaf_list;
+static int leaf_maxcount;
+
+static void CM_BoxLeafnums_r(vec3_t mins, vec3_t maxs, cnode_t *node)
+{
+	if (node->contents == BSP29CONTENTS_SOLID)
+	{
+		return;
+	}
+
+	if (node->contents < 0)
+	{
+		if (leaf_count == leaf_maxcount)
+		{
+			return;
+		}
+
+		cleaf_t* leaf = (cleaf_t*)node;
+		int leafnum = leaf - CMap->map_models[0].leafs;
+
+		leaf_list[leaf_count] = leafnum;
+		leaf_count++;
+		return;
+	}
+
+	// NODE_MIXED
+
+	cplane_t* splitplane = node->plane;
+	int sides = BOX_ON_PLANE_SIDE(mins, maxs, splitplane);
+
+	// recurse down the contacted sides
+	if (sides & 1)
+	{
+		CM_BoxLeafnums_r(mins, maxs, node->children[0]);
+	}
+
+	if (sides & 2)
+	{
+		CM_BoxLeafnums_r(mins, maxs, node->children[1]);
+	}
+}
+
+//==========================================================================
+//
+//	CM_BoxLeafnums
+//
+//==========================================================================
+
+int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int maxcount)
+{
+	leaf_count = 0;
+	leaf_list = list;
+	leaf_maxcount = maxcount;
+	CM_BoxLeafnums_r(mins, maxs, CMap->map_models[0].nodes);
+	return leaf_count;
+}
+
+//==========================================================================
+//
+//	CM_CalcPHS
+//
+//	Calculates the PHS (Potentially Hearable Set)
+//
+//==========================================================================
+
+void CM_CalcPHS()
+{
+	int		rowbytes, rowwords;
+	int		i, j, k, l, index, num;
+	int		bitbyte;
+	unsigned	*dest, *src;
+	byte	*scan;
+	int		count, vcount;
+
+	Con_Printf ("Building PHS...\n");
+
+	num = CMap->map_models[0].numleafs;
+	rowwords = (num+31)>>5;
+	rowbytes = rowwords*4;
+
+	byte* pvs = (byte*)Hunk_Alloc (rowbytes*num);
+	scan = pvs;
+	vcount = 0;
+	for (i=0 ; i<num ; i++, scan+=rowbytes)
+	{
+		Com_Memcpy(scan, CM_ClusterPVS(CM_LeafCluster(i)), rowbytes);
+		if (i == 0)
+			continue;
+		for (j=0 ; j<num ; j++)
+		{
+			if ( scan[j>>3] & (1<<(j&7)) )
+			{
+				vcount++;
+			}
+		}
+	}
+
+
+	CMap->map_models[0].phs = (byte*)Hunk_Alloc (rowbytes*num);
+	count = 0;
+	scan = pvs;
+	dest = (unsigned *)CMap->map_models[0].phs;
+	for (i=0 ; i<num ; i++, dest += rowwords, scan += rowbytes)
+	{
+		Com_Memcpy(dest, scan, rowbytes);
+		for (j=0 ; j<rowbytes ; j++)
+		{
+			bitbyte = scan[j];
+			if (!bitbyte)
+				continue;
+			for (k=0 ; k<8 ; k++)
+			{
+				if (! (bitbyte & (1<<k)) )
+					continue;
+				// or this pvs row into the phs
+				// +1 because pvs is 1 based
+				index = ((j<<3)+k+1);
+				if (index >= num)
+					continue;
+				src = (unsigned *)pvs + index*rowwords;
+				for (l=0 ; l<rowwords ; l++)
+					dest[l] |= src[l];
+			}
+		}
+
+		if (i == 0)
+			continue;
+		for (j=0 ; j<num ; j++)
+			if ( ((byte *)dest)[j>>3] & (1<<(j&7)) )
+				count++;
+	}
+
+	Con_Printf ("Average leafs visible / hearable / total: %i / %i / %i\n"
+		, vcount/num, count/num, num);
 }

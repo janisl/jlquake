@@ -1,40 +1,22 @@
 set(CORE_FILES
-	array.h
+	cm29_load.cpp
 	cmd.cpp
-	cmd.h
 	common.cpp
-	common.h
-	core.h
 	crc.cpp
-	crc.h
 	cvar.cpp
-	cvar.h
 	endian.cpp
-	endian.h
 	exception.cpp
-	exception.h
 	files.cpp
-	files.h
 	huffman.cpp
-	huffman.h
 	infostr.cpp
-	infostr.h
 	log.cpp
-	log.h
 	mathlib.cpp
-	mathlib.h
 	md4.cpp
-	md4.h
 	memory.cpp
-	memory.h
 	message.cpp
-	message.h
 	str.cpp
-	str.h
-	system.h
 	system_unix.cpp
 	unzip.cpp
-	unzip.h
 )
 
 set(CORE_ASM_FILES

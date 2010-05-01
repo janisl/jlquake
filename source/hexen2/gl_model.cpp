@@ -920,7 +920,7 @@ static void Mod_LoadLeafs (bsp29_lump_t *l)
 			out->ambient_sound_level[j] = in->ambient_level[j];
 
 		// gl underwater warp
-		if (out->contents != CONTENTS_EMPTY)
+		if (out->contents != BSP29CONTENTS_EMPTY)
 		{
 			for (j=0 ; j<out->nummarksurfaces ; j++)
 				out->firstmarksurface[j]->flags |= SURF_UNDERWATER;

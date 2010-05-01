@@ -50,11 +50,27 @@
 
 #define BSP29_NUM_AMBIENTS		4		// automatic ambient sounds
 
-#define	BSP29_MAX_MAP_LEAFS		32767
+#define BSP29_MAX_MAP_LEAFS		32767
 
 //	This is where Quake and Hexen 2 maps differ.
 #define BSP29_MAX_MAP_HULLS_Q1	4
 #define BSP29_MAX_MAP_HULLS_H2	8
+
+#define BSP29CONTENTS_EMPTY		-1
+#define BSP29CONTENTS_SOLID		-2
+#define BSP29CONTENTS_WATER		-3
+#define BSP29CONTENTS_SLIME		-4
+#define BSP29CONTENTS_LAVA		-5
+#define BSP29CONTENTS_SKY		-6
+#define BSP29CONTENTS_ORIGIN	-7		// removed at csg time
+#define BSP29CONTENTS_CLIP		-8		// changed to contents_solid
+
+#define BSP29CONTENTS_CURRENT_0		-9
+#define BSP29CONTENTS_CURRENT_90	-10
+#define BSP29CONTENTS_CURRENT_180	-11
+#define BSP29CONTENTS_CURRENT_270	-12
+#define BSP29CONTENTS_CURRENT_UP	-13
+#define BSP29CONTENTS_CURRENT_DOWN	-14
 
 struct bsp29_lump_t
 {

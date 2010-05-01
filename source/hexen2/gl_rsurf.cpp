@@ -874,7 +874,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 	double		d, dot;
 	vec3_t		mins, maxs;
 
-	if (node->contents == CONTENTS_SOLID)
+	if (node->contents == BSP29CONTENTS_SOLID)
 		return;		// solid
 
 	if (node->visframe != r_visframecount)

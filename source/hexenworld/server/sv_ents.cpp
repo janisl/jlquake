@@ -1,6 +1,5 @@
 
 #include "qwsvdef.h"
-#include "../../quake/cm_local.h"
 
 /*
 =============================================================================
@@ -13,43 +12,7 @@ crosses a waterline.
 =============================================================================
 */
 
-int		fatbytes;
-byte	fatpvs[BSP29_MAX_MAP_LEAFS/8];
-
-void SV_AddToFatPVS (vec3_t org, cnode_t *node)
-{
-	int		i;
-	byte	*pvs;
-	cplane_t	*plane;
-	float	d;
-
-	while (1)
-	{
-	// if this is a leaf, accumulate the pvs bits
-		if (node->contents < 0)
-		{
-			if (node->contents != CONTENTS_SOLID)
-			{
-				pvs = CM_ClusterPVS(CM_LeafCluster((cleaf_t*)node - sv.worldmodel->leafs));
-				for (i=0 ; i<fatbytes ; i++)
-					fatpvs[i] |= pvs[i];
-			}
-			return;
-		}
-	
-		plane = node->plane;
-		d = DotProduct (org, plane->normal) - plane->dist;
-		if (d > 8)
-			node = node->children[0];
-		else if (d < -8)
-			node = node->children[1];
-		else
-		{	// go down both
-			SV_AddToFatPVS (org, node->children[0]);
-			node = node->children[1];
-		}
-	}
-}
+static byte		fatpvs[BSP29_MAX_MAP_LEAFS/8];
 
 /*
 =============
@@ -61,9 +24,37 @@ given point.
 */
 byte *SV_FatPVS (vec3_t org)
 {
-	fatbytes = (CM_NumClusters() + 31) >> 3;
-	Com_Memset(fatpvs, 0, fatbytes);
-	SV_AddToFatPVS (org, sv.worldmodel->nodes);
+	vec3_t mins, maxs;
+	for (int i = 0; i < 3; i++)
+	{
+		mins[i] = org[i] - 8;
+		maxs[i] = org[i] + 8;
+	}
+
+	int leafs[64];
+	int count = CM_BoxLeafnums(mins, maxs, leafs, 64);
+	if (count < 1)
+	{
+		throw QException("SV_FatPVS: count < 1");
+	}
+
+	// convert leafs to clusters
+	for (int i = 0; i < count; i++)
+	{
+		leafs[i] = CM_LeafCluster(leafs[i]);
+	}
+
+	int fatbytes = (CM_NumClusters() + 31) >> 3;
+	Com_Memcpy(fatpvs, CM_ClusterPVS(leafs[0]), fatbytes);
+	// or in all the other leaf bits
+	for (int i = 1; i < count; i++)
+	{
+		byte* pvs = CM_ClusterPVS(leafs[i]);
+		for (int j = 0; j < fatbytes; j++)
+		{
+			fatpvs[j] |= pvs[j];
+		}
+	}
 	return fatpvs;
 }
 
@@ -1178,8 +1169,11 @@ void SV_WritePlayersToClient (client_t *client, edict_t *clent, byte *pvs, QMsg 
 			{
 				// ignore if not touching a PV leaf
 				for (i=0 ; i < ent->num_leafs ; i++)
-					if (pvs[ent->leafnums[i] >> 3] & (1 << (ent->leafnums[i]&7) ))
+				{
+					int l = CM_LeafCluster(ent->LeafNums[i]);
+					if (pvs[l >> 3] & (1 << (l & 7)))
 						break;
+				}
 				if (i == ent->num_leafs)
 					invis_level = 2;//no vis or weaponsound
 			}
@@ -1386,9 +1380,14 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 
 		// ignore if not touching a PV leaf
 		for (i=0 ; i < ent->num_leafs ; i++)
-			if (pvs[ent->leafnums[i] >> 3] & (1 << (ent->leafnums[i]&7) ))
+		{
+			int l = CM_LeafCluster(ent->LeafNums[i]);
+			if (pvs[l >> 3] & (1 << (l & 7)))
+			{
 				break;
-			
+			}
+		}
+
 		if (i == ent->num_leafs)
 			continue;		// not visible
 

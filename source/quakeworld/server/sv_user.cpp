@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // sv_user.c -- server code for moving users
 
 #include "qwsvdef.h"
-#include "../../quake/cm_local.h"
 
 edict_t	*sv_player;
 
@@ -250,12 +249,15 @@ void SV_PreSpawn_f (void)
 
 //		Con_DPrintf("Client check = %d\n", check);
 
-		if (sv_mapcheck->value && check != sv.worldmodel->checksum &&
-			check != sv.worldmodel->checksum2) {
+		int map_checksum;
+		int map_checksum2;
+		CM_MapChecksums(map_checksum, map_checksum2);
+		if (sv_mapcheck->value && check != map_checksum && check != map_checksum2)
+		{
 			SV_ClientPrintf (host_client, PRINT_HIGH, 
 				"Map model file does not match (%s), %i != %i/%i.\n"
 				"You may need a new version of the map, or the proper install files.\n",
-				sv.modelname, check, sv.worldmodel->checksum, sv.worldmodel->checksum2);
+				sv.modelname, check, map_checksum, map_checksum2);
 			SV_DropClient (host_client); 
 			return;
 		}

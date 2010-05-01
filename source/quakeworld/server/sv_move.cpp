@@ -53,7 +53,7 @@ qboolean SV_CheckBottom (edict_t *ent)
 		{
 			start[0] = x ? maxs[0] : mins[0];
 			start[1] = y ? maxs[1] : mins[1];
-			if (SV_PointContents (start) != CONTENTS_SOLID)
+			if (SV_PointContents (start) != BSP29CONTENTS_SOLID)
 				goto realcheck;
 		}
 
@@ -139,7 +139,7 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink)
 	
 			if (trace.fraction == 1)
 			{
-				if ( ((int)ent->v.flags & FL_SWIM) && SV_PointContents(trace.endpos) == CONTENTS_EMPTY )
+				if ( ((int)ent->v.flags & FL_SWIM) && SV_PointContents(trace.endpos) == BSP29CONTENTS_EMPTY )
 					return false;	// swim monster left water
 	
 				VectorCopy (trace.endpos, ent->v.origin);
@@ -209,7 +209,7 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink)
 //		Con_Printf ("back on ground\n"); 
 		ent->v.flags = (int)ent->v.flags & ~FL_PARTIALGROUND;
 	}
-	ent->v.groundentity = EDICT_TO_PROG(trace.ent);
+	ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 
 // the move is ok
 	if (relink)

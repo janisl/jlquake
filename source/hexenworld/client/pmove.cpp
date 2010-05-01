@@ -31,11 +31,8 @@ vec3_t	beast_maxs = {48, 48, 100};
 // #define	PM_FRICTION			6
 // #define	PM_WATERFRICTION	1
 
-void PM_InitBoxHull (void);
-
 void Pmove_Init (void)
 {
-	PM_InitBoxHull ();
 }
 
 #define	STEPSIZE	18
@@ -98,7 +95,7 @@ int PM_FlyMove (void)
 	vec3_t		planes[MAX_CLIP_PLANES];
 	vec3_t		primal_velocity, original_velocity;
 	int			i, j;
-	pmtrace_t		trace;
+	trace_t		trace;
 	vec3_t		end;
 	float		time_left;
 	int			blocked;
@@ -135,7 +132,7 @@ int PM_FlyMove (void)
 			 break;		// moved the entire distance
 
 		// save entity for contact
-		pmove.touchindex[pmove.numtouch] = trace.ent;
+		pmove.touchindex[pmove.numtouch] = trace.entityNum;
 		pmove.numtouch++;
 
 		if (trace.plane.normal[2] > 0.7)
@@ -219,7 +216,7 @@ Player is on ground, with no upwards velocity
 void PM_GroundMove (void)
 {
 	vec3_t	start, dest;
-	pmtrace_t	trace;
+	trace_t	trace;
 	vec3_t	original, originalvel, down, up, downvel;
 	float	downdist, updist;
 
@@ -418,7 +415,7 @@ void PM_WaterMove (void)
 	float	wishspeed;
 	vec3_t	wishdir;
 	vec3_t	start, dest;
-	pmtrace_t	trace;
+	trace_t	trace;
 	float fmove, smove, clamp;
 
 //
@@ -703,7 +700,7 @@ void PM_CatagorizePosition (void)
 {
 	vec3_t		point;
 	int			cont;
-	pmtrace_t		tr;
+	trace_t		tr;
 
 // if the player hull point one unit down is solid, the player
 // is on ground
@@ -722,7 +719,7 @@ void PM_CatagorizePosition (void)
 		if ( tr.plane.normal[2] < 0.7)
 			onground = -1;	// too steep
 		else
-			onground = tr.ent;
+			onground = tr.entityNum;
 
 		if (onground != -1)
 		{
@@ -732,9 +729,9 @@ void PM_CatagorizePosition (void)
 		}
 
 		// standing on an entity other than the world
-		if (tr.ent > 0)
+		if (tr.entityNum > 0)
 		{
-			pmove.touchindex[pmove.numtouch] = tr.ent;
+			pmove.touchindex[pmove.numtouch] = tr.entityNum;
 			pmove.numtouch++;
 		}
 	}
@@ -743,23 +740,23 @@ void PM_CatagorizePosition (void)
 // get waterlevel
 //
 	waterlevel = 0;
-	watertype = CONTENTS_EMPTY;
+	watertype = BSP29CONTENTS_EMPTY;
 
 	point[2] = pmove.origin[2] + player_mins[2] + 1;	
-	cont = PM_PointContents (point);
+	cont = CM_PointContents (point);
 
-	if (cont <= CONTENTS_WATER)
+	if (cont <= BSP29CONTENTS_WATER)
 	{
 		watertype = cont;
 		waterlevel = 1;
 		point[2] += 26;
-		cont = PM_PointContents (point);
-		if (cont <= CONTENTS_WATER)
+		cont = CM_PointContents (point);
+		if (cont <= BSP29CONTENTS_WATER)
 		{
 			waterlevel = 2;
 			point[2] += 22;
-			cont = PM_PointContents (point);
-			if (cont <= CONTENTS_WATER)
+			cont = CM_PointContents (point);
+			if (cont <= BSP29CONTENTS_WATER)
 				waterlevel = 3;
 		}
 	}
@@ -791,9 +788,9 @@ void JumpButton (void)
 	{	// swimming, not jumping
 		onground = -1;
 
-		if (watertype == CONTENTS_WATER)
+		if (watertype == BSP29CONTENTS_WATER)
 			pmove.velocity[2] = 100;
-		else if (watertype == CONTENTS_SLIME)
+		else if (watertype == BSP29CONTENTS_SLIME)
 			pmove.velocity[2] = 80;
 		else
 			pmove.velocity[2] = 50;
@@ -846,15 +843,15 @@ void CheckWaterJump (void)
 
 	VectorMA (pmove.origin, 24, flatforward, spot);
 	spot[2] += 32;
-	cont = PM_PointContents (spot);
-	if (cont != CONTENTS_SOLID) 
+	cont = CM_PointContents (spot);
+	if (cont != BSP29CONTENTS_SOLID) 
 	{
 		//Con_Printf("notsolid\n");
 		return;
 	}
 	spot[2] += 24;
-	cont = PM_PointContents (spot);
-	if (cont != CONTENTS_EMPTY)
+	cont = CM_PointContents (spot);
+	if (cont != BSP29CONTENTS_EMPTY)
 	{
 		//Con_Printf("notempty\n");
 		return;

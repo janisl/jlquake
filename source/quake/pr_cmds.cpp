@@ -634,8 +634,8 @@ void PF_traceline (void)
 	VectorCopy (trace.endpos, pr_global_struct->trace_endpos);
 	VectorCopy (trace.plane.normal, pr_global_struct->trace_plane_normal);
 	pr_global_struct->trace_plane_dist =  trace.plane.dist;	
-	if (trace.ent)
-		pr_global_struct->trace_ent = EDICT_TO_PROG(trace.ent);
+	if (trace.entityNum >= 0)
+		pr_global_struct->trace_ent = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 	else
 		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.edicts);
 }
@@ -1121,7 +1121,7 @@ void PF_droptofloor (void)
 		VectorCopy (trace.endpos, ent->v.origin);
 		SV_LinkEdict (ent, false);
 		ent->v.flags = (int)ent->v.flags | FL_ONGROUND;
-		ent->v.groundentity = EDICT_TO_PROG(trace.ent);
+		ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 		G_FLOAT(OFS_RETURN) = 1;
 	}
 }
@@ -1264,8 +1264,8 @@ void PF_aim (void)
 	VectorCopy (pr_global_struct->v_forward, dir);
 	VectorMA (start, 2048, dir, end);
 	tr = SV_Move (start, vec3_origin, vec3_origin, end, false, ent);
-	if (tr.ent && tr.ent->v.takedamage == DAMAGE_AIM
-	&& (!teamplay->value || ent->v.team <=0 || ent->v.team != tr.ent->v.team) )
+	if (tr.entityNum >= 0 && EDICT_NUM(tr.entityNum)->v.takedamage == DAMAGE_AIM
+	&& (!teamplay->value || ent->v.team <=0 || ent->v.team != EDICT_NUM(tr.entityNum)->v.team) )
 	{
 		VectorCopy (pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 		return;
@@ -1295,7 +1295,7 @@ void PF_aim (void)
 		if (dist < bestdist)
 			continue;	// to far to turn
 		tr = SV_Move (start, vec3_origin, vec3_origin, end, false, ent);
-		if (tr.ent == check)
+		if (EDICT_NUM(tr.entityNum) == check)
 		{	// can shoot at this one
 			bestdist = dist;
 			bestent = check;

@@ -19,24 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // world.h
 
-typedef struct
-{
-	vec3_t	normal;
-	float	dist;
-} plane_t;
-
-typedef struct
-{
-	qboolean	allsolid;	// if true, plane is not valid
-	qboolean	startsolid;	// if true, the initial point was in a solid area
-	qboolean	inopen, inwater;
-	float	fraction;		// time completed, 1.0 = didn't hit anything
-	vec3_t	endpos;			// final position
-	plane_t	plane;			// surface normal at impact
-	edict_t	*ent;			// entity the surface is on
-} trace_t;
-
-
 #define	MOVE_NORMAL		0
 #define	MOVE_NOMONSTERS	1
 #define	MOVE_MISSILE	2
@@ -57,7 +39,6 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers);
 // if touchtriggers, calls prog functions for the intersected triggers
 
 int SV_PointContents (vec3_t p);
-int SV_TruePointContents (vec3_t p);
 // returns the CONTENTS_* value from the world at the given point.
 // does not check any entities at all
 // the non-true version remaps the water current contents to content_water
@@ -76,5 +57,3 @@ trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, e
 // shouldn't be considered solid objects
 
 // passedict is explicitly excluded from clipping checks (normally NULL)
-
-qboolean SV_RecursiveHullCheck (chull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t *trace);

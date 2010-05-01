@@ -269,19 +269,19 @@ void SV_Multicast (vec3_t origin, int to)
 	case MULTICAST_ALL_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_ALL:
-		mask = sv.pvs;		// leaf 0 is everything;
+		mask = NULL;
 		break;
 
 	case MULTICAST_PHS_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_PHS:
-		mask = sv.phs + leafnum * 4*((CM_NumClusters() + 31) >> 5);
+		mask = CM_ClusterPHS(CM_LeafCluster(leafnum));
 		break;
 
 	case MULTICAST_PVS_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_PVS:
-		mask = sv.pvs + leafnum * 4*((CM_NumClusters() + 31) >> 5);
+		mask = CM_ClusterPVS(CM_LeafCluster(leafnum));
 		break;
 
 	default:
@@ -302,12 +302,15 @@ void SV_Multicast (vec3_t origin, int to)
 				goto inrange;
 		}
 
-		leafnum = CM_PointLeafnum(client->edict->v.origin);
-		leafnum = CM_LeafCluster(leafnum);
-		if (leafnum < 0 || !(mask[leafnum >> 3] & (1 << (leafnum & 7))))
+		if (mask)
 		{
-//			Con_Printf ("supressed multicast\n");
-			continue;
+			leafnum = CM_PointLeafnum(client->edict->v.origin);
+			leafnum = CM_LeafCluster(leafnum);
+			if (leafnum < 0 || !(mask[leafnum >> 3] & (1 << (leafnum & 7))))
+			{
+//				Con_Printf ("supressed multicast\n");
+				continue;
+			}
 		}
 
 inrange:

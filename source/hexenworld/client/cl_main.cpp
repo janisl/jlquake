@@ -312,7 +312,6 @@ void CL_ClearState (void)
 	Con_DPrintf ("Clearing memory\n");
 	D_FlushCaches ();
 	Mod_ClearAll ();
-	CM_ClearAll();
 	if (host_hunklevel)	// FIXME: check this...
 		Hunk_FreeToLowMark (host_hunklevel);
 
@@ -1309,6 +1308,7 @@ void Host_Init (quakeparms_t *parms)
 {
 	try
 	{
+	GGameType = GAME_Hexen2 | GAME_HexenWorld;
 	Sys_SetHomePathSuffix("vhexen2");
 	GLog.AddListener(&MainLog);
 

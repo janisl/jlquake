@@ -268,16 +268,16 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 		if (trace.fraction == 1)
 			 break;		// moved the entire distance
 
-		if (!trace.ent)
+		if (trace.entityNum < 0)
 			Sys_Error ("SV_FlyMove: !trace.ent");
 
 		if (trace.plane.normal[2] > 0.7)
 		{
 			blocked |= 1;		// floor
-			if (trace.ent->v.solid == SOLID_BSP)
+			if (EDICT_NUM(trace.entityNum)->v.solid == SOLID_BSP)
 			{
 				ent->v.flags =	(int)ent->v.flags | FL_ONGROUND;
-				ent->v.groundentity = EDICT_TO_PROG(trace.ent);
+				ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 			}
 		}
 		if (!trace.plane.normal[2])
@@ -290,7 +290,7 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 //
 // run the impact function
 //
-		SV_Impact (ent, trace.ent);
+		SV_Impact (ent, EDICT_NUM(trace.entityNum));
 		if (ent->free)
 			break;		// removed by the impact function
 
@@ -409,11 +409,11 @@ trace_t SV_PushEntity (edict_t *ent, vec3_t push)
 	VectorCopy (trace.endpos, ent->v.origin);
 	SV_LinkEdict (ent, true);
 
-	if (trace.ent)
-		SV_Impact (ent, trace.ent);		
+	if (trace.entityNum >= 0)
+		SV_Impact (ent, EDICT_NUM(trace.entityNum));
 
 	return trace;
-}					
+}
 
 
 /*
@@ -654,20 +654,20 @@ qboolean SV_CheckWater (edict_t *ent)
 	point[2] = ent->v.origin[2] + ent->v.mins[2] + 1;	
 	
 	ent->v.waterlevel = 0;
-	ent->v.watertype = CONTENTS_EMPTY;
+	ent->v.watertype = BSP29CONTENTS_EMPTY;
 	cont = SV_PointContents (point);
-	if (cont <= CONTENTS_WATER)
+	if (cont <= BSP29CONTENTS_WATER)
 	{
 		ent->v.watertype = cont;
 		ent->v.waterlevel = 1;
 		point[2] = ent->v.origin[2] + (ent->v.mins[2] + ent->v.maxs[2])*0.5;
 		cont = SV_PointContents (point);
-		if (cont <= CONTENTS_WATER)
+		if (cont <= BSP29CONTENTS_WATER)
 		{
 			ent->v.waterlevel = 2;
 			point[2] = ent->v.origin[2] + ent->v.view_ofs[2];
 			cont = SV_PointContents (point);
-			if (cont <= CONTENTS_WATER)
+			if (cont <= BSP29CONTENTS_WATER)
 				ent->v.waterlevel = 3;
 		}
 	}
@@ -852,7 +852,7 @@ void SV_WalkMove (edict_t *ent)
 		if (ent->v.solid == SOLID_BSP)
 		{
 			ent->v.flags =	(int)ent->v.flags | FL_ONGROUND;
-			ent->v.groundentity = EDICT_TO_PROG(downtrace.ent);
+			ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(downtrace.entityNum));
 		}
 	}
 	else
@@ -999,9 +999,9 @@ void SV_CheckWaterTransition (edict_t *ent)
 		return;
 	}
 	
-	if (cont <= CONTENTS_WATER)
+	if (cont <= BSP29CONTENTS_WATER)
 	{
-		if (ent->v.watertype == CONTENTS_EMPTY)
+		if (ent->v.watertype == BSP29CONTENTS_EMPTY)
 		{	// just crossed into water
 			SV_StartSound (ent, 0, "misc/h2ohit1.wav", 255, 1);
 		}		
@@ -1010,11 +1010,11 @@ void SV_CheckWaterTransition (edict_t *ent)
 	}
 	else
 	{
-		if (ent->v.watertype != CONTENTS_EMPTY)
+		if (ent->v.watertype != BSP29CONTENTS_EMPTY)
 		{	// just crossed into water
 			SV_StartSound (ent, 0, "misc/h2ohit1.wav", 255, 1);
 		}		
-		ent->v.watertype = CONTENTS_EMPTY;
+		ent->v.watertype = BSP29CONTENTS_EMPTY;
 		ent->v.waterlevel = cont;
 	}
 }
@@ -1070,7 +1070,7 @@ void SV_Physics_Toss (edict_t *ent)
 		if (ent->v.velocity[2] < 60 || ent->v.movetype != MOVETYPE_BOUNCE)
 		{
 			ent->v.flags = (int)ent->v.flags | FL_ONGROUND;
-			ent->v.groundentity = EDICT_TO_PROG(trace.ent);
+			ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 			VectorCopy (vec3_origin, ent->v.velocity);
 			VectorCopy (vec3_origin, ent->v.avelocity);
 		}

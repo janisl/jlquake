@@ -1,7 +1,6 @@
 // cl_ents.c -- entity parsing and management
 
 #include "quakedef.h"
-#include "../../quake/cm_local.h"
 
 extern	QCvar*	cl_predict_players;
 extern	QCvar*	cl_predict_players2;
@@ -1458,17 +1457,14 @@ void CL_SetSolidEntities (void)
 	{
 		state = &pak->entities[i];
 
-		if (!state->modelindex)
+		if (state->modelindex < 2)
 			continue;
 		if (!cl.clip_models[state->modelindex])
 			continue;
-		if (cl.clip_models[state->modelindex]->hulls[1].firstclipnode)
-		{
-			pmove.physents[pmove.numphysent].model = cl.clip_models[state->modelindex];
-			VectorCopy (state->origin, pmove.physents[pmove.numphysent].origin);
-			VectorCopy (state->angles, pmove.physents[pmove.numphysent].angles);
-			pmove.numphysent++;
-		}
+		pmove.physents[pmove.numphysent].model = cl.clip_models[state->modelindex];
+		VectorCopy(state->origin, pmove.physents[pmove.numphysent].origin);
+		VectorCopy(state->angles, pmove.physents[pmove.numphysent].angles);
+		pmove.numphysent++;
 	}
 
 }

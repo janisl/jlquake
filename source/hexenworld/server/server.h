@@ -45,8 +45,6 @@ typedef struct
 									// edict_t is variable sized, but can
 									// be used to reference the world ent
 
-	byte		*pvs, *phs;			// fully expanded and decompressed
-
 	// added to every client's unreliable buffer each frame, then cleared
 	QMsg		datagram;
 	byte		datagram_buf[MAX_DATAGRAM];

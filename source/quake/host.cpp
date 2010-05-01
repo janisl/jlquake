@@ -488,7 +488,6 @@ void Host_ClearMemory (void)
 	Con_DPrintf ("Clearing memory\n");
 	D_FlushCaches ();
 	Mod_ClearAll ();
-	CM_ClearAll();
 	if (host_hunklevel)
 		Hunk_FreeToLowMark (host_hunklevel);
 
@@ -790,6 +789,7 @@ void Host_Init (quakeparms_t *parms)
 {
 	try
 	{
+	GGameType = GAME_Quake;
 	Sys_SetHomePathSuffix("vquake");
 	GLog.AddListener(&MainLog);
 

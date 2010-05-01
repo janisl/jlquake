@@ -2447,7 +2447,7 @@ void CL_UpdateEffects(void)
 						ent->origin[2] += frametime * cl.Effects[index].Chunk.velocity[i][2];
 
 						l = Mod_PointInLeaf (ent->origin, cl.worldmodel);
-						if(l->contents!=CONTENTS_EMPTY) //||in_solid==true
+						if(l->contents!=BSP29CONTENTS_EMPTY) //||in_solid==true
 						{	// bouncing prolly won't work...
 							VectorCopy(oldorg, ent->origin);
 

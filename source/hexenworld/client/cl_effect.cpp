@@ -2110,7 +2110,7 @@ void CL_UpdateEffects(void)
 						VectorAdd(org,cl.Effects[index].Bubble.offset,org);
 
 						l = Mod_PointInLeaf (org, cl.worldmodel);
-						if(l->contents!=CONTENTS_WATER) 
+						if(l->contents!=BSP29CONTENTS_WATER) 
 						{	//not in water anymore
 							CL_FreeEffect(index);
 							break;

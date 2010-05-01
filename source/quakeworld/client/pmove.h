@@ -18,24 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-typedef struct
-{
-	vec3_t	normal;
-	float	dist;
-} pmplane_t;
-
-typedef struct
-{
-	qboolean	allsolid;	// if true, plane is not valid
-	qboolean	startsolid;	// if true, the initial point was in a solid area
-	qboolean	inopen, inwater;
-	float		fraction;		// time completed, 1.0 = didn't hit anything
-	vec3_t		endpos;			// final position
-	pmplane_t		plane;			// surface normal at impact
-	int			ent;			// entity the surface is on
-} pmtrace_t;
-
-
 #define	MAX_PHYSENTS	32
 typedef struct
 {
@@ -94,8 +76,5 @@ extern	int		watertype;
 void PlayerMove (void);
 void Pmove_Init (void);
 
-int PM_HullPointContents (chull_t *hull, int num, vec3_t p);
-
-int PM_PointContents (vec3_t point);
 qboolean PM_TestPlayerPosition (vec3_t point);
-pmtrace_t PM_PlayerMove (vec3_t start, vec3_t stop);
+trace_t PM_PlayerMove (vec3_t start, vec3_t stop);

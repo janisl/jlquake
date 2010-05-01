@@ -2186,6 +2186,7 @@ void Com_Init( char *commandLine )
 		Sys_Error ("Error during initialization");
 	}
 
+	GGameType = GAME_Quake3;
 	Sys_SetHomePathSuffix("vquake3");
 	GLog.AddListener(&MainLog);
 

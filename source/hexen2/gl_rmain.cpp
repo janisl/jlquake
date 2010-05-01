@@ -1003,7 +1003,7 @@ void R_DrawEntitiesOnList (void)
 		if (item_trans) {
 			pLeaf = Mod_PointInLeaf (currententity->origin, cl.worldmodel);
 //			if (pLeaf->contents == CONTENTS_EMPTY)
-			if (pLeaf->contents != CONTENTS_WATER)
+			if (pLeaf->contents != BSP29CONTENTS_WATER)
 				cl_transvisedicts[cl_numtransvisedicts++].ent = currententity;
 			else
 				cl_transwateredicts[cl_numtranswateredicts++].ent = currententity;
@@ -1580,11 +1580,11 @@ void R_RenderView (void)
 
 	R_DrawParticles ();
 
-	R_DrawTransEntitiesOnList( r_viewleaf->contents == CONTENTS_EMPTY ); // This restores the depth mask
+	R_DrawTransEntitiesOnList( r_viewleaf->contents == BSP29CONTENTS_EMPTY ); // This restores the depth mask
 
 	R_DrawWaterSurfaces ();
 
-	R_DrawTransEntitiesOnList( r_viewleaf->contents != CONTENTS_EMPTY );
+	R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY );
 
 	R_DrawViewModel();
 

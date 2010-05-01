@@ -254,19 +254,19 @@ void SV_Multicast (vec3_t origin, int to)
 	case MULTICAST_ALL_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_ALL:
-		mask = sv.pvs;		// leaf 0 is everything;
+		mask = NULL;
 		break;
 
 	case MULTICAST_PHS_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_PHS:
-		mask = sv.phs + leafnum * 4 * ((CM_NumClusters() + 31) >> 5);
+		mask = CM_ClusterPHS(CM_LeafCluster(leafnum));
 		break;
 
 	case MULTICAST_PVS_R:
 		reliable = true;	// intentional fallthrough
 	case MULTICAST_PVS:
-		mask = sv.pvs + leafnum * 4*((CM_NumClusters() + 31) >> 5);
+		mask = CM_ClusterPVS(CM_LeafCluster(leafnum));
 		break;
 
 	default:
@@ -282,15 +282,16 @@ void SV_Multicast (vec3_t origin, int to)
 
 		VectorCopy(client->edict->v.origin, adjust_origin);
 		adjust_origin[2] += 16;
-		leafnum = CM_PointLeafnum(adjust_origin);
-		// if (leaf != sv.worldmodel->leafs)
+		if (mask)
 		{
-			leafnum = CM_LeafCluster(leafnum);
-			if (leafnum < 0 || !(mask[leafnum >> 3] & (1 << (leafnum & 7))))
+			leafnum = CM_PointLeafnum(adjust_origin);
+			// if (leaf != sv.worldmodel->leafs)
 			{
-				if (mask == sv.pvs)
-					Sys_Printf("supressed multicast to all!!!\n");
-				continue;
+				leafnum = CM_LeafCluster(leafnum);
+				if (leafnum < 0 || !(mask[leafnum >> 3] & (1 << (leafnum & 7))))
+				{
+					continue;
+				}
 			}
 		}
 
@@ -879,7 +880,7 @@ static void UpdatePIV(void)
 			adjust_org2[2] += 24;
 
 			trace = SV_Move (adjust_org1, vec3_origin, vec3_origin, adjust_org2, false, host_client->edict);
-			if (trace.ent == client->edict)
+			if (EDICT_NUM(trace.entityNum) == client->edict)
 			{	//can see each other, check for invisible, dead
 				if (ValidToShowName(client->edict))
 					host_client->PIV |= 1<<j;

@@ -384,7 +384,6 @@ void CL_ClearState (void)
 	Con_DPrintf ("Clearing memory\n");
 	D_FlushCaches ();
 	Mod_ClearAll ();
-	CM_ClearAll();
 	if (host_hunklevel)	// FIXME: check this...
 		Hunk_FreeToLowMark (host_hunklevel);
 
@@ -1435,6 +1434,7 @@ void Host_Init (quakeparms_t *parms)
 {
 	try
 	{
+	GGameType = GAME_Quake | GAME_QuakeWorld;
 	Sys_SetHomePathSuffix("vquake");
 	GLog.AddListener(&MainLog);
 	COM_InitArgv2(parms->argc, parms->argv);

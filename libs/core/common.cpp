@@ -42,6 +42,8 @@ QCvar	*com_journal;
 fileHandle_t	com_journalFile;			// events are written here
 fileHandle_t	com_journalDataFile;		// config files are written here
 
+int				GGameType;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static int			com_argc;

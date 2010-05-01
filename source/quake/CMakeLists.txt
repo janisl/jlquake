@@ -59,7 +59,6 @@ set(QUAKE_FILES
 )
 
 set(QUAKE_ASM_FILES
-	worlda.s
 	snd_mixa.s
 )
 

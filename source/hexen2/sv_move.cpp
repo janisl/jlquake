@@ -80,7 +80,7 @@ qboolean SV_CheckBottom (edict_t *ent)
 				start[1] = mins[1];
 //			start[0] = x ? maxs[0] : mins[0];
 //			start[1] = y ? maxs[1] : mins[1];
-			if (SV_PointContents (start) != CONTENTS_SOLID)
+			if (SV_PointContents (start) != BSP29CONTENTS_SOLID)
 				goto realcheck;
 		}
 
@@ -187,8 +187,8 @@ void set_move_trace(trace_t *trace)
 	VectorCopy (trace->endpos, pr_global_struct->trace_endpos);
 	VectorCopy (trace->plane.normal, pr_global_struct->trace_plane_normal);
 	pr_global_struct->trace_plane_dist =  trace->plane.dist;	
-	if (trace->ent)
-		pr_global_struct->trace_ent = EDICT_TO_PROG(trace->ent);
+	if (trace->entityNum >= 0)
+		pr_global_struct->trace_ent = EDICT_TO_PROG(EDICT_NUM(trace->entityNum));
 	else
 		pr_global_struct->trace_ent = EDICT_TO_PROG(sv.edicts);
 }
@@ -240,13 +240,13 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noene
 				}
 			}
 
-			if ( ((int)ent->v.flags & FL_SWIM) && SV_PointContents(neworg) == CONTENTS_EMPTY )
+			if ( ((int)ent->v.flags & FL_SWIM) && SV_PointContents(neworg) == BSP29CONTENTS_EMPTY )
 			{//Would end up out of water, don't do z move
 				neworg[2]=ent->v.origin[2];
 				trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, neworg, false, ent);
 				if (set_trace)
 					set_move_trace(&trace);
-				if(trace.fraction < 1||SV_PointContents(trace.endpos) == CONTENTS_EMPTY )
+				if(trace.fraction < 1||SV_PointContents(trace.endpos) == BSP29CONTENTS_EMPTY )
 					return false;	// swim monster left water
 			}
 			else
@@ -336,7 +336,7 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noene
 //		Con_Printf ("back on ground\n"); 
 		ent->v.flags = (int)ent->v.flags & ~FL_PARTIALGROUND;
 	}
-	ent->v.groundentity = EDICT_TO_PROG(trace.ent);
+	ent->v.groundentity = EDICT_TO_PROG(EDICT_NUM(trace.entityNum));
 
 // the move is ok
 	if (relink)

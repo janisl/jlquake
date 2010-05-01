@@ -1,7 +1,6 @@
 // chase.c -- chase camera code
 
 #include "quakedef.h"
-#include "../quake/cm_local.h"
 
 QCvar*	chase_back;
 QCvar*	chase_up;
@@ -34,7 +33,7 @@ void TraceLine (vec3_t start, vec3_t end, vec3_t impact)
 	trace_t	trace;
 
 	Com_Memset(&trace, 0, sizeof(trace));
-	SV_RecursiveHullCheck (cl.worldcmodel->hulls, 0, 0, 1, start, end, &trace);
+	CM_TraceLine(start, end, &trace);
 
 	VectorCopy (trace.endpos, impact);
 }

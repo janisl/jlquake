@@ -985,6 +985,7 @@ void Qcommon_Init (int argc, char **argv)
 	if (setjmp (abortframe) )
 		Sys_Error ("Error during initialization");
 
+	GGameType = GAME_Quake2;
 	Sys_SetHomePathSuffix("vquake2");
 	GLog.AddListener(&MainLog);
 

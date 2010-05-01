@@ -1277,7 +1277,7 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 		j=50;
 		l = Mod_PointInLeaf (p->org, cl.worldmodel);
 //		while(SV_PointContents(p->org)!=CONTENTS_EMPTY && j<50)
-		while(l->contents!=CONTENTS_EMPTY && j)
+		while(l->contents!=BSP29CONTENTS_EMPTY && j)
 		{//Make sure it doesn't start in a solid
 			holdint=org2[0] - org1[0];
 			p->org[0] = org1[0] + (rand() % holdint);
@@ -1286,7 +1286,7 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 			j--;//No infinite loops
 			l = Mod_PointInLeaf (p->org, cl.worldmodel);
 		}
-		if(l->contents!=CONTENTS_EMPTY)
+		if(l->contents!=BSP29CONTENTS_EMPTY)
 			Sys_Error ("Snow entity top plane is not in an empty area (sorry!)");
 
 		VectorCopy(org1,p->min_org);
@@ -1643,7 +1643,7 @@ void R_UpdateParticles (void)
 				{
 					//IF hit solid, go to last position, no velocity, fade out.
 					l = Mod_PointInLeaf (p->org, cl.worldmodel);
-					if(l->contents!=CONTENTS_EMPTY) //||in_solid==true
+					if(l->contents!=BSP29CONTENTS_EMPTY) //||in_solid==true
 					{
 						if(p->flags&SFL_NO_MELT)
 						{//Don't melt, just die
@@ -1653,7 +1653,7 @@ void R_UpdateParticles (void)
 						{//still have small prob of snow melting on emitter
 							VectorScale(diff,0.2,p->vel);
 							i=6;
-							while(l->contents!=CONTENTS_EMPTY )
+							while(l->contents!=BSP29CONTENTS_EMPTY )
 							{
 								p->org[0] -= p->vel[0];
 								p->org[1] -= p->vel[1];

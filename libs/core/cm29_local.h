@@ -17,7 +17,14 @@
 //**
 //**************************************************************************
 
-#define MAX_MAP_HULLS_			8
+#define MAX_MAP_HULLS			8
+
+enum cmodtype_t
+{
+	cmod_brush,
+	cmod_sprite,
+	cmod_alias
+};
 
 struct cnode_t
 {
@@ -53,9 +60,8 @@ struct chull_t
 struct cmodel_t
 {
 	char			name[MAX_QPATH];
-	bool			needload;		// bmodels and sprites don't cache normally
 
-	modtype_t		type;
+	cmodtype_t		type;
 
 	//
 	// volume occupied by the model graphics
@@ -67,8 +73,6 @@ struct cmodel_t
 	// brush model
 	//
 	int				numsubmodels;
-	//	Use Hexen 2 type as it has biggest number of hulls.
-	bsp29_dmodel_h2_t*	submodels;
 
 	int				numplanes;
 	cplane_t*		planes;
@@ -82,9 +86,10 @@ struct cmodel_t
 	int				numclipnodes;
 	bsp29_dclipnode_t*	clipnodes;
 
-	chull_t			hulls[MAX_MAP_HULLS_];
+	chull_t			hulls[MAX_MAP_HULLS];
 
 	byte*			visdata;
+	byte*			phs;
 	char*			entities;
 
 	//QW only
@@ -93,3 +98,35 @@ struct cmodel_t
 
 	void Free();
 };
+
+#define	MAX_MAP_MODELS		256
+class QClipMap29
+{
+private:
+	byte*		mod_base;
+
+	cmodel_t*	loadcmodel;
+
+	void LoadVisibility(bsp29_lump_t* l);
+	void LoadEntities(bsp29_lump_t* l);
+	void LoadPlanes(bsp29_lump_t* l);
+	void LoadNodes(bsp29_lump_t* l);
+	void LoadLeafs(bsp29_lump_t* l);
+	void LoadClipnodes(bsp29_lump_t* l);
+	void MakeHull0();
+	void MakeHulls();
+	void LoadSubmodelsQ1(bsp29_lump_t* l);
+	void LoadSubmodelsH2(bsp29_lump_t* l);
+	void LoadSubmodelsNonMapQ1(bsp29_lump_t* l);
+	void LoadSubmodelsNonMapH2(bsp29_lump_t* l);
+
+public:
+	cmodel_t	map_models[MAX_MAP_MODELS];
+
+	void LoadBrushModel(cmodel_t* mod, void* buffer);
+	void LoadBrushModelNonMap(cmodel_t* mod, void* buffer);
+};
+
+extern chull_t		box_hull;
+extern bsp29_dclipnode_t	box_clipnodes[6];
+extern cplane_t	box_planes[6];

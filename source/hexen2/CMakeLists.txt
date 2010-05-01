@@ -60,7 +60,6 @@ set(HEXEN2_FILES
 )
 
 set(HEXEN2_ASM_FILES
-	worlda.s
 	snd_mixa.s
 )
 

@@ -1634,6 +1634,7 @@ void SV_Init (quakeparms_t *parms)
 {
 	try
 	{
+	GGameType = GAME_Quake | GAME_QuakeWorld;
 	Sys_SetHomePathSuffix("vquake");
 	GLog.AddListener(&MainLog);
 

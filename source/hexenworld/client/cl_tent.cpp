@@ -2770,7 +2770,7 @@ void CL_ParseTEnt (void)
 					{	// I dunno how expensive this is, but it kind of sucks anyway around it...
 						l = Mod_PointInLeaf (ex->origin, cl.worldmodel);
 
-						if(l->contents == CONTENTS_EMPTY)
+						if(l->contents == BSP29CONTENTS_EMPTY)
 						{
 							ex->origin[2] -= 16;
 						}
@@ -2778,7 +2778,7 @@ void CL_ParseTEnt (void)
 						{
 							ex->origin[2] += 16;
 						}
-					}while(l->contents == CONTENTS_EMPTY);
+					}while(l->contents == BSP29CONTENTS_EMPTY);
 					ex->origin[0] += (rand()%8)-4;
 					ex->origin[1] += (rand()%8)-4;
 					ex->origin[2] += (rand()%6)+21;
@@ -3681,7 +3681,7 @@ void CL_UpdateExplosions (void)
 		if(ex->exflags & EXFLAG_COLLIDE)
 		{
 			l = Mod_PointInLeaf (ex->origin, cl.worldmodel);
-			if(l->contents != CONTENTS_EMPTY)
+			if(l->contents != BSP29CONTENTS_EMPTY)
 			{
 				if (ex->removeFunc)
 				{
@@ -4322,7 +4322,7 @@ void ChunkThink(explosion_t *ex)
 	int			moving = 1;
 
 	l = Mod_PointInLeaf (ex->origin, cl.worldmodel);
-	if(l->contents!=CONTENTS_EMPTY) //||in_solid==true
+	if(l->contents!=BSP29CONTENTS_EMPTY) //||in_solid==true
 	{	//collided with world
 		VectorCopy(ex->oldorg, ex->origin);
 
@@ -4461,7 +4461,7 @@ void BubbleThink(explosion_t *ex)
 	mleaf_t		*l;
 
 	l = Mod_PointInLeaf (ex->origin, cl.worldmodel);
-	if(l->contents==CONTENTS_WATER) 
+	if(l->contents==BSP29CONTENTS_WATER) 
 	{	//still in water
 
 		if (ex->data < cl.time)//change course
@@ -4518,7 +4518,7 @@ void CheckSpaceThink(explosion_t *ex)
 	mleaf_t		*l;
 
 	l = Mod_PointInLeaf (ex->origin, cl.worldmodel);
-	if(l->contents!=CONTENTS_EMPTY) 
+	if(l->contents!=BSP29CONTENTS_EMPTY) 
 	{
 		ex->endTime = ex->startTime;
 	}
@@ -4674,7 +4674,7 @@ void MeteorBlastThink(explosion_t *ex)
 			VectorScale(ex->origin, .1 * (i+1), tempVect);
 			VectorMA(tempVect, 1.0 - (.1 * (i+1)), ex->oldorg, tempVect);
 			l = Mod_PointInLeaf (tempVect, cl.worldmodel);
-			if(l->contents != CONTENTS_EMPTY)
+			if(l->contents != BSP29CONTENTS_EMPTY)
 			{
 				hitWall = 1;
 			}

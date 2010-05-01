@@ -156,7 +156,7 @@ void	VID_UnlockBuffer (void);
 // #define IDGODS
 
 #include "common.h"
-#include "bspfile.h"
+#include "../../libs/core/bsp29file.h"
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"

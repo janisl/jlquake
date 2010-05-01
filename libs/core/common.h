@@ -166,3 +166,26 @@ void COM_InitArgv(int argc, const char** argv);
 void COM_AddParm(const char* parm);
 void COM_ClearArgv(int arg);
 int COM_CheckParm(const char* parm);
+
+//==========================================================================
+//
+//	Which game are we playing
+//
+//==========================================================================
+
+enum
+{
+	GAME_Quake			= 0x01,
+	GAME_Hexen2			= 0x02,
+	GAME_Quake2			= 0x04,
+	GAME_Quake3			= 0x08,
+	//	Aditional flags
+	GAME_QuakeWorld		= 0x10,
+	GAME_HexenWorld		= 0x20,
+	GAME_H2Portals		= 0x40,
+
+	//	Combinations
+	GAME_QuakeHexen		= GAME_Quake | GAME_Hexen2,
+};
+
+extern int		GGameType;
