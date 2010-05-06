@@ -161,7 +161,7 @@ void IN_ActivateMouse (void)
 
 		mouseactive = true;
 
-		SetCapture (mainwindow);
+		SetCapture (GMainWindow);
 		ClipCursor (&window_rect);
 	}
 }

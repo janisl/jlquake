@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -104,7 +104,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -160,6 +160,14 @@
 				RelativePath=".\snd_mix.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\snd_win.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\sys_win.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -176,6 +184,10 @@
 			</File>
 			<File
 				RelativePath=".\snd_public.h"
+				>
+			</File>
+			<File
+				RelativePath=".\win_shared.h"
 				>
 			</File>
 		</Filter>

@@ -65,6 +65,4 @@ sfxHandle_t	S_RegisterSound( const char *sample, qboolean compressed );
 
 void S_ClearSoundBuffer( void );
 
-void SNDDMA_Activate( void );
-
 void S_UpdateBackgroundTrack( void );

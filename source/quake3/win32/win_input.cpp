@@ -132,7 +132,7 @@ void IN_ActivateWin32Mouse( void ) {
 	width = GetSystemMetrics (SM_CXSCREEN);
 	height = GetSystemMetrics (SM_CYSCREEN);
 
-	GetWindowRect ( g_wv.hWnd, &window_rect);
+	GetWindowRect ( GMainWindow, &window_rect);
 	if (window_rect.left < 0)
 		window_rect.left = 0;
 	if (window_rect.top < 0)
@@ -146,7 +146,7 @@ void IN_ActivateWin32Mouse( void ) {
 
 	SetCursorPos (window_center_x, window_center_y);
 
-	SetCapture ( g_wv.hWnd );
+	SetCapture ( GMainWindow );
 	ClipCursor (&window_rect);
 	while (ShowCursor (FALSE) >= 0)
 		;
@@ -191,18 +191,6 @@ DIRECT INPUT MOUSE CONTROL
 
 ============================================================
 */
-
-#undef DEFINE_GUID
-
-#define DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
-        EXTERN_C const GUID name \
-                = { l, w1, w2, { b1, b2,  b3,  b4,  b5,  b6,  b7,  b8 } }
-
-DEFINE_GUID(GUID_SysMouse,   0x6F1D2B60,0xD5A0,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00);
-DEFINE_GUID(GUID_XAxis,   0xA36D02E0,0xC9F3,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00);
-DEFINE_GUID(GUID_YAxis,   0xA36D02E1,0xC9F3,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00);
-DEFINE_GUID(GUID_ZAxis,   0xA36D02E2,0xC9F3,0x11CF,0xBF,0xC7,0x44,0x45,0x53,0x54,0x00,0x00);
-
 
 #define DINPUT_BUFFERSIZE           16
 #define iDirectInputCreate(a,b,c,d)	pDirectInputCreate(a,b,c,d)
@@ -313,7 +301,7 @@ qboolean IN_InitDIMouse( void ) {
 	}
 
 	// set the cooperativity level.
-	hr = IDirectInputDevice_SetCooperativeLevel(g_pMouse, g_wv.hWnd,
+	hr = IDirectInputDevice_SetCooperativeLevel(g_pMouse, GMainWindow,
 			DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 
 	// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=50
@@ -573,7 +561,7 @@ void IN_StartupMouse( void )
 	if ( in_mouse->integer == -1 ) {
 		Com_Printf ("Skipping check for DirectInput\n");
 	} else {
-    if (!g_wv.hWnd)
+    if (!GMainWindow)
     {
       Com_Printf ("No window for DirectInput mouse init, delaying\n");
       s_wmv.mouseStartupDelayed = qtrue;
@@ -738,7 +726,7 @@ void IN_Frame (void) {
 	IN_JoyMove();
 
 	if ( !s_wmv.mouseInitialized ) {
-    if (s_wmv.mouseStartupDelayed && g_wv.hWnd)
+    if (s_wmv.mouseStartupDelayed && GMainWindow)
 		{
 			Com_Printf("Proceeding with delayed mouse init\n");
       IN_StartupMouse();

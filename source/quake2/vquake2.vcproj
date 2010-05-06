@@ -68,7 +68,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib wsock32.lib"
+				AdditionalDependencies="winmm.lib wsock32.lib dxguid.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -155,7 +155,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib wsock32.lib"
+				AdditionalDependencies="winmm.lib wsock32.lib dxguid.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				SubSystem="2"
@@ -316,10 +316,6 @@
 			</File>
 			<File
 				RelativePath="client\snd_dma.cpp"
-				>
-			</File>
-			<File
-				RelativePath="win32\snd_win.cpp"
 				>
 			</File>
 			<File

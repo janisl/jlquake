@@ -357,10 +357,6 @@
 				>
 			</File>
 			<File
-				RelativePath="snd_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath="strings.cpp"
 				>
 			</File>

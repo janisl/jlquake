@@ -423,7 +423,7 @@ void CL_Disconnect (void)
 	connect_time = -1;
 
 #ifdef _WIN32
-	SetWindowText (mainwindow, "QuakeWorld: disconnected");
+	SetWindowText (GMainWindow, "QuakeWorld: disconnected");
 #endif
 
 // stop sounds (especially looping!)
@@ -867,8 +867,8 @@ void CL_ConnectionlessPacket (void)
 			return;
 		}
 #ifdef _WIN32
-		ShowWindow (mainwindow, SW_RESTORE);
-		SetForegroundWindow (mainwindow);
+		ShowWindow (GMainWindow, SW_RESTORE);
+		SetForegroundWindow (GMainWindow);
 #endif
 		s = const_cast<char*>(net_message.ReadString2());
 
@@ -1051,9 +1051,9 @@ CL_Minimize_f
 */
 void CL_Windows_f (void) {
 //	if (modestate == MS_WINDOWED)
-//		ShowWindow(mainwindow, SW_MINIMIZE);
+//		ShowWindow(GMainWindow, SW_MINIMIZE);
 //	else
-		SendMessage(mainwindow, WM_SYSKEYUP, VK_TAB, 1 | (0x0F << 16) | (1<<29));
+		SendMessage(GMainWindow, WM_SYSKEYUP, VK_TAB, 1 | (0x0F << 16) | (1<<29));
 }
 #endif
 

@@ -539,9 +539,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		Sys_Error ("Error Registering Message\n");
 	}
 
-// because sound is off until we become active
-	S_BlockSound ();
-
 	Sys_Printf ("Host_Init\n");
 	Host_Init (&parms);
 

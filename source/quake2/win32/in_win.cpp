@@ -162,7 +162,7 @@ void IN_ActivateMouse (void)
 	width = GetSystemMetrics (SM_CXSCREEN);
 	height = GetSystemMetrics (SM_CYSCREEN);
 
-	GetWindowRect ( cl_hwnd, &window_rect);
+	GetWindowRect ( GMainWindow, &window_rect);
 	if (window_rect.left < 0)
 		window_rect.left = 0;
 	if (window_rect.top < 0)
@@ -180,7 +180,7 @@ void IN_ActivateMouse (void)
 	old_x = window_center_x;
 	old_y = window_center_y;
 
-	SetCapture ( cl_hwnd );
+	SetCapture ( GMainWindow );
 	ClipCursor (&window_rect);
 	while (ShowCursor (FALSE) >= 0)
 		;

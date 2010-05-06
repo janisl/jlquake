@@ -6,7 +6,7 @@
 
 #pragma warning( disable : 4229 )  // mgraph gets this
 
-#include <windows.h>
+#include "../../libs/client/win_shared.h"
 
 #ifndef SERVERONLY
 #include <ddraw.h>
@@ -18,23 +18,8 @@ extern	int			global_nCmdShow;
 
 #ifndef SERVERONLY
 
-extern LPDIRECTDRAW		lpDD;
-extern qboolean			DDActive;
-extern LPDIRECTDRAWSURFACE	lpPrimary;
-extern LPDIRECTDRAWSURFACE	lpFrontBuffer;
-extern LPDIRECTDRAWSURFACE	lpBackBuffer;
-extern LPDIRECTDRAWPALETTE	lpDDPal;
-extern LPDIRECTSOUND pDS;
-extern LPDIRECTSOUNDBUFFER pDSBuf;
-
-extern DWORD gSndBufSize;
-//#define SNDBUFSIZE 65536
-
 void	VID_LockBuffer (void);
 void	VID_UnlockBuffer (void);
-
-void Snd_AcquireBuffer (void);
-void Snd_ReleaseBuffer (void);
 
 #endif
 
@@ -42,7 +27,6 @@ typedef enum {MS_WINDOWED, MS_FULLSCREEN, MS_FULLDIB, MS_FULLDIRECT, MS_UNINIT} 
 
 extern modestate_t	modestate;
 
-extern HWND			mainwindow;
 extern qboolean		ActiveApp, Minimized;
 
 extern qboolean	Win32AtLeastV4, WinNT;
@@ -70,9 +54,6 @@ extern HANDLE	hinput, houtput;
 
 void IN_UpdateClipCursor (void);
 void CenterWindow(HWND hWndCenter, int width, int height, BOOL lefttopjustify);
-
-void S_BlockSound (void);
-void S_UnblockSound (void);
 
 void VID_SetDefaultMode (void);
 

@@ -362,10 +362,6 @@
 				>
 			</File>
 			<File
-				RelativePath="snd_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath="sv_main.cpp"
 				>
 			</File>

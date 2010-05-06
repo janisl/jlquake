@@ -224,7 +224,7 @@ void IN_ActivateMouse (void)
 			restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
 
 		SetCursorPos (window_center_x, window_center_y);
-		SetCapture (mainwindow);
+		SetCapture (GMainWindow);
 		ClipCursor (&window_rect);
 	}
 
@@ -370,7 +370,7 @@ qboolean IN_InitDInput (void)
 	}
 
 // set the cooperativity level.
-	hr = IDirectInputDevice_SetCooperativeLevel(g_pMouse, mainwindow,
+	hr = IDirectInputDevice_SetCooperativeLevel(g_pMouse, GMainWindow,
 			DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 
 	if (FAILED(hr))

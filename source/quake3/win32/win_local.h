@@ -21,14 +21,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // win_local.h: Win32-specific Quake3 header file
 
-#if defined (_MSC_VER) && (_MSC_VER >= 1200)
 #pragma warning(disable : 4201)
-#pragma warning( push )
-#endif
-#include <windows.h>
-#if defined (_MSC_VER) && (_MSC_VER >= 1200)
-#pragma warning( pop )
-#endif
+
+#include "../../../libs/client/win_shared.h"
 
 #define	DIRECTSOUND_VERSION	0x0300
 #define	DIRECTINPUT_VERSION	0x0300
@@ -72,16 +67,12 @@ LONG WINAPI MainWndProc (
 
 void Conbuf_AppendText( const char *msg );
 
-void SNDDMA_Activate( void );
-int  SNDDMA_InitDS ();
-
 typedef struct
 {
 	
 	HINSTANCE		reflib_library;		// Handle to refresh DLL 
 	qboolean		reflib_active;
 
-	HWND			hWnd;
 	HINSTANCE		hInstance;
 	qboolean		activeApp;
 	qboolean		isMinimized;

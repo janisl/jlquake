@@ -51,8 +51,6 @@ extern QCvar		*vid_fullscreen;
 viddef_t	viddef;				// global video state; used by other modules
 qboolean	reflib_active = 0;
 
-HWND        cl_hwnd;            // Main window handle for life of program
-
 #define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
 
 LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
@@ -257,7 +255,6 @@ void AppActivate(BOOL fActive, BOOL minimize)
 	{
 		IN_Activate (false);
 		CDAudio_Activate (false);
-		S_Activate (false);
 
 		if ( win_noalttab->value )
 		{
@@ -268,7 +265,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 	{
 		IN_Activate (true);
 		CDAudio_Activate (true);
-		S_Activate (true);
+		SNDDMA_Activate();
 		if ( win_noalttab->value )
 		{
 			WIN_DisableAltTab();
@@ -329,7 +326,7 @@ LONG WINAPI MainWndProc (
 		return 0;
 
 	case WM_CREATE:
-		cl_hwnd = hWnd;
+		GMainWindow = hWnd;
 
 		MSH_MOUSEWHEEL = RegisterWindowMessage("MSWHEEL_ROLLMSG"); 
         return DefWindowProc (hWnd, uMsg, wParam, lParam);
@@ -340,7 +337,7 @@ LONG WINAPI MainWndProc (
 
 	case WM_DESTROY:
 		// let sound and input know about this?
-		cl_hwnd = NULL;
+		GMainWindow = NULL;
         return DefWindowProc (hWnd, uMsg, wParam, lParam);
 
 	case WM_ACTIVATE:
@@ -468,8 +465,8 @@ void VID_Restart_f (void)
 
 void VID_Front_f( void )
 {
-	SetWindowLong( cl_hwnd, GWL_EXSTYLE, WS_EX_TOPMOST );
-	SetForegroundWindow( cl_hwnd );
+	SetWindowLong( GMainWindow, GWL_EXSTYLE, WS_EX_TOPMOST );
+	SetForegroundWindow( GMainWindow );
 }
 
 /*
@@ -521,13 +518,13 @@ void VID_UpdateWindowPosAndSize( int x, int y )
 	r.right  = viddef.width;
 	r.bottom = viddef.height;
 
-	style = GetWindowLong( cl_hwnd, GWL_STYLE );
+	style = GetWindowLong( GMainWindow, GWL_STYLE );
 	AdjustWindowRect( &r, style, FALSE );
 
 	w = r.right - r.left;
 	h = r.bottom - r.top;
 
-	MoveWindow( cl_hwnd, vid_xpos->value, vid_ypos->value, w, h, TRUE );
+	MoveWindow( GMainWindow, vid_xpos->value, vid_ypos->value, w, h, TRUE );
 }
 
 /*

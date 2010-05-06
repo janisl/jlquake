@@ -3,8 +3,9 @@
 #ifdef _WIN32 
 #pragma warning( disable : 4229 )  // mgraph gets this
 
-#include <windows.h>
 #define WM_MOUSEWHEEL                   0x020A
+
+#include "../../../libs/client/win_shared.h"
 
 #ifndef SERVERONLY
 #include <ddraw.h>
@@ -36,7 +37,6 @@ typedef enum {MS_WINDOWED, MS_FULLSCREEN, MS_FULLDIB, MS_UNINIT} modestate_t;
 
 extern modestate_t	modestate;
 
-extern HWND			mainwindow;
 extern qboolean		ActiveApp, Minimized;
 
 extern qboolean	WinNT;
@@ -64,9 +64,6 @@ extern HANDLE	hinput, houtput;
 
 void IN_UpdateClipCursor (void);
 void CenterWindow(HWND hWndCenter, int width, int height, BOOL lefttopjustify);
-
-void S_BlockSound (void);
-void S_UnblockSound (void);
 
 void VID_SetDefaultMode (void);
 

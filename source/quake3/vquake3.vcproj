@@ -70,7 +70,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib wsock32.lib"
+				AdditionalDependencies="winmm.lib wsock32.lib dxguid.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -159,7 +159,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib wsock32.lib"
+				AdditionalDependencies="winmm.lib wsock32.lib dxguid.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -357,10 +357,6 @@
 			</File>
 			<File
 				RelativePath="win32\win_shared.cpp"
-				>
-			</File>
-			<File
-				RelativePath="win32\win_snd.cpp"
 				>
 			</File>
 			<File

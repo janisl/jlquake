@@ -51,7 +51,6 @@ const char *gl_renderer;
 const char *gl_version;
 const char *gl_extensions;
 
-qboolean		DDActive;
 qboolean		scr_skipupdate;
 
 static vmode_t	modelist[MAX_MODE_LIST];
@@ -75,7 +74,7 @@ int			DIBWidth, DIBHeight;
 RECT		WindowRect;
 DWORD		WindowStyle, ExWindowStyle;
 
-HWND	mainwindow, dibwindow;
+HWND	dibwindow;
 
 int			vid_modenum = NO_MODE;
 int			vid_realmode;
@@ -249,10 +248,10 @@ qboolean VID_SetWindowedMode (int modenum)
 	}
 	vid.numpages = 2;
 
-	mainwindow = dibwindow;
+	GMainWindow = dibwindow;
 
-	SendMessage (mainwindow, WM_SETICON, (WPARAM)TRUE, (LPARAM)hIcon);
-	SendMessage (mainwindow, WM_SETICON, (WPARAM)FALSE, (LPARAM)hIcon);
+	SendMessage (GMainWindow, WM_SETICON, (WPARAM)TRUE, (LPARAM)hIcon);
+	SendMessage (GMainWindow, WM_SETICON, (WPARAM)FALSE, (LPARAM)hIcon);
 
 	return true;
 }
@@ -338,10 +337,10 @@ qboolean VID_SetFullDIBMode (int modenum)
 	window_x = 0;
 	window_y = 0;
 
-	mainwindow = dibwindow;
+	GMainWindow = dibwindow;
 
-	SendMessage (mainwindow, WM_SETICON, (WPARAM)TRUE, (LPARAM)hIcon);
-	SendMessage (mainwindow, WM_SETICON, (WPARAM)FALSE, (LPARAM)hIcon);
+	SendMessage (GMainWindow, WM_SETICON, (WPARAM)TRUE, (LPARAM)hIcon);
+	SendMessage (GMainWindow, WM_SETICON, (WPARAM)FALSE, (LPARAM)hIcon);
 
 	return true;
 }
@@ -365,7 +364,6 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
 
-	Snd_ReleaseBuffer ();
 	CDAudio_Pause ();
 
 	if (vid_modenum == NO_MODE)
@@ -405,7 +403,6 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	VID_UpdateWindowStatus ();
 
 	CDAudio_Resume ();
-	Snd_AcquireBuffer ();
 	scr_disabled_for_loading = temp;
 
 	if (!stat)
@@ -419,7 +416,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 // to let messages finish bouncing around the system, then we put
 // ourselves at the top of the z order, then grab the foreground again,
 // Who knows if it helps, but it probably doesn't hurt
-	SetForegroundWindow (mainwindow);
+	SetForegroundWindow (GMainWindow);
 	VID_SetPalette (palette);
 	vid_modenum = modenum;
 	Cvar_SetValue ("vid_mode", (float)vid_modenum);
@@ -432,11 +429,11 @@ int VID_SetMode (int modenum, unsigned char *palette)
 
 	Sleep (100);
 
-	SetWindowPos (mainwindow, HWND_TOP, 0, 0, 0, 0,
+	SetWindowPos (GMainWindow, HWND_TOP, 0, 0, 0, 0,
 				  SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW |
 				  SWP_NOCOPYBITS);
 
-	SetForegroundWindow (mainwindow);
+	SetForegroundWindow (GMainWindow);
 
 // fix the leftover Alt from any Alt-Tab or the like that switched us away
 	ClearAllStates ();
@@ -1066,22 +1063,9 @@ void AppActivate(BOOL fActive, BOOL minimize)
 {
     HDC			hdc;
     int			i, t;
-	static BOOL	sound_active;
 
 	ActiveApp = fActive;
 	Minimized = minimize;
-
-// enable/disable sound on focus gain/loss
-	if (!ActiveApp && sound_active)
-	{
-		S_BlockSound ();
-		sound_active = false;
-	}
-	else if (ActiveApp && !sound_active)
-	{
-		S_UnblockSound ();
-		sound_active = true;
-	}
 
 	if (fActive)
 	{
@@ -1177,7 +1161,7 @@ LONG WINAPI MainWndProc (
             break;
 
    	    case WM_CLOSE:
-			if (MessageBox (mainwindow, "Are you sure you want to quit?", "Confirm Exit",
+			if (MessageBox (GMainWindow, "Are you sure you want to quit?", "Confirm Exit",
 						MB_YESNO | MB_SETFOREGROUND | MB_ICONQUESTION) == IDYES)
 			{
 				Sys_Quit ();
@@ -1811,7 +1795,7 @@ void	VID_Init (unsigned char *palette)
 
 	VID_SetMode (vid_default, palette);
 
-    maindc = GetDC(mainwindow);
+    maindc = GetDC(GMainWindow);
 	bSetupPixelFormat(maindc);
 
     baseRC = wglCreateContext( maindc );

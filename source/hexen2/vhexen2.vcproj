@@ -71,7 +71,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib winmm.lib wsock32.lib glu32.lib"
+				AdditionalDependencies="opengl32.lib winmm.lib wsock32.lib glu32.lib dxguid.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -140,7 +140,7 @@
 				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS"
 				MinimalRebuild="true"
-				RuntimeLibrary="0"
+				RuntimeLibrary="1"
 				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
 			/>
@@ -157,7 +157,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib winmm.lib wsock32.lib glu32.lib"
+				AdditionalDependencies="opengl32.lib winmm.lib wsock32.lib glu32.lib dxguid.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -390,10 +390,6 @@
 			</File>
 			<File
 				RelativePath="snd_dma.cpp"
-				>
-			</File>
-			<File
-				RelativePath="snd_win.cpp"
 				>
 			</File>
 			<File

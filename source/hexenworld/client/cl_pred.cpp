@@ -134,7 +134,7 @@ void CL_PredictMove (void)
 		cls.state = ca_active;
 		sprintf (text, "HexenWorld: %s", cls.servername);
 #ifdef _WIN32
-		SetWindowText (mainwindow, text);
+		SetWindowText (GMainWindow, text);
 #endif
 	}
 

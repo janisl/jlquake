@@ -1,10 +1,8 @@
 // Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
 // rights reserved.
 
-#include <windows.h>
 #include "quakedef.h"
-
-extern	HWND	mainwindow;
+#include "winquake.h"
 
 static qboolean cdValid = false;
 static qboolean	playing = false;
@@ -143,7 +141,7 @@ void CDAudio_Play(byte track, qboolean looping)
 
     mciPlayParms.dwFrom = MCI_MAKE_TMSF(track, 0, 0, 0);
 	mciPlayParms.dwTo = (mciStatusParms.dwReturn << 8) | track;
-    mciPlayParms.dwCallback = (DWORD)mainwindow;
+    mciPlayParms.dwCallback = (DWORD)GMainWindow;
     dwReturn = mciSendCommand(wDeviceID, MCI_PLAY, MCI_NOTIFY | MCI_FROM | MCI_TO, (DWORD)(LPVOID) &mciPlayParms);
 	if (dwReturn)
 	{
@@ -189,7 +187,7 @@ void CDAudio_Pause(void)
 	if (!playing)
 		return;
 
-	mciGenericParms.dwCallback = (DWORD)mainwindow;
+	mciGenericParms.dwCallback = (DWORD)GMainWindow;
     if (dwReturn = mciSendCommand(wDeviceID, MCI_PAUSE, 0, (DWORD)(LPVOID) &mciGenericParms))
 		Con_DPrintf("MCI_PAUSE failed (%i)", dwReturn);
 
@@ -214,7 +212,7 @@ void CDAudio_Resume(void)
 	
     mciPlayParms.dwFrom = MCI_MAKE_TMSF(playTrack, 0, 0, 0);
     mciPlayParms.dwTo = MCI_MAKE_TMSF(playTrack + 1, 0, 0, 0);
-    mciPlayParms.dwCallback = (DWORD)mainwindow;
+    mciPlayParms.dwCallback = (DWORD)GMainWindow;
     dwReturn = mciSendCommand(wDeviceID, MCI_PLAY, MCI_TO | MCI_NOTIFY, (DWORD)(LPVOID) &mciPlayParms);
 	if (dwReturn)
 	{

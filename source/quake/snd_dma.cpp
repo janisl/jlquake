@@ -22,10 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../../libs/client/snd_local.h"
 
-#ifdef _WIN32
-#include "winquake.h"
-#endif
-
 void S_Play(void);
 void S_PlayVol(void);
 void S_SoundList(void);
@@ -534,11 +530,7 @@ void S_ClearSoundBuffer (void)
 {
 	int		clear;
 		
-#ifdef _WIN32
-	if (!sound_started || (!dma.buffer && !pDSBuf))
-#else
-	if (!sound_started || !dma.buffer)
-#endif
+	if (!sound_started)
 		return;
 
 	if (dma.samplebits == 8)
@@ -547,7 +539,8 @@ void S_ClearSoundBuffer (void)
 		clear = 0;
 
 	SNDDMA_BeginPainting();
-	Com_Memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
+	if (dma.buffer)
+		Com_Memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
 	SNDDMA_Submit();
 }
 
@@ -788,11 +781,6 @@ void GetSoundtime(void)
 
 void S_ExtraUpdate (void)
 {
-
-#ifdef _WIN32
-	IN_Accumulate ();
-#endif
-
 	if (snd_noextraupdate->value)
 		return;		// don't pollute timings
 	S_Update_();
@@ -821,25 +809,6 @@ void S_Update_(void)
 	samps = dma.samples >> (dma.channels-1);
 	if (endtime - s_soundtime > samps)
 		endtime = s_soundtime + samps;
-
-#ifdef _WIN32
-// if the buffer was lost or stopped, restore it and/or restart it
-	{
-		DWORD	dwStatus;
-
-		if (pDSBuf)
-		{
-			if (pDSBuf->GetStatus (&dwStatus) != DD_OK)
-				Con_Printf ("Couldn't get sound buffer status\n");
-			
-			if (dwStatus & DSBSTATUS_BUFFERLOST)
-				pDSBuf->Restore ();
-			
-			if (!(dwStatus & DSBSTATUS_PLAYING))
-				pDSBuf->Play(0, 0, DSBPLAY_LOOPING);
-		}
-	}
-#endif
 
 	SNDDMA_BeginPainting();
 

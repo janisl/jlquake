@@ -307,7 +307,7 @@ LONG WINAPI MainWndProc (
 
 	case WM_CREATE:
 
-		g_wv.hWnd = hWnd;
+		GMainWindow = hWnd;
 
 		vid_xpos = Cvar_Get ("vid_xpos", "3", CVAR_ARCHIVE);
 		vid_ypos = Cvar_Get ("vid_ypos", "22", CVAR_ARCHIVE);
@@ -340,7 +340,7 @@ LONG WINAPI MainWndProc (
 #endif
 	case WM_DESTROY:
 		// let sound and input know about this?
-		g_wv.hWnd = NULL;
+		GMainWindow = NULL;
 		if ( r_fullscreen->integer )
 		{
 			WIN_EnableAltTab();
