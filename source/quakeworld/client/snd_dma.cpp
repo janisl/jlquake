@@ -549,43 +549,9 @@ void S_ClearSoundBuffer (void)
 	else
 		clear = 0;
 
-#ifdef _WIN32
-	if (pDSBuf)
-	{
-		DWORD	dwSize;
-		DWORD	*pData;
-		int		reps;
-		HRESULT	hresult;
-
-		reps = 0;
-
-		while ((hresult = pDSBuf->Lock(0, gSndBufSize, (void**)&pData, &dwSize, NULL, NULL, 0)) != DS_OK)
-		{
-			if (hresult != DSERR_BUFFERLOST)
-			{
-				Con_Printf ("S_ClearSoundBuffer: DS::Lock Sound Buffer Failed\n");
-				S_Shutdown ();
-				return;
-			}
-
-			if (++reps > 10000)
-			{
-				Con_Printf ("S_ClearSoundBuffer: DS: couldn't restore buffer\n");
-				S_Shutdown ();
-				return;
-			}
-		}
-
-		Com_Memset(pData, clear, dma.samples * dma.samplebits/8);
-
-		pDSBuf->Unlock(pData, dwSize, NULL, 0);
-	
-	}
-	else
-#endif
-	{
-		Com_Memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
-	}
+	SNDDMA_BeginPainting();
+	Com_Memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
+	SNDDMA_Submit();
 }
 
 

@@ -340,36 +340,6 @@
 				>
 			</File>
 			<File
-				RelativePath="snd_mem.cpp"
-				>
-			</File>
-			<File
-				RelativePath="snd_mix.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\snd_mixa.asm"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="ml /c /Cp /coff /Fo $(IntDir)/$(InputName).obj /Zi /Zm $(InputPath)&#x0D;&#x0A;"
-						Outputs="$(IntDir)\$(InputName).obj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="snd_win.cpp"
 				>
 			</File>

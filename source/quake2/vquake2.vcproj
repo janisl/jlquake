@@ -319,14 +319,6 @@
 				>
 			</File>
 			<File
-				RelativePath="client\snd_mem.cpp"
-				>
-			</File>
-			<File
-				RelativePath="client\snd_mix.cpp"
-				>
-			</File>
-			<File
 				RelativePath="win32\snd_win.cpp"
 				>
 			</File>

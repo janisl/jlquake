@@ -362,18 +362,6 @@
 				>
 			</File>
 			<File
-				RelativePath="snd_mem.cpp"
-				>
-			</File>
-			<File
-				RelativePath="snd_mix.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\snd_mixa.asm"
-				>
-			</File>
-			<File
 				RelativePath="snd_win.cpp"
 				>
 			</File>

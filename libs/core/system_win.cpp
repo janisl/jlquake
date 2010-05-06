@@ -20,8 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-//#define WIN32_LEAN_AND_MEAN
-//#include <windows.h>
+#include <windows.h>
 #include <direct.h>
 #include <io.h>
 

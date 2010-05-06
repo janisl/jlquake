@@ -114,7 +114,7 @@ Initialize direct sound
 Returns false if failed
 ==================
 */
-qboolean SNDDMA_Init(void) {
+bool SNDDMA_Init(void) {
 
 	Com_Memset((void *)&dma, 0, sizeof (dma));
 	dsound_init = 0;

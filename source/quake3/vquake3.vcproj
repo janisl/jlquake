@@ -292,23 +292,7 @@
 				>
 			</File>
 			<File
-				RelativePath="client\snd_adpcm.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\snd_dma.cpp"
-				>
-			</File>
-			<File
-				RelativePath="client\snd_mem.cpp"
-				>
-			</File>
-			<File
-				RelativePath="client\snd_mix.cpp"
-				>
-			</File>
-			<File
-				RelativePath="client\snd_wavelet.cpp"
 				>
 			</File>
 			<File

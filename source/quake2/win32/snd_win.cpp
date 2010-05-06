@@ -590,7 +590,7 @@ Try to find a sound device to mix for.
 Returns false if nothing is found.
 ==================
 */
-int SNDDMA_Init(void)
+bool SNDDMA_Init(void)
 {
 	sndinitstat	stat;
 

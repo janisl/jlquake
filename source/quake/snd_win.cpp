@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "quakedef.h"
 #include "winquake.h"
+#include "../../libs/client/snd_local.h"
 
 #define iDirectSoundCreate(a,b,c)	pDirectSoundCreate(a,b,c)
 
@@ -68,6 +69,8 @@ HINSTANCE hInstDS;
 
 sndinitstat SNDDMA_InitDirect (void);
 qboolean SNDDMA_InitWav (void);
+
+DWORD	locksize;
 
 
 /*
@@ -190,7 +193,7 @@ sndinitstat SNDDMA_InitDirect (void)
 	HRESULT			hresult;
 	int				reps;
 
-	Com_Memset((void *)&sn, 0, sizeof (sn));
+	Com_Memset((void*)&dma, 0, sizeof(dma));
 
 	dma.channels = 2;
 	dma.samplebits = 16;
@@ -546,7 +549,7 @@ Returns false if nothing is found.
 ==================
 */
 
-int SNDDMA_Init(void)
+bool SNDDMA_Init(void)
 {
 	sndinitstat	stat;
 
@@ -661,6 +664,11 @@ void SNDDMA_Submit(void)
 	LPWAVEHDR	h;
 	int			wResult;
 
+	if (pDSBuf)
+	{
+		pDSBuf->Unlock(dma.buffer, locksize, NULL, 0);
+	}
+
 	if (!wav_init)
 		return;
 
@@ -719,3 +727,32 @@ void SNDDMA_Shutdown(void)
 	FreeSound ();
 }
 
+void SNDDMA_BeginPainting()
+{
+	if (pDSBuf)
+	{
+		DWORD	*pData;
+		int		reps;
+		HRESULT	hresult;
+
+		reps = 0;
+
+		while ((hresult = pDSBuf->Lock(0, gSndBufSize, (void**)&pData, &locksize, NULL, NULL, 0)) != DS_OK)
+		{
+			if (hresult != DSERR_BUFFERLOST)
+			{
+				Con_Printf ("S_ClearSoundBuffer: DS::Lock Sound Buffer Failed\n");
+				S_Shutdown ();
+				return;
+			}
+
+			if (++reps > 10000)
+			{
+				Con_Printf ("S_ClearSoundBuffer: DS: couldn't restore buffer\n");
+				S_Shutdown ();
+				return;
+			}
+		}
+		dma.buffer = (byte*)pData;
+	}
+}
