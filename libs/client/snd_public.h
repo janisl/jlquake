@@ -1,6 +1,6 @@
 //**************************************************************************
 //**
-//**	$Id: common.h 167 2010-04-09 18:17:27Z dj_jl $
+//**	$Id: crc.cpp 189 2010-04-21 14:23:18Z dj_jl $
 //**
 //**	Copyright (C) 1996-2005 Id Software, Inc.
 //**	Copyright (C) 2010 Jānis Legzdiņš
@@ -17,14 +17,4 @@
 //**
 //**************************************************************************
 
-void Sys_Mkdir(const char* path);
-const char* Sys_Cwd();
-void Sys_SetHomePathSuffix(const char* Name);
-const char* Sys_DefaultHomePath();
-
-char** Sys_ListFiles(const char* directory, const char* extension, char* filter, int* numfiles, bool wantsubs);
-void Sys_FreeFileList(char** list);
-
-// Sys_Milliseconds should only be used for profiling purposes,
-// any game related timing information should come from event timestamps
-int Sys_Milliseconds();
+extern	QCvar* s_volume;

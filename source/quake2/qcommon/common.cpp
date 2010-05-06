@@ -1143,17 +1143,17 @@ void Qcommon_Frame (int msec)
 	Cbuf_Execute ();
 
 	if (host_speeds->value)
-		time_before = Sys_Milliseconds ();
+		time_before = Sys_Milliseconds_ ();
 
 	SV_Frame (msec);
 
 	if (host_speeds->value)
-		time_between = Sys_Milliseconds ();		
+		time_between = Sys_Milliseconds_ ();		
 
 	CL_Frame (msec);
 
 	if (host_speeds->value)
-		time_after = Sys_Milliseconds ();		
+		time_after = Sys_Milliseconds_ ();		
 
 
 	if (host_speeds->value)
@@ -1184,4 +1184,9 @@ Qcommon_Shutdown
 */
 void Qcommon_Shutdown (void)
 {
+}
+
+int Com_Milliseconds()
+{
+	return Sys_Milliseconds();
 }

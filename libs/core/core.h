@@ -45,6 +45,8 @@
 #include "md4.h"
 #include "system.h"
 
+int Com_Milliseconds();
+
 extern	QCvar	*com_journal;
 
 extern	fileHandle_t	com_journalFile;

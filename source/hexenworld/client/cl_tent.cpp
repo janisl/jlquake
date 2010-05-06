@@ -4104,7 +4104,7 @@ void MultiGrenadeExplodeSound (explosion_t *ex)//plug up all of -1's channels w/
 {
 	if (!(rand()&7))
 	{
-		if (MultiGrenadeCurrentChannel>=MAX_DYNAMIC_CHANNELS || MultiGrenadeCurrentChannel<0)
+		if (MultiGrenadeCurrentChannel>=8 || MultiGrenadeCurrentChannel<0)
 		{
 			MultiGrenadeCurrentChannel=0;
 		}

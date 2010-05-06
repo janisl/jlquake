@@ -413,3 +413,8 @@ void COM_InitFilesystem (void)
 void FS_Restart(int checksumFeed)
 {
 }
+
+int Com_Milliseconds()
+{
+	return Sys_Milliseconds();
+}

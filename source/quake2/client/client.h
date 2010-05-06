@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // client.h -- primary header for client
 
-#include "../../../libs/core/core.h"
+#include "../../../libs/client/client.h"
 
 //define	PARANOID			// speed sapping error checking
 
@@ -158,7 +158,7 @@ typedef struct
 	struct model_s	*model_draw[MAX_MODELS];
 	struct cmodel_s	*model_clip[MAX_MODELS];
 
-	struct sfx_s	*sound_precache[MAX_SOUNDS];
+	struct sfx_t	*sound_precache[MAX_SOUNDS];
 	struct image_s	*image_precache[MAX_IMAGES];
 
 	clientinfo_t	clientinfo[MAX_CLIENTS];

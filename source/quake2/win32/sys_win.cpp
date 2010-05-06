@@ -606,7 +606,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	}
 
 	Qcommon_Init (argc, argv);
-	oldtime = Sys_Milliseconds ();
+	oldtime = Sys_Milliseconds_ ();
 
     /* main window message loop */
 	while (1)
@@ -628,7 +628,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 		do
 		{
-			newtime = Sys_Milliseconds ();
+			newtime = Sys_Milliseconds_ ();
 			time = newtime - oldtime;
 		} while (time < 1);
 //			Con_Printf ("time:%5.2f - %5.2f = %5.2f\n", newtime, oldtime, time);

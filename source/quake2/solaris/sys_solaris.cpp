@@ -245,7 +245,7 @@ void Sys_AppActivate (void)
 void Sys_SendKeyEvents (void)
 {
 	// grab frame time 
-	sys_frame_time = Sys_Milliseconds();
+	sys_frame_time = Sys_Milliseconds_();
 }
 
 /*****************************************************************************/
@@ -289,12 +289,12 @@ int main (int argc, char **argv)
 //		printf ("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
 	}
 
-    oldtime = Sys_Milliseconds ();
+    oldtime = Sys_Milliseconds_ ();
     while (1)
     {
 // find time spent rendering last frame
 		do {
-			newtime = Sys_Milliseconds ();
+			newtime = Sys_Milliseconds_ ();
 			time = newtime - oldtime;
 		} while (time < 1);
         Qcommon_Frame (time);

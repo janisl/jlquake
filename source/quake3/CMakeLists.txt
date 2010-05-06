@@ -23,11 +23,7 @@ set(QUAKE3_FILES
 	client/cl_parse.cpp
 	client/cl_scrn.cpp
 	client/cl_ui.cpp
-	client/snd_adpcm.cpp
 	client/snd_dma.cpp
-	client/snd_mem.cpp
-	client/snd_mix.cpp
-	client/snd_wavelet.cpp
 	server/sv_bot.cpp
 	server/sv_ccmds.cpp
 	server/sv_client.cpp
@@ -83,24 +79,7 @@ set(QUAKE3_FILES
 	unix/linux_glimp.cpp
 	unix/linux_qgl.cpp
 	unix/linux_signals.cpp
-	unix/linux_snd.cpp
-#	unix/snd_alsa.cpp
 )
-
-set(QUAKE3_ASM_FILES
-	unix/snd_mixa.s
-)
-
-foreach(SRC ${QUAKE3_ASM_FILES})
-	get_filename_component(FILE_BASE ${SRC} NAME_WE)
-	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-	add_custom_command(OUTPUT ${OBJ}
-		DEPENDS ${SRC} ${CMAKE_CURRENT_SOURCE_DIR}/unix/qasm.h
-		COMMAND ${CMAKE_C_COMPILER} -x assembler-with-cpp -DELF
-			-c ${CMAKE_CURRENT_SOURCE_DIR}/${SRC} -o ${OBJ}
-	)
-	set(QUAKE3_FILES ${QUAKE3_FILES} ${OBJ})
-endforeach(SRC)
 
 set(QUAKE3_NASM_FILES
 	unix/ftol.nasm
@@ -119,13 +98,13 @@ endforeach(SRC)
 
 add_executable(vquake3 ${QUAKE3_FILES})
 set_target_properties(vquake3 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake3 botlib core jpeg zlib ${GLLDFLAGS})
-add_dependencies(vquake3 botlib core jpeg zlib)
+target_link_libraries(vquake3 botlib client core jpeg zlib ${GLLDFLAGS})
+add_dependencies(vquake3 botlib client jpeg)
 
 #add_executable(vquake3-smp ${QUAKE3_FILES})
 #set_target_properties(vquake3-smp PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSMP")
-#target_link_libraries(vquake3-smp botlib core jpeg zlib ${THREAD_LDFLAGS} ${GLLDFLAGS})
-#add_dependencies(vquake3-smp botlib core jpeg zlib)
+#target_link_libraries(vquake3-smp botlib client core jpeg zlib ${THREAD_LDFLAGS} ${GLLDFLAGS})
+#add_dependencies(vquake3-smp botlib client jpeg)
 
 #############################################################################
 # DEDICATED SERVER                        

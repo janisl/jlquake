@@ -575,7 +575,7 @@ void SCR_BeginLoadingPlaque (void)
 	else
 		scr_draw_loading = 1;
 	SCR_UpdateScreen ();
-	cls.disable_screen = Sys_Milliseconds ();
+	cls.disable_screen = Sys_Milliseconds_ ();
 	cls.disable_servercount = cl.servercount;
 }
 
@@ -629,7 +629,7 @@ void SCR_TimeRefresh_f (void)
 	if ( cls.state != ca_active )
 		return;
 
-	start = Sys_Milliseconds ();
+	start = Sys_Milliseconds_ ();
 
 	if (Cmd_Argc() == 2)
 	{	// run without page flipping
@@ -653,7 +653,7 @@ void SCR_TimeRefresh_f (void)
 		}
 	}
 
-	stop = Sys_Milliseconds ();
+	stop = Sys_Milliseconds_ ();
 	time = (stop-start)/1000.0;
 	Com_Printf ("%f seconds (%f fps)\n", time, 128/time);
 }
@@ -1274,7 +1274,7 @@ void SCR_UpdateScreen (void)
 	// do nothing at all
 	if (cls.disable_screen)
 	{
-		if (Sys_Milliseconds() - cls.disable_screen > 120000)
+		if (Sys_Milliseconds_() - cls.disable_screen > 120000)
 		{
 			cls.disable_screen = 0;
 			Com_Printf ("Loading plaque timed out.\n");

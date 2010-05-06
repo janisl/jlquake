@@ -63,8 +63,6 @@ void S_BeginRegistration( void );
 // checks for missing files
 sfxHandle_t	S_RegisterSound( const char *sample, qboolean compressed );
 
-void S_DisplayFreeMemory(void);
-
 void S_ClearSoundBuffer( void );
 
 void SNDDMA_Activate( void );

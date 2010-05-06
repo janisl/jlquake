@@ -31,8 +31,6 @@ set(QUAKE2_OBJS
 	client/keys.cpp
 	client/menu.cpp
 	client/snd_dma.cpp
-	client/snd_mem.cpp
-	client/snd_mix.cpp
 	client/qmenu.cpp
 	qcommon/m_flash.cpp
 	qcommon/cmd.cpp
@@ -55,8 +53,6 @@ set(QUAKE2_OBJS
 	linux/q_shlinux.cpp
 	linux/vid_menu.cpp
 	linux/vid_so.cpp
-	linux/snd_alsa.cpp
-	#linux/snd_linux.cpp
 	linux/sys_linux.cpp
 	linux/glob.cpp
 	linux/net_udp.cpp
@@ -73,25 +69,10 @@ set(QUAKE2_OBJS
 	linux/gl_glx.cpp
 )
 
-set(QUAKE2_ASM_FILES
-	linux/snd_mixa.s
-)
-
-foreach(SRC ${QUAKE2_ASM_FILES})
-	get_filename_component(FILE_BASE ${SRC} NAME_WE)
-	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-	add_custom_command(OUTPUT ${OBJ}
-		DEPENDS ${SRC} ${CMAKE_CURRENT_SOURCE_DIR}/linux/qasm.h
-		COMMAND ${CMAKE_C_COMPILER} -x assembler-with-cpp -DELF
-			-c ${CMAKE_CURRENT_SOURCE_DIR}/${SRC} -o ${OBJ}
-	)
-	set(QUAKE2_OBJS ${QUAKE2_OBJS} ${OBJ})
-endforeach(SRC)
-
 add_executable(vquake2 ${QUAKE2_OBJS})
 set_target_properties(vquake2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake2 core zlib ${GLLDFLAGS})
-add_dependencies(vquake2 core)
+target_link_libraries(vquake2 client core zlib ${GLLDFLAGS})
+add_dependencies(vquake2 client)
 
 #############################################################################
 # GAME

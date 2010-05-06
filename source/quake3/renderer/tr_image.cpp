@@ -1393,6 +1393,7 @@ struct my_source_mgr
 	jpeg_source_mgr	pub;
 
 	unsigned char*	infile;
+	int				bytes_left;
 	JOCTET*			buffer;
 	bool			start_of_file;
 };
@@ -1411,12 +1412,22 @@ static boolean my_jpeg_fill_input_buffer(j_decompress_ptr cinfo)
 {
 	my_src_ptr src = (my_src_ptr)cinfo->src;
 
-	Com_Memcpy(src->buffer, src->infile, INPUT_BUF_SIZE);
+	if (!src->bytes_left)
+	{
+		return FALSE;
+	}
+	int Cnt = INPUT_BUF_SIZE;
+	if (Cnt > src->bytes_left)
+	{
+		Cnt = src->bytes_left;
+	}
+	Com_Memcpy(src->buffer, src->infile, Cnt);
 
-	src->infile += INPUT_BUF_SIZE;
+	src->infile += Cnt;
+	src->bytes_left -= Cnt;
 
 	src->pub.next_input_byte = src->buffer;
-	src->pub.bytes_in_buffer = INPUT_BUF_SIZE;
+	src->pub.bytes_in_buffer = Cnt;
 	src->start_of_file = FALSE;
 
 	return TRUE;
@@ -1430,7 +1441,10 @@ static void my_jpeg_skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 		while (num_bytes > (long)src->pub.bytes_in_buffer)
 		{
 			num_bytes -= (long)src->pub.bytes_in_buffer;
-			(void)my_jpeg_fill_input_buffer(cinfo);
+			if (!my_jpeg_fill_input_buffer(cinfo))
+			{
+				return;
+			}
 		}
 		src->pub.next_input_byte += (size_t)num_bytes;
 		src->pub.bytes_in_buffer -= (size_t)num_bytes;
@@ -1441,7 +1455,7 @@ static void my_jpeg_term_source(j_decompress_ptr cinfo)
 {
 }
 
-static void my_jpeg_src(j_decompress_ptr cinfo, unsigned char *infile)
+static void my_jpeg_src(j_decompress_ptr cinfo, unsigned char *infile, int size)
 {
 	my_src_ptr src;
 
@@ -1463,6 +1477,7 @@ static void my_jpeg_src(j_decompress_ptr cinfo, unsigned char *infile)
 	src->pub.resync_to_restart = jpeg_resync_to_restart;
 	src->pub.term_source = my_jpeg_term_source;
 	src->infile = infile;
+	src->bytes_left = size;
 	src->pub.bytes_in_buffer = 0;
 	src->pub.next_input_byte = NULL;
 }
@@ -1496,7 +1511,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
    * requires it in order to read binary files.
    */
 
-  ri.FS_ReadFile ( ( char * ) filename, (void **)&fbuffer);
+  int FileSize = ri.FS_ReadFile ( ( char * ) filename, (void **)&fbuffer);
   if (!fbuffer) {
 	return;
   }
@@ -1517,7 +1532,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
 
   /* Step 2: specify data source (eg, a file) */
 
-  my_jpeg_src(&cinfo, fbuffer);
+  my_jpeg_src(&cinfo, fbuffer, FileSize);
 
   /* Step 3: read file parameters with jpeg_read_header() */
 

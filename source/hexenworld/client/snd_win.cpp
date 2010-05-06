@@ -171,17 +171,15 @@ sndinitstat SNDDMA_InitDirect (void)
 
 	Com_Memset((void *)&sn, 0, sizeof (sn));
 
-	shm = &sn;
-
-	shm->channels = 2;
-	shm->samplebits = 16;
-	shm->speed = 11025;
+	dma.channels = 2;
+	dma.samplebits = 16;
+	dma.speed = 11025;
 
 	Com_Memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
-    format.nChannels = shm->channels;
-    format.wBitsPerSample = shm->samplebits;
-    format.nSamplesPerSec = shm->speed;
+    format.nChannels = dma.channels;
+    format.wBitsPerSample = dma.samplebits;
+    format.nSamplesPerSec = dma.speed;
     format.nBlockAlign = format.nChannels
 		*format.wBitsPerSample / 8;
     format.cbSize = 0;
@@ -300,9 +298,9 @@ sndinitstat SNDDMA_InitDirect (void)
 			return SIS_FAILURE;
 		}
 
-		shm->channels = format.nChannels;
-		shm->samplebits = format.wBitsPerSample;
-		shm->speed = format.nSamplesPerSec;
+		dma.channels = format.nChannels;
+		dma.samplebits = format.wBitsPerSample;
+		dma.speed = format.nSamplesPerSec;
 
 		if (DS_OK != pDSBuf->GetCaps (&dsbcaps))
 		{
@@ -340,7 +338,7 @@ sndinitstat SNDDMA_InitDirect (void)
 		Con_SafePrintf("   %d channel(s)\n"
 		               "   %d bits/sample\n"
 					   "   %d bytes/sec\n",
-					   shm->channels, shm->samplebits, shm->speed);*/
+					   dma.channels, dma.samplebits, dma.speed);*/
 	
 	gSndBufSize = dsbcaps.dwBufferBytes;
 
@@ -377,13 +375,11 @@ sndinitstat SNDDMA_InitDirect (void)
 	pDSBuf->GetCurrentPosition(&mmstarttime.u.sample, &dwWrite);
 	pDSBuf->Play(0, 0, DSBPLAY_LOOPING);
 
-	shm->soundalive = true;
-	shm->splitbuffer = false;
-	shm->samples = gSndBufSize/(shm->samplebits/8);
-	shm->samplepos = 0;
-	shm->submission_chunk = 1;
-	shm->buffer = (unsigned char *) lpData;
-	sample16 = (shm->samplebits/8) - 1;
+	dma.samples = gSndBufSize/(dma.samplebits/8);
+	dma.samplepos = 0;
+	dma.submission_chunk = 1;
+	dma.buffer = (unsigned char *) lpData;
+	sample16 = (dma.samplebits/8) - 1;
 
 	dsound_init = true;
 
@@ -407,17 +403,15 @@ qboolean SNDDMA_InitWav (void)
 	snd_sent = 0;
 	snd_completed = 0;
 
-	shm = &sn;
-
-	shm->channels = 2;
-	shm->samplebits = 16;
-	shm->speed = 11025;
+	dma.channels = 2;
+	dma.samplebits = 16;
+	dma.speed = 11025;
 
 	Com_Memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
-	format.nChannels = shm->channels;
-	format.wBitsPerSample = shm->samplebits;
-	format.nSamplesPerSec = shm->speed;
+	format.nChannels = dma.channels;
+	format.wBitsPerSample = dma.samplebits;
+	format.nSamplesPerSec = dma.speed;
 	format.nBlockAlign = format.nChannels
 		*format.wBitsPerSample / 8;
 	format.cbSize = 0;
@@ -511,13 +505,11 @@ qboolean SNDDMA_InitWav (void)
 		}
 	}
 
-	shm->soundalive = true;
-	shm->splitbuffer = false;
-	shm->samples = gSndBufSize/(shm->samplebits/8);
-	shm->samplepos = 0;
-	shm->submission_chunk = 1;
-	shm->buffer = (unsigned char *) lpData;
-	sample16 = (shm->samplebits/8) - 1;
+	dma.samples = gSndBufSize/(dma.samplebits/8);
+	dma.samplepos = 0;
+	dma.submission_chunk = 1;
+	dma.buffer = (unsigned char *) lpData;
+	sample16 = (dma.samplebits/8) - 1;
 
 	wav_init = true;
 
@@ -631,7 +623,7 @@ int SNDDMA_GetDMAPos(void)
 
 	s >>= sample16;
 
-	s &= (shm->samples-1);
+	s &= (dma.samples-1);
 
 	return s;
 }

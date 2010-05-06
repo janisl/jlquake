@@ -425,6 +425,6 @@ void IN_Activate (qboolean active)
 
 void Do_Key_Event(int key, qboolean down)
 {
-	Key_Event(key, down, Sys_Milliseconds());
+	Key_Event(key, down, Sys_Milliseconds_());
 }
 

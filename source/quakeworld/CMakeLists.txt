@@ -8,7 +8,7 @@ set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
 	-malign-jumps=2 -malign-functions=2")
 
 set(SV_LDFLAGS -lm)
-set(LDFLAGS -L/usr/X11/lib -lm -lGL -lX11 -lXext)
+set(LDFLAGS -L/usr/X11/lib -lm -lGL -lX11 -lXext -lasound)
 
 #############################################################################
 # SERVER
@@ -73,14 +73,11 @@ set(GLQWCL_OBJS
 	client/sbar.cpp
 	client/skin.cpp
 	client/snd_dma.cpp
-	client/snd_mem.cpp
-	client/snd_mix.cpp
 	client/view.cpp
 	client/wad.cpp
 	client/zone.cpp
 	client/cd_linux.cpp
 	client/sys_linux.cpp
-	client/snd_linux.cpp
 	client/gl_draw.cpp
 	client/gl_mesh.cpp
 	client/gl_model.cpp
@@ -95,22 +92,7 @@ set(GLQWCL_OBJS
 	client/gl_warp.cpp
 )
 
-set(QWCL_ASM_FILES
-	client/snd_mixa.s
-)
-
-foreach(SRC ${QWCL_ASM_FILES})
-	get_filename_component(FILE_BASE ${SRC} NAME_WE)
-	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-	add_custom_command(OUTPUT ${OBJ}
-		DEPENDS ${SRC} ${CMAKE_CURRENT_SOURCE_DIR}/client/asm_i386.h
-		COMMAND ${CMAKE_C_COMPILER} -x assembler-with-cpp -DELF
-			-c ${CMAKE_CURRENT_SOURCE_DIR}/${SRC} -o ${OBJ}
-	)
-	set(GLQWCL_OBJS ${GLQWCL_OBJS} ${OBJ})
-endforeach(SRC)
-
 add_executable(vqwcl ${GLQWCL_OBJS})
 set_target_properties(vqwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vqwcl core zlib ${LDFLAGS})
-add_dependencies(vqwcl core)
+target_link_libraries(vqwcl client core zlib ${LDFLAGS})
+add_dependencies(vqwcl client)

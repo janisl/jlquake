@@ -1,6 +1,6 @@
 // quakedef.h -- primary header for client
 
-#include "../../../libs/core/core.h"
+#include "../../../libs/client/client.h"
 
 //define	PARANOID			// speed sapping error checking
 

@@ -26,15 +26,6 @@
 #define C(label) _##label
 #endif
 
-
-#if defined(_WIN32) && !defined(WINDED)
-
-#if defined(_M_IX86)
-#define __i386__	1
-#endif
-
-#endif
-
 #ifdef __i386__
 #define id386	1
 #else

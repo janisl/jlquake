@@ -332,3 +332,22 @@ void Sys_FreeFileList(char** list)
 
 	Mem_Free(list);
 }
+
+//==========================================================================
+//
+//	Sys_Milliseconds
+//
+//==========================================================================
+
+int Sys_Milliseconds()
+{
+	static int		base;
+	static bool		initialized = false;
+
+	if (!initialized)
+	{
+		base = timeGetTime();
+		initialized = true;
+	}
+	return timeGetTime() - base;
+}

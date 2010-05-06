@@ -1,6 +1,6 @@
 //**************************************************************************
 //**
-//**	$Id: common.h 167 2010-04-09 18:17:27Z dj_jl $
+//**	$Id: qasm.h 155 2010-04-08 17:53:23Z dj_jl $
 //**
 //**	Copyright (C) 1996-2005 Id Software, Inc.
 //**	Copyright (C) 2010 Jānis Legzdiņš
@@ -17,14 +17,20 @@
 //**
 //**************************************************************************
 
-void Sys_Mkdir(const char* path);
-const char* Sys_Cwd();
-void Sys_SetHomePathSuffix(const char* Name);
-const char* Sys_DefaultHomePath();
+#ifndef _QASM_H_
+#define _QASM_H_
 
-char** Sys_ListFiles(const char* directory, const char* extension, char* filter, int* numfiles, bool wantsubs);
-void Sys_FreeFileList(char** list);
+#ifdef ELF
+#define C(label) label
+#else
+#define C(label) _##label
+#endif
 
-// Sys_Milliseconds should only be used for profiling purposes,
-// any game related timing information should come from event timestamps
-int Sys_Milliseconds();
+#ifdef __i386__
+#define id386	1
+#else
+#define id386	0
+#endif
+
+#endif
+

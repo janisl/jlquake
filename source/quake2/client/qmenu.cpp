@@ -113,7 +113,7 @@ void Field_Draw( menufield_s *f )
 		else
 			offset = f->cursor;
 
-		if ( ( ( int ) ( Sys_Milliseconds() / 250 ) ) & 1 )
+		if ( ( ( int ) ( Sys_Milliseconds_() / 250 ) ) & 1 )
 		{
 			Draw_Char( f->generic.x + f->generic.parent->x + ( offset + 2 ) * 8 + 8,
 					   f->generic.y + f->generic.parent->y,
@@ -386,11 +386,11 @@ void Menu_Draw( menuframework_s *menu )
 	{
 		if ( item->flags & QMF_LEFT_JUSTIFY )
 		{
-			Draw_Char( menu->x + item->x - 24 + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( Sys_Milliseconds()/250 ) & 1 ) );
+			Draw_Char( menu->x + item->x - 24 + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( Sys_Milliseconds_()/250 ) & 1 ) );
 		}
 		else
 		{
-			Draw_Char( menu->x + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( Sys_Milliseconds()/250 ) & 1 ) );
+			Draw_Char( menu->x + item->cursor_offset, menu->y + item->y, 12 + ( ( int ) ( Sys_Milliseconds_()/250 ) & 1 ) );
 		}
 	}
 

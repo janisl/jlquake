@@ -799,7 +799,7 @@ void SNDDMA_Submit(void)
 	while (((snd_sent - snd_completed) >> sample16) < 8)
 	{
 		h = lpWaveHdr + ( snd_sent&WAV_MASK );
-	if (paintedtime/256 <= snd_sent)
+	if (s_paintedtime/256 <= snd_sent)
 		break;	//	Com_Printf ("submit overrun\n");
 //Com_Printf ("send %i\n", snd_sent);
 		snd_sent++;

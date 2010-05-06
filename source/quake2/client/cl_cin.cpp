@@ -646,5 +646,5 @@ void SCR_PlayCinematic (char *arg)
 
 	cl.cinematicframe = 0;
 	cin.pic = SCR_ReadNextFrame ();
-	cl.cinematictime = Sys_Milliseconds ();
+	cl.cinematictime = Sys_Milliseconds_ ();
 }

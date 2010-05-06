@@ -452,7 +452,7 @@ void V_RenderView( float stereo_separation )
 	if (cl_timedemo->value)
 	{
 		if (!cl.timedemo_start)
-			cl.timedemo_start = Sys_Milliseconds ();
+			cl.timedemo_start = Sys_Milliseconds_ ();
 		cl.timedemo_frames++;
 	}
 

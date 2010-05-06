@@ -624,7 +624,7 @@ void CL_Disconnect (void)
 	{
 		int	time;
 		
-		time = Sys_Milliseconds () - cl.timedemo_start;
+		time = Sys_Milliseconds_ () - cl.timedemo_start;
 		if (time > 0)
 			Com_Printf ("%i frames, %3.1f seconds: %3.1f fps\n", cl.timedemo_frames,
 			time/1000.0, cl.timedemo_frames*1000.0 / time);
@@ -1409,7 +1409,7 @@ CL_InitLocal
 void CL_InitLocal (void)
 {
 	cls.state = ca_disconnected;
-	cls.realtime = Sys_Milliseconds ();
+	cls.realtime = Sys_Milliseconds_ ();
 
 	CL_InitInput ();
 
@@ -1711,7 +1711,7 @@ void CL_Frame (int msec)
 
 	// if in the debugger last frame, don't timeout
 	if (msec > 5000)
-		cls.netchan.last_received = Sys_Milliseconds ();
+		cls.netchan.last_received = Sys_Milliseconds_ ();
 
 	// fetch results from server
 	CL_ReadPackets ();
@@ -1729,10 +1729,10 @@ void CL_Frame (int msec)
 
 	// update the screen
 	if (host_speeds->value)
-		time_before_ref = Sys_Milliseconds ();
+		time_before_ref = Sys_Milliseconds_ ();
 	SCR_UpdateScreen ();
 	if (host_speeds->value)
-		time_after_ref = Sys_Milliseconds ();
+		time_after_ref = Sys_Milliseconds_ ();
 
 	// update audio
 	S_Update (cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
@@ -1753,13 +1753,13 @@ void CL_Frame (int msec)
 		{
 			if ( !lasttimecalled )
 			{
-				lasttimecalled = Sys_Milliseconds();
+				lasttimecalled = Sys_Milliseconds_();
 				if ( log_stats_file )
 					FS_Printf( log_stats_file, "0\n" );
 			}
 			else
 			{
-				int now = Sys_Milliseconds();
+				int now = Sys_Milliseconds_();
 
 				if ( log_stats_file )
 					FS_Printf(log_stats_file, "%d\n", now - lasttimecalled);

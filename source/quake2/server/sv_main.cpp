@@ -725,7 +725,7 @@ SV_RunGameFrame
 void SV_RunGameFrame (void)
 {
 	if (host_speeds->value)
-		time_before_game = Sys_Milliseconds ();
+		time_before_game = Sys_Milliseconds_ ();
 
 	// we always need to bump framenum, even if we
 	// don't run the world, otherwise the delta
@@ -749,7 +749,7 @@ void SV_RunGameFrame (void)
 	}
 
 	if (host_speeds->value)
-		time_after_game = Sys_Milliseconds ();
+		time_after_game = Sys_Milliseconds_ ();
 
 }
 

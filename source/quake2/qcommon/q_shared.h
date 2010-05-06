@@ -92,8 +92,11 @@ SYSTEM SPECIFIC
 */
 
 extern	int	curtime;		// time returned by last Sys_Milliseconds
-
-int		Sys_Milliseconds (void);
+inline int Sys_Milliseconds_()
+{
+	curtime = Sys_Milliseconds();
+	return curtime;
+}
 
 // large block stack allocation routines
 void	*Hunk_Begin (int maxsize);

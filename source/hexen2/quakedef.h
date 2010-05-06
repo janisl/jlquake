@@ -4,7 +4,7 @@
  * $Header: /H2 Mission Pack/Quakedef.h 8     3/19/98 12:53p Jmonroe $
  */
 
-#include "../../libs/core/core.h"
+#include "../../libs/client/client.h"
 
 //#define MISSIONPACK
 
