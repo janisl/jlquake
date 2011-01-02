@@ -223,24 +223,27 @@ void *Sys_GetGameAPI (void *parms)
 	{
 		path = FS_NextPath (path);
 		if (!path)
+		{
 			return NULL;		// couldn't find one anywhere
-		sprintf (name, "%s/%s/%s", curpath, path, gamename);
+		}
+		sprintf (name, "%s/%s", path, gamename);
 		game_library = dlopen (name, RTLD_NOW );
 		if (game_library)
 		{
 			Com_DPrintf ("LoadLibrary (%s)\n",name);
 			break;
 		}
+		GLog.DWriteLine("failed:\n\"%s\"\n", dlerror());
 	}
 
 	GetGameAPI = (void* (*)(void*))dlsym (game_library, "GetGameAPI");
 	if (!GetGameAPI)
 	{
-		Sys_UnloadGame ();		
+		Sys_UnloadGame();
 		return NULL;
 	}
 
-	return GetGameAPI (parms);
+	return GetGameAPI(parms);
 }
 
 /*****************************************************************************/

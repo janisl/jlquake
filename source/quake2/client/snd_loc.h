@@ -21,17 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../../../libs/client/snd_local.h"
 
-extern	vec3_t	listener_origin;
-extern	vec3_t	listener_forward;
-extern	vec3_t	listener_right;
-extern	vec3_t	listener_up;
-
 extern QCvar	*s_nosound;
-extern QCvar	*s_loadas8bit;
 extern QCvar	*s_khz;
 extern QCvar	*s_show;
 extern QCvar	*s_mixahead;
-extern QCvar	*s_primary;
 
 void S_IssuePlaysound (playsound_t *ps);
 

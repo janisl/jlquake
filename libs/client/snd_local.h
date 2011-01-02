@@ -17,6 +17,11 @@
 //**
 //**************************************************************************
 
+#ifndef _SND_LOCAL_H
+#define _SND_LOCAL_H
+
+#include "../core/bsp29file.h"
+
 #define WAV_FORMAT_PCM			1
 
 #define PAINTBUFFER_SIZE		4096					// this is in samples
@@ -24,6 +29,10 @@
 //#define MAX_CHANNELS			96
 #define MAX_CHANNELS			128
 #define MAX_DYNAMIC_CHANNELS	8
+
+// MAX_SFX may be larger than MAX_SOUNDS because
+// of custom player sounds
+#define MAX_SFX					4096
 
 struct portable_samplepair_t
 {
@@ -67,7 +76,6 @@ struct channel_t
 	vec_t		dist_mult;		// distance multiplier (attenuation/clipK)
 	int			master_vol;		// 0-255 volume before spatialization
 	qboolean	fixed_origin;	// use origin instead of fetching entnum's origin
-	qboolean	autosound;		// from an entity->sound, cleared each frame
 	int			allocTime;
 	int			startSample;	// START_SAMPLE_IMMEDIATE = set immediately on next mix
 	float		dopplerScale;
@@ -147,3 +155,27 @@ extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 //----
 void S_IssuePlaysound (playsound_t *ps);
+extern int	s_soundStarted;
+extern bool	s_soundMuted;
+extern int			listener_number;
+extern vec3_t		listener_origin;
+extern vec3_t		listener_axis[3];
+extern sfx_t		s_knownSfx[MAX_SFX];
+extern int			s_numSfx;
+extern fileHandle_t s_backgroundFile;
+extern wavinfo_t	s_backgroundInfo;
+extern int			s_backgroundSamples;
+extern char		s_backgroundLoop[MAX_QPATH];
+extern QCvar		*s_khz;
+extern QCvar		*s_show;
+extern QCvar		*s_mixahead;
+extern QCvar		*s_mixPreStep;
+extern QCvar		*s_musicVolume;
+extern QCvar		*s_separation;
+extern QCvar		*s_doppler;
+extern QCvar* ambient_level;
+extern QCvar* ambient_fade;
+extern QCvar* snd_noextraupdate;
+extern sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
+
+#endif

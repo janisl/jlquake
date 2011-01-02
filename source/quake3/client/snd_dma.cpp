@@ -40,14 +40,6 @@ void S_Update_();
 void S_StopAllSounds(void);
 void S_UpdateBackgroundTrack( void );
 
-static fileHandle_t s_backgroundFile;
-static wavinfo_t	s_backgroundInfo;
-//int			s_nextWavChunk;
-static int			s_backgroundSamples;
-static char		s_backgroundLoop[MAX_QPATH];
-//static char		s_backgroundMusic[MAX_QPATH]; //TTimo: unused
-
-
 // =======================================================================
 // Internal sound data & structures
 // =======================================================================
@@ -57,29 +49,8 @@ static char		s_backgroundLoop[MAX_QPATH];
 
 #define		SOUND_ATTENUATE		0.0008f
 
-static int	s_soundStarted;
-static		qboolean	s_soundMuted;
-
-static int			listener_number;
-static vec3_t		listener_origin;
-static vec3_t		listener_axis[3];
-
-// MAX_SFX may be larger than MAX_SOUNDS because
-// of custom player sounds
-#define		MAX_SFX			4096
-sfx_t		s_knownSfx[MAX_SFX];
-int			s_numSfx = 0;
-
 #define		LOOP_HASH		128
 static	sfx_t		*sfxHash[LOOP_HASH];
-
-QCvar		*s_khz;
-QCvar		*s_show;
-QCvar		*s_mixahead;
-QCvar		*s_mixPreStep;
-QCvar		*s_musicVolume;
-QCvar		*s_separation;
-QCvar		*s_doppler;
 
 static loopSound_t		loopSounds[MAX_GENTITIES];
 static	channel_t		*freelist = NULL;
@@ -140,8 +111,9 @@ void S_Init( void ) {
 	s_testsound = Cvar_Get ("s_testsound", "0", CVAR_CHEAT);
 
 	cv = Cvar_Get ("s_initsound", "1", 0);
-	if ( !cv->integer ) {
-		Com_Printf ("not initializing.\n");
+	if (!cv->integer)
+	{
+		Com_Printf("not initializing.\n");
 		Com_Printf("------------------------------------\n");
 		return;
 	}
@@ -877,13 +849,15 @@ void S_AddLoopSounds (void) {
 		// allocate a channel
 		ch = &loop_channels[numLoopChannels];
 		
-		if (left_total > 255) {
+		if (left_total > 255)
+		{
 			left_total = 255;
 		}
-		if (right_total > 255) {
+		if (right_total > 255)
+		{
 			right_total = 255;
 		}
-		
+
 		ch->master_vol = 127;
 		ch->leftvol = left_total;
 		ch->rightvol = right_total;
@@ -892,7 +866,8 @@ void S_AddLoopSounds (void) {
 		ch->dopplerScale = loop->dopplerScale;
 		ch->oldDopplerScale = loop->oldDopplerScale;
 		numLoopChannels++;
-		if (numLoopChannels == MAX_CHANNELS) {
+		if (numLoopChannels == MAX_CHANNELS)
+		{
 			return;
 		}
 	}
@@ -1577,37 +1552,6 @@ void S_UpdateBackgroundTrack( void ) {
 			}
 		}
 	}
-}
-
-
-/*
-======================
-S_FreeOldestSound
-======================
-*/
-
-void S_FreeOldestSound() {
-	int	i, oldest, used;
-	sfx_t	*sfx;
-
-	oldest = Com_Milliseconds();
-	used = 0;
-
-	for (i=1 ; i < s_numSfx ; i++) {
-		sfx = &s_knownSfx[i];
-		if (sfx->InMemory && sfx->LastTimeUsed<oldest) {
-			used = i;
-			oldest = sfx->LastTimeUsed;
-		}
-	}
-
-	sfx = &s_knownSfx[used];
-
-	Com_DPrintf("S_FreeOldestSound: freeing sound %s\n", sfx->Name);
-
-	delete[] sfx->Data;
-	sfx->InMemory = qfalse;
-	sfx->Data = NULL;
 }
 
 void S_IssuePlaysound(playsound_t *ps)

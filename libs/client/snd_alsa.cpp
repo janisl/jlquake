@@ -56,7 +56,7 @@ static QCvar*				snddevice;
 //	The sample rates which will be attempted.
 static int RATES[] =
 {
-	44100, 22050, 11025, 8000
+	44100, 22050, 11025, 48000, 8000
 };
 
 // CODE --------------------------------------------------------------------

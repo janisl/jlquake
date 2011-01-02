@@ -418,12 +418,7 @@ void S_PaintChannels(int endtime)
 				// if at end of loop, restart
 				if (ltime >= ch->startSample + ch->sfx->Length)
 				{
-					if (ch->autosound)
-					{
-						// autolooping sounds always go back to start
-						ch->startSample = ltime;
-					}
-					else if (ch->sfx->LoopStart >= 0)
+					if (ch->sfx->LoopStart >= 0)
 					{
 						ch->startSample = ltime - ch->sfx->LoopStart;
 					}

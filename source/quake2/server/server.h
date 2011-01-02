@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../qcommon/qcommon.h"
 #define cvar_t	QCvar
-#include "../game/game.h"
+#include "../../../q2game/game/game.h"
 #undef cvar_t
 
 //=============================================================================

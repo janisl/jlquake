@@ -17,6 +17,9 @@
 //**
 //**************************************************************************
 
+#ifndef _BSP29FILE_H
+#define _BSP29FILE_H
+
 #define BSP29_VERSION			29
 
 #define BSP29LUMP_ENTITIES		0
@@ -192,3 +195,5 @@ struct bsp29_dmodel_h2_t
 	qint32		firstface;
 	qint32		numfaces;
 };
+
+#endif

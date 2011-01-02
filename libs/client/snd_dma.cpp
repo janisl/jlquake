@@ -16,12 +16,6 @@
 //**  GNU General Public License for more details.
 //**
 //**************************************************************************
-//**
-//**	This is a 16 bit, non-reflected CRC using the polynomial 0x1021
-//**  and the initial and final xor values shown below...  in other words,
-//**  the CCITT standard CRC used by XMODEM
-//**
-//**************************************************************************
 
 // HEADER FILES ------------------------------------------------------------
 
@@ -49,6 +43,16 @@ int   		s_paintedtime; 	// sample PAIRS
 
 QCvar*		s_volume;
 QCvar*		s_testsound;
+QCvar*		s_khz;
+QCvar*		s_show;
+QCvar*		s_mixahead;
+QCvar		*s_mixPreStep;
+QCvar		*s_musicVolume;
+QCvar		*s_separation;
+QCvar		*s_doppler;
+QCvar* ambient_level;
+QCvar* ambient_fade;
+QCvar* snd_noextraupdate;
 
 channel_t   s_channels[MAX_CHANNELS];
 channel_t   loop_channels[MAX_CHANNELS];
@@ -62,6 +66,23 @@ int						s_rawend;
 portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+int			s_soundStarted;
+bool		s_soundMuted;
+
+int			listener_number;
+vec3_t		listener_origin;
+vec3_t		listener_axis[3];
+
+sfx_t		s_knownSfx[MAX_SFX];
+int			s_numSfx = 0;
+
+fileHandle_t s_backgroundFile;
+wavinfo_t	s_backgroundInfo;
+int			s_backgroundSamples;
+char		s_backgroundLoop[MAX_QPATH];
+
+sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
 
 // CODE --------------------------------------------------------------------
 

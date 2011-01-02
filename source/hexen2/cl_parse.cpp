@@ -306,25 +306,17 @@ void CL_ParseServerInfo (void)
 // now we try to load everything else until a cache allocation fails
 //
 
-	if (precache->value)
-	{
-		total_loading_size = nummodels + numsounds;
-		current_loading_size = 1;
-		loading_stage = 2;
-	}
+	total_loading_size = nummodels + numsounds;
+	current_loading_size = 1;
+	loading_stage = 2;
 
 	//always precache the world!!!
 	cl.model_precache[1] = Mod_ForName (model_precache[1], false);
 	for (i=2 ; i<nummodels ; i++)
 	{
-		if (precache->value)
-		{
-			cl.model_precache[i] = Mod_ForName (model_precache[i], false);
-			current_loading_size++;
-			D_ShowLoadingSize();
-		}
-		else
-			cl.model_precache[i] = (model_t *)Mod_FindName (model_precache[i]);
+		cl.model_precache[i] = Mod_ForName (model_precache[i], false);
+		current_loading_size++;
+		D_ShowLoadingSize();
 
 		if (cl.model_precache[i] == NULL)
 		{
@@ -344,11 +336,8 @@ void CL_ParseServerInfo (void)
 	for (i=1 ; i<numsounds ; i++)
 	{
 		cl.sound_precache[i] = S_PrecacheSound (sound_precache[i]);
-		if (precache->value)
-		{
-			current_loading_size++;
-			D_ShowLoadingSize();
-		}
+		current_loading_size++;
+		D_ShowLoadingSize();
 
 		CL_KeepaliveMessage ();
 	}

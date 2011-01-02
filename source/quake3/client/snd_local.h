@@ -62,7 +62,3 @@ portable_samplepair_t *S_GetRawSamplePointer();
 
 // spatializes a channel
 void S_Spatialize(channel_t *ch);
-
-// wavelet function
-
-void S_FreeOldestSound();

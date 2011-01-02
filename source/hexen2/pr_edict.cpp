@@ -1258,7 +1258,7 @@ void PR_LoadProgs (void)
 	}
 #ifdef MISSIONPACK
 	// set the cl_playerclass value after pr_global_struct has been created
-	pr_global_struct->cl_playerclass = cl_playerclass.value;
+	pr_global_struct->cl_playerclass = cl_playerclass->value;
 #endif
 }
 
