@@ -345,7 +345,7 @@ int WINS_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 	{
 		int err = WSAGetLastError();
 
-		if (errno == WSAEWOULDBLOCK || errno == WSAECONNREFUSED)
+		if (err == WSAEWOULDBLOCK || err == WSAECONNREFUSED)
 			return 0;
 
 	}
