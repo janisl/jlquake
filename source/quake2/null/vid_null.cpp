@@ -108,7 +108,7 @@ void	VID_Init (void)
 	ri.Vid_NewWindow = VID_NewWindow;
     ri.Cvar_Get = Cvar_Get;
     ri.Cvar_Set = Cvar_Set;
-    ri.Cvar_SetValue = Cvar_SetValue;
+    ri.Cvar_SetValue = Cvar_SetValueLatched;
     ri.Vid_GetModeInfo = VID_GetModeInfo;
 
     re = GetRefAPI(ri);

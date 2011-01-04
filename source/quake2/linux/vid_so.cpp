@@ -205,7 +205,7 @@ qboolean VID_LoadRefresh( char *name )
 	ri.FS_Gamedir = FS_Gamedir;
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_Set;
-	ri.Cvar_SetValue = Cvar_SetValue;
+	ri.Cvar_SetValue = Cvar_SetValueLatched;
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
@@ -304,7 +304,7 @@ Com_Printf("Refresh failed\n");
 				sw_mode = Cvar_Get( "sw_mode", "0", 0 );
 				if (sw_mode->value != 0) {
 Com_Printf("Trying mode 0\n");
-					Cvar_SetValue("sw_mode", 0);
+					Cvar_SetValueLatched("sw_mode", 0);
 					if ( !VID_LoadRefresh( name ) )
 						Com_Error (ERR_FATAL, "Couldn't fall back to software refresh!");
 				} else

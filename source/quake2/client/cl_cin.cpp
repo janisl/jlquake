@@ -639,9 +639,9 @@ void SCR_PlayCinematic (char *arg)
 	if (old_khz != cin.s_rate/1000)
 	{
 		cin.restart_sound = true;
-		Cvar_SetValue ("s_khz", cin.s_rate/1000);
+		Cvar_SetValueLatched("s_khz", cin.s_rate/1000);
 		CL_Snd_Restart_f ();
-		Cvar_SetValue ("s_khz", old_khz);
+		Cvar_SetValueLatched("s_khz", old_khz);
 	}
 
 	cl.cinematicframe = 0;

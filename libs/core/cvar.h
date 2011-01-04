@@ -91,7 +91,7 @@ struct vmCvar_t
 	char		string[MAX_CVAR_VALUE_STRING];
 };
 
-QCvar* Cvar_Get(const char* VarName, const char* Value, int flags);
+QCvar* Cvar_Get(const char* VarName, const char* Value, int Flags);
 // creates the variable if it doesn't exist, or returns the existing one
 // if it exists, the value will not be changed, but flags will be ORed in
 // that allows variables to be unarchived without needing bitflags
@@ -113,8 +113,9 @@ QCvar* Cvar_Set(const char* VarName, const char* Value);
 QCvar* Cvar_SetLatched(const char* VarName, const char* Value);
 // don't set the cvar immediately
 
-void Cvar_SetValue(const char* VarName, float value);
-// expands value to a string and calls Cvar_Set
+void Cvar_SetValue(const char* VarName, float Value);
+void Cvar_SetValueLatched(const char* VarName, float Value);
+// expands value to a string and calls Cvar_Set/Cvar_SetLatched
 
 const char* Cvar_CompleteVariable(const char* Partial);
 // attempts to match a partial variable name for command line completion
@@ -125,20 +126,20 @@ bool Cvar_Command();
 // command.  Returns true if the command was a variable reference that
 // was handled. (print or change)
 
-char* Cvar_InfoString(int bit, int MaxSize,
+char* Cvar_InfoString(int Bit, int MaxSize,
 	int MaxKeySize = BIG_INFO_KEY, int MaxValSize = BIG_INFO_VALUE,
 	bool NoHighChars = false, bool LowerCaseVal = false);
 // returns an info string containing all the cvars that have the given bit set
 // in their flags ( CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc )
-void Cvar_InfoStringBuffer(int bit, int MaxSize, char *buff, int buffsize);
+void Cvar_InfoStringBuffer(int Bit, int MaxSize, char* Buff, int BuffSize);
 
-void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultValue, int flags);
+void Cvar_Register(vmCvar_t* VmCvar, const char* VarName, const char* DefaultValue, int Flags);
 // basically a slightly modified Cvar_Get for the interpreted modules
 
-void Cvar_Update(vmCvar_t* vmCvar);
+void Cvar_Update(vmCvar_t* VmCvar);
 // updates an interpreted modules' version of a cvar
 
-void Cvar_CommandCompletion(void(*callback)(const char* s));
+void Cvar_CommandCompletion(void(*Callback)(const char* S));
 // callback with each valid string
 
 void Cvar_SetCheatState();
@@ -148,7 +149,7 @@ void Cvar_Reset(const char* VarName);
 
 void Cvar_Init();
 
-void Cvar_WriteVariables(fileHandle_t f);
+void Cvar_WriteVariables(fileHandle_t F);
 // writes lines containing "set variable value" for all variables
 // with the archive flag set to true.
 

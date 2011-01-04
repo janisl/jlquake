@@ -309,6 +309,27 @@ void Cvar_SetValue(const char* var_name, float value)
 
 //==========================================================================
 //
+//	Cvar_SetValueLatched
+//
+//==========================================================================
+
+void Cvar_SetValueLatched(const char* var_name, float value)
+{
+	char	val[32];
+
+	if (value == (int)value)
+	{
+		QStr::Sprintf(val, sizeof(val), "%i", (int)value);
+	}
+	else
+	{
+		QStr::Sprintf(val, sizeof(val), "%f", value);
+	}
+	Cvar_SetLatched(var_name, val);
+}
+
+//==========================================================================
+//
 //	Cvar_Get
 //
 //	If the variable already exists, the value will not be set.

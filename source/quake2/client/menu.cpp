@@ -1032,12 +1032,12 @@ static menulist_s		s_options_console_action;
 
 static void CrosshairFunc( void *unused )
 {
-	Cvar_SetValue( "crosshair", s_options_crosshair_box.curvalue );
+	Cvar_SetValueLatched( "crosshair", s_options_crosshair_box.curvalue );
 }
 
 static void JoystickFunc( void *unused )
 {
-	Cvar_SetValue( "in_joystick", s_options_joystick_box.curvalue );
+	Cvar_SetValueLatched( "in_joystick", s_options_joystick_box.curvalue );
 }
 
 static void CustomizeControlsFunc( void *unused )
@@ -1047,22 +1047,22 @@ static void CustomizeControlsFunc( void *unused )
 
 static void AlwaysRunFunc( void *unused )
 {
-	Cvar_SetValue( "cl_run", s_options_alwaysrun_box.curvalue );
+	Cvar_SetValueLatched( "cl_run", s_options_alwaysrun_box.curvalue );
 }
 
 static void FreeLookFunc( void *unused )
 {
-	Cvar_SetValue( "freelook", s_options_freelook_box.curvalue );
+	Cvar_SetValueLatched( "freelook", s_options_freelook_box.curvalue );
 }
 
 static void MouseSpeedFunc( void *unused )
 {
-	Cvar_SetValue( "sensitivity", s_options_sensitivity_slider.curvalue / 2.0F );
+	Cvar_SetValueLatched( "sensitivity", s_options_sensitivity_slider.curvalue / 2.0F );
 }
 
 static void NoAltTabFunc( void *unused )
 {
-	Cvar_SetValue( "win_noalttab", s_options_noalttab_box.curvalue );
+	Cvar_SetValueLatched( "win_noalttab", s_options_noalttab_box.curvalue );
 }
 
 static float ClampCvar( float min, float max, float value )
@@ -1078,24 +1078,24 @@ static void ControlsSetMenuItemValues( void )
 	s_options_cdvolume_box.curvalue 		= !Cvar_VariableValue("cd_nocd");
 	s_options_sensitivity_slider.curvalue	= ( sensitivity->value ) * 2;
 
-	Cvar_SetValue( "cl_run", ClampCvar( 0, 1, cl_run->value ) );
+	Cvar_SetValueLatched( "cl_run", ClampCvar( 0, 1, cl_run->value ) );
 	s_options_alwaysrun_box.curvalue		= cl_run->value;
 
 	s_options_invertmouse_box.curvalue		= m_pitch->value < 0;
 
-	Cvar_SetValue( "lookspring", ClampCvar( 0, 1, lookspring->value ) );
+	Cvar_SetValueLatched( "lookspring", ClampCvar( 0, 1, lookspring->value ) );
 	s_options_lookspring_box.curvalue		= lookspring->value;
 
-	Cvar_SetValue( "lookstrafe", ClampCvar( 0, 1, lookstrafe->value ) );
+	Cvar_SetValueLatched( "lookstrafe", ClampCvar( 0, 1, lookstrafe->value ) );
 	s_options_lookstrafe_box.curvalue		= lookstrafe->value;
 
-	Cvar_SetValue( "freelook", ClampCvar( 0, 1, freelook->value ) );
+	Cvar_SetValueLatched( "freelook", ClampCvar( 0, 1, freelook->value ) );
 	s_options_freelook_box.curvalue			= freelook->value;
 
-	Cvar_SetValue( "crosshair", ClampCvar( 0, 3, crosshair->value ) );
+	Cvar_SetValueLatched( "crosshair", ClampCvar( 0, 3, crosshair->value ) );
 	s_options_crosshair_box.curvalue		= crosshair->value;
 
-	Cvar_SetValue( "in_joystick", ClampCvar( 0, 1, in_joystick->value ) );
+	Cvar_SetValueLatched( "in_joystick", ClampCvar( 0, 1, in_joystick->value ) );
 	s_options_joystick_box.curvalue		= in_joystick->value;
 
 	s_options_noalttab_box.curvalue			= win_noalttab->value;
@@ -1113,32 +1113,32 @@ static void InvertMouseFunc( void *unused )
 {
 	if ( s_options_invertmouse_box.curvalue == 0 )
 	{
-		Cvar_SetValue( "m_pitch", fabs( m_pitch->value ) );
+		Cvar_SetValueLatched( "m_pitch", fabs( m_pitch->value ) );
 	}
 	else
 	{
-		Cvar_SetValue( "m_pitch", -fabs( m_pitch->value ) );
+		Cvar_SetValueLatched( "m_pitch", -fabs( m_pitch->value ) );
 	}
 }
 
 static void LookspringFunc( void *unused )
 {
-	Cvar_SetValue( "lookspring", s_options_lookspring_box.curvalue );
+	Cvar_SetValueLatched( "lookspring", s_options_lookspring_box.curvalue );
 }
 
 static void LookstrafeFunc( void *unused )
 {
-	Cvar_SetValue( "lookstrafe", s_options_lookstrafe_box.curvalue );
+	Cvar_SetValueLatched( "lookstrafe", s_options_lookstrafe_box.curvalue );
 }
 
 static void UpdateVolumeFunc( void *unused )
 {
-	Cvar_SetValue( "s_volume", s_options_sfxvolume_slider.curvalue / 10 );
+	Cvar_SetValueLatched( "s_volume", s_options_sfxvolume_slider.curvalue / 10 );
 }
 
 static void UpdateCDVolumeFunc( void *unused )
 {
-	Cvar_SetValue( "cd_nocd", !s_options_cdvolume_box.curvalue );
+	Cvar_SetValueLatched( "cd_nocd", !s_options_cdvolume_box.curvalue );
 }
 
 static void ConsoleFunc( void *unused )
@@ -1845,10 +1845,10 @@ static void StartGame( void )
 	// disable updates and start the cinematic going
 	cl.servercount = -1;
 	M_ForceMenuOff ();
-	Cvar_SetValue( "deathmatch", 0 );
-	Cvar_SetValue( "coop", 0 );
+	Cvar_SetValueLatched( "deathmatch", 0 );
+	Cvar_SetValueLatched( "coop", 0 );
 
-	Cvar_SetValue( "gamerules", 0 );		//PGM
+	Cvar_SetValueLatched( "gamerules", 0 );		//PGM
 
 	Cbuf_AddText ("loading ; killserver ; wait ; newgame\n");
 	cls.key_dest = key_game;
@@ -2396,25 +2396,25 @@ void StartServerActionFunc( void *self )
 	timelimit	= QStr::Atoi( s_timelimit_field.buffer );
 	fraglimit	= QStr::Atoi( s_fraglimit_field.buffer );
 
-	Cvar_SetValue( "maxclients", ClampCvar( 0, maxclients, maxclients ) );
-	Cvar_SetValue ("timelimit", ClampCvar( 0, timelimit, timelimit ) );
-	Cvar_SetValue ("fraglimit", ClampCvar( 0, fraglimit, fraglimit ) );
+	Cvar_SetValueLatched( "maxclients", ClampCvar( 0, maxclients, maxclients ) );
+	Cvar_SetValueLatched("timelimit", ClampCvar( 0, timelimit, timelimit ) );
+	Cvar_SetValueLatched("fraglimit", ClampCvar( 0, fraglimit, fraglimit ) );
 	Cvar_SetLatched("hostname", s_hostname_field.buffer );
-//	Cvar_SetValue ("deathmatch", !s_rules_box.curvalue );
-//	Cvar_SetValue ("coop", s_rules_box.curvalue );
+//	Cvar_SetValueLatched("deathmatch", !s_rules_box.curvalue );
+//	Cvar_SetValueLatched("coop", s_rules_box.curvalue );
 
 //PGM
 	if((s_rules_box.curvalue < 2) || (FS_GetQuake2GameType() != 2))
 	{
-		Cvar_SetValue ("deathmatch", !s_rules_box.curvalue );
-		Cvar_SetValue ("coop", s_rules_box.curvalue );
-		Cvar_SetValue ("gamerules", 0 );
+		Cvar_SetValueLatched("deathmatch", !s_rules_box.curvalue );
+		Cvar_SetValueLatched("coop", s_rules_box.curvalue );
+		Cvar_SetValueLatched("gamerules", 0 );
 	}
 	else
 	{
-		Cvar_SetValue ("deathmatch", 1 );	// deathmatch is always true for rogue games, right?
-		Cvar_SetValue ("coop", 0 );			// FIXME - this might need to depend on which game we're running
-		Cvar_SetValue ("gamerules", s_rules_box.curvalue );
+		Cvar_SetValueLatched("deathmatch", 1 );	// deathmatch is always true for rogue games, right?
+		Cvar_SetValueLatched("coop", 0 );			// FIXME - this might need to depend on which game we're running
+		Cvar_SetValueLatched("gamerules", s_rules_box.curvalue );
 	}
 //PGM
 
@@ -2833,7 +2833,7 @@ static void DMFlagCallback( void *self )
 	}
 
 setvalue:
-	Cvar_SetValue ("dmflags", flags);
+	Cvar_SetValueLatched("dmflags", flags);
 
 	QStr::Sprintf( dmoptions_statusbar, sizeof( dmoptions_statusbar ), "dmflags = %d", flags );
 
@@ -3087,27 +3087,27 @@ static void DownloadCallback( void *self )
 
 	if (f == &s_allow_download_box)
 	{
-		Cvar_SetValue("allow_download", f->curvalue);
+		Cvar_SetValueLatched("allow_download", f->curvalue);
 	}
 
 	else if (f == &s_allow_download_maps_box)
 	{
-		Cvar_SetValue("allow_download_maps", f->curvalue);
+		Cvar_SetValueLatched("allow_download_maps", f->curvalue);
 	}
 
 	else if (f == &s_allow_download_models_box)
 	{
-		Cvar_SetValue("allow_download_models", f->curvalue);
+		Cvar_SetValueLatched("allow_download_models", f->curvalue);
 	}
 
 	else if (f == &s_allow_download_players_box)
 	{
-		Cvar_SetValue("allow_download_players", f->curvalue);
+		Cvar_SetValueLatched("allow_download_players", f->curvalue);
 	}
 
 	else if (f == &s_allow_download_sounds_box)
 	{
-		Cvar_SetValue("allow_download_sounds", f->curvalue);
+		Cvar_SetValueLatched("allow_download_sounds", f->curvalue);
 	}
 }
 
@@ -3314,13 +3314,13 @@ void DownloadOptionsFunc( void *self )
 
 static void HandednessCallback( void *unused )
 {
-	Cvar_SetValue( "hand", s_player_handedness_box.curvalue );
+	Cvar_SetValueLatched( "hand", s_player_handedness_box.curvalue );
 }
 
 static void RateCallback( void *unused )
 {
 	if (s_player_rate_box.curvalue != sizeof(rate_tbl) / sizeof(*rate_tbl) - 1)
-		Cvar_SetValue( "rate", rate_tbl[s_player_rate_box.curvalue] );
+		Cvar_SetValueLatched( "rate", rate_tbl[s_player_rate_box.curvalue] );
 }
 
 static void ModelCallback( void *unused )
@@ -3545,7 +3545,7 @@ qboolean PlayerConfig_MenuInit( void )
 		return false;
 
 	if ( hand->value < 0 || hand->value > 2 )
-		Cvar_SetValue( "hand", 0 );
+		Cvar_SetValueLatched( "hand", 0 );
 
 	QStr::Cpy( currentdirectory, skin->string );
 

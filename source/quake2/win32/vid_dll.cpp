@@ -374,8 +374,8 @@ LONG WINAPI MainWndProc (
 				style = GetWindowLong( hWnd, GWL_STYLE );
 				AdjustWindowRect( &r, style, FALSE );
 
-				Cvar_SetValue( "vid_xpos", xPos + r.left);
-				Cvar_SetValue( "vid_ypos", yPos + r.top);
+				Cvar_SetValueLatched( "vid_xpos", xPos + r.left);
+				Cvar_SetValueLatched( "vid_ypos", yPos + r.top);
 				vid_xpos->modified = false;
 				vid_ypos->modified = false;
 				if (ActiveApp)
@@ -420,7 +420,7 @@ LONG WINAPI MainWndProc (
 		{
 			if ( vid_fullscreen )
 			{
-				Cvar_SetValue( "vid_fullscreen", !vid_fullscreen->value );
+				Cvar_SetValueLatched( "vid_fullscreen", !vid_fullscreen->value );
 			}
 			return 0;
 		}
@@ -571,7 +571,7 @@ qboolean VID_LoadRefresh( char *name )
 	ri.FS_Gamedir = FS_Gamedir;
 	ri.Cvar_Get = Cvar_Get;
 	ri.Cvar_Set = Cvar_SetLatched;
-	ri.Cvar_SetValue = Cvar_SetValue;
+	ri.Cvar_SetValue = Cvar_SetValueLatched;
 	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
@@ -704,7 +704,7 @@ void VID_Init (void)
 
 		if ( QStr::ICmp( gl_driver->string, "3dfxgl" ) == 0 )
 		{
-			Cvar_SetValue( "gl_mode", 3 );
+			Cvar_SetValueLatched( "gl_mode", 3 );
 			viddef.width  = 640;
 			viddef.height = 480;
 		}

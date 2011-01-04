@@ -345,7 +345,7 @@ Keybinding command
 */
 void SCR_SizeUp_f (void)
 {
-	Cvar_SetValue ("viewsize",scr_viewsize->value+10);
+	Cvar_SetValueLatched("viewsize",scr_viewsize->value+10);
 }
 
 
@@ -358,7 +358,7 @@ Keybinding command
 */
 void SCR_SizeDown_f (void)
 {
-	Cvar_SetValue ("viewsize",scr_viewsize->value-10);
+	Cvar_SetValueLatched("viewsize",scr_viewsize->value-10);
 }
 
 /*
@@ -1290,9 +1290,9 @@ void SCR_UpdateScreen (void)
 	** brain
 	*/
 	if ( cl_stereo_separation->value > 1.0 )
-		Cvar_SetValue( "cl_stereo_separation", 1.0 );
+		Cvar_SetValueLatched( "cl_stereo_separation", 1.0 );
 	else if ( cl_stereo_separation->value < 0 )
-		Cvar_SetValue( "cl_stereo_separation", 0.0 );
+		Cvar_SetValueLatched( "cl_stereo_separation", 0.0 );
 
 	if ( cl_stereo->value )
 	{

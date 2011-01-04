@@ -90,7 +90,7 @@ static void ScreenSizeCallback( void *s )
 {
 	menuslider_s *slider = ( menuslider_s * ) s;
 
-	Cvar_SetValue( "viewsize", slider->curvalue * 10 );
+	Cvar_SetValueLatched( "viewsize", slider->curvalue * 10 );
 }
 
 static void BrightnessCallback( void *s )
@@ -106,7 +106,7 @@ static void BrightnessCallback( void *s )
 	{
 		float gamma = ( 0.8 - ( slider->curvalue/10.0 - 0.5 ) ) + 0.5;
 
-		Cvar_SetValue( "vid_gamma", gamma );
+		Cvar_SetValueLatched( "vid_gamma", gamma );
 	}
 }
 
@@ -131,14 +131,14 @@ static void ApplyChanges( void *unused )
 	*/
 	gamma = ( 0.8 - ( s_brightness_slider[s_current_menu_index].curvalue/10.0 - 0.5 ) ) + 0.5;
 
-	Cvar_SetValue( "vid_gamma", gamma );
-	Cvar_SetValue( "sw_stipplealpha", s_stipple_box.curvalue );
-	Cvar_SetValue( "gl_picmip", 3 - s_tq_slider.curvalue );
-	Cvar_SetValue( "vid_fullscreen", s_fs_box[s_current_menu_index].curvalue );
-	Cvar_SetValue( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
-	Cvar_SetValue( "gl_finish", s_finish_box.curvalue );
-	Cvar_SetValue( "sw_mode", s_mode_list[SOFTWARE_MENU].curvalue );
-	Cvar_SetValue( "gl_mode", s_mode_list[OPENGL_MENU].curvalue );
+	Cvar_SetValueLatched( "vid_gamma", gamma );
+	Cvar_SetValueLatched( "sw_stipplealpha", s_stipple_box.curvalue );
+	Cvar_SetValueLatched( "gl_picmip", 3 - s_tq_slider.curvalue );
+	Cvar_SetValueLatched( "vid_fullscreen", s_fs_box[s_current_menu_index].curvalue );
+	Cvar_SetValueLatched( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
+	Cvar_SetValueLatched( "gl_finish", s_finish_box.curvalue );
+	Cvar_SetValueLatched( "sw_mode", s_mode_list[SOFTWARE_MENU].curvalue );
+	Cvar_SetValueLatched( "gl_mode", s_mode_list[OPENGL_MENU].curvalue );
 
 	switch ( s_ref_list[s_current_menu_index].curvalue )
 	{
