@@ -58,3 +58,5 @@
   I decided to go through all previous changes and review them and make sure that there are no changes that break behavior in one of the games. Since in the beginning I didn't have game type variable, things that were merged first may need to be changed and take advantage of it.
 04.01.2011
   In Quake 2 Cvar_SetValue was using non-force version of Cvar_Set, so I added separate version that uses it and replaced everywhere in Quake 2 to use it.
+  I did some compatibility changes in Cvar_Get.
+

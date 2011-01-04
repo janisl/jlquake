@@ -339,15 +339,23 @@ void Cvar_SetValueLatched(const char* var_name, float value)
 
 QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 {
-	if (!VarName || !VarValue)
+	if (!VarName || (!(GGameType & GAME_Quake2) && !VarValue))
 	{
 		throw QException("Cvar_Get: NULL parameter");
 	}
 
-	if (!Cvar_ValidateString(VarName))
+	if (!(GGameType & GAME_Quake2) || (Flags & (CVAR_USERINFO | CVAR_SERVERINFO)))
 	{
-		GLog.Write("invalid cvar name string: %s\n", VarName);
-		VarName = "BADNAME";
+		if (!Cvar_ValidateString(VarName))
+		{
+			if (GGameType & GAME_Quake2)
+			{
+				GLog.Write("invalid info cvar name\n");
+				return NULL;
+			}
+			GLog.Write("invalid cvar name string: %s\n", VarName);
+			VarName = "BADNAME";
+		}
 	}
 
 	QCvar* var = Cvar_FindVar(VarName);
@@ -381,7 +389,7 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 				VarName, var->resetString, VarValue);
 		}
 		// if we have a latched string, take that value now
-		if (var->latchedString)
+		if (!(GGameType & GAME_Quake2) && var->latchedString)
 		{
 			char* s = var->latchedString;
 			var->latchedString = NULL;	// otherwise cvar_set2 would free it
@@ -392,10 +400,17 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 		return var;
 	}
 
-	//  Quake 3 didin't check this at all. It had commented out check that
+	//	Quake 2 case, other games check this above.
+	if (!VarValue)
+	{
+		return NULL;
+	}
+
+	//  Quake 3 doesn't check this at all. It had commented out check that
 	// ignored flags and it was commented out because variables that are not
 	// info variables can contain characters that are invalid for info srings.
-	if (Flags & (CVAR_USERINFO | CVAR_SERVERINFO))
+	// Currently for compatibility it's not done for Quake 3.
+	if (!(GGameType & GAME_Quake3) && (Flags & (CVAR_USERINFO | CVAR_SERVERINFO)))
 	{
 		if (!Cvar_ValidateString(VarValue))
 		{
@@ -433,6 +448,11 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	long hash = Cvar_GenerateHashValue(VarName);
 	var->hashNext = cvar_hashTable[hash];
 	cvar_hashTable[hash] = var;
+
+	if (GGameType & (GAME_QuakeWorld | GAME_HexenWorld))
+	{
+		Cvar_Changed(var);
+	}
 
 	return var;
 }
