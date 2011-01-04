@@ -122,11 +122,11 @@ static void ApplyChanges( void *unused )
 	switch ( s_ref_list[s_current_menu_index].curvalue )
 	{
 	case REF_SOFT:
-		Cvar_Set( "vid_ref", "soft" );
+		Cvar_SetLatched( "vid_ref", "soft" );
 		break;
 	case REF_OPENGL:
-		Cvar_Set( "vid_ref", "gl" );
-		Cvar_Set( "gl_driver", "opengl32" );
+		Cvar_SetLatched( "vid_ref", "gl" );
+		Cvar_SetLatched( "gl_driver", "opengl32" );
 		break;
 	}
 

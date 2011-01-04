@@ -107,7 +107,7 @@ void	VID_Init (void)
     ri.FS_Gamedir = FS_Gamedir;
 	ri.Vid_NewWindow = VID_NewWindow;
     ri.Cvar_Get = Cvar_Get;
-    ri.Cvar_Set = Cvar_Set;
+    ri.Cvar_Set = Cvar_SetLatched;
     ri.Cvar_SetValue = Cvar_SetValueLatched;
     ri.Vid_GetModeInfo = VID_GetModeInfo;
 
