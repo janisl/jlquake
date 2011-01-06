@@ -641,8 +641,10 @@ void Cmd_SharedInit()
 	//
 	Cmd_AddCommand("wait", Cmd_Wait_f);
 	Cmd_AddCommand("echo", Cmd_Echo_f);
-	Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
-	Cmd_AddCommand("alias", Cmd_Alias_f);
+	if (GGameType & GAME_QuakeHexen)
+		Cmd_AddCommand("stuffcmds", Cmd_StuffCmds_f);
+	if (!(GGameType & GAME_Quake3))
+		Cmd_AddCommand("alias", Cmd_Alias_f);
 	Cmd_AddCommand("exec",Cmd_Exec_f);
 	Cmd_AddCommand("vstr", Cmd_Vstr_f);
 	Cmd_AddCommand("cmdlist", Cmd_List_f);
