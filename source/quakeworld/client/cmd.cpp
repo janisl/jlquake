@@ -66,7 +66,7 @@ void Cmd_ForwardToServer (void)
 	if (Cmd_Argc() > 1)
 	{
 		cls.netchan.message.Print(" ");
-		cls.netchan.message.Print(Cmd_Args());
+		cls.netchan.message.Print(Cmd_ArgsUnmodified());
 	}
 }
 
@@ -90,7 +90,7 @@ void Cmd_ForwardToServer_f (void)
 	if (Cmd_Argc() > 1)
 	{
 		cls.netchan.message.WriteByte(clc_stringcmd);
-		cls.netchan.message.Print(Cmd_Args());
+		cls.netchan.message.Print(Cmd_ArgsUnmodified());
 	}
 }
 #else

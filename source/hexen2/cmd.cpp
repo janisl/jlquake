@@ -60,7 +60,7 @@ void Cmd_ForwardToServer (void)
 		cls.message.Print(" ");
 	}
 	if (Cmd_Argc() > 1)
-		cls.message.Print(Cmd_Args());
+		cls.message.Print(Cmd_ArgsUnmodified());
 	else
 		cls.message.Print("\n");
 }
