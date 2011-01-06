@@ -673,7 +673,7 @@ static pack_t* FS_LoadPackFile(const char* packfile)
 		CRC_ProcessByte(&crc, ((byte*)info)[i]);
 	}
 
-	if (numpackfiles == PAK3_COUNT && crc == PAK3_CRC)
+	if ((GGameType & GAME_HexenWorld) && numpackfiles == PAK3_COUNT && crc == PAK3_CRC)
 	{
 		com_portals = true;
 	}
