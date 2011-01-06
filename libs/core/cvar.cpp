@@ -545,8 +545,16 @@ bool Cvar_Command()
 	// perform a variable print or set
 	if (Cmd_Argc() == 1)
 	{
-		GLog.Write("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
-			v->name, v->string, v->resetString);
+		if (GGameType & GAME_Quake3)
+		{
+			GLog.Write("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
+				v->name, v->string, v->resetString);
+		}
+		else
+		{
+			GLog.Write("\"%s\" is:\"%s\" default:\"%s\"\n",
+				v->name, v->string, v->resetString);
+		}
 		if (v->latchedString)
 		{
 			GLog.Write("latched: \"%s\"\n", v->latchedString);
