@@ -72,8 +72,6 @@ cmd_source_t			cmd_source;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static bool				cmd_macroExpand;
-
 static cmdalias_t*		cmd_alias;
 
 static int				alias_count;		// for detecting runaway loops
@@ -636,10 +634,8 @@ static void Cmd_List_f()
 //
 //==========================================================================
 
-void Cmd_SharedInit(bool MacroExpand)
+void Cmd_SharedInit()
 {
-	cmd_macroExpand = MacroExpand;
-
 	//
 	// register our commands
 	//
@@ -1159,7 +1155,7 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 {
 	// execute the command line
 	cmd_source = Src;
-	Cmd_TokenizeString(Text, cmd_macroExpand);
+	Cmd_TokenizeString(Text, !!(GGameType & GAME_Quake2));
 	if (!Cmd_Argc())
 	{
 		return;		// no tokens

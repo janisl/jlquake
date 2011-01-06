@@ -94,7 +94,7 @@ Cmd_Init
 */
 void Cmd_Init (void)
 {
-	Cmd_SharedInit(false);
+	Cmd_SharedInit();
 #ifndef SERVERONLY
 	Cmd_AddCommand ("cmd", Cmd_ForwardToServer_f);
 #endif

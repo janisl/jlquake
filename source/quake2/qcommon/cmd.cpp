@@ -51,6 +51,6 @@ Cmd_Init
 */
 void Cmd_Init (void)
 {
-	Cmd_SharedInit(true);
+	Cmd_SharedInit();
 }
 

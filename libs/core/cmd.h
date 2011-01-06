@@ -123,6 +123,6 @@ void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
 // Parses a single line of text into arguments and tries to execute it
 // as if it was typed at the console
 
-void Cmd_SharedInit(bool MacroExpand);
+void Cmd_SharedInit();
 
 extern	cmd_source_t	cmd_source;
