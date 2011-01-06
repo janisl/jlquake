@@ -211,7 +211,7 @@ channel_t *SND_PickChannel(int entnum, int entchannel)
 		}
 
 		// don't let monster sounds override player sounds
-		if (s_channels[ch_idx].entnum == cl.viewentity && entnum != cl.viewentity && s_channels[ch_idx].sfx)
+		if (s_channels[ch_idx].entnum == listener_number && entnum != listener_number && s_channels[ch_idx].sfx)
 			continue;
 
 		if (!s_channels[ch_idx].sfx)
@@ -254,7 +254,7 @@ void SND_Spatialize(channel_t *ch)
 	sfx_t *snd;
 
 // anything coming from the view entity will allways be full volume
-	if (ch->entnum == cl.viewentity)
+	if (ch->entnum == listener_number)
 	{
 		ch->leftvol = ch->master_vol;
 		ch->rightvol = ch->master_vol;
@@ -554,6 +554,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	if (!s_soundStarted || s_soundMuted)
 		return;
 
+	listener_number = cl.viewentity;
 	VectorCopy(origin, listener_origin);
 	VectorCopy(forward, listener_axis[0]);
 	VectorSubtract(vec3_origin, right, listener_axis[1]);
@@ -807,7 +808,7 @@ void S_LocalSound (char *sound)
 		Con_Printf ("S_LocalSound: can't cache %s\n", sound);
 		return;
 	}
-	S_StartSound (cl.viewentity, -1, sfx, vec3_origin, 1, 1);
+	S_StartSound (listener_number, -1, sfx, vec3_origin, 1, 1);
 }
 
 

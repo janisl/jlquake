@@ -331,7 +331,7 @@ channel_t *S_PickChannel(int entnum, int entchannel)
 		}
 
 		// don't let monster sounds override player sounds
-		if (s_channels[ch_idx].entnum == cl.playernum+1 && entnum != cl.playernum+1 && s_channels[ch_idx].sfx)
+		if (s_channels[ch_idx].entnum == listener_number && entnum != listener_number && s_channels[ch_idx].sfx)
 			continue;
 
 		if (!s_channels[ch_idx].sfx)
@@ -424,7 +424,7 @@ void S_Spatialize(channel_t *ch)
 	vec3_t		origin;
 
 	// anything coming from the view entity will always be full volume
-	if (ch->entnum == cl.playernum+1)
+	if (ch->entnum == listener_number)
 	{
 		ch->leftvol = ch->master_vol;
 		ch->rightvol = ch->master_vol;
@@ -689,7 +689,7 @@ void S_StartLocalSound (char *sound)
 		Com_Printf ("S_StartLocalSound: can't cache %s\n", sound);
 		return;
 	}
-	S_StartSound (NULL, cl.playernum+1, 0, sfx, 1, 1, 0);
+	S_StartSound (NULL, listener_number, 0, sfx, 1, 1, 0);
 }
 
 
@@ -972,6 +972,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		return;
 	}
 
+	listener_number = cl.playernum + 1;
 	VectorCopy(origin, listener_origin);
 	VectorCopy(forward, listener_axis[0]);
 	VectorSubtract(vec3_origin, right, listener_axis[1]);
@@ -1111,7 +1112,7 @@ void S_Play(void)
 		else
 			QStr::Cpy(name, Cmd_Argv(i));
 		sfx = S_RegisterSound(name);
-		S_StartSound(NULL, cl.playernum+1, 0, sfx, 1.0, 1.0, 0);
+		S_StartSound(NULL, listener_number, 0, sfx, 1.0, 1.0, 0);
 		i++;
 	}
 }
