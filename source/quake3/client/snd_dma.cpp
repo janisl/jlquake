@@ -61,33 +61,6 @@ static	channel_t		*freelist = NULL;
 // ====================================================================
 
 
-void S_SoundInfo_f(void) {	
-	Com_Printf("----- Sound Info -----\n" );
-	if (!s_soundStarted) {
-		Com_Printf ("sound system not started\n");
-	} else {
-		if ( s_soundMuted ) {
-			Com_Printf ("sound system is muted\n");
-		}
-
-		Com_Printf("%5d stereo\n", dma.channels - 1);
-		Com_Printf("%5d samples\n", dma.samples);
-		Com_Printf("%5d samplebits\n", dma.samplebits);
-		Com_Printf("%5d submission_chunk\n", dma.submission_chunk);
-		Com_Printf("%5d speed\n", dma.speed);
-		Com_Printf("0x%x dma buffer\n", dma.buffer);
-		if ( s_backgroundFile ) {
-			Com_Printf("Background file: %s\n", s_backgroundLoop );
-		} else {
-			Com_Printf("No background file.\n" );
-		}
-
-	}
-	Com_Printf("----------------------\n" );
-}
-
-
-
 /*
 ================
 S_Init

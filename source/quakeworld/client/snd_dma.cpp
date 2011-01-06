@@ -61,25 +61,6 @@ void S_AmbientOn (void)
 	snd_ambient = true;
 }
 
-
-void S_SoundInfo_f(void)
-{
-	if (!s_soundStarted)
-	{
-		Con_Printf ("sound system not started\n");
-		return;
-	}
-	
-    Con_Printf("%5d stereo\n", dma.channels - 1);
-    Con_Printf("%5d samples\n", dma.samples);
-    Con_Printf("%5d samplepos\n", dma.samplepos);
-    Con_Printf("%5d samplebits\n", dma.samplebits);
-    Con_Printf("%5d submission_chunk\n", dma.submission_chunk);
-    Con_Printf("%5d speed\n", dma.speed);
-    Con_Printf("0x%x dma buffer\n", dma.buffer);
-	Con_Printf("%5d total_channels\n", numLoopChannels);
-}
-
 /*
 ================
 S_Init

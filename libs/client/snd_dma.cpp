@@ -107,3 +107,41 @@ void Snd_Memset(void* dest, const int val, const size_t count)
 		pDest[i] = val;
 	}
 }
+
+//==========================================================================
+//
+//	S_SoundInfo_f
+//
+//==========================================================================
+
+void S_SoundInfo_f()
+{
+	GLog.Write("----- Sound Info -----\n");
+	if (!s_soundStarted)
+	{
+		GLog.Write("sound system not started\n");
+	}
+	else
+	{
+		if (s_soundMuted)
+		{
+			GLog.Write("sound system is muted\n");
+		}
+
+		GLog.Write("%5d stereo\n", dma.channels - 1);
+		GLog.Write("%5d samples\n", dma.samples);
+		GLog.Write("%5d samplebits\n", dma.samplebits);
+		GLog.Write("%5d submission_chunk\n", dma.submission_chunk);
+		GLog.Write("%5d speed\n", dma.speed);
+		GLog.Write("0x%x dma buffer\n", dma.buffer);
+		if (s_backgroundFile)
+		{
+			GLog.Write("Background file: %s\n", s_backgroundLoop);
+		}
+		else
+		{
+			GLog.Write("No background file.\n" );
+		}
+	}
+	GLog.Write("----------------------\n" );
+}

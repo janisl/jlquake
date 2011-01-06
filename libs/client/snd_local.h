@@ -112,6 +112,7 @@ struct playsound_t
 };
 
 void Snd_Memset(void* dest, const int val, const size_t count);
+void S_SoundInfo_f();
 
 bool S_LoadSound(sfx_t* sfx);
 
