@@ -731,7 +731,7 @@ char* Cmd_Argv(int Arg)
 {
 	if ((unsigned)Arg >= cmd_argc)
 	{
-		return "";
+		return const_cast<char*>("");
 	}
 	return cmd_argv[Arg];
 }
@@ -966,9 +966,14 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 		while (1)
 		{
 			// skip whitespace
-			while (*Text && *Text <= ' ')
+			while (*Text && *Text <= ' ' && (*Text != '\n' || (GGameType & GAME_Quake3)))
 			{
 				Text++;
+			}
+			if (*Text == '\n' && !(GGameType & GAME_Quake3))
+			{
+				// a newline seperates commands in the buffer
+				return;
 			}
 			if (!*Text)
 			{
@@ -982,7 +987,7 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 			}
 
 			// skip /* */ comments
-			if (Text[0] == '/' && Text[1] =='*')
+			if ((GGameType & GAME_Quake3) && Text[0] == '/' && Text[1] =='*')
 			{
 				while (*Text && (Text[0] != '*' || Text[1] != '/'))
 				{
@@ -1003,19 +1008,22 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 		// set cmd_args to everything after the first arg
 		if (cmd_argc == 1)
 		{
-			QStr::Cpy(cmd_args, Text);
+			QStr::NCpyZ(cmd_args, Text, sizeof(cmd_args));
 
-			// strip off any trailing whitespace
-			int l = QStr::Length(cmd_args) - 1;
-			for (; l >= 0; l--)
+			if (GGameType & GAME_Quake2)
 			{
-				if (cmd_args[l] <= ' ')
+				// strip off any trailing whitespace
+				int l = QStr::Length(cmd_args) - 1;
+				for (; l >= 0; l--)
 				{
-					cmd_args[l] = 0;
-				}
-				else
-				{
-					break;
+					if (cmd_args[l] <= ' ')
+					{
+						cmd_args[l] = 0;
+					}
+					else
+					{
+						break;
+					}
 				}
 			}
 		}
@@ -1040,6 +1048,17 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 			continue;
 		}
 
+		// parse single characters
+		if ((GGameType & GAME_QuakeHexen) && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) &&
+			(*Text == '{' || *Text == '}'|| *Text == ')'|| *Text == '(' || *Text == '\'' || *Text == ':'))
+		{
+			cmd_argv[cmd_argc] = TextOut;
+			cmd_argc++;
+			*TextOut++ = *Text++;
+			*TextOut++ = 0;
+			continue;
+		}
+
 		// regular token
 		cmd_argv[cmd_argc] = TextOut;
 		cmd_argc++;
@@ -1047,18 +1066,27 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 		// skip until whitespace, quote, or comment
 		while (*Text > ' ')
 		{
-			if (Text[0] == '"')
+			if (GGameType & GAME_Quake3)
 			{
-				break;
+				if (Text[0] == '"')
+				{
+					break;
+				}
+
+				if (Text[0] == '/' && Text[1] == '/')
+				{
+					break;
+				}
+
+				// skip /* */ comments
+				if (Text[0] == '/' && Text[1] =='*')
+				{
+					break;
+				}
 			}
 
-			if (Text[0] == '/' && Text[1] == '/')
-			{
-				break;
-			}
-
-			// skip /* */ comments
-			if (Text[0] == '/' && Text[1] =='*')
+			if ((GGameType & GAME_QuakeHexen) && !(GGameType & (GAME_QuakeWorld | GAME_HexenWorld)) &&
+				(*Text == '{' || *Text == '}'|| *Text == ')'|| *Text == '(' || *Text == '\'' || *Text == ':'))
 			{
 				break;
 			}
