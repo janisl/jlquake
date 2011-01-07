@@ -49,11 +49,27 @@
 15.04.2010
   I fixed a bug I introduced in command parsing that caused Quake 3 to loose network key sync.
 18.04.2010
-  Work on file access has been completed and most remaining file system code is unifid too.
+  Work on file access has been completed and most remaining file system code is unified too.
 19.04.2010
   In Hexen 2 I added support for maplist.txt file that specifies alternate progs file for specific levels. Now boss levels work.
 20.04.2010
   I finished replacing use of stdio with use of file system for game created files like savegames, config files, screenshots etc. and made them all to be created in home directory.
+27.04.2010
+  I added clipmap to QUake and Hexen 2.
+30.04.2010
+  More work on Quake clipmap.
+02.05.2010
+  I started work on merging sound code into a common client librray. I removed support for loading samples as 8 bit. I removed sound compression in Quake 3 as memory is not a problem nowdays.
+03.05.2010
+  I merged most of the sound mixing code.
+04.05.2010
+  I merged Linux soun drivers and loading of sounds.
+05.05.2010
+  I merged remaining sound mixing code.
+06.05.2010
+  I merged Windows sound drivers.
+09.05.2010
+  I moved Quake 2 game sources outide of engine sources as they were getting in the way when searching for something in files. I also added sources of mission packs so that I can play them.
 02.01.2011
   I decided to go through all previous changes and review them and make sure that there are no changes that break behavior in one of the games. Since in the beginning I didn't have game type variable, things that were merged first may need to be changed and take advantage of it.
 04.01.2011
