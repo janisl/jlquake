@@ -19,11 +19,19 @@
 
 typedef int		sfxHandle_t;
 
+//	RegisterSound will allways return a valid sample, even if it
+// has to create a placeholder.  This prevents continuous filesystem
+// checks for missing files.
 void S_BeginRegistration();
 sfxHandle_t S_RegisterSound(const char* Name);
-// RegisterSound will allways return a valid sample, even if it
-// has to create a placeholder.  This prevents continuous filesystem
-// checks for missing files
 void S_EndRegistration();
+
+//	Cinematics and voice-over-network will send raw samples
+// 1.0 volume will be direct output of source samples
+void S_ByteSwapRawSamples(int Samples, int Width, int Channels, const byte* Data);
+void S_RawSamples(int Samples, int Rate, int Width, int Channels, const byte* Data, float Volume);
+
+void S_StartBackgroundTrack(const char* Intro, const char* Loop);
+void S_StopBackgroundTrack();
 
 extern	QCvar* s_volume;

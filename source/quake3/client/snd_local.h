@@ -57,7 +57,5 @@ extern QCvar	*s_mixahead;
 
 extern QCvar	*s_separation;
 
-portable_samplepair_t *S_GetRawSamplePointer();
-
 // spatializes a channel
 void S_Spatialize(channel_t *ch);

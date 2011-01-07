@@ -466,7 +466,9 @@ byte *SCR_ReadNextFrame (void)
 
 	FS_Read (samples, count*cin.s_width*cin.s_channels, cl.cinematic_file);
 
-	S_RawSamples (count, cin.s_rate, cin.s_width, cin.s_channels, samples);
+	S_ByteSwapRawSamples(count, cin.s_width, cin.s_channels, samples);
+
+	S_RawSamples (count, cin.s_rate, cin.s_width, cin.s_channels, samples, 1.0);
 
 	in.data = compressed;
 	in.count = size;

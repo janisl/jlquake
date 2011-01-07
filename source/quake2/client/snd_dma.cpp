@@ -61,6 +61,7 @@ void S_Init (void)
 	Com_Printf("\n------- sound initialization -------\n");
 
 	s_volume = Cvar_Get ("s_volume", "0.7", CVAR_ARCHIVE);
+	s_musicVolume = Cvar_Get ("s_musicvolume", "0.25", CVAR_ARCHIVE);
 	s_khz = Cvar_Get ("s_khz", "11", CVAR_ARCHIVE);
 	s_mixahead = Cvar_Get ("s_mixahead", "0.2", CVAR_ARCHIVE);
 	s_show = Cvar_Get ("s_show", "0", 0);
@@ -75,6 +76,7 @@ void S_Init (void)
 	}
 
 	Cmd_AddCommand("play", S_Play);
+	Cmd_AddCommand("music", S_Music_f);
 	Cmd_AddCommand("stopsound", S_StopAllSounds);
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
@@ -116,6 +118,7 @@ void S_Shutdown(void)
 	s_soundStarted = 0;
 
 	Cmd_RemoveCommand("play");
+	Cmd_RemoveCommand("music");
 	Cmd_RemoveCommand("stopsound");
 	Cmd_RemoveCommand("soundlist");
 	Cmd_RemoveCommand("soundinfo");
@@ -682,105 +685,6 @@ void S_AddLoopSounds (void)
 
 /*
 ============
-S_RawSamples
-
-Cinematic streaming and voice over network
-============
-*/
-void S_RawSamples (int samples, int rate, int width, int channels, byte *data)
-{
-	int		i;
-	int		src, dst;
-	float	scale;
-
-	if (!s_soundStarted)
-		return;
-
-	if (s_rawend < s_paintedtime)
-		s_rawend = s_paintedtime;
-	scale = (float)rate / dma.speed;
-
-//Com_Printf ("%i < %i < %i\n", s_soundtime, s_paintedtime, s_rawend);
-	if (channels == 2 && width == 2)
-	{
-		if (scale == 1.0)
-		{	// optimized case
-			for (i=0 ; i<samples ; i++)
-			{
-				dst = s_rawend&(MAX_RAW_SAMPLES-1);
-				s_rawend++;
-				s_rawsamples[dst].left =
-				    LittleShort(((short *)data)[i*2]) << 8;
-				s_rawsamples[dst].right =
-				    LittleShort(((short *)data)[i*2+1]) << 8;
-			}
-		}
-		else
-		{
-			for (i=0 ; ; i++)
-			{
-				src = i*scale;
-				if (src >= samples)
-					break;
-				dst = s_rawend&(MAX_RAW_SAMPLES-1);
-				s_rawend++;
-				s_rawsamples[dst].left =
-				    LittleShort(((short *)data)[src*2]) << 8;
-				s_rawsamples[dst].right =
-				    LittleShort(((short *)data)[src*2+1]) << 8;
-			}
-		}
-	}
-	else if (channels == 1 && width == 2)
-	{
-		for (i=0 ; ; i++)
-		{
-			src = i*scale;
-			if (src >= samples)
-				break;
-			dst = s_rawend&(MAX_RAW_SAMPLES-1);
-			s_rawend++;
-			s_rawsamples[dst].left =
-			    LittleShort(((short *)data)[src]) << 8;
-			s_rawsamples[dst].right =
-			    LittleShort(((short *)data)[src]) << 8;
-		}
-	}
-	else if (channels == 2 && width == 1)
-	{
-		for (i=0 ; ; i++)
-		{
-			src = i*scale;
-			if (src >= samples)
-				break;
-			dst = s_rawend&(MAX_RAW_SAMPLES-1);
-			s_rawend++;
-			s_rawsamples[dst].left =
-			    ((char *)data)[src*2] << 16;
-			s_rawsamples[dst].right =
-			    ((char *)data)[src*2+1] << 16;
-		}
-	}
-	else if (channels == 1 && width == 1)
-	{
-		for (i=0 ; ; i++)
-		{
-			src = i*scale;
-			if (src >= samples)
-				break;
-			dst = s_rawend&(MAX_RAW_SAMPLES-1);
-			s_rawend++;
-			s_rawsamples[dst].left =
-			    (((byte *)data)[src]-128) << 16;
-			s_rawsamples[dst].right = (((byte *)data)[src]-128) << 16;
-		}
-	}
-}
-
-//=============================================================================
-
-/*
-============
 S_Update
 
 Called once each time through the main loop
@@ -846,6 +750,9 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		
 		Com_Printf ("----(%i)---- painted: %i\n", total, s_paintedtime);
 	}
+
+	// add raw data from streamed samples
+	S_UpdateBackgroundTrack();
 
 // mix some sound
 	S_Update_();

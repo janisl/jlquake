@@ -113,9 +113,10 @@ struct playsound_t
 
 void Snd_Memset(void* dest, const int val, const size_t count);
 void S_SoundInfo_f();
-int S_HashSFXName(const char* Name);
 sfx_t* S_FindName(const char* name, bool create = true);
 sfx_t* S_AliasName(const char* aliasname, const char* truename);
+void S_UpdateBackgroundTrack();
+void S_Music_f();
 
 bool S_LoadSound(sfx_t* sfx);
 

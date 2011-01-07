@@ -70,6 +70,7 @@ void S_Init (void)
 
 	bgmvolume = Cvar_Get("bgmvolume", "1", CVAR_ARCHIVE);
 	s_volume = Cvar_Get("volume", "0.7", CVAR_ARCHIVE);
+	s_musicVolume = Cvar_Get ("s_musicvolume", "0.25", CVAR_ARCHIVE);
 	nosound = Cvar_Get("nosound", "0", 0);
 	ambient_level = Cvar_Get("ambient_level", "0.3", 0);
 	ambient_fade = Cvar_Get("ambient_fade", "100", 0);
@@ -83,6 +84,7 @@ void S_Init (void)
 
 	Cmd_AddCommand("play", S_Play);
 	Cmd_AddCommand("playvol", S_PlayVol);
+	Cmd_AddCommand("music", S_Music_f);
 	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
@@ -552,6 +554,9 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		
 		Con_Printf ("----(%i)----\n", total);
 	}
+
+	// add raw data from streamed samples
+	S_UpdateBackgroundTrack();
 
 // mix some sound
 	S_Update_();
