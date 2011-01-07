@@ -277,12 +277,14 @@ bool S_LoadSound(sfx_t* sfx)
 	// player specific sounds are never directly loaded
 	if (sfx->Name[0] == '*')
 	{
+		sfx->DefaultSound = true;
 		return false;
 	}
 
 	// see if still in memory
 	if (sfx->Data)
 	{
+		sfx->InMemory = true;
 		return true;
 	}
 
@@ -311,6 +313,7 @@ bool S_LoadSound(sfx_t* sfx)
 	if (size <= 0)
 	{
 		GLog.DWrite("Couldn't load %s\n", namebuffer);
+		sfx->DefaultSound = true;
 		return false;
 	}
 
@@ -318,6 +321,7 @@ bool S_LoadSound(sfx_t* sfx)
 	if (info.channels != 1)
 	{
 		GLog.Write("%s is a stereo wav file\n", sfx->Name);
+		sfx->DefaultSound = true;
 		return false;
 	}
 
@@ -327,5 +331,6 @@ bool S_LoadSound(sfx_t* sfx)
 
 	ResampleSfx(sfx, info.rate, info.width, &data[info.dataofs]);
 
+	sfx->InMemory = true;
 	return true;
 }

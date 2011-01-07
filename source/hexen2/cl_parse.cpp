@@ -299,7 +299,6 @@ void CL_ParseServerInfo (void)
 			return;
 		}
 		QStr::Cpy(sound_precache[numsounds], str);
-		S_TouchSound (str);
 	}
 
 //
@@ -332,16 +331,16 @@ void CL_ParseServerInfo (void)
 	player_models[3] = (model_t *)Mod_FindName ("models/assassin.mdl");
 	player_models[4] = (model_t *)Mod_FindName ("models/succubus.mdl");
 
-	S_BeginPrecaching ();
+	S_BeginRegistration();
 	for (i=1 ; i<numsounds ; i++)
 	{
-		cl.sound_precache[i] = S_PrecacheSound (sound_precache[i]);
+		cl.sound_precache[i] = S_RegisterSound(sound_precache[i]);
 		current_loading_size++;
 		D_ShowLoadingSize();
 
 		CL_KeepaliveMessage ();
 	}
-	S_EndPrecaching ();
+	S_EndRegistration();
 
 	total_loading_size = 0;
 	loading_stage = 0;

@@ -898,7 +898,7 @@ int CL_UISystemCalls( int *args ) {
 		return 0;
 
 	case UI_S_REGISTERSOUND:
-		return S_RegisterSound( (char*)VMA(1), args[2] );
+		return S_RegisterSound( (char*)VMA(1) );
 
 	case UI_S_STARTLOCALSOUND:
 		S_StartLocalSound( args[1], args[2] );

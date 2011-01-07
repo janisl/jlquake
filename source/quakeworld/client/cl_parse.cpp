@@ -289,12 +289,14 @@ void Sound_NextDownload (void)
 			return;		// started a download
 	}
 
+	S_BeginRegistration();
 	for (i=1 ; i<MAX_SOUNDS ; i++)
 	{
 		if (!cl.sound_name[i][0])
 			break;
-		cl.sound_precache[i] = S_PrecacheSound (cl.sound_name[i]);
+		cl.sound_precache[i] = S_RegisterSound(cl.sound_name[i]);
 	}
+	S_EndRegistration();
 
 	// done with sounds, request models now
 	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));

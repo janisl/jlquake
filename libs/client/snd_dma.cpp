@@ -76,6 +76,7 @@ vec3_t		listener_axis[3];
 
 sfx_t		s_knownSfx[MAX_SFX];
 int			s_numSfx = 0;
+sfx_t*		sfxHash[LOOP_HASH];
 
 fileHandle_t s_backgroundFile;
 wavinfo_t	s_backgroundInfo;
@@ -83,6 +84,9 @@ int			s_backgroundSamples;
 char		s_backgroundLoop[MAX_QPATH];
 
 sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
+
+int			s_registration_sequence;
+bool		s_registering;
 
 // CODE --------------------------------------------------------------------
 
@@ -144,4 +148,282 @@ void S_SoundInfo_f()
 		}
 	}
 	GLog.Write("----------------------\n" );
+}
+
+//==========================================================================
+//
+//	S_HashSFXName
+//
+//	return a hash value for the sfx name
+//
+//==========================================================================
+
+int S_HashSFXName(const char* Name)
+{
+	int Hash = 0;
+	int i = 0;
+	while (Name[i] != '\0')
+	{
+		char Letter = QStr::ToLower(Name[i]);
+		if (Letter =='.')
+		{
+			break;				// don't include extension
+		}
+		if (Letter =='\\')
+		{
+			Letter = '/';		// damn path names
+		}
+		Hash += (long)(Letter) * (i + 119);
+		i++;
+	}
+	Hash &= (LOOP_HASH - 1);
+	return Hash;
+}
+
+//==========================================================================
+//
+//	S_FindName
+//
+//	Will allocate a new sfx if it isn't found
+//
+//==========================================================================
+
+sfx_t* S_FindName(const char* Name, bool Create)
+{
+	if (!Name)
+	{
+		throw QException("S_FindName: NULL\n");
+	}
+	if (!Name[0])
+	{
+		throw QException("S_FindName: empty name\n");
+	}
+
+	if (QStr::Length(Name) >= MAX_QPATH)
+	{
+		throw QException(va("Sound name too long: %s", Name));
+	}
+
+	int Hash = S_HashSFXName(Name);
+
+	sfx_t* Sfx = sfxHash[Hash];
+	// see if already loaded
+	while (Sfx)
+	{
+		if (!QStr::ICmp(Sfx->Name, Name))
+		{
+			return Sfx;
+		}
+		Sfx = Sfx->HashNext;
+	}
+
+	if (!Create)
+	{
+		return NULL;
+	}
+
+	//	Find a free sfx.
+	int i;
+	for (i = 0; i < s_numSfx; i++)
+	{
+		if (!s_knownSfx[i].Name[0])
+		{
+			break;
+		}
+	}
+
+	if (i == s_numSfx)
+	{
+		if (s_numSfx == MAX_SFX)
+		{
+			throw QException("S_FindName: out of sfx_t");
+		}
+		s_numSfx++;
+	}
+
+	Sfx = &s_knownSfx[i];
+	Com_Memset(Sfx, 0, sizeof(*Sfx));
+	QStr::Cpy(Sfx->Name, Name);
+	Sfx->RegistrationSequence = s_registration_sequence;
+
+	Sfx->HashNext = sfxHash[Hash];
+	sfxHash[Hash] = Sfx;
+
+	return Sfx;
+}
+
+//==========================================================================
+//
+//	S_AliasName
+//
+//==========================================================================
+
+sfx_t* S_AliasName(const char* AliasName, const char* TrueName)
+{
+
+	char* S = new char[MAX_QPATH];
+	QStr::Cpy(S, TrueName);
+
+	// find a free sfx
+	int i;
+	for (i = 0; i < s_numSfx; i++)
+	{
+		if (!s_knownSfx[i].Name[0])
+		{
+			break;
+		}
+	}
+
+	if (i == s_numSfx)
+	{
+		if (s_numSfx == MAX_SFX)
+		{
+			throw QException("S_FindName: out of sfx_t");
+		}
+		s_numSfx++;
+	}
+
+	sfx_t* Sfx = &s_knownSfx[i];
+	Com_Memset(Sfx, 0, sizeof(*Sfx));
+	QStr::Cpy(Sfx->Name, AliasName);
+	Sfx->RegistrationSequence = s_registration_sequence;
+	Sfx->TrueName = S;
+
+	int Hash = S_HashSFXName(AliasName);
+	Sfx->HashNext = sfxHash[Hash];
+	sfxHash[Hash] = Sfx;
+
+	return Sfx;
+}
+
+//==========================================================================
+//
+//	S_BeginRegistration
+//
+//==========================================================================
+
+void S_BeginRegistration()
+{
+	if (GGameType & GAME_Quake2)
+	{
+		s_registration_sequence++;
+		s_registering = true;
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		s_soundMuted = false;		// we can play again
+
+		if (s_numSfx == 0)
+		{
+			s_numSfx = 0;
+			Com_Memset(s_knownSfx, 0, sizeof(s_knownSfx));
+			Com_Memset(sfxHash, 0, sizeof(sfx_t*) * LOOP_HASH);
+
+			S_RegisterSound("sound/feedback/hit.wav");		// changed to a sound in baseq3
+		}
+	}
+}
+
+//==========================================================================
+//
+//	S_RegisterSound
+//
+//	Creates a default buzz sound if the file can't be loaded
+//
+//==========================================================================
+
+sfxHandle_t S_RegisterSound(const char* Name)
+{
+	if (!s_soundStarted)
+	{
+		return 0;
+	}
+
+	if (QStr::Length(Name) >= MAX_QPATH)
+	{
+		GLog.Write("Sound name exceeds MAX_QPATH\n");
+		return 0;
+	}
+
+	sfx_t* Sfx = S_FindName(Name);
+	Sfx->RegistrationSequence = s_registration_sequence;
+	if (Sfx->Data)
+	{
+		if ((GGameType & GAME_Quake3) && Sfx->DefaultSound)
+		{
+			GLog.Write(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
+			return 0;
+		}
+		return Sfx - s_knownSfx;
+	}
+
+	Sfx->InMemory = false;
+
+	if (!(GGameType & GAME_Quake2) || !s_registering)
+		S_LoadSound(Sfx);
+
+	if ((GGameType & GAME_Quake3) && Sfx->DefaultSound)
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: could not find %s - using default\n", Sfx->Name);
+		return 0;
+	}
+
+	return Sfx - s_knownSfx;
+}
+
+//==========================================================================
+//
+//	S_EndRegistration
+//
+//==========================================================================
+
+void S_EndRegistration()
+{
+	if (GGameType & GAME_Quake2)
+	{
+		//	Free any sounds not from this registration sequence
+		sfx_t* Sfx = s_knownSfx;
+		for (int i = 0; i < s_numSfx; i++, Sfx++)
+		{
+			if (!Sfx->Name[0])
+			{
+				continue;
+			}
+			if (Sfx->RegistrationSequence != s_registration_sequence)
+			{
+				//	Don't need this sound
+				if (Sfx->Data)	// it is possible to have a leftover
+				{
+					delete[] Sfx->Data;	// from a server that didn't finish loading
+				}
+				if (Sfx->TrueName)
+				{
+					delete[] Sfx->TrueName;
+				}
+				Com_Memset(Sfx, 0, sizeof(*Sfx));
+			}
+		}
+
+		//	Need to rehash remaining sounds.
+		Com_Memset(sfxHash, 0, sizeof(sfx_t *)*LOOP_HASH);
+
+		//	Load everything in
+		Sfx = s_knownSfx;
+		for (int i = 0; i < s_numSfx; i++, Sfx++)
+		{
+			if (!Sfx->Name[0])
+			{
+				continue;
+			}
+
+			S_LoadSound(Sfx);
+
+			int Hash = S_HashSFXName(Sfx->Name);
+			Sfx->HashNext = sfxHash[Hash];
+			sfxHash[Hash] = Sfx;
+		}
+
+		s_registering = false;
+	}
 }

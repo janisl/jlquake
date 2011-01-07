@@ -84,59 +84,60 @@ static void vectoangles(vec3_t vec, vec3_t ang)
 //
 //==========================================================================
 
-sfx_t	*cl_fxsfx_bone;
-sfx_t	*cl_fxsfx_bonefpow;
-sfx_t	*cl_fxsfx_xbowshoot;
-sfx_t	*cl_fxsfx_xbowfshoot;
-sfx_t	*cl_fxsfx_explode;
-sfx_t	*cl_fxsfx_mmfire;
-sfx_t	*cl_fxsfx_eidolon;
-sfx_t	*cl_fxsfx_scarabwhoosh;
-sfx_t	*cl_fxsfx_scarabgrab;
-sfx_t	*cl_fxsfx_scarabhome;
-sfx_t	*cl_fxsfx_scarabrip;
-sfx_t	*cl_fxsfx_scarabbyebye;
-sfx_t	*cl_fxsfx_ravensplit;
-sfx_t	*cl_fxsfx_ravenfire;
-sfx_t	*cl_fxsfx_ravengo;
-sfx_t	*cl_fxsfx_drillashoot;
-sfx_t	*cl_fxsfx_drillaspin;
-sfx_t	*cl_fxsfx_drillameat;
+static sfxHandle_t	cl_fxsfx_bone;
+static sfxHandle_t	cl_fxsfx_bonefpow;
+static sfxHandle_t	cl_fxsfx_xbowshoot;
+static sfxHandle_t	cl_fxsfx_xbowfshoot;
+static sfxHandle_t	cl_fxsfx_explode;
+static sfxHandle_t	cl_fxsfx_mmfire;
+static sfxHandle_t	cl_fxsfx_eidolon;
+static sfxHandle_t	cl_fxsfx_scarabwhoosh;
+static sfxHandle_t	cl_fxsfx_scarabgrab;
+static sfxHandle_t	cl_fxsfx_scarabhome;
+static sfxHandle_t	cl_fxsfx_scarabrip;
+static sfxHandle_t	cl_fxsfx_scarabbyebye;
+static sfxHandle_t	cl_fxsfx_ravensplit;
+static sfxHandle_t	cl_fxsfx_ravenfire;
+static sfxHandle_t	cl_fxsfx_ravengo;
+static sfxHandle_t	cl_fxsfx_drillashoot;
+static sfxHandle_t	cl_fxsfx_drillaspin;
+static sfxHandle_t	cl_fxsfx_drillameat;
 
 
-sfx_t			*cl_fxsfx_arr2flsh;
-sfx_t			*cl_fxsfx_arr2wood;
-sfx_t			*cl_fxsfx_met2stn;
+static sfxHandle_t	cl_fxsfx_arr2flsh;
+static sfxHandle_t	cl_fxsfx_arr2wood;
+static sfxHandle_t	cl_fxsfx_met2stn;
 
-sfx_t			*cl_fxsfx_ripple;
-sfx_t			*cl_fxsfx_splash;
+static sfxHandle_t	cl_fxsfx_ripple;
+static sfxHandle_t	cl_fxsfx_splash;
+
 void CL_InitEffects(void)
 {
-	cl_fxsfx_bone = S_PrecacheSound ("necro/bonefnrm.wav");
-	cl_fxsfx_bonefpow = S_PrecacheSound ("necro/bonefpow.wav");
-	cl_fxsfx_xbowshoot = S_PrecacheSound ("assassin/firebolt.wav");
-	cl_fxsfx_xbowfshoot = S_PrecacheSound ("assassin/firefblt.wav");
-	cl_fxsfx_explode = S_PrecacheSound ("weapons/explode.wav");
-	cl_fxsfx_mmfire = S_PrecacheSound ("necro/mmfire.wav");
-	cl_fxsfx_eidolon = S_PrecacheSound ("eidolon/spell.wav");
-	cl_fxsfx_scarabwhoosh = S_PrecacheSound ("misc/whoosh.wav");
-	cl_fxsfx_scarabgrab = S_PrecacheSound ("assassin/chn2flsh.wav");
-	cl_fxsfx_scarabhome = S_PrecacheSound ("assassin/chain.wav");
-	cl_fxsfx_scarabrip = S_PrecacheSound ("assassin/chntear.wav");
-	cl_fxsfx_scarabbyebye = S_PrecacheSound ("items/itmspawn.wav");
-	cl_fxsfx_ravensplit = S_PrecacheSound ("raven/split.wav");
-	cl_fxsfx_ravenfire = S_PrecacheSound ("raven/rfire1.wav");
-	cl_fxsfx_ravengo = S_PrecacheSound ("raven/ravengo.wav");
-	cl_fxsfx_drillashoot = S_PrecacheSound ("assassin/pincer.wav");
-	cl_fxsfx_drillaspin = S_PrecacheSound ("assassin/spin.wav");
-	cl_fxsfx_drillameat = S_PrecacheSound ("assassin/core.wav");
+	cl_fxsfx_bone = S_RegisterSound("necro/bonefnrm.wav");
+	cl_fxsfx_bonefpow = S_RegisterSound("necro/bonefpow.wav");
+	cl_fxsfx_xbowshoot = S_RegisterSound("assassin/firebolt.wav");
+	cl_fxsfx_xbowfshoot = S_RegisterSound("assassin/firefblt.wav");
+	cl_fxsfx_explode = S_RegisterSound("weapons/explode.wav");
+	cl_fxsfx_mmfire = S_RegisterSound("necro/mmfire.wav");
+	cl_fxsfx_eidolon = S_RegisterSound("eidolon/spell.wav");
+	cl_fxsfx_scarabwhoosh = S_RegisterSound("misc/whoosh.wav");
+	cl_fxsfx_scarabgrab = S_RegisterSound("assassin/chn2flsh.wav");
+	cl_fxsfx_scarabhome = S_RegisterSound("assassin/chain.wav");
+	cl_fxsfx_scarabrip = S_RegisterSound("assassin/chntear.wav");
+	cl_fxsfx_scarabbyebye = S_RegisterSound("items/itmspawn.wav");
+	cl_fxsfx_ravensplit = S_RegisterSound("raven/split.wav");
+	cl_fxsfx_ravenfire = S_RegisterSound("raven/rfire1.wav");
+	cl_fxsfx_ravengo = S_RegisterSound("raven/ravengo.wav");
+	cl_fxsfx_drillashoot = S_RegisterSound("assassin/pincer.wav");
+	cl_fxsfx_drillaspin = S_RegisterSound("assassin/spin.wav");
+	cl_fxsfx_drillameat = S_RegisterSound("assassin/core.wav");
 
-	cl_fxsfx_arr2flsh = S_PrecacheSound ("assassin/arr2flsh.wav");
-	cl_fxsfx_arr2wood = S_PrecacheSound ("assassin/arr2wood.wav");
-	cl_fxsfx_met2stn = S_PrecacheSound ("weapons/met2stn.wav");
+	cl_fxsfx_arr2flsh = S_RegisterSound("assassin/arr2flsh.wav");
+	cl_fxsfx_arr2wood = S_RegisterSound("assassin/arr2wood.wav");
+	cl_fxsfx_met2stn = S_RegisterSound("weapons/met2stn.wav");
 
-	cl_fxsfx_ripple = S_PrecacheSound ("misc/drip.wav");
-	cl_fxsfx_splash = S_PrecacheSound ("raven/outwater.wav");
+	cl_fxsfx_ripple = S_RegisterSound("misc/drip.wav");
+	cl_fxsfx_splash = S_RegisterSound("raven/outwater.wav");
 }
 
 void CL_ClearEffects(void)

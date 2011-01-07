@@ -113,6 +113,9 @@ struct playsound_t
 
 void Snd_Memset(void* dest, const int val, const size_t count);
 void S_SoundInfo_f();
+int S_HashSFXName(const char* Name);
+sfx_t* S_FindName(const char* name, bool create = true);
+sfx_t* S_AliasName(const char* aliasname, const char* truename);
 
 bool S_LoadSound(sfx_t* sfx);
 
@@ -163,6 +166,8 @@ extern vec3_t		listener_origin;
 extern vec3_t		listener_axis[3];
 extern sfx_t		s_knownSfx[MAX_SFX];
 extern int			s_numSfx;
+#define		LOOP_HASH		128
+extern sfx_t		*sfxHash[LOOP_HASH];
 extern fileHandle_t s_backgroundFile;
 extern wavinfo_t	s_backgroundInfo;
 extern int			s_backgroundSamples;
@@ -178,5 +183,7 @@ extern QCvar* ambient_level;
 extern QCvar* ambient_fade;
 extern QCvar* snd_noextraupdate;
 extern sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
+extern int			s_registration_sequence;
+extern bool			s_registering;
 
 #endif

@@ -37,10 +37,6 @@ void S_StopAllSounds(void);
 
 #define		SOUND_LOOPATTENUATE	0.003
 
-int			s_registration_sequence;
-
-qboolean	s_registering;
-
 #define		MAX_PLAYSOUNDS	128
 playsound_t	s_playsounds[MAX_PLAYSOUNDS];
 playsound_t	s_freeplays;
@@ -94,6 +90,8 @@ void S_Init (void)
 		s_soundtime = 0;
 		s_paintedtime = 0;
 
+		Com_Memset(sfxHash, 0, sizeof(sfx_t *)*LOOP_HASH);
+
 		S_StopAllSounds ();
 
 		S_SoundInfo_f();
@@ -134,173 +132,6 @@ void S_Shutdown(void)
 
 	s_numSfx = 0;
 }
-
-
-// =======================================================================
-// Load a sound
-// =======================================================================
-
-/*
-==================
-S_FindName
-
-==================
-*/
-sfx_t *S_FindName (char *name, qboolean create)
-{
-	int		i;
-	sfx_t	*sfx;
-
-	if (!name)
-		Com_Error (ERR_FATAL, "S_FindName: NULL\n");
-	if (!name[0])
-		Com_Error (ERR_FATAL, "S_FindName: empty name\n");
-
-	if (QStr::Length(name) >= MAX_QPATH)
-		Com_Error (ERR_FATAL, "Sound name too long: %s", name);
-
-	// see if already loaded
-	for (i=0 ; i < s_numSfx; i++)
-		if (!QStr::Cmp(s_knownSfx[i].Name, name))
-		{
-			return &s_knownSfx[i];
-		}
-
-	if (!create)
-		return NULL;
-
-	// find a free sfx
-	for (i=0 ; i < s_numSfx; i++)
-		if (!s_knownSfx[i].Name[0])
-//			registration_sequence < s_registration_sequence)
-			break;
-
-	if (i == s_numSfx)
-	{
-		if (s_numSfx == MAX_SFX)
-			Com_Error (ERR_FATAL, "S_FindName: out of sfx_t");
-		s_numSfx++;
-	}
-	
-	sfx = &s_knownSfx[i];
-	Com_Memset(sfx, 0, sizeof(*sfx));
-	QStr::Cpy(sfx->Name, name);
-	sfx->RegistrationSequence = s_registration_sequence;
-	
-	return sfx;
-}
-
-
-/*
-==================
-S_AliasName
-
-==================
-*/
-sfx_t *S_AliasName (char *aliasname, char *truename)
-{
-	sfx_t	*sfx;
-	char	*s;
-	int		i;
-
-	s = (char*)Z_Malloc (MAX_QPATH);
-	QStr::Cpy(s, truename);
-
-	// find a free sfx
-	for (i=0 ; i < s_numSfx; i++)
-		if (!s_knownSfx[i].Name[0])
-			break;
-
-	if (i == s_numSfx)
-	{
-		if (s_numSfx == MAX_SFX)
-			Com_Error (ERR_FATAL, "S_FindName: out of sfx_t");
-		s_numSfx++;
-	}
-	
-	sfx = &s_knownSfx[i];
-	Com_Memset(sfx, 0, sizeof(*sfx));
-	QStr::Cpy(sfx->Name, aliasname);
-	sfx->RegistrationSequence = s_registration_sequence;
-	sfx->TrueName = s;
-
-	return sfx;
-}
-
-
-/*
-=====================
-S_BeginRegistration
-
-=====================
-*/
-void S_BeginRegistration (void)
-{
-	s_registration_sequence++;
-	s_registering = true;
-}
-
-/*
-==================
-S_RegisterSound
-
-==================
-*/
-sfx_t *S_RegisterSound (char *name)
-{
-	sfx_t	*sfx;
-
-	if (!s_soundStarted)
-		return NULL;
-
-	sfx = S_FindName (name, true);
-	sfx->RegistrationSequence = s_registration_sequence;
-
-	if (!s_registering)
-		S_LoadSound (sfx);
-
-	return sfx;
-}
-
-
-/*
-=====================
-S_EndRegistration
-
-=====================
-*/
-void S_EndRegistration (void)
-{
-	int		i;
-	sfx_t	*sfx;
-	int		size;
-
-	// free any sounds not from this registration sequence
-	for (i=0, sfx=s_knownSfx; i < s_numSfx; i++,sfx++)
-	{
-		if (!sfx->Name[0])
-			continue;
-		if (sfx->RegistrationSequence != s_registration_sequence)
-		{	// don't need this sound
-			if (sfx->Data)	// it is possible to have a leftover
-				delete[] sfx->Data;	// from a server that didn't finish loading
-			Com_Memset(sfx, 0, sizeof(*sfx));
-		}
-	}
-
-	// load everything in
-	for (i=0, sfx=s_knownSfx; i < s_numSfx; i++,sfx++)
-	{
-		if (!sfx->Name[0])
-			continue;
-		S_LoadSound (sfx);
-	}
-
-	s_registering = false;
-}
-
-
-//=============================================================================
 
 /*
 =================
@@ -568,7 +399,7 @@ sfx_t *S_RegisterSexedSound (entity_state_t *ent, char *base)
 		{
 			// yes, close the file and register it
 			FS_FCloseFile (f);
-			sfx = S_RegisterSound (sexedFilename);
+			sfx = s_knownSfx + S_RegisterSound (sexedFilename);
 		}
 		else
 		{
@@ -595,7 +426,7 @@ if pos is NULL, the sound will be dynamically sourced from the entity
 Entchannel 0 will never override a playing sound
 ====================
 */
-void S_StartSound(vec3_t origin, int entnum, int entchannel, sfx_t *sfx, float fvol, float attenuation, float timeofs)
+void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t Handle, float fvol, float attenuation, float timeofs)
 {
 	int			vol;
 	playsound_t	*ps, *sort;
@@ -604,8 +435,9 @@ void S_StartSound(vec3_t origin, int entnum, int entchannel, sfx_t *sfx, float f
 	if (!s_soundStarted)
 		return;
 
-	if (!sfx)
+	if (Handle < 0 || Handle >= s_numSfx)
 		return;
+	sfx_t* sfx = s_knownSfx + Handle;
 
 	if (sfx->Name[0] == '*')
 		sfx = S_RegisterSexedSound(&cl_entities[entnum].current, sfx->Name);
@@ -678,7 +510,7 @@ S_StartLocalSound
 */
 void S_StartLocalSound (char *sound)
 {
-	sfx_t	*sfx;
+	sfxHandle_t	sfx;
 
 	if (!s_soundStarted)
 		return;
@@ -792,9 +624,10 @@ void S_AddLoopSounds (void)
 		if (!sounds[i])
 			continue;
 
-		sfx = cl.sound_precache[sounds[i]];
-		if (!sfx)
+		sfxHandle_t Handle = cl.sound_precache[sounds[i]];
+		if (Handle < 0 || Handle >= s_numSfx)
 			continue;		// bad sound effect
+		sfx = s_knownSfx + Handle;
 		if (!sfx->Data)
 			continue;
 
@@ -1099,7 +932,7 @@ void S_Play(void)
 {
 	int 	i;
 	char name[256];
-	sfx_t	*sfx;
+	sfxHandle_t	sfx;
 	
 	i = 1;
 	while (i<Cmd_Argc())

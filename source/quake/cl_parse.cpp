@@ -277,7 +277,6 @@ void CL_ParseServerInfo (void)
 			return;
 		}
 		QStr::Cpy(sound_precache[numsounds], str);
-		S_TouchSound (str);
 	}
 
 //
@@ -295,13 +294,13 @@ void CL_ParseServerInfo (void)
 		CL_KeepaliveMessage ();
 	}
 
-	S_BeginPrecaching ();
+	S_BeginRegistration();
 	for (i=1 ; i<numsounds ; i++)
 	{
-		cl.sound_precache[i] = S_PrecacheSound (sound_precache[i]);
+		cl.sound_precache[i] = S_RegisterSound(sound_precache[i]);
 		CL_KeepaliveMessage ();
 	}
-	S_EndPrecaching ();
+	S_EndRegistration();
 
 
 // local state

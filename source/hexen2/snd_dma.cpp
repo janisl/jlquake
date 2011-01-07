@@ -81,8 +81,10 @@ void S_Init (void)
 
 		s_numSfx = 0;
 
-		ambient_sfx[BSP29AMBIENT_WATER] = S_PrecacheSound ("ambience/water1.wav");
-		ambient_sfx[BSP29AMBIENT_SKY] = S_PrecacheSound ("ambience/wind2.wav");
+		ambient_sfx[BSP29AMBIENT_WATER] = s_knownSfx + S_RegisterSound("ambience/water1.wav");
+		ambient_sfx[BSP29AMBIENT_SKY] = s_knownSfx + S_RegisterSound("ambience/wind2.wav");
+
+		Com_Memset(sfxHash, 0, sizeof(sfx_t *)*LOOP_HASH);
 
 		S_StopAllSounds (true);
 
@@ -104,87 +106,6 @@ void S_Shutdown(void)
 
 	SNDDMA_Shutdown();
 }
-
-
-// =======================================================================
-// Load a sound
-// =======================================================================
-
-/*
-==================
-S_FindName
-
-==================
-*/
-sfx_t *S_FindName (char *name)
-{
-	int		i;
-	sfx_t	*sfx;
-
-	if (!name)
-		Sys_Error ("S_FindName: NULL\n");
-
-	if (QStr::Length(name) >= MAX_QPATH)
-		Sys_Error ("Sound name too long: %s", name);
-
-// see if already loaded
-	for (i=0 ; i < s_numSfx; i++)
-		if (!QStr::Cmp(s_knownSfx[i].Name, name))
-		{
-			return &s_knownSfx[i];
-		}
-
-	if (s_numSfx == MAX_SFX)
-		Sys_Error ("S_FindName: out of sfx_t");
-	
-	sfx = &s_knownSfx[i];
-	QStr::Cpy(sfx->Name, name);
-
-	s_numSfx++;
-	
-	return sfx;
-}
-
-
-/*
-==================
-S_TouchSound
-
-==================
-*/
-void S_TouchSound (char *name)
-{
-	sfx_t	*sfx;
-	
-	if (!s_soundStarted)
-		return;
-
-	sfx = S_FindName (name);
-}
-
-/*
-==================
-S_PrecacheSound
-
-==================
-*/
-sfx_t *S_PrecacheSound (char *name)
-{
-	sfx_t	*sfx;
-
-	if (!s_soundStarted || nosound->value)
-		return NULL;
-
-	sfx = S_FindName (name);
-	
-	// cache it in
-	S_LoadSound (sfx);
-	
-	return sfx;
-}
-
-
-//=============================================================================
 
 /*
 =================
@@ -298,7 +219,7 @@ void SND_Spatialize(channel_t *ch)
 // Start a sound effect
 // =======================================================================
 
-void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol, float attenuation)
+void S_StartSound(int entnum, int entchannel, sfxHandle_t Handle, vec3_t origin, float fvol, float attenuation)
 {
 	channel_t *target_chan, *check;
 	int		vol;
@@ -309,8 +230,9 @@ void S_StartSound(int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float f
 	if (!s_soundStarted)
 		return;
 
-	if (!sfx)
+	if (Handle < 0 || Handle >= s_numSfx)
 		return;
+	sfx_t* sfx = s_knownSfx + Handle;
 
 	if (nosound->value)
 		return;
@@ -448,12 +370,13 @@ void S_ClearSoundBuffer (void)
 S_StaticSound
 =================
 */
-void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation)
+void S_StaticSound (sfxHandle_t Handle, vec3_t origin, float vol, float attenuation)
 {
 	channel_t	*ss;
 
-	if (!sfx)
+	if (Handle < 0 || Handle >= s_numSfx)
 		return;
+	sfx_t* sfx = s_knownSfx + Handle;
 
 	if (numLoopChannels == MAX_CHANNELS)
 	{
@@ -727,7 +650,7 @@ void S_Play(void)
 	static int hash=345;
 	int 	i;
 	char name[256];
-	sfx_t	*sfx;
+	sfxHandle_t	sfx;
 	
 	i = 1;
 	while (i<Cmd_Argc())
@@ -739,7 +662,7 @@ void S_Play(void)
 		}
 		else
 			QStr::Cpy(name, Cmd_Argv(i));
-		sfx = S_PrecacheSound(name);
+		sfx = S_RegisterSound(name);
 		S_StartSound(hash++, 0, sfx, listener_origin, 1.0, 1.0);
 		i++;
 	}
@@ -751,7 +674,7 @@ void S_PlayVol(void)
 	int i;
 	float vol;
 	char name[256];
-	sfx_t	*sfx;
+	sfxHandle_t	sfx;
 	
 	i = 1;
 	while (i<Cmd_Argc())
@@ -763,7 +686,7 @@ void S_PlayVol(void)
 		}
 		else
 			QStr::Cpy(name, Cmd_Argv(i));
-		sfx = S_PrecacheSound(name);
+		sfx = S_RegisterSound(name);
 		vol = QStr::Atof(Cmd_Argv(i+1));
 		S_StartSound(hash++, 0, sfx, listener_origin, vol, 1.0);
 		i+=2;
@@ -795,35 +718,20 @@ void S_SoundList(void)
 
 void S_LocalSound (char *sound)
 {
-	sfx_t	*sfx;
+	sfxHandle_t	sfx;
 
 	if (nosound->value)
 		return;
 	if (!s_soundStarted)
 		return;
 		
-	sfx = S_PrecacheSound (sound);
+	sfx = S_RegisterSound(sound);
 	if (!sfx)
 	{
 		Con_Printf ("S_LocalSound: can't cache %s\n", sound);
 		return;
 	}
 	S_StartSound (listener_number, -1, sfx, vec3_origin, 1, 1);
-}
-
-
-void S_ClearPrecache (void)
-{
-}
-
-
-void S_BeginPrecaching (void)
-{
-}
-
-
-void S_EndPrecaching (void)
-{
 }
 
 void S_IssuePlaysound(playsound_t *ps)

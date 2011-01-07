@@ -17,4 +17,13 @@
 //**
 //**************************************************************************
 
+typedef int		sfxHandle_t;
+
+void S_BeginRegistration();
+sfxHandle_t S_RegisterSound(const char* Name);
+// RegisterSound will allways return a valid sample, even if it
+// has to create a placeholder.  This prevents continuous filesystem
+// checks for missing files
+void S_EndRegistration();
+
 extern	QCvar* s_volume;

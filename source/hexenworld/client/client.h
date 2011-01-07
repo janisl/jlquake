@@ -265,8 +265,8 @@ typedef struct
 	char		model_name[MAX_MODELS][MAX_QPATH];
 	char		sound_name[MAX_SOUNDS][MAX_QPATH];
 
-	struct model_s		*model_precache[MAX_MODELS];
-	struct sfx_t		*sound_precache[MAX_SOUNDS];
+	struct model_s	*model_precache[MAX_MODELS];
+	sfxHandle_t		sound_precache[MAX_SOUNDS];
 
 	char		levelname[40];	// for display on solo scoreboard
 	int			playernum;

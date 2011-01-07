@@ -49,9 +49,6 @@ void S_UpdateBackgroundTrack( void );
 
 #define		SOUND_ATTENUATE		0.0008f
 
-#define		LOOP_HASH		128
-static	sfx_t		*sfxHash[LOOP_HASH];
-
 static loopSound_t		loopSounds[MAX_GENTITIES];
 static	channel_t		*freelist = NULL;
 
@@ -173,110 +170,6 @@ void S_Shutdown( void ) {
 }
 
 
-// =======================================================================
-// Load a sound
-// =======================================================================
-
-/*
-================
-return a hash value for the sfx name
-================
-*/
-static long S_HashSFXName(const char *name) {
-	int		i;
-	long	hash;
-	char	letter;
-
-	hash = 0;
-	i = 0;
-	while (name[i] != '\0') {
-		letter = QStr::ToLower(name[i]);
-		if (letter =='.') break;				// don't include extension
-		if (letter =='\\') letter = '/';		// damn path names
-		hash+=(long)(letter)*(i+119);
-		i++;
-	}
-	hash &= (LOOP_HASH-1);
-	return hash;
-}
-
-/*
-==================
-S_FindName
-
-Will allocate a new sfx if it isn't found
-==================
-*/
-static sfx_t *S_FindName( const char *name ) {
-	int		i;
-	int		hash;
-
-	sfx_t	*sfx;
-
-	if (!name) {
-		Com_Error (ERR_FATAL, "S_FindName: NULL\n");
-	}
-	if (!name[0]) {
-		Com_Error (ERR_FATAL, "S_FindName: empty name\n");
-	}
-
-	if (QStr::Length(name) >= MAX_QPATH) {
-		Com_Error (ERR_FATAL, "Sound name too long: %s", name);
-	}
-
-	hash = S_HashSFXName(name);
-
-	sfx = sfxHash[hash];
-	// see if already loaded
-	while (sfx) {
-		if (!QStr::ICmp(sfx->Name, name) ) {
-			return sfx;
-		}
-		sfx = sfx->HashNext;
-	}
-
-	// find a free sfx
-	for (i=0 ; i < s_numSfx ; i++) {
-		if (!s_knownSfx[i].Name[0]) {
-			break;
-		}
-	}
-
-	if (i == s_numSfx) {
-		if (s_numSfx == MAX_SFX) {
-			Com_Error (ERR_FATAL, "S_FindName: out of sfx_t");
-		}
-		s_numSfx++;
-	}
-	
-	sfx = &s_knownSfx[i];
-	Com_Memset (sfx, 0, sizeof(*sfx));
-	QStr::Cpy(sfx->Name, name);
-
-	sfx->HashNext = sfxHash[hash];
-	sfxHash[hash] = sfx;
-
-	return sfx;
-}
-
-/*
-=================
-S_DefaultSound
-=================
-*/
-void S_DefaultSound( sfx_t *sfx ) {
-	
-	int		i;
-
-	sfx->Length = 512;
-	sfx->Data = new short[512];
-
-
-	for ( i = 0 ; i < sfx->Length ; i++ ) {
-		sfx->Data[i] = i;
-	}
-}
-
 /*
 ===================
 S_DisableSounds
@@ -290,78 +183,6 @@ void S_DisableSounds( void ) {
 	S_StopAllSounds();
 	s_soundMuted = qtrue;
 }
-
-/*
-=====================
-S_BeginRegistration
-
-=====================
-*/
-void S_BeginRegistration( void ) {
-	s_soundMuted = qfalse;		// we can play again
-
-	if (s_numSfx == 0)
-	{
-		s_numSfx = 0;
-		Com_Memset( s_knownSfx, 0, sizeof( s_knownSfx ) );
-		Com_Memset(sfxHash, 0, sizeof(sfx_t *)*LOOP_HASH);
-
-		S_RegisterSound("sound/feedback/hit.wav", qfalse);		// changed to a sound in baseq3
-	}
-}
-
-
-/*
-==================
-S_RegisterSound
-
-Creates a default buzz sound if the file can't be loaded
-==================
-*/
-sfxHandle_t	S_RegisterSound( const char *name, qboolean compressed ) {
-	sfx_t	*sfx;
-
-	compressed = qfalse;
-	if (!s_soundStarted) {
-		return 0;
-	}
-
-	if ( QStr::Length( name ) >= MAX_QPATH ) {
-		Com_Printf( "Sound name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	sfx = S_FindName( name );
-	if ( sfx->Data ) {
-		if ( sfx->DefaultSound) {
-			Com_Printf( S_COLOR_YELLOW "WARNING: could not find %s - using default\n", sfx->Name );
-			return 0;
-		}
-		return sfx - s_knownSfx;
-	}
-
-	sfx->InMemory = false;
-
-  S_memoryLoad(sfx);
-
-	if ( sfx->DefaultSound) {
-		Com_Printf( S_COLOR_YELLOW "WARNING: could not find %s - using default\n", sfx->Name );
-		return 0;
-	}
-
-	return sfx - s_knownSfx;
-}
-
-void S_memoryLoad(sfx_t	*sfx) {
-	// load the sound file
-	if ( !S_LoadSound ( sfx ) ) {
-//		Com_Printf( S_COLOR_YELLOW "WARNING: couldn't load sound: %s\n", sfx->soundName );
-		sfx->DefaultSound = true;
-	}
-	sfx->InMemory = true;
-}
-
-//=============================================================================
 
 /*
 =================
@@ -460,7 +281,7 @@ void S_StartSound(vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfxH
 
 	if (sfx->InMemory == false)
 	{
-		S_memoryLoad(sfx);
+		S_LoadSound(sfx);
 	}
 
 	if ( s_show->integer == 1 ) {
@@ -684,7 +505,7 @@ void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocit
 
 	if (sfx->InMemory == qfalse)
 	{
-		S_memoryLoad(sfx);
+		S_LoadSound(sfx);
 	}
 
 	if ( !sfx->Length ) {
@@ -746,7 +567,7 @@ void S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t vel
 
 	if (sfx->InMemory == false)
 	{
-		S_memoryLoad(sfx);
+		S_LoadSound(sfx);
 	}
 
 	if ( !sfx->Length ) {
@@ -1247,7 +1068,7 @@ void S_Play_f( void ) {
 		} else {
 			QStr::NCpyZ( name, Cmd_Argv(i), sizeof(name) );
 		}
-		h = S_RegisterSound( name, qfalse );
+		h = S_RegisterSound(name);
 		if( h ) {
 			S_StartLocalSound( h, CHAN_LOCAL_SOUND );
 		}

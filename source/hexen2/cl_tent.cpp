@@ -79,13 +79,13 @@ static entity_t *NewStreamEntity(void);
 static stream_t cl_Streams[MAX_STREAMS];
 static entity_t StreamEntities[MAX_STREAM_ENTITIES];
 static int StreamEntityCount;
-static sfx_t *cl_sfx_wizhit;
-static sfx_t *cl_sfx_knighthit;
-static sfx_t *cl_sfx_tink1;
-static sfx_t *cl_sfx_ric1;
-static sfx_t *cl_sfx_ric2;
-static sfx_t *cl_sfx_ric3;
-static sfx_t *cl_sfx_r_exp3;
+static sfxHandle_t cl_sfx_wizhit;
+static sfxHandle_t cl_sfx_knighthit;
+static sfxHandle_t cl_sfx_tink1;
+static sfxHandle_t cl_sfx_ric1;
+static sfxHandle_t cl_sfx_ric2;
+static sfxHandle_t cl_sfx_ric3;
+static sfxHandle_t cl_sfx_r_exp3;
 
 // CODE --------------------------------------------------------------------
 
@@ -97,11 +97,11 @@ static sfx_t *cl_sfx_r_exp3;
 
 void CL_InitTEnts(void)
 {
-	cl_sfx_tink1 = S_PrecacheSound ("weapons/tink1.wav");
-	cl_sfx_ric1 = S_PrecacheSound ("weapons/ric1.wav");
-	cl_sfx_ric2 = S_PrecacheSound ("weapons/ric2.wav");
-	cl_sfx_ric3 = S_PrecacheSound ("weapons/ric3.wav");
-	cl_sfx_r_exp3 = S_PrecacheSound ("weapons/r_exp3.wav");
+	cl_sfx_tink1 = S_RegisterSound("weapons/tink1.wav");
+	cl_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");
+	cl_sfx_ric2 = S_RegisterSound("weapons/ric2.wav");
+	cl_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
+	cl_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
 }
 
 //==========================================================================

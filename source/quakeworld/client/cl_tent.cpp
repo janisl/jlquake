@@ -44,13 +44,13 @@ typedef struct
 explosion_t	cl_explosions[MAX_EXPLOSIONS];
 
 
-sfx_t			*cl_sfx_wizhit;
-sfx_t			*cl_sfx_knighthit;
-sfx_t			*cl_sfx_tink1;
-sfx_t			*cl_sfx_ric1;
-sfx_t			*cl_sfx_ric2;
-sfx_t			*cl_sfx_ric3;
-sfx_t			*cl_sfx_r_exp3;
+static sfxHandle_t	cl_sfx_wizhit;
+static sfxHandle_t	cl_sfx_knighthit;
+static sfxHandle_t	cl_sfx_tink1;
+static sfxHandle_t	cl_sfx_ric1;
+static sfxHandle_t	cl_sfx_ric2;
+static sfxHandle_t	cl_sfx_ric3;
+static sfxHandle_t	cl_sfx_r_exp3;
 
 /*
 =================
@@ -59,13 +59,13 @@ CL_ParseTEnts
 */
 void CL_InitTEnts (void)
 {
-	cl_sfx_wizhit = S_PrecacheSound ("wizard/hit.wav");
-	cl_sfx_knighthit = S_PrecacheSound ("hknight/hit.wav");
-	cl_sfx_tink1 = S_PrecacheSound ("weapons/tink1.wav");
-	cl_sfx_ric1 = S_PrecacheSound ("weapons/ric1.wav");
-	cl_sfx_ric2 = S_PrecacheSound ("weapons/ric2.wav");
-	cl_sfx_ric3 = S_PrecacheSound ("weapons/ric3.wav");
-	cl_sfx_r_exp3 = S_PrecacheSound ("weapons/r_exp3.wav");
+	cl_sfx_wizhit = S_RegisterSound("wizard/hit.wav");
+	cl_sfx_knighthit = S_RegisterSound("hknight/hit.wav");
+	cl_sfx_tink1 = S_RegisterSound("weapons/tink1.wav");
+	cl_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");
+	cl_sfx_ric2 = S_RegisterSound("weapons/ric2.wav");
+	cl_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
+	cl_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
 }
 
 /*

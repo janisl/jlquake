@@ -77,3 +77,5 @@
   I did some compatibility changes in Cvar_Get.
 06.01.2011
   I finished review. Hopefully all broken compatibility has been restored.
+07.01.2011
+  I moved sound registration methods to client lib.

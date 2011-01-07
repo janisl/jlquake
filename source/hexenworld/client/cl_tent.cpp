@@ -137,47 +137,47 @@ static int		StreamEntityCount;
 
 static int		MultiGrenadeCurrentChannel;
 
-//sfx_t			*cl_sfx_wizhit;
-//sfx_t			*cl_sfx_knighthit;
-sfx_t			*cl_sfx_tink1;
-sfx_t			*cl_sfx_ric1;
-sfx_t			*cl_sfx_ric2;
-sfx_t			*cl_sfx_ric3;
-sfx_t			*cl_sfx_r_exp3;
-sfx_t			*cl_sfx_explode;
-sfx_t			*cl_sfx_bonehit;
-sfx_t			*cl_sfx_bonewal;
-sfx_t			*cl_sfx_bonephit;
-sfx_t			*cl_sfx_ravendie;
-sfx_t			*cl_sfx_buzzbee;
+//static sfxHandle_t		cl_sfx_wizhit;
+//static sfxHandle_t		cl_sfx_knighthit;
+static sfxHandle_t		cl_sfx_tink1;
+static sfxHandle_t		cl_sfx_ric1;
+static sfxHandle_t		cl_sfx_ric2;
+static sfxHandle_t		cl_sfx_ric3;
+static sfxHandle_t		cl_sfx_r_exp3;
+static sfxHandle_t		cl_sfx_explode;
+static sfxHandle_t		cl_sfx_bonehit;
+static sfxHandle_t		cl_sfx_bonewal;
+static sfxHandle_t		cl_sfx_bonephit;
+static sfxHandle_t		cl_sfx_ravendie;
+static sfxHandle_t		cl_sfx_buzzbee;
 
-sfx_t			*cl_sfx_iceflesh;
-sfx_t			*cl_sfx_icewall;
-sfx_t			*cl_sfx_iceshatter;
-sfx_t			*cl_sfx_icestorm;
-sfx_t			*cl_sfx_sunstaff;
-sfx_t			*cl_sfx_sunhit;
-sfx_t			*cl_sfx_lightning1;
-sfx_t			*cl_sfx_lightning2;
-sfx_t			*cl_sfx_hammersound;
-sfx_t			*cl_sfx_tornado;
-sfx_t			*cl_sfx_swordExplode;
-sfx_t			*cl_sfx_axeBounce;
-sfx_t			*cl_sfx_axeExplode;
-sfx_t			*cl_sfx_fireBall;
-sfx_t			*cl_sfx_purify2;
-sfx_t			*cl_sfx_telefrag;
-sfx_t			*cl_sfx_big_gib;
-sfx_t			*cl_sfx_gib1;
-sfx_t			*cl_sfx_gib2;
-sfx_t			*cl_sfx_purify1_fire;
-sfx_t			*cl_sfx_purify1_hit;
-sfx_t			*cl_sfx_acidhit;
-sfx_t			*cl_sfx_dropfizzle;
-sfx_t			*cl_sfx_flameend;
+static sfxHandle_t		cl_sfx_iceflesh;
+static sfxHandle_t		cl_sfx_icewall;
+static sfxHandle_t		cl_sfx_iceshatter;
+static sfxHandle_t		cl_sfx_icestorm;
+static sfxHandle_t		cl_sfx_sunstaff;
+static sfxHandle_t		cl_sfx_sunhit;
+static sfxHandle_t		cl_sfx_lightning1;
+static sfxHandle_t		cl_sfx_lightning2;
+static sfxHandle_t		cl_sfx_hammersound;
+static sfxHandle_t		cl_sfx_tornado;
+static sfxHandle_t		cl_sfx_swordExplode;
+static sfxHandle_t		cl_sfx_axeBounce;
+static sfxHandle_t		cl_sfx_axeExplode;
+static sfxHandle_t		cl_sfx_fireBall;
+static sfxHandle_t		cl_sfx_purify2;
+static sfxHandle_t		cl_sfx_telefrag;
+static sfxHandle_t		cl_sfx_big_gib;
+static sfxHandle_t		cl_sfx_gib1;
+static sfxHandle_t		cl_sfx_gib2;
+static sfxHandle_t		cl_sfx_purify1_fire;
+static sfxHandle_t		cl_sfx_purify1_hit;
+static sfxHandle_t		cl_sfx_acidhit;
+static sfxHandle_t		cl_sfx_dropfizzle;
+static sfxHandle_t		cl_sfx_flameend;
 
-sfx_t			*cl_sfx_teleport[5];
-sfx_t			*cl_sfx_ravengo;
+static sfxHandle_t		cl_sfx_teleport[5];
+static sfxHandle_t		cl_sfx_ravengo;
 
 
 
@@ -188,53 +188,53 @@ CL_ParseTEnts
 */
 void CL_InitTEnts (void)
 {
-//	cl_sfx_wizhit = S_PrecacheSound ("wizard/hit.wav");
-//	cl_sfx_knighthit = S_PrecacheSound ("hknight/hit.wav");
-	cl_sfx_tink1 = S_PrecacheSound ("weapons/tink1.wav");
-	cl_sfx_ric1 = S_PrecacheSound ("weapons/ric1.wav");
-	cl_sfx_ric2 = S_PrecacheSound ("weapons/ric2.wav");
-	cl_sfx_ric3 = S_PrecacheSound ("weapons/ric3.wav");
-	cl_sfx_r_exp3 = S_PrecacheSound ("weapons/r_exp3.wav");
-	cl_sfx_explode = S_PrecacheSound ("weapons/explode.wav");
-	cl_sfx_bonephit = S_PrecacheSound ("necro/bonephit.wav");
-	cl_sfx_bonehit = S_PrecacheSound ("necro/bonenhit.wav");
-	cl_sfx_bonewal = S_PrecacheSound ("necro/bonenwal.wav");
-	cl_sfx_ravendie = S_PrecacheSound ("raven/death.wav");
-	cl_sfx_buzzbee = S_PrecacheSound ("assassin/scrbfly.wav");
+//	cl_sfx_wizhit = S_RegisterSound("wizard/hit.wav");
+//	cl_sfx_knighthit = S_RegisterSound("hknight/hit.wav");
+	cl_sfx_tink1 = S_RegisterSound("weapons/tink1.wav");
+	cl_sfx_ric1 = S_RegisterSound("weapons/ric1.wav");
+	cl_sfx_ric2 = S_RegisterSound("weapons/ric2.wav");
+	cl_sfx_ric3 = S_RegisterSound("weapons/ric3.wav");
+	cl_sfx_r_exp3 = S_RegisterSound("weapons/r_exp3.wav");
+	cl_sfx_explode = S_RegisterSound("weapons/explode.wav");
+	cl_sfx_bonephit = S_RegisterSound("necro/bonephit.wav");
+	cl_sfx_bonehit = S_RegisterSound("necro/bonenhit.wav");
+	cl_sfx_bonewal = S_RegisterSound("necro/bonenwal.wav");
+	cl_sfx_ravendie = S_RegisterSound("raven/death.wav");
+	cl_sfx_buzzbee = S_RegisterSound("assassin/scrbfly.wav");
 
-	cl_sfx_iceflesh = S_PrecacheSound ("crusader/icehit.wav");
-	cl_sfx_icewall = S_PrecacheSound ("crusader/icewall.wav");
-	cl_sfx_iceshatter = S_PrecacheSound ("misc/icestatx.wav");
-	cl_sfx_icestorm = S_PrecacheSound ("crusader/blizzard.wav");
-	cl_sfx_sunstaff = S_PrecacheSound ("crusader/sunhum.wav");
-	cl_sfx_sunhit = S_PrecacheSound ("crusader/sunhit.wav");
-	cl_sfx_lightning1 = S_PrecacheSound ("crusader/lghtn1.wav");
-	cl_sfx_lightning2 = S_PrecacheSound ("crusader/lghtn2.wav");
-	cl_sfx_hammersound = S_PrecacheSound ("paladin/axblade.wav");
-	cl_sfx_tornado = S_PrecacheSound ("crusader/tornado.wav");
-	cl_sfx_swordExplode = S_PrecacheSound ("weapons/explode.wav");
-	cl_sfx_axeBounce = S_PrecacheSound ("paladin/axric1.wav");
-	cl_sfx_axeExplode = S_PrecacheSound ("weapons/explode.wav");
-	cl_sfx_fireBall = S_PrecacheSound ("weapons/fbfire.wav");
-	cl_sfx_purify2 = S_PrecacheSound ("weapons/exphuge.wav");
-	cl_sfx_telefrag = S_PrecacheSound ("player/telefrag.wav");
-	cl_sfx_big_gib = S_PrecacheSound ("player/megagib.wav");
-	cl_sfx_gib1 = S_PrecacheSound ("player/gib1.wav");
-	cl_sfx_gib2 = S_PrecacheSound ("player/gib2.wav");
-	cl_sfx_purify1_fire = S_PrecacheSound ("paladin/purfire.wav");
-	cl_sfx_purify1_hit = S_PrecacheSound ("weapons/expsmall.wav");
-	cl_sfx_acidhit = S_PrecacheSound ("succubus/acidhit.wav");
-	cl_sfx_dropfizzle = S_PrecacheSound ("succubus/dropfizz.wav");
-	cl_sfx_flameend = S_PrecacheSound ("succubus/flamend.wav");
+	cl_sfx_iceflesh = S_RegisterSound("crusader/icehit.wav");
+	cl_sfx_icewall = S_RegisterSound("crusader/icewall.wav");
+	cl_sfx_iceshatter = S_RegisterSound("misc/icestatx.wav");
+	cl_sfx_icestorm = S_RegisterSound("crusader/blizzard.wav");
+	cl_sfx_sunstaff = S_RegisterSound("crusader/sunhum.wav");
+	cl_sfx_sunhit = S_RegisterSound("crusader/sunhit.wav");
+	cl_sfx_lightning1 = S_RegisterSound("crusader/lghtn1.wav");
+	cl_sfx_lightning2 = S_RegisterSound("crusader/lghtn2.wav");
+	cl_sfx_hammersound = S_RegisterSound("paladin/axblade.wav");
+	cl_sfx_tornado = S_RegisterSound("crusader/tornado.wav");
+	cl_sfx_swordExplode = S_RegisterSound("weapons/explode.wav");
+	cl_sfx_axeBounce = S_RegisterSound("paladin/axric1.wav");
+	cl_sfx_axeExplode = S_RegisterSound("weapons/explode.wav");
+	cl_sfx_fireBall = S_RegisterSound("weapons/fbfire.wav");
+	cl_sfx_purify2 = S_RegisterSound("weapons/exphuge.wav");
+	cl_sfx_telefrag = S_RegisterSound("player/telefrag.wav");
+	cl_sfx_big_gib = S_RegisterSound("player/megagib.wav");
+	cl_sfx_gib1 = S_RegisterSound("player/gib1.wav");
+	cl_sfx_gib2 = S_RegisterSound("player/gib2.wav");
+	cl_sfx_purify1_fire = S_RegisterSound("paladin/purfire.wav");
+	cl_sfx_purify1_hit = S_RegisterSound("weapons/expsmall.wav");
+	cl_sfx_acidhit = S_RegisterSound("succubus/acidhit.wav");
+	cl_sfx_dropfizzle = S_RegisterSound("succubus/dropfizz.wav");
+	cl_sfx_flameend = S_RegisterSound("succubus/flamend.wav");
 
 
-	cl_sfx_teleport[0] = S_PrecacheSound ("misc/teleprt1.wav");
-	cl_sfx_teleport[1] = S_PrecacheSound ("misc/teleprt2.wav");
-	cl_sfx_teleport[2] = S_PrecacheSound ("misc/teleprt3.wav");
-	cl_sfx_teleport[3] = S_PrecacheSound ("misc/teleprt4.wav");
-	cl_sfx_teleport[4] = S_PrecacheSound ("misc/teleprt5.wav");
+	cl_sfx_teleport[0] = S_RegisterSound("misc/teleprt1.wav");
+	cl_sfx_teleport[1] = S_RegisterSound("misc/teleprt2.wav");
+	cl_sfx_teleport[2] = S_RegisterSound("misc/teleprt3.wav");
+	cl_sfx_teleport[3] = S_RegisterSound("misc/teleprt4.wav");
+	cl_sfx_teleport[4] = S_RegisterSound("misc/teleprt5.wav");
 
-	cl_sfx_ravengo = S_PrecacheSound ("raven/ravengo.wav");
+	cl_sfx_ravengo = S_RegisterSound("raven/ravengo.wav");
 }
 
 

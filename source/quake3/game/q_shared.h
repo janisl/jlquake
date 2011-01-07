@@ -174,7 +174,6 @@ void Sys_PumpEvents( void );
 enum {qfalse, qtrue};
 
 typedef int		qhandle_t;
-typedef int		sfxHandle_t;
 typedef int		clipHandle_t;
 
 
