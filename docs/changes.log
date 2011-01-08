@@ -78,4 +78,4 @@
 06.01.2011
   I finished review. Hopefully all broken compatibility has been restored.
 07.01.2011
-  I moved sound registration and background music playback methods to client lib.
+  I moved sound registration and background music playback methods to client lib. I enabled music in all games. Currently on Linux plays like crap, similar to Quake 2 cinematics.

@@ -204,6 +204,13 @@ bool SNDDMA_Init()
 	}
 
 	snd_pcm_uframes_t p = BUFFER_SAMPLES / dma.channels;
+	err = snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hw_params, &p);
+	if (err < 0)
+	{
+		GLog.Write("ALSA: Unable to set buffer size %li: %s\n", BUFFER_SAMPLES / dma.channels, snd_strerror(err));
+		//return false;
+	}
+
 	int dir;
 	err = snd_pcm_hw_params_set_period_size_near(pcm_handle, hw_params, &p, &dir);
 	if (err < 0)
@@ -239,7 +246,7 @@ bool SNDDMA_Init()
 	dma.samplepos = 0;
 
 	dma.samples = BUFFER_SAMPLES;
-	dma.submission_chunk = SUBMISSION_CHUNK;
+	dma.submission_chunk = p * dma.channels;
 
 	snd_pcm_prepare(pcm_handle);
 
@@ -315,23 +322,41 @@ void SNDDMA_Submit()
 		return;
 	}
 
-	int s = dma.samplepos * sample_bytes;
-	void* start = &dma.buffer[s];
-
-	int frames = dma.submission_chunk / dma.channels;
-
-	int w = snd_pcm_writei(pcm_handle, start, frames);
-	if (w < 0)
+	int Submitted = 0;
+	do
 	{
-		//write to card
-		snd_pcm_prepare(pcm_handle);  //xrun occured
-		return;
-	}
+		int s = dma.samplepos * sample_bytes;
+		void* start = &dma.buffer[s];
 
-	dma.samplepos += w * dma.channels;  //mark progress
+		int frames = dma.submission_chunk / dma.channels;
+		if (dma.samplepos + frames * dma.channels > dma.samples)
+		{
+			frames = (dma.samples - dma.samplepos) / dma.channels;
+		}
+		if (Submitted + frames >= dma.samples / dma.channels)
+		{
+			frames = dma.samples / dma.channels - Submitted - 1;
+		}
 
-	if (dma.samplepos >= dma.samples)
-	{
-		dma.samplepos = 0;  //wrap buffer
+		int w = snd_pcm_writei(pcm_handle, start, frames);
+		if (w == -EAGAIN)
+		{
+			break;
+		}
+		if (w < 0)
+		{
+			//write to card
+			snd_pcm_prepare(pcm_handle);  //xrun occured
+			return;
+		}
+
+		dma.samplepos += w * dma.channels;  //mark progress
+
+		if (dma.samplepos >= dma.samples)
+		{
+			dma.samplepos = 0;  //wrap buffer
+		}
+		Submitted += w;
 	}
+	while (Submitted < (dma.samples / dma.channels) - 1);
 }
