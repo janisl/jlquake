@@ -452,11 +452,7 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 
 	intVolume = 256 * volume;
 
-	if (!(GGameType & GAME_Quake3) && s_rawend < s_paintedtime)
-	{
-		s_rawend = s_paintedtime;
-	}
-	if ((GGameType & GAME_Quake3) && s_rawend < s_soundtime)
+	if (s_rawend < s_soundtime)
 	{
 		GLog.DWrite("S_RawSamples: resetting minimum: %i < %i\n", s_rawend, s_soundtime);
 		s_rawend = s_soundtime;
@@ -535,7 +531,7 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 		}
 	}
 
-	if ((GGameType & GAME_Quake3) && s_rawend > s_soundtime + MAX_RAW_SAMPLES)
+	if (s_rawend > s_soundtime + MAX_RAW_SAMPLES)
 	{
 		GLog.DWrite("S_RawSamples: overflowed %i > %i\n", s_rawend, s_soundtime);
 	}
