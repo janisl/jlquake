@@ -67,17 +67,19 @@ struct dma_t
 
 struct channel_t
 {
+	//	First part is also used to store ponter to next free channel, so
+	// pointer of sfx must be somewhere after.
+	int			allocTime;
+	int			startSample;	// START_SAMPLE_IMMEDIATE = set immediately on next mix
+	int			entnum;			// to allow overriding a specific sound
+	int			entchannel;		// to allow overriding a specific sound
 	sfx_t*		sfx;			// sfx structure
 	int			leftvol;		// 0-255 volume after spatialization
 	int			rightvol;		// 0-255 volume after spatialization
-	int			entnum;			// to allow overriding a specific sound
-	int			entchannel;		// to allow overriding a specific sound
 	vec3_t		origin;			// only use if fixed_origin is set
 	vec_t		dist_mult;		// distance multiplier (attenuation/clipK)
 	int			master_vol;		// 0-255 volume before spatialization
 	qboolean	fixed_origin;	// use origin instead of fetching entnum's origin
-	int			allocTime;
-	int			startSample;	// START_SAMPLE_IMMEDIATE = set immediately on next mix
 	float		dopplerScale;
 	float		oldDopplerScale;
 	qboolean	doppler;
