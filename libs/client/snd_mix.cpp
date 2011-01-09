@@ -425,7 +425,10 @@ void S_PaintChannels(int endtime)
 					else
 					{
 						// channel just stopped
-						ch->sfx = NULL;
+						if (!(GGameType & GAME_Quake3))
+						{
+							ch->sfx = NULL;
+						}
 						break;
 					}
 				}
