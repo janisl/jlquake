@@ -24,9 +24,14 @@
 
 // MACROS ------------------------------------------------------------------
 
+// only begin attenuating sound volumes when outside the FULLVOLUME range
+#define SOUND_FULLVOLUME		80
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
+
+int S_GetClientFrameCount();
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -48,7 +53,6 @@ QCvar*		s_show;
 QCvar*		s_mixahead;
 QCvar		*s_mixPreStep;
 QCvar		*s_musicVolume;
-QCvar		*s_separation;
 QCvar		*s_doppler;
 QCvar* ambient_level;
 QCvar* ambient_fade;
@@ -57,8 +61,11 @@ QCvar* snd_noextraupdate;
 channel_t   s_channels[MAX_CHANNELS];
 channel_t   loop_channels[MAX_CHANNELS];
 int			numLoopChannels;
+channel_t*	freelist = NULL;
 
 playsound_t	s_pendingplays;
+playsound_t	s_playsounds[MAX_PLAYSOUNDS];
+playsound_t	s_freeplays;
 
 bool		s_use_custom_memset = false;
 
@@ -88,6 +95,8 @@ sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
 int			s_registration_sequence;
 bool		s_registering;
 
+loopSound_t	loopSounds[MAX_LOOPSOUNDS];
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -110,6 +119,63 @@ void Snd_Memset(void* dest, const int val, const size_t count)
 	{
 		pDest[i] = val;
 	}
+}
+
+//==========================================================================
+//
+//	S_ChannelFree
+//
+//==========================================================================
+
+void S_ChannelFree(channel_t* v)
+{
+	v->sfx = NULL;
+	*(channel_t**)v = freelist;
+	freelist = (channel_t*)v;
+}
+
+//==========================================================================
+//
+//	S_ChannelMalloc
+//
+//==========================================================================
+
+channel_t* S_ChannelMalloc()
+{
+	channel_t *v;
+	if (freelist == NULL)
+	{
+		return NULL;
+	}
+	v = freelist;
+	freelist = *(channel_t**)freelist;
+	v->allocTime = Com_Milliseconds();
+	return v;
+}
+
+//==========================================================================
+//
+//	S_ChannelSetup
+//
+//==========================================================================
+
+void S_ChannelSetup()
+{
+	channel_t *p, *q;
+
+	// clear all the sounds so they don't
+	Com_Memset(s_channels, 0, sizeof(s_channels));
+
+	p = s_channels;;
+	q = p + MAX_CHANNELS;
+	while (--q > p)
+	{
+		*(channel_t**)q = q - 1;
+	}
+
+	*(channel_t**)q = NULL;
+	freelist = p + MAX_CHANNELS - 1;
+	GLog.DWrite("Channel memory manager started\n");
 }
 
 //**************************************************************************
@@ -543,7 +609,7 @@ void S_RawSamples(int samples, int rate, int width, int channels, const byte *da
 //
 //==========================================================================
 
-static int	FGetLittleLong(fileHandle_t f)
+static int FGetLittleLong(fileHandle_t f)
 {
 	int		v;
 
@@ -558,7 +624,7 @@ static int	FGetLittleLong(fileHandle_t f)
 //
 //==========================================================================
 
-static int	FGetLittleShort(fileHandle_t f)
+static int FGetLittleShort(fileHandle_t f)
 {
 	short	v;
 
@@ -884,3 +950,421 @@ void S_Music_f()
 		return;
 	}
 }
+
+//==========================================================================
+//
+//	S_UpdateEntityPosition
+//
+//	Let the sound system know where an entity currently is.
+//
+//==========================================================================
+
+void S_UpdateEntityPosition(int EntityNum, const vec3_t Origin)
+{
+	if (EntityNum < 0 || EntityNum > MAX_LOOPSOUNDS)
+	{
+		QDropException(va("S_UpdateEntityPosition: bad entitynum %i", EntityNum));
+	}
+	VectorCopy(Origin, loopSounds[EntityNum].origin);
+}
+
+//==========================================================================
+//
+//	S_StopLoopingSound
+//
+//==========================================================================
+
+void S_StopLoopingSound(int EntityNum)
+{
+	loopSounds[EntityNum].active = false;
+//	loopSounds[EntityNum].sfx = NULL;
+	loopSounds[EntityNum].kill = false;
+}
+
+//==========================================================================
+//
+//	S_ClearLoopingSounds
+//
+//==========================================================================
+
+void S_ClearLoopingSounds(bool KillAll)
+{
+	for (int i = 0; i < MAX_LOOPSOUNDS; i++)
+	{
+		if (KillAll || loopSounds[i].kill == true || (loopSounds[i].sfx && loopSounds[i].sfx->Length == 0))
+		{
+			loopSounds[i].kill = false;
+			S_StopLoopingSound(i);
+		}
+	}
+	numLoopChannels = 0;
+}
+
+//==========================================================================
+//
+//	S_AddLoopingSound
+//
+//	Called during entity generation for a frame
+//	Include velocity in case I get around to doing doppler...
+//
+//==========================================================================
+
+void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfxHandle)
+{
+	if (!s_soundStarted || s_soundMuted)
+	{
+		return;
+	}
+
+	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
+	{
+		if (GGameType & GAME_Quake3)
+		{
+			GLog.Write(S_COLOR_YELLOW "S_AddLoopingSound: handle %i out of range\n", sfxHandle);
+		}
+		else
+		{
+			GLog.Write("S_AddLoopingSound: handle %i out of range\n", sfxHandle);
+		}
+		return;
+	}
+
+	sfx_t* sfx = &s_knownSfx[sfxHandle];
+
+	if (sfx->InMemory == false)
+	{
+		S_LoadSound(sfx);
+	}
+
+	if (!sfx->Length)
+	{
+		QDropException(va("%s has length 0", sfx->Name));
+	}
+
+	VectorCopy(origin, loopSounds[entityNum].origin);
+	VectorCopy(velocity, loopSounds[entityNum].velocity);
+	loopSounds[entityNum].active = true;
+	loopSounds[entityNum].kill = true;
+	loopSounds[entityNum].doppler = false;
+	loopSounds[entityNum].oldDopplerScale = 1.0;
+	loopSounds[entityNum].dopplerScale = 1.0;
+	loopSounds[entityNum].sfx = sfx;
+
+	if (s_doppler->integer && VectorLengthSquared(velocity) > 0.0)
+	{
+		vec3_t	out;
+		float	lena, lenb;
+
+		loopSounds[entityNum].doppler = true;
+		lena = DistanceSquared(loopSounds[listener_number].origin, loopSounds[entityNum].origin);
+		VectorAdd(loopSounds[entityNum].origin, loopSounds[entityNum].velocity, out);
+		lenb = DistanceSquared(loopSounds[listener_number].origin, out);
+		if ((loopSounds[entityNum].framenum + 1) != S_GetClientFrameCount())
+		{
+			loopSounds[entityNum].oldDopplerScale = 1.0;
+		}
+		else
+		{
+			loopSounds[entityNum].oldDopplerScale = loopSounds[entityNum].dopplerScale;
+		}
+		loopSounds[entityNum].dopplerScale = lenb / (lena * 100);
+		if (loopSounds[entityNum].dopplerScale <= 1.0)
+		{
+			loopSounds[entityNum].doppler = false;			// don't bother doing the math
+		}
+	}
+
+	loopSounds[entityNum].framenum = S_GetClientFrameCount();
+}
+
+//==========================================================================
+//
+//	S_AddRealLoopingSound
+//
+//	Called during entity generation for a frame
+//	Include velocity in case I get around to doing doppler...
+//
+//==========================================================================
+
+void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfxHandle)
+{
+	if (!s_soundStarted || s_soundMuted)
+	{
+		return;
+	}
+
+	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
+	{
+		if (GGameType & GAME_Quake3)
+		{
+			GLog.Write(S_COLOR_YELLOW "S_AddRealLoopingSound: handle %i out of range\n", sfxHandle);
+		}
+		else
+		{
+			GLog.Write("S_AddRealLoopingSound: handle %i out of range\n", sfxHandle);
+		}
+		return;
+	}
+
+	sfx_t* sfx = &s_knownSfx[sfxHandle];
+
+	if (sfx->InMemory == false)
+	{
+		S_LoadSound(sfx);
+	}
+
+	if (!sfx->Length)
+	{
+		QDropException(va("%s has length 0", sfx->Name));
+	}
+
+	VectorCopy(origin, loopSounds[entityNum].origin);
+	VectorCopy(velocity, loopSounds[entityNum].velocity);
+	loopSounds[entityNum].sfx = sfx;
+	loopSounds[entityNum].active = true;
+	loopSounds[entityNum].kill = false;
+	loopSounds[entityNum].doppler = false;
+}
+
+//==========================================================================
+//
+//	S_PickChannel
+//
+//==========================================================================
+
+channel_t* S_PickChannel(int EntNum, int EntChannel)
+{
+	if ((GGameType & GAME_Quake2) && EntChannel < 0)
+	{
+		QDropException("S_PickChannel: entchannel<0");
+	}
+
+	// Check for replacement sound, or find the best one to replace
+	int FirstToDie = -1;
+	int LifeLeft = 0x7fffffff;
+	for (int ChIdx = 0; ChIdx < MAX_CHANNELS; ChIdx++)
+    {
+		if (EntChannel != 0 &&		// channel 0 never overrides
+			s_channels[ChIdx].entnum == EntNum &&
+			(s_channels[ChIdx].entchannel == EntChannel || EntChannel == -1))
+		{
+			// always override sound from same entity
+			FirstToDie = ChIdx;
+			break;
+		}
+
+		// don't let monster sounds override player sounds
+		if (s_channels[ChIdx].entnum == listener_number && EntNum != listener_number && s_channels[ChIdx].sfx)
+		{
+			continue;
+		}
+
+		if (!s_channels[ChIdx].sfx)
+		{
+			if (LifeLeft > 0)
+			{
+				LifeLeft = 0;
+				FirstToDie = ChIdx;
+			}
+			continue;
+		}
+
+		if (s_channels[ChIdx].startSample + s_channels[ChIdx].sfx->Length - s_paintedtime < LifeLeft)
+		{
+			LifeLeft = s_channels[ChIdx].startSample + s_channels[ChIdx].sfx->Length - s_paintedtime;
+			FirstToDie = ChIdx;
+		}
+	}
+
+	if (FirstToDie == -1)
+	{
+		return NULL;
+	}
+
+	channel_t* Ch = &s_channels[FirstToDie];
+	Com_Memset(Ch, 0, sizeof(*Ch));
+
+	return Ch;
+}       
+
+//==========================================================================
+//
+//	S_SpatializeOrigin
+//
+//	Used for spatializing channels.
+//
+//==========================================================================
+
+void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol)
+{
+	vec_t		dot;
+	vec_t		dist;
+	vec_t		lscale, rscale, scale;
+	vec3_t		source_vec;
+	vec3_t		vec;
+
+	// calculate stereo seperation and distance attenuation
+	VectorSubtract(origin, listener_origin, source_vec);
+
+	dist = VectorNormalize(source_vec);
+	if (!(GGameType & GAME_QuakeHexen))
+	{
+		dist -= SOUND_FULLVOLUME;
+		if (dist < 0)
+		{
+			dist = 0;			// close enough to be at full volume
+		}
+	}
+	dist *= dist_mult;		// different attenuation levels
+
+	VectorRotate( source_vec, listener_axis, vec );
+
+	dot = -vec[1];
+
+	if (dma.channels == 1 || ((GGameType & GAME_Quake2) && !dist_mult))
+	{
+		// no attenuation = no spatialization
+		rscale = 1.0;
+		lscale = 1.0;
+	}
+	else if (GGameType & GAME_QuakeHexen)
+	{
+		rscale = 1.0 + dot;
+		lscale = 1.0 - dot;
+	}
+	else
+	{
+		rscale = 0.5 * (1.0 + dot);
+		lscale = 0.5 * (1.0 - dot);
+		if (rscale < 0)
+		{
+			rscale = 0;
+		}
+		if (lscale < 0)
+		{
+			lscale = 0;
+		}
+	}
+
+	// add in distance effect
+	scale = (1.0 - dist) * rscale;
+	*right_vol = (int)(master_vol * scale);
+	if (*right_vol < 0)
+	{
+		*right_vol = 0;
+	}
+
+	scale = (1.0 - dist) * lscale;
+	*left_vol = (int)(master_vol * scale);
+	if (*left_vol < 0)
+	{
+		*left_vol = 0;
+	}
+}
+
+//==========================================================================
+//
+//	S_ClearSoundBuffer
+//
+//	If we are about to perform file access, clear the buffer
+// so sound doesn't stutter.
+//
+//==========================================================================
+
+void S_ClearSoundBuffer()
+{
+	int		clear;
+		
+	if (!s_soundStarted)
+		return;
+
+	if (GGameType & GAME_Quake3)
+	{
+		// stop looping sounds
+		Com_Memset(loopSounds, 0, MAX_LOOPSOUNDS * sizeof(loopSound_t));
+		Com_Memset(loop_channels, 0, MAX_CHANNELS * sizeof(channel_t));
+		numLoopChannels = 0;
+
+		S_ChannelSetup();
+	}
+
+	s_rawend = 0;
+
+	if (dma.samplebits == 8)
+		clear = 0x80;
+	else
+		clear = 0;
+
+	SNDDMA_BeginPainting();
+	if (dma.buffer)
+		// TTimo: due to a particular bug workaround in linux sound code,
+		//   have to optionally use a custom C implementation of Com_Memset
+		//   not affecting win32, we have #define Snd_Memset Com_Memset
+		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=371
+		Snd_Memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
+	SNDDMA_Submit();
+}
+
+//==========================================================================
+//
+//	S_StopAllSounds
+//
+//==========================================================================
+
+void S_StopAllSounds()
+{
+	if (!s_soundStarted)
+	{
+		return;
+	}
+
+	//	Clear all the playsounds.
+	Com_Memset(s_playsounds, 0, sizeof(s_playsounds));
+	s_freeplays.next = s_freeplays.prev = &s_freeplays;
+	s_pendingplays.next = s_pendingplays.prev = &s_pendingplays;
+
+	for (int i = 0; i < MAX_PLAYSOUNDS; i++)
+	{
+		s_playsounds[i].prev = &s_freeplays;
+		s_playsounds[i].next = s_freeplays.next;
+		s_playsounds[i].prev->next = &s_playsounds[i];
+		s_playsounds[i].next->prev = &s_playsounds[i];
+	}
+
+	if (!(GGameType & GAME_Quake3))
+	{
+		//	Clear all the channels.
+		//	Quake 3 does this in S_ClearSoundBuffer.
+		Com_Memset(s_channels, 0, sizeof(s_channels));
+		Com_Memset(loop_channels, 0, sizeof(loop_channels));
+	}
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		numLoopChannels = BSP29_NUM_AMBIENTS;	// no statics
+	}
+
+	//	Stop the background music.
+	S_StopBackgroundTrack();
+
+	S_ClearSoundBuffer();
+}
+
+/*
+=================
+SND_Spatialize
+=================
+*/
+void SND_Spatialize(channel_t *ch)
+{
+// anything coming from the view entity will allways be full volume
+	if (ch->entnum == listener_number)
+	{
+		ch->leftvol = ch->master_vol;
+		ch->rightvol = ch->master_vol;
+		return;
+	}
+
+	// calculate stereo seperation and distance attenuation
+	S_SpatializeOrigin(ch->origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+}           

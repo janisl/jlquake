@@ -11,8 +11,6 @@ void S_Play(void);
 void S_PlayVol(void);
 void S_SoundList(void);
 void S_Update_();
-void S_StopAllSounds(qboolean clear);
-void S_StopAllSoundsC(void);
 
 // =======================================================================
 // Internal sound data & structures
@@ -71,7 +69,7 @@ void S_Init (void)
 	Cmd_AddCommand("play", S_Play);
 	Cmd_AddCommand("playvol", S_PlayVol);
 	Cmd_AddCommand("music", S_Music_f);
-	Cmd_AddCommand("stopsound", S_StopAllSoundsC);
+	Cmd_AddCommand("stopsound", S_StopAllSounds);
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 
@@ -88,7 +86,7 @@ void S_Init (void)
 
 		Com_Memset(sfxHash, 0, sizeof(sfx_t *)*LOOP_HASH);
 
-		S_StopAllSounds (true);
+		S_StopAllSounds();
 
 		S_SoundInfo_f();
 	}
@@ -108,114 +106,6 @@ void S_Shutdown(void)
 
 	SNDDMA_Shutdown();
 }
-
-/*
-=================
-SND_PickChannel
-=================
-*/
-channel_t *SND_PickChannel(int entnum, int entchannel)
-{
-    int ch_idx;
-    int first_to_die;
-    int life_left;
-
-// Check for replacement sound, or find the best one to replace
-    first_to_die = -1;
-    life_left = 0x7fffffff;
-    for (ch_idx=0; ch_idx < MAX_CHANNELS ; ch_idx++)
-    {
-		if (entchannel != 0		// channel 0 never overrides
-		&& s_channels[ch_idx].entnum == entnum
-		&& (s_channels[ch_idx].entchannel == entchannel || entchannel == -1) )
-		{	// allways override sound from same entity
-			first_to_die = ch_idx;
-			break;
-		}
-
-		// don't let monster sounds override player sounds
-		if (s_channels[ch_idx].entnum == listener_number && entnum != listener_number && s_channels[ch_idx].sfx)
-			continue;
-
-		if (!s_channels[ch_idx].sfx)
-		{
-			if (life_left > 0)
-			{
-				life_left = 0;
-				first_to_die = ch_idx;
-			}
-			continue;
-		}
-
-		if (s_channels[ch_idx].startSample + s_channels[ch_idx].sfx->Length - s_paintedtime < life_left)
-		{
-			life_left = s_channels[ch_idx].startSample + s_channels[ch_idx].sfx->Length - s_paintedtime;
-			first_to_die = ch_idx;
-		}
-   }
-
-	if (first_to_die == -1)
-		return NULL;
-
-	if (s_channels[first_to_die].sfx)
-		s_channels[first_to_die].sfx = NULL;
-
-    return &s_channels[first_to_die];    
-}       
-
-/*
-=================
-SND_Spatialize
-=================
-*/
-void SND_Spatialize(channel_t *ch)
-{
-    vec_t dot;
-    vec_t ldist, rdist, dist;
-    vec_t lscale, rscale, scale;
-    vec3_t source_vec;
-	sfx_t *snd;
-
-// anything coming from the view entity will allways be full volume
-	if (ch->entnum == listener_number)
-	{
-		ch->leftvol = ch->master_vol;
-		ch->rightvol = ch->master_vol;
-		return;
-	}
-
-// calculate stereo seperation and distance attenuation
-
-	snd = ch->sfx;
-	VectorSubtract(ch->origin, listener_origin, source_vec);
-	
-	dist = VectorNormalize(source_vec) * ch->dist_mult;
-	
-	dot = DotProduct(listener_axis[1], source_vec);
-
-	if (dma.channels == 1)
-	{
-		rscale = 1.0;
-		lscale = 1.0;
-	}
-	else
-	{
-		rscale = 1.0 - dot;
-		lscale = 1.0 + dot;
-	}
-
-// add in distance effect
-	scale = (1.0 - dist) * rscale;
-	ch->rightvol = (int) (ch->master_vol * scale);
-	if (ch->rightvol < 0)
-		ch->rightvol = 0;
-
-	scale = (1.0 - dist) * lscale;
-	ch->leftvol = (int) (ch->master_vol * scale);
-	if (ch->leftvol < 0)
-		ch->leftvol = 0;
-}           
-
 
 // =======================================================================
 // Start a sound effect
@@ -242,7 +132,7 @@ void S_StartSound(int entnum, int entchannel, sfxHandle_t Handle, vec3_t origin,
 	vol = fvol*255;
 
 // pick a channel to play on
-	target_chan = SND_PickChannel(entnum, entchannel);
+	target_chan = S_PickChannel(entnum, entchannel);
 	if (!target_chan)
 		return;
 		
@@ -258,6 +148,7 @@ void S_StartSound(int entnum, int entchannel, sfxHandle_t Handle, vec3_t origin,
 	target_chan->master_vol = vol;
 	target_chan->entnum = entnum;
 	target_chan->entchannel = entchannel;
+	target_chan->fixed_origin = true;
 	SND_Spatialize(target_chan);
 
 	if(!skip_dist_check)//always play looping sounds
@@ -324,48 +215,6 @@ void S_UpdateSoundPos (int entnum, int entchannel, vec3_t origin)
 		}
 	}
 }
-
-void S_StopAllSounds(qboolean clear)
-{
-	int		i;
-
-	if (!s_soundStarted)
-		return;
-
-	s_pendingplays.next = s_pendingplays.prev = &s_pendingplays;
-
-	numLoopChannels = BSP29_NUM_AMBIENTS;	// no statics
-
-	Com_Memset(s_channels, 0, MAX_CHANNELS * sizeof(channel_t));
-	Com_Memset(loop_channels, 0, MAX_CHANNELS * sizeof(channel_t));
-
-	if (clear)
-		S_ClearSoundBuffer ();
-}
-
-void S_StopAllSoundsC (void)
-{
-	S_StopAllSounds (true);
-}
-
-void S_ClearSoundBuffer (void)
-{
-	int		clear;
-		
-	if (!s_soundStarted)
-		return;
-
-	if (dma.samplebits == 8)
-		clear = 0x80;
-	else
-		clear = 0;
-
-	SNDDMA_BeginPainting();
-	if (dma.buffer)
-		Com_Memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
-	SNDDMA_Submit();
-}
-
 
 /*
 =================
@@ -582,8 +431,8 @@ void GetSoundtime(void)
 	
 	fullsamples = dma.samples / dma.channels;
 
-// it is possible to miscount buffers if it has wrapped twice between
-// calls to S_Update.  Oh well.
+	// it is possible to miscount buffers if it has wrapped twice between
+	// calls to S_Update.  Oh well.
 	samplepos = SNDDMA_GetDMAPos();
 
 	if (samplepos < oldsamplepos)
@@ -594,7 +443,7 @@ void GetSoundtime(void)
 		{	// time to chop things off to avoid 32 bit limits
 			buffers = 0;
 			s_paintedtime = fullsamples;
-			S_StopAllSounds (true);
+			S_StopAllSounds();
 		}
 	}
 	oldsamplepos = samplepos;
@@ -741,4 +590,9 @@ void S_LocalSound (char *sound)
 
 void S_IssuePlaysound(playsound_t *ps)
 {
+}
+
+int S_GetClientFrameCount()
+{
+	return host_framecount;
 }

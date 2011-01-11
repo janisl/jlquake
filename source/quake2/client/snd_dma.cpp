@@ -32,14 +32,7 @@ void S_StopAllSounds(void);
 // Internal sound data & structures
 // =======================================================================
 
-// only begin attenuating sound volumes when outside the FULLVOLUME range
-#define		SOUND_FULLVOLUME	80
-
 #define		SOUND_LOOPATTENUATE	0.003
-
-#define		MAX_PLAYSOUNDS	128
-playsound_t	s_playsounds[MAX_PLAYSOUNDS];
-playsound_t	s_freeplays;
 
 int			s_beginofs;
 
@@ -62,6 +55,7 @@ void S_Init (void)
 
 	s_volume = Cvar_Get ("s_volume", "0.7", CVAR_ARCHIVE);
 	s_musicVolume = Cvar_Get ("s_musicvolume", "0.25", CVAR_ARCHIVE);
+	s_doppler = Cvar_Get ("s_doppler", "0", CVAR_ARCHIVE);
 	s_khz = Cvar_Get ("s_khz", "11", CVAR_ARCHIVE);
 	s_mixahead = Cvar_Get ("s_mixahead", "0.2", CVAR_ARCHIVE);
 	s_show = Cvar_Get ("s_show", "0", 0);
@@ -138,118 +132,6 @@ void S_Shutdown(void)
 
 /*
 =================
-S_PickChannel
-=================
-*/
-channel_t *S_PickChannel(int entnum, int entchannel)
-{
-    int			ch_idx;
-    int			first_to_die;
-    int			life_left;
-	channel_t	*ch;
-
-	if (entchannel<0)
-		Com_Error (ERR_DROP, "S_PickChannel: entchannel<0");
-
-// Check for replacement sound, or find the best one to replace
-    first_to_die = -1;
-    life_left = 0x7fffffff;
-    for (ch_idx=0 ; ch_idx < MAX_CHANNELS ; ch_idx++)
-    {
-		if (entchannel != 0		// channel 0 never overrides
-		&& s_channels[ch_idx].entnum == entnum
-		&& s_channels[ch_idx].entchannel == entchannel)
-		{	// always override sound from same entity
-			first_to_die = ch_idx;
-			break;
-		}
-
-		// don't let monster sounds override player sounds
-		if (s_channels[ch_idx].entnum == listener_number && entnum != listener_number && s_channels[ch_idx].sfx)
-			continue;
-
-		if (!s_channels[ch_idx].sfx)
-		{
-			if (life_left > 0)
-			{
-				life_left = 0;
-				first_to_die = ch_idx;
-			}
-			continue;
-		}
-
-		if (s_channels[ch_idx].startSample + s_channels[ch_idx].sfx->Length - s_paintedtime < life_left)
-		{
-			life_left = s_channels[ch_idx].startSample + s_channels[ch_idx].sfx->Length - s_paintedtime;
-			first_to_die = ch_idx;
-		}
-   }
-
-	if (first_to_die == -1)
-		return NULL;
-
-	ch = &s_channels[first_to_die];
-	Com_Memset(ch, 0, sizeof(*ch));
-
-    return ch;
-}       
-
-/*
-=================
-S_SpatializeOrigin
-
-Used for spatializing channels and autosounds
-=================
-*/
-void S_SpatializeOrigin (vec3_t origin, float master_vol, float dist_mult, int *left_vol, int *right_vol)
-{
-    vec_t		dot;
-    vec_t		dist;
-    vec_t		lscale, rscale, scale;
-    vec3_t		source_vec;
-
-	if (cls.state != ca_active)
-	{
-		*left_vol = *right_vol = 255;
-		return;
-	}
-
-// calculate stereo seperation and distance attenuation
-	VectorSubtract(origin, listener_origin, source_vec);
-
-	dist = VectorNormalize(source_vec);
-	dist -= SOUND_FULLVOLUME;
-	if (dist < 0)
-		dist = 0;			// close enough to be at full volume
-	dist *= dist_mult;		// different attenuation levels
-	
-	dot = DotProduct(listener_axis[1], source_vec);
-
-	if (dma.channels == 1 || !dist_mult)
-	{ // no attenuation = no spatialization
-		rscale = 1.0;
-		lscale = 1.0;
-	}
-	else
-	{
-		rscale = 0.5 * (1.0 - dot);
-		lscale = 0.5 * (1.0 + dot);
-	}
-
-	// add in distance effect
-	scale = (1.0 - dist) * rscale;
-	*right_vol = (int) (master_vol * scale);
-	if (*right_vol < 0)
-		*right_vol = 0;
-
-	scale = (1.0 - dist) * lscale;
-	*left_vol = (int) (master_vol * scale);
-	if (*left_vol < 0)
-		*left_vol = 0;
-}
-
-/*
-=================
 S_Spatialize
 =================
 */
@@ -267,12 +149,14 @@ void S_Spatialize(channel_t *ch)
 
 	if (ch->fixed_origin)
 	{
-		VectorCopy (ch->origin, origin);
+		VectorCopy(ch->origin, origin);
 	}
 	else
-		CL_GetEntitySoundOrigin (ch->entnum, origin);
+	{
+		VectorCopy(loopSounds[ch->entnum].origin, origin);
+	}
 
-	S_SpatializeOrigin (origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+	S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
 }           
 
 
@@ -527,64 +411,6 @@ void S_StartLocalSound (char *sound)
 	S_StartSound (NULL, listener_number, 0, sfx, 1, 1, 0);
 }
 
-
-/*
-==================
-S_ClearSoundBuffer
-==================
-*/
-void S_ClearSoundBuffer (void)
-{
-	int		clear;
-		
-	if (!s_soundStarted)
-		return;
-
-	s_rawend = 0;
-
-	if (dma.samplebits == 8)
-		clear = 0x80;
-	else
-		clear = 0;
-
-	SNDDMA_BeginPainting ();
-	if (dma.buffer)
-		Com_Memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
-	SNDDMA_Submit ();
-}
-
-/*
-==================
-S_StopAllSounds
-==================
-*/
-void S_StopAllSounds(void)
-{
-	int		i;
-
-	if (!s_soundStarted)
-		return;
-
-	// clear all the playsounds
-	Com_Memset(s_playsounds, 0, sizeof(s_playsounds));
-	s_freeplays.next = s_freeplays.prev = &s_freeplays;
-	s_pendingplays.next = s_pendingplays.prev = &s_pendingplays;
-
-	for (i=0 ; i<MAX_PLAYSOUNDS ; i++)
-	{
-		s_playsounds[i].prev = &s_freeplays;
-		s_playsounds[i].next = s_freeplays.next;
-		s_playsounds[i].prev->next = &s_playsounds[i];
-		s_playsounds[i].next->prev = &s_playsounds[i];
-	}
-
-	// clear all the channels
-	Com_Memset(s_channels, 0, sizeof(s_channels));
-	Com_Memset(loop_channels, 0, sizeof(loop_channels));
-
-	S_ClearSoundBuffer ();
-}
-
 /*
 ==================
 S_AddLoopSounds
@@ -717,6 +543,17 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 
 	combine = NULL;
 
+	if (cls.state == ca_active)
+	{
+		vec3_t		origin;
+
+		for (i = 0; i < MAX_EDICTS; i++)
+		{
+			CL_GetEntitySoundOrigin(i, origin);
+			S_UpdateEntityPosition(i, origin);
+		}
+	}
+
 	// update spatialization for dynamic sounds	
 	ch = s_channels;
 	for (i=0 ; i<MAX_CHANNELS; i++, ch++)
@@ -767,8 +604,8 @@ void GetSoundtime(void)
 	
 	fullsamples = dma.samples / dma.channels;
 
-// it is possible to miscount buffers if it has wrapped twice between
-// calls to S_Update.  Oh well.
+	// it is possible to miscount buffers if it has wrapped twice between
+	// calls to S_Update.  Oh well.
 	samplepos = SNDDMA_GetDMAPos();
 
 	if (samplepos < oldsamplepos)
@@ -889,3 +726,7 @@ void S_SoundList(void)
 	Com_Printf ("Total resident: %i\n", total);
 }
 
+int S_GetClientFrameCount()
+{
+	return cls.framecount;
+}

@@ -28,8 +28,5 @@ extern QCvar	*s_mixahead;
 
 void S_IssuePlaysound (playsound_t *ps);
 
-// picks a channel based on priorities, empty slots, number of channels
-channel_t *S_PickChannel(int entnum, int entchannel);
-
 // spatializes a channel
 void S_Spatialize(channel_t *ch);

@@ -34,6 +34,9 @@
 // of custom player sounds
 #define MAX_SFX					4096
 
+//	This is MAX_EDICTS or MAX_GENTITIES
+#define MAX_LOOPSOUNDS			1024
+
 struct portable_samplepair_t
 {
 	int			left;	// the final values will be clamped to +/- 0x00ffff00 and shifted down
@@ -113,12 +116,32 @@ struct playsound_t
 	unsigned		begin;			// begin on this sample
 };
 
+struct loopSound_t
+{
+	vec3_t		origin;
+	vec3_t		velocity;
+	sfx_t		*sfx;
+	int			mergeFrame;
+	qboolean	active;
+	qboolean	kill;
+	qboolean	doppler;
+	float		dopplerScale;
+	float		oldDopplerScale;
+	int			framenum;
+};
+
 void Snd_Memset(void* dest, const int val, const size_t count);
 void S_SoundInfo_f();
 sfx_t* S_FindName(const char* name, bool create = true);
 sfx_t* S_AliasName(const char* aliasname, const char* truename);
 void S_UpdateBackgroundTrack();
 void S_Music_f();
+channel_t* S_PickChannel(int entnum, int entchannel);
+void S_SpatializeOrigin (vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol);
+void SND_Spatialize(channel_t* ch);
+void S_ChannelFree(channel_t* v);
+channel_t* S_ChannelMalloc();
+void S_ChannelSetup();
 
 bool S_LoadSound(sfx_t* sfx);
 
@@ -152,7 +175,10 @@ extern channel_t	s_channels[MAX_CHANNELS];
 extern channel_t	loop_channels[MAX_CHANNELS];
 extern int			numLoopChannels;
 
+#define		MAX_PLAYSOUNDS	128
 extern playsound_t	s_pendingplays;
+extern playsound_t	s_playsounds[MAX_PLAYSOUNDS];
+extern playsound_t	s_freeplays;
 
 extern bool		s_use_custom_memset;
 
@@ -180,7 +206,6 @@ extern QCvar		*s_show;
 extern QCvar		*s_mixahead;
 extern QCvar		*s_mixPreStep;
 extern QCvar		*s_musicVolume;
-extern QCvar		*s_separation;
 extern QCvar		*s_doppler;
 extern QCvar* ambient_level;
 extern QCvar* ambient_fade;
@@ -188,5 +213,7 @@ extern QCvar* snd_noextraupdate;
 extern sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
 extern int			s_registration_sequence;
 extern bool			s_registering;
+extern loopSound_t	loopSounds[MAX_LOOPSOUNDS];
+extern channel_t	*freelist;
 
 #endif

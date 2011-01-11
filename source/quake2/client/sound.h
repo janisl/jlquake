@@ -25,7 +25,6 @@ void S_Shutdown (void);
 void S_StartSound (vec3_t origin, int entnum, int entchannel, sfxHandle_t Handle, float fvol,  float attenuation, float timeofs);
 void S_StartLocalSound (char *s);
 
-void S_StopAllSounds(void);
 void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
 
 // the sound code makes callbacks to the client for entitiy position

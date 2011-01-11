@@ -31,21 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define START_SAMPLE_IMMEDIATE	0x7fffffff
 
-typedef struct loopSound_s {
-	vec3_t		origin;
-	vec3_t		velocity;
-	sfx_t		*sfx;
-	int			mergeFrame;
-	qboolean	active;
-	qboolean	kill;
-	qboolean	doppler;
-	float		dopplerScale;
-	float		oldDopplerScale;
-	int			framenum;
-} loopSound_t;
-
-
-
 extern	vec3_t	listener_forward;
 extern	vec3_t	listener_right;
 extern	vec3_t	listener_up;
@@ -54,8 +39,6 @@ extern QCvar	*s_nosound;
 extern QCvar	*s_khz;
 extern QCvar	*s_show;
 extern QCvar	*s_mixahead;
-
-extern QCvar	*s_separation;
 
 // spatializes a channel
 void S_Spatialize(channel_t *ch);

@@ -307,7 +307,7 @@ void CL_ClearState (void)
 {
 	int			i;
 
-	S_StopAllSounds (true);
+	S_StopAllSounds();
 
 	Con_DPrintf ("Clearing memory\n");
 	D_FlushCaches ();
@@ -361,7 +361,7 @@ void CL_Disconnect (void)
 
 // stop sounds (especially looping!)
 	cl_siege=false;//no more siege display, etc.
-	S_StopAllSounds (true);
+	S_StopAllSounds();
 	
 // if running a local server, shut it down
 	if (cls.demoplayback)
@@ -714,7 +714,7 @@ drop to full console
 */
 void CL_Changing_f (void)
 {
-	S_StopAllSounds (true);
+	S_StopAllSounds();
 	cl.intermission = 0;
 	cls.state = ca_connected;	// not active anymore, but not disconnected
 	Con_Printf ("\nChanging map...\n");
@@ -730,7 +730,7 @@ The server is changing levels
 */
 void CL_Reconnect_f (void)
 {
-	S_StopAllSounds (true);
+	S_StopAllSounds();
 
 	if (cls.state == ca_connected) {
 		Con_Printf ("reconnecting...\n");

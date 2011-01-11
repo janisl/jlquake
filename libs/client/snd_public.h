@@ -34,4 +34,18 @@ void S_RawSamples(int Samples, int Rate, int Width, int Channels, const byte* Da
 void S_StartBackgroundTrack(const char* Intro, const char* Loop);
 void S_StopBackgroundTrack();
 
+// let the sound system know where an entity currently is
+void S_UpdateEntityPosition(int EntityNum, const vec3_t Origin);
+
+// all continuous looping sounds must be added before calling S_Update
+void S_ClearLoopingSounds(bool KillAll);
+void S_AddLoopingSound(int EntityNum, const vec3_t Origin, const vec3_t Velocity, sfxHandle_t SfxHandle);
+void S_AddRealLoopingSound(int EntityNum, const vec3_t Origin, const vec3_t Velocity, sfxHandle_t SfxHandle);
+void S_StopLoopingSound(int EntityNum);
+
+// stop all sounds and the background track
+void S_StopAllSounds();
+
+void S_ClearSoundBuffer();
+
 extern	QCvar* s_volume;
