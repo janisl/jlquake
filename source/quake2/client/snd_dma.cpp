@@ -217,8 +217,6 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 {
 	int			i;
 	int			total;
-	channel_t	*ch;
-	channel_t	*combine;
 
 	if (!s_soundStarted)
 		return;
@@ -232,14 +230,6 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 		return;
 	}
 
-	listener_number = cl.playernum + 1;
-	VectorCopy(origin, listener_origin);
-	VectorCopy(forward, listener_axis[0]);
-	VectorSubtract(vec3_origin, right, listener_axis[1]);
-	VectorCopy(up, listener_axis[2]);
-
-	combine = NULL;
-
 	if (cls.state == ca_active)
 	{
 		vec3_t		origin;
@@ -250,24 +240,13 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 			S_UpdateEntityPosition(i, origin);
 		}
 	}
-
-	// update spatialization for dynamic sounds	
-	ch = s_channels;
-	for (i=0 ; i<MAX_CHANNELS; i++, ch++)
-	{
-		if (!ch->sfx)
-			continue;
-		S_Spatialize(ch);         // respatialize channel
-		if (!ch->leftvol && !ch->rightvol)
-		{
-			Com_Memset(ch, 0, sizeof(*ch));
-			continue;
-		}
-	}
-
-	// add loopsounds
 	S_RegisterLoopSounds();
-	S_AddLoopSounds ();
+
+	vec3_t axis[3];
+	VectorCopy(forward, axis[0]);
+	VectorSubtract(vec3_origin, right, axis[1]);
+	VectorCopy(up, axis[2]);
+	S_Respatialize(cl.playernum + 1, origin, axis, 0);
 
 	//
 	// debugging output
@@ -275,7 +254,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	if (s_show->value)
 	{
 		total = 0;
-		ch = s_channels;
+		channel_t* ch = s_channels;
 		for (i=0 ; i<MAX_CHANNELS; i++, ch++)
 			if (ch->sfx && (ch->leftvol || ch->rightvol) )
 			{
@@ -360,7 +339,17 @@ int S_GetClientFrameCount()
 	return cls.framecount;
 }
 
+float S_GetClientFrameTime()
+{
+	return cls.frametime;
+}
+
 int S_GetClFrameServertime()
 {
 	return cl.frame.servertime;
+}
+
+byte* CM_LeafAmbientSoundLevel(int LeafNum)
+{
+	return NULL;
 }

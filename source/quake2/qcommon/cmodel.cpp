@@ -793,7 +793,7 @@ CM_PointLeafnum_r
 
 ==================
 */
-int CM_PointLeafnum_r (vec3_t p, int num)
+int CM_PointLeafnum_r (const vec3_t p, int num)
 {
 	float		d;
 	cnode_t		*node;
@@ -819,7 +819,7 @@ int CM_PointLeafnum_r (vec3_t p, int num)
 	return -1 - num;
 }
 
-int CM_PointLeafnum (vec3_t p)
+int CM_PointLeafnum (const vec3_t p)
 {
 	if (!numplanes)
 		return 0;		// sound may call this without map loaded

@@ -135,55 +135,6 @@ void S_DisableSounds( void ) {
 
 //=============================================================================
 
-
-/*
-============
-S_Respatialize
-
-Change the volumes of all the playing sounds for changes in their positions
-============
-*/
-void S_Respatialize( int entityNum, const vec3_t head, vec3_t axis[3], int inwater )
-{
-	int			i;
-	channel_t	*ch;
-	vec3_t		origin;
-
-	if ( !s_soundStarted || s_soundMuted ) {
-		return;
-	}
-
-	listener_number = entityNum;
-	VectorCopy(head, listener_origin);
-	VectorCopy(axis[0], listener_axis[0]);
-	VectorCopy(axis[1], listener_axis[1]);
-	VectorCopy(axis[2], listener_axis[2]);
-
-	// update spatialization for dynamic sounds	
-	ch = s_channels;
-	for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-		if ( !ch->sfx ) {
-			continue;
-		}
-		// anything coming from the view entity will always be full volume
-		if (ch->entnum == listener_number) {
-			ch->leftvol = ch->master_vol;
-			ch->rightvol = ch->master_vol;
-		} else {
-			if (ch->fixed_origin) {
-				VectorCopy( ch->origin, origin );
-			} else {
-				VectorCopy( loopSounds[ ch->entnum ].origin, origin );
-			}
-
-			S_SpatializeOrigin (origin, ch->master_vol, SOUND_ATTENUATE, &ch->leftvol, &ch->rightvol);
-		}
-	}
-
-	// add loopsounds
-	S_AddLoopSounds ();
-}
-
 /*
 ============
 S_Update
@@ -275,6 +226,11 @@ int S_GetClientFrameCount()
 	return cls.framecount;
 }
 
+float S_GetClientFrameTime()
+{
+	return cls.frametime;
+}
+
 sfx_t *S_RegisterSexedSound(int entnum, char *base)
 {
 	return NULL;
@@ -283,4 +239,9 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 int S_GetClFrameServertime()
 {
 	return 0;
+}
+
+byte* CM_LeafAmbientSoundLevel(int LeafNum)
+{
+	return NULL;
 }

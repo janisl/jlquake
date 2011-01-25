@@ -154,6 +154,7 @@ void GetSoundtime();
 void S_Update_();
 void S_IssuePlaysound(playsound_t* ps);
 void S_AddLoopSounds();
+void S_UpdateAmbientSounds();
 
 bool S_LoadSound(sfx_t* sfx);
 

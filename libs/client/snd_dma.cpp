@@ -36,8 +36,11 @@
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 int S_GetClientFrameCount();
+float S_GetClientFrameTime();
 sfx_t *S_RegisterSexedSound(int entnum, char *base);
 int S_GetClFrameServertime();
+int CM_PointLeafnum(const vec3_t p);
+byte* CM_LeafAmbientSoundLevel(int LeafNum);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -1713,6 +1716,7 @@ void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHand
 		ch->leftvol = ch->master_vol;		// these will get calced at next spatialize
 		ch->rightvol = ch->master_vol;		// unless the game isn't running
 		ch->doppler = false;
+		ch->dist_mult = SOUND_ATTENUATE;
 	}
 }
 
@@ -1879,8 +1883,6 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 	ss->dist_mult = (attenuation / 64) / sound_nominal_clip_dist;
     ss->startSample = s_paintedtime;
 	ss->fixed_origin = true;
-
-	S_Spatialize(ss);
 }
 
 //==========================================================================
@@ -1920,6 +1922,114 @@ bool S_ScanChannelStarts()
 	}
 
 	return newSamples;
+}
+
+//==========================================================================
+//
+//	S_UpdateAmbientSounds
+//
+//==========================================================================
+
+void S_UpdateAmbientSounds()
+{
+	float		vol;
+
+	// calc ambient sound levels
+	byte* ambient_sound_level = CM_LeafAmbientSoundLevel(CM_PointLeafnum(listener_origin));
+	if (!ambient_sound_level || !ambient_level->value)
+	{
+		for (int ambient_channel = 0 ; ambient_channel< BSP29_NUM_AMBIENTS ; ambient_channel++)
+		{
+			loop_channels[ambient_channel].sfx = NULL;
+		}
+		return;
+	}
+
+	for (int ambient_channel = 0 ; ambient_channel< BSP29_NUM_AMBIENTS ; ambient_channel++)
+	{
+		channel_t* chan = &loop_channels[ambient_channel];	
+		chan->sfx = ambient_sfx[ambient_channel];
+	
+		vol = ambient_level->value * ambient_sound_level[ambient_channel];
+		if (vol < 8)
+		{
+			vol = 0;
+		}
+
+	// don't adjust volume too fast
+		if (chan->master_vol < vol)
+		{
+			chan->master_vol += S_GetClientFrameTime() * ambient_fade->value;
+			if (chan->master_vol > vol)
+			{
+				chan->master_vol = vol;
+			}
+		}
+		else if (chan->master_vol > vol)
+		{
+			chan->master_vol -= S_GetClientFrameTime() * ambient_fade->value;
+			if (chan->master_vol < vol)
+			{
+				chan->master_vol = vol;
+			}
+		}
+
+		chan->leftvol = chan->rightvol = chan->master_vol;
+	}
+
+	channel_t* combine = NULL;
+
+// update spatialization for static sounds
+	channel_t* ch = &loop_channels[BSP29_NUM_AMBIENTS];
+	for (int i = BSP29_NUM_AMBIENTS; i < numLoopChannels; i++, ch++)
+	{
+		if (!ch->sfx)
+		{
+			continue;
+		}
+		S_SpatializeOrigin(ch->origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+		if (!ch->leftvol && !ch->rightvol)
+		{
+			continue;
+		}
+
+		// try to combine static sounds with a previous channel of the same
+		// sound effect so we don't mix five torches every frame
+	
+		// see if it can just use the last one
+		if (combine && combine->sfx == ch->sfx)
+		{
+			combine->leftvol += ch->leftvol;
+			combine->rightvol += ch->rightvol;
+			ch->leftvol = ch->rightvol = 0;
+			continue;
+		}
+		// search for one
+		combine = &loop_channels[BSP29_NUM_AMBIENTS];
+		int j;
+		for (j = BSP29_NUM_AMBIENTS; j < i; j++, combine++)
+		{
+			if (combine->sfx == ch->sfx)
+			{
+				break;
+			}
+		}
+
+		if (j == numLoopChannels)
+		{
+			combine = NULL;
+		}
+		else
+		{
+			if (combine != ch)
+			{
+				combine->leftvol += ch->leftvol;
+				combine->rightvol += ch->rightvol;
+				ch->leftvol = ch->rightvol = 0;
+			}
+			continue;
+		}
+	}
 }
 
 //==========================================================================
@@ -2020,6 +2130,74 @@ void S_AddLoopSounds()
 		{
 			return;
 		}
+	}
+}
+
+//==========================================================================
+//
+//	S_Respatialize
+//
+//	Change the volumes of all the playing sounds for changes in their positions
+//
+//==========================================================================
+
+void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwater)
+{
+	if (!s_soundStarted || s_soundMuted)
+	{
+		return;
+	}
+
+	listener_number = entityNum;
+	VectorCopy(head, listener_origin);
+	VectorCopy(axis[0], listener_axis[0]);
+	VectorCopy(axis[1], listener_axis[1]);
+	VectorCopy(axis[2], listener_axis[2]);
+
+	// update spatialization for dynamic sounds	
+	channel_t* ch = s_channels;
+	for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+	{
+		if (!ch->sfx)
+		{
+			continue;
+		}
+		// anything coming from the view entity will always be full volume
+		if (ch->entnum == listener_number)
+		{
+			ch->leftvol = ch->master_vol;
+			ch->rightvol = ch->master_vol;
+		}
+		else
+		{
+			vec3_t origin;
+			if (ch->fixed_origin)
+			{
+				VectorCopy(ch->origin, origin);
+			}
+			else
+			{
+				VectorCopy(loopSounds[ch->entnum].origin, origin);
+			}
+
+			S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+		}
+		if ((GGameType & GAME_Quake2) && !ch->leftvol && !ch->rightvol)
+		{
+			Com_Memset(ch, 0, sizeof(*ch));
+			continue;
+		}
+	}
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		// update general area ambient sound sources
+		S_UpdateAmbientSounds();
+	}
+	else
+	{
+		// add loopsounds
+		S_AddLoopSounds();
 	}
 }
 

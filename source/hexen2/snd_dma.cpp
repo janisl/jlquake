@@ -89,54 +89,6 @@ void S_Shutdown(void)
 //=============================================================================
 
 /*
-===================
-S_UpdateAmbientSounds
-===================
-*/
-void S_UpdateAmbientSounds (void)
-{
-	float		vol;
-	int			ambient_channel;
-	channel_t	*chan;
-
-	// calc ambient sound levels
-	byte* ambient_sound_level = CM_LeafAmbientSoundLevel(CM_PointLeafnum(listener_origin));
-	if (!ambient_sound_level || !ambient_level->value)
-	{
-		for (ambient_channel = 0 ; ambient_channel< BSP29_NUM_AMBIENTS ; ambient_channel++)
-			loop_channels[ambient_channel].sfx = NULL;
-		return;
-	}
-
-	for (ambient_channel = 0 ; ambient_channel< BSP29_NUM_AMBIENTS ; ambient_channel++)
-	{
-		chan = &loop_channels[ambient_channel];	
-		chan->sfx = ambient_sfx[ambient_channel];
-
-		vol = ambient_level->value * ambient_sound_level[ambient_channel];
-		if (vol < 8)
-			vol = 0;
-
-	// don't adjust volume too fast
-		if (chan->master_vol < vol)
-		{
-			chan->master_vol += host_frametime * ambient_fade->value;
-			if (chan->master_vol > vol)
-				chan->master_vol = vol;
-		}
-		else if (chan->master_vol > vol)
-		{
-			chan->master_vol -= host_frametime * ambient_fade->value;
-			if (chan->master_vol < vol)
-				chan->master_vol = vol;
-		}
-		
-		chan->leftvol = chan->rightvol = chan->master_vol;
-	}
-}
-
-
-/*
 ============
 S_Update
 
@@ -145,76 +97,17 @@ Called once each time through the main loop
 */
 void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 {
-	int			i, j;
+	int			i;
 	int			total;
-	channel_t	*ch;
-	channel_t	*combine;
 
 	if (!s_soundStarted || s_soundMuted)
 		return;
 
-	listener_number = cl.viewentity;
-	VectorCopy(origin, listener_origin);
-	VectorCopy(forward, listener_axis[0]);
-	VectorSubtract(vec3_origin, right, listener_axis[1]);
-	VectorCopy(up, listener_axis[2]);
-	
-// update general area ambient sound sources
-	S_UpdateAmbientSounds ();
-
-	combine = NULL;
-
-// update spatialization for static and dynamic sounds	
-	ch = s_channels;
-	for (i=0; i<MAX_CHANNELS; i++, ch++)
-	{
-		if (!ch->sfx)
-			continue;
-		S_Spatialize(ch);         // respatialize channel
-	}
-
-// update spatialization for static and dynamic sounds	
-	ch = loop_channels + BSP29_NUM_AMBIENTS;
-	for (i=BSP29_NUM_AMBIENTS; i<numLoopChannels; i++, ch++)
-	{
-		if (!ch->sfx)
-			continue;
-		S_Spatialize(ch);         // respatialize channel
-		if (!ch->leftvol && !ch->rightvol)
-			continue;
-
-	// try to combine static sounds with a previous channel of the same
-	// sound effect so we don't mix five torches every frame
-	
-	// see if it can just use the last one
-		if (combine && combine->sfx == ch->sfx)
-		{
-			combine->leftvol += ch->leftvol;
-			combine->rightvol += ch->rightvol;
-			ch->leftvol = ch->rightvol = 0;
-			continue;
-		}
-	// search for one
-		combine = loop_channels;
-		for (j=BSP29_NUM_AMBIENTS; j<i; j++, combine++)
-			if (combine->sfx == ch->sfx)
-				break;
-				
-		if (j == numLoopChannels)
-		{
-			combine = NULL;
-		}
-		else
-		{
-			if (combine != ch)
-			{
-				combine->leftvol += ch->leftvol;
-				combine->rightvol += ch->rightvol;
-				ch->leftvol = ch->rightvol = 0;
-			}
-			continue;
-		}
-	}
+	vec3_t axis[3];
+	VectorCopy(forward, axis[0]);
+	VectorSubtract(vec3_origin, right, axis[1]);
+	VectorCopy(up, axis[2]);
+	S_Respatialize(cl.viewentity, origin, axis, 0);
 
 //
 // debugging output
@@ -222,7 +115,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	if (s_show->value)
 	{
 		total = 0;
-		ch = s_channels;
+		channel_t* ch = s_channels;
 		for (i=0 ; i<MAX_CHANNELS; i++, ch++)
 			if (ch->sfx && (ch->leftvol || ch->rightvol) )
 			{
@@ -335,6 +228,11 @@ void S_SoundList(void)
 int S_GetClientFrameCount()
 {
 	return host_framecount;
+}
+
+float S_GetClientFrameTime()
+{
+	return host_frametime;
 }
 
 sfx_t *S_RegisterSexedSound(int entnum, char *base)
