@@ -292,7 +292,7 @@ void CL_ParseDelta (entity_state_t *from, entity_state_t *to, int bits)
 	if (bits & U_SOUND)
 	{
 		i = net_message.ReadShort();
-		S_StartSound(to->number, 1, cl.sound_precache[i], to->origin, 1.0, 1.0);
+		S_StartSound(to->origin, to->number, 1, cl.sound_precache[i], 1.0, 1.0);
 	}
 }
 
@@ -1220,7 +1220,7 @@ void CL_ParsePlayerinfo (void)
 	if(flags & PF_SOUND)
 	{
 		i = net_message.ReadShort ();
-		S_StartSound(num, 1, cl.sound_precache[i], state->origin, 1.0, 1.0);
+		S_StartSound(state->origin, num, 1, cl.sound_precache[i], 1.0, 1.0);
 	}
 	
 	VectorCopy (state->command.angles, state->viewangles);

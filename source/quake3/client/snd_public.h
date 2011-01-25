@@ -24,10 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void S_Init( void );
 void S_Shutdown( void );
 
-// if origin is NULL, the sound will be dynamically sourced from the entity
-void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
-void S_StartLocalSound( sfxHandle_t sfx, int channelNum );
-
 // recompute the reletive volumes for all running sounds
 // reletive to the given entityNum / orientation
 void S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int inwater );

@@ -37,6 +37,8 @@
 //	This is MAX_EDICTS or MAX_GENTITIES
 #define MAX_LOOPSOUNDS			1024
 
+#define START_SAMPLE_IMMEDIATE	0x7fffffff
+
 struct portable_samplepair_t
 {
 	int			left;	// the final values will be clamped to +/- 0x00ffff00 and shifted down
@@ -138,10 +140,16 @@ void S_UpdateBackgroundTrack();
 void S_Music_f();
 channel_t* S_PickChannel(int entnum, int entchannel);
 void S_SpatializeOrigin (vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol);
-void SND_Spatialize(channel_t* ch);
+void S_Spatialize(channel_t* ch);
 void S_ChannelFree(channel_t* v);
 channel_t* S_ChannelMalloc();
 void S_ChannelSetup();
+playsound_t* S_AllocPlaysound();
+void S_FreePlaysound(playsound_t* ps);
+bool S_ScanChannelStarts();
+void GetSoundtime();
+void S_Update_();
+void S_IssuePlaysound(playsound_t* ps);
 
 bool S_LoadSound(sfx_t* sfx);
 
@@ -187,7 +195,6 @@ extern	int		s_rawend;
 extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
 //----
-void S_IssuePlaysound (playsound_t *ps);
 extern int	s_soundStarted;
 extern bool	s_soundMuted;
 extern int			listener_number;
@@ -210,10 +217,12 @@ extern QCvar		*s_doppler;
 extern QCvar* ambient_level;
 extern QCvar* ambient_fade;
 extern QCvar* snd_noextraupdate;
+extern QCvar* nosound;
 extern sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
 extern int			s_registration_sequence;
 extern bool			s_registering;
 extern loopSound_t	loopSounds[MAX_LOOPSOUNDS];
 extern channel_t	*freelist;
+extern vec_t		sound_nominal_clip_dist;
 
 #endif

@@ -831,7 +831,7 @@ void CL_ParseStartSoundPacket(void)
 	if (ent > MAX_EDICTS)
 		Host_EndGame ("CL_ParseStartSoundPacket: ent = %i", ent);
 	
-    S_StartSound (ent, channel, cl.sound_precache[sound_num], pos, volume/255.0, attenuation);
+    S_StartSound(pos, ent, channel, cl.sound_precache[sound_num], volume / 255.0, attenuation);
 }       
 
 
@@ -1128,7 +1128,7 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i == PRINT_CHAT)
 			{
-				S_LocalSound ("misc/talk.wav");
+				S_StartLocalSound("misc/talk.wav");
 				con_ormask = 128;
 			}
 			Con_Printf ("%s", net_message.ReadString2 ());

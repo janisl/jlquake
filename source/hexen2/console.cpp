@@ -259,7 +259,7 @@ void Con_Print (const char *txt)
 	if (txt[0] == 1)
 	{
 		mask = 256;		// go to colored text
-		S_LocalSound ("misc/comm.wav");
+		S_StartLocalSound("misc/comm.wav");
 	// play talk wav
 		txt++;
 	}

@@ -437,12 +437,12 @@ void CL_ParseEffect(void)
 					if(cl.Effects[index].Smoke.framelength==2)
 					{
 						R_SplashParticleEffect (cl.Effects[index].Smoke.origin, 200, 406+rand()%8, pt_slowgrav, 40);//splash
-						S_StartSound (TempSoundChannel(), 1, cl_fxsfx_splash, cl.Effects[index].Smoke.origin, 1, 1);
+						S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_splash, 1, 1);
 					}
 					else if(cl.Effects[index].Smoke.framelength==1)
 						R_SplashParticleEffect (cl.Effects[index].Smoke.origin, 100, 406+rand()%8, pt_slowgrav, 20);//splash
 					else
-						S_StartSound (TempSoundChannel(), 1, cl_fxsfx_ripple, cl.Effects[index].Smoke.origin, 1, 1);
+						S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_ripple, 1, 1);
 					cl.Effects[index].Smoke.framelength=0.05;
 					ent->model = Mod_ForName("models/ripple.spr", true);
 					ent->drawflags = DRF_TRANSLUCENT;//|SCALE_TYPE_XYONLY|SCALE_ORIGIN_CENTER;
@@ -473,7 +473,7 @@ void CL_ParseEffect(void)
 				}
 				if (cl.Effects[index].type == CE_TELESMK1)
 				{
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_ravenfire, cl.Effects[index].Smoke.origin, 1, 1);
+					S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_ravenfire, 1, 1);
 
 					if ((cl.Effects[index].Smoke.entity_index2 = NewEffectEntity()) != -1)
 					{
@@ -550,13 +550,13 @@ void CL_ParseEffect(void)
 				else if (cl.Effects[index].type == CE_SM_EXPLOSION2)
 				{
 					ent->model = Mod_ForName("models/sm_expld.spr", true);
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_explode, cl.Effects[index].Smoke.origin, 1, 1);
+					S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
 
 				}
 				else if (cl.Effects[index].type == CE_BG_EXPLOSION)
 				{
 					ent->model = Mod_ForName("models/bg_expld.spr", true);
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_explode, cl.Effects[index].Smoke.origin, 1, 1);
+					S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
 				}
 				else if (cl.Effects[index].type == CE_FLOOR_EXPLOSION)
 					ent->model = Mod_ForName("models/fl_expld.spr", true);
@@ -581,7 +581,7 @@ void CL_ParseEffect(void)
 				else if (cl.Effects[index].type == CE_MAGIC_MISSILE_EXPLOSION)
 				{
 					ent->model = Mod_ForName("models/mm_expld.spr", true);
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_explode, cl.Effects[index].Smoke.origin, 1, 1);
+					S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
 				}
 				else if (cl.Effects[index].type == CE_BONE_EXPLOSION)
 					ent->model = Mod_ForName("models/bonexpld.spr", true);
@@ -650,7 +650,7 @@ void CL_ParseEffect(void)
 				else if (cl.Effects[index].type == CE_HWSPLITFLASH)
 				{
 					ent->model = Mod_ForName("models/sm_blue.spr", true);
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_ravensplit, cl.Effects[index].Flash.origin, 1, 1);
+					S_StartSound(cl.Effects[index].Flash.origin, TempSoundChannel(), 1, cl_fxsfx_ravensplit, 1, 1);
 				}
 				ent->drawflags = DRF_TRANSLUCENT;
 
@@ -750,7 +750,7 @@ void CL_ParseEffect(void)
 				else if (cl.Effects[index].type == CE_HWBONEBALL)
 				{
 					ent->model = Mod_ForName("models/bonelump.mdl", true);
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_bonefpow, cl.Effects[index].Missile.origin, 1, 1);
+					S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_bonefpow, 1, 1);
 				}
 			}
 			else
@@ -783,12 +783,12 @@ void CL_ParseEffect(void)
 				{
 					cl.Effects[index].Missile.avelocity[0] = (rand() % 1554) - 777;
 					ent->model = Mod_ForName("models/boneshot.mdl", true);
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_bone, cl.Effects[index].Missile.origin, 1, 1);
+					S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_bone, 1, 1);
 				}
 				else if (cl.Effects[index].type == CE_HWRAVENPOWER)
 				{
 					ent->model = Mod_ForName("models/ravproj.mdl", true);
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_ravengo, cl.Effects[index].Missile.origin, 1, 1);
+					S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_ravengo, 1, 1);
 				}
 			}
 			else
@@ -828,11 +828,11 @@ void CL_ParseEffect(void)
 
 			if (cl.Effects[index].Xbow.bolts == 3)
 			{
-				S_StartSound (TempSoundChannel(), 1, cl_fxsfx_xbowshoot, origin, 1, 1);
+				S_StartSound(origin, TempSoundChannel(), 1, cl_fxsfx_xbowshoot, 1, 1);
 			}
 			else if (cl.Effects[index].Xbow.bolts == 5)
 			{
-				S_StartSound (TempSoundChannel(), 1, cl_fxsfx_xbowfshoot, origin, 1, 1);
+				S_StartSound(origin, TempSoundChannel(), 1, cl_fxsfx_xbowfshoot, 1, 1);
 			}
 
 			for (i=0;i<cl.Effects[index].Xbow.bolts;i++)
@@ -901,7 +901,7 @@ void CL_ParseEffect(void)
 			VectorNormalize(forward);
 			VectorCopy(forward, cl.Effects[index].Xbow.velocity);
 
-//			S_StartSound (TempSoundChannel(), 1, cl_fxsfx_xbowshoot, origin, 1, 1);
+//			S_StartSound(origin, TempSoundChannel(), 1, cl_fxsfx_xbowshoot, 1, 1);
 
 			for (i=0;i<cl.Effects[index].Xbow.bolts;i++)
 			{
@@ -949,7 +949,7 @@ void CL_ParseEffect(void)
 
 			cl.Effects[index].Missile.speed = net_message.ReadShort();
 
-			S_StartSound (TempSoundChannel(), 1, cl_fxsfx_drillashoot, cl.Effects[index].Missile.origin, 1, 1);
+			S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_drillashoot, 1, 1);
 
 			AngleVectors(cl.Effects[index].Missile.angle,cl.Effects[index].Missile.velocity,right,up);
 
@@ -980,7 +980,7 @@ void CL_ParseEffect(void)
 
 			cl.Effects[index].Chain.state = 0;//state 0: move slowly toward owner
 
-			S_StartSound (TempSoundChannel(), 1, cl_fxsfx_scarabwhoosh, cl.Effects[index].Chain.origin, 1, 1);
+			S_StartSound(cl.Effects[index].Chain.origin, TempSoundChannel(), 1, cl_fxsfx_scarabwhoosh, 1, 1);
 
 			if ((cl.Effects[index].Chain.ent1 = NewEffectEntity()) != -1)
 			{
@@ -1067,13 +1067,13 @@ void CL_ParseEffect(void)
 				{
 					ent->model = Mod_ForName("models/star.mdl", true);	
 					ent->scale = 0.3;
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_mmfire, ent->origin, 1, 1);
+					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_mmfire, 1, 1);
 
 				}
 				else
 				{
 					ent->model = Mod_ForName("models/glowball.mdl", true);	
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_eidolon, ent->origin, 1, 1);
+					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_eidolon, 1, 1);
 				}
 			}
 			if(cl.Effects[index].type == CE_HWMISSILESTAR)
@@ -1252,13 +1252,13 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 					case XBOW_IMPACT_GREENFLESH:
 					case XBOW_IMPACT_REDFLESH:
 					case XBOW_IMPACT_MUMMY:
-						S_StartSound (TempSoundChannel(), 0, cl_fxsfx_arr2flsh, ent->origin, 1, 1);
+						S_StartSound(ent->origin, TempSoundChannel(), 0, cl_fxsfx_arr2flsh, 1, 1);
 						break;
 					case XBOW_IMPACT_WOOD:
-						S_StartSound (TempSoundChannel(), 0, cl_fxsfx_arr2wood, ent->origin, 1, 1);
+						S_StartSound(ent->origin, TempSoundChannel(), 0, cl_fxsfx_arr2wood, 1, 1);
 						break;
 					default:
-						S_StartSound (TempSoundChannel(), 0, cl_fxsfx_met2stn, ent->origin, 1, 1);
+						S_StartSound(ent->origin, TempSoundChannel(), 0, cl_fxsfx_met2stn, 1, 1);
 						break;
 					}
 
@@ -1401,7 +1401,7 @@ void CL_ReviseEffect(void)	// be sure to read, in the switch statement, everythi
 
 				if ((material == XBOW_IMPACT_GREENFLESH) || (material == XBOW_IMPACT_GREENFLESH))
 				{//meaty sound and some chunks too
-					S_StartSound (TempSoundChannel(), 0, cl_fxsfx_drillameat, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_fxsfx_drillameat, 1, 1);
 					
 					//todo: the chunks
 				}
@@ -1987,7 +1987,7 @@ void CL_UpdateEffects(void)
 
 				if ((int)(cl.time) != (int)(cl.time - host_frametime))
 				{
-					S_StartSound (TempSoundChannel(), 1, cl_fxsfx_drillaspin, ent->origin, 1, 1);
+					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_drillaspin, 1, 1);
 				}
 
 				ent->angles[0] += frametime * cl.Effects[index].Missile.avelocity[0];
@@ -2049,7 +2049,7 @@ void CL_UpdateEffects(void)
 									cl.Effects[index].Xbow.gonetime[i] = cl.time + HX_FRAME_TIME * 2;
 
 									//play explosion sound
-									S_StartSound (TempSoundChannel(), 1, cl_fxsfx_explode, ent->origin, 1, 1);
+									S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
 
 									CL_LinkEntity(ent);
 								}
@@ -2136,7 +2136,7 @@ void CL_UpdateEffects(void)
 					if (cl.Effects[index].Chain.sound_time <= cl.time)
 					{
 						cl.Effects[index].Chain.sound_time = cl.time + 0.5;
-						S_StartSound (TempSoundChannel(), 1, cl_fxsfx_scarabhome, ent->origin, 1, 1);
+						S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_scarabhome, 1, 1);
 					}
 					if (es)
 					{
@@ -2145,7 +2145,7 @@ void CL_UpdateEffects(void)
 						VectorSubtract(org,ent->origin,org);
 						if (fabs(VectorNormalize(org))<500*frametime)
 						{
-							S_StartSound (TempSoundChannel(), 1, cl_fxsfx_scarabgrab, ent->origin, 1, 1);
+							S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_scarabgrab, 1, 1);
 							cl.Effects[index].Chain.state = 1;
 							VectorCopy(es->origin, ent->origin);
 							ent->origin[2] += cl.Effects[index].Chain.height;
@@ -2176,7 +2176,7 @@ void CL_UpdateEffects(void)
 					}
 					else//done--flash & git outa here (change type to redflash)
 					{
-						S_StartSound (TempSoundChannel(), 1, cl_fxsfx_scarabbyebye, ent->origin, 1, 1);
+						S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_scarabbyebye, 1, 1);
 						cl.Effects[index].Flash.entity_index = cl.Effects[index].Chain.ent1;
 						cl.Effects[index].type = CE_RED_FLASH;
 						VectorCopy(ent->origin,cl.Effects[index].Flash.origin);
@@ -2364,7 +2364,7 @@ void CL_ParseMultiEffect(void)
 				VectorCopy(cl.Effects[index].Missile.origin, ent->origin);
 				VectorCopy(cl.Effects[index].Missile.angle, ent->angles);
 				ent->model = Mod_ForName("models/ravproj.mdl", true);
-				S_StartSound (TempSoundChannel(), 1, cl_fxsfx_ravengo, cl.Effects[index].Missile.origin, 1, 1);
+				S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_ravengo, 1, 1);
 			}
 		}
 		CreateRavenExplosions(orig);

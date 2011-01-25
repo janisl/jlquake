@@ -137,7 +137,7 @@ void CL_ParseTEnt(void)
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
 		R_RunParticleEffect (pos, vec3_origin, 20, 30);
-//		S_StartSound (-1, 0, cl_sfx_wizhit, pos, 1, 1);
+//		S_StartSound(pos, -1, 0, cl_sfx_wizhit, 1, 1);
 		break;
 		
 	case TE_KNIGHTSPIKE:			// spike hitting wall
@@ -145,7 +145,7 @@ void CL_ParseTEnt(void)
 		pos[1] = net_message.ReadCoord ();
 		pos[2] = net_message.ReadCoord ();
 		R_RunParticleEffect (pos, vec3_origin, 226, 20);
-//		S_StartSound (-1, 0, cl_sfx_knighthit, pos, 1, 1);
+//		S_StartSound(pos, -1, 0, cl_sfx_knighthit, 1, 1);
 		break;
 		
 	case TE_SPIKE:			// spike hitting wall
@@ -154,16 +154,16 @@ void CL_ParseTEnt(void)
 		pos[2] = net_message.ReadCoord ();
 		R_RunParticleEffect (pos, vec3_origin, 0, 10);
 		if ( rand() % 5 )
-			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
+			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
 		else
 		{
 			rnd = rand() & 3;
 			if (rnd == 1)
-				S_StartSound (-1, 0, cl_sfx_ric1, pos, 1, 1);
+				S_StartSound(pos, -1, 0, cl_sfx_ric1, 1, 1);
 			else if (rnd == 2)
-				S_StartSound (-1, 0, cl_sfx_ric2, pos, 1, 1);
+				S_StartSound(pos, -1, 0, cl_sfx_ric2, 1, 1);
 			else
-				S_StartSound (-1, 0, cl_sfx_ric3, pos, 1, 1);
+				S_StartSound(pos, -1, 0, cl_sfx_ric3, 1, 1);
 		}
 		break;
 	case TE_SUPERSPIKE:			// super spike hitting wall
@@ -173,16 +173,16 @@ void CL_ParseTEnt(void)
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 
 		if ( rand() % 5 )
-			S_StartSound (-1, 0, cl_sfx_tink1, pos, 1, 1);
+			S_StartSound(pos, -1, 0, cl_sfx_tink1, 1, 1);
 		else
 		{
 			rnd = rand() & 3;
 			if (rnd == 1)
-				S_StartSound (-1, 0, cl_sfx_ric1, pos, 1, 1);
+				S_StartSound(pos, -1, 0, cl_sfx_ric1, 1, 1);
 			else if (rnd == 2)
-				S_StartSound (-1, 0, cl_sfx_ric2, pos, 1, 1);
+				S_StartSound(pos, -1, 0, cl_sfx_ric2, 1, 1);
 			else
-				S_StartSound (-1, 0, cl_sfx_ric3, pos, 1, 1);
+				S_StartSound(pos, -1, 0, cl_sfx_ric3, 1, 1);
 		}
 		break;
 		
@@ -204,7 +204,7 @@ void CL_ParseTEnt(void)
 		dl->radius = 350;
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
-		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
+		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
 /*	//jfm:not used
 	case TE_TAREXPLOSION:			// tarbaby explosion
@@ -213,7 +213,7 @@ void CL_ParseTEnt(void)
 		pos[2] = net_message.ReadCoord ();
 		R_BlobExplosion (pos);
 
-		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
+		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
 */
 	case TE_LIGHTNING1:
@@ -266,7 +266,7 @@ void CL_ParseTEnt(void)
 		dl->radius = 350;
 		dl->die = cl.time + 0.5;
 		dl->decay = 300;
-		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
+		S_StartSound(pos, -1, 0, cl_sfx_r_exp3, 1, 1);
 		break;
 */
 	default:

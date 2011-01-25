@@ -661,13 +661,13 @@ void M_Main_Key (int key)
 		break;
 		
 	case K_DOWNARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		if (++m_main_cursor >= MAIN_ITEMS)
 			m_main_cursor = 0;
 		break;
 
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		if (--m_main_cursor < 0)
 			m_main_cursor = MAIN_ITEMS - 1;
 		break;
@@ -757,13 +757,13 @@ void M_Class_Key (int key)
 		break;
 		
 	case K_DOWNARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		if (++m_class_cursor >= CLASS_ITEMS)
 			m_class_cursor = 0;
 		break;
 
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		if (--m_class_cursor < 0)
 			m_class_cursor = CLASS_ITEMS - 1;
 		break;
@@ -837,7 +837,7 @@ void M_Menu_Options_f (void)
 
 void M_AdjustSliders (int dir)
 {
-	S_LocalSound ("raven/menu3.wav");
+	S_StartLocalSound("raven/menu3.wav");
 
 	switch (options_cursor)
 	{
@@ -1083,7 +1083,7 @@ void M_Options_Key (int k)
 		return;
 	
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		options_cursor--;
 		if (options_cursor < 0)
 			options_cursor = OPTIONS_ITEMS-1;
@@ -1093,7 +1093,7 @@ void M_Options_Key (int k)
 		break;
 
 	case K_DOWNARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		options_cursor++;
 		if (options_cursor >= OPTIONS_ITEMS)
 			options_cursor = 0;
@@ -1313,7 +1313,7 @@ void M_Keys_Key (int k)
 	
 	if (bind_grab)
 	{	// defining a key
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		if (k == K_ESCAPE)
 		{
 			bind_grab = false;
@@ -1336,7 +1336,7 @@ void M_Keys_Key (int k)
 
 	case K_LEFTARROW:
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		keys_cursor--;
 		if (keys_cursor < 0)
 			keys_cursor = NUMCOMMANDS-1;
@@ -1344,7 +1344,7 @@ void M_Keys_Key (int k)
 
 	case K_DOWNARROW:
 	case K_RIGHTARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		keys_cursor++;
 		if (keys_cursor >= NUMCOMMANDS)
 			keys_cursor = 0;
@@ -1352,7 +1352,7 @@ void M_Keys_Key (int k)
 
 	case K_ENTER:		// go into bind mode
 		M_FindKeysForCommand (bindnames[keys_cursor][0], keys);
-		S_LocalSound ("raven/menu2.wav");
+		S_StartLocalSound("raven/menu2.wav");
 		if (keys[1] != -1)
 			M_UnbindCommand (bindnames[keys_cursor][0]);
 		bind_grab = true;
@@ -1360,7 +1360,7 @@ void M_Keys_Key (int k)
 
 	case K_BACKSPACE:		// delete bindings
 	case K_DEL:				// delete bindings
-		S_LocalSound ("raven/menu2.wav");
+		S_StartLocalSound("raven/menu2.wav");
 		M_UnbindCommand (bindnames[keys_cursor][0]);
 		break;
 	}
@@ -1977,7 +1977,7 @@ void M_Quit_Draw (void)
 
 	if (LinePos > 55 && !SoundPlayed && LineText == Credit2Text)
 	{
-		S_LocalSound ("rj/steve.wav");
+		S_StartLocalSound("rj/steve.wav");
 		SoundPlayed = true;
 	}
 	topy = y;
@@ -2128,13 +2128,13 @@ void M_MultiPlayer_Key (int key)
 		break;
 		
 	case K_DOWNARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		if (++m_multiplayer_cursor >= MULTIPLAYER_ITEMS)
 			m_multiplayer_cursor = 0;
 		break;
 
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		if (--m_multiplayer_cursor < 0)
 			m_multiplayer_cursor = MULTIPLAYER_ITEMS - 1;
 		break;
@@ -2279,14 +2279,14 @@ void M_Connect_Key (int k)
 		break;
 
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		connect_cursor--;
 		if (connect_cursor < 0)
 			connect_cursor = MAX_CONNECT_CMDS-1;
 		break;
 
 	case K_DOWNARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		connect_cursor++;
 		if (connect_cursor >= MAX_CONNECT_CMDS)
 			connect_cursor = 0;
@@ -2508,14 +2508,14 @@ void M_Setup_Key (int k)
 		break;
 
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		setup_cursor--;
 		if (setup_cursor < 1)
 			setup_cursor = NUM_SETUP_CMDS-1;
 		break;
 
 	case K_DOWNARROW:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		setup_cursor++;
 		if (setup_cursor >= NUM_SETUP_CMDS)
 			setup_cursor = 1;
@@ -2524,7 +2524,7 @@ void M_Setup_Key (int k)
 	case K_LEFTARROW:
 		if (setup_cursor < 2)
 			return;
-		S_LocalSound ("raven/menu3.wav");
+		S_StartLocalSound("raven/menu3.wav");
 		if (setup_cursor == 2)
 		{
 			if (spectator->value)
@@ -2554,7 +2554,7 @@ void M_Setup_Key (int k)
 		if (setup_cursor < 2)
 			return;
 forward:
-		S_LocalSound ("raven/menu3.wav");
+		S_StartLocalSound("raven/menu3.wav");
 		if (setup_cursor == 2)
 		{
 			if (spectator->value)
@@ -2780,7 +2780,7 @@ void M_Draw (void)
 
 	if (m_entersound)
 	{
-		S_LocalSound ("raven/menu2.wav");
+		S_StartLocalSound("raven/menu2.wav");
 		m_entersound = false;
 	}
 

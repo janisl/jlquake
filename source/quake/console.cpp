@@ -267,7 +267,7 @@ void Con_Print (char *txt)
 	if (txt[0] == 1)
 	{
 		mask = 128;		// go to colored text
-		S_LocalSound ("misc/talk.wav");
+		S_StartLocalSound("misc/talk.wav");
 	// play talk wav
 		txt++;
 	}

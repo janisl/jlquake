@@ -815,7 +815,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 20, 30);
-//			S_StartSound (-1, 0, cl_sfx_wizhit, pos, 1, 1);
+//			S_StartSound(pos, -1, 0, cl_sfx_wizhit, 1, 1);
 			break;
 			
 		case TE_KNIGHTSPIKE:			// spike hitting wall
@@ -823,7 +823,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 			R_RunParticleEffect (pos, vec3_origin, 226, 20);
-//			S_StartSound (-1, 0, cl_sfx_knighthit, pos, 1, 1);
+//			S_StartSound(pos, -1, 0, cl_sfx_knighthit, 1, 1);
 			break;
 			
 		case TE_SPIKE:			// spike hitting wall
@@ -833,16 +833,16 @@ void CL_ParseTEnt (void)
 			R_RunParticleEffect (pos, vec3_origin, 0, 10);
 
 			if ( rand() % 5 )
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_tink1, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
 			else
 			{
 				rnd = rand() & 3;
 				if (rnd == 1)
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_ric1, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
 				else if (rnd == 2)
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_ric2, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
 				else
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_ric3, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
 			}
 			break;
 		case TE_SUPERSPIKE:			// super spike hitting wall
@@ -852,16 +852,16 @@ void CL_ParseTEnt (void)
 			R_RunParticleEffect (pos, vec3_origin, 0, 20);
 
 			if ( rand() % 5 )
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_tink1, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_tink1, 1, 1);
 			else
 			{
 				rnd = rand() & 3;
 				if (rnd == 1)
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_ric1, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
 				else if (rnd == 2)
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_ric2, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
 				else
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_ric3, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
 			}
 			break;
 
@@ -879,7 +879,7 @@ void CL_ParseTEnt (void)
 			ex->endTime = ex->startTime + ex->model->numframes * 0.1;
 		
 		// sound
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_explode, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_explode, 1, 1);
 			break;
 			
 		case TE_EXPLOSION:			// rocket explosion
@@ -901,7 +901,7 @@ void CL_ParseTEnt (void)
 			dl->color[3] = 0.7;
 		
 		// sound
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_r_exp3, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
 			break;
 			
 		case TE_TAREXPLOSION:			// tarbaby explosion
@@ -910,7 +910,7 @@ void CL_ParseTEnt (void)
 			pos[2] = net_message.ReadCoord ();
 			R_BlobExplosion (pos);
 
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_r_exp3, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_r_exp3, 1, 1);
 			break;
 
 		case TE_LIGHTNING1:				// lightning bolts
@@ -1358,13 +1358,13 @@ void CL_ParseTEnt (void)
 			switch (chType)
 			{
 			case THINGTYPE_FLESH:
-//				S_StartSound (TempSoundChannel(), 0, cl_sfx_arr2flsh, pos, 1, 1);
+//				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_arr2flsh, 1, 1);
 				break;
 			case THINGTYPE_WOOD:
-//				S_StartSound (TempSoundChannel(), 0, cl_sfx_arr2wood, pos, 1, 1);
+//				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_arr2wood, 1, 1);
 				break;
 			default:
-//				S_StartSound (TempSoundChannel(), 0, cl_sfx_met2stn, pos, 1, 1);
+//				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_met2stn, 1, 1);
 				break;
 			}
 
@@ -1489,7 +1489,7 @@ void CL_ParseTEnt (void)
 				ex->startTime = cl.time + (rand()%50 / 200.0);
 				ex->endTime = ex->startTime + ex->model->numframes * 0.04;
 			}
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_axeExplode, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			break;
 
 		case TE_HWBONEPOWER:
@@ -1557,7 +1557,7 @@ void CL_ParseTEnt (void)
 				ex->frameFunc = CheckSpaceThink;
 				
 			}
-			S_StartSound(TempSoundChannel(), 1, cl_sfx_bonephit, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_bonephit, 1, 1);
 
 			break;
 		case TE_HWBONEPOWER2:
@@ -1576,11 +1576,11 @@ void CL_ParseTEnt (void)
 			//sound
 			if(cnt2)
 			{
-				S_StartSound(TempSoundChannel(), 1, cl_sfx_bonehit, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_bonehit, 1, 1);
 			}
 			else
 			{
-				S_StartSound(TempSoundChannel(), 1, cl_sfx_bonewal, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_bonewal, 1, 1);
 			}
 
 			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_grav, 7);
@@ -1614,7 +1614,7 @@ void CL_ParseTEnt (void)
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 			
-			S_StartSound(TempSoundChannel(), 1, cl_sfx_ravendie, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravendie, 1, 1);
 			break;
 		case TE_HWRAVENEXPLODE:
 			pos[0] = net_message.ReadCoord ();
@@ -1644,7 +1644,7 @@ void CL_ParseTEnt (void)
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
-			S_StartSound(TempSoundChannel(), 1, cl_sfx_ravengo, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravengo, 1, 1);
 			break;
 
 		case TE_ICEHIT:
@@ -1718,15 +1718,15 @@ void CL_ParseTEnt (void)
 			// Add in the sound
 			if(cnt2 == 1)
 			{	// hit a wall
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_icewall, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_icewall, 1, 1);
 			}
 			else if (cnt2 == 2)
 			{
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_iceshatter, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_iceshatter, 1, 1);
 			}
 			else
 			{	// hit a person
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_iceflesh, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_iceflesh, 1, 1);
 			}
 			break;
 
@@ -1750,7 +1750,7 @@ void CL_ParseTEnt (void)
 					playIceSound+=host_frametime;
 					if(playIceSound >= .6)
 					{
-						S_StartSound (TempSoundChannel(), 0, cl_sfx_icestorm, center, 1, 1);
+						S_StartSound(center, TempSoundChannel(), 0, cl_sfx_icestorm, 1, 1);
 						playIceSound -= .6;
 					}
 
@@ -1915,11 +1915,11 @@ void CL_ParseTEnt (void)
 				{
 					if(rand()&1)
 					{
-						S_StartSound (TempSoundChannel(), 0, cl_sfx_lightning1, state->origin, 1, 1);
+						S_StartSound(state->origin, TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
 					}
 					else
 					{
-						S_StartSound (TempSoundChannel(), 0, cl_sfx_lightning2, state->origin, 1, 1);
+						S_StartSound(state->origin, TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
 					}
 
 					for (i = 0; i < 5; i++)
@@ -1958,7 +1958,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord ();
 			pos[2] = net_message.ReadCoord ();
 			cnt = net_message.ReadShort();  //skin#
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_teleport[rand() % 5], pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_teleport[rand() % 5], 1, 1);
 
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
@@ -2016,11 +2016,11 @@ void CL_ParseTEnt (void)
 				{
 					if(rand()&1)
 					{
-						S_StartSound (TempSoundChannel(), 0, cl_sfx_lightning1, pos, 1, 1);
+						S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
 					}
 					else
 					{
-						S_StartSound (TempSoundChannel(), 0, cl_sfx_lightning2, pos, 1, 1);
+						S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
 					}
 
 					for (i = 0; i < 5; i++)
@@ -2062,7 +2062,7 @@ void CL_ParseTEnt (void)
 				ex->scale = 100;
 				ex->frameFunc = SwordFrameFunc;
 
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_swordExplode, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_swordExplode, 1, 1);
 
 			}
 			break;
@@ -2082,7 +2082,7 @@ void CL_ParseTEnt (void)
 			ex->scale = 100;
 			ex->endTime = ex->startTime + ex->model->numframes * 0.05;
 
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_axeBounce, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeBounce, 1, 1);
 			break;
 
 		case TE_AXE_EXPLODE:
@@ -2130,7 +2130,7 @@ void CL_ParseTEnt (void)
 			}
 
 
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_axeExplode, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			break;
 
 		case TE_TIME_BOMB:
@@ -2172,7 +2172,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + ex->model->numframes * 0.05;
 			}
 
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_axeExplode, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			break;
 
 		case TE_FIREBALL:
@@ -2197,7 +2197,7 @@ void CL_ParseTEnt (void)
 			ex->avel[1] = 50;
 			ex->avel[2] = 50;
 		
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_fireBall, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_fireBall, 1, 1);
 			break;
 
 		case TE_SUNSTAFF_POWER:
@@ -2250,13 +2250,13 @@ void CL_ParseTEnt (void)
 
 
 
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_fireBall, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_fireBall, 1, 1);
 
 				state = FindState(ent);
 
 				if (state)
 				{
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_sunstaff, state->origin, 1, 1);
+					S_StartSound(state->origin, TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
 
 					models[0] = Mod_ForName("models/stsunsf2.mdl", true);
 					models[1] = Mod_ForName("models/stsunsf1.mdl", true);
@@ -2344,7 +2344,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + ex->model->numframes * 0.04;
 			}
 
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_purify2, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_purify2, 1, 1);
 			 
 			break;
 
@@ -2419,20 +2419,20 @@ void CL_ParseTEnt (void)
 				switch(style)
 				{
 				case 0:
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_big_gib, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_big_gib, 1, 1);
 					break;
 				case 1:
 					if(rand()%2)
 					{
-						S_StartSound (TempSoundChannel(), 0, cl_sfx_gib1, pos, 1, 1);
+						S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_gib1, 1, 1);
 					}
 					else
 					{
-						S_StartSound (TempSoundChannel(), 0, cl_sfx_gib2, pos, 1, 1);
+						S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_gib2, 1, 1);
 					}
 					break;
 				case 2:
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_telefrag, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_telefrag, 1, 1);
 					break;
 				}
 			}
@@ -2460,8 +2460,8 @@ void CL_ParseTEnt (void)
 				//R_RocketTrail (pos, endPos, rt_purify);
 				R_RocketTrail (pos, endPos, rt_purify);
 
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_purify1_fire, pos, 1, 1);
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_purify1_hit, endPos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_purify1_fire, 1, 1);
+				S_StartSound(endPos, TempSoundChannel(), 0, cl_sfx_purify1_hit, 1, 1);
 
 				ex = CL_AllocExplosion();
 				VectorCopy(endPos, ex->origin);
@@ -2600,7 +2600,7 @@ void CL_ParseTEnt (void)
 				ex->frameFunc = MeteorCrushSpawnThink;
 				ex->data = maxDist;
 
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_axeExplode, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			}
 
 			break;
@@ -2635,7 +2635,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + ex->model->numframes * 0.05;
 			}
 
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_acidhit, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_acidhit, 1, 1);
 
 			break;
 
@@ -2715,7 +2715,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + 4.0;
 			}
 
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_acidhit, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_acidhit, 1, 1);
 			break;
 
 		case TE_FIREWALL:
@@ -2818,7 +2818,7 @@ void CL_ParseTEnt (void)
 				ex->endTime = ex->startTime + ex->model->numframes * 0.05;
 			}
 
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_flameend, pos, 1, 1);
+			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_flameend, 1, 1);
 
 			break;
 		case TE_HWBONERIC:
@@ -2829,11 +2829,11 @@ void CL_ParseTEnt (void)
 			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_grav, cnt);
 			rnd = rand() % 100;
 			if (rnd > 95)
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_ric1, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
 			else if (rnd > 91)
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_ric2, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric2, 1, 1);
 			else if (rnd > 87)
-				S_StartSound (TempSoundChannel(), 0, cl_sfx_ric3, pos, 1, 1);
+				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric3, 1, 1);
 
 			break;
 
@@ -3349,8 +3349,8 @@ void CL_ParseTEnt (void)
 					}
 
 					VectorSet(smokeDir,0,0,100);
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_sunstaff, source, 1, 1);
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_sunhit, dest, 1, 1);
+					S_StartSound(source, TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
+					S_StartSound(dest, TempSoundChannel(), 0, cl_sfx_sunhit, 1, 1);
 					R_SunStaffTrail(dest, source);
 					CreateStream(TE_STREAM_COLORBEAM, ent, flags, tag, duration, skin, source, dest);
 				}
@@ -3375,11 +3375,11 @@ void CL_ParseTEnt (void)
 
 				if(rand()&1)
 				{
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_lightning1, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_lightning1, 1, 1);
 				}
 				else
 				{
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_lightning2, pos, 1, 1);
+					S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_lightning2, 1, 1);
 				}
 
 				for (i = 0; i < 10; i++)
@@ -4109,7 +4109,7 @@ void MultiGrenadeExplodeSound (explosion_t *ex)//plug up all of -1's channels w/
 			MultiGrenadeCurrentChannel=0;
 		}
 
-		S_StartSound (TempSoundChannel(), MultiGrenadeCurrentChannel++, cl_sfx_explode, ex->origin, 1, 1);
+		S_StartSound(ex->origin, TempSoundChannel(), MultiGrenadeCurrentChannel++, cl_sfx_explode, 1, 1);
 	}
 
 
@@ -4347,7 +4347,7 @@ void ChunkThink(explosion_t *ex)
 				//R_RunParticleEffect2 (ex->origin, dmin, dmax, 136 + (rand()%5), pt_darken, 20);	// FIXME - These should be green
 				if(!(rand()%3))
 				{
-					S_StartSound (TempSoundChannel(), 0, cl_sfx_dropfizzle, ex->origin, 1, 1);
+					S_StartSound(ex->origin, TempSoundChannel(), 0, cl_sfx_dropfizzle, 1, 1);
 				}
 			}
 		}
@@ -4581,7 +4581,7 @@ void CreateRavenDeath(vec3_t pos)
 	ex->startTime = cl.time;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 	
-	S_StartSound(TempSoundChannel(), 1, cl_sfx_ravendie, pos, 1, 1);
+	S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_ravendie, 1, 1);
 }
 
 void CreateExplosionWithSound(vec3_t pos)
@@ -4594,7 +4594,7 @@ void CreateExplosionWithSound(vec3_t pos)
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 	ex->model = Mod_ForName("models/sm_expld.spr", true);
 	
-	S_StartSound (TempSoundChannel(), 1, cl_sfx_explode, pos, 1, 1);
+	S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_explode, 1, 1);
 }
 
 void SwordFrameFunc(explosion_t *ex)
@@ -4720,7 +4720,7 @@ void MeteorBlastThink(explosion_t *ex)
 		}
 		if(rand()&1)
 		{
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_axeExplode, ex->origin, 1, 1);
+			S_StartSound(ex->origin, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 		}
 
 		ex->model == NULL;
@@ -5126,7 +5126,7 @@ void PowerFlameBurnRemove(explosion_t *ex)
 	ex2->abslight = 128;
 
 	
-	if(rand()&1)S_StartSound(TempSoundChannel(), 1, cl_sfx_flameend, ex2->origin, 1, 1);
+	if(rand()&1)S_StartSound(ex2->origin, TempSoundChannel(), 1, cl_sfx_flameend, 1, 1);
 }
 
 void CL_UpdatePowerFlameBurn(entity_t *ent, int edict_num)
@@ -5180,8 +5180,8 @@ void CL_UpdateHammer(entity_t *ent, int edict_num)
 	{
 		if(!(testVal%3))
 		{
-			//S_StartSound(TempSoundChannel(), 1, cl_sfx_hammersound, ent->origin, 1, 1);
-			S_StartSound(edict_num, 2, cl_sfx_hammersound, ent->origin, 1, 1);
+			//S_StartSound(ent->origin, TempSoundChannel(), 1, cl_sfx_hammersound, 1, 1);
+			S_StartSound(ent->origin, edict_num, 2, cl_sfx_hammersound, 1, 1);
 		}
 	}
 }
@@ -5197,7 +5197,7 @@ void CL_UpdateBug(entity_t *ent)
 	// do this every .1 seconds
 //		if(!(testVal%3))
 //		{
-			S_StartSound(TempSoundChannel(), 1, cl_sfx_buzzbee, ent->origin, 1, 1);
+			S_StartSound(ent->origin, TempSoundChannel(), 1, cl_sfx_buzzbee, 1, 1);
 //		}
 	}
 }
@@ -5229,7 +5229,7 @@ void CL_UpdateIceStorm(entity_t *ent, int edict_num)
 		playIceSound+=host_frametime;
 		if(playIceSound >= .6)
 		{
-			S_StartSound (TempSoundChannel(), 0, cl_sfx_icestorm, center, 1, 1);
+			S_StartSound(center, TempSoundChannel(), 0, cl_sfx_icestorm, 1, 1);
 			playIceSound -= .6;
 		}
 	}

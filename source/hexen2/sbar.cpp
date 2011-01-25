@@ -1485,7 +1485,7 @@ static void ShowInfoDown_f(void)
 	{
 		return;
 	}
-	S_LocalSound("misc/barmovup.wav");
+	S_StartLocalSound("misc/barmovup.wav");
 	BarTargetHeight = BAR_TOTAL_HEIGHT;
 	sb_ShowInfo = true;
 	sb_updates = 0;
@@ -1507,7 +1507,7 @@ static void ShowInfoUp_f(void)
 	{
 		BarTargetHeight = BAR_TOP_HEIGHT;
 	}
-	S_LocalSound("misc/barmovdn.wav");
+	S_StartLocalSound("misc/barmovdn.wav");
 	sb_ShowInfo = false;
 	sb_updates = 0;
 }
@@ -1541,7 +1541,7 @@ static void InvLeft_f(void)
 	{
 		inv_flg = true;
 	}
-	S_LocalSound("misc/invmove.wav");
+	S_StartLocalSound("misc/invmove.wav");
 	InventoryHideTime = cl.time+INVENTORY_DISPLAY_TIME;
 }
 
@@ -1575,7 +1575,7 @@ static void InvRight_f(void)
 	{
 		inv_flg = true;
 	}
-	S_LocalSound("misc/invmove.wav");
+	S_StartLocalSound("misc/invmove.wav");
 	InventoryHideTime = cl.time+INVENTORY_DISPLAY_TIME;
 }
 
@@ -1591,7 +1591,7 @@ static void InvUse_f(void)
 	{
 		return;
 	}
-	S_LocalSound("misc/invuse.wav");
+	S_StartLocalSound("misc/invuse.wav");
 	//Inv_Update(false);
 	Inv_Update(true);
 	inv_flg = false;

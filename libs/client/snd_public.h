@@ -35,17 +35,25 @@ void S_StartBackgroundTrack(const char* Intro, const char* Loop);
 void S_StopBackgroundTrack();
 
 // let the sound system know where an entity currently is
-void S_UpdateEntityPosition(int EntityNum, const vec3_t Origin);
+void S_UpdateEntityPosition(int EntityNumber, const vec3_t Origin);
 
 // all continuous looping sounds must be added before calling S_Update
 void S_ClearLoopingSounds(bool KillAll);
-void S_AddLoopingSound(int EntityNum, const vec3_t Origin, const vec3_t Velocity, sfxHandle_t SfxHandle);
-void S_AddRealLoopingSound(int EntityNum, const vec3_t Origin, const vec3_t Velocity, sfxHandle_t SfxHandle);
-void S_StopLoopingSound(int EntityNum);
+void S_AddLoopingSound(int EntityNumber, const vec3_t Origin, const vec3_t Velocity, sfxHandle_t SfxHandle);
+void S_AddRealLoopingSound(int EntityNumber, const vec3_t Origin, const vec3_t Velocity, sfxHandle_t SfxHandle);
+void S_StopLoopingSound(int EntityNumber);
 
 // stop all sounds and the background track
 void S_StopAllSounds();
 
 void S_ClearSoundBuffer();
+
+// if origin is NULL, the sound will be dynamically sourced from the entity
+void S_StartSound(vec3_t Origin, int EntityNumber, int EntityChannel, sfxHandle_t SfxHandle, float FVolume = 1, float Attenuation = 1, float TimeOffset = 0);
+void S_StartLocalSound(const char* Sound);
+void S_StartLocalSound(sfxHandle_t SfxHandle, int ChannelNumber);
+void S_StopSound(int EntityNumber, int EntityChannel);
+void S_UpdateSoundPos(int EntityNumber, int EntityChannel, vec3_t Origin);
+void S_StaticSound(sfxHandle_t SfxHandle, vec3_t Origin, float Volume, float Attenuation);
 
 extern	QCvar* s_volume;

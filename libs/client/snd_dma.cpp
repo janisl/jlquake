@@ -27,11 +27,17 @@
 // only begin attenuating sound volumes when outside the FULLVOLUME range
 #define SOUND_FULLVOLUME		80
 
+#define CHAN_ANNOUNCER			7
+
+#define ATTN_STATIC				3	// diminish very rapidly with distance
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 int S_GetClientFrameCount();
+sfx_t *S_RegisterSexedSound(int entnum, char *base);
+int S_GetClFrameServertime();
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -57,6 +63,7 @@ QCvar		*s_doppler;
 QCvar* ambient_level;
 QCvar* ambient_fade;
 QCvar* snd_noextraupdate;
+QCvar* nosound;
 
 channel_t   s_channels[MAX_CHANNELS];
 channel_t   loop_channels[MAX_CHANNELS];
@@ -96,6 +103,10 @@ int			s_registration_sequence;
 bool		s_registering;
 
 loopSound_t	loopSounds[MAX_LOOPSOUNDS];
+
+vec_t		sound_nominal_clip_dist=1000.0;
+
+static int			s_beginofs;
 
 // CODE --------------------------------------------------------------------
 
@@ -1264,6 +1275,36 @@ void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult, int *lef
 
 //==========================================================================
 //
+//	S_Spatialize
+//
+//==========================================================================
+
+void S_Spatialize(channel_t *ch)
+{
+	vec3_t		origin;
+
+	// anything coming from the view entity will always be full volume
+	if (ch->entnum == listener_number)
+	{
+		ch->leftvol = ch->master_vol;
+		ch->rightvol = ch->master_vol;
+		return;
+	}
+
+	if (ch->fixed_origin)
+	{
+		VectorCopy(ch->origin, origin);
+	}
+	else
+	{
+		VectorCopy(loopSounds[ch->entnum].origin, origin);
+	}
+
+	S_SpatializeOrigin(origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
+}           
+
+//==========================================================================
+//
 //	S_ClearSoundBuffer
 //
 //	If we are about to perform file access, clear the buffer
@@ -1350,21 +1391,670 @@ void S_StopAllSounds()
 	S_ClearSoundBuffer();
 }
 
-/*
-=================
-SND_Spatialize
-=================
-*/
-void SND_Spatialize(channel_t *ch)
+//==========================================================================
+//
+//	S_AllocPlaysound
+//
+//==========================================================================
+
+playsound_t* S_AllocPlaysound()
 {
-// anything coming from the view entity will allways be full volume
-	if (ch->entnum == listener_number)
+	playsound_t	*ps;
+
+	ps = s_freeplays.next;
+	if (ps == &s_freeplays)
 	{
-		ch->leftvol = ch->master_vol;
-		ch->rightvol = ch->master_vol;
+		return NULL;		// no free playsounds
+	}
+
+	// unlink from freelist
+	ps->prev->next = ps->next;
+	ps->next->prev = ps->prev;
+	
+	return ps;
+}
+
+//==========================================================================
+//
+//	S_FreePlaysound
+//
+//==========================================================================
+
+void S_FreePlaysound(playsound_t* ps)
+{
+	// unlink from channel
+	ps->prev->next = ps->next;
+	ps->next->prev = ps->prev;
+
+	// add to free list
+	ps->next = s_freeplays.next;
+	s_freeplays.next->prev = ps;
+	ps->prev = &s_freeplays;
+	s_freeplays.next = ps;
+}
+
+//==========================================================================
+//
+//	S_StartSound
+//
+//	Validates the parms and ques the sound up
+//	if pos is NULL, the sound will be dynamically sourced from the entity
+//	Entchannel 0 will never override a playing sound
+//
+//==========================================================================
+
+void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHandle, float fvol, float attenuation, float timeofs)
+{
+	if (!s_soundStarted || s_soundMuted)
+	{
 		return;
 	}
 
-	// calculate stereo seperation and distance attenuation
-	S_SpatializeOrigin(ch->origin, ch->master_vol, ch->dist_mult, &ch->leftvol, &ch->rightvol);
-}           
+	if (sfxHandle < 0 || sfxHandle >= s_numSfx)
+	{
+		if (GGameType & GAME_Quake3)
+		{
+			GLog.Write(S_COLOR_YELLOW "S_StartSound: handle %i out of range\n", sfxHandle);
+		}
+		else
+		{
+			GLog.Write("S_StartSound: handle %i out of range\n", sfxHandle);
+		}
+		return;
+	}
+
+	sfx_t* sfx = &s_knownSfx[sfxHandle];
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		channel_t *target_chan, *check;
+		int		vol;
+		int		ch_idx;
+		int		skip;
+		qboolean skip_dist_check = false;
+
+		if (nosound->value)
+			return;
+
+		vol = fvol * 255;
+
+		// pick a channel to play on
+		target_chan = S_PickChannel(entnum, entchannel);
+		if (!target_chan)
+			return;
+			
+		if ((GGameType & GAME_Hexen2) && attenuation == 4)//Looping sound- always play
+		{
+			skip_dist_check = true;
+			attenuation = 1;//was 3 - static
+		}
+
+		// spatialize
+		Com_Memset(target_chan, 0, sizeof(*target_chan));
+		VectorCopy(origin, target_chan->origin);
+		target_chan->dist_mult = attenuation / sound_nominal_clip_dist;
+		target_chan->master_vol = vol;
+		target_chan->entnum = entnum;
+		target_chan->entchannel = entchannel;
+		target_chan->fixed_origin = true;
+		S_Spatialize(target_chan);
+
+		if (!skip_dist_check)
+		{
+			if (!target_chan->leftvol && !target_chan->rightvol)
+			{
+				return;		// not audible at all
+			}
+		}
+
+		// new channel
+		if (!S_LoadSound(sfx))
+		{
+			target_chan->sfx = NULL;
+			return;		// couldn't load the sound's data
+		}
+
+		target_chan->sfx = sfx;
+		target_chan->startSample = s_paintedtime;
+
+		// if an identical sound has also been started this frame, offset the pos
+		// a bit to keep it from just making the first one louder
+		check = s_channels;
+		for (ch_idx=0; ch_idx < MAX_CHANNELS ; ch_idx++, check++)
+		{
+			if (check == target_chan)
+				continue;
+			if (check->sfx == sfx && check->startSample == s_paintedtime)
+			{
+				skip = rand () % (int)(0.1*dma.speed);
+				if (skip >= target_chan->startSample + target_chan->sfx->Length)
+					skip = target_chan->startSample + target_chan->sfx->Length - 1;
+				target_chan->startSample -= skip;
+				break;
+			}
+			
+		}
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		int			vol;
+		playsound_t	*ps, *sort;
+		int			start;
+
+		if (sfx->Name[0] == '*')
+		{
+			sfx = S_RegisterSexedSound(entnum, sfx->Name);
+		}
+
+		// make sure the sound is loaded
+		if (!S_LoadSound (sfx))
+			return;		// couldn't load the sound's data
+
+		vol = fvol*255;
+
+		// make the playsound_t
+		ps = S_AllocPlaysound ();
+		if (!ps)
+			return;
+
+		if (origin)
+		{
+			VectorCopy (origin, ps->origin);
+			ps->fixed_origin = true;
+		}
+		else
+			ps->fixed_origin = false;
+
+		ps->entnum = entnum;
+		ps->entchannel = entchannel;
+		ps->attenuation = attenuation;
+		ps->volume = vol;
+		ps->sfx = sfx;
+
+		// drift s_beginofs
+		start = S_GetClFrameServertime() * 0.001 * dma.speed + s_beginofs;
+		if (start < s_paintedtime)
+		{
+			start = s_paintedtime;
+			s_beginofs = start - (S_GetClFrameServertime() * 0.001 * dma.speed);
+		}
+		else if (start > s_paintedtime + 0.3 * dma.speed)
+		{
+			start = s_paintedtime + 0.1 * dma.speed;
+			s_beginofs = start - (S_GetClFrameServertime() * 0.001 * dma.speed);
+		}
+		else
+		{
+			s_beginofs-=10;
+		}
+
+		if (!timeofs)
+			ps->begin = s_paintedtime;
+		else
+			ps->begin = start + timeofs * dma.speed;
+
+		// sort into the pending sound list
+		for (sort = s_pendingplays.next ; 
+			sort != &s_pendingplays && sort->begin < ps->begin ;
+			sort = sort->next)
+				;
+
+		ps->next = sort;
+		ps->prev = sort->prev;
+
+		ps->next->prev = ps;
+		ps->prev->next = ps;
+	}
+	else if (GGameType & GAME_Quake3)
+	{
+		channel_t	*ch;
+		int i, oldest, chosen, time;
+		int	inplay, allowed;
+
+		if (!origin && ( entnum < 0 || entnum > MAX_LOOPSOUNDS))
+		{
+			throw QDropException(va("S_StartSound: bad entitynum %i", entnum));
+		}
+
+		if (sfx->InMemory == false)
+		{
+			S_LoadSound(sfx);
+		}
+
+		if ( s_show->integer == 1 ) {
+			GLog.Write("%i : %s\n", s_paintedtime, sfx->Name );
+		}
+
+		time = Com_Milliseconds();
+
+	//	Com_Printf("playing %s\n", sfx->soundName);
+		// pick a channel to play on
+
+		allowed = 4;
+		if (entnum == listener_number) {
+			allowed = 8;
+		}
+
+		ch = s_channels;
+		inplay = 0;
+		for ( i = 0; i < MAX_CHANNELS ; i++, ch++ ) {		
+			if (ch[i].entnum == entnum && ch[i].sfx == sfx) {
+				if (time - ch[i].allocTime < 50) {
+	//				if (Cvar_VariableValue( "cg_showmiss" )) {
+	//					Com_Printf("double sound start\n");
+	//				}
+					return;
+				}
+				inplay++;
+			}
+		}
+
+		if (inplay>allowed) {
+			return;
+		}
+
+		sfx->LastTimeUsed = time;
+
+		ch = S_ChannelMalloc();	// entityNum, entchannel);
+		if (!ch) {
+			ch = s_channels;
+
+			oldest = sfx->LastTimeUsed;
+			chosen = -1;
+			for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
+				if (ch->entnum != listener_number && ch->entnum == entnum && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER) {
+					oldest = ch->allocTime;
+					chosen = i;
+				}
+			}
+			if (chosen == -1) {
+				ch = s_channels;
+				for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
+					if (ch->entnum != listener_number && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER) {
+						oldest = ch->allocTime;
+						chosen = i;
+					}
+				}
+				if (chosen == -1) {
+					if (ch->entnum == listener_number) {
+						for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
+							if (ch->allocTime<oldest) {
+								oldest = ch->allocTime;
+								chosen = i;
+							}
+						}
+					}
+					if (chosen == -1) {
+						GLog.Write("dropping sound\n");
+						return;
+					}
+				}
+			}
+			ch = &s_channels[chosen];
+			ch->allocTime = sfx->LastTimeUsed;
+		}
+
+		if (origin) {
+			VectorCopy (origin, ch->origin);
+			ch->fixed_origin = true;
+		} else {
+			ch->fixed_origin = false;
+		}
+
+		ch->master_vol = 127;
+		ch->entnum = entnum;
+		ch->sfx = sfx;
+		ch->startSample = START_SAMPLE_IMMEDIATE;
+		ch->entchannel = entchannel;
+		ch->leftvol = ch->master_vol;		// these will get calced at next spatialize
+		ch->rightvol = ch->master_vol;		// unless the game isn't running
+		ch->doppler = false;
+	}
+}
+
+//==========================================================================
+//
+//	S_StartLocalSound
+//
+//==========================================================================
+
+void S_StartLocalSound(const char* Sound)
+{
+	if (!s_soundStarted)
+	{
+		return;
+	}
+
+	sfxHandle_t sfx = S_RegisterSound(Sound);
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		S_StartSound(vec3_origin, listener_number, -1, sfx);
+	}
+	else
+	{
+		S_StartSound(NULL, listener_number, 0, sfx);
+	}
+}
+
+//==========================================================================
+//
+//	S_StartLocalSound
+//
+//==========================================================================
+
+void S_StartLocalSound(sfxHandle_t SfxHandle, int ChannelNumber)
+{
+	S_StartSound(NULL, listener_number, ChannelNumber, SfxHandle);
+}
+
+//==========================================================================
+//
+//	S_IssuePlaysound
+//
+//	Take the next playsound and begin it on the channel
+// This is never called directly by S_Play*, but only by the update loop.
+//
+//==========================================================================
+
+void S_IssuePlaysound(playsound_t* ps)
+{
+	channel_t	*ch;
+
+	if (s_show->value)
+		GLog.Write("Issue %i\n", ps->begin);
+	// pick a channel to play on
+	ch = S_PickChannel(ps->entnum, ps->entchannel);
+	if (!ch)
+	{
+		S_FreePlaysound(ps);
+		return;
+	}
+
+	// spatialize
+	if (ps->attenuation == ATTN_STATIC)
+		ch->dist_mult = ps->attenuation * 0.001;
+	else
+		ch->dist_mult = ps->attenuation * 0.0005;
+	ch->master_vol = ps->volume;
+	ch->entnum = ps->entnum;
+	ch->entchannel = ps->entchannel;
+	ch->sfx = ps->sfx;
+	VectorCopy (ps->origin, ch->origin);
+	ch->fixed_origin = ps->fixed_origin;
+
+	S_Spatialize(ch);
+
+	S_LoadSound(ch->sfx);
+    ch->startSample = s_paintedtime;
+
+	// free the playsound
+	S_FreePlaysound(ps);
+}
+
+//==========================================================================
+//
+//	S_StopSound
+//
+//==========================================================================
+
+void S_StopSound(int entnum, int entchannel)
+{
+	for (int i = 0; i < MAX_CHANNELS; i++)
+	{
+		if (s_channels[i].entnum == entnum &&
+			(((GGameType & GAME_Hexen2) && !entchannel) || s_channels[i].entchannel == entchannel))	// 0 matches any
+		{
+			s_channels[i].startSample = 0;
+			s_channels[i].sfx = NULL;
+			if (!(GGameType & GAME_Hexen2) || entchannel)
+			{
+				return;	//got a match, not looking for more.
+			}
+		}
+	}
+}
+
+//==========================================================================
+//
+//	S_UpdateSoundPos
+//
+//==========================================================================
+
+void S_UpdateSoundPos(int entnum, int entchannel, vec3_t origin)
+{
+	for (int i = 0; i < MAX_CHANNELS; i++)
+	{
+		if (s_channels[i].entnum == entnum &&
+			s_channels[i].entchannel == entchannel)
+		{
+			VectorCopy(origin, s_channels[i].origin);
+			return;
+		}
+	}
+}
+
+//==========================================================================
+//
+//	S_StaticSound
+//
+//==========================================================================
+
+void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuation)
+{
+	if (Handle < 0 || Handle >= s_numSfx)
+	{
+		return;
+	}
+	sfx_t* sfx = s_knownSfx + Handle;
+
+	if (numLoopChannels == MAX_CHANNELS)
+	{
+		GLog.Write("StaticSound: MAX_CHANNELS reached\n");
+		GLog.Write(" failed at (%.2f, %.2f, %.2f)\n",origin[0],origin[1],origin[2]);
+		return;
+	}
+
+	channel_t* ss = &loop_channels[numLoopChannels];
+	numLoopChannels++;
+
+	if (!S_LoadSound(sfx))
+	{
+		return;
+	}
+
+	if (sfx->LoopStart == -1)
+	{
+		GLog.Write("Sound %s not looped\n", sfx->Name);
+		return;
+	}
+
+	ss->sfx = sfx;
+	VectorCopy(origin, ss->origin);
+	ss->master_vol = vol;
+	ss->dist_mult = (attenuation / 64) / sound_nominal_clip_dist;
+    ss->startSample = s_paintedtime;
+	ss->fixed_origin = true;
+
+	S_Spatialize(ss);
+}
+
+//==========================================================================
+//
+//	S_ScanChannelStarts
+//
+//	Returns qtrue if any new sounds were started since the last mix
+//
+//==========================================================================
+
+bool S_ScanChannelStarts()
+{
+	bool newSamples = false;
+	channel_t* ch = s_channels;
+
+	for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+	{
+		if (!ch->sfx)
+		{
+			continue;
+		}
+		// if this channel was just started this frame,
+		// set the sample count to it begins mixing
+		// into the very first sample
+		if (ch->startSample == START_SAMPLE_IMMEDIATE)
+		{
+			ch->startSample = s_paintedtime;
+			newSamples = true;
+			continue;
+		}
+
+		// if it is completely finished by now, clear it
+		if (ch->startSample + (ch->sfx->Length) <= s_paintedtime)
+		{
+			S_ChannelFree(ch);
+		}
+	}
+
+	return newSamples;
+}
+
+//==========================================================================
+//
+//	GetSoundtime
+//
+//==========================================================================
+
+void GetSoundtime()
+{
+	int		samplepos;
+	static	int		buffers;
+	static	int		oldsamplepos;
+	int		fullsamples;
+	
+	fullsamples = dma.samples / dma.channels;
+
+	// it is possible to miscount buffers if it has wrapped twice between
+	// calls to S_Update.  Oh well.
+	samplepos = SNDDMA_GetDMAPos();
+
+	if (samplepos < oldsamplepos)
+	{
+		buffers++;					// buffer wrapped
+		
+		if (s_paintedtime > 0x40000000)
+		{	// time to chop things off to avoid 32 bit limits
+			buffers = 0;
+			s_paintedtime = fullsamples;
+			S_StopAllSounds();
+		}
+	}
+	oldsamplepos = samplepos;
+
+	s_soundtime = buffers*fullsamples + samplepos/dma.channels;
+
+	if (GGameType & GAME_Quake3)
+	{
+#if 0
+		// check to make sure that we haven't overshot
+		if (s_paintedtime < s_soundtime)
+		{
+			Com_DPrintf ("S_Update_ : overflow\n");
+			s_paintedtime = s_soundtime;
+		}
+#endif
+
+#ifdef _WIN32
+		if (dma.submission_chunk < 256)
+		{
+			s_paintedtime = s_soundtime + s_mixPreStep->value * dma.speed;
+		}
+		else
+		{
+			s_paintedtime = s_soundtime + dma.submission_chunk;
+		}
+#endif
+	}
+}
+
+//==========================================================================
+//
+//	S_Update_
+//
+//==========================================================================
+
+void S_Update_()
+{
+	static float	lastTime = 0.0f;
+	static int		ot = -1;
+	
+	unsigned        endtime;
+	int				samps;
+
+	if (!s_soundStarted || s_soundMuted)
+	{
+		return;
+	}
+
+	float thisTime = Com_Milliseconds();
+
+	//	Updates s_soundtime
+	GetSoundtime();
+
+	// check to make sure that we haven't overshot
+	if (!(GGameType & GAME_Quake3) && s_paintedtime < s_soundtime)
+	{
+		GLog.DWrite("S_Update_ : overflow\n");
+		s_paintedtime = s_soundtime;
+	}
+
+	float ma = s_mixahead->value * dma.speed;
+	if (GGameType & GAME_Quake3)
+	{
+#ifdef _WIN32
+		if (s_soundtime == ot)
+		{
+			return;
+		}
+#endif
+		ot = s_soundtime;
+
+		// clear any sound effects that end before the current time,
+		// and start any new sounds
+		S_ScanChannelStarts();
+
+		float sane = thisTime - lastTime;
+		if (sane < 11)
+		{
+			sane = 11;			// 85hz
+		}
+
+		float op = s_mixPreStep->value + sane * dma.speed * 0.01;
+
+		if (op < ma)
+		{
+			ma = op;
+		}
+	}
+
+	// mix ahead of current position
+	endtime = s_soundtime + ma;
+
+	if (!(GGameType & GAME_QuakeHexen))
+	{
+		// mix to an even submission block size
+		endtime = (endtime + dma.submission_chunk - 1) & ~ (dma.submission_chunk  -1);
+	}
+
+	// never mix more than the complete buffer
+	samps = dma.samples >> (dma.channels-1);
+	if (endtime - s_soundtime > samps)
+		endtime = s_soundtime + samps;
+
+	SNDDMA_BeginPainting();
+
+	S_PaintChannels(endtime);
+
+	SNDDMA_Submit();
+
+	lastTime = thisTime;
+}

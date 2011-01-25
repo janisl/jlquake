@@ -1924,7 +1924,7 @@ void VID_MenuKey (int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		S_LocalSound ("raven/menu1.wav");
+		S_StartLocalSound("raven/menu1.wav");
 		M_Menu_Options_f ();
 		break;
 
