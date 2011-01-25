@@ -38,13 +38,6 @@ void S_SoundList_f(void);
 void S_Update_();
 void S_StopAllSounds(void);
 
-// =======================================================================
-// Internal sound data & structures
-// =======================================================================
-
-#define		SOUND_ATTENUATE		0.0008f
-
-
 // ====================================================================
 // User-setable variables
 // ====================================================================
@@ -138,94 +131,6 @@ are no longer valid.
 void S_DisableSounds( void ) {
 	S_StopAllSounds();
 	s_soundMuted = qtrue;
-}
-
-// =======================================================================
-// Start a sound effect
-// =======================================================================
-
-/*
-==================
-S_AddLoopSounds
-
-Spatialize all of the looping sounds.
-All sounds are on the same cycle, so any duplicates can just
-sum up the channel multipliers.
-==================
-*/
-void S_AddLoopSounds (void) {
-	int			i, j, time;
-	int			left_total, right_total, left, right;
-	channel_t	*ch;
-	loopSound_t	*loop, *loop2;
-	static int	loopFrame;
-
-
-	numLoopChannels = 0;
-
-	time = Com_Milliseconds();
-
-	loopFrame++;
-	for ( i = 0 ; i < MAX_GENTITIES ; i++) {
-		loop = &loopSounds[i];
-		if ( !loop->active || loop->mergeFrame == loopFrame ) {
-			continue;	// already merged into an earlier sound
-		}
-
-		if (loop->kill) {
-			S_SpatializeOrigin( loop->origin, 127, SOUND_ATTENUATE, &left_total, &right_total);			// 3d
-		} else {
-			S_SpatializeOrigin( loop->origin, 90,  SOUND_ATTENUATE, &left_total, &right_total);			// sphere
-		}
-
-		loop->sfx->LastTimeUsed = time;
-
-		for (j=(i+1); j< MAX_GENTITIES ; j++) {
-			loop2 = &loopSounds[j];
-			if ( !loop2->active || loop2->doppler || loop2->sfx != loop->sfx) {
-				continue;
-			}
-			loop2->mergeFrame = loopFrame;
-
-			if (loop2->kill) {
-				S_SpatializeOrigin( loop2->origin, 127, SOUND_ATTENUATE, &left, &right);				// 3d
-			} else {
-				S_SpatializeOrigin( loop2->origin, 90,  SOUND_ATTENUATE, &left, &right);				// sphere
-			}
-
-			loop2->sfx->LastTimeUsed = time;
-			left_total += left;
-			right_total += right;
-		}
-		if (left_total == 0 && right_total == 0) {
-			continue;		// not audible
-		}
-
-		// allocate a channel
-		ch = &loop_channels[numLoopChannels];
-		
-		if (left_total > 255)
-		{
-			left_total = 255;
-		}
-		if (right_total > 255)
-		{
-			right_total = 255;
-		}
-
-		ch->master_vol = 127;
-		ch->leftvol = left_total;
-		ch->rightvol = right_total;
-		ch->sfx = loop->sfx;
-		ch->doppler = loop->doppler;
-		ch->dopplerScale = loop->dopplerScale;
-		ch->oldDopplerScale = loop->oldDopplerScale;
-		numLoopChannels++;
-		if (numLoopChannels == MAX_CHANNELS)
-		{
-			return;
-		}
-	}
 }
 
 //=============================================================================

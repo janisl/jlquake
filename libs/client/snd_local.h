@@ -39,6 +39,9 @@
 
 #define START_SAMPLE_IMMEDIATE	0x7fffffff
 
+#define SOUND_LOOPATTENUATE		0.003
+#define SOUND_ATTENUATE			0.0008f
+
 struct portable_samplepair_t
 {
 	int			left;	// the final values will be clamped to +/- 0x00ffff00 and shifted down
@@ -150,6 +153,7 @@ bool S_ScanChannelStarts();
 void GetSoundtime();
 void S_Update_();
 void S_IssuePlaysound(playsound_t* ps);
+void S_AddLoopSounds();
 
 bool S_LoadSound(sfx_t* sfx);
 

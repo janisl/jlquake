@@ -28,12 +28,6 @@ void S_Update_();
 void S_StopAllSounds(void);
 
 
-// =======================================================================
-// Internal sound data & structures
-// =======================================================================
-
-#define		SOUND_LOOPATTENUATE	0.003
-
 // ====================================================================
 // User-setable variables
 // ====================================================================
@@ -188,25 +182,8 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 // Start a sound effect
 // =======================================================================
 
-/*
-==================
-S_AddLoopSounds
-
-Entities with a ->sound field will generated looped sounds
-that are automatically started, stopped, and merged together
-as the entities are sent to the client
-==================
-*/
-void S_AddLoopSounds (void)
+void S_RegisterLoopSounds (void)
 {
-	int			i, j;
-	int			sounds[MAX_EDICTS];
-	int			left, right, left_total, right_total;
-	channel_t	*ch;
-	sfx_t		*sfx;
-	int			num;
-	entity_state_t	*ent;
-
 	if (cl_paused->value)
 		return;
 
@@ -216,71 +193,14 @@ void S_AddLoopSounds (void)
 	if (!cl.sound_prepped)
 		return;
 
-	numLoopChannels = 0;
-
-	for (i=0 ; i<cl.frame.num_entities ; i++)
+	S_ClearLoopingSounds(false);
+	for (int i=0 ; i<cl.frame.num_entities ; i++)
 	{
-		num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
-		ent = &cl_parse_entities[num];
-		sounds[i] = ent->sound;
-	}
-
-	for (i=0 ; i<cl.frame.num_entities ; i++)
-	{
-		if (!sounds[i])
+		int num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
+		entity_state_t* ent = &cl_parse_entities[num];
+		if (!ent->sound)
 			continue;
-
-		sfxHandle_t Handle = cl.sound_precache[sounds[i]];
-		if (Handle < 0 || Handle >= s_numSfx)
-			continue;		// bad sound effect
-		sfx = s_knownSfx + Handle;
-		if (!sfx->Data)
-			continue;
-
-		num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
-		ent = &cl_parse_entities[num];
-
-		// find the total contribution of all sounds of this type
-		S_SpatializeOrigin (ent->origin, 255.0, SOUND_LOOPATTENUATE,
-			&left_total, &right_total);
-		for (j=i+1 ; j<cl.frame.num_entities ; j++)
-		{
-			if (sounds[j] != sounds[i])
-				continue;
-			sounds[j] = 0;	// don't check this again later
-
-			num = (cl.frame.parse_entities + j)&(MAX_PARSE_ENTITIES-1);
-			ent = &cl_parse_entities[num];
-
-			S_SpatializeOrigin (ent->origin, 255.0, SOUND_LOOPATTENUATE, 
-				&left, &right);
-			left_total += left;
-			right_total += right;
-		}
-
-		if (left_total == 0 && right_total == 0)
-			continue;		// not audible
-
-		// allocate a channel
-		ch = &loop_channels[numLoopChannels];
-
-		if (left_total > 255)
-		{
-			left_total = 255;
-		}
-		if (right_total > 255)
-		{
-			right_total = 255;
-		}
-
-		ch->leftvol = left_total;
-		ch->rightvol = right_total;
-		ch->sfx = sfx;
-		numLoopChannels++;
-		if (numLoopChannels == MAX_CHANNELS)
-		{
-			return;
-		}
+		S_AddLoopingSound(num, ent->origin, vec3_origin, cl.sound_precache[ent->sound]);
 	}
 }
 
@@ -346,6 +266,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	}
 
 	// add loopsounds
+	S_RegisterLoopSounds();
 	S_AddLoopSounds ();
 
 	//

@@ -1049,6 +1049,10 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 
 	if (!sfx->Length)
 	{
+		if (GGameType & GAME_Quake2)
+		{
+			return;
+		}
 		QDropException(va("%s has length 0", sfx->Name));
 	}
 
@@ -1916,6 +1920,107 @@ bool S_ScanChannelStarts()
 	}
 
 	return newSamples;
+}
+
+//==========================================================================
+//
+//	S_AddLoopSounds
+//
+//	Spatialize all of the looping sounds. All sounds are on the same cycle,
+// so any duplicates can just sum up the channel multipliers.
+//
+//==========================================================================
+
+void S_AddLoopSounds()
+{
+	int			left_total, right_total, left, right;
+	static int	loopFrame;
+
+	numLoopChannels = 0;
+
+	int time = Com_Milliseconds();
+
+	loopFrame++;
+	for (int i = 0; i < MAX_LOOPSOUNDS; i++)
+	{
+		loopSound_t* loop = &loopSounds[i];
+		if (!loop->active || loop->mergeFrame == loopFrame)
+		{
+			continue;	// already merged into an earlier sound
+		}
+
+		if (GGameType & GAME_Quake2)
+		{
+			S_SpatializeOrigin(loop->origin, 255.0, SOUND_LOOPATTENUATE, &left_total, &right_total);
+		}
+		else if (loop->kill)
+		{
+			S_SpatializeOrigin(loop->origin, 127, SOUND_ATTENUATE, &left_total, &right_total);			// 3d
+		}
+		else
+		{
+			S_SpatializeOrigin(loop->origin, 90,  SOUND_ATTENUATE, &left_total, &right_total);			// sphere
+		}
+
+		loop->sfx->LastTimeUsed = time;
+
+		for (int j = i + 1; j < MAX_LOOPSOUNDS; j++)
+		{
+			loopSound_t* loop2 = &loopSounds[j];
+			if (!loop2->active || loop2->doppler || loop2->sfx != loop->sfx)
+			{
+				continue;
+			}
+			loop2->mergeFrame = loopFrame;
+
+			if (GGameType & GAME_Quake2)
+			{
+				S_SpatializeOrigin(loop2->origin, 255.0, SOUND_LOOPATTENUATE, &left, &right);
+			}
+			else if (loop2->kill)
+			{
+				S_SpatializeOrigin(loop2->origin, 127, SOUND_ATTENUATE, &left, &right);				// 3d
+			}
+			else
+			{
+				S_SpatializeOrigin(loop2->origin, 90,  SOUND_ATTENUATE, &left, &right);				// sphere
+			}
+
+			loop2->sfx->LastTimeUsed = time;
+			left_total += left;
+			right_total += right;
+		}
+
+		if (left_total == 0 && right_total == 0)
+		{
+			continue;		// not audible
+		}
+
+		// allocate a channel
+		channel_t* ch = &loop_channels[numLoopChannels];
+
+		if (left_total > 255)
+		{
+			left_total = 255;
+		}
+		if (right_total > 255)
+		{
+			right_total = 255;
+		}
+
+		ch->master_vol = 127;
+		ch->leftvol = left_total;
+		ch->rightvol = right_total;
+		ch->sfx = loop->sfx;
+		ch->doppler = loop->doppler;
+		ch->dopplerScale = loop->dopplerScale;
+		ch->oldDopplerScale = loop->oldDopplerScale;
+		numLoopChannels++;
+		if (numLoopChannels == MAX_CHANNELS)
+		{
+			return;
+		}
+	}
 }
 
 //==========================================================================
