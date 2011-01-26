@@ -32,17 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "client.h"
 #include "../../../libs/client/snd_local.h"
 
-void S_Play_f(void);
-void S_SoundList_f(void);
-
-void S_Update_();
-void S_StopAllSounds(void);
-
-// ====================================================================
-// User-setable variables
-// ====================================================================
-
-
 /*
 ================
 S_Init
@@ -131,52 +120,6 @@ are no longer valid.
 void S_DisableSounds( void ) {
 	S_StopAllSounds();
 	s_soundMuted = qtrue;
-}
-
-/*
-===============================================================================
-
-console functions
-
-===============================================================================
-*/
-
-void S_Play_f( void ) {
-	int 		i;
-	sfxHandle_t	h;
-	char		name[256];
-	
-	i = 1;
-	while ( i<Cmd_Argc() ) {
-		if ( !QStr::RChr(Cmd_Argv(i), '.') ) {
-			QStr::Sprintf( name, sizeof(name), "%s.wav", Cmd_Argv(1) );
-		} else {
-			QStr::NCpyZ( name, Cmd_Argv(i), sizeof(name) );
-		}
-		h = S_RegisterSound(name);
-		if( h ) {
-			S_StartLocalSound( h, CHAN_LOCAL_SOUND );
-		}
-		i++;
-	}
-}
-
-void S_SoundList_f()
-{
-	int		i;
-	sfx_t	*sfx;
-	int		size, total;
-	char	mem[2][16];
-
-	QStr::Cpy(mem[0], "paged out");
-	QStr::Cpy(mem[1], "resident ");
-	total = 0;
-	for (sfx=s_knownSfx, i=0 ; i<s_numSfx ; i++, sfx++) {
-		size = sfx->Length;
-		total += size;
-		Com_Printf("%6i : %s[%s]\n", size, sfx->Name, mem[sfx->InMemory]);
-	}
-	Com_Printf ("Total resident: %i\n", total);
 }
 
 int S_GetClientFrameCount()

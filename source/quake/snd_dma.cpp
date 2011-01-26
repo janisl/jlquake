@@ -22,16 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../../libs/client/snd_local.h"
 
-void S_Play(void);
-void S_PlayVol(void);
-void S_SoundList(void);
-void S_Update_();
-void S_StopAllSounds();
-
-// =======================================================================
-// Internal sound data & structures
-// =======================================================================
-
 QCvar* bgmvolume;
 
 
@@ -59,11 +49,11 @@ void S_Init (void)
 	if (COM_CheckParm("-nosound"))
 		return;
 
-	Cmd_AddCommand("play", S_Play);
-	Cmd_AddCommand("playvol", S_PlayVol);
+	Cmd_AddCommand("play", S_Play_f);
+	Cmd_AddCommand("playvol", S_PlayVol_f);
 	Cmd_AddCommand("music", S_Music_f);
 	Cmd_AddCommand("stopsound", S_StopAllSounds);
-	Cmd_AddCommand("soundlist", S_SoundList);
+	Cmd_AddCommand("soundlist", S_SoundList_f);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 
 	bool r = SNDDMA_Init();
@@ -97,84 +87,6 @@ void S_Shutdown(void)
 	s_soundStarted = 0;
 
 	SNDDMA_Shutdown();
-}
-
-/*
-===============================================================================
-
-console functions
-
-===============================================================================
-*/
-
-void S_Play(void)
-{
-	static int hash=345;
-	int 	i;
-	char name[256];
-	sfxHandle_t	sfx;
-	
-	i = 1;
-	while (i<Cmd_Argc())
-	{
-		if (!QStr::RChr(Cmd_Argv(i), '.'))
-		{
-			QStr::Cpy(name, Cmd_Argv(i));
-			QStr::Cat(name, sizeof(name), ".wav");
-		}
-		else
-			QStr::Cpy(name, Cmd_Argv(i));
-		sfx = S_RegisterSound(name);
-		S_StartSound(listener_origin, hash++, 0, sfx, 1.0, 1.0);
-		i++;
-	}
-}
-
-void S_PlayVol(void)
-{
-	static int hash=543;
-	int i;
-	float vol;
-	char name[256];
-	sfxHandle_t	sfx;
-	
-	i = 1;
-	while (i<Cmd_Argc())
-	{
-		if (!QStr::RChr(Cmd_Argv(i), '.'))
-		{
-			QStr::Cpy(name, Cmd_Argv(i));
-			QStr::Cat(name, sizeof(name), ".wav");
-		}
-		else
-			QStr::Cpy(name, Cmd_Argv(i));
-		sfx = S_RegisterSound(name);
-		vol = QStr::Atof(Cmd_Argv(i+1));
-		S_StartSound(listener_origin, hash++, 0, sfx, vol, 1.0);
-		i+=2;
-	}
-}
-
-void S_SoundList(void)
-{
-	int		i;
-	sfx_t	*sfx;
-	int		size, total;
-
-	total = 0;
-	for (sfx=s_knownSfx, i=0 ; i<s_numSfx; i++, sfx++)
-	{
-		if (!sfx->Data)
-			continue;
-		size = sfx->Length * 2;
-		total += size;
-		if (sfx->LoopStart >= 0)
-			Con_Printf ("L");
-		else
-			Con_Printf (" ");
-		Con_Printf("%6i : %s\n", size, sfx->Name);
-	}
-	Con_Printf ("Total resident: %i\n", total);
 }
 
 int S_GetClientFrameCount()

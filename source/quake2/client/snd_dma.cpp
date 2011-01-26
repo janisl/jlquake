@@ -22,18 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "snd_loc.h"
 
-void S_Play(void);
-void S_SoundList(void);
-void S_Update_();
-void S_StopAllSounds(void);
-
-
-// ====================================================================
-// User-setable variables
-// ====================================================================
-
-
-
 /*
 ================
 S_Init
@@ -61,10 +49,10 @@ void S_Init (void)
 		return;
 	}
 
-	Cmd_AddCommand("play", S_Play);
+	Cmd_AddCommand("play", S_Play_f);
 	Cmd_AddCommand("music", S_Music_f);
 	Cmd_AddCommand("stopsound", S_StopAllSounds);
-	Cmd_AddCommand("soundlist", S_SoundList);
+	Cmd_AddCommand("soundlist", S_SoundList_f);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 
 	bool r = SNDDMA_Init();
@@ -175,69 +163,6 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 	}
 
 	return sfx;
-}
-
-
-/*
-===============================================================================
-
-console functions
-
-===============================================================================
-*/
-
-void S_Play(void)
-{
-	int 	i;
-	char name[256];
-	sfxHandle_t	sfx;
-	
-	i = 1;
-	while (i<Cmd_Argc())
-	{
-		if (!QStr::RChr(Cmd_Argv(i), '.'))
-		{
-			QStr::Cpy(name, Cmd_Argv(i));
-			QStr::Cat(name, sizeof(name), ".wav");
-		}
-		else
-			QStr::Cpy(name, Cmd_Argv(i));
-		sfx = S_RegisterSound(name);
-		S_StartSound(NULL, listener_number, 0, sfx, 1.0, 1.0, 0);
-		i++;
-	}
-}
-
-void S_SoundList(void)
-{
-	int		i;
-	sfx_t	*sfx;
-	int		size, total;
-
-	total = 0;
-	for (sfx=s_knownSfx, i=0 ; i<s_numSfx ; i++, sfx++)
-	{
-		if (!sfx->RegistrationSequence)
-			continue;
-		if (sfx->Data)
-		{
-			size = sfx->Length * 2;
-			total += size;
-			if (sfx->LoopStart >= 0)
-				Com_Printf ("L");
-			else
-				Com_Printf (" ");
-			Com_Printf(" %6i : %s\n", size, sfx->Name);
-		}
-		else
-		{
-			if (sfx->Name[0] == '*')
-				Com_Printf("  placeholder : %s\n", sfx->Name);
-			else
-				Com_Printf("  not loaded  : %s\n", sfx->Name);
-		}
-	}
-	Com_Printf ("Total resident: %i\n", total);
 }
 
 int S_GetClientFrameCount()

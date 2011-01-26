@@ -27,6 +27,7 @@
 // only begin attenuating sound volumes when outside the FULLVOLUME range
 #define SOUND_FULLVOLUME		80
 
+#define CHAN_LOCAL_SOUND		6
 #define CHAN_ANNOUNCER			7
 
 #define ATTN_STATIC				3	// diminish very rapidly with distance
@@ -2407,4 +2408,127 @@ void S_ExtraUpdate()
 		return;		// don't pollute timings
 	}
 	S_Update_();
+}
+
+//**************************************************************************
+//	Console functions
+//**************************************************************************
+
+//==========================================================================
+//
+//	S_Play_f
+//
+//==========================================================================
+
+void S_Play_f()
+{
+	char		name[256];
+
+	int i = 1;
+	while (i < Cmd_Argc())
+	{
+		if (!QStr::RChr(Cmd_Argv(i), '.'))
+		{
+			QStr::Sprintf(name, sizeof(name), "%s.wav", Cmd_Argv(1));
+		}
+		else
+		{
+			QStr::NCpyZ(name, Cmd_Argv(i), sizeof(name));
+		}
+		sfxHandle_t h = S_RegisterSound(name);
+		if (h)
+		{
+			if (GGameType & GAME_QuakeHexen)
+			{
+				S_StartSound(listener_origin, listener_number, 0, h);
+			}
+			else if (GGameType & GAME_Quake2)
+			{
+				S_StartSound(NULL, listener_number, 0, h);
+			}
+			else
+			{
+				S_StartLocalSound(h, CHAN_LOCAL_SOUND);
+			}
+		}
+		i++;
+	}
+}
+
+//==========================================================================
+//
+//	S_PlayVol_f
+//
+//==========================================================================
+
+void S_PlayVol_f()
+{
+	char		name[256];
+
+	int i = 1;
+	while (i < Cmd_Argc())
+	{
+		if (!QStr::RChr(Cmd_Argv(i), '.'))
+		{
+			QStr::Sprintf(name, sizeof(name), "%s.wav", Cmd_Argv(1));
+		}
+		else
+		{
+			QStr::NCpyZ(name, Cmd_Argv(i), sizeof(name));
+		}
+		sfxHandle_t h = S_RegisterSound(name);
+		float vol = QStr::Atof(Cmd_Argv(i + 1));
+		if (h)
+		{
+			if (GGameType & GAME_QuakeHexen)
+			{
+				S_StartSound(listener_origin, listener_number, 0, h, vol);
+			}
+			else if (GGameType & GAME_Quake2)
+			{
+				S_StartSound(NULL, listener_number, 0, h, vol);
+			}
+			else
+			{
+				S_StartSound(NULL, listener_number, CHAN_LOCAL_SOUND, h, vol);
+			}
+		}
+		i += 2;
+	}
+}
+
+//==========================================================================
+//
+//	S_SoundList_f
+//
+//==========================================================================
+
+void S_SoundList_f()
+{
+	int		i;
+	sfx_t	*sfx;
+	int		size, total;
+	char	mem[2][16];
+
+	QStr::Cpy(mem[0], "paged out");
+	QStr::Cpy(mem[1], "resident ");
+	total = 0;
+	for (sfx=s_knownSfx, i=0 ; i<s_numSfx; i++, sfx++)
+	{
+		if (sfx->Name[0] == '*')
+		{
+			GLog.Write("  placeholder : %s\n", sfx->Name);
+		}
+		else
+		{
+			size = sfx->Length;
+			total += size;
+			if (sfx->LoopStart >= 0)
+				GLog.Write("L");
+			else
+				GLog.Write(" ");
+			GLog.Write("%6i : %s[%s]\n", size, sfx->Name, mem[sfx->InMemory]);
+		}
+	}
+	GLog.Write("Total resident: %i\n", total);
 }
