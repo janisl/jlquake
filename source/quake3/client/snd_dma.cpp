@@ -133,48 +133,6 @@ void S_DisableSounds( void ) {
 	s_soundMuted = qtrue;
 }
 
-//=============================================================================
-
-/*
-============
-S_Update
-
-Called once each time through the main loop
-============
-*/
-void S_Update( void ) {
-	int			i;
-	int			total;
-	channel_t	*ch;
-
-	if ( !s_soundStarted || s_soundMuted ) {
-		Com_DPrintf ("not started or muted\n");
-		return;
-	}
-
-	//
-	// debugging output
-	//
-	if ( s_show->integer == 2 ) {
-		total = 0;
-		ch = s_channels;
-		for (i=0 ; i<MAX_CHANNELS; i++, ch++) {
-			if (ch->sfx && (ch->leftvol || ch->rightvol) ) {
-				Com_Printf ("%f %f %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name);
-				total++;
-			}
-		}
-		
-		Com_Printf ("----(%i)---- painted: %i\n", total, s_paintedtime);
-	}
-
-	// add raw data from streamed samples
-	S_UpdateBackgroundTrack();
-
-	// mix some sound
-	S_Update_();
-}
-
 /*
 ===============================================================================
 
@@ -244,4 +202,9 @@ int S_GetClFrameServertime()
 byte* CM_LeafAmbientSoundLevel(int LeafNum)
 {
 	return NULL;
+}
+
+bool S_GetDisableScreen()
+{
+	return false;
 }

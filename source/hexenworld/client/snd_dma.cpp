@@ -8,9 +8,6 @@ void S_PlayVol(void);
 void S_SoundList(void);
 void S_Update_();
 
-// QuakeWorld hack...
-#define	viewentity	playernum+1
-
 // =======================================================================
 // Internal sound data & structures
 // =======================================================================
@@ -83,67 +80,6 @@ void S_Shutdown(void)
 	s_soundStarted = 0;
 
 	SNDDMA_Shutdown();
-}
-
-//=============================================================================
-
-/*
-============
-S_Update
-
-Called once each time through the main loop
-============
-*/
-void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
-{
-	int			i;
-	int			total;
-
-	if (!s_soundStarted || s_soundMuted)
-		return;
-
-	vec3_t axis[3];
-	VectorCopy(forward, axis[0]);
-	VectorSubtract(vec3_origin, right, axis[1]);
-	VectorCopy(up, axis[2]);
-	S_Respatialize(cl.viewentity, origin, axis, 0);
-
-//
-// debugging output
-//
-	if (s_show->value)
-	{
-		total = 0;
-		channel_t* ch = s_channels;
-		for (i=0 ; i<MAX_CHANNELS; i++, ch++)
-			if (ch->sfx && (ch->leftvol || ch->rightvol) )
-			{
-				//Con_Printf ("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->name);
-				total++;
-			}
-		ch = loop_channels;
-		for (i=0 ; i<numLoopChannels; i++, ch++)
-			if (ch->sfx && (ch->leftvol || ch->rightvol) )
-			{
-				//Con_Printf ("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->name);
-				total++;
-			}
-		
-		Con_Printf ("----(%i)----\n", total);
-	}
-
-	// add raw data from streamed samples
-	S_UpdateBackgroundTrack();
-
-// mix some sound
-	S_Update_();
-}
-
-void S_ExtraUpdate (void)
-{
-	if (snd_noextraupdate->value)
-		return;		// don't pollute timings
-	S_Update_();
 }
 
 /*
@@ -242,4 +178,9 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 int S_GetClFrameServertime()
 {
 	return 0;
+}
+
+bool S_GetDisableScreen()
+{
+	return false;
 }

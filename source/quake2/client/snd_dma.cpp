@@ -178,100 +178,6 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 }
 
 
-// =======================================================================
-// Start a sound effect
-// =======================================================================
-
-void S_RegisterLoopSounds (void)
-{
-	if (cl_paused->value)
-		return;
-
-	if (cls.state != ca_active)
-		return;
-
-	if (!cl.sound_prepped)
-		return;
-
-	S_ClearLoopingSounds(false);
-	for (int i=0 ; i<cl.frame.num_entities ; i++)
-	{
-		int num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
-		entity_state_t* ent = &cl_parse_entities[num];
-		if (!ent->sound)
-			continue;
-		S_AddLoopingSound(num, ent->origin, vec3_origin, cl.sound_precache[ent->sound]);
-	}
-}
-
-//=============================================================================
-
-/*
-============
-S_Update
-
-Called once each time through the main loop
-============
-*/
-void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
-{
-	int			i;
-	int			total;
-
-	if (!s_soundStarted)
-		return;
-
-	// if the laoding plaque is up, clear everything
-	// out to make sure we aren't looping a dirty
-	// dma buffer while loading
-	if (cls.disable_screen)
-	{
-		S_ClearSoundBuffer ();
-		return;
-	}
-
-	if (cls.state == ca_active)
-	{
-		vec3_t		origin;
-
-		for (i = 0; i < MAX_EDICTS; i++)
-		{
-			CL_GetEntitySoundOrigin(i, origin);
-			S_UpdateEntityPosition(i, origin);
-		}
-	}
-	S_RegisterLoopSounds();
-
-	vec3_t axis[3];
-	VectorCopy(forward, axis[0]);
-	VectorSubtract(vec3_origin, right, axis[1]);
-	VectorCopy(up, axis[2]);
-	S_Respatialize(cl.playernum + 1, origin, axis, 0);
-
-	//
-	// debugging output
-	//
-	if (s_show->value)
-	{
-		total = 0;
-		channel_t* ch = s_channels;
-		for (i=0 ; i<MAX_CHANNELS; i++, ch++)
-			if (ch->sfx && (ch->leftvol || ch->rightvol) )
-			{
-				Com_Printf ("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name);
-				total++;
-			}
-		
-		Com_Printf ("----(%i)---- painted: %i\n", total, s_paintedtime);
-	}
-
-	// add raw data from streamed samples
-	S_UpdateBackgroundTrack();
-
-// mix some sound
-	S_Update_();
-}
-
 /*
 ===============================================================================
 
@@ -352,4 +258,9 @@ int S_GetClFrameServertime()
 byte* CM_LeafAmbientSoundLevel(int LeafNum)
 {
 	return NULL;
+}
+
+bool S_GetDisableScreen()
+{
+	return !!cls.disable_screen;
 }

@@ -60,4 +60,7 @@ void S_StaticSound(sfxHandle_t SfxHandle, vec3_t Origin, float Volume, float Att
 // reletive to the given entityNum / orientation
 void S_Respatialize(int EntityNumber, const vec3_t Origin, vec3_t Axis[3], int InWater);
 
+void S_Update();
+void S_ExtraUpdate();
+
 extern	QCvar* s_volume;

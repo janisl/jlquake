@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void S_Init (void);
 void S_Shutdown (void);
 
-void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
-
 // the sound code makes callbacks to the client for entitiy position
 // information, so entities can be dynamically re-spatialized
 void CL_GetEntitySoundOrigin (int ent, vec3_t org);

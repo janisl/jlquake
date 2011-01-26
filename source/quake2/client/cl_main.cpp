@@ -1668,6 +1668,35 @@ void CL_SendCommand (void)
 }
 
 
+void CL_UpdateSounds()
+{
+	if (cl_paused->value)
+		return;
+
+	if (cls.state != ca_active)
+		return;
+
+	if (!cl.sound_prepped)
+		return;
+
+	for (int i = 0; i < MAX_EDICTS; i++)
+	{
+		vec3_t origin;
+		CL_GetEntitySoundOrigin(i, origin);
+		S_UpdateEntityPosition(i, origin);
+	}
+
+	S_ClearLoopingSounds(false);
+	for (int i=0 ; i<cl.frame.num_entities ; i++)
+	{
+		int num = (cl.frame.parse_entities + i)&(MAX_PARSE_ENTITIES-1);
+		entity_state_t* ent = &cl_parse_entities[num];
+		if (!ent->sound)
+			continue;
+		S_AddLoopingSound(num, ent->origin, vec3_origin, cl.sound_precache[ent->sound]);
+	}
+}
+
 /*
 ==================
 CL_Frame
@@ -1735,7 +1764,13 @@ void CL_Frame (int msec)
 		time_after_ref = Sys_Milliseconds_ ();
 
 	// update audio
-	S_Update (cl.refdef.vieworg, cl.v_forward, cl.v_right, cl.v_up);
+	CL_UpdateSounds();
+
+	vec3_t axis[3];
+	AnglesToAxis(cl.refdef.viewangles, axis);
+	S_Respatialize(cl.playernum + 1, cl.refdef.vieworg, axis, 0);
+
+	S_Update();
 	
 	CDAudio_Update();
 

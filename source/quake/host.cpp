@@ -714,11 +714,13 @@ void _Host_Frame (float time)
 // update audio
 	if (cls.signon == SIGNONS)
 	{
-		S_Update (r_origin, vpn, vright, vup);
+		vec3_t axis[3];
+		AnglesToAxis(r_refdef.viewangles, axis);
+		S_Respatialize(cl.viewentity, r_origin, axis, 0);
 		CL_DecayLights ();
 	}
-	else
-		S_Update (vec3_origin, vec3_origin, vec3_origin, vec3_origin);
+
+	S_Update();
 	
 	CDAudio_Update();
 

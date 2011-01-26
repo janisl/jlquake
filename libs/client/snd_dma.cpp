@@ -41,6 +41,7 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base);
 int S_GetClFrameServertime();
 int CM_PointLeafnum(const vec3_t p);
 byte* CM_LeafAmbientSoundLevel(int LeafNum);
+bool S_GetDisableScreen();
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -2340,4 +2341,70 @@ void S_Update_()
 	SNDDMA_Submit();
 
 	lastTime = thisTime;
+}
+
+//==========================================================================
+//
+//	S_Update
+//
+//	Called once each time through the main loop
+//
+//==========================================================================
+
+void S_Update()
+{
+	if (!s_soundStarted || s_soundMuted)
+	{
+		GLog.DWrite("not started or muted\n");
+		return;
+	}
+
+	// if the laoding plaque is up, clear everything
+	// out to make sure we aren't looping a dirty
+	// dma buffer while loading
+	if (S_GetDisableScreen())
+	{
+		S_ClearSoundBuffer();
+		return;
+	}
+
+	//
+	// debugging output
+	//
+	if (s_show->integer == 2)
+	{
+		int total = 0;
+		channel_t* ch = s_channels;
+		for (int i = 0; i < MAX_CHANNELS; i++, ch++)
+		{
+			if (ch->sfx && (ch->leftvol || ch->rightvol))
+			{
+				GLog.Write("%3i %3i %s\n", ch->leftvol, ch->rightvol, ch->sfx->Name);
+				total++;
+			}
+		}
+
+		GLog.Write("----(%i)---- painted: %i\n", total, s_paintedtime);
+	}
+
+	// add raw data from streamed samples
+	S_UpdateBackgroundTrack();
+
+	// mix some sound
+	S_Update_();
+}
+
+//==========================================================================
+//
+//	S_ExtraUpdate
+//
+//==========================================================================
+
+void S_ExtraUpdate()
+{
+	if (snd_noextraupdate->value)
+	{
+		return;		// don't pollute timings
+	}
+	S_Update_();
 }
