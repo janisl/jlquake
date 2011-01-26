@@ -199,7 +199,6 @@ typedef struct
 #include "protocol.h"
 #include "cmd.h"
 #include "sbar.h"
-#include "sound.h"
 #include "render.h"
 #include "client.h"
 #include "progs.h"

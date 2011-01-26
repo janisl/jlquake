@@ -16,7 +16,11 @@
 //**  GNU General Public License for more details.
 //**
 //**************************************************************************
-
+//**
+//**	Main control for any streaming sound output device.
+//**
+//**************************************************************************
+ 
 // HEADER FILES ------------------------------------------------------------
 
 #include "client.h"
@@ -69,6 +73,8 @@ QCvar* ambient_level;
 QCvar* ambient_fade;
 QCvar* snd_noextraupdate;
 QCvar* nosound;
+QCvar* bgmvolume;
+QCvar* bgmtype;
 
 channel_t   s_channels[MAX_CHANNELS];
 channel_t   loop_channels[MAX_CHANNELS];
@@ -2531,4 +2537,175 @@ void S_SoundList_f()
 		}
 	}
 	GLog.Write("Total resident: %i\n", total);
+}
+
+//==========================================================================
+//
+//	S_Init
+//
+//==========================================================================
+
+void S_Init()
+{
+	GLog.Write("\n------- sound initialization -------\n");
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		s_volume = Cvar_Get("volume", "0.7", CVAR_ARCHIVE);
+		bgmvolume = Cvar_Get("bgmvolume", "1", CVAR_ARCHIVE);
+		if (GGameType & GAME_Hexen2)
+		{
+			bgmtype = Cvar_Get("bgmtype", "cd", CVAR_ARCHIVE);   // cd or midi
+		}
+		nosound = Cvar_Get("nosound", "0", 0);
+		ambient_level = Cvar_Get("ambient_level", "0.3", 0);
+		ambient_fade = Cvar_Get("ambient_fade", "100", 0);
+		snd_noextraupdate = Cvar_Get("snd_noextraupdate", "0", 0);
+	}
+	else
+	{
+		s_volume = Cvar_Get("s_volume", "0.8", CVAR_ARCHIVE);
+	}
+	s_musicVolume = Cvar_Get("s_musicvolume", "0.25", CVAR_ARCHIVE);
+	s_doppler = Cvar_Get("s_doppler", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE);
+	s_khz = Cvar_Get("s_khz", "22", CVAR_ARCHIVE);
+	s_mixahead = Cvar_Get("s_mixahead", "0.2", CVAR_ARCHIVE);
+	if (GGameType & GAME_Quake3)
+	{
+		s_mixPreStep = Cvar_Get("s_mixPreStep", "0.05", CVAR_ARCHIVE);
+	}
+	s_show = Cvar_Get("s_show", "0", CVAR_CHEAT);
+	s_testsound = Cvar_Get("s_testsound", "0", CVAR_CHEAT);
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		if (COM_CheckParm("-nosound"))
+		{
+			GLog.Write("not initializing.\n");
+			GLog.Write("------------------------------------\n");
+			return;
+		}
+	}
+	else
+	{
+		QCvar* cv = Cvar_Get("s_initsound", "1", 0);
+		if (!cv->integer)
+		{
+			GLog.Write("not initializing.\n");
+			GLog.Write("------------------------------------\n");
+			return;
+		}
+	}
+
+	Cmd_AddCommand("play", S_Play_f);
+	if (GGameType & GAME_QuakeHexen)
+	{
+		Cmd_AddCommand("playvol", S_PlayVol_f);
+	}
+	Cmd_AddCommand("music", S_Music_f);
+	if (!(GGameType & GAME_Quake3))
+	{
+		Cmd_AddCommand("soundlist", S_SoundList_f);
+		Cmd_AddCommand("soundinfo", S_SoundInfo_f);
+		Cmd_AddCommand("stopsound", S_StopAllSounds);
+	}
+	else
+	{
+		Cmd_AddCommand("s_list", S_SoundList_f);
+		Cmd_AddCommand("s_info", S_SoundInfo_f);
+		Cmd_AddCommand("s_stop", S_StopAllSounds);
+	}
+
+	bool r = SNDDMA_Init();
+	GLog.Write("------------------------------------\n");
+
+	if (r)
+	{
+		s_soundStarted = 1;
+		if (GGameType & GAME_Quake3)
+		{
+			s_soundMuted = 1;
+			//s_numSfx = 0;
+		}
+		else
+		{
+			s_numSfx = 0;
+		}
+
+		Com_Memset(sfxHash, 0, sizeof(sfx_t*) * LOOP_HASH);
+
+		s_soundtime = 0;
+		s_paintedtime = 0;
+
+		if (GGameType & GAME_QuakeHexen)
+		{
+			ambient_sfx[BSP29AMBIENT_WATER] = s_knownSfx + S_RegisterSound("ambience/water1.wav");
+			ambient_sfx[BSP29AMBIENT_SKY] = s_knownSfx + S_RegisterSound("ambience/wind2.wav");
+		}
+
+		S_StopAllSounds();
+
+		S_SoundInfo_f();
+	}
+}
+
+//==========================================================================
+//
+//	S_Shutdown
+//
+//	Shutdown sound engine
+//
+//==========================================================================
+
+void S_Shutdown()
+{
+	if (!s_soundStarted)
+	{
+		return;
+	}
+
+	SNDDMA_Shutdown();
+
+	s_soundStarted = 0;
+
+    Cmd_RemoveCommand("play");
+	Cmd_RemoveCommand("music");
+	Cmd_RemoveCommand("stopsound");
+	Cmd_RemoveCommand("soundlist");
+	Cmd_RemoveCommand("soundinfo");
+
+	if (GGameType & GAME_Quake2)
+	{
+		// free all sounds
+		sfx_t* sfx = s_knownSfx;
+		for (int i = 0; i < s_numSfx; i++, sfx++)
+		{
+			if (!sfx->Name[0])
+			{
+				continue;
+			}
+			if (sfx->Data)
+			{
+				delete[] sfx->Data;
+			}
+			Com_Memset(sfx, 0, sizeof(*sfx));
+		}
+
+		s_numSfx = 0;
+	}
+}
+
+//==========================================================================
+//
+//	S_DisableSounds
+//
+//	Disables sounds until the next S_BeginRegistration.
+//	This is called when the hunk is cleared and the sounds are no longer valid.
+//
+//==========================================================================
+
+void S_DisableSounds()
+{
+	S_StopAllSounds();
+	s_soundMuted = true;
 }

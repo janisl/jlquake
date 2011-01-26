@@ -50,6 +50,9 @@
 #define	SU_WEAPON		(1<<14)
 #define	SU_SC2			(1<<15)
 
+#define DEFAULT_SOUND_PACKET_VOLUME 255
+#define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
+
 // a sound with no channel is a local only sound
 #define	SND_VOLUME		(1<<0)		// a byte
 #define	SND_ATTENUATION	(1<<1)		// a byte

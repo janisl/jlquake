@@ -62,5 +62,10 @@ void S_Respatialize(int EntityNumber, const vec3_t Origin, vec3_t Axis[3], int I
 
 void S_Update();
 void S_ExtraUpdate();
+void S_Shutdown();
+void S_Init();
+void S_DisableSounds();
 
 extern	QCvar* s_volume;
+extern	QCvar* bgmvolume;
+extern	QCvar* bgmtype;

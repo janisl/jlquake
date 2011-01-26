@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "vid.h"
 #include "screen.h"
-#include "sound.h"
 #include "input.h"
 #include "keys.h"
 #include "console.h"
@@ -527,6 +526,10 @@ void V_AddLightStyle (int style, float r, float g, float b);
 void CL_RegisterTEntSounds (void);
 void CL_RegisterTEntModels (void);
 void CL_SmokeAndFlash(vec3_t origin);
+
+// the sound code makes callbacks to the client for entitiy position
+// information, so entities can be dynamically re-spatialized
+void CL_GetEntitySoundOrigin (int ent, vec3_t org);
 
 
 //
