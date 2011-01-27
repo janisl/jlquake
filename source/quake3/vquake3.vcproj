@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="vquake3"
 	ProjectGUID="{81CB51C4-B434-4E12-B69B-BAEE102F2852}"
 	RootNamespace="quake3"
@@ -434,14 +434,6 @@
 			</File>
 			<File
 				RelativePath="server\server.h"
-				>
-			</File>
-			<File
-				RelativePath="client\snd_local.h"
-				>
-			</File>
-			<File
-				RelativePath="client\snd_public.h"
 				>
 			</File>
 			<File

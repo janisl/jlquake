@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="vquake"
 	ProjectGUID="{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}"
 	RootNamespace="winquake"
@@ -528,10 +528,6 @@
 			</File>
 			<File
 				RelativePath="server.h"
-				>
-			</File>
-			<File
-				RelativePath="sound.h"
 				>
 			</File>
 			<File

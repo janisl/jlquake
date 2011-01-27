@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="vqwcl"
 	ProjectGUID="{D4534779-D8AA-4694-8119-7A899AEFA0F3}"
 	TargetFrameworkVersion="0"
@@ -466,10 +466,6 @@
 			</File>
 			<File
 				RelativePath="screen.h"
-				>
-			</File>
-			<File
-				RelativePath="sound.h"
 				>
 			</File>
 			<File
