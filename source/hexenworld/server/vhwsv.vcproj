@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1253"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9,00"
+	Version="9.00"
 	Name="vhwsv"
 	ProjectGUID="{3918E6E0-AB3C-4A77-AC60-13AB718DCC1F}"
 	RootNamespace="qwsv"
@@ -23,6 +23,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -107,6 +108,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -291,10 +293,6 @@
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
 			<File
-				RelativePath="asm_i386.h"
-				>
-			</File>
-			<File
 				RelativePath="pr_comp.h"
 				>
 			</File>
@@ -304,10 +302,6 @@
 			</File>
 			<File
 				RelativePath="progs.h"
-				>
-			</File>
-			<File
-				RelativePath="quakeasm.h"
 				>
 			</File>
 			<File

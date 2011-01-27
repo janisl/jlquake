@@ -436,7 +436,6 @@ LONG WINAPI MainWndProc (
 
 	case MM_MCINOTIFY:
 		{
-			LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 			lRet = CDAudio_MessageHandler (hWnd, uMsg, wParam, lParam);
 		}
 		break;

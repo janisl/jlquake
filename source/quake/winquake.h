@@ -75,4 +75,3 @@ void CenterWindow(HWND hWndCenter, int width, int height, BOOL lefttopjustify);
 void VID_SetDefaultMode (void);
 
 void IN_Accumulate (void);
-LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

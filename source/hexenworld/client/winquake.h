@@ -69,6 +69,5 @@ void VID_SetDefaultMode (void);
 
 void IN_Accumulate (void);
 void IN_ClearStates (void);
-LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #endif

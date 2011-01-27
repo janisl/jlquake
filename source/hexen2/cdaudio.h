@@ -1,6 +1,6 @@
 
 int CDAudio_Init(void);
-void CDAudio_Play(byte track, qboolean looping);
+void CDAudio_Play(int track, qboolean looping);
 void CDAudio_Stop(void);
 void CDAudio_Pause(void);
 void CDAudio_Resume(void);
