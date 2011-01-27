@@ -20,27 +20,16 @@
 #ifndef _SND_LOCAL_H
 #define _SND_LOCAL_H
 
-#include "../core/bsp29file.h"
-
 #define WAV_FORMAT_PCM			1
-
-#define PAINTBUFFER_SIZE		4096					// this is in samples
 
 //#define MAX_CHANNELS			96
 #define MAX_CHANNELS			128
-#define MAX_DYNAMIC_CHANNELS	8
 
 // MAX_SFX may be larger than MAX_SOUNDS because
 // of custom player sounds
 #define MAX_SFX					4096
 
-//	This is MAX_EDICTS or MAX_GENTITIES
-#define MAX_LOOPSOUNDS			1024
-
-#define START_SAMPLE_IMMEDIATE	0x7fffffff
-
-#define SOUND_LOOPATTENUATE		0.003
-#define SOUND_ATTENUATE			0.0008f
+#define MAX_RAW_SAMPLES			16384
 
 struct portable_samplepair_t
 {
@@ -121,43 +110,9 @@ struct playsound_t
 	unsigned		begin;			// begin on this sample
 };
 
-struct loopSound_t
-{
-	vec3_t		origin;
-	vec3_t		velocity;
-	sfx_t		*sfx;
-	int			mergeFrame;
-	qboolean	active;
-	qboolean	kill;
-	qboolean	doppler;
-	float		dopplerScale;
-	float		oldDopplerScale;
-	int			framenum;
-};
-
-void Snd_Memset(void* dest, const int val, const size_t count);
-void S_SoundInfo_f();
 sfx_t* S_FindName(const char* name, bool create = true);
 sfx_t* S_AliasName(const char* aliasname, const char* truename);
-void S_UpdateBackgroundTrack();
-void S_Music_f();
-channel_t* S_PickChannel(int entnum, int entchannel);
-void S_SpatializeOrigin (vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol);
-void S_Spatialize(channel_t* ch);
-void S_ChannelFree(channel_t* v);
-channel_t* S_ChannelMalloc();
-void S_ChannelSetup();
-playsound_t* S_AllocPlaysound();
-void S_FreePlaysound(playsound_t* ps);
-bool S_ScanChannelStarts();
-void GetSoundtime();
-void S_Update_();
 void S_IssuePlaysound(playsound_t* ps);
-void S_AddLoopSounds();
-void S_UpdateAmbientSounds();
-void S_Play_f();
-void S_PlayVol_f();
-void S_SoundList_f();
 
 bool S_LoadSound(sfx_t* sfx);
 
@@ -172,65 +127,30 @@ int SNDDMA_GetDMAPos();
 void SNDDMA_BeginPainting();
 void SNDDMA_Submit();
 
-extern dma_t	dma;
-extern portable_samplepair_t	paintbuffer[PAINTBUFFER_SIZE];
+extern dma_t					dma;
+
 extern "C"
 {
-extern int*		snd_p;
-extern int		snd_linear_count;
-extern int		snd_vol;
-extern short*	snd_out;
+extern int*						snd_p;
+extern int						snd_linear_count;
+extern short*					snd_out;
 }
 
-extern int		s_soundtime;
-extern int   	s_paintedtime;
+extern int						s_soundtime;
+extern int   					s_paintedtime;
 
-extern QCvar	*s_testsound;
+extern QCvar*					s_testsound;
+extern QCvar*					s_khz;
 
-extern channel_t	s_channels[MAX_CHANNELS];
-extern channel_t	loop_channels[MAX_CHANNELS];
-extern int			numLoopChannels;
+extern channel_t				s_channels[MAX_CHANNELS];
+extern channel_t				loop_channels[MAX_CHANNELS];
+extern int						numLoopChannels;
 
-#define		MAX_PLAYSOUNDS	128
-extern playsound_t	s_pendingplays;
-extern playsound_t	s_playsounds[MAX_PLAYSOUNDS];
-extern playsound_t	s_freeplays;
+extern playsound_t				s_pendingplays;
 
-extern bool		s_use_custom_memset;
+extern int						s_rawend;
+extern portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
-#define	MAX_RAW_SAMPLES	16384
-extern	int		s_rawend;
-extern	portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
-
-//----
-extern int	s_soundStarted;
-extern bool	s_soundMuted;
-extern int			listener_number;
-extern vec3_t		listener_origin;
-extern vec3_t		listener_axis[3];
-extern sfx_t		s_knownSfx[MAX_SFX];
-extern int			s_numSfx;
-#define		LOOP_HASH		128
-extern sfx_t		*sfxHash[LOOP_HASH];
-extern fileHandle_t s_backgroundFile;
-extern wavinfo_t	s_backgroundInfo;
-extern int			s_backgroundSamples;
-extern char		s_backgroundLoop[MAX_QPATH];
-extern QCvar		*s_khz;
-extern QCvar		*s_show;
-extern QCvar		*s_mixahead;
-extern QCvar		*s_mixPreStep;
-extern QCvar		*s_musicVolume;
-extern QCvar		*s_doppler;
-extern QCvar* ambient_level;
-extern QCvar* ambient_fade;
-extern QCvar* snd_noextraupdate;
-extern QCvar* nosound;
-extern sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
-extern int			s_registration_sequence;
-extern bool			s_registering;
-extern loopSound_t	loopSounds[MAX_LOOPSOUNDS];
-extern channel_t	*freelist;
-extern vec_t		sound_nominal_clip_dist;
+extern sfx_t					s_knownSfx[MAX_SFX];
 
 #endif

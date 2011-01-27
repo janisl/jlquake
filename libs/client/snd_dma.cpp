@@ -25,8 +25,16 @@
 
 #include "client.h"
 #include "snd_local.h"
+#include "../core/bsp29file.h"
 
 // MACROS ------------------------------------------------------------------
+
+#define MAX_PLAYSOUNDS			128
+
+//	This is MAX_EDICTS or MAX_GENTITIES
+#define MAX_LOOPSOUNDS			1024
+
+#define START_SAMPLE_IMMEDIATE	0x7fffffff
 
 // only begin attenuating sound volumes when outside the FULLVOLUME range
 #define SOUND_FULLVOLUME		80
@@ -36,7 +44,26 @@
 
 #define ATTN_STATIC				3	// diminish very rapidly with distance
 
+#define SOUND_LOOPATTENUATE		0.003
+#define SOUND_ATTENUATE			0.0008f
+
+#define LOOP_HASH				128
+
 // TYPES -------------------------------------------------------------------
+
+struct loopSound_t
+{
+	vec3_t		origin;
+	vec3_t		velocity;
+	sfx_t		*sfx;
+	int			mergeFrame;
+	qboolean	active;
+	qboolean	kill;
+	qboolean	doppler;
+	float		dopplerScale;
+	float		oldDopplerScale;
+	int			framenum;
+};
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -56,66 +83,70 @@ bool S_GetDisableScreen();
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-dma_t		dma;
+dma_t				dma;
 
-int			s_soundtime;	// sample PAIRS
-int   		s_paintedtime; 	// sample PAIRS
+int					s_soundtime;	// sample PAIRS
+int   				s_paintedtime; 	// sample PAIRS
 
-QCvar*		s_volume;
-QCvar*		s_testsound;
-QCvar*		s_khz;
-QCvar*		s_show;
-QCvar*		s_mixahead;
-QCvar		*s_mixPreStep;
-QCvar		*s_musicVolume;
-QCvar		*s_doppler;
-QCvar* ambient_level;
-QCvar* ambient_fade;
-QCvar* snd_noextraupdate;
-QCvar* nosound;
-QCvar* bgmvolume;
-QCvar* bgmtype;
+QCvar*				s_volume;
+QCvar*				s_testsound;
+QCvar*				s_khz;
+QCvar*				bgmvolume;
+QCvar*				bgmtype;
 
-channel_t   s_channels[MAX_CHANNELS];
-channel_t   loop_channels[MAX_CHANNELS];
-int			numLoopChannels;
-channel_t*	freelist = NULL;
+channel_t   		s_channels[MAX_CHANNELS];
+channel_t   		loop_channels[MAX_CHANNELS];
+int					numLoopChannels;
 
-playsound_t	s_pendingplays;
-playsound_t	s_playsounds[MAX_PLAYSOUNDS];
-playsound_t	s_freeplays;
-
-bool		s_use_custom_memset = false;
+playsound_t			s_pendingplays;
 
 int						s_rawend;
 portable_samplepair_t	s_rawsamples[MAX_RAW_SAMPLES];
 
+sfx_t				s_knownSfx[MAX_SFX];
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-int			s_soundStarted;
-bool		s_soundMuted;
+static int			s_soundStarted;
+static bool			s_soundMuted;
 
-int			listener_number;
-vec3_t		listener_origin;
-vec3_t		listener_axis[3];
+static bool			s_use_custom_memset = false;
 
-sfx_t		s_knownSfx[MAX_SFX];
-int			s_numSfx = 0;
-sfx_t*		sfxHash[LOOP_HASH];
+static QCvar*		s_show;
+static QCvar*		s_mixahead;
+static QCvar*		s_mixPreStep;
+static QCvar*		s_musicVolume;
+static QCvar*		s_doppler;
+static QCvar*		ambient_level;
+static QCvar*		ambient_fade;
+static QCvar*		snd_noextraupdate;
+static QCvar*		nosound;
 
-fileHandle_t s_backgroundFile;
-wavinfo_t	s_backgroundInfo;
-int			s_backgroundSamples;
-char		s_backgroundLoop[MAX_QPATH];
+static int			listener_number;
+static vec3_t		listener_origin;
+static vec3_t		listener_axis[3];
 
-sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
+static int			s_numSfx = 0;
+static sfx_t*		sfxHash[LOOP_HASH];
 
-int			s_registration_sequence;
-bool		s_registering;
+static channel_t*	freelist = NULL;
 
-loopSound_t	loopSounds[MAX_LOOPSOUNDS];
+static fileHandle_t s_backgroundFile;
+static wavinfo_t	s_backgroundInfo;
+static int			s_backgroundSamples;
+static char			s_backgroundLoop[MAX_QPATH];
 
-vec_t		sound_nominal_clip_dist=1000.0;
+static sfx_t		*ambient_sfx[BSP29_NUM_AMBIENTS];
+
+static int			s_registration_sequence;
+static bool			s_registering;
+
+static playsound_t	s_playsounds[MAX_PLAYSOUNDS];
+static playsound_t	s_freeplays;
+
+static loopSound_t	loopSounds[MAX_LOOPSOUNDS];
+
+static vec_t		sound_nominal_clip_dist=1000.0;
 
 static int			s_beginofs;
 
@@ -128,7 +159,7 @@ static int			s_beginofs;
 //==========================================================================
 
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=371 
-void Snd_Memset(void* dest, const int val, const size_t count)
+static void Snd_Memset(void* dest, const int val, const size_t count)
 {
 	if (!s_use_custom_memset)
 	{
@@ -149,7 +180,7 @@ void Snd_Memset(void* dest, const int val, const size_t count)
 //
 //==========================================================================
 
-void S_ChannelFree(channel_t* v)
+static void S_ChannelFree(channel_t* v)
 {
 	v->sfx = NULL;
 	*(channel_t**)v = freelist;
@@ -162,7 +193,7 @@ void S_ChannelFree(channel_t* v)
 //
 //==========================================================================
 
-channel_t* S_ChannelMalloc()
+static channel_t* S_ChannelMalloc()
 {
 	channel_t *v;
 	if (freelist == NULL)
@@ -181,7 +212,7 @@ channel_t* S_ChannelMalloc()
 //
 //==========================================================================
 
-void S_ChannelSetup()
+static void S_ChannelSetup()
 {
 	channel_t *p, *q;
 
@@ -811,7 +842,7 @@ void S_StopBackgroundTrack()
 //
 //==========================================================================
 
-void S_UpdateBackgroundTrack()
+static void S_UpdateBackgroundTrack()
 {
 	int		bufferSamples;
 	int		fileSamples;
@@ -915,7 +946,7 @@ void S_UpdateBackgroundTrack()
 //
 //==========================================================================
 
-void S_SoundInfo_f()
+static void S_SoundInfo_f()
 {
 	GLog.Write("----- Sound Info -----\n");
 	if (!s_soundStarted)
@@ -953,7 +984,7 @@ void S_SoundInfo_f()
 //
 //==========================================================================
 
-void S_Music_f()
+static void S_Music_f()
 {
 	int c = Cmd_Argc();
 
@@ -1158,7 +1189,7 @@ void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velo
 //
 //==========================================================================
 
-channel_t* S_PickChannel(int EntNum, int EntChannel)
+static channel_t* S_PickChannel(int EntNum, int EntChannel)
 {
 	if ((GGameType & GAME_Quake2) && EntChannel < 0)
 	{
@@ -1221,7 +1252,7 @@ channel_t* S_PickChannel(int EntNum, int EntChannel)
 //
 //==========================================================================
 
-void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol)
+static void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult, int *left_vol, int *right_vol)
 {
 	vec_t		dot;
 	vec_t		dist;
@@ -1294,7 +1325,7 @@ void S_SpatializeOrigin(vec3_t origin, int master_vol, float dist_mult, int *lef
 //
 //==========================================================================
 
-void S_Spatialize(channel_t *ch)
+static void S_Spatialize(channel_t *ch)
 {
 	vec3_t		origin;
 
@@ -1412,7 +1443,7 @@ void S_StopAllSounds()
 //
 //==========================================================================
 
-playsound_t* S_AllocPlaysound()
+static playsound_t* S_AllocPlaysound()
 {
 	playsound_t	*ps;
 
@@ -1435,7 +1466,7 @@ playsound_t* S_AllocPlaysound()
 //
 //==========================================================================
 
-void S_FreePlaysound(playsound_t* ps)
+static void S_FreePlaysound(playsound_t* ps)
 {
 	// unlink from channel
 	ps->prev->next = ps->next;
@@ -1901,7 +1932,7 @@ void S_StaticSound(sfxHandle_t Handle, vec3_t origin, float vol, float attenuati
 //
 //==========================================================================
 
-bool S_ScanChannelStarts()
+static bool S_ScanChannelStarts()
 {
 	bool newSamples = false;
 	channel_t* ch = s_channels;
@@ -1938,7 +1969,7 @@ bool S_ScanChannelStarts()
 //
 //==========================================================================
 
-void S_UpdateAmbientSounds()
+static void S_UpdateAmbientSounds()
 {
 	float		vol;
 
@@ -2049,7 +2080,7 @@ void S_UpdateAmbientSounds()
 //
 //==========================================================================
 
-void S_AddLoopSounds()
+static void S_AddLoopSounds()
 {
 	int			left_total, right_total, left, right;
 	static int	loopFrame;
@@ -2215,7 +2246,7 @@ void S_Respatialize(int entityNum, const vec3_t head, vec3_t axis[3], int inwate
 //
 //==========================================================================
 
-void GetSoundtime()
+static void GetSoundtime()
 {
 	int		samplepos;
 	static	int		buffers;
@@ -2273,7 +2304,7 @@ void GetSoundtime()
 //
 //==========================================================================
 
-void S_Update_()
+static void S_Update_()
 {
 	static float	lastTime = 0.0f;
 	static int		ot = -1;
@@ -2426,7 +2457,7 @@ void S_ExtraUpdate()
 //
 //==========================================================================
 
-void S_Play_f()
+static void S_Play_f()
 {
 	char		name[256];
 
@@ -2467,7 +2498,7 @@ void S_Play_f()
 //
 //==========================================================================
 
-void S_PlayVol_f()
+static void S_PlayVol_f()
 {
 	char		name[256];
 
@@ -2509,7 +2540,7 @@ void S_PlayVol_f()
 //
 //==========================================================================
 
-void S_SoundList_f()
+static void S_SoundList_f()
 {
 	int		i;
 	sfx_t	*sfx;

@@ -28,6 +28,8 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define PAINTBUFFER_SIZE		4096					// this is in samples
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -42,14 +44,14 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-portable_samplepair_t	paintbuffer[PAINTBUFFER_SIZE];
+static portable_samplepair_t	paintbuffer[PAINTBUFFER_SIZE];
 extern "C"
 {
-int*		snd_p;
-int			snd_linear_count;
-int			snd_vol;
-short*		snd_out;
+int*			snd_p;
+int				snd_linear_count;
+short*			snd_out;
 }
+static int		snd_vol;
 
 // CODE --------------------------------------------------------------------
 
