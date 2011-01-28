@@ -3,6 +3,7 @@ set(CLIENT_FILES
 	snd_alsa.cpp
 	snd_dma.cpp
 	snd_mem.cpp
+	snd_midi_null.cpp
 	snd_mix.cpp
 	#snd_oss.cpp
 )

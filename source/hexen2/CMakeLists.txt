@@ -31,7 +31,6 @@ set(HEXEN2_FILES
 	host_cmd.cpp
 	keys.cpp
 	menu.cpp
-	midi.cpp
 	net_dgrm.cpp
 	net_loop.cpp
 	net_main.cpp

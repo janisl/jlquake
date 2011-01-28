@@ -2,7 +2,6 @@
  * $Header: /HexenWorld/Client/midi.c 7     3/27/98 6:22p Jmonroe $
  */
 
-#ifdef _WIN32
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
@@ -617,24 +616,3 @@ void SetChannelVolume(DWORD dwChannel, DWORD dwVolumePercent)
       return;
    }
 }
-
-#else
-#include "quakedef.h"
-
-qboolean MIDI_Init(void)
-{
-	return false;
-}
-
-void MIDI_Cleanup(void)
-{
-}
-
-void MIDI_Play(char *Name)
-{
-}
-
-void MIDI_Stop(void)
-{
-}
-#endif

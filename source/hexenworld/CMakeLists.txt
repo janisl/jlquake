@@ -67,7 +67,6 @@ set(HWCL_FILES
 	client/cvar.cpp
 	client/keys.cpp
 	client/menu.cpp
-	client/midi.cpp
 	client/net_chan.cpp
 	client/net_udp.cpp
 	client/pmove.cpp
