@@ -211,7 +211,6 @@ typedef struct
 #include "console.h"
 #include "view.h"
 #include "menu.h"
-#include "cdaudio.h"
 #include "glquake.h"
 
 //=============================================================================

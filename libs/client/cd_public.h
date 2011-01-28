@@ -17,12 +17,11 @@
 //**
 //**************************************************************************
 
-#ifndef _CLIENT_H
-#define _CLIENT_H
-
-#include "../core/core.h"
-
-#include "snd_public.h"
-#include "cd_public.h"
-
-#endif
+int CDAudio_Init();
+void CDAudio_Play(int track, qboolean looping);
+void CDAudio_Stop();
+void CDAudio_Pause();
+void CDAudio_Resume();
+void CDAudio_Shutdown();
+void CDAudio_Update();
+void CDAudio_Activate(qboolean active);
