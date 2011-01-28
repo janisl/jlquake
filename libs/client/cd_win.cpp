@@ -41,24 +41,24 @@ void CDAudio_Pause();
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-qboolean cdValid = false;
-qboolean	playing = false;
-qboolean	wasPlaying = false;
-qboolean	initialized = false;
-qboolean	enabled = false;
-qboolean playLooping = false;
-float	cdvolume;
-byte 	remap[100];
-byte		cdrom;
-byte		playTrack;
-byte		maxTrack;
+static qboolean cdValid = false;
+static qboolean	playing = false;
+static qboolean	wasPlaying = false;
+static qboolean	initialized = false;
+static qboolean	enabled = false;
+static qboolean playLooping = false;
+static float	cdvolume;
+static byte 	remap[100];
+static byte		cdrom;
+static byte		playTrack;
+static byte		maxTrack;
 
-UINT	wDeviceID;
-int		loopcounter;
+static UINT		wDeviceID;
+static int		loopcounter;
 
-QCvar *cd_nocd;
-QCvar *cd_loopcount;
-QCvar *cd_looptrack;
+static QCvar*	cd_nocd;
+static QCvar*	cd_loopcount;
+static QCvar*	cd_looptrack;
 
 // CODE --------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ QCvar *cd_looptrack;
 //
 //==========================================================================
 
-void CDAudio_Eject()
+static void CDAudio_Eject()
 {
 	DWORD	dwReturn;
 
@@ -84,7 +84,7 @@ void CDAudio_Eject()
 //
 //==========================================================================
 
-void CDAudio_CloseDoor()
+static void CDAudio_CloseDoor()
 {
 	DWORD	dwReturn;
 
@@ -100,7 +100,7 @@ void CDAudio_CloseDoor()
 //
 //==========================================================================
 
-int CDAudio_GetAudioDiskInfo()
+static int CDAudio_GetAudioDiskInfo()
 {
 	DWORD				dwReturn;
 	MCI_STATUS_PARMS	mciStatusParms;
@@ -146,7 +146,7 @@ int CDAudio_GetAudioDiskInfo()
 //
 //==========================================================================
 
-void CDAudio_Play2(int track, qboolean looping)
+static void CDAudio_Play2(int track, qboolean looping)
 {
 	DWORD				dwReturn;
     MCI_PLAY_PARMS		mciPlayParms;
@@ -363,7 +363,7 @@ void CDAudio_Resume()
 //
 //==========================================================================
 
-void CD_f()
+static void CD_f()
 {
 	char	*command;
 	int		ret;
