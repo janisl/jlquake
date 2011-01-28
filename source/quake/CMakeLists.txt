@@ -4,7 +4,6 @@ set(DEBUG_CFLAGS "-g")
 set(LDFLAGS -L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm -lasound)
 
 set(QUAKE_FILES
-	cd_linux.cpp
 	cl_demo.cpp
 	cl_input.cpp
 	cl_main.cpp

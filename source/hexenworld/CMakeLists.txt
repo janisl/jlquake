@@ -81,7 +81,6 @@ set(HWCL_FILES
 	client/view.cpp
 	client/wad.cpp
 	client/zone.cpp
-	client/cd_linux.cpp
 	client/gl_draw.cpp
 	client/gl_mesh.cpp
 	client/gl_model.cpp

@@ -50,7 +50,6 @@ set(HEXEN2_FILES
 	view.cpp
 	wad.cpp
 	world.cpp
-	cd_linux.cpp
 	sys_linux.cpp
 	snd_dma.cpp
 )
