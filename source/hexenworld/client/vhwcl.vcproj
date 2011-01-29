@@ -319,10 +319,6 @@
 				>
 			</File>
 			<File
-				RelativePath="mstrconv.cpp"
-				>
-			</File>
-			<File
 				RelativePath="net_chan.cpp"
 				>
 			</File>
@@ -404,10 +400,6 @@
 				>
 			</File>
 			<File
-				RelativePath="cdaudio.h"
-				>
-			</File>
-			<File
 				RelativePath="cl_effect.h"
 				>
 			</File>
@@ -456,15 +448,7 @@
 				>
 			</File>
 			<File
-				RelativePath="midi.h"
-				>
-			</File>
-			<File
 				RelativePath="mididef.h"
-				>
-			</File>
-			<File
-				RelativePath="midstuff.h"
 				>
 			</File>
 			<File

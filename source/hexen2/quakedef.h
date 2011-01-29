@@ -336,14 +336,3 @@ extern	QCvar*	chase_active;
 void Chase_Init (void);
 void Chase_Reset (void);
 void Chase_Update (void);
-
-
-// Midi Stuff
-// Put it here cuz I didn't want to make all the files
-// include the window components
-qboolean MIDI_Init(void);
-void MIDI_Cleanup(void);
-void MIDI_Play(char *Name);
-void MIDI_Stop(void);
-void MIDI_Pause(void);
-void MIDI_Loop(int NewValue);

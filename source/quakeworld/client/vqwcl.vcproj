@@ -4,6 +4,7 @@
 	Version="9.00"
 	Name="vqwcl"
 	ProjectGUID="{D4534779-D8AA-4694-8119-7A899AEFA0F3}"
+	RootNamespace="vqwcl"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -376,10 +377,6 @@
 			</File>
 			<File
 				RelativePath="bothdefs.h"
-				>
-			</File>
-			<File
-				RelativePath="cdaudio.h"
 				>
 			</File>
 			<File

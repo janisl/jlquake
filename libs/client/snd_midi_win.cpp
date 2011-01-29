@@ -8,8 +8,8 @@
 #include <memory.h>
 #include <mmreg.h>
 
-#include "midstuff.h"
-#include "midi.h"
+#include "../../libs/client/midstuff.h"
+#include "../../libs/client/midi.h"
 #include "quakedef.h"
 
 
@@ -31,7 +31,6 @@ static HANDLE   hBufferReturnEvent;
 
 
 static void FreeBuffers(void);
-
 
 void MidiErrorMessageBox(MMRESULT mmr)
 {
@@ -60,7 +59,7 @@ void MIDI_Stop_f (void)
 
 void MIDI_Pause_f (void)
 {
-	MIDI_Pause();
+	MIDI_Pause(0);
 }
 
 void MIDI_Loop_f (void)
@@ -101,7 +100,7 @@ BOOL MIDI_Init(void)
 
 	hBufferReturnEvent = CreateEvent(NULL,FALSE,FALSE,"Wait For Buffer Return");
 
-	if(COM_CheckParm("-nomidi"))
+	if (COM_CheckParm("-nomidi"))
 	{
 		bMidiInited = 0;
 		return FALSE;
@@ -170,29 +169,46 @@ void MIDI_Play(char *Name)
 	}
 }
 
-void MIDI_Pause(void)
+void MIDI_Pause(int mode)
 {
-	if(bPaused)
-	   midiStreamRestart(hStream);
-   else
-      midiStreamPause(hStream);
+	if (!bPlaying)
+	{
+		return;
+	}
 
-	bPaused = !bPaused;
+	if((mode == 0 && bPaused) || mode == 1)
+	{
+		midiStreamRestart(hStream);
+		bPaused = false;
+	}
+	else
+	{
+		midiStreamPause(hStream);
+		bPaused = true;
+	}
 }
 
 void MIDI_Loop(int NewValue)
 {
 	if (NewValue == 2)
-	   bLooped = !bLooped;
-    else bLooped = NewValue;
+	{
+		bLooped = !bLooped;
+	}
+    else
+	{
+		bLooped = NewValue;
+	}
 }
 
 void MIDI_Stop(void)
 {
 	MMRESULT mmrRetVal;
 
-   if(bFileOpen || bPlaying)// || uCallbackStatus != STATUS_CALLBACKDEAD)
-   {
+	if (!bMidiInited)	//Just to be safe
+		return;
+
+	if(bFileOpen || bPlaying)// || uCallbackStatus != STATUS_CALLBACKDEAD)
+	{
       bPlaying = bPaused = FALSE;
       if (uCallbackStatus != STATUS_CALLBACKDEAD && uCallbackStatus != STATUS_WAITINGFOREND)
          uCallbackStatus = STATUS_KILLCALLBACK;

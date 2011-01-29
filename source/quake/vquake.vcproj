@@ -413,10 +413,6 @@
 				>
 			</File>
 			<File
-				RelativePath="cdaudio.h"
-				>
-			</File>
-			<File
 				RelativePath="client.h"
 				>
 			</File>

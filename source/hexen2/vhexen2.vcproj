@@ -343,10 +343,6 @@
 				>
 			</File>
 			<File
-				RelativePath="mstrconv.cpp"
-				>
-			</File>
-			<File
 				RelativePath="net_dgrm.cpp"
 				>
 			</File>
@@ -440,10 +436,6 @@
 				>
 			</File>
 			<File
-				RelativePath="Cdaudio.h"
-				>
-			</File>
-			<File
 				RelativePath="cl_effect.h"
 				>
 			</File>
@@ -497,14 +489,6 @@
 			</File>
 			<File
 				RelativePath="Menu.h"
-				>
-			</File>
-			<File
-				RelativePath="midi.h"
-				>
-			</File>
-			<File
-				RelativePath="midstuff.h"
 				>
 			</File>
 			<File

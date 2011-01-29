@@ -378,10 +378,6 @@
 				>
 			</File>
 			<File
-				RelativePath="client\cdaudio.h"
-				>
-			</File>
-			<File
 				RelativePath="client\client.h"
 				>
 			</File>

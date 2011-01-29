@@ -17,13 +17,9 @@
 //**
 //**************************************************************************
 
-#ifndef _CLIENT_H
-#define _CLIENT_H
-
-#include "../core/core.h"
-
-#include "snd_public.h"
-#include "snd_midi_public.h"
-#include "cd_public.h"
-
-#endif
+qboolean MIDI_Init();
+void MIDI_Cleanup();
+void MIDI_Play(char *Name);
+void MIDI_Stop();
+void MIDI_Pause(int mode);
+void MIDI_Loop(int NewValue);

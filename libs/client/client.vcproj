@@ -153,6 +153,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\mstrconv.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\snd_dma.cpp"
 				>
 			</File>
@@ -179,11 +183,27 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\cd_public.h"
+				>
+			</File>
+			<File
 				RelativePath=".\client.h"
 				>
 			</File>
 			<File
+				RelativePath=".\midi.h"
+				>
+			</File>
+			<File
+				RelativePath=".\midstuff.h"
+				>
+			</File>
+			<File
 				RelativePath=".\snd_local.h"
+				>
+			</File>
+			<File
+				RelativePath=".\snd_midi_public.h"
 				>
 			</File>
 			<File
