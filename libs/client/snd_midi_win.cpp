@@ -8,9 +8,9 @@
 #include <memory.h>
 #include <mmreg.h>
 
-#include "../../libs/client/midstuff.h"
-#include "../../libs/client/midi.h"
-#include "quakedef.h"
+#include "midstuff.h"
+#include "midi.h"
+#include "client.h"
 
 
 BOOL bMidiInited,bFileOpen, bPlaying, bBuffersPrepared;
@@ -37,7 +37,7 @@ void MidiErrorMessageBox(MMRESULT mmr)
    char temp[1024];
 
    midiOutGetErrorText(mmr,temp,sizeof(temp));
-	Con_Printf("%s\n",temp);
+	GLog.Write("%s\n",temp);
 }
 
 
@@ -74,8 +74,8 @@ void MIDI_Loop_f (void)
 			MIDI_Loop(2);
 	}
 
-	if (bLooped) Con_Printf("MIDI music will be looped\n");
-	else Con_Printf("MIDI music will not be looped\n");
+	if (bLooped) GLog.Write("MIDI music will be looped\n");
+	else GLog.Write("MIDI music will not be looped\n");
 }
 
 void MIDI_Volume_f (void)
@@ -90,7 +90,7 @@ void MIDI_Volume_f (void)
 	}
 	else
 	{
-		Con_Printf("MIDI volume is %d\n", dwVolumePercent/(65535/100));
+		GLog.Write("MIDI volume is %d\n", dwVolumePercent/(65535/100));
 	}
 }
 
@@ -146,13 +146,13 @@ void MIDI_Play(char *Name)
 
 	if (StreamBufferSetup(Temp))
 	{
-		Con_Printf("Couldn't load midi file %s\n",Temp);
+		GLog.Write("Couldn't load midi file %s\n",Temp);
 	}
 	else
 	{
 		bFileOpen = TRUE;
 
-		Con_Printf("Playing midi file %s\n",Temp);
+		GLog.Write("Playing midi file %s\n",Temp);
 
 		uCallbackStatus = 0;
                         
@@ -229,7 +229,7 @@ void MIDI_Stop(void)
 
 		if(WaitForSingleObject(hBufferReturnEvent,DEBUG_CALLBACK_TIMEOUT) == WAIT_TIMEOUT)
       {
-         //Con_Printf("Timed out waiting for MIDI callback\n");
+         //GLog.Write("Timed out waiting for MIDI callback\n");
          uCallbackStatus = STATUS_CALLBACKDEAD;
       }
    }
@@ -507,7 +507,7 @@ void CALLBACK MidiProc(HMIDIIN hMidi,UINT uMsg,DWORD dwInstance,DWORD dwParam1,D
 					}
 					else
 					{
-						Con_Printf( "MidiProc() conversion pass failed!" );
+						GLog.Write( "MidiProc() conversion pass failed!" );
 						ConverterCleanup();
 						return;
 					}

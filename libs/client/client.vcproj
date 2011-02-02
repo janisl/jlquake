@@ -165,6 +165,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\snd_midi_win.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\snd_mix.cpp"
 				>
 			</File>
