@@ -104,8 +104,8 @@ void Sys_Printf (char *fmt, ...)
 	if (QStr::Length(text) > sizeof(text))
 		Sys_Error("memory overwrite in Sys_Printf");
 
-    if (sys_nostdout->value)
-        return;
+	if (sys_nostdout && sys_nostdout->value)
+		return;
 
 	for (p = (unsigned char *)text; *p; p++) {
 		*p &= 0x7f;
