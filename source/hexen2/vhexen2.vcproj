@@ -339,10 +339,6 @@
 				>
 			</File>
 			<File
-				RelativePath="midi.cpp"
-				>
-			</File>
-			<File
 				RelativePath="net_dgrm.cpp"
 				>
 			</File>

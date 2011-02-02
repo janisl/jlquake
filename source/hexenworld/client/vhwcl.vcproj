@@ -315,10 +315,6 @@
 				>
 			</File>
 			<File
-				RelativePath="midi.cpp"
-				>
-			</File>
-			<File
 				RelativePath="net_chan.cpp"
 				>
 			</File>
