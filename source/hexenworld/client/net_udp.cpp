@@ -17,7 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// net_main.c
+// net_udp.c
 
 #include "quakedef.h"
 
@@ -44,14 +44,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libc.h>
 #endif
 
+#if _DEBUG
+extern int HuffIn;
+extern int HuffOut;
+void ZeroFreq();
+void CalcFreq(unsigned char *packet, int packetlen);
+void PrintFreqs();
+#endif
+extern float HuffFreq[256];
+void BuildTree(float *freq);
+void HuffDecode(unsigned char *in,unsigned char *out,int inlen,int *outlen);
+void HuffEncode(unsigned char *in,unsigned char *out,int inlen,int *outlen);
+
+int LastCompMessageSize = 0;
+
 netadr_t	net_local_adr;
 
 netadr_t	net_from;
 QMsg		net_message;
 int			net_socket;			// non blocking, for receives
-int			net_send_socket;	// blocking, for sends
 
-#define	MAX_UDP_PACKET	8192
+#define	MAX_UDP_PACKET	(MAX_MSGLEN+9)	// one more than msg + header
 byte		net_message_buffer[MAX_UDP_PACKET];
 
 //=============================================================================
@@ -70,14 +83,6 @@ void SockadrToNetadr (struct sockaddr_in *s, netadr_t *a)
 	*(int *)&a->ip = *(int *)&s->sin_addr;
 	a->port = s->sin_port;
 }
-
-qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
-{
-	if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3])
-		return true;
-	return false;
-}
-
 
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 {
@@ -152,39 +157,8 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 	return true;
 }
 
-// Returns true if we can't bind the address locally--in other words, 
-// the IP is NOT one of our interfaces.
-qboolean NET_IsClientLegal(netadr_t *adr)
-{
-	struct sockaddr_in sadr;
-	int newsocket;
-
-#if 0
-	if (adr->ip[0] == 127)
-		return false; // no local connections period
-
-	NetadrToSockadr (adr, &sadr);
-
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-		Sys_Error ("NET_IsClientLegal: socket:", strerror(errno));
-
-	sadr.sin_port = 0;
-
-	if( bind (newsocket, (void *)&sadr, sizeof(sadr)) == -1) 
-	{
-		// It is not a local address
-		close(newsocket);
-		return true;
-	}
-	close(newsocket);
-	return false;
-#else
-	return true;
-#endif
-}
-
-
 //=============================================================================
+static unsigned char huffbuff[65536];
 
 qboolean NET_GetPacket (void)
 {
@@ -193,7 +167,7 @@ qboolean NET_GetPacket (void)
 	socklen_t	fromlen;
 
 	fromlen = sizeof(from);
-	ret = recvfrom (net_socket, net_message_buffer, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
+	ret = recvfrom (net_socket, huffbuff, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
 	if (ret == -1) {
 		if (errno == EWOULDBLOCK)
 			return false;
@@ -203,8 +177,18 @@ qboolean NET_GetPacket (void)
 		return false;
 	}
 
-	net_message.cursize = ret;
 	SockadrToNetadr (&from, &net_from);
+
+	if (ret == sizeof(net_message_buffer) )
+	{
+		Con_Printf ("Oversize packet from %s\n", NET_AdrToString (net_from));
+		return false;
+	}
+
+	LastCompMessageSize += ret;//keep track of bytes actually received for debugging
+
+	HuffDecode(huffbuff, (unsigned char *)net_message_buffer,ret,&ret);
+	net_message.cursize = ret;
 
 	return ret;
 }
@@ -215,10 +199,12 @@ void NET_SendPacket (int length, void *data, netadr_t to)
 {
 	int ret;
 	struct sockaddr_in	addr;
+	int outlen;
 
 	NetadrToSockadr (&to, &addr);
+	HuffEncode((unsigned char *)data,huffbuff,length,&outlen);
 
-	ret = sendto (net_socket, data, length, 0, (struct sockaddr *)&addr, sizeof(addr) );
+	ret = sendto (net_socket, huffbuff, outlen, 0, (struct sockaddr *)&addr, sizeof(addr) );
 	if (ret == -1) {
 		if (errno == EWOULDBLOCK)
 			return;
@@ -264,6 +250,12 @@ void NET_GetLocalAddress (void)
 	char	buff[MAXHOSTNAMELEN];
 	struct sockaddr_in	address;
 	socklen_t	namelen;
+
+#ifdef _DEBUG
+	ZeroFreq();
+#endif
+
+	BuildTree(HuffFreq);
 
 	gethostname(buff, MAXHOSTNAMELEN);
 	buff[MAXHOSTNAMELEN-1] = 0;
@@ -311,5 +303,9 @@ NET_Shutdown
 void	NET_Shutdown (void)
 {
 	close (net_socket);
+
+#ifdef _DEBUG
+	PrintFreqs();
+#endif
 }
 
