@@ -12,7 +12,7 @@ void Cvar_Changed(QCvar* var)
 	if (var->flags & CVAR_SERVERINFO && var->name[0] != '*')
 	{
 		Info_SetValueForKey(svs.info, var->name, var->string, MAX_SERVERINFO_STRING,
-			64, 64, !sv_highchars->value, false);
+			64, 64, !sv_highchars || !sv_highchars->value, false);
 		SV_BroadcastCommand ("fullserverinfo \"%s\"\n", svs.info);
 	}
 #else
