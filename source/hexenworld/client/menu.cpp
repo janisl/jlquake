@@ -11,7 +11,7 @@ void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
 
 enum menu_state_t {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, 
-		m_keys, m_help, m_quit, m_serialconfig, m_modemconfig, m_lanconfig, m_gameoptions, m_search, m_slist, 
+		m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist, 
 		m_class, m_difficulty, m_mload, m_msave, m_mconnect};
 menu_state_t m_state;
 
@@ -27,8 +27,6 @@ void M_Menu_Main_f (void);
 		void M_Menu_Video_f (void);
 	void M_Menu_Help_f (void);
 	void M_Menu_Quit_f (void);
-void M_Menu_SerialConfig_f (void);
-	void M_Menu_ModemConfig_f (void);
 void M_Menu_LanConfig_f (void);
 void M_Menu_GameOptions_f (void);
 void M_Menu_Search_f (void);
@@ -2749,14 +2747,6 @@ void M_Draw (void)
 		M_Quit_Draw ();
 		break;
 
-	case m_serialconfig:
-//		M_SerialConfig_Draw ();
-		break;
-
-	case m_modemconfig:
-//		M_ModemConfig_Draw ();
-		break;
-
 	case m_lanconfig:
 //		M_LanConfig_Draw ();
 		break;
@@ -2847,14 +2837,6 @@ void M_Keydown (int key)
 
 	case m_quit:
 		M_Quit_Key (key);
-		return;
-
-	case m_serialconfig:
-//		M_SerialConfig_Key (key);
-		return;
-
-	case m_modemconfig:
-//		M_ModemConfig_Key (key);
 		return;
 
 	case m_lanconfig:

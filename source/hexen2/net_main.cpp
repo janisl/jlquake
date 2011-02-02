@@ -6,20 +6,12 @@ qsocket_t	*net_activeSockets = NULL;
 qsocket_t	*net_freeSockets = NULL;
 int			net_numsockets = 0;
 
-qboolean	serialAvailable = false;
-qboolean	ipxAvailable = false;
 qboolean	tcpipAvailable = false;
 
 int			net_hostport;
 int			DEFAULTnet_hostport = 26900;
 
-char		my_ipx_address[NET_NAMELEN];
 char		my_tcpip_address[NET_NAMELEN];
-
-void (*GetComPortConfig) (int portNumber, int *port, int *irq, int *baud, qboolean *useModem);
-void (*SetComPortConfig) (int portNumber, int port, int irq, int baud, qboolean useModem);
-void (*GetModemConfig) (int portNumber, char *dialType, char *clear, char *init, char *hangup);
-void (*SetModemConfig) (int portNumber, char *dialType, char *clear, char *init, char *hangup);
 
 static qboolean	listening = false;
 
@@ -46,18 +38,6 @@ int unreliableMessagesReceived = 0;
 
 QCvar*	net_messagetimeout;
 QCvar*	hostname;
-
-qboolean	configRestored = false;
-QCvar*	config_com_port;
-QCvar*	config_com_irq;
-QCvar*	config_com_baud;
-QCvar*	config_com_modem;
-QCvar*	config_modem_dialtype;
-QCvar*	config_modem_clear;
-QCvar*	config_modem_init;
-QCvar*	config_modem_hangup;
-
-QCvar*	net_allowmultiple;
 
 #ifdef IDGODS
 QCvar*	idgods;
@@ -730,15 +710,6 @@ void NET_Init (void)
 
 	net_messagetimeout = Cvar_Get("net_messagetimeout", "300", 0);
 	hostname = Cvar_Get("hostname", "UNNAMED", 0);
-	config_com_port = Cvar_Get("_config_com_port", "0x3f8", CVAR_ARCHIVE);
-	config_com_irq = Cvar_Get("_config_com_irq", "4", CVAR_ARCHIVE);
-	config_com_baud = Cvar_Get("_config_com_baud", "57600", CVAR_ARCHIVE);
-	config_com_modem = Cvar_Get("_config_com_modem", "1", CVAR_ARCHIVE);
-	config_modem_dialtype = Cvar_Get("_config_modem_dialtype", "T", CVAR_ARCHIVE);
-	config_modem_clear = Cvar_Get("_config_modem_clear", "ATZ", CVAR_ARCHIVE);
-	config_modem_init = Cvar_Get("_config_modem_init", "", CVAR_ARCHIVE);
-	config_modem_hangup = Cvar_Get("_config_modem_hangup", "AT H", CVAR_ARCHIVE);
-	net_allowmultiple = Cvar_Get("net_allowmultiple", "0", CVAR_ARCHIVE);
 #ifdef IDGODS
 	idgods = Cvar_Get("idgods", "0", 0);
 #endif
@@ -760,8 +731,6 @@ void NET_Init (void)
 			net_drivers[net_driverlevel].Listen (true);
 		}
 
-	if (*my_ipx_address)
-		Con_DPrintf("IPX address %s\n", my_ipx_address);
 	if (*my_tcpip_address)
 		Con_DPrintf("TCP/IP address %s\n", my_tcpip_address);
 }
@@ -800,21 +769,6 @@ static PollProcedure *pollProcedureList = NULL;
 void NET_Poll(void)
 {
 	PollProcedure *pp;
-	qboolean	useModem;
-
-	if (!configRestored)
-	{
-		if (serialAvailable)
-		{
-			if (config_com_modem->value == 1.0)
-				useModem = true;
-			else
-				useModem = false;
-			SetComPortConfig (0, (int)config_com_port->value, (int)config_com_irq->value, (int)config_com_baud->value, useModem);
-			SetModemConfig (0, config_modem_dialtype->string, config_modem_clear->string, config_modem_init->string, config_modem_hangup->string);
-		}
-		configRestored = true;
-	}
 
 	SetNetTime();
 
