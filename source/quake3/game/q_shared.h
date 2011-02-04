@@ -758,4 +758,9 @@ typedef enum _flag_status {
 #define CDCHKSUM_LEN 2
 
 
+typedef struct {
+	vec3_t		origin;
+	vec3_t		axis[3];
+} orientation_t;
+
 #endif	// __Q_SHARED_H

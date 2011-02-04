@@ -45,19 +45,6 @@ typedef struct {
 // or ENTITYNUM_NONE, ENTITYNUM_WORLD
 
 
-// markfragments are returned by CM_MarkFragments()
-typedef struct {
-	int		firstPoint;
-	int		numPoints;
-} markFragment_t;
-
-
-
-typedef struct {
-	vec3_t		origin;
-	vec3_t		axis[3];
-} orientation_t;
-
 void		CM_LoadMap( const char *name, qboolean clientload, int *checksum);
 void		CM_ClearMap( void );
 clipHandle_t CM_InlineModel( int index );		// 0 = world, 1 + are bmodels
@@ -97,15 +84,6 @@ void		CM_AdjustAreaPortalState( int area1, int area2, qboolean open );
 qboolean	CM_AreasConnected( int area1, int area2 );
 
 int			CM_WriteAreaBits( byte *buffer, int area );
-
-// cm_tag.c
-int			CM_LerpTag( orientation_t *tag,  clipHandle_t model, int startFrame, int endFrame, 
-					 float frac, const char *tagName );
-
-
-// cm_marks.c
-int	CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection,
-				   int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
 
 // cm_patch.c
 void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *points) );
