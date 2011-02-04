@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // cmodel.c -- model loading
 
 #include "cm_local.h"
+#include "cm_patch.h"
 
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
@@ -73,14 +74,14 @@ void CMod_LoadShaders( lump_t *l ) {
 
 	in = (dshader_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in)) {
-		Com_Error (ERR_DROP, "CMod_LoadShaders: funny lump size");
+		throw QDropException("CMod_LoadShaders: funny lump size");
 	}
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1) {
-		Com_Error (ERR_DROP, "Map with no shaders");
+		throw QDropException("Map with no shaders");
 	}
-	cm.shaders = (dshader_t*)Hunk_Alloc( count * sizeof( *cm.shaders ), h_high );
+	cm.shaders = new dshader_t[count];
 	cm.numShaders = count;
 
 	Com_Memcpy( cm.shaders, in, count * sizeof( *cm.shaders ) );
@@ -106,16 +107,17 @@ void CMod_LoadSubmodels( lump_t *l ) {
 
 	in = (dmodel_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "CMod_LoadSubmodels: funny lump size");
+		throw QDropException("CMod_LoadSubmodels: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
-		Com_Error (ERR_DROP, "Map with no models");
-	cm.cmodels = (cmodel_t*)Hunk_Alloc( count * sizeof( *cm.cmodels ), h_high );
+		throw QDropException("Map with no models");
+	cm.cmodels = new cmodel_t[count];
+	Com_Memset(cm.cmodels, 0, sizeof(cmodel_t) * count);
 	cm.numSubModels = count;
 
 	if ( count > MAX_SUBMODELS ) {
-		Com_Error( ERR_DROP, "MAX_SUBMODELS exceeded" );
+		throw QDropException("MAX_SUBMODELS exceeded" );
 	}
 
 	for ( i=0 ; i<count ; i++, in++, out++)
@@ -134,14 +136,14 @@ void CMod_LoadSubmodels( lump_t *l ) {
 
 		// make a "leaf" just to hold the model's brushes and surfaces
 		out->leaf.numLeafBrushes = LittleLong( in->numBrushes );
-		indexes = (int*)Hunk_Alloc( out->leaf.numLeafBrushes * 4, h_high );
+		indexes = new int[out->leaf.numLeafBrushes];
 		out->leaf.firstLeafBrush = indexes - cm.leafbrushes;
 		for ( j = 0 ; j < out->leaf.numLeafBrushes ; j++ ) {
 			indexes[j] = LittleLong( in->firstBrush ) + j;
 		}
 
 		out->leaf.numLeafSurfaces = LittleLong( in->numSurfaces );
-		indexes = (int*)Hunk_Alloc( out->leaf.numLeafSurfaces * 4, h_high );
+		indexes = new int[out->leaf.numLeafSurfaces];
 		out->leaf.firstLeafSurface = indexes - cm.leafsurfaces;
 		for ( j = 0 ; j < out->leaf.numLeafSurfaces ; j++ ) {
 			indexes[j] = LittleLong( in->firstSurface ) + j;
@@ -164,12 +166,13 @@ void CMod_LoadNodes( lump_t *l ) {
 	
 	in = (dnode_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
-		Com_Error (ERR_DROP, "Map has no nodes");
-	cm.nodes = (cNode_t*)Hunk_Alloc( count * sizeof( *cm.nodes ), h_high );
+		throw QDropException("Map has no nodes");
+	cm.nodes = new cNode_t[count];
+	Com_Memset(cm.nodes, 0, sizeof(cNode_t) * count);
 	cm.numNodes = count;
 
 	out = cm.nodes;
@@ -217,11 +220,12 @@ void CMod_LoadBrushes( lump_t *l ) {
 
 	in = (dbrush_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in)) {
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	count = l->filelen / sizeof(*in);
 
-	cm.brushes = (cbrush_t*)Hunk_Alloc( ( BOX_BRUSHES + count ) * sizeof( *cm.brushes ), h_high );
+	cm.brushes = new cbrush_t[BOX_BRUSHES + count];
+	Com_Memset(cm.brushes, 0, sizeof(cbrush_t) * (BOX_BRUSHES + count));
 	cm.numBrushes = count;
 
 	out = cm.brushes;
@@ -232,7 +236,7 @@ void CMod_LoadBrushes( lump_t *l ) {
 
 		out->shaderNum = LittleLong( in->shaderNum );
 		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders ) {
-			Com_Error( ERR_DROP, "CMod_LoadBrushes: bad shaderNum: %i", out->shaderNum );
+			throw QDropException(va("CMod_LoadBrushes: bad shaderNum: %i", out->shaderNum));
 		}
 		out->contents = cm.shaders[out->shaderNum].contentFlags;
 
@@ -255,13 +259,14 @@ void CMod_LoadLeafs (lump_t *l)
 	
 	in = (dleaf_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
-		Com_Error (ERR_DROP, "Map with no leafs");
+		throw QDropException("Map with no leafs");
 
-	cm.leafs = (cLeaf_t*)Hunk_Alloc( ( BOX_LEAFS + count ) * sizeof( *cm.leafs ), h_high );
+	cm.leafs = new cLeaf_t[BOX_LEAFS + count];
+	Com_Memset(cm.leafs, 0, sizeof(cLeaf_t) * (BOX_LEAFS + count));
 	cm.numLeafs = count;
 
 	out = cm.leafs;	
@@ -280,8 +285,10 @@ void CMod_LoadLeafs (lump_t *l)
 			cm.numAreas = out->area + 1;
 	}
 
-	cm.areas = (cArea_t*)Hunk_Alloc( cm.numAreas * sizeof( *cm.areas ), h_high );
-	cm.areaPortals = (int*)Hunk_Alloc( cm.numAreas * cm.numAreas * sizeof( *cm.areaPortals ), h_high );
+	cm.areas = new cArea_t[cm.numAreas];
+	Com_Memset(cm.areas, 0, sizeof(cArea_t) * cm.numAreas);
+	cm.areaPortals = new int[cm.numAreas * cm.numAreas];
+	Com_Memset(cm.areaPortals, 0, sizeof(int) * cm.numAreas * cm.numAreas);
 }
 
 /*
@@ -298,12 +305,13 @@ void CMod_LoadPlanes (lump_t *l)
 	
 	in = (dplane_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
-		Com_Error (ERR_DROP, "Map with no planes");
-	cm.planes = (cplane_t*)Hunk_Alloc( ( BOX_PLANES + count ) * sizeof( *cm.planes ), h_high );
+		throw QDropException("Map with no planes");
+	cm.planes = new cplane_t[BOX_PLANES + count];
+	Com_Memset(cm.planes, 0, sizeof(cplane_t) * (BOX_PLANES + count));
 	cm.numPlanes = count;
 
 	out = cm.planes;	
@@ -335,10 +343,11 @@ void CMod_LoadLeafBrushes (lump_t *l)
 	
 	in = (int*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
-	cm.leafbrushes = (int*)Hunk_Alloc( (count + BOX_BRUSHES) * sizeof( *cm.leafbrushes ), h_high );
+	cm.leafbrushes = new int[count + BOX_BRUSHES];
+	Com_Memset(cm.leafbrushes, 0, sizeof(int) * (count + BOX_BRUSHES));
 	cm.numLeafBrushes = count;
 
 	out = cm.leafbrushes;
@@ -362,10 +371,10 @@ void CMod_LoadLeafSurfaces( lump_t *l )
 	
 	in = (int*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
-	cm.leafsurfaces = (int*)Hunk_Alloc( count * sizeof( *cm.leafsurfaces ), h_high );
+	cm.leafsurfaces = new int[count];
 	cm.numLeafSurfaces = count;
 
 	out = cm.leafsurfaces;
@@ -390,11 +399,12 @@ void CMod_LoadBrushSides (lump_t *l)
 
 	in = (dbrushside_t*)(cmod_base + l->fileofs);
 	if ( l->filelen % sizeof(*in) ) {
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	count = l->filelen / sizeof(*in);
 
-	cm.brushsides = (cbrushside_t*)Hunk_Alloc( ( BOX_SIDES + count ) * sizeof( *cm.brushsides ), h_high );
+	cm.brushsides = new cbrushside_t[BOX_SIDES + count];
+	Com_Memset(cm.brushsides, 0, sizeof(cbrushside_t) * (BOX_SIDES + count));
 	cm.numBrushSides = count;
 
 	out = cm.brushsides;	
@@ -404,7 +414,7 @@ void CMod_LoadBrushSides (lump_t *l)
 		out->plane = &cm.planes[num];
 		out->shaderNum = LittleLong( in->shaderNum );
 		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders ) {
-			Com_Error( ERR_DROP, "CMod_LoadBrushSides: bad shaderNum: %i", out->shaderNum );
+			throw QDropException(va("CMod_LoadBrushSides: bad shaderNum: %i", out->shaderNum));
 		}
 		out->surfaceFlags = cm.shaders[out->shaderNum].surfaceFlags;
 	}
@@ -416,8 +426,9 @@ void CMod_LoadBrushSides (lump_t *l)
 CMod_LoadEntityString
 =================
 */
-void CMod_LoadEntityString( lump_t *l ) {
-	cm.entityString = (char*)Hunk_Alloc( l->filelen, h_high );
+void CMod_LoadEntityString( lump_t *l )
+{
+	cm.entityString = new char[l->filelen];
 	cm.numEntityChars = l->filelen;
 	Com_Memcpy (cm.entityString, cmod_base + l->fileofs, l->filelen);
 }
@@ -435,17 +446,17 @@ void CMod_LoadVisibility( lump_t *l ) {
     len = l->filelen;
 	if ( !len ) {
 		cm.clusterBytes = ( cm.numClusters + 31 ) & ~31;
-		cm.visibility = (byte*)Hunk_Alloc( cm.clusterBytes, h_high );
-		Com_Memset( cm.visibility, 255, cm.clusterBytes );
+		cm.visibility = new byte[cm.clusterBytes];
+		Com_Memset(cm.visibility, 255, cm.clusterBytes);
 		return;
 	}
 	buf = cmod_base + l->fileofs;
 
-	cm.vised = qtrue;
-	cm.visibility = (byte*)Hunk_Alloc( len, h_high );
+	cm.vised = true;
+	cm.visibility = new byte[len];
 	cm.numClusters = LittleLong( ((int *)buf)[0] );
 	cm.clusterBytes = LittleLong( ((int *)buf)[1] );
-	Com_Memcpy (cm.visibility, buf + VIS_HEADER, len - VIS_HEADER );
+	Com_Memcpy(cm.visibility, buf + VIS_HEADER, len - VIS_HEADER);
 }
 
 //==================================================================
@@ -470,13 +481,14 @@ void CMod_LoadPatches( lump_t *surfs, lump_t *verts ) {
 
 	in = (dsurface_t*)(cmod_base + surfs->fileofs);
 	if (surfs->filelen % sizeof(*in))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	cm.numSurfaces = count = surfs->filelen / sizeof(*in);
-	cm.surfaces = (cPatch_t**)Hunk_Alloc( cm.numSurfaces * sizeof( cm.surfaces[0] ), h_high );
+	cm.surfaces = new cPatch_t*[cm.numSurfaces];
+	Com_Memset(cm.surfaces, 0, sizeof(cPatch_t*) * cm.numSurfaces);
 
 	dv = (drawVert_t*)(cmod_base + verts->fileofs);
 	if (verts->filelen % sizeof(*dv))
-		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 
 	// scan through all the surfaces, but only load patches,
 	// not planar faces
@@ -486,14 +498,15 @@ void CMod_LoadPatches( lump_t *surfs, lump_t *verts ) {
 		}
 		// FIXME: check for non-colliding patches
 
-		cm.surfaces[ i ] = patch = (cPatch_t*)Hunk_Alloc( sizeof( *patch ), h_high );
+		cm.surfaces[ i ] = patch = new cPatch_t;
+		Com_Memset(patch, 0, sizeof(*patch));
 
 		// load the full drawverts onto the stack
 		width = LittleLong( in->patchWidth );
 		height = LittleLong( in->patchHeight );
 		c = width * height;
 		if ( c > MAX_PATCH_VERTS ) {
-			Com_Error( ERR_DROP, "ParseMesh: MAX_PATCH_VERTS" );
+			throw QDropException("ParseMesh: MAX_PATCH_VERTS" );
 		}
 
 		dv_p = dv + LittleLong( in->firstVert );
@@ -550,13 +563,13 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	static unsigned	last_checksum;
 
 	if ( !name || !name[0] ) {
-		Com_Error( ERR_DROP, "CM_LoadMap: NULL name" );
+		throw QDropException("CM_LoadMap: NULL name" );
 	}
 
 	cm_noAreas = Cvar_Get ("cm_noAreas", "0", CVAR_CHEAT);
 	cm_noCurves = Cvar_Get ("cm_noCurves", "0", CVAR_CHEAT);
 	cm_playerCurveClip = Cvar_Get ("cm_playerCurveClip", "1", CVAR_ARCHIVE|CVAR_CHEAT );
-	Com_DPrintf( "CM_LoadMap( %s, %i )\n", name, clientload );
+	GLog.DWrite("CM_LoadMap( %s, %i )\n", name, clientload);
 
 	if ( !QStr::Cmp( cm.name, name ) && clientload ) {
 		*checksum = last_checksum;
@@ -564,14 +577,14 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	}
 
 	// free old stuff
-	Com_Memset( &cm, 0, sizeof( cm ) );
-	CM_ClearLevelPatches();
+	CM_ClearMap();
 
 	if ( !name[0] ) {
 		cm.numLeafs = 1;
 		cm.numClusters = 1;
 		cm.numAreas = 1;
-		cm.cmodels = (cmodel_t*)Hunk_Alloc( sizeof( *cm.cmodels ), h_high );
+		cm.cmodels = new cmodel_t[1];
+		Com_Memset(cm.cmodels, 0, sizeof(cmodel_t));
 		*checksum = 0;
 		return;
 	}
@@ -582,7 +595,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	length = FS_ReadFile( name, (void **)&buf );
 
 	if ( !buf ) {
-		Com_Error (ERR_DROP, "Couldn't load %s", name);
+		throw QDropException(va("Couldn't load %s", name));
 	}
 
 	last_checksum = LittleLong (Com_BlockChecksum (buf, length));
@@ -594,8 +607,8 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 	}
 
 	if ( header.version != BSP_VERSION ) {
-		Com_Error (ERR_DROP, "CM_LoadMap: %s has wrong version number (%i should be %i)"
-		, name, header.version, BSP_VERSION );
+		throw QDropException(va("CM_LoadMap: %s has wrong version number (%i should be %i)"
+		, name, header.version, BSP_VERSION));
 	}
 
 	cmod_base = (byte *)buf;
@@ -632,10 +645,42 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum ) {
 CM_ClearMap
 ==================
 */
-void CM_ClearMap( void ) {
-	Com_Memset( &cm, 0, sizeof( cm ) );
+void CM_ClearMap()
+{
+	delete[] cm.shaders;
+	for (int i = 1; i < cm.numSubModels; i++)
+	{
+		delete[] (cm.leafbrushes + cm.cmodels[i].leaf.firstLeafBrush);
+		delete[] (cm.leafsurfaces + cm.cmodels[i].leaf.firstLeafSurface);
+	}
+	delete[] cm.cmodels;
+	delete[] cm.nodes;
+	delete[] cm.brushes;
+	delete[] cm.leafs;
+	delete[] cm.areas;
+	delete[] cm.areaPortals;
+	delete[] cm.planes;
+	delete[] cm.leafbrushes;
+	delete[] cm.leafsurfaces;
+	delete[] cm.brushsides;
+	delete[] cm.entityString;
+	delete[] cm.visibility;
+	for (int i = 0; i < cm.numSurfaces; i++)
+	{
+		if (!cm.surfaces[i])
+		{
+			continue;
+		}
+		delete[] cm.surfaces[i]->pc->facets;
+		delete[] cm.surfaces[i]->pc->planes;
+		delete cm.surfaces[i]->pc;
+		delete cm.surfaces[i];
+	}
+	delete[] cm.surfaces;
+	Com_Memset(&cm, 0, sizeof(cm));
 	CM_ClearLevelPatches();
 }
+
 
 /*
 ==================
@@ -644,7 +689,7 @@ CM_ClipHandleToModel
 */
 cmodel_t	*CM_ClipHandleToModel( clipHandle_t handle ) {
 	if ( handle < 0 ) {
-		Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i", handle );
+		throw QDropException(va("CM_ClipHandleToModel: bad handle %i", handle));
 	}
 	if ( handle < cm.numSubModels ) {
 		return &cm.cmodels[handle];
@@ -653,10 +698,10 @@ cmodel_t	*CM_ClipHandleToModel( clipHandle_t handle ) {
 		return &box_model;
 	}
 	if ( handle < MAX_SUBMODELS ) {
-		Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i < %i < %i", 
-			cm.numSubModels, handle, MAX_SUBMODELS );
+		throw QDropException(va("CM_ClipHandleToModel: bad handle %i < %i < %i", 
+			cm.numSubModels, handle, MAX_SUBMODELS));
 	}
-	Com_Error( ERR_DROP, "CM_ClipHandleToModel: bad handle %i", handle + MAX_SUBMODELS );
+	throw QDropException(va("CM_ClipHandleToModel: bad handle %i", handle + MAX_SUBMODELS));
 
 	return NULL;
 
@@ -669,7 +714,7 @@ CM_InlineModel
 */
 clipHandle_t	CM_InlineModel( int index ) {
 	if ( index < 0 || index >= cm.numSubModels ) {
-		Com_Error (ERR_DROP, "CM_InlineModel: bad number");
+		throw QDropException("CM_InlineModel: bad number");
 	}
 	return index;
 }
@@ -688,14 +733,14 @@ char	*CM_EntityString( void ) {
 
 int		CM_LeafCluster( int leafnum ) {
 	if (leafnum < 0 || leafnum >= cm.numLeafs) {
-		Com_Error (ERR_DROP, "CM_LeafCluster: bad number");
+		throw QDropException("CM_LeafCluster: bad number");
 	}
 	return cm.leafs[leafnum].cluster;
 }
 
 int		CM_LeafArea( int leafnum ) {
 	if ( leafnum < 0 || leafnum >= cm.numLeafs ) {
-		Com_Error (ERR_DROP, "CM_LeafArea: bad number");
+		throw QDropException("CM_LeafArea: bad number");
 	}
 	return cm.leafs[leafnum].area;
 }

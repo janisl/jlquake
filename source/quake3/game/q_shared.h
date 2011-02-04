@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define __Q_SHARED_H
 
 #include "../../../libs/core/core.h"
+#include "surfaceflags.h"
 
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file
@@ -174,7 +175,6 @@ void Sys_PumpEvents( void );
 enum {qfalse, qtrue};
 
 typedef int		qhandle_t;
-typedef int		clipHandle_t;
 
 
 #define	MAX_STRING_TOKENS	1024	// max tokens resulting from Cmd_TokenizeString
@@ -380,47 +380,7 @@ void	QDECL Com_Error( int level, const char *error, ... );
 void	QDECL Com_Printf( const char *msg, ... );
 
 
-/*
-==============================================================
-
-COLLISION DETECTION
-
-==============================================================
-*/
-
-#include "surfaceflags.h"			// shared with the q3map utility
-
-// a trace is returned when a box is swept through the world
-typedef struct {
-	qboolean	allsolid;	// if true, plane is not valid
-	qboolean	startsolid;	// if true, the initial point was in a solid area
-	float		fraction;	// time completed, 1.0 = didn't hit anything
-	vec3_t		endpos;		// final position
-	cplane_t	plane;		// surface normal at impact, transformed to world space
-	int			surfaceFlags;	// surface hit
-	int			contents;	// contents on other side of surface hit
-	int			entityNum;	// entity the contacted sirface is a part of
-} trace_t;
-
-// trace->entityNum can also be 0 to (MAX_GENTITIES-1)
-// or ENTITYNUM_NONE, ENTITYNUM_WORLD
-
-
-// markfragments are returned by CM_MarkFragments()
-typedef struct {
-	int		firstPoint;
-	int		numPoints;
-} markFragment_t;
-
-
-
-typedef struct {
-	vec3_t		origin;
-	vec3_t		axis[3];
-} orientation_t;
-
 //=====================================================================
-
 
 // in order from highest priority to lowest
 // if none of the catchers are active, bound key strings will be executed
@@ -738,8 +698,6 @@ typedef struct {
   float glyphScale;
   char name[MAX_QPATH];
 } fontInfo_t;
-
-#define Square(x) ((x)*(x))
 
 // real time
 //=============================================

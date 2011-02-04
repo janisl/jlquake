@@ -131,11 +131,11 @@ static qboolean CM_PlaneFromPoints( vec4_t plane, vec3_t a, vec3_t b, vec3_t c )
 	VectorSubtract( c, a, d2 );
 	CrossProduct( d2, d1, plane );
 	if ( VectorNormalize( plane ) == 0 ) {
-		return qfalse;
+		return false;
 	}
 
 	plane[3] = DotProduct( a, plane );
-	return qtrue;
+	return true;
 }
 
 
@@ -252,7 +252,7 @@ static void CM_TransposeGrid( cGrid_t *grid ) {
 ===================
 CM_SetGridWrapWidth
 
-If the left and right columns are exactly equal, set grid->wrapWidth qtrue
+If the left and right columns are exactly equal, set grid->wrapWidth true
 ===================
 */
 static void CM_SetGridWrapWidth( cGrid_t *grid ) {
@@ -271,9 +271,9 @@ static void CM_SetGridWrapWidth( cGrid_t *grid ) {
 		}
 	}
 	if ( i == grid->height ) {
-		grid->wrapWidth = qtrue;
+		grid->wrapWidth = true;
 	} else {
-		grid->wrapWidth = qfalse;
+		grid->wrapWidth = false;
 	}
 }
 
@@ -359,17 +359,17 @@ static qboolean CM_ComparePoints( float *a, float *b ) {
 
 	d = a[0] - b[0];
 	if ( d < -POINT_EPSILON || d > POINT_EPSILON ) {
-		return qfalse;
+		return false;
 	}
 	d = a[1] - b[1];
 	if ( d < -POINT_EPSILON || d > POINT_EPSILON ) {
-		return qfalse;
+		return false;
 	}
 	d = a[2] - b[2];
 	if ( d < -POINT_EPSILON || d > POINT_EPSILON ) {
-		return qfalse;
+		return false;
 	}
-	return qtrue;
+	return true;
 }
 
 /*
@@ -437,8 +437,8 @@ int CM_PlaneEqual(patchPlane_t *p, float plane[4], int *flipped) {
 	&& fabs(p->plane[2] - plane[2]) < NORMAL_EPSILON
 	&& fabs(p->plane[3] - plane[3]) < DIST_EPSILON )
 	{
-		*flipped = qfalse;
-		return qtrue;
+		*flipped = false;
+		return true;
 	}
 
 	VectorNegate(plane, invplane);
@@ -450,11 +450,11 @@ int CM_PlaneEqual(patchPlane_t *p, float plane[4], int *flipped) {
 	&& fabs(p->plane[2] - invplane[2]) < NORMAL_EPSILON
 	&& fabs(p->plane[3] - invplane[3]) < DIST_EPSILON )
 	{
-		*flipped = qtrue;
-		return qtrue;
+		*flipped = true;
+		return true;
 	}
 
-	return qfalse;
+	return false;
 }
 
 /*
@@ -497,7 +497,7 @@ int CM_FindPlane2(float plane[4], int *flipped) {
 
 	// add a new plane
 	if ( numPlanes == MAX_PATCH_PLANES ) {
-		Com_Error( ERR_DROP, "MAX_PATCH_PLANES" );
+		throw QDropException("MAX_PATCH_PLANES");
 	}
 
 	Vector4Copy( plane, planes[numPlanes].plane );
@@ -505,7 +505,7 @@ int CM_FindPlane2(float plane[4], int *flipped) {
 
 	numPlanes++;
 
-	*flipped = qfalse;
+	*flipped = false;
 
 	return numPlanes-1;
 }
@@ -551,7 +551,7 @@ static int CM_FindPlane( float *p1, float *p2, float *p3 ) {
 
 	// add a new plane
 	if ( numPlanes == MAX_PATCH_PLANES ) {
-		Com_Error( ERR_DROP, "MAX_PATCH_PLANES" );
+		throw QDropException("MAX_PATCH_PLANES");
 	}
 
 	Vector4Copy( plane, planes[numPlanes].plane );
@@ -607,7 +607,7 @@ static int	CM_GridPlane( int gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2], int i,
 	}
 
 	// should never happen
-	Com_Printf( "WARNING: CM_GridPlane unresolvable\n" );
+	GLog.Write("WARNING: CM_GridPlane unresolvable\n");
 	return -1;
 }
 
@@ -666,7 +666,7 @@ static int CM_EdgePlaneNum( cGrid_t *grid, int gridPlanes[MAX_GRID_SIZE][MAX_GRI
 
 	}
 
-	Com_Error( ERR_DROP, "CM_EdgePlaneNum: bad k" );
+	throw QDropException("CM_EdgePlaneNum: bad k");
 	return -1;
 }
 
@@ -702,7 +702,7 @@ static void CM_SetBorderInward( facet_t *facet, cGrid_t *grid, int gridPlanes[MA
 		numPoints = 3;
 		break;
 	default:
-		Com_Error( ERR_FATAL, "CM_SetBorderInward: bad parameter" );
+		throw QException("CM_SetBorderInward: bad parameter" );
 		numPoints = 0;
 		break;
 	}
@@ -725,18 +725,18 @@ static void CM_SetBorderInward( facet_t *facet, cGrid_t *grid, int gridPlanes[MA
 		}
 
 		if ( front && !back ) {
-			facet->borderInward[k] = qtrue;
+			facet->borderInward[k] = true;
 		} else if ( back && !front ) {
-			facet->borderInward[k] = qfalse;
+			facet->borderInward[k] = false;
 		} else if ( !front && !back ) {
 			// flat side border
 			facet->borderPlanes[k] = -1;
 		} else {
 			// bisecting side border
-			Com_DPrintf( "WARNING: CM_SetBorderInward: mixed plane sides\n" );
-			facet->borderInward[k] = qfalse;
+			GLog.DWrite("WARNING: CM_SetBorderInward: mixed plane sides\n" );
+			facet->borderInward[k] = false;
 			if ( !debugBlock ) {
-				debugBlock = qtrue;
+				debugBlock = true;
 				VectorCopy( grid->points[i][j], debugBlockPoints[0] );
 				VectorCopy( grid->points[i+1][j], debugBlockPoints[1] );
 				VectorCopy( grid->points[i+1][j+1], debugBlockPoints[2] );
@@ -760,14 +760,14 @@ static qboolean CM_ValidateFacet( facet_t *facet ) {
 	vec3_t		bounds[2];
 
 	if ( facet->surfacePlane == -1 ) {
-		return qfalse;
+		return false;
 	}
 
 	Vector4Copy( planes[ facet->surfacePlane ].plane, plane );
 	w = BaseWindingForPlane( plane,  plane[3] );
 	for ( j = 0 ; j < facet->numBorders && w ; j++ ) {
 		if ( facet->borderPlanes[j] == -1 ) {
-			return qfalse;
+			return false;
 		}
 		Vector4Copy( planes[ facet->borderPlanes[j] ].plane, plane );
 		if ( !facet->borderInward[j] ) {
@@ -778,7 +778,7 @@ static qboolean CM_ValidateFacet( facet_t *facet ) {
 	}
 
 	if ( !w ) {
-		return qfalse;		// winding was completely chopped away
+		return false;		// winding was completely chopped away
 	}
 
 	// see if the facet is unreasonably large
@@ -787,16 +787,16 @@ static qboolean CM_ValidateFacet( facet_t *facet ) {
 	
 	for ( j = 0 ; j < 3 ; j++ ) {
 		if ( bounds[1][j] - bounds[0][j] > MAX_MAP_BOUNDS ) {
-			return qfalse;		// we must be missing a plane
+			return false;		// we must be missing a plane
 		}
 		if ( bounds[0][j] >= MAX_MAP_BOUNDS ) {
-			return qfalse;
+			return false;
 		}
 		if ( bounds[1][j] <= -MAX_MAP_BOUNDS ) {
-			return qfalse;
+			return false;
 		}
 	}
-	return qtrue;		// winding is fine
+	return true;		// winding is fine
 }
 
 /*
@@ -857,7 +857,7 @@ void CM_AddFacetBevels( facet_t *facet ) {
 			}
 
 			if ( i == facet->numBorders ) {
-				if (facet->numBorders > 4 + 6 + 16) Com_Printf("ERROR: too many bevels\n");
+				if (facet->numBorders > 4 + 6 + 16) GLog.Write("ERROR: too many bevels\n");
 				facet->borderPlanes[facet->numBorders] = CM_FindPlane2(plane, &flipped);
 				facet->borderNoAdjust[facet->numBorders] = 0;
 				facet->borderInward[facet->numBorders] = flipped;
@@ -919,12 +919,12 @@ void CM_AddFacetBevels( facet_t *facet ) {
 				}
 
 				if ( i == facet->numBorders ) {
-					if (facet->numBorders > 4 + 6 + 16) Com_Printf("ERROR: too many bevels\n");
+					if (facet->numBorders > 4 + 6 + 16) GLog.Write("ERROR: too many bevels\n");
 					facet->borderPlanes[facet->numBorders] = CM_FindPlane2(plane, &flipped);
 
 					for ( k = 0 ; k < facet->numBorders ; k++ ) {
 						if (facet->borderPlanes[facet->numBorders] ==
-							facet->borderPlanes[k]) Com_Printf("WARNING: bevel plane already used\n");
+							facet->borderPlanes[k]) GLog.Write("WARNING: bevel plane already used\n");
 					}
 
 					facet->borderNoAdjust[facet->numBorders] = 0;
@@ -939,7 +939,7 @@ void CM_AddFacetBevels( facet_t *facet ) {
 					} //end if
 					ChopWindingInPlace( &w2, newplane, newplane[3], 0.1f );
 					if (!w2) {
-						Com_DPrintf("WARNING: CM_AddFacetBevels... invalid bevel\n");
+						GLog.DWrite("WARNING: CM_AddFacetBevels... invalid bevel\n");
 						continue;
 					}
 					else {
@@ -958,7 +958,7 @@ void CM_AddFacetBevels( facet_t *facet ) {
 	//add opposite plane
 	facet->borderPlanes[facet->numBorders] = facet->surfacePlane;
 	facet->borderNoAdjust[facet->numBorders] = 0;
-	facet->borderInward[facet->numBorders] = qtrue;
+	facet->borderInward[facet->numBorders] = true;
 	facet->numBorders++;
 }
 
@@ -977,7 +977,7 @@ CM_PatchCollideFromGrid
 static void CM_PatchCollideFromGrid( cGrid_t *grid, patchCollide_t *pf ) {
 	int				i, j;
 	float			*p1, *p2, *p3;
-	MAC_STATIC int				gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2];
+	int				gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2];
 	facet_t			*facet;
 	int				borders[4];
 	int				noAdjust[4];
@@ -1049,7 +1049,7 @@ static void CM_PatchCollideFromGrid( cGrid_t *grid, patchCollide_t *pf ) {
 			}
 
 			if ( numFacets == MAX_FACETS ) {
-				Com_Error( ERR_DROP, "MAX_FACETS" );
+				throw QDropException("MAX_FACETS");
 			}
 			facet = &facets[numFacets];
 			Com_Memset( facet, 0, sizeof( *facet ) );
@@ -1095,7 +1095,7 @@ static void CM_PatchCollideFromGrid( cGrid_t *grid, patchCollide_t *pf ) {
 				}
 
 				if ( numFacets == MAX_FACETS ) {
-					Com_Error( ERR_DROP, "MAX_FACETS" );
+					throw QDropException("MAX_FACETS");
 				}
 				facet = &facets[numFacets];
 				Com_Memset( facet, 0, sizeof( *facet ) );
@@ -1125,9 +1125,9 @@ static void CM_PatchCollideFromGrid( cGrid_t *grid, patchCollide_t *pf ) {
 	// copy the results out
 	pf->numPlanes = numPlanes;
 	pf->numFacets = numFacets;
-	pf->facets = (facet_t*)Hunk_Alloc( numFacets * sizeof( *pf->facets ), h_high );
+	pf->facets = new facet_t[numFacets];
 	Com_Memcpy( pf->facets, facets, numFacets * sizeof( *pf->facets ) );
-	pf->planes = (patchPlane_t*)Hunk_Alloc( numPlanes * sizeof( *pf->planes ), h_high );
+	pf->planes = new patchPlane_t[numPlanes];
 	Com_Memcpy( pf->planes, planes, numPlanes * sizeof( *pf->planes ) );
 }
 
@@ -1144,27 +1144,27 @@ Points is packed as concatenated rows.
 */
 struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *points ) {
 	patchCollide_t	*pf;
-	MAC_STATIC cGrid_t			grid;
+	cGrid_t			grid;
 	int				i, j;
 
 	if ( width <= 2 || height <= 2 || !points ) {
-		Com_Error( ERR_DROP, "CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)",
-			width, height, points );
+		throw QDropException(va("CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)",
+			width, height, points));
 	}
 
 	if ( !(width & 1) || !(height & 1) ) {
-		Com_Error( ERR_DROP, "CM_GeneratePatchFacets: even sizes are invalid for quadratic meshes" );
+		throw QDropException("CM_GeneratePatchFacets: even sizes are invalid for quadratic meshes");
 	}
 
 	if ( width > MAX_GRID_SIZE || height > MAX_GRID_SIZE ) {
-		Com_Error( ERR_DROP, "CM_GeneratePatchFacets: source is > MAX_GRID_SIZE" );
+		throw QDropException("CM_GeneratePatchFacets: source is > MAX_GRID_SIZE");
 	}
 
 	// build a grid
 	grid.width = width;
 	grid.height = height;
-	grid.wrapWidth = qfalse;
-	grid.wrapHeight = qfalse;
+	grid.wrapWidth = false;
+	grid.wrapHeight = false;
 	for ( i = 0 ; i < width ; i++ ) {
 		for ( j = 0 ; j < height ; j++ ) {
 			VectorCopy( points[j*width + i], grid.points[i][j] );
@@ -1185,15 +1185,18 @@ struct patchCollide_s	*CM_GeneratePatchCollide( int width, int height, vec3_t *p
 	// we now have a grid of points exactly on the curve
 	// the aproximate surface defined by these points will be
 	// collided against
-	pf = (patchCollide_t*)Hunk_Alloc( sizeof( *pf ), h_high );
-	ClearBounds( pf->bounds[0], pf->bounds[1] );
-	for ( i = 0 ; i < grid.width ; i++ ) {
-		for ( j = 0 ; j < grid.height ; j++ ) {
-			AddPointToBounds( grid.points[i][j], pf->bounds[0], pf->bounds[1] );
+	pf = new patchCollide_t;
+	Com_Memset(pf, 0, sizeof(*pf));
+	ClearBounds(pf->bounds[0], pf->bounds[1]);
+	for (i = 0; i < grid.width; i++)
+	{
+		for (j = 0; j < grid.height; j++)
+		{
+			AddPointToBounds(grid.points[i][j], pf->bounds[0], pf->bounds[1]);
 		}
 	}
 
-	c_totalPatchBlocks += ( grid.width - 1 ) * ( grid.height - 1 );
+	c_totalPatchBlocks += (grid.width - 1) * (grid.height - 1);
 
 	// generate a bsp tree for the surface
 	CM_PatchCollideFromGrid( &grid, pf );
@@ -1247,9 +1250,9 @@ void CM_TracePointThroughPatchCollide( traceWork_t *tw, const struct patchCollid
 		d1 = DotProduct( tw->start, planes->plane ) - planes->plane[3] + offset;
 		d2 = DotProduct( tw->end, planes->plane ) - planes->plane[3] + offset;
 		if ( d1 <= 0 ) {
-			frontFacing[i] = qfalse;
+			frontFacing[i] = false;
 		} else {
-			frontFacing[i] = qtrue;
+			frontFacing[i] = true;
 		}
 		if ( d1 == d2 ) {
 			intersection[i] = 99999;
@@ -1322,19 +1325,19 @@ CM_CheckFacetPlane
 int CM_CheckFacetPlane(float *plane, vec3_t start, vec3_t end, float *enterFrac, float *leaveFrac, int *hit) {
 	float d1, d2, f;
 
-	*hit = qfalse;
+	*hit = false;
 
 	d1 = DotProduct( start, plane ) - plane[3];
 	d2 = DotProduct( end, plane ) - plane[3];
 
 	// if completely in front of face, no intersection with the entire facet
 	if (d1 > 0 && ( d2 >= SURFACE_CLIP_EPSILON || d2 >= d1 )  ) {
-		return qfalse;
+		return false;
 	}
 
 	// if it doesn't cross the plane, the plane isn't relevent
 	if (d1 <= 0 && d2 <= 0 ) {
-		return qtrue;
+		return true;
 	}
 
 	// crosses face
@@ -1346,7 +1349,7 @@ int CM_CheckFacetPlane(float *plane, vec3_t start, vec3_t end, float *enterFrac,
 		//always favor previous plane hits and thus also the surface plane hit
 		if (f > *enterFrac) {
 			*enterFrac = f;
-			*hit = qtrue;
+			*hit = true;
 		}
 	} else {	// leave
 		f = (d1+SURFACE_CLIP_EPSILON) / (d1-d2);
@@ -1357,7 +1360,7 @@ int CM_CheckFacetPlane(float *plane, vec3_t start, vec3_t end, float *enterFrac,
 			*leaveFrac = f;
 		}
 	}
-	return qtrue;
+	return true;
 }
 
 /*
@@ -1506,7 +1509,7 @@ qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchColli
 	vec3_t startp;
 
 	if (tw->isPoint) {
-		return qfalse;
+		return false;
 	}
 	//
 	facet = pc->facets;
@@ -1575,9 +1578,9 @@ qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const struct patchColli
 			continue;
 		}
 		// inside this patch facet
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 /*
@@ -1641,7 +1644,7 @@ void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *poin
 			}
 			else {
 				planenum = facet->surfacePlane;
-				inward = qfalse;
+				inward = false;
 				//continue;
 			}
 
@@ -1673,7 +1676,7 @@ void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *poin
 				}
 				else {
 					curplanenum = facet->surfacePlane;
-					curinward = qfalse;
+					curinward = false;
 					//continue;
 				}
 				//
@@ -1707,7 +1710,7 @@ void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *poin
 				FreeWinding( w );
 			}
 			else
-				Com_Printf("winding chopped away by border planes\n");
+				GLog.Write("winding chopped away by border planes\n");
 		}
 	}
 

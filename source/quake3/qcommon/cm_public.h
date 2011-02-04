@@ -20,8 +20,43 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#ifndef __cm_public_h__
+#define __cm_public_h__
+
 #include "qfiles.h"
 
+typedef int		clipHandle_t;
+
+#include "../game/surfaceflags.h"			// shared with the q3map utility
+
+// a trace is returned when a box is swept through the world
+typedef struct {
+	qboolean	allsolid;	// if true, plane is not valid
+	qboolean	startsolid;	// if true, the initial point was in a solid area
+	float		fraction;	// time completed, 1.0 = didn't hit anything
+	vec3_t		endpos;		// final position
+	cplane_t	plane;		// surface normal at impact, transformed to world space
+	int			surfaceFlags;	// surface hit
+	int			contents;	// contents on other side of surface hit
+	int			entityNum;	// entity the contacted sirface is a part of
+} trace_t;
+
+// trace->entityNum can also be 0 to (MAX_GENTITIES-1)
+// or ENTITYNUM_NONE, ENTITYNUM_WORLD
+
+
+// markfragments are returned by CM_MarkFragments()
+typedef struct {
+	int		firstPoint;
+	int		numPoints;
+} markFragment_t;
+
+
+
+typedef struct {
+	vec3_t		origin;
+	vec3_t		axis[3];
+} orientation_t;
 
 void		CM_LoadMap( const char *name, qboolean clientload, int *checksum);
 void		CM_ClearMap( void );
@@ -74,3 +109,5 @@ int	CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projecti
 
 // cm_patch.c
 void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *points) );
+
+#endif

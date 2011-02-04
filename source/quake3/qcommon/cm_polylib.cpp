@@ -33,14 +33,6 @@ int	c_peak_windings;
 int	c_winding_allocs;
 int	c_winding_points;
 
-void pw(winding_t *w)
-{
-	int		i;
-	for (i=0 ; i<w->numpoints ; i++)
-		printf ("(%5.1f, %5.1f, %5.1f)\n",w->p[i][0], w->p[i][1],w->p[i][2]);
-}
-
-
 /*
 =============
 AllocWinding
@@ -58,7 +50,7 @@ winding_t	*AllocWinding (int points)
 		c_peak_windings = c_active_windings;
 
 	s = sizeof(vec_t)*3*points + sizeof(int);
-	w = (winding_t*)Z_Malloc (s);
+	w = (winding_t*)Mem_Alloc(s);
 	Com_Memset (w, 0, s); 
 	return w;
 }
@@ -66,11 +58,11 @@ winding_t	*AllocWinding (int points)
 void FreeWinding (winding_t *w)
 {
 	if (*(unsigned *)w == 0xdeaddead)
-		Com_Error (ERR_FATAL, "FreeWinding: freed a freed winding");
+		throw QException("FreeWinding: freed a freed winding");
 	*(unsigned *)w = 0xdeaddead;
 
 	c_active_windings--;
-	Z_Free (w);
+	Mem_Free(w);
 }
 
 /*
@@ -142,7 +134,7 @@ winding_t *BaseWindingForPlane (vec3_t normal, vec_t dist)
 		}
 	}
 	if (x==-1)
-		Com_Error (ERR_DROP, "BaseWindingForPlane: no axis found");
+		throw QDropException("BaseWindingForPlane: no axis found");
 		
 	VectorCopy (vec3_origin, vup);	
 	switch (x)
@@ -202,118 +194,6 @@ winding_t	*CopyWinding (winding_t *w)
 	Com_Memcpy (c, w, size);
 	return c;
 }
-
-/*
-=============
-ClipWindingEpsilon
-=============
-*/
-void	ClipWindingEpsilon (winding_t *in, vec3_t normal, vec_t dist, 
-				vec_t epsilon, winding_t **front, winding_t **back)
-{
-	vec_t	dists[MAX_POINTS_ON_WINDING+4];
-	int		sides[MAX_POINTS_ON_WINDING+4];
-	int		counts[3];
-	static	vec_t	dot;		// VC 4.2 optimizer bug if not static
-	int		i, j;
-	vec_t	*p1, *p2;
-	vec3_t	mid;
-	winding_t	*f, *b;
-	int		maxpts;
-	
-	counts[0] = counts[1] = counts[2] = 0;
-
-// determine sides for each point
-	for (i=0 ; i<in->numpoints ; i++)
-	{
-		dot = DotProduct (in->p[i], normal);
-		dot -= dist;
-		dists[i] = dot;
-		if (dot > epsilon)
-			sides[i] = SIDE_FRONT;
-		else if (dot < -epsilon)
-			sides[i] = SIDE_BACK;
-		else
-		{
-			sides[i] = SIDE_ON;
-		}
-		counts[sides[i]]++;
-	}
-	sides[i] = sides[0];
-	dists[i] = dists[0];
-	
-	*front = *back = NULL;
-
-	if (!counts[0])
-	{
-		*back = CopyWinding (in);
-		return;
-	}
-	if (!counts[1])
-	{
-		*front = CopyWinding (in);
-		return;
-	}
-
-	maxpts = in->numpoints+4;	// cant use counts[0]+2 because
-								// of fp grouping errors
-
-	*front = f = AllocWinding (maxpts);
-	*back = b = AllocWinding (maxpts);
-		
-	for (i=0 ; i<in->numpoints ; i++)
-	{
-		p1 = in->p[i];
-		
-		if (sides[i] == SIDE_ON)
-		{
-			VectorCopy (p1, f->p[f->numpoints]);
-			f->numpoints++;
-			VectorCopy (p1, b->p[b->numpoints]);
-			b->numpoints++;
-			continue;
-		}
-	
-		if (sides[i] == SIDE_FRONT)
-		{
-			VectorCopy (p1, f->p[f->numpoints]);
-			f->numpoints++;
-		}
-		if (sides[i] == SIDE_BACK)
-		{
-			VectorCopy (p1, b->p[b->numpoints]);
-			b->numpoints++;
-		}
-
-		if (sides[i+1] == SIDE_ON || sides[i+1] == sides[i])
-			continue;
-			
-	// generate a split point
-		p2 = in->p[(i+1)%in->numpoints];
-		
-		dot = dists[i] / (dists[i]-dists[i+1]);
-		for (j=0 ; j<3 ; j++)
-		{	// avoid round off error when possible
-			if (normal[j] == 1)
-				mid[j] = dist;
-			else if (normal[j] == -1)
-				mid[j] = -dist;
-			else
-				mid[j] = p1[j] + dot*(p2[j]-p1[j]);
-		}
-			
-		VectorCopy (mid, f->p[f->numpoints]);
-		f->numpoints++;
-		VectorCopy (mid, b->p[b->numpoints]);
-		b->numpoints++;
-	}
-	
-	if (f->numpoints > maxpts || b->numpoints > maxpts)
-		Com_Error (ERR_DROP, "ClipWinding: points exceeded estimate");
-	if (f->numpoints > MAX_POINTS_ON_WINDING || b->numpoints > MAX_POINTS_ON_WINDING)
-		Com_Error (ERR_DROP, "ClipWinding: MAX_POINTS_ON_WINDING");
-}
-
 
 /*
 =============
@@ -408,30 +288,10 @@ void ChopWindingInPlace (winding_t **inout, vec3_t normal, vec_t dist, vec_t eps
 	}
 	
 	if (f->numpoints > maxpts)
-		Com_Error (ERR_DROP, "ClipWinding: points exceeded estimate");
+		throw QDropException("ClipWinding: points exceeded estimate");
 	if (f->numpoints > MAX_POINTS_ON_WINDING)
-		Com_Error (ERR_DROP, "ClipWinding: MAX_POINTS_ON_WINDING");
+		throw QDropException("ClipWinding: MAX_POINTS_ON_WINDING");
 
 	FreeWinding (in);
 	*inout = f;
-}
-
-
-/*
-=================
-ChopWinding
-
-Returns the fragment of in that is on the front side
-of the cliping plane.  The original is freed.
-=================
-*/
-winding_t	*ChopWinding (winding_t *in, vec3_t normal, vec_t dist)
-{
-	winding_t	*f, *b;
-
-	ClipWindingEpsilon (in, normal, dist, ON_EPSILON, &f, &b);
-	FreeWinding (in);
-	if (b)
-		FreeWinding (b);
-	return f;
 }

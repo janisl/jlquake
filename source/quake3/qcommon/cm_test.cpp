@@ -81,7 +81,7 @@ void CM_StoreLeafs( leafList_t *ll, int nodenum ) {
 	}
 
 	if ( ll->count >= ll->maxcount) {
-		ll->overflowed = qtrue;
+		ll->overflowed = true;
 		return;
 	}
 	ll->list[ ll->count++ ] = leafNum;
@@ -114,7 +114,7 @@ void CM_StoreBrushes( leafList_t *ll, int nodenum ) {
 			continue;
 		}
 		if ( ll->count >= ll->maxcount) {
-			ll->overflowed = qtrue;
+			ll->overflowed = true;
 			return;
 		}
 		((cbrush_t **)ll->list)[ ll->count++ ] = b;
@@ -181,7 +181,7 @@ int	CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list, int listsiz
 	ll.list = list;
 	ll.storeLeafs = CM_StoreLeafs;
 	ll.lastLeaf = 0;
-	ll.overflowed = qfalse;
+	ll.overflowed = false;
 
 	CM_BoxLeafnums_r( &ll, 0 );
 
@@ -206,7 +206,7 @@ int CM_BoxBrushes( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int li
 	ll.list = (int*)list;
 	ll.storeLeafs = CM_StoreBrushes;
 	ll.lastLeaf = 0;
-	ll.overflowed = qfalse;
+	ll.overflowed = false;
 	
 	CM_BoxLeafnums_r( &ll, 0 );
 
@@ -337,7 +337,7 @@ void CM_FloodArea_r( int areaNum, int floodnum) {
 	if ( area->floodvalid == cm.floodvalid ) {
 		if (area->floodnum == floodnum)
 			return;
-		Com_Error (ERR_DROP, "FloodArea_r: reflooded");
+		throw QDropException("FloodArea_r: reflooded");
 	}
 
 	area->floodnum = floodnum;
@@ -388,7 +388,7 @@ void	CM_AdjustAreaPortalState( int area1, int area2, qboolean open ) {
 	}
 
 	if ( area1 >= cm.numAreas || area2 >= cm.numAreas ) {
-		Com_Error (ERR_DROP, "CM_ChangeAreaPortalState: bad area number");
+		throw QDropException("CM_ChangeAreaPortalState: bad area number");
 	}
 
 	if ( open ) {
@@ -398,7 +398,7 @@ void	CM_AdjustAreaPortalState( int area1, int area2, qboolean open ) {
 		cm.areaPortals[ area1 * cm.numAreas + area2 ]--;
 		cm.areaPortals[ area2 * cm.numAreas + area1 ]--;
 		if ( cm.areaPortals[ area2 * cm.numAreas + area1 ] < 0 ) {
-			Com_Error (ERR_DROP, "CM_AdjustAreaPortalState: negative reference count");
+			throw QDropException("CM_AdjustAreaPortalState: negative reference count");
 		}
 	}
 
@@ -413,21 +413,21 @@ CM_AreasConnected
 */
 qboolean	CM_AreasConnected( int area1, int area2 ) {
 	if ( cm_noAreas->integer ) {
-		return qtrue;
+		return true;
 	}
 
 	if ( area1 < 0 || area2 < 0 ) {
-		return qfalse;
+		return false;
 	}
 
 	if (area1 >= cm.numAreas || area2 >= cm.numAreas) {
-		Com_Error (ERR_DROP, "area >= cm.numAreas");
+		throw QDropException("area >= cm.numAreas");
 	}
 
 	if (cm.areas[area1].floodnum == cm.areas[area2].floodnum) {
-		return qtrue;
+		return true;
 	}
-	return qfalse;
+	return false;
 }
 
 
