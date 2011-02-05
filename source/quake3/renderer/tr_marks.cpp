@@ -158,8 +158,8 @@ void R_BoxSurfaces_r(mnode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **li
 		//
 		surf = *mark;
 		// check if the surface has NOIMPACT or NOMARKS set
-		if ( ( surf->shader->surfaceFlags & ( SURF_NOIMPACT | SURF_NOMARKS ) )
-			|| ( surf->shader->contentFlags & CONTENTS_FOG ) ) {
+		if ( ( surf->shader->surfaceFlags & ( BSP46SURF_NOIMPACT | BSP46SURF_NOMARKS ) )
+			|| ( surf->shader->contentFlags & BSP46CONTENTS_FOG ) ) {
 			surf->viewCount = tr.viewCount;
 		}
 		// extra check for surfaces to avoid list overflows
@@ -265,7 +265,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 	float			*v;
 	srfSurfaceFace_t *surf;
 	srfGridMesh_t	*cv;
-	drawVert_t		*dv;
+	bsp46_drawVert_t		*dv;
 	vec3_t			normal;
 	vec3_t			projectionDir;
 	vec3_t			v1, v2;

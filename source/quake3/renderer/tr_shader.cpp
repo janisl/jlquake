@@ -1316,45 +1316,45 @@ typedef struct {
 
 infoParm_t	infoParms[] = {
 	// server relevant contents
-	{"water",		1,	0,	CONTENTS_WATER },
-	{"slime",		1,	0,	CONTENTS_SLIME },		// mildly damaging
-	{"lava",		1,	0,	CONTENTS_LAVA },		// very damaging
-	{"playerclip",	1,	0,	CONTENTS_PLAYERCLIP },
-	{"monsterclip",	1,	0,	CONTENTS_MONSTERCLIP },
-	{"nodrop",		1,	0,	CONTENTS_NODROP },		// don't drop items or leave bodies (death fog, lava, etc)
-	{"nonsolid",	1,	SURF_NONSOLID,	0},						// clears the solid flag
+	{"water",		1,	0,	BSP46CONTENTS_WATER },
+	{"slime",		1,	0,	BSP46CONTENTS_SLIME },		// mildly damaging
+	{"lava",		1,	0,	BSP46CONTENTS_LAVA },		// very damaging
+	{"playerclip",	1,	0,	BSP46CONTENTS_PLAYERCLIP },
+	{"monsterclip",	1,	0,	BSP46CONTENTS_MONSTERCLIP },
+	{"nodrop",		1,	0,	BSP46CONTENTS_NODROP },		// don't drop items or leave bodies (death fog, lava, etc)
+	{"nonsolid",	1,	BSP46SURF_NONSOLID,	0},						// clears the solid flag
 
 	// utility relevant attributes
-	{"origin",		1,	0,	CONTENTS_ORIGIN },		// center of rotating brushes
-	{"trans",		0,	0,	CONTENTS_TRANSLUCENT },	// don't eat contained surfaces
-	{"detail",		0,	0,	CONTENTS_DETAIL },		// don't include in structural bsp
-	{"structural",	0,	0,	CONTENTS_STRUCTURAL },	// force into structural bsp even if trnas
-	{"areaportal",	1,	0,	CONTENTS_AREAPORTAL },	// divides areas
-	{"clusterportal", 1,0,  CONTENTS_CLUSTERPORTAL },	// for bots
-	{"donotenter",  1,  0,  CONTENTS_DONOTENTER },		// for bots
+	{"origin",		1,	0,	BSP46CONTENTS_ORIGIN },			// center of rotating brushes
+	{"trans",		0,	0,	BSP46CONTENTS_TRANSLUCENT },	// don't eat contained surfaces
+	{"detail",		0,	0,	BSP46CONTENTS_DETAIL },			// don't include in structural bsp
+	{"structural",	0,	0,	BSP46CONTENTS_STRUCTURAL },		// force into structural bsp even if trnas
+	{"areaportal",	1,	0,	BSP46CONTENTS_AREAPORTAL },		// divides areas
+	{"clusterportal", 1,0,  BSP46CONTENTS_CLUSTERPORTAL },	// for bots
+	{"donotenter",  1,  0,  BSP46CONTENTS_DONOTENTER },		// for bots
 
-	{"fog",			1,	0,	CONTENTS_FOG},			// carves surfaces entering
-	{"sky",			0,	SURF_SKY,		0 },		// emit light from an environment map
-	{"lightfilter",	0,	SURF_LIGHTFILTER, 0 },		// filter light going through it
-	{"alphashadow",	0,	SURF_ALPHASHADOW, 0 },		// test light on a per-pixel basis
-	{"hint",		0,	SURF_HINT,		0 },		// use as a primary splitter
+	{"fog",			1,	0,	BSP46CONTENTS_FOG},			// carves surfaces entering
+	{"sky",			0,	BSP46SURF_SKY,		0 },		// emit light from an environment map
+	{"lightfilter",	0,	BSP46SURF_LIGHTFILTER, 0 },		// filter light going through it
+	{"alphashadow",	0,	BSP46SURF_ALPHASHADOW, 0 },		// test light on a per-pixel basis
+	{"hint",		0,	BSP46SURF_HINT,		0 },		// use as a primary splitter
 
 	// server attributes
-	{"slick",		0,	SURF_SLICK,		0 },
-	{"noimpact",	0,	SURF_NOIMPACT,	0 },		// don't make impact explosions or marks
-	{"nomarks",		0,	SURF_NOMARKS,	0 },		// don't make impact marks, but still explode
-	{"ladder",		0,	SURF_LADDER,	0 },
-	{"nodamage",	0,	SURF_NODAMAGE,	0 },
-	{"metalsteps",	0,	SURF_METALSTEPS,0 },
-	{"flesh",		0,	SURF_FLESH,		0 },
-	{"nosteps",		0,	SURF_NOSTEPS,	0 },
+	{"slick",		0,	BSP46SURF_SLICK,		0 },
+	{"noimpact",	0,	BSP46SURF_NOIMPACT,	0 },		// don't make impact explosions or marks
+	{"nomarks",		0,	BSP46SURF_NOMARKS,	0 },		// don't make impact marks, but still explode
+	{"ladder",		0,	BSP46SURF_LADDER,	0 },
+	{"nodamage",	0,	BSP46SURF_NODAMAGE,	0 },
+	{"metalsteps",	0,	BSP46SURF_METALSTEPS,0 },
+	{"flesh",		0,	BSP46SURF_FLESH,		0 },
+	{"nosteps",		0,	BSP46SURF_NOSTEPS,	0 },
 
 	// drawsurf attributes
-	{"nodraw",		0,	SURF_NODRAW,	0 },	// don't generate a drawsurface (or a lightmap)
-	{"pointlight",	0,	SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
-	{"nolightmap",	0,	SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
-	{"nodlight",	0,	SURF_NODLIGHT, 0 },		// don't ever add dynamic lights
-	{"dust",		0,	SURF_DUST, 0}			// leave a dust trail when walking on this surface
+	{"nodraw",		0,	BSP46SURF_NODRAW,	0 },	// don't generate a drawsurface (or a lightmap)
+	{"pointlight",	0,	BSP46SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
+	{"nolightmap",	0,	BSP46SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
+	{"nodlight",	0,	BSP46SURF_NODLIGHT, 0 },	// don't ever add dynamic lights
+	{"dust",		0,	BSP46SURF_DUST, 0}			// leave a dust trail when walking on this surface
 };
 
 
@@ -1596,7 +1596,7 @@ static qboolean ParseShader( const char **text )
 	//
 	// ignore shaders that don't have any stages, unless it is a sky or fog
 	//
-	if ( s == 0 && !shader.isSky && !(shader.contentFlags & CONTENTS_FOG ) ) {
+	if ( s == 0 && !shader.isSky && !(shader.contentFlags & BSP46CONTENTS_FOG ) ) {
 		return qfalse;
 	}
 
@@ -1981,7 +1981,7 @@ static shader_t *GeneratePermanentShader( void ) {
 
 	if ( shader.sort <= SS_OPAQUE ) {
 		newShader->fogPass = FP_EQUAL;
-	} else if ( shader.contentFlags & CONTENTS_FOG ) {
+	} else if ( shader.contentFlags & BSP46CONTENTS_FOG ) {
 		newShader->fogPass = FP_LE;
 	}
 

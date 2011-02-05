@@ -573,7 +573,7 @@ R_PlaneForSurface
 void R_PlaneForSurface (surfaceType_t *surfType, cplane_t *plane) {
 	srfTriangles_t	*tri;
 	srfPoly_t		*poly;
-	drawVert_t		*v1, *v2, *v3;
+	bsp46_drawVert_t		*v1, *v2, *v3;
 	vec4_t			plane4;
 
 	if (!surfType) {

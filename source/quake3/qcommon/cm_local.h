@@ -21,8 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "../../../libs/core/core.h"
-//#include "../game/q_shared.h"
-//#include "qcommon.h"
+#include "../../../libs/core/bsp46file.h"
 #include "cm_public.h"
 #include "cm_polylib.h"
 
@@ -85,7 +84,7 @@ typedef struct {
 	char		name[MAX_QPATH];
 
 	int			numShaders;
-	dshader_t	*shaders;
+	bsp46_dshader_t	*shaders;
 
 	int			numBrushSides;
 	cbrushside_t *brushsides;

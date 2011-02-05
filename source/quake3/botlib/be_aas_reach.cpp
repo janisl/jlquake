@@ -871,7 +871,7 @@ int AAS_Reachability_Swim(int area1num, int area2num)
 			{
 				AAS_FaceCenter(face1num, start);
 				//
-				if (AAS_PointContents(start) & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER))
+				if (AAS_PointContents(start) & (BSP46CONTENTS_LAVA|BSP46CONTENTS_SLIME|BSP46CONTENTS_WATER))
 				{
 					//
 					face1 = &aasworld.faces[face1num];
@@ -2234,7 +2234,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 			if (DotProduct(plane->normal, up) >= 0.7)
 			{
 				// if no lava or slime below
-				if (!(AAS_PointContents(trace.endpos) & (CONTENTS_LAVA|CONTENTS_SLIME)))
+				if (!(AAS_PointContents(trace.endpos) & (BSP46CONTENTS_LAVA|BSP46CONTENTS_SLIME)))
 				{
 					if (teststart[2] - trace.endpos[2] <= aassettings.phys_maxbarrier)
 						return qfalse;
@@ -2257,7 +2257,7 @@ int AAS_Reachability_Jump(int area1num, int area2num)
 			if (DotProduct(plane->normal, up) >= 0.7)
 			{
 				// if no lava or slime below
-				if (!(AAS_PointContents(trace.endpos) & (CONTENTS_LAVA|CONTENTS_SLIME)))
+				if (!(AAS_PointContents(trace.endpos) & (BSP46CONTENTS_LAVA|BSP46CONTENTS_SLIME)))
 				{
 					if (teststart[2] - trace.endpos[2] <= aassettings.phys_maxbarrier)
 						return qfalse;
@@ -3828,7 +3828,7 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 	} //end if
 	else
 	{
-		if (!(AAS_PointContents(start) & (CONTENTS_LAVA|CONTENTS_SLIME|CONTENTS_WATER))) return qfalse;
+		if (!(AAS_PointContents(start) & (BSP46CONTENTS_LAVA|BSP46CONTENTS_SLIME|BSP46CONTENTS_WATER))) return qfalse;
 	} //end else
 	//
 	//start is now the start point
@@ -3866,9 +3866,9 @@ int AAS_Reachability_Grapple(int area1num, int area2num)
 		VectorCopy(facecenter, start);
 		VectorMA(facecenter, -500, aasworld.planes[face2->planenum].normal, end);
 		//
-		bsptrace = AAS_Trace(start, NULL, NULL, end, 0, CONTENTS_SOLID);
+		bsptrace = AAS_Trace(start, NULL, NULL, end, 0, BSP46CONTENTS_SOLID);
 		//the grapple won't stick to the sky and the grapple point should be near the AAS wall
-		if ((bsptrace.surface.flags & SURF_SKY) || (bsptrace.fraction * 500 > 32)) continue;
+		if ((bsptrace.surface.flags & BSP46SURF_SKY) || (bsptrace.fraction * 500 > 32)) continue;
 		//trace a full bounding box from the area center on the ground to
 		//the center of the face
 		VectorSubtract(facecenter, areastart, dir);

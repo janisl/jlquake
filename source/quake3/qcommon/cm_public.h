@@ -23,11 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __cm_public_h__
 #define __cm_public_h__
 
-#include "qfiles.h"
-
 typedef int		clipHandle_t;
-
-#include "../game/surfaceflags.h"			// shared with the q3map utility
 
 // a trace is returned when a box is swept through the world
 typedef struct {

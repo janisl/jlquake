@@ -596,11 +596,11 @@ void BotInitLevelItems(void)
 		if (spawnflags & 1)
 		{
 			//if the item is not floating in water
-			if (!(AAS_PointContents(origin) & CONTENTS_WATER))
+			if (!(AAS_PointContents(origin) & BSP46CONTENTS_WATER))
 			{
 				VectorCopy(origin, end);
 				end[2] -= 32;
-				trace = AAS_Trace(origin, ic->iteminfo[i].mins, ic->iteminfo[i].maxs, end, -1, CONTENTS_SOLID|CONTENTS_PLAYERCLIP);
+				trace = AAS_Trace(origin, ic->iteminfo[i].mins, ic->iteminfo[i].maxs, end, -1, BSP46CONTENTS_SOLID|BSP46CONTENTS_PLAYERCLIP);
 				//if the item not near the ground
 				if (trace.fraction >= 1)
 				{
@@ -1646,7 +1646,7 @@ int BotItemGoalInVisButNotVisible(int viewer, vec3_t eye, vec3_t viewangles, bot
 	VectorScale(middle, 0.5, middle);
 	VectorAdd(goal->origin, middle, middle);
 	//
-	trace = AAS_Trace(eye, NULL, NULL, middle, viewer, CONTENTS_SOLID);
+	trace = AAS_Trace(eye, NULL, NULL, middle, viewer, BSP46CONTENTS_SOLID);
 	//if the goal middle point is visible
 	if (trace.fraction >= 1)
 	{
