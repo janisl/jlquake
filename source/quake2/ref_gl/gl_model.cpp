@@ -29,7 +29,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer);
 void Mod_LoadAliasModel (model_t *mod, void *buffer);
 model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
-byte	mod_novis[MAX_MAP_LEAFS/8];
+byte	mod_novis[BSP38MAX_MAP_LEAFS/8];
 
 #define	MAX_MOD_KNOWN	512
 model_t	mod_known[MAX_MOD_KNOWN];
@@ -78,7 +78,7 @@ Mod_DecompressVis
 */
 byte *Mod_DecompressVis (byte *in, model_t *model)
 {
-	static byte	decompressed[MAX_MAP_LEAFS/8];
+	static byte	decompressed[BSP38MAX_MAP_LEAFS/8];
 	int		c;
 	byte	*out;
 	int		row;
@@ -125,7 +125,7 @@ byte *Mod_ClusterPVS (int cluster, model_t *model)
 {
 	if (cluster == -1 || !model->vis)
 		return mod_novis;
-	return Mod_DecompressVis ( (byte *)model->vis + model->vis->bitofs[cluster][DVIS_PVS],
+	return Mod_DecompressVis ( (byte *)model->vis + model->vis->bitofs[cluster][BSP38DVIS_PVS],
 		model);
 }
 
@@ -254,7 +254,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 		Mod_LoadSpriteModel (mod, buf);
 		break;
 	
-	case IDBSPHEADER:
+	case BSP38_HEADER:
 		loadmodel->extradata = Hunk_Begin (0x1000000);
 		Mod_LoadBrushModel (mod, buf);
 		break;
@@ -287,7 +287,7 @@ byte	*mod_base;
 Mod_LoadLighting
 =================
 */
-void Mod_LoadLighting (lump_t *l)
+void Mod_LoadLighting (bsp38_lump_t *l)
 {
 	if (!l->filelen)
 	{
@@ -304,7 +304,7 @@ void Mod_LoadLighting (lump_t *l)
 Mod_LoadVisibility
 =================
 */
-void Mod_LoadVisibility (lump_t *l)
+void Mod_LoadVisibility (bsp38_lump_t *l)
 {
 	int		i;
 
@@ -313,7 +313,7 @@ void Mod_LoadVisibility (lump_t *l)
 		loadmodel->vis = NULL;
 		return;
 	}
-	loadmodel->vis = (dvis_t*)Hunk_Alloc ( l->filelen);	
+	loadmodel->vis = (bsp38_dvis_t*)Hunk_Alloc ( l->filelen);	
 	Com_Memcpy(loadmodel->vis, mod_base + l->fileofs, l->filelen);
 
 	loadmodel->vis->numclusters = LittleLong (loadmodel->vis->numclusters);
@@ -330,13 +330,13 @@ void Mod_LoadVisibility (lump_t *l)
 Mod_LoadVertexes
 =================
 */
-void Mod_LoadVertexes (lump_t *l)
+void Mod_LoadVertexes (bsp38_lump_t *l)
 {
-	dvertex_t	*in;
+	bsp38_dvertex_t	*in;
 	mvertex_t	*out;
 	int			i, count;
 
-	in = (dvertex_t*)(mod_base + l->fileofs);
+	in = (bsp38_dvertex_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -377,13 +377,13 @@ float RadiusFromBounds (vec3_t mins, vec3_t maxs)
 Mod_LoadSubmodels
 =================
 */
-void Mod_LoadSubmodels (lump_t *l)
+void Mod_LoadSubmodels (bsp38_lump_t *l)
 {
-	dmodel_t	*in;
+	bsp38_dmodel_t	*in;
 	mmodel_t	*out;
 	int			i, j, count;
 
-	in = (dmodel_t*)(mod_base + l->fileofs);
+	in = (bsp38_dmodel_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -412,13 +412,13 @@ void Mod_LoadSubmodels (lump_t *l)
 Mod_LoadEdges
 =================
 */
-void Mod_LoadEdges (lump_t *l)
+void Mod_LoadEdges (bsp38_lump_t *l)
 {
-	dedge_t *in;
+	bsp38_dedge_t *in;
 	medge_t *out;
 	int 	i, count;
 
-	in = (dedge_t*)(mod_base + l->fileofs);
+	in = (bsp38_dedge_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -439,15 +439,15 @@ void Mod_LoadEdges (lump_t *l)
 Mod_LoadTexinfo
 =================
 */
-void Mod_LoadTexinfo (lump_t *l)
+void Mod_LoadTexinfo (bsp38_lump_t *l)
 {
-	texinfo_t *in;
+	bsp38_texinfo_t *in;
 	mtexinfo_t *out, *step;
 	int 	i, j, count;
 	char	name[MAX_QPATH];
 	int		next;
 
-	in = (texinfo_t*)(mod_base + l->fileofs);
+	in = (bsp38_texinfo_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -552,15 +552,15 @@ void GL_BeginBuildingLightmaps (model_t *m);
 Mod_LoadFaces
 =================
 */
-void Mod_LoadFaces (lump_t *l)
+void Mod_LoadFaces (bsp38_lump_t *l)
 {
-	dface_t		*in;
+	bsp38_dface_t		*in;
 	msurface_t 	*out;
 	int			i, count, surfnum;
 	int			planenum, side;
 	int			ti;
 
-	in = (dface_t*)(mod_base + l->fileofs);
+	in = (bsp38_dface_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -596,7 +596,7 @@ void Mod_LoadFaces (lump_t *l)
 				
 	// lighting info
 
-		for (i=0 ; i<MAXLIGHTMAPS ; i++)
+		for (i=0 ; i<BSP38_MAXLIGHTMAPS ; i++)
 			out->styles[i] = in->styles[i];
 		i = LittleLong(in->lightofs);
 		if (i == -1)
@@ -606,7 +606,7 @@ void Mod_LoadFaces (lump_t *l)
 		
 	// set the drawing flags
 		
-		if (out->texinfo->flags & SURF_WARP)
+		if (out->texinfo->flags & BSP38SURF_WARP)
 		{
 			out->flags |= SURF_DRAWTURB;
 			for (i=0 ; i<2 ; i++)
@@ -618,10 +618,10 @@ void Mod_LoadFaces (lump_t *l)
 		}
 
 		// create lightmaps and polygons
-		if ( !(out->texinfo->flags & (SURF_SKY|SURF_TRANS33|SURF_TRANS66|SURF_WARP) ) )
+		if ( !(out->texinfo->flags & (BSP38SURF_SKY|BSP38SURF_TRANS33|BSP38SURF_TRANS66|BSP38SURF_WARP) ) )
 			GL_CreateSurfaceLightmap (out);
 
-		if (! (out->texinfo->flags & SURF_WARP) ) 
+		if (! (out->texinfo->flags & BSP38SURF_WARP) ) 
 			GL_BuildPolygonFromSurface(out);
 
 	}
@@ -649,13 +649,13 @@ void Mod_SetParent (mnode_t *node, mnode_t *parent)
 Mod_LoadNodes
 =================
 */
-void Mod_LoadNodes (lump_t *l)
+void Mod_LoadNodes (bsp38_lump_t *l)
 {
 	int			i, j, count, p;
-	dnode_t		*in;
+	bsp38_dnode_t		*in;
 	mnode_t 	*out;
 
-	in = (dnode_t*)(mod_base + l->fileofs);
+	in = (bsp38_dnode_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -697,14 +697,14 @@ void Mod_LoadNodes (lump_t *l)
 Mod_LoadLeafs
 =================
 */
-void Mod_LoadLeafs (lump_t *l)
+void Mod_LoadLeafs (bsp38_lump_t *l)
 {
-	dleaf_t 	*in;
+	bsp38_dleaf_t 	*in;
 	mleaf_t 	*out;
 	int			i, j, count, p;
 //	glpoly_t	*poly;
 
-	in = (dleaf_t*)(mod_base + l->fileofs);
+	in = (bsp38_dleaf_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -751,7 +751,7 @@ void Mod_LoadLeafs (lump_t *l)
 Mod_LoadMarksurfaces
 =================
 */
-void Mod_LoadMarksurfaces (lump_t *l)
+void Mod_LoadMarksurfaces (bsp38_lump_t *l)
 {	
 	int		i, j, count;
 	short		*in;
@@ -780,7 +780,7 @@ void Mod_LoadMarksurfaces (lump_t *l)
 Mod_LoadSurfedges
 =================
 */
-void Mod_LoadSurfedges (lump_t *l)
+void Mod_LoadSurfedges (bsp38_lump_t *l)
 {	
 	int		i, count;
 	int		*in, *out;
@@ -789,7 +789,7 @@ void Mod_LoadSurfedges (lump_t *l)
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	if (count < 1 || count >= MAX_MAP_SURFEDGES)
+	if (count < 1 || count >= BSP38MAX_MAP_SURFEDGES)
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: bad surfedges count in %s: %i",
 		loadmodel->name, count);
 
@@ -808,14 +808,14 @@ void Mod_LoadSurfedges (lump_t *l)
 Mod_LoadPlanes
 =================
 */
-void Mod_LoadPlanes (lump_t *l)
+void Mod_LoadPlanes (bsp38_lump_t *l)
 {
 	int			i, j;
 	cplane_t	*out;
-	dplane_t 	*in;
+	bsp38_dplane_t 	*in;
 	int			count;
 	
-	in = (dplane_t*)(mod_base + l->fileofs);
+	in = (bsp38_dplane_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
@@ -845,39 +845,39 @@ Mod_LoadBrushModel
 void Mod_LoadBrushModel (model_t *mod, void *buffer)
 {
 	int			i;
-	dheader_t	*header;
+	bsp38_dheader_t	*header;
 	mmodel_t 	*bm;
 	
 	loadmodel->type = mod_brush;
 	if (loadmodel != mod_known)
 		ri.Sys_Error (ERR_DROP, "Loaded a brush model after the world");
 
-	header = (dheader_t *)buffer;
+	header = (bsp38_dheader_t *)buffer;
 
 	i = LittleLong (header->version);
-	if (i != BSPVERSION)
-		ri.Sys_Error (ERR_DROP, "Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSPVERSION);
+	if (i != BSP38_VERSION)
+		ri.Sys_Error (ERR_DROP, "Mod_LoadBrushModel: %s has wrong version number (%i should be %i)", mod->name, i, BSP38_VERSION);
 
 // swap all the lumps
 	mod_base = (byte *)header;
 
-	for (i=0 ; i<sizeof(dheader_t)/4 ; i++)
+	for (i=0 ; i<sizeof(bsp38_dheader_t)/4 ; i++)
 		((int *)header)[i] = LittleLong ( ((int *)header)[i]);
 
 // load into heap
 	
-	Mod_LoadVertexes (&header->lumps[LUMP_VERTEXES]);
-	Mod_LoadEdges (&header->lumps[LUMP_EDGES]);
-	Mod_LoadSurfedges (&header->lumps[LUMP_SURFEDGES]);
-	Mod_LoadLighting (&header->lumps[LUMP_LIGHTING]);
-	Mod_LoadPlanes (&header->lumps[LUMP_PLANES]);
-	Mod_LoadTexinfo (&header->lumps[LUMP_TEXINFO]);
-	Mod_LoadFaces (&header->lumps[LUMP_FACES]);
-	Mod_LoadMarksurfaces (&header->lumps[LUMP_LEAFFACES]);
-	Mod_LoadVisibility (&header->lumps[LUMP_VISIBILITY]);
-	Mod_LoadLeafs (&header->lumps[LUMP_LEAFS]);
-	Mod_LoadNodes (&header->lumps[LUMP_NODES]);
-	Mod_LoadSubmodels (&header->lumps[LUMP_MODELS]);
+	Mod_LoadVertexes (&header->lumps[BSP38LUMP_VERTEXES]);
+	Mod_LoadEdges (&header->lumps[BSP38LUMP_EDGES]);
+	Mod_LoadSurfedges (&header->lumps[BSP38LUMP_SURFEDGES]);
+	Mod_LoadLighting (&header->lumps[BSP38LUMP_LIGHTING]);
+	Mod_LoadPlanes (&header->lumps[BSP38LUMP_PLANES]);
+	Mod_LoadTexinfo (&header->lumps[BSP38LUMP_TEXINFO]);
+	Mod_LoadFaces (&header->lumps[BSP38LUMP_FACES]);
+	Mod_LoadMarksurfaces (&header->lumps[BSP38LUMP_LEAFFACES]);
+	Mod_LoadVisibility (&header->lumps[BSP38LUMP_VISIBILITY]);
+	Mod_LoadLeafs (&header->lumps[BSP38LUMP_LEAFS]);
+	Mod_LoadNodes (&header->lumps[BSP38LUMP_NODES]);
+	Mod_LoadSubmodels (&header->lumps[BSP38LUMP_MODELS]);
 	mod->numframes = 2;		// regular and alternate animation
 	
 //

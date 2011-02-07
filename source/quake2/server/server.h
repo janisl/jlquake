@@ -85,7 +85,7 @@ typedef enum
 typedef struct
 {
 	int					areabytes;
-	byte				areabits[MAX_MAP_AREAS/8];		// portalarea visibility bits
+	byte				areabits[BSP38MAX_MAP_AREAS/8];		// portalarea visibility bits
 	player_state_t		ps;
 	int					num_entities;
 	int					first_entity;		// into the circular sv_packet_entities[]

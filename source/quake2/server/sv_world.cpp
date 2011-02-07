@@ -544,7 +544,7 @@ void SV_ClipMoveToEntities ( moveclip_t *clip )
 				continue;	// don't clip against owner
 		}
 
-		if ( !(clip->contentmask & CONTENTS_DEADMONSTER)
+		if ( !(clip->contentmask & BSP38CONTENTS_DEADMONSTER)
 		&& (touch->svflags & SVF_DEADMONSTER) )
 				continue;
 

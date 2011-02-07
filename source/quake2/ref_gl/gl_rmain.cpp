@@ -619,7 +619,7 @@ void R_SetupFrame (void)
 			VectorCopy (r_origin, temp);
 			temp[2] -= 16;
 			leaf = Mod_PointInLeaf (temp, r_worldmodel);
-			if ( !(leaf->contents & CONTENTS_SOLID) &&
+			if ( !(leaf->contents & BSP38CONTENTS_SOLID) &&
 				(leaf->cluster != r_viewcluster2) )
 				r_viewcluster2 = leaf->cluster;
 		}
@@ -630,7 +630,7 @@ void R_SetupFrame (void)
 			VectorCopy (r_origin, temp);
 			temp[2] += 16;
 			leaf = Mod_PointInLeaf (temp, r_worldmodel);
-			if ( !(leaf->contents & CONTENTS_SOLID) &&
+			if ( !(leaf->contents & BSP38CONTENTS_SOLID) &&
 				(leaf->cluster != r_viewcluster2) )
 				r_viewcluster2 = leaf->cluster;
 		}

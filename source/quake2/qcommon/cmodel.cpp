@@ -63,42 +63,42 @@ int			checkcount;
 char		map_name[MAX_QPATH];
 
 int			numbrushsides;
-cbrushside_t map_brushsides[MAX_MAP_BRUSHSIDES];
+cbrushside_t map_brushsides[BSP38MAX_MAP_BRUSHSIDES];
 
 int			numtexinfo;
-mapsurface_t	map_surfaces[MAX_MAP_TEXINFO];
+mapsurface_t	map_surfaces[BSP38MAX_MAP_TEXINFO];
 
 int			numplanes;
-cplane_t	map_planes[MAX_MAP_PLANES+6];		// extra for box hull
+cplane_t	map_planes[BSP38MAX_MAP_PLANES+6];		// extra for box hull
 
 int			numnodes;
-cnode_t		map_nodes[MAX_MAP_NODES+6];		// extra for box hull
+cnode_t		map_nodes[BSP38MAX_MAP_NODES+6];		// extra for box hull
 
 int			numleafs = 1;	// allow leaf funcs to be called without a map
-cleaf_t		map_leafs[MAX_MAP_LEAFS];
+cleaf_t		map_leafs[BSP38MAX_MAP_LEAFS];
 int			emptyleaf, solidleaf;
 
 int			numleafbrushes;
-unsigned short	map_leafbrushes[MAX_MAP_LEAFBRUSHES];
+unsigned short	map_leafbrushes[BSP38MAX_MAP_LEAFBRUSHES];
 
 int			numcmodels;
-cmodel_t	map_cmodels[MAX_MAP_MODELS];
+cmodel_t	map_cmodels[BSP38MAX_MAP_MODELS];
 
 int			numbrushes;
-cbrush_t	map_brushes[MAX_MAP_BRUSHES];
+cbrush_t	map_brushes[BSP38MAX_MAP_BRUSHES];
 
 int			numvisibility;
-byte		map_visibility[MAX_MAP_VISIBILITY];
-dvis_t		*map_vis = (dvis_t *)map_visibility;
+byte		map_visibility[BSP38MAX_MAP_VISIBILITY];
+bsp38_dvis_t		*map_vis = (bsp38_dvis_t *)map_visibility;
 
 int			numentitychars;
-char		map_entitystring[MAX_MAP_ENTSTRING];
+char		map_entitystring[BSP38MAX_MAP_ENTSTRING];
 
 int			numareas = 1;
-carea_t		map_areas[MAX_MAP_AREAS];
+carea_t		map_areas[BSP38MAX_MAP_AREAS];
 
 int			numareaportals;
-dareaportal_t map_areaportals[MAX_MAP_AREAPORTALS];
+bsp38_dareaportal_t map_areaportals[BSP38MAX_MAP_AREAPORTALS];
 
 int			numclusters = 1;
 
@@ -106,7 +106,7 @@ mapsurface_t	nullsurface;
 
 int			floodvalid;
 
-qboolean	portalopen[MAX_MAP_AREAPORTALS];
+qboolean	portalopen[BSP38MAX_MAP_AREAPORTALS];
 
 
 QCvar		*map_noareas;
@@ -134,20 +134,20 @@ byte	*cmod_base;
 CMod_LoadSubmodels
 =================
 */
-void CMod_LoadSubmodels (lump_t *l)
+void CMod_LoadSubmodels (bsp38_lump_t *l)
 {
-	dmodel_t	*in;
+	bsp38_dmodel_t	*in;
 	cmodel_t	*out;
 	int			i, j, count;
 
-	in = (dmodel_t*)(cmod_base + l->fileofs);
+	in = (bsp38_dmodel_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
 		Com_Error (ERR_DROP, "Map with no models");
-	if (count > MAX_MAP_MODELS)
+	if (count > BSP38MAX_MAP_MODELS)
 		Com_Error (ERR_DROP, "Map has too many models");
 
 	numcmodels = count;
@@ -172,19 +172,19 @@ void CMod_LoadSubmodels (lump_t *l)
 CMod_LoadSurfaces
 =================
 */
-void CMod_LoadSurfaces (lump_t *l)
+void CMod_LoadSurfaces (bsp38_lump_t *l)
 {
-	texinfo_t	*in;
+	bsp38_texinfo_t	*in;
 	mapsurface_t	*out;
 	int			i, count;
 
-	in = (texinfo_t*)(cmod_base + l->fileofs);
+	in = (bsp38_texinfo_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 	if (count < 1)
 		Com_Error (ERR_DROP, "Map with no surfaces");
-	if (count > MAX_MAP_TEXINFO)
+	if (count > BSP38MAX_MAP_TEXINFO)
 		Com_Error (ERR_DROP, "Map has too many surfaces");
 
 	numtexinfo = count;
@@ -206,21 +206,21 @@ CMod_LoadNodes
 
 =================
 */
-void CMod_LoadNodes (lump_t *l)
+void CMod_LoadNodes (bsp38_lump_t *l)
 {
-	dnode_t		*in;
+	bsp38_dnode_t		*in;
 	int			child;
 	cnode_t		*out;
 	int			i, j, count;
 	
-	in = (dnode_t*)(cmod_base + l->fileofs);
+	in = (bsp38_dnode_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	if (count < 1)
 		Com_Error (ERR_DROP, "Map has no nodes");
-	if (count > MAX_MAP_NODES)
+	if (count > BSP38MAX_MAP_NODES)
 		Com_Error (ERR_DROP, "Map has too many nodes");
 
 	out = map_nodes;
@@ -245,18 +245,18 @@ CMod_LoadBrushes
 
 =================
 */
-void CMod_LoadBrushes (lump_t *l)
+void CMod_LoadBrushes (bsp38_lump_t *l)
 {
-	dbrush_t	*in;
+	bsp38_dbrush_t	*in;
 	cbrush_t	*out;
 	int			i, count;
 	
-	in = (dbrush_t*)(cmod_base + l->fileofs);
+	in = (bsp38_dbrush_t*)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
-	if (count > MAX_MAP_BRUSHES)
+	if (count > BSP38MAX_MAP_BRUSHES)
 		Com_Error (ERR_DROP, "Map has too many brushes");
 
 	out = map_brushes;
@@ -277,14 +277,14 @@ void CMod_LoadBrushes (lump_t *l)
 CMod_LoadLeafs
 =================
 */
-void CMod_LoadLeafs (lump_t *l)
+void CMod_LoadLeafs (bsp38_lump_t *l)
 {
 	int			i;
 	cleaf_t		*out;
-	dleaf_t 	*in;
+	bsp38_dleaf_t 	*in;
 	int			count;
 	
-	in = (dleaf_t *)(cmod_base + l->fileofs);
+	in = (bsp38_dleaf_t *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
@@ -292,7 +292,7 @@ void CMod_LoadLeafs (lump_t *l)
 	if (count < 1)
 		Com_Error (ERR_DROP, "Map with no leafs");
 	// need to save space for box planes
-	if (count > MAX_MAP_PLANES)
+	if (count > BSP38MAX_MAP_PLANES)
 		Com_Error (ERR_DROP, "Map has too many planes");
 
 	out = map_leafs;	
@@ -311,7 +311,7 @@ void CMod_LoadLeafs (lump_t *l)
 			numclusters = out->cluster + 1;
 	}
 
-	if (map_leafs[0].contents != CONTENTS_SOLID)
+	if (map_leafs[0].contents != BSP38CONTENTS_SOLID)
 		Com_Error (ERR_DROP, "Map leaf 0 is not CONTENTS_SOLID");
 	solidleaf = 0;
 	emptyleaf = -1;
@@ -332,14 +332,14 @@ void CMod_LoadLeafs (lump_t *l)
 CMod_LoadPlanes
 =================
 */
-void CMod_LoadPlanes (lump_t *l)
+void CMod_LoadPlanes (bsp38_lump_t *l)
 {
 	int			i, j;
 	cplane_t	*out;
-	dplane_t 	*in;
+	bsp38_dplane_t 	*in;
 	int			count;
 	
-	in = (dplane_t *)(cmod_base + l->fileofs);
+	in = (bsp38_dplane_t *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
@@ -347,7 +347,7 @@ void CMod_LoadPlanes (lump_t *l)
 	if (count < 1)
 		Com_Error (ERR_DROP, "Map with no planes");
 	// need to save space for box planes
-	if (count > MAX_MAP_PLANES)
+	if (count > BSP38MAX_MAP_PLANES)
 		Com_Error (ERR_DROP, "Map has too many planes");
 
 	out = map_planes;	
@@ -371,7 +371,7 @@ void CMod_LoadPlanes (lump_t *l)
 CMod_LoadLeafBrushes
 =================
 */
-void CMod_LoadLeafBrushes (lump_t *l)
+void CMod_LoadLeafBrushes (bsp38_lump_t *l)
 {
 	int			i;
 	unsigned short	*out;
@@ -386,7 +386,7 @@ void CMod_LoadLeafBrushes (lump_t *l)
 	if (count < 1)
 		Com_Error (ERR_DROP, "Map with no planes");
 	// need to save space for box planes
-	if (count > MAX_MAP_LEAFBRUSHES)
+	if (count > BSP38MAX_MAP_LEAFBRUSHES)
 		Com_Error (ERR_DROP, "Map has too many leafbrushes");
 
 	out = map_leafbrushes;
@@ -401,21 +401,21 @@ void CMod_LoadLeafBrushes (lump_t *l)
 CMod_LoadBrushSides
 =================
 */
-void CMod_LoadBrushSides (lump_t *l)
+void CMod_LoadBrushSides (bsp38_lump_t *l)
 {
 	int			i, j;
 	cbrushside_t	*out;
-	dbrushside_t 	*in;
+	bsp38_dbrushside_t 	*in;
 	int			count;
 	int			num;
 
-	in = (dbrushside_t *)(cmod_base + l->fileofs);
+	in = (bsp38_dbrushside_t *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
 	// need to save space for box planes
-	if (count > MAX_MAP_BRUSHSIDES)
+	if (count > BSP38MAX_MAP_BRUSHSIDES)
 		Com_Error (ERR_DROP, "Map has too many planes");
 
 	out = map_brushsides;	
@@ -437,19 +437,19 @@ void CMod_LoadBrushSides (lump_t *l)
 CMod_LoadAreas
 =================
 */
-void CMod_LoadAreas (lump_t *l)
+void CMod_LoadAreas (bsp38_lump_t *l)
 {
 	int			i;
 	carea_t		*out;
-	darea_t 	*in;
+	bsp38_darea_t 	*in;
 	int			count;
 
-	in = (darea_t *)(cmod_base + l->fileofs);
+	in = (bsp38_darea_t *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
-	if (count > MAX_MAP_AREAS)
+	if (count > BSP38MAX_MAP_AREAS)
 		Com_Error (ERR_DROP, "Map has too many areas");
 
 	out = map_areas;
@@ -469,19 +469,19 @@ void CMod_LoadAreas (lump_t *l)
 CMod_LoadAreaPortals
 =================
 */
-void CMod_LoadAreaPortals (lump_t *l)
+void CMod_LoadAreaPortals (bsp38_lump_t *l)
 {
 	int			i;
-	dareaportal_t		*out;
-	dareaportal_t 	*in;
+	bsp38_dareaportal_t		*out;
+	bsp38_dareaportal_t 	*in;
 	int			count;
 
-	in = (dareaportal_t *)(cmod_base + l->fileofs);
+	in = (bsp38_dareaportal_t *)(cmod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Com_Error (ERR_DROP, "MOD_LoadBmodel: funny lump size");
 	count = l->filelen / sizeof(*in);
 
-	if (count > MAX_MAP_AREAS)
+	if (count > BSP38MAX_MAP_AREAS)
 		Com_Error (ERR_DROP, "Map has too many areas");
 
 	out = map_areaportals;
@@ -499,12 +499,12 @@ void CMod_LoadAreaPortals (lump_t *l)
 CMod_LoadVisibility
 =================
 */
-void CMod_LoadVisibility (lump_t *l)
+void CMod_LoadVisibility (bsp38_lump_t *l)
 {
 	int		i;
 
 	numvisibility = l->filelen;
-	if (l->filelen > MAX_MAP_VISIBILITY)
+	if (l->filelen > BSP38MAX_MAP_VISIBILITY)
 		Com_Error (ERR_DROP, "Map has too large visibility lump");
 
 	Com_Memcpy(map_visibility, cmod_base + l->fileofs, l->filelen);
@@ -523,10 +523,10 @@ void CMod_LoadVisibility (lump_t *l)
 CMod_LoadEntityString
 =================
 */
-void CMod_LoadEntityString (lump_t *l)
+void CMod_LoadEntityString (bsp38_lump_t *l)
 {
 	numentitychars = l->filelen;
-	if (l->filelen > MAX_MAP_ENTSTRING)
+	if (l->filelen > BSP38MAX_MAP_ENTSTRING)
 		Com_Error (ERR_DROP, "Map has too large entity lump");
 
 	Com_Memcpy(map_entitystring, cmod_base + l->fileofs, l->filelen);
@@ -545,7 +545,7 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 {
 	unsigned		*buf;
 	int				i;
-	dheader_t		header;
+	bsp38_dheader_t		header;
 	int				length;
 	static unsigned	last_checksum;
 
@@ -591,29 +591,29 @@ cmodel_t *CM_LoadMap (char *name, qboolean clientload, unsigned *checksum)
 	last_checksum = LittleLong (Com_BlockChecksum (buf, length));
 	*checksum = last_checksum;
 
-	header = *(dheader_t *)buf;
-	for (i=0 ; i<sizeof(dheader_t)/4 ; i++)
+	header = *(bsp38_dheader_t *)buf;
+	for (i=0 ; i<sizeof(bsp38_dheader_t)/4 ; i++)
 		((int *)&header)[i] = LittleLong ( ((int *)&header)[i]);
 
-	if (header.version != BSPVERSION)
+	if (header.version != BSP38_VERSION)
 		Com_Error (ERR_DROP, "CMod_LoadBrushModel: %s has wrong version number (%i should be %i)"
-		, name, header.version, BSPVERSION);
+		, name, header.version, BSP38_VERSION);
 
 	cmod_base = (byte *)buf;
 
 	// load into heap
-	CMod_LoadSurfaces (&header.lumps[LUMP_TEXINFO]);
-	CMod_LoadLeafs (&header.lumps[LUMP_LEAFS]);
-	CMod_LoadLeafBrushes (&header.lumps[LUMP_LEAFBRUSHES]);
-	CMod_LoadPlanes (&header.lumps[LUMP_PLANES]);
-	CMod_LoadBrushes (&header.lumps[LUMP_BRUSHES]);
-	CMod_LoadBrushSides (&header.lumps[LUMP_BRUSHSIDES]);
-	CMod_LoadSubmodels (&header.lumps[LUMP_MODELS]);
-	CMod_LoadNodes (&header.lumps[LUMP_NODES]);
-	CMod_LoadAreas (&header.lumps[LUMP_AREAS]);
-	CMod_LoadAreaPortals (&header.lumps[LUMP_AREAPORTALS]);
-	CMod_LoadVisibility (&header.lumps[LUMP_VISIBILITY]);
-	CMod_LoadEntityString (&header.lumps[LUMP_ENTITIES]);
+	CMod_LoadSurfaces (&header.lumps[BSP38LUMP_TEXINFO]);
+	CMod_LoadLeafs (&header.lumps[BSP38LUMP_LEAFS]);
+	CMod_LoadLeafBrushes (&header.lumps[BSP38LUMP_LEAFBRUSHES]);
+	CMod_LoadPlanes (&header.lumps[BSP38LUMP_PLANES]);
+	CMod_LoadBrushes (&header.lumps[BSP38LUMP_BRUSHES]);
+	CMod_LoadBrushSides (&header.lumps[BSP38LUMP_BRUSHSIDES]);
+	CMod_LoadSubmodels (&header.lumps[BSP38LUMP_MODELS]);
+	CMod_LoadNodes (&header.lumps[BSP38LUMP_NODES]);
+	CMod_LoadAreas (&header.lumps[BSP38LUMP_AREAS]);
+	CMod_LoadAreaPortals (&header.lumps[BSP38LUMP_AREAPORTALS]);
+	CMod_LoadVisibility (&header.lumps[BSP38LUMP_VISIBILITY]);
+	CMod_LoadEntityString (&header.lumps[BSP38LUMP_ENTITIES]);
 
 	FS_FreeFile (buf);
 
@@ -707,20 +707,20 @@ void CM_InitBoxHull (void)
 
 	box_headnode = numnodes;
 	box_planes = &map_planes[numplanes];
-	if (numnodes+6 > MAX_MAP_NODES
-		|| numbrushes+1 > MAX_MAP_BRUSHES
-		|| numleafbrushes+1 > MAX_MAP_LEAFBRUSHES
-		|| numbrushsides+6 > MAX_MAP_BRUSHSIDES
-		|| numplanes+12 > MAX_MAP_PLANES)
+	if (numnodes+6 > BSP38MAX_MAP_NODES
+		|| numbrushes+1 > BSP38MAX_MAP_BRUSHES
+		|| numleafbrushes+1 > BSP38MAX_MAP_LEAFBRUSHES
+		|| numbrushsides+6 > BSP38MAX_MAP_BRUSHSIDES
+		|| numplanes+12 > BSP38MAX_MAP_PLANES)
 		Com_Error (ERR_DROP, "Not enough room for box tree");
 
 	box_brush = &map_brushes[numbrushes];
 	box_brush->numsides = 6;
 	box_brush->firstbrushside = numbrushsides;
-	box_brush->contents = CONTENTS_MONSTER;
+	box_brush->contents = BSP38CONTENTS_MONSTER;
 
 	box_leaf = &map_leafs[numleafs];
-	box_leaf->contents = CONTENTS_MONSTER;
+	box_leaf->contents = BSP38CONTENTS_MONSTER;
 	box_leaf->firstleafbrush = numleafbrushes;
 	box_leaf->numleafbrushes = 1;
 
@@ -1565,15 +1565,15 @@ void CM_DecompressVis (byte *in, byte *out)
 	} while (out_p - out < row);
 }
 
-byte	pvsrow[MAX_MAP_LEAFS/8];
-byte	phsrow[MAX_MAP_LEAFS/8];
+byte	pvsrow[BSP38MAX_MAP_LEAFS/8];
+byte	phsrow[BSP38MAX_MAP_LEAFS/8];
 
 byte	*CM_ClusterPVS (int cluster)
 {
 	if (cluster == -1)
 		Com_Memset(pvsrow, 0, (numclusters+7)>>3);
 	else
-		CM_DecompressVis (map_visibility + map_vis->bitofs[cluster][DVIS_PVS], pvsrow);
+		CM_DecompressVis (map_visibility + map_vis->bitofs[cluster][BSP38DVIS_PVS], pvsrow);
 	return pvsrow;
 }
 
@@ -1582,7 +1582,7 @@ byte	*CM_ClusterPHS (int cluster)
 	if (cluster == -1)
 		Com_Memset(phsrow, 0, (numclusters+7)>>3);
 	else
-		CM_DecompressVis (map_visibility + map_vis->bitofs[cluster][DVIS_PHS], phsrow);
+		CM_DecompressVis (map_visibility + map_vis->bitofs[cluster][BSP38DVIS_PHS], phsrow);
 	return phsrow;
 }
 
@@ -1598,7 +1598,7 @@ AREAPORTALS
 void FloodArea_r (carea_t *area, int floodnum)
 {
 	int		i;
-	dareaportal_t	*p;
+	bsp38_dareaportal_t	*p;
 
 	if (area->floodvalid == floodvalid)
 	{

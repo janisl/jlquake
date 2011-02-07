@@ -269,7 +269,7 @@ int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
 
 			lightmap += 3*(dt * ((surf->extents[0]>>4)+1) + ds);
 
-			for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ;
+			for (maps = 0 ; maps < BSP38_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 					maps++)
 			{
 				for (i=0 ; i<3 ; i++)
@@ -438,7 +438,7 @@ void R_SetCacheState( msurface_t *surf )
 {
 	int maps;
 
-	for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ;
+	for (maps = 0 ; maps < BSP38_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 		 maps++)
 	{
 		surf->cached_light[maps] = r_newrefdef.lightstyles[surf->styles[maps]].white;
@@ -464,7 +464,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	lightstyle_t	*style;
 	int monolightmap;
 
-	if ( surf->texinfo->flags & (SURF_SKY|SURF_TRANS33|SURF_TRANS66|SURF_WARP) )
+	if ( surf->texinfo->flags & (BSP38SURF_SKY|BSP38SURF_TRANS33|BSP38SURF_TRANS66|BSP38SURF_WARP) )
 		ri.Sys_Error (ERR_DROP, "R_BuildLightMap called for non-lit surface");
 
 	smax = (surf->extents[0]>>4)+1;
@@ -480,7 +480,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 
 		for (i=0 ; i<size*3 ; i++)
 			s_blocklights[i] = 255;
-		for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ;
+		for (maps = 0 ; maps < BSP38_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 			 maps++)
 		{
 			style = &r_newrefdef.lightstyles[surf->styles[maps]];
@@ -489,7 +489,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	}
 
 	// count the # of maps
-	for ( nummaps = 0 ; nummaps < MAXLIGHTMAPS && surf->styles[nummaps] != 255 ;
+	for ( nummaps = 0 ; nummaps < BSP38_MAXLIGHTMAPS && surf->styles[nummaps] != 255 ;
 		 nummaps++)
 		;
 
@@ -500,7 +500,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	{
 		int maps;
 
-		for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ;
+		for (maps = 0 ; maps < BSP38_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 			 maps++)
 		{
 			bl = s_blocklights;
@@ -537,7 +537,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 
 		Com_Memset( s_blocklights, 0, sizeof( s_blocklights[0] ) * size * 3 );
 
-		for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ;
+		for (maps = 0 ; maps < BSP38_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 			 maps++)
 		{
 			bl = s_blocklights;

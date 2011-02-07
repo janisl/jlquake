@@ -508,7 +508,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 
 //======
 //PGM
-	if(fa->texinfo->flags & SURF_FLOWING)
+	if(fa->texinfo->flags & BSP38SURF_FLOWING)
 		DrawGLFlowingPoly (fa);
 	else
 		DrawGLPoly (fa->polys);
@@ -518,7 +518,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 	/*
 	** check for lightmap modification
 	*/
-	for ( maps = 0; maps < MAXLIGHTMAPS && fa->styles[maps] != 255; maps++ )
+	for ( maps = 0; maps < BSP38_MAXLIGHTMAPS && fa->styles[maps] != 255; maps++ )
 	{
 		if ( r_newrefdef.lightstyles[fa->styles[maps]].white != fa->cached_light[maps] )
 			goto dynamic;
@@ -530,7 +530,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 dynamic:
 		if ( gl_dynamic->value )
 		{
-			if (!( fa->texinfo->flags & (SURF_SKY|SURF_TRANS33|SURF_TRANS66|SURF_WARP ) ) )
+			if (!( fa->texinfo->flags & (BSP38SURF_SKY|BSP38SURF_TRANS33|BSP38SURF_TRANS66|BSP38SURF_WARP ) ) )
 			{
 				is_dynamic = true;
 			}
@@ -605,9 +605,9 @@ void R_DrawAlphaSurfaces (void)
 	{
 		GL_Bind(s->texinfo->image->texnum);
 		c_brush_polys++;
-		if (s->texinfo->flags & SURF_TRANS33)
+		if (s->texinfo->flags & BSP38SURF_TRANS33)
 			qglColor4f (intens,intens,intens,0.33);
-		else if (s->texinfo->flags & SURF_TRANS66)
+		else if (s->texinfo->flags & BSP38SURF_TRANS66)
 			qglColor4f (intens,intens,intens,0.66);
 		else
 			qglColor4f (intens,intens,intens,1);
@@ -707,7 +707,7 @@ static void GL_RenderLightmappedPoly( msurface_t *surf )
 	unsigned lmtex = surf->lightmaptexturenum;
 	glpoly_t *p;
 
-	for ( map = 0; map < MAXLIGHTMAPS && surf->styles[map] != 255; map++ )
+	for ( map = 0; map < BSP38_MAXLIGHTMAPS && surf->styles[map] != 255; map++ )
 	{
 		if ( r_newrefdef.lightstyles[surf->styles[map]].white != surf->cached_light[map] )
 			goto dynamic;
@@ -719,7 +719,7 @@ static void GL_RenderLightmappedPoly( msurface_t *surf )
 dynamic:
 		if ( gl_dynamic->value )
 		{
-			if ( !(surf->texinfo->flags & (SURF_SKY|SURF_TRANS33|SURF_TRANS66|SURF_WARP ) ) )
+			if ( !(surf->texinfo->flags & (BSP38SURF_SKY|BSP38SURF_TRANS33|BSP38SURF_TRANS66|BSP38SURF_WARP ) ) )
 			{
 				is_dynamic = true;
 			}
@@ -776,7 +776,7 @@ dynamic:
 
 //==========
 //PGM
-		if (surf->texinfo->flags & SURF_FLOWING)
+		if (surf->texinfo->flags & BSP38SURF_FLOWING)
 		{
 			float scroll;
 		
@@ -824,7 +824,7 @@ dynamic:
 
 //==========
 //PGM
-		if (surf->texinfo->flags & SURF_FLOWING)
+		if (surf->texinfo->flags & BSP38SURF_FLOWING)
 		{
 			float scroll;
 		
@@ -915,7 +915,7 @@ void R_DrawInlineBModel (void)
 		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
-			if (psurf->texinfo->flags & (SURF_TRANS33|SURF_TRANS66) )
+			if (psurf->texinfo->flags & (BSP38SURF_TRANS33|BSP38SURF_TRANS66) )
 			{	// add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
@@ -1039,7 +1039,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 	float		dot;
 	image_t		*image;
 
-	if (node->contents == CONTENTS_SOLID)
+	if (node->contents == BSP38CONTENTS_SOLID)
 		return;		// solid
 
 	if (node->visframe != r_visframecount)
@@ -1118,11 +1118,11 @@ void R_RecursiveWorldNode (mnode_t *node)
 		if ( (surf->flags & SURF_PLANEBACK) != sidebit )
 			continue;		// wrong side
 
-		if (surf->texinfo->flags & SURF_SKY)
+		if (surf->texinfo->flags & BSP38SURF_SKY)
 		{	// just adds to visible sky bounds
 			R_AddSkySurface (surf);
 		}
-		else if (surf->texinfo->flags & (SURF_TRANS33|SURF_TRANS66))
+		else if (surf->texinfo->flags & (BSP38SURF_TRANS33|BSP38SURF_TRANS66))
 		{	// add to the translucent chain
 			surf->texturechain = r_alpha_surfaces;
 			r_alpha_surfaces = surf;
@@ -1262,7 +1262,7 @@ cluster
 void R_MarkLeaves (void)
 {
 	byte	*vis;
-	byte	fatvis[MAX_MAP_LEAFS/8];
+	byte	fatvis[BSP38MAX_MAP_LEAFS/8];
 	mnode_t	*node;
 	int		i, c;
 	mleaf_t	*leaf;

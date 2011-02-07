@@ -119,8 +119,8 @@ typedef struct msurface_s
 	int			dlightbits;
 
 	int			lightmaptexturenum;
-	byte		styles[MAXLIGHTMAPS];
-	float		cached_light[MAXLIGHTMAPS];	// values currently used in lightmap
+	byte		styles[BSP38_MAXLIGHTMAPS];
+	float		cached_light[BSP38_MAXLIGHTMAPS];	// values currently used in lightmap
 	byte		*samples;		// [numstyles*surfsize]
 } msurface_t;
 
@@ -231,7 +231,7 @@ typedef struct model_s
 	int			nummarksurfaces;
 	msurface_t	**marksurfaces;
 
-	dvis_t		*vis;
+	bsp38_dvis_t		*vis;
 
 	byte		*lightdata;
 

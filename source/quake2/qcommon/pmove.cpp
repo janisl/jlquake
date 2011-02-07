@@ -362,7 +362,7 @@ void PM_Friction (void)
 	drop = 0;
 
 // apply ground friction
-	if ((pm->groundentity && pml.groundsurface && !(pml.groundsurface->flags & SURF_SLICK) ) || (pml.ladder) )
+	if ((pm->groundentity && pml.groundsurface && !(pml.groundsurface->flags & BSP38SURF_SLICK) ) || (pml.ladder) )
 	{
 		friction = pm_friction;
 		control = speed < pm_stopspeed ? pm_stopspeed : speed;
@@ -478,17 +478,17 @@ void PM_AddCurrents (vec3_t	wishvel)
 	{
 		VectorClear (v);
 
-		if (pm->watertype & CONTENTS_CURRENT_0)
+		if (pm->watertype & BSP38CONTENTS_CURRENT_0)
 			v[0] += 1;
-		if (pm->watertype & CONTENTS_CURRENT_90)
+		if (pm->watertype & BSP38CONTENTS_CURRENT_90)
 			v[1] += 1;
-		if (pm->watertype & CONTENTS_CURRENT_180)
+		if (pm->watertype & BSP38CONTENTS_CURRENT_180)
 			v[0] -= 1;
-		if (pm->watertype & CONTENTS_CURRENT_270)
+		if (pm->watertype & BSP38CONTENTS_CURRENT_270)
 			v[1] -= 1;
-		if (pm->watertype & CONTENTS_CURRENT_UP)
+		if (pm->watertype & BSP38CONTENTS_CURRENT_UP)
 			v[2] += 1;
-		if (pm->watertype & CONTENTS_CURRENT_DOWN)
+		if (pm->watertype & BSP38CONTENTS_CURRENT_DOWN)
 			v[2] -= 1;
 
 		s = pm_waterspeed;
@@ -506,17 +506,17 @@ void PM_AddCurrents (vec3_t	wishvel)
 	{
 		VectorClear (v);
 
-		if (pml.groundcontents & CONTENTS_CURRENT_0)
+		if (pml.groundcontents & BSP38CONTENTS_CURRENT_0)
 			v[0] += 1;
-		if (pml.groundcontents & CONTENTS_CURRENT_90)
+		if (pml.groundcontents & BSP38CONTENTS_CURRENT_90)
 			v[1] += 1;
-		if (pml.groundcontents & CONTENTS_CURRENT_180)
+		if (pml.groundcontents & BSP38CONTENTS_CURRENT_180)
 			v[0] -= 1;
-		if (pml.groundcontents & CONTENTS_CURRENT_270)
+		if (pml.groundcontents & BSP38CONTENTS_CURRENT_270)
 			v[1] -= 1;
-		if (pml.groundcontents & CONTENTS_CURRENT_UP)
+		if (pml.groundcontents & BSP38CONTENTS_CURRENT_UP)
 			v[2] += 1;
-		if (pml.groundcontents & CONTENTS_CURRENT_DOWN)
+		if (pml.groundcontents & BSP38CONTENTS_CURRENT_DOWN)
 			v[2] -= 1;
 
 		VectorMA (wishvel, 100 /* pm->groundentity->speed */, v, wishvel);
@@ -802,9 +802,9 @@ void PM_CheckJump (void)
 		if (pml.velocity[2] <= -300)
 			return;
 
-		if (pm->watertype == CONTENTS_WATER)
+		if (pm->watertype == BSP38CONTENTS_WATER)
 			pml.velocity[2] = 100;
-		else if (pm->watertype == CONTENTS_SLIME)
+		else if (pm->watertype == BSP38CONTENTS_SLIME)
 			pml.velocity[2] = 80;
 		else
 			pml.velocity[2] = 50;
@@ -848,7 +848,7 @@ void PM_CheckSpecialMovement (void)
 
 	VectorMA (pml.origin, 1, flatforward, spot);
 	trace = pm->trace (pml.origin, pm->mins, pm->maxs, spot);
-	if ((trace.fraction < 1) && (trace.contents & CONTENTS_LADDER))
+	if ((trace.fraction < 1) && (trace.contents & BSP38CONTENTS_LADDER))
 		pml.ladder = true;
 
 	// check for water jump
@@ -858,7 +858,7 @@ void PM_CheckSpecialMovement (void)
 	VectorMA (pml.origin, 30, flatforward, spot);
 	spot[2] += 4;
 	cont = pm->pointcontents (spot);
-	if (!(cont & CONTENTS_SOLID))
+	if (!(cont & BSP38CONTENTS_SOLID))
 		return;
 
 	spot[2] += 16;
