@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // q_shared.h -- included first by ALL program modules
 
 #include "../../../libs/core/core.h"
+#include "../../../libs/core/cm38_public.h"
 
 #include <assert.h>
 #include <time.h>
@@ -149,26 +150,6 @@ COLLISION DETECTION
 #define	AREA_SOLID		1
 #define	AREA_TRIGGERS	2
 
-
-typedef struct cmodel_s
-{
-	vec3_t		mins, maxs;
-	vec3_t		origin;		// for sounds or lights
-	int			headnode;
-} cmodel_t;
-
-typedef struct csurface_s
-{
-	char		name[16];
-	int			flags;
-	int			value;
-} csurface_t;
-
-typedef struct mapsurface_s  // used internally due to name len probs //ZOID
-{
-	csurface_t	c;
-	char		rname[32];
-} mapsurface_t;
 
 // a trace is returned when a box is swept through the world
 typedef struct

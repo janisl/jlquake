@@ -388,7 +388,7 @@ CMODEL
 
 #include "../qcommon/qfiles.h"
 
-cmodel_t	*CM_LoadMap (char *name, qboolean clientload, unsigned *checksum);
+cmodel_t* CM_LoadMap(const char* name, bool clientload, unsigned* checksum);
 cmodel_t	*CM_InlineModel (char *name);	// *1, *2, etc
 
 int			CM_NumClusters (void);
@@ -433,6 +433,9 @@ qboolean	CM_HeadnodeVisible (int headnode, byte *visbits);
 
 void		CM_WritePortalState (fileHandle_t f);
 void		CM_ReadPortalState (fileHandle_t f);
+
+int CM_GetNumTextures();
+const char* CM_GetTextureName(int Index);
 
 /*
 ==============================================================

@@ -17,6 +17,9 @@
 //**
 //**************************************************************************
 
+#ifndef _CM29_LOCAL_H
+#define _CM29_LOCAL_H
+
 #define MAX_MAP_HULLS			8
 
 enum cmodtype_t
@@ -130,3 +133,5 @@ public:
 extern chull_t		box_hull;
 extern bsp29_dclipnode_t	box_clipnodes[6];
 extern cplane_t	box_planes[6];
+
+#endif

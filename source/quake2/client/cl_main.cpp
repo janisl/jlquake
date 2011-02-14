@@ -1347,15 +1347,11 @@ void CL_RequestNextDownload (void)
 
 	// confirm existance of textures, download any that don't exist
 	if (precache_check == TEXTURE_CNT+1) {
-		// from qcommon/cmodel.c
-		extern int			numtexinfo;
-		extern mapsurface_t	map_surfaces[];
-
 		if (allow_download->value && allow_download_maps->value) {
-			while (precache_tex < numtexinfo) {
+			while (precache_tex < CM_GetNumTextures()) {
 				char fn[MAX_OSPATH];
 
-				sprintf(fn, "textures/%s.wal", map_surfaces[precache_tex++].rname);
+				sprintf(fn, "textures/%s.wal", CM_GetTextureName(precache_tex++));
 				if (!CL_CheckOrDownloadFile(fn))
 					return; // started a download
 			}

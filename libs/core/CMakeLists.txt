@@ -1,5 +1,6 @@
 set(CORE_FILES
 	cm29_load.cpp
+	cm38_load.cpp
 	cmd.cpp
 	common.cpp
 	crc.cpp
