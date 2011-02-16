@@ -35,7 +35,7 @@ int CM_PointLeafnum_r( const vec3_t p, int num ) {
 
 	while (num >= 0)
 	{
-		node = cm.nodes + num;
+		node = CMap->nodes + num;
 		plane = node->plane;
 		
 		if (plane->type < 3)
@@ -54,7 +54,7 @@ int CM_PointLeafnum_r( const vec3_t p, int num ) {
 }
 
 int CM_PointLeafnum( const vec3_t p ) {
-	if ( !cm.numNodes ) {	// map not loaded
+	if (!CMap || !CMap->numNodes ) {	// map not loaded
 		return 0;
 	}
 	return CM_PointLeafnum_r (p, 0);
@@ -76,7 +76,7 @@ void CM_StoreLeafs( leafList_t *ll, int nodenum ) {
 	leafNum = -1 - nodenum;
 
 	// store the lastLeaf even if the list is overflowed
-	if ( cm.leafs[ leafNum ].cluster != -1 ) {
+	if (CMap->leafs[ leafNum ].cluster != -1 ) {
 		ll->lastLeaf = leafNum;
 	}
 
@@ -96,15 +96,15 @@ void CM_StoreBrushes( leafList_t *ll, int nodenum ) {
 
 	leafnum = -1 - nodenum;
 
-	leaf = &cm.leafs[leafnum];
+	leaf = &CMap->leafs[leafnum];
 
 	for ( k = 0 ; k < leaf->numLeafBrushes ; k++ ) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush+k];
-		b = &cm.brushes[brushnum];
-		if ( b->checkcount == cm.checkcount ) {
+		brushnum = CMap->leafbrushes[leaf->firstLeafBrush+k];
+		b = &CMap->brushes[brushnum];
+		if ( b->checkcount == CMap->checkcount ) {
 			continue;	// already checked this brush in another leaf
 		}
-		b->checkcount = cm.checkcount;
+		b->checkcount = CMap->checkcount;
 		for ( i = 0 ; i < 3 ; i++ ) {
 			if ( b->bounds[0][i] >= ll->bounds[1][i] || b->bounds[1][i] <= ll->bounds[0][i] ) {
 				break;
@@ -148,7 +148,7 @@ void CM_BoxLeafnums_r( leafList_t *ll, int nodenum ) {
 			return;
 		}
 	
-		node = &cm.nodes[nodenum];
+		node = &CMap->nodes[nodenum];
 		plane = node->plane;
 		s = BoxOnPlaneSide( ll->bounds[0], ll->bounds[1], plane );
 		if (s == 1) {
@@ -172,7 +172,7 @@ CM_BoxLeafnums
 int	CM_BoxLeafnums( const vec3_t mins, const vec3_t maxs, int *list, int listsize, int *lastLeaf) {
 	leafList_t	ll;
 
-	cm.checkcount++;
+	CMap->checkcount++;
 
 	VectorCopy( mins, ll.bounds[0] );
 	VectorCopy( maxs, ll.bounds[1] );
@@ -197,7 +197,7 @@ CM_BoxBrushes
 int CM_BoxBrushes( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int listsize ) {
 	leafList_t	ll;
 
-	cm.checkcount++;
+	CMap->checkcount++;
 
 	VectorCopy( mins, ll.bounds[0] );
 	VectorCopy( maxs, ll.bounds[1] );
@@ -233,7 +233,7 @@ int CM_PointContents( const vec3_t p, clipHandle_t model ) {
 	float		d;
 	cmodel_t	*clipm;
 
-	if (!cm.numNodes) {	// map not loaded
+	if (!CMap || !CMap->numNodes) {	// map not loaded
 		return 0;
 	}
 
@@ -242,13 +242,13 @@ int CM_PointContents( const vec3_t p, clipHandle_t model ) {
 		leaf = &clipm->leaf;
 	} else {
 		leafnum = CM_PointLeafnum_r (p, 0);
-		leaf = &cm.leafs[leafnum];
+		leaf = &CMap->leafs[leafnum];
 	}
 
 	contents = 0;
 	for (k=0 ; k<leaf->numLeafBrushes ; k++) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush+k];
-		b = &cm.brushes[brushnum];
+		brushnum = CMap->leafbrushes[leaf->firstLeafBrush+k];
+		b = &CMap->brushes[brushnum];
 
 		// see if the point is in the brush
 		for ( i = 0 ; i < b->numsides ; i++ ) {
@@ -309,12 +309,14 @@ PVS
 ===============================================================================
 */
 
-byte	*CM_ClusterPVS (int cluster) {
-	if (cluster < 0 || cluster >= cm.numClusters || !cm.vised ) {
-		return cm.visibility;
+byte* CM_ClusterPVS(int cluster)
+{
+	if (cluster < 0 || cluster >= CMap->numClusters || !CMap->vised )
+	{
+		return CMap->visibility;
 	}
 
-	return cm.visibility + cluster * cm.clusterBytes;
+	return CMap->visibility + cluster * CMap->clusterBytes;
 }
 
 
@@ -332,18 +334,18 @@ void CM_FloodArea_r( int areaNum, int floodnum) {
 	cArea_t *area;
 	int		*con;
 
-	area = &cm.areas[ areaNum ];
+	area = &CMap->areas[ areaNum ];
 
-	if ( area->floodvalid == cm.floodvalid ) {
+	if ( area->floodvalid == CMap->floodvalid ) {
 		if (area->floodnum == floodnum)
 			return;
 		throw QDropException("FloodArea_r: reflooded");
 	}
 
 	area->floodnum = floodnum;
-	area->floodvalid = cm.floodvalid;
-	con = cm.areaPortals + areaNum * cm.numAreas;
-	for ( i=0 ; i < cm.numAreas  ; i++ ) {
+	area->floodvalid = CMap->floodvalid;
+	con = CMap->areaPortals + areaNum * CMap->numAreas;
+	for ( i=0 ; i < CMap->numAreas  ; i++ ) {
 		if ( con[i] > 0 ) {
 			CM_FloodArea_r( i, floodnum );
 		}
@@ -362,12 +364,12 @@ void	CM_FloodAreaConnections( void ) {
 	int		floodnum;
 
 	// all current floods are now invalid
-	cm.floodvalid++;
+	CMap->floodvalid++;
 	floodnum = 0;
 
-	for (i = 0 ; i < cm.numAreas ; i++) {
-		area = &cm.areas[i];
-		if (area->floodvalid == cm.floodvalid) {
+	for (i = 0 ; i < CMap->numAreas ; i++) {
+		area = &CMap->areas[i];
+		if (area->floodvalid == CMap->floodvalid) {
 			continue;		// already flooded into
 		}
 		floodnum++;
@@ -387,17 +389,17 @@ void	CM_AdjustAreaPortalState( int area1, int area2, qboolean open ) {
 		return;
 	}
 
-	if ( area1 >= cm.numAreas || area2 >= cm.numAreas ) {
+	if ( area1 >= CMap->numAreas || area2 >= CMap->numAreas ) {
 		throw QDropException("CM_ChangeAreaPortalState: bad area number");
 	}
 
 	if ( open ) {
-		cm.areaPortals[ area1 * cm.numAreas + area2 ]++;
-		cm.areaPortals[ area2 * cm.numAreas + area1 ]++;
+		CMap->areaPortals[ area1 * CMap->numAreas + area2 ]++;
+		CMap->areaPortals[ area2 * CMap->numAreas + area1 ]++;
 	} else {
-		cm.areaPortals[ area1 * cm.numAreas + area2 ]--;
-		cm.areaPortals[ area2 * cm.numAreas + area1 ]--;
-		if ( cm.areaPortals[ area2 * cm.numAreas + area1 ] < 0 ) {
+		CMap->areaPortals[ area1 * CMap->numAreas + area2 ]--;
+		CMap->areaPortals[ area2 * CMap->numAreas + area1 ]--;
+		if ( CMap->areaPortals[ area2 * CMap->numAreas + area1 ] < 0 ) {
 			throw QDropException("CM_AdjustAreaPortalState: negative reference count");
 		}
 	}
@@ -420,11 +422,11 @@ qboolean	CM_AreasConnected( int area1, int area2 ) {
 		return false;
 	}
 
-	if (area1 >= cm.numAreas || area2 >= cm.numAreas) {
+	if (area1 >= CMap->numAreas || area2 >= CMap->numAreas) {
 		throw QDropException("area >= cm.numAreas");
 	}
 
-	if (cm.areas[area1].floodnum == cm.areas[area2].floodnum) {
+	if (CMap->areas[area1].floodnum == CMap->areas[area2].floodnum) {
 		return true;
 	}
 	return false;
@@ -451,7 +453,7 @@ int CM_WriteAreaBits (byte *buffer, int area)
 	int		floodnum;
 	int		bytes;
 
-	bytes = (cm.numAreas+7)>>3;
+	bytes = (CMap->numAreas+7)>>3;
 
 	if (cm_noAreas->integer || area == -1)
 	{	// for debugging, send everything
@@ -459,10 +461,10 @@ int CM_WriteAreaBits (byte *buffer, int area)
 	}
 	else
 	{
-		floodnum = cm.areas[area].floodnum;
-		for (i=0 ; i<cm.numAreas ; i++)
+		floodnum = CMap->areas[area].floodnum;
+		for (i=0 ; i<CMap->numAreas ; i++)
 		{
-			if (cm.areas[i].floodnum == floodnum || area == -1)
+			if (CMap->areas[i].floodnum == floodnum || area == -1)
 				buffer[i>>3] |= 1<<(i&7);
 		}
 	}

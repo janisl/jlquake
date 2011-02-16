@@ -1,6 +1,9 @@
 set(CORE_FILES
 	cm29_load.cpp
 	cm38_load.cpp
+	cm46_load.cpp
+	cm46_patch.cpp
+	cm46_polylib.cpp
 	cmd.cpp
 	common.cpp
 	crc.cpp

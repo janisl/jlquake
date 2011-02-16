@@ -35,7 +35,6 @@ set(QUAKE3_FILES
 	server/sv_world.cpp
 	qcommon/cm_load.cpp
 	qcommon/cm_patch.cpp
-	qcommon/cm_polylib.cpp
 	qcommon/cm_test.cpp
 	qcommon/cm_trace.cpp
 	qcommon/cmd.cpp
@@ -122,7 +121,6 @@ set(QUAKE3_DEDICATED_FILES
 	server/sv_world.cpp
 	qcommon/cm_load.cpp
 	qcommon/cm_patch.cpp
-	qcommon/cm_polylib.cpp
 	qcommon/cm_test.cpp
 	qcommon/cm_trace.cpp
 	qcommon/cmd.cpp

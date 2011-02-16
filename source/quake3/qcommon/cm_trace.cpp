@@ -249,12 +249,12 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 
 	// test box position against all brushes in the leaf
 	for (k=0 ; k<leaf->numLeafBrushes ; k++) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush+k];
-		b = &cm.brushes[brushnum];
-		if (b->checkcount == cm.checkcount) {
+		brushnum = CMap->leafbrushes[leaf->firstLeafBrush+k];
+		b = &CMap->brushes[brushnum];
+		if (b->checkcount == CMap->checkcount) {
 			continue;	// already checked this brush in another leaf
 		}
-		b->checkcount = cm.checkcount;
+		b->checkcount = CMap->checkcount;
 
 		if ( !(b->contents & tw->contents)) {
 			continue;
@@ -269,14 +269,14 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 	// test against all patches
 	if ( !cm_noCurves->integer ) {
 		for ( k = 0 ; k < leaf->numLeafSurfaces ; k++ ) {
-			patch = cm.surfaces[ cm.leafsurfaces[ leaf->firstLeafSurface + k ] ];
+			patch = CMap->surfaces[ CMap->leafsurfaces[ leaf->firstLeafSurface + k ] ];
 			if ( !patch ) {
 				continue;
 			}
-			if ( patch->checkcount == cm.checkcount ) {
+			if ( patch->checkcount == CMap->checkcount ) {
 				continue;	// already checked this brush in another leaf
 			}
-			patch->checkcount = cm.checkcount;
+			patch->checkcount = CMap->checkcount;
 
 			if ( !(patch->contents & tw->contents)) {
 				continue;
@@ -426,16 +426,16 @@ void CM_PositionTest( traceWork_t *tw ) {
 	ll.lastLeaf = 0;
 	ll.overflowed = false;
 
-	cm.checkcount++;
+	CMap->checkcount++;
 
 	CM_BoxLeafnums_r( &ll, 0 );
 
 
-	cm.checkcount++;
+	CMap->checkcount++;
 
 	// test the contents of the leafs
 	for (i=0 ; i < ll.count ; i++) {
-		CM_TestInLeaf( tw, &cm.leafs[leafs[i]] );
+		CM_TestInLeaf( tw, &CMap->leafs[leafs[i]] );
 		if ( tw->trace.allsolid ) {
 			break;
 		}
@@ -668,13 +668,13 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 
 	// trace line against all brushes in the leaf
 	for ( k = 0 ; k < leaf->numLeafBrushes ; k++ ) {
-		brushnum = cm.leafbrushes[leaf->firstLeafBrush+k];
+		brushnum = CMap->leafbrushes[leaf->firstLeafBrush+k];
 
-		b = &cm.brushes[brushnum];
-		if ( b->checkcount == cm.checkcount ) {
+		b = &CMap->brushes[brushnum];
+		if ( b->checkcount == CMap->checkcount ) {
 			continue;	// already checked this brush in another leaf
 		}
-		b->checkcount = cm.checkcount;
+		b->checkcount = CMap->checkcount;
 
 		if ( !(b->contents & tw->contents) ) {
 			continue;
@@ -689,14 +689,14 @@ void CM_TraceThroughLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 	// trace line against all patches in the leaf
 	if ( !cm_noCurves->integer ) {
 		for ( k = 0 ; k < leaf->numLeafSurfaces ; k++ ) {
-			patch = cm.surfaces[ cm.leafsurfaces[ leaf->firstLeafSurface + k ] ];
+			patch = CMap->surfaces[CMap->leafsurfaces[ leaf->firstLeafSurface + k ] ];
 			if ( !patch ) {
 				continue;
 			}
-			if ( patch->checkcount == cm.checkcount ) {
+			if ( patch->checkcount == CMap->checkcount ) {
 				continue;	// already checked this patch in another leaf
 			}
-			patch->checkcount = cm.checkcount;
+			patch->checkcount = CMap->checkcount;
 
 			if ( !(patch->contents & tw->contents) ) {
 				continue;
@@ -1031,7 +1031,7 @@ void CM_TraceThroughTree( traceWork_t *tw, int num, float p1f, float p2f, vec3_t
 
 	// if < 0, we are in a leaf node
 	if (num < 0) {
-		CM_TraceThroughLeaf( tw, &cm.leafs[-1-num] );
+		CM_TraceThroughLeaf( tw, &CMap->leafs[-1-num] );
 		return;
 	}
 
@@ -1039,7 +1039,7 @@ void CM_TraceThroughTree( traceWork_t *tw, int num, float p1f, float p2f, vec3_t
 	// find the point distances to the seperating plane
 	// and the offset for the size of the box
 	//
-	node = cm.nodes + num;
+	node = CMap->nodes + num;
 	plane = node->plane;
 
 	// adjust the plane distance apropriately for mins/maxs
@@ -1148,7 +1148,7 @@ void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mi
 
 	cmod = CM_ClipHandleToModel( model );
 
-	cm.checkcount++;		// for multi-check avoidance
+	CMap->checkcount++;		// for multi-check avoidance
 
 	c_traces++;				// for statistics, may be zeroed
 
@@ -1157,7 +1157,7 @@ void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mi
 	tw.trace.fraction = 1;	// assume it goes the entire distance until shown otherwise
 	VectorCopy(origin, tw.modelOrigin);
 
-	if (!cm.numNodes) {
+	if (!CMap->numNodes) {
 		*results = tw.trace;
 
 		return;	// map not loaded, shouldn't happen
