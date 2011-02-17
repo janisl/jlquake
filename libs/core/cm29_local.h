@@ -20,7 +20,11 @@
 #ifndef _CM29_LOCAL_H
 #define _CM29_LOCAL_H
 
-#define MAX_MAP_HULLS			8
+#define MAX_MAP_HULLS		8
+
+#define	MAX_MAP_MODELS		256
+
+#define MAX_CMOD_KNOWN		2048
 
 enum cmodtype_t
 {
@@ -49,7 +53,6 @@ struct cleaf_t
 	byte		ambient_sound_level[BSP29_NUM_AMBIENTS];
 };
 
-// !!! if this is changed, it must be changed in asm_i386.h too !!!
 struct chull_t
 {
 	bsp29_dclipnode_t*	clipnodes;
@@ -102,36 +105,67 @@ struct cmodel_t
 	void Free();
 };
 
-#define	MAX_MAP_MODELS		256
-class QClipMap29
+class QClipModel29
 {
-private:
-	byte*		mod_base;
+public:
+	void LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadEntities(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void MakeHull0(cmodel_t* loadcmodel);
+	void MakeHulls(cmodel_t* loadcmodel);
+};
 
-	cmodel_t*	loadcmodel;
-
-	void LoadVisibility(bsp29_lump_t* l);
-	void LoadEntities(bsp29_lump_t* l);
-	void LoadPlanes(bsp29_lump_t* l);
-	void LoadNodes(bsp29_lump_t* l);
-	void LoadLeafs(bsp29_lump_t* l);
-	void LoadClipnodes(bsp29_lump_t* l);
-	void MakeHull0();
-	void MakeHulls();
-	void LoadSubmodelsQ1(bsp29_lump_t* l);
-	void LoadSubmodelsH2(bsp29_lump_t* l);
-	void LoadSubmodelsNonMapQ1(bsp29_lump_t* l);
-	void LoadSubmodelsNonMapH2(bsp29_lump_t* l);
-
+class QClipModelMap29 : public QClipModel29
+{
 public:
 	cmodel_t	map_models[MAX_MAP_MODELS];
 
-	void LoadBrushModel(cmodel_t* mod, void* buffer);
+	~QClipModelMap29()
+	{
+		map_models[0].Free();
+	}
+
+	void LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+};
+
+class QClipModelNonMap29 : public QClipModel29
+{
+public:
+	cmodel_t	model;
+
+	~QClipModelNonMap29()
+	{
+		model.Free();
+	}
+
+	void LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadBrushModelNonMap(cmodel_t* mod, void* buffer);
 };
 
-extern chull_t		box_hull;
-extern bsp29_dclipnode_t	box_clipnodes[6];
-extern cplane_t	box_planes[6];
+class QClipMap29
+{
+public:
+	QClipModelMap29	Map;
+
+	QClipModelNonMap29*	known[MAX_CMOD_KNOWN];
+	int				numknown;
+
+	chull_t			box_hull;
+	bsp29_dclipnode_t	box_clipnodes[6];
+	cplane_t		box_planes[6];
+
+	QClipMap29()
+	: numknown(0)
+	{}
+	~QClipMap29();
+
+	void LoadModel(const char* name);
+	void InitBoxHull();
+};
 
 #endif

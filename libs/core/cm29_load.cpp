@@ -41,6 +41,46 @@
 
 // CODE --------------------------------------------------------------------
 
+//==========================================================================
+//
+//	QClipMap29::~QClipMap29
+//
+//==========================================================================
+
+QClipMap29::~QClipMap29()
+{
+	for (int i = 0; i < numknown; i++)
+	{
+		delete known[i];
+	}
+}
+
+//==========================================================================
+//
+//	cmodel_t::Free
+//
+//==========================================================================
+
+void cmodel_t::Free()
+{
+	delete[] visdata;
+	visdata = NULL;
+	delete[] entities;
+	entities = NULL;
+	delete[] planes;
+	planes = NULL;
+	delete[] nodes;
+	nodes = NULL;
+	delete[] leafs;
+	leafs = NULL;
+	delete[] clipnodes;
+	clipnodes = NULL;
+	delete[] hulls[0].clipnodes;
+	hulls[0].clipnodes = NULL;
+	delete[] phs;
+	phs = NULL;
+}
+
 //**************************************************************************
 //
 //	BRUSHMODEL LOADING
@@ -49,11 +89,95 @@
 
 //==========================================================================
 //
-//	QClipMap29::LoadVisibility
+//	QClipMap29::LoadModel
 //
 //==========================================================================
 
-void QClipMap29::LoadVisibility(bsp29_lump_t* l)
+void QClipMap29::LoadModel(const char* name)
+{
+	Com_Memset(Map.map_models, 0, sizeof(Map.map_models));
+	cmodel_t* mod = &Map.map_models[0];
+	QStr::Cpy(mod->name, name);
+
+	//
+	// load the file
+	//
+	QArray<byte> Buffer;
+	if (FS_ReadFile(name, Buffer) <= 0)
+	{
+		throw QDropException(va("Couldn't load %s", name));
+	}
+
+	mod->type = cmod_brush;
+
+	bsp29_dheader_t header = *(bsp29_dheader_t*)Buffer.Ptr();
+
+	int version = LittleLong(header.version);
+	if (version != BSP29_VERSION)
+	{
+		throw QDropException(va("CM_LoadModel: %s has wrong version number (%i should be %i)",
+			mod->name, version, BSP29_VERSION));
+	}
+
+	// swap all the lumps
+	for (int i = 0; i < sizeof(bsp29_dheader_t) / 4; i++)
+	{
+		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
+	}
+
+	mod->checksum = 0;
+	mod->checksum2 = 0;
+
+	const quint8* mod_base = (quint8*)Buffer.Ptr();
+
+	// checksum all of the map, except for entities
+	for (int i = 0; i < BSP29_HEADER_LUMPS; i++)
+	{
+		if (i == BSP29LUMP_ENTITIES)
+		{
+			continue;
+		}
+		mod->checksum ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs, 
+			header.lumps[i].filelen));
+
+		if (i == BSP29LUMP_VISIBILITY || i == BSP29LUMP_LEAFS || i == BSP29LUMP_NODES)
+		{
+			continue;
+		}
+		mod->checksum2 ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs, 
+			header.lumps[i].filelen));
+	}
+
+	// load into heap
+	Map.LoadPlanes(mod, mod_base, &header.lumps[BSP29LUMP_PLANES]);
+	Map.LoadVisibility(mod, mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
+	Map.LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
+	Map.LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
+	Map.LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
+	Map.LoadEntities(mod, mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
+
+	Map.MakeHull0(mod);
+	Map.MakeHulls(mod);
+
+	if (GGameType & GAME_Hexen2)
+	{
+		Map.LoadSubmodelsH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+	}
+	else
+	{
+		Map.LoadSubmodelsQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+	}
+
+	InitBoxHull();
+}
+
+//==========================================================================
+//
+//	QClipModel29::LoadVisibility
+//
+//==========================================================================
+
+void QClipModel29::LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	if (!l->filelen)
 	{
@@ -61,16 +185,16 @@ void QClipMap29::LoadVisibility(bsp29_lump_t* l)
 		return;
 	}
 	loadcmodel->visdata = new byte[l->filelen];
-	Com_Memcpy(loadcmodel->visdata, mod_base + l->fileofs, l->filelen);
+	Com_Memcpy(loadcmodel->visdata, base + l->fileofs, l->filelen);
 }
 
 //==========================================================================
 //
-//	QClipMap29::LoadEntities
+//	QClipModel29::LoadEntities
 //
 //==========================================================================
 
-void QClipMap29::LoadEntities(bsp29_lump_t* l)
+void QClipModel29::LoadEntities(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	if (!l->filelen)
 	{
@@ -78,21 +202,21 @@ void QClipMap29::LoadEntities(bsp29_lump_t* l)
 		return;
 	}
 	loadcmodel->entities = new char[l->filelen];
-	Com_Memcpy(loadcmodel->entities, mod_base + l->fileofs, l->filelen);
+	Com_Memcpy(loadcmodel->entities, base + l->fileofs, l->filelen);
 }
 
 //==========================================================================
 //
-//	QClipMap29::LoadPlanes
+//	QClipModel29::LoadPlanes
 //
 //==========================================================================
 
-void QClipMap29::LoadPlanes(bsp29_lump_t* l)
+void QClipModel29::LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
-	bsp29_dplane_t* in = (bsp29_dplane_t*)(mod_base + l->fileofs);
+	const bsp29_dplane_t* in = (const bsp29_dplane_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	cplane_t* out = new cplane_t[count];
@@ -115,16 +239,16 @@ void QClipMap29::LoadPlanes(bsp29_lump_t* l)
 
 //==========================================================================
 //
-//	QClipMap29::LoadNodes
+//	QClipModel29::LoadNodes
 //
 //==========================================================================
 
-void QClipMap29::LoadNodes(bsp29_lump_t* l)
+void QClipModel29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
-	bsp29_dnode_t* in = (bsp29_dnode_t*)(mod_base + l->fileofs);
+	const bsp29_dnode_t* in = (const bsp29_dnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	cnode_t* out = new cnode_t[count];
@@ -155,16 +279,16 @@ void QClipMap29::LoadNodes(bsp29_lump_t* l)
 
 //==========================================================================
 //
-//	QClipMap29::LoadLeafs
+//	QClipModel29::LoadLeafs
 //
 //==========================================================================
 
-void QClipMap29::LoadLeafs(bsp29_lump_t* l)
+void QClipModel29::LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
-	bsp29_dleaf_t* in = (bsp29_dleaf_t*)(mod_base + l->fileofs);
+	const bsp29_dleaf_t* in = (const bsp29_dleaf_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	cleaf_t* out = new cleaf_t[count];
@@ -196,16 +320,16 @@ void QClipMap29::LoadLeafs(bsp29_lump_t* l)
 
 //==========================================================================
 //
-//	QClipMap29::LoadClipnodes
+//	QClipModel29::LoadClipnodes
 //
 //==========================================================================
 
-void QClipMap29::LoadClipnodes(bsp29_lump_t* l)
+void QClipModel29::LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
-	bsp29_dclipnode_t* in = (bsp29_dclipnode_t*)(mod_base + l->fileofs);
+	const bsp29_dclipnode_t* in = (const bsp29_dclipnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	bsp29_dclipnode_t* out = new bsp29_dclipnode_t[count];
@@ -223,13 +347,13 @@ void QClipMap29::LoadClipnodes(bsp29_lump_t* l)
 
 //==========================================================================
 //
-//	QClipMap29::MakeHull0
+//	QClipModel29::MakeHull0
 //
 //	Deplicate the drawing hull structure as a clipping hull
 //
 //==========================================================================
 
-void QClipMap29::MakeHull0()
+void QClipModel29::MakeHull0(cmodel_t* loadcmodel)
 {
 	chull_t* hull = &loadcmodel->hulls[0];
 
@@ -262,11 +386,11 @@ void QClipMap29::MakeHull0()
 
 //==========================================================================
 //
-//	QClipMap29::MakeHulls
+//	QClipModel29::MakeHulls
 //
 //==========================================================================
 
-void QClipMap29::MakeHulls()
+void QClipModel29::MakeHulls(cmodel_t* loadcmodel)
 {
 	for (int j = 1; j < MAX_MAP_HULLS; j++)
 	{
@@ -346,16 +470,16 @@ void QClipMap29::MakeHulls()
 
 //==========================================================================
 //
-//	QClipMap29::LoadSubmodelsQ1
+//	QClipModelMap29::LoadSubmodelsQ1
 //
 //==========================================================================
 
-void QClipMap29::LoadSubmodelsQ1(bsp29_lump_t* l)
+void QClipModelMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
-	bsp29_dmodel_q1_t* in = (bsp29_dmodel_q1_t*)(mod_base + l->fileofs);
+	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -391,16 +515,16 @@ void QClipMap29::LoadSubmodelsQ1(bsp29_lump_t* l)
 
 //==========================================================================
 //
-//	QClipMap29::LoadSubmodelsH2
+//	QClipModelMap29::LoadSubmodelsH2
 //
 //==========================================================================
 
-void QClipMap29::LoadSubmodelsH2(bsp29_lump_t* l)
+void QClipModelMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
-	bsp29_dmodel_h2_t* in = (bsp29_dmodel_h2_t*)(mod_base + l->fileofs);
+	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -434,89 +558,72 @@ void QClipMap29::LoadSubmodelsH2(bsp29_lump_t* l)
 	}
 }
 
+//**************************************************************************
+//
+//	LOADING OF NON-MAP MODELS
+//
+//**************************************************************************
+
 //==========================================================================
 //
-//	QClipMap29::LoadBrushModel
+//	QClipModelNonMap29::LoadBrushModelNonMap
 //
 //==========================================================================
 
-void QClipMap29::LoadBrushModel(cmodel_t* mod, void* buffer)
+void QClipModelNonMap29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
 {
-	loadcmodel = mod;
+	mod->type = cmod_brush;
 
-	loadcmodel->type = cmod_brush;
+	bsp29_dheader_t header = *(bsp29_dheader_t*)buffer;
 
-	bsp29_dheader_t* header = (bsp29_dheader_t*)buffer;
-
-	int version = LittleLong(header->version);
+	int version = LittleLong(header.version);
 	if (version != BSP29_VERSION)
 	{
-		throw QException(va("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
+		throw QDropException(va("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
 			mod->name, version, BSP29_VERSION));
 	}
 
 	// swap all the lumps
-	mod_base = (byte *)header;
+	const quint8* mod_base = (quint8*)buffer;
 
 	for (int i = 0; i < sizeof(bsp29_dheader_t) / 4; i++)
 	{
-		((int*)header)[i] = LittleLong(((int*)header)[i]);
-	}
-
-	mod->checksum = 0;
-	mod->checksum2 = 0;
-
-	// checksum all of the map, except for entities
-	for (int i = 0; i < BSP29_HEADER_LUMPS; i++)
-	{
-		if (i == BSP29LUMP_ENTITIES)
-		{
-			continue;
-		}
-		mod->checksum ^= LittleLong(Com_BlockChecksum(mod_base + header->lumps[i].fileofs, 
-			header->lumps[i].filelen));
-
-		if (i == BSP29LUMP_VISIBILITY || i == BSP29LUMP_LEAFS || i == BSP29LUMP_NODES)
-		{
-			continue;
-		}
-		mod->checksum2 ^= LittleLong(Com_BlockChecksum(mod_base + header->lumps[i].fileofs, 
-			header->lumps[i].filelen));
+		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
 	}
 
 	// load into heap
-	LoadPlanes(&header->lumps[BSP29LUMP_PLANES]);
-	LoadVisibility(&header->lumps[BSP29LUMP_VISIBILITY]);
-	LoadLeafs(&header->lumps[BSP29LUMP_LEAFS]);
-	LoadNodes(&header->lumps[BSP29LUMP_NODES]);
-	LoadClipnodes(&header->lumps[BSP29LUMP_CLIPNODES]);
-	LoadEntities(&header->lumps[BSP29LUMP_ENTITIES]);
+	LoadPlanes(mod, mod_base, &header.lumps[BSP29LUMP_PLANES]);
+	LoadVisibility(mod, mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
+	LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
+	LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
+	LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
+	LoadEntities(mod, mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
 
-	MakeHull0();
-	MakeHulls();
+	MakeHull0(mod);
+	MakeHulls(mod);
 
 	if (GGameType & GAME_Hexen2)
 	{
-		LoadSubmodelsH2(&header->lumps[BSP29LUMP_MODELS]);
+		LoadSubmodelsNonMapH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
 	}
 	else
 	{
-		LoadSubmodelsQ1(&header->lumps[BSP29LUMP_MODELS]);
+		LoadSubmodelsNonMapQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
 	}
 }
 
 //==========================================================================
 //
-//	QClipMap29::LoadSubmodelsNonMapQ1
+//	QClipModelNonMap29::LoadSubmodelsNonMapQ1
 //
 //==========================================================================
 
-void QClipMap29::LoadSubmodelsNonMapQ1(bsp29_lump_t* l)
+void QClipModelNonMap29::LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
-	bsp29_dmodel_q1_t* in = (bsp29_dmodel_q1_t*)(mod_base + l->fileofs);
+	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
 	}
 	if (l->filelen != sizeof(*in))
 	{
@@ -538,16 +645,16 @@ void QClipMap29::LoadSubmodelsNonMapQ1(bsp29_lump_t* l)
 
 //==========================================================================
 //
-//	QClipMap29::LoadSubmodelsNonMapH2
+//	QClipModelNonMap29::LoadSubmodelsNonMapH2
 //
 //==========================================================================
 
-void QClipMap29::LoadSubmodelsNonMapH2(bsp29_lump_t* l)
+void QClipModelNonMap29::LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
-	bsp29_dmodel_h2_t* in = (bsp29_dmodel_h2_t*)(mod_base + l->fileofs);
+	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
 	}
 	if (l->filelen != sizeof(*in))
 	{
@@ -567,52 +674,45 @@ void QClipMap29::LoadSubmodelsNonMapH2(bsp29_lump_t* l)
 	loadcmodel->numleafs = LittleLong(in->visleafs);
 }
 
+//**************************************************************************
+//
+//	BOX HULL
+//
+//**************************************************************************
+
 //==========================================================================
 //
-//	QClipMap29::LoadBrushModelNonMap
+//	QClipMap29::InitBoxHull
+//
+//	Set up the planes and clipnodes so that the six floats of a bounding box
+// can just be stored out and get a proper chull_t structure.
 //
 //==========================================================================
 
-void QClipMap29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
+void QClipMap29::InitBoxHull()
 {
-	loadcmodel = mod;
+	box_hull.clipnodes = box_clipnodes;
+	box_hull.planes = box_planes;
+	box_hull.firstclipnode = 0;
+	box_hull.lastclipnode = 5;
 
-	loadcmodel->type = cmod_brush;
-
-	bsp29_dheader_t* header = (bsp29_dheader_t*)buffer;
-
-	int version = LittleLong(header->version);
-	if (version != BSP29_VERSION)
+	for (int i = 0; i < 6; i++)
 	{
-		throw QException(va("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
-			mod->name, version, BSP29_VERSION));
-	}
+		box_clipnodes[i].planenum = i;
 
-	// swap all the lumps
-	mod_base = (byte *)header;
+		int side = i & 1;
 
-	for (int i = 0; i < sizeof(bsp29_dheader_t) / 4; i++)
-	{
-		((int*)header)[i] = LittleLong(((int*)header)[i]);
-	}
+		box_clipnodes[i].children[side] = BSP29CONTENTS_EMPTY;
+		if (i != 5)
+		{
+			box_clipnodes[i].children[side ^ 1] = i + 1;
+		}
+		else
+		{
+			box_clipnodes[i].children[side ^ 1] = BSP29CONTENTS_SOLID;
+		}
 
-	// load into heap
-	LoadPlanes(&header->lumps[BSP29LUMP_PLANES]);
-	LoadVisibility(&header->lumps[BSP29LUMP_VISIBILITY]);
-	LoadLeafs(&header->lumps[BSP29LUMP_LEAFS]);
-	LoadNodes(&header->lumps[BSP29LUMP_NODES]);
-	LoadClipnodes(&header->lumps[BSP29LUMP_CLIPNODES]);
-	LoadEntities(&header->lumps[BSP29LUMP_ENTITIES]);
-
-	MakeHull0();
-	MakeHulls();
-
-	if (GGameType & GAME_Hexen2)
-	{
-		LoadSubmodelsNonMapH2(&header->lumps[BSP29LUMP_MODELS]);
-	}
-	else
-	{
-		LoadSubmodelsNonMapQ1(&header->lumps[BSP29LUMP_MODELS]);
+		box_planes[i].type = i >> 1;
+		box_planes[i].normal[i >> 1] = 1;
 	}
 }

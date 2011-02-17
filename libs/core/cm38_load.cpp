@@ -454,9 +454,8 @@ void QClipMap38::LoadVisibility(const quint8* base, const bsp38_lump_t* l)
 void QClipMap38::LoadEntityString(const quint8* base, const bsp38_lump_t *l)
 {
 	numentitychars = l->filelen;
-	entitystring = new char[l->filelen + 1];
+	entitystring = new char[l->filelen];
 	Com_Memcpy(entitystring, base + l->fileofs, l->filelen);
-	entitystring[l->filelen] = 0;
 }
 
 //==========================================================================

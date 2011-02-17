@@ -34,7 +34,6 @@
 static void CM_LoadAliasModel(cmodel_t* mod, void* buffer);
 static void CM_LoadAliasModelNew(cmodel_t* mod, void* buffer);
 static void CM_LoadSpriteModel(cmodel_t* mod, void* buffer);
-static void CM_InitBoxHull();
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -45,14 +44,6 @@ static void CM_InitBoxHull();
 static byte			mod_novis[BSP29_MAX_MAP_LEAFS/8];
 
 static QClipMap29*	CMap;
-
-#define MAX_MOD_KNOWN	2048
-static QClipMap29*	cm_known[MAX_MOD_KNOWN];
-static int			mod_numknown;
-
-chull_t		box_hull;
-bsp29_dclipnode_t	box_clipnodes[6];
-cplane_t	box_planes[6];
 
 // CODE --------------------------------------------------------------------
 
@@ -80,12 +71,12 @@ int CM_PointLeafnum(const vec3_t p)
 		return 0;		// sound may call this without map loaded
 	}
 
-	cnode_t* node = CMap->map_models[0].nodes;
+	cnode_t* node = CMap->Map.map_models[0].nodes;
 	while (1)
 	{
 		if (node->contents < 0)
 		{
-			return (cleaf_t*)node - CMap->map_models[0].leafs;
+			return (cleaf_t*)node - CMap->Map.map_models[0].leafs;
 		}
 		cplane_t* plane = node->plane;
 		float d = DotProduct(p, plane->normal) - plane->dist;
@@ -153,8 +144,8 @@ byte* CM_ClusterPVS(int Cluster)
 	{
 		return mod_novis;
 	}
-	return CM_DecompressVis(CMap->map_models[0].leafs[Cluster + 1].compressed_vis,
-		&CMap->map_models[0]);
+	return CM_DecompressVis(CMap->Map.map_models[0].leafs[Cluster + 1].compressed_vis,
+		&CMap->Map.map_models[0]);
 }
 
 //==========================================================================
@@ -165,7 +156,7 @@ byte* CM_ClusterPVS(int Cluster)
 
 byte* CM_ClusterPHS(int Cluster)
 {
-	return CMap->map_models[0].phs + (Cluster + 1) * 4 * ((CM_NumClusters() + 31) >> 5);
+	return CMap->Map.map_models[0].phs + (Cluster + 1) * 4 * ((CM_NumClusters() + 31) >> 5);
 }
 
 //==========================================================================
@@ -183,35 +174,19 @@ cmodel_t* CM_LoadMap(const char* name, bool clientload, int* checksum)
 
 	if (CMap)
 	{
-		if (!QStr::Cmp(CMap->map_models[0].name, name))
+		if (!QStr::Cmp(CMap->Map.map_models[0].name, name))
 		{
 			//	Already got it.
-			return &CMap->map_models[0];
+			return &CMap->Map.map_models[0];
 		}
 
-		CMap->map_models[0].Free();
 		delete CMap;
 	}
 
 	CMap = new QClipMap29;
-	Com_Memset(CMap->map_models, 0, sizeof(CMap->map_models));
-	cmodel_t* mod = &CMap->map_models[0];
-	QStr::Cpy(mod->name, name);
+	CMap->LoadModel(name);
 
-	//
-	// load the file
-	//
-	QArray<byte> Buffer;
-	if (FS_ReadFile(mod->name, Buffer) <= 0)
-	{
-		return NULL;
-	}
-
-	CMap->LoadBrushModel(mod, Buffer.Ptr());
-
-	CM_InitBoxHull();
-
-	return mod;
+	return &CMap->Map.map_models[0];
 }
 
 //==========================================================================
@@ -227,11 +202,11 @@ cmodel_t* CM_InlineModel(const char* name)
 		throw QDropException("Submodel name mus start with *");
 	}
 	int i = QStr::Atoi(name + 1);
-	if (i < 1 || i > CMap->map_models[0].numsubmodels)
+	if (i < 1 || i > CMap->Map.map_models[0].numsubmodels)
 	{
 		throw QDropException("Bad submodel index");
 	}
-	return &CMap->map_models[i];
+	return &CMap->Map.map_models[i];
 }
 
 //==========================================================================
@@ -250,24 +225,24 @@ cmodel_t* CM_PrecacheModel(const char* name)
 	//
 	// search the currently loaded models
 	//
-	for (int i = 0; i < mod_numknown; i++)
+	for (int i = 0; i < CMap->numknown; i++)
 	{
-		if (!QStr::Cmp(cm_known[i]->map_models[0].name, name))
+		if (!QStr::Cmp(CMap->known[i]->model.name, name))
 		{
-			return &cm_known[i]->map_models[0];
+			return &CMap->known[i]->model;
 		}
 	}
 
-	if (mod_numknown == MAX_MOD_KNOWN)
+	if (CMap->numknown == MAX_CMOD_KNOWN)
 	{
-		Sys_Error("mod_numknown == MAX_MOD_KNOWN");
+		Sys_Error("mod_numknown == MAX_CMOD_KNOWN");
 	}
-	cm_known[mod_numknown] = new QClipMap29;
-	Com_Memset(cm_known[mod_numknown]->map_models, 0, sizeof(cm_known[mod_numknown]->map_models));
-	cmodel_t* mod = &cm_known[mod_numknown]->map_models[0];
+	CMap->known[CMap->numknown] = new QClipModelNonMap29;
+	Com_Memset(&CMap->known[CMap->numknown]->model, 0, sizeof(CMap->known[CMap->numknown]->model));
+	cmodel_t* mod = &CMap->known[CMap->numknown]->model;
 	QStr::Cpy(mod->name, name);
-	QClipMap29* LoadCMap = cm_known[mod_numknown];
-	mod_numknown++;
+	QClipModelNonMap29* LoadCMap = CMap->known[CMap->numknown];
+	CMap->numknown++;
 
 	//
 	// load the file
@@ -309,8 +284,8 @@ cmodel_t* CM_PrecacheModel(const char* name)
 
 void CM_MapChecksums(int& checksum, int& checksum2)
 {
-	checksum = CMap->map_models[0].checksum;
-	checksum2 = CMap->map_models[0].checksum2;
+	checksum = CMap->Map.map_models[0].checksum;
+	checksum2 = CMap->Map.map_models[0].checksum2;
 }
 
 //==========================================================================
@@ -333,7 +308,7 @@ void CM_ModelBounds(cmodel_t* model, vec3_t mins, vec3_t maxs)
 
 int CM_NumClusters()
 {
-	return CMap->map_models[0].numleafs;
+	return CMap->Map.map_models[0].numleafs;
 }
 
 //==========================================================================
@@ -344,7 +319,7 @@ int CM_NumClusters()
 
 int CM_NumInlineModels()
 {
-	return CMap->map_models[0].numsubmodels;
+	return CMap->Map.map_models[0].numsubmodels;
 }
 
 //==========================================================================
@@ -355,7 +330,7 @@ int CM_NumInlineModels()
 
 const char* CM_EntityString()
 {
-	return CMap->map_models[0].entities;
+	return CMap->Map.map_models[0].entities;
 }
 
 //==========================================================================
@@ -382,33 +357,7 @@ byte* CM_LeafAmbientSoundLevel(int LeafNum)
 	{
 		return NULL;		// sound may call this without map loaded
 	}
-	return CMap->map_models[0].leafs[LeafNum].ambient_sound_level;
-}
-
-//==========================================================================
-//
-//	cmodel_t::Free
-//
-//==========================================================================
-
-void cmodel_t::Free()
-{
-	delete[] visdata;
-	visdata = NULL;
-	delete[] entities;
-	entities = NULL;
-	delete[] planes;
-	planes = NULL;
-	delete[] nodes;
-	nodes = NULL;
-	delete[] leafs;
-	leafs = NULL;
-	delete[] clipnodes;
-	clipnodes = NULL;
-	delete[] hulls[0].clipnodes;
-	hulls[0].clipnodes = NULL;
-	delete[] phs;
-	phs = NULL;
+	return CMap->Map.map_models[0].leafs[LeafNum].ambient_sound_level;
 }
 
 //**************************************************************************
@@ -772,45 +721,8 @@ int CM_HullPointContents(chull_t* hull, vec3_t p)
 
 int CM_PointContents(vec3_t p, int HullNum)
 {
-	chull_t* hull = &CMap->map_models[0].hulls[HullNum];
+	chull_t* hull = &CMap->Map.map_models[0].hulls[HullNum];
 	return CM_HullPointContents(hull, hull->firstclipnode, p);
-}
-
-//==========================================================================
-//
-//	CM_InitBoxHull
-//
-//	Set up the planes and clipnodes so that the six floats of a bounding box
-// can just be stored out and get a proper chull_t structure.
-//
-//==========================================================================
-
-static void CM_InitBoxHull()
-{
-	box_hull.clipnodes = box_clipnodes;
-	box_hull.planes = box_planes;
-	box_hull.firstclipnode = 0;
-	box_hull.lastclipnode = 5;
-
-	for (int i = 0; i < 6; i++)
-	{
-		box_clipnodes[i].planenum = i;
-
-		int side = i & 1;
-
-		box_clipnodes[i].children[side] = BSP29CONTENTS_EMPTY;
-		if (i != 5)
-		{
-			box_clipnodes[i].children[side ^ 1] = i + 1;
-		}
-		else
-		{
-			box_clipnodes[i].children[side ^ 1] = BSP29CONTENTS_SOLID;
-		}
-
-		box_planes[i].type = i >> 1;
-		box_planes[i].normal[i >> 1] = 1;
-	}
 }
 
 //==========================================================================
@@ -824,14 +736,14 @@ static void CM_InitBoxHull()
 
 chull_t* CM_HullForBox(vec3_t mins, vec3_t maxs)
 {
-	box_planes[0].dist = maxs[0];
-	box_planes[1].dist = mins[0];
-	box_planes[2].dist = maxs[1];
-	box_planes[3].dist = mins[1];
-	box_planes[4].dist = maxs[2];
-	box_planes[5].dist = mins[2];
+	CMap->box_planes[0].dist = maxs[0];
+	CMap->box_planes[1].dist = mins[0];
+	CMap->box_planes[2].dist = maxs[1];
+	CMap->box_planes[3].dist = mins[1];
+	CMap->box_planes[4].dist = maxs[2];
+	CMap->box_planes[5].dist = mins[2];
 
-	return &box_hull;
+	return &CMap->box_hull;
 }
 
 //==========================================================================
@@ -1010,7 +922,7 @@ bool CM_HullCheck(chull_t* hull, vec3_t p1, vec3_t p2, trace_t* trace)
 
 int CM_TraceLine(vec3_t start, vec3_t end, trace_t* trace)
 {
-	return CM_RecursiveHullCheck(&CMap->map_models[0].hulls[0], 0, 0, 1, start, end, trace);
+	return CM_RecursiveHullCheck(&CMap->Map.map_models[0].hulls[0], 0, 0, 1, start, end, trace);
 }
 
 //==========================================================================
@@ -1055,7 +967,7 @@ static void CM_BoxLeafnums_r(vec3_t mins, vec3_t maxs, cnode_t *node)
 		}
 
 		cleaf_t* leaf = (cleaf_t*)node;
-		int leafnum = leaf - CMap->map_models[0].leafs;
+		int leafnum = leaf - CMap->Map.map_models[0].leafs;
 
 		leaf_list[leaf_count] = leafnum;
 		leaf_count++;
@@ -1090,7 +1002,7 @@ int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int maxcount)
 	leaf_count = 0;
 	leaf_list = list;
 	leaf_maxcount = maxcount;
-	CM_BoxLeafnums_r(mins, maxs, CMap->map_models[0].nodes);
+	CM_BoxLeafnums_r(mins, maxs, CMap->Map.map_models[0].nodes);
 	return leaf_count;
 }
 
@@ -1113,7 +1025,7 @@ void CM_CalcPHS()
 
 	Con_Printf ("Building PHS...\n");
 
-	num = CMap->map_models[0].numleafs;
+	num = CMap->Map.map_models[0].numleafs;
 	rowwords = (num+31)>>5;
 	rowbytes = rowwords*4;
 
@@ -1135,10 +1047,10 @@ void CM_CalcPHS()
 	}
 
 
-	CMap->map_models[0].phs = (byte*)Hunk_Alloc (rowbytes*num);
+	CMap->Map.map_models[0].phs = (byte*)Hunk_Alloc (rowbytes*num);
 	count = 0;
 	scan = pvs;
-	dest = (unsigned *)CMap->map_models[0].phs;
+	dest = (unsigned *)CMap->Map.map_models[0].phs;
 	for (i=0 ; i<num ; i++, dest += rowwords, scan += rowbytes)
 	{
 		Com_Memcpy(dest, scan, rowbytes);
