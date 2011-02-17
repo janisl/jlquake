@@ -2,7 +2,7 @@
 #ifndef __MODEL__
 #define __MODEL__
 
-#include "genmodel.h"
+#include "../../../libs/core/mdlfile.h"
 #include "spritegn.h"
 
 /*
