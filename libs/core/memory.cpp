@@ -332,11 +332,11 @@ void QMemHeap::LargeFree(void* Ptr)
 
 //==========================================================================
 //
-//  Z_Shutdown
+//  Mem_Shutdown
 //
 //==========================================================================
 
-void Z_Shutdown()
+void Mem_Shutdown()
 {
 #ifdef MEM_DEBUG
 	Mem_MemDebugDump();
