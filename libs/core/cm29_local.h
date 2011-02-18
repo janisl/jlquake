@@ -135,8 +135,12 @@ public:
 class QClipModelNonMap29 : public QClipModel29
 {
 private:
+	void LoadBrushModelNonMap(cmodel_t* mod, void* buffer);
 	void LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadAliasModel(cmodel_t* mod, void* buffer);
+	void LoadAliasModelNew(cmodel_t* mod, void* buffer);
+	void LoadSpriteModel(cmodel_t* mod, void* buffer);
 
 public:
 	cmodel_t	model;
@@ -146,9 +150,7 @@ public:
 		model.Free();
 	}
 
-	void LoadBrushModelNonMap(cmodel_t* mod, void* buffer);
-	void LoadAliasModel(cmodel_t* mod, void* buffer);
-	void LoadAliasModelNew(cmodel_t* mod, void* buffer);
+	void Load(const char* name);
 };
 
 class QClipMap29

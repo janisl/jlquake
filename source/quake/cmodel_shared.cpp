@@ -31,9 +31,6 @@
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
-static void CM_LoadAliasModelNew(cmodel_t* mod, void* buffer);
-static void CM_LoadSpriteModel(cmodel_t* mod, void* buffer);
-
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
@@ -237,42 +234,12 @@ cmodel_t* CM_PrecacheModel(const char* name)
 		Sys_Error("mod_numknown == MAX_CMOD_KNOWN");
 	}
 	CMap->known[CMap->numknown] = new QClipModelNonMap29;
-	Com_Memset(&CMap->known[CMap->numknown]->model, 0, sizeof(CMap->known[CMap->numknown]->model));
-	cmodel_t* mod = &CMap->known[CMap->numknown]->model;
-	QStr::Cpy(mod->name, name);
 	QClipModelNonMap29* LoadCMap = CMap->known[CMap->numknown];
 	CMap->numknown++;
 
-	//
-	// load the file
-	//
-	QArray<byte> Buffer;
-	if (FS_ReadFile(mod->name, Buffer) <= 0)
-	{
-		Sys_Error("CM_PrecacheModel: %s not found", mod->name);
-	}
+	LoadCMap->Load(name);
 
-	// call the apropriate loader
-	switch (LittleLong(*(unsigned*)Buffer.Ptr()))
-	{
-	case RAPOLYHEADER:
-		LoadCMap->LoadAliasModelNew(mod, Buffer.Ptr());
-		break;
-
-	case IDPOLYHEADER:
-		LoadCMap->LoadAliasModel(mod, Buffer.Ptr());
-		break;
-
-	case IDSPRITE1HEADER:
-		CM_LoadSpriteModel(mod, Buffer.Ptr());
-		break;
-
-	default:
-		LoadCMap->LoadBrushModelNonMap(mod, Buffer.Ptr());
-		break;
-	}
-
-	return mod;
+	return &LoadCMap->model;
 }
 
 //==========================================================================
@@ -357,30 +324,6 @@ byte* CM_LeafAmbientSoundLevel(int LeafNum)
 		return NULL;		// sound may call this without map loaded
 	}
 	return CMap->Map.map_models[0].leafs[LeafNum].ambient_sound_level;
-}
-
-//==========================================================================
-//
-//	CM_LoadSpriteModel
-//
-//==========================================================================
-
-static void CM_LoadSpriteModel(cmodel_t* mod, void* buffer)
-{
-	dsprite1_t* pin = (dsprite1_t*)buffer;
-
-	int version = LittleLong (pin->version);
-	if (version != SPRITE1_VERSION)
-	{
-		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, version, SPRITE1_VERSION);
-	}
-
-	mod->type = cmod_sprite;
-
-	mod->mins[0] = mod->mins[1] = -LittleLong(pin->width) / 2;
-	mod->maxs[0] = mod->maxs[1] = LittleLong(pin->width) / 2;
-	mod->mins[2] = -LittleLong(pin->height) / 2;
-	mod->maxs[2] = LittleLong(pin->height) / 2;
 }
 
 //==========================================================================

@@ -23,6 +23,7 @@
 #include "bsp29file.h"
 #include "cm29_local.h"
 #include "mdlfile.h"
+#include "sprfile.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -589,6 +590,49 @@ void QClipModelMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, 
 
 //==========================================================================
 //
+//	QClipModelNonMap29::Load
+//
+//==========================================================================
+
+void QClipModelNonMap29::Load(const char* name)
+{
+	Com_Memset(&model, 0, sizeof(model));
+	cmodel_t* mod = &model;
+
+	//
+	// load the file
+	//
+	QArray<byte> Buffer;
+	if (FS_ReadFile(name, Buffer) <= 0)
+	{
+		throw QDropException(va("CM_PrecacheModel: %s not found", name));
+	}
+
+	// call the apropriate loader
+	switch (LittleLong(*(unsigned*)Buffer.Ptr()))
+	{
+	case RAPOLYHEADER:
+		LoadAliasModelNew(mod, Buffer.Ptr());
+		break;
+
+	case IDPOLYHEADER:
+		LoadAliasModel(mod, Buffer.Ptr());
+		break;
+
+	case IDSPRITE1HEADER:
+		LoadSpriteModel(mod, Buffer.Ptr());
+		break;
+
+	default:
+		LoadBrushModelNonMap(mod, Buffer.Ptr());
+		break;
+	}
+
+	QStr::Cpy(mod->name, name);
+}
+
+//==========================================================================
+//
 //	QClipModelNonMap29::LoadBrushModelNonMap
 //
 //==========================================================================
@@ -982,6 +1026,30 @@ void QMdlBoundsLoader::AliasTransformVector(vec3_t in, vec3_t out)
 	out[0] = DotProduct(in, aliastransform[0]) + aliastransform[0][3];
 	out[1] = DotProduct(in, aliastransform[1]) + aliastransform[1][3];
 	out[2] = DotProduct(in, aliastransform[2]) + aliastransform[2][3];
+}
+
+//==========================================================================
+//
+//	QClipModelNonMap29::LoadSpriteModel
+//
+//==========================================================================
+
+void QClipModelNonMap29::LoadSpriteModel(cmodel_t* mod, void* buffer)
+{
+	dsprite1_t* pin = (dsprite1_t*)buffer;
+
+	int version = LittleLong (pin->version);
+	if (version != SPRITE1_VERSION)
+	{
+		throw QDropException(va("%s has wrong version number (%i should be %i)", mod->name, version, SPRITE1_VERSION));
+	}
+
+	mod->type = cmod_sprite;
+
+	mod->mins[0] = mod->mins[1] = -LittleLong(pin->width) / 2;
+	mod->maxs[0] = mod->maxs[1] = LittleLong(pin->width) / 2;
+	mod->mins[2] = -LittleLong(pin->height) / 2;
+	mod->maxs[2] = LittleLong(pin->height) / 2;
 }
 
 //**************************************************************************
