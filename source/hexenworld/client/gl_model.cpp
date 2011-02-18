@@ -271,7 +271,7 @@ static model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 		Mod_LoadAliasModel (mod, buf);
 		break;
 		
-	case IDSPRITEHEADER:
+	case IDSPRITE1HEADER:
 		Mod_LoadSpriteModel (mod, buf);
 		break;
 	
@@ -1973,14 +1973,14 @@ Mod_LoadSpriteFrame
 */
 static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int framenum)
 {
-	dspriteframe_t		*pinframe;
+	dsprite1frame_t		*pinframe;
 	mspriteframe_t		*pspriteframe;
 	int					i, width, height, size, origin[2];
 	unsigned short		*ppixout;
 	byte				*ppixin;
 	char				name[64];
 
-	pinframe = (dspriteframe_t *)pin;
+	pinframe = (dsprite1frame_t *)pin;
 
 	width = LittleLong (pinframe->width);
 	height = LittleLong (pinframe->height);
@@ -2005,7 +2005,7 @@ static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int fra
 	sprintf (name, "%s_%i", loadmodel->name, framenum);
 	pspriteframe->gl_texturenum = GL_LoadTexture (name, width, height, (byte *)(pinframe + 1), true, true, 10);
 
-	return (void *)((byte *)pinframe + sizeof (dspriteframe_t) + size);
+	return (void *)((byte *)pinframe + sizeof (dsprite1frame_t) + size);
 }
 
 
@@ -2016,14 +2016,14 @@ Mod_LoadSpriteGroup
 */
 static void * Mod_LoadSpriteGroup (void * pin, mspriteframe_t **ppframe, int framenum)
 {
-	dspritegroup_t		*pingroup;
+	dsprite1group_t		*pingroup;
 	mspritegroup_t		*pspritegroup;
 	int					i, numframes;
-	dspriteinterval_t	*pin_intervals;
+	dsprite1interval_t	*pin_intervals;
 	float				*poutintervals;
 	void				*ptemp;
 
-	pingroup = (dspritegroup_t *)pin;
+	pingroup = (dsprite1group_t *)pin;
 
 	numframes = LittleLong (pingroup->numframes);
 
@@ -2034,7 +2034,7 @@ static void * Mod_LoadSpriteGroup (void * pin, mspriteframe_t **ppframe, int fra
 
 	*ppframe = (mspriteframe_t *)pspritegroup;
 
-	pin_intervals = (dspriteinterval_t *)(pingroup + 1);
+	pin_intervals = (dsprite1interval_t *)(pingroup + 1);
 
 	poutintervals = (float*)Hunk_AllocName (numframes * sizeof (float), loadname);
 
@@ -2070,18 +2070,18 @@ static void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 {
 	int					i;
 	int					version;
-	dsprite_t			*pin;
+	dsprite1_t			*pin;
 	msprite_t			*psprite;
 	int					numframes;
 	int					size;
-	dspriteframetype_t	*pframetype;
+	dsprite1frametype_t	*pframetype;
 	
-	pin = (dsprite_t *)buffer;
+	pin = (dsprite1_t *)buffer;
 
 	version = LittleLong (pin->version);
-	if (version != SPRITE_VERSION)
+	if (version != SPRITE1_VERSION)
 		Sys_Error ("%s has wrong version number "
-				 "(%i should be %i)", mod->name, version, SPRITE_VERSION);
+				 "(%i should be %i)", mod->name, version, SPRITE1_VERSION);
 
 	numframes = LittleLong (pin->numframes);
 
@@ -2111,24 +2111,24 @@ static void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 
 	mod->numframes = numframes;
 
-	pframetype = (dspriteframetype_t *)(pin + 1);
+	pframetype = (dsprite1frametype_t *)(pin + 1);
 
 	for (i=0 ; i<numframes ; i++)
 	{
-		spriteframetype_t	frametype;
+		sprite1frametype_t	frametype;
 
-		frametype = (spriteframetype_t)LittleLong (pframetype->type);
+		frametype = (sprite1frametype_t)LittleLong (pframetype->type);
 		psprite->frames[i].type = frametype;
 
 		if (frametype == SPR_SINGLE)
 		{
-			pframetype = (dspriteframetype_t *)
+			pframetype = (dsprite1frametype_t *)
 					Mod_LoadSpriteFrame (pframetype + 1,
 										 &psprite->frames[i].frameptr, i);
 		}
 		else
 		{
-			pframetype = (dspriteframetype_t *)
+			pframetype = (dsprite1frametype_t *)
 					Mod_LoadSpriteGroup (pframetype + 1,
 										 &psprite->frames[i].frameptr, i);
 		}

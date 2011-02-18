@@ -263,7 +263,7 @@ cmodel_t* CM_PrecacheModel(const char* name)
 		LoadCMap->LoadAliasModel(mod, Buffer.Ptr());
 		break;
 
-	case IDSPRITEHEADER:
+	case IDSPRITE1HEADER:
 		CM_LoadSpriteModel(mod, Buffer.Ptr());
 		break;
 
@@ -367,12 +367,12 @@ byte* CM_LeafAmbientSoundLevel(int LeafNum)
 
 static void CM_LoadSpriteModel(cmodel_t* mod, void* buffer)
 {
-	dsprite_t* pin = (dsprite_t*)buffer;
+	dsprite1_t* pin = (dsprite1_t*)buffer;
 
 	int version = LittleLong (pin->version);
-	if (version != SPRITE_VERSION)
+	if (version != SPRITE1_VERSION)
 	{
-		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, version, SPRITE_VERSION);
+		Sys_Error("%s has wrong version number (%i should be %i)", mod->name, version, SPRITE1_VERSION);
 	}
 
 	mod->type = cmod_sprite;

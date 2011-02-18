@@ -6,7 +6,7 @@
 #define __MODEL__
 
 #include "../../libs/core/mdlfile.h"
-#include "spritegn.h"
+#include "../../libs/core/sprfile.h"
 
 /*
 
@@ -205,7 +205,7 @@ typedef struct
 
 typedef struct
 {
-	spriteframetype_t	type;
+	sprite1frametype_t	type;
 	mspriteframe_t		*frameptr;
 } mspriteframedesc_t;
 
