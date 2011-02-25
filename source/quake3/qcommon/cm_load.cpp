@@ -30,12 +30,6 @@ QClipMap46*	CMap;
 int			c_traces, c_brush_traces, c_patch_traces;
 
 
-QCvar		*cm_noAreas;
-QCvar		*cm_noCurves;
-QCvar		*cm_playerCurveClip;
-
-
-
 void	CM_FloodAreaConnections (void);
 
 //==================================================================

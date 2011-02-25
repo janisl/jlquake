@@ -129,7 +129,7 @@ clipHandle_t CM_PrecacheModel(const char* name)
 #define	DIST_EPSILON	(0.03125)
 
 static bool CM_RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
-	vec3_t p1, vec3_t p2, trace_t* trace)
+	vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
 	// check for empty
 	if (num < 0)
@@ -282,7 +282,7 @@ static bool CM_RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
 //
 //==========================================================================
 
-bool CM_HullCheck(clipHandle_t Handle, vec3_t p1, vec3_t p2, trace_t* trace)
+bool CM_HullCheck(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
 	chull_t* hull = CMap->ClipHandleToHull(Handle);
 	return CM_RecursiveHullCheck(hull, hull->firstclipnode, 0, 1, p1, p2, trace);
@@ -294,7 +294,7 @@ bool CM_HullCheck(clipHandle_t Handle, vec3_t p1, vec3_t p2, trace_t* trace)
 //
 //==========================================================================
 
-int CM_TraceLine(vec3_t start, vec3_t end, trace_t* trace)
+int CM_TraceLine(vec3_t start, vec3_t end, q1trace_t* trace)
 {
 	return CM_RecursiveHullCheck(&CMap->Map.map_models[0].hulls[0], 0, 0, 1, start, end, trace);
 }

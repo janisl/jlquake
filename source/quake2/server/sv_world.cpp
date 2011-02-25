@@ -471,7 +471,7 @@ typedef struct
 	float		*mins, *maxs;	// size of the moving object
 	vec3_t		mins2, maxs2;	// size when clipping against mosnters
 	float		*start, *end;
-	trace_t		trace;
+	q2trace_t		trace;
 	edict_t		*passedict;
 	int			contentmask;
 } moveclip_t;
@@ -521,7 +521,7 @@ void SV_ClipMoveToEntities ( moveclip_t *clip )
 {
 	int			i, num;
 	edict_t		*touchlist[MAX_EDICTS], *touch;
-	trace_t		trace;
+	q2trace_t		trace;
 	clipHandle_t	model;
 	float		*angles;
 
@@ -624,7 +624,7 @@ Passedict and edicts owned by passedict are explicitly not checked.
 
 ==================
 */
-trace_t SV_Trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passedict, int contentmask)
+q2trace_t SV_Trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passedict, int contentmask)
 {
 	moveclip_t	clip;
 

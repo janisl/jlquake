@@ -70,10 +70,10 @@ CL_ClipMoveToEntities
 
 ====================
 */
-void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, trace_t *tr )
+void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, q2trace_t *tr )
 {
 	int			i, x, zd, zu;
-	trace_t		trace;
+	q2trace_t		trace;
 	float		*angles;
 	entity_state_t	*ent;
 	int			num;
@@ -143,9 +143,9 @@ void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
 CL_PMTrace
 ================
 */
-trace_t		CL_PMTrace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
+q2trace_t		CL_PMTrace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 {
-	trace_t	t;
+	q2trace_t	t;
 
 	// check against world
 	t = CM_BoxTrace (start, end, mins, maxs, 0, MASK_PLAYERSOLID);

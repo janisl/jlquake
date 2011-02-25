@@ -39,6 +39,10 @@
 #define	BOX_MODEL_HANDLE		255
 #define CAPSULE_MODEL_HANDLE	254
 
+// keep 1/8 unit away to keep the position valid before network snapping
+// and to avoid various numeric issues
+#define	SURFACE_CLIP_EPSILON	(0.125)
+
 struct cLeaf_t
 {
 	int			cluster;
@@ -78,6 +82,31 @@ struct cNode_t
 {
 	cplane_t*	plane;
 	int			children[2];		// negative numbers are leafs
+};
+
+// Used for oriented capsule collision detection
+struct sphere_t
+{
+	bool		use;
+	float		radius;
+	float		halfheight;
+	vec3_t		offset;
+};
+
+struct traceWork_t
+{
+	vec3_t		start;
+	vec3_t		end;
+	vec3_t		size[2];	// size of the box being swept through the model
+	vec3_t		offsets[8];	// [signbits][x] = either size[0][x] or size[1][x]
+	float		maxOffset;	// longest corner length from origin
+	vec3_t		extents;	// greatest of abs(size[0]) and abs(size[1])
+	vec3_t		bounds[2];	// enclosing box of start and end surrounding by size
+	vec3_t		modelOrigin;// origin of the model tracing through
+	int			contents;	// ored contents of the model tracing through
+	qboolean	isPoint;	// optimized case
+	q3trace_t	trace;		// returned from trace call
+	sphere_t	sphere;		// sphere for oriendted capsule collision
 };
 
 struct patchPlane_t
@@ -124,6 +153,8 @@ struct patchCollide_t
 	facet_t*	facets;
 
 	void FromGrid(cGrid_t* grid);
+	void TraceThrough(traceWork_t* tw) const;
+	bool PositionTest(traceWork_t* tw) const;
 private:
 	static int FindPlane(float* p1, float* p2, float* p3);
 	static int SignbitsForNormal(vec3_t normal);
@@ -137,6 +168,8 @@ private:
 	static bool PlaneEqual(patchPlane_t* p, float plane[4], int* flipped);
 	static int FindPlane2(float plane[4], int* flipped);
 	static void CM_SnapVector(vec3_t normal);
+	void TracePointThrough(traceWork_t* tw) const;
+	static int CheckFacetPlane(float* plane, vec3_t start, vec3_t end, float* enterFrac, float* leaveFrac, int* hit);
 };
 
 struct cPatch_t
@@ -315,5 +348,9 @@ void CM46_ChopWindingInPlace(winding_t** inout, vec3_t normal, vec_t dist, vec_t
 // frees the original if clipped
 void CM46_WindingBounds(winding_t* w, vec3_t mins, vec3_t maxs);
 winding_t* CM46_CopyWinding(winding_t* w);
+
+extern	QCvar		*cm_noAreas;
+extern	QCvar		*cm_noCurves;
+extern	QCvar		*cm_playerCurveClip;
 
 #endif

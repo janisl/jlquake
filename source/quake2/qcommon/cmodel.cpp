@@ -98,7 +98,7 @@ vec3_t	trace_start, trace_end;
 vec3_t	trace_mins, trace_maxs;
 vec3_t	trace_extents;
 
-trace_t	trace_trace;
+q2trace_t	trace_trace;
 int		trace_contents;
 qboolean	trace_ispoint;		// optimized case
 
@@ -108,7 +108,7 @@ CM_ClipBoxToBrush
 ================
 */
 void CM_ClipBoxToBrush (vec3_t mins, vec3_t maxs, vec3_t p1, vec3_t p2,
-					  trace_t *trace, cbrush_t *brush)
+					  q2trace_t *trace, cbrush_t *brush)
 {
 	int			i, j;
 	cplane_t	*plane, *clipplane;
@@ -222,7 +222,7 @@ CM_TestBoxInBrush
 ================
 */
 void CM_TestBoxInBrush (vec3_t mins, vec3_t maxs, vec3_t p1,
-					  trace_t *trace, cbrush_t *brush)
+					  q2trace_t *trace, cbrush_t *brush)
 {
 	int			i, j;
 	cplane_t	*plane;
@@ -468,7 +468,7 @@ return;
 CM_BoxTrace
 ==================
 */
-trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
+q2trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 						  vec3_t mins, vec3_t maxs,
 						  clipHandle_t Handle, int brushmask)
 {
@@ -577,12 +577,12 @@ rotating entities
 #endif
 
 
-trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
+q2trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 						  vec3_t mins, vec3_t maxs,
 						  clipHandle_t Handle, int brushmask,
 						  vec3_t origin, vec3_t angles)
 {
-	trace_t		trace;
+	q2trace_t		trace;
 	vec3_t		start_l, end_l;
 	vec3_t		a;
 	vec3_t		forward, right, up;

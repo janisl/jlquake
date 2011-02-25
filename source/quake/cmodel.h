@@ -17,28 +17,10 @@
 //**
 //**************************************************************************
 
-struct plane_t
-{
-	vec3_t		normal;
-	float		dist;
-};
-
-struct trace_t
-{
-	qboolean	allsolid;	// if true, plane is not valid
-	qboolean	startsolid;	// if true, the initial point was in a solid area
-	qboolean	inopen;
-	qboolean	inwater;
-	float		fraction;		// time completed, 1.0 = didn't hit anything
-	vec3_t		endpos;			// final position
-	plane_t		plane;			// surface normal at impact
-	int			entityNum;			// entity the surface is on
-};
-
 void CM_Init();
 clipHandle_t CM_LoadMap(const char* name, bool clientload, int* checksum);
 clipHandle_t CM_PrecacheModel(const char* name);
 
-bool CM_HullCheck(clipHandle_t hull, vec3_t p1, vec3_t p2, trace_t* trace);
-int CM_TraceLine(vec3_t start, vec3_t end, trace_t* trace);
+bool CM_HullCheck(clipHandle_t hull, vec3_t p1, vec3_t p2, q1trace_t* trace);
+int CM_TraceLine(vec3_t start, vec3_t end, q1trace_t* trace);
 void CM_CalcPHS();

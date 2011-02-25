@@ -391,10 +391,10 @@ CMODEL
 clipHandle_t CM_LoadMap(const char* name, bool clientload, unsigned* checksum);
 
 
-trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
+q2trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 						  vec3_t mins, vec3_t maxs,
 						  clipHandle_t model, int brushmask);
-trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
+q2trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 						  vec3_t mins, vec3_t maxs,
 						  clipHandle_t model, int brushmask,
 						  vec3_t origin, vec3_t angles);

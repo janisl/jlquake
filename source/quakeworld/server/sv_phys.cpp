@@ -235,7 +235,7 @@ If steptrace is not NULL, the trace of any vertical wall hit will be stored
 ============
 */
 #define	MAX_CLIP_PLANES	5
-int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
+int SV_FlyMove (edict_t *ent, float time, q1trace_t *steptrace)
 {
 	int			bumpcount, numbumps;
 	vec3_t		dir;
@@ -244,7 +244,7 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 	vec3_t		planes[MAX_CLIP_PLANES];
 	vec3_t		primal_velocity, original_velocity, new_velocity;
 	int			i, j;
-	trace_t		trace;
+	q1trace_t		trace;
 	vec3_t		end;
 	float		time_left;
 	int			blocked;
@@ -394,9 +394,9 @@ SV_PushEntity
 Does not change the entities velocity at all
 ============
 */
-trace_t SV_PushEntity (edict_t *ent, vec3_t push)
+q1trace_t SV_PushEntity (edict_t *ent, vec3_t push)
 {
-	trace_t	trace;
+	q1trace_t	trace;
 	vec3_t	end;
 		
 	VectorAdd (ent->v.origin, push, end);
@@ -711,7 +711,7 @@ Toss, bounce, and fly movement.  When onground, do nothing.
 */
 void SV_Physics_Toss (edict_t *ent)
 {
-	trace_t	trace;
+	q1trace_t	trace;
 	vec3_t	move;
 	float	backoff;
 

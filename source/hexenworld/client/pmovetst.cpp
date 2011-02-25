@@ -19,7 +19,7 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 	physent_t	*pe;
 	vec3_t		mins, maxs, test;
 	clipHandle_t	hull;
-	trace_t	trace;
+	q1trace_t	trace;
 
 	trace = PM_PlayerMove (pos, pos);
 	if (trace.allsolid || trace.startsolid)
@@ -84,9 +84,9 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 PM_PlayerMove
 ================
 */
-trace_t PM_PlayerMove (vec3_t start, vec3_t end)
+q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 {
-	trace_t		trace, total;
+	q1trace_t		trace, total;
 	vec3_t		offset;
 	vec3_t		start_l, end_l;
 	clipHandle_t	hull;
@@ -95,7 +95,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	vec3_t		mins, maxs;
 
 // fill in a default trace
-	Com_Memset(&total, 0, sizeof(trace_t));
+	Com_Memset(&total, 0, sizeof(q1trace_t));
 	total.fraction = 1;
 	total.entityNum = -1;
 	VectorCopy (end, total.endpos);
@@ -170,7 +170,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 		end_l[2] -= clip_mins[2];
 
 	// fill in a default trace
-		Com_Memset(&trace, 0, sizeof(trace_t));
+		Com_Memset(&trace, 0, sizeof(q1trace_t));
 		trace.fraction = 1;
 		trace.allsolid = true;
 //		trace.startsolid = true;

@@ -259,4 +259,7 @@ void RotateAroundDirection(vec3_t axis[3], float yaw);
 void MakeNormalVectors(const vec3_t forward, vec3_t right, vec3_t up);
 // perpendicular vector could be replaced by this
 
+void RotatePoint(vec3_t point, const vec3_t matrix[3]);
+void TransposeMatrix(const vec3_t matrix[3], vec3_t transpose[3]);
+
 extern const vec3_t		axisDefault[3];

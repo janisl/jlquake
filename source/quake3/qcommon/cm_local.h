@@ -25,43 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../libs/core/cm46_local.h"
 #include "cm_public.h"
 
-// keep 1/8 unit away to keep the position valid before network snapping
-// and to avoid various numeric issues
-#define	SURFACE_CLIP_EPSILON	(0.125)
-
 extern	int			c_traces, c_brush_traces, c_patch_traces;
-extern	QCvar		*cm_noAreas;
-extern	QCvar		*cm_noCurves;
-extern	QCvar		*cm_playerCurveClip;
 
-// cm_test.c
-
-// Used for oriented capsule collision detection
-typedef struct
-{
-	qboolean	use;
-	float		radius;
-	float		halfheight;
-	vec3_t		offset;
-} sphere_t;
-
-typedef struct {
-	vec3_t		start;
-	vec3_t		end;
-	vec3_t		size[2];	// size of the box being swept through the model
-	vec3_t		offsets[8];	// [signbits][x] = either size[0][x] or size[1][x]
-	float		maxOffset;	// longest corner length from origin
-	vec3_t		extents;	// greatest of abs(size[0]) and abs(size[1])
-	vec3_t		bounds[2];	// enclosing box of start and end surrounding by size
-	vec3_t		modelOrigin;// origin of the model tracing through
-	int			contents;	// ored contents of the model tracing through
-	qboolean	isPoint;	// optimized case
-	trace_t		trace;		// returned from trace call
-	sphere_t	sphere;		// sphere for oriendted capsule collision
-} traceWork_t;
-
-void CM_TraceThroughPatchCollide( traceWork_t *tw, const patchCollide_t* pc );
-qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const patchCollide_t* pc );
 void CM_ClearLevelPatches( void );
 
 extern QClipMap46*	CMap;

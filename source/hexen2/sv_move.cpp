@@ -24,7 +24,7 @@ qboolean SV_CheckBottom (edict_t *ent)
 	//move, and adjusted for steps
 	model_t		*model;
 	vec3_t	mins, maxs, start, stop, check,size;
-	trace_t	trace;
+	q1trace_t	trace;
 	hull_t	*wclip_hull;
 	int		x, y;
 	float	mid, bottom;
@@ -177,7 +177,7 @@ realcheck:	// check it for real...
 }
 
 
-void set_move_trace(trace_t *trace)
+void set_move_trace(q1trace_t *trace)
 {
 	pr_global_struct->trace_allsolid = trace->allsolid;
 	pr_global_struct->trace_startsolid = trace->startsolid;
@@ -208,7 +208,7 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noene
 {
 	float		dz;
 	vec3_t		oldorg, neworg, end;
-	trace_t		trace;
+	q1trace_t		trace;
 	int			i;
 	edict_t		*enemy;
 

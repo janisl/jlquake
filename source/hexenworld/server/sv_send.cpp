@@ -843,7 +843,7 @@ static void UpdatePIV(void)
 {
 	int			i, j;
 	client_t	*client;
-	trace_t		trace;
+	q1trace_t		trace;
 	vec3_t		adjust_org1, adjust_org2, distvec;
 	float		save_hull, dist;
 

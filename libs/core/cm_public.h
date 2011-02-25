@@ -19,6 +19,59 @@
 
 typedef int clipHandle_t;
 
+struct q1plane_t
+{
+	vec3_t		normal;
+	float		dist;
+};
+
+struct q1trace_t
+{
+	qboolean	allsolid;	// if true, plane is not valid
+	qboolean	startsolid;	// if true, the initial point was in a solid area
+	qboolean	inopen;
+	qboolean	inwater;
+	float		fraction;		// time completed, 1.0 = didn't hit anything
+	vec3_t		endpos;			// final position
+	q1plane_t		plane;			// surface normal at impact
+	int			entityNum;			// entity the surface is on
+};
+
+struct q2csurface_t
+{
+	char		name[16];
+	int			flags;
+	int			value;
+};
+
+// a trace is returned when a box is swept through the world
+struct q2trace_t
+{
+	qboolean	allsolid;	// if true, plane is not valid
+	qboolean	startsolid;	// if true, the initial point was in a solid area
+	float		fraction;	// time completed, 1.0 = didn't hit anything
+	vec3_t		endpos;		// final position
+	cplane_t	plane;		// surface normal at impact
+	q2csurface_t	*surface;	// surface hit
+	int			contents;	// contents on other side of surface hit
+	struct edict_s	*ent;		// not set by CM_*() functions
+};
+
+// a trace is returned when a box is swept through the world
+// trace->entityNum can also be 0 to (MAX_GENTITIES-1)
+// or ENTITYNUM_NONE, ENTITYNUM_WORLD
+struct q3trace_t
+{
+	qboolean	allsolid;	// if true, plane is not valid
+	qboolean	startsolid;	// if true, the initial point was in a solid area
+	float		fraction;	// time completed, 1.0 = didn't hit anything
+	vec3_t		endpos;		// final position
+	cplane_t	plane;		// surface normal at impact, transformed to world space
+	int			surfaceFlags;	// surface hit
+	int			contents;	// contents on other side of surface hit
+	int			entityNum;	// entity the contacted surface is a part of
+};
+
 clipHandle_t CM_InlineModel(int Index);		// 0 = world, 1 + are bmodels
 
 int CM_NumClusters();

@@ -37,7 +37,7 @@ int c_yes, c_no;
 qboolean SV_CheckBottom (edict_t *ent)
 {
 	vec3_t	mins, maxs, start, stop;
-	trace_t	trace;
+	q1trace_t	trace;
 	int		x, y;
 	float	mid, bottom;
 	
@@ -111,7 +111,7 @@ qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink)
 {
 	float		dz;
 	vec3_t		oldorg, neworg, end;
-	trace_t		trace;
+	q1trace_t	trace;
 	int			i;
 	edict_t		*enemy;
 

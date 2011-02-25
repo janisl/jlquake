@@ -70,7 +70,9 @@ properly.
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-vec3_t		debugBlockPoints[4];
+const patchCollide_t*	debugPatchCollide;
+const facet_t*			debugFacet;
+vec3_t					debugBlockPoints[4];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -1324,4 +1326,447 @@ void patchCollide_t::CM_SnapVector(vec3_t normal)
 			break;
 		}
 	}
+}
+
+/*
+================================================================================
+
+TRACE TESTING
+
+================================================================================
+*/
+
+//==========================================================================
+//
+//	patchCollide_t::TraceThrough
+//
+//==========================================================================
+
+void patchCollide_t::TraceThrough(traceWork_t* tw) const
+{
+	static QCvar *cv;
+
+	if (tw->isPoint)
+	{
+		TracePointThrough(tw);
+		return;
+	}
+
+	float bestplane[4];
+	const facet_t* facet = facets;
+	for (int i = 0; i < numFacets; i++, facet++)
+	{
+		float enterFrac = -1.0;
+		float leaveFrac = 1.0;
+		int hitnum = -1;
+
+		const patchPlane_t* planes = &this->planes[facet->surfacePlane];
+		float plane[4];
+		VectorCopy(planes->plane, plane);
+		plane[3] = planes->plane[3];
+		vec3_t startp, endp;
+		if (tw->sphere.use)
+		{
+			// adjust the plane distance apropriately for radius
+			plane[3] += tw->sphere.radius;
+
+			// find the closest point on the capsule to the plane
+			float t = DotProduct(plane, tw->sphere.offset);
+			if (t > 0.0f)
+			{
+				VectorSubtract(tw->start, tw->sphere.offset, startp);
+				VectorSubtract(tw->end, tw->sphere.offset, endp);
+			}
+			else
+			{
+				VectorAdd(tw->start, tw->sphere.offset, startp);
+				VectorAdd(tw->end, tw->sphere.offset, endp);
+			}
+		}
+		else
+		{
+			float offset = DotProduct(tw->offsets[planes->signbits], plane);
+			plane[3] -= offset;
+			VectorCopy(tw->start, startp);
+			VectorCopy(tw->end, endp);
+		}
+
+		int hit;
+		if (!CheckFacetPlane(plane, startp, endp, &enterFrac, &leaveFrac, &hit))
+		{
+			continue;
+		}
+		if (hit)
+		{
+			Vector4Copy(plane, bestplane);
+		}
+
+		int j;
+		for (j = 0; j < facet->numBorders; j++)
+		{
+			planes = &this->planes[facet->borderPlanes[j]];
+			if (facet->borderInward[j])
+			{
+				VectorNegate(planes->plane, plane);
+				plane[3] = -planes->plane[3];
+			}
+			else
+			{
+				VectorCopy(planes->plane, plane);
+				plane[3] = planes->plane[3];
+			}
+			if (tw->sphere.use)
+			{
+				// adjust the plane distance apropriately for radius
+				plane[3] += tw->sphere.radius;
+
+				// find the closest point on the capsule to the plane
+				float t = DotProduct(plane, tw->sphere.offset);
+				if (t > 0.0f)
+				{
+					VectorSubtract(tw->start, tw->sphere.offset, startp);
+					VectorSubtract(tw->end, tw->sphere.offset, endp);
+				}
+				else {
+					VectorAdd(tw->start, tw->sphere.offset, startp);
+					VectorAdd(tw->end, tw->sphere.offset, endp);
+				}
+			}
+			else
+			{
+				// NOTE: this works even though the plane might be flipped because the bbox is centered
+				float offset = DotProduct(tw->offsets[planes->signbits], plane);
+				plane[3] += fabs(offset);
+				VectorCopy(tw->start, startp);
+				VectorCopy(tw->end, endp);
+			}
+
+			if (!CheckFacetPlane(plane, startp, endp, &enterFrac, &leaveFrac, &hit))
+			{
+				break;
+			}
+			if (hit)
+			{
+				hitnum = j;
+				Vector4Copy(plane, bestplane);
+			}
+		}
+		if (j < facet->numBorders)
+		{
+			continue;
+		}
+		//never clip against the back side
+		if (hitnum == facet->numBorders - 1)
+		{
+			continue;
+		}
+
+		if (enterFrac < leaveFrac && enterFrac >= 0)
+		{
+			if (enterFrac < tw->trace.fraction)
+			{
+				if (enterFrac < 0)
+				{
+					enterFrac = 0;
+				}
+				if (!cv)
+				{
+					cv = Cvar_Get("r_debugSurfaceUpdate", "1", 0);
+				}
+				if (cv && cv->integer)
+				{
+					debugPatchCollide = this;
+					debugFacet = facet;
+				}
+
+				tw->trace.fraction = enterFrac;
+				VectorCopy(bestplane, tw->trace.plane.normal);
+				tw->trace.plane.dist = bestplane[3];
+			}
+		}
+	}
+}
+
+//==========================================================================
+//
+//	patchCollide_t::TracePointThrough
+//
+//	special case for point traces because the patch collide "brushes" have no volume
+//
+//==========================================================================
+
+void patchCollide_t::TracePointThrough(traceWork_t* tw) const
+{
+	static QCvar *cv;
+
+	if (!cm_playerCurveClip->integer || !tw->isPoint)
+	{
+		return;
+	}
+
+	// determine the trace's relationship to all planes
+	const patchPlane_t* planes = this->planes;
+	bool frontFacing[MAX_PATCH_PLANES];
+	float intersection[MAX_PATCH_PLANES];
+	for (int i = 0; i < numPlanes; i++, planes++)
+	{
+		float offset = DotProduct(tw->offsets[planes->signbits], planes->plane);
+		float d1 = DotProduct(tw->start, planes->plane) - planes->plane[3] + offset;
+		float d2 = DotProduct(tw->end, planes->plane) - planes->plane[3] + offset;
+		if (d1 <= 0)
+		{
+			frontFacing[i] = false;
+		}
+		else
+		{
+			frontFacing[i] = true;
+		}
+		if (d1 == d2)
+		{
+			intersection[i] = 99999;
+		}
+		else
+		{
+			intersection[i] = d1 / ( d1 - d2 );
+			if (intersection[i] <= 0)
+			{
+				intersection[i] = 99999;
+			}
+		}
+	}
+
+
+	// see if any of the surface planes are intersected
+	const facet_t* facet = facets;
+	for (int i = 0; i < numFacets; i++, facet++)
+	{
+		if (!frontFacing[facet->surfacePlane])
+		{
+			continue;
+		}
+		float intersect = intersection[facet->surfacePlane];
+		if (intersect < 0)
+		{
+			continue;		// surface is behind the starting point
+		}
+		if (intersect > tw->trace.fraction)
+		{
+			continue;		// already hit something closer
+		}
+		int j;
+		for (j = 0; j < facet->numBorders; j++)
+		{
+			int k = facet->borderPlanes[j];
+			if (frontFacing[k] ^ facet->borderInward[j])
+			{
+				if (intersection[k] > intersect)
+				{
+					break;
+				}
+			}
+			else
+			{
+				if (intersection[k] < intersect)
+				{
+					break;
+				}
+			}
+		}
+		if (j == facet->numBorders)
+		{
+			// we hit this facet
+			if (!cv)
+			{
+				cv = Cvar_Get("r_debugSurfaceUpdate", "1", 0);
+			}
+			if (cv->integer)
+			{
+				debugPatchCollide = this;
+				debugFacet = facet;
+			}
+			planes = &this->planes[facet->surfacePlane];
+
+			// calculate intersection with a slight pushoff
+			float offset = DotProduct(tw->offsets[planes->signbits], planes->plane);
+			float d1 = DotProduct(tw->start, planes->plane) - planes->plane[3] + offset;
+			float d2 = DotProduct(tw->end, planes->plane) - planes->plane[3] + offset;
+			tw->trace.fraction = (d1 - SURFACE_CLIP_EPSILON) / (d1 - d2);
+
+			if (tw->trace.fraction < 0)
+			{
+				tw->trace.fraction = 0;
+			}
+
+			VectorCopy(planes->plane,  tw->trace.plane.normal);
+			tw->trace.plane.dist = planes->plane[3];
+		}
+	}
+}
+
+//==========================================================================
+//
+//	patchCollide_t::CheckFacetPlane
+//
+//==========================================================================
+
+int patchCollide_t::CheckFacetPlane(float* plane, vec3_t start, vec3_t end,
+	float* enterFrac, float* leaveFrac, int* hit)
+{
+	*hit = false;
+
+	float d1 = DotProduct(start, plane) - plane[3];
+	float d2 = DotProduct(end, plane) - plane[3];
+
+	// if completely in front of face, no intersection with the entire facet
+	if (d1 > 0 && (d2 >= SURFACE_CLIP_EPSILON || d2 >= d1))
+	{
+		return false;
+	}
+
+	// if it doesn't cross the plane, the plane isn't relevent
+	if (d1 <= 0 && d2 <= 0)
+	{
+		return true;
+	}
+
+	// crosses face
+	if (d1 > d2)
+	{
+		// enter
+		float f = (d1 - SURFACE_CLIP_EPSILON) / (d1 - d2);
+		if (f < 0)
+		{
+			f = 0;
+		}
+		//always favor previous plane hits and thus also the surface plane hit
+		if (f > *enterFrac)
+		{
+			*enterFrac = f;
+			*hit = true;
+		}
+	}
+	else
+	{
+		// leave
+		float f = (d1 + SURFACE_CLIP_EPSILON) / (d1 - d2);
+		if (f > 1)
+		{
+			f = 1;
+		}
+		if (f < *leaveFrac)
+		{
+			*leaveFrac = f;
+		}
+	}
+	return true;
+}
+
+/*
+=======================================================================
+
+POSITION TEST
+
+=======================================================================
+*/
+
+//==========================================================================
+//
+//	patchCollide_t::PositionTest
+//
+//==========================================================================
+
+bool patchCollide_t::PositionTest(traceWork_t* tw) const
+{
+	if (tw->isPoint)
+	{
+		return false;
+	}
+
+	const facet_t* facet = facets;
+	for (int i = 0; i < numFacets; i++, facet++)
+	{
+		const patchPlane_t* planes = &this->planes[facet->surfacePlane];
+		float plane[4];
+		VectorCopy(planes->plane, plane);
+		plane[3] = planes->plane[3];
+		vec3_t startp;
+		if (tw->sphere.use)
+		{
+			// adjust the plane distance apropriately for radius
+			plane[3] += tw->sphere.radius;
+
+			// find the closest point on the capsule to the plane
+			float t = DotProduct(plane, tw->sphere.offset);
+			if (t > 0)
+			{
+				VectorSubtract(tw->start, tw->sphere.offset, startp);
+			}
+			else
+			{
+				VectorAdd(tw->start, tw->sphere.offset, startp);
+			}
+		}
+		else
+		{
+			float offset = DotProduct(tw->offsets[planes->signbits], plane);
+			plane[3] -= offset;
+			VectorCopy(tw->start, startp);
+		}
+
+		if (DotProduct(plane, startp) - plane[3] > 0.0f)
+		{
+			continue;
+		}
+
+		int j;
+		for (j = 0; j < facet->numBorders; j++)
+		{
+			planes = &this->planes[facet->borderPlanes[j]];
+			if (facet->borderInward[j])
+			{
+				VectorNegate(planes->plane, plane);
+				plane[3] = -planes->plane[3];
+			}
+			else
+			{
+				VectorCopy(planes->plane, plane);
+				plane[3] = planes->plane[3];
+			}
+			if (tw->sphere.use)
+			{
+				// adjust the plane distance apropriately for radius
+				plane[3] += tw->sphere.radius;
+
+				// find the closest point on the capsule to the plane
+				float t = DotProduct(plane, tw->sphere.offset);
+				if (t > 0.0f)
+				{
+					VectorSubtract(tw->start, tw->sphere.offset, startp);
+				}
+				else
+				{
+					VectorAdd(tw->start, tw->sphere.offset, startp);
+				}
+			}
+			else
+			{
+				// NOTE: this works even though the plane might be flipped because the bbox is centered
+				float offset = DotProduct(tw->offsets[planes->signbits], plane);
+				plane[3] += fabs(offset);
+				VectorCopy(tw->start, startp);
+			}
+
+			if (DotProduct(plane, startp) - plane[3] > 0.0f)
+			{
+				break;
+			}
+		}
+		if (j < facet->numBorders)
+		{
+			continue;
+		}
+		// inside this patch facet
+		return true;
+	}
+	return false;
 }

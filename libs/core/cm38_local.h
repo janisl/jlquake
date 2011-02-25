@@ -27,8 +27,8 @@
 
 struct mapsurface_t	// used internally due to name len probs //ZOID
 {
-	csurface_t	c;
-	char		rname[32];
+	q2csurface_t	c;
+	char			rname[32];
 };
 
 struct cleaf_t

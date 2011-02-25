@@ -2034,7 +2034,7 @@ void CL_UpdateEffects(void)
 	vec3_t mymin,mymax;
 	float frametime;
 	edict_t test;
-	trace_t	trace;
+	q1trace_t	trace;
 	vec3_t	org,org2,alldir;
 	int x_dir,y_dir;
 	entity_t *ent;

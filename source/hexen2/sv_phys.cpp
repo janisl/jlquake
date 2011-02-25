@@ -209,7 +209,7 @@ If steptrace is not NULL, the trace of any vertical wall hit will be stored
 ============
 */
 #define	MAX_CLIP_PLANES	5
-int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
+int SV_FlyMove (edict_t *ent, float time, q1trace_t *steptrace)
 {
 	int			bumpcount, numbumps;
 	vec3_t		dir;
@@ -219,7 +219,7 @@ int SV_FlyMove (edict_t *ent, float time, trace_t *steptrace)
 	vec3_t		primal_velocity, original_velocity, new_velocity;
 //rjr	vec3_t		before_velocity;
 	int			i, j;
-	trace_t		trace;
+	q1trace_t		trace;
 	vec3_t		end;
 	float		time_left;
 	int			blocked;
@@ -359,7 +359,7 @@ SV_FlyExtras
 
 ============
 */
-void SV_FlyExtras (edict_t *ent, float time, trace_t *steptrace)
+void SV_FlyExtras (edict_t *ent, float time, q1trace_t *steptrace)
 {
 const float hoverinc = 0.4;
 
@@ -424,9 +424,9 @@ SV_PushEntity
 Does not change the entities velocity at all
 ============
 */
-trace_t SV_PushEntity (edict_t *ent, vec3_t push)
+q1trace_t SV_PushEntity (edict_t *ent, vec3_t push)
 {
-	trace_t	trace;
+	q1trace_t	trace;
 	vec3_t	start,end, impact;
 	edict_t *impact_e;
 
@@ -1279,7 +1279,7 @@ SV_WallFriction
 
 ============
 */
-void SV_WallFriction (edict_t *ent, trace_t *trace)
+void SV_WallFriction (edict_t *ent, q1trace_t *trace)
 {
 	vec3_t		forward, right, up;
 	float		d, i;
@@ -1319,7 +1319,7 @@ int SV_TryUnstick (edict_t *ent, vec3_t oldvel)
 	vec3_t	oldorg;
 	vec3_t	dir;
 	int		clip;
-	trace_t	steptrace;
+	q1trace_t	steptrace;
 	
 	VectorCopy (ent->v.origin, oldorg);
 	VectorCopy (vec3_origin, dir);
@@ -1377,7 +1377,7 @@ void SV_WalkMove (edict_t *ent)
 	vec3_t		nosteporg, nostepvel;
 	int			clip;
 	int			oldonground;
-	trace_t		steptrace, downtrace;
+	q1trace_t		steptrace, downtrace;
 	
 //
 // do a regular slide move unless it looks like you ran into a step
@@ -1630,7 +1630,7 @@ Toss, bounce, and fly movement.  When onground, do nothing.
 
 void SV_Physics_Toss (edict_t *ent)
 {
-	trace_t	trace;
+	q1trace_t	trace;
 	vec3_t	move;
 	float	backoff;
 	// regular thinking

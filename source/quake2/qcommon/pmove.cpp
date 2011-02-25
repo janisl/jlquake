@@ -37,7 +37,7 @@ typedef struct
 	float		frametime;
 
 
-	csurface_t	*groundsurface;
+	q2csurface_t	*groundsurface;
 	cplane_t	groundplane;
 	int			groundcontents;
 
@@ -119,7 +119,7 @@ void PM_StepSlideMove_ (void)
 	vec3_t		planes[MAX_CLIP_PLANES];
 	vec3_t		primal_velocity;
 	int			i, j;
-	trace_t	trace;
+	q2trace_t	trace;
 	vec3_t		end;
 	float		time_left;
 	
@@ -272,7 +272,7 @@ void PM_StepSlideMove (void)
 {
 	vec3_t		start_o, start_v;
 	vec3_t		down_o, down_v;
-	trace_t		trace;
+	q2trace_t		trace;
 	float		down_dist, up_dist;
 //	vec3_t		delta;
 	vec3_t		up, down;
@@ -672,7 +672,7 @@ void PM_CatagorizePosition (void)
 {
 	vec3_t		point;
 	int			cont;
-	trace_t		trace;
+	q2trace_t		trace;
 	int			sample1;
 	int			sample2;
 
@@ -833,7 +833,7 @@ void PM_CheckSpecialMovement (void)
 	vec3_t	spot;
 	int		cont;
 	vec3_t	flatforward;
-	trace_t	trace;
+	q2trace_t	trace;
 
 	if (pm->s.pm_time)
 		return;
@@ -889,7 +889,7 @@ void PM_FlyMove (qboolean doclip)
 	vec3_t		wishdir;
 	float		wishspeed;
 	vec3_t		end;
-	trace_t	trace;
+	q2trace_t	trace;
 
 	pm->viewheight = 22;
 
@@ -975,7 +975,7 @@ Sets mins, maxs, and pm->viewheight
 */
 void PM_CheckDuck (void)
 {
-	trace_t	trace;
+	q2trace_t	trace;
 
 	pm->mins[0] = -16;
 	pm->mins[1] = -16;
@@ -1056,7 +1056,7 @@ void PM_DeadMove (void)
 
 qboolean	PM_GoodPosition (void)
 {
-	trace_t	trace;
+	q2trace_t	trace;
 	vec3_t	origin, end;
 	int		i;
 

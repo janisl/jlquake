@@ -36,7 +36,7 @@ typedef struct
 	float		*mins, *maxs;	// size of the moving object
 	vec3_t		mins2, maxs2;	// size when clipping against mosnters
 	float		*start, *end;
-	trace_t		trace;
+	q1trace_t	trace;
 	int			type;
 	edict_t		*passedict;
 } moveclip_t;
@@ -367,7 +367,7 @@ This could be a lot more efficient...
 */
 edict_t	*SV_TestEntityPosition (edict_t *ent)
 {
-	trace_t	trace;
+	q1trace_t	trace;
 
 	trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, ent->v.origin, 0, ent);
 	
@@ -386,15 +386,15 @@ Handles selection or creation of a clipping hull, and offseting (and
 eventually rotation) of the end points
 ==================
 */
-trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
+q1trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end)
 {
-	trace_t		trace;
+	q1trace_t	trace;
 	vec3_t		offset;
 	vec3_t		start_l, end_l;
 	clipHandle_t	hull;
 
 // fill in a default trace
-	Com_Memset(&trace, 0, sizeof(trace_t));
+	Com_Memset(&trace, 0, sizeof(q1trace_t));
 	trace.fraction = 1;
 	trace.allsolid = true;
 	trace.entityNum = -1;
@@ -433,7 +433,7 @@ void SV_ClipToLinks ( areanode_t *node, moveclip_t *clip )
 {
 	link_t		*l, *next;
 	edict_t		*touch;
-	trace_t		trace;
+	q1trace_t	trace;
 
 // touch linked edicts
 	for (l = node->solid_edicts.next ; l != &node->solid_edicts ; l = next)
@@ -538,7 +538,7 @@ boxmaxs[0] = boxmaxs[1] = boxmaxs[2] = 9999;
 SV_Move
 ==================
 */
-trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, edict_t *passedict)
+q1trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, edict_t *passedict)
 {
 	moveclip_t	clip;
 	int			i;

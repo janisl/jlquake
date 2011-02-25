@@ -39,7 +39,7 @@ SV_SetIdealPitch
 void SV_SetIdealPitch (void)
 {
 	float	angleval, sinval, cosval;
-	trace_t	tr;
+	q1trace_t	tr;
 	vec3_t	top, bottom;
 	float	z[MAX_FORWARD];
 	int		i, j;
@@ -121,7 +121,7 @@ void SV_UserFriction (void)
 	float	speed, newspeed, control;
 	vec3_t	start, stop;
 	float	friction;
-	trace_t	trace;
+	q1trace_t	trace;
 	float	save_hull;
 
 	vel = velocity;

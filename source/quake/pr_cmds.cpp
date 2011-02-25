@@ -615,7 +615,7 @@ traceline (vector1, vector2, tryents)
 void PF_traceline (void)
 {
 	float	*v1, *v2;
-	trace_t	trace;
+	q1trace_t	trace;
 	int		nomonsters;
 	edict_t	*ent;
 
@@ -1105,7 +1105,7 @@ void PF_droptofloor (void)
 {
 	edict_t		*ent;
 	vec3_t		end;
-	trace_t		trace;
+	q1trace_t		trace;
 	
 	ent = PROG_TO_EDICT(pr_global_struct->self);
 
@@ -1250,7 +1250,7 @@ void PF_aim (void)
 	edict_t	*ent, *check, *bestent;
 	vec3_t	start, dir, end, bestdir;
 	int		i, j;
-	trace_t	tr;
+	q1trace_t	tr;
 	float	dist, bestdist;
 	float	speed;
 	

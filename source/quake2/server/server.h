@@ -25,8 +25,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../qcommon/qcommon.h"
 #define cvar_t	QCvar
+#define trace_t	q2trace_t
 #include "../../../q2game/game/game.h"
 #undef cvar_t
+#undef trace_t
 
 //=============================================================================
 
@@ -331,7 +333,7 @@ int SV_PointContents (vec3_t p);
 // Quake 2 extends this to also check entities, to allow moving liquids
 
 
-trace_t SV_Trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passedict, int contentmask);
+q2trace_t SV_Trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t *passedict, int contentmask);
 // mins and maxs are relative
 
 // if the entire move stays in a solid volume, trace.allsolid will be set,

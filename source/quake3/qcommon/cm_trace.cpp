@@ -39,44 +39,6 @@ BASIC MATH
 
 /*
 ================
-RotatePoint
-================
-*/
-void RotatePoint(vec3_t point, /*const*/ vec3_t matrix[3]) { // bk: FIXME 
-	vec3_t tvec;
-
-	VectorCopy(point, tvec);
-	point[0] = DotProduct(matrix[0], tvec);
-	point[1] = DotProduct(matrix[1], tvec);
-	point[2] = DotProduct(matrix[2], tvec);
-}
-
-/*
-================
-TransposeMatrix
-================
-*/
-void TransposeMatrix(/*const*/ vec3_t matrix[3], vec3_t transpose[3]) { // bk: FIXME
-	int i, j;
-	for (i = 0; i < 3; i++) {
-		for (j = 0; j < 3; j++) {
-			transpose[i][j] = matrix[j][i];
-		}
-	}
-}
-
-/*
-================
-CreateRotationMatrix
-================
-*/
-void CreateRotationMatrix(const vec3_t angles, vec3_t matrix[3]) {
-	AngleVectors(angles, matrix[0], matrix[1], matrix[2]);
-	VectorInverse(matrix[1]);
-}
-
-/*
-================
 CM_ProjectPointOntoVector
 ================
 */
@@ -131,18 +93,19 @@ float CM_VectorDistanceSquared(vec3_t p1, vec3_t p2) {
 SquareRootFloat
 ================
 */
-float SquareRootFloat(float number) {
+float SquareRootFloat(float number)
+{
 	long i;
-	float x, y;
-	const float f = 1.5F;
+	float x2, y;
+	const float threehalfs = 1.5F;
 
-	x = number * 0.5F;
+	x2 = number * 0.5F;
 	y  = number;
-	i  = * ( long * ) &y;
-	i  = 0x5f3759df - ( i >> 1 );
-	y  = * ( float * ) &i;
-	y  = y * ( f - ( x * y * y ) );
-	y  = y * ( f - ( x * y * y ) );
+	i  = *(long*)&y;
+	i  = 0x5f3759df - (i >> 1);
+	y  = *(float*)&i;
+	y  = y * (threehalfs - (x2 * y * y));
+	y  = y * (threehalfs - (x2 * y * y));
 	return number * y;
 }
 
@@ -282,7 +245,8 @@ void CM_TestInLeaf( traceWork_t *tw, cLeaf_t *leaf ) {
 				continue;
 			}
 			
-			if ( CM_PositionTestInPatchCollide( tw, patch->pc ) ) {
+			if (patch->pc->PositionTest(tw))
+			{
 				tw->trace.startsolid = tw->trace.allsolid = true;
 				tw->trace.fraction = 0;
 				tw->trace.contents = patch->contents;
@@ -463,7 +427,7 @@ void CM_TraceThroughPatch( traceWork_t *tw, cPatch_t *patch ) {
 
 	oldFrac = tw->trace.fraction;
 
-	CM_TraceThroughPatchCollide( tw, patch->pc );
+	patch->pc->TraceThrough(tw);
 
 	if ( tw->trace.fraction < oldFrac ) {
 		tw->trace.surfaceFlags = patch->surfaceFlags;
@@ -1138,7 +1102,7 @@ void CM_TraceThroughTree( traceWork_t *tw, int num, float p1f, float p2f, vec3_t
 CM_Trace
 ==================
 */
-void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
+void CM_Trace( q3trace_t *results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
 						  clipHandle_t model, const vec3_t origin, int brushmask, int capsule, sphere_t *sphere ) {
 	int			i;
 	traceWork_t	tw;
@@ -1356,7 +1320,7 @@ void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mi
 CM_BoxTrace
 ==================
 */
-void CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
+void CM_BoxTrace( q3trace_t *results, const vec3_t start, const vec3_t end,
 						  vec3_t mins, vec3_t maxs,
 						  clipHandle_t model, int brushmask, int capsule ) {
 	CM_Trace( results, start, end, mins, maxs, model, vec3_origin, brushmask, capsule, NULL );
@@ -1370,11 +1334,11 @@ Handles offseting and rotation of the end points for moving and
 rotating entities
 ==================
 */
-void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
+void CM_TransformedBoxTrace( q3trace_t *results, const vec3_t start, const vec3_t end,
 						  vec3_t mins, vec3_t maxs,
 						  clipHandle_t model, int brushmask,
 						  const vec3_t origin, const vec3_t angles, int capsule ) {
-	trace_t		trace;
+	q3trace_t		trace;
 	vec3_t		start_l, end_l;
 	qboolean	rotated;
 	vec3_t		offset;
@@ -1431,7 +1395,7 @@ void CM_TransformedBoxTrace( trace_t *results, const vec3_t start, const vec3_t 
 		//		 the bounding box or the bmodel because that would make all the brush
 		//		 bevels invalid.
 		//		 However this is correct for capsules since a capsule itself is rotated too.
-		CreateRotationMatrix(angles, matrix);
+		AnglesToAxis(angles, matrix);
 		RotatePoint(start_l, matrix);
 		RotatePoint(end_l, matrix);
 		// rotated sphere offset for capsule

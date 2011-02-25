@@ -95,7 +95,7 @@ int PM_FlyMove (void)
 	vec3_t		planes[MAX_CLIP_PLANES];
 	vec3_t		primal_velocity, original_velocity;
 	int			i, j;
-	trace_t		trace;
+	q1trace_t		trace;
 	vec3_t		end;
 	float		time_left;
 	int			blocked;
@@ -216,7 +216,7 @@ Player is on ground, with no upwards velocity
 void PM_GroundMove (void)
 {
 	vec3_t	start, dest;
-	trace_t	trace;
+	q1trace_t	trace;
 	vec3_t	original, originalvel, down, up, downvel;
 	float	downdist, updist;
 
@@ -415,7 +415,7 @@ void PM_WaterMove (void)
 	float	wishspeed;
 	vec3_t	wishdir;
 	vec3_t	start, dest;
-	trace_t	trace;
+	q1trace_t	trace;
 	float fmove, smove, clamp;
 
 //
@@ -700,7 +700,7 @@ void PM_CatagorizePosition (void)
 {
 	vec3_t		point;
 	int			cont;
-	trace_t		tr;
+	q1trace_t		tr;
 
 // if the player hull point one unit down is solid, the player
 // is on ground
