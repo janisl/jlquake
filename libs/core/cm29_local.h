@@ -20,11 +20,18 @@
 #ifndef _CM29_LOCAL_H
 #define _CM29_LOCAL_H
 
+#include "cm_local.h"
+#include "bsp29file.h"
+
 #define MAX_MAP_HULLS		8
 
 #define	MAX_MAP_MODELS		256
 
 #define MAX_CMOD_KNOWN		2048
+
+#define HULL_NUMBER_MASK	(MAX_MAP_HULLS - 1)
+#define MODEL_NUMBER_MASK	(~HULL_NUMBER_MASK)
+#define BOX_HULL_HANDLE		((MAX_MAP_MODELS + MAX_CMOD_KNOWN) * MAX_MAP_HULLS)
 
 enum cmodtype_t
 {
@@ -153,27 +160,60 @@ public:
 	void Load(const char* name);
 };
 
-class QClipMap29
+class QClipMap29 : public QClipMap
 {
 private:
 	void InitBoxHull();
+	int ContentsToQ2(int Contents) const;
+	int ContentsToQ3(int Contents) const;
+
+	byte* DecompressVis(byte* in);
 
 public:
-	QClipModelMap29	Map;
+	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
+
+	QClipModelMap29		Map;
 
 	QClipModelNonMap29*	known[MAX_CMOD_KNOWN];
-	int				numknown;
+	int					numknown;
 
-	chull_t			box_hull;
+	cmodel_t			box_model;
 	bsp29_dclipnode_t	box_clipnodes[6];
-	cplane_t		box_planes[6];
+	cplane_t			box_planes[6];
 
-	QClipMap29()
-	: numknown(0)
-	{}
+	QClipMap29();
 	~QClipMap29();
 
+	clipHandle_t InlineModel(int Index) const;
+	int GetNumClusters() const;
+	int GetNumInlineModels() const;
+	const char* GetEntityString() const;
+	void MapChecksums(int& CheckSum1, int& CheckSum2) const;
+	int LeafCluster(int LeafNum) const;
+	int LeafArea(int LeafNum) const;
+	const byte* LeafAmbientSoundLevel(int LeafNum) const;
+	void ModelBounds(clipHandle_t Model, vec3_t Mins, vec3_t Maxs);
+	int GetNumTextures() const;
+	const char* GetTextureName(int Index) const;
+	clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule);
+	clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
+	int PointLeafnum(const vec3_t P) const;
+	int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List, int ListSize, int* TopNode, int* LastLeaf) const;
+	int PointContentsQ1(const vec3_t P, clipHandle_t Model);
+	int PointContentsQ2(const vec3_t p, clipHandle_t Model);
+	int PointContentsQ3(const vec3_t P, clipHandle_t Model);
+	int TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
+	int TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
+	int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
+	byte* ClusterPVS(int Cluster);
+	byte* ClusterPHS(int Cluster);
+
 	void LoadModel(const char* name);
+	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
+	chull_t* ClipHandleToHull(clipHandle_t Handle);
+	void BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const;
+	int HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t P) const;
+	void CalcPHS();
 };
 
 #endif

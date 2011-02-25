@@ -37,8 +37,6 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static byte			mod_novis[BSP29_MAX_MAP_LEAFS/8];
-
 static QClipMap29*	CMap;
 
 // CODE --------------------------------------------------------------------
@@ -51,108 +49,6 @@ static QClipMap29*	CMap;
 
 void CM_Init()
 {
-	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
-}
-
-//==========================================================================
-//
-//	CM_PointLeafnum
-//
-//==========================================================================
-
-int CM_PointLeafnum(const vec3_t p)
-{
-	if (!CMap)
-	{
-		return 0;		// sound may call this without map loaded
-	}
-
-	cnode_t* node = CMap->Map.map_models[0].nodes;
-	while (1)
-	{
-		if (node->contents < 0)
-		{
-			return (cleaf_t*)node - CMap->Map.map_models[0].leafs;
-		}
-		cplane_t* plane = node->plane;
-		float d = DotProduct(p, plane->normal) - plane->dist;
-		if (d > 0)
-		{
-			node = node->children[0];
-		}
-		else
-		{
-			node = node->children[1];
-		}
-	}
-
-	return 0;	// never reached
-}
-
-//==========================================================================
-//
-//	CM_DecompressVis
-//
-//==========================================================================
-
-static byte* CM_DecompressVis(byte* in, cmodel_t* model)
-{
-	static byte		decompressed[BSP29_MAX_MAP_LEAFS/8];
-
-	if (!in)
-	{
-		// no vis info
-		return mod_novis;
-	}
-
-	int row = (model->numleafs + 7) >> 3;
-	byte* out = decompressed;
-
-	do
-	{
-		if (*in)
-		{
-			*out++ = *in++;
-			continue;
-		}
-
-		int c = in[1];
-		in += 2;
-		while (c)
-		{
-			*out++ = 0;
-			c--;
-		}
-	} while (out - decompressed < row);
-
-	return decompressed;
-}
-
-//==========================================================================
-//
-//	CM_ClusterPVS
-//
-//==========================================================================
-
-byte* CM_ClusterPVS(int Cluster)
-{
-	if (Cluster < 0)
-	{
-		return mod_novis;
-	}
-	return CM_DecompressVis(CMap->Map.map_models[0].leafs[Cluster + 1].compressed_vis,
-		&CMap->Map.map_models[0]);
-}
-
-//==========================================================================
-//
-//	CM_ClusterPHS
-//
-//==========================================================================
-
-byte* CM_ClusterPHS(int Cluster)
-{
-	return CMap->Map.map_models[0].phs + (Cluster + 1) * 4 * ((CM_NumClusters() + 31) >> 5);
 }
 
 //==========================================================================
@@ -161,11 +57,11 @@ byte* CM_ClusterPHS(int Cluster)
 //
 //==========================================================================
 
-cmodel_t* CM_LoadMap(const char* name, bool clientload, int* checksum)
+clipHandle_t CM_LoadMap(const char* name, bool clientload, int* checksum)
 {
 	if (!name[0])
 	{
-		Sys_Error("CM_ForName: NULL name");
+		throw QException("CM_ForName: NULL name");
 	}
 
 	if (CMap)
@@ -173,36 +69,17 @@ cmodel_t* CM_LoadMap(const char* name, bool clientload, int* checksum)
 		if (!QStr::Cmp(CMap->Map.map_models[0].name, name))
 		{
 			//	Already got it.
-			return &CMap->Map.map_models[0];
+			return 0;
 		}
 
 		delete CMap;
 	}
 
 	CMap = new QClipMap29;
+	CMapShared = CMap;
 	CMap->LoadModel(name);
 
-	return &CMap->Map.map_models[0];
-}
-
-//==========================================================================
-//
-//	CM_InlineModel
-//
-//==========================================================================
-
-cmodel_t* CM_InlineModel(const char* name)
-{
-	if (name[0] != '*')
-	{
-		throw QDropException("Submodel name mus start with *");
-	}
-	int i = QStr::Atoi(name + 1);
-	if (i < 1 || i > CMap->Map.map_models[0].numsubmodels)
-	{
-		throw QDropException("Bad submodel index");
-	}
-	return &CMap->Map.map_models[i];
+	return 0;
 }
 
 //==========================================================================
@@ -211,7 +88,7 @@ cmodel_t* CM_InlineModel(const char* name)
 //
 //==========================================================================
 
-cmodel_t* CM_PrecacheModel(const char* name)
+clipHandle_t CM_PrecacheModel(const char* name)
 {
 	if (!name[0])
 	{
@@ -225,7 +102,7 @@ cmodel_t* CM_PrecacheModel(const char* name)
 	{
 		if (!QStr::Cmp(CMap->known[i]->model.name, name))
 		{
-			return &CMap->known[i]->model;
+			return (MAX_MAP_MODELS + i) * MAX_MAP_HULLS;
 		}
 	}
 
@@ -239,175 +116,7 @@ cmodel_t* CM_PrecacheModel(const char* name)
 
 	LoadCMap->Load(name);
 
-	return &LoadCMap->model;
-}
-
-//==========================================================================
-//
-//	CM_MapChecksums
-//
-//==========================================================================
-
-void CM_MapChecksums(int& checksum, int& checksum2)
-{
-	checksum = CMap->Map.map_models[0].checksum;
-	checksum2 = CMap->Map.map_models[0].checksum2;
-}
-
-//==========================================================================
-//
-//	CM_ModelBounds
-//
-//==========================================================================
-
-void CM_ModelBounds(cmodel_t* model, vec3_t mins, vec3_t maxs)
-{
-	VectorCopy(model->mins, mins);
-	VectorCopy(model->maxs, maxs);
-}
-
-//==========================================================================
-//
-//	CM_NumClusters
-//
-//==========================================================================
-
-int CM_NumClusters()
-{
-	return CMap->Map.map_models[0].numleafs;
-}
-
-//==========================================================================
-//
-//	CM_NumInlineModels
-//
-//==========================================================================
-
-int CM_NumInlineModels()
-{
-	return CMap->Map.map_models[0].numsubmodels;
-}
-
-//==========================================================================
-//
-//	CM_EntityString
-//
-//==========================================================================
-
-const char* CM_EntityString()
-{
-	return CMap->Map.map_models[0].entities;
-}
-
-//==========================================================================
-//
-//	CM_LeafCluster
-//
-//==========================================================================
-
-int CM_LeafCluster(int LeafNum)
-{
-	//	-1 is because pvs rows are 1 based, not 0 based like leafs
-	return LeafNum - 1;
-}
-
-//==========================================================================
-//
-//	CM_LeafAmbientSoundLevel
-//
-//==========================================================================
-
-byte* CM_LeafAmbientSoundLevel(int LeafNum)
-{
-	if (!CMap)
-	{
-		return NULL;		// sound may call this without map loaded
-	}
-	return CMap->Map.map_models[0].leafs[LeafNum].ambient_sound_level;
-}
-
-//==========================================================================
-//
-//	CM_HullPointContents
-//
-//==========================================================================
-
-int CM_HullPointContents(chull_t* hull, int num, vec3_t p)
-{
-	while (num >= 0)
-	{
-		if (num < hull->firstclipnode || num > hull->lastclipnode)
-		{
-			throw QException("SV_HullPointContents: bad node number");
-		}
-	
-		bsp29_dclipnode_t* node = hull->clipnodes + num;
-		cplane_t* plane = hull->planes + node->planenum;
-
-		float d;
-		if (plane->type < 3)
-		{
-			d = p[plane->type] - plane->dist;
-		}
-		else
-		{
-			d = DotProduct(plane->normal, p) - plane->dist;
-		}
-		if (d < 0)
-		{
-			num = node->children[1];
-		}
-		else
-		{
-			num = node->children[0];
-		}
-	}
-
-	return num;
-}
-
-//==========================================================================
-//
-//	CM_HullPointContents
-//
-//==========================================================================
-
-int CM_HullPointContents(chull_t* hull, vec3_t p)
-{
-	return CM_HullPointContents(hull, hull->firstclipnode, p);
-}
-
-//==========================================================================
-//
-//	CM_PointContents
-//
-//==========================================================================
-
-int CM_PointContents(vec3_t p, int HullNum)
-{
-	chull_t* hull = &CMap->Map.map_models[0].hulls[HullNum];
-	return CM_HullPointContents(hull, hull->firstclipnode, p);
-}
-
-//==========================================================================
-//
-//	CM_HullForBox
-//
-//	To keep everything totally uniform, bounding boxes are turned into small
-// BSP trees instead of being compared directly.
-//
-//==========================================================================
-
-chull_t* CM_HullForBox(vec3_t mins, vec3_t maxs)
-{
-	CMap->box_planes[0].dist = maxs[0];
-	CMap->box_planes[1].dist = mins[0];
-	CMap->box_planes[2].dist = maxs[1];
-	CMap->box_planes[3].dist = mins[1];
-	CMap->box_planes[4].dist = maxs[2];
-	CMap->box_planes[5].dist = mins[2];
-
-	return &CMap->box_hull;
+	return (MAX_MAP_MODELS + CMap->numknown - 1) * MAX_MAP_HULLS;
 }
 
 //==========================================================================
@@ -419,7 +128,7 @@ chull_t* CM_HullForBox(vec3_t mins, vec3_t maxs)
 // 1/32 epsilon to keep floating point happy
 #define	DIST_EPSILON	(0.03125)
 
-bool CM_RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
+static bool CM_RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
 	vec3_t p1, vec3_t p2, trace_t* trace)
 {
 	// check for empty
@@ -518,7 +227,7 @@ bool CM_RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
 	}
 #endif
 
-	if (CM_HullPointContents(hull, node->children[side ^ 1], mid) != BSP29CONTENTS_SOLID)
+	if (CMap->HullPointContents(hull, node->children[side ^ 1], mid) != BSP29CONTENTS_SOLID)
 	{
 		// go past the node
 		return CM_RecursiveHullCheck (hull, node->children[side^1], midf, p2f, mid, p2, trace);
@@ -543,7 +252,7 @@ bool CM_RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
 		trace->plane.dist = -plane->dist;
 	}
 
-	while (CM_HullPointContents (hull, hull->firstclipnode, mid) == BSP29CONTENTS_SOLID)
+	while (CMap->HullPointContents(hull, hull->firstclipnode, mid) == BSP29CONTENTS_SOLID)
 	{
 		// shouldn't really happen, but does occasionally
 		frac -= 0.1;
@@ -573,8 +282,9 @@ bool CM_RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
 //
 //==========================================================================
 
-bool CM_HullCheck(chull_t* hull, vec3_t p1, vec3_t p2, trace_t* trace)
+bool CM_HullCheck(clipHandle_t Handle, vec3_t p1, vec3_t p2, trace_t* trace)
 {
+	chull_t* hull = CMap->ClipHandleToHull(Handle);
 	return CM_RecursiveHullCheck(hull, hull->firstclipnode, 0, 1, p1, p2, trace);
 }
 
@@ -591,87 +301,6 @@ int CM_TraceLine(vec3_t start, vec3_t end, trace_t* trace)
 
 //==========================================================================
 //
-//	CM_ModelHull
-//
-//==========================================================================
-
-chull_t* CM_ModelHull(cmodel_t* model, int HullNum, vec3_t clip_mins, vec3_t clip_maxs)
-{
-	if (!model || model->type != mod_brush)
-	{
-		throw QException("Non bsp model");
-	}
-	VectorCopy(model->hulls[HullNum].clip_mins, clip_mins);
-	VectorCopy(model->hulls[HullNum].clip_maxs, clip_maxs);
-	return &model->hulls[HullNum];
-}
-
-//==========================================================================
-//
-//	CM_BoxLeafnums_r
-//
-//==========================================================================
-
-static int leaf_count;
-static int* leaf_list;
-static int leaf_maxcount;
-
-static void CM_BoxLeafnums_r(vec3_t mins, vec3_t maxs, cnode_t *node)
-{
-	if (node->contents == BSP29CONTENTS_SOLID)
-	{
-		return;
-	}
-
-	if (node->contents < 0)
-	{
-		if (leaf_count == leaf_maxcount)
-		{
-			return;
-		}
-
-		cleaf_t* leaf = (cleaf_t*)node;
-		int leafnum = leaf - CMap->Map.map_models[0].leafs;
-
-		leaf_list[leaf_count] = leafnum;
-		leaf_count++;
-		return;
-	}
-
-	// NODE_MIXED
-
-	cplane_t* splitplane = node->plane;
-	int sides = BOX_ON_PLANE_SIDE(mins, maxs, splitplane);
-
-	// recurse down the contacted sides
-	if (sides & 1)
-	{
-		CM_BoxLeafnums_r(mins, maxs, node->children[0]);
-	}
-
-	if (sides & 2)
-	{
-		CM_BoxLeafnums_r(mins, maxs, node->children[1]);
-	}
-}
-
-//==========================================================================
-//
-//	CM_BoxLeafnums
-//
-//==========================================================================
-
-int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int maxcount)
-{
-	leaf_count = 0;
-	leaf_list = list;
-	leaf_maxcount = maxcount;
-	CM_BoxLeafnums_r(mins, maxs, CMap->Map.map_models[0].nodes);
-	return leaf_count;
-}
-
-//==========================================================================
-//
 //	CM_CalcPHS
 //
 //	Calculates the PHS (Potentially Hearable Set)
@@ -680,71 +309,5 @@ int CM_BoxLeafnums(vec3_t mins, vec3_t maxs, int* list, int maxcount)
 
 void CM_CalcPHS()
 {
-	int		rowbytes, rowwords;
-	int		i, j, k, l, index, num;
-	int		bitbyte;
-	unsigned	*dest, *src;
-	byte	*scan;
-	int		count, vcount;
-
-	Con_Printf ("Building PHS...\n");
-
-	num = CMap->Map.map_models[0].numleafs;
-	rowwords = (num+31)>>5;
-	rowbytes = rowwords*4;
-
-	byte* pvs = (byte*)Hunk_Alloc (rowbytes*num);
-	scan = pvs;
-	vcount = 0;
-	for (i=0 ; i<num ; i++, scan+=rowbytes)
-	{
-		Com_Memcpy(scan, CM_ClusterPVS(CM_LeafCluster(i)), rowbytes);
-		if (i == 0)
-			continue;
-		for (j=0 ; j<num ; j++)
-		{
-			if ( scan[j>>3] & (1<<(j&7)) )
-			{
-				vcount++;
-			}
-		}
-	}
-
-
-	CMap->Map.map_models[0].phs = (byte*)Hunk_Alloc (rowbytes*num);
-	count = 0;
-	scan = pvs;
-	dest = (unsigned *)CMap->Map.map_models[0].phs;
-	for (i=0 ; i<num ; i++, dest += rowwords, scan += rowbytes)
-	{
-		Com_Memcpy(dest, scan, rowbytes);
-		for (j=0 ; j<rowbytes ; j++)
-		{
-			bitbyte = scan[j];
-			if (!bitbyte)
-				continue;
-			for (k=0 ; k<8 ; k++)
-			{
-				if (! (bitbyte & (1<<k)) )
-					continue;
-				// or this pvs row into the phs
-				// +1 because pvs is 1 based
-				index = ((j<<3)+k+1);
-				if (index >= num)
-					continue;
-				src = (unsigned *)pvs + index*rowwords;
-				for (l=0 ; l<rowwords ; l++)
-					dest[l] |= src[l];
-			}
-		}
-
-		if (i == 0)
-			continue;
-		for (j=0 ; j<num ; j++)
-			if ( ((byte *)dest)[j>>3] & (1<<(j&7)) )
-				count++;
-	}
-
-	Con_Printf ("Average leafs visible / hearable / total: %i / %i / %i\n"
-		, vcount/num, count/num, num);
+	CMap->CalcPHS();
 }

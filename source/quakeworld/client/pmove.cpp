@@ -614,19 +614,19 @@ void PM_CatagorizePosition (void)
 	watertype = BSP29CONTENTS_EMPTY;
 
 	point[2] = pmove.origin[2] + player_mins[2] + 1;	
-	cont = CM_PointContents (point);
+	cont = CM_PointContentsQ1(point, 0);
 
 	if (cont <= BSP29CONTENTS_WATER)
 	{
 		watertype = cont;
 		waterlevel = 1;
 		point[2] = pmove.origin[2] + (player_mins[2] + player_maxs[2])*0.5;
-		cont = CM_PointContents (point);
+		cont = CM_PointContentsQ1(point, 0);
 		if (cont <= BSP29CONTENTS_WATER)
 		{
 			waterlevel = 2;
 			point[2] = pmove.origin[2] + 22;
-			cont = CM_PointContents (point);
+			cont = CM_PointContentsQ1(point, 0);
 			if (cont <= BSP29CONTENTS_WATER)
 				waterlevel = 3;
 		}
@@ -706,11 +706,11 @@ void CheckWaterJump (void)
 
 	VectorMA (pmove.origin, 24, flatforward, spot);
 	spot[2] += 8;
-	cont = CM_PointContents (spot);
+	cont = CM_PointContentsQ1(spot, 0);
 	if (cont != BSP29CONTENTS_SOLID)
 		return;
 	spot[2] += 24;
-	cont = CM_PointContents (spot);
+	cont = CM_PointContentsQ1(spot, 0);
 	if (cont != BSP29CONTENTS_EMPTY)
 		return;
 	// jump out of water

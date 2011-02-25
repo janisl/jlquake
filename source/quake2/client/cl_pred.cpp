@@ -74,11 +74,10 @@ void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
 {
 	int			i, x, zd, zu;
 	trace_t		trace;
-	int			headnode;
 	float		*angles;
 	entity_state_t	*ent;
 	int			num;
-	cmodel_t		*cmodel;
+	clipHandle_t	cmodel;
 	vec3_t		bmins, bmaxs;
 
 	for (i=0 ; i<cl.frame.num_entities ; i++)
@@ -97,7 +96,6 @@ void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
 			cmodel = cl.model_clip[ent->modelindex];
 			if (!cmodel)
 				continue;
-			headnode = cmodel->headnode;
 			angles = ent->angles;
 		}
 		else
@@ -111,7 +109,7 @@ void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
 			bmins[2] = -zd;
 			bmaxs[2] = zu;
 
-			headnode = CM_HeadnodeForBox (bmins, bmaxs);
+			cmodel = CM_TempBoxModel(bmins, bmaxs);
 			angles = vec3_origin;	// boxes don't rotate
 		}
 
@@ -119,7 +117,7 @@ void CL_ClipMoveToEntities ( vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end,
 			return;
 
 		trace = CM_TransformedBoxTrace (start, end,
-			mins, maxs, headnode,  MASK_PLAYERSOLID,
+			mins, maxs, cmodel,  MASK_PLAYERSOLID,
 			ent->origin, angles);
 
 		if (trace.allsolid || trace.startsolid ||
@@ -165,10 +163,10 @@ int		CL_PMpointcontents (vec3_t point)
 	int			i;
 	entity_state_t	*ent;
 	int			num;
-	cmodel_t		*cmodel;
+	clipHandle_t	cmodel;
 	int			contents;
 
-	contents = CM_PointContents (point, 0);
+	contents = CM_PointContentsQ2(point, 0);
 
 	for (i=0 ; i<cl.frame.num_entities ; i++)
 	{
@@ -182,7 +180,7 @@ int		CL_PMpointcontents (vec3_t point)
 		if (!cmodel)
 			continue;
 
-		contents |= CM_TransformedPointContents (point, cmodel->headnode, ent->origin, ent->angles);
+		contents |= CM_TransformedPointContentsQ2(point, cmodel, ent->origin, ent->angles);
 	}
 
 	return contents;

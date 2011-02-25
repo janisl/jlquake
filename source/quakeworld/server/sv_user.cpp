@@ -1280,7 +1280,7 @@ void AddLinksToPmove ( areanode_t *node )
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			else
 			{
-				pe->model = NULL;
+				pe->model = -1;
 				VectorCopy (check->v.mins, pe->mins);
 				VectorCopy (check->v.maxs, pe->maxs);
 			}
@@ -1342,7 +1342,7 @@ void AddAllEntsToPmove (void)
 				pe->model = sv.models[(int)(check->v.modelindex)];
 			else
 			{
-				pe->model = NULL;
+				pe->model = -1;
 				VectorCopy (check->v.mins, pe->mins);
 				VectorCopy (check->v.maxs, pe->maxs);
 			}

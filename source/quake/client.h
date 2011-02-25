@@ -211,7 +211,7 @@ typedef struct
 
 // refresh related state
 	struct model_s	*worldmodel;	// cl_entitites[0].model
-	struct cmodel_t	*worldcmodel;
+	clipHandle_t	worldcmodel;
 	struct efrag_s	*free_efrags;
 	int			num_entities;	// held in cl_entities array
 	int			num_statics;	// held in cl_staticentities array

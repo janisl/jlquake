@@ -20,7 +20,6 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include "bsp38file.h"
 #include "cm38_public.h"
 #include "cm38_local.h"
 
@@ -39,8 +38,6 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-mapsurface_t	QClipMap38::nullsurface;
 
 // CODE --------------------------------------------------------------------
 
@@ -492,133 +489,4 @@ void QClipMap38::LoadSubmodels(const quint8* base, const bsp38_lump_t *l)
 		}
 		out->headnode = LittleLong(in->headnode);
 	}
-}
-
-//==========================================================================
-//
-//	QClipMap38::InitBoxHull
-//
-//	Set up the planes and nodes so that the six floats of a bounding box
-// can just be stored out and get a proper clipping hull structure.
-//
-//==========================================================================
-
-void QClipMap38::InitBoxHull()
-{
-	box_headnode = numnodes;
-	box_planes = &planes[numplanes];
-
-	box_brush = &brushes[numbrushes];
-	box_brush->numsides = 6;
-	box_brush->firstbrushside = numbrushsides;
-	box_brush->contents = BSP38CONTENTS_MONSTER;
-
-	box_leaf = &leafs[numleafs];
-	box_leaf->contents = BSP38CONTENTS_MONSTER;
-	box_leaf->firstleafbrush = numleafbrushes;
-	box_leaf->numleafbrushes = 1;
-
-	leafbrushes[numleafbrushes] = numbrushes;
-
-	for (int i = 0; i < 6; i++)
-	{
-		int side = i & 1;
-
-		// brush sides
-		cbrushside_t* s = &brushsides[numbrushsides + i];
-		s->plane = 	planes + (numplanes + i * 2 + side);
-		s->surface = &nullsurface;
-
-		// nodes
-		cnode_t* c = &nodes[box_headnode + i];
-		c->plane = planes + (numplanes + i * 2);
-		c->children[side] = -1 - emptyleaf;
-		if (i != 5)
-		{
-			c->children[side ^ 1] = box_headnode + i + 1;
-		}
-		else
-		{
-			c->children[side ^ 1] = -1 - numleafs;
-		}
-
-		// planes
-		cplane_t* p = &box_planes[i * 2];
-		p->type = i >> 1;
-		p->signbits = 0;
-		VectorClear(p->normal);
-		p->normal[i >> 1] = 1;
-
-		p = &box_planes[i * 2 + 1];
-		p->type = 3 + (i >> 1);
-		p->signbits = 0;
-		VectorClear(p->normal);
-		p->normal[i >> 1] = -1;
-	}	
-}
-
-//==========================================================================
-//
-//	QClipMap38::FloodArea
-//
-//==========================================================================
-
-void QClipMap38::FloodArea(carea_t* area, int floodnum)
-{
-	if (area->floodvalid == floodvalid)
-	{
-		if (area->floodnum == floodnum)
-		{
-			return;
-		}
-		throw QDropException("QClipMap38.FloodArea: reflooded");
-	}
-
-	area->floodnum = floodnum;
-	area->floodvalid = floodvalid;
-	bsp38_dareaportal_t* p = &areaportals[area->firstareaportal];
-	for (int i = 0; i < area->numareaportals; i++, p++)
-	{
-		if (portalopen[p->portalnum])
-		{
-			FloodArea(&areas[p->otherarea], floodnum);
-		}
-	}
-}
-
-//==========================================================================
-//
-//	QClipMap38::FloodAreaConnections
-//
-//==========================================================================
-
-void QClipMap38::FloodAreaConnections()
-{
-	// all current floods are now invalid
-	floodvalid++;
-	int floodnum = 0;
-
-	// area 0 is not used
-	for (int i = 1; i < numareas; i++)
-	{
-		carea_t* area = &areas[i];
-		if (area->floodvalid == floodvalid)
-		{
-			continue;		// already flooded into
-		}
-		floodnum++;
-		FloodArea(area, floodnum);
-	}
-}
-
-//==========================================================================
-//
-//	QClipMap38::ClearPortalOpen
-//
-//==========================================================================
-
-void QClipMap38::ClearPortalOpen()
-{
-	Com_Memset(portalopen, 0, sizeof(portalopen));
-	FloodAreaConnections();
 }

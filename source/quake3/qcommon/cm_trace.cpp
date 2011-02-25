@@ -395,7 +395,7 @@ void CM_TestBoundingBoxInCapsule( traceWork_t *tw, clipHandle_t model ) {
 	// replace the capsule with the bounding box
 	h = CM_TempBoxModel(tw->size[0], tw->size[1], false);
 	// calculate collision
-	cmod = CM_ClipHandleToModel( h );
+	cmod = CMap->ClipHandleToModel( h );
 	CM_TestInLeaf( tw, &cmod->leaf );
 }
 
@@ -422,13 +422,12 @@ void CM_PositionTest( traceWork_t *tw ) {
 	ll.count = 0;
 	ll.maxcount = MAX_POSITION_LEAFS;
 	ll.list = leafs;
-	ll.storeLeafs = CM_StoreLeafs;
+	ll.topnode = -1;
 	ll.lastLeaf = 0;
-	ll.overflowed = false;
 
 	CMap->checkcount++;
 
-	CM_BoxLeafnums_r( &ll, 0 );
+	CMap->BoxLeafnums_r( &ll, 0 );
 
 
 	CMap->checkcount++;
@@ -999,7 +998,7 @@ void CM_TraceBoundingBoxThroughCapsule( traceWork_t *tw, clipHandle_t model ) {
 	// replace the capsule with the bounding box
 	h = CM_TempBoxModel(tw->size[0], tw->size[1], false);
 	// calculate collision
-	cmod = CM_ClipHandleToModel( h );
+	cmod = CMap->ClipHandleToModel( h );
 	CM_TraceThroughLeaf( tw, &cmod->leaf );
 }
 
@@ -1146,7 +1145,7 @@ void CM_Trace( trace_t *results, const vec3_t start, const vec3_t end, vec3_t mi
 	vec3_t		offset;
 	cmodel_t	*cmod;
 
-	cmod = CM_ClipHandleToModel( model );
+	cmod = CMap->ClipHandleToModel( model );
 
 	CMap->checkcount++;		// for multi-check avoidance
 

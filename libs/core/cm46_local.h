@@ -20,6 +20,9 @@
 #ifndef _CM46_LOCAL_H
 #define _CM46_LOCAL_H
 
+#include "cm_local.h"
+#include "bsp46file.h"
+
 #define MAX_FACETS			1024
 #define MAX_PATCH_PLANES	2048
 #define PLANE_TRI_EPSILON	0.1
@@ -32,6 +35,9 @@
 #define MAX_MAP_BOUNDS			65535
 
 #define	MAX_SUBMODELS			256
+
+#define	BOX_MODEL_HANDLE		255
+#define CAPSULE_MODEL_HANDLE	254
 
 struct cLeaf_t
 {
@@ -154,9 +160,29 @@ struct cmodel_t
 	cLeaf_t		leaf;			// submodels don't reference the main tree
 };
 
-class QClipMap46
+class QClipMap46 : public QClipMap
 {
 private:
+	//	Main
+	void InitBoxHull();
+	int ContentsToQ1(int Contents) const;
+	int ContentsToQ2(int Contents) const;
+
+	//	Load
+	void LoadShaders(const quint8* base, const bsp46_lump_t* l);
+	void LoadLeafs(const quint8* base, const bsp46_lump_t* l);
+	void LoadLeafBrushes(const quint8* base, const bsp46_lump_t* l);
+	void LoadLeafSurfaces(const quint8* base, const bsp46_lump_t* l);
+	void LoadPlanes(const quint8* base, const bsp46_lump_t* l);
+	void LoadBrushSides(const quint8* base, const bsp46_lump_t* l);
+	void LoadBrushes(const quint8* base, const bsp46_lump_t* l);
+	void LoadNodes(const quint8* base, const bsp46_lump_t* l);
+	void LoadVisibility(const quint8* base, const bsp46_lump_t* l);
+	void LoadEntityString(const quint8* base, const bsp46_lump_t* l);
+	void LoadPatches(const quint8* base, const bsp46_lump_t* surfs, const bsp46_lump_t* verts);
+	void LoadSubmodels(const quint8* base, const bsp46_lump_t* l);
+
+	//	Patch
 	static patchCollide_t* GeneratePatchCollide(int width, int height, vec3_t* points);
 
 public:
@@ -205,6 +231,10 @@ public:
 	int			numSubModels;
 	cmodel_t	*cmodels;
 
+	cmodel_t	box_model;
+	cplane_t*	box_planes;
+	cbrush_t*	box_brush;
+
 	int			floodvalid;
 	int			checkcount;					// incremented on each trace
 
@@ -239,6 +269,8 @@ public:
 	, surfaces(NULL)
 	, numSubModels(0)
 	, cmodels(NULL)
+	, box_planes(NULL)
+	, box_brush(NULL)
 	, floodvalid(0)
 	, checkcount(0)
 	{
@@ -246,19 +278,35 @@ public:
 	}
 	~QClipMap46();
 
+	clipHandle_t InlineModel(int Index) const;
+	int GetNumClusters() const;
+	int GetNumInlineModels() const;
+	const char* GetEntityString() const;
+	void MapChecksums(int& CheckSum1, int& CheckSum2) const;
+	int LeafCluster(int LeafNum) const;
+	int LeafArea(int LeafNum) const;
+	const byte* LeafAmbientSoundLevel(int LeafNum) const;
+	void ModelBounds(clipHandle_t Model, vec3_t Mins, vec3_t Maxs);
+	int GetNumTextures() const;
+	const char* GetTextureName(int Index) const;
+	clipHandle_t TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule);
+	clipHandle_t ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs);
+	int PointLeafnum(const vec3_t p) const;
+	int BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int *List, int ListSize, int *TopNode, int *LastLeaf) const;
+	int PointContentsQ1(const vec3_t P, clipHandle_t Model);
+	int PointContentsQ2(const vec3_t p, clipHandle_t Model);
+	int PointContentsQ3(const vec3_t P, clipHandle_t Model);
+	int TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
+	int TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
+	int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
+	byte* ClusterPVS(int Cluster);
+	byte* ClusterPHS(int Cluster);
+
 	void LoadMap(const char* name);
-	void LoadShaders(const quint8* base, const bsp46_lump_t* l);
-	void LoadLeafs(const quint8* base, const bsp46_lump_t* l);
-	void LoadLeafBrushes(const quint8* base, const bsp46_lump_t* l);
-	void LoadLeafSurfaces(const quint8* base, const bsp46_lump_t* l);
-	void LoadPlanes(const quint8* base, const bsp46_lump_t* l);
-	void LoadBrushSides(const quint8* base, const bsp46_lump_t* l);
-	void LoadBrushes(const quint8* base, const bsp46_lump_t* l);
-	void LoadNodes(const quint8* base, const bsp46_lump_t* l);
-	void LoadVisibility(const quint8* base, const bsp46_lump_t* l);
-	void LoadEntityString(const quint8* base, const bsp46_lump_t* l);
-	void LoadPatches(const quint8* base, const bsp46_lump_t* surfs, const bsp46_lump_t* verts);
-	void LoadSubmodels(const quint8* base, const bsp46_lump_t* l);
+	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
+	int PointLeafnum_r(const vec3_t P, int Num) const;
+	void StoreLeafs(leafList_t* ll, int NodeNum) const;
+	void BoxLeafnums_r(leafList_t* ll, int nodenum) const;
 };
 
 void CM46_FreeWinding(winding_t* w);

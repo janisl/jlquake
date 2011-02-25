@@ -91,11 +91,6 @@ int S_GetClFrameServertime()
 	return cl.frame.servertime;
 }
 
-byte* CM_LeafAmbientSoundLevel(int LeafNum)
-{
-	return NULL;
-}
-
 bool S_GetDisableScreen()
 {
 	return !!cls.disable_screen;

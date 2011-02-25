@@ -18,7 +18,7 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 	int			i;
 	physent_t	*pe;
 	vec3_t		mins, maxs, test;
-	chull_t		*hull;
+	clipHandle_t	hull;
 	trace_t	trace;
 
 	trace = PM_PlayerMove (pos, pos);
@@ -42,7 +42,7 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 			VectorCopy (beast_mins, mins);
 			hull = &pmove.physents[i].model->hulls[5];
 		}*/
-		else if (pe->model)
+		else if (pe->model >= 0)
 		{
 			if(pmove.crouched)
 			{
@@ -64,7 +64,7 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 				VectorSubtract (pe->mins, player_maxs, mins);
 			}
 			VectorSubtract (pe->maxs, player_mins, maxs);
-			hull = CM_HullForBox (mins, maxs);
+			hull = CM_TempBoxModel(mins, maxs);
 			clip_mins[2] = 0;
 		}
 
@@ -72,7 +72,7 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 // rjr will need to adjust for player when going into different hulls
 		test[2] -= clip_mins[2];
 
-		if (CM_HullPointContents(hull, test) == BSP29CONTENTS_SOLID)
+		if (CM_PointContentsQ1(test, hull) == BSP29CONTENTS_SOLID)
 			return false;
 	}
 
@@ -89,7 +89,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	trace_t		trace, total;
 	vec3_t		offset;
 	vec3_t		start_l, end_l;
-	chull_t		*hull;
+	clipHandle_t	hull;
 	int			i;
 	physent_t	*pe;
 	vec3_t		mins, maxs;
@@ -113,7 +113,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 			VectorCopy (beast_mins, mins);
 			hull = &pmove.physents[i].model->hulls[5];
 		}*/
-		else if (pe->model)
+		else if (pe->model >= 0)
 		{
 			if(pmove.crouched)
 			{
@@ -135,7 +135,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 				VectorSubtract (pe->mins, player_maxs, mins);
 			}
 			VectorSubtract (pe->maxs, player_mins, maxs);
-			hull = CM_HullForBox(mins, maxs);
+			hull = CM_TempBoxModel(mins, maxs);
 			clip_mins[2] = 0;
 		}
 
@@ -145,7 +145,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 		VectorSubtract (start, offset, start_l);
 		VectorSubtract (end, offset, end_l);
 
-		if (pe->model && (Q_fabs(pe->angles[0]) > 1 || Q_fabs(pe->angles[1]) > 1 || Q_fabs(pe->angles[2]) > 1) )
+		if (pe->model >= 0 && (Q_fabs(pe->angles[0]) > 1 || Q_fabs(pe->angles[1]) > 1 || Q_fabs(pe->angles[2]) > 1) )
 		{
 			vec3_t	a;
 			vec3_t	forward, right, up;
@@ -185,7 +185,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 // rjr will need to adjust for player when going into different hulls
 		trace.endpos[2] += clip_mins[2];
 
-		if (pe->model && (Q_fabs(pe->angles[0]) > 1 || Q_fabs(pe->angles[1]) > 1 || Q_fabs(pe->angles[2]) > 1) )
+		if (pe->model >= 0 && (Q_fabs(pe->angles[0]) > 1 || Q_fabs(pe->angles[1]) > 1 || Q_fabs(pe->angles[2]) > 1) )
 		{
 			vec3_t	a;
 			vec3_t	forward, right, up;

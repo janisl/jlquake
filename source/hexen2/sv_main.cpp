@@ -1974,14 +1974,6 @@ void SV_SpawnServer (char *server, char *startspot)
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 
 	sv.worldmodel = CM_LoadMap(sv.modelname, false, NULL);
-	if (!sv.worldmodel)
-	{
-		Con_Printf ("Couldn't spawn server %s\n", sv.modelname);
-		sv.active = false;
-		total_loading_size = 0;
-		loading_stage = 0;
-		return;
-	}
 	sv.models[1] = sv.worldmodel;
 	
 //
@@ -1996,7 +1988,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
 		sv.model_precache[1+i] = localmodels[i];
-		sv.models[i+1] = CM_InlineModel(localmodels[i]);
+		sv.models[i+1] = CM_InlineModel(i);
 	}
 
 //

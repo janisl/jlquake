@@ -25,15 +25,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../libs/core/cm46_local.h"
 #include "cm_public.h"
 
-#define	BOX_MODEL_HANDLE		255
-#define CAPSULE_MODEL_HANDLE	254
-
-
 // keep 1/8 unit away to keep the position valid before network snapping
 // and to avoid various numeric issues
 #define	SURFACE_CLIP_EPSILON	(0.125)
 
-extern	int			c_pointcontents;
 extern	int			c_traces, c_brush_traces, c_patch_traces;
 extern	QCvar		*cm_noAreas;
 extern	QCvar		*cm_noCurves;
@@ -64,26 +59,6 @@ typedef struct {
 	trace_t		trace;		// returned from trace call
 	sphere_t	sphere;		// sphere for oriendted capsule collision
 } traceWork_t;
-
-typedef struct leafList_s {
-	int		count;
-	int		maxcount;
-	qboolean	overflowed;
-	int		*list;
-	vec3_t	bounds[2];
-	int		lastLeaf;		// for overflows where each leaf can't be stored individually
-	void	(*storeLeafs)( struct leafList_s *ll, int nodenum );
-} leafList_t;
-
-
-int CM_BoxBrushes( const vec3_t mins, const vec3_t maxs, cbrush_t **list, int listsize );
-
-void CM_StoreLeafs( leafList_t *ll, int nodenum );
-void CM_StoreBrushes( leafList_t *ll, int nodenum );
-
-void CM_BoxLeafnums_r( leafList_t *ll, int nodenum );
-
-cmodel_t	*CM_ClipHandleToModel( clipHandle_t handle );
 
 void CM_TraceThroughPatchCollide( traceWork_t *tw, const patchCollide_t* pc );
 qboolean CM_PositionTestInPatchCollide( traceWork_t *tw, const patchCollide_t* pc );

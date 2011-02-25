@@ -241,7 +241,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	{
 		QStr::Sprintf (sv.configstrings[CS_MODELS+1+i], sizeof(sv.configstrings[CS_MODELS+1+i]),
 			"*%i", i);
-		sv.models[i+1] = CM_InlineModel (sv.configstrings[CS_MODELS+1+i]);
+		sv.models[i+1] = CM_InlineModel(i);
 	}
 
 	//
@@ -254,7 +254,7 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 	Com_SetServerState (sv.state);
 
 	// load and spawn all other entities
-	ge->SpawnEntities ( sv.name, CM_EntityString(), spawnpoint );
+	ge->SpawnEntities ( sv.name, const_cast<char*>(CM_EntityString()), spawnpoint );
 
 	// run two frames to allow everything to settle
 	ge->RunFrame ();

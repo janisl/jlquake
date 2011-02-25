@@ -71,8 +71,6 @@ int S_GetClientFrameCount();
 float S_GetClientFrameTime();
 sfx_t *S_RegisterSexedSound(int entnum, char *base);
 int S_GetClFrameServertime();
-int CM_PointLeafnum(const vec3_t p);
-byte* CM_LeafAmbientSoundLevel(int LeafNum);
 bool S_GetDisableScreen();
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -1974,7 +1972,7 @@ static void S_UpdateAmbientSounds()
 	float		vol;
 
 	// calc ambient sound levels
-	byte* ambient_sound_level = CM_LeafAmbientSoundLevel(CM_PointLeafnum(listener_origin));
+	const byte* ambient_sound_level = CM_LeafAmbientSoundLevel(CM_PointLeafnum(listener_origin));
 	if (!ambient_sound_level || !ambient_level->value)
 	{
 		for (int ambient_channel = 0 ; ambient_channel< BSP29_NUM_AMBIENTS ; ambient_channel++)

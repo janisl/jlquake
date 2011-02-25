@@ -268,7 +268,7 @@ void SV_SpawnServer (char *server)
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
 		sv.model_precache[1 + i] = localmodels[i];
-		sv.models[i + 1] = CM_InlineModel(localmodels[i]);
+		sv.models[i + 1] = CM_InlineModel(i);
 	}
 
 	//check player/eyes models for hacks

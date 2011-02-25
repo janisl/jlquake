@@ -225,7 +225,7 @@ void PF_setmodel (void)
 {
 	edict_t	*e;
 	char	*m, **check;
-	cmodel_t	*mod;
+	clipHandle_t	mod;
 	int		i;
 
 	e = G_EDICT(OFS_PARM0);
@@ -262,7 +262,7 @@ void PF_setpuzzlemodel (void)
 {
 	edict_t	*e;
 	char	*m, **check;
-	cmodel_t	*mod;
+	clipHandle_t	mod;
 	int		i;
 	char	NewName[256];
 

@@ -208,7 +208,7 @@ void Model_NextDownload (void)
 		}
 		else if (cl.model_name[i][0] == '*')
 		{
-			cl.clip_models[i] = CM_InlineModel(cl.model_name[i]);
+			cl.clip_models[i] = CM_InlineModel(QStr::Atoi(cl.model_name[i] + 1));
 		}
 		if (!cl.model_precache[i])
 		{

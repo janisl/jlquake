@@ -44,12 +44,12 @@ Offset is filled in to contain the adjustment that must be added to the
 testing object's origin to get a point to use with the returned hull.
 ================
 */
-chull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset, edict_t *move_ent)
+clipHandle_t SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset, edict_t *move_ent)
 {
-	cmodel_t	*model;
+	clipHandle_t	model;
 	vec3_t		size;
 	vec3_t		hullmins, hullmaxs;
-	chull_t		*hull;
+	clipHandle_t	hull;
 	int			index;
 
 // decide which clipping hull to use, based on the size
@@ -58,10 +58,12 @@ chull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset
 		if (ent->v.movetype != MOVETYPE_PUSH)
 			SV_Error ("SOLID_BSP without MOVETYPE_PUSH");
 
-		model = sv.models[ (int)ent->v.modelindex ];
+		model = sv.models[(int)ent->v.modelindex];
 
-		if (!model)
+		if (ent->v.modelindex != 1 && !model)
+		{
 			SV_Error ("MOVETYPE_PUSH with a non bsp model");
+		}
 
 		VectorSubtract (maxs, mins, size);
 		vec3_t clip_mins;
@@ -96,7 +98,7 @@ chull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset
 
 		VectorSubtract (ent->v.mins, maxs, hullmins);
 		VectorSubtract (ent->v.maxs, mins, hullmaxs);
-		hull = CM_HullForBox (hullmins, hullmaxs);
+		hull = CM_TempBoxModel(hullmins, hullmaxs);
 		
 		VectorCopy (ent->v.origin, offset);
 	}
@@ -360,7 +362,7 @@ SV_PointContents
 */
 int SV_PointContents (vec3_t p)
 {
-	int cont = CM_PointContents(p);
+	int cont = CM_PointContentsQ1(p, 0);
 	if (cont <= BSP29CONTENTS_CURRENT_0 && cont >= BSP29CONTENTS_CURRENT_DOWN)
 		cont = BSP29CONTENTS_WATER;
 	return cont;
@@ -401,7 +403,7 @@ trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t max
 	trace_t		trace;
 	vec3_t		offset;
 	vec3_t		start_l, end_l;
-	chull_t		*hull;
+	clipHandle_t	hull;
 
 // fill in a default trace
 	Com_Memset(&trace, 0, sizeof(trace_t));
@@ -655,17 +657,15 @@ SV_TestPlayerPosition
 */
 edict_t	*SV_TestPlayerPosition (edict_t *ent, vec3_t origin)
 {
-	chull_t	*hull;
+	clipHandle_t	hull;
 	edict_t	*check;
 	vec3_t	boxmins, boxmaxs;
 	vec3_t	offset;
 	int		e;
 	
 // check world first
-	vec3_t clip_mins;
-	vec3_t clip_maxs;
-	hull = CM_ModelHull(sv.worldmodel, 1, clip_mins, clip_maxs);
-	if (CM_HullPointContents(hull, origin) != BSP29CONTENTS_EMPTY)
+	hull = CM_ModelHull(sv.worldmodel, 1);
+	if (CM_PointContentsQ1(origin, hull) != BSP29CONTENTS_EMPTY)
 		return sv.edicts;
 
 // check all entities
@@ -699,7 +699,7 @@ edict_t	*SV_TestPlayerPosition (edict_t *ent, vec3_t origin)
 		VectorSubtract (origin, offset, offset);
 	
 	// test the point
-		if (CM_HullPointContents(hull, offset) != BSP29CONTENTS_EMPTY)
+		if (CM_PointContentsQ1(offset, hull) != BSP29CONTENTS_EMPTY)
 			return check;
 	}
 

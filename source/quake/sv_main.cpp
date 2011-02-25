@@ -1089,12 +1089,6 @@ void SV_SpawnServer (char *server)
 	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 	sv.worldmodel = CM_LoadMap(sv.modelname, false, NULL);
-	if (!sv.worldmodel)
-	{
-		Con_Printf ("Couldn't spawn server %s\n", sv.modelname);
-		sv.active = false;
-		return;
-	}
 	sv.models[1] = sv.worldmodel;
 	
 //
@@ -1109,7 +1103,7 @@ void SV_SpawnServer (char *server)
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
 		sv.model_precache[1 + i] = localmodels[i];
-		sv.models[i + 1] = CM_InlineModel(localmodels[i]);
+		sv.models[i + 1] = CM_InlineModel(i);
 	}
 
 //

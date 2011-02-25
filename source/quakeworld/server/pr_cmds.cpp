@@ -165,7 +165,7 @@ void PF_setmodel (void)
 	edict_t	*e;
 	char	*m, **check;
 	int		i;
-	cmodel_t	*mod;
+	clipHandle_t	mod;
 
 	e = G_EDICT(OFS_PARM0);
 	m = G_STRING(OFS_PARM1);
@@ -184,7 +184,7 @@ void PF_setmodel (void)
 // if it is an inline model, get the size information for it
 	if (m[0] == '*')
 	{
-		mod = CM_InlineModel(m);
+		mod = CM_InlineModel(QStr::Atoi(m + 1));
 		CM_ModelBounds(mod, e->v.mins, e->v.maxs);
 		VectorSubtract(e->v.maxs, e->v.mins, e->v.size);
 		SV_LinkEdict(e, false);

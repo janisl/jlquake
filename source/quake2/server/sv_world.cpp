@@ -57,7 +57,7 @@ edict_t	**area_list;
 int		area_count, area_maxcount;
 int		area_type;
 
-int SV_HullForEntity (edict_t *ent);
+clipHandle_t SV_HullForEntity (edict_t *ent);
 
 
 // ClearLink is used for new headnodes
@@ -136,7 +136,10 @@ void SV_ClearWorld (void)
 {
 	Com_Memset(sv_areanodes, 0, sizeof(sv_areanodes));
 	sv_numareanodes = 0;
-	SV_CreateAreaNode (0, sv.models[1]->mins, sv.models[1]->maxs);
+	vec3_t mins;
+	vec3_t maxs;
+	CM_ModelBounds(0, mins, maxs);
+	SV_CreateAreaNode (0, mins, maxs);
 }
 
 
@@ -433,11 +436,11 @@ int SV_PointContents (vec3_t p)
 	edict_t		*touch[MAX_EDICTS], *hit;
 	int			i, num;
 	int			contents, c2;
-	int			headnode;
+	clipHandle_t	model;
 	float		*angles;
 
 	// get base contents from world
-	contents = CM_PointContents (p, sv.models[1]->headnode);
+	contents = CM_PointContentsQ2(p, 0);
 
 	// or in contents from all the other entities
 	num = SV_AreaEdicts (p, p, touch, MAX_EDICTS, AREA_SOLID);
@@ -447,12 +450,12 @@ int SV_PointContents (vec3_t p)
 		hit = touch[i];
 
 		// might intersect, so do an exact clip
-		headnode = SV_HullForEntity (hit);
+		model = SV_HullForEntity (hit);
 		angles = hit->s.angles;
 		if (hit->solid != SOLID_BSP)
 			angles = vec3_origin;	// boxes don't rotate
 
-		c2 = CM_TransformedPointContents (p, headnode, hit->s.origin, hit->s.angles);
+		c2 = CM_TransformedPointContentsQ2(p, model, hit->s.origin, hit->s.angles);
 
 		contents |= c2;
 	}
@@ -485,9 +488,9 @@ Offset is filled in to contain the adjustment that must be added to the
 testing object's origin to get a point to use with the returned hull.
 ================
 */
-int SV_HullForEntity (edict_t *ent)
+clipHandle_t SV_HullForEntity (edict_t *ent)
 {
-	cmodel_t	*model;
+	clipHandle_t	model;
 
 // decide which clipping hull to use, based on the size
 	if (ent->solid == SOLID_BSP)
@@ -497,12 +500,12 @@ int SV_HullForEntity (edict_t *ent)
 		if (!model)
 			Com_Error (ERR_FATAL, "MOVETYPE_PUSH with a non bsp model");
 
-		return model->headnode;
+		return model;
 	}
 
 	// create a temp hull from bounding box sizes
 
-	return CM_HeadnodeForBox (ent->mins, ent->maxs);
+	return CM_TempBoxModel(ent->mins, ent->maxs);
 }
 
 
@@ -519,7 +522,7 @@ void SV_ClipMoveToEntities ( moveclip_t *clip )
 	int			i, num;
 	edict_t		*touchlist[MAX_EDICTS], *touch;
 	trace_t		trace;
-	int			headnode;
+	clipHandle_t	model;
 	float		*angles;
 
 	num = SV_AreaEdicts (clip->boxmins, clip->boxmaxs, touchlist
@@ -549,18 +552,18 @@ void SV_ClipMoveToEntities ( moveclip_t *clip )
 				continue;
 
 		// might intersect, so do an exact clip
-		headnode = SV_HullForEntity (touch);
+		model = SV_HullForEntity (touch);
 		angles = touch->s.angles;
 		if (touch->solid != SOLID_BSP)
 			angles = vec3_origin;	// boxes don't rotate
 
 		if (touch->svflags & SVF_MONSTER)
 			trace = CM_TransformedBoxTrace (clip->start, clip->end,
-				clip->mins2, clip->maxs2, headnode, clip->contentmask,
+				clip->mins2, clip->maxs2, model, clip->contentmask,
 				touch->s.origin, angles);
 		else
 			trace = CM_TransformedBoxTrace (clip->start, clip->end,
-				clip->mins, clip->maxs, headnode,  clip->contentmask,
+				clip->mins, clip->maxs, model,  clip->contentmask,
 				touch->s.origin, angles);
 
 		if (trace.allsolid || trace.startsolid ||

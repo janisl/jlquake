@@ -27,7 +27,6 @@ static int			checkcount;
 static QCvar		*map_noareas;
 
 
-int		c_pointcontents;
 int		c_traces, c_brush_traces;
 
 static QClipMap38*	CMap;
@@ -40,28 +39,13 @@ static QClipMap38*	CMap;
 ===============================================================================
 */
 
-QClipMap38::~QClipMap38()
-{
-	delete[] surfaces;
-	delete[] leafs;
-	delete[] leafbrushes;
-	delete[] planes;
-	delete[] brushes;
-	delete[] brushsides;
-	delete[] nodes;
-	delete[] areas;
-	delete[] areaportals;
-	delete[] visibility;
-	delete[] entitystring;
-	delete[] cmodels;
-}
-
 void CM_ClearMap()
 {
 	if (CMap)
 	{
 		delete CMap;
 		CMap = NULL;
+		CMapShared = NULL;
 	}
 }
 
@@ -72,7 +56,7 @@ CM_LoadMap
 Loads in the map and all submodels
 ==================
 */
-cmodel_t* CM_LoadMap(const char* name, bool clientload, unsigned* checksum)
+clipHandle_t CM_LoadMap(const char* name, bool clientload, unsigned* checksum)
 {
 	map_noareas = Cvar_Get("map_noareas", "0", 0);
 
@@ -90,273 +74,14 @@ cmodel_t* CM_LoadMap(const char* name, bool clientload, unsigned* checksum)
 		CM_ClearMap();
 
 		CMap = new QClipMap38();
+		CMapShared = CMap;
 
 		CMap->LoadMap(name);
 	}
 
 	*checksum = CMap->checksum;
-	return &CMap->cmodels[0];
+	return 0;
 }
-
-/*
-==================
-CM_InlineModel
-==================
-*/
-cmodel_t	*CM_InlineModel (char *name)
-{
-	int		num;
-
-	if (!name || name[0] != '*')
-		Com_Error (ERR_DROP, "CM_InlineModel: bad name");
-	num = QStr::Atoi(name+1);
-	if (num < 1 || num >= CMap->numcmodels)
-		Com_Error (ERR_DROP, "CM_InlineModel: bad number");
-
-	return &CMap->cmodels[num];
-}
-
-int		CM_NumClusters (void)
-{
-	return CMap->numclusters;
-}
-
-int		CM_NumInlineModels (void)
-{
-	return CMap->numcmodels;
-}
-
-char	*CM_EntityString (void)
-{
-	return CMap->entitystring;
-}
-
-int		CM_LeafContents (int leafnum)
-{
-	if (!CMap)
-		return 0;
-	if (leafnum < 0 || leafnum >= CMap->numleafs)
-		Com_Error (ERR_DROP, "CM_LeafContents: bad number");
-	return CMap->leafs[leafnum].contents;
-}
-
-int		CM_LeafCluster (int leafnum)
-{
-	if (!CMap)
-		return 0;
-	if (leafnum < 0 || leafnum >= CMap->numleafs)
-		Com_Error (ERR_DROP, "CM_LeafCluster: bad number");
-	return CMap->leafs[leafnum].cluster;
-}
-
-int		CM_LeafArea (int leafnum)
-{
-	if (!CMap)
-		return 0;
-	if (leafnum < 0 || leafnum >= CMap->numleafs)
-		Com_Error (ERR_DROP, "CM_LeafArea: bad number");
-	return CMap->leafs[leafnum].area;
-}
-
-//=======================================================================
-
-/*
-===================
-CM_HeadnodeForBox
-
-To keep everything totally uniform, bounding boxes are turned into small
-BSP trees instead of being compared directly.
-===================
-*/
-int	CM_HeadnodeForBox (vec3_t mins, vec3_t maxs)
-{
-	CMap->box_planes[0].dist = maxs[0];
-	CMap->box_planes[1].dist = -maxs[0];
-	CMap->box_planes[2].dist = mins[0];
-	CMap->box_planes[3].dist = -mins[0];
-	CMap->box_planes[4].dist = maxs[1];
-	CMap->box_planes[5].dist = -maxs[1];
-	CMap->box_planes[6].dist = mins[1];
-	CMap->box_planes[7].dist = -mins[1];
-	CMap->box_planes[8].dist = maxs[2];
-	CMap->box_planes[9].dist = -maxs[2];
-	CMap->box_planes[10].dist = mins[2];
-	CMap->box_planes[11].dist = -mins[2];
-
-	return CMap->box_headnode;
-}
-
-
-/*
-==================
-CM_PointLeafnum_r
-
-==================
-*/
-int CM_PointLeafnum_r (const vec3_t p, int num)
-{
-	float		d;
-	cnode_t		*node;
-	cplane_t	*plane;
-
-	while (num >= 0)
-	{
-		node = CMap->nodes + num;
-		plane = node->plane;
-		
-		if (plane->type < 3)
-			d = p[plane->type] - plane->dist;
-		else
-			d = DotProduct (plane->normal, p) - plane->dist;
-		if (d < 0)
-			num = node->children[1];
-		else
-			num = node->children[0];
-	}
-
-	c_pointcontents++;		// optimize counter
-
-	return -1 - num;
-}
-
-int CM_PointLeafnum (const vec3_t p)
-{
-	if (!CMap || !CMap->numplanes)
-		return 0;		// sound may call this without map loaded
-	return CM_PointLeafnum_r (p, 0);
-}
-
-
-
-/*
-=============
-CM_BoxLeafnums
-
-Fills in a list of all the leafs touched
-=============
-*/
-int		leaf_count, leaf_maxcount;
-int		*leaf_list;
-float	*leaf_mins, *leaf_maxs;
-int		leaf_topnode;
-
-void CM_BoxLeafnums_r (int nodenum)
-{
-	cplane_t	*plane;
-	cnode_t		*node;
-	int		s;
-
-	while (1)
-	{
-		if (nodenum < 0)
-		{
-			if (leaf_count >= leaf_maxcount)
-			{
-//				Com_Printf ("CM_BoxLeafnums_r: overflow\n");
-				return;
-			}
-			leaf_list[leaf_count++] = -1 - nodenum;
-			return;
-		}
-	
-		node = &CMap->nodes[nodenum];
-		plane = node->plane;
-//		s = BoxOnPlaneSide (leaf_mins, leaf_maxs, plane);
-		s = BOX_ON_PLANE_SIDE(leaf_mins, leaf_maxs, plane);
-		if (s == 1)
-			nodenum = node->children[0];
-		else if (s == 2)
-			nodenum = node->children[1];
-		else
-		{	// go down both
-			if (leaf_topnode == -1)
-				leaf_topnode = nodenum;
-			CM_BoxLeafnums_r (node->children[0]);
-			nodenum = node->children[1];
-		}
-
-	}
-}
-
-int	CM_BoxLeafnums_headnode (vec3_t mins, vec3_t maxs, int *list, int listsize, int headnode, int *topnode)
-{
-	leaf_list = list;
-	leaf_count = 0;
-	leaf_maxcount = listsize;
-	leaf_mins = mins;
-	leaf_maxs = maxs;
-
-	leaf_topnode = -1;
-
-	CM_BoxLeafnums_r (headnode);
-
-	if (topnode)
-		*topnode = leaf_topnode;
-
-	return leaf_count;
-}
-
-int	CM_BoxLeafnums (vec3_t mins, vec3_t maxs, int *list, int listsize, int *topnode)
-{
-	return CM_BoxLeafnums_headnode (mins, maxs, list,
-		listsize, CMap->cmodels[0].headnode, topnode);
-}
-
-
-
-/*
-==================
-CM_PointContents
-
-==================
-*/
-int CM_PointContents (vec3_t p, int headnode)
-{
-	int		l;
-
-	if (!CMap || !CMap->numnodes)	// map not loaded
-		return 0;
-
-	l = CM_PointLeafnum_r (p, headnode);
-
-	return CMap->leafs[l].contents;
-}
-
-/*
-==================
-CM_TransformedPointContents
-
-Handles offseting and rotation of the end points for moving and
-rotating entities
-==================
-*/
-int	CM_TransformedPointContents (vec3_t p, int headnode, vec3_t origin, vec3_t angles)
-{
-	vec3_t		p_l;
-	vec3_t		temp;
-	vec3_t		forward, right, up;
-	int			l;
-
-	// subtract origin offset
-	VectorSubtract (p, origin, p_l);
-
-	// rotate start and end into the models frame of reference
-	if (headnode != CMap->box_headnode && 
-	(angles[0] || angles[1] || angles[2]) )
-	{
-		AngleVectors (angles, forward, right, up);
-
-		VectorCopy (p_l, temp);
-		p_l[0] = DotProduct (temp, forward);
-		p_l[1] = -DotProduct (temp, right);
-		p_l[2] = DotProduct (temp, up);
-	}
-
-	l = CM_PointLeafnum_r (p_l, headnode);
-
-	return CMap->leafs[l].contents;
-}
-
 
 /*
 ===============================================================================
@@ -745,10 +470,11 @@ CM_BoxTrace
 */
 trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 						  vec3_t mins, vec3_t maxs,
-						  int headnode, int brushmask)
+						  clipHandle_t Handle, int brushmask)
 {
 	int		i;
 
+	cmodel_t* model = CMap->ClipHandleToModel(Handle);
 	checkcount++;		// for multi-check avoidance
 
 	c_traces++;			// for statistics, may be zeroed
@@ -773,20 +499,27 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 	if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2])
 	{
 		int		leafs[1024];
-		int		i, numleafs;
-		vec3_t	c1, c2;
-		int		topnode;
+		int		i;
 
-		VectorAdd (start, mins, c1);
-		VectorAdd (start, maxs, c2);
+		leafList_t ll;
+
+		VectorAdd (start, mins, ll.bounds[0]);
+		VectorAdd (start, maxs, ll.bounds[1]);
 		for (i=0 ; i<3 ; i++)
 		{
-			c1[i] -= 1;
-			c2[i] += 1;
+			ll.bounds[0][i] -= 1;
+			ll.bounds[1][i] += 1;
 		}
 
-		numleafs = CM_BoxLeafnums_headnode (c1, c2, leafs, 1024, headnode, &topnode);
-		for (i=0 ; i<numleafs ; i++)
+		ll.list = leafs;
+		ll.count = 0;
+		ll.maxcount = 1024;
+		ll.topnode = -1;
+		ll.lastLeaf = 0;
+
+		CMap->BoxLeafnums_r(&ll, model->headnode);
+
+		for (i=0 ; i<ll.count; i++)
 		{
 			CM_TestInLeaf (leafs[i]);
 			if (trace_trace.allsolid)
@@ -816,7 +549,7 @@ trace_t		CM_BoxTrace (vec3_t start, vec3_t end,
 	//
 	// general sweeping through world
 	//
-	CM_RecursiveHullCheck (headnode, 0, 1, start, end);
+	CM_RecursiveHullCheck (model->headnode, 0, 1, start, end);
 
 	if (trace_trace.fraction == 1)
 	{
@@ -846,7 +579,7 @@ rotating entities
 
 trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 						  vec3_t mins, vec3_t maxs,
-						  int headnode, int brushmask,
+						  clipHandle_t Handle, int brushmask,
 						  vec3_t origin, vec3_t angles)
 {
 	trace_t		trace;
@@ -861,7 +594,7 @@ trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 	VectorSubtract (end, origin, end_l);
 
 	// rotate start and end into the models frame of reference
-	if (headnode != CMap->box_headnode && 
+	if (Handle != BOX_HANDLE && 
 	(angles[0] || angles[1] || angles[2]) )
 		rotated = true;
 	else
@@ -883,7 +616,7 @@ trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 	}
 
 	// sweep the box through the model
-	trace = CM_BoxTrace (start_l, end_l, mins, maxs, headnode, brushmask);
+	trace = CM_BoxTrace (start_l, end_l, mins, maxs, Handle, brushmask);
 
 	if (rotated && trace.fraction != 1.0)
 	{
@@ -904,101 +637,10 @@ trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 	return trace;
 }
 
-#ifdef _WIN32
-#pragma optimize( "", on )
-#endif
-
-
-
-/*
-===============================================================================
-
-PVS / PHS
-
-===============================================================================
-*/
-
-/*
-===================
-CM_DecompressVis
-===================
-*/
-void CM_DecompressVis (byte *in, byte *out)
-{
-	int		c;
-	byte	*out_p;
-	int		row;
-
-	row = (CMap->numclusters+7)>>3;	
-	out_p = out;
-
-	if (!in || !CMap->numvisibility)
-	{	// no vis info, so make all visible
-		while (row)
-		{
-			*out_p++ = 0xff;
-			row--;
-		}
-		return;		
-	}
-
-	do
-	{
-		if (*in)
-		{
-			*out_p++ = *in++;
-			continue;
-		}
-	
-		c = in[1];
-		in += 2;
-		if ((out_p - out) + c > row)
-		{
-			c = row - (out_p - out);
-			Com_DPrintf ("warning: Vis decompression overrun\n");
-		}
-		while (c)
-		{
-			*out_p++ = 0;
-			c--;
-		}
-	} while (out_p - out < row);
-}
-
-byte	pvsrow[BSP38MAX_MAP_LEAFS/8];
-byte	phsrow[BSP38MAX_MAP_LEAFS/8];
-
-byte	*CM_ClusterPVS (int cluster)
-{
-	if (cluster == -1)
-		Com_Memset(pvsrow, 0, (CMap->numclusters+7)>>3);
-	else
-		CM_DecompressVis (CMap->visibility + CMap->vis->bitofs[cluster][BSP38DVIS_PVS], pvsrow);
-	return pvsrow;
-}
-
-byte	*CM_ClusterPHS (int cluster)
-{
-	if (cluster == -1)
-		Com_Memset(phsrow, 0, (CMap->numclusters+7)>>3);
-	else
-		CM_DecompressVis (CMap->visibility + CMap->vis->bitofs[cluster][BSP38DVIS_PHS], phsrow);
-	return phsrow;
-}
-
-
-/*
-===============================================================================
-
-AREAPORTALS
-
-===============================================================================
-*/
-
 void	CM_SetAreaPortalState (int portalnum, qboolean open)
 {
 	if (portalnum > CMap->numareaportals)
-		Com_Error (ERR_DROP, "areaportal > numareaportals");
+		throw QDropException("areaportal > numareaportals");
 
 	CMap->portalopen[portalnum] = open;
 	CMap->FloodAreaConnections();
@@ -1010,7 +652,7 @@ qboolean	CM_AreasConnected (int area1, int area2)
 		return true;
 
 	if (area1 > CMap->numareas || area2 > CMap->numareas)
-		Com_Error (ERR_DROP, "area > numareas");
+		throw QDropException("area > numareas");
 
 	if (CMap->areas[area1].floodnum == CMap->areas[area2].floodnum)
 		return true;
@@ -1111,14 +753,4 @@ qboolean CM_HeadnodeVisible (int nodenum, byte *visbits)
 	if (CM_HeadnodeVisible(node->children[0], visbits))
 		return true;
 	return CM_HeadnodeVisible(node->children[1], visbits);
-}
-
-int CM_GetNumTextures()
-{
-	return CMap->numtexinfo;
-}
-
-const char* CM_GetTextureName(int Index)
-{
-	return CMap->surfaces[Index].rname;
 }

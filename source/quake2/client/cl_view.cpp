@@ -302,9 +302,9 @@ void CL_PrepRefresh (void)
 		{
 			cl.model_draw[i] = re.RegisterModel (cl.configstrings[CS_MODELS+i]);
 			if (name[0] == '*')
-				cl.model_clip[i] = CM_InlineModel (cl.configstrings[CS_MODELS+i]);
+				cl.model_clip[i] = CM_InlineModel(QStr::Atoi(cl.configstrings[CS_MODELS + i] + 1));
 			else
-				cl.model_clip[i] = NULL;
+				cl.model_clip[i] = 0;
 		}
 		if (name[0] != '*')
 			Com_Printf ("                                     \r");

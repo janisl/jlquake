@@ -2,11 +2,11 @@
 #define	MAX_PHYSENTS	64
 typedef struct
 {
-	vec3_t	origin;
-	cmodel_t	*model;		// only for bsp models
-	vec3_t	mins, maxs;	// only for non-bsp models
-	vec3_t	angles;
-	int		info;		// for client or server to identify
+	vec3_t			origin;
+	clipHandle_t	model;		// only for bsp models
+	vec3_t			mins, maxs;	// only for non-bsp models
+	vec3_t			angles;
+	int				info;		// for client or server to identify
 } physent_t;
 
 

@@ -486,7 +486,7 @@ void SV_FatPVS (vec3_t org)
 		maxs[i] = org[i] + 8;
 	}
 
-	count = CM_BoxLeafnums (mins, maxs, leafs, 64, NULL);
+	count = CM_BoxLeafnums (mins, maxs, leafs, 64);
 	if (count < 1)
 		Com_Error (ERR_FATAL, "SV_FatPVS: count < 1");
 	longs = (CM_NumClusters()+31)>>5;

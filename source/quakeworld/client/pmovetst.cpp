@@ -34,28 +34,26 @@ qboolean PM_TestPlayerPosition (vec3_t pos)
 	int			i;
 	physent_t	*pe;
 	vec3_t		mins, maxs, test;
-	chull_t		*hull;
+	clipHandle_t	hull;
 
 	for (i=0 ; i< pmove.numphysent ; i++)
 	{
 		pe = &pmove.physents[i];
 	// get the clipping hull
-		if (pe->model)
+		if (pe->model >= 0)
 		{
-			vec3_t clip_mins;
-			vec3_t clip_maxs;
-			hull = CM_ModelHull(pmove.physents[i].model, 1, clip_mins, clip_maxs);
+			hull = CM_ModelHull(pmove.physents[i].model, 1);
 		}
 		else
 		{
 			VectorSubtract(pe->mins, player_maxs, mins);
 			VectorSubtract(pe->maxs, player_mins, maxs);
-			hull = CM_HullForBox(mins, maxs);
+			hull = CM_TempBoxModel(mins, maxs);
 		}
 
 		VectorSubtract(pos, pe->origin, test);
 
-		if (CM_HullPointContents(hull, test) == BSP29CONTENTS_SOLID)
+		if (CM_PointContentsQ1(test, hull) == BSP29CONTENTS_SOLID)
 			return false;
 	}
 
@@ -72,7 +70,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	trace_t		trace, total;
 	vec3_t		offset;
 	vec3_t		start_l, end_l;
-	chull_t		*hull;
+	clipHandle_t	hull;
 	int			i;
 	physent_t	*pe;
 	vec3_t		mins, maxs;
@@ -87,7 +85,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 	{
 		pe = &pmove.physents[i];
 		// get the clipping hull
-		if (pe->model)
+		if (pe->model >= 0)
 		{
 			vec3_t clip_mins;
 			vec3_t clip_maxs;
@@ -97,7 +95,7 @@ trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 		{
 			VectorSubtract(pe->mins, player_maxs, mins);
 			VectorSubtract(pe->maxs, player_mins, maxs);
-			hull = CM_HullForBox(mins, maxs);
+			hull = CM_TempBoxModel(mins, maxs);
 		}
 
 	// PM_HullForEntity (ent, mins, maxs, offset);

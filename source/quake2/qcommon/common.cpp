@@ -1126,7 +1126,6 @@ void Qcommon_Frame (int msec)
 	if (showtrace->value)
 	{
 		extern	int c_traces, c_brush_traces;
-		extern	int	c_pointcontents;
 
 		Com_Printf ("%4i traces  %4i points\n", c_traces, c_pointcontents);
 		c_traces = 0;

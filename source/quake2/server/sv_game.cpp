@@ -162,7 +162,7 @@ Also sets mins and maxs for inline bmodels
 void PF_setmodel (edict_t *ent, char *name)
 {
 	int		i;
-	cmodel_t	*mod;
+	clipHandle_t mod;
 
 	if (!name)
 		Com_Error (ERR_DROP, "PF_setmodel: NULL");
@@ -175,9 +175,8 @@ void PF_setmodel (edict_t *ent, char *name)
 // if it is an inline model, get the size information for it
 	if (name[0] == '*')
 	{
-		mod = CM_InlineModel (name);
-		VectorCopy (mod->mins, ent->mins);
-		VectorCopy (mod->maxs, ent->maxs);
+		mod = CM_InlineModel(QStr::Atoi(name + 1));
+		CM_ModelBounds(mod, ent->mins, ent->maxs);
 		SV_LinkEdict (ent);
 	}
 

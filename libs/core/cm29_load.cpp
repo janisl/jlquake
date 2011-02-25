@@ -20,7 +20,6 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include "bsp29file.h"
 #include "cm29_local.h"
 #include "mdlfile.h"
 #include "sprfile.h"
@@ -64,46 +63,6 @@ public:
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	QClipMap29::~QClipMap29
-//
-//==========================================================================
-
-QClipMap29::~QClipMap29()
-{
-	for (int i = 0; i < numknown; i++)
-	{
-		delete known[i];
-	}
-}
-
-//==========================================================================
-//
-//	cmodel_t::Free
-//
-//==========================================================================
-
-void cmodel_t::Free()
-{
-	delete[] visdata;
-	visdata = NULL;
-	delete[] entities;
-	entities = NULL;
-	delete[] planes;
-	planes = NULL;
-	delete[] nodes;
-	nodes = NULL;
-	delete[] leafs;
-	leafs = NULL;
-	delete[] clipnodes;
-	clipnodes = NULL;
-	delete[] hulls[0].clipnodes;
-	hulls[0].clipnodes = NULL;
-	delete[] phs;
-	phs = NULL;
-}
 
 //**************************************************************************
 //
@@ -1050,47 +1009,4 @@ void QClipModelNonMap29::LoadSpriteModel(cmodel_t* mod, void* buffer)
 	mod->maxs[0] = mod->maxs[1] = LittleLong(pin->width) / 2;
 	mod->mins[2] = -LittleLong(pin->height) / 2;
 	mod->maxs[2] = LittleLong(pin->height) / 2;
-}
-
-//**************************************************************************
-//
-//	BOX HULL
-//
-//**************************************************************************
-
-//==========================================================================
-//
-//	QClipMap29::InitBoxHull
-//
-//	Set up the planes and clipnodes so that the six floats of a bounding box
-// can just be stored out and get a proper chull_t structure.
-//
-//==========================================================================
-
-void QClipMap29::InitBoxHull()
-{
-	box_hull.clipnodes = box_clipnodes;
-	box_hull.planes = box_planes;
-	box_hull.firstclipnode = 0;
-	box_hull.lastclipnode = 5;
-
-	for (int i = 0; i < 6; i++)
-	{
-		box_clipnodes[i].planenum = i;
-
-		int side = i & 1;
-
-		box_clipnodes[i].children[side] = BSP29CONTENTS_EMPTY;
-		if (i != 5)
-		{
-			box_clipnodes[i].children[side ^ 1] = i + 1;
-		}
-		else
-		{
-			box_clipnodes[i].children[side ^ 1] = BSP29CONTENTS_SOLID;
-		}
-
-		box_planes[i].type = i >> 1;
-		box_planes[i].normal[i >> 1] = 1;
-	}
 }

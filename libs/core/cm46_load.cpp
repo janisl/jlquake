@@ -20,21 +20,20 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include "bsp46file.h"
 #include "cm46_local.h"
 
 // MACROS ------------------------------------------------------------------
 
 // to allow boxes to be treated as brush models, we allocate
 // some extra indexes along with those needed by the map
-#define	BOX_BRUSHES		1
-#define	BOX_SIDES		6
-#define	BOX_LEAFS		2
-#define	BOX_PLANES		12
+#define BOX_BRUSHES			1
+#define BOX_SIDES			6
+#define BOX_LEAFS			2
+#define BOX_PLANES			12
 
-#define	VIS_HEADER		8
+#define VIS_HEADER			8
 
-#define	MAX_PATCH_VERTS		1024
+#define MAX_PATCH_VERTS		1024
 
 // TYPES -------------------------------------------------------------------
 
@@ -51,46 +50,6 @@
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
-
-//==========================================================================
-//
-//	QClipMap46::~QClipMap46
-//
-//==========================================================================
-
-QClipMap46::~QClipMap46()
-{
-	for (int i = 1; i < numSubModels; i++)
-	{
-		delete[] (leafbrushes + cmodels[i].leaf.firstLeafBrush);
-		delete[] (leafsurfaces + cmodels[i].leaf.firstLeafSurface);
-	}
-	for (int i = 0; i < numSurfaces; i++)
-	{
-		if (!surfaces[i])
-		{
-			continue;
-		}
-		delete[] surfaces[i]->pc->facets;
-		delete[] surfaces[i]->pc->planes;
-		delete surfaces[i]->pc;
-		delete surfaces[i];
-	}
-	delete[] shaders;
-	delete[] leafs;
-	delete[] areas;
-	delete[] areaPortals;
-	delete[] leafbrushes;
-	delete[] leafsurfaces;
-	delete[] planes;
-	delete[] brushsides;
-	delete[] brushes;
-	delete[] nodes;
-	delete[] entityString;
-	delete[] visibility;
-	delete[] surfaces;
-	delete[] cmodels;
-}
 
 //==========================================================================
 //
@@ -143,6 +102,8 @@ void QClipMap46::LoadMap(const char* name)
 
 	// we are NOT freeing the file, because it is cached for the ref
 	FS_FreeFile(buf);
+
+	InitBoxHull();
 }
 
 //==========================================================================

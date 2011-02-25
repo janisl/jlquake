@@ -35,9 +35,9 @@ typedef struct
 
 	char		startspot[64];
 	char		modelname[64];		// maps/<name>.bsp, for model_precache[0]
-	struct cmodel_t	*worldmodel;
+	clipHandle_t	worldmodel;
 	char		*model_precache[MAX_MODELS];	// NULL terminated
-	struct cmodel_t	*models[MAX_MODELS];
+	clipHandle_t	models[MAX_MODELS];
 	char		*sound_precache[MAX_SOUNDS];	// NULL terminated
 	char		*lightstyles[MAX_LIGHTSTYLES];
 	struct EffectT Effects[MAX_EFFECTS];

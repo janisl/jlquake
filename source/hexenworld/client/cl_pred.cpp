@@ -21,7 +21,7 @@ void CL_NudgePosition (void)
 	vec3_t	base;
 	int		x, y;
 
-	if (CM_PointContents(pmove.origin, 1) == BSP29CONTENTS_EMPTY)
+	if (CM_PointContentsQ1(pmove.origin, CM_ModelHull(0, 1)) == BSP29CONTENTS_EMPTY)
 		return;
 
 	VectorCopy (pmove.origin, base);
@@ -31,7 +31,7 @@ void CL_NudgePosition (void)
 		{
 			pmove.origin[0] = base[0] + x * 1.0/8;
 			pmove.origin[1] = base[1] + y * 1.0/8;
-			if (CM_PointContents(pmove.origin, 1) == BSP29CONTENTS_EMPTY)
+			if (CM_PointContentsQ1(pmove.origin, CM_ModelHull(0, 1)) == BSP29CONTENTS_EMPTY)
 				return;
 		}
 	}

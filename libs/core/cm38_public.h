@@ -27,12 +27,4 @@ struct csurface_t
 	int			value;
 };
 
-struct cmodel_t
-{
-	vec3_t		mins;
-	vec3_t		maxs;
-	vec3_t		origin;		// for sounds or lights
-	int			headnode;
-};
-
 #endif

@@ -235,7 +235,7 @@ void PF_setmodel (void)
 {
 	edict_t	*e;
 	char	*m, **check;
-	cmodel_t	*mod;
+	clipHandle_t	mod;
 	int		i;
 
 	e = G_EDICT(OFS_PARM0);

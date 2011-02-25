@@ -44,6 +44,7 @@
 #include "crc.h"
 #include "md4.h"
 #include "system.h"
+#include "cm_public.h"
 
 int Com_Milliseconds();
 

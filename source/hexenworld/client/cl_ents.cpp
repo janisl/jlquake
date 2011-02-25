@@ -1585,7 +1585,7 @@ void CL_SetSolidPlayers (int playernum)
 		if (pplayer->flags & PF_DEAD)
 			continue; // dead players aren't solid
 
-		pent->model = 0;
+		pent->model = -1;
 		VectorCopy(pplayer->origin, pent->origin);
 /*shitbox
 		if(!QStr::ICmp(cl.model_precache[cl.players[playernum].modelindex]->name,"models/yakman.mdl"))
