@@ -113,4 +113,11 @@ int CM_TransformedPointContentsQ3(const vec3_t Point, clipHandle_t Model, const 
 byte* CM_ClusterPVS(int Cluster);
 byte* CM_ClusterPHS(int Cluster);
 
+void CM_SetAreaPortalState(int PortalNum, qboolean Open);
+void CM_AdjustAreaPortalState(int Area1, int Area2, bool Open);
+qboolean CM_AreasConnected(int Area1, int Area2);
+int CM_WriteAreaBits(byte* Buffer, int Area);
+void CM_WritePortalState(fileHandle_t f);
+void CM_ReadPortalState(fileHandle_t f);
+
 extern	int			c_pointcontents;

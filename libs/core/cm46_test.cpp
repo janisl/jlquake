@@ -362,3 +362,208 @@ byte* QClipMap46::ClusterPHS(int Cluster)
 	//	FIXME: Could calculate it like QuakeWorld does.
 	return ClusterPVS(Cluster);
 }
+
+/*
+===============================================================================
+
+AREAPORTALS
+
+===============================================================================
+*/
+
+//==========================================================================
+//
+//	QClipMap46::FloodAreaConnections
+//
+//==========================================================================
+
+void QClipMap46::FloodAreaConnections()
+{
+	// all current floods are now invalid
+	floodvalid++;
+	int floodnum = 0;
+
+	for (int i = 0; i < numAreas; i++)
+	{
+		cArea_t* area = &areas[i];
+		if (area->floodvalid == floodvalid)
+		{
+			continue;		// already flooded into
+		}
+		floodnum++;
+		FloodArea_r(i, floodnum);
+	}
+}
+
+//==========================================================================
+//
+//	QClipMap46::FloodArea_r
+//
+//==========================================================================
+
+void QClipMap46::FloodArea_r(int AreaNum, int FloodNum)
+{
+	cArea_t* area = &areas[AreaNum];
+
+	if (area->floodvalid == floodvalid)
+	{
+		if (area->floodnum == FloodNum)
+		{
+			return;
+		}
+		throw QDropException("FloodArea_r: reflooded");
+	}
+
+	area->floodnum = FloodNum;
+	area->floodvalid = floodvalid;
+	int* con = areaPortals + AreaNum * numAreas;
+	for (int i = 0; i < numAreas; i++)
+	{
+		if (con[i] > 0)
+		{
+			FloodArea_r(i, FloodNum);
+		}
+	}
+}
+
+//==========================================================================
+//
+//	QClipMap46::SetAreaPortalState
+//
+//==========================================================================
+
+void QClipMap46::SetAreaPortalState(int portalnum, qboolean open)
+{
+}
+
+//==========================================================================
+//
+//	QClipMap46::AdjustAreaPortalState
+//
+//==========================================================================
+
+void QClipMap46::AdjustAreaPortalState(int Area1, int Area2, bool Open)
+{
+	if (Area1 < 0 || Area2 < 0)
+	{
+		return;
+	}
+
+	if (Area1 >= numAreas || Area2 >= numAreas)
+	{
+		throw QDropException("CM_ChangeAreaPortalState: bad area number");
+	}
+
+	if (Open)
+	{
+		areaPortals[Area1 * numAreas + Area2]++;
+		areaPortals[Area2 * numAreas + Area1]++;
+	}
+	else
+	{
+		areaPortals[Area1 * numAreas + Area2]--;
+		areaPortals[Area2 * numAreas + Area1]--;
+		if (areaPortals[Area2 * numAreas + Area1] < 0)
+		{
+			throw QDropException("CM_AdjustAreaPortalState: negative reference count");
+		}
+	}
+
+	FloodAreaConnections();
+}
+
+//==========================================================================
+//
+//	QClipMap46::AreasConnected
+//
+//==========================================================================
+
+qboolean QClipMap46::AreasConnected(int Area1, int Area2)
+{
+	if (cm_noAreas->integer)
+	{
+		return true;
+	}
+
+	if (Area1 < 0 || Area2 < 0)
+	{
+		return false;
+	}
+
+	if (Area1 >= numAreas || Area2 >= numAreas)
+	{
+		throw QDropException("area >= numAreas");
+	}
+
+	if (areas[Area1].floodnum == areas[Area2].floodnum)
+	{
+		return true;
+	}
+	return false;
+}
+
+//==========================================================================
+//
+//	QClipMap46::WriteAreaBits
+//
+//	Writes a bit vector of all the areas that are in the same flood as the
+// area parameter. Returns the number of bytes needed to hold all the bits.
+//
+//	The bits are OR'd in, so you can CM_WriteAreaBits from multiple
+// viewpoints and get the union of all visible areas.
+//
+//	This is used to cull non-visible entities from snapshots
+//
+//==========================================================================
+
+int QClipMap46::WriteAreaBits(byte* Buffer, int Area)
+{
+	int bytes = (numAreas + 7) >> 3;
+
+	if (cm_noAreas->integer || Area == -1)
+	{
+		// for debugging, send everything
+		Com_Memset(Buffer, 255, bytes);
+	}
+	else
+	{
+		int floodnum = areas[Area].floodnum;
+		for (int i = 0; i < numAreas; i++)
+		{
+			if (areas[i].floodnum == floodnum || Area == -1)
+			{
+				Buffer[i >> 3] |= 1 << (i & 7);
+			}
+		}
+	}
+
+	return bytes;
+}
+
+//==========================================================================
+//
+//	QClipMap46::WritePortalState
+//
+//	Writes the portal state to a savegame file
+//
+//==========================================================================
+
+void QClipMap46::WritePortalState(fileHandle_t f)
+{
+	FS_Write(areaPortals, sizeof(areaPortals), f);
+}
+
+//==========================================================================
+//
+//	QClipMap46::ReadPortalState
+//
+//	Reads the portal state from a savegame file and recalculates the area
+// connections
+//
+//==========================================================================
+
+void QClipMap46::ReadPortalState(fileHandle_t f)
+{
+	FS_Read(areaPortals, sizeof(areaPortals), f);
+	FloodAreaConnections();
+}

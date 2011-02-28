@@ -328,3 +328,69 @@ byte* CM_ClusterPHS(int Cluster)
 {
 	return CMapShared->ClusterPHS(Cluster);
 }
+
+//==========================================================================
+//
+//	CM_SetAreaPortalState
+//
+//==========================================================================
+
+void CM_SetAreaPortalState(int PortalNum, qboolean Open)
+{
+	CMapShared->SetAreaPortalState(PortalNum, Open);
+}
+
+//==========================================================================
+//
+//	CM_AdjustAreaPortalState
+//
+//==========================================================================
+
+void CM_AdjustAreaPortalState(int Area1, int Area2, bool Open)
+{
+	CMapShared->AdjustAreaPortalState(Area1, Area2, Open);
+}
+
+//==========================================================================
+//
+//	CM_AreasConnected
+//
+//==========================================================================
+
+qboolean CM_AreasConnected(int Area1, int Area2)
+{
+	return CMapShared->AreasConnected(Area1, Area2);
+}
+
+//==========================================================================
+//
+//	CM_WriteAreaBits
+//
+//==========================================================================
+
+int CM_WriteAreaBits(byte* Buffer, int Area)
+{
+	return CMapShared->WriteAreaBits(Buffer, Area);
+}
+
+//==========================================================================
+//
+//	CM_WritePortalState
+//
+//==========================================================================
+
+void CM_WritePortalState(fileHandle_t f)
+{
+	CMapShared->WritePortalState(f);
+}
+
+//==========================================================================
+//
+//	CM_ReadPortalState
+//
+//==========================================================================
+
+void CM_ReadPortalState(fileHandle_t f)
+{
+	CMapShared->ReadPortalState(f);
+}

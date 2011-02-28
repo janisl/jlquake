@@ -399,14 +399,7 @@ q2trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 						  clipHandle_t model, int brushmask,
 						  vec3_t origin, vec3_t angles);
 
-void		CM_SetAreaPortalState (int portalnum, qboolean open);
-qboolean	CM_AreasConnected (int area1, int area2);
-
-int			CM_WriteAreaBits (byte *buffer, int area);
 qboolean	CM_HeadnodeVisible (int headnode, byte *visbits);
-
-void		CM_WritePortalState (fileHandle_t f);
-void		CM_ReadPortalState (fileHandle_t f);
 
 /*
 ==============================================================

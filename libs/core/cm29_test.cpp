@@ -437,3 +437,65 @@ byte* QClipMap29::ClusterPHS(int Cluster)
 {
 	return Map.map_models[0].phs + (Cluster + 1) * 4 * ((Map.map_models[0].numleafs + 31) >> 5);
 }
+
+//==========================================================================
+//
+//	QClipMap29::SetAreaPortalState
+//
+//==========================================================================
+
+void QClipMap29::SetAreaPortalState(int portalnum, qboolean open)
+{
+}
+
+//==========================================================================
+//
+//	QClipMap29::AdjustAreaPortalState
+//
+//==========================================================================
+
+void QClipMap29::AdjustAreaPortalState(int Area1, int Area2, bool Open)
+{
+}
+
+//==========================================================================
+//
+//	QClipMap29::AreasConnected
+//
+//==========================================================================
+
+qboolean QClipMap29::AreasConnected(int Area1, int Area2)
+{
+	return true;
+}
+
+//==========================================================================
+//
+//	QClipMap29::WriteAreaBits
+//
+//==========================================================================
+
+int QClipMap29::WriteAreaBits(byte* Buffer, int Area)
+{
+	return 0;
+}
+
+//==========================================================================
+//
+//	QClipMap29::WritePortalState
+//
+//==========================================================================
+
+void QClipMap29::WritePortalState(fileHandle_t f)
+{
+}
+
+//==========================================================================
+//
+//	QClipMap29::ReadPortalState
+//
+//==========================================================================
+
+void QClipMap29::ReadPortalState(fileHandle_t f)
+{
+}

@@ -57,6 +57,12 @@ public:
 	virtual int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles) = 0;
 	virtual byte* ClusterPVS(int Cluster) = 0;
 	virtual byte* ClusterPHS(int Cluster) = 0;
+	virtual void SetAreaPortalState(int PortalNum, qboolean Open) = 0;
+	virtual void AdjustAreaPortalState(int Area1, int Area2, bool Open) = 0;
+	virtual qboolean AreasConnected(int Area1, int Area2) = 0;
+	virtual int WriteAreaBits(byte* Buffer, int Area) = 0;
+	virtual void WritePortalState(fileHandle_t f) = 0;
+	virtual void ReadPortalState(fileHandle_t f) = 0;
 };
 
 extern QClipMap*			CMapShared;

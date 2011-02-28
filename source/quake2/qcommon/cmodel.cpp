@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static int			checkcount;
 
-static QCvar		*map_noareas;
-
 
 int		c_traces, c_brush_traces;
 
@@ -637,92 +635,6 @@ q2trace_t		CM_TransformedBoxTrace (vec3_t start, vec3_t end,
 	return trace;
 }
 
-void	CM_SetAreaPortalState (int portalnum, qboolean open)
-{
-	if (portalnum > CMap->numareaportals)
-		throw QDropException("areaportal > numareaportals");
-
-	CMap->portalopen[portalnum] = open;
-	CMap->FloodAreaConnections();
-}
-
-qboolean	CM_AreasConnected (int area1, int area2)
-{
-	if (map_noareas->value)
-		return true;
-
-	if (area1 > CMap->numareas || area2 > CMap->numareas)
-		throw QDropException("area > numareas");
-
-	if (CMap->areas[area1].floodnum == CMap->areas[area2].floodnum)
-		return true;
-	return false;
-}
-
-
-/*
-=================
-CM_WriteAreaBits
-
-Writes a length byte followed by a bit vector of all the areas
-that area in the same flood as the area parameter
-
-This is used by the client refreshes to cull visibility
-=================
-*/
-int CM_WriteAreaBits (byte *buffer, int area)
-{
-	int		i;
-	int		floodnum;
-	int		bytes;
-
-	bytes = (CMap->numareas+7)>>3;
-
-	if (map_noareas->value)
-	{	// for debugging, send everything
-		Com_Memset(buffer, 255, bytes);
-	}
-	else
-	{
-		Com_Memset(buffer, 0, bytes);
-
-		floodnum = CMap->areas[area].floodnum;
-		for (i=0 ; i<CMap->numareas ; i++)
-		{
-			if (CMap->areas[i].floodnum == floodnum || !area)
-				buffer[i>>3] |= 1<<(i&7);
-		}
-	}
-
-	return bytes;
-}
-
-
-/*
-===================
-CM_WritePortalState
-
-Writes the portal state to a savegame file
-===================
-*/
-void	CM_WritePortalState (fileHandle_t f)
-{
-	FS_Write(CMap->portalopen, sizeof(CMap->portalopen), f);
-}
-
-/*
-===================
-CM_ReadPortalState
-
-Reads the portal state from a savegame file
-and recalculates the area connections
-===================
-*/
-void	CM_ReadPortalState (fileHandle_t f)
-{
-	FS_Read(CMap->portalopen, sizeof(CMap->portalopen), f);
-	CMap->FloodAreaConnections();
-}
 
 /*
 =============

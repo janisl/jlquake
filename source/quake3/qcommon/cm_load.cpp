@@ -78,7 +78,7 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	CMap->LoadMap(name);
 	*checksum = CMap->checksum;
 
-	CM_FloodAreaConnections();
+	CMap->FloodAreaConnections();
 
 	// allow this to be cached if it is loaded by the server
 	if (!clientload)

@@ -38,6 +38,8 @@
 
 mapsurface_t	QClipMap38::nullsurface;
 
+QCvar*			map_noareas;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------

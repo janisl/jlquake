@@ -334,12 +334,20 @@ public:
 	int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
 	byte* ClusterPVS(int Cluster);
 	byte* ClusterPHS(int Cluster);
+	void SetAreaPortalState(int PortalNum, qboolean Open);
+	void AdjustAreaPortalState(int Area1, int Area2, bool Open);
+	qboolean AreasConnected(int Area1, int Area2);
+	int WriteAreaBits(byte* Buffer, int Area);
+	void WritePortalState(fileHandle_t f);
+	void ReadPortalState(fileHandle_t f);
 
 	void LoadMap(const char* name);
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
 	int PointLeafnum_r(const vec3_t P, int Num) const;
 	void StoreLeafs(leafList_t* ll, int NodeNum) const;
 	void BoxLeafnums_r(leafList_t* ll, int nodenum) const;
+	void FloodArea_r(int AreaNum, int FloodNum);
+	void FloodAreaConnections();
 };
 
 void CM46_FreeWinding(winding_t* w);
