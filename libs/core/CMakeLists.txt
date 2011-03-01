@@ -11,6 +11,7 @@ set(CORE_FILES
 	cm46_patch.cpp
 	cm46_polylib.cpp
 	cm46_test.cpp
+	cm46_trace.cpp
 	cmd.cpp
 	common.cpp
 	crc.cpp

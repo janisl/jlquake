@@ -218,6 +218,26 @@ private:
 	//	Patch
 	static patchCollide_t* GeneratePatchCollide(int width, int height, vec3_t* points);
 
+	//	Trace
+	void Trace(q3trace_t* results, const vec3_t start, const vec3_t end, vec3_t mins, vec3_t maxs,
+		clipHandle_t model, const vec3_t origin, int brushmask, int capsule, sphere_t* sphere);
+	void TraceThroughTree(traceWork_t* tw, int num, float p1f, float p2f, vec3_t p1, vec3_t p2);
+	void TraceThroughLeaf(traceWork_t *tw, cLeaf_t *leaf);
+	static void TraceThroughBrush(traceWork_t *tw, cbrush_t *brush);
+	static void TraceThroughPatch(traceWork_t *tw, cPatch_t *patch);
+	void TraceBoundingBoxThroughCapsule(traceWork_t *tw, clipHandle_t model);
+	void TraceCapsuleThroughCapsule(traceWork_t *tw, clipHandle_t model);
+	static void TraceThroughVerticalCylinder(traceWork_t *tw, vec3_t origin, float radius, float halfheight, vec3_t start, vec3_t end);
+	static void TraceThroughSphere(traceWork_t *tw, vec3_t origin, float radius, vec3_t start, vec3_t end);
+	void PositionTest(traceWork_t* tw);
+	void TestInLeaf(traceWork_t *tw, cLeaf_t *leaf);
+	static void TestBoxInBrush(traceWork_t *tw, cbrush_t *brush);
+	void TestBoundingBoxInCapsule(traceWork_t *tw, clipHandle_t model);
+	void TestCapsuleInCapsule(traceWork_t *tw, clipHandle_t model);
+	static float DistanceFromLineSquared(vec3_t p, vec3_t lp1, vec3_t lp2, vec3_t dir);
+	static void ProjectPointOntoVector(vec3_t point, vec3_t vStart, vec3_t vDir, vec3_t vProj);
+	static float SquareRootFloat(float number);
+
 public:
 	char		name[MAX_QPATH];
 	unsigned	checksum;
@@ -340,6 +360,10 @@ public:
 	int WriteAreaBits(byte* Buffer, int Area);
 	void WritePortalState(fileHandle_t f);
 	void ReadPortalState(fileHandle_t f);
+	void BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+		clipHandle_t Model, int BrushMask, int Capsule);
+	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 
 	void LoadMap(const char* name);
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);

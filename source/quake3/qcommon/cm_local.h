@@ -25,8 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../../libs/core/cm46_local.h"
 #include "cm_public.h"
 
-extern	int			c_traces, c_brush_traces, c_patch_traces;
-
 void CM_ClearLevelPatches( void );
 
 extern QClipMap46*	CMap;

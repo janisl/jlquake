@@ -22,5 +22,4 @@ clipHandle_t CM_LoadMap(const char* name, bool clientload, int* checksum);
 clipHandle_t CM_PrecacheModel(const char* name);
 
 bool CM_HullCheck(clipHandle_t hull, vec3_t p1, vec3_t p2, q1trace_t* trace);
-int CM_TraceLine(vec3_t start, vec3_t end, q1trace_t* trace);
 void CM_CalcPHS();

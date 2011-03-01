@@ -39,6 +39,9 @@
 QClipMap*			CMapShared;
 
 int					c_pointcontents;
+int					c_traces;
+int					c_brush_traces;
+int					c_patch_traces;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

@@ -120,4 +120,7 @@ int CM_WriteAreaBits(byte* Buffer, int Area);
 void CM_WritePortalState(fileHandle_t f);
 void CM_ReadPortalState(fileHandle_t f);
 
-extern	int			c_pointcontents;
+extern int			c_pointcontents;
+extern int			c_traces;
+extern int			c_brush_traces;
+extern int			c_patch_traces;

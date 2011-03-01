@@ -52,7 +52,7 @@ void TraceLine (vec3_t start, vec3_t end, vec3_t impact)
 	q1trace_t	trace;
 
 	Com_Memset(&trace, 0, sizeof(trace));
-	CM_TraceLine(start, end, &trace);
+	CM_HullCheck(0, start, end, &trace);
 
 	VectorCopy (trace.endpos, impact);
 }

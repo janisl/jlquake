@@ -290,17 +290,6 @@ bool CM_HullCheck(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 
 //==========================================================================
 //
-//	CM_TraceLine
-//
-//==========================================================================
-
-int CM_TraceLine(vec3_t start, vec3_t end, q1trace_t* trace)
-{
-	return CM_RecursiveHullCheck(&CMap->Map.map_models[0].hulls[0], 0, 0, 1, start, end, trace);
-}
-
-//==========================================================================
-//
 //	CM_CalcPHS
 //
 //	Calculates the PHS (Potentially Hearable Set)

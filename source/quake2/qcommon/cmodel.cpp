@@ -25,8 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static int			checkcount;
 
 
-int		c_traces, c_brush_traces;
-
 static QClipMap38*	CMap;
 
 /*
