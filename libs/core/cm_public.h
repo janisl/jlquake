@@ -120,6 +120,15 @@ int CM_WriteAreaBits(byte* Buffer, int Area);
 void CM_WritePortalState(fileHandle_t f);
 void CM_ReadPortalState(fileHandle_t f);
 
+bool CM_HullCheckQ1(clipHandle_t Hull, vec3_t P1, vec3_t P2, q1trace_t* Trace);
+q2trace_t CM_BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask);
+q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs,
+	clipHandle_t Model, int BrushMask, vec3_t Origin, vec3_t Angles);
+void CM_BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+	clipHandle_t Model, int BrushMask, int Capsule);
+void CM_TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
+
 extern int			c_pointcontents;
 extern int			c_traces;
 extern int			c_brush_traces;

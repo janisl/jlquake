@@ -112,7 +112,7 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 		VectorCopy (end, trace.endpos);
 
 	// trace a line through the apropriate clipping hull
-		CM_HullCheck(hull, start_l, end_l, &trace);
+		CM_HullCheckQ1(hull, start_l, end_l, &trace);
 
 		if (trace.allsolid)
 			trace.startsolid = true;

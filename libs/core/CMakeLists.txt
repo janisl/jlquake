@@ -3,9 +3,11 @@ set(CORE_FILES
 	cm29_load.cpp
 	cm29_main.cpp
 	cm29_test.cpp
+	cm29_trace.cpp
 	cm38_load.cpp
 	cm38_main.cpp
 	cm38_test.cpp
+	cm38_trace.cpp
 	cm46_load.cpp
 	cm46_main.cpp
 	cm46_patch.cpp

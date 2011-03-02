@@ -100,31 +100,3 @@ void CM_ClearMap()
 	}
 	CM_ClearLevelPatches();
 }
-
-/*
-==================
-CM_BoxTrace
-==================
-*/
-void CM_BoxTrace( q3trace_t *Results, const vec3_t Start, const vec3_t End,
-						  vec3_t Mins, vec3_t Maxs,
-						  clipHandle_t Model, int BrushMask, int Capsule)
-{
-	CMap->BoxTraceQ3(Results, Start, End, Mins, Maxs, Model, BrushMask, Capsule);
-}
-
-/*
-==================
-CM_TransformedBoxTrace
-
-Handles offseting and rotation of the end points for moving and
-rotating entities
-==================
-*/
-void CM_TransformedBoxTrace(q3trace_t *Results, const vec3_t Start, const vec3_t End,
-						  vec3_t Mins, vec3_t Maxs,
-						  clipHandle_t Model, int BrushMask,
-						  const vec3_t Origin, const vec3_t Angles, int Capsule)
-{
-	CMap->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model, BrushMask, Origin, Angles, Capsule);
-}

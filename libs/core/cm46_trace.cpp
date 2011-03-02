@@ -1523,3 +1523,38 @@ float QClipMap46::SquareRootFloat(float number)
 	y  = y * (threehalfs - (x2 * y * y));
 	return number * y;
 }
+
+//==========================================================================
+//
+//  QClipMap46::HullCheckQ1
+//
+//==========================================================================
+
+bool QClipMap46::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t * trace)
+{
+	throw QDropException("Not implemented");
+}
+
+//==========================================================================
+//
+//	QClipMap46::BoxTraceQ2
+//
+//==========================================================================
+
+q2trace_t QClipMap46::BoxTraceQ2(vec3_t Start, vec3_t End,
+	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask)
+{
+	throw QDropException("Not implemented");
+}
+
+//==========================================================================
+//
+//	QClipMap46::TransformedBoxTraceQ2
+//
+//==========================================================================
+
+q2trace_t QClipMap46::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
+	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, vec3_t Origin, vec3_t Angles)
+{
+	throw QDropException("Not implemented");
+}

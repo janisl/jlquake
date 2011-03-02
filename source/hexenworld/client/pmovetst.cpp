@@ -179,7 +179,7 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 		trace.endpos[2] -= clip_mins[2];
 
 	// trace a line through the apropriate clipping hull
-		CM_HullCheck(hull, start_l, end_l, &trace);
+		CM_HullCheckQ1(hull, start_l, end_l, &trace);
 
 
 // rjr will need to adjust for player when going into different hulls

@@ -407,7 +407,7 @@ q1trace_t SV_ClipMoveToEntity (edict_t *ent, vec3_t start, vec3_t mins, vec3_t m
 	VectorSubtract (end, offset, end_l);
 
 // trace a line through the apropriate clipping hull
-	CM_HullCheck(hull, start_l, end_l, &trace);
+	CM_HullCheckQ1(hull, start_l, end_l, &trace);
 
 // fix trace up by the offset
 	if (trace.fraction != 1)

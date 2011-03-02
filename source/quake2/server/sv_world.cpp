@@ -558,11 +558,11 @@ void SV_ClipMoveToEntities ( moveclip_t *clip )
 			angles = vec3_origin;	// boxes don't rotate
 
 		if (touch->svflags & SVF_MONSTER)
-			trace = CM_TransformedBoxTrace (clip->start, clip->end,
+			trace = CM_TransformedBoxTraceQ2(clip->start, clip->end,
 				clip->mins2, clip->maxs2, model, clip->contentmask,
 				touch->s.origin, angles);
 		else
-			trace = CM_TransformedBoxTrace (clip->start, clip->end,
+			trace = CM_TransformedBoxTraceQ2(clip->start, clip->end,
 				clip->mins, clip->maxs, model,  clip->contentmask,
 				touch->s.origin, angles);
 
@@ -636,7 +636,7 @@ q2trace_t SV_Trace (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, edict_t 
 	Com_Memset( &clip, 0, sizeof ( moveclip_t ) );
 
 	// clip to world
-	clip.trace = CM_BoxTrace (start, end, mins, maxs, 0, contentmask);
+	clip.trace = CM_BoxTraceQ2(start, end, mins, maxs, 0, contentmask);
 	clip.trace.ent = ge->edicts;
 	if (clip.trace.fraction == 0)
 		return clip.trace;		// blocked by the world

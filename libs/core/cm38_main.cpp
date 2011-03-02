@@ -84,6 +84,7 @@ QClipMap38::QClipMap38()
 , box_leaf(NULL)
 , checksum(0)
 , floodvalid(0)
+, checkcount(0)
 {
 	Com_Memset(name, 0, sizeof(name));
 	Com_Memset(&box_model, 0, sizeof(box_model));

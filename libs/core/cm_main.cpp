@@ -397,3 +397,61 @@ void CM_ReadPortalState(fileHandle_t f)
 {
 	CMapShared->ReadPortalState(f);
 }
+
+//==========================================================================
+//
+//	CM_HullCheckQ1
+//
+//==========================================================================
+
+bool CM_HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
+{
+	return CMapShared->HullCheckQ1(Handle, p1, p2, trace);
+}
+
+//==========================================================================
+//
+//	CM_BoxTraceQ2
+//
+//==========================================================================
+
+q2trace_t CM_BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask)
+{
+	CMapShared->BoxTraceQ2(Start, End, Mins, Maxs, Model, BrushMask);
+}
+
+//==========================================================================
+//
+//	CM_TransformedBoxTraceQ2
+//
+//==========================================================================
+
+q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
+	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, vec3_t Origin, vec3_t Angles)
+{
+	return CMapShared->TransformedBoxTraceQ2(Start, End, Mins, Maxs, Model, BrushMask, Origin, Angles);
+}
+
+//==========================================================================
+//
+//	CM_BoxTraceQ3
+//
+//==========================================================================
+
+void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+	clipHandle_t Model, int BrushMask, int Capsule)
+{
+	CMapShared->BoxTraceQ3(Results, Start, End, Mins, Maxs, Model, BrushMask, Capsule);
+}
+
+//==========================================================================
+//
+//	CM_TransformedBoxTraceQ3
+//
+//==========================================================================
+
+void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
+	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule)
+{
+	CMapShared->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model, BrushMask, Origin, Angles, Capsule);
+}
