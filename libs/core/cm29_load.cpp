@@ -111,7 +111,7 @@ void QClipMap29::LoadModel(const char* name)
 	mod->checksum = 0;
 	mod->checksum2 = 0;
 
-	const quint8* mod_base = (quint8*)Buffer.Ptr();
+	const quint8* mod_base = Buffer.Ptr();
 
 	// checksum all of the map, except for entities
 	for (int i = 0; i < BSP29_HEADER_LUMPS; i++)
@@ -152,6 +152,8 @@ void QClipMap29::LoadModel(const char* name)
 	}
 
 	InitBoxHull();
+
+	CalcPHS();
 }
 
 //==========================================================================
@@ -546,6 +548,43 @@ void QClipModelMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, 
 //	LOADING OF NON-MAP MODELS
 //
 //**************************************************************************
+
+//==========================================================================
+//
+//	QClipMap29::PrecacheModel
+//
+//==========================================================================
+
+clipHandle_t QClipMap29::PrecacheModel(const char* Name)
+{
+	if (!Name[0])
+	{
+		throw QDropException("CM_ForName: NULL name");
+	}
+
+	//
+	// search the currently loaded models
+	//
+	for (int i = 0; i < numknown; i++)
+	{
+		if (!QStr::Cmp(known[i]->model.name, Name))
+		{
+			return (MAX_MAP_MODELS + i) * MAX_MAP_HULLS;
+		}
+	}
+
+	if (numknown == MAX_CMOD_KNOWN)
+	{
+		throw QDropException("mod_numknown == MAX_CMOD_KNOWN");
+	}
+	known[numknown] = new QClipModelNonMap29;
+	QClipModelNonMap29* LoadCMap = known[numknown];
+	numknown++;
+
+	LoadCMap->Load(Name);
+
+	return (MAX_MAP_MODELS + numknown - 1) * MAX_MAP_HULLS;
+}
 
 //==========================================================================
 //

@@ -390,8 +390,6 @@ CMODEL
 
 clipHandle_t CM_LoadMap(const char* name, bool clientload, unsigned* checksum);
 
-qboolean	CM_HeadnodeVisible (int headnode, byte *visbits);
-
 /*
 ==============================================================
 

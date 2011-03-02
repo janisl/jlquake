@@ -274,6 +274,40 @@ int QClipMap38::TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, c
 	return ContentsToQ3(TransformedPointContentsQ2(P, Model, Origin, Angles));
 }
 
+//==========================================================================
+//
+//	QClipMap38::HeadnodeVisible
+//
+//	Returns true if any leaf under headnode has a cluster that
+// is potentially visible
+//
+//==========================================================================
+
+bool QClipMap38::HeadnodeVisible(int NodeNum, byte* VisBits)
+{
+	if (NodeNum < 0)
+	{
+		int leafnum = -1-NodeNum;
+		int cluster = leafs[leafnum].cluster;
+		if (cluster == -1)
+		{
+			return false;
+		}
+		if (VisBits[cluster >> 3] & (1 << (cluster & 7)))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	cnode_t* node = &nodes[NodeNum];
+	if (HeadnodeVisible(node->children[0], VisBits))
+	{
+		return true;
+	}
+	return HeadnodeVisible(node->children[1], VisBits);
+}
+
 /*
 ===============================================================================
 

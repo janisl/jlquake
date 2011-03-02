@@ -1342,7 +1342,6 @@ void Host_Init (quakeparms_t *parms)
 	Con_Init ();	
 	M_Init ();	
 	Mod_Init ();
-	CM_Init ();
 
 	
 //	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");

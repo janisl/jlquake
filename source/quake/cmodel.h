@@ -17,8 +17,4 @@
 //**
 //**************************************************************************
 
-void CM_Init();
 clipHandle_t CM_LoadMap(const char* name, bool clientload, int* checksum);
-clipHandle_t CM_PrecacheModel(const char* name);
-
-void CM_CalcPHS();

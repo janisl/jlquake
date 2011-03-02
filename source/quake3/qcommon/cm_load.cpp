@@ -21,16 +21,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // cmodel.c -- model loading
 
-#include "cm_local.h"
-
-#define	LL(x) x=LittleLong(x)
-
+#include "../../../libs/core/core.h"
+#include "../../../libs/core/bsp46file.h"
+#include "../../../libs/core/cm46_local.h"
+#include "cm_public.h"
 
 QClipMap46*	CMap;
-
-void	CM_FloodAreaConnections (void);
-
-//==================================================================
 
 /*
 ==================
@@ -98,5 +94,4 @@ void CM_ClearMap()
 		CMap = NULL;
 		CMapShared = NULL;
 	}
-	CM_ClearLevelPatches();
 }

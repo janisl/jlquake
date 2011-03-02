@@ -26,7 +26,4 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 void		CM_LoadMap( const char *name, qboolean clientload, int *checksum);
 void		CM_ClearMap( void );
 
-// cm_patch.c
-void CM_DrawDebugSurface( void (*drawPoly)(int color, int numPoints, float *points) );
-
 #endif

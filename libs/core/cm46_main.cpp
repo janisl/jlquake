@@ -82,6 +82,8 @@ QClipMap46::~QClipMap46()
 	delete[] visibility;
 	delete[] surfaces;
 	delete[] cmodels;
+
+	ClearLevelPatches();
 }
 
 //==========================================================================

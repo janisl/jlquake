@@ -489,3 +489,14 @@ void QClipMap38::LoadSubmodels(const quint8* base, const bsp38_lump_t *l)
 		out->headnode = LittleLong(in->headnode);
 	}
 }
+
+//==========================================================================
+//
+//	QClipMap38::PrecacheModel
+//
+//==========================================================================
+
+clipHandle_t QClipMap38::PrecacheModel(const char* Name)
+{
+	return 0;
+}

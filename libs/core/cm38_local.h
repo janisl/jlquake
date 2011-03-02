@@ -183,6 +183,7 @@ public:
 	QClipMap38();
 	~QClipMap38();
 
+	clipHandle_t PrecacheModel(const char* Name);
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;
 	int GetNumInlineModels() const;
@@ -204,6 +205,7 @@ public:
 	int TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
 	int TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
 	int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
+	bool HeadnodeVisible(int NodeNum, byte *VisBits);
 	byte* ClusterPVS(int Cluster);
 	byte* ClusterPHS(int Cluster);
 	void SetAreaPortalState(int PortalNum, qboolean Open);
@@ -220,6 +222,7 @@ public:
 		clipHandle_t Model, int BrushMask, int Capsule);
 	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
+	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
 	void LoadMap(const char* name);
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);

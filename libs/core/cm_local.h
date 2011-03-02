@@ -34,6 +34,7 @@ class QClipMap
 {
 public:
 	virtual ~QClipMap();
+	virtual clipHandle_t PrecacheModel(const char* Name) = 0;
 	virtual clipHandle_t InlineModel(int Index) const = 0;
 	virtual int GetNumClusters() const = 0;
 	virtual int GetNumInlineModels() const = 0;
@@ -55,6 +56,7 @@ public:
 	virtual int TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles) = 0;
 	virtual int TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles) = 0;
 	virtual int TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles) = 0;
+	virtual bool HeadnodeVisible(int NodeNum, byte *VisBits) = 0;
 	virtual byte* ClusterPVS(int Cluster) = 0;
 	virtual byte* ClusterPHS(int Cluster) = 0;
 	virtual void SetAreaPortalState(int PortalNum, qboolean Open) = 0;
@@ -71,6 +73,7 @@ public:
 		clipHandle_t Model, int BrushMask, int Capsule) = 0;
 	virtual void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule) = 0;
+	virtual void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points)) = 0;
 };
 
 extern QClipMap*			CMapShared;

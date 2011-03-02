@@ -76,34 +76,3 @@ clipHandle_t CM_LoadMap(const char* name, bool clientload, unsigned* checksum)
 	*checksum = CMap->checksum;
 	return 0;
 }
-
-/*
-=============
-CM_HeadnodeVisible
-
-Returns true if any leaf under headnode has a cluster that
-is potentially visible
-=============
-*/
-qboolean CM_HeadnodeVisible (int nodenum, byte *visbits)
-{
-	int		leafnum;
-	int		cluster;
-	cnode_t	*node;
-
-	if (nodenum < 0)
-	{
-		leafnum = -1-nodenum;
-		cluster = CMap->leafs[leafnum].cluster;
-		if (cluster == -1)
-			return false;
-		if (visbits[cluster>>3] & (1<<(cluster&7)))
-			return true;
-		return false;
-	}
-
-	node = &CMap->nodes[nodenum];
-	if (CM_HeadnodeVisible(node->children[0], visbits))
-		return true;
-	return CM_HeadnodeVisible(node->children[1], visbits);
-}

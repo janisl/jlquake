@@ -369,3 +369,13 @@ int QClipMap29::ContentsToQ3(int Contents) const
 {
 	throw QException("Not implemented");
 }
+
+//==========================================================================
+//
+//	QClipMap29::DrawDebugSurface
+//
+//==========================================================================
+
+void QClipMap29::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
+{
+}

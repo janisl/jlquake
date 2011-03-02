@@ -231,7 +231,6 @@ void SV_SpawnServer (char *server, char *startspot)
 	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 	sv.worldmodel = CM_LoadMap(sv.modelname, false, NULL);
-	CM_CalcPHS();
 
 	//
 	// clear physics interaction links

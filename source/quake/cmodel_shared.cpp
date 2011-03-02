@@ -43,16 +43,6 @@ static QClipMap29*	CMap;
 
 //==========================================================================
 //
-//	CM_Init
-//
-//==========================================================================
-
-void CM_Init()
-{
-}
-
-//==========================================================================
-//
 //	CM_LoadMap
 //
 //==========================================================================
@@ -80,54 +70,4 @@ clipHandle_t CM_LoadMap(const char* name, bool clientload, int* checksum)
 	CMap->LoadModel(name);
 
 	return 0;
-}
-
-//==========================================================================
-//
-//	CM_PrecacheModel
-//
-//==========================================================================
-
-clipHandle_t CM_PrecacheModel(const char* name)
-{
-	if (!name[0])
-	{
-		Sys_Error("CM_ForName: NULL name");
-	}
-
-	//
-	// search the currently loaded models
-	//
-	for (int i = 0; i < CMap->numknown; i++)
-	{
-		if (!QStr::Cmp(CMap->known[i]->model.name, name))
-		{
-			return (MAX_MAP_MODELS + i) * MAX_MAP_HULLS;
-		}
-	}
-
-	if (CMap->numknown == MAX_CMOD_KNOWN)
-	{
-		Sys_Error("mod_numknown == MAX_CMOD_KNOWN");
-	}
-	CMap->known[CMap->numknown] = new QClipModelNonMap29;
-	QClipModelNonMap29* LoadCMap = CMap->known[CMap->numknown];
-	CMap->numknown++;
-
-	LoadCMap->Load(name);
-
-	return (MAX_MAP_MODELS + CMap->numknown - 1) * MAX_MAP_HULLS;
-}
-
-//==========================================================================
-//
-//	CM_CalcPHS
-//
-//	Calculates the PHS (Potentially Hearable Set)
-//
-//==========================================================================
-
-void CM_CalcPHS()
-{
-	CMap->CalcPHS();
 }

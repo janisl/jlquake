@@ -72,6 +72,7 @@ struct q3trace_t
 	int			entityNum;	// entity the contacted surface is a part of
 };
 
+clipHandle_t CM_PrecacheModel(const char* Name);
 clipHandle_t CM_InlineModel(int Index);		// 0 = world, 1 + are bmodels
 
 int CM_NumClusters();
@@ -110,6 +111,8 @@ int CM_TransformedPointContentsQ1(const vec3_t Point, clipHandle_t Model, const 
 int CM_TransformedPointContentsQ2(const vec3_t Point, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
 int CM_TransformedPointContentsQ3(const vec3_t Point, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles);
 
+bool CM_HeadnodeVisible(int HeadNode, byte* VisBits);
+
 byte* CM_ClusterPVS(int Cluster);
 byte* CM_ClusterPHS(int Cluster);
 
@@ -129,6 +132,8 @@ void CM_BoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec
 void CM_TransformedBoxTraceQ3(q3trace_t* Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 
+void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
+	
 extern int			c_pointcontents;
 extern int			c_traces;
 extern int			c_brush_traces;

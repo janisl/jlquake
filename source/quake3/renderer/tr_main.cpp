@@ -1429,17 +1429,29 @@ R_DebugGraphics
 Visualization aid for movement clipping debugging
 ====================
 */
-void R_DebugGraphics( void ) {
-	if ( !r_debugSurface->integer ) {
+void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
+
+void R_DebugGraphics()
+{
+	if (!r_debugSurface->integer)
+	{
 		return;
 	}
 
 	// the render thread can't make callbacks to the main thread
 	R_SyncRenderThread();
 
-	GL_Bind( tr.whiteImage);
-	GL_Cull( CT_FRONT_SIDED );
-	ri.CM_DrawDebugSurface( R_DebugPolygon );
+	GL_Bind(tr.whiteImage);
+	GL_Cull(CT_FRONT_SIDED);
+
+	if (r_debugSurface->integer == 1)
+	{
+		ri.CM_DrawDebugSurface(R_DebugPolygon);
+	}
+	else
+	{
+		BotDrawDebugPolygons(R_DebugPolygon, r_debugSurface->integer);
+	}
 }
 
 

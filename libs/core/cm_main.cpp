@@ -59,6 +59,17 @@ QClipMap::~QClipMap()
 
 //==========================================================================
 //
+//	CM_PrecacheModel
+//
+//==========================================================================
+
+clipHandle_t CM_PrecacheModel(const char* Name)
+{
+	return CMapShared->PrecacheModel(Name);
+}
+
+//==========================================================================
+//
 //	CM_InlineModel
 //
 //==========================================================================
@@ -312,6 +323,17 @@ int CM_TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3
 
 //==========================================================================
 //
+//	CM_HeadnodeVisible
+//
+//==========================================================================
+
+bool CM_HeadnodeVisible(int NodeNum, byte* VisBits)
+{
+	return CMapShared->HeadnodeVisible(NodeNum, VisBits);
+}
+
+//==========================================================================
+//
 //	CM_ClusterPVS
 //
 //==========================================================================
@@ -454,4 +476,15 @@ void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
 	CMapShared->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model, BrushMask, Origin, Angles, Capsule);
+}
+
+//==========================================================================
+//
+//	CM_DrawDebugSurface
+//
+//==========================================================================
+
+void CM_DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
+{
+	CMapShared->DrawDebugSurface(drawPoly);
 }
