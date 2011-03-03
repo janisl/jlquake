@@ -373,7 +373,7 @@ public:
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
-	void LoadMap(const char* name);
+	void LoadMap(const char* name, const QArray<quint8>& Buffer);
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
 	int PointLeafnum_r(const vec3_t P, int Num) const;
 	void StoreLeafs(leafList_t* ll, int NodeNum) const;

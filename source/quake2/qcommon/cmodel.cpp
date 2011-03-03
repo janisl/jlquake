@@ -52,7 +52,10 @@ Loads in the map and all submodels
 */
 clipHandle_t CM_LoadMap(const char* name, bool clientload, unsigned* checksum)
 {
-	map_noareas = Cvar_Get("map_noareas", "0", 0);
+	if (!name)
+	{
+		throw QDropException("CM_LoadMap: NULL name");
+	}
 
 	if (CMap && !QStr::Cmp(CMap->name, name) && (clientload || !Cvar_VariableValue("flushmap")))
 	{
@@ -67,10 +70,22 @@ clipHandle_t CM_LoadMap(const char* name, bool clientload, unsigned* checksum)
 		// free old stuff
 		CM_ClearMap();
 
+		QArray<quint8> Buffer;
+		if (name[0])
+		{
+			//
+			// load the file
+			//
+			int length = FS_ReadFile(name, Buffer);
+			if (!length)
+			{
+				throw QDropException(va("Couldn't load %s", name));
+			}
+		}
+
 		CMap = new QClipMap38();
 		CMapShared = CMap;
-
-		CMap->LoadMap(name);
+		CMap->LoadMap(name, Buffer);
 	}
 
 	*checksum = CMap->checksum;

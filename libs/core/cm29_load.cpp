@@ -76,20 +76,11 @@ public:
 //
 //==========================================================================
 
-void QClipMap29::LoadModel(const char* name)
+void QClipMap29::LoadModel(const char* name, const QArray<quint8>& Buffer)
 {
 	Com_Memset(Map.map_models, 0, sizeof(Map.map_models));
 	cmodel_t* mod = &Map.map_models[0];
 	QStr::Cpy(mod->name, name);
-
-	//
-	// load the file
-	//
-	QArray<byte> Buffer;
-	if (FS_ReadFile(name, Buffer) <= 0)
-	{
-		throw QDropException(va("Couldn't load %s", name));
-	}
 
 	mod->type = cmod_brush;
 

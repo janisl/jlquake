@@ -232,7 +232,7 @@ public:
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
-	void LoadModel(const char* name);
+	void LoadModel(const char* name, const QArray<quint8>& Buffer);
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
 	chull_t* ClipHandleToHull(clipHandle_t Handle);
 	void BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const;

@@ -224,7 +224,7 @@ public:
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
-	void LoadMap(const char* name);
+	void LoadMap(const char* name, const QArray<quint8>& Buffer);
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
 	void FloodAreaConnections();
 	void ClearPortalOpen();

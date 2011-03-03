@@ -57,22 +57,15 @@
 //
 //==========================================================================
 
-void QClipMap46::LoadMap(const char* name)
+void QClipMap46::LoadMap(const char* name, const QArray<quint8>& Buffer)
 {
-	//
-	// load the file
-	//
-	void* buf;
-	int length = FS_ReadFile(name, &buf);
+	cm_noAreas = Cvar_Get("cm_noAreas", "0", CVAR_CHEAT);
+	cm_noCurves = Cvar_Get("cm_noCurves", "0", CVAR_CHEAT);
+	cm_playerCurveClip = Cvar_Get("cm_playerCurveClip", "1", CVAR_ARCHIVE | CVAR_CHEAT);
 
-	if (!buf)
-	{
-		throw QDropException(va("Couldn't load %s", name));
-	}
+	checksum = LittleLong(Com_BlockChecksum(Buffer.Ptr(), Buffer.Num()));
 
-	checksum = LittleLong(Com_BlockChecksum(buf, length));
-
-	bsp46_dheader_t header = *(bsp46_dheader_t*)buf;
+	bsp46_dheader_t header = *(bsp46_dheader_t*)Buffer.Ptr();
 	for (int i = 0; i < sizeof(bsp46_dheader_t) / 4; i++)
 	{
 		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
@@ -84,7 +77,7 @@ void QClipMap46::LoadMap(const char* name)
 			name, header.version, BSP46_VERSION));
 	}
 
-	byte* cmod_base = (byte*)buf;
+	const byte* cmod_base = Buffer.Ptr();
 
 	// load into heap
 	LoadShaders(cmod_base, &header.lumps[BSP46LUMP_SHADERS]);
@@ -100,10 +93,16 @@ void QClipMap46::LoadMap(const char* name)
 	LoadPatches(cmod_base, &header.lumps[BSP46LUMP_SURFACES], &header.lumps[BSP46LUMP_DRAWVERTS]);
 	LoadSubmodels(cmod_base, &header.lumps[BSP46LUMP_MODELS]);
 
-	// we are NOT freeing the file, because it is cached for the ref
-	FS_FreeFile(buf);
-
 	InitBoxHull();
+
+	FloodAreaConnections();
+
+	// allow this to be cached if it is loaded by the server
+	//JL: And why not on client?
+	//if (!clientload)
+	{
+		QStr::NCpyZ(this->name, name, sizeof(this->name));
+	}
 }
 
 //==========================================================================

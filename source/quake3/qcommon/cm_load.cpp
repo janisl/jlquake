@@ -37,13 +37,11 @@ Loads in the map and all submodels
 */
 void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 {
-	if ( !name || !name[0] ) {
-		throw QDropException("CM_LoadMap: NULL name" );
+	if (!name || !name[0])
+	{
+		throw QDropException("CM_LoadMap: NULL name");
 	}
 
-	cm_noAreas = Cvar_Get ("cm_noAreas", "0", CVAR_CHEAT);
-	cm_noCurves = Cvar_Get ("cm_noCurves", "0", CVAR_CHEAT);
-	cm_playerCurveClip = Cvar_Get ("cm_playerCurveClip", "1", CVAR_ARCHIVE|CVAR_CHEAT );
 	GLog.DWrite("CM_LoadMap( %s, %i )\n", name, clientload);
 
 	if (CMap && !QStr::Cmp(CMap->name, name) && clientload)
@@ -55,30 +53,21 @@ void CM_LoadMap( const char *name, qboolean clientload, int *checksum )
 	// free old stuff
 	CM_ClearMap();
 
+	//
+	// load the file
+	//
+	QArray<quint8> Buffer;
+	int length = FS_ReadFile(name, Buffer);
+
+	if (!length)
+	{
+		throw QDropException(va("Couldn't load %s", name));
+	}
+
 	CMap = new QClipMap46;
 	CMapShared = CMap;
-
-	if (!name[0])
-	{
-		CMap->numLeafs = 1;
-		CMap->numClusters = 1;
-		CMap->numAreas = 1;
-		CMap->cmodels = new cmodel_t[1];
-		Com_Memset(CMap->cmodels, 0, sizeof(cmodel_t));
-		*checksum = 0;
-		return;
-	}
-
-	CMap->LoadMap(name);
+	CMap->LoadMap(name, Buffer);
 	*checksum = CMap->checksum;
-
-	CMap->FloodAreaConnections();
-
-	// allow this to be cached if it is loaded by the server
-	if (!clientload)
-	{
-		QStr::NCpyZ(CMap->name, name, sizeof(CMap->name));
-	}
 }
 
 /*

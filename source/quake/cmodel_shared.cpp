@@ -65,9 +65,18 @@ clipHandle_t CM_LoadMap(const char* name, bool clientload, int* checksum)
 		delete CMap;
 	}
 
+	//
+	// load the file
+	//
+	QArray<quint8> Buffer;
+	if (FS_ReadFile(name, Buffer) <= 0)
+	{
+		throw QDropException(va("Couldn't load %s", name));
+	}
+
 	CMap = new QClipMap29;
 	CMapShared = CMap;
-	CMap->LoadModel(name);
+	CMap->LoadModel(name, Buffer);
 
 	return 0;
 }

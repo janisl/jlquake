@@ -46,8 +46,10 @@
 //
 //==========================================================================
 
-void QClipMap38::LoadMap(const char* name)
+void QClipMap38::LoadMap(const char* name, const QArray<quint8>& Buffer)
 {
+	map_noareas = Cvar_Get("map_noareas", "0", 0);
+
 	if (!name || !name[0])
 	{
 		numleafs = 1;
@@ -63,19 +65,9 @@ void QClipMap38::LoadMap(const char* name)
 		return;			// cinematic servers won't have anything at all
 	}
 
-	//
-	// load the file
-	//
-	void* buf;
-	int length = FS_ReadFile(name, &buf);
-	if (!buf)
-	{
-		throw QDropException(va("Couldn't load %s", name));
-	}
+	checksum = LittleLong(Com_BlockChecksum(Buffer.Ptr(), Buffer.Num()));
 
-	checksum = LittleLong(Com_BlockChecksum(buf, length));
-
-	bsp38_dheader_t header = *(bsp38_dheader_t*)buf;
+	bsp38_dheader_t header = *(bsp38_dheader_t*)Buffer.Ptr();
 	for (int i = 0; i < sizeof(bsp38_dheader_t) / 4 ; i++)
 	{
 		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
@@ -87,7 +79,7 @@ void QClipMap38::LoadMap(const char* name)
 			name, header.version, BSP38_VERSION));
 	}
 
-	byte* cmod_base = (byte*)buf;
+	const byte* cmod_base = Buffer.Ptr();
 
 	// load into heap
 	LoadSurfaces(cmod_base, &header.lumps[BSP38LUMP_TEXINFO]);
@@ -102,8 +94,6 @@ void QClipMap38::LoadMap(const char* name)
 	LoadVisibility(cmod_base, &header.lumps[BSP38LUMP_VISIBILITY]);
 	LoadEntityString(cmod_base, &header.lumps[BSP38LUMP_ENTITIES]);
 	LoadSubmodels(cmod_base, &header.lumps[BSP38LUMP_MODELS]);
-
-	FS_FreeFile(buf);
 
 	InitBoxHull();
 
