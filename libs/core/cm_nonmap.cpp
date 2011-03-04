@@ -46,8 +46,8 @@ public:
 
 	float		aliastransform[3][4];
 
-	void LoadAliasModel(QClipModel29* mod, void* buffer);
-	void LoadAliasModelNew(QClipModel29* mod, void* buffer);
+	void LoadAliasModel(QClipMap29* mod, void* buffer);
+	void LoadAliasModelNew(QClipMap29* mod, void* buffer);
 	void* LoadAllSkins(int numskins, daliasskintype_t* pskintype);
 	void* LoadAliasFrame(void* pin);
 	void* LoadAliasGroup(void* pin);
@@ -97,23 +97,21 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	QClipMap29* LoadCMap = new QClipMap29;
 	CMNonMapModels.Append(LoadCMap);
 
-	LoadCMap->Map.LoadNonMap(Name);
-
-	LoadCMap->Name = Name;
+	LoadCMap->LoadNonMap(Name);
 
 	return CMNonMapModels.Num() << CMH_NON_MAP_SHIFT;
 }
 
 //==========================================================================
 //
-//	QClipModel29::LoadNonMap
+//	QClipMap29::LoadNonMap
 //
 //==========================================================================
 
-void QClipModel29::LoadNonMap(const char* name)
+void QClipMap29::LoadNonMap(const char* name)
 {
-	Com_Memset(&map_models, 0, sizeof(map_models));
-	cmodel_t* mod = &map_models[0];
+	Com_Memset(&Map.map_models, 0, sizeof(Map.map_models));
+	cmodel_t* mod = &Map.map_models[0];
 
 	//
 	// load the file
@@ -123,6 +121,8 @@ void QClipModel29::LoadNonMap(const char* name)
 	{
 		throw QDropException(va("CM_PrecacheModel: %s not found", name));
 	}
+
+	this->Name = Name;
 
 	// call the apropriate loader
 	switch (LittleLong(*(unsigned*)Buffer.Ptr()))
@@ -147,11 +147,11 @@ void QClipModel29::LoadNonMap(const char* name)
 
 //==========================================================================
 //
-//	QClipModel29::LoadAliasModel
+//	QClipMap29::LoadAliasModel
 //
 //==========================================================================
 
-void QClipModel29::LoadAliasModel(cmodel_t* mod, void* buffer)
+void QClipMap29::LoadAliasModel(cmodel_t* mod, void* buffer)
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -168,11 +168,11 @@ void QClipModel29::LoadAliasModel(cmodel_t* mod, void* buffer)
 
 //==========================================================================
 //
-//	QClipModel29::LoadAliasModelNew
+//	QClipMap29::LoadAliasModelNew
 //
 //==========================================================================
 
-void QClipModel29::LoadAliasModelNew(cmodel_t* mod, void* buffer)
+void QClipMap29::LoadAliasModelNew(cmodel_t* mod, void* buffer)
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -193,17 +193,15 @@ void QClipModel29::LoadAliasModelNew(cmodel_t* mod, void* buffer)
 //
 //==========================================================================
 
-void QMdlBoundsLoader::LoadAliasModel(QClipModel29* mod, void* buffer)
+void QMdlBoundsLoader::LoadAliasModel(QClipMap29* mod, void* buffer)
 {
 	mdl_t* pinmodel = (mdl_t *)buffer;
 
 	int version = LittleLong (pinmodel->version);
 	if (version != ALIAS_VERSION)
 	{
-		//throw QDropException(va("%s has wrong version number (%i should be %i)",
-		//	 mod->name, version, ALIAS_VERSION));
-		throw QDropException(va("wrong version number (%i should be %i)",
-			 version, ALIAS_VERSION));
+		throw QDropException(va("%s has wrong version number (%i should be %i)",
+			 *mod->Name, version, ALIAS_VERSION));
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -240,14 +238,14 @@ void QMdlBoundsLoader::LoadAliasModel(QClipModel29* mod, void* buffer)
 		}
 	}
 
-	mod->map_models[0].type = cmod_alias;
+	mod->Map.map_models[0].type = cmod_alias;
 
-	mod->map_models[0].mins[0] = mins[0] - 10;
-	mod->map_models[0].mins[1] = mins[1] - 10;
-	mod->map_models[0].mins[2] = mins[2] - 10;
-	mod->map_models[0].maxs[0] = maxs[0] + 10;
-	mod->map_models[0].maxs[1] = maxs[1] + 10;
-	mod->map_models[0].maxs[2] = maxs[2] + 10;
+	mod->Map.map_models[0].mins[0] = mins[0] - 10;
+	mod->Map.map_models[0].mins[1] = mins[1] - 10;
+	mod->Map.map_models[0].mins[2] = mins[2] - 10;
+	mod->Map.map_models[0].maxs[0] = maxs[0] + 10;
+	mod->Map.map_models[0].maxs[1] = maxs[1] + 10;
+	mod->Map.map_models[0].maxs[2] = maxs[2] + 10;
 }
 
 //==========================================================================
@@ -258,17 +256,15 @@ void QMdlBoundsLoader::LoadAliasModel(QClipModel29* mod, void* buffer)
 //
 //==========================================================================
 
-void QMdlBoundsLoader::LoadAliasModelNew(QClipModel29* mod, void* buffer)
+void QMdlBoundsLoader::LoadAliasModelNew(QClipMap29* mod, void* buffer)
 {
 	newmdl_t* pinmodel = (newmdl_t *)buffer;
 
 	int version = LittleLong(pinmodel->version);
 	if (version != ALIAS_NEWVERSION)
 	{
-		//throw QDropException(va("%s has wrong version number (%i should be %i)",
-		//	mod->name, version, ALIAS_NEWVERSION));
-		throw QDropException(va("wrong version number (%i should be %i)",
-			version, ALIAS_NEWVERSION));
+		throw QDropException(va("%s has wrong version number (%i should be %i)",
+			*mod->Name, version, ALIAS_NEWVERSION));
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -306,14 +302,14 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipModel29* mod, void* buffer)
 		}
 	}
 
-	mod->map_models[0].type = cmod_alias;
+	mod->Map.map_models[0].type = cmod_alias;
 
-	mod->map_models[0].mins[0] = mins[0] - 10;
-	mod->map_models[0].mins[1] = mins[1] - 10;
-	mod->map_models[0].mins[2] = mins[2] - 10;
-	mod->map_models[0].maxs[0] = maxs[0] + 10;
-	mod->map_models[0].maxs[1] = maxs[1] + 10;
-	mod->map_models[0].maxs[2] = maxs[2] + 10;
+	mod->Map.map_models[0].mins[0] = mins[0] - 10;
+	mod->Map.map_models[0].mins[1] = mins[1] - 10;
+	mod->Map.map_models[0].mins[2] = mins[2] - 10;
+	mod->Map.map_models[0].maxs[0] = maxs[0] + 10;
+	mod->Map.map_models[0].maxs[1] = maxs[1] + 10;
+	mod->Map.map_models[0].maxs[2] = maxs[2] + 10;
 }
 
 //==========================================================================
@@ -432,19 +428,18 @@ void QMdlBoundsLoader::AliasTransformVector(vec3_t in, vec3_t out)
 
 //==========================================================================
 //
-//	QClipModel29::LoadSpriteModel
+//	QClipMap29::LoadSpriteModel
 //
 //==========================================================================
 
-void QClipModel29::LoadSpriteModel(cmodel_t* mod, void* buffer)
+void QClipMap29::LoadSpriteModel(cmodel_t* mod, void* buffer)
 {
 	dsprite1_t* pin = (dsprite1_t*)buffer;
 
 	int version = LittleLong (pin->version);
 	if (version != SPRITE1_VERSION)
 	{
-		//throw QDropException(va("%s has wrong version number (%i should be %i)", name, version, SPRITE1_VERSION));
-		throw QDropException(va("wrong version number (%i should be %i)", version, SPRITE1_VERSION));
+		throw QDropException(va("%s has wrong version number (%i should be %i)", *Name, version, SPRITE1_VERSION));
 	}
 
 	mod->type = cmod_sprite;

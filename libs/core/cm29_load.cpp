@@ -126,6 +126,58 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 
 //==========================================================================
 //
+//	QClipMap29::LoadBrushModelNonMap
+//
+//==========================================================================
+
+void QClipMap29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
+{
+	mod->type = cmod_brush;
+
+	bsp29_dheader_t header = *(bsp29_dheader_t*)buffer;
+
+	int version = LittleLong(header.version);
+	if (version != BSP29_VERSION)
+	{
+		throw QDropException(va("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
+			*Name, version, BSP29_VERSION));
+	}
+
+	// swap all the lumps
+	const quint8* mod_base = (quint8*)buffer;
+
+	for (int i = 0; i < sizeof(bsp29_dheader_t) / 4; i++)
+	{
+		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
+	}
+
+	// load into heap
+	Map.LoadPlanes(mod, mod_base, &header.lumps[BSP29LUMP_PLANES]);
+	Map.LoadVisibility(mod, mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
+	Map.LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
+	Map.LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
+	Map.LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
+	Map.LoadEntities(mod, mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
+
+	Map.MakeHull0(mod);
+	Map.MakeHulls(mod);
+
+	if (GGameType & GAME_Hexen2)
+	{
+		Map.LoadSubmodelsH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+	}
+	else
+	{
+		Map.LoadSubmodelsQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+	}
+	if (mod->numsubmodels > 1)
+	{
+		GLog.WriteLine("Non-map BSP models are not supposed to have submodels");
+	}
+}
+
+//==========================================================================
+//
 //	QClipMap29::ReloadMap
 //
 //==========================================================================
@@ -510,65 +562,5 @@ void QClipModel29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, con
 			*nextmodel = *loadcmodel;
 			loadcmodel = nextmodel;
 		}
-	}
-}
-
-//**************************************************************************
-//
-//	LOADING OF NON-MAP MODELS
-//
-//**************************************************************************
-
-//==========================================================================
-//
-//	QClipModel29::LoadBrushModelNonMap
-//
-//==========================================================================
-
-void QClipModel29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
-{
-	mod->type = cmod_brush;
-
-	bsp29_dheader_t header = *(bsp29_dheader_t*)buffer;
-
-	int version = LittleLong(header.version);
-	if (version != BSP29_VERSION)
-	{
-		//throw QDropException(va("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
-		//	name, version, BSP29_VERSION));
-		throw QDropException(va("CM_LoadBrushModel: wrong version number (%i should be %i)",
-			version, BSP29_VERSION));
-	}
-
-	// swap all the lumps
-	const quint8* mod_base = (quint8*)buffer;
-
-	for (int i = 0; i < sizeof(bsp29_dheader_t) / 4; i++)
-	{
-		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
-	}
-
-	// load into heap
-	LoadPlanes(mod, mod_base, &header.lumps[BSP29LUMP_PLANES]);
-	LoadVisibility(mod, mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
-	LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
-	LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
-	LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
-	LoadEntities(mod, mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
-
-	MakeHull0(mod);
-	MakeHulls(mod);
-
-	if (GGameType & GAME_Hexen2)
-	{
-		LoadSubmodelsH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
-	}
-	else
-	{
-		LoadSubmodelsQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
-	}
-	if (mod->numsubmodels > 1)
-	{
-		GLog.WriteLine("Non-map BSP models are not supposed to have submodels");
 	}
 }
