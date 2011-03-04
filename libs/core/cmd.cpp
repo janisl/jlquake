@@ -582,6 +582,8 @@ static void Cmd_Exec_f()
 		GLog.Write("couldn't exec %s\n", Cmd_Argv(1));
 		return;
 	}
+	//	Append trailing 0
+	Buffer.Append(0);
 	GLog.Write("execing %s\n", Cmd_Argv(1));
 
 	Cbuf_InsertText((char*)Buffer.Ptr());

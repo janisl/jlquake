@@ -2199,12 +2199,10 @@ int FS_ReadFile(const char* qpath, QArray<byte>& Buffer)
 		return -1;
 	}
 
-	Buffer.SetNum(len + 1);
+	Buffer.SetNum(len);
 
 	FS_Read(Buffer.Ptr(), len, h);
 
-	// guarantee that it will have a trailing 0 for string operations
-	Buffer[len] = 0;
 	FS_FCloseFile(h);
 
 	// if we are journalling and it is a config file, write it to the journal file
