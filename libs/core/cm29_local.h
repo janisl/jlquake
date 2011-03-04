@@ -202,7 +202,6 @@ public:
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
 	void LoadNonMap(const char* name);
-	void LoadBrushModelNonMap(cmodel_t* mod, void* buffer);
 	void LoadAliasModel(cmodel_t* mod, void* buffer);
 	void LoadAliasModelNew(cmodel_t* mod, void* buffer);
 	void LoadSpriteModel(cmodel_t* mod, void* buffer);

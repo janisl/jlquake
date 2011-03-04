@@ -122,7 +122,7 @@ void QClipMap29::LoadNonMap(const char* name)
 		throw QDropException(va("CM_PrecacheModel: %s not found", name));
 	}
 
-	this->Name = Name;
+	this->Name = name;
 
 	// call the apropriate loader
 	switch (LittleLong(*(unsigned*)Buffer.Ptr()))
@@ -140,7 +140,11 @@ void QClipMap29::LoadNonMap(const char* name)
 		break;
 
 	default:
-		LoadBrushModelNonMap(mod, Buffer.Ptr());
+		LoadMap(name, Buffer);
+		if (mod->numsubmodels > 1)
+		{
+			GLog.WriteLine("Non-map BSP models are not supposed to have submodels");
+		}
 		break;
 	}
 }
