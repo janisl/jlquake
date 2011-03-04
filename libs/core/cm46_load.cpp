@@ -111,7 +111,7 @@ void QClipMap46::ReloadMap(bool ClientLoad)
 {
 	if (!ClientLoad)
 	{
-		Com_Memset(areaPortals, 0, sizeof(areaPortals));
+		Com_Memset(areaPortals, 0, sizeof(int) * numAreas * numAreas);
 		FloodAreaConnections();
 	}
 }
