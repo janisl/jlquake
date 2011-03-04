@@ -46,7 +46,6 @@ public:
 	virtual ~QClipMap();
 	virtual void LoadMap(const char* name, const QArray<quint8>& Buffer) = 0;
 	virtual void ReloadMap(bool ClientLoad) = 0;
-	virtual clipHandle_t PrecacheModel(const char* Name) = 0;
 	virtual clipHandle_t InlineModel(int Index) const = 0;
 	virtual int GetNumClusters() const = 0;
 	virtual int GetNumInlineModels() const = 0;

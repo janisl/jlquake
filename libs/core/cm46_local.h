@@ -329,7 +329,6 @@ public:
 
 	void LoadMap(const char* name, const QArray<quint8>& Buffer);
 	void ReloadMap(bool ClientLoad);
-	clipHandle_t PrecacheModel(const char* Name);
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;
 	int GetNumInlineModels() const;

@@ -72,11 +72,11 @@ QArray<QClipMap*>		CMNonMapModels;
 
 //==========================================================================
 //
-//	QClipMap29::PrecacheModel
+//	CM_PrecacheModel
 //
 //==========================================================================
 
-clipHandle_t QClipMap29::PrecacheModel(const char* Name)
+clipHandle_t CM_PrecacheModel(const char* Name)
 {
 	if (!Name[0])
 	{

@@ -562,14 +562,3 @@ void QClipMap46::LoadSubmodels(const quint8* base, const bsp46_lump_t* l)
 		}
 	}
 }
-
-//==========================================================================
-//
-//	QClipMap46::PrecacheModel
-//
-//==========================================================================
-
-clipHandle_t QClipMap46::PrecacheModel(const char* Name)
-{
-	return 0;
-}
