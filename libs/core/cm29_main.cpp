@@ -60,7 +60,6 @@ QClipMap* CM_CreateQClipMap29()
 //==========================================================================
 
 QClipMap29::QClipMap29()
-: numknown(0)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 }
@@ -73,10 +72,6 @@ QClipMap29::QClipMap29()
 
 QClipMap29::~QClipMap29()
 {
-	for (int i = 0; i < numknown; i++)
-	{
-		delete known[i];
-	}
 }
 
 //==========================================================================
@@ -271,7 +266,7 @@ cmodel_t* QClipMap29::ClipHandleToModel(clipHandle_t Handle)
 	}
 	if (Handle < MAX_MAP_MODELS + MAX_CMOD_KNOWN)
 	{
-		return &known[Handle - MAX_MAP_MODELS]->Map.map_models[0];
+		return &CMNonMapModels[Handle - MAX_MAP_MODELS]->Map.map_models[0];
 	}
 	if (Handle == BOX_HULL_HANDLE / MAX_MAP_HULLS)
 	{

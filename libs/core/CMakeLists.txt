@@ -1,5 +1,6 @@
 set(CORE_FILES
 	cm_main.cpp
+	cm_nonmap.cpp
 	cm29_load.cpp
 	cm29_main.cpp
 	cm29_test.cpp

@@ -163,9 +163,6 @@ public:
 
 	QClipModel29		Map;
 
-	QClipMap29*			known[MAX_CMOD_KNOWN];
-	int					numknown;
-
 	cmodel_t			box_model;
 	bsp29_dclipnode_t	box_clipnodes[6];
 	cplane_t			box_planes[6];
@@ -216,5 +213,7 @@ public:
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 };
+
+extern QArray<QClipMap29*>		CMNonMapModels;
 
 #endif
