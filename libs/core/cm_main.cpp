@@ -58,6 +58,27 @@ QCvar*				cm_flushmap;
 //
 //==========================================================================
 
+static QClipMap* GetModel(clipHandle_t Handle)
+{
+	if (!(Handle & CMH_NON_MAP_MASK))
+	{
+		return CMapShared;
+	}
+	
+	int Index = ((Handle & CMH_NON_MAP_MASK) >> CMH_NON_MAP_SHIFT) - 1;
+	if (Index >= CMNonMapModels.Num())
+	{
+		throw QDropException("Invalid handle");
+	}
+	return CMNonMapModels[Index];
+}
+
+//==========================================================================
+//
+//	QClipMap::QClipMap
+//
+//==========================================================================
+
 QClipMap::QClipMap()
 : CheckSum(0)
 , CheckSum2(0)
@@ -299,7 +320,7 @@ const byte* CM_LeafAmbientSoundLevel(int LeafNum)
 
 void CM_ModelBounds(clipHandle_t Model, vec3_t Mins, vec3_t Maxs)
 {
-	CMapShared->ModelBounds(Model, Mins, Maxs);
+	GetModel(Model)->ModelBounds(Model & CMH_MODEL_MASK, Mins, Maxs);
 }
 
 //==========================================================================
@@ -343,7 +364,7 @@ clipHandle_t CM_TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule)
 
 clipHandle_t CM_ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs)
 {
-	return CMapShared->ModelHull(Handle, HullNum, ClipMins, ClipMaxs);
+	return GetModel(Handle)->ModelHull(Handle & CMH_MODEL_MASK, HullNum, ClipMins, ClipMaxs) | (Handle & CMH_NON_MAP_MASK);
 }
 
 //==========================================================================
@@ -356,7 +377,7 @@ clipHandle_t CM_ModelHull(clipHandle_t Handle, int HullNum)
 {
 	vec3_t ClipMins;
 	vec3_t ClipMaxs;
-	return CMapShared->ModelHull(Handle, HullNum, ClipMins, ClipMaxs);
+	return CM_ModelHull(Handle, HullNum, ClipMins, ClipMaxs);
 }
 
 //==========================================================================
@@ -394,7 +415,7 @@ int CM_BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int *List, int ListSize
 
 int CM_PointContentsQ1(const vec3_t P, clipHandle_t Model)
 {
-	return CMapShared->PointContentsQ1(P, Model);
+	return GetModel(Model)->PointContentsQ1(P, Model & CMH_MODEL_MASK);
 }
 
 //==========================================================================
@@ -405,7 +426,7 @@ int CM_PointContentsQ1(const vec3_t P, clipHandle_t Model)
 
 int CM_PointContentsQ2(const vec3_t P, clipHandle_t Model)
 {
-	return CMapShared->PointContentsQ2(P, Model);
+	return GetModel(Model)->PointContentsQ2(P, Model & CMH_MODEL_MASK);
 }
 
 //==========================================================================
@@ -416,7 +437,7 @@ int CM_PointContentsQ2(const vec3_t P, clipHandle_t Model)
 
 int CM_PointContentsQ3(const vec3_t P, clipHandle_t Model)
 {
-	return CMapShared->PointContentsQ3(P, Model);
+	return GetModel(Model)->PointContentsQ3(P, Model & CMH_MODEL_MASK);
 }
 
 //==========================================================================
@@ -427,7 +448,7 @@ int CM_PointContentsQ3(const vec3_t P, clipHandle_t Model)
 
 int CM_TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
 {
-	return CMapShared->TransformedPointContentsQ1(P, Model, Origin, Angles);
+	return GetModel(Model)->TransformedPointContentsQ1(P, Model & CMH_MODEL_MASK, Origin, Angles);
 }
 
 //==========================================================================
@@ -438,7 +459,7 @@ int CM_TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3
 
 int CM_TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
 {
-	return CMapShared->TransformedPointContentsQ2(P, Model, Origin, Angles);
+	return GetModel(Model)->TransformedPointContentsQ2(P, Model & CMH_MODEL_MASK, Origin, Angles);
 }
 
 //==========================================================================
@@ -449,7 +470,7 @@ int CM_TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3
 
 int CM_TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
 {
-	return CMapShared->TransformedPointContentsQ3(P, Model, Origin, Angles);
+	return GetModel(Model)->TransformedPointContentsQ3(P, Model & CMH_MODEL_MASK, Origin, Angles);
 }
 
 //==========================================================================
@@ -559,7 +580,7 @@ void CM_ReadPortalState(fileHandle_t f)
 
 bool CM_HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 {
-	return CMapShared->HullCheckQ1(Handle, p1, p2, trace);
+	return GetModel(Handle)->HullCheckQ1(Handle & CMH_MODEL_MASK, p1, p2, trace);
 }
 
 //==========================================================================
@@ -570,7 +591,7 @@ bool CM_HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t* trace)
 
 q2trace_t CM_BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask)
 {
-	CMapShared->BoxTraceQ2(Start, End, Mins, Maxs, Model, BrushMask);
+	return GetModel(Model)->BoxTraceQ2(Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask);
 }
 
 //==========================================================================
@@ -582,7 +603,7 @@ q2trace_t CM_BoxTraceQ2(vec3_t Start, vec3_t End, vec3_t Mins, vec3_t Maxs, clip
 q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, vec3_t Origin, vec3_t Angles)
 {
-	return CMapShared->TransformedBoxTraceQ2(Start, End, Mins, Maxs, Model, BrushMask, Origin, Angles);
+	return GetModel(Model)->TransformedBoxTraceQ2(Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Origin, Angles);
 }
 
 //==========================================================================
@@ -594,7 +615,7 @@ q2trace_t CM_TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, int Capsule)
 {
-	CMapShared->BoxTraceQ3(Results, Start, End, Mins, Maxs, Model, BrushMask, Capsule);
+	GetModel(Model)->BoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Capsule);
 }
 
 //==========================================================================
@@ -606,7 +627,7 @@ void CM_BoxTraceQ3( q3trace_t *Results, const vec3_t Start, const vec3_t End, ve
 void CM_TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 	clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
-	CMapShared->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model, BrushMask, Origin, Angles, Capsule);
+	GetModel(Model)->TransformedBoxTraceQ3(Results, Start, End, Mins, Maxs, Model & CMH_MODEL_MASK, BrushMask, Origin, Angles, Capsule);
 }
 
 //==========================================================================

@@ -27,11 +27,9 @@
 
 #define	MAX_MAP_MODELS		256
 
-#define MAX_CMOD_KNOWN		2048
-
 #define HULL_NUMBER_MASK	(MAX_MAP_HULLS - 1)
 #define MODEL_NUMBER_MASK	(~HULL_NUMBER_MASK)
-#define BOX_HULL_HANDLE		((MAX_MAP_MODELS + MAX_CMOD_KNOWN) * MAX_MAP_HULLS)
+#define BOX_HULL_HANDLE		(MAX_MAP_MODELS * MAX_MAP_HULLS)
 
 enum cmodtype_t
 {
@@ -211,7 +209,5 @@ public:
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 };
-
-extern QArray<QClipMap29*>		CMNonMapModels;
 
 #endif

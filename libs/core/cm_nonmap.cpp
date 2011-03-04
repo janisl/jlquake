@@ -64,7 +64,7 @@ public:
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QArray<QClipMap29*>		CMNonMapModels;
+QArray<QClipMap*>		CMNonMapModels;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -90,7 +90,7 @@ clipHandle_t QClipMap29::PrecacheModel(const char* Name)
 	{
 		if (CMNonMapModels[i]->Name == Name)
 		{
-			return (MAX_MAP_MODELS + i) * MAX_MAP_HULLS;
+			return (i + 1) << CMH_NON_MAP_SHIFT;
 		}
 	}
 
@@ -101,7 +101,7 @@ clipHandle_t QClipMap29::PrecacheModel(const char* Name)
 
 	LoadCMap->Name = Name;
 
-	return (MAX_MAP_MODELS + CMNonMapModels.Num() - 1) * MAX_MAP_HULLS;
+	return CMNonMapModels.Num() << CMH_NON_MAP_SHIFT;
 }
 
 //==========================================================================

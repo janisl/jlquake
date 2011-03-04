@@ -264,10 +264,6 @@ cmodel_t* QClipMap29::ClipHandleToModel(clipHandle_t Handle)
 	{
 		return &Map.map_models[Handle];
 	}
-	if (Handle < MAX_MAP_MODELS + MAX_CMOD_KNOWN)
-	{
-		return &CMNonMapModels[Handle - MAX_MAP_MODELS]->Map.map_models[0];
-	}
 	if (Handle == BOX_HULL_HANDLE / MAX_MAP_HULLS)
 	{
 		return &box_model;
