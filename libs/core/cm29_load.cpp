@@ -42,8 +42,8 @@ public:
 
 	float		aliastransform[3][4];
 
-	void LoadAliasModel(QClipModelNonMap29* mod, void* buffer);
-	void LoadAliasModelNew(QClipModelNonMap29* mod, void* buffer);
+	void LoadAliasModel(QClipModel29* mod, void* buffer);
+	void LoadAliasModelNew(QClipModel29* mod, void* buffer);
 	void* LoadAllSkins(int numskins, daliasskintype_t* pskintype);
 	void* LoadAliasFrame(void* pin);
 	void* LoadAliasGroup(void* pin);
@@ -457,11 +457,11 @@ void QClipModel29::MakeHulls(cmodel_t* loadcmodel)
 
 //==========================================================================
 //
-//	QClipModelMap29::LoadSubmodelsQ1
+//	QClipModel29::LoadSubmodelsQ1
 //
 //==========================================================================
 
-void QClipModelMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipModel29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -498,11 +498,11 @@ void QClipModelMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, 
 
 //==========================================================================
 //
-//	QClipModelMap29::LoadSubmodelsH2
+//	QClipModel29::LoadSubmodelsH2
 //
 //==========================================================================
 
-void QClipModelMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipModel29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -571,25 +571,25 @@ clipHandle_t QClipMap29::PrecacheModel(const char* Name)
 	{
 		throw QDropException("mod_numknown == MAX_CMOD_KNOWN");
 	}
-	known[numknown] = new QClipModelNonMap29;
-	QClipModelNonMap29* LoadCMap = known[numknown];
+	known[numknown] = new QClipModel29;
+	QClipModel29* LoadCMap = known[numknown];
 	numknown++;
 
-	LoadCMap->Load(Name);
+	LoadCMap->LoadNonMap(Name);
 
 	return (MAX_MAP_MODELS + numknown - 1) * MAX_MAP_HULLS;
 }
 
 //==========================================================================
 //
-//	QClipModelNonMap29::Load
+//	QClipModel29::LoadNonMap
 //
 //==========================================================================
 
-void QClipModelNonMap29::Load(const char* name)
+void QClipModel29::LoadNonMap(const char* name)
 {
-	Com_Memset(&model, 0, sizeof(model));
-	cmodel_t* mod = &model;
+	Com_Memset(&map_models, 0, sizeof(map_models));
+	cmodel_t* mod = &map_models[0];
 
 	//
 	// load the file
@@ -625,11 +625,11 @@ void QClipModelNonMap29::Load(const char* name)
 
 //==========================================================================
 //
-//	QClipModelNonMap29::LoadBrushModelNonMap
+//	QClipModel29::LoadBrushModelNonMap
 //
 //==========================================================================
 
-void QClipModelNonMap29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
+void QClipModel29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
 {
 	mod->type = cmod_brush;
 
@@ -673,11 +673,11 @@ void QClipModelNonMap29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
 
 //==========================================================================
 //
-//	QClipModelNonMap29::LoadSubmodelsNonMapQ1
+//	QClipModel29::LoadSubmodelsNonMapQ1
 //
 //==========================================================================
 
-void QClipModelNonMap29::LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipModel29::LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -704,11 +704,11 @@ void QClipModelNonMap29::LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint
 
 //==========================================================================
 //
-//	QClipModelNonMap29::LoadSubmodelsNonMapH2
+//	QClipModel29::LoadSubmodelsNonMapH2
 //
 //==========================================================================
 
-void QClipModelNonMap29::LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipModel29::LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -741,11 +741,11 @@ void QClipModelNonMap29::LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint
 
 //==========================================================================
 //
-//	QClipModelNonMap29::LoadAliasModel
+//	QClipModel29::LoadAliasModel
 //
 //==========================================================================
 
-void QClipModelNonMap29::LoadAliasModel(cmodel_t* mod, void* buffer)
+void QClipModel29::LoadAliasModel(cmodel_t* mod, void* buffer)
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -762,11 +762,11 @@ void QClipModelNonMap29::LoadAliasModel(cmodel_t* mod, void* buffer)
 
 //==========================================================================
 //
-//	QClipModelNonMap29::LoadAliasModelNew
+//	QClipModel29::LoadAliasModelNew
 //
 //==========================================================================
 
-void QClipModelNonMap29::LoadAliasModelNew(cmodel_t* mod, void* buffer)
+void QClipModel29::LoadAliasModelNew(cmodel_t* mod, void* buffer)
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -787,7 +787,7 @@ void QClipModelNonMap29::LoadAliasModelNew(cmodel_t* mod, void* buffer)
 //
 //==========================================================================
 
-void QMdlBoundsLoader::LoadAliasModel(QClipModelNonMap29* mod, void* buffer)
+void QMdlBoundsLoader::LoadAliasModel(QClipModel29* mod, void* buffer)
 {
 	mdl_t* pinmodel = (mdl_t *)buffer;
 
@@ -832,14 +832,14 @@ void QMdlBoundsLoader::LoadAliasModel(QClipModelNonMap29* mod, void* buffer)
 		}
 	}
 
-	mod->model.type = cmod_alias;
+	mod->map_models[0].type = cmod_alias;
 
-	mod->model.mins[0] = mins[0] - 10;
-	mod->model.mins[1] = mins[1] - 10;
-	mod->model.mins[2] = mins[2] - 10;
-	mod->model.maxs[0] = maxs[0] + 10;
-	mod->model.maxs[1] = maxs[1] + 10;
-	mod->model.maxs[2] = maxs[2] + 10;
+	mod->map_models[0].mins[0] = mins[0] - 10;
+	mod->map_models[0].mins[1] = mins[1] - 10;
+	mod->map_models[0].mins[2] = mins[2] - 10;
+	mod->map_models[0].maxs[0] = maxs[0] + 10;
+	mod->map_models[0].maxs[1] = maxs[1] + 10;
+	mod->map_models[0].maxs[2] = maxs[2] + 10;
 }
 
 //==========================================================================
@@ -850,7 +850,7 @@ void QMdlBoundsLoader::LoadAliasModel(QClipModelNonMap29* mod, void* buffer)
 //
 //==========================================================================
 
-void QMdlBoundsLoader::LoadAliasModelNew(QClipModelNonMap29* mod, void* buffer)
+void QMdlBoundsLoader::LoadAliasModelNew(QClipModel29* mod, void* buffer)
 {
 	newmdl_t* pinmodel = (newmdl_t *)buffer;
 
@@ -896,14 +896,14 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipModelNonMap29* mod, void* buffer)
 		}
 	}
 
-	mod->model.type = cmod_alias;
+	mod->map_models[0].type = cmod_alias;
 
-	mod->model.mins[0] = mins[0] - 10;
-	mod->model.mins[1] = mins[1] - 10;
-	mod->model.mins[2] = mins[2] - 10;
-	mod->model.maxs[0] = maxs[0] + 10;
-	mod->model.maxs[1] = maxs[1] + 10;
-	mod->model.maxs[2] = maxs[2] + 10;
+	mod->map_models[0].mins[0] = mins[0] - 10;
+	mod->map_models[0].mins[1] = mins[1] - 10;
+	mod->map_models[0].mins[2] = mins[2] - 10;
+	mod->map_models[0].maxs[0] = maxs[0] + 10;
+	mod->map_models[0].maxs[1] = maxs[1] + 10;
+	mod->map_models[0].maxs[2] = maxs[2] + 10;
 }
 
 //==========================================================================
@@ -1022,11 +1022,11 @@ void QMdlBoundsLoader::AliasTransformVector(vec3_t in, vec3_t out)
 
 //==========================================================================
 //
-//	QClipModelNonMap29::LoadSpriteModel
+//	QClipModel29::LoadSpriteModel
 //
 //==========================================================================
 
-void QClipModelNonMap29::LoadSpriteModel(cmodel_t* mod, void* buffer)
+void QClipModel29::LoadSpriteModel(cmodel_t* mod, void* buffer)
 {
 	dsprite1_t* pin = (dsprite1_t*)buffer;
 

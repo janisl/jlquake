@@ -109,6 +109,15 @@ struct cmodel_t
 class QClipModel29
 {
 public:
+	char			name[MAX_QPATH];
+
+	cmodel_t		map_models[MAX_MAP_MODELS];
+
+	~QClipModel29()
+	{
+		map_models[0].Free();
+	}
+
 	void LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadEntities(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
@@ -117,43 +126,15 @@ public:
 	void LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void MakeHull0(cmodel_t* loadcmodel);
 	void MakeHulls(cmodel_t* loadcmodel);
-};
-
-class QClipModelMap29 : public QClipModel29
-{
-public:
-	cmodel_t	map_models[MAX_MAP_MODELS];
-
-	~QClipModelMap29()
-	{
-		map_models[0].Free();
-	}
-
 	void LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
-};
-
-class QClipModelNonMap29 : public QClipModel29
-{
-private:
 	void LoadBrushModelNonMap(cmodel_t* mod, void* buffer);
 	void LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadAliasModel(cmodel_t* mod, void* buffer);
 	void LoadAliasModelNew(cmodel_t* mod, void* buffer);
 	void LoadSpriteModel(cmodel_t* mod, void* buffer);
-
-public:
-	char			name[MAX_QPATH];
-
-	cmodel_t		model;
-
-	~QClipModelNonMap29()
-	{
-		model.Free();
-	}
-
-	void Load(const char* name);
+	void LoadNonMap(const char* name);
 };
 
 class QClipMap29 : public QClipMap
@@ -180,9 +161,9 @@ private:
 public:
 	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
-	QClipModelMap29		Map;
+	QClipModel29		Map;
 
-	QClipModelNonMap29*	known[MAX_CMOD_KNOWN];
+	QClipModel29*		known[MAX_CMOD_KNOWN];
 	int					numknown;
 
 	cmodel_t			box_model;
