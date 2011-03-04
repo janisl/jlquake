@@ -125,8 +125,6 @@ public:
 	void LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadBrushModelNonMap(cmodel_t* mod, void* buffer);
-	void LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
-	void LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadAliasModel(cmodel_t* mod, void* buffer);
 	void LoadAliasModelNew(cmodel_t* mod, void* buffer);
 	void LoadSpriteModel(cmodel_t* mod, void* buffer);

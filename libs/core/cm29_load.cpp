@@ -561,72 +561,14 @@ void QClipModel29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
 
 	if (GGameType & GAME_Hexen2)
 	{
-		LoadSubmodelsNonMapH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+		LoadSubmodelsH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
 	}
 	else
 	{
-		LoadSubmodelsNonMapQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+		LoadSubmodelsQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
 	}
-}
-
-//==========================================================================
-//
-//	QClipModel29::LoadSubmodelsNonMapQ1
-//
-//==========================================================================
-
-void QClipModel29::LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
-{
-	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
-	}
-	if (l->filelen != sizeof(*in))
+	if (mod->numsubmodels > 1)
 	{
 		GLog.WriteLine("Non-map BSP models are not supposed to have submodels");
 	}
-
-	for (int j = 0; j < 3; j++)
-	{
-		// spread the mins / maxs by a pixel
-		loadcmodel->mins[j] = LittleFloat(in->mins[j]) - 1;
-		loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
-	}
-	for (int j = 0; j < BSP29_MAX_MAP_HULLS_Q1; j++)
-	{
-		loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
-	}
-	loadcmodel->numleafs = LittleLong(in->visleafs);
-}
-
-//==========================================================================
-//
-//	QClipModel29::LoadSubmodelsNonMapH2
-//
-//==========================================================================
-
-void QClipModel29::LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
-{
-	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
-	}
-	if (l->filelen != sizeof(*in))
-	{
-		GLog.WriteLine("Non-map BSP models are not supposed to have submodels");
-	}
-
-	for (int j = 0; j < 3; j++)
-	{
-		// spread the mins / maxs by a pixel
-		loadcmodel->mins[j] = LittleFloat(in->mins[j]) - 1;
-		loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
-	}
-	for (int j = 0; j < BSP29_MAX_MAP_HULLS_H2; j++)
-	{
-		loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
-	}
-	loadcmodel->numleafs = LittleLong(in->visleafs);
 }
