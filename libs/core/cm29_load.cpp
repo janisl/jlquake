@@ -561,7 +561,7 @@ clipHandle_t QClipMap29::PrecacheModel(const char* Name)
 	//
 	for (int i = 0; i < numknown; i++)
 	{
-		if (!QStr::Cmp(known[i]->name, Name))
+		if (!QStr::Cmp(known[i]->Map.name, Name))
 		{
 			return (MAX_MAP_MODELS + i) * MAX_MAP_HULLS;
 		}
@@ -571,11 +571,11 @@ clipHandle_t QClipMap29::PrecacheModel(const char* Name)
 	{
 		throw QDropException("mod_numknown == MAX_CMOD_KNOWN");
 	}
-	known[numknown] = new QClipModel29;
-	QClipModel29* LoadCMap = known[numknown];
+	QClipMap29* LoadCMap = new QClipMap29;
+	known[numknown] = LoadCMap;
 	numknown++;
 
-	LoadCMap->LoadNonMap(Name);
+	LoadCMap->Map.LoadNonMap(Name);
 
 	return (MAX_MAP_MODELS + numknown - 1) * MAX_MAP_HULLS;
 }

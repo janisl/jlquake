@@ -163,7 +163,7 @@ public:
 
 	QClipModel29		Map;
 
-	QClipModel29*		known[MAX_CMOD_KNOWN];
+	QClipMap29*			known[MAX_CMOD_KNOWN];
 	int					numknown;
 
 	cmodel_t			box_model;
