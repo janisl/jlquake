@@ -109,8 +109,6 @@ struct cmodel_t
 class QClipModel29
 {
 public:
-	char			name[MAX_QPATH];
-
 	cmodel_t		map_models[MAX_MAP_MODELS];
 
 	~QClipModel29()

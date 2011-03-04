@@ -534,8 +534,10 @@ void QClipModel29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
 	int version = LittleLong(header.version);
 	if (version != BSP29_VERSION)
 	{
-		throw QDropException(va("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
-			name, version, BSP29_VERSION));
+		//throw QDropException(va("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
+		//	name, version, BSP29_VERSION));
+		throw QDropException(va("CM_LoadBrushModel: wrong version number (%i should be %i)",
+			version, BSP29_VERSION));
 	}
 
 	// swap all the lumps

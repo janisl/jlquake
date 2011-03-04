@@ -88,7 +88,7 @@ clipHandle_t QClipMap29::PrecacheModel(const char* Name)
 	//
 	for (int i = 0; i < CMNonMapModels.Num(); i++)
 	{
-		if (!QStr::Cmp(CMNonMapModels[i]->Map.name, Name))
+		if (CMNonMapModels[i]->Name == Name)
 		{
 			return (MAX_MAP_MODELS + i) * MAX_MAP_HULLS;
 		}
@@ -98,6 +98,8 @@ clipHandle_t QClipMap29::PrecacheModel(const char* Name)
 	CMNonMapModels.Append(LoadCMap);
 
 	LoadCMap->Map.LoadNonMap(Name);
+
+	LoadCMap->Name = Name;
 
 	return (MAX_MAP_MODELS + CMNonMapModels.Num() - 1) * MAX_MAP_HULLS;
 }
@@ -141,8 +143,6 @@ void QClipModel29::LoadNonMap(const char* name)
 		LoadBrushModelNonMap(mod, Buffer.Ptr());
 		break;
 	}
-
-	QStr::Cpy(this->name, name);
 }
 
 //==========================================================================
@@ -200,8 +200,10 @@ void QMdlBoundsLoader::LoadAliasModel(QClipModel29* mod, void* buffer)
 	int version = LittleLong (pinmodel->version);
 	if (version != ALIAS_VERSION)
 	{
-		throw QDropException(va("%s has wrong version number (%i should be %i)",
-			 mod->name, version, ALIAS_VERSION));
+		//throw QDropException(va("%s has wrong version number (%i should be %i)",
+		//	 mod->name, version, ALIAS_VERSION));
+		throw QDropException(va("wrong version number (%i should be %i)",
+			 version, ALIAS_VERSION));
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -263,8 +265,10 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipModel29* mod, void* buffer)
 	int version = LittleLong(pinmodel->version);
 	if (version != ALIAS_NEWVERSION)
 	{
-		throw QDropException(va("%s has wrong version number (%i should be %i)",
-			mod->name, version, ALIAS_NEWVERSION));
+		//throw QDropException(va("%s has wrong version number (%i should be %i)",
+		//	mod->name, version, ALIAS_NEWVERSION));
+		throw QDropException(va("wrong version number (%i should be %i)",
+			version, ALIAS_NEWVERSION));
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -439,7 +443,8 @@ void QClipModel29::LoadSpriteModel(cmodel_t* mod, void* buffer)
 	int version = LittleLong (pin->version);
 	if (version != SPRITE1_VERSION)
 	{
-		throw QDropException(va("%s has wrong version number (%i should be %i)", name, version, SPRITE1_VERSION));
+		//throw QDropException(va("%s has wrong version number (%i should be %i)", name, version, SPRITE1_VERSION));
+		throw QDropException(va("wrong version number (%i should be %i)", version, SPRITE1_VERSION));
 	}
 
 	mod->type = cmod_sprite;
