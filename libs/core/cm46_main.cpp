@@ -46,6 +46,17 @@ QCvar*		cm_playerCurveClip;
 
 //==========================================================================
 //
+//	CM_CreateQClipMap46
+//
+//==========================================================================
+
+QClipMap* CM_CreateQClipMap46()
+{
+	return new QClipMap46();
+}
+
+//==========================================================================
+//
 //	QClipMap46::~QClipMap46
 //
 //==========================================================================
@@ -140,10 +151,10 @@ const char* QClipMap46::GetEntityString() const
 //
 //==========================================================================
 
-void QClipMap46::MapChecksums(int& CheckSum1, int& CheckSum2) const
+void QClipMap46::MapChecksums(int& ACheckSum1, int& ACheckSum2) const
 {
-	CheckSum1 = checksum;
-	CheckSum2 = checksum;
+	ACheckSum1 = CheckSum;
+	ACheckSum2 = CheckSum2;
 }
 
 //==========================================================================

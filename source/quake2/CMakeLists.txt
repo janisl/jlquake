@@ -27,7 +27,6 @@ set(QUAKE2_OBJS
 	client/qmenu.cpp
 	qcommon/m_flash.cpp
 	qcommon/cmd.cpp
-	qcommon/cmodel.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp
 	qcommon/files.cpp

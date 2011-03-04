@@ -46,6 +46,17 @@ QCvar*			map_noareas;
 
 //==========================================================================
 //
+//	CM_CreateQClipMap38
+//
+//==========================================================================
+
+QClipMap* CM_CreateQClipMap38()
+{
+	return new QClipMap38();
+}
+
+//==========================================================================
+//
 //	QClipMap38::QClipMap38
 //
 //==========================================================================
@@ -82,11 +93,9 @@ QClipMap38::QClipMap38()
 , box_planes(NULL)
 , box_brush(NULL)
 , box_leaf(NULL)
-, checksum(0)
 , floodvalid(0)
 , checkcount(0)
 {
-	Com_Memset(name, 0, sizeof(name));
 	Com_Memset(&box_model, 0, sizeof(box_model));
 	Com_Memset(portalopen, 0, sizeof(portalopen));
 	Com_Memset(pvsrow, 0, sizeof(pvsrow));
@@ -169,10 +178,10 @@ const char* QClipMap38::GetEntityString() const
 //
 //==========================================================================
 
-void QClipMap38::MapChecksums(int& CheckSum1, int& CheckSum2) const
+void QClipMap38::MapChecksums(int& ACheckSum1, int& ACheckSum2) const
 {
-	CheckSum1 = checksum;
-	CheckSum2 = checksum;
+	ACheckSum1 = CheckSum;
+	ACheckSum2 = CheckSum2;
 }
 
 //==========================================================================

@@ -1119,7 +1119,7 @@ static const char *env_suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
 
 void CL_RequestNextDownload (void)
 {
-	unsigned	map_checksum;		// for detecting cheater maps
+	int	map_checksum;		// for detecting cheater maps
 	char fn[MAX_OSPATH];
 	dmdl_t *pheader;
 
@@ -1380,7 +1380,7 @@ void CL_Precache_f (void)
 	//Yet another hack to let old demos work
 	//the old precache sequence
 	if (Cmd_Argc() < 2) {
-		unsigned	map_checksum;		// for detecting cheater maps
+		int	map_checksum;		// for detecting cheater maps
 
 		CM_LoadMap (cl.configstrings[CS_MODELS+1], true, &map_checksum);
 		CL_RegisterSounds ();

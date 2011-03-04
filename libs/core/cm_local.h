@@ -33,7 +33,15 @@ struct leafList_t
 class QClipMap
 {
 public:
+	QStr			Name;
+
+	quint32			CheckSum;
+	quint32			CheckSum2;
+
+	QClipMap();
 	virtual ~QClipMap();
+	virtual void LoadMap(const char* name, const QArray<quint8>& Buffer) = 0;
+	virtual void ReloadMap(bool ClientLoad) = 0;
 	virtual clipHandle_t PrecacheModel(const char* Name) = 0;
 	virtual clipHandle_t InlineModel(int Index) const = 0;
 	virtual int GetNumClusters() const = 0;
@@ -76,6 +84,12 @@ public:
 	virtual void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points)) = 0;
 };
 
+QClipMap* CM_CreateQClipMap29();
+QClipMap* CM_CreateQClipMap38();
+QClipMap* CM_CreateQClipMap46();
+
 extern QClipMap*			CMapShared;
+
+extern QCvar*				cm_flushmap;
 
 #endif

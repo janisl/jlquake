@@ -44,6 +44,17 @@ byte			QClipMap29::mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
 //==========================================================================
 //
+//	CM_CreateQClipMap29
+//
+//==========================================================================
+
+QClipMap* CM_CreateQClipMap29()
+{
+	return new QClipMap29();
+}
+
+//==========================================================================
+//
 //	QClipMap29::QClipMap29
 //
 //==========================================================================
@@ -148,10 +159,10 @@ const char* QClipMap29::GetEntityString() const
 //
 //==========================================================================
 
-void QClipMap29::MapChecksums(int& CheckSum1, int& CheckSum2) const
+void QClipMap29::MapChecksums(int& ACheckSum1, int& ACheckSum2) const
 {
-	CheckSum1 = Map.map_models[0].checksum;
-	CheckSum2 = Map.map_models[0].checksum2;
+	ACheckSum1 = CheckSum;
+	ACheckSum2 = CheckSum2;
 }
 
 //==========================================================================

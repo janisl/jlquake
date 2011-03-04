@@ -272,7 +272,6 @@ typedef struct
 	int			playernum;
 
 	clipHandle_t	clip_models[MAX_MODELS];
-	clipHandle_t	worldcmodel;	// cl_entitites[0].model
 
 // refresh related state
 	struct model_s	*worldmodel;	// cl_entitites[0].model

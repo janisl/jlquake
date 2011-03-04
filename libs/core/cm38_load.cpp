@@ -46,11 +46,11 @@
 //
 //==========================================================================
 
-void QClipMap38::LoadMap(const char* name, const QArray<quint8>& Buffer)
+void QClipMap38::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 {
 	map_noareas = Cvar_Get("map_noareas", "0", 0);
 
-	if (!name || !name[0])
+	if (!AName || !AName[0])
 	{
 		numleafs = 1;
 		leafs = new cleaf_t[1];
@@ -61,11 +61,13 @@ void QClipMap38::LoadMap(const char* name, const QArray<quint8>& Buffer)
 		Com_Memset(areas, 0, sizeof(carea_t));
 		cmodels = new cmodel_t[1];
 		Com_Memset(cmodels, 0, sizeof(cmodel_t));
-		checksum = 0;
+		CheckSum = 0;
+		CheckSum2 = 0;
 		return;			// cinematic servers won't have anything at all
 	}
 
-	checksum = LittleLong(Com_BlockChecksum(Buffer.Ptr(), Buffer.Num()));
+	CheckSum = LittleLong(Com_BlockChecksum(Buffer.Ptr(), Buffer.Num()));
+	CheckSum2 = CheckSum;
 
 	bsp38_dheader_t header = *(bsp38_dheader_t*)Buffer.Ptr();
 	for (int i = 0; i < sizeof(bsp38_dheader_t) / 4 ; i++)
@@ -76,7 +78,7 @@ void QClipMap38::LoadMap(const char* name, const QArray<quint8>& Buffer)
 	if (header.version != BSP38_VERSION)
 	{
 		throw QDropException(va("CMod_LoadBrushModel: %s has wrong version number (%i should be %i)",
-			name, header.version, BSP38_VERSION));
+			AName, header.version, BSP38_VERSION));
 	}
 
 	const byte* cmod_base = Buffer.Ptr();
@@ -99,7 +101,21 @@ void QClipMap38::LoadMap(const char* name, const QArray<quint8>& Buffer)
 
 	ClearPortalOpen();
 
-	QStr::Cpy(this->name, name);
+	Name = AName;
+}
+
+//==========================================================================
+//
+//	QClipMap38::ReloadMap
+//
+//==========================================================================
+
+void QClipMap38::ReloadMap(bool ClientLoad)
+{
+	if (!ClientLoad)
+	{
+		ClearPortalOpen();
+	}
 }
 
 //==========================================================================

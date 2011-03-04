@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // qcommon.h -- definitions common between client and server, but not game.dll
 
 #include "q_shared.h"
+#include "../qcommon/qfiles.h"
 
 
 #define	VERSION		3.19
@@ -376,19 +377,6 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg);
 
 qboolean Netchan_CanReliable (netchan_t *chan);
 
-
-/*
-==============================================================
-
-CMODEL
-
-==============================================================
-*/
-
-
-#include "../qcommon/qfiles.h"
-
-clipHandle_t CM_LoadMap(const char* name, bool clientload, unsigned* checksum);
 
 /*
 ==============================================================

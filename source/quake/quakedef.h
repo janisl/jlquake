@@ -203,7 +203,6 @@ typedef struct
 #include "client.h"
 #include "progs.h"
 #include "gl_model.h"
-#include "cmodel.h"
 #include "server.h"
 #include "input.h"
 #include "world.h"

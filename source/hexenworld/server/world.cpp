@@ -176,7 +176,7 @@ void SV_ClearWorld (void)
 	sv_numareanodes = 0;
 	vec3_t mins;
 	vec3_t maxs;
-	CM_ModelBounds(sv.worldmodel, mins, maxs);
+	CM_ModelBounds(0, mins, maxs);
 	SV_CreateAreaNode(0, mins, maxs);
 }
 
@@ -664,7 +664,7 @@ edict_t	*SV_TestPlayerPosition (edict_t *ent, vec3_t origin)
 	int		e;
 	
 // check world first
-	hull = CM_ModelHull(sv.worldmodel, 1);
+	hull = CM_ModelHull(0, 1);
 	if (CM_PointContentsQ1(origin, hull) != BSP29CONTENTS_EMPTY)
 		return sv.edicts;
 

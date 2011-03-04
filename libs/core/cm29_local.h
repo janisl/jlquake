@@ -72,8 +72,6 @@ struct chull_t
 
 struct cmodel_t
 {
-	char			name[MAX_QPATH];
-
 	cmodtype_t		type;
 
 	//
@@ -104,10 +102,6 @@ struct cmodel_t
 	byte*			visdata;
 	byte*			phs;
 	char*			entities;
-
-	//QW only
-	unsigned		checksum;
-	unsigned		checksum2;
 
 	void Free();
 };
@@ -150,7 +144,9 @@ private:
 	void LoadSpriteModel(cmodel_t* mod, void* buffer);
 
 public:
-	cmodel_t	model;
+	char			name[MAX_QPATH];
+
+	cmodel_t		model;
 
 	~QClipModelNonMap29()
 	{
@@ -165,12 +161,17 @@ class QClipMap29 : public QClipMap
 private:
 	//	Main
 	void InitBoxHull();
+	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
+	chull_t* ClipHandleToHull(clipHandle_t Handle);
 	int ContentsToQ2(int Contents) const;
 	int ContentsToQ3(int Contents) const;
 
 	//	Test
+	void BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const;
+	int HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t P) const;
 	bool HeadnodeVisible(cnode_t* Node, byte* VisBits);
 	byte* DecompressVis(byte* in);
+	void CalcPHS();
 
 	//	Trace
 	bool RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
@@ -191,6 +192,8 @@ public:
 	QClipMap29();
 	~QClipMap29();
 
+	void LoadMap(const char* name, const QArray<quint8>& Buffer);
+	void ReloadMap(bool ClientLoad);
 	clipHandle_t PrecacheModel(const char* Name);
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;
@@ -231,13 +234,6 @@ public:
 	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
-
-	void LoadModel(const char* name, const QArray<quint8>& Buffer);
-	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
-	chull_t* ClipHandleToHull(clipHandle_t Handle);
-	void BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const;
-	int HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t P) const;
-	void CalcPHS();
 };
 
 #endif

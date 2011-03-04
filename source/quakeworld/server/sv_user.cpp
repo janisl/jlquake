@@ -1436,7 +1436,7 @@ void SV_RunCmd (usercmd_t *ucmd)
 	pmove.spectator = host_client->spectator;
 	pmove.waterjumptime = sv_player->v.teleport_time;
 	pmove.numphysent = 1;
-	pmove.physents[0].model = sv.worldmodel;
+	pmove.physents[0].model = 0;
 	pmove.cmd = *ucmd;
 	pmove.dead = sv_player->v.health <= 0;
 	pmove.oldbuttons = host_client->oldbuttons;

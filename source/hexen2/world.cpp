@@ -209,7 +209,7 @@ void SV_ClearWorld (void)
 	sv_numareanodes = 0;
 	vec3_t mins;
 	vec3_t maxs;
-	CM_ModelBounds(sv.worldmodel, mins, maxs);
+	CM_ModelBounds(0, mins, maxs);
 	SV_CreateAreaNode (0, mins, maxs);
 }
 

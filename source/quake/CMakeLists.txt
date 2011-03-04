@@ -11,7 +11,6 @@ set(QUAKE_FILES
 	cl_tent.cpp
 	chase.cpp
 	cmd.cpp
-	cmodel.cpp
 	common.cpp
 	console.cpp
 	cvar.cpp

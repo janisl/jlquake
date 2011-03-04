@@ -110,8 +110,6 @@ private:
 	void TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, q2trace_t* trace, cbrush_t* brush);
 
 public:
-	char			name[MAX_QPATH];
-
 	int				numtexinfo;
 	mapsurface_t*	surfaces;
 
@@ -158,8 +156,6 @@ public:
 	cleaf_t*		box_leaf;
 	cmodel_t		box_model;
 
-	unsigned		checksum;
-
 	static mapsurface_t	nullsurface;
 
 	qboolean		portalopen[BSP38MAX_MAP_AREAPORTALS];
@@ -183,6 +179,8 @@ public:
 	QClipMap38();
 	~QClipMap38();
 
+	void LoadMap(const char* name, const QArray<quint8>& Buffer);
+	void ReloadMap(bool ClientLoad);
 	clipHandle_t PrecacheModel(const char* Name);
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;
@@ -224,7 +222,6 @@ public:
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
-	void LoadMap(const char* name, const QArray<quint8>& Buffer);
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
 	void FloodAreaConnections();
 	void ClearPortalOpen();

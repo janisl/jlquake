@@ -57,13 +57,14 @@
 //
 //==========================================================================
 
-void QClipMap46::LoadMap(const char* name, const QArray<quint8>& Buffer)
+void QClipMap46::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 {
 	cm_noAreas = Cvar_Get("cm_noAreas", "0", CVAR_CHEAT);
 	cm_noCurves = Cvar_Get("cm_noCurves", "0", CVAR_CHEAT);
 	cm_playerCurveClip = Cvar_Get("cm_playerCurveClip", "1", CVAR_ARCHIVE | CVAR_CHEAT);
 
-	checksum = LittleLong(Com_BlockChecksum(Buffer.Ptr(), Buffer.Num()));
+	CheckSum = LittleLong(Com_BlockChecksum(Buffer.Ptr(), Buffer.Num()));
+	CheckSum2 = CheckSum;
 
 	bsp46_dheader_t header = *(bsp46_dheader_t*)Buffer.Ptr();
 	for (int i = 0; i < sizeof(bsp46_dheader_t) / 4; i++)
@@ -74,7 +75,7 @@ void QClipMap46::LoadMap(const char* name, const QArray<quint8>& Buffer)
 	if (header.version != BSP46_VERSION)
 	{
 		throw QDropException(va("CM_LoadMap: %s has wrong version number (%i should be %i)",
-			name, header.version, BSP46_VERSION));
+			AName, header.version, BSP46_VERSION));
 	}
 
 	const byte* cmod_base = Buffer.Ptr();
@@ -97,11 +98,21 @@ void QClipMap46::LoadMap(const char* name, const QArray<quint8>& Buffer)
 
 	FloodAreaConnections();
 
-	// allow this to be cached if it is loaded by the server
-	//JL: And why not on client?
-	//if (!clientload)
+	Name = AName;
+}
+
+//==========================================================================
+//
+//	QClipMap46::ReloadMap
+//
+//==========================================================================
+
+void QClipMap46::ReloadMap(bool ClientLoad)
+{
+	if (!ClientLoad)
 	{
-		QStr::NCpyZ(this->name, name, sizeof(this->name));
+		Com_Memset(areaPortals, 0, sizeof(areaPortals));
+		FloodAreaConnections();
 	}
 }
 

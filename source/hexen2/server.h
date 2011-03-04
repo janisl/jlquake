@@ -35,7 +35,6 @@ typedef struct
 
 	char		startspot[64];
 	char		modelname[64];		// maps/<name>.bsp, for model_precache[0]
-	clipHandle_t	worldmodel;
 	char		*model_precache[MAX_MODELS];	// NULL terminated
 	clipHandle_t	models[MAX_MODELS];
 	char		*sound_precache[MAX_SOUNDS];	// NULL terminated

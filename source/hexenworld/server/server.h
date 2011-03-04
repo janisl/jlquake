@@ -32,7 +32,6 @@ typedef struct
 
 	char		startspot[64];
 	char		modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
-	clipHandle_t	worldmodel;
 	char		*model_precache[MAX_MODELS];	// NULL terminated
 	char		*sound_precache[MAX_SOUNDS];	// NULL terminated
 	char		*lightstyles[MAX_LIGHTSTYLES];

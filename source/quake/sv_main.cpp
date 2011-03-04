@@ -1088,8 +1088,8 @@ void SV_SpawnServer (char *server)
 	
 	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
-	sv.worldmodel = CM_LoadMap(sv.modelname, false, NULL);
-	sv.models[1] = sv.worldmodel;
+	CM_LoadMap(sv.modelname, false, NULL);
+	sv.models[1] = 0;
 	
 //
 // clear world interaction links

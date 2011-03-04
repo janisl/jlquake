@@ -643,8 +643,6 @@ void CL_FlushMemory( void ) {
 	if ( !com_sv_running->integer ) {
 		// clear the whole hunk
 		Hunk_Clear();
-		// clear collision map data
-		CM_ClearMap();
 	}
 	else {
 		// clear all the client data on the hunk

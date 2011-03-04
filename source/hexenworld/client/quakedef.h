@@ -27,7 +27,6 @@
 #include "cl_effect.h"
 #include "client.h"
 #include "gl_model.h"
-#include "../../quake/cmodel.h"
 #include "input.h"
 #include "keys.h"
 #include "console.h"

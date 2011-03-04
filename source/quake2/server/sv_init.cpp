@@ -166,7 +166,7 @@ clients along with it.
 void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate, qboolean attractloop, qboolean loadgame)
 {
 	int			i;
-	unsigned	checksum;
+	int			checksum;
 
 	if (attractloop)
 		Cvar_SetLatched("paused", "0");
@@ -221,16 +221,17 @@ void SV_SpawnServer (char *server, char *spawnpoint, server_state_t serverstate,
 
 	if (serverstate != ss_game)
 	{
-		sv.models[1] = CM_LoadMap ("", false, &checksum);	// no real map
+		CM_LoadMap ("", false, &checksum);	// no real map
 	}
 	else
 	{
 		QStr::Sprintf (sv.configstrings[CS_MODELS+1],sizeof(sv.configstrings[CS_MODELS+1]),
 			"maps/%s.bsp", server);
-		sv.models[1] = CM_LoadMap (sv.configstrings[CS_MODELS+1], false, &checksum);
+		CM_LoadMap (sv.configstrings[CS_MODELS+1], false, &checksum);
 	}
+	sv.models[1] = 0;
 	QStr::Sprintf (sv.configstrings[CS_MAPCHECKSUM],sizeof(sv.configstrings[CS_MAPCHECKSUM]),
-		"%i", checksum);
+		"%i", (unsigned)checksum);
 
 	//
 	// clear physics interaction links

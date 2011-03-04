@@ -240,9 +240,6 @@ private:
 	static float SquareRootFloat(float number);
 
 public:
-	char		name[MAX_QPATH];
-	unsigned	checksum;
-
 	int			numShaders;
 	bsp46_dshader_t*	shaders;
 
@@ -256,13 +253,13 @@ public:
 	int*		leafsurfaces;
 
 	int			numPlanes;
-	cplane_t	*planes;
+	cplane_t*	planes;
 
 	int			numBrushSides;
 	cbrushside_t*	brushsides;
 
 	int			numBrushes;
-	cbrush_t	*brushes;
+	cbrush_t*	brushes;
 
 	int			numNodes;
 	cNode_t*	nodes;
@@ -293,8 +290,7 @@ public:
 	int			checkcount;					// incremented on each trace
 
 	QClipMap46()
-	: checksum(0)
-	, numShaders(0)
+	: numShaders(0)
 	, shaders(NULL)
 	, numLeafs(0)
 	, leafs(NULL)
@@ -328,10 +324,11 @@ public:
 	, floodvalid(0)
 	, checkcount(0)
 	{
-		name[0] = 0;
 	}
 	~QClipMap46();
 
+	void LoadMap(const char* name, const QArray<quint8>& Buffer);
+	void ReloadMap(bool ClientLoad);
 	clipHandle_t PrecacheModel(const char* Name);
 	clipHandle_t InlineModel(int Index) const;
 	int GetNumClusters() const;
@@ -373,7 +370,6 @@ public:
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
 
-	void LoadMap(const char* name, const QArray<quint8>& Buffer);
 	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
 	int PointLeafnum_r(const vec3_t P, int Num) const;
 	void StoreLeafs(leafList_t* ll, int NodeNum) const;

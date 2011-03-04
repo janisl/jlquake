@@ -233,7 +233,8 @@ void Model_NextDownload (void)
 		cl.model_precache[i] = Mod_ForName (cl.model_name[i], false);
 		if (i == 1)
 		{
-			cl.clip_models[i] = CM_LoadMap(cl.model_name[i], true, NULL);
+			CM_LoadMap(cl.model_name[i], true, NULL);
+			cl.clip_models[i] = 0;
 		}
 		else if (cl.model_name[i][0] == '*')
 		{
@@ -253,7 +254,6 @@ void Model_NextDownload (void)
 
 	// all done
 	cl.worldmodel = cl.model_precache[1];
-	cl.worldcmodel = cl.clip_models[1];
 	R_NewMap ();
 	Hunk_Check ();		// make sure nothing is hurt
 

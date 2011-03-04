@@ -21,6 +21,9 @@
 
 #include "core.h"
 #include "cm_local.h"
+#include "bsp29file.h"
+#include "bsp38file.h"
+#include "bsp46file.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -43,9 +46,23 @@ int					c_traces;
 int					c_brush_traces;
 int					c_patch_traces;
 
+QCvar*				cm_flushmap;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
+
+//==========================================================================
+//
+//	QClipMap::QClipMap
+//
+//==========================================================================
+
+QClipMap::QClipMap()
+: CheckSum(0)
+, CheckSum2(0)
+{
+}
 
 //==========================================================================
 //
@@ -55,6 +72,120 @@ int					c_patch_traces;
 
 QClipMap::~QClipMap()
 {
+}
+
+//==========================================================================
+//
+//	CM_LoadMap
+//
+//	Loads in the map and all submodels
+//
+//==========================================================================
+
+void CM_LoadMap(const char* name, bool clientload, int* checksum)
+{
+	if (!name || (!(GGameType & GAME_Quake2) && !name[0]))
+	{
+		throw QDropException("CM_LoadMap: NULL name");
+	}
+
+	GLog.DWrite("CM_LoadMap(%s, %i)\n", name, clientload);
+
+	if (!cm_flushmap)
+	{
+		cm_flushmap = Cvar_Get("cm_flushmap", "0", 0);
+	}
+
+	if (CMapShared && CMapShared->Name == name && (clientload || !cm_flushmap->integer))
+	{
+		// still have the right version
+		CMapShared->ReloadMap(clientload);
+		if (checksum)
+		{
+			*checksum = CMapShared->CheckSum;
+		}
+		return;
+	}
+
+	// free old stuff
+	CM_ClearMap();
+
+	if (!name[0])
+	{
+		QArray<quint8> Buffer;
+		CMapShared = CM_CreateQClipMap38();
+		CMapShared->LoadMap(name, Buffer);
+		if (checksum)
+		{
+			*checksum = CMapShared->CheckSum;
+		}
+		return;
+	}
+	
+	//
+	// load the file
+	//
+	QArray<quint8> Buffer;
+	if (FS_ReadFile(name, Buffer) <= 0)
+	{
+		throw QDropException(va("Couldn't load %s", name));
+	}
+
+	struct TTestHeader
+	{
+		int		Id;
+		int		Version;
+	} TestHeader;
+	TestHeader = *(TTestHeader*)Buffer.Ptr();
+	TestHeader.Id = LittleLong(TestHeader.Id);
+	TestHeader.Version = LittleLong(TestHeader.Version);
+
+	switch (TestHeader.Id)
+	{
+	case BSP29_VERSION:
+		CMapShared = CM_CreateQClipMap29();
+		break;
+
+	case BSP46_IDENT:
+		switch (TestHeader.Version)
+		{
+		case BSP38_VERSION:
+			CMapShared = CM_CreateQClipMap38();
+			break;
+
+		case BSP46_VERSION:
+			CMapShared = CM_CreateQClipMap46();
+			break;
+
+		default:
+			throw QDropException("Unsupported BSP model version");
+		}
+		break;
+
+	default:
+		throw QDropException("Unsupported map file format");
+	}
+
+	CMapShared->LoadMap(name, Buffer);
+	if (checksum)
+	{
+		*checksum = CMapShared->CheckSum;
+	}
+}
+
+//==========================================================================
+//
+//	CM_ClearMap
+//
+//==========================================================================
+
+void CM_ClearMap()
+{
+	if (CMapShared)
+	{
+		delete CMapShared;
+		CMapShared = NULL;
+	}
 }
 
 //==========================================================================

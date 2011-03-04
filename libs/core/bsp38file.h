@@ -17,8 +17,8 @@
 //**
 //**************************************************************************
 
-#ifndef _BSP46FILE_H
-#define _BSP46FILE_H
+#ifndef _BSP38FILE_H
+#define _BSP38FILE_H
 
 // little-endian "IBSP"
 #define BSP38_HEADER	(('P' << 24) + ('S' << 16) + ('B' << 8) + 'I')

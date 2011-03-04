@@ -252,7 +252,7 @@ void SV_SpawnServer (char *server)
 	
 	QStr::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
-	sv.worldmodel = CM_LoadMap(sv.modelname, false, NULL);
+	CM_LoadMap(sv.modelname, false, NULL);
 
 	//
 	// clear physics interaction links
@@ -263,7 +263,7 @@ void SV_SpawnServer (char *server)
 
 	sv.model_precache[0] = pr_strings;
 	sv.model_precache[1] = sv.modelname;
-	sv.models[1] = sv.worldmodel;
+	sv.models[1] = 0;
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
 		sv.model_precache[1 + i] = localmodels[i];

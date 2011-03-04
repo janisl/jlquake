@@ -42,8 +42,8 @@ public:
 
 	float		aliastransform[3][4];
 
-	void LoadAliasModel(cmodel_t* mod, void* buffer);
-	void LoadAliasModelNew(cmodel_t* mod, void* buffer);
+	void LoadAliasModel(QClipModelNonMap29* mod, void* buffer);
+	void LoadAliasModelNew(QClipModelNonMap29* mod, void* buffer);
 	void* LoadAllSkins(int numskins, daliasskintype_t* pskintype);
 	void* LoadAliasFrame(void* pin);
 	void* LoadAliasGroup(void* pin);
@@ -72,15 +72,14 @@ public:
 
 //==========================================================================
 //
-//	QClipMap29::LoadModel
+//	QClipMap29::LoadMap
 //
 //==========================================================================
 
-void QClipMap29::LoadModel(const char* name, const QArray<quint8>& Buffer)
+void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 {
 	Com_Memset(Map.map_models, 0, sizeof(Map.map_models));
 	cmodel_t* mod = &Map.map_models[0];
-	QStr::Cpy(mod->name, name);
 
 	mod->type = cmod_brush;
 
@@ -90,7 +89,7 @@ void QClipMap29::LoadModel(const char* name, const QArray<quint8>& Buffer)
 	if (version != BSP29_VERSION)
 	{
 		throw QDropException(va("CM_LoadModel: %s has wrong version number (%i should be %i)",
-			mod->name, version, BSP29_VERSION));
+			AName, version, BSP29_VERSION));
 	}
 
 	// swap all the lumps
@@ -99,8 +98,8 @@ void QClipMap29::LoadModel(const char* name, const QArray<quint8>& Buffer)
 		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
 	}
 
-	mod->checksum = 0;
-	mod->checksum2 = 0;
+	CheckSum = 0;
+	CheckSum2 = 0;
 
 	const quint8* mod_base = Buffer.Ptr();
 
@@ -111,14 +110,14 @@ void QClipMap29::LoadModel(const char* name, const QArray<quint8>& Buffer)
 		{
 			continue;
 		}
-		mod->checksum ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs, 
+		CheckSum ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs, 
 			header.lumps[i].filelen));
 
 		if (i == BSP29LUMP_VISIBILITY || i == BSP29LUMP_LEAFS || i == BSP29LUMP_NODES)
 		{
 			continue;
 		}
-		mod->checksum2 ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs, 
+		CheckSum2 ^= LittleLong(Com_BlockChecksum(mod_base + header.lumps[i].fileofs, 
 			header.lumps[i].filelen));
 	}
 
@@ -145,6 +144,18 @@ void QClipMap29::LoadModel(const char* name, const QArray<quint8>& Buffer)
 	InitBoxHull();
 
 	CalcPHS();
+
+	Name = AName;
+}
+
+//==========================================================================
+//
+//	QClipMap29::ReloadMap
+//
+//==========================================================================
+
+void QClipMap29::ReloadMap(bool ClientLoad)
+{
 }
 
 //==========================================================================
@@ -192,7 +203,7 @@ void QClipModel29::LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bs
 	const bsp29_dplane_t* in = (const bsp29_dplane_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	cplane_t* out = new cplane_t[count];
@@ -224,7 +235,7 @@ void QClipModel29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp
 	const bsp29_dnode_t* in = (const bsp29_dnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	cnode_t* out = new cnode_t[count];
@@ -264,7 +275,7 @@ void QClipModel29::LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp
 	const bsp29_dleaf_t* in = (const bsp29_dleaf_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	cleaf_t* out = new cleaf_t[count];
@@ -305,7 +316,7 @@ void QClipModel29::LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const
 	const bsp29_dclipnode_t* in = (const bsp29_dclipnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	bsp29_dclipnode_t* out = new bsp29_dclipnode_t[count];
@@ -455,7 +466,7 @@ void QClipModelMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, 
 	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -478,12 +489,8 @@ void QClipModelMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, 
 		if (i < loadcmodel->numsubmodels - 1)
 		{
 			// duplicate the basic information
-			char	name[10];
-
-			sprintf(name, "*%i", i + 1);
 			cmodel_t* nextmodel = &map_models[i + 1];
 			*nextmodel = *loadcmodel;
-			QStr::Cpy(nextmodel->name, name);
 			loadcmodel = nextmodel;
 		}
 	}
@@ -500,7 +507,7 @@ void QClipModelMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, 
 	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -523,12 +530,8 @@ void QClipModelMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, 
 		if (i < loadcmodel->numsubmodels - 1)
 		{
 			// duplicate the basic information
-			char	name[10];
-
-			sprintf(name, "*%i", i + 1);
 			cmodel_t* nextmodel = &map_models[i + 1];
 			*nextmodel = *loadcmodel;
-			QStr::Cpy(nextmodel->name, name);
 			loadcmodel = nextmodel;
 		}
 	}
@@ -558,7 +561,7 @@ clipHandle_t QClipMap29::PrecacheModel(const char* Name)
 	//
 	for (int i = 0; i < numknown; i++)
 	{
-		if (!QStr::Cmp(known[i]->model.name, Name))
+		if (!QStr::Cmp(known[i]->name, Name))
 		{
 			return (MAX_MAP_MODELS + i) * MAX_MAP_HULLS;
 		}
@@ -617,7 +620,7 @@ void QClipModelNonMap29::Load(const char* name)
 		break;
 	}
 
-	QStr::Cpy(mod->name, name);
+	QStr::Cpy(this->name, name);
 }
 
 //==========================================================================
@@ -636,7 +639,7 @@ void QClipModelNonMap29::LoadBrushModelNonMap(cmodel_t* mod, void* buffer)
 	if (version != BSP29_VERSION)
 	{
 		throw QDropException(va("CM_LoadBrushModel: %s has wrong version number (%i should be %i)",
-			mod->name, version, BSP29_VERSION));
+			name, version, BSP29_VERSION));
 	}
 
 	// swap all the lumps
@@ -679,7 +682,7 @@ void QClipModelNonMap29::LoadSubmodelsNonMapQ1(cmodel_t* loadcmodel, const quint
 	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	if (l->filelen != sizeof(*in))
 	{
@@ -710,7 +713,7 @@ void QClipModelNonMap29::LoadSubmodelsNonMapH2(cmodel_t* loadcmodel, const quint
 	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException(va("MOD_LoadBmodel: funny lump size in %s", loadcmodel->name));
+		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	if (l->filelen != sizeof(*in))
 	{
@@ -747,7 +750,7 @@ void QClipModelNonMap29::LoadAliasModel(cmodel_t* mod, void* buffer)
 	if (GGameType & GAME_Hexen2)
 	{
 		QMdlBoundsLoader BoundsLoader;
-		BoundsLoader.LoadAliasModel(mod, buffer);
+		BoundsLoader.LoadAliasModel(this, buffer);
 	}
 	else
 	{
@@ -768,7 +771,7 @@ void QClipModelNonMap29::LoadAliasModelNew(cmodel_t* mod, void* buffer)
 	if (GGameType & GAME_Hexen2)
 	{
 		QMdlBoundsLoader BoundsLoader;
-		BoundsLoader.LoadAliasModelNew(mod, buffer);
+		BoundsLoader.LoadAliasModelNew(this, buffer);
 	}
 	else
 	{
@@ -784,7 +787,7 @@ void QClipModelNonMap29::LoadAliasModelNew(cmodel_t* mod, void* buffer)
 //
 //==========================================================================
 
-void QMdlBoundsLoader::LoadAliasModel(cmodel_t* mod, void* buffer)
+void QMdlBoundsLoader::LoadAliasModel(QClipModelNonMap29* mod, void* buffer)
 {
 	mdl_t* pinmodel = (mdl_t *)buffer;
 
@@ -829,14 +832,14 @@ void QMdlBoundsLoader::LoadAliasModel(cmodel_t* mod, void* buffer)
 		}
 	}
 
-	mod->type = cmod_alias;
+	mod->model.type = cmod_alias;
 
-	mod->mins[0] = mins[0] - 10;
-	mod->mins[1] = mins[1] - 10;
-	mod->mins[2] = mins[2] - 10;
-	mod->maxs[0] = maxs[0] + 10;
-	mod->maxs[1] = maxs[1] + 10;
-	mod->maxs[2] = maxs[2] + 10;
+	mod->model.mins[0] = mins[0] - 10;
+	mod->model.mins[1] = mins[1] - 10;
+	mod->model.mins[2] = mins[2] - 10;
+	mod->model.maxs[0] = maxs[0] + 10;
+	mod->model.maxs[1] = maxs[1] + 10;
+	mod->model.maxs[2] = maxs[2] + 10;
 }
 
 //==========================================================================
@@ -847,7 +850,7 @@ void QMdlBoundsLoader::LoadAliasModel(cmodel_t* mod, void* buffer)
 //
 //==========================================================================
 
-void QMdlBoundsLoader::LoadAliasModelNew(cmodel_t* mod, void* buffer)
+void QMdlBoundsLoader::LoadAliasModelNew(QClipModelNonMap29* mod, void* buffer)
 {
 	newmdl_t* pinmodel = (newmdl_t *)buffer;
 
@@ -893,14 +896,14 @@ void QMdlBoundsLoader::LoadAliasModelNew(cmodel_t* mod, void* buffer)
 		}
 	}
 
-	mod->type = cmod_alias;
+	mod->model.type = cmod_alias;
 
-	mod->mins[0] = mins[0] - 10;
-	mod->mins[1] = mins[1] - 10;
-	mod->mins[2] = mins[2] - 10;
-	mod->maxs[0] = maxs[0] + 10;
-	mod->maxs[1] = maxs[1] + 10;
-	mod->maxs[2] = maxs[2] + 10;
+	mod->model.mins[0] = mins[0] - 10;
+	mod->model.mins[1] = mins[1] - 10;
+	mod->model.mins[2] = mins[2] - 10;
+	mod->model.maxs[0] = maxs[0] + 10;
+	mod->model.maxs[1] = maxs[1] + 10;
+	mod->model.maxs[2] = maxs[2] + 10;
 }
 
 //==========================================================================
@@ -1030,7 +1033,7 @@ void QClipModelNonMap29::LoadSpriteModel(cmodel_t* mod, void* buffer)
 	int version = LittleLong (pin->version);
 	if (version != SPRITE1_VERSION)
 	{
-		throw QDropException(va("%s has wrong version number (%i should be %i)", mod->name, version, SPRITE1_VERSION));
+		throw QDropException(va("%s has wrong version number (%i should be %i)", name, version, SPRITE1_VERSION));
 	}
 
 	mod->type = cmod_sprite;
