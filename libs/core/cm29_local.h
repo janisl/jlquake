@@ -200,11 +200,6 @@ public:
 	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
-
-	void LoadNonMap(const char* name);
-	void LoadAliasModel(cmodel_t* mod, void* buffer);
-	void LoadAliasModelNew(cmodel_t* mod, void* buffer);
-	void LoadSpriteModel(cmodel_t* mod, void* buffer);
 };
 
 #endif
