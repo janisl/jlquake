@@ -242,10 +242,6 @@ clipHandle_t QClipMap29::ModelHull(clipHandle_t Handle, int HullNum, vec3_t Clip
 	{
 		throw QException("Invalid hull number");
 	}
-	if (!model || model->type != cmod_brush)
-	{
-		throw QException("Non bsp model");
-	}
 	VectorCopy(model->hulls[HullNum].clip_mins, ClipMins);
 	VectorCopy(model->hulls[HullNum].clip_maxs, ClipMaxs);
 	return (Handle & MODEL_NUMBER_MASK) | HullNum;

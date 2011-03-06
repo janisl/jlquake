@@ -31,13 +31,6 @@
 #define MODEL_NUMBER_MASK	(~HULL_NUMBER_MASK)
 #define BOX_HULL_HANDLE		(MAX_MAP_MODELS * MAX_MAP_HULLS)
 
-enum cmodtype_t
-{
-	cmod_brush,
-	cmod_sprite,
-	cmod_alias
-};
-
 struct cnode_t
 {
 	// common with leaf
@@ -70,8 +63,6 @@ struct chull_t
 
 struct cmodel_t
 {
-	cmodtype_t		type;
-
 	//
 	// volume occupied by the model graphics
 	//

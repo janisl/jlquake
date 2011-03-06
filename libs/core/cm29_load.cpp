@@ -57,8 +57,6 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	Com_Memset(Map.map_models, 0, sizeof(Map.map_models));
 	cmodel_t* mod = &Map.map_models[0];
 
-	mod->type = cmod_brush;
-
 	bsp29_dheader_t header = *(bsp29_dheader_t*)Buffer.Ptr();
 
 	int version = LittleLong(header.version);
