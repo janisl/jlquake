@@ -43,15 +43,18 @@ public:
 class QClipMapNonMap : public QClipMap
 {
 private:
-	void LoadAliasModel(cmodel_t* mod, const void* buffer);
-	void LoadAliasModelNew(cmodel_t* mod, const void* buffer);
-	void LoadSpriteModel(cmodel_t* mod, const void* buffer);
+	void LoadAliasModel(const void* buffer);
+	void LoadAliasModelNew(const void* buffer);
+	void LoadSpriteModel(const void* buffer);
 
 public:
-	QClipModel29		Map;
+	//
+	// volume occupied by the model graphics
+	//
+	vec3_t			ModelMins;
+	vec3_t			ModelMaxs;
 
-	void LoadMap(const char* name, const QArray<quint8>& Buffer)
-	{}
+	void LoadMap(const char* name, const QArray<quint8>& Buffer);
 	void ReloadMap(bool ClientLoad)
 	{}
 	clipHandle_t InlineModel(int Index) const
@@ -128,8 +131,6 @@ public:
 	{ throw QNonBspModelException(); }
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
 	{}
-
-	void LoadNonMap(const char* name, const QArray<quint8>& Buffer);
 };
 
 class QMdlBoundsLoader
@@ -223,7 +224,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 			QClipMapNonMap* LoadCMap = new QClipMapNonMap;
 			CMNonMapModels.Append(LoadCMap);
 
-			LoadCMap->LoadNonMap(Name, Buffer);
+			LoadCMap->LoadMap(Name, Buffer);
 		}
 	}
 
@@ -232,36 +233,32 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 
 //==========================================================================
 //
-//	QClipMapNonMap::LoadNonMap
+//	QClipMapNonMap::LoadMap
 //
 //==========================================================================
 
-void QClipMapNonMap::LoadNonMap(const char* name, const QArray<quint8>& Buffer)
+void QClipMapNonMap::LoadMap(const char* name, const QArray<quint8>& Buffer)
 {
-	Com_Memset(&Map.map_models, 0, sizeof(Map.map_models));
-	cmodel_t* mod = &Map.map_models[0];
-
 	this->Name = name;
 
 	// call the apropriate loader
 	switch (LittleLong(*(unsigned*)Buffer.Ptr()))
 	{
 	case RAPOLYHEADER:
-		LoadAliasModelNew(mod, Buffer.Ptr());
+		LoadAliasModelNew(Buffer.Ptr());
 		break;
 
 	case IDPOLYHEADER:
-		LoadAliasModel(mod, Buffer.Ptr());
+		LoadAliasModel(Buffer.Ptr());
 		break;
 
 	case IDSPRITE1HEADER:
-		LoadSpriteModel(mod, Buffer.Ptr());
+		LoadSpriteModel(Buffer.Ptr());
 		break;
 
 	default:
-		mod->type = cmod_alias;
-		mod->mins[0] = mod->mins[1] = mod->mins[2] = -16;
-		mod->maxs[0] = mod->maxs[1] = mod->maxs[2] = 16;
+		ModelMins[0] = ModelMins[1] = ModelMins[2] = -16;
+		ModelMaxs[0] = ModelMaxs[1] = ModelMaxs[2] = 16;
 		break;
 	}
 }
@@ -272,7 +269,7 @@ void QClipMapNonMap::LoadNonMap(const char* name, const QArray<quint8>& Buffer)
 //
 //==========================================================================
 
-void QClipMapNonMap::LoadAliasModel(cmodel_t* mod, const void* buffer)
+void QClipMapNonMap::LoadAliasModel(const void* buffer)
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -281,9 +278,8 @@ void QClipMapNonMap::LoadAliasModel(cmodel_t* mod, const void* buffer)
 	}
 	else
 	{
-		mod->type = cmod_alias;
-		mod->mins[0] = mod->mins[1] = mod->mins[2] = -16;
-		mod->maxs[0] = mod->maxs[1] = mod->maxs[2] = 16;
+		ModelMins[0] = ModelMins[1] = ModelMins[2] = -16;
+		ModelMaxs[0] = ModelMaxs[1] = ModelMaxs[2] = 16;
 	}
 }
 
@@ -293,7 +289,7 @@ void QClipMapNonMap::LoadAliasModel(cmodel_t* mod, const void* buffer)
 //
 //==========================================================================
 
-void QClipMapNonMap::LoadAliasModelNew(cmodel_t* mod, const void* buffer)
+void QClipMapNonMap::LoadAliasModelNew(const void* buffer)
 {
 	if (GGameType & GAME_Hexen2)
 	{
@@ -302,9 +298,8 @@ void QClipMapNonMap::LoadAliasModelNew(cmodel_t* mod, const void* buffer)
 	}
 	else
 	{
-		mod->type = cmod_alias;
-		mod->mins[0] = mod->mins[1] = mod->mins[2] = -16;
-		mod->maxs[0] = mod->maxs[1] = mod->maxs[2] = 16;
+		ModelMins[0] = ModelMins[1] = ModelMins[2] = -16;
+		ModelMaxs[0] = ModelMaxs[1] = ModelMaxs[2] = 16;
 	}
 }
 
@@ -359,14 +354,12 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 		}
 	}
 
-	mod->Map.map_models[0].type = cmod_alias;
-
-	mod->Map.map_models[0].mins[0] = mins[0] - 10;
-	mod->Map.map_models[0].mins[1] = mins[1] - 10;
-	mod->Map.map_models[0].mins[2] = mins[2] - 10;
-	mod->Map.map_models[0].maxs[0] = maxs[0] + 10;
-	mod->Map.map_models[0].maxs[1] = maxs[1] + 10;
-	mod->Map.map_models[0].maxs[2] = maxs[2] + 10;
+	mod->ModelMins[0] = mins[0] - 10;
+	mod->ModelMins[1] = mins[1] - 10;
+	mod->ModelMins[2] = mins[2] - 10;
+	mod->ModelMaxs[0] = maxs[0] + 10;
+	mod->ModelMaxs[1] = maxs[1] + 10;
+	mod->ModelMaxs[2] = maxs[2] + 10;
 }
 
 //==========================================================================
@@ -423,14 +416,12 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 		}
 	}
 
-	mod->Map.map_models[0].type = cmod_alias;
-
-	mod->Map.map_models[0].mins[0] = mins[0] - 10;
-	mod->Map.map_models[0].mins[1] = mins[1] - 10;
-	mod->Map.map_models[0].mins[2] = mins[2] - 10;
-	mod->Map.map_models[0].maxs[0] = maxs[0] + 10;
-	mod->Map.map_models[0].maxs[1] = maxs[1] + 10;
-	mod->Map.map_models[0].maxs[2] = maxs[2] + 10;
+	mod->ModelMins[0] = mins[0] - 10;
+	mod->ModelMins[1] = mins[1] - 10;
+	mod->ModelMins[2] = mins[2] - 10;
+	mod->ModelMaxs[0] = maxs[0] + 10;
+	mod->ModelMaxs[1] = maxs[1] + 10;
+	mod->ModelMaxs[2] = maxs[2] + 10;
 }
 
 //==========================================================================
@@ -553,7 +544,7 @@ void QMdlBoundsLoader::AliasTransformVector(vec3_t in, vec3_t out)
 //
 //==========================================================================
 
-void QClipMapNonMap::LoadSpriteModel(cmodel_t* mod, const void* buffer)
+void QClipMapNonMap::LoadSpriteModel(const void* buffer)
 {
 	dsprite1_t* pin = (dsprite1_t*)buffer;
 
@@ -563,12 +554,10 @@ void QClipMapNonMap::LoadSpriteModel(cmodel_t* mod, const void* buffer)
 		throw QDropException(va("%s has wrong version number (%i should be %i)", *Name, version, SPRITE1_VERSION));
 	}
 
-	mod->type = cmod_sprite;
-
-	mod->mins[0] = mod->mins[1] = -LittleLong(pin->width) / 2;
-	mod->maxs[0] = mod->maxs[1] = LittleLong(pin->width) / 2;
-	mod->mins[2] = -LittleLong(pin->height) / 2;
-	mod->maxs[2] = LittleLong(pin->height) / 2;
+	ModelMins[0] = ModelMins[1] = -LittleLong(pin->width) / 2;
+	ModelMaxs[0] = ModelMaxs[1] = LittleLong(pin->width) / 2;
+	ModelMins[2] = -LittleLong(pin->height) / 2;
+	ModelMaxs[2] = LittleLong(pin->height) / 2;
 }
 
 //==========================================================================
@@ -581,7 +570,6 @@ void QClipMapNonMap::LoadSpriteModel(cmodel_t* mod, const void* buffer)
 
 void QClipMapNonMap::ModelBounds(clipHandle_t Model, vec3_t Mins, vec3_t Maxs)
 {
-	cmodel_t* cmod = &Map.map_models[0];
-	VectorCopy(cmod->mins, Mins);
-	VectorCopy(cmod->maxs, Maxs);
+	VectorCopy(ModelMins, Mins);
+	VectorCopy(ModelMaxs, Maxs);
 }
