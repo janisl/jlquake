@@ -96,7 +96,7 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	}
 
 	// load into heap
-	LoadPlanes(mod, mod_base, &header.lumps[BSP29LUMP_PLANES]);
+	LoadPlanes(mod_base, &header.lumps[BSP29LUMP_PLANES]);
 	LoadVisibility(mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
 	LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
 	LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
@@ -173,7 +173,7 @@ void QClipMap29::LoadEntities(const quint8* base, const bsp29_lump_t* l)
 //
 //==========================================================================
 
-void QClipMap29::LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadPlanes(const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dplane_t* in = (const bsp29_dplane_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -183,8 +183,8 @@ void QClipMap29::LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp2
 	int count = l->filelen / sizeof(*in);
 	cplane_t* out = new cplane_t[count];
 
-	loadcmodel->planes = out;
-	loadcmodel->numplanes = count;
+	planes = out;
+	numplanes = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
@@ -221,7 +221,7 @@ void QClipMap29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29
 	for (int i = 0; i < count; i++, in++, out++)
 	{
 		int p = LittleLong(in->planenum);
-		out->plane = loadcmodel->planes + p;
+		out->plane = planes + p;
 
 		for (int j = 0; j < 2; j++)
 		{
@@ -318,11 +318,11 @@ void QClipMap29::MakeHull0(cmodel_t* loadcmodel)
 	hull->clipnodes = out;
 	hull->firstclipnode = 0;
 	hull->lastclipnode = count - 1;
-	hull->planes = loadcmodel->planes;
+	hull->planes = planes;
 
 	for (int i = 0; i < count; i++, out++, in++)
 	{
-		out->planenum = in->plane - loadcmodel->planes;
+		out->planenum = in->plane - planes;
 		for (int j = 0; j < 2; j++)
 		{
 			if (in->children[j] < 0)
@@ -351,7 +351,7 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 		loadcmodel->hulls[j].clipnodes = loadcmodel->clipnodes;
 		loadcmodel->hulls[j].firstclipnode = 0;
 		loadcmodel->hulls[j].lastclipnode = loadcmodel->numclipnodes - 1;
-		loadcmodel->hulls[j].planes = loadcmodel->planes;
+		loadcmodel->hulls[j].planes = planes;
 	}
 
 	chull_t* hull = &loadcmodel->hulls[1];

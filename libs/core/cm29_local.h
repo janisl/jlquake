@@ -67,9 +67,6 @@ struct cmodel_t
 	//
 	int				numsubmodels;
 
-	int				numplanes;
-	cplane_t*		planes;
-
 	int				numleafs;		// number of visible leafs, not counting 0
 	cleaf_t*		leafs;
 
@@ -97,7 +94,7 @@ private:
 	//	Load
 	void LoadVisibility(const quint8* base, const bsp29_lump_t* l);
 	void LoadEntities(const quint8* base, const bsp29_lump_t* l);
-	void LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadPlanes(const quint8* base, const bsp29_lump_t* l);
 	void LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
@@ -118,6 +115,9 @@ private:
 
 public:
 	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
+
+	int					numplanes;
+	cplane_t*			planes;
 
 	byte*				visdata;
 
