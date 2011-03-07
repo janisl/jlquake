@@ -54,9 +54,6 @@
 
 void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 {
-	Com_Memset(map_models, 0, sizeof(map_models));
-	cmodel_t* mod = &map_models[0];
-
 	bsp29_dheader_t header = *(bsp29_dheader_t*)Buffer.Ptr();
 
 	int version = LittleLong(header.version);
@@ -102,10 +99,6 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	LoadNodes(mod_base, &header.lumps[BSP29LUMP_NODES]);
 	LoadClipnodes(mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
 	LoadEntities(mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
-
-	MakeHull0(mod);
-	MakeHulls(mod);
-
 	if (GGameType & GAME_Hexen2)
 	{
 		LoadSubmodelsH2(mod_base, &header.lumps[BSP29LUMP_MODELS]);
@@ -308,9 +301,9 @@ void QClipMap29::LoadClipnodes(const quint8* base, const bsp29_lump_t* l)
 //
 //==========================================================================
 
-void QClipMap29::MakeHull0(cmodel_t* loadcmodel)
+void QClipMap29::MakeHull0()
 {
-	chull_t* hull = &loadcmodel->hulls[0];
+	chull_t* hull = &map_models[0].hulls[0];
 
 	cnode_t* in = nodes;
 	int count = numnodes;
@@ -344,16 +337,16 @@ void QClipMap29::MakeHull0(cmodel_t* loadcmodel)
 //
 //==========================================================================
 
-void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
+void QClipMap29::MakeHulls()
 {
 	for (int j = 1; j < MAX_MAP_HULLS; j++)
 	{
-		loadcmodel->hulls[j].clipnodes = clipnodes;
-		loadcmodel->hulls[j].firstclipnode = 0;
-		loadcmodel->hulls[j].lastclipnode = numclipnodes - 1;
+		map_models[0].hulls[j].clipnodes = clipnodes;
+		map_models[0].hulls[j].firstclipnode = 0;
+		map_models[0].hulls[j].lastclipnode = numclipnodes - 1;
 	}
 
-	chull_t* hull = &loadcmodel->hulls[1];
+	chull_t* hull = &map_models[0].hulls[1];
 	hull->clip_mins[0] = -16;
 	hull->clip_mins[1] = -16;
 	hull->clip_mins[2] = -24;
@@ -363,7 +356,7 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 
 	if (GGameType & GAME_Hexen2)
 	{
-		hull = &loadcmodel->hulls[2];
+		hull = &map_models[0].hulls[2];
 		hull->clip_mins[0] = -24;
 		hull->clip_mins[1] = -24;
 		hull->clip_mins[2] = -20;
@@ -371,7 +364,7 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 		hull->clip_maxs[1] = 24;
 		hull->clip_maxs[2] = 20;
 
-		hull = &loadcmodel->hulls[3];
+		hull = &map_models[0].hulls[3];
 		hull->clip_mins[0] = -16;
 		hull->clip_mins[1] = -16;
 		hull->clip_mins[2] = -12;
@@ -379,7 +372,7 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 		hull->clip_maxs[1] = 16;
 		hull->clip_maxs[2] = 16;
 
-		hull = &loadcmodel->hulls[4];
+		hull = &map_models[0].hulls[4];
 		//	In Hexen 2 this was #if 0. After looking in progs source I found that
 		// it was changed for mission pack.
 		if ((GGameType & GAME_HexenWorld) || !(GGameType & GAME_H2Portals))
@@ -401,7 +394,7 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 			hull->clip_maxs[2] = 8;
 		}
 
-		hull = &loadcmodel->hulls[5];
+		hull = &map_models[0].hulls[5];
 		hull->clip_mins[0] = -48;
 		hull->clip_mins[1] = -48;
 		hull->clip_mins[2] = -50;
@@ -411,7 +404,7 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 	}
 	else
 	{
-		hull = &loadcmodel->hulls[2];
+		hull = &map_models[0].hulls[2];
 		hull->clip_mins[0] = -32;
 		hull->clip_mins[1] = -32;
 		hull->clip_mins[2] = -24;
@@ -437,6 +430,11 @@ void QClipMap29::LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l)
 	int count = l->filelen / sizeof(*in);
 
 	numsubmodels = count;
+	map_models = new cmodel_t[count];
+	Com_Memset(map_models, 0, sizeof(cmodel_t) * count);
+
+	MakeHull0();
+	MakeHulls();
 
 	cmodel_t* loadcmodel = &map_models[0];
 	for (int i = 0; i < count; i++, in++)
@@ -482,6 +480,11 @@ void QClipMap29::LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l)
 	int count = l->filelen / sizeof(*in);
 
 	numsubmodels = count;
+	map_models = new cmodel_t[count];
+	Com_Memset(map_models, 0, sizeof(cmodel_t) * count);
+
+	MakeHull0();
+	MakeHulls();
 
 	cmodel_t* loadcmodel = &map_models[0];
 	for (int i = 0; i < count; i++, in++)

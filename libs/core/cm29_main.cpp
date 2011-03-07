@@ -74,6 +74,7 @@ QClipMap29::QClipMap29()
 , entitychars(0)
 , entitystring(NULL)
 , numsubmodels(0)
+, map_models(NULL)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 }
@@ -86,7 +87,6 @@ QClipMap29::QClipMap29()
 
 QClipMap29::~QClipMap29()
 {
-	map_models[0].Free();
 	delete[] planes;
 	delete[] nodes;
 	delete[] leafs;
@@ -94,18 +94,8 @@ QClipMap29::~QClipMap29()
 	delete[] visdata;
 	delete[] entitystring;
 	delete[] phs;
-}
-
-//==========================================================================
-//
-//	cmodel_t::Free
-//
-//==========================================================================
-
-void cmodel_t::Free()
-{
-	delete[] hulls[0].clipnodes;
-	hulls[0].clipnodes = NULL;
+	delete[] map_models[0].hulls[0].clipnodes;
+	delete[] map_models;
 }
 
 //==========================================================================

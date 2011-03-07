@@ -62,8 +62,6 @@ struct cmodel_t
 	vec3_t			maxs;
 
 	chull_t			hulls[MAX_MAP_HULLS];
-
-	void Free();
 };
 
 class QClipMap29 : public QClipMap
@@ -83,8 +81,8 @@ private:
 	void LoadNodes(const quint8* base, const bsp29_lump_t* l);
 	void LoadLeafs(const quint8* base, const bsp29_lump_t* l);
 	void LoadClipnodes(const quint8* base, const bsp29_lump_t* l);
-	void MakeHull0(cmodel_t* loadcmodel);
-	void MakeHulls(cmodel_t* loadcmodel);
+	void MakeHull0();
+	void MakeHulls();
 	void LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l);
 	void LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l);
 
@@ -123,7 +121,7 @@ public:
 	char*				entitystring;
 
 	int					numsubmodels;
-	cmodel_t			map_models[MAX_MAP_MODELS];
+	cmodel_t*			map_models;
 
 	cmodel_t			box_model;
 	bsp29_dclipnode_t	box_clipnodes[6];
