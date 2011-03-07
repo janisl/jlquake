@@ -219,7 +219,6 @@ void QClipMap29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
-		out->contents = 0;
 		int p = LittleLong(in->planenum);
 		out->plane = loadcmodel->planes + p;
 

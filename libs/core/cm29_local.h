@@ -33,20 +33,13 @@
 
 struct cnode_t
 {
-	// common with leaf
-	int			contents;		// 0, to differentiate from leafs
-
-	// node specific
 	cplane_t*	plane;
 	int			children[2];	
 };
 
 struct cleaf_t
 {
-	// common with node
-	int			contents;		// wil be a negative contents number
-
-	// leaf specific
+	int			contents;
 	byte*		compressed_vis;
 	byte		ambient_sound_level[BSP29_NUM_AMBIENTS];
 };
