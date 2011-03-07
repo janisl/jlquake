@@ -303,15 +303,15 @@ void QClipMap29::InitBoxHull()
 {
 	Com_Memset(&box_model, 0, sizeof(box_model));
 	box_model.hulls[0].clipnodes = box_clipnodes;
-	box_model.hulls[0].planes = box_planes;
+	box_model.hulls[0].planes = planes;
 	box_model.hulls[0].firstclipnode = 0;
 	box_model.hulls[0].lastclipnode = 5;
 
-	Com_Memset(box_planes, 0, sizeof(box_planes));
+	cplane_t* box_planes = planes + numplanes;
 
 	for (int i = 0; i < 6; i++)
 	{
-		box_clipnodes[i].planenum = i;
+		box_clipnodes[i].planenum = numplanes + i;
 
 		int side = i & 1;
 
@@ -341,6 +341,7 @@ void QClipMap29::InitBoxHull()
 
 clipHandle_t QClipMap29::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule)
 {
+	cplane_t* box_planes = planes + numplanes;
 	box_planes[0].dist = Maxs[0];
 	box_planes[1].dist = Mins[0];
 	box_planes[2].dist = Maxs[1];

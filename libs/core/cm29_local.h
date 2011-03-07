@@ -132,7 +132,6 @@ public:
 
 	cmodel_t			box_model;
 	bsp29_dclipnode_t	box_clipnodes[6];
-	cplane_t			box_planes[6];
 
 	QClipMap29();
 	~QClipMap29();

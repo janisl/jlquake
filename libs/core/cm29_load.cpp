@@ -181,11 +181,12 @@ void QClipMap29::LoadPlanes(const quint8* base, const bsp29_lump_t* l)
 		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
-	cplane_t* out = new cplane_t[count];
-
-	planes = out;
+	//	Extra planes for box.
+	planes = new cplane_t[count + 6];
+	Com_Memset(planes, 0, sizeof(cplane_t) * (count + 6));
 	numplanes = count;
 
+	cplane_t* out = planes;
 	for (int i = 0; i < count; i++, in++, out++)
 	{
 		for (int j = 0; j < 3; j++)
