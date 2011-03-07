@@ -405,10 +405,10 @@ void QClipMap29::CalcPHS()
 		}
 	}
 
-	map_models[0].phs = new byte[rowbytes * num];
+	phs = new byte[rowbytes * num];
 	int count = 0;
 	scan = pvs;
-	unsigned* dest = (unsigned*)map_models[0].phs;
+	unsigned* dest = (unsigned*)phs;
 	for (int i = 0; i < num; i++, dest += rowwords, scan += rowbytes)
 	{
 		Com_Memcpy(dest, scan, rowbytes);
@@ -467,7 +467,7 @@ void QClipMap29::CalcPHS()
 
 byte* QClipMap29::ClusterPHS(int Cluster)
 {
-	return map_models[0].phs + (Cluster + 1) * 4 * ((map_models[0].numleafs + 31) >> 5);
+	return phs + (Cluster + 1) * 4 * ((map_models[0].numleafs + 31) >> 5);
 }
 
 //==========================================================================

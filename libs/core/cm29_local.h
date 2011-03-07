@@ -81,8 +81,6 @@ struct cmodel_t
 
 	chull_t			hulls[MAX_MAP_HULLS];
 
-	byte*			phs;
-
 	void Free();
 };
 
@@ -122,6 +120,8 @@ public:
 	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
 	byte*				visdata;
+
+	byte*				phs;
 
 	int					entitychars;
 	char*				entitystring;

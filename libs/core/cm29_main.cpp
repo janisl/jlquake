@@ -61,6 +61,7 @@ QClipMap* CM_CreateQClipMap29()
 
 QClipMap29::QClipMap29()
 : visdata(NULL)
+, phs(NULL)
 , entitychars(0)
 , entitystring(NULL)
 {
@@ -78,6 +79,7 @@ QClipMap29::~QClipMap29()
 	map_models[0].Free();
 	delete[] visdata;
 	delete[] entitystring;
+	delete[] phs;
 }
 
 //==========================================================================
@@ -98,8 +100,6 @@ void cmodel_t::Free()
 	clipnodes = NULL;
 	delete[] hulls[0].clipnodes;
 	hulls[0].clipnodes = NULL;
-	delete[] phs;
-	phs = NULL;
 }
 
 //==========================================================================
