@@ -38,7 +38,7 @@ struct cnode_t
 
 	// node specific
 	cplane_t*	plane;
-	cnode_t*	children[2];	
+	int			children[2];	
 };
 
 struct cleaf_t
@@ -118,9 +118,8 @@ private:
 	void LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 
 	//	Test
-	void BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const;
+	void BoxLeafnums_r(leafList_t* ll, int NodeNum) const;
 	int HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t P) const;
-	bool HeadnodeVisible(cnode_t* Node, byte* VisBits);
 	byte* DecompressVis(byte* in);
 	void CalcPHS();
 

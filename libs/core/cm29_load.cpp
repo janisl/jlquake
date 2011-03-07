@@ -226,14 +226,7 @@ void QClipMap29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29
 		for (int j = 0; j < 2; j++)
 		{
 			p = LittleShort(in->children[j]);
-			if (p >= 0)
-			{
-				out->children[j] = loadcmodel->nodes + p;
-			}
-			else
-			{
-				out->children[j] = (cnode_t *)(loadcmodel->leafs + (-1 - p));
-			}
+			out->children[j] = p;
 		}
 	}
 }
@@ -332,14 +325,14 @@ void QClipMap29::MakeHull0(cmodel_t* loadcmodel)
 		out->planenum = in->plane - loadcmodel->planes;
 		for (int j = 0; j < 2; j++)
 		{
-			cnode_t* child = in->children[j];
-			if (child->contents < 0)
+			if (in->children[j] < 0)
 			{
+				cleaf_t* child = map_models[0].leafs + (-1 - in->children[j]);
 				out->children[j] = child->contents;
 			}
 			else
 			{
-				out->children[j] = child - loadcmodel->nodes;
+				out->children[j] = in->children[j];
 			}
 		}
 	}

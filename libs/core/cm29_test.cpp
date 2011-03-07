@@ -48,26 +48,23 @@
 
 int QClipMap29::PointLeafnum(const vec3_t P) const
 {
-	cnode_t* Node = map_models[0].nodes;
-	while (1)
+	int NodeNum = 0;
+	while (NodeNum >= 0)
 	{
-		if (Node->contents < 0)
-		{
-			return (cleaf_t*)Node - map_models[0].leafs;
-		}
+		cnode_t* Node = map_models[0].nodes + NodeNum;
 		cplane_t* Plane = Node->plane;
 		float d = DotProduct(P, Plane->normal) - Plane->dist;
 		if (d > 0)
 		{
-			Node = Node->children[0];
+			NodeNum = Node->children[0];
 		}
 		else
 		{
-			Node = Node->children[1];
+			NodeNum = Node->children[1];
 		}
 	}
 
-	return 0;	// never reached
+	return -1 - NodeNum;
 }
 
 //==========================================================================
@@ -76,17 +73,17 @@ int QClipMap29::PointLeafnum(const vec3_t P) const
 //
 //==========================================================================
 
-void QClipMap29::BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const
+void QClipMap29::BoxLeafnums_r(leafList_t* ll, int NodeNum) const
 {
-	if (node->contents == BSP29CONTENTS_SOLID)
+	if (NodeNum < 0)
 	{
-		return;
-	}
+		int LeafNum = -1 - NodeNum;
+		const cleaf_t* leaf = map_models[0].leafs + LeafNum;
 
-	if (node->contents < 0)
-	{
-		const cleaf_t* leaf = (const cleaf_t*)node;
-		int LeafNum = leaf - map_models[0].leafs;
+		if (leaf->contents == BSP29CONTENTS_SOLID)
+		{
+			return;
+		}
 
 		// store the lastLeaf even if the list is overflowed
 		if (LeafNum != 0)
@@ -105,6 +102,7 @@ void QClipMap29::BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const
 
 	// NODE_MIXED
 
+	const cnode_t* node = map_models[0].nodes + NodeNum;
 	const cplane_t* splitplane = node->plane;
 	int sides = BOX_ON_PLANE_SIDE(ll->bounds[0], ll->bounds[1], splitplane);
 
@@ -144,7 +142,7 @@ int QClipMap29::BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List,
 	ll.topnode = -1;
 	ll.lastLeaf = 0;
 
-	BoxLeafnums_r(&ll, map_models[0].nodes);
+	BoxLeafnums_r(&ll, 0);
 
 	if (TopNode)
 	{
@@ -295,24 +293,9 @@ int QClipMap29::TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, c
 
 bool QClipMap29::HeadnodeVisible(int NodeNum, byte* VisBits)
 {
-	return HeadnodeVisible(&map_models[0].nodes[NodeNum], VisBits);
-}
-
-//==========================================================================
-//
-//	QClipMap29::HeadnodeVisible
-//
-//	Returns true if any leaf under headnode has a cluster that
-// is potentially visible
-//
-//==========================================================================
-
-bool QClipMap29::HeadnodeVisible(cnode_t* Node, byte* VisBits)
-{
-	if (Node->contents < 0)
+	if (NodeNum < 0)
 	{
-		const cleaf_t* leaf = (const cleaf_t*)Node;
-		int LeafNum = leaf - map_models[0].leafs;
+		int LeafNum = -1 - NodeNum;
 		int cluster = LeafNum - 1;
 		if (cluster == -1)
 		{
@@ -325,6 +308,7 @@ bool QClipMap29::HeadnodeVisible(cnode_t* Node, byte* VisBits)
 		return false;
 	}
 
+	const cnode_t* Node = &map_models[0].nodes[NodeNum];
 	if (HeadnodeVisible(Node->children[0], VisBits))
 	{
 		return true;
