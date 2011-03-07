@@ -203,10 +203,6 @@
 				>
 			</File>
 			<File
-				RelativePath="model.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\quake\v2\client\net.h"
 				>
 			</File>
@@ -296,10 +292,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\bspfile.h"
-				>
-			</File>
-			<File
 				RelativePath="..\client\cdaudio.h"
 				>
 			</File>
@@ -341,14 +333,6 @@
 			</File>
 			<File
 				RelativePath="..\client\menu.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\model.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\modelgen.h"
 				>
 			</File>
 			<File
@@ -404,15 +388,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\spritegn.h"
-				>
-			</File>
-			<File
 				RelativePath="sys.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\sys.h"
 				>
 			</File>
 			<File

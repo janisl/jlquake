@@ -249,10 +249,6 @@
 				>
 			</File>
 			<File
-				RelativePath="qcommon\cmodel.cpp"
-				>
-			</File>
-			<File
 				RelativePath="qcommon\common.cpp"
 				>
 			</File>
@@ -371,10 +367,6 @@
 			>
 			<File
 				RelativePath="client\anorms.h"
-				>
-			</File>
-			<File
-				RelativePath="qcommon\bspfile.h"
 				>
 			</File>
 			<File

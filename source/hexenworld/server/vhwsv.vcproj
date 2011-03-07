@@ -204,10 +204,6 @@
 				>
 			</File>
 			<File
-				RelativePath="model.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\client\net_chan.cpp"
 				>
 			</File>

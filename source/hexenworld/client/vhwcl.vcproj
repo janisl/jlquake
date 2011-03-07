@@ -239,10 +239,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cmodel.cpp"
-				>
-			</File>
-			<File
 				RelativePath="common.cpp"
 				>
 			</File>
@@ -444,14 +440,6 @@
 				>
 			</File>
 			<File
-				RelativePath="mididef.h"
-				>
-			</File>
-			<File
-				RelativePath="modelgen.h"
-				>
-			</File>
-			<File
 				RelativePath="net.h"
 				>
 			</File>
@@ -489,10 +477,6 @@
 			</File>
 			<File
 				RelativePath="screen.h"
-				>
-			</File>
-			<File
-				RelativePath="spritegn.h"
 				>
 			</File>
 			<File

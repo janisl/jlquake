@@ -242,26 +242,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\qcommon\cm_load.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\qcommon\cm_patch.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\qcommon\cm_polylib.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\qcommon\cm_test.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\qcommon\cm_trace.cpp"
-				>
-			</File>
-			<File
 				RelativePath="qcommon\cmd.cpp"
 				>
 			</File>
@@ -387,22 +367,6 @@
 				>
 			</File>
 			<File
-				RelativePath="qcommon\cm_local.h"
-				>
-			</File>
-			<File
-				RelativePath="qcommon\cm_patch.h"
-				>
-			</File>
-			<File
-				RelativePath="qcommon\cm_polylib.h"
-				>
-			</File>
-			<File
-				RelativePath="qcommon\cm_public.h"
-				>
-			</File>
-			<File
 				RelativePath="game\g_public.h"
 				>
 			</File>
@@ -436,10 +400,6 @@
 			</File>
 			<File
 				RelativePath="server\server.h"
-				>
-			</File>
-			<File
-				RelativePath="game\surfaceflags.h"
 				>
 			</File>
 			<File

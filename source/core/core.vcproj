@@ -155,6 +155,66 @@
 				>
 			</File>
 			<File
+				RelativePath=".\cm29_main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm29_test.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm29_trace.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm38_load.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm38_main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm38_test.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm38_trace.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm46_load.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm46_main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm46_patch.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm46_polylib.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm46_test.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm46_trace.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm_main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cm_nonmap.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\cmd.cpp"
 				>
 			</File>
@@ -237,7 +297,31 @@
 				>
 			</File>
 			<File
+				RelativePath=".\bsp38file.h"
+				>
+			</File>
+			<File
+				RelativePath=".\bsp46file.h"
+				>
+			</File>
+			<File
 				RelativePath=".\cm29_local.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cm38_local.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cm46_local.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cm_local.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cm_public.h"
 				>
 			</File>
 			<File

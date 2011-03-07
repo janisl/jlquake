@@ -83,7 +83,6 @@ q2trace_t QClipMap38::BoxTraceQ2(vec3_t Start, vec3_t End,
 	if (Start[0] == End[0] && Start[1] == End[1] && Start[2] == End[2])
 	{
 		int		leafs[1024];
-		int		i;
 
 		leafList_t ll;
 

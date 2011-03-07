@@ -233,10 +233,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cmodel.cpp"
-				>
-			</File>
-			<File
 				RelativePath="common.cpp"
 				>
 			</File>
@@ -553,10 +549,6 @@
 			</File>
 			<File
 				RelativePath="Server.h"
-				>
-			</File>
-			<File
-				RelativePath="Spritegn.h"
 				>
 			</File>
 			<File
