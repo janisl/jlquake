@@ -99,6 +99,10 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	LoadNodes(mod_base, &header.lumps[BSP29LUMP_NODES]);
 	LoadClipnodes(mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
 	LoadEntities(mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
+
+	MakeHull0();
+	MakeHulls();
+
 	if (GGameType & GAME_Hexen2)
 	{
 		LoadSubmodelsH2(mod_base, &header.lumps[BSP29LUMP_MODELS]);
@@ -304,13 +308,8 @@ void QClipMap29::LoadClipnodes(const quint8* base, const bsp29_lump_t* l)
 
 void QClipMap29::MakeHull0()
 {
-	chull_t* hull = &map_models[0].hulls[0];
-
 	cnode_t* in = nodes;
 	int count = numnodes;
-
-	hull->firstclipnode = numclipnodes;
-	hull->lastclipnode = numclipnodes + count - 1;
 
 	cclipnode_t* out = clipnodes + numclipnodes;
 	for (int i = 0; i < count; i++, out++, in++)
@@ -339,12 +338,6 @@ void QClipMap29::MakeHull0()
 
 void QClipMap29::MakeHulls()
 {
-	for (int j = 1; j < MAX_MAP_HULLS; j++)
-	{
-		map_models[0].hulls[j].firstclipnode = 0;
-		map_models[0].hulls[j].lastclipnode = numclipnodes - 1;
-	}
-
 	chullshared_t* hull = &hullsshared[1];
 	hull->clip_mins[0] = -16;
 	hull->clip_mins[1] = -16;
@@ -432,9 +425,6 @@ void QClipMap29::LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l)
 	map_models = new cmodel_t[count];
 	Com_Memset(map_models, 0, sizeof(cmodel_t) * count);
 
-	MakeHull0();
-	MakeHulls();
-
 	cmodel_t* loadcmodel = &map_models[0];
 	for (int i = 0; i < count; i++, in++)
 	{
@@ -445,9 +435,11 @@ void QClipMap29::LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l)
 			loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 		}
 		loadcmodel->hulls[0].firstclipnode = numclipnodes + LittleLong(in->headnode[0]);
+		loadcmodel->hulls[0].lastclipnode = numclipnodes + numnodes - 1;
 		for (int j = 1; j < BSP29_MAX_MAP_HULLS_Q1; j++)
 		{
 			loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
+			loadcmodel->hulls[j].lastclipnode = numclipnodes - 1;
 		}
 		if (i == 0)
 		{
@@ -483,9 +475,6 @@ void QClipMap29::LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l)
 	map_models = new cmodel_t[count];
 	Com_Memset(map_models, 0, sizeof(cmodel_t) * count);
 
-	MakeHull0();
-	MakeHulls();
-
 	cmodel_t* loadcmodel = &map_models[0];
 	for (int i = 0; i < count; i++, in++)
 	{
@@ -496,9 +485,11 @@ void QClipMap29::LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l)
 			loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 		}
 		loadcmodel->hulls[0].firstclipnode = numclipnodes + LittleLong(in->headnode[0]);
+		loadcmodel->hulls[0].lastclipnode = numclipnodes + numnodes - 1;
 		for (int j = 1; j < BSP29_MAX_MAP_HULLS_H2; j++)
 		{
 			loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
+			loadcmodel->hulls[j].lastclipnode = numclipnodes - 1;
 		}
 		if (i == 0)
 		{
