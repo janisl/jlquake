@@ -72,6 +72,7 @@ QClipMap29::QClipMap29()
 
 QClipMap29::~QClipMap29()
 {
+	map_models[0].Free();
 }
 
 //==========================================================================
@@ -108,7 +109,7 @@ void cmodel_t::Free()
 
 clipHandle_t QClipMap29::InlineModel(int Index) const
 {
-	if (Index < 1 || Index > Map.map_models[0].numsubmodels)
+	if (Index < 1 || Index > map_models[0].numsubmodels)
 	{
 		throw QDropException("Bad submodel index");
 	}
@@ -123,7 +124,7 @@ clipHandle_t QClipMap29::InlineModel(int Index) const
 
 int QClipMap29::GetNumClusters() const
 {
-	return Map.map_models[0].numleafs;
+	return map_models[0].numleafs;
 }
 
 //==========================================================================
@@ -134,7 +135,7 @@ int QClipMap29::GetNumClusters() const
 
 int QClipMap29::GetNumInlineModels() const
 {
-	return Map.map_models[0].numsubmodels;
+	return map_models[0].numsubmodels;
 }
 
 //==========================================================================
@@ -145,7 +146,7 @@ int QClipMap29::GetNumInlineModels() const
 
 const char* QClipMap29::GetEntityString() const
 {
-	return Map.map_models[0].entities;
+	return map_models[0].entities;
 }
 
 //==========================================================================
@@ -191,7 +192,7 @@ int QClipMap29::LeafArea(int LeafNum) const
 
 const byte* QClipMap29::LeafAmbientSoundLevel(int LeafNum) const
 {
-	return Map.map_models[0].leafs[LeafNum].ambient_sound_level;
+	return map_models[0].leafs[LeafNum].ambient_sound_level;
 }
 
 //==========================================================================
@@ -258,7 +259,7 @@ cmodel_t* QClipMap29::ClipHandleToModel(clipHandle_t Handle)
 	Handle /= MAX_MAP_HULLS;
 	if (Handle < MAX_MAP_MODELS)
 	{
-		return &Map.map_models[Handle];
+		return &map_models[Handle];
 	}
 	if (Handle == BOX_HULL_HANDLE / MAX_MAP_HULLS)
 	{

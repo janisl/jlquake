@@ -48,12 +48,12 @@
 
 int QClipMap29::PointLeafnum(const vec3_t P) const
 {
-	cnode_t* Node = Map.map_models[0].nodes;
+	cnode_t* Node = map_models[0].nodes;
 	while (1)
 	{
 		if (Node->contents < 0)
 		{
-			return (cleaf_t*)Node - Map.map_models[0].leafs;
+			return (cleaf_t*)Node - map_models[0].leafs;
 		}
 		cplane_t* Plane = Node->plane;
 		float d = DotProduct(P, Plane->normal) - Plane->dist;
@@ -86,7 +86,7 @@ void QClipMap29::BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const
 	if (node->contents < 0)
 	{
 		const cleaf_t* leaf = (const cleaf_t*)node;
-		int LeafNum = leaf - Map.map_models[0].leafs;
+		int LeafNum = leaf - map_models[0].leafs;
 
 		// store the lastLeaf even if the list is overflowed
 		if (LeafNum != 0)
@@ -110,7 +110,7 @@ void QClipMap29::BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const
 
 	if (sides == 3 && ll->topnode == -1)
 	{
-		ll->topnode = node - Map.map_models[0].nodes;
+		ll->topnode = node - map_models[0].nodes;
 	}
 
 	// recurse down the contacted sides
@@ -144,7 +144,7 @@ int QClipMap29::BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List,
 	ll.topnode = -1;
 	ll.lastLeaf = 0;
 
-	BoxLeafnums_r(&ll, Map.map_models[0].nodes);
+	BoxLeafnums_r(&ll, map_models[0].nodes);
 
 	if (TopNode)
 	{
@@ -295,7 +295,7 @@ int QClipMap29::TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, c
 
 bool QClipMap29::HeadnodeVisible(int NodeNum, byte* VisBits)
 {
-	return HeadnodeVisible(&Map.map_models[0].nodes[NodeNum], VisBits);
+	return HeadnodeVisible(&map_models[0].nodes[NodeNum], VisBits);
 }
 
 //==========================================================================
@@ -312,7 +312,7 @@ bool QClipMap29::HeadnodeVisible(cnode_t* Node, byte* VisBits)
 	if (Node->contents < 0)
 	{
 		const cleaf_t* leaf = (const cleaf_t*)Node;
-		int LeafNum = leaf - Map.map_models[0].leafs;
+		int LeafNum = leaf - map_models[0].leafs;
 		int cluster = LeafNum - 1;
 		if (cluster == -1)
 		{
@@ -348,7 +348,7 @@ byte* QClipMap29::DecompressVis(byte* in)
 		return mod_novis;
 	}
 
-	int row = (Map.map_models[0].numleafs + 7) >> 3;
+	int row = (map_models[0].numleafs + 7) >> 3;
 	byte* out = decompressed;
 
 	do
@@ -383,7 +383,7 @@ byte* QClipMap29::ClusterPVS(int Cluster)
 	{
 		return mod_novis;
 	}
-	return DecompressVis(Map.map_models[0].leafs[Cluster + 1].compressed_vis);
+	return DecompressVis(map_models[0].leafs[Cluster + 1].compressed_vis);
 }
 
 //==========================================================================
@@ -398,7 +398,7 @@ void QClipMap29::CalcPHS()
 {
 	GLog.Write("Building PHS...\n");
 
-	int num = Map.map_models[0].numleafs;
+	int num = map_models[0].numleafs;
 	int rowwords = (num + 31) >> 5;
 	int rowbytes = rowwords * 4;
 
@@ -421,10 +421,10 @@ void QClipMap29::CalcPHS()
 		}
 	}
 
-	Map.map_models[0].phs = new byte[rowbytes * num];
+	map_models[0].phs = new byte[rowbytes * num];
 	int count = 0;
 	scan = pvs;
-	unsigned* dest = (unsigned*)Map.map_models[0].phs;
+	unsigned* dest = (unsigned*)map_models[0].phs;
 	for (int i = 0; i < num; i++, dest += rowwords, scan += rowbytes)
 	{
 		Com_Memcpy(dest, scan, rowbytes);
@@ -483,7 +483,7 @@ void QClipMap29::CalcPHS()
 
 byte* QClipMap29::ClusterPHS(int Cluster)
 {
-	return Map.map_models[0].phs + (Cluster + 1) * 4 * ((Map.map_models[0].numleafs + 31) >> 5);
+	return map_models[0].phs + (Cluster + 1) * 4 * ((map_models[0].numleafs + 31) >> 5);
 }
 
 //==========================================================================

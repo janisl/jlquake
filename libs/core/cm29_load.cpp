@@ -54,8 +54,8 @@
 
 void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 {
-	Com_Memset(Map.map_models, 0, sizeof(Map.map_models));
-	cmodel_t* mod = &Map.map_models[0];
+	Com_Memset(map_models, 0, sizeof(map_models));
+	cmodel_t* mod = &map_models[0];
 
 	bsp29_dheader_t header = *(bsp29_dheader_t*)Buffer.Ptr();
 
@@ -96,23 +96,23 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	}
 
 	// load into heap
-	Map.LoadPlanes(mod, mod_base, &header.lumps[BSP29LUMP_PLANES]);
-	Map.LoadVisibility(mod, mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
-	Map.LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
-	Map.LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
-	Map.LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
-	Map.LoadEntities(mod, mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
+	LoadPlanes(mod, mod_base, &header.lumps[BSP29LUMP_PLANES]);
+	LoadVisibility(mod, mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
+	LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
+	LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
+	LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
+	LoadEntities(mod, mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
 
-	Map.MakeHull0(mod);
-	Map.MakeHulls(mod);
+	MakeHull0(mod);
+	MakeHulls(mod);
 
 	if (GGameType & GAME_Hexen2)
 	{
-		Map.LoadSubmodelsH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+		LoadSubmodelsH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
 	}
 	else
 	{
-		Map.LoadSubmodelsQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+		LoadSubmodelsQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
 	}
 
 	InitBoxHull();
@@ -134,11 +134,11 @@ void QClipMap29::ReloadMap(bool ClientLoad)
 
 //==========================================================================
 //
-//	QClipModel29::LoadVisibility
+//	QClipMap29::LoadVisibility
 //
 //==========================================================================
 
-void QClipModel29::LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	if (!l->filelen)
 	{
@@ -151,11 +151,11 @@ void QClipModel29::LoadVisibility(cmodel_t* loadcmodel, const quint8* base, cons
 
 //==========================================================================
 //
-//	QClipModel29::LoadEntities
+//	QClipMap29::LoadEntities
 //
 //==========================================================================
 
-void QClipModel29::LoadEntities(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadEntities(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	if (!l->filelen)
 	{
@@ -168,11 +168,11 @@ void QClipModel29::LoadEntities(cmodel_t* loadcmodel, const quint8* base, const 
 
 //==========================================================================
 //
-//	QClipModel29::LoadPlanes
+//	QClipMap29::LoadPlanes
 //
 //==========================================================================
 
-void QClipModel29::LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dplane_t* in = (const bsp29_dplane_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -200,11 +200,11 @@ void QClipModel29::LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bs
 
 //==========================================================================
 //
-//	QClipModel29::LoadNodes
+//	QClipMap29::LoadNodes
 //
 //==========================================================================
 
-void QClipModel29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dnode_t* in = (const bsp29_dnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -240,11 +240,11 @@ void QClipModel29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp
 
 //==========================================================================
 //
-//	QClipModel29::LoadLeafs
+//	QClipMap29::LoadLeafs
 //
 //==========================================================================
 
-void QClipModel29::LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dleaf_t* in = (const bsp29_dleaf_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -281,11 +281,11 @@ void QClipModel29::LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp
 
 //==========================================================================
 //
-//	QClipModel29::LoadClipnodes
+//	QClipMap29::LoadClipnodes
 //
 //==========================================================================
 
-void QClipModel29::LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dclipnode_t* in = (const bsp29_dclipnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -308,13 +308,13 @@ void QClipModel29::LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const
 
 //==========================================================================
 //
-//	QClipModel29::MakeHull0
+//	QClipMap29::MakeHull0
 //
 //	Deplicate the drawing hull structure as a clipping hull
 //
 //==========================================================================
 
-void QClipModel29::MakeHull0(cmodel_t* loadcmodel)
+void QClipMap29::MakeHull0(cmodel_t* loadcmodel)
 {
 	chull_t* hull = &loadcmodel->hulls[0];
 
@@ -347,11 +347,11 @@ void QClipModel29::MakeHull0(cmodel_t* loadcmodel)
 
 //==========================================================================
 //
-//	QClipModel29::MakeHulls
+//	QClipMap29::MakeHulls
 //
 //==========================================================================
 
-void QClipModel29::MakeHulls(cmodel_t* loadcmodel)
+void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 {
 	for (int j = 1; j < MAX_MAP_HULLS; j++)
 	{
@@ -431,11 +431,11 @@ void QClipModel29::MakeHulls(cmodel_t* loadcmodel)
 
 //==========================================================================
 //
-//	QClipModel29::LoadSubmodelsQ1
+//	QClipMap29::LoadSubmodelsQ1
 //
 //==========================================================================
 
-void QClipModel29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -472,11 +472,11 @@ void QClipModel29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, con
 
 //==========================================================================
 //
-//	QClipModel29::LoadSubmodelsH2
+//	QClipMap29::LoadSubmodelsH2
 //
 //==========================================================================
 
-void QClipModel29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))

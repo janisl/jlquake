@@ -212,7 +212,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 			QClipMap29* LoadCMap = new QClipMap29;
 			CMNonMapModels.Append(LoadCMap);
 			LoadCMap->LoadMap(Name, Buffer);
-			if (LoadCMap->Map.map_models[0].numsubmodels > 1)
+			if (LoadCMap->map_models[0].numsubmodels > 1)
 			{
 				GLog.WriteLine("Non-map BSP models are not supposed to have submodels");
 			}

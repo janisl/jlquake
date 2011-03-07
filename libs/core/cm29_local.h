@@ -95,16 +95,17 @@ struct cmodel_t
 	void Free();
 };
 
-class QClipModel29
+class QClipMap29 : public QClipMap
 {
-public:
-	cmodel_t		map_models[MAX_MAP_MODELS];
+private:
+	//	Main
+	void InitBoxHull();
+	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
+	chull_t* ClipHandleToHull(clipHandle_t Handle);
+	int ContentsToQ2(int Contents) const;
+	int ContentsToQ3(int Contents) const;
 
-	~QClipModel29()
-	{
-		map_models[0].Free();
-	}
-
+	//	Load
 	void LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadEntities(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
@@ -115,17 +116,6 @@ public:
 	void MakeHulls(cmodel_t* loadcmodel);
 	void LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
-};
-
-class QClipMap29 : public QClipMap
-{
-private:
-	//	Main
-	void InitBoxHull();
-	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
-	chull_t* ClipHandleToHull(clipHandle_t Handle);
-	int ContentsToQ2(int Contents) const;
-	int ContentsToQ3(int Contents) const;
 
 	//	Test
 	void BoxLeafnums_r(leafList_t* ll, const cnode_t *node) const;
@@ -141,7 +131,7 @@ private:
 public:
 	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
-	QClipModel29		Map;
+	cmodel_t			map_models[MAX_MAP_MODELS];
 
 	cmodel_t			box_model;
 	bsp29_dclipnode_t	box_clipnodes[6];
