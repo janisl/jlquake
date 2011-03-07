@@ -346,7 +346,7 @@ void QClipMap29::MakeHulls()
 		map_models[0].hulls[j].lastclipnode = numclipnodes - 1;
 	}
 
-	chull_t* hull = &map_models[0].hulls[1];
+	chullshared_t* hull = &hullsshared[1];
 	hull->clip_mins[0] = -16;
 	hull->clip_mins[1] = -16;
 	hull->clip_mins[2] = -24;
@@ -356,7 +356,7 @@ void QClipMap29::MakeHulls()
 
 	if (GGameType & GAME_Hexen2)
 	{
-		hull = &map_models[0].hulls[2];
+		hull = &hullsshared[2];
 		hull->clip_mins[0] = -24;
 		hull->clip_mins[1] = -24;
 		hull->clip_mins[2] = -20;
@@ -364,7 +364,7 @@ void QClipMap29::MakeHulls()
 		hull->clip_maxs[1] = 24;
 		hull->clip_maxs[2] = 20;
 
-		hull = &map_models[0].hulls[3];
+		hull = &hullsshared[3];
 		hull->clip_mins[0] = -16;
 		hull->clip_mins[1] = -16;
 		hull->clip_mins[2] = -12;
@@ -372,7 +372,7 @@ void QClipMap29::MakeHulls()
 		hull->clip_maxs[1] = 16;
 		hull->clip_maxs[2] = 16;
 
-		hull = &map_models[0].hulls[4];
+		hull = &hullsshared[4];
 		//	In Hexen 2 this was #if 0. After looking in progs source I found that
 		// it was changed for mission pack.
 		if ((GGameType & GAME_HexenWorld) || !(GGameType & GAME_H2Portals))
@@ -394,7 +394,7 @@ void QClipMap29::MakeHulls()
 			hull->clip_maxs[2] = 8;
 		}
 
-		hull = &map_models[0].hulls[5];
+		hull = &hullsshared[5];
 		hull->clip_mins[0] = -48;
 		hull->clip_mins[1] = -48;
 		hull->clip_mins[2] = -50;
@@ -404,7 +404,7 @@ void QClipMap29::MakeHulls()
 	}
 	else
 	{
-		hull = &map_models[0].hulls[2];
+		hull = &hullsshared[2];
 		hull->clip_mins[0] = -32;
 		hull->clip_mins[1] = -32;
 		hull->clip_mins[2] = -24;

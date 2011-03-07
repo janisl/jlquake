@@ -77,6 +77,7 @@ QClipMap29::QClipMap29()
 , map_models(NULL)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
+	Com_Memset(hullsshared, 0, sizeof(hullsshared));
 }
 
 //==========================================================================
@@ -235,13 +236,12 @@ const char* QClipMap29::GetTextureName(int Index) const
 
 clipHandle_t QClipMap29::ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs)
 {
-	cmodel_t* model = ClipHandleToModel(Handle);
 	if (HullNum < 0 || HullNum >= MAX_MAP_HULLS)
 	{
 		throw QException("Invalid hull number");
 	}
-	VectorCopy(model->hulls[HullNum].clip_mins, ClipMins);
-	VectorCopy(model->hulls[HullNum].clip_maxs, ClipMaxs);
+	VectorCopy(hullsshared[HullNum].clip_mins, ClipMins);
+	VectorCopy(hullsshared[HullNum].clip_maxs, ClipMaxs);
 	return (Handle & MODEL_NUMBER_MASK) | HullNum;
 }
 

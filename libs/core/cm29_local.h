@@ -44,13 +44,17 @@ struct cleaf_t
 	byte		ambient_sound_level[BSP29_NUM_AMBIENTS];
 };
 
+struct chullshared_t
+{
+	vec3_t			clip_mins;
+	vec3_t			clip_maxs;
+};
+
 struct chull_t
 {
 	bsp29_dclipnode_t*	clipnodes;
 	int				firstclipnode;
 	int				lastclipnode;
-	vec3_t			clip_mins;
-	vec3_t			clip_maxs;
 };
 
 struct cmodel_t
@@ -122,6 +126,8 @@ public:
 
 	int					numsubmodels;
 	cmodel_t*			map_models;
+
+	chullshared_t		hullsshared[MAX_MAP_HULLS];
 
 	cmodel_t			box_model;
 	bsp29_dclipnode_t	box_clipnodes[6];
