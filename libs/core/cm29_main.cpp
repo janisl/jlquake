@@ -73,6 +73,7 @@ QClipMap29::QClipMap29()
 , phs(NULL)
 , entitychars(0)
 , entitystring(NULL)
+, numsubmodels(0)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 }
@@ -115,7 +116,7 @@ void cmodel_t::Free()
 
 clipHandle_t QClipMap29::InlineModel(int Index) const
 {
-	if (Index < 1 || Index > map_models[0].numsubmodels)
+	if (Index < 1 || Index > numsubmodels)
 	{
 		throw QDropException("Bad submodel index");
 	}
@@ -141,7 +142,7 @@ int QClipMap29::GetNumClusters() const
 
 int QClipMap29::GetNumInlineModels() const
 {
-	return map_models[0].numsubmodels;
+	return numsubmodels;
 }
 
 //==========================================================================

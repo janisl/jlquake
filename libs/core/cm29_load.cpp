@@ -108,11 +108,11 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 
 	if (GGameType & GAME_Hexen2)
 	{
-		LoadSubmodelsH2(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+		LoadSubmodelsH2(mod_base, &header.lumps[BSP29LUMP_MODELS]);
 	}
 	else
 	{
-		LoadSubmodelsQ1(mod, mod_base, &header.lumps[BSP29LUMP_MODELS]);
+		LoadSubmodelsQ1(mod_base, &header.lumps[BSP29LUMP_MODELS]);
 	}
 
 	InitBoxHull();
@@ -427,7 +427,7 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 //
 //==========================================================================
 
-void QClipMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dmodel_q1_t* in = (const bsp29_dmodel_q1_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -436,8 +436,9 @@ void QClipMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const
 	}
 	int count = l->filelen / sizeof(*in);
 
-	loadcmodel->numsubmodels = count;
+	numsubmodels = count;
 
+	cmodel_t* loadcmodel = &map_models[0];
 	for (int i = 0; i < count; i++, in++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -455,7 +456,7 @@ void QClipMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const
 			numclusters = LittleLong(in->visleafs);
 		}
 
-		if (i < loadcmodel->numsubmodels - 1)
+		if (i < numsubmodels - 1)
 		{
 			// duplicate the basic information
 			cmodel_t* nextmodel = &map_models[i + 1];
@@ -471,7 +472,7 @@ void QClipMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const
 //
 //==========================================================================
 
-void QClipMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dmodel_h2_t* in = (const bsp29_dmodel_h2_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -480,8 +481,9 @@ void QClipMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const
 	}
 	int count = l->filelen / sizeof(*in);
 
-	loadcmodel->numsubmodels = count;
+	numsubmodels = count;
 
+	cmodel_t* loadcmodel = &map_models[0];
 	for (int i = 0; i < count; i++, in++)
 	{
 		for (int j = 0; j < 3; j++)
@@ -499,7 +501,7 @@ void QClipMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const
 			numclusters = LittleLong(in->visleafs);
 		}
 
-		if (i < loadcmodel->numsubmodels - 1)
+		if (i < numsubmodels - 1)
 		{
 			// duplicate the basic information
 			cmodel_t* nextmodel = &map_models[i + 1];

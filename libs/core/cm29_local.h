@@ -61,11 +61,6 @@ struct cmodel_t
 	vec3_t			mins;
 	vec3_t			maxs;
 
-	//
-	// brush model
-	//
-	int				numsubmodels;
-
 	chull_t			hulls[MAX_MAP_HULLS];
 
 	void Free();
@@ -90,8 +85,8 @@ private:
 	void LoadClipnodes(const quint8* base, const bsp29_lump_t* l);
 	void MakeHull0(cmodel_t* loadcmodel);
 	void MakeHulls(cmodel_t* loadcmodel);
-	void LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
-	void LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l);
+	void LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l);
 
 	//	Test
 	void BoxLeafnums_r(leafList_t* ll, int NodeNum) const;
@@ -127,6 +122,7 @@ public:
 	int					entitychars;
 	char*				entitystring;
 
+	int					numsubmodels;
 	cmodel_t			map_models[MAX_MAP_MODELS];
 
 	cmodel_t			box_model;
