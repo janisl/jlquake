@@ -171,7 +171,7 @@ int QClipMap29::HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t
 		}
 	
 		bsp29_dclipnode_t* node = Hull->clipnodes + NodeNum;
-		cplane_t* plane = Hull->planes + node->planenum;
+		cplane_t* plane = planes + node->planenum;
 
 		float d;
 		if (plane->type < 3)

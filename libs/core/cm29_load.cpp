@@ -319,7 +319,6 @@ void QClipMap29::MakeHull0(cmodel_t* loadcmodel)
 	hull->clipnodes = out;
 	hull->firstclipnode = 0;
 	hull->lastclipnode = count - 1;
-	hull->planes = planes;
 
 	for (int i = 0; i < count; i++, out++, in++)
 	{
@@ -352,7 +351,6 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 		loadcmodel->hulls[j].clipnodes = loadcmodel->clipnodes;
 		loadcmodel->hulls[j].firstclipnode = 0;
 		loadcmodel->hulls[j].lastclipnode = loadcmodel->numclipnodes - 1;
-		loadcmodel->hulls[j].planes = planes;
 	}
 
 	chull_t* hull = &loadcmodel->hulls[1];

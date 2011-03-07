@@ -303,7 +303,6 @@ void QClipMap29::InitBoxHull()
 {
 	Com_Memset(&box_model, 0, sizeof(box_model));
 	box_model.hulls[0].clipnodes = box_clipnodes;
-	box_model.hulls[0].planes = planes;
 	box_model.hulls[0].firstclipnode = 0;
 	box_model.hulls[0].lastclipnode = 5;
 

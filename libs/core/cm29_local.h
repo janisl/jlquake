@@ -47,7 +47,6 @@ struct cleaf_t
 struct chull_t
 {
 	bsp29_dclipnode_t*	clipnodes;
-	cplane_t*		planes;
 	int				firstclipnode;
 	int				lastclipnode;
 	vec3_t			clip_mins;
