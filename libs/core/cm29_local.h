@@ -83,7 +83,6 @@ struct cmodel_t
 
 	byte*			visdata;
 	byte*			phs;
-	char*			entities;
 
 	void Free();
 };
@@ -100,7 +99,7 @@ private:
 
 	//	Load
 	void LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
-	void LoadEntities(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadEntities(const quint8* base, const bsp29_lump_t* l);
 	void LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
@@ -122,6 +121,9 @@ private:
 
 public:
 	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
+
+	int					entitychars;
+	char*				entitystring;
 
 	cmodel_t			map_models[MAX_MAP_MODELS];
 

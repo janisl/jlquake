@@ -60,6 +60,8 @@ QClipMap* CM_CreateQClipMap29()
 //==========================================================================
 
 QClipMap29::QClipMap29()
+: entitychars(0)
+, entitystring(NULL)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 }
@@ -73,6 +75,7 @@ QClipMap29::QClipMap29()
 QClipMap29::~QClipMap29()
 {
 	map_models[0].Free();
+	delete[] entitystring;
 }
 
 //==========================================================================
@@ -85,8 +88,6 @@ void cmodel_t::Free()
 {
 	delete[] visdata;
 	visdata = NULL;
-	delete[] entities;
-	entities = NULL;
 	delete[] planes;
 	planes = NULL;
 	delete[] nodes;
@@ -146,7 +147,7 @@ int QClipMap29::GetNumInlineModels() const
 
 const char* QClipMap29::GetEntityString() const
 {
-	return map_models[0].entities;
+	return entitystring;
 }
 
 //==========================================================================

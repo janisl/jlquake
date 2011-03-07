@@ -101,7 +101,7 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
 	LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
 	LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
-	LoadEntities(mod, mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
+	LoadEntities(mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
 
 	MakeHull0(mod);
 	MakeHulls(mod);
@@ -155,15 +155,16 @@ void QClipMap29::LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const 
 //
 //==========================================================================
 
-void QClipMap29::LoadEntities(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadEntities(const quint8* base, const bsp29_lump_t* l)
 {
+	entitychars = l->filelen;
 	if (!l->filelen)
 	{
-		loadcmodel->entities = NULL;
+		entitystring = NULL;
 		return;
 	}
-	loadcmodel->entities = new char[l->filelen];
-	Com_Memcpy(loadcmodel->entities, base + l->fileofs, l->filelen);
+	entitystring = new char[l->filelen];
+	Com_Memcpy(entitystring, base + l->fileofs, l->filelen);
 }
 
 //==========================================================================
