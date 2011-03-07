@@ -78,7 +78,7 @@ void QClipMap29::BoxLeafnums_r(leafList_t* ll, int NodeNum) const
 	if (NodeNum < 0)
 	{
 		int LeafNum = -1 - NodeNum;
-		const cleaf_t* leaf = map_models[0].leafs + LeafNum;
+		const cleaf_t* leaf = leafs + LeafNum;
 
 		if (leaf->contents == BSP29CONTENTS_SOLID)
 		{
@@ -332,7 +332,7 @@ byte* QClipMap29::DecompressVis(byte* in)
 		return mod_novis;
 	}
 
-	int row = (map_models[0].numleafs + 7) >> 3;
+	int row = (numleafs + 7) >> 3;
 	byte* out = decompressed;
 
 	do
@@ -367,7 +367,7 @@ byte* QClipMap29::ClusterPVS(int Cluster)
 	{
 		return mod_novis;
 	}
-	return DecompressVis(map_models[0].leafs[Cluster + 1].compressed_vis);
+	return DecompressVis(leafs[Cluster + 1].compressed_vis);
 }
 
 //==========================================================================
@@ -382,7 +382,7 @@ void QClipMap29::CalcPHS()
 {
 	GLog.Write("Building PHS...\n");
 
-	int num = map_models[0].numleafs;
+	int num = numleafs;
 	int rowwords = (num + 31) >> 5;
 	int rowbytes = rowwords * 4;
 
@@ -467,7 +467,7 @@ void QClipMap29::CalcPHS()
 
 byte* QClipMap29::ClusterPHS(int Cluster)
 {
-	return phs + (Cluster + 1) * 4 * ((map_models[0].numleafs + 31) >> 5);
+	return phs + (Cluster + 1) * 4 * ((numleafs + 31) >> 5);
 }
 
 //==========================================================================

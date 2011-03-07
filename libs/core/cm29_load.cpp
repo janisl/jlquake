@@ -98,7 +98,7 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	// load into heap
 	LoadPlanes(mod_base, &header.lumps[BSP29LUMP_PLANES]);
 	LoadVisibility(mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
-	LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
+	LoadLeafs(mod_base, &header.lumps[BSP29LUMP_LEAFS]);
 	LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
 	LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
 	LoadEntities(mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
@@ -237,7 +237,7 @@ void QClipMap29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29
 //
 //==========================================================================
 
-void QClipMap29::LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadLeafs(const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dleaf_t* in = (const bsp29_dleaf_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -247,8 +247,8 @@ void QClipMap29::LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29
 	int count = l->filelen / sizeof(*in);
 	cleaf_t* out = new cleaf_t[count];
 
-	loadcmodel->leafs = out;
-	loadcmodel->numleafs = count;
+	leafs = out;
+	numleafs = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
@@ -327,7 +327,7 @@ void QClipMap29::MakeHull0(cmodel_t* loadcmodel)
 		{
 			if (in->children[j] < 0)
 			{
-				cleaf_t* child = map_models[0].leafs + (-1 - in->children[j]);
+				cleaf_t* child = leafs + (-1 - in->children[j]);
 				out->children[j] = child->contents;
 			}
 			else
@@ -451,7 +451,13 @@ void QClipMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const
 		{
 			loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
 		}
-		loadcmodel->numleafs = LittleLong(in->visleafs);
+		if (i == 0)
+		{
+			//	This replaces total number of leafs with number of leafs in the
+			// base map and this number is what PVS information is based on.
+			//	Maybe rename this to number of clusters?
+			numleafs = LittleLong(in->visleafs);
+		}
 
 		if (i < loadcmodel->numsubmodels - 1)
 		{
@@ -492,7 +498,13 @@ void QClipMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const
 		{
 			loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
 		}
-		loadcmodel->numleafs = LittleLong(in->visleafs);
+		if (i == 0)
+		{
+			//	This replaces total number of leafs with number of leafs in the
+			// base map and this number is what PVS information is based on.
+			//	Maybe rename this to number of clusters?
+			numleafs = LittleLong(in->visleafs);
+		}
 
 		if (i < loadcmodel->numsubmodels - 1)
 		{

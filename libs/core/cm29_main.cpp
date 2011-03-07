@@ -62,6 +62,8 @@ QClipMap* CM_CreateQClipMap29()
 QClipMap29::QClipMap29()
 : numplanes(0)
 , planes(NULL)
+, numleafs(0)
+, leafs(NULL)
 , visdata(NULL)
 , phs(NULL)
 , entitychars(0)
@@ -80,6 +82,7 @@ QClipMap29::~QClipMap29()
 {
 	map_models[0].Free();
 	delete[] planes;
+	delete[] leafs;
 	delete[] visdata;
 	delete[] entitystring;
 	delete[] phs;
@@ -95,8 +98,6 @@ void cmodel_t::Free()
 {
 	delete[] nodes;
 	nodes = NULL;
-	delete[] leafs;
-	leafs = NULL;
 	delete[] clipnodes;
 	clipnodes = NULL;
 	delete[] hulls[0].clipnodes;
@@ -126,7 +127,7 @@ clipHandle_t QClipMap29::InlineModel(int Index) const
 
 int QClipMap29::GetNumClusters() const
 {
-	return map_models[0].numleafs;
+	return numleafs;
 }
 
 //==========================================================================
@@ -194,7 +195,7 @@ int QClipMap29::LeafArea(int LeafNum) const
 
 const byte* QClipMap29::LeafAmbientSoundLevel(int LeafNum) const
 {
-	return map_models[0].leafs[LeafNum].ambient_sound_level;
+	return leafs[LeafNum].ambient_sound_level;
 }
 
 //==========================================================================
