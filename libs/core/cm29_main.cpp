@@ -294,7 +294,6 @@ chull_t* QClipMap29::ClipHandleToHull(clipHandle_t Handle)
 void QClipMap29::InitBoxHull()
 {
 	Com_Memset(&box_model, 0, sizeof(box_model));
-	box_model.hulls[0].clipnodes = clipnodes;
 	box_model.hulls[0].firstclipnode = numclipnodes + numnodes;
 	box_model.hulls[0].lastclipnode = numclipnodes + numnodes + 5;
 

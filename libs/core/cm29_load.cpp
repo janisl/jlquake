@@ -309,7 +309,6 @@ void QClipMap29::MakeHull0()
 	cnode_t* in = nodes;
 	int count = numnodes;
 
-	hull->clipnodes = clipnodes;
 	hull->firstclipnode = numclipnodes;
 	hull->lastclipnode = numclipnodes + count - 1;
 
@@ -342,7 +341,6 @@ void QClipMap29::MakeHulls()
 {
 	for (int j = 1; j < MAX_MAP_HULLS; j++)
 	{
-		map_models[0].hulls[j].clipnodes = clipnodes;
 		map_models[0].hulls[j].firstclipnode = 0;
 		map_models[0].hulls[j].lastclipnode = numclipnodes - 1;
 	}

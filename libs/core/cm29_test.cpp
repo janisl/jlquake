@@ -170,7 +170,7 @@ int QClipMap29::HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t
 			throw QException("SV_HullPointContents: bad node number");
 		}
 	
-		cclipnode_t* node = Hull->clipnodes + NodeNum;
+		cclipnode_t* node = clipnodes + NodeNum;
 		cplane_t* plane = planes + node->planenum;
 
 		float d;

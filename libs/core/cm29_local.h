@@ -58,7 +58,6 @@ struct chullshared_t
 
 struct chull_t
 {
-	cclipnode_t*	clipnodes;
 	int				firstclipnode;
 	int				lastclipnode;
 };
