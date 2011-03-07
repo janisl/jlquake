@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "quakedef.h"
-#include "../../../libs/client/snd_local.h"
+#include "../../client/snd_local.h"
 
 int S_GetClientFrameCount()
 {

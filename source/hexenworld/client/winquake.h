@@ -5,7 +5,7 @@
 
 #define WM_MOUSEWHEEL                   0x020A
 
-#include "../../../libs/client/win_shared.h"
+#include "../../client/win_shared.h"
 
 #ifndef SERVERONLY
 #include <ddraw.h>

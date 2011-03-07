@@ -1,5 +1,5 @@
 #include "quakedef.h"
-#include "../../../libs/client/snd_local.h"
+#include "../../client/snd_local.h"
 
 int S_GetClientFrameCount()
 {

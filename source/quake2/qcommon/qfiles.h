@@ -190,4 +190,4 @@ typedef struct miptex_s
 ==============================================================================
 */
 
-#include "../../../libs/core/bsp38file.h"
+#include "../../core/bsp38file.h"

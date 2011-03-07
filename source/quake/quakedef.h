@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // quakedef.h -- primary header for client
 
-#include "../../libs/client/client.h"
+#include "../client/client.h"
 
 #define	VERSION				1.09
 #define	GLQUAKE_VERSION		1.00
@@ -175,7 +175,7 @@ void	VID_UnlockBuffer (void);
 // #define IDGODS
 
 #include "common.h"
-#include "../../libs/core/bsp29file.h"
+#include "../core/bsp29file.h"
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"

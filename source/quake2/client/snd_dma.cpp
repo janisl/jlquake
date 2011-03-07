@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "client.h"
-#include "../../../libs/client/snd_local.h"
+#include "../../client/snd_local.h"
 
 sfx_t *S_RegisterSexedSound(int entnum, char *base)
 {

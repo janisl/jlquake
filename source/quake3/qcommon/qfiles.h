@@ -308,6 +308,6 @@ typedef struct {
 ==============================================================================
 */
 
-#include "../../../libs/core/bsp46file.h"
+#include "../../core/bsp46file.h"
 
 #endif

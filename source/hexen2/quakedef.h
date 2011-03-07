@@ -4,7 +4,7 @@
  * $Header: /H2 Mission Pack/Quakedef.h 8     3/19/98 12:53p Jmonroe $
  */
 
-#include "../../libs/client/client.h"
+#include "../client/client.h"
 
 #define MISSIONPACK
 
@@ -156,7 +156,7 @@ void	VID_UnlockBuffer (void);
 // #define IDGODS
 
 #include "common.h"
-#include "../../libs/core/bsp29file.h"
+#include "../core/bsp29file.h"
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"

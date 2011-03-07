@@ -1,6 +1,6 @@
 // quakedef.h -- primary header for server
 
-#include "../../../libs/core/core.h"
+#include "../../core/core.h"
 
 //define	PARANOID			// speed sapping error checking
 
@@ -9,7 +9,7 @@
 #include "bothdefs.h"
 
 #include "common.h"
-#include "../../../libs/core/bsp29file.h"
+#include "../../core/bsp29file.h"
 #include "sys.h"
 #include "zone.h"
 

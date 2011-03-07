@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __Q_SHARED_H
 #define __Q_SHARED_H
 
-#include "../../../libs/core/core.h"
-#include "../../../libs/core/bsp46file.h"
+#include "../../core/core.h"
+#include "../../core/bsp46file.h"
 
 // q_shared.h -- included first by ALL program modules.
 // A user mod should never modify this file

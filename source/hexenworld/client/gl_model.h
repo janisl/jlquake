@@ -2,8 +2,8 @@
 #ifndef __MODEL__
 #define __MODEL__
 
-#include "../../../libs/core/mdlfile.h"
-#include "../../../libs/core/sprfile.h"
+#include "../../core/mdlfile.h"
+#include "../../core/sprfile.h"
 
 /*
 
