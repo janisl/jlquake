@@ -280,7 +280,7 @@ void QClipMap29::LoadClipnodes(const quint8* base, const bsp29_lump_t* l)
 		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
-	cclipnode_t* out = new cclipnode_t[count];
+	cclipnode_t* out = new cclipnode_t[count + numnodes];
 
 	clipnodes = out;
 	numclipnodes = count;
@@ -307,12 +307,12 @@ void QClipMap29::MakeHull0()
 
 	cnode_t* in = nodes;
 	int count = numnodes;
-	cclipnode_t* out = new cclipnode_t[count];
 
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count - 1;
+	hull->clipnodes = clipnodes;
+	hull->firstclipnode = numclipnodes;
+	hull->lastclipnode = numclipnodes + count - 1;
 
+	cclipnode_t* out = clipnodes + numclipnodes;
 	for (int i = 0; i < count; i++, out++, in++)
 	{
 		out->planenum = in->plane - planes;
@@ -325,7 +325,7 @@ void QClipMap29::MakeHull0()
 			}
 			else
 			{
-				out->children[j] = in->children[j];
+				out->children[j] = numclipnodes + in->children[j];
 			}
 		}
 	}
@@ -445,7 +445,8 @@ void QClipMap29::LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l)
 			loadcmodel->mins[j] = LittleFloat(in->mins[j]) - 1;
 			loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 		}
-		for (int j = 0; j < BSP29_MAX_MAP_HULLS_Q1; j++)
+		loadcmodel->hulls[0].firstclipnode = numclipnodes + LittleLong(in->headnode[0]);
+		for (int j = 1; j < BSP29_MAX_MAP_HULLS_Q1; j++)
 		{
 			loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
 		}
@@ -495,7 +496,8 @@ void QClipMap29::LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l)
 			loadcmodel->mins[j] = LittleFloat(in->mins[j]) - 1;
 			loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 		}
-		for (int j = 0; j < BSP29_MAX_MAP_HULLS_H2; j++)
+		loadcmodel->hulls[0].firstclipnode = numclipnodes + LittleLong(in->headnode[0]);
+		for (int j = 1; j < BSP29_MAX_MAP_HULLS_H2; j++)
 		{
 			loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
 		}

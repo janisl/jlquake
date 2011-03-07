@@ -95,7 +95,6 @@ QClipMap29::~QClipMap29()
 	delete[] visdata;
 	delete[] entitystring;
 	delete[] phs;
-	delete[] map_models[0].hulls[0].clipnodes;
 	delete[] map_models;
 }
 
