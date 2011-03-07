@@ -97,7 +97,7 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 
 	// load into heap
 	LoadPlanes(mod, mod_base, &header.lumps[BSP29LUMP_PLANES]);
-	LoadVisibility(mod, mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
+	LoadVisibility(mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
 	LoadLeafs(mod, mod_base, &header.lumps[BSP29LUMP_LEAFS]);
 	LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
 	LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
@@ -138,15 +138,15 @@ void QClipMap29::ReloadMap(bool ClientLoad)
 //
 //==========================================================================
 
-void QClipMap29::LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadVisibility(const quint8* base, const bsp29_lump_t* l)
 {
 	if (!l->filelen)
 	{
-		loadcmodel->visdata = NULL;
+		visdata = NULL;
 		return;
 	}
-	loadcmodel->visdata = new byte[l->filelen];
-	Com_Memcpy(loadcmodel->visdata, base + l->fileofs, l->filelen);
+	visdata = new byte[l->filelen];
+	Com_Memcpy(visdata, base + l->fileofs, l->filelen);
 }
 
 //==========================================================================
@@ -262,7 +262,7 @@ void QClipMap29::LoadLeafs(cmodel_t* loadcmodel, const quint8* base, const bsp29
 		}
 		else
 		{
-			out->compressed_vis = loadcmodel->visdata + p;
+			out->compressed_vis = visdata + p;
 		}
 
 		for (int j = 0; j < 4; j++)

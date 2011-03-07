@@ -81,7 +81,6 @@ struct cmodel_t
 
 	chull_t			hulls[MAX_MAP_HULLS];
 
-	byte*			visdata;
 	byte*			phs;
 
 	void Free();
@@ -98,7 +97,7 @@ private:
 	int ContentsToQ3(int Contents) const;
 
 	//	Load
-	void LoadVisibility(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadVisibility(const quint8* base, const bsp29_lump_t* l);
 	void LoadEntities(const quint8* base, const bsp29_lump_t* l);
 	void LoadPlanes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
@@ -121,6 +120,8 @@ private:
 
 public:
 	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
+
+	byte*				visdata;
 
 	int					entitychars;
 	char*				entitystring;
