@@ -99,7 +99,7 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	LoadPlanes(mod_base, &header.lumps[BSP29LUMP_PLANES]);
 	LoadVisibility(mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
 	LoadLeafs(mod_base, &header.lumps[BSP29LUMP_LEAFS]);
-	LoadNodes(mod, mod_base, &header.lumps[BSP29LUMP_NODES]);
+	LoadNodes(mod_base, &header.lumps[BSP29LUMP_NODES]);
 	LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
 	LoadEntities(mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
 
@@ -206,7 +206,7 @@ void QClipMap29::LoadPlanes(const quint8* base, const bsp29_lump_t* l)
 //
 //==========================================================================
 
-void QClipMap29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadNodes(const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dnode_t* in = (const bsp29_dnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -216,8 +216,8 @@ void QClipMap29::LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29
 	int count = l->filelen / sizeof(*in);
 	cnode_t* out = new cnode_t[count];
 
-	loadcmodel->nodes = out;
-	loadcmodel->numnodes = count;
+	nodes = out;
+	numnodes = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
 	{
@@ -312,8 +312,8 @@ void QClipMap29::MakeHull0(cmodel_t* loadcmodel)
 {
 	chull_t* hull = &loadcmodel->hulls[0];
 
-	cnode_t* in = loadcmodel->nodes;
-	int count = loadcmodel->numnodes;
+	cnode_t* in = nodes;
+	int count = numnodes;
 	bsp29_dclipnode_t* out = new bsp29_dclipnode_t[count];
 
 	hull->clipnodes = out;

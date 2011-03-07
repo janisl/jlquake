@@ -66,9 +66,6 @@ struct cmodel_t
 	//
 	int				numsubmodels;
 
-	int				numnodes;
-	cnode_t*		nodes;
-
 	int				numclipnodes;
 	bsp29_dclipnode_t*	clipnodes;
 
@@ -91,7 +88,7 @@ private:
 	void LoadVisibility(const quint8* base, const bsp29_lump_t* l);
 	void LoadEntities(const quint8* base, const bsp29_lump_t* l);
 	void LoadPlanes(const quint8* base, const bsp29_lump_t* l);
-	void LoadNodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadNodes(const quint8* base, const bsp29_lump_t* l);
 	void LoadLeafs(const quint8* base, const bsp29_lump_t* l);
 	void LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
 	void MakeHull0(cmodel_t* loadcmodel);
@@ -114,6 +111,9 @@ public:
 
 	int					numplanes;
 	cplane_t*			planes;
+
+	int					numnodes;
+	cnode_t*			nodes;
 
 	int					numleafs;
 	cleaf_t*			leafs;

@@ -51,7 +51,7 @@ int QClipMap29::PointLeafnum(const vec3_t P) const
 	int NodeNum = 0;
 	while (NodeNum >= 0)
 	{
-		cnode_t* Node = map_models[0].nodes + NodeNum;
+		cnode_t* Node = nodes + NodeNum;
 		cplane_t* Plane = Node->plane;
 		float d = DotProduct(P, Plane->normal) - Plane->dist;
 		if (d > 0)
@@ -102,13 +102,13 @@ void QClipMap29::BoxLeafnums_r(leafList_t* ll, int NodeNum) const
 
 	// NODE_MIXED
 
-	const cnode_t* node = map_models[0].nodes + NodeNum;
+	const cnode_t* node = nodes + NodeNum;
 	const cplane_t* splitplane = node->plane;
 	int sides = BOX_ON_PLANE_SIDE(ll->bounds[0], ll->bounds[1], splitplane);
 
 	if (sides == 3 && ll->topnode == -1)
 	{
-		ll->topnode = node - map_models[0].nodes;
+		ll->topnode = node - nodes;
 	}
 
 	// recurse down the contacted sides
@@ -308,7 +308,7 @@ bool QClipMap29::HeadnodeVisible(int NodeNum, byte* VisBits)
 		return false;
 	}
 
-	const cnode_t* Node = &map_models[0].nodes[NodeNum];
+	const cnode_t* Node = &nodes[NodeNum];
 	if (HeadnodeVisible(Node->children[0], VisBits))
 	{
 		return true;
