@@ -64,6 +64,7 @@ QClipMap29::QClipMap29()
 , planes(NULL)
 , numleafs(0)
 , leafs(NULL)
+, numclusters(0)
 , visdata(NULL)
 , phs(NULL)
 , entitychars(0)
@@ -127,7 +128,7 @@ clipHandle_t QClipMap29::InlineModel(int Index) const
 
 int QClipMap29::GetNumClusters() const
 {
-	return numleafs;
+	return numclusters;
 }
 
 //==========================================================================

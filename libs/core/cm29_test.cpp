@@ -332,7 +332,7 @@ byte* QClipMap29::DecompressVis(byte* in)
 		return mod_novis;
 	}
 
-	int row = (numleafs + 7) >> 3;
+	int row = (numclusters + 7) >> 3;
 	byte* out = decompressed;
 
 	do
@@ -382,7 +382,7 @@ void QClipMap29::CalcPHS()
 {
 	GLog.Write("Building PHS...\n");
 
-	int num = numleafs;
+	int num = numclusters;
 	int rowwords = (num + 31) >> 5;
 	int rowbytes = rowwords * 4;
 
@@ -467,7 +467,7 @@ void QClipMap29::CalcPHS()
 
 byte* QClipMap29::ClusterPHS(int Cluster)
 {
-	return phs + (Cluster + 1) * 4 * ((numleafs + 31) >> 5);
+	return phs + (Cluster + 1) * 4 * ((numclusters + 31) >> 5);
 }
 
 //==========================================================================

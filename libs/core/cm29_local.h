@@ -116,8 +116,10 @@ public:
 	int					numplanes;
 	cplane_t*			planes;
 
-	int					numleafs;		// number of visible leafs, not counting 0
+	int					numleafs;
 	cleaf_t*			leafs;
+
+	int					numclusters;
 
 	byte*				visdata;
 

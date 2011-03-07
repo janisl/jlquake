@@ -453,10 +453,7 @@ void QClipMap29::LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const
 		}
 		if (i == 0)
 		{
-			//	This replaces total number of leafs with number of leafs in the
-			// base map and this number is what PVS information is based on.
-			//	Maybe rename this to number of clusters?
-			numleafs = LittleLong(in->visleafs);
+			numclusters = LittleLong(in->visleafs);
 		}
 
 		if (i < loadcmodel->numsubmodels - 1)
@@ -500,10 +497,7 @@ void QClipMap29::LoadSubmodelsH2(cmodel_t* loadcmodel, const quint8* base, const
 		}
 		if (i == 0)
 		{
-			//	This replaces total number of leafs with number of leafs in the
-			// base map and this number is what PVS information is based on.
-			//	Maybe rename this to number of clusters?
-			numleafs = LittleLong(in->visleafs);
+			numclusters = LittleLong(in->visleafs);
 		}
 
 		if (i < loadcmodel->numsubmodels - 1)
