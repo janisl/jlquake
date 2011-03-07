@@ -421,37 +421,33 @@ void QClipMap29::LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l)
 	}
 	int count = l->filelen / sizeof(*in);
 
+	//	It's always from model 0.
+	numclusters = LittleLong(in->visleafs);
+
 	numsubmodels = count;
 	map_models = new cmodel_t[count];
 	Com_Memset(map_models, 0, sizeof(cmodel_t) * count);
 
-	cmodel_t* loadcmodel = &map_models[0];
 	for (int i = 0; i < count; i++, in++)
 	{
+		cmodel_t* out = &map_models[i];
+
 		for (int j = 0; j < 3; j++)
 		{
 			// spread the mins / maxs by a pixel
-			loadcmodel->mins[j] = LittleFloat(in->mins[j]) - 1;
-			loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
-		}
-		loadcmodel->hulls[0].firstclipnode = numclipnodes + LittleLong(in->headnode[0]);
-		loadcmodel->hulls[0].lastclipnode = numclipnodes + numnodes - 1;
-		for (int j = 1; j < BSP29_MAX_MAP_HULLS_Q1; j++)
-		{
-			loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
-			loadcmodel->hulls[j].lastclipnode = numclipnodes - 1;
-		}
-		if (i == 0)
-		{
-			numclusters = LittleLong(in->visleafs);
+			out->mins[j] = LittleFloat(in->mins[j]) - 1;
+			out->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 		}
 
-		if (i < numsubmodels - 1)
+		//	Clip nodes for hull 0 are appended after clip nodes of
+		// other hulls. They are build from regular nodes.
+		out->hulls[0].firstclipnode = numclipnodes + LittleLong(in->headnode[0]);
+		out->hulls[0].lastclipnode = numclipnodes + numnodes - 1;
+
+		for (int j = 1; j < BSP29_MAX_MAP_HULLS_Q1; j++)
 		{
-			// duplicate the basic information
-			cmodel_t* nextmodel = &map_models[i + 1];
-			*nextmodel = *loadcmodel;
-			loadcmodel = nextmodel;
+			out->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
+			out->hulls[j].lastclipnode = numclipnodes - 1;
 		}
 	}
 }
@@ -471,37 +467,33 @@ void QClipMap29::LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l)
 	}
 	int count = l->filelen / sizeof(*in);
 
+	//	It's always from model 0.
+	numclusters = LittleLong(in->visleafs);
+
 	numsubmodels = count;
 	map_models = new cmodel_t[count];
 	Com_Memset(map_models, 0, sizeof(cmodel_t) * count);
 
-	cmodel_t* loadcmodel = &map_models[0];
 	for (int i = 0; i < count; i++, in++)
 	{
+		cmodel_t* out = &map_models[i];
+
 		for (int j = 0; j < 3; j++)
 		{
 			// spread the mins / maxs by a pixel
-			loadcmodel->mins[j] = LittleFloat(in->mins[j]) - 1;
-			loadcmodel->maxs[j] = LittleFloat(in->maxs[j]) + 1;
-		}
-		loadcmodel->hulls[0].firstclipnode = numclipnodes + LittleLong(in->headnode[0]);
-		loadcmodel->hulls[0].lastclipnode = numclipnodes + numnodes - 1;
-		for (int j = 1; j < BSP29_MAX_MAP_HULLS_H2; j++)
-		{
-			loadcmodel->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
-			loadcmodel->hulls[j].lastclipnode = numclipnodes - 1;
-		}
-		if (i == 0)
-		{
-			numclusters = LittleLong(in->visleafs);
+			out->mins[j] = LittleFloat(in->mins[j]) - 1;
+			out->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 		}
 
-		if (i < numsubmodels - 1)
+		//	Clip nodes for hull 0 are appended after clip nodes of
+		// other hulls. They are build from regular nodes.
+		out->hulls[0].firstclipnode = numclipnodes + LittleLong(in->headnode[0]);
+		out->hulls[0].lastclipnode = numclipnodes + numnodes - 1;
+
+		for (int j = 1; j < BSP29_MAX_MAP_HULLS_H2; j++)
 		{
-			// duplicate the basic information
-			cmodel_t* nextmodel = &map_models[i + 1];
-			*nextmodel = *loadcmodel;
-			loadcmodel = nextmodel;
+			out->hulls[j].firstclipnode = LittleLong(in->headnode[j]);
+			out->hulls[j].lastclipnode = numclipnodes - 1;
 		}
 	}
 }
