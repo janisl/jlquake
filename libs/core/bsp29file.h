@@ -144,7 +144,6 @@ struct bsp29_dface_t
 	qint32		lightofs;		// start of [numstyles*surfsize] samples
 };
 
-// !!! if this is changed, it must be changed in asm_i386.h too !!!
 struct bsp29_dclipnode_t
 {
 	qint32		planenum;

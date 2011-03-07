@@ -33,15 +33,21 @@
 
 struct cnode_t
 {
-	cplane_t*	plane;
-	int			children[2];	
+	cplane_t*		plane;
+	int				children[2];	
 };
 
 struct cleaf_t
 {
-	int			contents;
-	byte*		compressed_vis;
-	byte		ambient_sound_level[BSP29_NUM_AMBIENTS];
+	int				contents;
+	byte*			compressed_vis;
+	byte			ambient_sound_level[BSP29_NUM_AMBIENTS];
+};
+
+struct cclipnode_t
+{
+	int				planenum;
+	int				children[2];	// negative numbers are contents
 };
 
 struct chullshared_t
@@ -52,7 +58,7 @@ struct chullshared_t
 
 struct chull_t
 {
-	bsp29_dclipnode_t*	clipnodes;
+	cclipnode_t*	clipnodes;
 	int				firstclipnode;
 	int				lastclipnode;
 };
@@ -115,7 +121,7 @@ public:
 	int					numclusters;
 
 	int					numclipnodes;
-	bsp29_dclipnode_t*	clipnodes;
+	cclipnode_t*		clipnodes;
 
 	byte*				visdata;
 
@@ -130,7 +136,7 @@ public:
 	chullshared_t		hullsshared[MAX_MAP_HULLS];
 
 	cmodel_t			box_model;
-	bsp29_dclipnode_t	box_clipnodes[6];
+	cclipnode_t			box_clipnodes[6];
 
 	QClipMap29();
 	~QClipMap29();

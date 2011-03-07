@@ -94,7 +94,7 @@ bool QClipMap29::RecursiveHullCheck(chull_t * hull, int num, float p1f,
 	//
 	// find the point distances
 	//
-	bsp29_dclipnode_t *node = hull->clipnodes + num;
+	cclipnode_t* node = hull->clipnodes + num;
 	cplane_t *plane = planes + node->planenum;
 
 	float t1, t2;
