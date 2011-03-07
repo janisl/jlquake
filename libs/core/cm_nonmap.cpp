@@ -24,7 +24,8 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include "cm29_local.h"
+#include "cm_local.h"
+#include "bsp29file.h"
 #include "mdlfile.h"
 #include "sprfile.h"
 
@@ -209,10 +210,10 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	{
 	case BSP29_VERSION:
 		{
-			QClipMap29* LoadCMap = new QClipMap29;
+			QClipMap* LoadCMap = CM_CreateQClipMap29();
 			CMNonMapModels.Append(LoadCMap);
 			LoadCMap->LoadMap(Name, Buffer);
-			if (LoadCMap->map_models[0].numsubmodels > 1)
+			if (LoadCMap->GetNumInlineModels() > 1)
 			{
 				GLog.WriteLine("Non-map BSP models are not supposed to have submodels");
 			}
