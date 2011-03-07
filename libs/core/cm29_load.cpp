@@ -100,7 +100,7 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	LoadVisibility(mod_base, &header.lumps[BSP29LUMP_VISIBILITY]);
 	LoadLeafs(mod_base, &header.lumps[BSP29LUMP_LEAFS]);
 	LoadNodes(mod_base, &header.lumps[BSP29LUMP_NODES]);
-	LoadClipnodes(mod, mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
+	LoadClipnodes(mod_base, &header.lumps[BSP29LUMP_CLIPNODES]);
 	LoadEntities(mod_base, &header.lumps[BSP29LUMP_ENTITIES]);
 
 	MakeHull0(mod);
@@ -279,7 +279,7 @@ void QClipMap29::LoadLeafs(const quint8* base, const bsp29_lump_t* l)
 //
 //==========================================================================
 
-void QClipMap29::LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l)
+void QClipMap29::LoadClipnodes(const quint8* base, const bsp29_lump_t* l)
 {
 	const bsp29_dclipnode_t* in = (const bsp29_dclipnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -289,8 +289,8 @@ void QClipMap29::LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const b
 	int count = l->filelen / sizeof(*in);
 	bsp29_dclipnode_t* out = new bsp29_dclipnode_t[count];
 
-	loadcmodel->clipnodes = out;
-	loadcmodel->numclipnodes = count;
+	clipnodes = out;
+	numclipnodes = count;
 
 	for (int i = 0; i < count; i++, out++, in++)
 	{
@@ -348,9 +348,9 @@ void QClipMap29::MakeHulls(cmodel_t* loadcmodel)
 {
 	for (int j = 1; j < MAX_MAP_HULLS; j++)
 	{
-		loadcmodel->hulls[j].clipnodes = loadcmodel->clipnodes;
+		loadcmodel->hulls[j].clipnodes = clipnodes;
 		loadcmodel->hulls[j].firstclipnode = 0;
-		loadcmodel->hulls[j].lastclipnode = loadcmodel->numclipnodes - 1;
+		loadcmodel->hulls[j].lastclipnode = numclipnodes - 1;
 	}
 
 	chull_t* hull = &loadcmodel->hulls[1];

@@ -67,6 +67,8 @@ QClipMap29::QClipMap29()
 , numleafs(0)
 , leafs(NULL)
 , numclusters(0)
+, numclipnodes(0)
+, clipnodes(NULL)
 , visdata(NULL)
 , phs(NULL)
 , entitychars(0)
@@ -87,6 +89,7 @@ QClipMap29::~QClipMap29()
 	delete[] planes;
 	delete[] nodes;
 	delete[] leafs;
+	delete[] clipnodes;
 	delete[] visdata;
 	delete[] entitystring;
 	delete[] phs;
@@ -100,8 +103,6 @@ QClipMap29::~QClipMap29()
 
 void cmodel_t::Free()
 {
-	delete[] clipnodes;
-	clipnodes = NULL;
 	delete[] hulls[0].clipnodes;
 	hulls[0].clipnodes = NULL;
 }

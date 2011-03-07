@@ -66,9 +66,6 @@ struct cmodel_t
 	//
 	int				numsubmodels;
 
-	int				numclipnodes;
-	bsp29_dclipnode_t*	clipnodes;
-
 	chull_t			hulls[MAX_MAP_HULLS];
 
 	void Free();
@@ -90,7 +87,7 @@ private:
 	void LoadPlanes(const quint8* base, const bsp29_lump_t* l);
 	void LoadNodes(const quint8* base, const bsp29_lump_t* l);
 	void LoadLeafs(const quint8* base, const bsp29_lump_t* l);
-	void LoadClipnodes(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
+	void LoadClipnodes(const quint8* base, const bsp29_lump_t* l);
 	void MakeHull0(cmodel_t* loadcmodel);
 	void MakeHulls(cmodel_t* loadcmodel);
 	void LoadSubmodelsQ1(cmodel_t* loadcmodel, const quint8* base, const bsp29_lump_t* l);
@@ -119,6 +116,9 @@ public:
 	cleaf_t*			leafs;
 
 	int					numclusters;
+
+	int					numclipnodes;
+	bsp29_dclipnode_t*	clipnodes;
 
 	byte*				visdata;
 
