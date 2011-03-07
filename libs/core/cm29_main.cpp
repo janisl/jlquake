@@ -294,12 +294,13 @@ chull_t* QClipMap29::ClipHandleToHull(clipHandle_t Handle)
 void QClipMap29::InitBoxHull()
 {
 	Com_Memset(&box_model, 0, sizeof(box_model));
-	box_model.hulls[0].clipnodes = box_clipnodes;
-	box_model.hulls[0].firstclipnode = 0;
-	box_model.hulls[0].lastclipnode = 5;
+	box_model.hulls[0].clipnodes = clipnodes;
+	box_model.hulls[0].firstclipnode = numclipnodes + numnodes;
+	box_model.hulls[0].lastclipnode = numclipnodes + numnodes + 5;
 
 	cplane_t* box_planes = planes + numplanes;
-
+	cclipnode_t* box_clipnodes = clipnodes + numclipnodes + numnodes;
+	
 	for (int i = 0; i < 6; i++)
 	{
 		box_clipnodes[i].planenum = numplanes + i;
@@ -309,7 +310,7 @@ void QClipMap29::InitBoxHull()
 		box_clipnodes[i].children[side] = BSP29CONTENTS_EMPTY;
 		if (i != 5)
 		{
-			box_clipnodes[i].children[side ^ 1] = i + 1;
+			box_clipnodes[i].children[side ^ 1] = numclipnodes + numnodes + i + 1;
 		}
 		else
 		{

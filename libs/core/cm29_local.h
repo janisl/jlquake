@@ -136,7 +136,6 @@ public:
 	chullshared_t		hullsshared[MAX_MAP_HULLS];
 
 	cmodel_t			box_model;
-	cclipnode_t			box_clipnodes[6];
 
 	QClipMap29();
 	~QClipMap29();

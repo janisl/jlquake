@@ -280,7 +280,8 @@ void QClipMap29::LoadClipnodes(const quint8* base, const bsp29_lump_t* l)
 		throw QDropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
-	cclipnode_t* out = new cclipnode_t[count + numnodes];
+	//	Extra space for hull 0 and box.
+	cclipnode_t* out = new cclipnode_t[count + numnodes + 6];
 
 	clipnodes = out;
 	numclipnodes = count;
