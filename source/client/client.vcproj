@@ -157,6 +157,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_qgl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\snd_dma.cpp"
 				>
 			</File>
@@ -200,6 +204,18 @@
 			</File>
 			<File
 				RelativePath=".\midstuff.h"
+				>
+			</File>
+			<File
+				RelativePath=".\render_local.h"
+				>
+			</File>
+			<File
+				RelativePath=".\render_qgl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\render_qgl_functions.h"
 				>
 			</File>
 			<File

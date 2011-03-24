@@ -19,12 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include <stdio.h>
 
-#include <GL/glu.h>
 #include <math.h>
 
 #include "../client/ref.h"
 
 #include "qgl.h"
+
+#include <GL/glu.h>
 
 #ifndef GL_COLOR_INDEX8_EXT
 #define GL_COLOR_INDEX8_EXT GL_COLOR_INDEX

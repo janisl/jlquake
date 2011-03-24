@@ -1,5 +1,8 @@
 
 #include "quakedef.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #define	PACKET_HEADER	8
 
