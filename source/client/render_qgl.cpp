@@ -172,6 +172,7 @@ static void APIENTRY log##n(t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 
 #undef GLF_V3
 #undef GLF_V3_X
 #undef GLF_V4
+#undef GLF_V4_X
 #undef GLF_V5
 #undef GLF_V6
 #undef GLF_V7
