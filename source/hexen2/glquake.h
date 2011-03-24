@@ -79,11 +79,6 @@ typedef struct
 
 extern	int glx, gly, glwidth, glheight;
 
-extern	PROC glArrayElementEXT;
-extern	PROC glColorPointerEXT;
-extern	PROC glTexturePointerEXT;
-extern	PROC glVertexPointerEXT;
-
 
 // r_local.h -- private refresh defs
 
