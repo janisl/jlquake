@@ -1,6 +1,7 @@
 // cl_parse.c  -- parse a message received from the server
 
 #include "quakedef.h"
+#include "glquake.h"
 
 char *svc_strings[] =
 {

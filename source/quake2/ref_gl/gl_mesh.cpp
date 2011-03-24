@@ -112,8 +112,8 @@ void GL_DrawAliasFrameLerp (dmdl_t *paliashdr, float backlerp)
 
 	order = (int *)((byte *)paliashdr + paliashdr->ofs_glcmds);
 
-//	glTranslatef (frame->translate[0], frame->translate[1], frame->translate[2]);
-//	glScalef (frame->scale[0], frame->scale[1], frame->scale[2]);
+//	qglTranslatef (frame->translate[0], frame->translate[1], frame->translate[2]);
+//	qglScalef (frame->scale[0], frame->scale[1], frame->scale[2]);
 
 	if (currententity->flags & RF_TRANSLUCENT)
 		alpha = currententity->alpha;

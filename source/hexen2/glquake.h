@@ -8,13 +8,12 @@
 #pragma warning(disable : 4136)     // X86
 #pragma warning(disable : 4051)     // ALPHA
   
-#ifdef _WIN32
-#include <windows.h>
-#else
+#ifndef _WIN32
 #define PROC void*
 #endif
 
-#include <GL/gl.h>
+#include "../client/render_local.h"
+
 #include <GL/glu.h>
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);
@@ -270,10 +269,6 @@ extern byte *playerTranslation;
 // Multitexture
 #define    TEXTURE0_SGIS				0x835E
 #define    TEXTURE1_SGIS				0x835F
-
-#ifndef _WIN32
-#define APIENTRY /* */
-#endif
 
 typedef void (APIENTRY *lpMTexFUNC) (GLenum, GLfloat, GLfloat);
 typedef void (APIENTRY *lpSelTexFUNC) (GLenum);

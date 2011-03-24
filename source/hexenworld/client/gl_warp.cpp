@@ -1,6 +1,7 @@
 // gl_warp.c -- sky and water polygons
 
 #include "quakedef.h"
+#include "glquake.h"
 
 extern	model_t	*loadmodel;
 
@@ -180,7 +181,7 @@ void EmitWaterPolys (msurface_t *fa)
 
 	for (p=fa->polys ; p ; p=p->next)
 	{
-		glBegin (GL_POLYGON);
+		qglBegin (GL_POLYGON);
 		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=VERTEXSIZE)
 		{
 			os = v[3];
@@ -192,10 +193,10 @@ void EmitWaterPolys (msurface_t *fa)
 			t = ot + turbsin[(int)((os*0.125+realtime) * TURBSCALE) & 255];
 			t *= (1.0/64);
 
-			glTexCoord2f (s, t);
-			glVertex3fv (v);
+			qglTexCoord2f (s, t);
+			qglVertex3fv (v);
 		}
-		glEnd ();
+		qglEnd ();
 	}
 }
 
@@ -218,7 +219,7 @@ void EmitSkyPolys (msurface_t *fa)
 
 	for (p=fa->polys ; p ; p=p->next)
 	{
-		glBegin (GL_POLYGON);
+		qglBegin (GL_POLYGON);
 		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=VERTEXSIZE)
 		{
 			VectorSubtract (v, r_origin, dir);
@@ -234,10 +235,10 @@ void EmitSkyPolys (msurface_t *fa)
 			s = (speedscale + dir[0]) * (1.0/128);
 			t = (speedscale + dir[1]) * (1.0/128);
 
-			glTexCoord2f (s, t);
-			glVertex3fv (v);
+			qglTexCoord2f (s, t);
+			qglVertex3fv (v);
 		}
-		glEnd ();
+		qglEnd ();
 	}
 }
 
@@ -264,14 +265,14 @@ void EmitBothSkyLayers (msurface_t *fa)
 
 	EmitSkyPolys (fa);
 
-	glEnable (GL_BLEND);
+	qglEnable (GL_BLEND);
 	GL_Bind (alphaskytexture);
 	speedscale = realtime*16;
 	speedscale -= (int)speedscale & ~127 ;
 
 	EmitSkyPolys (fa);
 
-	glDisable (GL_BLEND);
+	qglDisable (GL_BLEND);
 }
 
 /*
@@ -293,7 +294,7 @@ void R_DrawSkyChain (msurface_t *s)
 	for (fa=s ; fa ; fa=fa->texturechain)
 		EmitSkyPolys (fa);
 
-	glEnable (GL_BLEND);
+	qglEnable (GL_BLEND);
 	GL_Bind (alphaskytexture);
 	speedscale = realtime*16;
 	speedscale -= (int)speedscale & ~127 ;
@@ -301,7 +302,7 @@ void R_DrawSkyChain (msurface_t *s)
 	for (fa=s ; fa ; fa=fa->texturechain)
 		EmitSkyPolys (fa);
 
-	glDisable (GL_BLEND);
+	qglDisable (GL_BLEND);
 }
 
 //===============================================================
@@ -349,9 +350,9 @@ void R_InitSky (texture_t *mt)
 	if (!solidskytexture)
 		solidskytexture = texture_extension_number++;
 	GL_Bind (solidskytexture );
-	glTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	qglTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
 	for (i=0 ; i<128 ; i++)
@@ -367,8 +368,8 @@ void R_InitSky (texture_t *mt)
 	if (!alphaskytexture)
 		alphaskytexture = texture_extension_number++;
 	GL_Bind(alphaskytexture);
-	glTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	qglTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 

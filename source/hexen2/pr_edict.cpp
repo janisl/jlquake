@@ -5,6 +5,7 @@
  */
 
 #include "quakedef.h"
+#include "glquake.h"
 
 dprograms_t		*progs;
 dfunction_t		*pr_functions;

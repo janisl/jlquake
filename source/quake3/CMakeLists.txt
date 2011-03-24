@@ -6,7 +6,7 @@ set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium 
 
 set(THREAD_LDFLAGS -lpthread)
 set(LDFLAGS -ldl -lm)
-set(GLLDFLAGS ${LDFLAGS} -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -lasound)
+set(GLLDFLAGS ${LDFLAGS} -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -lasound -lGL)
 
 #############################################################################
 # CLIENT/SERVER

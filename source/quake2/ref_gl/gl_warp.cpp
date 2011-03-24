@@ -608,10 +608,10 @@ qglRotatef (r_newrefdef.time * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
 	}
 qglPopMatrix ();
 #if 0
-glDisable (GL_BLEND);
-glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-glColor4f (1,1,1,0.5);
-glEnable (GL_DEPTH_TEST);
+qglDisable (GL_BLEND);
+qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+qglColor4f (1,1,1,0.5);
+qglEnable (GL_DEPTH_TEST);
 #endif
 }
 

@@ -8,6 +8,7 @@
  */
 
 #include "quakedef.h"
+#include "glquake.h"
 
 extern qboolean	vid_initialized;
 

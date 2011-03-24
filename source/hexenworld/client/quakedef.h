@@ -33,7 +33,6 @@
 #include "view.h"
 #include "menu.h"
 #include "pmove.h"
-#include "glquake.h"
 
 //=============================================================================
 

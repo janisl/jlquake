@@ -4,13 +4,12 @@
 #pragma warning(disable : 4244)     // MIPS
 #pragma warning(disable : 4136)     // X86
 #pragma warning(disable : 4051)     // ALPHA
-
-#include <windows.h>
 #else
 #define PROC void*
 #endif
 
-#include <GL/gl.h>
+#include "../../client/render_local.h"
+
 #include <GL/glu.h>
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);

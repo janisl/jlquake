@@ -1,6 +1,7 @@
 // r_efrag.c
 
 #include "quakedef.h"
+#include "glquake.h"
 
 mnode_t	*r_pefragtopnode;
 

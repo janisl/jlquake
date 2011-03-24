@@ -3,6 +3,7 @@
  */
 
 #include "quakedef.h"
+#include "glquake.h"
 
 #define	SFL_FLUFFY			1	// All largish flakes
 #define	SFL_MIXED			2	// Mixed flakes
@@ -1352,10 +1353,10 @@ void R_DrawParticles (void)
 	float			scale;
 
 	GL_Bind(particletexture);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBegin (GL_TRIANGLES);
+	qglEnable (GL_BLEND);
+	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	qglBegin (GL_TRIANGLES);
 
 	VectorScale (vup, 1.5, r_pup);
 	VectorScale (vright, 1.5, r_pright);
@@ -1398,17 +1399,17 @@ void R_DrawParticles (void)
 			else
 				scale = 1 + scale * 0.004;
 			if (p->color <= 255)
-				glColor3ubv ((byte *)&d_8to24table[(int)p->color]);
+				qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
 			else
-				glColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
+				qglColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
 			
 			//fixme: need rain texture
-			glTexCoord2f (1,0);
-			glVertex3fv (p->org);
-			glTexCoord2f (1,0.5);
-			glVertex3f (p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
-			glTexCoord2f (0.5,0);
-			glVertex3f (p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
+			qglTexCoord2f (1,0);
+			qglVertex3fv (p->org);
+			qglTexCoord2f (1,0.5);
+			qglVertex3f(p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
+			qglTexCoord2f (0.5,0);
+			qglVertex3f(p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
 		}
 		else if (p->type==pt_snow)
 		{
@@ -1422,41 +1423,41 @@ void R_DrawParticles (void)
 				scale = p->count/10 + scale * 0.004;
 
 			if (p->color <= 255)
-				glColor3ubv ((byte *)&d_8to24table[(int)p->color]);
+				qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
 			else
-				glColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
+				qglColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
 	
 			if(p->count>=69)
-				glTexCoord2f (1,1);//happy snow!- bottom right
+				qglTexCoord2f (1,1);//happy snow!- bottom right
 			else if(p->count>=40)	
-				glTexCoord2f (0,0);	//normal snow - top left
+				qglTexCoord2f (0,0);	//normal snow - top left
 			else if(p->count>=30)
-				glTexCoord2f (0,1);	//bottom left
+				qglTexCoord2f (0,1);	//bottom left
 			else
-				glTexCoord2f (1,0);	//top right
+				qglTexCoord2f (1,0);	//top right
 
-			glVertex3fv (p->org);
+			qglVertex3fv (p->org);
 			if(p->count>=69)
-				glTexCoord2f (1,.18);//top right
+				qglTexCoord2f (1,.18);//top right
 			else if(p->count>=40)	
-				glTexCoord2f (.815,0);//top right
+				qglTexCoord2f (.815,0);//top right
 			else if(p->count>=30)
-				glTexCoord2f (0.5,1);//bottom middle
+				qglTexCoord2f (0.5,1);//bottom middle
 			else
-				glTexCoord2f (1,0.5);//middle right
+				qglTexCoord2f (1,0.5);//middle right
 
-			glVertex3f (p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
+			qglVertex3f(p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
 
 			if(p->count>=69)
-				glTexCoord2f (.18,1);//bottom left
+				qglTexCoord2f (.18,1);//bottom left
 			else if(p->count>=40)	
-				glTexCoord2f (0,.815);//bottom left
+				qglTexCoord2f (0,.815);//bottom left
 			else if(p->count>=30)
-				glTexCoord2f (0,0.5);//left middle
+				qglTexCoord2f (0,0.5);//left middle
 			else
-				glTexCoord2f (0.5,0);//middle top
+				qglTexCoord2f (0.5,0);//middle top
 			
-			glVertex3f (p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
+			qglVertex3f(p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
 		}
 		else
 		{
@@ -1468,21 +1469,21 @@ void R_DrawParticles (void)
 			else
 				scale = 1 + scale * 0.004;
 			if (p->color <= 255)
-				glColor3ubv ((byte *)&d_8to24table[(int)p->color]);
+				qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
 			else
-				glColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
-			glTexCoord2f (1,0);
-			glVertex3fv (p->org);
-			glTexCoord2f (1,0.5);
-			glVertex3f (p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
-			glTexCoord2f (0.5,0);
-			glVertex3f (p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
+				qglColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
+			qglTexCoord2f (1,0);
+			qglVertex3fv (p->org);
+			qglTexCoord2f (1,0.5);
+			qglVertex3f(p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
+			qglTexCoord2f (0.5,0);
+			qglVertex3f(p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
 		}
 	}
 
-	glEnd ();
-	glDisable (GL_BLEND);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	qglEnd ();
+	qglDisable (GL_BLEND);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
 
 

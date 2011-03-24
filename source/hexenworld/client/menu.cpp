@@ -4,6 +4,7 @@
 
 #include "quakedef.h"
 #include "winquake.h"
+#include "glquake.h"
 
 extern	QCvar*	crosshair;
 

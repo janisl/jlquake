@@ -1,6 +1,7 @@
 // cl_ents.c -- entity parsing and management
 
 #include "quakedef.h"
+#include "glquake.h"
 
 extern	QCvar*	cl_predict_players;
 extern	QCvar*	cl_predict_players2;

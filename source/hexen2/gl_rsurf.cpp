@@ -1,6 +1,7 @@
 // r_surf.c: surface-related refresh code
 
 #include "quakedef.h"
+#include "glquake.h"
 
 int			skytexturenum;
 
@@ -276,11 +277,11 @@ void R_DrawSequentialPoly (msurface_t *s)
 	{
 		if (currententity->drawflags & DRF_TRANSLUCENT)
 		{
-			glEnable (GL_BLEND);
-//			glColor4f (1,1,1,r_wateralpha.value);
+			qglEnable (GL_BLEND);
+//			qglColor4f (1,1,1,r_wateralpha.value);
 			alpha_val = r_wateralpha->value;
 
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			intensity = 1;
 			// rjr
 		}
@@ -288,43 +289,43 @@ void R_DrawSequentialPoly (msurface_t *s)
 		{
 			// currententity->abslight   0 - 255
 			// rjr
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			intensity = ( float )currententity->abslight / 255.0f;
 //			intensity = 0;
 		}
 
-		glColor4f( intensity, intensity, intensity, alpha_val );
+		qglColor4f( intensity, intensity, intensity, alpha_val );
 		
 		p = s->polys;
 
 		t = R_TextureAnimation (s->texinfo->texture);
 		GL_Bind (t->gl_texturenum);
-		glBegin (GL_POLYGON);
+		qglBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 		{
-			glTexCoord2f (v[3], v[4]);
-			glVertex3fv (v);
+			qglTexCoord2f (v[3], v[4]);
+			qglVertex3fv (v);
 		}
-		glEnd ();
+		qglEnd ();
 
 		GL_Bind (lightmap_textures + s->lightmaptexturenum);
-		glEnable (GL_BLEND);
-		glBegin (GL_POLYGON);
+		qglEnable (GL_BLEND);
+		qglBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 		{
-			glTexCoord2f (v[5], v[6]);
-			glVertex3fv (v);
+			qglTexCoord2f (v[5], v[6]);
+			qglVertex3fv (v);
 		}
-		glEnd ();
+		qglEnd ();
 
-		glDisable (GL_BLEND);
+		qglDisable (GL_BLEND);
 
 		if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
 			(currententity->drawflags & DRF_TRANSLUCENT))
 		{
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		}
 		return;
 	}
@@ -350,16 +351,16 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 		EmitSkyPolys (s, true);
 
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		qglEnable (GL_BLEND);
+		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		GL_Bind (alphaskytexture);
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale;
 		EmitSkyPolys (s, false);
 		if (gl_lightmap_format == GL_LUMINANCE)
-			glBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+			qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 
-		glDisable (GL_BLEND);
+		qglDisable (GL_BLEND);
 	}
 
 	//
@@ -372,9 +373,9 @@ void R_DrawSequentialPoly (msurface_t *s)
 	DrawGLWaterPoly (p);
 
 	GL_Bind (lightmap_textures + s->lightmaptexturenum);
-	glEnable (GL_BLEND);
+	qglEnable (GL_BLEND);
 	DrawGLWaterPolyLightmap (p);
-	glDisable (GL_BLEND);
+	qglDisable (GL_BLEND);
 }
 
 
@@ -392,19 +393,19 @@ void DrawGLWaterPoly (glpoly_t *p)
 	float	s, t, os, ot;
 	vec3_t	nv;
 
-	glBegin (GL_TRIANGLE_FAN);
+	qglBegin (GL_TRIANGLE_FAN);
 	v = p->verts[0];
 	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 	{
-		glTexCoord2f (v[3], v[4]);
+		qglTexCoord2f (v[3], v[4]);
 
 		nv[0] = v[0] + 8*sin(v[1]*0.05+realtime)*sin(v[2]*0.05+realtime);
 		nv[1] = v[1] + 8*sin(v[0]*0.05+realtime)*sin(v[2]*0.05+realtime);
 		nv[2] = v[2];
 
-		glVertex3fv (nv);
+		qglVertex3fv (nv);
 	}
-	glEnd ();
+	qglEnd ();
 }
 void DrawGLWaterPolyLightmap (glpoly_t *p)
 {
@@ -413,19 +414,19 @@ void DrawGLWaterPolyLightmap (glpoly_t *p)
 	float	s, t, os, ot;
 	vec3_t	nv;
 
-	glBegin (GL_TRIANGLE_FAN);
+	qglBegin (GL_TRIANGLE_FAN);
 	v = p->verts[0];
 	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 	{
-		glTexCoord2f (v[5], v[6]);
+		qglTexCoord2f (v[5], v[6]);
 
 		nv[0] = v[0] + 8*sin(v[1]*0.05+realtime)*sin(v[2]*0.05+realtime);
 		nv[1] = v[1] + 8*sin(v[0]*0.05+realtime)*sin(v[2]*0.05+realtime);
 		nv[2] = v[2];
 
-		glVertex3fv (nv);
+		qglVertex3fv (nv);
 	}
-	glEnd ();
+	qglEnd ();
 }
 
 /*
@@ -439,17 +440,17 @@ void DrawGLPoly (glpoly_t *p)
 	float	*v;
 
 	// hack
-//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBegin (GL_POLYGON);
+//	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	qglBegin (GL_POLYGON);
 	v = p->verts[0];
 	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
 	{
 		// hack
-//		glColor3f( 1.0f, 0.0f, 0.0f );
-		glTexCoord2f (v[3], v[4]);
-		glVertex3fv (v);
+//		qglColor3f( 1.0f, 0.0f, 0.0f );
+		qglTexCoord2f (v[3], v[4]);
+		qglVertex3fv (v);
 	}
-	glEnd ();
+	qglEnd ();
 }
 
 
@@ -470,20 +471,20 @@ void R_BlendLightmaps (qboolean Translucent)
 		return;
 
 	if (!Translucent)
-		glDepthMask (0);		// don't bother writing Z
+		qglDepthMask (0);		// don't bother writing Z
 
 	if (gl_lightmap_format == GL_LUMINANCE)
-		glBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+		qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 	else if (gl_lightmap_format == GL_INTENSITY)
 	{
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		glColor4f (0,0,0,1);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		qglColor4f (0,0,0,1);
+		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	if (!r_lightmap->value)
 	{
-		glEnable (GL_BLEND);
+		qglEnable (GL_BLEND);
 	}
 
 	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
@@ -495,7 +496,7 @@ void R_BlendLightmaps (qboolean Translucent)
 		if (lightmap_modified[i])
 		{
 			lightmap_modified[i] = false;
-			glTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
+			qglTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
 			, BLOCK_WIDTH, BLOCK_HEIGHT, 0, 
 			gl_lightmap_format, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
 		}
@@ -505,29 +506,29 @@ void R_BlendLightmaps (qboolean Translucent)
 				DrawGLWaterPolyLightmap (p);
 			else
 			{
-				glBegin (GL_POLYGON);
+				qglBegin (GL_POLYGON);
 				v = p->verts[0];
 				for (j=0 ; j<p->numverts ; j++, v+= VERTEXSIZE)
 				{
-					glTexCoord2f (v[5], v[6]);
-					glVertex3fv (v);
+					qglTexCoord2f (v[5], v[6]);
+					qglVertex3fv (v);
 				}
-				glEnd ();
+				qglEnd ();
 			}
 		}
 	}
 
-	glDisable (GL_BLEND);
+	qglDisable (GL_BLEND);
 	if (gl_lightmap_format == GL_LUMINANCE)
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	else if (gl_lightmap_format == GL_INTENSITY)
 	{
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		glColor4f (1,1,1,1);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		qglColor4f (1,1,1,1);
 	}
 
 	if (!Translucent)
-		glDepthMask (1);		// back to normal Z buffering
+		qglDepthMask (1);		// back to normal Z buffering
 }
 
 /*
@@ -547,8 +548,8 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 #if 0
 	if (currententity->drawflags & DRF_TRANSLUCENT)
 	{
-		glEnable (GL_BLEND);
-		glColor4f (1,1,1,r_wateralpha.value);
+		qglEnable (GL_BLEND);
+		qglColor4f (1,1,1,r_wateralpha.value);
 		// rjr
 	}
 	if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT)
@@ -559,12 +560,12 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 	
 	if (currententity->drawflags & DRF_TRANSLUCENT)
 	{
-		glEnable (GL_BLEND);
-		//			glColor4f (1,1,1,r_wateralpha.value);
+		qglEnable (GL_BLEND);
+		//			qglColor4f (1,1,1,r_wateralpha.value);
 		alpha_val = r_wateralpha->value;
 		// rjr
 
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		intensity = 1.0;
 
 	}
@@ -572,13 +573,13 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 	{
 		// currententity->abslight   0 - 255
 		// rjr
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 		intensity = ( float )currententity->abslight / 255.0f;
 //		intensity = 0;
 	}
 	
 	if (!override)
-		glColor4f( intensity, intensity, intensity, alpha_val );
+		qglColor4f( intensity, intensity, intensity, alpha_val );
 		
 	if (fa->flags & SURF_DRAWSKY)
 	{	// warp texture, no lightmaps
@@ -626,12 +627,12 @@ dynamic:
 	if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
 	    (currententity->drawflags & DRF_TRANSLUCENT))
 	{
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 	}
 
 	if (currententity->drawflags & DRF_TRANSLUCENT)
 	{
-		glDisable (GL_BLEND);
+		qglDisable (GL_BLEND);
 	}
 }
 
@@ -663,15 +664,15 @@ void R_DrawWaterSurfaces (void)
 	if (r_wateralpha->value == 1.0)
 		return;
 
-//	glDepthMask( 0 );
+//	qglDepthMask( 0 );
 
 	//
 	// go back to the world matrix
 	//
-    glLoadMatrixf (r_world_matrix);
+    qglLoadMatrixf (r_world_matrix);
 
-	glEnable (GL_BLEND);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	qglEnable (GL_BLEND);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 	{
@@ -685,9 +686,9 @@ void R_DrawWaterSurfaces (void)
 			continue;
 
 		if (s->flags & SURF_TRANSLUCENT)
-			glColor4f (1,1,1,r_wateralpha->value);
+			qglColor4f (1,1,1,r_wateralpha->value);
 		else
-			glColor4f (1,1,1,1);
+			qglColor4f (1,1,1,1);
 
 		// set modulate mode explicitly
 		GL_Bind (t->gl_texturenum);
@@ -698,11 +699,11 @@ void R_DrawWaterSurfaces (void)
 		t->texturechain = NULL;
 	}
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
-	glColor4f (1,1,1,1);
-	glDisable (GL_BLEND);
-//	glDepthMask( 0 );
+	qglColor4f (1,1,1,1);
+	qglDisable (GL_BLEND);
+//	qglDepthMask( 0 );
 }
 
 /*
@@ -783,7 +784,7 @@ void R_DrawBrushModel (entity_t *e, qboolean Translucent)
 	if (R_CullBox (mins, maxs))
 		return;
 
-	glColor3f (1,1,1);
+	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
 	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
@@ -816,7 +817,7 @@ void R_DrawBrushModel (entity_t *e, qboolean Translucent)
 		}
 	}
 
-    glPushMatrix ();
+    qglPushMatrix ();
 e->angles[0] = -e->angles[0];	// stupid quake bug
 e->angles[2] = -e->angles[2];	// stupid quake bug
 	R_RotateForEntity (e);
@@ -848,7 +849,7 @@ e->angles[2] = -e->angles[2];	// stupid quake bug
         (currententity->drawflags & MLS_ABSLIGHT) != MLS_ABSLIGHT)
 		R_BlendLightmaps (Translucent);
 
-	glPopMatrix ();
+	qglPopMatrix ();
 }
 
 /*
@@ -998,7 +999,7 @@ void R_DrawWorld (void)
 	currententity = &ent;
 	currenttexture = -1;
 
-	glColor3f (1,1,1);
+	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
 	R_RecursiveWorldNode (cl.worldmodel->nodes);
@@ -1335,9 +1336,9 @@ void GL_BuildLightmaps (void)
 			break;		// no more used
 		lightmap_modified[i] = false;
 		GL_Bind(lightmap_textures + i);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		qglTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
 		, BLOCK_WIDTH, BLOCK_HEIGHT, 0, 
 		gl_lightmap_format, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
 	}

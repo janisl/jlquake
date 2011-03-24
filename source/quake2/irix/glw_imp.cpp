@@ -233,7 +233,7 @@ void GLimp_BeginFrame( float camera_seperation )
 */
 void GLimp_EndFrame (void)
 {
-	glFlush();
+	qglFlush();
 	glXSwapBuffers( x_disp, x_win );
 }
 

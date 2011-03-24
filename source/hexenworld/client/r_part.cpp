@@ -1,5 +1,6 @@
 
 #include "quakedef.h"
+#include "glquake.h"
 
 #define MAX_PARTICLES			2048	// default max # of particles at one
 										//  time
@@ -1530,21 +1531,21 @@ void R_RenderParticle(particle_t *p)
 	//			theAlpha = 255*(8-p->ramp)/8;
 		else
 			theAlpha = 255;
-		glColor4ub (*at, *(at+1), *(at+2), theAlpha);
+		qglColor4ub (*at, *(at+1), *(at+2), theAlpha);
 	}
 	else
 	{
-		glColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
+		qglColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
 	}
 
-//		glColor3ubv (at);
-//		glColor3ubv ((byte *)&d_8to24table[(int)p->color]);
-	glTexCoord2f (0,0);
-	glVertex3fv (p->org);
-	glTexCoord2f (1,0);
-	glVertex3f (p->org[0] + up[0]*scale, p->org[1] + up[1]*scale, p->org[2] + up[2]*scale);
-	glTexCoord2f (0,1);
-	glVertex3f (p->org[0] + right[0]*scale, p->org[1] + right[1]*scale, p->org[2] + right[2]*scale);
+//		qglColor3ubv (at);
+//		qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
+	qglTexCoord2f (0,0);
+	qglVertex3fv (p->org);
+	qglTexCoord2f (1,0);
+	qglVertex3f (p->org[0] + up[0]*scale, p->org[1] + up[1]*scale, p->org[2] + up[2]*scale);
+	qglTexCoord2f (0,1);
+	qglVertex3f (p->org[0] + right[0]*scale, p->org[1] + right[1]*scale, p->org[2] + right[2]*scale);
 }
 
 /*
@@ -1566,14 +1567,14 @@ void R_DrawParticles (void)
 	vec3_t			diff;
     
 	GL_Bind(particletexture);
-	alphaTestEnabled = glIsEnabled(GL_ALPHA_TEST);
+	alphaTestEnabled = qglIsEnabled(GL_ALPHA_TEST);
 	
 	if (alphaTestEnabled)
-		glDisable(GL_ALPHA_TEST);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBegin (GL_TRIANGLES);
+		qglDisable(GL_ALPHA_TEST);
+	qglEnable (GL_BLEND);
+	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	qglBegin (GL_TRIANGLES);
 
 	VectorScale (vup, 1.5, up);
 	VectorScale (vright, 1.5, right);
@@ -1928,10 +1929,10 @@ void R_DrawParticles (void)
 		}
 	}
 
-	glEnd ();
-	glDisable (GL_BLEND);
+	qglEnd ();
+	qglDisable (GL_BLEND);
 	if (alphaTestEnabled)
-		glEnable(GL_ALPHA_TEST);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		qglEnable(GL_ALPHA_TEST);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
 

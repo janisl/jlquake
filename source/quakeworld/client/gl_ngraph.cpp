@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // gl_ngraph.c
 
 #include "quakedef.h"
+#include "glquake.h"
 
 extern byte		*draw_chars;				// 8*8 graphic characters
 
@@ -117,25 +118,25 @@ void R_NetGraph (void)
 	
     GL_Bind(netgraphtexture);
 
-	glTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 
+	qglTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 
 		NET_TIMINGS, NET_GRAPHHEIGHT, 0, GL_RGBA, 
 		GL_UNSIGNED_BYTE, ngraph_pixels);
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	x = 8;
-	glColor3f (1,1,1);
-	glBegin (GL_QUADS);
-	glTexCoord2f (0, 0);
-	glVertex2f (x, y);
-	glTexCoord2f (1, 0);
-	glVertex2f (x+NET_TIMINGS, y);
-	glTexCoord2f (1, 1);
-	glVertex2f (x+NET_TIMINGS, y+NET_GRAPHHEIGHT);
-	glTexCoord2f (0, 1);
-	glVertex2f (x, y+NET_GRAPHHEIGHT);
-	glEnd ();
+	qglColor3f (1,1,1);
+	qglBegin (GL_QUADS);
+	qglTexCoord2f (0, 0);
+	qglVertex2f (x, y);
+	qglTexCoord2f (1, 0);
+	qglVertex2f (x+NET_TIMINGS, y);
+	qglTexCoord2f (1, 1);
+	qglVertex2f (x+NET_TIMINGS, y+NET_GRAPHHEIGHT);
+	qglTexCoord2f (0, 1);
+	qglVertex2f (x, y+NET_GRAPHHEIGHT);
+	qglEnd ();
 }
 

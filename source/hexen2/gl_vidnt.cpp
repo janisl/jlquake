@@ -1,6 +1,7 @@
 // gl_vidnt.c -- NT GL vid component
 
 #include "quakedef.h"
+#include "glquake.h"
 #include "winquake.h"
 #include "resource.h"
 
@@ -485,7 +486,7 @@ void Check3DfxDisplayModeExtension( void )
 	char *tmp;
 	qboolean display_mode_ext = false;
 
-	tmp = ( char * )glGetString( GL_EXTENSIONS );
+	tmp = ( char * )qglGetString( GL_EXTENSIONS );
 	while( *tmp )
 	{
 		if (QStr::NCmp((const char*)tmp, FX_DISPLAY_MODE_EXT_STRING, QStr::Length(FX_DISPLAY_MODE_EXT_STRING)) == 0)
@@ -518,7 +519,7 @@ void CheckSetPaletteExtension( void )
 	if (!search) return;
 
 
-	tmp = ( char * )glGetString( GL_EXTENSIONS );
+	tmp = ( char * )qglGetString( GL_EXTENSIONS );
 	while( *tmp )
 	{
 		if (QStr::NCmp((const char*)tmp, search, QStr::Length(search)) == 0)
@@ -545,7 +546,7 @@ void Check3DfxMarkPaletteTextureExtension( void )
 	char *tmp;
 	qboolean found_ext = false;
 
-	tmp = ( unsigned char * )glGetString( GL_EXTENSIONS );
+	tmp = ( unsigned char * )qglGetString( GL_EXTENSIONS );
 	while( *tmp )
 	{
 		if (QStr::NCmp((const char*)tmp, FX_SET_PALETTE_EXT_STRING, QStr::Length(FX_SET_PALETTE_EXT_STRING)) == 0)
@@ -570,7 +571,7 @@ void CheckArrayExtensions (void)
 	char		*tmp;
 
 	/* check for texture extension */
-	tmp = (char *)glGetString(GL_EXTENSIONS);
+	tmp = (char *)qglGetString(GL_EXTENSIONS);
 	while (*tmp)
 	{
 		if (QStr::NCmp((const char*)tmp, "GL_EXT_vertex_array", QStr::Length("GL_EXT_vertex_array")) == 0)
@@ -608,14 +609,16 @@ GL_Init
 */
 void GL_Init (void)
 {
-	gl_vendor = (char*)glGetString (GL_VENDOR);
+	QGL_SharedInit();
+
+	gl_vendor = (char*)qglGetString (GL_VENDOR);
 	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = (char*)glGetString (GL_RENDERER);
+	gl_renderer = (char*)qglGetString (GL_RENDERER);
 	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
 
-	gl_version = (char*)glGetString (GL_VERSION);
+	gl_version = (char*)qglGetString (GL_VERSION);
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = (char*)glGetString (GL_EXTENSIONS);
+	gl_extensions = (char*)qglGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
 	if (!QStr::NICmp((char *)gl_renderer, "3dfx",4))
@@ -636,31 +639,31 @@ void GL_Init (void)
 	CheckSetPaletteExtension();
 	//Check3DfxMarkPaletteTextureExtension();	
 
-	glClearColor (1,0,0,0);
-	glCullFace(GL_FRONT);
-	glEnable(GL_TEXTURE_2D);
+	qglClearColor (1,0,0,0);
+	qglCullFace(GL_FRONT);
+	qglEnable(GL_TEXTURE_2D);
 
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.666);
+	qglEnable(GL_ALPHA_TEST);
+	qglAlphaFunc(GL_GREATER, 0.666);
 
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	glShadeModel (GL_FLAT);
+	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	qglShadeModel (GL_FLAT);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 #if 0
 	CheckArrayExtensions ();
 
-	glEnable (GL_VERTEX_ARRAY_EXT);
-	glEnable (GL_TEXTURE_COORD_ARRAY_EXT);
+	qglEnable (GL_VERTEX_ARRAY_EXT);
+	qglEnable (GL_TEXTURE_COORD_ARRAY_EXT);
 	glVertexPointerEXT (3, GL_FLOAT, 0, 0, &glv.x);
 	glTexCoordPointerEXT (2, GL_FLOAT, 0, 0, &glv.s);
 	glColorPointerEXT (3, GL_FLOAT, 0, 0, &glv.r);
@@ -682,7 +685,7 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 //    if (!wglMakeCurrent( maindc, baseRC ))
 //		Sys_Error ("wglMakeCurrent failed");
 
-//	glViewport (*x, *y, *width, *height);
+//	qglViewport (*x, *y, *width, *height);
 }
 
 
@@ -1938,9 +1941,9 @@ void D_ShowLoadingSize(void)
 	if (!vid_initialized)
 		return;
 
-	glDrawBuffer  (GL_FRONT);
+	qglDrawBuffer  (GL_FRONT);
 
 	SCR_DrawLoading();
 
-	glDrawBuffer  (GL_BACK);
+	qglDrawBuffer  (GL_BACK);
 }

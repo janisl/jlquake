@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <signal.h>
 
 #include "quakedef.h"
+#include "glquake.h"
 
 #include <GL/glx.h>
 
@@ -464,37 +465,39 @@ GL_Init
 */
 void GL_Init (void)
 {
-	gl_vendor = (char*)glGetString (GL_VENDOR);
+	QGL_SharedInit();
+
+	gl_vendor = (char*)qglGetString (GL_VENDOR);
 	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = (char*)glGetString (GL_RENDERER);
+	gl_renderer = (char*)qglGetString (GL_RENDERER);
 	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
 
-	gl_version = (char*)glGetString (GL_VERSION);
+	gl_version = (char*)qglGetString (GL_VERSION);
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = (char*)glGetString (GL_EXTENSIONS);
+	gl_extensions = (char*)qglGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
 //	Con_Printf ("%s %s\n", gl_renderer, gl_version);
 
-	glClearColor (1,0,0,0);
-	glCullFace(GL_FRONT);
-	glEnable(GL_TEXTURE_2D);
+	qglClearColor (1,0,0,0);
+	qglCullFace(GL_FRONT);
+	qglEnable(GL_TEXTURE_2D);
 
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.666);
+	qglEnable(GL_ALPHA_TEST);
+	qglAlphaFunc(GL_GREATER, 0.666);
 
-	glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	glShadeModel (GL_FLAT);
+	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	qglShadeModel (GL_FLAT);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+//	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 }
 
 /*
@@ -512,13 +515,13 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 //    if (!wglMakeCurrent( maindc, baseRC ))
 //		Sys_Error ("wglMakeCurrent failed");
 
-//	glViewport (*x, *y, *width, *height);
+//	qglViewport (*x, *y, *width, *height);
 }
 
 
 void GL_EndRendering (void)
 {
-	glFlush();
+	qglFlush();
 	glXSwapBuffers(dpy, win);
 }
 
@@ -538,7 +541,7 @@ void VID_Init8bitPalette()
 		return;
 
 	Con_SafePrintf("8-bit GL extensions enabled.\n");
-	glEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
+	qglEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
 	oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
 	newPalette = thePalette;
 	for (i=0;i<256;i++) {

@@ -1,6 +1,7 @@
 // r_light.c
 
 #include "quakedef.h"
+#include "glquake.h"
 
 int	r_dlightframecount;
 
@@ -84,21 +85,21 @@ void R_RenderDlight (dlight_t *light)
 		return;
 	}
 
-	glBegin (GL_TRIANGLE_FAN);
-	glColor3f (0.2,0.1,0.0);
+	qglBegin (GL_TRIANGLE_FAN);
+	qglColor3f (0.2,0.1,0.0);
 	for (i=0 ; i<3 ; i++)
 		v[i] = light->origin[i] - vpn[i]*rad;
-	glVertex3fv (v);
-	glColor3f (0,0,0);
+	qglVertex3fv (v);
+	qglColor3f (0,0,0);
 	for (i=16 ; i>=0 ; i--)
 	{
 		a = i/16.0 * M_PI*2;
 		for (j=0 ; j<3 ; j++)
 			v[j] = light->origin[j] + vright[j]*cos(a)*rad
 				+ vup[j]*sin(a)*rad;
-		glVertex3fv (v);
+		qglVertex3fv (v);
 	}
-	glEnd ();
+	qglEnd ();
 }
 
 /*
@@ -116,11 +117,11 @@ void R_RenderDlights (void)
 
 	r_dlightframecount = r_framecount + 1;	// because the count hasn't
 											//  advanced yet for this frame
-	glDepthMask (0);
-	glDisable (GL_TEXTURE_2D);
-	glShadeModel (GL_SMOOTH);
-	glEnable (GL_BLEND);
-	glBlendFunc (GL_ONE, GL_ONE);
+	qglDepthMask (0);
+	qglDisable (GL_TEXTURE_2D);
+	qglShadeModel (GL_SMOOTH);
+	qglEnable (GL_BLEND);
+	qglBlendFunc (GL_ONE, GL_ONE);
 
 	l = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
@@ -130,11 +131,11 @@ void R_RenderDlights (void)
 		R_RenderDlight (l);
 	}
 
-	glColor3f (1,1,1);
-	glDisable (GL_BLEND);
-	glEnable (GL_TEXTURE_2D);
-	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask (1);
+	qglColor3f (1,1,1);
+	qglDisable (GL_BLEND);
+	qglEnable (GL_TEXTURE_2D);
+	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	qglDepthMask (1);
 }
 
 

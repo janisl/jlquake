@@ -4,6 +4,7 @@
 // on the same machine.
 
 #include "quakedef.h"
+#include "glquake.h"
 
 model_t	*loadmodel;
 static char	loadname[32];	// for hunk tags
