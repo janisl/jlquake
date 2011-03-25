@@ -1232,8 +1232,8 @@ int R_Init( void *hinstance, void *hWnd )
 		 strstr( gl_config.extensions_string, "GL_SGI_compiled_vertex_array" ) )
 	{
 		ri.Con_Printf( PRINT_ALL, "...enabling GL_EXT_compiled_vertex_array\n" );
-		qglLockArraysEXT = (void(APIENTRY*)(int, int)) qwglGetProcAddress( "glLockArraysEXT" );
-		qglUnlockArraysEXT = (void(APIENTRY*)()) qwglGetProcAddress( "glUnlockArraysEXT" );
+		qglLockArraysEXT = (void(APIENTRY*)(int, int)) wglGetProcAddress( "glLockArraysEXT" );
+		qglUnlockArraysEXT = (void(APIENTRY*)()) wglGetProcAddress( "glUnlockArraysEXT" );
 	}
 	else
 	{
@@ -1242,7 +1242,7 @@ int R_Init( void *hinstance, void *hWnd )
 
 	if ( strstr( gl_config.extensions_string, "WGL_EXT_swap_control" ) )
 	{
-		qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) qwglGetProcAddress( "wglSwapIntervalEXT" );
+		qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) wglGetProcAddress( "wglSwapIntervalEXT" );
 		ri.Con_Printf( PRINT_ALL, "...enabling WGL_EXT_swap_control\n" );
 	}
 	else
@@ -1254,8 +1254,8 @@ int R_Init( void *hinstance, void *hWnd )
 	{
 		if ( gl_ext_pointparameters->value )
 		{
-			qglPointParameterfEXT = ( void (APIENTRY *)( GLenum, GLfloat ) ) qwglGetProcAddress( "glPointParameterfEXT" );
-			qglPointParameterfvEXT = ( void (APIENTRY *)( GLenum, const GLfloat * ) ) qwglGetProcAddress( "glPointParameterfvEXT" );
+			qglPointParameterfEXT = ( void (APIENTRY *)( GLenum, GLfloat ) ) wglGetProcAddress( "glPointParameterfEXT" );
+			qglPointParameterfvEXT = ( void (APIENTRY *)( GLenum, const GLfloat * ) ) wglGetProcAddress( "glPointParameterfvEXT" );
 			ri.Con_Printf( PRINT_ALL, "...using GL_EXT_point_parameters\n" );
 		}
 		else
@@ -1274,7 +1274,7 @@ int R_Init( void *hinstance, void *hWnd )
 		if ( gl_ext_palettedtexture->value )
 		{
 			ri.Con_Printf( PRINT_ALL, "...using GL_EXT_shared_texture_palette\n" );
-			qglColorTableEXT = ( void ( APIENTRY * ) ( int, int, int, int, int, const void * ) ) qwglGetProcAddress( "glColorTableEXT" );
+			qglColorTableEXT = ( void ( APIENTRY * ) ( int, int, int, int, int, const void * ) ) wglGetProcAddress( "glColorTableEXT" );
 		}
 		else
 		{
@@ -1291,8 +1291,8 @@ int R_Init( void *hinstance, void *hWnd )
 		if ( gl_ext_multitexture->value )
 		{
 			ri.Con_Printf( PRINT_ALL, "...using GL_SGIS_multitexture\n" );
-			qglMTexCoord2fSGIS = (void(APIENTRY*)( GLenum, GLfloat, GLfloat )) qwglGetProcAddress( "glMTexCoord2fSGIS" );
-			qglSelectTextureSGIS = (void ( APIENTRY *)( GLenum )) qwglGetProcAddress( "glSelectTextureSGIS" );
+			qglMTexCoord2fSGIS = (void(APIENTRY*)( GLenum, GLfloat, GLfloat )) wglGetProcAddress( "glMTexCoord2fSGIS" );
+			qglSelectTextureSGIS = (void ( APIENTRY *)( GLenum )) wglGetProcAddress( "glSelectTextureSGIS" );
 		}
 		else
 		{

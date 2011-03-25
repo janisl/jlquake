@@ -301,11 +301,11 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 */
 void GLimp_Shutdown( void )
 {
-	if ( qwglMakeCurrent && !qwglMakeCurrent( NULL, NULL ) )
+	if ( !wglMakeCurrent( NULL, NULL ) )
 		ri.Con_Printf( PRINT_ALL, "ref_gl::R_Shutdown() - wglMakeCurrent failed\n");
 	if ( glw_state.hGLRC )
 	{
-		if (  qwglDeleteContext && !qwglDeleteContext( glw_state.hGLRC ) )
+		if (!wglDeleteContext(glw_state.hGLRC))
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_Shutdown() - wglDeleteContext failed\n");
 		glw_state.hGLRC = NULL;
 	}
@@ -449,47 +449,30 @@ qboolean GLimp_InitGL (void)
 		return false;
 	}
 
-	if ( glw_state.minidriver )
+	if ( ( pixelformat = ChoosePixelFormat( glw_state.hDC, &pfd)) == 0 )
 	{
-		if ( (pixelformat = qwglChoosePixelFormat( glw_state.hDC, &pfd)) == 0 )
-		{
-			ri.Con_Printf (PRINT_ALL, "GLimp_Init() - qwglChoosePixelFormat failed\n");
-			return false;
-		}
-		if ( qwglSetPixelFormat( glw_state.hDC, pixelformat, &pfd) == FALSE )
-		{
-			ri.Con_Printf (PRINT_ALL, "GLimp_Init() - qwglSetPixelFormat failed\n");
-			return false;
-		}
-		qwglDescribePixelFormat( glw_state.hDC, pixelformat, sizeof( pfd ), &pfd );
+		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - ChoosePixelFormat failed\n");
+		return false;
+	}
+	if ( SetPixelFormat( glw_state.hDC, pixelformat, &pfd) == FALSE )
+	{
+		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - SetPixelFormat failed\n");
+		return false;
+	}
+	DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( pfd ), &pfd );
+
+	if ( !( pfd.dwFlags & PFD_GENERIC_ACCELERATED ) )
+	{
+		extern QCvar *gl_allow_software;
+
+		if ( gl_allow_software->value )
+			glw_state.mcd_accelerated = true;
+		else
+			glw_state.mcd_accelerated = false;
 	}
 	else
 	{
-		if ( ( pixelformat = ChoosePixelFormat( glw_state.hDC, &pfd)) == 0 )
-		{
-			ri.Con_Printf (PRINT_ALL, "GLimp_Init() - ChoosePixelFormat failed\n");
-			return false;
-		}
-		if ( SetPixelFormat( glw_state.hDC, pixelformat, &pfd) == FALSE )
-		{
-			ri.Con_Printf (PRINT_ALL, "GLimp_Init() - SetPixelFormat failed\n");
-			return false;
-		}
-		DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( pfd ), &pfd );
-
-		if ( !( pfd.dwFlags & PFD_GENERIC_ACCELERATED ) )
-		{
-			extern QCvar *gl_allow_software;
-
-			if ( gl_allow_software->value )
-				glw_state.mcd_accelerated = true;
-			else
-				glw_state.mcd_accelerated = false;
-		}
-		else
-		{
-			glw_state.mcd_accelerated = true;
-		}
+		glw_state.mcd_accelerated = true;
 	}
 
 	/*
@@ -506,16 +489,16 @@ qboolean GLimp_InitGL (void)
 	** startup the OpenGL subsystem by creating a context and making
 	** it current
 	*/
-	if ( ( glw_state.hGLRC = qwglCreateContext( glw_state.hDC ) ) == 0 )
+	if ( ( glw_state.hGLRC = wglCreateContext( glw_state.hDC ) ) == 0 )
 	{
-		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - qwglCreateContext failed\n");
+		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - wglCreateContext failed\n");
 
 		goto fail;
 	}
 
-    if ( !qwglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) )
+    if ( !wglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) )
 	{
-		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - qwglMakeCurrent failed\n");
+		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - wglMakeCurrent failed\n");
 
 		goto fail;
 	}
@@ -536,7 +519,7 @@ qboolean GLimp_InitGL (void)
 fail:
 	if ( glw_state.hGLRC )
 	{
-		qwglDeleteContext( glw_state.hGLRC );
+		wglDeleteContext( glw_state.hGLRC );
 		glw_state.hGLRC = NULL;
 	}
 
@@ -593,7 +576,7 @@ void GLimp_EndFrame (void)
 
 	if ( QStr::ICmp( gl_drawbuffer->string, "GL_BACK" ) == 0 )
 	{
-		if ( !qwglSwapBuffers( glw_state.hDC ) )
+		if ( !SwapBuffers( glw_state.hDC ) )
 			ri.Sys_Error( ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n" );
 	}
 }

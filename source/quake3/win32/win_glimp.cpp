@@ -127,14 +127,7 @@ static int GLW_ChoosePFD( HDC hDC, PIXELFORMATDESCRIPTOR *pPFD )
 	ri.Printf( PRINT_ALL, "...GLW_ChoosePFD( %d, %d, %d )\n", ( int ) pPFD->cColorBits, ( int ) pPFD->cDepthBits, ( int ) pPFD->cStencilBits );
 
 	// count number of PFDs
-	if ( glConfig.driverType > GLDRV_ICD )
-	{
-		maxPFD = qwglDescribePixelFormat( hDC, 1, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[0] );
-	}
-	else
-	{
-		maxPFD = DescribePixelFormat( hDC, 1, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[0] );
-	}
+	maxPFD = DescribePixelFormat( hDC, 1, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[0] );
 	if ( maxPFD > MAX_PFDS )
 	{
 		ri.Printf( PRINT_WARNING, "...numPFDs > MAX_PFDS (%d > %d)\n", maxPFD, MAX_PFDS );
@@ -146,14 +139,7 @@ static int GLW_ChoosePFD( HDC hDC, PIXELFORMATDESCRIPTOR *pPFD )
 	// grab information
 	for ( i = 1; i <= maxPFD; i++ )
 	{
-		if ( glConfig.driverType > GLDRV_ICD )
-		{
-			qwglDescribePixelFormat( hDC, i, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[i] );
-		}
-		else
-		{
-			DescribePixelFormat( hDC, i, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[i] );
-		}
+		DescribePixelFormat( hDC, i, sizeof( PIXELFORMATDESCRIPTOR ), &pfds[i] );
 	}
 
 	// look for a best match
@@ -386,24 +372,12 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
 		}
 		ri.Printf( PRINT_ALL, "...PIXELFORMAT %d selected\n", pixelformat );
 
-		if ( glConfig.driverType > GLDRV_ICD )
-		{
-			qwglDescribePixelFormat( glw_state.hDC, pixelformat, sizeof( *pPFD ), pPFD );
-			if ( qwglSetPixelFormat( glw_state.hDC, pixelformat, pPFD ) == FALSE )
-			{
-				ri.Printf ( PRINT_ALL, "...qwglSetPixelFormat failed\n");
-				return TRY_PFD_FAIL_SOFT;
-			}
-		}
-		else
-		{
-			DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( *pPFD ), pPFD );
+		DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( *pPFD ), pPFD );
 
-			if ( SetPixelFormat( glw_state.hDC, pixelformat, pPFD ) == FALSE )
-			{
-				ri.Printf (PRINT_ALL, "...SetPixelFormat failed\n", glw_state.hDC );
-				return TRY_PFD_FAIL_SOFT;
-			}
+		if ( SetPixelFormat( glw_state.hDC, pixelformat, pPFD ) == FALSE )
+		{
+			ri.Printf (PRINT_ALL, "...SetPixelFormat failed\n", glw_state.hDC );
+			return TRY_PFD_FAIL_SOFT;
 		}
 
 		glw_state.pixelFormatSet = qtrue;
@@ -415,7 +389,7 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
 	if ( !glw_state.hGLRC )
 	{
 		ri.Printf( PRINT_ALL, "...creating GL context: " );
-		if ( ( glw_state.hGLRC = qwglCreateContext( glw_state.hDC ) ) == 0 )
+		if ( ( glw_state.hGLRC = wglCreateContext( glw_state.hDC ) ) == 0 )
 		{
 			ri.Printf (PRINT_ALL, "failed\n");
 
@@ -424,9 +398,9 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
 		ri.Printf( PRINT_ALL, "succeeded\n" );
 
 		ri.Printf( PRINT_ALL, "...making context current: " );
-		if ( !qwglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) )
+		if ( !wglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) )
 		{
-			qwglDeleteContext( glw_state.hGLRC );
+			wglDeleteContext( glw_state.hGLRC );
 			glw_state.hGLRC = NULL;
 			ri.Printf (PRINT_ALL, "failed\n");
 			return TRY_PFD_FAIL_HARD;
@@ -1009,7 +983,7 @@ static void GLW_InitExtensions( void )
 	}
 
 	// WGL_EXT_swap_control
-	qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) qwglGetProcAddress( "wglSwapIntervalEXT" );
+	qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) wglGetProcAddress( "wglSwapIntervalEXT" );
 	if ( qwglSwapIntervalEXT )
 	{
 		ri.Printf( PRINT_ALL, "...using WGL_EXT_swap_control\n" );
@@ -1028,9 +1002,9 @@ static void GLW_InitExtensions( void )
 	{
 		if ( r_ext_multitexture->integer )
 		{
-			qglMultiTexCoord2fARB = ( PFNGLMULTITEXCOORD2FARBPROC ) qwglGetProcAddress( "glMultiTexCoord2fARB" );
-			qglActiveTextureARB = ( PFNGLACTIVETEXTUREARBPROC ) qwglGetProcAddress( "glActiveTextureARB" );
-			qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) qwglGetProcAddress( "glClientActiveTextureARB" );
+			qglMultiTexCoord2fARB = ( PFNGLMULTITEXCOORD2FARBPROC ) wglGetProcAddress( "glMultiTexCoord2fARB" );
+			qglActiveTextureARB = ( PFNGLACTIVETEXTUREARBPROC ) wglGetProcAddress( "glActiveTextureARB" );
+			qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) wglGetProcAddress( "glClientActiveTextureARB" );
 
 			if ( qglActiveTextureARB )
 			{
@@ -1067,8 +1041,8 @@ static void GLW_InitExtensions( void )
 		if ( r_ext_compiled_vertex_array->integer )
 		{
 			ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
-			qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) ) qwglGetProcAddress( "glLockArraysEXT" );
-			qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) ) qwglGetProcAddress( "glUnlockArraysEXT" );
+			qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) ) wglGetProcAddress( "glLockArraysEXT" );
+			qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) ) wglGetProcAddress( "glUnlockArraysEXT" );
 			if (!qglLockArraysEXT || !qglUnlockArraysEXT) {
 				ri.Error (ERR_FATAL, "bad getprocaddress");
 			}
@@ -1091,8 +1065,8 @@ static void GLW_InitExtensions( void )
 	{
 		if ( !r_ignorehwgamma->integer && r_ext_gamma_control->integer )
 		{
-			qwglGetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) qwglGetProcAddress( "wglGetDeviceGammaRamp3DFX" );
-			qwglSetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) qwglGetProcAddress( "wglSetDeviceGammaRamp3DFX" );
+			qwglGetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) wglGetProcAddress( "wglGetDeviceGammaRamp3DFX" );
+			qwglSetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) wglGetProcAddress( "wglSetDeviceGammaRamp3DFX" );
 
 			if ( qwglGetDeviceGammaRamp3DFX && qwglSetDeviceGammaRamp3DFX )
 			{
@@ -1260,17 +1234,7 @@ void GLimp_EndFrame (void)
 	// don't flip if drawing to front buffer
 	if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
-		if ( glConfig.driverType > GLDRV_ICD )
-		{
-			if ( !qwglSwapBuffers( glw_state.hDC ) )
-			{
-				ri.Error( ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n" );
-			}
-		}
-		else
-		{
-			SwapBuffers( glw_state.hDC );
-		}
+		SwapBuffers( glw_state.hDC );
 	}
 
 	// check logging
@@ -1473,28 +1437,20 @@ void GLimp_Shutdown( void )
 	const char *success[] = { "failed", "success" };
 	int retVal;
 
-	// FIXME: Brian, we need better fallbacks from partially initialized failures
-	if ( !qwglMakeCurrent ) {
-		return;
-	}
-
 	ri.Printf( PRINT_ALL, "Shutting down OpenGL subsystem\n" );
 
 	// restore gamma.  We do this first because 3Dfx's extension needs a valid OGL subsystem
 	WG_RestoreGamma();
 
 	// set current context to NULL
-	if ( qwglMakeCurrent )
-	{
-		retVal = qwglMakeCurrent( NULL, NULL ) != 0;
+	retVal = wglMakeCurrent( NULL, NULL ) != 0;
 
-		ri.Printf( PRINT_ALL, "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
-	}
+	ri.Printf( PRINT_ALL, "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
 
 	// delete HGLRC
 	if ( glw_state.hGLRC )
 	{
-		retVal = qwglDeleteContext( glw_state.hGLRC ) != 0;
+		retVal = wglDeleteContext( glw_state.hGLRC ) != 0;
 		ri.Printf( PRINT_ALL, "...deleting GL context: %s\n", success[retVal] );
 		glw_state.hGLRC = NULL;
 	}
@@ -1568,7 +1524,7 @@ void GLimp_RenderThreadWrapper( void ) {
 	glimpRenderThread();
 
 	// unbind the context before we die
-	qwglMakeCurrent( glw_state.hDC, NULL );
+	wglMakeCurrent( glw_state.hDC, NULL );
 }
 
 /*
@@ -1607,7 +1563,7 @@ static	int		wglErrors;
 void *GLimp_RendererSleep( void ) {
 	void	*data;
 
-	if ( !qwglMakeCurrent( glw_state.hDC, NULL ) ) {
+	if ( !wglMakeCurrent( glw_state.hDC, NULL ) ) {
 		wglErrors++;
 	}
 
@@ -1618,7 +1574,7 @@ void *GLimp_RendererSleep( void ) {
 
 	WaitForSingleObject( renderCommandsEvent, INFINITE );
 
-	if ( !qwglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
+	if ( !wglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
 		wglErrors++;
 	}
 
@@ -1637,7 +1593,7 @@ void *GLimp_RendererSleep( void ) {
 void GLimp_FrontEndSleep( void ) {
 	WaitForSingleObject( renderCompletedEvent, INFINITE );
 
-	if ( !qwglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
+	if ( !wglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
 		wglErrors++;
 	}
 }
@@ -1646,7 +1602,7 @@ void GLimp_FrontEndSleep( void ) {
 void GLimp_WakeRenderer( void *data ) {
 	smpData = data;
 
-	if ( !qwglMakeCurrent( glw_state.hDC, NULL ) ) {
+	if ( !wglMakeCurrent( glw_state.hDC, NULL ) ) {
 		wglErrors++;
 	}
 
