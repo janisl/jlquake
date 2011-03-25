@@ -47,11 +47,6 @@ int		gl_filter_max = GL_LINEAR;
 
 int		texels;
 
-qboolean is_3dfx = false;
-qboolean is_PowerVR = false;
-//qboolean is_3dfx = true;
-//qboolean is_PowerVR = true;
-
 typedef struct
 {
 	int		texnum;
@@ -449,12 +444,6 @@ void Draw_Init (void)
 	gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
 	gl_picmip = Cvar_Get("gl_picmip", "0", 0);
 	gl_round_down = Cvar_Get("gl_round_down", "0", 0);
-
-	// 3dfx can only handle 256 wide textures
-	if (is_3dfx || is_PowerVR)
-	{
-		Cvar_Set ("gl_max_size", "256");
-	}
 
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 	Cmd_AddCommand ("gl_texels", &GL_Texels_f);
@@ -1230,41 +1219,6 @@ void GL_MipMap (byte *in, int width, int height)
 	}
 }
 
-// Acts the same as qglTexImage2D, except that it maps color into the
-// current palette and uses paletteized textures.
-static void fxPalTexImage2D (GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, const GLvoid *pixels)
-{
-	static unsigned char dest_image[256*256];
-	long i;
-	long mip_width, mip_height;
-
-	mip_width = width;
-	mip_height = height;
-
-	if( internalformat != 3 )
-		Sys_Error( "fxPalTexImage2D: internalformat != 3" );
-	for( i = 0; i < mip_width * mip_height; i++ )
-	{
-		int r, g, b, index;
-		r = ( ( unsigned char * )pixels )[i * 4];
-		g = ( ( unsigned char * )pixels )[i * 4+1];
-		b = ( ( unsigned char * )pixels )[i * 4+2];
-		r >>= 8 - INVERSE_PAL_R_BITS;
-		g >>= 8 - INVERSE_PAL_G_BITS;
-		b >>= 8 - INVERSE_PAL_B_BITS;
-		index = ( r << ( INVERSE_PAL_G_BITS + INVERSE_PAL_B_BITS ) ) |
-			( g << INVERSE_PAL_B_BITS ) |
-			b;
-		dest_image[i] = inverse_pal[index];
-//		dest_image[i] = ( ( unsigned char * )pixels )[i*4];
-	}
-//	qglTexImage2D( target, level, 1, width, height, border, GL_LUMINANCE, GL_UNSIGNED_BYTE, dest_image );
-	qglTexImage2D( target, level, 1, width, height, border, GL_COLOR_INDEX, GL_UNSIGNED_BYTE, dest_image );
-/*	if( fxMarkPalTextureExtension )
-		fxMarkPalTextureExtension();*/
-}
-
-
 /*
 ===============
 GL_Upload32
@@ -1300,19 +1254,6 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qbool
 	if (scaled_width * scaled_height > sizeof(scaled)/4)
 		Sys_Error ("GL_LoadTexture: too big");
 
-	// 3dfx has some aspect ratio constraints. . . can't go beyond 8 to 1 or below 1 to 8.
-	if( is_3dfx )
-	{
-		if( scaled_width * 8 < scaled_height )
-		{
-			scaled_width = scaled_height >> 3;
-		}
-		else if( scaled_height * 8 < scaled_width )
-		{
-			scaled_height = scaled_width >> 3;
-		}
-	}
-
 	samples = alpha ? gl_alpha_format : gl_solid_format;
 
 #if 0
@@ -1342,16 +1283,7 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qbool
 
 	texels += scaled_width * scaled_height;
 
-	// If you are on a 3Dfx card and your texture has no alpha, then download it
-	// as a palettized texture to save memory.
-	if( fxSetPaletteExtension && ( samples == 3 ) )
-	{
-		fxPalTexImage2D( GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled );
-	}
-	else
-	{
-		qglTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-	}
+	qglTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 
 	if (mipmap)
 	{
@@ -1370,16 +1302,7 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qbool
 			miplevel++;
 			texels += scaled_width * scaled_height;
 
-			// If you are on a 3Dfx card and your texture has no alpha, then download it
-			// as a palettized texture to save memory.
-			if( fxSetPaletteExtension && ( samples == 3) )
-			{
-				fxPalTexImage2D (GL_TEXTURE_2D, miplevel, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-			}
-			else
-			{
-				qglTexImage2D (GL_TEXTURE_2D, miplevel, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-			}
+			qglTexImage2D (GL_TEXTURE_2D, miplevel, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 		}
 	}
 done: ;

@@ -94,7 +94,6 @@ int			vid_realmode;
 int			vid_default = MODE_WINDOWED;
 static int	windowed_default;
 unsigned char	vid_curpal[256*3];
-static qboolean fullsbardraw = false;
 
 static float vid_gamma = 1.0;
 
@@ -126,7 +125,6 @@ void VID_UpdateWindowStatus (void);
 void GL_Init (void);
 
 qboolean is8bit = false;
-qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 //====================================
@@ -530,12 +528,6 @@ void GL_Init (void)
 
 //	Con_Printf ("%s %s\n", gl_renderer, gl_version);
 
-    if (QStr::NICmp(gl_renderer,"PowerVR",7)==0)
-         fullsbardraw = true;
-
-    if (QStr::NICmp(gl_renderer,"Permedia",8)==0)
-         isPermedia = true;
-
 	CheckMultiTextureExtensions ();
 
 	qglClearColor (1,0,0,0);
@@ -603,8 +595,6 @@ void GL_EndRendering (void)
 			}
 		}
 	}
-	if (fullsbardraw)
-		Sbar_Changed();
 }
 
 void	VID_SetPalette (unsigned char *palette)
@@ -1685,9 +1675,6 @@ void	VID_Init (unsigned char *palette)
 
 	QStr::Cpy(badmode.modedesc, "Bad mode");
 	vid_canalttab = true;
-
-	if (COM_CheckParm("-fullsbar"))
-		fullsbardraw = true;
 }
 
 

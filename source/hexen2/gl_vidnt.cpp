@@ -20,9 +20,6 @@
 
 byte globalcolormap[VID_GRADES*256];
 
-extern qboolean is_3dfx;
-extern qboolean is_PowerVR;
-
 typedef struct {
 	modestate_t	type;
 	int			width;
@@ -64,12 +61,6 @@ qboolean	vid_initialized = false;
 static qboolean	windowed, leavecurrentmode;
 static int		windowed_mouse;
 static HICON	hIcon;
-
-FX_DISPLAY_MODE_EXT fxDisplayModeExtension;
-FX_SET_PALETTE_EXT fxSetPaletteExtension;
-//FX_MARK_PAL_TEXTURE_EXT fxMarkPalTextureExtension;
-
-unsigned char inverse_pal[(1<<INVERSE_PAL_TOTAL_BITS)+1];
 
 int			DIBWidth, DIBHeight;
 RECT		WindowRect;
@@ -466,101 +457,6 @@ void VID_UpdateWindowStatus (void)
 
 //====================================
 
-#define TEXTURE_EXT_STRING "GL_EXT_texture_object"
-
-#define FX_DISPLAY_MODE_EXT_STRING "gl3DfxDisplayModeEXT"
-
-//#define FX_SET_PALETTE_EXT_STRING "gl3DfxSetPaletteEXT"
-#define FX_SET_PALETTE_EXT_STRING "3DFX_set_global_palette"
-#define VR_SET_PALETTE_EXT_STRING "POWERVR_set_global_palette"
-
-//#define FX_MARK_PAL_TEXTURE_EXT_STRING "gl3DfxMarkPalettizedTextureEXT"
-
-void Check3DfxDisplayModeExtension( void )
-{
-	char *tmp;
-	qboolean display_mode_ext = false;
-
-	tmp = ( char * )qglGetString( GL_EXTENSIONS );
-	while( *tmp )
-	{
-		if (QStr::NCmp((const char*)tmp, FX_DISPLAY_MODE_EXT_STRING, QStr::Length(FX_DISPLAY_MODE_EXT_STRING)) == 0)
-			display_mode_ext = TRUE;
-		tmp++;
-	}
-
-	fxDisplayModeExtension = NULL;
-	if( !display_mode_ext )
-		return;
-	if ((fxDisplayModeExtension = (FX_DISPLAY_MODE_EXT)
-		wglGetProcAddress((LPCSTR) FX_DISPLAY_MODE_EXT_STRING)) == NULL)
-	{
-		Sys_Error ("GetProcAddress for gl3DfxDisplayModeExt failed");
-		return;
-	}
-}
-
-void CheckSetPaletteExtension( void )
-{
-	char *tmp;
-	qboolean set_palette_ext = false;
-	char *search;
-
-	fxSetPaletteExtension = NULL;
-	
-	search = NULL;
-	if (is_3dfx) search = FX_SET_PALETTE_EXT_STRING;
-	if (is_PowerVR) search = VR_SET_PALETTE_EXT_STRING;
-	if (!search) return;
-
-
-	tmp = ( char * )qglGetString( GL_EXTENSIONS );
-	while( *tmp )
-	{
-		if (QStr::NCmp((const char*)tmp, search, QStr::Length(search)) == 0)
-		{
-			Con_Printf("Using palettized textures!\n");
-			set_palette_ext = TRUE;
-		}
-		tmp++;
-	}
-
-	if( !set_palette_ext )
-		return;
-	if ((fxSetPaletteExtension = (FX_SET_PALETTE_EXT)
-		wglGetProcAddress((LPCSTR) search)) == NULL)
-	{
-		Sys_Error ("GetProcAddress for gl3DfxSetPaletteEXT failed");
-		return;
-	}
-}
-
-/*
-void Check3DfxMarkPaletteTextureExtension( void )
-{
-	char *tmp;
-	qboolean found_ext = false;
-
-	tmp = ( unsigned char * )qglGetString( GL_EXTENSIONS );
-	while( *tmp )
-	{
-		if (QStr::NCmp((const char*)tmp, FX_SET_PALETTE_EXT_STRING, QStr::Length(FX_SET_PALETTE_EXT_STRING)) == 0)
-			found_ext = TRUE;
-		tmp++;
-	}
-
-	fxMarkPalTextureExtension = NULL;
-	if( !found_ext )
-		return;
-	if ((fxMarkPalTextureExtension = (FX_MARK_PAL_TEXTURE_EXT)
-		wglGetProcAddress((LPCSTR) FX_MARK_PAL_TEXTURE_EXT_STRING)) == NULL)
-	{
-		Sys_Error ("GetProcAddress for fxMarkPalTextureExtension failed");
-		return;
-	}
-}
-*/
-
 //int		texture_mode = GL_NEAREST;
 //int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
 //int		texture_mode = GL_NEAREST_MIPMAP_LINEAR;
@@ -588,24 +484,6 @@ void GL_Init (void)
 	Con_Printf ("GL_VERSION: %s\n", gl_version);
 	gl_extensions = (char*)qglGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
-
-	if (!QStr::NICmp((char *)gl_renderer, "3dfx",4))
-	{
-		is_3dfx = true;
-	}
-
-	if (!QStr::NICmp((char *)gl_renderer, "PowerVR PCX1",12) ||
-		!QStr::NICmp((char *)gl_renderer, "PowerVR PCX2",12))
-	{
-		is_PowerVR = true;
-	}
-
-    fxDisplayModeExtension = NULL;
-	fxSetPaletteExtension = NULL;
-	//fxMarkPalTextureExtension = NULL;
-	Check3DfxDisplayModeExtension();
-	CheckSetPaletteExtension();
-	//Check3DfxMarkPaletteTextureExtension();	
 
 	qglClearColor (1,0,0,0);
 	qglCullFace(GL_FRONT);
@@ -684,96 +562,6 @@ unsigned ColorPercent[16] =
 	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
 };
 
-static int ConvertTrueColorToPal( unsigned char *true_color, unsigned char *palette )
-{
-	int i;
-	long min_dist;
-	int min_index;
-	long r, g, b;
-
-	min_dist = 256 * 256 + 256 * 256 + 256 * 256;
-	min_index = -1;
-	r = ( long )true_color[0];
-	g = ( long )true_color[1];
-	b = ( long )true_color[2];
-
-	for( i = 0; i < 256; i++ )
-	{
-		long palr, palg, palb, dist;
-		long dr, dg, db;
-
-		palr = palette[3*i];
-		palg = palette[3*i+1];
-		palb = palette[3*i+2];
-		dr = palr - r;
-		dg = palg - g;
-		db = palb - b;
-		dist = dr * dr + dg * dg + db * db;
-		if( dist < min_dist )
-		{
-			min_dist = dist;
-			min_index = i;
-		}
-	}
-	return min_index;
-}
-
-void	VID_CreateInversePalette( unsigned char *palette )
-{
-#ifdef DO_BUILD
-	FILE *FH;
-
-	long r, g, b;
-	long index = 0;
-	unsigned char true_color[3];
-	static qboolean been_here = false;
-
-	if( been_here )
-		return;
-
-	been_here = true;
-	
-	for( r = 0; r < ( 1 << INVERSE_PAL_R_BITS ); r++ )
-	{
-		for( g = 0; g < ( 1 << INVERSE_PAL_G_BITS ); g++ )
-		{
-			for( b = 0; b < ( 1 << INVERSE_PAL_B_BITS ); b++ )
-			{
-				true_color[0] = ( unsigned char )( r << ( 8 - INVERSE_PAL_R_BITS ) );
-				true_color[1] = ( unsigned char )( g << ( 8 - INVERSE_PAL_G_BITS ) );
-				true_color[2] = ( unsigned char )( b << ( 8 - INVERSE_PAL_B_BITS ) );
-				inverse_pal[index] = ConvertTrueColorToPal( true_color, palette );
-				index++;
-			}
-		}
-	}
-
-	FH = fopen("data1\\gfx\\invpal.lmp","wb");
-	fwrite(inverse_pal,1,sizeof(inverse_pal),FH);
-	fclose(FH);
-#else
-	COM_LoadStackFile ("gfx/invpal.lmp",inverse_pal,sizeof(inverse_pal));
-#endif
-}
-
-void VID_Download3DfxPalette( void )
-{
-	unsigned long fxPalette[256];
-	int i;
-
-	for( i = 0; i < 256; i++ )
-	{
-		fxPalette[i] = 0xff000000 | 
-			( (  d_8to24table[i] & 0x000000ff ) << 16 ) |
-			( (  d_8to24table[i] & 0x0000ff00 ) ) |
-			( (  d_8to24table[i] & 0x00ff0000 ) >> 16 );
-
-//		fxPalette[i] = i<<16; // 0x00rrggbb
-	}
-	if( fxSetPaletteExtension )
-		fxSetPaletteExtension( fxPalette );
-}
-
 void VID_SetPalette (unsigned char *palette)
 {
 	byte	*pal;
@@ -782,9 +570,6 @@ void VID_SetPalette (unsigned char *palette)
 	unsigned	*table;
 	
 	
-	if( is_3dfx || is_PowerVR)
-		VID_CreateInversePalette( palette );
-
 //
 // 8 8 8 encoding
 //
@@ -805,9 +590,6 @@ void VID_SetPalette (unsigned char *palette)
 	}
 
 	d_8to24table[255] &= 0xffffff;	// 255 is transparent
-
-	if( is_3dfx || is_PowerVR )
-		VID_Download3DfxPalette();
 
 	pal = palette;
 	table = d_8to24TranslucentTable;
@@ -837,10 +619,6 @@ BOOL	gammaworks;
 void	VID_ShiftPalette (unsigned char *palette)
 {
 	extern	byte ramps[3][256];
-	
-//	VID_SetPalette (palette);
-
-//	gammaworks = SetDeviceGammaRamp (maindc, ramps);
 }
 
 
@@ -1302,21 +1080,6 @@ void VID_DescribeMode_f (void)
 	leavecurrentmode = t;
 }
 
-void VID_Switch_f (void)
-{
-	int newmode;
-
-	newmode = QStr::Atoi (Cmd_Argv(1));
-	if( !fxDisplayModeExtension )
-		return;
-
-//	fxDisplayModeExtension( newmode );
-	fxDisplayModeExtension( 0 );
-	Sleep( 2 );
-	fxDisplayModeExtension( 1 );
-}
-
-
 /*
 =================
 VID_DescribeModes_f
@@ -1574,7 +1337,6 @@ void	VID_Init (unsigned char *palette)
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
 	Cmd_AddCommand ("vid_describemode", VID_DescribeMode_f);
 	Cmd_AddCommand ("vid_describemodes", VID_DescribeModes_f);
-	Cmd_AddCommand ("vid_switch", VID_Switch_f);
 
 	hIcon = LoadIcon (global_hInstance, MAKEINTRESOURCE (IDI_ICON2));
 

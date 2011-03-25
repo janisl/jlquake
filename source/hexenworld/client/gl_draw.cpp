@@ -56,9 +56,6 @@ int		gl_filter_max = GL_LINEAR;
 
 int		texels;
 
-qboolean is_3dfx = false;
-qboolean is_PowerVR = false;
-
 typedef struct
 {
 	int		texnum;
@@ -1568,19 +1565,6 @@ static	unsigned	scaled[1024*512];	// [512*256];
 	if (scaled_height > gl_max_size->value)
 		scaled_height = gl_max_size->value;
 
-	// 3dfx has some aspect ratio constraints. . . can't go beyond 8 to 1 or below 1 to 8.
-	if( is_3dfx )
-	{
-		if( scaled_width * 8 < scaled_height )
-		{
-			scaled_width = scaled_height >> 3;
-		}
-		else if( scaled_height * 8 < scaled_width )
-		{
-			scaled_height = scaled_width >> 3;
-		}
-	}
-
 	if (scaled_width * scaled_height > sizeof(scaled)/4)
 		Sys_Error ("GL_LoadTexture: too big");
 
@@ -1700,19 +1684,6 @@ void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboole
 		scaled_width = gl_max_size->value;
 	if (scaled_height > gl_max_size->value)
 		scaled_height = gl_max_size->value;
-
-	// 3dfx has some aspect ratio constraints. . . can't go beyond 8 to 1 or below 1 to 8.
-	if( is_3dfx )
-	{
-		if( scaled_width * 8 < scaled_height )
-		{
-			scaled_width = scaled_height >> 3;
-		}
-		else if( scaled_height * 8 < scaled_width )
-		{
-			scaled_height = scaled_width >> 3;
-		}
-	}
 
 	if (scaled_width * scaled_height > sizeof(scaled))
 		Sys_Error ("GL_LoadTexture: too big");

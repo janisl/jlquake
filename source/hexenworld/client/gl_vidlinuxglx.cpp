@@ -104,7 +104,6 @@ const char *gl_version;
 const char *gl_extensions;
 
 qboolean is8bit = false;
-qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 typedef void (APIENTRY *lp3DFXFUNC) (int, int, int, int, int, const void*);
 lp3DFXFUNC glColorTableEXT;

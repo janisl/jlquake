@@ -21,9 +21,6 @@
 
 byte globalcolormap[VID_GRADES*256];
 
-extern qboolean is_3dfx;
-extern qboolean is_PowerVR;
-
 typedef struct {
 	modestate_t	type;
 	int			width;
@@ -80,7 +77,6 @@ int			vid_realmode;
 int			vid_default = MODE_WINDOWED;
 static int	windowed_default;
 unsigned char	vid_curpal[256*3];
-static qboolean fullsbardraw = false;
 float RTint[256],GTint[256],BTint[256];
 
 HGLRC	baseRC;
@@ -112,7 +108,6 @@ void VID_UpdateWindowStatus (void);
 void GL_Init (void);
 
 qboolean is8bit = false;
-qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 //====================================
@@ -514,24 +509,7 @@ void GL_Init (void)
 	gl_extensions = (char*)qglGetString (GL_EXTENSIONS);
 	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
 
-	if (!QStr::NICmp((char *)gl_renderer, "3dfx",4))
-	{
-		is_3dfx = true;
-	}
-
-	if (!QStr::NICmp((char *)gl_renderer, "PowerVR PCX1",12) ||
-		!QStr::NICmp((char *)gl_renderer, "PowerVR PCX2",12))
-	{
-		is_PowerVR = true;
-	}
-
 //	Con_Printf ("%s %s\n", gl_renderer, gl_version);
-
-    if (QStr::NICmp(gl_renderer,"PowerVR",7)==0)
-         fullsbardraw = true;
-
-    if (QStr::NICmp(gl_renderer,"Permedia",8)==0)
-         isPermedia = true;
 
 	CheckMultiTextureExtensions ();
 
@@ -554,16 +532,6 @@ void GL_Init (void)
 
 //	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-#if 0
-	CheckArrayExtensions ();
-
-	qglEnable (GL_VERTEX_ARRAY_EXT);
-	qglEnable (GL_TEXTURE_COORD_ARRAY_EXT);
-	glVertexPointerEXT (3, GL_FLOAT, 0, 0, &glv.x);
-	glTexCoordPointerEXT (2, GL_FLOAT, 0, 0, &glv.s);
-	glColorPointerEXT (3, GL_FLOAT, 0, 0, &glv.r);
-#endif
 }
 
 /*
@@ -609,8 +577,6 @@ void GL_EndRendering (void)
 			windowed_mouse = (int)_windowed_mouse->value;
 		}
 	}
-	if (fullsbardraw)
-		Sbar_Changed();
 }
 
 int ColorIndex[16] =
@@ -1750,9 +1716,6 @@ void	VID_Init (unsigned char *palette)
 
 	QStr::Cpy(badmode.modedesc, "Bad mode");
 	vid_canalttab = true;
-
-	if (COM_CheckParm("-fullsbar"))
-		fullsbardraw = true;
 }
 
 

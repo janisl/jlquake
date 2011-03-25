@@ -94,10 +94,6 @@ unsigned ColorPercent[16] =
 
 byte globalcolormap[VID_GRADES*256];
 
-unsigned char inverse_pal[(1<<INVERSE_PAL_TOTAL_BITS)+1];
-
-FX_SET_PALETTE_EXT fxSetPaletteExtension;
-
 unsigned	d_8to24TranslucentTable[256];
 
 /*-----------------------------------------------------------------------*/
@@ -126,7 +122,6 @@ void (*qgl3DfxSetPaletteEXT) (GLuint *);
 static float vid_gamma = 1.0;
 
 qboolean is8bit = false;
-qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 /*-----------------------------------------------------------------------*/

@@ -108,7 +108,6 @@ void (*qgl3DfxSetPaletteEXT) (GLuint *);
 static float vid_gamma = 1.0;
 
 qboolean is8bit = false;
-qboolean isPermedia = false;
 qboolean gl_mtexable = false;
 
 /*-----------------------------------------------------------------------*/

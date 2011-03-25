@@ -1593,7 +1593,6 @@ void GL_BuildLightmaps (void)
 {
 	int		i, j;
 	model_t	*m;
-	extern qboolean isPermedia;
 
 	Com_Memset(allocated, 0, sizeof(allocated));
 
@@ -1606,10 +1605,6 @@ void GL_BuildLightmaps (void)
 	}
 
 	gl_lightmap_format = GL_LUMINANCE;
-	// default differently on the Permedia
-	if (isPermedia)
-		gl_lightmap_format = GL_RGBA;
-
 	if (COM_CheckParm ("-lm_1"))
 		gl_lightmap_format = GL_LUMINANCE;
 	if (COM_CheckParm ("-lm_a"))
