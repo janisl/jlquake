@@ -127,8 +127,6 @@ QCvar	*gl_texturealphamode;
 QCvar	*gl_texturesolidmode;
 QCvar	*gl_lockpvs;
 
-QCvar	*gl_3dlabs_broken;
-
 QCvar	*vid_fullscreen;
 QCvar	*vid_gamma;
 QCvar	*vid_ref;
@@ -859,48 +857,6 @@ void	R_SetGL2D (void)
 	qglColor4f (1,1,1,1);
 }
 
-static void GL_DrawColoredStereoLinePair( float r, float g, float b, float y )
-{
-	qglColor3f( r, g, b );
-	qglVertex2f( 0, y );
-	qglVertex2f( vid.width, y );
-	qglColor3f( 0, 0, 0 );
-	qglVertex2f( 0, y + 1 );
-	qglVertex2f( vid.width, y + 1 );
-}
-
-static void GL_DrawStereoPattern( void )
-{
-	int i;
-
-	if ( !( gl_config.renderer & GL_RENDERER_INTERGRAPH ) )
-		return;
-
-	if ( !gl_state.stereo_enabled )
-		return;
-
-	R_SetGL2D();
-
-	qglDrawBuffer( GL_BACK_LEFT );
-
-	for ( i = 0; i < 20; i++ )
-	{
-		qglBegin( GL_LINES );
-			GL_DrawColoredStereoLinePair( 1, 0, 0, 0 );
-			GL_DrawColoredStereoLinePair( 1, 0, 0, 2 );
-			GL_DrawColoredStereoLinePair( 1, 0, 0, 4 );
-			GL_DrawColoredStereoLinePair( 1, 0, 0, 6 );
-			GL_DrawColoredStereoLinePair( 0, 1, 0, 8 );
-			GL_DrawColoredStereoLinePair( 1, 1, 0, 10);
-			GL_DrawColoredStereoLinePair( 1, 1, 0, 12);
-			GL_DrawColoredStereoLinePair( 0, 1, 0, 14);
-		qglEnd();
-		
-		GLimp_EndFrame();
-	}
-}
-
-
 /*
 ====================
 R_SetLightLevel
@@ -1014,8 +970,6 @@ void R_Register( void )
 
 	gl_saturatelighting = ri.Cvar_Get( "gl_saturatelighting", "0", 0 );
 
-	gl_3dlabs_broken = ri.Cvar_Get( "gl_3dlabs_broken", "1", CVAR_ARCHIVE );
-
 	vid_fullscreen = ri.Cvar_Get( "vid_fullscreen", "0", CVAR_ARCHIVE );
 	vid_gamma = ri.Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
 	vid_ref = ri.Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
@@ -1035,13 +989,6 @@ qboolean R_SetMode (void)
 {
 	int err;
 	qboolean fullscreen;
-
-	if ( vid_fullscreen->modified && !gl_config.allow_cds )
-	{
-		ri.Con_Printf( PRINT_ALL, "R_SetMode() - CDS not allowed with this driver\n" );
-		ri.Cvar_SetValue( "vid_fullscreen", !vid_fullscreen->value );
-		vid_fullscreen->modified = false;
-	}
 
 	fullscreen = vid_fullscreen->value;
 
@@ -1086,8 +1033,6 @@ R_Init
 */
 int R_Init( void *hinstance, void *hWnd )
 {	
-	char renderer_buffer[1000];
-	char vendor_buffer[1000];
 	int		err;
 	int		j;
 	extern float r_turbsin[256];
@@ -1143,86 +1088,12 @@ int R_Init( void *hinstance, void *hWnd )
 	gl_config.extensions_string = (char*)qglGetString (GL_EXTENSIONS);
 	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
 
-	QStr::Cpy( renderer_buffer, gl_config.renderer_string );
-	QStr::ToLower( renderer_buffer );
-
-	QStr::Cpy( vendor_buffer, gl_config.vendor_string );
-	QStr::ToLower( vendor_buffer );
-
-	if ( strstr( renderer_buffer, "voodoo" ) )
-	{
-		if ( !strstr( renderer_buffer, "rush" ) )
-			gl_config.renderer = GL_RENDERER_VOODOO;
-		else
-			gl_config.renderer = GL_RENDERER_VOODOO_RUSH;
-	}
-	else if ( strstr( vendor_buffer, "sgi" ) )
-		gl_config.renderer = GL_RENDERER_SGI;
-	else if ( strstr( renderer_buffer, "permedia" ) )
-		gl_config.renderer = GL_RENDERER_PERMEDIA2;
-	else if ( strstr( renderer_buffer, "glint" ) )
-		gl_config.renderer = GL_RENDERER_GLINT_MX;
-	else if ( strstr( renderer_buffer, "glzicd" ) )
-		gl_config.renderer = GL_RENDERER_REALIZM;
-	else if ( strstr( renderer_buffer, "gdi" ) )
-		gl_config.renderer = GL_RENDERER_MCD;
-	else if ( strstr( renderer_buffer, "pcx2" ) )
-		gl_config.renderer = GL_RENDERER_PCX2;
-	else if ( strstr( renderer_buffer, "verite" ) )
-		gl_config.renderer = GL_RENDERER_RENDITION;
-	else
-		gl_config.renderer = GL_RENDERER_OTHER;
-
 	if ( QStr::ToUpper( gl_monolightmap->string[1] ) != 'F' )
 	{
-		if ( gl_config.renderer == GL_RENDERER_PERMEDIA2 )
-		{
-			ri.Cvar_Set( "gl_monolightmap", "A" );
-			ri.Con_Printf( PRINT_ALL, "...using gl_monolightmap 'a'\n" );
-		}
-		else if ( gl_config.renderer & GL_RENDERER_POWERVR ) 
-		{
-			ri.Cvar_Set( "gl_monolightmap", "0" );
-		}
-		else
-		{
-			ri.Cvar_Set( "gl_monolightmap", "0" );
-		}
+		ri.Cvar_Set( "gl_monolightmap", "0" );
 	}
 
-	// power vr can't have anything stay in the framebuffer, so
-	// the screen needs to redraw the tiled background every frame
-	if ( gl_config.renderer & GL_RENDERER_POWERVR ) 
-	{
-		ri.Cvar_Set( "scr_drawall", "1" );
-	}
-	else
-	{
-		ri.Cvar_Set( "scr_drawall", "0" );
-	}
-
-	// MCD has buffering issues
-	if ( gl_config.renderer == GL_RENDERER_MCD )
-	{
-		ri.Cvar_SetValue( "gl_finish", 1 );
-	}
-
-	if ( gl_config.renderer & GL_RENDERER_3DLABS )
-	{
-		if ( gl_3dlabs_broken->value )
-			gl_config.allow_cds = false;
-		else
-			gl_config.allow_cds = true;
-	}
-	else
-	{
-		gl_config.allow_cds = true;
-	}
-
-	if ( gl_config.allow_cds )
-		ri.Con_Printf( PRINT_ALL, "...allowing CDS\n" );
-	else
-		ri.Con_Printf( PRINT_ALL, "...disabling CDS\n" );
+	ri.Cvar_Set( "scr_drawall", "0" );
 
 	/*
 	** grab extensions
@@ -1289,13 +1160,6 @@ int R_Init( void *hinstance, void *hWnd )
 
 	GL_SetDefaultState();
 
-	/*
-	** draw our stereo patterns
-	*/
-#if 0 // commented out until H3D pays us the money they owe us
-	GL_DrawStereoPattern();
-#endif
-
 	GL_InitImages ();
 	Mod_Init ();
 	R_InitParticleTexture ();
@@ -1359,27 +1223,6 @@ void R_BeginFrame( float camera_separation )
 	QGL_EnableLogging(!!r_logFile->integer);
 
 	QGL_LogComment("*** R_BeginFrame ***\n");
-
-	/*
-	** update 3Dfx gamma -- it is expected that a user will do a vid_restart
-	** after tweaking this value
-	*/
-	if ( vid_gamma->modified )
-	{
-		vid_gamma->modified = false;
-
-		if ( gl_config.renderer & ( GL_RENDERER_VOODOO ) )
-		{
-			char envbuffer[1024];
-			float g;
-
-			g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
-			QStr::Sprintf( envbuffer, sizeof(envbuffer), "SSTV2_GAMMA=%f", g );
-			putenv( envbuffer );
-			QStr::Sprintf( envbuffer, sizeof(envbuffer), "SST_GAMMA=%f", g );
-			putenv( envbuffer );
-		}
-	}
 
 	GLimp_BeginFrame( camera_separation );
 

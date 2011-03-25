@@ -69,8 +69,6 @@ void QGL_Shutdown( void )
 */
 qboolean QGL_Init( const char *dllname )
 {
-	gl_config.allow_cds = true;
-
 	QGL_SharedInit();
 
 	qwglSwapIntervalEXT = 0;
