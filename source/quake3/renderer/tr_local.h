@@ -1050,7 +1050,6 @@ extern	QCvar	*r_lightmap;					// render lightmaps only
 extern	QCvar	*r_vertexLight;					// vertex lighting mode for better performance
 extern	QCvar	*r_uiFullScreen;				// ui is running fullscreen
 
-extern	QCvar	*r_logFile;						// number of frames to emit GL logs
 extern	QCvar	*r_showtris;					// enables wireframe rendering of the world
 extern	QCvar	*r_showsky;						// forces sky in front of all surfaces
 extern	QCvar	*r_shownormals;					// draws wireframe normals

@@ -206,6 +206,8 @@ void R_Init (void)
 
 	gl_finish = Cvar_Get("gl_finish", "0", 0);
 
+	r_logFile = Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
+
 	R_InitBubble();
 
 	R_InitParticles ();

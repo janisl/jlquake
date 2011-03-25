@@ -31,4 +31,6 @@
 
 #include "render_qgl.h"
 
+extern	QCvar	*r_logFile;						// number of frames to emit GL logs
+
 #endif

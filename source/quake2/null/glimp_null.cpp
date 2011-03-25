@@ -23,7 +23,3 @@ int     	GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen
 void		GLimp_AppActivate( qboolean active )
 {
 }
-
-void		QGL_EnableLogging( qboolean enable )
-{
-}

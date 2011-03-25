@@ -98,7 +98,7 @@ QCvar	*gl_ext_multitexture;
 QCvar	*gl_ext_pointparameters;
 QCvar	*gl_ext_compiled_vertex_array;
 
-QCvar	*gl_log;
+QCvar	*r_logFile;
 QCvar	*gl_bitdepth;
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
@@ -976,7 +976,7 @@ void R_Register( void )
 	gl_particle_att_c = ri.Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
 	gl_modulate = ri.Cvar_Get ("gl_modulate", "1", CVAR_ARCHIVE );
-	gl_log = ri.Cvar_Get( "gl_log", "0", 0 );
+	r_logFile = ri.Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
 	gl_bitdepth = ri.Cvar_Get( "gl_bitdepth", "0", 0 );
 	gl_mode = ri.Cvar_Get( "gl_mode", "3", CVAR_ARCHIVE );
 	gl_lightmap = ri.Cvar_Get ("gl_lightmap", "0", 0);
@@ -1374,11 +1374,7 @@ void R_BeginFrame( float camera_separation )
 		ref->modified = true;
 	}
 
-	if ( gl_log->modified )
-	{
-		QGL_EnableLogging( gl_log->value );
-		gl_log->modified = false;
-	}
+	QGL_EnableLogging(!!r_logFile->integer);
 
 	QGL_LogComment("*** R_BeginFrame ***\n");
 

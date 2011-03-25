@@ -676,26 +676,50 @@ void QGL_SharedShutdown()
 
 //==========================================================================
 //
-//	QGL_SharedLogOn
+//	QGL_EnableLogging
 //
 //==========================================================================
 
-void QGL_SharedLogOn()
+void QGL_EnableLogging(bool enable)
 {
-	if (!log_fp)
+	static bool isEnabled;
+
+	// return if we're already active
+	if (isEnabled && enable)
 	{
-		struct tm *newtime;
-		time_t aclock;
-
-		time( &aclock );
-		newtime = localtime( &aclock );
-
-		asctime( newtime );
-
-		log_fp = FS_FOpenFileWrite("gl.log");
-
-		QGL_Log("%s\n", asctime(newtime));
+		// decrement log counter and stop if it has reached 0
+		Cvar_Set("r_logFile", va("%d", r_logFile->integer - 1));
+		if (r_logFile->integer)
+		{
+			return;
+		}
+		enable = false;
 	}
+
+	// return if we're already disabled
+	if (!enable && !isEnabled)
+	{
+		return;
+	}
+
+	isEnabled = enable;
+
+	if (enable)
+	{
+		if (!log_fp)
+		{
+			struct tm *newtime;
+			time_t aclock;
+
+			time( &aclock );
+			newtime = localtime( &aclock );
+
+			asctime( newtime );
+
+			log_fp = FS_FOpenFileWrite("gl.log");
+
+			QGL_Log("%s\n", asctime(newtime));
+		}
 
 #define GLF_0(r, n)				qgl##n = log##n;
 #define GLF_V0(n)				qgl##n = log##n;
@@ -726,22 +750,15 @@ void QGL_SharedLogOn()
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
-}
-
-//==========================================================================
-//
-//	QGL_SharedLogOff
-//
-//==========================================================================
-
-void QGL_SharedLogOff()
-{
-	if (log_fp)
-	{
-		QGL_Log("*** CLOSING LOG ***\n");
-		FS_FCloseFile(log_fp);
-		log_fp = 0;
 	}
+	else
+	{
+		if (log_fp)
+		{
+			QGL_Log("*** CLOSING LOG ***\n");
+			FS_FCloseFile(log_fp);
+			log_fp = 0;
+		}
 
 #define GLF_0(r, n)				qgl##n = gl##n;
 #define GLF_V0(n)				qgl##n = gl##n;
@@ -772,6 +789,7 @@ void QGL_SharedLogOff()
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
+	}
 }
 
 //==========================================================================

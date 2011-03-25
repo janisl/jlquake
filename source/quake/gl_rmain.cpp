@@ -103,6 +103,8 @@ QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 QCvar*	gl_doubleeyes;
 
+QCvar	*r_logFile;
+
 extern	QCvar*	gl_ztrick;
 
 /*
@@ -1107,6 +1109,8 @@ void R_RenderView (void)
 
 	if (gl_finish->value)
 		qglFinish ();
+
+	QGL_EnableLogging(!!r_logFile->integer);
 
 	R_Clear ();
 

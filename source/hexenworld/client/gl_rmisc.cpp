@@ -194,6 +194,8 @@ void R_Init (void)
 
 	r_teamcolor = Cvar_Get("r_teamcolor", "187", CVAR_ARCHIVE);
 
+	r_logFile = Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
+
 	R_InitBubble();
 	
 	R_InitParticles ();

@@ -33,8 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../renderer/tr_local.h"
 #include "glw_win.h"
 
-void QGL_EnableLogging( qboolean enable );
-
 int ( WINAPI * qwglSwapIntervalEXT)( int interval );
 BOOL  ( WINAPI * qwglGetDeviceGammaRamp3DFX)( HDC, LPVOID );
 BOOL  ( WINAPI * qwglSetDeviceGammaRamp3DFX)( HDC, LPVOID );
@@ -138,38 +136,7 @@ qboolean QGL_Init( const char *dllname )
 	qwglSetDeviceGammaRamp3DFX = NULL;
 
 	// check logging
-	QGL_EnableLogging( r_logFile->integer );
+	QGL_EnableLogging(!!r_logFile->integer);
 
 	return qtrue;
-}
-
-void QGL_EnableLogging( qboolean enable )
-{
-	static qboolean isEnabled;
-
-	// return if we're already active
-	if ( isEnabled && enable )
-	{
-		// decrement log counter and stop if it has reached 0
-		ri.Cvar_Set( "r_logFile", va("%d", r_logFile->integer - 1 ) );
-		if ( r_logFile->integer ) {
-			return;
-		}
-		enable = qfalse;
-	}
-
-	// return if we're already disabled
-	if ( !enable && !isEnabled )
-		return;
-
-	isEnabled = enable;
-
-	if ( enable )
-	{
-		QGL_SharedLogOn();
-	}
-	else
-	{
-		QGL_SharedLogOff();
-	}
 }

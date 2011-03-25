@@ -54,15 +54,3 @@ qboolean QGL_Init( const char *dllname )
 
 	return true;
 }
-
-void QGL_EnableLogging( qboolean enable )
-{
-	if ( enable )
-	{
-		QGL_SharedLogOn();
-	}
-	else
-	{
-		QGL_SharedLogOff();
-	}
-}

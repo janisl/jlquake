@@ -34,9 +34,6 @@ int 		GLimp_Init( void )
 void		GLimp_Shutdown( void ) {
 }
 
-void		QGL_EnableLogging( qboolean enable ) {
-}
-
 qboolean QGL_Init( const char *dllname ) {
 	return qtrue;
 }

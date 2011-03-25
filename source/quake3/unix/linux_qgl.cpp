@@ -118,33 +118,3 @@ qboolean QGL_Init( const char *dllname )
 
 	return qtrue;
 }
-
-void QGL_EnableLogging( qboolean enable ) {
-  // bk001205 - fixed for new countdown
-  static qboolean isEnabled = qfalse; // init
-  
-  // return if we're already active
-  if ( isEnabled && enable ) {
-    // decrement log counter and stop if it has reached 0
-    ri.Cvar_Set( "r_logFile", va("%d", r_logFile->integer - 1 ) );
-    if ( r_logFile->integer ) {
-      return;
-    }
-    enable = qfalse;
-  }
-
-  // return if we're already disabled
-  if ( !enable && !isEnabled )
-    return;
-
-  isEnabled = enable;
-
-  // bk001205 - old code starts here
-  if ( enable ) {
-		QGL_SharedLogOn();
-	}
-	else
-	{
-		QGL_SharedLogOff();
-	}
-}

@@ -210,6 +210,8 @@ void R_Init (void)
 
 	gl_doubleeyes = Cvar_Get("gl_doubleeys", "1", 0);
 
+	r_logFile = Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
+	
 	R_InitParticles ();
 	R_InitParticleTexture ();
 

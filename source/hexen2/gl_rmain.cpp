@@ -92,6 +92,8 @@ QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 
+QCvar	*r_logFile;
+
 extern	QCvar*	gl_ztrick;
 static qboolean AlwaysDrawModel;
 
@@ -1569,6 +1571,8 @@ void R_RenderView (void)
 	}
 
 	mirror = false;
+
+	QGL_EnableLogging(!!r_logFile->integer);
 
 //	qglFinish ();
 

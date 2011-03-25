@@ -1553,7 +1553,7 @@ void GLimp_EndFrame (void)
   }
 
   // check logging
-  QGL_EnableLogging( (qboolean)r_logFile->integer ); // bk001205 - was ->value
+  QGL_EnableLogging(!!r_logFile->integer);
 }
 
 #ifdef SMP
