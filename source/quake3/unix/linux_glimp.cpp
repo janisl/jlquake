@@ -780,7 +780,7 @@ void GLimp_Shutdown( void )
   if (dpy)
   {
     if (ctx)
-      qglXDestroyContext(dpy, ctx);
+      glXDestroyContext(dpy, ctx);
     if (win)
       XDestroyWindow(dpy, win);
     if (vidmode_active)
@@ -1086,7 +1086,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
     attrib[ATTR_DEPTH_IDX] = tdepthbits; // default to 24 depth
     attrib[ATTR_STENCIL_IDX] = tstencilbits;
 
-    visinfo = qglXChooseVisual(dpy, scrnum, attrib);
+    visinfo = glXChooseVisual(dpy, scrnum, attrib);
     if (!visinfo)
     {
       continue;
@@ -1144,13 +1144,13 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 
   XFlush(dpy);
   XSync(dpy,False); // bk001130 - from cvs1.17 (mkv)
-  ctx = qglXCreateContext(dpy, visinfo, NULL, True);
+  ctx = glXCreateContext(dpy, visinfo, NULL, True);
   XSync(dpy,False); // bk001130 - from cvs1.17 (mkv)
 
   /* GH: Free the visinfo after we're done with it */
   XFree( visinfo );
 
-  qglXMakeCurrent(dpy, win, ctx);
+  glXMakeCurrent(dpy, win, ctx);
 
   // bk001130 - from cvs1.17 (mkv)
   glstring = (char*)qglGetString (GL_RENDERER);
@@ -1560,7 +1560,7 @@ void GLimp_EndFrame (void)
   // don't flip if drawing to front buffer
   if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
   {
-    qglXSwapBuffers(dpy, win);
+    glXSwapBuffers(dpy, win);
   }
 
   // check logging
@@ -1589,7 +1589,7 @@ static void *GLimp_RenderThreadWrapper( void *arg )
 
   glimpRenderThread();
 
-	qglXMakeCurrent( dpy, None, NULL );
+	glXMakeCurrent( dpy, None, NULL );
 
 	Com_Printf( "Render thread terminating\n" );
 
@@ -1632,7 +1632,7 @@ void *GLimp_RendererSleep( void )
 {
 	void  *data;
 
-	qglXMakeCurrent( dpy, None, NULL );
+	glXMakeCurrent( dpy, None, NULL );
 
 	pthread_mutex_lock( &smpMutex );
 	{
@@ -1650,7 +1650,7 @@ void *GLimp_RendererSleep( void )
 	}
 	pthread_mutex_unlock( &smpMutex );
 
-	qglXMakeCurrent( dpy, win, ctx );
+	glXMakeCurrent( dpy, win, ctx );
 
   return data;
 }
@@ -1665,12 +1665,12 @@ void GLimp_FrontEndSleep( void )
 	}
 	pthread_mutex_unlock( &smpMutex );
 
-	qglXMakeCurrent( dpy, win, ctx );
+	glXMakeCurrent( dpy, win, ctx );
 }
 
 void GLimp_WakeRenderer( void *data )
 {
-	qglXMakeCurrent( dpy, None, NULL );
+	glXMakeCurrent( dpy, None, NULL );
 
 	pthread_mutex_lock( &smpMutex );
 	{

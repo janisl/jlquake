@@ -39,22 +39,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../renderer/tr_local.h"
 #include "unix_glw.h"
 
-// bk001129 - from cvs1.17 (mkv)
-//#if defined(__FX__)
-//#include <GL/fxmesa.h>
-//#endif
-//#include <GL/glx.h> // bk010216 - FIXME: all of the above redundant? renderer/qgl.h
-
 #include <dlfcn.h>
 
-
-//GLX Functions
-XVisualInfo * (*qglXChooseVisual)( Display *dpy, int screen, int *attribList );
-GLXContext (*qglXCreateContext)( Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct );
-void (*qglXDestroyContext)( Display *dpy, GLXContext ctx );
-Bool (*qglXMakeCurrent)( Display *dpy, GLXDrawable drawable, GLXContext ctx);
-void (*qglXCopyContext)( Display *dpy, GLXContext src, GLXContext dst, GLuint mask );
-void (*qglXSwapBuffers)( Display *dpy, GLXDrawable drawable );
 
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
@@ -97,22 +83,6 @@ void QGL_Shutdown( void )
 	glw_state.OpenGLLib = NULL;
 
 	QGL_SharedShutdown();
-
-	qglXChooseVisual             = NULL;
-	qglXCreateContext            = NULL;
-	qglXDestroyContext           = NULL;
-	qglXMakeCurrent              = NULL;
-	qglXCopyContext              = NULL;
-	qglXSwapBuffers              = NULL;
-}
-
-#define GPA( a ) dlsym( glw_state.OpenGLLib, a )
-
-void *qwglGetProcAddress(char *symbol)
-{
-	if (glw_state.OpenGLLib)
-		return GPA ( symbol );
-	return NULL;
 }
 
 /*
@@ -151,13 +121,6 @@ qboolean QGL_Init( const char *dllname )
 	}
 
 	QGL_SharedInit();
-
-	qglXChooseVisual             =  (XVisualInfo * (*)( Display *dpy, int screen, int *attribList ))GPA("glXChooseVisual");
-	qglXCreateContext            =  (GLXContext (*)( Display *dpy, XVisualInfo *vis, GLXContext shareList, Bool direct ))GPA("glXCreateContext");
-	qglXDestroyContext           =  (void (*)( Display *dpy, GLXContext ctx ))GPA("glXDestroyContext");
-	qglXMakeCurrent              =  (Bool (*)( Display *dpy, GLXDrawable drawable, GLXContext ctx))GPA("glXMakeCurrent");
-	qglXCopyContext              =  (void (*)( Display *dpy, GLXContext src, GLXContext dst, GLuint mask ))GPA("glXCopyContext");
-	qglXSwapBuffers              =  (void (*)( Display *dpy, GLXDrawable drawable ))GPA("glXSwapBuffers");
 
 	qglLockArraysEXT = 0;
 	qglUnlockArraysEXT = 0;
