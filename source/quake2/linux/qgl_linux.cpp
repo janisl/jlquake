@@ -11,8 +11,6 @@
 #define QGL
 #include "../ref_gl/gl_local.h"
 
-extern fileHandle_t log_fp;
-
 void ( APIENTRY * qglLockArraysEXT)( int, int);
 void ( APIENTRY * qglUnlockArraysEXT) ( void );
 
@@ -21,8 +19,6 @@ void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
 void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
-
-void QGL_Log(const char* Fmt, ...);
 
 /*
 ** QGL_Shutdown
@@ -70,11 +66,3 @@ void GLimp_EnableLogging( qboolean enable )
 		QGL_SharedLogOff();
 	}
 }
-
-
-void GLimp_LogNewFrame( void )
-{
-	QGL_Log("*** R_BeginFrame ***\n");
-}
-
-

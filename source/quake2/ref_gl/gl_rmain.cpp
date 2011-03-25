@@ -1380,10 +1380,7 @@ void R_BeginFrame( float camera_separation )
 		gl_log->modified = false;
 	}
 
-	if ( gl_log->value )
-	{
-		GLimp_LogNewFrame();
-	}
+	QGL_LogComment("*** R_BeginFrame ***\n");
 
 	/*
 	** update 3Dfx gamma -- it is expected that a user will do a vid_restart

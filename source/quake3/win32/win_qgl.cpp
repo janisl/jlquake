@@ -39,10 +39,6 @@ int ( WINAPI * qwglSwapIntervalEXT)( int interval );
 BOOL  ( WINAPI * qwglGetDeviceGammaRamp3DFX)( HDC, LPVOID );
 BOOL  ( WINAPI * qwglSetDeviceGammaRamp3DFX)( HDC, LPVOID );
 
-extern fileHandle_t log_fp;
-
-void QGL_Log(const char* Fmt, ...);
-
 /*
 ** QGL_Shutdown
 **
@@ -177,16 +173,3 @@ void QGL_EnableLogging( qboolean enable )
 		QGL_SharedLogOff();
 	}
 }
-
-/*
-** GLimp_LogComment
-*/
-void GLimp_LogComment( char *comment ) 
-{
-	if (log_fp)
-	{
-		QGL_Log("%s", comment );
-	}
-}
-
-#pragma warning (default : 4113 4133 4047 )

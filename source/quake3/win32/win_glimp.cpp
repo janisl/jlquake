@@ -28,7 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 **
 ** GLimp_EndFrame
 ** GLimp_Init
-** GLimp_LogComment
 ** GLimp_Shutdown
 **
 ** Note that the GLW_xxx functions are Windows specific GL-subsystem

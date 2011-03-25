@@ -49,10 +49,6 @@ void ( APIENTRY * qgl3DfxSetPaletteEXT)( GLuint * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
-extern fileHandle_t log_fp;
-
-void QGL_Log(const char* Fmt, ...);
-
 /*
 ** QGL_Shutdown
 **
@@ -150,17 +146,5 @@ void QGL_EnableLogging( qboolean enable ) {
 	else
 	{
 		QGL_SharedLogOff();
-	}
-}
-
-
-/*
-** GLimp_LogComment
-*/
-void GLimp_LogComment( char *comment ) 
-{
-	if (log_fp)
-	{
-		QGL_Log("%s", comment);
 	}
 }

@@ -51,3 +51,4 @@ void QGL_SharedInit();
 void QGL_SharedShutdown();
 void QGL_SharedLogOn();
 void QGL_SharedLogOff();
+void QGL_LogComment(const char* Comment);

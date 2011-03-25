@@ -69,7 +69,7 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-fileHandle_t log_fp;
+static fileHandle_t		log_fp;
 
 // CODE --------------------------------------------------------------------
 
@@ -79,7 +79,7 @@ fileHandle_t log_fp;
 //
 //==========================================================================
 
-void QGL_Log(const char* Fmt, ...)
+static void QGL_Log(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
 	char		String[1024];
@@ -772,4 +772,18 @@ void QGL_SharedLogOff()
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
+}
+
+//==========================================================================
+//
+//	QGL_LogComment
+//
+//==========================================================================
+
+void QGL_LogComment(const char* Comment)
+{
+	if (log_fp)
+	{
+		QGL_Log("%s", Comment);
+	}
 }

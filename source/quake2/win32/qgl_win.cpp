@@ -43,10 +43,6 @@ void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
-extern fileHandle_t log_fp;
-
-void QGL_Log(const char* Fmt, ...);
-
 /*
 ** QGL_Shutdown
 **
@@ -131,14 +127,3 @@ void GLimp_EnableLogging( qboolean enable )
 		QGL_SharedLogOff();
 	}
 }
-
-
-void GLimp_LogNewFrame( void )
-{
-	QGL_Log("*** R_BeginFrame ***\n");
-}
-
-#pragma warning (default : 4113 4133 4047 )
-
-
-
