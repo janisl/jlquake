@@ -93,16 +93,6 @@ extern	QCvar*	gl_ztrick;
 extern	QCvar*	scr_fov;
 static qboolean AlwaysDrawModel;
 
-//==========================================================================
-//
-//	QGL_Log
-//
-//==========================================================================
-
-void QGL_Log(const char* Fmt, ...)
-{
-}
-
 /*
 =================
 R_CullBox

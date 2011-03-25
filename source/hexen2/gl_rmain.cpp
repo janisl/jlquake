@@ -98,16 +98,6 @@ static qboolean AlwaysDrawModel;
 static void R_RotateForEntity2(entity_t *e);
 
 
-//==========================================================================
-//
-//	QGL_Log
-//
-//==========================================================================
-
-void QGL_Log(const char* Fmt, ...)
-{
-}
-
 /*
 =================
 R_CullBox

@@ -28,8 +28,6 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-void QGL_Log(const char* Fmt, ...);
-
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
@@ -70,7 +68,33 @@ void QGL_Log(const char* Fmt, ...);
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+fileHandle_t log_fp;
+
 // CODE --------------------------------------------------------------------
+
+//==========================================================================
+//
+//	QGL_Log
+//
+//==========================================================================
+
+void QGL_Log(const char* Fmt, ...)
+{
+	va_list		ArgPtr;
+	char		String[1024];
+	
+	va_start(ArgPtr, Fmt);
+	vsprintf(String, Fmt, ArgPtr);
+	va_end(ArgPtr);
+
+	FS_Printf(log_fp, "%s", String);
+}
+
+//==========================================================================
+//
+//	Simple logging
+//
+//==========================================================================
 
 #define GLF_0(r, n) \
 static r APIENTRY log##n() \

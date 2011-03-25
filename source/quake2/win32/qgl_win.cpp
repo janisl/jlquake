@@ -43,25 +43,9 @@ void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
-static fileHandle_t log_fp;
+extern fileHandle_t log_fp;
 
-//==========================================================================
-//
-//	QGL_Log
-//
-//==========================================================================
-
-void QGL_Log(const char* Fmt, ...)
-{
-	va_list		ArgPtr;
-	char		String[1024];
-	
-	va_start(ArgPtr, Fmt);
-	vsprintf(String, Fmt, ArgPtr);
-	va_end(ArgPtr);
-
-	FS_Printf(log_fp, "%s", String);
-}
+void QGL_Log(const char* Fmt, ...);
 
 /*
 ** QGL_Shutdown
