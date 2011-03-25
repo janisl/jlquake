@@ -1222,9 +1222,9 @@ static void GLW_InitExtensions( void )
   {
     if ( r_ext_multitexture->value )
     {
-      qglMultiTexCoord2fARB = (PFNGLMULTITEXCOORD2FARBPROC)glXGetProcAddress((const GLubyte*)"glMultiTexCoord2fARB");
-      qglActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)glXGetProcAddress((const GLubyte*)"glActiveTextureARB");
-      qglClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)glXGetProcAddress((const GLubyte*)"glClientActiveTextureARB");
+      qglMultiTexCoord2fARB = (PFNGLMULTITEXCOORD2FARBPROC)GLimp_GetProcAddress("glMultiTexCoord2fARB");
+      qglActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)GLimp_GetProcAddress("glActiveTextureARB");
+      qglClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)GLimp_GetProcAddress("glClientActiveTextureARB");
 
       if ( qglActiveTextureARB )
       {
@@ -1256,8 +1256,8 @@ static void GLW_InitExtensions( void )
     if ( r_ext_compiled_vertex_array->value )
     {
       ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
-      qglLockArraysEXT = (void (APIENTRY*)(int, int))glXGetProcAddress((const GLubyte*)"glLockArraysEXT");
-      qglUnlockArraysEXT = (void (APIENTRY*)())glXGetProcAddress((const GLubyte*)"glUnlockArraysEXT");
+      qglLockArraysEXT = (void (APIENTRY*)(int, int))GLimp_GetProcAddress("glLockArraysEXT");
+      qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
       if (!qglLockArraysEXT || !qglUnlockArraysEXT)
       {
         ri.Error (ERR_FATAL, "bad getprocaddress");

@@ -1,5 +1,6 @@
 set(CLIENT_FILES
 	cd_linux.cpp
+	render_driver_glx.cpp
 	render_qgl.cpp
 	snd_alsa.cpp
 	snd_dma.cpp

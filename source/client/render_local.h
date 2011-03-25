@@ -31,6 +31,8 @@
 
 #include "render_qgl.h"
 
+void* GLimp_GetProcAddress(const char* Name);
+
 extern	QCvar	*r_logFile;						// number of frames to emit GL logs
 
 #endif
