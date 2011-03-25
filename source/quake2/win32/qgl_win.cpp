@@ -39,7 +39,6 @@ BOOL ( WINAPI * qwglGetDeviceGammaRampEXT)( unsigned char *, unsigned char *, un
 BOOL ( WINAPI * qwglSetDeviceGammaRampEXT)( const unsigned char *, const unsigned char *, const unsigned char * );
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
-void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
@@ -77,7 +76,6 @@ qboolean QGL_Init( const char *dllname )
 	qwglSwapIntervalEXT = 0;
 	qglPointParameterfEXT = 0;
 	qglPointParameterfvEXT = 0;
-	qglColorTableEXT = 0;
 	qglSelectTextureSGIS = 0;
 	qglMTexCoord2fSGIS = 0;
 

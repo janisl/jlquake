@@ -124,7 +124,6 @@ void ClearAllStates (void);
 void VID_UpdateWindowStatus (void);
 void GL_Init (void);
 
-qboolean is8bit = false;
 qboolean gl_mtexable = false;
 
 //====================================
@@ -1385,10 +1384,6 @@ void VID_InitFullDIB (HINSTANCE hInstance)
 
 	if (nummodes == originalnummodes)
 		Con_SafePrintf ("No fullscreen DIB modes found\n");
-}
-
-qboolean VID_Is8bit() {
-	return is8bit;
 }
 
 static void Check_Gamma (unsigned char *pal)

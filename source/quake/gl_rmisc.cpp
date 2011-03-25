@@ -312,33 +312,6 @@ void R_TranslatePlayerSkin (int playernum)
 	scaled_width >>= (int)gl_playermip->value;
 	scaled_height >>= (int)gl_playermip->value;
 
-	if (VID_Is8bit()) { // 8bit texture upload
-		byte *out2;
-
-		out2 = (byte *)pixels;
-		Com_Memset(pixels, 0, sizeof(pixels));
-		fracstep = inwidth*0x10000/scaled_width;
-		for (i=0 ; i<scaled_height ; i++, out2 += scaled_width)
-		{
-			inrow = original + inwidth*(i*inheight/scaled_height);
-			frac = fracstep >> 1;
-			for (j=0 ; j<scaled_width ; j+=4)
-			{
-				out2[j] = translate[inrow[frac>>16]];
-				frac += fracstep;
-				out2[j+1] = translate[inrow[frac>>16]];
-				frac += fracstep;
-				out2[j+2] = translate[inrow[frac>>16]];
-				frac += fracstep;
-				out2[j+3] = translate[inrow[frac>>16]];
-				frac += fracstep;
-			}
-		}
-
-		GL_Upload8_EXT ((byte *)pixels, scaled_width, scaled_height, false, false);
-		return;
-	}
-
 	for (i=0 ; i<256 ; i++)
 		translate32[i] = d_8to24table[translate[i]];
 

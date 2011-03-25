@@ -43,8 +43,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
-void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
-void ( APIENTRY * qgl3DfxSetPaletteEXT)( GLuint * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
@@ -77,8 +75,6 @@ qboolean QGL_Init( const char *dllname )
 	qglUnlockArraysEXT = 0;
 	qglPointParameterfEXT = 0;
 	qglPointParameterfvEXT = 0;
-	qglColorTableEXT = 0;
-	qgl3DfxSetPaletteEXT = 0;
 	qglSelectTextureSGIS = 0;
 	qglMTexCoord2fSGIS = 0;
 	qglActiveTextureARB = 0;

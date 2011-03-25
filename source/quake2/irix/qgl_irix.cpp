@@ -13,7 +13,6 @@
 
 void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
 void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
-void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
@@ -25,9 +24,6 @@ void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 void QGL_Shutdown( void )
 {
 	QGL_SharedShutdown();
-
-	qglColorTableEXT             = NULL;
-
 }
 
 /*
@@ -48,8 +44,6 @@ qboolean QGL_Init( const char *dllname )
 
 	qglPointParameterfEXT = 0;
 	qglPointParameterfvEXT = 0;
-	qglColorTableEXT = glColorTableSGI;
-	qglColorTableEXT = 0;
 	qglSelectTextureSGIS = 0;
 	qglMTexCoord2fSGIS = 0;
 

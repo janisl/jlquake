@@ -202,8 +202,6 @@ void EmitWaterPolys (msurface_t *fa);
 void R_RotateForEntity (entity_t *e);
 void EmitSkyPolys (msurface_t *fa);
 void R_InitParticles (void);
-qboolean VID_Is8bit(void);
-void GL_Upload8_EXT (byte *data, int width, int height,  qboolean mipmap, qboolean alpha);
 void R_ClearParticles (void);
 void GL_BuildLightmaps (void);
 int R_LightPoint (vec3_t p);

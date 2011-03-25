@@ -87,11 +87,7 @@ const char *gl_renderer;
 const char *gl_version;
 const char *gl_extensions;
 
-qboolean is8bit = false;
 qboolean gl_mtexable = false;
-
-typedef void (APIENTRY *lp3DFXFUNC) (int, int, int, int, int, const void*);
-lp3DFXFUNC glColorTableEXT;
 
 /*-----------------------------------------------------------------------*/
 void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
@@ -524,35 +520,6 @@ void GL_EndRendering (void)
 	glXSwapBuffers(dpy, win);
 }
 
-qboolean VID_Is8bit(void)
-{
-	return is8bit;
-}
-
-void VID_Init8bitPalette() 
-{
-	// Check for 8bit Extensions and initialize them.
-	int i;
-	char thePalette[256*3];
-	char *oldPalette, *newPalette;
-
-	if (strstr(gl_extensions, "GL_EXT_shared_texture_palette") == NULL)
-		return;
-
-	Con_SafePrintf("8-bit GL extensions enabled.\n");
-	qglEnable( GL_SHARED_TEXTURE_PALETTE_EXT );
-	oldPalette = (char *) d_8to24table; //d_8to24table3dfx;
-	newPalette = thePalette;
-	for (i=0;i<256;i++) {
-		*newPalette++ = *oldPalette++;
-		*newPalette++ = *oldPalette++;
-		*newPalette++ = *oldPalette++;
-		oldPalette++;
-	}
-	glColorTableEXT(GL_SHARED_TEXTURE_PALETTE_EXT, GL_RGB, 256, GL_RGB, GL_UNSIGNED_BYTE, (void *) thePalette);
-	is8bit = true;
-}
-
 void VID_Init(unsigned char *palette)
 {
 	int i;
@@ -661,9 +628,6 @@ void VID_Init(unsigned char *palette)
 	GL_Init();
 
 	VID_SetPalette(palette);
-
-	// Check for 3DFX Extensions and initialize them.
-	VID_Init8bitPalette();
 
 	Con_SafePrintf ("Video mode %dx%d initialized.\n", width, height);
 

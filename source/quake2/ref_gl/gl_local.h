@@ -323,8 +323,6 @@ image_t	*GL_FindImage (char *name, imagetype_t type);
 void	GL_TextureMode( char *string );
 void	GL_ImageList_f (void);
 
-void	GL_SetTexturePalette( unsigned palette[256] );
-
 void	GL_InitImages (void);
 void	GL_ShutdownImages (void);
 
@@ -398,8 +396,6 @@ typedef struct
 	qboolean fullscreen;
 
 	int     prev_mode;
-
-	unsigned char *d_16to8table;
 
 	int lightmap_textures;
 
