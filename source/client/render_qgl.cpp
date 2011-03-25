@@ -711,10 +711,8 @@ void QGL_EnableLogging(bool enable)
 			struct tm *newtime;
 			time_t aclock;
 
-			time( &aclock );
-			newtime = localtime( &aclock );
-
-			asctime( newtime );
+			time(&aclock);
+			newtime = localtime(&aclock);
 
 			log_fp = FS_FOpenFileWrite("gl.log");
 
