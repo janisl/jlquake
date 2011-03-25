@@ -40,11 +40,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #elif defined( __FreeBSD__ ) // rb010123
 #include <GL/glx.h>
 #endif
+
+#include "../../client/render_local.h"
+
 #ifndef WINAPI
 #define WINAPI
 #endif
-
-#include "../../client/render_local.h"
 
 //===========================================================================
 
