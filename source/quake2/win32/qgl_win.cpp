@@ -60,7 +60,7 @@ void QGL_Log(const char* Fmt, ...)
 	vsprintf(String, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
-	FS_Printf(glw_state.log_fp, "%s", String);
+	FS_Printf(log_fp, "%s", String);
 }
 
 /*
