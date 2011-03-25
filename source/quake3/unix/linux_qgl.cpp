@@ -37,7 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <float.h>
 #include "../renderer/tr_local.h"
-#include "unix_glw.h"
 
 #include <dlfcn.h>
 
@@ -56,14 +55,6 @@ void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 */
 void QGL_Shutdown( void )
 {
-	if ( glw_state.OpenGLLib )
-	{
-		dlclose ( glw_state.OpenGLLib );
-		glw_state.OpenGLLib = NULL;
-	}
-
-	glw_state.OpenGLLib = NULL;
-
 	QGL_SharedShutdown();
 }
 
@@ -80,28 +71,6 @@ void QGL_Shutdown( void )
 
 qboolean QGL_Init( const char *dllname )
 {
-	if ( ( glw_state.OpenGLLib = dlopen( dllname, RTLD_LAZY|RTLD_GLOBAL ) ) == 0 )
-	{
-		char	fn[1024];
-		// FILE *fp; // bk001204 - unused
-		extern uid_t saved_euid; // unix_main.c
-
-		// if we are not setuid, try current directory
-		if (getuid() == saved_euid) {
-			getcwd(fn, sizeof(fn));
-			QStr::Cat(fn, sizeof(fn), "/");
-			QStr::Cat(fn, sizeof(fn), dllname);
-
-			if ( ( glw_state.OpenGLLib = dlopen( fn, RTLD_LAZY ) ) == 0 ) {
-				ri.Printf(PRINT_ALL, "QGL_Init: Can't load %s from /etc/ld.so.conf or current dir: %s\n", dllname, dlerror());
-				return qfalse;
-			}
-		} else {
-			ri.Printf(PRINT_ALL, "QGL_Init: Can't load %s from /etc/ld.so.conf: %s\n", dllname, dlerror());
-			return qfalse;
-		}
-	}
-
 	QGL_SharedInit();
 
 	qglLockArraysEXT = 0;

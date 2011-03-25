@@ -59,8 +59,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../client/client.h"
 #include "linux_local.h" // bk001130
 
-#include "unix_glw.h"
-
 #include <GL/glx.h>
 
 #include <X11/keysym.h>
@@ -80,8 +78,6 @@ typedef enum
 
   RSERR_UNKNOWN
 } rserr_t;
-
-glwstate_t glw_state;
 
 static Display *dpy = NULL;
 static int scrnum;
@@ -1226,9 +1222,9 @@ static void GLW_InitExtensions( void )
   {
     if ( r_ext_multitexture->value )
     {
-      qglMultiTexCoord2fARB = ( PFNGLMULTITEXCOORD2FARBPROC ) dlsym( glw_state.OpenGLLib, "glMultiTexCoord2fARB" );
-      qglActiveTextureARB = ( PFNGLACTIVETEXTUREARBPROC ) dlsym( glw_state.OpenGLLib, "glActiveTextureARB" );
-      qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) dlsym( glw_state.OpenGLLib, "glClientActiveTextureARB" );
+      qglMultiTexCoord2fARB = (PFNGLMULTITEXCOORD2FARBPROC)glXGetProcAddress((const GLubyte*)"glMultiTexCoord2fARB");
+      qglActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)glXGetProcAddress((const GLubyte*)"glActiveTextureARB");
+      qglClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)glXGetProcAddress((const GLubyte*)"glClientActiveTextureARB");
 
       if ( qglActiveTextureARB )
       {
@@ -1260,8 +1256,8 @@ static void GLW_InitExtensions( void )
     if ( r_ext_compiled_vertex_array->value )
     {
       ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
-      qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) ) dlsym( glw_state.OpenGLLib, "glLockArraysEXT" );
-      qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) ) dlsym( glw_state.OpenGLLib, "glUnlockArraysEXT" );
+      qglLockArraysEXT = (void (APIENTRY*)(int, int))glXGetProcAddress((const GLubyte*)"glLockArraysEXT");
+      qglUnlockArraysEXT = (void (APIENTRY*)())glXGetProcAddress((const GLubyte*)"glUnlockArraysEXT");
       if (!qglLockArraysEXT || !qglUnlockArraysEXT)
       {
         ri.Error (ERR_FATAL, "bad getprocaddress");
