@@ -39,7 +39,7 @@ int ( WINAPI * qwglSwapIntervalEXT)( int interval );
 BOOL  ( WINAPI * qwglGetDeviceGammaRamp3DFX)( HDC, LPVOID );
 BOOL  ( WINAPI * qwglSetDeviceGammaRamp3DFX)( HDC, LPVOID );
 
-static FILE *log_fp;
+static fileHandle_t log_fp;
 
 //==========================================================================
 //
@@ -56,7 +56,7 @@ void QGL_Log(const char* Fmt, ...)
 	vsprintf(String, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
-	fprintf(log_fp, "%s", String);
+	FS_Printf(log_fp, "%s", String);
 }
 
 /*
@@ -72,7 +72,7 @@ void QGL_Shutdown( void )
 	// close the r_logFile
 	if (log_fp)
 	{
-		fclose(log_fp);
+		FS_FCloseFile(log_fp);
 		log_fp = 0;
 	}
 
@@ -92,38 +92,11 @@ void QGL_Shutdown( void )
 static qboolean GlideIsValid( void )
 {
 	HMODULE hGlide;
-//	int numBoards;
-//	void (__stdcall *grGet)(unsigned int, unsigned int, int*);
 
     if ( ( hGlide = LoadLibrary("Glide3X") ) != 0 ) 
 	{
 		// FIXME: 3Dfx needs to fix this shit
 		return qtrue;
-
-#if 0
-        grGet = (void *)GetProcAddress( hGlide, "_grGet@12");
-
-		if ( grGet )
-		{
-	        grGet( GR_NUM_BOARDS, sizeof(int), &numBoards);
-		}
-		else
-		{
-			// if we've reached this point, something is seriously wrong
-			ri.Printf( PRINT_WARNING, "WARNING: could not find grGet in GLIDE3X.DLL\n" );
-			numBoards = 0;
-		}
-
-		FreeLibrary( hGlide );
-		hGlide = NULL;
-
-		if ( numBoards > 0 )
-		{
-			return qtrue;
-		}
-
-		ri.Printf( PRINT_WARNING, "WARNING: invalid Glide installation!\n" );
-#endif
     }
 
 	return qfalse;
@@ -202,7 +175,8 @@ void QGL_EnableLogging( qboolean enable )
 	static qboolean isEnabled;
 
 	// return if we're already active
-	if ( isEnabled && enable ) {
+	if ( isEnabled && enable )
+	{
 		// decrement log counter and stop if it has reached 0
 		ri.Cvar_Set( "r_logFile", va("%d", r_logFile->integer - 1 ) );
 		if ( r_logFile->integer ) {
@@ -223,17 +197,13 @@ void QGL_EnableLogging( qboolean enable )
 		{
 			struct tm *newtime;
 			time_t aclock;
-			char buffer[1024];
-			QCvar	*basedir;
 
 			time( &aclock );
 			newtime = localtime( &aclock );
 
 			asctime( newtime );
 
-			basedir = ri.Cvar_Get( "fs_basepath", "", 0 );
-			QStr::Sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
-			log_fp = fopen(buffer, "wt");
+			log_fp = FS_FOpenFileWrite("gl.log");
 
 			QGL_Log("%s\n", asctime(newtime));
 		}
@@ -245,8 +215,8 @@ void QGL_EnableLogging( qboolean enable )
 		if (log_fp)
 		{
 			QGL_Log("*** CLOSING LOG ***\n" );
-			fclose(log_fp);
-			log_fp = NULL;
+			FS_FCloseFile(log_fp);
+			log_fp = 0;
 		}
 		QGL_SharedLogOff();
 	}
