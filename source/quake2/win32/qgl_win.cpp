@@ -50,14 +50,6 @@ void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 */
 void QGL_Shutdown( void )
 {
-	if ( glw_state.hinstOpenGL )
-	{
-		FreeLibrary( glw_state.hinstOpenGL );
-		glw_state.hinstOpenGL = NULL;
-	}
-
-	glw_state.hinstOpenGL = NULL;
-
 	QGL_SharedShutdown();
 
 	qwglSwapIntervalEXT	= NULL;
@@ -65,9 +57,6 @@ void QGL_Shutdown( void )
 	qwglGetDeviceGammaRampEXT = NULL;
 	qwglSetDeviceGammaRampEXT = NULL;
 }
-
-#	pragma warning (disable : 4113 4133 4047 )
-#	define GPA( a ) GetProcAddress( glw_state.hinstOpenGL, a )
 
 /*
 ** QGL_Init
@@ -81,27 +70,6 @@ void QGL_Shutdown( void )
 */
 qboolean QGL_Init( const char *dllname )
 {
-	// update 3Dfx gamma irrespective of underlying DLL
-	{
-		char envbuffer[1024];
-		float g;
-
-		g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
-		QStr::Sprintf( envbuffer, sizeof(envbuffer), "SSTV2_GAMMA=%f", g );
-		putenv( envbuffer );
-		QStr::Sprintf( envbuffer, sizeof(envbuffer), "SST_GAMMA=%f", g );
-		putenv( envbuffer );
-	}
-
-	if ( ( glw_state.hinstOpenGL = LoadLibrary( dllname ) ) == 0 )
-	{
-		char *buf = NULL;
-
-		FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR) &buf, 0, NULL);
-		ri.Con_Printf( PRINT_ALL, "%s\n", buf );
-		return false;
-	}
-
 	gl_config.allow_cds = true;
 
 	QGL_SharedInit();

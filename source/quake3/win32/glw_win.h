@@ -33,8 +33,6 @@ typedef struct
 	HDC     hDC;			// handle to device context
 	HGLRC   hGLRC;			// handle to GL rendering context
 
-	HINSTANCE hinstOpenGL;	// HINSTANCE for the OpenGL library
-
 	qboolean allowdisplaydepthchange;
 	qboolean pixelFormatSet;
 

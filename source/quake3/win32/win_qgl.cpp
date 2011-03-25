@@ -47,34 +47,8 @@ void QGL_Shutdown( void )
 {
 	ri.Printf( PRINT_ALL, "...shutting down QGL\n" );
 
-	if ( glw_state.hinstOpenGL )
-	{
-		ri.Printf( PRINT_ALL, "...unloading OpenGL DLL\n" );
-		FreeLibrary( glw_state.hinstOpenGL );
-	}
-
-	glw_state.hinstOpenGL = NULL;
-
 	QGL_SharedShutdown();
 }
-
-#define GR_NUM_BOARDS 0x0f
-
-static qboolean GlideIsValid( void )
-{
-	HMODULE hGlide;
-
-    if ( ( hGlide = LoadLibrary("Glide3X") ) != 0 ) 
-	{
-		// FIXME: 3Dfx needs to fix this shit
-		return qtrue;
-    }
-
-	return qfalse;
-} 
-
-#	pragma warning (disable : 4113 4133 4047 )
-#	define GPA( a ) GetProcAddress( glw_state.hinstOpenGL, a )
 
 /*
 ** QGL_Init
@@ -87,42 +61,7 @@ static qboolean GlideIsValid( void )
 */
 qboolean QGL_Init( const char *dllname )
 {
-	char systemDir[1024];
-	char libName[1024];
-
-	GetSystemDirectory( systemDir, sizeof( systemDir ) );
-
-	assert( glw_state.hinstOpenGL == 0 );
-
 	ri.Printf( PRINT_ALL, "...initializing QGL\n" );
-
-	// NOTE: this assumes that 'dllname' is lower case (and it should be)!
-	if ( strstr( dllname, _3DFX_DRIVER_NAME ) )
-	{
-		if ( !GlideIsValid() )
-		{
-			ri.Printf( PRINT_ALL, "...WARNING: missing Glide installation, assuming no 3Dfx available\n" );
-			return qfalse;
-		}
-	}
-
-	if ( dllname[0] != '!' )
-	{
-		QStr::Sprintf( libName, sizeof( libName ), "%s\\%s", systemDir, dllname );
-	}
-	else
-	{
-		QStr::NCpyZ( libName, dllname, sizeof( libName ) );
-	}
-
-	ri.Printf( PRINT_ALL, "...calling LoadLibrary( '%s.dll' ): ", libName );
-
-	if ( ( glw_state.hinstOpenGL = LoadLibrary( dllname ) ) == 0 )
-	{
-		ri.Printf( PRINT_ALL, "failed\n" );
-		return qfalse;
-	}
-	ri.Printf( PRINT_ALL, "succeeded\n" );
 
 	QGL_SharedInit();
 
