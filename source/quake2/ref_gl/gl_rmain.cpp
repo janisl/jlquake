@@ -1376,7 +1376,7 @@ void R_BeginFrame( float camera_separation )
 
 	if ( gl_log->modified )
 	{
-		GLimp_EnableLogging( gl_log->value );
+		QGL_EnableLogging( gl_log->value );
 		gl_log->modified = false;
 	}
 

@@ -24,6 +24,6 @@ void		GLimp_AppActivate( qboolean active )
 {
 }
 
-void		GLimp_EnableLogging( qboolean enable )
+void		QGL_EnableLogging( qboolean enable )
 {
 }

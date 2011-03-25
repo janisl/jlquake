@@ -55,7 +55,7 @@ qboolean QGL_Init( const char *dllname )
 	return true;
 }
 
-void GLimp_EnableLogging( qboolean enable )
+void QGL_EnableLogging( qboolean enable )
 {
 	if ( enable )
 	{
