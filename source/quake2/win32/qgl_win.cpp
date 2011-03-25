@@ -62,12 +62,6 @@ void QGL_Shutdown( void )
 
 	glw_state.hinstOpenGL = NULL;
 
-	if (log_fp )
-	{
-		FS_FCloseFile(log_fp);
-		log_fp = 0;
-	}
-
 	QGL_SharedShutdown();
 
 	qwglSwapIntervalEXT	= NULL;
@@ -130,21 +124,6 @@ void GLimp_EnableLogging( qboolean enable )
 {
 	if ( enable )
 	{
-		if (!log_fp)
-		{
-			struct tm *newtime;
-			time_t aclock;
-
-			time( &aclock );
-			newtime = localtime( &aclock );
-
-			asctime( newtime );
-
-			log_fp = FS_FOpenFileWrite("gl.log");
-
-			QGL_Log("%s\n", asctime(newtime));
-		}
-
 		QGL_SharedLogOn();
 	}
 	else

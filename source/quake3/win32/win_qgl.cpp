@@ -53,13 +53,6 @@ void QGL_Shutdown( void )
 {
 	ri.Printf( PRINT_ALL, "...shutting down QGL\n" );
 
-	// close the r_logFile
-	if (log_fp)
-	{
-		FS_FCloseFile(log_fp);
-		log_fp = 0;
-	}
-
 	if ( glw_state.hinstOpenGL )
 	{
 		ri.Printf( PRINT_ALL, "...unloading OpenGL DLL\n" );
@@ -177,31 +170,10 @@ void QGL_EnableLogging( qboolean enable )
 
 	if ( enable )
 	{
-		if (!log_fp)
-		{
-			struct tm *newtime;
-			time_t aclock;
-
-			time( &aclock );
-			newtime = localtime( &aclock );
-
-			asctime( newtime );
-
-			log_fp = FS_FOpenFileWrite("gl.log");
-
-			QGL_Log("%s\n", asctime(newtime));
-		}
-
 		QGL_SharedLogOn();
 	}
 	else
 	{
-		if (log_fp)
-		{
-			QGL_Log("*** CLOSING LOG ***\n" );
-			FS_FCloseFile(log_fp);
-			log_fp = 0;
-		}
 		QGL_SharedLogOff();
 	}
 }

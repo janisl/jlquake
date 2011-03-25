@@ -63,21 +63,6 @@ void GLimp_EnableLogging( qboolean enable )
 {
 	if ( enable )
 	{
-		if ( !log_fp )
-		{
-			struct tm *newtime;
-			time_t aclock;
-
-			time( &aclock );
-			newtime = localtime( &aclock );
-
-			asctime( newtime );
-
-			log_fp = FS_FOpenFileWrite("gl.log");
-
-			FS_Printf( log_fp, "%s\n", asctime( newtime ) );
-		}
-
 		QGL_SharedLogOn();
 	}
 	else
@@ -89,7 +74,7 @@ void GLimp_EnableLogging( qboolean enable )
 
 void GLimp_LogNewFrame( void )
 {
-	FS_Printf( log_fp, "*** R_BeginFrame ***\n");
+	QGL_Log("*** R_BeginFrame ***\n");
 }
 
 

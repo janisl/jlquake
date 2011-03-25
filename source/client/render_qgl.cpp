@@ -21,6 +21,7 @@
 
 #include "client.h"
 #include "render_local.h"
+#include <time.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -635,6 +636,13 @@ void QGL_SharedInit()
 
 void QGL_SharedShutdown()
 {
+	// close the r_logFile
+	if (log_fp)
+	{
+		FS_FCloseFile(log_fp);
+		log_fp = 0;
+	}
+
 #define GLF_0(r, n)				qgl##n = NULL;
 #define GLF_V0(n)				qgl##n = NULL;
 #define GLF_1(r, n, t1, p1)		qgl##n = NULL;
@@ -674,6 +682,21 @@ void QGL_SharedShutdown()
 
 void QGL_SharedLogOn()
 {
+	if (!log_fp)
+	{
+		struct tm *newtime;
+		time_t aclock;
+
+		time( &aclock );
+		newtime = localtime( &aclock );
+
+		asctime( newtime );
+
+		log_fp = FS_FOpenFileWrite("gl.log");
+
+		QGL_Log("%s\n", asctime(newtime));
+	}
+
 #define GLF_0(r, n)				qgl##n = log##n;
 #define GLF_V0(n)				qgl##n = log##n;
 #define GLF_1(r, n, t1, p1)		qgl##n = log##n;
@@ -713,6 +736,13 @@ void QGL_SharedLogOn()
 
 void QGL_SharedLogOff()
 {
+	if (log_fp)
+	{
+		QGL_Log("*** CLOSING LOG ***\n");
+		FS_FCloseFile(log_fp);
+		log_fp = 0;
+	}
+
 #define GLF_0(r, n)				qgl##n = gl##n;
 #define GLF_V0(n)				qgl##n = gl##n;
 #define GLF_1(r, n, t1, p1)		qgl##n = gl##n;

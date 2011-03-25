@@ -145,21 +145,6 @@ void QGL_EnableLogging( qboolean enable ) {
 
   // bk001205 - old code starts here
   if ( enable ) {
-    if (!log_fp)
-	{
-      struct tm *newtime;
-      time_t aclock;
-      
-      time( &aclock );
-      newtime = localtime( &aclock );
-      
-      asctime( newtime );
-      
-      log_fp = FS_FOpenFileWrite("gl.log");
-
-      QGL_Log("%s\n", asctime(newtime));
-    }
-
 		QGL_SharedLogOn();
 	}
 	else
@@ -168,11 +153,6 @@ void QGL_EnableLogging( qboolean enable ) {
 	}
 }
 
-
-void GLimp_LogNewFrame( void )
-{
-	QGL_Log("*** R_BeginFrame ***\n");
-}
 
 /*
 ** GLimp_LogComment
