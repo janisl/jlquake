@@ -43,6 +43,8 @@ void ( APIENTRY * qglColorTableEXT)( int, int, int, int, int, const void * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
+static fileHandle_t log_fp;
+
 //==========================================================================
 //
 //	QGL_Log
@@ -75,6 +77,12 @@ void QGL_Shutdown( void )
 	}
 
 	glw_state.hinstOpenGL = NULL;
+
+	if (log_fp )
+	{
+		FS_FCloseFile(log_fp);
+		log_fp = 0;
+	}
 
 	QGL_SharedShutdown();
 
@@ -138,7 +146,7 @@ void GLimp_EnableLogging( qboolean enable )
 {
 	if ( enable )
 	{
-		if ( !glw_state.log_fp )
+		if (!log_fp)
 		{
 			struct tm *newtime;
 			time_t aclock;
@@ -148,9 +156,9 @@ void GLimp_EnableLogging( qboolean enable )
 
 			asctime( newtime );
 
-			glw_state.log_fp = FS_FOpenFileWrite("gl.log");
+			log_fp = FS_FOpenFileWrite("gl.log");
 
-			FS_Printf( glw_state.log_fp, "%s\n", asctime( newtime ) );
+			QGL_Log("%s\n", asctime(newtime));
 		}
 
 		QGL_SharedLogOn();
@@ -164,7 +172,7 @@ void GLimp_EnableLogging( qboolean enable )
 
 void GLimp_LogNewFrame( void )
 {
-	FS_Printf( glw_state.log_fp, "*** R_BeginFrame ***\n" );
+	QGL_Log("*** R_BeginFrame ***\n");
 }
 
 #pragma warning (default : 4113 4133 4047 )

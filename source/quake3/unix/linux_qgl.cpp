@@ -49,6 +49,8 @@ void ( APIENTRY * qgl3DfxSetPaletteEXT)( GLuint * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
+static FILE *log_fp;
+
 //==========================================================================
 //
 //	QGL_Log
@@ -64,7 +66,7 @@ void QGL_Log(const char* Fmt, ...)
 	vsprintf(String, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
-	fprintf(glw_state.log_fp, "%s", String);
+	fprintf(log_fp, "%s", String);
 }
 
 /*
@@ -159,7 +161,8 @@ void QGL_EnableLogging( qboolean enable ) {
 
   // bk001205 - old code starts here
   if ( enable ) {
-    if ( !glw_state.log_fp ) {
+    if (!log_fp)
+	{
       struct tm *newtime;
       time_t aclock;
       char buffer[1024];
@@ -173,11 +176,11 @@ void QGL_EnableLogging( qboolean enable ) {
       basedir = ri.Cvar_Get( "fs_basepath", "", 0 ); // FIXME: userdir?
       assert(basedir);
       QStr::Sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
-      glw_state.log_fp = fopen( buffer, "wt" );
-      assert(glw_state.log_fp);
+      log_fp = fopen( buffer, "wt" );
+      assert(log_fp);
       ri.Printf(PRINT_ALL, "QGL_EnableLogging(%d): writing %s\n", r_logFile->integer, buffer );
 
-      fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );
+      QGL_Log("%s\n", asctime(newtime));
     }
 
 		QGL_SharedLogOn();
@@ -191,7 +194,16 @@ void QGL_EnableLogging( qboolean enable ) {
 
 void GLimp_LogNewFrame( void )
 {
-	fprintf( glw_state.log_fp, "*** R_BeginFrame ***\n" );
+	QGL_Log("*** R_BeginFrame ***\n");
 }
 
-
+/*
+** GLimp_LogComment
+*/
+void GLimp_LogComment( char *comment ) 
+{
+	if (log_fp)
+	{
+		QGL_Log("%s", comment);
+	}
+}

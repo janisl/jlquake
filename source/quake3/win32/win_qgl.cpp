@@ -39,6 +39,8 @@ int ( WINAPI * qwglSwapIntervalEXT)( int interval );
 BOOL  ( WINAPI * qwglGetDeviceGammaRamp3DFX)( HDC, LPVOID );
 BOOL  ( WINAPI * qwglSetDeviceGammaRamp3DFX)( HDC, LPVOID );
 
+static FILE *log_fp;
+
 //==========================================================================
 //
 //	QGL_Log
@@ -54,7 +56,7 @@ void QGL_Log(const char* Fmt, ...)
 	vsprintf(String, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
-	fprintf(glw_state.log_fp, "%s", String);
+	fprintf(log_fp, "%s", String);
 }
 
 /*
@@ -66,6 +68,13 @@ void QGL_Log(const char* Fmt, ...)
 void QGL_Shutdown( void )
 {
 	ri.Printf( PRINT_ALL, "...shutting down QGL\n" );
+
+	// close the r_logFile
+	if (log_fp)
+	{
+		fclose(log_fp);
+		log_fp = 0;
+	}
 
 	if ( glw_state.hinstOpenGL )
 	{
@@ -210,7 +219,7 @@ void QGL_EnableLogging( qboolean enable )
 
 	if ( enable )
 	{
-		if ( !glw_state.log_fp )
+		if (!log_fp)
 		{
 			struct tm *newtime;
 			time_t aclock;
@@ -224,25 +233,34 @@ void QGL_EnableLogging( qboolean enable )
 
 			basedir = ri.Cvar_Get( "fs_basepath", "", 0 );
 			QStr::Sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
-			glw_state.log_fp = fopen( buffer, "wt" );
+			log_fp = fopen(buffer, "wt");
 
-			fprintf( glw_state.log_fp, "%s\n", asctime( newtime ) );
+			QGL_Log("%s\n", asctime(newtime));
 		}
 
 		QGL_SharedLogOn();
 	}
 	else
 	{
-		if ( glw_state.log_fp )	{
-			fprintf( glw_state.log_fp, "*** CLOSING LOG ***\n" );
-			fclose( glw_state.log_fp );
-			glw_state.log_fp = NULL;
+		if (log_fp)
+		{
+			QGL_Log("*** CLOSING LOG ***\n" );
+			fclose(log_fp);
+			log_fp = NULL;
 		}
 		QGL_SharedLogOff();
 	}
 }
 
+/*
+** GLimp_LogComment
+*/
+void GLimp_LogComment( char *comment ) 
+{
+	if (log_fp)
+	{
+		QGL_Log("%s", comment );
+	}
+}
+
 #pragma warning (default : 4113 4133 4047 )
-
-
-

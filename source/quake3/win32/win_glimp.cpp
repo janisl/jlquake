@@ -1473,13 +1473,6 @@ void GLimp_Shutdown( void )
 		glw_state.pixelFormatSet = qfalse;
 	}
 
-	// close the r_logFile
-	if ( glw_state.log_fp )
-	{
-		fclose( glw_state.log_fp );
-		glw_state.log_fp = 0;
-	}
-
 	// reset display settings
 	if ( glw_state.cdsFullscreen )
 	{
@@ -1493,16 +1486,6 @@ void GLimp_Shutdown( void )
 
 	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
 	Com_Memset( &glState, 0, sizeof( glState ) );
-}
-
-/*
-** GLimp_LogComment
-*/
-void GLimp_LogComment( char *comment ) 
-{
-	if ( glw_state.log_fp ) {
-		fprintf( glw_state.log_fp, "%s", comment );
-	}
 }
 
 

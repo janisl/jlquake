@@ -321,12 +321,6 @@ void GLimp_Shutdown( void )
 		glw_state.hWnd = NULL;
 	}
 
-	if ( glw_state.log_fp )
-	{
-		FS_FCloseFile( glw_state.log_fp );
-		glw_state.log_fp = 0;
-	}
-
 	UnregisterClass (WINDOW_CLASS_NAME, glw_state.hInstance);
 
 	if ( gl_state.fullscreen )

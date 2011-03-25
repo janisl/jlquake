@@ -42,8 +42,6 @@ typedef struct
 	int		 desktopWidth, desktopHeight;
 
 	qboolean	cdsFullscreen;
-
-	FILE *log_fp;
 } glwstate_t;
 
 extern glwstate_t glw_state;
