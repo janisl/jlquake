@@ -49,7 +49,7 @@ void ( APIENTRY * qgl3DfxSetPaletteEXT)( GLuint * );
 void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
 void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 
-static FILE *log_fp;
+static fileHandle_t log_fp;
 
 //==========================================================================
 //
@@ -66,7 +66,7 @@ void QGL_Log(const char* Fmt, ...)
 	vsprintf(String, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
-	fprintf(log_fp, "%s", String);
+	FS_Printf(log_fp, "%s", String);
 }
 
 /*
@@ -165,20 +165,13 @@ void QGL_EnableLogging( qboolean enable ) {
 	{
       struct tm *newtime;
       time_t aclock;
-      char buffer[1024];
-      QCvar	*basedir;
       
       time( &aclock );
       newtime = localtime( &aclock );
       
       asctime( newtime );
       
-      basedir = ri.Cvar_Get( "fs_basepath", "", 0 ); // FIXME: userdir?
-      assert(basedir);
-      QStr::Sprintf( buffer, sizeof(buffer), "%s/gl.log", basedir->string ); 
-      log_fp = fopen( buffer, "wt" );
-      assert(log_fp);
-      ri.Printf(PRINT_ALL, "QGL_EnableLogging(%d): writing %s\n", r_logFile->integer, buffer );
+      log_fp = FS_FOpenFileWrite("gl.log");
 
       QGL_Log("%s\n", asctime(newtime));
     }
