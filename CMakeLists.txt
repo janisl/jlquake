@@ -24,6 +24,13 @@ if(INTTYPES_INCLUDE_DIR)
 	add_definitions(-DHAVE_INTTYPES_H=1)
 endif(INTTYPES_INCLUDE_DIR)
 
+#
+#  **** Check for size of void* (to detect 64 bit systems) ****
+#
+
+include(CheckTypeSize)
+check_type_size(void*  SIZEOF_VOID_PTR)
+
 add_subdirectory(libs)
 add_subdirectory(source)
 add_subdirectory(q2game)

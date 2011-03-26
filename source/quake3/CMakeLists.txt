@@ -41,7 +41,6 @@ set(QUAKE3_FILES
 	qcommon/net_chan.cpp
 	qcommon/vm.cpp
 	qcommon/vm_interpreted.cpp
-	qcommon/vm_x86.cpp
 	game/q_shared.cpp
 	game/q_math.cpp
 	renderer/tr_animation.cpp
@@ -76,20 +75,30 @@ set(QUAKE3_FILES
 	unix/linux_signals.cpp
 )
 
-set(QUAKE3_NASM_FILES
-	unix/ftol.nasm
-	unix/snapvector.nasm
-)
-
-foreach(SRC ${QUAKE3_NASM_FILES})
-	get_filename_component(FILE_BASE ${SRC} NAME_WE)
-	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-	add_custom_command(OUTPUT ${OBJ}
-		DEPENDS ${SRC}
-		COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
+if(${SIZEOF_VOID_PTR} MATCHES "^4$")
+	set(QUAKE3_FILES ${QUAKE3_FILES}
+		qcommon/vm_x86.cpp
 	)
-	set(QUAKE3_FILES ${QUAKE3_FILES} ${OBJ})
-endforeach(SRC)
+
+	set(QUAKE3_NASM_FILES
+		unix/ftol.nasm
+		unix/snapvector.nasm
+	)
+
+	foreach(SRC ${QUAKE3_NASM_FILES})
+		get_filename_component(FILE_BASE ${SRC} NAME_WE)
+		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
+		add_custom_command(OUTPUT ${OBJ}
+			DEPENDS ${SRC}
+			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
+		)
+		set(QUAKE3_FILES ${QUAKE3_FILES} ${OBJ})
+	endforeach(SRC)
+else(${SIZEOF_VOID_PTR} MATCHES "^4$")
+	set(QUAKE3_FILES ${QUAKE3_FILES}
+		unix/vm_x86.cpp
+	)
+endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(vquake3 ${QUAKE3_FILES})
 set_target_properties(vquake3 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
@@ -132,23 +141,32 @@ set(QUAKE3_DEDICATED_FILES
 	null/null_client.cpp
 	null/null_input.cpp
 	null/null_snddma.cpp
-	qcommon/vm_x86.cpp
 )
 
-set(QUAKE3_DED_NASM_FILES
-	unix/ftol.nasm
-	unix/snapvector.nasm
-)
-
-foreach(SRC ${QUAKE3_DED_NASM_FILES})
-	get_filename_component(FILE_BASE ${SRC} NAME_WE)
-	set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
-	add_custom_command(OUTPUT ${OBJ}
-		DEPENDS ${SRC}
-		COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
+if(${SIZEOF_VOID_PTR} MATCHES "^4$")
+	set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES}
+		qcommon/vm_x86.cpp
 	)
-	set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES} ${OBJ})
-endforeach(SRC)
+
+	set(QUAKE3_DED_NASM_FILES
+		unix/ftol.nasm
+		unix/snapvector.nasm
+	)
+
+	foreach(SRC ${QUAKE3_DED_NASM_FILES})
+		get_filename_component(FILE_BASE ${SRC} NAME_WE)
+		set(OBJ ${CMAKE_CURRENT_BINARY_DIR}/${FILE_BASE}.o)
+		add_custom_command(OUTPUT ${OBJ}
+			DEPENDS ${SRC}
+			COMMAND nasm -f elf -o ${OBJ} ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}
+		)
+		set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES} ${OBJ})
+	endforeach(SRC)
+else(${SIZEOF_VOID_PTR} MATCHES "^4$")
+	set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES}
+		unix/vm_x86.cpp
+	)
+endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(vquake3ded ${QUAKE3_DEDICATED_FILES})
 set_target_properties(vquake3ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED -DC_ONLY")

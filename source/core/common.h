@@ -84,6 +84,7 @@ typedef int16_t				qint16;
 typedef uint16_t			quint16;
 typedef int32_t				qint32;
 typedef uint32_t			quint32;
+typedef intptr_t			qintptr;
 #else
 typedef char				qint8;
 typedef unsigned char		quint8;
@@ -91,6 +92,11 @@ typedef short				qint16;
 typedef unsigned short		quint16;
 typedef int					qint32;
 typedef unsigned int		quint32;
+#ifdef _WIN64
+typedef long long			qintptr;
+#else
+typedef int					qintptr;
+#endif
 #endif
 
 typedef int					qboolean;

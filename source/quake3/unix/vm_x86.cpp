@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/vm_local.h"
 
 void VM_Compile( vm_t *vm, vmHeader_t *header ) {}
-int	VM_CallCompiled( vm_t *vm, int *args ) {}
+int	VM_CallCompiled( vm_t *vm, int *args ) { return 0; }
 
 
 

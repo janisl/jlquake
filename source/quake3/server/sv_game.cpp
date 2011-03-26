@@ -828,7 +828,7 @@ int SV_GameSystemCalls( int *args ) {
 		return 0;
 
 	case TRAP_STRNCPY:
-		return (int)strncpy( (char*)VMA(1), (char*)VMA(2), args[3] );
+		return (qintptr)strncpy( (char*)VMA(1), (char*)VMA(2), args[3] );
 
 	case TRAP_SIN:
 		return FloatAsInt( sin( VMF(1) ) );

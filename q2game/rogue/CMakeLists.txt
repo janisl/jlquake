@@ -1,4 +1,8 @@
-set(ARCH i386)
+if(${SIZEOF_VOID_PTR} MATCHES "^4$")
+	set(ARCH i386)
+else(${SIZEOF_VOID_PTR} MATCHES "^4$")
+	set(ARCH amd64)
+endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 set(BASE_CFLAGS "")
 

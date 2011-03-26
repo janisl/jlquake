@@ -722,6 +722,8 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
   snprintf (fname, sizeof(fname), "%saxp.so", name);
 #elif defined __mips__
   snprintf (fname, sizeof(fname), "%smips.so", name);
+#elif defined __amd64__
+  snprintf (fname, sizeof(fname), "%samd64.so", name);
 #else
 #error Unknown arch
 #endif

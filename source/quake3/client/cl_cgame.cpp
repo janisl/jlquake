@@ -624,7 +624,7 @@ int CL_CgameSystemCalls( int *args ) {
 		return 0;
 	case CG_STRNCPY:
 		QStr::NCpy( (char*)VMA(1), (char*)VMA(2), args[3] );
-		return (int)(char*)VMA(1);
+		return (qintptr)(char*)VMA(1);
 	case CG_SIN:
 		return FloatAsInt( sin( VMF(1) ) );
 	case CG_COS:

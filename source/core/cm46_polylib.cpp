@@ -82,7 +82,7 @@ void CM46_FreeWinding(winding_t* w)
 winding_t* CM46_CopyWinding(winding_t* w)
 {
 	winding_t* c = AllocWinding(w->numpoints);
-	int size = (int)((winding_t*)0)->p[w->numpoints];
+	int size = (int)(qintptr)((winding_t*)0)->p[w->numpoints];
 	Com_Memcpy(c, w, size);
 	return c;
 }

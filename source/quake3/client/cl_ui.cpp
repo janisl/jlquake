@@ -1044,7 +1044,7 @@ int CL_UISystemCalls( int *args ) {
 
 	case UI_STRNCPY:
 		QStr::NCpy( (char*)VMA(1), (char*)VMA(2), args[3] );
-		return (int)(char*)VMA(1);
+		return (qintptr)(char*)VMA(1);
 
 	case UI_SIN:
 		return FloatAsInt( sin( VMF(1) ) );
