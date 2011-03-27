@@ -813,16 +813,6 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 {
   rserr_t err;
 
-  // don't ever bother going into fullscreen with a voodoo card
-#if 1	// JDC: I reenabled this
-  if ( Q_stristr( drivername, "Voodoo" ) )
-  {
-    ri.Cvar_Set( "r_fullscreen", "0" );
-    r_fullscreen->modified = qfalse;
-    fullscreen = qfalse;
-  }
-#endif
-	
 	if (fullscreen && in_nograb->value)
 	{
 		ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n");
@@ -980,7 +970,7 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
       }
     } else
     {
-      ri.Printf(PRINT_ALL, "XFree86-VidModeExtension:  Ignored on non-fullscreen/Voodoo\n");
+      ri.Printf(PRINT_ALL, "XFree86-VidModeExtension:  Ignored on non-fullscreen\n");
     }
   }
 
@@ -989,9 +979,6 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
     colorbits = 24;
   else
     colorbits = r_colorbits->value;
-
-  if ( !QStr::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
-    colorbits = 16;
 
   if (!r_depthbits->value)
     depthbits = 24;
@@ -1410,26 +1397,7 @@ void GLimp_Init( void )
     if ( !QStr::ICmp( r_glDriver->string, OPENGL_DRIVER_NAME ) )
     {
       attemptedlibGL = qtrue;
-    } else if ( !QStr::ICmp( r_glDriver->string, _3DFX_DRIVER_NAME ) )
-    {
-      attempted3Dfx = qtrue;
     }
-
-    #if 0
-    // TTimo
-    // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=455
-    // old legacy load code, was confusing people who had a bad OpenGL setup
-    if ( !attempted3Dfx && !success )
-    {
-      attempted3Dfx = qtrue;
-      if ( GLW_LoadOpenGL( _3DFX_DRIVER_NAME ) )
-      {
-        ri.Cvar_Set( "r_glDriver", _3DFX_DRIVER_NAME );
-        r_glDriver->modified = qfalse;
-        success = qtrue;
-      }
-    }
-    #endif
 
     // try ICD before trying 3Dfx standalone driver
     if ( !attemptedlibGL && !success )
@@ -1476,49 +1444,9 @@ void GLimp_Init( void )
   //
   if ( QStr::ICmp( lastValidRenderer->string, glConfig.renderer_string ) )
   {
-    glConfig.hardwareType = GLHW_GENERIC;
-
     ri.Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
 
-    // VOODOO GRAPHICS w/ 2MB
-    if ( Q_stristr( buf, "voodoo graphics/1 tmu/2 mb" ) )
-    {
-      ri.Cvar_Set( "r_picmip", "2" );
-      ri.Cvar_Get( "r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH );
-    } else
-    {
       ri.Cvar_Set( "r_picmip", "1" );
-
-      if ( Q_stristr( buf, "rage 128" ) || Q_stristr( buf, "rage128" ) )
-      {
-        ri.Cvar_Set( "r_finish", "0" );
-      }
-      // Savage3D and Savage4 should always have trilinear enabled
-      else if ( Q_stristr( buf, "savage3d" ) || Q_stristr( buf, "s3 savage4" ) )
-      {
-        ri.Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
-      }
-    }
-  }
-
-  //
-  // this is where hardware specific workarounds that should be
-  // detected/initialized every startup should go.
-  //
-  if ( Q_stristr( buf, "banshee" ) || Q_stristr( buf, "Voodoo_Graphics" ) )
-  {
-    glConfig.hardwareType = GLHW_3DFX_2D3D;
-  } else if ( Q_stristr( buf, "rage pro" ) || Q_stristr( buf, "RagePro" ) )
-  {
-    glConfig.hardwareType = GLHW_RAGEPRO;
-  } else if ( Q_stristr( buf, "permedia2" ) )
-  {
-    glConfig.hardwareType = GLHW_PERMEDIA2;
-  } else if ( Q_stristr( buf, "riva 128" ) )
-  {
-    glConfig.hardwareType = GLHW_RIVA128;
-  } else if ( Q_stristr( buf, "riva tnt " ) )
-  {
   }
 
   ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
@@ -1729,9 +1657,7 @@ void IN_Frame (void) {
   {
     // temporarily deactivate if not in the game and
     // running on the desktop
-    // voodoo always counts as full screen
-    if (Cvar_VariableValue ("r_fullscreen") == 0
-        && QStr::Cmp( Cvar_VariableString("r_glDriver"), _3DFX_DRIVER_NAME ) )
+    if (Cvar_VariableValue ("r_fullscreen") == 0)
     {
       IN_DeactivateMouse ();
       return;
