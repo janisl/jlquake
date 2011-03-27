@@ -99,7 +99,7 @@ int Sys_XTimeToSysTime (unsigned long xtime)
 #endif
 
 //#if 0 // bk001215 - see snapvector.nasm for replacement
-#if !id386 // rcg010206 - using this for PPC builds...
+#ifndef __i386__ // rcg010206 - using this for PPC builds...
 long fastftol( float f ) { // bk001213 - from win32/win_shared.c
   //static int tmp;
   //	__asm fld f
