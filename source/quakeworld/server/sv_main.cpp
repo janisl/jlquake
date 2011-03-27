@@ -149,7 +149,7 @@ void SV_Error (char *error, ...)
 	inerror = true;
 
 	va_start (argptr,error);
-	vsprintf (string,error,argptr);
+	Q_vsnprintf(string, 1024, error, argptr);
 	va_end (argptr);
 
 	Con_Printf ("SV_Error: %s\n",string);

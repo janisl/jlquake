@@ -46,7 +46,7 @@ void Sys_Printf (char *fmt, ...)
 	unsigned char		*p;
 
 	va_start (argptr,fmt);
-	vsprintf (text,fmt,argptr);
+	Q_vsnprintf(text, 1024, fmt, argptr);
 	va_end (argptr);
 
 	if (QStr::Length(text) > sizeof(text))
@@ -88,7 +88,7 @@ void Sys_Error (char *error, ...)
     fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
     
     va_start (argptr,error);
-    vsprintf (string,error,argptr);
+    Q_vsnprintf(string, 1024, error, argptr);
     va_end (argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
@@ -104,7 +104,7 @@ void Sys_Warn (char *warning, ...)
     char        string[1024];
     
     va_start (argptr,warning);
-    vsprintf (string,warning,argptr);
+    Q_vsnprintf(string, 1024, warning, argptr);
     va_end (argptr);
 	fprintf(stderr, "Warning: %s", string);
 } 

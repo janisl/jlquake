@@ -118,7 +118,7 @@ void VID_Printf (int print_level, char *fmt, ...)
 	static qboolean	inupdate;
 	
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end (argptr);
 
 	if (print_level == PRINT_ALL)
@@ -143,7 +143,7 @@ void VID_Error (int err_level, char *fmt, ...)
 	static qboolean	inupdate;
 	
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end (argptr);
 
 	Com_Error (err_level,"%s", msg);

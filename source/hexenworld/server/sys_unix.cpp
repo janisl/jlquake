@@ -79,7 +79,7 @@ void Sys_Error (char *error, ...)
 	char		string[1024];
 	
 	va_start (argptr,error);
-	vsprintf (string,error,argptr);
+	Q_vsnprintf(string, 1024, error, argptr);
 	va_end (argptr);
 	printf ("Fatal error: %s\n",string);
 	
@@ -98,7 +98,7 @@ void Sys_Printf (char *fmt, ...)
 	unsigned char		*p;
 
 	va_start (argptr,fmt);
-	vsprintf (text,fmt,argptr);
+	Q_vsnprintf(text, 2048, fmt, argptr);
 	va_end (argptr);
 
 	if (QStr::Length(text) > sizeof(text))

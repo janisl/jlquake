@@ -845,7 +845,7 @@ void PR_RunError(char *error, ...)
 	char string[1024];
 
 	va_start(argptr,error);
-	vsprintf(string,error,argptr);
+	Q_vsnprintf(string, 1024, error, argptr);
 	va_end(argptr);
 
 	PrintStatement(pr_statements + pr_xstatement);

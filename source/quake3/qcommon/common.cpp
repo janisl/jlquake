@@ -279,7 +279,7 @@ void QDECL Com_Error( int code, const char *fmt, ... ) {
 	com_errorEntered = qtrue;
 
 	va_start (argptr,fmt);
-	vsprintf (com_errorMessage,fmt,argptr);
+	Q_vsnprintf(com_errorMessage, MAXPRINTMSG, fmt,argptr);
 	va_end (argptr);
 
 	if ( code != ERR_DISCONNECT && code != ERR_NEED_CD ) {

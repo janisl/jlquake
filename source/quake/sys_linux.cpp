@@ -35,11 +35,8 @@ void Sys_Printf (char *fmt, ...)
 	unsigned char		*p;
 
 	va_start (argptr,fmt);
-	vsprintf (text,fmt,argptr);
+	Q_vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end (argptr);
-
-	if (QStr::Length(text) > sizeof(text))
-		Sys_Error("memory overwrite in Sys_Printf");
 
     if (nostdout)
         return;
@@ -70,7 +67,7 @@ void Sys_Error (char *error, ...)
     fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
     
     va_start (argptr,error);
-    vsprintf (string,error,argptr);
+    Q_vsnprintf(string, 1024, error, argptr);
     va_end (argptr);
 	fprintf(stderr, "Error: %s\n", string);
 

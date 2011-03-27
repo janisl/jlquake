@@ -203,13 +203,13 @@ void Sys_Error (char *error, ...)
 	VID_ForceUnlockedAndReturnState ();
 
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	Q_vsnprintf(text, 1024, error, argptr);
 	va_end (argptr);
 
 	if (isDedicated)
 	{
 		va_start (argptr, error);
-		vsprintf (text, error, argptr);
+		Q_vsnprintf(text, 1024, error, argptr);
 		va_end (argptr);
 
 		sprintf (text2, "ERROR: %s\n", text);
@@ -252,7 +252,7 @@ void Sys_Printf (char *fmt, ...)
 	if (isDedicated)
 	{
 		va_start (argptr,fmt);
-		vsprintf (text, fmt, argptr);
+		Q_vsnprintf(text, 1024, fmt, argptr);
 		va_end (argptr);
 
 		WriteFile(houtput, text, QStr::Length(text), &dummy, NULL);	

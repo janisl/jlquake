@@ -1264,7 +1264,7 @@ void QStr::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	char		BigBuffer[32000];	// big, but small enough to fit in PPC stack
 
 	va_start(ArgPtr, Fmt);
-	int Len = vsprintf(BigBuffer, Fmt, ArgPtr);
+	int Len = Q_vsnprintf(BigBuffer, 32000, Fmt, ArgPtr);
 	va_end(ArgPtr);
 	if (Len >= sizeof(BigBuffer))
 	{
@@ -2225,7 +2225,7 @@ char* va(const char* Format, ...)
 	Index++;
 
 	va_start(ArgPtr, Format);
-	vsprintf(Buf, Format, ArgPtr);
+	Q_vsnprintf(Buf, 32000, Format, ArgPtr);
 	va_end(ArgPtr);
 
 	return Buf;  

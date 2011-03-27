@@ -32,7 +32,7 @@ void Sys_Error (char *error, ...)
 	char		text[1024];
 
 	va_start (argptr,error);
-	vsprintf (text, error,argptr);
+	Q_vsnprintf(text, 1024, error, argptr);
 	va_end (argptr);
 
 //    MessageBox(NULL, text, "Error", 0 /* MB_OK */ );

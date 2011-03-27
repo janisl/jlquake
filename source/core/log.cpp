@@ -96,10 +96,10 @@ void QLog::RemoveListener(QLogListener* Listener)
 void QLog::Write(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[1024];
+	char		String[MAXPRINTMSG];
 	
 	va_start(ArgPtr, Fmt);
-	vsprintf(String, Fmt, ArgPtr);
+	Q_vsnprintf(String, MAXPRINTMSG, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
@@ -126,10 +126,10 @@ void QLog::Write(const char* Fmt, ...)
 void QLog::WriteLine(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[1024];
+	char		String[MAXPRINTMSG];
 	
 	va_start(ArgPtr, Fmt);
-	vsprintf(String, Fmt, ArgPtr);
+	Q_vsnprintf(String, MAXPRINTMSG, Fmt, ArgPtr);
 	va_end(ArgPtr);
 	strcat(String, "\n");
 
@@ -157,10 +157,10 @@ void QLog::WriteLine(const char* Fmt, ...)
 void QLog::DWrite(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[1024];
+	char		String[MAXPRINTMSG];
 	
 	va_start(ArgPtr, Fmt);
-	vsprintf(String, Fmt, ArgPtr);
+	Q_vsnprintf(String, MAXPRINTMSG, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
@@ -187,10 +187,10 @@ void QLog::DWrite(const char* Fmt, ...)
 void QLog::DWriteLine(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[1024];
+	char		String[MAXPRINTMSG];
 	
 	va_start(ArgPtr, Fmt);
-	vsprintf(String, Fmt, ArgPtr);
+	Q_vsnprintf(String, MAXPRINTMSG, Fmt, ArgPtr);
 	va_end(ArgPtr);
 	strcat(String, "\n");
 

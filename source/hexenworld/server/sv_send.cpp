@@ -86,14 +86,13 @@ Con_Printf
 Handles cursor positioning, line wrapping, etc
 ================
 */
-// FIXME: make a buffer size safe vsprintf?
 void Con_Printf (char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
 	
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end (argptr);
 
 	// add to redirected message
@@ -126,7 +125,7 @@ void Con_DPrintf (char *fmt, ...)
 		return;
 
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end (argptr);
 	
 	Con_Printf ("%s", msg);
@@ -157,7 +156,7 @@ void SV_ClientPrintf (client_t *cl, int level, char *fmt, ...)
 		return;
 	
 	va_start (argptr,fmt);
-	vsprintf (string, fmt,argptr);
+	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
 	cl->netchan.message.WriteByte(svc_print);
@@ -181,7 +180,7 @@ void SV_BroadcastPrintf (int level, char *fmt, ...)
 	int			i;
 
 	va_start (argptr,fmt);
-	vsprintf (string, fmt,argptr);
+	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
 	Sys_Printf ("%s", string);	// print to the console
@@ -213,7 +212,7 @@ void SV_BroadcastCommand (char *fmt, ...)
 	if (!sv.state)
 		return;
 	va_start (argptr,fmt);
-	vsprintf (string, fmt,argptr);
+	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 
 	sv.reliable_datagram.WriteByte(svc_stufftext);

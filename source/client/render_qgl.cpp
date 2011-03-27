@@ -85,7 +85,7 @@ static void QGL_Log(const char* Fmt, ...)
 	char		String[1024];
 	
 	va_start(ArgPtr, Fmt);
-	vsprintf(String, Fmt, ArgPtr);
+	Q_vsnprintf(String, 1024, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
 	FS_Printf(log_fp, "%s", String);

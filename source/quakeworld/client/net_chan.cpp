@@ -144,7 +144,7 @@ void Netchan_OutOfBandPrint (netadr_t adr, char *format, ...)
 	static char		string[8192];		// ??? why static?
 	
 	va_start (argptr, format);
-	vsprintf (string, format,argptr);
+	Q_vsnprintf(string, 8192, format, argptr);
 	va_end (argptr);
 
 

@@ -563,7 +563,7 @@ void OutofBandPrintf(netadr_t where, char *fmt, ...)
 	send[3] = 0xff;
 	send[4] = A2C_PRINT;
 	va_start (argptr, fmt);
-	vsprintf (send+5, fmt, argptr);
+	Q_vsnprintf(send + 5, 1024 - 5, fmt, argptr);
 	va_end (argptr);
 
 	NET_SendPacket (QStr::Length(send)+1, send, where);

@@ -351,7 +351,6 @@ Con_Printf
 Handles cursor positioning, line wrapping, etc
 ================
 */
-// FIXME: make a buffer size safe vsprintf?
 void Con_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
@@ -359,7 +358,7 @@ void Con_Printf (const char *fmt, ...)
 	static qboolean	inupdate;
 	
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end (argptr);
 	
 // also echo to debugging console
@@ -408,7 +407,7 @@ void Con_DPrintf (const char *fmt, ...)
 		return;			// don't confuse non-developers with techie stuff...
 
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end (argptr);
 	
 	Con_Printf ("%s", msg);
@@ -425,11 +424,11 @@ Okay to call even when the screen can't be updated
 void Con_SafePrintf (const char *fmt, ...)
 {
 	va_list		argptr;
-	char		msg[1024];
+	char		msg[MAXPRINTMSG];
 	int			temp;
 		
 	va_start (argptr,fmt);
-	vsprintf (msg,fmt,argptr);
+	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
 	va_end (argptr);
 
 	temp = scr_disabled_for_loading;

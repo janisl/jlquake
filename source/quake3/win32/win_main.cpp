@@ -74,7 +74,7 @@ void Spk_Printf (const char *text, ...)
     return;
 
   va_start (argptr,text);
-  vsprintf (buf, text, argptr);
+  Q_vsnprintf(buf, 32768, text, argptr);
   write(fh, buf, QStr::Length(buf));
   _commit(fh);
   va_end (argptr);
@@ -116,7 +116,7 @@ void QDECL Sys_Error( const char *error, ... ) {
     MSG        msg;
 
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	Q_vsnprintf(text, 4096, error, argptr);
 	va_end (argptr);
 
 	Conbuf_AppendText( text );

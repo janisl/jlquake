@@ -95,7 +95,7 @@ void Host_EndGame (char *message, ...)
 	char		string[1024];
 	
 	va_start (argptr,message);
-	vsprintf (string,message,argptr);
+	Q_vsnprintf(string, 1024, message, argptr);
 	va_end (argptr);
 	Con_DPrintf ("Host_EndGame: %s\n",string);
 	
@@ -133,7 +133,7 @@ void Host_Error (char *error, ...)
 	SCR_EndLoadingPlaque ();		// reenable screen updates
 
 	va_start (argptr,error);
-	vsprintf (string,error,argptr);
+	Q_vsnprintf(string, 1024, error, argptr);
 	va_end (argptr);
 	Con_Printf ("Host_Error: %s\n",string);
 	
@@ -329,7 +329,7 @@ void SV_ClientPrintf (const char *fmt, ...)
 	char		string[1024];
 	
 	va_start (argptr,fmt);
-	vsprintf (string, fmt,argptr);
+	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
 	host_client->message.WriteByte(svc_print);
@@ -350,7 +350,7 @@ void SV_BroadcastPrintf (char *fmt, ...)
 	int			i;
 	
 	va_start (argptr,fmt);
-	vsprintf (string, fmt,argptr);
+	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
 	for (i=0 ; i<svs.maxclients ; i++)
@@ -374,7 +374,7 @@ void Host_ClientCommands (char *fmt, ...)
 	char		string[1024];
 	
 	va_start (argptr,fmt);
-	vsprintf (string, fmt,argptr);
+	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
 	host_client->message.WriteByte(svc_stufftext);

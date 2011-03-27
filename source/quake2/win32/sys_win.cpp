@@ -73,7 +73,7 @@ void Sys_Error (char *error, ...)
 	Qcommon_Shutdown ();
 
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	Q_vsnprintf(text, 1024, error, argptr);
 	va_end (argptr);
 
 	MessageBox(NULL, text, "Error", 0 /* MB_OK */ );
