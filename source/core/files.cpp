@@ -891,7 +891,7 @@ void FS_AddGameDirectory(const char* path, const char* dir, int AddPacks)
 		sorted[i] = pakfiles[i];
 	}
 
-	qsort(sorted, numfiles, 4, paksort);
+	qsort(sorted, numfiles, sizeof(char*), paksort);
 
 	for (int i = 0; i < numfiles ; i++)
 	{
