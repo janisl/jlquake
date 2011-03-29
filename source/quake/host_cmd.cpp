@@ -573,6 +573,7 @@ void Host_Loadgame_f (void)
 		Con_Printf("ERROR: couldn't open.\n");
 		return;
 	}
+	Buffer.Append(0);
 
 	char* ReadPos = (char*)Buffer.Ptr();
 	version = QStr::Atoi(GetLine(ReadPos));

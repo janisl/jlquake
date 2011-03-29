@@ -1147,6 +1147,7 @@ static void GetProgsName(char* finalprogname)
 	QStr::Cpy(finalprogname, "progs.dat");
 	QArray<byte> MapList;
 	FS_ReadFile("maplist.txt", MapList);
+	MapList.Append(0);
 	const char* p = (char*)MapList.Ptr();
 	const char* token = QStr::Parse2(&p);
 	int NumMaps = QStr::Atoi(token);

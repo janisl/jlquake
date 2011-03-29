@@ -609,6 +609,7 @@ void Host_Loadgame_f (void)
 		Con_Printf("ERROR: couldn't open.\n");
 		return;
 	}
+	Buffer.Append(0);
 
 	char* ReadPos = (char*)Buffer.Ptr();
 	version = QStr::Atoi(GetLine(ReadPos));
@@ -848,6 +849,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 
 		return -1;
 	}
+	Buffer.Append(0);
 
 	char* ReadPos = (char*)Buffer.Ptr();
 	version = QStr::Atoi(GetLine(ReadPos));
@@ -891,10 +893,12 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 	while (start)
 	{
 		char* token = QStr::Parse1(&start);
+GLog.WriteLine("Token %s", token);
 		if (!start)
 			break;		// end of file
 		entnum = QStr::Atoi(token);
 		token = QStr::Parse1(&start);
+GLog.WriteLine("Token %s", token);
 		if (QStr::Cmp(token, "{"))
 			Sys_Error("First token isn't a brace");
 			
