@@ -323,12 +323,16 @@ void Sys_Init(void)
   Cvar_Set( "arch", "linux alpha" );
 #elif defined __sparc__
   Cvar_Set( "arch", "linux sparc" );
+#elif defined __x86_64__
+  Cvar_Set( "arch", "linux x86_86" );
 #elif defined __FreeBSD__
 
 #if defined __i386__ // FreeBSD
   Cvar_Set( "arch", "freebsd i386" );
 #elif defined __alpha__
   Cvar_Set( "arch", "freebsd alpha" );
+#elif defined __x86_64__
+  Cvar_Set( "arch", "freebsd x86_86" );
 #else
   Cvar_Set( "arch", "freebsd unknown" );
 #endif // FreeBSD
@@ -341,6 +345,8 @@ void Sys_Init(void)
   Cvar_Set( "arch", "solaris x86" );
 #elif defined __sparc__
   Cvar_Set( "arch", "solaris sparc" );
+#elif defined __x86_64__
+  Cvar_Set( "arch", "solaris x86_86" );
 #else
   Cvar_Set( "arch", "solaris unknown" );
 #endif
@@ -697,7 +703,7 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
 #elif defined __mips__
   snprintf (fname, sizeof(fname), "%smips.so", name);
 #elif defined __amd64__
-  snprintf (fname, sizeof(fname), "%samd64.so", name);
+  snprintf (fname, sizeof(fname), "%sx86_64.so", name);
 #else
 #error Unknown arch
 #endif

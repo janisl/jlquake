@@ -313,7 +313,13 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath , int (QDECL **entryPoi
 
 	*fqpath = 0 ;		// added 7/20/02 by T.Ray
 
+#if defined _M_IX86
 	QStr::Sprintf( filename, sizeof( filename ), "%sx86.dll", name );
+#elif defined _M_X86_64
+	QStr::Sprintf( filename, sizeof( filename ), "%sx86_64.dll", name );
+#else
+#error "Unknown arch"
+#endif
 
 #ifdef NDEBUG
 	timestamp = Sys_Milliseconds();
