@@ -71,7 +71,7 @@ void PR_ClearStringMap()
 
 int PR_SetString(const char* s)
 {
-	if (s - pr_strings < 0)
+	if (s < pr_strings || s >= pr_strings + progs->numstrings)
 	{
 		for (int i = 0; i <= num_prstr; i++)
 		{
@@ -86,7 +86,6 @@ int PR_SetString(const char* s)
 		}
 		num_prstr++;
 		pr_strtbl[num_prstr] = s;
-//Con_DPrintf("SET:%d == %s\n", -num_prstr, s);
 		return -num_prstr;
 	}
 	return (int)(s - pr_strings);
@@ -102,7 +101,6 @@ const char* PR_GetString(int Num)
 {
 	if (Num < 0)
 	{
-//Con_DPrintf("GET:%d == %s\n", num, pr_strtbl[-num]);
 		return pr_strtbl[-Num];
 	}
 	return pr_strings + Num;
