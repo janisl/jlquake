@@ -1,5 +1,6 @@
 add_subdirectory(core)
 add_subdirectory(client)
+add_subdirectory(progsvm)
 
 add_subdirectory(quake)
 add_subdirectory(quakeworld)

@@ -1,5 +1,21 @@
-
-// this file is shared by quake and qcc
+//**************************************************************************
+//**
+//**	$Id$
+//**
+//**	Copyright (C) 1996-2005 Id Software, Inc.
+//**	Copyright (C) 2010 Jānis Legzdiņš
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 2
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//**  GNU General Public License for more details.
+//**
+//**************************************************************************
 
 typedef int	func_t;
 typedef int	string_t;
@@ -40,19 +56,19 @@ enum
 	OP_ADD_V,
 	OP_SUB_F,
 	OP_SUB_V,
-	
+
 	OP_EQ_F,
 	OP_EQ_V,
 	OP_EQ_S,
 	OP_EQ_E,
 	OP_EQ_FNC,
-	
+
 	OP_NE_F,
 	OP_NE_V,
 	OP_NE_S,
 	OP_NE_E,
 	OP_NE_FNC,
-	
+
 	OP_LE,
 	OP_GE,
 	OP_LT,
@@ -102,10 +118,11 @@ enum
 	OP_GOTO,
 	OP_AND,
 	OP_OR,
-	
+
 	OP_BITAND,
 	OP_BITOR,
 
+	//	Start of Hexen 2 added instructions.
 	OP_MULSTORE_F,
 	OP_MULSTORE_V,
 	OP_MULSTOREP_F,
@@ -170,6 +187,7 @@ typedef struct
 	unsigned short	ofs;
 	int			s_name;
 } ddef_t;
+
 #define	DEF_SAVEGLOBAL	(1<<15)
 
 #define	MAX_PARMS	8
@@ -191,6 +209,7 @@ typedef struct
 
 
 #define	PROG_VERSION	6
+
 typedef struct
 {
 	int		version;
@@ -216,4 +235,3 @@ typedef struct
 	
 	int		entityfields;
 } dprograms_t;
-
