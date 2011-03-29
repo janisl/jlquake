@@ -116,7 +116,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
+void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -189,7 +189,7 @@ This will be sent on the initial connection and upon each server load.
 */
 void SV_SendServerinfo (client_t *client)
 {
-	char			**s;
+	const char			**s;
 	char			message[2048];
 
 	client->message.WriteByte(svc_print);
@@ -205,7 +205,7 @@ void SV_SendServerinfo (client_t *client)
 	else
 		client->message.WriteByte(GAME_COOP);
 
-	sprintf (message, pr_strings+sv.edicts->v.message);
+	sprintf (message, PR_GetString(sv.edicts->v.message));
 
 	client->message.WriteString2(message);
 
@@ -437,7 +437,7 @@ void SV_WriteEntitiesToClient (edict_t	*clent, QMsg *msg)
 		if (ent != clent)	// clent is ALLWAYS sent
 		{
 // ignore ents without visible models
-			if (!ent->v.modelindex || !pr_strings[ent->v.model])
+			if (!ent->v.modelindex || !*PR_GetString(ent->v.model))
 				continue;
 
 			for (i=0 ; i < ent->num_leafs ; i++)
@@ -671,7 +671,7 @@ void SV_WriteClientdataToMessage (edict_t *ent, QMsg *msg)
 	if (bits & SU_ARMOR)
 		msg->WriteByte(ent->v.armorvalue);
 	if (bits & SU_WEAPON)
-		msg->WriteByte(SV_ModelIndex(pr_strings+ent->v.weaponmodel));
+		msg->WriteByte(SV_ModelIndex(PR_GetString(ent->v.weaponmodel)));
 	
 	msg->WriteShort(ent->v.health);
 	msg->WriteByte(ent->v.currentammo);
@@ -882,7 +882,7 @@ SV_ModelIndex
 
 ================
 */
-int SV_ModelIndex (char *name)
+int SV_ModelIndex (const char *name)
 {
 	int		i;
 	
@@ -934,7 +934,7 @@ void SV_CreateBaseline (void)
 		{
 			svent->baseline.colormap = 0;
 			svent->baseline.modelindex =
-				SV_ModelIndex(pr_strings + svent->v.model);
+				SV_ModelIndex(PR_GetString(svent->v.model));
 		}
 		
 	//
@@ -1096,9 +1096,9 @@ void SV_SpawnServer (char *server)
 //
 	SV_ClearWorld ();
 	
-	sv.sound_precache[0] = pr_strings;
+	sv.sound_precache[0] = PR_GetString(0);
 
-	sv.model_precache[0] = pr_strings;
+	sv.model_precache[0] = PR_GetString(0);
 	sv.model_precache[1] = sv.modelname;
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
@@ -1112,7 +1112,7 @@ void SV_SpawnServer (char *server)
 	ent = EDICT_NUM(0);
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
-	ent->v.model = sv.modelname - pr_strings;
+	ent->v.model = PR_SetString(sv.modelname);
 	ent->v.modelindex = 1;		// world model
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
@@ -1122,7 +1122,7 @@ void SV_SpawnServer (char *server)
 	else
 		pr_global_struct->deathmatch = deathmatch->value;
 
-	pr_global_struct->mapname = sv.name - pr_strings;
+	pr_global_struct->mapname = PR_SetString(sv.name);
 
 // serverflags are for cross level information (sigils)
 	pr_global_struct->serverflags = svs.serverflags;

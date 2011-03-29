@@ -609,8 +609,9 @@ void Host_Loadgame_f (void)
 	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
 	{
 		char* Style = GetLine(ReadPos);
-		sv.lightstyles[i] = (char*)Hunk_Alloc(QStr::Length(Style) + 1);
-		QStr::Cpy(sv.lightstyles[i], Style);
+		char* Tmp = (char*)Hunk_Alloc(QStr::Length(Style) + 1);
+		QStr::Cpy(Tmp, Style);
+		sv.lightstyles[i] = Tmp;
 	}
 
 	// load the edicts out of the savegame file
@@ -693,7 +694,7 @@ void Host_Name_f (void)
 		if (QStr::Cmp(host_client->name, newName) != 0)
 			Con_Printf ("%s renamed to %s\n", host_client->name, newName);
 	QStr::Cpy(host_client->name, newName);
-	host_client->edict->v.netname = host_client->name - pr_strings;
+	host_client->edict->v.netname = PR_SetString(host_client->name);
 	
 // send notification to all clients
 	
@@ -987,11 +988,11 @@ void Host_Pause_f (void)
 
 		if (sv.paused)
 		{
-			SV_BroadcastPrintf ("%s paused the game\n", pr_strings + sv_player->v.netname);
+			SV_BroadcastPrintf ("%s paused the game\n", PR_GetString(sv_player->v.netname));
 		}
 		else
 		{
-			SV_BroadcastPrintf ("%s unpaused the game\n",pr_strings + sv_player->v.netname);
+			SV_BroadcastPrintf ("%s unpaused the game\n", PR_GetString(sv_player->v.netname));
 		}
 
 	// send notification to all clients
@@ -1065,7 +1066,7 @@ void Host_Spawn_f (void)
 		Com_Memset(&ent->v, 0, progs->entityfields * 4);
 		ent->v.colormap = NUM_FOR_EDICT(ent);
 		ent->v.team = (host_client->colors & 15) + 1;
-		ent->v.netname = host_client->name - pr_strings;
+		ent->v.netname = PR_SetString(host_client->name);
 
 		// copy spawn parms out of the client_t
 
@@ -1433,7 +1434,7 @@ edict_t	*FindViewthing (void)
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if ( !QStr::Cmp(pr_strings + e->v.classname, "viewthing") )
+		if ( !QStr::Cmp(PR_GetString(e->v.classname), "viewthing") )
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");

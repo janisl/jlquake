@@ -61,7 +61,7 @@ void PF_error (void)
 	
 	s = PF_VarString(0);
 	Con_Printf ("======SERVER ERROR in %s:\n%s\n"
-	,pr_strings + pr_xfunction->s_name,s);
+	,PR_GetString(pr_xfunction->s_name),s);
 	ed = PROG_TO_EDICT(pr_global_struct->self);
 	ED_Print (ed);
 
@@ -85,7 +85,7 @@ void PF_objerror (void)
 	
 	s = PF_VarString(0);
 	Con_Printf ("======OBJECT ERROR in %s:\n%s\n"
-	,pr_strings + pr_xfunction->s_name,s);
+	,PR_GetString(pr_xfunction->s_name),s);
 	ed = PROG_TO_EDICT(pr_global_struct->self);
 	ED_Print (ed);
 	ED_Free (ed);
@@ -234,7 +234,7 @@ setmodel(entity, model)
 void PF_setmodel (void)
 {
 	edict_t	*e;
-	char	*m, **check;
+	const char	*m, **check;
 	clipHandle_t	mod;
 	int		i;
 
@@ -249,7 +249,7 @@ void PF_setmodel (void)
 	if (!*check)
 		PR_RunError ("no precache: %s\n", m);
 
-	e->v.model = m - pr_strings;
+	e->v.model = PR_SetString(m);
 	e->v.modelindex = i; //SV_ModelIndex (m);
 
 	mod = sv.models[ (int)e->v.modelindex];  // Mod_ForName (m, true);
@@ -511,8 +511,8 @@ PF_ambientsound
 */
 void PF_ambientsound (void)
 {
-	char		**check;
-	char		*samp;
+	const char		**check;
+	const char		*samp;
 	float		*pos;
 	float 		vol, attenuation;
 	int			i, soundnum;
@@ -563,7 +563,7 @@ Larger attenuations will drop off.
 */
 void PF_sound (void)
 {
-	char		*sample;
+	const char		*sample;
 	int			channel;
 	edict_t		*entity;
 	int 		volume;
@@ -777,7 +777,7 @@ stuffcmd (clientent, value)
 void PF_stuffcmd (void)
 {
 	int		entnum;
-	char	*str;
+	const char	*str;
 	client_t	*old;
 	
 	entnum = G_EDICTNUM(OFS_PARM0);
@@ -802,7 +802,7 @@ localcmd (string)
 */
 void PF_localcmd (void)
 {
-	char	*str;
+	const char	*str;
 	
 	str = G_STRING(OFS_PARM0);	
 	Cbuf_AddText (str);
@@ -817,7 +817,7 @@ float cvar (string)
 */
 void PF_cvar (void)
 {
-	char	*str;
+	const char	*str;
 	
 	str = G_STRING(OFS_PARM0);
 	
@@ -833,7 +833,7 @@ float cvar (string)
 */
 void PF_cvar_set (void)
 {
-	char	*var, *val;
+	const char	*var, *val;
 	
 	var = G_STRING(OFS_PARM0);
 	val = G_STRING(OFS_PARM1);
@@ -904,7 +904,7 @@ void PF_ftos (void)
 		sprintf (pr_string_temp, "%d",(int)v);
 	else
 		sprintf (pr_string_temp, "%5.1f",v);
-	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
+	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
 }
 
 void PF_fabs (void)
@@ -917,7 +917,7 @@ void PF_fabs (void)
 void PF_vtos (void)
 {
 	sprintf (pr_string_temp, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM0)[0], G_VECTOR(OFS_PARM0)[1], G_VECTOR(OFS_PARM0)[2]);
-	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
+	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
 }
 
 void PF_Spawn (void)
@@ -941,7 +941,7 @@ void PF_Find (void)
 {
 	int		e;	
 	int		f;
-	char	*s, *t;
+	const char	*s, *t;
 	edict_t	*ed;
 
 	e = G_EDICTNUM(OFS_PARM0);
@@ -968,7 +968,7 @@ void PF_Find (void)
 	RETURN_EDICT(sv.edicts);
 }
 
-void PR_CheckEmptyString (char *s)
+void PR_CheckEmptyString (const char *s)
 {
 	if (s[0] <= ' ')
 		PR_RunError ("Bad string");
@@ -981,7 +981,7 @@ void PF_precache_file (void)
 
 void PF_precache_sound (void)
 {
-	char	*s;
+	const char	*s;
 	int		i;
 	
 	if (sv.state != ss_loading)
@@ -1006,7 +1006,7 @@ void PF_precache_sound (void)
 
 void PF_precache_model (void)
 {
-	char	*s;
+	const char	*s;
 	int		i;
 	
 	if (sv.state != ss_loading)
@@ -1136,7 +1136,7 @@ void(float style, string value) lightstyle
 void PF_lightstyle (void)
 {
 	int		style;
-	char	*val;
+	const char	*val;
 	client_t	*client;
 	int			j;
 	
@@ -1450,8 +1450,6 @@ void PF_WriteEntity (void)
 
 //=============================================================================
 
-int SV_ModelIndex (char *name);
-
 void PF_makestatic (void)
 {
 	edict_t	*ent;
@@ -1461,7 +1459,7 @@ void PF_makestatic (void)
 
 	sv.signon.WriteByte(svc_spawnstatic);
 
-	sv.signon.WriteByte(SV_ModelIndex(pr_strings + ent->v.model));
+	sv.signon.WriteByte(SV_ModelIndex(PR_GetString(ent->v.model)));
 
 	sv.signon.WriteByte(ent->v.frame);
 	sv.signon.WriteByte(ent->v.colormap);
@@ -1508,7 +1506,7 @@ PF_changelevel
 */
 void PF_changelevel (void)
 {
-	char	*s;
+	const char	*s;
 
 // make sure we don't issue two changelevels
 	if (svs.changelevel_issued)

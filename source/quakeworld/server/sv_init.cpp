@@ -259,9 +259,9 @@ void SV_SpawnServer (char *server)
 	//
 	SV_ClearWorld ();
 	
-	sv.sound_precache[0] = pr_strings;
+	sv.sound_precache[0] = PR_GetString(0);
 
-	sv.model_precache[0] = pr_strings;
+	sv.model_precache[0] = PR_GetString(0);
 	sv.model_precache[1] = sv.modelname;
 	sv.models[1] = 0;
 	for (i = 1; i < CM_NumInlineModels(); i++)
