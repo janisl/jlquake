@@ -96,7 +96,7 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	endforeach(SRC)
 else(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	set(QUAKE3_FILES ${QUAKE3_FILES}
-		unix/vm_x86.cpp
+		qcommon/vm_none.cpp
 	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
@@ -164,7 +164,7 @@ if(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	endforeach(SRC)
 else(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	set(QUAKE3_DEDICATED_FILES ${QUAKE3_DEDICATED_FILES}
-		unix/vm_x86.cpp
+		qcommon/vm_none.cpp
 	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
