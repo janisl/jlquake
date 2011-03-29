@@ -50,14 +50,7 @@ typedef struct edict_s
 
 //============================================================================
 
-extern	dprograms_t		*progs;
-extern	dfunction_t		*pr_functions;
-extern	char			*pr_strings;
-extern	ddef_t			*pr_globaldefs;
-extern	ddef_t			*pr_fielddefs;
-extern	dstatement_t	*pr_statements;
 extern	globalvars_t	*pr_global_struct;
-extern	float			*pr_globals;			// same as pr_global_struct
 
 extern	int				pr_edict_size;	// in bytes
 
@@ -133,15 +126,3 @@ void ED_PrintEdicts (void);
 void ED_PrintNum (int ent);
 
 eval_t *GetEdictFieldValue(edict_t *ed, char *field);
-
-//
-// PR STrings stuff
-//
-#define MAX_PRSTR 1024
-
-extern char *pr_strtbl[MAX_PRSTR];
-extern int num_prstr;
-
-char *PR_GetString(int num);
-int PR_SetString(const char *s);
-

@@ -21,14 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "qwsvdef.h"
 
-dprograms_t		*progs;
-dfunction_t		*pr_functions;
-char			*pr_strings;
-ddef_t			*pr_fielddefs;
-ddef_t			*pr_globaldefs;
-dstatement_t	*pr_statements;
 globalvars_t	*pr_global_struct;
-float			*pr_globals;			// same as pr_global_struct
 int				pr_edict_size;	// in bytes
 
 int		type_size[8] = {1,sizeof(void *)/4,1,3,1,1,sizeof(void *)/4,sizeof(void *)/4};
@@ -219,7 +212,7 @@ ddef_t *ED_FindGlobal (char *name)
 ED_FindFunction
 ============
 */
-dfunction_t *ED_FindFunction (char *name)
+dfunction_t *ED_FindFunction (const char *name)
 {
 	dfunction_t		*func;
 	int				i;
@@ -432,7 +425,7 @@ void ED_Print (edict_t *ed)
 	ddef_t	*d;
 	int		*v;
 	int		i, j;
-	char	*name;
+	const char	*name;
 	int		type;
 
 	if (ed->free)
@@ -480,7 +473,7 @@ void ED_Write (FILE *f, edict_t *ed)
 	ddef_t	*d;
 	int		*v;
 	int		i, j;
-	char	*name;
+	const char	*name;
 	int		type;
 
 	fprintf (f, "{\n");
@@ -609,7 +602,7 @@ void ED_WriteGlobals (FILE *f)
 {
 	ddef_t		*def;
 	int			i;
-	char		*name;
+	const char	*name;
 	int			type;
 
 	fprintf (f,"{\n");
@@ -991,7 +984,7 @@ void PR_LoadProgs (void)
 	pr_fielddefs = (ddef_t *)((byte *)progs + progs->ofs_fielddefs);
 	pr_statements = (dstatement_t *)((byte *)progs + progs->ofs_statements);
 
-	num_prstr = 0;
+	PR_ClearStringMap();
 
 	pr_global_struct = (globalvars_t *)((byte *)progs + progs->ofs_globals);
 	pr_globals = (float *)pr_global_struct;

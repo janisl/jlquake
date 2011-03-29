@@ -163,7 +163,8 @@ Also sets size, mins, and maxs for inline bmodels
 void PF_setmodel (void)
 {
 	edict_t	*e;
-	char	*m, **check;
+	const char*	m;
+	const char	**check;
 	int		i;
 	clipHandle_t	mod;
 
@@ -421,8 +422,8 @@ PF_ambientsound
 */
 void PF_ambientsound (void)
 {
-	char		**check;
-	char		*samp;
+	const char	**check;
+	const char	*samp;
 	float		*pos;
 	float 		vol, attenuation;
 	int			i, soundnum;
@@ -473,7 +474,7 @@ Larger attenuations will drop off.
 */
 void PF_sound (void)
 {
-	char		*sample;
+	const char	*sample;
 	int			channel;
 	edict_t		*entity;
 	int 		volume;
@@ -677,7 +678,7 @@ stuffcmd (clientent, value)
 void PF_stuffcmd (void)
 {
 	int		entnum;
-	char	*str;
+	const char	*str;
 	client_t	*cl;
 	
 	entnum = G_EDICTNUM(OFS_PARM0);
@@ -708,7 +709,7 @@ localcmd (string)
 */
 void PF_localcmd (void)
 {
-	char	*str;
+	const char	*str;
 	
 	str = G_STRING(OFS_PARM0);	
 	Cbuf_AddText (str);
@@ -723,7 +724,7 @@ float cvar (string)
 */
 void PF_cvar (void)
 {
-	char	*str;
+	const char	*str;
 	
 	str = G_STRING(OFS_PARM0);
 	
@@ -739,10 +740,8 @@ float cvar (string)
 */
 void PF_cvar_set (void)
 {
-	char	*var, *val;
-	
-	var = G_STRING(OFS_PARM0);
-	val = G_STRING(OFS_PARM1);
+	const char* var = G_STRING(OFS_PARM0);
+	const char* val = G_STRING(OFS_PARM1);
 	
 	Cvar_Set (var, val);
 }
@@ -847,7 +846,8 @@ void PF_Find (void)
 {
 	int		e;	
 	int		f;
-	char	*s, *t;
+	const char	*s;
+	const char	*t;
 	edict_t	*ed;
 	
 	e = G_EDICTNUM(OFS_PARM0);
@@ -874,7 +874,7 @@ void PF_Find (void)
 	RETURN_EDICT(sv.edicts);
 }
 
-void PR_CheckEmptyString (char *s)
+void PR_CheckEmptyString (const char *s)
 {
 	if (s[0] <= ' ')
 		PR_RunError ("Bad string");
@@ -887,7 +887,7 @@ void PF_precache_file (void)
 
 void PF_precache_sound (void)
 {
-	char	*s;
+	const char	*s;
 	int		i;
 	
 	if (sv.state != ss_loading)
@@ -912,7 +912,7 @@ void PF_precache_sound (void)
 
 void PF_precache_model (void)
 {
-	char	*s;
+	const char	*s;
 	int		i;
 	
 	if (sv.state != ss_loading)
@@ -1041,7 +1041,7 @@ void(float style, string value) lightstyle
 void PF_lightstyle (void)
 {
 	int		style;
-	char	*val;
+	const char	*val;
 	client_t	*client;
 	int			j;
 	
@@ -1434,8 +1434,6 @@ void PF_WriteEntity (void)
 
 //=============================================================================
 
-int SV_ModelIndex (char *name);
-
 void PF_makestatic (void)
 {
 	edict_t	*ent;
@@ -1492,7 +1490,7 @@ PF_changelevel
 */
 void PF_changelevel (void)
 {
-	char	*s;
+	const char	*s;
 	static	int	last_spawncount;
 
 // make sure we don't issue two changelevels
@@ -1551,7 +1549,7 @@ void PF_infokey (void)
 	edict_t	*e;
 	int		e1;
 	const char	*value;
-	char	*key;
+	const char	*key;
 	static	char ov[256];
 
 	e = G_EDICT(OFS_PARM0);
@@ -1591,7 +1589,7 @@ float(string s) stof
 */
 void PF_stof (void)
 {
-	char	*s;
+	const char	*s;
 
 	s = G_STRING(OFS_PARM0);
 

@@ -53,5 +53,4 @@ set(QUAKE_FILES
 
 add_executable(vquake ${QUAKE_FILES})
 set_target_properties(vquake PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake client core zlib ${LDFLAGS})
-add_dependencies(vquake client)
+target_link_libraries(vquake client progsvm core zlib ${LDFLAGS})

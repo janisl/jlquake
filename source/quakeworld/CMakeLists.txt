@@ -41,8 +41,7 @@ set(QWSV_OBJS
 
 add_executable(vqwsv ${QWSV_OBJS})
 set_target_properties(vqwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
-target_link_libraries(vqwsv core zlib ${SV_LDFLAGS})
-add_dependencies(vqwsv core)
+target_link_libraries(vqwsv core progsvm zlib ${SV_LDFLAGS})
 
 #############################################################################
 # GL CLIENT
@@ -92,4 +91,3 @@ set(GLQWCL_OBJS
 add_executable(vqwcl ${GLQWCL_OBJS})
 set_target_properties(vqwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
 target_link_libraries(vqwcl client core zlib ${LDFLAGS})
-add_dependencies(vqwcl client)

@@ -19,9 +19,11 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "../core/core.h"
+#include "progsvm.h"
 
 // MACROS ------------------------------------------------------------------
+
+#define MAX_PRSTR			1024
 
 // TYPES -------------------------------------------------------------------
 
@@ -35,12 +37,73 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+dprograms_t		*progs;
+dfunction_t		*pr_functions;
+char			*pr_strings;
+ddef_t			*pr_fielddefs;
+ddef_t			*pr_globaldefs;
+dstatement_t	*pr_statements;
+float			*pr_globals;			// same as pr_global_struct
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+static const char*	pr_strtbl[MAX_PRSTR];
+static int			num_prstr;
 
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
 //
-//	QClipMap29::LoadMap
+//	PR_ClearStringMap
 //
 //==========================================================================
+
+void PR_ClearStringMap()
+{
+	num_prstr = 0;
+}
+
+//==========================================================================
+//
+//	PR_SetString
+//
+//==========================================================================
+
+int PR_SetString(const char* s)
+{
+	if (s - pr_strings < 0)
+	{
+		for (int i = 0; i <= num_prstr; i++)
+		{
+			if (pr_strtbl[i] == s)
+			{
+				return -i;
+			}
+		}
+		if (num_prstr == MAX_PRSTR - 1)
+		{
+			throw QException("MAX_PRSTR");
+		}
+		num_prstr++;
+		pr_strtbl[num_prstr] = s;
+//Con_DPrintf("SET:%d == %s\n", -num_prstr, s);
+		return -num_prstr;
+	}
+	return (int)(s - pr_strings);
+}
+
+//==========================================================================
+//
+//	PR_SetString
+//
+//==========================================================================
+
+const char* PR_GetString(int Num)
+{
+	if (Num < 0)
+	{
+//Con_DPrintf("GET:%d == %s\n", num, pr_strtbl[-num]);
+		return pr_strtbl[-Num];
+	}
+	return pr_strings + Num;
+}

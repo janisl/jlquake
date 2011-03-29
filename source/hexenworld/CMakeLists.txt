@@ -42,8 +42,7 @@ set(HWSV_FILES
 
 add_executable(vhwsv ${HWSV_FILES})
 set_target_properties(vhwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
-target_link_libraries(vhwsv core zlib ${SV_LDFLAGS})
-add_dependencies(vhwsv core)
+target_link_libraries(vhwsv core progsvm zlib ${SV_LDFLAGS})
 
 #############################################################################
 # GL CLIENT
@@ -95,4 +94,3 @@ set(HWCL_FILES
 add_executable(vhwcl ${HWCL_FILES})
 set_target_properties(vhwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
 target_link_libraries(vhwcl client core zlib ${LDFLAGS})
-add_dependencies(vhwcl client)

@@ -51,9 +51,9 @@ typedef struct
 	
 	char		name[64];			// map name
 	char		modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
-	char		*model_precache[MAX_MODELS];	// NULL terminated
-	char		*sound_precache[MAX_SOUNDS];	// NULL terminated
-	char		*lightstyles[MAX_LIGHTSTYLES];
+	const char*	model_precache[MAX_MODELS];	// NULL terminated
+	const char*	sound_precache[MAX_SOUNDS];	// NULL terminated
+	const char*	lightstyles[MAX_LIGHTSTYLES];
 	clipHandle_t	models[MAX_MODELS];
 
 	int			num_edicts;			// increases towards MAX_EDICTS
@@ -353,7 +353,7 @@ void SV_DropClient (client_t *drop);
 int SV_CalcPing (client_t *cl);
 void SV_FullClientUpdate (client_t *client, QMsg *buf);
 
-int SV_ModelIndex (char *name);
+int SV_ModelIndex (const char *name);
 
 qboolean SV_CheckBottom (edict_t *ent);
 qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink);
@@ -402,7 +402,7 @@ void SV_SetMoveVars(void);
 void SV_SendClientMessages (void);
 
 void SV_Multicast (vec3_t origin, int to);
-void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
+void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
     float attenuation);
 void SV_ClientPrintf (client_t *cl, int level, char *fmt, ...);
 void SV_BroadcastPrintf (int level, char *fmt, ...);
@@ -450,7 +450,7 @@ void ClientReliableWrite_Float(client_t *cl, float f);
 void ClientReliableWrite_Coord(client_t *cl, float f);
 void ClientReliableWrite_Long(client_t *cl, int c);
 void ClientReliableWrite_Short(client_t *cl, int c);
-void ClientReliableWrite_String(client_t *cl, char *s);
+void ClientReliableWrite_String(client_t *cl, const char *s);
 void ClientReliableWrite_SZ(client_t *cl, void *data, int len);
 
 void SV_FullClientUpdateToClient (client_t *client, client_t *cl);

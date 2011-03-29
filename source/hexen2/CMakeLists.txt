@@ -54,5 +54,4 @@ set(HEXEN2_FILES
 
 add_executable(vhexen2 ${HEXEN2_FILES})
 set_target_properties(vhexen2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vhexen2 client core zlib ${LDFLAGS})
-add_dependencies(vhexen2 client)
+target_link_libraries(vhexen2 client core progsvm zlib ${LDFLAGS})

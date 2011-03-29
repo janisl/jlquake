@@ -21,14 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-dprograms_t		*progs;
-dfunction_t		*pr_functions;
-char			*pr_strings;
-ddef_t			*pr_fielddefs;
-ddef_t			*pr_globaldefs;
-dstatement_t	*pr_statements;
 globalvars_t	*pr_global_struct;
-float			*pr_globals;			// same as pr_global_struct
 int				pr_edict_size;	// in bytes
 
 unsigned short		pr_crc;

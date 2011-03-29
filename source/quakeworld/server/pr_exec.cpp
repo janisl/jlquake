@@ -662,38 +662,3 @@ while (1)
 }
 
 }
-
-/*----------------------*/
-
-char *pr_strtbl[MAX_PRSTR];
-int num_prstr;
-
-char *PR_GetString(int num)
-{
-	if (num < 0) {
-//Con_DPrintf("GET:%d == %s\n", num, pr_strtbl[-num]);
-		return pr_strtbl[-num];
-	}
-	return pr_strings + num;
-}
-
-int PR_SetString(const char *s)
-{
-	int i;
-
-	if (s - pr_strings < 0) {
-		for (i = 0; i <= num_prstr; i++)
-			if (pr_strtbl[i] == s)
-				break;
-		if (i < num_prstr)
-			return -i;
-		if (num_prstr == MAX_PRSTR - 1)
-			Sys_Error("MAX_PRSTR");
-		num_prstr++;
-		pr_strtbl[num_prstr] = const_cast<char*>(s);
-//Con_DPrintf("SET:%d == %s\n", -num_prstr, s);
-		return -num_prstr;
-	}
-	return (int)(s - pr_strings);
-}
-

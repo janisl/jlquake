@@ -141,7 +141,7 @@ void ClientReliableWrite_Short(client_t *cl, int c)
 		cl->netchan.message.WriteShort(c);
 }
 
-void ClientReliableWrite_String(client_t *cl, char *s)
+void ClientReliableWrite_String(client_t *cl, const char *s)
 {
 	if (cl->num_backbuf) {
 		cl->backbuf.WriteString2(s);
