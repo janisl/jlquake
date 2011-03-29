@@ -183,6 +183,55 @@ typedef struct
 
 extern client_static_t	cls;
 
+struct client_entvars_t
+{
+	float	movetype;
+	float	health;
+	float	max_health;
+	float	playerclass;
+	float	bluemana;
+	float	greenmana;
+	float	max_mana;
+	float	armor_amulet;
+	float	armor_bracer;
+	float	armor_breastplate;
+	float	armor_helmet;
+	float	level;
+	float	intelligence;
+	float	wisdom;
+	float	dexterity;
+	float	strength;
+	float	experience;
+	float	ring_flight;
+	float	ring_water;
+	float	ring_turning;
+	float	ring_regeneration;
+	float	flags;
+	float	teleport_time;
+	float	rings_active;
+	float	rings_low;
+	float	artifact_active;
+	float	artifact_low;
+	float	hasted;
+	float	inventory;
+	float	cnt_torch;
+	float	cnt_h_boost;
+	float	cnt_sh_boost;
+	float	cnt_mana_boost;
+	float	cnt_teleport;
+	float	cnt_tome;
+	float	cnt_summon;
+	float	cnt_invisibility;
+	float	cnt_glyph;
+	float	cnt_haste;
+	float	cnt_blast;
+	float	cnt_polymorph;
+	float	cnt_flight;
+	float	cnt_cubeofforce;
+	float	cnt_invincibility;
+	int	cameramode;
+};
+
 //
 // the client_state_t structure is wiped completely at every
 // server signon
@@ -217,7 +266,7 @@ typedef struct
 	float		item_gettime[32];	// cl.time of aquiring item, for blinking
 	float		faceanimtime;		// use anim frame if cl.time < this
 
-	entvars_t		v; // NOTE: not every field will be update - you must specifically add
+	client_entvars_t	v; // NOTE: not every field will be update - you must specifically add
 	                   // them in functions SV_WriteClientdatatToMessage() and CL_ParseClientdata()
 
 	cshift_t	cshifts[NUM_CSHIFTS];	// color shifts for damage, powerups
