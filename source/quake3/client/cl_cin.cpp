@@ -1045,19 +1045,22 @@ static void readQuadInfo( byte *qData )
 	cinTable[currentHandle].VQ0 = cinTable[currentHandle].VQNormal;
 	cinTable[currentHandle].VQ1 = cinTable[currentHandle].VQBuffer;
 
-	cinTable[currentHandle].t[0] = (0 - (unsigned int)(qintptr)cin.linbuf)+(unsigned int)(qintptr)cin.linbuf+cinTable[currentHandle].screenDelta;
-	cinTable[currentHandle].t[1] = (0 - ((unsigned int)(qintptr)cin.linbuf + cinTable[currentHandle].screenDelta))+(unsigned int)(qintptr)cin.linbuf;
+	cinTable[currentHandle].t[0] = cinTable[currentHandle].screenDelta;
+	cinTable[currentHandle].t[1] = -cinTable[currentHandle].screenDelta;
 
-        cinTable[currentHandle].drawX = cinTable[currentHandle].CIN_WIDTH;
-        cinTable[currentHandle].drawY = cinTable[currentHandle].CIN_HEIGHT;
+	cinTable[currentHandle].drawX = cinTable[currentHandle].CIN_WIDTH;
+	cinTable[currentHandle].drawY = cinTable[currentHandle].CIN_HEIGHT;
         
-	if (glConfig.maxTextureSize <= 256) {
-                if (cinTable[currentHandle].drawX>256) {
-                        cinTable[currentHandle].drawX = 256;
-                }
-                if (cinTable[currentHandle].drawY>256) {
-                        cinTable[currentHandle].drawY = 256;
-                }
+	if (glConfig.maxTextureSize <= 256)
+	{
+		if (cinTable[currentHandle].drawX > 256)
+		{
+			cinTable[currentHandle].drawX = 256;
+		}
+		if (cinTable[currentHandle].drawY > 256)
+		{
+			cinTable[currentHandle].drawY = 256;
+		}
 	}
 #if defined(MACOS_X)
 	cinTable[currentHandle].drawX = 256;
