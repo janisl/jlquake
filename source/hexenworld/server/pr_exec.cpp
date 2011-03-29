@@ -261,7 +261,7 @@ while (1)
 		c->_float = !a->vector[0] && !a->vector[1] && !a->vector[2];
 		break;
 	case OP_NOT_S:
-		c->_float = !a->string || !pr_strings[a->string];
+		c->_float = !a->string || !*PR_GetString(a->string);
 		break;
 	case OP_NOT_FNC:
 		c->_float = !a->function;
@@ -279,7 +279,7 @@ while (1)
 			&& (a->vector[2] == b->vector[2]);
 		break;
 	case OP_EQ_S:
-		c->_float = !QStr::Cmp(pr_strings+a->string,pr_strings+b->string);
+		c->_float = !QStr::Cmp(PR_GetString(a->string), PR_GetString(b->string));
 		break;
 	case OP_EQ_E:
 		c->_float = a->_int == b->_int;
@@ -297,7 +297,7 @@ while (1)
 			|| (a->vector[2] != b->vector[2]);
 		break;
 	case OP_NE_S:
-		c->_float = QStr::Cmp(pr_strings+a->string,pr_strings+b->string);
+		c->_float = QStr::Cmp(PR_GetString(a->string), PR_GetString(b->string));
 		break;
 	case OP_NE_E:
 		c->_float = a->_int != b->_int;
@@ -885,8 +885,8 @@ static void PrintCallHistory(void)
 		}
 		else
 		{
-			Con_Printf("%12s : %s\n", pr_strings+f->s_file,
-				pr_strings+f->s_name);
+			Con_Printf("%12s : %s\n", PR_GetString(f->s_file),
+				PR_GetString(f->s_name));
 		}
 	}
 }
@@ -1047,13 +1047,13 @@ void PR_Profile_f(void)
 					{
 						FS_Printf(saveFile, "%05.2f %s\n",
 							((float)bestFunc->profile/(float)total)*100.0,
-							pr_strings+bestFunc->s_name);
+							PR_GetString(bestFunc->s_name));
 					}
 					else
 					{
 						Con_Printf("%05.2f %s\n",
 							((float)bestFunc->profile/(float)total)*100.0,
-							pr_strings+bestFunc->s_name);
+							PR_GetString(bestFunc->s_name));
 					}
 				}
 				j++;
@@ -1091,11 +1091,11 @@ void PR_Profile_f(void)
 		{
 			if(*saveName)
 			{
-				FS_Printf(saveFile, "\"%s\"\n", pr_strings+currentFile);
+				FS_Printf(saveFile, "\"%s\"\n", PR_GetString(currentFile));
 			}
 			else
 			{
-				Con_Printf("\"%s\"\n", pr_strings+currentFile);
+				Con_Printf("\"%s\"\n", PR_GetString(currentFile));
 			}
 			j = 0;
 			do
@@ -1120,14 +1120,14 @@ void PR_Profile_f(void)
 							FS_Printf(saveFile, "   %05.2f %s\n",
 								((float)bestFunc->profile
 								/(float)total)*100.0,
-								pr_strings+bestFunc->s_name);
+								PR_GetString(bestFunc->s_name));
 						}
 						else
 						{
 							Con_Printf("   %05.2f %s\n",
 								((float)bestFunc->profile
 								/(float)total)*100.0,
-								pr_strings+bestFunc->s_name);
+								PR_GetString(bestFunc->s_name));
 						}
 					}
 					j++;

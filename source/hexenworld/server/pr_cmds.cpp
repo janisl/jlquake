@@ -5,7 +5,7 @@
 #endif
 
 #define	RETURN_EDICT(e) (((int *)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
-#define	RETURN_STRING(s) (((int *)pr_globals)[OFS_RETURN] = s-pr_strings)
+#define	RETURN_STRING(s) (((int *)pr_globals)[OFS_RETURN] = PR_SetString(s))
 
 QMsg *WriteDest (void);
 
@@ -54,7 +54,7 @@ void PF_error (void)
 	
 	s = PF_VarString(0);
 	Con_Printf ("======SERVER ERROR in %s:\n%s\n"
-	,pr_strings + pr_xfunction->s_name,s);
+	,PR_GetString(pr_xfunction->s_name),s);
 	ed = PROG_TO_EDICT(pr_global_struct->self);
 	ED_Print (ed);
 
@@ -78,7 +78,7 @@ void PF_objerror (void)
 	
 	s = PF_VarString(0);
 	Con_Printf ("======OBJECT ERROR in %s:\n%s\n"
-	,pr_strings + pr_xfunction->s_name,s);
+	,PR_GetString(pr_xfunction->s_name),s);
 	ed = PROG_TO_EDICT(pr_global_struct->self);
 	ED_Print (ed);
 	ED_Free (ed);
@@ -232,7 +232,7 @@ Also sets size, mins, and maxs for inline bmodels
 void PF_setmodel (void)
 {
 	edict_t	*e;
-	char	*m, **check;
+	const char	*m, **check;
 	int		i;
 	clipHandle_t	mod;
 
@@ -247,7 +247,7 @@ void PF_setmodel (void)
 	if (!*check)
 		PR_RunError ("no precache: %s\n", m);
 		
-	e->v.model = m - pr_strings;
+	e->v.model = PR_SetString(m);
 	e->v.modelindex = i;
 
 	mod = sv.models[ (int)e->v.modelindex];
@@ -280,7 +280,7 @@ void PF_setmodel (void)
 void PF_setpuzzlemodel (void)
 {
 	edict_t	*e;
-	char	*m, **check;
+	const char	*m, **check;
 	clipHandle_t	mod;
 	int		i;
 	char	NewName[256];
@@ -294,7 +294,7 @@ void PF_setpuzzlemodel (void)
 		if (!QStr::Cmp(*check, NewName))
 			break;
 			
-	e->v.model = ED_NewString (NewName) - pr_strings;
+	e->v.model = PR_SetString(ED_NewString(NewName));
 
 	if (!*check)
 	{
@@ -302,7 +302,7 @@ void PF_setpuzzlemodel (void)
 		Con_Printf("**** NO PRECACHE FOR PUZZLE PIECE:");
 		Con_Printf("**** %s\n",NewName);
 
-		sv.model_precache[i] = e->v.model + pr_strings;
+		sv.model_precache[i] = PR_GetString(e->v.model);
 		//sv.models[i] = Mod_ForName (NewName, true);
 	}
 		
@@ -843,8 +843,8 @@ PF_ambientsound
 */
 void PF_ambientsound (void)
 {
-	char		**check;
-	char		*samp;
+	const char		**check;
+	const char		*samp;
 	float		*pos;
 	float 		vol, attenuation;
 	int			i, soundnum;
@@ -935,7 +935,7 @@ Larger attenuations will drop off.
 */
 void PF_sound (void)
 {
-	char		*sample;
+	const char		*sample;
 	int			channel;
 	edict_t		*entity;
 	int 		volume;
@@ -1199,7 +1199,7 @@ stuffcmd (clientent, value)
 void PF_stuffcmd (void)
 {
 	int		entnum;
-	char	*str;
+	const char	*str;
 	client_t	*old;
 	
 	entnum = G_EDICTNUM(OFS_PARM0);
@@ -1227,7 +1227,7 @@ localcmd (string)
 */
 void PF_localcmd (void)
 {
-	char	*str;
+	const char	*str;
 	
 	str = G_STRING(OFS_PARM0);	
 	Cbuf_AddText (str);
@@ -1242,7 +1242,7 @@ float cvar (string)
 */
 void PF_cvar (void)
 {
-	char	*str;
+	const char	*str;
 	
 	str = G_STRING(OFS_PARM0);
 	
@@ -1258,7 +1258,7 @@ float cvar (string)
 */
 void PF_cvar_set (void)
 {
-	char	*var, *val;
+	const char	*var, *val;
 	
 	var = G_STRING(OFS_PARM0);
 	val = G_STRING(OFS_PARM1);
@@ -1353,7 +1353,7 @@ void PF_ftos (void)
 		sprintf (pr_string_temp, "%d",(int)v);
 	else
 		sprintf (pr_string_temp, "%5.1f",v);
-	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
+	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
 }
 
 void PF_fabs (void)
@@ -1366,7 +1366,7 @@ void PF_fabs (void)
 void PF_vtos (void)
 {
 	sprintf (pr_string_temp, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM0)[0], G_VECTOR(OFS_PARM0)[1], G_VECTOR(OFS_PARM0)[2]);
-	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
+	G_INT(OFS_RETURN) = PR_SetString(pr_string_temp);
 }
 
 void PF_Spawn (void)
@@ -1394,7 +1394,7 @@ void PF_Remove (void)
 	if (ed == sv.edicts)
 	{
 		Con_Printf("Tried to remove the world at %s in %s!\n",
-			pr_xfunction->s_name + pr_strings, pr_xfunction->s_file + pr_strings);
+			PR_GetString(pr_xfunction->s_name), PR_GetString(pr_xfunction->s_file));
 		return;
 	}
 
@@ -1402,7 +1402,7 @@ void PF_Remove (void)
 	if (i <= MAX_CLIENTS)
 	{
 		Con_Printf("Tried to remove a client at %s in %s!\n",
-			pr_xfunction->s_name + pr_strings, pr_xfunction->s_file + pr_strings);
+			PR_GetString(pr_xfunction->s_name), PR_GetString(pr_xfunction->s_file));
 		return;
 	}
 	ED_Free (ed);
@@ -1414,7 +1414,7 @@ void PF_Find (void)
 {
 	int		e;	
 	int		f;
-	char	*s, *t;
+	const char	*s, *t;
 	edict_t	*ed;
 
 	e = G_EDICTNUM(OFS_PARM0);
@@ -1470,7 +1470,7 @@ void PF_FindFloat (void)
 	RETURN_EDICT(sv.edicts);
 }
 
-void PR_CheckEmptyString (char *s)
+void PR_CheckEmptyString (const char *s)
 {
 	if (s[0] <= ' ')
 		PR_RunError ("Bad string");
@@ -1483,7 +1483,7 @@ void PF_precache_file (void)
 
 void PF_precache_sound (void)
 {
-	char	*s;
+	const char	*s;
 	int		i;
 	
 	if (sv.state != ss_loading && !ignore_precache)
@@ -1524,7 +1524,7 @@ void PF_precache_sound3 (void)
 
 void PF_precache_model (void)
 {
-	char	*s;
+	const char	*s;
 	int		i;
 	
 	if (sv.state != ss_loading && !ignore_precache)
@@ -1567,7 +1567,8 @@ void PF_precache_model3 (void)
 void PF_precache_puzzle_model (void)
 {
 	int		i;
-	char	*s,temp[256],*m;
+	char	*s,temp[256];
+	const char*	m;
 	
 	if (sv.state != ss_loading && !ignore_precache)
 		PR_RunError ("PF_Precache_*: Precache can only be done in spawn functions");
@@ -1701,7 +1702,7 @@ void(float style, string value) lightstyle
 void PF_lightstyle (void)
 {
 	int		style;
-	char	*val;
+	const char	*val;
 	client_t	*client;
 	int			j;
 	
@@ -2121,8 +2122,6 @@ void PF_WriteEntity (void)
 
 //=============================================================================
 
-int SV_ModelIndex (char *name);
-
 void PF_makestatic (void)
 {
 	edict_t	*ent;
@@ -2132,7 +2131,7 @@ void PF_makestatic (void)
 
 	sv.signon.WriteByte(svc_spawnstatic);
 
-	sv.signon.WriteShort(SV_ModelIndex(pr_strings + ent->v.model));
+	sv.signon.WriteShort(SV_ModelIndex(PR_GetString(ent->v.model)));
 
 	sv.signon.WriteByte(ent->v.frame);
 	sv.signon.WriteByte(ent->v.colormap);
@@ -2182,7 +2181,7 @@ PF_changelevel
 */
 void PF_changelevel (void)
 {
-	char	*s1, *s2;
+	const char	*s1, *s2;
 
 	if (svs.changelevel_issued)
 		return;
@@ -2241,7 +2240,7 @@ void PF_infokey (void)
 	edict_t	*e;
 	int		e1;
 	const char	*value;
-	char	*key;
+	const char	*key;
 
 	e = G_EDICT(OFS_PARM0);
 	e1 = NUM_FOR_EDICT(e);
@@ -2268,7 +2267,7 @@ float(string s) stof
 */
 void PF_stof (void)
 {
-	char	*s;
+	const char	*s;
 
 	s = G_STRING(OFS_PARM0);
 
@@ -2517,7 +2516,7 @@ void PF_AwardExperience(void)
 
 	if (!Amount) return;
 
-	IsPlayer = (QStr::ICmp(ToEnt->v.classname + pr_strings, "player") == 0);
+	IsPlayer = (QStr::ICmp(PR_GetString(ToEnt->v.classname), "player") == 0);
 
 	if (FromEnt && Amount == 0.0)
 	{
@@ -3022,7 +3021,7 @@ void PF_GetString(void)
 	if (Index >= pr_string_count)
 		PR_RunError ("PF_GetString: index(%d) >= pr_string_count(%d)",Index,pr_string_count);
 
-	G_INT(OFS_RETURN) = (&pr_global_strings[pr_string_index[Index]]) - pr_strings;
+	G_INT(OFS_RETURN) = PR_SetString(&pr_global_strings[pr_string_index[Index]]);
 }
 
 
@@ -3111,7 +3110,7 @@ void PF_weapon_sound(void)
 {
 	edict_t *entity;
 	int sound_num;
-	char *sample;
+	const char *sample;
 
 	entity = G_EDICT(OFS_PARM0);
 	sample = G_STRING(OFS_PARM1);

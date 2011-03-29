@@ -220,7 +220,7 @@ void SV_DropClient (client_t *drop)
 			PR_ExecuteProgram (SpectatorDisconnect);
 		}
 	else if(dmMode->value==DM_SIEGE)
-		if(QStr::ICmp(drop->edict->v.puzzle_inv1+pr_strings,""))
+		if(QStr::ICmp(PR_GetString(drop->edict->v.puzzle_inv1),""))
 		{
 			//this guy has a puzzle piece, call this function anyway
 			//to make sure he leaves it behind

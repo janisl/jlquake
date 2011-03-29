@@ -86,7 +86,7 @@ Con_Printf
 Handles cursor positioning, line wrapping, etc
 ================
 */
-void Con_Printf (char *fmt, ...)
+void Con_Printf(const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
@@ -116,7 +116,7 @@ Con_DPrintf
 A Con_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Con_DPrintf (char *fmt, ...)
+void Con_DPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
@@ -415,7 +415,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
+void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -752,7 +752,7 @@ void SV_UpdateClientStats (client_t *client)
 		ent = svs.clients[client->spec_track - 1].edict;
 
 	stats[STAT_HEALTH] = 0;//ent->v.health;
-	stats[STAT_WEAPON] = SV_ModelIndex(pr_strings+ent->v.weaponmodel);
+	stats[STAT_WEAPON] = SV_ModelIndex(PR_GetString(ent->v.weaponmodel));
 	stats[STAT_AMMO] = 0;//ent->v.currentammo;
 	stats[STAT_ARMOR] = 0;//ent->v.armorvalue;
 	stats[STAT_SHELLS] = 0;//ent->v.ammo_shells;

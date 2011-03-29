@@ -71,7 +71,7 @@ void SV_New_f (void)
 	else 
 	{//Use netname on map if there is one, so they don't have to edit strings.txt
 	//	host_client->netchan.message.WriteString2("");
-		host_client->netchan.message.WriteString2(sv.edicts->v.netname + pr_strings);
+		host_client->netchan.message.WriteString2(PR_GetString(sv.edicts->v.netname));
 	}
 
 	// send the movevars
@@ -105,7 +105,7 @@ SV_Soundlist_f
 */
 void SV_Soundlist_f (void)
 {
-	char		**s;
+	const char		**s;
 
 	if (host_client->state != cs_connected)
 	{
@@ -134,7 +134,7 @@ SV_Modellist_f
 */
 void SV_Modellist_f (void)
 {
-	char		**s;
+	const char		**s;
 
 	if (host_client->state != cs_connected)
 	{
@@ -237,7 +237,7 @@ void SV_Spawn_f (void)
 		ent->v.team = ent->v.siege_team;	// FIXME
 	else
 		ent->v.team = 0;	// FIXME
-	ent->v.netname = host_client->name - pr_strings;
+	ent->v.netname = PR_SetString(host_client->name);
 	//ent->v.playerclass = host_client->playerclass = 
 	ent->v.next_playerclass = host_client->next_playerclass;;
 	ent->v.has_portals = host_client->portals;
@@ -315,7 +315,7 @@ void SV_SpawnSpectator (void)
 	for (i=MAX_CLIENTS-1 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if (!QStr::Cmp(pr_strings + e->v.classname, "info_player_start"))
+		if (!QStr::Cmp(PR_GetString(e->v.classname), "info_player_start"))
 		{
 			VectorCopy (e->v.origin, sv_player->v.origin);
 			return;

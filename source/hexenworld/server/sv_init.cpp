@@ -14,7 +14,7 @@ SV_ModelIndex
 
 ================
 */
-int SV_ModelIndex (char *name)
+int SV_ModelIndex (const char *name)
 {
 	int		i;
 	
@@ -92,7 +92,7 @@ void SV_CreateBaseline (void)
 		{
 			svent->baseline.colormap = 0;
 			svent->baseline.modelindex =
-				SV_ModelIndex(pr_strings + svent->v.model);
+				SV_ModelIndex(PR_GetString(svent->v.model));
 		}
 
 		svent->baseline.scale = (int)(svent->v.scale*100.0)&255;
@@ -237,9 +237,9 @@ void SV_SpawnServer (char *server, char *startspot)
 	//
 	SV_ClearWorld ();
 	
-	sv.sound_precache[0] = pr_strings;
+	sv.sound_precache[0] = PR_GetString(0);
 
-	sv.model_precache[0] = pr_strings;
+	sv.model_precache[0] = PR_GetString(0);
 	sv.model_precache[1] = sv.modelname;
 	sv.models[1] = 0;
 	for (i = 1; i < CM_NumInlineModels(); i++)
@@ -258,7 +258,7 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	ent = EDICT_NUM(0);
 	ent->free = false;
-	ent->v.model = sv.modelname - pr_strings;
+	ent->v.model = PR_SetString(sv.modelname);
 	ent->v.modelindex = 1;		// world model
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
@@ -285,7 +285,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	pr_global_struct->patternRunner = patternRunner->value;
 	pr_global_struct->max_players = maxclients->value;
 
-	pr_global_struct->startspot = sv.startspot - pr_strings;
+	pr_global_struct->startspot = PR_SetString(sv.startspot);
 
 	sv.current_skill = (int)(skill->value + 0.5);
 	if (sv.current_skill < 0)
@@ -295,7 +295,7 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	Cvar_SetValue ("skill", (float)sv.current_skill);
 
-	pr_global_struct->mapname = sv.name - pr_strings;
+	pr_global_struct->mapname = PR_SetString(sv.name);
 	// serverflags are for cross level information (sigils)
 	pr_global_struct->serverflags = svs.serverflags;
 	

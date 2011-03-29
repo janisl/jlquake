@@ -314,7 +314,7 @@ void SV_WriteDelta (entity_state_t *from, entity_state_t *to, QMsg *msg, qboolea
 	temp_index = to->modelindex;
 	if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
 	{
-		QStr::Cpy(NewName,ent->v.model + pr_strings);
+		QStr::Cpy(NewName, PR_GetString(ent->v.model));
 		if (client->playerclass <= 0 || client->playerclass > MAX_PLAYER_CLASS)
 		{
 			NewName[QStr::Length(NewName)-5] = '1';
@@ -757,21 +757,21 @@ void SV_WriteInventory (client_t *host_client, edict_t *ent, QMsg *msg)
 //	if (sc2 & SC2_TOME_T)
 //		msg->WriteFloat(ent->v.tome_time);
 	if (sc2 & SC2_PUZZLE1)
-		msg->WriteString2(pr_strings+ent->v.puzzle_inv1);
+		msg->WriteString2(PR_GetString(ent->v.puzzle_inv1));
 	if (sc2 & SC2_PUZZLE2)
-		msg->WriteString2(pr_strings+ent->v.puzzle_inv2);
+		msg->WriteString2(PR_GetString(ent->v.puzzle_inv2));
 	if (sc2 & SC2_PUZZLE3)
-		msg->WriteString2(pr_strings+ent->v.puzzle_inv3);
+		msg->WriteString2(PR_GetString(ent->v.puzzle_inv3));
 	if (sc2 & SC2_PUZZLE4)
-		msg->WriteString2(pr_strings+ent->v.puzzle_inv4);
+		msg->WriteString2(PR_GetString(ent->v.puzzle_inv4));
 	if (sc2 & SC2_PUZZLE5)
-		msg->WriteString2(pr_strings+ent->v.puzzle_inv5);
+		msg->WriteString2(PR_GetString(ent->v.puzzle_inv5));
 	if (sc2 & SC2_PUZZLE6)
-		msg->WriteString2(pr_strings+ent->v.puzzle_inv6);
+		msg->WriteString2(PR_GetString(ent->v.puzzle_inv6));
 	if (sc2 & SC2_PUZZLE7)
-		msg->WriteString2(pr_strings+ent->v.puzzle_inv7);
+		msg->WriteString2(PR_GetString(ent->v.puzzle_inv7));
 	if (sc2 & SC2_PUZZLE8)
-		msg->WriteString2(pr_strings+ent->v.puzzle_inv8);
+		msg->WriteString2(PR_GetString(ent->v.puzzle_inv8));
 	if (sc2 & SC2_MAXHEALTH)
 		msg->WriteShort(ent->v.max_health);
 	if (sc2 & SC2_MAXMANA)
@@ -1370,7 +1370,7 @@ void SV_WriteEntitiesToClient (client_t *client, QMsg *msg)
 	for (e=MAX_CLIENTS+1, ent=EDICT_NUM(e) ; e<sv.num_edicts ; e++, ent = NEXT_EDICT(ent))
 	{
 		// ignore ents without visible models
-		if (!ent->v.modelindex || !pr_strings[ent->v.model])
+		if (!ent->v.modelindex || !*PR_GetString(ent->v.model))
 			continue;
 	
 		if ((int)ent->v.effects & EF_NODRAW)

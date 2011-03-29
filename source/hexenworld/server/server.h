@@ -32,9 +32,9 @@ typedef struct
 
 	char		startspot[64];
 	char		modelname[MAX_QPATH];		// maps/<name>.bsp, for model_precache[0]
-	char		*model_precache[MAX_MODELS];	// NULL terminated
-	char		*sound_precache[MAX_SOUNDS];	// NULL terminated
-	char		*lightstyles[MAX_LIGHTSTYLES];
+	const char*	model_precache[MAX_MODELS];	// NULL terminated
+	const char*	sound_precache[MAX_SOUNDS];	// NULL terminated
+	const char*	lightstyles[MAX_LIGHTSTYLES];
 	clipHandle_t	models[MAX_MODELS];
 
 	struct EffectT Effects[MAX_EFFECTS];
@@ -355,7 +355,7 @@ void SV_DropClient (client_t *drop);
 int SV_CalcPing (client_t *cl);
 void SV_FullClientUpdate (client_t *client, QMsg *buf);
 
-int SV_ModelIndex (char *name);
+int SV_ModelIndex (const char *name);
 
 qboolean SV_CheckBottom (edict_t *ent);
 qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink, qboolean noenemy, qboolean set_trace);
@@ -405,7 +405,7 @@ void SV_SendClientMessages (void);
 
 void SV_Multicast (vec3_t origin, int to);
 void SV_MulticastSpecific (unsigned clients, qboolean reliable);
-void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
+void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
     float attenuation);
 void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count);
 void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);

@@ -60,8 +60,8 @@ extern	double		realtime;			// not bounded in any way, changed at
 void SV_Error (char *error, ...);
 void SV_Init (quakeparms_t *parms);
 
-void Con_Printf (char *fmt, ...);
-void Con_DPrintf (char *fmt, ...);
+void Con_Printf (const char *fmt, ...);
+void Con_DPrintf (const char *fmt, ...);
 
 extern	unsigned int defLosses;	// Defenders losses in Siege
 extern	unsigned int attLosses;	// Attackers Losses in Siege
