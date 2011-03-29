@@ -35,10 +35,10 @@ typedef struct
 
 	char		startspot[64];
 	char		modelname[64];		// maps/<name>.bsp, for model_precache[0]
-	char		*model_precache[MAX_MODELS];	// NULL terminated
+	const char*	model_precache[MAX_MODELS];	// NULL terminated
 	clipHandle_t	models[MAX_MODELS];
-	char		*sound_precache[MAX_SOUNDS];	// NULL terminated
-	char		*lightstyles[MAX_LIGHTSTYLES];
+	const char*	sound_precache[MAX_SOUNDS];	// NULL terminated
+	const char*	lightstyles[MAX_LIGHTSTYLES];
 	struct EffectT Effects[MAX_EFFECTS];
 	client_state2_t *states;
 	int			num_edicts;
@@ -266,7 +266,7 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count);
 void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
 void SV_StartParticle3 (vec3_t org, vec3_t box, int color, int effect, int count);
 void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int count);
-void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
+void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
     float attenuation);
 
 void SV_DropClient (qboolean crash);
@@ -274,7 +274,7 @@ void SV_DropClient (qboolean crash);
 void SV_SendClientMessages (void);
 void SV_ClearDatagram (void);
 
-int SV_ModelIndex (char *name);
+int SV_ModelIndex (const char *name);
 
 void SV_SetIdealPitch (void);
 

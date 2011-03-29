@@ -230,7 +230,7 @@ ddef_t *ED_FindField (char *name)
 	for (i=0 ; i<progs->numfielddefs ; i++)
 	{
 		def = &pr_fielddefs[i];
-		if (!QStr::Cmp(pr_strings + def->s_name,name) )
+		if (!QStr::Cmp(PR_GetString(def->s_name),name) )
 			return def;
 	}
 	return NULL;
@@ -250,7 +250,7 @@ ddef_t *ED_FindGlobal (char *name)
 	for (i=0 ; i<progs->numglobaldefs ; i++)
 	{
 		def = &pr_globaldefs[i];
-		if (!QStr::Cmp(pr_strings + def->s_name,name) )
+		if (!QStr::Cmp(PR_GetString(def->s_name),name) )
 			return def;
 	}
 	return NULL;
@@ -262,7 +262,7 @@ ddef_t *ED_FindGlobal (char *name)
 ED_FindFunction
 ============
 */
-dfunction_t *ED_FindFunction (char *name)
+dfunction_t *ED_FindFunction (const char *name)
 {
 	dfunction_t		*func;
 	int				i;
@@ -270,7 +270,7 @@ dfunction_t *ED_FindFunction (char *name)
 	for (i=0 ; i<progs->numfunctions ; i++)
 	{
 		func = &pr_functions[i];
-		if (!QStr::Cmp(pr_strings + func->s_name,name) )
+		if (!QStr::Cmp(PR_GetString(func->s_name),name) )
 			return func;
 	}
 	return NULL;
@@ -284,7 +284,7 @@ dfunction_t *ED_FindFunctioni (char *name)
 	for (i=0 ; i<progs->numfunctions ; i++)
 	{
 		func = &pr_functions[i];
-		if (!QStr::ICmp(pr_strings + func->s_name,name) )
+		if (!QStr::ICmp(PR_GetString(func->s_name),name) )
 			return func;
 	}
 	return NULL;
@@ -341,18 +341,18 @@ char *PR_ValueString (etype_t type, eval_t *val)
 	switch (type)
 	{
 	case ev_string:
-		sprintf (line, "%s", pr_strings + val->string);
+		sprintf (line, "%s", PR_GetString(val->string));
 		break;
 	case ev_entity:	
 		sprintf (line, "entity %i", NUM_FOR_EDICT(PROG_TO_EDICT(val->edict)) );
 		break;
 	case ev_function:
 		f = pr_functions + val->function;
-		sprintf (line, "%s()", pr_strings + f->s_name);
+		sprintf (line, "%s()", PR_GetString(f->s_name));
 		break;
 	case ev_field:
 		def = ED_FieldAtOfs ( val->_int );
-		sprintf (line, ".%s", pr_strings + def->s_name);
+		sprintf (line, ".%s", PR_GetString(def->s_name));
 		break;
 	case ev_void:
 		sprintf (line, "void");
@@ -393,18 +393,18 @@ char *PR_UglyValueString (etype_t type, eval_t *val)
 	switch (type)
 	{
 	case ev_string:
-		sprintf (line, "%s", pr_strings + val->string);
+		sprintf (line, "%s", PR_GetString(val->string));
 		break;
 	case ev_entity:	
 		sprintf (line, "%i", NUM_FOR_EDICT(PROG_TO_EDICT(val->edict)));
 		break;
 	case ev_function:
 		f = pr_functions + val->function;
-		sprintf (line, "%s", pr_strings + f->s_name);
+		sprintf (line, "%s", PR_GetString(f->s_name));
 		break;
 	case ev_field:
 		def = ED_FieldAtOfs ( val->_int );
-		sprintf (line, "%s", pr_strings + def->s_name);
+		sprintf (line, "%s", PR_GetString(def->s_name));
 		break;
 	case ev_void:
 		sprintf (line, "void");
@@ -446,7 +446,7 @@ char *PR_GlobalString (int ofs)
 	else
 	{
 		s = PR_ValueString ((etype_t)def->type, (eval_t*)val);
-		sprintf (line,"%i(%s)%s", ofs, pr_strings + def->s_name, s);
+		sprintf (line,"%i(%s)%s", ofs, PR_GetString(def->s_name), s);
 	}
 	
 	i = QStr::Length(line);
@@ -467,7 +467,7 @@ char *PR_GlobalStringNoContents (int ofs)
 	if (!def)
 		sprintf (line,"%i(?)", ofs);
 	else
-		sprintf (line,"%i(%s)", ofs, pr_strings + def->s_name);
+		sprintf (line,"%i(%s)", ofs, PR_GetString(def->s_name));
 	
 	i = QStr::Length(line);
 	for ( ; i<20 ; i++)
@@ -491,7 +491,7 @@ void ED_Print (edict_t *ed)
 	ddef_t	*d;
 	int		*v;
 	int		i, j;
-	char	*name;
+	const char	*name;
 	int		type;
 
 	if (ed->free)
@@ -504,7 +504,7 @@ void ED_Print (edict_t *ed)
 	for (i=1 ; i<progs->numfielddefs ; i++)
 	{
 		d = &pr_fielddefs[i];
-		name = pr_strings + d->s_name;
+		name = PR_GetString(d->s_name);
 		if ((name[QStr::Length(name)-2] == '_') && 
 			((name[QStr::Length(name)-1] == 'x') || (name[QStr::Length(name)-1] == 'y') || (name[QStr::Length(name)-1] == 'z')))
 			continue;	// skip _x, _y, _z vars
@@ -541,7 +541,7 @@ void ED_Write (fileHandle_t f, edict_t *ed)
 	ddef_t	*d;
 	int		*v;
 	int		i, j;
-	char	*name;
+	const char	*name;
 	int		type;
 	int		length;
 
@@ -556,14 +556,14 @@ void ED_Write (fileHandle_t f, edict_t *ed)
 	RemoveBadReferences = true;
 	
 	if (ed->v.classname)
-		QStr::Cpy(class_name,pr_strings + ed->v.classname);
+		QStr::Cpy(class_name,PR_GetString(ed->v.classname));
 	else
 		class_name[0] = 0;
 
 	for (i=1 ; i<progs->numfielddefs ; i++)
 	{
 		d = &pr_fielddefs[i];
-		name = pr_strings + d->s_name;
+		name = PR_GetString(d->s_name);
 		length = QStr::Length(name);
 		if (name[length-2] == '_' && name[length-1] >= 'x' && name[length-1] <= 'z')
 			continue;	// skip _x, _y, _z vars
@@ -686,7 +686,7 @@ void ED_WriteGlobals (fileHandle_t f)
 {
 	ddef_t		*def;
 	int			i;
-	char		*name;
+	const char		*name;
 	int			type;
 
 	FS_Printf(f,"{\n");
@@ -703,7 +703,7 @@ void ED_WriteGlobals (fileHandle_t f)
 		&& type != ev_entity)
 			continue;
 
-		name = pr_strings + def->s_name;		
+		name = PR_GetString(def->s_name);
 		FS_Printf(f,"\"%s\" ", name);
 		FS_Printf(f,"\"%s\"\n", PR_UglyValueString((etype_t)type, (eval_t *)&pr_globals[def->ofs]));		
 	}
@@ -809,7 +809,7 @@ qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
 	switch (key->type & ~DEF_SAVEGLOBAL)
 	{
 	case ev_string:
-		*(string_t *)d = ED_NewString (s) - pr_strings;
+		*(string_t *)d = PR_SetString(ED_NewString(s));
 		break;
 		
 	case ev_float:
@@ -1028,7 +1028,7 @@ void ED_LoadFromFile (const char *data)
 #if 0
 		//jfm fuckup test
 		//remove for final release
-		if ((ent->v.spawnflags >1) && !QStr::Cmp("worldspawn",pr_strings + ent->v.classname) )
+		if ((ent->v.spawnflags >1) && !QStr::Cmp("worldspawn",PR_GetString(ent->v.classname)) )
 		{
 			Host_Error ("invalid SpawnFlags on World!!!\n");
 		}
@@ -1125,7 +1125,7 @@ void ED_LoadFromFile (const char *data)
 		}
 		
 	// look for the spawn function
-		func = ED_FindFunction ( pr_strings + ent->v.classname );
+		func = ED_FindFunction ( PR_GetString(ent->v.classname) );
 
 		if (!func)
 		{

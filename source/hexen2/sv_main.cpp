@@ -105,9 +105,9 @@ void SV_Edicts(const char *Name)
 	{
 		e = EDICT_NUM(i);
 		FS_Printf(FH,"%3d. %8.2f %-30s %-30s %-40s %-40s %-40s\n",
-			i,e->v.nextthink,e->v.classname+pr_strings,e->v.model+pr_strings,
-			pr_functions[e->v.think].s_name+pr_strings,pr_functions[e->v.touch].s_name+pr_strings,
-			pr_functions[e->v.use].s_name+pr_strings);
+			i,e->v.nextthink,PR_GetString(e->v.classname),PR_GetString(e->v.model),
+			PR_GetString(pr_functions[e->v.think].s_name),PR_GetString(pr_functions[e->v.touch].s_name),
+			PR_GetString(pr_functions[e->v.use].s_name));
 	}
 	FS_FCloseFile(FH);
 }
@@ -310,7 +310,7 @@ Larger attenuations will drop off.  (max 4 attenuation)
 
 ==================
 */  
-void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
+void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
     float attenuation)
 {       
     int         sound_num;
@@ -401,7 +401,7 @@ This will be sent on the initial connection and upon each server load.
 */
 void SV_SendServerinfo (client_t *client)
 {
-	char			**s;
+	const char			**s;
 	char			message[2048];
 
 	client->message.WriteByte(svc_print);
@@ -427,7 +427,7 @@ void SV_SendServerinfo (client_t *client)
 	else
 	{
 //		client->message.WriteString2("");
-		client->message.WriteString2(sv.edicts->v.netname + pr_strings);
+		client->message.WriteString2(PR_GetString(sv.edicts->v.netname));
 	}
 
 	for (s = sv.model_precache+1 ; *s ; s++)
@@ -777,7 +777,7 @@ void SV_PrepareClientEntities (client_t *client, edict_t	*clent, QMsg *msg)
 		// ignore if not touching a PV leaf
 		if (ent != clent)	// clent is ALWAYS sent
 		{	// ignore ents without visible models
-			if (!ent->v.modelindex || !pr_strings[ent->v.model])
+			if (!ent->v.modelindex || !*PR_GetString(ent->v.model))
 			{
 				DoRemove = true;
 				goto skipA;
@@ -946,14 +946,14 @@ skipA:
 //		flagtest = (long)ent->v.flags;
 		if (flagtest & 0xff000000)
 		{
-			Host_Error("Invalid flags setting for class %s",ent->v.classname + pr_strings);
+			Host_Error("Invalid flags setting for class %s", PR_GetString(ent->v.classname));
 			return;
 		}
 
 		temp_index = ent->v.modelindex;
 		if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
 		{
-			QStr::Cpy(NewName,ent->v.model + pr_strings);
+			QStr::Cpy(NewName, PR_GetString(ent->v.model));
 			NewName[QStr::Length(NewName)-5] = client->playerclass + 48;
 			temp_index = SV_ModelIndex (NewName);
 		}
@@ -1224,7 +1224,7 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	if (bits & SU_ARMOR)
 		msg->WriteByte(ent->v.armorvalue);
 	if (bits & SU_WEAPON)
-		msg->WriteShort(SV_ModelIndex(pr_strings+ent->v.weaponmodel));
+		msg->WriteShort(SV_ModelIndex(PR_GetString(ent->v.weaponmodel)));
 
 	if (host_client->send_all_v) 
 	{
@@ -1479,21 +1479,21 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	if (sc2 & SC2_TOME_T)
 		host_client->message.WriteFloat(ent->v.tome_time);
 	if (sc2 & SC2_PUZZLE1)
-		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv1);
+		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv1));
 	if (sc2 & SC2_PUZZLE2)
-		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv2);
+		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv2));
 	if (sc2 & SC2_PUZZLE3)
-		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv3);
+		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv3));
 	if (sc2 & SC2_PUZZLE4)
-		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv4);
+		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv4));
 	if (sc2 & SC2_PUZZLE5)
-		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv5);
+		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv5));
 	if (sc2 & SC2_PUZZLE6)
-		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv6);
+		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv6));
 	if (sc2 & SC2_PUZZLE7)
-		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv7);
+		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv7));
 	if (sc2 & SC2_PUZZLE8)
-		host_client->message.WriteString2(pr_strings+ent->v.puzzle_inv8);
+		host_client->message.WriteString2(PR_GetString(ent->v.puzzle_inv8));
 	if (sc2 & SC2_MAXHEALTH)
 		host_client->message.WriteShort(ent->v.max_health);
 	if (sc2 & SC2_MAXMANA)
@@ -1720,7 +1720,7 @@ SV_ModelIndex
 
 ================
 */
-int SV_ModelIndex (char *name)
+int SV_ModelIndex (const char *name)
 {
 	int		i;
 	
@@ -1780,7 +1780,7 @@ void SV_CreateBaseline (void)
 		{
 			svent->baseline.colormap = 0;
 			svent->baseline.modelindex =
-				SV_ModelIndex(pr_strings + svent->v.model);
+				SV_ModelIndex(PR_GetString(svent->v.model));
 		}
 		Com_Memset(svent->baseline.ClearCount,99,sizeof(svent->baseline.ClearCount));
 		
@@ -1982,9 +1982,9 @@ void SV_SpawnServer (char *server, char *startspot)
 //
 	SV_ClearWorld ();
 
-	sv.sound_precache[0] = pr_strings;
+	sv.sound_precache[0] = PR_GetString(0);
 
-	sv.model_precache[0] = pr_strings;
+	sv.model_precache[0] = PR_GetString(0);
 	sv.model_precache[1] = sv.modelname;
 	for (i = 1; i < CM_NumInlineModels(); i++)
 	{
@@ -1998,7 +1998,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	ent = EDICT_NUM(0);
 	Com_Memset(&ent->v, 0, progs->entityfields * 4);
 	ent->free = false;
-	ent->v.model = sv.modelname - pr_strings;
+	ent->v.model = PR_SetString(sv.modelname);
 	ent->v.modelindex = 1;		// world model
 	ent->v.solid = SOLID_BSP;
 	ent->v.movetype = MOVETYPE_PUSH;
@@ -2010,8 +2010,8 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	pr_global_struct->randomclass = randomclass->value;
 
-	pr_global_struct->mapname = sv.name - pr_strings;
-	pr_global_struct->startspot = sv.startspot - pr_strings;
+	pr_global_struct->mapname = PR_SetString(sv.name);
+	pr_global_struct->startspot = PR_SetString(sv.startspot);
 
 	// serverflags are for cross level information (sigils)
 	pr_global_struct->serverflags = svs.serverflags;
