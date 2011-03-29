@@ -477,8 +477,8 @@ void CheckMultiTextureExtensions(void)
 {
 	if (strstr(gl_extensions, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
 		Con_Printf("Multitexture extensions found.\n");
-		glMTexCoord2fSGIS = (lpMTexFUNC) wglGetProcAddress("glMTexCoord2fSGIS");
-		glSelectTextureSGIS = (lpSelTexFUNC) wglGetProcAddress("glSelectTextureSGIS");
+		glMTexCoord2fSGIS = (lpMTexFUNC) GLimp_GetProcAddress("glMTexCoord2fSGIS");
+		glSelectTextureSGIS = (lpSelTexFUNC) GLimp_GetProcAddress("glSelectTextureSGIS");
 		gl_mtexable = true;
 	}
 }

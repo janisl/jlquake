@@ -157,6 +157,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_driver_wgl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_qgl.cpp"
 				>
 			</File>

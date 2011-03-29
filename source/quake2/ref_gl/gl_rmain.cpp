@@ -1103,8 +1103,8 @@ int R_Init( void *hinstance, void *hWnd )
 		 strstr( gl_config.extensions_string, "GL_SGI_compiled_vertex_array" ) )
 	{
 		ri.Con_Printf( PRINT_ALL, "...enabling GL_EXT_compiled_vertex_array\n" );
-		qglLockArraysEXT = (void(APIENTRY*)(int, int)) wglGetProcAddress( "glLockArraysEXT" );
-		qglUnlockArraysEXT = (void(APIENTRY*)()) wglGetProcAddress( "glUnlockArraysEXT" );
+		qglLockArraysEXT = (void(APIENTRY*)(int, int)) GLimp_GetProcAddress( "glLockArraysEXT" );
+		qglUnlockArraysEXT = (void(APIENTRY*)()) GLimp_GetProcAddress( "glUnlockArraysEXT" );
 	}
 	else
 	{
@@ -1113,7 +1113,7 @@ int R_Init( void *hinstance, void *hWnd )
 
 	if ( strstr( gl_config.extensions_string, "WGL_EXT_swap_control" ) )
 	{
-		qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) wglGetProcAddress( "wglSwapIntervalEXT" );
+		qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) GLimp_GetProcAddress( "wglSwapIntervalEXT" );
 		ri.Con_Printf( PRINT_ALL, "...enabling WGL_EXT_swap_control\n" );
 	}
 	else
@@ -1125,8 +1125,8 @@ int R_Init( void *hinstance, void *hWnd )
 	{
 		if ( gl_ext_pointparameters->value )
 		{
-			qglPointParameterfEXT = ( void (APIENTRY *)( GLenum, GLfloat ) ) wglGetProcAddress( "glPointParameterfEXT" );
-			qglPointParameterfvEXT = ( void (APIENTRY *)( GLenum, const GLfloat * ) ) wglGetProcAddress( "glPointParameterfvEXT" );
+			qglPointParameterfEXT = ( void (APIENTRY *)( GLenum, GLfloat ) ) GLimp_GetProcAddress( "glPointParameterfEXT" );
+			qglPointParameterfvEXT = ( void (APIENTRY *)( GLenum, const GLfloat * ) ) GLimp_GetProcAddress( "glPointParameterfvEXT" );
 			ri.Con_Printf( PRINT_ALL, "...using GL_EXT_point_parameters\n" );
 		}
 		else
@@ -1144,8 +1144,8 @@ int R_Init( void *hinstance, void *hWnd )
 		if ( gl_ext_multitexture->value )
 		{
 			ri.Con_Printf( PRINT_ALL, "...using GL_SGIS_multitexture\n" );
-			qglMTexCoord2fSGIS = (void(APIENTRY*)( GLenum, GLfloat, GLfloat )) wglGetProcAddress( "glMTexCoord2fSGIS" );
-			qglSelectTextureSGIS = (void ( APIENTRY *)( GLenum )) wglGetProcAddress( "glSelectTextureSGIS" );
+			qglMTexCoord2fSGIS = (void(APIENTRY*)( GLenum, GLfloat, GLfloat )) GLimp_GetProcAddress( "glMTexCoord2fSGIS" );
+			qglSelectTextureSGIS = (void ( APIENTRY *)( GLenum )) GLimp_GetProcAddress( "glSelectTextureSGIS" );
 		}
 		else
 		{

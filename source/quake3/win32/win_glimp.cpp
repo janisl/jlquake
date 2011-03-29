@@ -975,7 +975,7 @@ static void GLW_InitExtensions( void )
 	}
 
 	// WGL_EXT_swap_control
-	qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) wglGetProcAddress( "wglSwapIntervalEXT" );
+	qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) GLimp_GetProcAddress( "wglSwapIntervalEXT" );
 	if ( qwglSwapIntervalEXT )
 	{
 		ri.Printf( PRINT_ALL, "...using WGL_EXT_swap_control\n" );
@@ -994,9 +994,9 @@ static void GLW_InitExtensions( void )
 	{
 		if ( r_ext_multitexture->integer )
 		{
-			qglMultiTexCoord2fARB = ( PFNGLMULTITEXCOORD2FARBPROC ) wglGetProcAddress( "glMultiTexCoord2fARB" );
-			qglActiveTextureARB = ( PFNGLACTIVETEXTUREARBPROC ) wglGetProcAddress( "glActiveTextureARB" );
-			qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) wglGetProcAddress( "glClientActiveTextureARB" );
+			qglMultiTexCoord2fARB = ( PFNGLMULTITEXCOORD2FARBPROC ) GLimp_GetProcAddress( "glMultiTexCoord2fARB" );
+			qglActiveTextureARB = ( PFNGLACTIVETEXTUREARBPROC ) GLimp_GetProcAddress( "glActiveTextureARB" );
+			qglClientActiveTextureARB = ( PFNGLCLIENTACTIVETEXTUREARBPROC ) GLimp_GetProcAddress( "glClientActiveTextureARB" );
 
 			if ( qglActiveTextureARB )
 			{
@@ -1033,8 +1033,8 @@ static void GLW_InitExtensions( void )
 		if ( r_ext_compiled_vertex_array->integer )
 		{
 			ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
-			qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) ) wglGetProcAddress( "glLockArraysEXT" );
-			qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) ) wglGetProcAddress( "glUnlockArraysEXT" );
+			qglLockArraysEXT = ( void ( APIENTRY * )( int, int ) ) GLimp_GetProcAddress( "glLockArraysEXT" );
+			qglUnlockArraysEXT = ( void ( APIENTRY * )( void ) ) GLimp_GetProcAddress( "glUnlockArraysEXT" );
 			if (!qglLockArraysEXT || !qglUnlockArraysEXT) {
 				ri.Error (ERR_FATAL, "bad getprocaddress");
 			}
@@ -1057,8 +1057,8 @@ static void GLW_InitExtensions( void )
 	{
 		if ( !r_ignorehwgamma->integer && r_ext_gamma_control->integer )
 		{
-			qwglGetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) wglGetProcAddress( "wglGetDeviceGammaRamp3DFX" );
-			qwglSetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) wglGetProcAddress( "wglSetDeviceGammaRamp3DFX" );
+			qwglGetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) GLimp_GetProcAddress( "wglGetDeviceGammaRamp3DFX" );
+			qwglSetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) GLimp_GetProcAddress( "wglSetDeviceGammaRamp3DFX" );
 
 			if ( qwglGetDeviceGammaRamp3DFX && qwglSetDeviceGammaRamp3DFX )
 			{
