@@ -70,12 +70,16 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	CPUSTRING	"win-x86"
 #elif defined _M_ALPHA
 #define	CPUSTRING	"win-AXP"
+#elif defined _M_X86_64
+#define	CPUSTRING	"win-x86_64"
 #endif
 #else
 #ifdef _M_IX86
 #define	CPUSTRING	"win-x86-debug"
 #elif defined _M_ALPHA
 #define	CPUSTRING	"win-AXP-debug"
+#elif defined _M_X86_64
+#define	CPUSTRING	"win-x86_64-debug"
 #endif
 #endif
 
@@ -93,6 +97,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CPUSTRING	"MacOSX-ppc"
 #elif defined __i386__
 #define CPUSTRING	"MacOSX-i386"
+#elif defined __x86_64__
+#define	CPUSTRING	"MaxOSX-x86_64"
 #else
 #define CPUSTRING	"MacOSX-other"
 #endif
@@ -149,6 +155,8 @@ void Sys_PumpEvents( void );
 #define	CPUSTRING	"linux-i386"
 #elif defined __axp__
 #define	CPUSTRING	"linux-alpha"
+#elif defined __x86_64__
+#define	CPUSTRING	"linux-x86_64"
 #else
 #define	CPUSTRING	"linux-other"
 #endif
@@ -164,6 +172,8 @@ void Sys_PumpEvents( void );
 #define CPUSTRING       "freebsd-i386"
 #elif defined __axp__
 #define CPUSTRING       "freebsd-alpha"
+#elif defined __x86_64__
+#define	CPUSTRING		"freebsd-x86_64"
 #else
 #define CPUSTRING       "freebsd-other"
 #endif
