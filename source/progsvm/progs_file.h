@@ -17,10 +17,12 @@
 //**
 //**************************************************************************
 
+#pragma pack(push, 1)
+
 typedef int	func_t;
 typedef int	string_t;
 
-typedef enum
+enum etype_t
 {
 	ev_void,
 	ev_string,
@@ -30,7 +32,7 @@ typedef enum
 	ev_field,
 	ev_function,
 	ev_pointer
-} etype_t;
+};
 
 #define	OFS_NULL		0
 #define	OFS_RETURN		1
@@ -174,64 +176,68 @@ enum
 	OP_CASERANGE
 };
 
-typedef struct statement_s
+struct dstatement_t
 {
-	unsigned short	op;
-	short	a,b,c;
-} dstatement_t;
+	quint16		op;
+	qint16		a;
+	qint16		b;
+	qint16		c;
+};
 
-typedef struct
+struct ddef_t
 {
-	unsigned short	type;		// if DEF_SAVEGLOBGAL bit is set
-								// the variable needs to be saved in savegames
-	unsigned short	ofs;
-	int			s_name;
-} ddef_t;
+	quint16		type;		// if DEF_SAVEGLOBGAL bit is set
+							// the variable needs to be saved in savegames
+	quint16		ofs;
+	qint32		s_name;
+};
 
-#define	DEF_SAVEGLOBAL	(1<<15)
+#define DEF_SAVEGLOBAL	(1 << 15)
 
-#define	MAX_PARMS	8
+#define MAX_PARMS		8
 
-typedef struct
+struct dfunction_t
 {
-	int		first_statement;	// negative numbers are builtins
-	int		parm_start;
-	int		locals;				// total ints of parms + locals
+	qint32		first_statement;	// negative numbers are builtins
+	qint32		parm_start;
+	qint32		locals;				// total ints of parms + locals
 	
-	int		profile;		// runtime
+	qint32		profile;		// runtime
 	
-	int		s_name;
-	int		s_file;			// source file defined in
+	qint32		s_name;
+	qint32		s_file;			// source file defined in
 	
-	int		numparms;
-	byte	parm_size[MAX_PARMS];
-} dfunction_t;
+	qint32		numparms;
+	quint8		parm_size[MAX_PARMS];
+};
 
 
-#define	PROG_VERSION	6
+#define PROG_VERSION	6
 
-typedef struct
+struct dprograms_t
 {
-	int		version;
-	int		crc;			// check of header file
-	
-	int		ofs_statements;
-	int		numstatements;	// statement 0 is an error
+	qint32		version;
+	qint32		crc;			// check of header file
 
-	int		ofs_globaldefs;
-	int		numglobaldefs;
-	
-	int		ofs_fielddefs;
-	int		numfielddefs;
-	
-	int		ofs_functions;
-	int		numfunctions;	// function 0 is an empty
-	
-	int		ofs_strings;
-	int		numstrings;		// first string is a null string
+	qint32		ofs_statements;
+	qint32		numstatements;	// statement 0 is an error
 
-	int		ofs_globals;
-	int		numglobals;
-	
-	int		entityfields;
-} dprograms_t;
+	qint32		ofs_globaldefs;
+	qint32		numglobaldefs;
+
+	qint32		ofs_fielddefs;
+	qint32		numfielddefs;
+
+	qint32		ofs_functions;
+	qint32		numfunctions;	// function 0 is an empty
+
+	qint32		ofs_strings;
+	qint32		numstrings;		// first string is a null string
+
+	qint32		ofs_globals;
+	qint32		numglobals;
+
+	qint32		entityfields;
+};
+
+#pragma pack(pop)
