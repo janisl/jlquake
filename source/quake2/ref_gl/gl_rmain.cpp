@@ -1098,7 +1098,6 @@ int R_Init( void *hinstance, void *hWnd )
 	/*
 	** grab extensions
 	*/
-#ifdef WIN32
 	if ( strstr( gl_config.extensions_string, "GL_EXT_compiled_vertex_array" ) || 
 		 strstr( gl_config.extensions_string, "GL_SGI_compiled_vertex_array" ) )
 	{
@@ -1111,6 +1110,7 @@ int R_Init( void *hinstance, void *hWnd )
 		ri.Con_Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
 	}
 
+#ifdef WIN32
 	if ( strstr( gl_config.extensions_string, "WGL_EXT_swap_control" ) )
 	{
 		qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) GLimp_GetProcAddress( "wglSwapIntervalEXT" );
@@ -1120,6 +1120,7 @@ int R_Init( void *hinstance, void *hWnd )
 	{
 		ri.Con_Printf( PRINT_ALL, "...WGL_EXT_swap_control not found\n" );
 	}
+#endif
 
 	if ( strstr( gl_config.extensions_string, "GL_EXT_point_parameters" ) )
 	{
@@ -1156,7 +1157,6 @@ int R_Init( void *hinstance, void *hWnd )
 	{
 		ri.Con_Printf( PRINT_ALL, "...GL_SGIS_multitexture not found\n" );
 	}
-#endif
 
 	GL_SetDefaultState();
 

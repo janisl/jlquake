@@ -30,27 +30,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-#include <GL/glx.h>
+#include "../client/unix_shared.h"
 
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
 #include <X11/extensions/xf86dga.h>
-#include <X11/extensions/xf86vmode.h>
 
 #define WARP_WIDTH              320
 #define WARP_HEIGHT             200
-
-static Display *dpy = NULL;
-static int scrnum;
-static Window win;
-static GLXContext ctx = NULL;
-
-#define KEY_MASK (KeyPressMask | KeyReleaseMask)
-#define MOUSE_MASK (ButtonPressMask | ButtonReleaseMask | \
-		    PointerMotionMask | ButtonMotionMask )
-#define X_MASK (KEY_MASK | MOUSE_MASK | VisibilityChangeMask | StructureNotifyMask )
-
 
 unsigned short	d_8to16table[256];
 unsigned		d_8to24table[256];
@@ -58,26 +46,13 @@ unsigned char	d_15to8table[65536];
 
 QCvar*	vid_mode;
  
-static qboolean        mouse_avail = true;
-static qboolean        mouse_active;
-static int   mx, my;
 static int	old_mouse_x, old_mouse_y;
 
-static QCvar* in_mouse;
-static QCvar* in_dgamouse;
 static QCvar* m_filter;
 
 qboolean dgamouse = false;
-qboolean vidmode_ext = false;
-
-static int win_x, win_y;
 
 static int scr_width, scr_height;
-
-static XF86VidModeModeInfo **vidmodes;
-static int default_dotclock_vidmode;
-static int num_vidmodes;
-static qboolean vidmode_active = false;
 
 float RTint[256],GTint[256],BTint[256];
 qboolean	vid_initialized = false;
@@ -348,8 +323,8 @@ static void HandleEvents(void)
 	KeySym ks;
 	int b;
 	qboolean dowarp = false;
-	int mwx = vid.width/2;
-	int mwy = vid.height/2;
+	mwx = vid.width/2;
+	mwy = vid.height/2;
 
 	if (!dpy)
 		return;
@@ -895,6 +870,7 @@ void Force_CenterView_f (void)
 
 void IN_Init(void)
 {
+	mouse_avail = true;
 }
 
 void IN_Shutdown(void)

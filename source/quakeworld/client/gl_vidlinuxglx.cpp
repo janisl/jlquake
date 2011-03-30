@@ -28,30 +28,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-#include <GL/glx.h>
+#include "../../client/unix_shared.h"
 
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
-#ifdef USE_DGA
 #include <X11/extensions/xf86dga.h>
-#endif
-
 
 #define WARP_WIDTH              320
 #define WARP_HEIGHT             200
 
-static Display *dpy = NULL;
-static Window win;
-static GLXContext ctx = NULL;
-
 static float old_windowed_mouse = 0;
-
-#define KEY_MASK (KeyPressMask | KeyReleaseMask)
-#define MOUSE_MASK (ButtonPressMask | ButtonReleaseMask | \
-		    PointerMotionMask)
-
-#define X_MASK (KEY_MASK | MOUSE_MASK | VisibilityChangeMask)
 
 unsigned short	d_8to16table[256];
 unsigned		d_8to24table[256];
@@ -60,8 +47,7 @@ unsigned char	d_15to8table[65536];
 QCvar*	_windowed_mouse;
 QCvar*	vid_mode;
  
-static float   mouse_x, mouse_y;
-static float	old_mouse_x, old_mouse_y;
+static float	old_mx, old_my;
 
 QCvar*	m_filter;
 
@@ -88,6 +74,7 @@ const char *gl_version;
 const char *gl_extensions;
 
 qboolean gl_mtexable = false;
+qboolean dgamouse = false;
 
 /*-----------------------------------------------------------------------*/
 void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
@@ -238,14 +225,8 @@ static void install_grabs(void)
 				 None,
 				 CurrentTime);
 
-#ifdef USE_DGA
 	XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
 	dgamouse = 1;
-#else
-	XWarpPointer(dpy, None, win,
-				 0, 0, 0, 0,
-				 vid.width / 2, vid.height / 2);
-#endif
 
 	XGrabKeyboard(dpy, win,
 				  False,
@@ -257,10 +238,8 @@ static void install_grabs(void)
 
 static void uninstall_grabs(void)
 {
-#ifdef USE_DGA
 	XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
 	dgamouse = 0;
-#endif
 
 	XUngrabPointer(dpy, CurrentTime);
 	XUngrabKeyboard(dpy, CurrentTime);
@@ -285,16 +264,14 @@ static void GetEvent(void)
 		break;
 
 	case MotionNotify:
-#ifdef USE_DGA
 		if (dgamouse && _windowed_mouse->value) {
-			mouse_x = event.xmotion.x_root;
-			mouse_y = event.xmotion.y_root;
+			mx = event.xmotion.x_root;
+			my = event.xmotion.y_root;
 		} else
-#endif
 		{
 			if (_windowed_mouse->value) {
-				mouse_x = (float) ((int)event.xmotion.x - (int)(vid.width/2));
-				mouse_y = (float) ((int)event.xmotion.y - (int)(vid.height/2));
+				mx = (float) ((int)event.xmotion.x - (int)(vid.width/2));
+				my = (float) ((int)event.xmotion.y - (int)(vid.height/2));
 
 				/* move the mouse to the window center again */
 				XSelectInput(dpy, win, X_MASK & ~PointerMotionMask);
@@ -533,7 +510,6 @@ void VID_Init(unsigned char *palette)
 		None
 	};
 	int width = 640, height = 480;
-	int scrnum;
 	XSetWindowAttributes attr;
 	unsigned long mask;
 	Window root;
@@ -673,27 +649,27 @@ void IN_MouseMove (usercmd_t *cmd)
 {
 	if (m_filter->value)
 	{
-		mouse_x = (mouse_x + old_mouse_x) * 0.5;
-		mouse_y = (mouse_y + old_mouse_y) * 0.5;
+		mx = (mx + old_mx) * 0.5;
+		my = (my + old_my) * 0.5;
 	}
-	old_mouse_x = mouse_x;
-	old_mouse_y = mouse_y;
+	old_mx = mx;
+	old_my = my;
 
-	mouse_x *= sensitivity->value;
-	mouse_y *= sensitivity->value;
+	mx *= sensitivity->value;
+	my *= sensitivity->value;
 
 // add mouse X/Y movement to cmd
 	if ( (in_strafe.state & 1) || (lookstrafe->value && (in_mlook.state & 1) ))
-		cmd->sidemove += m_side->value * mouse_x;
+		cmd->sidemove += m_side->value * mx;
 	else
-		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
+		cl.viewangles[YAW] -= m_yaw->value * mx;
 	
 	if (in_mlook.state & 1)
 		V_StopPitchDrift ();
 		
 	if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
 	{
-		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
+		cl.viewangles[PITCH] += m_pitch->value * my;
 		if (cl.viewangles[PITCH] > 80)
 			cl.viewangles[PITCH] = 80;
 		if (cl.viewangles[PITCH] < -70)
@@ -702,11 +678,11 @@ void IN_MouseMove (usercmd_t *cmd)
 	else
 	{
 		if ((in_strafe.state & 1) && noclip_anglehack)
-			cmd->upmove -= m_forward->value * mouse_y;
+			cmd->upmove -= m_forward->value * my;
 		else
-			cmd->forwardmove -= m_forward->value * mouse_y;
+			cmd->forwardmove -= m_forward->value * my;
 	}
-	mouse_x = mouse_y = 0.0;
+	mx = my = 0.0;
 }
 
 void IN_Move (usercmd_t *cmd)

@@ -59,13 +59,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../client/client.h"
 #include "linux_local.h" // bk001130
 
-#include <GL/glx.h>
-
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
 #include <X11/extensions/xf86dga.h>
-#include <X11/extensions/xf86vmode.h>
+
+#include "../../client/unix_shared.h"
 
 #define	WINDOW_CLASS_NAME	"Quake III: Arena"
 
@@ -79,30 +78,13 @@ typedef enum
   RSERR_UNKNOWN
 } rserr_t;
 
-static Display *dpy = NULL;
-static int scrnum;
-static Window win = 0;
-static GLXContext ctx = NULL;
-
 // bk001206 - not needed anymore
 // static qboolean autorepeaton = qtrue;
-
-#define KEY_MASK (KeyPressMask | KeyReleaseMask)
-#define MOUSE_MASK (ButtonPressMask | ButtonReleaseMask | \
-		    PointerMotionMask | ButtonMotionMask )
-#define X_MASK (KEY_MASK | MOUSE_MASK | VisibilityChangeMask | StructureNotifyMask )
-
-static qboolean mouse_avail;
-static qboolean mouse_active = qfalse;
-static int mwx, mwy;
-static int mx = 0, my = 0;
 
 // Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
 static int mouseResetTime = 0;
 #define MOUSE_RESET_DELAY 50
 
-static QCvar *in_mouse;
-static QCvar *in_dgamouse; // user pref for dga mouse
 QCvar *in_subframe;
 QCvar *in_nograb; // this is strictly for developers
 
@@ -114,18 +96,10 @@ QCvar   *joy_threshold    = NULL;
 QCvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
 QCvar  *r_previousglDriver;
 
-qboolean vidmode_ext = qfalse;
 static int vidmode_MajorVersion = 0, vidmode_MinorVersion = 0; // major and minor of XF86VidExtensions
 
 // gamma value of the X display before we start playing with it
 static XF86VidModeGamma vidmode_InitialGamma;
-
-static int win_x, win_y;
-
-static XF86VidModeModeInfo **vidmodes;
-//static int default_dotclock_vidmode; // bk001204 - unused
-static int num_vidmodes;
-static qboolean vidmode_active = qfalse;
 
 static int mouse_accel_numerator;
 static int mouse_accel_denominator;
