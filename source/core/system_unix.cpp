@@ -132,7 +132,7 @@ const char* Sys_DefaultHomePath()
 //
 //==========================================================================
 
-static void Sys_ListFilteredFiles(const char* basedir, char* subdirs, char* filter,
+static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, const char* filter,
 	char** list, int* numfiles)
 {
 	char		search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
@@ -205,7 +205,7 @@ static void Sys_ListFilteredFiles(const char* basedir, char* subdirs, char* filt
 //
 //==========================================================================
 
-char** Sys_ListFiles(const char *directory, const char *extension, char *filter,
+char** Sys_ListFiles(const char *directory, const char *extension, const char *filter,
 	int *numfiles, bool wantsubs)
 {
 	struct dirent *d;

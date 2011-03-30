@@ -22,7 +22,7 @@ const char* Sys_Cwd();
 void Sys_SetHomePathSuffix(const char* Name);
 const char* Sys_DefaultHomePath();
 
-char** Sys_ListFiles(const char* directory, const char* extension, char* filter, int* numfiles, bool wantsubs);
+char** Sys_ListFiles(const char* directory, const char* extension, const char* filter, int* numfiles, bool wantsubs);
 void Sys_FreeFileList(char** list);
 
 // Sys_Milliseconds should only be used for profiling purposes,

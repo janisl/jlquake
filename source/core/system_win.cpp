@@ -103,7 +103,7 @@ const char* Sys_DefaultHomePath()
 //
 //==========================================================================
 
-static void Sys_ListFilteredFiles(const char* basedir, char* subdirs, char* filter,
+static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, const char* filter,
 	char** list, int* numfiles)
 {
 	char		search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
@@ -200,7 +200,7 @@ static bool strgtr(const char *s0, const char *s1)
 //
 //==========================================================================
 
-char** Sys_ListFiles(const char* directory, const char* extension, char* filter,
+char** Sys_ListFiles(const char* directory, const char* extension, const char* filter,
 	int* numfiles, bool wantsubs)
 {
 	char		search[MAX_OSPATH];
