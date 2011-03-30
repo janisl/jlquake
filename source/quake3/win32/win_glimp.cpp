@@ -69,7 +69,7 @@ static qboolean s_classRegistered = qfalse;
 //
 // function declaration
 //
-qboolean QGL_Init( const char *dllname );
+qboolean QGL_Init();
 void     QGL_Shutdown( void );
 
 //
@@ -1132,18 +1132,14 @@ static qboolean GLW_CheckOSVersion( void )
 */
 static qboolean GLW_LoadOpenGL( const char *drivername )
 {
-	char buffer[1024];
 	qboolean cdsFullscreen;
-
-	QStr::NCpyZ( buffer, drivername, sizeof(buffer) );
-	QStr::ToLower(buffer);
 
 	glConfig.driverType = GLDRV_ICD;
 
 	//
 	// load the driver and bind our function pointers to it
 	// 
-	if ( QGL_Init( buffer ) ) 
+	if ( QGL_Init() ) 
 	{
 		cdsFullscreen = r_fullscreen->integer;
 

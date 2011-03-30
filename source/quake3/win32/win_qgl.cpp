@@ -59,7 +59,7 @@ void QGL_Shutdown( void )
 ** operating systems we need to do the right thing, whatever that
 ** might be.
 */
-qboolean QGL_Init( const char *dllname )
+qboolean QGL_Init()
 {
 	ri.Printf( PRINT_ALL, "...initializing QGL\n" );
 

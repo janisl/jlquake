@@ -36,7 +36,7 @@ void IN_JoyMove( void );
 void IN_StartupJoystick( void );
 
 // GL subsystem
-qboolean QGL_Init( const char *dllname );
+qboolean QGL_Init();
 void QGL_Shutdown( void );
 
 // bk001130 - win32

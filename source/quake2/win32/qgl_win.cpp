@@ -67,7 +67,7 @@ void QGL_Shutdown( void )
 ** might be.
 ** 
 */
-qboolean QGL_Init( const char *dllname )
+qboolean QGL_Init()
 {
 	QGL_SharedInit();
 

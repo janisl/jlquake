@@ -1302,7 +1302,7 @@ static qboolean GLW_LoadOpenGL( const char *name )
   putenv("MESA_GLX_FX=fullscreen\n");
 
   // load the QGL layer
-  if ( QGL_Init( name ) )
+  if ( QGL_Init() )
   {
     fullscreen = r_fullscreen->integer;
 

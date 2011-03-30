@@ -40,12 +40,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include <dlfcn.h>
 
-
-void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
-void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
-void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
-void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
-
 /*
 ** QGL_Shutdown
 **
@@ -67,16 +61,12 @@ void QGL_Shutdown( void )
 ** 
 */
 
-qboolean QGL_Init( const char *dllname )
+qboolean QGL_Init()
 {
 	QGL_SharedInit();
 
 	qglLockArraysEXT = 0;
 	qglUnlockArraysEXT = 0;
-	qglPointParameterfEXT = 0;
-	qglPointParameterfvEXT = 0;
-	qglSelectTextureSGIS = 0;
-	qglMTexCoord2fSGIS = 0;
 	qglActiveTextureARB = 0;
 	qglClientActiveTextureARB = 0;
 	qglMultiTexCoord2fARB = 0;
