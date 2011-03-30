@@ -8,7 +8,7 @@ set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
 	-malign-jumps=2 -malign-functions=2")
 
 set(SV_LDFLAGS -lm)
-set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lX11 -lXext -lasound)
+set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lXxf86vm -lX11 -lXext -lasound)
 
 #############################################################################
 # SERVER

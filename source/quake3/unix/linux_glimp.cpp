@@ -62,21 +62,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
-#include <X11/extensions/xf86dga.h>
-
 #include "../../client/unix_shared.h"
 
 #define	WINDOW_CLASS_NAME	"Quake III: Arena"
-
-typedef enum
-{
-  RSERR_OK,
-
-  RSERR_INVALID_FULLSCREEN,
-  RSERR_INVALID_MODE,
-
-  RSERR_UNKNOWN
-} rserr_t;
 
 // bk001206 - not needed anymore
 // static qboolean autorepeaton = qtrue;
@@ -95,8 +83,6 @@ QCvar   *joy_threshold    = NULL;
 
 QCvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
 QCvar  *r_previousglDriver;
-
-static int vidmode_MajorVersion = 0, vidmode_MinorVersion = 0; // major and minor of XF86VidExtensions
 
 // gamma value of the X display before we start playing with it
 static XF86VidModeGamma vidmode_InitialGamma;
@@ -832,15 +818,12 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 #define ATTR_BLUE_IDX 6
 #define ATTR_DEPTH_IDX 9
 #define ATTR_STENCIL_IDX 11
-  Window root;
   XVisualInfo *visinfo;
   XSetWindowAttributes attr;
   XSizeHints sizehints;
   unsigned long mask;
   int colorbits, depthbits, stencilbits;
   int tcolorbits, tdepthbits, tstencilbits;
-  int dga_MajorVersion, dga_MinorVersion;
-  int actualWidth, actualHeight;
   int i;
   const char*   glstring; // bk001130 - from cvs1.17 (mkv)
 
@@ -855,44 +838,13 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
   }
   ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight);
 
-  if (!(dpy = XOpenDisplay(NULL)))
-  {
-    fprintf(stderr, "Error couldn't open the X display\n");
-    return RSERR_INVALID_MODE;
-  }
-  
-  scrnum = DefaultScreen(dpy);
-  root = RootWindow(dpy, scrnum);
+	if (GLimp_GLXSharedInit() != RSERR_OK)
+	{
+		return RSERR_INVALID_MODE;
+	}
 
   actualWidth = glConfig.vidWidth;
   actualHeight = glConfig.vidHeight;
-
-  // Get video mode list
-  if (!XF86VidModeQueryVersion(dpy, &vidmode_MajorVersion, &vidmode_MinorVersion))
-  {
-    vidmode_ext = qfalse;
-  } else
-  {
-    ri.Printf(PRINT_ALL, "Using XFree86-VidModeExtension Version %d.%d\n",
-              vidmode_MajorVersion, vidmode_MinorVersion);
-    vidmode_ext = qtrue;
-  }
-
-  // Check for DGA	
-  dga_MajorVersion = 0, dga_MinorVersion = 0;
-  if (in_dgamouse->value)
-  {
-    if (!XF86DGAQueryVersion(dpy, &dga_MajorVersion, &dga_MinorVersion))
-    {
-      // unable to query, probalby not supported
-      ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
-      ri.Cvar_Set( "in_dgamouse", "0" );
-    } else
-    {
-      ri.Printf( PRINT_ALL, "XF86DGA Mouse (Version %d.%d) initialized\n",
-                 dga_MajorVersion, dga_MinorVersion);
-    }
-  }
 
   if (vidmode_ext)
   {

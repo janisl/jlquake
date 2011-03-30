@@ -21,6 +21,7 @@
 #define _UNIX_SHARED_H
 
 #include <GL/glx.h>
+#include <X11/extensions/xf86dga.h>
 #include <X11/extensions/xf86vmode.h>
 
 #define KEY_MASK	(KeyPressMask | KeyReleaseMask)
@@ -47,5 +48,11 @@ extern XF86VidModeModeInfo**	vidmodes;
 extern int			num_vidmodes;
 extern bool			vidmode_active;
 extern bool			vidmode_ext;
+extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of XF86VidExtensions
+
+rserr_t GLimp_GLXSharedInit();
+
+extern Window root;
+extern int actualWidth, actualHeight;
 
 #endif

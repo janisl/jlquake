@@ -31,6 +31,16 @@
 
 #include "render_qgl.h"
 
+enum rserr_t
+{
+	RSERR_OK,
+
+	RSERR_INVALID_FULLSCREEN,
+	RSERR_INVALID_MODE,
+
+	RSERR_UNKNOWN
+};
+
 void* GLimp_GetProcAddress(const char* Name);
 
 extern	QCvar	*r_logFile;						// number of frames to emit GL logs

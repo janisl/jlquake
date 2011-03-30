@@ -38,8 +38,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
-#include <X11/extensions/xf86dga.h>
-
 #define WARP_WIDTH              320
 #define WARP_HEIGHT             200
 
@@ -683,11 +681,8 @@ void VID_Init(unsigned char *palette)
 	int width = 640, height = 480;
 	XSetWindowAttributes attr;
 	unsigned long mask;
-	Window root;
 	XVisualInfo *visinfo;
 	qboolean fullscreen = true;
-	int MajorVersion, MinorVersion;
-	int actualWidth, actualHeight;
 
 	vid_mode = Cvar_Get("vid_mode", "0", 0);
 	in_mouse = Cvar_Get("in_mouse", "1", 0);
@@ -730,21 +725,9 @@ void VID_Init(unsigned char *palette)
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 
-	if (!(dpy = XOpenDisplay(NULL))) {
-		fprintf(stderr, "Error couldn't open the X display\n");
+	if (GLimp_GLXSharedInit() != RSERR_OK)
+	{
 		exit(1);
-	}
-
-	scrnum = DefaultScreen(dpy);
-	root = RootWindow(dpy, scrnum);
-
-	// Get video mode list
-	MajorVersion = MinorVersion = 0;
-	if (!XF86VidModeQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
-		vidmode_ext = false;
-	} else {
-		Con_Printf("Using XFree86-VidModeExtension Version %d.%d\n", MajorVersion, MinorVersion);
-		vidmode_ext = true;
 	}
 
 	visinfo = glXChooseVisual(dpy, scrnum, attrib);

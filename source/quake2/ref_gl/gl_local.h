@@ -97,16 +97,6 @@ typedef struct image_s
 
 //===================================================================
 
-typedef enum
-{
-	rserr_ok,
-
-	rserr_invalid_fullscreen,
-	rserr_invalid_mode,
-
-	rserr_unknown
-} rserr_t;
-
 #include "gl_model.h"
 
 void GL_BeginRendering (int *x, int *y, int *width, int *height);

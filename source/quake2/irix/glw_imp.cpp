@@ -147,7 +147,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 	if ( !ri.Vid_GetModeInfo( &width, &height, mode ) )
 	{
 		ri.Con_Printf( PRINT_ALL, " invalid mode\n" );
-		return rserr_invalid_mode;
+		return RSERR_INVALID_MODE;
 	}
 
 	ri.Con_Printf( PRINT_ALL, " %d %d\n", width, height );
@@ -160,14 +160,14 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 	if ( !GLimp_InitGraphics( fullscreen ) ) {
 		// failed to set a valid mode in windowed mode
-		return rserr_invalid_mode;
+		return RSERR_INVALID_MODE;
 	}
 /* 	ctx = glXCreateContext( dpy, x_visinfo, 0, True ); */
 
 	// let the sound and input subsystems know about the new window
 	ri.Vid_NewWindow (width, height);
 
-	return rserr_ok;
+	return RSERR_OK;
 }
 
 /*
@@ -277,23 +277,17 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 
 	fprintf(stderr, "GLimp_InitGraphics\n");
 
+	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
+
 	srandom(getpid());
 
 	// let the sound and input subsystems know about the new window
 	ri.Vid_NewWindow (vid.width, vid.height);
 
-	// open the display
-	dpy = XOpenDisplay(NULL);
-	if (!dpy)
+	if (GLimp_GLXSharedInit() != RSERR_OK)
 	{
-		if (getenv("DISPLAY"))
-			Sys_Error("VID: Could not open display [%s]\n",
-				getenv("DISPLAY"));
-		else
-			Sys_Error("VID: Could not open local display\n");
+		return false;
 	}
-	else
-	    fprintf(stderr, "VID: Opened display %s\n", getenv("DISPLAY"));
 
 	XAutoRepeatOff(dpy);
 
@@ -303,25 +297,9 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 // check for command-line window size
 	template_mask = 0;
 
-#if 0
-// specify a visual id
-	if ((pnum=COM_CheckParm("-visualid")))
-	{
-		if (pnum >= COM_Argc()-1)
-			Sys_Error("VID: -visualid <id#>\n");
-		template.visualid = QStr::Atoi(COM_Argv(pnum+1));
-		template_mask = VisualIDMask;
-	}
-
-// If not specified, use default visual
-	else
-#endif
-	{
-		scrnum = XDefaultScreen(dpy);
 		template.visualid =
 			XVisualIDFromVisual(XDefaultVisual(dpy, scrnum));
 		template_mask = VisualIDMask;
-	}
 
 // pick a visual- warn if more than one was available
 
@@ -358,9 +336,7 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	   XSetWindowAttributes attribs;
 	   Colormap tmpcmap;
 	   
-	   Window root_win = XRootWindow(dpy, x_visinfo->screen);
-
-	   tmpcmap = XCreateColormap(dpy, root_win, x_vis, AllocNone);
+	   tmpcmap = XCreateColormap(dpy, root, x_vis, AllocNone);
 				     
 	   
 	   attribs.event_mask = X_MASK;
@@ -369,7 +345,7 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 
 // create the main window
 		win = XCreateWindow(	dpy,
-			root_win,		
+			root,		
 			0, 0,	// x, y
 			vid.width, vid.height,
 			0, // borderwidth

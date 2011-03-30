@@ -33,8 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
-#include <X11/extensions/xf86dga.h>
-
 #define WARP_WIDTH              320
 #define WARP_HEIGHT             200
 
@@ -552,7 +550,6 @@ void VID_Init(unsigned char *palette)
 	int width = 640, height = 480;
 	XSetWindowAttributes attr;
 	unsigned long mask;
-	Window root;
 	XVisualInfo *visinfo;
 
 	S_Init();
@@ -561,6 +558,7 @@ void VID_Init(unsigned char *palette)
 	vid_mode = Cvar_Get("vid_mode", "0", 0);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 	m_filter = Cvar_Get("m_filter", "0", 0);
+	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
 
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
@@ -593,13 +591,10 @@ void VID_Init(unsigned char *palette)
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 
-	if (!(dpy = XOpenDisplay(NULL))) {
-		fprintf(stderr, "Error couldn't open the X display\n");
+	if (GLimp_GLXSharedInit() != RSERR_OK)
+	{
 		exit(1);
 	}
-
-	scrnum = DefaultScreen(dpy);
-	root = RootWindow(dpy, scrnum);
 
 	visinfo = glXChooseVisual(dpy, scrnum, attrib);
 	if (!visinfo) {

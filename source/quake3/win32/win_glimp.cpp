@@ -43,15 +43,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 extern void WG_CheckHardwareGamma( void );
 extern void WG_RestoreGamma( void );
 
-typedef enum {
-	RSERR_OK,
-
-	RSERR_INVALID_FULLSCREEN,
-	RSERR_INVALID_MODE,
-
-	RSERR_UNKNOWN
-} rserr_t;
-
 #define TRY_PFD_SUCCESS		0
 #define TRY_PFD_FAIL_SOFT	1
 #define TRY_PFD_FAIL_HARD	2
