@@ -286,26 +286,28 @@ Dlls will call this directly
 
   For speed, we just grab 15 arguments, and don't worry about exactly
    how many the syscall actually needs; the extra is thrown away.
- 
+
+  JL: On 64 bit stack contains 64 bit values.
 ============
 */
-int QDECL VM_DllSyscall( int arg, ... ) {
-#if ((defined __linux__) && (defined __powerpc__))
-  // rcg010206 - see commentary above
-  int args[16];
-  int i;
-  va_list ap;
-  
-  args[0] = arg;
-  
-  va_start(ap, arg);
-  for (i = 1; i < sizeof (args) / sizeof (args[i]); i++)
-    args[i] = va_arg(ap, int);
-  va_end(ap);
-  
-  return currentVM->systemCall( args );
-#else // original id code
-	return currentVM->systemCall( &arg );
+int QDECL VM_DllSyscall(int arg, ...)
+{
+#if id386
+	return currentVM->systemCall(&arg);
+#else
+	// rcg010206 - see commentary above
+	int args[16];
+	args[0] = arg;
+
+	va_list ap;
+	va_start(ap, arg);
+	for (int i = 1; i < sizeof (args) / sizeof (args[i]); i++)
+	{
+		args[i] = va_arg(ap, int);
+	}
+	va_end(ap);
+
+	return currentVM->systemCall(args);
 #endif
 }
 
@@ -630,47 +632,59 @@ locals from sp
 #define	MAX_STACK	256
 #define	STACK_MASK	(MAX_STACK-1)
 
-int	QDECL VM_Call( vm_t *vm, int callnum, ... ) {
-	vm_t	*oldVM;
-	int		r;
-	int i;
-	int args[16];
-	va_list ap;
-
-
-	if ( !vm ) {
-		Com_Error( ERR_FATAL, "VM_Call with NULL vm" );
+int QDECL VM_Call(vm_t* vm, int callnum, ...)
+{
+	if (!vm)
+	{
+		Com_Error(ERR_FATAL, "VM_Call with NULL vm");
 	}
 
-	oldVM = currentVM;
+	vm_t* oldVM = currentVM;
 	currentVM = vm;
 	lastVM = vm;
 
-	if ( vm_debugLevel ) {
-	  Com_Printf( "VM_Call( %i )\n", callnum );
+	if (vm_debugLevel)
+	{
+		Com_Printf("VM_Call( %i )\n", callnum);
 	}
+
+#if id386
+	int* args = &callnum;
+#else
+	//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
+	int args[17];	//	Index 0 is for callnum
+	args[0] = callnum;
+	va_list ap;
+	va_start(ap, callnum);
+	for (int i = 1; i < sizeof (args) / sizeof (args[i]); i++)
+	{
+		args[i] = va_arg(ap, int);
+	}
+	va_end(ap);
+#endif
 
 	// if we have a dll loaded, call it directly
-	if ( vm->entryPoint ) {
-		//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
-		va_start(ap, callnum);
-		for (i = 0; i < sizeof (args) / sizeof (args[i]); i++) {
-			args[i] = va_arg(ap, int);
-		}
-		va_end(ap);
-
-		r = vm->entryPoint( callnum,  args[0],  args[1],  args[2], args[3],
-                            args[4],  args[5],  args[6], args[7],
-                            args[8],  args[9], args[10], args[11],
-                            args[12], args[13], args[14], args[15]);
-	} else if ( vm->compiled ) {
-		r = VM_CallCompiled( vm, &callnum );
-	} else {
-		r = VM_CallInterpreted( vm, &callnum );
+	int r;
+	if (vm->entryPoint)
+	{
+		r = vm->entryPoint(callnum,  args[1],  args[2],  args[3], args[4],
+			args[5],  args[6],  args[7], args[8],
+			args[9],  args[10], args[11], args[12],
+			args[13], args[14], args[15], args[16]);
+	}
+	else if (vm->compiled)
+	{
+		r = VM_CallCompiled(vm, args);
+	}
+	else
+	{
+		r = VM_CallInterpreted(vm, args);
 	}
 
-	if ( oldVM != NULL ) // bk001220 - assert(currentVM!=NULL) for oldVM==NULL
-	  currentVM = oldVM;
+	if (oldVM != NULL) // bk001220 - assert(currentVM!=NULL) for oldVM==NULL
+	{
+		currentVM = oldVM;
+	}
 	return r;
 }
 
