@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void R_Clear (void);
 
-viddef_t	vid;
-
 refimport_t	ri;
 
 model_t		*r_worldmodel;
@@ -643,7 +641,7 @@ void R_SetupFrame (void)
 	{
 		qglEnable( GL_SCISSOR_TEST );
 		qglClearColor( 0.3, 0.3, 0.3, 1 );
-		qglScissor( r_newrefdef.x, vid.height - r_newrefdef.height - r_newrefdef.y, r_newrefdef.width, r_newrefdef.height );
+		qglScissor( r_newrefdef.x, glConfig.vidHeight - r_newrefdef.height - r_newrefdef.y, r_newrefdef.width, r_newrefdef.height );
 		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		qglClearColor( 1, 0, 0.5, 0.5 );
 		qglDisable( GL_SCISSOR_TEST );
@@ -683,10 +681,10 @@ void R_SetupGL (void)
 	//
 	// set up viewport
 	//
-	x = floor((double)r_newrefdef.x * vid.width / vid.width);
-	x2 = ceil((double)(r_newrefdef.x + r_newrefdef.width) * vid.width / vid.width);
-	y = floor((double)vid.height - r_newrefdef.y * vid.height / vid.height);
-	y2 = ceil((double)vid.height - (r_newrefdef.y + r_newrefdef.height) * vid.height / vid.height);
+	x = floor((double)r_newrefdef.x);
+	x2 = ceil((double)(r_newrefdef.x + r_newrefdef.width));
+	y = floor((double)glConfig.vidHeight - r_newrefdef.y);
+	y2 = ceil((double)glConfig.vidHeight - (r_newrefdef.y + r_newrefdef.height));
 
 	w = x2 - x;
 	h = y - y2;
@@ -842,10 +840,10 @@ void R_RenderView (refdef_t *fd)
 void	R_SetGL2D (void)
 {
 	// set 2D virtual screen size
-	qglViewport (0,0, vid.width, vid.height);
+	qglViewport (0,0, glConfig.vidWidth, glConfig.vidHeight);
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
-	qglOrtho  (0, vid.width, vid.height, 0, -99999, 99999);
+	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
 	qglDisable (GL_DEPTH_TEST);
@@ -993,7 +991,7 @@ qboolean R_SetMode (void)
 	vid_fullscreen->modified = false;
 	gl_mode->modified = false;
 
-	if ( ( err = GLimp_SetMode( (int*)&vid.width, (int*)&vid.height, gl_mode->value, fullscreen ) ) == RSERR_OK )
+	if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, gl_mode->value, fullscreen ) ) == RSERR_OK )
 	{
 		gl_state.prev_mode = gl_mode->value;
 	}
@@ -1004,7 +1002,7 @@ qboolean R_SetMode (void)
 			ri.Cvar_SetValue( "vid_fullscreen", 0);
 			vid_fullscreen->modified = false;
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n" );
-			if ( ( err = GLimp_SetMode( (int*)&vid.width, (int*)&vid.height, gl_mode->value, false ) ) == RSERR_OK )
+			if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, gl_mode->value, false ) ) == RSERR_OK )
 				return true;
 		}
 		else if ( err == RSERR_INVALID_MODE )
@@ -1015,7 +1013,7 @@ qboolean R_SetMode (void)
 		}
 
 		// try setting it back to something safe
-		if ( ( err = GLimp_SetMode( (int*)&vid.width, (int*)&vid.height, gl_state.prev_mode, false ) ) != RSERR_OK )
+		if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, gl_state.prev_mode, false ) ) != RSERR_OK )
 		{
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n" );
 			return false;
@@ -1227,10 +1225,10 @@ void R_BeginFrame( float camera_separation )
 	/*
 	** go into 2D mode
 	*/
-	qglViewport (0,0, vid.width, vid.height);
+	qglViewport (0,0, glConfig.vidWidth, glConfig.vidHeight);
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
-	qglOrtho  (0, vid.width, vid.height, 0, -99999, 99999);
+	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
 	qglDisable (GL_DEPTH_TEST);

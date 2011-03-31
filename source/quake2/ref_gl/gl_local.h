@@ -44,14 +44,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	ROLL	2
 
 
-typedef struct
-{
-	unsigned		width, height;			// coordinates from main game
-} viddef_t;
-
-extern	viddef_t	vid;
-
-
 /*
 
   skins will be outline flood filled and mip mapped

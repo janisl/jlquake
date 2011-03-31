@@ -50,8 +50,6 @@ static QCvar* m_filter;
 
 qboolean dgamouse = false;
 
-static int scr_width, scr_height;
-
 float RTint[256],GTint[256],BTint[256];
 qboolean	vid_initialized = false;
 
@@ -479,8 +477,8 @@ GL_BeginRendering
 void GL_BeginRendering (int *x, int *y, int *width, int *height)
 {
 	*x = *y = 0;
-	*width = scr_width;
-	*height = scr_height;
+	*width = glConfig.vidWidth;
+	*height = glConfig.vidHeight;
 
 //    if (!wglMakeCurrent( maindc, baseRC ))
 //		Sys_Error ("wglMakeCurrent failed");
@@ -577,8 +575,8 @@ void VID_Init(unsigned char *palette)
 		exit(1);
 	}
 
-	scr_width = width;
-	scr_height = height;
+	glConfig.vidWidth = width;
+	glConfig.vidHeight = height;
 
 	vid_initialized = true;
 

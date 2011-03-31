@@ -216,7 +216,7 @@ void GLimp_AppActivate( qboolean active )
 ** graphics subsystem.
 **
 ** The necessary width and height parameters are grabbed from
-** vid.width and vid.height.
+** glConfig.vidWidth and glConfig.vidHeight.
 */
 qboolean GLimp_InitGraphics( qboolean fullscreen )
 {
@@ -227,9 +227,9 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	srandom(getpid());
 
 	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow (vid.width, vid.height);
+	ri.Vid_NewWindow (glConfig.vidWidth, glConfig.vidHeight);
 
-	if (GLimp_GLXSharedInit(vid.width, vid.height, fullscreen) != RSERR_OK)
+	if (GLimp_GLXSharedInit(glConfig.vidWidth, glConfig.vidHeight, fullscreen) != RSERR_OK)
 	{
 		return false;
 	}
@@ -263,13 +263,13 @@ void GetEvent(void)
 
 	case MotionNotify:
 		if (_windowed_mouse->value) {
-			mx += ((int)x_event.xmotion.x - (int)(vid.width/2));
-			my += ((int)x_event.xmotion.y - (int)(vid.height/2));
+			mx += ((int)x_event.xmotion.x - (int)(glConfig.vidWidth/2));
+			my += ((int)x_event.xmotion.y - (int)(glConfig.vidHeight/2));
 
 			/* move the mouse to the window center again */
 			XSelectInput(dpy,win, X_MASK & ~PointerMotionMask);
 			XWarpPointer(dpy,None,win,0,0,0,0, 
-				(vid.width/2),(vid.height/2));
+				(glConfig.vidWidth/2),(glConfig.vidHeight/2));
 			XSelectInput(dpy,win, X_MASK);
 		} else {
 			mx = ((int)x_event.xmotion.x - (int)p_mouse_x);

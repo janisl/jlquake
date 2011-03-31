@@ -123,19 +123,19 @@ void GL_ScreenShot_f (void)
 		return;
 	}
 
-	buffer = (byte*)malloc(vid.width*vid.height*3 + 18);
+	buffer = (byte*)malloc(glConfig.vidWidth*glConfig.vidHeight*3 + 18);
 	Com_Memset(buffer, 0, 18);
 	buffer[2] = 2;		// uncompressed type
-	buffer[12] = vid.width&255;
-	buffer[13] = vid.width>>8;
-	buffer[14] = vid.height&255;
-	buffer[15] = vid.height>>8;
+	buffer[12] = glConfig.vidWidth&255;
+	buffer[13] = glConfig.vidWidth>>8;
+	buffer[14] = glConfig.vidHeight&255;
+	buffer[15] = glConfig.vidHeight>>8;
 	buffer[16] = 24;	// pixel size
 
-	qglReadPixels(0, 0, vid.width, vid.height, GL_RGB, GL_UNSIGNED_BYTE, buffer + 18);
+	qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer + 18);
 
 	// swap rgb to bgr
-	c = 18 + vid.width * vid.height * 3;
+	c = 18 + glConfig.vidWidth * glConfig.vidHeight * 3;
 	for (i = 18; i < c; i += 3)
 	{
 		temp = buffer[i];
