@@ -67,10 +67,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bk001206 - not needed anymore
 // static qboolean autorepeaton = qtrue;
 
-// Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
-static int mouseResetTime = 0;
-#define MOUSE_RESET_DELAY 50
-
 QCvar *in_subframe;
 QCvar *in_nograb; // this is strictly for developers
 
@@ -84,10 +80,6 @@ QCvar  *r_previousglDriver;
 
 // gamma value of the X display before we start playing with it
 static XF86VidModeGamma vidmode_InitialGamma;
-
-static int mouse_accel_numerator;
-static int mouse_accel_denominator;
-static int mouse_threshold;    
 
 /*
 * Find the first occurrence of find in s.
@@ -121,87 +113,6 @@ static const char *Q_stristr( const char *s, const char *find)
     s--;
   }
   return s;
-}
-
-static void install_grabs(void)
-{
-	Shared_install_grabs();
-
-  // inviso cursor
-  XWarpPointer(dpy, None, win,
-               0, 0, 0, 0,
-               glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-  XSync(dpy, False);
-
-  XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
-
-  XGrabPointer(dpy, win, // bk010108 - do this earlier?
-               False,
-               MOUSE_MASK,
-               GrabModeAsync, GrabModeAsync,
-               win,
-               None,
-               CurrentTime);
-
-  XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
-                     &mouse_threshold);
-
-  XChangePointerControl(dpy, True, True, 1, 1, 0);
-
-  XSync(dpy, False);
-
-  mouseResetTime = Sys_Milliseconds ();
-
-  if (in_dgamouse->value)
-  {
-    int MajorVersion, MinorVersion;
-
-    if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
-    {
-      // unable to query, probalby not supported, force the setting to 0
-      ri.Printf( PRINT_ALL, "Failed to detect XF86DGA Mouse\n" );
-      ri.Cvar_Set( "in_dgamouse", "0" );
-    } else
-    {
-      XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-      XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
-    }
-  } else
-  {
-    mwx = glConfig.vidWidth / 2;
-    mwy = glConfig.vidHeight / 2;
-    mx = my = 0;
-  }
-
-  XGrabKeyboard(dpy, win,
-                False,
-                GrabModeAsync, GrabModeAsync,
-                CurrentTime);
-
-  XSync(dpy, False);
-}
-
-static void uninstall_grabs(void)
-{
-  if (in_dgamouse->value)
-  {
-		if (com_developer->value)
-			ri.Printf( PRINT_ALL, "DGA Mouse - Disabling DGA DirectVideo\n" );
-    XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
-  }
-
-  XChangePointerControl(dpy, qtrue, qtrue, mouse_accel_numerator, 
-                        mouse_accel_denominator, mouse_threshold);
-
-  XUngrabPointer(dpy, CurrentTime);
-  XUngrabKeyboard(dpy, CurrentTime);
-
-  XWarpPointer(dpy, None, win,
-               0, 0, 0, 0,
-               glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-
-  // inviso cursor
-  XUndefineCursor(dpy, win);
 }
 
 // bk001206 - from Ryan's Fakk2

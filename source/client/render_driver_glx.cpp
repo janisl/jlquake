@@ -44,14 +44,6 @@ int						scrnum;
 Window					win;
 GLXContext				ctx = NULL;
 
-bool					mouse_avail;
-bool					mouse_active;
-int						mwx, mwy;
-int						mx = 0, my = 0;
-
-QCvar*					in_mouse;
-QCvar*					in_dgamouse; // user pref for dga mouse
-
 int						win_x, win_y;
 
 XF86VidModeModeInfo**	vidmodes;

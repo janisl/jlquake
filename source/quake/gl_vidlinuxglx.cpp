@@ -51,8 +51,6 @@ static int	old_mouse_x, old_mouse_y;
 
 static QCvar* m_filter;
 
-qboolean dgamouse = false;
-
 /*-----------------------------------------------------------------------*/
 
 //int		texture_mode = GL_NEAREST;
@@ -86,68 +84,6 @@ void D_EndDirectRect (int x, int y, int width, int height)
 {
 }
 
-static void install_grabs(void)
-{
-	Shared_install_grabs();
-
-// inviso cursor
-	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
-
-	XGrabPointer(dpy, win,
-				 True,
-				 0,
-				 GrabModeAsync, GrabModeAsync,
-				 win,
-				 None,
-				 CurrentTime);
-
-	if (in_dgamouse->value) {
-		int MajorVersion, MinorVersion;
-
-		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion)) { 
-			// unable to query, probalby not supported
-			Con_Printf( "Failed to detect XF86DGA Mouse\n" );
-			in_dgamouse->value = 0;
-		} else {
-			dgamouse = true;
-			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
-		}
-	} else {
-		XWarpPointer(dpy, None, win,
-					 0, 0, 0, 0,
-					 vid.width / 2, vid.height / 2);
-	}
-
-	XGrabKeyboard(dpy, win,
-				  False,
-				  GrabModeAsync, GrabModeAsync,
-				  CurrentTime);
-
-	mouse_active = true;
-
-//	XSync(dpy, True);
-}
-
-static void uninstall_grabs(void)
-{
-	if (!dpy || !win)
-		return;
-
-	if (dgamouse) {
-		dgamouse = false;
-		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
-	}
-
-	XUngrabPointer(dpy, CurrentTime);
-	XUngrabKeyboard(dpy, CurrentTime);
-
-// inviso cursor
-	XUndefineCursor(dpy, win);
-
-	mouse_active = false;
-}
-
 static void HandleEvents(void)
 {
 	XEvent event;
@@ -173,7 +109,7 @@ static void HandleEvents(void)
 
 		case MotionNotify:
 			if (mouse_active) {
-				if (dgamouse) {
+				if (in_dgamouse->value) {
 					mx += (event.xmotion.x + win_x) * 2;
 					my += (event.xmotion.y + win_y) * 2;
 				} 

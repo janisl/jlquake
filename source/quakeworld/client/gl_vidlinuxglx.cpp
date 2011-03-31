@@ -70,7 +70,6 @@ const char *gl_version;
 const char *gl_extensions;
 
 qboolean gl_mtexable = false;
-qboolean dgamouse = false;
 
 /*-----------------------------------------------------------------------*/
 void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
@@ -79,40 +78,6 @@ void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
 
 void D_EndDirectRect (int x, int y, int width, int height)
 {
-}
-
-static void install_grabs(void)
-{
-	Shared_install_grabs();
-
-	XGrabPointer(dpy, win,
-				 True,
-				 0,
-				 GrabModeAsync, GrabModeAsync,
-				 win,
-				 None,
-				 CurrentTime);
-
-	XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-	dgamouse = 1;
-
-	XGrabKeyboard(dpy, win,
-				  False,
-				  GrabModeAsync, GrabModeAsync,
-				  CurrentTime);
-
-//	XSync(dpy, True);
-}
-
-static void uninstall_grabs(void)
-{
-	XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
-	dgamouse = 0;
-
-	XUngrabPointer(dpy, CurrentTime);
-	XUngrabKeyboard(dpy, CurrentTime);
-
-//	XSync(dpy, True);
 }
 
 static void GetEvent(void)
@@ -134,7 +99,7 @@ static void GetEvent(void)
 		break;
 
 	case MotionNotify:
-		if (dgamouse && _windowed_mouse->value) {
+		if (in_dgamouse->value && _windowed_mouse->value) {
 			mx = event.xmotion.x_root;
 			my = event.xmotion.y_root;
 		} else

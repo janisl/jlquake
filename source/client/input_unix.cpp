@@ -39,6 +39,21 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+bool					mouse_avail;
+bool					mouse_active;
+int						mwx, mwy;
+int						mx = 0, my = 0;
+
+QCvar*					in_mouse;
+QCvar*					in_dgamouse; // user pref for dga mouse
+
+static int mouse_accel_numerator;
+static int mouse_accel_denominator;
+static int mouse_threshold;    
+
+// Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
+int mouseResetTime = 0;
+
 // CODE --------------------------------------------------------------------
 
 /*****************************************************************************
@@ -337,7 +352,7 @@ char* XLateKey(XKeyEvent* ev, int& key)
 //
 //==========================================================================
 
-Cursor CreateNullCursor(Display *display, Window root)
+static Cursor CreateNullCursor(Display *display, Window root)
 {
 	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
 	XGCValues xgc;
@@ -355,6 +370,95 @@ Cursor CreateNullCursor(Display *display, Window root)
 	return cursor;
 }
 
-void Shared_install_grabs()
+//==========================================================================
+//
+//	install_grabs
+//
+//==========================================================================
+
+void install_grabs()
 {
+	// inviso cursor
+	XWarpPointer(dpy, None, win,
+		0, 0, 0, 0,
+		glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	XSync(dpy, False);
+
+	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
+
+	XGrabPointer(dpy, win, // bk010108 - do this earlier?
+		False,
+		MOUSE_MASK,
+		GrabModeAsync, GrabModeAsync,
+		win,
+		None,
+		CurrentTime);
+
+	XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
+		&mouse_threshold);
+
+	XChangePointerControl(dpy, True, True, 1, 1, 0);
+
+	XSync(dpy, False);
+
+	mouseResetTime = Sys_Milliseconds();
+
+	if (in_dgamouse->value)
+	{
+		int MajorVersion, MinorVersion;
+
+		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
+		{
+			// unable to query, probalby not supported, force the setting to 0
+			GLog.Write("Failed to detect XF86DGA Mouse\n");
+			Cvar_Set("in_dgamouse", "0");
+		}
+		else
+		{
+			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
+			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+		}
+	}
+	else
+	{
+		mwx = glConfig.vidWidth / 2;
+		mwy = glConfig.vidHeight / 2;
+		mx = my = 0;
+	}
+
+
+	XGrabKeyboard(dpy, win,
+		False,
+		GrabModeAsync, GrabModeAsync,
+		CurrentTime);
+
+	XSync(dpy, False);
+}
+
+//==========================================================================
+//
+//	uninstall_grabs
+//
+//==========================================================================
+
+void uninstall_grabs()
+{
+	if (in_dgamouse->value)
+	{
+		GLog.DWrite("DGA Mouse - Disabling DGA DirectVideo\n");
+		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
+	}
+
+	XChangePointerControl(dpy, true, true, mouse_accel_numerator, 
+		mouse_accel_denominator, mouse_threshold);
+
+	XUngrabPointer(dpy, CurrentTime);
+	XUngrabKeyboard(dpy, CurrentTime);
+
+	XWarpPointer(dpy, None, win,
+		0, 0, 0, 0,
+		glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+
+	// inviso cursor
+	XUndefineCursor(dpy, win);
 }

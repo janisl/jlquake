@@ -357,12 +357,9 @@ void GetEvent(void)
 		old_windowed_mouse = _windowed_mouse->value;
 
 		if (!_windowed_mouse->value) {
-			/* ungrab the pointer */
-			XUngrabPointer(dpy,CurrentTime);
+			uninstall_grabs();
 		} else {
-			/* grab the pointer */
-			XGrabPointer(dpy,win,True,0,GrabModeAsync,
-				GrabModeAsync,win,None,CurrentTime);
+			install_grabs();
 		}
 	}
 }
