@@ -31,9 +31,6 @@
 
 static qboolean			doShm;
 static Colormap			x_cmap;
-static GC				x_gc;
-static Visual			*x_vis;
-static XVisualInfo		*x_visinfo;
 
 int current_framebuffer;
 static int				x_shmeventtype;
@@ -155,7 +152,6 @@ static void InitSig()
 int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 {
 	int width, height;
-	GLint attribs[32];
 
 	fprintf(stderr, "GLimp_SetMode\n");
 
@@ -181,7 +177,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 		// failed to set a valid mode in windowed mode
 		return RSERR_INVALID_MODE;
 	}
-/* 	ctx = glXCreateContext( dpy, x_visinfo, 0, True ); */
+/* 	ctx = glXCreateContext( dpy, visinfo, 0, True ); */
 
 	// let the sound and input subsystems know about the new window
 	ri.Vid_NewWindow (width, height);
@@ -289,11 +285,6 @@ static Cursor CreateNullCursor(Display *display, Window root)
 */
 qboolean GLimp_InitGraphics( qboolean fullscreen )
 {
-	int pnum, i;
-	XVisualInfo templ;
-	int num_visuals;
-	int template_mask;
-
 	fprintf(stderr, "GLimp_InitGraphics\n");
 
 	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
@@ -301,176 +292,17 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	srandom(getpid());
 
 	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow (vid.width, vid.height);
+	ri.Vid_NewWindow(vid.width, vid.height);
 
 	if (GLimp_GLXSharedInit(vid.width, vid.height, fullscreen) != RSERR_OK)
 	{
 		return false;
 	}
 
-	XAutoRepeatOff(dpy);
-
-// for debugging only
-	XSynchronize(dpy, True);
-
-// check for command-line window size
-	template_mask = 0;
-
-		templ.visualid =
-			XVisualIDFromVisual(XDefaultVisual(dpy, scrnum));
-		template_mask = VisualIDMask;
-
-// pick a visual- warn if more than one was available
-
-	x_visinfo = glXChooseVisual( dpy, scrnum, attrib );
-	if (!x_visinfo) Sys_Error( "No matching visual available!\n" );
-
-	ri.Con_Printf(PRINT_ALL, "Using visualid 0x%x:\n",
-		   (int)(x_visinfo->visualid));
-#if 0
-	if (verbose)
-	{
-		printf("Using visualid %d:\n", (int)(x_visinfo->visualid));
-		printf("	screen %d\n", x_visinfo->screen);
-		printf("	red_mask 0x%x\n", (int)(x_visinfo->red_mask));
-		printf("	green_mask 0x%x\n", (int)(x_visinfo->green_mask));
-		printf("	blue_mask 0x%x\n", (int)(x_visinfo->blue_mask));
-		printf("	colormap_size %d\n", x_visinfo->colormap_size);
-		printf("	bits_per_rgb %d\n", x_visinfo->bits_per_rgb);
-	}
-#endif
-
-	x_vis = x_visinfo->visual;
-
-// setup attributes for main window
-	{
-	   int attribmask = CWEventMask  | CWColormap | CWBorderPixel;
-	   XSetWindowAttributes attribs;
-	   Colormap tmpcmap;
-	   
-	   tmpcmap = XCreateColormap(dpy, root, x_vis, AllocNone);
-				     
-	   
-	   attribs.event_mask = X_MASK;
-	   attribs.border_pixel = 0;
-	   attribs.colormap = tmpcmap;
-
-// create the main window
-		win = XCreateWindow(	dpy,
-			root,		
-			0, 0,	// x, y
-			vid.width, vid.height,
-			0, // borderwidth
-			x_visinfo->depth,
-			InputOutput,
-			x_vis,
-			attribmask,
-			&attribs );
-		XStoreName(dpy, win, "Quake II");
-
-		if (x_visinfo->c_class != TrueColor)
-			XFreeColormap(dpy, tmpcmap);
-	}
-
-	if (x_visinfo->depth == 8)
-	{
-	// create and upload the palette
-		if (x_visinfo->c_class == PseudoColor)
-		{
-			x_cmap = XCreateColormap(dpy, win, x_vis, AllocAll);
-			XSetWindowColormap(dpy, win, x_cmap);
-		}
-
-	}
-
-// inviso cursor
+	// inviso cursor
 	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
 
-// create the GC
-	{
-		XGCValues xgcvalues;
-		int valuemask = GCGraphicsExposures;
-		xgcvalues.graphics_exposures = False;
-		x_gc = XCreateGC(dpy, win, valuemask, &xgcvalues );
-	}
-
-// set window properties for full screen
-	if (fullscreen)
-	{
-	    XSizeHints              sizehints;
-	    XWindowChanges  changes;
-
-		sizehints.flags = USPosition | USSize;
-		sizehints.x = 0;
-		sizehints.y = 0;
-		sizehints.width = vid.width;
-		sizehints.height = vid.height;
-		XSetWMNormalHints( dpy, win, &sizehints );
-
-		changes.x = 0;
-		changes.y = 0;
-		changes.width = vid.width;
-		changes.height = vid.height;
-		changes.stack_mode = TopIf;
-		XConfigureWindow(dpy, win,
-				 CWX | CWY | CWWidth | CWHeight | CWStackMode,
-				 &changes);
-	}
-
-// map the window
-	XMapWindow(dpy, win);
-
-// wait for first exposure event
-	{
-		XEvent event;
-		do
-		{
-			XNextEvent(dpy, &event);
-			if (event.type == Expose && !event.xexpose.count)
-				oktodraw = true;
-		} while (!oktodraw);
-	}
-// now safe to draw
-
-    ctx = glXCreateContext( dpy, x_visinfo, 0, True );
-    if (!glXMakeCurrent( dpy, win, ctx ))
-		Sys_Error( "Can't make window current to context\n" );
-
-// even if MITSHM is available, make sure it's a local connection
-#if 0
-// This is messing up the DISPLAY environment variable so can't close and
-// reopen the window (it lops off the :0.0)...
-	if (XShmQueryExtension(dpy))
-	{
-		char *displayname;
-		doShm = true;
-		displayname = (char *) getenv("DISPLAY");
-		if (displayname)
-		{
-			char *d = displayname;
-			while (*d && (*d != ':')) d++;
-			if (*d) *d = 0;
-			if (!(!QStr::ICmp(displayname, "unix") || !*displayname))
-				doShm = false;
-		}
-	}
-#endif
-
-#if 0
-	if (doShm)
-	{
-		x_shmeventtype = XShmGetEventBase(dpy) + ShmCompletion;
-		ResetSharedFrameBuffers();
-	}
-	else
-		ResetFrameBuffer();
-#endif
-
 	current_framebuffer = 0;
-/* 	vid.rowbytes = x_framebuffer[0]->bytes_per_line; */
-/* 	vid.buffer = x_framebuffer[0]->data; */
-
-//	XSynchronize(dpy, False);
 
 	X11_active = true;
 

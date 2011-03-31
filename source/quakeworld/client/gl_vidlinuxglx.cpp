@@ -497,11 +497,9 @@ void GL_EndRendering (void)
 
 void VID_Init(unsigned char *palette)
 {
+	R_SharedRegister();
 	int i;
 	int width = 640, height = 480;
-	XSetWindowAttributes attr;
-	unsigned long mask;
-	XVisualInfo *visinfo;
 
 	S_Init();
 
@@ -546,31 +544,6 @@ void VID_Init(unsigned char *palette)
 	{
 		exit(1);
 	}
-
-	visinfo = glXChooseVisual(dpy, scrnum, attrib);
-	if (!visinfo) {
-		fprintf(stderr, "qkHack: Error couldn't get an RGB, Double-buffered, Depth visual\n");
-		exit(1);
-	}
-	/* window attributes */
-	attr.background_pixel = 0;
-	attr.border_pixel = 0;
-	attr.colormap = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
-	attr.event_mask = X_MASK;
-	mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
-
-	win = XCreateWindow(dpy, root, 0, 0, width, height,
-						0, visinfo->depth, InputOutput,
-						visinfo->visual, mask, &attr);
-	XMapWindow(dpy, win);
-
-	XMoveWindow(dpy, win, 0, 0);
-
-	XFlush(dpy);
-
-	ctx = glXCreateContext(dpy, visinfo, NULL, True);
-
-	glXMakeCurrent(dpy, win, ctx);
 
 	scr_width = width;
 	scr_height = height;

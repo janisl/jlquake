@@ -170,7 +170,6 @@ R_Init
 */
 void R_Init (void)
 {
-	R_SharedRegister();
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 	Cmd_AddCommand ("envmap", R_Envmap_f);	
 	//Cmd_AddCommand ("pointfile", R_ReadPointFile_f);	

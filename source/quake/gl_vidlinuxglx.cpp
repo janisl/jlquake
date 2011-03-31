@@ -668,11 +668,9 @@ static void Check_Gamma (unsigned char *pal)
 
 void VID_Init(unsigned char *palette)
 {
+	R_SharedRegister();
 	int i;
 	int width = 640, height = 480;
-	XSetWindowAttributes attr;
-	unsigned long mask;
-	XVisualInfo *visinfo;
 	qboolean fullscreen = true;
 
 	vid_mode = Cvar_Get("vid_mode", "0", 0);
@@ -720,46 +718,6 @@ void VID_Init(unsigned char *palette)
 	{
 		exit(1);
 	}
-
-	visinfo = glXChooseVisual(dpy, scrnum, attrib);
-	if (!visinfo) {
-		fprintf(stderr, "qkHack: Error couldn't get an RGB, Double-buffered, Depth visual\n");
-		exit(1);
-	}
-
-	/* window attributes */
-	attr.background_pixel = 0;
-	attr.border_pixel = 0;
-	attr.colormap = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
-	attr.event_mask = X_MASK;
-	if (vidmode_active) {
-		mask = CWBackPixel | CWColormap | CWSaveUnder | CWBackingStore | 
-			CWEventMask | CWOverrideRedirect;
-		attr.override_redirect = True;
-		attr.backing_store = NotUseful;
-		attr.save_under = False;
-	} else
-		mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
-
-	win = XCreateWindow(dpy, root, 0, 0, width, height,
-						0, visinfo->depth, InputOutput,
-						visinfo->visual, mask, &attr);
-	XMapWindow(dpy, win);
-
-	if (vidmode_active) {
-		XMoveWindow(dpy, win, 0, 0);
-		XRaiseWindow(dpy, win);
-		XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
-		XFlush(dpy);
-		// Move the viewport to top left
-		XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
-	}
-
-	XFlush(dpy);
-
-	ctx = glXCreateContext(dpy, visinfo, NULL, True);
-
-	glXMakeCurrent(dpy, win, ctx);
 
 	scr_width = width;
 	scr_height = height;

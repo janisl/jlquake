@@ -64,8 +64,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../../client/unix_shared.h"
 
-#define	WINDOW_CLASS_NAME	"Quake III: Arena"
-
 // bk001206 - not needed anymore
 // static qboolean autorepeaton = qtrue;
 
@@ -802,13 +800,6 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 */
 int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 {
-  XVisualInfo *visinfo;
-  XSetWindowAttributes attr;
-  XSizeHints sizehints;
-  unsigned long mask;
-  int colorbits, depthbits, stencilbits;
-  int tcolorbits, tdepthbits, tstencilbits;
-  int i;
   const char*   glstring; // bk001130 - from cvs1.17 (mkv)
 
   ri.Printf( PRINT_ALL, "Initializing OpenGL display\n");
@@ -826,155 +817,6 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 	{
 		return RSERR_INVALID_MODE;
 	}
-
-  if (!r_colorbits->value)
-    colorbits = 24;
-  else
-    colorbits = r_colorbits->value;
-
-  if (!r_depthbits->value)
-    depthbits = 24;
-  else
-    depthbits = r_depthbits->value;
-  stencilbits = r_stencilbits->value;
-
-  for (i = 0; i < 16; i++)
-  {
-    // 0 - default
-    // 1 - minus colorbits
-    // 2 - minus depthbits
-    // 3 - minus stencil
-    if ((i % 4) == 0 && i)
-    {
-      // one pass, reduce
-      switch (i / 4)
-      {
-      case 2 :
-        if (colorbits == 24)
-          colorbits = 16;
-        break;
-      case 1 :
-        if (depthbits == 24)
-          depthbits = 16;
-        else if (depthbits == 16)
-          depthbits = 8;
-      case 3 :
-        if (stencilbits == 24)
-          stencilbits = 16;
-        else if (stencilbits == 16)
-          stencilbits = 8;
-      }
-    }
-
-    tcolorbits = colorbits;
-    tdepthbits = depthbits;
-    tstencilbits = stencilbits;
-
-    if ((i % 4) == 3)
-    { // reduce colorbits
-      if (tcolorbits == 24)
-        tcolorbits = 16;
-    }
-
-    if ((i % 4) == 2)
-    { // reduce depthbits
-      if (tdepthbits == 24)
-        tdepthbits = 16;
-      else if (tdepthbits == 16)
-        tdepthbits = 8;
-    }
-
-    if ((i % 4) == 1)
-    { // reduce stencilbits
-      if (tstencilbits == 24)
-        tstencilbits = 16;
-      else if (tstencilbits == 16)
-        tstencilbits = 8;
-      else
-        tstencilbits = 0;
-    }
-
-    if (tcolorbits == 24)
-    {
-      attrib[ATTR_RED_IDX] = 8;
-      attrib[ATTR_GREEN_IDX] = 8;
-      attrib[ATTR_BLUE_IDX] = 8;
-    } else
-    {
-      // must be 16 bit
-      attrib[ATTR_RED_IDX] = 4;
-      attrib[ATTR_GREEN_IDX] = 4;
-      attrib[ATTR_BLUE_IDX] = 4;
-    }
-
-    attrib[ATTR_DEPTH_IDX] = tdepthbits; // default to 24 depth
-    attrib[ATTR_STENCIL_IDX] = tstencilbits;
-
-    visinfo = glXChooseVisual(dpy, scrnum, attrib);
-    if (!visinfo)
-    {
-      continue;
-    }
-
-    ri.Printf( PRINT_ALL, "Using %d/%d/%d Color bits, %d depth, %d stencil display.\n", 
-               attrib[ATTR_RED_IDX], attrib[ATTR_GREEN_IDX], attrib[ATTR_BLUE_IDX],
-               attrib[ATTR_DEPTH_IDX], attrib[ATTR_STENCIL_IDX]);
-
-    glConfig.colorBits = tcolorbits;
-    glConfig.depthBits = tdepthbits;
-    glConfig.stencilBits = tstencilbits;
-    break;
-  }
-
-  if (!visinfo)
-  {
-    ri.Printf( PRINT_ALL, "Couldn't get a visual\n" );
-    return RSERR_INVALID_MODE;
-  }
-
-  /* window attributes */
-  attr.background_pixel = BlackPixel(dpy, scrnum);
-  attr.border_pixel = 0;
-  attr.colormap = XCreateColormap(dpy, root, visinfo->visual, AllocNone);
-  attr.event_mask = X_MASK;
-  if (vidmode_active)
-  {
-    mask = CWBackPixel | CWColormap | CWSaveUnder | CWBackingStore | 
-           CWEventMask | CWOverrideRedirect;
-    attr.override_redirect = True;
-    attr.backing_store = NotUseful;
-    attr.save_under = False;
-  } else
-    mask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
-
-  win = XCreateWindow(dpy, root, 0, 0, 
-                      actualWidth, actualHeight, 
-                      0, visinfo->depth, InputOutput,
-                      visinfo->visual, mask, &attr);
-
-  XStoreName( dpy, win, WINDOW_CLASS_NAME );
-
-  /* GH: Don't let the window be resized */
-  sizehints.flags = PMinSize | PMaxSize;
-  sizehints.min_width = sizehints.max_width = actualWidth;
-  sizehints.min_height = sizehints.max_height = actualHeight;
-
-  XSetWMNormalHints( dpy, win, &sizehints );
-
-  XMapWindow( dpy, win );
-
-  if (vidmode_active)
-    XMoveWindow(dpy, win, 0, 0);
-
-  XFlush(dpy);
-  XSync(dpy,False); // bk001130 - from cvs1.17 (mkv)
-  ctx = glXCreateContext(dpy, visinfo, NULL, True);
-  XSync(dpy,False); // bk001130 - from cvs1.17 (mkv)
-
-  /* GH: Free the visinfo after we're done with it */
-  XFree( visinfo );
-
-  glXMakeCurrent(dpy, win, ctx);
 
   // bk001130 - from cvs1.17 (mkv)
   glstring = (char*)qglGetString (GL_RENDERER);

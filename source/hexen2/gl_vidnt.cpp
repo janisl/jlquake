@@ -1313,6 +1313,7 @@ VID_Init
 */
 void	VID_Init (unsigned char *palette)
 {
+	R_SharedRegister();
 	int		i, existingmode;
 	int		basenummodes, width, height, bpp, findbpp, done;
 	byte	*ptmp;

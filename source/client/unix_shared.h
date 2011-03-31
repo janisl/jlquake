@@ -52,14 +52,4 @@ extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of X
 
 rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
 
-extern Window root;
-extern int actualWidth, actualHeight;
-extern int attrib[];
-// these match in the array
-#define ATTR_RED_IDX 2
-#define ATTR_GREEN_IDX 4
-#define ATTR_BLUE_IDX 6
-#define ATTR_DEPTH_IDX 9
-#define ATTR_STENCIL_IDX 11
-
 #endif
