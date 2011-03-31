@@ -136,59 +136,6 @@ typedef enum {
 } stereoFrame_t;
 
 
-/*
-** glconfig_t
-**
-** Contains variables specific to the OpenGL configuration
-** being run right now.  These are constant once the OpenGL
-** subsystem is initialized.
-*/
-typedef enum {
-	TC_NONE,
-	TC_S3TC
-} textureCompression_t;
-
-typedef enum {
-	GLDRV_ICD,					// driver is integrated with window system
-} glDriverType_t;
-
-typedef enum {
-	GLHW_GENERIC,			// where everthing works the way it should
-} glHardwareType_t;
-
-typedef struct {
-	char					renderer_string[MAX_STRING_CHARS];
-	char					vendor_string[MAX_STRING_CHARS];
-	char					version_string[MAX_STRING_CHARS];
-	char					extensions_string[BIG_INFO_STRING];
-
-	int						maxTextureSize;			// queried from GL
-	int						maxActiveTextures;		// multitexture ability
-
-	int						colorBits, depthBits, stencilBits;
-
-	glDriverType_t			driverType;
-	glHardwareType_t		hardwareType;
-
-	qboolean				deviceSupportsGamma;
-	textureCompression_t	textureCompression;
-	qboolean				textureEnvAddAvailable;
-
-	int						vidWidth, vidHeight;
-	// aspect is the screen's physical width / height, which may be different
-	// than scrWidth / scrHeight if the pixels are non-square
-	// normal screens should be 4/3, but wide aspect monitors may be 16/9
-	float					windowAspect;
-
-	int						displayFrequency;
-
-	// synonymous with "does rendering consume the entire screen?", therefore
-	// a Win32 ICD that used CDS will have this set to TRUE.
-	qboolean				isFullscreen;
-	qboolean				stereoEnabled;
-	qboolean				smpActive;		// dual processor
-} glconfig_t;
-
 // FIXME: VM should be OS agnostic .. in theory
 
 #if defined(Q3_VM) || defined(_WIN32)

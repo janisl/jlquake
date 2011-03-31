@@ -36,6 +36,8 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+glconfig_t	glConfig;
+
 QCvar*		r_logFile;
 
 QCvar*		r_stencilbits;
