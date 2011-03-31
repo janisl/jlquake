@@ -92,8 +92,6 @@ QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 
-QCvar	*r_logFile;
-
 extern	QCvar*	gl_ztrick;
 static qboolean AlwaysDrawModel;
 

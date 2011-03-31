@@ -802,22 +802,6 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 */
 int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
 {
-  int attrib[] = {
-    GLX_RGBA,         // 0
-    GLX_RED_SIZE, 4,      // 1, 2
-    GLX_GREEN_SIZE, 4,      // 3, 4
-    GLX_BLUE_SIZE, 4,     // 5, 6
-    GLX_DOUBLEBUFFER,     // 7
-    GLX_DEPTH_SIZE, 1,      // 8, 9
-    GLX_STENCIL_SIZE, 1,    // 10, 11
-    None
-  };
-  // these match in the array
-#define ATTR_RED_IDX 2
-#define ATTR_GREEN_IDX 4
-#define ATTR_BLUE_IDX 6
-#define ATTR_DEPTH_IDX 9
-#define ATTR_STENCIL_IDX 11
   XVisualInfo *visinfo;
   XSetWindowAttributes attr;
   XSizeHints sizehints;

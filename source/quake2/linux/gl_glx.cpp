@@ -35,29 +35,6 @@ static GC				x_gc;
 static Visual			*x_vis;
 static XVisualInfo		*x_visinfo;
 
-static int				StudlyRGBattributes[] =
-{
-    GLX_DOUBLEBUFFER,
-    GLX_RGBA,
-    GLX_RED_SIZE, 4,
-    GLX_GREEN_SIZE, 4,
-    GLX_BLUE_SIZE, 4,
-    GLX_DEPTH_SIZE, 1,
-    GLX_SAMPLES_SGIS, 4, /* for better AA */
-    None,
-};
-
-static int				RGBattributes[] =
-{
-    GLX_DOUBLEBUFFER,
-    GLX_RGBA,
-    GLX_RED_SIZE, 4,
-    GLX_GREEN_SIZE, 4,
-    GLX_BLUE_SIZE, 4,
-    GLX_DEPTH_SIZE, 1,
-    None,
-};
-
 int current_framebuffer;
 static int				x_shmeventtype;
 //static XShmSegmentInfo	x_shminfo;
@@ -345,14 +322,8 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 
 // pick a visual- warn if more than one was available
 
-	x_visinfo = glXChooseVisual( dpy, scrnum, StudlyRGBattributes );
-	if (!x_visinfo)
-	{
-	    fprintf(stderr, "Using non studly RGB attributes\n");
-		x_visinfo = glXChooseVisual( dpy, DefaultScreen( dpy ),
-					     RGBattributes );
-		if (!x_visinfo) Sys_Error( "No matching visual available!\n" );
-	}
+	x_visinfo = glXChooseVisual( dpy, scrnum, attrib );
+	if (!x_visinfo) Sys_Error( "No matching visual available!\n" );
 
 	ri.Con_Printf(PRINT_ALL, "Using visualid 0x%x:\n",
 		   (int)(x_visinfo->visualid));

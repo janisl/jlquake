@@ -179,6 +179,7 @@ void R_Init (void)
 	extern byte *hunk_base;
 	int counter;
 
+	R_SharedRegister();
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 	Cmd_AddCommand ("envmap", R_Envmap_f);	
 	//Cmd_AddCommand ("pointfile", R_ReadPointFile_f);	
@@ -208,8 +209,6 @@ void R_Init (void)
 
 	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions", "1", CVAR_ARCHIVE);
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
-
-	r_logFile = Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
 
 	R_InitParticles ();
 	R_InitParticleTexture ();

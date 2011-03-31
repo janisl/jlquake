@@ -43,6 +43,12 @@ enum rserr_t
 
 void* GLimp_GetProcAddress(const char* Name);
 
-extern	QCvar	*r_logFile;						// number of frames to emit GL logs
+void R_SharedRegister();
+
+extern QCvar*	r_logFile;						// number of frames to emit GL logs
+
+extern QCvar*	r_stencilbits;			// number of desired stencil bits
+extern QCvar*	r_depthbits;			// number of desired depth bits
+extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for fullscreen
 
 #endif

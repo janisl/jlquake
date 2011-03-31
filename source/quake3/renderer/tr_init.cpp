@@ -82,11 +82,7 @@ QCvar	*r_ext_compiled_vertex_array;
 QCvar	*r_ext_texture_env_add;
 
 QCvar	*r_ignoreGLErrors;
-QCvar	*r_logFile;
 
-QCvar	*r_stencilbits;
-QCvar	*r_depthbits;
-QCvar	*r_colorbits;
 QCvar	*r_stereo;
 QCvar	*r_primitives;
 QCvar	*r_texturebits;
@@ -846,6 +842,7 @@ R_Register
 */
 void R_Register( void ) 
 {
+	R_SharedRegister();
 	//
 	// latched and archived variables
 	//
@@ -867,14 +864,14 @@ void R_Register( void )
 	AssertCvarRange( r_picmip, 0, 16, qtrue );
 	r_detailTextures = ri.Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_texturebits = ri.Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH );
-	r_colorbits = ri.Cvar_Get( "r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	//r_colorbits = ri.Cvar_Get( "r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
 	r_stereo = ri.Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH );
-#ifdef __linux__
-	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
-#else
-	r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH );
-#endif
-	r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
+//#ifdef __linux__
+	//r_stencilbits = ri.Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
+//#else
+	//r_stencilbits = ri.Cvar_Get( "r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH );
+//#endif
+	//r_depthbits = ri.Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
 	r_overBrightBits = ri.Cvar_Get ("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	r_mode = ri.Cvar_Get( "r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH );
@@ -968,7 +965,7 @@ void R_Register( void )
 	r_showcluster = ri.Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = ri.Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
 	r_verbose = ri.Cvar_Get( "r_verbose", "0", CVAR_CHEAT );
-	r_logFile = ri.Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
+	//r_logFile = ri.Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
 	r_debugSurface = ri.Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 	r_nobind = ri.Cvar_Get ("r_nobind", "0", CVAR_CHEAT);
 	r_showtris = ri.Cvar_Get ("r_showtris", "0", CVAR_CHEAT);

@@ -981,9 +981,6 @@ extern QCvar	*r_ignoreFastPath;		// allows us to ignore our Tess fast paths
 
 extern QCvar	*r_znear;				// near Z clip plane
 
-extern QCvar	*r_stencilbits;			// number of desired stencil bits
-extern QCvar	*r_depthbits;			// number of desired depth bits
-extern QCvar	*r_colorbits;			// number of desired color bits, only relevant for fullscreen
 extern QCvar	*r_stereo;				// desired pixelformat stereo flag
 extern QCvar	*r_texturebits;			// number of desired texture bits
 										// 0 = use framebuffer depth

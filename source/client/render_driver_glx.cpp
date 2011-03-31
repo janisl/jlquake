@@ -62,6 +62,18 @@ int						vidmode_MajorVersion = 0, vidmode_MinorVersion = 0; // major and minor 
 
 Window root;
 int actualWidth, actualHeight;
+int attrib[] =
+{
+	GLX_RGBA,         // 0
+	GLX_RED_SIZE, 4,      // 1, 2
+	GLX_GREEN_SIZE, 4,      // 3, 4
+	GLX_BLUE_SIZE, 4,     // 5, 6
+	GLX_DOUBLEBUFFER,     // 7
+	GLX_DEPTH_SIZE, 1,      // 8, 9
+	GLX_STENCIL_SIZE, 1,    // 10, 11
+	//GLX_SAMPLES_SGIS, 4, /* for better AA */
+	None
+};
 
 // CODE --------------------------------------------------------------------
 

@@ -538,15 +538,6 @@ void GL_EndRendering (void)
 void VID_Init(unsigned char *palette)
 {
 	int i;
-	int attrib[] = {
-		GLX_RGBA,
-		GLX_RED_SIZE, 1,
-		GLX_GREEN_SIZE, 1,
-		GLX_BLUE_SIZE, 1,
-		GLX_DOUBLEBUFFER,
-		GLX_DEPTH_SIZE, 1,
-		None
-	};
 	int width = 640, height = 480;
 	XSetWindowAttributes attr;
 	unsigned long mask;

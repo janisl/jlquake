@@ -98,7 +98,6 @@ QCvar	*gl_ext_multitexture;
 QCvar	*gl_ext_pointparameters;
 QCvar	*gl_ext_compiled_vertex_array;
 
-QCvar	*r_logFile;
 QCvar	*gl_bitdepth;
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
@@ -909,6 +908,7 @@ void R_RenderFrame (refdef_t *fd)
 
 void R_Register( void )
 {
+	R_SharedRegister();
 	r_lefthand = ri.Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 	r_norefresh = ri.Cvar_Get ("r_norefresh", "0", 0);
 	r_fullbright = ri.Cvar_Get ("r_fullbright", "0", 0);
@@ -932,7 +932,6 @@ void R_Register( void )
 	gl_particle_att_c = ri.Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
 	gl_modulate = ri.Cvar_Get ("gl_modulate", "1", CVAR_ARCHIVE );
-	r_logFile = ri.Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
 	gl_bitdepth = ri.Cvar_Get( "gl_bitdepth", "0", 0 );
 	gl_mode = ri.Cvar_Get( "gl_mode", "3", CVAR_ARCHIVE );
 	gl_lightmap = ri.Cvar_Get ("gl_lightmap", "0", 0);
