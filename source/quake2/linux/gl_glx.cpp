@@ -19,7 +19,6 @@
 #include <X11/Xatom.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XShm.h>
-#include <Xm/MwmUtil.h>
 #include <unistd.h>
 #include <sys/mman.h>
 #include <execinfo.h>
@@ -124,6 +123,8 @@ static void signal_handler(int sig, siginfo_t *info, void *secret)
 	char **messages = (char **)NULL;
 	int i, trace_size = 0;
 	ucontext_t *uc = (ucontext_t *)secret;
+
+	XAutoRepeatOn(dpy);
 
 #if id386
 	/* Do something useful with siginfo_t */
@@ -325,7 +326,7 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	// let the sound and input subsystems know about the new window
 	ri.Vid_NewWindow (vid.width, vid.height);
 
-	if (GLimp_GLXSharedInit() != RSERR_OK)
+	if (GLimp_GLXSharedInit(vid.width, vid.height, fullscreen) != RSERR_OK)
 	{
 		return false;
 	}
@@ -423,24 +424,10 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	}
 
 // set window properties for full screen
-	if (fullscreen) {
-	    MotifWmHints    wmhints;
-	    Atom aHints;
+	if (fullscreen)
+	{
 	    XSizeHints              sizehints;
 	    XWindowChanges  changes;
-
-	    aHints = XInternAtom( dpy, "_MOTIF_WM_HINTS", 0 );
-	    if (aHints == None)
-	    {
-                ri.Con_Printf( PRINT_ALL, "Could not intern X atom for _MOTIF_WM_HINTS." );
-/*                 return( false ); */
-	    }
-	    else {
-		wmhints.flags = MWM_HINTS_DECORATIONS;
-		wmhints.decorations = 0; // Absolutely no decorations.
-		XChangeProperty(dpy, win, aHints, aHints, 32,
-				PropModeReplace, (unsigned char *)&wmhints,
-				4 );
 
 		sizehints.flags = USPosition | USSize;
 		sizehints.x = 0;
@@ -457,7 +444,6 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 		XConfigureWindow(dpy, win,
 				 CWX | CWY | CWWidth | CWHeight | CWStackMode,
 				 &changes);
-	    }
 	}
 
 // map the window

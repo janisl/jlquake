@@ -551,7 +551,7 @@ void VID_Init(unsigned char *palette)
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 
-	if (GLimp_GLXSharedInit() != RSERR_OK)
+	if (GLimp_GLXSharedInit(width, height, true) != RSERR_OK)
 	{
 		exit(1);
 	}

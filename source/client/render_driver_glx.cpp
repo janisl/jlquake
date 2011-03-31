@@ -82,7 +82,7 @@ void* GLimp_GetProcAddress(const char* Name)
 //
 //==========================================================================
 
-rserr_t GLimp_GLXSharedInit()
+rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen)
 {
 	// open the display
 	if (!(dpy = XOpenDisplay(NULL)))
@@ -119,6 +119,64 @@ rserr_t GLimp_GLXSharedInit()
 		else
 		{
 			GLog.Write("XF86DGA Mouse (Version %d.%d) initialized\n", dga_MajorVersion, dga_MinorVersion);
+		}
+	}
+
+	actualWidth = width;
+	actualHeight = height;
+
+	if (vidmode_ext)
+	{
+		int best_fit, best_dist, dist, x, y;
+
+		XF86VidModeGetAllModeLines(dpy, scrnum, &num_vidmodes, &vidmodes);
+
+		// Are we going fullscreen?  If so, let's change video mode
+		if (fullscreen)
+		{
+			best_dist = 9999999;
+			best_fit = -1;
+
+			for (int i = 0; i < num_vidmodes; i++)
+			{
+				if (width > vidmodes[i]->hdisplay ||
+					height > vidmodes[i]->vdisplay)
+					continue;
+
+				x = width - vidmodes[i]->hdisplay;
+				y = height - vidmodes[i]->vdisplay;
+				dist = (x * x) + (y * y);
+				if (dist < best_dist)
+				{
+					best_dist = dist;
+					best_fit = i;
+				}
+			}
+
+			if (best_fit != -1)
+			{
+				actualWidth = vidmodes[best_fit]->hdisplay;
+				actualHeight = vidmodes[best_fit]->vdisplay;
+
+				// change to the mode
+				XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[best_fit]);
+				vidmode_active = true;
+
+				// Move the viewport to top left
+				XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
+
+				GLog.Write("XFree86-VidModeExtension Activated at %dx%d\n",
+					actualWidth, actualHeight);
+			}
+			else
+			{
+				fullscreen = 0;
+				GLog.Write("XFree86-VidModeExtension: No acceptable modes found\n");
+			}
+		}
+		else
+		{
+			GLog.Write("XFree86-VidModeExtension:  Ignored on non-fullscreen\n");
 		}
 	}
 

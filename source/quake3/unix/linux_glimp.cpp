@@ -838,68 +838,10 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
   }
   ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight);
 
-	if (GLimp_GLXSharedInit() != RSERR_OK)
+	if (GLimp_GLXSharedInit(glConfig.vidWidth, glConfig.vidHeight, fullscreen) != RSERR_OK)
 	{
 		return RSERR_INVALID_MODE;
 	}
-
-  actualWidth = glConfig.vidWidth;
-  actualHeight = glConfig.vidHeight;
-
-  if (vidmode_ext)
-  {
-    int best_fit, best_dist, dist, x, y;
-
-    XF86VidModeGetAllModeLines(dpy, scrnum, &num_vidmodes, &vidmodes);
-
-    // Are we going fullscreen?  If so, let's change video mode
-    if (fullscreen)
-    {
-      best_dist = 9999999;
-      best_fit = -1;
-
-      for (i = 0; i < num_vidmodes; i++)
-      {
-        if (glConfig.vidWidth > vidmodes[i]->hdisplay ||
-            glConfig.vidHeight > vidmodes[i]->vdisplay)
-          continue;
-
-        x = glConfig.vidWidth - vidmodes[i]->hdisplay;
-        y = glConfig.vidHeight - vidmodes[i]->vdisplay;
-        dist = (x * x) + (y * y);
-        if (dist < best_dist)
-        {
-          best_dist = dist;
-          best_fit = i;
-        }
-      }
-
-      if (best_fit != -1)
-      {
-        actualWidth = vidmodes[best_fit]->hdisplay;
-        actualHeight = vidmodes[best_fit]->vdisplay;
-
-        // change to the mode
-        XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[best_fit]);
-        vidmode_active = qtrue;
-
-        // Move the viewport to top left
-        XF86VidModeSetViewPort(dpy, scrnum, 0, 0);
-
-        ri.Printf(PRINT_ALL, "XFree86-VidModeExtension Activated at %dx%d\n",
-                  actualWidth, actualHeight);
-
-      } else
-      {
-        fullscreen = 0;
-        ri.Printf(PRINT_ALL, "XFree86-VidModeExtension: No acceptable modes found\n");
-      }
-    } else
-    {
-      ri.Printf(PRINT_ALL, "XFree86-VidModeExtension:  Ignored on non-fullscreen\n");
-    }
-  }
-
 
   if (!r_colorbits->value)
     colorbits = 24;

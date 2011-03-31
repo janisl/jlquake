@@ -50,7 +50,7 @@ extern bool			vidmode_active;
 extern bool			vidmode_ext;
 extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of XF86VidExtensions
 
-rserr_t GLimp_GLXSharedInit();
+rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
 
 extern Window root;
 extern int actualWidth, actualHeight;
