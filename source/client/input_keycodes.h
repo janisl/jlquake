@@ -1,27 +1,21 @@
-/*
-===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-
-This file is part of Quake III Arena source code.
-
-Quake III Arena source code is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
-
-Quake III Arena source code is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with Foobar; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-===========================================================================
-*/
-//
-#ifndef __KEYCODES_H__
-#define __KEYCODES_H__
+//**************************************************************************
+//**
+//**	$Id$
+//**
+//**	Copyright (C) 1996-2005 Id Software, Inc.
+//**	Copyright (C) 2010 Jānis Legzdiņš
+//**
+//**	This program is free software; you can redistribute it and/or
+//**  modify it under the terms of the GNU General Public License
+//**  as published by the Free Software Foundation; either version 2
+//**  of the License, or (at your option) any later version.
+//**
+//**	This program is distributed in the hope that it will be useful,
+//**  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//**  GNU General Public License for more details.
+//**
+//**************************************************************************
 
 //
 // these are the key numbers that should be passed to KeyEvent
@@ -29,7 +23,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // normal keys should be passed as lowercased ascii
 
-typedef enum {
+//
+//	These values are passed to Quake 3 UI VM and should not be changed.
+//
+
+enum
+{
 	K_TAB = 9,
 	K_ENTER = 13,
 	K_ESCAPE = 27,
@@ -92,6 +91,9 @@ typedef enum {
 	K_KP_STAR,
 	K_KP_EQUALS,
 
+	//
+	// mouse buttons generate virtual keys
+	//
 	K_MOUSE1,
 	K_MOUSE2,
 	K_MOUSE3,
@@ -101,6 +103,9 @@ typedef enum {
 	K_MWHEELDOWN,
 	K_MWHEELUP,
 
+	//
+	// joystick buttons
+	//
 	K_JOY1,
 	K_JOY2,
 	K_JOY3,
@@ -134,6 +139,10 @@ typedef enum {
 	K_JOY31,
 	K_JOY32,
 
+	//
+	// aux keys are for multi-buttoned joysticks to generate so they can use
+	// the normal binding process
+	//
 	K_AUX1,
 	K_AUX2,
 	K_AUX3,
@@ -150,14 +159,27 @@ typedef enum {
 	K_AUX14,
 	K_AUX15,
 	K_AUX16,
+	K_AUX17,
+	K_AUX18,
+	K_AUX19,
+	K_AUX20,
+	K_AUX21,
+	K_AUX22,
+	K_AUX23,
+	K_AUX24,
+	K_AUX25,
+	K_AUX26,
+	K_AUX27,
+	K_AUX28,
+	K_AUX29,
+	K_AUX30,
+	K_AUX31,
+	K_AUX32,
 
 	K_LAST_KEY		// this had better be <256!
-} keyNum_t;
-
+};
 
 // The menu code needs to get both key and char events, but
 // to avoid duplicating the paths, the char events are just
 // distinguished by or'ing in K_CHAR_FLAG (ugly)
-#define	K_CHAR_FLAG		1024
-
-#endif
+#define K_CHAR_FLAG		1024

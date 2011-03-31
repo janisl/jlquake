@@ -26,5 +26,6 @@
 #include "snd_midi_public.h"
 #include "cd_public.h"
 #include "render_public.h"
+#include "input_keycodes.h"
 
 #endif
