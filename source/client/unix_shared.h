@@ -51,5 +51,6 @@ extern bool			vidmode_ext;
 extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of XF86VidExtensions
 
 rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
+char* XLateKey(XKeyEvent* ev, int& key);
 
 #endif

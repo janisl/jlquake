@@ -1,5 +1,6 @@
 set(CLIENT_FILES
 	cd_linux.cpp
+	input_unix.cpp
 	render_driver_glx.cpp
 	render_init.cpp
 	render_qgl.cpp
