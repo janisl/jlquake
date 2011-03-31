@@ -156,10 +156,10 @@ void GL_ScreenShot_f (void)
 */
 void GL_Strings_f( void )
 {
-	ri.Con_Printf (PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
-	ri.Con_Printf (PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
-	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
-	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
+	ri.Con_Printf (PRINT_ALL, "GL_VENDOR: %s\n", glConfig.vendor_string );
+	ri.Con_Printf (PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
+	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
+	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 }
 
 /*

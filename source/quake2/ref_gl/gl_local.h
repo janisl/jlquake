@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <math.h>
 
+#include "../../client/client.h"
 #include "../client/ref.h"
 
 #include "qgl.h"
@@ -325,17 +326,6 @@ void GL_TextureSolidMode( char *string );
 */
 void GL_DrawParticles( int n, const particle_t particles[], const unsigned colortable[768] );
 
-/*
-** GL config stuff
-*/
-typedef struct
-{
-	const char *renderer_string;
-	const char *vendor_string;
-	const char *version_string;
-	const char *extensions_string;
-} glconfig_t;
-
 typedef struct
 {
 	float inverse_intensity;
@@ -356,7 +346,6 @@ typedef struct
 	unsigned char originalBlueGammaTable[256];
 } glstate_t;
 
-extern glconfig_t  gl_config;
 extern glstate_t   gl_state;
 
 /*

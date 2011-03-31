@@ -30,7 +30,6 @@ model_t		*r_worldmodel;
 
 float		gldepthmin, gldepthmax;
 
-glconfig_t gl_config;
 glstate_t  gl_state;
 
 image_t		*r_notexture;		// use for bad textures
@@ -1078,14 +1077,14 @@ int R_Init( void *hinstance, void *hWnd )
 	/*
 	** get our various GL strings
 	*/
-	gl_config.vendor_string = (char*)qglGetString (GL_VENDOR);
-	ri.Con_Printf (PRINT_ALL, "GL_VENDOR: %s\n", gl_config.vendor_string );
-	gl_config.renderer_string = (char*)qglGetString (GL_RENDERER);
-	ri.Con_Printf (PRINT_ALL, "GL_RENDERER: %s\n", gl_config.renderer_string );
-	gl_config.version_string = (char*)qglGetString (GL_VERSION);
-	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", gl_config.version_string );
-	gl_config.extensions_string = (char*)qglGetString (GL_EXTENSIONS);
-	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", gl_config.extensions_string );
+	QStr::NCpyZ(glConfig.vendor_string, (char*)qglGetString (GL_VENDOR), sizeof(glConfig.vendor_string));
+	ri.Con_Printf (PRINT_ALL, "GL_VENDOR: %s\n", glConfig.vendor_string );
+	QStr::NCpyZ(glConfig.renderer_string, (char*)qglGetString (GL_RENDERER), sizeof(glConfig.renderer_string));
+	ri.Con_Printf (PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
+	QStr::NCpyZ(glConfig.version_string, (char*)qglGetString (GL_VERSION), sizeof(glConfig.version_string));
+	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
+	QStr::NCpyZ(glConfig.extensions_string, (char*)qglGetString (GL_EXTENSIONS), sizeof(glConfig.extensions_string));
+	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 
 	if ( QStr::ToUpper( gl_monolightmap->string[1] ) != 'F' )
 	{
@@ -1097,8 +1096,8 @@ int R_Init( void *hinstance, void *hWnd )
 	/*
 	** grab extensions
 	*/
-	if ( strstr( gl_config.extensions_string, "GL_EXT_compiled_vertex_array" ) || 
-		 strstr( gl_config.extensions_string, "GL_SGI_compiled_vertex_array" ) )
+	if ( strstr( glConfig.extensions_string, "GL_EXT_compiled_vertex_array" ) || 
+		 strstr( glConfig.extensions_string, "GL_SGI_compiled_vertex_array" ) )
 	{
 		ri.Con_Printf( PRINT_ALL, "...enabling GL_EXT_compiled_vertex_array\n" );
 		qglLockArraysEXT = (void(APIENTRY*)(int, int)) GLimp_GetProcAddress( "glLockArraysEXT" );
@@ -1110,7 +1109,7 @@ int R_Init( void *hinstance, void *hWnd )
 	}
 
 #ifdef WIN32
-	if ( strstr( gl_config.extensions_string, "WGL_EXT_swap_control" ) )
+	if ( strstr( glConfig.extensions_string, "WGL_EXT_swap_control" ) )
 	{
 		qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) GLimp_GetProcAddress( "wglSwapIntervalEXT" );
 		ri.Con_Printf( PRINT_ALL, "...enabling WGL_EXT_swap_control\n" );
@@ -1121,7 +1120,7 @@ int R_Init( void *hinstance, void *hWnd )
 	}
 #endif
 
-	if ( strstr( gl_config.extensions_string, "GL_EXT_point_parameters" ) )
+	if ( strstr( glConfig.extensions_string, "GL_EXT_point_parameters" ) )
 	{
 		if ( gl_ext_pointparameters->value )
 		{
@@ -1139,7 +1138,7 @@ int R_Init( void *hinstance, void *hWnd )
 		ri.Con_Printf( PRINT_ALL, "...GL_EXT_point_parameters not found\n" );
 	}
 
-	if ( strstr( gl_config.extensions_string, "GL_SGIS_multitexture" ) )
+	if ( strstr( glConfig.extensions_string, "GL_SGIS_multitexture" ) )
 	{
 		if ( gl_ext_multitexture->value )
 		{

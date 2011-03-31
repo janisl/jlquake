@@ -45,6 +45,8 @@ void* GLimp_GetProcAddress(const char* Name);
 
 void R_SharedRegister();
 
+extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
+
 extern QCvar*	r_logFile;						// number of frames to emit GL logs
 
 extern QCvar*	r_stencilbits;			// number of desired stencil bits
