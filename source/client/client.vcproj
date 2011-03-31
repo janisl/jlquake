@@ -161,6 +161,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_init.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_qgl.cpp"
 				>
 			</File>
@@ -212,6 +216,10 @@
 			</File>
 			<File
 				RelativePath=".\render_local.h"
+				>
+			</File>
+			<File
+				RelativePath=".\render_public.h"
 				>
 			</File>
 			<File
