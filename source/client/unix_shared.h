@@ -52,5 +52,7 @@ extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of X
 
 rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
 char* XLateKey(XKeyEvent* ev, int& key);
+Cursor CreateNullCursor(Display *display, Window root);
+void Shared_install_grabs();
 
 #endif

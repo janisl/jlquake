@@ -248,32 +248,6 @@ void GLimp_AppActivate( qboolean active )
 {
 }
 
-// ========================================================================
-// makes a null cursor
-// ========================================================================
-
-static Cursor CreateNullCursor(Display *display, Window root)
-{
-    Pixmap cursormask; 
-    XGCValues xgc;
-    GC gc;
-    XColor dummycolour;
-    Cursor cursor;
-
-    cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
-    xgc.function = GXclear;
-    gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
-    XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
-    dummycolour.pixel = 0;
-    dummycolour.red = 0;
-    dummycolour.flags = 04;
-    cursor = XCreatePixmapCursor(display, cursormask, cursormask,
-          &dummycolour,&dummycolour, 0,0);
-    XFreePixmap(display,cursormask);
-    XFreeGC(display,gc);
-    return cursor;
-}
-
 /*
 ** GLimp_InitGraphics
 **
@@ -298,9 +272,6 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	{
 		return false;
 	}
-
-	// inviso cursor
-	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
 
 	current_framebuffer = 0;
 

@@ -28,7 +28,6 @@
 
 static qboolean			doShm;
 static Colormap			x_cmap;
-static GC				x_gc;
 
 int current_framebuffer;
 static int				x_shmeventtype;
@@ -210,28 +209,6 @@ void GLimp_AppActivate( qboolean active )
 // makes a null cursor
 // ========================================================================
 
-static Cursor CreateNullCursor(Display *display, Window root)
-{
-    Pixmap cursormask; 
-    XGCValues xgc;
-    GC gc;
-    XColor dummycolour;
-    Cursor cursor;
-
-    cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
-    xgc.function = GXclear;
-    gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
-    XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
-    dummycolour.pixel = 0;
-    dummycolour.red = 0;
-    dummycolour.flags = 04;
-    cursor = XCreatePixmapCursor(display, cursormask, cursormask,
-          &dummycolour,&dummycolour, 0,0);
-    XFreePixmap(display,cursormask);
-    XFreeGC(display,gc);
-    return cursor;
-}
-
 /*
 ** GLimp_InitGraphics
 **
@@ -243,11 +220,6 @@ static Cursor CreateNullCursor(Display *display, Window root)
 */
 qboolean GLimp_InitGraphics( qboolean fullscreen )
 {
-	int pnum, i;
-	XVisualInfo template;
-	int num_visuals;
-	int template_mask;
-
 	fprintf(stderr, "GLimp_InitGraphics\n");
 
 	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
@@ -260,29 +232,6 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 	if (GLimp_GLXSharedInit(vid.width, vid.height, fullscreen) != RSERR_OK)
 	{
 		return false;
-	}
-
-	XAutoRepeatOff(dpy);
-
-// for debugging only
-	XSynchronize(dpy, True);
-
-// check for command-line window size
-	template_mask = 0;
-
-		template.visualid =
-			XVisualIDFromVisual(XDefaultVisual(dpy, scrnum));
-		template_mask = VisualIDMask;
-
-// inviso cursor
-	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
-
-// create the GC
-	{
-		XGCValues xgcvalues;
-		int valuemask = GCGraphicsExposures;
-		xgcvalues.graphics_exposures = False;
-		x_gc = XCreateGC(dpy, win, valuemask, &xgcvalues );
 	}
 
 	current_framebuffer = 0;

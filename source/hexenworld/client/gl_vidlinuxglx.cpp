@@ -101,6 +101,8 @@ void D_EndDirectRect (int x, int y, int width, int height)
 
 static void install_grabs(void)
 {
+	Shared_install_grabs();
+
 	XGrabPointer(dpy, win,
 				 True,
 				 0,

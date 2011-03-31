@@ -328,3 +328,33 @@ char* XLateKey(XKeyEvent* ev, int& key)
 
 	return buf;
 }
+
+//==========================================================================
+//
+//	CreateNullCursor
+//
+//	Makes a null cursor.
+//
+//==========================================================================
+
+Cursor CreateNullCursor(Display *display, Window root)
+{
+	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
+	XGCValues xgc;
+	xgc.function = GXclear;
+	GC gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
+	XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
+	XColor dummycolour;
+	dummycolour.pixel = 0;
+	dummycolour.red = 0;
+	dummycolour.flags = 04;
+	Cursor cursor = XCreatePixmapCursor(display, cursormask, cursormask,
+		&dummycolour, &dummycolour, 0,0);
+	XFreePixmap(display, cursormask);
+	XFreeGC(display, gc);
+	return cursor;
+}
+
+void Shared_install_grabs()
+{
+}
