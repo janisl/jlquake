@@ -650,30 +650,6 @@ void	VID_Shutdown (void)
 
 //==========================================================================
 
-
-BOOL bSetupPixelFormat(HDC hDC)
-{
-    static PIXELFORMATDESCRIPTOR pfd;
-	GLW_CreatePFD(&pfd, 24, 32, 0, false);
-    int pixelformat;
-
-    if ( (pixelformat = GLW_ChoosePFD(hDC, &pfd)) == 0 )
-    {
-        MessageBox(NULL, "ChoosePixelFormat failed", "Error", MB_OK);
-        return FALSE;
-    }
-
-    if (SetPixelFormat(hDC, pixelformat, &pfd) == FALSE)
-    {
-        MessageBox(NULL, "SetPixelFormat failed", "Error", MB_OK);
-        return FALSE;
-    }
-
-    return TRUE;
-}
-
-
-
 byte        scantokey[128] = 
 					{ 
 //  0           1       2       3       4       5       6       7 
@@ -1545,13 +1521,11 @@ void	VID_Init (unsigned char *palette)
 	VID_SetMode (vid_default, palette);
 
     maindc = GetDC(GMainWindow);
-	bSetupPixelFormat(maindc);
+    static PIXELFORMATDESCRIPTOR pfd;
+	GLW_CreatePFD(&pfd, 24, 32, 0, false);
 
-    baseRC = wglCreateContext( maindc );
-	if (!baseRC)
+	if (GLW_MakeContext(&pfd) == TRY_PFD_FAIL_HARD)
 		Sys_Error ("Could not initialize GL (wglCreateContext failed).\n\nMake sure you in are 65535 color mode, and try running -window.");
-    if (!wglMakeCurrent( maindc, baseRC ))
-		Sys_Error ("wglMakeCurrent failed");
 
 	GL_Init ();
 

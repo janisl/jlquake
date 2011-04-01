@@ -43,10 +43,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 extern void WG_CheckHardwareGamma( void );
 extern void WG_RestoreGamma( void );
 
-#define TRY_PFD_SUCCESS		0
-#define TRY_PFD_FAIL_SOFT	1
-#define TRY_PFD_FAIL_HARD	2
-
 static void		GLW_InitExtensions( void );
 static rserr_t	GLW_SetMode( int mode, 
 							 int colorbits, 
@@ -89,69 +85,6 @@ static qboolean GLW_StartDriverAndSetMode(int mode,
 	}
 	return qtrue;
 }
-
-/*
-** GLW_MakeContext
-*/
-static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
-{
-	int pixelformat;
-
-	//
-	// don't putz around with pixelformat if it's already set (e.g. this is a soft
-	// reset of the graphics system)
-	//
-	if ( !glw_state.pixelFormatSet )
-	{
-		//
-		// choose, set, and describe our desired pixel format.
-		//
-		if ( ( pixelformat = GLW_ChoosePFD( maindc, pPFD ) ) == 0 )
-		{
-			ri.Printf( PRINT_ALL, "...GLW_ChoosePFD failed\n");
-			return TRY_PFD_FAIL_SOFT;
-		}
-		ri.Printf( PRINT_ALL, "...PIXELFORMAT %d selected\n", pixelformat );
-
-		DescribePixelFormat( maindc, pixelformat, sizeof( *pPFD ), pPFD );
-
-		if ( SetPixelFormat( maindc, pixelformat, pPFD ) == FALSE )
-		{
-			ri.Printf (PRINT_ALL, "...SetPixelFormat failed\n", maindc );
-			return TRY_PFD_FAIL_SOFT;
-		}
-
-		glw_state.pixelFormatSet = qtrue;
-	}
-
-	//
-	// startup the OpenGL subsystem by creating a context and making it current
-	//
-	if ( !baseRC )
-	{
-		ri.Printf( PRINT_ALL, "...creating GL context: " );
-		if ( ( baseRC = wglCreateContext( maindc ) ) == 0 )
-		{
-			ri.Printf (PRINT_ALL, "failed\n");
-
-			return TRY_PFD_FAIL_HARD;
-		}
-		ri.Printf( PRINT_ALL, "succeeded\n" );
-
-		ri.Printf( PRINT_ALL, "...making context current: " );
-		if ( !wglMakeCurrent( maindc, baseRC ) )
-		{
-			wglDeleteContext( baseRC );
-			baseRC = NULL;
-			ri.Printf (PRINT_ALL, "failed\n");
-			return TRY_PFD_FAIL_HARD;
-		}
-		ri.Printf( PRINT_ALL, "succeeded\n" );
-	}
-
-	return TRY_PFD_SUCCESS;
-}
-
 
 /*
 ** GLW_InitDriver
@@ -216,7 +149,7 @@ static qboolean GLW_InitDriver(int colorbits)
 	//
 	// first attempt: r_colorbits, depthbits, and r_stencilbits
 	//
-	if ( !glw_state.pixelFormatSet )
+	if ( !pixelFormatSet )
 	{
 		GLW_CreatePFD( &pfd, colorbits, depthbits, stencilbits, r_stereo->integer );
 		if ( ( tpfd = GLW_MakeContext( &pfd ) ) != TRY_PFD_SUCCESS )
@@ -940,7 +873,7 @@ void GLimp_Shutdown( void )
 		ShowWindow( GMainWindow, SW_HIDE );
 		DestroyWindow( GMainWindow );
 		GMainWindow = NULL;
-		glw_state.pixelFormatSet = qfalse;
+		pixelFormatSet = qfalse;
 	}
 
 	// reset display settings

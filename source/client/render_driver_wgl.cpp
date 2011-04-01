@@ -49,6 +49,7 @@ int		 desktopBitsPixel;
 int		 desktopWidth, desktopHeight;
 
 static bool		s_classRegistered = false;
+bool pixelFormatSet;
 
 // CODE --------------------------------------------------------------------
 
@@ -62,17 +63,13 @@ static bool		s_classRegistered = false;
 
 #define MAX_PFDS 256
 
-int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
+static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 {
-	PIXELFORMATDESCRIPTOR pfds[MAX_PFDS+1];
-	int maxPFD = 0;
-	int i;
-	int bestMatch = 0;
-
 	GLog.Write("...GLW_ChoosePFD( %d, %d, %d )\n", (int)pPFD->cColorBits, (int)pPFD->cDepthBits, (int)pPFD->cStencilBits);
 
 	// count number of PFDs
-	maxPFD = DescribePixelFormat(hDC, 1, sizeof(PIXELFORMATDESCRIPTOR), &pfds[0]);
+	PIXELFORMATDESCRIPTOR pfds[MAX_PFDS + 1];
+	int maxPFD = DescribePixelFormat(hDC, 1, sizeof(PIXELFORMATDESCRIPTOR), &pfds[0]);
 	if (maxPFD > MAX_PFDS)
 	{
 		GLog.Write(S_COLOR_YELLOW "...numPFDs > MAX_PFDS (%d > %d)\n", maxPFD, MAX_PFDS);
@@ -82,13 +79,14 @@ int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 	GLog.Write("...%d PFDs found\n", maxPFD - 1);
 
 	// grab information
-	for (i = 1; i <= maxPFD; i++)
+	for (int i = 1; i <= maxPFD; i++)
 	{
 		DescribePixelFormat(hDC, i, sizeof(PIXELFORMATDESCRIPTOR), &pfds[i]);
 	}
 
 	// look for a best match
-	for (i = 1; i <= maxPFD; i++)
+	int bestMatch = 0;
+	for (int i = 1; i <= maxPFD; i++)
 	{
 		//
 		// make sure this has hardware acceleration
@@ -295,6 +293,69 @@ void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthbits, in
 	}
 
 	*pPFD = src;
+}
+
+//==========================================================================
+//
+//	GLW_MakeContext
+//
+//==========================================================================
+
+int GLW_MakeContext(PIXELFORMATDESCRIPTOR* pPFD)
+{
+	//
+	// don't putz around with pixelformat if it's already set (e.g. this is a soft
+	// reset of the graphics system)
+	//
+	if (!pixelFormatSet)
+	{
+		//
+		// choose, set, and describe our desired pixel format.
+		//
+		int pixelformat = GLW_ChoosePFD(maindc, pPFD);
+		if (pixelformat == 0)
+		{
+			GLog.Write("...GLW_ChoosePFD failed\n");
+			return TRY_PFD_FAIL_SOFT;
+		}
+		GLog.Write("...PIXELFORMAT %d selected\n", pixelformat);
+
+		DescribePixelFormat(maindc, pixelformat, sizeof(*pPFD), pPFD);
+
+		if (SetPixelFormat(maindc, pixelformat, pPFD) == FALSE)
+		{
+			GLog.Write("...SetPixelFormat failed\n");
+			return TRY_PFD_FAIL_SOFT;
+		}
+
+		pixelFormatSet = true;
+	}
+
+	//
+	// startup the OpenGL subsystem by creating a context and making it current
+	//
+	if (!baseRC)
+	{
+		GLog.Write("...creating GL context: ");
+		if ((baseRC = wglCreateContext(maindc)) == 0)
+		{
+			GLog.Write("failed\n");
+			return TRY_PFD_FAIL_HARD;
+		}
+		GLog.Write("succeeded\n");
+
+		GLog.Write("...making context current: ");
+		if (!wglMakeCurrent(maindc, baseRC))
+		{
+			wglDeleteContext(baseRC);
+			baseRC = NULL;
+			GLog.Write("failed\n");
+			return TRY_PFD_FAIL_HARD;
+		}
+		GLog.Write("succeeded\n");
+	}
+
+	return TRY_PFD_SUCCESS;
 }
 
 //==========================================================================

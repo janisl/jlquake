@@ -317,7 +317,6 @@ qboolean GLimp_Init(void*, void*)
 qboolean GLimp_InitGL (void)
 {
     PIXELFORMATDESCRIPTOR pfd;
-    int  pixelformat;
 	QCvar *stereo;
 	
 	stereo = Cvar_Get( "cl_stereo", "0", 0 );
@@ -336,17 +335,8 @@ qboolean GLimp_InitGL (void)
 		return false;
 	}
 
-	if ( ( pixelformat = GLW_ChoosePFD( maindc, &pfd)) == 0 )
-	{
-		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - ChoosePixelFormat failed\n");
-		return false;
-	}
-	if ( SetPixelFormat( maindc, pixelformat, &pfd) == FALSE )
-	{
-		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - SetPixelFormat failed\n");
-		return false;
-	}
-	DescribePixelFormat( maindc, pixelformat, sizeof( pfd ), &pfd );
+	if (GLW_MakeContext(&pfd))
+		goto fail;
 
 	if ( !( pfd.dwFlags & PFD_GENERIC_ACCELERATED ) )
 	{
@@ -370,24 +360,6 @@ qboolean GLimp_InitGL (void)
 		glConfig.stereoEnabled = false;
 	}
 
-	/*
-	** startup the OpenGL subsystem by creating a context and making
-	** it current
-	*/
-	if ( ( baseRC = wglCreateContext( maindc ) ) == 0 )
-	{
-		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - wglCreateContext failed\n");
-
-		goto fail;
-	}
-
-    if ( !wglMakeCurrent( maindc, baseRC ) )
-	{
-		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - wglMakeCurrent failed\n");
-
-		goto fail;
-	}
-
 	if ( !VerifyDriver() )
 	{
 		ri.Con_Printf( PRINT_ALL, "GLimp_Init() - no hardware acceleration detected\n" );
@@ -402,12 +374,6 @@ qboolean GLimp_InitGL (void)
 	return true;
 
 fail:
-	if ( baseRC )
-	{
-		wglDeleteContext( baseRC );
-		baseRC = NULL;
-	}
-
 	if ( maindc )
 	{
 		ReleaseDC( GMainWindow, maindc );

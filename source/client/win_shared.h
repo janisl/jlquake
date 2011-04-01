@@ -30,8 +30,15 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #define WINDOW_CLASS_NAME	"vQuake"
 
-int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD);
+enum
+{
+	TRY_PFD_SUCCESS		= 0,
+	TRY_PFD_FAIL_SOFT	= 1,
+	TRY_PFD_FAIL_HARD	= 2,
+};
+
 void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthbits, int stencilbits, bool stereo);
+int GLW_MakeContext(PIXELFORMATDESCRIPTOR* pPFD);
 void GLW_SharedCreateWindow(int width, int height, bool fullscreen);
 
 extern HINSTANCE	global_hInstance;
@@ -40,5 +47,6 @@ extern HDC			maindc;
 extern HGLRC		baseRC;
 extern int			desktopBitsPixel;
 extern int			desktopWidth, desktopHeight;
+extern bool			pixelFormatSet;
 
 #endif
