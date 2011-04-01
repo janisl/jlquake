@@ -75,7 +75,6 @@ QCvar   *in_joystickDebug = NULL;
 QCvar   *joy_threshold    = NULL;
 
 QCvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
-QCvar  *r_previousglDriver;
 
 // gamma value of the X display before we start playing with it
 static XF86VidModeGamma vidmode_InitialGamma;
@@ -448,10 +447,8 @@ void GLimp_Shutdown( void )
 ** GLW_StartDriverAndSetMode
 */
 // bk001204 - prototype needed
-int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen );
-static qboolean GLW_StartDriverAndSetMode( const char *drivername, 
-                                           int mode, 
-                                           qboolean fullscreen )
+int GLW_SetMode(int mode, qboolean fullscreen );
+static qboolean GLW_StartDriverAndSetMode(int mode, qboolean fullscreen )
 {
   rserr_t err;
 
@@ -463,7 +460,7 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
     fullscreen = qfalse;		
 	}
 
-  err = (rserr_t)GLW_SetMode( drivername, mode, fullscreen );
+  err = (rserr_t)GLW_SetMode(mode, fullscreen);
 
   switch ( err )
   {
@@ -482,7 +479,7 @@ static qboolean GLW_StartDriverAndSetMode( const char *drivername,
 /*
 ** GLW_SetMode
 */
-int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
+int GLW_SetMode(int mode, qboolean fullscreen )
 {
   const char*   glstring; // bk001130 - from cvs1.17 (mkv)
 
@@ -514,7 +511,6 @@ int GLW_SetMode( const char *drivername, int mode, qboolean fullscreen )
     {
       ri.Printf( PRINT_ALL, "\n\n***********************************************************\n" );
       ri.Printf( PRINT_ALL, " You are using software Mesa (no hardware acceleration)!   \n" );
-      ri.Printf( PRINT_ALL, " Driver DLL used: %s\n", drivername ); 
       ri.Printf( PRINT_ALL, " If this is intentional, add\n" );
       ri.Printf( PRINT_ALL, "       \"+set r_allowSoftwareGL 1\"\n" );
       ri.Printf( PRINT_ALL, " to the command line when starting the game.\n" );
@@ -665,19 +661,9 @@ static void GLW_InitGamma()
 ** GLimp_win.c internal function that that attempts to load and use 
 ** a specific OpenGL DLL.
 */
-static qboolean GLW_LoadOpenGL( const char *name )
+static qboolean GLW_LoadOpenGL()
 {
   qboolean fullscreen;
-
-  ri.Printf( PRINT_ALL, "...loading %s: ", name );
-
-  // disable the 3Dfx splash screen and set gamma
-  // we do this all the time, but it shouldn't hurt anything
-  // on non-3Dfx stuff
-  putenv("FX_GLIDE_NO_SPLASH=0");
-
-  // Mesa VooDoo hacks
-  putenv("MESA_GLX_FX=fullscreen\n");
 
   // load the QGL layer
   if ( QGL_Init() )
@@ -685,11 +671,11 @@ static qboolean GLW_LoadOpenGL( const char *name )
     fullscreen = r_fullscreen->integer;
 
     // create the window and set up the context
-    if ( !GLW_StartDriverAndSetMode( name, r_mode->integer, fullscreen ) )
+    if (!GLW_StartDriverAndSetMode(r_mode->integer, fullscreen))
     {
       if (r_mode->integer != 3)
       {
-        if ( !GLW_StartDriverAndSetMode( name, 3, fullscreen ) )
+        if (!GLW_StartDriverAndSetMode(3, fullscreen))
         {
           goto fail;
         }
@@ -735,9 +721,6 @@ int qXErrorHandler(Display *dpy, XErrorEvent *ev)
 */
 void GLimp_Init( void )
 {
-  qboolean attemptedlibGL = qfalse;
-  qboolean attempted3Dfx = qfalse;
-  qboolean success = qfalse;
   char  buf[1024];
   QCvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
 
@@ -749,50 +732,18 @@ void GLimp_Init( void )
 
   r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
 
-  r_previousglDriver = ri.Cvar_Get( "r_previousglDriver", "", CVAR_ROM );
-
   InitSig();
 
-  // Hack here so that if the UI 
-  if ( *r_previousglDriver->string )
-  {
-    // The UI changed it on us, hack it back
-    // This means the renderer can't be changed on the fly
-    ri.Cvar_Set( "r_glDriver", r_previousglDriver->string );
-  }
-  
   // set up our custom error handler for X failures
   XSetErrorHandler(&qXErrorHandler);
 
   //
   // load and initialize the specific OpenGL driver
   //
-  if ( !GLW_LoadOpenGL( r_glDriver->string ) )
+  if (!GLW_LoadOpenGL())
   {
-    if ( !QStr::ICmp( r_glDriver->string, OPENGL_DRIVER_NAME ) )
-    {
-      attemptedlibGL = qtrue;
-    }
-
-    // try ICD before trying 3Dfx standalone driver
-    if ( !attemptedlibGL && !success )
-    {
-      attemptedlibGL = qtrue;
-      if ( GLW_LoadOpenGL( OPENGL_DRIVER_NAME ) )
-      {
-        ri.Cvar_Set( "r_glDriver", OPENGL_DRIVER_NAME );
-        r_glDriver->modified = qfalse;
-        success = qtrue;
-      }
-    }
-
-    if (!success)
       ri.Error( ERR_FATAL, "GLimp_Init() - could not load OpenGL subsystem\n" );
-
   }
-
-  // Save it in case the UI stomps it
-  ri.Cvar_Set( "r_previousglDriver", r_glDriver->string );
 
   // This values force the UI to disable driver selection
   glConfig.driverType = GLDRV_ICD;
