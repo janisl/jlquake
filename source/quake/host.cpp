@@ -570,7 +570,7 @@ void _Host_ServerFrame (void)
 	
 // move things around and think
 // always pause in single player if in console or menus
-	if (!sv.paused && (svs.maxclients > 1 || key_dest == key_game) )
+	if (!sv.paused && (svs.maxclients > 1 || in_keyCatchers == 0))
 		SV_Physics ();
 }
 
@@ -622,7 +622,7 @@ void Host_ServerFrame (void)
 	
 // move things around and think
 // always pause in single player if in console or menus
-	if (!sv.paused && (svs.maxclients > 1 || key_dest == key_game) )
+	if (!sv.paused && (svs.maxclients > 1 || in_keyCatchers == 0) )
 		SV_Physics ();
 
 // send all messages to the clients

@@ -239,18 +239,18 @@ void M_ToggleMenu_f (void)
 {
 	m_entersound = true;
 
-	if (key_dest == key_menu)
+	if (in_keyCatchers & KEYCATCH_UI)
 	{
 		if (m_state != m_main)
 		{
 			M_Menu_Main_f ();
 			return;
 		}
-		key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		return;
 	}
-	if (key_dest == key_console)
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
 		Con_ToggleConsole_f ();
 	}
@@ -270,12 +270,12 @@ int	m_main_cursor;
 
 void M_Menu_Main_f (void)
 {
-	if (key_dest != key_menu)
+	if (!(in_keyCatchers & KEYCATCH_UI))
 	{
 		m_save_demonum = cls.demonum;
 		cls.demonum = -1;
 	}
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_main;
 	m_entersound = true;
 }
@@ -302,7 +302,7 @@ void M_Main_Key (int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		cls.demonum = m_save_demonum;
 		if (cls.demonum != -1 && !cls.demoplayback && cls.state != ca_connected)
@@ -358,7 +358,7 @@ int	m_singleplayer_cursor;
 
 void M_Menu_SinglePlayer_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_singleplayer;
 	m_entersound = true;
 }
@@ -409,7 +409,7 @@ void M_SinglePlayer_Key (int key)
 			if (sv.active)
 				if (!SCR_ModalMessage("Are you sure you want to\nstart a new game?\n"))
 					break;
-			key_dest = key_game;
+			in_keyCatchers &= ~KEYCATCH_UI;
 			if (sv.active)
 				Cbuf_AddText ("disconnect\n");
 			Cbuf_AddText ("maxplayers 1\n");
@@ -487,7 +487,7 @@ void M_Menu_Load_f (void)
 {
 	m_entersound = true;
 	m_state = m_load;
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanSaves ();
 }
 
@@ -502,7 +502,7 @@ void M_Menu_Save_f (void)
 		return;
 	m_entersound = true;
 	m_state = m_save;
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	M_ScanSaves ();
 }
 
@@ -552,7 +552,7 @@ void M_Load_Key (int k)
 		if (!loadable[load_cursor])
 			return;
 		m_state = m_none;
-		key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_UI;
 
 	// Host_Loadgame_f can't bring up the loading plaque because too much
 	// stack space has been used, so do it now
@@ -591,7 +591,7 @@ void M_Save_Key (int k)
 
 	case K_ENTER:
 		m_state = m_none;
-		key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_UI;
 		Cbuf_AddText (va("save s%i\n", load_cursor));
 		return;
 
@@ -622,7 +622,7 @@ int	m_multiplayer_cursor;
 
 void M_Menu_MultiPlayer_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_multiplayer;
 	m_entersound = true;
 }
@@ -706,7 +706,7 @@ int		setup_bottom;
 
 void M_Menu_Setup_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
 	m_entersound = true;
 	QStr::Cpy(setup_myname, cl_name->string);
@@ -896,7 +896,7 @@ char *net_helpMessage [] =
 
 void M_Menu_Net_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_net;
 	m_entersound = true;
 	m_net_items = 4;
@@ -1009,7 +1009,7 @@ int		options_cursor;
 
 void M_Menu_Options_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_options;
 	m_entersound = true;
 
@@ -1302,7 +1302,7 @@ int		bind_grab;
 
 void M_Menu_Keys_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_keys;
 	m_entersound = true;
 }
@@ -1469,7 +1469,7 @@ void M_Keys_Key (int k)
 
 void M_Menu_Video_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_video;
 	m_entersound = true;
 }
@@ -1495,7 +1495,7 @@ int		help_page;
 
 void M_Menu_Help_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_help;
 	m_entersound = true;
 	help_page = 0;
@@ -1590,8 +1590,8 @@ void M_Menu_Quit_f (void)
 {
 	if (m_state == m_quit)
 		return;
-	wasInMenus = (key_dest == key_menu);
-	key_dest = key_menu;
+	wasInMenus = !!(in_keyCatchers & KEYCATCH_UI);
+	in_keyCatchers |= KEYCATCH_UI;
 	m_quit_prevstate = m_state;
 	m_state = m_quit;
 	m_entersound = true;
@@ -1613,14 +1613,14 @@ void M_Quit_Key (int key)
 		}
 		else
 		{
-			key_dest = key_game;
+			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
 		}
 		break;
 
 	case 'Y':
 	case 'y':
-		key_dest = key_console;
+		in_keyCatchers |= KEYCATCH_CONSOLE;
 		Host_Quit_f ();
 		break;
 
@@ -1686,7 +1686,7 @@ char	lanConfig_joinname[22];
 
 void M_Menu_LanConfig_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_lanconfig;
 	m_entersound = true;
 	if (lanConfig_cursor == -1)
@@ -1806,7 +1806,7 @@ void M_LanConfig_Key (int key)
 		{
 			m_return_state = m_state;
 			m_return_onerror = true;
-			key_dest = key_game;
+			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
 			Cbuf_AddText ( va ("connect \"%s\"\n", lanConfig_joinname) );
 			break;
@@ -2024,7 +2024,7 @@ double m_serverInfoMessageTime;
 
 void M_Menu_GameOptions_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_gameoptions;
 	m_entersound = true;
 	if (maxplayers == 0)
@@ -2334,7 +2334,7 @@ double		searchCompleteTime;
 
 void M_Menu_Search_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_search;
 	m_entersound = false;
 	slistSilent = true;
@@ -2394,7 +2394,7 @@ qboolean slist_sorted;
 
 void M_Menu_ServerList_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_slist;
 	m_entersound = true;
 	slist_cursor = 0;
@@ -2478,7 +2478,7 @@ void M_ServerList_Key (int k)
 		m_return_state = m_state;
 		m_return_onerror = true;
 		slist_sorted = false;
-		key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		Cbuf_AddText ( va ("connect \"%s\"\n", hostcache[slist_cursor].cname) );
 		break;
@@ -2513,7 +2513,7 @@ void M_Init (void)
 
 void M_Draw (void)
 {
-	if (m_state == m_none || key_dest != key_menu)
+	if (m_state == m_none || !(in_keyCatchers & KEYCATCH_UI))
 		return;
 
 	if (!m_recursiveDraw)

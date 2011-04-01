@@ -35,8 +35,6 @@ int		key_lastpress;
 int		edit_line=0;
 int		history_line=0;
 
-keydest_t	key_dest;
-
 int		key_count;			// incremented every key event
 
 char	*keybindings[256];
@@ -292,7 +290,7 @@ void Key_Message (int key)
 		Cbuf_AddText(chat_buffer);
 		Cbuf_AddText("\"\n");
 
-		key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_MESSAGE;
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
 		return;
@@ -300,7 +298,7 @@ void Key_Message (int key)
 
 	if (key == K_ESCAPE)
 	{
-		key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_MESSAGE;
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
 		return;
@@ -634,20 +632,17 @@ void Key_Event (int key, qboolean down)
 	{
 		if (!down)
 			return;
-		switch (key_dest)
+		if (in_keyCatchers & KEYCATCH_MESSAGE)
 		{
-		case key_message:
-			Key_Message (key);
-			break;
-		case key_menu:
+			Key_Message(key);
+		}
+		else if (in_keyCatchers & KEYCATCH_UI)
+		{
 			M_Keydown (key);
-			break;
-		case key_game:
-		case key_console:
-			M_ToggleMenu_f ();
-			break;
-		default:
-			Sys_Error ("Bad key_dest");
+		}
+		else
+		{
+			M_ToggleMenu_f();
 		}
 		return;
 	}
@@ -682,7 +677,7 @@ void Key_Event (int key, qboolean down)
 //
 // during demo playback, most keys bring up the main menu
 //
-	if (cls.demoplayback && down && consolekeys[key] && key_dest == key_game)
+	if (cls.demoplayback && down && consolekeys[key] && in_keyCatchers == 0)
 	{
 		M_ToggleMenu_f ();
 		return;
@@ -691,9 +686,9 @@ void Key_Event (int key, qboolean down)
 //
 // if not a consolekey, send to the interpreter no matter what mode is
 //
-	if ( (key_dest == key_menu && menubound[key])
-	|| (key_dest == key_console && !consolekeys[key])
-	|| (key_dest == key_game && ( !con_forcedup || !consolekeys[key] ) ) )
+	if ( ((in_keyCatchers & KEYCATCH_UI) && menubound[key])
+	|| ((in_keyCatchers & KEYCATCH_CONSOLE) && !consolekeys[key])
+	|| (in_keyCatchers == 0 && ( !con_forcedup || !consolekeys[key] ) ) )
 	{
 		kb = keybindings[key];
 		if (kb)
@@ -720,21 +715,17 @@ void Key_Event (int key, qboolean down)
 		key = keyshift[key];
 	}
 
-	switch (key_dest)
+	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-	case key_message:
-		Key_Message (key);
-		break;
-	case key_menu:
-		M_Keydown (key);
-		break;
-
-	case key_game:
-	case key_console:
-		Key_Console (key);
-		break;
-	default:
-		Sys_Error ("Bad key_dest");
+		Key_Message(key);
+	}
+	else if (in_keyCatchers & KEYCATCH_UI)
+	{
+		M_Keydown(key);
+	}
+	else
+	{
+		Key_Console(key);
 	}
 }
 
