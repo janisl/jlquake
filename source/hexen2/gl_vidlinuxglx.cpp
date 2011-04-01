@@ -542,7 +542,7 @@ void IN_Commands (void)
 	if (!dpy || !win)
 		return;
 
-	if (vidmode_active || key_dest == key_game)
+	if (vidmode_active || in_keyCatchers == 0)
 		IN_ActivateMouse();
 	else
 		IN_DeactivateMouse ();

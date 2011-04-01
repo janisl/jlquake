@@ -422,7 +422,7 @@ void IN_CrouchDown (void)
 {
 	int state;
 
-	if (key_dest == key_game)
+	if (in_keyCatchers == 0)
 	{
 		state = in_crouch.state;
 		KeyDown(&in_crouch);
@@ -436,7 +436,7 @@ void IN_CrouchUp (void)
 {
 	int state;
 
-	if (key_dest == key_game)
+	if (in_keyCatchers == 0)
 	{
 		state = in_crouch.state;
 
@@ -449,7 +449,7 @@ void IN_CrouchUp (void)
 #ifdef MISSIONPACK
 void IN_infoPlaqueUp(void)
 {
-	if (key_dest == key_game)
+	if (in_keyCatchers == 0)
 	{
 		//They want to lower the plaque
 		/*if (!infomessage)
@@ -464,7 +464,7 @@ void IN_infoPlaqueUp(void)
 
 void IN_infoPlaqueDown(void)
 {
-	if (key_dest == key_game)
+	if (in_keyCatchers == 0)
 	{
 		//They want to see the plaque
 		/*if (infomessage[0] == '\0')

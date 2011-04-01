@@ -45,11 +45,11 @@ Con_ToggleConsole_f
 */
 void Con_ToggleConsole_f (void)
 {
-	if (key_dest == key_console)
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
 	{
+		in_keyCatchers &= ~KEYCATCH_CONSOLE;
 		if (cls.state == ca_connected)
 		{
-			key_dest = key_game;
 			key_lines[edit_line][1] = 0;	// clear any typing
 			key_linepos = 1;
 		}
@@ -59,7 +59,7 @@ void Con_ToggleConsole_f (void)
 		}
 	}
 	else
-		key_dest = key_console;
+		in_keyCatchers |= KEYCATCH_CONSOLE;
 	
 	SCR_EndLoadingPlaque ();
 	Com_Memset(con_times, 0, sizeof(con_times));
@@ -102,7 +102,7 @@ extern qboolean team_message;
 
 void Con_MessageMode_f (void)
 {
-	key_dest = key_message;
+	in_keyCatchers |= KEYCATCH_MESSAGE;
 	team_message = false;
 }
 
@@ -114,7 +114,7 @@ Con_MessageMode2_f
 */
 void Con_MessageMode2_f (void)
 {
-	key_dest = key_message;
+	in_keyCatchers |= KEYCATCH_MESSAGE;
 	team_message = true;
 }
 
@@ -460,7 +460,7 @@ void Con_DrawInput (void)
 	int		i;
 	char	*text;
 
-	if (key_dest != key_console && !con_forcedup)
+	if (!(in_keyCatchers & KEYCATCH_CONSOLE) && !con_forcedup)
 		return;		// don't draw anything
 
 	text = key_lines[edit_line];
@@ -525,7 +525,7 @@ void Con_DrawNotify (void)
 	}
 
 
-	if (key_dest == key_message)
+	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
 		clearnotify = 0;
 		scr_copytop = 1;
@@ -608,7 +608,7 @@ void Con_NotifyBox (char *text)
 	Con_Printf("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 
 	key_count = -2;		// wait for a key down and up
-	key_dest = key_console;
+	in_keyCatchers |= KEYCATCH_CONSOLE;
 
 	do
 	{
@@ -620,7 +620,7 @@ void Con_NotifyBox (char *text)
 	} while (key_count < 0);
 
 	Con_Printf ("\n");
-	key_dest = key_game;
+	in_keyCatchers &= ~KEYCATCH_CONSOLE;
 	realtime = 0;				// put the cursor back to invisible
 }
 
