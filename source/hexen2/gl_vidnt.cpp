@@ -60,13 +60,8 @@ static DEVMODE	gdevmode;
 qboolean	vid_initialized = false;
 static qboolean	windowed, leavecurrentmode;
 static int		windowed_mouse;
-static HICON	hIcon;
 
 int			DIBWidth, DIBHeight;
-RECT		WindowRect;
-DWORD		WindowStyle, ExWindowStyle;
-
-HWND	dibwindow;
 
 int			vid_modenum = NO_MODE;
 int			vid_realmode;
@@ -147,80 +142,19 @@ void D_EndDirectRect (int x, int y, int width, int height)
 }
 
 
-void CenterWindow(HWND hWndCenter, int width, int height, BOOL lefttopjustify)
-{
-    RECT    rect;
-    int     CenterX, CenterY;
-
-	CenterX = (GetSystemMetrics(SM_CXSCREEN) - width) / 2;
-	CenterY = (GetSystemMetrics(SM_CYSCREEN) - height) / 2;
-	if (CenterX > CenterY*2)
-		CenterX >>= 1;	// dual screens
-	CenterX = (CenterX < 0) ? 0: CenterX;
-	CenterY = (CenterY < 0) ? 0: CenterY;
-	SetWindowPos (hWndCenter, NULL, CenterX, CenterY, 0, 0,
-			SWP_NOSIZE | SWP_NOZORDER | SWP_SHOWWINDOW | SWP_DRAWFRAME);
-}
-
 qboolean VID_SetWindowedMode (int modenum)
 {
-	HDC				hdc;
-	int				lastmodestate, width, height;
-	RECT			rect;
+	int				lastmodestate;
 
 	lastmodestate = modestate;
-
-	WindowRect.top = WindowRect.left = 0;
-
-	WindowRect.right = modelist[modenum].width;
-	WindowRect.bottom = modelist[modenum].height;
 
 	DIBWidth = modelist[modenum].width;
 	DIBHeight = modelist[modenum].height;
 
-	WindowStyle = WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_SYSMENU |
-				  WS_MINIMIZEBOX;
-	ExWindowStyle = 0;
-
-	rect = WindowRect;
-	AdjustWindowRectEx(&rect, WindowStyle, FALSE, 0);
-
-	width = rect.right - rect.left;
-	height = rect.bottom - rect.top;
-
 	// Create the DIB window
-	dibwindow = CreateWindowEx (
-		 ExWindowStyle,
-		 WINDOW_CLASS_NAME,
-		 "HexenII",
-		 WindowStyle,
-		 rect.left, rect.top,
-		 width,
-		 height,
-		 NULL,
-		 NULL,
-		 global_hInstance,
-		 NULL);
-
-	if (!dibwindow)
-		Sys_Error ("Couldn't create DIB window");
-
-	// Center and show the DIB window
-	CenterWindow(dibwindow, WindowRect.right - WindowRect.left,
-				 WindowRect.bottom - WindowRect.top, false);
-
-	ShowWindow (dibwindow, SW_SHOWDEFAULT);
-	UpdateWindow (dibwindow);
+	GLW_SharedCreateWindow(modelist[modenum].width, modelist[modenum].height, false);
 
 	modestate = MS_WINDOWED;
-
-// because we have set the background brush for the window to NULL
-// (to avoid flickering when re-sizing the window on the desktop),
-// we clear the window to black when created, otherwise it will be
-// empty while Quake starts up.
-	hdc = GetDC(dibwindow);
-	PatBlt(hdc,0,0,WindowRect.right,WindowRect.bottom,BLACKNESS);
-	ReleaseDC(dibwindow, hdc);
 
 	if (COM_CheckParm ("-scale2d")) {
 		vid.height = vid.conheight = BASEHEIGHT ;//modelist[modenum].height; // BASEHEIGHT;
@@ -231,20 +165,13 @@ qboolean VID_SetWindowedMode (int modenum)
 	}
 	vid.numpages = 2;
 
-	GMainWindow = dibwindow;
-
-	SendMessage (GMainWindow, WM_SETICON, (WPARAM)TRUE, (LPARAM)hIcon);
-	SendMessage (GMainWindow, WM_SETICON, (WPARAM)FALSE, (LPARAM)hIcon);
-
 	return true;
 }
 
 
 qboolean VID_SetFullDIBMode (int modenum)
 {
-	HDC				hdc;
-	int				lastmodestate, width, height;
-	RECT			rect;
+	int				lastmodestate;
 
 	if (!leavecurrentmode)
 	{
@@ -262,50 +189,11 @@ qboolean VID_SetFullDIBMode (int modenum)
 	lastmodestate = modestate;
 	modestate = MS_FULLDIB;
 
-	WindowRect.top = WindowRect.left = 0;
-
-	WindowRect.right = modelist[modenum].width;
-	WindowRect.bottom = modelist[modenum].height;
-
 	DIBWidth = modelist[modenum].width;
 	DIBHeight = modelist[modenum].height;
 
-	WindowStyle = WS_POPUP;
-	ExWindowStyle = 0;
-
-	rect = WindowRect;
-	AdjustWindowRectEx(&rect, WindowStyle, FALSE, 0);
-
-	width = rect.right - rect.left;
-	height = rect.bottom - rect.top;
-
 	// Create the DIB window
-	dibwindow = CreateWindowEx (
-		 ExWindowStyle,
-		 WINDOW_CLASS_NAME,
-		 "HexenII",
-		 WindowStyle,
-		 rect.left, rect.top,
-		 width,
-		 height,
-		 NULL,
-		 NULL,
-		 global_hInstance,
-		 NULL);
-
-	if (!dibwindow)
-		Sys_Error ("Couldn't create DIB window");
-
-	ShowWindow (dibwindow, SW_SHOWDEFAULT);
-	UpdateWindow (dibwindow);
-
-	// Because we have set the background brush for the window to NULL
-	// (to avoid flickering when re-sizing the window on the desktop), we
-	// clear the window to black when created, otherwise it will be
-	// empty while Quake starts up.
-	hdc = GetDC(dibwindow);
-	PatBlt(hdc,0,0,WindowRect.right,WindowRect.bottom,BLACKNESS);
-	ReleaseDC(dibwindow, hdc);
+	GLW_SharedCreateWindow(modelist[modenum].width, modelist[modenum].height, true);
 
 	if (COM_CheckParm ("-scale2d")) {
 		vid.height = vid.conheight = BASEHEIGHT ;//modelist[modenum].height; // BASEHEIGHT;
@@ -320,11 +208,6 @@ qboolean VID_SetFullDIBMode (int modenum)
 	window_x = 0;
 	window_y = 0;
 
-	GMainWindow = dibwindow;
-
-	SendMessage (GMainWindow, WM_SETICON, (WPARAM)TRUE, (LPARAM)hIcon);
-	SendMessage (GMainWindow, WM_SETICON, (WPARAM)FALSE, (LPARAM)hIcon);
-
 	return true;
 }
 
@@ -335,6 +218,15 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	qboolean		stat;
     MSG				msg;
 	HDC				hdc;
+
+	//
+	// check our desktop attributes
+	//
+	HDC hDC = GetDC(GetDesktopWindow());
+	desktopBitsPixel = GetDeviceCaps(hDC, BITSPIXEL);
+	desktopWidth = GetDeviceCaps(hDC, HORZRES);
+	desktopHeight = GetDeviceCaps(hDC, VERTRES);
+	ReleaseDC(GetDesktopWindow(), hDC);
 
 	if ((windowed && (modenum != 0)) ||
 		(!windowed && (modenum < 1)) ||
@@ -511,8 +403,8 @@ GL_BeginRendering
 void GL_BeginRendering (int *x, int *y, int *width, int *height)
 {
 	*x = *y = 0;
-	*width = WindowRect.right - WindowRect.left;
-	*height = WindowRect.bottom - WindowRect.top;
+	*width = DIBWidth;
+	*height = DIBHeight;
 
 //    if (!wglMakeCurrent( maindc, baseRC ))
 //		Sys_Error ("wglMakeCurrent failed");
@@ -639,14 +531,14 @@ void	VID_Shutdown (void)
     	if (hRC)
     	    wglDeleteContext(hRC);
 
-		if (hDC && dibwindow)
-			ReleaseDC(dibwindow, hDC);
+		if (hDC && GMainWindow)
+			ReleaseDC(GMainWindow, hDC);
 
 		if (modestate == MS_FULLDIB)
 			ChangeDisplaySettings (NULL, 0);
 
-		if (maindc && dibwindow)
-			ReleaseDC (dibwindow, maindc);
+		if (maindc && GMainWindow)
+			ReleaseDC (GMainWindow, maindc);
 
 		AppActivate(false, false);
 	}
@@ -916,8 +808,8 @@ LONG WINAPI MainWndProc (
 
    	    case WM_DESTROY:
         {
-			if (dibwindow)
-				DestroyWindow (dibwindow);
+			if (GMainWindow)
+				DestroyWindow (GMainWindow);
 
             PostQuitMessage (0);
         }
@@ -1107,8 +999,6 @@ void VID_InitDIB (HINSTANCE hInstance)
 {
 	HDC				hdc;
 	int				i;
-
-	GLW_SharedRegisterClass();
 
 	modelist[0].type = MS_WINDOWED;
 
@@ -1320,8 +1210,6 @@ void	VID_Init (unsigned char *palette)
 	Cmd_AddCommand ("vid_describecurrentmode", VID_DescribeCurrentMode_f);
 	Cmd_AddCommand ("vid_describemode", VID_DescribeMode_f);
 	Cmd_AddCommand ("vid_describemodes", VID_DescribeModes_f);
-
-	hIcon = LoadIcon (global_hInstance, MAKEINTRESOURCE (IDI_ICON1));
 
 	VID_InitDIB (global_hInstance);
 	basenummodes = nummodes = 1;

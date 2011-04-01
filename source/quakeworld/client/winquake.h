@@ -68,7 +68,6 @@ extern HWND		hwnd_dialog;
 extern HANDLE	hinput, houtput;
 
 void IN_UpdateClipCursor (void);
-void CenterWindow(HWND hWndCenter, int width, int height, BOOL lefttopjustify);
 
 void VID_SetDefaultMode (void);
 void IN_ClearStates (void);

@@ -52,8 +52,6 @@ static rserr_t	GLW_SetMode( int mode,
 							 int colorbits, 
 							 qboolean cdsFullscreen );
 
-static qboolean s_classRegistered = qfalse;
-
 //
 // function declaration
 //
@@ -425,7 +423,7 @@ static qboolean GLW_InitDriver(int colorbits)
 
 	if ( colorbits == 0 )
 	{
-		colorbits = glw_state.desktopBitsPixel;
+		colorbits = desktopBitsPixel;
 	}
 
 	//
@@ -471,7 +469,7 @@ static qboolean GLW_InitDriver(int colorbits)
 			//
 			// punt if we've already tried the desktop bit depth and no stencil bits
 			//
-			if ( ( r_colorbits->integer == glw_state.desktopBitsPixel ) &&
+			if ( ( r_colorbits->integer == desktopBitsPixel ) &&
 				 ( stencilbits == 0 ) )
 			{
 				ReleaseDC( GMainWindow, maindc );
@@ -485,9 +483,9 @@ static qboolean GLW_InitDriver(int colorbits)
 			//
 			// second attempt: desktop's color bits and no stencil
 			//
-			if ( colorbits > glw_state.desktopBitsPixel )
+			if ( colorbits > desktopBitsPixel )
 			{
-				colorbits = glw_state.desktopBitsPixel;
+				colorbits = desktopBitsPixel;
 			}
 			GLW_CreatePFD( &pfd, colorbits, depthbits, 0, r_stereo->integer );
 			if ( GLW_MakeContext( &pfd ) != TRY_PFD_SUCCESS )
@@ -529,106 +527,9 @@ static qboolean GLW_InitDriver(int colorbits)
 **
 ** Responsible for creating the Win32 window and initializing the OpenGL driver.
 */
-#define	WINDOW_STYLE	(WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_VISIBLE)
 static qboolean GLW_CreateWindow(int width, int height, int colorbits, qboolean cdsFullscreen )
 {
-	RECT			r;
-	QCvar			*vid_xpos, *vid_ypos;
-	int				stylebits;
-	int				x, y, w, h;
-	int				exstyle;
-
-	//
-	// register the window class if necessary
-	//
-	if ( !s_classRegistered )
-	{
-		GLW_SharedRegisterClass();
-		s_classRegistered = qtrue;
-		ri.Printf( PRINT_ALL, "...registered window class\n" );
-	}
-
-	//
-	// create the HWND if one does not already exist
-	//
-	if ( !GMainWindow )
-	{
-		//
-		// compute width and height
-		//
-		r.left = 0;
-		r.top = 0;
-		r.right  = width;
-		r.bottom = height;
-
-		if (cdsFullscreen)
-		{
-			exstyle = WS_EX_TOPMOST;
-			stylebits = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
-		}
-		else
-		{
-			exstyle = 0;
-			stylebits = WINDOW_STYLE|WS_SYSMENU;
-			AdjustWindowRect (&r, stylebits, FALSE);
-		}
-
-		w = r.right - r.left;
-		h = r.bottom - r.top;
-
-		if (cdsFullscreen)
-		{
-			x = 0;
-			y = 0;
-		}
-		else
-		{
-			vid_xpos = ri.Cvar_Get ("vid_xpos", "", 0);
-			vid_ypos = ri.Cvar_Get ("vid_ypos", "", 0);
-			x = vid_xpos->integer;
-			y = vid_ypos->integer;
-
-			// adjust window coordinates if necessary 
-			// so that the window is completely on screen
-			if ( x < 0 )
-				x = 0;
-			if ( y < 0 )
-				y = 0;
-
-			if ( w < glw_state.desktopWidth &&
-				 h < glw_state.desktopHeight )
-			{
-				if ( x + w > glw_state.desktopWidth )
-					x = ( glw_state.desktopWidth - w );
-				if ( y + h > glw_state.desktopHeight )
-					y = ( glw_state.desktopHeight - h );
-			}
-		}
-
-		GMainWindow = CreateWindowEx (
-			 exstyle, 
-			 WINDOW_CLASS_NAME,
-			 "Quake 3: Arena",
-			 stylebits,
-			 x, y, w, h,
-			 NULL,
-			 NULL,
-			 global_hInstance,
-			 NULL);
-
-		if ( !GMainWindow )
-		{
-			ri.Error (ERR_FATAL, "GLW_CreateWindow() - Couldn't create window");
-		}
-	
-		ShowWindow( GMainWindow, SW_SHOW );
-		UpdateWindow( GMainWindow );
-		ri.Printf( PRINT_ALL, "...created window@%d,%d (%dx%d)\n", x, y, w, h );
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...window already present, CreateWindowEx skipped\n" );
-	}
+	GLW_SharedCreateWindow(width, height, cdsFullscreen);
 
 	if ( !GLW_InitDriver(colorbits))
 	{
@@ -680,7 +581,6 @@ static rserr_t GLW_SetMode(int mode,
 							int colorbits, 
 							qboolean cdsFullscreen )
 {
-	HDC hDC;
 	const char *win_fs[] = { "W", "FS" };
 	int		cdsRet;
 	DEVMODE dm;
@@ -699,16 +599,16 @@ static rserr_t GLW_SetMode(int mode,
 	//
 	// check our desktop attributes
 	//
-	hDC = GetDC( GetDesktopWindow() );
-	glw_state.desktopBitsPixel = GetDeviceCaps( hDC, BITSPIXEL );
-	glw_state.desktopWidth = GetDeviceCaps( hDC, HORZRES );
-	glw_state.desktopHeight = GetDeviceCaps( hDC, VERTRES );
-	ReleaseDC( GetDesktopWindow(), hDC );
+	HDC hDC = GetDC(GetDesktopWindow());
+	desktopBitsPixel = GetDeviceCaps(hDC, BITSPIXEL);
+	desktopWidth = GetDeviceCaps(hDC, HORZRES);
+	desktopHeight = GetDeviceCaps(hDC, VERTRES);
+	ReleaseDC(GetDesktopWindow(), hDC);
 
 	//
 	// verify desktop bit depth
 	//
-	if ( glw_state.desktopBitsPixel < 15 || glw_state.desktopBitsPixel == 24 )
+	if ( desktopBitsPixel < 15 || desktopBitsPixel == 24 )
 	{
 		if ( colorbits == 0 || ( !cdsFullscreen && colorbits >= 15 ) )
 		{
@@ -759,7 +659,7 @@ static rserr_t GLW_SetMode(int mode,
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "...using desktop display depth of %d\n", glw_state.desktopBitsPixel );
+			ri.Printf( PRINT_ALL, "...using desktop display depth of %d\n", desktopBitsPixel );
 		}
 
 		//

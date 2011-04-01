@@ -61,64 +61,7 @@ static qboolean VerifyDriver( void )
 */
 qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 {
-	RECT			r;
-	QCvar			*vid_xpos, *vid_ypos;
-	int				stylebits;
-	int				x, y, w, h;
-	int				exstyle;
-
-	GLW_SharedRegisterClass();
-
-	if (fullscreen)
-	{
-		exstyle = WS_EX_TOPMOST;
-		stylebits = WS_POPUP|WS_VISIBLE;
-	}
-	else
-	{
-		exstyle = 0;
-		stylebits = WINDOW_STYLE;
-	}
-
-	r.left = 0;
-	r.top = 0;
-	r.right  = width;
-	r.bottom = height;
-
-	AdjustWindowRect (&r, stylebits, FALSE);
-
-	w = r.right - r.left;
-	h = r.bottom - r.top;
-
-	if (fullscreen)
-	{
-		x = 0;
-		y = 0;
-	}
-	else
-	{
-		vid_xpos = ri.Cvar_Get ("vid_xpos", "0", 0);
-		vid_ypos = ri.Cvar_Get ("vid_ypos", "0", 0);
-		x = vid_xpos->value;
-		y = vid_ypos->value;
-	}
-
-	GMainWindow = CreateWindowEx (
-		 exstyle, 
-		 WINDOW_CLASS_NAME,
-		 "Quake 2",
-		 stylebits,
-		 x, y, w, h,
-		 NULL,
-		 NULL,
-		 global_hInstance,
-		 NULL);
-
-	if (!GMainWindow)
-		ri.Sys_Error (ERR_FATAL, "Couldn't create window");
-	
-	ShowWindow( GMainWindow, SW_SHOW );
-	UpdateWindow( GMainWindow );
+	GLW_SharedCreateWindow(width, height, fullscreen);
 
 	// init all the gl stuff for the window
 	if (!GLimp_InitGL ())
@@ -144,6 +87,15 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 {
 	int width, height;
 	const char *win_fs[] = { "W", "FS" };
+
+	//
+	// check our desktop attributes
+	//
+	HDC hDC = GetDC(GetDesktopWindow());
+	desktopBitsPixel = GetDeviceCaps(hDC, BITSPIXEL);
+	desktopWidth = GetDeviceCaps(hDC, HORZRES);
+	desktopHeight = GetDeviceCaps(hDC, VERTRES);
+	ReleaseDC(GetDesktopWindow(), hDC);
 
 	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
 

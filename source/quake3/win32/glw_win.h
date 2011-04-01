@@ -31,9 +31,6 @@ typedef struct
 	qboolean allowdisplaydepthchange;
 	qboolean pixelFormatSet;
 
-	int		 desktopBitsPixel;
-	int		 desktopWidth, desktopHeight;
-
 	qboolean	cdsFullscreen;
 } glwstate_t;
 
