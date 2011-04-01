@@ -17,16 +17,14 @@
 //**
 //**************************************************************************
 
-#ifndef _CLIENT_H
-#define _CLIENT_H
+// in order from highest priority to lowest
+// if none of the catchers are active, bound key strings will be executed
+enum
+{
+	KEYCATCH_CONSOLE		= 0x0001,
+	KEYCATCH_UI				= 0x0002,
+	KEYCATCH_MESSAGE		= 0x0004,
+	KEYCATCH_CGAME			= 0x0008,
+};
 
-#include "../core/core.h"
-
-#include "snd_public.h"
-#include "snd_midi_public.h"
-#include "cd_public.h"
-#include "render_public.h"
-#include "input_keycodes.h"
-#include "input_public.h"
-
-#endif
+extern int			in_keyCatchers;		// bit flags

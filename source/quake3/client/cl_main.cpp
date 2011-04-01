@@ -570,7 +570,7 @@ Closing the main menu will restart the demo loop
 void CL_StartDemoLoop( void ) {
 	// start the demo loop again
 	Cbuf_AddText ("d1\n");
-	cls.keyCatchers = 0;
+	in_keyCatchers = 0;
 }
 
 /*
@@ -667,7 +667,7 @@ void CL_MapLoading( void ) {
 	}
 
 	Con_Close();
-	cls.keyCatchers = 0;
+	in_keyCatchers = 0;
 
 	// if we are already connected to the local host, stay connected
 	if ( cls.state >= CA_CONNECTED && !QStr::ICmp( cls.servername, "localhost" ) ) {
@@ -683,7 +683,7 @@ void CL_MapLoading( void ) {
 		CL_Disconnect( qtrue );
 		QStr::NCpyZ( cls.servername, "localhost", sizeof(cls.servername) );
 		cls.state = CA_CHALLENGING;		// so the connect screen is drawn
-		cls.keyCatchers = 0;
+		in_keyCatchers = 0;
 		SCR_UpdateScreen();
 		clc.connectTime = -RETRANSMIT_TIMEOUT;
 		NET_StringToAdr( cls.servername, &clc.serverAddress);
@@ -1080,7 +1080,7 @@ void CL_Connect_f( void ) {
 		cls.state = CA_CONNECTING;
 	}
 
-	cls.keyCatchers = 0;
+	in_keyCatchers = 0;
 	clc.connectTime = -99999;	// CL_CheckForResend() will fire immediately
 	clc.connectPacketCount = 0;
 
@@ -2002,7 +2002,7 @@ void CL_Frame ( int msec ) {
 		// bring up the cd error dialog if needed
 		cls.cddialog = qfalse;
 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NEED_CD );
-	} else	if ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI )
+	} else	if ( cls.state == CA_DISCONNECTED && !( in_keyCatchers & KEYCATCH_UI )
 		&& !com_sv_running->integer ) {
 		// if disconnected, bring up the menu
 		S_StopAllSounds();

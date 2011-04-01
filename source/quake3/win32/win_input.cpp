@@ -735,7 +735,7 @@ void IN_Frame (void) {
 		return;
 	}
 
-	if ( cls.keyCatchers & KEYCATCH_CONSOLE ) {
+	if ( in_keyCatchers & KEYCATCH_CONSOLE ) {
 		// temporarily deactivate if not in the game and
 		// running on the desktop
 		if (Cvar_VariableValue("r_fullscreen") == 0)

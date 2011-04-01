@@ -248,7 +248,6 @@ typedef struct {
 
 typedef struct {
 	connstate_t	state;				// connection status
-	int			keyCatchers;		// bit flags
 
 	qboolean	cddialog;			// bring up the cd needed dialog next frame
 

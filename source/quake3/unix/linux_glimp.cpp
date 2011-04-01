@@ -223,7 +223,7 @@ static void HandleEvents(void)
       //            also: not done if console/menu is active.
       // From Ryan's Fakk2.
       // see game/q_shared.h, KEYCATCH_* . 0 == in 3d game.  
-      if (cls.keyCatchers == 0)
+      if (in_keyCatchers == 0)
       {   // FIXME: KEYCATCH_NONE
         if (repeated_press(&event) == qtrue)
           continue;
@@ -1031,7 +1031,7 @@ void IN_Frame (void) {
   // bk001130 - from cvs 1.17 (mkv)
   IN_JoyMove(); // FIXME: disable if on desktop?
 
-  if ( cls.keyCatchers & KEYCATCH_CONSOLE )
+  if ( in_keyCatchers & KEYCATCH_CONSOLE )
   {
     // temporarily deactivate if not in the game and
     // running on the desktop
