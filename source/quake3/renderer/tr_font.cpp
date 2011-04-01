@@ -167,7 +167,7 @@ void WriteTGA (char *filename, byte *data, int width, int height) {
 		buffer[i+3] = data[i-18+3];		// alpha
 	}
 
-	ri.FS_WriteFile(filename, buffer, c);
+	FS_WriteFile(filename, buffer, c);
 
 	//f = fopen (filename, "wb");
 	//fwrite (buffer, 1, c, f);
@@ -364,9 +364,9 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
 		}
 	}
 
-	len = ri.FS_ReadFile(name, NULL);
+	len = FS_ReadFile(name, NULL);
 	if (len == sizeof(fontInfo_t)) {
-		ri.FS_ReadFile(name, &faceData);
+		FS_ReadFile(name, &faceData);
 		fdOffset = 0;
 		fdFile = (byte*)faceData;
 		for(i=0; i<GLYPHS_PER_FONT; i++) {
@@ -405,7 +405,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
     return;
   }
 
-  len = ri.FS_ReadFile(fontName, &faceData);
+  len = FS_ReadFile(fontName, &faceData);
   if (len <= 0) {
     ri.Printf(PRINT_ALL, "RE_RegisterFont: Unable to read font file\n");
     return;
@@ -509,12 +509,12 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
   Com_Memcpy(&registeredFont[registeredFontCount++], font, sizeof(fontInfo_t));
 
 	if (r_saveFontData->integer) { 
-		ri.FS_WriteFile(va("fonts/fontImage_%i.dat", pointSize), font, sizeof(fontInfo_t));
+		FS_WriteFile(va("fonts/fontImage_%i.dat", pointSize), font, sizeof(fontInfo_t));
 	}
 
   Z_Free(out);
   
-  ri.FS_FreeFile(faceData);
+  FS_FreeFile(faceData);
 #endif
 }
 

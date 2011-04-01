@@ -2774,7 +2774,7 @@ void	R_ShaderList_f (void) {
 
 	count = 0;
 	for ( i = 0 ; i < tr.numShaders ; i++ ) {
-		if ( ri.Cmd_Argc() > 1 ) {
+		if ( Cmd_Argc() > 1 ) {
 			shader = tr.sortedShaders[i];
 		} else {
 			shader = tr.shaders[i];
@@ -2848,7 +2848,7 @@ static void ScanAndLoadShaderFiles( void )
 
 	long sum = 0;
 	// scan for shader files
-	shaderFiles = ri.FS_ListFiles( "scripts", ".shader", &numShaders );
+	shaderFiles = FS_ListFiles( "scripts", ".shader", &numShaders );
 
 	if ( !shaderFiles || !numShaders )
 	{
@@ -2867,7 +2867,7 @@ static void ScanAndLoadShaderFiles( void )
 
 		QStr::Sprintf( filename, sizeof( filename ), "scripts/%s", shaderFiles[i] );
 		ri.Printf( PRINT_ALL, "...loading '%s'\n", filename );
-		sum += ri.FS_ReadFile( filename, (void **)&buffers[i] );
+		sum += FS_ReadFile( filename, (void **)&buffers[i] );
 		if ( !buffers[i] ) {
 			ri.Error( ERR_DROP, "Couldn't load %s", filename );
 		}
@@ -2881,13 +2881,13 @@ static void ScanAndLoadShaderFiles( void )
 		QStr::Cat( s_shaderText, sum + numShaders*2, "\n" );
 		p = &s_shaderText[QStr::Length(s_shaderText)];
 		QStr::Cat( s_shaderText, sum + numShaders*2, buffers[i] );
-		ri.FS_FreeFile( buffers[i] );
+		FS_FreeFile( buffers[i] );
 		buffers[i] = const_cast<char*>(p);
 		QStr::Compress(const_cast<char*>(p));
 	}
 
 	// free up memory
-	ri.FS_FreeFileList( shaderFiles );
+	FS_FreeFileList( shaderFiles );
 
 	Com_Memset(shaderTextHashTableSizes, 0, sizeof(shaderTextHashTableSizes));
 	size = 0;

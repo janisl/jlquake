@@ -1087,7 +1087,7 @@ static void GLW_StartOpenGL( void )
 void GLimp_Init( void )
 {
 	char	buf[1024];
-	QCvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
+	QCvar *lastValidRenderer = Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
 
@@ -1099,7 +1099,7 @@ void GLimp_Init( void )
 		ri.Error( ERR_FATAL, "GLimp_Init() - incorrect operating system\n" );
 	}
 
-	r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
+	r_allowSoftwareGL = Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
 
 	// load appropriate DLL and initialize subsystem
 	GLW_StartOpenGL();
@@ -1125,12 +1125,12 @@ void GLimp_Init( void )
 	{
 		glConfig.hardwareType = GLHW_GENERIC;
 
-		ri.Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
+		Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
 
-		ri.Cvar_Set( "r_picmip", "1" );
+		Cvar_Set( "r_picmip", "1" );
 	}
 
-	ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
+	Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
 
 	GLW_InitExtensions();
 	WG_CheckHardwareGamma();

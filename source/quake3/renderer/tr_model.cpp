@@ -146,7 +146,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 			QStr::Cat( filename, sizeof(filename), namebuf );
 		}
 
-		ri.FS_ReadFile( filename, (void **)&buf );
+		FS_ReadFile( filename, (void **)&buf );
 		if ( !buf ) {
 			continue;
 		}
@@ -165,7 +165,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 			loaded = R_LoadMD3( mod, lod, buf, name );
 		}
 		
-		ri.FS_FreeFile (buf);
+		FS_FreeFile (buf);
 
 		if ( !loaded ) {
 			if ( lod == 0 ) {

@@ -826,7 +826,7 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 	//
 	// load the file
 	//
-	length = ri.FS_ReadFile( ( char * ) name, (void **)&buffer);
+	length = FS_ReadFile( ( char * ) name, (void **)&buffer);
 	if (!buffer) {
 		return;
 	}
@@ -955,7 +955,7 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 		}
 	}
 
-	ri.FS_FreeFile( buffer );
+	FS_FreeFile( buffer );
 
 }
 
@@ -990,7 +990,7 @@ static void LoadPCX ( const char *filename, byte **pic, byte **palette, int *wid
 	//
 	// load the file
 	//
-	len = ri.FS_ReadFile( ( char * ) filename, (void **)&raw);
+	len = FS_ReadFile( ( char * ) filename, (void **)&raw);
 	if (!raw) {
 		return;
 	}
@@ -1060,7 +1060,7 @@ static void LoadPCX ( const char *filename, byte **pic, byte **palette, int *wid
 		*pic = NULL;
 	}
 
-	ri.FS_FreeFile (pcx);
+	FS_FreeFile (pcx);
 }
 
 
@@ -1124,7 +1124,7 @@ static void LoadTGA ( const char *name, byte **pic, int *width, int *height)
 	//
 	// load the file
 	//
-	ri.FS_ReadFile ( ( char * ) name, (void **)&buffer);
+	FS_ReadFile ( ( char * ) name, (void **)&buffer);
 	if (!buffer) {
 		return;
 	}
@@ -1345,7 +1345,7 @@ static void LoadTGA ( const char *name, byte **pic, int *width, int *height)
     ri.Printf( PRINT_WARNING, "WARNING: '%s' TGA file header declares top-down image, ignoring\n", name);
   }
 
-  ri.FS_FreeFile (buffer);
+  FS_FreeFile (buffer);
 }
 
 /*
@@ -1503,7 +1503,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
    * requires it in order to read binary files.
    */
 
-  int FileSize = ri.FS_ReadFile ( ( char * ) filename, (void **)&fbuffer);
+  int FileSize = FS_ReadFile ( ( char * ) filename, (void **)&fbuffer);
   if (!fbuffer) {
 	return;
   }
@@ -1605,7 +1605,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
    * so as to simplify the setjmp error logic above.  (Actually, I don't
    * think that jpeg_destroy can do an error exit, but why assume anything...)
    */
-  ri.FS_FreeFile (fbuffer);
+  FS_FreeFile (fbuffer);
 
   /* At this point you may want to check to see whether any corrupt-data
    * warnings occurred (test whether jerr.pub.num_warnings is nonzero).
@@ -1812,7 +1812,7 @@ void SaveJPG(char * filename, int quality, int image_width, int image_height, un
 
   jpeg_finish_compress(&cinfo);
   /* After finish_compress, we can close the output file. */
-  ri.FS_WriteFile( filename, out, hackSize );
+  FS_WriteFile( filename, out, hackSize );
 
   ri.Hunk_FreeTempMemory(out);
 
@@ -2181,13 +2181,13 @@ void R_SetColorMappings( void ) {
 
 
 	if ( r_intensity->value <= 1 ) {
-		ri.Cvar_Set( "r_intensity", "1" );
+		Cvar_Set( "r_intensity", "1" );
 	}
 
 	if ( r_gamma->value < 0.5f ) {
-		ri.Cvar_Set( "r_gamma", "0.5" );
+		Cvar_Set( "r_gamma", "0.5" );
 	} else if ( r_gamma->value > 3.0f ) {
-		ri.Cvar_Set( "r_gamma", "3.0" );
+		Cvar_Set( "r_gamma", "3.0" );
 	}
 
 	g = r_gamma->value;
@@ -2441,7 +2441,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 	}
 
 	// load and parse the skin file
-    ri.FS_ReadFile( name, (void **)&text );
+    FS_ReadFile( name, (void **)&text );
 	if ( !text ) {
 		return 0;
 	}
@@ -2475,7 +2475,7 @@ qhandle_t RE_RegisterSkin( const char *name ) {
 		skin->numSurfaces++;
 	}
 
-	ri.FS_FreeFile( text );
+	FS_FreeFile( text );
 
 
 	// never let a skin have 0 shaders

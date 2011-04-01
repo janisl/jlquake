@@ -127,29 +127,8 @@ typedef struct {
 	void	*(*Malloc)( int bytes );
 	void	(*Free)( void *buf );
 
-	QCvar	*(*Cvar_Get)( const char *name, const char *value, int flags );
-	QCvar	*(*Cvar_Set)( const char *name, const char *value );
-
-	void	(*Cmd_AddCommand)( const char *name, void(*cmd)(void) );
-	void	(*Cmd_RemoveCommand)( const char *name );
-
-	int		(*Cmd_Argc) (void);
-	char	*(*Cmd_Argv) (int i);
-
-	void	(*Cmd_ExecuteText) (int exec_when, const char *text);
-
 	// visualization for debugging collision detection
 	void	(*CM_DrawDebugSurface)( void (*drawPoly)(int color, int numPoints, float *points) );
-
-	// a -1 return means the file does not exist
-	// NULL can be passed for buf to just determine existance
-	int		(*FS_FileIsInPAK)( const char *name, int *pCheckSum );
-	int		(*FS_ReadFile)( const char *name, void **buf );
-	void	(*FS_FreeFile)( void *buf );
-	char **	(*FS_ListFiles)( const char *name, const char *extension, int *numfilesfound );
-	void	(*FS_FreeFileList)( char **filelist );
-	void	(*FS_WriteFile)( const char *qpath, const void *buffer, int size );
-	bool    (*FS_FileExists)( const char *file );
 
 	// cinematic stuff
 	void	(*CIN_UploadCinematic)(int handle);

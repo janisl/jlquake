@@ -422,7 +422,7 @@ static qboolean GLW_StartDriverAndSetMode(int mode, qboolean fullscreen )
 	if (fullscreen && in_nograb->value)
 	{
 		ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n");
-    ri.Cvar_Set( "r_fullscreen", "0" );
+    Cvar_Set( "r_fullscreen", "0" );
     r_fullscreen->modified = qfalse;
     fullscreen = qfalse;		
 	}
@@ -689,15 +689,15 @@ int qXErrorHandler(Display *dpy, XErrorEvent *ev)
 void GLimp_Init( void )
 {
   char  buf[1024];
-  QCvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
+  QCvar *lastValidRenderer = Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
 
   if (!XInitThreads())
   {
     Com_Printf("GLimp_Init() - XInitThreads() failed, disabling r_smp\n");
-    ri.Cvar_Set( "r_smp", "0" );
+    Cvar_Set( "r_smp", "0" );
   }
 
-  r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
+  r_allowSoftwareGL = Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
 
   InitSig();
 
@@ -737,12 +737,12 @@ void GLimp_Init( void )
   //
   if ( QStr::ICmp( lastValidRenderer->string, glConfig.renderer_string ) )
   {
-    ri.Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
+    Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
 
-      ri.Cvar_Set( "r_picmip", "1" );
+      Cvar_Set( "r_picmip", "1" );
   }
 
-  ri.Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
+  Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
 
   // initialize extensions
   GLW_InitExtensions();
