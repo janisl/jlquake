@@ -54,6 +54,201 @@ static bool		s_classRegistered = false;
 
 //==========================================================================
 //
+//	GLW_ChoosePFD
+//
+//	Helper function that replaces ChoosePixelFormat.
+//
+//==========================================================================
+
+#define MAX_PFDS 256
+
+int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
+{
+	PIXELFORMATDESCRIPTOR pfds[MAX_PFDS+1];
+	int maxPFD = 0;
+	int i;
+	int bestMatch = 0;
+
+	GLog.Write("...GLW_ChoosePFD( %d, %d, %d )\n", (int)pPFD->cColorBits, (int)pPFD->cDepthBits, (int)pPFD->cStencilBits);
+
+	// count number of PFDs
+	maxPFD = DescribePixelFormat(hDC, 1, sizeof(PIXELFORMATDESCRIPTOR), &pfds[0]);
+	if (maxPFD > MAX_PFDS)
+	{
+		GLog.Write(S_COLOR_YELLOW "...numPFDs > MAX_PFDS (%d > %d)\n", maxPFD, MAX_PFDS);
+		maxPFD = MAX_PFDS;
+	}
+
+	GLog.Write("...%d PFDs found\n", maxPFD - 1);
+
+	// grab information
+	for (i = 1; i <= maxPFD; i++)
+	{
+		DescribePixelFormat(hDC, i, sizeof(PIXELFORMATDESCRIPTOR), &pfds[i]);
+	}
+
+	// look for a best match
+	for (i = 1; i <= maxPFD; i++)
+	{
+		//
+		// make sure this has hardware acceleration
+		//
+		if ((pfds[i].dwFlags & PFD_GENERIC_FORMAT ) != 0)
+		{
+			if (!r_allowSoftwareGL->integer)
+			{
+				if (r_verbose->integer)
+				{
+					GLog.Write("...PFD %d rejected, software acceleration\n", i);
+				}
+				continue;
+			}
+		}
+
+		// verify pixel type
+		if (pfds[i].iPixelType != PFD_TYPE_RGBA)
+		{
+			if (r_verbose->integer)
+			{
+				GLog.Write("...PFD %d rejected, not RGBA\n", i);
+			}
+			continue;
+		}
+
+		// verify proper flags
+		if (((pfds[i].dwFlags & pPFD->dwFlags) & pPFD->dwFlags) != pPFD->dwFlags)
+		{
+			if (r_verbose->integer)
+			{
+				GLog.Write("...PFD %d rejected, improper flags (%x instead of %x)\n", i, pfds[i].dwFlags, pPFD->dwFlags);
+			}
+			continue;
+		}
+
+		// verify enough bits
+		if (pfds[i].cDepthBits < 15)
+		{
+			continue;
+		}
+		if ((pfds[i].cStencilBits < 4) && (pPFD->cStencilBits > 0))
+		{
+			continue;
+		}
+
+		//
+		// selection criteria (in order of priority):
+		// 
+		//  PFD_STEREO
+		//  colorBits
+		//  depthBits
+		//  stencilBits
+		//
+		if (bestMatch)
+		{
+			// check stereo
+			if ((pfds[i].dwFlags & PFD_STEREO) && !(pfds[bestMatch].dwFlags & PFD_STEREO) && (pPFD->dwFlags & PFD_STEREO))
+			{
+				bestMatch = i;
+				continue;
+			}
+			
+			if (!(pfds[i].dwFlags & PFD_STEREO) && (pfds[bestMatch].dwFlags & PFD_STEREO) && (pPFD->dwFlags & PFD_STEREO))
+			{
+				bestMatch = i;
+				continue;
+			}
+
+			// check color
+			if (pfds[bestMatch].cColorBits != pPFD->cColorBits)
+			{
+				// prefer perfect match
+				if (pfds[i].cColorBits == pPFD->cColorBits)
+				{
+					bestMatch = i;
+					continue;
+				}
+				// otherwise if this PFD has more bits than our best, use it
+				else if (pfds[i].cColorBits > pfds[bestMatch].cColorBits)
+				{
+					bestMatch = i;
+					continue;
+				}
+			}
+
+			// check depth
+			if (pfds[bestMatch].cDepthBits != pPFD->cDepthBits)
+			{
+				// prefer perfect match
+				if (pfds[i].cDepthBits == pPFD->cDepthBits)
+				{
+					bestMatch = i;
+					continue;
+				}
+				// otherwise if this PFD has more bits than our best, use it
+				else if (pfds[i].cDepthBits > pfds[bestMatch].cDepthBits)
+				{
+					bestMatch = i;
+					continue;
+				}
+			}
+
+			// check stencil
+			if (pfds[bestMatch].cStencilBits != pPFD->cStencilBits)
+			{
+				// prefer perfect match
+				if (pfds[i].cStencilBits == pPFD->cStencilBits)
+				{
+					bestMatch = i;
+					continue;
+				}
+				// otherwise if this PFD has more bits than our best, use it
+				else if ((pfds[i].cStencilBits > pfds[bestMatch].cStencilBits) &&
+					 (pPFD->cStencilBits > 0))
+				{
+					bestMatch = i;
+					continue;
+				}
+			}
+		}
+		else
+		{
+			bestMatch = i;
+		}
+	}
+	
+	if (!bestMatch)
+	{
+		return 0;
+	}
+
+	if ((pfds[bestMatch].dwFlags & PFD_GENERIC_FORMAT) != 0)
+	{
+		if (!r_allowSoftwareGL->integer)
+		{
+			GLog.Write("...no hardware acceleration found\n");
+			return 0;
+		}
+		else
+		{
+			GLog.Write("...using software emulation\n");
+		}
+	}
+	else if (pfds[bestMatch].dwFlags & PFD_GENERIC_ACCELERATED)
+	{
+		GLog.Write("...MCD acceleration found\n");
+	}
+	else
+	{
+		GLog.Write("...hardware acceleration found\n");
+	}
+
+	*pPFD = pfds[bestMatch];
+
+	return bestMatch;
+}
+
+//==========================================================================
+//
 //	GLW_SharedCreateWindow
 //
 //==========================================================================

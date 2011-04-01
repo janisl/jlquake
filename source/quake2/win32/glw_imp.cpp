@@ -368,7 +368,7 @@ qboolean GLimp_InitGL (void)
 		return false;
 	}
 
-	if ( ( pixelformat = ChoosePixelFormat( maindc, &pfd)) == 0 )
+	if ( ( pixelformat = GLW_ChoosePFD( maindc, &pfd)) == 0 )
 	{
 		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - ChoosePixelFormat failed\n");
 		return false;

@@ -572,7 +572,7 @@ BOOL bSetupPixelFormat(HDC hDC)
     };
     int pixelformat;
 
-    if ( (pixelformat = ChoosePixelFormat(hDC, &pfd)) == 0 )
+    if ( (pixelformat = GLW_ChoosePFD(hDC, &pfd)) == 0 )
     {
         MessageBox(NULL, "ChoosePixelFormat failed", "Error", MB_OK);
         return FALSE;
