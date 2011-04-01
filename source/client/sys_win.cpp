@@ -36,6 +36,7 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+HINSTANCE		global_hInstance;
 HWND			GMainWindow;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------

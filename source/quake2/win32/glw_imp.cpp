@@ -59,8 +59,6 @@ static qboolean VerifyDriver( void )
 /*
 ** VID_CreateWindow
 */
-#define	WINDOW_CLASS_NAME	"Quake 2"
-
 qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 {
 	WNDCLASS		wc;
@@ -72,10 +70,10 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 
 	/* Register the frame class */
     wc.style         = 0;
-    wc.lpfnWndProc   = (WNDPROC)glw_state.wndproc;
+    wc.lpfnWndProc   = MainWndProc;
     wc.cbClsExtra    = 0;
     wc.cbWndExtra    = 0;
-    wc.hInstance     = glw_state.hInstance;
+    wc.hInstance     = global_hInstance;
     wc.hIcon         = 0;
     wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
 	wc.hbrBackground = (HBRUSH)COLOR_GRAYTEXT;
@@ -119,7 +117,7 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 		y = vid_ypos->value;
 	}
 
-	glw_state.hWnd = CreateWindowEx (
+	GMainWindow = CreateWindowEx (
 		 exstyle, 
 		 WINDOW_CLASS_NAME,
 		 "Quake 2",
@@ -127,14 +125,14 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 		 x, y, w, h,
 		 NULL,
 		 NULL,
-		 glw_state.hInstance,
+		 global_hInstance,
 		 NULL);
 
-	if (!glw_state.hWnd)
+	if (!GMainWindow)
 		ri.Sys_Error (ERR_FATAL, "Couldn't create window");
 	
-	ShowWindow( glw_state.hWnd, SW_SHOW );
-	UpdateWindow( glw_state.hWnd );
+	ShowWindow( GMainWindow, SW_SHOW );
+	UpdateWindow( GMainWindow );
 
 	// init all the gl stuff for the window
 	if (!GLimp_InitGL ())
@@ -143,8 +141,8 @@ qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 		return false;
 	}
 
-	SetForegroundWindow( glw_state.hWnd );
-	SetFocus( glw_state.hWnd );
+	SetForegroundWindow( GMainWindow );
+	SetFocus( GMainWindow );
 
 	// let the sound and input subsystems know about the new window
 	ri.Vid_NewWindow (width, height);
@@ -174,7 +172,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 	ri.Con_Printf( PRINT_ALL, " %d %d %s\n", width, height, win_fs[fullscreen] );
 
 	// destroy the existing window
-	if (glw_state.hWnd)
+	if (GMainWindow)
 	{
 		GLimp_Shutdown ();
 	}
@@ -303,25 +301,25 @@ void GLimp_Shutdown( void )
 {
 	if ( !wglMakeCurrent( NULL, NULL ) )
 		ri.Con_Printf( PRINT_ALL, "ref_gl::R_Shutdown() - wglMakeCurrent failed\n");
-	if ( glw_state.hGLRC )
+	if ( baseRC )
 	{
-		if (!wglDeleteContext(glw_state.hGLRC))
+		if (!wglDeleteContext(baseRC))
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_Shutdown() - wglDeleteContext failed\n");
-		glw_state.hGLRC = NULL;
+		baseRC = NULL;
 	}
-	if (glw_state.hDC)
+	if (maindc)
 	{
-		if ( !ReleaseDC( glw_state.hWnd, glw_state.hDC ) )
+		if ( !ReleaseDC( GMainWindow, maindc ) )
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_Shutdown() - ReleaseDC failed\n" );
-		glw_state.hDC   = NULL;
+		maindc   = NULL;
 	}
-	if (glw_state.hWnd)
+	if (GMainWindow)
 	{
-		DestroyWindow (	glw_state.hWnd );
-		glw_state.hWnd = NULL;
+		DestroyWindow (	GMainWindow );
+		GMainWindow = NULL;
 	}
 
-	UnregisterClass (WINDOW_CLASS_NAME, glw_state.hInstance);
+	UnregisterClass (WINDOW_CLASS_NAME, global_hInstance);
 
 	if ( gl_state.fullscreen )
 	{
@@ -338,7 +336,7 @@ void GLimp_Shutdown( void )
 ** of OpenGL.  Under Win32 this means dealing with the pixelformats and
 ** doing the wgl interface stuff.
 */
-qboolean GLimp_Init( void *hinstance, void *wndproc )
+qboolean GLimp_Init(void*, void*)
 {
 #define OSR2_BUILD_NUMBER 1111
 
@@ -374,9 +372,6 @@ qboolean GLimp_Init( void *hinstance, void *wndproc )
 		ri.Con_Printf( PRINT_ALL, "GLimp_Init() - GetVersionEx failed\n" );
 		return false;
 	}
-
-	glw_state.hInstance = ( HINSTANCE ) hinstance;
-	glw_state.wndproc = wndproc;
 
 	return true;
 }
@@ -426,26 +421,26 @@ qboolean GLimp_InitGL (void)
 	/*
 	** Get a DC for the specified window
 	*/
-	if ( glw_state.hDC != NULL )
+	if ( maindc != NULL )
 		ri.Con_Printf( PRINT_ALL, "GLimp_Init() - non-NULL DC exists\n" );
 
-    if ( ( glw_state.hDC = GetDC( glw_state.hWnd ) ) == NULL )
+    if ( ( maindc = GetDC( GMainWindow ) ) == NULL )
 	{
 		ri.Con_Printf( PRINT_ALL, "GLimp_Init() - GetDC failed\n" );
 		return false;
 	}
 
-	if ( ( pixelformat = ChoosePixelFormat( glw_state.hDC, &pfd)) == 0 )
+	if ( ( pixelformat = ChoosePixelFormat( maindc, &pfd)) == 0 )
 	{
 		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - ChoosePixelFormat failed\n");
 		return false;
 	}
-	if ( SetPixelFormat( glw_state.hDC, pixelformat, &pfd) == FALSE )
+	if ( SetPixelFormat( maindc, pixelformat, &pfd) == FALSE )
 	{
 		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - SetPixelFormat failed\n");
 		return false;
 	}
-	DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( pfd ), &pfd );
+	DescribePixelFormat( maindc, pixelformat, sizeof( pfd ), &pfd );
 
 	if ( !( pfd.dwFlags & PFD_GENERIC_ACCELERATED ) )
 	{
@@ -475,14 +470,14 @@ qboolean GLimp_InitGL (void)
 	** startup the OpenGL subsystem by creating a context and making
 	** it current
 	*/
-	if ( ( glw_state.hGLRC = wglCreateContext( glw_state.hDC ) ) == 0 )
+	if ( ( baseRC = wglCreateContext( maindc ) ) == 0 )
 	{
 		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - wglCreateContext failed\n");
 
 		goto fail;
 	}
 
-    if ( !wglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) )
+    if ( !wglMakeCurrent( maindc, baseRC ) )
 	{
 		ri.Con_Printf (PRINT_ALL, "GLimp_Init() - wglMakeCurrent failed\n");
 
@@ -503,16 +498,16 @@ qboolean GLimp_InitGL (void)
 	return true;
 
 fail:
-	if ( glw_state.hGLRC )
+	if ( baseRC )
 	{
-		wglDeleteContext( glw_state.hGLRC );
-		glw_state.hGLRC = NULL;
+		wglDeleteContext( baseRC );
+		baseRC = NULL;
 	}
 
-	if ( glw_state.hDC )
+	if ( maindc )
 	{
-		ReleaseDC( glw_state.hWnd, glw_state.hDC );
-		glw_state.hDC = NULL;
+		ReleaseDC( GMainWindow, maindc );
+		maindc = NULL;
 	}
 	return false;
 }
@@ -562,7 +557,7 @@ void GLimp_EndFrame (void)
 
 	if ( QStr::ICmp( gl_drawbuffer->string, "GL_BACK" ) == 0 )
 	{
-		if ( !SwapBuffers( glw_state.hDC ) )
+		if ( !SwapBuffers( maindc ) )
 			ri.Sys_Error( ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n" );
 	}
 }
@@ -574,12 +569,12 @@ void GLimp_AppActivate( qboolean active )
 {
 	if ( active )
 	{
-		SetForegroundWindow( glw_state.hWnd );
-		ShowWindow( glw_state.hWnd, SW_RESTORE );
+		SetForegroundWindow( GMainWindow );
+		ShowWindow( GMainWindow, SW_RESTORE );
 	}
 	else
 	{
 		if ( vid_fullscreen->value )
-			ShowWindow( glw_state.hWnd, SW_MINIMIZE );
+			ShowWindow( GMainWindow, SW_MINIMIZE );
 	}
 }

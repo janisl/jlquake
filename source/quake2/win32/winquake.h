@@ -27,8 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	WINDOW_STYLE	(WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_VISIBLE)
 
-extern	HINSTANCE	global_hInstance;
-
 extern qboolean		ActiveApp, Minimized;
 
 void IN_Activate (qboolean active);

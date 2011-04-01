@@ -109,7 +109,7 @@ void mapGammaMax( void ) {
 	for ( i = 0 ; i < 128 ; i++ ) {
 		for ( j = i*2 ; j < 255 ; j++ ) {
 			table[0][i] = table[1][i] = table[2][i] = j<<8;
-			if ( !SetDeviceGammaRamp( glw_state.hDC, table ) ) {
+			if ( !SetDeviceGammaRamp( maindc, table ) ) {
 				break;
 			}
 		}
@@ -130,7 +130,7 @@ void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 	int		ret;
 	OSVERSIONINFO	vinfo;
 
-	if ( !glConfig.deviceSupportsGamma || r_ignorehwgamma->integer || !glw_state.hDC ) {
+	if ( !glConfig.deviceSupportsGamma || r_ignorehwgamma->integer || !maindc ) {
 		return;
 	}
 
@@ -173,11 +173,11 @@ void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 
 	if ( qwglSetDeviceGammaRamp3DFX )
 	{
-		qwglSetDeviceGammaRamp3DFX( glw_state.hDC, table );
+		qwglSetDeviceGammaRamp3DFX( maindc, table );
 	}
 	else
 	{
-		ret = SetDeviceGammaRamp( glw_state.hDC, table );
+		ret = SetDeviceGammaRamp( maindc, table );
 		if ( !ret ) {
 			Com_Printf( "SetDeviceGammaRamp failed.\n" );
 		}
@@ -193,7 +193,7 @@ void WG_RestoreGamma( void )
 	{
 		if ( qwglSetDeviceGammaRamp3DFX )
 		{
-			qwglSetDeviceGammaRamp3DFX( glw_state.hDC, s_oldHardwareGamma );
+			qwglSetDeviceGammaRamp3DFX( maindc, s_oldHardwareGamma );
 		}
 		else
 		{

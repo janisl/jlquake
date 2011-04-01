@@ -26,6 +26,13 @@ void SNDDMA_Activate();
 
 LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+#define WINDOW_CLASS_NAME	"vQuake"
+
+extern HINSTANCE	global_hInstance;
 extern HWND			GMainWindow;
+extern HDC			maindc;
+extern HGLRC		baseRC;
 
 #endif

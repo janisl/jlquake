@@ -79,9 +79,6 @@ static int	windowed_default;
 unsigned char	vid_curpal[256*3];
 float RTint[256],GTint[256],BTint[256];
 
-HGLRC	baseRC;
-HDC		maindc;
-
 glvert_t glv;
 
 QCvar*	gl_ztrick;
@@ -100,7 +97,6 @@ modestate_t	modestate = MS_UNINIT;
 void VID_MenuDraw (void);
 void VID_MenuKey (int key);
 
-LONG WINAPI MainWndProc (HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AppActivate(BOOL fActive, BOOL minimize);
 char *VID_GetModeDescription (int mode);
 void ClearAllStates (void);
@@ -201,7 +197,7 @@ qboolean VID_SetWindowedMode (int modenum)
 	// Create the DIB window
 	dibwindow = CreateWindowEx (
 		 ExWindowStyle,
-		 "GLHexenWorld",
+		 WINDOW_CLASS_NAME,
 		 "GLHexenWorld",
 		 WindowStyle,
 		 rect.left, rect.top,
@@ -292,7 +288,7 @@ qboolean VID_SetFullDIBMode (int modenum)
 	// Create the DIB window
 	dibwindow = CreateWindowEx (
 		 ExWindowStyle,
-		 "GLHexenWorld",
+		 WINDOW_CLASS_NAME,
 		 "GLHexenWorld",
 		 WindowStyle,
 		 rect.left, rect.top,
@@ -1276,7 +1272,7 @@ void VID_InitDIB (HINSTANCE hInstance)
     wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
 	wc.hbrBackground = NULL;
     wc.lpszMenuName  = 0;
-    wc.lpszClassName = "GLHexenWorld";
+    wc.lpszClassName = WINDOW_CLASS_NAME;
 
     if (!RegisterClass (&wc) )
 		Sys_Error ("Couldn't register window class");

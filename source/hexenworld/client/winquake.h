@@ -12,7 +12,6 @@
 #include <dsound.h>
 #endif
 
-extern	HINSTANCE	global_hInstance;
 extern	int			global_nCmdShow;
 
 extern UINT	uMSG_MOUSEWHEEL;

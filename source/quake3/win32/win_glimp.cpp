@@ -47,8 +47,6 @@ extern void WG_RestoreGamma( void );
 #define TRY_PFD_FAIL_SOFT	1
 #define TRY_PFD_FAIL_HARD	2
 
-#define	WINDOW_CLASS_NAME	"Quake 3: Arena"
-
 static void		GLW_InitExtensions( void );
 static rserr_t	GLW_SetMode( int mode, 
 							 int colorbits, 
@@ -349,18 +347,18 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
 		//
 		// choose, set, and describe our desired pixel format.
 		//
-		if ( ( pixelformat = GLW_ChoosePFD( glw_state.hDC, pPFD ) ) == 0 )
+		if ( ( pixelformat = GLW_ChoosePFD( maindc, pPFD ) ) == 0 )
 		{
 			ri.Printf( PRINT_ALL, "...GLW_ChoosePFD failed\n");
 			return TRY_PFD_FAIL_SOFT;
 		}
 		ri.Printf( PRINT_ALL, "...PIXELFORMAT %d selected\n", pixelformat );
 
-		DescribePixelFormat( glw_state.hDC, pixelformat, sizeof( *pPFD ), pPFD );
+		DescribePixelFormat( maindc, pixelformat, sizeof( *pPFD ), pPFD );
 
-		if ( SetPixelFormat( glw_state.hDC, pixelformat, pPFD ) == FALSE )
+		if ( SetPixelFormat( maindc, pixelformat, pPFD ) == FALSE )
 		{
-			ri.Printf (PRINT_ALL, "...SetPixelFormat failed\n", glw_state.hDC );
+			ri.Printf (PRINT_ALL, "...SetPixelFormat failed\n", maindc );
 			return TRY_PFD_FAIL_SOFT;
 		}
 
@@ -370,10 +368,10 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
 	//
 	// startup the OpenGL subsystem by creating a context and making it current
 	//
-	if ( !glw_state.hGLRC )
+	if ( !baseRC )
 	{
 		ri.Printf( PRINT_ALL, "...creating GL context: " );
-		if ( ( glw_state.hGLRC = wglCreateContext( glw_state.hDC ) ) == 0 )
+		if ( ( baseRC = wglCreateContext( maindc ) ) == 0 )
 		{
 			ri.Printf (PRINT_ALL, "failed\n");
 
@@ -382,10 +380,10 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
 		ri.Printf( PRINT_ALL, "succeeded\n" );
 
 		ri.Printf( PRINT_ALL, "...making context current: " );
-		if ( !wglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) )
+		if ( !wglMakeCurrent( maindc, baseRC ) )
 		{
-			wglDeleteContext( glw_state.hGLRC );
-			glw_state.hGLRC = NULL;
+			wglDeleteContext( baseRC );
+			baseRC = NULL;
 			ri.Printf (PRINT_ALL, "failed\n");
 			return TRY_PFD_FAIL_HARD;
 		}
@@ -413,11 +411,11 @@ static qboolean GLW_InitDriver(int colorbits)
 	//
 	// get a DC for our window if we don't already have one allocated
 	//
-	if ( glw_state.hDC == NULL )
+	if ( maindc == NULL )
 	{
 		ri.Printf( PRINT_ALL, "...getting DC: " );
 
-		if ( ( glw_state.hDC = GetDC( GMainWindow ) ) == NULL )
+		if ( ( maindc = GetDC( GMainWindow ) ) == NULL )
 		{
 			ri.Printf( PRINT_ALL, "failed\n" );
 			return qfalse;
@@ -476,8 +474,8 @@ static qboolean GLW_InitDriver(int colorbits)
 			if ( ( r_colorbits->integer == glw_state.desktopBitsPixel ) &&
 				 ( stencilbits == 0 ) )
 			{
-				ReleaseDC( GMainWindow, glw_state.hDC );
-				glw_state.hDC = NULL;
+				ReleaseDC( GMainWindow, maindc );
+				maindc = NULL;
 
 				ri.Printf( PRINT_ALL, "...failed to find an appropriate PIXELFORMAT\n" );
 
@@ -494,10 +492,10 @@ static qboolean GLW_InitDriver(int colorbits)
 			GLW_CreatePFD( &pfd, colorbits, depthbits, 0, r_stereo->integer );
 			if ( GLW_MakeContext( &pfd ) != TRY_PFD_SUCCESS )
 			{
-				if ( glw_state.hDC )
+				if ( maindc )
 				{
-					ReleaseDC( GMainWindow, glw_state.hDC );
-					glw_state.hDC = NULL;
+					ReleaseDC( GMainWindow, maindc );
+					maindc = NULL;
 				}
 
 				ri.Printf( PRINT_ALL, "...failed to find an appropriate PIXELFORMAT\n" );
@@ -550,11 +548,11 @@ static qboolean GLW_CreateWindow(int width, int height, int colorbits, qboolean 
 		Com_Memset( &wc, 0, sizeof( wc ) );
 
 		wc.style         = 0;
-		wc.lpfnWndProc   = (WNDPROC) glw_state.wndproc;
+		wc.lpfnWndProc   = MainWndProc;
 		wc.cbClsExtra    = 0;
 		wc.cbWndExtra    = 0;
-		wc.hInstance     = g_wv.hInstance;
-		wc.hIcon         = LoadIcon( g_wv.hInstance, MAKEINTRESOURCE(IDI_ICON1));
+		wc.hInstance     = global_hInstance;
+		wc.hIcon         = LoadIcon( global_hInstance, MAKEINTRESOURCE(IDI_ICON1));
 		wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
 		wc.hbrBackground = (HBRUSH)COLOR_GRAYTEXT;
 		wc.lpszMenuName  = 0;
@@ -633,7 +631,7 @@ static qboolean GLW_CreateWindow(int width, int height, int colorbits, qboolean 
 			 x, y, w, h,
 			 NULL,
 			 NULL,
-			 g_wv.hInstance,
+			 global_hInstance,
 			 NULL);
 
 		if ( !GMainWindow )
@@ -1176,7 +1174,7 @@ void GLimp_EndFrame (void)
 	// don't flip if drawing to front buffer
 	if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
-		SwapBuffers( glw_state.hDC );
+		SwapBuffers( maindc );
 	}
 
 	// check logging
@@ -1208,7 +1206,6 @@ void GLimp_Init( void )
 {
 	char	buf[1024];
 	QCvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
-	QCvar	*cv;
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
 
@@ -1219,13 +1216,6 @@ void GLimp_Init( void )
 	{
 		ri.Error( ERR_FATAL, "GLimp_Init() - incorrect operating system\n" );
 	}
-
-	// save off hInstance and wndproc
-	cv = ri.Cvar_Get( "win_hinstance", "", 0 );
-	sscanf( cv->string, "%i", (int *)&g_wv.hInstance );
-
-	cv = ri.Cvar_Get( "win_wndproc", "", 0 );
-	sscanf( cv->string, "%i", (int *)&glw_state.wndproc );
 
 	r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
 
@@ -1287,19 +1277,19 @@ void GLimp_Shutdown( void )
 	ri.Printf( PRINT_ALL, "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
 
 	// delete HGLRC
-	if ( glw_state.hGLRC )
+	if ( baseRC )
 	{
-		retVal = wglDeleteContext( glw_state.hGLRC ) != 0;
+		retVal = wglDeleteContext( baseRC ) != 0;
 		ri.Printf( PRINT_ALL, "...deleting GL context: %s\n", success[retVal] );
-		glw_state.hGLRC = NULL;
+		baseRC = NULL;
 	}
 
 	// release DC
-	if ( glw_state.hDC )
+	if ( maindc )
 	{
-		retVal = ReleaseDC( GMainWindow, glw_state.hDC ) != 0;
+		retVal = ReleaseDC( GMainWindow, maindc ) != 0;
 		ri.Printf( PRINT_ALL, "...releasing DC: %s\n", success[retVal] );
-		glw_state.hDC   = NULL;
+		maindc   = NULL;
 	}
 
 	// destroy window
@@ -1346,7 +1336,7 @@ void GLimp_RenderThreadWrapper( void ) {
 	glimpRenderThread();
 
 	// unbind the context before we die
-	wglMakeCurrent( glw_state.hDC, NULL );
+	wglMakeCurrent( maindc, NULL );
 }
 
 /*
@@ -1385,7 +1375,7 @@ static	int		wglErrors;
 void *GLimp_RendererSleep( void ) {
 	void	*data;
 
-	if ( !wglMakeCurrent( glw_state.hDC, NULL ) ) {
+	if ( !wglMakeCurrent( maindc, NULL ) ) {
 		wglErrors++;
 	}
 
@@ -1396,7 +1386,7 @@ void *GLimp_RendererSleep( void ) {
 
 	WaitForSingleObject( renderCommandsEvent, INFINITE );
 
-	if ( !wglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
+	if ( !wglMakeCurrent( maindc, baseRC ) ) {
 		wglErrors++;
 	}
 
@@ -1415,7 +1405,7 @@ void *GLimp_RendererSleep( void ) {
 void GLimp_FrontEndSleep( void ) {
 	WaitForSingleObject( renderCompletedEvent, INFINITE );
 
-	if ( !wglMakeCurrent( glw_state.hDC, glw_state.hGLRC ) ) {
+	if ( !wglMakeCurrent( maindc, baseRC ) ) {
 		wglErrors++;
 	}
 }
@@ -1424,7 +1414,7 @@ void GLimp_FrontEndSleep( void ) {
 void GLimp_WakeRenderer( void *data ) {
 	smpData = data;
 
-	if ( !wglMakeCurrent( glw_state.hDC, NULL ) ) {
+	if ( !wglMakeCurrent( maindc, NULL ) ) {
 		wglErrors++;
 	}
 

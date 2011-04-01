@@ -26,13 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	HINSTANCE	hInstance;
-	void	*wndproc;
-
-	HDC     hDC;			// handle to device context
-	HWND    hWnd;			// handle to window
-	HGLRC   hGLRC;			// handle to GL rendering context
-
 	qboolean allowdisplaydepthchange;
 	qboolean mcd_accelerated;
 } glwstate_t;

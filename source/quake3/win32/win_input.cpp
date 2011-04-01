@@ -277,7 +277,7 @@ qboolean IN_InitDIMouse( void ) {
 	}
 
 	// register with DirectInput and get an IDirectInput to play with.
-	hr = iDirectInputCreate( g_wv.hInstance, DIRECTINPUT_VERSION, &g_pdi, NULL);
+	hr = iDirectInputCreate( global_hInstance, DIRECTINPUT_VERSION, &g_pdi, NULL);
 
 	if (FAILED(hr)) {
 		Com_Printf ("iDirectInputCreate failed\n");

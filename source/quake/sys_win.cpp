@@ -472,7 +472,6 @@ void SleepUntilInput (int time)
 WinMain
 ==================
 */
-HINSTANCE	global_hInstance;
 int			global_nCmdShow;
 char		*argv[MAX_NUM_ARGVS];
 static char	*empty_string = "";

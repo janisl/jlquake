@@ -601,10 +601,6 @@ void Sys_Init( void ) {
 		Cvar_Set( "arch", "unknown Windows variant" );
 	}
 
-	// save out a couple things in rom cvars for the renderer to access
-	Cvar_Get( "win_hinstance", va("%i", (int)g_wv.hInstance), CVAR_ROM );
-	Cvar_Get( "win_wndproc", va("%i", (int)MainWndProc), CVAR_ROM );
-
 	//
 	// figure out our CPU
 	//
@@ -704,7 +700,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         return 0;
 	}
 
-	g_wv.hInstance = hInstance;
+	global_hInstance = hInstance;
 	QStr::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output

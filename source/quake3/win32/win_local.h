@@ -69,11 +69,9 @@ void Conbuf_AppendText( const char *msg );
 
 typedef struct
 {
-	
 	HINSTANCE		reflib_library;		// Handle to refresh DLL 
 	qboolean		reflib_active;
 
-	HINSTANCE		hInstance;
 	qboolean		activeApp;
 	qboolean		isMinimized;
 	OSVERSIONINFO	osversion;

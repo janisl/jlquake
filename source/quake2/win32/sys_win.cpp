@@ -580,8 +580,6 @@ WinMain
 
 ==================
 */
-HINSTANCE	global_hInstance;
-
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     MSG				msg;
