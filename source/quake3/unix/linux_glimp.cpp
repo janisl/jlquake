@@ -76,9 +76,6 @@ QCvar   *joy_threshold    = NULL;
 
 QCvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
 
-// gamma value of the X display before we start playing with it
-static XF86VidModeGamma vidmode_InitialGamma;
-
 /*
 * Find the first occurrence of find in s.
 */
@@ -408,37 +405,7 @@ void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 */
 void GLimp_Shutdown( void )
 {
-  if (!ctx || !dpy)
-    return;
-  IN_DeactivateMouse();
-  // bk001206 - replaced with H2/Fakk2 solution
-  // XAutoRepeatOn(dpy);
-  // autorepeaton = qfalse; // bk001130 - from cvs1.17 (mkv)
-  if (dpy)
-  {
-    if (ctx)
-      glXDestroyContext(dpy, ctx);
-    if (win)
-      XDestroyWindow(dpy, win);
-    if (vidmode_active)
-      XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[0]);
-    if (glConfig.deviceSupportsGamma)
-    {
-      XF86VidModeSetGamma(dpy, scrnum, &vidmode_InitialGamma);
-    }
-    // NOTE TTimo opening/closing the display should be necessary only once per run
-    //   but it seems QGL_Shutdown gets called in a lot of occasion
-    //   in some cases, this XCloseDisplay is known to raise some X errors
-    //   ( https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=33 )
-    XCloseDisplay(dpy);
-  }
-  vidmode_active = qfalse;
-  dpy = NULL;
-  win = 0;
-  ctx = NULL;
-
-  Com_Memset( &glConfig, 0, sizeof( glConfig ) );
-  Com_Memset( &glState, 0, sizeof( glState ) );
+	GLimp_SharedShutdown();
 
   QGL_Shutdown();
 }

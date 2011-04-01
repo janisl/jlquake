@@ -336,9 +336,9 @@ typedef struct
 	unsigned char originalRedGammaTable[256];
 	unsigned char originalGreenGammaTable[256];
 	unsigned char originalBlueGammaTable[256];
-} glstate_t;
+} glstate2_t;
 
-extern glstate_t   gl_state;
+extern glstate2_t   gl_state;
 
 /*
 ====================================================================

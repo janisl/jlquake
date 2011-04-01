@@ -169,10 +169,7 @@ static void GetEvent(void)
 
 void VID_Shutdown(void)
 {
-	if (!ctx)
-		return;
-
-	glXDestroyContext(dpy, ctx);
+	GLimp_SharedShutdown();
 }
 
 void signal_handler(int sig)

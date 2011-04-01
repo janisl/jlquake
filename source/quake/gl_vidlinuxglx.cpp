@@ -173,22 +173,7 @@ static void HandleEvents(void)
 
 void VID_Shutdown(void)
 {
-	if (!ctx || !dpy)
-		return;
-	IN_DeactivateMouse();
-	if (dpy) {
-		if (ctx)
-			glXDestroyContext(dpy, ctx);
-		if (win)
-			XDestroyWindow(dpy, win);
-		if (vidmode_active)
-			XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[0]);
-		XCloseDisplay(dpy);
-	}
-	vidmode_active = false;
-	dpy = NULL;
-	win = 0;
-	ctx = NULL;
+	GLimp_SharedShutdown();
 }
 
 static void signal_handler(int sig, siginfo_t *info, void *secret)

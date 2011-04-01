@@ -152,15 +152,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 */
 void GLimp_Shutdown( void )
 {
-	fprintf(stderr, "GLimp_Shutdown\n");
-
-	if (!dpy)
-	    return;
-
-	XSynchronize( dpy, True );
-	XAutoRepeatOn(dpy);
-	XCloseDisplay(dpy);
-	dpy = NULL;
+	GLimp_SharedShutdown();
 }
 
 /*

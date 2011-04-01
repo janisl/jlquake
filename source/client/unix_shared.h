@@ -45,13 +45,15 @@ extern QCvar*		in_nograb; // this is strictly for developers
 
 extern int			win_x, win_y;
 
-extern XF86VidModeModeInfo**	vidmodes;
-extern int			num_vidmodes;
 extern bool			vidmode_active;
 extern bool			vidmode_ext;
 extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of XF86VidExtensions
 
+// gamma value of the X display before we start playing with it
+extern XF86VidModeGamma	vidmode_InitialGamma;
+
 rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
+void GLimp_SharedShutdown();
 char* XLateKey(XKeyEvent* ev, int& key);
 void IN_ActivateMouse();
 void IN_DeactivateMouse();

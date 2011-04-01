@@ -37,6 +37,7 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 glconfig_t	glConfig;
+glstate_t	glState;
 
 QCvar*		r_logFile;
 

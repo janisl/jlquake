@@ -821,17 +821,6 @@ typedef struct {
 #define FUNCTABLE_MASK		(FUNCTABLE_SIZE-1)
 
 
-// the renderer front end should never modify glstate_t
-typedef struct {
-	int			currenttextures[2];
-	int			currenttmu;
-	qboolean	finishCalled;
-	int			texEnv[2];
-	int			faceCulling;
-	unsigned long	glStateBits;
-} glstate_t;
-
-
 typedef struct {
 	int		c_surfaces, c_shaders, c_vertexes, c_indexes, c_totalIndexes;
 	float	c_overDraw;
@@ -962,7 +951,6 @@ typedef struct {
 
 extern backEndState_t	backEnd;
 extern trGlobals_t	tr;
-extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init
 
 
 //

@@ -41,11 +41,23 @@ enum rserr_t
 	RSERR_UNKNOWN
 };
 
+// the renderer front end should never modify glstate_t
+struct glstate_t
+{
+	int			currenttextures[2];
+	int			currenttmu;
+	qboolean	finishCalled;
+	int			texEnv[2];
+	int			faceCulling;
+	unsigned long	glStateBits;
+};
+
 void* GLimp_GetProcAddress(const char* Name);
 
 void R_SharedRegister();
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
+extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern QCvar*	r_logFile;						// number of frames to emit GL logs
 

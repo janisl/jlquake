@@ -46,11 +46,14 @@ GLXContext				ctx = NULL;
 
 int						win_x, win_y;
 
-XF86VidModeModeInfo**	vidmodes;
-int						num_vidmodes;
+static XF86VidModeModeInfo**	vidmodes;
+static int						num_vidmodes;
 bool					vidmode_active = false;
 bool					vidmode_ext = false;
 int						vidmode_MajorVersion = 0, vidmode_MinorVersion = 0; // major and minor of XF86VidExtensions
+
+// gamma value of the X display before we start playing with it
+XF86VidModeGamma		vidmode_InitialGamma;
 
 // CODE --------------------------------------------------------------------
 
@@ -392,4 +395,46 @@ rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen)
 	glXMakeCurrent(dpy, win, ctx);
 
 	return RSERR_OK;
+}
+
+//==========================================================================
+//
+//	GLimp_SharedShutdown
+//
+//==========================================================================
+
+void GLimp_SharedShutdown()
+{
+	IN_DeactivateMouse();
+	if (dpy)
+	{
+		if (ctx)
+		{
+			glXDestroyContext(dpy, ctx);
+		}
+		if (win)
+		{
+			XDestroyWindow(dpy, win);
+		}
+		if (vidmode_active)
+		{
+			XF86VidModeSwitchToMode(dpy, scrnum, vidmodes[0]);
+		}
+		if (glConfig.deviceSupportsGamma)
+		{
+			XF86VidModeSetGamma(dpy, scrnum, &vidmode_InitialGamma);
+		}
+		// NOTE TTimo opening/closing the display should be necessary only once per run
+		//   but it seems QGL_Shutdown gets called in a lot of occasion
+		//   in some cases, this XCloseDisplay is known to raise some X errors
+		//   ( https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=33 )
+		XCloseDisplay(dpy);
+	}
+	vidmode_active = false;
+	dpy = NULL;
+	win = 0;
+	ctx = NULL;
+
+	Com_Memset(&glConfig, 0, sizeof(glConfig));
+	Com_Memset(&glState, 0, sizeof(glState));
 }
