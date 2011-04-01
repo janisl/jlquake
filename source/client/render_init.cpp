@@ -41,9 +41,12 @@ glstate_t	glState;
 
 QCvar*		r_logFile;
 
+QCvar*		r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
 QCvar*		r_stencilbits;
 QCvar*		r_depthbits;
 QCvar*		r_colorbits;
+
+QCvar*		r_verbose;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -58,7 +61,9 @@ QCvar*		r_colorbits;
 void R_SharedRegister() 
 {
 	r_logFile = Cvar_Get("r_logFile", "0", CVAR_CHEAT);
-	
+	r_verbose = Cvar_Get( "r_verbose", "0", CVAR_CHEAT );
+
+	r_allowSoftwareGL = Cvar_Get("r_allowSoftwareGL", "0", CVAR_LATCH);
 	r_colorbits = Cvar_Get("r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	r_stencilbits = Cvar_Get("r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH);
 	r_depthbits = Cvar_Get("r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH);

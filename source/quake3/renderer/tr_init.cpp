@@ -34,7 +34,6 @@ QCvar	*r_railSegmentLength;
 
 QCvar	*r_ignoreFastPath;
 
-QCvar	*r_verbose;
 QCvar	*r_ignore;
 
 QCvar	*r_displayRefresh;
@@ -961,7 +960,7 @@ void R_Register( void )
 	r_novis = Cvar_Get ("r_novis", "0", CVAR_CHEAT);
 	r_showcluster = Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
-	r_verbose = Cvar_Get( "r_verbose", "0", CVAR_CHEAT );
+	//r_verbose = Cvar_Get( "r_verbose", "0", CVAR_CHEAT );
 	//r_logFile = Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 	r_nobind = Cvar_Get ("r_nobind", "0", CVAR_CHEAT);

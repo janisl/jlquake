@@ -382,9 +382,7 @@ qboolean GLimp_InitGL (void)
 
 	if ( !( pfd.dwFlags & PFD_GENERIC_ACCELERATED ) )
 	{
-		extern QCvar *gl_allow_software;
-
-		if ( gl_allow_software->value )
+		if ( r_allowSoftwareGL->value )
 			glw_state.mcd_accelerated = true;
 		else
 			glw_state.mcd_accelerated = false;

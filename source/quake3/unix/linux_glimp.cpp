@@ -74,8 +74,6 @@ QCvar   *in_joystick      = NULL;
 QCvar   *in_joystickDebug = NULL;
 QCvar   *joy_threshold    = NULL;
 
-QCvar  *r_allowSoftwareGL;   // don't abort out if the pixelformat claims software
-
 /*
 * Find the first occurrence of find in s.
 */
@@ -696,8 +694,6 @@ void GLimp_Init( void )
     Com_Printf("GLimp_Init() - XInitThreads() failed, disabling r_smp\n");
     Cvar_Set( "r_smp", "0" );
   }
-
-  r_allowSoftwareGL = Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
 
   InitSig();
 

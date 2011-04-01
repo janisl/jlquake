@@ -964,7 +964,6 @@ extern QCvar	*r_railCoreWidth;
 extern QCvar	*r_railSegmentLength;
 
 extern QCvar	*r_ignore;				// used for debugging anything
-extern QCvar	*r_verbose;				// used for verbose debug spew
 extern QCvar	*r_ignoreFastPath;		// allows us to ignore our Tess fast paths
 
 extern QCvar	*r_znear;				// near Z clip plane

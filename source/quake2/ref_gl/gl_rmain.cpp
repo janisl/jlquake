@@ -78,7 +78,6 @@ QCvar	*r_lefthand;
 QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
 QCvar	*gl_nosubimage;
-QCvar	*gl_allow_software;
 
 QCvar	*gl_vertex_arrays;
 
@@ -919,7 +918,6 @@ void R_Register( void )
 	r_lightlevel = Cvar_Get ("r_lightlevel", "0", 0);
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
-	gl_allow_software = Cvar_Get( "gl_allow_software", "0", 0 );
 
 	gl_particle_min_size = Cvar_Get( "gl_particle_min_size", "2", CVAR_ARCHIVE );
 	gl_particle_max_size = Cvar_Get( "gl_particle_max_size", "40", CVAR_ARCHIVE );

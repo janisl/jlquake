@@ -63,8 +63,6 @@ void     QGL_Shutdown( void );
 //
 glwstate_t glw_state;
 
-QCvar	*r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
-
 
 
 /*
@@ -1098,8 +1096,6 @@ void GLimp_Init( void )
 	{
 		ri.Error( ERR_FATAL, "GLimp_Init() - incorrect operating system\n" );
 	}
-
-	r_allowSoftwareGL = Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
 
 	// load appropriate DLL and initialize subsystem
 	GLW_StartOpenGL();

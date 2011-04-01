@@ -59,8 +59,10 @@ void R_SharedRegister();
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init
 
-extern QCvar*	r_logFile;						// number of frames to emit GL logs
+extern QCvar*	r_logFile;				// number of frames to emit GL logs
+extern QCvar*	r_verbose;				// used for verbose debug spew
 
+extern QCvar*	r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
 extern QCvar*	r_stencilbits;			// number of desired stencil bits
 extern QCvar*	r_depthbits;			// number of desired depth bits
 extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for fullscreen
