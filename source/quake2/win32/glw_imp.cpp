@@ -61,27 +61,13 @@ static qboolean VerifyDriver( void )
 */
 qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 {
-	WNDCLASS		wc;
 	RECT			r;
 	QCvar			*vid_xpos, *vid_ypos;
 	int				stylebits;
 	int				x, y, w, h;
 	int				exstyle;
 
-	/* Register the frame class */
-    wc.style         = 0;
-    wc.lpfnWndProc   = MainWndProc;
-    wc.cbClsExtra    = 0;
-    wc.cbWndExtra    = 0;
-    wc.hInstance     = global_hInstance;
-    wc.hIcon         = 0;
-    wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
-	wc.hbrBackground = (HBRUSH)COLOR_GRAYTEXT;
-    wc.lpszMenuName  = 0;
-    wc.lpszClassName = WINDOW_CLASS_NAME;
-
-    if (!RegisterClass (&wc) )
-		ri.Sys_Error (ERR_FATAL, "Couldn't register window class");
+	GLW_SharedRegisterClass();
 
 	if (fullscreen)
 	{

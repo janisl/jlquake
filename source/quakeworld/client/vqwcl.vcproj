@@ -347,10 +347,6 @@
 				>
 			</File>
 			<File
-				RelativePath="winquake.rc"
-				>
-			</File>
-			<File
 				RelativePath="zone.cpp"
 				>
 			</File>
@@ -448,6 +444,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="sbar.h"
 				>
 			</File>
@@ -490,6 +490,10 @@
 			</File>
 			<File
 				RelativePath="qwcl2.ico"
+				>
+			</File>
+			<File
+				RelativePath="winquake.rc"
 				>
 			</File>
 		</Filter>

@@ -384,10 +384,6 @@
 				>
 			</File>
 			<File
-				RelativePath="winquake.rc"
-				>
-			</File>
-			<File
 				RelativePath="world.cpp"
 				>
 			</File>
@@ -505,6 +501,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="sbar.h"
 				>
 			</File>
@@ -550,11 +550,11 @@
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 			>
 			<File
-				RelativePath="qe3.ico"
+				RelativePath="quake.ico"
 				>
 			</File>
 			<File
-				RelativePath="quake.ico"
+				RelativePath="winquake.rc"
 				>
 			</File>
 		</Filter>

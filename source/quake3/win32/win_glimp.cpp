@@ -543,25 +543,7 @@ static qboolean GLW_CreateWindow(int width, int height, int colorbits, qboolean 
 	//
 	if ( !s_classRegistered )
 	{
-		WNDCLASS wc;
-
-		Com_Memset( &wc, 0, sizeof( wc ) );
-
-		wc.style         = 0;
-		wc.lpfnWndProc   = MainWndProc;
-		wc.cbClsExtra    = 0;
-		wc.cbWndExtra    = 0;
-		wc.hInstance     = global_hInstance;
-		wc.hIcon         = LoadIcon( global_hInstance, MAKEINTRESOURCE(IDI_ICON1));
-		wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)COLOR_GRAYTEXT;
-		wc.lpszMenuName  = 0;
-		wc.lpszClassName = WINDOW_CLASS_NAME;
-
-		if ( !RegisterClass( &wc ) )
-		{
-			ri.Error( ERR_FATAL, "GLW_CreateWindow: could not register window class" );
-		}
+		GLW_SharedRegisterClass();
 		s_classRegistered = qtrue;
 		ri.Printf( PRINT_ALL, "...registered window class\n" );
 	}

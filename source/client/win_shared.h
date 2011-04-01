@@ -30,6 +30,8 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #define WINDOW_CLASS_NAME	"vQuake"
 
+void GLW_SharedRegisterClass();
+
 extern HINSTANCE	global_hInstance;
 extern HWND			GMainWindow;
 extern HDC			maindc;

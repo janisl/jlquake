@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -27,18 +27,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -54,7 +54,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON2               ICON    DISCARDABLE     "qe3.ico"
+IDI_ICON1               ICON                    "qe3.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -62,13 +62,11 @@ IDI_ICON2               ICON    DISCARDABLE     "qe3.ico"
 //
 
 IDD_DIALOG1 DIALOGEX 0, 0, 62, 21
-STYLE DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_CENTER | WS_POPUP | 
-    WS_VISIBLE
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_3DLOOK | DS_CENTER | WS_POPUP | WS_VISIBLE
 EXSTYLE WS_EX_TOOLWINDOW | WS_EX_CLIENTEDGE
 FONT 16, "Times New Roman", 0, 0, 0x1
 BEGIN
-    CTEXT           "Starting Hexen II+...",IDC_STATIC,2,3,58,15,
-                    SS_CENTERIMAGE | SS_SUNKEN
+    CTEXT           "Starting Hexen II+...",IDC_STATIC,2,3,58,15,SS_CENTERIMAGE | SS_SUNKEN
 END
 
 
@@ -78,7 +76,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_DIALOG1, DIALOG
     BEGIN
@@ -97,7 +95,7 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE 
 BEGIN
     IDS_STRING1             "HexenII"
 END

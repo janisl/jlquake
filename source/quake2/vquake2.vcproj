@@ -414,6 +414,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\win32\resource.h"
+				>
+			</File>
+			<File
 				RelativePath="client\screen.h"
 				>
 			</File>
