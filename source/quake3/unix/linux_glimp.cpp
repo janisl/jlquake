@@ -741,14 +741,11 @@ void GLimp_Init( void )
   char  buf[1024];
   QCvar *lastValidRenderer = ri.Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
 
-  // guarded, as this is only relevant to SMP renderer thread
-#ifdef SMP
   if (!XInitThreads())
   {
     Com_Printf("GLimp_Init() - XInitThreads() failed, disabling r_smp\n");
     ri.Cvar_Set( "r_smp", "0" );
   }
-#endif
 
   r_allowSoftwareGL = ri.Cvar_Get( "r_allowSoftwareGL", "0", CVAR_LATCH );
 
@@ -858,7 +855,6 @@ void GLimp_EndFrame (void)
   QGL_EnableLogging(!!r_logFile->integer);
 }
 
-#ifdef SMP
 /*
 ===========================================================
 
@@ -974,21 +970,6 @@ void GLimp_WakeRenderer( void *data )
 	}
 	pthread_mutex_unlock( &smpMutex );
 }
-
-#else
-
-void GLimp_RenderThreadWrapper( void *stub ) {}
-qboolean GLimp_SpawnRenderThread( void (*function)( void ) ) {
-	ri.Printf( PRINT_WARNING, "ERROR: SMP support was disabled at compile time\n");
-  return qfalse;
-}
-void *GLimp_RendererSleep( void ) {
-  return NULL;
-}
-void GLimp_FrontEndSleep( void ) {}
-void GLimp_WakeRenderer( void *data ) {}
-
-#endif
 
 /*****************************************************************************/
 /* MOUSE                                                                     */
