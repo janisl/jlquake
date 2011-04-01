@@ -316,45 +316,13 @@ qboolean GLimp_Init(void*, void*)
 
 qboolean GLimp_InitGL (void)
 {
-    PIXELFORMATDESCRIPTOR pfd = 
-	{
-		sizeof(PIXELFORMATDESCRIPTOR),	// size of this pfd
-		1,								// version number
-		PFD_DRAW_TO_WINDOW |			// support window
-		PFD_SUPPORT_OPENGL |			// support OpenGL
-		PFD_DOUBLEBUFFER,				// double buffered
-		PFD_TYPE_RGBA,					// RGBA type
-		24,								// 24-bit color depth
-		0, 0, 0, 0, 0, 0,				// color bits ignored
-		0,								// no alpha buffer
-		0,								// shift bit ignored
-		0,								// no accumulation buffer
-		0, 0, 0, 0, 					// accum bits ignored
-		32,								// 32-bit z-buffer	
-		0,								// no stencil buffer
-		0,								// no auxiliary buffer
-		PFD_MAIN_PLANE,					// main layer
-		0,								// reserved
-		0, 0, 0							// layer masks ignored
-    };
+    PIXELFORMATDESCRIPTOR pfd;
     int  pixelformat;
 	QCvar *stereo;
 	
 	stereo = Cvar_Get( "cl_stereo", "0", 0 );
 
-	/*
-	** set PFD_STEREO if necessary
-	*/
-	if ( stereo->value != 0 )
-	{
-		ri.Con_Printf( PRINT_ALL, "...attempting to use stereo\n" );
-		pfd.dwFlags |= PFD_STEREO;
-		gl_state.stereo_enabled = true;
-	}
-	else
-	{
-		gl_state.stereo_enabled = false;
-	}
+	GLW_CreatePFD(&pfd, 24, 32, 0, stereo->value != 0);
 
 	/*
 	** Get a DC for the specified window

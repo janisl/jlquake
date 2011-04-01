@@ -31,6 +31,7 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #define WINDOW_CLASS_NAME	"vQuake"
 
 int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD);
+void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthbits, int stencilbits, bool stereo);
 void GLW_SharedCreateWindow(int width, int height, bool fullscreen);
 
 extern HINSTANCE	global_hInstance;
