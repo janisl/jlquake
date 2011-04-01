@@ -237,7 +237,6 @@ extern client_static_t	cls;
 // cvars
 //
 extern	QCvar	*cl_stereo_separation;
-extern	QCvar	*cl_stereo;
 
 extern	QCvar	*cl_gun;
 extern	QCvar	*cl_add_blend;

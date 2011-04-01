@@ -45,6 +45,7 @@ QCvar*		r_allowSoftwareGL;		// don't abort out if the pixelformat claims softwar
 QCvar*		r_stencilbits;
 QCvar*		r_depthbits;
 QCvar*		r_colorbits;
+QCvar*		r_stereo;
 
 QCvar*		r_verbose;
 
@@ -67,4 +68,5 @@ void R_SharedRegister()
 	r_colorbits = Cvar_Get("r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	r_stencilbits = Cvar_Get("r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH);
 	r_depthbits = Cvar_Get("r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH);
+	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH);
 }

@@ -317,11 +317,8 @@ qboolean GLimp_Init(void*, void*)
 qboolean GLimp_InitGL (void)
 {
     PIXELFORMATDESCRIPTOR pfd;
-	QCvar *stereo;
 	
-	stereo = Cvar_Get( "cl_stereo", "0", 0 );
-
-	GLW_CreatePFD(&pfd, 24, 32, 0, stereo->value != 0);
+	GLW_CreatePFD(&pfd, 24, 32, 0, r_stereo->value != 0);
 
 	/*
 	** Get a DC for the specified window
@@ -356,7 +353,7 @@ qboolean GLimp_InitGL (void)
 	if ( !( pfd.dwFlags & PFD_STEREO ) && ( stereo->value != 0 ) ) 
 	{
 		ri.Con_Printf( PRINT_ALL, "...failed to select stereo pixel format\n" );
-		Cvar_SetValueLatched( "cl_stereo", 0 );
+		Cvar_SetValueLatched( "r_stereo", 0 );
 		glConfig.stereoEnabled = false;
 	}
 

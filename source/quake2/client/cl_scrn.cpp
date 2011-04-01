@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
   */
 
 #include "client.h"
+#include "../../client/render_local.h"
 
 float		scr_con_current;	// aproaches scr_conlines at scr_conspeed
 float		scr_conlines;		// 0.0 to 1.0 lines of console to display
@@ -1294,7 +1295,7 @@ void SCR_UpdateScreen (void)
 	else if ( cl_stereo_separation->value < 0 )
 		Cvar_SetValueLatched( "cl_stereo_separation", 0.0 );
 
-	if ( cl_stereo->value )
+	if (glConfig.stereoEnabled)
 	{
 		numframes = 2;
 		separation[0] = -cl_stereo_separation->value / 2;

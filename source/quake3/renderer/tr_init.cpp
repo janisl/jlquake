@@ -79,7 +79,6 @@ QCvar	*r_ext_texture_env_add;
 
 QCvar	*r_ignoreGLErrors;
 
-QCvar	*r_stereo;
 QCvar	*r_primitives;
 QCvar	*r_texturebits;
 
@@ -861,7 +860,7 @@ void R_Register( void )
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_texturebits = Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH );
 	//r_colorbits = Cvar_Get( "r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
-	r_stereo = Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	//r_stereo = Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH );
 //#ifdef __linux__
 	//r_stencilbits = Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH );
 //#else

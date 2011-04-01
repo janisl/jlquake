@@ -34,7 +34,6 @@ QCvar	*adr7;
 QCvar	*adr8;
 
 QCvar	*cl_stereo_separation;
-QCvar	*cl_stereo;
 
 QCvar	*rcon_client_password;
 QCvar	*rcon_address;
@@ -1423,7 +1422,6 @@ void CL_InitLocal (void)
 // register our variables
 //
 	cl_stereo_separation = Cvar_Get( "cl_stereo_separation", "0.4", CVAR_ARCHIVE );
-	cl_stereo = Cvar_Get( "cl_stereo", "0", 0 );
 
 	cl_add_blend = Cvar_Get ("cl_blend", "1", 0);
 	cl_add_lights = Cvar_Get ("cl_lights", "1", 0);

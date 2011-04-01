@@ -66,5 +66,6 @@ extern QCvar*	r_allowSoftwareGL;		// don't abort out if the pixelformat claims s
 extern QCvar*	r_stencilbits;			// number of desired stencil bits
 extern QCvar*	r_depthbits;			// number of desired depth bits
 extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for fullscreen
+extern QCvar*	r_stereo;				// desired pixelformat stereo flag
 
 #endif
