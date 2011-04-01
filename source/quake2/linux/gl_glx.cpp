@@ -364,7 +364,7 @@ Key_Event_fp_t Key_Event_fp;
 
 void KBD_Init(Key_Event_fp_t fp)
 {
-	_windowed_mouse = ri.Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
+	_windowed_mouse = Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
 	Key_Event_fp = fp;
 }
 
@@ -414,22 +414,22 @@ void RW_IN_Init(in_state_t *in_state_p)
 	in_state = in_state_p;
 
 	// mouse variables
-	_windowed_mouse = ri.Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
-	m_filter = ri.Cvar_Get ("m_filter", "0", 0);
-    in_mouse = ri.Cvar_Get ("in_mouse", "1", CVAR_ARCHIVE);
-	freelook = ri.Cvar_Get( "freelook", "0", 0 );
-	lookstrafe = ri.Cvar_Get ("lookstrafe", "0", 0);
-	sensitivity = ri.Cvar_Get ("sensitivity", "3", 0);
-	m_pitch = ri.Cvar_Get ("m_pitch", "0.022", 0);
-	m_yaw = ri.Cvar_Get ("m_yaw", "0.022", 0);
-	m_forward = ri.Cvar_Get ("m_forward", "1", 0);
-	m_side = ri.Cvar_Get ("m_side", "0.8", 0);
+	_windowed_mouse = Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
+	m_filter = Cvar_Get ("m_filter", "0", 0);
+    in_mouse = Cvar_Get ("in_mouse", "1", CVAR_ARCHIVE);
+	freelook = Cvar_Get( "freelook", "0", 0 );
+	lookstrafe = Cvar_Get ("lookstrafe", "0", 0);
+	sensitivity = Cvar_Get ("sensitivity", "3", 0);
+	m_pitch = Cvar_Get ("m_pitch", "0.022", 0);
+	m_yaw = Cvar_Get ("m_yaw", "0.022", 0);
+	m_forward = Cvar_Get ("m_forward", "1", 0);
+	m_side = Cvar_Get ("m_side", "0.8", 0);
 	in_nograb = Cvar_Get ("in_nograb", "0", 0);
 
-	ri.Cmd_AddCommand ("+mlook", RW_IN_MLookDown);
-	ri.Cmd_AddCommand ("-mlook", RW_IN_MLookUp);
+	Cmd_AddCommand ("+mlook", RW_IN_MLookDown);
+	Cmd_AddCommand ("-mlook", RW_IN_MLookUp);
 
-	ri.Cmd_AddCommand ("force_centerview", Force_CenterView_f);
+	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
 	mouse_x = mouse_y = 0.0;
 	mouse_avail = true;
@@ -439,9 +439,9 @@ void RW_IN_Shutdown(void)
 {
 	mouse_avail = false;
 
-	ri.Cmd_RemoveCommand ("force_centerview");
-	ri.Cmd_RemoveCommand ("+mlook");
-	ri.Cmd_RemoveCommand ("-mlook");
+	Cmd_RemoveCommand ("force_centerview");
+	Cmd_RemoveCommand ("+mlook");
+	Cmd_RemoveCommand ("-mlook");
 }
 
 /*

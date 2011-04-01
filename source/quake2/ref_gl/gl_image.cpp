@@ -410,7 +410,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 	//
 	// load the file
 	//
-	len = ri.FS_ReadFile(filename, (void **)&raw);
+	len = FS_ReadFile(filename, (void **)&raw);
 	if (!raw)
 	{
 		ri.Con_Printf (PRINT_DEVELOPER, "Bad pcx file %s\n", filename);
@@ -488,7 +488,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 		*pic = NULL;
 	}
 
-	ri.FS_FreeFile (pcx);
+	FS_FreeFile (pcx);
 }
 
 /*
@@ -530,7 +530,7 @@ void LoadTGA (char *name, byte **pic, int *width, int *height)
 	//
 	// load the file
 	//
-	length = ri.FS_ReadFile(name, (void **)&buffer);
+	length = FS_ReadFile(name, (void **)&buffer);
 	if (!buffer)
 	{
 		ri.Con_Printf (PRINT_DEVELOPER, "Bad tga file %s\n", name);
@@ -694,7 +694,7 @@ void LoadTGA (char *name, byte **pic, int *width, int *height)
 		}
 	}
 
-	ri.FS_FreeFile (buffer);
+	FS_FreeFile (buffer);
 }
 
 
@@ -1207,7 +1207,7 @@ image_t *GL_LoadWal (char *name)
 	int			width, height, ofs;
 	image_t		*image;
 
-	ri.FS_ReadFile(name, (void **)&mt);
+	FS_ReadFile(name, (void **)&mt);
 	if (!mt)
 	{
 		ri.Con_Printf (PRINT_ALL, "GL_FindImage: can't load %s\n", name);
@@ -1220,7 +1220,7 @@ image_t *GL_LoadWal (char *name)
 
 	image = GL_LoadPic (name, (byte *)mt + ofs, width, height, it_wall, 8);
 
-	ri.FS_FreeFile ((void *)mt);
+	FS_FreeFile ((void *)mt);
 
 	return image;
 }
@@ -1386,10 +1386,10 @@ void	GL_InitImages (void)
 	registration_sequence = 1;
 
 	// init intensity conversions
-	intensity = ri.Cvar_Get ("intensity", "2", 0);
+	intensity = Cvar_Get ("intensity", "2", 0);
 
 	if ( intensity->value <= 1 )
-		ri.Cvar_Set( "intensity", "1" );
+		Cvar_SetLatched( "intensity", "1" );
 
 	gl_state.inverse_intensity = 1 / intensity->value;
 

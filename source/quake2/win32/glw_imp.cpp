@@ -388,7 +388,7 @@ qboolean GLimp_InitGL (void)
     int  pixelformat;
 	QCvar *stereo;
 	
-	stereo = ri.Cvar_Get( "cl_stereo", "0", 0 );
+	stereo = Cvar_Get( "cl_stereo", "0", 0 );
 
 	/*
 	** set PFD_STEREO if necessary
@@ -448,7 +448,7 @@ qboolean GLimp_InitGL (void)
 	if ( !( pfd.dwFlags & PFD_STEREO ) && ( stereo->value != 0 ) ) 
 	{
 		ri.Con_Printf( PRINT_ALL, "...failed to select stereo pixel format\n" );
-		ri.Cvar_SetValue( "cl_stereo", 0 );
+		Cvar_SetValueLatched( "cl_stereo", 0 );
 		gl_state.stereo_enabled = false;
 	}
 
@@ -507,7 +507,7 @@ void GLimp_BeginFrame( float camera_separation )
 	{
 		if ( gl_bitdepth->value != 0 && !glw_state.allowdisplaydepthchange )
 		{
-			ri.Cvar_SetValue( "gl_bitdepth", 0 );
+			Cvar_SetValueLatched( "gl_bitdepth", 0 );
 			ri.Con_Printf( PRINT_ALL, "gl_bitdepth requires Win95 OSR2.x or WinNT 4.x\n" );
 		}
 		gl_bitdepth->modified = false;

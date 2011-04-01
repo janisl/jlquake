@@ -94,20 +94,9 @@ void	VID_Init (void)
     viddef.width = 320;
     viddef.height = 240;
 
-    ri.Cmd_AddCommand = Cmd_AddCommand;
-    ri.Cmd_RemoveCommand = Cmd_RemoveCommand;
-    ri.Cmd_Argc = Cmd_Argc;
-    ri.Cmd_Argv = Cmd_Argv;
-    ri.Cmd_ExecuteText = Cbuf_ExecuteText;
     ri.Con_Printf = VID_Printf;
     ri.Sys_Error = VID_Error;
-    ri.FS_ReadFile = FS_ReadFile;
-    ri.FS_FreeFile = FS_FreeFile;
-    ri.FS_Gamedir = FS_Gamedir;
 	ri.Vid_NewWindow = VID_NewWindow;
-    ri.Cvar_Get = Cvar_Get;
-    ri.Cvar_Set = Cvar_SetLatched;
-    ri.Cvar_SetValue = Cvar_SetValueLatched;
     ri.Vid_GetModeInfo = VID_GetModeInfo;
 
     re = GetRefAPI(ri);

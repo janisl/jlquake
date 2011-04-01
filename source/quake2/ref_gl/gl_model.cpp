@@ -224,7 +224,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	// load the file
 	//
-	modfilelen = ri.FS_ReadFile(mod->name, (void**)&buf);
+	modfilelen = FS_ReadFile(mod->name, (void**)&buf);
 	if (!buf)
 	{
 		if (crash)
@@ -266,7 +266,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 
 	loadmodel->extradatasize = Hunk_End ();
 
-	ri.FS_FreeFile (buf);
+	FS_FreeFile (buf);
 
 	return mod;
 }
@@ -1110,7 +1110,7 @@ void R_BeginRegistration (char *model)
 
 	// explicitly free the old map if different
 	// this guarantees that mod_known[0] is the world map
-	flushmap = ri.Cvar_Get ("flushmap", "0", 0);
+	flushmap = Cvar_Get ("flushmap", "0", 0);
 	if ( QStr::Cmp(mod_known[0].name, fullname) || flushmap->value)
 		Mod_Free (&mod_known[0]);
 	r_worldmodel = Mod_ForName(fullname, true);

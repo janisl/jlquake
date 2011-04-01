@@ -190,29 +190,7 @@ typedef struct
 {
 	void	(*Sys_Error) (int err_level, char *str, ...);
 
-	void	(*Cmd_AddCommand) (const char *name, void(*cmd)(void));
-	void	(*Cmd_RemoveCommand) (const char *name);
-	int		(*Cmd_Argc) (void);
-	char	*(*Cmd_Argv) (int i);
-	void	(*Cmd_ExecuteText) (int exec_when, const char *text);
-
 	void	(*Con_Printf) (int print_level, char *str, ...);
-
-	// files will be memory mapped read only
-	// the returned buffer may be part of a larger pak file,
-	// or a discrete file from anywhere in the quake search path
-	// a -1 return means the file does not exist
-	// NULL can be passed for buf to just determine existance
-	int		(*FS_ReadFile) (const char *name, void **buf);
-	void	(*FS_FreeFile) (void *buf);
-
-	// gamedir will be the current directory that generated
-	// files should be stored to, ie: "f:\quake\id1"
-	char	*(*FS_Gamedir) (void);
-
-	QCvar	*(*Cvar_Get)(const char *name, const char *value, int flags);
-	QCvar	*(*Cvar_Set)(const char *name, const char *value);
-	void	 (*Cvar_SetValue)(const char *name, float value);
 
 	qboolean	(*Vid_GetModeInfo)( int *width, int *height, int mode );
 	void		(*Vid_MenuInit)( void );
