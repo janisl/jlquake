@@ -357,9 +357,9 @@ void GetEvent(void)
 		old_windowed_mouse = _windowed_mouse->value;
 
 		if (!_windowed_mouse->value) {
-			uninstall_grabs();
+			IN_DeactivateMouse();
 		} else {
-			install_grabs();
+			IN_ActivateMouse();
 		}
 	}
 }
@@ -434,6 +434,7 @@ void RW_IN_Init(in_state_t *in_state_p)
 	m_yaw = ri.Cvar_Get ("m_yaw", "0.022", 0);
 	m_forward = ri.Cvar_Get ("m_forward", "1", 0);
 	m_side = ri.Cvar_Get ("m_side", "0.8", 0);
+	in_nograb = Cvar_Get ("in_nograb", "0", 0);
 
 	ri.Cmd_AddCommand ("+mlook", RW_IN_MLookDown);
 	ri.Cmd_AddCommand ("-mlook", RW_IN_MLookUp);

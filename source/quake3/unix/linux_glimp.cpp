@@ -68,7 +68,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // static qboolean autorepeaton = qtrue;
 
 QCvar *in_subframe;
-QCvar *in_nograb; // this is strictly for developers
 
 // bk001130 - from cvs1.17 (mkv), but not static
 QCvar   *in_joystick      = NULL;
@@ -378,36 +377,6 @@ void KBD_Init(void)
 
 void KBD_Close(void)
 {
-}
-
-void IN_ActivateMouse( void ) 
-{
-  if (!mouse_avail || !dpy || !win)
-    return;
-
-  if (!mouse_active)
-  {
-		if (!in_nograb->value)
-      install_grabs();
-		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
-			ri.Cvar_Set("in_dgamouse", "0");
-    mouse_active = qtrue;
-  }
-}
-
-void IN_DeactivateMouse( void ) 
-{
-  if (!mouse_avail || !dpy || !win)
-    return;
-
-  if (mouse_active)
-  {
-		if (!in_nograb->value)
-      uninstall_grabs();
-		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
-			ri.Cvar_Set("in_dgamouse", "0");
-    mouse_active = qfalse;
-  }
 }
 /*****************************************************************************/
 

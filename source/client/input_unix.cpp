@@ -46,6 +46,7 @@ int						mx = 0, my = 0;
 
 QCvar*					in_mouse;
 QCvar*					in_dgamouse; // user pref for dga mouse
+QCvar*					in_nograb; // this is strictly for developers
 
 static int mouse_accel_numerator;
 static int mouse_accel_denominator;
@@ -376,12 +377,10 @@ static Cursor CreateNullCursor(Display *display, Window root)
 //
 //==========================================================================
 
-void install_grabs()
+static void install_grabs()
 {
 	// inviso cursor
-	XWarpPointer(dpy, None, win,
-		0, 0, 0, 0,
-		glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
 	XSync(dpy, False);
 
 	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
@@ -427,10 +426,7 @@ void install_grabs()
 	}
 
 
-	XGrabKeyboard(dpy, win,
-		False,
-		GrabModeAsync, GrabModeAsync,
-		CurrentTime);
+	XGrabKeyboard(dpy, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
 
 	XSync(dpy, False);
 }
@@ -441,7 +437,7 @@ void install_grabs()
 //
 //==========================================================================
 
-void uninstall_grabs()
+static void uninstall_grabs()
 {
 	if (in_dgamouse->value)
 	{
@@ -449,16 +445,68 @@ void uninstall_grabs()
 		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
 	}
 
-	XChangePointerControl(dpy, true, true, mouse_accel_numerator, 
+	XChangePointerControl(dpy, True, True, mouse_accel_numerator, 
 		mouse_accel_denominator, mouse_threshold);
 
 	XUngrabPointer(dpy, CurrentTime);
 	XUngrabKeyboard(dpy, CurrentTime);
 
-	XWarpPointer(dpy, None, win,
-		0, 0, 0, 0,
-		glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
 
 	// inviso cursor
 	XUndefineCursor(dpy, win);
+}
+
+//==========================================================================
+//
+//	IN_ActivateMouse
+//
+//==========================================================================
+
+void IN_ActivateMouse() 
+{
+	if (!mouse_avail || !dpy || !win)
+	{
+		return;
+	}
+
+	if (!mouse_active)
+	{
+		if (!in_nograb->value)
+		{
+			install_grabs();
+		}
+		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
+		{
+			Cvar_Set("in_dgamouse", "0");
+		}
+		mouse_active = true;
+	}
+}
+
+//==========================================================================
+//
+//	IN_DeactivateMouse
+//
+//==========================================================================
+
+void IN_DeactivateMouse() 
+{
+	if (!mouse_avail || !dpy || !win)
+	{
+		return;
+	}
+
+	if (mouse_active)
+	{
+		if (!in_nograb->value)
+		{
+			uninstall_grabs();
+		}
+		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
+		{
+			Cvar_Set("in_dgamouse", "0");
+		}
+		mouse_active = false;
+	}
 }

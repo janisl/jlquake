@@ -146,11 +146,9 @@ static void GetEvent(void)
 		old_windowed_mouse = _windowed_mouse->value;
 
 		if (!_windowed_mouse->value) {
-			/* ungrab the pointer */
-			uninstall_grabs();
+			IN_DeactivateMouse();
 		} else {
-			/* grab the pointer */
-			install_grabs();
+			IN_ActivateMouse();
 		}
 	}
 }
@@ -345,6 +343,7 @@ void VID_Init(unsigned char *palette)
 	_windowed_mouse = Cvar_Get("_windowed_mouse", "0", CVAR_ARCHIVE);
 	m_filter = Cvar_Get("m_filter", "0", 0);
 	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
+	in_nograb = Cvar_Get ("in_nograb", "0", 0);
 
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
@@ -421,6 +420,7 @@ void Force_CenterView_f (void)
 
 void IN_Init(void)
 {
+	mouse_avail = true;
 }
 
 void IN_Shutdown(void)

@@ -41,6 +41,7 @@ extern int			mx, my;
 
 extern QCvar*		in_mouse;
 extern QCvar*		in_dgamouse; // user pref for dga mouse
+extern QCvar*		in_nograb; // this is strictly for developers
 
 extern int			win_x, win_y;
 
@@ -52,8 +53,8 @@ extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of X
 
 rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
 char* XLateKey(XKeyEvent* ev, int& key);
-void install_grabs();
-void uninstall_grabs();
+void IN_ActivateMouse();
+void IN_DeactivateMouse();
 
 // Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
 extern int mouseResetTime;

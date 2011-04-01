@@ -171,30 +171,6 @@ static void HandleEvents(void)
 
 }
 
-static void IN_DeactivateMouse( void ) 
-{
-	if (!mouse_avail || !dpy || !win)
-		return;
-
-	if (mouse_active) {
-		uninstall_grabs();
-		mouse_active = false;
-	}
-}
-
-static void IN_ActivateMouse( void ) 
-{
-	if (!mouse_avail || !dpy || !win)
-		return;
-
-	if (!mouse_active) {
-		mx = my = 0; // don't spazz
-		install_grabs();
-		mouse_active = true;
-	}
-}
-
-
 void VID_Shutdown(void)
 {
 	if (!ctx || !dpy)
@@ -463,6 +439,7 @@ void VID_Init(unsigned char *palette)
 	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
 	m_filter = Cvar_Get("m_filter", "0", 0);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
+	in_nograb = Cvar_Get ("in_nograb", "0", 0);
 	
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
