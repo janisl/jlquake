@@ -496,7 +496,7 @@ Scroll it up or down
 void SCR_RunConsole (void)
 {
 // decide on the height of the console
-	if (cls.key_dest == key_console)
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
 		scr_conlines = 0.5;		// half screen
 	else
 		scr_conlines = 0;				// none visible
@@ -545,7 +545,7 @@ void SCR_DrawConsole (void)
 	}
 	else
 	{
-		if (cls.key_dest == key_game || cls.key_dest == key_message)
+		if (in_keyCatchers == 0 || in_keyCatchers == KEYCATCH_MESSAGE)
 			Con_DrawNotify ();	// only draw notify in game
 	}
 }
@@ -568,7 +568,7 @@ void SCR_BeginLoadingPlaque (void)
 		return;
 	if (cls.state == ca_disconnected)
 		return;	// if at console, don't bring up the plaque
-	if (cls.key_dest == key_console)
+	if (in_keyCatchers & KEYCATCH_CONSOLE)
 		return;
 	if (cl.cinematictime > 0)
 		scr_draw_loading = 2;	// clear to balack first
@@ -1326,7 +1326,7 @@ void SCR_UpdateScreen (void)
 		// and console specially
 		else if (cl.cinematictime > 0)
 		{
-			if (cls.key_dest == key_menu)
+			if (in_keyCatchers & KEYCATCH_UI)
 			{
 				if (cl.cinematicpalette_active)
 				{
@@ -1337,7 +1337,7 @@ void SCR_UpdateScreen (void)
 //				re.EndFrame();
 //				return;
 			}
-			else if (cls.key_dest == key_console)
+			else if (in_keyCatchers & KEYCATCH_CONSOLE)
 			{
 				if (cl.cinematicpalette_active)
 				{

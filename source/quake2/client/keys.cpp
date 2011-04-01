@@ -403,7 +403,7 @@ void Key_Message (int key)
 		Cbuf_AddText(chat_buffer);
 		Cbuf_AddText("\"\n");
 
-		cls.key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_MESSAGE;
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
 		return;
@@ -411,7 +411,7 @@ void Key_Message (int key)
 
 	if (key == K_ESCAPE)
 	{
-		cls.key_dest = key_game;
+		in_keyCatchers &= ~KEYCATCH_MESSAGE;
 		chat_bufferlen = 0;
 		chat_buffer[0] = 0;
 		return;
@@ -787,7 +787,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 	}
 
 	// any key during the attract mode will bring up the menu
-	if (cl.attractloop && cls.key_dest != key_menu)
+	if (cl.attractloop && !(in_keyCatchers & KEYCATCH_UI))
 		key = K_ESCAPE;
 
 	// menu key is hardcoded, so the user can never unbind it
@@ -796,25 +796,22 @@ void Key_Event (int key, qboolean down, unsigned time)
 		if (!down)
 			return;
 
-		if (cl.frame.playerstate.stats[STAT_LAYOUTS] && cls.key_dest == key_game)
+		if (cl.frame.playerstate.stats[STAT_LAYOUTS] && in_keyCatchers == 0)
 		{	// put away help computer / inventory
 			Cbuf_AddText ("cmd putaway\n");
 			return;
 		}
-		switch (cls.key_dest)
+		if (in_keyCatchers & KEYCATCH_MESSAGE)
 		{
-		case key_message:
-			Key_Message (key);
-			break;
-		case key_menu:
-			M_Keydown (key);
-			break;
-		case key_game:
-		case key_console:
-			M_Menu_Main_f ();
-			break;
-		default:
-			Com_Error (ERR_FATAL, "Bad cls.key_dest");
+			Key_Message(key);
+		}
+		else if (in_keyCatchers & KEYCATCH_UI)
+		{
+			M_Keydown(key);
+		}
+		else
+		{
+			M_Menu_Main_f();
 		}
 		return;
 	}
@@ -863,9 +860,9 @@ void Key_Event (int key, qboolean down, unsigned time)
 //
 // if not a consolekey, send to the interpreter no matter what mode is
 //
-	if ( (cls.key_dest == key_menu && menubound[key])
-	|| (cls.key_dest == key_console && !consolekeys[key])
-	|| (cls.key_dest == key_game && ( cls.state == ca_active || !consolekeys[key] ) ) )
+	if ( ((in_keyCatchers & KEYCATCH_UI) && menubound[key])
+	|| ((in_keyCatchers & KEYCATCH_CONSOLE) && !consolekeys[key])
+	|| (in_keyCatchers == 0 && ( cls.state == ca_active || !consolekeys[key] ) ) )
 	{
 		kb = keybindings[key];
 		if (kb)
@@ -890,21 +887,17 @@ void Key_Event (int key, qboolean down, unsigned time)
 	if (shift_down)
 		key = keyshift[key];
 
-	switch (cls.key_dest)
+	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-	case key_message:
-		Key_Message (key);
-		break;
-	case key_menu:
-		M_Keydown (key);
-		break;
-
-	case key_game:
-	case key_console:
-		Key_Console (key);
-		break;
-	default:
-		Com_Error (ERR_FATAL, "Bad cls.key_dest");
+		Key_Message(key);
+	}
+	else if (in_keyCatchers & KEYCATCH_UI)
+	{
+		M_Keydown(key);
+	}
+	else
+	{
+		Key_Console(key);
 	}
 }
 

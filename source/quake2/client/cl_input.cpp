@@ -343,7 +343,7 @@ void CL_FinishMove (usercmd_t *cmd)
 		cmd->buttons |= BUTTON_USE;
 	in_use.state &= ~2;
 
-	if (anykeydown && cls.key_dest == key_game)
+	if (anykeydown && in_keyCatchers == 0)
 		cmd->buttons |= BUTTON_ANY;
 
 	// send milliseconds of time to apply the move

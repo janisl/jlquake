@@ -190,12 +190,9 @@ typedef enum {
 	dl_single
 } dltype_t;		// download type
 
-typedef enum {key_game, key_console, key_message, key_menu} keydest_t;
-
 typedef struct
 {
 	connstate_t	state;
-	keydest_t	key_dest;
 
 	int			framecount;
 	int			realtime;			// always increasing, no clamping, etc

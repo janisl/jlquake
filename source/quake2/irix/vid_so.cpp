@@ -321,7 +321,7 @@ void VID_CheckChanges (void)
 			/*
 			** drop the console if we fail to load a refresh
 			*/
-			if ( cls.key_dest != key_console )
+			if (!(in_keyCatchers & KEYCATCH_CONSOLE))
 			{
 				Con_ToggleConsole_f();
 			}

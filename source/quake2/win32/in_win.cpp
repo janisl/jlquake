@@ -429,8 +429,8 @@ void IN_Frame (void)
 	}
 
 	if ( !cl.refresh_prepped
-		|| cls.key_dest == key_console
-		|| cls.key_dest == key_menu)
+		|| (in_keyCatchers & KEYCATCH_CONSOLE)
+		|| (in_keyCatchers & KEYCATCH_UI))
 	{
 		// temporarily deactivate if in fullscreen
 		if (Cvar_VariableValue ("vid_fullscreen") == 0)
