@@ -153,6 +153,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\input_main.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\mstrconv.cpp"
 				>
 			</File>
@@ -204,6 +208,14 @@
 			</File>
 			<File
 				RelativePath=".\client.h"
+				>
+			</File>
+			<File
+				RelativePath=".\input_keycodes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\input_public.h"
 				>
 			</File>
 			<File
