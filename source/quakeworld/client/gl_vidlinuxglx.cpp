@@ -36,8 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WARP_WIDTH              320
 #define WARP_HEIGHT             200
 
-static float old_windowed_mouse = 0;
-
 unsigned short	d_8to16table[256];
 unsigned		d_8to24table[256];
 unsigned char	d_15to8table[65536];
@@ -142,14 +140,13 @@ static void GetEvent(void)
 		break;
 	}
 
-	if (old_windowed_mouse != _windowed_mouse->value) {
-		old_windowed_mouse = _windowed_mouse->value;
-
-		if (!_windowed_mouse->value) {
-			IN_DeactivateMouse();
-		} else {
-			IN_ActivateMouse();
-		}
+	if (vidmode_active || _windowed_mouse->value)
+	{
+		IN_ActivateMouse();
+	}
+	else
+	{
+		IN_DeactivateMouse();
 	}
 }
 

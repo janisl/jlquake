@@ -76,7 +76,6 @@ static int     mouse_buttonstate;
 static int     mouse_oldbuttonstate;
 static int   mouse_x, mouse_y;
 static int	old_mouse_x, old_mouse_y;
-static float old_windowed_mouse;
 
 static QCvar	*m_filter;
 
@@ -352,15 +351,14 @@ void GetEvent(void)
 		if (doShm && x_event.type == x_shmeventtype)
 			oktodraw = true;
 	}
-   
-	if (old_windowed_mouse != _windowed_mouse->value) {
-		old_windowed_mouse = _windowed_mouse->value;
 
-		if (!_windowed_mouse->value) {
-			IN_DeactivateMouse();
-		} else {
-			IN_ActivateMouse();
-		}
+	if (vidmode_active || _windowed_mouse->value)
+	{
+		IN_ActivateMouse();
+	}
+	else
+	{
+		IN_DeactivateMouse();
 	}
 }
 
