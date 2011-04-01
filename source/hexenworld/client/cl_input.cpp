@@ -142,7 +142,7 @@ void IN_CrouchDown (void)
 {
 	int state;
 
-	if (key_dest == key_game)
+	if (in_keyCatchers == 0)
 	{
 		state = in_crouch.state;
 		KeyDown(&in_crouch);
@@ -153,7 +153,7 @@ void IN_CrouchUp (void)
 {
 	int state;
 
-	if (key_dest == key_game)
+	if (in_keyCatchers == 0)
 	{
 		state = in_crouch.state;
 

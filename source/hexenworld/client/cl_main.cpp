@@ -134,7 +134,7 @@ CL_Quit_f
 */
 void CL_Quit_f (void)
 {
-	if (1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
+	if (1 /* !(in_keyCatchers & KEYCATCH_CONSOLE) */ /* && cls.state != ca_dedicated */)
 	{
 		M_Menu_Quit_f ();
 		return;

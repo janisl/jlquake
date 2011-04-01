@@ -395,7 +395,7 @@ void M_ToggleMenu_f (void)
 {
 	m_entersound = true;
 
-	if (key_dest == key_menu)
+	if (in_keyCatchers & KEYCATCH_UI)
 	{
 		if (m_state != m_main)
 		{
@@ -404,11 +404,11 @@ void M_ToggleMenu_f (void)
 			M_Menu_Main_f ();
 			return;
 		}
-		key_dest = key_game;
+		in_keyCatchers &= KEYCATCH_UI;
 		m_state = m_none;
 		return;
 	}
-	if (key_dest == key_console && cls.state == ca_active)
+	if ((in_keyCatchers & KEYCATCH_CONSOLE) && cls.state == ca_active)
 	{
 		Con_ToggleConsole_f ();
 	}
@@ -618,12 +618,12 @@ int	m_main_cursor;
 
 void M_Menu_Main_f (void)
 {
-	if (key_dest != key_menu)
+	if (!(in_keyCatchers & KEYCATCH_UI))
 	{
 		m_save_demonum = cls.demonum;
 		cls.demonum = -1;
 	}
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_main;
 	m_entersound = true;
 }
@@ -652,7 +652,7 @@ void M_Main_Key (int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		key_dest = key_game;
+		in_keyCatchers &= KEYCATCH_UI;
 		m_state = m_none;
 		cls.demonum = m_save_demonum;
 		if (cls.demonum != -1 && !cls.demoplayback && cls.state == ca_disconnected)
@@ -710,13 +710,13 @@ int class_flag;
 void M_Menu_Class_f (void)
 {
 	class_flag=0;
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_class;
 }
 
 void M_Menu_Class2_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_class;
 	class_flag=1;
 }
@@ -778,12 +778,12 @@ void M_Class_Key (int key)
 //		}
 //		else
 		{
-			key_dest = key_game;
+			in_keyCatchers &= KEYCATCH_UI;
 			m_state = m_none;
 		}
 		break;
 	default:
-		key_dest = key_game;
+		in_keyCatchers &= KEYCATCH_UI;
 		m_state = m_none;
 		break;
 	}
@@ -822,7 +822,7 @@ int		options_cursor;
 
 void M_Menu_Options_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_options;
 	m_entersound = true;
 #ifdef _WIN32
@@ -1066,7 +1066,7 @@ void M_Options_Key (int k)
 		case OPT_CONSOLE:
 			//m_state = m_none;
 			//Con_ToggleConsole_f ();
-			key_dest = key_game;
+			in_keyCatchers &= KEYCATCH_UI;
 			m_state = m_none;
 			break;
 		case OPT_DEFAULTS:
@@ -1190,7 +1190,7 @@ int		keys_top = 0;
 
 void M_Menu_Keys_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_keys;
 	m_entersound = true;
 }
@@ -1375,7 +1375,7 @@ void M_Keys_Key (int k)
 
 void M_Menu_Video_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_video;
 	m_entersound = true;
 }
@@ -1404,7 +1404,7 @@ int		help_page;
 
 void M_Menu_Help_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_help;
 	m_entersound = true;
 	help_page = 0;
@@ -1893,8 +1893,8 @@ void M_Menu_Quit_f (void)
 {
 	if (m_state == m_quit)
 		return;
-	wasInMenus = (key_dest == key_menu);
-	key_dest = key_menu;
+	wasInMenus = !!(in_keyCatchers & KEYCATCH_UI);
+	in_keyCatchers |= KEYCATCH_UI;
 	m_quit_prevstate = m_state;
 	m_state = m_quit;
 	m_entersound = true;
@@ -1922,14 +1922,14 @@ void M_Quit_Key (int key)
 		}
 		else
 		{
-			key_dest = key_game;
+			in_keyCatchers &= KEYCATCH_UI;
 			m_state = m_none;
 		}
 		break;
 
 	case 'Y':
 	case 'y':
-		key_dest = key_console;
+		in_keyCatchers |= KEYCATCH_CONSOLE;
 		CL_Disconnect ();
 		Sys_Quit ();
 		break;
@@ -2086,7 +2086,7 @@ int	m_multiplayer_cursor;
 
 void M_Menu_MultiPlayer_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_multiplayer;
 	m_entersound = true;
 
@@ -2193,7 +2193,7 @@ int		connect_cursor_table[MAX_CONNECT_CMDS] =
 
 void M_Menu_Connect_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_mconnect;
 	m_entersound = true;
 
@@ -2305,7 +2305,7 @@ void M_Connect_Key (int k)
 
 		if (connect_cursor < MAX_HOST_NAMES)
 		{
-			key_dest = key_game;
+			in_keyCatchers &= KEYCATCH_UI;
 			m_state = m_none;
 			Cbuf_AddText ( va ("connect %s\n", save_names[connect_cursor]) );
 		}
@@ -2364,7 +2364,7 @@ extern QCvar*	bottomcolor;
 
 void M_Menu_Setup_f (void)
 {
-	key_dest = key_menu;
+	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
 	m_entersound = true;
 	QStr::Cpy(setup_myname, name->string);
@@ -2667,7 +2667,7 @@ void M_Init (void)
 
 void M_Draw (void)
 {
-	if (m_state == m_none || key_dest != key_menu)
+	if (m_state == m_none || !(in_keyCatchers & KEYCATCH_UI))
 		return;
 
 	if (!m_recursiveDraw)
