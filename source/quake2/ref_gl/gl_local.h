@@ -327,11 +327,7 @@ typedef struct
 
 	int lightmap_textures;
 
-	int	currenttextures[2];
-	int currenttmu;
-
 	float camera_separation;
-	qboolean stereo_enabled;
 
 	unsigned char originalRedGammaTable[256];
 	unsigned char originalGreenGammaTable[256];

@@ -77,10 +77,10 @@ void GL_SelectTexture( GLenum texture )
 	else
 		tmu = 1;
 
-	if ( tmu == gl_state.currenttmu )
+	if ( tmu == glState.currenttmu )
 		return;
 
-	gl_state.currenttmu = tmu;
+	glState.currenttmu = tmu;
 
 	if ( tmu == 0 )
 		qglSelectTextureSGIS( GL_TEXTURE0_SGIS );
@@ -92,10 +92,10 @@ void GL_TexEnv( GLenum mode )
 {
 	static int lastmodes[2] = { -1, -1 };
 
-	if ( mode != lastmodes[gl_state.currenttmu] )
+	if ( mode != lastmodes[glState.currenttmu] )
 	{
 		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode );
-		lastmodes[gl_state.currenttmu] = mode;
+		lastmodes[glState.currenttmu] = mode;
 	}
 }
 
@@ -105,9 +105,9 @@ void GL_Bind (int texnum)
 
 	if (gl_nobind->value && draw_chars)		// performance evaluation option
 		texnum = draw_chars->texnum;
-	if ( gl_state.currenttextures[gl_state.currenttmu] == texnum)
+	if ( glState.currenttextures[glState.currenttmu] == texnum)
 		return;
-	gl_state.currenttextures[gl_state.currenttmu] = texnum;
+	glState.currenttextures[glState.currenttmu] = texnum;
 	qglBindTexture (GL_TEXTURE_2D, texnum);
 }
 
@@ -116,12 +116,12 @@ void GL_MBind( GLenum target, int texnum )
 	GL_SelectTexture( target );
 	if ( target == GL_TEXTURE0_SGIS )
 	{
-		if ( gl_state.currenttextures[0] == texnum )
+		if ( glState.currenttextures[0] == texnum )
 			return;
 	}
 	else
 	{
-		if ( gl_state.currenttextures[1] == texnum )
+		if ( glState.currenttextures[1] == texnum )
 			return;
 	}
 	GL_Bind( texnum );

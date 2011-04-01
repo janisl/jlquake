@@ -711,7 +711,7 @@ void R_SetupGL (void)
     qglRotatef (-r_newrefdef.viewangles[1],  0, 0, 1);
     qglTranslatef (-r_newrefdef.vieworg[0],  -r_newrefdef.vieworg[1],  -r_newrefdef.vieworg[2]);
 
-//	if ( gl_state.camera_separation != 0 && gl_state.stereo_enabled )
+//	if ( gl_state.camera_separation != 0 && glConfig.stereoEnabled )
 //		qglTranslatef ( gl_state.camera_separation, 0, 0 );
 
 	qglGetFloatv (GL_MODELVIEW_MATRIX, r_world_matrix);
@@ -1242,7 +1242,7 @@ void R_BeginFrame( float camera_separation )
 	{
 		gl_drawbuffer->modified = false;
 
-		if ( gl_state.camera_separation == 0 || !gl_state.stereo_enabled )
+		if ( gl_state.camera_separation == 0 || !glConfig.stereoEnabled )
 		{
 			if ( QStr::ICmp( gl_drawbuffer->string, "GL_FRONT" ) == 0 )
 				qglDrawBuffer( GL_FRONT );

@@ -367,7 +367,7 @@ qboolean GLimp_InitGL (void)
 	{
 		ri.Con_Printf( PRINT_ALL, "...failed to select stereo pixel format\n" );
 		Cvar_SetValueLatched( "cl_stereo", 0 );
-		gl_state.stereo_enabled = false;
+		glConfig.stereoEnabled = false;
 	}
 
 	/*
@@ -431,11 +431,11 @@ void GLimp_BeginFrame( float camera_separation )
 		gl_bitdepth->modified = false;
 	}
 
-	if ( camera_separation < 0 && gl_state.stereo_enabled )
+	if ( camera_separation < 0 && glConfig.stereoEnabled )
 	{
 		qglDrawBuffer( GL_BACK_LEFT );
 	}
-	else if ( camera_separation > 0 && gl_state.stereo_enabled )
+	else if ( camera_separation > 0 && glConfig.stereoEnabled )
 	{
 		qglDrawBuffer( GL_BACK_RIGHT );
 	}
