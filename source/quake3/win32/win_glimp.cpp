@@ -50,8 +50,7 @@ extern void WG_RestoreGamma( void );
 #define	WINDOW_CLASS_NAME	"Quake 3: Arena"
 
 static void		GLW_InitExtensions( void );
-static rserr_t	GLW_SetMode( const char *drivername, 
-							 int mode, 
+static rserr_t	GLW_SetMode( int mode, 
 							 int colorbits, 
 							 qboolean cdsFullscreen );
 
@@ -75,14 +74,13 @@ QCvar	*r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
 /*
 ** GLW_StartDriverAndSetMode
 */
-static qboolean GLW_StartDriverAndSetMode( const char *drivername, 
-										   int mode, 
+static qboolean GLW_StartDriverAndSetMode(int mode, 
 										   int colorbits,
 										   qboolean cdsFullscreen )
 {
 	rserr_t err;
 
-	err = GLW_SetMode( drivername, r_mode->integer, colorbits, cdsFullscreen );
+	err = GLW_SetMode(r_mode->integer, colorbits, cdsFullscreen );
 
 	switch ( err )
 	{
@@ -349,9 +347,7 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
 	if ( !glw_state.pixelFormatSet )
 	{
 		//
-		// choose, set, and describe our desired pixel format.  If we're
-		// using a minidriver then we need to bypass the GDI functions,
-		// otherwise use the GDI functions.
+		// choose, set, and describe our desired pixel format.
 		//
 		if ( ( pixelformat = GLW_ChoosePFD( glw_state.hDC, pPFD ) ) == 0 )
 		{
@@ -406,7 +402,7 @@ static int GLW_MakeContext( PIXELFORMATDESCRIPTOR *pPFD )
 ** - get a DC if one doesn't exist
 ** - create an HGLRC if one doesn't exist
 */
-static qboolean GLW_InitDriver( const char *drivername, int colorbits )
+static qboolean GLW_InitDriver(int colorbits)
 {
 	int		tpfd;
 	int		depthbits, stencilbits;
@@ -536,7 +532,7 @@ static qboolean GLW_InitDriver( const char *drivername, int colorbits )
 ** Responsible for creating the Win32 window and initializing the OpenGL driver.
 */
 #define	WINDOW_STYLE	(WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_VISIBLE)
-static qboolean GLW_CreateWindow( const char *drivername, int width, int height, int colorbits, qboolean cdsFullscreen )
+static qboolean GLW_CreateWindow(int width, int height, int colorbits, qboolean cdsFullscreen )
 {
 	RECT			r;
 	QCvar			*vid_xpos, *vid_ypos;
@@ -654,7 +650,7 @@ static qboolean GLW_CreateWindow( const char *drivername, int width, int height,
 		ri.Printf( PRINT_ALL, "...window already present, CreateWindowEx skipped\n" );
 	}
 
-	if ( !GLW_InitDriver( drivername, colorbits ) )
+	if ( !GLW_InitDriver(colorbits))
 	{
 		ShowWindow( GMainWindow, SW_HIDE );
 		DestroyWindow( GMainWindow );
@@ -700,8 +696,7 @@ static void PrintCDSError( int value )
 /*
 ** GLW_SetMode
 */
-static rserr_t GLW_SetMode( const char *drivername, 
-						    int mode, 
+static rserr_t GLW_SetMode(int mode, 
 							int colorbits, 
 							qboolean cdsFullscreen )
 {
@@ -794,7 +789,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 		{
 			ri.Printf( PRINT_ALL, "...already fullscreen, avoiding redundant CDS\n" );
 
-			if ( !GLW_CreateWindow ( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) )
+			if ( !GLW_CreateWindow (glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) )
 			{
 				ri.Printf( PRINT_ALL, "...restoring display settings\n" );
 				ChangeDisplaySettings( 0, 0 );
@@ -814,7 +809,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 			{
 				ri.Printf( PRINT_ALL, "ok\n" );
 
-				if ( !GLW_CreateWindow ( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue) )
+				if ( !GLW_CreateWindow (glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue) )
 				{
 					ri.Printf( PRINT_ALL, "...restoring display settings\n" );
 					ChangeDisplaySettings( 0, 0 );
@@ -853,7 +848,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 				if ( modeNum != -1 && ( cdsRet = ChangeDisplaySettings( &devmode, CDS_FULLSCREEN ) ) == DISP_CHANGE_SUCCESSFUL )
 				{
 					ri.Printf( PRINT_ALL, " ok\n" );
-					if ( !GLW_CreateWindow( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue) )
+					if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue) )
 					{
 						ri.Printf( PRINT_ALL, "...restoring display settings\n" );
 						ChangeDisplaySettings( 0, 0 );
@@ -873,7 +868,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 					
 					glw_state.cdsFullscreen = qfalse;
 					glConfig.isFullscreen = qfalse;
-					if ( !GLW_CreateWindow( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse) )
+					if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse) )
 					{
 						return RSERR_INVALID_MODE;
 					}
@@ -890,7 +885,7 @@ static rserr_t GLW_SetMode( const char *drivername,
 		}
 
 		glw_state.cdsFullscreen = qfalse;
-		if ( !GLW_CreateWindow( drivername, glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) )
+		if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) )
 		{
 			return RSERR_INVALID_MODE;
 		}
@@ -1121,7 +1116,7 @@ static qboolean GLW_CheckOSVersion( void )
 ** GLimp_win.c internal function that attempts to load and use 
 ** a specific OpenGL DLL.
 */
-static qboolean GLW_LoadOpenGL( const char *drivername )
+static qboolean GLW_LoadOpenGL()
 {
 	qboolean cdsFullscreen;
 
@@ -1135,7 +1130,7 @@ static qboolean GLW_LoadOpenGL( const char *drivername )
 		cdsFullscreen = r_fullscreen->integer;
 
 		// create the window and set up the context
-		if ( !GLW_StartDriverAndSetMode( drivername, r_mode->integer, r_colorbits->integer, cdsFullscreen ) )
+		if ( !GLW_StartDriverAndSetMode(r_mode->integer, r_colorbits->integer, cdsFullscreen ) )
 		{
 			// if we're on a 24/32-bit desktop and we're going fullscreen on an ICD,
 			// try it again but with a 16-bit desktop
@@ -1143,7 +1138,7 @@ static qboolean GLW_LoadOpenGL( const char *drivername )
 					cdsFullscreen != qtrue ||
 					r_mode->integer != 3 )
 			{
-				if ( !GLW_StartDriverAndSetMode( drivername, 3, 16, qtrue ) )
+				if ( !GLW_StartDriverAndSetMode(3, 16, qtrue ) )
 				{
 					goto fail;
 				}
@@ -1190,31 +1185,12 @@ void GLimp_EndFrame (void)
 
 static void GLW_StartOpenGL( void )
 {
-	qboolean attemptedOpenGL32 = qfalse;
-
 	//
 	// load and initialize the specific OpenGL driver
 	//
-	if ( !GLW_LoadOpenGL( r_glDriver->string ) )
+	if ( !GLW_LoadOpenGL() )
 	{
-		if ( !QStr::ICmp( r_glDriver->string, OPENGL_DRIVER_NAME ) )
-		{
-			attemptedOpenGL32 = qtrue;
-		}
-
-		if ( !attemptedOpenGL32 )
-		{
-			attemptedOpenGL32 = qtrue;
-			if ( GLW_LoadOpenGL( OPENGL_DRIVER_NAME ) )
-			{
-				ri.Cvar_Set( "r_glDriver", OPENGL_DRIVER_NAME );
-				r_glDriver->modified = qfalse;
-			}
-			else
-			{
-				ri.Error( ERR_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem\n" );
-			}
-		}
+		ri.Error( ERR_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem\n" );
 	}
 }
 

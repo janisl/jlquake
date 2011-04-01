@@ -424,14 +424,6 @@ qboolean GLimp_InitGL (void)
 	}
 
 	/*
-	** figure out if we're running on a minidriver or not
-	*/
-	if ( strstr( gl_driver->string, "opengl32" ) != 0 )
-		glw_state.minidriver = false;
-	else
-		glw_state.minidriver = true;
-
-	/*
 	** Get a DC for the specified window
 	*/
 	if ( glw_state.hDC != NULL )

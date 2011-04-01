@@ -33,7 +33,6 @@ typedef struct
 	HWND    hWnd;			// handle to window
 	HGLRC   hGLRC;			// handle to GL rendering context
 
-	qboolean minidriver;
 	qboolean allowdisplaydepthchange;
 	qboolean mcd_accelerated;
 } glwstate_t;
