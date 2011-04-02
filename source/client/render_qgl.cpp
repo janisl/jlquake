@@ -67,6 +67,23 @@
 #undef GLF_V9
 #undef GLF_V10
 
+void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
+void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
+
+void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
+void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
+void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
+
+void ( APIENTRY * qglLockArraysEXT)( GLint, GLint);
+void ( APIENTRY * qglUnlockArraysEXT) ( void );
+
+void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
+void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
+
+#ifdef _WIN32
+BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
+#endif
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static fileHandle_t		log_fp;
@@ -597,6 +614,8 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 
 void QGL_SharedInit()
 {
+	GLog.Write("...initializing QGL\n");
+
 #define GLF_0(r, n)				qgl##n = gl##n;
 #define GLF_V0(n)				qgl##n = gl##n;
 #define GLF_1(r, n, t1, p1)		qgl##n = gl##n;
@@ -626,6 +645,23 @@ void QGL_SharedInit()
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
+
+	qglSelectTextureSGIS = NULL;
+	qglMTexCoord2fSGIS = NULL;
+
+	qglActiveTextureARB = NULL;
+	qglClientActiveTextureARB = NULL;
+	qglMultiTexCoord2fARB = NULL;
+
+	qglLockArraysEXT = NULL;
+	qglUnlockArraysEXT = NULL;
+
+	qglPointParameterfEXT = NULL;
+	qglPointParameterfvEXT = NULL;
+
+#ifdef _WIN32
+	qwglSwapIntervalEXT = NULL;
+#endif
 }
 
 //==========================================================================
@@ -636,6 +672,8 @@ void QGL_SharedInit()
 
 void QGL_SharedShutdown()
 {
+	GLog.Write("...shutting down QGL\n");
+
 	// close the r_logFile
 	if (log_fp)
 	{
@@ -672,6 +710,23 @@ void QGL_SharedShutdown()
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
+
+	qglSelectTextureSGIS = NULL;
+	qglMTexCoord2fSGIS = NULL;
+
+	qglActiveTextureARB = NULL;
+	qglClientActiveTextureARB = NULL;
+	qglMultiTexCoord2fARB = NULL;
+
+	qglLockArraysEXT = NULL;
+	qglUnlockArraysEXT = NULL;
+
+	qglPointParameterfEXT = NULL;
+	qglPointParameterfvEXT = NULL;
+
+#ifdef _WIN32
+	qwglSwapIntervalEXT = NULL;
+#endif
 }
 
 //==========================================================================

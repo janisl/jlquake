@@ -438,37 +438,6 @@ static void GLW_InitExtensions( void )
 	{
 		ri.Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
 	}
-
-	// WGL_3DFX_gamma_control
-	qwglGetDeviceGammaRamp3DFX = NULL;
-	qwglSetDeviceGammaRamp3DFX = NULL;
-
-	if ( strstr( glConfig.extensions_string, "WGL_3DFX_gamma_control" ) )
-	{
-		if ( !r_ignorehwgamma->integer && r_ext_gamma_control->integer )
-		{
-			qwglGetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) GLimp_GetProcAddress( "wglGetDeviceGammaRamp3DFX" );
-			qwglSetDeviceGammaRamp3DFX = ( BOOL ( WINAPI * )( HDC, LPVOID ) ) GLimp_GetProcAddress( "wglSetDeviceGammaRamp3DFX" );
-
-			if ( qwglGetDeviceGammaRamp3DFX && qwglSetDeviceGammaRamp3DFX )
-			{
-				ri.Printf( PRINT_ALL, "...using WGL_3DFX_gamma_control\n" );
-			}
-			else
-			{
-				qwglGetDeviceGammaRamp3DFX = NULL;
-				qwglSetDeviceGammaRamp3DFX = NULL;
-			}
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring WGL_3DFX_gamma_control\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...WGL_3DFX_gamma_control not found\n" );
-	}
 }
 
 /*

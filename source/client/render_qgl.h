@@ -51,3 +51,20 @@ void QGL_SharedInit();
 void QGL_SharedShutdown();
 void QGL_EnableLogging(bool Enable);
 void QGL_LogComment(const char* Comment);
+
+extern	void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
+extern	void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
+
+extern	void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
+extern	void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
+extern	void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
+
+extern	void ( APIENTRY * qglLockArraysEXT) (GLint, GLint);
+extern	void ( APIENTRY * qglUnlockArraysEXT) (void);
+
+extern	void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
+extern	void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
+
+#if defined( _WIN32 )
+extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
+#endif

@@ -65,11 +65,5 @@ qboolean QGL_Init()
 {
 	QGL_SharedInit();
 
-	qglLockArraysEXT = 0;
-	qglUnlockArraysEXT = 0;
-	qglActiveTextureARB = 0;
-	qglClientActiveTextureARB = 0;
-	qglMultiTexCoord2fARB = 0;
-
 	return qtrue;
 }

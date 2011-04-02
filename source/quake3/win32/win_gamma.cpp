@@ -40,17 +40,6 @@ void WG_CheckHardwareGamma( void )
 
 	glConfig.deviceSupportsGamma = qfalse;
 
-	if ( qwglSetDeviceGammaRamp3DFX )
-	{
-		glConfig.deviceSupportsGamma = qtrue;
-
-		hDC = GetDC( GetDesktopWindow() );
-		glConfig.deviceSupportsGamma = qwglGetDeviceGammaRamp3DFX( hDC, s_oldHardwareGamma );
-		ReleaseDC( GetDesktopWindow(), hDC );
-
-		return;
-	}
-
 	if ( !r_ignorehwgamma->integer )
 	{
 		hDC = GetDC( GetDesktopWindow() );

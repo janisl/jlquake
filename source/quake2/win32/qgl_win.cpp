@@ -30,17 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <float.h>
 #include "../ref_gl/gl_local.h"
 
-void ( APIENTRY * qglLockArraysEXT)( int, int);
-void ( APIENTRY * qglUnlockArraysEXT) ( void );
-
-BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
-BOOL ( WINAPI * qwglGetDeviceGammaRampEXT)( unsigned char *, unsigned char *, unsigned char * );
-BOOL ( WINAPI * qwglSetDeviceGammaRampEXT)( const unsigned char *, const unsigned char *, const unsigned char * );
-void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
-void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
-void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
-void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
-
 /*
 ** QGL_Shutdown
 **
@@ -49,11 +38,6 @@ void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
 void QGL_Shutdown( void )
 {
 	QGL_SharedShutdown();
-
-	qwglSwapIntervalEXT	= NULL;
-
-	qwglGetDeviceGammaRampEXT = NULL;
-	qwglSetDeviceGammaRampEXT = NULL;
 }
 
 /*
@@ -69,12 +53,6 @@ void QGL_Shutdown( void )
 qboolean QGL_Init()
 {
 	QGL_SharedInit();
-
-	qwglSwapIntervalEXT = 0;
-	qglPointParameterfEXT = 0;
-	qglPointParameterfvEXT = 0;
-	qglSelectTextureSGIS = 0;
-	qglMTexCoord2fSGIS = 0;
 
 	return true;
 }

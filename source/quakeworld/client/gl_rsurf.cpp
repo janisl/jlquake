@@ -276,11 +276,6 @@ extern	float	speedscale;		// for top sky and bottom sky
 void DrawGLWaterPoly (glpoly_t *p);
 void DrawGLWaterPolyLightmap (glpoly_t *p);
 
-#ifdef _WIN32
-lpMTexFUNC qglMTexCoord2fSGIS = NULL;
-lpSelTexFUNC qglSelectTextureSGIS = NULL;
-#endif
-
 qboolean mtexenabled = false;
 
 void GL_SelectTexture (GLenum target);

@@ -115,25 +115,4 @@ typedef void (APIENTRY * PFNGLCLIENTACTIVETEXTUREARBPROC) (GLenum target);
 #define GL_RGB_S3TC							0x83A0
 #define GL_RGB4_S3TC						0x83A1
 
-
-// extensions will be function pointers on all platforms
-
-extern	void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
-extern	void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
-extern	void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
-
-extern	void ( APIENTRY * qglLockArraysEXT) (GLint, GLint);
-extern	void ( APIENTRY * qglUnlockArraysEXT) (void);
-
-//===========================================================================
-
-#if defined( _WIN32 )
-
-extern	BOOL  ( WINAPI * qwglGetDeviceGammaRamp3DFX)( HDC, LPVOID );
-extern	BOOL  ( WINAPI * qwglSetDeviceGammaRamp3DFX)( HDC, LPVOID );
-
-extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
-
-#endif	// _WIN32
-
 #endif

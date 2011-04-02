@@ -32,9 +32,6 @@ int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
 
 
-lpMTexFUNC qglMTexCoord2fSGIS = NULL;
-lpSelTexFUNC qglSelectTextureSGIS = NULL;
-
 qboolean mtexenabled = false;
 
 /*

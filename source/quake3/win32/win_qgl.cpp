@@ -32,10 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <float.h>
 #include "../renderer/tr_local.h"
 
-int ( WINAPI * qwglSwapIntervalEXT)( int interval );
-BOOL  ( WINAPI * qwglGetDeviceGammaRamp3DFX)( HDC, LPVOID );
-BOOL  ( WINAPI * qwglSetDeviceGammaRamp3DFX)( HDC, LPVOID );
-
 /*
 ** QGL_Shutdown
 **
@@ -44,8 +40,6 @@ BOOL  ( WINAPI * qwglSetDeviceGammaRamp3DFX)( HDC, LPVOID );
 */
 void QGL_Shutdown( void )
 {
-	ri.Printf( PRINT_ALL, "...shutting down QGL\n" );
-
 	QGL_SharedShutdown();
 }
 
@@ -60,18 +54,7 @@ void QGL_Shutdown( void )
 */
 qboolean QGL_Init()
 {
-	ri.Printf( PRINT_ALL, "...initializing QGL\n" );
-
 	QGL_SharedInit();
-
-	qwglSwapIntervalEXT = 0;
-	qglActiveTextureARB = 0;
-	qglClientActiveTextureARB = 0;
-	qglMultiTexCoord2fARB = 0;
-	qglLockArraysEXT = 0;
-	qglUnlockArraysEXT = 0;
-	qwglGetDeviceGammaRamp3DFX = NULL;
-	qwglSetDeviceGammaRamp3DFX = NULL;
 
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);

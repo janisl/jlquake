@@ -236,11 +236,6 @@ extern byte *playerTranslation;
 #define    TEXTURE0_SGIS				0x835E
 #define    TEXTURE1_SGIS				0x835F
 
-typedef void (APIENTRY *lpMTexFUNC) (GLenum, GLfloat, GLfloat);
-typedef void (APIENTRY *lpSelTexFUNC) (GLenum);
-extern lpMTexFUNC qglMTexCoord2fSGIS;
-extern lpSelTexFUNC qglSelectTextureSGIS;
-
 extern qboolean gl_mtexable;
 
 void GL_DisableMultitexture(void);

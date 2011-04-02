@@ -307,8 +307,8 @@ void CheckMultiTextureExtensions(void)
 			return;
 		}
 
-		qglMTexCoord2fSGIS = (lpMTexFUNC) dlsym(prjobj, "glMTexCoord2fSGIS");
-		qglSelectTextureSGIS = (lpSelTexFUNC) dlsym(prjobj, "glSelectTextureSGIS");
+		qglMTexCoord2fSGIS = (void(APIENTRY*)(GLenum, GLfloat, GLfloat)) dlsym(prjobj, "glMTexCoord2fSGIS");
+		qglSelectTextureSGIS = (void(APIENTRY*)(GLenum)) dlsym(prjobj, "glSelectTextureSGIS");
 
 		if (qglMTexCoord2fSGIS && qglSelectTextureSGIS) {
 			Con_Printf("Multitexture extensions found.\n");

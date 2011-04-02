@@ -29,24 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 qboolean QGL_Init();
 void     QGL_Shutdown( void );
 
-extern	void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
-extern	void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
-
-extern	void ( APIENTRY * qglLockArraysEXT) (int , int);
-extern	void ( APIENTRY * qglUnlockArraysEXT) (void);
-
-extern	void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
-extern	void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
-
-#ifdef _WIN32
-
-extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
-
-extern BOOL ( WINAPI * qwglGetDeviceGammaRampEXT ) ( unsigned char *pRed, unsigned char *pGreen, unsigned char *pBlue );
-extern BOOL ( WINAPI * qwglSetDeviceGammaRampEXT ) ( const unsigned char *pRed, const unsigned char *pGreen, const unsigned char *pBlue );
-
-#endif
-
 /*
 ** extension constants
 */

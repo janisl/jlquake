@@ -11,14 +11,6 @@
 #define QGL
 #include "../ref_gl/gl_local.h"
 
-void ( APIENTRY * qglLockArraysEXT)( int, int);
-void ( APIENTRY * qglUnlockArraysEXT) ( void );
-
-void ( APIENTRY * qglPointParameterfEXT)( GLenum param, GLfloat value );
-void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *value );
-void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
-void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
-
 /*
 ** QGL_Shutdown
 **
@@ -42,11 +34,6 @@ void QGL_Shutdown( void )
 qboolean QGL_Init()
 {
 	QGL_SharedInit();
-
-	qglPointParameterfEXT = 0;
-	qglPointParameterfvEXT = 0;
-	qglSelectTextureSGIS = 0;
-	qglMTexCoord2fSGIS = 0;
 
 	return true;
 }
