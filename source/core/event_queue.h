@@ -42,5 +42,8 @@ struct sysEvent_t
 	void*			evPtr;			// this must be manually freed if not NULL
 };
 
+void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr);
+sysEvent_t Sys_SharedGetEvent();
+
 extern sysEvent_t	eventQue[MAX_QUED_EVENTS];
 extern int			eventHead, eventTail;

@@ -45,6 +45,66 @@ int				eventTail;
 
 //==========================================================================
 //
+//	Sys_QueEvent
 //
+//	A time of 0 will get the current time
+//	Ptr should either be null, or point to a block of data that can
+// be freed by the game later.
 //
 //==========================================================================
+
+void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr)
+{
+	sysEvent_t  *ev;
+
+	ev = &eventQue[eventHead & MASK_QUED_EVENTS];
+	if (eventHead - eventTail >= MAX_QUED_EVENTS)
+	{
+		GLog.Write("Sys_QueEvent: overflow\n");
+		// we are discarding an event, but don't leak memory
+		if (ev->evPtr)
+		{
+			Mem_Free(ev->evPtr);
+		}
+		eventTail++;
+	}
+
+	eventHead++;
+
+	if (time == 0)
+	{
+		time = Sys_Milliseconds();
+	}
+
+	ev->evTime = time;
+	ev->evType = type;
+	ev->evValue = value;
+	ev->evValue2 = value2;
+	ev->evPtrLength = ptrLength;
+	ev->evPtr = ptr;
+}
+
+//==========================================================================
+//
+//	Sys_SharedGetEvent
+//
+//==========================================================================
+
+sysEvent_t Sys_SharedGetEvent()
+{
+	// return if we have data
+	if (eventHead > eventTail)
+	{
+		eventTail++;
+		return eventQue[(eventTail - 1) & MASK_QUED_EVENTS];
+	}
+
+	// create an empty event to return
+
+	sysEvent_t  ev;
+	Com_Memset(&ev, 0, sizeof(ev));
+	//	Windows uses timeGetTime();
+	ev.evTime = Sys_Milliseconds();
+
+	return ev;
+}
