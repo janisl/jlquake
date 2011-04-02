@@ -235,6 +235,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\event_queue.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\exception.cpp"
 				>
 			</File>
@@ -346,6 +350,10 @@
 			</File>
 			<File
 				RelativePath=".\endian.h"
+				>
+			</File>
+			<File
+				RelativePath=".\event_queue.h"
 				>
 			</File>
 			<File
