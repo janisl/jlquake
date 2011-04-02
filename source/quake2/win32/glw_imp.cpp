@@ -44,25 +44,10 @@ extern QCvar *vid_fullscreen;
 extern QCvar *vid_ref;
 
 /*
-** VID_CreateWindow
-*/
-qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
-{
-	bool ret = GLW_CreateWindow(width, height, 24, fullscreen);
-
-	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow (width, height);
-
-	return ret;
-}
-
-
-/*
 ** GLimp_SetMode
 */
 int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 {
-	int width, height;
 	const char *win_fs[] = { "W", "FS" };
 
 	//
@@ -78,13 +63,16 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
 
-	if ( !ri.Vid_GetModeInfo( &width, &height, mode ) )
+	if ( !ri.Vid_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, mode ) )
 	{
 		ri.Con_Printf( PRINT_ALL, " invalid mode\n" );
 		return RSERR_INVALID_MODE;
 	}
 
-	ri.Con_Printf( PRINT_ALL, " %d %d %s\n", width, height, win_fs[fullscreen] );
+	*pwidth = glConfig.vidWidth;
+	*pheight = glConfig.vidHeight;
+
+	ri.Con_Printf( PRINT_ALL, " %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[fullscreen] );
 
 	// destroy the existing window
 	if (GMainWindow)
@@ -103,8 +91,8 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 		dm.dmSize = sizeof( dm );
 
-		dm.dmPelsWidth  = width;
-		dm.dmPelsHeight = height;
+		dm.dmPelsWidth  = glConfig.vidWidth;
+		dm.dmPelsHeight = glConfig.vidHeight;
 		dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT;
 
 		if ( gl_bitdepth->value != 0 )
@@ -126,29 +114,23 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 		ri.Con_Printf( PRINT_ALL, "...calling CDS: " );
 		if ( ChangeDisplaySettings( &dm, CDS_FULLSCREEN ) == DISP_CHANGE_SUCCESSFUL )
 		{
-			*pwidth = width;
-			*pheight = height;
-
 			gl_state.fullscreen = true;
 
 			ri.Con_Printf( PRINT_ALL, "ok\n" );
 
-			if ( !VID_CreateWindow (width, height, true) )
+			if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, true) )
 				return RSERR_INVALID_MODE;
 
 			return RSERR_OK;
 		}
 		else
 		{
-			*pwidth = width;
-			*pheight = height;
-
 			ri.Con_Printf( PRINT_ALL, "failed\n" );
 
 			ri.Con_Printf( PRINT_ALL, "...calling CDS assuming dual monitors:" );
 
-			dm.dmPelsWidth = width * 2;
-			dm.dmPelsHeight = height;
+			dm.dmPelsWidth = glConfig.vidWidth * 2;
+			dm.dmPelsHeight = glConfig.vidHeight;
 			dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
 
 			if ( gl_bitdepth->value != 0 )
@@ -169,17 +151,17 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 				ChangeDisplaySettings( 0, 0 );
 
-				*pwidth = width;
-				*pheight = height;
+				*pwidth = glConfig.vidWidth;
+				*pheight = glConfig.vidHeight;
 				gl_state.fullscreen = false;
-				if ( !VID_CreateWindow (width, height, false) )
+				if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, false) )
 					return RSERR_INVALID_MODE;
 				return RSERR_INVALID_FULLSCREEN;
 			}
 			else
 			{
 				ri.Con_Printf( PRINT_ALL, " ok\n" );
-				if ( !VID_CreateWindow (width, height, true) )
+				if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, true) )
 					return RSERR_INVALID_MODE;
 
 				gl_state.fullscreen = true;
@@ -193,12 +175,13 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 		ChangeDisplaySettings( 0, 0 );
 
-		*pwidth = width;
-		*pheight = height;
 		gl_state.fullscreen = false;
-		if ( !VID_CreateWindow (width, height, false) )
+		if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, false) )
 			return RSERR_INVALID_MODE;
 	}
+
+	// let the sound and input subsystems know about the new window
+	ri.Vid_NewWindow (glConfig.vidWidth, glConfig.vidHeight);
 
 	return RSERR_OK;
 }
