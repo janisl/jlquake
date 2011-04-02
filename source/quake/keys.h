@@ -29,3 +29,4 @@ void Key_WriteBindings (fileHandle_t f);
 void Key_SetBinding (int keynum, char *binding);
 void Key_ClearStates (void);
 
+void IN_ProcessEvents();

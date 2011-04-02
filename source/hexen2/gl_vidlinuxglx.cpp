@@ -118,7 +118,7 @@ static void HandleEvents(void)
 		case KeyPress:
 		case KeyRelease:
 			XLateKey(&event.xkey, key);
-			Key_Event(key, event.type == KeyPress);
+			Sys_QueEvent(0, SE_KEY, key, event.type == KeyPress, 0, NULL);
 			break;
 
 		case MotionNotify:

@@ -736,3 +736,16 @@ void Key_ClearStates (void)
 	}
 }
 
+
+void IN_ProcessEvents()
+{
+	for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
+	{
+		switch (ev.evType)
+		{
+		case SE_KEY:
+			Key_Event(ev.evValue, ev.evValue2);
+			break;
+		}
+	}
+}
