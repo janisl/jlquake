@@ -518,7 +518,7 @@ bool GLW_InitDriver(int colorbits)
 //
 //==========================================================================
 
-void GLW_SharedCreateWindow(int width, int height, bool fullscreen)
+bool GLW_SharedCreateWindow(int width, int height, int colorbits, bool fullscreen)
 {
 	//
 	// register the window class if necessary
@@ -662,6 +662,7 @@ void GLW_SharedCreateWindow(int width, int height, bool fullscreen)
 	{
 		GLog.Write("...window already present, CreateWindowEx skipped\n");
 	}
+	return true;
 }
 
 //==========================================================================

@@ -93,7 +93,7 @@ static qboolean GLW_StartDriverAndSetMode(int mode,
 */
 static qboolean GLW_CreateWindow(int width, int height, int colorbits, qboolean cdsFullscreen )
 {
-	GLW_SharedCreateWindow(width, height, cdsFullscreen);
+	GLW_SharedCreateWindow(width, height, colorbits, cdsFullscreen);
 
 	if ( !GLW_InitDriver(colorbits))
 	{

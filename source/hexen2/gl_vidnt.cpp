@@ -142,76 +142,6 @@ void D_EndDirectRect (int x, int y, int width, int height)
 }
 
 
-qboolean VID_SetWindowedMode (int modenum)
-{
-	int				lastmodestate;
-
-	lastmodestate = modestate;
-
-	DIBWidth = modelist[modenum].width;
-	DIBHeight = modelist[modenum].height;
-
-	// Create the DIB window
-	GLW_SharedCreateWindow(modelist[modenum].width, modelist[modenum].height, false);
-
-	modestate = MS_WINDOWED;
-
-	if (COM_CheckParm ("-scale2d")) {
-		vid.height = vid.conheight = BASEHEIGHT ;//modelist[modenum].height; // BASEHEIGHT;
-		vid.width = vid.conwidth =   BASEWIDTH  ;//modelist[modenum].width; //  BASEWIDTH ;
-	} else {
-		vid.height = vid.conheight = modelist[modenum].height; // BASEHEIGHT;
-		vid.width = vid.conwidth =   modelist[modenum].width; //  BASEWIDTH ;
-	}
-	vid.numpages = 2;
-
-	return true;
-}
-
-
-qboolean VID_SetFullDIBMode (int modenum)
-{
-	int				lastmodestate;
-
-	if (!leavecurrentmode)
-	{
-		gdevmode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-		gdevmode.dmBitsPerPel = modelist[modenum].bpp;
-		gdevmode.dmPelsWidth = modelist[modenum].width <<
-							   modelist[modenum].halfscreen;
-		gdevmode.dmPelsHeight = modelist[modenum].height;
-		gdevmode.dmSize = sizeof (gdevmode);
-
-		if (ChangeDisplaySettings (&gdevmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
-			Sys_Error ("Couldn't set fullscreen DIB mode");
-	}
-
-	lastmodestate = modestate;
-	modestate = MS_FULLDIB;
-
-	DIBWidth = modelist[modenum].width;
-	DIBHeight = modelist[modenum].height;
-
-	// Create the DIB window
-	GLW_SharedCreateWindow(modelist[modenum].width, modelist[modenum].height, true);
-
-	if (COM_CheckParm ("-scale2d")) {
-		vid.height = vid.conheight = BASEHEIGHT ;//modelist[modenum].height; // BASEHEIGHT;
-		vid.width = vid.conwidth =   BASEWIDTH  ;//modelist[modenum].width; //  BASEWIDTH ;
-	} else {
-		vid.height = vid.conheight = modelist[modenum].height; // BASEHEIGHT;
-		vid.width = vid.conwidth =   modelist[modenum].width; //  BASEWIDTH ;
-	}
-	vid.numpages = 2;
-
-// needed because we're not getting WM_MOVE messages fullscreen on NT
-	window_x = 0;
-	window_y = 0;
-
-	return true;
-}
-
-
 int VID_SetMode (int modenum, unsigned char *palette)
 {
 	int				original_mode, temp;
@@ -246,31 +176,62 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	else
 		original_mode = vid_modenum;
 
-	// Set either the fullscreen or windowed mode
-	if (modelist[modenum].type == MS_WINDOWED)
+	bool fullscreen = modelist[modenum].type == MS_FULLDIB;
+
+	if (!fullscreen && (!_windowed_mouse->value || in_keyCatchers != 0))
 	{
-		if (_windowed_mouse->value)
-		{
-			stat = VID_SetWindowedMode(modenum);
-			IN_ActivateMouse ();
-			IN_HideMouse ();
-		}
-		else
-		{
-			IN_DeactivateMouse ();
-			IN_ShowMouse ();
-			stat = VID_SetWindowedMode(modenum);
-		}
+		IN_DeactivateMouse();
+		IN_ShowMouse();
 	}
-	else if (modelist[modenum].type == MS_FULLDIB)
+
+	// Set either the fullscreen or windowed mode
+	if (!fullscreen)
 	{
-		stat = VID_SetFullDIBMode(modenum);
-		IN_ActivateMouse ();
-		IN_HideMouse ();
+		modestate = MS_WINDOWED;
 	}
 	else
 	{
-		Sys_Error ("VID_SetMode: Bad mode type in modelist");
+		if (!leavecurrentmode)
+		{
+			gdevmode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+			gdevmode.dmBitsPerPel = modelist[modenum].bpp;
+			gdevmode.dmPelsWidth = modelist[modenum].width <<
+								   modelist[modenum].halfscreen;
+			gdevmode.dmPelsHeight = modelist[modenum].height;
+			gdevmode.dmSize = sizeof (gdevmode);
+
+			if (ChangeDisplaySettings (&gdevmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+				Sys_Error ("Couldn't set fullscreen DIB mode");
+		}
+
+		modestate = MS_FULLDIB;
+
+		// needed because we're not getting WM_MOVE messages fullscreen on NT
+		window_x = 0;
+		window_y = 0;
+	}
+
+	DIBWidth = modelist[modenum].width;
+	DIBHeight = modelist[modenum].height;
+
+	// Create the DIB window
+	GLW_SharedCreateWindow(modelist[modenum].width, modelist[modenum].height, 24, fullscreen);
+
+	if (COM_CheckParm ("-scale2d")) {
+		vid.height = vid.conheight = BASEHEIGHT ;//modelist[modenum].height; // BASEHEIGHT;
+		vid.width = vid.conwidth =   BASEWIDTH  ;//modelist[modenum].width; //  BASEWIDTH ;
+	} else {
+		vid.height = vid.conheight = modelist[modenum].height; // BASEHEIGHT;
+		vid.width = vid.conwidth =   modelist[modenum].width; //  BASEWIDTH ;
+	}
+	vid.numpages = 2;
+
+	stat = true;
+
+	if (fullscreen || (_windowed_mouse->value && in_keyCatchers == 0))
+	{
+		IN_ActivateMouse ();
+		IN_HideMouse ();
 	}
 
 	window_width = DIBWidth;

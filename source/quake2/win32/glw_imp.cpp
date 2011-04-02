@@ -37,7 +37,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.h"
 
 static qboolean GLimp_SwitchFullscreen( int width, int height );
-qboolean GLimp_InitGL (void);
 
 glwstate_t glw_state;
 
@@ -49,10 +48,10 @@ extern QCvar *vid_ref;
 */
 qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 {
-	GLW_SharedCreateWindow(width, height, fullscreen);
+	GLW_SharedCreateWindow(width, height, 24, fullscreen);
 
 	// init all the gl stuff for the window
-	if (!GLimp_InitGL ())
+	if (!GLW_InitDriver(24))
 	{
 		ri.Con_Printf( PRINT_ALL, "VID_CreateWindow() - GLimp_InitGL failed\n");
 		return false;
@@ -300,11 +299,6 @@ qboolean GLimp_Init(void*, void*)
 	}
 
 	return true;
-}
-
-qboolean GLimp_InitGL (void)
-{
-	return GLW_InitDriver(24);
 }
 
 /*
