@@ -23,8 +23,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define MAX_PRSTR			1024
-
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -47,8 +45,7 @@ float			*pr_globals;			// same as pr_global_struct
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static const char*	pr_strtbl[MAX_PRSTR];
-static int			num_prstr;
+static QArray<const char*>	pr_strtbl;
 
 // CODE --------------------------------------------------------------------
 
@@ -60,7 +57,7 @@ static int			num_prstr;
 
 void PR_ClearStringMap()
 {
-	num_prstr = 0;
+	pr_strtbl.Clear();
 }
 
 //==========================================================================
@@ -73,20 +70,15 @@ int PR_SetString(const char* s)
 {
 	if (s < pr_strings || s >= pr_strings + progs->numstrings)
 	{
-		for (int i = 0; i <= num_prstr; i++)
+		for (int i = 0; i < pr_strtbl.Num(); i++)
 		{
 			if (pr_strtbl[i] == s)
 			{
-				return -i;
+				return -i - 1;
 			}
 		}
-		if (num_prstr == MAX_PRSTR - 1)
-		{
-			throw QException("MAX_PRSTR");
-		}
-		num_prstr++;
-		pr_strtbl[num_prstr] = s;
-		return -num_prstr;
+		pr_strtbl.Append(s);
+		return -pr_strtbl.Num();
 	}
 	return (int)(s - pr_strings);
 }
@@ -101,7 +93,7 @@ const char* PR_GetString(int Num)
 {
 	if (Num < 0)
 	{
-		return pr_strtbl[-Num];
+		return pr_strtbl[-Num - 1];
 	}
 	return pr_strings + Num;
 }
