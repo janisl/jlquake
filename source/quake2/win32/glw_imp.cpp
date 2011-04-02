@@ -33,12 +33,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <assert.h>
 #include <windows.h>
 #include "../ref_gl/gl_local.h"
-#include "glw_win.h"
 #include "winquake.h"
 
 static qboolean GLimp_SwitchFullscreen( int width, int height );
-
-glwstate_t glw_state;
 
 extern QCvar *vid_fullscreen;
 extern QCvar *vid_ref;
@@ -236,41 +233,6 @@ void GLimp_Shutdown( void )
 */
 qboolean GLimp_Init(void*, void*)
 {
-#define OSR2_BUILD_NUMBER 1111
-
-	OSVERSIONINFO	vinfo;
-
-	vinfo.dwOSVersionInfoSize = sizeof(vinfo);
-
-	glw_state.allowdisplaydepthchange = false;
-
-	if ( GetVersionEx( &vinfo) )
-	{
-		if ( vinfo.dwMajorVersion > 4 )
-		{
-			glw_state.allowdisplaydepthchange = true;
-		}
-		else if ( vinfo.dwMajorVersion == 4 )
-		{
-			if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT )
-			{
-				glw_state.allowdisplaydepthchange = true;
-			}
-			else if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )
-			{
-				if ( LOWORD( vinfo.dwBuildNumber ) >= OSR2_BUILD_NUMBER )
-				{
-					glw_state.allowdisplaydepthchange = true;
-				}
-			}
-		}
-	}
-	else
-	{
-		ri.Con_Printf( PRINT_ALL, "GLimp_Init() - GetVersionEx failed\n" );
-		return false;
-	}
-
 	return true;
 }
 
@@ -279,16 +241,6 @@ qboolean GLimp_Init(void*, void*)
 */
 void GLimp_BeginFrame( float camera_separation )
 {
-	if ( gl_bitdepth->modified )
-	{
-		if ( gl_bitdepth->value != 0 && !glw_state.allowdisplaydepthchange )
-		{
-			Cvar_SetValueLatched( "gl_bitdepth", 0 );
-			ri.Con_Printf( PRINT_ALL, "gl_bitdepth requires Win95 OSR2.x or WinNT 4.x\n" );
-		}
-		gl_bitdepth->modified = false;
-	}
-
 	if ( camera_separation < 0 && glConfig.stereoEnabled )
 	{
 		qglDrawBuffer( GL_BACK_LEFT );

@@ -186,16 +186,9 @@ static rserr_t GLW_SetMode(int mode,
 		// try to change color depth if possible
 		if ( colorbits != 0 )
 		{
-			if ( glw_state.allowdisplaydepthchange )
-			{
-				dm.dmBitsPerPel = colorbits;
-				dm.dmFields |= DM_BITSPERPEL;
-				ri.Printf( PRINT_ALL, "...using colorsbits of %d\n", colorbits );
-			}
-			else
-			{
-				ri.Printf( PRINT_ALL, "WARNING:...changing depth not supported on Win95 < pre-OSR 2.x\n" );
-			}
+			dm.dmBitsPerPel = colorbits;
+			dm.dmFields |= DM_BITSPERPEL;
+			ri.Printf( PRINT_ALL, "...using colorsbits of %d\n", colorbits );
 		}
 		else
 		{
@@ -487,49 +480,6 @@ static void GLW_InitExtensions( void )
 }
 
 /*
-** GLW_CheckOSVersion
-*/
-static qboolean GLW_CheckOSVersion( void )
-{
-#define OSR2_BUILD_NUMBER 1111
-
-	OSVERSIONINFO	vinfo;
-
-	vinfo.dwOSVersionInfoSize = sizeof(vinfo);
-
-	glw_state.allowdisplaydepthchange = qfalse;
-
-	if ( GetVersionEx( &vinfo) )
-	{
-		if ( vinfo.dwMajorVersion > 4 )
-		{
-			glw_state.allowdisplaydepthchange = qtrue;
-		}
-		else if ( vinfo.dwMajorVersion == 4 )
-		{
-			if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT )
-			{
-				glw_state.allowdisplaydepthchange = qtrue;
-			}
-			else if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )
-			{
-				if ( LOWORD( vinfo.dwBuildNumber ) >= OSR2_BUILD_NUMBER )
-				{
-					glw_state.allowdisplaydepthchange = qtrue;
-				}
-			}
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "GLW_CheckOSVersion() - GetVersionEx failed\n" );
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
 ** GLW_LoadOpenGL
 **
 ** GLimp_win.c internal function that attempts to load and use 
@@ -629,14 +579,6 @@ void GLimp_Init( void )
 	QCvar *lastValidRenderer = Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
 
 	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
-
-	//
-	// check OS version to see if we can do fullscreen display changes
-	//
-	if ( !GLW_CheckOSVersion() )
-	{
-		ri.Error( ERR_FATAL, "GLimp_Init() - incorrect operating system\n" );
-	}
 
 	// load appropriate DLL and initialize subsystem
 	GLW_StartOpenGL();
