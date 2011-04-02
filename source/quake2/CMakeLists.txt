@@ -47,6 +47,7 @@ set(QUAKE2_OBJS
 	linux/sys_linux.cpp
 	linux/glob.cpp
 	linux/net_udp.cpp
+	linux/gl_glx.cpp
 	ref_gl/gl_draw.cpp
 	ref_gl/gl_image.cpp
 	ref_gl/gl_light.cpp
@@ -56,8 +57,6 @@ set(QUAKE2_OBJS
 	ref_gl/gl_rmisc.cpp
 	ref_gl/gl_rsurf.cpp
 	ref_gl/gl_warp.cpp
-	linux/qgl_linux.cpp
-	linux/gl_glx.cpp
 )
 
 add_executable(vquake2 ${QUAKE2_OBJS})

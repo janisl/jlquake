@@ -47,8 +47,8 @@
 #undef GLF_V9
 #undef GLF_V10
 
-void QGL_SharedInit();
-void QGL_SharedShutdown();
+bool QGL_Init();
+void QGL_Shutdown();
 void QGL_EnableLogging(bool Enable);
 void QGL_LogComment(const char* Comment);
 

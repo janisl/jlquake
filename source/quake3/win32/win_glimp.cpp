@@ -47,12 +47,6 @@ static rserr_t	GLW_SetMode( int mode,
 							 int colorbits, 
 							 qboolean cdsFullscreen );
 
-//
-// function declaration
-//
-qboolean QGL_Init();
-void     QGL_Shutdown( void );
-
 /*
 ** GLW_StartDriverAndSetMode
 */

@@ -16,6 +16,10 @@
 //**  GNU General Public License for more details.
 //**
 //**************************************************************************
+//**
+//**	This file implements the binding of GL to QGL function pointers.
+//**
+//**************************************************************************
 
 // HEADER FILES ------------------------------------------------------------
 
@@ -608,11 +612,14 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 
 //==========================================================================
 //
-//	QGL_SharedInit
+//	QGL_Init
+//
+//	This is responsible for binding our qgl function pointers to the
+// appropriate GL stuff.
 //
 //==========================================================================
 
-void QGL_SharedInit()
+bool QGL_Init()
 {
 	GLog.Write("...initializing QGL\n");
 
@@ -662,15 +669,23 @@ void QGL_SharedInit()
 #ifdef _WIN32
 	qwglSwapIntervalEXT = NULL;
 #endif
+
+	// check logging
+	QGL_EnableLogging(!!r_logFile->integer);
+
+	return true;
 }
 
 //==========================================================================
 //
-//	QGL_SharedShutdown
+//	QGL_Shutdown
+//
+//	Nulls out all the proc pointers.  This is only called during a hard
+// shutdown of the OGL subsystem (e.g. vid_restart).
 //
 //==========================================================================
 
-void QGL_SharedShutdown()
+void QGL_Shutdown()
 {
 	GLog.Write("...shutting down QGL\n");
 

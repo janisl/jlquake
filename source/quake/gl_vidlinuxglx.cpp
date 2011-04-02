@@ -321,7 +321,7 @@ GL_Init
 */
 void GL_Init (void)
 {
-	QGL_SharedInit();
+	QGL_Init();
 
 	gl_vendor = (const char*)qglGetString (GL_VENDOR);
 	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);

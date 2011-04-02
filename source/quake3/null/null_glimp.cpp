@@ -31,10 +31,3 @@ int 		GLimp_Init( void )
 
 void		GLimp_Shutdown( void ) {
 }
-
-qboolean QGL_Init() {
-	return qtrue;
-}
-
-void		QGL_Shutdown( void ) {
-}

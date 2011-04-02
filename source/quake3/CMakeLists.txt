@@ -71,7 +71,6 @@ set(QUAKE3_FILES
 	unix/unix_shared.cpp
 	unix/linux_joystick.cpp
 	unix/linux_glimp.cpp
-	unix/linux_qgl.cpp
 	unix/linux_signals.cpp
 )
 

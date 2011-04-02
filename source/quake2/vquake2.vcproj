@@ -515,10 +515,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\win32\qgl_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ref_gl\warpsin.h"
 				>
 			</File>

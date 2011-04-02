@@ -259,10 +259,6 @@
 				RelativePath="..\win32\win_glimp.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\win32\win_qgl.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
