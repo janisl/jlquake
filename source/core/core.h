@@ -45,6 +45,7 @@
 #include "md4.h"
 #include "system.h"
 #include "cm_public.h"
+#include "event_queue.h"
 
 int Com_Milliseconds();
 
