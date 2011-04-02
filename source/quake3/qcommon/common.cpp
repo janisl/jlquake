@@ -1767,7 +1767,7 @@ sysEvent_t	Com_GetRealEvent( void ) {
 			Com_Error( ERR_FATAL, "Error reading from journal file" );
 		}
 		if ( ev.evPtrLength ) {
-			ev.evPtr = Z_Malloc( ev.evPtrLength );
+			ev.evPtr = Mem_Alloc( ev.evPtrLength );
 			r = FS_Read( ev.evPtr, ev.evPtrLength, com_journalFile );
 			if ( r != ev.evPtrLength ) {
 				Com_Error( ERR_FATAL, "Error reading from journal file" );
@@ -1832,7 +1832,7 @@ void Com_PushEvent( sysEvent_t *event ) {
 		}
 
 		if ( ev->evPtr ) {
-			Z_Free( ev->evPtr );
+			Mem_Free( ev->evPtr );
 		}
 		com_pushedEventsTail++;
 	} else {
@@ -1974,7 +1974,7 @@ int Com_EventLoop( void ) {
 
 		// free any block data
 		if ( ev.evPtr ) {
-			Z_Free( ev.evPtr );
+			Mem_Free( ev.evPtr );
 		}
 	}
 

@@ -425,7 +425,7 @@ void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrL
 		// we are discarding an event, but don't leak memory
 		if ( ev->evPtr )
 		{
-			Z_Free( ev->evPtr );
+			Mem_Free( ev->evPtr );
 		}
 		eventTail++;
 	}
@@ -484,7 +484,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		int		len;
 
 		len = QStr::Length( s ) + 1;
-		b = (char*)Z_Malloc( len );
+		b = (char*)Mem_Alloc( len );
 		QStr::NCpyZ( b, s, len-1 );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
@@ -498,7 +498,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		// copy out to a seperate buffer for qeueing
 		// the readcount stepahead is for SOCKS support
 		len = sizeof( netadr_t ) + netmsg.cursize - netmsg.readcount;
-		buf = (netadr_t*)Z_Malloc( len );
+		buf = (netadr_t*)Mem_Alloc( len );
 		*buf = adr;
 		Com_Memcpy( buf+1, &netmsg._data[netmsg.readcount], netmsg.cursize - netmsg.readcount );
 		Sys_QueEvent( 0, SE_PACKET, 0, 0, len, buf );

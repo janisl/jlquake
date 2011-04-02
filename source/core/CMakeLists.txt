@@ -20,6 +20,7 @@ set(CORE_FILES
 	crc.cpp
 	cvar.cpp
 	endian.cpp
+	event_queue.cpp
 	exception.cpp
 	files.cpp
 	huffman.cpp
