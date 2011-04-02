@@ -152,7 +152,6 @@ int VID_SetMode (int modenum, unsigned char *palette)
 {
 	int				original_mode, temp;
 	qboolean		stat;
-    MSG				msg;
 	HDC				hdc;
 
 	//
@@ -221,7 +220,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	DIBHeight = modelist[modenum].height;
 
 	// Create the DIB window
-	GLW_SharedCreateWindow(modelist[modenum].width, modelist[modenum].height, 24, fullscreen);
+	stat = GLW_CreateWindow(modelist[modenum].width, modelist[modenum].height, 24, fullscreen);
 
 	if (vid.conheight > modelist[modenum].height)
 		vid.conheight = modelist[modenum].height;
@@ -231,8 +230,6 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	vid.height = vid.conheight;
 
 	vid.numpages = 2;
-
-	stat = true;
 
 	if (fullscreen || (_windowed_mouse->value && in_keyCatchers == 0))
 	{
@@ -252,32 +249,11 @@ int VID_SetMode (int modenum, unsigned char *palette)
 		Sys_Error ("Couldn't set video mode");
 	}
 
-// now we try to make sure we get the focus on the mode switch, because
-// sometimes in some systems we don't.  We grab the foreground, then
-// finish setting up, pump all our messages, and sleep for a little while
-// to let messages finish bouncing around the system, then we put
-// ourselves at the top of the z order, then grab the foreground again,
-// Who knows if it helps, but it probably doesn't hurt
-	SetForegroundWindow (GMainWindow);
 	VID_SetPalette (palette);
 	vid_modenum = modenum;
 	Cvar_SetValue ("vid_mode", (float)vid_modenum);
 
-	while (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
-	{
-      	TranslateMessage (&msg);
-      	DispatchMessage (&msg);
-	}
-
-	Sleep (100);
-
-	SetWindowPos (GMainWindow, HWND_TOP, 0, 0, 0, 0,
-				  SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW |
-				  SWP_NOCOPYBITS);
-
-	SetForegroundWindow (GMainWindow);
-
-// fix the leftover Alt from any Alt-Tab or the like that switched us away
+	// fix the leftover Alt from any Alt-Tab or the like that switched us away
 	ClearAllStates ();
 
 	if (!msg_suppress_1)
@@ -1480,9 +1456,6 @@ void	VID_Init (unsigned char *palette)
 	DestroyWindow (hwnd_dialog);
 
 	VID_SetMode (vid_default, palette);
-
-	if (!GLW_InitDriver(24))
-		Sys_Error ("Could not initialize GL (wglCreateContext failed).\n\nMake sure you in are 65535 color mode, and try running -window.");
 
 	GL_Init ();
 

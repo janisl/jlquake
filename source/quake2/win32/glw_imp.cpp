@@ -48,22 +48,12 @@ extern QCvar *vid_ref;
 */
 qboolean VID_CreateWindow( int width, int height, qboolean fullscreen )
 {
-	GLW_SharedCreateWindow(width, height, 24, fullscreen);
-
-	// init all the gl stuff for the window
-	if (!GLW_InitDriver(24))
-	{
-		ri.Con_Printf( PRINT_ALL, "VID_CreateWindow() - GLimp_InitGL failed\n");
-		return false;
-	}
-
-	SetForegroundWindow( GMainWindow );
-	SetFocus( GMainWindow );
+	bool ret = GLW_CreateWindow(width, height, 24, fullscreen);
 
 	// let the sound and input subsystems know about the new window
 	ri.Vid_NewWindow (width, height);
 
-	return true;
+	return ret;
 }
 
 

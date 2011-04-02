@@ -86,30 +86,6 @@ static qboolean GLW_StartDriverAndSetMode(int mode,
 	return qtrue;
 }
 
-/*
-** GLW_CreateWindow
-**
-** Responsible for creating the Win32 window and initializing the OpenGL driver.
-*/
-static qboolean GLW_CreateWindow(int width, int height, int colorbits, qboolean cdsFullscreen )
-{
-	GLW_SharedCreateWindow(width, height, colorbits, cdsFullscreen);
-
-	if ( !GLW_InitDriver(colorbits))
-	{
-		ShowWindow( GMainWindow, SW_HIDE );
-		DestroyWindow( GMainWindow );
-		GMainWindow = NULL;
-
-		return qfalse;
-	}
-
-	SetForegroundWindow( GMainWindow );
-	SetFocus( GMainWindow );
-
-	return qtrue;
-}
-
 static void PrintCDSError( int value )
 {
 	switch ( value )

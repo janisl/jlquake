@@ -374,7 +374,7 @@ static int GLW_MakeContext(PIXELFORMATDESCRIPTOR* pPFD)
 //
 //==========================================================================
 
-bool GLW_InitDriver(int colorbits)
+static bool GLW_InitDriver(int colorbits)
 {
 	static PIXELFORMATDESCRIPTOR pfd;		// save between frames since 'tr' gets cleared
 
@@ -514,11 +514,13 @@ bool GLW_InitDriver(int colorbits)
 
 //==========================================================================
 //
-//	GLW_SharedCreateWindow
+//	GLW_CreateWindow
+//
+//	Responsible for creating the Win32 window and initializing the OpenGL driver.
 //
 //==========================================================================
 
-bool GLW_SharedCreateWindow(int width, int height, int colorbits, bool fullscreen)
+bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscreen)
 {
 	//
 	// register the window class if necessary
@@ -662,6 +664,19 @@ bool GLW_SharedCreateWindow(int width, int height, int colorbits, bool fullscree
 	{
 		GLog.Write("...window already present, CreateWindowEx skipped\n");
 	}
+
+	if (!GLW_InitDriver(colorbits))
+	{
+		ShowWindow(GMainWindow, SW_HIDE);
+		DestroyWindow(GMainWindow);
+		GMainWindow = NULL;
+
+		return false;
+	}
+
+	SetForegroundWindow(GMainWindow);
+	SetFocus(GMainWindow);
+
 	return true;
 }
 

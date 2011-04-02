@@ -30,8 +30,7 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #define WINDOW_CLASS_NAME	"vQuake"
 
-bool GLW_InitDriver(int colorbits);
-bool GLW_SharedCreateWindow(int width, int height, int colorbits, bool fullscreen);
+bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscreen);
 
 extern HINSTANCE	global_hInstance;
 extern HWND			GMainWindow;
