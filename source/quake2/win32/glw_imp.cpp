@@ -35,6 +35,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../ref_gl/gl_local.h"
 #include "winquake.h"
 
+rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen);
+
 static qboolean GLimp_SwitchFullscreen( int width, int height );
 
 extern QCvar *vid_fullscreen;
@@ -45,17 +47,6 @@ extern QCvar *vid_ref;
 */
 int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 {
-	const char *win_fs[] = { "W", "FS" };
-
-	//
-	// check our desktop attributes
-	//
-	HDC hDC = GetDC(GetDesktopWindow());
-	desktopBitsPixel = GetDeviceCaps(hDC, BITSPIXEL);
-	desktopWidth = GetDeviceCaps(hDC, HORZRES);
-	desktopHeight = GetDeviceCaps(hDC, VERTRES);
-	ReleaseDC(GetDesktopWindow(), hDC);
-
 	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
 
 	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
@@ -69,113 +60,15 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 	*pwidth = glConfig.vidWidth;
 	*pheight = glConfig.vidHeight;
 
-	ri.Con_Printf( PRINT_ALL, " %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[fullscreen] );
-
 	// destroy the existing window
 	if (GMainWindow)
 	{
 		GLimp_Shutdown ();
 	}
 
-	// do a CDS if needed
-	if ( fullscreen )
-	{
-		DEVMODE dm;
-
-		ri.Con_Printf( PRINT_ALL, "...attempting fullscreen\n" );
-
-		Com_Memset( &dm, 0, sizeof( dm ) );
-
-		dm.dmSize = sizeof( dm );
-
-		dm.dmPelsWidth  = glConfig.vidWidth;
-		dm.dmPelsHeight = glConfig.vidHeight;
-		dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT;
-
-		if ( gl_bitdepth->value != 0 )
-		{
-			dm.dmBitsPerPel = gl_bitdepth->value;
-			dm.dmFields |= DM_BITSPERPEL;
-			ri.Con_Printf( PRINT_ALL, "...using gl_bitdepth of %d\n", ( int ) gl_bitdepth->value );
-		}
-		else
-		{
-			HDC hdc = GetDC( NULL );
-			int bitspixel = GetDeviceCaps( hdc, BITSPIXEL );
-
-			ri.Con_Printf( PRINT_ALL, "...using desktop display depth of %d\n", bitspixel );
-
-			ReleaseDC( 0, hdc );
-		}
-
-		ri.Con_Printf( PRINT_ALL, "...calling CDS: " );
-		if ( ChangeDisplaySettings( &dm, CDS_FULLSCREEN ) == DISP_CHANGE_SUCCESSFUL )
-		{
-			cdsFullscreen = true;
-
-			ri.Con_Printf( PRINT_ALL, "ok\n" );
-
-			if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, true) )
-				return RSERR_INVALID_MODE;
-
-			return RSERR_OK;
-		}
-		else
-		{
-			ri.Con_Printf( PRINT_ALL, "failed\n" );
-
-			ri.Con_Printf( PRINT_ALL, "...calling CDS assuming dual monitors:" );
-
-			dm.dmPelsWidth = glConfig.vidWidth * 2;
-			dm.dmPelsHeight = glConfig.vidHeight;
-			dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
-
-			if ( gl_bitdepth->value != 0 )
-			{
-				dm.dmBitsPerPel = gl_bitdepth->value;
-				dm.dmFields |= DM_BITSPERPEL;
-			}
-
-			/*
-			** our first CDS failed, so maybe we're running on some weird dual monitor
-			** system 
-			*/
-			if ( ChangeDisplaySettings( &dm, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL )
-			{
-				ri.Con_Printf( PRINT_ALL, " failed\n" );
-
-				ri.Con_Printf( PRINT_ALL, "...setting windowed mode\n" );
-
-				ChangeDisplaySettings( 0, 0 );
-
-				*pwidth = glConfig.vidWidth;
-				*pheight = glConfig.vidHeight;
-				cdsFullscreen = false;
-				if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, false) )
-					return RSERR_INVALID_MODE;
-				return RSERR_INVALID_FULLSCREEN;
-			}
-			else
-			{
-				ri.Con_Printf( PRINT_ALL, " ok\n" );
-				if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, true) )
-					return RSERR_INVALID_MODE;
-
-				cdsFullscreen = true;
-				return RSERR_OK;
-			}
-		}
-	}
-	else
-	{
-		ri.Con_Printf( PRINT_ALL, "...setting windowed mode\n" );
-
-		ChangeDisplaySettings( 0, 0 );
-
-		cdsFullscreen = false;
-		if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, false) )
-			return RSERR_INVALID_MODE;
-	}
+	rserr_t r = GLW_SharedSetMode(gl_bitdepth->integer, fullscreen);
+	if (r != RSERR_OK)
+		return r;
 
 	// let the sound and input subsystems know about the new window
 	ri.Vid_NewWindow (glConfig.vidWidth, glConfig.vidHeight);

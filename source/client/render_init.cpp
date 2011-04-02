@@ -46,12 +46,42 @@ QCvar*		r_stencilbits;
 QCvar*		r_depthbits;
 QCvar*		r_colorbits;
 QCvar*		r_stereo;
+QCvar*		r_displayRefresh;
 
 QCvar*		r_verbose;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
+
+//==========================================================================
+//
+//	AssertCvarRange
+//
+//==========================================================================
+
+void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
+{
+	if (shouldBeIntegral)
+	{
+		if ((int)cv->value != cv->integer)
+		{
+			GLog.Write(S_COLOR_YELLOW "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value);
+			Cvar_Set(cv->name, va("%d", cv->integer));
+		}
+	}
+
+	if (cv->value < minVal)
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal);
+		Cvar_Set(cv->name, va("%f", minVal));
+	}
+	else if (cv->value > maxVal)
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal);
+		Cvar_Set(cv->name, va("%f", maxVal));
+	}
+}
 
 //==========================================================================
 //
@@ -69,4 +99,6 @@ void R_SharedRegister()
 	r_stencilbits = Cvar_Get("r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH);
 	r_depthbits = Cvar_Get("r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH);
+	r_displayRefresh = Cvar_Get("r_displayRefresh", "0", CVAR_LATCH);
+	AssertCvarRange(r_displayRefresh, 0, 200, true);
 }

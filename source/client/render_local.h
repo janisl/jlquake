@@ -54,6 +54,7 @@ struct glstate_t
 
 void* GLimp_GetProcAddress(const char* Name);
 
+void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_SharedRegister();
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
@@ -67,5 +68,6 @@ extern QCvar*	r_stencilbits;			// number of desired stencil bits
 extern QCvar*	r_depthbits;			// number of desired depth bits
 extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for fullscreen
 extern QCvar*	r_stereo;				// desired pixelformat stereo flag
+extern QCvar*	r_displayRefresh;		// optional display refresh option
 
 #endif

@@ -39,6 +39,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "resource.h"
 #include "win_local.h"
 
+rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen);
+
 extern void WG_CheckHardwareGamma( void );
 extern void WG_RestoreGamma( void );
 
@@ -72,34 +74,6 @@ static qboolean GLW_StartDriverAndSetMode(int mode,
 	return qtrue;
 }
 
-static void PrintCDSError( int value )
-{
-	switch ( value )
-	{
-	case DISP_CHANGE_RESTART:
-		ri.Printf( PRINT_ALL, "restart required\n" );
-		break;
-	case DISP_CHANGE_BADPARAM:
-		ri.Printf( PRINT_ALL, "bad param\n" );
-		break;
-	case DISP_CHANGE_BADFLAGS:
-		ri.Printf( PRINT_ALL, "bad flags\n" );
-		break;
-	case DISP_CHANGE_FAILED:
-		ri.Printf( PRINT_ALL, "DISP_CHANGE_FAILED\n" );
-		break;
-	case DISP_CHANGE_BADMODE:
-		ri.Printf( PRINT_ALL, "bad mode\n" );
-		break;
-	case DISP_CHANGE_NOTUPDATED:
-		ri.Printf( PRINT_ALL, "not updated\n" );
-		break;
-	default:
-		ri.Printf( PRINT_ALL, "unknown error %d\n", value );
-		break;
-	}
-}
-
 /*
 ** GLW_SetMode
 */
@@ -107,10 +81,6 @@ static rserr_t GLW_SetMode(int mode,
 							int colorbits, 
 							qboolean cdsFullscreen )
 {
-	const char *win_fs[] = { "W", "FS" };
-	int		cdsRet;
-	DEVMODE dm;
-		
 	//
 	// print out informational messages
 	//
@@ -120,189 +90,7 @@ static rserr_t GLW_SetMode(int mode,
 		ri.Printf( PRINT_ALL, " invalid mode\n" );
 		return RSERR_INVALID_MODE;
 	}
-	ri.Printf( PRINT_ALL, " %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[cdsFullscreen] );
-
-	//
-	// check our desktop attributes
-	//
-	HDC hDC = GetDC(GetDesktopWindow());
-	desktopBitsPixel = GetDeviceCaps(hDC, BITSPIXEL);
-	desktopWidth = GetDeviceCaps(hDC, HORZRES);
-	desktopHeight = GetDeviceCaps(hDC, VERTRES);
-	ReleaseDC(GetDesktopWindow(), hDC);
-
-	//
-	// verify desktop bit depth
-	//
-	if ( desktopBitsPixel < 15 || desktopBitsPixel == 24 )
-	{
-		if ( colorbits == 0 || ( !cdsFullscreen && colorbits >= 15 ) )
-		{
-			if ( MessageBox( NULL,
-						"It is highly unlikely that a correct\n"
-						"windowed display can be initialized with\n"
-						"the current desktop display depth.  Select\n"
-						"'OK' to try anyway.  Press 'Cancel' if you otherwise\n"
-						"wish to quit.",
-						"Low Desktop Color Depth",
-						MB_OKCANCEL | MB_ICONEXCLAMATION ) != IDOK )
-			{
-				return RSERR_INVALID_MODE;
-			}
-		}
-	}
-
-	// do a CDS if needed
-	if ( cdsFullscreen )
-	{
-		Com_Memset( &dm, 0, sizeof( dm ) );
-		
-		dm.dmSize = sizeof( dm );
-		
-		dm.dmPelsWidth  = glConfig.vidWidth;
-		dm.dmPelsHeight = glConfig.vidHeight;
-		dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT;
-
-		if ( r_displayRefresh->integer != 0 )
-		{
-			dm.dmDisplayFrequency = r_displayRefresh->integer;
-			dm.dmFields |= DM_DISPLAYFREQUENCY;
-		}
-		
-		// try to change color depth if possible
-		if ( colorbits != 0 )
-		{
-			dm.dmBitsPerPel = colorbits;
-			dm.dmFields |= DM_BITSPERPEL;
-			ri.Printf( PRINT_ALL, "...using colorsbits of %d\n", colorbits );
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...using desktop display depth of %d\n", desktopBitsPixel );
-		}
-
-		//
-		// if we're already in fullscreen then just create the window
-		//
-		if (::cdsFullscreen)
-		{
-			ri.Printf( PRINT_ALL, "...already fullscreen, avoiding redundant CDS\n" );
-
-			if ( !GLW_CreateWindow (glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue ) )
-			{
-				ri.Printf( PRINT_ALL, "...restoring display settings\n" );
-				ChangeDisplaySettings( 0, 0 );
-				return RSERR_INVALID_MODE;
-			}
-		}
-		//
-		// need to call CDS
-		//
-		else
-		{
-			ri.Printf( PRINT_ALL, "...calling CDS: " );
-			
-			// try setting the exact mode requested, because some drivers don't report
-			// the low res modes in EnumDisplaySettings, but still work
-			if ( ( cdsRet = ChangeDisplaySettings( &dm, CDS_FULLSCREEN ) ) == DISP_CHANGE_SUCCESSFUL )
-			{
-				ri.Printf( PRINT_ALL, "ok\n" );
-
-				if ( !GLW_CreateWindow (glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue) )
-				{
-					ri.Printf( PRINT_ALL, "...restoring display settings\n" );
-					ChangeDisplaySettings( 0, 0 );
-					return RSERR_INVALID_MODE;
-				}
-				
-				::cdsFullscreen = qtrue;
-			}
-			else
-			{
-				//
-				// the exact mode failed, so scan EnumDisplaySettings for the next largest mode
-				//
-				DEVMODE		devmode;
-				int			modeNum;
-
-				ri.Printf( PRINT_ALL, "failed, " );
-				
-				PrintCDSError( cdsRet );
-			
-				ri.Printf( PRINT_ALL, "...trying next higher resolution:" );
-				
-				// we could do a better matching job here...
-				for ( modeNum = 0 ; ; modeNum++ ) {
-					if ( !EnumDisplaySettings( NULL, modeNum, &devmode ) ) {
-						modeNum = -1;
-						break;
-					}
-					if ( devmode.dmPelsWidth >= glConfig.vidWidth
-						&& devmode.dmPelsHeight >= glConfig.vidHeight
-						&& devmode.dmBitsPerPel >= 15 ) {
-						break;
-					}
-				}
-
-				if ( modeNum != -1 && ( cdsRet = ChangeDisplaySettings( &devmode, CDS_FULLSCREEN ) ) == DISP_CHANGE_SUCCESSFUL )
-				{
-					ri.Printf( PRINT_ALL, " ok\n" );
-					if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, qtrue) )
-					{
-						ri.Printf( PRINT_ALL, "...restoring display settings\n" );
-						ChangeDisplaySettings( 0, 0 );
-						return RSERR_INVALID_MODE;
-					}
-					
-					::cdsFullscreen = qtrue;
-				}
-				else
-				{
-					ri.Printf( PRINT_ALL, " failed, " );
-					
-					PrintCDSError( cdsRet );
-					
-					ri.Printf( PRINT_ALL, "...restoring display settings\n" );
-					ChangeDisplaySettings( 0, 0 );
-					
-					::cdsFullscreen = qfalse;
-					glConfig.isFullscreen = qfalse;
-					if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse) )
-					{
-						return RSERR_INVALID_MODE;
-					}
-					return RSERR_INVALID_FULLSCREEN;
-				}
-			}
-		}
-	}
-	else
-	{
-		if (::cdsFullscreen)
-		{
-			ChangeDisplaySettings( 0, 0 );
-		}
-
-		::cdsFullscreen = qfalse;
-		if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) )
-		{
-			return RSERR_INVALID_MODE;
-		}
-	}
-
-	//
-	// success, now check display frequency
-	//
-	Com_Memset( &dm, 0, sizeof( dm ) );
-	dm.dmSize = sizeof( dm );
-	if ( EnumDisplaySettings( NULL, ENUM_CURRENT_SETTINGS, &dm ) )
-	{
-		glConfig.displayFrequency = dm.dmDisplayFrequency;
-	}
-
-	glConfig.isFullscreen = cdsFullscreen;
-
-	return RSERR_OK;
+	return GLW_SharedSetMode(colorbits, cdsFullscreen);
 }
 
 /*

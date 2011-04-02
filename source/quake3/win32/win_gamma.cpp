@@ -159,16 +159,9 @@ void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 	}
 
 
-	if ( qwglSetDeviceGammaRamp3DFX )
-	{
-		qwglSetDeviceGammaRamp3DFX( maindc, table );
-	}
-	else
-	{
-		ret = SetDeviceGammaRamp( maindc, table );
-		if ( !ret ) {
-			Com_Printf( "SetDeviceGammaRamp failed.\n" );
-		}
+	ret = SetDeviceGammaRamp( maindc, table );
+	if ( !ret ) {
+		Com_Printf( "SetDeviceGammaRamp failed.\n" );
 	}
 }
 
@@ -179,18 +172,11 @@ void WG_RestoreGamma( void )
 {
 	if ( glConfig.deviceSupportsGamma )
 	{
-		if ( qwglSetDeviceGammaRamp3DFX )
-		{
-			qwglSetDeviceGammaRamp3DFX( maindc, s_oldHardwareGamma );
-		}
-		else
-		{
-			HDC hDC;
-			
-			hDC = GetDC( GetDesktopWindow() );
-			SetDeviceGammaRamp( hDC, s_oldHardwareGamma );
-			ReleaseDC( GetDesktopWindow(), hDC );
-		}
+		HDC hDC;
+		
+		hDC = GetDC( GetDesktopWindow() );
+		SetDeviceGammaRamp( hDC, s_oldHardwareGamma );
+		ReleaseDC( GetDesktopWindow(), hDC );
 	}
 }
 

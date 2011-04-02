@@ -36,8 +36,6 @@ QCvar	*r_ignoreFastPath;
 
 QCvar	*r_ignore;
 
-QCvar	*r_displayRefresh;
-
 QCvar	*r_detailTextures;
 
 QCvar	*r_znear;
@@ -138,30 +136,6 @@ QCvar	*r_maxpolys;
 int		max_polys;
 QCvar	*r_maxpolyverts;
 int		max_polyverts;
-
-static void AssertCvarRange( QCvar *cv, float minVal, float maxVal, qboolean shouldBeIntegral )
-{
-	if ( shouldBeIntegral )
-	{
-		if ( ( int ) cv->value != cv->integer )
-		{
-			ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value );
-			Cvar_Set( cv->name, va( "%d", cv->integer ) );
-		}
-	}
-
-	if ( cv->value < minVal )
-	{
-		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal );
-		Cvar_Set( cv->name, va( "%f", minVal ) );
-	}
-	else if ( cv->value > maxVal )
-	{
-		ri.Printf( PRINT_WARNING, "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal );
-		Cvar_Set( cv->name, va( "%f", maxVal ) );
-	}
-}
-
 
 /*
 ** InitOpenGL
@@ -882,8 +856,8 @@ void R_Register( void )
 	//
 	// temporary latched variables that can only change over a restart
 	//
-	r_displayRefresh = Cvar_Get( "r_displayRefresh", "0", CVAR_LATCH );
-	AssertCvarRange( r_displayRefresh, 0, 200, qtrue );
+	//r_displayRefresh = Cvar_Get( "r_displayRefresh", "0", CVAR_LATCH );
+	//AssertCvarRange( r_displayRefresh, 0, 200, qtrue );
 	r_fullbright = Cvar_Get ("r_fullbright", "0", CVAR_LATCH|CVAR_CHEAT );
 	r_mapOverBrightBits = Cvar_Get ("r_mapOverBrightBits", "2", CVAR_LATCH );
 	r_intensity = Cvar_Get ("r_intensity", "1", CVAR_LATCH );

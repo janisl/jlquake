@@ -1004,7 +1004,6 @@ extern	QCvar	*r_showcluster;
 extern QCvar	*r_mode;				// video mode
 extern QCvar	*r_fullscreen;
 extern QCvar	*r_gamma;
-extern QCvar	*r_displayRefresh;		// optional display refresh option
 extern QCvar	*r_ignorehwgamma;		// overrides hardware gamma capabilities
 
 extern QCvar	*r_allowExtensions;				// global enable/disable of OpenGL extensions

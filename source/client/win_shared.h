@@ -30,14 +30,10 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 #define WINDOW_CLASS_NAME	"vQuake"
 
-bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscreen);
-
 extern HINSTANCE	global_hInstance;
 extern HWND			GMainWindow;
 extern HDC			maindc;
 extern HGLRC		baseRC;
-extern int			desktopBitsPixel;
-extern int			desktopWidth, desktopHeight;
 extern bool			pixelFormatSet;
 extern bool			cdsFullscreen;
 

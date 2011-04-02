@@ -52,8 +52,9 @@ enum
 HDC		maindc;
 HGLRC	baseRC;
 
-int		 desktopBitsPixel;
-int		 desktopWidth, desktopHeight;
+static int		desktopBitsPixel;
+static int		desktopWidth;
+static int		desktopHeight;
 
 static bool		s_classRegistered = false;
 bool			pixelFormatSet;
@@ -521,7 +522,7 @@ static bool GLW_InitDriver(int colorbits)
 //
 //==========================================================================
 
-bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscreen)
+static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscreen)
 {
 	//
 	// register the window class if necessary
@@ -679,6 +680,245 @@ bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscreen)
 	SetFocus(GMainWindow);
 
 	return true;
+}
+
+//==========================================================================
+//
+//	PrintCDSError
+//
+//==========================================================================
+
+static void PrintCDSError(int value)
+{
+	switch (value)
+	{
+	case DISP_CHANGE_RESTART:
+		GLog.Write("restart required\n");
+		break;
+	case DISP_CHANGE_BADPARAM:
+		GLog.Write("bad param\n");
+		break;
+	case DISP_CHANGE_BADFLAGS:
+		GLog.Write("bad flags\n");
+		break;
+	case DISP_CHANGE_FAILED:
+		GLog.Write("DISP_CHANGE_FAILED\n");
+		break;
+	case DISP_CHANGE_BADMODE:
+		GLog.Write("bad mode\n");
+		break;
+	case DISP_CHANGE_NOTUPDATED:
+		GLog.Write("not updated\n");
+		break;
+	default:
+		GLog.Write("unknown error %d\n", value);
+		break;
+	}
+}
+
+//==========================================================================
+//
+//	GLW_SharedSetMode
+//
+//==========================================================================
+
+rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen)
+{
+	const char* win_fs[] = { "W", "FS" };
+
+	GLog.Write(" %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[fullscreen]);
+
+	//
+	// check our desktop attributes
+	//
+	HDC hDC = GetDC(GetDesktopWindow());
+	desktopBitsPixel = GetDeviceCaps(hDC, BITSPIXEL);
+	desktopWidth = GetDeviceCaps(hDC, HORZRES);
+	desktopHeight = GetDeviceCaps(hDC, VERTRES);
+	ReleaseDC(GetDesktopWindow(), hDC);
+
+	//
+	// verify desktop bit depth
+	//
+	if (desktopBitsPixel < 15 || desktopBitsPixel == 24)
+	{
+		if (colorbits == 0 || (!cdsFullscreen && colorbits >= 15))
+		{
+			if (MessageBox(NULL,
+				"It is highly unlikely that a correct\n"
+				"windowed display can be initialized with\n"
+				"the current desktop display depth.  Select\n"
+				"'OK' to try anyway.  Press 'Cancel' if you otherwise\n"
+				"wish to quit.",
+				"Low Desktop Color Depth",
+				MB_OKCANCEL | MB_ICONEXCLAMATION) != IDOK)
+			{
+				return RSERR_INVALID_MODE;
+			}
+		}
+	}
+
+	DEVMODE dm;
+
+	// do a CDS if needed
+	if (fullscreen)
+	{
+		Com_Memset(&dm, 0, sizeof(dm));
+		
+		dm.dmSize = sizeof(dm);
+
+		dm.dmPelsWidth = glConfig.vidWidth;
+		dm.dmPelsHeight = glConfig.vidHeight;
+		dm.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT;
+
+		if (r_displayRefresh->integer != 0)
+		{
+			dm.dmDisplayFrequency = r_displayRefresh->integer;
+			dm.dmFields |= DM_DISPLAYFREQUENCY;
+		}
+		
+		// try to change color depth if possible
+		if (colorbits != 0)
+		{
+			dm.dmBitsPerPel = colorbits;
+			dm.dmFields |= DM_BITSPERPEL;
+			GLog.Write("...using colorsbits of %d\n", colorbits);
+		}
+		else
+		{
+			GLog.Write("...using desktop display depth of %d\n", desktopBitsPixel);
+		}
+
+		//
+		//	If we're already in fullscreen then just create the window.
+		//
+		if (cdsFullscreen)
+		{
+			GLog.Write("...already fullscreen, avoiding redundant CDS\n");
+
+			if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, true))
+			{
+				GLog.Write("...restoring display settings\n");
+				ChangeDisplaySettings(0, 0);
+				cdsFullscreen = false;
+				return RSERR_INVALID_MODE;
+			}
+		}
+		//
+		// need to call CDS
+		//
+		else
+		{
+			GLog.Write("...calling CDS: ");
+
+			// try setting the exact mode requested, because some drivers don't report
+			// the low res modes in EnumDisplaySettings, but still work
+			int cdsRet = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
+			if (cdsRet == DISP_CHANGE_SUCCESSFUL)
+			{
+				GLog.Write("ok\n");
+
+				if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, true))
+				{
+					GLog.Write("...restoring display settings\n");
+					ChangeDisplaySettings(0, 0);
+					return RSERR_INVALID_MODE;
+				}
+				
+				cdsFullscreen = true;
+			}
+			else
+			{
+				GLog.Write("failed, ");
+
+				PrintCDSError(cdsRet);
+
+				//
+				// the exact mode failed, so scan EnumDisplaySettings for the next largest mode
+				//
+				GLog.Write("...trying next higher resolution:");
+				
+				// we could do a better matching job here...
+				DEVMODE devmode;
+				int modeNum;
+				for (modeNum = 0; ;modeNum++)
+				{
+					if (!EnumDisplaySettings(NULL, modeNum, &devmode))
+					{
+						modeNum = -1;
+						break;
+					}
+					if (devmode.dmPelsWidth >= glConfig.vidWidth &&
+						devmode.dmPelsHeight >= glConfig.vidHeight &&
+						devmode.dmBitsPerPel >= 15)
+					{
+						break;
+					}
+				}
+
+				if (modeNum != -1)
+				{
+					cdsRet = ChangeDisplaySettings(&devmode, CDS_FULLSCREEN);
+				}
+				if (modeNum != -1 && cdsRet == DISP_CHANGE_SUCCESSFUL)
+				{
+					GLog.Write(" ok\n");
+					if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, true))
+					{
+						GLog.Write("...restoring display settings\n");
+						ChangeDisplaySettings(0, 0);
+						return RSERR_INVALID_MODE;
+					}
+					
+					cdsFullscreen = true;
+				}
+				else
+				{
+					GLog.Write(" failed, ");
+					
+					PrintCDSError(cdsRet);
+					
+					GLog.Write("...restoring display settings\n");
+					ChangeDisplaySettings(0, 0);
+					
+					cdsFullscreen = false;
+					glConfig.isFullscreen = false;
+					if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, false))
+					{
+						return RSERR_INVALID_MODE;
+					}
+					return RSERR_INVALID_FULLSCREEN;
+				}
+			}
+		}
+	}
+	else
+	{
+		if (cdsFullscreen)
+		{
+			ChangeDisplaySettings(0, 0);
+		}
+
+		cdsFullscreen = false;
+		if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, false))
+		{
+			return RSERR_INVALID_MODE;
+		}
+	}
+
+	//
+	// success, now check display frequency
+	//
+	Com_Memset(&dm, 0, sizeof(dm));
+	dm.dmSize = sizeof(dm);
+	if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dm))
+	{
+		glConfig.displayFrequency = dm.dmDisplayFrequency;
+	}
+
+	glConfig.isFullscreen = fullscreen;
+
+	return RSERR_OK;
 }
 
 //==========================================================================
