@@ -28,6 +28,13 @@
 //	Copied from resources.h
 #define IDI_ICON1                       1
 
+enum
+{
+	TRY_PFD_SUCCESS		= 0,
+	TRY_PFD_FAIL_SOFT	= 1,
+	TRY_PFD_FAIL_HARD	= 2,
+};
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -253,7 +260,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 //
 //==========================================================================
 
-void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthbits, int stencilbits, bool stereo)
+static void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthbits, int stencilbits, bool stereo)
 {
 	PIXELFORMATDESCRIPTOR src = 
 	{
@@ -301,7 +308,7 @@ void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthbits, in
 //
 //==========================================================================
 
-int GLW_MakeContext(PIXELFORMATDESCRIPTOR* pPFD)
+static int GLW_MakeContext(PIXELFORMATDESCRIPTOR* pPFD)
 {
 	//
 	// don't putz around with pixelformat if it's already set (e.g. this is a soft
@@ -356,6 +363,153 @@ int GLW_MakeContext(PIXELFORMATDESCRIPTOR* pPFD)
 	}
 
 	return TRY_PFD_SUCCESS;
+}
+
+//==========================================================================
+//
+//	GLW_InitDriver
+//
+//	- get a DC if one doesn't exist
+//	- create an HGLRC if one doesn't exist
+//
+//==========================================================================
+
+bool GLW_InitDriver(int colorbits)
+{
+	static PIXELFORMATDESCRIPTOR pfd;		// save between frames since 'tr' gets cleared
+
+	GLog.Write("Initializing OpenGL driver\n");
+
+	//
+	// get a DC for our window if we don't already have one allocated
+	//
+	if (maindc == NULL)
+	{
+		GLog.Write("...getting DC: ");
+
+		if ((maindc = GetDC(GMainWindow)) == NULL)
+		{
+			GLog.Write("failed\n");
+			return false;
+		}
+		GLog.Write("succeeded\n");
+	}
+
+	if (colorbits == 0)
+	{
+		colorbits = desktopBitsPixel;
+	}
+
+	//
+	// implicitly assume Z-buffer depth == desktop color depth
+	//
+	int depthbits;
+	if (r_depthbits->integer == 0)
+	{
+		if (colorbits > 16)
+		{
+			depthbits = 24;
+		}
+		else
+		{
+			depthbits = 16;
+		}
+	}
+	else
+	{
+		depthbits = r_depthbits->integer;
+	}
+
+	//
+	// do not allow stencil if Z-buffer depth likely won't contain it
+	//
+	int stencilbits = r_stencilbits->integer;
+	if (depthbits < 24)
+	{
+		stencilbits = 0;
+	}
+
+	//
+	// make two attempts to set the PIXELFORMAT
+	//
+
+	//
+	// first attempt: r_colorbits, depthbits, and r_stencilbits
+	//
+	if (!pixelFormatSet)
+	{
+		GLW_CreatePFD(&pfd, colorbits, depthbits, stencilbits, !!r_stereo->integer);
+		int tpfd = GLW_MakeContext(&pfd);
+		if (tpfd != TRY_PFD_SUCCESS)
+		{
+			if (tpfd == TRY_PFD_FAIL_HARD)
+			{
+				if (maindc)
+				{
+					ReleaseDC(GMainWindow, maindc);
+					maindc = NULL;
+				}
+
+				GLog.Write(S_COLOR_YELLOW "...failed hard\n");
+				return false;
+			}
+
+			//
+			// punt if we've already tried the desktop bit depth and no stencil bits
+			//
+			if ((r_colorbits->integer == desktopBitsPixel) && (stencilbits == 0))
+			{
+				if (maindc)
+				{
+					ReleaseDC(GMainWindow, maindc);
+					maindc = NULL;
+				}
+
+				GLog.Write("...failed to find an appropriate PIXELFORMAT\n");
+
+				return false;
+			}
+
+			//
+			// second attempt: desktop's color bits and no stencil
+			//
+			if (colorbits > desktopBitsPixel)
+			{
+				colorbits = desktopBitsPixel;
+			}
+			GLW_CreatePFD(&pfd, colorbits, depthbits, 0, !!r_stereo->integer);
+			if (GLW_MakeContext(&pfd) != TRY_PFD_SUCCESS)
+			{
+				if (maindc)
+				{
+					ReleaseDC(GMainWindow, maindc);
+					maindc = NULL;
+				}
+
+				GLog.Write("...failed to find an appropriate PIXELFORMAT\n");
+
+				return false;
+			}
+		}
+
+		//
+		//	Report if stereo is desired but unavailable.
+		//
+		if (!(pfd.dwFlags & PFD_STEREO) && (r_stereo->integer != 0)) 
+		{
+			GLog.Write("...failed to select stereo pixel format\n");
+			glConfig.stereoEnabled = false;
+		}
+	}
+
+	//
+	//	Store PFD specifics.
+	//
+	glConfig.colorBits = (int)pfd.cColorBits;
+	glConfig.depthBits = (int)pfd.cDepthBits;
+	glConfig.stencilBits = (int)pfd.cStencilBits;
+
+	return true;
 }
 
 //==========================================================================

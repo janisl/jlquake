@@ -44,18 +44,6 @@ glwstate_t glw_state;
 extern QCvar *vid_fullscreen;
 extern QCvar *vid_ref;
 
-static qboolean VerifyDriver( void )
-{
-	char buffer[1024];
-
-	QStr::Cpy( buffer, (char*)qglGetString( GL_RENDERER ) );
-	QStr::ToLower( buffer );
-	if ( QStr::Cmp( buffer, "gdi generic" ) == 0 )
-		if ( !glw_state.mcd_accelerated )
-			return false;
-	return true;
-}
-
 /*
 ** VID_CreateWindow
 */
@@ -316,67 +304,7 @@ qboolean GLimp_Init(void*, void*)
 
 qboolean GLimp_InitGL (void)
 {
-    PIXELFORMATDESCRIPTOR pfd;
-	
-	GLW_CreatePFD(&pfd, 24, 32, 0, r_stereo->value != 0);
-
-	/*
-	** Get a DC for the specified window
-	*/
-	if ( maindc != NULL )
-		ri.Con_Printf( PRINT_ALL, "GLimp_Init() - non-NULL DC exists\n" );
-
-    if ( ( maindc = GetDC( GMainWindow ) ) == NULL )
-	{
-		ri.Con_Printf( PRINT_ALL, "GLimp_Init() - GetDC failed\n" );
-		return false;
-	}
-
-	if (GLW_MakeContext(&pfd))
-		goto fail;
-
-	if ( !( pfd.dwFlags & PFD_GENERIC_ACCELERATED ) )
-	{
-		if ( r_allowSoftwareGL->value )
-			glw_state.mcd_accelerated = true;
-		else
-			glw_state.mcd_accelerated = false;
-	}
-	else
-	{
-		glw_state.mcd_accelerated = true;
-	}
-
-	/*
-	** report if stereo is desired but unavailable
-	*/
-	if ( !( pfd.dwFlags & PFD_STEREO ) && ( stereo->value != 0 ) ) 
-	{
-		ri.Con_Printf( PRINT_ALL, "...failed to select stereo pixel format\n" );
-		Cvar_SetValueLatched( "r_stereo", 0 );
-		glConfig.stereoEnabled = false;
-	}
-
-	if ( !VerifyDriver() )
-	{
-		ri.Con_Printf( PRINT_ALL, "GLimp_Init() - no hardware acceleration detected\n" );
-		goto fail;
-	}
-
-	/*
-	** print out PFD specifics 
-	*/
-	ri.Con_Printf( PRINT_ALL, "GL PFD: color(%d-bits) Z(%d-bit)\n", ( int ) pfd.cColorBits, ( int ) pfd.cDepthBits );
-
-	return true;
-
-fail:
-	if ( maindc )
-	{
-		ReleaseDC( GMainWindow, maindc );
-		maindc = NULL;
-	}
-	return false;
+	return GLW_InitDriver(24);
 }
 
 /*

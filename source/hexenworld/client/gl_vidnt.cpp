@@ -1520,11 +1520,7 @@ void	VID_Init (unsigned char *palette)
 
 	VID_SetMode (vid_default, palette);
 
-    maindc = GetDC(GMainWindow);
-    static PIXELFORMATDESCRIPTOR pfd;
-	GLW_CreatePFD(&pfd, 24, 32, 0, false);
-
-	if (GLW_MakeContext(&pfd) == TRY_PFD_FAIL_HARD)
+	if (!GLW_InitDriver(24))
 		Sys_Error ("Could not initialize GL (wglCreateContext failed).\n\nMake sure you in are 65535 color mode, and try running -window.");
 
 	GL_Init ();
