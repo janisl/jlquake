@@ -321,7 +321,6 @@ static rserr_t GLW_SetMode(int mode,
 		glConfig.displayFrequency = dm.dmDisplayFrequency;
 	}
 
-	// NOTE: this is overridden later on standalone 3Dfx drivers
 	glConfig.isFullscreen = cdsFullscreen;
 
 	return RSERR_OK;
@@ -688,7 +687,7 @@ void GLimp_Shutdown( void )
 
 	ri.Printf( PRINT_ALL, "Shutting down OpenGL subsystem\n" );
 
-	// restore gamma.  We do this first because 3Dfx's extension needs a valid OGL subsystem
+	// restore gamma.
 	WG_RestoreGamma();
 
 	// set current context to NULL

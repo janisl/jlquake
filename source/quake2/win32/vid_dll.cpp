@@ -679,26 +679,6 @@ void VID_Init (void)
 	Cmd_AddCommand ("vid_restart", VID_Restart_f);
 	Cmd_AddCommand ("vid_front", VID_Front_f);
 
-	/*
-	** this is a gross hack but necessary to clamp the mode for 3Dfx
-	*/
-#if 0
-	{
-		QCvar *gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
-		QCvar *gl_mode = Cvar_Get( "gl_mode", "3", 0 );
-
-		if ( QStr::ICmp( gl_driver->string, "3dfxgl" ) == 0 )
-		{
-			Cvar_SetValueLatched( "gl_mode", 3 );
-			viddef.width  = 640;
-			viddef.height = 480;
-		}
-	}
-#endif
-
-	/* Disable the 3Dfx splash screen */
-	putenv("FX_GLIDE_NO_SPLASH=0");
-		
 	/* Start the graphics mode and load refresh DLL */
 	VID_CheckChanges();
 }

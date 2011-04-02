@@ -395,14 +395,14 @@ static void Check_Gamma (unsigned char *pal)
 	unsigned char	palette[768];
 	int		i;
 
-	if ((i = COM_CheckParm("-gamma")) == 0) {
-		if ((gl_renderer && strstr(gl_renderer, "Voodoo")) ||
-			(gl_vendor && strstr(gl_vendor, "3Dfx")))
-			vid_gamma = 1;
-		else
-			vid_gamma = 0.7; // default to 0.7 on non-3dfx hardware
-	} else
+	if ((i = COM_CheckParm("-gamma")) == 0)
+	{
+		vid_gamma = 0.7; // default to 0.7 on non-3dfx hardware
+	}
+	else
+	{
 		vid_gamma = QStr::Atof(COM_Argv(i+1));
+	}
 
 	for (i=0 ; i<768 ; i++)
 	{
