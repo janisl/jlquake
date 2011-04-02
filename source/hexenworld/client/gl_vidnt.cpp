@@ -29,7 +29,6 @@ typedef struct {
 	int			dib;
 	int			fullscreen;
 	int			bpp;
-	int			halfscreen;
 	char		modedesc[17];
 } vmode_t;
 
@@ -64,8 +63,6 @@ static qboolean	windowed, leavecurrentmode;
 static qboolean vid_canalttab = false;
 static qboolean vid_wassuspended = false;
 static int		windowed_mouse;
-
-int			DIBWidth, DIBHeight;
 
 int			vid_modenum = NO_MODE;
 int			vid_realmode;
@@ -113,7 +110,7 @@ QCvar*		vid_config_y;
 QCvar*		vid_stretch_by_2;
 QCvar*		_windowed_mouse;
 
-int			window_center_x, window_center_y, window_x, window_y, window_width, window_height;
+int			window_center_x, window_center_y, window_x, window_y;
 RECT		window_rect;
 
 // direct draw software compatability stuff
@@ -189,6 +186,9 @@ int VID_SetMode (int modenum, unsigned char *palette)
 		IN_ShowMouse();
 	}
 
+	glConfig.vidWidth = modelist[modenum].width;
+	glConfig.vidHeight = modelist[modenum].height;
+
 	// Set either the fullscreen or windowed mode
 	if (!fullscreen)
 	{
@@ -200,9 +200,8 @@ int VID_SetMode (int modenum, unsigned char *palette)
 		{
 			gdevmode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 			gdevmode.dmBitsPerPel = modelist[modenum].bpp;
-			gdevmode.dmPelsWidth = modelist[modenum].width <<
-								   modelist[modenum].halfscreen;
-			gdevmode.dmPelsHeight = modelist[modenum].height;
+			gdevmode.dmPelsWidth = glConfig.vidWidth;
+			gdevmode.dmPelsHeight = glConfig.vidHeight;
 			gdevmode.dmSize = sizeof (gdevmode);
 
 			if (ChangeDisplaySettings (&gdevmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
@@ -216,16 +215,13 @@ int VID_SetMode (int modenum, unsigned char *palette)
 		window_y = 0;
 	}
 
-	DIBWidth = modelist[modenum].width;
-	DIBHeight = modelist[modenum].height;
-
 	// Create the DIB window
-	stat = GLW_CreateWindow(modelist[modenum].width, modelist[modenum].height, 24, fullscreen);
+	stat = GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, fullscreen);
 
-	if (vid.conheight > modelist[modenum].height)
-		vid.conheight = modelist[modenum].height;
-	if (vid.conwidth > modelist[modenum].width)
-		vid.conwidth = modelist[modenum].width;
+	if (vid.conheight > glConfig.vidHeight)
+		vid.conheight = glConfig.vidHeight;
+	if (vid.conwidth > glConfig.vidWidth)
+		vid.conwidth = glConfig.vidWidth;
 	vid.width = vid.conwidth;
 	vid.height = vid.conheight;
 
@@ -237,8 +233,6 @@ int VID_SetMode (int modenum, unsigned char *palette)
 		IN_HideMouse ();
 	}
 
-	window_width = DIBWidth;
-	window_height = DIBHeight;
 	VID_UpdateWindowStatus ();
 
 	CDAudio_Resume ();
@@ -277,8 +271,8 @@ void VID_UpdateWindowStatus (void)
 
 	window_rect.left = window_x;
 	window_rect.top = window_y;
-	window_rect.right = window_x + window_width;
-	window_rect.bottom = window_y + window_height;
+	window_rect.right = window_x + glConfig.vidWidth;
+	window_rect.bottom = window_y + glConfig.vidHeight;
 	window_center_x = (window_rect.left + window_rect.right) / 2;
 	window_center_y = (window_rect.top + window_rect.bottom) / 2;
 
@@ -367,8 +361,8 @@ GL_BeginRendering
 void GL_BeginRendering (int *x, int *y, int *width, int *height)
 {
 	*x = *y = 0;
-	*width = DIBWidth;
-	*height = DIBHeight;
+	*width = glConfig.vidWidth;
+	*height = glConfig.vidHeight;
 
 //    if (!wglMakeCurrent( maindc, baseRC ))
 //		Sys_Error ("wglMakeCurrent failed");
@@ -1072,7 +1066,6 @@ void VID_InitDIB (HINSTANCE hInstance)
 	modelist[0].modenum = MODE_WINDOWED;
 	modelist[0].dib = 1;
 	modelist[0].fullscreen = 0;
-	modelist[0].halfscreen = 0;
 	modelist[0].bpp = 0;
 
 	nummodes = 1;
@@ -1115,28 +1108,12 @@ void VID_InitFullDIB (HINSTANCE hInstance)
 				modelist[nummodes].width = devmode.dmPelsWidth;
 				modelist[nummodes].height = devmode.dmPelsHeight;
 				modelist[nummodes].modenum = 0;
-				modelist[nummodes].halfscreen = 0;
 				modelist[nummodes].dib = 1;
 				modelist[nummodes].fullscreen = 1;
 				modelist[nummodes].bpp = devmode.dmBitsPerPel;
 				sprintf (modelist[nummodes].modedesc, "%dx%dx%d",
 						 devmode.dmPelsWidth, devmode.dmPelsHeight,
 						 devmode.dmBitsPerPel);
-
-			// if the width is more than twice the height, reduce it by half because this
-			// is probably a dual-screen monitor
-				if (!COM_CheckParm("-noadjustaspect"))
-				{
-					if (modelist[nummodes].width > (modelist[nummodes].height << 1))
-					{
-						modelist[nummodes].width >>= 1;
-						modelist[nummodes].halfscreen = 1;
-						sprintf (modelist[nummodes].modedesc, "%dx%dx%d",
-								 modelist[nummodes].width,
-								 modelist[nummodes].height,
-								 modelist[nummodes].bpp);
-					}
-				}
 
 				for (i=originalnummodes, existingmode = 0 ; i<nummodes ; i++)
 				{
@@ -1180,7 +1157,6 @@ void VID_InitFullDIB (HINSTANCE hInstance)
 				modelist[nummodes].width = devmode.dmPelsWidth;
 				modelist[nummodes].height = devmode.dmPelsHeight;
 				modelist[nummodes].modenum = 0;
-				modelist[nummodes].halfscreen = 0;
 				modelist[nummodes].dib = 1;
 				modelist[nummodes].fullscreen = 1;
 				modelist[nummodes].bpp = devmode.dmBitsPerPel;
@@ -1335,7 +1311,6 @@ void	VID_Init (unsigned char *palette)
 					modelist[nummodes].width = width;
 					modelist[nummodes].height = height;
 					modelist[nummodes].modenum = 0;
-					modelist[nummodes].halfscreen = 0;
 					modelist[nummodes].dib = 1;
 					modelist[nummodes].fullscreen = 1;
 					modelist[nummodes].bpp = bpp;
