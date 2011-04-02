@@ -288,6 +288,7 @@ void CL_PrepRefresh (void)
 			Com_Printf ("%s\r", name); 
 		SCR_UpdateScreen ();
 		Sys_SendKeyEvents ();	// pump message loop
+		IN_ProcessEvents();
 		if (name[0] == '#')
 		{
 			// special player weapon model
@@ -316,6 +317,7 @@ void CL_PrepRefresh (void)
 	{
 		cl.image_precache[i] = re.RegisterPic (cl.configstrings[CS_IMAGES+i]);
 		Sys_SendKeyEvents ();	// pump message loop
+		IN_ProcessEvents();
 	}
 	
 	Com_Printf ("                                     \r");
@@ -326,6 +328,7 @@ void CL_PrepRefresh (void)
 		Com_Printf ("client %i\r", i); 
 		SCR_UpdateScreen ();
 		Sys_SendKeyEvents ();	// pump message loop
+		IN_ProcessEvents();
 		CL_ParseClientinfo (i);
 		Com_Printf ("                                     \r");
 	}

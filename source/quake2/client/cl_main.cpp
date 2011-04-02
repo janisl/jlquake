@@ -866,6 +866,7 @@ void CL_Skins_f (void)
 		Com_Printf ("client %i: %s\n", i, cl.configstrings[CS_PLAYERSKINS+i]); 
 		SCR_UpdateScreen ();
 		Sys_SendKeyEvents ();	// pump message loop
+		IN_ProcessEvents();
 		CL_ParseClientinfo (i);
 	}
 }
@@ -1647,6 +1648,8 @@ void CL_SendCommand (void)
 
 	// allow mice or other external controllers to add commands
 	IN_Commands ();
+
+	IN_ProcessEvents();
 
 	// process console commands
 	Cbuf_Execute ();

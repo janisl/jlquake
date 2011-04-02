@@ -253,8 +253,7 @@ void Sys_AppActivate (void)
 
 void Sys_SendKeyEvents (void)
 {
-	if (KBD_Update_fp)
-		KBD_Update_fp();
+	KBD_Update();
 
 	// grab frame time 
 	sys_frame_time = Sys_Milliseconds_();

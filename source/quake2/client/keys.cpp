@@ -932,8 +932,24 @@ int Key_GetKey (void)
 	key_waiting = -1;
 
 	while (key_waiting == -1)
+	{
 		Sys_SendKeyEvents ();
+		IN_ProcessEvents();
+	}
 
 	return key_waiting;
 }
 
+
+void IN_ProcessEvents()
+{
+	for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
+	{
+		switch (ev.evType)
+		{
+		case SE_KEY:
+			Key_Event(ev.evValue, ev.evValue2, ev.evTime);
+			break;
+		}
+	}
+}

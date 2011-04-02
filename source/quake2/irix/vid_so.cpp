@@ -34,10 +34,6 @@ qboolean	reflib_active = 0;
 
 void Do_Key_Event(int key, qboolean down);
 
-void (*KBD_Update_fp)(void);
-void (*KBD_Init_fp)(Key_Event_fp_t fp);
-void (*KBD_Close_fp)(void);
-
 /** MOUSE *****************************************************************/
 
 in_state_t in_state;
@@ -150,14 +146,10 @@ void VID_NewWindow ( int width, int height)
 
 void VID_FreeReflib (void)
 {
-		if (KBD_Close_fp)
-			KBD_Close_fp();
+		KBD_Close();
 		if (RW_IN_Shutdown_fp)
 			RW_IN_Shutdown_fp();
 
-	KBD_Init_fp = NULL;
-	KBD_Update_fp = NULL;
-	KBD_Close_fp = NULL;
 	RW_IN_Init_fp = NULL;
 	RW_IN_Shutdown_fp = NULL;
 	RW_IN_Activate_fp = NULL;
@@ -186,11 +178,9 @@ qboolean VID_LoadRefresh( char *name )
 
 	if ( reflib_active )
 	{
-		if (KBD_Close_fp)
-			KBD_Close_fp();
+		KBD_Close();
 		if (RW_IN_Shutdown_fp)
 			RW_IN_Shutdown_fp();
-		KBD_Close_fp = NULL;
 		RW_IN_Shutdown_fp = NULL;
 		re.Shutdown();
 		VID_FreeReflib ();
@@ -212,7 +202,6 @@ qboolean VID_LoadRefresh( char *name )
 
 	/* Init IN (Mouse) */
 	in_state.IN_CenterView_fp = IN_CenterView;
-	in_state.Key_Event_fp = Do_Key_Event;
 	in_state.viewangles = cl.viewangles;
 	in_state.in_strafe_state = &in_strafe.state;
 
@@ -244,16 +233,7 @@ qboolean VID_LoadRefresh( char *name )
 	setegid(getgid());
 
 	/* Init KBD */
-	{
-		void KBD_Init(void);
-		void KBD_Update(void);
-		void KBD_Close(void);
-
-		KBD_Init_fp = KBD_Init;
-		KBD_Update_fp = KBD_Update;
-		KBD_Close_fp = KBD_Close;
-	}
-	KBD_Init_fp(Do_Key_Event);
+	KBD_Init();
 	Real_IN_Init();
 
 	Com_Printf( "------------------------------------\n");
@@ -350,11 +330,9 @@ void VID_Shutdown (void)
 {
 	if ( reflib_active )
 	{
-		if (KBD_Close_fp)
-			KBD_Close_fp();
+		KBD_Close();
 		if (RW_IN_Shutdown_fp)
 			RW_IN_Shutdown_fp();
-		KBD_Close_fp = NULL;
 		RW_IN_Shutdown_fp = NULL;
 		re.Shutdown ();
 		VID_FreeReflib ();

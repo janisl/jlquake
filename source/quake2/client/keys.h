@@ -33,3 +33,4 @@ void Key_SetBinding (int keynum, char *binding);
 void Key_ClearStates (void);
 int Key_GetKey (void);
 
+void IN_ProcessEvents();
