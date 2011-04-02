@@ -1050,7 +1050,7 @@ CL_Minimize_f
 =================
 */
 void CL_Windows_f (void) {
-//	if (modestate == MS_WINDOWED)
+//	if (!cdsFullscreen)
 //		ShowWindow(GMainWindow, SW_MINIMIZE);
 //	else
 		SendMessage(GMainWindow, WM_SYSKEYUP, VK_TAB, 1 | (0x0F << 16) | (1<<29));

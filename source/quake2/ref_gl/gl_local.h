@@ -321,7 +321,6 @@ void GL_DrawParticles( int n, const particle_t particles[], const unsigned color
 typedef struct
 {
 	float inverse_intensity;
-	qboolean fullscreen;
 
 	int     prev_mode;
 

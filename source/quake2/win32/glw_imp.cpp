@@ -111,7 +111,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 		ri.Con_Printf( PRINT_ALL, "...calling CDS: " );
 		if ( ChangeDisplaySettings( &dm, CDS_FULLSCREEN ) == DISP_CHANGE_SUCCESSFUL )
 		{
-			gl_state.fullscreen = true;
+			cdsFullscreen = true;
 
 			ri.Con_Printf( PRINT_ALL, "ok\n" );
 
@@ -150,7 +150,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 				*pwidth = glConfig.vidWidth;
 				*pheight = glConfig.vidHeight;
-				gl_state.fullscreen = false;
+				cdsFullscreen = false;
 				if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, false) )
 					return RSERR_INVALID_MODE;
 				return RSERR_INVALID_FULLSCREEN;
@@ -161,7 +161,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 				if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, true) )
 					return RSERR_INVALID_MODE;
 
-				gl_state.fullscreen = true;
+				cdsFullscreen = true;
 				return RSERR_OK;
 			}
 		}
@@ -172,7 +172,7 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 		ChangeDisplaySettings( 0, 0 );
 
-		gl_state.fullscreen = false;
+		cdsFullscreen = false;
 		if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, 24, false) )
 			return RSERR_INVALID_MODE;
 	}
@@ -216,10 +216,10 @@ void GLimp_Shutdown( void )
 
 	UnregisterClass (WINDOW_CLASS_NAME, global_hInstance);
 
-	if ( gl_state.fullscreen )
+	if ( cdsFullscreen )
 	{
 		ChangeDisplaySettings( 0, 0 );
-		gl_state.fullscreen = false;
+		cdsFullscreen = false;
 	}
 }
 

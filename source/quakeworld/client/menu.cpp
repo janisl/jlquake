@@ -546,7 +546,7 @@ void M_Options_Draw (void)
 		M_Print (16, 144, "         Video Options");
 
 #ifdef _WIN32
-	if (modestate == MS_WINDOWED)
+	if (!cdsFullscreen)
 	{
 #endif
 		M_Print (16, 152, "             Use Mouse");
@@ -624,7 +624,7 @@ void M_Options_Key (int k)
 
 	if ((options_cursor == 15) 
 #ifdef _WIN32
-	&& (modestate != MS_WINDOWED)
+	&& (cdsFullscreen)
 #endif
 	)
 	{

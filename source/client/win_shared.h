@@ -39,5 +39,6 @@ extern HGLRC		baseRC;
 extern int			desktopBitsPixel;
 extern int			desktopWidth, desktopHeight;
 extern bool			pixelFormatSet;
+extern bool			cdsFullscreen;
 
 #endif

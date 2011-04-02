@@ -56,7 +56,8 @@ int		 desktopBitsPixel;
 int		 desktopWidth, desktopHeight;
 
 static bool		s_classRegistered = false;
-bool pixelFormatSet;
+bool			pixelFormatSet;
+bool			cdsFullscreen;
 
 // CODE --------------------------------------------------------------------
 

@@ -1014,7 +1014,7 @@ void M_Menu_Options_f (void)
 	m_entersound = true;
 
 #ifdef _WIN32
-	if ((options_cursor == 13) && (modestate != MS_WINDOWED))
+	if ((options_cursor == 13) && (cdsFullscreen))
 	{
 		options_cursor = 0;
 	}
@@ -1185,7 +1185,7 @@ void M_Options_Draw (void)
 		M_Print (16, 128, "         Video Options");
 
 #ifdef _WIN32
-	if (modestate == MS_WINDOWED)
+	if (!cdsFullscreen)
 	{
 		M_Print (16, 136, "             Use Mouse");
 		M_DrawCheckbox (220, 136, _windowed_mouse->value);
@@ -1260,7 +1260,7 @@ void M_Options_Key (int k)
 	}
 
 #ifdef _WIN32
-	if ((options_cursor == 13) && (modestate != MS_WINDOWED))
+	if ((options_cursor == 13) && (cdsFullscreen))
 	{
 		if (k == K_UPARROW)
 			options_cursor = 12;

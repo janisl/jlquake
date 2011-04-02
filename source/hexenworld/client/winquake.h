@@ -34,8 +34,6 @@ extern DWORD gSndBufSize;
 
 typedef enum {MS_WINDOWED, MS_FULLSCREEN, MS_FULLDIB, MS_UNINIT} modestate_t;
 
-extern modestate_t	modestate;
-
 extern qboolean		ActiveApp, Minimized;
 
 extern qboolean	WinNT;

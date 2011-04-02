@@ -37,7 +37,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../renderer/tr_local.h"
 #include "../qcommon/qcommon.h"
 #include "resource.h"
-#include "glw_win.h"
 #include "win_local.h"
 
 extern void WG_CheckHardwareGamma( void );
@@ -53,13 +52,6 @@ static rserr_t	GLW_SetMode( int mode,
 //
 qboolean QGL_Init();
 void     QGL_Shutdown( void );
-
-//
-// variable declarations
-//
-glwstate_t glw_state;
-
-
 
 /*
 ** GLW_StartDriverAndSetMode
@@ -198,7 +190,7 @@ static rserr_t GLW_SetMode(int mode,
 		//
 		// if we're already in fullscreen then just create the window
 		//
-		if ( glw_state.cdsFullscreen )
+		if (::cdsFullscreen)
 		{
 			ri.Printf( PRINT_ALL, "...already fullscreen, avoiding redundant CDS\n" );
 
@@ -229,7 +221,7 @@ static rserr_t GLW_SetMode(int mode,
 					return RSERR_INVALID_MODE;
 				}
 				
-				glw_state.cdsFullscreen = qtrue;
+				::cdsFullscreen = qtrue;
 			}
 			else
 			{
@@ -268,7 +260,7 @@ static rserr_t GLW_SetMode(int mode,
 						return RSERR_INVALID_MODE;
 					}
 					
-					glw_state.cdsFullscreen = qtrue;
+					::cdsFullscreen = qtrue;
 				}
 				else
 				{
@@ -279,7 +271,7 @@ static rserr_t GLW_SetMode(int mode,
 					ri.Printf( PRINT_ALL, "...restoring display settings\n" );
 					ChangeDisplaySettings( 0, 0 );
 					
-					glw_state.cdsFullscreen = qfalse;
+					::cdsFullscreen = qfalse;
 					glConfig.isFullscreen = qfalse;
 					if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse) )
 					{
@@ -292,12 +284,12 @@ static rserr_t GLW_SetMode(int mode,
 	}
 	else
 	{
-		if ( glw_state.cdsFullscreen )
+		if (::cdsFullscreen)
 		{
 			ChangeDisplaySettings( 0, 0 );
 		}
 
-		glw_state.cdsFullscreen = qfalse;
+		::cdsFullscreen = qfalse;
 		if ( !GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, qfalse ) )
 		{
 			return RSERR_INVALID_MODE;
@@ -664,11 +656,11 @@ void GLimp_Shutdown( void )
 	}
 
 	// reset display settings
-	if ( glw_state.cdsFullscreen )
+	if (::cdsFullscreen)
 	{
 		ri.Printf( PRINT_ALL, "...resetting display\n" );
 		ChangeDisplaySettings( 0, 0 );
-		glw_state.cdsFullscreen = qfalse;
+		::cdsFullscreen = qfalse;
 	}
 
 	// shutdown QGL subsystem

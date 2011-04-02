@@ -101,8 +101,6 @@ unsigned char d_15to8table[65536];
 
 float		gldepthmin, gldepthmax;
 
-modestate_t	modestate = MS_UNINIT;
-
 void VID_MenuDraw (void);
 void VID_MenuKey (int key);
 
@@ -209,7 +207,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	// Set either the fullscreen or windowed mode
 	if (!fullscreen)
 	{
-		modestate = MS_WINDOWED;
+		cdsFullscreen = false;
 	}
 	else
 	{
@@ -225,7 +223,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 				Sys_Error ("Couldn't set fullscreen DIB mode");
 		}
 
-		modestate = MS_FULLDIB;
+		cdsFullscreen = true;
 
 		// needed because we're not getting WM_MOVE messages fullscreen on NT
 		window_x = 0;
@@ -394,7 +392,7 @@ void GL_EndRendering (void)
 		SwapBuffers(maindc);
 
 // handle the mouse state when windowed if that's changed
-	if (modestate == MS_WINDOWED)
+	if (!cdsFullscreen)
 	{
 		if (!_windowed_mouse->value) {
 			if (windowed_mouse)	{
@@ -512,7 +510,7 @@ void	VID_Shutdown (void)
 		if (hDC && GMainWindow)
 			ReleaseDC(GMainWindow, hDC);
 
-		if (modestate == MS_FULLDIB)
+		if (cdsFullscreen)
 			ChangeDisplaySettings (NULL, 0);
 
 		if (maindc && GMainWindow)
@@ -635,7 +633,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 
 	if (fActive)
 	{
-		if (modestate == MS_FULLDIB)
+		if (cdsFullscreen)
 		{
 			IN_ActivateMouse ();
 			IN_HideMouse ();
@@ -645,7 +643,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 				ShowWindow(GMainWindow, SW_SHOWNORMAL);
 			}
 		}
-		else if ((modestate == MS_WINDOWED) && _windowed_mouse->value && in_keyCatchers == 0)
+		else if ((!cdsFullscreen) && _windowed_mouse->value && in_keyCatchers == 0)
 		{
 			IN_ActivateMouse ();
 			IN_HideMouse ();
@@ -654,7 +652,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 
 	if (!fActive)
 	{
-		if (modestate == MS_FULLDIB)
+		if (cdsFullscreen)
 		{
 			IN_DeactivateMouse ();
 			IN_ShowMouse ();
@@ -663,7 +661,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 				vid_wassuspended = true;
 			}
 		}
-		else if ((modestate == MS_WINDOWED) && _windowed_mouse->value)
+		else if ((!cdsFullscreen) && _windowed_mouse->value)
 		{
 			IN_DeactivateMouse ();
 			IN_ShowMouse ();
@@ -689,7 +687,7 @@ LONG WINAPI MainWndProc (
     switch (uMsg)
     {
 		case WM_KILLFOCUS:
-			if (modestate == MS_FULLDIB)
+			if (cdsFullscreen)
 				ShowWindow(GMainWindow, SW_SHOWMINNOACTIVE);
 			break;
 
@@ -882,7 +880,7 @@ char *VID_GetExtModeDescription (int mode)
 	}
 	else
 	{
-		if (modestate == MS_WINDOWED)
+		if (!cdsFullscreen)
 			sprintf(pinfo, "%s windowed", pv->modedesc);
 		else
 			sprintf(pinfo, "windowed");
