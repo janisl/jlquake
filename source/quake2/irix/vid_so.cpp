@@ -38,13 +38,6 @@ void Do_Key_Event(int key, qboolean down);
 
 in_state_t in_state;
 
-void (*RW_IN_Init_fp)(in_state_t *in_state_p);
-void (*RW_IN_Shutdown_fp)(void);
-void (*RW_IN_Activate_fp)(qboolean active);
-void (*RW_IN_Commands_fp)(void);
-void (*RW_IN_Move_fp)(usercmd_t *cmd);
-void (*RW_IN_Frame_fp)(void);
-
 void Real_IN_Init (void);
 
 /*
@@ -146,16 +139,8 @@ void VID_NewWindow ( int width, int height)
 
 void VID_FreeReflib (void)
 {
-		KBD_Close();
-		if (RW_IN_Shutdown_fp)
-			RW_IN_Shutdown_fp();
-
-	RW_IN_Init_fp = NULL;
-	RW_IN_Shutdown_fp = NULL;
-	RW_IN_Activate_fp = NULL;
-	RW_IN_Commands_fp = NULL;
-	RW_IN_Move_fp = NULL;
-	RW_IN_Frame_fp = NULL;
+	KBD_Close();
+	RW_IN_Shutdown();
 
 	Com_Memset(&re, 0, sizeof(re));
 	reflib_active  = false;
@@ -179,9 +164,7 @@ qboolean VID_LoadRefresh( char *name )
 	if ( reflib_active )
 	{
 		KBD_Close();
-		if (RW_IN_Shutdown_fp)
-			RW_IN_Shutdown_fp();
-		RW_IN_Shutdown_fp = NULL;
+		RW_IN_Shutdown();
 		re.Shutdown();
 		VID_FreeReflib ();
 	}
@@ -204,22 +187,6 @@ qboolean VID_LoadRefresh( char *name )
 	in_state.IN_CenterView_fp = IN_CenterView;
 	in_state.viewangles = cl.viewangles;
 	in_state.in_strafe_state = &in_strafe.state;
-
-	{
-	    void RW_IN_Init(in_state_t *in_state_p);
-	    void RW_IN_Shutdown(void);
-	    void RW_IN_Commands (void);
-	    void RW_IN_Move (usercmd_t *cmd);
-	    void RW_IN_Frame (void);
-	    void RW_IN_Activate(void);
-
-	    RW_IN_Init_fp = RW_IN_Init;
-	    RW_IN_Shutdown_fp = RW_IN_Shutdown;
-	    RW_IN_Activate_fp = RW_IN_Activate;
-	    RW_IN_Commands_fp = RW_IN_Commands;
-	    RW_IN_Move_fp = RW_IN_Move;
-	    RW_IN_Frame_fp = RW_IN_Frame;
-	}
 
 	if ( re.Init( 0, 0 ) == -1 )
 	{
@@ -331,9 +298,7 @@ void VID_Shutdown (void)
 	if ( reflib_active )
 	{
 		KBD_Close();
-		if (RW_IN_Shutdown_fp)
-			RW_IN_Shutdown_fp();
-		RW_IN_Shutdown_fp = NULL;
+		RW_IN_Shutdown();
 		re.Shutdown ();
 		VID_FreeReflib ();
 	}
@@ -354,38 +319,31 @@ void IN_Init (void)
 
 void Real_IN_Init (void)
 {
-	if (RW_IN_Init_fp)
-		RW_IN_Init_fp(&in_state);
+	RW_IN_Init(&in_state);
 }
 
 void IN_Shutdown (void)
 {
-	if (RW_IN_Shutdown_fp)
-		RW_IN_Shutdown_fp();
+	RW_IN_Shutdown();
 }
 
 void IN_Commands (void)
 {
-	if (RW_IN_Commands_fp)
-		RW_IN_Commands_fp();
 }
 
 void IN_Move (usercmd_t *cmd)
 {
-	if (RW_IN_Move_fp)
-		RW_IN_Move_fp(cmd);
+	RW_IN_Move_fp(cmd);
 }
 
 void IN_Frame (void)
 {
-	if (RW_IN_Frame_fp)
-		RW_IN_Frame_fp();
+	RW_IN_Frame();
 }
 
 void IN_Activate (qboolean active)
 {
-	if (RW_IN_Activate_fp)
-		RW_IN_Activate_fp(active);
+	RW_IN_Activate(active);
 }
 
 void Do_Key_Event(int key, qboolean down)

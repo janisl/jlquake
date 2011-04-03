@@ -42,6 +42,7 @@ extern int			mx, my;
 extern QCvar*		in_mouse;
 extern QCvar*		in_dgamouse; // user pref for dga mouse
 extern QCvar*		in_nograb; // this is strictly for developers
+extern QCvar*		in_subframe;
 
 extern int			win_x, win_y;
 
@@ -57,6 +58,8 @@ void GLimp_SharedShutdown();
 char* XLateKey(XKeyEvent* ev, int& key);
 void IN_ActivateMouse();
 void IN_DeactivateMouse();
+int Sys_XTimeToSysTime(Time xtime);
+void SharedHandleEvents(XEvent& event);
 
 // Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
 extern int mouseResetTime;

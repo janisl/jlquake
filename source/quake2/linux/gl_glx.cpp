@@ -39,14 +39,6 @@ static int				x_shmeventtype;
 static qboolean			oktodraw = false;
 static qboolean			X11_active = false;
 
-struct
-{
-	int key;
-	int down;
-} keyq[64];
-int keyq_head=0;
-int keyq_tail=0;
-
 static int p_mouse_x, p_mouse_y;
 static QCvar	*_windowed_mouse;
 
@@ -72,8 +64,6 @@ typedef unsigned short PIXEL;
 
 // this is inside the renderer shared lib, so these are called from vid_so
 
-static int     mouse_buttonstate;
-static int     mouse_oldbuttonstate;
 static int   mouse_x, mouse_y;
 static int	old_mouse_x, old_mouse_y;
 
@@ -279,18 +269,8 @@ void GetEvent(void)
 	int b;
    
 	XNextEvent(dpy, &x_event);
+	SharedHandleEvents(x_event);
 	switch(x_event.type) {
-	case KeyPress:
-		XLateKey(&x_event.xkey, keyq[keyq_head].key);
-		keyq[keyq_head].down = true;
-		keyq_head = (keyq_head + 1) & 63;
-		break;
-	case KeyRelease:
-		XLateKey(&x_event.xkey, keyq[keyq_head].key);
-		keyq[keyq_head].down = false;
-		keyq_head = (keyq_head + 1) & 63;
-		break;
-
 	case MotionNotify:
 		if (_windowed_mouse->value) {
 			mx += ((int)x_event.xmotion.x - (int)(glConfig.vidWidth/2));
@@ -309,30 +289,6 @@ void GetEvent(void)
 		}
 		break;
 
-	case ButtonPress:
-		b=-1;
-		if (x_event.xbutton.button == 1)
-			b = 0;
-		else if (x_event.xbutton.button == 2)
-			b = 2;
-		else if (x_event.xbutton.button == 3)
-			b = 1;
-		if (b>=0)
-			mouse_buttonstate |= 1<<b;
-		break;
-
-	case ButtonRelease:
-		b=-1;
-		if (x_event.xbutton.button == 1)
-			b = 0;
-		else if (x_event.xbutton.button == 2)
-			b = 2;
-		else if (x_event.xbutton.button == 3)
-			b = 1;
-		if (b>=0)
-			mouse_buttonstate &= ~(1<<b);
-		break;
-	
 	case ConfigureNotify:
 		config_notify_width = x_event.xconfigure.width;
 		config_notify_height = x_event.xconfigure.height;
@@ -372,12 +328,6 @@ void KBD_Update(void)
 	{
 		while (XPending(dpy)) 
 			GetEvent();
-		while (keyq_head != keyq_tail)
-		{
-			//Do_Key_Event(keyq[keyq_tail].key, keyq[keyq_tail].down);
-			Sys_QueEvent(Sys_Milliseconds_(), SE_KEY, keyq[keyq_tail].key, keyq[keyq_tail].down, 0, NULL);
-			keyq_tail = (keyq_tail + 1) & 63;
-		}
 	}
 }
 
@@ -423,6 +373,8 @@ void RW_IN_Init(in_state_t *in_state_p)
 	m_forward = Cvar_Get ("m_forward", "1", 0);
 	m_side = Cvar_Get ("m_side", "0.8", 0);
 	in_nograb = Cvar_Get ("in_nograb", "0", 0);
+	// turn on-off sub-frame timing of X events
+	in_subframe = Cvar_Get ("in_subframe", "1", CVAR_ARCHIVE);
 
 	Cmd_AddCommand ("+mlook", RW_IN_MLookDown);
 	Cmd_AddCommand ("-mlook", RW_IN_MLookUp);
@@ -440,28 +392,6 @@ void RW_IN_Shutdown(void)
 	Cmd_RemoveCommand ("force_centerview");
 	Cmd_RemoveCommand ("+mlook");
 	Cmd_RemoveCommand ("-mlook");
-}
-
-/*
-===========
-IN_Commands
-===========
-*/
-void RW_IN_Commands (void)
-{
-	int i;
-   
-	if (!mouse_avail) 
-		return;
-   
-	for (i=0 ; i<3 ; i++) {
-		if ( (mouse_buttonstate & (1<<i)) && !(mouse_oldbuttonstate & (1<<i)) )
-			Do_Key_Event(K_MOUSE1 + i, true);
-
-		if ( !(mouse_buttonstate & (1<<i)) && (mouse_oldbuttonstate & (1<<i)) )
-			Do_Key_Event(K_MOUSE1 + i, false);
-	}
-	mouse_oldbuttonstate = mouse_buttonstate;
 }
 
 /*

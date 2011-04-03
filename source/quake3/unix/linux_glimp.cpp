@@ -67,8 +67,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bk001206 - not needed anymore
 // static qboolean autorepeaton = qtrue;
 
-QCvar *in_subframe;
-
 // bk001130 - from cvs1.17 (mkv), but not static
 QCvar   *in_joystick      = NULL;
 QCvar   *in_joystickDebug = NULL;
@@ -108,82 +106,11 @@ static const char *Q_stristr( const char *s, const char *find)
   return s;
 }
 
-// bk001206 - from Ryan's Fakk2
-/**
- * XPending() actually performs a blocking read 
- *  if no events available. From Fakk2, by way of
- *  Heretic2, by way of SDL, original idea GGI project.
- * The benefit of this approach over the quite
- *  badly behaved XAutoRepeatOn/Off is that you get
- *  focus handling for free, which is a major win
- *  with debug and windowed mode. It rests on the
- *  assumption that the X server will use the
- *  same timestamp on press/release event pairs 
- *  for key repeats. 
- */
-static qboolean X11_PendingInput(void) {
-
-  assert(dpy != NULL);
-
-  // Flush the display connection
-  //  and look to see if events are queued
-  XFlush( dpy );
-  if ( XEventsQueued( dpy, QueuedAlready) )
-  {
-    return qtrue;
-  }
-
-  // More drastic measures are required -- see if X is ready to talk
-  {
-    static struct timeval zero_time;
-    int x11_fd;
-    fd_set fdset;
-
-    x11_fd = ConnectionNumber( dpy );
-    FD_ZERO(&fdset);
-    FD_SET(x11_fd, &fdset);
-    if ( select(x11_fd+1, &fdset, NULL, NULL, &zero_time) == 1 )
-    {
-      return(XPending(dpy));
-    }
-  }
-
-  // Oh well, nothing is ready ..
-  return qfalse;
-}
-
-// bk001206 - from Ryan's Fakk2. See above.
-static qboolean repeated_press(XEvent *event)
-{
-  XEvent        peekevent;
-  qboolean      repeated = qfalse;
-
-  assert(dpy != NULL);
-
-  if (X11_PendingInput())
-  {
-    XPeekEvent(dpy, &peekevent);
-
-    if ((peekevent.type == KeyPress) &&
-        (peekevent.xkey.keycode == event->xkey.keycode) &&
-        (peekevent.xkey.time == event->xkey.time))
-    {
-      repeated = qtrue;
-      XNextEvent(dpy, &peekevent);  // skip event.
-    } // if
-  } // if
-
-  return(repeated);
-} // repeated_press
-
-int Sys_XTimeToSysTime (Time xtime);
 static void HandleEvents(void)
 {
   int b;
-  int key;
   XEvent event;
   qboolean dowarp = qfalse;
-  char *p;
   int dx, dy;
   int t = 0; // default to 0 in case we don't set
 	
@@ -193,40 +120,9 @@ static void HandleEvents(void)
   while (XPending(dpy))
   {
     XNextEvent(dpy, &event);
+	SharedHandleEvents(event);
     switch (event.type)
     {
-    case KeyPress:
-			t = Sys_XTimeToSysTime(event.xkey.time);
-      p = XLateKey(&event.xkey, key);
-      if (key)
-      {
-        Sys_QueEvent( t, SE_KEY, key, qtrue, 0, NULL );
-      }
-      if (p)
-      {
-        while (*p)
-        {
-          Sys_QueEvent( t, SE_CHAR, *p++, 0, 0, NULL );
-        }
-      }
-      break;
-
-    case KeyRelease:
-			t = Sys_XTimeToSysTime(event.xkey.time);
-      // bk001206 - handle key repeat w/o XAutRepatOn/Off
-      //            also: not done if console/menu is active.
-      // From Ryan's Fakk2.
-      // see game/q_shared.h, KEYCATCH_* . 0 == in 3d game.  
-      if (in_keyCatchers == 0)
-      {   // FIXME: KEYCATCH_NONE
-        if (repeated_press(&event) == qtrue)
-          continue;
-      } // if
-      XLateKey(&event.xkey, key);
-
-      Sys_QueEvent( t, SE_KEY, key, qfalse, 0, NULL );
-      break;
-
     case MotionNotify:
 			t = Sys_XTimeToSysTime(event.xkey.time);
       if (mouse_active)
@@ -277,70 +173,6 @@ static void HandleEvents(void)
           mwy = event.xmotion.y;
           dowarp = qtrue;
         }
-      }
-      break;
-
-    case ButtonPress:
-		  t = Sys_XTimeToSysTime(event.xkey.time);
-      if (event.xbutton.button == 4)
-      {
-        Sys_QueEvent( t, SE_KEY, K_MWHEELUP, qtrue, 0, NULL );
-      } else if (event.xbutton.button == 5)
-      {
-        Sys_QueEvent( t, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
-      } else
-      {
-        // NOTE TTimo there seems to be a weird mapping for K_MOUSE1 K_MOUSE2 K_MOUSE3 ..
-        b=-1;
-        if (event.xbutton.button == 1)
-        {
-          b = 0; // K_MOUSE1
-        } else if (event.xbutton.button == 2)
-        {
-          b = 2; // K_MOUSE3
-        } else if (event.xbutton.button == 3)
-        {
-          b = 1; // K_MOUSE2
-        } else if (event.xbutton.button == 6)
-        {
-          b = 3; // K_MOUSE4
-        } else if (event.xbutton.button == 7)
-        {
-          b = 4; // K_MOUSE5
-        };
-
-        Sys_QueEvent( t, SE_KEY, K_MOUSE1 + b, qtrue, 0, NULL );
-      }
-      break;
-
-    case ButtonRelease:
-		  t = Sys_XTimeToSysTime(event.xkey.time);
-      if (event.xbutton.button == 4)
-      {
-        Sys_QueEvent( t, SE_KEY, K_MWHEELUP, qfalse, 0, NULL );
-      } else if (event.xbutton.button == 5)
-      {
-        Sys_QueEvent( t, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL );
-      } else
-      {
-        b=-1;
-        if (event.xbutton.button == 1)
-        {
-          b = 0;
-        } else if (event.xbutton.button == 2)
-        {
-          b = 2;
-        } else if (event.xbutton.button == 3)
-        {
-          b = 1;
-        } else if (event.xbutton.button == 6)
-        {
-          b = 3; // K_MOUSE4
-        } else if (event.xbutton.button == 7)
-        {
-          b = 4; // K_MOUSE5
-        };
-        Sys_QueEvent( t, SE_KEY, K_MOUSE1 + b, qfalse, 0, NULL );
       }
       break;
 

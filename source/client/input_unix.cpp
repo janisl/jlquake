@@ -35,6 +35,9 @@
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
+//	Declared in core.
+extern unsigned long	sys_timeBase;
+
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -48,6 +51,8 @@ QCvar*					in_mouse;
 QCvar*					in_dgamouse; // user pref for dga mouse
 QCvar*					in_nograb; // this is strictly for developers
 
+QCvar*					in_subframe;
+
 static int mouse_accel_numerator;
 static int mouse_accel_denominator;
 static int mouse_threshold;    
@@ -56,6 +61,172 @@ static int mouse_threshold;
 int mouseResetTime = 0;
 
 // CODE --------------------------------------------------------------------
+
+//==========================================================================
+//
+//	CreateNullCursor
+//
+//	Makes a null cursor.
+//
+//==========================================================================
+
+static Cursor CreateNullCursor(Display *display, Window root)
+{
+	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
+	XGCValues xgc;
+	xgc.function = GXclear;
+	GC gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
+	XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
+	XColor dummycolour;
+	dummycolour.pixel = 0;
+	dummycolour.red = 0;
+	dummycolour.flags = 04;
+	Cursor cursor = XCreatePixmapCursor(display, cursormask, cursormask,
+		&dummycolour, &dummycolour, 0,0);
+	XFreePixmap(display, cursormask);
+	XFreeGC(display, gc);
+	return cursor;
+}
+
+//==========================================================================
+//
+//	install_grabs
+//
+//==========================================================================
+
+static void install_grabs()
+{
+	// inviso cursor
+	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	XSync(dpy, False);
+
+	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
+
+	XGrabPointer(dpy, win, // bk010108 - do this earlier?
+		False,
+		MOUSE_MASK,
+		GrabModeAsync, GrabModeAsync,
+		win,
+		None,
+		CurrentTime);
+
+	XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
+		&mouse_threshold);
+
+	XChangePointerControl(dpy, True, True, 1, 1, 0);
+
+	XSync(dpy, False);
+
+	mouseResetTime = Sys_Milliseconds();
+
+	if (in_dgamouse->value)
+	{
+		int MajorVersion, MinorVersion;
+
+		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
+		{
+			// unable to query, probalby not supported, force the setting to 0
+			GLog.Write("Failed to detect XF86DGA Mouse\n");
+			Cvar_Set("in_dgamouse", "0");
+		}
+		else
+		{
+			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
+			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+		}
+	}
+	else
+	{
+		mwx = glConfig.vidWidth / 2;
+		mwy = glConfig.vidHeight / 2;
+		mx = my = 0;
+	}
+
+
+	XGrabKeyboard(dpy, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+
+	XSync(dpy, False);
+}
+
+//==========================================================================
+//
+//	uninstall_grabs
+//
+//==========================================================================
+
+static void uninstall_grabs()
+{
+	if (in_dgamouse->value)
+	{
+		GLog.DWrite("DGA Mouse - Disabling DGA DirectVideo\n");
+		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
+	}
+
+	XChangePointerControl(dpy, True, True, mouse_accel_numerator, 
+		mouse_accel_denominator, mouse_threshold);
+
+	XUngrabPointer(dpy, CurrentTime);
+	XUngrabKeyboard(dpy, CurrentTime);
+
+	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+
+	// inviso cursor
+	XUndefineCursor(dpy, win);
+}
+
+//==========================================================================
+//
+//	IN_ActivateMouse
+//
+//==========================================================================
+
+void IN_ActivateMouse() 
+{
+	if (!mouse_avail || !dpy || !win)
+	{
+		return;
+	}
+
+	if (!mouse_active)
+	{
+		if (!in_nograb->value)
+		{
+			install_grabs();
+		}
+		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
+		{
+			Cvar_Set("in_dgamouse", "0");
+		}
+		mouse_active = true;
+	}
+}
+
+//==========================================================================
+//
+//	IN_DeactivateMouse
+//
+//==========================================================================
+
+void IN_DeactivateMouse() 
+{
+	if (!mouse_avail || !dpy || !win)
+	{
+		return;
+	}
+
+	if (mouse_active)
+	{
+		if (!in_nograb->value)
+		{
+			uninstall_grabs();
+		}
+		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
+		{
+			Cvar_Set("in_dgamouse", "0");
+		}
+		mouse_active = false;
+	}
+}
 
 /*****************************************************************************
 ** KEYBOARD
@@ -347,166 +518,265 @@ char* XLateKey(XKeyEvent* ev, int& key)
 
 //==========================================================================
 //
-//	CreateNullCursor
+//	Sys_XTimeToSysTime
 //
-//	Makes a null cursor.
+//	Sub-frame timing of events returned by X
+//	X uses the Time typedef - unsigned long
+//	disable with in_subframe 0
+//
+//	sys_timeBase*1000 is the number of ms since the Epoch of our origin
+//	xtime is in ms and uses the Epoch as origin
+//	Time data type is an unsigned long: 0xffffffff ms - ~49 days period
+//	I didn't find much info in the XWindow documentation about the wrapping
+// we clamp sys_timeBase*1000 to unsigned long, that gives us the current
+// origin for xtime the computation will still work if xtime wraps (at
+// ~49 days period since the Epoch) after we set sys_timeBase.
 //
 //==========================================================================
 
-static Cursor CreateNullCursor(Display *display, Window root)
+int Sys_XTimeToSysTime(unsigned long xtime)
 {
-	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
-	XGCValues xgc;
-	xgc.function = GXclear;
-	GC gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
-	XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
-	XColor dummycolour;
-	dummycolour.pixel = 0;
-	dummycolour.red = 0;
-	dummycolour.flags = 04;
-	Cursor cursor = XCreatePixmapCursor(display, cursormask, cursormask,
-		&dummycolour, &dummycolour, 0,0);
-	XFreePixmap(display, cursormask);
-	XFreeGC(display, gc);
-	return cursor;
+	int ret, time, test;
+	
+	if (!in_subframe->value)
+	{
+		// if you don't want to do any event times corrections
+		return Sys_Milliseconds();
+	}
+
+	// test the wrap issue
+#if 0	
+	// reference values for test: sys_timeBase 0x3dc7b5e9 xtime 0x541ea451 (read these from a test run)
+	// xtime will wrap in 0xabe15bae ms >~ 0x2c0056 s (33 days from Nov 5 2002 -> 8 Dec)
+	//   NOTE: date -d '1970-01-01 UTC 1039384002 seconds' +%c
+	// use sys_timeBase 0x3dc7b5e9+0x2c0056 = 0x3df3b63f
+	// after around 5s, xtime would have wrapped around
+	// we get 7132, the formula handles the wrap safely
+	unsigned long xtime_aux,base_aux;
+	int test;
+//	Com_Printf("sys_timeBase: %p\n", sys_timeBase);
+//	Com_Printf("xtime: %p\n", xtime);
+	xtime_aux = 500; // 500 ms after wrap
+	base_aux = 0x3df3b63f; // the base a few seconds before wrap
+	test = xtime_aux - (unsigned long)(base_aux*1000);
+	Com_Printf("xtime wrap test: %d\n", test);
+#endif
+
+	// some X servers (like suse 8.1's) report weird event times
+	// if the game is loading, resolving DNS, etc. we are also getting old events
+	// so we only deal with subframe corrections that look 'normal'
+	ret = xtime - (unsigned long)(sys_timeBase * 1000);
+	time = Sys_Milliseconds();
+	test = time - ret;
+	//printf("delta: %d\n", test);
+	if (test < 0 || test > 30) // in normal conditions I've never seen this go above
+	{
+		return time;
+	}
+
+	return ret;
 }
 
 //==========================================================================
 //
-//	install_grabs
+//	X11_PendingInput
+//
+//	bk001206 - from Ryan's Fakk2
+//
+//	XPending() actually performs a blocking read if no events available.
+// From Fakk2, by way of Heretic2, by way of SDL, original idea GGI project.
+// The benefit of this approach over the quite badly behaved XAutoRepeatOn/Off
+// is that you get focus handling for free, which is a major win with debug
+// and windowed mode. It rests on the assumption that the X server will use
+// the same timestamp on press/release event pairs for key repeats. 
 //
 //==========================================================================
 
-static void install_grabs()
+static bool X11_PendingInput()
 {
-	// inviso cursor
-	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-	XSync(dpy, False);
+	qassert(dpy != NULL);
 
-	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
-
-	XGrabPointer(dpy, win, // bk010108 - do this earlier?
-		False,
-		MOUSE_MASK,
-		GrabModeAsync, GrabModeAsync,
-		win,
-		None,
-		CurrentTime);
-
-	XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
-		&mouse_threshold);
-
-	XChangePointerControl(dpy, True, True, 1, 1, 0);
-
-	XSync(dpy, False);
-
-	mouseResetTime = Sys_Milliseconds();
-
-	if (in_dgamouse->value)
+	// Flush the display connection
+	//  and look to see if events are queued
+	XFlush(dpy);
+	if (XEventsQueued(dpy, QueuedAlready))
 	{
-		int MajorVersion, MinorVersion;
-
-		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
-		{
-			// unable to query, probalby not supported, force the setting to 0
-			GLog.Write("Failed to detect XF86DGA Mouse\n");
-			Cvar_Set("in_dgamouse", "0");
-		}
-		else
-		{
-			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
-		}
-	}
-	else
-	{
-		mwx = glConfig.vidWidth / 2;
-		mwy = glConfig.vidHeight / 2;
-		mx = my = 0;
+		return true;
 	}
 
+	// More drastic measures are required -- see if X is ready to talk
+	static struct timeval zero_time;
+	fd_set fdset;
 
-	XGrabKeyboard(dpy, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+	int x11_fd = ConnectionNumber(dpy);
+	FD_ZERO(&fdset);
+	FD_SET(x11_fd, &fdset);
+	if (select(x11_fd + 1, &fdset, NULL, NULL, &zero_time) == 1)
+	{
+		return XPending(dpy);
+	}
 
-	XSync(dpy, False);
+	// Oh well, nothing is ready ..
+	return false;
 }
 
 //==========================================================================
 //
-//	uninstall_grabs
+//	repeated_press
+//
+// bk001206 - from Ryan's Fakk2. See above.
 //
 //==========================================================================
 
-static void uninstall_grabs()
+static bool repeated_press(XEvent* event)
 {
-	if (in_dgamouse->value)
+	qassert(dpy != NULL);
+
+	bool repeated = false;
+	if (X11_PendingInput())
 	{
-		GLog.DWrite("DGA Mouse - Disabling DGA DirectVideo\n");
-		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
+		XEvent peekevent;
+		XPeekEvent(dpy, &peekevent);
+
+		if ((peekevent.type == KeyPress) &&
+			(peekevent.xkey.keycode == event->xkey.keycode) &&
+			(peekevent.xkey.time == event->xkey.time))
+		{
+			repeated = true;
+			XNextEvent(dpy, &peekevent);  // skip event.
+		}
 	}
 
-	XChangePointerControl(dpy, True, True, mouse_accel_numerator, 
-		mouse_accel_denominator, mouse_threshold);
-
-	XUngrabPointer(dpy, CurrentTime);
-	XUngrabKeyboard(dpy, CurrentTime);
-
-	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-
-	// inviso cursor
-	XUndefineCursor(dpy, win);
+	return repeated;
 }
 
 //==========================================================================
 //
-//	IN_ActivateMouse
+//	SharedHandleEvents
 //
 //==========================================================================
 
-void IN_ActivateMouse() 
+void SharedHandleEvents(XEvent& event)
 {
-	if (!mouse_avail || !dpy || !win)
-	{
-		return;
-	}
+	int t;
+	int key;
+	char* p;
 
-	if (!mouse_active)
-	{
-		if (!in_nograb->value)
+		switch (event.type)
 		{
-			install_grabs();
-		}
-		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
-		{
-			Cvar_Set("in_dgamouse", "0");
-		}
-		mouse_active = true;
-	}
-}
+		case KeyPress:
+			t = Sys_XTimeToSysTime(event.xkey.time);
+			p = XLateKey(&event.xkey, key);
+			if (key)
+			{
+				Sys_QueEvent(t, SE_KEY, key, true, 0, NULL);
+			}
+			if (p)
+			{
+				while (*p)
+				{
+					Sys_QueEvent(t, SE_CHAR, *p++, 0, 0, NULL);
+				}
+			}
+			break;
 
-//==========================================================================
-//
-//	IN_DeactivateMouse
-//
-//==========================================================================
+		case KeyRelease:
+			t = Sys_XTimeToSysTime(event.xkey.time);
+			// bk001206 - handle key repeat w/o XAutRepatOn/Off
+			//            also: not done if console/menu is active.
+			// From Ryan's Fakk2.
+			// see game/q_shared.h, KEYCATCH_* . 0 == in 3d game.  
+			if (in_keyCatchers == 0)
+			{
+				// FIXME: KEYCATCH_NONE
+				if (repeated_press(&event))
+				{
+					break;
+				}
+			}
+			XLateKey(&event.xkey, key);
+			Sys_QueEvent(t, SE_KEY, key, false, 0, NULL);
+			break;
 
-void IN_DeactivateMouse() 
-{
-	if (!mouse_avail || !dpy || !win)
-	{
-		return;
-	}
+		case ButtonPress:
+			t = Sys_XTimeToSysTime(event.xkey.time);
+			if (event.xbutton.button == 4)
+			{
+				Sys_QueEvent(t, SE_KEY, K_MWHEELUP, true, 0, NULL);
+			}
+			else if (event.xbutton.button == 5)
+			{
+				Sys_QueEvent(t, SE_KEY, K_MWHEELDOWN, true, 0, NULL);
+			}
+			else
+			{
+				// NOTE TTimo there seems to be a weird mapping for K_MOUSE1 K_MOUSE2 K_MOUSE3 ..
+				int b = -1;
+				if (event.xbutton.button == 1)
+				{
+					b = 0; // K_MOUSE1
+				}
+				else if (event.xbutton.button == 2)
+				{
+					b = 2; // K_MOUSE3
+				}
+				else if (event.xbutton.button == 3)
+				{
+					b = 1; // K_MOUSE2
+				}
+				else if (event.xbutton.button == 6)
+				{
+					b = 3; // K_MOUSE4
+				}
+				else if (event.xbutton.button == 7)
+				{
+					b = 4; // K_MOUSE5
+				}
+				if (b >= 0)
+				{
+					Sys_QueEvent(t, SE_KEY, K_MOUSE1 + b, true, 0, NULL);
+				}
+			}
+			break;
 
-	if (mouse_active)
-	{
-		if (!in_nograb->value)
-		{
-			uninstall_grabs();
+		case ButtonRelease:
+			t = Sys_XTimeToSysTime(event.xkey.time);
+			if (event.xbutton.button == 4)
+			{
+				Sys_QueEvent(t, SE_KEY, K_MWHEELUP, false, 0, NULL);
+			}
+			else if (event.xbutton.button == 5)
+			{
+				Sys_QueEvent(t, SE_KEY, K_MWHEELDOWN, false, 0, NULL);
+			}
+			else
+			{
+				int b = -1;
+				if (event.xbutton.button == 1)
+				{
+					b = 0;
+				}
+				else if (event.xbutton.button == 2)
+				{
+					b = 2;
+				}
+				else if (event.xbutton.button == 3)
+				{
+					b = 1;
+				}
+				else if (event.xbutton.button == 6)
+				{
+					b = 3; // K_MOUSE4
+				}
+				else if (event.xbutton.button == 7)
+				{
+					b = 4; // K_MOUSE5
+				}
+				if (b >= 0)
+				{
+					Sys_QueEvent(t, SE_KEY, K_MOUSE1 + b, false, 0, NULL);
+				}
+			}
+			break;
 		}
-		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
-		{
-			Cvar_Set("in_dgamouse", "0");
-		}
-		mouse_active = false;
-	}
 }

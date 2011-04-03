@@ -92,7 +92,6 @@ static void HandleEvents(void)
 	qboolean dowarp = false;
 	mwx = vid.width/2;
 	mwy = vid.height/2;
-	int key;
 
 	if (!dpy)
 		return;
@@ -100,13 +99,8 @@ static void HandleEvents(void)
 	while (XPending(dpy)) {
 		XNextEvent(dpy, &event);
 
+		SharedHandleEvents(event);
 		switch (event.type) {
-		case KeyPress:
-		case KeyRelease:
-			XLateKey(&event.xkey, key);
-			Sys_QueEvent(0, SE_KEY, key, event.type == KeyPress, 0, NULL);
-			break;
-
 		case MotionNotify:
 			if (mouse_active) {
 				if (in_dgamouse->value) {
@@ -124,32 +118,6 @@ static void HandleEvents(void)
 						dowarp = true;
 				}
 			}
-			break;
-
-			break;
-
-		case ButtonPress:
-			b=-1;
-			if (event.xbutton.button == 1)
-				b = 0;
-			else if (event.xbutton.button == 2)
-				b = 2;
-			else if (event.xbutton.button == 3)
-				b = 1;
-			if (b>=0)
-				Key_Event(K_MOUSE1 + b, true);
-			break;
-
-		case ButtonRelease:
-			b=-1;
-			if (event.xbutton.button == 1)
-				b = 0;
-			else if (event.xbutton.button == 2)
-				b = 2;
-			else if (event.xbutton.button == 3)
-				b = 1;
-			if (b>=0)
-				Key_Event(K_MOUSE1 + b, false);
 			break;
 
 		case CreateNotify :
@@ -425,7 +393,9 @@ void VID_Init(unsigned char *palette)
 	m_filter = Cvar_Get("m_filter", "0", 0);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 	in_nograb = Cvar_Get ("in_nograb", "0", 0);
-	
+	// turn on-off sub-frame timing of X events
+	in_subframe = Cvar_Get ("in_subframe", "1", CVAR_ARCHIVE);
+
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
 	vid.colormap = host_colormap;
