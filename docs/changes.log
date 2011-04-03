@@ -55,7 +55,7 @@
 20.04.2010
   I finished replacing use of stdio with use of file system for game created files like savegames, config files, screenshots etc. and made them all to be created in home directory.
 27.04.2010
-  I added clipmap to QUake and Hexen 2.
+  I added clipmap to Quake and Hexen 2.
 30.04.2010
   More work on Quake clipmap.
 02.05.2010
@@ -79,3 +79,78 @@
   I finished review. Hopefully all broken compatibility has been restored.
 07.01.2011
   I moved sound registration and background music playback methods to client lib. I enabled music in all games. Currently on Linux plays like crap, similar to Quake 2 cinematics.
+08.01.2011
+  Some changes to ALSA driver, music sounds almost good now.
+  Changed to compare against sound time in all games.
+09.01.2011
+  Rearanged fields to fix crash in Quake 3.
+  In Quake 3 don't set sfx to NULL in mixing code because code that frees channels later still depends on it.
+11.01.2011
+  I did more work on sound code merging.
+25.01.2011
+  I continued work on sound code merging. I changed Quake 2 to use Quake 3 interface for looping sounds.
+26.01.2011
+  I merged remaining sound code.
+28.01.2011
+  I merged CD audio drivers.
+29.01.2011
+  I moved Hexen 2's MIDI driver to client library.
+02.02.2011
+  I fixed crashed because of use of uninitialised cvars.
+  I moved Hexen2's Huffman encoding to net_chan and reused it on Linux. Thanks to sezero for pointing this out.
+  I cleaned up some leftovers of serial and IPX network drivers.
+04.02.2011
+  I stared work on sorting out clipmaps.
+14.02.2011
+  I moved Quake 2 clip map loading to core.
+16.02.2011
+  I moved Quake 3 clip map loading to core.
+17.02.2011
+  I changed Quake and Hexen 2 to also have clip maps.
+25.02.2011
+  I moved most of the clip map code to core.
+28.02.2011
+  I moved clip map area portals methods to core.
+02.03.2011
+  I moved clip map tracing code to core.
+04.03.2011
+  I merged clip map loading method.
+04.03.2011
+  I split non-map model code into a separate file, made list of non-map models global so models don't get unloaded on map changes.
+07.03.2011
+  I created clip map class for non-map models by copyig Quake clip map, removed non-map related code from Quake clip map.
+  I changed Quake clip map to reserve space for box on data arrays like later games do.
+  I moved core and client libraries to source folder so that libs is for third party libraries.
+25.03.2011
+  I sorted out QGL stuff. Platform independent stuff is now common. Changed Quake and Hexen 2 to use it.
+  I added platform independent wrapper around GetProcAddress functions.
+  I removed all workarounds for specific video cards and support for 8-bit textures.
+26.01.2011
+  I made it compile on 64 bit. Quake and Hexen 2 crash because of prog strings use ints to store pointer offsets which will not work for engine strings. Quake 2 is the only one that runs fine. Quake 3 crashes during file system initialisation.
+27.03.2011
+  I replaced all uses of vsprintf with Q_vsnprintf to make them all safe against buffer overflows. This fixed crash with newer video cards where extensions string exceeds buffer limits.
+28.03.2011
+  I fixed crash on 64-bit because of hardcoded pointer size of 4.
+29.03.2011
+  I took a look at ioquake3 to see how to fix some of the 64-bit issues in Quake 3.
+  I created initial version of Quake/Hexen 2 progs VM library, moved some progs globals and QuakeWorlds prog string fnctions to progsvm, changed all games to use them. For now that's all it will have. This made Quake and Hexen 2 run on 64 bit.
+  I fixed uses of FS_ReadFile with aray where trailing 0 was expected.
+30.03.2011
+  I fixed issue with arguments on 64 bit when calling a VM method.
+  I started work on merging GLX drivers.
+31.03.2011
+  I changed SWAP_DRAW_SURF macro to work on 64 bit and fixed playback of cinematics on 64 bit. Quake 3 runs fine now.
+31.03.2011
+  I merged main GLX initialisation, all games now properly go fullscreen, but those that didn't now don't have input. To fix that I started merging input code as well.
+01.04.2011
+  I did more work on input. It works in all games, but in Quake 2 mouse has some issues.
+  I changed all games to use Quake 3 style key catchers.
+  I merged common part for shutting down GLX.
+  Yey, OpenGL acceleration works in VirtualBox, that means I can do some testing there.
+  I started work on merging Windows GL driver as well.
+02.04.2011
+  I merged init and shutdown methods of QGL. Everything is common now.
+  I removed number of prog strings limit as it was giving problems when goint to the seconf map in Quake. I should add cleanup as well like DarkPlaces does it.
+  I started work on common event queue.
+03.04.2011
+  I decided to stop working on rendere for now anc concentrate on merging input and most of the remaining system specific code.
