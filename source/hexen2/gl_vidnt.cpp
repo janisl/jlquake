@@ -103,7 +103,7 @@ QCvar*		vid_config_y;
 QCvar*		vid_stretch_by_2;
 QCvar*		_windowed_mouse;
 
-int			window_center_x, window_center_y, window_x, window_y;
+int			window_x, window_y;
 RECT		window_rect;
 
 // direct draw software compatability stuff
@@ -166,7 +166,6 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	if (!fullscreen && (!_windowed_mouse->value || in_keyCatchers != 0))
 	{
 		IN_DeactivateMouse();
-		IN_ShowMouse();
 	}
 
 	glConfig.vidWidth = modelist[modenum].width;
@@ -194,7 +193,6 @@ int VID_SetMode (int modenum, unsigned char *palette)
 	if (fullscreen || (_windowed_mouse->value && in_keyCatchers == 0))
 	{
 		IN_ActivateMouse ();
-		IN_HideMouse ();
 	}
 
 	VID_UpdateWindowStatus ();
@@ -232,8 +230,6 @@ void VID_UpdateWindowStatus (void)
 	window_rect.top = window_y;
 	window_rect.right = window_x + glConfig.vidWidth;
 	window_rect.bottom = window_y + glConfig.vidHeight;
-	window_center_x = (window_rect.left + window_rect.right) / 2;
-	window_center_y = (window_rect.top + window_rect.bottom) / 2;
 
 	IN_UpdateClipCursor ();
 }
@@ -322,12 +318,10 @@ void GL_EndRendering (void)
 			if (_windowed_mouse->value)
 			{
 				IN_ActivateMouse ();
-				IN_HideMouse ();
 			}
 			else
 			{
 				IN_DeactivateMouse ();
-				IN_ShowMouse ();
 			}
 
 			windowed_mouse = (int)_windowed_mouse->value;
@@ -491,12 +485,10 @@ void AppActivate(BOOL fActive, BOOL minimize)
 		if (cdsFullscreen)
 		{
 			IN_ActivateMouse ();
-			IN_HideMouse ();
 		}
 		else if ((!cdsFullscreen) && _windowed_mouse->value)
 		{
 			IN_ActivateMouse ();
-			IN_HideMouse ();
 		}
 	}
 
@@ -505,12 +497,10 @@ void AppActivate(BOOL fActive, BOOL minimize)
 		if (cdsFullscreen)
 		{
 			IN_DeactivateMouse ();
-			IN_ShowMouse ();
 		}
 		else if ((!cdsFullscreen) && _windowed_mouse->value)
 		{
 			IN_DeactivateMouse ();
-			IN_ShowMouse ();
 		}
 	}
 }

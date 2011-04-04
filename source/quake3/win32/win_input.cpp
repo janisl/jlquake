@@ -36,8 +36,6 @@ typedef struct {
 
 static WinMouseVars_t s_wmv;
 
-static int	window_center_x, window_center_y;
-
 //
 // MIDI definitions
 //
@@ -94,95 +92,6 @@ void IN_StartupJoystick (void);
 void IN_JoyMove(void);
 
 static void MidiInfo_f( void );
-
-/*
-============================================================
-
-WIN32 MOUSE CONTROL
-
-============================================================
-*/
-
-/*
-================
-IN_InitWin32Mouse
-================
-*/
-void IN_InitWin32Mouse( void ) 
-{
-}
-
-/*
-================
-IN_ShutdownWin32Mouse
-================
-*/
-void IN_ShutdownWin32Mouse( void ) {
-}
-
-/*
-================
-IN_ActivateWin32Mouse
-================
-*/
-void IN_ActivateWin32Mouse( void ) {
-	int			width, height;
-	RECT		window_rect;
-
-	width = GetSystemMetrics (SM_CXSCREEN);
-	height = GetSystemMetrics (SM_CYSCREEN);
-
-	GetWindowRect ( GMainWindow, &window_rect);
-	if (window_rect.left < 0)
-		window_rect.left = 0;
-	if (window_rect.top < 0)
-		window_rect.top = 0;
-	if (window_rect.right >= width)
-		window_rect.right = width-1;
-	if (window_rect.bottom >= height-1)
-		window_rect.bottom = height-1;
-	window_center_x = (window_rect.right + window_rect.left)/2;
-	window_center_y = (window_rect.top + window_rect.bottom)/2;
-
-	SetCursorPos (window_center_x, window_center_y);
-
-	SetCapture ( GMainWindow );
-	ClipCursor (&window_rect);
-	while (ShowCursor (FALSE) >= 0)
-		;
-}
-
-/*
-================
-IN_DeactivateWin32Mouse
-================
-*/
-void IN_DeactivateWin32Mouse( void ) 
-{
-	ClipCursor (NULL);
-	ReleaseCapture ();
-	while (ShowCursor (TRUE) < 0)
-		;
-}
-
-/*
-================
-IN_Win32Mouse
-================
-*/
-void IN_Win32Mouse( int *mx, int *my ) {
-	POINT		current_pos;
-
-	// find mouse movement
-	GetCursorPos (&current_pos);
-
-	// force the mouse to the center, so there's room to move
-	SetCursorPos (window_center_x, window_center_y);
-
-	*mx = current_pos.x - window_center_x;
-	*my = current_pos.y - window_center_y;
-}
-
 
 /*
 ============================================================
@@ -574,7 +483,6 @@ void IN_StartupMouse( void )
 		Com_Printf ("Falling back to Win32 mouse support...\n");
 	}
 	s_wmv.mouseInitialized = qtrue;
-	IN_InitWin32Mouse();
 }
 
 /*

@@ -60,6 +60,9 @@ static byte s_scantokey[128] =
 	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0         // 7 
 }; 
 
+static int				window_center_x;
+static int				window_center_y;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -156,4 +159,83 @@ bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam)
 	}
 
 	return false;
+}
+
+//**************************************************************************
+//
+//	WIN32 MOUSE CONTROL
+//
+//**************************************************************************
+
+//==========================================================================
+//
+//	IN_ActivateWin32Mouse
+//
+//==========================================================================
+
+void IN_ActivateWin32Mouse()
+{
+	int width = GetSystemMetrics(SM_CXSCREEN);
+	int height = GetSystemMetrics(SM_CYSCREEN);
+
+	RECT window_rect;
+	GetWindowRect(GMainWindow, &window_rect);
+	if (window_rect.left < 0)
+	{
+		window_rect.left = 0;
+	}
+	if (window_rect.top < 0)
+	{
+		window_rect.top = 0;
+	}
+	if (window_rect.right >= width)
+	{
+		window_rect.right = width - 1;
+	}
+	if (window_rect.bottom >= height - 1)
+	{
+		window_rect.bottom = height - 1;
+	}
+	window_center_x = (window_rect.right + window_rect.left) / 2;
+	window_center_y = (window_rect.top + window_rect.bottom) / 2;
+
+	SetCursorPos(window_center_x, window_center_y);
+
+	SetCapture(GMainWindow);
+	ClipCursor(&window_rect);
+	while (ShowCursor(FALSE) >= 0)
+		;
+}
+
+//==========================================================================
+//
+//	IN_DeactivateWin32Mouse
+//
+//==========================================================================
+
+void IN_DeactivateWin32Mouse()
+{
+	ClipCursor(NULL);
+	ReleaseCapture();
+	while (ShowCursor(TRUE) < 0)
+		;
+}
+
+//==========================================================================
+//
+//	IN_Win32Mouse
+//
+//==========================================================================
+
+void IN_Win32Mouse(int* mx, int* my)
+{
+	// find mouse movement
+	POINT current_pos;
+	GetCursorPos(&current_pos);
+
+	// force the mouse to the center, so there's room to move
+	SetCursorPos(window_center_x, window_center_y);
+
+	*mx = current_pos.x - window_center_x;
+	*my = current_pos.y - window_center_y;
 }

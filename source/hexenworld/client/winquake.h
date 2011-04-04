@@ -49,7 +49,6 @@ void IN_MouseEvent (int mstate);
 
 extern QCvar*		_windowed_mouse;
 
-extern int		window_center_x, window_center_y;
 extern RECT		window_rect;
 
 extern qboolean	mouseinitialized;

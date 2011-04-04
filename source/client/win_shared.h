@@ -28,6 +28,9 @@ LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam);
+void IN_ActivateWin32Mouse();
+void IN_DeactivateWin32Mouse();
+void IN_Win32Mouse(int* mx, int* my);
 
 #define WINDOW_CLASS_NAME	"vQuake"
 

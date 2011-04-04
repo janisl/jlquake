@@ -35,7 +35,6 @@ QCvar*	m_filter;
 
 int			mouse_buttons;
 int			mouse_oldbuttonstate;
-POINT		current_pos;
 int			mouse_x, mouse_y, old_mouse_x, old_mouse_y, mx_accum, my_accum;
 
 static qboolean	restore_spi;
@@ -237,15 +236,15 @@ void IN_ActivateMouse (void)
 			{
 				return;
 			}
+			IN_HideMouse ();
 		}
 		else
 		{
 			if (mouseparmsvalid)
 				restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
 
-			SetCursorPos (window_center_x, window_center_y);
-			SetCapture (GMainWindow);
-			ClipCursor (&window_rect);
+			IN_ActivateWin32Mouse();
+			mouseshowtoggle = 0;
 		}
 
 		mouseactive = true;
@@ -287,14 +286,15 @@ void IN_DeactivateMouse (void)
 					dinput_acquired = false;
 				}
 			}
+		IN_ShowMouse();
 		}
 		else
 		{
 			if (restore_spi)
 				SystemParametersInfo (SPI_SETMOUSE, 0, originalmouseparms, 0);
 
-			ClipCursor (NULL);
-			ReleaseCapture ();
+			IN_DeactivateWin32Mouse();
+		mouseshowtoggle = 1;
 		}
 
 		mouseactive = false;
@@ -522,7 +522,6 @@ void IN_Shutdown (void)
 {
 
 	IN_DeactivateMouse ();
-	IN_ShowMouse ();
 
     if (g_pMouse)
 	{
@@ -667,9 +666,9 @@ void IN_MouseMove (usercmd_t *cmd)
 	}
 	else
 	{
-		GetCursorPos (&current_pos);
-		mx = current_pos.x - window_center_x + mx_accum;
-		my = current_pos.y - window_center_y + my_accum;
+		IN_Win32Mouse(&mx, &my);
+		mx += mx_accum;
+		my += my_accum;
 		mx_accum = 0;
 		my_accum = 0;
 	}
@@ -718,12 +717,6 @@ void IN_MouseMove (usercmd_t *cmd)
 		else
 			cmd->forwardmove -= m_forward->value * mouse_y;
 	}
-
-// if the mouse has moved, force it to the center, so there's room to move
-	if (mx || my)
-	{
-		SetCursorPos (window_center_x, window_center_y);
-	}
 }
 
 
@@ -757,13 +750,10 @@ void IN_Accumulate (void)
 	{
 		if (!dinput)
 		{
-			GetCursorPos (&current_pos);
+			IN_Win32Mouse(&mx, &my);
 
-			mx_accum += current_pos.x - window_center_x;
-			my_accum += current_pos.y - window_center_y;
-
-		// force the mouse to the center, so there's room to move
-			SetCursorPos (window_center_x, window_center_y);
+			mx_accum += mx;
+			my_accum += my;
 		}
 	}
 }

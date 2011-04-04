@@ -13,7 +13,6 @@ QCvar*	m_filter;
 
 int			mouse_buttons;
 int			mouse_oldbuttonstate;
-POINT		current_pos;
 int			mouse_x, mouse_y, old_mouse_x, old_mouse_y, mx_accum, my_accum;
 
 static qboolean	restore_spi;
@@ -157,12 +156,10 @@ void IN_ActivateMouse (void)
 		if (mouseparmsvalid)
 			restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
 
-		SetCursorPos (window_center_x, window_center_y);
-
 		mouseactive = true;
 
-		SetCapture (GMainWindow);
-		ClipCursor (&window_rect);
+			IN_ActivateWin32Mouse();
+		mouseshowtoggle = 0;
 	}
 }
 
@@ -196,8 +193,8 @@ void IN_DeactivateMouse (void)
 
 		mouseactive = false;
 
-		ClipCursor (NULL);
-		ReleaseCapture ();
+			IN_DeactivateWin32Mouse();
+		mouseshowtoggle = 1;
 	}
 }
 
@@ -315,7 +312,6 @@ void IN_Shutdown (void)
 {
 
 	IN_DeactivateMouse ();
-	IN_ShowMouse ();
 }
 
 
@@ -365,10 +361,10 @@ void IN_MouseMove (usercmd_t *cmd)
 //	if (sv_player->v.cameramode)	// Stuck in a different camera, don't move
 //		return;
 
-	GetCursorPos (&current_pos);
+	IN_Win32Mouse(&mx, &my);
 
-	mx = current_pos.x - window_center_x + mx_accum;
-	my = current_pos.y - window_center_y + my_accum;
+	mx += mx_accum;
+	my += my_accum;
 
 	mx_accum = 0;
 	my_accum = 0;
@@ -422,12 +418,6 @@ void IN_MouseMove (usercmd_t *cmd)
 		else if ((mouse_x >0) && (cl.v.movetype==MOVETYPE_FLY))
 			cl.idealroll=10;
 	}
-
-// if the mouse has moved, force it to the center, so there's room to move
-	if (mx || my)
-	{
-		SetCursorPos (window_center_x, window_center_y);
-	}
 }
 
 
@@ -466,13 +456,10 @@ void IN_Accumulate (void)
 
 	if (mouseactive)
 	{
-		GetCursorPos (&current_pos);
+		IN_Win32Mouse(&mx, &my);
 
-		mx_accum += current_pos.x - window_center_x;
-		my_accum += current_pos.y - window_center_y;
-
-	// force the mouse to the center, so there's room to move
-		SetCursorPos (window_center_x, window_center_y);
+		mx_accum += mx;
+		my_accum += my;
 	}
 }
 

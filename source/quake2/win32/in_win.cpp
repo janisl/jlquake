@@ -115,10 +115,7 @@ if (!freelook->value && lookspring->value)
 
 int			mouse_buttons;
 int			mouse_oldbuttonstate;
-POINT		current_pos;
 int			mouse_x, mouse_y, old_mouse_x, old_mouse_y, mx_accum, my_accum;
-
-int			old_x, old_y;
 
 qboolean	mouseactive;	// false when not focus app
 
@@ -127,7 +124,6 @@ qboolean	mouseinitialized;
 int		originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
 qboolean	mouseparmsvalid;
 
-int			window_center_x, window_center_y;
 RECT		window_rect;
 
 
@@ -140,8 +136,6 @@ Called when the window gains focus or changes in some way
 */
 void IN_ActivateMouse (void)
 {
-	int		width, height;
-
 	if (!mouseinitialized)
 		return;
 	if (!in_mouse->value)
@@ -157,31 +151,9 @@ void IN_ActivateMouse (void)
 	if (mouseparmsvalid)
 		restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
 
-	width = GetSystemMetrics (SM_CXSCREEN);
-	height = GetSystemMetrics (SM_CYSCREEN);
-
 	GetWindowRect ( GMainWindow, &window_rect);
-	if (window_rect.left < 0)
-		window_rect.left = 0;
-	if (window_rect.top < 0)
-		window_rect.top = 0;
-	if (window_rect.right >= width)
-		window_rect.right = width-1;
-	if (window_rect.bottom >= height-1)
-		window_rect.bottom = height-1;
 
-	window_center_x = (window_rect.right + window_rect.left)/2;
-	window_center_y = (window_rect.top + window_rect.bottom)/2;
-
-	SetCursorPos (window_center_x, window_center_y);
-
-	old_x = window_center_x;
-	old_y = window_center_y;
-
-	SetCapture ( GMainWindow );
-	ClipCursor (&window_rect);
-	while (ShowCursor (FALSE) >= 0)
-		;
+	IN_ActivateWin32Mouse();
 }
 
 
@@ -204,10 +176,7 @@ void IN_DeactivateMouse (void)
 
 	mouseactive = false;
 
-	ClipCursor (NULL);
-	ReleaseCapture ();
-	while (ShowCursor (TRUE) < 0)
-		;
+	IN_DeactivateWin32Mouse();
 }
 
 
@@ -274,17 +243,7 @@ void IN_MouseMove (usercmd_t *cmd)
 	if (!mouseactive)
 		return;
 
-	// find mouse movement
-	if (!GetCursorPos (&current_pos))
-		return;
-
-	mx = current_pos.x - window_center_x;
-	my = current_pos.y - window_center_y;
-
-#if 0
-	if (!mx && !my)
-		return;
-#endif
+	IN_Win32Mouse(&mx, &my);
 
 	if (m_filter->value)
 	{
@@ -317,10 +276,6 @@ void IN_MouseMove (usercmd_t *cmd)
 	{
 		cmd->forwardmove -= m_forward->value * mouse_y;
 	}
-
-	// force the mouse to the center, so there's room to move
-	if (mx || my)
-		SetCursorPos (window_center_x, window_center_y);
 }
 
 
