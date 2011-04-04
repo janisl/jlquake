@@ -31,6 +31,8 @@ bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam);
 void IN_ActivateWin32Mouse();
 void IN_DeactivateWin32Mouse();
 void IN_Win32Mouse(int* mx, int* my);
+void IN_StartupJoystick();
+void IN_JoyMove();
 
 #define WINDOW_CLASS_NAME	"vQuake"
 
@@ -41,5 +43,9 @@ extern HGLRC		baseRC;
 extern bool			pixelFormatSet;
 extern bool			cdsFullscreen;
 extern unsigned		sysMsgTime;
+extern QCvar*		in_joystick;
+extern QCvar*		in_debugJoystick;
+extern QCvar	*joy_threshold;
+extern QCvar	*in_joyBallScale;
 
 #endif
