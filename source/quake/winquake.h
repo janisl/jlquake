@@ -68,5 +68,3 @@ extern HANDLE	hinput, houtput;
 void IN_UpdateClipCursor (void);
 
 void VID_SetDefaultMode (void);
-
-void IN_Accumulate (void);

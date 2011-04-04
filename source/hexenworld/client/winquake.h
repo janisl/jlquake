@@ -60,7 +60,6 @@ void IN_UpdateClipCursor (void);
 
 void VID_SetDefaultMode (void);
 
-void IN_Accumulate (void);
 void IN_ClearStates (void);
 
 #endif

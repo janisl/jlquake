@@ -35,7 +35,7 @@ QCvar*	m_filter;
 
 int			mouse_buttons;
 int			mouse_oldbuttonstate;
-int			mouse_x, mouse_y, old_mouse_x, old_mouse_y, mx_accum, my_accum;
+int			mouse_x, mouse_y, old_mouse_x, old_mouse_y;
 
 static qboolean	restore_spi;
 static int		originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
@@ -666,10 +666,6 @@ void IN_MouseMove (usercmd_t *cmd)
 	else
 	{
 			IN_Win32Mouse(&mx, &my);
-	mx += mx_accum;
-	my += my_accum;
-	mx_accum = 0;
-	my_accum = 0;
 	}
 
 	if (m_filter->value)
@@ -733,26 +729,6 @@ void IN_Move (usercmd_t *cmd)
 
 
 /*
-===========
-IN_Accumulate
-===========
-*/
-void IN_Accumulate (void)
-{
-	int		mx, my;
-	HDC	hdc;
-
-	if (mouseactive)
-	{
-		IN_Win32Mouse(&mx, &my);
-
-		mx_accum += mx;
-		my_accum += my;
-	}
-}
-
-
-/*
 ===================
 IN_ClearStates
 ===================
@@ -762,8 +738,6 @@ void IN_ClearStates (void)
 
 	if (mouseactive)
 	{
-		mx_accum = 0;
-		my_accum = 0;
 		mouse_oldbuttonstate = 0;
 	}
 }
