@@ -44,7 +44,6 @@ qboolean	Minimized;
 
 static HANDLE		hinput, houtput;
 
-unsigned	sys_msg_time;
 unsigned	sys_frame_time;
 
 
@@ -363,7 +362,7 @@ void Sys_SendKeyEvents (void)
 	{
 		if (!GetMessage (&msg, NULL, 0, 0))
 			Sys_Quit ();
-		sys_msg_time = msg.time;
+		sysMsgTime = msg.time;
       	TranslateMessage (&msg);
       	DispatchMessage (&msg);
 	}
@@ -628,7 +627,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		{
 			if (!GetMessage (&msg, NULL, 0, 0))
 				Com_Quit ();
-			sys_msg_time = msg.time;
+			sysMsgTime = msg.time;
 			TranslateMessage (&msg);
    			DispatchMessage (&msg);
 		}

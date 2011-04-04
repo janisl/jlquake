@@ -157,6 +157,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\input_windows.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\mstrconv.cpp"
 				>
 			</File>

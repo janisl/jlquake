@@ -430,7 +430,7 @@ sysEvent_t Sys_GetEvent( void ) {
 		}
 
 		// save the msg time, because wndprocs don't have access to the timestamp
-		g_wv.sysMsgTime = msg.time;
+		sysMsgTime = msg.time;
 
 		TranslateMessage (&msg);
       	DispatchMessage (&msg);

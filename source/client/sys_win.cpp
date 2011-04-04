@@ -38,6 +38,9 @@
 
 HINSTANCE		global_hInstance;
 HWND			GMainWindow;
+// when we get a windows message, we store the time off so keyboard processing
+// can know the exact time of an event
+unsigned		sysMsgTime;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

@@ -440,6 +440,9 @@ void Sys_SendKeyEvents (void)
 		if (!GetMessage (&msg, NULL, 0, 0))
 			Sys_Quit ();
 
+		// save the msg time, because wndprocs don't have access to the timestamp
+		sysMsgTime = msg.time;
+
       	TranslateMessage (&msg);
       	DispatchMessage (&msg);
 	}
