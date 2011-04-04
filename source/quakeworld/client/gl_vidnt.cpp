@@ -574,10 +574,6 @@ LONG WINAPI MainWndProc (
 {
     LONG    lRet = 1;
 	int		fwKeys, xPos, yPos, fActive, fMinimized, temp;
-	extern unsigned int uiWheelMessage;
-
-	if ( uMsg == uiWheelMessage )
-		uMsg = WM_MOUSEWHEEL;
 
 	if (IN_HandleInputMessage(uMsg, wParam, lParam))
 	{

@@ -642,23 +642,6 @@ LONG WINAPI MainWndProc (
     LONG    lRet = 1;
 	int		fwKeys, xPos, yPos, fActive, fMinimized, temp;
 
-	if (uMsg == uMSG_MOUSEWHEEL && mwheelthreshold->value >= 1)
-	{
-		MWheelAccumulator += *(int *)&wParam;
-		while (MWheelAccumulator >= mwheelthreshold->value)
-		{
-			Key_Event(K_MWHEELUP, true);
-			Key_Event(K_MWHEELUP, false);
-			MWheelAccumulator -= mwheelthreshold->value;
-		}
-		while (MWheelAccumulator <= -mwheelthreshold->value)
-		{
-			Key_Event(K_MWHEELDOWN, true);
-			Key_Event(K_MWHEELDOWN, false);
-			MWheelAccumulator += mwheelthreshold->value;
-		}
-	}
-
 	if (IN_HandleInputMessage(uMsg, wParam, lParam))
 	{
 		return 0;

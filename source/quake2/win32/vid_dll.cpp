@@ -36,8 +36,6 @@ QCvar *win_noalttab;
 #define WM_MOUSEWHEEL (WM_MOUSELAST+1)  // message that will be supported by the OS 
 #endif
 
-static UINT MSH_MOUSEWHEEL;
-
 refexport_t GetRefAPI (refimport_t rimp);
 
 // Console variables that we need to access from this module
@@ -197,21 +195,6 @@ LONG WINAPI MainWndProc (
 {
 	LONG			lRet = 0;
 
-	if ( uMsg == MSH_MOUSEWHEEL )
-	{
-		if ( ( ( int ) wParam ) > 0 )
-		{
-			Key_Event( K_MWHEELUP, true, sysMsgTime );
-			Key_Event( K_MWHEELUP, false, sysMsgTime );
-		}
-		else
-		{
-			Key_Event( K_MWHEELDOWN, true, sysMsgTime );
-			Key_Event( K_MWHEELDOWN, false, sysMsgTime );
-		}
-        return DefWindowProc (hWnd, uMsg, wParam, lParam);
-	}
-
 	switch (uMsg)
 	{
 	case WM_MOUSEWHEEL:
@@ -236,8 +219,6 @@ LONG WINAPI MainWndProc (
 
 	case WM_CREATE:
 		GMainWindow = hWnd;
-
-		MSH_MOUSEWHEEL = RegisterWindowMessage("MSWHEEL_ROLLMSG"); 
         return DefWindowProc (hWnd, uMsg, wParam, lParam);
 
 	case WM_PAINT:

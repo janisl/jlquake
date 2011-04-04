@@ -32,8 +32,6 @@ static HANDLE		hinput, houtput;
 
 HANDLE		qwclsemaphore;
 
-UINT	uMSG_MOUSEWHEEL;
-
 void Sys_InitFloatTime (void);
 
 /*
@@ -534,12 +532,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		Sys_Error ("Not enough memory free; check disk space\n");
 
 	Sys_Init ();
-
-	uMSG_MOUSEWHEEL = RegisterWindowMessage("MSWHEEL_ROLLMSG");
-	if (!uMSG_MOUSEWHEEL)
-	{
-		Sys_Error ("Error Registering Message\n");
-	}
 
 	Sys_Printf ("Host_Init\n");
 	Host_Init (&parms);

@@ -14,8 +14,6 @@
 
 extern	int			global_nCmdShow;
 
-extern UINT	uMSG_MOUSEWHEEL;
-
 #ifndef SERVERONLY
 
 extern LPDIRECTDRAW		lpDD;

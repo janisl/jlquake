@@ -45,7 +45,6 @@ static qboolean	mouseparmsvalid, mouseactivatetoggle;
 static qboolean	mouseshowtoggle = 1;
 static qboolean	dinput_acquired;
 static unsigned int		mstate_di;
-unsigned int uiWheelMessage;
 
 qboolean	mouseactive;
 
@@ -508,8 +507,6 @@ void IN_Init (void)
 
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 	Cmd_AddCommand ("joyadvancedupdate", Joy_AdvancedUpdate_f);
-
-	uiWheelMessage = RegisterWindowMessage ( "MSWHEEL_ROLLMSG" );
 
 	IN_StartupMouse ();
 	IN_StartupJoystick ();
