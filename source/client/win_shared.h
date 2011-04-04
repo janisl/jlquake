@@ -33,6 +33,9 @@ void IN_DeactivateWin32Mouse();
 void IN_Win32Mouse(int* mx, int* my);
 void IN_StartupJoystick();
 void IN_JoyMove();
+void IN_StartupMIDI();
+void IN_ShutdownMIDI();
+void MidiInfo_f();
 
 #define WINDOW_CLASS_NAME	"vQuake"
 
@@ -47,5 +50,9 @@ extern QCvar*		in_joystick;
 extern QCvar*		in_debugJoystick;
 extern QCvar	*joy_threshold;
 extern QCvar	*in_joyBallScale;
+extern QCvar	*in_midi;
+extern QCvar	*in_midiport;
+extern QCvar	*in_midichannel;
+extern QCvar	*in_mididevice;
 
 #endif

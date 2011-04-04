@@ -38,6 +38,19 @@ struct joystickInfo_t
 	JOYINFOEX	ji;
 };
 
+//
+// MIDI definitions
+//
+#define MAX_MIDIIN_DEVICES	8
+
+struct MidiInfo_t
+{
+	int			numDevices;
+	MIDIINCAPS	caps[MAX_MIDIIN_DEVICES];
+
+	HMIDIIN		hMidiIn;
+};
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -94,6 +107,13 @@ static int joyDirectionKeys[16] =
 	K_JOY24, K_JOY25,
 	K_JOY26, K_JOY27
 };
+
+QCvar	*in_midi;
+QCvar	*in_midiport;
+QCvar	*in_midichannel;
+QCvar	*in_mididevice;
+
+static MidiInfo_t s_midiInfo;
 
 // CODE --------------------------------------------------------------------
 
@@ -523,4 +543,180 @@ void IN_JoyMove()
 			Sys_QueEvent(sysMsgTime, SE_MOUSE, x, y, 0, NULL);
 		}
 	}
+}
+
+//**************************************************************************
+//
+//	MIDI
+//
+//**************************************************************************
+
+//==========================================================================
+//
+//	MIDI_NoteOff
+//
+//==========================================================================
+
+static void MIDI_NoteOff(int note)
+{
+	int qkey = note - 60 + K_AUX1;
+
+	if (qkey > 255 || qkey < K_AUX1)
+	{
+		return;
+	}
+
+	Sys_QueEvent(sysMsgTime, SE_KEY, qkey, false, 0, NULL);
+}
+
+//==========================================================================
+//
+//	MIDI_NoteOn
+//
+//==========================================================================
+
+static void MIDI_NoteOn(int note, int velocity)
+{
+	if (velocity == 0)
+	{
+		MIDI_NoteOff(note);
+	}
+
+	int qkey = note - 60 + K_AUX1;
+
+	if (qkey > 255 || qkey < K_AUX1)
+	{
+		return;
+	}
+
+	Sys_QueEvent(sysMsgTime, SE_KEY, qkey, true, 0, NULL);
+}
+
+//==========================================================================
+//
+//	MidiInProc
+//
+//==========================================================================
+
+static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT uMsg, DWORD dwInstance, 
+	DWORD dwParam1, DWORD dwParam2 )
+{
+	int message;
+
+	switch (uMsg)
+	{
+	case MIM_OPEN:
+		break;
+	case MIM_CLOSE:
+		break;
+	case MIM_DATA:
+		message = dwParam1 & 0xff;
+
+		// note on
+		if ((message & 0xf0) == 0x90)
+		{
+			if (((message & 0x0f) + 1) == in_midichannel->integer)
+			{
+				MIDI_NoteOn((dwParam1 & 0xff00) >> 8, (dwParam1 & 0xff0000) >> 16);
+			}
+		}
+		else if (( message & 0xf0) == 0x80)
+		{
+			if (((message & 0x0f) + 1) == in_midichannel->integer)
+			{
+				MIDI_NoteOff((dwParam1 & 0xff00) >> 8);
+			}
+		}
+		break;
+	case MIM_LONGDATA:
+		break;
+	case MIM_ERROR:
+		break;
+	case MIM_LONGERROR:
+		break;
+	}
+}
+
+//==========================================================================
+//
+//	MidiInfo_f
+//
+//==========================================================================
+
+void MidiInfo_f()
+{
+	const char* enableStrings[] = { "disabled", "enabled" };
+
+	GLog.Write("\nMIDI control:       %s\n", enableStrings[in_midi->integer != 0]);
+	GLog.Write("port:               %d\n", in_midiport->integer);
+	GLog.Write("channel:            %d\n", in_midichannel->integer);
+	GLog.Write("current device:     %d\n", in_mididevice->integer);
+	GLog.Write("number of devices:  %d\n", s_midiInfo.numDevices);
+	for (int i = 0; i < s_midiInfo.numDevices; i++)
+	{
+		if (i == Cvar_VariableValue("in_mididevice"))
+		{
+			GLog.Write("***");
+		}
+		else
+		{
+			GLog.Write("...");
+		}
+		GLog.Write("device %2d:       %s\n", i, s_midiInfo.caps[i].szPname);
+		GLog.Write("...manufacturer ID: 0x%hx\n", s_midiInfo.caps[i].wMid);
+		GLog.Write("...product ID:      0x%hx\n", s_midiInfo.caps[i].wPid);
+
+		GLog.Write("\n");
+	}
+}
+
+//==========================================================================
+//
+//	IN_StartupMIDI
+//
+//==========================================================================
+
+void IN_StartupMIDI()
+{
+	if (!Cvar_VariableValue("in_midi"))
+	{
+		return;
+	}
+
+	//
+	// enumerate MIDI IN devices
+	//
+	s_midiInfo.numDevices = midiInGetNumDevs();
+
+	for (int i = 0; i < s_midiInfo.numDevices; i++)
+	{
+		midiInGetDevCaps(i, &s_midiInfo.caps[i], sizeof(s_midiInfo.caps[i]));
+	}
+
+	//
+	// open the MIDI IN port
+	//
+	if (midiInOpen(&s_midiInfo.hMidiIn, in_mididevice->integer,
+		(DWORD_PTR)MidiInProc, (DWORD_PTR)NULL, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
+	{
+		GLog.Write("WARNING: could not open MIDI device %d: '%s'\n", in_mididevice->integer , s_midiInfo.caps[(int)in_mididevice->value]);
+		return;
+	}
+
+	midiInStart(s_midiInfo.hMidiIn);
+}
+
+//==========================================================================
+//
+//	IN_ShutdownMIDI
+//
+//==========================================================================
+
+void IN_ShutdownMIDI()
+{
+	if (s_midiInfo.hMidiIn)
+	{
+		midiInClose(s_midiInfo.hMidiIn);
+	}
+	Com_Memset(&s_midiInfo, 0, sizeof(s_midiInfo));
 }
