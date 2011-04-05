@@ -26,9 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/win_shared.h"
 
 #define	DIRECTSOUND_VERSION	0x0300
-#define	DIRECTINPUT_VERSION	0x0300
 
-#include <dinput.h>
 #include <dsound.h>
 #include <winsock.h>
 #include <wsipx.h>

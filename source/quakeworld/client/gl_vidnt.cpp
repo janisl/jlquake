@@ -80,7 +80,6 @@ static qboolean	windowed;
 static qboolean vid_canalttab = false;
 static qboolean vid_wassuspended = false;
 static int		windowed_mouse;
-extern qboolean	mouseactive;  // from in_win.c
 
 int			vid_modenum = NO_MODE;
 int			vid_realmode;
@@ -357,9 +356,9 @@ void GL_EndRendering (void)
 			}
 		} else {
 			windowed_mouse = true;
-			if (in_keyCatchers == 0 && !mouseactive && ActiveApp) {
+			if (in_keyCatchers == 0 && !s_wmv.mouseActive && ActiveApp) {
 				IN_ActivateMouse ();
-			} else if (mouseactive && in_keyCatchers != 0) {
+			} else if (s_wmv.mouseActive && in_keyCatchers != 0) {
 				IN_DeactivateMouse ();
 			}
 		}

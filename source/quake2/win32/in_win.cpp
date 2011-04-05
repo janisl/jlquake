@@ -36,12 +36,8 @@ qboolean	in_appactive;
 */
 
 int			mouse_buttons;
-int			mouse_oldbuttonstate;
-
-qboolean	mouseactive;	// false when not focus app
 
 qboolean	restore_spi;
-qboolean	mouseinitialized;
 int		originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
 qboolean	mouseparmsvalid;
 
@@ -57,17 +53,17 @@ Called when the window gains focus or changes in some way
 */
 void IN_ActivateMouse (void)
 {
-	if (!mouseinitialized)
+	if (!s_wmv.mouseInitialized)
 		return;
 	if (!in_mouse->value)
 	{
-		mouseactive = false;
+		s_wmv.mouseActive = false;
 		return;
 	}
-	if (mouseactive)
+	if (s_wmv.mouseActive)
 		return;
 
-	mouseactive = true;
+	s_wmv.mouseActive = true;
 
 	if (mouseparmsvalid)
 		restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
@@ -87,15 +83,15 @@ Called when the window loses focus
 */
 void IN_DeactivateMouse (void)
 {
-	if (!mouseinitialized)
+	if (!s_wmv.mouseInitialized)
 		return;
-	if (!mouseactive)
+	if (!s_wmv.mouseActive)
 		return;
 
 	if (restore_spi)
 		SystemParametersInfo (SPI_SETMOUSE, 0, originalmouseparms, 0);
 
-	mouseactive = false;
+	s_wmv.mouseActive = false;
 
 	IN_DeactivateWin32Mouse();
 }
@@ -115,7 +111,7 @@ void IN_StartupMouse (void)
 	if ( !cv->value ) 
 		return; 
 
-	mouseinitialized = true;
+	s_wmv.mouseInitialized = true;
 	mouseparmsvalid = SystemParametersInfo (SPI_GETMOUSE, 0, originalmouseparms, 0);
 	mouse_buttons = 3;
 }
@@ -129,26 +125,26 @@ void IN_MouseEvent (int mstate)
 {
 	int		i;
 
-	if (!mouseinitialized)
+	if (!s_wmv.mouseInitialized)
 		return;
 
 // perform button actions
 	for (i=0 ; i<mouse_buttons ; i++)
 	{
 		if ( (mstate & (1<<i)) &&
-			!(mouse_oldbuttonstate & (1<<i)) )
+			!(s_wmv.oldButtonState & (1<<i)) )
 		{
 			Key_Event (K_MOUSE1 + i, true, sysMsgTime);
 		}
 
 		if ( !(mstate & (1<<i)) &&
-			(mouse_oldbuttonstate & (1<<i)) )
+			(s_wmv.oldButtonState & (1<<i)) )
 		{
 				Key_Event (K_MOUSE1 + i, false, sysMsgTime);
 		}
 	}	
 		
-	mouse_oldbuttonstate = mstate;
+	s_wmv.oldButtonState = mstate;
 }
 
 
@@ -211,7 +207,7 @@ between a deactivate and an activate.
 void IN_Activate (qboolean active)
 {
 	in_appactive = active;
-	mouseactive = !active;		// force a new window check or turn off
+	s_wmv.mouseActive = !active;		// force a new window check or turn off
 }
 
 
@@ -224,7 +220,7 @@ Called every frame, even if not generating commands
 */
 void IN_Frame (void)
 {
-	if (!mouseinitialized)
+	if (!s_wmv.mouseInitialized)
 		return;
 
 	if (!in_mouse || !in_appactive)
@@ -257,7 +253,7 @@ void IN_Move ()
 {
 	int		mx, my;
 
-	if (!mouseactive)
+	if (!s_wmv.mouseActive)
 		return;
 
 	IN_Win32Mouse(&mx, &my);
@@ -273,9 +269,7 @@ IN_ClearStates
 */
 void IN_ClearStates (void)
 {
-	mx_accum = 0;
-	my_accum = 0;
-	mouse_oldbuttonstate = 0;
+	s_wmv.oldButtonState = 0;
 }
 
 /*

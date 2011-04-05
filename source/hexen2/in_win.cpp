@@ -9,12 +9,9 @@
 #include "winquake.h"
 
 int			mouse_buttons;
-int			mouse_oldbuttonstate;
 
 static qboolean	restore_spi;
 static int		originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
-static qboolean	mouseactive;
-qboolean		mouseinitialized;
 static qboolean	mouseparmsvalid, mouseactivatetoggle;
 static qboolean	mouseshowtoggle = 1;
 
@@ -37,7 +34,7 @@ IN_UpdateClipCursor
 void IN_UpdateClipCursor (void)
 {
 
-	if (mouseinitialized && mouseactive)
+	if (s_wmv.mouseInitialized && s_wmv.mouseActive)
 		ClipCursor (&window_rect);
 }
 
@@ -84,12 +81,12 @@ void IN_ActivateMouse (void)
 
 	mouseactivatetoggle = true;
 
-	if (mouseinitialized)
+	if (s_wmv.mouseInitialized)
 	{
 		if (mouseparmsvalid)
 			restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
 
-		mouseactive = true;
+		s_wmv.mouseActive = true;
 
 			IN_ActivateWin32Mouse();
 		mouseshowtoggle = 0;
@@ -119,12 +116,12 @@ void IN_DeactivateMouse (void)
 
 	mouseactivatetoggle = false;
 
-	if (mouseinitialized)
+	if (s_wmv.mouseInitialized)
 	{
 		if (restore_spi)
 			SystemParametersInfo (SPI_SETMOUSE, 0, originalmouseparms, 0);
 
-		mouseactive = false;
+		s_wmv.mouseActive = false;
 
 			IN_DeactivateWin32Mouse();
 		mouseshowtoggle = 1;
@@ -164,7 +161,7 @@ void IN_StartupMouse (void)
 	if ( COM_CheckParm ("-nomouse") ) 
 		return; 
 
-	mouseinitialized = true;
+	s_wmv.mouseInitialized = true;
 	mouseparmsvalid = SystemParametersInfo (SPI_GETMOUSE, 0, originalmouseparms, 0);
 
 	if (mouseparmsvalid)
@@ -238,25 +235,25 @@ void IN_MouseEvent (int mstate)
 {
 	int		i;
 
-	if (mouseactive)
+	if (s_wmv.mouseActive)
 	{
 	// perform button actions
 		for (i=0 ; i<mouse_buttons ; i++)
 		{
 			if ( (mstate & (1<<i)) &&
-				!(mouse_oldbuttonstate & (1<<i)) )
+				!(s_wmv.oldButtonState & (1<<i)) )
 			{
 				Key_Event (K_MOUSE1 + i, true);
 			}
 
 			if ( !(mstate & (1<<i)) &&
-				(mouse_oldbuttonstate & (1<<i)) )
+				(s_wmv.oldButtonState & (1<<i)) )
 			{
 					Key_Event (K_MOUSE1 + i, false);
 			}
 		}	
 			
-		mouse_oldbuttonstate = mstate;
+		s_wmv.oldButtonState = mstate;
 	}
 }
 
@@ -268,7 +265,7 @@ IN_Move
 */
 void IN_Move ()
 {
-	if (!mouseactive)
+	if (!s_wmv.mouseActive)
 	{
 		return;
 	}
@@ -286,9 +283,9 @@ IN_ClearStates
 void IN_ClearStates (void)
 {
 
-	if (mouseactive)
+	if (s_wmv.mouseActive)
 	{
-		mouse_oldbuttonstate = 0;
+		s_wmv.oldButtonState = 0;
 	}
 }
 

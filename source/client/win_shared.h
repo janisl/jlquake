@@ -20,7 +20,10 @@
 #ifndef _WIN_SHARED_H
 #define _WIN_SHARED_H
 
+#define	DIRECTINPUT_VERSION	0x0300
+
 #include <windows.h>
+#include <dinput.h>
 
 void SNDDMA_Activate();
 
@@ -36,8 +39,22 @@ void IN_JoyMove();
 void IN_StartupMIDI();
 void IN_ShutdownMIDI();
 void MidiInfo_f();
+bool IN_InitDIMouse();
+void IN_ShutdownDIMouse();
+void IN_ActivateDIMouse();
+void IN_DeactivateDIMouse();
+void IN_DIMouse(int* mx, int* my);
 
 #define WINDOW_CLASS_NAME	"vQuake"
+
+struct WinMouseVars_t
+{
+	int			oldButtonState;
+
+	bool		mouseActive;
+	bool		mouseInitialized;
+	bool		mouseStartupDelayed; // delay mouse init to try DI again when we have a window
+};
 
 extern HINSTANCE	global_hInstance;
 extern HWND			GMainWindow;
@@ -54,5 +71,8 @@ extern QCvar	*in_midi;
 extern QCvar	*in_midiport;
 extern QCvar	*in_midichannel;
 extern QCvar	*in_mididevice;
+extern WinMouseVars_t s_wmv;
+extern LPDIRECTINPUTDEVICE	g_pMouse;
+
 
 #endif
