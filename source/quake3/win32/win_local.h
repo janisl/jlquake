@@ -49,8 +49,6 @@ void	IN_JoystickCommands (void);
 void	IN_Move (usercmd_t *cmd);
 // add additional non keyboard / non mouse movement on top of the keyboard move cmd
 
-void	IN_DeactivateWin32Mouse( void);
-
 void	IN_Activate (qboolean active);
 void	IN_Frame (void);
 

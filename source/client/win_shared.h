@@ -20,10 +20,7 @@
 #ifndef _WIN_SHARED_H
 #define _WIN_SHARED_H
 
-#define	DIRECTINPUT_VERSION	0x0300
-
 #include <windows.h>
-#include <dinput.h>
 
 void SNDDMA_Activate();
 
@@ -31,19 +28,17 @@ LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam);
-void IN_ActivateWin32Mouse();
-void IN_DeactivateWin32Mouse();
-void IN_Win32Mouse(int* mx, int* my);
 void IN_StartupJoystick();
 void IN_JoyMove();
 void IN_StartupMIDI();
 void IN_ShutdownMIDI();
 void MidiInfo_f();
-bool IN_InitDIMouse();
 void IN_ShutdownDIMouse();
-void IN_ActivateDIMouse();
-void IN_DeactivateDIMouse();
-void IN_DIMouse(int* mx, int* my);
+void IN_StartupMouse();
+void IN_ActivateMouse();
+void IN_DeactivateMouse();
+void IN_MouseMove();
+void IN_MouseEvent(int mstate);
 
 #define WINDOW_CLASS_NAME	"vQuake"
 
@@ -72,7 +67,6 @@ extern QCvar	*in_midiport;
 extern QCvar	*in_midichannel;
 extern QCvar	*in_mididevice;
 extern WinMouseVars_t s_wmv;
-extern LPDIRECTINPUTDEVICE	g_pMouse;
-
+extern QCvar	*in_mouse;
 
 #endif

@@ -51,7 +51,6 @@ const char *gl_renderer;
 const char *gl_version;
 const char *gl_extensions;
 
-qboolean		DDActive;
 qboolean		scr_skipupdate;
 
 static vmode_t	modelist[MAX_MODE_LIST];
@@ -110,7 +109,6 @@ QCvar*		vid_stretch_by_2;
 QCvar*		_windowed_mouse;
 
 int			window_x, window_y;
-RECT		window_rect;
 
 // direct draw software compatability stuff
 
@@ -231,13 +229,6 @@ VID_UpdateWindowStatus
 */
 void VID_UpdateWindowStatus (void)
 {
-
-	window_rect.left = window_x;
-	window_rect.top = window_y;
-	window_rect.right = window_x + glConfig.vidWidth;
-	window_rect.bottom = window_y + glConfig.vidHeight;
-
-	IN_UpdateClipCursor ();
 }
 
 

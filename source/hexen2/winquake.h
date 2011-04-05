@@ -31,23 +31,10 @@ extern qboolean	Win32AtLeastV4, WinNT;
 int VID_ForceUnlockedAndReturnState (void);
 void VID_ForceLockState (int lk);
 
-void IN_ShowMouse (void);
-void IN_DeactivateMouse (void);
-void IN_HideMouse (void);
-void IN_ActivateMouse (void);
-void IN_RestoreOriginalMouseState (void);
-void IN_SetQuakeMouseState (void);
-void IN_MouseEvent (int mstate);
-
 extern QCvar*		_windowed_mouse;
 
-extern RECT		window_rect;
-
-extern qboolean	mouseinitialized;
 extern HWND		hwnd_dialog;
 
 extern HANDLE	hinput, houtput;
-
-void IN_UpdateClipCursor (void);
 
 void VID_SetDefaultMode (void);

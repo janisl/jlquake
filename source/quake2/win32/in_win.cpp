@@ -23,130 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/client.h"
 #include "winquake.h"
 
-QCvar	*in_mouse;
-
 qboolean	in_appactive;
-
-/*
-============================================================
-
-  MOUSE CONTROL
-
-============================================================
-*/
-
-int			mouse_buttons;
-
-qboolean	restore_spi;
-int		originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
-qboolean	mouseparmsvalid;
-
-RECT		window_rect;
-
-
-/*
-===========
-IN_ActivateMouse
-
-Called when the window gains focus or changes in some way
-===========
-*/
-void IN_ActivateMouse (void)
-{
-	if (!s_wmv.mouseInitialized)
-		return;
-	if (!in_mouse->value)
-	{
-		s_wmv.mouseActive = false;
-		return;
-	}
-	if (s_wmv.mouseActive)
-		return;
-
-	s_wmv.mouseActive = true;
-
-	if (mouseparmsvalid)
-		restore_spi = SystemParametersInfo (SPI_SETMOUSE, 0, newmouseparms, 0);
-
-	GetWindowRect ( GMainWindow, &window_rect);
-
-	IN_ActivateWin32Mouse();
-}
-
-
-/*
-===========
-IN_DeactivateMouse
-
-Called when the window loses focus
-===========
-*/
-void IN_DeactivateMouse (void)
-{
-	if (!s_wmv.mouseInitialized)
-		return;
-	if (!s_wmv.mouseActive)
-		return;
-
-	if (restore_spi)
-		SystemParametersInfo (SPI_SETMOUSE, 0, originalmouseparms, 0);
-
-	s_wmv.mouseActive = false;
-
-	IN_DeactivateWin32Mouse();
-}
-
-
-
-/*
-===========
-IN_StartupMouse
-===========
-*/
-void IN_StartupMouse (void)
-{
-	QCvar		*cv;
-
-	cv = Cvar_Get ("in_initmouse", "1", CVAR_INIT);
-	if ( !cv->value ) 
-		return; 
-
-	s_wmv.mouseInitialized = true;
-	mouseparmsvalid = SystemParametersInfo (SPI_GETMOUSE, 0, originalmouseparms, 0);
-	mouse_buttons = 3;
-}
-
-/*
-===========
-IN_MouseEvent
-===========
-*/
-void IN_MouseEvent (int mstate)
-{
-	int		i;
-
-	if (!s_wmv.mouseInitialized)
-		return;
-
-// perform button actions
-	for (i=0 ; i<mouse_buttons ; i++)
-	{
-		if ( (mstate & (1<<i)) &&
-			!(s_wmv.oldButtonState & (1<<i)) )
-		{
-			Key_Event (K_MOUSE1 + i, true, sysMsgTime);
-		}
-
-		if ( !(mstate & (1<<i)) &&
-			(s_wmv.oldButtonState & (1<<i)) )
-		{
-				Key_Event (K_MOUSE1 + i, false, sysMsgTime);
-		}
-	}	
-		
-	s_wmv.oldButtonState = mstate;
-}
-
 
 /*
 =========================================================================
@@ -251,14 +128,10 @@ IN_Move
 */
 void IN_Move ()
 {
-	int		mx, my;
-
 	if (!s_wmv.mouseActive)
 		return;
 
-	IN_Win32Mouse(&mx, &my);
-
-	CL_MouseEvent(mx, my);
+	IN_MouseMove();
 }
 
 

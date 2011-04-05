@@ -21,6 +21,8 @@
 
 #include "client.h"
 #include "win_shared.h"
+#define	DIRECTINPUT_VERSION	0x0300
+#include <dinput.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -80,6 +82,8 @@ static byte s_scantokey[128] =
 	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0         // 7 
 }; 
 
+QCvar*	in_mouse;
+
 static int				window_center_x;
 static int				window_center_y;
 
@@ -88,9 +92,9 @@ WinMouseVars_t	s_wmv;
 static HRESULT (WINAPI *pDirectInputCreate)(HINSTANCE hinst, DWORD dwVersion,
 	LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter);
 
-static HINSTANCE		hInstDI;
-static LPDIRECTINPUT	g_pdi;
-LPDIRECTINPUTDEVICE	g_pMouse;
+static HINSTANCE			hInstDI;
+static LPDIRECTINPUT		g_pdi;
+static LPDIRECTINPUTDEVICE	g_pMouse;
 
 static DIOBJECTDATAFORMAT rgodf[] =
 {
@@ -218,6 +222,36 @@ static int MapKey(int key)
 
 //==========================================================================
 //
+//	IN_MouseEvent
+//
+//==========================================================================
+
+void IN_MouseEvent(int mstate)
+{
+	if (!s_wmv.mouseInitialized)
+	{
+		return;
+	}
+
+	// perform button actions
+	for (int i = 0; i < 3; i++)
+	{
+		if ((mstate & (1 << i)) && !(s_wmv.oldButtonState & (1 << i)))
+		{
+			Sys_QueEvent(sysMsgTime, SE_KEY, K_MOUSE1 + i, true, 0, NULL);
+		}
+
+		if (!(mstate & (1 << i)) && (s_wmv.oldButtonState & (1 << i)))
+		{
+			Sys_QueEvent(sysMsgTime, SE_KEY, K_MOUSE1 + i, false, 0, NULL);
+		}
+	}	
+
+	s_wmv.oldButtonState = mstate;
+}
+
+//==========================================================================
+//
 //	IN_HandleInputMessage
 //
 //	Returns true if window proc should return 0.
@@ -258,7 +292,7 @@ bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam)
 //
 //==========================================================================
 
-void IN_ActivateWin32Mouse()
+static void IN_ActivateWin32Mouse()
 {
 	int width = GetSystemMetrics(SM_CXSCREEN);
 	int height = GetSystemMetrics(SM_CYSCREEN);
@@ -298,7 +332,7 @@ void IN_ActivateWin32Mouse()
 //
 //==========================================================================
 
-void IN_DeactivateWin32Mouse()
+static void IN_DeactivateWin32Mouse()
 {
 	ClipCursor(NULL);
 	ReleaseCapture();
@@ -312,7 +346,7 @@ void IN_DeactivateWin32Mouse()
 //
 //==========================================================================
 
-void IN_Win32Mouse(int* mx, int* my)
+static void IN_Win32Mouse(int* mx, int* my)
 {
 	// find mouse movement
 	POINT current_pos;
@@ -337,7 +371,7 @@ void IN_Win32Mouse(int* mx, int* my)
 //
 //==========================================================================
 
-bool IN_InitDIMouse()
+static bool IN_InitDIMouse()
 {
 	GLog.Write("Initializing DirectInput...\n");
 
@@ -470,7 +504,7 @@ void IN_ShutdownDIMouse()
 //
 //==========================================================================
 
-void IN_ActivateDIMouse()
+static void IN_ActivateDIMouse()
 {
 	if (!g_pMouse)
 	{
@@ -495,7 +529,7 @@ void IN_ActivateDIMouse()
 //
 //==========================================================================
 
-void IN_DeactivateDIMouse()
+static void IN_DeactivateDIMouse()
 {
 	if (!g_pMouse)
 	{
@@ -510,7 +544,7 @@ void IN_DeactivateDIMouse()
 //
 //==========================================================================
 
-void IN_DIMouse(int* mx, int* my)
+static void IN_DIMouse(int* mx, int* my)
 {
 	if (!g_pMouse)
 	{
@@ -615,6 +649,134 @@ void IN_DIMouse(int* mx, int* my)
 	}
 	*mx = state.lX;
 	*my = state.lY;
+}
+
+//**************************************************************************
+//
+//	MOUSE CONTROL
+//
+//**************************************************************************
+
+//==========================================================================
+//
+//	IN_StartupMouse
+//
+//==========================================================================
+
+void IN_StartupMouse()
+{
+	s_wmv.mouseInitialized = false;
+	s_wmv.mouseStartupDelayed = false;
+
+	if (in_mouse->integer == 0)
+	{
+		GLog.Write("Mouse control not active.\n");
+		return;
+	}
+
+	if (in_mouse->integer == -1)
+	{
+		GLog.Write("Skipping check for DirectInput\n");
+	}
+	else
+	{
+		if (!GMainWindow)
+		{
+			GLog.Write("No window for DirectInput mouse init, delaying\n");
+			s_wmv.mouseStartupDelayed = true;
+			return;
+		}
+		if (IN_InitDIMouse())
+		{
+			s_wmv.mouseInitialized = true;
+			return;
+		}
+		GLog.Write("Falling back to Win32 mouse support...\n");
+	}
+	s_wmv.mouseInitialized = true;
+}
+
+//==========================================================================
+//
+//	IN_ActivateMouse
+//
+//	Called when the window gains focus or changes in some way
+//
+//==========================================================================
+
+void IN_ActivateMouse() 
+{
+	if (!s_wmv.mouseInitialized)
+	{
+		return;
+	}
+	if (!in_mouse->integer)
+	{
+		s_wmv.mouseActive = false;
+		return;
+	}
+	if (s_wmv.mouseActive)
+	{
+		return;
+	}
+
+	s_wmv.mouseActive = true;
+
+	if (in_mouse->integer != -1)
+	{
+		IN_ActivateDIMouse();
+	}
+	IN_ActivateWin32Mouse();
+}
+
+//==========================================================================
+//
+//	IN_DeactivateMouse
+//
+//	Called when the window loses focus
+//
+//==========================================================================
+
+void IN_DeactivateMouse()
+{
+	if (!s_wmv.mouseInitialized)
+	{
+		return;
+	}
+	if (!s_wmv.mouseActive)
+	{
+		return;
+	}
+	s_wmv.mouseActive = false;
+
+	IN_DeactivateDIMouse();
+	IN_DeactivateWin32Mouse();
+}
+
+//==========================================================================
+//
+//	IN_MouseMove
+//
+//==========================================================================
+
+void IN_MouseMove()
+{
+	int mx, my;
+	if (g_pMouse)
+	{
+		IN_DIMouse(&mx, &my);
+	}
+	else
+	{
+		IN_Win32Mouse(&mx, &my);
+	}
+
+	if (!mx && !my)
+	{
+		return;
+	}
+
+	Sys_QueEvent(0, SE_MOUSE, mx, my, 0, NULL);
 }
 
 //**************************************************************************
