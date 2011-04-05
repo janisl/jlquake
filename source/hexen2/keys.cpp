@@ -746,6 +746,9 @@ void IN_ProcessEvents()
 		case SE_KEY:
 			Key_Event(ev.evValue, ev.evValue2);
 			break;
+		case SE_MOUSE:
+			CL_MouseEvent(ev.evValue, ev.evValue2);
+			break;
 		}
 	}
 }
