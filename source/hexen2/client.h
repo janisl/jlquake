@@ -319,6 +319,8 @@ void CL_ClearState (void);
 int  CL_ReadFromServer (void);
 void CL_WriteToServer (usercmd_t *cmd);
 void CL_BaseMove (usercmd_t *cmd);
+void CL_MouseEvent(int mx, int my);
+void CL_MouseMove(usercmd_t *cmd);
 
 
 float CL_KeyState (kbutton_t *key);

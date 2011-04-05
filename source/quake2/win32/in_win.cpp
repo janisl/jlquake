@@ -35,21 +35,8 @@ qboolean	in_appactive;
 ============================================================
 */
 
-// mouse variables
-QCvar	*m_filter;
-
-qboolean	mlooking;
-
-void IN_MLookDown (void) { mlooking = true; }
-void IN_MLookUp (void) {
-mlooking = false;
-if (!freelook->value && lookspring->value)
-		IN_CenterView ();
-}
-
 int			mouse_buttons;
 int			mouse_oldbuttonstate;
-int			mouse_x, mouse_y, old_mouse_x, old_mouse_y, mx_accum, my_accum;
 
 qboolean	mouseactive;	// false when not focus app
 
@@ -166,54 +153,6 @@ void IN_MouseEvent (int mstate)
 
 
 /*
-===========
-IN_MouseMove
-===========
-*/
-void IN_MouseMove (usercmd_t *cmd)
-{
-	int		mx, my;
-
-	if (!mouseactive)
-		return;
-
-	IN_Win32Mouse(&mx, &my);
-
-	if (m_filter->value)
-	{
-		mouse_x = (mx + old_mouse_x) * 0.5;
-		mouse_y = (my + old_mouse_y) * 0.5;
-	}
-	else
-	{
-		mouse_x = mx;
-		mouse_y = my;
-	}
-
-	old_mouse_x = mx;
-	old_mouse_y = my;
-
-	mouse_x *= sensitivity->value;
-	mouse_y *= sensitivity->value;
-
-// add mouse X/Y movement to cmd
-	if ( (in_strafe.state & 1) || (lookstrafe->value && mlooking ))
-		cmd->sidemove += m_side->value * mouse_x;
-	else
-		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
-
-	if ( (mlooking || freelook->value) && !(in_strafe.state & 1))
-	{
-		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
-	}
-	else
-	{
-		cmd->forwardmove -= m_forward->value * mouse_y;
-	}
-}
-
-
-/*
 =========================================================================
 
 VIEW CENTERING
@@ -233,7 +172,6 @@ IN_Init
 void IN_Init (void)
 {
 	// mouse variables
-	m_filter				= Cvar_Get ("m_filter",					"0",		0);
     in_mouse				= Cvar_Get ("in_mouse",					"1",		CVAR_ARCHIVE);
 
 	// joystick variables
@@ -245,9 +183,6 @@ void IN_Init (void)
 	// centering
 	v_centermove			= Cvar_Get ("v_centermove",				"0.15",		0);
 	v_centerspeed			= Cvar_Get ("v_centerspeed",			"500",		0);
-
-	Cmd_AddCommand ("+mlook", IN_MLookDown);
-	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
 	IN_StartupMouse ();
 	IN_StartupJoystick ();
@@ -318,9 +253,16 @@ void IN_Frame (void)
 IN_Move
 ===========
 */
-void IN_Move (usercmd_t *cmd)
+void IN_Move ()
 {
-	IN_MouseMove (cmd);
+	int		mx, my;
+
+	if (!mouseactive)
+		return;
+
+	IN_Win32Mouse(&mx, &my);
+
+	CL_MouseEvent(mx, my);
 }
 
 

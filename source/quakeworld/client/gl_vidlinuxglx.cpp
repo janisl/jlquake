@@ -43,10 +43,6 @@ unsigned char	d_15to8table[65536];
 QCvar*	_windowed_mouse;
 QCvar*	vid_mode;
  
-static float	old_mx, old_my;
-
-QCvar*	m_filter;
-
 /*-----------------------------------------------------------------------*/
 
 //int		texture_mode = GL_NEAREST;
@@ -305,7 +301,6 @@ void VID_Init(unsigned char *palette)
 	vid_mode = Cvar_Get("vid_mode", "0", 0);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 	_windowed_mouse = Cvar_Get("_windowed_mouse", "0", CVAR_ARCHIVE);
-	m_filter = Cvar_Get("m_filter", "0", 0);
 	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
 	in_nograb = Cvar_Get ("in_nograb", "0", 0);
 	// turn on-off sub-frame timing of X events
@@ -402,54 +397,10 @@ void IN_Commands (void)
 {
 }
 
-/*
-===========
-IN_Move
-===========
-*/
-void IN_MouseMove (usercmd_t *cmd)
+void IN_Move ()
 {
-	if (m_filter->value)
-	{
-		mx = (mx + old_mx) * 0.5;
-		my = (my + old_my) * 0.5;
-	}
-	old_mx = mx;
-	old_my = my;
-
-	mx *= sensitivity->value;
-	my *= sensitivity->value;
-
-// add mouse X/Y movement to cmd
-	if ( (in_strafe.state & 1) || (lookstrafe->value && (in_mlook.state & 1) ))
-		cmd->sidemove += m_side->value * mx;
-	else
-		cl.viewangles[YAW] -= m_yaw->value * mx;
-	
-	if (in_mlook.state & 1)
-		V_StopPitchDrift ();
-		
-	if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
-	{
-		cl.viewangles[PITCH] += m_pitch->value * my;
-		if (cl.viewangles[PITCH] > 80)
-			cl.viewangles[PITCH] = 80;
-		if (cl.viewangles[PITCH] < -70)
-			cl.viewangles[PITCH] = -70;
-	}
-	else
-	{
-		if ((in_strafe.state & 1) && noclip_anglehack)
-			cmd->upmove -= m_forward->value * my;
-		else
-			cmd->forwardmove -= m_forward->value * my;
-	}
+	CL_MouseEvent(mx, my);
 	mx = my = 0.0;
-}
-
-void IN_Move (usercmd_t *cmd)
-{
-	IN_MouseMove(cmd);
 }
 
 

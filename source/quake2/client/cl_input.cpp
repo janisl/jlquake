@@ -62,6 +62,13 @@ kbutton_t	in_up, in_down;
 
 int			in_impulse;
 
+static QCvar	*m_filter;
+
+static int	mouse_move_x;
+static int	mouse_move_y;
+static int	old_mouse_x, old_mouse_y;
+
+static qboolean	mlooking;
 
 void KeyDown (kbutton_t *b)
 {
@@ -309,6 +316,46 @@ void CL_BaseMove (usercmd_t *cmd)
 	}	
 }
 
+void CL_MouseEvent(int mx, int my)
+{
+	mouse_move_x += mx;
+	mouse_move_y += my;
+}
+
+void CL_MouseMove(usercmd_t *cmd)
+{
+	int mouse_x = mouse_move_x;
+	int mouse_y = mouse_move_y;
+	if (m_filter->value)
+	{
+		mouse_x = (mouse_x + old_mouse_x) * 0.5;
+		mouse_y = (mouse_y + old_mouse_y) * 0.5;
+	}
+
+	old_mouse_x = mouse_move_x;
+	old_mouse_y = mouse_move_y;
+
+	mouse_x *= sensitivity->value;
+	mouse_y *= sensitivity->value;
+
+// add mouse X/Y movement to cmd
+	if ( (in_strafe.state & 1) || (lookstrafe->value && mlooking ))
+		cmd->sidemove += m_side->value * mouse_x;
+	else
+		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
+
+	if ( (mlooking || freelook->value) && !(in_strafe.state & 1))
+	{
+		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
+	}
+	else
+	{
+		cmd->forwardmove -= m_forward->value * mouse_y;
+	}
+	mouse_move_x = 0;
+	mouse_move_y = 0;
+}
+
 void CL_ClampPitch (void)
 {
 	float	pitch;
@@ -382,7 +429,8 @@ usercmd_t CL_CreateCmd (void)
 	CL_BaseMove (&cmd);
 
 	// allow mice or other external controllers to add to the move
-	IN_Move (&cmd);
+	IN_Move ();
+	CL_MouseMove(&cmd);
 
 	CL_FinishMove (&cmd);
 
@@ -397,6 +445,18 @@ usercmd_t CL_CreateCmd (void)
 void IN_CenterView (void)
 {
 	cl.viewangles[PITCH] = -SHORT2ANGLE(cl.frame.playerstate.pmove.delta_angles[PITCH]);
+}
+
+static void IN_MLookDown()
+{
+	mlooking = true;
+}
+
+static void IN_MLookUp()
+{
+	mlooking = false;
+	if (!freelook->value && lookspring->value)
+		IN_CenterView ();
 }
 
 /*
@@ -439,8 +499,11 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("impulse", IN_Impulse);
 	Cmd_AddCommand ("+klook", IN_KLookDown);
 	Cmd_AddCommand ("-klook", IN_KLookUp);
+	Cmd_AddCommand ("+mlook", IN_MLookDown);
+	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
 	cl_nodelta = Cvar_Get ("cl_nodelta", "0", 0);
+	m_filter = Cvar_Get ("m_filter", "0", 0);
 }
 
 

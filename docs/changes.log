@@ -154,3 +154,5 @@
   I started work on common event queue.
 03.04.2011
   I decided to stop working on rendere for now anc concentrate on merging input and most of the remaining system specific code.
+05.04.2011
+  I changed all games to do adding mouse move to user command in platform independent part.

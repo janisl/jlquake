@@ -36,8 +36,6 @@ void Do_Key_Event(int key, qboolean down);
 
 /** MOUSE *****************************************************************/
 
-in_state_t in_state;
-
 void Real_IN_Init (void);
 
 /*
@@ -140,7 +138,7 @@ void VID_NewWindow ( int width, int height)
 void VID_FreeReflib (void)
 {
 	KBD_Close();
-	RW_IN_Shutdown();
+	IN_Shutdown();
 
 	Com_Memset(&re, 0, sizeof(re));
 	reflib_active  = false;
@@ -164,7 +162,7 @@ qboolean VID_LoadRefresh( char *name )
 	if ( reflib_active )
 	{
 		KBD_Close();
-		RW_IN_Shutdown();
+		IN_Shutdown();
 		re.Shutdown();
 		VID_FreeReflib ();
 	}
@@ -182,11 +180,6 @@ qboolean VID_LoadRefresh( char *name )
 		VID_FreeReflib ();
 		Com_Error (ERR_FATAL, "%s has incompatible api_version", name);
 	}
-
-	/* Init IN (Mouse) */
-	in_state.IN_CenterView_fp = IN_CenterView;
-	in_state.viewangles = cl.viewangles;
-	in_state.in_strafe_state = &in_strafe.state;
 
 	if ( re.Init( 0, 0 ) == -1 )
 	{
@@ -298,56 +291,9 @@ void VID_Shutdown (void)
 	if ( reflib_active )
 	{
 		KBD_Close();
-		RW_IN_Shutdown();
+		IN_Shutdown();
 		re.Shutdown ();
 		VID_FreeReflib ();
 	}
-}
-
-
-/*****************************************************************************/
-/* INPUT                                                                     */
-/*****************************************************************************/
-
-QCvar	*in_joystick;
-
-// This if fake, it's acutally done by the Refresh load
-void IN_Init (void)
-{
-	in_joystick	= Cvar_Get ("in_joystick", "0", CVAR_ARCHIVE);
-}
-
-void Real_IN_Init (void)
-{
-	RW_IN_Init(&in_state);
-}
-
-void IN_Shutdown (void)
-{
-	RW_IN_Shutdown();
-}
-
-void IN_Commands (void)
-{
-}
-
-void IN_Move (usercmd_t *cmd)
-{
-	RW_IN_Move_fp(cmd);
-}
-
-void IN_Frame (void)
-{
-	RW_IN_Frame();
-}
-
-void IN_Activate (qboolean active)
-{
-	RW_IN_Activate(active);
-}
-
-void Do_Key_Event(int key, qboolean down)
-{
-	Key_Event(key, down, Sys_Milliseconds_());
 }
 

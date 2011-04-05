@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // qcommon.h -- definitions common between client and server, but not game.dll
 
+#ifndef _qcommon_h
+#define _qcommon_h
+
 #include "q_shared.h"
 #include "../qcommon/qfiles.h"
 
@@ -514,3 +517,4 @@ void SV_Frame (int msec);
 
 
 
+#endif

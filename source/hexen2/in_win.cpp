@@ -8,12 +8,8 @@
 #include "quakedef.h"
 #include "winquake.h"
 
-// mouse variables
-QCvar*	m_filter;
-
 int			mouse_buttons;
 int			mouse_oldbuttonstate;
-int			mouse_x, mouse_y, old_mouse_x, old_mouse_y;
 
 static qboolean	restore_spi;
 static int		originalmouseparms[3], newmouseparms[3] = {0, 0, 1};
@@ -209,9 +205,6 @@ IN_Init
 */
 void IN_Init (void)
 {
-	// mouse variables
-    m_filter = Cvar_Get("m_filter", "0", 0);
-
 	// joystick variables
     in_joystick = Cvar_Get("joystick", "0", CVAR_ARCHIVE);
 	in_debugJoystick		= Cvar_Get ("in_debugjoystick",			"0",		CVAR_TEMP);
@@ -270,89 +263,19 @@ void IN_MouseEvent (int mstate)
 
 /*
 ===========
-IN_MouseMove
-===========
-*/
-void IN_MouseMove (usercmd_t *cmd)
-{
-	int		mx, my;
-	HDC	hdc;
-
-
-//	if (sv_player->v.cameramode)	// Stuck in a different camera, don't move
-//		return;
-
-	IN_Win32Mouse(&mx, &my);
-
-	if (m_filter->value)
-	{
-		mouse_x = (mx + old_mouse_x) * 0.5;
-		mouse_y = (my + old_mouse_y) * 0.5;
-	}
-	else
-	{
-		mouse_x = mx;
-		mouse_y = my;
-	}
-
-	old_mouse_x = mx;
-	old_mouse_y = my;
-
-	mouse_x *= sensitivity->value;
-	mouse_y *= sensitivity->value;
-
-// add mouse X/Y movement to cmd
-	if ( (in_strafe.state & 1) || (lookstrafe->value && (in_mlook.state & 1) ))
-		cmd->sidemove += m_side->value * mouse_x;
-	else
-		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
-
-	if (in_mlook.state & 1)
-		V_StopPitchDrift ();
-		
-	if ( (in_mlook.state & 1) && !(in_strafe.state & 1))
-	{
-		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
-		if (cl.viewangles[PITCH] > 80)
-			cl.viewangles[PITCH] = 80;
-		if (cl.viewangles[PITCH] < -70)
-			cl.viewangles[PITCH] = -70;
-	}
-	else
-	{
-		if ((in_strafe.state & 1) && noclip_anglehack)
-			cmd->upmove -= m_forward->value * mouse_y;
-		else
-			cmd->forwardmove -= m_forward->value * mouse_y;
-	}
-
-	if (cl.idealroll == 0) // Did keyboard set it already??
-	{
-		if ((mouse_x <0) && (cl.v.movetype==MOVETYPE_FLY))
-			cl.idealroll=-10;
-		else if ((mouse_x >0) && (cl.v.movetype==MOVETYPE_FLY))
-			cl.idealroll=10;
-	}
-}
-
-
-/*
-===========
 IN_Move
 ===========
 */
-void IN_Move (usercmd_t *cmd)
+void IN_Move ()
 {
-	if (cl.v.cameramode)	// Stuck in a different camera so don't move
+	if (!mouseactive)
 	{
-		Com_Memset(cmd, 0, sizeof(*cmd));
 		return;
 	}
+	int		mx, my;
 
-	if (mouseactive)
-	{
-		IN_MouseMove (cmd);
-	}
+	IN_Win32Mouse(&mx, &my);
+	CL_MouseEvent(mx, my);
 }
 
 /*

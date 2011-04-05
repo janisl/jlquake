@@ -478,6 +478,8 @@ void CL_ReadPackets (void);
 int  CL_ReadFromServer (void);
 void CL_WriteToServer (usercmd_t *cmd);
 void CL_BaseMove (usercmd_t *cmd);
+void CL_MouseEvent(int mx, int my);
+void CL_MouseMove(usercmd_t *cmd);
 
 void IN_CenterView (void);
 

@@ -326,8 +326,8 @@ void CL_BaseMove (usercmd_t *cmd)
 
 void CL_MouseEvent(int mx, int my)
 {
-	mouse_move_x = mx;
-	mouse_move_y = my;
+	mouse_move_x += mx;
+	mouse_move_y += my;
 }
 
 void CL_MouseMove(usercmd_t *cmd)

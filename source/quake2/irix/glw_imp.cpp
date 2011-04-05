@@ -61,17 +61,9 @@ typedef unsigned short PIXEL;
 
 // this is inside the renderer shared lib, so these are called from vid_so
 
-static int   mouse_x, mouse_y;
-static int	old_mouse_x, old_mouse_y;
 static int p_mouse_x, p_mouse_y;
 
 static QCvar	*_windowed_mouse;
-static QCvar	*m_filter;
-
-static qboolean	mlooking;
-
-// state struct passed in Init
-static in_state_t	*in_state;
 
 int XShmQueryExtension(Display *);
 int XShmGetEventBase(Display *);
@@ -299,32 +291,18 @@ void KBD_Close(void)
 
 static void Force_CenterView_f (void)
 {
-	in_state->viewangles[PITCH] = 0;
+	cl.viewangles[PITCH] = 0;
 }
 
-static void RW_IN_MLookDown (void) 
-{ 
-	mlooking = true; 
-}
-
-static void RW_IN_MLookUp (void) 
-{
-	mlooking = false;
-	in_state->IN_CenterView_fp ();
-}
-
-void RW_IN_Init(in_state_t *in_state_p)
+void Real_IN_Init()
 {
 	int mtype;
 	int i;
 
-	fprintf(stderr, "GL RW_IN_Init\n");
-
-	in_state = in_state_p;
+	fprintf(stderr, "GL Real_IN_Init\n");
 
 	// mouse variables
 	_windowed_mouse = Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
-	m_filter = Cvar_Get ("m_filter", "0", 0);
     in_mouse = Cvar_Get ("in_mouse", "1", CVAR_ARCHIVE);
 	freelook = Cvar_Get( "freelook", "0", 0 );
 	lookstrafe = Cvar_Get ("lookstrafe", "0", 0);
@@ -337,16 +315,12 @@ void RW_IN_Init(in_state_t *in_state_p)
 	// turn on-off sub-frame timing of X events
 	in_subframe = Cvar_Get ("in_subframe", "1", CVAR_ARCHIVE);
 
-	Cmd_AddCommand ("+mlook", RW_IN_MLookDown);
-	Cmd_AddCommand ("-mlook", RW_IN_MLookUp);
-
 	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
-	mouse_x = mouse_y = 0.0;
 	mouse_avail = true;
 }
 
-void RW_IN_Shutdown(void)
+void IN_Shutdown(void)
 {
 	mouse_avail = false;
 
@@ -360,54 +334,42 @@ void RW_IN_Shutdown(void)
 IN_Move
 ===========
 */
-void RW_IN_Move (usercmd_t *cmd)
+void IN_Move ()
 {
 	if (!mouse_avail)
 		return;
    
-	if (m_filter->value)
-	{
-		mouse_x = (mx + old_mouse_x) * 0.5;
-		mouse_y = (my + old_mouse_y) * 0.5;
-	} else {
-		mouse_x = mx;
-		mouse_y = my;
-	}
-
-	old_mouse_x = mx;
-	old_mouse_y = my;
-
-	if (!mouse_x && !mouse_y)
-		return;
-
-	mouse_x *= sensitivity->value;
-	mouse_y *= sensitivity->value;
-
-// add mouse X/Y movement to cmd
-	if ( (*in_state->in_strafe_state & 1) || 
-		(lookstrafe->value && mlooking ))
-		cmd->sidemove += m_side->value * mouse_x;
-	else
-		in_state->viewangles[YAW] -= m_yaw->value * mouse_x;
-
-	if ( (mlooking || freelook->value) && 
-		!(*in_state->in_strafe_state & 1))
-	{
-		in_state->viewangles[PITCH] += m_pitch->value * mouse_y;
-	}
-	else
-	{
-		cmd->forwardmove -= m_forward->value * mouse_y;
-	}
+	CL_MouseEvent(mx, my);
 	mx = my = 0;
 }
 
-void RW_IN_Frame (void)
+void IN_Frame (void)
 {
 }
 
-void RW_IN_Activate(void)
+/*****************************************************************************/
+/* INPUT                                                                     */
+/*****************************************************************************/
+
+QCvar	*in_joystick;
+
+// This if fake, it's acutally done by the Refresh load
+void IN_Init (void)
 {
+	in_joystick	= Cvar_Get ("in_joystick", "0", CVAR_ARCHIVE);
+}
+
+void IN_Commands (void)
+{
+}
+
+void IN_Activate (qboolean active)
+{
+}
+
+void Do_Key_Event(int key, qboolean down)
+{
+	Key_Event(key, down, Sys_Milliseconds_());
 }
 
 
