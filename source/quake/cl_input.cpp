@@ -54,6 +54,12 @@ kbutton_t	in_up, in_down;
 
 int			in_impulse;
 
+static QCvar* m_filter;
+
+static int	old_mouse_x, old_mouse_y;
+static int	mouse_move_x;
+static int	mouse_move_y;
+
 
 void KeyDown (kbutton_t *b)
 {
@@ -318,7 +324,69 @@ void CL_BaseMove (usercmd_t *cmd)
 	}
 }
 
+void CL_MouseEvent(int mx, int my)
+{
+	mouse_move_x = mx;
+	mouse_move_y = my;
+}
 
+void CL_MouseMove(usercmd_t *cmd)
+{
+	int mouse_x = mouse_move_x;
+	int mouse_y = mouse_move_y;
+	if (m_filter->value)
+	{
+		mouse_x = (mouse_x + old_mouse_x) * 0.5;
+		mouse_y = (mouse_y + old_mouse_y) * 0.5;
+	}
+
+	old_mouse_x = mouse_move_x;
+	old_mouse_y = mouse_move_y;
+
+	mouse_x *= sensitivity->value;
+	mouse_y *= sensitivity->value;
+
+	// add mouse X/Y movement to cmd
+	if ((in_strafe.state & 1) || (lookstrafe->value && (in_mlook.state & 1)))
+	{
+		cmd->sidemove += m_side->value * mouse_x;
+	}
+	else
+	{
+		cl.viewangles[YAW] -= m_yaw->value * mouse_x;
+	}
+
+	if (in_mlook.state & 1)
+	{
+		V_StopPitchDrift();
+	}
+
+	if ((in_mlook.state & 1) && !(in_strafe.state & 1))
+	{
+		cl.viewangles[PITCH] += m_pitch->value * mouse_y;
+		if (cl.viewangles[PITCH] > 80)
+		{
+			cl.viewangles[PITCH] = 80;
+		}
+		if (cl.viewangles[PITCH] < -70)
+		{
+			cl.viewangles[PITCH] = -70;
+		}
+	}
+	else
+	{
+		if ((in_strafe.state & 1) && noclip_anglehack)
+		{
+			cmd->upmove -= m_forward->value * mouse_y;
+		}
+		else
+		{
+			cmd->forwardmove -= m_forward->value * mouse_y;
+		}
+	}
+	mouse_move_x = 0;
+	mouse_move_y = 0;
+}
 
 /*
 ==============
@@ -431,5 +499,6 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
+	m_filter = Cvar_Get("m_filter", "0", 0);
 }
 
