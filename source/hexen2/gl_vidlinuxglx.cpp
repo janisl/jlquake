@@ -473,10 +473,6 @@ void IN_Init(void)
 	mouse_avail = true;
 }
 
-void IN_Shutdown(void)
-{
-}
-
 /*
 ===========
 IN_Commands

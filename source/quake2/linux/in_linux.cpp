@@ -10,10 +10,6 @@ void IN_Init (void)
     in_joystick = Cvar_Get ("in_joystick", "0", CVAR_ARCHIVE);
 }
 
-void IN_Shutdown (void)
-{
-}
-
 void IN_Commands (void)
 {
 }

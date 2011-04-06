@@ -743,11 +743,6 @@ void IN_Init(void) {
 	Com_Printf ("------------------------------------\n");
 }
 
-void IN_Shutdown(void)
-{
-  mouse_avail = qfalse;
-}
-
 void IN_Frame (void) {
 
   // bk001130 - from cvs 1.17 (mkv)

@@ -313,13 +313,6 @@ void Real_IN_Init()
 	mouse_avail = true;
 }
 
-void IN_Shutdown(void)
-{
-	mouse_avail = false;
-
-	Cmd_RemoveCommand ("force_centerview");
-}
-
 /*
 ===========
 IN_Move

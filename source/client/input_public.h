@@ -27,4 +27,6 @@ enum
 	KEYCATCH_CGAME			= 0x0008,
 };
 
+void IN_Shutdown();
+
 extern int			in_keyCatchers;		// bit flags

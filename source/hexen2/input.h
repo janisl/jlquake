@@ -2,8 +2,6 @@
 
 void IN_Init (void);
 
-void IN_Shutdown (void);
-
 void IN_Commands (void);
 // oportunity for devices to stick commands on the script buffer
 

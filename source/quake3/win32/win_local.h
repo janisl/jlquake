@@ -41,7 +41,6 @@ qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 // Input subsystem
 
 void	IN_Init (void);
-void	IN_Shutdown (void);
 void	IN_JoystickCommands (void);
 
 void	IN_Move (usercmd_t *cmd);
