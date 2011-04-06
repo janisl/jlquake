@@ -457,6 +457,16 @@ void CL_SendMove (usercmd_t *cmd)
 }
 
 /*
+===========
+Force_CenterView_f
+===========
+*/
+void Force_CenterView_f (void)
+{
+	cl.viewangles[PITCH] = 0;
+}
+
+/*
 ============
 CL_InitInput
 ============
@@ -498,6 +508,7 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("-klook", IN_KLookUp);
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
+	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
 	m_filter = Cvar_Get("m_filter", "0", 0);
 }

@@ -546,6 +546,16 @@ void IN_infoPlaqueDown(void)
 #endif
 
 /*
+===========
+Force_CenterView_f
+===========
+*/
+void Force_CenterView_f (void)
+{
+	cl.viewangles[PITCH] = 0;
+}
+
+/*
 ============
 CL_InitInput
 ============
@@ -595,6 +605,8 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("+infoplaque", IN_infoPlaqueDown);
 	Cmd_AddCommand ("-infoplaque", IN_infoPlaqueUp);
 #endif
+
+	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
     m_filter = Cvar_Get("m_filter", "0", 0);
 }

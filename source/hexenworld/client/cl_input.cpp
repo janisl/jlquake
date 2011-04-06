@@ -567,6 +567,16 @@ void CL_SendCmd (void)
 
 
 /*
+===========
+Force_CenterView_f
+===========
+*/
+void Force_CenterView_f (void)
+{
+	cl.viewangles[PITCH] = 0;
+}
+
+/*
 ============
 CL_InitInput
 ============
@@ -610,6 +620,7 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
 	Cmd_AddCommand ("+crouch", IN_CrouchDown);
 	Cmd_AddCommand ("-crouch", IN_CrouchUp);
+	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 
 	cl_nodelta = Cvar_Get("cl_nodelta","0", 0);
     m_filter = Cvar_Get("m_filter", "0", 0);

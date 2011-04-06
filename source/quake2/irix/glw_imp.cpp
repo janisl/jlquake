@@ -289,11 +289,6 @@ void KBD_Close(void)
 }
 
 
-static void Force_CenterView_f (void)
-{
-	cl.viewangles[PITCH] = 0;
-}
-
 void Real_IN_Init()
 {
 	int mtype;
@@ -315,8 +310,6 @@ void Real_IN_Init()
 	// turn on-off sub-frame timing of X events
 	in_subframe = Cvar_Get ("in_subframe", "1", CVAR_ARCHIVE);
 
-	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
-
 	mouse_avail = true;
 }
 
@@ -325,8 +318,6 @@ void IN_Shutdown(void)
 	mouse_avail = false;
 
 	Cmd_RemoveCommand ("force_centerview");
-	Cmd_RemoveCommand ("+mlook");
-	Cmd_RemoveCommand ("-mlook");
 }
 
 /*

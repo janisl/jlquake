@@ -21,21 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "winquake.h"
 
-/*
-===========
-Force_CenterView_f
-===========
-*/
-void Force_CenterView_f (void)
-{
-	cl.viewangles[PITCH] = 0;
-}
-
 void IN_Init()
 {
 	IN_SharedInit();
-
-	Cmd_AddCommand ("force_centerview", Force_CenterView_f);
 }
 
 void IN_Move ()
