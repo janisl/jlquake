@@ -22,7 +22,7 @@ QCvar		*vid_gamma;
 QCvar		*vid_ref;			// Name of Refresh DLL loaded
 QCvar		*vid_xpos;			// X coordinate of window position
 QCvar		*vid_ypos;			// Y coordinate of window position
-QCvar		*vid_fullscreen;
+extern QCvar		*r_fullscreen;
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
@@ -226,7 +226,7 @@ void VID_CheckChanges (void)
 		** refresh has changed
 		*/
 		vid_ref->modified = false;
-		vid_fullscreen->modified = true;
+		r_fullscreen->modified = true;
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
@@ -271,7 +271,7 @@ void VID_Init (void)
         vid_ref = Cvar_Get ("vid_ref", "soft", CVAR_ARCHIVE);
 	vid_xpos = Cvar_Get ("vid_xpos", "3", CVAR_ARCHIVE);
 	vid_ypos = Cvar_Get ("vid_ypos", "22", CVAR_ARCHIVE);
-	vid_fullscreen = Cvar_Get ("vid_fullscreen", "0", CVAR_ARCHIVE);
+	r_fullscreen = Cvar_Get ("r_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = Cvar_Get( "vid_gamma", "1", CVAR_ARCHIVE );
 
 	/* Add some console commands that we want to handle */

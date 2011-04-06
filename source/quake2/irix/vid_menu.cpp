@@ -5,7 +5,7 @@
 #define REF_OPENGL	1
 
 extern QCvar *vid_ref;
-extern QCvar *vid_fullscreen;
+extern QCvar *r_fullscreen;
 extern QCvar *vid_gamma;
 extern QCvar *scr_viewsize;
 
@@ -113,7 +113,7 @@ static void ApplyChanges( void *unused )
 	Cvar_SetValueLatched( "vid_gamma", gamma );
 	Cvar_SetValueLatched( "sw_stipplealpha", s_stipple_box.curvalue );
 	Cvar_SetValueLatched( "gl_picmip", 3 - s_tq_slider.curvalue );
-	Cvar_SetValueLatched( "vid_fullscreen", s_fs_box[s_current_menu_index].curvalue );
+	Cvar_SetValueLatched( "r_fullscreen", s_fs_box[s_current_menu_index].curvalue );
 	Cvar_SetValueLatched( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
 	Cvar_SetValueLatched( "sw_mode", s_mode_list[SOFTWARE_MENU].curvalue );
 	Cvar_SetValueLatched( "gl_mode", s_mode_list[OPENGL_MENU].curvalue );
@@ -282,7 +282,7 @@ void VID_MenuInit( void )
 		s_fs_box[i].generic.y	= 40;
 		s_fs_box[i].generic.name	= "fullscreen";
 		s_fs_box[i].itemnames = yesno_names;
-		s_fs_box[i].curvalue = vid_fullscreen->value;
+		s_fs_box[i].curvalue = r_fullscreen->value;
 
 		s_defaults_action[i].generic.type = MTYPE_ACTION;
 		s_defaults_action[i].generic.name = "reset to default";
