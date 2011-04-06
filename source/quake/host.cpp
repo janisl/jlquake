@@ -841,9 +841,7 @@ void Host_Init (quakeparms_t *parms)
 		if (!host_colormap)
 			Sys_Error ("Couldn't load gfx/colormap.lmp");
 
-#ifndef _WIN32 // on non win32, mouse comes before video for security reasons
 		IN_Init ();
-#endif
 		VID_Init (host_basepal);
 
 		Draw_Init ();
@@ -853,9 +851,6 @@ void Host_Init (quakeparms_t *parms)
 		CDAudio_Init ();
 		Sbar_Init ();
 		CL_Init ();
-#ifdef _WIN32 // on non win32, mouse comes before video for security reasons
-		IN_Init ();
-#endif
 	}
 
 	Cbuf_InsertText ("exec quake.rc\n");

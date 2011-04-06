@@ -956,6 +956,7 @@ void Host_Init (quakeparms_t *parms)
 		if (!host_colormap)
 			Sys_Error ("Couldn't load gfx/colormap.lmp");
 
+		IN_Init();
 		VID_Init (host_basepal);
 
 		Draw_Init ();
@@ -966,7 +967,6 @@ void Host_Init (quakeparms_t *parms)
 		MIDI_Init();
 		SB_Init();
 		CL_Init();
-		IN_Init();
 	}
 
 	Cbuf_InsertText ("exec hexen.rc\n");

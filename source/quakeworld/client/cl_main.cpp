@@ -1482,8 +1482,8 @@ void Host_Init (quakeparms_t *parms)
 	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
 	if (!host_colormap)
 		Sys_Error ("Couldn't load gfx/colormap.lmp");
-#ifdef __linux__
 	IN_Init ();
+#ifdef __linux__
 	CDAudio_Init ();
 	VID_Init (host_basepal);
 	Draw_Init ();
@@ -1506,7 +1506,6 @@ void Host_Init (quakeparms_t *parms)
 	CDAudio_Init ();
 	Sbar_Init ();
 	CL_Init ();
-	IN_Init ();
 #endif
 
 	Cbuf_InsertText ("exec quake.rc\n");
