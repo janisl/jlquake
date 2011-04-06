@@ -26,7 +26,6 @@ void Sys_SendKeyEvents (void);
 
 // Input subsystem
 
-void IN_Init (void);
 void IN_Frame (void);
 
 

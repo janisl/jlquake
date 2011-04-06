@@ -69,8 +69,8 @@ static int mouse_threshold;
 int mouseResetTime = 0;
 
 QCvar*					in_joystick;
-QCvar*					in_joystickDebug;
-QCvar*					joy_threshold;
+static QCvar*			in_joystickDebug;
+static QCvar*			joy_threshold;
 
 #ifdef __linux__
 //	Our file descriptor for the joystick device.
@@ -839,7 +839,7 @@ void SharedHandleEvents(XEvent& event)
 //
 //==========================================================================
 
-void IN_StartupJoystick()
+static void IN_StartupJoystick()
 {
 	joy_fd = -1;
 
@@ -1001,7 +1001,7 @@ void IN_JoyMove()
 //
 //==========================================================================
 
-void IN_StartupJoystick()
+static void IN_StartupJoystick()
 {
 }
 
@@ -1022,6 +1022,46 @@ void IN_JoyMove()
 //	MAIN INPUT API
 //
 //**************************************************************************
+
+//==========================================================================
+//
+//	IN_Init
+//
+//==========================================================================
+
+void IN_Init()
+{
+	GLog.Write("\n------- Input Initialization -------\n");
+
+	// mouse variables
+	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE);
+	in_dgamouse = Cvar_Get("in_dgamouse", "1", CVAR_ARCHIVE);
+
+	// turn on-off sub-frame timing of X events
+	in_subframe = Cvar_Get("in_subframe", "1", CVAR_ARCHIVE);
+
+	// developer feature, allows to break without loosing mouse pointer
+	in_nograb = Cvar_Get("in_nograb", "0", 0);
+
+	// bk001130 - from cvs.17 (mkv), joystick variables
+	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH);
+	// bk001130 - changed this to match win32
+	in_joystickDebug = Cvar_Get("in_debugjoystick", "0", CVAR_TEMP);
+	joy_threshold = Cvar_Get("joy_threshold", "0.15", CVAR_ARCHIVE); // FIXME: in_joythreshold
+
+	if (in_mouse->value)
+	{
+		mouse_avail = true;
+	}
+	else
+	{
+		mouse_avail = false;
+	}
+
+	IN_StartupJoystick();
+
+	GLog.Write("------------------------------------\n");
+}
 
 //==========================================================================
 //

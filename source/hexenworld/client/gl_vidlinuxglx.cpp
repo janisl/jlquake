@@ -341,10 +341,6 @@ void VID_Init(unsigned char *palette)
 	_windowed_mouse = Cvar_Get("_windowed_mouse", "0", CVAR_ARCHIVE);
 	vid_mode = Cvar_Get("vid_mode", "0", 0);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
-	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
-	in_nograb = Cvar_Get ("in_nograb", "0", 0);
-	// turn on-off sub-frame timing of X events
-	in_subframe = Cvar_Get ("in_subframe", "1", CVAR_ARCHIVE);
 
 	vid.maxwarpwidth = WARP_WIDTH;
 	vid.maxwarpheight = WARP_HEIGHT;
@@ -412,11 +408,6 @@ void Sys_SendKeyEvents(void)
 		while (XPending(dpy)) 
 			GetEvent();
 	}
-}
-
-void IN_Init(void)
-{
-	mouse_avail = true;
 }
 
 /*

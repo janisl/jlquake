@@ -39,14 +39,6 @@ static qboolean			X11_active = false;
 static int p_mouse_x, p_mouse_y;
 static QCvar	*_windowed_mouse;
 
-static QCvar *sensitivity;
-static QCvar *lookstrafe;
-static QCvar *m_side;
-static QCvar *m_yaw;
-static QCvar *m_pitch;
-static QCvar *m_forward;
-static QCvar *freelook;
-
 int config_notify=0;
 int config_notify_width;
 int config_notify_height;
@@ -195,8 +187,6 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 {
 	fprintf(stderr, "GLimp_InitGraphics\n");
 
-	in_dgamouse = Cvar_Get("in_dgamouse", "1", 0);
-
 	srandom(getpid());
 
 	// let the sound and input subsystems know about the new window
@@ -291,26 +281,8 @@ void KBD_Close(void)
 
 void Real_IN_Init()
 {
-	int mtype;
-	int i;
-
-	fprintf(stderr, "GL Real_IN_Init\n");
-
 	// mouse variables
 	_windowed_mouse = Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
-    in_mouse = Cvar_Get ("in_mouse", "1", CVAR_ARCHIVE);
-	freelook = Cvar_Get( "freelook", "0", 0 );
-	lookstrafe = Cvar_Get ("lookstrafe", "0", 0);
-	sensitivity = Cvar_Get ("sensitivity", "3", 0);
-	m_pitch = Cvar_Get ("m_pitch", "0.022", 0);
-	m_yaw = Cvar_Get ("m_yaw", "0.022", 0);
-	m_forward = Cvar_Get ("m_forward", "1", 0);
-	m_side = Cvar_Get ("m_side", "0.8", 0);
-	in_nograb = Cvar_Get ("in_nograb", "0", 0);
-	// turn on-off sub-frame timing of X events
-	in_subframe = Cvar_Get ("in_subframe", "1", CVAR_ARCHIVE);
-
-	mouse_avail = true;
 }
 
 /*
@@ -334,12 +306,6 @@ void IN_Frame (void)
 /*****************************************************************************/
 /* INPUT                                                                     */
 /*****************************************************************************/
-
-// This if fake, it's acutally done by the Refresh load
-void IN_Init (void)
-{
-	in_joystick	= Cvar_Get ("in_joystick", "0", CVAR_ARCHIVE);
-}
 
 void IN_Commands (void)
 {

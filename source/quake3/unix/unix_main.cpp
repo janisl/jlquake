@@ -369,8 +369,9 @@ void Sys_Init(void)
 
   Cvar_Set( "username", Sys_GetCurrentUser() );
 
+#ifndef DEDICATED
   IN_Init();
-
+#endif
 }
 
 void  Sys_Error( const char *error, ...)

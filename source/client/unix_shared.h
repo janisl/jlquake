@@ -54,8 +54,6 @@ extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of X
 extern XF86VidModeGamma	vidmode_InitialGamma;
 
 extern QCvar *  in_joystick;
-extern QCvar *  in_joystickDebug;
-extern QCvar *  joy_threshold;
 
 rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
 void GLimp_SharedShutdown();
@@ -63,7 +61,6 @@ void IN_ActivateMouse();
 void IN_DeactivateMouse();
 int Sys_XTimeToSysTime(Time xtime);
 void SharedHandleEvents(XEvent& event);
-void IN_StartupJoystick();
 void IN_JoyMove();
 
 // Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events

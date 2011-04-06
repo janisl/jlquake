@@ -2,10 +2,6 @@
 
 #include "../client/client.h"
 
-void IN_Init (void)
-{
-}
-
 void IN_Commands (void)
 {
 }

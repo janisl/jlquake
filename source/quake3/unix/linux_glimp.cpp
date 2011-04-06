@@ -716,33 +716,6 @@ void GLimp_WakeRenderer( void *data )
 /* MOUSE                                                                     */
 /*****************************************************************************/
 
-void IN_Init(void) {
-	Com_Printf ("\n------- Input Initialization -------\n");
-  // mouse variables
-  in_mouse = Cvar_Get ("in_mouse", "1", CVAR_ARCHIVE);
-  in_dgamouse = Cvar_Get ("in_dgamouse", "1", CVAR_ARCHIVE);
-	
-	// turn on-off sub-frame timing of X events
-	in_subframe = Cvar_Get ("in_subframe", "1", CVAR_ARCHIVE);
-	
-	// developer feature, allows to break without loosing mouse pointer
-	in_nograb = Cvar_Get ("in_nograb", "0", 0);
-
-  // bk001130 - from cvs.17 (mkv), joystick variables
-  in_joystick = Cvar_Get ("in_joystick", "0", CVAR_ARCHIVE|CVAR_LATCH);
-  // bk001130 - changed this to match win32
-  in_joystickDebug = Cvar_Get ("in_debugjoystick", "0", CVAR_TEMP);
-  joy_threshold = Cvar_Get ("joy_threshold", "0.15", CVAR_ARCHIVE); // FIXME: in_joythreshold
-
-  if (in_mouse->value)
-    mouse_avail = qtrue;
-  else
-    mouse_avail = qfalse;
-
-  IN_StartupJoystick( ); // bk001130 - from cvs1.17 (mkv)
-	Com_Printf ("------------------------------------\n");
-}
-
 void IN_Frame (void) {
 
   // bk001130 - from cvs 1.17 (mkv)
