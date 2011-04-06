@@ -380,8 +380,6 @@ void IN_Frame (void)
 /* INPUT                                                                     */
 /*****************************************************************************/
 
-QCvar	*in_joystick;
-
 // This if fake, it's acutally done by the Refresh load
 void IN_Init (void)
 {

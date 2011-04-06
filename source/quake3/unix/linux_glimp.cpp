@@ -67,11 +67,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // bk001206 - not needed anymore
 // static qboolean autorepeaton = qtrue;
 
-// bk001130 - from cvs1.17 (mkv), but not static
-QCvar   *in_joystick      = NULL;
-QCvar   *in_joystickDebug = NULL;
-QCvar   *joy_threshold    = NULL;
-
 /*
 * Find the first occurrence of find in s.
 */
@@ -785,12 +780,3 @@ void Sys_SendKeyEvents (void) {
     return;
   HandleEvents();
 }
-
-
-// bk010216 - added stubs for non-Linux UNIXes here
-// FIXME - use NO_JOYSTICK or something else generic
-
-#if defined( __FreeBSD__ ) // rb010123
-void IN_StartupJoystick( void ) {}
-void IN_JoyMove( void ) {}
-#endif

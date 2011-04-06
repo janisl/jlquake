@@ -22,8 +22,16 @@
 #include "client.h"
 #include "render_local.h"
 #include "unix_shared.h"
+#ifdef __linux__
+#include <linux/joystick.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <limits.h>
+#endif
 
 // MACROS ------------------------------------------------------------------
+
+//#define KBD_DBG
 
 // TYPES -------------------------------------------------------------------
 
@@ -60,186 +68,44 @@ static int mouse_threshold;
 // Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
 int mouseResetTime = 0;
 
+QCvar*					in_joystick;
+QCvar*					in_joystickDebug;
+QCvar*					joy_threshold;
+
+#ifdef __linux__
+//	Our file descriptor for the joystick device.
+static int				joy_fd = -1;
+
+//	We translate axes movement into keypresses.
+static int joy_keys[16] =
+{
+	K_LEFTARROW, K_RIGHTARROW,
+	K_UPARROW, K_DOWNARROW,
+	K_JOY16, K_JOY17,
+	K_JOY18, K_JOY19,
+	K_JOY20, K_JOY21,
+	K_JOY22, K_JOY23,
+
+	K_JOY24, K_JOY25,
+	K_JOY26, K_JOY27
+};
+#endif
+
 // CODE --------------------------------------------------------------------
 
-//==========================================================================
+//**************************************************************************
 //
-//	CreateNullCursor
+//	KEYBOARD
 //
-//	Makes a null cursor.
+//	NOTE TTimo the keyboard handling is done with KeySyms
+//	that means relying on the keyboard mapping provided by X
+//	in-game it would probably be better to use KeyCode (i.e. hardware key codes)
+//	you would still need the KeySyms in some cases, such as for the console and all entry textboxes
+//	(cause there's nothing worse than a qwerty mapping on a french keyboard)
 //
-//==========================================================================
-
-static Cursor CreateNullCursor(Display *display, Window root)
-{
-	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
-	XGCValues xgc;
-	xgc.function = GXclear;
-	GC gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
-	XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
-	XColor dummycolour;
-	dummycolour.pixel = 0;
-	dummycolour.red = 0;
-	dummycolour.flags = 04;
-	Cursor cursor = XCreatePixmapCursor(display, cursormask, cursormask,
-		&dummycolour, &dummycolour, 0,0);
-	XFreePixmap(display, cursormask);
-	XFreeGC(display, gc);
-	return cursor;
-}
-
-//==========================================================================
+//	you can turn on some debugging and verbose of the keyboard code with #define KBD_DBG
 //
-//	install_grabs
-//
-//==========================================================================
-
-static void install_grabs()
-{
-	// inviso cursor
-	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-	XSync(dpy, False);
-
-	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
-
-	XGrabPointer(dpy, win, // bk010108 - do this earlier?
-		False,
-		MOUSE_MASK,
-		GrabModeAsync, GrabModeAsync,
-		win,
-		None,
-		CurrentTime);
-
-	XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
-		&mouse_threshold);
-
-	XChangePointerControl(dpy, True, True, 1, 1, 0);
-
-	XSync(dpy, False);
-
-	mouseResetTime = Sys_Milliseconds();
-
-	if (in_dgamouse->value)
-	{
-		int MajorVersion, MinorVersion;
-
-		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
-		{
-			// unable to query, probalby not supported, force the setting to 0
-			GLog.Write("Failed to detect XF86DGA Mouse\n");
-			Cvar_Set("in_dgamouse", "0");
-		}
-		else
-		{
-			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
-			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
-		}
-	}
-	else
-	{
-		mwx = glConfig.vidWidth / 2;
-		mwy = glConfig.vidHeight / 2;
-		mx = my = 0;
-	}
-
-
-	XGrabKeyboard(dpy, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
-
-	XSync(dpy, False);
-}
-
-//==========================================================================
-//
-//	uninstall_grabs
-//
-//==========================================================================
-
-static void uninstall_grabs()
-{
-	if (in_dgamouse->value)
-	{
-		GLog.DWrite("DGA Mouse - Disabling DGA DirectVideo\n");
-		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
-	}
-
-	XChangePointerControl(dpy, True, True, mouse_accel_numerator, 
-		mouse_accel_denominator, mouse_threshold);
-
-	XUngrabPointer(dpy, CurrentTime);
-	XUngrabKeyboard(dpy, CurrentTime);
-
-	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
-
-	// inviso cursor
-	XUndefineCursor(dpy, win);
-}
-
-//==========================================================================
-//
-//	IN_ActivateMouse
-//
-//==========================================================================
-
-void IN_ActivateMouse() 
-{
-	if (!mouse_avail || !dpy || !win)
-	{
-		return;
-	}
-
-	if (!mouse_active)
-	{
-		if (!in_nograb->value)
-		{
-			install_grabs();
-		}
-		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
-		{
-			Cvar_Set("in_dgamouse", "0");
-		}
-		mouse_active = true;
-	}
-}
-
-//==========================================================================
-//
-//	IN_DeactivateMouse
-//
-//==========================================================================
-
-void IN_DeactivateMouse() 
-{
-	if (!mouse_avail || !dpy || !win)
-	{
-		return;
-	}
-
-	if (mouse_active)
-	{
-		if (!in_nograb->value)
-		{
-			uninstall_grabs();
-		}
-		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
-		{
-			Cvar_Set("in_dgamouse", "0");
-		}
-		mouse_active = false;
-	}
-}
-
-/*****************************************************************************
-** KEYBOARD
-** NOTE TTimo the keyboard handling is done with KeySyms
-**   that means relying on the keyboard mapping provided by X
-**   in-game it would probably be better to use KeyCode (i.e. hardware key codes)
-**   you would still need the KeySyms in some cases, such as for the console and all entry textboxes
-**     (cause there's nothing worse than a qwerty mapping on a french keyboard)
-**
-** you can turn on some debugging and verbose of the keyboard code with #define KBD_DBG
-******************************************************************************/
-
-//#define KBD_DBG
+//**************************************************************************
 
 //==========================================================================
 //
@@ -247,7 +113,7 @@ void IN_DeactivateMouse()
 //
 //==========================================================================
 
-char* XLateKey(XKeyEvent* ev, int& key)
+static char* XLateKey(XKeyEvent* ev, int& key)
 {
 	key = 0;
 
@@ -518,67 +384,6 @@ char* XLateKey(XKeyEvent* ev, int& key)
 
 //==========================================================================
 //
-//	Sys_XTimeToSysTime
-//
-//	Sub-frame timing of events returned by X
-//	X uses the Time typedef - unsigned long
-//	disable with in_subframe 0
-//
-//	sys_timeBase*1000 is the number of ms since the Epoch of our origin
-//	xtime is in ms and uses the Epoch as origin
-//	Time data type is an unsigned long: 0xffffffff ms - ~49 days period
-//	I didn't find much info in the XWindow documentation about the wrapping
-// we clamp sys_timeBase*1000 to unsigned long, that gives us the current
-// origin for xtime the computation will still work if xtime wraps (at
-// ~49 days period since the Epoch) after we set sys_timeBase.
-//
-//==========================================================================
-
-int Sys_XTimeToSysTime(unsigned long xtime)
-{
-	int ret, time, test;
-	
-	if (!in_subframe->value)
-	{
-		// if you don't want to do any event times corrections
-		return Sys_Milliseconds();
-	}
-
-	// test the wrap issue
-#if 0	
-	// reference values for test: sys_timeBase 0x3dc7b5e9 xtime 0x541ea451 (read these from a test run)
-	// xtime will wrap in 0xabe15bae ms >~ 0x2c0056 s (33 days from Nov 5 2002 -> 8 Dec)
-	//   NOTE: date -d '1970-01-01 UTC 1039384002 seconds' +%c
-	// use sys_timeBase 0x3dc7b5e9+0x2c0056 = 0x3df3b63f
-	// after around 5s, xtime would have wrapped around
-	// we get 7132, the formula handles the wrap safely
-	unsigned long xtime_aux,base_aux;
-	int test;
-//	Com_Printf("sys_timeBase: %p\n", sys_timeBase);
-//	Com_Printf("xtime: %p\n", xtime);
-	xtime_aux = 500; // 500 ms after wrap
-	base_aux = 0x3df3b63f; // the base a few seconds before wrap
-	test = xtime_aux - (unsigned long)(base_aux*1000);
-	Com_Printf("xtime wrap test: %d\n", test);
-#endif
-
-	// some X servers (like suse 8.1's) report weird event times
-	// if the game is loading, resolving DNS, etc. we are also getting old events
-	// so we only deal with subframe corrections that look 'normal'
-	ret = xtime - (unsigned long)(sys_timeBase * 1000);
-	time = Sys_Milliseconds();
-	test = time - ret;
-	//printf("delta: %d\n", test);
-	if (test < 0 || test > 30) // in normal conditions I've never seen this go above
-	{
-		return time;
-	}
-
-	return ret;
-}
-
-//==========================================================================
-//
 //	X11_PendingInput
 //
 //	bk001206 - from Ryan's Fakk2
@@ -648,6 +453,245 @@ static bool repeated_press(XEvent* event)
 	}
 
 	return repeated;
+}
+
+//**************************************************************************
+//
+//	MOUSE
+//
+//**************************************************************************
+
+//==========================================================================
+//
+//	CreateNullCursor
+//
+//	Makes a null cursor.
+//
+//==========================================================================
+
+static Cursor CreateNullCursor(Display *display, Window root)
+{
+	Pixmap cursormask = XCreatePixmap(display, root, 1, 1, 1/*depth*/);
+	XGCValues xgc;
+	xgc.function = GXclear;
+	GC gc =  XCreateGC(display, cursormask, GCFunction, &xgc);
+	XFillRectangle(display, cursormask, gc, 0, 0, 1, 1);
+	XColor dummycolour;
+	dummycolour.pixel = 0;
+	dummycolour.red = 0;
+	dummycolour.flags = 04;
+	Cursor cursor = XCreatePixmapCursor(display, cursormask, cursormask,
+		&dummycolour, &dummycolour, 0,0);
+	XFreePixmap(display, cursormask);
+	XFreeGC(display, gc);
+	return cursor;
+}
+
+//==========================================================================
+//
+//	install_grabs
+//
+//==========================================================================
+
+static void install_grabs()
+{
+	// inviso cursor
+	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	XSync(dpy, False);
+
+	XDefineCursor(dpy, win, CreateNullCursor(dpy, win));
+
+	XGrabPointer(dpy, win, // bk010108 - do this earlier?
+		False,
+		MOUSE_MASK,
+		GrabModeAsync, GrabModeAsync,
+		win,
+		None,
+		CurrentTime);
+
+	XGetPointerControl(dpy, &mouse_accel_numerator, &mouse_accel_denominator,
+		&mouse_threshold);
+
+	XChangePointerControl(dpy, True, True, 1, 1, 0);
+
+	XSync(dpy, False);
+
+	mouseResetTime = Sys_Milliseconds();
+
+	if (in_dgamouse->value)
+	{
+		int MajorVersion, MinorVersion;
+
+		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
+		{
+			// unable to query, probalby not supported, force the setting to 0
+			GLog.Write("Failed to detect XF86DGA Mouse\n");
+			Cvar_Set("in_dgamouse", "0");
+		}
+		else
+		{
+			XF86DGADirectVideo(dpy, DefaultScreen(dpy), XF86DGADirectMouse);
+			XWarpPointer(dpy, None, win, 0, 0, 0, 0, 0, 0);
+		}
+	}
+	else
+	{
+		mwx = glConfig.vidWidth / 2;
+		mwy = glConfig.vidHeight / 2;
+		mx = my = 0;
+	}
+
+
+	XGrabKeyboard(dpy, win, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+
+	XSync(dpy, False);
+}
+
+//==========================================================================
+//
+//	uninstall_grabs
+//
+//==========================================================================
+
+static void uninstall_grabs()
+{
+	if (in_dgamouse->value)
+	{
+		GLog.DWrite("DGA Mouse - Disabling DGA DirectVideo\n");
+		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
+	}
+
+	XChangePointerControl(dpy, True, True, mouse_accel_numerator, 
+		mouse_accel_denominator, mouse_threshold);
+
+	XUngrabPointer(dpy, CurrentTime);
+	XUngrabKeyboard(dpy, CurrentTime);
+
+	XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+
+	// inviso cursor
+	XUndefineCursor(dpy, win);
+}
+
+//==========================================================================
+//
+//	IN_ActivateMouse
+//
+//==========================================================================
+
+void IN_ActivateMouse() 
+{
+	if (!mouse_avail || !dpy || !win)
+	{
+		return;
+	}
+
+	if (!mouse_active)
+	{
+		if (!in_nograb->value)
+		{
+			install_grabs();
+		}
+		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
+		{
+			Cvar_Set("in_dgamouse", "0");
+		}
+		mouse_active = true;
+	}
+}
+
+//==========================================================================
+//
+//	IN_DeactivateMouse
+//
+//==========================================================================
+
+void IN_DeactivateMouse() 
+{
+	if (!mouse_avail || !dpy || !win)
+	{
+		return;
+	}
+
+	if (mouse_active)
+	{
+		if (!in_nograb->value)
+		{
+			uninstall_grabs();
+		}
+		else if (in_dgamouse->value) // force dga mouse to 0 if using nograb
+		{
+			Cvar_Set("in_dgamouse", "0");
+		}
+		mouse_active = false;
+	}
+}
+
+//**************************************************************************
+//
+//	PROCESSING OF X KEYBOARD AND MOUSE EVENTS
+//
+//**************************************************************************
+
+//==========================================================================
+//
+//	Sys_XTimeToSysTime
+//
+//	Sub-frame timing of events returned by X
+//	X uses the Time typedef - unsigned long
+//	disable with in_subframe 0
+//
+//	sys_timeBase*1000 is the number of ms since the Epoch of our origin
+//	xtime is in ms and uses the Epoch as origin
+//	Time data type is an unsigned long: 0xffffffff ms - ~49 days period
+//	I didn't find much info in the XWindow documentation about the wrapping
+// we clamp sys_timeBase*1000 to unsigned long, that gives us the current
+// origin for xtime the computation will still work if xtime wraps (at
+// ~49 days period since the Epoch) after we set sys_timeBase.
+//
+//==========================================================================
+
+int Sys_XTimeToSysTime(unsigned long xtime)
+{
+	int ret, time, test;
+	
+	if (!in_subframe->value)
+	{
+		// if you don't want to do any event times corrections
+		return Sys_Milliseconds();
+	}
+
+	// test the wrap issue
+#if 0	
+	// reference values for test: sys_timeBase 0x3dc7b5e9 xtime 0x541ea451 (read these from a test run)
+	// xtime will wrap in 0xabe15bae ms >~ 0x2c0056 s (33 days from Nov 5 2002 -> 8 Dec)
+	//   NOTE: date -d '1970-01-01 UTC 1039384002 seconds' +%c
+	// use sys_timeBase 0x3dc7b5e9+0x2c0056 = 0x3df3b63f
+	// after around 5s, xtime would have wrapped around
+	// we get 7132, the formula handles the wrap safely
+	unsigned long xtime_aux,base_aux;
+	int test;
+//	Com_Printf("sys_timeBase: %p\n", sys_timeBase);
+//	Com_Printf("xtime: %p\n", xtime);
+	xtime_aux = 500; // 500 ms after wrap
+	base_aux = 0x3df3b63f; // the base a few seconds before wrap
+	test = xtime_aux - (unsigned long)(base_aux*1000);
+	Com_Printf("xtime wrap test: %d\n", test);
+#endif
+
+	// some X servers (like suse 8.1's) report weird event times
+	// if the game is loading, resolving DNS, etc. we are also getting old events
+	// so we only deal with subframe corrections that look 'normal'
+	ret = xtime - (unsigned long)(sys_timeBase * 1000);
+	time = Sys_Milliseconds();
+	test = time - ret;
+	//printf("delta: %d\n", test);
+	if (test < 0 || test > 30) // in normal conditions I've never seen this go above
+	{
+		return time;
+	}
+
+	return ret;
 }
 
 //==========================================================================
@@ -780,3 +824,195 @@ void SharedHandleEvents(XEvent& event)
 			break;
 		}
 }
+
+//**************************************************************************
+//
+//	LINUX JOYSTICK
+//
+//**************************************************************************
+
+#ifdef __linux__
+
+//==========================================================================
+//
+//	IN_StartupJoystick
+//
+//==========================================================================
+
+void IN_StartupJoystick()
+{
+	joy_fd = -1;
+
+	if (!in_joystick->integer)
+	{
+		GLog.Write("Joystick is not active.\n");
+		return;
+	}
+
+	for (int i = 0; i < 4; i++ )
+	{
+		char filename[PATH_MAX];
+
+		snprintf(filename, PATH_MAX, "/dev/js%d", i);
+
+		joy_fd = open(filename, O_RDONLY | O_NONBLOCK);
+
+		if (joy_fd != -1)
+		{
+			GLog.Write("Joystick %s found\n", filename);
+
+			//	Get rid of initialization messages.
+			js_event event;
+			do
+			{
+				int n = read(joy_fd, &event, sizeof(event));
+
+				if (n == -1)
+				{
+					break;
+				}
+			} while (event.type & JS_EVENT_INIT);
+
+			//	Get joystick statistics.
+			char axes = 0;
+			ioctl(joy_fd, JSIOCGAXES, &axes);
+			char buttons = 0;
+			ioctl(joy_fd, JSIOCGBUTTONS, &buttons);
+
+			char name[128];
+			if (ioctl(joy_fd, JSIOCGNAME(sizeof(name)), name) < 0)
+			{
+				QStr::NCpy(name, "Unknown", sizeof(name));
+			}
+
+			GLog.Write( "Name:    %s\n", name );
+			GLog.Write( "Axes:    %d\n", axes );
+			GLog.Write( "Buttons: %d\n", buttons );
+
+			//	Our work here is done.
+			return;
+		}
+	}
+
+	//	No soup for you.
+	if (joy_fd == -1)
+	{
+		GLog.Write("No joystick found.\n");
+		return;
+	}
+}
+
+//==========================================================================
+//
+//	IN_JoyMove
+//
+//==========================================================================
+
+void IN_JoyMove()
+{
+	//	Store instantaneous joystick state. Hack to get around event model
+	// used in Linux joystick driver.
+	static int axes_state[16];
+	//	Old bits for Quake-style input compares.
+	static unsigned int old_axes = 0;
+
+	if (joy_fd == -1)
+	{
+		return;
+	}
+
+	//	Empty the queue, dispatching button presses immediately and updating
+	// the instantaneous state for the axes.
+	do
+	{
+		js_event event;
+		int n = read(joy_fd, &event, sizeof(event));
+
+		if (n == -1)
+		{
+			//	No error, we're non-blocking.
+			break;
+		}
+
+		if (event.type & JS_EVENT_BUTTON)
+		{
+			Sys_QueEvent(0, SE_KEY, K_JOY1 + event.number, event.value, 0, NULL);
+		}
+		else if (event.type & JS_EVENT_AXIS)
+		{
+			if (event.number >= 16)
+			{
+				continue;
+			}
+			axes_state[event.number] = event.value;
+		}
+		else
+		{
+			GLog.Write("Unknown joystick event type\n");
+		}
+
+	} while (1);
+
+	//	Translate our instantaneous state to bits.
+	unsigned int axes = 0;
+	for (int i = 0; i < 16; i++)
+	{
+		float f = ((float)axes_state[i]) / 32767.0f;
+
+		if (f < -joy_threshold->value)
+		{
+			axes |= (1 << (i * 2));
+		}
+		else if (f > joy_threshold->value)
+		{
+			axes |= (1 << ((i * 2) + 1));
+		}
+	}
+
+	//	Time to update axes state based on old vs. new.
+	for (int i = 0; i < 16; i++)
+	{
+		if ((axes & (1 << i)) && !(old_axes & (1 << i)))
+		{
+			Sys_QueEvent(0, SE_KEY, joy_keys[i], true, 0, NULL);
+		}
+
+		if (!(axes & (1 << i)) && (old_axes & (1 << i)))
+		{
+			Sys_QueEvent(0, SE_KEY, joy_keys[i], false, 0, NULL);
+		}
+	}
+
+	//	Save for future generations.
+	old_axes = axes;
+}
+
+//**************************************************************************
+//
+//	NULL JOYSTICK
+//
+//**************************************************************************
+
+#else
+
+//==========================================================================
+//
+//	IN_StartupJoystick
+//
+//==========================================================================
+
+void IN_StartupJoystick()
+{
+}
+
+//==========================================================================
+//
+//	IN_JoyMove
+//
+//==========================================================================
+
+void IN_JoyMove()
+{
+}
+
+#endif

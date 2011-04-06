@@ -31,9 +31,6 @@ void IN_Frame (void);
 void IN_Shutdown (void);
 
 
-void IN_JoyMove( void );
-void IN_StartupJoystick( void );
-
 // bk001130 - win32
 // void IN_JoystickCommands (void);
 

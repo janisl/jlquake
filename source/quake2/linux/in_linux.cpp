@@ -3,7 +3,6 @@
 #include "../client/client.h"
 
 QCvar	*in_mouse;
-QCvar	*in_joystick;
 
 void IN_Init (void)
 {
