@@ -364,23 +364,6 @@ void Sys_SendKeyEvents(void)
 	HandleEvents();
 }
 
-/*
-===========
-IN_Frame
-===========
-*/
-void IN_Frame(void)
-{
-	if (vidmode_active || _windowed_mouse->value)
-	{
-		IN_ActivateMouse();
-	}
-	else
-	{
-		IN_DeactivateMouse();
-	}
-}
-
 void VID_UnlockBuffer() {}
 void VID_LockBuffer() {}
 

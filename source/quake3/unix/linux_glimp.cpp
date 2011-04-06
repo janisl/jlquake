@@ -623,29 +623,6 @@ void GLimp_WakeRenderer( void *data )
 	pthread_mutex_unlock( &smpMutex );
 }
 
-/*****************************************************************************/
-/* MOUSE                                                                     */
-/*****************************************************************************/
-
-void IN_Frame (void) {
-
-  // bk001130 - from cvs 1.17 (mkv)
-  IN_JoyMove(); // FIXME: disable if on desktop?
-
-  if ( in_keyCatchers & KEYCATCH_CONSOLE )
-  {
-    // temporarily deactivate if not in the game and
-    // running on the desktop
-    if (Cvar_VariableValue ("r_fullscreen") == 0)
-    {
-      IN_DeactivateMouse ();
-      return;
-    }
-  }
-
-  IN_ActivateMouse();
-}
-
 void IN_Activate(void)
 {
 }

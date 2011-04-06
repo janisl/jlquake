@@ -210,15 +210,6 @@ void KBD_Init()
 void KBD_Update(void)
 {
 	HandleEvents();
-
-	if (vidmode_active || _windowed_mouse->value)
-	{
-		IN_ActivateMouse();
-	}
-	else
-	{
-		IN_DeactivateMouse();
-	}
 }
 
 void KBD_Close(void)
@@ -230,10 +221,6 @@ void Real_IN_Init()
 {
 	// mouse variables
 	_windowed_mouse = Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
-}
-
-void IN_Frame (void)
-{
 }
 
 //===============================================================================

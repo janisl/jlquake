@@ -1164,3 +1164,24 @@ void IN_Shutdown()
 {
 	mouse_avail = false;
 }
+
+//==========================================================================
+//
+//	IN_Frame
+//
+//==========================================================================
+
+void IN_Frame()
+{
+	// bk001130 - from cvs 1.17 (mkv)
+	IN_JoyMove(); // FIXME: disable if on desktop?
+
+	// temporarily deactivate if not in the game and running on the desktop
+	if (in_keyCatchers & KEYCATCH_CONSOLE && r_fullscreen->integer == 0)
+	{
+		IN_DeactivateMouse ();
+		return;
+	}
+
+	IN_ActivateMouse();
+}

@@ -399,19 +399,3 @@ void Sys_SendKeyEvents(void)
 {
 	HandleEvents();
 }
-
-/*
-===========
-IN_Frame
-===========
-*/
-void IN_Frame(void)
-{
-	if (!dpy || !win)
-		return;
-
-	if (vidmode_active || in_keyCatchers == 0)
-		IN_ActivateMouse();
-	else
-		IN_DeactivateMouse ();
-}
