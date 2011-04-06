@@ -362,15 +362,6 @@ void VID_Init(unsigned char *palette)
 void Sys_SendKeyEvents(void)
 {
 	HandleEvents();
-
-	if (vidmode_active || _windowed_mouse->value)
-	{
-		IN_ActivateMouse();
-	}
-	else
-	{
-		IN_DeactivateMouse();
-	}
 }
 
 /*
@@ -380,17 +371,15 @@ IN_Commands
 */
 void IN_Commands (void)
 {
+	if (vidmode_active || _windowed_mouse->value)
+	{
+		IN_ActivateMouse();
+	}
+	else
+	{
+		IN_DeactivateMouse();
+	}
 }
-
-/*
-===========
-IN_Move
-===========
-*/
-void IN_Move()
-{
-}
-
 
 void VID_UnlockBuffer() {}
 void VID_LockBuffer() {}

@@ -424,12 +424,6 @@ void IN_Commands (void)
 		IN_DeactivateMouse ();
 }
 
-void IN_Move()
-{
-}
-
-
-
 void D_ShowLoadingSize(void)
 {
 	if (!vidmode_active)

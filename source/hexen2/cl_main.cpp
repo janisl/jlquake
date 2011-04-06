@@ -837,7 +837,6 @@ void CL_SendCmd (void)
 		CL_BaseMove (&cmd);
 	
 	// allow mice or other external controllers to add to the move
-		IN_Move ();
 		CL_MouseMove(&cmd);
 	
 	// send the unreliable message

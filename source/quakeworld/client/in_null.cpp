@@ -6,10 +6,6 @@ void IN_Commands (void)
 {
 }
 
-void IN_Move ()
-{
-}
-
 /*
 ===========
 IN_ModeChanged

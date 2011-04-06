@@ -429,7 +429,6 @@ usercmd_t CL_CreateCmd (void)
 	CL_BaseMove (&cmd);
 
 	// allow mice or other external controllers to add to the move
-	IN_Move ();
 	CL_MouseMove(&cmd);
 
 	CL_FinishMove (&cmd);

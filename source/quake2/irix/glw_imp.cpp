@@ -232,15 +232,6 @@ void Real_IN_Init()
 	_windowed_mouse = Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
 }
 
-/*
-===========
-IN_Move
-===========
-*/
-void IN_Move ()
-{
-}
-
 void IN_Frame (void)
 {
 }

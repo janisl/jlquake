@@ -9,7 +9,3 @@ void IN_Commands (void)
 void IN_Frame (void)
 {
 }
-
-void IN_Move ()
-{
-}

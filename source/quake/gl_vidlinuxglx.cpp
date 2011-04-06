@@ -415,12 +415,3 @@ void IN_Commands (void)
 	else
 		IN_DeactivateMouse ();
 }
-
-/*
-===========
-IN_Move
-===========
-*/
-void IN_Move ()
-{
-}

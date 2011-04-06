@@ -42,9 +42,6 @@ qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 
 void	IN_JoystickCommands (void);
 
-void	IN_Move (usercmd_t *cmd);
-// add additional non keyboard / non mouse movement on top of the keyboard move cmd
-
 void	IN_Frame (void);
 
 // window procedure
