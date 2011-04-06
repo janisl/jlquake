@@ -1343,7 +1343,7 @@ void Host_Frame (float time)
 	IN_ProcessEvents();
 
 	// allow mice or other external controllers to add commands
-	IN_Commands ();
+	IN_Frame();
 
 	// process console commands
 	Cbuf_Execute ();

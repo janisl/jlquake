@@ -204,7 +204,6 @@ typedef struct
 #include "progs.h"
 #include "gl_model.h"
 #include "server.h"
-#include "input.h"
 #include "world.h"
 #include "keys.h"
 #include "console.h"

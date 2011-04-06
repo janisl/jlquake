@@ -29,5 +29,6 @@ enum
 
 void IN_Init();
 void IN_Shutdown();
+void IN_Frame();
 
 extern int			in_keyCatchers;		// bit flags

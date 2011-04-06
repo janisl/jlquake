@@ -1,7 +1,7 @@
 #include "quakedef.h"
 #include "winquake.h"
 
-void IN_Commands()
+void IN_Frame()
 {
 	IN_SharedFrame();
 }

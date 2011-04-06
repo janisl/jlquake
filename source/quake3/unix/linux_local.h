@@ -24,13 +24,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 qboolean Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 void Sys_SendKeyEvents (void);
 
-// Input subsystem
-
-void IN_Frame (void);
-
-
-// bk001130 - win32
-// void IN_JoystickCommands (void);
-
 // signals.c
 void InitSig(void);

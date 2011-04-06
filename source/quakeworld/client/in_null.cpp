@@ -2,16 +2,6 @@
 
 #include "quakedef.h"
 
-void IN_Commands (void)
+void IN_Frame (void)
 {
 }
-
-/*
-===========
-IN_ModeChanged
-===========
-*/
-void IN_ModeChanged (void)
-{
-}
-

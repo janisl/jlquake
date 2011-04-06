@@ -366,10 +366,10 @@ void Sys_SendKeyEvents(void)
 
 /*
 ===========
-IN_Commands
+IN_Frame
 ===========
 */
-void IN_Commands (void)
+void IN_Frame(void)
 {
 	if (vidmode_active || _windowed_mouse->value)
 	{

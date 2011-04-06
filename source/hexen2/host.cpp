@@ -713,7 +713,7 @@ void _Host_Frame (float time)
 	Sys_SendKeyEvents ();
 
 // allow mice or other external controllers to add commands
-	IN_Commands ();
+	IN_Frame ();
 
 	IN_ProcessEvents();
 

@@ -824,8 +824,10 @@ sysEvent_t Sys_GetEvent( void ) {
     Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
   }
 
+#ifndef DEDICATED
   // check for other input devices
   IN_Frame();
+#endif
 
   // check for network packets
   MSG_Init( &netmsg, sys_packetReceived, sizeof( sys_packetReceived ) );
