@@ -1302,7 +1302,7 @@ static void IN_Startup()
 //
 //==========================================================================
 
-void IN_SharedInit()
+void IN_Init()
 {
 	// mouse variables
 	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE | CVAR_LATCH);

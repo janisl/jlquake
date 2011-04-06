@@ -21,26 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../client/client.h"
 #include "winquake.h"
 
-/*
-=========================================================================
-
-VIEW CENTERING
-
-=========================================================================
-*/
-
-QCvar	*v_centermove;
-QCvar	*v_centerspeed;
-
-void IN_Init()
-{
-	IN_SharedInit();
-
-	// centering
-	v_centermove			= Cvar_Get ("v_centermove",				"0.15",		0);
-	v_centerspeed			= Cvar_Get ("v_centerspeed",			"500",		0);
-}
-
 void IN_Frame()
 {
 	IN_SharedFrame();
