@@ -807,9 +807,10 @@ sysEvent_t Sys_GetEvent( void ) {
     return eventQue[ ( eventTail - 1 ) & MASK_QUED_EVENTS ];
   }
 
+#ifndef DEDICATED
   // pump the message loop
-  // in vga this calls KBD_Update, under X, it calls GetEvent
   Sys_SendKeyEvents ();
+#endif
 
   // check for console commands
   s = Sys_ConsoleInput();

@@ -137,7 +137,6 @@ set(QUAKE3_DEDICATED_FILES
 	unix/unix_net.cpp
 	unix/unix_shared.cpp
 	null/null_client.cpp
-	null/null_input.cpp
 	null/null_snddma.cpp
 )
 
