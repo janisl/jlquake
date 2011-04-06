@@ -164,7 +164,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 
 	if (!fullscreen && (!_windowed_mouse->value || in_keyCatchers != 0))
 	{
-		IN_DeactivateMouse();
+		IN_Activate(false);
 	}
 
 	glConfig.vidWidth = modelist[modenum].width;
@@ -191,7 +191,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 
 	if (fullscreen || (_windowed_mouse->value && in_keyCatchers == 0))
 	{
-		IN_ActivateMouse ();
+		IN_Activate(true);
 	}
 
 	VID_UpdateWindowStatus ();
@@ -309,11 +309,11 @@ void GL_EndRendering (void)
 		{
 			if (_windowed_mouse->value)
 			{
-				IN_ActivateMouse ();
+				IN_Activate(true);
 			}
 			else
 			{
-				IN_DeactivateMouse ();
+				IN_Activate(false);
 			}
 
 			windowed_mouse = (int)_windowed_mouse->value;
@@ -394,7 +394,7 @@ void	VID_ShiftPalette (unsigned char *palette)
 
 void VID_SetDefaultMode (void)
 {
-	IN_DeactivateMouse ();
+	IN_Activate(false);
 }
 
 
@@ -451,7 +451,6 @@ void ClearAllStates (void)
 	}
 
 	Key_ClearStates ();
-	IN_ClearStates ();
 }
 
 void AppActivate(BOOL fActive, BOOL minimize)
@@ -476,11 +475,11 @@ void AppActivate(BOOL fActive, BOOL minimize)
 	{
 		if (cdsFullscreen)
 		{
-			IN_ActivateMouse ();
+			IN_Activate(true);
 		}
 		else if ((!cdsFullscreen) && _windowed_mouse->value)
 		{
-			IN_ActivateMouse ();
+			IN_Activate(true);
 		}
 	}
 
@@ -488,11 +487,11 @@ void AppActivate(BOOL fActive, BOOL minimize)
 	{
 		if (cdsFullscreen)
 		{
-			IN_DeactivateMouse ();
+			IN_Activate(false);
 		}
 		else if ((!cdsFullscreen) && _windowed_mouse->value)
 		{
-			IN_DeactivateMouse ();
+			IN_Activate(false);
 		}
 	}
 }

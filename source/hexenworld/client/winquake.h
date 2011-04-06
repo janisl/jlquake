@@ -26,6 +26,4 @@ extern HANDLE	hinput, houtput;
 
 void VID_SetDefaultMode (void);
 
-void IN_ClearStates (void);
-
 #endif

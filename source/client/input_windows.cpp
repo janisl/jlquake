@@ -84,12 +84,15 @@ static byte s_scantokey[128] =
 	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0         // 7 
 }; 
 
-QCvar*	in_mouse;
+static QCvar*			in_mouse;
 
 static int				window_center_x;
 static int				window_center_y;
 
-WinMouseVars_t	s_wmv;
+static int				mouse_oldButtonState;
+static bool				mouse_active;
+static bool				mouse_initialized;
+static bool				mouse_startupDelayed; // delay mouse init to try DI again when we have a window
 
 static HRESULT (WINAPI *pDirectInputCreate)(HINSTANCE hinst, DWORD dwVersion,
 	LPDIRECTINPUT * lplpDirectInput, LPUNKNOWN punkOuter);
@@ -121,9 +124,9 @@ static DIDATAFORMAT df =
 };
 
 QCvar*				in_joystick;
-QCvar*				in_debugJoystick;
-QCvar*				in_joyBallScale;
-QCvar*				joy_threshold;
+static QCvar*		in_debugJoystick;
+static QCvar*		in_joyBallScale;
+static QCvar*		joy_threshold;
 
 static bool			joy_avail;
 static int			joy_id;			// joystick number
@@ -145,14 +148,16 @@ static int joyDirectionKeys[16] =
 	K_JOY26, K_JOY27
 };
 
-QCvar*	in_midi;
-QCvar*	in_midiport;
-QCvar*	in_midichannel;
-QCvar*	in_mididevice;
+static QCvar*		in_midi;
+static QCvar*		in_midiport;
+static QCvar*		in_midichannel;
+static QCvar*		in_mididevice;
 
 static int			midi_numDevices;
 static MIDIINCAPS	midi_caps[MAX_MIDIIN_DEVICES];
 static HMIDIIN		midi_hMidiIn;
+
+static bool			in_appactive;
 
 // CODE --------------------------------------------------------------------
 
@@ -230,7 +235,7 @@ static int MapKey(int key)
 
 static void IN_MouseEvent(int mstate)
 {
-	if (!s_wmv.mouseInitialized)
+	if (!mouse_initialized)
 	{
 		return;
 	}
@@ -238,18 +243,18 @@ static void IN_MouseEvent(int mstate)
 	// perform button actions
 	for (int i = 0; i < 3; i++)
 	{
-		if ((mstate & (1 << i)) && !(s_wmv.oldButtonState & (1 << i)))
+		if ((mstate & (1 << i)) && !(mouse_oldButtonState & (1 << i)))
 		{
 			Sys_QueEvent(sysMsgTime, SE_KEY, K_MOUSE1 + i, true, 0, NULL);
 		}
 
-		if (!(mstate & (1 << i)) && (s_wmv.oldButtonState & (1 << i)))
+		if (!(mstate & (1 << i)) && (mouse_oldButtonState & (1 << i)))
 		{
 			Sys_QueEvent(sysMsgTime, SE_KEY, K_MOUSE1 + i, false, 0, NULL);
 		}
 	}	
 
-	s_wmv.oldButtonState = mstate;
+	mouse_oldButtonState = mstate;
 }
 
 //==========================================================================
@@ -540,7 +545,7 @@ static bool IN_InitDIMouse()
 //
 //==========================================================================
 
-void IN_ShutdownDIMouse()
+static void IN_ShutdownDIMouse()
 {
     if (g_pMouse)
 	{
@@ -720,10 +725,10 @@ static void IN_DIMouse(int* mx, int* my)
 //
 //==========================================================================
 
-void IN_StartupMouse()
+static void IN_StartupMouse()
 {
-	s_wmv.mouseInitialized = false;
-	s_wmv.mouseStartupDelayed = false;
+	mouse_initialized = false;
+	mouse_startupDelayed = false;
 
 	if (in_mouse->integer == 0)
 	{
@@ -740,17 +745,17 @@ void IN_StartupMouse()
 		if (!GMainWindow)
 		{
 			GLog.Write("No window for DirectInput mouse init, delaying\n");
-			s_wmv.mouseStartupDelayed = true;
+			mouse_startupDelayed = true;
 			return;
 		}
 		if (IN_InitDIMouse())
 		{
-			s_wmv.mouseInitialized = true;
+			mouse_initialized = true;
 			return;
 		}
 		GLog.Write("Falling back to Win32 mouse support...\n");
 	}
-	s_wmv.mouseInitialized = true;
+	mouse_initialized = true;
 }
 
 //==========================================================================
@@ -761,23 +766,23 @@ void IN_StartupMouse()
 //
 //==========================================================================
 
-void IN_ActivateMouse() 
+static void IN_ActivateMouse() 
 {
-	if (!s_wmv.mouseInitialized)
+	if (!mouse_initialized)
 	{
 		return;
 	}
 	if (!in_mouse->integer)
 	{
-		s_wmv.mouseActive = false;
+		mouse_active = false;
 		return;
 	}
-	if (s_wmv.mouseActive)
+	if (mouse_active)
 	{
 		return;
 	}
 
-	s_wmv.mouseActive = true;
+	mouse_active = true;
 
 	if (in_mouse->integer != -1)
 	{
@@ -794,17 +799,17 @@ void IN_ActivateMouse()
 //
 //==========================================================================
 
-void IN_DeactivateMouse()
+static void IN_DeactivateMouse()
 {
-	if (!s_wmv.mouseInitialized)
+	if (!mouse_initialized)
 	{
 		return;
 	}
-	if (!s_wmv.mouseActive)
+	if (!mouse_active)
 	{
 		return;
 	}
-	s_wmv.mouseActive = false;
+	mouse_active = false;
 
 	IN_DeactivateDIMouse();
 	IN_DeactivateWin32Mouse();
@@ -816,7 +821,7 @@ void IN_DeactivateMouse()
 //
 //==========================================================================
 
-void IN_MouseMove()
+static void IN_MouseMove()
 {
 	int mx, my;
 	if (g_pMouse)
@@ -848,7 +853,7 @@ void IN_MouseMove()
 //
 //==========================================================================
 
-void IN_StartupJoystick()
+static void IN_StartupJoystick()
 { 
 	// assume no joystick
 	joy_avail = false; 
@@ -971,7 +976,7 @@ static int JoyToI(int value)
 //
 //==========================================================================
 
-void IN_JoyMove()
+static void IN_JoyMove()
 {
 	// verify joystick is available and that the user wants to use it
 	if (!joy_avail)
@@ -1187,7 +1192,7 @@ static void CALLBACK MidiInProc(HMIDIIN hMidiIn, UINT uMsg, DWORD dwInstance,
 //
 //==========================================================================
 
-void MidiInfo_f()
+static void MidiInfo_f()
 {
 	const char* enableStrings[] = { "disabled", "enabled" };
 
@@ -1220,7 +1225,7 @@ void MidiInfo_f()
 //
 //==========================================================================
 
-void IN_StartupMIDI()
+static void IN_StartupMIDI()
 {
 	if (!Cvar_VariableValue("in_midi"))
 	{
@@ -1256,7 +1261,7 @@ void IN_StartupMIDI()
 //
 //==========================================================================
 
-void IN_ShutdownMIDI()
+static void IN_ShutdownMIDI()
 {
 	if (midi_hMidiIn)
 	{
@@ -1265,4 +1270,132 @@ void IN_ShutdownMIDI()
 	midi_numDevices = 0;
 	Com_Memset(&midi_caps, 0, sizeof(midi_caps));
 	midi_hMidiIn = NULL;
+}
+
+//**************************************************************************
+//
+//	MAIN INPUT API
+//
+//**************************************************************************
+
+//==========================================================================
+//
+//	IN_Startup
+//
+//==========================================================================
+
+static void IN_Startup()
+{
+	GLog.Write("\n------- Input Initialization -------\n");
+	IN_StartupMouse();
+	IN_StartupJoystick();
+	IN_StartupMIDI();
+	GLog.Write("------------------------------------\n");
+
+	in_mouse->modified = false;
+	in_joystick->modified = false;
+}
+
+//==========================================================================
+//
+//	IN_Init
+//
+//==========================================================================
+
+void IN_SharedInit()
+{
+	// mouse variables
+	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE | CVAR_LATCH);
+
+	// joystick variables
+	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH);
+	in_joyBallScale = Cvar_Get("in_joyBallScale", "0.02", CVAR_ARCHIVE);
+	in_debugJoystick = Cvar_Get("in_debugjoystick", "0", CVAR_TEMP);
+	joy_threshold = Cvar_Get("joy_threshold", "0.15", CVAR_ARCHIVE);
+
+	// MIDI input controler variables
+	in_midi = Cvar_Get("in_midi", "0", CVAR_ARCHIVE);
+	in_midiport = Cvar_Get("in_midiport", "1", CVAR_ARCHIVE);
+	in_midichannel = Cvar_Get("in_midichannel", "1", CVAR_ARCHIVE);
+	in_mididevice = Cvar_Get("in_mididevice", "0", CVAR_ARCHIVE);
+
+	Cmd_AddCommand("midiinfo", MidiInfo_f);
+
+	IN_Startup();
+}
+
+//==========================================================================
+//
+//	IN_Shutdown
+//
+//==========================================================================
+
+void IN_Shutdown()
+{
+	IN_DeactivateMouse();
+	IN_ShutdownDIMouse();
+	IN_ShutdownMIDI();
+	Cmd_RemoveCommand("midiinfo");
+}
+
+//==========================================================================
+//
+//	IN_Activate
+//
+//	Called when the main window gains or loses focus. The window may have
+// been destroyed and recreated between a deactivate and an activate.
+//
+//==========================================================================
+
+void IN_Activate(bool active)
+{
+	in_appactive = active;
+
+	if (!active)
+	{
+		IN_DeactivateMouse();
+	}
+}
+
+//==========================================================================
+//
+//	IN_Frame
+//
+//	Called every frame, even if not generating commands
+//
+//==========================================================================
+
+void IN_SharedFrame()
+{
+	// post joystick events
+	IN_JoyMove();
+
+	if (!mouse_initialized)
+	{
+		if (mouse_startupDelayed && GMainWindow)
+		{
+			GLog.Write("Proceeding with delayed mouse init\n");
+			IN_StartupMouse();
+			mouse_startupDelayed = false;
+		}
+		return;
+	}
+
+	// temporarily deactivate if not in the game and running on the desktop
+	if ((in_keyCatchers & KEYCATCH_CONSOLE) && r_fullscreen->integer == 0)
+	{
+		IN_DeactivateMouse();
+		return;
+	}
+
+	if (!in_appactive)
+	{
+		IN_DeactivateMouse();
+		return;
+	}
+
+	IN_ActivateMouse();
+
+	// post events to the system que
+	IN_MouseMove();
 }

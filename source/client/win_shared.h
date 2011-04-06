@@ -28,27 +28,11 @@ LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam);
-void IN_StartupJoystick();
-void IN_JoyMove();
-void IN_StartupMIDI();
-void IN_ShutdownMIDI();
-void MidiInfo_f();
-void IN_ShutdownDIMouse();
-void IN_StartupMouse();
-void IN_ActivateMouse();
-void IN_DeactivateMouse();
-void IN_MouseMove();
+void IN_SharedInit();
+void IN_Activate(bool active);
+void IN_SharedFrame();
 
 #define WINDOW_CLASS_NAME	"vQuake"
-
-struct WinMouseVars_t
-{
-	int			oldButtonState;
-
-	bool		mouseActive;
-	bool		mouseInitialized;
-	bool		mouseStartupDelayed; // delay mouse init to try DI again when we have a window
-};
 
 extern HINSTANCE	global_hInstance;
 extern HWND			GMainWindow;
@@ -58,14 +42,5 @@ extern bool			pixelFormatSet;
 extern bool			cdsFullscreen;
 extern unsigned		sysMsgTime;
 extern QCvar*		in_joystick;
-extern QCvar*		in_debugJoystick;
-extern QCvar	*joy_threshold;
-extern QCvar	*in_joyBallScale;
-extern QCvar	*in_midi;
-extern QCvar	*in_midiport;
-extern QCvar	*in_midichannel;
-extern QCvar	*in_mididevice;
-extern WinMouseVars_t s_wmv;
-extern QCvar	*in_mouse;
 
 #endif

@@ -186,7 +186,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 
 	if (!fullscreen && (!_windowed_mouse->value || in_keyCatchers != 0))
 	{
-		IN_DeactivateMouse();
+		IN_Activate(false);
 	}
 
 	glConfig.vidWidth = modelist[modenum].width;
@@ -213,7 +213,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 
 	if (fullscreen || (_windowed_mouse->value && in_keyCatchers == 0))
 	{
-		IN_ActivateMouse ();
+		IN_Activate(true);
 	}
 
 	VID_UpdateWindowStatus ();
@@ -343,15 +343,15 @@ void GL_EndRendering (void)
 	{
 		if (!_windowed_mouse->value) {
 			if (windowed_mouse)	{
-				IN_DeactivateMouse ();
+				IN_Activate(false);
 				windowed_mouse = false;
 			}
 		} else {
 			windowed_mouse = true;
-			if (in_keyCatchers == 0 && !s_wmv.mouseActive && ActiveApp) {
-				IN_ActivateMouse ();
-			} else if (s_wmv.mouseActive && in_keyCatchers != 0) {
-				IN_DeactivateMouse ();
+			if (in_keyCatchers == 0 && ActiveApp) {
+				IN_Activate(true);
+			} else if (in_keyCatchers != 0) {
+				IN_Activate(false);
 			}
 		}
 	}
@@ -431,7 +431,7 @@ void	VID_ShiftPalette (unsigned char *palette)
 
 void VID_SetDefaultMode (void)
 {
-	IN_DeactivateMouse ();
+	IN_Activate(false);
 }
 
 
@@ -489,7 +489,6 @@ void ClearAllStates (void)
 	}
 
 	Key_ClearStates ();
-	IN_ClearStates ();
 }
 
 void AppActivate(BOOL fActive, BOOL minimize)
@@ -515,7 +514,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 	{
 		if (cdsFullscreen)
 		{
-			IN_ActivateMouse ();
+			IN_Activate(true);
 			if (vid_canalttab && vid_wassuspended) {
 				vid_wassuspended = false;
 				ShowWindow(GMainWindow, SW_SHOWNORMAL);
@@ -523,7 +522,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 		}
 		else if ((!cdsFullscreen) && _windowed_mouse->value && in_keyCatchers == 0)
 		{
-			IN_ActivateMouse ();
+			IN_Activate(true);
 		}
 	}
 
@@ -531,7 +530,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 	{
 		if (cdsFullscreen)
 		{
-			IN_DeactivateMouse ();
+			IN_Activate(false);
 			if (vid_canalttab) { 
 				ChangeDisplaySettings (NULL, 0);
 				vid_wassuspended = true;
@@ -539,7 +538,7 @@ void AppActivate(BOOL fActive, BOOL minimize)
 		}
 		else if ((!cdsFullscreen) && _windowed_mouse->value)
 		{
-			IN_DeactivateMouse ();
+			IN_Activate(false);
 		}
 	}
 }

@@ -116,7 +116,6 @@ MainWndProc
 main window procedure
 ====================
 */
-extern QCvar *in_mouse;
 LONG WINAPI MainWndProc (
     HWND    hWnd,
     UINT    uMsg,
