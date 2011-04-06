@@ -269,10 +269,6 @@
 				>
 			</File>
 			<File
-				RelativePath="win32\in_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\keys.cpp"
 				>
 			</File>
@@ -383,10 +379,6 @@
 			</File>
 			<File
 				RelativePath="game\game.h"
-				>
-			</File>
-			<File
-				RelativePath="client\input.h"
 				>
 			</File>
 			<File

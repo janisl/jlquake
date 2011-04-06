@@ -299,10 +299,6 @@
 				>
 			</File>
 			<File
-				RelativePath="in_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath="keys.cpp"
 				>
 			</File>
@@ -421,10 +417,6 @@
 			</File>
 			<File
 				RelativePath="glquake.h"
-				>
-			</File>
-			<File
-				RelativePath="input.h"
 				>
 			</File>
 			<File

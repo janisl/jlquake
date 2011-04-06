@@ -1365,7 +1365,7 @@ void IN_Activate(bool active)
 //
 //==========================================================================
 
-void IN_SharedFrame()
+void IN_Frame()
 {
 	// post joystick events
 	IN_JoyMove();

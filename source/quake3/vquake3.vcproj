@@ -326,10 +326,6 @@
 				>
 			</File>
 			<File
-				RelativePath="win32\win_input.cpp"
-				>
-			</File>
-			<File
 				RelativePath="win32\win_main.cpp"
 				>
 			</File>
