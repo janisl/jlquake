@@ -2,10 +2,6 @@
 
 #include "../client/client.h"
 
-void IN_Commands (void)
-{
-}
-
 void IN_Frame (void)
 {
 }

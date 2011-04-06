@@ -25,7 +25,3 @@ void IN_Frame()
 {
 	IN_SharedFrame();
 }
-
-void IN_Commands()
-{
-}
