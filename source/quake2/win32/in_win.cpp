@@ -111,7 +111,7 @@ void IN_Frame (void)
 		|| (in_keyCatchers & KEYCATCH_UI))
 	{
 		// temporarily deactivate if in fullscreen
-		if (Cvar_VariableValue ("vid_fullscreen") == 0)
+		if (Cvar_VariableValue ("r_fullscreen") == 0)
 		{
 			IN_DeactivateMouse ();
 			return;

@@ -39,7 +39,6 @@ rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen);
 
 static qboolean GLimp_SwitchFullscreen( int width, int height );
 
-extern QCvar *vid_fullscreen;
 extern QCvar *vid_ref;
 
 /*
@@ -181,7 +180,7 @@ void GLimp_AppActivate( qboolean active )
 	}
 	else
 	{
-		if ( vid_fullscreen->value )
+		if ( r_fullscreen->value )
 			ShowWindow( GMainWindow, SW_MINIMIZE );
 	}
 }

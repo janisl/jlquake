@@ -43,7 +43,7 @@ extern QCvar		*vid_gamma;
 extern QCvar		*vid_ref;			// Name of Refresh DLL loaded
 QCvar		*vid_xpos;			// X coordinate of window position
 QCvar		*vid_ypos;			// Y coordinate of window position
-extern QCvar		*vid_fullscreen;
+extern QCvar *r_fullscreen;
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
@@ -197,23 +197,6 @@ LONG WINAPI MainWndProc (
 
 	switch (uMsg)
 	{
-	case WM_MOUSEWHEEL:
-		/*
-		** this chunk of code theoretically only works under NT4 and Win98
-		** since this message doesn't exist under Win95
-		*/
-		if ( ( short ) HIWORD( wParam ) > 0 )
-		{
-			Key_Event( K_MWHEELUP, true, sysMsgTime );
-			Key_Event( K_MWHEELUP, false, sysMsgTime );
-		}
-		else
-		{
-			Key_Event( K_MWHEELDOWN, true, sysMsgTime );
-			Key_Event( K_MWHEELDOWN, false, sysMsgTime );
-		}
-		break;
-
 	case WM_HOTKEY:
 		return 0;
 
@@ -251,7 +234,7 @@ LONG WINAPI MainWndProc (
 			RECT r;
 			int		style;
 
-			if (!vid_fullscreen->value)
+			if (!r_fullscreen->value)
 			{
 				xPos = (short) LOWORD(lParam);    // horizontal position 
 				yPos = (short) HIWORD(lParam);    // vertical position 
@@ -274,33 +257,6 @@ LONG WINAPI MainWndProc (
 		}
         return DefWindowProc (hWnd, uMsg, wParam, lParam);
 
-// this is complicated because Win32 seems to pack multiple mouse events into
-// one update sometimes, so we always check all states and look for events
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONDOWN:
-	case WM_RBUTTONUP:
-	case WM_MBUTTONDOWN:
-	case WM_MBUTTONUP:
-	case WM_MOUSEMOVE:
-		{
-			int	temp;
-
-			temp = 0;
-
-			if (wParam & MK_LBUTTON)
-				temp |= 1;
-
-			if (wParam & MK_RBUTTON)
-				temp |= 2;
-
-			if (wParam & MK_MBUTTON)
-				temp |= 4;
-
-			IN_MouseEvent (temp);
-		}
-		break;
-
 	case WM_SYSCOMMAND:
 		if ( wParam == SC_SCREENSAVE )
 			return 0;
@@ -308,9 +264,9 @@ LONG WINAPI MainWndProc (
 	case WM_SYSKEYDOWN:
 		if ( wParam == 13 )
 		{
-			if ( vid_fullscreen )
+			if ( r_fullscreen )
 			{
-				Cvar_SetValueLatched( "vid_fullscreen", !vid_fullscreen->value );
+				Cvar_SetValueLatched( "r_fullscreen", !r_fullscreen->value );
 			}
 			return 0;
 		}
@@ -513,7 +469,7 @@ void VID_CheckChanges (void)
 		** refresh has changed
 		*/
 		vid_ref->modified = false;
-		vid_fullscreen->modified = true;
+		r_fullscreen->modified = true;
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
@@ -540,7 +496,7 @@ void VID_CheckChanges (void)
 	*/
 	if ( vid_xpos->modified || vid_ypos->modified )
 	{
-		if (!vid_fullscreen->value)
+		if (!r_fullscreen->value)
 			VID_UpdateWindowPosAndSize( vid_xpos->value, vid_ypos->value );
 
 		vid_xpos->modified = false;
@@ -559,7 +515,7 @@ void VID_Init (void)
 	vid_ref = Cvar_Get ("vid_ref", "soft", CVAR_ARCHIVE);
 	vid_xpos = Cvar_Get ("vid_xpos", "3", CVAR_ARCHIVE);
 	vid_ypos = Cvar_Get ("vid_ypos", "22", CVAR_ARCHIVE);
-	vid_fullscreen = Cvar_Get ("vid_fullscreen", "0", CVAR_ARCHIVE);
+	r_fullscreen = Cvar_Get ("r_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = Cvar_Get( "vid_gamma", "1", CVAR_ARCHIVE );
 	win_noalttab = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
 

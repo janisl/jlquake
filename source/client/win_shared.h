@@ -38,7 +38,6 @@ void IN_StartupMouse();
 void IN_ActivateMouse();
 void IN_DeactivateMouse();
 void IN_MouseMove();
-void IN_MouseEvent(int mstate);
 
 #define WINDOW_CLASS_NAME	"vQuake"
 

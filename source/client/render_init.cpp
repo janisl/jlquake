@@ -47,6 +47,7 @@ QCvar*		r_depthbits;
 QCvar*		r_colorbits;
 QCvar*		r_stereo;
 QCvar*		r_displayRefresh;
+QCvar*		r_fullscreen;
 
 QCvar*		r_verbose;
 
@@ -101,4 +102,5 @@ void R_SharedRegister()
 	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	r_displayRefresh = Cvar_Get("r_displayRefresh", "0", CVAR_LATCH);
 	AssertCvarRange(r_displayRefresh, 0, 200, true);
+	r_fullscreen = Cvar_Get("r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH);
 }

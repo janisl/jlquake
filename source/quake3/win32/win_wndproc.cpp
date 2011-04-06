@@ -123,38 +123,8 @@ LONG WINAPI MainWndProc (
     WPARAM  wParam,
     LPARAM  lParam)
 {
-	int zDelta, i;
-
 	switch (uMsg)
 	{
-	case WM_MOUSEWHEEL:
-		// only relevant for non-DI input and when console is toggled in window mode
-		//   if console is toggled in window mode (KEYCATCH_CONSOLE) then mouse is released and DI doesn't see any mouse wheel
-		if (in_mouse->integer != 1 || (!r_fullscreen->integer && (in_keyCatchers & KEYCATCH_CONSOLE)))
-		{
-			// 120 increments, might be 240 and multiples if wheel goes too fast
-			zDelta = ( short ) HIWORD( wParam ) / 120;
-			if ( zDelta > 0 )
-			{
-				for(i=0; i<zDelta; i++)
-				{
-					Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELUP, qtrue, 0, NULL );
-					Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELUP, qfalse, 0, NULL );
-				}
-			}
-			else
-			{
-				for(i=0; i<-zDelta; i++)
-				{
-					Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELDOWN, qtrue, 0, NULL );
-					Sys_QueEvent( sysMsgTime, SE_KEY, K_MWHEELDOWN, qfalse, 0, NULL );
-				}
-			}
-			// when an application processes the WM_MOUSEWHEEL message, it must return zero
-			return 0;
-		}
-		break;
-
 	case WM_CREATE:
 
 		GMainWindow = hWnd;
@@ -240,33 +210,6 @@ LONG WINAPI MainWndProc (
 					IN_Activate (qtrue);
 				}
 			}
-		}
-		break;
-
-// this is complicated because Win32 seems to pack multiple mouse events into
-// one update sometimes, so we always check all states and look for events
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONDOWN:
-	case WM_RBUTTONUP:
-	case WM_MBUTTONDOWN:
-	case WM_MBUTTONUP:
-	case WM_MOUSEMOVE:
-		{
-			int	temp;
-
-			temp = 0;
-
-			if (wParam & MK_LBUTTON)
-				temp |= 1;
-
-			if (wParam & MK_RBUTTON)
-				temp |= 2;
-
-			if (wParam & MK_MBUTTON)
-				temp |= 4;
-
-			IN_MouseEvent (temp);
 		}
 		break;
 

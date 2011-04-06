@@ -122,7 +122,6 @@ QCvar	*gl_texturealphamode;
 QCvar	*gl_texturesolidmode;
 QCvar	*gl_lockpvs;
 
-QCvar	*vid_fullscreen;
 QCvar	*vid_gamma;
 QCvar	*vid_ref;
 
@@ -964,7 +963,7 @@ void R_Register( void )
 
 	gl_saturatelighting = Cvar_Get( "gl_saturatelighting", "0", 0 );
 
-	vid_fullscreen = Cvar_Get( "vid_fullscreen", "0", CVAR_ARCHIVE );
+	r_fullscreen = Cvar_Get( "r_fullscreen", "0", CVAR_ARCHIVE );
 	vid_gamma = Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 
@@ -984,9 +983,9 @@ qboolean R_SetMode (void)
 	int err;
 	qboolean fullscreen;
 
-	fullscreen = vid_fullscreen->value;
+	fullscreen = r_fullscreen->value;
 
-	vid_fullscreen->modified = false;
+	r_fullscreen->modified = false;
 	gl_mode->modified = false;
 
 	if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, gl_mode->value, fullscreen ) ) == RSERR_OK )
@@ -997,8 +996,8 @@ qboolean R_SetMode (void)
 	{
 		if ( err == RSERR_INVALID_FULLSCREEN )
 		{
-			Cvar_SetValueLatched( "vid_fullscreen", 0);
-			vid_fullscreen->modified = false;
+			Cvar_SetValueLatched( "r_fullscreen", 0);
+			r_fullscreen->modified = false;
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n" );
 			if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, gl_mode->value, false ) ) == RSERR_OK )
 				return true;
@@ -1206,7 +1205,7 @@ void R_BeginFrame( float camera_separation )
 	/*
 	** change modes if necessary
 	*/
-	if ( gl_mode->modified || vid_fullscreen->modified )
+	if ( gl_mode->modified || r_fullscreen->modified )
 	{	// FIXME: only restart if CDS is required
 		QCvar	*ref;
 

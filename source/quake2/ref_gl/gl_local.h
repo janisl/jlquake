@@ -204,7 +204,6 @@ extern	QCvar	*gl_texturesolidmode;
 extern  QCvar  *gl_saturatelighting;
 extern  QCvar  *gl_lockpvs;
 
-extern	QCvar	*vid_fullscreen;
 extern	QCvar	*vid_gamma;
 
 extern	QCvar		*intensity;

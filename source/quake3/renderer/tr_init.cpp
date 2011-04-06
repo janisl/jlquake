@@ -111,8 +111,6 @@ QCvar	*r_portalOnly;
 QCvar	*r_subdivisions;
 QCvar	*r_lodCurveError;
 
-QCvar	*r_fullscreen;
-
 QCvar	*r_customwidth;
 QCvar	*r_customheight;
 QCvar	*r_customaspect;
@@ -837,7 +835,7 @@ void R_Register( void )
 	r_overBrightBits = Cvar_Get ("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_ignorehwgamma = Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH);
 	r_mode = Cvar_Get( "r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH );
-	r_fullscreen = Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH );
+	//r_fullscreen = Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_customwidth = Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH );
 	r_customheight = Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH );
 	r_customaspect = Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
