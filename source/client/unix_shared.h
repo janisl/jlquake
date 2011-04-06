@@ -34,17 +34,8 @@ extern int			scrnum;
 extern Window		win;
 extern GLXContext	ctx;
 
-extern bool			mouse_avail;
-extern bool			mouse_active;
-extern int			mwx, mwy;
-extern int			mx, my;
-
-extern QCvar*		in_mouse;
 extern QCvar*		in_dgamouse; // user pref for dga mouse
 extern QCvar*		in_nograb; // this is strictly for developers
-extern QCvar*		in_subframe;
-
-extern int			win_x, win_y;
 
 extern bool			vidmode_active;
 extern bool			vidmode_ext;
@@ -59,12 +50,7 @@ rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
 void GLimp_SharedShutdown();
 void IN_ActivateMouse();
 void IN_DeactivateMouse();
-int Sys_XTimeToSysTime(Time xtime);
-void SharedHandleEvents(XEvent& event);
+void HandleEvents();
 void IN_JoyMove();
-
-// Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
-extern int mouseResetTime;
-#define MOUSE_RESET_DELAY 50
 
 #endif

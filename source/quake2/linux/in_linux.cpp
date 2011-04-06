@@ -9,8 +9,3 @@ void IN_Commands (void)
 void IN_Move ()
 {
 }
-
-void IN_Activate (qboolean active)
-{
-}
-

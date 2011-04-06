@@ -44,8 +44,6 @@ int						scrnum;
 Window					win;
 GLXContext				ctx = NULL;
 
-int						win_x, win_y;
-
 static XF86VidModeModeInfo**	vidmodes;
 static int						num_vidmodes;
 bool					vidmode_active = false;

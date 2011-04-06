@@ -33,6 +33,8 @@
 
 //#define KBD_DBG
 
+#define MOUSE_RESET_DELAY	50
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -48,27 +50,29 @@ extern unsigned long	sys_timeBase;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-// PRIVATE DATA DEFINITIONS ------------------------------------------------
-
-bool					mouse_avail;
-bool					mouse_active;
-int						mwx, mwy;
-int						mx = 0, my = 0;
-
-QCvar*					in_mouse;
-QCvar*					in_dgamouse; // user pref for dga mouse
-QCvar*					in_nograb; // this is strictly for developers
-
-QCvar*					in_subframe;
-
-static int mouse_accel_numerator;
-static int mouse_accel_denominator;
-static int mouse_threshold;    
-
-// Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
-int mouseResetTime = 0;
+QCvar*					in_dgamouse;	// user pref for dga mouse
+QCvar*					in_nograb;		// this is strictly for developers
 
 QCvar*					in_joystick;
+
+// PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+static bool				mouse_avail;
+static bool				mouse_active;
+static int				mwx, mwy;
+static int				mx = 0, my = 0;
+
+static QCvar*			in_mouse;
+
+static QCvar*			in_subframe;
+
+static int				mouse_accel_numerator;
+static int				mouse_accel_denominator;
+static int				mouse_threshold;    
+
+// Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
+static int				mouseResetTime = 0;
+
 static QCvar*			in_joystickDebug;
 static QCvar*			joy_threshold;
 
@@ -651,7 +655,7 @@ void IN_DeactivateMouse()
 //
 //==========================================================================
 
-int Sys_XTimeToSysTime(unsigned long xtime)
+static int Sys_XTimeToSysTime(unsigned long xtime)
 {
 	int ret, time, test;
 	
@@ -696,16 +700,26 @@ int Sys_XTimeToSysTime(unsigned long xtime)
 
 //==========================================================================
 //
-//	SharedHandleEvents
+//	HandleEvents
 //
 //==========================================================================
 
-void SharedHandleEvents(XEvent& event)
+void HandleEvents()
 {
 	int t;
 	int key;
 	char* p;
+	bool dowarp = false;
 
+	if (!dpy)
+	{
+		return;
+	}
+
+	while (XPending(dpy))
+	{
+		XEvent event;
+		XNextEvent(dpy, &event);
 		switch (event.type)
 		{
 		case KeyPress:
@@ -822,7 +836,84 @@ void SharedHandleEvents(XEvent& event)
 				}
 			}
 			break;
+
+		case MotionNotify:
+			t = Sys_XTimeToSysTime(event.xkey.time);
+			if (mouse_active)
+			{
+				if (in_dgamouse->value)
+				{
+					if (abs(event.xmotion.x_root) > 1)
+					{
+						mx += event.xmotion.x_root * 2;
+					}
+					else
+					{
+						mx += event.xmotion.x_root;
+					}
+					if (abs(event.xmotion.y_root) > 1)
+					{
+						my += event.xmotion.y_root * 2;
+					}
+					else
+					{
+						my += event.xmotion.y_root;
+					}
+					if (t - mouseResetTime > MOUSE_RESET_DELAY)
+					{
+						Sys_QueEvent(t, SE_MOUSE, mx, my, 0, NULL);
+					}
+					mx = 0;
+					my = 0;
+				}
+				else
+				{
+					// If it's a center motion, we've just returned from our warp
+					if (event.xmotion.x == glConfig.vidWidth / 2 &&
+						event.xmotion.y == glConfig.vidHeight / 2)
+					{
+						mwx = glConfig.vidWidth / 2;
+						mwy = glConfig.vidHeight / 2;
+						if (t - mouseResetTime > MOUSE_RESET_DELAY)
+						{
+							Sys_QueEvent(t, SE_MOUSE, mx, my, 0, NULL);
+						}
+						mx = my = 0;
+						break;
+					}
+
+					int dx = ((int)event.xmotion.x - mwx);
+					int dy = ((int)event.xmotion.y - mwy);
+					if (abs(dx) > 1)
+					{
+						mx += dx * 2;
+					}
+					else
+					{
+						mx += dx;
+					}
+					if (abs(dy) > 1)
+					{
+						my += dy * 2;
+					}
+					else
+					{
+						my += dy;
+					}
+
+					mwx = event.xmotion.x;
+					mwy = event.xmotion.y;
+					dowarp = true;
+				}
+			}
+			break;
 		}
+	}
+
+	if (dowarp)
+	{
+		XWarpPointer(dpy, None, win, 0, 0, 0, 0, glConfig.vidWidth / 2, glConfig.vidHeight / 2);
+	}
 }
 
 //**************************************************************************

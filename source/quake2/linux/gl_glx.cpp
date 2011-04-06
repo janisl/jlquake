@@ -29,23 +29,17 @@
 
 #include "../../client/unix_shared.h"
 
-static qboolean			doShm;
 static Colormap			x_cmap;
 
 int current_framebuffer;
 static int				x_shmeventtype;
 //static XShmSegmentInfo	x_shminfo;
 
-static qboolean			oktodraw = false;
 static qboolean			X11_active = false;
 
 static int p_mouse_x, p_mouse_y;
 static QCvar	*_windowed_mouse;
 
-int config_notify=0;
-int config_notify_width;
-int config_notify_height;
-						      
 typedef unsigned short PIXEL;
 
 // Console variables that we need to access from this module
@@ -242,57 +236,6 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 }
 
 /*****************************************************************************/
-
-void GetEvent(void)
-{
-	XEvent x_event;
-	int b;
-   
-	XNextEvent(dpy, &x_event);
-	SharedHandleEvents(x_event);
-	switch(x_event.type) {
-	case MotionNotify:
-		if (_windowed_mouse->value) {
-			mx += ((int)x_event.xmotion.x - (int)(glConfig.vidWidth/2));
-			my += ((int)x_event.xmotion.y - (int)(glConfig.vidHeight/2));
-
-			/* move the mouse to the window center again */
-			XSelectInput(dpy,win, X_MASK & ~PointerMotionMask);
-			XWarpPointer(dpy,None,win,0,0,0,0, 
-				(glConfig.vidWidth/2),(glConfig.vidHeight/2));
-			XSelectInput(dpy,win, X_MASK);
-		} else {
-			mx = ((int)x_event.xmotion.x - (int)p_mouse_x);
-			my = ((int)x_event.xmotion.y - (int)p_mouse_y);
-			p_mouse_x=x_event.xmotion.x;
-			p_mouse_y=x_event.xmotion.y;
-		}
-		break;
-
-	case ConfigureNotify:
-		config_notify_width = x_event.xconfigure.width;
-		config_notify_height = x_event.xconfigure.height;
-		config_notify = 1;
-		break;
-
-	default:
-		if (doShm && x_event.type == x_shmeventtype)
-			oktodraw = true;
-	}
-
-	if (vidmode_active || _windowed_mouse->value)
-	{
-		IN_ActivateMouse();
-	}
-	else
-	{
-		IN_DeactivateMouse();
-	}
-}
-
-/*****************************************************************************/
-
-/*****************************************************************************/
 /* KEYBOARD                                                                  */
 /*****************************************************************************/
 
@@ -303,11 +246,15 @@ void KBD_Init()
 
 void KBD_Update(void)
 {
-// get events from x server
-	if (dpy)
+	HandleEvents();
+
+	if (vidmode_active || _windowed_mouse->value)
 	{
-		while (XPending(dpy)) 
-			GetEvent();
+		IN_ActivateMouse();
+	}
+	else
+	{
+		IN_DeactivateMouse();
 	}
 }
 
@@ -329,11 +276,6 @@ IN_Move
 */
 void IN_Move ()
 {
-	if (!mouse_avail)
-		return;
-   
-	CL_MouseEvent(mx, my);
-	mx = my = 0;
 }
 
 void IN_Frame (void)
@@ -347,16 +289,6 @@ void IN_Frame (void)
 void IN_Commands (void)
 {
 }
-
-void IN_Activate (qboolean active)
-{
-}
-
-void Do_Key_Event(int key, qboolean down)
-{
-	Key_Event(key, down, Sys_Milliseconds_());
-}
-
 
 //===============================================================================
 

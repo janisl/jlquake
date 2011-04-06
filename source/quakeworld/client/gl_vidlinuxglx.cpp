@@ -74,49 +74,6 @@ void D_EndDirectRect (int x, int y, int width, int height)
 {
 }
 
-static void GetEvent(void)
-{
-	XEvent event;
-	int b;
-
-	if (!dpy)
-		return;
-
-	XNextEvent(dpy, &event);
-
-	SharedHandleEvents(event);
-	switch (event.type) {
-	case MotionNotify:
-		if (in_dgamouse->value && _windowed_mouse->value) {
-			mx = event.xmotion.x_root;
-			my = event.xmotion.y_root;
-		} else
-		{
-			if (_windowed_mouse->value) {
-				mx = (float) ((int)event.xmotion.x - (int)(vid.width/2));
-				my = (float) ((int)event.xmotion.y - (int)(vid.height/2));
-
-				/* move the mouse to the window center again */
-				XSelectInput(dpy, win, X_MASK & ~PointerMotionMask);
-				XWarpPointer(dpy, None, win, 0, 0, 0, 0, 
-					(vid.width/2), (vid.height/2));
-				XSelectInput(dpy, win, X_MASK);
-			}
-		}
-		break;
-	}
-
-	if (vidmode_active || _windowed_mouse->value)
-	{
-		IN_ActivateMouse();
-	}
-	else
-	{
-		IN_DeactivateMouse();
-	}
-}
-
-
 void VID_Shutdown(void)
 {
 	GLimp_SharedShutdown();
@@ -364,9 +321,15 @@ void VID_Init(unsigned char *palette)
 
 void Sys_SendKeyEvents(void)
 {
-	if (dpy) {
-		while (XPending(dpy)) 
-			GetEvent();
+	HandleEvents();
+
+	if (vidmode_active || _windowed_mouse->value)
+	{
+		IN_ActivateMouse();
+	}
+	else
+	{
+		IN_DeactivateMouse();
 	}
 }
 
@@ -381,8 +344,6 @@ void IN_Commands (void)
 
 void IN_Move ()
 {
-	CL_MouseEvent(mx, my);
-	mx = my = 0.0;
 }
 
 

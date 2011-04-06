@@ -30,10 +30,6 @@ qboolean	reflib_active = 0;
 
 #define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
 
-/** KEYBOARD **************************************************************/
-
-void Do_Key_Event(int key, qboolean down);
-
 /** MOUSE *****************************************************************/
 
 void Real_IN_Init (void);

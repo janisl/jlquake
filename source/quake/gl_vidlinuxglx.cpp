@@ -80,61 +80,6 @@ void D_EndDirectRect (int x, int y, int width, int height)
 {
 }
 
-static void HandleEvents(void)
-{
-	XEvent event;
-	KeySym ks;
-	int b;
-	qboolean dowarp = false;
-	mwx = vid.width/2;
-	mwy = vid.height/2;
-
-	if (!dpy)
-		return;
-
-	while (XPending(dpy)) {
-		XNextEvent(dpy, &event);
-
-		SharedHandleEvents(event);
-		switch (event.type) {
-		case MotionNotify:
-			if (mouse_active) {
-				if (in_dgamouse->value) {
-					mx += (event.xmotion.x + win_x) * 2;
-					my += (event.xmotion.y + win_y) * 2;
-				} 
-				else 
-				{
-					mx += ((int)event.xmotion.x - mwx) * 2;
-					my += ((int)event.xmotion.y - mwy) * 2;
-					mwx = event.xmotion.x;
-					mwy = event.xmotion.y;
-
-					if (mx || my)
-						dowarp = true;
-				}
-			}
-			break;
-
-		case CreateNotify :
-			win_x = event.xcreatewindow.x;
-			win_y = event.xcreatewindow.y;
-			break;
-
-		case ConfigureNotify :
-			win_x = event.xconfigure.x;
-			win_y = event.xconfigure.y;
-			break;
-		}
-	}
-
-	if (dowarp) {
-		/* move the mouse to the window center again */
-		XWarpPointer(dpy, None, win, 0, 0, 0, 0, vid.width / 2, vid.height / 2);
-	}
-
-}
-
 void VID_Shutdown(void)
 {
 	GLimp_SharedShutdown();
@@ -478,7 +423,4 @@ IN_Move
 */
 void IN_Move ()
 {
-	CL_MouseEvent(mx, my);
-	mx = 0;
-	my = 0;
 }
