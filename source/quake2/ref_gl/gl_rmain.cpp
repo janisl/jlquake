@@ -963,7 +963,6 @@ void R_Register( void )
 
 	gl_saturatelighting = Cvar_Get( "gl_saturatelighting", "0", 0 );
 
-	r_fullscreen = Cvar_Get( "r_fullscreen", "0", CVAR_ARCHIVE );
 	vid_gamma = Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 

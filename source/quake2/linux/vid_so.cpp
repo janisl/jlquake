@@ -215,7 +215,9 @@ void VID_CheckChanges (void)
 		** refresh has changed
 		*/
 		vid_ref->modified = false;
-		r_fullscreen->modified = true;
+		//FIXME
+		if (r_fullscreen)
+			r_fullscreen->modified = true;
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
@@ -265,7 +267,6 @@ void VID_Init (void)
 		vid_ref = Cvar_Get ("vid_ref", "soft", CVAR_ARCHIVE);
 	vid_xpos = Cvar_Get ("vid_xpos", "3", CVAR_ARCHIVE);
 	vid_ypos = Cvar_Get ("vid_ypos", "22", CVAR_ARCHIVE);
-	r_fullscreen = Cvar_Get ("r_fullscreen", "0", CVAR_ARCHIVE);
 	vid_gamma = Cvar_Get( "vid_gamma", "1", CVAR_ARCHIVE );
 
 	/* Add some console commands that we want to handle */
