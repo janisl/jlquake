@@ -43,8 +43,6 @@ static QCvar	*noudp;
 loopback_t	loopbacks[2];
 int			ip_sockets[2];
 
-char *NET_ErrorString (void);
-
 //=============================================================================
 
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
@@ -256,9 +254,9 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 		if (err == WSAEWOULDBLOCK)
 			return false;
 		if (dedicated->value)	// let dedicated servers continue after errors
-			Com_Printf ("NET_GetPacket: %s", NET_ErrorString());
+			Com_Printf ("NET_GetPacket: %s", SOCK_ErrorString());
 		else
-			Com_Error (ERR_DROP, "NET_GetPacket: %s", NET_ErrorString());
+			Com_Error (ERR_DROP, "NET_GetPacket: %s", SOCK_ErrorString());
 		return false;
 	}
 
@@ -320,17 +318,17 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 
 		if (dedicated->value)	// let dedicated servers continue after errors
 		{
-			Com_Printf ("NET_SendPacket ERROR: %s\n", NET_ErrorString());
+			Com_Printf ("NET_SendPacket ERROR: %s\n", SOCK_ErrorString());
 		}
 		else
 		{
 			if (err == WSAEADDRNOTAVAIL)
 			{
-				Com_DPrintf ("NET_SendPacket Warning: %s : %s\n", NET_ErrorString(), NET_AdrToString (to));
+				Com_DPrintf ("NET_SendPacket Warning: %s : %s\n", SOCK_ErrorString(), NET_AdrToString (to));
 			}
 			else
 			{
-				Com_Error (ERR_DROP, "NET_SendPacket ERROR: %s\n", NET_ErrorString());
+				Com_Error (ERR_DROP, "NET_SendPacket ERROR: %s\n", SOCK_ErrorString());
 			}
 		}
 	}
@@ -357,21 +355,21 @@ int NET_IPSocket (char *net_interface, int port)
 	{
 		err = WSAGetLastError();
 		if (err != WSAEAFNOSUPPORT)
-			Com_Printf ("WARNING: UDP_OpenSocket: socket: %s", NET_ErrorString());
+			Com_Printf ("WARNING: UDP_OpenSocket: socket: %s", SOCK_ErrorString());
 		return 0;
 	}
 
 	// make it non-blocking
 	if (ioctlsocket (newsocket, FIONBIO, &_true) == -1)
 	{
-		Com_Printf ("WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString());
+		Com_Printf ("WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", SOCK_ErrorString());
 		return 0;
 	}
 
 	// make it broadcast capable
 	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) == -1)
 	{
-		Com_Printf ("WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString());
+		Com_Printf ("WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", SOCK_ErrorString());
 		return 0;
 	}
 
@@ -389,7 +387,7 @@ int NET_IPSocket (char *net_interface, int port)
 
 	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
 	{
-		Com_Printf ("WARNING: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
+		Com_Printf ("WARNING: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
 		closesocket (newsocket);
 		return 0;
 	}
@@ -547,65 +545,4 @@ void	NET_Shutdown (void)
 	NET_Config (false);	// close sockets
 
 	WSACleanup ();
-}
-
-
-/*
-====================
-NET_ErrorString
-====================
-*/
-char *NET_ErrorString (void)
-{
-	int		code;
-
-	code = WSAGetLastError ();
-	switch (code)
-	{
-	case WSAEINTR: return "WSAEINTR";
-	case WSAEBADF: return "WSAEBADF";
-	case WSAEACCES: return "WSAEACCES";
-	case WSAEDISCON: return "WSAEDISCON";
-	case WSAEFAULT: return "WSAEFAULT";
-	case WSAEINVAL: return "WSAEINVAL";
-	case WSAEMFILE: return "WSAEMFILE";
-	case WSAEWOULDBLOCK: return "WSAEWOULDBLOCK";
-	case WSAEINPROGRESS: return "WSAEINPROGRESS";
-	case WSAEALREADY: return "WSAEALREADY";
-	case WSAENOTSOCK: return "WSAENOTSOCK";
-	case WSAEDESTADDRREQ: return "WSAEDESTADDRREQ";
-	case WSAEMSGSIZE: return "WSAEMSGSIZE";
-	case WSAEPROTOTYPE: return "WSAEPROTOTYPE";
-	case WSAENOPROTOOPT: return "WSAENOPROTOOPT";
-	case WSAEPROTONOSUPPORT: return "WSAEPROTONOSUPPORT";
-	case WSAESOCKTNOSUPPORT: return "WSAESOCKTNOSUPPORT";
-	case WSAEOPNOTSUPP: return "WSAEOPNOTSUPP";
-	case WSAEPFNOSUPPORT: return "WSAEPFNOSUPPORT";
-	case WSAEAFNOSUPPORT: return "WSAEAFNOSUPPORT";
-	case WSAEADDRINUSE: return "WSAEADDRINUSE";
-	case WSAEADDRNOTAVAIL: return "WSAEADDRNOTAVAIL";
-	case WSAENETDOWN: return "WSAENETDOWN";
-	case WSAENETUNREACH: return "WSAENETUNREACH";
-	case WSAENETRESET: return "WSAENETRESET";
-	case WSAECONNABORTED: return "WSWSAECONNABORTEDAEINTR";
-	case WSAECONNRESET: return "WSAECONNRESET";
-	case WSAENOBUFS: return "WSAENOBUFS";
-	case WSAEISCONN: return "WSAEISCONN";
-	case WSAENOTCONN: return "WSAENOTCONN";
-	case WSAESHUTDOWN: return "WSAESHUTDOWN";
-	case WSAETOOMANYREFS: return "WSAETOOMANYREFS";
-	case WSAETIMEDOUT: return "WSAETIMEDOUT";
-	case WSAECONNREFUSED: return "WSAECONNREFUSED";
-	case WSAELOOP: return "WSAELOOP";
-	case WSAENAMETOOLONG: return "WSAENAMETOOLONG";
-	case WSAEHOSTDOWN: return "WSAEHOSTDOWN";
-	case WSASYSNOTREADY: return "WSASYSNOTREADY";
-	case WSAVERNOTSUPPORTED: return "WSAVERNOTSUPPORTED";
-	case WSANOTINITIALISED: return "WSANOTINITIALISED";
-	case WSAHOST_NOT_FOUND: return "WSAHOST_NOT_FOUND";
-	case WSATRY_AGAIN: return "WSATRY_AGAIN";
-	case WSANO_RECOVERY: return "WSANO_RECOVERY";
-	case WSANO_DATA: return "WSANO_DATA";
-	default: return "NO ERROR";
-	}
 }

@@ -46,67 +46,6 @@ static SOCKET	socks_socket;
 static	int		numIP;
 static	byte	localIP[MAX_IPS][4];
 
-//=============================================================================
-
-
-/*
-====================
-NET_ErrorString
-====================
-*/
-char *NET_ErrorString( void ) {
-	int		code;
-
-	code = WSAGetLastError();
-	switch( code ) {
-	case WSAEINTR: return "WSAEINTR";
-	case WSAEBADF: return "WSAEBADF";
-	case WSAEACCES: return "WSAEACCES";
-	case WSAEDISCON: return "WSAEDISCON";
-	case WSAEFAULT: return "WSAEFAULT";
-	case WSAEINVAL: return "WSAEINVAL";
-	case WSAEMFILE: return "WSAEMFILE";
-	case WSAEWOULDBLOCK: return "WSAEWOULDBLOCK";
-	case WSAEINPROGRESS: return "WSAEINPROGRESS";
-	case WSAEALREADY: return "WSAEALREADY";
-	case WSAENOTSOCK: return "WSAENOTSOCK";
-	case WSAEDESTADDRREQ: return "WSAEDESTADDRREQ";
-	case WSAEMSGSIZE: return "WSAEMSGSIZE";
-	case WSAEPROTOTYPE: return "WSAEPROTOTYPE";
-	case WSAENOPROTOOPT: return "WSAENOPROTOOPT";
-	case WSAEPROTONOSUPPORT: return "WSAEPROTONOSUPPORT";
-	case WSAESOCKTNOSUPPORT: return "WSAESOCKTNOSUPPORT";
-	case WSAEOPNOTSUPP: return "WSAEOPNOTSUPP";
-	case WSAEPFNOSUPPORT: return "WSAEPFNOSUPPORT";
-	case WSAEAFNOSUPPORT: return "WSAEAFNOSUPPORT";
-	case WSAEADDRINUSE: return "WSAEADDRINUSE";
-	case WSAEADDRNOTAVAIL: return "WSAEADDRNOTAVAIL";
-	case WSAENETDOWN: return "WSAENETDOWN";
-	case WSAENETUNREACH: return "WSAENETUNREACH";
-	case WSAENETRESET: return "WSAENETRESET";
-	case WSAECONNABORTED: return "WSWSAECONNABORTEDAEINTR";
-	case WSAECONNRESET: return "WSAECONNRESET";
-	case WSAENOBUFS: return "WSAENOBUFS";
-	case WSAEISCONN: return "WSAEISCONN";
-	case WSAENOTCONN: return "WSAENOTCONN";
-	case WSAESHUTDOWN: return "WSAESHUTDOWN";
-	case WSAETOOMANYREFS: return "WSAETOOMANYREFS";
-	case WSAETIMEDOUT: return "WSAETIMEDOUT";
-	case WSAECONNREFUSED: return "WSAECONNREFUSED";
-	case WSAELOOP: return "WSAELOOP";
-	case WSAENAMETOOLONG: return "WSAENAMETOOLONG";
-	case WSAEHOSTDOWN: return "WSAEHOSTDOWN";
-	case WSASYSNOTREADY: return "WSASYSNOTREADY";
-	case WSAVERNOTSUPPORTED: return "WSAVERNOTSUPPORTED";
-	case WSANOTINITIALISED: return "WSANOTINITIALISED";
-	case WSAHOST_NOT_FOUND: return "WSAHOST_NOT_FOUND";
-	case WSATRY_AGAIN: return "WSATRY_AGAIN";
-	case WSANO_RECOVERY: return "WSANO_RECOVERY";
-	case WSANO_DATA: return "WSANO_DATA";
-	default: return "NO ERROR";
-	}
-}
-
 /*
 =============
 Sys_StringToAdr
@@ -189,7 +128,7 @@ qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 		if( err == WSAEWOULDBLOCK || err == WSAECONNRESET ) {
 			return qfalse;
 		}
-		Com_Printf( "NET_GetPacket: %s\n", NET_ErrorString() );
+		Com_Printf( "NET_GetPacket: %s\n", SOCK_ErrorString() );
 		return qfalse;
 	}
 
@@ -280,7 +219,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to ) {
 			return;
 		}
 
-		Com_Printf( "NET_SendPacket: %s\n", NET_ErrorString() );
+		Com_Printf( "NET_SendPacket: %s\n", SOCK_ErrorString() );
 	}
 }
 
@@ -389,20 +328,20 @@ int NET_IPSocket( char *net_interface, int port ) {
 	if( ( newsocket = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET ) {
 		err = WSAGetLastError();
 		if( err != WSAEAFNOSUPPORT ) {
-			Com_Printf( "WARNING: UDP_OpenSocket: socket: %s\n", NET_ErrorString() );
+			Com_Printf( "WARNING: UDP_OpenSocket: socket: %s\n", SOCK_ErrorString() );
 		}
 		return 0;
 	}
 
 	// make it non-blocking
 	if( ioctlsocket( newsocket, FIONBIO, &_true ) == SOCKET_ERROR ) {
-		Com_Printf( "WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", NET_ErrorString() );
+		Com_Printf( "WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", SOCK_ErrorString() );
 		return 0;
 	}
 
 	// make it broadcast capable
 	if( setsockopt( newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i) ) == SOCKET_ERROR ) {
-		Com_Printf( "WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString() );
+		Com_Printf( "WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", SOCK_ErrorString() );
 		return 0;
 	}
 
@@ -423,7 +362,7 @@ int NET_IPSocket( char *net_interface, int port ) {
 	address.sin_family = AF_INET;
 
 	if( bind( newsocket, (sockaddr*)&address, sizeof(address) ) == SOCKET_ERROR ) {
-		Com_Printf( "WARNING: UDP_OpenSocket: bind: %s\n", NET_ErrorString() );
+		Com_Printf( "WARNING: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString() );
 		closesocket( newsocket );
 		return 0;
 	}
@@ -451,14 +390,14 @@ void NET_OpenSocks( int port ) {
 
 	if ( ( socks_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ) ) == INVALID_SOCKET ) {
 		err = WSAGetLastError();
-		Com_Printf( "WARNING: NET_OpenSocks: socket: %s\n", NET_ErrorString() );
+		Com_Printf( "WARNING: NET_OpenSocks: socket: %s\n", SOCK_ErrorString() );
 		return;
 	}
 
 	h = gethostbyname( net_socksServer->string );
 	if ( h == NULL ) {
 		err = WSAGetLastError();
-		Com_Printf( "WARNING: NET_OpenSocks: gethostbyname: %s\n", NET_ErrorString() );
+		Com_Printf( "WARNING: NET_OpenSocks: gethostbyname: %s\n", SOCK_ErrorString() );
 		return;
 	}
 	if ( h->h_addrtype != AF_INET ) {
@@ -471,7 +410,7 @@ void NET_OpenSocks( int port ) {
 
 	if ( connect( socks_socket, (struct sockaddr *)&address, sizeof( address ) ) == SOCKET_ERROR ) {
 		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: connect: %s\n", NET_ErrorString() );
+		Com_Printf( "NET_OpenSocks: connect: %s\n", SOCK_ErrorString() );
 		return;
 	}
 
@@ -499,7 +438,7 @@ void NET_OpenSocks( int port ) {
 	}
 	if ( send( socks_socket, (char*)buf, len, 0 ) == SOCKET_ERROR ) {
 		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
+		Com_Printf( "NET_OpenSocks: send: %s\n", SOCK_ErrorString() );
 		return;
 	}
 
@@ -507,7 +446,7 @@ void NET_OpenSocks( int port ) {
 	len = recv( socks_socket, (char*)buf, 64, 0 );
 	if ( len == SOCKET_ERROR ) {
 		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
+		Com_Printf( "NET_OpenSocks: recv: %s\n", SOCK_ErrorString() );
 		return;
 	}
 	if ( len != 2 || buf[0] != 5 ) {
@@ -546,7 +485,7 @@ void NET_OpenSocks( int port ) {
 		// send it
 		if ( send( socks_socket, (char*)buf, 3 + ulen + plen, 0 ) == SOCKET_ERROR ) {
 			err = WSAGetLastError();
-			Com_Printf( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
+			Com_Printf( "NET_OpenSocks: send: %s\n", SOCK_ErrorString() );
 			return;
 		}
 
@@ -554,7 +493,7 @@ void NET_OpenSocks( int port ) {
 		len = recv( socks_socket, (char*)buf, 64, 0 );
 		if ( len == SOCKET_ERROR ) {
 			err = WSAGetLastError();
-			Com_Printf( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
+			Com_Printf( "NET_OpenSocks: recv: %s\n", SOCK_ErrorString() );
 			return;
 		}
 		if ( len != 2 || buf[0] != 1 ) {
@@ -576,7 +515,7 @@ void NET_OpenSocks( int port ) {
 	*(short *)&buf[8] = htons( (short)port );		// port
 	if ( send( socks_socket, (char*)buf, 10, 0 ) == SOCKET_ERROR ) {
 		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: send: %s\n", NET_ErrorString() );
+		Com_Printf( "NET_OpenSocks: send: %s\n", SOCK_ErrorString() );
 		return;
 	}
 
@@ -584,7 +523,7 @@ void NET_OpenSocks( int port ) {
 	len = recv( socks_socket, (char*)buf, 64, 0 );
 	if( len == SOCKET_ERROR ) {
 		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: recv: %s\n", NET_ErrorString() );
+		Com_Printf( "NET_OpenSocks: recv: %s\n", SOCK_ErrorString() );
 		return;
 	}
 	if( len < 2 || buf[0] != 5 ) {
