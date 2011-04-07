@@ -347,29 +347,10 @@ int NET_IPSocket (char *net_interface, int port)
 {
 	int					newsocket;
 	struct sockaddr_in	address;
-	u_long			_true = true;
-	int					i = 1;
-	int					err;
 
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
+	newsocket = SOCK_Open(net_interface, port);
+	if (newsocket == 0)
 	{
-		err = WSAGetLastError();
-		if (err != WSAEAFNOSUPPORT)
-			Com_Printf ("WARNING: UDP_OpenSocket: socket: %s", SOCK_ErrorString());
-		return 0;
-	}
-
-	// make it non-blocking
-	if (ioctlsocket (newsocket, FIONBIO, &_true) == -1)
-	{
-		Com_Printf ("WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", SOCK_ErrorString());
-		return 0;
-	}
-
-	// make it broadcast capable
-	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) == -1)
-	{
-		Com_Printf ("WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", SOCK_ErrorString());
 		return 0;
 	}
 

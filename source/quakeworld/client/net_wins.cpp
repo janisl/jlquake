@@ -217,14 +217,11 @@ int UDP_OpenSocket (int port)
 {
 	int newsocket;
 	struct sockaddr_in address;
-	unsigned long _true = true;
 	int i;
 
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-		Sys_Error ("UDP_OpenSocket: socket:", strerror(errno));
-
-	if (ioctlsocket (newsocket, FIONBIO, &_true) == -1)
-		Sys_Error ("UDP_OpenSocket: ioctl FIONBIO:", strerror(errno));
+	newsocket = SOCK_Open(NULL, port);
+	if (newsocket == 0)
+		Sys_Error ("UDP_OpenSocket: socket failed");
 
 	address.sin_family = AF_INET;
 //ZOID -- check for interface binding option

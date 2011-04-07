@@ -314,9 +314,6 @@ NET_IPSocket
 int NET_IPSocket( char *net_interface, int port ) {
 	SOCKET				newsocket;
 	struct sockaddr_in	address;
-	u_long			_true = qtrue;
-	int					i = 1;
-	int					err;
 
 	if( net_interface ) {
 		Com_Printf( "Opening IP socket: %s:%i\n", net_interface, port );
@@ -325,23 +322,8 @@ int NET_IPSocket( char *net_interface, int port ) {
 		Com_Printf( "Opening IP socket: localhost:%i\n", port );
 	}
 
-	if( ( newsocket = socket( AF_INET, SOCK_DGRAM, IPPROTO_UDP ) ) == INVALID_SOCKET ) {
-		err = WSAGetLastError();
-		if( err != WSAEAFNOSUPPORT ) {
-			Com_Printf( "WARNING: UDP_OpenSocket: socket: %s\n", SOCK_ErrorString() );
-		}
-		return 0;
-	}
-
-	// make it non-blocking
-	if( ioctlsocket( newsocket, FIONBIO, &_true ) == SOCKET_ERROR ) {
-		Com_Printf( "WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", SOCK_ErrorString() );
-		return 0;
-	}
-
-	// make it broadcast capable
-	if( setsockopt( newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i) ) == SOCKET_ERROR ) {
-		Com_Printf( "WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", SOCK_ErrorString() );
+	newsocket = SOCK_Open(net_interface, port);
+	if(newsocket == 0) {
 		return 0;
 	}
 

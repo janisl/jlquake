@@ -139,3 +139,41 @@ const char* SOCK_ErrorString()
 	default: return "NO ERROR";
 	}
 }
+
+//==========================================================================
+//
+//	SOCK_Open
+//
+//==========================================================================
+
+int SOCK_Open(const char* net_interface, int port)
+{
+	int newsocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (newsocket == INVALID_SOCKET)
+	{
+		int err = WSAGetLastError();
+		if (err != WSAEAFNOSUPPORT)
+		{
+			GLog.Write("WARNING: SOCK_Open: socket: %s\n", SOCK_ErrorString());
+		}
+		return 0;
+	}
+
+	// make it non-blocking
+	u_long _true = 1;
+	if (ioctlsocket(newsocket, FIONBIO, &_true) == SOCKET_ERROR)
+	{
+		GLog.Write("WARNING: UDP_OpenSocket: ioctl FIONBIO: %s\n", SOCK_ErrorString());
+		closesocket(newsocket);
+		return 0;
+	}
+
+	// make it broadcast capable
+	int i = 1;
+	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == SOCKET_ERROR)
+	{
+		GLog.Write("WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", SOCK_ErrorString());
+		return 0;
+	}
+	return newsocket;
+}

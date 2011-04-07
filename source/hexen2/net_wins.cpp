@@ -178,13 +178,10 @@ int WINS_OpenSocket (int port)
 {
 	int newsocket;
 	struct sockaddr_in address;
-	u_long _true = 1;
 
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
+	newsocket = SOCK_Open(NULL, port);
+	if (newsocket == 0)
 		return -1;
-
-	if (ioctlsocket (newsocket, FIONBIO, &_true) == -1)
-		goto ErrorReturn;
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
@@ -311,13 +308,7 @@ int WINS_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 
 int WINS_MakeSocketBroadcastCapable (int socket)
 {
-	int	i = 1;
-
-	// make this socket broadcast capable
-	if (setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) < 0)
-		return -1;
 	net_broadcastsocket = socket;
-
 	return 0;
 }
 
