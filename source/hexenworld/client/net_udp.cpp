@@ -205,13 +205,11 @@ int UDP_OpenSocket (int port)
 {
 	int newsocket;
 	struct sockaddr_in address;
-	qboolean _true = true;
 	int i;
 
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-		Sys_Error ("UDP_OpenSocket: socket:", SOCK_ErrorString());
-	if (ioctl (newsocket, FIONBIO, (char *)&_true) == -1)
-		Sys_Error ("UDP_OpenSocket: ioctl FIONBIO:", SOCK_ErrorString());
+	newsocket = SOCK_Open(NULL, port);
+	if (newsocket == 0)
+		Sys_Error ("UDP_OpenSocket: failed");
 	address.sin_family = AF_INET;
 //ZOID -- check for interface binding option
 	if ((i = COM_CheckParm("-ip")) != 0 && i < COM_Argc()) {

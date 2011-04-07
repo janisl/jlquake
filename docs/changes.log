@@ -158,3 +158,5 @@
   I changed all games to do adding mouse move to user command in platform independent part.
 06.04.2011
   I finished merging input drivers on both Windows and Linux.
+07.04.2011
+  I started work on network drivers. I removed remaining support for IPX.

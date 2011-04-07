@@ -21,7 +21,9 @@
 
 #include "core.h"
 #include <errno.h>
+#include <unistd.h>
 #include <netinet/in.h>
+#include <sys/ioctl.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -94,4 +96,38 @@ const char* SOCK_ErrorString()
 {
 	int code = errno;
 	return strerror(code);
+}
+
+//==========================================================================
+//
+//	SOCK_Open
+//
+//==========================================================================
+
+int SOCK_Open(const char* net_interface, int port)
+{
+	int newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	if (newsocket == -1)
+	{
+		GLog.Write("ERROR: UDP_OpenSocket: socket: %s\n", SOCK_ErrorString());
+		return 0;
+	}
+
+	// make it non-blocking
+	int _true = 1;
+	if (ioctl(newsocket, FIONBIO, &_true) == -1)
+	{
+		GLog.Write("ERROR: UDP_OpenSocket: ioctl FIONBIO:%s\n", SOCK_ErrorString());
+		close(newsocket);
+		return 0;
+	}
+
+	// make it broadcast capable
+	int i = 1;
+	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == -1)
+	{
+		GLog.Write("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
+		return 0;
+	}
+	return newsocket;
 }
