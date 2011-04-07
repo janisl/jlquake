@@ -41,3 +41,4 @@ struct qsockaddr
 
 void NetadrToSockadr(netadr_t* a, struct sockaddr_in* s);
 void SockadrToNetadr(struct sockaddr_in* s, netadr_t* a);
+const char* SOCK_ErrorString();

@@ -56,7 +56,6 @@ static	int		numIP;
 static	byte	localIP[MAX_IPS][4];
 
 int NET_Socket (char *net_interface, int port);
-char *NET_ErrorString (void);
 
 //=============================================================================
 
@@ -154,7 +153,7 @@ qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
 
 		if (err == EWOULDBLOCK || err == ECONNREFUSED)
 			return false;
-		Com_Printf ("NET_GetPacket: %s from %s\n", NET_ErrorString(),
+		Com_Printf ("NET_GetPacket: %s from %s\n", SOCK_ErrorString(),
 					NET_AdrToString(*net_from));
 		return false;
 	}
@@ -198,7 +197,7 @@ void	Sys_SendPacket( int length, const void *data, netadr_t to )
 	ret = sendto (net_socket, data, length, 0, (struct sockaddr *)&addr, sizeof(addr) );
 	if (ret == -1)
 	{
-		Com_Printf ("NET_SendPacket ERROR: %s to %s\n", NET_ErrorString(),
+		Com_Printf ("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(),
 				NET_AdrToString (to));
 	}
 }
@@ -479,21 +478,21 @@ int NET_IPSocket (char *net_interface, int port)
 
 	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 	{
-		Com_Printf ("ERROR: UDP_OpenSocket: socket: %s", NET_ErrorString());
+		Com_Printf ("ERROR: UDP_OpenSocket: socket: %s", SOCK_ErrorString());
 		return 0;
 	}
 
 	// make it non-blocking
 	if (ioctl (newsocket, FIONBIO, &_qtrue) == -1)
 	{
-		Com_Printf ("ERROR: UDP_OpenSocket: ioctl FIONBIO:%s\n", NET_ErrorString());
+		Com_Printf ("ERROR: UDP_OpenSocket: ioctl FIONBIO:%s\n", SOCK_ErrorString());
 		return 0;
 	}
 
 	// make it broadcast capable
 	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) == -1)
 	{
-		Com_Printf ("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", NET_ErrorString());
+		Com_Printf ("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
 		return 0;
 	}
 
@@ -511,7 +510,7 @@ int NET_IPSocket (char *net_interface, int port)
 
 	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
 	{
-		Com_Printf ("ERROR: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
+		Com_Printf ("ERROR: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
 		close (newsocket);
 		return 0;
 	}
@@ -530,20 +529,6 @@ void	NET_Shutdown (void)
 		close(ip_socket);
 		ip_socket = 0;
 	}
-}
-
-
-/*
-====================
-NET_ErrorString
-====================
-*/
-char *NET_ErrorString (void)
-{
-	int		code;
-
-	code = errno;
-	return strerror (code);
 }
 
 // sleeps msec or until net socket is ready

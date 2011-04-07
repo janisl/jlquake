@@ -20,6 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
+#include <errno.h>
 #include <netinet/in.h>
 
 // MACROS ------------------------------------------------------------------
@@ -81,4 +82,16 @@ void SockadrToNetadr(sockaddr_in* s, netadr_t* a)
 	*(int*)&a->ip = *(int*)&s->sin_addr;
 	a->port = s->sin_port;
 	a->type = NA_IP;
+}
+
+//==========================================================================
+//
+//	SOCK_ErrorString
+//
+//==========================================================================
+
+const char* SOCK_ErrorString()
+{
+	int code = errno;
+	return strerror(code);
 }

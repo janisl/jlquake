@@ -38,7 +38,6 @@ loopback_t	loopbacks[2];
 int			ip_sockets[2];
 
 int NET_Socket (char *net_interface, int port);
-char *NET_ErrorString (void);
 
 //=============================================================================
 
@@ -244,7 +243,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 
 		if (err == EWOULDBLOCK || err == ECONNREFUSED)
 			continue;
-		Com_Printf ("NET_GetPacket: %s", NET_ErrorString());
+		Com_Printf ("NET_GetPacket: %s", SOCK_ErrorString());
 		continue;
 	}
 
@@ -293,7 +292,7 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	ret = sendto (net_socket, data, length, 0, (struct sockaddr *)&addr, sizeof(addr) );
 	if (ret == -1)
 	{
-		Com_Printf ("NET_SendPacket ERROR: %i\n", NET_ErrorString());
+		Com_Printf ("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
 	}
 }
 
@@ -377,21 +376,21 @@ int NET_Socket (char *net_interface, int port)
 
 	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 	{
-		Com_Printf ("ERROR: UDP_OpenSocket: socket:", NET_ErrorString());
+		Com_Printf ("ERROR: UDP_OpenSocket: socket:", SOCK_ErrorString());
 		return 0;
 	}
 
 	// make it non-blocking
 	if (ioctl (newsocket, FIONBIO, &_true) == -1)
 	{
-		Com_Printf ("ERROR: UDP_OpenSocket: ioctl FIONBIO:%s\n", NET_ErrorString());
+		Com_Printf ("ERROR: UDP_OpenSocket: ioctl FIONBIO:%s\n", SOCK_ErrorString());
 		return 0;
 	}
 
 	// make it broadcast capable
 	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) == -1)
 	{
-		Com_Printf ("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", NET_ErrorString());
+		Com_Printf ("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
 		return 0;
 	}
 
@@ -409,7 +408,7 @@ int NET_Socket (char *net_interface, int port)
 
 	if( bind (newsocket, (void *)&address, sizeof(address)) == -1)
 	{
-		Com_Printf ("ERROR: UDP_OpenSocket: bind: %s\n", NET_ErrorString());
+		Com_Printf ("ERROR: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
 		close (newsocket);
 		return 0;
 	}
@@ -428,19 +427,6 @@ void	NET_Shutdown (void)
 	NET_Config (false);	// close sockets
 }
 
-
-/*
-====================
-NET_ErrorString
-====================
-*/
-char *NET_ErrorString (void)
-{
-	int		code;
-
-	code = errno;
-	return strerror (code);
-}
 
 // sleeps msec or until net socket is ready
 void NET_Sleep(int msec)

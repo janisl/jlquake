@@ -158,7 +158,7 @@ qboolean NET_GetPacket (void)
 			return false;
 		if (errno == ECONNREFUSED)
 			return false;
-		Sys_Printf ("NET_GetPacket: %s\n", strerror(errno));
+		Sys_Printf ("NET_GetPacket: %s\n", SOCK_ErrorString());
 		return false;
 	}
 
@@ -195,7 +195,7 @@ void NET_SendPacket (int length, void *data, netadr_t to)
 			return;
 		if (errno == ECONNREFUSED)
 			return;
-		Sys_Printf ("NET_SendPacket: %s\n", strerror(errno));
+		Sys_Printf ("NET_SendPacket: %s\n", SOCK_ErrorString());
 	}
 }
 
@@ -209,9 +209,9 @@ int UDP_OpenSocket (int port)
 	int i;
 
 	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-		Sys_Error ("UDP_OpenSocket: socket:", strerror(errno));
+		Sys_Error ("UDP_OpenSocket: socket:", SOCK_ErrorString());
 	if (ioctl (newsocket, FIONBIO, (char *)&_true) == -1)
-		Sys_Error ("UDP_OpenSocket: ioctl FIONBIO:", strerror(errno));
+		Sys_Error ("UDP_OpenSocket: ioctl FIONBIO:", SOCK_ErrorString());
 	address.sin_family = AF_INET;
 //ZOID -- check for interface binding option
 	if ((i = COM_CheckParm("-ip")) != 0 && i < COM_Argc()) {
@@ -225,7 +225,7 @@ int UDP_OpenSocket (int port)
 	else
 		address.sin_port = htons((short)port);
 	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
-		Sys_Error ("UDP_OpenSocket: bind: %s", strerror(errno));
+		Sys_Error ("UDP_OpenSocket: bind: %s", SOCK_ErrorString());
 
 	return newsocket;
 }
@@ -249,7 +249,7 @@ void NET_GetLocalAddress (void)
 
 	namelen = sizeof(address);
 	if (getsockname (net_socket, (struct sockaddr *)&address, &namelen) == -1)
-		Sys_Error ("NET_Init: getsockname:", strerror(errno));
+		Sys_Error ("NET_Init: getsockname:", SOCK_ErrorString());
 	net_local_adr.port = address.sin_port;
 
 	Con_Printf("IP address %s\n", NET_AdrToString (net_local_adr) );
