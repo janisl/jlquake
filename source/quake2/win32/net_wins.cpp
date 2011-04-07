@@ -47,35 +47,6 @@ char *NET_ErrorString (void);
 
 //=============================================================================
 
-void NetadrToSockadr (netadr_t *a, struct sockaddr *s)
-{
-	Com_Memset(s, 0, sizeof(*s));
-
-	if (a->type == NA_BROADCAST)
-	{
-		((struct sockaddr_in *)s)->sin_family = AF_INET;
-		((struct sockaddr_in *)s)->sin_port = a->port;
-		((struct sockaddr_in *)s)->sin_addr.s_addr = INADDR_BROADCAST;
-	}
-	else if (a->type == NA_IP)
-	{
-		((struct sockaddr_in *)s)->sin_family = AF_INET;
-		((struct sockaddr_in *)s)->sin_addr.s_addr = *(int *)&a->ip;
-		((struct sockaddr_in *)s)->sin_port = a->port;
-	}
-}
-
-void SockadrToNetadr (struct sockaddr *s, netadr_t *a)
-{
-	if (s->sa_family == AF_INET)
-	{
-		a->type = NA_IP;
-		*(int *)&a->ip = ((struct sockaddr_in *)s)->sin_addr.s_addr;
-		a->port = ((struct sockaddr_in *)s)->sin_port;
-	}
-}
-
-
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 {
 	if (a.type != b.type)
@@ -199,7 +170,7 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 	if (!NET_StringToSockaddr (s, &sadr))
 		return false;
 	
-	SockadrToNetadr (&sadr, a);
+	SockadrToNetadr ((struct sockaddr_in*)&sadr, a);
 
 	return true;
 }
@@ -291,7 +262,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 		return false;
 	}
 
-	SockadrToNetadr (&from, net_from);
+	SockadrToNetadr ((struct sockaddr_in*)&from, net_from);
 
 	if (ret == net_message->maxsize)
 	{
@@ -332,7 +303,7 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	else
 		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
 
-	NetadrToSockadr (&to, &addr);
+	NetadrToSockadr (&to, (struct sockaddr_in *)&addr);
 
 	ret = sendto (net_socket, (char*)data, length, 0, &addr, sizeof(addr) );
 	if (ret == -1)

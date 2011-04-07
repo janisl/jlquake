@@ -20,6 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
+#include <windows.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -41,6 +42,41 @@
 
 //==========================================================================
 //
-//
+//	NetadrToSockadr
 //
 //==========================================================================
+
+void NetadrToSockadr(netadr_t* a, sockaddr_in* s)
+{
+	Com_Memset(s, 0, sizeof(*s));
+
+	if (a->type == NA_BROADCAST)
+	{
+		s->sin_family = AF_INET;
+		s->sin_port = a->port;
+		s->sin_addr.s_addr = INADDR_BROADCAST;
+	}
+	else if (a->type == NA_IP)
+	{
+		s->sin_family = AF_INET;
+		s->sin_addr.s_addr = *(int*)&a->ip;
+		s->sin_port = a->port;
+	}
+}
+
+//==========================================================================
+//
+//	SockadrToNetadr
+//
+//==========================================================================
+
+void SockadrToNetadr(sockaddr_in* s, netadr_t* a)
+{
+	if (s->sin_family != AF_INET)
+	{
+		throw QException("Not an IP address");
+	}
+	a->type = NA_IP;
+	*(int*)&a->ip = s->sin_addr.s_addr;
+	a->port = s->sin_port;
+}

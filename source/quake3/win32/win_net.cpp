@@ -107,31 +107,6 @@ char *NET_ErrorString( void ) {
 	}
 }
 
-void NetadrToSockadr( netadr_t *a, struct sockaddr *s ) {
-	Com_Memset( s, 0, sizeof(*s) );
-
-	if( a->type == NA_BROADCAST ) {
-		((struct sockaddr_in *)s)->sin_family = AF_INET;
-		((struct sockaddr_in *)s)->sin_port = a->port;
-		((struct sockaddr_in *)s)->sin_addr.s_addr = INADDR_BROADCAST;
-	}
-	else if( a->type == NA_IP ) {
-		((struct sockaddr_in *)s)->sin_family = AF_INET;
-		((struct sockaddr_in *)s)->sin_addr.s_addr = *(int *)&a->ip;
-		((struct sockaddr_in *)s)->sin_port = a->port;
-	}
-}
-
-
-void SockadrToNetadr( struct sockaddr *s, netadr_t *a ) {
-	if (s->sa_family == AF_INET) {
-		a->type = NA_IP;
-		*(int *)&a->ip = ((struct sockaddr_in *)s)->sin_addr.s_addr;
-		a->port = ((struct sockaddr_in *)s)->sin_port;
-	}
-}
-
-
 /*
 =============
 Sys_StringToAdr
@@ -176,7 +151,7 @@ qboolean Sys_StringToAdr( const char *s, netadr_t *a ) {
 		return qfalse;
 	}
 	
-	SockadrToNetadr( &sadr, a );
+	SockadrToNetadr( (struct sockaddr_in*)&sadr, a );
 	return qtrue;
 }
 
@@ -235,7 +210,7 @@ qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 		net_message->readcount = 10;
 	}
 	else {
-		SockadrToNetadr( &from, net_from );
+		SockadrToNetadr( (struct sockaddr_in*)&from, net_from );
 		net_message->readcount = 0;
 	}
 
@@ -277,7 +252,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to ) {
 		return;
 	}
 
-	NetadrToSockadr( &to, &addr );
+	NetadrToSockadr( &to, (struct sockaddr_in *)&addr );
 
 	if( usingSocks && to.type == NA_IP ) {
 		socksBuf[0] = 0;	// reserved
