@@ -60,33 +60,6 @@ char *NET_ErrorString (void);
 
 //=============================================================================
 
-void NetadrToSockadr (netadr_t *a, struct sockaddr_in *s)
-{
-	Com_Memset(s, 0, sizeof(*s));
-
-	if (a->type == NA_BROADCAST)
-	{
-		s->sin_family = AF_INET;
-
-		s->sin_port = a->port;
-		*(int *)&s->sin_addr = -1;
-	}
-	else if (a->type == NA_IP)
-	{
-		s->sin_family = AF_INET;
-
-		*(int *)&s->sin_addr = *(int *)&a->ip;
-		s->sin_port = a->port;
-	}
-}
-
-void SockadrToNetadr (struct sockaddr_in *s, netadr_t *a)
-{
-	*(int *)&a->ip = *(int *)&s->sin_addr;
-	a->port = s->sin_port;
-	a->type = NA_IP;
-}
-
 char	*NET_BaseAdrToString (netadr_t a)
 {
 	static	char	s[64];

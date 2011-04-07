@@ -20,6 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
+#include <netinet/in.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -41,6 +42,43 @@
 
 //==========================================================================
 //
-//
+//	NetadrToSockadr
 //
 //==========================================================================
+
+void NetadrToSockadr(netadr_t* a, sockaddr_in* s)
+{
+	Com_Memset(s, 0, sizeof(*s));
+
+	if (a->type == NA_BROADCAST)
+	{
+		s->sin_family = AF_INET;
+
+		s->sin_port = a->port;
+		*(int*)&s->sin_addr = -1;
+	}
+	else if (a->type == NA_IP)
+	{
+		s->sin_family = AF_INET;
+
+		*(int*)&s->sin_addr = *(int*)&a->ip;
+		s->sin_port = a->port;
+	}
+	else
+	{
+		throw QException("Invalid address type");
+	}
+}
+
+//==========================================================================
+//
+//	SockadrToNetadr
+//
+//==========================================================================
+
+void SockadrToNetadr(sockaddr_in* s, netadr_t* a)
+{
+	*(int*)&a->ip = *(int*)&s->sin_addr;
+	a->port = s->sin_port;
+	a->type = NA_IP;
+}
