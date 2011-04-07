@@ -83,8 +83,6 @@ typedef enum {
 	NA_LOOPBACK,
 	NA_BROADCAST,
 	NA_IP,
-	NA_IPX,
-	NA_BROADCAST_IPX
 } netadrtype_t;
 
 typedef enum {

@@ -804,7 +804,6 @@ void CL_PingServers_f (void)
 	char		name[32];
 	const char	*adrstring;
 	QCvar		*noudp;
-	QCvar		*noipx;
 
 	NET_Config (true);		// allow remote
 
@@ -815,14 +814,6 @@ void CL_PingServers_f (void)
 	if (!noudp->value)
 	{
 		adr.type = NA_BROADCAST;
-		adr.port = BigShort(PORT_SERVER);
-		Netchan_OutOfBandPrint (NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
-	}
-
-	noipx = Cvar_Get ("noipx", "0", CVAR_INIT);
-	if (!noipx->value)
-	{
-		adr.type = NA_BROADCAST_IPX;
 		adr.port = BigShort(PORT_SERVER);
 		Netchan_OutOfBandPrint (NS_CLIENT, adr, va("info %i", PROTOCOL_VERSION));
 	}

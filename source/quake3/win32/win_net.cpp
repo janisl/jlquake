@@ -31,7 +31,6 @@ static qboolean usingSocks = qfalse;
 static qboolean networkingEnabled = qfalse;
 
 static QCvar	*net_noudp;
-static QCvar	*net_noipx;
 
 static QCvar	*net_socksEnabled;
 static QCvar	*net_socksServer;
@@ -42,7 +41,6 @@ static struct sockaddr	socksRelayAddr;
 
 static SOCKET	ip_socket;
 static SOCKET	socks_socket;
-static SOCKET	ipx_socket;
 
 #define	MAX_IPS		16
 static	int		numIP;
@@ -122,18 +120,6 @@ void NetadrToSockadr( netadr_t *a, struct sockaddr *s ) {
 		((struct sockaddr_in *)s)->sin_addr.s_addr = *(int *)&a->ip;
 		((struct sockaddr_in *)s)->sin_port = a->port;
 	}
-	else if( a->type == NA_IPX ) {
-		((struct sockaddr_ipx *)s)->sa_family = AF_IPX;
-		Com_Memcpy( ((struct sockaddr_ipx *)s)->sa_netnum, &a->ipx[0], 4 );
-		Com_Memcpy( ((struct sockaddr_ipx *)s)->sa_nodenum, &a->ipx[4], 6 );
-		((struct sockaddr_ipx *)s)->sa_socket = a->port;
-	}
-	else if( a->type == NA_BROADCAST_IPX ) {
-		((struct sockaddr_ipx *)s)->sa_family = AF_IPX;
-		Com_Memset( ((struct sockaddr_ipx *)s)->sa_netnum, 0, 4 );
-		Com_Memset( ((struct sockaddr_ipx *)s)->sa_nodenum, 0xff, 6 );
-		((struct sockaddr_ipx *)s)->sa_socket = a->port;
-	}
 }
 
 
@@ -142,12 +128,6 @@ void SockadrToNetadr( struct sockaddr *s, netadr_t *a ) {
 		a->type = NA_IP;
 		*(int *)&a->ip = ((struct sockaddr_in *)s)->sin_addr.s_addr;
 		a->port = ((struct sockaddr_in *)s)->sin_port;
-	}
-	else if( s->sa_family == AF_IPX ) {
-		a->type = NA_IPX;
-		Com_Memcpy( &a->ipx[0], ((struct sockaddr_ipx *)s)->sa_netnum, 4 );
-		Com_Memcpy( &a->ipx[4], ((struct sockaddr_ipx *)s)->sa_nodenum, 6 );
-		a->port = ((struct sockaddr_ipx *)s)->sa_socket;
 	}
 }
 
@@ -244,66 +224,56 @@ qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 	struct sockaddr from;
 	int		fromlen;
 	int		net_socket;
-	int		protocol;
 	int		err;
 
-	for( protocol = 0 ; protocol < 2 ; protocol++ )	{
-		if( protocol == 0 ) {
-			net_socket = ip_socket;
-		}
-		else {
-			net_socket = ipx_socket;
-		}
+	net_socket = ip_socket;
 
-		if( !net_socket ) {
-			continue;
-		}
-
-		fromlen = sizeof(from);
-		recvfromCount++;		// performance check
-		ret = recvfrom( net_socket, (char*)net_message->_data, net_message->maxsize, 0, (struct sockaddr *)&from, &fromlen );
-		if (ret == SOCKET_ERROR)
-		{
-			err = WSAGetLastError();
-
-			if( err == WSAEWOULDBLOCK || err == WSAECONNRESET ) {
-				continue;
-			}
-			Com_Printf( "NET_GetPacket: %s\n", NET_ErrorString() );
-			continue;
-		}
-
-		if ( net_socket == ip_socket ) {
-			Com_Memset( ((struct sockaddr_in *)&from)->sin_zero, 0, 8 );
-		}
-
-		if ( usingSocks && net_socket == ip_socket && memcmp( &from, &socksRelayAddr, fromlen ) == 0 ) {
-			if ( ret < 10 || net_message->_data[0] != 0 || net_message->_data[1] != 0 || net_message->_data[2] != 0 || net_message->_data[3] != 1 ) {
-				continue;
-			}
-			net_from->type = NA_IP;
-			net_from->ip[0] = net_message->_data[4];
-			net_from->ip[1] = net_message->_data[5];
-			net_from->ip[2] = net_message->_data[6];
-			net_from->ip[3] = net_message->_data[7];
-			net_from->port = *(short *)&net_message->_data[8];
-			net_message->readcount = 10;
-		}
-		else {
-			SockadrToNetadr( &from, net_from );
-			net_message->readcount = 0;
-		}
-
-		if( ret == net_message->maxsize ) {
-			Com_Printf( "Oversize packet from %s\n", NET_AdrToString (*net_from) );
-			continue;
-		}
-
-		net_message->cursize = ret;
-		return qtrue;
+	if( !net_socket ) {
+		return qfalse;
 	}
 
-	return qfalse;
+	fromlen = sizeof(from);
+	recvfromCount++;		// performance check
+	ret = recvfrom( net_socket, (char*)net_message->_data, net_message->maxsize, 0, (struct sockaddr *)&from, &fromlen );
+	if (ret == SOCKET_ERROR)
+	{
+		err = WSAGetLastError();
+
+		if( err == WSAEWOULDBLOCK || err == WSAECONNRESET ) {
+			return qfalse;
+		}
+		Com_Printf( "NET_GetPacket: %s\n", NET_ErrorString() );
+		return qfalse;
+	}
+
+	if ( net_socket == ip_socket ) {
+		Com_Memset( ((struct sockaddr_in *)&from)->sin_zero, 0, 8 );
+	}
+
+	if ( usingSocks && net_socket == ip_socket && memcmp( &from, &socksRelayAddr, fromlen ) == 0 ) {
+		if ( ret < 10 || net_message->_data[0] != 0 || net_message->_data[1] != 0 || net_message->_data[2] != 0 || net_message->_data[3] != 1 ) {
+			return qfalse;
+		}
+		net_from->type = NA_IP;
+		net_from->ip[0] = net_message->_data[4];
+		net_from->ip[1] = net_message->_data[5];
+		net_from->ip[2] = net_message->_data[6];
+		net_from->ip[3] = net_message->_data[7];
+		net_from->port = *(short *)&net_message->_data[8];
+		net_message->readcount = 10;
+	}
+	else {
+		SockadrToNetadr( &from, net_from );
+		net_message->readcount = 0;
+	}
+
+	if( ret == net_message->maxsize ) {
+		Com_Printf( "Oversize packet from %s\n", NET_AdrToString (*net_from) );
+		return qfalse;
+	}
+
+	net_message->cursize = ret;
+	return qtrue;
 }
 
 //=============================================================================
@@ -325,12 +295,6 @@ void Sys_SendPacket( int length, const void *data, netadr_t to ) {
 	}
 	else if( to.type == NA_IP ) {
 		net_socket = ip_socket;
-	}
-	else if( to.type == NA_IPX ) {
-		net_socket = ipx_socket;
-	}
-	else if( to.type == NA_BROADCAST_IPX ) {
-		net_socket = ipx_socket;
 	}
 	else {
 		Com_Error( ERR_FATAL, "Sys_SendPacket: bad address type" );
@@ -365,7 +329,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to ) {
 		}
 
 		// some PPP links do not allow broadcasts and return an error
-		if( ( err == WSAEADDRNOTAVAIL ) && ( ( to.type == NA_BROADCAST ) || ( to.type == NA_BROADCAST_IPX ) ) ) {
+		if( ( err == WSAEADDRNOTAVAIL ) && ( to.type == NA_BROADCAST ) ) {
 			return;
 		}
 
@@ -387,10 +351,6 @@ qboolean Sys_IsLANAddress( netadr_t adr ) {
 	int		i;
 
 	if( adr.type == NA_LOOPBACK ) {
-		return qtrue;
-	}
-
-	if( adr.type == NA_IPX ) {
 		return qtrue;
 	}
 
@@ -830,20 +790,6 @@ int NET_IPXSocket( int port ) {
 }
 
 
-/*
-====================
-NET_OpenIPX
-====================
-*/
-void NET_OpenIPX( void ) {
-	int		port;
-
-	port = Cvar_Get( "net_port", va( "%i", PORT_SERVER ), CVAR_LATCH )->integer;
-	ipx_socket = NET_IPXSocket( port );
-}
-
-
-
 //===================================================================
 
 
@@ -861,11 +807,6 @@ static qboolean NET_GetCvars( void ) {
 		modified = qtrue;
 	}
 	net_noudp = Cvar_Get( "net_noudp", "0", CVAR_LATCH | CVAR_ARCHIVE );
-
-	if( net_noipx && net_noipx->modified ) {
-		modified = qtrue;
-	}
-	net_noipx = Cvar_Get( "net_noipx", "0", CVAR_LATCH | CVAR_ARCHIVE );
 
 
 	if( net_socksEnabled && net_socksEnabled->modified ) {
@@ -911,7 +852,7 @@ void NET_Config( qboolean enableNetworking ) {
 	// get any latched changes to cvars
 	modified = NET_GetCvars();
 
-	if( net_noudp->integer && net_noipx->integer ) {
+	if (net_noudp->integer) {
 		enableNetworking = qfalse;
 	}
 
@@ -952,19 +893,11 @@ void NET_Config( qboolean enableNetworking ) {
 			closesocket( socks_socket );
 			socks_socket = 0;
 		}
-
-		if ( ipx_socket && ipx_socket != INVALID_SOCKET ) {
-			closesocket( ipx_socket );
-			ipx_socket = 0;
-		}
 	}
 
 	if( start ) {
 		if (! net_noudp->integer ) {
 			NET_OpenIP();
-		}
-		if (! net_noipx->integer ) {
-			NET_OpenIPX();
 		}
 	}
 }

@@ -2532,12 +2532,6 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 					type = 1;
 					break;
 
-				case NA_IPX:
-				case NA_BROADCAST_IPX:
-					str = "ipx";
-					type = 2;
-					break;
-
 				default:
 					str = "???";
 					type = 0;
@@ -2824,9 +2818,6 @@ void CL_LocalServers_f( void ) {
 			to.port = BigShort( (short)(PORT_SERVER + j) );
 
 			to.type = NA_BROADCAST;
-			NET_SendPacket( NS_CLIENT, QStr::Length( message ), message, to );
-
-			to.type = NA_BROADCAST_IPX;
 			NET_SendPacket( NS_CLIENT, QStr::Length( message ), message, to );
 		}
 	}
