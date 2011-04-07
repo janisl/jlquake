@@ -50,7 +50,6 @@ static QCvar	*noudp;
 netadr_t	net_local_adr;
 
 int			ip_socket;
-int			ipx_socket;
 
 #define	MAX_IPS		16
 static	int		numIP;
@@ -161,49 +160,40 @@ qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
 	struct sockaddr_in	from;
 	socklen_t	fromlen;
 	int		net_socket;
-	int		protocol;
 	int		err;
 
-	for (protocol = 0 ; protocol < 2 ; protocol++)
+	net_socket = ip_socket;
+
+	if (!net_socket)
+		continue;
+
+	fromlen = sizeof(from);
+	ret = recvfrom (net_socket, net_message->_data, net_message->maxsize
+		, 0, (struct sockaddr *)&from, &fromlen);
+
+	SockadrToNetadr (&from, net_from);
+	// bk000305: was missing
+	net_message->readcount = 0;
+
+	if (ret == -1)
 	{
-		if (protocol == 0)
-			net_socket = ip_socket;
-		else
-			net_socket = ipx_socket;
+		err = errno;
 
-		if (!net_socket)
+		if (err == EWOULDBLOCK || err == ECONNREFUSED)
 			continue;
-
-		fromlen = sizeof(from);
-		ret = recvfrom (net_socket, net_message->_data, net_message->maxsize
-			, 0, (struct sockaddr *)&from, &fromlen);
-
-		SockadrToNetadr (&from, net_from);
-		// bk000305: was missing
-		net_message->readcount = 0;
-
-		if (ret == -1)
-		{
-			err = errno;
-
-			if (err == EWOULDBLOCK || err == ECONNREFUSED)
-				continue;
-			Com_Printf ("NET_GetPacket: %s from %s\n", NET_ErrorString(),
-						NET_AdrToString(*net_from));
-			continue;
-		}
-
-		if (ret == net_message->maxsize)
-		{
-			Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
-			continue;
-		}
-
-		net_message->cursize = ret;
-		return qtrue;
+		Com_Printf ("NET_GetPacket: %s from %s\n", NET_ErrorString(),
+					NET_AdrToString(*net_from));
+		continue;
 	}
 
-	return qfalse;
+	if (ret == net_message->maxsize)
+	{
+		Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
+		continue;
+	}
+
+	net_message->cursize = ret;
+	return qtrue;
 }
 
 //=============================================================================
@@ -221,14 +211,6 @@ void	Sys_SendPacket( int length, const void *data, netadr_t to )
 	else if (to.type == NA_IP)
 	{
 		net_socket = ip_socket;
-	}
-	else if (to.type == NA_IPX)
-	{
-		net_socket = ipx_socket;
-	}
-	else if (to.type == NA_BROADCAST_IPX)
-	{
-		net_socket = ipx_socket;
 	}
 	else {
 		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
@@ -262,10 +244,6 @@ qboolean	Sys_IsLANAddress (netadr_t adr) {
 	int		i;
 
 	if( adr.type == NA_LOOPBACK ) {
-		return qtrue;
-	}
-
-	if( adr.type == NA_IPX ) {
 		return qtrue;
 	}
 

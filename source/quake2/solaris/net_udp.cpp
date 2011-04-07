@@ -99,13 +99,6 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
 			return true;
 		return false;
 	}
-
-	if (a.type == NA_IPX)
-	{
-		if ((memcmp(a.ipx, b.ipx, 10) == 0))
-			return true;
-		return false;
-	}
 }
 
 char	*NET_AdrToString (netadr_t a)
@@ -261,47 +254,38 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 	struct sockaddr_in	from;
 	int		fromlen;
 	int		net_socket;
-	int		protocol;
 	int		err;
 
 	if (NET_GetLoopPacket (sock, net_from, net_message))
 		return true;
 
-	for (protocol = 0 ; protocol < 2 ; protocol++)
+	net_socket = ip_sockets[sock];
+
+	if (!net_socket)
+		continue;
+
+	fromlen = sizeof(from);
+	ret = recvfrom (net_socket, net_message->data, net_message->maxsize
+		, 0, (struct sockaddr *)&from, &fromlen);
+	if (ret == -1)
 	{
-		if (protocol == 0)
-			net_socket = ip_sockets[sock];
-		else
-			net_socket = ipx_sockets[sock];
+		err = errno;
 
-		if (!net_socket)
+		if (err == EWOULDBLOCK || err == ECONNREFUSED)
 			continue;
-
-		fromlen = sizeof(from);
-		ret = recvfrom (net_socket, net_message->data, net_message->maxsize
-			, 0, (struct sockaddr *)&from, &fromlen);
-		if (ret == -1)
-		{
-			err = errno;
-
-			if (err == EWOULDBLOCK || err == ECONNREFUSED)
-				continue;
-			Com_Printf ("NET_GetPacket: %s", NET_ErrorString());
-			continue;
-		}
-
-		if (ret == net_message->maxsize)
-		{
-			Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
-			continue;
-		}
-
-		net_message->cursize = ret;
-		SockadrToNetadr (&from, net_from);
-		return true;
+		Com_Printf ("NET_GetPacket: %s", NET_ErrorString());
+		continue;
 	}
 
-	return false;
+	if (ret == net_message->maxsize)
+	{
+		Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
+		continue;
+	}
+
+	net_message->cursize = ret;
+	SockadrToNetadr (&from, net_from);
+	return true;
 }
 
 //=============================================================================
@@ -327,18 +311,6 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	else if (to.type == NA_IP)
 	{
 		net_socket = ip_sockets[sock];
-		if (!net_socket)
-			return;
-	}
-	else if (to.type == NA_IPX)
-	{
-		net_socket = ipx_sockets[sock];
-		if (!net_socket)
-			return;
-	}
-	else if (to.type == NA_BROADCAST_IPX)
-	{
-		net_socket = ipx_sockets[sock];
 		if (!net_socket)
 			return;
 	}
@@ -380,16 +352,6 @@ void NET_OpenIP (void)
 
 /*
 ====================
-NET_OpenIPX
-====================
-*/
-void NET_OpenIPX (void)
-{
-}
-
-
-/*
-====================
 NET_Config
 
 A single player game will only use the loopback code
@@ -408,17 +370,11 @@ void	NET_Config (qboolean multiplayer)
 				close (ip_sockets[i]);
 				ip_sockets[i] = 0;
 			}
-			if (ipx_sockets[i])
-			{
-				close (ipx_sockets[i]);
-				ipx_sockets[i] = 0;
-			}
 		}
 	}
 	else
 	{	// open sockets
 		NET_OpenIP ();
-		NET_OpenIPX ();
 	}
 }
 
