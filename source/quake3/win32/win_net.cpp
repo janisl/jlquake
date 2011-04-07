@@ -149,39 +149,19 @@ idnewt
 
 qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr ) {
 	struct hostent	*h;
-	int		val;
-	char	copy[MAX_STRING_CHARS];
 	
 	Com_Memset( sadr, 0, sizeof( *sadr ) );
 
-	// check for an IPX address
-	if( ( QStr::Length( s ) == 21 ) && ( s[8] == '.' ) ) {
-		((struct sockaddr_ipx *)sadr)->sa_family = AF_IPX;
-		((struct sockaddr_ipx *)sadr)->sa_socket = 0;
-		copy[2] = 0;
-		DO(0, sa_netnum[0]);
-		DO(2, sa_netnum[1]);
-		DO(4, sa_netnum[2]);
-		DO(6, sa_netnum[3]);
-		DO(9, sa_nodenum[0]);
-		DO(11, sa_nodenum[1]);
-		DO(13, sa_nodenum[2]);
-		DO(15, sa_nodenum[3]);
-		DO(17, sa_nodenum[4]);
-		DO(19, sa_nodenum[5]);
-	}
-	else {
-		((struct sockaddr_in *)sadr)->sin_family = AF_INET;
-		((struct sockaddr_in *)sadr)->sin_port = 0;
+	((struct sockaddr_in *)sadr)->sin_family = AF_INET;
+	((struct sockaddr_in *)sadr)->sin_port = 0;
 
-		if( s[0] >= '0' && s[0] <= '9' ) {
-			*(int *)&((struct sockaddr_in *)sadr)->sin_addr = inet_addr(s);
-		} else {
-			if( ( h = gethostbyname( s ) ) == 0 ) {
-				return 0;
-			}
-			*(int *)&((struct sockaddr_in *)sadr)->sin_addr = *(int *)h->h_addr_list[0];
+	if( s[0] >= '0' && s[0] <= '9' ) {
+		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = inet_addr(s);
+	} else {
+		if( ( h = gethostbyname( s ) ) == 0 ) {
+			return 0;
 		}
+		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = *(int *)h->h_addr_list[0];
 	}
 	
 	return qtrue;
@@ -736,57 +716,6 @@ void NET_OpenIP( void ) {
 		}
 	}
 	Com_Printf( "WARNING: Couldn't allocate IP port\n");
-}
-
-
-/*
-====================
-NET_IPXSocket
-====================
-*/
-int NET_IPXSocket( int port ) {
-	SOCKET				newsocket;
-	struct sockaddr_ipx	address;
-	u_long				_true = 1;
-	int					err;
-
-	if( ( newsocket = socket( AF_IPX, SOCK_DGRAM, NSPROTO_IPX ) ) == INVALID_SOCKET ) {
-		err = WSAGetLastError();
-		if (err != WSAEAFNOSUPPORT) {
-			Com_Printf( "WARNING: IPX_Socket: socket: %s\n", NET_ErrorString() );
-		}
-		return 0;
-	}
-
-	// make it non-blocking
-	if( ioctlsocket( newsocket, FIONBIO, &_true ) == SOCKET_ERROR ) {
-		Com_Printf( "WARNING: IPX_Socket: ioctl FIONBIO: %s\n", NET_ErrorString() );
-		return 0;
-	}
-
-	// make it broadcast capable
-	if( setsockopt( newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&_true, sizeof( _true ) ) == SOCKET_ERROR ) {
-		Com_Printf( "WARNING: IPX_Socket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString() );
-		return 0;
-	}
-
-	address.sa_family = AF_IPX;
-	Com_Memset( address.sa_netnum, 0, 4 );
-	Com_Memset( address.sa_nodenum, 0, 6 );
-	if( port == PORT_ANY ) {
-		address.sa_socket = 0;
-	}
-	else {
-		address.sa_socket = htons( (short)port );
-	}
-
-	if( bind( newsocket, (sockaddr*)&address, sizeof(address) ) == SOCKET_ERROR ) {
-		Com_Printf( "WARNING: IPX_Socket: bind: %s\n", NET_ErrorString() );
-		closesocket( newsocket );
-		return 0;
-	}
-
-	return newsocket;
 }
 
 

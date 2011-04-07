@@ -89,8 +89,8 @@ qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 	{
 		if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3] && a.port == b.port)
 			return true;
-		return false;
 	}
+	return false;
 }
 
 /*
@@ -112,8 +112,8 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
 	{
 		if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3])
 			return true;
-		return false;
 	}
+	return false;
 }
 
 char	*NET_AdrToString (netadr_t a)
@@ -152,53 +152,32 @@ qboolean	NET_StringToSockaddr (char *s, struct sockaddr *sadr)
 {
 	struct hostent	*h;
 	char	*colon;
-	int		val;
 	char	copy[128];
 	
 	Com_Memset(sadr, 0, sizeof(*sadr));
 
-	if ((QStr::Length(s) >= 23) && (s[8] == ':') && (s[21] == ':'))	// check for an IPX address
+	((struct sockaddr_in *)sadr)->sin_family = AF_INET;
+	
+	((struct sockaddr_in *)sadr)->sin_port = 0;
+
+	QStr::Cpy(copy, s);
+	// strip off a trailing :port if present
+	for (colon = copy ; *colon ; colon++)
+		if (*colon == ':')
+		{
+			*colon = 0;
+			((struct sockaddr_in *)sadr)->sin_port = htons((short)QStr::Atoi(colon+1));	
+		}
+	
+	if (copy[0] >= '0' && copy[0] <= '9')
 	{
-		((struct sockaddr_ipx *)sadr)->sa_family = AF_IPX;
-		copy[2] = 0;
-		DO(0, sa_netnum[0]);
-		DO(2, sa_netnum[1]);
-		DO(4, sa_netnum[2]);
-		DO(6, sa_netnum[3]);
-		DO(9, sa_nodenum[0]);
-		DO(11, sa_nodenum[1]);
-		DO(13, sa_nodenum[2]);
-		DO(15, sa_nodenum[3]);
-		DO(17, sa_nodenum[4]);
-		DO(19, sa_nodenum[5]);
-		sscanf (&s[22], "%u", &val);
-		((struct sockaddr_ipx *)sadr)->sa_socket = htons((unsigned short)val);
+		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = inet_addr(copy);
 	}
 	else
 	{
-		((struct sockaddr_in *)sadr)->sin_family = AF_INET;
-		
-		((struct sockaddr_in *)sadr)->sin_port = 0;
-
-		QStr::Cpy(copy, s);
-		// strip off a trailing :port if present
-		for (colon = copy ; *colon ; colon++)
-			if (*colon == ':')
-			{
-				*colon = 0;
-				((struct sockaddr_in *)sadr)->sin_port = htons((short)QStr::Atoi(colon+1));	
-			}
-		
-		if (copy[0] >= '0' && copy[0] <= '9')
-		{
-			*(int *)&((struct sockaddr_in *)sadr)->sin_addr = inet_addr(copy);
-		}
-		else
-		{
-			if (! (h = gethostbyname(copy)) )
-				return 0;
-			*(int *)&((struct sockaddr_in *)sadr)->sin_addr = *(int *)h->h_addr_list[0];
-		}
+		if (! (h = gethostbyname(copy)) )
+			return 0;
+		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = *(int *)h->h_addr_list[0];
 	}
 	
 	return true;
@@ -508,59 +487,6 @@ void NET_OpenIP (void)
 		if (!ip_sockets[NS_CLIENT])
 			ip_sockets[NS_CLIENT] = NET_IPSocket (ip->string, PORT_ANY);
 	}
-}
-
-
-/*
-====================
-IPX_Socket
-====================
-*/
-int NET_IPXSocket (int port)
-{
-	int					newsocket;
-	struct sockaddr_ipx	address;
-	u_long				_true = 1;
-	int					err;
-
-	if ((newsocket = socket (PF_IPX, SOCK_DGRAM, NSPROTO_IPX)) == -1)
-	{
-		err = WSAGetLastError();
-		if (err != WSAEAFNOSUPPORT)
-			Com_Printf ("WARNING: IPX_Socket: socket: %s\n", NET_ErrorString());
-		return 0;
-	}
-
-	// make it non-blocking
-	if (ioctlsocket (newsocket, FIONBIO, &_true) == -1)
-	{
-		Com_Printf ("WARNING: IPX_Socket: ioctl FIONBIO: %s\n", NET_ErrorString());
-		return 0;
-	}
-
-	// make it broadcast capable
-	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char *)&_true, sizeof(_true)) == -1)
-	{
-		Com_Printf ("WARNING: IPX_Socket: setsockopt SO_BROADCAST: %s\n", NET_ErrorString());
-		return 0;
-	}
-
-	address.sa_family = AF_IPX;
-	Com_Memset(address.sa_netnum, 0, 4);
-	Com_Memset(address.sa_nodenum, 0, 6);
-	if (port == PORT_ANY)
-		address.sa_socket = 0;
-	else
-		address.sa_socket = htons((short)port);
-
-	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
-	{
-		Com_Printf ("WARNING: IPX_Socket: bind: %s\n", NET_ErrorString());
-		closesocket (newsocket);
-		return 0;
-	}
-
-	return newsocket;
 }
 
 
