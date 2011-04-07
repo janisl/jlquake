@@ -72,38 +72,6 @@ char	*NET_BaseAdrToString (netadr_t a)
 =============
 Sys_StringToAdr
 
-idnewt
-192.246.40.70
-=============
-*/
-qboolean	Sys_StringToSockaddr (const char *s, struct sockaddr *sadr)
-{
-	struct hostent	*h;
-	//char	*colon; // bk001204 - unused
-	
-	Com_Memset(sadr, 0, sizeof(*sadr));
-	((struct sockaddr_in *)sadr)->sin_family = AF_INET;
-	
-	((struct sockaddr_in *)sadr)->sin_port = 0;
-	
-	if ( s[0] >= '0' && s[0] <= '9')
-	{
-		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = inet_addr(s);
-	}
-	else
-	{
-		if (! (h = gethostbyname(s)) )
-			return qfalse;
-		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = *(int *)h->h_addr_list[0];
-	}
-	
-	return qtrue;
-}
-
-/*
-=============
-Sys_StringToAdr
-
 localhost
 idnewt
 idnewt:28000
@@ -115,7 +83,7 @@ qboolean	Sys_StringToAdr (const char *s, netadr_t *a)
 {
 	struct sockaddr_in sadr;
 	
-	if (!Sys_StringToSockaddr (s, (struct sockaddr *)&sadr))
+	if (!SOCK_StringToSockaddr(s, &sadr))
 		return qfalse;
 	
 	SockadrToNetadr (&sadr, a);
@@ -484,7 +452,7 @@ int NET_IPSocket (char *net_interface, int port)
 	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
 		address.sin_addr.s_addr = INADDR_ANY;
 	else
-		Sys_StringToSockaddr (net_interface, (struct sockaddr *)&address);
+		SOCK_StringToSockaddr(net_interface, &address);
 
 	if (port == PORT_ANY)
 		address.sin_port = 0;

@@ -21,7 +21,9 @@
 
 #include "core.h"
 #include <errno.h>
+#include <netdb.h>
 #include <unistd.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 
@@ -88,6 +90,47 @@ void SockadrToNetadr(sockaddr_in* s, netadr_t* a)
 
 //==========================================================================
 //
+//	SOCK_StringToSockaddr
+//
+//==========================================================================
+
+bool SOCK_StringToSockaddr(const char* s, sockaddr_in* sadr)
+{
+	Com_Memset(sadr, 0, sizeof(*sadr));
+	sadr->sin_family = AF_INET;
+
+	sadr->sin_port = 0;
+
+	char copy[128];
+	QStr::Cpy(copy, s);
+	// strip off a trailing :port if present
+	for (char* colon = copy; *colon; colon++)
+	{
+		if (*colon == ':')
+		{
+			*colon = 0;
+			sadr->sin_port = htons((short)QStr::Atoi(colon + 1));
+		}
+	}
+	
+	if (copy[0] >= '0' && copy[0] <= '9')
+	{
+		*(int*)&sadr->sin_addr = inet_addr(copy);
+	}
+	else
+	{
+		hostent* h = gethostbyname(copy);
+		if (!h)
+		{
+			return false;
+		}
+		*(int*)&sadr->sin_addr = *(int*)h->h_addr_list[0];
+	}
+	return true;
+}
+
+//==========================================================================
+//
 //	SOCK_ErrorString
 //
 //==========================================================================
@@ -127,6 +170,7 @@ int SOCK_Open(const char* net_interface, int port)
 	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == -1)
 	{
 		GLog.Write("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
+		close(newsocket);
 		return 0;
 	}
 	return newsocket;

@@ -101,51 +101,6 @@ idnewt:28000
 192.246.40.70:28000
 =============
 */
-qboolean	NET_StringToSockaddr (char *s, struct sockaddr *sadr)
-{
-	struct hostent	*h;
-	char	*colon;
-	char	copy[128];
-	
-	Com_Memset(sadr, 0, sizeof(*sadr));
-	((struct sockaddr_in *)sadr)->sin_family = AF_INET;
-	
-	((struct sockaddr_in *)sadr)->sin_port = 0;
-
-	QStr::Cpy(copy, s);
-	// strip off a trailing :port if present
-	for (colon = copy ; *colon ; colon++)
-		if (*colon == ':')
-		{
-			*colon = 0;
-			((struct sockaddr_in *)sadr)->sin_port = htons((short)QStr::Atoi(colon+1));	
-		}
-	
-	if (copy[0] >= '0' && copy[0] <= '9')
-	{
-		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = inet_addr(copy);
-	}
-	else
-	{
-		if (! (h = gethostbyname(copy)) )
-			return 0;
-		*(int *)&((struct sockaddr_in *)sadr)->sin_addr = *(int *)h->h_addr_list[0];
-	}
-	
-	return true;
-}
-
-/*
-=============
-NET_StringToAdr
-
-localhost
-idnewt
-idnewt:28000
-192.246.40.70
-192.246.40.70:28000
-=============
-*/
 qboolean	NET_StringToAdr (char *s, netadr_t *a)
 {
 	struct sockaddr_in sadr;
@@ -157,7 +112,7 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 		return true;
 	}
 
-	if (!NET_StringToSockaddr (s, (struct sockaddr *)&sadr))
+	if (!SOCK_StringToSockaddr (s, &sadr))
 		return false;
 	
 	SockadrToNetadr (&sadr, a);
@@ -382,7 +337,7 @@ int NET_Socket (char *net_interface, int port)
 	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
 		address.sin_addr.s_addr = INADDR_ANY;
 	else
-		NET_StringToSockaddr (net_interface, (struct sockaddr *)&address);
+		SOCK_StringToSockaddr(net_interface, &address);
 
 	if (port == PORT_ANY)
 		address.sin_port = 0;

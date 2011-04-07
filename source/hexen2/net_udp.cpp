@@ -153,64 +153,6 @@ int UDP_CloseSocket (int socket)
 	return close (socket);
 }
 
-
-//=============================================================================
-/*
-============
-PartialIPAddress
-
-this lets you type only as much of the net address as required, using
-the local network components to fill in the rest
-============
-*/
-static int PartialIPAddress (char *in, struct qsockaddr *hostaddr)
-{
-	char buff[256];
-	char *b;
-	int addr;
-	int num;
-	int mask;
-	int run;
-	int port;
-	
-	buff[0] = '.';
-	b = buff;
-	QStr::Cpy(buff+1, in);
-	if (buff[1] == '.')
-		b++;
-
-	addr = 0;
-	mask=-1;
-	while (*b == '.')
-	{
-		b++;
-		num = 0;
-		run = 0;
-		while (!( *b < '0' || *b > '9'))
-		{
-		  num = num*10 + *b++ - '0';
-		  if (++run > 3)
-		  	return -1;
-		}
-		if ((*b < '0' || *b > '9') && *b != '.' && *b != ':' && *b != 0)
-			return -1;
-		if (num < 0 || num > 255)
-			return -1;
-		mask<<=8;
-		addr = (addr<<8) + num;
-	}
-	
-	if (*b++ == ':')
-		port = QStr::Atoi(b);
-	else
-		port = net_hostport;
-
-	hostaddr->sa_family = AF_INET;
-	((struct sockaddr_in *)hostaddr)->sin_port = htons((short)port);	
-	((struct sockaddr_in *)hostaddr)->sin_addr.s_addr = (myAddr & htonl(mask)) | htonl(addr);
-	
-	return 0;
-}
 //=============================================================================
 
 int UDP_Connect (int socket, struct qsockaddr *addr)
@@ -353,18 +295,10 @@ int UDP_GetNameFromAddr (struct qsockaddr *addr, char *name)
 
 int UDP_GetAddrFromName(char *name, struct qsockaddr *addr)
 {
-	struct hostent *hostentry;
-
-	if (name[0] >= '0' && name[0] <= '9')
-		return PartialIPAddress (name, addr);
-	
-	hostentry = gethostbyname (name);
-	if (!hostentry)
+	if (!SOCK_StringToSockaddr(name, (sockaddr_in*)addr))
 		return -1;
 
-	addr->sa_family = AF_INET;
 	((struct sockaddr_in *)addr)->sin_port = htons(net_hostport);	
-	((struct sockaddr_in *)addr)->sin_addr.s_addr = *(int *)hostentry->h_addr_list[0];
 
 	return 0;
 }
