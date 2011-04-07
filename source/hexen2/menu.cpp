@@ -4,9 +4,6 @@
 
 #include "quakedef.h"
 #include "glquake.h"
-#ifdef _WIN32
-#include "winquake.h"
-#endif
 
 extern	float introTime;
 extern	QCvar*	crosshair;
@@ -1773,7 +1770,6 @@ enum
 	OPT_CROSSHAIR,	//13
 	OPT_ALWAYSMLOOK,//14
 	OPT_VIDEO,		//15
-	OPT_USEMOUSE,	//16
 	OPTIONS_ITEMS
 };
 
@@ -1784,13 +1780,6 @@ void M_Menu_Options_f (void)
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_options;
 	m_entersound = true;
-
-#ifdef _WIN32
-	if ((options_cursor == OPT_USEMOUSE) && (cdsFullscreen))
-#else
-	if ((options_cursor == OPT_USEMOUSE))
-#endif
-		options_cursor = 0;
 }
 
 
@@ -1897,12 +1886,6 @@ void M_AdjustSliders (int dir)
 			//IN_MLookDown();
 			Cbuf_AddText("+mlook");
 		break;
-
-#ifdef _WIN32
-	case OPT_USEMOUSE:	// _windowed_mouse
-		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse->value);
-		break;
-#endif
 	}
 }
 
@@ -1992,14 +1975,6 @@ void M_Options_Draw (void)
 	if (vid_menudrawfn)
 		M_Print (16, 60+(OPT_VIDEO*8),	"         Video Options");
 
-#ifdef _WIN32
-	if (!cdsFullscreen)
-	{
-		M_Print (16, 60+(OPT_USEMOUSE*8), "             Use Mouse");
-		M_DrawCheckbox (220, 60+(OPT_USEMOUSE*8), _windowed_mouse->value);
-	}
-#endif
-
 // cursor
 	M_DrawCharacter (200, 60 + options_cursor*8, 12+((int)(realtime*4)&1));
 }
@@ -2070,16 +2045,6 @@ void M_Options_Key (int k)
 			options_cursor = 11;
 		else
 			options_cursor = 0;
-
-#ifdef _WIN32
-	if ((options_cursor == OPT_USEMOUSE) && (cdsFullscreen))
-	{
-		if (k == K_UPARROW)
-			options_cursor = OPT_VIDEO;
-		else
-			options_cursor = 0;
-	}
-#endif
 }
 
 //=============================================================================

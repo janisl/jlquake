@@ -322,8 +322,6 @@ extern	QCvar*	m_yaw;
 extern	QCvar*	m_forward;
 extern	QCvar*	m_side;
 
-extern QCvar*		_windowed_mouse;
-
 extern	QCvar*	name;
 
 

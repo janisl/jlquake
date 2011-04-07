@@ -79,7 +79,6 @@ static qboolean	vid_initialized = false;
 static qboolean	windowed;
 static qboolean vid_canalttab = false;
 static qboolean vid_wassuspended = false;
-static int		windowed_mouse;
 
 int			vid_modenum = NO_MODE;
 int			vid_realmode;
@@ -123,7 +122,6 @@ QCvar*		_vid_wait_override;
 QCvar*		vid_config_x;
 QCvar*		vid_config_y;
 QCvar*		vid_stretch_by_2;
-QCvar*		_windowed_mouse;
 
 int			window_x, window_y;
 
@@ -184,10 +182,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 
 	bool fullscreen = modelist[modenum].type == MS_FULLDIB;
 
-	if (!fullscreen && (!_windowed_mouse->value || in_keyCatchers != 0))
-	{
-		IN_Activate(false);
-	}
+	IN_Activate(false);
 
 	glConfig.vidWidth = modelist[modenum].width;
 	glConfig.vidHeight = modelist[modenum].height;
@@ -211,10 +206,7 @@ int VID_SetMode (int modenum, unsigned char *palette)
 
 	vid.numpages = 2;
 
-	if (fullscreen || (_windowed_mouse->value && in_keyCatchers == 0))
-	{
-		IN_Activate(true);
-	}
+	IN_Activate(true);
 
 	VID_UpdateWindowStatus ();
 
@@ -337,24 +329,6 @@ void GL_EndRendering (void)
 {
 	if (!scr_skipupdate || block_drawing)
 		SwapBuffers(maindc);
-
-// handle the mouse state when windowed if that's changed
-	if (!cdsFullscreen)
-	{
-		if (!_windowed_mouse->value) {
-			if (windowed_mouse)	{
-				IN_Activate(false);
-				windowed_mouse = false;
-			}
-		} else {
-			windowed_mouse = true;
-			if (in_keyCatchers == 0 && ActiveApp) {
-				IN_Activate(true);
-			} else if (in_keyCatchers != 0) {
-				IN_Activate(false);
-			}
-		}
-	}
 }
 
 void	VID_SetPalette (unsigned char *palette)
@@ -513,33 +487,26 @@ void AppActivate(BOOL fActive, BOOL minimize)
 
 	if (fActive)
 	{
+		IN_Activate(true);
 		if (cdsFullscreen)
 		{
-			IN_Activate(true);
 			if (vid_canalttab && vid_wassuspended) {
 				vid_wassuspended = false;
 				ShowWindow(GMainWindow, SW_SHOWNORMAL);
 			}
 		}
-		else if ((!cdsFullscreen) && _windowed_mouse->value && in_keyCatchers == 0)
-		{
-			IN_Activate(true);
-		}
 	}
 
 	if (!fActive)
 	{
+		IN_Activate(false);
 		if (cdsFullscreen)
 		{
-			IN_Activate(false);
-			if (vid_canalttab) { 
+			if (vid_canalttab)
+			{ 
 				ChangeDisplaySettings (NULL, 0);
 				vid_wassuspended = true;
 			}
-		}
-		else if ((!cdsFullscreen) && _windowed_mouse->value)
-		{
-			IN_Activate(false);
 		}
 	}
 }
@@ -983,7 +950,6 @@ void	VID_Init (unsigned char *palette)
     vid_config_x = Cvar_Get("vid_config_x", "800", CVAR_ARCHIVE);
     vid_config_y = Cvar_Get("vid_config_y", "600", CVAR_ARCHIVE);
     vid_stretch_by_2 = Cvar_Get("vid_stretch_by_2", "1", CVAR_ARCHIVE);
-    _windowed_mouse = Cvar_Get("_windowed_mouse", "1", CVAR_ARCHIVE);
     gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 
 	Cmd_AddCommand ("vid_nummodes", VID_NumModes_f);

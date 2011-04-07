@@ -31,8 +31,6 @@ extern qboolean	Win32AtLeastV4, WinNT;
 int VID_ForceUnlockedAndReturnState (void);
 void VID_ForceLockState (int lk);
 
-extern QCvar*		_windowed_mouse;
-
 extern HWND		hwnd_dialog;
 
 extern HANDLE	hinput, houtput;

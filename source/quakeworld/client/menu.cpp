@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "quakedef.h"
-#include "winquake.h"
 
 void (*vid_menudrawfn)(void);
 void (*vid_menukeyfn)(int key);
@@ -358,7 +357,7 @@ void M_Main_Key (int key)
 //=============================================================================
 /* OPTIONS MENU */
 
-#define	OPTIONS_ITEMS	16
+#define	OPTIONS_ITEMS	15
 
 #define	SLIDER_RANGE	10
 
@@ -454,12 +453,6 @@ void M_AdjustSliders (int dir)
 
 	case 13:
 		Cvar_SetValue ("cl_hudswap", !cl_hudswap->value);
-
-#ifdef _WIN32
-	case 15:	// _windowed_mouse
-		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse->value);
-		break;
-#endif
 	}
 }
 
@@ -547,14 +540,6 @@ void M_Options_Draw (void)
 	if (vid_menudrawfn)
 		M_Print (16, 144, "         Video Options");
 
-#ifdef _WIN32
-	if (!cdsFullscreen)
-	{
-		M_Print (16, 152, "             Use Mouse");
-		M_DrawCheckbox (220, 152, _windowed_mouse->value);
-	}
-#endif
-
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
 }
@@ -618,18 +603,6 @@ void M_Options_Key (int k)
 	{
 		if (k == K_UPARROW)
 			options_cursor = 13;
-		else
-			options_cursor = 0;
-	}
-
-	if ((options_cursor == 15) 
-#ifdef _WIN32
-	&& (cdsFullscreen)
-#endif
-	)
-	{
-		if (k == K_UPARROW)
-			options_cursor = 14;
 		else
 			options_cursor = 0;
 	}
