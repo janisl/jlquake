@@ -17,8 +17,6 @@ static QCvar *gl_ext_palettedtexture;
 static QCvar *sw_mode;
 static QCvar *sw_stipplealpha;
 
-static QCvar *_windowed_mouse;
-
 extern void M_ForceMenuOff( void );
 
 /*
@@ -44,7 +42,6 @@ static menuslider_s		s_brightness_slider[2];
 static menulist_s  		s_fs_box[2];
 static menulist_s  		s_stipple_box;
 static menulist_s  		s_paletted_texture_box;
-static menulist_s  		s_windowed_mouse;
 static menuaction_s		s_apply_action[2];
 static menuaction_s		s_defaults_action[2];
 
@@ -117,7 +114,6 @@ static void ApplyChanges( void *unused )
 	Cvar_SetValueLatched( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
 	Cvar_SetValueLatched( "sw_mode", s_mode_list[SOFTWARE_MENU].curvalue );
 	Cvar_SetValueLatched( "gl_mode", s_mode_list[OPENGL_MENU].curvalue );
-	Cvar_SetValueLatched( "_windowed_mouse", s_windowed_mouse.curvalue);
 
 	switch ( s_ref_list[s_current_menu_index].curvalue )
 	{
@@ -206,9 +202,6 @@ void VID_MenuInit( void )
 
 	if ( !sw_stipplealpha )
 		sw_stipplealpha = Cvar_Get( "sw_stipplealpha", "0", CVAR_ARCHIVE );
-
-	if ( !_windowed_mouse)
-        _windowed_mouse = Cvar_Get( "_windowed_mouse", "0", CVAR_ARCHIVE );
 
 	s_mode_list[SOFTWARE_MENU].curvalue = sw_mode->value;
 	s_mode_list[OPENGL_MENU].curvalue = gl_mode->value;
@@ -304,13 +297,6 @@ void VID_MenuInit( void )
 	s_stipple_box.curvalue = sw_stipplealpha->value;
 	s_stipple_box.itemnames = yesno_names;
 
-	s_windowed_mouse.generic.type = MTYPE_SPINCONTROL;
-	s_windowed_mouse.generic.x  = 0;
-	s_windowed_mouse.generic.y  = 72;
-	s_windowed_mouse.generic.name   = "windowed mouse";
-	s_windowed_mouse.curvalue = _windowed_mouse->value;
-	s_windowed_mouse.itemnames = yesno_names;
-
 	s_tq_slider.generic.type	= MTYPE_SLIDER;
 	s_tq_slider.generic.x		= 0;
 	s_tq_slider.generic.y		= 60;
@@ -332,7 +318,6 @@ void VID_MenuInit( void )
 	Menu_AddItem( &s_software_menu, ( void * ) &s_brightness_slider[SOFTWARE_MENU] );
 	Menu_AddItem( &s_software_menu, ( void * ) &s_fs_box[SOFTWARE_MENU] );
 	Menu_AddItem( &s_software_menu, ( void * ) &s_stipple_box );
-	Menu_AddItem( &s_software_menu, ( void * ) &s_windowed_mouse );
 
 	Menu_AddItem( &s_opengl_menu, ( void * ) &s_ref_list[OPENGL_MENU] );
 	Menu_AddItem( &s_opengl_menu, ( void * ) &s_mode_list[OPENGL_MENU] );

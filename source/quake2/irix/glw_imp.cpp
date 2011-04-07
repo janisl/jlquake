@@ -35,7 +35,6 @@ static int				x_shmeventtype;
 static qboolean			X11_active = false;
 
 static int p_mouse_x, p_mouse_y;
-static QCvar	*_windowed_mouse;
 
 typedef unsigned short PIXEL;
 
@@ -48,8 +47,6 @@ typedef unsigned short PIXEL;
 // this is inside the renderer shared lib, so these are called from vid_so
 
 static int p_mouse_x, p_mouse_y;
-
-static QCvar	*_windowed_mouse;
 
 int XShmQueryExtension(Display *);
 int XShmGetEventBase(Display *);
@@ -204,7 +201,6 @@ qboolean GLimp_InitGraphics( qboolean fullscreen )
 
 void KBD_Init()
 {
-	_windowed_mouse = Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
 }
 
 void KBD_Update(void)
@@ -219,8 +215,6 @@ void KBD_Close(void)
 
 void Real_IN_Init()
 {
-	// mouse variables
-	_windowed_mouse = Cvar_Get ("_windowed_mouse", "0", CVAR_ARCHIVE);
 }
 
 //===============================================================================

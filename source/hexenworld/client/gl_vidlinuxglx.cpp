@@ -40,7 +40,6 @@ unsigned short	d_8to16table[256];
 unsigned		d_8to24table[256];
 unsigned char	d_15to8table[65536];
 
-QCvar*	_windowed_mouse;
 QCvar*	vid_mode;
  
 float RTint[256],GTint[256],BTint[256];
@@ -295,7 +294,6 @@ void VID_Init(unsigned char *palette)
 
 	S_Init();
 
-	_windowed_mouse = Cvar_Get("_windowed_mouse", "0", CVAR_ARCHIVE);
 	vid_mode = Cvar_Get("vid_mode", "0", 0);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 

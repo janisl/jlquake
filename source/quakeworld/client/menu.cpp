@@ -455,9 +455,11 @@ void M_AdjustSliders (int dir)
 	case 13:
 		Cvar_SetValue ("cl_hudswap", !cl_hudswap->value);
 
+#ifdef _WIN32
 	case 15:	// _windowed_mouse
 		Cvar_SetValue ("_windowed_mouse", !_windowed_mouse->value);
 		break;
+#endif
 	}
 }
 
@@ -548,10 +550,8 @@ void M_Options_Draw (void)
 #ifdef _WIN32
 	if (!cdsFullscreen)
 	{
-#endif
 		M_Print (16, 152, "             Use Mouse");
 		M_DrawCheckbox (220, 152, _windowed_mouse->value);
-#ifdef _WIN32
 	}
 #endif
 
