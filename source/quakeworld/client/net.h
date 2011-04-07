@@ -21,13 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define	PORT_ANY	-1
 
-typedef struct
-{
-	byte	ip[4];
-	unsigned short	port;
-	unsigned short	pad;
-} netadr_t;
-
 extern	netadr_t	net_local_adr;
 extern	netadr_t	net_from;		// address of who sent the packet
 extern	QMsg		net_message;

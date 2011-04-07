@@ -141,12 +141,6 @@ idnewt
 12121212.121212121212
 =============
 */
-#define DO(src,dest)	\
-	copy[0] = s[src];	\
-	copy[1] = s[src + 1];	\
-	sscanf (copy, "%x", &val);	\
-	((struct sockaddr_ipx *)sadr)->dest = val
-
 qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr ) {
 	struct hostent	*h;
 	
@@ -166,8 +160,6 @@ qboolean Sys_StringToSockaddr( const char *s, struct sockaddr *sadr ) {
 	
 	return qtrue;
 }
-
-#undef DO
 
 /*
 =============

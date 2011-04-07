@@ -1,11 +1,5 @@
 // net.h -- quake's interface to the networking layer
 
-struct qsockaddr
-{
-	short sa_family;
-	unsigned char sa_data[14];
-};
-
 #define NET_NAME_ID         "HEXENII"
 
 #define	NET_NAMELEN			64

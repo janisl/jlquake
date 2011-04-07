@@ -78,26 +78,9 @@ NET
 #define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
 
 typedef enum {
-	NA_BOT,
-	NA_BAD,					// an address lookup failed
-	NA_LOOPBACK,
-	NA_BROADCAST,
-	NA_IP,
-} netadrtype_t;
-
-typedef enum {
 	NS_CLIENT,
 	NS_SERVER
 } netsrc_t;
-
-typedef struct {
-	netadrtype_t	type;
-
-	byte	ip[4];
-	byte	ipx[10];
-
-	unsigned short	port;
-} netadr_t;
 
 void		NET_Init( void );
 void		NET_Shutdown( void );

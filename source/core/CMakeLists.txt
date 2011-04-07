@@ -30,6 +30,7 @@ set(CORE_FILES
 	md4.cpp
 	memory.cpp
 	message.cpp
+	socket_unix.cpp
 	str.cpp
 	system_unix.cpp
 	unzip.cpp

@@ -19,12 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // net.h -- quake's interface to the networking layer
 
-struct qsockaddr
-{
-	short sa_family;
-	unsigned char sa_data[14];
-};
-
 
 #define	NET_NAMELEN			64
 
