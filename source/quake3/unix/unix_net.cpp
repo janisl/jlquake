@@ -165,7 +165,7 @@ qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
 	net_socket = ip_socket;
 
 	if (!net_socket)
-		continue;
+		return false;
 
 	fromlen = sizeof(from);
 	ret = recvfrom (net_socket, net_message->_data, net_message->maxsize
@@ -180,16 +180,16 @@ qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
 		err = errno;
 
 		if (err == EWOULDBLOCK || err == ECONNREFUSED)
-			continue;
+			return false;
 		Com_Printf ("NET_GetPacket: %s from %s\n", NET_ErrorString(),
 					NET_AdrToString(*net_from));
-		continue;
+		return false;
 	}
 
 	if (ret == net_message->maxsize)
 	{
 		Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
-		continue;
+		return false;
 	}
 
 	net_message->cursize = ret;
