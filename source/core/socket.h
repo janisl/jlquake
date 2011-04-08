@@ -26,7 +26,7 @@ enum netadrtype_t
 	NA_IP,
 };
 
-#define PORT_ANY	-1
+#define PORT_ANY			-1
 
 #define SOCKRECV_ERROR		-1
 #define SOCKRECV_NO_DATA	-2
@@ -51,9 +51,20 @@ void NetadrToSockadr(netadr_t* a, struct sockaddr_in* s);
 void SockadrToNetadr(struct sockaddr_in* s, netadr_t* a);
 bool SOCK_StringToSockaddr(const char* s, struct sockaddr_in* sadr);
 const char* SOCK_ErrorString();
+
 bool SOCK_Init();
 void SOCK_Shutdown();
+
+void SOCK_OpenSocks(int Port);
+void SOCK_CloseSocks();
+
 int SOCK_Open(const char* NetInterface, int Port);
 void SOCK_Close(int Socket);
 int SOCK_Recv(int Socket, void* Buffer, int Length, netadr_t* From);
 int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To);
+
+extern QCvar*	net_socksEnabled;
+extern QCvar*	net_socksServer;
+extern QCvar*	net_socksPort;
+extern QCvar*	net_socksUsername;
+extern QCvar*	net_socksPassword;

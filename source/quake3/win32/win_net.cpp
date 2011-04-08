@@ -25,20 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "win_local.h"
 
-extern bool usingSocks;
 static qboolean networkingEnabled = qfalse;
 
 static QCvar	*net_noudp;
 
-static QCvar	*net_socksEnabled;
-static QCvar	*net_socksServer;
-static QCvar	*net_socksPort;
-static QCvar	*net_socksUsername;
-static QCvar	*net_socksPassword;
-extern sockaddr	socksRelayAddr;
-
 static SOCKET	ip_socket;
-static SOCKET	socks_socket;
 
 #define	MAX_IPS		16
 static	int		numIP;
@@ -212,183 +203,6 @@ void Sys_ShowIP(void) {
 //=============================================================================
 
 /*
-====================
-NET_OpenSocks
-====================
-*/
-void NET_OpenSocks( int port ) {
-	struct sockaddr_in	address;
-	int					err;
-	struct hostent		*h;
-	int					len;
-	qboolean			rfc1929;
-	unsigned char		buf[64];
-
-	usingSocks = qfalse;
-
-	Com_Printf( "Opening connection to SOCKS server.\n" );
-
-	if ( ( socks_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ) ) == INVALID_SOCKET ) {
-		err = WSAGetLastError();
-		Com_Printf( "WARNING: NET_OpenSocks: socket: %s\n", SOCK_ErrorString() );
-		return;
-	}
-
-	h = gethostbyname( net_socksServer->string );
-	if ( h == NULL ) {
-		err = WSAGetLastError();
-		Com_Printf( "WARNING: NET_OpenSocks: gethostbyname: %s\n", SOCK_ErrorString() );
-		return;
-	}
-	if ( h->h_addrtype != AF_INET ) {
-		Com_Printf( "WARNING: NET_OpenSocks: gethostbyname: address type was not AF_INET\n" );
-		return;
-	}
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = *(int *)h->h_addr_list[0];
-	address.sin_port = htons( (short)net_socksPort->integer );
-
-	if ( connect( socks_socket, (struct sockaddr *)&address, sizeof( address ) ) == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: connect: %s\n", SOCK_ErrorString() );
-		return;
-	}
-
-	// send socks authentication handshake
-	if ( *net_socksUsername->string || *net_socksPassword->string ) {
-		rfc1929 = qtrue;
-	}
-	else {
-		rfc1929 = qfalse;
-	}
-
-	buf[0] = 5;		// SOCKS version
-	// method count
-	if ( rfc1929 ) {
-		buf[1] = 2;
-		len = 4;
-	}
-	else {
-		buf[1] = 1;
-		len = 3;
-	}
-	buf[2] = 0;		// method #1 - method id #00: no authentication
-	if ( rfc1929 ) {
-		buf[2] = 2;		// method #2 - method id #02: username/password
-	}
-	if ( send( socks_socket, (char*)buf, len, 0 ) == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: send: %s\n", SOCK_ErrorString() );
-		return;
-	}
-
-	// get the response
-	len = recv( socks_socket, (char*)buf, 64, 0 );
-	if ( len == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: recv: %s\n", SOCK_ErrorString() );
-		return;
-	}
-	if ( len != 2 || buf[0] != 5 ) {
-		Com_Printf( "NET_OpenSocks: bad response\n" );
-		return;
-	}
-	switch( buf[1] ) {
-	case 0:	// no authentication
-		break;
-	case 2: // username/password authentication
-		break;
-	default:
-		Com_Printf( "NET_OpenSocks: request denied\n" );
-		return;
-	}
-
-	// do username/password authentication if needed
-	if ( buf[1] == 2 ) {
-		int		ulen;
-		int		plen;
-
-		// build the request
-		ulen = QStr::Length( net_socksUsername->string );
-		plen = QStr::Length( net_socksPassword->string );
-
-		buf[0] = 1;		// username/password authentication version
-		buf[1] = ulen;
-		if ( ulen ) {
-			Com_Memcpy( &buf[2], net_socksUsername->string, ulen );
-		}
-		buf[2 + ulen] = plen;
-		if ( plen ) {
-			Com_Memcpy( &buf[3 + ulen], net_socksPassword->string, plen );
-		}
-
-		// send it
-		if ( send( socks_socket, (char*)buf, 3 + ulen + plen, 0 ) == SOCKET_ERROR ) {
-			err = WSAGetLastError();
-			Com_Printf( "NET_OpenSocks: send: %s\n", SOCK_ErrorString() );
-			return;
-		}
-
-		// get the response
-		len = recv( socks_socket, (char*)buf, 64, 0 );
-		if ( len == SOCKET_ERROR ) {
-			err = WSAGetLastError();
-			Com_Printf( "NET_OpenSocks: recv: %s\n", SOCK_ErrorString() );
-			return;
-		}
-		if ( len != 2 || buf[0] != 1 ) {
-			Com_Printf( "NET_OpenSocks: bad response\n" );
-			return;
-		}
-		if ( buf[1] != 0 ) {
-			Com_Printf( "NET_OpenSocks: authentication failed\n" );
-			return;
-		}
-	}
-
-	// send the UDP associate request
-	buf[0] = 5;		// SOCKS version
-	buf[1] = 3;		// command: UDP associate
-	buf[2] = 0;		// reserved
-	buf[3] = 1;		// address type: IPV4
-	*(int *)&buf[4] = INADDR_ANY;
-	*(short *)&buf[8] = htons( (short)port );		// port
-	if ( send( socks_socket, (char*)buf, 10, 0 ) == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: send: %s\n", SOCK_ErrorString() );
-		return;
-	}
-
-	// get the response
-	len = recv( socks_socket, (char*)buf, 64, 0 );
-	if( len == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		Com_Printf( "NET_OpenSocks: recv: %s\n", SOCK_ErrorString() );
-		return;
-	}
-	if( len < 2 || buf[0] != 5 ) {
-		Com_Printf( "NET_OpenSocks: bad response\n" );
-		return;
-	}
-	// check completion code
-	if( buf[1] != 0 ) {
-		Com_Printf( "NET_OpenSocks: request denied: %i\n", buf[1] );
-		return;
-	}
-	if( buf[3] != 1 ) {
-		Com_Printf( "NET_OpenSocks: relay address is not IPV4: %i\n", buf[3] );
-		return;
-	}
-	((struct sockaddr_in *)&socksRelayAddr)->sin_family = AF_INET;
-	((struct sockaddr_in *)&socksRelayAddr)->sin_addr.s_addr = *(int *)&buf[4];
-	((struct sockaddr_in *)&socksRelayAddr)->sin_port = *(short *)&buf[8];
-	Com_Memset( ((struct sockaddr_in *)&socksRelayAddr)->sin_zero, 0, 8 );
-
-	usingSocks = qtrue;
-}
-
-
-/*
 =====================
 NET_GetLocalAddress
 =====================
@@ -455,7 +269,7 @@ void NET_OpenIP( void ) {
 		if ( ip_socket ) {
 			Cvar_SetValue( "net_port", port + i );
 			if ( net_socksEnabled->integer ) {
-				NET_OpenSocks( port + i );
+				SOCK_OpenSocks( port + i );
 			}
 			NET_GetLocalAddress();
 			return;
@@ -564,10 +378,7 @@ void NET_Config( qboolean enableNetworking ) {
 			ip_socket = 0;
 		}
 
-		if ( socks_socket && socks_socket != INVALID_SOCKET ) {
-			SOCK_Close( socks_socket );
-			socks_socket = 0;
-		}
+		SOCK_CloseSocks();
 	}
 
 	if( start ) {
