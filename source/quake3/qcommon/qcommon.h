@@ -576,8 +576,6 @@ int		Sys_GetProcessorId( void );
 void	Sys_ShowConsole( int level, qboolean quitOnClose );
 void	Sys_SetErrorText( const char *text );
 
-void	Sys_SendPacket( int length, const void *data, netadr_t to );
-
 qboolean	Sys_StringToAdr( const char *s, netadr_t *a );
 //Does NOT parse port numbers, only base addresses.
 

@@ -597,6 +597,8 @@ void NET_SendLoopPacket (netsrc_t sock, int length, const void *data, netadr_t t
 //=============================================================================
 
 
+int			ip_socket;
+
 void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to ) {
 
 	// sequenced packets are shown in netchan, so just show oob
@@ -615,7 +617,24 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to ) 
 		return;
 	}
 
-	Sys_SendPacket( length, data, to );
+	if (to.type == NA_BROADCAST)
+	{
+	}
+	else if (to.type == NA_IP)
+	{
+	}
+	else
+	{
+		Com_Error(ERR_FATAL, "NET_SendPacket: bad address type");
+		return;
+	}
+
+	if (!ip_socket)
+	{
+		return;
+	}
+
+	SOCL_Send(ip_socket, data, length, &to);
 }
 
 /*
@@ -671,6 +690,41 @@ void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len
 	Huff_Compress( &mbuf, 12);
 	// send the datagram
 	NET_SendPacket( sock, mbuf.cursize, mbuf._data, adr );
+}
+
+/*
+==================
+Sys_GetPacket
+
+Never called by the game logic, just the system event queing
+==================
+*/
+qboolean Sys_GetPacket(netadr_t *net_from, QMsg *net_message)
+{
+	if (!ip_socket)
+	{
+		return false;
+	}
+
+	int ret = SOCK_Recv(ip_socket, net_message->_data, net_message->maxsize, net_from);
+	if (ret == SOCKRECV_NO_DATA)
+	{
+		return false;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
+		return false;
+	}
+	net_message->readcount = 0;
+
+	if (ret == net_message->maxsize)
+	{
+		Com_Printf("Oversize packet from %s\n", NET_AdrToString(*net_from));
+		return false;
+	}
+
+	net_message->cursize = ret;
+	return true;
 }
 
 /*

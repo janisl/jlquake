@@ -49,7 +49,7 @@ static QCvar	*noudp;
 
 netadr_t	net_local_adr;
 
-int			ip_socket;
+extern int			ip_socket;
 
 #define	MAX_IPS		16
 static	int		numIP;
@@ -89,67 +89,6 @@ qboolean	Sys_StringToAdr (const char *s, netadr_t *a)
 	SockadrToNetadr (&sadr, a);
 
 	return qtrue;
-}
-
-
-//=============================================================================
-
-qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
-{
-	int 	ret;
-	int		net_socket;
-
-	net_socket = ip_socket;
-
-	if (!net_socket)
-		return false;
-
-	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
-	// bk000305: was missing
-	net_message->readcount = 0;
-
-	if (ret == SOCKRECV_NO_DATA)
-	{
-		return false;
-	}
-	if (ret == SOCKRECV_ERROR)
-	{
-		return false;
-	}
-
-	if (ret == net_message->maxsize)
-	{
-		Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
-		return false;
-	}
-
-	net_message->cursize = ret;
-	return qtrue;
-}
-
-//=============================================================================
-
-void	Sys_SendPacket( int length, const void *data, netadr_t to )
-{
-	int		net_socket;
-
-	if (to.type == NA_BROADCAST)
-	{
-		net_socket = ip_socket;
-	}
-	else if (to.type == NA_IP)
-	{
-		net_socket = ip_socket;
-	}
-	else {
-		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
-		return;
-	}
-
-	if (!net_socket)
-		return;
-
-	SOCL_Send(net_socket, data, length, &to);
 }
 
 

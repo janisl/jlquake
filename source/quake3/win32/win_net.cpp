@@ -29,7 +29,7 @@ static qboolean networkingEnabled = qfalse;
 
 static QCvar	*net_noudp;
 
-static SOCKET	ip_socket;
+extern int	ip_socket;
 
 #define	MAX_IPS		16
 static	int		numIP;
@@ -53,73 +53,6 @@ qboolean Sys_StringToAdr( const char *s, netadr_t *a ) {
 	SockadrToNetadr( (struct sockaddr_in*)&sadr, a );
 	return qtrue;
 }
-
-//=============================================================================
-
-/*
-==================
-Sys_GetPacket
-
-Never called by the game logic, just the system event queing
-==================
-*/
-int	recvfromCount;
-
-qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
-	if( !ip_socket ) {
-		return qfalse;
-	}
-
-	recvfromCount++;		// performance check
-	int ret = SOCK_Recv(ip_socket, net_message->_data, net_message->maxsize, net_from);
-	if (ret == SOCKRECV_NO_DATA)
-	{
-		return false;
-	}
-	if (ret == SOCKRECV_ERROR)
-	{
-		return false;
-	}
-	net_message->readcount = 0;
-
-	if( ret == net_message->maxsize ) {
-		Com_Printf( "Oversize packet from %s\n", NET_AdrToString (*net_from) );
-		return qfalse;
-	}
-
-	net_message->cursize = ret;
-	return qtrue;
-}
-
-//=============================================================================
-
-/*
-==================
-Sys_SendPacket
-==================
-*/
-void Sys_SendPacket( int length, const void *data, netadr_t to )
-{
-	SOCKET			net_socket;
-
-	if( to.type == NA_BROADCAST ) {
-		net_socket = ip_socket;
-	}
-	else if( to.type == NA_IP ) {
-		net_socket = ip_socket;
-	}
-	else {
-		Com_Error( ERR_FATAL, "Sys_SendPacket: bad address type" );
-		return;
-	}
-
-	if( !net_socket ) {
-		return;
-	}
-
-	SOCL_Send(net_socket, data, length, &to);
-}
-
 
 //=============================================================================
 
