@@ -291,46 +291,6 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 
 //=============================================================================
 
-
-/*
-====================
-NET_Socket
-====================
-*/
-int NET_IPSocket (char *net_interface, int port)
-{
-	int					newsocket;
-	struct sockaddr_in	address;
-
-	newsocket = SOCK_Open(net_interface, port);
-	if (newsocket == 0)
-	{
-		return 0;
-	}
-
-	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
-		address.sin_addr.s_addr = INADDR_ANY;
-	else
-		SOCK_StringToSockaddr(net_interface, &address);
-
-	if (port == PORT_ANY)
-		address.sin_port = 0;
-	else
-		address.sin_port = htons((short)port);
-
-	address.sin_family = AF_INET;
-
-	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
-	{
-		Com_Printf ("WARNING: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
-		closesocket (newsocket);
-		return 0;
-	}
-
-	return newsocket;
-}
-
-
 /*
 ====================
 NET_OpenIP
@@ -357,7 +317,7 @@ void NET_OpenIP (void)
 				port = Cvar_Get("port", va("%i", PORT_SERVER), CVAR_INIT)->value;
 			}
 		}
-		ip_sockets[NS_SERVER] = NET_IPSocket (ip->string, port);
+		ip_sockets[NS_SERVER] = SOCK_Open (ip->string, port);
 		if (!ip_sockets[NS_SERVER] && dedicated)
 			Com_Error (ERR_FATAL, "Couldn't allocate dedicated server IP port");
 	}
@@ -376,9 +336,9 @@ void NET_OpenIP (void)
 			if (!port)
 				port = PORT_ANY;
 		}
-		ip_sockets[NS_CLIENT] = NET_IPSocket (ip->string, port);
+		ip_sockets[NS_CLIENT] = SOCK_Open (ip->string, port);
 		if (!ip_sockets[NS_CLIENT])
-			ip_sockets[NS_CLIENT] = NET_IPSocket (ip->string, PORT_ANY);
+			ip_sockets[NS_CLIENT] = SOCK_Open (ip->string, PORT_ANY);
 	}
 }
 

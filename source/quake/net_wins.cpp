@@ -32,6 +32,7 @@ static int net_broadcastsocket = 0;
 static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
+static const char* net_interface;
 
 #include "net_wins.h"
 
@@ -155,6 +156,7 @@ int WINS_Init (void)
 			if (myAddr == INADDR_NONE)
 				Sys_Error ("%s is not a valid IP address", COM_Argv(i+1));
 			QStr::Cpy(my_tcpip_address, COM_Argv(i+1));
+			net_interface = COM_Argv(i+1);
 		}
 		else
 		{
@@ -221,23 +223,10 @@ void WINS_Listen (qboolean state)
 
 int WINS_OpenSocket (int port)
 {
-	int newsocket;
-	struct sockaddr_in address;
-
-	newsocket = SOCK_Open(NULL, port);
+	int newsocket = SOCK_Open(net_interface, port);
 	if (newsocket == 0)
 		return -1;
-
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = myAddr;
-	address.sin_port = htons((unsigned short)port);
-	if( bind (newsocket, (sockaddr *)&address, sizeof(address)) == 0)
-		return newsocket;
-
-	Sys_Error ("Unable to bind to %s", WINS_AddrToString((struct qsockaddr *)&address));
-ErrorReturn:
-	closesocket (newsocket);
-	return -1;
+	return newsocket;
 }
 
 //=============================================================================

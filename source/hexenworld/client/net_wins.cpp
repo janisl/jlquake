@@ -143,23 +143,9 @@ void NET_SendPacket (int length, void *data, netadr_t to)
 
 int UDP_OpenSocket (int port)
 {
-	int newsocket;
-	struct sockaddr_in address;
-
-	newsocket = SOCK_Open(NULL, port);
+	int newsocket = SOCK_Open(NULL, port);
 	if (newsocket == 0)
 		Sys_Error ("UDP_OpenSocket: socket failed");
-
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
-
-	if (port == PORT_ANY)
-		address.sin_port = 0;
-	else
-		address.sin_port = htons((short)port);
-	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
-		Sys_Error ("UDP_OpenSocket: bind: %s", strerror(errno));
-
 	return newsocket;
 }
 

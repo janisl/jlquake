@@ -190,29 +190,17 @@ void NET_SendPacket (int length, void *data, netadr_t to)
 int UDP_OpenSocket (int port)
 {
 	int newsocket;
-	struct sockaddr_in address;
 	int i;
 
-	newsocket = SOCK_Open(NULL, port);
+	const char* net_interface = NULL;
+//ZOID -- check for interface binding option
+	if ((i = COM_CheckParm("-ip")) != 0 && i < COM_Argc())
+	{
+		net_interface = COM_Argv(i+1);
+	}
+	newsocket = SOCK_Open(net_interface, port);
 	if (newsocket == 0)
 		Sys_Error ("UDP_OpenSocket: socket failed");
-
-	address.sin_family = AF_INET;
-//ZOID -- check for interface binding option
-	if ((i = COM_CheckParm("-ip")) != 0 && i < COM_Argc()) {
-		address.sin_addr.s_addr = inet_addr(COM_Argv(i+1));
-		Con_Printf("Binding to IP Interface Address of %s\n",
-				inet_ntoa(address.sin_addr));
-	} else
-		address.sin_addr.s_addr = INADDR_ANY;
-
-	if (port == PORT_ANY)
-		address.sin_port = 0;
-	else
-		address.sin_port = htons((short)port);
-	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
-		Sys_Error ("UDP_OpenSocket: bind: %s", strerror(errno));
-
 	return newsocket;
 }
 
