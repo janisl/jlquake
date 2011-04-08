@@ -235,7 +235,8 @@ int WINS_CloseSocket (int socket)
 {
 	if (socket == net_broadcastsocket)
 		net_broadcastsocket = 0;
-	return closesocket (socket);
+	SOCK_Close(socket);
+	return 0;
 }
 
 

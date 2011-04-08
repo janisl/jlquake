@@ -217,7 +217,7 @@ NET_Shutdown
 */
 void	NET_Shutdown (void)
 {
-	closesocket (net_socket);
+	SOCK_Close(net_socket);
 	WSACleanup ();
 
 #ifdef _DEBUG

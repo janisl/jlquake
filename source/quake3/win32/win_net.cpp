@@ -625,12 +625,12 @@ void NET_Config( qboolean enableNetworking ) {
 
 	if( stop ) {
 		if ( ip_socket && ip_socket != INVALID_SOCKET ) {
-			closesocket( ip_socket );
+			SOCK_Close( ip_socket );
 			ip_socket = 0;
 		}
 
 		if ( socks_socket && socks_socket != INVALID_SOCKET ) {
-			closesocket( socks_socket );
+			SOCK_Close( socks_socket );
 			socks_socket = 0;
 		}
 	}

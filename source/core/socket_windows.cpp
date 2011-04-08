@@ -223,6 +223,7 @@ int SOCK_Open(const char* net_interface, int port)
 	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == SOCKET_ERROR)
 	{
 		GLog.Write("WARNING: UDP_OpenSocket: setsockopt SO_BROADCAST: %s\n", SOCK_ErrorString());
+		closesocket(newsocket);
 		return 0;
 	}
 
@@ -255,4 +256,15 @@ int SOCK_Open(const char* net_interface, int port)
 	}
 
 	return newsocket;
+}
+
+//==========================================================================
+//
+//	SOCK_Close
+//
+//==========================================================================
+
+void SOCK_Close(int Socket)
+{
+	closesocket(Socket);
 }

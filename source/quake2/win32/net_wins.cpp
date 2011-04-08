@@ -366,7 +366,7 @@ void	NET_Config (qboolean multiplayer)
 		{
 			if (ip_sockets[i])
 			{
-				closesocket (ip_sockets[i]);
+				SOCK_Close(ip_sockets[i]);
 				ip_sockets[i] = 0;
 			}
 		}
