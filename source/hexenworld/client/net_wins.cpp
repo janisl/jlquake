@@ -106,12 +106,9 @@ qboolean NET_GetPacket (void)
 //=============================================================================
 void NET_SendPacket (int length, void *data, netadr_t to)
 {
-	int ret;
 	int outlen;
-	struct sockaddr_in	addr;
 	char string[120];
 
-	NetadrToSockadr (&to, &addr);
 	HuffEncode((unsigned char *)data,huffbuff,length,&outlen);
 
 #ifdef _DEBUG
@@ -121,13 +118,7 @@ void NET_SendPacket (int length, void *data, netadr_t to)
 	CalcFreq((unsigned char *)data, length);
 #endif
 
-	ret = sendto (net_socket, (char *) huffbuff, outlen, 0, (struct sockaddr *)&addr, sizeof(addr) );
-	if (ret == -1)
-	{
-		int err = WSAGetLastError();
-
-		Con_Printf ("NET_SendPacket ERROR: %i", err);
-	}
+	SOCL_Send(net_socket, huffbuff, outlen, &to);
 }
 
 //=============================================================================

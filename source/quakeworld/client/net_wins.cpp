@@ -147,27 +147,7 @@ qboolean NET_GetPacket (void)
 
 void NET_SendPacket (int length, void *data, netadr_t to)
 {
-	int ret;
-	struct sockaddr_in	addr;
-
-	NetadrToSockadr (&to, &addr);
-
-	ret = sendto (net_socket, (char*)data, length, 0, (struct sockaddr *)&addr, sizeof(addr) );
-	if (ret == -1)
-	{
-		int err = WSAGetLastError();
-
-// wouldblock is silent
-        if (err == WSAEWOULDBLOCK)
-	        return;
-
-#ifndef SERVERONLY
-		if (err == WSAEADDRNOTAVAIL)
-			Con_DPrintf("NET_SendPacket Warning: %i\n", err);
-		else
-#endif
-			Con_Printf ("NET_SendPacket ERROR: %i\n", errno);
-	}
+	SOCL_Send(net_socket, data, length, &to);
 }
 
 //=============================================================================

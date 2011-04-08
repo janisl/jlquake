@@ -222,7 +222,6 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 {
 	int		ret;
-	struct sockaddr	addr;
 	int		net_socket;
 
 	if ( to.type == NA_LOOPBACK )
@@ -246,35 +245,12 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	else
 		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
 
-	NetadrToSockadr (&to, (struct sockaddr_in *)&addr);
-
-	ret = sendto (net_socket, (char*)data, length, 0, &addr, sizeof(addr) );
-	if (ret == -1)
+	ret = SOCL_Send(net_socket, data, length, &to);
+	if (ret == SOCKSEND_ERROR)
 	{
-		int err = WSAGetLastError();
-
-		// wouldblock is silent
-		if (err == WSAEWOULDBLOCK)
-			return;
-
-		// some PPP links dont allow broadcasts
-		if ((err == WSAEADDRNOTAVAIL) && (to.type == NA_BROADCAST))
-			return;
-
-		if (dedicated->value)	// let dedicated servers continue after errors
+		if (!dedicated->value)	// let dedicated servers continue after errors
 		{
-			Com_Printf ("NET_SendPacket ERROR: %s\n", SOCK_ErrorString());
-		}
-		else
-		{
-			if (err == WSAEADDRNOTAVAIL)
-			{
-				Com_DPrintf ("NET_SendPacket Warning: %s : %s\n", SOCK_ErrorString(), NET_AdrToString (to));
-			}
-			else
-			{
-				Com_Error (ERR_DROP, "NET_SendPacket ERROR: %s\n", SOCK_ErrorString());
-			}
+			Com_Error(ERR_DROP, "NET_SendPacket ERROR");
 		}
 	}
 }

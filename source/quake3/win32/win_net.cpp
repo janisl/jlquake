@@ -102,16 +102,13 @@ qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
 
 //=============================================================================
 
-static char socksBuf[4096];
-
 /*
 ==================
 Sys_SendPacket
 ==================
 */
-void Sys_SendPacket( int length, const void *data, netadr_t to ) {
-	int				ret;
-	struct sockaddr	addr;
+void Sys_SendPacket( int length, const void *data, netadr_t to )
+{
 	SOCKET			net_socket;
 
 	if( to.type == NA_BROADCAST ) {
@@ -129,36 +126,7 @@ void Sys_SendPacket( int length, const void *data, netadr_t to ) {
 		return;
 	}
 
-	NetadrToSockadr( &to, (struct sockaddr_in *)&addr );
-
-	if( usingSocks && to.type == NA_IP ) {
-		socksBuf[0] = 0;	// reserved
-		socksBuf[1] = 0;
-		socksBuf[2] = 0;	// fragment (not fragmented)
-		socksBuf[3] = 1;	// address type: IPV4
-		*(int *)&socksBuf[4] = ((struct sockaddr_in *)&addr)->sin_addr.s_addr;
-		*(short *)&socksBuf[8] = ((struct sockaddr_in *)&addr)->sin_port;
-		Com_Memcpy( &socksBuf[10], data, length );
-		ret = sendto( net_socket, socksBuf, length+10, 0, &socksRelayAddr, sizeof(socksRelayAddr) );
-	}
-	else {
-		ret = sendto( net_socket, (char*)data, length, 0, &addr, sizeof(addr) );
-	}
-	if( ret == SOCKET_ERROR ) {
-		int err = WSAGetLastError();
-
-		// wouldblock is silent
-		if( err == WSAEWOULDBLOCK ) {
-			return;
-		}
-
-		// some PPP links do not allow broadcasts and return an error
-		if( ( err == WSAEADDRNOTAVAIL ) && ( to.type == NA_BROADCAST ) ) {
-			return;
-		}
-
-		Com_Printf( "NET_SendPacket: %s\n", SOCK_ErrorString() );
-	}
+	SOCL_Send(net_socket, data, length, &to);
 }
 
 

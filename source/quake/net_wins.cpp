@@ -297,13 +297,11 @@ int WINS_Broadcast (int socket, byte *buf, int len)
 
 int WINS_Write (int socket, byte *buf, int len, struct qsockaddr *addr)
 {
-	int ret;
-
-	ret = sendto (socket, (char*)buf, len, 0, (struct sockaddr *)addr, sizeof(struct qsockaddr));
-	if (ret == -1)
-		if (WSAGetLastError() == WSAEWOULDBLOCK)
-			return 0;
-
+	netadr_t to;
+	SockadrToNetadr((struct sockaddr_in*)addr, &to);
+	int ret = SOCL_Send(socket, buf, len, &to);
+	if (ret == SOCKSEND_WOULDBLOCK)
+		return 0;
 	return ret;
 }
 

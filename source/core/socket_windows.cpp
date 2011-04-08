@@ -326,11 +326,11 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 	if (usingSocks)
 	{
 		SocksBuf.SetNum(len + 10);
-		ret = recvfrom(socket, (char*)SocksBuf.Ptr(), len + 10, 0, (struct sockaddr*)&addr, &addrlen);
+		ret = recvfrom(socket, (char*)SocksBuf.Ptr(), len + 10, 0, (sockaddr*)&addr, &addrlen);
 	}
 	else
 	{
-		ret = recvfrom(socket, (char*)buf, len, 0, (struct sockaddr*)&addr, &addrlen);
+		ret = recvfrom(socket, (char*)buf, len, 0, (sockaddr*)&addr, &addrlen);
 	}
 
 	if (ret == SOCKET_ERROR)
@@ -381,5 +381,59 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 	{
 		SockadrToNetadr(&addr, From);
 	}
+	return ret;
+}
+
+//==========================================================================
+//
+//	SOCL_Send
+//
+//==========================================================================
+
+static char socksBuf[4096];
+
+int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To)
+{
+	sockaddr_in addr;
+
+	NetadrToSockadr(To, &addr);
+
+	int ret;
+	if (usingSocks && To->type == NA_IP)
+	{
+		socksBuf[0] = 0;	// reserved
+		socksBuf[1] = 0;
+		socksBuf[2] = 0;	// fragment (not fragmented)
+		socksBuf[3] = 1;	// address type: IPV4
+		*(int*)&socksBuf[4] = addr.sin_addr.s_addr;
+		*(short*)&socksBuf[8] = addr.sin_port;
+		Com_Memcpy(&socksBuf[10], Data, Length);
+		ret = sendto(Socket, socksBuf, Length + 10, 0, &socksRelayAddr, sizeof(socksRelayAddr));
+	}
+	else
+	{
+		ret = sendto(Socket, (char*)Data, Length, 0, (sockaddr*)&addr, sizeof(addr));
+	}
+
+	if (ret == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+
+		// wouldblock is silent
+		if (err == WSAEWOULDBLOCK)
+		{
+			return SOCKSEND_WOULDBLOCK;
+		}
+
+		// some PPP links do not allow broadcasts and return an error
+		if ((err == WSAEADDRNOTAVAIL) && (To->type == NA_BROADCAST))
+		{
+			return SOCKSEND_WOULDBLOCK;
+		}
+
+		GLog.Write("NET_SendPacket: %s\n", SOCK_ErrorString());
+		return SOCKSEND_ERROR;
+	}
+
 	return ret;
 }
