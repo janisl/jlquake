@@ -371,6 +371,10 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 		else
 		{
 			SockadrToNetadr(&addr, From);
+			if (ret > len)
+			{
+				ret = len;
+			}
 			if (ret > 0)
 			{
 				Com_Memcpy(buf, SocksBuf.Ptr(), ret);
@@ -390,8 +394,6 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 //
 //==========================================================================
 
-static char socksBuf[4096];
-
 int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To)
 {
 	sockaddr_in addr;
@@ -401,6 +403,8 @@ int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To)
 	int ret;
 	if (usingSocks && To->type == NA_IP)
 	{
+		QArray<char> socksBuf;
+		socksBuf.SetNum(Length + 10);
 		socksBuf[0] = 0;	// reserved
 		socksBuf[1] = 0;
 		socksBuf[2] = 0;	// fragment (not fragmented)
@@ -408,7 +412,7 @@ int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To)
 		*(int*)&socksBuf[4] = addr.sin_addr.s_addr;
 		*(short*)&socksBuf[8] = addr.sin_port;
 		Com_Memcpy(&socksBuf[10], Data, Length);
-		ret = sendto(Socket, socksBuf, Length + 10, 0, &socksRelayAddr, sizeof(socksRelayAddr));
+		ret = sendto(Socket, socksBuf.Ptr(), Length + 10, 0, &socksRelayAddr, sizeof(socksRelayAddr));
 	}
 	else
 	{
