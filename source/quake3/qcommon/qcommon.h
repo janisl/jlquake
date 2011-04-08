@@ -73,8 +73,6 @@ NET
 
 #define	MAX_PACKET_USERCMDS		32		// max number of usercmd_t in a packet
 
-#define	PORT_ANY			-1
-
 #define	MAX_RELIABLE_COMMANDS	64			// max string commands buffered for restransmit
 
 typedef enum {

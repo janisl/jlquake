@@ -26,6 +26,8 @@ enum netadrtype_t
 	NA_IP,
 };
 
+#define PORT_ANY	-1
+
 struct netadr_t
 {
 	netadrtype_t	type;

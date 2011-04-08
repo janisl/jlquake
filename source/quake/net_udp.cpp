@@ -75,7 +75,7 @@ int UDP_Init (void)
 		Cvar_Set ("hostname", buff);
 	}
 
-	if ((net_controlsocket = UDP_OpenSocket (0)) == -1)
+	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
 		Sys_Error("UDP_Init: Unable to open control socket\n");
 
 	((struct sockaddr_in *)&broadcastaddr)->sin_family = AF_INET;
@@ -127,24 +127,10 @@ void UDP_Listen (qboolean state)
 
 int UDP_OpenSocket (int port)
 {
-	int newsocket;
-	struct sockaddr_in address;
-
-	newsocket = SOCK_Open(NULL, port);
+	int newsocket = SOCK_Open(NULL, port);
 	if (newsocket == 0)
 		return -1;
-
-	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons(port);
-	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
-		goto ErrorReturn;
-
 	return newsocket;
-
-ErrorReturn:
-	close (newsocket);
-	return -1;
 }
 
 //=============================================================================

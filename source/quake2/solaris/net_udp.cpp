@@ -37,8 +37,6 @@ typedef struct
 loopback_t	loopbacks[2];
 int			ip_sockets[2];
 
-int NET_Socket (char *net_interface, int port);
-
 //=============================================================================
 
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
@@ -270,9 +268,9 @@ void NET_OpenIP (void)
 	ip = Cvar_Get ("ip", "localhost", CVAR_INIT);
 
 	if (!ip_sockets[NS_SERVER])
-		ip_sockets[NS_SERVER] = NET_Socket (ip->string, port->value);
+		ip_sockets[NS_SERVER] = SOCK_Open(ip->string, port->value);
 	if (!ip_sockets[NS_CLIENT])
-		ip_sockets[NS_CLIENT] = NET_Socket (ip->string, PORT_ANY);
+		ip_sockets[NS_CLIENT] = SOCK_Open(ip->string, PORT_ANY);
 }
 
 /*
@@ -314,45 +312,6 @@ NET_Init
 */
 void NET_Init (void)
 {
-}
-
-
-/*
-====================
-NET_Socket
-====================
-*/
-int NET_Socket (char *net_interface, int port)
-{
-	int newsocket;
-	struct sockaddr_in address;
-
-	newsocket = SOCK_Open(net_interface, port);
-	if (newsocket == 0)
-	{
-		return 0;
-	}
-
-	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
-		address.sin_addr.s_addr = INADDR_ANY;
-	else
-		SOCK_StringToSockaddr (net_interface, &address);
-
-	if (port == PORT_ANY)
-		address.sin_port = 0;
-	else
-		address.sin_port = htons((short)port);
-
-	address.sin_family = AF_INET;
-
-	if( bind (newsocket, (void *)&address, sizeof(address)) == -1)
-	{
-		Com_Printf ("ERROR: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
-		close (newsocket);
-		return 0;
-	}
-
-	return newsocket;
 }
 
 

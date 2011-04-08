@@ -149,6 +149,15 @@ const char* SOCK_ErrorString()
 
 int SOCK_Open(const char* net_interface, int port)
 {
+	if (net_interface)
+	{
+		GLog.Write("Opening IP socket: %s:%i\n", net_interface, port);
+	}
+	else
+	{
+		GLog.Write("Opening IP socket: localhost:%i\n", port);
+	}
+
 	int newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (newsocket == -1)
 	{
@@ -173,5 +182,34 @@ int SOCK_Open(const char* net_interface, int port)
 		close(newsocket);
 		return 0;
 	}
+
+	sockaddr_in address;
+	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
+	{
+		address.sin_addr.s_addr = INADDR_ANY;
+	}
+	else
+	{
+		SOCK_StringToSockaddr(net_interface, &address);
+	}
+
+	if (port == PORT_ANY)
+	{
+		address.sin_port = 0;
+	}
+	else
+	{
+		address.sin_port = htons((short)port);
+	}
+
+	address.sin_family = AF_INET;
+
+	if (bind(newsocket, (sockaddr*)&address, sizeof(address)) == -1)
+	{
+		GLog.Write("ERROR: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
+		close(newsocket);
+		return 0;
+	}
+
 	return newsocket;
 }

@@ -388,7 +388,6 @@ NET_OpenIP
 ====================
 */
 // bk001204 - prototype needed
-int NET_IPSocket (char *net_interface, int port);
 void NET_OpenIP (void)
 {
 	QCvar	*ip;
@@ -400,7 +399,7 @@ void NET_OpenIP (void)
 	port = Cvar_Get("net_port", va("%i", PORT_SERVER), 0)->value;
 
 	for ( i = 0 ; i < 10 ; i++ ) {
-		ip_socket = NET_IPSocket (ip->string, port + i);
+		ip_socket = SOCK_Open(ip->string, port + i);
 		if ( ip_socket ) {
 			Cvar_SetValue( "net_port", port + i );
 			NET_GetLocalAddress();
@@ -425,51 +424,6 @@ void NET_Init (void)
 	}
 }
 
-
-/*
-====================
-NET_IPSocket
-====================
-*/
-int NET_IPSocket (char *net_interface, int port)
-{
-	int newsocket;
-	struct sockaddr_in address;
-	qboolean _qtrue = qtrue;
-
-	if ( net_interface ) {
-		Com_Printf("Opening IP socket: %s:%i\n", net_interface, port );
-	} else {
-		Com_Printf("Opening IP socket: localhost:%i\n", port );
-	}
-
-	newsocket = SOCK_Open(net_interface, port);
-	if (newsocket == 0)
-	{
-		return 0;
-	}
-
-	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
-		address.sin_addr.s_addr = INADDR_ANY;
-	else
-		SOCK_StringToSockaddr(net_interface, &address);
-
-	if (port == PORT_ANY)
-		address.sin_port = 0;
-	else
-		address.sin_port = htons((short)port);
-
-	address.sin_family = AF_INET;
-
-	if( bind (newsocket, (sockaddr*)&address, sizeof(address)) == -1)
-	{
-		Com_Printf ("ERROR: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
-		close (newsocket);
-		return 0;
-	}
-
-	return newsocket;
-}
 
 /*
 ====================

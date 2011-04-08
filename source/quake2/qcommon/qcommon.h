@@ -290,8 +290,6 @@ NET
 
 // net.h -- quake's interface to the networking layer
 
-#define	PORT_ANY	-1
-
 #define	MAX_MSGLEN		1400		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
 
