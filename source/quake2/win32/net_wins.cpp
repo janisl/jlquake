@@ -402,9 +402,6 @@ void NET_Sleep(int msec)
 
 //===================================================================
 
-
-static WSADATA		winsockdata;
-
 /*
 ====================
 NET_Init
@@ -412,17 +409,8 @@ NET_Init
 */
 void NET_Init (void)
 {
-	WORD	wVersionRequested; 
-	int		r;
-
-	wVersionRequested = MAKEWORD(1, 1); 
-
-	r = WSAStartup (MAKEWORD(1, 1), &winsockdata);
-
-	if (r)
-		Com_Error (ERR_FATAL,"Winsock initialization failed.");
-
-	Com_Printf("Winsock Initialized\n");
+	if (!SOCK_Init())
+		Com_Error (ERR_FATAL,"Sockets initialization failed.");
 
 	noudp = Cvar_Get ("noudp", "0", CVAR_INIT);
 
@@ -439,5 +427,5 @@ void	NET_Shutdown (void)
 {
 	NET_Config (false);	// close sockets
 
-	WSACleanup ();
+	SOCK_Shutdown();
 }

@@ -38,6 +38,9 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+static bool		winsockInitialized = false;
+static WSADATA	winsockdata;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -179,6 +182,42 @@ const char* SOCK_ErrorString()
 	case WSANO_DATA: return "WSANO_DATA";
 	default: return "NO ERROR";
 	}
+}
+
+//==========================================================================
+//
+//	SOCK_Init
+//
+//==========================================================================
+
+bool SOCK_Init()
+{
+	int r = WSAStartup(MAKEWORD(1, 1), &winsockdata);
+	if (r)
+	{
+		GLog.Write("WARNING: Winsock initialization failed, returned %d\n", r);
+		return false;
+	}
+
+	winsockInitialized = true;
+	GLog.Write("Winsock Initialized\n");
+	return true;
+}
+
+//==========================================================================
+//
+//	SOCK_Shutdown
+//
+//==========================================================================
+
+void SOCK_Shutdown()
+{
+	if (!winsockInitialized)
+	{
+		return;
+	}
+	WSACleanup();
+	winsockInitialized = false;
 }
 
 //==========================================================================

@@ -31,8 +31,6 @@ int			net_socket;
 #define	MAX_UDP_PACKET	(MAX_MSGLEN*2)	// one more than msg + header
 byte		net_message_buffer[MAX_UDP_PACKET];
 
-WSADATA		winsockdata;
-
 //=============================================================================
 
 qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
@@ -230,15 +228,8 @@ NET_Init
 */
 void NET_Init (int port)
 {
-	WORD	wVersionRequested; 
-	int		r;
-
-	wVersionRequested = MAKEWORD(1, 1); 
-
-	r = WSAStartup (MAKEWORD(1, 1), &winsockdata);
-
-	if (r)
-		Sys_Error ("Winsock initialization failed.");
+	if (!SOCK_Init())
+		Sys_Error("Sockets initialization failed.");
 
 	//
 	// open the single socket to be used for all communications
@@ -255,8 +246,6 @@ void NET_Init (int port)
 	// determine my name & address
 	//
 	NET_GetLocalAddress ();
-
-	Con_Printf("UDP Initialized\n");
 }
 
 /*
@@ -267,6 +256,6 @@ NET_Shutdown
 void	NET_Shutdown (void)
 {
 	SOCK_Close(net_socket);
-	WSACleanup ();
+	SOCK_Shutdown();
 }
 

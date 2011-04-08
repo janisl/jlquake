@@ -36,9 +36,6 @@ static const char* net_interface;
 
 #include "net_wins.h"
 
-int winsock_initialized = 0;
-WSADATA		winsockdata;
-
 //=============================================================================
 
 static double	blocktime;
@@ -99,32 +96,20 @@ int WINS_Init (void)
 	int		i;
 	char	buff[MAXHOSTNAMELEN];
 	char	*p;
-	int		r;
-	WORD	wVersionRequested;
 
 	if (COM_CheckParm ("-noudp"))
 		return -1;
 
-	if (winsock_initialized == 0)
+	if (!SOCK_Init())
 	{
-		wVersionRequested = MAKEWORD(1, 1); 
-
-		r = WSAStartup (MAKEWORD(1, 1), &winsockdata);
-
-		if (r)
-		{
-			Con_SafePrintf ("Winsock initialization failed.\n");
-			return -1;
-		}
+		return -1;
 	}
-	winsock_initialized++;
 
 	// determine my name
 	if (gethostname(buff, MAXHOSTNAMELEN) == SOCKET_ERROR)
 	{
 		Con_DPrintf ("Winsock TCP/IP Initialization failed.\n");
-		if (--winsock_initialized == 0)
-			WSACleanup ();
+		SOCK_Shutdown();
 		return -1;
 	}
 
@@ -169,11 +154,10 @@ int WINS_Init (void)
 		QStr::Cpy(my_tcpip_address, "INADDR_ANY");
 	}
 
-	if ((net_controlsocket = WINS_OpenSocket (0)) == -1)
+	if ((net_controlsocket = WINS_OpenSocket (PORT_ANY)) == -1)
 	{
 		Con_Printf("WINS_Init: Unable to open control socket\n");
-		if (--winsock_initialized == 0)
-			WSACleanup ();
+		SOCK_Shutdown();
 		return -1;
 	}
 
@@ -181,7 +165,6 @@ int WINS_Init (void)
 	((struct sockaddr_in *)&broadcastaddr)->sin_addr.s_addr = INADDR_BROADCAST;
 	((struct sockaddr_in *)&broadcastaddr)->sin_port = htons((unsigned short)net_hostport);
 
-	Con_Printf("Winsock TCP/IP Initialized\n");
 	tcpipAvailable = true;
 
 	return net_controlsocket;
@@ -193,8 +176,7 @@ void WINS_Shutdown (void)
 {
 	WINS_Listen (false);
 	WINS_CloseSocket (net_controlsocket);
-	if (--winsock_initialized == 0)
-		WSACleanup ();
+	SOCK_Shutdown();
 }
 
 //=============================================================================

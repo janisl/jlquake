@@ -25,8 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "win_local.h"
 
-static WSADATA	winsockdata;
-static qboolean	winsockInitialized = qfalse;
 static qboolean usingSocks = qfalse;
 static qboolean networkingEnabled = qfalse;
 
@@ -649,16 +647,10 @@ NET_Init
 ====================
 */
 void NET_Init( void ) {
-	int		r;
-
-	r = WSAStartup( MAKEWORD( 1, 1 ), &winsockdata );
-	if( r ) {
-		Com_Printf( "WARNING: Winsock initialization failed, returned %d\n", r );
+	if (!SOCK_Init())
+	{
 		return;
 	}
-
-	winsockInitialized = qtrue;
-	Com_Printf( "Winsock Initialized\n" );
 
 	// this is really just to get the cvars registered
 	NET_GetCvars();
@@ -674,12 +666,7 @@ NET_Shutdown
 ====================
 */
 void NET_Shutdown( void ) {
-	if ( !winsockInitialized ) {
-		return;
-	}
 	NET_Config( qfalse );
-	WSACleanup();
-	winsockInitialized = qfalse;
 }
 
 

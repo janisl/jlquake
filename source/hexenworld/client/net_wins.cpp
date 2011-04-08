@@ -26,8 +26,6 @@ int			net_socket;
 #define	MAX_UDP_PACKET	(MAX_MSGLEN+9)	// one more than msg + header
 byte		net_message_buffer[MAX_UDP_PACKET];
 
-WSADATA		winsockdata;
-
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 {
 	if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3] && a.port == b.port)
@@ -175,21 +173,14 @@ NET_Init
 */
 void NET_Init (int port)
 {
-	WORD	wVersionRequested; 
-	int		r;
-
 #ifdef _DEBUG
 	ZeroFreq();
 #endif
 
 	BuildTree(HuffFreq);
 
-	wVersionRequested = MAKEWORD(1, 1); 
-
-	r = WSAStartup (MAKEWORD(1, 1), &winsockdata);
-
-	if (r)
-		Sys_Error ("Winsock initialization failed.");
+	if (!SOCK_Init())
+		Sys_Error ("Sockets initialization failed.");
 
 	//
 	// open the single socket to be used for all communications
@@ -206,8 +197,6 @@ void NET_Init (int port)
 	// determine my name & address
 	//
 	NET_GetLocalAddress ();
-
-	Con_Printf("UDP Initialized\n");
 }
 
 /*
@@ -218,7 +207,7 @@ NET_Shutdown
 void	NET_Shutdown (void)
 {
 	SOCK_Close(net_socket);
-	WSACleanup ();
+	SOCK_Shutdown();
 
 #ifdef _DEBUG
 	PrintFreqs();
