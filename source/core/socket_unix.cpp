@@ -213,3 +213,14 @@ int SOCK_Open(const char* net_interface, int port)
 
 	return newsocket;
 }
+
+//==========================================================================
+//
+//	SOCK_Close
+//
+//==========================================================================
+
+void SOCK_Close(int Socket)
+{
+	close(Socket);
+}

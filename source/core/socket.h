@@ -45,4 +45,5 @@ void NetadrToSockadr(netadr_t* a, struct sockaddr_in* s);
 void SockadrToNetadr(struct sockaddr_in* s, netadr_t* a);
 bool SOCK_StringToSockaddr(const char* s, struct sockaddr_in* sadr);
 const char* SOCK_ErrorString();
-int SOCK_Open(const char* net_interface, int port);
+int SOCK_Open(const char* NetInterface, int Port);
+void SOCK_Close(int Socket);

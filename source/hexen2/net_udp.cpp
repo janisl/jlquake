@@ -136,7 +136,8 @@ int UDP_CloseSocket (int socket)
 {
 	if (socket == net_broadcastsocket)
 		net_broadcastsocket = 0;
-	return close (socket);
+	SOCK_Close(socket);
+	return 0;
 }
 
 //=============================================================================

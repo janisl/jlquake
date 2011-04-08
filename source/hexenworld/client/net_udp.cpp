@@ -248,7 +248,7 @@ NET_Shutdown
 */
 void	NET_Shutdown (void)
 {
-	close (net_socket);
+	SOCK_Close(net_socket);
 
 #ifdef _DEBUG
 	PrintFreqs();
