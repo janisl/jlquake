@@ -209,8 +209,6 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 
 void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 {
-	int		ret;
-	struct sockaddr_in	addr;
 	int		net_socket;
 
 	if ( to.type == NA_LOOPBACK )
@@ -234,13 +232,7 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	else
 		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
 
-	NetadrToSockadr (&to, &addr);
-
-	ret = sendto (net_socket, data, length, 0, (struct sockaddr *)&addr, sizeof(addr) );
-	if (ret == -1)
-	{
-		Com_Printf ("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
-	}
+	SOCL_Send(net_socket, data, length, &to);
 }
 
 

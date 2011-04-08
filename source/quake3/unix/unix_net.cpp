@@ -131,8 +131,6 @@ qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
 
 void	Sys_SendPacket( int length, const void *data, netadr_t to )
 {
-	int		ret;
-	struct sockaddr_in	addr;
 	int		net_socket;
 
 	if (to.type == NA_BROADCAST)
@@ -151,14 +149,7 @@ void	Sys_SendPacket( int length, const void *data, netadr_t to )
 	if (!net_socket)
 		return;
 
-	NetadrToSockadr (&to, &addr);
-
-	ret = sendto (net_socket, data, length, 0, (struct sockaddr *)&addr, sizeof(addr) );
-	if (ret == -1)
-	{
-		Com_Printf ("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(),
-				NET_AdrToString (to));
-	}
+	SOCL_Send(net_socket, data, length, &to);
 }
 
 

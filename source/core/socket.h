@@ -31,6 +31,9 @@ enum netadrtype_t
 #define SOCKRECV_ERROR		-1
 #define SOCKRECV_NO_DATA	-2
 
+#define SOCKSEND_ERROR		-1
+#define SOCKSEND_WOULDBLOCK	-2
+
 struct netadr_t
 {
 	netadrtype_t	type;
@@ -53,3 +56,4 @@ void SOCK_Shutdown();
 int SOCK_Open(const char* NetInterface, int Port);
 void SOCK_Close(int Socket);
 int SOCK_Recv(int Socket, void* Buffer, int Length, netadr_t* From);
+int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To);

@@ -149,21 +149,11 @@ qboolean NET_GetPacket (void)
 
 void NET_SendPacket (int length, void *data, netadr_t to)
 {
-	int ret;
-	struct sockaddr_in	addr;
 	int outlen;
 
-	NetadrToSockadr (&to, &addr);
-	HuffEncode((unsigned char *)data,huffbuff,length,&outlen);
+	HuffEncode((unsigned char *)data, huffbuff, length, &outlen);
 
-	ret = sendto (net_socket, huffbuff, outlen, 0, (struct sockaddr *)&addr, sizeof(addr) );
-	if (ret == -1) {
-		if (errno == EWOULDBLOCK)
-			return;
-		if (errno == ECONNREFUSED)
-			return;
-		Sys_Printf ("NET_SendPacket: %s\n", SOCK_ErrorString());
-	}
+	SOCL_Send(net_socket, huffbuff, outlen, &to);
 }
 
 //=============================================================================

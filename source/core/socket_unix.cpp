@@ -273,3 +273,30 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 	SockadrToNetadr(&addr, From);
 	return ret;
 }
+
+//==========================================================================
+//
+//	SOCL_Send
+//
+//==========================================================================
+
+int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To)
+{
+	sockaddr_in addr;
+	NetadrToSockadr(To, &addr);
+
+	int ret = sendto(Socket, Data, Length, 0, (struct sockaddr*)&addr, sizeof(addr));
+
+	if (ret == -1)
+	{
+		GLog.Write("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
+		//GLog.Write("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(), NET_AdrToString(to));
+		if (errno == EWOULDBLOCK)
+		{
+			return SOCKSEND_WOULDBLOCK;
+		}
+		return SOCKSEND_ERROR;
+	}
+
+	return ret;
+}

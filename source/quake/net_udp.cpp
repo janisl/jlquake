@@ -210,10 +210,10 @@ int UDP_Broadcast (int socket, byte *buf, int len)
 
 int UDP_Write (int socket, byte *buf, int len, struct qsockaddr *addr)
 {
-	int ret;
-
-	ret = sendto (socket, buf, len, 0, (struct sockaddr *)addr, sizeof(struct qsockaddr));
-	if (ret == -1 && errno == EWOULDBLOCK)
+	netadr_t to;
+	SockadrToNetadr((struct sockaddr_in*)addr, &to);
+	int ret = SOCL_Send(socket, buf, len, &to);
+	if (ret == SOCKSEND_WOULDBLOCK)
 		return 0;
 	return ret;
 }
