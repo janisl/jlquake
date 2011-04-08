@@ -79,36 +79,10 @@ idnewt:28000
 */
 qboolean	NET_StringToAdr (char *s, netadr_t *a)
 {
-	struct hostent	*h;
 	struct sockaddr_in sadr;
-	char	*colon;
-	char	copy[128];
-	
-	
-	Com_Memset(&sadr, 0, sizeof(sadr));
-	sadr.sin_family = AF_INET;
-	
-	sadr.sin_port = 0;
 
-	QStr::Cpy(copy, s);
-	// strip off a trailing :port if present
-	for (colon = copy ; *colon ; colon++)
-		if (*colon == ':')
-		{
-			*colon = 0;
-			sadr.sin_port = htons((short)QStr::Atoi(colon+1));	
-		}
-	
-	if (copy[0] >= '0' && copy[0] <= '9')
-	{
-		*(int *)&sadr.sin_addr = inet_addr(copy);
-	}
-	else
-	{
-		if ((h = gethostbyname(copy)) == 0)
-			return 0;
-		*(int *)&sadr.sin_addr = *(int *)h->h_addr_list[0];
-	}
+	if (!SOCK_StringToSockaddr(s, &sadr))
+		return false;
 	
 	SockadrToNetadr (&sadr, a);
 
