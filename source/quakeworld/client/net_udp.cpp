@@ -149,16 +149,14 @@ qboolean NET_GetPacket (void)
 {
 	int 	ret;
 	struct sockaddr_in	from;
-	socklen_t	fromlen;
 
-	fromlen = sizeof(from);
-	ret = recvfrom (net_socket, net_message_buffer, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
-	if (ret == -1) {
-		if (errno == EWOULDBLOCK)
-			return false;
-		if (errno == ECONNREFUSED)
-			return false;
-		Sys_Printf ("NET_GetPacket: %s\n", SOCK_ErrorString());
+	ret = SOCK_Recv(net_socket, net_message_buffer, sizeof(net_message_buffer), &from);
+	if (ret == SOCKRECV_NO_DATA)
+	{
+		return false;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
 		return false;
 	}
 

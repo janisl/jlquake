@@ -98,31 +98,25 @@ qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
 {
 	int 	ret;
 	struct sockaddr_in	from;
-	socklen_t	fromlen;
 	int		net_socket;
-	int		err;
 
 	net_socket = ip_socket;
 
 	if (!net_socket)
 		return false;
 
-	fromlen = sizeof(from);
-	ret = recvfrom (net_socket, net_message->_data, net_message->maxsize
-		, 0, (struct sockaddr *)&from, &fromlen);
+	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, &from);
 
 	SockadrToNetadr (&from, net_from);
 	// bk000305: was missing
 	net_message->readcount = 0;
 
-	if (ret == -1)
+	if (ret == SOCKRECV_NO_DATA)
 	{
-		err = errno;
-
-		if (err == EWOULDBLOCK || err == ECONNREFUSED)
-			return false;
-		Com_Printf ("NET_GetPacket: %s from %s\n", SOCK_ErrorString(),
-					NET_AdrToString(*net_from));
+		return false;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
 		return false;
 	}
 

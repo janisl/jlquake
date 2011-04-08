@@ -167,11 +167,8 @@ int UDP_CheckNewConnections (void)
 
 int UDP_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 {
-	socklen_t addrlen = sizeof (struct qsockaddr);
-	int ret;
-
-	ret = recvfrom (socket, buf, len, 0, (struct sockaddr *)addr, &addrlen);
-	if (ret == -1 && (errno == EWOULDBLOCK || errno == ECONNREFUSED))
+	int ret = SOCK_Recv(socket, buf, len, (struct sockaddr_in *)addr);
+	if (ret == SOCKRECV_NO_DATA)
 		return 0;
 	return ret;
 }

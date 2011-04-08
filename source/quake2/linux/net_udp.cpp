@@ -176,7 +176,6 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 {
 	int 	ret;
 	struct sockaddr_in	from;
-	socklen_t	fromlen;
 	int		net_socket;
 	int		err;
 
@@ -188,16 +187,13 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 	if (!net_socket)
 		return false;
 
-	fromlen = sizeof(from);
-	ret = recvfrom (net_socket, net_message->_data, net_message->maxsize
-		, 0, (struct sockaddr *)&from, &fromlen);
-	if (ret == -1)
+	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, &from);
+	if (ret == SOCKRECV_NO_DATA)
 	{
-		err = errno;
-
-		if (err == EWOULDBLOCK || err == ECONNREFUSED)
-			return false;
-		Com_Printf ("NET_GetPacket: %s", SOCK_ErrorString());
+		return false;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
 		return false;
 	}
 

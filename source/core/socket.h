@@ -28,6 +28,9 @@ enum netadrtype_t
 
 #define PORT_ANY	-1
 
+#define SOCKRECV_ERROR		-1
+#define SOCKRECV_NO_DATA	-2
+
 struct netadr_t
 {
 	netadrtype_t	type;
@@ -49,3 +52,4 @@ bool SOCK_Init();
 void SOCK_Shutdown();
 int SOCK_Open(const char* NetInterface, int Port);
 void SOCK_Close(int Socket);
+int SOCK_Recv(int socket, void* buf, int len, struct sockaddr_in* addr);
