@@ -200,18 +200,17 @@ int WINS_CheckNewConnections (void)
 
 int WINS_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 {
-	int addrlen = sizeof (struct qsockaddr);
-	int ret;
-
-	ret = recvfrom (socket, (char*)buf, len, 0, (struct sockaddr *)addr, &addrlen);
-	if (ret == -1)
+	netadr_t from;
+	int ret = SOCK_Recv(socket, buf, len, &from);
+	if (ret == SOCKRECV_NO_DATA)
 	{
-		int err = WSAGetLastError();
-
-		if (err == WSAEWOULDBLOCK || err == WSAECONNREFUSED)
-			return 0;
-
+		return 0;
 	}
+	if (ret == SOCKRECV_ERROR)
+	{
+		return -1;
+	}
+	NetadrToSockadr(&from, (struct sockaddr_in*)addr);
 	return ret;
 }
 

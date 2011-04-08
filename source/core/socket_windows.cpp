@@ -41,6 +41,9 @@
 static bool		winsockInitialized = false;
 static WSADATA	winsockdata;
 
+bool		usingSocks = false;
+sockaddr	socksRelayAddr;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -306,4 +309,77 @@ int SOCK_Open(const char* net_interface, int port)
 void SOCK_Close(int Socket)
 {
 	closesocket(Socket);
+}
+
+//==========================================================================
+//
+//	SOCK_Recv
+//
+//==========================================================================
+
+int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
+{
+	sockaddr_in addr;
+	int addrlen = sizeof(addr);
+	int ret;
+	QArray<quint8> SocksBuf;
+	if (usingSocks)
+	{
+		SocksBuf.SetNum(len + 10);
+		ret = recvfrom(socket, (char*)SocksBuf.Ptr(), len + 10, 0, (struct sockaddr*)&addr, &addrlen);
+	}
+	else
+	{
+		ret = recvfrom(socket, (char*)buf, len, 0, (struct sockaddr*)&addr, &addrlen);
+	}
+
+	if (ret == SOCKET_ERROR)
+	{
+		int err = WSAGetLastError();
+		if (err == WSAEWOULDBLOCK || err == WSAECONNRESET)
+		{
+			return SOCKRECV_NO_DATA;
+		}
+
+		GLog.Write("NET_GetPacket: %s\n", SOCK_ErrorString());
+		return SOCKRECV_ERROR;
+	}
+
+	Com_Memset(addr.sin_zero, 0, sizeof(addr.sin_zero));
+
+
+	if (usingSocks)
+	{
+		if (memcmp(&addr, &socksRelayAddr, sizeof(addr)) == 0)
+		{
+			if (ret < 10 || SocksBuf[0] != 0 || SocksBuf[1] != 0 || SocksBuf[2] != 0 || SocksBuf[3] != 1)
+			{
+				return SOCKRECV_ERROR;
+			}
+			From->type = NA_IP;
+			From->ip[0] = SocksBuf[4];
+			From->ip[1] = SocksBuf[5];
+			From->ip[2] = SocksBuf[6];
+			From->ip[3] = SocksBuf[7];
+			From->port = *(short*)&SocksBuf[8];
+			ret -= 10;
+			if (ret > 0)
+			{
+				Com_Memcpy(buf, &SocksBuf[10], ret);
+			}
+		}
+		else
+		{
+			SockadrToNetadr(&addr, From);
+			if (ret > 0)
+			{
+				Com_Memcpy(buf, SocksBuf.Ptr(), ret);
+			}
+		}
+	}
+	else
+	{
+		SockadrToNetadr(&addr, From);
+	}
+	return ret;
 }

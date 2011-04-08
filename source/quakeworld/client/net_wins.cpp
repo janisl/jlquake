@@ -122,28 +122,15 @@ qboolean NET_IsClientLegal(netadr_t *adr)
 
 qboolean NET_GetPacket (void)
 {
-	int 	ret;
-	struct sockaddr_in	from;
-	int		fromlen;
-
-	fromlen = sizeof(from);
-	ret = recvfrom (net_socket, (char *)net_message_buffer, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
-	SockadrToNetadr (&from, &net_from);
-
-	if (ret == -1)
+	int ret = SOCK_Recv(net_socket, net_message_buffer, sizeof(net_message_buffer), &net_from);
+	if (ret == SOCKRECV_NO_DATA)
 	{
-		int err = WSAGetLastError();
+		return false;
+	}
 
-		if (err == WSAEWOULDBLOCK)
-			return false;
-		if (err == WSAEMSGSIZE) {
-			Con_Printf ("Warning:  Oversize packet from %s\n",
-				NET_AdrToString (net_from));
-			return false;
-		}
-
-
-		Sys_Error ("NET_GetPacket: %s", strerror(err));
+	if (ret == SOCKRECV_ERROR)
+	{
+		Sys_Error("NET_GetPacket failed");
 	}
 
 	net_message.cursize = ret;

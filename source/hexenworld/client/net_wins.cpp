@@ -79,22 +79,15 @@ static unsigned char huffbuff[65536];
 
 qboolean NET_GetPacket (void)
 {
-	int 	ret;
-	struct sockaddr_in	from;
-	int		fromlen;
-
-	fromlen = sizeof(from);
-	ret = recvfrom (net_socket,(char *) huffbuff, sizeof(net_message_buffer), 0, (struct sockaddr *)&from, &fromlen);
-	if (ret == -1)
+	int ret = SOCK_Recv(net_socket, huffbuff, sizeof(net_message_buffer), &net_from);
+	if (ret == SOCKRECV_NO_DATA)
 	{
-		int err = WSAGetLastError();
-
-		if (err == WSAEWOULDBLOCK)
-			return false;
-		Sys_Error ("NET_GetPacket: %s", strerror(err));
+		return false;
 	}
-
-	SockadrToNetadr (&from, &net_from);
+	if (ret == SOCKRECV_ERROR)
+	{
+		Sys_Error("NET_GetPacket failed");
+	}
 
 	if (ret == sizeof(net_message_buffer) )
 	{

@@ -53,3 +53,4 @@ void SOCK_Shutdown();
 int SOCK_Open(const char* NetInterface, int Port);
 void SOCK_Close(int Socket);
 int SOCK_Recv(int socket, void* buf, int len, struct sockaddr_in* addr);
+int SOCK_Recv(int Socket, void* Buffer, int Length, netadr_t* From);

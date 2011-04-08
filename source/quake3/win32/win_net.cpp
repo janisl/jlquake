@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #include "win_local.h"
 
-static qboolean usingSocks = qfalse;
+extern bool usingSocks;
 static qboolean networkingEnabled = qfalse;
 
 static QCvar	*net_noudp;
@@ -35,7 +35,7 @@ static QCvar	*net_socksServer;
 static QCvar	*net_socksPort;
 static QCvar	*net_socksUsername;
 static QCvar	*net_socksPassword;
-static struct sockaddr	socksRelayAddr;
+extern sockaddr	socksRelayAddr;
 
 static SOCKET	ip_socket;
 static SOCKET	socks_socket;
@@ -75,52 +75,21 @@ Never called by the game logic, just the system event queing
 int	recvfromCount;
 
 qboolean Sys_GetPacket( netadr_t *net_from, QMsg *net_message ) {
-	int 	ret;
-	struct sockaddr from;
-	int		fromlen;
-	int		net_socket;
-	int		err;
-
-	net_socket = ip_socket;
-
-	if( !net_socket ) {
+	if( !ip_socket ) {
 		return qfalse;
 	}
 
-	fromlen = sizeof(from);
 	recvfromCount++;		// performance check
-	ret = recvfrom( net_socket, (char*)net_message->_data, net_message->maxsize, 0, (struct sockaddr *)&from, &fromlen );
-	if (ret == SOCKET_ERROR)
+	int ret = SOCK_Recv(ip_socket, net_message->_data, net_message->maxsize, net_from);
+	if (ret == SOCKRECV_NO_DATA)
 	{
-		err = WSAGetLastError();
-
-		if( err == WSAEWOULDBLOCK || err == WSAECONNRESET ) {
-			return qfalse;
-		}
-		Com_Printf( "NET_GetPacket: %s\n", SOCK_ErrorString() );
-		return qfalse;
+		return false;
 	}
-
-	if ( net_socket == ip_socket ) {
-		Com_Memset( ((struct sockaddr_in *)&from)->sin_zero, 0, 8 );
+	if (ret == SOCKRECV_ERROR)
+	{
+		return false;
 	}
-
-	if ( usingSocks && net_socket == ip_socket && memcmp( &from, &socksRelayAddr, fromlen ) == 0 ) {
-		if ( ret < 10 || net_message->_data[0] != 0 || net_message->_data[1] != 0 || net_message->_data[2] != 0 || net_message->_data[3] != 1 ) {
-			return qfalse;
-		}
-		net_from->type = NA_IP;
-		net_from->ip[0] = net_message->_data[4];
-		net_from->ip[1] = net_message->_data[5];
-		net_from->ip[2] = net_message->_data[6];
-		net_from->ip[3] = net_message->_data[7];
-		net_from->port = *(short *)&net_message->_data[8];
-		net_message->readcount = 10;
-	}
-	else {
-		SockadrToNetadr( (struct sockaddr_in*)&from, net_from );
-		net_message->readcount = 0;
-	}
+	net_message->readcount = 0;
 
 	if( ret == net_message->maxsize ) {
 		Com_Printf( "Oversize packet from %s\n", NET_AdrToString (*net_from) );

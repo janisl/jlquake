@@ -185,10 +185,7 @@ void NET_SendLoopPacket (netsrc_t sock, int length, void *data, netadr_t to)
 qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 {
 	int 	ret;
-	struct sockaddr from;
-	int		fromlen;
 	int		net_socket;
-	int		err;
 
 	if (NET_GetLoopPacket (sock, net_from, net_message))
 		return true;
@@ -198,23 +195,17 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 	if (!net_socket)
 		return false;
 
-	fromlen = sizeof(from);
-	ret = recvfrom (net_socket, (char*)net_message->_data, net_message->maxsize
-		, 0, (struct sockaddr *)&from, &fromlen);
-	if (ret == -1)
+	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
+	if (ret == SOCKRECV_NO_DATA)
 	{
-		err = WSAGetLastError();
-
-		if (err == WSAEWOULDBLOCK)
-			return false;
-		if (dedicated->value)	// let dedicated servers continue after errors
-			Com_Printf ("NET_GetPacket: %s", SOCK_ErrorString());
-		else
-			Com_Error (ERR_DROP, "NET_GetPacket: %s", SOCK_ErrorString());
 		return false;
 	}
-
-	SockadrToNetadr ((struct sockaddr_in*)&from, net_from);
+	if (ret == SOCKRECV_ERROR)
+	{
+		if (!dedicated->value)	// let dedicated servers continue after errors
+			Com_Error(ERR_DROP, "NET_GetPacket failed");
+		return false;
+	}
 
 	if (ret == net_message->maxsize)
 	{
