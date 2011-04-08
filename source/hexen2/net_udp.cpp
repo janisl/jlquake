@@ -167,9 +167,13 @@ int UDP_CheckNewConnections (void)
 
 int UDP_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 {
-	int ret = SOCK_Recv(socket, buf, len, (struct sockaddr_in*)addr);
+	netadr_t From;
+	int ret = SOCK_Recv(socket, buf, len, &From);
 	if (ret == SOCKRECV_NO_DATA)
 		return 0;
+	if (ret == SOCKRECV_ERROR)
+		return -1;
+	NetadrToSockadr(&From, (struct sockaddr_in *)addr);
 	return ret;
 }
 

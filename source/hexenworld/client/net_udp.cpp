@@ -121,10 +121,7 @@ static unsigned char huffbuff[65536];
 
 qboolean NET_GetPacket (void)
 {
-	int 	ret;
-	struct sockaddr_in	from;
-
-	ret = SOCK_Recv(net_socket, huffbuff, sizeof(net_message_buffer), &from);
+	int ret = SOCK_Recv(net_socket, huffbuff, sizeof(net_message_buffer), &net_from);
 	if (ret == SOCKRECV_NO_DATA)
 	{
 		return false;
@@ -133,8 +130,6 @@ qboolean NET_GetPacket (void)
 	{
 		return false;
 	}
-
-	SockadrToNetadr (&from, &net_from);
 
 	if (ret == sizeof(net_message_buffer) )
 	{

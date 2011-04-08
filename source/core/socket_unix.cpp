@@ -251,10 +251,12 @@ void SOCK_Close(int Socket)
 //
 //==========================================================================
 
-int SOCK_Recv(int socket, void* buf, int len, struct sockaddr_in* addr)
+int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 {
-	socklen_t addrlen = sizeof(*addr);
-	int ret = recvfrom(socket, buf, len, 0, (struct sockaddr *)addr, &addrlen);
+	sockaddr_in	addr;
+	socklen_t addrlen = sizeof(addr);
+	int ret = recvfrom(socket, buf, len, 0, (struct sockaddr*)&addr, &addrlen);
+
 	if (ret == -1)
 	{
 		int err = errno;
@@ -262,9 +264,12 @@ int SOCK_Recv(int socket, void* buf, int len, struct sockaddr_in* addr)
 		{
 			return SOCKRECV_NO_DATA;
 		}
+
 		GLog.Write("NET_GetPacket: %s", SOCK_ErrorString());
 		//GLog.Write("NET_GetPacket: %s from %s\n", SOCK_ErrorString(), NET_AdrToString(*net_from));
 		return SOCKRECV_ERROR;
 	}
+
+	SockadrToNetadr(&addr, From);
 	return ret;
 }

@@ -147,10 +147,7 @@ qboolean NET_IsClientLegal(netadr_t *adr)
 
 qboolean NET_GetPacket (void)
 {
-	int 	ret;
-	struct sockaddr_in	from;
-
-	ret = SOCK_Recv(net_socket, net_message_buffer, sizeof(net_message_buffer), &from);
+	int ret = SOCK_Recv(net_socket, net_message_buffer, sizeof(net_message_buffer), &net_from);
 	if (ret == SOCKRECV_NO_DATA)
 	{
 		return false;
@@ -161,7 +158,6 @@ qboolean NET_GetPacket (void)
 	}
 
 	net_message.cursize = ret;
-	SockadrToNetadr (&from, &net_from);
 
 	return ret;
 }

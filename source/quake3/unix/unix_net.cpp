@@ -97,7 +97,6 @@ qboolean	Sys_StringToAdr (const char *s, netadr_t *a)
 qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
 {
 	int 	ret;
-	struct sockaddr_in	from;
 	int		net_socket;
 
 	net_socket = ip_socket;
@@ -105,9 +104,7 @@ qboolean	Sys_GetPacket (netadr_t *net_from, QMsg *net_message)
 	if (!net_socket)
 		return false;
 
-	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, &from);
-
-	SockadrToNetadr (&from, net_from);
+	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
 	// bk000305: was missing
 	net_message->readcount = 0;
 

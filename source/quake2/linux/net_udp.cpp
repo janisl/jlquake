@@ -175,7 +175,6 @@ void NET_SendLoopPacket (netsrc_t sock, int length, void *data, netadr_t to)
 qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 {
 	int 	ret;
-	struct sockaddr_in	from;
 	int		net_socket;
 	int		err;
 
@@ -187,7 +186,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 	if (!net_socket)
 		return false;
 
-	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, &from);
+	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
 	if (ret == SOCKRECV_NO_DATA)
 	{
 		return false;
@@ -204,7 +203,6 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 	}
 
 	net_message->cursize = ret;
-	SockadrToNetadr (&from, net_from);
 	return true;
 }
 
