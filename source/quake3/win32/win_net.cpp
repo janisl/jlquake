@@ -31,10 +31,6 @@ static QCvar	*net_noudp;
 
 extern int	ip_socket;
 
-#define	MAX_IPS		16
-static	int		numIP;
-static	byte	localIP[MAX_IPS][4];
-
 /*
 =============
 Sys_StringToAdr

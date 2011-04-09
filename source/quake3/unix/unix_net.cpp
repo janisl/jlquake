@@ -51,10 +51,6 @@ netadr_t	net_local_adr;
 
 extern int			ip_socket;
 
-#define	MAX_IPS		16
-static	int		numIP;
-static	byte	localIP[MAX_IPS][4];
-
 int NET_Socket (char *net_interface, int port);
 
 //=============================================================================

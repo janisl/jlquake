@@ -68,3 +68,7 @@ extern QCvar*	net_socksServer;
 extern QCvar*	net_socksPort;
 extern QCvar*	net_socksUsername;
 extern QCvar*	net_socksPassword;
+
+#define	MAX_IPS		16
+extern int		numIP;
+extern byte		localIP[MAX_IPS][4];

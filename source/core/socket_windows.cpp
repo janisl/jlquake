@@ -47,6 +47,9 @@ QCvar*		net_socksPassword;
 static bool		winsockInitialized = false;
 static WSADATA	winsockdata;
 
+int		numIP;
+byte	localIP[MAX_IPS][4];
+
 static bool		usingSocks = false;
 static SOCKET	socks_socket;
 static sockaddr	socksRelayAddr;
