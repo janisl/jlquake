@@ -524,3 +524,175 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 		}
 	}
 }
+
+//=============================================================================
+
+static QCvar	*noudp;
+
+/*
+====================
+NET_OpenIP
+====================
+*/
+static void NET_OpenIP()
+{
+	QCvar* ip = Cvar_Get("ip", "localhost", CVAR_INIT);
+
+	int dedicated = Cvar_VariableValue("dedicated");
+
+	if (!ip_sockets[NS_SERVER])
+	{
+		int port = Cvar_Get("ip_hostport", "0", CVAR_INIT)->integer;
+		if (!port)
+		{
+			port = Cvar_Get("hostport", "0", CVAR_INIT)->integer;
+			if (!port)
+			{
+				port = Cvar_Get("port", va("%i", PORT_SERVER), CVAR_INIT)->integer;
+			}
+		}
+		ip_sockets[NS_SERVER] = SOCK_Open(ip->string, port);
+		if (!ip_sockets[NS_SERVER] && dedicated)
+			Com_Error (ERR_FATAL, "Couldn't allocate dedicated server IP port");
+	}
+
+	// dedicated servers don't need client ports
+	if (dedicated)
+		return;
+
+	if (!ip_sockets[NS_CLIENT])
+	{
+		int port = Cvar_Get("ip_clientport", "0", CVAR_INIT)->integer;
+		if (!port)
+		{
+			port = Cvar_Get("clientport", va("%i", PORT_CLIENT), CVAR_INIT)->integer;
+			if (!port)
+				port = PORT_ANY;
+		}
+		ip_sockets[NS_CLIENT] = SOCK_Open(ip->string, port);
+		if (!ip_sockets[NS_CLIENT])
+			ip_sockets[NS_CLIENT] = SOCK_Open (ip->string, PORT_ANY);
+	}
+}
+
+/*
+====================
+NET_Config
+
+A single player game will only use the loopback code
+====================
+*/
+void	NET_Config (qboolean multiplayer)
+{
+	int		i;
+	static	qboolean	old_config;
+
+	if (old_config == multiplayer)
+		return;
+
+	old_config = multiplayer;
+
+	if (!multiplayer)
+	{	// shut down any existing sockets
+		for (i=0 ; i<2 ; i++)
+		{
+			if (ip_sockets[i])
+			{
+				SOCK_Close(ip_sockets[i]);
+				ip_sockets[i] = 0;
+			}
+		}
+	}
+	else
+	{	// open sockets
+		if (!noudp->value)
+			NET_OpenIP ();
+	}
+}
+
+//===================================================================
+
+/*
+====================
+NET_Init
+====================
+*/
+void NET_Init()
+{
+	if (!SOCK_Init())
+	{
+		Com_Error(ERR_FATAL,"Sockets initialization failed.");
+	}
+
+	noudp = Cvar_Get("noudp", "0", CVAR_INIT);
+}
+
+/*
+====================
+NET_Shutdown
+====================
+*/
+void NET_Shutdown()
+{
+	NET_Config(false);	// close sockets
+
+	SOCK_Shutdown();
+}
+
+//=============================================================================
+
+qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
+{
+	if (a.type != b.type)
+		return false;
+
+	if (a.type == NA_LOOPBACK)
+		return true;
+
+	if (a.type == NA_IP)
+	{
+		if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3] && a.port == b.port)
+			return true;
+	}
+	return false;
+}
+
+/*
+===================
+NET_CompareBaseAdr
+
+Compares without the port
+===================
+*/
+qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
+{
+	if (a.type != b.type)
+		return false;
+
+	if (a.type == NA_LOOPBACK)
+		return true;
+
+	if (a.type == NA_IP)
+	{
+		if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3])
+			return true;
+	}
+	return false;
+}
+
+char* NET_AdrToString (netadr_t a)
+{
+	static	char	s[64];
+
+	if (a.type == NA_LOOPBACK)
+		QStr::Sprintf (s, sizeof(s), "loopback");
+	else
+		QStr::Sprintf (s, sizeof(s), "%i.%i.%i.%i:%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3], BigShort(a.port));
+
+	return s;
+}
+
+qboolean	NET_IsLocalAddress (netadr_t adr)
+{
+	return adr.type == NA_LOOPBACK;
+}

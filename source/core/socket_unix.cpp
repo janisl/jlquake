@@ -162,6 +162,7 @@ const char* SOCK_ErrorString()
 
 bool SOCK_Init()
 {
+	return true;
 }
 
 //==========================================================================
