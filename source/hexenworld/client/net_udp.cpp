@@ -176,7 +176,6 @@ int UDP_OpenSocket (int port)
 
 void NET_GetLocalAddress (void)
 {
-	char	buff[MAXHOSTNAMELEN];
 	struct sockaddr_in	address;
 	socklen_t	namelen;
 
@@ -186,17 +185,24 @@ void NET_GetLocalAddress (void)
 
 	BuildTree(HuffFreq);
 
-	gethostname(buff, MAXHOSTNAMELEN);
-	buff[MAXHOSTNAMELEN-1] = 0;
+	SOCK_GetLocalAddress();
+	hostname_buf[256-1] = 0;
 
-	NET_StringToAdr (buff, &net_local_adr);
+	struct sockaddr_in sadr;
+	
+	Com_Memset(&sadr, 0, sizeof(sadr));
+	sadr.sin_family = AF_INET;
+
+	sadr.sin_port = 0;
+
+	*(int*)&sadr.sin_addr = *(int*)localIP[0];
+	
+	SockadrToNetadr (&sadr, &net_local_adr);
 
 	namelen = sizeof(address);
 	if (getsockname (net_socket, (struct sockaddr *)&address, &namelen) == -1)
 		Sys_Error ("NET_Init: getsockname:", SOCK_ErrorString());
 	net_local_adr.port = address.sin_port;
-
-	Con_Printf("IP address %s\n", NET_AdrToString (net_local_adr) );
 }
 
 /*

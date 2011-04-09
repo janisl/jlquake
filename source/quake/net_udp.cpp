@@ -52,8 +52,6 @@ static unsigned long myAddr;
 
 int UDP_Init (void)
 {
-	struct hostent *local;
-	char	buff[MAXHOSTNAMELEN];
 	struct qsockaddr addr;
 	char *colon;
 	
@@ -61,15 +59,14 @@ int UDP_Init (void)
 		return -1;
 
 	// determine my name & address
-	gethostname(buff, MAXHOSTNAMELEN);
-	local = gethostbyname(buff);
-	myAddr = *(int *)local->h_addr_list[0];
+	SOCK_GetLocalAddress();
+	myAddr = *(int *)localIP[0];
 
 	// if the quake hostname isn't set, set it to the machine name
 	if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
 	{
-		buff[15] = 0;
-		Cvar_Set ("hostname", buff);
+		hostname_buf[15] = 0;
+		Cvar_Set ("hostname", hostname_buf);
 	}
 
 	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
