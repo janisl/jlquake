@@ -232,6 +232,7 @@ void SOCK_Shutdown()
 
 void SOCK_GetLocalAddress()
 {
+	char hostname_buf[256];
 	if (gethostname(hostname_buf, 256) == SOCKET_ERROR)
 	{
 		return;

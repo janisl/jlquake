@@ -43,7 +43,6 @@ QCvar*		net_socksPassword;
 
 int			numIP;
 byte		localIP[MAX_IPS][4];
-char		hostname_buf[256];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

@@ -74,4 +74,3 @@ extern QCvar*	net_socksPassword;
 #define	MAX_IPS		16
 extern int		numIP;
 extern byte		localIP[MAX_IPS][4];
-extern char				hostname_buf[256];

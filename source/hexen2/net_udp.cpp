@@ -62,13 +62,6 @@ int UDP_Init (void)
 	SOCK_GetLocalAddress();
 	myAddr = *(int *)localIP[0];
 
-	// if the quake hostname isn't set, set it to the machine name
-	if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
-	{
-		hostname_buf[15] = 0;
-		Cvar_Set ("hostname", hostname_buf);
-	}
-
 	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
 		Sys_Error("UDP_Init: Unable to open control socket\n");
 

@@ -186,7 +186,6 @@ void NET_GetLocalAddress (void)
 	BuildTree(HuffFreq);
 
 	SOCK_GetLocalAddress();
-	hostname_buf[256-1] = 0;
 
 	struct sockaddr_in sadr;
 	

@@ -36,25 +36,6 @@ int WINS_Init (void)
 
 	myAddr = *(int *)localIP[0];
 
-	// if the quake hostname isn't set, set it to the machine name
-	if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
-	{
-		// see if it's a text IP address (well, close enough)
-		for (p = hostname_buf; *p; p++)
-			if ((*p < '0' || *p > '9') && *p != '.')
-				break;
-
-		// if it is a real name, strip off the domain; we only want the host
-		if (*p)
-		{
-			for (i = 0; i < 15; i++)
-				if (hostname_buf[i] == '.')
-					break;
-			hostname_buf[i] = 0;
-		}
-		Cvar_Set ("hostname", hostname_buf);
-	}
-
 	if ((net_controlsocket = WINS_OpenSocket (PORT_ANY)) == -1)
 	{
 		Con_Printf("WINS_Init: Unable to open control socket\n");

@@ -294,6 +294,7 @@ void SOCK_GetLocalAddress()
 
 	close(interfaceSocket);
 #else
+	char hostname_buf[256];
 	if (gethostname(hostname_buf, 256) == -1)
 	{
 		return;

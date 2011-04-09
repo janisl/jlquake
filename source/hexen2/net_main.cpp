@@ -707,7 +707,7 @@ void NET_Init (void)
 	net_message.InitOOB(net_message_buf, NET_MAXMESSAGE);
 
 	net_messagetimeout = Cvar_Get("net_messagetimeout", "300", 0);
-	hostname = Cvar_Get("hostname", "UNNAMED", 0);
+	hostname = Cvar_Get("hostname", "UNNAMED", CVAR_ARCHIVE);
 #ifdef IDGODS
 	idgods = Cvar_Get("idgods", "0", 0);
 #endif
