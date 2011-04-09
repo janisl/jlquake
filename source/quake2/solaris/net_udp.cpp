@@ -16,8 +16,6 @@
 #include <libc.h>
 #endif
 
-netadr_t	net_local_adr;
-
 #define	LOOPBACK	0x7f000001
 
 #define	MAX_LOOPBACK	4
@@ -120,7 +118,7 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 
 qboolean	NET_IsLocalAddress (netadr_t adr)
 {
-	return NET_CompareAdr (adr, net_local_adr);
+	return adr.type == NA_LOOPBACK;
 }
 
 /*
@@ -149,7 +147,8 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message
 
 	Com_Memcpy(net_message->data, loop->msgs[i].data, loop->msgs[i].datalen);
 	net_message->cursize = loop->msgs[i].datalen;
-	*net_from = net_local_adr;
+	Com_Memset(net_from, 0, sizeof(*net_from));
+	net_from->type = NA_LOOPBACK;
 	return true;
 
 }
