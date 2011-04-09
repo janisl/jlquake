@@ -36,20 +36,10 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*		net_socksEnabled;
-QCvar*		net_socksServer;
-QCvar*		net_socksPort;
-QCvar*		net_socksUsername;
-QCvar*		net_socksPassword;
-
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static bool		winsockInitialized = false;
 static WSADATA	winsockdata;
-
-int		numIP;
-byte	localIP[MAX_IPS][4];
-char				hostname_buf[256];
 
 static bool		usingSocks = false;
 static SOCKET	socks_socket;
@@ -287,131 +277,133 @@ void SOCK_GetLocalAddress()
 
 void SOCK_OpenSocks(int port)
 {
-	struct sockaddr_in	address;
 	int					err;
-	struct hostent		*h;
-	int					len;
-	bool				rfc1929;
-	unsigned char		buf[64];
 
 	usingSocks = false;
 
 	GLog.Write("Opening connection to SOCKS server.\n");
 
-	if ( ( socks_socket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ) ) == INVALID_SOCKET ) {
-		err = WSAGetLastError();
-		GLog.Write( "WARNING: SOCK_OpenSocks: socket: %s\n", SOCK_ErrorString() );
+	socks_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (socks_socket == INVALID_SOCKET)
+	{
+		GLog.Write("WARNING: SOCK_OpenSocks: socket: %s\n", SOCK_ErrorString());
 		return;
 	}
 
-	h = gethostbyname( net_socksServer->string );
-	if ( h == NULL ) {
-		err = WSAGetLastError();
-		GLog.Write( "WARNING: SOCK_OpenSocks: gethostbyname: %s\n", SOCK_ErrorString() );
+	hostent* h = gethostbyname(net_socksServer->string);
+	if (h == NULL)
+	{
+		GLog.Write("WARNING: SOCK_OpenSocks: gethostbyname: %s\n", SOCK_ErrorString());
 		return;
 	}
-	if ( h->h_addrtype != AF_INET ) {
-		GLog.Write( "WARNING: SOCK_OpenSocks: gethostbyname: address type was not AF_INET\n" );
+	if (h->h_addrtype != AF_INET)
+	{
+		GLog.Write("WARNING: SOCK_OpenSocks: gethostbyname: address type was not AF_INET\n");
 		return;
 	}
+	sockaddr_in address;
 	address.sin_family = AF_INET;
-	address.sin_addr.s_addr = *(int *)h->h_addr_list[0];
-	address.sin_port = htons( (short)net_socksPort->integer );
+	address.sin_addr.s_addr = *(int*)h->h_addr_list[0];
+	address.sin_port = htons((short)net_socksPort->integer);
 
-	if ( connect( socks_socket, (struct sockaddr *)&address, sizeof( address ) ) == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		GLog.Write( "SOCK_OpenSocks: connect: %s\n", SOCK_ErrorString() );
+	if (connect(socks_socket, (sockaddr*)&address, sizeof(address)) == SOCKET_ERROR)
+	{
+		GLog.Write("SOCK_OpenSocks: connect: %s\n", SOCK_ErrorString());
 		return;
 	}
 
 	// send socks authentication handshake
-	if ( *net_socksUsername->string || *net_socksPassword->string ) {
-		rfc1929 = true;
-	}
-	else {
-		rfc1929 = false;
-	}
+	bool rfc1929 = *net_socksUsername->string || *net_socksPassword->string;
 
+	unsigned char buf[64];
+	int len;
 	buf[0] = 5;		// SOCKS version
 	// method count
-	if ( rfc1929 ) {
+	if (rfc1929)
+	{
 		buf[1] = 2;
 		len = 4;
 	}
-	else {
+	else
+	{
 		buf[1] = 1;
 		len = 3;
 	}
 	buf[2] = 0;		// method #1 - method id #00: no authentication
-	if ( rfc1929 ) {
+	if (rfc1929)
+	{
 		buf[2] = 2;		// method #2 - method id #02: username/password
 	}
-	if ( send( socks_socket, (char*)buf, len, 0 ) == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		GLog.Write( "SOCK_OpenSocks: send: %s\n", SOCK_ErrorString() );
+	if (send(socks_socket, (char*)buf, len, 0) == SOCKET_ERROR)
+	{
+		GLog.Write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 		return;
 	}
 
 	// get the response
-	len = recv( socks_socket, (char*)buf, 64, 0 );
-	if ( len == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		GLog.Write( "SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString() );
+	len = recv(socks_socket, (char*)buf, 64, 0);
+	if (len == SOCKET_ERROR)
+	{
+		GLog.Write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 		return;
 	}
-	if ( len != 2 || buf[0] != 5 ) {
-		GLog.Write( "SOCK_OpenSocks: bad response\n" );
+	if (len != 2 || buf[0] != 5)
+	{
+		GLog.Write("SOCK_OpenSocks: bad response\n");
 		return;
 	}
-	switch( buf[1] ) {
+	switch (buf[1])
+	{
 	case 0:	// no authentication
 		break;
 	case 2: // username/password authentication
 		break;
 	default:
-		GLog.Write( "SOCK_OpenSocks: request denied\n" );
+		GLog.Write("SOCK_OpenSocks: request denied\n");
 		return;
 	}
 
 	// do username/password authentication if needed
-	if ( buf[1] == 2 ) {
-		int		ulen;
-		int		plen;
-
+	if (buf[1] == 2)
+	{
 		// build the request
-		ulen = QStr::Length( net_socksUsername->string );
-		plen = QStr::Length( net_socksPassword->string );
+		int ulen = QStr::Length(net_socksUsername->string);
+		int plen = QStr::Length(net_socksPassword->string);
 
 		buf[0] = 1;		// username/password authentication version
 		buf[1] = ulen;
-		if ( ulen ) {
-			Com_Memcpy( &buf[2], net_socksUsername->string, ulen );
+		if (ulen)
+		{
+			Com_Memcpy(&buf[2], net_socksUsername->string, ulen);
 		}
 		buf[2 + ulen] = plen;
-		if ( plen ) {
-			Com_Memcpy( &buf[3 + ulen], net_socksPassword->string, plen );
+		if (plen)
+		{
+			Com_Memcpy(&buf[3 + ulen], net_socksPassword->string, plen);
 		}
 
 		// send it
-		if ( send( socks_socket, (char*)buf, 3 + ulen + plen, 0 ) == SOCKET_ERROR ) {
-			err = WSAGetLastError();
-			GLog.Write( "SOCK_OpenSocks: send: %s\n", SOCK_ErrorString() );
+		if (send(socks_socket, (char*)buf, 3 + ulen + plen, 0) == SOCKET_ERROR)
+		{
+			GLog.Write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 			return;
 		}
 
 		// get the response
-		len = recv( socks_socket, (char*)buf, 64, 0 );
-		if ( len == SOCKET_ERROR ) {
-			err = WSAGetLastError();
-			GLog.Write( "SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString() );
+		len = recv(socks_socket, (char*)buf, 64, 0);
+		if (len == SOCKET_ERROR)
+		{
+			GLog.Write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 			return;
 		}
-		if ( len != 2 || buf[0] != 1 ) {
-			GLog.Write( "SOCK_OpenSocks: bad response\n" );
+		if (len != 2 || buf[0] != 1)
+		{
+			GLog.Write("SOCK_OpenSocks: bad response\n");
 			return;
 		}
-		if ( buf[1] != 0 ) {
-			GLog.Write( "SOCK_OpenSocks: authentication failed\n" );
+		if (buf[1] != 0)
+		{
+			GLog.Write("SOCK_OpenSocks: authentication failed\n");
 			return;
 		}
 	}
@@ -421,38 +413,41 @@ void SOCK_OpenSocks(int port)
 	buf[1] = 3;		// command: UDP associate
 	buf[2] = 0;		// reserved
 	buf[3] = 1;		// address type: IPV4
-	*(int *)&buf[4] = INADDR_ANY;
-	*(short *)&buf[8] = htons( (short)port );		// port
-	if ( send( socks_socket, (char*)buf, 10, 0 ) == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		GLog.Write( "SOCK_OpenSocks: send: %s\n", SOCK_ErrorString() );
+	*(int*)&buf[4] = INADDR_ANY;
+	*(short*)&buf[8] = htons((short)port);		// port
+	if (send(socks_socket, (char*)buf, 10, 0) == SOCKET_ERROR)
+	{
+		GLog.Write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 		return;
 	}
 
 	// get the response
 	len = recv( socks_socket, (char*)buf, 64, 0 );
-	if( len == SOCKET_ERROR ) {
-		err = WSAGetLastError();
-		GLog.Write( "SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString() );
+	if (len == SOCKET_ERROR)
+	{
+		GLog.Write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 		return;
 	}
-	if( len < 2 || buf[0] != 5 ) {
-		GLog.Write( "SOCK_OpenSocks: bad response\n" );
+	if (len < 2 || buf[0] != 5)
+	{
+		GLog.Write("SOCK_OpenSocks: bad response\n");
 		return;
 	}
 	// check completion code
-	if( buf[1] != 0 ) {
-		GLog.Write( "SOCK_OpenSocks: request denied: %i\n", buf[1] );
+	if (buf[1] != 0)
+	{
+		GLog.Write("SOCK_OpenSocks: request denied: %i\n", buf[1]);
 		return;
 	}
-	if( buf[3] != 1 ) {
-		GLog.Write( "SOCK_OpenSocks: relay address is not IPV4: %i\n", buf[3] );
+	if (buf[3] != 1)
+	{
+		GLog.Write("SOCK_OpenSocks: relay address is not IPV4: %i\n", buf[3]);
 		return;
 	}
-	((struct sockaddr_in *)&socksRelayAddr)->sin_family = AF_INET;
-	((struct sockaddr_in *)&socksRelayAddr)->sin_addr.s_addr = *(int *)&buf[4];
-	((struct sockaddr_in *)&socksRelayAddr)->sin_port = *(short *)&buf[8];
-	Com_Memset( ((struct sockaddr_in *)&socksRelayAddr)->sin_zero, 0, 8 );
+	((sockaddr_in*)&socksRelayAddr)->sin_family = AF_INET;
+	((sockaddr_in*)&socksRelayAddr)->sin_addr.s_addr = *(int*)&buf[4];
+	((sockaddr_in*)&socksRelayAddr)->sin_port = *(short*)&buf[8];
+	Com_Memset(((sockaddr_in*)&socksRelayAddr)->sin_zero, 0, sizeof(((sockaddr_in*)&socksRelayAddr)->sin_zero));
 
 	usingSocks = true;
 }
@@ -467,7 +462,7 @@ void SOCK_CloseSocks()
 {
 	if (socks_socket && socks_socket != INVALID_SOCKET)
 	{
-		SOCK_Close(socks_socket);
+		closesocket(socks_socket);
 		socks_socket = 0;
 	}
 	usingSocks = false;
@@ -596,7 +591,6 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 	}
 
 	Com_Memset(addr.sin_zero, 0, sizeof(addr.sin_zero));
-
 
 	if (usingSocks)
 	{

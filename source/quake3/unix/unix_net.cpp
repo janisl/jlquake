@@ -173,6 +173,10 @@ void NET_OpenIP (void)
 		ip_socket = SOCK_Open(ip->string, port + i);
 		if ( ip_socket ) {
 			Cvar_SetValue( "net_port", port + i );
+			if (net_socksEnabled->integer)
+			{
+				SOCK_OpenSocks(port + i);
+			}
 			SOCK_GetLocalAddress();
 			return;
 		}
@@ -189,6 +193,9 @@ NET_Init
 void NET_Init (void)
 {
 	noudp = Cvar_Get ("net_noudp", "0", 0);
+
+	SOCK_GetSocksCvars();
+
 	// open sockets
 	if (! noudp->value) {
 		NET_OpenIP ();
@@ -207,6 +214,8 @@ void	NET_Shutdown (void)
 		close(ip_socket);
 		ip_socket = 0;
 	}
+
+	SOCK_CloseSocks();
 }
 
 // sleeps msec or until net socket is ready

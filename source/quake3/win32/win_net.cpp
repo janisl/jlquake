@@ -151,8 +151,9 @@ void NET_OpenIP( void ) {
 		ip_socket = SOCK_Open( ip->string, port + i );
 		if ( ip_socket ) {
 			Cvar_SetValue( "net_port", port + i );
-			if ( net_socksEnabled->integer ) {
-				SOCK_OpenSocks( port + i );
+			if (net_socksEnabled->integer)
+			{
+				SOCK_OpenSocks(port + i);
 			}
 			SOCK_GetLocalAddress();
 			return;
@@ -180,32 +181,10 @@ static qboolean NET_GetCvars( void ) {
 	}
 	net_noudp = Cvar_Get( "net_noudp", "0", CVAR_LATCH | CVAR_ARCHIVE );
 
-
-	if( net_socksEnabled && net_socksEnabled->modified ) {
+	if (SOCK_GetSocksCvars())
+	{
 		modified = qtrue;
 	}
-	net_socksEnabled = Cvar_Get( "net_socksEnabled", "0", CVAR_LATCH | CVAR_ARCHIVE );
-
-	if( net_socksServer && net_socksServer->modified ) {
-		modified = qtrue;
-	}
-	net_socksServer = Cvar_Get( "net_socksServer", "", CVAR_LATCH | CVAR_ARCHIVE );
-
-	if( net_socksPort && net_socksPort->modified ) {
-		modified = qtrue;
-	}
-	net_socksPort = Cvar_Get( "net_socksPort", "1080", CVAR_LATCH | CVAR_ARCHIVE );
-
-	if( net_socksUsername && net_socksUsername->modified ) {
-		modified = qtrue;
-	}
-	net_socksUsername = Cvar_Get( "net_socksUsername", "", CVAR_LATCH | CVAR_ARCHIVE );
-
-	if( net_socksPassword && net_socksPassword->modified ) {
-		modified = qtrue;
-	}
-	net_socksPassword = Cvar_Get( "net_socksPassword", "", CVAR_LATCH | CVAR_ARCHIVE );
-
 
 	return modified;
 }

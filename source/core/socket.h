@@ -56,6 +56,7 @@ bool SOCK_Init();
 void SOCK_Shutdown();
 void SOCK_GetLocalAddress();
 
+bool SOCK_GetSocksCvars();
 void SOCK_OpenSocks(int Port);
 void SOCK_CloseSocks();
 
