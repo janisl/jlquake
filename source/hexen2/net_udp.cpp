@@ -41,7 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static int net_acceptsocket = -1;		// socket for fielding new connections
 static int net_controlsocket;
-static int net_broadcastsocket = 0;
 static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
@@ -124,8 +123,6 @@ int UDP_OpenSocket (int port)
 
 int UDP_CloseSocket (int socket)
 {
-	if (socket == net_broadcastsocket)
-		net_broadcastsocket = 0;
 	SOCK_Close(socket);
 	return 0;
 }
@@ -169,30 +166,8 @@ int UDP_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 
 //=============================================================================
 
-int UDP_MakeSocketBroadcastCapable (int socket)
-{
-	net_broadcastsocket = socket;
-	return 0;
-}
-
-//=============================================================================
-
 int UDP_Broadcast (int socket, byte *buf, int len)
 {
-	int ret;
-
-	if (socket != net_broadcastsocket)
-	{
-		if (net_broadcastsocket != 0)
-			Sys_Error("Attempted to use multiple broadcasts sockets\n");
-		ret = UDP_MakeSocketBroadcastCapable (socket);
-		if (ret == -1)
-		{
-			Con_Printf("Unable to make socket broadcast capable\n");
-			return ret;
-		}
-	}
-
 	return UDP_Write (socket, buf, len, &broadcastaddr);
 }
 
