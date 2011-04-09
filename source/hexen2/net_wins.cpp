@@ -5,8 +5,6 @@
 
 extern QCvar* hostname;
 
-#define MAXHOSTNAMELEN		256
-
 static int net_acceptsocket = -1;		// socket for fielding new connections
 static int net_controlsocket;
 static int net_broadcastsocket = 0;
@@ -19,37 +17,9 @@ static unsigned long myAddr;
 
 //=============================================================================
 
-static double	blocktime;
-
-BOOL PASCAL FAR BlockingHook(void)  
-{ 
-    MSG		msg;
-    BOOL	ret;
- 
-	if ((Sys_FloatTime() - blocktime) > 2.0)
-	{
-		WSACancelBlockingCall();
-		return FALSE;
-	}
-
-    /* get the next message, if any */ 
-    ret = (BOOL) PeekMessage(&msg, NULL, 0, 0, PM_REMOVE); 
- 
-    /* if we got one, process it */ 
-    if (ret) { 
-        TranslateMessage(&msg); 
-        DispatchMessage(&msg); 
-    } 
- 
-    /* TRUE if we got a message */ 
-    return ret; 
-} 
-
 int WINS_Init (void)
 {
 	int		i;
-	struct hostent *local = NULL;
-	char	buff[MAXHOSTNAMELEN];
 	struct qsockaddr addr;
 	char	*p;
 
@@ -62,42 +32,27 @@ int WINS_Init (void)
 	}
 
 	// determine my name & address
-	if (gethostname(buff, MAXHOSTNAMELEN) == 0)
-	{
-		blocktime = Sys_FloatTime();
-		WSASetBlockingHook(BlockingHook);
-		local = gethostbyname(buff);
-		WSAUnhookBlockingHook();
-		if (local == NULL)
-		{
-			Con_DPrintf ("Winsock TCP/IP Initialization timed out.\n");
-			SOCK_Shutdown();
-			return -1;
-		}
-	}
+	SOCK_GetLocalAddress();
 
-	if (local)
-	{
-		myAddr = *(int *)local->h_addr_list[0];
+	myAddr = *(int *)localIP[0];
 
-		// if the quake hostname isn't set, set it to the machine name
-		if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
+	// if the quake hostname isn't set, set it to the machine name
+	if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
+	{
+		// see if it's a text IP address (well, close enough)
+		for (p = hostname_buf; *p; p++)
+			if ((*p < '0' || *p > '9') && *p != '.')
+				break;
+
+		// if it is a real name, strip off the domain; we only want the host
+		if (*p)
 		{
-			// see if it's a text IP address (well, close enough)
-			for (p = buff; *p; p++)
-				if ((*p < '0' || *p > '9') && *p != '.')
+			for (i = 0; i < 15; i++)
+				if (hostname_buf[i] == '.')
 					break;
-
-			// if it is a real name, strip off the domain; we only want the host
-			if (*p)
-			{
-				for (i = 0; i < 15; i++)
-					if (buff[i] == '.')
-						break;
-				buff[i] = 0;
-			}
-			Cvar_Set ("hostname", buff);
+			hostname_buf[i] = 0;
 		}
+		Cvar_Set ("hostname", hostname_buf);
 	}
 
 	if ((net_controlsocket = WINS_OpenSocket (PORT_ANY)) == -1)

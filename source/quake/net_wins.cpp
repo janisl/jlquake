@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern QCvar* hostname;
 
-#define MAXHOSTNAMELEN		256
-
 static int net_acceptsocket = -1;		// socket for fielding new connections
 static int net_controlsocket;
 static int net_broadcastsocket = 0;
@@ -38,63 +36,9 @@ static const char* net_interface;
 
 //=============================================================================
 
-static double	blocktime;
-
-BOOL PASCAL FAR BlockingHook(void)  
-{ 
-    MSG		msg;
-    BOOL	ret;
- 
-	if ((Sys_FloatTime() - blocktime) > 2.0)
-	{
-		WSACancelBlockingCall();
-		return FALSE;
-	}
-
-    /* get the next message, if any */ 
-    ret = (BOOL) PeekMessage(&msg, NULL, 0, 0, PM_REMOVE); 
- 
-    /* if we got one, process it */ 
-    if (ret) { 
-        TranslateMessage(&msg); 
-        DispatchMessage(&msg); 
-    } 
- 
-    /* TRUE if we got a message */ 
-    return ret; 
-} 
-
-
-void WINS_GetLocalAddress()
-{
-	struct hostent	*local = NULL;
-	char			buff[MAXHOSTNAMELEN];
-	unsigned long	addr;
-
-	if (myAddr != INADDR_ANY)
-		return;
-
-	if (gethostname(buff, MAXHOSTNAMELEN) == SOCKET_ERROR)
-		return;
-
-	blocktime = Sys_FloatTime();
-	WSASetBlockingHook(BlockingHook);
-	local = gethostbyname(buff);
-	WSAUnhookBlockingHook();
-	if (local == NULL)
-		return;
-
-	myAddr = *(int *)local->h_addr_list[0];
-
-	addr = ntohl(myAddr);
-	sprintf(my_tcpip_address, "%d.%d.%d.%d", (addr >> 24) & 0xff, (addr >> 16) & 0xff, (addr >> 8) & 0xff, addr & 0xff);
-}
-
-
 int WINS_Init (void)
 {
 	int		i;
-	char	buff[MAXHOSTNAMELEN];
 	char	*p;
 
 	if (COM_CheckParm ("-noudp"))
@@ -105,19 +49,15 @@ int WINS_Init (void)
 		return -1;
 	}
 
-	// determine my name
-	if (gethostname(buff, MAXHOSTNAMELEN) == SOCKET_ERROR)
-	{
-		Con_DPrintf ("Winsock TCP/IP Initialization failed.\n");
-		SOCK_Shutdown();
-		return -1;
-	}
+	unsigned long	addr;
+
+	SOCK_GetLocalAddress();
 
 	// if the quake hostname isn't set, set it to the machine name
 	if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
 	{
 		// see if it's a text IP address (well, close enough)
-		for (p = buff; *p; p++)
+		for (p = hostname_buf; *p; p++)
 			if ((*p < '0' || *p > '9') && *p != '.')
 				break;
 
@@ -125,11 +65,11 @@ int WINS_Init (void)
 		if (*p)
 		{
 			for (i = 0; i < 15; i++)
-				if (buff[i] == '.')
+				if (hostname_buf[i] == '.')
 					break;
-			buff[i] = 0;
+			hostname_buf[i] = 0;
 		}
-		Cvar_Set ("hostname", buff);
+		Cvar_Set ("hostname", hostname_buf);
 	}
 
 	i = COM_CheckParm ("-ip");
@@ -152,6 +92,14 @@ int WINS_Init (void)
 	{
 		myAddr = INADDR_ANY;
 		QStr::Cpy(my_tcpip_address, "INADDR_ANY");
+	}
+
+	if (myAddr == INADDR_ANY)
+	{
+		myAddr = *(int *)localIP[0];
+
+		addr = ntohl(myAddr);
+		sprintf(my_tcpip_address, "%d.%d.%d.%d", (addr >> 24) & 0xff, (addr >> 16) & 0xff, (addr >> 8) & 0xff, addr & 0xff);
 	}
 
 	if ((net_controlsocket = WINS_OpenSocket (PORT_ANY)) == -1)
@@ -188,7 +136,6 @@ void WINS_Listen (qboolean state)
 	{
 		if (net_acceptsocket != -1)
 			return;
-		WINS_GetLocalAddress();
 		if ((net_acceptsocket = WINS_OpenSocket (net_hostport)) == -1)
 			Sys_Error ("WINS_Listen: Unable to open accept socket\n");
 		return;
@@ -281,7 +228,6 @@ int WINS_Broadcast (int socket, byte *buf, int len)
 	{
 		if (net_broadcastsocket != 0)
 			Sys_Error("Attempted to use multiple broadcasts sockets\n");
-		WINS_GetLocalAddress();
 		ret = WINS_MakeSocketBroadcastCapable (socket);
 		if (ret == -1)
 		{

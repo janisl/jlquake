@@ -49,6 +49,7 @@ static WSADATA	winsockdata;
 
 int		numIP;
 byte	localIP[MAX_IPS][4];
+char				hostname_buf[256];
 
 static bool		usingSocks = false;
 static SOCKET	socks_socket;
@@ -231,6 +232,51 @@ void SOCK_Shutdown()
 	}
 	WSACleanup();
 	winsockInitialized = false;
+}
+
+//==========================================================================
+//
+//	SOCK_GetLocalAddress
+//
+//==========================================================================
+
+void SOCK_GetLocalAddress()
+{
+	if (gethostname(hostname_buf, 256) == SOCKET_ERROR)
+	{
+		return;
+	}
+
+	hostent* hostInfo = gethostbyname(hostname_buf);
+	if (!hostInfo)
+	{
+		return;
+	}
+
+	GLog.Write("Hostname: %s\n", hostInfo->h_name);
+	char* p;
+	int n = 0;
+	while ((p = hostInfo->h_aliases[n++]) != NULL)
+	{
+		GLog.Write("Alias: %s\n", p);
+	}
+
+	if (hostInfo->h_addrtype != AF_INET)
+	{
+		return;
+	}
+
+	numIP = 0;
+	while ((p = hostInfo->h_addr_list[numIP]) != NULL && numIP < MAX_IPS)
+	{
+		int ip = ntohl(*(int*)p);
+		localIP[numIP][0] = p[0];
+		localIP[numIP][1] = p[1];
+		localIP[numIP][2] = p[2];
+		localIP[numIP][3] = p[3];
+		GLog.Write("IP: %i.%i.%i.%i\n", (ip >> 24) & 0xff, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
+		numIP++;
+	}
 }
 
 //==========================================================================
