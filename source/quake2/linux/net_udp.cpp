@@ -19,22 +19,7 @@
 
 #define	LOOPBACK	0x7f000001
 
-#define	MAX_LOOPBACK	4
-
-typedef struct
-{
-	byte	data[MAX_MSGLEN];
-	int		datalen;
-} loopmsg_t;
-
-typedef struct
-{
-	loopmsg_t	msgs[MAX_LOOPBACK];
-	int			get, send;
-} loopback_t;
-
-loopback_t	loopbacks[2];
-int			ip_sockets[2];
+extern int			ip_sockets[2];
 
 //=============================================================================
 
@@ -121,120 +106,6 @@ qboolean	NET_IsLocalAddress (netadr_t adr)
 {
 	return adr.type == NA_LOOPBACK;
 }
-
-/*
-=============================================================================
-
-LOOPBACK BUFFERS FOR LOCAL PLAYER
-
-=============================================================================
-*/
-
-qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
-{
-	int		i;
-	loopback_t	*loop;
-
-	loop = &loopbacks[sock];
-
-	if (loop->send - loop->get > MAX_LOOPBACK)
-		loop->get = loop->send - MAX_LOOPBACK;
-
-	if (loop->get >= loop->send)
-		return false;
-
-	i = loop->get & (MAX_LOOPBACK-1);
-	loop->get++;
-
-	Com_Memcpy(net_message->_data, loop->msgs[i].data, loop->msgs[i].datalen);
-	net_message->cursize = loop->msgs[i].datalen;
-	Com_Memset(net_from, 0, sizeof(*net_from));
-	net_from->type = NA_LOOPBACK;
-	return true;
-
-}
-
-
-void NET_SendLoopPacket (netsrc_t sock, int length, void *data, netadr_t to)
-{
-	int		i;
-	loopback_t	*loop;
-
-	loop = &loopbacks[sock^1];
-
-	i = loop->send & (MAX_LOOPBACK-1);
-	loop->send++;
-
-	Com_Memcpy(loop->msgs[i].data, data, length);
-	loop->msgs[i].datalen = length;
-}
-
-//=============================================================================
-
-qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
-{
-	int 	ret;
-	int		net_socket;
-	int		err;
-
-	if (NET_GetLoopPacket (sock, net_from, net_message))
-		return true;
-
-	net_socket = ip_sockets[sock];
-
-	if (!net_socket)
-		return false;
-
-	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
-	if (ret == SOCKRECV_NO_DATA)
-	{
-		return false;
-	}
-	if (ret == SOCKRECV_ERROR)
-	{
-		return false;
-	}
-
-	if (ret == net_message->maxsize)
-	{
-		Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
-		return false;
-	}
-
-	net_message->cursize = ret;
-	return true;
-}
-
-//=============================================================================
-
-void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
-{
-	int		net_socket;
-
-	if ( to.type == NA_LOOPBACK )
-	{
-		NET_SendLoopPacket (sock, length, data, to);
-		return;
-	}
-
-	if (to.type == NA_BROADCAST)
-	{
-		net_socket = ip_sockets[sock];
-		if (!net_socket)
-			return;
-	}
-	else if (to.type == NA_IP)
-	{
-		net_socket = ip_sockets[sock];
-		if (!net_socket)
-			return;
-	}
-	else
-		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
-
-	SOCL_Send(net_socket, data, length, &to);
-}
-
 
 //=============================================================================
 

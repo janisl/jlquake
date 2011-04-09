@@ -385,3 +385,142 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 	return true;
 }
 
+/*
+=============================================================================
+
+LOOPBACK BUFFERS FOR LOCAL PLAYER
+
+=============================================================================
+*/
+
+#define	MAX_LOOPBACK	4
+
+struct loopmsg_t
+{
+	byte	data[MAX_MSGLEN];
+	int		datalen;
+};
+
+struct loopback_t
+{
+	loopmsg_t	msgs[MAX_LOOPBACK];
+	int			get, send;
+};
+
+static loopback_t	loopbacks[2];
+
+static bool NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
+{
+	int		i;
+	loopback_t	*loop;
+
+	loop = &loopbacks[sock];
+
+	if (loop->send - loop->get > MAX_LOOPBACK)
+		loop->get = loop->send - MAX_LOOPBACK;
+
+	if (loop->get >= loop->send)
+		return false;
+
+	i = loop->get & (MAX_LOOPBACK-1);
+	loop->get++;
+
+	Com_Memcpy(net_message->_data, loop->msgs[i].data, loop->msgs[i].datalen);
+	net_message->cursize = loop->msgs[i].datalen;
+	Com_Memset(net_from, 0, sizeof(*net_from));
+	net_from->type = NA_LOOPBACK;
+	return true;
+
+}
+
+static void NET_SendLoopPacket(netsrc_t sock, int length, void *data, netadr_t to)
+{
+	int		i;
+	loopback_t	*loop;
+
+	loop = &loopbacks[sock^1];
+
+	i = loop->send & (MAX_LOOPBACK-1);
+	loop->send++;
+
+	Com_Memcpy(loop->msgs[i].data, data, length);
+	loop->msgs[i].datalen = length;
+}
+
+//=============================================================================
+
+int			ip_sockets[2];
+
+//=============================================================================
+
+qboolean NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
+{
+	int 	ret;
+	int		net_socket;
+
+	if (NET_GetLoopPacket (sock, net_from, net_message))
+		return true;
+
+	net_socket = ip_sockets[sock];
+
+	if (!net_socket)
+		return false;
+
+	ret = SOCK_Recv(net_socket, net_message->_data, net_message->maxsize, net_from);
+	if (ret == SOCKRECV_NO_DATA)
+	{
+		return false;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
+		if (!dedicated->value)	// let dedicated servers continue after errors
+			Com_Error(ERR_DROP, "NET_GetPacket failed");
+		return false;
+	}
+
+	if (ret == net_message->maxsize)
+	{
+		Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
+		return false;
+	}
+
+	net_message->cursize = ret;
+	return true;
+}
+
+//=============================================================================
+
+void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
+{
+	int		net_socket;
+
+	if ( to.type == NA_LOOPBACK )
+	{
+		NET_SendLoopPacket (sock, length, data, to);
+		return;
+	}
+
+	if (to.type == NA_BROADCAST)
+	{
+		net_socket = ip_sockets[sock];
+		if (!net_socket)
+			return;
+	}
+	else if (to.type == NA_IP)
+	{
+		net_socket = ip_sockets[sock];
+		if (!net_socket)
+			return;
+	}
+	else
+		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
+
+	int ret = SOCL_Send(net_socket, data, length, &to);
+	if (ret == SOCKSEND_ERROR)
+	{
+		if (!dedicated->value)	// let dedicated servers continue after errors
+		{
+			Com_Error(ERR_DROP, "NET_SendPacket ERROR");
+		}
+	}
+}
