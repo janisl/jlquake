@@ -596,6 +596,9 @@ void NET_SendLoopPacket (netsrc_t sock, int length, const void *data, netadr_t t
 
 //=============================================================================
 
+static qboolean networkingEnabled = qfalse;
+
+static QCvar	*net_noudp;
 
 int			ip_socket;
 
@@ -775,3 +778,248 @@ qboolean	NET_StringToAdr( const char *s, netadr_t *a ) {
 	return qtrue;
 }
 
+
+//=============================================================================
+
+/*
+==================
+Sys_IsLANAddress
+
+LAN clients will have their rate var ignored
+==================
+*/
+qboolean Sys_IsLANAddress( netadr_t adr ) {
+	int		i;
+
+	if( adr.type == NA_LOOPBACK ) {
+		return qtrue;
+	}
+
+	if( adr.type != NA_IP ) {
+		return qfalse;
+	}
+
+	// choose which comparison to use based on the class of the address being tested
+	// any local adresses of a different class than the address being tested will fail based on the first byte
+
+	if( adr.ip[0] == 127 && adr.ip[1] == 0 && adr.ip[2] == 0 && adr.ip[3] == 1 ) {
+		return qtrue;
+	}
+
+	// Class A
+	if( (adr.ip[0] & 0x80) == 0x00 ) {
+		for ( i = 0 ; i < numIP ; i++ ) {
+			if( adr.ip[0] == localIP[i][0] ) {
+				return qtrue;
+			}
+		}
+		// the RFC1918 class a block will pass the above test
+		return qfalse;
+	}
+
+	// Class B
+	if( (adr.ip[0] & 0xc0) == 0x80 ) {
+		for ( i = 0 ; i < numIP ; i++ ) {
+			if( adr.ip[0] == localIP[i][0] && adr.ip[1] == localIP[i][1] ) {
+				return qtrue;
+			}
+			// also check against the RFC1918 class b blocks
+			if( adr.ip[0] == 172 && localIP[i][0] == 172 && (adr.ip[1] & 0xf0) == 16 && (localIP[i][1] & 0xf0) == 16 ) {
+				return qtrue;
+			}
+		}
+		return qfalse;
+	}
+
+	// Class C
+	for ( i = 0 ; i < numIP ; i++ ) {
+		if( adr.ip[0] == localIP[i][0] && adr.ip[1] == localIP[i][1] && adr.ip[2] == localIP[i][2] ) {
+			return qtrue;
+		}
+		// also check against the RFC1918 class c blocks
+		if( adr.ip[0] == 192 && localIP[i][0] == 192 && adr.ip[1] == 168 && localIP[i][1] == 168 ) {
+			return qtrue;
+		}
+	}
+	return qfalse;
+}
+
+/*
+==================
+Sys_ShowIP
+==================
+*/
+void Sys_ShowIP(void) {
+	int i;
+
+	for (i = 0; i < numIP; i++) {
+		Com_Printf( "IP: %i.%i.%i.%i\n", localIP[i][0], localIP[i][1], localIP[i][2], localIP[i][3] );
+	}
+}
+
+//=============================================================================
+
+/*
+====================
+NET_OpenIP
+====================
+*/
+static void NET_OpenIP()
+{
+	QCvar* ip = Cvar_Get("net_ip", "localhost", CVAR_LATCH);
+	int port = Cvar_Get("net_port", va("%i", PORT_SERVER), CVAR_LATCH)->integer;
+
+	// automatically scan for a valid port, so multiple
+	// dedicated servers can be started without requiring
+	// a different net_port for each one
+	for (int i = 0; i < 10; i++)
+	{
+		ip_socket = SOCK_Open(ip->string, port + i);
+		if (ip_socket)
+		{
+			Cvar_SetValue("net_port", port + i);
+			if (net_socksEnabled->integer)
+			{
+				SOCK_OpenSocks(port + i);
+			}
+			SOCK_GetLocalAddress();
+			return;
+		}
+	}
+	Com_Printf( "WARNING: Couldn't allocate IP port\n");
+}
+
+//===================================================================
+
+
+/*
+====================
+NET_GetCvars
+====================
+*/
+static bool NET_GetCvars()
+{
+	bool modified = false;
+
+	if (net_noudp && net_noudp->modified)
+	{
+		modified = true;
+	}
+	net_noudp = Cvar_Get("net_noudp", "0", CVAR_LATCH | CVAR_ARCHIVE);
+
+	if (SOCK_GetSocksCvars())
+	{
+		modified = true;
+	}
+
+	return modified;
+}
+
+/*
+====================
+NET_Config
+====================
+*/
+void NET_Config(bool enableNetworking)
+{
+	bool	modified;
+	bool	stop;
+	bool	start;
+
+	// get any latched changes to cvars
+	modified = NET_GetCvars();
+
+	if (net_noudp->integer)
+	{
+		enableNetworking = false;
+	}
+
+	// if enable state is the same and no cvars were modified, we have nothing to do
+	if (enableNetworking == networkingEnabled && !modified)
+	{
+		return;
+	}
+
+	if (enableNetworking == networkingEnabled)
+	{
+		if (enableNetworking)
+		{
+			stop = true;
+			start = true;
+		}
+		else
+		{
+			stop = false;
+			start = false;
+		}
+	}
+	else
+	{
+		if (enableNetworking)
+		{
+			stop = false;
+			start = true;
+		}
+		else
+		{
+			stop = true;
+			start = false;
+		}
+		networkingEnabled = enableNetworking;
+	}
+
+	if (stop)
+	{
+		if (ip_socket)
+		{
+			SOCK_Close(ip_socket);
+			ip_socket = 0;
+		}
+
+		SOCK_CloseSocks();
+	}
+
+	if (start)
+	{
+		NET_OpenIP();
+	}
+}
+
+/*
+====================
+NET_Init
+====================
+*/
+void NET_Init()
+{
+	if (!SOCK_Init())
+	{
+		return;
+	}
+
+	// this is really just to get the cvars registered
+	NET_GetCvars();
+
+	//FIXME testing!
+	NET_Config(true);
+}
+
+/*
+====================
+NET_Shutdown
+====================
+*/
+void NET_Shutdown()
+{
+	NET_Config(false);
+}
+
+/*
+====================
+NET_Restart_f
+====================
+*/
+void NET_Restart()
+{
+	NET_Config(networkingEnabled);
+}
