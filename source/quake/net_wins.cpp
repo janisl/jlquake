@@ -145,10 +145,14 @@ int UDP_GetNameFromAddr (struct qsockaddr *addr, char *name)
 
 int UDP_GetAddrFromName(const char *name, struct qsockaddr *addr)
 {
-	if (!SOCK_StringToSockaddr(name, (struct sockaddr_in*)addr))
+	netadr_t a;
+	sockaddr_in sadr;
+	if (!SOCK_StringToSockaddr(name, &sadr))
 		return -1;
 
-	((struct sockaddr_in *)addr)->sin_port = htons((unsigned short)net_hostport);	
+	SockadrToNetadr(&sadr, &a);
+	a.port = htons(net_hostport);
+	NetadrToSockadr(&a, (struct sockaddr_in*)addr);
 
 	return 0;
 }
