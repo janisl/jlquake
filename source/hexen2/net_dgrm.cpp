@@ -37,12 +37,6 @@ unsigned long inet_addr(const char *cp);
 #include "net_dgrm.h"
 #include "net_udp.h"
 
-// these two macros are to make the code more readable
-#define sfunc	net_landrivers[sock->landriver]
-#define dfunc	net_landrivers[net_landriverlevel]
-
-static int net_landriverlevel;
-
 /* statistic counters */
 int	packetsSent = 0;
 int	packetsReSent = 0;
@@ -50,6 +44,9 @@ int packetsReceived = 0;
 int receivedDuplicateCount = 0;
 int shortPacketCount = 0;
 int droppedDatagrams;
+
+static int			udp_controlSock;
+static qboolean		udp_initialized;
 
 static int myDriverLevel;
 
@@ -493,7 +490,6 @@ void NET_Stats_f (void)
 
 static qboolean testInProgress = false;
 static int		testPollCount;
-static int		testDriver;
 static int		testSocket;
 
 static void Test_Poll(void);
@@ -510,8 +506,6 @@ static void Test_Poll(void)
 	int		frags;
 	int		connectTime;
 	byte	playerNumber;
-
-	net_landriverlevel = testDriver;
 
 	while (1)
 	{
@@ -575,7 +569,6 @@ static void Test_f (void)
 			{
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
-				net_landriverlevel = hostcache[n].ldriver;
 				max = hostcache[n].maxusers;
 				Com_Memcpy(&sendaddr, &hostcache[n].addr, sizeof(struct qsockaddr));
 				break;
@@ -584,16 +577,11 @@ static void Test_f (void)
 			goto JustDoIt;
 	}
 
-	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
-	{
-		if (!net_landrivers[net_landriverlevel].initialized)
-			continue;
+	if (!udp_initialized)
+		return;
 
-		// see if we can resolve the host name
-		if (UDP_GetAddrFromName(host, &sendaddr) != -1)
-			break;
-	}
-	if (net_landriverlevel == net_numlandrivers)
+	// see if we can resolve the host name
+	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 		return;
 
 JustDoIt:
@@ -603,7 +591,6 @@ JustDoIt:
 
 	testInProgress = true;
 	testPollCount = 20;
-	testDriver = net_landriverlevel;
 
 	for (n = 0; n < max; n++)
 	{
@@ -621,7 +608,6 @@ JustDoIt:
 
 
 static qboolean test2InProgress = false;
-static int		test2Driver;
 static int		test2Socket;
 
 static void Test2_Poll(void);
@@ -635,7 +621,6 @@ static void Test2_Poll(void)
 	char	name[256];
 	char	value[256];
 
-	net_landriverlevel = test2Driver;
 	name[0] = 0;
 
 	len = UDP_Read(test2Socket, net_message._data, net_message.maxsize, &clientaddr);
@@ -703,7 +688,6 @@ static void Test2_f (void)
 			{
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
-				net_landriverlevel = hostcache[n].ldriver;
 				Com_Memcpy(&sendaddr, &hostcache[n].addr, sizeof(struct qsockaddr));
 				break;
 			}
@@ -711,16 +695,11 @@ static void Test2_f (void)
 			goto JustDoIt;
 	}
 
-	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
-	{
-		if (!net_landrivers[net_landriverlevel].initialized)
-			continue;
+	if (!udp_initialized)
+		return;
 
-		// see if we can resolve the host name
-		if (UDP_GetAddrFromName(host, &sendaddr) != -1)
-			break;
-	}
-	if (net_landriverlevel == net_numlandrivers)
+	// see if we can resolve the host name
+	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 		return;
 
 JustDoIt:
@@ -729,7 +708,6 @@ JustDoIt:
 		return;
 
 	test2InProgress = true;
-	test2Driver = net_landriverlevel;
 
 	net_message.Clear();
 	// save space for the header, filled in later
@@ -754,8 +732,8 @@ int Datagram_Init (void)
 	int csock = UDP_Init();
 	if (csock != -1)
 	{
-		net_landrivers[0].initialized = true;
-		net_landrivers[0].controlSock = csock;
+		udp_initialized = true;
+		udp_controlSock = csock;
 	}
 
 #ifdef BAN_TEST
@@ -773,10 +751,10 @@ void Datagram_Shutdown (void)
 //
 // shutdown the lan drivers
 //
-	if (net_landrivers[0].initialized)
+	if (udp_initialized)
 	{
 		UDP_Shutdown();
-		net_landrivers[0].initialized = false;
+		udp_initialized = false;
 	}
 }
 
@@ -789,7 +767,7 @@ void Datagram_Close (qsocket_t *sock)
 
 void Datagram_Listen (qboolean state)
 {
-	if (net_landrivers[0].initialized)
+	if (udp_initialized)
 		UDP_Listen(state);
 }
 
@@ -1036,7 +1014,6 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 	// everything is allocated, just fill in the details	
 	sock->socket = newsock;
-	sock->landriver = net_landriverlevel;
 	sock->addr = clientaddr;
 	QStr::Cpy(sock->address, UDP_AddrToString(&clientaddr));
 
@@ -1059,10 +1036,8 @@ qsocket_t *Datagram_CheckNewConnections (void)
 {
 	qsocket_t *ret = NULL;
 
-	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
-		if (net_landrivers[net_landriverlevel].initialized)
-			if ((ret = _Datagram_CheckNewConnections ()) != NULL)
-				break;
+	if (udp_initialized)
+		ret = _Datagram_CheckNewConnections ();
 	return ret;
 }
 
@@ -1076,7 +1051,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 	struct qsockaddr myaddr;
 	int		control;
 
-	UDP_GetSocketAddr(dfunc.controlSock, &myaddr);
+	UDP_GetSocketAddr(udp_controlSock, &myaddr);
 	if (xmit)
 	{
 		net_message.Clear();
@@ -1086,11 +1061,11 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		net_message.WriteString2(NET_NAME_ID);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Broadcast(dfunc.controlSock, net_message._data, net_message.cursize);
+		UDP_Broadcast(udp_controlSock, net_message._data, net_message.cursize);
 		net_message.Clear();
 	}
 
-	while ((ret = UDP_Read(dfunc.controlSock, net_message._data, net_message.maxsize, &readaddr)) > 0)
+	while ((ret = UDP_Read(udp_controlSock, net_message._data, net_message.maxsize, &readaddr)) > 0)
 	{
 		if (ret < sizeof(int))
 			continue;
@@ -1142,7 +1117,6 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		}
 		Com_Memcpy(&hostcache[n].addr, &readaddr, sizeof(struct qsockaddr));
 		hostcache[n].driver = net_driverlevel;
-		hostcache[n].ldriver = net_landriverlevel;
 		QStr::Cpy(hostcache[n].cname, UDP_AddrToString(&readaddr));
 
 		// check for a name conflict
@@ -1168,13 +1142,8 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 
 void Datagram_SearchForHosts (qboolean xmit)
 {
-	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
-	{
-		if (hostCacheCount == HOSTCACHESIZE)
-			break;
-		if (net_landrivers[net_landriverlevel].initialized)
-			_Datagram_SearchForHosts (xmit);
-	}
+	if (udp_initialized)
+		_Datagram_SearchForHosts (xmit);
 }
 
 
@@ -1202,7 +1171,6 @@ static qsocket_t *_Datagram_Connect (char *host)
 	if (sock == NULL)
 		goto ErrorReturn2;
 	sock->socket = newsock;
-	sock->landriver = net_landriverlevel;
 
 	// connect to the host
 	if (UDP_Connect(newsock, &sendaddr) == -1)
@@ -1349,9 +1317,7 @@ qsocket_t *Datagram_Connect (char *host)
 {
 	qsocket_t *ret = NULL;
 
-	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
-		if (net_landrivers[net_landriverlevel].initialized)
-			if ((ret = _Datagram_Connect (host)) != NULL)
-				break;
+	if (udp_initialized)
+		ret = _Datagram_Connect (host);
 	return ret;
 }

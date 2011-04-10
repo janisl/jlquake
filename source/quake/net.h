@@ -122,7 +122,6 @@ typedef struct qsocket_s
 	qboolean		sendNext;
 	
 	int				driver;
-	int				landriver;
 	int				socket;
 	void			*driverdata;
 
@@ -146,16 +145,7 @@ extern qsocket_t	*net_activeSockets;
 extern qsocket_t	*net_freeSockets;
 extern int			net_numsockets;
 
-typedef struct
-{
-	char		*name;
-	qboolean	initialized;
-	int			controlSock;
-} net_landriver_t;
-
 #define	MAX_NET_DRIVERS		8
-extern int 				net_numlandrivers;
-extern net_landriver_t	net_landrivers[MAX_NET_DRIVERS];
 
 typedef struct
 {
@@ -207,27 +197,11 @@ typedef struct
 	int		users;
 	int		maxusers;
 	int		driver;
-	int		ldriver;
 	struct qsockaddr addr;
 } hostcache_t;
 
 extern int hostCacheCount;
 extern hostcache_t hostcache[HOSTCACHESIZE];
-
-#if !defined(_WIN32 ) && !defined (__linux__) && !defined (__sun__)
-#ifndef htonl
-extern unsigned long htonl (unsigned long hostlong);
-#endif
-#ifndef htons
-extern unsigned short htons (unsigned short hostshort);
-#endif
-#ifndef ntohl
-extern unsigned long ntohl (unsigned long netlong);
-#endif
-#ifndef ntohs
-extern unsigned short ntohs (unsigned short netshort);
-#endif
-#endif
 
 #ifdef IDGODS
 qboolean IsID(struct qsockaddr *addr);

@@ -3665,7 +3665,7 @@ void M_ServerList_Draw (void)
 		if (hostcache[n].driver == 0)
 			name = net_drivers[hostcache[n].driver].name;
 		else
-			name = net_landrivers[hostcache[n].ldriver].name;
+			name = "UDP";
 
 		if (hostcache[n].maxusers)
 			sprintf(string, "%-11.11s %-8.8s %-10.10s %2u/%2u\n", hostcache[n].name, name, hostcache[n].map, hostcache[n].users, hostcache[n].maxusers);

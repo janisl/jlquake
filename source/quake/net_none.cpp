@@ -41,6 +41,3 @@ net_driver_t net_drivers[MAX_NET_DRIVERS] =
 	}
 };
 int net_numdrivers = 1;
-
-net_landriver_t	net_landrivers[MAX_NET_DRIVERS];
-int net_numlandrivers = 0;
