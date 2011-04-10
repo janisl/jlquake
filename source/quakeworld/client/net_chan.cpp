@@ -447,3 +447,137 @@ qboolean Netchan_Process (netchan_t *chan)
 	return true;
 }
 
+
+//=============================================================================
+
+netadr_t	net_local_adr;
+
+netadr_t	net_from;
+QMsg		net_message;
+int			net_socket;
+
+#define	MAX_UDP_PACKET	(MAX_MSGLEN*2)	// one more than msg + header
+byte		net_message_buffer[MAX_UDP_PACKET];
+
+//=============================================================================
+
+qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
+{
+	if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3])
+		return true;
+	return false;
+}
+
+qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
+{
+	if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3] && a.port == b.port)
+		return true;
+	return false;
+}
+
+char	*NET_AdrToString (netadr_t a)
+{
+	static	char	s[64];
+	
+	sprintf (s, "%i.%i.%i.%i:%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3], BigShort(a.port));
+
+	return s;
+}
+
+char	*NET_BaseAdrToString (netadr_t a)
+{
+	static	char	s[64];
+	
+	sprintf (s, "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
+
+	return s;
+}
+
+//=============================================================================
+
+static int UDP_OpenSocket (int port)
+{
+	int newsocket;
+	int i;
+
+	const char* net_interface = NULL;
+	//ZOID -- check for interface binding option
+	if ((i = COM_CheckParm("-ip")) != 0 && i < COM_Argc())
+	{
+		net_interface = COM_Argv(i+1);
+	}
+	newsocket = SOCK_Open(net_interface, port);
+	if (newsocket == 0)
+		Sys_Error ("UDP_OpenSocket: socket failed");
+	return newsocket;
+}
+
+//=============================================================================
+
+qboolean NET_GetPacket (void)
+{
+	int ret = SOCK_Recv(net_socket, net_message_buffer, sizeof(net_message_buffer), &net_from);
+	if (ret == SOCKRECV_NO_DATA)
+	{
+		return false;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
+		Sys_Error("NET_GetPacket failed");
+	}
+
+	net_message.cursize = ret;
+	if (ret == sizeof(net_message_buffer) )
+	{
+		Con_Printf ("Oversize packet from %s\n", NET_AdrToString (net_from));
+		return false;
+	}
+
+	return ret;
+}
+
+//=============================================================================
+
+void NET_SendPacket (int length, void *data, netadr_t to)
+{
+	SOCL_Send(net_socket, data, length, &to);
+}
+
+void NET_GetLocalAddress();
+
+/*
+====================
+NET_Init
+====================
+*/
+void NET_Init (int port)
+{
+	if (!SOCK_Init())
+		Sys_Error("Sockets initialization failed.");
+
+	//
+	// open the single socket to be used for all communications
+	//
+	net_socket = UDP_OpenSocket (port);
+
+	//
+	// init the message buffer
+	//
+	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
+
+	//
+	// determine my name & address
+	//
+	NET_GetLocalAddress ();
+}
+
+/*
+====================
+NET_Shutdown
+====================
+*/
+void	NET_Shutdown (void)
+{
+	SOCK_Close(net_socket);
+	SOCK_Shutdown();
+}
