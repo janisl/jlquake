@@ -33,7 +33,6 @@ set(QUAKE_FILES
 	net_loop.cpp
 	net_main.cpp
 	net_udp.cpp
-	net_bsd.cpp
 	pr_cmds.cpp
 	pr_edict.cpp
 	pr_exec.cpp
