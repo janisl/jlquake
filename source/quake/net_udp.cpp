@@ -117,18 +117,6 @@ int UDP_CheckNewConnections (void)
 
 //=============================================================================
 
-char *UDP_AddrToString (struct qsockaddr *addr)
-{
-	static char buffer[22];
-	int haddr;
-
-	haddr = ntohl(((struct sockaddr_in *)addr)->sin_addr.s_addr);
-	sprintf(buffer, "%d.%d.%d.%d:%d", (haddr >> 24) & 0xff, (haddr >> 16) & 0xff, (haddr >> 8) & 0xff, haddr & 0xff, ntohs(((struct sockaddr_in *)addr)->sin_port));
-	return buffer;
-}
-
-//=============================================================================
-
 int UDP_GetSocketAddr (int socket, struct qsockaddr *addr)
 {
 	socklen_t addrlen = sizeof(struct qsockaddr);
@@ -171,35 +159,3 @@ int UDP_GetAddrFromName(const char *name, struct qsockaddr *addr)
 
 	return 0;
 }
-
-//=============================================================================
-
-int UDP_AddrCompare (struct qsockaddr *addr1, struct qsockaddr *addr2)
-{
-	if (addr1->sa_family != addr2->sa_family)
-		return -1;
-
-	if (((struct sockaddr_in *)addr1)->sin_addr.s_addr != ((struct sockaddr_in *)addr2)->sin_addr.s_addr)
-		return -1;
-
-	if (((struct sockaddr_in *)addr1)->sin_port != ((struct sockaddr_in *)addr2)->sin_port)
-		return 1;
-
-	return 0;
-}
-
-//=============================================================================
-
-int UDP_GetSocketPort (struct qsockaddr *addr)
-{
-	return ntohs(((struct sockaddr_in *)addr)->sin_port);
-}
-
-
-int UDP_SetSocketPort (struct qsockaddr *addr, int port)
-{
-	((struct sockaddr_in *)addr)->sin_port = htons(port);
-	return 0;
-}
-
-//=============================================================================

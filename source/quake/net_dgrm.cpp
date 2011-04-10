@@ -1446,3 +1446,56 @@ int UDP_Broadcast (int socket, byte *buf, int len)
 		return 0;
 	return ret;
 }
+
+//=============================================================================
+
+char *UDP_AddrToString (struct qsockaddr *addr_old)
+{
+	static char buffer[22];
+	netadr_t addr;
+	SockadrToNetadr((struct sockaddr_in*)addr_old, &addr);
+
+	sprintf(buffer, "%d.%d.%d.%d:%d", addr.ip[0], addr.ip[1], addr.ip[2], addr.ip[3], BigShort(addr.port));
+	return buffer;
+}
+
+//=============================================================================
+
+int UDP_AddrCompare (struct qsockaddr *addr1_old, struct qsockaddr *addr2_old)
+{
+	netadr_t addr1;
+	netadr_t addr2;
+	SockadrToNetadr((struct sockaddr_in*)addr1_old, &addr1);
+	SockadrToNetadr((struct sockaddr_in*)addr2_old, &addr2);
+	if (addr1.type != addr2.type)
+		return -1;
+
+	if (addr1.ip[0] != addr2.ip[0] || addr1.ip[1] != addr2.ip[1] || addr1.ip[2] != addr2.ip[2] || addr1.ip[3] != addr2.ip[3])
+		return -1;
+
+	if (addr1.port != addr2.port)
+		return 1;
+
+	return 0;
+}
+
+//=============================================================================
+
+int UDP_GetSocketPort (struct qsockaddr *addr_old)
+{
+	netadr_t addr;
+	SockadrToNetadr((struct sockaddr_in*)addr_old, &addr);
+	return BigShort(addr.port);
+}
+
+
+int UDP_SetSocketPort (struct qsockaddr *addr_old, int port)
+{
+	netadr_t addr;
+	SockadrToNetadr((struct sockaddr_in*)addr_old, &addr);
+	addr.port = BigShort(port);
+	NetadrToSockadr(&addr, (struct sockaddr_in*)addr_old);
+	return 0;
+}
+
+//=============================================================================
