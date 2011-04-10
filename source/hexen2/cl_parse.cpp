@@ -175,8 +175,7 @@ void CL_KeepaliveMessage (void)
 		return;
 
 // read messages from server, should just be nops
-	old = net_message;
-	Com_Memcpy(olddata, net_message._data, net_message.cursize);
+	old.Copy(olddata, sizeof(olddata), net_message);
 	
 	do
 	{
@@ -197,8 +196,7 @@ void CL_KeepaliveMessage (void)
 		}
 	} while (ret);
 
-	net_message = old;
-	Com_Memcpy(net_message._data, olddata, net_message.cursize);
+	net_message.Copy(net_message._data, net_message.maxsize, old);
 
 // check time
 	time = Sys_FloatTime ();

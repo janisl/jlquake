@@ -179,8 +179,7 @@ void CL_KeepaliveMessage (void)
 		}
 	} while (ret);
 
-	net_message = old;
-	Com_Memcpy(net_message._data, olddata, net_message.cursize);
+	net_message.Copy(net_message._data, net_message.maxsize, old);
 
 // check time
 	time = Sys_FloatTime ();
