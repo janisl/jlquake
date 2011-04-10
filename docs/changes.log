@@ -160,3 +160,7 @@
   I finished merging input drivers on both Windows and Linux.
 07.04.2011
   I started work on network drivers. I removed remaining support for IPX.
+09.04.2011
+  I merged most of the socket API. I did some testing, QuakeWorld, Hexen 2, Quake 3 work fine. Quake 2 on Linux had problem that was introduced in my work with sockets and was easily fixed. Quake fails with invalid message error. HexenWorld has problem on server where it fails because of an NULL progs functin call.
+10.04.2011
+  I went back through subversion revisions and tracked down change that broke Quake and fixed it. HexenWorld has this problem even in early revisions, maybe I should try to get different progs from other HexenWorld project.
