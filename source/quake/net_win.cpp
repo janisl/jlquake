@@ -69,25 +69,7 @@ net_landriver_t	net_landrivers[MAX_NET_DRIVERS] =
 	{
 	"Winsock TCPIP",
 	false,
-	0,
-	UDP_Init,
-	UDP_Shutdown,
-	UDP_Listen,
-	UDP_OpenSocket,
-	UDP_CloseSocket,
-	UDP_Connect,
-	UDP_CheckNewConnections,
-	UDP_Read,
-	UDP_Write,
-	UDP_Broadcast,
-	UDP_AddrToString,
-	UDP_StringToAddr,
-	UDP_GetSocketAddr,
-	UDP_GetNameFromAddr,
-	UDP_GetAddrFromName,
-	UDP_AddrCompare,
-	UDP_GetSocketPort,
-	UDP_SetSocketPort
+	0
 	}
 };
 
