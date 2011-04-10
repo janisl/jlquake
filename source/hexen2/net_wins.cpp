@@ -7,7 +7,6 @@ extern QCvar* hostname;
 
 extern int net_acceptsocket;		// socket for fielding new connections
 extern int net_controlsocket;
-static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
 
@@ -41,10 +40,6 @@ int UDP_Init (void)
 		return -1;
 	}
 
-	((struct sockaddr_in *)&broadcastaddr)->sin_family = AF_INET;
-	((struct sockaddr_in *)&broadcastaddr)->sin_addr.s_addr = INADDR_BROADCAST;
-	((struct sockaddr_in *)&broadcastaddr)->sin_port = htons((unsigned short)net_hostport);
-
 	UDP_GetSocketAddr (net_controlsocket, &addr);
 	QStr::Cpy(my_tcpip_address,  UDP_AddrToString (&addr));
 	p = QStr::RChr(my_tcpip_address, ':');
@@ -70,13 +65,6 @@ int UDP_CheckNewConnections (void)
 		return net_acceptsocket;
 	}
 	return -1;
-}
-
-//=============================================================================
-
-int UDP_Broadcast (int socket, byte *buf, int len)
-{
-	return UDP_Write (socket, buf, len, &broadcastaddr);
 }
 
 //=============================================================================

@@ -41,7 +41,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern int net_acceptsocket;		// socket for fielding new connections
 extern int net_controlsocket;
-static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
 extern const char* net_interface;
@@ -88,10 +87,6 @@ int UDP_Init (void)
 	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
 		Sys_Error("UDP_Init: Unable to open control socket\n");
 
-	((struct sockaddr_in *)&broadcastaddr)->sin_family = AF_INET;
-	((struct sockaddr_in *)&broadcastaddr)->sin_addr.s_addr = INADDR_BROADCAST;
-	((struct sockaddr_in *)&broadcastaddr)->sin_port = htons(net_hostport);
-
 	UDP_GetSocketAddr (net_controlsocket, &addr);
 	QStr::Cpy(my_tcpip_address,  UDP_AddrToString (&addr));
 	colon = QStr::RChr(my_tcpip_address, ':');
@@ -118,13 +113,6 @@ int UDP_CheckNewConnections (void)
 	if (available)
 		return net_acceptsocket;
 	return -1;
-}
-
-//=============================================================================
-
-int UDP_Broadcast (int socket, byte *buf, int len)
-{
-	return UDP_Write (socket, buf, len, &broadcastaddr);
 }
 
 //=============================================================================

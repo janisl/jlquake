@@ -1411,3 +1411,17 @@ int UDP_Write (int socket, byte *buf, int len, struct qsockaddr *addr)
 		return 0;
 	return ret;
 }
+
+//=============================================================================
+
+int UDP_Broadcast (int socket, byte *buf, int len)
+{
+	netadr_t to;
+	Com_Memset(&to, 0, sizeof(to));
+	to.type = NA_BROADCAST;
+	to.port = BigShort(net_hostport);
+	int ret = SOCL_Send(socket, buf, len, &to);
+	if (ret == SOCKSEND_WOULDBLOCK)
+		return 0;
+	return ret;
+}
