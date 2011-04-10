@@ -24,12 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern QCvar* hostname;
 
-static int net_acceptsocket = -1;		// socket for fielding new connections
-static int net_controlsocket;
+extern int net_acceptsocket;		// socket for fielding new connections
+extern int net_controlsocket;
 static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
-static const char* net_interface;
+extern const char* net_interface;
 
 #include "net_udp.h"
 
@@ -37,7 +37,6 @@ static const char* net_interface;
 
 int UDP_Init (void)
 {
-	int		i;
 	char	*p;
 
 	if (COM_CheckParm ("-noudp"))
@@ -52,7 +51,7 @@ int UDP_Init (void)
 
 	SOCK_GetLocalAddress();
 
-	i = COM_CheckParm ("-ip");
+	int i = COM_CheckParm ("-ip");
 	if (i)
 	{
 		if (i < COM_Argc()-1)
@@ -100,62 +99,6 @@ int UDP_Init (void)
 
 //=============================================================================
 
-void UDP_Shutdown (void)
-{
-	UDP_Listen (false);
-	UDP_CloseSocket (net_controlsocket);
-	SOCK_Shutdown();
-}
-
-//=============================================================================
-
-void UDP_Listen (qboolean state)
-{
-	// enable listening
-	if (state)
-	{
-		if (net_acceptsocket != -1)
-			return;
-		if ((net_acceptsocket = UDP_OpenSocket (net_hostport)) == -1)
-			Sys_Error ("UDP_Listen: Unable to open accept socket\n");
-		return;
-	}
-
-	// disable listening
-	if (net_acceptsocket == -1)
-		return;
-	UDP_CloseSocket (net_acceptsocket);
-	net_acceptsocket = -1;
-}
-
-//=============================================================================
-
-int UDP_OpenSocket (int port)
-{
-	int newsocket = SOCK_Open(net_interface, port);
-	if (newsocket == 0)
-		return -1;
-	return newsocket;
-}
-
-//=============================================================================
-
-int UDP_CloseSocket (int socket)
-{
-	SOCK_Close(socket);
-	return 0;
-}
-
-
-//=============================================================================
-
-int UDP_Connect (int socket, struct qsockaddr *addr)
-{
-	return 0;
-}
-
-//=============================================================================
-
 int UDP_CheckNewConnections (void)
 {
 	char buf[4096];
@@ -172,39 +115,9 @@ int UDP_CheckNewConnections (void)
 
 //=============================================================================
 
-int UDP_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
-{
-	netadr_t from;
-	int ret = SOCK_Recv(socket, buf, len, &from);
-	if (ret == SOCKRECV_NO_DATA)
-	{
-		return 0;
-	}
-	if (ret == SOCKRECV_ERROR)
-	{
-		return -1;
-	}
-	NetadrToSockadr(&from, (struct sockaddr_in*)addr);
-	return ret;
-}
-
-//=============================================================================
-
 int UDP_Broadcast (int socket, byte *buf, int len)
 {
 	return UDP_Write (socket, buf, len, &broadcastaddr);
-}
-
-//=============================================================================
-
-int UDP_Write (int socket, byte *buf, int len, struct qsockaddr *addr)
-{
-	netadr_t to;
-	SockadrToNetadr((struct sockaddr_in*)addr, &to);
-	int ret = SOCL_Send(socket, buf, len, &to);
-	if (ret == SOCKSEND_WOULDBLOCK)
-		return 0;
-	return ret;
 }
 
 //=============================================================================
