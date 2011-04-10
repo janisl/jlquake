@@ -1321,3 +1321,93 @@ qsocket_t *Datagram_Connect (char *host)
 		ret = _Datagram_Connect (host);
 	return ret;
 }
+
+//=============================================================================
+
+int net_acceptsocket = -1;		// socket for fielding new connections
+int net_controlsocket;
+
+//=============================================================================
+
+void UDP_Shutdown (void)
+{
+	UDP_Listen (false);
+	UDP_CloseSocket (net_controlsocket);
+	SOCK_Shutdown();
+}
+
+//=============================================================================
+
+void UDP_Listen (qboolean state)
+{
+	// enable listening
+	if (state)
+	{
+		if (net_acceptsocket != -1)
+			return;
+		if ((net_acceptsocket = UDP_OpenSocket (net_hostport)) == -1)
+			Sys_Error ("UDP_Listen: Unable to open accept socket\n");
+		return;
+	}
+
+	// disable listening
+	if (net_acceptsocket == -1)
+		return;
+	UDP_CloseSocket (net_acceptsocket);
+	net_acceptsocket = -1;
+}
+
+//=============================================================================
+
+int UDP_OpenSocket (int port)
+{
+	int newsocket = SOCK_Open(NULL, port);
+	if (newsocket == 0)
+		return -1;
+	return newsocket;
+}
+
+//=============================================================================
+
+int UDP_CloseSocket (int socket)
+{
+	SOCK_Close(socket);
+	return 0;
+}
+
+//=============================================================================
+
+int UDP_Connect (int socket, struct qsockaddr *addr)
+{
+	return 0;
+}
+
+//=============================================================================
+
+int UDP_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
+{
+	netadr_t From;
+	int ret = SOCK_Recv(socket, buf, len, &From);
+	if (ret == SOCKRECV_NO_DATA)
+	{
+		return 0;
+	}
+	if (ret == SOCKRECV_ERROR)
+	{
+		return -1;
+	}
+	NetadrToSockadr(&From, (struct sockaddr_in*)addr);
+	return ret;
+}
+
+//=============================================================================
+
+int UDP_Write (int socket, byte *buf, int len, struct qsockaddr *addr)
+{
+	netadr_t to;
+	SockadrToNetadr((struct sockaddr_in*)addr, &to);
+	int ret = SOCL_Send(socket, buf, len, &to);
+	if (ret == SOCKSEND_WOULDBLOCK)
+		return 0;
+	return ret;
+}
