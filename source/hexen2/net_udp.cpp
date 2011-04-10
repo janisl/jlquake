@@ -105,22 +105,6 @@ char *UDP_AddrToString (struct qsockaddr *addr)
 
 //=============================================================================
 
-int UDP_StringToAddr (char *string, struct qsockaddr *addr)
-{
-	int ha1, ha2, ha3, ha4, hp;
-	int ipaddr;
-
-	sscanf(string, "%d.%d.%d.%d:%d", &ha1, &ha2, &ha3, &ha4, &hp);
-	ipaddr = (ha1 << 24) | (ha2 << 16) | (ha3 << 8) | ha4;
-
-	addr->sa_family = AF_INET;
-	((struct sockaddr_in *)addr)->sin_addr.s_addr = htonl(ipaddr);
-	((struct sockaddr_in *)addr)->sin_port = htons(hp);
-	return 0;
-}
-
-//=============================================================================
-
 int UDP_GetSocketAddr (int socket, struct qsockaddr *addr)
 {
 	socklen_t addrlen = sizeof(struct qsockaddr);
