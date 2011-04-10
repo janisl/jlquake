@@ -12,7 +12,7 @@ static struct qsockaddr broadcastaddr;
 
 static unsigned long myAddr;
 
-#include "net_wins.h"
+#include "net_udp.h"
 
 //=============================================================================
 

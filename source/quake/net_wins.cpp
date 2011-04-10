@@ -31,7 +31,7 @@ static struct qsockaddr broadcastaddr;
 static unsigned long myAddr;
 static const char* net_interface;
 
-#include "net_wins.h"
+#include "net_udp.h"
 
 //=============================================================================
 
