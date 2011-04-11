@@ -136,8 +136,8 @@ typedef struct qsocket_s
 	int				receiveMessageLength;
 	byte			receiveMessage [NET_MAXMESSAGE];
 
-	struct qsockaddr	addr;
-	char				address[NET_NAMELEN];
+	netadr_t		addr;
+	char			address[NET_NAMELEN];
 
 } qsocket_t;
 

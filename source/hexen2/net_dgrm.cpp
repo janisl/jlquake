@@ -173,9 +173,7 @@ int Datagram_SendMessage (qsocket_t *sock, QMsg *data)
 
 	sock->canSend = false;
 
-	netadr_t tmp;
-	SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &tmp) == -1)
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -208,9 +206,7 @@ int SendMessageNext (qsocket_t *sock)
 
 	sock->sendNext = false;
 
-	netadr_t tmp;
-	SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &tmp) == -1)
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -243,9 +239,7 @@ int ReSendMessage (qsocket_t *sock)
 
 	sock->sendNext = false;
 
-	netadr_t tmp;
-	SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &tmp) == -1)
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -287,9 +281,7 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
 	packetBuffer.sequence = BigLong(sock->unreliableSendSequence++);
 	Com_Memcpy(packetBuffer.data, data->_data, data->cursize);
 
-	netadr_t tmp;
-	SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &tmp) == -1)
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
 		return -1;
 
 	packetsSent++;
@@ -328,9 +320,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 		}
 
 		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
-		netadr_t tmp;
-		SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
-		if (UDP_AddrCompare(&readaddr, &tmp) != 0)
+		if (UDP_AddrCompare(&readaddr, &sock->addr) != 0)
 		{
 #ifdef DEBUG
 			Con_DPrintf("Forged packet received\n");
@@ -787,7 +777,6 @@ void Datagram_Listen (qboolean state)
 static qsocket_t *_Datagram_CheckNewConnections (void)
 {
 	netadr_t clientaddr;
-	struct qsockaddr clientaddr_old;
 	netadr_t newaddr;
 	int			newsock;
 	int			acceptsock;
@@ -807,7 +796,6 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	len = UDP_Read(acceptsock, net_message._data, net_message.maxsize, &clientaddr);
 	if (len < sizeof(int))
 		return NULL;
-	NetadrToSockadr(&clientaddr, (struct sockaddr_in*)&clientaddr_old);
 	net_message.cursize = len;
 
 	net_message.BeginReadingOOB();
@@ -945,6 +933,8 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 #ifdef BAN_TEST
 	// check for a ban
+	struct qsockaddr clientaddr_old;
+	NetadrToSockadr(&clientaddr, (struct sockaddr_in*)&clientaddr_old);
 	if (clientaddr_old.sa_family == AF_INET)
 	{
 		unsigned long testAddr;
@@ -969,9 +959,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	{
 		if (s->driver != net_driverlevel)
 			continue;
-		netadr_t tmp;
-		SockadrToNetadr((struct sockaddr_in*)&s->addr, &tmp);
-		ret = UDP_AddrCompare(&clientaddr, &tmp);
+		ret = UDP_AddrCompare(&clientaddr, &s->addr);
 		if (ret >= 0)
 		{
 			// is this a duplicate connection reqeust?
@@ -1022,7 +1010,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 	// everything is allocated, just fill in the details	
 	sock->socket = newsock;
-	sock->addr = clientaddr_old;
+	sock->addr = clientaddr;
 	QStr::Cpy(sock->address, UDP_AddrToString(&clientaddr));
 
 	// send him back the info about the server connection he has been allocated
@@ -1162,7 +1150,6 @@ void Datagram_SearchForHosts (qboolean xmit)
 static qsocket_t *_Datagram_Connect (char *host)
 {
 	netadr_t sendaddr;
-	struct qsockaddr sendaddr_old;
 	netadr_t readaddr;
 	struct qsockaddr readaddr_old;
 	qsocket_t	*sock;
@@ -1176,7 +1163,6 @@ static qsocket_t *_Datagram_Connect (char *host)
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 		return NULL;
-	NetadrToSockadr(&sendaddr, (struct sockaddr_in*)&sendaddr_old);
 
 	newsock = UDP_OpenSocket(0);
 	if (newsock == -1)
@@ -1284,11 +1270,8 @@ static qsocket_t *_Datagram_Connect (char *host)
 
 	if (ret == CCREP_ACCEPT)
 	{
-		sock->addr = sendaddr_old;
-		netadr_t tmp;
-		SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
-		UDP_SetSocketPort(&tmp, net_message.ReadLong());
-		NetadrToSockadr(&tmp, (struct sockaddr_in*)&sock->addr);
+		sock->addr = sendaddr;
+		UDP_SetSocketPort(&sock->addr, net_message.ReadLong());
 	}
 	else
 	{
