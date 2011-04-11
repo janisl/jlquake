@@ -34,5 +34,5 @@ int  UDP_GetSocketAddr (int socket, netadr_t* addr);
 int  UDP_GetNameFromAddr (netadr_t* addr, char *name);
 int  UDP_GetAddrFromName (const char *name, netadr_t* addr);
 int  UDP_AddrCompare (struct qsockaddr *addr1, struct qsockaddr *addr2);
-int  UDP_GetSocketPort (struct qsockaddr *addr);
+int  UDP_GetSocketPort (netadr_t* addr);
 int  UDP_SetSocketPort (struct qsockaddr *addr, int port);

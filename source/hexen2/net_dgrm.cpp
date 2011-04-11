@@ -785,7 +785,6 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	netadr_t clientaddr;
 	struct qsockaddr clientaddr_old;
 	netadr_t newaddr;
-	struct qsockaddr newaddr_old;
 	int			newsock;
 	int			acceptsock;
 	qsocket_t	*sock;
@@ -978,8 +977,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 				net_message.WriteLong(0);
 				net_message.WriteByte(CCREP_ACCEPT);
 				UDP_GetSocketAddr(s->socket, &newaddr);
-				NetadrToSockadr(&newaddr, (struct sockaddr_in*)&newaddr_old);
-				net_message.WriteLong(UDP_GetSocketPort(&newaddr_old));
+				net_message.WriteLong(UDP_GetSocketPort(&newaddr));
 				*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 				net_message.Clear();
@@ -1035,8 +1033,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	net_message.WriteLong(0);
 	net_message.WriteByte(CCREP_ACCEPT);
 	UDP_GetSocketAddr(newsock, &newaddr);
-	NetadrToSockadr(&newaddr, (struct sockaddr_in*)&newaddr_old);
-	net_message.WriteLong(UDP_GetSocketPort(&newaddr_old));
+	net_message.WriteLong(UDP_GetSocketPort(&newaddr));
 //	net_message.WriteString2(dfunc.AddrToString(&newaddr));
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
@@ -1478,11 +1475,9 @@ int UDP_AddrCompare (struct qsockaddr *addr1_old, struct qsockaddr *addr2_old)
 
 //=============================================================================
 
-int UDP_GetSocketPort (struct qsockaddr *addr_old)
+int UDP_GetSocketPort(netadr_t* addr)
 {
-	netadr_t addr;
-	SockadrToNetadr((struct sockaddr_in*)addr_old, &addr);
-	return BigShort(addr.port);
+	return BigShort(addr->port);
 }
 
 
