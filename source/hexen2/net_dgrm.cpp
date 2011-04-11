@@ -555,7 +555,8 @@ static void Test_f (void)
 	char	*host;
 	int		n;
 	int		max = MAX_SCOREBOARD;
-	struct qsockaddr sendaddr;
+	netadr_t sendaddr;
+	struct qsockaddr sendaddr_old;
 
 	if (testInProgress)
 		return;
@@ -570,7 +571,7 @@ static void Test_f (void)
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
 				max = hostcache[n].maxusers;
-				Com_Memcpy(&sendaddr, &hostcache[n].addr, sizeof(struct qsockaddr));
+				Com_Memcpy(&sendaddr_old, &hostcache[n].addr, sizeof(struct qsockaddr));
 				break;
 			}
 		if (n < hostCacheCount)
@@ -583,6 +584,7 @@ static void Test_f (void)
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 		return;
+	NetadrToSockadr(&sendaddr, (struct sockaddr_in*)&sendaddr_old);
 
 JustDoIt:
 	testSocket = UDP_OpenSocket(0);
@@ -599,8 +601,8 @@ JustDoIt:
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREQ_PLAYER_INFO);
 		net_message.WriteByte(n);
-		*((int *)net_message._data) = BigLong(NETFLAG_CTL | 	(net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(testSocket, net_message._data, net_message.cursize, &sendaddr);
+		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
+		UDP_Write(testSocket, net_message._data, net_message.cursize, &sendaddr_old);
 	}
 	net_message.Clear();
 	SchedulePollProcedure(&testPollProcedure, 0.1);
@@ -674,7 +676,8 @@ static void Test2_f (void)
 {
 	char	*host;
 	int		n;
-	struct qsockaddr sendaddr;
+	netadr_t sendaddr;
+	struct qsockaddr sendaddr_old;
 
 	if (test2InProgress)
 		return;
@@ -688,7 +691,7 @@ static void Test2_f (void)
 			{
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
-				Com_Memcpy(&sendaddr, &hostcache[n].addr, sizeof(struct qsockaddr));
+				Com_Memcpy(&sendaddr_old, &hostcache[n].addr, sizeof(struct qsockaddr));
 				break;
 			}
 		if (n < hostCacheCount)
@@ -701,6 +704,7 @@ static void Test2_f (void)
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 		return;
+	NetadrToSockadr(&sendaddr, (struct sockaddr_in*)&sendaddr_old);
 
 JustDoIt:
 	test2Socket = UDP_OpenSocket(0);
@@ -715,7 +719,7 @@ JustDoIt:
 	net_message.WriteByte(CCREQ_RULE_INFO);
 	net_message.WriteString2("");
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	UDP_Write(test2Socket, net_message._data, net_message.cursize, &sendaddr);
+	UDP_Write(test2Socket, net_message._data, net_message.cursize, &sendaddr_old);
 	net_message.Clear();
 	SchedulePollProcedure(&test2PollProcedure, 0.05);
 }
@@ -1051,7 +1055,8 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 	int		ret;
 	int		n;
 	int		i;
-	struct qsockaddr readaddr;
+	netadr_t readaddr;
+	struct qsockaddr readaddr_old;
 	netadr_t	myaddr;
 	struct qsockaddr myaddr_old;
 	int		control;
@@ -1071,14 +1076,14 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		net_message.Clear();
 	}
 
-	while ((ret = UDP_Read(udp_controlSock, net_message._data, net_message.maxsize, &readaddr)) > 0)
+	while ((ret = UDP_Read(udp_controlSock, net_message._data, net_message.maxsize, &readaddr_old)) > 0)
 	{
 		if (ret < sizeof(int))
 			continue;
 		net_message.cursize = ret;
 
 		// don't answer our own query
-		if (UDP_AddrCompare(&readaddr, &myaddr_old) >= 0)
+		if (UDP_AddrCompare(&readaddr_old, &myaddr_old) >= 0)
 			continue;
 
 		// is the cache full?
@@ -1099,9 +1104,10 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 			continue;
 
 		UDP_GetAddrFromName(const_cast<char*>(net_message.ReadString2()), &readaddr);
+		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
 		// search the cache for this server
 		for (n = 0; n < hostCacheCount; n++)
-			if (UDP_AddrCompare(&readaddr, &hostcache[n].addr) == 0)
+			if (UDP_AddrCompare(&readaddr_old, &hostcache[n].addr) == 0)
 				break;
 
 		// is it already there?
@@ -1121,9 +1127,9 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 			QStr::Cpy(hostcache[n].name, "*");
 			QStr::Cat(hostcache[n].name, sizeof(hostcache[n].name), hostcache[n].cname);
 		}
-		Com_Memcpy(&hostcache[n].addr, &readaddr, sizeof(struct qsockaddr));
+		Com_Memcpy(&hostcache[n].addr, &readaddr_old, sizeof(struct qsockaddr));
 		hostcache[n].driver = net_driverlevel;
-		QStr::Cpy(hostcache[n].cname, UDP_AddrToString(&readaddr));
+		QStr::Cpy(hostcache[n].cname, UDP_AddrToString(&readaddr_old));
 
 		// check for a name conflict
 		for (i = 0; i < hostCacheCount; i++)
@@ -1167,9 +1173,9 @@ static qsocket_t *_Datagram_Connect (char *host)
 	char		*reason;
 
 	// see if we can resolve the host name
-	if (UDP_GetAddrFromName(host, &sendaddr_old) == -1)
+	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 		return NULL;
-	SockadrToNetadr((struct sockaddr_in*)&sendaddr_old, &sendaddr);
+	NetadrToSockadr(&sendaddr, (struct sockaddr_in*)&sendaddr_old);
 
 	newsock = UDP_OpenSocket(0);
 	if (newsock == -1)
