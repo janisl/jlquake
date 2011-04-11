@@ -113,18 +113,20 @@ int UDP_GetSocketAddr(int socket, netadr_t* addr)
 
 //=============================================================================
 
-int UDP_GetNameFromAddr (struct qsockaddr *addr, char *name)
+int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 {
+	sockaddr_in sadr;
+	NetadrToSockadr(addr, &sadr);
 	struct hostent *hostentry;
 
-	hostentry = gethostbyaddr ((char *)&((struct sockaddr_in *)addr)->sin_addr, sizeof(struct in_addr), AF_INET);
+	hostentry = gethostbyaddr ((char *)&sadr.sin_addr, sizeof(struct in_addr), AF_INET);
 	if (hostentry)
 	{
 		QStr::NCpy(name, (char *)hostentry->h_name, NET_NAMELEN - 1);
 		return 0;
 	}
 
-	QStr::Cpy(name, UDP_AddrToString (addr));
+	QStr::Cpy(name, UDP_AddrToString((qsockaddr*)&sadr));
 	return 0;
 }
 

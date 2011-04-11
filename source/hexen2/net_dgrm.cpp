@@ -1155,7 +1155,8 @@ void Datagram_SearchForHosts (qboolean xmit)
 
 static qsocket_t *_Datagram_Connect (char *host)
 {
-	struct qsockaddr sendaddr;
+	netadr_t sendaddr;
+	struct qsockaddr sendaddr_old;
 	struct qsockaddr readaddr;
 	qsocket_t	*sock;
 	int			newsock;
@@ -1166,8 +1167,9 @@ static qsocket_t *_Datagram_Connect (char *host)
 	char		*reason;
 
 	// see if we can resolve the host name
-	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
+	if (UDP_GetAddrFromName(host, &sendaddr_old) == -1)
 		return NULL;
+	SockadrToNetadr((struct sockaddr_in*)&sendaddr_old, &sendaddr);
 
 	newsock = UDP_OpenSocket(0);
 	if (newsock == -1)
@@ -1179,7 +1181,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 	sock->socket = newsock;
 
 	// connect to the host
-	if (UDP_Connect(newsock, &sendaddr) == -1)
+	if (UDP_Connect(newsock, &sendaddr_old) == -1)
 		goto ErrorReturn;
 
 	// send the connection request
@@ -1195,7 +1197,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 		net_message.WriteString2(NET_NAME_ID);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(newsock, net_message._data, net_message.cursize, &sendaddr);
+		UDP_Write(newsock, net_message._data, net_message.cursize, &sendaddr_old);
 		net_message.Clear();
 		do
 		{
@@ -1204,11 +1206,11 @@ static qsocket_t *_Datagram_Connect (char *host)
 			if (ret > 0)
 			{
 				// is it from the right place?
-				if (UDP_AddrCompare(&readaddr, &sendaddr) != 0)
+				if (UDP_AddrCompare(&readaddr, &sendaddr_old) != 0)
 				{
 #ifdef DEBUG
 					Con_Printf("wrong reply address\n");
-					Con_Printf("Expected: %s\n", StrAddr (&sendaddr));
+					Con_Printf("Expected: %s\n", StrAddr (&sendaddr_old));
 					Con_Printf("Received: %s\n", StrAddr (&readaddr));
 					SCR_UpdateScreen ();
 #endif
@@ -1278,7 +1280,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 
 	if (ret == CCREP_ACCEPT)
 	{
-		Com_Memcpy(&sock->addr, &sendaddr, sizeof(struct qsockaddr));
+		Com_Memcpy(&sock->addr, &sendaddr_old, sizeof(struct qsockaddr));
 		UDP_SetSocketPort(&sock->addr, net_message.ReadLong());
 	}
 	else
