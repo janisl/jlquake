@@ -41,9 +41,7 @@ int UDP_Init (void)
 	}
 
 	UDP_GetSocketAddr (net_controlsocket, &addr);
-	qsockaddr sadr;
-	NetadrToSockadr(&addr, (struct sockaddr_in*)&sadr);
-	QStr::Cpy(my_tcpip_address,  UDP_AddrToString (&sadr));
+	QStr::Cpy(my_tcpip_address,  UDP_AddrToString (&addr));
 	p = QStr::RChr(my_tcpip_address, ':');
 	if (p)
 		*p = 0;
@@ -102,7 +100,7 @@ int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 		return 0;
 	}
 
-	QStr::Cpy(name, UDP_AddrToString((qsockaddr*)&sadr));
+	QStr::Cpy(name, UDP_AddrToString(addr));
 	return 0;
 }
 

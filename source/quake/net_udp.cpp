@@ -88,9 +88,7 @@ int UDP_Init (void)
 		Sys_Error("UDP_Init: Unable to open control socket\n");
 
 	UDP_GetSocketAddr (net_controlsocket, &addr);
-	qsockaddr sadr;
-	NetadrToSockadr(&addr, (struct sockaddr_in*)&sadr);
-	QStr::Cpy(my_tcpip_address,  UDP_AddrToString (&sadr));
+	QStr::Cpy(my_tcpip_address,  UDP_AddrToString(&addr));
 	colon = QStr::RChr(my_tcpip_address, ':');
 	if (colon)
 		*colon = 0;
@@ -150,7 +148,7 @@ int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 		return 0;
 	}
 
-	QStr::Cpy(name, UDP_AddrToString((qsockaddr*)&sadr));
+	QStr::Cpy(name, UDP_AddrToString(addr));
 	return 0;
 }
 

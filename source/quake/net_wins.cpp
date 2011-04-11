@@ -141,7 +141,7 @@ int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 		return 0;
 	}
 
-	QStr::Cpy(name, UDP_AddrToString((qsockaddr*)&sadr));
+	QStr::Cpy(name, UDP_AddrToString(addr));
 	return 0;
 }
 

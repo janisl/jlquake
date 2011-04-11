@@ -778,7 +778,8 @@ void Datagram_Listen (qboolean state)
 
 static qsocket_t *_Datagram_CheckNewConnections (void)
 {
-	struct qsockaddr clientaddr;
+	netadr_t clientaddr;
+	struct qsockaddr clientaddr_old;
 	netadr_t newaddr;
 	struct qsockaddr newaddr_old;
 	int			newsock;
@@ -796,7 +797,8 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 	net_message.Clear();
 
-	len = UDP_Read(acceptsock, net_message._data, net_message.maxsize, &clientaddr);
+	len = UDP_Read(acceptsock, net_message._data, net_message.maxsize, &clientaddr_old);
+	SockadrToNetadr((struct sockaddr_in*)&clientaddr_old, &clientaddr);
 	if (len < sizeof(int))
 		return NULL;
 	net_message.cursize = len;
@@ -822,15 +824,14 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREP_SERVER_INFO);
 		UDP_GetSocketAddr(acceptsock, &newaddr);
-		NetadrToSockadr(&newaddr, (struct sockaddr_in*)&newaddr_old);
-		net_message.WriteString2(UDP_AddrToString(&newaddr_old));
+		net_message.WriteString2(UDP_AddrToString(&newaddr));
 		net_message.WriteString2(hostname->string);
 		net_message.WriteString2(sv.name);
 		net_message.WriteByte(net_activeconnections);
 		net_message.WriteByte(svs.maxclients);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 		net_message.Clear();
 		return NULL;
 	}
@@ -867,7 +868,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteLong((int)(net_time - client->netconnection->connecttime));
 		net_message.WriteString2(client->netconnection->address);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 		net_message.Clear();
 
 		return NULL;
@@ -910,7 +911,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 			net_message.WriteString2(var->string);
 		}
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 		net_message.Clear();
 
 		return NULL;
@@ -930,17 +931,17 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteByte(CCREP_REJECT);
 		net_message.WriteString2("Incompatible version.\n");
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 		net_message.Clear();
 		return NULL;
 	}
 
 #ifdef BAN_TEST
 	// check for a ban
-	if (clientaddr.sa_family == AF_INET)
+	if (clientaddr_old.sa_family == AF_INET)
 	{
 		unsigned long testAddr;
-		testAddr = ((struct sockaddr_in *)&clientaddr)->sin_addr.s_addr;
+		testAddr = ((struct sockaddr_in *)&clientaddr_old)->sin_addr.s_addr;
 		if ((testAddr & banMask) == banAddr)
 		{
 			net_message.Clear();
@@ -949,7 +950,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 			net_message.WriteByte(CCREP_REJECT);
 			net_message.WriteString2("You have been banned.\n");
 			*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-			UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+			UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 			net_message.Clear();
 			return NULL;
 		}
@@ -961,7 +962,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	{
 		if (s->driver != net_driverlevel)
 			continue;
-		ret = UDP_AddrCompare(&clientaddr, &s->addr);
+		ret = UDP_AddrCompare(&clientaddr_old, &s->addr);
 		if (ret >= 0)
 		{
 			// is this a duplicate connection reqeust?
@@ -976,7 +977,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 				NetadrToSockadr(&newaddr, (struct sockaddr_in*)&newaddr_old);
 				net_message.WriteLong(UDP_GetSocketPort(&newaddr_old));
 				*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 				net_message.Clear();
 				return NULL;
 			}
@@ -998,7 +999,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteByte(CCREP_REJECT);
 		net_message.WriteString2("Server is full.\n");
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 		net_message.Clear();
 		return NULL;
 	}
@@ -1012,7 +1013,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	}
 
 	// connect to the client
-	if (UDP_Connect(newsock, &clientaddr) == -1)
+	if (UDP_Connect(newsock, &clientaddr_old) == -1)
 	{
 		UDP_OpenSocket(newsock);
 		NET_FreeQSocket(sock);
@@ -1021,7 +1022,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 	// everything is allocated, just fill in the details	
 	sock->socket = newsock;
-	sock->addr = clientaddr;
+	sock->addr = clientaddr_old;
 	QStr::Cpy(sock->address, UDP_AddrToString(&clientaddr));
 
 	// send him back the info about the server connection he has been allocated
@@ -1034,7 +1035,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	net_message.WriteLong(UDP_GetSocketPort(&newaddr_old));
 //	net_message.WriteString2(dfunc.AddrToString(&newaddr));
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
+	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
 	net_message.Clear();
 
 	return sock;
@@ -1129,7 +1130,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		}
 		Com_Memcpy(&hostcache[n].addr, &readaddr_old, sizeof(struct qsockaddr));
 		hostcache[n].driver = net_driverlevel;
-		QStr::Cpy(hostcache[n].cname, UDP_AddrToString(&readaddr_old));
+		QStr::Cpy(hostcache[n].cname, UDP_AddrToString(&readaddr));
 
 		// check for a name conflict
 		for (i = 0; i < hostCacheCount; i++)
@@ -1442,13 +1443,11 @@ int UDP_Broadcast (int socket, byte *buf, int len)
 
 //=============================================================================
 
-char *UDP_AddrToString (struct qsockaddr *addr_old)
+char* UDP_AddrToString(netadr_t* addr)
 {
 	static char buffer[22];
-	netadr_t addr;
-	SockadrToNetadr((struct sockaddr_in*)addr_old, &addr);
 
-	sprintf(buffer, "%d.%d.%d.%d:%d", addr.ip[0], addr.ip[1], addr.ip[2], addr.ip[3], BigShort(addr.port));
+	sprintf(buffer, "%d.%d.%d.%d:%d", addr->ip[0], addr->ip[1], addr->ip[2], addr->ip[3], BigShort(addr->port));
 	return buffer;
 }
 
