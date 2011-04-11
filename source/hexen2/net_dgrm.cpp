@@ -1018,14 +1018,6 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		return NULL;
 	}
 
-	// connect to the client
-	if (UDP_Connect(newsock, &clientaddr_old) == -1)
-	{
-		UDP_OpenSocket(newsock);
-		NET_FreeQSocket(sock);
-		return NULL;
-	}
-
 	// everything is allocated, just fill in the details	
 	sock->socket = newsock;
 	sock->addr = clientaddr_old;
@@ -1197,10 +1189,6 @@ static qsocket_t *_Datagram_Connect (char *host)
 		goto ErrorReturn2;
 	sock->socket = newsock;
 
-	// connect to the host
-	if (UDP_Connect(newsock, &sendaddr_old) == -1)
-		goto ErrorReturn;
-
 	// send the connection request
 	Con_Printf("trying...\n"); SCR_UpdateScreen ();
 	start_time = net_time;
@@ -1317,15 +1305,6 @@ static qsocket_t *_Datagram_Connect (char *host)
 	Con_Printf ("Connection accepted\n");
 	sock->lastMessageTime = SetNetTime();
 
-	// switch the connection to the specified address
-	if (UDP_Connect(newsock, &sock->addr) == -1)
-	{
-		reason = "Connect to Game failed";
-		Con_Printf("%s\n", reason);
-		QStr::Cpy(m_return_reason, reason);
-		goto ErrorReturn;
-	}
-
 	m_return_onerror = false;
 	return sock;
 
@@ -1401,13 +1380,6 @@ int UDP_OpenSocket (int port)
 int UDP_CloseSocket (int socket)
 {
 	SOCK_Close(socket);
-	return 0;
-}
-
-//=============================================================================
-
-int UDP_Connect (int socket, struct qsockaddr *addr)
-{
 	return 0;
 }
 
