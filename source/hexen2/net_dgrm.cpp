@@ -31,20 +31,6 @@ extern qboolean m_return_onerror;
 extern char m_return_reason[32];
 
 
-#ifdef DEBUG
-char *StrAddr (struct qsockaddr *addr)
-{
-	static char buf[34];
-	byte *p = (byte *)addr;
-	int n;
-
-	for (n = 0; n < 16; n++)
-		sprintf (buf + n * 2, "%02x", *p++);
-	return buf;
-}
-#endif
-
-
 #ifdef BAN_TEST
 netadr_t banAddr;
 netadr_t banMask;
@@ -265,7 +251,6 @@ int	Datagram_GetMessage (qsocket_t *sock)
 	unsigned int	flags;
 	int				ret = 0;
 	netadr_t readaddr;
-	struct qsockaddr readaddr_old;
 	unsigned int	sequence;
 	unsigned int	count;
 
@@ -289,13 +274,12 @@ int	Datagram_GetMessage (qsocket_t *sock)
 			return -1;
 		}
 
-		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
 		if (UDP_AddrCompare(&readaddr, &sock->addr) != 0)
 		{
 #ifdef DEBUG
 			Con_DPrintf("Forged packet received\n");
-			Con_DPrintf("Expected: %s\n", StrAddr (&sock->addr));
-			Con_DPrintf("Received: %s\n", StrAddr (&readaddr_old));
+			Con_DPrintf("Expected: %s\n", UDP_AddrToString(&sock->addr));
+			Con_DPrintf("Received: %s\n", UDP_AddrToString(&readaddr));
 #endif
 			continue;
 		}
@@ -1118,7 +1102,6 @@ static qsocket_t *_Datagram_Connect (char *host)
 {
 	netadr_t sendaddr;
 	netadr_t readaddr;
-	struct qsockaddr readaddr_old;
 	qsocket_t	*sock;
 	int			newsock;
 	int			ret;
@@ -1162,13 +1145,12 @@ static qsocket_t *_Datagram_Connect (char *host)
 			if (ret > 0)
 			{
 				// is it from the right place?
-				NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
 				if (UDP_AddrCompare(&readaddr, &sendaddr) != 0)
 				{
 #ifdef DEBUG
 					Con_Printf("wrong reply address\n");
-					Con_Printf("Expected: %s\n", StrAddr (&sendaddr_old));
-					Con_Printf("Received: %s\n", StrAddr (&readaddr_old));
+					Con_Printf("Expected: %s\n", UDP_AddrToString(&sendaddr));
+					Con_Printf("Received: %s\n", UDP_AddrToString(&readaddr));
 					SCR_UpdateScreen ();
 #endif
 					ret = 0;
