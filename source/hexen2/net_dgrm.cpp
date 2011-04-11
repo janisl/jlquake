@@ -173,7 +173,9 @@ int Datagram_SendMessage (qsocket_t *sock, QMsg *data)
 
 	sock->canSend = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
+	netadr_t tmp;
+	SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &tmp) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -206,7 +208,9 @@ int SendMessageNext (qsocket_t *sock)
 
 	sock->sendNext = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
+	netadr_t tmp;
+	SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &tmp) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -239,7 +243,9 @@ int ReSendMessage (qsocket_t *sock)
 
 	sock->sendNext = false;
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
+	netadr_t tmp;
+	SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &tmp) == -1)
 		return -1;
 
 	sock->lastSendTime = net_time;
@@ -281,7 +287,9 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
 	packetBuffer.sequence = BigLong(sock->unreliableSendSequence++);
 	Com_Memcpy(packetBuffer.data, data->_data, data->cursize);
 
-	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &sock->addr) == -1)
+	netadr_t tmp;
+	SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
+	if (UDP_Write(sock->socket, (byte *)&packetBuffer, packetLen, &tmp) == -1)
 		return -1;
 
 	packetsSent++;
@@ -409,7 +417,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 		{
 			packetBuffer.length = BigLong(NET_HEADERSIZE | NETFLAG_ACK);
 			packetBuffer.sequence = BigLong(sequence);
-			UDP_Write(sock->socket, (byte *)&packetBuffer, NET_HEADERSIZE, &readaddr_old);
+			UDP_Write(sock->socket, (byte *)&packetBuffer, NET_HEADERSIZE, &readaddr);
 
 			if (sequence != sock->receiveSequence)
 			{
@@ -576,6 +584,7 @@ static void Test_f (void)
 					continue;
 				max = hostcache[n].maxusers;
 				Com_Memcpy(&sendaddr_old, &hostcache[n].addr, sizeof(struct qsockaddr));
+				SockadrToNetadr((struct sockaddr_in*)&sendaddr_old, &sendaddr);
 				break;
 			}
 		if (n < hostCacheCount)
@@ -588,7 +597,6 @@ static void Test_f (void)
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 		return;
-	NetadrToSockadr(&sendaddr, (struct sockaddr_in*)&sendaddr_old);
 
 JustDoIt:
 	testSocket = UDP_OpenSocket(0);
@@ -606,7 +614,7 @@ JustDoIt:
 		net_message.WriteByte(CCREQ_PLAYER_INFO);
 		net_message.WriteByte(n);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(testSocket, net_message._data, net_message.cursize, &sendaddr_old);
+		UDP_Write(testSocket, net_message._data, net_message.cursize, &sendaddr);
 	}
 	net_message.Clear();
 	SchedulePollProcedure(&testPollProcedure, 0.1);
@@ -622,7 +630,6 @@ PollProcedure	test2PollProcedure = {NULL, 0.0, Test2_Poll};
 static void Test2_Poll(void)
 {
 	netadr_t clientaddr;
-	struct qsockaddr clientaddr_old;
 	int		control;
 	int		len;
 	char	name[256];
@@ -662,8 +669,7 @@ static void Test2_Poll(void)
 	net_message.WriteByte(CCREQ_RULE_INFO);
 	net_message.WriteString2(name);
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	NetadrToSockadr(&clientaddr, (struct sockaddr_in*)&clientaddr_old);
-	UDP_Write(test2Socket, net_message._data, net_message.cursize, &clientaddr_old);
+	UDP_Write(test2Socket, net_message._data, net_message.cursize, &clientaddr);
 	net_message.Clear();
 
 Reschedule:
@@ -698,6 +704,7 @@ static void Test2_f (void)
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
 				Com_Memcpy(&sendaddr_old, &hostcache[n].addr, sizeof(struct qsockaddr));
+				SockadrToNetadr((struct sockaddr_in*)&sendaddr_old, &sendaddr);
 				break;
 			}
 		if (n < hostCacheCount)
@@ -710,7 +717,6 @@ static void Test2_f (void)
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
 		return;
-	NetadrToSockadr(&sendaddr, (struct sockaddr_in*)&sendaddr_old);
 
 JustDoIt:
 	test2Socket = UDP_OpenSocket(0);
@@ -725,7 +731,7 @@ JustDoIt:
 	net_message.WriteByte(CCREQ_RULE_INFO);
 	net_message.WriteString2("");
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	UDP_Write(test2Socket, net_message._data, net_message.cursize, &sendaddr_old);
+	UDP_Write(test2Socket, net_message._data, net_message.cursize, &sendaddr);
 	net_message.Clear();
 	SchedulePollProcedure(&test2PollProcedure, 0.05);
 }
@@ -836,7 +842,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteByte(svs.maxclients);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 		return NULL;
 	}
@@ -873,7 +879,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteLong((int)(net_time - client->netconnection->connecttime));
 		net_message.WriteString2(client->netconnection->address);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 
 		return NULL;
@@ -916,7 +922,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 			net_message.WriteString2(var->string);
 		}
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 
 		return NULL;
@@ -936,7 +942,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteByte(CCREP_REJECT);
 		net_message.WriteString2("Incompatible version.\n");
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 		return NULL;
 	}
@@ -955,7 +961,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 			net_message.WriteByte(CCREP_REJECT);
 			net_message.WriteString2("You have been banned.\n");
 			*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-			UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
+			UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 			net_message.Clear();
 			return NULL;
 		}
@@ -983,7 +989,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 				UDP_GetSocketAddr(s->socket, &newaddr);
 				net_message.WriteLong(UDP_GetSocketPort(&newaddr));
 				*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
+				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 				net_message.Clear();
 				return NULL;
 			}
@@ -1005,7 +1011,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteByte(CCREP_REJECT);
 		net_message.WriteString2("Server is full.\n");
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
+		UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 		net_message.Clear();
 		return NULL;
 	}
@@ -1032,7 +1038,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	net_message.WriteLong(UDP_GetSocketPort(&newaddr));
 //	net_message.WriteString2(dfunc.AddrToString(&newaddr));
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr_old);
+	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 	net_message.Clear();
 
 	return sock;
@@ -1202,7 +1208,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 		net_message.WriteString2(NET_NAME_ID);
 		net_message.WriteByte(NET_PROTOCOL_VERSION);
 		*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-		UDP_Write(newsock, net_message._data, net_message.cursize, &sendaddr_old);
+		UDP_Write(newsock, net_message._data, net_message.cursize, &sendaddr);
 		net_message.Clear();
 		do
 		{
@@ -1401,11 +1407,9 @@ int UDP_Read (int socket, byte* buf, int len, netadr_t* addr)
 
 //=============================================================================
 
-int UDP_Write (int socket, byte *buf, int len, struct qsockaddr *addr)
+int UDP_Write (int socket, byte *buf, int len, netadr_t* addr)
 {
-	netadr_t to;
-	SockadrToNetadr((struct sockaddr_in*)addr, &to);
-	int ret = SOCL_Send(socket, buf, len, &to);
+	int ret = SOCL_Send(socket, buf, len, addr);
 	if (ret == SOCKSEND_WOULDBLOCK)
 		return 0;
 	return ret;

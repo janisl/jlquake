@@ -26,7 +26,7 @@ int  UDP_OpenSocket (int port);
 int  UDP_CloseSocket (int socket);
 int  UDP_CheckNewConnections (void);
 int  UDP_Read (int socket, byte *buf, int len, netadr_t* addr);
-int  UDP_Write (int socket, byte *buf, int len, struct qsockaddr *addr);
+int  UDP_Write (int socket, byte *buf, int len, netadr_t* addr);
 int  UDP_Broadcast (int socket, byte *buf, int len);
 char *UDP_AddrToString (netadr_t* addr);
 int  UDP_GetSocketAddr (int socket, netadr_t* addr);
