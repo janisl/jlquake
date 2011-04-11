@@ -50,7 +50,7 @@ static unsigned long myAddr;
 
 int UDP_Init (void)
 {
-	struct qsockaddr addr;
+	netadr_t addr;
 	char *colon;
 	
 	if (COM_CheckParm ("-noudp"))
@@ -64,7 +64,9 @@ int UDP_Init (void)
 		Sys_Error("UDP_Init: Unable to open control socket\n");
 
 	UDP_GetSocketAddr (net_controlsocket, &addr);
-	QStr::Cpy(my_tcpip_address,  UDP_AddrToString (&addr));
+	qsockaddr sadr;
+	NetadrToSockadr(&addr, (struct sockaddr_in*)&sadr);
+	QStr::Cpy(my_tcpip_address,  UDP_AddrToString (&sadr));
 	colon = QStr::RChr(my_tcpip_address, ':');
 	if (colon)
 		*colon = 0;
@@ -93,17 +95,19 @@ int UDP_CheckNewConnections (void)
 
 //=============================================================================
 
-int UDP_GetSocketAddr (int socket, struct qsockaddr *addr)
+int UDP_GetSocketAddr(int socket, netadr_t* addr)
 {
-	socklen_t addrlen = sizeof(struct qsockaddr);
+	sockaddr_in sadr;
+	socklen_t addrlen = sizeof(sadr);
 	unsigned int a;
 
-	Com_Memset(addr, 0, sizeof(struct qsockaddr));
-	getsockname(socket, (struct sockaddr *)addr, &addrlen);
-	a = ((struct sockaddr_in *)addr)->sin_addr.s_addr;
+	Com_Memset(&sadr, 0, sizeof(struct qsockaddr));
+	getsockname(socket, (struct sockaddr *)&sadr, &addrlen);
+	a = sadr.sin_addr.s_addr;
 	if (a == 0 || a == inet_addr("127.0.0.1"))
-		((struct sockaddr_in *)addr)->sin_addr.s_addr = myAddr;
+		sadr.sin_addr.s_addr = myAddr;
 
+	SockadrToNetadr(&sadr, addr);
 	return 0;
 }
 

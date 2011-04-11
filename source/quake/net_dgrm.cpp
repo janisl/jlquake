@@ -795,7 +795,8 @@ void Datagram_Listen (qboolean state)
 static qsocket_t *_Datagram_CheckNewConnections (void)
 {
 	struct qsockaddr clientaddr;
-	struct qsockaddr newaddr;
+	netadr_t newaddr;
+	struct qsockaddr newaddr_old;
 	int			newsock;
 	int			acceptsock;
 	qsocket_t	*sock;
@@ -837,7 +838,8 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREP_SERVER_INFO);
 		UDP_GetSocketAddr(acceptsock, &newaddr);
-		net_message.WriteString2(UDP_AddrToString(&newaddr));
+		NetadrToSockadr(&newaddr, (struct sockaddr_in*)&newaddr_old);
+		net_message.WriteString2(UDP_AddrToString(&newaddr_old));
 		net_message.WriteString2(hostname->string);
 		net_message.WriteString2(sv.name);
 		net_message.WriteByte(net_activeconnections);
@@ -987,7 +989,8 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 				net_message.WriteLong(0);
 				net_message.WriteByte(CCREP_ACCEPT);
 				UDP_GetSocketAddr(s->socket, &newaddr);
-				net_message.WriteLong(UDP_GetSocketPort(&newaddr));
+				NetadrToSockadr(&newaddr, (struct sockaddr_in*)&newaddr_old);
+				net_message.WriteLong(UDP_GetSocketPort(&newaddr_old));
 				*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 				net_message.Clear();
@@ -1043,7 +1046,8 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	net_message.WriteLong(0);
 	net_message.WriteByte(CCREP_ACCEPT);
 	UDP_GetSocketAddr(newsock, &newaddr);
-	net_message.WriteLong(UDP_GetSocketPort(&newaddr));
+	NetadrToSockadr(&newaddr, (struct sockaddr_in*)&newaddr_old);
+	net_message.WriteLong(UDP_GetSocketPort(&newaddr_old));
 //	net_message.WriteString2(dfunc.AddrToString(&newaddr));
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
@@ -1068,10 +1072,12 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 	int		n;
 	int		i;
 	struct qsockaddr readaddr;
-	struct qsockaddr myaddr;
+	netadr_t	myaddr;
+	struct qsockaddr myaddr_old;
 	int		control;
 
 	UDP_GetSocketAddr(udp_controlSock, &myaddr);
+	NetadrToSockadr(&myaddr, (struct sockaddr_in*)&myaddr_old);
 	if (xmit)
 	{
 		net_message.Clear();
@@ -1092,7 +1098,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		net_message.cursize = ret;
 
 		// don't answer our own query
-		if (UDP_AddrCompare(&readaddr, &myaddr) >= 0)
+		if (UDP_AddrCompare(&readaddr, &myaddr_old) >= 0)
 			continue;
 
 		// is the cache full?
