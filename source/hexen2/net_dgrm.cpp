@@ -1291,8 +1291,11 @@ static qsocket_t *_Datagram_Connect (char *host)
 
 	if (ret == CCREP_ACCEPT)
 	{
-		Com_Memcpy(&sock->addr, &sendaddr_old, sizeof(struct qsockaddr));
-		UDP_SetSocketPort(&sock->addr, net_message.ReadLong());
+		sock->addr = sendaddr_old;
+		netadr_t tmp;
+		SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
+		UDP_SetSocketPort(&tmp, net_message.ReadLong());
+		NetadrToSockadr(&tmp, (struct sockaddr_in*)&sock->addr);
 	}
 	else
 	{
@@ -1481,12 +1484,9 @@ int UDP_GetSocketPort(netadr_t* addr)
 }
 
 
-int UDP_SetSocketPort (struct qsockaddr *addr_old, int port)
+int UDP_SetSocketPort(netadr_t* addr, int port)
 {
-	netadr_t addr;
-	SockadrToNetadr((struct sockaddr_in*)addr_old, &addr);
-	addr.port = BigShort(port);
-	NetadrToSockadr(&addr, (struct sockaddr_in*)addr_old);
+	addr->port = BigShort(port);
 	return 0;
 }
 
