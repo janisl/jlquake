@@ -320,7 +320,9 @@ int	Datagram_GetMessage (qsocket_t *sock)
 		}
 
 		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
-		if (UDP_AddrCompare(&readaddr_old, &sock->addr) != 0)
+		netadr_t tmp;
+		SockadrToNetadr((struct sockaddr_in*)&sock->addr, &tmp);
+		if (UDP_AddrCompare(&readaddr, &tmp) != 0)
 		{
 #ifdef DEBUG
 			Con_DPrintf("Forged packet received\n");
@@ -965,7 +967,9 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	{
 		if (s->driver != net_driverlevel)
 			continue;
-		ret = UDP_AddrCompare(&clientaddr_old, &s->addr);
+		netadr_t tmp;
+		SockadrToNetadr((struct sockaddr_in*)&s->addr, &tmp);
+		ret = UDP_AddrCompare(&clientaddr, &tmp);
 		if (ret >= 0)
 		{
 			// is this a duplicate connection reqeust?
@@ -1060,11 +1064,9 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 	netadr_t readaddr;
 	struct qsockaddr readaddr_old;
 	netadr_t	myaddr;
-	struct qsockaddr myaddr_old;
 	int		control;
 
 	UDP_GetSocketAddr(udp_controlSock, &myaddr);
-	NetadrToSockadr(&myaddr, (struct sockaddr_in*)&myaddr_old);
 	if (xmit)
 	{
 		net_message.Clear();
@@ -1085,8 +1087,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		net_message.cursize = ret;
 
 		// don't answer our own query
-		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
-		if (UDP_AddrCompare(&readaddr_old, &myaddr_old) >= 0)
+		if (UDP_AddrCompare(&readaddr, &myaddr) >= 0)
 			continue;
 
 		// is the cache full?
@@ -1106,12 +1107,18 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		if (net_message.ReadByte() != CCREP_SERVER_INFO)
 			continue;
 
-		UDP_GetAddrFromName(const_cast<char*>(net_message.ReadString2()), &readaddr);
+		UDP_GetAddrFromName(net_message.ReadString2(), &readaddr);
 		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
 		// search the cache for this server
 		for (n = 0; n < hostCacheCount; n++)
-			if (UDP_AddrCompare(&readaddr_old, &hostcache[n].addr) == 0)
+		{
+			netadr_t tmp;
+			SockadrToNetadr((struct sockaddr_in*)&hostcache[n].addr, &tmp);
+			if (UDP_AddrCompare(&readaddr, &tmp) == 0)
+			{
 				break;
+			}
+		}
 
 		// is it already there?
 		if (n < hostCacheCount)
@@ -1130,7 +1137,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 			QStr::Cpy(hostcache[n].name, "*");
 			QStr::Cat(hostcache[n].name, sizeof(hostcache[n].name), hostcache[n].cname);
 		}
-		Com_Memcpy(&hostcache[n].addr, &readaddr_old, sizeof(struct qsockaddr));
+		hostcache[n].addr = readaddr_old;
 		hostcache[n].driver = net_driverlevel;
 		QStr::Cpy(hostcache[n].cname, UDP_AddrToString(&readaddr));
 
@@ -1217,7 +1224,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 			{
 				// is it from the right place?
 				NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
-				if (UDP_AddrCompare(&readaddr_old, &sendaddr_old) != 0)
+				if (UDP_AddrCompare(&readaddr, &sendaddr) != 0)
 				{
 #ifdef DEBUG
 					Con_Printf("wrong reply address\n");
@@ -1458,19 +1465,15 @@ char* UDP_AddrToString(netadr_t* addr)
 
 //=============================================================================
 
-int UDP_AddrCompare (struct qsockaddr *addr1_old, struct qsockaddr *addr2_old)
+int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
 {
-	netadr_t addr1;
-	netadr_t addr2;
-	SockadrToNetadr((struct sockaddr_in*)addr1_old, &addr1);
-	SockadrToNetadr((struct sockaddr_in*)addr2_old, &addr2);
-	if (addr1.type != addr2.type)
+	if (addr1->type != addr2->type)
 		return -1;
 
-	if (addr1.ip[0] != addr2.ip[0] || addr1.ip[1] != addr2.ip[1] || addr1.ip[2] != addr2.ip[2] || addr1.ip[3] != addr2.ip[3])
+	if (addr1->ip[0] != addr2->ip[0] || addr1->ip[1] != addr2->ip[1] || addr1->ip[2] != addr2->ip[2] || addr1->ip[3] != addr2->ip[3])
 		return -1;
 
-	if (addr1.port != addr2.port)
+	if (addr1->port != addr2->port)
 		return 1;
 
 	return 0;
