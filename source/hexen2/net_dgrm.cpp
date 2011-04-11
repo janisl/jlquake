@@ -294,7 +294,8 @@ int	Datagram_GetMessage (qsocket_t *sock)
 	unsigned int	length;
 	unsigned int	flags;
 	int				ret = 0;
-	struct qsockaddr readaddr;
+	netadr_t readaddr;
+	struct qsockaddr readaddr_old;
 	unsigned int	sequence;
 	unsigned int	count;
 
@@ -318,12 +319,13 @@ int	Datagram_GetMessage (qsocket_t *sock)
 			return -1;
 		}
 
-		if (UDP_AddrCompare(&readaddr, &sock->addr) != 0)
+		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
+		if (UDP_AddrCompare(&readaddr_old, &sock->addr) != 0)
 		{
 #ifdef DEBUG
 			Con_DPrintf("Forged packet received\n");
 			Con_DPrintf("Expected: %s\n", StrAddr (&sock->addr));
-			Con_DPrintf("Received: %s\n", StrAddr (&readaddr));
+			Con_DPrintf("Received: %s\n", StrAddr (&readaddr_old));
 #endif
 			continue;
 		}
@@ -405,7 +407,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 		{
 			packetBuffer.length = BigLong(NET_HEADERSIZE | NETFLAG_ACK);
 			packetBuffer.sequence = BigLong(sequence);
-			UDP_Write(sock->socket, (byte *)&packetBuffer, NET_HEADERSIZE, &readaddr);
+			UDP_Write(sock->socket, (byte *)&packetBuffer, NET_HEADERSIZE, &readaddr_old);
 
 			if (sequence != sock->receiveSequence)
 			{
@@ -497,7 +499,7 @@ PollProcedure	testPollProcedure = {NULL, 0.0, Test_Poll};
 
 static void Test_Poll(void)
 {
-	struct qsockaddr clientaddr;
+	netadr_t clientaddr;
 	int		control;
 	int		len;
 	char	name[32];
@@ -617,7 +619,8 @@ PollProcedure	test2PollProcedure = {NULL, 0.0, Test2_Poll};
 
 static void Test2_Poll(void)
 {
-	struct qsockaddr clientaddr;
+	netadr_t clientaddr;
+	struct qsockaddr clientaddr_old;
 	int		control;
 	int		len;
 	char	name[256];
@@ -657,7 +660,8 @@ static void Test2_Poll(void)
 	net_message.WriteByte(CCREQ_RULE_INFO);
 	net_message.WriteString2(name);
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
-	UDP_Write(test2Socket, net_message._data, net_message.cursize, &clientaddr);
+	NetadrToSockadr(&clientaddr, (struct sockaddr_in*)&clientaddr_old);
+	UDP_Write(test2Socket, net_message._data, net_message.cursize, &clientaddr_old);
 	net_message.Clear();
 
 Reschedule:
@@ -797,10 +801,10 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 	net_message.Clear();
 
-	len = UDP_Read(acceptsock, net_message._data, net_message.maxsize, &clientaddr_old);
-	SockadrToNetadr((struct sockaddr_in*)&clientaddr_old, &clientaddr);
+	len = UDP_Read(acceptsock, net_message._data, net_message.maxsize, &clientaddr);
 	if (len < sizeof(int))
 		return NULL;
+	NetadrToSockadr(&clientaddr, (struct sockaddr_in*)&clientaddr_old);
 	net_message.cursize = len;
 
 	net_message.BeginReadingOOB();
@@ -1077,13 +1081,14 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		net_message.Clear();
 	}
 
-	while ((ret = UDP_Read(udp_controlSock, net_message._data, net_message.maxsize, &readaddr_old)) > 0)
+	while ((ret = UDP_Read(udp_controlSock, net_message._data, net_message.maxsize, &readaddr)) > 0)
 	{
 		if (ret < sizeof(int))
 			continue;
 		net_message.cursize = ret;
 
 		// don't answer our own query
+		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
 		if (UDP_AddrCompare(&readaddr_old, &myaddr_old) >= 0)
 			continue;
 
@@ -1164,7 +1169,8 @@ static qsocket_t *_Datagram_Connect (char *host)
 {
 	netadr_t sendaddr;
 	struct qsockaddr sendaddr_old;
-	struct qsockaddr readaddr;
+	netadr_t readaddr;
+	struct qsockaddr readaddr_old;
 	qsocket_t	*sock;
 	int			newsock;
 	int			ret;
@@ -1213,12 +1219,13 @@ static qsocket_t *_Datagram_Connect (char *host)
 			if (ret > 0)
 			{
 				// is it from the right place?
-				if (UDP_AddrCompare(&readaddr, &sendaddr_old) != 0)
+				NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
+				if (UDP_AddrCompare(&readaddr_old, &sendaddr_old) != 0)
 				{
 #ifdef DEBUG
 					Con_Printf("wrong reply address\n");
 					Con_Printf("Expected: %s\n", StrAddr (&sendaddr_old));
-					Con_Printf("Received: %s\n", StrAddr (&readaddr));
+					Con_Printf("Received: %s\n", StrAddr (&readaddr_old));
 					SCR_UpdateScreen ();
 #endif
 					ret = 0;
@@ -1399,10 +1406,9 @@ int UDP_Connect (int socket, struct qsockaddr *addr)
 
 //=============================================================================
 
-int UDP_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
+int UDP_Read (int socket, byte* buf, int len, netadr_t* addr)
 {
-	netadr_t From;
-	int ret = SOCK_Recv(socket, buf, len, &From);
+	int ret = SOCK_Recv(socket, buf, len, addr);
 	if (ret == SOCKRECV_NO_DATA)
 	{
 		return 0;
@@ -1411,7 +1417,6 @@ int UDP_Read (int socket, byte *buf, int len, struct qsockaddr *addr)
 	{
 		return -1;
 	}
-	NetadrToSockadr(&From, (struct sockaddr_in*)addr);
 	return ret;
 }
 
