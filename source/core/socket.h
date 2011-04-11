@@ -41,12 +41,6 @@ struct netadr_t
 	quint16			port;
 };
 
-struct qsockaddr
-{
-	short			sa_family;
-	unsigned char	sa_data[14];
-};
-
 void NetadrToSockadr(netadr_t* a, struct sockaddr_in* s);
 void SockadrToNetadr(struct sockaddr_in* s, netadr_t* a);
 bool SOCK_StringToSockaddr(const char* s, struct sockaddr_in* sadr);

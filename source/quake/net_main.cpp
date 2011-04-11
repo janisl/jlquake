@@ -872,15 +872,15 @@ void SchedulePollProcedure(PollProcedure *proc, double timeOffset)
 #ifdef IDGODS
 #define IDNET	0xc0f62800
 
-qboolean IsID(struct qsockaddr *addr)
+qboolean IsID(netadr_t* addr)
 {
 	if (idgods->value == 0.0)
 		return false;
 
-	if (addr->sa_family != 2)
+	if (addr->type != NA_IP)
 		return false;
 
-	if ((BigLong(*(int *)&addr->sa_data[2]) & 0xffffff00) == IDNET)
+	if ((BigLong(*(int*)addr->ip) & 0xffffff00) == IDNET)
 		return true;
 	return false;
 }

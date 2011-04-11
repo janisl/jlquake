@@ -99,7 +99,7 @@ int UDP_GetSocketAddr(int socket, netadr_t* addr)
 	socklen_t addrlen = sizeof(sadr);
 	unsigned int a;
 
-	Com_Memset(&sadr, 0, sizeof(struct qsockaddr));
+	Com_Memset(&sadr, 0, sizeof(sadr));
 	getsockname(socket, (struct sockaddr *)&sadr, &addrlen);
 	a = sadr.sin_addr.s_addr;
 	if (a == 0 || a == inet_addr("127.0.0.1"))
