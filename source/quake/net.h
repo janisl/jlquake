@@ -197,7 +197,7 @@ typedef struct
 	int		users;
 	int		maxusers;
 	int		driver;
-	struct qsockaddr addr;
+	netadr_t addr;
 } hostcache_t;
 
 extern int hostCacheCount;

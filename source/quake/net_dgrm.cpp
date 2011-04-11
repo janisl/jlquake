@@ -588,7 +588,6 @@ static void Test_f (void)
 	int		n;
 	int		max = MAX_SCOREBOARD;
 	netadr_t sendaddr;
-	struct qsockaddr sendaddr_old;
 
 	if (testInProgress)
 		return;
@@ -603,8 +602,7 @@ static void Test_f (void)
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
 				max = hostcache[n].maxusers;
-				Com_Memcpy(&sendaddr_old, &hostcache[n].addr, sizeof(struct qsockaddr));
-				SockadrToNetadr((struct sockaddr_in*)&sendaddr_old, &sendaddr);
+				Com_Memcpy(&sendaddr, &hostcache[n].addr, sizeof(netadr_t));
 				break;
 			}
 		if (n < hostCacheCount)
@@ -709,7 +707,6 @@ static void Test2_f (void)
 	char	*host;
 	int		n;
 	netadr_t sendaddr;
-	struct qsockaddr sendaddr_old;
 
 	if (test2InProgress)
 		return;
@@ -723,8 +720,7 @@ static void Test2_f (void)
 			{
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
-				Com_Memcpy(&sendaddr_old, &hostcache[n].addr, sizeof(struct qsockaddr));
-				SockadrToNetadr((struct sockaddr_in*)&sendaddr_old, &sendaddr);
+				Com_Memcpy(&sendaddr, &hostcache[n].addr, sizeof(netadr_t));
 				break;
 			}
 		if (n < hostCacheCount)
@@ -1080,7 +1076,6 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 	int		n;
 	int		i;
 	netadr_t readaddr;
-	struct qsockaddr readaddr_old;
 	netadr_t	myaddr;
 	int		control;
 
@@ -1126,13 +1121,10 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 			continue;
 
 		UDP_GetAddrFromName(net_message.ReadString2(), &readaddr);
-		NetadrToSockadr(&readaddr, (struct sockaddr_in*)&readaddr_old);
 		// search the cache for this server
 		for (n = 0; n < hostCacheCount; n++)
 		{
-			netadr_t tmp;
-			SockadrToNetadr((struct sockaddr_in*)&hostcache[n].addr, &tmp);
-			if (UDP_AddrCompare(&readaddr, &tmp) == 0)
+			if (UDP_AddrCompare(&readaddr, &hostcache[n].addr) == 0)
 			{
 				break;
 			}
@@ -1155,7 +1147,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 			QStr::Cpy(hostcache[n].name, "*");
 			QStr::Cat(hostcache[n].name, sizeof(hostcache[n].name), hostcache[n].cname);
 		}
-		hostcache[n].addr = readaddr_old;
+		hostcache[n].addr = readaddr;
 		hostcache[n].driver = net_driverlevel;
 		QStr::Cpy(hostcache[n].cname, UDP_AddrToString(&readaddr));
 
