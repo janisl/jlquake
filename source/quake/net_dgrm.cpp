@@ -22,36 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // This is enables a simple IP banning mechanism
 #define BAN_TEST
 
-#ifdef BAN_TEST
-#if defined(_WIN32)
-#include <windows.h>
-#elif defined (NeXT) || defined __linux__
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#else
-#define AF_INET 		2	/* internet */
-struct in_addr
-{
-	union
-	{
-		struct { unsigned char s_b1,s_b2,s_b3,s_b4; } S_un_b;
-		struct { unsigned short s_w1,s_w2; } S_un_w;
-		unsigned long S_addr;
-	} S_un;
-};
-#define	s_addr	S_un.S_addr	/* can be used for most tcp & ip code */
-struct sockaddr_in
-{
-    short			sin_family;
-    unsigned short	sin_port;
-	struct in_addr	sin_addr;
-    char			sin_zero[8];
-};
-char *inet_ntoa(struct in_addr in);
-unsigned long inet_addr(const char *cp);
-#endif
-#endif	// BAN_TEST
-
 #include "quakedef.h"
 #include "net_dgrm.h"
 #include "net_udp.h"
@@ -96,8 +66,8 @@ char *StrAddr (struct qsockaddr *addr)
 
 
 #ifdef BAN_TEST
-unsigned long banAddr = 0x00000000;
-unsigned long banMask = 0xffffffff;
+netadr_t banAddr;
+netadr_t banMask;
 
 void NET_Ban_f (void)
 {
@@ -124,10 +94,10 @@ void NET_Ban_f (void)
 	switch (Cmd_Argc ())
 	{
 		case 1:
-			if (((struct in_addr *)&banAddr)->s_addr)
+			if (banAddr.type == NA_IP)
 			{
-				QStr::Cpy(addrStr, inet_ntoa(*(struct in_addr *)&banAddr));
-				QStr::Cpy(maskStr, inet_ntoa(*(struct in_addr *)&banMask));
+				QStr::Cpy(addrStr, UDP_AddrToString(&banAddr));
+				QStr::Cpy(maskStr, UDP_AddrToString(&banMask));
 				print("Banning %s [%s]\n", addrStr, maskStr);
 			}
 			else
@@ -136,15 +106,15 @@ void NET_Ban_f (void)
 
 		case 2:
 			if (QStr::ICmp(Cmd_Argv(1), "off") == 0)
-				banAddr = 0x00000000;
+				Com_Memset(&banAddr, 0, sizeof(banAddr));
 			else
-				banAddr = inet_addr(Cmd_Argv(1));
-			banMask = 0xffffffff;
+				UDP_GetAddrFromName(Cmd_Argv(1), &banAddr);
+			*(int*)banMask.ip = 0xffffffff;
 			break;
 
 		case 3:
-			banAddr = inet_addr(Cmd_Argv(1));
-			banMask = inet_addr(Cmd_Argv(2));
+			UDP_GetAddrFromName(Cmd_Argv(1), &banAddr);
+			UDP_GetAddrFromName(Cmd_Argv(1), &banMask);
 			break;
 
 		default:
@@ -953,13 +923,10 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 
 #ifdef BAN_TEST
 	// check for a ban
-	struct qsockaddr clientaddr_old;
-	NetadrToSockadr(&clientaddr, (struct sockaddr_in*)&clientaddr_old);
-	if (clientaddr_old.sa_family == AF_INET)
+	if (clientaddr.type == NA_IP && banAddr.type == NA_IP)
 	{
-		unsigned long testAddr;
-		testAddr = ((struct sockaddr_in *)&clientaddr_old)->sin_addr.s_addr;
-		if ((testAddr & banMask) == banAddr)
+		quint32 testAddr = *(quint32*)clientaddr.ip;
+		if ((testAddr & *(quint32*)banMask.ip) == *(quint32*)banAddr.ip)
 		{
 			net_message.Clear();
 			// save space for the header, filled in later
