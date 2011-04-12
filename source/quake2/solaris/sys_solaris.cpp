@@ -25,7 +25,7 @@ QCvar *nostdout;
 
 unsigned	sys_frame_time;
 
-qboolean stdin_active = true;
+extern bool stdin_active;
 
 // =======================================================================
 // General routines

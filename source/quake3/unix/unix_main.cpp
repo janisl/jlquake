@@ -60,7 +60,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 unsigned  sys_frame_time;
 
 uid_t saved_euid;
-qboolean stdin_active = qtrue;
+extern bool stdin_active;
 
 // =============================================================
 // tty console variables

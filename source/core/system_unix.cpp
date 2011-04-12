@@ -50,6 +50,8 @@ char* __CopyString(const char* in);
    using unsigned long data type to work right with Sys_XTimeToSysTime */
 unsigned long	sys_timeBase = 0;
 
+bool			stdin_active = true;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static char		HomePathSuffix[MAX_OSPATH];

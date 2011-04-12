@@ -36,8 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 QCvar*	sys_nostdout;
 QCvar*	sys_extrasleep;
 
-qboolean	stdin_ready;
-
 /*
 ===============================================================================
 
@@ -128,7 +126,7 @@ void Sys_Quit (void)
 	exit (0);		// appkit isn't running
 }
 
-static int do_stdin = 1;
+extern bool stdin_active;
 
 /*
 ================
@@ -142,15 +140,23 @@ char *Sys_ConsoleInput (void)
 {
 	static char	text[256];
 	int		len;
+	fd_set	fdset;
+    struct timeval timeout;
 
-	if (!stdin_ready || !do_stdin)
-		return NULL;		// the select didn't say it was ready
-	stdin_ready = false;
+	if (!stdin_active)
+		return NULL;
+
+	FD_ZERO(&fdset);
+	FD_SET(0, &fdset); // stdin
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 0;
+	if (select (1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(0, &fdset))
+		return NULL;
 
 	len = read (0, text, sizeof(text));
 	if (len == 0) {
 		// end of file
-		do_stdin = 0;
+		stdin_active = false;
 		return NULL;
 	}
 	if (len < 1)
@@ -183,9 +189,7 @@ int main(int argc, char *argv[])
 {
 	double			time, oldtime, newtime;
 	quakeparms_t	parms;
-	fd_set	fdset;
 	extern	int		net_socket;
-    struct timeval timeout;
 	int j;
 
 	Com_Memset(&parms, 0, sizeof(parms));
@@ -219,15 +223,10 @@ int main(int argc, char *argv[])
 	// the only reason we have a timeout at all is so that if the last
 	// connected client times out, the message would not otherwise
 	// be printed until the next event.
-		FD_ZERO(&fdset);
-		if (do_stdin)
-			FD_SET(0, &fdset);
-		FD_SET(net_socket, &fdset);
-		timeout.tv_sec = 1;
-		timeout.tv_usec = 0;
-		if (select (net_socket+1, &fdset, NULL, NULL, &timeout) == -1)
+		if (!SOCK_Sleep(net_socket, 1000))
+		{
 			continue;
-		stdin_ready = FD_ISSET(0, &fdset);
+		}
 
 	// find time passed since last cycle
 		newtime = Sys_DoubleTime ();

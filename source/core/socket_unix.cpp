@@ -48,6 +48,8 @@
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
+extern bool		stdin_active;
+
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -754,4 +756,34 @@ int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To)
 	}
 
 	return ret;
+}
+
+//==========================================================================
+//
+//	SOCK_Sleep
+//
+//	Sleeps msec or until net socket is ready
+//
+//==========================================================================
+
+bool SOCK_Sleep(int socket, int msec)
+{
+	if (!socket)
+	{
+		return false;
+	}
+
+	fd_set fdset;
+	FD_ZERO(&fdset);
+	if (stdin_active)
+	{
+		FD_SET(0, &fdset); // stdin is processed too
+	}
+	FD_SET(socket, &fdset); // network socket
+
+    timeval timeout;
+	timeout.tv_sec = msec / 1000;
+	timeout.tv_usec = (msec % 1000) * 1000;
+
+	return select(socket + 1, &fdset, NULL, NULL, &timeout) != -1;
 }
