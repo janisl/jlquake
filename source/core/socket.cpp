@@ -95,10 +95,22 @@ bool SOCK_GetSocksCvars()
 //
 //	SOCK_StringToAdr
 //
+//	Traps "localhost" for loopback, passes everything else to system
+//
 //==========================================================================
 
 bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort)
 {
+	if ((GGameType & GAME_Quake2) || (GGameType & GAME_Quake3))
+	{
+		if (!QStr::Cmp(s, "localhost"))
+		{
+			Com_Memset(a, 0, sizeof(*a));
+			a->type = NA_LOOPBACK;
+			return true;
+		}
+	}
+
 	// look for a port number
 	char base[MAX_STRING_CHARS];
 	QStr::NCpyZ(base, s, sizeof(base));

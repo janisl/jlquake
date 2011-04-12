@@ -739,13 +739,6 @@ Traps "localhost" for loopback, passes everything else to system
 */
 qboolean	NET_StringToAdr( const char *s, netadr_t *a )
 {
-	if (!QStr::Cmp(s, "localhost"))
-	{
-		Com_Memset(a, 0, sizeof(*a));
-		a->type = NA_LOOPBACK;
-		return true;
-	}
-
 	return SOCK_StringToAdr(s, a, PORT_SERVER);
 }
 
