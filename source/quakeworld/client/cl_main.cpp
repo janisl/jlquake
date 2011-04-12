@@ -204,7 +204,7 @@ void CL_SendConnectPacket (void)
 
 	t1 = Sys_DoubleTime ();
 
-	if (!SOCK_StringToAdr(cls.servername, &adr))
+	if (!SOCK_StringToAdr(cls.servername, &adr, 27500))
 	{
 		Con_Printf ("Bad server address\n");
 		connect_time = -1;
@@ -218,8 +218,6 @@ void CL_SendConnectPacket (void)
 		return;
 	}
 
-	if (adr.port == 0)
-		adr.port = BigShort (27500);
 	t2 = Sys_DoubleTime ();
 
 	connect_time = realtime+t2-t1;	// for retransmit requests
@@ -256,7 +254,7 @@ void CL_CheckForResend (void)
 		return;
 
 	t1 = Sys_DoubleTime ();
-	if (!SOCK_StringToAdr(cls.servername, &adr))
+	if (!SOCK_StringToAdr(cls.servername, &adr, 27500))
 	{
 		Con_Printf ("Bad server address\n");
 		connect_time = -1;
@@ -269,8 +267,6 @@ void CL_CheckForResend (void)
 		return;
 	}
 
-	if (adr.port == 0)
-		adr.port = BigShort (27500);
 	t2 = Sys_DoubleTime ();
 
 	connect_time = realtime+t2-t1;	// for retransmit requests
@@ -361,11 +357,10 @@ void CL_Rcon_f (void)
 
 			return;
 		}
-		SOCK_StringToAdr(rcon_address->string, &to);
+		SOCK_StringToAdr(rcon_address->string, &to, 27500);
 	}
 	
-	NET_SendPacket (QStr::Length(message)+1, message
-		, to);
+	NET_SendPacket (QStr::Length(message)+1, message, to);
 }
 
 
@@ -709,7 +704,7 @@ void CL_Packet_f (void)
 		return;
 	}
 
-	if (!SOCK_StringToAdr(Cmd_Argv(1), &adr))
+	if (!SOCK_StringToAdr(Cmd_Argv(1), &adr, 0))
 	{
 		Con_Printf ("Bad address\n");
 		return;

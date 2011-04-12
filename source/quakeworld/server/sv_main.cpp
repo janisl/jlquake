@@ -1621,7 +1621,7 @@ void SV_InitNet (void)
 
 	// heartbeats will allways be sent to the id master
 	svs.last_heartbeat = -99999;		// send immediately
-//	SOCK_StringToAdr("192.246.40.70:27000", &idmaster_adr);
+//	SOCK_StringToAdr("192.246.40.70", &idmaster_adr, 27000);
 }
 
 

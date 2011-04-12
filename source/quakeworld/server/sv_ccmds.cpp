@@ -53,13 +53,11 @@ void SV_SetMaster_f (void)
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		if (!QStr::Cmp(Cmd_Argv(i), "none") || !SOCK_StringToAdr(Cmd_Argv(i), &master_adr[i-1]))
+		if (!QStr::Cmp(Cmd_Argv(i), "none") || !SOCK_StringToAdr(Cmd_Argv(i), &master_adr[i-1], 27000))
 		{
 			Con_Printf ("Setting nomaster mode.\n");
 			return;
 		}
-		if (master_adr[i-1].port == 0)
-			master_adr[i-1].port = BigShort (27000);
 
 		Con_Printf ("Master server at %s\n", NET_AdrToString (master_adr[i-1]));
 
