@@ -717,5 +717,5 @@ qboolean	NET_StringToAdr (char *s, netadr_t *a)
 		return true;
 	}
 
-	return SOCK_GetAddressByName(s, a);
+	return SOCK_StringToAdr(s, a);
 }

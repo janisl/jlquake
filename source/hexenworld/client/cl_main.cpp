@@ -173,7 +173,7 @@ void CL_SendConnectPacket (void)
 
 	t1 = Sys_DoubleTime ();
 
-	if (!NET_StringToAdr (cls.servername, &adr))
+	if (!SOCK_StringToAdr(cls.servername, &adr))
 	{
 		Con_Printf ("Bad server address\n");
 		connect_time = -1;
@@ -285,7 +285,7 @@ void CL_Rcon_f (void)
 
 			return;
 		}
-		NET_StringToAdr (rcon_address->string, &to);
+		SOCK_StringToAdr(rcon_address->string, &to);
 		if (to.port == 0)
 		{
 			to.port = BigShort (PORT_SERVER);
@@ -646,7 +646,7 @@ void CL_Packet_f (void)
 		return;
 	}
 
-	if (!NET_StringToAdr (Cmd_Argv(1), &adr))
+	if (!SOCK_StringToAdr(Cmd_Argv(1), &adr))
 	{
 		Con_Printf ("Bad address\n");
 		return;

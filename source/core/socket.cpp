@@ -90,3 +90,14 @@ bool SOCK_GetSocksCvars()
 
 	return modified;
 }
+
+//==========================================================================
+//
+//	SOCK_StringToAdr
+//
+//==========================================================================
+
+bool SOCK_StringToAdr(const char* s, netadr_t* a)
+{
+	return SOCK_GetAddressByName(s, a);
+}

@@ -756,7 +756,7 @@ qboolean	NET_StringToAdr( const char *s, netadr_t *a ) {
 		port++;
 	}
 
-	r = SOCK_GetAddressByName( base, a );
+	r = SOCK_StringToAdr( base, a );
 
 	if ( !r ) {
 		a->type = NA_BAD;
