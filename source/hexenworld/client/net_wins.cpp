@@ -3,29 +3,6 @@
 #include "quakedef.h"
 #include "winquake.h"
 
-/*
-=============
-NET_StringToAdr
-
-idnewt
-idnewt:28000
-192.246.40.70
-192.246.40.70:28000
-=============
-*/
-qboolean	NET_StringToAdr (char *s, netadr_t *a)
-{
-	struct sockaddr_in sadr;
-	
-	if (!SOCK_StringToSockaddr(s, &sadr))
-		return false;
-	
-	SockadrToNetadr (&sadr, a);
-
-	return true;
-}
-
-
 void NET_GetLocalAddress (void)
 {
 	struct sockaddr_in	address;

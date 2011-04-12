@@ -696,3 +696,26 @@ qboolean	NET_IsLocalAddress (netadr_t adr)
 {
 	return adr.type == NA_LOOPBACK;
 }
+
+/*
+=============
+NET_StringToAdr
+
+localhost
+idnewt
+idnewt:28000
+192.246.40.70
+192.246.40.70:28000
+=============
+*/
+qboolean	NET_StringToAdr (char *s, netadr_t *a)
+{
+	if (!QStr::Cmp(s, "localhost"))
+	{
+		Com_Memset(a, 0, sizeof(*a));
+		a->type = NA_LOOPBACK;
+		return true;
+	}
+
+	return SOCK_GetAddressByName(s, a);
+}

@@ -1365,6 +1365,18 @@ char* UDP_AddrToString(netadr_t* addr)
 
 //=============================================================================
 
+int UDP_GetAddrFromName(const char *name, netadr_t* addr)
+{
+	if (!SOCK_GetAddressByName(name, addr))
+		return -1;
+
+	addr->port = BigShort(net_hostport);
+
+	return 0;
+}
+
+//=============================================================================
+
 int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
 {
 	if (addr1->type != addr2->type)

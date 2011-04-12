@@ -18,36 +18,6 @@
 
 extern int			ip_sockets[2];
 
-/*
-=============
-NET_StringToAdr
-
-localhost
-idnewt
-idnewt:28000
-192.246.40.70
-192.246.40.70:28000
-=============
-*/
-qboolean	NET_StringToAdr (char *s, netadr_t *a)
-{
-	struct sockaddr_in sadr;
-	
-	if (!QStr::Cmp(s, "localhost"))
-	{
-		Com_Memset(a, 0, sizeof(*a));
-		a->type = NA_LOOPBACK;
-		return true;
-	}
-
-	if (!SOCK_StringToSockaddr (s, &sadr))
-		return false;
-	
-	SockadrToNetadr (&sadr, a);
-
-	return true;
-}
-
 // sleeps msec or until net socket is ready
 void NET_Sleep(int msec)
 {

@@ -1295,3 +1295,18 @@ void	NET_Shutdown (void)
 	PrintFreqs();
 #endif
 }
+
+/*
+=============
+NET_StringToAdr
+
+idnewt
+idnewt:28000
+192.246.40.70
+192.246.40.70:28000
+=============
+*/
+qboolean	NET_StringToAdr (char *s, netadr_t *a)
+{
+	return SOCK_GetAddressByName(s, a);
+}

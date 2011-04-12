@@ -103,17 +103,3 @@ int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 	QStr::Cpy(name, UDP_AddrToString(addr));
 	return 0;
 }
-
-//=============================================================================
-
-int UDP_GetAddrFromName(const char *name, netadr_t* addr)
-{
-	sockaddr_in sadr;
-	if (!SOCK_StringToSockaddr(name, &sadr))
-		return -1;
-
-	SockadrToNetadr(&sadr, addr);
-	addr->port = htons(net_hostport);
-
-	return 0;
-}

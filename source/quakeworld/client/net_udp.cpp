@@ -44,28 +44,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libc.h>
 #endif
 
-/*
-=============
-NET_StringToAdr
-
-idnewt
-idnewt:28000
-192.246.40.70
-192.246.40.70:28000
-=============
-*/
-qboolean	NET_StringToAdr (char *s, netadr_t *a)
-{
-	struct sockaddr_in sadr;
-	
-	if (!SOCK_StringToSockaddr(s, &sadr))
-		return false;
-	
-	SockadrToNetadr (&sadr, a);
-
-	return true;
-}
-
 // Returns true if we can't bind the address locally--in other words, 
 // the IP is NOT one of our interfaces.
 qboolean NET_IsClientLegal(netadr_t *adr)

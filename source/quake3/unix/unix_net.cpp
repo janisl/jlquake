@@ -38,29 +38,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 extern int			ip_socket;
 
-/*
-=============
-Sys_StringToAdr
-
-localhost
-idnewt
-idnewt:28000
-192.246.40.70
-192.246.40.70:28000
-=============
-*/
-qboolean	Sys_StringToAdr (const char *s, netadr_t *a)
-{
-	struct sockaddr_in sadr;
-	
-	if (!SOCK_StringToSockaddr(s, &sadr))
-		return qfalse;
-	
-	SockadrToNetadr (&sadr, a);
-
-	return qtrue;
-}
-
 // sleeps msec or until net socket is ready
 void NET_Sleep(int msec)
 {

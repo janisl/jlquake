@@ -94,7 +94,7 @@ void SockadrToNetadr(sockaddr_in* s, netadr_t* a)
 //
 //==========================================================================
 
-bool SOCK_StringToSockaddr(const char* s, sockaddr_in* sadr)
+static bool SOCK_StringToSockaddr(const char* s, sockaddr_in* sadr)
 {
 	Com_Memset(sadr, 0, sizeof(*sadr));
 
@@ -126,6 +126,25 @@ bool SOCK_StringToSockaddr(const char* s, sockaddr_in* sadr)
 		}
 		*(int*)&sadr->sin_addr = *(int*)h->h_addr_list[0];
 	}
+	return true;
+}
+
+//==========================================================================
+//
+//	SOCK_GetAddressByName
+//
+//==========================================================================
+
+bool SOCK_GetAddressByName(const char* s, netadr_t* a)
+{
+	sockaddr_in sadr;
+	if (!SOCK_StringToSockaddr(s, &sadr))
+	{
+		return false;
+	}
+
+	SockadrToNetadr(&sadr, a);
+
 	return true;
 }
 

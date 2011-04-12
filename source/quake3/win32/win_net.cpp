@@ -28,25 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 extern int	ip_socket;
 
 /*
-=============
-Sys_StringToAdr
-
-idnewt
-192.246.40.70
-=============
-*/
-qboolean Sys_StringToAdr( const char *s, netadr_t *a ) {
-	struct sockaddr sadr;
-	
-	if ( !SOCK_StringToSockaddr( s, (struct sockaddr_in*)&sadr ) ) {
-		return qfalse;
-	}
-	
-	SockadrToNetadr( (struct sockaddr_in*)&sadr, a );
-	return qtrue;
-}
-
-/*
 ====================
 NET_Sleep
 
