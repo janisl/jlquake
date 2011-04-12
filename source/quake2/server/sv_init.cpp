@@ -289,7 +289,6 @@ void SV_InitGame (void)
 {
 	int		i;
 	edict_t	*ent;
-	char	idmaster[32];
 
 	if (svs.initialized)
 	{
@@ -350,8 +349,7 @@ void SV_InitGame (void)
 
 	// heartbeats will always be sent to the id master
 	svs.last_heartbeat = -99999;		// send immediately
-	QStr::Sprintf(idmaster, sizeof(idmaster), "192.246.40.37:%i", PORT_MASTER);
-	NET_StringToAdr (idmaster, &master_adr[0]);
+	SOCK_StringToAdr("192.246.40.37", &master_adr[0], PORT_MASTER);
 
 	// init game
 	SV_InitGameProgs ();

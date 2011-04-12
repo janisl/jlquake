@@ -696,19 +696,3 @@ qboolean	NET_IsLocalAddress (netadr_t adr)
 {
 	return adr.type == NA_LOOPBACK;
 }
-
-/*
-=============
-NET_StringToAdr
-
-localhost
-idnewt
-idnewt:28000
-192.246.40.70
-192.246.40.70:28000
-=============
-*/
-qboolean	NET_StringToAdr (char *s, netadr_t *a)
-{
-	return SOCK_StringToAdr(s, a);
-}
