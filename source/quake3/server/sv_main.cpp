@@ -242,16 +242,14 @@ void SV_MasterHeartbeat( void ) {
 			sv_master[i]->modified = qfalse;
 	
 			Com_Printf( "Resolving %s\n", sv_master[i]->string );
-			if ( !NET_StringToAdr( sv_master[i]->string, &adr[i] ) ) {
+			if (!SOCK_StringToAdr(sv_master[i]->string, &adr[i], PORT_MASTER))
+			{
 				// if the address failed to resolve, clear it
 				// so we don't take repeated dns hits
 				Com_Printf( "Couldn't resolve address: %s\n", sv_master[i]->string );
 				Cvar_Set( sv_master[i]->name, "" );
 				sv_master[i]->modified = qfalse;
 				continue;
-			}
-			if ( !strstr( ":", sv_master[i]->string ) ) {
-				adr[i].port = BigShort( PORT_MASTER );
 			}
 			Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
 				adr[i].ip[0], adr[i].ip[1], adr[i].ip[2], adr[i].ip[3],

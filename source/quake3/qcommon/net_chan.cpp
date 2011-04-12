@@ -730,19 +730,6 @@ qboolean Sys_GetPacket(netadr_t *net_from, QMsg *net_message)
 	return true;
 }
 
-/*
-=============
-NET_StringToAdr
-
-Traps "localhost" for loopback, passes everything else to system
-=============
-*/
-qboolean	NET_StringToAdr( const char *s, netadr_t *a )
-{
-	return SOCK_StringToAdr(s, a, PORT_SERVER);
-}
-
-
 //=============================================================================
 
 /*

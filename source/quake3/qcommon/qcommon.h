@@ -92,7 +92,6 @@ qboolean	NET_CompareAdr (netadr_t a, netadr_t b);
 qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b);
 qboolean	NET_IsLocalAddress (netadr_t adr);
 const char	*NET_AdrToString (netadr_t a);
-qboolean	NET_StringToAdr ( const char *s, netadr_t *a);
 qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message);
 void		NET_Sleep(int msec);
 
