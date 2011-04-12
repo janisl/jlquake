@@ -320,10 +320,6 @@
 				>
 			</File>
 			<File
-				RelativePath="net_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath="net_wins.cpp"
 				>
 			</File>
@@ -457,7 +453,7 @@
 				>
 			</File>
 			<File
-				RelativePath="net_wins.h"
+				RelativePath=".\net_udp.h"
 				>
 			</File>
 			<File

@@ -343,10 +343,6 @@
 				>
 			</File>
 			<File
-				RelativePath="net_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath="net_wins.cpp"
 				>
 			</File>
@@ -488,15 +484,7 @@
 				>
 			</File>
 			<File
-				RelativePath="Net_ser.h"
-				>
-			</File>
-			<File
-				RelativePath="Net_wins.h"
-				>
-			</File>
-			<File
-				RelativePath="Net_wipx.h"
+				RelativePath=".\net_udp.h"
 				>
 			</File>
 			<File

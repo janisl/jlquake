@@ -275,6 +275,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\socket.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\socket_windows.cpp"
 				>
 			</File>
