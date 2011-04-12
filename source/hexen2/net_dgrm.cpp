@@ -1367,7 +1367,7 @@ char* UDP_AddrToString(netadr_t* addr)
 
 int UDP_GetAddrFromName(const char *name, netadr_t* addr)
 {
-	if (!SOCK_StringToAdr(name, addr))
+	if (!SOCK_StringToAdr(name, addr, 0))
 		return -1;
 
 	addr->port = BigShort(net_hostport);
