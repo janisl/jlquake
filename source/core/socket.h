@@ -45,7 +45,7 @@ void NetadrToSockadr(netadr_t* a, struct sockaddr_in* s);
 void SockadrToNetadr(struct sockaddr_in* s, netadr_t* a);
 const char* SOCK_ErrorString();
 bool SOCK_GetAddressByName(const char* s, netadr_t* a);
-bool SOCK_StringToAdr(const char* s, netadr_t* a);
+bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort = 0);
 
 bool SOCK_Init();
 void SOCK_Shutdown();

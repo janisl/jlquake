@@ -97,25 +97,38 @@ bool SOCK_GetSocksCvars()
 //
 //==========================================================================
 
-bool SOCK_StringToAdr(const char* s, netadr_t* a)
+bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort)
 {
-	char copy[128];
-	QStr::Cpy(copy, s);
-	// strip off a trailing :port if present
-	char* port = strstr(copy, ":");
+	// look for a port number
+	char base[MAX_STRING_CHARS];
+	QStr::NCpyZ(base, s, sizeof(base));
+	char* port = strstr(base, ":");
 	if (port)
 	{
 		*port = 0;
+		port++;
 	}
-	
-	if (!SOCK_GetAddressByName(copy, a))
+
+	if (!SOCK_GetAddressByName(base, a))
 	{
+		a->type = NA_BAD;
+		return false;
+	}
+
+	// inet_addr returns this if out of range
+	if (a->ip[0] == 255 && a->ip[1] == 255 && a->ip[2] == 255 && a->ip[3] == 255)
+	{
+		a->type = NA_BAD;
 		return false;
 	}
 
 	if (port)
 	{
-		a->port = BigShort((short)QStr::Atoi(port + 1));
+		a->port = BigShort((short)QStr::Atoi(port));
+	}
+	else
+	{
+		a->port = BigShort(DefaultPort);
 	}
 
 	return true;

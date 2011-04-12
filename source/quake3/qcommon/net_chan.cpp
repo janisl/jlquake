@@ -737,45 +737,16 @@ NET_StringToAdr
 Traps "localhost" for loopback, passes everything else to system
 =============
 */
-qboolean	NET_StringToAdr( const char *s, netadr_t *a ) {
-	qboolean	r;
-	char	base[MAX_STRING_CHARS];
-	char	*port;
-
-	if (!QStr::Cmp(s, "localhost")) {
-		Com_Memset (a, 0, sizeof(*a));
+qboolean	NET_StringToAdr( const char *s, netadr_t *a )
+{
+	if (!QStr::Cmp(s, "localhost"))
+	{
+		Com_Memset(a, 0, sizeof(*a));
 		a->type = NA_LOOPBACK;
-		return qtrue;
+		return true;
 	}
 
-	// look for a port number
-	QStr::NCpyZ( base, s, sizeof( base ) );
-	port = strstr( base, ":" );
-	if ( port ) {
-		*port = 0;
-		port++;
-	}
-
-	r = SOCK_StringToAdr( base, a );
-
-	if ( !r ) {
-		a->type = NA_BAD;
-		return qfalse;
-	}
-
-	// inet_addr returns this if out of range
-	if ( a->ip[0] == 255 && a->ip[1] == 255 && a->ip[2] == 255 && a->ip[3] == 255 ) {
-		a->type = NA_BAD;
-		return qfalse;
-	}
-
-	if ( port ) {
-		a->port = BigShort( (short)QStr::Atoi( port ) );
-	} else {
-		a->port = BigShort( PORT_SERVER );
-	}
-
-	return qtrue;
+	return SOCK_StringToAdr(s, a, PORT_SERVER);
 }
 
 
