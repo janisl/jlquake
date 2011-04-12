@@ -99,5 +99,24 @@ bool SOCK_GetSocksCvars()
 
 bool SOCK_StringToAdr(const char* s, netadr_t* a)
 {
-	return SOCK_GetAddressByName(s, a);
+	char copy[128];
+	QStr::Cpy(copy, s);
+	// strip off a trailing :port if present
+	char* port = strstr(copy, ":");
+	if (port)
+	{
+		*port = 0;
+	}
+	
+	if (!SOCK_GetAddressByName(copy, a))
+	{
+		return false;
+	}
+
+	if (port)
+	{
+		a->port = BigShort((short)QStr::Atoi(port + 1));
+	}
+
+	return true;
 }

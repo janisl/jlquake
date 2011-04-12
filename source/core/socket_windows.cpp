@@ -125,28 +125,13 @@ static bool SOCK_StringToSockaddr(const char* s, sockaddr_in* sadr)
 
 bool SOCK_GetAddressByName(const char* s, netadr_t* a)
 {
-	char copy[128];
-	QStr::Cpy(copy, s);
-	char* port = NULL;
-	// strip off a trailing :port if present
-	char* port = strstr(copy, ":");
-	if (port)
-	{
-		*port = 0;
-	}
-
 	sockaddr_in sadr;
-	if (!SOCK_StringToSockaddr(copy, &sadr))
+	if (!SOCK_StringToSockaddr(s, &sadr))
 	{
 		return false;
 	}
 
 	SockadrToNetadr(&sadr, a);
-
-	if (port)
-	{
-		a->port = htons((short)QStr::Atoi(port + 1));
-	}
 
 	return true;
 }
