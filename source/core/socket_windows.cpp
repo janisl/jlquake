@@ -101,25 +101,13 @@ static bool SOCK_StringToSockaddr(const char* s, sockaddr_in* sadr)
 	sadr->sin_family = AF_INET;
 	sadr->sin_port = 0;
 
-	char copy[128];
-	QStr::Cpy(copy, s);
-	// strip off a trailing :port if present
-	for (char* colon = copy; *colon; colon++)
+	if (s[0] >= '0' && s[0] <= '9')
 	{
-		if (*colon == ':')
-		{
-			*colon = 0;
-			sadr->sin_port = htons((short)QStr::Atoi(colon + 1));	
-		}
-	}
-
-	if (copy[0] >= '0' && copy[0] <= '9')
-	{
-		*(int*)&sadr->sin_addr = inet_addr(copy);
+		*(int*)&sadr->sin_addr = inet_addr(s);
 	}
 	else
 	{
-		hostent* h = gethostbyname(copy);
+		hostent* h = gethostbyname(s);
 		if (!h)
 		{
 			return false;
@@ -137,13 +125,28 @@ static bool SOCK_StringToSockaddr(const char* s, sockaddr_in* sadr)
 
 bool SOCK_GetAddressByName(const char* s, netadr_t* a)
 {
+	char copy[128];
+	QStr::Cpy(copy, s);
+	char* port = NULL;
+	// strip off a trailing :port if present
+	char* port = strstr(copy, ":");
+	if (port)
+	{
+		*port = 0;
+	}
+
 	sockaddr_in sadr;
-	if (!SOCK_StringToSockaddr(s, &sadr))
+	if (!SOCK_StringToSockaddr(copy, &sadr))
 	{
 		return false;
 	}
 
 	SockadrToNetadr(&sadr, a);
+
+	if (port)
+	{
+		a->port = htons((short)QStr::Atoi(port + 1));
+	}
 
 	return true;
 }
