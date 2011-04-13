@@ -573,7 +573,6 @@ int		Sys_GetProcessorId( void );
 void	Sys_ShowConsole( int level, qboolean quitOnClose );
 void	Sys_SetErrorText( const char *text );
 
-qboolean	Sys_IsLANAddress (netadr_t adr);
 void		Sys_ShowIP(void);
 
 qboolean	Sys_CheckCD( void );

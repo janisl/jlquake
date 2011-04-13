@@ -185,3 +185,79 @@ bool SOCK_IsLocalIP(const netadr_t& adr)
 	}
 	return false;
 }
+
+//==========================================================================
+//
+//	SOCK_IsLocalIP
+//
+//	LAN clients will have their rate var ignored
+//
+//==========================================================================
+
+bool SOCK_IsLANAddress(const netadr_t& adr)
+{
+	if (adr.type == NA_LOOPBACK)
+	{
+		return true;
+	}
+
+	if (adr.type != NA_IP)
+	{
+		return false;
+	}
+
+	// choose which comparison to use based on the class of the address being tested
+	// any local adresses of a different class than the address being tested will fail based on the first byte
+
+	if (adr.ip[0] == 127 && adr.ip[1] == 0 && adr.ip[2] == 0 && adr.ip[3] == 1)
+	{
+		return true;
+	}
+
+	// Class A
+	if ((adr.ip[0] & 0x80) == 0x00)
+	{
+		for (int i = 0; i < numIP; i++)
+		{
+			if (adr.ip[0] == localIP[i][0])
+			{
+				return true;
+			}
+		}
+		// the RFC1918 class a block will pass the above test
+		return false;
+	}
+
+	// Class B
+	if ((adr.ip[0] & 0xc0) == 0x80)
+	{
+		for (int i = 0; i < numIP; i++)
+		{
+			if (adr.ip[0] == localIP[i][0] && adr.ip[1] == localIP[i][1])
+			{
+				return true;
+			}
+			// also check against the RFC1918 class b blocks
+			if (adr.ip[0] == 172 && localIP[i][0] == 172 && (adr.ip[1] & 0xf0) == 16 && (localIP[i][1] & 0xf0) == 16)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Class C
+	for (int i = 0; i < numIP; i++)
+	{
+		if (adr.ip[0] == localIP[i][0] && adr.ip[1] == localIP[i][1] && adr.ip[2] == localIP[i][2])
+		{
+			return true;
+		}
+		// also check against the RFC1918 class c blocks
+		if (adr.ip[0] == 192 && localIP[i][0] == 192 && adr.ip[1] == 168 && localIP[i][1] == 168)
+		{
+			return true;
+		}
+	}
+	return false;
+}
