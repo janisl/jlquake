@@ -24,7 +24,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "net_dgrm.h"
-#include "net_udp.h"
+
+int  UDP_Init (void);
+void UDP_Shutdown (void);
+void UDP_Listen (qboolean state);
+int  UDP_OpenSocket (int port);
+int  UDP_CloseSocket (int socket);
+int  UDP_Read (int socket, byte *buf, int len, netadr_t* addr);
+int  UDP_Write (int socket, byte *buf, int len, netadr_t* addr);
+int  UDP_Broadcast (int socket, byte *buf, int len);
+char *UDP_AddrToString (netadr_t* addr);
+int  UDP_GetSocketAddr (int socket, netadr_t* addr);
+int  UDP_GetNameFromAddr (netadr_t* addr, char *name);
+int  UDP_GetAddrFromName (const char *name, netadr_t* addr);
+int  UDP_AddrCompare (netadr_t* addr1, netadr_t* addr2);
+int  UDP_GetSocketPort (netadr_t* addr);
+int  UDP_SetSocketPort (netadr_t* addr, int port);
 
 /* statistic counters */
 int	packetsSent = 0;
