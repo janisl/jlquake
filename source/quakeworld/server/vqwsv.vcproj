@@ -211,10 +211,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\net_wins.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\client\pmove.cpp"
 				>
 			</File>
