@@ -1443,3 +1443,18 @@ int UDP_GetSocketAddr(int socket, netadr_t* addr)
 }
 
 //=============================================================================
+
+int UDP_GetNameFromAddr(netadr_t* addr, char* name)
+{
+	const char* host = SOCK_GetHostByAddr(addr);
+	if (host)
+	{
+		QStr::NCpy(name, host, NET_NAMELEN - 1);
+		return 0;
+	}
+
+	QStr::Cpy(name, UDP_AddrToString(addr));
+	return 0;
+}
+
+//=============================================================================
