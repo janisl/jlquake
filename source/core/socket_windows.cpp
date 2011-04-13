@@ -53,7 +53,7 @@ static sockaddr	socksRelayAddr;
 //
 //==========================================================================
 
-void NetadrToSockadr(netadr_t* a, sockaddr_in* s)
+static void NetadrToSockadr(netadr_t* a, sockaddr_in* s)
 {
 	Com_Memset(s, 0, sizeof(*s));
 
@@ -77,7 +77,7 @@ void NetadrToSockadr(netadr_t* a, sockaddr_in* s)
 //
 //==========================================================================
 
-void SockadrToNetadr(sockaddr_in* s, netadr_t* a)
+static void SockadrToNetadr(sockaddr_in* s, netadr_t* a)
 {
 	if (s->sin_family != AF_INET)
 	{
@@ -142,7 +142,7 @@ bool SOCK_GetAddressByName(const char* s, netadr_t* a)
 //
 //==========================================================================
 
-const char* SOCK_ErrorString()
+static const char* SOCK_ErrorString()
 {
 	int code = WSAGetLastError();
 	switch (code)
