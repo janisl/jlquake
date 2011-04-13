@@ -693,3 +693,27 @@ int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To)
 
 	return ret;
 }
+
+//==========================================================================
+//
+//	SOCK_Sleep
+//
+//==========================================================================
+
+bool SOCK_Sleep(int socket, int msec)
+{
+	fd_set fdset;
+	FD_ZERO(&fdset);
+	int i = 0;
+	if (socket)
+	{
+		FD_SET(socket, &fdset); // network socket
+		i = socket;
+	}
+
+    timeval timeout;
+	timeout.tv_sec = msec / 1000;
+	timeout.tv_usec = (msec % 1000) * 1000;
+
+	return select(i + 1, &fdset, NULL, NULL, &timeout) != -1;
+}

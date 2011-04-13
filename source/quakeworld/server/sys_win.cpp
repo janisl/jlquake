@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/types.h>
 #include <sys/timeb.h>
 #include "qwsvdef.h"
-#include <winsock.h>
 #include <conio.h>
 #include <direct.h>
 
@@ -168,8 +167,6 @@ int main (int argc, char **argv)
 	quakeparms_t	parms;
 	double			newtime, time, oldtime;
 	static	char	cwd[1024];
-	struct timeval	timeout;
-	fd_set			fdset;
 	int				t;
 
 	COM_InitArgv2(argc, argv);
@@ -210,11 +207,8 @@ int main (int argc, char **argv)
 	// the only reason we have a timeout at all is so that if the last
 	// connected client times out, the message would not otherwise
 	// be printed until the next event.
-		FD_ZERO(&fdset);
-		FD_SET(net_socket, &fdset);
-		timeout.tv_sec = 0;
-		timeout.tv_usec = 100;
-		if (select (net_socket+1, &fdset, NULL, NULL, &timeout) == -1)
+		//JL: Originally timeout was 0.1 ms
+		if (!SOCK_Sleep(net_socket, 1))
 			continue;
 
 	// find time passed since last cycle

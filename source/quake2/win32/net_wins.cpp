@@ -27,21 +27,12 @@ extern int			ip_sockets[2];
 // sleeps msec or until net socket is ready
 void NET_Sleep(int msec)
 {
-    struct timeval timeout;
-	fd_set	fdset;
 	extern QCvar *dedicated;
-	int i;
 
 	if (!dedicated || !dedicated->value)
+	{
 		return; // we're not a server, just run full speed
-
-	FD_ZERO(&fdset);
-	i = 0;
-	if (ip_sockets[NS_SERVER]) {
-		FD_SET(ip_sockets[NS_SERVER], &fdset); // network socket
-		i = ip_sockets[NS_SERVER];
 	}
-	timeout.tv_sec = msec/1000;
-	timeout.tv_usec = (msec%1000)*1000;
-	select(i+1, &fdset, NULL, NULL, &timeout);
+
+	SOCK_Sleep(ip_sockets[NS_SERVER], msec);
 }
