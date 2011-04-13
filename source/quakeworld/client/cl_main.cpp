@@ -21,11 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "winquake.h"
-#ifdef _WIN32
-#include "winsock.h"
-#else
-#include <netinet/in.h>
-#endif
 
 
 // we need to declare some mouse variables here, because the menu system
@@ -842,8 +837,7 @@ void CL_ConnectionlessPacket (void)
 
 		Con_Printf ("client command\n");
 
-		if ((*(unsigned *)net_from.ip != *(unsigned *)net_local_adr.ip
-			&& *(unsigned *)net_from.ip != htonl(INADDR_LOOPBACK)) )
+		if (!SOCK_IsLocalIP(net_from))
 		{
 			Con_Printf ("Command packet from remote host.  Ignored.\n");
 			return;

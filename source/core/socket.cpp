@@ -156,3 +156,32 @@ bool SOCK_IsLocalAddress(const netadr_t& adr)
 {
 	return adr.type == NA_LOOPBACK;
 }
+
+//==========================================================================
+//
+//	SOCK_IsLocalIP
+//
+//==========================================================================
+
+bool SOCK_IsLocalIP(const netadr_t& adr)
+{
+	if (adr.type != NA_IP)
+	{
+		return false;
+	}
+
+	//	Check for 127.0.0.1
+	if (adr.ip[0] == 127 && adr.ip[1] == 0 && adr.ip[2] == 0 && adr.ip[3] == 1)
+	{
+		return true;
+	}
+
+	for (int i = 0; i < numIP; i++)
+	{
+		if (adr.ip[0] == localIP[i][0] && adr.ip[1] == localIP[i][1] && adr.ip[2] == localIP[i][2] && adr.ip[3] == localIP[i][3])
+		{
+			return true;
+		}
+	}
+	return false;
+}

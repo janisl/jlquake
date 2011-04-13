@@ -2,18 +2,6 @@
 
 #include "quakedef.h"
 #include "winquake.h"
-#ifdef _WIN32
-#include "winsock.h"
-#endif
-
-#ifdef __linux__
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <sys/param.h>
-#include <sys/ioctl.h>
-#endif
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -778,10 +766,9 @@ void CL_ConnectionlessPacket (void)
 	// remote command from gui front end
 	if (c == A2C_CLIENT_COMMAND)
 	{
-		if ((*(unsigned *)net_from.ip != *(unsigned *)net_local_adr.ip
-			&& *(unsigned *)net_from.ip != htonl(INADDR_LOOPBACK)) )
+		if (!SOCK_IsLocalIP(net_from))
 		{
-			Con_Printf ("Command packet from remote host.  Ignored.\n");
+			Con_Printf("Command packet from remote host.  Ignored.\n");
 			return;
 		}
 #ifdef _WIN32

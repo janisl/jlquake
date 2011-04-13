@@ -47,6 +47,7 @@ const char* SOCK_ErrorString();
 bool SOCK_GetAddressByName(const char* s, netadr_t* a);
 bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort);
 bool SOCK_IsLocalAddress(const netadr_t& adr);
+bool SOCK_IsLocalIP(const netadr_t& adr);
 
 bool SOCK_Init();
 void SOCK_Shutdown();
