@@ -49,6 +49,7 @@ bool SOCK_StringToAdr(const char* String, netadr_t* Address, int DefaultPort);
 bool SOCK_IsLocalAddress(const netadr_t& Address);
 bool SOCK_IsLocalIP(const netadr_t& Address);
 bool SOCK_IsLANAddress(const netadr_t& Address);
+const char* SOCK_GetHostByAddr(netadr_t* addr);
 
 bool SOCK_Init();
 void SOCK_Shutdown();

@@ -112,14 +112,10 @@ int UDP_CheckNewConnections (void)
 
 int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 {
-	sockaddr_in sadr;
-	NetadrToSockadr(addr, &sadr);
-	struct hostent *hostentry;
-
-	hostentry = gethostbyaddr ((char *)&sadr.sin_addr, sizeof(struct in_addr), AF_INET);
-	if (hostentry)
+	const char* host = SOCK_GetHostByAddr(addr);
+	if (host)
 	{
-		QStr::NCpy(name, (char *)hostentry->h_name, NET_NAMELEN - 1);
+		QStr::NCpy(name, host, NET_NAMELEN - 1);
 		return 0;
 	}
 
