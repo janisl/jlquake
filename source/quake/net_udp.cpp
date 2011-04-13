@@ -42,7 +42,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern int net_acceptsocket;		// socket for fielding new connections
 extern int net_controlsocket;
 
-static unsigned long myAddr;
 extern const char* net_interface;
 
 #include "net_udp.h"
@@ -65,9 +64,6 @@ int UDP_Init (void)
 	{
 		if (i < COM_Argc()-1)
 		{
-			myAddr = inet_addr(COM_Argv(i+1));
-			if (myAddr == INADDR_NONE)
-				Sys_Error ("%s is not a valid IP address", COM_Argv(i+1));
 			QStr::Cpy(my_tcpip_address, COM_Argv(i+1));
 			net_interface = COM_Argv(i+1);
 		}
@@ -78,11 +74,8 @@ int UDP_Init (void)
 	}
 	else
 	{
-		myAddr = INADDR_ANY;
 		QStr::Cpy(my_tcpip_address, "INADDR_ANY");
 	}
-
-	myAddr = *(int *)localIP[0];
 
 	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
 		Sys_Error("UDP_Init: Unable to open control socket\n");
