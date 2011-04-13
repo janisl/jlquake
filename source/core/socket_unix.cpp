@@ -787,3 +787,25 @@ bool SOCK_Sleep(int socket, int msec)
 
 	return select(socket + 1, &fdset, NULL, NULL, &timeout) != -1;
 }
+
+//==========================================================================
+//
+//	SOCK_GetAddr
+//
+//==========================================================================
+
+bool SOCK_GetAddr(int socket, netadr_t* addr)
+{
+	sockaddr_in sadr;
+	socklen_t addrlen = sizeof(sadr);
+
+	Com_Memset(&sadr, 0, sizeof(sadr));
+	if (getsockname(socket, (sockaddr*)&sadr, &addrlen) == -1)
+	{
+		GLog.Write("getsockname: ", SOCK_ErrorString());
+		return false;
+	}
+
+	SockadrToNetadr(&sadr, addr);
+	return true;
+}
