@@ -974,3 +974,15 @@ void NET_Restart()
 {
 	NET_Config(networkingEnabled);
 }
+
+// sleeps msec or until net socket is ready
+//JL: Note on Windows this  method was empty.
+void NET_Sleep(int msec)
+{
+	if (!com_dedicated->integer)
+	{
+		return; // we're not a server, just run full speed
+	}
+
+	SOCK_Sleep(ip_socket, msec);
+}

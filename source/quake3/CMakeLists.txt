@@ -67,7 +67,6 @@ set(QUAKE3_FILES
 	renderer/tr_surface.cpp
 	renderer/tr_world.cpp
 	unix/unix_main.cpp
-	unix/unix_net.cpp
 	unix/unix_shared.cpp
 	unix/linux_glimp.cpp
 	unix/linux_signals.cpp
@@ -134,7 +133,6 @@ set(QUAKE3_DEDICATED_FILES
 	qcommon/vm_interpreted.cpp
 	unix/linux_signals.cpp
 	unix/unix_main.cpp
-	unix/unix_net.cpp
 	unix/unix_shared.cpp
 	null/null_client.cpp
 	null/null_snddma.cpp
