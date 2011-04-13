@@ -167,3 +167,5 @@
 11.04.2011
   I tried HexenWorld using game data provided by uHexen project and it works. Probably it didn't work because I was using data from beta version.
   I changed Quake and Hexen 2 to use netadr_t like other games.
+13.04.2011
+  I finished merging platform dependent socket methods.
