@@ -285,8 +285,6 @@ void SOCK_GetLocalAddress()
 
 void SOCK_OpenSocks(int port)
 {
-	int					err;
-
 	usingSocks = false;
 
 	GLog.Write("Opening connection to SOCKS server.\n");
@@ -716,4 +714,26 @@ bool SOCK_Sleep(int socket, int msec)
 	timeout.tv_usec = (msec % 1000) * 1000;
 
 	return select(i + 1, &fdset, NULL, NULL, &timeout) != -1;
+}
+
+//==========================================================================
+//
+//	SOCK_GetAddr
+//
+//==========================================================================
+
+bool SOCK_GetAddr(int Socket, netadr_t* Address)
+{
+	sockaddr_in sadr;
+	int addrlen = sizeof(sadr);
+
+	Com_Memset(&sadr, 0, sizeof(sadr));
+	if (getsockname(Socket, (struct sockaddr *)&sadr, &addrlen) == -1)
+	{
+		GLog.Write("WARNING: SOCK_GetAddr: getsockname: ", SOCK_ErrorString());
+		return false;
+	}
+
+	SockadrToNetadr(&sadr, Address);
+	return true;
 }

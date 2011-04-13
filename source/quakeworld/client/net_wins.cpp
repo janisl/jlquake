@@ -24,9 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void NET_GetLocalAddress (void)
 {
-	struct sockaddr_in	address;
-	int		namelen;
-
 	SOCK_GetLocalAddress();
 
 	struct sockaddr_in sadr;
@@ -40,8 +37,8 @@ void NET_GetLocalAddress (void)
 
 	SockadrToNetadr (&sadr, &net_local_adr);
 
-	namelen = sizeof(address);
-	if (getsockname (net_socket, (struct sockaddr *)&address, &namelen) == -1)
-		Sys_Error ("NET_Init: getsockname:", strerror(errno));
-	net_local_adr.port = address.sin_port;
+	netadr_t address;
+	if (!SOCK_GetAddr(net_socket, &address))
+		Sys_Error("NET_Init: getsockname failed");
+	net_local_adr.port = address.port;
 }
