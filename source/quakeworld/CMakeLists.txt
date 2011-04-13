@@ -36,7 +36,6 @@ set(QWSV_OBJS
 	client/pmove.cpp
 	client/pmovetst.cpp
 	client/net_chan.cpp
-	client/net_udp.cpp
 )
 
 add_executable(vqwsv ${QWSV_OBJS})
@@ -63,7 +62,6 @@ set(GLQWCL_OBJS
 	client/keys.cpp
 	client/menu.cpp
 	client/net_chan.cpp
-	client/net_udp.cpp
 	client/pmove.cpp
 	client/pmovetst.cpp
 	client/r_part.cpp

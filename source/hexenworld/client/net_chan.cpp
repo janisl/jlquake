@@ -1247,7 +1247,23 @@ static int UDP_OpenSocket (int port)
 	return newsocket;
 }
 
-void NET_GetLocalAddress();
+static void NET_GetLocalAddress()
+{
+	SOCK_GetLocalAddress();
+
+	net_local_adr.type = NA_IP;
+	net_local_adr.ip[0] = localIP[0][0];
+	net_local_adr.ip[1] = localIP[0][1];
+	net_local_adr.ip[2] = localIP[0][2];
+	net_local_adr.ip[3] = localIP[0][3];
+
+	netadr_t address;
+	if (!SOCK_GetAddr(net_socket, &address))
+	{
+		Sys_Error("NET_Init: getsockname failed");
+	}
+	net_local_adr.port = address.port;
+}
 
 /*
 ====================

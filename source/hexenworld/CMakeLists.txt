@@ -37,7 +37,6 @@ set(HWSV_FILES
 	client/pmove.cpp
 	client/pmovetst.cpp
 	client/net_chan.cpp
-	client/net_udp.cpp
 )
 
 add_executable(vhwsv ${HWSV_FILES})
@@ -65,7 +64,6 @@ set(HWCL_FILES
 	client/keys.cpp
 	client/menu.cpp
 	client/net_chan.cpp
-	client/net_udp.cpp
 	client/pmove.cpp
 	client/pmovetst.cpp
 	client/r_part.cpp
