@@ -46,7 +46,6 @@ set(QUAKE2_OBJS
 	linux/vid_so.cpp
 	linux/sys_linux.cpp
 	linux/glob.cpp
-	linux/net_udp.cpp
 	linux/gl_glx.cpp
 	ref_gl/gl_draw.cpp
 	ref_gl/gl_image.cpp
