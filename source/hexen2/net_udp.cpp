@@ -40,37 +40,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 extern int net_acceptsocket;		// socket for fielding new connections
-extern int net_controlsocket;
 
 #include "net_udp.h"
-
-//=============================================================================
-
-int UDP_Init (void)
-{
-	netadr_t addr;
-	char *colon;
-	
-	if (COM_CheckParm ("-noudp"))
-		return -1;
-
-	// determine my name & address
-	SOCK_GetLocalAddress();
-
-	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
-		Sys_Error("UDP_Init: Unable to open control socket\n");
-
-	UDP_GetSocketAddr (net_controlsocket, &addr);
-	QStr::Cpy(my_tcpip_address,  UDP_AddrToString(&addr));
-	colon = QStr::RChr(my_tcpip_address, ':');
-	if (colon)
-		*colon = 0;
-
-	Con_Printf("UDP Initialized\n");
-	tcpipAvailable = true;
-
-	return net_controlsocket;
-}
 
 //=============================================================================
 

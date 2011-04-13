@@ -40,57 +40,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 extern int net_acceptsocket;		// socket for fielding new connections
-extern int net_controlsocket;
-
-extern const char* net_interface;
 
 #include "net_udp.h"
-
-//=============================================================================
-
-int UDP_Init (void)
-{
-	netadr_t addr;
-	char *colon;
-	
-	if (COM_CheckParm ("-noudp"))
-		return -1;
-
-	// determine my name & address
-	SOCK_GetLocalAddress();
-
-	int i = COM_CheckParm ("-ip");
-	if (i)
-	{
-		if (i < COM_Argc()-1)
-		{
-			QStr::Cpy(my_tcpip_address, COM_Argv(i+1));
-			net_interface = COM_Argv(i+1);
-		}
-		else
-		{
-			Sys_Error ("NET_Init: you must specify an IP address after -ip");
-		}
-	}
-	else
-	{
-		QStr::Cpy(my_tcpip_address, "INADDR_ANY");
-	}
-
-	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
-		Sys_Error("UDP_Init: Unable to open control socket\n");
-
-	UDP_GetSocketAddr (net_controlsocket, &addr);
-	QStr::Cpy(my_tcpip_address,  UDP_AddrToString(&addr));
-	colon = QStr::RChr(my_tcpip_address, ':');
-	if (colon)
-		*colon = 0;
-
-	Con_Printf("UDP Initialized\n");
-	tcpipAvailable = true;
-
-	return net_controlsocket;
-}
 
 //=============================================================================
 

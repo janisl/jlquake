@@ -1267,6 +1267,44 @@ int net_controlsocket;
 
 //=============================================================================
 
+int UDP_Init()
+{
+	if (COM_CheckParm("-noudp"))
+	{
+		return -1;
+	}
+
+	if (!SOCK_Init())
+	{
+		return -1;
+	}
+
+	// determine my name & address
+	SOCK_GetLocalAddress();
+
+	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
+	{
+		Con_Printf("UDP_Init: Unable to open control socket\n");
+		SOCK_Shutdown();
+		return -1;
+	}
+
+	netadr_t addr;
+	UDP_GetSocketAddr (net_controlsocket, &addr);
+	QStr::Cpy(my_tcpip_address,  UDP_AddrToString(&addr));
+	char* colon = QStr::RChr(my_tcpip_address, ':');
+	if (colon)
+	{
+		*colon = 0;
+	}
+
+	tcpipAvailable = true;
+
+	return net_controlsocket;
+}
+
+//=============================================================================
+
 void UDP_Shutdown (void)
 {
 	UDP_Listen (false);
