@@ -8,8 +8,6 @@ extern QCvar* hostname;
 extern int net_acceptsocket;		// socket for fielding new connections
 extern int net_controlsocket;
 
-static unsigned long myAddr;
-
 #include "net_udp.h"
 
 //=============================================================================
@@ -30,8 +28,6 @@ int UDP_Init (void)
 
 	// determine my name & address
 	SOCK_GetLocalAddress();
-
-	myAddr = *(int *)localIP[0];
 
 	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
 	{

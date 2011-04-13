@@ -27,7 +27,6 @@ extern QCvar* hostname;
 extern int net_acceptsocket;		// socket for fielding new connections
 extern int net_controlsocket;
 
-static unsigned long myAddr;
 extern const char* net_interface;
 
 #include "net_udp.h"
@@ -46,8 +45,6 @@ int UDP_Init (void)
 		return -1;
 	}
 
-	unsigned long	addr;
-
 	SOCK_GetLocalAddress();
 
 	int i = COM_CheckParm ("-ip");
@@ -55,9 +52,6 @@ int UDP_Init (void)
 	{
 		if (i < COM_Argc()-1)
 		{
-			myAddr = inet_addr(COM_Argv(i+1));
-			if (myAddr == INADDR_NONE)
-				Sys_Error ("%s is not a valid IP address", COM_Argv(i+1));
 			QStr::Cpy(my_tcpip_address, COM_Argv(i+1));
 			net_interface = COM_Argv(i+1);
 		}
@@ -68,16 +62,7 @@ int UDP_Init (void)
 	}
 	else
 	{
-		myAddr = INADDR_ANY;
-		QStr::Cpy(my_tcpip_address, "INADDR_ANY");
-	}
-
-	if (myAddr == INADDR_ANY)
-	{
-		myAddr = *(int *)localIP[0];
-
-		addr = ntohl(myAddr);
-		sprintf(my_tcpip_address, "%d.%d.%d.%d", (addr >> 24) & 0xff, (addr >> 16) & 0xff, (addr >> 8) & 0xff, addr & 0xff);
+		sprintf(my_tcpip_address, "%d.%d.%d.%d", localIP[0][0], localIP[0][1], localIP[0][2], localIP[0][3]);
 	}
 
 	if ((net_controlsocket = UDP_OpenSocket (PORT_ANY)) == -1)
