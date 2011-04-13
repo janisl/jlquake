@@ -343,10 +343,6 @@
 				>
 			</File>
 			<File
-				RelativePath="net_wins.cpp"
-				>
-			</File>
-			<File
 				RelativePath="pr_cmds.cpp"
 				>
 			</File>
@@ -481,10 +477,6 @@
 			</File>
 			<File
 				RelativePath="Net_loop.h"
-				>
-			</File>
-			<File
-				RelativePath=".\net_udp.h"
 				>
 			</File>
 			<File
