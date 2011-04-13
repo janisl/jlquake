@@ -285,10 +285,6 @@
 				>
 			</File>
 			<File
-				RelativePath="win32\net_wins.cpp"
-				>
-			</File>
-			<File
 				RelativePath="qcommon\pmove.cpp"
 				>
 			</File>
