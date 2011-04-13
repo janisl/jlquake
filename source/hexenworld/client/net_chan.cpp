@@ -1234,7 +1234,7 @@ void NET_SendPacket (int length, void *data, netadr_t to)
 	CalcFreq((unsigned char *)data, length);
 #endif
 
-	SOCL_Send(net_socket, huffbuff, outlen, &to);
+	SOCK_Send(net_socket, huffbuff, outlen, &to);
 }
 
 //=============================================================================

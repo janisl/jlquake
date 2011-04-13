@@ -540,7 +540,7 @@ qboolean NET_GetPacket (void)
 
 void NET_SendPacket (int length, void *data, netadr_t to)
 {
-	SOCL_Send(net_socket, data, length, &to);
+	SOCK_Send(net_socket, data, length, &to);
 }
 
 void NET_GetLocalAddress();

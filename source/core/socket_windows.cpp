@@ -642,11 +642,11 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 
 //==========================================================================
 //
-//	SOCL_Send
+//	SOCK_Send
 //
 //==========================================================================
 
-int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To)
+int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To)
 {
 	sockaddr_in addr;
 

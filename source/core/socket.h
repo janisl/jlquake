@@ -58,7 +58,7 @@ void SOCK_CloseSocks();
 int SOCK_Open(const char* NetInterface, int Port);
 void SOCK_Close(int Socket);
 int SOCK_Recv(int Socket, void* Buffer, int Length, netadr_t* From);
-int SOCL_Send(int Socket, const void* Data, int Length, netadr_t* To);
+int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To);
 bool SOCK_Sleep(int socket, int msec);
 
 extern QCvar*	net_socksEnabled;

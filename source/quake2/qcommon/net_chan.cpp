@@ -515,7 +515,7 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	else
 		Com_Error (ERR_FATAL, "NET_SendPacket: bad address type");
 
-	int ret = SOCL_Send(net_socket, data, length, &to);
+	int ret = SOCK_Send(net_socket, data, length, &to);
 	if (ret == SOCKSEND_ERROR)
 	{
 		if (!dedicated->value)	// let dedicated servers continue after errors

@@ -637,7 +637,7 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to ) 
 		return;
 	}
 
-	SOCL_Send(ip_socket, data, length, &to);
+	SOCK_Send(ip_socket, data, length, &to);
 }
 
 /*

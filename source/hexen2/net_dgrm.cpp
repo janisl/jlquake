@@ -1333,7 +1333,7 @@ int UDP_Read (int socket, byte* buf, int len, netadr_t* addr)
 
 int UDP_Write (int socket, byte *buf, int len, netadr_t* addr)
 {
-	int ret = SOCL_Send(socket, buf, len, addr);
+	int ret = SOCK_Send(socket, buf, len, addr);
 	if (ret == SOCKSEND_WOULDBLOCK)
 		return 0;
 	return ret;
@@ -1347,7 +1347,7 @@ int UDP_Broadcast (int socket, byte *buf, int len)
 	Com_Memset(&to, 0, sizeof(to));
 	to.type = NA_BROADCAST;
 	to.port = BigShort(net_hostport);
-	int ret = SOCL_Send(socket, buf, len, &to);
+	int ret = SOCK_Send(socket, buf, len, &to);
 	if (ret == SOCKSEND_WOULDBLOCK)
 		return 0;
 	return ret;
