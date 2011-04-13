@@ -33,7 +33,6 @@ set(HEXEN2_FILES
 	net_dgrm.cpp
 	net_loop.cpp
 	net_main.cpp
-	net_udp.cpp
 	pr_cmds.cpp
 	pr_edict.cpp
 	pr_exec.cpp

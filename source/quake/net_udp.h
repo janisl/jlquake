@@ -24,7 +24,6 @@ void UDP_Shutdown (void);
 void UDP_Listen (qboolean state);
 int  UDP_OpenSocket (int port);
 int  UDP_CloseSocket (int socket);
-int  UDP_CheckNewConnections (void);
 int  UDP_Read (int socket, byte *buf, int len, netadr_t* addr);
 int  UDP_Write (int socket, byte *buf, int len, netadr_t* addr);
 int  UDP_Broadcast (int socket, byte *buf, int len);

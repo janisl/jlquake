@@ -18,6 +18,9 @@ int droppedDatagrams;
 static int			udp_controlSock;
 static qboolean		udp_initialized;
 
+static int net_acceptsocket = -1;		// socket for fielding new connections
+static int net_controlsocket;
+
 static int myDriverLevel;
 
 struct
@@ -741,7 +744,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	int			control;
 	int			ret;
 
-	acceptsock = UDP_CheckNewConnections();
+	acceptsock = net_acceptsocket;
 	if (acceptsock == -1)
 		return NULL;
 
@@ -1259,11 +1262,6 @@ qsocket_t *Datagram_Connect (char *host)
 		ret = _Datagram_Connect (host);
 	return ret;
 }
-
-//=============================================================================
-
-int net_acceptsocket = -1;		// socket for fielding new connections
-int net_controlsocket;
 
 //=============================================================================
 
