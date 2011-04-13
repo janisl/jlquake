@@ -304,7 +304,7 @@ void SVC_DirectConnect (void)
 	// attractloop servers are ONLY for local clients
 	if (sv.attractloop)
 	{
-		if (!NET_IsLocalAddress (adr))
+		if (!SOCK_IsLocalAddress(adr))
 		{
 			Com_Printf ("Remote connect in attract loop.  Ignored.\n");
 			Netchan_OutOfBandPrint (NS_SERVER, adr, "print\nConnection refused.\n");
@@ -313,7 +313,7 @@ void SVC_DirectConnect (void)
 	}
 
 	// see if the challenge is valid
-	if (!NET_IsLocalAddress (adr))
+	if (!SOCK_IsLocalAddress(adr))
 	{
 		for (i=0 ; i<MAX_CHALLENGES ; i++)
 		{
@@ -344,7 +344,7 @@ void SVC_DirectConnect (void)
 			&& ( cl->netchan.qport == qport 
 			|| adr.port == cl->netchan.remote_address.port ) )
 		{
-			if (!NET_IsLocalAddress (adr) && (svs.realtime - cl->lastconnect) < ((int)sv_reconnect_limit->value * 1000))
+			if (!SOCK_IsLocalAddress(adr) && (svs.realtime - cl->lastconnect) < ((int)sv_reconnect_limit->value * 1000))
 			{
 				Com_DPrintf ("%s:reconnect rejected : too soon\n", NET_AdrToString (adr));
 				return;

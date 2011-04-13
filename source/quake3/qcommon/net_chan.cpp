@@ -523,13 +523,6 @@ qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 	return qfalse;
 }
 
-
-qboolean	NET_IsLocalAddress( netadr_t adr ) {
-	return adr.type == NA_LOOPBACK;
-}
-
-
-
 /*
 =============================================================================
 

@@ -901,7 +901,7 @@ void CL_ConnectionlessPacket (void)
 	// remote command from gui front end
 	if (!QStr::Cmp(c, "cmd"))
 	{
-		if (!NET_IsLocalAddress(net_from))
+		if (!SOCK_IsLocalAddress(net_from))
 		{
 			Com_Printf ("Command packet from remote host.  Ignored.\n");
 			return;

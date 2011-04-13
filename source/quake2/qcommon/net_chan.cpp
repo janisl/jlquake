@@ -692,16 +692,9 @@ char* NET_AdrToString (netadr_t a)
 	return s;
 }
 
-qboolean	NET_IsLocalAddress (netadr_t adr)
-{
-	return adr.type == NA_LOOPBACK;
-}
-
 // sleeps msec or until net socket is ready
 void NET_Sleep(int msec)
 {
-	extern QCvar *dedicated;
-
 	if (!dedicated || !dedicated->value)
 	{
 		return; // we're not a server, just run full speed

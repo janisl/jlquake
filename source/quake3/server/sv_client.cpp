@@ -273,7 +273,7 @@ void SV_DirectConnect( netadr_t from ) {
 	}
 
 	// see if the challenge is valid (LAN clients don't need to challenge)
-	if ( !NET_IsLocalAddress (from) ) {
+	if ( !SOCK_IsLocalAddress(from) ) {
 		int		ping;
 
 		for (i=0 ; i<MAX_CHALLENGES ; i++) {
@@ -369,7 +369,7 @@ void SV_DirectConnect( netadr_t from ) {
 	}
 
 	if ( !newcl ) {
-		if ( NET_IsLocalAddress( from ) ) {
+		if ( SOCK_IsLocalAddress( from ) ) {
 			count = 0;
 			for ( i = startIndex; i < sv_maxclients->integer ; i++ ) {
 				cl = &svs.clients[i];
@@ -1169,7 +1169,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	if (!val[0])
 	{
 		//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
-		if ( !NET_IsLocalAddress(cl->netchan.remoteAddress) )
+		if ( !SOCK_IsLocalAddress(cl->netchan.remoteAddress) )
 			Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING);
 		else
 			// force the "ip" info key to "localhost" for local clients

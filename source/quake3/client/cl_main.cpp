@@ -1072,7 +1072,7 @@ void CL_Connect_f( void ) {
 
 	// if we aren't playing on a lan, we need to authenticate
 	// with the cd key
-	if ( NET_IsLocalAddress( clc.serverAddress ) ) {
+	if ( SOCK_IsLocalAddress( clc.serverAddress ) ) {
 		cls.state = CA_CHALLENGING;
 	} else {
 		cls.state = CA_CONNECTING;

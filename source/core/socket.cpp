@@ -145,3 +145,14 @@ bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort)
 
 	return true;
 }
+
+//==========================================================================
+//
+//	SOCK_IsLocalAddress
+//
+//==========================================================================
+
+bool SOCK_IsLocalAddress(const netadr_t& adr)
+{
+	return adr.type == NA_LOOPBACK;
+}
