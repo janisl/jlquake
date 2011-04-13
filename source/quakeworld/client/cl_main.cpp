@@ -211,13 +211,6 @@ void CL_SendConnectPacket (void)
 		return;
 	}
 
-	if (!NET_IsClientLegal(&adr))
-	{
-		Con_Printf ("Illegal server address\n");
-		connect_time = -1;
-		return;
-	}
-
 	t2 = Sys_DoubleTime ();
 
 	connect_time = realtime+t2-t1;	// for retransmit requests
@@ -257,12 +250,6 @@ void CL_CheckForResend (void)
 	if (!SOCK_StringToAdr(cls.servername, &adr, 27500))
 	{
 		Con_Printf ("Bad server address\n");
-		connect_time = -1;
-		return;
-	}
-	if (!NET_IsClientLegal(&adr))
-	{
-		Con_Printf ("Illegal server address\n");
 		connect_time = -1;
 		return;
 	}

@@ -44,38 +44,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <libc.h>
 #endif
 
-// Returns true if we can't bind the address locally--in other words, 
-// the IP is NOT one of our interfaces.
-qboolean NET_IsClientLegal(netadr_t *adr)
-{
-	struct sockaddr_in sadr;
-	int newsocket;
-
-#if 0
-	if (adr->ip[0] == 127)
-		return false; // no local connections period
-
-	NetadrToSockadr (adr, &sadr);
-
-	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
-		Sys_Error ("NET_IsClientLegal: socket:", SOCK_ErrorString());
-
-	sadr.sin_port = 0;
-
-	if( bind (newsocket, (void *)&sadr, sizeof(sadr)) == -1) 
-	{
-		// It is not a local address
-		close(newsocket);
-		return true;
-	}
-	close(newsocket);
-	return false;
-#else
-	return true;
-#endif
-}
-
-
 void NET_GetLocalAddress (void)
 {
 	struct sockaddr_in	address;
