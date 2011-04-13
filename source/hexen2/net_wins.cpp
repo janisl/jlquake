@@ -69,22 +69,6 @@ int UDP_CheckNewConnections (void)
 
 //=============================================================================
 
-int UDP_GetSocketAddr(int socket, netadr_t* addr)
-{
-	SOCK_GetAddr(socket, addr);
-	if ((addr->ip[0] == 0 && addr->ip[1] == 0 && addr->ip[2] == 0 && addr->ip[3] == 0) ||
-		(addr->ip[0] == 127 && addr->ip[1] == 0 && addr->ip[2] == 0 && addr->ip[3] == 1))
-	{
-		addr->ip[0] = localIP[0][0];
-		addr->ip[1] = localIP[0][1];
-		addr->ip[2] = localIP[0][2];
-		addr->ip[3] = localIP[0][3];
-	}
-	return 0;
-}
-
-//=============================================================================
-
 int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 {
 	sockaddr_in sadr;
