@@ -21,6 +21,7 @@
 
 #include "core.h"
 #include <errno.h>
+#include <ifaddrs.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
@@ -184,41 +185,33 @@ void SOCK_Shutdown()
 
 void SOCK_GetLocalAddress()
 {
-	char hostname_buf[256];
-	if (gethostname(hostname_buf, 256) == -1)
-	{
-		return;
-	}
-
-	hostent* hostInfo = gethostbyname(hostname_buf);
-	if (!hostInfo)
-	{
-		return;
-	}
-
-	GLog.Write("Hostname: %s\n", hostInfo->h_name);
-	int n = 0;
-	char* p;
-	while ((p = hostInfo->h_aliases[n++]) != NULL)
-	{
-		GLog.Write("Alias: %s\n", p);
-	}
-
-	if (hostInfo->h_addrtype != AF_INET)
-	{
-		return;
-	}
-
 	numIP = 0;
-	while ((p = hostInfo->h_addr_list[numIP]) != NULL && numIP < MAX_IPS)
+
+	ifaddrs* IfAddrs = NULL;
+	if (getifaddrs(&IfAddrs) == -1)
 	{
-		int ip = ntohl(*(int*)p);
-		localIP[numIP][0] = p[0];
-		localIP[numIP][1] = p[1];
-		localIP[numIP][2] = p[2];
-		localIP[numIP][3] = p[3];
-		GLog.Write("IP: %i.%i.%i.%i\n", (ip >> 24) & 0xff, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
+		GLog.Write("SOCK_GetLocalAddress: getifaddrs: %s", SOCK_ErrorString());
+		return;
+	}
+
+	for (ifaddrs* Addr = IfAddrs; Addr && numIP < MAX_IPS; Addr = Addr->ifa_next)
+	{
+		if (Addr->ifa_addr->sa_family != AF_INET)
+		{
+			continue;
+		}
+
+		localIP[numIP][0] = Addr->ifa_addr->sa_data[2];
+		localIP[numIP][1] = Addr->ifa_addr->sa_data[3];
+		localIP[numIP][2] = Addr->ifa_addr->sa_data[4];
+		localIP[numIP][3] = Addr->ifa_addr->sa_data[5];
+		GLog.Write("IP: %i.%i.%i.%i\n", localIP[numIP][0], localIP[numIP][1], localIP[numIP][2], localIP[numIP][3]);
 		numIP++;
+	}
+
+	if (IfAddrs)
+	{
+		freeifaddrs(IfAddrs);
 	}
 }
 
