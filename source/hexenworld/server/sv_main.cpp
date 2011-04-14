@@ -546,7 +546,7 @@ void SVC_DirectConnect (void)
 	{
 		if (cl->state == cs_free)
 			continue;
-		if (NET_CompareAdr (adr, cl->netchan.remote_address))
+		if (SOCK_CompareAdr(adr, cl->netchan.remote_address))
 		{
 			Con_Printf ("%s:reconnect\n", SOCK_AdrToString (adr));
 			SV_DropClient (cl);
@@ -1028,7 +1028,7 @@ void SV_ReadPackets (void)
 		{
 			if (cl->state == cs_free)
 				continue;
-			if (!NET_CompareAdr (net_from, cl->netchan.remote_address))
+			if (!SOCK_CompareAdr(net_from, cl->netchan.remote_address))
 				continue;
 			if (Netchan_Process(&cl->netchan))
 			{	// this is a valid, sequenced packet, so process it

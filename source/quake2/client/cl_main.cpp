@@ -993,7 +993,7 @@ void CL_ReadPackets (void)
 		//
 		// packet from server
 		//
-		if (!NET_CompareAdr (net_from, cls.netchan.remote_address))
+		if (!SOCK_CompareAdr(net_from, cls.netchan.remote_address))
 		{
 			Com_DPrintf ("%s:sequenced packet without connection\n"
 				,SOCK_AdrToString(net_from));

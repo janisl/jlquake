@@ -13,8 +13,6 @@ void		NET_Shutdown (void);
 qboolean	NET_GetPacket (void);
 void		NET_SendPacket (int length, void *data, netadr_t to);
 
-qboolean	NET_CompareAdr (netadr_t a, netadr_t b);
-
 //============================================================================
 
 #define	OLD_AVG		0.99		// total = oldtotal*OLD_AVG + new*(1-OLD_AVG)

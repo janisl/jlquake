@@ -60,7 +60,7 @@ void SV_GetChallenge( netadr_t from ) {
 	// see if we already have a challenge for this ip
 	challenge = &svs.challenges[0];
 	for (i = 0 ; i < MAX_CHALLENGES ; i++, challenge++) {
-		if ( !challenge->connected && NET_CompareAdr( from, challenge->adr ) ) {
+		if ( !challenge->connected && SOCK_CompareAdr( from, challenge->adr ) ) {
 			break;
 		}
 		if ( challenge->time < oldestTime ) {
@@ -274,7 +274,7 @@ void SV_DirectConnect( netadr_t from ) {
 		int		ping;
 
 		for (i=0 ; i<MAX_CHALLENGES ; i++) {
-			if (NET_CompareAdr(from, svs.challenges[i].adr)) {
+			if (SOCK_CompareAdr(from, svs.challenges[i].adr)) {
 				if ( challenge == svs.challenges[i].challenge ) {
 					break;		// good
 				}
@@ -480,7 +480,7 @@ void SV_DropClient( client_t *drop, const char *reason ) {
 		challenge = &svs.challenges[0];
 
 		for (i = 0 ; i < MAX_CHALLENGES ; i++, challenge++) {
-			if ( NET_CompareAdr( drop->netchan.remoteAddress, challenge->adr ) ) {
+			if ( SOCK_CompareAdr( drop->netchan.remoteAddress, challenge->adr ) ) {
 				challenge->connected = qfalse;
 				break;
 			}

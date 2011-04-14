@@ -1554,7 +1554,7 @@ void CL_DisconnectPacket( netadr_t from ) {
 	}
 
 	// if not from our server, ignore it
-	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) ) {
+	if ( !SOCK_CompareAdr( from, clc.netchan.remoteAddress ) ) {
 		return;
 	}
 
@@ -1582,7 +1582,7 @@ void CL_MotdPacket( netadr_t from ) {
 	char	*info;
 
 	// if not from our server, ignore it
-	if ( !NET_CompareAdr( from, cls.updateServer ) ) {
+	if ( !SOCK_CompareAdr( from, cls.updateServer ) ) {
 		return;
 	}
 
@@ -1892,7 +1892,7 @@ void CL_PacketEvent( netadr_t from, QMsg *msg ) {
 	//
 	// packet from server
 	//
-	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) ) {
+	if ( !SOCK_CompareAdr( from, clc.netchan.remoteAddress ) ) {
 		Com_DPrintf ("%s:sequenced packet without connection\n"
 			,SOCK_AdrToString( from ) );
 		// FIXME: send a client disconnect?
@@ -2450,25 +2450,25 @@ static void CL_SetServerInfoByAddress(netadr_t from, const char *info, int ping)
 	int i;
 
 	for (i = 0; i < MAX_OTHER_SERVERS; i++) {
-		if (NET_CompareAdr(from, cls.localServers[i].adr)) {
+		if (SOCK_CompareAdr(from, cls.localServers[i].adr)) {
 			CL_SetServerInfo(&cls.localServers[i], info, ping);
 		}
 	}
 
 	for (i = 0; i < MAX_OTHER_SERVERS; i++) {
-		if (NET_CompareAdr(from, cls.mplayerServers[i].adr)) {
+		if (SOCK_CompareAdr(from, cls.mplayerServers[i].adr)) {
 			CL_SetServerInfo(&cls.mplayerServers[i], info, ping);
 		}
 	}
 
 	for (i = 0; i < MAX_GLOBAL_SERVERS; i++) {
-		if (NET_CompareAdr(from, cls.globalServers[i].adr)) {
+		if (SOCK_CompareAdr(from, cls.globalServers[i].adr)) {
 			CL_SetServerInfo(&cls.globalServers[i], info, ping);
 		}
 	}
 
 	for (i = 0; i < MAX_OTHER_SERVERS; i++) {
-		if (NET_CompareAdr(from, cls.favoriteServers[i].adr)) {
+		if (SOCK_CompareAdr(from, cls.favoriteServers[i].adr)) {
 			CL_SetServerInfo(&cls.favoriteServers[i], info, ping);
 		}
 	}
@@ -2499,7 +2499,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	// iterate servers waiting for ping response
 	for (i=0; i<MAX_PINGREQUESTS; i++)
 	{
-		if ( cl_pinglist[i].adr.port && !cl_pinglist[i].time && NET_CompareAdr( from, cl_pinglist[i].adr ) )
+		if ( cl_pinglist[i].adr.port && !cl_pinglist[i].time && SOCK_CompareAdr( from, cl_pinglist[i].adr ) )
 		{
 			// calc ping time
 			cl_pinglist[i].time = cls.realtime - cl_pinglist[i].start + 1;
@@ -2542,7 +2542,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 		}
 
 		// avoid duplicate
-		if ( NET_CompareAdr( from, cls.localServers[i].adr ) ) {
+		if ( SOCK_CompareAdr( from, cls.localServers[i].adr ) ) {
 			return;
 		}
 	}
@@ -2587,7 +2587,7 @@ serverStatus_t *CL_GetServerStatus( netadr_t from ) {
 
 	serverStatus = NULL;
 	for (i = 0; i < MAX_SERVERSTATUSREQUESTS; i++) {
-		if ( NET_CompareAdr( from, cl_serverStatusList[i].address ) ) {
+		if ( SOCK_CompareAdr( from, cl_serverStatusList[i].address ) ) {
 			return &cl_serverStatusList[i];
 		}
 	}
@@ -2642,7 +2642,7 @@ int CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen )
 	}
 
 	// if this server status request has the same address
-	if ( NET_CompareAdr( to, serverStatus->address) ) {
+	if ( SOCK_CompareAdr( to, serverStatus->address) ) {
 		// if we recieved an response for this server status request
 		if (!serverStatus->pending) {
 			QStr::NCpyZ(serverStatusString, serverStatus->string, maxLen);
@@ -2689,7 +2689,7 @@ void CL_ServerStatusResponse( netadr_t from, QMsg *msg ) {
 
 	serverStatus = NULL;
 	for (i = 0; i < MAX_SERVERSTATUSREQUESTS; i++) {
-		if ( NET_CompareAdr( from, cl_serverStatusList[i].address ) ) {
+		if ( SOCK_CompareAdr( from, cl_serverStatusList[i].address ) ) {
 			serverStatus = &cl_serverStatusList[i];
 			break;
 		}
@@ -3122,7 +3122,7 @@ qboolean CL_UpdateVisiblePings_f(int source) {
 						if (!cl_pinglist[j].adr.port) {
 							continue;
 						}
-						if (NET_CompareAdr( cl_pinglist[j].adr, server[i].adr)) {
+						if (SOCK_CompareAdr( cl_pinglist[j].adr, server[i].adr)) {
 							// already on the list
 							break;
 						}

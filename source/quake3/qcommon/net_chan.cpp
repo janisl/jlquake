@@ -487,25 +487,6 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
 	return qfalse;
 }
 
-qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
-{
-	if (a.type != b.type)
-		return qfalse;
-
-	if (a.type == NA_LOOPBACK)
-		return qtrue;
-
-	if (a.type == NA_IP)
-	{
-		if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3] && a.port == b.port)
-			return qtrue;
-		return qfalse;
-	}
-
-	Com_Printf ("NET_CompareAdr: bad address type\n");
-	return qfalse;
-}
-
 /*
 =============================================================================
 
