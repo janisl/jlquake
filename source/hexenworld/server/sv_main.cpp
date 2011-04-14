@@ -82,6 +82,8 @@ QCvar*	noexit;
 fileHandle_t	sv_logfile;
 fileHandle_t	sv_fraglogfile;
 
+int		sv_net_port;
+
 void SV_AcceptClient (netadr_t adr, int userid, char *userinfo);
 void Master_Shutdown (void);
 
@@ -1522,17 +1524,16 @@ SV_InitNet
 */
 void SV_InitNet (void)
 {
-	int	port;
 	int	p;
 
-	port = PORT_SERVER;
+	sv_net_port = PORT_SERVER;
 	p = COM_CheckParm ("-port");
 	if (p && p < COM_Argc())
 	{
-		port = QStr::Atoi(COM_Argv(p+1));
-		Con_Printf ("Port: %i\n", port);
+		sv_net_port = QStr::Atoi(COM_Argv(p+1));
+		Con_Printf ("Port: %i\n", sv_net_port);
 	}
-	NET_Init (port);
+	NET_Init (sv_net_port);
 
 	Netchan_Init ();
 

@@ -342,6 +342,8 @@ extern	int			host_hunklevel;
 extern	fileHandle_t	sv_logfile;
 extern	fileHandle_t	sv_fraglogfile;
 
+extern int			sv_net_port;
+
 //===========================================================
 
 //
