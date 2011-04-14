@@ -1010,10 +1010,8 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 	int		n;
 	int		i;
 	netadr_t readaddr;
-	netadr_t	myaddr;
 	int		control;
 
-	UDP_GetSocketAddr(udp_controlSock, &myaddr);
 	if (xmit)
 	{
 		net_message.Clear();
@@ -1032,10 +1030,6 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		if (ret < sizeof(int))
 			continue;
 		net_message.cursize = ret;
-
-		// don't answer our own query
-		if (UDP_AddrCompare(&readaddr, &myaddr) >= 0)
-			continue;
 
 		// is the cache full?
 		if (hostCacheCount == HOSTCACHESIZE)
