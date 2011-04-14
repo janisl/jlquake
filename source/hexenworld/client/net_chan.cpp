@@ -1153,8 +1153,6 @@ static void HuffEncode(unsigned char *in,unsigned char *out,int inlen,int *outle
 
 static int LastCompMessageSize = 0;
 
-netadr_t	net_local_adr;
-
 netadr_t	net_from;
 QMsg		net_message;
 int			net_socket;
@@ -1220,24 +1218,6 @@ static int UDP_OpenSocket (int port)
 	return newsocket;
 }
 
-static void NET_GetLocalAddress()
-{
-	SOCK_GetLocalAddress();
-
-	net_local_adr.type = NA_IP;
-	net_local_adr.ip[0] = localIP[0][0];
-	net_local_adr.ip[1] = localIP[0][1];
-	net_local_adr.ip[2] = localIP[0][2];
-	net_local_adr.ip[3] = localIP[0][3];
-
-	netadr_t address;
-	if (!SOCK_GetAddr(net_socket, &address))
-	{
-		Sys_Error("NET_Init: getsockname failed");
-	}
-	net_local_adr.port = address.port;
-}
-
 /*
 ====================
 NET_Init
@@ -1265,9 +1245,9 @@ void NET_Init (int port)
 	net_message.InitOOB(net_message_buffer, sizeof(net_message_buffer));
 
 	//
-	// determine my name & address
+	// determine my addresses
 	//
-	NET_GetLocalAddress ();
+	SOCK_GetLocalAddress();
 }
 
 /*
