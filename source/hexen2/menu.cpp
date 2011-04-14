@@ -2839,7 +2839,7 @@ void M_Quit_Draw (void)
 /* LAN CONFIG MENU */
 
 int		lanConfig_cursor = -1;
-int		lanConfig_cursor_table [] = {100, 120, 140, 172};
+int		lanConfig_cursor_table [] = {80, 100, 120, 152};
 #define NUM_LANCONFIG_CMDS	4
 
 int 	lanConfig_port;
@@ -2891,9 +2891,6 @@ void M_LanConfig_Draw (void)
 	M_Print (basex, 60, va ("%s - %s", startJoin, protocol));
 	basex += 8;
 
-	M_Print (basex, 80, "Address:");
-	M_Print (basex+9*8, 80, my_tcpip_address);
-
 	M_Print (basex, lanConfig_cursor_table[0], "Port");
 	M_DrawTextBox (basex+8*8, lanConfig_cursor_table[0]-8, 6, 1);
 	M_Print (basex+9*8, lanConfig_cursor_table[0], lanConfig_portname);
@@ -2904,7 +2901,7 @@ void M_LanConfig_Draw (void)
 		M_Print (basex+8*7, lanConfig_cursor_table[1], ClassNames[setup_class]);
 
 		M_Print (basex, lanConfig_cursor_table[2], "Search for local games...");
-		M_Print (basex, 156, "Join game at:");
+		M_Print (basex, 136, "Join game at:");
 		M_DrawTextBox (basex, lanConfig_cursor_table[3]-8, 30, 1);
 		M_Print (basex+8, lanConfig_cursor_table[3], lanConfig_joinname);
 	}
@@ -2923,7 +2920,7 @@ void M_LanConfig_Draw (void)
 		M_DrawCharacter (basex+8 + 8*QStr::Length(lanConfig_joinname), lanConfig_cursor_table [3], 10+((int)(realtime*4)&1));
 
 	if (*m_return_reason)
-		M_PrintWhite (basex, 192, m_return_reason);
+		M_PrintWhite (basex, 172, m_return_reason);
 }
 
 
