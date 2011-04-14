@@ -30,8 +30,6 @@ qboolean	tcpipAvailable = false;
 int			net_hostport;
 int			DEFAULTnet_hostport = 26000;
 
-char		my_tcpip_address[NET_NAMELEN];
-
 static qboolean	listening = false;
 
 qboolean	slistInProgress = false;

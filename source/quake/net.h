@@ -271,7 +271,6 @@ typedef struct _PollProcedure
 void SchedulePollProcedure(PollProcedure *pp, double timeOffset);
 
 extern	qboolean	tcpipAvailable;
-extern	char		my_tcpip_address[NET_NAMELEN];
 
 extern	qboolean	slistInProgress;
 extern	qboolean	slistSilent;

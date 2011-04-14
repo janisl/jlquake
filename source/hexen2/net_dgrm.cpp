@@ -1299,15 +1299,6 @@ int UDP_Init()
 		return -1;
 	}
 
-	netadr_t addr;
-	UDP_GetSocketAddr (net_controlsocket, &addr);
-	QStr::Cpy(my_tcpip_address,  SOCK_AdrToString(addr));
-	char* colon = QStr::RChr(my_tcpip_address, ':');
-	if (colon)
-	{
-		*colon = 0;
-	}
-
 	tcpipAvailable = true;
 
 	return net_controlsocket;
