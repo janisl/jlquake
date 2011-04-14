@@ -33,7 +33,6 @@ int  UDP_CloseSocket (int socket);
 int  UDP_Read (int socket, byte *buf, int len, netadr_t* addr);
 int  UDP_Write (int socket, byte *buf, int len, netadr_t* addr);
 int  UDP_Broadcast (int socket, byte *buf, int len);
-int  UDP_GetSocketAddr (int socket, netadr_t* addr);
 int  UDP_GetNameFromAddr (netadr_t* addr, char *name);
 int  UDP_GetAddrFromName (const char *name, netadr_t* addr);
 int  UDP_AddrCompare (netadr_t* addr1, netadr_t* addr2);
@@ -808,7 +807,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		// save space for the header, filled in later
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREP_SERVER_INFO);
-		UDP_GetSocketAddr(acceptsock, &newaddr);
+		SOCK_GetAddr(acceptsock, &newaddr);
 		net_message.WriteString2(SOCK_AdrToString(newaddr));
 		net_message.WriteString2(hostname->string);
 		net_message.WriteString2(sv.name);
@@ -1069,7 +1068,13 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		if (net_message.ReadByte() != CCREP_SERVER_INFO)
 			continue;
 
-		UDP_GetAddrFromName(net_message.ReadString2(), &readaddr);
+		//	This is server's IP, or more exatly what server thinks is it's IP.
+		// Originally this string was converted into readaddr and that address
+		// was then saved in host cache. The whole thin is stupid as server
+		// can't know exatly which IP this client sees it by and secondly
+		// readaddr already contains exactly the right address.
+		net_message.ReadString2();
+
 		// search the cache for this server
 		for (n = 0; n < hostCacheCount; n++)
 		{
@@ -1441,22 +1446,6 @@ int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
 		return 1;
 
 	return -1;
-}
-
-//=============================================================================
-
-int UDP_GetSocketAddr(int socket, netadr_t* addr)
-{
-	SOCK_GetAddr(socket, addr);
-	if ((addr->ip[0] == 0 && addr->ip[1] == 0 && addr->ip[2] == 0 && addr->ip[3] == 0) ||
-		(addr->ip[0] == 127 && addr->ip[1] == 0 && addr->ip[2] == 0 && addr->ip[3] == 1))
-	{
-		addr->ip[0] = localIP[0][0];
-		addr->ip[1] = localIP[0][1];
-		addr->ip[2] = localIP[0][2];
-		addr->ip[3] = localIP[0][3];
-	}
-	return 0;
 }
 
 //=============================================================================
