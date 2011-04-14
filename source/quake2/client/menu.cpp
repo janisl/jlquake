@@ -2209,7 +2209,7 @@ void JoinServerFunc( void *self )
 	if (index >= m_num_servers)
 		return;
 
-	QStr::Sprintf (buffer, sizeof(buffer), "connect %s\n", NET_AdrToString (local_server_netadr[index]));
+	QStr::Sprintf (buffer, sizeof(buffer), "connect %s\n", SOCK_AdrToString(local_server_netadr[index]));
 	Cbuf_AddText (buffer);
 	M_ForceMenuOff ();
 }

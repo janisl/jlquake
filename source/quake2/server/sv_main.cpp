@@ -163,7 +163,7 @@ SVC_Ack
 */
 void SVC_Ack (void)
 {
-	Com_Printf ("Ping acknowledge from %s\n", NET_AdrToString(net_from));
+	Com_Printf ("Ping acknowledge from %s\n", SOCK_AdrToString(net_from));
 }
 
 /*
@@ -298,7 +298,7 @@ void SVC_DirectConnect (void)
 	userinfo[sizeof(userinfo) - 1] = 0;
 
 	// force the IP key/value pair so the game can filter based on ip
-	Info_SetValueForKey (userinfo, "ip", NET_AdrToString(net_from), MAX_INFO_STRING, MAX_INFO_KEY,
+	Info_SetValueForKey (userinfo, "ip", SOCK_AdrToString(net_from), MAX_INFO_STRING, MAX_INFO_KEY,
 		MAX_INFO_VALUE, true, false);
 
 	// attractloop servers are ONLY for local clients
@@ -346,10 +346,10 @@ void SVC_DirectConnect (void)
 		{
 			if (!SOCK_IsLocalAddress(adr) && (svs.realtime - cl->lastconnect) < ((int)sv_reconnect_limit->value * 1000))
 			{
-				Com_DPrintf ("%s:reconnect rejected : too soon\n", NET_AdrToString (adr));
+				Com_DPrintf ("%s:reconnect rejected : too soon\n", SOCK_AdrToString (adr));
 				return;
 			}
-			Com_Printf ("%s:reconnect\n", NET_AdrToString (adr));
+			Com_Printf ("%s:reconnect\n", SOCK_AdrToString (adr));
 			newcl = cl;
 			goto gotnewcl;
 		}
@@ -440,9 +440,9 @@ void SVC_RemoteCommand (void)
 	i = Rcon_Validate ();
 
 	if (i == 0)
-		Com_Printf ("Bad rcon from %s:\n%s\n", NET_AdrToString (net_from), net_message._data+4);
+		Com_Printf ("Bad rcon from %s:\n%s\n", SOCK_AdrToString (net_from), net_message._data+4);
 	else
-		Com_Printf ("Rcon from %s:\n%s\n", NET_AdrToString (net_from), net_message._data+4);
+		Com_Printf ("Rcon from %s:\n%s\n", SOCK_AdrToString (net_from), net_message._data+4);
 
 	Com_BeginRedirect (RD_PACKET, sv_outputbuf, SV_OUTPUTBUF_LENGTH, (void*)SV_FlushRedirect);
 
@@ -489,7 +489,7 @@ void SV_ConnectionlessPacket (void)
 	Cmd_TokenizeString (s, false);
 
 	c = Cmd_Argv(0);
-	Com_DPrintf ("Packet %s : %s\n", NET_AdrToString(net_from), c);
+	Com_DPrintf ("Packet %s : %s\n", SOCK_AdrToString(net_from), c);
 
 	if (!QStr::Cmp(c, "ping"))
 		SVC_Ping ();
@@ -507,7 +507,7 @@ void SV_ConnectionlessPacket (void)
 		SVC_RemoteCommand ();
 	else
 		Com_Printf ("bad connectionless packet from %s:\n%s\n"
-		, NET_AdrToString (net_from), s);
+		, SOCK_AdrToString (net_from), s);
 }
 
 
@@ -854,7 +854,7 @@ void Master_Heartbeat (void)
 	for (i=0 ; i<MAX_MASTERS ; i++)
 		if (master_adr[i].port)
 		{
-			Com_Printf ("Sending heartbeat to %s\n", NET_AdrToString (master_adr[i]));
+			Com_Printf ("Sending heartbeat to %s\n", SOCK_AdrToString (master_adr[i]));
 			Netchan_OutOfBandPrint (NS_SERVER, master_adr[i], "heartbeat\n%s", string);
 		}
 }
@@ -881,7 +881,7 @@ void Master_Shutdown (void)
 		if (master_adr[i].port)
 		{
 			if (i > 0)
-				Com_Printf ("Sending heartbeat to %s\n", NET_AdrToString (master_adr[i]));
+				Com_Printf ("Sending heartbeat to %s\n", SOCK_AdrToString (master_adr[i]));
 			Netchan_OutOfBandPrint (NS_SERVER, master_adr[i], "shutdown");
 		}
 }

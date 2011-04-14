@@ -305,7 +305,6 @@ void		NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to);
 
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b);
 qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b);
-char		*NET_AdrToString (netadr_t a);
 void		NET_Sleep(int msec);
 
 //============================================================================

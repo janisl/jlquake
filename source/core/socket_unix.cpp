@@ -530,7 +530,7 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 		}
 
 		GLog.Write("NET_GetPacket: %s", SOCK_ErrorString());
-		//GLog.Write("NET_GetPacket: %s from %s\n", SOCK_ErrorString(), NET_AdrToString(*net_from));
+		//GLog.Write("NET_GetPacket: %s from %s\n", SOCK_ErrorString(), SOCK_AdrToString(*net_from));
 		return SOCKRECV_ERROR;
 	}
 
@@ -624,7 +624,7 @@ int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To)
 		}
 
 		GLog.Write("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
-		//GLog.Write("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(), NET_AdrToString(to));
+		//GLog.Write("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(), SOCK_AdrToString(to));
 		return SOCKSEND_ERROR;
 	}
 

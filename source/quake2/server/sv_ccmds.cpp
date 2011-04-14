@@ -65,7 +65,7 @@ void SV_SetMaster_f (void)
 			continue;
 		}
 
-		Com_Printf ("Master server at %s\n", NET_AdrToString (master_adr[slot]));
+		Com_Printf ("Master server at %s\n", SOCK_AdrToString(master_adr[slot]));
 
 		Com_Printf ("Sending a ping.\n");
 
@@ -687,7 +687,7 @@ void SV_Status_f (void)
 {
 	int			i, j, l;
 	client_t	*cl;
-	char		*s;
+	const char*	s;
 	int			ping;
 	if (!svs.clients)
 	{
@@ -722,7 +722,7 @@ void SV_Status_f (void)
 
 		Com_Printf ("%7i ", svs.realtime - cl->lastmessage );
 
-		s = NET_AdrToString ( cl->netchan.remote_address);
+		s = SOCK_AdrToString( cl->netchan.remote_address);
 		Com_Printf ("%s", s);
 		l = 22 - QStr::Length(s);
 		for (j=0 ; j<l ; j++)

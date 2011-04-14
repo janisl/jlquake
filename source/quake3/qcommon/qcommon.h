@@ -90,7 +90,6 @@ void		QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int le
 
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b);
 qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b);
-const char	*NET_AdrToString (netadr_t a);
 qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message);
 void		NET_Sleep(int msec);
 

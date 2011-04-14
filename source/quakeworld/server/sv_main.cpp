@@ -441,7 +441,7 @@ void SVC_Log (void)
 		return;
 	}
 
-	Con_DPrintf ("sending log %i to %s\n", svs.logsequence-1, NET_AdrToString(net_from));
+	Con_DPrintf ("sending log %i to %s\n", svs.logsequence-1, SOCK_AdrToString(net_from));
 
 	sprintf (data, "stdlog %i\n", svs.logsequence-1);
 	QStr::Cat(data, sizeof(data), (char *)svs.log_buf[((svs.logsequence-1)&1)]);
@@ -576,7 +576,7 @@ void SVC_DirectConnect (void)
 			QStr::ICmp(spectator_password->string, "none") &&
 			QStr::Cmp(spectator_password->string, s) )
 		{	// failed
-			Con_Printf ("%s:spectator password failed\n", NET_AdrToString (net_from));
+			Con_Printf ("%s:spectator password failed\n", SOCK_AdrToString (net_from));
 			Netchan_OutOfBandPrint (net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
 			return;
 		}
@@ -591,7 +591,7 @@ void SVC_DirectConnect (void)
 			QStr::ICmp(password->string, "none") &&
 			QStr::Cmp(password->string, s) )
 		{
-			Con_Printf ("%s:password failed\n", NET_AdrToString (net_from));
+			Con_Printf ("%s:password failed\n", SOCK_AdrToString (net_from));
 			Netchan_OutOfBandPrint (net_from, "%c\nserver requires a password\n\n", A2C_PRINT);
 			return;
 		}
@@ -628,12 +628,12 @@ void SVC_DirectConnect (void)
 			|| adr.port == cl->netchan.remote_address.port ))
 		{
 			if (cl->state == cs_connected) {
-				Con_Printf("%s:dup connect\n", NET_AdrToString (adr));
+				Con_Printf("%s:dup connect\n", SOCK_AdrToString (adr));
 				userid--;
 				return;
 			}
 
-			Con_Printf ("%s:reconnect\n", NET_AdrToString (adr));
+			Con_Printf ("%s:reconnect\n", SOCK_AdrToString (adr));
 			SV_DropClient (cl);
 			break;
 		}
@@ -662,7 +662,7 @@ void SVC_DirectConnect (void)
 	if ( (spectator && spectators >= (int)maxspectators->value)
 		|| (!spectator && clients >= (int)maxclients->value) )
 	{
-		Con_Printf ("%s:full connect\n", NET_AdrToString (adr));
+		Con_Printf ("%s:full connect\n", SOCK_AdrToString (adr));
 		Netchan_OutOfBandPrint (adr, "%c\nserver is full\n\n", A2C_PRINT);
 		return;
 	}
@@ -755,7 +755,7 @@ void SVC_RemoteCommand (void)
 
 	if (!Rcon_Validate ()) {
 		Con_Printf ("Bad rcon from %s:\n%s\n"
-			, NET_AdrToString (net_from), net_message._data+4);
+			, SOCK_AdrToString (net_from), net_message._data+4);
 
 		SV_BeginRedirect (RD_PACKET);
 
@@ -764,7 +764,7 @@ void SVC_RemoteCommand (void)
 	} else {
 
 		Con_Printf ("Rcon from %s:\n%s\n"
-			, NET_AdrToString (net_from), net_message._data+4);
+			, SOCK_AdrToString (net_from), net_message._data+4);
 
 		SV_BeginRedirect (RD_PACKET);
 
@@ -815,7 +815,7 @@ void SV_ConnectionlessPacket (void)
 	}
 	if (c[0] == A2A_ACK && (c[1] == 0 || c[1] == '\n') )
 	{
-		Con_Printf ("A2A_ACK from %s\n", NET_AdrToString (net_from));
+		Con_Printf ("A2A_ACK from %s\n", SOCK_AdrToString (net_from));
 		return;
 	}
 	else if (!QStr::Cmp(c,"status"))
@@ -842,7 +842,7 @@ void SV_ConnectionlessPacket (void)
 		SVC_RemoteCommand ();
 	else
 		Con_Printf ("bad connectionless packet from %s:\n%s\n"
-		, NET_AdrToString (net_from), s);
+		, SOCK_AdrToString (net_from), s);
 }
 
 /*
@@ -1141,7 +1141,7 @@ void SV_ReadPackets (void)
 	
 		// packet is not from a known client
 		//	Con_Printf ("%s:sequenced packet without connection\n"
-		// ,NET_AdrToString(net_from));
+		// ,SOCK_AdrToString(net_from));
 	}
 }
 
@@ -1443,7 +1443,7 @@ void Master_Heartbeat (void)
 	for (i=0 ; i<MAX_MASTERS ; i++)
 		if (master_adr[i].port)
 		{
-			Con_Printf ("Sending heartbeat to %s\n", NET_AdrToString (master_adr[i]));
+			Con_Printf ("Sending heartbeat to %s\n", SOCK_AdrToString (master_adr[i]));
 			NET_SendPacket (QStr::Length(string), string, master_adr[i]);
 		}
 }
@@ -1466,7 +1466,7 @@ void Master_Shutdown (void)
 	for (i=0 ; i<MAX_MASTERS ; i++)
 		if (master_adr[i].port)
 		{
-			Con_Printf ("Sending heartbeat to %s\n", NET_AdrToString (master_adr[i]));
+			Con_Printf ("Sending heartbeat to %s\n", SOCK_AdrToString (master_adr[i]));
 			NET_SendPacket (QStr::Length(string), string, master_adr[i]);
 		}
 }

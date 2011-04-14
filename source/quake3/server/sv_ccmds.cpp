@@ -420,10 +420,7 @@ static void SV_Ban_f( void ) {
 			Com_Printf( "Couldn't resolve address\n" );
 			return;
 		}
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-			BigShort( svs.authorizeAddress.port ) );
+		Com_Printf( "%s resolved to %s\n", AUTHORIZE_SERVER_NAME, SOCK_AdrToString(svs.authorizeAddress));
 	}
 
 	// otherwise send their ip to the authorize server
@@ -474,10 +471,7 @@ static void SV_BanNum_f( void ) {
 			Com_Printf( "Couldn't resolve address\n" );
 			return;
 		}
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-			BigShort( svs.authorizeAddress.port ) );
+		Com_Printf( "%s resolved to %s\n", AUTHORIZE_SERVER_NAME, SOCK_AdrToString(svs.authorizeAddress));
 	}
 
 	// otherwise send their ip to the authorize server
@@ -573,7 +567,7 @@ static void SV_Status_f( void ) {
 
 		Com_Printf ("%7i ", svs.time - cl->lastPacketTime );
 
-		s = NET_AdrToString( cl->netchan.remoteAddress );
+		s = SOCK_AdrToString( cl->netchan.remoteAddress );
 		Com_Printf ("%s", s);
 		l = 22 - QStr::Length(s);
 		for (j=0 ; j<l ; j++)

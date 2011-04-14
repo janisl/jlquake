@@ -96,10 +96,7 @@ void SV_GetChallenge( netadr_t from ) {
 			Com_Printf( "Couldn't resolve address\n" );
 			return;
 		}
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-			svs.authorizeAddress.ip[0], svs.authorizeAddress.ip[1],
-			svs.authorizeAddress.ip[2], svs.authorizeAddress.ip[3],
-			BigShort( svs.authorizeAddress.port ) );
+		Com_Printf( "%s resolved to %s\n", AUTHORIZE_SERVER_NAME, SOCK_AdrToString(svs.authorizeAddress));
 	}
 
 	// if they have been challenging for a long time and we
@@ -119,7 +116,7 @@ void SV_GetChallenge( netadr_t from ) {
 		QCvar	*fs;
 		char	game[1024];
 
-		Com_DPrintf( "sending getIpAuthorize for %s\n", NET_AdrToString( from ));
+		Com_DPrintf( "sending getIpAuthorize for %s\n", SOCK_AdrToString( from ));
 		
 		QStr::Cpy(game, BASEGAME);
 		fs = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
@@ -265,7 +262,7 @@ void SV_DirectConnect( netadr_t from ) {
 			|| from.port == cl->netchan.remoteAddress.port ) ) {
 			if (( svs.time - cl->lastConnectTime) 
 				< (sv_reconnectlimit->integer * 1000)) {
-				Com_DPrintf ("%s:reconnect rejected : too soon\n", NET_AdrToString (from));
+				Com_DPrintf ("%s:reconnect rejected : too soon\n", SOCK_AdrToString (from));
 				return;
 			}
 			break;
@@ -288,7 +285,7 @@ void SV_DirectConnect( netadr_t from ) {
 			return;
 		}
 		// force the IP key/value pair so the game can filter based on ip
-		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ), MAX_INFO_STRING);
+		Info_SetValueForKey( userinfo, "ip", SOCK_AdrToString( from ), MAX_INFO_STRING);
 
 		ping = svs.time - svs.challenges[i].pingTime;
 		Com_Printf( "Client %i connecting with %i challenge ping\n", i, ping );
@@ -327,7 +324,7 @@ void SV_DirectConnect( netadr_t from ) {
 		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress )
 			&& ( cl->netchan.qport == qport 
 			|| from.port == cl->netchan.remoteAddress.port ) ) {
-			Com_Printf ("%s:reconnect\n", NET_AdrToString (from));
+			Com_Printf ("%s:reconnect\n", SOCK_AdrToString (from));
 			newcl = cl;
 
 			// this doesn't work because it nukes the players userinfo
@@ -1170,7 +1167,7 @@ void SV_UserinfoChanged( client_t *cl ) {
 	{
 		//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
 		if ( !SOCK_IsLocalAddress(cl->netchan.remoteAddress) )
-			Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING);
+			Info_SetValueForKey( cl->userinfo, "ip", SOCK_AdrToString( cl->netchan.remoteAddress ), MAX_INFO_STRING);
 		else
 			// force the "ip" info key to "localhost" for local clients
 			Info_SetValueForKey( cl->userinfo, "ip", "localhost", MAX_INFO_STRING);

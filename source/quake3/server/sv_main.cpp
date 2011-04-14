@@ -251,9 +251,7 @@ void SV_MasterHeartbeat( void ) {
 				sv_master[i]->modified = qfalse;
 				continue;
 			}
-			Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", sv_master[i]->string,
-				adr[i].ip[0], adr[i].ip[1], adr[i].ip[2], adr[i].ip[3],
-				BigShort( adr[i].port ) );
+			Com_Printf( "%s resolved to %s\n", sv_master[i]->string, SOCK_AdrToString(adr[i]));
 		}
 
 
@@ -448,10 +446,10 @@ void SVC_RemoteCommand( netadr_t from, QMsg *msg ) {
 	if ( !QStr::Length( sv_rconPassword->string ) ||
 		QStr::Cmp(Cmd_Argv(1), sv_rconPassword->string) ) {
 		valid = qfalse;
-		Com_Printf ("Bad rcon from %s:\n%s\n", NET_AdrToString (from), Cmd_Argv(2) );
+		Com_Printf ("Bad rcon from %s:\n%s\n", SOCK_AdrToString (from), Cmd_Argv(2) );
 	} else {
 		valid = qtrue;
-		Com_Printf ("Rcon from %s:\n%s\n", NET_AdrToString (from), Cmd_Argv(2) );
+		Com_Printf ("Rcon from %s:\n%s\n", SOCK_AdrToString (from), Cmd_Argv(2) );
 	}
 
 	// start redirecting all print outputs to the packet
@@ -512,7 +510,7 @@ void SV_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 	Cmd_TokenizeString( s );
 
 	c = Cmd_Argv(0);
-	Com_DPrintf ("SV packet %s : %s\n", NET_AdrToString(from), c);
+	Com_DPrintf ("SV packet %s : %s\n", SOCK_AdrToString(from), c);
 
 	if (!QStr::ICmp(c, "getstatus")) {
 		SVC_Status( from  );
@@ -532,7 +530,7 @@ void SV_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 		// sequenced messages to the old client
 	} else {
 		Com_DPrintf ("bad connectionless packet from %s:\n%s\n"
-		, NET_AdrToString (from), s);
+		, SOCK_AdrToString (from), s);
 	}
 }
 

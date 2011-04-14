@@ -212,7 +212,7 @@ void CL_SendConnectPacket (void)
 
 	cls.qport = Cvar_VariableValue("qport");
 
-	Info_SetValueForKey(cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING, 64, 64, true, false);
+	Info_SetValueForKey(cls.userinfo, "*ip", SOCK_AdrToString(adr), MAX_INFO_STRING, 64, 64, true, false);
 
 //	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
@@ -811,7 +811,7 @@ void CL_ConnectionlessPacket (void)
 
 	c = net_message.ReadByte ();
 	if (!cls.demoplayback)
-		Con_Printf ("%s: ", NET_AdrToString (net_from));
+		Con_Printf ("%s: ", SOCK_AdrToString (net_from));
 //	Con_DPrintf ("%s", net_message.data + 5);
 	if (c == S2C_CONNECTION)
 	{
@@ -952,7 +952,7 @@ void CL_ReadPackets (void)
 
 		if (net_message.cursize < 8)
 		{
-			Con_Printf ("%s: Runt packet\n",NET_AdrToString(net_from));
+			Con_Printf ("%s: Runt packet\n",SOCK_AdrToString(net_from));
 			continue;
 		}
 
@@ -963,7 +963,7 @@ void CL_ReadPackets (void)
 			!NET_CompareAdr (net_from, cls.netchan.remote_address))
 		{
 			Con_DPrintf ("%s:sequenced packet without connection\n"
-				,NET_AdrToString(net_from));
+				,SOCK_AdrToString(net_from));
 			continue;
 		}
 		if (!Netchan_Process(&cls.netchan))

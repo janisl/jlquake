@@ -169,3 +169,5 @@
   I changed Quake and Hexen 2 to use netadr_t like other games.
 13.04.2011
   I finished merging platform dependent socket methods.
+14.04.2011
+  I changed retrieval of local IPs to use different APIs. Now it properly finds all IPs. Unix version should work on MacOSX as well so I removed MacOSX specific code.

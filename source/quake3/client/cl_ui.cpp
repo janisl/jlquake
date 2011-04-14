@@ -251,25 +251,25 @@ static void LAN_GetServerAddressString( int source, int n, char *buf, int buflen
 	switch (source) {
 		case AS_LOCAL :
 			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				QStr::NCpyZ(buf, NET_AdrToString( cls.localServers[n].adr) , buflen );
+				QStr::NCpyZ(buf, SOCK_AdrToString( cls.localServers[n].adr) , buflen );
 				return;
 			}
 			break;
 		case AS_MPLAYER :
 			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				QStr::NCpyZ(buf, NET_AdrToString( cls.mplayerServers[n].adr) , buflen );
+				QStr::NCpyZ(buf, SOCK_AdrToString( cls.mplayerServers[n].adr) , buflen );
 				return;
 			}
 			break;
 		case AS_GLOBAL :
 			if (n >= 0 && n < MAX_GLOBAL_SERVERS) {
-				QStr::NCpyZ(buf, NET_AdrToString( cls.globalServers[n].adr) , buflen );
+				QStr::NCpyZ(buf, SOCK_AdrToString( cls.globalServers[n].adr) , buflen );
 				return;
 			}
 			break;
 		case AS_FAVORITES :
 			if (n >= 0 && n < MAX_OTHER_SERVERS) {
-				QStr::NCpyZ(buf, NET_AdrToString( cls.favoriteServers[n].adr) , buflen );
+				QStr::NCpyZ(buf, SOCK_AdrToString( cls.favoriteServers[n].adr) , buflen );
 				return;
 			}
 			break;
@@ -320,7 +320,7 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen ) {
 		Info_SetValueForKey( info, "game", server->game, MAX_INFO_STRING);
 		Info_SetValueForKey( info, "gametype", va("%i",server->gameType), MAX_INFO_STRING);
 		Info_SetValueForKey( info, "nettype", va("%i",server->netType), MAX_INFO_STRING);
-		Info_SetValueForKey( info, "addr", NET_AdrToString(server->adr), MAX_INFO_STRING);
+		Info_SetValueForKey( info, "addr", SOCK_AdrToString(server->adr), MAX_INFO_STRING);
 		Info_SetValueForKey( info, "punkbuster", va("%i", server->punkbuster), MAX_INFO_STRING);
 		QStr::NCpyZ(buf, info, buflen);
 	} else {

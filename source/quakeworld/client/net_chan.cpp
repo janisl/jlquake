@@ -232,7 +232,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	{
 		chan->fatal_error = true;
 		Con_Printf ("%s:Outgoing message overflow\n"
-			, NET_AdrToString (chan->remote_address));
+			, SOCK_AdrToString (chan->remote_address));
 		return;
 	}
 
@@ -395,7 +395,7 @@ qboolean Netchan_Process (netchan_t *chan)
 	{
 		if (showdrop->value)
 			Con_Printf ("%s:Out of order packet %i at %i\n"
-				, NET_AdrToString (chan->remote_address)
+				, SOCK_AdrToString (chan->remote_address)
 				,  sequence
 				, chan->incoming_sequence);
 		return false;
@@ -411,7 +411,7 @@ qboolean Netchan_Process (netchan_t *chan)
 
 		if (showdrop->value)
 			Con_Printf ("%s:Dropped %i packets at %i\n"
-			, NET_AdrToString (chan->remote_address)
+			, SOCK_AdrToString (chan->remote_address)
 			, sequence-(chan->incoming_sequence+1)
 			, sequence);
 	}
@@ -475,15 +475,6 @@ qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 	return false;
 }
 
-char	*NET_AdrToString (netadr_t a)
-{
-	static	char	s[64];
-	
-	sprintf (s, "%i.%i.%i.%i:%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3], BigShort(a.port));
-
-	return s;
-}
-
 char	*NET_BaseAdrToString (netadr_t a)
 {
 	static	char	s[64];
@@ -529,7 +520,7 @@ qboolean NET_GetPacket (void)
 	net_message.cursize = ret;
 	if (ret == sizeof(net_message_buffer) )
 	{
-		Con_Printf ("Oversize packet from %s\n", NET_AdrToString (net_from));
+		Con_Printf ("Oversize packet from %s\n", SOCK_AdrToString (net_from));
 		return false;
 	}
 

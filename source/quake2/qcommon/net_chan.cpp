@@ -222,7 +222,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 	{
 		chan->fatal_error = true;
 		Com_Printf ("%s:Outgoing message overflow\n"
-			, NET_AdrToString (chan->remote_address));
+			, SOCK_AdrToString (chan->remote_address));
 		return;
 	}
 
@@ -340,7 +340,7 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 	{
 		if (showdrop->value)
 			Com_Printf ("%s:Out of order packet %i at %i\n"
-				, NET_AdrToString (chan->remote_address)
+				, SOCK_AdrToString (chan->remote_address)
 				,  sequence
 				, chan->incoming_sequence);
 		return false;
@@ -354,7 +354,7 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 	{
 		if (showdrop->value)
 			Com_Printf ("%s:Dropped %i packets at %i\n"
-			, NET_AdrToString (chan->remote_address)
+			, SOCK_AdrToString (chan->remote_address)
 			, chan->dropped
 			, sequence);
 	}
@@ -480,7 +480,7 @@ qboolean NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 
 	if (ret == net_message->maxsize)
 	{
-		Com_Printf ("Oversize packet from %s\n", NET_AdrToString (*net_from));
+		Com_Printf ("Oversize packet from %s\n", SOCK_AdrToString (*net_from));
 		return false;
 	}
 
@@ -678,18 +678,6 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
 			return true;
 	}
 	return false;
-}
-
-char* NET_AdrToString (netadr_t a)
-{
-	static	char	s[64];
-
-	if (a.type == NA_LOOPBACK)
-		QStr::Sprintf (s, sizeof(s), "loopback");
-	else
-		QStr::Sprintf (s, sizeof(s), "%i.%i.%i.%i:%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3], BigShort(a.port));
-
-	return s;
 }
 
 // sleeps msec or until net socket is ready

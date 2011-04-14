@@ -357,7 +357,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	if ( sequence <= chan->incomingSequence ) {
 		if ( showdrop->integer || showpackets->integer ) {
 			Com_Printf( "%s:Out of order packet %i at %i\n"
-				, NET_AdrToString( chan->remoteAddress )
+				, SOCK_AdrToString( chan->remoteAddress )
 				,  sequence
 				, chan->incomingSequence );
 		}
@@ -371,7 +371,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 	if ( chan->dropped > 0 ) {
 		if ( showdrop->integer || showpackets->integer ) {
 			Com_Printf( "%s:Dropped %i packets at %i\n"
-			, NET_AdrToString( chan->remoteAddress )
+			, SOCK_AdrToString( chan->remoteAddress )
 			, chan->dropped
 			, sequence );
 		}
@@ -397,7 +397,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 		if ( fragmentStart != chan->fragmentLength ) {
 			if ( showdrop->integer || showpackets->integer ) {
 				Com_Printf( "%s:Dropped a message fragment\n"
-				, NET_AdrToString( chan->remoteAddress )
+				, SOCK_AdrToString( chan->remoteAddress )
 				, sequence);
 			}
 			// we can still keep the part that we have so far,
@@ -410,7 +410,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 			chan->fragmentLength + fragmentLength > sizeof( chan->fragmentBuffer ) ) {
 			if ( showdrop->integer || showpackets->integer ) {
 				Com_Printf ("%s:illegal fragment length\n"
-				, NET_AdrToString (chan->remoteAddress ) );
+				, SOCK_AdrToString (chan->remoteAddress ) );
 			}
 			return qfalse;
 		}
@@ -427,7 +427,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 
 		if ( chan->fragmentLength > msg->maxsize ) {
 			Com_Printf( "%s:fragmentLength %i > msg->maxsize\n"
-				, NET_AdrToString (chan->remoteAddress ),
+				, SOCK_AdrToString (chan->remoteAddress ),
 				chan->fragmentLength );
 			return qfalse;
 		}
@@ -486,23 +486,6 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
 	Com_Printf ("NET_CompareBaseAdr: bad address type\n");
 	return qfalse;
 }
-
-const char	*NET_AdrToString (netadr_t a)
-{
-	static	char	s[64];
-
-	if (a.type == NA_LOOPBACK) {
-		QStr::Sprintf (s, sizeof(s), "loopback");
-	} else if (a.type == NA_BOT) {
-		QStr::Sprintf (s, sizeof(s), "bot");
-	} else {
-		QStr::Sprintf (s, sizeof(s), "%i.%i.%i.%i:%hu",
-			a.ip[0], a.ip[1], a.ip[2], a.ip[3], BigShort(a.port));
-	}
-
-	return s;
-}
-
 
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 {
@@ -715,7 +698,7 @@ qboolean Sys_GetPacket(netadr_t *net_from, QMsg *net_message)
 
 	if (ret == net_message->maxsize)
 	{
-		Com_Printf("Oversize packet from %s\n", NET_AdrToString(*net_from));
+		Com_Printf("Oversize packet from %s\n", SOCK_AdrToString(*net_from));
 		return false;
 	}
 

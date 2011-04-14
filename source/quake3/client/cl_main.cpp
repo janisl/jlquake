@@ -822,10 +822,7 @@ void CL_RequestMotd( void ) {
 		Com_Printf( "Couldn't resolve address\n" );
 		return;
 	}
-	Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", UPDATE_SERVER_NAME,
-		cls.updateServer.ip[0], cls.updateServer.ip[1],
-		cls.updateServer.ip[2], cls.updateServer.ip[3],
-		BigShort( cls.updateServer.port ) );
+	Com_Printf( "%s resolved to %s\n", UPDATE_SERVER_NAME, SOCK_AdrToString(cls.updateServer));
 	
 	info[0] = 0;
   // NOTE TTimo xoring against Com_Milliseconds, otherwise we may not have a true randomization
@@ -893,10 +890,7 @@ void CL_RequestAuthorization( void ) {
 			return;
 		}
 
-		Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", AUTHORIZE_SERVER_NAME,
-			cls.authorizeServer.ip[0], cls.authorizeServer.ip[1],
-			cls.authorizeServer.ip[2], cls.authorizeServer.ip[3],
-			BigShort( cls.authorizeServer.port ) );
+		Com_Printf( "%s resolved to %s\n", AUTHORIZE_SERVER_NAME, SOCK_AdrToString(cls.authorizeServer));
 	}
 	if ( cls.authorizeServer.type == NA_BAD ) {
 		return;
@@ -1065,10 +1059,7 @@ void CL_Connect_f( void ) {
 		cls.state = CA_DISCONNECTED;
 		return;
 	}
-	Com_Printf( "%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
-		clc.serverAddress.ip[0], clc.serverAddress.ip[1],
-		clc.serverAddress.ip[2], clc.serverAddress.ip[3],
-		BigShort( clc.serverAddress.port ) );
+	Com_Printf( "%s resolved to %s\n", cls.servername, SOCK_AdrToString(clc.serverAddress));
 
 	// if we aren't playing on a lan, we need to authenticate
 	// with the cd key
@@ -1774,7 +1765,7 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 
 	c = Cmd_Argv(0);
 
-	Com_DPrintf ("CL packet %s: %s\n", NET_AdrToString(from), c);
+	Com_DPrintf ("CL packet %s: %s\n", SOCK_AdrToString(from), c);
 
 	// challenge from the server we are connecting to
 	if ( !QStr::ICmp(c, "challengeResponse") ) {
@@ -1807,8 +1798,8 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 		}
 		if ( !NET_CompareBaseAdr( from, clc.serverAddress ) ) {
 			Com_Printf( "connectResponse from a different address.  Ignored.\n" );
-			Com_Printf( "%s should have been %s\n", NET_AdrToString( from ), 
-				NET_AdrToString( clc.serverAddress ) );
+			Com_Printf( "%s should have been %s\n", SOCK_AdrToString( from ), 
+				SOCK_AdrToString( clc.serverAddress ) );
 			return;
 		}
 		Netchan_Setup (NS_CLIENT, &clc.netchan, from, Cvar_VariableValue( "net_qport" ) );
@@ -1894,7 +1885,7 @@ void CL_PacketEvent( netadr_t from, QMsg *msg ) {
 	}
 
 	if ( msg->cursize < 4 ) {
-		Com_Printf ("%s: Runt packet\n",NET_AdrToString( from ));
+		Com_Printf ("%s: Runt packet\n",SOCK_AdrToString( from ));
 		return;
 	}
 
@@ -1903,7 +1894,7 @@ void CL_PacketEvent( netadr_t from, QMsg *msg ) {
 	//
 	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) ) {
 		Com_DPrintf ("%s:sequenced packet without connection\n"
-			,NET_AdrToString( from ) );
+			,SOCK_AdrToString( from ) );
 		// FIXME: send a client disconnect?
 		return;
 	}
@@ -2512,7 +2503,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 		{
 			// calc ping time
 			cl_pinglist[i].time = cls.realtime - cl_pinglist[i].start + 1;
-			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[i].time, NET_AdrToString( from ) );
+			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[i].time, SOCK_AdrToString( from ) );
 
 			// save of info
 			QStr::NCpyZ( cl_pinglist[i].info, infoString, sizeof( cl_pinglist[i].info ) );
@@ -2581,7 +2572,7 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 		if (info[QStr::Length(info)-1] != '\n') {
 			strncat(info, "\n", sizeof(info));
 		}
-		Com_Printf( "%s: %s", NET_AdrToString( from ), info );
+		Com_Printf( "%s: %s", SOCK_AdrToString( from ), info );
 	}
 }
 
@@ -2893,7 +2884,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 		return;
 	}
 
-	str = NET_AdrToString( cl_pinglist[n].adr );
+	str = SOCK_AdrToString( cl_pinglist[n].adr );
 	QStr::NCpyZ( buf, str, buflen );
 
 	time = cl_pinglist[n].time;

@@ -33,7 +33,6 @@ int  UDP_CloseSocket (int socket);
 int  UDP_Read (int socket, byte *buf, int len, netadr_t* addr);
 int  UDP_Write (int socket, byte *buf, int len, netadr_t* addr);
 int  UDP_Broadcast (int socket, byte *buf, int len);
-char *UDP_AddrToString (netadr_t* addr);
 int  UDP_GetSocketAddr (int socket, netadr_t* addr);
 int  UDP_GetNameFromAddr (netadr_t* addr, char *name);
 int  UDP_GetAddrFromName (const char *name, netadr_t* addr);
@@ -101,8 +100,8 @@ void NET_Ban_f (void)
 		case 1:
 			if (banAddr.type == NA_IP)
 			{
-				QStr::Cpy(addrStr, UDP_AddrToString(&banAddr));
-				QStr::Cpy(maskStr, UDP_AddrToString(&banMask));
+				QStr::Cpy(addrStr, SOCK_AdrToString(banAddr));
+				QStr::Cpy(maskStr, SOCK_AdrToString(banMask));
 				print("Banning %s [%s]\n", addrStr, maskStr);
 			}
 			else
@@ -317,8 +316,8 @@ int	Datagram_GetMessage (qsocket_t *sock)
 		{
 #ifdef DEBUG
 			Con_DPrintf("Forged packet received\n");
-			Con_DPrintf("Expected: %s\n", UDP_AddrToString(&sock->addr));
-			Con_DPrintf("Received: %s\n", UDP_AddrToString(&readaddr));
+			Con_DPrintf("Expected: %s\n", SOCK_AdrToString(sock->addr));
+			Con_DPrintf("Received: %s\n", SOCK_AdrToString(readaddr));
 #endif
 			continue;
 		}
@@ -812,7 +811,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREP_SERVER_INFO);
 		UDP_GetSocketAddr(acceptsock, &newaddr);
-		net_message.WriteString2(UDP_AddrToString(&newaddr));
+		net_message.WriteString2(SOCK_AdrToString(newaddr));
 		net_message.WriteString2(hostname->string);
 		net_message.WriteString2(sv.name);
 		net_message.WriteByte(net_activeconnections);
@@ -1001,7 +1000,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	// everything is allocated, just fill in the details	
 	sock->socket = newsock;
 	sock->addr = clientaddr;
-	QStr::Cpy(sock->address, UDP_AddrToString(&clientaddr));
+	QStr::Cpy(sock->address, SOCK_AdrToString(clientaddr));
 
 	// send him back the info about the server connection he has been allocated
 	net_message.Clear();
@@ -1107,7 +1106,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		}
 		hostcache[n].addr = readaddr;
 		hostcache[n].driver = net_driverlevel;
-		QStr::Cpy(hostcache[n].cname, UDP_AddrToString(&readaddr));
+		QStr::Cpy(hostcache[n].cname, SOCK_AdrToString(readaddr));
 
 		// check for a name conflict
 		for (i = 0; i < hostCacheCount; i++)
@@ -1188,8 +1187,8 @@ static qsocket_t *_Datagram_Connect (char *host)
 				{
 #ifdef DEBUG
 					Con_Printf("wrong reply address\n");
-					Con_Printf("Expected: %s\n", UDP_AddrToString(&sendaddr));
-					Con_Printf("Received: %s\n", UDP_AddrToString(&readaddr));
+					Con_Printf("Expected: %s\n", SOCK_AdrToString(sendaddr));
+					Con_Printf("Received: %s\n", SOCK_AdrToString(readaddr));
 					SCR_UpdateScreen ();
 #endif
 					ret = 0;
@@ -1434,16 +1433,6 @@ int UDP_Broadcast (int socket, byte *buf, int len)
 
 //=============================================================================
 
-char* UDP_AddrToString(netadr_t* addr)
-{
-	static char buffer[22];
-
-	sprintf(buffer, "%d.%d.%d.%d:%d", addr->ip[0], addr->ip[1], addr->ip[2], addr->ip[3], BigShort(addr->port));
-	return buffer;
-}
-
-//=============================================================================
-
 int UDP_GetAddrFromName(const char *name, netadr_t* addr)
 {
 	if (!SOCK_StringToAdr(name, addr, 0))
@@ -1511,7 +1500,7 @@ int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 		return 0;
 	}
 
-	QStr::Cpy(name, UDP_AddrToString(addr));
+	QStr::Cpy(name, SOCK_AdrToString(*addr));
 	return 0;
 }
 

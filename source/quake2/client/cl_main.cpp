@@ -874,7 +874,7 @@ void CL_ConnectionlessPacket (void)
 
 	c = Cmd_Argv(0);
 
-	Com_Printf ("%s: %s\n", NET_AdrToString (net_from), c);
+	Com_Printf ("%s: %s\n", SOCK_AdrToString (net_from), c);
 
 	// server connection
 	if (!QStr::Cmp(c, "client_connect"))
@@ -986,7 +986,7 @@ void CL_ReadPackets (void)
 
 		if (net_message.cursize < 8)
 		{
-			Com_Printf ("%s: Runt packet\n",NET_AdrToString(net_from));
+			Com_Printf ("%s: Runt packet\n",SOCK_AdrToString(net_from));
 			continue;
 		}
 
@@ -996,7 +996,7 @@ void CL_ReadPackets (void)
 		if (!NET_CompareAdr (net_from, cls.netchan.remote_address))
 		{
 			Com_DPrintf ("%s:sequenced packet without connection\n"
-				,NET_AdrToString(net_from));
+				,SOCK_AdrToString(net_from));
 			continue;
 		}
 		if (!Netchan_Process(&cls.netchan, &net_message))
