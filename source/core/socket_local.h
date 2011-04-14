@@ -22,4 +22,8 @@
 
 bool SOCK_GetAddressByName(const char* String, netadr_t* Address);
 
+#define MAX_IPS		16
+extern int			numIP;
+extern byte			localIP[MAX_IPS][4];
+
 #endif

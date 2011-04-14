@@ -153,7 +153,7 @@
   I removed number of prog strings limit as it was giving problems when goint to the seconf map in Quake. I should add cleanup as well like DarkPlaces does it.
   I started work on common event queue.
 03.04.2011
-  I decided to stop working on rendere for now anc concentrate on merging input and most of the remaining system specific code.
+  I decided to stop working on renderer for now and concentrate on merging input and most of the remaining system specific code.
 05.04.2011
   I changed all games to do adding mouse move to user command in platform independent part.
 06.04.2011
@@ -171,3 +171,5 @@
   I finished merging platform dependent socket methods.
 14.04.2011
   I changed retrieval of local IPs to use different APIs. Now it properly finds all IPs. Unix version should work on MacOSX as well so I removed MacOSX specific code.
+  I also merged network address utility methods.
+  I think that's enough network code merging for now, as primary goal - system specific code is merged.
