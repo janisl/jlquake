@@ -51,6 +51,8 @@ bool SOCK_IsLocalAddress(const netadr_t& Address);
 bool SOCK_IsLocalIP(const netadr_t& Address);
 bool SOCK_IsLANAddress(const netadr_t& Address);
 void SOCK_ShowIP();
+int SOCK_GetPort(netadr_t* Address);
+void SOCK_SetPort(netadr_t* Address, int Port);
 
 bool SOCK_Init();
 void SOCK_Shutdown();

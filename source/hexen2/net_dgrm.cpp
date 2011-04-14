@@ -18,8 +18,6 @@ int  UDP_GetSocketAddr (int socket, netadr_t* addr);
 int  UDP_GetNameFromAddr (netadr_t* addr, char *name);
 int  UDP_GetAddrFromName (const char *name, netadr_t* addr);
 int  UDP_AddrCompare (netadr_t* addr1, netadr_t* addr2);
-int  UDP_GetSocketPort (netadr_t* addr);
-int  UDP_SetSocketPort (netadr_t* addr, int port);
 
 /* statistic counters */
 int	packetsSent = 0;
@@ -939,7 +937,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 				net_message.WriteLong(0);
 				net_message.WriteByte(CCREP_ACCEPT);
 				UDP_GetSocketAddr(s->socket, &newaddr);
-				net_message.WriteLong(UDP_GetSocketPort(&newaddr));
+				net_message.WriteLong(SOCK_GetPort(&newaddr));
 				*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
 				net_message.Clear();
@@ -987,7 +985,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	net_message.WriteLong(0);
 	net_message.WriteByte(CCREP_ACCEPT);
 	UDP_GetSocketAddr(newsock, &newaddr);
-	net_message.WriteLong(UDP_GetSocketPort(&newaddr));
+	net_message.WriteLong(SOCK_GetPort(&newaddr));
 //	net_message.WriteString2(dfunc.AddrToString(&newaddr));
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 	UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
@@ -1237,7 +1235,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 	if (ret == CCREP_ACCEPT)
 	{
 		sock->addr = sendaddr;
-		UDP_SetSocketPort(&sock->addr, net_message.ReadLong());
+		SOCK_SetPort(&sock->addr, net_message.ReadLong());
 	}
 	else
 	{
@@ -1426,20 +1424,6 @@ int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
 		return 1;
 
 	return -1;
-}
-
-//=============================================================================
-
-int UDP_GetSocketPort(netadr_t* addr)
-{
-	return BigShort(addr->port);
-}
-
-
-int UDP_SetSocketPort(netadr_t* addr, int port)
-{
-	addr->port = BigShort(port);
-	return 0;
 }
 
 //=============================================================================

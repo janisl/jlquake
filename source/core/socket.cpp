@@ -393,3 +393,25 @@ void SOCK_ShowIP()
 		GLog.Write("IP: %i.%i.%i.%i\n", localIP[i][0], localIP[i][1], localIP[i][2], localIP[i][3]);
 	}
 }
+
+//==========================================================================
+//
+//	SOCK_GetPort
+//
+//==========================================================================
+
+int SOCK_GetPort(netadr_t* addr)
+{
+	return BigShort(addr->port);
+}
+
+//==========================================================================
+//
+//	SOCK_SetPort
+//
+//==========================================================================
+
+void SOCK_SetPort(netadr_t* addr, int port)
+{
+	addr->port = BigShort(port);
+}
