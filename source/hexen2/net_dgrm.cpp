@@ -79,8 +79,8 @@ void NET_Ban_f (void)
 		case 1:
 			if (banAddr.type == NA_IP)
 			{
-				QStr::Cpy(addrStr, SOCK_AdrToString(banAddr));
-				QStr::Cpy(maskStr, SOCK_AdrToString(banMask));
+				QStr::Cpy(addrStr, SOCK_BaseAdrToString(banAddr));
+				QStr::Cpy(maskStr, SOCK_BaseAdrToString(banMask));
 				print("Banning %s [%s]\n", addrStr, maskStr);
 			}
 			else

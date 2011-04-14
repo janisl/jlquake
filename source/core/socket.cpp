@@ -173,6 +173,33 @@ const char* SOCK_AdrToString(const netadr_t& a)
 
 	return s;
 }
+
+//==========================================================================
+//
+//	SOCK_BaseAdrToString
+//
+//==========================================================================
+
+const char* SOCK_BaseAdrToString(const netadr_t& a)
+{
+	static	char	s[64];
+	
+	if (a.type == NA_LOOPBACK)
+	{
+		QStr::Sprintf(s, sizeof(s), "loopback");
+	}
+	else if (a.type == NA_BOT)
+	{
+		QStr::Sprintf(s, sizeof(s), "bot");
+	}
+	else
+	{
+		QStr::Sprintf(s, sizeof(s), "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
+	}
+
+	return s;
+}
+
 //==========================================================================
 //
 //	SOCK_IsLocalAddress

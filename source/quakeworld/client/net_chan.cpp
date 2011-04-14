@@ -475,15 +475,6 @@ qboolean	NET_CompareAdr (netadr_t a, netadr_t b)
 	return false;
 }
 
-char	*NET_BaseAdrToString (netadr_t a)
-{
-	static	char	s[64];
-	
-	sprintf (s, "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
-
-	return s;
-}
-
 //=============================================================================
 
 static int UDP_OpenSocket (int port)

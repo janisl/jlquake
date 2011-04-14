@@ -380,7 +380,7 @@ void SV_Status_f (void)
 	int			i, j, l;
 	client_t	*cl;
 	float		cpu, avg, pak;
-	char		*s;
+	const char*	s;
 
 
 	cpu = (svs.stats.latched_active+svs.stats.latched_idle);
@@ -414,7 +414,7 @@ void SV_Status_f (void)
 			else			
 				Con_Printf("\n");
 
-			s = NET_BaseAdrToString ( cl->netchan.remote_address);
+			s = SOCK_BaseAdrToString( cl->netchan.remote_address);
 			Con_Printf ("  %-16.16s", s);
 			if (cl->state == cs_connected)
 			{
@@ -440,7 +440,7 @@ void SV_Status_f (void)
 				continue;
 			Con_Printf ("%5i %6i ", (int)cl->edict->v.frags,  cl->userid);
 
-			s = NET_BaseAdrToString ( cl->netchan.remote_address);
+			s = SOCK_BaseAdrToString( cl->netchan.remote_address);
 			Con_Printf ("%s", s);
 			l = 16 - QStr::Length(s);
 			for (j=0 ; j<l ; j++)

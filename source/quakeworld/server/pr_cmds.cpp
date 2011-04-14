@@ -1563,7 +1563,7 @@ void PF_infokey (void)
 	} else if (e1 <= MAX_CLIENTS) {
 		if (!QStr::Cmp(key, "ip"))
 		{
-			QStr::Cpy(ov, NET_BaseAdrToString (svs.clients[e1-1].netchan.remote_address));
+			QStr::Cpy(ov, SOCK_BaseAdrToString(svs.clients[e1-1].netchan.remote_address));
 			value = ov;
 		}
 		else if (!QStr::Cmp(key, "ping"))

@@ -127,8 +127,8 @@ void SV_GetChallenge( netadr_t from ) {
 		// the 0 is for backwards compatibility with obsolete sv_allowanonymous flags
 		// getIpAuthorize <challenge> <IP> <game> 0 <auth-flag>
 		NET_OutOfBandPrint( NS_SERVER, svs.authorizeAddress,
-			"getIpAuthorize %i %i.%i.%i.%i %s 0 %s",  svs.challenges[i].challenge,
-			from.ip[0], from.ip[1], from.ip[2], from.ip[3], game, sv_strictAuth->string );
+			"getIpAuthorize %i %s %s 0 %s",  svs.challenges[i].challenge,
+			SOCK_BaseAdrToString(from), game, sv_strictAuth->string );
 	}
 }
 
