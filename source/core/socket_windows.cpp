@@ -21,6 +21,7 @@
 
 #include "core.h"
 #include <windows.h>
+#include <iphlpapi.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -239,39 +240,23 @@ void SOCK_Shutdown()
 
 void SOCK_GetLocalAddress()
 {
-	char hostname_buf[256];
-	if (gethostname(hostname_buf, 256) == SOCKET_ERROR)
-	{
-		return;
-	}
-
-	hostent* hostInfo = gethostbyname(hostname_buf);
-	if (!hostInfo)
-	{
-		return;
-	}
-
-	GLog.Write("Hostname: %s\n", hostInfo->h_name);
-	char* p;
-	int n = 0;
-	while ((p = hostInfo->h_aliases[n++]) != NULL)
-	{
-		GLog.Write("Alias: %s\n", p);
-	}
-
-	if (hostInfo->h_addrtype != AF_INET)
-	{
-		return;
-	}
-
 	numIP = 0;
-	while ((p = hostInfo->h_addr_list[numIP]) != NULL && numIP < MAX_IPS)
+
+	byte Buffer[2048];
+	MIB_IPADDRTABLE* AddrTable = (MIB_IPADDRTABLE*)Buffer;
+	ULONG AddrTableSize = sizeof(Buffer);
+	if (GetIpAddrTable(AddrTable, &AddrTableSize, FALSE) != NO_ERROR)
 	{
-		int ip = ntohl(*(int*)p);
-		localIP[numIP][0] = p[0];
-		localIP[numIP][1] = p[1];
-		localIP[numIP][2] = p[2];
-		localIP[numIP][3] = p[3];
+		return;
+	}
+
+	for (int i = 0; i < AddrTable->dwNumEntries && numIP < MAX_IPS; i++)
+	{
+		int ip = ntohl(AddrTable->table[i].dwAddr);
+		localIP[numIP][0] = (ip >> 24) & 0xff;
+		localIP[numIP][1] = (ip >> 16) & 0xff;
+		localIP[numIP][2] = (ip >> 8) & 0xff;
+		localIP[numIP][3] = ip & 0xff;
 		GLog.Write("IP: %i.%i.%i.%i\n", (ip >> 24) & 0xff, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
 		numIP++;
 	}

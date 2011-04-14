@@ -67,7 +67,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				AdditionalDependencies="wsock32.lib iphlpapi.lib odbc32.lib odbccp32.lib winmm.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				SubSystem="1"
@@ -148,7 +148,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib odbc32.lib odbccp32.lib winmm.lib"
+				AdditionalDependencies="wsock32.lib iphlpapi.lib odbc32.lib odbccp32.lib winmm.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"

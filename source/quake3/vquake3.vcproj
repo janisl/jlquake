@@ -71,7 +71,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib wsock32.lib dxguid.lib opengl32.lib"
+				AdditionalDependencies="winmm.lib wsock32.lib iphlpapi.lib dxguid.lib opengl32.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -161,7 +161,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="winmm.lib wsock32.lib dxguid.lib opengl32.lib"
+				AdditionalDependencies="winmm.lib wsock32.lib iphlpapi.lib dxguid.lib opengl32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
