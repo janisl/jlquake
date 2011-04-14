@@ -957,7 +957,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 				// save space for the header, filled in later
 				net_message.WriteLong(0);
 				net_message.WriteByte(CCREP_ACCEPT);
-				UDP_GetSocketAddr(s->socket, &newaddr);
+				SOCK_GetAddr(s->socket, &newaddr);
 				net_message.WriteLong(SOCK_GetPort(&newaddr));
 				*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
 				UDP_Write(acceptsock, net_message._data, net_message.cursize, &clientaddr);
@@ -1005,7 +1005,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	// save space for the header, filled in later
 	net_message.WriteLong(0);
 	net_message.WriteByte(CCREP_ACCEPT);
-	UDP_GetSocketAddr(newsock, &newaddr);
+	SOCK_GetAddr(newsock, &newaddr);
 	net_message.WriteLong(SOCK_GetPort(&newaddr));
 //	net_message.WriteString2(dfunc.AddrToString(&newaddr));
 	*((int *)net_message._data) = BigLong(NETFLAG_CTL | (net_message.cursize & NETFLAG_LENGTH_MASK));
