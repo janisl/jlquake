@@ -42,6 +42,7 @@ struct netadr_t
 };
 
 bool SOCK_StringToAdr(const char* String, netadr_t* Address, int DefaultPort);
+const char* SOCK_GetHostByAddr(netadr_t* Address);
 const char* SOCK_AdrToString(const netadr_t& Address);
 const char* SOCK_BaseAdrToString(const netadr_t& Address);
 bool SOCK_CompareAdr(const netadr_t& AddressA, const netadr_t& AddressB);
@@ -49,7 +50,7 @@ bool SOCK_CompareBaseAdr(const netadr_t& AddressA, const netadr_t& AddressB);
 bool SOCK_IsLocalAddress(const netadr_t& Address);
 bool SOCK_IsLocalIP(const netadr_t& Address);
 bool SOCK_IsLANAddress(const netadr_t& Address);
-const char* SOCK_GetHostByAddr(netadr_t* Address);
+void SOCK_ShowIP();
 
 bool SOCK_Init();
 void SOCK_Shutdown();

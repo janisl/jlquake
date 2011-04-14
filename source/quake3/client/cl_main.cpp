@@ -3219,7 +3219,7 @@ CL_ShowIP_f
 ==================
 */
 void CL_ShowIP_f(void) {
-	Sys_ShowIP();
+	SOCK_ShowIP();
 }
 
 /*

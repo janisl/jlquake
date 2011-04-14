@@ -570,8 +570,6 @@ int		Sys_GetProcessorId( void );
 void	Sys_ShowConsole( int level, qboolean quitOnClose );
 void	Sys_SetErrorText( const char *text );
 
-void		Sys_ShowIP(void);
-
 qboolean	Sys_CheckCD( void );
 
 void	Sys_BeginProfiling( void );

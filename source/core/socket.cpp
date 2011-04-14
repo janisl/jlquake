@@ -379,3 +379,17 @@ bool SOCK_IsLANAddress(const netadr_t& adr)
 	}
 	return false;
 }
+
+//==========================================================================
+//
+//	SOCK_ShowIP
+//
+//==========================================================================
+
+void SOCK_ShowIP()
+{
+	for (int i = 0; i < numIP; i++)
+	{
+		GLog.Write("IP: %i.%i.%i.%i\n", localIP[i][0], localIP[i][1], localIP[i][2], localIP[i][3]);
+	}
+}

@@ -662,21 +662,6 @@ qboolean Sys_GetPacket(netadr_t *net_from, QMsg *net_message)
 //=============================================================================
 
 /*
-==================
-Sys_ShowIP
-==================
-*/
-void Sys_ShowIP(void) {
-	int i;
-
-	for (i = 0; i < numIP; i++) {
-		Com_Printf( "IP: %i.%i.%i.%i\n", localIP[i][0], localIP[i][1], localIP[i][2], localIP[i][3] );
-	}
-}
-
-//=============================================================================
-
-/*
 ====================
 NET_OpenIP
 ====================
