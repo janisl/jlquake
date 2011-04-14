@@ -488,7 +488,7 @@ void SVC_GetChallenge (void)
 	// see if we already have a challenge for this ip
 	for (i = 0 ; i < MAX_CHALLENGES ; i++)
 	{
-		if (NET_CompareBaseAdr (net_from, svs.challenges[i].adr))
+		if (SOCK_CompareBaseAdr(net_from, svs.challenges[i].adr))
 			break;
 		if (svs.challenges[i].time < oldestTime)
 		{
@@ -554,7 +554,7 @@ void SVC_DirectConnect (void)
 	// see if the challenge is valid
 	for (i=0 ; i<MAX_CHALLENGES ; i++)
 	{
-		if (NET_CompareBaseAdr (net_from, svs.challenges[i].adr))
+		if (SOCK_CompareBaseAdr(net_from, svs.challenges[i].adr))
 		{
 			if (challenge == svs.challenges[i].challenge)
 				break;		// good
@@ -623,7 +623,7 @@ void SVC_DirectConnect (void)
 	{
 		if (cl->state == cs_free)
 			continue;
-		if (NET_CompareBaseAdr (adr, cl->netchan.remote_address)
+		if (SOCK_CompareBaseAdr(adr, cl->netchan.remote_address)
 			&& ( cl->netchan.qport == qport 
 			|| adr.port == cl->netchan.remote_address.port ))
 		{
@@ -1116,7 +1116,7 @@ void SV_ReadPackets (void)
 		{
 			if (cl->state == cs_free)
 				continue;
-			if (!NET_CompareBaseAdr (net_from, cl->netchan.remote_address))
+			if (!SOCK_CompareBaseAdr(net_from, cl->netchan.remote_address))
 				continue;
 			if (cl->netchan.qport != qport)
 				continue;

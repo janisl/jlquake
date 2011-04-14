@@ -1422,13 +1422,10 @@ int UDP_AddrCompare(netadr_t* addr1, netadr_t* addr2)
 	if (SOCK_CompareAdr(*addr1, *addr2))
 		return 0;
 
-	if (addr1->type != addr2->type)
-		return -1;
+	if (SOCK_CompareBaseAdr(*addr1, *addr2))
+		return 1;
 
-	if (addr1->ip[0] != addr2->ip[0] || addr1->ip[1] != addr2->ip[1] || addr1->ip[2] != addr2->ip[2] || addr1->ip[3] != addr2->ip[3])
-		return -1;
-
-	return 1;
+	return -1;
 }
 
 //=============================================================================

@@ -148,7 +148,7 @@ void SV_AuthorizeIpPacket( netadr_t from ) {
 	char	*r;
 	char	ret[1024];
 
-	if ( !NET_CompareBaseAdr( from, svs.authorizeAddress ) ) {
+	if ( !SOCK_CompareBaseAdr( from, svs.authorizeAddress ) ) {
 		Com_Printf( "SV_AuthorizeIpPacket: not from authorize server\n" );
 		return;
 	}
@@ -257,7 +257,7 @@ void SV_DirectConnect( netadr_t from ) {
 		if ( cl->state == CS_FREE ) {
 			continue;
 		}
-		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress )
+		if ( SOCK_CompareBaseAdr( from, cl->netchan.remoteAddress )
 			&& ( cl->netchan.qport == qport 
 			|| from.port == cl->netchan.remoteAddress.port ) ) {
 			if (( svs.time - cl->lastConnectTime) 
@@ -321,7 +321,7 @@ void SV_DirectConnect( netadr_t from ) {
 		if ( cl->state == CS_FREE ) {
 			continue;
 		}
-		if ( NET_CompareBaseAdr( from, cl->netchan.remoteAddress )
+		if ( SOCK_CompareBaseAdr( from, cl->netchan.remoteAddress )
 			&& ( cl->netchan.qport == qport 
 			|| from.port == cl->netchan.remoteAddress.port ) ) {
 			Com_Printf ("%s:reconnect\n", SOCK_AdrToString (from));

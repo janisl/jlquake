@@ -303,7 +303,6 @@ void		NET_Config (qboolean multiplayer);
 qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message);
 void		NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to);
 
-qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b);
 void		NET_Sleep(int msec);
 
 //============================================================================

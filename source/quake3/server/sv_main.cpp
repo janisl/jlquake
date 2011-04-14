@@ -563,7 +563,7 @@ void SV_PacketEvent( netadr_t from, QMsg *msg ) {
 		if (cl->state == CS_FREE) {
 			continue;
 		}
-		if ( !NET_CompareBaseAdr( from, cl->netchan.remoteAddress ) ) {
+		if ( !SOCK_CompareBaseAdr( from, cl->netchan.remoteAddress ) ) {
 			continue;
 		}
 		// it is possible to have multiple clients from a single IP

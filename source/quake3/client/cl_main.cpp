@@ -1796,7 +1796,7 @@ void CL_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 			Com_Printf ("connectResponse packet while not connecting.  Ignored.\n");
 			return;
 		}
-		if ( !NET_CompareBaseAdr( from, clc.serverAddress ) ) {
+		if ( !SOCK_CompareBaseAdr( from, clc.serverAddress ) ) {
 			Com_Printf( "connectResponse from a different address.  Ignored.\n" );
 			Com_Printf( "%s should have been %s\n", SOCK_AdrToString( from ), 
 				SOCK_AdrToString( clc.serverAddress ) );

@@ -641,29 +641,6 @@ void NET_Shutdown()
 
 //=============================================================================
 
-/*
-===================
-NET_CompareBaseAdr
-
-Compares without the port
-===================
-*/
-qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
-{
-	if (a.type != b.type)
-		return false;
-
-	if (a.type == NA_LOOPBACK)
-		return true;
-
-	if (a.type == NA_IP)
-	{
-		if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3])
-			return true;
-	}
-	return false;
-}
-
 // sleeps msec or until net socket is ready
 void NET_Sleep(int msec)
 {

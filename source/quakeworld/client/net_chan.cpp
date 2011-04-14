@@ -461,15 +461,6 @@ byte		net_message_buffer[MAX_UDP_PACKET];
 
 //=============================================================================
 
-qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
-{
-	if (a.ip[0] == b.ip[0] && a.ip[1] == b.ip[1] && a.ip[2] == b.ip[2] && a.ip[3] == b.ip[3])
-		return true;
-	return false;
-}
-
-//=============================================================================
-
 static int UDP_OpenSocket (int port)
 {
 	int newsocket;
