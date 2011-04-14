@@ -41,7 +41,6 @@ struct netadr_t
 	quint16			port;
 };
 
-bool SOCK_GetAddressByName(const char* String, netadr_t* Address);
 bool SOCK_StringToAdr(const char* String, netadr_t* Address, int DefaultPort);
 bool SOCK_IsLocalAddress(const netadr_t& Address);
 bool SOCK_IsLocalIP(const netadr_t& Address);

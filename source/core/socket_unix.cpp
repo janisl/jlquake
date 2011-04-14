@@ -20,6 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
+#include "socket_local.h"
 #include <errno.h>
 #include <ifaddrs.h>
 #include <netdb.h>
