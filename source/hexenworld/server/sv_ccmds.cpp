@@ -431,7 +431,8 @@ void SV_Status_f (void)
 	avg = 1000*svs.stats.latched_active / STATFRAMES;
 	pak = (float)svs.stats.latched_packets/ STATFRAMES;
 
-	Con_Printf ("net address      : %s\n",SOCK_AdrToString(net_local_adr));
+	SOCK_ShowIP();
+	Con_Printf ("port             : %d\n",BigShort(net_local_adr.port));
 	Con_Printf ("cpu utilization  : %3i%%\n",(int)cpu);
 	Con_Printf ("avg response time: %i ms\n",(int)avg);
 	Con_Printf ("packets/frame    : %5.2f\n", pak);

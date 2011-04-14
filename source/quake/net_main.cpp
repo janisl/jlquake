@@ -793,9 +793,6 @@ void NET_Init (void)
 		if (listening)
 			net_drivers[net_driverlevel].Listen (true);
 		}
-
-	if (*my_tcpip_address)
-		Con_DPrintf("TCP/IP address %s\n", my_tcpip_address);
 }
 
 /*
