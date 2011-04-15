@@ -117,8 +117,8 @@ static QCvar*		s_mixahead;
 static QCvar*		s_mixPreStep;
 static QCvar*		s_musicVolume;
 static QCvar*		s_doppler;
-static QCvar*		ambient_level;
-static QCvar*		ambient_fade;
+static QCvar*		s_ambient_level;
+static QCvar*		s_ambient_fade;
 static QCvar*		snd_noextraupdate;
 
 static int			listener_number;
@@ -1988,7 +1988,7 @@ static void S_UpdateAmbientSounds()
 
 	// calc ambient sound levels
 	const byte* ambient_sound_level = CM_LeafAmbientSoundLevel(CM_PointLeafnum(listener_origin));
-	if (!ambient_sound_level || !ambient_level->value)
+	if (!ambient_sound_level || !s_ambient_level->value)
 	{
 		for (int ambient_channel = 0 ; ambient_channel< BSP29_NUM_AMBIENTS ; ambient_channel++)
 		{
@@ -2002,7 +2002,7 @@ static void S_UpdateAmbientSounds()
 		channel_t* chan = &loop_channels[ambient_channel];	
 		chan->sfx = ambient_sfx[ambient_channel];
 	
-		vol = ambient_level->value * ambient_sound_level[ambient_channel];
+		vol = s_ambient_level->value * ambient_sound_level[ambient_channel];
 		if (vol < 8)
 		{
 			vol = 0;
@@ -2011,7 +2011,7 @@ static void S_UpdateAmbientSounds()
 	// don't adjust volume too fast
 		if (chan->master_vol < vol)
 		{
-			chan->master_vol += S_GetClientFrameTime() * ambient_fade->value;
+			chan->master_vol += S_GetClientFrameTime() * s_ambient_fade->value;
 			if (chan->master_vol > vol)
 			{
 				chan->master_vol = vol;
@@ -2019,7 +2019,7 @@ static void S_UpdateAmbientSounds()
 		}
 		else if (chan->master_vol > vol)
 		{
-			chan->master_vol -= S_GetClientFrameTime() * ambient_fade->value;
+			chan->master_vol -= S_GetClientFrameTime() * s_ambient_fade->value;
 			if (chan->master_vol < vol)
 			{
 				chan->master_vol = vol;
@@ -2600,8 +2600,8 @@ void S_Init()
 		{
 			bgmtype = Cvar_Get("bgmtype", "cd", CVAR_ARCHIVE);   // cd or midi
 		}
-		ambient_level = Cvar_Get("ambient_level", "0.3", 0);
-		ambient_fade = Cvar_Get("ambient_fade", "100", 0);
+		s_ambient_level = Cvar_Get("s_ambient_level", "0.3", 0);
+		s_ambient_fade = Cvar_Get("s_ambient_fade", "100", 0);
 		snd_noextraupdate = Cvar_Get("snd_noextraupdate", "0", 0);
 	}
 	s_volume = Cvar_Get("s_volume", "0.8", CVAR_ARCHIVE);
