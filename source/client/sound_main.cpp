@@ -2627,23 +2627,11 @@ void S_Init()
 	}
 
 	Cmd_AddCommand("play", S_Play_f);
-	if (GGameType & GAME_QuakeHexen)
-	{
-		Cmd_AddCommand("playvol", S_PlayVol_f);
-	}
+	Cmd_AddCommand("playvol", S_PlayVol_f);
 	Cmd_AddCommand("music", S_Music_f);
-	if (!(GGameType & GAME_Quake3))
-	{
-		Cmd_AddCommand("soundlist", S_SoundList_f);
-		Cmd_AddCommand("soundinfo", S_SoundInfo_f);
-		Cmd_AddCommand("stopsound", S_StopAllSounds);
-	}
-	else
-	{
-		Cmd_AddCommand("s_list", S_SoundList_f);
-		Cmd_AddCommand("s_info", S_SoundInfo_f);
-		Cmd_AddCommand("s_stop", S_StopAllSounds);
-	}
+	Cmd_AddCommand("s_list", S_SoundList_f);
+	Cmd_AddCommand("s_info", S_SoundInfo_f);
+	Cmd_AddCommand("s_stop", S_StopAllSounds);
 
 	bool r = SNDDMA_Init();
 	GLog.Write("------------------------------------\n");
