@@ -415,3 +415,29 @@ void SOCK_SetPort(netadr_t* addr, int port)
 {
 	addr->port = BigShort(port);
 }
+
+//==========================================================================
+//
+//	SOCK_CheckAddr
+//
+//==========================================================================
+
+void SOCK_CheckAddr(netadr_t* addr)
+{
+	if ((addr->ip[0] == 0 && addr->ip[1] == 0 && addr->ip[2] == 0 && addr->ip[3] == 0) ||
+		(addr->ip[0] == 127 && addr->ip[1] == 0 && addr->ip[2] == 0 && addr->ip[3] == 1))
+	{
+		for (int i = 0; i < numIP; i++)
+		{
+			if (localIP[i][0] == 127)
+			{
+				continue;
+			}
+			addr->ip[0] = localIP[i][0];
+			addr->ip[1] = localIP[i][1];
+			addr->ip[2] = localIP[i][2];
+			addr->ip[3] = localIP[i][3];
+			break;
+		}
+	}
+}

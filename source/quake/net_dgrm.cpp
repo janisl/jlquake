@@ -808,6 +808,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		net_message.WriteLong(0);
 		net_message.WriteByte(CCREP_SERVER_INFO);
 		SOCK_GetAddr(acceptsock, &newaddr);
+		SOCK_CheckAddr(&newaddr);
 		net_message.WriteString2(SOCK_AdrToString(newaddr));
 		net_message.WriteString2(hostname->string);
 		net_message.WriteString2(sv.name);

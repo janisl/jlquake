@@ -53,6 +53,7 @@ bool SOCK_IsLANAddress(const netadr_t& Address);
 void SOCK_ShowIP();
 int SOCK_GetPort(netadr_t* Address);
 void SOCK_SetPort(netadr_t* Address, int Port);
+void SOCK_CheckAddr(netadr_t* addr);
 
 bool SOCK_Init();
 void SOCK_Shutdown();
