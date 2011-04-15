@@ -1329,7 +1329,14 @@ void Host_Init (quakeparms_t *parms)
 //	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 	Con_Printf ("%4.1f megs RAM used.\n",parms->memsize/ (1024*1024.0));
 	
-	R_InitTextures ();
+	cls.state = ca_disconnected;
+	CL_Init();
+
+	Cbuf_InsertText("exec hexen.rc\n");
+	Cbuf_AddText("cl_warncmd 1\n");
+	Cbuf_Execute();
+
+	R_InitTextures();
  
 	host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
 	if (!host_basepal)
@@ -1337,35 +1344,16 @@ void Host_Init (quakeparms_t *parms)
 	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
 	if (!host_colormap)
 		Sys_Error ("Couldn't load gfx/colormap.lmp");
-	IN_Init ();
-#ifdef __linux__
-	CDAudio_Init ();
-	VID_Init (host_basepal);
-	Draw_Init ();
-	SCR_Init ();
-	R_Init ();
 
-//	S_Init ();		// S_Init is now done as part of VID. Sigh.
-	
-	cls.state = ca_disconnected;
-	Sbar_Init ();
-	CL_Init ();
-#else
-	VID_Init (host_basepal);
-	Draw_Init ();
-	SCR_Init ();
-	R_Init ();
+	IN_Init();
+	VID_Init(host_basepal);
+	Draw_Init();
+	SCR_Init();
+	R_Init();
 	S_Init();
-
-	cls.state = ca_disconnected;
-	CDAudio_Init ();
-	MIDI_Init ();
-	Sbar_Init ();
-	CL_Init ();
-#endif
-
-	Cbuf_InsertText ("exec hexen.rc\n");
-	Cbuf_AddText ("cl_warncmd 1\n");
+	CDAudio_Init();
+	MIDI_Init();
+	Sbar_Init();
 
 	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark ();

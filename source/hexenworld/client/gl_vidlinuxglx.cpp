@@ -292,8 +292,6 @@ void VID_Init(unsigned char *palette)
 	int i;
 	int width = 640, height = 480;
 
-	S_Init();
-
 	vid_mode = Cvar_Get("vid_mode", "0", 0);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 

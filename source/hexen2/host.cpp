@@ -939,16 +939,25 @@ void Host_Init (quakeparms_t *parms)
 	M_Init ();	
 	PR_Init ();
 	Mod_Init ();
-	NET_Init ();
 	SV_Init ();
 
 	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 	Con_Printf ("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
 	
-	R_InitTextures ();		// needed even for dedicated servers
- 
 	if (cls.state != ca_dedicated)
 	{
+		CL_Init();
+	}
+
+	Cbuf_InsertText("exec hexen.rc\n");
+	Cbuf_Execute();
+
+	NET_Init();
+
+	if (cls.state != ca_dedicated)
+	{
+		R_InitTextures();
+ 
 		host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
 		if (!host_basepal)
 			Sys_Error ("Couldn't load gfx/palette.lmp");
@@ -957,19 +966,15 @@ void Host_Init (quakeparms_t *parms)
 			Sys_Error ("Couldn't load gfx/colormap.lmp");
 
 		IN_Init();
-		VID_Init (host_basepal);
-
-		Draw_Init ();
-		SCR_Init ();
-		R_Init ();
-		S_Init ();
+		VID_Init(host_basepal);
+		Draw_Init();
+		SCR_Init();
+		R_Init();
+		S_Init();
 		CDAudio_Init();
 		MIDI_Init();
 		SB_Init();
-		CL_Init();
 	}
-
-	Cbuf_InsertText ("exec hexen.rc\n");
 
 	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
 	host_hunklevel = Hunk_LowMark ();
