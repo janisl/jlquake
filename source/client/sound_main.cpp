@@ -120,7 +120,6 @@ static QCvar*		s_doppler;
 static QCvar*		ambient_level;
 static QCvar*		ambient_fade;
 static QCvar*		snd_noextraupdate;
-static QCvar*		nosound;
 
 static int			listener_number;
 static vec3_t		listener_origin;
@@ -1519,9 +1518,6 @@ void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHand
 		int		skip;
 		qboolean skip_dist_check = false;
 
-		if (nosound->value)
-			return;
-
 		vol = fvol * 255;
 
 		// pick a channel to play on
@@ -1667,7 +1663,8 @@ void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHand
 			S_LoadSound(sfx);
 		}
 
-		if ( s_show->integer == 1 ) {
+		if (s_show->integer == 1)
+		{
 			GLog.Write("%i : %s\n", s_paintedtime, sfx->Name );
 		}
 
@@ -1677,60 +1674,73 @@ void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHand
 		// pick a channel to play on
 
 		allowed = 4;
-		if (entnum == listener_number) {
+		if (entnum == listener_number)
+		{
 			allowed = 8;
 		}
 
 		ch = s_channels;
 		inplay = 0;
-		for ( i = 0; i < MAX_CHANNELS ; i++, ch++ ) {		
-			if (ch[i].entnum == entnum && ch[i].sfx == sfx) {
-				if (time - ch[i].allocTime < 50) {
-	//				if (Cvar_VariableValue( "cg_showmiss" )) {
-	//					Com_Printf("double sound start\n");
-	//				}
+		for (i = 0; i < MAX_CHANNELS ; i++, ch++ )
+		{
+			if (ch[i].entnum == entnum && ch[i].sfx == sfx)
+			{
+				if (time - ch[i].allocTime < 50)
+				{
 					return;
 				}
 				inplay++;
 			}
 		}
 
-		if (inplay>allowed) {
+		if (inplay > allowed)
+		{
 			return;
 		}
 
 		sfx->LastTimeUsed = time;
 
 		ch = S_ChannelMalloc();	// entityNum, entchannel);
-		if (!ch) {
+		if (!ch)
+		{
 			ch = s_channels;
 
 			oldest = sfx->LastTimeUsed;
 			chosen = -1;
-			for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-				if (ch->entnum != listener_number && ch->entnum == entnum && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER) {
+			for (i = 0 ; i < MAX_CHANNELS; i++, ch++)
+			{
+				if (ch->entnum != listener_number && ch->entnum == entnum && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER)
+				{
 					oldest = ch->allocTime;
 					chosen = i;
 				}
 			}
-			if (chosen == -1) {
+			if (chosen == -1)
+			{
 				ch = s_channels;
-				for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-					if (ch->entnum != listener_number && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER) {
+				for (i = 0 ; i < MAX_CHANNELS; i++, ch++)
+				{
+					if (ch->entnum != listener_number && ch->allocTime<oldest && ch->entchannel != CHAN_ANNOUNCER)
+					{
 						oldest = ch->allocTime;
 						chosen = i;
 					}
 				}
-				if (chosen == -1) {
-					if (ch->entnum == listener_number) {
-						for ( i = 0 ; i < MAX_CHANNELS ; i++, ch++ ) {
-							if (ch->allocTime<oldest) {
+				if (chosen == -1)
+				{
+					if (ch->entnum == listener_number)
+					{
+						for (i = 0 ; i < MAX_CHANNELS ; i++, ch++)
+						{
+							if (ch->allocTime < oldest)
+							{
 								oldest = ch->allocTime;
 								chosen = i;
 							}
 						}
 					}
-					if (chosen == -1) {
+					if (chosen == -1)
+					{
 						GLog.Write("dropping sound\n");
 						return;
 					}
@@ -1740,10 +1750,13 @@ void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHand
 			ch->allocTime = sfx->LastTimeUsed;
 		}
 
-		if (origin) {
+		if (origin)
+		{
 			VectorCopy (origin, ch->origin);
 			ch->fixed_origin = true;
-		} else {
+		}
+		else
+		{
 			ch->fixed_origin = false;
 		}
 
@@ -2582,21 +2595,16 @@ void S_Init()
 
 	if (GGameType & GAME_QuakeHexen)
 	{
-		s_volume = Cvar_Get("volume", "0.7", CVAR_ARCHIVE);
 		bgmvolume = Cvar_Get("bgmvolume", "1", CVAR_ARCHIVE);
 		if (GGameType & GAME_Hexen2)
 		{
 			bgmtype = Cvar_Get("bgmtype", "cd", CVAR_ARCHIVE);   // cd or midi
 		}
-		nosound = Cvar_Get("nosound", "0", 0);
 		ambient_level = Cvar_Get("ambient_level", "0.3", 0);
 		ambient_fade = Cvar_Get("ambient_fade", "100", 0);
 		snd_noextraupdate = Cvar_Get("snd_noextraupdate", "0", 0);
 	}
-	else
-	{
-		s_volume = Cvar_Get("s_volume", "0.8", CVAR_ARCHIVE);
-	}
+	s_volume = Cvar_Get("s_volume", "0.8", CVAR_ARCHIVE);
 	s_musicVolume = Cvar_Get("s_musicvolume", "0.25", CVAR_ARCHIVE);
 	s_doppler = Cvar_Get("s_doppler", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE);
 	s_khz = Cvar_Get("s_khz", "44", CVAR_ARCHIVE);

@@ -1846,7 +1846,7 @@ void M_AdjustSliders (int dir)
 			s_volume->value = 0;
 		if (s_volume->value > 1)
 			s_volume->value = 1;
-		Cvar_SetValue ("volume", s_volume->value);
+		Cvar_SetValue ("s_volume", s_volume->value);
 		break;
 		
 	case OPT_ALWAYRUN:	// allways run
