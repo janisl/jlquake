@@ -8,8 +8,8 @@
 #include <memory.h>
 #include <mmreg.h>
 
-#include "midstuff.h"
-#include "midi.h"
+#include "sound_midstuff.h"
+#include "sound_midi.h"
 #include "client.h"
 
 

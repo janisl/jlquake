@@ -20,7 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "client.h"
-#include "snd_local.h"
+#include "sound_local.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>

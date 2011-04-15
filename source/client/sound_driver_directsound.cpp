@@ -20,7 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "client.h"
-#include "snd_local.h"
+#include "sound_local.h"
 #include "win_shared.h"
 #include <dsound.h>
 

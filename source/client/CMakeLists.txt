@@ -1,20 +1,20 @@
 set(CLIENT_FILES
-	cd_linux.cpp
 	input_main.cpp
 	input_unix.cpp
 	render_driver_glx.cpp
 	render_init.cpp
 	render_qgl.cpp
-	snd_alsa.cpp
-	snd_dma.cpp
-	snd_mem.cpp
-	snd_midi_null.cpp
-	snd_mix.cpp
-	#snd_oss.cpp
+	sound_audiocd_linux.cpp
+	sound_driver_alsa.cpp
+	sound_main.cpp
+	sound_memory.cpp
+	sound_midi_null.cpp
+	sound_mix.cpp
+	#sound_driver_oss.cpp
 )
 
 set(CLIENT_ASM_FILES
-	snd_mixa.s
+	sound_mix_x86.s
 )
 
 foreach(SRC ${CLIENT_ASM_FILES})

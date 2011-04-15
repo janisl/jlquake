@@ -149,19 +149,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\cd_win.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\input_main.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\input_windows.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\mstrconv.cpp"
 				>
 			</File>
 			<File
@@ -177,23 +169,31 @@
 				>
 			</File>
 			<File
-				RelativePath=".\snd_dma.cpp"
+				RelativePath=".\sound_audiocd_windows.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\snd_mem.cpp"
+				RelativePath=".\sound_driver_directsound.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\snd_midi_win.cpp"
+				RelativePath=".\sound_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\snd_mix.cpp"
+				RelativePath=".\sound_memory.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\snd_win.cpp"
+				RelativePath=".\sound_midi_windows.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\sound_midi_windows_stream_converter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\sound_mix.cpp"
 				>
 			</File>
 			<File
@@ -207,10 +207,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\cd_public.h"
-				>
-			</File>
-			<File
 				RelativePath=".\client.h"
 				>
 			</File>
@@ -220,14 +216,6 @@
 			</File>
 			<File
 				RelativePath=".\input_public.h"
-				>
-			</File>
-			<File
-				RelativePath=".\midi.h"
-				>
-			</File>
-			<File
-				RelativePath=".\midstuff.h"
 				>
 			</File>
 			<File
@@ -247,15 +235,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\snd_local.h"
+				RelativePath=".\sound_local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\snd_midi_public.h"
+				RelativePath=".\sound_midi.h"
 				>
 			</File>
 			<File
-				RelativePath=".\snd_public.h"
+				RelativePath=".\sound_midstuff.h"
+				>
+			</File>
+			<File
+				RelativePath=".\sound_public.h"
 				>
 			</File>
 			<File
