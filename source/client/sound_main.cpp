@@ -2685,11 +2685,12 @@ void S_Shutdown()
 
 	s_soundStarted = 0;
 
-    Cmd_RemoveCommand("play");
+	Cmd_RemoveCommand("play");
+	Cmd_RemoveCommand("playvol");
 	Cmd_RemoveCommand("music");
-	Cmd_RemoveCommand("stopsound");
-	Cmd_RemoveCommand("soundlist");
-	Cmd_RemoveCommand("soundinfo");
+	Cmd_RemoveCommand("s_sound");
+	Cmd_RemoveCommand("s_list");
+	Cmd_RemoveCommand("s_info");
 
 	if (GGameType & GAME_Quake2)
 	{
