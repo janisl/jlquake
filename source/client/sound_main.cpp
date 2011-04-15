@@ -2610,24 +2610,12 @@ void S_Init()
 	s_show = Cvar_Get("s_show", "0", CVAR_CHEAT);
 	s_testsound = Cvar_Get("s_testsound", "0", CVAR_CHEAT);
 
-	if (GGameType & GAME_QuakeHexen)
+	QCvar* cv = Cvar_Get("s_initsound", "1", 0);
+	if (!cv->integer)
 	{
-		if (COM_CheckParm("-nosound"))
-		{
-			GLog.Write("not initializing.\n");
-			GLog.Write("------------------------------------\n");
-			return;
-		}
-	}
-	else
-	{
-		QCvar* cv = Cvar_Get("s_initsound", "1", 0);
-		if (!cv->integer)
-		{
-			GLog.Write("not initializing.\n");
-			GLog.Write("------------------------------------\n");
-			return;
-		}
+		GLog.Write("not initializing.\n");
+		GLog.Write("------------------------------------\n");
+		return;
 	}
 
 	Cmd_AddCommand("play", S_Play_f);
