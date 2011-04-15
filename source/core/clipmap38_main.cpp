@@ -20,7 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include "cm46_local.h"
+#include "clipmap38_local.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -36,9 +36,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*		cm_noAreas;
-QCvar*		cm_noCurves;
-QCvar*		cm_playerCurveClip;
+mapsurface_t	QClipMap38::nullsurface;
+
+QCvar*			map_noareas;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -46,66 +46,93 @@ QCvar*		cm_playerCurveClip;
 
 //==========================================================================
 //
-//	CM_CreateQClipMap46
+//	CM_CreateQClipMap38
 //
 //==========================================================================
 
-QClipMap* CM_CreateQClipMap46()
+QClipMap* CM_CreateQClipMap38()
 {
-	return new QClipMap46();
+	return new QClipMap38();
 }
 
 //==========================================================================
 //
-//	QClipMap46::~QClipMap46
+//	QClipMap38::QClipMap38
 //
 //==========================================================================
 
-QClipMap46::~QClipMap46()
+QClipMap38::QClipMap38()
+: numtexinfo(0)
+, surfaces(NULL)
+, numleafs(0)
+, leafs(NULL)
+, emptyleaf(0)
+, solidleaf(0)
+, numclusters(0)
+, numleafbrushes(0)
+, leafbrushes(NULL)
+, numplanes(0)
+, planes(NULL)
+, numbrushes(0)
+, brushes(NULL)
+, numbrushsides(0)
+, brushsides(NULL)
+, numnodes(0)
+, nodes(NULL)
+, numareas(0)
+, areas(NULL)
+, numareaportals(0)
+, areaportals(NULL)
+, numvisibility(0)
+, visibility(NULL)
+, vis(NULL)
+, numentitychars(0)
+, entitystring(NULL)
+, numcmodels(0)
+, cmodels(NULL)
+, box_planes(NULL)
+, box_brush(NULL)
+, box_leaf(NULL)
+, floodvalid(0)
+, checkcount(0)
 {
-	for (int i = 1; i < numSubModels; i++)
-	{
-		delete[] (leafbrushes + cmodels[i].leaf.firstLeafBrush);
-		delete[] (leafsurfaces + cmodels[i].leaf.firstLeafSurface);
-	}
-	for (int i = 0; i < numSurfaces; i++)
-	{
-		if (!surfaces[i])
-		{
-			continue;
-		}
-		delete[] surfaces[i]->pc->facets;
-		delete[] surfaces[i]->pc->planes;
-		delete surfaces[i]->pc;
-		delete surfaces[i];
-	}
-	delete[] shaders;
-	delete[] leafs;
-	delete[] areas;
-	delete[] areaPortals;
-	delete[] leafbrushes;
-	delete[] leafsurfaces;
-	delete[] planes;
-	delete[] brushsides;
-	delete[] brushes;
-	delete[] nodes;
-	delete[] entityString;
-	delete[] visibility;
+	Com_Memset(&box_model, 0, sizeof(box_model));
+	Com_Memset(portalopen, 0, sizeof(portalopen));
+	Com_Memset(pvsrow, 0, sizeof(pvsrow));
+	Com_Memset(phsrow, 0, sizeof(phsrow));
+}
+
+//==========================================================================
+//
+//	QClipMap38::~QClipMap38
+//
+//==========================================================================
+
+QClipMap38::~QClipMap38()
+{
 	delete[] surfaces;
+	delete[] leafs;
+	delete[] leafbrushes;
+	delete[] planes;
+	delete[] brushes;
+	delete[] brushsides;
+	delete[] nodes;
+	delete[] areas;
+	delete[] areaportals;
+	delete[] visibility;
+	delete[] entitystring;
 	delete[] cmodels;
-
-	ClearLevelPatches();
 }
 
 //==========================================================================
 //
-//	QClipMap46::InlineModel
+//	QClipMap38::InlineModel
 //
 //==========================================================================
 
-clipHandle_t QClipMap46::InlineModel(int Index) const
+clipHandle_t QClipMap38::InlineModel(int Index) const
 {
-	if (Index < 0 || Index >= numSubModels)
+	if (Index < 1 || Index >= numcmodels)
 	{
 		throw QDropException("CM_InlineModel: bad number");
 	}
@@ -114,44 +141,44 @@ clipHandle_t QClipMap46::InlineModel(int Index) const
 
 //==========================================================================
 //
-//	QClipMap46::GetNumClusters
+//	QClipMap38::GetNumClusters
 //
 //==========================================================================
 
-int QClipMap46::GetNumClusters() const
+int QClipMap38::GetNumClusters() const
 {
-	return numClusters;
+	return numclusters;
 }
 
 //==========================================================================
 //
-//	QClipMap46::GetNumInlineModels
+//	QClipMap38::GetNumInlineModels
 //
 //==========================================================================
 
-int QClipMap46::GetNumInlineModels() const
+int QClipMap38::GetNumInlineModels() const
 {
-	return numSubModels;
+	return numcmodels;
 }
 
 //==========================================================================
 //
-//	QClipMap46::GetEntityString
+//	QClipMap38::GetEntityString
 //
 //==========================================================================
 
-const char* QClipMap46::GetEntityString() const
+const char* QClipMap38::GetEntityString() const
 {
-	return entityString;
+	return entitystring;
 }
 
 //==========================================================================
 //
-//	QClipMap46::MapChecksums
+//	QClipMap38::MapChecksums
 //
 //==========================================================================
 
-void QClipMap46::MapChecksums(int& ACheckSum1, int& ACheckSum2) const
+void QClipMap38::MapChecksums(int& ACheckSum1, int& ACheckSum2) const
 {
 	ACheckSum1 = CheckSum;
 	ACheckSum2 = CheckSum2;
@@ -159,13 +186,13 @@ void QClipMap46::MapChecksums(int& ACheckSum1, int& ACheckSum2) const
 
 //==========================================================================
 //
-//	QClipMap46::LeafCluster
+//	QClipMap38::LeafCluster
 //
 //==========================================================================
 
-int QClipMap46::LeafCluster(int LeafNum) const
+int QClipMap38::LeafCluster(int LeafNum) const
 {
-	if (LeafNum < 0 || LeafNum >= numLeafs)
+	if (LeafNum < 0 || LeafNum >= numleafs)
 	{
 		throw QDropException("CM_LeafCluster: bad number");
 	}
@@ -174,13 +201,13 @@ int QClipMap46::LeafCluster(int LeafNum) const
 
 //==========================================================================
 //
-//	QClipMap46::LeafArea
+//	QClipMap38::LeafArea
 //
 //==========================================================================
 
-int QClipMap46::LeafArea(int LeafNum) const
+int QClipMap38::LeafArea(int LeafNum) const
 {
-	if (LeafNum < 0 || LeafNum >= numLeafs)
+	if (LeafNum < 0 || LeafNum >= numleafs)
 	{
 		throw QDropException("CM_LeafArea: bad number");
 	}
@@ -189,22 +216,22 @@ int QClipMap46::LeafArea(int LeafNum) const
 
 //==========================================================================
 //
-//	QClipMap46::LeafAmbientSoundLevel
+//	QClipMap38::LeafAmbientSoundLevel
 //
 //==========================================================================
 
-const byte* QClipMap46::LeafAmbientSoundLevel(int LeafNum) const
+const byte* QClipMap38::LeafAmbientSoundLevel(int LeafNum) const
 {
 	return NULL;
 }
 
 //==========================================================================
 //
-//	QClipMap46::ModelBounds
+//	QClipMap38::ModelBounds
 //
 //==========================================================================
 
-void QClipMap46::ModelBounds(clipHandle_t Model, vec3_t Mins, vec3_t Maxs)
+void QClipMap38::ModelBounds(clipHandle_t Model, vec3_t Mins, vec3_t Maxs)
 {
 	cmodel_t* cmod = ClipHandleToModel(Model);
 	VectorCopy(cmod->mins, Mins);
@@ -213,33 +240,33 @@ void QClipMap46::ModelBounds(clipHandle_t Model, vec3_t Mins, vec3_t Maxs)
 
 //==========================================================================
 //
-//	QClipMap46::GetNumTextures
+//	QClipMap38::GetNumTextures
 //
 //==========================================================================
 
-int QClipMap46::GetNumTextures() const
+int QClipMap38::GetNumTextures() const
 {
-	return 0;
+	return numtexinfo;
 }
 
 //==========================================================================
 //
-//	QClipMap46::GetTextureName
+//	QClipMap38::GetTextureName
 //
 //==========================================================================
 
-const char* QClipMap46::GetTextureName(int Index) const
+const char* QClipMap38::GetTextureName(int Index) const
 {
-	return "";
+	return surfaces[Index].rname;
 }
 
 //==========================================================================
 //
-//	QClipMap46::ModelHull
+//	QClipMap38::ModelHull
 //
 //==========================================================================
 
-clipHandle_t QClipMap46::ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs)
+clipHandle_t QClipMap38::ModelHull(clipHandle_t Handle, int HullNum, vec3_t ClipMins, vec3_t ClipMaxs)
 {
 	VectorClear(ClipMins);
 	VectorClear(ClipMaxs);
@@ -248,64 +275,68 @@ clipHandle_t QClipMap46::ModelHull(clipHandle_t Handle, int HullNum, vec3_t Clip
 
 //==========================================================================
 //
-//	QClipMap46::ClipHandleToModel
+//	QClipMap38::ClipHandleToModel
 //
 //==========================================================================
 
-cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
+cmodel_t* QClipMap38::ClipHandleToModel(clipHandle_t Handle)
 {
-	if (Handle < 0)
-	{
-		throw QDropException(va("CM_ClipHandleToModel: bad handle %i", Handle));
-	}
-	if (Handle < numSubModels)
-	{
-		return &cmodels[Handle];
-	}
-	if (Handle == BOX_MODEL_HANDLE)
+	if (Handle == BOX_HANDLE)
 	{
 		return &box_model;
 	}
-	if (Handle < MAX_SUBMODELS)
-	{
-		throw QDropException(va("CM_ClipHandleToModel: bad handle %i < %i < %i", 
-			numSubModels, Handle, MAX_SUBMODELS));
-	}
-	throw QDropException(va("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS));
+	return &cmodels[Handle];
 }
 
 //==========================================================================
 //
-//	QClipMap46::InitBoxHull
+//	QClipMap38::InitBoxHull
 //
 //	Set up the planes and nodes so that the six floats of a bounding box
 // can just be stored out and get a proper clipping hull structure.
 //
 //==========================================================================
 
-void QClipMap46::InitBoxHull()
+void QClipMap38::InitBoxHull()
 {
-	box_planes = &planes[numPlanes];
-
-	box_brush = &brushes[numBrushes];
-	box_brush->numsides = 6;
-	box_brush->sides = brushsides + numBrushSides;
-	box_brush->contents = BSP46CONTENTS_BODY;
-
 	Com_Memset(&box_model, 0, sizeof(box_model));
-	box_model.leaf.numLeafBrushes = 1;
-//	box_model.leaf.firstLeafBrush = numBrushes;
-	box_model.leaf.firstLeafBrush = numLeafBrushes;
-	leafbrushes[numLeafBrushes] = numBrushes;
+	box_model.headnode = numnodes;
+
+	box_planes = &planes[numplanes];
+
+	box_brush = &brushes[numbrushes];
+	box_brush->numsides = 6;
+	box_brush->firstbrushside = numbrushsides;
+	box_brush->contents = BSP38CONTENTS_MONSTER;
+
+	box_leaf = &leafs[numleafs];
+	box_leaf->contents = BSP38CONTENTS_MONSTER;
+	box_leaf->firstleafbrush = numleafbrushes;
+	box_leaf->numleafbrushes = 1;
+
+	leafbrushes[numleafbrushes] = numbrushes;
 
 	for (int i = 0; i < 6; i++)
 	{
 		int side = i & 1;
 
 		// brush sides
-		cbrushside_t* s = &brushsides[numBrushSides + i];
-		s->plane = planes + (numPlanes + i * 2 + side);
-		s->surfaceFlags = 0;
+		cbrushside_t* s = &brushsides[numbrushsides + i];
+		s->plane = 	planes + (numplanes + i * 2 + side);
+		s->surface = &nullsurface;
+
+		// nodes
+		cnode_t* c = &nodes[numnodes + i];
+		c->plane = planes + (numplanes + i * 2);
+		c->children[side] = -1 - emptyleaf;
+		if (i != 5)
+		{
+			c->children[side ^ 1] = numnodes + i + 1;
+		}
+		else
+		{
+			c->children[side ^ 1] = -1 - numleafs;
+		}
 
 		// planes
 		cplane_t* p = &box_planes[i * 2];
@@ -319,31 +350,20 @@ void QClipMap46::InitBoxHull()
 		p->signbits = 0;
 		VectorClear(p->normal);
 		p->normal[i >> 1] = -1;
-
-		SetPlaneSignbits(p);
 	}	
 }
 
 //==========================================================================
 //
-//	QClipMap46::TempBoxModel
+//	QClipMap38::TempBoxModel
 //
 //	To keep everything totally uniform, bounding boxes are turned into small
 // BSP trees instead of being compared directly.
-// Capsules are handled differently though.
 //
 //==========================================================================
 
-clipHandle_t QClipMap46::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule)
+clipHandle_t QClipMap38::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool Capsule)
 {
-	VectorCopy(Mins, box_model.mins);
-	VectorCopy(Maxs, box_model.maxs);
-
-	if (Capsule)
-	{
-		return CAPSULE_MODEL_HANDLE;
-	}
-
 	box_planes[0].dist = Maxs[0];
 	box_planes[1].dist = -Maxs[0];
 	box_planes[2].dist = Mins[0];
@@ -357,30 +377,37 @@ clipHandle_t QClipMap46::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 	box_planes[10].dist = Mins[2];
 	box_planes[11].dist = -Mins[2];
 
-	VectorCopy(Mins, box_brush->bounds[0]);
-	VectorCopy(Maxs, box_brush->bounds[1]);
-
-	return BOX_MODEL_HANDLE;
+	return BOX_HANDLE;
 }
 
 //==========================================================================
 //
-//	QClipMap46::ContentsToQ1
+//	QClipMap38::ContentsToQ1
 //
 //==========================================================================
 
-int QClipMap46::ContentsToQ1(int Contents) const
+int QClipMap38::ContentsToQ1(int Contents) const
 {
 	throw QException("Not implemented");
 }
 
 //==========================================================================
 //
-//	QClipMap46::ContentsToQ2
+//	QClipMap38::ContentsToQ3
 //
 //==========================================================================
 
-int QClipMap46::ContentsToQ2(int Contents) const
+int QClipMap38::ContentsToQ3(int Contents) const
 {
 	throw QException("Not implemented");
+}
+
+//==========================================================================
+//
+//	QClipMap38::DrawDebugSurface
+//
+//==========================================================================
+
+void QClipMap38::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
+{
 }

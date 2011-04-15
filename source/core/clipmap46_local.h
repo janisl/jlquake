@@ -20,7 +20,7 @@
 #ifndef _CM46_LOCAL_H
 #define _CM46_LOCAL_H
 
-#include "cm_local.h"
+#include "clipmap_local.h"
 #include "bsp46file.h"
 
 #define MAX_FACETS			1024

@@ -44,7 +44,7 @@
 #include "crc.h"
 #include "md4.h"
 #include "system.h"
-#include "cm_public.h"
+#include "clipmap_public.h"
 #include "event_queue.h"
 #include "socket.h"
 

@@ -47,7 +47,7 @@ properly.
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include "cm46_local.h"
+#include "clipmap46_local.h"
 
 // MACROS ------------------------------------------------------------------
 

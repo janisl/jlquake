@@ -151,67 +151,67 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\cm29_load.cpp"
+				RelativePath=".\clipmap29_load.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm29_main.cpp"
+				RelativePath=".\clipmap29_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm29_test.cpp"
+				RelativePath=".\clipmap29_test.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm29_trace.cpp"
+				RelativePath=".\clipmap29_trace.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm38_load.cpp"
+				RelativePath=".\clipmap38_load.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm38_main.cpp"
+				RelativePath=".\clipmap38_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm38_test.cpp"
+				RelativePath=".\clipmap38_test.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm38_trace.cpp"
+				RelativePath=".\clipmap38_trace.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm46_load.cpp"
+				RelativePath=".\clipmap46_load.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm46_main.cpp"
+				RelativePath=".\clipmap46_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm46_patch.cpp"
+				RelativePath=".\clipmap46_patch.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm46_polylib.cpp"
+				RelativePath=".\clipmap46_polylib.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm46_test.cpp"
+				RelativePath=".\clipmap46_test.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm46_trace.cpp"
+				RelativePath=".\clipmap46_trace.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm_main.cpp"
+				RelativePath=".\clipmap_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cm_nonmap.cpp"
+				RelativePath=".\clipmap_nonmap.cpp"
 				>
 			</File>
 			<File

@@ -24,7 +24,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include "cm_local.h"
+#include "clipmap_local.h"
 #include "bsp29file.h"
 #include "mdlfile.h"
 #include "sprfile.h"
