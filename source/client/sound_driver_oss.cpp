@@ -52,7 +52,6 @@ static int			audio_fd;
 static int			snd_inited;
 
 static QCvar*		sndbits;
-static QCvar*		sndspeed;
 static QCvar*		sndchannels;
 static QCvar*		snddevice;
 
@@ -77,7 +76,6 @@ bool SNDDMA_Init()
 	if (!snddevice)
 	{
 		sndbits = Cvar_Get("sndbits", "16", CVAR_ARCHIVE);
-		sndspeed = Cvar_Get("sndspeed", "0", CVAR_ARCHIVE);
 		sndchannels = Cvar_Get("sndchannels", "2", CVAR_ARCHIVE);
 		snddevice = Cvar_Get("snddevice", "/dev/dsp", CVAR_ARCHIVE);
 	}
@@ -136,7 +134,23 @@ bool SNDDMA_Init()
 		}
 	}
 
-	dma.speed = (int)sndspeed->value;
+	if (s_khz->integer == 44)
+	{
+		dma.speed = 44100;
+	}
+	else if (s_khz->integer == 22)
+	{
+		dma.speed = 22050;
+	}
+	else if (s_khz->integer == 11)
+	{
+		dma.speed = 11025;
+	}
+	else
+	{
+		dma.speed = 0;
+	}
+
 	if (!dma.speed)
 	{
 		int i;

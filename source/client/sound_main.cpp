@@ -2597,7 +2597,7 @@ void S_Init()
 	}
 	s_musicVolume = Cvar_Get("s_musicvolume", "0.25", CVAR_ARCHIVE);
 	s_doppler = Cvar_Get("s_doppler", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE);
-	s_khz = Cvar_Get("s_khz", "22", CVAR_ARCHIVE);
+	s_khz = Cvar_Get("s_khz", "44", CVAR_ARCHIVE);
 	s_mixahead = Cvar_Get("s_mixahead", "0.2", CVAR_ARCHIVE);
 	if (GGameType & GAME_Quake3)
 	{

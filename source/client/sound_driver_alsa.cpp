@@ -49,7 +49,6 @@ static int					sample_bytes;
 static int					buffer_bytes;
 
 static QCvar*				sndbits;
-static QCvar*				sndspeed;
 static QCvar*				sndchannels;
 static QCvar*				snddevice;
 
@@ -74,7 +73,6 @@ bool SNDDMA_Init()
 	if (!snddevice)
 	{
 		sndbits = Cvar_Get("sndbits", "16", CVAR_ARCHIVE);
-		sndspeed = Cvar_Get("sndspeed", "0", CVAR_ARCHIVE);
 		sndchannels = Cvar_Get("sndchannels", "2", CVAR_ARCHIVE);
 		snddevice = Cvar_Get("s_alsaDevice", "default", CVAR_ARCHIVE);
 	}
@@ -135,7 +133,23 @@ bool SNDDMA_Init()
 		}
 	}
 
-	dma.speed = (int)sndspeed->value;
+	if (s_khz->integer == 44)
+	{
+		dma.speed = 44100;
+	}
+	else if (s_khz->integer == 22)
+	{
+		dma.speed = 22050;
+	}
+	else if (s_khz->integer == 11)
+	{
+		dma.speed = 11025;
+	}
+	else
+	{
+		dma.speed = 0;
+	}
+
 	if (dma.speed)
 	{
 		//try specified rate
@@ -145,13 +159,14 @@ bool SNDDMA_Init()
 		if (err < 0)
 		{
 			GLog.Write("ALSA: cannot set rate %d(%s)\n", r, snd_strerror(err));
+			dma.speed = 0;
 		}
 		else
 		{
 			//rate succeeded, but is perhaps slightly different
-			if (dir != 0)
+			if (dir != 0 && dma.speed != r)
 			{
-				GLog.Write("ALSA: rate %d not supported, using %d\n", sndspeed->value, r);
+				GLog.Write("ALSA: rate %d not supported, using %d\n", dma.speed, r);
 			}
 			dma.speed = r;
 		}

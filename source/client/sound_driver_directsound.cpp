@@ -128,13 +128,18 @@ bool SNDDMA_Init()
 	dma.channels = 2;
 	dma.samplebits = 16;
 
-//	if (s_khz->integer == 44)
-//		dma.speed = 44100;
-//	else if (s_khz->integer == 22)
-//		dma.speed = 22050;
-//	else
-//		dma.speed = 11025;
-	dma.speed = 22050;
+	if (s_khz->integer == 44)
+	{
+		dma.speed = 44100;
+	}
+	else if (s_khz->integer == 22)
+	{
+		dma.speed = 22050;
+	}
+	else
+	{
+		dma.speed = 11025;
+	}
 
 	Com_Memset(&format, 0, sizeof(format));
 	format.wFormatTag = WAVE_FORMAT_PCM;
