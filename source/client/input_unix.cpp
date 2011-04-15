@@ -1135,7 +1135,7 @@ void IN_Init()
 	in_nograb = Cvar_Get("in_nograb", "0", 0);
 
 	// bk001130 - from cvs.17 (mkv), joystick variables
-	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH);
+	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	// bk001130 - changed this to match win32
 	in_joystickDebug = Cvar_Get("in_debugjoystick", "0", CVAR_TEMP);
 	joy_threshold = Cvar_Get("joy_threshold", "0.15", CVAR_ARCHIVE); // FIXME: in_joythreshold

@@ -206,7 +206,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 			return var;
 		}
 
-		if (var->flags & CVAR_LATCH)
+		if (var->flags & (CVAR_LATCH | CVAR_LATCH2))
 		{
 			if (var->latchedString)
 			{
@@ -389,7 +389,8 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 				VarName, var->resetString, VarValue);
 		}
 		// if we have a latched string, take that value now
-		if (!(GGameType & GAME_Quake2) && var->latchedString)
+		//	This is done only for Quake 3 type latched vars.
+		if ((var->flags & CVAR_LATCH2) && var->latchedString)
 		{
 			char* s = var->latchedString;
 			var->latchedString = NULL;	// otherwise cvar_set2 would free it
@@ -628,7 +629,7 @@ void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultVal
 	}
 	if (TmpFlags & 32)
 	{
-		flags |= CVAR_LATCH;
+		flags |= CVAR_LATCH2;
 	}
 
 	QCvar* cv = Cvar_Get(varName, defaultValue, flags);
@@ -989,7 +990,7 @@ static void Cvar_List_f()
 		{
 			GLog.Write(" ");
 		}
-		if (var->flags & CVAR_LATCH)
+		if (var->flags & (CVAR_LATCH | CVAR_LATCH2))
 		{
 			GLog.Write("L");
 		}

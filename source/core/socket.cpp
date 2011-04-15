@@ -63,31 +63,31 @@ bool SOCK_GetSocksCvars()
 	{
 		modified = true;
 	}
-	net_socksEnabled = Cvar_Get("net_socksEnabled", "0", CVAR_LATCH | CVAR_ARCHIVE);
+	net_socksEnabled = Cvar_Get("net_socksEnabled", "0", CVAR_LATCH2 | CVAR_ARCHIVE);
 
 	if (net_socksServer && net_socksServer->modified)
 	{
 		modified = true;
 	}
-	net_socksServer = Cvar_Get("net_socksServer", "", CVAR_LATCH | CVAR_ARCHIVE);
+	net_socksServer = Cvar_Get("net_socksServer", "", CVAR_LATCH2 | CVAR_ARCHIVE);
 
 	if (net_socksPort && net_socksPort->modified)
 	{
 		modified = true;
 	}
-	net_socksPort = Cvar_Get("net_socksPort", "1080", CVAR_LATCH | CVAR_ARCHIVE);
+	net_socksPort = Cvar_Get("net_socksPort", "1080", CVAR_LATCH2 | CVAR_ARCHIVE);
 
 	if (net_socksUsername && net_socksUsername->modified)
 	{
 		modified = true;
 	}
-	net_socksUsername = Cvar_Get("net_socksUsername", "", CVAR_LATCH | CVAR_ARCHIVE);
+	net_socksUsername = Cvar_Get("net_socksUsername", "", CVAR_LATCH2 | CVAR_ARCHIVE);
 
 	if (net_socksPassword && net_socksPassword->modified)
 	{
 		modified = true;
 	}
-	net_socksPassword = Cvar_Get("net_socksPassword", "", CVAR_LATCH | CVAR_ARCHIVE);
+	net_socksPassword = Cvar_Get("net_socksPassword", "", CVAR_LATCH2 | CVAR_ARCHIVE);
 
 	return modified;
 }

@@ -1204,7 +1204,7 @@ void Com_InitSmallZoneMemory( void ) {
 void Com_InitZoneMemory( void ) {
 	QCvar	*cv;
 	// allocate the random block zone
-	cv = Cvar_Get( "com_zoneMegs", DEF_COMZONEMEGS, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_zoneMegs", DEF_COMZONEMEGS, CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	if ( cv->integer < 20 ) {
 		s_zoneTotal = 1024 * 1024 * 16;
@@ -1318,7 +1318,7 @@ void Com_InitHunkMemory( void ) {
 	}
 
 	// allocate the stack based hunk allocator
-	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS, CVAR_LATCH | CVAR_ARCHIVE );
+	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS, CVAR_LATCH2 | CVAR_ARCHIVE );
 
 	// if we are not dedicated min allocation is 56, otherwise min is 1
 	if (com_dedicated && com_dedicated->integer) {
@@ -2230,7 +2230,7 @@ void Com_Init( char *commandLine )
 #ifdef DEDICATED
 	com_dedicated = Cvar_Get ("dedicated", "1", CVAR_ROM);
 #else
-	com_dedicated = Cvar_Get ("dedicated", "0", CVAR_LATCH);
+	com_dedicated = Cvar_Get ("dedicated", "0", CVAR_LATCH2);
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();

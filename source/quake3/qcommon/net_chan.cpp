@@ -668,8 +668,8 @@ NET_OpenIP
 */
 static void NET_OpenIP()
 {
-	QCvar* ip = Cvar_Get("net_ip", "localhost", CVAR_LATCH);
-	int port = Cvar_Get("net_port", va("%i", PORT_SERVER), CVAR_LATCH)->integer;
+	QCvar* ip = Cvar_Get("net_ip", "localhost", CVAR_LATCH2);
+	int port = Cvar_Get("net_port", va("%i", PORT_SERVER), CVAR_LATCH2)->integer;
 
 	// automatically scan for a valid port, so multiple
 	// dedicated servers can be started without requiring
@@ -707,7 +707,7 @@ static bool NET_GetCvars()
 	{
 		modified = true;
 	}
-	net_noudp = Cvar_Get("net_noudp", "0", CVAR_LATCH | CVAR_ARCHIVE);
+	net_noudp = Cvar_Get("net_noudp", "0", CVAR_LATCH2 | CVAR_ARCHIVE);
 
 	if (SOCK_GetSocksCvars())
 	{

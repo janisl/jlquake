@@ -173,3 +173,6 @@
   I changed retrieval of local IPs to use different APIs. Now it properly finds all IPs. Unix version should work on MacOSX as well so I removed MacOSX specific code.
   I also merged network address utility methods.
   I think that's enough network code merging for now, as primary goal - system specific code is merged.
+15.04.2011
+  I rearanged init procedure in Quake/Hexen 2 so that config file is executed before initialising systems that depend on saved settings.
+  I added separate flag for Quake 3 latched cvars as there are important differences in their behavior and in Quake 2 it's server side latched cvars should behave as they did, but on client side (i.e. renderer) we want them to behave like in Quake 3. The differences are in the way latched value is applied (Cvar_GetLatchedVars vs Cvar_Get) and the fact that in Quake 2 they are saved in savegame and restored when loading, and we don't want this to be done for renderer vars.

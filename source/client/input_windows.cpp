@@ -1305,10 +1305,10 @@ static void IN_Startup()
 void IN_Init()
 {
 	// mouse variables
-	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE | CVAR_LATCH);
+	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	// joystick variables
-	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH);
+	in_joystick = Cvar_Get("in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	in_joyBallScale = Cvar_Get("in_joyBallScale", "0.02", CVAR_ARCHIVE);
 	in_debugJoystick = Cvar_Get("in_debugjoystick", "0", CVAR_TEMP);
 	joy_threshold = Cvar_Get("joy_threshold", "0.15", CVAR_ARCHIVE);

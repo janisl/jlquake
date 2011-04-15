@@ -38,7 +38,14 @@ void Cvar_GetLatchedVars (void)
 	for (var = cvar_vars ; var ; var = var->next)
 	{
 		if (!var->latchedString)
+		{
 			continue;
+		}
+		//	Only for Quake 2 type latched cvars.
+		if (!(var->flags & CVAR_LATCH))
+		{
+			continue;
+		}
 		Mem_Free (var->string);
 		var->string = var->latchedString;
 		var->latchedString = NULL;

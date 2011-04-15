@@ -44,17 +44,18 @@
 #define CVAR_SERVERINFO		4	// sent in response to front end requests
 #define CVAR_INIT			8	// don't allow change from console at all,
 								// but can be set from the command line
-#define CVAR_LATCH			16	// will only change when C code next does
-								// a Cvar_Get(), so it can't be changed
-								// without proper initialization.  modified
-								// will be set, even though the value hasn't
-								// changed yet
+#define CVAR_LATCH			16	// save changes until server restart
 #define CVAR_SYSTEMINFO		32	// these cvars will be duplicated on all clients
 #define CVAR_ROM			64	// display only, cannot be set by user at all
 #define CVAR_USER_CREATED	128	// created by a set command
 #define CVAR_TEMP			256	// can be set even when cheats are disabled, but is not archived
 #define CVAR_CHEAT			512	// can not be changed if cheats are disabled
 #define CVAR_NORESTART		1024	// do not clear when a cvar_restart is issued
+#define CVAR_LATCH2			2048	// will only change when C code next does
+								// a Cvar_Get(), so it can't be changed
+								// without proper initialization.  modified
+								// will be set, even though the value hasn't
+								// changed yet
 
 // nothing outside the Cvar_*() functions should modify these fields!
 struct QCvar
