@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #pragma warning(disable : 4201)
 
-#include "../../client/win_shared.h"
+#include "../../client/windows_shared.h"
 
 #define	DIRECTSOUND_VERSION	0x0300
 

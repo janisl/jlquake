@@ -5,7 +5,7 @@
 
 #define WM_MOUSEWHEEL                   0x020A
 
-#include "../../client/win_shared.h"
+#include "../../client/windows_shared.h"
 
 extern	int			global_nCmdShow;
 

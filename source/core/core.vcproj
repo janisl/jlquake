@@ -215,7 +215,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cmd.cpp"
+				RelativePath=".\command_buffer.cpp"
 				>
 			</File>
 			<File
@@ -223,11 +223,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\crc.cpp"
+				RelativePath=".\console_variable.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\cvar.cpp"
+				RelativePath=".\crc.cpp"
 				>
 			</File>
 			<File
@@ -251,7 +251,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\infostr.cpp"
+				RelativePath=".\info_string.cpp"
 				>
 			</File>
 			<File
@@ -283,11 +283,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\str.cpp"
+				RelativePath=".\strings.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\system_win.cpp"
+				RelativePath=".\system_windows.cpp"
 				>
 			</File>
 			<File
@@ -317,31 +317,35 @@
 				>
 			</File>
 			<File
-				RelativePath=".\cm29_local.h"
+				RelativePath=".\clipmap29_local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\cm38_local.h"
+				RelativePath=".\clipmap38_local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\cm46_local.h"
+				RelativePath=".\clipmap46_local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\cm_local.h"
+				RelativePath=".\clipmap_local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\cm_public.h"
+				RelativePath=".\clipmap_public.h"
 				>
 			</File>
 			<File
-				RelativePath=".\cmd.h"
+				RelativePath=".\command_buffer.h"
 				>
 			</File>
 			<File
 				RelativePath=".\common.h"
+				>
+			</File>
+			<File
+				RelativePath=".\console_variable.h"
 				>
 			</File>
 			<File
@@ -350,10 +354,6 @@
 			</File>
 			<File
 				RelativePath=".\crc.h"
-				>
-			</File>
-			<File
-				RelativePath=".\cvar.h"
 				>
 			</File>
 			<File
@@ -377,7 +377,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\infostr.h"
+				RelativePath=".\info_string.h"
 				>
 			</File>
 			<File
@@ -409,7 +409,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\str.h"
+				RelativePath=".\strings.h"
 				>
 			</File>
 			<File

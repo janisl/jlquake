@@ -6,7 +6,7 @@
 
 #pragma warning( disable : 4229 )  // mgraph gets this
 
-#include "../client/win_shared.h"
+#include "../client/windows_shared.h"
 
 #ifndef SERVERONLY
 #include <ddraw.h>

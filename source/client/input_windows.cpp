@@ -20,7 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "client.h"
-#include "win_shared.h"
+#include "windows_shared.h"
 #define	DIRECTINPUT_VERSION	0x0300
 #include <dinput.h>
 

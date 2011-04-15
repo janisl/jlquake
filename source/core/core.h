@@ -33,14 +33,14 @@
 #include "exception.h"	//	Exception handling
 #include "log.h"		//	General logging interface
 #include "array.h"		//	Dynamic array
-#include "str.h"		//	Strings
-#include "infostr.h"
+#include "strings.h"	//	Strings
+#include "info_string.h"
 #include "mathlib.h"
 #include "message.h"
 #include "huffman.h"
 #include "files.h"
-#include "cmd.h"
-#include "cvar.h"
+#include "command_buffer.h"
+#include "console_variable.h"
 #include "crc.h"
 #include "md4.h"
 #include "system.h"

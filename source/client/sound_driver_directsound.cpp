@@ -21,7 +21,7 @@
 
 #include "client.h"
 #include "sound_local.h"
-#include "win_shared.h"
+#include "windows_shared.h"
 #include <dsound.h>
 
 // MACROS ------------------------------------------------------------------

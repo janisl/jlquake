@@ -15,16 +15,16 @@ set(CORE_FILES
 	clipmap46_polylib.cpp
 	clipmap46_test.cpp
 	clipmap46_trace.cpp
-	cmd.cpp
+	command_buffer.cpp
 	common.cpp
+	console_variable.cpp
 	crc.cpp
-	cvar.cpp
 	endian.cpp
 	event_queue.cpp
 	exception.cpp
 	files.cpp
 	huffman.cpp
-	infostr.cpp
+	info_string.cpp
 	log.cpp
 	mathlib.cpp
 	md4.cpp
@@ -32,7 +32,7 @@ set(CORE_FILES
 	message.cpp
 	socket.cpp
 	socket_unix.cpp
-	str.cpp
+	strings.cpp
 	system_unix.cpp
 	unzip.cpp
 )

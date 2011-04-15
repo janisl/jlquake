@@ -21,7 +21,7 @@
 
 #include "client.h"
 #include "render_local.h"
-#include "win_shared.h"
+#include "windows_shared.h"
 
 // MACROS ------------------------------------------------------------------
 
