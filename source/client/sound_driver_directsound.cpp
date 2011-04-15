@@ -125,8 +125,8 @@ bool SNDDMA_Init()
 	GLog.DWrite("ok\n");
 
 	// create the secondary buffer we'll actually work with
-	dma.channels = 2;
-	dma.samplebits = 16;
+	dma.channels = s_channels_cv->integer;
+	dma.samplebits = s_bits->integer;
 
 	if (s_khz->integer == 44)
 	{

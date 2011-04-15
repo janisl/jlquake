@@ -89,10 +89,10 @@ Parameter                Console command                      Saved
 
 -nojoy                   set in_joystick 0                    Yes
 -nomouse                 set in_mouse 0                       Yes
--sndbits                 set sndbits <value>                  Yes
--sndspeed                set sndspeed <value>                 Yes
--sndmono                 set sndchannels 1                    Yes
--sndstereo               set sndchannels 2                    Yes
+-sndbits                 set s_bits <value>                   Yes
+-sndspeed                set s_khz <value>                    Yes
+-sndmono                 set s_channels 1                     Yes
+-sndstereo               set s_channels 2                     Yes
 
 -dinput
   Enabled by default, disable with:

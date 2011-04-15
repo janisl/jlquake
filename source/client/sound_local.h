@@ -141,6 +141,8 @@ extern int   					s_paintedtime;
 
 extern QCvar*					s_testsound;
 extern QCvar*					s_khz;
+extern QCvar*					s_bits;
+extern QCvar*					s_channels_cv;
 
 extern channel_t				s_channels[MAX_CHANNELS];
 extern channel_t				loop_channels[MAX_CHANNELS];

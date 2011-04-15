@@ -48,8 +48,6 @@ static snd_pcm_hw_params_t*	hw_params;
 static int					sample_bytes;
 static int					buffer_bytes;
 
-static QCvar*				sndbits;
-static QCvar*				sndchannels;
 static QCvar*				snddevice;
 
 //	The sample rates which will be attempted.
@@ -70,12 +68,7 @@ static int RATES[] =
 
 bool SNDDMA_Init()
 {
-	if (!snddevice)
-	{
-		sndbits = Cvar_Get("sndbits", "16", CVAR_ARCHIVE);
-		sndchannels = Cvar_Get("sndchannels", "2", CVAR_ARCHIVE);
-		snddevice = Cvar_Get("s_alsaDevice", "default", CVAR_ARCHIVE);
-	}
+	snddevice = Cvar_Get("s_alsaDevice", "default", CVAR_ARCHIVE);
 
 	int err = snd_pcm_open(&pcm_handle, snddevice->string,
 		SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
@@ -109,7 +102,7 @@ bool SNDDMA_Init()
 		return false;
 	}
 
-	dma.samplebits = (int)sndbits->value;
+	dma.samplebits = s_bits->integer;
 	if (dma.samplebits != 8)
 	{
 		//try 16 by default
@@ -203,7 +196,7 @@ bool SNDDMA_Init()
 		return false;
 	}
 
-	dma.channels = sndchannels->value;
+	dma.channels = s_channels_cv->integer;
 	if (dma.channels < 1 || dma.channels > 2)
 	{
 		dma.channels = 2;  //ensure either stereo or mono
@@ -213,7 +206,7 @@ bool SNDDMA_Init()
 	if (err < 0)
 	{
 		GLog.Write("ALSA: cannot set channels %d(%s)\n",
-			sndchannels->value, snd_strerror(err));
+			s_channels_cv->integer, snd_strerror(err));
 		snd_pcm_hw_params_free(hw_params);
 		return false;
 	}

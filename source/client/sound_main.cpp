@@ -89,6 +89,8 @@ int   				s_paintedtime; 	// sample PAIRS
 QCvar*				s_volume;
 QCvar*				s_testsound;
 QCvar*				s_khz;
+QCvar*				s_bits;
+QCvar*				s_channels_cv;
 QCvar*				bgmvolume;
 QCvar*				bgmtype;
 
@@ -2598,6 +2600,8 @@ void S_Init()
 	s_musicVolume = Cvar_Get("s_musicvolume", "0.25", CVAR_ARCHIVE);
 	s_doppler = Cvar_Get("s_doppler", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE);
 	s_khz = Cvar_Get("s_khz", "44", CVAR_ARCHIVE);
+	s_bits = Cvar_Get("s_bits", "16", CVAR_ARCHIVE);
+	s_channels_cv = Cvar_Get("s_channels", "2", CVAR_ARCHIVE);
 	s_mixahead = Cvar_Get("s_mixahead", "0.2", CVAR_ARCHIVE);
 	if (GGameType & GAME_Quake3)
 	{

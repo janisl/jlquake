@@ -51,8 +51,6 @@
 static int			audio_fd;
 static int			snd_inited;
 
-static QCvar*		sndbits;
-static QCvar*		sndchannels;
 static QCvar*		snddevice;
 
 //	Some devices may work only with 48000
@@ -73,21 +71,16 @@ bool SNDDMA_Init()
 		return true;
 	}
 
-	if (!snddevice)
-	{
-		sndbits = Cvar_Get("sndbits", "16", CVAR_ARCHIVE);
-		sndchannels = Cvar_Get("sndchannels", "2", CVAR_ARCHIVE);
-		snddevice = Cvar_Get("snddevice", "/dev/dsp", CVAR_ARCHIVE);
-	}
+	snddevice = Cvar_Get("s_ossDevice", "/dev/dsp", CVAR_ARCHIVE);
 
 	// open /dev/dsp, confirm capability to mmap, and get size of dma buffer
 	if (!audio_fd)
 	{
-		audio_fd = open("/dev/dsp", O_RDWR);
+		audio_fd = open(snddevice->string, O_RDWR);
 		if (audio_fd < 0)
 		{
 			perror(snddevice->string);
-			GLog.Write("Could not open /dev/dsp\n");
+			GLog.Write("Could not open %s\n", snddevice->string);
 			return false;
 		}
 	}
@@ -119,7 +112,7 @@ bool SNDDMA_Init()
 	//	SNDCTL_DSP_GETOSPACE moved to be called later
 
 	// set sample bits & speed
-	dma.samplebits = (int)sndbits->value;
+	dma.samplebits = s_bits->integer;
 	if (dma.samplebits != 16 && dma.samplebits != 8)
 	{
 		int fmt;
@@ -164,7 +157,7 @@ bool SNDDMA_Init()
 		dma.speed = tryrates[i];
 	}
 
-	dma.channels = (int)sndchannels->value;
+	dma.channels = s_channels_cv->integer;
 	if (dma.channels < 1 || dma.channels > 2)
 	{
 		dma.channels = 2;
