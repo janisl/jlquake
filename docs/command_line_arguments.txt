@@ -1,0 +1,154 @@
+------------------- Common -----------------------
+
+-basedir
+-bpp
+-cddev
+-condebug
+-force
+-heapsize
+-height
+-lm_1
+-lm_2
+-lm_4
+-lm_a
+-lm_i
+-minmemory
+-mode
+-nocdaudio
+-nosound
+-nomidi
+-particles
+-port
+-safe
+-starttime
+-width
+-window
+-zone
+
+--------------------- Quake --------------------------
+
+-conheight
+-conwidth
+-dedicated
+-game
+-gamma
+-HCHILD
+-HFILE
+-hipnotic
+-HPARENT
+-ip
+-listen
+-mem
+-nolan
+-nomtex
+-nostdout
+-noudp
+-rogue
+-udpport
+
+------------------------ QuakeWorld -----------------------------
+
+-cheats
+-conheight
+-conwidth
+-gamma
+-ip
+-mem
+-noconinput
+-nomtex
+-nostdout
+
+------------------------ Hexen 2 ---------------------------
+
+-dedicated
+-game
+-HCHILD
+-HFILE
+-HPARENT
+-listen
+-nolan
+-nopagein
+-noudp
+-scale2d
+-udpport
+
+---------------------- HexenWorld ------------------------
+
+-cheats
+-conheight
+-conwidth
+-game
+-mem
+-nomtex
+
+------------------------ Removed ----------------------
+
+---- Replaced with console variables ----
+
+Parameter                Console command                      Saved
+
+-nojoy                   set in_joystick 0                    Yes
+-nomouse                 set in_mouse 0                       Yes
+-sndbits                 set sndbits <value>                  Yes
+-sndspeed                set sndspeed <value>                 Yes
+-sndmono                 set sndchannels 1                    Yes
+-sndstereo               set sndchannels 2                    Yes
+
+-dinput
+  Enabled by default, disable with:
+    set in_mouse -1
+
+---- Removed ----
+
+-cachedir
+  Caching not supported anymore
+
+-current
+  Video mode must be specified.
+
+-fullsbar
+  Was only applicable to now an obsolete video hardware.
+
+-gl11
+  Nowdays opengl32.dll always implements version 1.1.
+
+-ipxport
+-noipx
+  IPX driver is not supported anymore.
+
+-no8bit
+  8-bit is not supported anymore.
+
+-noadjustaspect
+  Will not adjust it now.
+
+-noforcemspd
+-noforcemaccel
+-noforcemparms
+  Mouse parameters are not touched anymore
+
+-path
+  Not supported anymore.
+
+-playback
+-record
+  VCR recording and playback is not supported anymore.
+
+-primarysound
+-snoforceformat
+  DirectSound now always uses a secondary buffer.
+
+-proghack
+  Not supported anymore.
+
+-savedir
+  Game directory or user's home directory is always used.
+
+-simsound
+  Sound simulation is not supported anymore.
+
+-usecdvolume
+  Not supported anymore.
+
+-wavonly
+  Only DirectSound is supported on Windows.
