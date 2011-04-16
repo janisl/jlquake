@@ -1,22 +1,9 @@
+#include "quakedef.h"
+
 #include <unistd.h>
 #include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
 #include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
-#include <errno.h>
-
-#include "quakedef.h"
 
 qboolean			isDedicated;
 
@@ -100,11 +87,6 @@ double Sys_FloatTime (void)
 // Sleeps for microseconds
 // =======================================================================
 
-void floating_point_exception_handler(int whatever)
-{
-	signal(SIGFPE, floating_point_exception_handler);
-}
-
 char *Sys_ConsoleInput(void)
 {
 	return Sys_CommonConsoleInput();
@@ -117,9 +99,6 @@ int main (int c, char **v)
 	quakeparms_t parms;
 	int j;
 
-//	static char cwd[1024];
-
-//	signal(SIGFPE, floating_point_exception_handler);
 	signal(SIGFPE, SIG_IGN);
 
 	Com_Memset(&parms, 0, sizeof(parms));
