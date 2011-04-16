@@ -82,29 +82,7 @@ double Sys_FloatTime (void)
 
 char *Sys_ConsoleInput (void)
 {
-    static char	text[256];
-    int		len;
-    fd_set	readfds;
-    int		ready;
-    struct timeval timeout;
-    
-    timeout.tv_sec = 0;
-    timeout.tv_usec = 0;
-    FD_ZERO(&readfds);
-    FD_SET(0, &readfds);
-    ready = select(1, &readfds, 0, 0, &timeout);
-    
-    if (ready>0)
-    {
-	len = read (0, text, sizeof(text));
-	if (len >= 1)
-	{
-		text[len-1] = 0;	// rip off the /n and terminate
-		return text;
-	}
-    }
-    
-    return 0;
+	return Sys_CommonConsoleInput();
 }
 
 void Sys_Init(void)

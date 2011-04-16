@@ -170,20 +170,7 @@ void floating_point_exception_handler(int whatever)
 
 char *Sys_ConsoleInput(void)
 {
-#if 0
-    static char text[256];
-    int     len;
-
-	if (cls.state == ca_dedicated) {
-		len = read (0, text, sizeof(text));
-		if (len < 1)
-			return NULL;
-		text[len-1] = 0;    // rip off the /n and terminate
-
-		return text;
-	}
-#endif
-	return NULL;
+	return Sys_CommonConsoleInput();
 }
 
 int		skipframes;

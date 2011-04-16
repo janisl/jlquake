@@ -123,8 +123,6 @@ void Sys_Quit (void)
 	exit (0);		// appkit isn't running
 }
 
-extern bool stdin_active;
-
 /*
 ================
 Sys_ConsoleInput
@@ -135,32 +133,7 @@ it to the host command processor
 */
 char *Sys_ConsoleInput (void)
 {
-	static char	text[256];
-	int		len;
-	fd_set	fdset;
-    struct timeval timeout;
-
-	if (!stdin_active)
-		return NULL;
-
-	FD_ZERO(&fdset);
-	FD_SET(0, &fdset); // stdin
-	timeout.tv_sec = 0;
-	timeout.tv_usec = 0;
-	if (select (1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(0, &fdset))
-		return NULL;
-
-	len = read (0, text, sizeof(text));
-	if (len == 0) {
-		// end of file
-		stdin_active = false;
-		return NULL;
-	}
-	if (len < 1)
-		return NULL;
-	text[len-1] = 0;	// rip off the /n and terminate
-	
-	return text;
+	return Sys_CommonConsoleInput();
 }
 
 /*
