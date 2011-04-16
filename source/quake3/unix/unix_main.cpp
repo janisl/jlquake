@@ -56,6 +56,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 
 #include "linux_local.h" // bk001204
+#include "../../core/system_unix.h"
 
 unsigned  sys_frame_time;
 

@@ -22,6 +22,7 @@
 #include "../qcommon/qcommon.h"
 
 #include "../linux/rw_linux.h"
+#include "../../core/system_unix.h"
 
 QCvar *nostdout;
 

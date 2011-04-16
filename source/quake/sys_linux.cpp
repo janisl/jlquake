@@ -1,4 +1,5 @@
 #include "quakedef.h"
+#include "../core/system_unix.h"
 
 #include <signal.h>
 #include <sys/time.h>

@@ -45,9 +45,6 @@
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
-//	Declared in core.
-extern unsigned long	sys_timeBase;
-
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 QCvar*					in_dgamouse;	// user pref for dga mouse

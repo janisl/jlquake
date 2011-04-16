@@ -21,6 +21,7 @@
 
 #include "core.h"
 #include "socket_local.h"
+#include "system_unix.h"
 #include <errno.h>
 #include <ifaddrs.h>
 #include <netdb.h>
@@ -41,8 +42,6 @@
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
-
-extern bool		stdin_active;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 

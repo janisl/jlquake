@@ -20,6 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
+#include "system_unix.h"
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>

@@ -17,14 +17,13 @@
 //**
 //**************************************************************************
 
-void Sys_Mkdir(const char* path);
-const char* Sys_Cwd();
-void Sys_SetHomePathSuffix(const char* Name);
-const char* Sys_DefaultHomePath();
+#ifndef _SYSTEM_UNIX_H
+#define _SYSTEM_UNIX_H
 
-char** Sys_ListFiles(const char* directory, const char* extension, const char* filter, int* numfiles, bool wantsubs);
-void Sys_FreeFileList(char** list);
+char* Sys_CommonConsoleInput();
 
-// Sys_Milliseconds should only be used for profiling purposes,
-// any game related timing information should come from event timestamps
-int Sys_Milliseconds();
+extern bool				stdin_active;
+
+extern unsigned long	sys_timeBase;
+
+#endif

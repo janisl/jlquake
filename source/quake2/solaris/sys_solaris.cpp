@@ -20,6 +20,7 @@
 #include <dlfcn.h>
 
 #include "../qcommon/qcommon.h"
+#include "../../core/system_unix.h"
 
 QCvar *nostdout;
 
