@@ -93,7 +93,7 @@ void Sys_Quit (void)
 	CL_Shutdown();
 	Qcommon_Shutdown ();
 	CloseHandle (qwclsemaphore);
-	if (dedicated && dedicated->value)
+	if (com_dedicated && com_dedicated->value)
 		FreeConsole ();
 
 // shut down QHOST hooks if necessary
@@ -222,7 +222,7 @@ void Sys_Init (void)
 	else if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )
 		s_win95 = true;
 
-	if (dedicated->value)
+	if (com_dedicated->value)
 	{
 		if (!AllocConsole ())
 			Sys_Error ("Couldn't create dedicated server console");
@@ -249,7 +249,7 @@ char *Sys_ConsoleInput (void)
 	DWORD		dummy;
 	DWORD		ch, numread, numevents;
 
-	if (!dedicated || !dedicated->value)
+	if (!com_dedicated || !com_dedicated->value)
 		return NULL;
 
 
@@ -328,7 +328,7 @@ void Sys_ConsoleOutput (char *string)
 	DWORD	dummy;
 	char	text[256];
 
-	if (!dedicated || !dedicated->value)
+	if (!com_dedicated || !com_dedicated->value)
 		return;
 
 	if (console_textlen)
@@ -618,7 +618,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	while (1)
 	{
 		// if at a full screen console, don't update unless needed
-		if (Minimized || (dedicated && dedicated->value) )
+		if (Minimized || (com_dedicated && com_dedicated->value) )
 		{
 			Sleep (1);
 		}

@@ -88,7 +88,7 @@ void FS_SetGamedir (char *dir)
 	//
 	// flush all data, so it will be forced to reload
 	//
-	if (dedicated && !dedicated->value)
+	if (com_dedicated && !com_dedicated->value)
 		Cbuf_AddText ("vid_restart\nsnd_restart\n");
 
 	QStr::Sprintf (fs_gamedir, sizeof(fs_gamedir), "%s", dir);

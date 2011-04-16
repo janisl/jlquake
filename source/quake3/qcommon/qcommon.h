@@ -340,7 +340,6 @@ void		Com_StartupVariable( const char *match );
 
 
 extern	QCvar	*com_developer;
-extern	QCvar	*com_dedicated;
 extern	QCvar	*com_speeds;
 extern	QCvar	*com_timescale;
 extern	QCvar	*com_sv_running;

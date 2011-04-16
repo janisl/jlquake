@@ -36,7 +36,6 @@ QCvar	*timescale;
 QCvar	*fixedtime;
 QCvar	*logfile_active;	// 1 = buffer log, 2 = flush after each print
 QCvar	*showtrace;
-QCvar	*dedicated;
 
 static fileHandle_t		logfile;
 
@@ -1030,16 +1029,16 @@ void Qcommon_Init (int argc, char **argv)
 	logfile_active = Cvar_Get ("logfile", "0", 0);
 	showtrace = Cvar_Get ("showtrace", "0", 0);
 #ifdef DEDICATED_ONLY
-	dedicated = Cvar_Get ("dedicated", "1", CVAR_INIT);
+	com_dedicated = Cvar_Get ("dedicated", "1", CVAR_INIT);
 #else
-	dedicated = Cvar_Get ("dedicated", "0", CVAR_INIT);
+	com_dedicated = Cvar_Get ("dedicated", "0", CVAR_INIT);
 #endif
 
 	s = va("%4.2f %s %s %s", VERSION, CPUSTRING, __DATE__, BUILDSTRING);
 	Cvar_Get ("version", s, CVAR_SERVERINFO|CVAR_INIT);
 
 
-	if (dedicated->value)
+	if (com_dedicated->value)
 		Cmd_AddCommand ("quit", Com_Quit);
 
 	Sys_Init ();
@@ -1053,7 +1052,7 @@ void Qcommon_Init (int argc, char **argv)
 	// add + commands from command line
 	if (!Cbuf_AddLateCommands ())
 	{	// if the user didn't give any commands, run default action
-		if (!dedicated->value)
+		if (!com_dedicated->value)
 			Cbuf_AddText ("d1\n");
 		else
 			Cbuf_AddText ("dedicated_start\n");

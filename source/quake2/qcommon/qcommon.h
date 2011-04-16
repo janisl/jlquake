@@ -426,7 +426,6 @@ float	frand(void);	// 0 ti 1
 float	crand(void);	// -1 to 1
 
 extern	QCvar	*developer;
-extern	QCvar	*dedicated;
 extern	QCvar	*host_speeds;
 extern	QCvar	*log_stats;
 

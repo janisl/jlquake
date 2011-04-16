@@ -832,7 +832,7 @@ void Master_Heartbeat (void)
 	int			i;
 
 	
-	if (!dedicated->value)
+	if (!com_dedicated->value)
 		return;		// only dedicated servers send heartbeats
 
 	if (!public_server->value)
@@ -870,7 +870,7 @@ void Master_Shutdown (void)
 {
 	int			i;
 
-	if (!dedicated->value)
+	if (!com_dedicated->value)
 		return;		// only dedicated servers send heartbeats
 
 	if (!public_server->value)

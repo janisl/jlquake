@@ -47,7 +47,6 @@ static fileHandle_t logfile;
 QCvar	*com_viewlog;
 QCvar	*com_speeds;
 QCvar	*com_developer;
-QCvar	*com_dedicated;
 QCvar	*com_timescale;
 QCvar	*com_fixedtime;
 QCvar	*com_dropsim;		// 0.0 to 1.0, simulated packet drops

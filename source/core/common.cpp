@@ -37,7 +37,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar	*com_journal;
+QCvar*			com_dedicated;
+
+QCvar*			com_journal;
 
 fileHandle_t	com_journalFile;			// events are written here
 fileHandle_t	com_journalDataFile;		// config files are written here

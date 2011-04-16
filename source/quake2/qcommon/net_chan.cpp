@@ -473,7 +473,7 @@ qboolean NET_GetPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message)
 	}
 	if (ret == SOCKRECV_ERROR)
 	{
-		if (!dedicated->value)	// let dedicated servers continue after errors
+		if (!com_dedicated->value)	// let dedicated servers continue after errors
 			Com_Error(ERR_DROP, "NET_GetPacket failed");
 		return false;
 	}
@@ -518,7 +518,7 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 	int ret = SOCK_Send(net_socket, data, length, &to);
 	if (ret == SOCKSEND_ERROR)
 	{
-		if (!dedicated->value)	// let dedicated servers continue after errors
+		if (!com_dedicated->value)	// let dedicated servers continue after errors
 		{
 			Com_Error(ERR_DROP, "NET_SendPacket ERROR");
 		}
@@ -644,7 +644,7 @@ void NET_Shutdown()
 // sleeps msec or until net socket is ready
 void NET_Sleep(int msec)
 {
-	if (!dedicated || !dedicated->value)
+	if (!com_dedicated || !com_dedicated->value)
 	{
 		return; // we're not a server, just run full speed
 	}

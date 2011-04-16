@@ -41,7 +41,7 @@ void SV_SetMaster_f (void)
 	int		i, slot;
 
 	// only dedicated servers send heartbeats
-	if (!dedicated->value)
+	if (!com_dedicated->value)
 	{
 		Com_Printf ("Only dedicated servers use masters.\n");
 		return;
@@ -488,7 +488,7 @@ void SV_GameMap_f (void)
 	QStr::NCpy(svs.mapcmd, Cmd_Argv(1), sizeof(svs.mapcmd)-1);
 
 	// copy off the level to the autosave slot
-	if (!dedicated->value)
+	if (!com_dedicated->value)
 	{
 		SV_WriteServerFile (true);
 		SV_CopySaveGame ("current", "save0");
@@ -983,7 +983,7 @@ void SV_InitOperatorCommands (void)
 	Cmd_AddCommand ("gamemap", SV_GameMap_f);
 	Cmd_AddCommand ("setmaster", SV_SetMaster_f);
 
-	if ( dedicated->value )
+	if ( com_dedicated->value )
 		Cmd_AddCommand ("say", SV_ConSay_f);
 
 	Cmd_AddCommand ("serverrecord", SV_ServerRecord_f);

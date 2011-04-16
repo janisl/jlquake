@@ -98,7 +98,7 @@ void SV_BroadcastPrintf (int level, char *fmt, ...)
 	va_end (argptr);
 	
 	// echo to console
-	if (dedicated->value)
+	if (com_dedicated->value)
 	{
 		char	copy[1024];
 		int		i;
