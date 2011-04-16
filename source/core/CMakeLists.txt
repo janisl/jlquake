@@ -33,6 +33,7 @@ set(CORE_FILES
 	socket.cpp
 	socket_unix.cpp
 	strings.cpp
+	system_console_unix.cpp
 	system_unix.cpp
 	unzip.cpp
 )
