@@ -61,4 +61,30 @@ set(QUAKE2_OBJS
 add_executable(vquake2 ${QUAKE2_OBJS})
 set_target_properties(vquake2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
 target_link_libraries(vquake2 client core zlib ${GLLDFLAGS})
-add_dependencies(vquake2 client)
+
+set(QUAKE2_DED_OBJS
+	qcommon/m_flash.cpp
+	qcommon/cmd.cpp
+	qcommon/common.cpp
+	qcommon/cvar.cpp
+	qcommon/files.cpp
+	qcommon/net_chan.cpp
+	qcommon/q_shared.cpp
+	qcommon/pmove.cpp
+	server/sv_ccmds.cpp
+	server/sv_ents.cpp
+	server/sv_game.cpp
+	server/sv_init.cpp
+	server/sv_main.cpp
+	server/sv_send.cpp
+	server/sv_user.cpp
+	server/sv_world.cpp
+	linux/q_shlinux.cpp
+	linux/sys_linux.cpp
+	linux/glob.cpp
+	null/cl_null.cpp
+)
+
+add_executable(vquake2ded ${QUAKE2_DED_OBJS})
+set_target_properties(vquake2ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED_ONLY")
+target_link_libraries(vquake2ded core zlib dl)

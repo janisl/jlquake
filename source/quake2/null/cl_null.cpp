@@ -53,3 +53,6 @@ void Key_Init (void)
 	Cmd_AddCommand ("bind", Key_Bind_Null_f);
 }
 
+void S_ClearSoundBuffer()
+{
+}
