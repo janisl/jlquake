@@ -165,6 +165,8 @@ void	Host_FindMaxClients (void)
 	i = COM_CheckParm ("-dedicated");
 	if (i)
 	{
+		com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
+
 		cls.state = ca_dedicated;
 		if (i != (COM_Argc() - 1))
 		{
@@ -174,7 +176,11 @@ void	Host_FindMaxClients (void)
 			svs.maxclients = 8;
 	}
 	else
+	{
+		com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
+
 		cls.state = ca_disconnected;
+	}
 
 	i = COM_CheckParm ("-listen");
 	if (i)

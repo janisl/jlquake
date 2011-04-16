@@ -1574,6 +1574,8 @@ void SV_Init (quakeparms_t *parms)
 	Cmd_Init ();	
 	Cvar_Init();
 
+	com_dedicated = Cvar_Get("dedicated", "1", CVAR_ROM);
+
 	COM_Init (parms->basedir);
 	
 	PR_Init ();

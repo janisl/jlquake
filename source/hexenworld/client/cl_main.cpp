@@ -1314,6 +1314,8 @@ void Host_Init (quakeparms_t *parms)
 	Cvar_Init();
 	V_Init ();
 
+	com_dedicated = Cvar_Get("dedicated", "0", CVAR_ROM);
+
 	COM_Init (parms->basedir);
 	
 	NET_Init (PORT_CLIENT);
