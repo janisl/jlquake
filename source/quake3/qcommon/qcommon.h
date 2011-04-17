@@ -279,25 +279,6 @@ int		FS_LoadStack();
 /*
 ==============================================================
 
-Edit fields and command line history/completion
-
-==============================================================
-*/
-
-#define	MAX_EDIT_LINE	256
-typedef struct {
-	int		cursor;
-	int		scroll;
-	int		widthInChars;
-	char	buffer[MAX_EDIT_LINE];
-} field_t;
-
-void Field_Clear( field_t *edit );
-void Field_CompleteCommand( field_t *edit );
-
-/*
-==============================================================
-
 MISC
 
 ==============================================================

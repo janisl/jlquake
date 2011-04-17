@@ -126,3 +126,22 @@ void Cmd_ExecuteString(const char* text, cmd_source_t src = src_command);
 void Cmd_SharedInit();
 
 extern	cmd_source_t	cmd_source;
+
+//==========================================================================
+//
+//	Edit fields and command line history/completion
+//
+//==========================================================================
+
+#define	MAX_EDIT_LINE	256
+
+struct field_t
+{
+	int		cursor;
+	int		scroll;
+	int		widthInChars;
+	char	buffer[MAX_EDIT_LINE];
+};
+
+void Field_Clear(field_t* Edit);
+void Field_CompleteCommand(field_t* Edit);

@@ -1245,3 +1245,187 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 
 	Cmd_HandleUnknownCommand();
 }
+
+//**************************************************************************
+//	command line completion
+//**************************************************************************
+
+static const char*	completionString;
+static char			shortestMatch[MAX_EDIT_LINE];
+static int			matchCount;
+// field we are working on, passed to Field_CompleteCommand (&g_consoleCommand for instance)
+static field_t*		completionField;
+
+//==========================================================================
+//
+//	Field_Clear
+//
+//==========================================================================
+
+void Field_Clear(field_t* edit)
+{
+	Com_Memset(edit->buffer, 0, MAX_EDIT_LINE);
+	edit->cursor = 0;
+	edit->scroll = 0;
+}
+
+//==========================================================================
+//
+//	FindMatches
+//
+//==========================================================================
+
+static void FindMatches(const char* s)
+{
+	if (QStr::NICmp(s, completionString, QStr::Length(completionString)))
+	{
+		return;
+	}
+	matchCount++;
+	if (matchCount == 1)
+	{
+		QStr::NCpyZ(shortestMatch, s, sizeof(shortestMatch));
+		return;
+	}
+
+	// cut shortestMatch to the amount common with s
+	for (int i = 0; s[i]; i++)
+	{
+		if (QStr::ToLower(shortestMatch[i]) != QStr::ToLower(s[i]))
+		{
+			shortestMatch[i] = 0;
+			break;
+		}
+	}
+}
+
+//==========================================================================
+//
+//	PrintMatches
+//
+//==========================================================================
+
+static void PrintMatches(const char* s)
+{
+	if (!QStr::NICmp(s, shortestMatch, QStr::Length(shortestMatch)))
+	{
+		GLog.Write("    %s\n", s);
+	}
+}
+
+//==========================================================================
+//
+//	keyConcatArgs
+//
+//==========================================================================
+
+static void keyConcatArgs()
+{
+	for (int i = 1; i < Cmd_Argc(); i++)
+	{
+		QStr::Cat(completionField->buffer, sizeof(completionField->buffer), " ");
+		const char* arg = Cmd_Argv(i);
+		while (*arg)
+		{
+			if (*arg == ' ')
+			{
+				QStr::Cat(completionField->buffer, sizeof(completionField->buffer),  "\"");
+				break;
+			}
+			arg++;
+		}
+		QStr::Cat(completionField->buffer, sizeof(completionField->buffer),  Cmd_Argv(i));
+		if (*arg == ' ')
+		{
+			QStr::Cat(completionField->buffer, sizeof(completionField->buffer),  "\"");
+		}
+	}
+}
+
+//==========================================================================
+//
+//	Cmd_CommandCompletion
+//
+//==========================================================================
+
+static void ConcatRemaining(const char* src, const char* start)
+{
+	const char* str = strstr(src, start);
+	if (!str)
+	{
+		keyConcatArgs();
+		return;
+	}
+
+	str += QStr::Length(start);
+	QStr::Cat(completionField->buffer, sizeof(completionField->buffer), str);
+}
+
+//==========================================================================
+//
+//	Field_CompleteCommand
+//
+//	perform Tab expansion
+//	NOTE TTimo this was originally client code only
+//  moved to common code when writing tty console for *nix dedicated server
+//
+//==========================================================================
+
+void Field_CompleteCommand(field_t* field)
+{
+	field_t		temp;
+
+	completionField = field;
+
+	// only look at the first token for completion purposes
+	Cmd_TokenizeString(completionField->buffer);
+
+	completionString = Cmd_Argv(0);
+	if (completionString[0] == '\\' || completionString[0] == '/')
+	{
+		completionString++;
+	}
+	matchCount = 0;
+	shortestMatch[0] = 0;
+
+	if (QStr::Length(completionString) == 0)
+	{
+		return;
+	}
+
+	Cmd_CommandCompletion(FindMatches);
+	Cvar_CommandCompletion(FindMatches);
+
+	if (matchCount == 0)
+	{
+		return;	// no matches
+	}
+
+	Com_Memcpy(&temp, completionField, sizeof(field_t));
+
+	if (matchCount == 1)
+	{
+		QStr::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
+		if (Cmd_Argc() == 1)
+		{
+			QStr::Cat(completionField->buffer, sizeof(completionField->buffer), " ");
+		}
+		else
+		{
+			ConcatRemaining(temp.buffer, completionString);
+		}
+		completionField->cursor = QStr::Length(completionField->buffer);
+		return;
+	}
+
+	// multiple matches, complete to shortest
+	QStr::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
+	completionField->cursor = QStr::Length(completionField->buffer);
+	ConcatRemaining(temp.buffer, completionString);
+
+	GLog.Write("]%s\n", completionField->buffer);
+
+	// run through again, printing matches
+	Cmd_CommandCompletion(PrintMatches);
+	Cvar_CommandCompletion(PrintMatches);
+}
