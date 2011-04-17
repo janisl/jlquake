@@ -176,7 +176,6 @@ int main (int argc, char **argv)
 		Sys_Error("Insufficient memory.\n");
 
 	parms.basedir = ".";
-	parms.cachedir = NULL;
 
 	SV_Init (&parms);
 

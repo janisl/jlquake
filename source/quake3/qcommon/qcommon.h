@@ -550,15 +550,11 @@ int		Sys_GetProcessorId( void );
 void	Sys_ShowConsole( int level, qboolean quitOnClose );
 void	Sys_SetErrorText( const char *text );
 
-qboolean	Sys_CheckCD( void );
-
 void	Sys_BeginProfiling( void );
 void	Sys_EndProfiling( void );
 
 qboolean Sys_LowPhysicalMemory();
 unsigned int Sys_ProcessorCount();
-
-int Sys_MonkeyShouldBeSpanked( void );
 
 extern huffman_t clientHuffTables;
 

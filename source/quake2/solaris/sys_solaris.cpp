@@ -97,40 +97,6 @@ void Sys_Error (char *error, ...)
 
 } 
 
-void Sys_Warn (char *warning, ...)
-{ 
-    va_list     argptr;
-    char        string[1024];
-    
-    va_start (argptr,warning);
-    Q_vsnprintf(string, 1024, warning, argptr);
-    va_end (argptr);
-	fprintf(stderr, "Warning: %s", string);
-} 
-
-/*
-============
-Sys_FileTime
-
-returns -1 if not present
-============
-*/
-int	Sys_FileTime (char *path)
-{
-	struct	stat	buf;
-	
-	if (stat (path,&buf) == -1)
-		return -1;
-	
-	return buf.st_mtime;
-}
-
-void floating_point_exception_handler(int whatever)
-{
-//	Sys_Warn("floating point exception\n");
-	signal(SIGFPE, floating_point_exception_handler);
-}
-
 char *Sys_ConsoleInput(void)
 {
 	return Sys_CommonConsoleInput();

@@ -52,7 +52,6 @@ typedef void efrag_t;
 typedef struct
 {
 	char	*basedir;
-	char	*cachedir;		// for development over ISDN lines
 	int		argc;
 	char	**argv;
 	void	*membase;

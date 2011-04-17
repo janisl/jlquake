@@ -150,7 +150,6 @@ qboolean VID_LoadRefresh( char *name )
 	refimport_t	ri;
 	char	fn[MAX_OSPATH];
 	struct stat st;
-	extern uid_t saved_euid;
 	FILE *fp;
 	char	*path;
 	char	curpath[MAX_OSPATH];

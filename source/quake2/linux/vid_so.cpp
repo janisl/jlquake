@@ -149,7 +149,6 @@ qboolean VID_LoadRefresh( char *name )
 {
 	refimport_t	ri;
 	struct stat st;
-	extern uid_t saved_euid;
 	
 	if ( reflib_active )
 	{

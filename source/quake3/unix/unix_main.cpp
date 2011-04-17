@@ -60,8 +60,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 unsigned  sys_frame_time;
 
-uid_t saved_euid;
-
 // =======================================================================
 // General routines
 // =======================================================================
@@ -79,33 +77,6 @@ qboolean Sys_LowPhysicalMemory() {
   //GlobalMemoryStatus (&stat);
   //return (stat.dwTotalPhys <= MEM_THRESHOLD) ? qtrue : qfalse;
   return qfalse; // bk001207 - FIXME
-}
-
-/*
-==================
-Sys_FunctionCmp
-==================
-*/
-int Sys_FunctionCmp(void *f1, void *f2) {
-  return qtrue;
-}
-
-/*
-==================
-Sys_FunctionCheckSum
-==================
-*/
-int Sys_FunctionCheckSum(void *f1) {
-  return 0;
-}
-
-/*
-==================
-Sys_MonkeyShouldBeSpanked
-==================
-*/
-int Sys_MonkeyShouldBeSpanked( void ) {
-  return 0;
 }
 
 void Sys_BeginProfiling( void ) {
@@ -236,50 +207,6 @@ void  Sys_Error( const char *error, ...)
 
   Sys_Exit( 1 ); // bk010104 - use single exit point.
 } 
-
-void Sys_Warn (char *warning, ...)
-{ 
-  va_list     argptr;
-  char        string[1024];
-
-  va_start (argptr,warning);
-  Q_vsnprintf(string, 1024, warning, argptr);
-  va_end (argptr);
-
-  if (ttycon_on)
-  {
-    tty_Hide();
-  }
-
-  fprintf(stderr, "Warning: %s", string);
-
-  if (ttycon_on)
-  {
-    tty_Show();
-  }
-} 
-
-/*
-============
-Sys_FileTime
-
-returns -1 if not present
-============
-*/
-int Sys_FileTime (char *path)
-{
-  struct  stat  buf;
-
-  if (stat (path,&buf) == -1)
-    return -1;
-
-  return buf.st_mtime;
-}
-
-void floating_point_exception_handler(int whatever)
-{
-  signal(SIGFPE, floating_point_exception_handler);
-}
 
 char *Sys_ConsoleInput(void)
 {
@@ -488,10 +415,6 @@ sysEvent_t Sys_GetEvent( void ) {
 
 /*****************************************************************************/
 
-qboolean Sys_CheckCD( void ) {
-  return qtrue;
-}
-
 void Sys_AppActivate (void)
 {
 }
@@ -568,9 +491,6 @@ void Sys_ParseArgs( int argc, char* argv[] ) {
   }
 }
 
-#include "../client/client.h"
-extern clientStatic_t cls;
-
 int main ( int argc, char* argv[] )
 {
   // int 	oldtime, newtime; // bk001204 - unused
@@ -578,7 +498,6 @@ int main ( int argc, char* argv[] )
   char  *cmdline;
 
   // go back to real user for config loads
-  saved_euid = geteuid();
   seteuid(getuid());
 
   Sys_ParseArgs( argc, argv );  // bk010104 - added this for support

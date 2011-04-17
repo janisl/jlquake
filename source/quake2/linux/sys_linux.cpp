@@ -28,8 +28,6 @@ QCvar *nostdout;
 
 unsigned	sys_frame_time;
 
-uid_t saved_euid;
-
 // =======================================================================
 // General routines
 // =======================================================================
@@ -101,40 +99,6 @@ void Sys_Error (char *error, ...)
 	_exit (1);
 
 } 
-
-void Sys_Warn (char *warning, ...)
-{ 
-    va_list     argptr;
-    char        string[1024];
-    
-    va_start (argptr,warning);
-    Q_vsnprintf(string, 1024, warning, argptr);
-    va_end (argptr);
-	fprintf(stderr, "Warning: %s", string);
-} 
-
-/*
-============
-Sys_FileTime
-
-returns -1 if not present
-============
-*/
-int	Sys_FileTime (char *path)
-{
-	struct	stat	buf;
-	
-	if (stat (path,&buf) == -1)
-		return -1;
-	
-	return buf.st_mtime;
-}
-
-void floating_point_exception_handler(int whatever)
-{
-//	Sys_Warn("floating point exception\n");
-	signal(SIGFPE, floating_point_exception_handler);
-}
 
 char *Sys_ConsoleInput(void)
 {
@@ -248,7 +212,6 @@ int main (int argc, char **argv)
 	int 	time, oldtime, newtime;
 
 	// go back to real user for config loads
-	saved_euid = geteuid();
 	seteuid(getuid());
 
 	Qcommon_Init(argc, argv);

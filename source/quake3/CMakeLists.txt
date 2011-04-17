@@ -1,7 +1,7 @@
 add_subdirectory(botlib)
 
 set(BASE_CFLAGS "-pipe -fsigned-char -I/usr/X11R6/include")
-set(DEBUG_CFLAGS "${BASE_CFLAGS} -g  -Wall -DNO_MOUSEGRAB -O")
+set(DEBUG_CFLAGS "${BASE_CFLAGS} -g  -Wall -O")
 set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium -fomit-frame-pointer -pipe -ffast-math -malign-loops=2 -malign-jumps=2 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce")
 
 set(THREAD_LDFLAGS -lpthread)
@@ -101,11 +101,6 @@ add_executable(vquake3 ${QUAKE3_FILES})
 set_target_properties(vquake3 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
 target_link_libraries(vquake3 botlib client core jpeg zlib ${GLLDFLAGS})
 add_dependencies(vquake3 botlib client jpeg)
-
-#add_executable(vquake3-smp ${QUAKE3_FILES})
-#set_target_properties(vquake3-smp PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSMP")
-#target_link_libraries(vquake3-smp botlib client core jpeg zlib ${THREAD_LDFLAGS} ${GLLDFLAGS})
-#add_dependencies(vquake3-smp botlib client jpeg)
 
 #############################################################################
 # DEDICATED SERVER                        

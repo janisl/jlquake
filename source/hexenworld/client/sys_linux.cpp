@@ -17,23 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <unistd.h>
 #include <signal.h>
-#include <stdlib.h>
-#include <limits.h>
 #include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <fcntl.h>
-#include <stdarg.h>
-#include <stdio.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <sys/mman.h>
-#include <errno.h>
 
 #include "quakedef.h"
 #include "../../core/system_unix.h"
@@ -42,15 +28,10 @@ int noconinput = 0;
 int nostdout = 0;
 
 char *basedir = ".";
-char *cachedir = "/tmp";
 
 // =======================================================================
 // General routines
 // =======================================================================
-
-void Sys_DebugNumber(int y, int val)
-{
-}
 
 void Sys_Printf (char *fmt, ...)
 {
@@ -104,40 +85,6 @@ void Sys_Error (char *error, ...)
 
 } 
 
-void Sys_Warn (char *warning, ...)
-{ 
-    va_list     argptr;
-    char        string[1024];
-    
-    va_start (argptr,warning);
-    Q_vsnprintf(string, 1024, warning, argptr);
-    va_end (argptr);
-	fprintf(stderr, "Warning: %s", string);
-} 
-
-void Sys_EditFile(char *filename)
-{
-
-	char cmd[256];
-	char *term;
-	char *editor;
-
-	term = getenv("TERM");
-	if (term && !QStr::Cmp(term, "xterm"))
-	{
-		editor = getenv("VISUAL");
-		if (!editor)
-			editor = getenv("EDITOR");
-		if (!editor)
-			editor = getenv("EDIT");
-		if (!editor)
-			editor = "vi";
-		sprintf(cmd, "xterm -e %s %s", editor, filename);
-		system(cmd);
-	}
-
-}
-
 double Sys_DoubleTime (void)
 {
     struct timeval tp;
@@ -159,25 +106,10 @@ double Sys_DoubleTime (void)
 // Sleeps for microseconds
 // =======================================================================
 
-static volatile int oktogo;
-
-void alarm_handler(int x)
-{
-	oktogo=1;
-}
-
-void floating_point_exception_handler(int whatever)
-{
-//	Sys_Warn("floating point exception\n");
-	signal(SIGFPE, floating_point_exception_handler);
-}
-
 char *Sys_ConsoleInput(void)
 {
 	return Sys_CommonConsoleInput();
 }
-
-int		skipframes;
 
 int main (int c, char **v)
 {
@@ -186,9 +118,6 @@ int main (int c, char **v)
 	quakeparms_t parms;
 	int j;
 
-//	static char cwd[1024];
-
-//	signal(SIGFPE, floating_point_exception_handler);
 	signal(SIGFPE, SIG_IGN);
 
 	Com_Memset(&parms, 0, sizeof(parms));
@@ -205,8 +134,6 @@ int main (int c, char **v)
 	parms.membase = malloc (parms.memsize);
 
 	parms.basedir = basedir;
-// caching is disabled by default, use -cachedir to enable
-//	parms.cachedir = cachedir;
 
 	noconinput = COM_CheckParm("-noconinput");
 	if (!noconinput)

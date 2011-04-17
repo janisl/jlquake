@@ -221,20 +221,6 @@ qboolean Sys_ScanForCD( void ) {
 
 /*
 ================
-Sys_CheckCD
-
-Return true if the proper CD is in the drive
-================
-*/
-qboolean	Sys_CheckCD( void ) {
-  // FIXME: mission pack
-  return qtrue;
-	//return Sys_ScanForCD();
-}
-
-
-/*
-================
 Sys_GetClipboardData
 
 ================
