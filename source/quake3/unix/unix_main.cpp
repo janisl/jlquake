@@ -208,11 +208,6 @@ void  Sys_Error( const char *error, ...)
   Sys_Exit( 1 ); // bk010104 - use single exit point.
 } 
 
-char *Sys_ConsoleInput(void)
-{
-	return Sys_CommonConsoleInput();
-}
-
 /*****************************************************************************/
 
 /*

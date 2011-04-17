@@ -28,3 +28,5 @@ void Sys_FreeFileList(char** list);
 // Sys_Milliseconds should only be used for profiling purposes,
 // any game related timing information should come from event timestamps
 int Sys_Milliseconds();
+
+char* Sys_ConsoleInput();

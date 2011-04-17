@@ -99,15 +99,6 @@ double Sys_DoubleTime (void)
     return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
 }
 
-// =======================================================================
-// Sleeps for microseconds
-// =======================================================================
-
-char *Sys_ConsoleInput(void)
-{
-	return Sys_CommonConsoleInput();
-}
-
 int main (int c, char **v)
 {
 

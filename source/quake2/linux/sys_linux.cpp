@@ -100,11 +100,6 @@ void Sys_Error (char *error, ...)
 
 } 
 
-char *Sys_ConsoleInput(void)
-{
-	return Sys_CommonConsoleInput();
-}
-
 /*****************************************************************************/
 
 static void *game_library;

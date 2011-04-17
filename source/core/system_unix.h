@@ -22,7 +22,6 @@
 
 void Sys_ConsoleInputInit();
 void Sys_ConsoleInputShutdown();
-char* Sys_CommonConsoleInput();
 void tty_Hide();
 void tty_Show();
 

@@ -322,11 +322,14 @@ static field_t* Hist_Next()
 
 //==========================================================================
 //
-//	Sys_CommonConsoleInput
+//	Sys_ConsoleInput
+//
+//	Checks for a complete line of text typed in at the console, then forwards
+// it to the host command processor
 //
 //==========================================================================
 
-char* Sys_CommonConsoleInput()
+char* Sys_ConsoleInput()
 {
 	// we use this when sending back commands
 	int i;

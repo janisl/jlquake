@@ -81,11 +81,6 @@ double Sys_FloatTime (void)
     return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
 }
 
-char *Sys_ConsoleInput (void)
-{
-	return Sys_CommonConsoleInput();
-}
-
 void Sys_Init(void)
 {
 }

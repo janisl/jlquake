@@ -128,19 +128,6 @@ void Sys_Quit (void)
 }
 
 /*
-================
-Sys_ConsoleInput
-
-Checks for a complete line of text typed in at the console, then forwards
-it to the host command processor
-================
-*/
-char *Sys_ConsoleInput (void)
-{
-	return Sys_CommonConsoleInput();
-}
-
-/*
 =============
 Sys_Init
 

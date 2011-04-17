@@ -88,11 +88,6 @@ double Sys_FloatTime (void)
 // Sleeps for microseconds
 // =======================================================================
 
-char *Sys_ConsoleInput(void)
-{
-	return Sys_CommonConsoleInput();
-}
-
 int main (int c, char **v)
 {
 

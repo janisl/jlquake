@@ -23,7 +23,7 @@
 #include "../core/system_unix.h"
 
 #include <GL/glx.h>
-#include <X11/extensions/xf86dga.h>
+#include <X11/extensions/Xxf86dga.h>
 #include <X11/extensions/xf86vmode.h>
 
 #define KEY_MASK	(KeyPressMask | KeyReleaseMask)
