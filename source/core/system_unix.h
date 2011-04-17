@@ -20,10 +20,17 @@
 #ifndef _SYSTEM_UNIX_H
 #define _SYSTEM_UNIX_H
 
+void Sys_ConsoleInputInit();
+void Sys_ConsoleInputShutdown();
 char* Sys_CommonConsoleInput();
+void tty_Hide();
+void tty_Show();
 
 extern bool				stdin_active;
 
 extern unsigned long	sys_timeBase;
+
+extern QCvar *ttycon;
+extern bool		ttycon_on;
 
 #endif
