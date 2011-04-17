@@ -77,7 +77,7 @@ static field_t		ttyEditLines[TTY_HISTORY];
 static int			hist_current = -1;
 static int			hist_count = 0;
 
-static char			text[256];
+static char			returnedText[256];
 
 // CODE --------------------------------------------------------------------
 
@@ -331,13 +331,9 @@ static field_t* Hist_Next()
 
 char* Sys_ConsoleInput()
 {
-	// we use this when sending back commands
-	int i;
-	char key;
-	field_t *history;
-
 	if (ttycon && ttycon->value)
 	{
+		char key;
 		int avail = read(0, &key, 1);
 		if (avail == -1)
 		{
@@ -359,17 +355,17 @@ char* Sys_ConsoleInput()
 		}
 		
 		// check if this is a control char
-		if ((key) && (key) < ' ')
+		if (key && key < ' ')
 		{
 			if (key == '\n')
 			{
 				// push it in history
 				Hist_Add(&tty_con);
-				QStr::Cpy(text, tty_con.buffer);
+				QStr::Cpy(returnedText, tty_con.buffer);
 				Field_Clear(&tty_con);
 				key = '\n';
 				write(1, &key, 1);
-				return text;
+				return returnedText;
 			}
 			if (key == '\t')
 			{
@@ -379,13 +375,13 @@ char* Sys_ConsoleInput()
 				//   it adds a '\' at the beginning of the string
 				//   cursor doesn't reflect actual length of the string that's sent back
 				tty_con.cursor = QStr::Length(tty_con.buffer);
-				if (tty_con.cursor>0)
+				if (tty_con.cursor > 0)
 				{
 					if (tty_con.buffer[0] == '\\')
 					{
-						for (i=0; i<=tty_con.cursor; i++)
+						for (int i = 0; i <= tty_con.cursor; i++)
 						{
-							tty_con.buffer[i] = tty_con.buffer[i+1];
+							tty_con.buffer[i] = tty_con.buffer[i + 1];
 						}
 						tty_con.cursor--;
 					}
@@ -402,6 +398,7 @@ char* Sys_ConsoleInput()
 					avail = read(0, &key, 1);
 					if (avail != -1)
 					{
+						field_t* history;
 						switch (key)
 						{
 						case 'A':
@@ -471,7 +468,7 @@ char* Sys_ConsoleInput()
 			return NULL;
 		}
 
-		int len = read(0, text, sizeof(text));
+		int len = read(0, returnedText, sizeof(returnedText));
 		if (len == 0)
 		{
 			// eof!
@@ -483,8 +480,8 @@ char* Sys_ConsoleInput()
 		{
 			return NULL;
 		}
-		text[len - 1] = 0;    // rip off the /n and terminate
+		returnedText[len - 1] = 0;    // rip off the /n and terminate
 
-		return text;
+		return returnedText;
 	}
 }

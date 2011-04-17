@@ -40,11 +40,17 @@ void Sys_Error (char *error, ...)
 {
     va_list         argptr;
 
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
+
     printf ("Sys_Error: ");   
     va_start (argptr,error);
     vprintf (error,argptr);
     va_end (argptr);
     printf ("\n");
+	Sys_ConsoleInputShutdown();
     Host_Shutdown();
     exit (1);
 }
@@ -53,13 +59,22 @@ void Sys_Printf (char *fmt, ...)
 {
     va_list         argptr;
     
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
     va_start (argptr,fmt);
     vprintf (fmt,argptr);
     va_end (argptr);
+	if (ttycon_on)
+	{
+		tty_Show();
+	}
 }
 
 void Sys_Quit (void)
 {
+	Sys_ConsoleInputShutdown();
     Host_Shutdown();
     exit (0);
 }
@@ -109,6 +124,8 @@ int main (int argc, char **argv)
     // unroll the simulation loop to give the video side a chance to see _vid_default_mode
     Host_Frame( 0.1 );
     VID_SetDefaultMode();
+
+	Sys_ConsoleInputInit();
 
     oldtime = Sys_FloatTime();
     while (1)

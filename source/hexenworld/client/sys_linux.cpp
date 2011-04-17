@@ -49,15 +49,24 @@ void Sys_Printf (char *fmt, ...)
     if (nostdout)
         return;
 
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
 	for (p = (unsigned char *)text; *p; p++)
 		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
 			printf("[%02x]", *p);
 		else
 			putc(*p, stdout);
+	if (ttycon_on)
+	{
+		tty_Show();
+	}
 }
 
 void Sys_Quit (void)
 {
+	Sys_ConsoleInputShutdown();
 	Host_Shutdown();
     fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
 	exit(0);
@@ -74,12 +83,18 @@ void Sys_Error (char *error, ...)
 
 // change stdin to non blocking
     fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
-    
+
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
+
     va_start (argptr,error);
     Q_vsnprintf(string, 1024, error, argptr);
     va_end (argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
+	Sys_ConsoleInputShutdown();
 	Host_Shutdown ();
 	exit (1);
 
@@ -136,6 +151,8 @@ int main (int c, char **v)
 	Sys_Init();
 
     Host_Init(&parms);
+
+	Sys_ConsoleInputInit();
 
     oldtime = Sys_DoubleTime ();
     while (1)

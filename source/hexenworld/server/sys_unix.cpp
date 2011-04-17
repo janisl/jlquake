@@ -76,12 +76,18 @@ void Sys_Error (char *error, ...)
 {
 	va_list		argptr;
 	char		string[1024];
-	
+
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
+
 	va_start (argptr,error);
 	Q_vsnprintf(string, 1024, error, argptr);
 	va_end (argptr);
 	printf ("Fatal error: %s\n",string);
 	
+	Sys_ConsoleInputShutdown();
 	exit (1);
 }
 
@@ -106,6 +112,10 @@ void Sys_Printf (char *fmt, ...)
 	if (sys_nostdout && sys_nostdout->value)
 		return;
 
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
 	for (p = (unsigned char *)text; *p; p++) {
 		*p &= 0x7f;
 		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
@@ -114,6 +124,10 @@ void Sys_Printf (char *fmt, ...)
 			putc(*p, stdout);
 	}
 	fflush(stdout);
+	if (ttycon_on)
+	{
+		tty_Show();
+	}
 }
 
 
@@ -124,6 +138,7 @@ Sys_Quit
 */
 void Sys_Quit (void)
 {
+	Sys_ConsoleInputShutdown();
 	exit (0);		// appkit isn't running
 }
 
@@ -173,6 +188,8 @@ int main(int argc, char *argv[])
 
 // run one frame immediately for first heartbeat
 	SV_Frame (0.1);		
+
+	Sys_ConsoleInputInit();
 
 //
 // main loop

@@ -37,7 +37,15 @@ void Sys_ConsoleOutput (char *string)
 	if (nostdout && nostdout->value)
 		return;
 
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
 	fputs(string, stdout);
+	if (ttycon_on)
+	{
+		tty_Show();
+	}
 }
 
 void Sys_Printf (char *fmt, ...)
@@ -56,6 +64,10 @@ void Sys_Printf (char *fmt, ...)
     if (nostdout && nostdout->value)
         return;
 
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
 	for (p = (unsigned char *)text; *p; p++) {
 		*p &= 0x7f;
 		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
@@ -63,10 +75,15 @@ void Sys_Printf (char *fmt, ...)
 		else
 			putc(*p, stdout);
 	}
+	if (ttycon_on)
+	{
+		tty_Show();
+	}
 }
 
 void Sys_Quit (void)
 {
+	Sys_ConsoleInputShutdown();
 	CL_Shutdown ();
 	Qcommon_Shutdown ();
     fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
@@ -88,6 +105,11 @@ void Sys_Error (char *error, ...)
 // change stdin to non blocking
     fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
 
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
+
 	CL_Shutdown ();
 	Qcommon_Shutdown ();
     
@@ -96,6 +118,7 @@ void Sys_Error (char *error, ...)
     va_end (argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
+	Sys_ConsoleInputShutdown();
 	_exit (1);
 
 } 
@@ -218,6 +241,8 @@ int main (int argc, char **argv)
 		fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY);
 //		printf ("Linux Quake -- Version %0.3f\n", LINUX_VERSION);
 	}
+
+	Sys_ConsoleInputInit();
 
     oldtime = Sys_Milliseconds_ ();
     while (1)

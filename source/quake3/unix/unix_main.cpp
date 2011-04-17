@@ -421,15 +421,15 @@ char *Sys_GetClipboardData(void)
 
 void  Sys_Print( const char *msg )
 {
-  if (ttycon_on)
-  {
-    tty_Hide();
-  }
-  fputs(msg, stderr);
-  if (ttycon_on)
-  {
-    tty_Show();
-  }
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
+	fputs(msg, stderr);
+	if (ttycon_on)
+	{
+		tty_Show();
+	}
 }
 
 
