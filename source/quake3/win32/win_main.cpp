@@ -41,6 +41,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static char		sys_cmdline[MAX_STRING_CHARS];
 
+#ifdef DEDICATED
+HINSTANCE		global_hInstance;
+unsigned		sysMsgTime;
+#endif
+
+WinVars_t	g_wv;
+
 // define this to use alternate spanking method
 // I found out that the regular way doesn't work on my box for some reason
 // see the associated spank.sh script
@@ -127,7 +134,9 @@ void QDECL Sys_Error( const char *error, ... ) {
 
 	timeEndPeriod( 1 );
 
+#ifndef DEDICATED
 	IN_Shutdown();
+#endif
 
 	// wait for the user to quit
 	while ( 1 ) {
@@ -149,7 +158,9 @@ Sys_Quit
 */
 void Sys_Quit( void ) {
 	timeEndPeriod( 1 );
+#ifndef DEDICATED
 	IN_Shutdown();
+#endif
 	Sys_DestroyConsole();
 
 	exit (0);
@@ -461,10 +472,12 @@ Sys_In_Restart_f
 Restart the input subsystem
 =================
 */
+#ifndef DEDICATED
 void Sys_In_Restart_f( void ) {
 	IN_Shutdown();
 	IN_Init();
 }
+#endif
 
 
 /*
@@ -497,7 +510,9 @@ void Sys_Init( void ) {
 	// NT gets 18ms resolution
 	timeBeginPeriod( 1 );
 
+#ifndef DEDICATED
 	Cmd_AddCommand ("in_restart", Sys_In_Restart_f);
+#endif
 	Cmd_AddCommand ("net_restart", Sys_Net_Restart_f);
 
 	g_wv.osversion.dwOSVersionInfoSize = sizeof( g_wv.osversion );
@@ -610,7 +625,9 @@ void Sys_Init( void ) {
 
 	Cvar_Set( "username", Sys_GetCurrentUser() );
 
+#ifndef DEDICATED
 	IN_Init();		// FIXME: not in dedicated?
+#endif
 }
 
 
@@ -676,8 +693,10 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 		startTime = Sys_Milliseconds();
 
+#ifndef DEDICATED
 		// make sure mouse and joystick are only called once a frame
 		IN_Frame();
+#endif
 
 		// run the game
 		Com_Frame();
