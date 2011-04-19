@@ -495,3 +495,32 @@ char* Sys_ConsoleInput()
 void Sys_ShowConsole(int visLevel, bool quitOnClose)
 {
 }
+
+//==========================================================================
+//
+//	Sys_Print
+//
+//==========================================================================
+
+void  Sys_Print(const char* msg)
+{
+	if (ttycon_on)
+	{
+		tty_Hide();
+	}
+	for (quint8* p = (quint8*)msg; *p; p++)
+	{
+		if ((*p >= 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
+		{
+			fprintf(stderr, "[%02x]", *p);
+		}
+		else
+		{
+			putc(*p, stderr);
+		}
+	}
+	if (ttycon_on)
+	{
+		tty_Show();
+	}
+}

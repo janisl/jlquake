@@ -419,20 +419,6 @@ char *Sys_GetClipboardData(void)
   return NULL;
 }
 
-void  Sys_Print( const char *msg )
-{
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-	fputs(msg, stderr);
-	if (ttycon_on)
-	{
-		tty_Show();
-	}
-}
-
-
 void    Sys_ConfigureFPU() { // bk001213 - divide by zero
 #ifdef __linux__
 #ifdef __i386
