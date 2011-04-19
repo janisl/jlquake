@@ -176,3 +176,5 @@
 15.04.2011
   I rearanged init procedure in Quake/Hexen 2 so that config file is executed before initialising systems that depend on saved settings.
   I added separate flag for Quake 3 latched cvars as there are important differences in their behavior and in Quake 2 it's server side latched cvars should behave as they did, but on client side (i.e. renderer) we want them to behave like in Quake 3. The differences are in the way latched value is applied (Cvar_GetLatchedVars vs Cvar_Get) and the fact that in Quake 2 they are saved in savegame and restored when loading, and we don't want this to be done for renderer vars.
+17.04.2011
+  I merged system console input (of dedicated servers) on Unix and made TTY stuff from Quake 3 available in all games, complete with command completition and history.

@@ -758,6 +758,16 @@ void IN_ProcessEvents()
 		case SE_MOUSE:
 			CL_MouseEvent(ev.evValue, ev.evValue2);
 			break;
+		case SE_CONSOLE:
+			Cbuf_AddText((char*)ev.evPtr);
+			Cbuf_AddText("\n");
+			break;
+		}
+
+		// free any block data
+		if (ev.evPtr)
+		{
+			Mem_Free(ev.evPtr);
 		}
 	}
 }

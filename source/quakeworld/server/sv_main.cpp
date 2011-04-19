@@ -1265,6 +1265,23 @@ void SV_Frame (float time)
 		sv.time += time;
 	}
 
+	for (sysEvent_t ev = Sys_SharedGetEvent(); ev.evType; ev = Sys_SharedGetEvent())
+	{
+		switch (ev.evType)
+		{
+		case SE_CONSOLE:
+			Cbuf_AddText((char*)ev.evPtr);
+			Cbuf_AddText("\n");
+			break;
+		}
+
+		// free any block data
+		if (ev.evPtr)
+		{
+			Mem_Free(ev.evPtr);
+		}
+	}
+
 // check timeouts
 	SV_CheckTimeouts ();
 
