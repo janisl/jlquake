@@ -3,26 +3,6 @@
 #include "quakedef.h"
 #include "errno.h"
 
-
-/*
-================
-filelength
-================
-*/
-int filelength (FILE *f)
-{
-	int		pos;
-	int		end;
-
-	pos = ftell (f);
-	fseek (f, 0, SEEK_END);
-	end = ftell (f);
-	fseek (f, pos, SEEK_SET);
-
-	return end;
-}
-
-
 /*
 ===============================================================================
 
@@ -44,15 +24,6 @@ void Sys_Error (char *error, ...)
 	exit (1);
 }
 
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	
-	va_start (argptr,fmt);
-	vprintf (fmt,argptr);
-	va_end (argptr);
-}
-
 void Sys_Quit (void)
 {
 	exit (0);
@@ -65,11 +36,6 @@ double Sys_FloatTime (void)
 	t += 0.1;
 	
 	return t;
-}
-
-char *Sys_ConsoleInput (void)
-{
-	return NULL;
 }
 
 void Sys_Sleep (void)

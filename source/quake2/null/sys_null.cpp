@@ -35,15 +35,6 @@ void	*Sys_GetGameAPI (void *parms)
 	return NULL;
 }
 
-char *Sys_ConsoleInput (void)
-{
-	return NULL;
-}
-
-void	Sys_ConsoleOutput (char *string)
-{
-}
-
 void Sys_SendKeyEvents (void)
 {
 }

@@ -417,7 +417,7 @@ void PF_name_print (void)
 		client_t	*cl;
 		int			i;
 		
-		Sys_Printf("%s",&svs.clients[Index-1].name);
+		Con_Printf("%s",&svs.clients[Index-1].name);
 
 		for (i=0, cl = svs.clients ; i<MAX_CLIENTS ; i++, cl++)
 		{
@@ -479,7 +479,7 @@ void PF_print_indexed (void)
 		client_t	*cl;
 		int			i;
 		
-		Sys_Printf("%s",&pr_global_strings[pr_string_index[Index-1]]);
+		Con_Printf("%s",&pr_global_strings[pr_string_index[Index-1]]);
 
 		for (i=0, cl = svs.clients ; i<MAX_CLIENTS ; i++, cl++)
 		{

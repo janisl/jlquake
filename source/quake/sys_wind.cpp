@@ -41,15 +41,6 @@ void Sys_Error (char *error, ...)
 	exit (1);
 }
 
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	
-	va_start (argptr,fmt);
-	vprintf (fmt,argptr);
-	va_end (argptr);
-}
-
 void Sys_Quit (void)
 {
 	exit (0);
@@ -73,47 +64,6 @@ double Sys_FloatTime (void)
 void Sys_SendKeyEvents (void)
 {
 }
-
-char *Sys_ConsoleInput (void)
-{
-	static char	text[256];
-	static int		len;
-	INPUT_RECORD	recs[1024];
-	int		count;
-	int		i;
-	int		c;
-
-	// read a line out
-	while (_kbhit())
-	{
-		c = _getch();
-		putch (c);
-		if (c == '\r')
-		{
-			text[len] = 0;
-			putch ('\n');
-			len = 0;
-			return text;
-		}
-		if (c == 8)
-		{
-			putch (' ');
-			putch (c);
-			len--;
-			text[len] = 0;
-			continue;
-		}
-		text[len] = c;
-		len++;
-		text[len] = 0;
-		if (len == sizeof(text))
-			len = 0;
-	}
-
-	return NULL;
-}
-
-
 
 /*
 ==================

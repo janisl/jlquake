@@ -58,23 +58,6 @@ double Sys_DoubleTime (void)
 
 /*
 ================
-Sys_Printf
-================
-*/
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	char		text[1024];
-	
-	va_start (argptr,fmt);
-	Q_vsnprintf(text, sizeof(text), fmt, argptr);
-	va_end (argptr);
-
-	Sys_Print(text);
-}
-
-/*
-================
 Sys_Quit
 ================
 */

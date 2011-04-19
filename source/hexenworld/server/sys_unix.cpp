@@ -93,46 +93,6 @@ void Sys_Error (char *error, ...)
 
 /*
 ================
-Sys_Printf
-================
-*/
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	static char		text[2048];
-	unsigned char		*p;
-
-	va_start (argptr,fmt);
-	Q_vsnprintf(text, 2048, fmt, argptr);
-	va_end (argptr);
-
-	if (QStr::Length(text) > sizeof(text))
-		Sys_Error("memory overwrite in Sys_Printf");
-
-	if (sys_nostdout && sys_nostdout->value)
-		return;
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-	for (p = (unsigned char *)text; *p; p++) {
-		*p &= 0x7f;
-		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
-			printf("[%02x]", *p);
-		else
-			putc(*p, stdout);
-	}
-	fflush(stdout);
-	if (ttycon_on)
-	{
-		tty_Show();
-	}
-}
-
-
-/*
-================
 Sys_Quit
 ================
 */

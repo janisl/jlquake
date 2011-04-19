@@ -28,59 +28,6 @@ QCvar *nostdout;
 
 unsigned	sys_frame_time;
 
-// =======================================================================
-// General routines
-// =======================================================================
-
-void Sys_ConsoleOutput (char *string)
-{
-	if (nostdout && nostdout->value)
-		return;
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-	fputs(string, stdout);
-	if (ttycon_on)
-	{
-		tty_Show();
-	}
-}
-
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	char		text[1024];
-	unsigned char		*p;
-
-	va_start (argptr,fmt);
-	Q_vsnprintf(text, 1024, fmt, argptr);
-	va_end (argptr);
-
-	if (QStr::Length(text) > sizeof(text))
-		Sys_Error("memory overwrite in Sys_Printf");
-
-    if (nostdout && nostdout->value)
-        return;
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-	for (p = (unsigned char *)text; *p; p++) {
-		*p &= 0x7f;
-		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
-			printf("[%02x]", *p);
-		else
-			putc(*p, stdout);
-	}
-	if (ttycon_on)
-	{
-		tty_Show();
-	}
-}
-
 void Sys_Quit (void)
 {
 	Sys_ConsoleInputShutdown();

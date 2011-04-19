@@ -119,18 +119,6 @@ void Sys_Error (char *error, ...)
 	exit (1);
 }
 
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	char		text[1024];
-	
-	va_start (argptr,fmt);
-	Q_vsnprintf(text, sizeof(text), fmt, argptr);
-	va_end (argptr);
-
-	Sys_Print(text);
-}
-
 void Sys_Quit (void)
 {
 	VID_ForceUnlockedAndReturnState ();
@@ -364,7 +352,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	Sys_Init ();
 
-	Sys_Printf ("Host_Init\n");
+	Con_Printf ("Host_Init\n");
 	Host_Init (&parms);
 
 	oldtime = Sys_DoubleTime ();

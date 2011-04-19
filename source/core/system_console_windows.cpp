@@ -501,6 +501,8 @@ char* Sys_ConsoleInput()
 //
 //	Sys_Print
 //
+//	Print text to the dedicated console
+//
 //==========================================================================
 
 void Sys_Print(const char* pMsg)

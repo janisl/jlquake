@@ -129,7 +129,7 @@ void Com_Printf (char *fmt, ...)
 	Con_Print (msg);
 		
 	// also echo to debugging console
-	Sys_ConsoleOutput (msg);
+	Sys_Print(msg);
 
 	// logfile
 	if (logfile_active && logfile_active->value)

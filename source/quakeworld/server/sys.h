@@ -22,9 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void Sys_Error (char *error, ...);
 // an error will cause the entire program to exit
 
-void Sys_Printf (char *fmt, ...);
-// send text to the console
-
 void Sys_Quit (void);
 double Sys_DoubleTime (void);
 void Sys_Init (void);

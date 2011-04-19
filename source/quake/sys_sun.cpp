@@ -55,23 +55,6 @@ void Sys_Error (char *error, ...)
     exit (1);
 }
 
-void Sys_Printf (char *fmt, ...)
-{
-    va_list         argptr;
-    
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-    va_start (argptr,fmt);
-    vprintf (fmt,argptr);
-    va_end (argptr);
-	if (ttycon_on)
-	{
-		tty_Show();
-	}
-}
-
 void Sys_Quit (void)
 {
 	Sys_ConsoleInputShutdown();

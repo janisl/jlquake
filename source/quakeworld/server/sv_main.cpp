@@ -298,7 +298,7 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 
 	i = client - svs.clients;
 
-//Sys_Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
+//Con_Printf("SV_FullClientUpdate:  Updated frags for client %d\n", i);
 
 	buf->WriteByte(svc_updatefrags);
 	buf->WriteByte(i);

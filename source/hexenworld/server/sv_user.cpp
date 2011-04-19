@@ -503,7 +503,7 @@ void SV_BeginDownload_f(void)
 			host_client->download = 0;
 		}
 
-		Sys_Printf ("Couldn't download %s to %s\n", name, host_client->name);
+		Con_Printf ("Couldn't download %s to %s\n", name, host_client->name);
 		host_client->netchan.message.WriteByte(svc_download);
 		host_client->netchan.message.WriteShort(-1);
 		host_client->netchan.message.WriteByte(0);
@@ -511,7 +511,7 @@ void SV_BeginDownload_f(void)
 	}
 
 	SV_NextDownload_f ();
-	Sys_Printf ("Downloading %s to %s\n", name, host_client->name);
+	Con_Printf ("Downloading %s to %s\n", name, host_client->name);
 }
 
 //=============================================================================
@@ -612,7 +612,7 @@ void SV_Say (qboolean team)
 		QStr::Cat(text, sizeof(text), "\n");
 	}
 
-	Sys_Printf ("%s", text);
+	Con_Printf ("%s", text);
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS; j++, client++)
 	{

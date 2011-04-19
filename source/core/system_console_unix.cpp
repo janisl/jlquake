@@ -57,7 +57,7 @@
 QCvar*		ttycon = NULL;
 // general flag to tell about tty console mode
 bool		ttycon_on = false;
-// when printing general stuff to stdout stderr (Sys_Printf)
+// when printing general stuff to stdout stderr (Sys_Print)
 //   we need to disable the tty console stuff
 // this increments so we can recursively disable
 static int			ttycon_hide = 0;
@@ -499,6 +499,8 @@ void Sys_ShowConsole(int visLevel, bool quitOnClose)
 //==========================================================================
 //
 //	Sys_Print
+//
+//	Print text to the dedicated console
 //
 //==========================================================================
 

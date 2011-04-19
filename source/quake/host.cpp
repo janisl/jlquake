@@ -384,7 +384,7 @@ void SV_DropClient (qboolean crash)
 			pr_global_struct->self = saveSelf;
 		}
 
-		Sys_Printf ("Client %s removed\n",host_client->name);
+		Con_Printf ("Client %s removed\n",host_client->name);
 	}
 
 // break the net connection
@@ -873,7 +873,7 @@ void Host_Init (quakeparms_t *parms)
 
 	host_initialized = true;
 	
-	Sys_Printf ("========Quake Initialized=========\n");	
+	Con_Printf ("========Quake Initialized=========\n");	
 	}
 	catch (QException& e)
 	{

@@ -157,19 +157,6 @@ void Sys_Init (void)
 
 /*
 ================
-Sys_ConsoleOutput
-
-Print text to the dedicated console
-================
-*/
-void Sys_ConsoleOutput (char *string)
-{
-	Sys_Print(string);
-}
-
-
-/*
-================
 Sys_SendKeyEvents
 
 Send Key_Event calls

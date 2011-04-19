@@ -363,7 +363,7 @@ void Con_Printf (const char *fmt, ...)
 	va_end (argptr);
 	
 // also echo to debugging console
-	Sys_Printf ("%s", msg);	// also echo to debugging console
+	Sys_Print(msg);	// also echo to debugging console
 
 // log all messages to file
 	if (con_debuglog)

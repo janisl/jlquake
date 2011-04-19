@@ -33,34 +33,6 @@ char *basedir = ".";
 // General routines
 // =======================================================================
 
-void Sys_Printf (char *fmt, ...)
-{
-	va_list		argptr;
-	char		text[4 * 2048];
-	unsigned char		*p;
-
-	va_start (argptr,fmt);
-	Q_vsnprintf(text, sizeof(text), fmt, argptr);
-	va_end (argptr);
-
-    if (nostdout)
-        return;
-
-	if (ttycon_on)
-	{
-		tty_Hide();
-	}
-	for (p = (unsigned char *)text; *p; p++)
-		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
-			printf("[%02x]", *p);
-		else
-			putc(*p, stdout);
-	if (ttycon_on)
-	{
-		tty_Show();
-	}
-}
-
 void Sys_Quit (void)
 {
 	Sys_ConsoleInputShutdown();

@@ -822,8 +822,6 @@ void Host_Say(qboolean teamonly)
 		SV_ClientPrintf("%s", text);
 	}
 	host_client = save;
-
-	Sys_Printf("%s", &text[1]);
 }
 
 
@@ -1080,7 +1078,7 @@ void Host_Spawn_f (void)
 		PR_ExecuteProgram (pr_global_struct->ClientConnect);
 
 		if ((Sys_FloatTime() - host_client->netconnection->connecttime) <= sv.time)
-			Sys_Printf ("%s entered the game\n", host_client->name);
+			Con_Printf ("%s entered the game\n", host_client->name);
 
 		PR_ExecuteProgram (pr_global_struct->PutClientInServer);	
 	}

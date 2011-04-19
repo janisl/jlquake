@@ -469,7 +469,6 @@ void	Sys_UnloadGame (void);
 void	*Sys_GetGameAPI (void *parms);
 // loads the game dll and calls the api init function
 
-void	Sys_ConsoleOutput (char *string);
 void	Sys_SendKeyEvents (void);
 void	Sys_Error (char *error, ...);
 void	Sys_Quit (void);

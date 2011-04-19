@@ -119,7 +119,7 @@ void Con_Printf (char *fmt, ...)
 		return;
 	}
 
-	Sys_Printf ("%s", msg);	// also echo to debugging console
+	Sys_Print(msg);	// also echo to debugging console
 	if (sv_logfile)
 		FS_Printf(sv_logfile, "%s", msg);
 }
@@ -202,7 +202,7 @@ void SV_BroadcastPrintf (int level, char *fmt, ...)
 	Q_vsnprintf(string, 1024, fmt, argptr);
 	va_end (argptr);
 	
-	Sys_Printf ("%s", string);	// print to the console
+	Sys_Print(string);	// print to the console
 
 	for (i=0, cl = svs.clients ; i<MAX_CLIENTS ; i++, cl++)
 	{
