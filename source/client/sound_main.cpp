@@ -2453,6 +2453,10 @@ void S_Update()
 
 void S_ExtraUpdate()
 {
+	if (!s_soundStarted)
+	{
+		return;
+	}
 	if (snd_noextraupdate->value)
 	{
 		return;		// don't pollute timings
