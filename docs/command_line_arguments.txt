@@ -31,10 +31,7 @@
 -dedicated
 -game
 -gamma
--HCHILD
--HFILE
 -hipnotic
--HPARENT
 -ip
 -listen
 -mem
@@ -61,9 +58,6 @@
 
 -dedicated
 -game
--HCHILD
--HFILE
--HPARENT
 -listen
 -nolan
 -nopagein
@@ -111,6 +105,11 @@ Parameter                Console command                      Saved
 
 -gl11
   Nowdays opengl32.dll always implements version 1.1.
+
+-HCHILD
+-HFILE
+-HPARENT
+  Not applicable with new console window.
 
 -ipxport
 -noipx
