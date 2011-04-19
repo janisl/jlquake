@@ -38,6 +38,7 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 QCvar*			com_dedicated;
+QCvar*			com_viewlog;
 
 QCvar*			com_journal;
 

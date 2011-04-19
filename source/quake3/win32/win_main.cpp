@@ -121,11 +121,11 @@ void QDECL Sys_Error( const char *error, ... ) {
 	Q_vsnprintf(text, 4096, error, argptr);
 	va_end (argptr);
 
-	Conbuf_AppendText( text );
-	Conbuf_AppendText( "\n" );
+	Sys_Print(text);
+	Sys_Print("\n");
 
-	Sys_SetErrorText( text );
-	Sys_ShowConsole( 1, qtrue );
+	Sys_SetErrorText(text);
+	Sys_ShowConsole(1, true);
 
 	timeEndPeriod( 1 );
 
@@ -134,7 +134,8 @@ void QDECL Sys_Error( const char *error, ... ) {
 #endif
 
 	// wait for the user to quit
-	while ( 1 ) {
+	while (1)
+	{
 		if (!GetMessage (&msg, NULL, 0, 0))
 			Com_Quit_f ();
 		TranslateMessage (&msg);
@@ -160,16 +161,6 @@ void Sys_Quit( void ) {
 
 	exit (0);
 }
-
-/*
-==============
-Sys_Print
-==============
-*/
-void Sys_Print( const char *msg ) {
-	Conbuf_AppendText( msg );
-}
-
 
 //========================================================
 
@@ -649,7 +640,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	QStr::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output
-	Sys_CreateConsole();
+	Sys_CreateConsole("Quake 3 Console");
 
 	// no abort/retry/fail errors
 	SetErrorMode( SEM_FAILCRITICALERRORS );

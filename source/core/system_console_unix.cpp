@@ -485,3 +485,13 @@ char* Sys_ConsoleInput()
 		return returnedText;
 	}
 }
+
+//==========================================================================
+//
+//	Sys_ConsoleInput
+//
+//==========================================================================
+
+void Sys_ShowConsole(int visLevel, bool quitOnClose)
+{
+}

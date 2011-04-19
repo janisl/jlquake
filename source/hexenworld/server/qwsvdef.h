@@ -48,7 +48,6 @@ typedef struct
 //
 extern	quakeparms_t host_parms;
 
-extern	QCvar*		sys_nostdout;
 extern	QCvar*		developer;
 
 extern	qboolean	host_initialized;		// true if into command execution

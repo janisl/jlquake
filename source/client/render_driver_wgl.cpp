@@ -25,9 +25,6 @@
 
 // MACROS ------------------------------------------------------------------
 
-//	Copied from resources.h
-#define IDI_ICON1                       1
-
 enum
 {
 	TRY_PFD_SUCCESS		= 0,

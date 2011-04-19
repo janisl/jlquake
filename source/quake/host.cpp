@@ -228,6 +228,8 @@ void Host_InitLocal (void)
 {
 	Host_InitCommands ();
 
+	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
+
 	host_framerate = Cvar_Get("host_framerate", "0", 0);	// set for slow motion
 	host_speeds = Cvar_Get("host_speeds", "0", 0);			// set for running times
 

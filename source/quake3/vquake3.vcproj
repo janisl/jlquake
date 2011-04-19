@@ -334,10 +334,6 @@
 				>
 			</File>
 			<File
-				RelativePath="win32\win_syscon.cpp"
-				>
-			</File>
-			<File
 				RelativePath="win32\win_wndproc.cpp"
 				>
 			</File>

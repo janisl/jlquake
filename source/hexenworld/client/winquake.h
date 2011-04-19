@@ -18,10 +18,6 @@ extern qboolean	WinNT;
 int VID_ForceUnlockedAndReturnState (void);
 void VID_ForceLockState (int lk);
 
-extern HWND		hwnd_dialog;
-
-extern HANDLE	hinput, houtput;
-
 void VID_SetDefaultMode (void);
 
 #endif

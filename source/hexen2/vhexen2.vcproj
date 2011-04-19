@@ -237,10 +237,6 @@
 				>
 			</File>
 			<File
-				RelativePath="conproc.cpp"
-				>
-			</File>
-			<File
 				RelativePath="console.cpp"
 				>
 			</File>
@@ -429,10 +425,6 @@
 			</File>
 			<File
 				RelativePath="Common.h"
-				>
-			</File>
-			<File
-				RelativePath="conproc.h"
 				>
 			</File>
 			<File

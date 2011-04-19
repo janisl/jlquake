@@ -23,14 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.h"
 #include "errno.h"
 #include "resource.h"
-#include "conproc.h"
 #include <direct.h>
 
 #define MINIMUM_WIN_MEMORY		0x0880000
 #define MAXIMUM_WIN_MEMORY		0x1000000
 
-#define CONSOLE_ERROR_TIMEOUT	60.0	// # of seconds to wait on Sys_Error running
-										//  dedicated before exiting
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP	20				// sleep time when not focus
 
@@ -45,15 +42,10 @@ static double		curtime = 0.0;
 static double		lastcurtime = 0.0;
 static int			lowshift;
 qboolean			isDedicated;
-static qboolean		sc_return_on_enter = false;
-HANDLE				hinput, houtput;
 
 static char			*tracking_tag = "Clams & Mooses";
 
 static HANDLE	tevent;
-static HANDLE	hFile;
-static HANDLE	heventParent;
-static HANDLE	heventChild;
 
 void Sys_InitFloatTime (void);
 
@@ -139,15 +131,9 @@ void Sys_Init (void)
 void Sys_Error (char *error, ...)
 {
 	va_list		argptr;
-	char		text[1024], text2[1024];
-	char		*text3 = "Press Enter to exit\n";
-	char		*text4 = "***********************************\n";
-	char		*text5 = "\n";
-	DWORD		dummy;
-	double		starttime;
+	char		text[1024];
 	static int	in_sys_error0 = 0;
 	static int	in_sys_error1 = 0;
-	static int	in_sys_error2 = 0;
 	static int	in_sys_error3 = 0;
 
 	if (!in_sys_error3)
@@ -160,29 +146,13 @@ void Sys_Error (char *error, ...)
 	Q_vsnprintf(text, 1024, error, argptr);
 	va_end (argptr);
 
-	if (isDedicated)
-	{
-		va_start (argptr, error);
-		Q_vsnprintf(text, 1024, error, argptr);
-		va_end (argptr);
+	Sys_Print(text);
+	Sys_Print("\n");
 
-		sprintf (text2, "ERROR: %s\n", text);
-		WriteFile (houtput, text5, QStr::Length(text5), &dummy, NULL);
-		WriteFile (houtput, text4, QStr::Length(text4), &dummy, NULL);
-		WriteFile (houtput, text2, QStr::Length(text2), &dummy, NULL);
-		WriteFile (houtput, text3, QStr::Length(text3), &dummy, NULL);
-		WriteFile (houtput, text4, QStr::Length(text4), &dummy, NULL);
+	Sys_SetErrorText(text);
+	Sys_ShowConsole(1, true);
 
-
-		starttime = Sys_FloatTime ();
-		sc_return_on_enter = true;	// so Enter will get us out of here
-
-		while (!Sys_ConsoleInput () &&
-				((Sys_FloatTime () - starttime) < CONSOLE_ERROR_TIMEOUT))
-		{
-		}
-	}
-	else
+	if (!isDedicated)
 	{
 	// switch to windowed so the message box is visible, unless we already
 	// tried that and failed
@@ -190,13 +160,6 @@ void Sys_Error (char *error, ...)
 		{
 			in_sys_error0 = 1;
 			VID_SetDefaultMode ();
-			MessageBox(NULL, text, "Quake Error",
-					   MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
-		}
-		else
-		{
-			MessageBox(NULL, text, "Double Quake Error",
-					   MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
 		}
 	}
 
@@ -206,13 +169,15 @@ void Sys_Error (char *error, ...)
 		Host_Shutdown ();
 	}
 
-// shut down QHOST hooks if necessary
-	if (!in_sys_error2)
+	// wait for the user to quit
+    MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0))
 	{
-		in_sys_error2 = 1;
-		DeinitConProc ();
+		TranslateMessage(&msg);
+      	DispatchMessage(&msg);
 	}
 
+	Sys_DestroyConsole();
 	exit (1);
 }
 
@@ -220,16 +185,12 @@ void Sys_Printf (char *fmt, ...)
 {
 	va_list		argptr;
 	char		text[1024];
-	DWORD		dummy;
 	
-	if (isDedicated)
-	{
-		va_start (argptr,fmt);
-		Q_vsnprintf(text, 1024, fmt, argptr);
-		va_end (argptr);
+	va_start (argptr,fmt);
+	Q_vsnprintf(text, 1024, fmt, argptr);
+	va_end (argptr);
 
-		WriteFile(houtput, text, QStr::Length(text), &dummy, NULL);	
-	}
+	Sys_Print(text);
 }
 
 void Sys_Quit (void)
@@ -242,12 +203,7 @@ void Sys_Quit (void)
 	if (tevent)
 		CloseHandle (tevent);
 
-	if (isDedicated)
-		FreeConsole ();
-
-// shut down QHOST hooks if necessary
-	DeinitConProc ();
-
+	Sys_DestroyConsole();
 	exit (0);
 }
 
@@ -340,88 +296,6 @@ void Sys_InitFloatTime (void)
 	lastcurtime = curtime;
 }
 
-
-char *Sys_ConsoleInput (void)
-{
-	static char	text[256];
-	static int		len;
-	INPUT_RECORD	recs[1024];
-	int		count;
-	int		i;
-	DWORD		dummy;
-	DWORD		ch, numread, numevents;
-
-	if (!isDedicated)
-		return NULL;
-
-
-	for ( ;; )
-	{
-		if (!GetNumberOfConsoleInputEvents (hinput, &numevents))
-			Sys_Error ("Error getting # of console events");
-
-		if (numevents <= 0)
-			break;
-
-		if (!ReadConsoleInput(hinput, recs, 1, &numread))
-			Sys_Error ("Error reading console input");
-
-		if (numread != 1)
-			Sys_Error ("Couldn't read console input");
-
-		if (recs[0].EventType == KEY_EVENT)
-		{
-			if (!recs[0].Event.KeyEvent.bKeyDown)
-			{
-				ch = recs[0].Event.KeyEvent.uChar.AsciiChar;
-
-				switch (ch)
-				{
-					case '\r':
-						WriteFile(houtput, "\r\n", 2, &dummy, NULL);	
-
-						if (len)
-						{
-							text[len] = 0;
-							len = 0;
-							return text;
-						}
-						else if (sc_return_on_enter)
-						{
-						// special case to allow exiting from the error handler on Enter
-							text[0] = '\r';
-							len = 0;
-							return text;
-						}
-
-						break;
-
-					case '\b':
-						WriteFile(houtput, "\b \b", 3, &dummy, NULL);	
-						if (len)
-						{
-							len--;
-						}
-						break;
-
-					default:
-						if (ch >= ' ')
-						{
-							WriteFile(houtput, &ch, 1, &dummy, NULL);	
-							text[len] = ch;
-							len = (len + 1) & 0xff;
-						}
-
-						break;
-
-				}
-			}
-		}
-	}
-
-	return NULL;
-}
-
 static void Sys_Sleep (void)
 {
 	Sleep (1);
@@ -478,7 +352,6 @@ WinMain
 int			global_nCmdShow;
 char		*argv[MAX_NUM_ARGVS];
 static char	*empty_string = "";
-HWND		hwnd_dialog;
 
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -489,7 +362,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	MEMORYSTATUS	lpBuffer;
 	static	char	cwd[1024];
 	int				t;
-	RECT			rect;
 
     /* previous instances do not exist in Win32 */
     if (hPrevInstance)
@@ -497,6 +369,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	global_hInstance = hInstance;
 	global_nCmdShow = nCmdShow;
+
+	Sys_CreateConsole("Quake Console");
 
 	lpBuffer.dwLength = sizeof(MEMORYSTATUS);
 	GlobalMemoryStatus (&lpBuffer);
@@ -540,29 +414,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	isDedicated = (COM_CheckParm ("-dedicated") != 0);
 
-	if (!isDedicated)
-	{
-		hwnd_dialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, NULL);
-
-		if (hwnd_dialog)
-		{
-			if (GetWindowRect (hwnd_dialog, &rect))
-			{
-				if (rect.left > (rect.top * 2))
-				{
-					SetWindowPos (hwnd_dialog, 0,
-						(rect.left / 2) - ((rect.right - rect.left) / 2),
-						rect.top, 0, 0,
-						SWP_NOZORDER | SWP_NOSIZE);
-				}
-			}
-
-			ShowWindow (hwnd_dialog, SW_SHOWDEFAULT);
-			UpdateWindow (hwnd_dialog);
-			SetForegroundWindow (hwnd_dialog);
-		}
-	}
-
 // take the greater of all the available memory or half the total memory,
 // but at least 8 Mb and no more than 16 Mb, unless they explicitly
 // request otherwise
@@ -596,38 +447,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	if (!tevent)
 		Sys_Error ("Couldn't create event");
-
-	if (isDedicated)
-	{
-		if (!AllocConsole ())
-		{
-			Sys_Error ("Couldn't create dedicated server console");
-		}
-
-		hinput = GetStdHandle (STD_INPUT_HANDLE);
-		houtput = GetStdHandle (STD_OUTPUT_HANDLE);
-
-	// give QHOST a chance to hook into the console
-		if ((t = COM_CheckParm ("-HFILE")) > 0)
-		{
-			if (t < COM_Argc())
-				hFile = (HANDLE)QStr::Atoi(COM_Argv(t+1));
-		}
-			
-		if ((t = COM_CheckParm ("-HPARENT")) > 0)
-		{
-			if (t < COM_Argc())
-				heventParent = (HANDLE)QStr::Atoi(COM_Argv(t+1));
-		}
-			
-		if ((t = COM_CheckParm ("-HCHILD")) > 0)
-		{
-			if (t < COM_Argc())
-				heventChild = (HANDLE)QStr::Atoi(COM_Argv(t+1));
-		}
-
-		InitConProc (hFile, heventParent, heventChild);
-	}
 
 	Sys_Init ();
 
@@ -675,4 +494,3 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     /* return success of application */
     return TRUE;
 }
-

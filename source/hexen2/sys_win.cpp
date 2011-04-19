@@ -10,7 +10,6 @@
 #include "errno.h"
 #include "resource.h"
 #include <direct.h>
-#include "conproc.h"
 
 #define CRC_A 59461 // "Who's Ridin' With Chaos?"
 #define CRC_B 54866 // "Santa needs a new sled!"
@@ -34,15 +33,10 @@ static double		curtime = 0.0;
 static double		lastcurtime = 0.0;
 static int			lowshift;
 qboolean			isDedicated;
-static qboolean		sc_return_on_enter = false;
-HANDLE				hinput, houtput;
 
 static char			*tracking_tag = "Sticky Buns";
 
 static HANDLE	tevent;
-static HANDLE	hFile;
-static HANDLE	heventParent;
-static HANDLE	heventChild;
 
 extern "C"
 {
@@ -193,12 +187,7 @@ static	char temp[MAX_PATH+1];
 void Sys_Error (char *error, ...)
 {
 	va_list		argptr;
-	char		text[1024], text2[1024];
-	char		*text3 = "Press Enter to exit\n";
-	char		*text4 = "***********************************\n";
-	char		*text5 = "\n";
-	DWORD		dummy;
-	double		starttime;
+	char		text[1024];
 
 	VID_ForceUnlockedAndReturnState ();
 
@@ -206,40 +195,29 @@ void Sys_Error (char *error, ...)
 	Q_vsnprintf(text, 1024, error, argptr);
 	va_end (argptr);
 
-	if (isDedicated)
-	{
-		va_start (argptr, error);
-		Q_vsnprintf(text, 1024, error, argptr);
-		va_end (argptr);
+	Sys_Print(text);
+	Sys_Print("\n");
 
-		sprintf (text2, "ERROR: %s\n", text);
-		WriteFile (houtput, text5, QStr::Length(text5), &dummy, NULL);
-		WriteFile (houtput, text4, QStr::Length(text4), &dummy, NULL);
-		WriteFile (houtput, text2, QStr::Length(text2), &dummy, NULL);
-		WriteFile (houtput, text3, QStr::Length(text3), &dummy, NULL);
-		WriteFile (houtput, text4, QStr::Length(text4), &dummy, NULL);
+	Sys_SetErrorText(text);
+	Sys_ShowConsole(1, true);
 
-
-		starttime = Sys_FloatTime ();
-		sc_return_on_enter = true;	// so Enter will get us out of here
-
-		while (!Sys_ConsoleInput () &&
-				((Sys_FloatTime () - starttime) < CONSOLE_ERROR_TIMEOUT))
-		{
-		}
-	}
-	else
+	if (!isDedicated)
 	{
 	// switch to windowed so the message box is visible
 		VID_SetDefaultMode ();
-		MessageBox(NULL, text, "Hexen II Error", MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
 	}
 
 	Host_Shutdown ();
 
-// shut down QHOST hooks if necessary
-	DeinitConProc ();
+	// wait for the user to quit
+    MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+      	DispatchMessage(&msg);
+	}
 
+	Sys_DestroyConsole();
 	exit (1);
 }
 
@@ -247,16 +225,12 @@ void Sys_Printf (char *fmt, ...)
 {
 	va_list		argptr;
 	char		text[1024];
-	DWORD		dummy;
 	
-	if (isDedicated)
-	{
-		va_start (argptr,fmt);
-		Q_vsnprintf(text, 1024, fmt, argptr);
-		va_end (argptr);
+	va_start (argptr,fmt);
+	Q_vsnprintf(text, 1024, fmt, argptr);
+	va_end (argptr);
 
-		WriteFile(houtput, text, QStr::Length(text), &dummy, NULL);	
-	}
+	Sys_Print(text);
 }
 
 void Sys_Quit (void)
@@ -269,12 +243,7 @@ void Sys_Quit (void)
 	if (tevent)
 		CloseHandle (tevent);
 
-	if (isDedicated)
-		FreeConsole ();
-
-// shut down QHOST hooks if necessary
-	DeinitConProc ();
-
+	Sys_DestroyConsole();
 	exit (0);
 }
 
@@ -368,87 +337,6 @@ void Sys_InitFloatTime (void)
 }
 
 
-char *Sys_ConsoleInput (void)
-{
-	static char	text[256];
-	static int		len;
-	INPUT_RECORD	recs[1024];
-	int		count;
-	int		i;
-	DWORD	dummy;
-	DWORD	ch, numread, numevents;
-
-	if (!isDedicated)
-		return NULL;
-
-
-	for ( ;; )
-	{
-		if (!GetNumberOfConsoleInputEvents (hinput, &numevents))
-			Sys_Error ("Error getting # of console events");
-
-		if (numevents <= 0)
-			break;
-
-		if (!ReadConsoleInput(hinput, recs, 1, &numread))
-			Sys_Error ("Error reading console input");
-
-		if (numread != 1)
-			Sys_Error ("Couldn't read console input");
-
-		if (recs[0].EventType == KEY_EVENT)
-		{
-			if (!recs[0].Event.KeyEvent.bKeyDown)
-			{
-				ch = recs[0].Event.KeyEvent.uChar.AsciiChar;
-
-				switch (ch)
-				{
-					case '\r':
-						WriteFile(houtput, "\r\n", 2, &dummy, NULL);	
-
-						if (len)
-						{
-							text[len] = 0;
-							len = 0;
-							return text;
-						}
-						else if (sc_return_on_enter)
-						{
-						// special case to allow exiting from the error handler on Enter
-							text[0] = '\r';
-							len = 0;
-							return text;
-						}
-
-						break;
-
-					case '\b':
-						WriteFile(houtput, "\b \b", 3, &dummy, NULL);	
-						if (len)
-						{
-							len--;
-						}
-						break;
-
-					default:
-						if (ch >= ' ')
-						{
-							WriteFile(houtput, &ch, 1, &dummy, NULL);	
-							text[len] = ch;
-							len = (len + 1) & 0xff;
-						}
-
-						break;
-
-				}
-			}
-		}
-	}
-
-	return NULL;
-}
-
 static void Sys_Sleep (void)
 {
 	Sleep (1);
@@ -504,7 +392,6 @@ WinMain
 int			global_nCmdShow;
 char		*argv[MAX_NUM_ARGVS];
 static char	*empty_string = "";
-HWND		hwnd_dialog;
 
 
 #define H2_PARAM_KEY      "Software\\Hexen2"
@@ -572,14 +459,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	if (!isDedicated)
 	{
-		hwnd_dialog = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, NULL);
-
-		if (hwnd_dialog)
-		{
-			ShowWindow (hwnd_dialog, SW_SHOWDEFAULT);
-			UpdateWindow (hwnd_dialog);
-			SetForegroundWindow (hwnd_dialog);
-		}
+		Sys_CreateConsole("Hexen II Console");
 	}
 
 // take the greater of all the available memory or half the total memory,
@@ -618,38 +498,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	if (!tevent)
 		Sys_Error ("Couldn't create event");
-
-	if (isDedicated)
-	{
-		if (!AllocConsole ())
-		{
-			Sys_Error ("Couldn't create dedicated server console");
-		}
-
-		hinput = GetStdHandle (STD_INPUT_HANDLE);
-		houtput = GetStdHandle (STD_OUTPUT_HANDLE);
-
-	// give QHOST a chance to hook into the console
-		if ((t = COM_CheckParm ("-HFILE")) > 0)
-		{
-			if (t < COM_Argc())
-				hFile = (HANDLE)QStr::Atoi (COM_Argv(t+1));
-		}
-			
-		if ((t = COM_CheckParm ("-HPARENT")) > 0)
-		{
-			if (t < COM_Argc())
-				heventParent = (HANDLE)QStr::Atoi (COM_Argv(t+1));
-		}
-			
-		if ((t = COM_CheckParm ("-HCHILD")) > 0)
-		{
-			if (t < COM_Argc())
-				heventChild = (HANDLE)QStr::Atoi (COM_Argv(t+1));
-		}
-
-		InitConProc (hFile, heventParent, heventChild);
-	}
 
 	Sys_Init ();
 

@@ -29,4 +29,6 @@ void Sys_FreeFileList(char** list);
 // any game related timing information should come from event timestamps
 int Sys_Milliseconds();
 
+void Sys_ShowConsole(int level, bool quitOnClose);
 char* Sys_ConsoleInput();
+void Sys_Print(const char* msg);

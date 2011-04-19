@@ -305,6 +305,8 @@ void COM_Init (char *basedir)
 {
 	Com_InitByteOrder();
 
+	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
+
 	registered = Cvar_Get("registered", "0", 0);
 
 	COM_InitFilesystem ();

@@ -30,11 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <dsound.h>
 #include <winsock.h>
 
-void	Sys_CreateConsole( void );
-void	Sys_DestroyConsole( void );
-
-char	*Sys_ConsoleInput (void);
-
 qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 
 // window procedure
@@ -43,8 +38,6 @@ LONG WINAPI MainWndProc (
     UINT    uMsg,
     WPARAM  wParam,
     LPARAM  lParam);
-
-void Conbuf_AppendText( const char *msg );
 
 typedef struct
 {

@@ -44,7 +44,6 @@ jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 FILE *debuglogfile;
 static fileHandle_t logfile;
 
-QCvar	*com_viewlog;
 QCvar	*com_speeds;
 QCvar	*com_developer;
 QCvar	*com_timescale;

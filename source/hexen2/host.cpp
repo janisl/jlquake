@@ -259,6 +259,8 @@ void Host_InitLocal (void)
 
 	Host_InitCommands ();
 	
+	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
+
 	sys_quake2 = Cvar_Get("sys_quake2", "1", CVAR_ARCHIVE);
 
 	host_framerate = Cvar_Get("host_framerate", "0", 0);	// set for slow motion

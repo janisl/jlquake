@@ -60,10 +60,6 @@ int Sys_GetProcessorId( void )
 	return CPUID_GENERIC;
 }
 
-void Sys_ShowConsole( int visLevel, qboolean quitOnClose )
-{
-}
-
 char *Sys_GetCurrentUser( void )
 {
 	struct passwd *p;

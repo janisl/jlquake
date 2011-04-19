@@ -50,11 +50,12 @@
 
 int Com_Milliseconds();
 
-extern	QCvar*	com_dedicated;
+extern QCvar*	com_dedicated;
+extern QCvar*	com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
 
-extern	QCvar*	com_journal;
+extern QCvar*	com_journal;
 
-extern	fileHandle_t	com_journalFile;
-extern	fileHandle_t	com_journalDataFile;
+extern fileHandle_t	com_journalFile;
+extern fileHandle_t	com_journalDataFile;
 
 #endif

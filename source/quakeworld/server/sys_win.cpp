@@ -20,11 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/types.h>
 #include <sys/timeb.h>
 #include "qwsvdef.h"
+#include "../../core/system_windows.h"
 #include <conio.h>
 #include <direct.h>
 
-
-QCvar*	sys_nostdout;
 
 /*
 ================
@@ -40,9 +39,21 @@ void Sys_Error (char *error, ...)
 	Q_vsnprintf(text, 1024, error, argptr);
 	va_end (argptr);
 
-//    MessageBox(NULL, text, "Error", 0 /* MB_OK */ );
-	printf ("ERROR: %s\n", text);
+	Sys_Print(text);
+	Sys_Print("\n");
 
+	Sys_SetErrorText(text);
+	Sys_ShowConsole(1, true);
+
+	// wait for the user to quit
+    MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg);
+      	DispatchMessage(&msg);
+	}
+
+	Sys_DestroyConsole();
 	exit (1);
 }
 
@@ -70,64 +81,19 @@ double Sys_DoubleTime (void)
 
 /*
 ================
-Sys_ConsoleInput
-================
-*/
-char *Sys_ConsoleInput (void)
-{
-	static char	text[256];
-	static int		len;
-	int		c;
-
-	// read a line out
-	while (_kbhit())
-	{
-		c = _getch();
-		putch (c);
-		if (c == '\r')
-		{
-			text[len] = 0;
-			putch ('\n');
-			len = 0;
-			return text;
-		}
-		if (c == 8)
-		{
-			if (len)
-			{
-				putch (' ');
-				putch (c);
-				len--;
-				text[len] = 0;
-			}
-			continue;
-		}
-		text[len] = c;
-		len++;
-		text[len] = 0;
-		if (len == sizeof(text))
-			len = 0;
-	}
-
-	return NULL;
-}
-
-
-/*
-================
 Sys_Printf
 ================
 */
 void Sys_Printf (char *fmt, ...)
 {
 	va_list		argptr;
+	char		text[1024];
 	
-	if (sys_nostdout && sys_nostdout->value)
-		return;
-		
 	va_start (argptr,fmt);
-	vprintf (fmt,argptr);
+	Q_vsnprintf(text, sizeof(text), fmt, argptr);
 	va_end (argptr);
+
+	Sys_Print(text);
 }
 
 /*
@@ -137,6 +103,7 @@ Sys_Quit
 */
 void Sys_Quit (void)
 {
+	Sys_DestroyConsole();
 	exit (0);
 }
 
@@ -151,7 +118,6 @@ is marked
 */
 void Sys_Init (void)
 {
-	sys_nostdout = Cvar_Get("sys_nostdout", "0", 0);
 }
 
 /*
@@ -162,17 +128,21 @@ main
 */
 char	*newargv[256];
 
-int main (int argc, char **argv)
+int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 	quakeparms_t	parms;
 	double			newtime, time, oldtime;
 	static	char	cwd[1024];
 	int				t;
 
-	COM_InitArgv2(argc, argv);
+	global_hInstance = hInstance;
+
+	Sys_CreateConsole("QuakeWorld Console");
+
+	COM_InitArgv2(__argc, __argv);
 	
-	parms.argc = argc;
-	parms.argv = argv;
+	parms.argc = __argc;
+	parms.argv = __argv;
 
 	parms.memsize = 16*1024*1024;
 
@@ -202,6 +172,16 @@ int main (int argc, char **argv)
 	oldtime = Sys_DoubleTime () - 0.1;
 	while (1)
 	{
+		MSG msg;
+		while (PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE))
+		{
+			if (!GetMessage (&msg, NULL, 0, 0))
+				Sys_Quit();
+
+      		TranslateMessage(&msg);
+      		DispatchMessage(&msg);
+		}
+
 	// select on the net socket and stdin
 	// the only reason we have a timeout at all is so that if the last
 	// connected client times out, the message would not otherwise
@@ -220,5 +200,3 @@ int main (int argc, char **argv)
 
 	return true;
 }
-
-

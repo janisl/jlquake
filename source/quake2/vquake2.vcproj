@@ -253,10 +253,6 @@
 				>
 			</File>
 			<File
-				RelativePath="win32\conproc.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\console.cpp"
 				>
 			</File>
@@ -363,10 +359,6 @@
 			</File>
 			<File
 				RelativePath="client\client.h"
-				>
-			</File>
-			<File
-				RelativePath="win32\conproc.h"
 				>
 			</File>
 			<File

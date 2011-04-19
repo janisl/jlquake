@@ -1021,6 +1021,8 @@ void Qcommon_Init (int argc, char **argv)
     Cmd_AddCommand ("z_stats", Z_Stats_f);
     Cmd_AddCommand ("error", Com_Error_f);
 
+	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
+
 	host_speeds = Cvar_Get ("host_speeds", "0", 0);
 	log_stats = Cvar_Get ("log_stats", "0", 0);
 	developer = Cvar_Get ("developer", "0", 0);

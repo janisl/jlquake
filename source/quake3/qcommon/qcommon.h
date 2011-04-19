@@ -325,7 +325,6 @@ extern	QCvar	*com_speeds;
 extern	QCvar	*com_timescale;
 extern	QCvar	*com_sv_running;
 extern	QCvar	*com_cl_running;
-extern	QCvar	*com_viewlog;			// 0 = hidden, 1 = visible, 2 = minimized
 extern	QCvar	*com_version;
 extern	QCvar	*com_blood;
 extern	QCvar	*com_buildScript;		// for building release pak files
@@ -538,17 +537,12 @@ void	QDECL Sys_Error( const char *error, ...);
 void	Sys_Quit (void);
 char	*Sys_GetClipboardData( void );	// note that this isn't journaled...
 
-void	Sys_Print( const char *msg );
-
 extern "C" void	Sys_SnapVector( float *v );
 
 // the system console is shown when a dedicated server is running
 void	Sys_DisplaySystemConsole( qboolean show );
 
 int		Sys_GetProcessorId( void );
-
-void	Sys_ShowConsole( int level, qboolean quitOnClose );
-void	Sys_SetErrorText( const char *text );
 
 void	Sys_BeginProfiling( void );
 void	Sys_EndProfiling( void );
