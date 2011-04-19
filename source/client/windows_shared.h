@@ -20,7 +20,7 @@
 #ifndef _WIN_SHARED_H
 #define _WIN_SHARED_H
 
-#include <windows.h>
+#include "../core/system_windows.h"
 
 void SNDDMA_Activate();
 
@@ -32,13 +32,11 @@ void IN_Activate(bool active);
 
 #define WINDOW_CLASS_NAME	"vQuake"
 
-extern HINSTANCE	global_hInstance;
 extern HWND			GMainWindow;
 extern HDC			maindc;
 extern HGLRC		baseRC;
 extern bool			pixelFormatSet;
 extern bool			cdsFullscreen;
-extern unsigned		sysMsgTime;
 extern QCvar*		in_joystick;
 
 #endif

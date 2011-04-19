@@ -41,11 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static char		sys_cmdline[MAX_STRING_CHARS];
 
-#ifdef DEDICATED
-HINSTANCE		global_hInstance;
-unsigned		sysMsgTime;
-#endif
-
 WinVars_t	g_wv;
 
 // define this to use alternate spanking method

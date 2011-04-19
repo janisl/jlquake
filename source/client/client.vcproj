@@ -251,7 +251,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\win_shared.h"
+				RelativePath=".\windows_shared.h"
 				>
 			</File>
 		</Filter>

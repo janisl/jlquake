@@ -417,6 +417,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\system_windows.h"
+				>
+			</File>
+			<File
 				RelativePath=".\unzip.h"
 				>
 			</File>

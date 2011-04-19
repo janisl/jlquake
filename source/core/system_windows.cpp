@@ -20,7 +20,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "core.h"
-#include <windows.h>
+#include "system_windows.h"
 #include <direct.h>
 #include <io.h>
 
@@ -41,6 +41,11 @@ char* __CopyString(const char* in);
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
+
+HINSTANCE		global_hInstance;
+// when we get a windows message, we store the time off so keyboard processing
+// can know the exact time of an event
+unsigned		sysMsgTime;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
