@@ -101,6 +101,10 @@ static qboolean IsGip(const char* name)
 
 void CL_RemoveGIPFiles(const char *path)
 {
+	if (!fs_homepath)
+	{
+		return;
+	}
 	char* netpath;
 	if (path)
 	{
