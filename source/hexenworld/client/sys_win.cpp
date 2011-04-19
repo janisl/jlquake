@@ -2,12 +2,6 @@
 
 #include "quakedef.h"
 #include "winquake.h"
-#include "resource.h"
-#include "errno.h"
-#include "fcntl.h"
-#include <io.h>
-#include <direct.h>
-#include <conio.h>
 
 #define MINIMUM_WIN_MEMORY		0x1000000
 #define MAXIMUM_WIN_MEMORY		0x1600000
@@ -20,7 +14,6 @@
 int		starttime;
 int		ActiveApp;
 int		Minimized;
-qboolean	WinNT;
 
 static double		pfreq;
 static double		curtime = 0.0;
@@ -30,33 +23,6 @@ static int			lowshift;
 HANDLE		qwclsemaphore;
 
 void Sys_InitFloatTime (void);
-
-/*
-===============================================================================
-
-FILE IO
-
-===============================================================================
-*/
-
-/*
-================
-filelength
-================
-*/
-int filelength (FILE *f)
-{
-	int		pos;
-	int		end;
-
-	pos = ftell (f);
-	fseek (f, 0, SEEK_END);
-	end = ftell (f);
-	fseek (f, pos, SEEK_SET);
-
-	return end;
-}
-
 
 /*
 ===============================================================================
@@ -75,7 +41,6 @@ void Sys_Init (void)
 {
 	LARGE_INTEGER	PerformanceFreq;
 	unsigned int	lowpart, highpart;
-	OSVERSIONINFO	vinfo;
 
 #ifndef SERVERONLY
 	// allocate a named semaphore on the client so the
@@ -117,22 +82,6 @@ void Sys_Init (void)
 	pfreq = 1.0 / (double)lowpart;
 
 	Sys_InitFloatTime ();
-
-	vinfo.dwOSVersionInfoSize = sizeof(vinfo);
-
-	if (!GetVersionEx (&vinfo))
-		Sys_Error ("Couldn't get OS info");
-
-	if ((vinfo.dwMajorVersion < 4) ||
-		(vinfo.dwPlatformId == VER_PLATFORM_WIN32s))
-	{
-		Sys_Error ("HexenWorld requires at least Win95 or NT 4.0");
-	}
-	
-	if (vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
-		WinNT = true;
-	else
-		WinNT = false;
 }
 
 
@@ -317,16 +266,6 @@ void Sys_SendKeyEvents (void)
 
 ==============================================================================
 */
-
-void TimerMessage (void)
-{
-	Con_Printf ("Timer\n");
-}
-
-void UserMessage (void)
-{
-}
-
 
 /*
 ==================

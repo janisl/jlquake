@@ -1,6 +1,4 @@
-#include <sys/types.h>
 #include <sys/timeb.h>
-#include <conio.h>
 #include "qwsvdef.h"
 #include "../../core/system_windows.h"
 

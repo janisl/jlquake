@@ -5,20 +5,11 @@
  */
 
 #include "quakedef.h"
-#include <windows.h>
 #include "winquake.h"
-#include "errno.h"
-#include "resource.h"
-#include <direct.h>
-
-#define CRC_A 59461 // "Who's Ridin' With Chaos?"
-#define CRC_B 54866 // "Santa needs a new sled!"
 
 #define MINIMUM_WIN_MEMORY		0x1000000
 #define MAXIMUM_WIN_MEMORY		0x1800000
 
-#define CONSOLE_ERROR_TIMEOUT	60.0	// # of seconds to wait on Sys_Error running
-										//  dedicated before exiting
 #define PAUSE_SLEEP		50				// sleep time on pause or minimization
 #define NOT_FOCUS_SLEEP	20				// sleep time when not focus
 
@@ -26,15 +17,12 @@
 
 int			starttime;
 qboolean	ActiveApp, Minimized;
-qboolean	Win32AtLeastV4, WinNT;
 
 static double		pfreq;
 static double		curtime = 0.0;
 static double		lastcurtime = 0.0;
 static int			lowshift;
 qboolean			isDedicated;
-
-static char			*tracking_tag = "Sticky Buns";
 
 static HANDLE	tevent;
 
@@ -77,51 +65,6 @@ void Sys_PageIn (void *ptr, int size)
 /*
 ===============================================================================
 
-FILE IO
-
-===============================================================================
-*/
-
-#define	MAX_HANDLES		10
-FILE	*sys_handles[MAX_HANDLES];
-
-int		findhandle (void)
-{
-	int		i;
-	
-	for (i=1 ; i<MAX_HANDLES ; i++)
-		if (!sys_handles[i])
-			return i;
-	Sys_Error ("out of handles");
-	return -1;
-}
-
-/*
-================
-filelength
-================
-*/
-int filelength (FILE *f)
-{
-	int		pos;
-	int		end;
-	int		t;
-
-	t = VID_ForceUnlockedAndReturnState ();
-
-	pos = ftell (f);
-	fseek (f, 0, SEEK_END);
-	end = ftell (f);
-	fseek (f, pos, SEEK_SET);
-
-	VID_ForceLockState (t);
-
-	return end;
-}
-
-/*
-===============================================================================
-
 SYSTEM IO
 
 ===============================================================================
@@ -136,7 +79,6 @@ void Sys_Init (void)
 {
 	LARGE_INTEGER	PerformanceFreq;
 	unsigned int	lowpart, highpart;
-	OSVERSIONINFO	vinfo;
 static	char temp[MAX_PATH+1];
 	int value,i;
 	HKEY hKey;
@@ -163,24 +105,6 @@ static	char temp[MAX_PATH+1];
 	pfreq = 1.0 / (double)lowpart;
 
 	Sys_InitFloatTime ();
-
-	vinfo.dwOSVersionInfoSize = sizeof(vinfo);
-
-	if (!GetVersionEx (&vinfo))
-		Sys_Error ("Couldn't get OS info");
-
-	if (vinfo.dwMajorVersion < 4)
-		Win32AtLeastV4 = false;
-	else
-		Win32AtLeastV4 = true;
-
-	if (vinfo.dwPlatformId == VER_PLATFORM_WIN32s)
-		Sys_Error ("Hexen2 requires at least Win95 or NT 4.0");
-	
-	if (vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
-		WinNT = true;
-	else
-		WinNT = false;
 }
 
 
@@ -393,9 +317,6 @@ int			global_nCmdShow;
 char		*argv[MAX_NUM_ARGVS];
 static char	*empty_string = "";
 
-
-#define H2_PARAM_KEY      "Software\\Hexen2"
-#define H2_FLAG_VALUE     "Flag"
 
 int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {

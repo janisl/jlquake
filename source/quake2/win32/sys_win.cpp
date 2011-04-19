@@ -21,21 +21,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../qcommon/qcommon.h"
 #include "winquake.h"
-#include "resource.h"
-#include <errno.h>
-#include <float.h>
-#include <fcntl.h>
-#include <stdio.h>
 #include <direct.h>
-#include <io.h>
-#include <conio.h>
 
 #define MINIMUM_WIN_MEMORY	0x0a00000
 #define MAXIMUM_WIN_MEMORY	0x1000000
 
 //#define DEMO
-
-qboolean s_win95;
 
 int			starttime;
 int			ActiveApp;
@@ -43,8 +34,6 @@ qboolean	Minimized;
 
 unsigned	sys_frame_time;
 
-
-static HANDLE		qwclsemaphore;
 
 #define	MAX_NUM_ARGVS	128
 int			argc;
@@ -78,9 +67,6 @@ void Sys_Error (char *error, ...)
 	Sys_SetErrorText(text);
 	Sys_ShowConsole(1, true);
 
-	if (qwclsemaphore)
-		CloseHandle (qwclsemaphore);
-
 	// wait for the user to quit
     MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
@@ -99,32 +85,9 @@ void Sys_Quit (void)
 
 	CL_Shutdown();
 	Qcommon_Shutdown ();
-	CloseHandle (qwclsemaphore);
 
 	Sys_DestroyConsole();
 	exit (0);
-}
-
-
-void WinError (void)
-{
-	LPVOID lpMsgBuf;
-
-	FormatMessage( 
-		FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-		NULL,
-		GetLastError(),
-		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-		(LPTSTR) &lpMsgBuf,
-		0,
-		NULL 
-	);
-
-	// Display the string.
-	MessageBox( NULL, (LPCSTR)lpMsgBuf, "GetLastError", MB_OK|MB_ICONINFORMATION );
-
-	// Free the buffer.
-	LocalFree( lpMsgBuf );
 }
 
 //================================================================
@@ -189,41 +152,7 @@ Sys_Init
 */
 void Sys_Init (void)
 {
-	OSVERSIONINFO	vinfo;
-
-#if 0
-	// allocate a named semaphore on the client so the
-	// front end can tell if it is alive
-
-	// mutex will fail if semephore already exists
-    qwclsemaphore = CreateMutex(
-        NULL,         /* Security attributes */
-        0,            /* owner       */
-        "qwcl"); /* Semaphore name      */
-	if (!qwclsemaphore)
-		Sys_Error ("QWCL is already running on this system");
-	CloseHandle (qwclsemaphore);
-
-    qwclsemaphore = CreateSemaphore(
-        NULL,         /* Security attributes */
-        0,            /* Initial count       */
-        1,            /* Maximum count       */
-        "qwcl"); /* Semaphore name      */
-#endif
-
 	timeBeginPeriod( 1 );
-
-	vinfo.dwOSVersionInfoSize = sizeof(vinfo);
-
-	if (!GetVersionEx (&vinfo))
-		Sys_Error ("Couldn't get OS info");
-
-	if (vinfo.dwMajorVersion < 4)
-		Sys_Error ("Quake2 requires windows version 4 or greater");
-	if (vinfo.dwPlatformId == VER_PLATFORM_WIN32s)
-		Sys_Error ("Quake2 doesn't run on Win32s");
-	else if ( vinfo.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )
-		s_win95 = true;
 }
 
 /*

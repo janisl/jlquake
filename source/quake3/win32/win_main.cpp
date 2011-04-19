@@ -24,14 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../client/client.h"
 #include "../qcommon/qcommon.h"
 #include "win_local.h"
-#include "resource.h"
-#include <errno.h>
-#include <float.h>
-#include <fcntl.h>
-#include <stdio.h>
 #include <direct.h>
-#include <io.h>
-#include <conio.h>
 
 #define	CD_BASEDIR	"quake3"
 #define	CD_EXE		"quake3.exe"
@@ -42,47 +35,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static char		sys_cmdline[MAX_STRING_CHARS];
 
 WinVars_t	g_wv;
-
-// define this to use alternate spanking method
-// I found out that the regular way doesn't work on my box for some reason
-// see the associated spank.sh script
-#define ALT_SPANK
-#ifdef ALT_SPANK
-#include <stdio.h>
-#include <sys\stat.h>
-
-int fh = 0;
-
-void Spk_Open(char *name)
-{
-  fh = open( name, O_TRUNC | O_CREAT | O_WRONLY, S_IREAD | S_IWRITE );
-};
-
-void Spk_Close()
-{
-  if (!fh)
-    return;
-
-  close( fh );
-  fh = 0;
-}
-
-void Spk_Printf (const char *text, ...)
-{
-  va_list argptr;
-  char buf[32768];
-
-  if (!fh)
-    return;
-
-  va_start (argptr,text);
-  Q_vsnprintf(buf, 32768, text, argptr);
-  write(fh, buf, QStr::Length(buf));
-  _commit(fh);
-  va_end (argptr);
-
-};
-#endif
 
 /*
 ==================

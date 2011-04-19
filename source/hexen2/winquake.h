@@ -26,8 +26,6 @@ typedef enum {MS_WINDOWED, MS_FULLSCREEN, MS_FULLDIB, MS_FULLDIRECT, MS_UNINIT} 
 
 extern qboolean		ActiveApp, Minimized;
 
-extern qboolean	Win32AtLeastV4, WinNT;
-
 int VID_ForceUnlockedAndReturnState (void);
 void VID_ForceLockState (int lk);
 
