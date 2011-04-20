@@ -33,16 +33,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int		starttime;
 qboolean ActiveApp, Minimized;
 
-static double		pfreq;
-static double		curtime = 0.0;
-static double		lastcurtime = 0.0;
-static int			lowshift;
-
 HANDLE		qwclsemaphore;
 
 static HANDLE	tevent;
-
-void Sys_InitFloatTime (void);
 
 /*
 ===============================================================================
@@ -80,29 +73,6 @@ void Sys_Init (void)
         0,            /* Initial count       */
         1,            /* Maximum count       */
         "qwcl"); /* Semaphore name      */
-#endif
-
-#if 0
-	if (!QueryPerformanceFrequency (&PerformanceFreq))
-		Sys_Error ("No hardware timer available");
-
-// get 32 out of the 64 time bits such that we have around
-// 1 microsecond resolution
-	lowpart = (unsigned int)PerformanceFreq.LowPart;
-	highpart = (unsigned int)PerformanceFreq.HighPart;
-	lowshift = 0;
-
-	while (highpart || (lowpart > 2000000.0))
-	{
-		lowshift++;
-		lowpart >>= 1;
-		lowpart |= (highpart & 1) << 31;
-		highpart >>= 1;
-	}
-
-	pfreq = 1.0 / (double)lowpart;
-
-	Sys_InitFloatTime ();
 #endif
 
 	// make sure the timer is high precision, otherwise
@@ -160,121 +130,6 @@ void Sys_Quit (void)
 
 	Sys_DestroyConsole();
 	exit (0);
-}
-
-
-#if 0
-/*
-================
-Sys_DoubleTime
-================
-*/
-double Sys_DoubleTime (void)
-{
-	static int			sametimecount;
-	static unsigned int	oldtime;
-	static int			first = 1;
-	LARGE_INTEGER		PerformanceCount;
-	unsigned int		temp, t2;
-	double				time;
-
-	QueryPerformanceCounter (&PerformanceCount);
-
-	temp = ((unsigned int)PerformanceCount.LowPart >> lowshift) |
-		   ((unsigned int)PerformanceCount.HighPart << (32 - lowshift));
-
-	if (first)
-	{
-		oldtime = temp;
-		first = 0;
-	}
-	else
-	{
-	// check for turnover or backward time
-		if ((temp <= oldtime) && ((oldtime - temp) < 0x10000000))
-		{
-			oldtime = temp;	// so we can't get stuck
-		}
-		else
-		{
-			t2 = temp - oldtime;
-
-			time = (double)t2 * pfreq;
-			oldtime = temp;
-
-			curtime += time;
-
-			if (curtime == lastcurtime)
-			{
-				sametimecount++;
-
-				if (sametimecount > 100000)
-				{
-					curtime += 1.0;
-					sametimecount = 0;
-				}
-			}
-			else
-			{
-				sametimecount = 0;
-			}
-
-			lastcurtime = curtime;
-		}
-	}
-
-    return curtime;
-}
-
-/*
-================
-Sys_InitFloatTime
-================
-*/
-void Sys_InitFloatTime (void)
-{
-	int		j;
-
-	Sys_DoubleTime ();
-
-	j = COM_CheckParm("-starttime");
-
-	if (j)
-	{
-		curtime = (double) (QStr::Atof(COM_Argv(j+1)));
-	}
-	else
-	{
-		curtime = 0.0;
-	}
-
-	lastcurtime = curtime;
-}
-
-#endif
-
-double Sys_DoubleTime (void)
-{
-	static DWORD starttime;
-	static qboolean first = true;
-	DWORD now;
-	double t;
-
-	now = timeGetTime();
-
-	if (first) {
-		first = false;
-		starttime = now;
-		return 0.0;
-	}
-	
-	if (now < starttime) // wrapped?
-		return (now / 1000.0) + (LONG_MAX - starttime / 1000.0);
-
-	if (now - starttime == 0)
-		return 0.0;
-
-	return (now - starttime) / 1000.0;
 }
 
 void Sys_Sleep (void)

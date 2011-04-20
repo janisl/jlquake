@@ -51,6 +51,11 @@ unsigned		sysMsgTime;
 
 static char		HomePathSuffix[MAX_OSPATH];
 
+static double	lastcurtime = 0.0;
+static double		curtime = 0.0;
+static int			lowshift;
+static double		pfreq;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -354,4 +359,130 @@ int Sys_Milliseconds()
 		initialized = true;
 	}
 	return timeGetTime() - base;
+}
+
+//==========================================================================
+//
+//	Sys_Milliseconds
+//
+//==========================================================================
+
+double Sys_DoubleTime()
+{
+#if 1
+	//	Method used in Quake, Hexen 2 and HexenWorld client
+	static int			sametimecount;
+	static unsigned int	oldtime;
+	static int			first = 1;
+	LARGE_INTEGER		PerformanceCount;
+	unsigned int		temp, t2;
+	double				time;
+
+	if (first)
+	{
+		LARGE_INTEGER	PerformanceFreq;
+		unsigned int	lowpart, highpart;
+
+		if (!QueryPerformanceFrequency (&PerformanceFreq))
+			throw QException("No hardware timer available");
+
+		// get 32 out of the 64 time bits such that we have around
+		// 1 microsecond resolution
+		lowpart = (unsigned int)PerformanceFreq.LowPart;
+		highpart = (unsigned int)PerformanceFreq.HighPart;
+		lowshift = 0;
+
+		while (highpart || (lowpart > 2000000.0))
+		{
+			lowshift++;
+			lowpart >>= 1;
+			lowpart |= (highpart & 1) << 31;
+			highpart >>= 1;
+		}
+
+		pfreq = 1.0 / (double)lowpart;
+	}
+
+	QueryPerformanceCounter (&PerformanceCount);
+
+	temp = ((unsigned int)PerformanceCount.LowPart >> lowshift) |
+		   ((unsigned int)PerformanceCount.HighPart << (32 - lowshift));
+
+	if (first)
+	{
+		oldtime = temp;
+		first = 0;
+	}
+	else
+	{
+		// check for turnover or backward time
+		if ((temp <= oldtime) && ((oldtime - temp) < 0x10000000))
+		{
+			oldtime = temp;	// so we can't get stuck
+		}
+		else
+		{
+			t2 = temp - oldtime;
+
+			time = (double)t2 * pfreq;
+			oldtime = temp;
+
+			curtime += time;
+
+			if (curtime == lastcurtime)
+			{
+				sametimecount++;
+
+				if (sametimecount > 100000)
+				{
+					curtime += 1.0;
+					sametimecount = 0;
+				}
+			}
+			else
+			{
+				sametimecount = 0;
+			}
+
+			lastcurtime = curtime;
+		}
+	}
+
+    return curtime;
+#elif 0
+	//	Method used in QuakeWorld client
+	static DWORD starttime;
+	static qboolean first = true;
+	DWORD now;
+	double t;
+
+	now = timeGetTime();
+
+	if (first) {
+		first = false;
+		starttime = now;
+		return 0.0;
+	}
+	
+	if (now < starttime) // wrapped?
+		return (now / 1000.0) + (LONG_MAX - starttime / 1000.0);
+
+	if (now - starttime == 0)
+		return 0.0;
+
+	return (now - starttime) / 1000.0;
+#else
+	//	Method used in QuakeWorld and HexenWorld servers.
+	double t;
+    struct _timeb tstruct;
+	static int	starttime;
+
+	_ftime( &tstruct );
+ 
+	if (!starttime)
+		starttime = tstruct.time;
+	t = (tstruct.time-starttime) + tstruct.millitm*0.001;
+	
+	return t;
+#endif
 }

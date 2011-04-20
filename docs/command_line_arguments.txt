@@ -19,7 +19,6 @@
 -particles
 -port
 -safe
--starttime
 -width
 -window
 -zone
@@ -145,6 +144,9 @@ Parameter                Console command                      Saved
 
 -simsound
   Sound simulation is not supported anymore.
+
+-starttime
+  Not supported anymore.
 
 -usecdvolume
   Not supported anymore.

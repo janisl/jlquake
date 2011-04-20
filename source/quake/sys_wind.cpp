@@ -46,21 +46,6 @@ void Sys_Quit (void)
 	exit (0);
 }
 
-double Sys_DoubleTime (void)
-{
-	double t;
-    struct _timeb tstruct;
-	static int	starttime;
-
-	_ftime( &tstruct );
- 
-	if (!starttime)
-		starttime = tstruct.time;
-	t = (tstruct.time-starttime) + tstruct.millitm*0.001;
-	
-	return t;
-}
-
 void Sys_SendKeyEvents (void)
 {
 }

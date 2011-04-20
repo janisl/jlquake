@@ -35,27 +35,6 @@ void Sys_Error (char *error, ...)
 	exit (1);
 }
 
-
-/*
-================
-Sys_DoubleTime
-================
-*/
-double Sys_DoubleTime (void)
-{
-	double t;
-    struct _timeb tstruct;
-	static int	starttime;
-
-	_ftime( &tstruct );
- 
-	if (!starttime)
-		starttime = tstruct.time;
-	t = (tstruct.time-starttime) + tstruct.millitm*0.001;
-	
-	return t;
-}
-
 /*
 ================
 Sys_Quit
