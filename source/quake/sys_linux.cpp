@@ -49,23 +49,6 @@ void Sys_Error (char *error, ...)
 
 } 
 
-double Sys_DoubleTime (void)
-{
-    struct timeval tp;
-    struct timezone tzp; 
-    static int      secbase; 
-    
-    gettimeofday(&tp, &tzp);  
-
-    if (!secbase)
-    {
-        secbase = tp.tv_sec;
-        return tp.tv_usec/1000000.0;
-    }
-
-    return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
-}
-
 int main (int c, char **v)
 {
 

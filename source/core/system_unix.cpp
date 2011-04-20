@@ -140,9 +140,9 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 {
 	char		search[MAX_OSPATH], newsubdirs[MAX_OSPATH];
 	char		filename[MAX_OSPATH];
-	DIR			*fdir;
-	struct dirent *d;
-	struct stat st;
+	DIR*		fdir;
+	dirent*		d;
+	struct stat	st;
 
 	if (*numfiles >= MAX_FOUND_FILES - 1)
 	{
@@ -211,13 +211,13 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 char** Sys_ListFiles(const char *directory, const char *extension, const char *filter,
 	int *numfiles, bool wantsubs)
 {
-	struct dirent *d;
+	dirent*		d;
 	DIR*		fdir;
 	bool		dironly = wantsubs;
 	char		search[MAX_OSPATH];
 	int			nfiles;
-	char		**listCopy;
-	char		*list[MAX_FOUND_FILES];
+	char**		listCopy;
+	char*		list[MAX_FOUND_FILES];
 	//int			flag; // bk001204 - unused
 	int			i;
 	struct stat st;
@@ -358,10 +358,9 @@ void Sys_FreeFileList(char** list)
 
 int Sys_Milliseconds()
 {
-	struct timeval tp;
-
+	timeval tp;
 	gettimeofday(&tp, NULL);
-	
+
 	if (!sys_timeBase)
 	{
 		sys_timeBase = tp.tv_sec;
@@ -369,4 +368,24 @@ int Sys_Milliseconds()
 	}
 
 	return (tp.tv_sec - sys_timeBase) * 1000 + tp.tv_usec / 1000;
+}
+
+//==========================================================================
+//
+//	Sys_DoubleTime
+//
+//==========================================================================
+
+double Sys_DoubleTime()
+{
+	timeval tp;
+	gettimeofday(&tp, NULL);
+
+	if (!sys_timeBase)
+	{
+		sys_timeBase = tp.tv_sec;
+		return tp.tv_usec / 1000000.0;
+	}
+
+	return (tp.tv_sec - sys_timeBase) + tp.tv_usec / 1000000.0;
 }

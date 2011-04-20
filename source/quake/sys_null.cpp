@@ -40,15 +40,6 @@ void Sys_Quit (void)
 	exit (0);
 }
 
-double Sys_DoubleTime(void)
-{
-	static double t;
-	
-	t += 0.1;
-	
-	return t;
-}
-
 void Sys_SendKeyEvents (void)
 {
 }

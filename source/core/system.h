@@ -28,6 +28,7 @@ void Sys_FreeFileList(char** list);
 // Sys_Milliseconds should only be used for profiling purposes,
 // any game related timing information should come from event timestamps
 int Sys_Milliseconds();
+double Sys_DoubleTime();
 
 void Sys_ShowConsole(int level, bool quitOnClose);
 char* Sys_ConsoleInput();

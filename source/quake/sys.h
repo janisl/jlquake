@@ -27,7 +27,5 @@ void Sys_Error (char *error, ...);
 
 void Sys_Quit (void);
 
-double Sys_DoubleTime (void);
-
 void Sys_SendKeyEvents (void);
 // Perform Key_Event () callbacks until the input que is empty
