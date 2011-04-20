@@ -199,7 +199,7 @@ void CL_KeepaliveMessage (void)
 	net_message.Copy(net_message._data, net_message.maxsize, old);
 
 // check time
-	time = Sys_FloatTime ();
+	time = Sys_DoubleTime ();
 	if (time - lastmsg < 5)
 		return;
 	lastmsg = time;

@@ -40,7 +40,7 @@ void Sys_Quit (void)
 	exit (0);
 }
 
-double Sys_FloatTime (void)
+double Sys_DoubleTime(void)
 {
 	static double t;
 	

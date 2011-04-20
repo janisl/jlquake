@@ -46,7 +46,7 @@ void Sys_Quit (void)
 	exit (0);
 }
 
-double Sys_FloatTime (void)
+double Sys_DoubleTime (void)
 {
 	double t;
     struct _timeb tstruct;
@@ -109,12 +109,12 @@ int main (int argc, char **argv)
 	printf ("Host_Init\n");
 	Host_Init (&parms);
 
-	oldtime = Sys_FloatTime ();
+	oldtime = Sys_DoubleTime ();
 
     /* main window message loop */
 	while (1)
 	{
-		time = Sys_FloatTime();
+		time = Sys_DoubleTime();
 		if (time - oldtime < sys_ticrate.value )
 		{
 			Sleep(1);

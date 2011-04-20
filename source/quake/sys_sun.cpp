@@ -62,7 +62,7 @@ void Sys_Quit (void)
     exit (0);
 }
 
-double Sys_FloatTime (void)
+double Sys_DoubleTime (void)
 {
     struct timeval tp;
     struct timezone tzp; 
@@ -110,10 +110,10 @@ int main (int argc, char **argv)
 
 	Sys_ConsoleInputInit();
 
-    oldtime = Sys_FloatTime();
+    oldtime = Sys_DoubleTime();
     while (1)
     {
-		newtime = Sys_FloatTime();
+		newtime = Sys_DoubleTime();
 		Host_Frame (newtime - oldtime);
 		oldtime = newtime;
     }

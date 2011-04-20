@@ -113,7 +113,7 @@ int net_numdrivers = 2;
 
 double SetNetTime(void)
 {
-	net_time = Sys_FloatTime();
+	net_time = Sys_DoubleTime();
 	return net_time;
 }
 
@@ -322,7 +322,7 @@ void NET_Slist_f (void)
 	}
 
 	slistInProgress = true;
-	slistStartTime = Sys_FloatTime();
+	slistStartTime = Sys_DoubleTime();
 
 	SchedulePollProcedure(&slistSendProcedure, 0.0);
 	SchedulePollProcedure(&slistPollProcedure, 0.1);
@@ -342,7 +342,7 @@ static void Slist_Send(void)
 		dfunc.SearchForHosts (true);
 	}
 
-	if ((Sys_FloatTime() - slistStartTime) < 0.5)
+	if ((Sys_DoubleTime() - slistStartTime) < 0.5)
 		SchedulePollProcedure(&slistSendProcedure, 0.75);
 }
 
@@ -361,7 +361,7 @@ static void Slist_Poll(void)
 	if (! slistSilent)
 		PrintSlist();
 
-	if ((Sys_FloatTime() - slistStartTime) < 1.5)
+	if ((Sys_DoubleTime() - slistStartTime) < 1.5)
 	{
 		SchedulePollProcedure(&slistPollProcedure, 0.1);
 		return;
@@ -681,7 +681,7 @@ int NET_SendToAll(QMsg *data, int blocktime)
 		}
 	}
 
-	start = Sys_FloatTime();
+	start = Sys_DoubleTime();
 	while (count)
 	{
 		count = 0;
@@ -716,7 +716,7 @@ int NET_SendToAll(QMsg *data, int blocktime)
 				continue;
 			}
 		}
-		if ((Sys_FloatTime() - start) > blocktime)
+		if ((Sys_DoubleTime() - start) > blocktime)
 			break;
 	}
 	return count;
@@ -844,7 +844,7 @@ void SchedulePollProcedure(PollProcedure *proc, double timeOffset)
 {
 	PollProcedure *pp, *prev;
 
-	proc->nextTime = Sys_FloatTime() + timeOffset;
+	proc->nextTime = Sys_DoubleTime() + timeOffset;
 	for (pp = pollProcedureList, prev = NULL; pp; pp = pp->next)
 	{
 		if (pp->nextTime >= proc->nextTime)

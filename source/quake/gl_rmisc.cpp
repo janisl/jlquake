@@ -399,7 +399,7 @@ void R_TimeRefresh_f (void)
 	qglDrawBuffer  (GL_FRONT);
 	qglFinish ();
 
-	start = Sys_FloatTime ();
+	start = Sys_DoubleTime ();
 	for (i=0 ; i<128 ; i++)
 	{
 		r_refdef.viewangles[1] = i/128.0*360.0;
@@ -407,7 +407,7 @@ void R_TimeRefresh_f (void)
 	}
 
 	qglFinish ();
-	stop = Sys_FloatTime ();
+	stop = Sys_DoubleTime ();
 	time = stop-start;
 	Con_Printf ("%f seconds (%f fps)\n", time, 128/time);
 

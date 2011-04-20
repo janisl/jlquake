@@ -1147,9 +1147,9 @@ void PF_FindPath(void)
 	nomonsters = G_FLOAT(OFS_PARM4);
 	ent = G_EDICT(OFS_PARM5);
 
-   b= Sys_FloatTime ();
+   b= Sys_DoubleTime ();
    FindPath(v1,v2,mins,maxs,nomonsters,ent);
-	Con_Printf("Time is %10.4f\n",Sys_FloatTime ()-b);
+	Con_Printf("Time is %10.4f\n",Sys_DoubleTime ()-b);
 }
 
 */

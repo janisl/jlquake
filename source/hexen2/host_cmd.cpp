@@ -1140,23 +1140,23 @@ float time1,time2,r1,r2;
 	}
 	Con_Printf ("looping %d times.\n", repcount);
 
-	time1 = Sys_FloatTime();
+	time1 = Sys_DoubleTime();
 	for (i=repcount;i;i--)
 	{
 		char buf[2048];
 		Com_Memset(buf,i,2048);
 	}
-	time2 = Sys_FloatTime( );
+	time2 = Sys_DoubleTime( );
 	r1 = time2-time1;
 	Con_Printf ("loop 1 = %f\n", r1);
 
-	time1 = Sys_FloatTime();
+	time1 = Sys_DoubleTime();
 	for (i=repcount;i;i--)
 	{
 		char buf[2048];
 		Com_Memset(buf,i,2048);
 	}
-	time2 = Sys_FloatTime( );
+	time2 = Sys_DoubleTime( );
 	r2 = time2-time1;
 	Con_Printf ("loop 2 = %f\n", r2);
 
@@ -1556,7 +1556,7 @@ void Host_Spawn_f (void)
 			pr_global_struct->self = EDICT_TO_PROG(sv_player);
 			PR_ExecuteProgram (pr_global_struct->ClientConnect);
 
-			if ((Sys_FloatTime() - host_client->netconnection->connecttime) <= sv.time)
+			if ((Sys_DoubleTime() - host_client->netconnection->connecttime) <= sv.time)
 				Con_Printf ("%s entered the game\n", host_client->name);
 
 			PR_ExecuteProgram (pr_global_struct->PutClientInServer);	

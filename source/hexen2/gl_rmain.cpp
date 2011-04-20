@@ -1531,7 +1531,7 @@ void R_PrintTimes(void)
 	float r_time2;
 	float ms, fps;
 
-	r_lasttime1 = r_time2 = Sys_FloatTime();
+	r_lasttime1 = r_time2 = Sys_DoubleTime();
 
 	ms = 1000*(r_time2-r_time1);
 	fps = 1000/ms;
@@ -1563,7 +1563,7 @@ void R_RenderView (void)
 		if (r_wholeframe->value)
 		   r_time1 = r_lasttime1;
 	   else
-		   r_time1 = Sys_FloatTime ();
+		   r_time1 = Sys_DoubleTime ();
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}

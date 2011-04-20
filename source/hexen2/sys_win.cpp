@@ -162,10 +162,10 @@ void Sys_Quit (void)
 
 /*
 ================
-Sys_FloatTime
+Sys_DoubleTime
 ================
 */
-double Sys_FloatTime (void)
+double Sys_DoubleTime (void)
 {
 	static int			sametimecount;
 	static unsigned int	oldtime;
@@ -232,7 +232,7 @@ void Sys_InitFloatTime (void)
 {
 	int		j;
 
-	Sys_FloatTime ();
+	Sys_DoubleTime ();
 
 	j = COM_CheckParm("-starttime");
 
@@ -413,7 +413,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	Con_Printf ("Host_Init\n");
 	Host_Init (&parms);
 
-	oldtime = Sys_FloatTime ();
+	oldtime = Sys_DoubleTime ();
 
 	sys_delay = Cvar_Get("sys_delay", "0", CVAR_ARCHIVE);
 
@@ -422,13 +422,13 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	{
 		if (isDedicated)
 		{
-			newtime = Sys_FloatTime ();
+			newtime = Sys_DoubleTime ();
 			time = newtime - oldtime;
 
 			while (time < sys_ticrate->value )
 			{
 				Sys_Sleep();
-				newtime = Sys_FloatTime ();
+				newtime = Sys_DoubleTime ();
 				time = newtime - oldtime;
 			}
 		}
@@ -446,7 +446,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 				scr_skipupdate = 1;		// no point in bothering to draw
 			}
 
-			newtime = Sys_FloatTime ();
+			newtime = Sys_DoubleTime ();
 			time = newtime - oldtime;
 		}
 
