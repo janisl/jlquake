@@ -87,7 +87,6 @@ QCvar	*r_vertexLight;
 QCvar	*r_uiFullScreen;
 QCvar	*r_shadows;
 QCvar	*r_flares;
-QCvar	*r_mode;
 QCvar	*r_nobind;
 QCvar	*r_singleShader;
 QCvar	*r_roundImagesDown;
@@ -110,10 +109,6 @@ QCvar	*r_portalOnly;
 
 QCvar	*r_subdivisions;
 QCvar	*r_lodCurveError;
-
-QCvar	*r_customwidth;
-QCvar	*r_customheight;
-QCvar	*r_customaspect;
 
 QCvar	*r_overBrightBits;
 QCvar	*r_mapOverBrightBits;
@@ -231,76 +226,6 @@ void GL_CheckErrors( void ) {
 
     ri.Error( ERR_FATAL, "GL_CheckErrors: %s", s );
 }
-
-
-/*
-** R_GetModeInfo
-*/
-typedef struct vidmode_s
-{
-    const char *description;
-    int         width, height;
-	float		pixelAspect;		// pixel width / height
-} vidmode_t;
-
-vidmode_t r_vidModes[] =
-{
-    { "Mode  0: 320x240",		320,	240,	1 },
-    { "Mode  1: 400x300",		400,	300,	1 },
-    { "Mode  2: 512x384",		512,	384,	1 },
-    { "Mode  3: 640x480",		640,	480,	1 },
-    { "Mode  4: 800x600",		800,	600,	1 },
-    { "Mode  5: 960x720",		960,	720,	1 },
-    { "Mode  6: 1024x768",		1024,	768,	1 },
-    { "Mode  7: 1152x864",		1152,	864,	1 },
-    { "Mode  8: 1280x1024",		1280,	1024,	1 },
-    { "Mode  9: 1600x1200",		1600,	1200,	1 },
-    { "Mode 10: 2048x1536",		2048,	1536,	1 },
-    { "Mode 11: 856x480 (wide)",856,	480,	1 }
-};
-static int	s_numVidModes = ( sizeof( r_vidModes ) / sizeof( r_vidModes[0] ) );
-
-qboolean R_GetModeInfo( int *width, int *height, float *windowAspect, int mode ) {
-	vidmode_t	*vm;
-
-    if ( mode < -1 ) {
-        return qfalse;
-	}
-	if ( mode >= s_numVidModes ) {
-		return qfalse;
-	}
-
-	if ( mode == -1 ) {
-		*width = r_customwidth->integer;
-		*height = r_customheight->integer;
-		*windowAspect = r_customaspect->value;
-		return qtrue;
-	}
-
-	vm = &r_vidModes[mode];
-
-    *width  = vm->width;
-    *height = vm->height;
-    *windowAspect = (float)vm->width / ( vm->height * vm->pixelAspect );
-
-    return qtrue;
-}
-
-/*
-** R_ModeList_f
-*/
-static void R_ModeList_f( void )
-{
-	int i;
-
-	ri.Printf( PRINT_ALL, "\n" );
-	for ( i = 0; i < s_numVidModes; i++ )
-	{
-		ri.Printf( PRINT_ALL, "%s\n", r_vidModes[i].description );
-	}
-	ri.Printf( PRINT_ALL, "\n" );
-}
-
 
 /* 
 ============================================================================== 
@@ -834,11 +759,11 @@ void R_Register( void )
 	//r_depthbits = Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_overBrightBits = Cvar_Get ("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ignorehwgamma = Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_mode = Cvar_Get( "r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH2 );
+	//r_mode = Cvar_Get( "r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH2 );
 	//r_fullscreen = Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_customwidth = Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_customheight = Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_customaspect = Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
+	//r_customwidth = Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH2 );
+	//r_customheight = Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH2 );
+	//r_customaspect = Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_simpleMipMaps = Cvar_Get( "r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_uiFullScreen = Cvar_Get( "r_uifullscreen", "0", 0);
@@ -948,7 +873,6 @@ void R_Register( void )
 	Cmd_AddCommand( "shaderlist", R_ShaderList_f );
 	Cmd_AddCommand( "skinlist", R_SkinList_f );
 	Cmd_AddCommand( "modellist", R_Modellist_f );
-	Cmd_AddCommand( "modelist", R_ModeList_f );
 	Cmd_AddCommand( "screenshot", R_ScreenShot_f );
 	Cmd_AddCommand( "screenshotJPEG", R_ScreenShotJPEG_f );
 	Cmd_AddCommand( "gfxinfo", GfxInfo_f );

@@ -50,7 +50,8 @@ int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
 
 	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
 
-	if ( !ri.Vid_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, mode ) )
+	float windowAspect;
+	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &windowAspect, mode ) )
 	{
 		ri.Con_Printf( PRINT_ALL, " invalid mode\n" );
 		return RSERR_INVALID_MODE;

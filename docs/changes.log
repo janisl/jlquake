@@ -180,3 +180,5 @@
   I merged system console input (of dedicated servers) on Unix and made TTY stuff from Quake 3 available in all games, complete with command completition and history.
 19.04.2011
   I moved Windows console window from Quake 3 to core and changed all games to use it.
+20.04.2011
+  I also merged time get method used in Quake and Hexen 2. I think I can finally get back to rendering.

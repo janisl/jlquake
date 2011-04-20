@@ -49,8 +49,6 @@ extern QCvar *r_fullscreen;
 viddef_t	viddef;				// global video state; used by other modules
 qboolean	reflib_active = 0;
 
-#define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
-
 static qboolean s_alttab_disabled;
 
 /*
@@ -290,41 +288,6 @@ void VID_Front_f( void )
 }
 
 /*
-** VID_GetModeInfo
-*/
-typedef struct vidmode_s
-{
-	const char *description;
-	int         width, height;
-	int         mode;
-} vidmode_t;
-
-vidmode_t vid_modes[] =
-{
-	{ "Mode 0: 320x240",   320, 240,   0 },
-	{ "Mode 1: 400x300",   400, 300,   1 },
-	{ "Mode 2: 512x384",   512, 384,   2 },
-	{ "Mode 3: 640x480",   640, 480,   3 },
-	{ "Mode 4: 800x600",   800, 600,   4 },
-	{ "Mode 5: 960x720",   960, 720,   5 },
-	{ "Mode 6: 1024x768",  1024, 768,  6 },
-	{ "Mode 7: 1152x864",  1152, 864,  7 },
-	{ "Mode 8: 1280x960",  1280, 960, 8 },
-	{ "Mode 9: 1600x1200", 1600, 1200, 9 }
-};
-
-qboolean VID_GetModeInfo( int *width, int *height, int mode )
-{
-	if ( mode < 0 || mode >= VID_NUM_MODES )
-		return false;
-
-	*width  = vid_modes[mode].width;
-	*height = vid_modes[mode].height;
-
-	return true;
-}
-
-/*
 ** VID_UpdateWindowPosAndSize
 */
 void VID_UpdateWindowPosAndSize( int x, int y )
@@ -381,7 +344,6 @@ qboolean VID_LoadRefresh( char *name )
 
 	ri.Con_Printf = VID_Printf;
 	ri.Sys_Error = VID_Error;
-	ri.Vid_GetModeInfo = VID_GetModeInfo;
 	ri.Vid_MenuInit = VID_MenuInit;
 	ri.Vid_NewWindow = VID_NewWindow;
 

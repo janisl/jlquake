@@ -32,8 +32,6 @@ QCvar		*vid_xpos;			// X coordinate of window position
 QCvar		*vid_ypos;			// Y coordinate of window position
 extern QCvar		*r_fullscreen;
 
-#define VID_NUM_MODES ( sizeof( vid_modes ) / sizeof( vid_modes[0] ) )
-
 static qboolean s_alttab_disabled;
 
 static void WIN_DisableAltTab( void )

@@ -54,6 +54,7 @@ struct glstate_t
 
 void* GLimp_GetProcAddress(const char* Name);
 
+bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_SharedRegister();
 
@@ -63,12 +64,23 @@ extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during
 extern QCvar*	r_logFile;				// number of frames to emit GL logs
 extern QCvar*	r_verbose;				// used for verbose debug spew
 
+extern QCvar*	r_mode;					// video mode
+extern QCvar*	r_fullscreen;
 extern QCvar*	r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
 extern QCvar*	r_stencilbits;			// number of desired stencil bits
 extern QCvar*	r_depthbits;			// number of desired depth bits
 extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for fullscreen
 extern QCvar*	r_stereo;				// desired pixelformat stereo flag
 extern QCvar*	r_displayRefresh;		// optional display refresh option
-extern QCvar*	r_fullscreen;
+
+struct vidmode_t
+{
+	const char*	description;
+	int         width;
+	int			height;
+	float		pixelAspect;		// pixel width / height
+};
+extern vidmode_t	r_vidModes[];
+extern int			s_numVidModes;
 
 #endif
