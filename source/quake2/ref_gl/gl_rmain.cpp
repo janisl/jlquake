@@ -99,7 +99,6 @@ QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
 QCvar	*gl_lightmap;
 QCvar	*gl_shadows;
-QCvar	*gl_mode;
 QCvar	*gl_dynamic;
 QCvar  *gl_monolightmap;
 QCvar	*gl_modulate;
@@ -927,7 +926,6 @@ void R_Register( void )
 
 	gl_modulate = Cvar_Get ("gl_modulate", "1", CVAR_ARCHIVE );
 	gl_bitdepth = Cvar_Get( "gl_bitdepth", "0", 0 );
-	gl_mode = Cvar_Get( "gl_mode", "3", CVAR_ARCHIVE );
 	gl_lightmap = Cvar_Get ("gl_lightmap", "0", 0);
 	gl_shadows = Cvar_Get ("gl_shadows", "0", CVAR_ARCHIVE );
 	gl_dynamic = Cvar_Get ("gl_dynamic", "1", 0);
@@ -985,11 +983,11 @@ qboolean R_SetMode (void)
 	fullscreen = r_fullscreen->value;
 
 	r_fullscreen->modified = false;
-	gl_mode->modified = false;
+	r_mode->modified = false;
 
-	if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, gl_mode->value, fullscreen ) ) == RSERR_OK )
+	if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, r_mode->value, fullscreen ) ) == RSERR_OK )
 	{
-		gl_state.prev_mode = gl_mode->value;
+		gl_state.prev_mode = r_mode->value;
 	}
 	else
 	{
@@ -998,13 +996,13 @@ qboolean R_SetMode (void)
 			Cvar_SetValueLatched( "r_fullscreen", 0);
 			r_fullscreen->modified = false;
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n" );
-			if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, gl_mode->value, false ) ) == RSERR_OK )
+			if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, r_mode->value, false ) ) == RSERR_OK )
 				return true;
 		}
 		else if ( err == RSERR_INVALID_MODE )
 		{
-			Cvar_SetValueLatched( "gl_mode", gl_state.prev_mode );
-			gl_mode->modified = false;
+			Cvar_SetValueLatched( "r_mode", gl_state.prev_mode );
+			r_mode->modified = false;
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n" );
 		}
 
@@ -1204,7 +1202,7 @@ void R_BeginFrame( float camera_separation )
 	/*
 	** change modes if necessary
 	*/
-	if ( gl_mode->modified || r_fullscreen->modified )
+	if ( r_mode->modified || r_fullscreen->modified )
 	{	// FIXME: only restart if CDS is required
 		QCvar	*ref;
 

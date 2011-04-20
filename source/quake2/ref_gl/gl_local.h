@@ -174,7 +174,6 @@ extern QCvar	*gl_particle_att_c;
 
 extern	QCvar	*gl_nosubimage;
 extern	QCvar	*gl_bitdepth;
-extern	QCvar	*gl_mode;
 extern	QCvar	*gl_lightmap;
 extern	QCvar	*gl_shadows;
 extern	QCvar	*gl_dynamic;

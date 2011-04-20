@@ -31,7 +31,7 @@ extern QCvar *vid_gamma;
 extern QCvar *r_fullscreen;
 extern QCvar *scr_viewsize;
 
-static QCvar *gl_mode;
+static QCvar *r_mode;
 static QCvar *gl_driver;
 static QCvar *gl_picmip;
 static QCvar *gl_ext_palettedtexture;
@@ -138,7 +138,7 @@ static void ApplyChanges( void *unused )
 	Cvar_SetValueLatched( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
 	Cvar_SetValueLatched( "gl_finish", s_finish_box.curvalue );
 	Cvar_SetValueLatched( "sw_mode", s_mode_list[SOFTWARE_MENU].curvalue );
-	Cvar_SetValueLatched( "gl_mode", s_mode_list[OPENGL_MENU].curvalue );
+	Cvar_SetValueLatched( "r_mode", s_mode_list[OPENGL_MENU].curvalue );
 
 	switch ( s_ref_list[s_current_menu_index].curvalue )
 	{
@@ -243,8 +243,8 @@ void VID_MenuInit( void )
 		gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
 	if ( !gl_picmip )
 		gl_picmip = Cvar_Get( "gl_picmip", "0", 0 );
-	if ( !gl_mode )
-		gl_mode = Cvar_Get( "gl_mode", "3", 0 );
+	if ( !r_mode )
+		r_mode = Cvar_Get( "r_mode", "3", 0 );
 	if ( !sw_mode )
 		sw_mode = Cvar_Get( "sw_mode", "0", 0 );
 	if ( !gl_ext_palettedtexture )
@@ -256,7 +256,7 @@ void VID_MenuInit( void )
 		sw_stipplealpha = Cvar_Get( "sw_stipplealpha", "0", CVAR_ARCHIVE );
 
 	s_mode_list[SOFTWARE_MENU].curvalue = sw_mode->value;
-	s_mode_list[OPENGL_MENU].curvalue = gl_mode->value;
+	s_mode_list[OPENGL_MENU].curvalue = r_mode->value;
 
 	if ( !scr_viewsize )
 		scr_viewsize = Cvar_Get ("viewsize", "100", CVAR_ARCHIVE);
