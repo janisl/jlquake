@@ -35,58 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
-unsigned		d_8to24table[256];
-
-float RTint[256],GTint[256],BTint[256];
-qboolean	vid_initialized = false;
-
-int ColorIndex[16] =
-{
-	0, 31, 47, 63, 79, 95, 111, 127, 143, 159, 175, 191, 199, 207, 223, 231
-};
-
-unsigned ColorPercent[16] =
-{
-	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
-};
-
-byte globalcolormap[VID_GRADES*256];
-
-unsigned	d_8to24TranslucentTable[256];
-
 /*-----------------------------------------------------------------------*/
-
-//int		texture_mode = GL_NEAREST;
-//int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
-//int		texture_mode = GL_NEAREST_MIPMAP_LINEAR;
-int		texture_mode = GL_LINEAR;
-//int		texture_mode = GL_LINEAR_MIPMAP_NEAREST;
-//int		texture_mode = GL_LINEAR_MIPMAP_LINEAR;
-
-int		texture_extension_number = 1;
-
-float		gldepthmin, gldepthmax;
-
-QCvar*	gl_ztrick;
-
-const char *gl_vendor;
-const char *gl_renderer;
-const char *gl_version;
-const char *gl_extensions;
-
-static float vid_gamma = 1.0;
-
-qboolean gl_mtexable = false;
-
-/*-----------------------------------------------------------------------*/
-void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
-{
-}
-
-void D_EndDirectRect (int x, int y, int width, int height)
-{
-}
-
 void VID_Shutdown(void)
 {
 	GLimp_Shutdown();
@@ -95,214 +44,17 @@ void VID_Shutdown(void)
 	QGL_Shutdown();
 }
 
-void signal_handler(int sig)
-{
-	printf("Received signal %d, exiting...\n", sig);
-	Sys_Quit();
-	exit(0);
-}
-
-void InitSig(void)
-{
-	signal(SIGHUP, signal_handler);
-	signal(SIGINT, signal_handler);
-	signal(SIGQUIT, signal_handler);
-	signal(SIGILL, signal_handler);
-	signal(SIGTRAP, signal_handler);
-	signal(SIGIOT, signal_handler);
-	signal(SIGBUS, signal_handler);
-	signal(SIGFPE, signal_handler);
-	signal(SIGSEGV, signal_handler);
-	signal(SIGTERM, signal_handler);
-}
-
-void VID_ShiftPalette(unsigned char *p)
-{
-//	VID_SetPalette(p);
-}
-
-void	VID_SetPalette (unsigned char *palette)
-{
-	unsigned r,g,b;
-	unsigned v;
-	int     r1,g1,b1;
-	int		j,k,l,m;
-	unsigned short i;
-	FILE *f;
-	char s[255];
-	int dist, bestdist;
-	int c, p;
-
-	//
-	// 8 8 8 encoding
-	//
-	byte* pal = palette;
-	unsigned* table = d_8to24table;
-	for (int i = 0; i < 256; i++)
-	{
-		unsigned r = pal[0];
-		unsigned g = pal[1];
-		unsigned b = pal[2];
-		pal += 3;
-		
-		unsigned v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
-		*table++ = v;
-	}
-	d_8to24table[255] &= 0xffffff;	// 255 is transparent
-
-	pal = palette;
-	table = d_8to24TranslucentTable;
-
-	for (i=0; i<16;i++)
-	{
-		c = ColorIndex[i]*3;
-
-		r = pal[c];
-		g = pal[c+1];
-		b = pal[c+2];
-
-		for(p=0;p<16;p++)
-		{
-			v = (ColorPercent[15-p]<<24) + (r<<0) + (g<<8) + (b<<16);
-			//v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
-			*table++ = v;
-
-			RTint[i*16+p] = ((float)r) / ((float)ColorPercent[15-p]) ;
-			GTint[i*16+p] = ((float)g) / ((float)ColorPercent[15-p]);
-			BTint[i*16+p] = ((float)b) / ((float)ColorPercent[15-p]);
-		}
-	}
-}
-
-void CheckMultiTextureExtensions(void) 
-{
-	void *prjobj;
-
-	if (strstr(gl_extensions, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
-		Con_Printf("Found GL_SGIS_multitexture...\n");
-
-		if ((prjobj = dlopen(NULL, RTLD_LAZY)) == NULL) {
-			Con_Printf("Unable to open symbol list for main program.\n");
-			return;
-		}
-
-		qglMTexCoord2fSGIS = (void(APIENTRY*)(GLenum, GLfloat, GLfloat)) dlsym(prjobj, "glMTexCoord2fSGIS");
-		qglSelectTextureSGIS = (void(APIENTRY*)(GLenum)) dlsym(prjobj, "glSelectTextureSGIS");
-
-		if (qglMTexCoord2fSGIS && qglSelectTextureSGIS) {
-			Con_Printf("Multitexture extensions found.\n");
-			gl_mtexable = true;
-		} else
-			Con_Printf("Symbol not found, disabled.\n");
-
-		dlclose(prjobj);
-	}
-}
-
-/*
-===============
-GL_Init
-===============
-*/
-void GL_Init (void)
-{
-	QGL_Init();
-
-	gl_vendor = (char*)qglGetString (GL_VENDOR);
-	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = (char*)qglGetString (GL_RENDERER);
-	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
-
-	gl_version = (char*)qglGetString (GL_VERSION);
-	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = (char*)qglGetString (GL_EXTENSIONS);
-	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
-
-//	Con_Printf ("%s %s\n", gl_renderer, gl_version);
-
-	CheckMultiTextureExtensions ();
-
-	qglClearColor (1,0,0,0);
-	qglCullFace(GL_FRONT);
-	qglEnable(GL_TEXTURE_2D);
-
-	qglEnable(GL_ALPHA_TEST);
-	qglAlphaFunc(GL_GREATER, 0.666);
-
-	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	qglShadeModel (GL_FLAT);
-
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-}
-
-/*
-=================
-GL_BeginRendering
-
-=================
-*/
-void GL_BeginRendering (int *x, int *y, int *width, int *height)
-{
-	*x = *y = 0;
-	*width = glConfig.vidWidth;
-	*height = glConfig.vidHeight;
-
-//    if (!wglMakeCurrent( maindc, baseRC ))
-//		Sys_Error ("wglMakeCurrent failed");
-
-//	qglViewport (*x, *y, *width, *height);
-}
-
-
 void GL_EndRendering (void)
 {
 	qglFlush();
 	glXSwapBuffers(dpy, win);
 }
 
-static void Check_Gamma (unsigned char *pal)
-{
-	float	f, inf;
-	unsigned char	palette[768];
-	int		i;
-
-	if ((i = COM_CheckParm("-gamma")) == 0)
-	{
-		vid_gamma = 0.7; // default to 0.7 on non-3dfx hardware
-	}
-	else
-	{
-		vid_gamma = QStr::Atof(COM_Argv(i+1));
-	}
-
-	for (i=0 ; i<768 ; i++)
-	{
-		f = pow ( (pal[i]+1)/256.0 , vid_gamma );
-		inf = f*255 + 0.5;
-		if (inf < 0)
-			inf = 0;
-		if (inf > 255)
-			inf = 255;
-		palette[i] = inf;
-	}
-
-	Com_Memcpy(pal, palette, sizeof(palette));
-}
-
+void GL_Init();
 void VID_Init(unsigned char *palette)
 {
 	R_SharedRegister();
 	int i;
-
-	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 
 	vid.colormap = host_colormap;
 
@@ -341,8 +93,6 @@ void VID_Init(unsigned char *palette)
 	vid.aspect = ((float)vid.height / (float)vid.width) * (320.0 / 240.0);
 	vid.numpages = 2;
 
-	InitSig(); // trap evil signals
-
 	GL_Init();
 
 	VID_SetPalette(palette);
@@ -353,16 +103,4 @@ void VID_Init(unsigned char *palette)
 void Sys_SendKeyEvents(void)
 {
 	HandleEvents();
-}
-
-void D_ShowLoadingSize(void)
-{
-	if (!vidmode_active)
-		return;
-
-	qglDrawBuffer  (GL_FRONT);
-
-	SCR_DrawLoading();
-
-	qglDrawBuffer  (GL_BACK);
 }

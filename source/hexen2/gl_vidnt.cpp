@@ -5,82 +5,21 @@
 #include "winquake.h"
 #include "resource.h"
 
-#define MAX_MODE_LIST	30
-#define VID_ROW_SIZE	3
 #define BASEWIDTH		320
 #define BASEHEIGHT		200
 
-#define MODE_WINDOWED			0
-#define NO_MODE					(MODE_WINDOWED - 1)
-#define MODE_FULLSCREEN_DEFAULT	(MODE_WINDOWED + 1)
-
-byte globalcolormap[VID_GRADES*256];
-
-const char *gl_vendor;
-const char *gl_renderer;
-const char *gl_version;
-const char *gl_extensions;
-
 qboolean		scr_skipupdate;
 
-qboolean	vid_initialized = false;
 static qboolean	windowed;
-
-unsigned char	vid_curpal[256*3];
-float RTint[256],GTint[256],BTint[256];
-
-glvert_t glv;
-
-QCvar*	gl_ztrick;
-
-HWND WINAPI InitializeWindow (HINSTANCE hInstance, int nCmdShow);
-
-unsigned	d_8to24table[256];
-unsigned	d_8to24TranslucentTable[256];
-
-float		gldepthmin, gldepthmax;
 
 void VID_MenuDraw (void);
 void VID_MenuKey (int key);
 
 void AppActivate(BOOL fActive, BOOL minimize);
 void ClearAllStates (void);
-void VID_UpdateWindowStatus (void);
 void GL_Init (void);
 
 //====================================
-
-// direct draw software compatability stuff
-
-void VID_HandlePause (qboolean pause)
-{
-}
-
-void VID_ForceLockState (int lk)
-{
-}
-
-void VID_LockBuffer (void)
-{
-}
-
-void VID_UnlockBuffer (void)
-{
-}
-
-int VID_ForceUnlockedAndReturnState (void)
-{
-	return 0;
-}
-
-void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
-{
-}
-
-void D_EndDirectRect (int x, int y, int width, int height)
-{
-}
-
 
 int VID_SetMode(unsigned char *palette)
 {
@@ -108,8 +47,6 @@ int VID_SetMode(unsigned char *palette)
 
 	IN_Activate(true);
 
-	VID_UpdateWindowStatus ();
-
 	CDAudio_Resume ();
 	scr_disabled_for_loading = temp;
 
@@ -125,85 +62,7 @@ int VID_SetMode(unsigned char *palette)
 	return true;
 }
 
-
-/*
-================
-VID_UpdateWindowStatus
-================
-*/
-void VID_UpdateWindowStatus (void)
-{
-}
-
-
 //====================================
-
-//int		texture_mode = GL_NEAREST;
-//int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
-//int		texture_mode = GL_NEAREST_MIPMAP_LINEAR;
-int		texture_mode = GL_LINEAR;
-//int		texture_mode = GL_LINEAR_MIPMAP_NEAREST;
-//int		texture_mode = GL_LINEAR_MIPMAP_LINEAR;
-
-int		texture_extension_number = 1;
-
-/*
-===============
-GL_Init
-===============
-*/
-void GL_Init (void)
-{
-	QGL_Init();
-
-	gl_vendor = (char*)qglGetString (GL_VENDOR);
-	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = (char*)qglGetString (GL_RENDERER);
-	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
-
-	gl_version = (char*)qglGetString (GL_VERSION);
-	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = (char*)qglGetString (GL_EXTENSIONS);
-	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
-
-	qglClearColor (1,0,0,0);
-	qglCullFace(GL_FRONT);
-	qglEnable(GL_TEXTURE_2D);
-
-	qglEnable(GL_ALPHA_TEST);
-	qglAlphaFunc(GL_GREATER, 0.666);
-
-	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	qglShadeModel (GL_FLAT);
-
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-}
-
-/*
-=================
-GL_BeginRendering
-
-=================
-*/
-void GL_BeginRendering (int *x, int *y, int *width, int *height)
-{
-	*x = *y = 0;
-	*width = glConfig.vidWidth;
-	*height = glConfig.vidHeight;
-
-//    if (!wglMakeCurrent( maindc, baseRC ))
-//		Sys_Error ("wglMakeCurrent failed");
-
-//	qglViewport (*x, *y, *width, *height);
-}
 
 
 void GL_EndRendering (void)
@@ -211,76 +70,6 @@ void GL_EndRendering (void)
 	if (!scr_skipupdate)
 		SwapBuffers(maindc);
 }
-
-
-int ColorIndex[16] =
-{
-	0, 31, 47, 63, 79, 95, 111, 127, 143, 159, 175, 191, 199, 207, 223, 231
-};
-
-unsigned ColorPercent[16] =
-{
-	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
-};
-
-void VID_SetPalette (unsigned char *palette)
-{
-	byte	*pal;
-	int		r,g,b,v;
-	int		i,c,p;
-	unsigned	*table;
-	
-	
-//
-// 8 8 8 encoding
-//
-	pal = palette;
-	table = d_8to24table;
-	
-	for (i=0 ; i<256 ; i++)
-	{
-		r = pal[0];
-		g = pal[1];
-		b = pal[2];
-		pal += 3;
-		
-//		v = (255<<24) + (r<<16) + (g<<8) + (b<<0);
-//		v = (255<<0) + (r<<8) + (g<<16) + (b<<24);
-		v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
-		*table++ = v;
-	}
-
-	d_8to24table[255] &= 0xffffff;	// 255 is transparent
-
-	pal = palette;
-	table = d_8to24TranslucentTable;
-
-	for (i=0; i<16;i++)
-	{
-		c = ColorIndex[i]*3;
-
-		r = pal[c];
-		g = pal[c+1];
-		b = pal[c+2];
-
-		for(p=0;p<16;p++)
-		{
-			v = (ColorPercent[15-p]<<24) + (r<<0) + (g<<8) + (b<<16);
-			//v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
-			*table++ = v;
-
-			RTint[i*16+p] = ((float)r) / ((float)ColorPercent[15-p]) ;
-			GTint[i*16+p] = ((float)g) / ((float)ColorPercent[15-p]);
-			BTint[i*16+p] = ((float)b) / ((float)ColorPercent[15-p]);
-		}
-	}
-}
-
-void	VID_ShiftPalette (unsigned char *palette)
-{
-	extern	byte ramps[3][256];
-}
-
 
 void VID_SetDefaultMode (void)
 {
@@ -378,7 +167,6 @@ LONG WINAPI MainWndProc (
 			break;
 
 		case WM_MOVE:
-			VID_UpdateWindowStatus ();
 			break;
 
 		case WM_SYSCHAR:
@@ -425,6 +213,7 @@ LONG WINAPI MainWndProc (
     return lRet;
 }
 
+void GL_Init();
 /*
 ===================
 VID_Init
@@ -433,8 +222,6 @@ VID_Init
 void	VID_Init (unsigned char *palette)
 {
 	R_SharedRegister();
-
-    gl_ztrick = Cvar_Get("gl_ztrick", "1", CVAR_ARCHIVE);
 
 	vid_initialized = true;
 
@@ -505,16 +292,4 @@ void VID_MenuKey (int key)
 	default:
 		break;
 	}
-}
-
-void D_ShowLoadingSize(void)
-{
-	if (!vid_initialized)
-		return;
-
-	qglDrawBuffer  (GL_FRONT);
-
-	SCR_DrawLoading();
-
-	qglDrawBuffer  (GL_BACK);
 }

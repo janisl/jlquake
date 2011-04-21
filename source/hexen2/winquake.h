@@ -15,18 +15,8 @@
 
 extern	int			global_nCmdShow;
 
-#ifndef SERVERONLY
-
-void	VID_LockBuffer (void);
-void	VID_UnlockBuffer (void);
-
-#endif
-
 typedef enum {MS_WINDOWED, MS_FULLSCREEN, MS_FULLDIB, MS_FULLDIRECT, MS_UNINIT} modestate_t;
 
 extern qboolean		ActiveApp, Minimized;
-
-int VID_ForceUnlockedAndReturnState (void);
-void VID_ForceLockState (int lk);
 
 void VID_SetDefaultMode (void);

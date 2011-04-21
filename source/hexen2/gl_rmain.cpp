@@ -92,7 +92,7 @@ QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 
-extern	QCvar*	gl_ztrick;
+QCvar*	gl_ztrick;
 static qboolean AlwaysDrawModel;
 
 static void R_RotateForEntity2(entity_t *e);
@@ -466,8 +466,6 @@ int	lastposenum;
 GL_DrawAliasFrame
 =============
 */
-extern float RTint[256],GTint[256],BTint[256];
-
 void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 {
 	float	s, t;

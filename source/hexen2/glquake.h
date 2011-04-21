@@ -35,15 +35,6 @@ int GL_FindTexture (char *identifier);
 
 typedef struct
 {
-	float	x, y, z;
-	float	s, t;
-	float	r, g, b;
-} glvert_t;
-
-extern glvert_t glv;
-
-typedef struct
-{
 	int		texnum;
 	float	sl, tl, sh, th;
 } glpic_t;
@@ -215,6 +206,7 @@ extern	int		gl_solid_format;
 extern	int		gl_alpha_format;
 
 extern	QCvar*	gl_max_size;
+extern QCvar*	gl_ztrick;
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;
@@ -231,15 +223,6 @@ void R_TranslatePlayerSkin (int playernum);
 void GL_Bind (int texnum);
 
 extern byte *playerTranslation;
-
-// Multitexture
-#define    TEXTURE0_SGIS				0x835E
-#define    TEXTURE1_SGIS				0x835F
-
-extern qboolean gl_mtexable;
-
-void GL_DisableMultitexture(void);
-void GL_EnableMultitexture(void);
 
 void D_ShowLoadingSize(void);
 model_t *Mod_FindName (char *name);
@@ -267,3 +250,9 @@ void R_StoreEfrags (efrag_t **ppefrag);
 void GL_Set2D (void);
 void SCR_DrawLoading (void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);
+
+extern float RTint[256],GTint[256],BTint[256];
+extern int ColorIndex[16];
+extern unsigned ColorPercent[16];
+
+extern qboolean	vid_initialized;

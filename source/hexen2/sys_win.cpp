@@ -77,8 +77,6 @@ void Sys_Error (char *error, ...)
 	va_list		argptr;
 	char		text[1024];
 
-	VID_ForceUnlockedAndReturnState ();
-
 	va_start (argptr, error);
 	Q_vsnprintf(text, 1024, error, argptr);
 	va_end (argptr);
@@ -111,9 +109,6 @@ void Sys_Error (char *error, ...)
 
 void Sys_Quit (void)
 {
-
-	VID_ForceUnlockedAndReturnState ();
-
 	Host_Shutdown();
 
 	if (tevent)

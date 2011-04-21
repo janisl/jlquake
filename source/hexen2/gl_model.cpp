@@ -10,8 +10,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-extern qboolean	vid_initialized;
-
 model_t	*loadmodel;
 static char	loadname[32];	// for hunk tags
 

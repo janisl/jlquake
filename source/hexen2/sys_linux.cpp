@@ -49,6 +49,27 @@ void Sys_Error (char *error, ...)
 
 } 
 
+void signal_handler(int sig)
+{
+	printf("Received signal %d, exiting...\n", sig);
+	Sys_Quit();
+	exit(0);
+}
+
+void InitSig(void)
+{
+	signal(SIGHUP, signal_handler);
+	signal(SIGINT, signal_handler);
+	signal(SIGQUIT, signal_handler);
+	signal(SIGILL, signal_handler);
+	signal(SIGTRAP, signal_handler);
+	signal(SIGIOT, signal_handler);
+	signal(SIGBUS, signal_handler);
+	signal(SIGFPE, signal_handler);
+	signal(SIGSEGV, signal_handler);
+	signal(SIGTERM, signal_handler);
+}
+
 // =======================================================================
 // Sleeps for microseconds
 // =======================================================================
@@ -60,7 +81,7 @@ int main (int c, char **v)
 	quakeparms_t parms;
 	int j;
 
-	signal(SIGFPE, SIG_IGN);
+	InitSig(); // trap evil signals
 
 	Com_Memset(&parms, 0, sizeof(parms));
 

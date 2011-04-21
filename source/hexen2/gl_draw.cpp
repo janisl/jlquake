@@ -9,10 +9,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-extern int ColorIndex[16];
-extern unsigned ColorPercent[16];
-extern qboolean	vid_initialized;
-
 #define MAX_DISC 18
 
 QCvar*		gl_nobind;
