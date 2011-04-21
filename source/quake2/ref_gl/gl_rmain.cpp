@@ -1021,7 +1021,7 @@ qboolean R_SetMode (void)
 R_Init
 ===============
 */
-int R_Init( void *hinstance, void *hWnd )
+int R_Init()
 {	
 	int		err;
 	int		j;
@@ -1046,13 +1046,6 @@ int R_Init( void *hinstance, void *hWnd )
 		return -1;
 	}
 
-	// initialize OS-specific parts of OpenGL
-	if ( !GLimp_Init( hinstance, hWnd ) )
-	{
-		QGL_Shutdown();
-		return -1;
-	}
-
 	// set our "safe" modes
 	gl_state.prev_mode = 3;
 
@@ -1063,6 +1056,9 @@ int R_Init( void *hinstance, void *hWnd )
         ri.Con_Printf (PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n" );
 		return -1;
 	}
+
+	// let the sound and input subsystems know about the new window
+	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
 
 	ri.Vid_MenuInit();
 
@@ -1418,8 +1414,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	ri = rimp;
 
-	re.api_version = API_VERSION;
-
 	re.BeginRegistration = R_BeginRegistration;
 	re.RegisterModel = R_RegisterModel;
 	re.RegisterSkin = R_RegisterSkin;
@@ -1439,7 +1433,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	re.DrawStretchRaw = Draw_StretchRaw;
 
-	re.Init = R_Init;
 	re.Shutdown = R_Shutdown;
 
 	re.CinematicSetPalette = R_SetPalette;

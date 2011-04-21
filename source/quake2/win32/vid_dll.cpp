@@ -24,11 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <float.h>
 
 #include "..\client\client.h"
+#include "../ref_gl/gl_local.h"
 #include "winquake.h"
-//#include "zmouse.h"
-
-// Structure containing functions exported from refresh DLL
-refexport_t	re;
 
 QCvar *win_noalttab;
 
@@ -36,18 +33,9 @@ QCvar *win_noalttab;
 #define WM_MOUSEWHEEL (WM_MOUSELAST+1)  // message that will be supported by the OS 
 #endif
 
-refexport_t GetRefAPI (refimport_t rimp);
-
 // Console variables that we need to access from this module
-extern QCvar		*vid_gamma;
-extern QCvar		*vid_ref;			// Name of Refresh DLL loaded
 QCvar		*vid_xpos;			// X coordinate of window position
 QCvar		*vid_ypos;			// Y coordinate of window position
-extern QCvar *r_fullscreen;
-
-// Global variables used internally by this module
-viddef_t	viddef;				// global video state; used by other modules
-qboolean	reflib_active = 0;
 
 static qboolean s_alttab_disabled;
 
@@ -73,52 +61,6 @@ static void WIN_EnableAltTab( void )
 
 		s_alttab_disabled = false;
 	}
-}
-
-/*
-==========================================================================
-
-DLL GLUE
-
-==========================================================================
-*/
-
-void VID_Printf (int print_level, char *fmt, ...)
-{
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-	static qboolean	inupdate;
-	
-	va_start (argptr,fmt);
-	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
-	va_end (argptr);
-
-	if (print_level == PRINT_ALL)
-	{
-		Com_Printf ("%s", msg);
-	}
-	else if ( print_level == PRINT_DEVELOPER )
-	{
-		Com_DPrintf ("%s", msg);
-	}
-	else if ( print_level == PRINT_ALERT )
-	{
-		MessageBox( 0, msg, "PRINT_ALERT", MB_ICONWARNING );
-		OutputDebugString( msg );
-	}
-}
-
-void VID_Error (int err_level, char *fmt, ...)
-{
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-	static qboolean	inupdate;
-	
-	va_start (argptr,fmt);
-	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
-	va_end (argptr);
-
-	Com_Error (err_level,"%s", msg);
 }
 
 //==========================================================================
@@ -267,20 +209,6 @@ LONG WINAPI MainWndProc (
     return DefWindowProc( hWnd, uMsg, wParam, lParam );
 }
 
-/*
-============
-VID_Restart_f
-
-Console command to re-start the video mode and refresh DLL. We do this
-simply by setting the modified flag for the vid_ref variable, which will
-cause the entire video mode and refresh DLL to be reset on the next frame.
-============
-*/
-void VID_Restart_f (void)
-{
-	vid_ref->modified = true;
-}
-
 void VID_Front_f( void )
 {
 	SetWindowLong( GMainWindow, GWL_EXSTYLE, WS_EX_TOPMOST );
@@ -311,70 +239,6 @@ void VID_UpdateWindowPosAndSize( int x, int y )
 }
 
 /*
-** VID_NewWindow
-*/
-void VID_NewWindow ( int width, int height)
-{
-	viddef.width  = width;
-	viddef.height = height;
-
-	cl.force_refdef = true;		// can't use a paused refdef
-}
-
-void VID_FreeReflib (void)
-{
-	Com_Memset(&re, 0, sizeof(re));
-	reflib_active  = false;
-}
-
-/*
-==============
-VID_LoadRefresh
-==============
-*/
-qboolean VID_LoadRefresh( char *name )
-{
-	refimport_t	ri;
-	
-	if ( reflib_active )
-	{
-		re.Shutdown();
-		VID_FreeReflib ();
-	}
-
-	ri.Con_Printf = VID_Printf;
-	ri.Sys_Error = VID_Error;
-	ri.Vid_MenuInit = VID_MenuInit;
-	ri.Vid_NewWindow = VID_NewWindow;
-
-	re = GetRefAPI( ri );
-
-	if (re.api_version != API_VERSION)
-	{
-		VID_FreeReflib ();
-		Com_Error (ERR_FATAL, "%s has incompatible api_version", name);
-	}
-
-	if ( re.Init( global_hInstance, MainWndProc ) == -1 )
-	{
-		re.Shutdown();
-		VID_FreeReflib ();
-		return false;
-	}
-
-	Com_Printf( "------------------------------------\n");
-	reflib_active = true;
-
-//======
-//PGM
-	vidref_val = VIDREF_GL;
-//PGM
-//======
-
-	return true;
-}
-
-/*
 ============
 VID_CheckChanges
 
@@ -385,8 +249,7 @@ update the rendering DLL and/or video mode to match.
 */
 void VID_CheckChanges (void)
 {
-	char name[100];
-
+	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 	if ( win_noalttab->modified )
 	{
 		if ( win_noalttab->value )
@@ -404,9 +267,6 @@ void VID_CheckChanges (void)
 	{
 		cl.force_refdef = true;		// can't use a paused refdef
 		S_StopAllSounds();
-	}
-	while (vid_ref->modified)
-	{
 		/*
 		** refresh has changed
 		*/
@@ -417,20 +277,9 @@ void VID_CheckChanges (void)
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
-		QStr::Sprintf( name, sizeof(name), "ref_%s.dll", vid_ref->string );
-		if ( !VID_LoadRefresh( name ) )
+		if ( !VID_LoadRefresh() )
 		{
-			if ( QStr::Cmp(vid_ref->string, "soft") == 0 )
-				Com_Error (ERR_FATAL, "Couldn't fall back to software refresh!");
-			Cvar_SetLatched( "vid_ref", "soft" );
-
-			/*
-			** drop the console if we fail to load a refresh
-			*/
-			if (!(in_keyCatchers & KEYCATCH_CONSOLE))
-			{
-				Con_ToggleConsole_f();
-			}
+			Com_Error(ERR_FATAL, "Couldn't init refresh!");
 		}
 		cls.disable_screen = false;
 	}
@@ -456,10 +305,8 @@ VID_Init
 void VID_Init (void)
 {
 	/* Create the video variables so we know how to start the graphics drivers */
-	vid_ref = Cvar_Get ("vid_ref", "soft", CVAR_ARCHIVE);
 	vid_xpos = Cvar_Get ("vid_xpos", "3", CVAR_ARCHIVE);
 	vid_ypos = Cvar_Get ("vid_ypos", "22", CVAR_ARCHIVE);
-	vid_gamma = Cvar_Get( "vid_gamma", "1", CVAR_ARCHIVE );
 	win_noalttab = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
 
 	/* Add some console commands that we want to handle */
@@ -469,19 +316,3 @@ void VID_Init (void)
 	/* Start the graphics mode and load refresh DLL */
 	VID_CheckChanges();
 }
-
-/*
-============
-VID_Shutdown
-============
-*/
-void VID_Shutdown (void)
-{
-	if ( reflib_active )
-	{
-		re.Shutdown ();
-		VID_FreeReflib ();
-	}
-}
-
-

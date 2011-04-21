@@ -166,9 +166,27 @@ char *Sys_GetClipboardData(void)
 	return NULL;
 }
 
+static void signal_handler(int sig)
+{
+	fprintf(stderr, "Received signal %d, exiting...\n", sig);
+	GLimp_Shutdown();
+	_exit(0);
+}
+
+static void InitSig(void)
+{
+        struct sigaction sa;
+	sigaction(SIGINT, 0, &sa);
+	sa.sa_handler = signal_handler;
+	sigaction(SIGINT, &sa, 0);
+	sigaction(SIGTERM, &sa, 0);
+}
+
 int main (int argc, char **argv)
 {
 	int 	time, oldtime, newtime;
+
+	InitSig();
 
 	// go back to real user for config loads
 	seteuid(getuid());

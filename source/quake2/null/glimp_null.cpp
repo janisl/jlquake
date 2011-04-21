@@ -8,10 +8,6 @@ void		GLimp_EndFrame( void )
 {
 }
 
-int 		GLimp_Init( void *hinstance, void *hWnd )
-{
-}
-
 int     	GLimp_SetMode(int mode, qboolean fullscreen)
 {
 }

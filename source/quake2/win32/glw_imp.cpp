@@ -25,19 +25,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 ** must be implemented by the port:
 **
 ** GLimp_EndFrame
-** GLimp_Init
 ** GLimp_Shutdown
-** GLimp_SwitchFullscreen
 **
 */
 #include <assert.h>
 #include <windows.h>
 #include "../ref_gl/gl_local.h"
 #include "winquake.h"
-
-static qboolean GLimp_SwitchFullscreen( int width, int height );
-
-extern QCvar *vid_ref;
 
 /*
 ** GLimp_SetMode
@@ -52,45 +46,7 @@ int GLimp_SetMode(int mode, qboolean fullscreen)
 		GLimp_Shutdown ();
 	}
 
-	rserr_t r = GLW_SetMode(mode, gl_bitdepth->integer, fullscreen);
-	if (r != RSERR_OK)
-		return r;
-
-	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow (glConfig.vidWidth, glConfig.vidHeight);
-
-	return RSERR_OK;
-}
-
-/*
-** GLimp_Init
-**
-** This routine is responsible for initializing the OS specific portions
-** of OpenGL.  Under Win32 this means dealing with the pixelformats and
-** doing the wgl interface stuff.
-*/
-qboolean GLimp_Init(void*, void*)
-{
-	return true;
-}
-
-/*
-** GLimp_BeginFrame
-*/
-void GLimp_BeginFrame( float camera_separation )
-{
-	if ( camera_separation < 0 && glConfig.stereoEnabled )
-	{
-		qglDrawBuffer( GL_BACK_LEFT );
-	}
-	else if ( camera_separation > 0 && glConfig.stereoEnabled )
-	{
-		qglDrawBuffer( GL_BACK_RIGHT );
-	}
-	else
-	{
-		qglDrawBuffer( GL_BACK );
-	}
+	return GLW_SetMode(mode, gl_bitdepth->integer, fullscreen);
 }
 
 /*

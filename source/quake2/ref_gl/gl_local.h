@@ -239,7 +239,7 @@ extern	int		registration_sequence;
 
 void V_AddBlend (float r, float g, float b, float a, float *v_blend);
 
-int 	R_Init( void *hinstance, void *hWnd );
+int 	R_Init();
 void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
@@ -343,6 +343,16 @@ IMPORTED FUNCTIONS
 
 extern	refimport_t	ri;
 
+extern QCvar		*vid_ref;
+extern qboolean		reflib_active;
+
+refexport_t GetRefAPI (refimport_t rimp);
+
+void VID_Restart_f (void);
+void VID_NewWindow ( int width, int height);
+void VID_FreeReflib (void);
+qboolean VID_LoadRefresh();
+
 
 /*
 ====================================================================
@@ -354,6 +364,5 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 
 void		GLimp_BeginFrame( float camera_separation );
 void		GLimp_EndFrame( void );
-int 		GLimp_Init( void *hinstance, void *hWnd );
 int     	GLimp_SetMode(int mode, qboolean fullscreen );
 void		GLimp_AppActivate( qboolean active );

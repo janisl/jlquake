@@ -126,19 +126,11 @@ typedef struct
 
 
 
-#define	API_VERSION		3
-
 //
 // these are the functions exported by the refresh module
 //
 typedef struct
 {
-	// if api_version is different, the dll cannot be used
-	int		api_version;
-
-	// called when the library is loaded
-	qboolean	(*Init) ( void *hinstance, void *wndproc );
-
 	// called before the library is unloaded
 	void	(*Shutdown) (void);
 
@@ -196,7 +188,6 @@ typedef struct
 	void	(*Con_Printf) (int print_level, char *str, ...);
 
 	void		(*Vid_MenuInit)( void );
-	void		(*Vid_NewWindow)( int width, int height );
 } refimport_t;
 
 
