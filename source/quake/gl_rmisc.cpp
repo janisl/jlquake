@@ -543,7 +543,7 @@ void Check_Gamma (unsigned char *pal)
 
 	for (i=0 ; i<768 ; i++)
 	{
-		f = pow ( (pal[i]+1)/256.0 , vid_gamma );
+		f = pow ( (pal[i]+1)/256.0 , (double)vid_gamma );
 		inf = f*255 + 0.5;
 		if (inf < 0)
 			inf = 0;
