@@ -92,8 +92,6 @@ void Sys_Error (char *error, ...)
 
 void Sys_Quit (void)
 {
-	VID_ForceUnlockedAndReturnState ();
-
 	Host_Shutdown();
 #ifndef SERVERONLY
 	if (qwclsemaphore)

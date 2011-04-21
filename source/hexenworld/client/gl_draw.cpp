@@ -5,9 +5,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-extern int ColorIndex[16];
-extern unsigned ColorPercent[16];
-
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
 QCvar*		gl_picmip;

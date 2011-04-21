@@ -214,6 +214,7 @@ extern	int		gl_solid_format;
 extern	int		gl_alpha_format;
 
 extern	QCvar*	gl_max_size;
+extern	QCvar*	gl_ztrick;
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;
@@ -278,5 +279,8 @@ void R_NetGraph (void);
 model_t *Mod_FindName (char *name);
 void R_DarkFieldParticles (entity_t *ent);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
-void	VID_LockBuffer (void);
-void	VID_UnlockBuffer (void);
+
+extern float RTint[256],GTint[256],BTint[256];
+
+extern int ColorIndex[16];
+extern unsigned ColorPercent[16];

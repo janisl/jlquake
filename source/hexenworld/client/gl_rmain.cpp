@@ -89,7 +89,7 @@ QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 QCvar*	r_teamcolor;
 
-extern	QCvar*	gl_ztrick;
+QCvar*	gl_ztrick;
 extern	QCvar*	scr_fov;
 static qboolean AlwaysDrawModel;
 
@@ -377,8 +377,6 @@ int	lastposenum;
 GL_DrawAliasFrame
 =============
 */
-extern float RTint[256],GTint[256],BTint[256];
-
 void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 {
 	float		s, t;
