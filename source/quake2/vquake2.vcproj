@@ -341,10 +341,6 @@
 				>
 			</File>
 			<File
-				RelativePath="win32\vid_menu.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\x86.cpp"
 				>
 			</File>

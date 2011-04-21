@@ -1060,8 +1060,6 @@ int R_Init()
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
 
-	ri.Vid_MenuInit();
-
 	/*
 	** get our various GL strings
 	*/

@@ -186,8 +186,6 @@ typedef struct
 	void	(*Sys_Error) (int err_level, char *str, ...);
 
 	void	(*Con_Printf) (int print_level, char *str, ...);
-
-	void		(*Vid_MenuInit)( void );
 } refimport_t;
 
 

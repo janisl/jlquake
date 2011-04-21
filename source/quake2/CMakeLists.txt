@@ -42,7 +42,6 @@ set(QUAKE2_OBJS
 	server/sv_user.cpp
 	server/sv_world.cpp
 	linux/q_shlinux.cpp
-	linux/vid_menu.cpp
 	linux/vid_so.cpp
 	linux/sys_linux.cpp
 	linux/glob.cpp

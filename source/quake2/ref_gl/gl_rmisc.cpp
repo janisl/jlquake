@@ -342,7 +342,6 @@ qboolean VID_LoadRefresh()
 
 	ri.Con_Printf = VID_Printf;
 	ri.Sys_Error = VID_Error;
-	ri.Vid_MenuInit = VID_MenuInit;
 
 	re = GetRefAPI( ri );
 
