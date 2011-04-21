@@ -26,6 +26,14 @@
 
 // TYPES -------------------------------------------------------------------
 
+struct vidmode_t
+{
+	const char*	description;
+	int         width;
+	int			height;
+	float		pixelAspect;		// pixel width / height
+};
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -58,7 +66,7 @@ QCvar*		r_verbose;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-vidmode_t r_vidModes[] =
+static vidmode_t r_vidModes[] =
 {
 	{ "Mode  0: 320x240",		320,	240,	1 },
 	{ "Mode  1: 400x300",		400,	300,	1 },
@@ -73,7 +81,7 @@ vidmode_t r_vidModes[] =
 	{ "Mode 10: 2048x1536",		2048,	1536,	1 },
 	{ "Mode 11: 856x480 (wide)",856,	480,	1 }
 };
-int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
+static int		s_numVidModes = sizeof(r_vidModes) / sizeof(r_vidModes[0]);
 
 // CODE --------------------------------------------------------------------
 

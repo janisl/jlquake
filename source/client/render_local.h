@@ -74,14 +74,4 @@ extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for 
 extern QCvar*	r_stereo;				// desired pixelformat stereo flag
 extern QCvar*	r_displayRefresh;		// optional display refresh option
 
-struct vidmode_t
-{
-	const char*	description;
-	int         width;
-	int			height;
-	float		pixelAspect;		// pixel width / height
-};
-extern vidmode_t	r_vidModes[];
-extern int			s_numVidModes;
-
 #endif
