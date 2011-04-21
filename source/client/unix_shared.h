@@ -48,7 +48,7 @@ extern XF86VidModeGamma	vidmode_InitialGamma;
 
 extern QCvar *  in_joystick;
 
-rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen);
+rserr_t GLimp_GLXSharedInit(int mode, bool fullscreen);
 void GLimp_SharedShutdown();
 void IN_ActivateMouse();
 void IN_DeactivateMouse();

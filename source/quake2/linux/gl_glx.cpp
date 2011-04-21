@@ -49,8 +49,6 @@ typedef unsigned short PIXEL;
 
 // this is inside the renderer shared lib, so these are called from vid_so
 
-qboolean GLimp_InitGraphics( qboolean fullscreen );
-
 int XShmQueryExtension(Display *);
 int XShmGetEventBase(Display *);
 
@@ -112,40 +110,29 @@ static void InitSig()
 
 /*
 ** GLimp_SetMode
+**
+** This initializes the GL implementation specific
+** graphics subsystem.
 */
-int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
+int GLimp_SetMode(int mode, qboolean fullscreen )
 {
-	int width, height;
-
-	fprintf(stderr, "GLimp_SetMode\n");
-
-	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
-
-	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
-
-	float windowAspect;
-	if ( !R_GetModeInfo( &width, &height, &windowAspect, mode ) )
-	{
-		ri.Con_Printf( PRINT_ALL, " invalid mode\n" );
-		return RSERR_INVALID_MODE;
-	}
-
-	ri.Con_Printf( PRINT_ALL, " %d %d\n", width, height );
-
 	// destroy the existing window
 	GLimp_Shutdown ();
 
-	*pwidth = width;
-	*pheight = height;
+	srandom(getpid());
 
-	if ( !GLimp_InitGraphics( fullscreen ) ) {
+	if (GLimp_GLXSharedInit(mode, fullscreen) != RSERR_OK)
+	{
 		// failed to set a valid mode in windowed mode
 		return RSERR_INVALID_MODE;
 	}
-/* 	ctx = glXCreateContext( dpy, visinfo, 0, True ); */
+
+	current_framebuffer = 0;
+
+	X11_active = true;
 
 	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow (width, height);
+	ri.Vid_NewWindow (glConfig.vidWidth, glConfig.vidHeight);
 
 	return RSERR_OK;
 }
@@ -203,36 +190,6 @@ void GLimp_EndFrame (void)
 */
 void GLimp_AppActivate( qboolean active )
 {
-}
-
-/*
-** GLimp_InitGraphics
-**
-** This initializes the GL implementation specific
-** graphics subsystem.
-**
-** The necessary width and height parameters are grabbed from
-** glConfig.vidWidth and glConfig.vidHeight.
-*/
-qboolean GLimp_InitGraphics( qboolean fullscreen )
-{
-	fprintf(stderr, "GLimp_InitGraphics\n");
-
-	srandom(getpid());
-
-	// let the sound and input subsystems know about the new window
-	ri.Vid_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
-
-	if (GLimp_GLXSharedInit(glConfig.vidWidth, glConfig.vidHeight, fullscreen) != RSERR_OK)
-	{
-		return false;
-	}
-
-	current_framebuffer = 0;
-
-	X11_active = true;
-
-	return true;
 }
 
 /*****************************************************************************/

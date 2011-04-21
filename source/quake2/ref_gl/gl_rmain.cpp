@@ -985,7 +985,7 @@ qboolean R_SetMode (void)
 	r_fullscreen->modified = false;
 	r_mode->modified = false;
 
-	if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, r_mode->value, fullscreen ) ) == RSERR_OK )
+	if ((err = GLimp_SetMode(r_mode->value, fullscreen)) == RSERR_OK)
 	{
 		gl_state.prev_mode = r_mode->value;
 	}
@@ -996,7 +996,7 @@ qboolean R_SetMode (void)
 			Cvar_SetValueLatched( "r_fullscreen", 0);
 			r_fullscreen->modified = false;
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n" );
-			if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, r_mode->value, false ) ) == RSERR_OK )
+			if ((err = GLimp_SetMode(r_mode->value, false)) == RSERR_OK)
 				return true;
 		}
 		else if ( err == RSERR_INVALID_MODE )
@@ -1007,7 +1007,7 @@ qboolean R_SetMode (void)
 		}
 
 		// try setting it back to something safe
-		if ( ( err = GLimp_SetMode( (int*)&glConfig.vidWidth, (int*)&glConfig.vidHeight, gl_state.prev_mode, false ) ) != RSERR_OK )
+		if ((err = GLimp_SetMode(gl_state.prev_mode, false)) != RSERR_OK)
 		{
 			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n" );
 			return false;

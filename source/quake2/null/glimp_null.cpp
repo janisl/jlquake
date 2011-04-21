@@ -16,7 +16,7 @@ void		GLimp_Shutdown( void )
 {
 }
 
-int     	GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
+int     	GLimp_SetMode(int mode, qboolean fullscreen)
 {
 }
 

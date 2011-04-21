@@ -44,8 +44,10 @@ extern QCvar *vid_ref;
 /*
 ** GLimp_SetMode
 */
-int GLimp_SetMode( int *pwidth, int *pheight, int mode, qboolean fullscreen )
+int GLimp_SetMode(int mode, qboolean fullscreen)
 {
+	int *pwidth = &glConfig.vidWidth;
+	int *pheight = &glConfig.vidHeight;
 	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
 
 	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );

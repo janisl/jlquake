@@ -6,21 +6,17 @@
 -condebug
 -force
 -heapsize
--height
 -lm_1
 -lm_2
 -lm_4
 -lm_a
 -lm_i
 -minmemory
--mode
 -nocdaudio
 -nomidi
 -particles
 -port
 -safe
--width
--window
 -zone
 
 --------------------- Quake --------------------------
@@ -86,6 +82,10 @@ Parameter                Console command                      Saved
 -sndspeed                set s_khz <value>                    Yes
 -sndmono                 set s_channels 1                     Yes
 -sndstereo               set s_channels 2                     Yes
+-width                   set r_customwidth <value>            Yes
+-height                  set r_customheight <value>           Yes
+-mode                    set r_mode <value>                   Yes
+-window                  set r_fullscreen 0                   Yes
 
 -dinput
   Enabled by default, disable with:

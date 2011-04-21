@@ -72,8 +72,19 @@ void* GLimp_GetProcAddress(const char* Name)
 //
 //==========================================================================
 
-rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen)
+rserr_t GLimp_GLXSharedInit(int mode, bool fullscreen)
 {
+	GLog.Write("Initializing OpenGL display\n");
+
+	GLog.Write("...setting mode %d:", mode);
+
+	if (!R_GetModeInfo(&glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode))
+	{
+		GLog.Write(" invalid mode\n");
+		return RSERR_INVALID_MODE;
+	}
+	GLog.Write(" %d %d\n", glConfig.vidWidth, glConfig.vidHeight);
+
 	// open the display
 	if (!(dpy = XOpenDisplay(NULL)))
 	{
@@ -112,8 +123,8 @@ rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen)
 		}
 	}
 
-	int actualWidth = width;
-	int actualHeight = height;
+	int actualWidth = glConfig.vidWidth;
+	int actualHeight = glConfig.vidHeight;
 
 	if (vidmode_ext)
 	{
@@ -129,12 +140,12 @@ rserr_t GLimp_GLXSharedInit(int width, int height, bool fullscreen)
 
 			for (int i = 0; i < num_vidmodes; i++)
 			{
-				if (width > vidmodes[i]->hdisplay ||
-					height > vidmodes[i]->vdisplay)
+				if (glConfig.vidWidth > vidmodes[i]->hdisplay ||
+					glConfig.vidHeight > vidmodes[i]->vdisplay)
 					continue;
 
-				x = width - vidmodes[i]->hdisplay;
-				y = height - vidmodes[i]->vdisplay;
+				x = glConfig.vidWidth - vidmodes[i]->hdisplay;
+				y = glConfig.vidHeight - vidmodes[i]->vdisplay;
 				dist = (x * x) + (y * y);
 				if (dist < best_dist)
 				{

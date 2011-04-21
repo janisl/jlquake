@@ -45,8 +45,6 @@ unsigned short	d_8to16table[256];
 unsigned		d_8to24table[256];
 unsigned char	d_15to8table[65536];
 
-QCvar*	vid_mode;
- 
 /*-----------------------------------------------------------------------*/
 
 //int		texture_mode = GL_NEAREST;
@@ -325,10 +323,7 @@ void VID_Init(unsigned char *palette)
 {
 	R_SharedRegister();
 	int i;
-	int width = 640, height = 480;
-	qboolean fullscreen = true;
 
-	vid_mode = Cvar_Get("vid_mode", "0", 0);
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 
 	vid.maxwarpwidth = WARP_WIDTH;
@@ -336,17 +331,10 @@ void VID_Init(unsigned char *palette)
 	vid.colormap = host_colormap;
 	vid.fullbright = 256 - LittleLong (*((int *)vid.colormap + 2048));
 
-// interpret command-line params
-
-// set vid parameters
-	if ((i = COM_CheckParm("-window")) != 0)
-		fullscreen = false;
-
-	if ((i = COM_CheckParm("-width")) != 0)
-		width = QStr::Atoi(COM_Argv(i+1));
-
-	if ((i = COM_CheckParm("-height")) != 0)
-		height = QStr::Atoi(COM_Argv(i+1));
+	if (GLimp_GLXSharedInit(r_mode->integer, !!r_fullscreen->value) != RSERR_OK)
+	{
+		exit(1);
+	}
 
 	if ((i = COM_CheckParm("-conwidth")) != 0)
 		vid.conwidth = QStr::Atoi(COM_Argv(i+1));
@@ -359,25 +347,17 @@ void VID_Init(unsigned char *palette)
 		vid.conwidth = 320;
 
 	// pick a conheight that matches with correct aspect
-	vid.conheight = vid.conwidth*3 / 4;
+	vid.conheight = vid.conwidth / glConfig.windowAspect;
 
 	if ((i = COM_CheckParm("-conheight")) != 0)
 		vid.conheight = QStr::Atoi(COM_Argv(i+1));
 	if (vid.conheight < 200)
 		vid.conheight = 200;
 
-	if (GLimp_GLXSharedInit(width, height, fullscreen) != RSERR_OK)
-	{
-		exit(1);
-	}
-
-	glConfig.vidWidth = width;
-	glConfig.vidHeight = height;
-
-	if (vid.conheight > height)
-		vid.conheight = height;
-	if (vid.conwidth > width)
-		vid.conwidth = width;
+	if (vid.conheight > glConfig.vidHeight)
+		vid.conheight = glConfig.vidHeight;
+	if (vid.conwidth > glConfig.vidWidth)
+		vid.conwidth = glConfig.vidWidth;
 	vid.width = vid.conwidth;
 	vid.height = vid.conheight;
 
@@ -389,8 +369,6 @@ void VID_Init(unsigned char *palette)
 	GL_Init();
 
 	VID_SetPalette(palette);
-
-	Con_SafePrintf ("Video mode %dx%d initialized.\n", width, height);
 
 	vid.recalc_refdef = 1;				// force a surface cache flush
 }

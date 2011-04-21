@@ -184,26 +184,13 @@ static qboolean GLW_StartDriverAndSetMode(int mode, qboolean fullscreen )
 */
 int GLW_SetMode(int mode, qboolean fullscreen )
 {
-  const char*   glstring; // bk001130 - from cvs1.17 (mkv)
-
-  ri.Printf( PRINT_ALL, "Initializing OpenGL display\n");
-
-  ri.Printf (PRINT_ALL, "...setting mode %d:", mode );
-
-  if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )
-  {
-    ri.Printf( PRINT_ALL, " invalid mode\n" );
-    return RSERR_INVALID_MODE;
-  }
-  ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight);
-
-	if (GLimp_GLXSharedInit(glConfig.vidWidth, glConfig.vidHeight, fullscreen) != RSERR_OK)
+	if (GLimp_GLXSharedInit(mode, fullscreen) != RSERR_OK)
 	{
 		return RSERR_INVALID_MODE;
 	}
 
   // bk001130 - from cvs1.17 (mkv)
-  glstring = (char*)qglGetString (GL_RENDERER);
+  const char* glstring = (char*)qglGetString (GL_RENDERER);
   ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glstring );
 
   // bk010122 - new software token (Indirect)
