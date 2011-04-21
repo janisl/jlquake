@@ -434,7 +434,7 @@ rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen)
 	}
 
 	//	Check for software GL implementation.
-	const char* glstring = (char*)qglGetString (GL_RENDERER);
+	const char* glstring = (char*)glGetString(GL_RENDERER);
 	if (!QStr::ICmp(glstring, "Mesa X11") ||
 		!QStr::ICmp(glstring, "Mesa GLX Indirect"))
 	{
