@@ -12,9 +12,6 @@ qboolean		scr_skipupdate;
 
 static qboolean	windowed;
 
-void VID_MenuDraw (void);
-void VID_MenuKey (int key);
-
 void AppActivate(BOOL fActive, BOOL minimize);
 void ClearAllStates (void);
 void GL_Init (void);
@@ -234,62 +231,4 @@ void	VID_Init (unsigned char *palette)
 	GL_Init ();
 
 	VID_SetPalette (palette);
-
-	vid_menudrawfn = VID_MenuDraw;
-	vid_menukeyfn = VID_MenuKey;
-}
-
-
-//========================================================
-// Video menu stuff
-//========================================================
-
-extern void M_Menu_Options_f (void);
-extern void M_Print (int cx, int cy, char *str);
-extern void M_PrintWhite (int cx, int cy, char *str);
-extern void M_DrawCharacter (int cx, int line, int num);
-extern void M_DrawTransPic (int x, int y, qpic_t *pic);
-extern void M_DrawPic (int x, int y, qpic_t *pic);
-
-#define MAX_COLUMN_SIZE		9
-#define MODE_AREA_HEIGHT	(MAX_COLUMN_SIZE + 2)
-
-/*
-================
-VID_MenuDraw
-================
-*/
-void VID_MenuDraw (void)
-{
-	qpic_t* p = Draw_CachePic ("gfx/vidmodes.lmp");
-	M_DrawPic ( (320-p->width)/2, 4, p);
-
-	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*2,
-			 "Video modes must be set from the");
-	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*3,
-			 "console with set r_mode <number>");
-	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*4,
-			 "and set r_colorbits <bits-per-pixel>");
-	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*6,
-			 "Select windowed mode with set r_fullscreen 0");
-}
-
-
-/*
-================
-VID_MenuKey
-================
-*/
-void VID_MenuKey (int key)
-{
-	switch (key)
-	{
-	case K_ESCAPE:
-		S_StartLocalSound("raven/menu1.wav");
-		M_Menu_Options_f ();
-		break;
-
-	default:
-		break;
-	}
 }

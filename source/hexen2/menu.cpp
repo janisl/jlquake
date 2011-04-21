@@ -9,9 +9,6 @@ extern	float introTime;
 extern	QCvar*	crosshair;
 QCvar* m_oldmission;
 
-void (*vid_menudrawfn)(void);
-void (*vid_menukeyfn)(int key);
-
 menu_state_t m_state;
 
 void M_Menu_Main_f (void);
@@ -1972,8 +1969,7 @@ void M_Options_Draw (void)
 	M_Print (16,60+(OPT_ALWAYSMLOOK*8),	"            Mouse Look");
 	M_DrawCheckbox (220, 60+(OPT_ALWAYSMLOOK*8), in_mlook.state & 1);
 
-	if (vid_menudrawfn)
-		M_Print (16, 60+(OPT_VIDEO*8),	"         Video Options");
+	M_Print (16, 60+(OPT_VIDEO*8),	"         Video Options");
 
 // cursor
 	M_DrawCharacter (200, 60 + options_cursor*8, 12+((int)(realtime*4)&1));
@@ -2039,12 +2035,6 @@ void M_Options_Key (int k)
 		M_AdjustSliders (1);
 		break;
 	}
-
-	if (options_cursor == 12 && vid_menudrawfn == NULL)
-		if (k == K_UPARROW)
-			options_cursor = 11;
-		else
-			options_cursor = 0;
 }
 
 //=============================================================================
@@ -2289,6 +2279,9 @@ void M_Keys_Key (int k)
 //=============================================================================
 /* VIDEO MENU */
 
+#define MAX_COLUMN_SIZE		9
+#define MODE_AREA_HEIGHT	(MAX_COLUMN_SIZE + 2)
+
 void M_Menu_Video_f (void)
 {
 	in_keyCatchers |= KEYCATCH_UI;
@@ -2299,13 +2292,32 @@ void M_Menu_Video_f (void)
 
 void M_Video_Draw (void)
 {
-	(*vid_menudrawfn) ();
+	qpic_t* p = Draw_CachePic ("gfx/vidmodes.lmp");
+	M_DrawPic ( (320-p->width)/2, 4, p);
+
+	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*2,
+			 "Video modes must be set from the");
+	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*3,
+			 "console with set r_mode <number>");
+	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*4,
+			 "and set r_colorbits <bits-per-pixel>");
+	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*6,
+			 "Select windowed mode with set r_fullscreen 0");
 }
 
 
 void M_Video_Key (int key)
 {
-	(*vid_menukeyfn) (key);
+	switch (key)
+	{
+	case K_ESCAPE:
+		S_StartLocalSound("raven/menu1.wav");
+		M_Menu_Options_f ();
+		break;
+
+	default:
+		break;
+	}
 }
 
 //=============================================================================
