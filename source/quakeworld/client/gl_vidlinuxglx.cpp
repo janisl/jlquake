@@ -292,7 +292,7 @@ void VID_Init(unsigned char *palette)
 	vid.colormap = host_colormap;
 	vid.fullbright = 256 - LittleLong (*((int *)vid.colormap + 2048));
 
-	if (GLimp_GLXSharedInit(r_mode->integer, !!r_fullscreen->value) != RSERR_OK)
+	if (GLW_SetMode(r_mode->integer, !!r_fullscreen->value) != RSERR_OK)
 	{
 		exit(1);
 	}

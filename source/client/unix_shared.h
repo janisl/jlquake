@@ -43,7 +43,7 @@ extern bool			vidmode_active;
 
 extern QCvar *  in_joystick;
 
-rserr_t GLimp_GLXSharedInit(int mode, bool fullscreen);
+rserr_t GLW_SetMode(int mode, bool fullscreen);
 void IN_ActivateMouse();
 void IN_DeactivateMouse();
 void HandleEvents();

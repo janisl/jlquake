@@ -121,7 +121,7 @@ int GLimp_SetMode(int mode, qboolean fullscreen )
 
 	srandom(getpid());
 
-	if (GLimp_GLXSharedInit(mode, fullscreen) != RSERR_OK)
+	if (GLW_SetMode(mode, fullscreen) != RSERR_OK)
 	{
 		// failed to set a valid mode in windowed mode
 		return RSERR_INVALID_MODE;

@@ -116,7 +116,6 @@ void KBD_Close(void)
 ** GLW_StartDriverAndSetMode
 */
 // bk001204 - prototype needed
-int GLW_SetMode(int mode, qboolean fullscreen );
 static qboolean GLW_StartDriverAndSetMode(int mode, qboolean fullscreen )
 {
   rserr_t err;
@@ -143,43 +142,6 @@ static qboolean GLW_StartDriverAndSetMode(int mode, qboolean fullscreen )
     break;
   }
   return qtrue;
-}
-
-/*
-** GLW_SetMode
-*/
-int GLW_SetMode(int mode, qboolean fullscreen )
-{
-	if (GLimp_GLXSharedInit(mode, fullscreen) != RSERR_OK)
-	{
-		return RSERR_INVALID_MODE;
-	}
-
-  // bk001130 - from cvs1.17 (mkv)
-  const char* glstring = (char*)qglGetString (GL_RENDERER);
-  ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glstring );
-
-  // bk010122 - new software token (Indirect)
-  if ( !QStr::ICmp( glstring, "Mesa X11")
-       || !QStr::ICmp( glstring, "Mesa GLX Indirect") )
-  {
-    if ( !r_allowSoftwareGL->integer )
-    {
-      ri.Printf( PRINT_ALL, "\n\n***********************************************************\n" );
-      ri.Printf( PRINT_ALL, " You are using software Mesa (no hardware acceleration)!   \n" );
-      ri.Printf( PRINT_ALL, " If this is intentional, add\n" );
-      ri.Printf( PRINT_ALL, "       \"+set r_allowSoftwareGL 1\"\n" );
-      ri.Printf( PRINT_ALL, " to the command line when starting the game.\n" );
-      ri.Printf( PRINT_ALL, "***********************************************************\n");
-      GLimp_Shutdown( );
-      return RSERR_INVALID_MODE;
-    } else
-    {
-      ri.Printf( PRINT_ALL, "...using software Mesa (r_allowSoftwareGL==1).\n" );
-    }
-  }
-
-  return RSERR_OK;
 }
 
 /*

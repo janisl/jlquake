@@ -73,11 +73,11 @@ void* GLimp_GetProcAddress(const char* Name)
 
 //==========================================================================
 //
-//	GLimp_GLXSharedInit
+//	GLW_SetMode
 //
 //==========================================================================
 
-rserr_t GLimp_GLXSharedInit(int mode, bool fullscreen)
+rserr_t GLW_SetMode(int mode, bool fullscreen)
 {
 	GLog.Write("Initializing OpenGL display\n");
 
@@ -421,6 +421,28 @@ rserr_t GLimp_GLXSharedInit(int mode, bool fullscreen)
 			XF86VidModeGetGamma(dpy, scrnum, &vidmode_InitialGamma);
 			GLog.Write("XF86 Gamma extension initialized\n");
 			glConfig.deviceSupportsGamma = true;
+		}
+	}
+
+	//	Check for software GL implementation.
+	const char* glstring = (char*)qglGetString (GL_RENDERER);
+	if (!QStr::ICmp(glstring, "Mesa X11") ||
+		!QStr::ICmp(glstring, "Mesa GLX Indirect"))
+	{
+		if (!r_allowSoftwareGL->integer)
+		{
+			GLog.Write("\n\n***********************************************************\n");
+			GLog.Write(" You are using software Mesa (no hardware acceleration)!\n");
+			GLog.Write(" If this is intentional, add\n");
+			GLog.Write("       \"+set r_allowSoftwareGL 1\"\n");
+			GLog.Write(" to the command line when starting the game.\n");
+			GLog.Write("***********************************************************\n");
+			GLimp_Shutdown();
+			return RSERR_INVALID_MODE;
+		}
+		else
+		{
+			GLog.Write("...using software Mesa (r_allowSoftwareGL==1).\n");
 		}
 	}
 
