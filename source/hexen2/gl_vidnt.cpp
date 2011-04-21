@@ -9,10 +9,6 @@ rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen);
 
 #define MAX_MODE_LIST	30
 #define VID_ROW_SIZE	3
-#define WARP_WIDTH		320
-#define WARP_HEIGHT		200
-#define MAXWIDTH		10000
-#define MAXHEIGHT		10000
 #define BASEWIDTH		320
 #define BASEHEIGHT		200
 
@@ -444,10 +440,7 @@ void	VID_Init (unsigned char *palette)
 
 	vid_initialized = true;
 
-	vid.maxwarpwidth = WARP_WIDTH;
-	vid.maxwarpheight = WARP_HEIGHT;
 	vid.colormap = host_colormap;
-	vid.fullbright = 256 - LittleLong (*((int *)vid.colormap + 2048));
 
 	Sys_ShowConsole(0, false);
 

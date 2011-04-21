@@ -33,9 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <X11/keysym.h>
 #include <X11/cursorfont.h>
 
-#define WARP_WIDTH              320
-#define WARP_HEIGHT             200
-
 unsigned		d_8to24table[256];
 
 float RTint[256],GTint[256],BTint[256];
@@ -213,10 +210,7 @@ void VID_Init(unsigned char *palette)
 
 	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 
-	vid.maxwarpwidth = WARP_WIDTH;
-	vid.maxwarpheight = WARP_HEIGHT;
 	vid.colormap = host_colormap;
-	vid.fullbright = 256 - LittleLong (*((int *)vid.colormap + 2048));
 
 	if (GLW_SetMode(r_mode->integer, !!r_fullscreen->value) != RSERR_OK)
 	{
