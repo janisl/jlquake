@@ -374,27 +374,9 @@ void VID_SetDefaultMode (void)
 
 void	VID_Shutdown (void)
 {
-   	HGLRC hRC;
-   	HDC	  hDC;
-
 	if (vid_initialized)
 	{
-    	hRC = wglGetCurrentContext();
-    	hDC = wglGetCurrentDC();
-
-    	wglMakeCurrent(NULL, NULL);
-
-    	if (hRC)
-    	    wglDeleteContext(hRC);
-
-		if (hDC && GMainWindow)
-			ReleaseDC(GMainWindow, hDC);
-
-		if (cdsFullscreen)
-			ChangeDisplaySettings (NULL, 0);
-
-		if (maindc && GMainWindow)
-			ReleaseDC (GMainWindow, maindc);
+	GLimp_SharedShutdown();
 
 		AppActivate(false, false);
 	}
@@ -510,13 +492,8 @@ LONG WINAPI MainWndProc (
 			break;
 
    	    case WM_DESTROY:
-        {
-			if (GMainWindow)
-				DestroyWindow (GMainWindow);
-
             PostQuitMessage (0);
-        }
-        break;
+			break;
 
 		case MM_MCINOTIFY:
             lRet = CDAudio_MessageHandler (hWnd, uMsg, wParam, lParam);

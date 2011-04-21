@@ -366,56 +366,12 @@ void GLimp_Init( void )
 */
 void GLimp_Shutdown( void )
 {
-//	const char *strings[] = { "soft", "hard" };
-	const char *success[] = { "failed", "success" };
-	int retVal;
-
 	ri.Printf( PRINT_ALL, "Shutting down OpenGL subsystem\n" );
 
 	// restore gamma.
 	WG_RestoreGamma();
 
-	// set current context to NULL
-	retVal = wglMakeCurrent( NULL, NULL ) != 0;
-
-	ri.Printf( PRINT_ALL, "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
-
-	// delete HGLRC
-	if ( baseRC )
-	{
-		retVal = wglDeleteContext( baseRC ) != 0;
-		ri.Printf( PRINT_ALL, "...deleting GL context: %s\n", success[retVal] );
-		baseRC = NULL;
-	}
-
-	// release DC
-	if ( maindc )
-	{
-		retVal = ReleaseDC( GMainWindow, maindc ) != 0;
-		ri.Printf( PRINT_ALL, "...releasing DC: %s\n", success[retVal] );
-		maindc   = NULL;
-	}
-
-	// destroy window
-	if ( GMainWindow )
-	{
-		ri.Printf( PRINT_ALL, "...destroying window\n" );
-		ShowWindow( GMainWindow, SW_HIDE );
-		DestroyWindow( GMainWindow );
-		GMainWindow = NULL;
-		pixelFormatSet = qfalse;
-	}
-
-	// reset display settings
-	if (::cdsFullscreen)
-	{
-		ri.Printf( PRINT_ALL, "...resetting display\n" );
-		ChangeDisplaySettings( 0, 0 );
-		::cdsFullscreen = qfalse;
-	}
-
-	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
-	Com_Memset( &glState, 0, sizeof( glState ) );
+	GLimp_SharedShutdown();
 }
 
 

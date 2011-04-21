@@ -25,6 +25,8 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define WINDOW_CLASS_NAME	"vQuake"
+
 enum
 {
 	TRY_PFD_SUCCESS		= 0,
@@ -916,6 +918,61 @@ rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen)
 	glConfig.isFullscreen = fullscreen;
 
 	return RSERR_OK;
+}
+
+//==========================================================================
+//
+//	GLimp_SharedShutdown()
+//
+//	This routine does all OS specific shutdown procedures for the OpenGL
+// subsystem.
+//
+//==========================================================================
+
+void GLimp_SharedShutdown()
+{
+	const char *success[] = { "failed", "success" };
+	// set current context to NULL
+	int retVal = wglMakeCurrent(NULL, NULL) != 0;
+
+	GLog.Write("...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal]);
+
+	// delete HGLRC
+	if (baseRC)
+	{
+		retVal = wglDeleteContext(baseRC) != 0;
+		GLog.Write("...deleting GL context: %s\n", success[retVal]);
+		baseRC = NULL;
+	}
+
+	// release DC
+	if (maindc)
+	{
+		retVal = ReleaseDC(GMainWindow, maindc) != 0;
+		GLog.Write("...releasing DC: %s\n", success[retVal]);
+		maindc = NULL;
+	}
+
+	// destroy window
+	if (GMainWindow)
+	{
+		GLog.Write("...destroying window\n");
+		ShowWindow(GMainWindow, SW_HIDE);
+		DestroyWindow(GMainWindow);
+		GMainWindow = NULL;
+		pixelFormatSet = false;
+	}
+
+	// reset display settings
+	if (cdsFullscreen)
+	{
+		GLog.Write("...resetting display\n");
+		ChangeDisplaySettings(0, 0);
+		cdsFullscreen = false;
+	}
+
+	Com_Memset(&glConfig, 0, sizeof(glConfig));
+	Com_Memset(&glState, 0, sizeof(glState));
 }
 
 //==========================================================================

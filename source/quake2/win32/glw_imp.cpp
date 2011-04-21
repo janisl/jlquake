@@ -89,33 +89,7 @@ int GLimp_SetMode(int mode, qboolean fullscreen)
 */
 void GLimp_Shutdown( void )
 {
-	if ( !wglMakeCurrent( NULL, NULL ) )
-		ri.Con_Printf( PRINT_ALL, "ref_gl::R_Shutdown() - wglMakeCurrent failed\n");
-	if ( baseRC )
-	{
-		if (!wglDeleteContext(baseRC))
-			ri.Con_Printf( PRINT_ALL, "ref_gl::R_Shutdown() - wglDeleteContext failed\n");
-		baseRC = NULL;
-	}
-	if (maindc)
-	{
-		if ( !ReleaseDC( GMainWindow, maindc ) )
-			ri.Con_Printf( PRINT_ALL, "ref_gl::R_Shutdown() - ReleaseDC failed\n" );
-		maindc   = NULL;
-	}
-	if (GMainWindow)
-	{
-		DestroyWindow (	GMainWindow );
-		GMainWindow = NULL;
-	}
-
-	UnregisterClass (WINDOW_CLASS_NAME, global_hInstance);
-
-	if ( cdsFullscreen )
-	{
-		ChangeDisplaySettings( 0, 0 );
-		cdsFullscreen = false;
-	}
+	GLimp_SharedShutdown();
 }
 
 
