@@ -44,9 +44,7 @@ QCvar*	gl_ztrick;
 
 HWND WINAPI InitializeWindow (HINSTANCE hInstance, int nCmdShow);
 
-unsigned short	d_8to16table[256];
 unsigned	d_8to24table[256];
-unsigned char d_15to8table[65536];
 unsigned	d_8to24TranslucentTable[256];
 
 float		gldepthmin, gldepthmax;
@@ -256,40 +254,30 @@ unsigned ColorPercent[16] =
 	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
 };
 
-unsigned	d_8to24table3dfx[256];
-
 void	VID_SetPalette (unsigned char *palette)
 {
-	byte	*pal;
 	unsigned short r,g,b;
 	int     v;
 	int     r1,g1,b1;
 	int		j,k,l,m;
 	unsigned short i, p, c;
-	unsigned	*table, *table3dfx;
-	fileHandle_t	f;
-	HWND hDlg, hProgress;
 
-//
-// 8 8 8 encoding
-//
-	pal = palette;
-	table = d_8to24table;
-	table3dfx = d_8to24table3dfx;
-	for (i=0 ; i<256 ; i++)
+	//
+	// 8 8 8 encoding
+	//
+	byte* pal = palette;
+	unsigned* table = d_8to24table;
+	for (int i = 0; i < 256; i++)
 	{
-		r = pal[0];
-		g = pal[1];
-		b = pal[2];
+		unsigned r = pal[0];
+		unsigned g = pal[1];
+		unsigned b = pal[2];
 		pal += 3;
 		
-//		v = (255<<24) + (r<<16) + (g<<8) + (b<<0);
-//		v = (255<<0) + (r<<8) + (g<<16) + (b<<24);
-		v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
+		unsigned v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
 		*table++ = v;
-		v = (255<<24) + (r<<16) + (g<<8) + (b<<0);
-		*table3dfx++ = v;
 	}
+	d_8to24table[255] &= 0xffffff;	// 255 is transparent
 
 	pal = palette;
 	table = d_8to24TranslucentTable;
@@ -313,71 +301,6 @@ void	VID_SetPalette (unsigned char *palette)
 			BTint[i*16+p] = ((float)b) / ((float)ColorPercent[15-p]);
 		}
 	}
-
-	// JACK: 3D distance calcs - k is last closest, l is the distance.
-	// FIXME: Precalculate this and cache to disk.
-
-	FS_FOpenFileRead("glhexen/15to8.pal", &f, true);
-	if (f)
-	{
-		FS_Read(d_15to8table, 1<<15, f);
-		FS_FCloseFile(f);
-	} 
-	else 
-	{
-		hDlg = CreateDialog(global_hInstance, MAKEINTRESOURCE(IDD_PROGRESS), 
-			NULL, NULL);
-		hProgress = GetDlgItem(hDlg, IDC_PROGRESS);
-		SendMessage(hProgress, PBM_SETSTEP, 1, 0);
-		SendMessage(hProgress, PBM_SETRANGE, 0, MAKELPARAM(0, 33));
-		for (i=0,m=0; i < (1<<15); i++,m++) 
-		{
-			/* Maps
- 			000000000000000
- 			000000000011111 = Red  = 0x1F
- 			000001111100000 = Blue = 0x03E0
- 			111110000000000 = Grn  = 0x7C00
- 			*/
- 			r = ((i & 0x1F) << 3)+4;
- 			g = ((i & 0x03E0) >> 2)+4;
- 			b = ((i & 0x7C00) >> 7)+4;
-#if 0
-			r = (i << 11);
-			g = (i << 6);
-			b = (i << 1);
-			r >>= 11;
-			g >>= 11;
-			b >>= 11;
-#endif
-			pal = (unsigned char *)d_8to24table;
-			for (v=0,k=0,l=10000; v<256; v++,pal+=4)
-			{
- 				r1 = r-pal[0];
- 				g1 = g-pal[1];
- 				b1 = b-pal[2];
-				j = sqrt((double)((r1*r1)+(g1*g1)+(b1*b1)));
-				if (j<l)
-				{
-					k=v;
-					l=j;
-				}
-			}
-			d_15to8table[i]=k;
-			if (m >= 1000)
-			{
-				SendMessage(hProgress, PBM_STEPIT, 0, 0);
-				m=0;
-			}
-		}
-		if (f = FS_FOpenFileWrite("glhexen/15to8.pal"))
-		{
-			FS_Write(d_15to8table, 1<<15, f);
-			FS_FCloseFile(f);
-		}
-		DestroyWindow(hDlg);
-	}
-
-	d_8to24table[255] &= 0xffffff;	// 255 is transparent
 }
 
 void	VID_ShiftPalette (unsigned char *palette)

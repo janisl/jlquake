@@ -36,9 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define WARP_WIDTH              320
 #define WARP_HEIGHT             200
 
-unsigned short	d_8to16table[256];
 unsigned		d_8to24table[256];
-unsigned char	d_15to8table[65536];
 
 float RTint[256],GTint[256],BTint[256];
 
@@ -123,101 +121,22 @@ void VID_ShiftPalette(unsigned char *p)
 
 void	VID_SetPalette (unsigned char *palette)
 {
-	byte	*pal;
-	unsigned r,g,b;
-	unsigned v;
-	int     r1,g1,b1;
-	int		k;
-	unsigned short i;
-	unsigned	*table;
-	fileHandle_t	f;
-	float dist, bestdist;
-	static qboolean palflag = false;
-	int c, p;
-
-//
-// 8 8 8 encoding
-//
-	Con_Printf("Converting 8to24\n");
-
-	pal = palette;
-	table = d_8to24table;
-	for (i=0 ; i<256 ; i++)
+	//
+	// 8 8 8 encoding
+	//
+	byte* pal = palette;
+	unsigned* table = d_8to24table;
+	for (int i = 0; i < 256; i++)
 	{
-		r = pal[0];
-		g = pal[1];
-		b = pal[2];
+		unsigned r = pal[0];
+		unsigned g = pal[1];
+		unsigned b = pal[2];
 		pal += 3;
 		
-//		v = (255<<24) + (r<<16) + (g<<8) + (b<<0);
-//		v = (255<<0) + (r<<8) + (g<<16) + (b<<24);
-		v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
+		unsigned v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
 		*table++ = v;
 	}
 	d_8to24table[255] &= 0xffffff;	// 255 is transparent
-
-	// JACK: 3D distance calcs - k is last closest, l is the distance.
-	// FIXME: Precalculate this and cache to disk.
-	if (palflag)
-		return;
-	palflag = true;
-
-	FS_FOpenFileRead("glquake/15to8.pal", &f, true);
-	if (f) {
-		FS_Read(d_15to8table, 1<<15, f);
-		FS_FCloseFile(f);
-	} else {
-		for (i=0; i < (1<<15); i++) {
-			/* Maps
- 			000000000000000
- 			000000000011111 = Red  = 0x1F
- 			000001111100000 = Blue = 0x03E0
- 			111110000000000 = Grn  = 0x7C00
- 			*/
- 			r = ((i & 0x1F) << 3)+4;
- 			g = ((i & 0x03E0) >> 2)+4;
- 			b = ((i & 0x7C00) >> 7)+4;
-			pal = (unsigned char *)d_8to24table;
-			for (v=0,k=0,bestdist=10000.0; v<256; v++,pal+=4) {
- 				r1 = (int)r - (int)pal[0];
- 				g1 = (int)g - (int)pal[1];
- 				b1 = (int)b - (int)pal[2];
-				dist = sqrt(((r1*r1)+(g1*g1)+(b1*b1)));
-				if (dist < bestdist) {
-					k=v;
-					bestdist = dist;
-				}
-			}
-			d_15to8table[i]=k;
-		}
-		if ((f = FS_FOpenFileWrite("glhexen/15to8.pal")) != NULL) {
-			FS_Write(d_15to8table, 1<<15, f);
-			FS_FCloseFile(f);
-		}
-	}
-
-	pal = palette;
-	table = d_8to24TranslucentTable;
-
-	for (i=0; i<16;i++)
-	{
-		c = ColorIndex[i]*3;
-
-		r = pal[c];
-		g = pal[c+1];
-		b = pal[c+2];
-
-		for(p=0;p<16;p++)
-		{
-			v = (ColorPercent[15-p]<<24) + (r<<0) + (g<<8) + (b<<16);
-			//v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
-			*table++ = v;
-
-			RTint[i*16+p] = ((float)r) / ((float)ColorPercent[15-p]) ;
-			GTint[i*16+p] = ((float)g) / ((float)ColorPercent[15-p]);
-			BTint[i*16+p] = ((float)b) / ((float)ColorPercent[15-p]);
-		}
-	}
 }
 
 /*
