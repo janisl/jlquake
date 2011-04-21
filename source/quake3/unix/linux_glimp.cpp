@@ -101,15 +101,6 @@ static const char *Q_stristr( const char *s, const char *find)
   return s;
 }
 
-// NOTE TTimo for the tty console input, we didn't rely on those .. 
-//   it's not very surprising actually cause they are not used otherwise
-void KBD_Init(void)
-{
-}
-
-void KBD_Close(void)
-{
-}
 /*****************************************************************************/
 
 /*

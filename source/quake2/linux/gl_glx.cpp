@@ -25,33 +25,12 @@
 
 #include "../ref_gl/gl_local.h"
 #include "../client/client.h"
-#include "../linux/rw_linux.h"
 
 #include "../../client/unix_shared.h"
 
-static Colormap			x_cmap;
-
-int current_framebuffer;
-static int				x_shmeventtype;
-//static XShmSegmentInfo	x_shminfo;
-
-static qboolean			X11_active = false;
-
-static int p_mouse_x, p_mouse_y;
-
-typedef unsigned short PIXEL;
-
-// Console variables that we need to access from this module
-
-/*****************************************************************************/
-/* MOUSE                                                                     */
-/*****************************************************************************/
+extern	unsigned	sys_frame_time;
 
 // this is inside the renderer shared lib, so these are called from vid_so
-
-int XShmQueryExtension(Display *);
-int XShmGetEventBase(Display *);
-
 
 static void signal_handler(int sig, siginfo_t *info, void *secret)
 {
@@ -127,10 +106,6 @@ int GLimp_SetMode(int mode, qboolean fullscreen )
 		return RSERR_INVALID_MODE;
 	}
 
-	current_framebuffer = 0;
-
-	X11_active = true;
-
 	// let the sound and input subsystems know about the new window
 	ri.Vid_NewWindow (glConfig.vidWidth, glConfig.vidHeight);
 
@@ -178,50 +153,10 @@ void GLimp_AppActivate( qboolean active )
 {
 }
 
-/*****************************************************************************/
-/* KEYBOARD                                                                  */
-/*****************************************************************************/
-
-void KBD_Init()
-{
-}
-
-void KBD_Update(void)
+void Sys_SendKeyEvents (void)
 {
 	HandleEvents();
-}
 
-void KBD_Close(void)
-{
-}
-
-
-void Real_IN_Init()
-{
-}
-
-//===============================================================================
-
-/*
-================
-Sys_MakeCodeWriteable
-================
-*/
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-
-	int r;
-	unsigned long addr;
-	int psize = getpagesize();
-
-	addr = (startaddr & ~(psize-1)) - psize;
-
-//	fprintf(stderr, "writable code %lx(%lx)-%lx, length=%lx\n", startaddr,
-//			addr, startaddr+length, length);
-
-	r = mprotect((char*)addr, length + startaddr - addr + psize, 7);
-
-	if (r < 0)
-    		Sys_Error("Protection change failed\n");
-
+	// grab frame time 
+	sys_frame_time = Sys_Milliseconds_();
 }

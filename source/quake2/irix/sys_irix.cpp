@@ -21,7 +21,6 @@
 
 #include "../qcommon/qcommon.h"
 
-#include "../linux/rw_linux.h"
 #include "../../core/system_unix.h"
 
 QCvar *nostdout;
@@ -154,7 +153,7 @@ void Sys_AppActivate (void)
 
 void Sys_SendKeyEvents (void)
 {
-	KBD_Update();
+	HandleEvents();
 
 	// grab frame time 
 	sys_frame_time = Sys_Milliseconds_();

@@ -10,8 +10,6 @@
 
 #include "../client/client.h"
 
-#include "../linux/rw_linux.h"
-
 // Structure containing functions exported from refresh DLL
 refexport_t	re;
 
@@ -29,8 +27,6 @@ viddef_t	viddef;				// global video state; used by other modules
 qboolean	reflib_active = 0;
 
 /** MOUSE *****************************************************************/
-
-void Real_IN_Init (void);
 
 /*
 ==========================================================================
@@ -96,7 +92,6 @@ void VID_NewWindow ( int width, int height)
 
 void VID_FreeReflib (void)
 {
-	KBD_Close();
 	IN_Shutdown();
 
 	Com_Memset(&re, 0, sizeof(re));
@@ -119,7 +114,6 @@ qboolean VID_LoadRefresh( char *name )
 
 	if ( reflib_active )
 	{
-		KBD_Close();
 		IN_Shutdown();
 		re.Shutdown();
 		VID_FreeReflib ();
@@ -148,10 +142,6 @@ qboolean VID_LoadRefresh( char *name )
 	// give up root now
 	setreuid(getuid(), getuid());
 	setegid(getgid());
-
-	/* Init KBD */
-	KBD_Init();
-	Real_IN_Init();
 
 	Com_Printf( "------------------------------------\n");
 	reflib_active = true;
@@ -248,7 +238,6 @@ void VID_Shutdown (void)
 {
 	if ( reflib_active )
 	{
-		KBD_Close();
 		IN_Shutdown();
 		re.Shutdown ();
 		VID_FreeReflib ();
