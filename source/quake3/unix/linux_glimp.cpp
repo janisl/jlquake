@@ -111,14 +111,6 @@ static qboolean GLW_StartDriverAndSetMode(int mode, qboolean fullscreen )
 {
   rserr_t err;
 
-	if (fullscreen && in_nograb->value)
-	{
-		ri.Printf( PRINT_ALL, "Fullscreen not allowed with in_nograb 1\n");
-    Cvar_Set( "r_fullscreen", "0" );
-    r_fullscreen->modified = qfalse;
-    fullscreen = qfalse;		
-	}
-
   err = (rserr_t)GLW_SetMode(mode, fullscreen);
 
   switch ( err )

@@ -81,6 +81,14 @@ rserr_t GLW_SetMode(int mode, bool fullscreen)
 {
 	GLog.Write("Initializing OpenGL display\n");
 
+	if (fullscreen && in_nograb->value)
+	{
+		GLog.Write("Fullscreen not allowed with in_nograb 1\n");
+		Cvar_Set("r_fullscreen", "0");
+		r_fullscreen->modified = false;
+		fullscreen = false;		
+	}
+
 	GLog.Write("...setting mode %d:", mode);
 
 	if (!R_GetModeInfo(&glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode))
