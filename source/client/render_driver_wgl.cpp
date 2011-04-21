@@ -980,14 +980,14 @@ rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen)
 
 //==========================================================================
 //
-//	GLimp_SharedShutdown()
+//	GLimp_Shutdown()
 //
 //	This routine does all OS specific shutdown procedures for the OpenGL
 // subsystem.
 //
 //==========================================================================
 
-void GLimp_SharedShutdown()
+void GLimp_Shutdown()
 {
 	const char *success[] = { "failed", "success" };
 

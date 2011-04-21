@@ -355,18 +355,6 @@ void GLimp_Init( void )
 }
 
 /*
-** GLimp_Shutdown
-**
-** This routine does all OS specific shutdown procedures for the OpenGL
-** subsystem.
-*/
-void GLimp_Shutdown( void )
-{
-	GLimp_SharedShutdown();
-}
-
-
-/*
 ===========================================================
 
 SMP acceleration

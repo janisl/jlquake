@@ -29,7 +29,6 @@ LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam);
 void IN_Activate(bool active);
-void GLimp_SharedShutdown();
 
 extern HWND			GMainWindow;
 extern HDC			maindc;

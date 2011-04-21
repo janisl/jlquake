@@ -415,7 +415,9 @@ void	VID_Shutdown (void)
 	{
 		vid_canalttab = false;
 
-	GLimp_SharedShutdown();
+		GLimp_Shutdown();
+
+		QGL_Shutdown();
 
 		AppActivate(false, false);
 	}

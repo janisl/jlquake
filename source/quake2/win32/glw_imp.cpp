@@ -79,21 +79,6 @@ int GLimp_SetMode(int mode, qboolean fullscreen)
 }
 
 /*
-** GLimp_Shutdown
-**
-** This routine does all OS specific shutdown procedures for the OpenGL
-** subsystem.  Under OpenGL this means NULLing out the current DC and
-** HGLRC, deleting the rendering context, and releasing the DC acquired
-** for the window.  The state structure is also nulled out.
-**
-*/
-void GLimp_Shutdown( void )
-{
-	GLimp_SharedShutdown();
-}
-
-
-/*
 ** GLimp_Init
 **
 ** This routine is responsible for initializing the OS specific portions

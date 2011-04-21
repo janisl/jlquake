@@ -376,7 +376,9 @@ void	VID_Shutdown (void)
 {
 	if (vid_initialized)
 	{
-	GLimp_SharedShutdown();
+		GLimp_Shutdown();
+
+		QGL_Shutdown();
 
 		AppActivate(false, false);
 	}
