@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../ref_gl/gl_local.h"
 #include "winquake.h"
 
-rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen);
+rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen);
 
 static qboolean GLimp_SwitchFullscreen( int width, int height );
 
@@ -46,21 +46,7 @@ extern QCvar *vid_ref;
 */
 int GLimp_SetMode(int mode, qboolean fullscreen)
 {
-	int *pwidth = &glConfig.vidWidth;
-	int *pheight = &glConfig.vidHeight;
 	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
-
-	ri.Con_Printf (PRINT_ALL, "...setting mode %d:", mode );
-
-	float windowAspect;
-	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &windowAspect, mode ) )
-	{
-		ri.Con_Printf( PRINT_ALL, " invalid mode\n" );
-		return RSERR_INVALID_MODE;
-	}
-
-	*pwidth = glConfig.vidWidth;
-	*pheight = glConfig.vidHeight;
 
 	// destroy the existing window
 	if (GMainWindow)
@@ -68,7 +54,7 @@ int GLimp_SetMode(int mode, qboolean fullscreen)
 		GLimp_Shutdown ();
 	}
 
-	rserr_t r = GLW_SharedSetMode(gl_bitdepth->integer, fullscreen);
+	rserr_t r = GLW_SetMode(mode, gl_bitdepth->integer, fullscreen);
 	if (r != RSERR_OK)
 		return r;
 

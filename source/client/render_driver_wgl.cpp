@@ -775,14 +775,23 @@ static void PrintCDSError(int value)
 
 //==========================================================================
 //
-//	GLW_SharedSetMode
+//	GLW_SetMode
 //
 //==========================================================================
 
-rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen)
+rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen)
 {
 	const char* win_fs[] = { "W", "FS" };
 
+	//
+	// print out informational messages
+	//
+	GLog.Write("...setting mode %d:", mode);
+	if (!R_GetModeInfo(&glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode))
+	{
+		GLog.Write(" invalid mode\n");
+		return RSERR_INVALID_MODE;
+	}
 	GLog.Write(" %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[fullscreen]);
 
 	//

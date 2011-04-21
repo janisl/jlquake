@@ -39,12 +39,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "resource.h"
 #include "win_local.h"
 
-rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen);
+rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen);
 
 static void		GLW_InitExtensions( void );
-static rserr_t	GLW_SetMode( int mode, 
-							 int colorbits, 
-							 qboolean cdsFullscreen );
 
 /*
 ** GLW_StartDriverAndSetMode
@@ -69,25 +66,6 @@ static qboolean GLW_StartDriverAndSetMode(int mode,
 		break;
 	}
 	return qtrue;
-}
-
-/*
-** GLW_SetMode
-*/
-static rserr_t GLW_SetMode(int mode, 
-							int colorbits, 
-							qboolean cdsFullscreen )
-{
-	//
-	// print out informational messages
-	//
-	ri.Printf( PRINT_ALL, "...setting mode %d:", mode );
-	if ( !R_GetModeInfo( &glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode ) )
-	{
-		ri.Printf( PRINT_ALL, " invalid mode\n" );
-		return RSERR_INVALID_MODE;
-	}
-	return GLW_SharedSetMode(colorbits, cdsFullscreen);
 }
 
 /*
