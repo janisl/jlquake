@@ -34,7 +34,6 @@ void GL_EndRendering (void);
 
 
 extern	int texture_extension_number;
-extern	int		texture_mode;
 
 extern	float	gldepthmin, gldepthmax;
 
@@ -163,6 +162,7 @@ extern	int		gl_solid_format;
 extern	int		gl_alpha_format;
 
 extern	QCvar*	gl_max_size;
+extern QCvar*	gl_ztrick;
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;

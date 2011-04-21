@@ -103,7 +103,7 @@ QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 QCvar*	gl_doubleeyes;
 
-extern	QCvar*	gl_ztrick;
+QCvar*	gl_ztrick;
 
 /*
 =================
