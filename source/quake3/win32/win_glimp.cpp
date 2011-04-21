@@ -414,9 +414,6 @@ void GLimp_Shutdown( void )
 		::cdsFullscreen = qfalse;
 	}
 
-	// shutdown QGL subsystem
-	QGL_Shutdown();
-
 	Com_Memset( &glConfig, 0, sizeof( glConfig ) );
 	Com_Memset( &glState, 0, sizeof( glState ) );
 }

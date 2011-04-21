@@ -80,7 +80,10 @@ void D_EndDirectRect (int x, int y, int width, int height)
 
 void VID_Shutdown(void)
 {
-	GLimp_SharedShutdown();
+	GLimp_Shutdown();
+
+	// shutdown QGL subsystem
+	QGL_Shutdown();
 }
 
 static void signal_handler(int sig, siginfo_t *info, void *secret)

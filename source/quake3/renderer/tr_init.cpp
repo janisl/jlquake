@@ -1008,6 +1008,9 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	// shut down platform specific OpenGL stuff
 	if ( destroyWindow ) {
 		GLimp_Shutdown();
+
+		// shutdown QGL subsystem
+		QGL_Shutdown();
 	}
 
 	tr.registered = qfalse;

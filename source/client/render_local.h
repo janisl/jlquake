@@ -52,6 +52,7 @@ struct glstate_t
 	unsigned long	glStateBits;
 };
 
+void GLimp_Shutdown();
 void* GLimp_GetProcAddress(const char* Name);
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);

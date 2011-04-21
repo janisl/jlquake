@@ -1209,7 +1209,6 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 */
 
 void		GLimp_Init( void );
-void		GLimp_Shutdown( void );
 void		GLimp_EndFrame( void );
 
 qboolean	GLimp_SpawnRenderThread( void (*function)( void ) );

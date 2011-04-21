@@ -408,11 +408,15 @@ rserr_t GLimp_GLXSharedInit(int mode, bool fullscreen)
 
 //==========================================================================
 //
-//	GLimp_SharedShutdown
+//	GLimp_Shutdown
+//
+//	This routine does all OS specific shutdown procedures for the OpenGL
+// subsystem. This means deleting the rendering context, destroying the
+// window and restoring video mode. The state structure is also nulled out.
 //
 //==========================================================================
 
-void GLimp_SharedShutdown()
+void GLimp_Shutdown()
 {
 	IN_DeactivateMouse();
 	if (dpy)

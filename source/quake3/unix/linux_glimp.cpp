@@ -131,22 +131,6 @@ void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned 
 }
 
 /*
-** GLimp_Shutdown
-**
-** This routine does all OS specific shutdown procedures for the OpenGL
-** subsystem.  Under OpenGL this means NULLing out the current DC and
-** HGLRC, deleting the rendering context, and releasing the DC acquired
-** for the window.  The state structure is also nulled out.
-**
-*/
-void GLimp_Shutdown( void )
-{
-	GLimp_SharedShutdown();
-
-  QGL_Shutdown();
-}
-
-/*
 ** GLW_StartDriverAndSetMode
 */
 // bk001204 - prototype needed

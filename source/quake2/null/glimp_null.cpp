@@ -12,10 +12,6 @@ int 		GLimp_Init( void *hinstance, void *hWnd )
 {
 }
 
-void		GLimp_Shutdown( void )
-{
-}
-
 int     	GLimp_SetMode(int mode, qboolean fullscreen)
 {
 }
