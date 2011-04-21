@@ -94,6 +94,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "progsvm", "source\progsvm\p
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vquake3ded", "source\quake3\vquake3ded.vcproj", "{3A6BD840-13BD-4F51-83B0-5E582395B134}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vquake2ded", "source\quake2\vquake2ded.vcproj", "{C67901ED-51CC-43AD-BA22-E70AF77EF66C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug Alpha|Win32 = Debug Alpha|Win32
@@ -254,6 +256,14 @@ Global
 		{3A6BD840-13BD-4F51-83B0-5E582395B134}.Release Alpha|Win32.Build.0 = Release|Win32
 		{3A6BD840-13BD-4F51-83B0-5E582395B134}.Release|Win32.ActiveCfg = Release|Win32
 		{3A6BD840-13BD-4F51-83B0-5E582395B134}.Release|Win32.Build.0 = Release|Win32
+		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Debug Alpha|Win32.ActiveCfg = Debug|Win32
+		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Debug Alpha|Win32.Build.0 = Debug|Win32
+		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Debug|Win32.Build.0 = Debug|Win32
+		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release Alpha|Win32.ActiveCfg = Release|Win32
+		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release Alpha|Win32.Build.0 = Release|Win32
+		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release|Win32.ActiveCfg = Release|Win32
+		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
