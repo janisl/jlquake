@@ -62,13 +62,24 @@ static XF86VidModeGamma			vidmode_InitialGamma;
 
 //==========================================================================
 //
-//	GLimp_GetProcAddress
+//	qXErrorHandler
+//
+//	the default X error handler exits the application
+//	I found out that on some hosts some operations would raise X errors (GLXUnsupportedPrivateRequest)
+//	but those don't seem to be fatal .. so the default would be to just ignore them
+//	our implementation mimics the default handler behaviour (not completely cause I'm lazy)
 //
 //==========================================================================
 
-void* GLimp_GetProcAddress(const char* Name)
+static int qXErrorHandler(Display* dpy, XErrorEvent* ev)
 {
-	return (void*)glXGetProcAddress((const GLubyte*)Name);
+	static char buf[1024];
+	XGetErrorText(dpy, ev->error_code, buf, 1024);
+	GLog.Write("X Error of failed request: %s\n", buf);
+	GLog.Write("  Major opcode of failed request: %d\n", ev->request_code, buf);
+	GLog.Write("  Minor opcode of failed request: %d\n", ev->minor_code);  
+	GLog.Write("  Serial number of failed request: %d\n", ev->serial);
+	return 0;
 }
 
 //==========================================================================
@@ -79,7 +90,14 @@ void* GLimp_GetProcAddress(const char* Name)
 
 rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen)
 {
-	GLog.Write("Initializing OpenGL display\n");
+	if (!XInitThreads())
+	{
+		GLog.Write("GLimp_Init() - XInitThreads() failed, disabling r_smp\n");
+		Cvar_Set("r_smp", "0");
+	}
+
+	// set up our custom error handler for X failures
+	XSetErrorHandler(&qXErrorHandler);
 
 	if (fullscreen && in_nograb->value)
 	{
@@ -502,6 +520,17 @@ void GLimp_Shutdown()
 
 	Com_Memset(&glConfig, 0, sizeof(glConfig));
 	Com_Memset(&glState, 0, sizeof(glState));
+}
+
+//==========================================================================
+//
+//	GLimp_GetProcAddress
+//
+//==========================================================================
+
+void* GLimp_GetProcAddress(const char* Name)
+{
+	return (void*)glXGetProcAddress((const GLubyte*)Name);
 }
 
 //==========================================================================

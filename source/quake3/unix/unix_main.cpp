@@ -478,6 +478,8 @@ int main ( int argc, char* argv[] )
   int   len, i;
   char  *cmdline;
 
+	InitSig();
+
   // go back to real user for config loads
   seteuid(getuid());
 
@@ -506,11 +508,6 @@ int main ( int argc, char* argv[] )
 
   fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY);
 	
-#ifdef DEDICATED
-	// init here for dedicated, as we don't have GLimp_Init
-	InitSig();
-#endif
-
   while (1)
   {
 #ifdef __linux__
