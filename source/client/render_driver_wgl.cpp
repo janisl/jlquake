@@ -59,6 +59,8 @@ static bool		s_classRegistered = false;
 bool			pixelFormatSet;
 bool			cdsFullscreen;
 
+static quint16	s_oldHardwareGamma[3][256];
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -515,6 +517,60 @@ static bool GLW_InitDriver(int colorbits)
 
 //==========================================================================
 //
+//	WG_CheckHardwareGamma
+//
+//	Determines if the underlying hardware supports the Win32 gamma correction API.
+//
+//==========================================================================
+
+static void WG_CheckHardwareGamma()
+{
+	glConfig.deviceSupportsGamma = false;
+
+	if (r_ignorehwgamma->integer)
+	{
+		return;
+	}
+
+	HDC hDC = GetDC( GetDesktopWindow() );
+	glConfig.deviceSupportsGamma = GetDeviceGammaRamp( hDC, s_oldHardwareGamma );
+	ReleaseDC( GetDesktopWindow(), hDC );
+
+	if (!glConfig.deviceSupportsGamma)
+	{
+		return;
+	}
+
+	//
+	// do a sanity check on the gamma values
+	//
+	if ((HIBYTE(s_oldHardwareGamma[0][255]) <= HIBYTE(s_oldHardwareGamma[0][0])) ||
+		(HIBYTE(s_oldHardwareGamma[1][255]) <= HIBYTE(s_oldHardwareGamma[1][0])) ||
+		(HIBYTE(s_oldHardwareGamma[2][255]) <= HIBYTE(s_oldHardwareGamma[2][0])))
+	{
+		glConfig.deviceSupportsGamma = false;
+		GLog.Write(S_COLOR_YELLOW "WARNING: device has broken gamma support\n");
+	}
+
+	//
+	// make sure that we didn't have a prior crash in the game, and if so we need to
+	// restore the gamma values to at least a linear value
+	//
+	if ((HIBYTE(s_oldHardwareGamma[0][181]) == 255))
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: suspicious gamma tables, using linear ramp for restoration\n");
+
+		for (int g = 0; g < 255; g++)
+		{
+			s_oldHardwareGamma[0][g] = g << 8;
+			s_oldHardwareGamma[1][g] = g << 8;
+			s_oldHardwareGamma[2][g] = g << 8;
+		}
+	}
+}
+
+//==========================================================================
+//
 //	GLW_CreateWindow
 //
 //	Responsible for creating the Win32 window and initializing the OpenGL driver.
@@ -677,6 +733,8 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 
 	SetForegroundWindow(GMainWindow);
 	SetFocus(GMainWindow);
+
+	WG_CheckHardwareGamma();
 
 	return true;
 }
@@ -932,6 +990,18 @@ rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen)
 void GLimp_SharedShutdown()
 {
 	const char *success[] = { "failed", "success" };
+
+	GLog.Write("Shutting down OpenGL subsystem\n");
+
+	// restore gamma.
+	if (glConfig.deviceSupportsGamma)
+	{
+		HDC hDC = GetDC(GetDesktopWindow());
+		SetDeviceGammaRamp(hDC, s_oldHardwareGamma);
+		ReleaseDC(GetDesktopWindow(), hDC);
+		glConfig.deviceSupportsGamma = false;
+	}
+
 	// set current context to NULL
 	int retVal = wglMakeCurrent(NULL, NULL) != 0;
 
@@ -984,4 +1054,62 @@ void GLimp_SharedShutdown()
 void* GLimp_GetProcAddress(const char* Name)
 {
 	return (void*)wglGetProcAddress(Name);
+}
+
+//==========================================================================
+//
+//	GLimp_SetGamma
+//
+//	This routine should only be called if glConfig.deviceSupportsGamma is TRUE
+//
+//==========================================================================
+
+void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned char blue[256])
+{
+	if (!glConfig.deviceSupportsGamma || r_ignorehwgamma->integer || !maindc)
+	{
+		return;
+	}
+
+	unsigned short table[3][256];
+	for (int i = 0; i < 256; i++)
+	{
+		table[0][i] = (((unsigned short)red[i]) << 8) | red[i];
+		table[1][i] = (((unsigned short)green[i]) << 8) | green[i];
+		table[2][i] = (((unsigned short)blue[i]) << 8) | blue[i];
+	}
+
+	// Windows puts this odd restriction on gamma ramps...
+	for (int j = 0; j < 3; j++)
+	{
+		for (int i = 0; i < 128; i++)
+		{
+			if (table[j][i] > ((128 + i) << 8))
+			{
+				table[j][i] = (128 + i) << 8;
+			}
+		}
+		if (table[j][127] > 254 << 8)
+		{
+			table[j][127] = 254 << 8;
+		}
+	}
+
+	// enforce constantly increasing
+	for (int j = 0; j < 3; j++)
+	{
+		for (int i = 1; i < 256; i++)
+		{
+			if (table[j][i] < table[j][i - 1])
+			{
+				table[j][i] = table[j][i - 1];
+			}
+		}
+	}
+
+	int ret = SetDeviceGammaRamp(maindc, table);
+	if (!ret)
+	{
+		GLog.Write("SetDeviceGammaRamp failed.\n");
+	}
 }

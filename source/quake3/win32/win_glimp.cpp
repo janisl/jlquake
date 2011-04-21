@@ -41,9 +41,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 rserr_t GLW_SharedSetMode(int colorbits, bool fullscreen);
 
-extern void WG_CheckHardwareGamma( void );
-extern void WG_RestoreGamma( void );
-
 static void		GLW_InitExtensions( void );
 static rserr_t	GLW_SetMode( int mode, 
 							 int colorbits, 
@@ -355,7 +352,6 @@ void GLimp_Init( void )
 	Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
 
 	GLW_InitExtensions();
-	WG_CheckHardwareGamma();
 }
 
 /*
@@ -366,11 +362,6 @@ void GLimp_Init( void )
 */
 void GLimp_Shutdown( void )
 {
-	ri.Printf( PRINT_ALL, "Shutting down OpenGL subsystem\n" );
-
-	// restore gamma.
-	WG_RestoreGamma();
-
 	GLimp_SharedShutdown();
 }
 

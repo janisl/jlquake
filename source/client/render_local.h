@@ -52,8 +52,20 @@ struct glstate_t
 	unsigned long	glStateBits;
 };
 
+/*
+====================================================================
+
+IMPLEMENTATION SPECIFIC FUNCTIONS
+
+====================================================================
+*/
+
 void GLimp_Shutdown();
 void* GLimp_GetProcAddress(const char* Name);
+
+// NOTE TTimo linux works with float gamma value, not the gamma table
+//   the params won't be used, getting the r_gamma cvar directly
+void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned char blue[256]);
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
@@ -73,5 +85,7 @@ extern QCvar*	r_depthbits;			// number of desired depth bits
 extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for fullscreen
 extern QCvar*	r_stereo;				// desired pixelformat stereo flag
 extern QCvar*	r_displayRefresh;		// optional display refresh option
+
+extern QCvar*	r_ignorehwgamma;		// overrides hardware gamma capabilities
 
 #endif

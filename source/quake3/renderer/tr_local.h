@@ -1002,7 +1002,6 @@ extern	QCvar	*r_nocurves;
 extern	QCvar	*r_showcluster;
 
 extern QCvar	*r_gamma;
-extern QCvar	*r_ignorehwgamma;		// overrides hardware gamma capabilities
 
 extern QCvar	*r_allowExtensions;				// global enable/disable of OpenGL extensions
 extern QCvar	*r_ext_compressed_textures;		// these control use of specific extensions
@@ -1215,13 +1214,6 @@ qboolean	GLimp_SpawnRenderThread( void (*function)( void ) );
 void		*GLimp_RendererSleep( void );
 void		GLimp_FrontEndSleep( void );
 void		GLimp_WakeRenderer( void *data );
-
-// NOTE TTimo linux works with float gamma value, not the gamma table
-//   the params won't be used, getting the r_gamma cvar directly
-void		GLimp_SetGamma( unsigned char red[256], 
-						    unsigned char green[256],
-							unsigned char blue[256] );
-
 
 /*
 ====================================================================

@@ -44,7 +44,6 @@ QCvar	*r_smp;
 QCvar	*r_showSmp;
 QCvar	*r_skipBackEnd;
 
-QCvar	*r_ignorehwgamma;
 QCvar	*r_measureOverdraw;
 
 QCvar	*r_inGameVideo;
@@ -758,7 +757,7 @@ void R_Register( void )
 //#endif
 	//r_depthbits = Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_overBrightBits = Cvar_Get ("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_ignorehwgamma = Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	//r_ignorehwgamma = Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	//r_mode = Cvar_Get( "r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH2 );
 	//r_fullscreen = Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	//r_customwidth = Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH2 );

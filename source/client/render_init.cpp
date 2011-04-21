@@ -64,6 +64,8 @@ QCvar*		r_displayRefresh;
 
 QCvar*		r_verbose;
 
+QCvar*		r_ignorehwgamma;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -187,6 +189,7 @@ void R_SharedRegister()
 	r_customheight = Cvar_Get("r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_customaspect = Cvar_Get("r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_mode = Cvar_Get("r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	Cmd_AddCommand("modelist", R_ModeList_f);
 }
