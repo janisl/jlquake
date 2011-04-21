@@ -100,7 +100,7 @@ QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 QCvar*	gl_finish;
 
-extern	QCvar*	gl_ztrick;
+QCvar*	gl_ztrick;
 extern	QCvar*	scr_fov;
 
 /*

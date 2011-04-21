@@ -22,6 +22,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
+unsigned		d_8to24table[256];
+
+int		texture_extension_number = 1;
+
+float		gldepthmin, gldepthmax;
+
+const char *gl_vendor;
+const char *gl_renderer;
+const char *gl_version;
+const char *gl_extensions;
+
+qboolean gl_mtexable = false;
+
 extern void R_InitBubble();
 
 /*
@@ -205,6 +218,8 @@ void R_Init (void)
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
 	gl_finish = Cvar_Get("gl_finish", "0", 0);
+
+	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
 
 	R_InitBubble();
 
@@ -434,8 +449,89 @@ void R_TimeRefresh_f (void)
 	GL_EndRendering ();
 }
 
-void D_FlushCaches (void)
+void	VID_SetPalette (unsigned char *palette)
 {
+	//
+	// 8 8 8 encoding
+	//
+	byte* pal = palette;
+	unsigned* table = d_8to24table;
+	for (int i = 0; i < 256; i++)
+	{
+		unsigned r = pal[0];
+		unsigned g = pal[1];
+		unsigned b = pal[2];
+		pal += 3;
+		
+		unsigned v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+		*table++ = v;
+	}
+	d_8to24table[255] &= 0xffffff;	// 255 is transparent
 }
 
+static void CheckMultiTextureExtensions() 
+{
+	if (strstr(gl_extensions, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
+		Con_Printf("Multitexture extensions found.\n");
+		qglMTexCoord2fSGIS = (void ( APIENTRY *)( GLenum, GLfloat, GLfloat )) GLimp_GetProcAddress("glMTexCoord2fSGIS");
+		qglSelectTextureSGIS = (void ( APIENTRY *)( GLenum )) GLimp_GetProcAddress("glSelectTextureSGIS");
+		gl_mtexable = true;
+	}
+}
 
+/*
+===============
+GL_Init
+===============
+*/
+void GL_Init()
+{
+	QGL_Init();
+
+	gl_vendor = (char*)qglGetString (GL_VENDOR);
+	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
+	gl_renderer = (char*)qglGetString (GL_RENDERER);
+	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
+
+	gl_version = (char*)qglGetString (GL_VERSION);
+	Con_Printf ("GL_VERSION: %s\n", gl_version);
+	gl_extensions = (char*)qglGetString (GL_EXTENSIONS);
+	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
+
+//	Con_Printf ("%s %s\n", gl_renderer, gl_version);
+
+	CheckMultiTextureExtensions ();
+
+	qglClearColor (1,0,0,0);
+	qglCullFace(GL_FRONT);
+	qglEnable(GL_TEXTURE_2D);
+
+	qglEnable(GL_ALPHA_TEST);
+	qglAlphaFunc(GL_GREATER, 0.666);
+
+	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+	qglShadeModel (GL_FLAT);
+
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+//	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+}
+
+/*
+=================
+GL_BeginRendering
+
+=================
+*/
+void GL_BeginRendering (int *x, int *y, int *width, int *height)
+{
+	*x = *y = 0;
+	*width = glConfig.vidWidth;
+	*height = glConfig.vidHeight;
+}
