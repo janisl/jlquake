@@ -77,7 +77,7 @@ void* GLimp_GetProcAddress(const char* Name)
 //
 //==========================================================================
 
-rserr_t GLW_SetMode(int mode, bool fullscreen)
+rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen)
 {
 	GLog.Write("Initializing OpenGL display\n");
 
@@ -194,7 +194,8 @@ rserr_t GLW_SetMode(int mode, bool fullscreen)
 		}
 	}
 
-	int colorbits = !r_colorbits->value ? 24 : r_colorbits->value;
+	if (!colorbits)
+		colorbits = !r_colorbits->value ? 24 : r_colorbits->value;
 	int depthbits = !r_depthbits->value ? 24 : r_depthbits->value;
 	int stencilbits = r_stencilbits->value;
 

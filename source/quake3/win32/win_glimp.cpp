@@ -39,8 +39,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "resource.h"
 #include "win_local.h"
 
-rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen);
-
 static void		GLW_InitExtensions( void );
 
 /*

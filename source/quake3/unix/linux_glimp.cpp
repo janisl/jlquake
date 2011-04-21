@@ -111,7 +111,7 @@ static qboolean GLW_StartDriverAndSetMode(int mode, qboolean fullscreen )
 {
   rserr_t err;
 
-  err = (rserr_t)GLW_SetMode(mode, fullscreen);
+  err = (rserr_t)GLW_SetMode(mode, r_colorbits->integer, fullscreen);
 
   switch ( err )
   {

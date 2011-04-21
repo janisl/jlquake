@@ -291,7 +291,7 @@ void VID_Init(unsigned char *palette)
 
 	vid.colormap = host_colormap;
 
-	if (GLW_SetMode(r_mode->integer, !!r_fullscreen->value) != RSERR_OK)
+	if (GLW_SetMode(r_mode->integer, r_colorbits->integer, !!r_fullscreen->value) != RSERR_OK)
 	{
 		exit(1);
 	}

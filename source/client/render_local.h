@@ -60,6 +60,7 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 ====================================================================
 */
 
+rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen);
 void GLimp_Shutdown();
 void* GLimp_GetProcAddress(const char* Name);
 
