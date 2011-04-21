@@ -100,7 +100,6 @@ QCvar	*r_swapInterval;
 QCvar	*r_textureMode;
 QCvar	*r_offsetFactor;
 QCvar	*r_offsetUnits;
-QCvar	*r_gamma;
 QCvar	*r_intensity;
 QCvar	*r_lockpvs;
 QCvar	*r_noportals;
@@ -802,11 +801,7 @@ void R_Register( void )
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
 	r_textureMode = Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	r_swapInterval = Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
-#ifdef __MACOS__
-	r_gamma = Cvar_Get( "r_gamma", "1.2", CVAR_ARCHIVE );
-#else
-	r_gamma = Cvar_Get( "r_gamma", "1", CVAR_ARCHIVE );
-#endif
+	//r_gamma = Cvar_Get( "r_gamma", "1", CVAR_ARCHIVE );
 	r_facePlaneCull = Cvar_Get ("r_facePlaneCull", "1", CVAR_ARCHIVE );
 
 	r_railWidth = Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );

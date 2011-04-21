@@ -25,6 +25,10 @@
 
 // MACROS ------------------------------------------------------------------
 
+//	Minimum extension version required
+#define GAMMA_MINMAJOR 2
+#define GAMMA_MINMINOR 0
+  
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -47,11 +51,12 @@ GLXContext				ctx = NULL;
 static XF86VidModeModeInfo**	vidmodes;
 static int						num_vidmodes;
 bool					vidmode_active = false;
-bool					vidmode_ext = false;
-int						vidmode_MajorVersion = 0, vidmode_MinorVersion = 0; // major and minor of XF86VidExtensions
+static bool						vidmode_ext = false;
+static int						vidmode_MajorVersion = 0; // major and minor of XF86VidExtensions
+static int						vidmode_MinorVersion = 0;
 
 // gamma value of the X display before we start playing with it
-XF86VidModeGamma		vidmode_InitialGamma;
+static XF86VidModeGamma			vidmode_InitialGamma;
 
 // CODE --------------------------------------------------------------------
 
@@ -403,6 +408,22 @@ rserr_t GLimp_GLXSharedInit(int mode, bool fullscreen)
 
 	glXMakeCurrent(dpy, win, ctx);
 
+	glConfig.deviceSupportsGamma = false;
+	if (vidmode_ext)
+	{
+		if (vidmode_MajorVersion < GAMMA_MINMAJOR || 
+			(vidmode_MajorVersion == GAMMA_MINMAJOR && vidmode_MinorVersion < GAMMA_MINMINOR))
+		{
+			GLog.Write("XF86 Gamma extension not supported in this version\n");
+		}
+		else
+		{
+			XF86VidModeGetGamma(dpy, scrnum, &vidmode_InitialGamma);
+			GLog.Write("XF86 Gamma extension initialized\n");
+			glConfig.deviceSupportsGamma = true;
+		}
+	}
+
 	return RSERR_OK;
 }
 
@@ -450,4 +471,29 @@ void GLimp_Shutdown()
 
 	Com_Memset(&glConfig, 0, sizeof(glConfig));
 	Com_Memset(&glState, 0, sizeof(glState));
+}
+
+//==========================================================================
+//
+//	GLimp_SetGamma
+//
+//	This routine should only be called if glConfig.deviceSupportsGamma is TRUE
+//
+//==========================================================================
+
+void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned char blue[256])
+{
+	if (!glConfig.deviceSupportsGamma)
+	{
+		return;
+	}
+
+	// NOTE TTimo we get the gamma value from cvar, because we can't work with the s_gammatable
+	//   the API wasn't changed to avoid breaking other OSes
+	float g = r_gamma->value;
+	XF86VidModeGamma gamma;
+	gamma.red = g;
+	gamma.green = g;
+	gamma.blue = g;
+	XF86VidModeSetGamma(dpy, scrnum, &gamma);
 }

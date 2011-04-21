@@ -40,11 +40,6 @@ extern QCvar*		in_dgamouse; // user pref for dga mouse
 extern QCvar*		in_nograb; // this is strictly for developers
 
 extern bool			vidmode_active;
-extern bool			vidmode_ext;
-extern int			vidmode_MajorVersion, vidmode_MinorVersion; // major and minor of XF86VidExtensions
-
-// gamma value of the X display before we start playing with it
-extern XF86VidModeGamma	vidmode_InitialGamma;
 
 extern QCvar *  in_joystick;
 

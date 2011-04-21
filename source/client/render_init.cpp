@@ -64,6 +64,7 @@ QCvar*		r_displayRefresh;
 
 QCvar*		r_verbose;
 
+QCvar*		r_gamma;
 QCvar*		r_ignorehwgamma;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -190,6 +191,7 @@ void R_SharedRegister()
 	r_customaspect = Cvar_Get("r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_mode = Cvar_Get("r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_gamma = Cvar_Get("r_gamma", "1", CVAR_ARCHIVE);
 
 	Cmd_AddCommand("modelist", R_ModeList_f);
 }

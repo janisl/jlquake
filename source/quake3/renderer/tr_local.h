@@ -1001,8 +1001,6 @@ extern	QCvar	*r_facePlaneCull;		// enables culling of planar surfaces with back 
 extern	QCvar	*r_nocurves;
 extern	QCvar	*r_showcluster;
 
-extern QCvar	*r_gamma;
-
 extern QCvar	*r_allowExtensions;				// global enable/disable of OpenGL extensions
 extern QCvar	*r_ext_compressed_textures;		// these control use of specific extensions
 extern QCvar	*r_ext_gamma_control;

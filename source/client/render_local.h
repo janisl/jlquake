@@ -86,6 +86,7 @@ extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for 
 extern QCvar*	r_stereo;				// desired pixelformat stereo flag
 extern QCvar*	r_displayRefresh;		// optional display refresh option
 
+extern QCvar*	r_gamma;
 extern QCvar*	r_ignorehwgamma;		// overrides hardware gamma capabilities
 
 #endif

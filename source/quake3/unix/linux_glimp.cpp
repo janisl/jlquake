@@ -113,24 +113,6 @@ void KBD_Close(void)
 /*****************************************************************************/
 
 /*
-** GLimp_SetGamma
-**
-** This routine should only be called if glConfig.deviceSupportsGamma is TRUE
-*/
-void GLimp_SetGamma( unsigned char red[256], unsigned char green[256], unsigned char blue[256] )
-{
-  // NOTE TTimo we get the gamma value from cvar, because we can't work with the s_gammatable
-  //   the API wasn't changed to avoid breaking other OSes
-  float g = Cvar_Get("r_gamma", "1.0", 0)->value;
-  XF86VidModeGamma gamma;
-  assert(glConfig.deviceSupportsGamma);
-  gamma.red = g;
-  gamma.green = g;
-  gamma.blue = g;
-  XF86VidModeSetGamma(dpy, scrnum, &gamma);
-}
-
-/*
 ** GLW_StartDriverAndSetMode
 */
 // bk001204 - prototype needed
@@ -308,27 +290,6 @@ static void GLW_InitExtensions( void )
 
 }
 
-static void GLW_InitGamma()
-{
-  /* Minimum extension version required */
-  #define GAMMA_MINMAJOR 2
-  #define GAMMA_MINMINOR 0
-  
-  glConfig.deviceSupportsGamma = qfalse;
-
-  if (vidmode_ext)
-  {
-    if (vidmode_MajorVersion < GAMMA_MINMAJOR || 
-        (vidmode_MajorVersion == GAMMA_MINMAJOR && vidmode_MinorVersion < GAMMA_MINMINOR)) {
-      ri.Printf( PRINT_ALL, "XF86 Gamma extension not supported in this version\n");
-      return;
-    }
-    XF86VidModeGetGamma(dpy, scrnum, &vidmode_InitialGamma);
-    ri.Printf( PRINT_ALL, "XF86 Gamma extension initialized\n");
-    glConfig.deviceSupportsGamma = qtrue;
-  }
-}
-
 /*
 ** GLW_LoadOpenGL
 **
@@ -451,7 +412,6 @@ void GLimp_Init( void )
 
   // initialize extensions
   GLW_InitExtensions();
-  GLW_InitGamma();
 
   InitSig(); // not clear why this is at begin & end of function
 
