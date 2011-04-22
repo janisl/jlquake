@@ -2292,8 +2292,7 @@ void M_Menu_Video_f (void)
 
 void M_Video_Draw (void)
 {
-	qpic_t* p = Draw_CachePic ("gfx/vidmodes.lmp");
-	M_DrawPic ( (320-p->width)/2, 4, p);
+	ScrollTitle("gfx/menu/title7.lmp");
 
 	M_Print (3*8, 36 + MODE_AREA_HEIGHT * 8 + 8*2,
 			 "Video modes must be set from the");
