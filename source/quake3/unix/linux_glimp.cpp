@@ -64,25 +64,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../../client/unix_shared.h"
 
-/*
-** GLimp_EndFrame
-** 
-** Responsible for doing a swapbuffers and possibly for other stuff
-** as yet to be determined.  Probably better not to make this a GLimp
-** function and instead do a call to GLimp_SwapBuffers.
-*/
-void GLimp_EndFrame (void)
-{
-  // don't flip if drawing to front buffer
-  if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
-  {
-	GLimp_SwapBuffers();
-  }
-
-  // check logging
-  QGL_EnableLogging(!!r_logFile->integer);
-}
-
 // bk001130 - cvs1.17 joystick code (mkv) was here, no linux_joystick.c
 
 void Sys_SendKeyEvents (void) {

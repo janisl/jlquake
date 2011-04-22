@@ -251,10 +251,6 @@
 				RelativePath=".\tr_world.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\win32\win_glimp.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

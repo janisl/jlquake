@@ -1489,5 +1489,35 @@ void R_RenderView (viewParms_t *parms) {
 	R_DebugGraphics();
 }
 
+/*
+** GLimp_EndFrame
+*/
+void GLimp_EndFrame()
+{
+	//
+	// swapinterval stuff
+	//
+#ifdef _WIN32
+	if (r_swapInterval->modified)
+	{
+		r_swapInterval->modified = false;
 
+		if (!glConfig.stereoEnabled)	// why?
+		{	
+			if (qwglSwapIntervalEXT)
+			{
+				qwglSwapIntervalEXT(r_swapInterval->integer);
+			}
+		}
+	}
+#endif
 
+	// don't flip if drawing to front buffer
+	if (QStr::ICmp(r_drawBuffer->string, "GL_FRONT") != 0)
+	{
+		GLimp_SwapBuffers();
+	}
+
+	// check logging
+	QGL_EnableLogging(!!r_logFile->integer);
+}
