@@ -96,7 +96,7 @@ GLimp_SpawnRenderThread
 */
 HANDLE	renderThreadHandle;
 DWORD	renderThreadId;
-qboolean GLimp_SpawnRenderThread( void (*function)( void ) ) {
+bool GLimp_SpawnRenderThread( void (*function)( void ) ) {
 
 	renderCommandsEvent = CreateEvent( NULL, TRUE, FALSE, NULL );
 	renderCompletedEvent = CreateEvent( NULL, TRUE, FALSE, NULL );

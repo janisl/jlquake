@@ -69,6 +69,11 @@ void* GLimp_GetProcAddress(const char* Name);
 void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned char blue[256]);
 void GLimp_SwapBuffers();
 
+bool GLimp_SpawnRenderThread(void (*function)());
+void* GLimp_RendererSleep();
+void GLimp_FrontEndSleep();
+void GLimp_WakeRenderer(void* data);
+
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_SharedRegister();

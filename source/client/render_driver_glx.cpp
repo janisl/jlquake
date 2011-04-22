@@ -22,6 +22,7 @@
 #include "client.h"
 #include "render_local.h"
 #include "unix_shared.h"
+#include <pthread.h>
 
 // MACROS ------------------------------------------------------------------
 
@@ -57,6 +58,16 @@ static int						vidmode_MinorVersion = 0;
 
 // gamma value of the X display before we start playing with it
 static XF86VidModeGamma			vidmode_InitialGamma;
+
+static pthread_mutex_t			smpMutex = PTHREAD_MUTEX_INITIALIZER;
+
+static pthread_cond_t			renderCommandsEvent = PTHREAD_COND_INITIALIZER;
+static pthread_cond_t			renderCompletedEvent = PTHREAD_COND_INITIALIZER;
+
+static void (*glimpRenderThread)();
+
+static volatile void*			smpData = NULL;
+static volatile bool			smpDataReady;
 
 // CODE --------------------------------------------------------------------
 
@@ -567,4 +578,130 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 void GLimp_SwapBuffers()
 {
     glXSwapBuffers(dpy, win);
+}
+
+//**************************************************************************
+//
+//	SMP acceleration
+//
+//**************************************************************************
+
+//==========================================================================
+//
+//	GLimp_RenderThreadWrapper
+//
+//==========================================================================
+
+static void* GLimp_RenderThreadWrapper(void *arg)
+{
+	GLog.Write("Render thread starting\n");
+
+	glimpRenderThread();
+
+	glXMakeCurrent(dpy, None, NULL);
+
+	GLog.Write("Render thread terminating\n");
+
+	return arg;
+}
+
+//==========================================================================
+//
+//	GLimp_SpawnRenderThread
+//
+//==========================================================================
+
+bool GLimp_SpawnRenderThread(void (*function)())
+{
+	pthread_mutex_init(&smpMutex, NULL);
+
+	pthread_cond_init(&renderCommandsEvent, NULL);
+	pthread_cond_init(&renderCompletedEvent, NULL);
+
+	glimpRenderThread = function;
+
+	pthread_t renderThread;
+	int ret = pthread_create(&renderThread, NULL, GLimp_RenderThreadWrapper, NULL);
+	if (ret)
+	{
+		GLog.Write("pthread_create returned %d: %s", ret, strerror(ret));
+		return false;
+	}
+
+	ret = pthread_detach(renderThread);
+	if (ret)
+	{
+		GLog.Write("pthread_detach returned %d: %s", ret, strerror(ret));
+	}
+
+	return true;
+}
+
+//==========================================================================
+//
+//	GLimp_RendererSleep
+//
+//==========================================================================
+
+void* GLimp_RendererSleep()
+{
+	glXMakeCurrent(dpy, None, NULL);
+
+	pthread_mutex_lock(&smpMutex);
+
+	smpData = NULL;
+	smpDataReady = false;
+
+	// after this, the front end can exit GLimp_FrontEndSleep
+	pthread_cond_signal(&renderCompletedEvent);
+
+	while (!smpDataReady)
+	{
+		pthread_cond_wait(&renderCommandsEvent, &smpMutex);
+	}
+
+	void* data = (void*)smpData;
+	pthread_mutex_unlock(&smpMutex);
+
+	glXMakeCurrent(dpy, win, ctx);
+
+	return data;
+}
+
+//==========================================================================
+//
+//	GLimp_FrontEndSleep
+//
+//==========================================================================
+
+void GLimp_FrontEndSleep()
+{
+	pthread_mutex_lock(&smpMutex);
+	while (smpData)
+	{
+		pthread_cond_wait(&renderCompletedEvent, &smpMutex);
+	}
+	pthread_mutex_unlock(&smpMutex);
+
+	glXMakeCurrent(dpy, win, ctx);
+}
+
+//==========================================================================
+//
+//	GLimp_WakeRenderer
+//
+//==========================================================================
+
+void GLimp_WakeRenderer(void* data)
+{
+	glXMakeCurrent(dpy, None, NULL);
+
+	pthread_mutex_lock(&smpMutex);
+	qassert(smpData == NULL);
+	smpData = data;
+	smpDataReady = true;
+
+	// after this, the renderer can continue through GLimp_RendererSleep
+	pthread_cond_signal(&renderCommandsEvent);
+	pthread_mutex_unlock(&smpMutex);
 }
