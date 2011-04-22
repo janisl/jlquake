@@ -1,7 +1,9 @@
 // cl_main.c  -- client main loop
 
 #include "quakedef.h"
-#include "winquake.h"
+#ifdef _WIN32 
+#include "../../client/windows_shared.h"
+#endif
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.

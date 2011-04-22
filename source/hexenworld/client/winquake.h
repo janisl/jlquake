@@ -2,6 +2,4 @@
 
 #ifdef _WIN32 
 #include "../../client/windows_shared.h"
-
-void VID_SetDefaultMode (void);
 #endif

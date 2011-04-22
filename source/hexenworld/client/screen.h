@@ -28,9 +28,5 @@ extern	QCvar*		scr_viewsize;
 extern	int			scr_copytop;
 extern	int			scr_copyeverything;
 
-extern	qboolean	scr_skipupdate;
-
-extern	qboolean	block_drawing;
-
 void SCR_UpdateWholeScreen (void);
 

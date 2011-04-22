@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // sys_win.h
 
 #include "quakedef.h"
-#include "winquake.h"
+#include "../../client/windows_shared.h"
 
 #define MINIMUM_WIN_MEMORY	0x0c00000
 #define MAXIMUM_WIN_MEMORY	0x1000000
@@ -138,9 +138,6 @@ void Sys_SendKeyEvents (void)
 
 	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-	// we always update if there are any event, even if we're paused
-		scr_skipupdate = 0;
-
 		if (!GetMessage (&msg, NULL, 0, 0))
 			Sys_Quit ();
 		// save the msg time, because wndprocs don't have access to the timestamp
@@ -283,10 +280,9 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	while (1)
 	{
 	// yield the CPU for a little while when paused, minimized, or not the focus
-		if ((cl.paused && !ActiveApp) || Minimized || block_drawing)
+		if ((cl.paused && !ActiveApp) || Minimized)
 		{
 			SleepUntilInput (PAUSE_SLEEP);
-			scr_skipupdate = 1;		// no point in bothering to draw
 		}
 		else if (!ActiveApp)
 		{

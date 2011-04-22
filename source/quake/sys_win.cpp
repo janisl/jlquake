@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // sys_win.c -- Win32 system interface code
 
 #include "quakedef.h"
-#include "winquake.h"
+#include "../client/windows_shared.h"
 
 #define MINIMUM_WIN_MEMORY		0x0880000
 #define MAXIMUM_WIN_MEMORY		0x1000000
@@ -78,7 +78,6 @@ void Sys_Error (char *error, ...)
 {
 	va_list		argptr;
 	char		text[1024];
-	static int	in_sys_error0 = 0;
 	static int	in_sys_error1 = 0;
 
 	va_start (argptr, error);
@@ -90,17 +89,6 @@ void Sys_Error (char *error, ...)
 
 	Sys_SetErrorText(text);
 	Sys_ShowConsole(1, true);
-
-	if (!isDedicated)
-	{
-	// switch to windowed so the message box is visible, unless we already
-	// tried that and failed
-		if (!in_sys_error0)
-		{
-			in_sys_error0 = 1;
-			VID_SetDefaultMode ();
-		}
-	}
 
 	if (!in_sys_error1)
 	{
@@ -143,9 +131,6 @@ void Sys_SendKeyEvents (void)
 
 	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-	// we always update if there are any event, even if we're paused
-		scr_skipupdate = 0;
-
 		if (!GetMessage (&msg, NULL, 0, 0))
 			Sys_Quit ();
 
@@ -306,10 +291,9 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		else
 		{
 		// yield the CPU for a little while when paused, minimized, or not the focus
-			if ((cl.paused && !ActiveApp) || Minimized || block_drawing)
+			if ((cl.paused && !ActiveApp) || Minimized)
 			{
 				SleepUntilInput (PAUSE_SLEEP);
-				scr_skipupdate = 1;		// no point in bothering to draw
 			}
 			else if (!ActiveApp)
 			{

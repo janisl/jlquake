@@ -7,7 +7,6 @@
  */
 
 #include "quakedef.h"
-#include "winquake.h"
 
 #define	PM_SPECTATORMAXSPEED	500
 #define	PM_STOPSPEED	100

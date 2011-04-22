@@ -5,7 +5,7 @@
  */
 
 #include "quakedef.h"
-#include "winquake.h"
+#include "../client/windows_shared.h"
 
 #define MINIMUM_WIN_MEMORY		0x1000000
 #define MAXIMUM_WIN_MEMORY		0x1800000
@@ -84,12 +84,6 @@ void Sys_Error (char *error, ...)
 	Sys_SetErrorText(text);
 	Sys_ShowConsole(1, true);
 
-	if (!isDedicated)
-	{
-	// switch to windowed so the message box is visible
-		VID_SetDefaultMode ();
-	}
-
 	Host_Shutdown ();
 
 	// wait for the user to quit
@@ -127,9 +121,6 @@ void Sys_SendKeyEvents (void)
 
 	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE))
 	{
-	// we always update if there are any event, even if we're paused
-		scr_skipupdate = 0;
-
 		if (!GetMessage (&msg, NULL, 0, 0))
 			Sys_Quit ();
 		// save the msg time, because wndprocs don't have access to the timestamp
@@ -302,12 +293,10 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 			if ((cl.paused && !ActiveApp) || Minimized)
 			{
 				SleepUntilInput (PAUSE_SLEEP);
-				scr_skipupdate = 1;		// no point in bothering to draw
 			}
 			else if (!ActiveApp)
 			{
 				SleepUntilInput (NOT_FOCUS_SLEEP);
-				scr_skipupdate = 1;		// no point in bothering to draw
 			}
 
 			newtime = Sys_DoubleTime ();

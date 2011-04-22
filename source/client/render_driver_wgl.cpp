@@ -1290,3 +1290,14 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 		GLog.Write("SetDeviceGammaRamp failed.\n");
 	}
 }
+
+//==========================================================================
+//
+//	GLimp_SwapBuffers
+//
+//==========================================================================
+
+void GLimp_SwapBuffers()
+{
+	SwapBuffers(maindc);
+}

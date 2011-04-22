@@ -2,11 +2,9 @@
 
 #include "quakedef.h"
 #include "glquake.h"
-#include "winquake.h"
+#include "../../client/windows_shared.h"
 #include "resource.h"
 #include <commctrl.h>
-
-qboolean		scr_skipupdate;
 
 //====================================
 
@@ -16,11 +14,7 @@ int VID_SetMode(unsigned char *palette)
 	qboolean temp = scr_disabled_for_loading;
 	scr_disabled_for_loading = true;
 
-	CDAudio_Pause ();
-
 	bool fullscreen = !!r_fullscreen->integer;
-
-	IN_Activate(false);
 
 	if (GLW_SetMode(r_mode->integer, r_colorbits->integer, fullscreen) != RSERR_OK)
 		Sys_Error ("Couldn't set fullscreen DIB mode");
@@ -34,9 +28,6 @@ int VID_SetMode(unsigned char *palette)
 
 	vid.numpages = 2;
 
-	IN_Activate(true);
-
-	CDAudio_Resume ();
 	scr_disabled_for_loading = temp;
 
 	VID_SetPalette (palette);
@@ -48,15 +39,8 @@ int VID_SetMode(unsigned char *palette)
 
 void GL_EndRendering (void)
 {
-	if (!scr_skipupdate || block_drawing)
-		SwapBuffers(maindc);
+	GLimp_SwapBuffers();
 }
-
-void VID_SetDefaultMode (void)
-{
-	IN_Activate(false);
-}
-
 
 void	VID_Shutdown (void)
 {

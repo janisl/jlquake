@@ -112,8 +112,6 @@ qboolean	scr_disabled_for_loading;
 qboolean	scr_drawloading;
 float		scr_disabled_time;
 
-qboolean	block_drawing;
-
 void SCR_ScreenShot_f (void);
 
 /*
@@ -820,9 +818,6 @@ void SCR_UpdateScreen (void)
 {
 	static float	oldscr_viewsize;
 	vrect_t		vrect;
-
-	if (block_drawing)
-		return;
 
     vid.numpages = 2 + (gl_triplebuffer ? gl_triplebuffer->value : 0);
 

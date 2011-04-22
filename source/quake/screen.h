@@ -42,14 +42,11 @@ extern	int			sb_lines;
 
 extern	int			clearnotify;	// set to 0 whenever notify text is drawn
 extern	qboolean	scr_disabled_for_loading;
-extern	qboolean	scr_skipupdate;
 
 extern	QCvar*		scr_viewsize;
 
 // only the refresh window will be updated unless these variables are flagged 
 extern	int			scr_copytop;
 extern	int			scr_copyeverything;
-
-extern qboolean		block_drawing;
 
 void SCR_UpdateWholeScreen (void);

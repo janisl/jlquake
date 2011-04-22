@@ -115,8 +115,6 @@ qboolean        scr_disabled_for_loading;
 qboolean        scr_drawloading;
 float           scr_disabled_time;
 
-qboolean        block_drawing;
-
 void SCR_ScreenShot_f (void);
 void SCR_RSShot_f (void);
 
@@ -1068,9 +1066,6 @@ needs almost the entire 256k of stack space!
 */
 void SCR_UpdateScreen (void)
 {
-	if (block_drawing)
-		return;
-
     vid.numpages = 2 + (gl_triplebuffer ? gl_triplebuffer->value : 0);
 
 	scr_copytop = 0;

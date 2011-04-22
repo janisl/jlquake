@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../client/client.h"
 #include "../qcommon/qcommon.h"
-#include "win_local.h"
+#include "../../client/windows_shared.h"
 #include <direct.h>
 
 #define	CD_BASEDIR	"quake3"
@@ -34,6 +34,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static char		sys_cmdline[MAX_STRING_CHARS];
 
+typedef struct
+{
+	OSVERSIONINFO	osversion;
+} WinVars_t;
 WinVars_t	g_wv;
 
 /*

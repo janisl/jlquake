@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../renderer/tr_local.h"
 #include "../qcommon/qcommon.h"
 #include "resource.h"
-#include "win_local.h"
+#include "../../client/windows_shared.h"
 
 /*
 ** GLimp_EndFrame
@@ -61,7 +61,7 @@ void GLimp_EndFrame (void)
 	// don't flip if drawing to front buffer
 	if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
-		SwapBuffers( maindc );
+		GLimp_SwapBuffers();
 	}
 
 	// check logging

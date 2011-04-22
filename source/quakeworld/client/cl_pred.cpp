@@ -18,7 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "quakedef.h"
-#include "winquake.h"
+#ifdef _WIN32
+#include "../../client/windows_shared.h"
+#endif
 
 QCvar*	cl_nopred;
 QCvar*	cl_pushlatency;

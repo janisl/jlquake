@@ -1,5 +1,7 @@
 #include "quakedef.h"
-#include "winquake.h"
+#ifdef _WIN32 
+#include "../../client/windows_shared.h"
+#endif
 
 QCvar*	cl_nopred;
 QCvar*	cl_pushlatency;

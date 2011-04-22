@@ -1,7 +1,7 @@
 // sys_win.h
 
 #include "quakedef.h"
-#include "winquake.h"
+#include "../../client/windows_shared.h"
 
 #define MINIMUM_WIN_MEMORY		0x1000000
 #define MAXIMUM_WIN_MEMORY		0x1600000
@@ -234,10 +234,9 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	while (1)
 	{
 	// yield the CPU for a little while when paused, minimized, or not the focus
-		if ((cl.paused && !ActiveApp) || Minimized || block_drawing)
+		if ((cl.paused && !ActiveApp) || Minimized)
 		{
 			Sleep (PAUSE_SLEEP);
-			scr_skipupdate = 1;		// no point in bothering to draw
 		}
 		else if (!ActiveApp)
 		{

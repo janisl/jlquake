@@ -45,7 +45,3 @@ extern	QCvar*		scr_viewsize;
 // only the refresh window will be updated unless these variables are flagged 
 extern	int			scr_copytop;
 extern	int			scr_copyeverything;
-
-extern	qboolean	scr_skipupdate;
-
-extern	qboolean	block_drawing;
