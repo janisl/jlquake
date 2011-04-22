@@ -66,6 +66,18 @@ static QCvar*	vid_ypos;			// Y coordinate of window position
 
 static quint16	s_oldHardwareGamma[3][256];
 
+static HANDLE	renderCommandsEvent;
+static HANDLE	renderCompletedEvent;
+static HANDLE	renderActiveEvent;
+
+static void		(*glimpRenderThread)();
+
+static HANDLE	renderThreadHandle;
+static DWORD	renderThreadId;
+
+static void*	smpData;
+static int		wglErrors;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -1300,4 +1312,123 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 void GLimp_SwapBuffers()
 {
 	SwapBuffers(maindc);
+}
+
+//**************************************************************************
+//
+//	SMP acceleration
+//
+//**************************************************************************
+
+//==========================================================================
+//
+//	GLimp_RenderThreadWrapper
+//
+//==========================================================================
+
+static DWORD WINAPI GLimp_RenderThreadWrapper(LPVOID)
+{
+	glimpRenderThread();
+
+	// unbind the context before we die
+	wglMakeCurrent(maindc, NULL);
+
+	return 0;
+}
+
+//==========================================================================
+//
+//	GLimp_SpawnRenderThread
+//
+//==========================================================================
+
+bool GLimp_SpawnRenderThread(void (*function)())
+{
+	renderCommandsEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	renderCompletedEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	renderActiveEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+	glimpRenderThread = function;
+
+	renderThreadHandle = CreateThread(NULL, 0, GLimp_RenderThreadWrapper, 0, 0, &renderThreadId);
+
+	if (!renderThreadHandle)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//==========================================================================
+//
+//	GLimp_RendererSleep
+//
+//==========================================================================
+
+void* GLimp_RendererSleep()
+{
+	if (!wglMakeCurrent(maindc, NULL))
+	{
+		wglErrors++;
+	}
+
+	ResetEvent(renderActiveEvent);
+
+	// after this, the front end can exit GLimp_FrontEndSleep
+	SetEvent(renderCompletedEvent);
+
+	WaitForSingleObject(renderCommandsEvent, INFINITE);
+
+	if (!wglMakeCurrent(maindc, baseRC))
+	{
+		wglErrors++;
+	}
+
+	ResetEvent(renderCompletedEvent);
+	ResetEvent(renderCommandsEvent);
+
+	void* data = smpData;
+
+	// after this, the main thread can exit GLimp_WakeRenderer
+	SetEvent(renderActiveEvent);
+
+	return data;
+}
+
+//==========================================================================
+//
+//	GLimp_FrontEndSleep
+//
+//==========================================================================
+
+void GLimp_FrontEndSleep()
+{
+	WaitForSingleObject(renderCompletedEvent, INFINITE);
+
+	if (!wglMakeCurrent(maindc, baseRC))
+	{
+		wglErrors++;
+	}
+}
+
+//==========================================================================
+//
+//	GLimp_WakeRenderer
+//
+//==========================================================================
+
+void GLimp_WakeRenderer(void* data)
+{
+	smpData = data;
+
+	if (!wglMakeCurrent(maindc, NULL))
+	{
+		wglErrors++;
+	}
+
+	// after this, the renderer can continue through GLimp_RendererSleep
+	SetEvent(renderCommandsEvent);
+
+	WaitForSingleObject(renderActiveEvent, INFINITE);
 }
