@@ -11,7 +11,3 @@ void		GLimp_EndFrame( void )
 int     	GLimp_SetMode(int mode, qboolean fullscreen)
 {
 }
-
-void		GLimp_AppActivate( qboolean active )
-{
-}

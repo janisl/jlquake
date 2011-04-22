@@ -52,10 +52,3 @@ void GLimp_EndFrame (void)
 	qglFlush();
 	glXSwapBuffers( dpy, win );
 }
-
-/*
-** GLimp_AppActivate
-*/
-void GLimp_AppActivate( qboolean active )
-{
-}

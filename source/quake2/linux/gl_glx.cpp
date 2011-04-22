@@ -54,13 +54,6 @@ void GLimp_EndFrame (void)
 	glXSwapBuffers( dpy, win );
 }
 
-/*
-** GLimp_AppActivate
-*/
-void GLimp_AppActivate( qboolean active )
-{
-}
-
 void Sys_SendKeyEvents (void)
 {
 	HandleEvents();
