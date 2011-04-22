@@ -280,10 +280,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_vidnt.cpp"
-				>
-			</File>
-			<File
 				RelativePath="gl_warp.cpp"
 				>
 			</File>

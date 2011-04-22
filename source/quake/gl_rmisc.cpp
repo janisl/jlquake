@@ -474,7 +474,7 @@ static void CheckMultiTextureExtensions()
 GL_Init
 ===============
 */
-void GL_Init()
+static void GL_Init()
 {
 	QGL_Init();
 
@@ -526,31 +526,64 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 	*height = glConfig.vidHeight;
 }
 
-void Check_Gamma (unsigned char *pal)
+void VID_Init(unsigned char *palette)
 {
-	float	f, inf;
-	unsigned char	palette[768];
-	int		i;
+	R_SharedRegister();
 
-	if ((i = COM_CheckParm("-gamma")) == 0)
+	if (GLW_SetMode(r_mode->integer, r_colorbits->integer, !!r_fullscreen->integer) != RSERR_OK)
 	{
-		vid_gamma = 0.7;
+		Sys_Error("Couldn't initialise OpenGL");
 	}
+
+	VID_SetPalette(palette);
+
+	GL_Init();
+
+	Sys_ShowConsole(0, false);
+
+	int i;
+	if ((i = COM_CheckParm("-conwidth")) != 0)
+		vid.conwidth = QStr::Atoi(COM_Argv(i+1));
 	else
-	{
-		vid_gamma = QStr::Atof(COM_Argv(i+1));
-	}
+		vid.conwidth = 640;
 
-	for (i=0 ; i<768 ; i++)
-	{
-		f = pow ( (pal[i]+1)/256.0 , (double)vid_gamma );
-		inf = f*255 + 0.5;
-		if (inf < 0)
-			inf = 0;
-		if (inf > 255)
-			inf = 255;
-		palette[i] = inf;
-	}
+	vid.conwidth &= 0xfff8; // make it a multiple of eight
 
-	Com_Memcpy(pal, palette, sizeof(palette));
+	if (vid.conwidth < 320)
+		vid.conwidth = 320;
+
+	// pick a conheight that matches with correct aspect
+	vid.conheight = vid.conwidth / glConfig.windowAspect;
+
+	if ((i = COM_CheckParm("-conheight")) != 0)
+		vid.conheight = QStr::Atoi(COM_Argv(i+1));
+	if (vid.conheight < 200)
+		vid.conheight = 200;
+
+	if (vid.conheight > glConfig.vidHeight)
+		vid.conheight = glConfig.vidHeight;
+	if (vid.conwidth > glConfig.vidWidth)
+		vid.conwidth = glConfig.vidWidth;
+	vid.width = vid.conwidth;
+	vid.height = vid.conheight;
+
+	vid.numpages = 2;
+
+	vid.recalc_refdef = 1;
+
+	vid.colormap = host_colormap;
+}
+
+void VID_Shutdown(void)
+{
+	GLimp_Shutdown();
+
+	// shutdown QGL subsystem
+	QGL_Shutdown();
+}
+
+void GL_EndRendering()
+{
+	//qglFlush();
+	GLimp_SwapBuffers();
 }
