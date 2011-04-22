@@ -30,8 +30,6 @@ bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam);
 void IN_Activate(bool active);
 
 extern HWND			GMainWindow;
-extern HDC			maindc;
-extern HGLRC		baseRC;
 extern QCvar*		in_joystick;
 extern bool			Minimized;
 extern bool			ActiveApp;

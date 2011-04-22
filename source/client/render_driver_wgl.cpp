@@ -48,8 +48,8 @@ enum
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-HDC		maindc;
-HGLRC	baseRC;
+static HDC		maindc;
+static HGLRC	baseRC;
 
 static bool		s_alttab_disabled;
 
