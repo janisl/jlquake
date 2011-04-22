@@ -1437,7 +1437,5 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.BeginFrame = R_BeginFrame;
 	re.EndFrame = GLimp_EndFrame;
 
-	re.AppActivate = GLimp_AppActivate;
-
 	return re;
 }

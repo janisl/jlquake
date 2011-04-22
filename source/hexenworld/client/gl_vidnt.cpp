@@ -63,8 +63,6 @@ void	VID_Shutdown (void)
 	GLimp_Shutdown();
 
 	QGL_Shutdown();
-
-	AppActivate(false, false);
 }
 
 
@@ -75,78 +73,6 @@ MAIN WINDOW
 
 ===================================================================
 */
-
-static int MWheelAccumulator;
-extern QCvar* mwheelthreshold;
-
-
-/* main window procedure */
-LONG WINAPI MainWndProc (
-    HWND    hWnd,
-    UINT    uMsg,
-    WPARAM  wParam,
-    LPARAM  lParam)
-{
-    LONG    lRet = 1;
-	int		fwKeys, xPos, yPos, fActive, fMinimized, temp;
-
-	if (IN_HandleInputMessage(uMsg, wParam, lParam))
-	{
-		return 0;
-	}
-
-    switch (uMsg)
-    {
-		case WM_KILLFOCUS:
-			if (cdsFullscreen)
-				ShowWindow(GMainWindow, SW_SHOWMINNOACTIVE);
-			break;
-
-		case WM_CREATE:
-			break;
-
-		case WM_MOVE:
-			break;
-
-		case WM_SYSCHAR:
-		// keep Alt-Space from happening
-			break;
-
-    	case WM_SIZE:
-            break;
-
-   	    case WM_CLOSE:
-			if (MessageBox (GMainWindow, "Are you sure you want to quit?", "Confirm Exit",
-						MB_YESNO | MB_SETFOREGROUND | MB_ICONQUESTION) == IDYES)
-			{
-				Sys_Quit ();
-			}
-
-	        break;
-
-		case WM_ACTIVATE:
-			fActive = LOWORD(wParam);
-			fMinimized = (BOOL) HIWORD(wParam);
-			AppActivate(!(fActive == WA_INACTIVE), fMinimized);
-			break;
-
-   	    case WM_DESTROY:
-            PostQuitMessage (0);
-			break;
-
-		case MM_MCINOTIFY:
-            lRet = CDAudio_MessageHandler (hWnd, uMsg, wParam, lParam);
-			break;
-
-    	default:
-            /* pass all unhandled messages to DefWindowProc */
-            lRet = DefWindowProc (hWnd, uMsg, wParam, lParam);
-        break;
-    }
-
-    /* return 1 if handled message, 0 if not */
-    return lRet;
-}
 
 void GL_Init();
 /*

@@ -26,22 +26,14 @@ void SNDDMA_Activate();
 
 LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 bool IN_HandleInputMessage(UINT uMsg, WPARAM  wParam, LPARAM  lParam);
 void IN_Activate(bool active);
-void AppActivate(bool fActive, bool minimize);
-void WIN_DisableAltTab();
-void WIN_EnableAltTab();
 
 extern HWND			GMainWindow;
 extern HDC			maindc;
 extern HGLRC		baseRC;
-extern bool			pixelFormatSet;
-extern bool			cdsFullscreen;
 extern QCvar*		in_joystick;
 extern bool			Minimized;
 extern bool			ActiveApp;
-extern QCvar		*vid_xpos;			// X coordinate of window position
-extern QCvar		*vid_ypos;			// Y coordinate of window position
 
 #endif

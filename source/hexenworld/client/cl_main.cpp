@@ -23,7 +23,6 @@ QCvar*	cl_hudswap;
 QCvar*	lookspring;
 QCvar*	lookstrafe;
 QCvar*	sensitivity;
-QCvar*	mwheelthreshold;
 
 QCvar*	m_pitch;
 QCvar*	m_yaw;
@@ -896,21 +895,6 @@ void CL_Download_f (void)
 	cls.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));
 }
 
-#ifdef _WINDOWS
-#include <windows.h>
-/*
-=================
-CL_Minimize_f
-=================
-*/
-void CL_Windows_f (void) {
-//	if (!cdsFullscreen)
-//		ShowWindow(GMainWindow, SW_MINIMIZE);
-//	else
-		SendMessage(GMainWindow, WM_SYSKEYUP, VK_TAB, 1 | (0x0F << 16) | (1<<29));
-}
-#endif
-
 void CL_Sensitivity_save_f (void)
 {
 	static float save_sensitivity = 3;
@@ -980,7 +964,6 @@ void CL_Init (void)
 	lookspring = Cvar_Get("lookspring", "0", CVAR_ARCHIVE);
 	lookstrafe = Cvar_Get("lookstrafe", "0", CVAR_ARCHIVE);
 	sensitivity = Cvar_Get("sensitivity", "3", CVAR_ARCHIVE);
-	mwheelthreshold = Cvar_Get("mwheelthreshold", "120", CVAR_ARCHIVE);
 
 	m_pitch = Cvar_Get("m_pitch", "0.022", CVAR_ARCHIVE);
 	m_yaw = Cvar_Get("m_yaw", "0.022", 0);
@@ -1053,13 +1036,6 @@ void CL_Init (void)
 	Cmd_AddCommand ("say", NULL);
 	Cmd_AddCommand ("say_team", NULL);
 	Cmd_AddCommand ("serverinfo", NULL);
-
-//
-//  Windows commands
-//
-#ifdef _WINDOWS
-	Cmd_AddCommand ("windows", CL_Windows_f);
-#endif
 }
 
 

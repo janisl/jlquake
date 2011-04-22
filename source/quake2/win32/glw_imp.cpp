@@ -69,20 +69,3 @@ void GLimp_EndFrame (void)
 			ri.Sys_Error( ERR_FATAL, "GLimp_EndFrame() - SwapBuffers() failed!\n" );
 	}
 }
-
-/*
-** GLimp_AppActivate
-*/
-void GLimp_AppActivate( qboolean active )
-{
-	if ( active )
-	{
-		SetForegroundWindow( GMainWindow );
-		ShowWindow( GMainWindow, SW_RESTORE );
-	}
-	else
-	{
-		if ( r_fullscreen->value )
-			ShowWindow( GMainWindow, SW_MINIMIZE );
-	}
-}

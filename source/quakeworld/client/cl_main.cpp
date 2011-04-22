@@ -1017,21 +1017,6 @@ void CL_Download_f (void)
 	cls.netchan.message.WriteString2(va("download %s\n",Cmd_Argv(1)));
 }
 
-#ifdef _WINDOWS
-#include <windows.h>
-/*
-=================
-CL_Minimize_f
-=================
-*/
-void CL_Windows_f (void) {
-//	if (!cdsFullscreen)
-//		ShowWindow(GMainWindow, SW_MINIMIZE);
-//	else
-		SendMessage(GMainWindow, WM_SYSKEYUP, VK_TAB, 1 | (0x0F << 16) | (1<<29));
-}
-#endif
-
 /*
 =================
 CL_Init
@@ -1154,13 +1139,6 @@ void CL_Init (void)
 	Cmd_AddCommand ("say", NULL);
 	Cmd_AddCommand ("say_team", NULL);
 	Cmd_AddCommand ("serverinfo", NULL);
-
-//
-//  Windows commands
-//
-#ifdef _WINDOWS
-	Cmd_AddCommand ("windows", CL_Windows_f);
-#endif
 }
 
 

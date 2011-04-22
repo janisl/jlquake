@@ -58,11 +58,11 @@ static int		desktopWidth;
 static int		desktopHeight;
 
 static bool		s_classRegistered = false;
-bool			pixelFormatSet;
-bool			cdsFullscreen;
+static bool		pixelFormatSet;
+static bool		cdsFullscreen;
 
-QCvar*			vid_xpos;			// X coordinate of window position
-QCvar*			vid_ypos;			// Y coordinate of window position
+static QCvar*	vid_xpos;			// X coordinate of window position
+static QCvar*	vid_ypos;			// Y coordinate of window position
 
 static quint16	s_oldHardwareGamma[3][256];
 
@@ -74,7 +74,7 @@ static quint16	s_oldHardwareGamma[3][256];
 //
 //==========================================================================
 
-void WIN_DisableAltTab()
+static void WIN_DisableAltTab()
 {
 	if (s_alttab_disabled)
 	{
@@ -92,7 +92,7 @@ void WIN_DisableAltTab()
 //
 //==========================================================================
 
-void WIN_EnableAltTab()
+static void WIN_EnableAltTab()
 {
 	if (!s_alttab_disabled)
 	{
@@ -110,7 +110,7 @@ void WIN_EnableAltTab()
 //
 //==========================================================================
 
-void AppActivate(bool fActive, bool minimize)
+static void AppActivate(bool fActive, bool minimize)
 {
 	Minimized = minimize;
 
@@ -125,6 +125,109 @@ void AppActivate(bool fActive, bool minimize)
 	IN_Activate(ActiveApp);
 	CDAudio_Activate(ActiveApp);
 	SNDDMA_Activate();
+}
+
+//==========================================================================
+//
+//	MainWndProc
+//
+//	main window procedure
+//
+//==========================================================================
+
+static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_CREATE:
+		GMainWindow = hWnd;
+		if (r_fullscreen->integer)
+		{
+			WIN_DisableAltTab();
+		}
+		else
+		{
+			WIN_EnableAltTab();
+		}
+		break;
+
+	case WM_DESTROY:
+		// let sound and input know about this?
+		GMainWindow = NULL;
+		if (r_fullscreen->integer)
+		{
+			WIN_EnableAltTab();
+		}
+		break;
+
+	case WM_CLOSE:
+		Cbuf_ExecuteText(EXEC_APPEND, "quit");
+		break;
+
+	case WM_ACTIVATE:
+		AppActivate(LOWORD(wParam) != WA_INACTIVE, !!HIWORD(wParam));
+		break;
+
+	case WM_MOVE:
+		if (!r_fullscreen->integer)
+		{
+			int xPos = (short)LOWORD(lParam);    // horizontal position 
+			int yPos = (short)HIWORD(lParam);    // vertical position 
+
+			RECT r;
+			r.left   = 0;
+			r.top    = 0;
+			r.right  = 1;
+			r.bottom = 1;
+
+			int style = GetWindowLong(hWnd, GWL_STYLE);
+			AdjustWindowRect(&r, style, FALSE);
+
+			Cvar_SetValue("vid_xpos", xPos + r.left);
+			Cvar_SetValue("vid_ypos", yPos + r.top);
+			vid_xpos->modified = false;
+			vid_ypos->modified = false;
+			if (ActiveApp)
+			{
+				IN_Activate(true);
+			}
+		}
+		break;
+
+	case WM_SYSCOMMAND:
+		if (wParam == SC_SCREENSAVE)
+		{
+			return 0;
+		}
+		break;
+
+	case WM_SYSKEYDOWN:
+		if (wParam == 13)
+		{
+			if (r_fullscreen)
+			{
+				Cvar_SetValue("r_fullscreen", !r_fullscreen->integer);
+				Cbuf_AddText("vid_restart\n");
+			}
+			return 0;
+		}
+		// fall through
+		break;
+
+	case MM_MCINOTIFY:
+		if (CDAudio_MessageHandler (hWnd, uMsg, wParam, lParam) == 0)
+		{
+			return 0;
+		}
+		break;
+	}
+
+	if (IN_HandleInputMessage(uMsg, wParam, lParam))
+	{
+		return 0;
+	}
+
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 //==========================================================================
@@ -648,6 +751,9 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 	//
 	if (!s_classRegistered)
 	{
+		vid_xpos = Cvar_Get("vid_xpos", "3", CVAR_ARCHIVE);
+		vid_ypos = Cvar_Get("vid_ypos", "22", CVAR_ARCHIVE);
+
 		WNDCLASS wc;
 
 		Com_Memset(&wc, 0, sizeof(wc));
@@ -710,8 +816,6 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 		}
 		else
 		{
-			QCvar* vid_xpos = Cvar_Get("vid_xpos", "", 0);
-			QCvar* vid_ypos = Cvar_Get("vid_ypos", "", 0);
 			x = vid_xpos->integer;
 			y = vid_ypos->integer;
 

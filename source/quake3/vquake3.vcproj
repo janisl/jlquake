@@ -333,10 +333,6 @@
 				RelativePath="win32\win_shared.cpp"
 				>
 			</File>
-			<File
-				RelativePath="win32\win_wndproc.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

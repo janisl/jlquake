@@ -174,8 +174,6 @@ typedef struct
 	void	(*BeginFrame)( float camera_separation );
 	void	(*EndFrame) (void);
 
-	void	(*AppActivate)( qboolean activate );
-
 } refexport_t;
 
 //

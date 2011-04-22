@@ -32,13 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
 
-// window procedure
-LONG WINAPI MainWndProc (
-    HWND    hWnd,
-    UINT    uMsg,
-    WPARAM  wParam,
-    LPARAM  lParam);
-
 typedef struct
 {
 	OSVERSIONINFO	osversion;
