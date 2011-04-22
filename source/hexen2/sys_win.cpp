@@ -15,9 +15,6 @@
 
 #define MAX_NUM_ARGVS	50
 
-int			starttime;
-qboolean	ActiveApp, Minimized;
-
 qboolean			isDedicated;
 
 static HANDLE	tevent;
@@ -170,7 +167,6 @@ void SleepUntilInput (int time)
 WinMain
 ==================
 */
-int			global_nCmdShow;
 char		*argv[MAX_NUM_ARGVS];
 static char	*empty_string = "";
 
@@ -191,7 +187,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	CL_RemoveGIPFiles(NULL);
 
 	global_hInstance = hInstance;
-	global_nCmdShow = nCmdShow;
 
 	lpBuffer.dwLength = sizeof(MEMORYSTATUS);
 	GlobalMemoryStatus (&lpBuffer);

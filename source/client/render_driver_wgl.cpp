@@ -51,6 +51,8 @@ enum
 HDC		maindc;
 HGLRC	baseRC;
 
+static bool		s_alttab_disabled;
+
 static int		desktopBitsPixel;
 static int		desktopWidth;
 static int		desktopHeight;
@@ -59,9 +61,71 @@ static bool		s_classRegistered = false;
 bool			pixelFormatSet;
 bool			cdsFullscreen;
 
+QCvar*			vid_xpos;			// X coordinate of window position
+QCvar*			vid_ypos;			// Y coordinate of window position
+
 static quint16	s_oldHardwareGamma[3][256];
 
 // CODE --------------------------------------------------------------------
+
+//==========================================================================
+//
+//	WIN_DisableAltTab
+//
+//==========================================================================
+
+void WIN_DisableAltTab()
+{
+	if (s_alttab_disabled)
+	{
+		return;
+	}
+
+	RegisterHotKey(0, 0, MOD_ALT, VK_TAB);
+
+	s_alttab_disabled = true;
+}
+
+//==========================================================================
+//
+//	WIN_EnableAltTab
+//
+//==========================================================================
+
+void WIN_EnableAltTab()
+{
+	if (!s_alttab_disabled)
+	{
+		return;
+	}
+
+	UnregisterHotKey(0, 0);
+
+	s_alttab_disabled = false;
+}
+
+//==========================================================================
+//
+//	AppActivate
+//
+//==========================================================================
+
+void AppActivate(bool fActive, bool minimize)
+{
+	Minimized = minimize;
+
+	GLog.DWrite("AppActivate: %i\n", fActive);
+
+	Key_ClearStates();	// FIXME!!!
+
+	// we don't want to act like we're active if we're minimized
+	ActiveApp = fActive && !Minimized;
+
+	// minimize/restore mouse-capture on demand
+	IN_Activate(ActiveApp);
+	CDAudio_Activate(ActiveApp);
+	SNDDMA_Activate();
+}
 
 //==========================================================================
 //

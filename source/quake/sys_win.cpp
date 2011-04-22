@@ -30,10 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define MAX_NUM_ARGVS	50
 
-int			starttime;
-qboolean	ActiveApp, Minimized;
-qboolean	WinNT;
-
 qboolean			isDedicated;
 
 static HANDLE	tevent;
@@ -198,7 +194,6 @@ void SleepUntilInput (int time)
 WinMain
 ==================
 */
-int			global_nCmdShow;
 char		*argv[MAX_NUM_ARGVS];
 static char	*empty_string = "";
 
@@ -217,7 +212,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         return 0;
 
 	global_hInstance = hInstance;
-	global_nCmdShow = nCmdShow;
 
 	Sys_CreateConsole("Quake Console");
 

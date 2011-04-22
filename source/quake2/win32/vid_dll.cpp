@@ -25,80 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "..\client\client.h"
 #include "../ref_gl/gl_local.h"
-#include "winquake.h"
-
-QCvar *win_noalttab;
-
-#ifndef WM_MOUSEWHEEL
-#define WM_MOUSEWHEEL (WM_MOUSELAST+1)  // message that will be supported by the OS 
-#endif
-
-// Console variables that we need to access from this module
-QCvar		*vid_xpos;			// X coordinate of window position
-QCvar		*vid_ypos;			// Y coordinate of window position
-
-static qboolean s_alttab_disabled;
-
-/*
-** WIN32 helper functions
-*/
-static void WIN_DisableAltTab( void )
-{
-	if ( s_alttab_disabled )
-		return;
-
-	RegisterHotKey( 0, 0, MOD_ALT, VK_TAB );
-	RegisterHotKey( 0, 1, MOD_ALT, VK_RETURN );
-	s_alttab_disabled = true;
-}
-
-static void WIN_EnableAltTab( void )
-{
-	if ( s_alttab_disabled )
-	{
-		UnregisterHotKey( 0, 0 );
-		UnregisterHotKey( 0, 1 );
-
-		s_alttab_disabled = false;
-	}
-}
-
-//==========================================================================
-
-void AppActivate(BOOL fActive, BOOL minimize)
-{
-	Minimized = minimize;
-
-	Key_ClearStates();
-
-	// we don't want to act like we're active if we're minimized
-	if (fActive && !Minimized)
-		ActiveApp = true;
-	else
-		ActiveApp = false;
-
-	// minimize/restore mouse-capture on demand
-	if (!ActiveApp)
-	{
-		IN_Activate (false);
-		CDAudio_Activate (false);
-
-		if ( win_noalttab->value )
-		{
-			WIN_EnableAltTab();
-		}
-	}
-	else
-	{
-		IN_Activate (true);
-		CDAudio_Activate (true);
-		SNDDMA_Activate();
-		if ( win_noalttab->value )
-		{
-			WIN_DisableAltTab();
-		}
-	}
-}
+#include "../../client/windows_shared.h"
 
 /*
 ====================
@@ -250,18 +177,6 @@ update the rendering DLL and/or video mode to match.
 void VID_CheckChanges (void)
 {
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
-	if ( win_noalttab->modified )
-	{
-		if ( win_noalttab->value )
-		{
-			WIN_DisableAltTab();
-		}
-		else
-		{
-			WIN_EnableAltTab();
-		}
-		win_noalttab->modified = false;
-	}
 
 	if ( vid_ref->modified )
 	{
@@ -307,7 +222,6 @@ void VID_Init (void)
 	/* Create the video variables so we know how to start the graphics drivers */
 	vid_xpos = Cvar_Get ("vid_xpos", "3", CVAR_ARCHIVE);
 	vid_ypos = Cvar_Get ("vid_ypos", "22", CVAR_ARCHIVE);
-	win_noalttab = Cvar_Get( "win_noalttab", "0", CVAR_ARCHIVE );
 
 	/* Add some console commands that we want to handle */
 	Cmd_AddCommand ("vid_restart", VID_Restart_f);

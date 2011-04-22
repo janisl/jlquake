@@ -25,32 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "resource.h"
 #include <commctrl.h>
 
-#define MAX_MODE_LIST	30
-#define VID_ROW_SIZE	3
-#define BASEWIDTH		320
-#define BASEHEIGHT		200
-
-#define MODE_WINDOWED			0
-#define NO_MODE					(MODE_WINDOWED - 1)
-#define MODE_FULLSCREEN_DEFAULT	(MODE_WINDOWED + 1)
-
 qboolean		scr_skipupdate;
 
-static qboolean	vid_initialized = false;
-static qboolean	windowed;
-static qboolean vid_canalttab = false;
-static qboolean vid_wassuspended = false;
-
-unsigned char	vid_curpal[256*3];
-
 static float vid_gamma = 1.0;
-
-glvert_t glv;
-
-HWND WINAPI InitializeWindow (HINSTANCE hInstance, int nCmdShow);
-
-void AppActivate(BOOL fActive, BOOL minimize);
-void ClearAllStates (void);
 
 //====================================
 
@@ -85,11 +62,6 @@ int VID_SetMode(unsigned char *palette)
 
 	VID_SetPalette (palette);
 
-	// fix the leftover Alt from any Alt-Tab or the like that switched us away
-	ClearAllStates ();
-
-	VID_SetPalette (palette);
-
 	vid.recalc_refdef = 1;
 
 	return true;
@@ -109,16 +81,11 @@ void VID_SetDefaultMode (void)
 
 void	VID_Shutdown (void)
 {
-	if (vid_initialized)
-	{
-		vid_canalttab = false;
+	GLimp_Shutdown();
 
-		GLimp_Shutdown();
+	QGL_Shutdown();
 
-		QGL_Shutdown();
-
-		AppActivate(false, false);
-	}
+	AppActivate(false, false);
 }
 
 
@@ -129,69 +96,6 @@ MAIN WINDOW
 
 ===================================================================
 */
-
-/*
-================
-ClearAllStates
-================
-*/
-void ClearAllStates (void)
-{
-	int		i;
-	
-// send an up event for each key, to make sure the server clears them all
-	for (i=0 ; i<256 ; i++)
-	{
-		Key_Event (i, false);
-	}
-
-	Key_ClearStates ();
-}
-
-void AppActivate(BOOL fActive, BOOL minimize)
-/****************************************************************************
-*
-* Function:     AppActivate
-* Parameters:   fActive - True if app is activating
-*
-* Description:  If the application is activating, then swap the system
-*               into SYSPAL_NOSTATIC mode so that our palettes will display
-*               correctly.
-*
-****************************************************************************/
-{
-	MSG msg;
-    HDC			hdc;
-    int			i, t;
-
-	ActiveApp = fActive;
-	Minimized = minimize;
-
-	if (fActive)
-	{
-		IN_Activate(true);
-		if (cdsFullscreen)
-		{
-			if (vid_canalttab && vid_wassuspended) {
-				vid_wassuspended = false;
-				ShowWindow(GMainWindow, SW_SHOWNORMAL);
-			}
-		}
-	}
-
-	if (!fActive)
-	{
-		IN_Activate(false);
-		if (cdsFullscreen)
-		{
-			if (vid_canalttab) { 
-				ChangeDisplaySettings (NULL, 0);
-				vid_wassuspended = true;
-			}
-		}
-	}
-}
-
 
 /* main window procedure */
 LONG WINAPI MainWndProc (
@@ -241,10 +145,6 @@ LONG WINAPI MainWndProc (
 			fActive = LOWORD(wParam);
 			fMinimized = (BOOL) HIWORD(wParam);
 			AppActivate(!(fActive == WA_INACTIVE), fMinimized);
-
-		// fix the leftover Alt from any Alt-Tab or the like that switched us away
-			ClearAllStates ();
-
 			break;
 
    	    case WM_DESTROY:
@@ -304,8 +204,6 @@ void	VID_Init (unsigned char *palette)
 {
 	R_SharedRegister();
 
-	vid_initialized = true;
-
 	int i;
 	if ((i = COM_CheckParm("-conwidth")) != 0)
 		vid.conwidth = QStr::Atoi(COM_Argv(i+1));
@@ -335,6 +233,4 @@ void	VID_Init (unsigned char *palette)
 	VID_SetMode(palette);
 
 	GL_Init ();
-
-	vid_canalttab = true;
 }

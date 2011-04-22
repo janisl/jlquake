@@ -27,4 +27,7 @@
 #include "input_keycodes.h"
 #include "input_public.h"
 
+//	Called by Windows driver.
+void Key_ClearStates();
+
 #endif

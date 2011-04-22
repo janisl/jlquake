@@ -20,17 +20,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // sys_win.h
 
 #include "../qcommon/qcommon.h"
-#include "winquake.h"
+#include "../../core/system_windows.h"
+#ifndef DEDICATED_ONLY
+#include "../../client/windows_shared.h"
+#endif
 #include <direct.h>
+#include <dsound.h>
 
 #define MINIMUM_WIN_MEMORY	0x0a00000
 #define MAXIMUM_WIN_MEMORY	0x1000000
 
 //#define DEMO
-
-int			starttime;
-int			ActiveApp;
-qboolean	Minimized;
 
 unsigned	sys_frame_time;
 
@@ -429,8 +429,9 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
     /* main window message loop */
 	while (1)
 	{
-		// if at a full screen console, don't update unless needed
-		if (Minimized || (com_dedicated && com_dedicated->value) )
+#ifndef DEDICATED_ONLY
+		if (Minimized || (com_dedicated && com_dedicated->value))
+#endif
 		{
 			Sleep (1);
 		}

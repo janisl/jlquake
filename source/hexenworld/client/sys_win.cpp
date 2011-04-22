@@ -11,10 +11,6 @@
 
 #define MAX_NUM_ARGVS	50
 
-int		starttime;
-int		ActiveApp;
-int		Minimized;
-
 HANDLE		qwclsemaphore;
 
 /*
@@ -139,7 +135,6 @@ void Sys_SendKeyEvents (void)
 WinMain
 ==================
 */
-int			global_nCmdShow;
 char		*argv[MAX_NUM_ARGVS];
 static char	*empty_string = "";
 
@@ -158,7 +153,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
         return 0;
 
 	global_hInstance = hInstance;
-	global_nCmdShow = nCmdShow;
 
 	lpBuffer.dwLength = sizeof(MEMORYSTATUS);
 	GlobalMemoryStatus (&lpBuffer);

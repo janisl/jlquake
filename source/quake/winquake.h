@@ -19,18 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // winquake.h: Win32-specific Quake header file
 
-#pragma warning( disable : 4229 )  // mgraph gets this
-
-#define WM_MOUSEWHEEL                   0x020A
-
 #include "../client/windows_shared.h"
-
-#ifndef SERVERONLY
-#include <ddraw.h>
-#include <dsound.h>
-#endif
-
-extern	int			global_nCmdShow;
 
 #ifndef SERVERONLY
 
@@ -38,10 +27,6 @@ void	VID_LockBuffer (void);
 void	VID_UnlockBuffer (void);
 
 #endif
-
-typedef enum {MS_WINDOWED, MS_FULLSCREEN, MS_FULLDIB, MS_UNINIT} modestate_t;
-
-extern qboolean		ActiveApp, Minimized;
 
 int VID_ForceUnlockedAndReturnState (void);
 void VID_ForceLockState (int lk);

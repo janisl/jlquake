@@ -42,15 +42,6 @@ void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean a
 int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha);
 int GL_FindTexture (char *identifier);
 
-typedef struct
-{
-	float	x, y, z;
-	float	s, t;
-	float	r, g, b;
-} glvert_t;
-
-extern glvert_t glv;
-
 extern	int glx, gly, glwidth, glheight;
 
 // r_local.h -- private refresh defs

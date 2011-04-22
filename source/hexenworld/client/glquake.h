@@ -31,15 +31,6 @@ int GL_FindTexture (char *identifier);
 
 typedef struct
 {
-	float	x, y, z;
-	float	s, t;
-	float	r, g, b;
-} glvert_t;
-
-extern glvert_t glv;
-
-typedef struct
-{
 	int		texnum;
 	float	sl, tl, sh, th;
 } glpic_t;

@@ -41,11 +41,6 @@ LONG WINAPI MainWndProc (
 
 typedef struct
 {
-	HINSTANCE		reflib_library;		// Handle to refresh DLL 
-	qboolean		reflib_active;
-
-	qboolean		activeApp;
-	qboolean		isMinimized;
 	OSVERSIONINFO	osversion;
 } WinVars_t;
 

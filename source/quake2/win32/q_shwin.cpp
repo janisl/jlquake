@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "../qcommon/qcommon.h"
-#include "winquake.h"
+#include "../../client/windows_shared.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>

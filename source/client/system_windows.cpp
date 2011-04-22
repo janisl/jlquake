@@ -37,6 +37,8 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 HWND			GMainWindow;
+bool			Minimized;
+bool			ActiveApp;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

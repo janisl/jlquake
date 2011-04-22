@@ -23,87 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../client/client.h"
 #include "win_local.h"
 
-#ifndef WM_MOUSEWHEEL
-#define WM_MOUSEWHEEL (WM_MOUSELAST+1)  // message that will be supported by the OS 
-#endif
-
 // Console variables that we need to access from this module
-QCvar		*vid_xpos;			// X coordinate of window position
-QCvar		*vid_ypos;			// Y coordinate of window position
 extern QCvar		*r_fullscreen;
-
-static qboolean s_alttab_disabled;
-
-static void WIN_DisableAltTab( void )
-{
-	if ( s_alttab_disabled )
-		return;
-
-	if ( !QStr::ICmp( Cvar_VariableString( "arch" ), "winnt" ) )
-	{
-		RegisterHotKey( 0, 0, MOD_ALT, VK_TAB );
-	}
-	else
-	{
-		BOOL old;
-
-		SystemParametersInfo( SPI_SCREENSAVERRUNNING, 1, &old, 0 );
-	}
-	s_alttab_disabled = qtrue;
-}
-
-static void WIN_EnableAltTab( void )
-{
-	if ( s_alttab_disabled )
-	{
-		if ( !QStr::ICmp( Cvar_VariableString( "arch" ), "winnt" ) )
-		{
-			UnregisterHotKey( 0, 0 );
-		}
-		else
-		{
-			BOOL old;
-
-			SystemParametersInfo( SPI_SCREENSAVERRUNNING, 0, &old, 0 );
-		}
-
-		s_alttab_disabled = qfalse;
-	}
-}
-
-/*
-==================
-VID_AppActivate
-==================
-*/
-static void VID_AppActivate(BOOL fActive, BOOL minimize)
-{
-	g_wv.isMinimized = minimize;
-
-	Com_DPrintf("VID_AppActivate: %i\n", fActive );
-
-	Key_ClearStates();	// FIXME!!!
-
-	// we don't want to act like we're active if we're minimized
-	if (fActive && !g_wv.isMinimized )
-	{
-		g_wv.activeApp = qtrue;
-	}
-	else
-	{
-		g_wv.activeApp = qfalse;
-	}
-
-	// minimize/restore mouse-capture on demand
-	if (!g_wv.activeApp )
-	{
-		IN_Activate (qfalse);
-	}
-	else
-	{
-		IN_Activate (qtrue);
-	}
-}
 
 /*
 ====================
@@ -138,20 +59,6 @@ LONG WINAPI MainWndProc (
 		}
 
 		break;
-#if 0
-	case WM_DISPLAYCHANGE:
-		Com_DPrintf( "WM_DISPLAYCHANGE\n" );
-		// we need to force a vid_restart if the user has changed
-		// their desktop resolution while the game is running,
-		// but don't do anything if the message is a result of
-		// our own calling of ChangeDisplaySettings
-		if ( com_insideVidInit ) {
-			break;		// we did this on purpose
-		}
-		// something else forced a mode change, so restart all our gl stuff
-		Cbuf_AddText( "vid_restart\n" );
-		break;
-#endif
 	case WM_DESTROY:
 		// let sound and input know about this?
 		GMainWindow = NULL;
@@ -172,8 +79,7 @@ LONG WINAPI MainWndProc (
 			fActive = LOWORD(wParam);
 			fMinimized = (BOOL) HIWORD(wParam);
 
-			VID_AppActivate( fActive != WA_INACTIVE, fMinimized);
-			SNDDMA_Activate();
+			AppActivate( fActive != WA_INACTIVE, fMinimized);
 		}
 		break;
 
@@ -200,7 +106,7 @@ LONG WINAPI MainWndProc (
 				Cvar_SetValue( "vid_ypos", yPos + r.top);
 				vid_xpos->modified = qfalse;
 				vid_ypos->modified = qfalse;
-				if ( g_wv.activeApp )
+				if ( ActiveApp )
 				{
 					IN_Activate (qtrue);
 				}

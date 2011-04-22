@@ -10,10 +10,6 @@
 
 qboolean		scr_skipupdate;
 
-static qboolean	windowed;
-
-void AppActivate(BOOL fActive, BOOL minimize);
-void ClearAllStates (void);
 void GL_Init (void);
 
 //====================================
@@ -46,11 +42,6 @@ int VID_SetMode(unsigned char *palette)
 
 	CDAudio_Resume ();
 	scr_disabled_for_loading = temp;
-
-	VID_SetPalette (palette);
-
-	// fix the leftover Alt from any Alt-Tab or the like that switched us away
-	ClearAllStates ();
 
 	VID_SetPalette (palette);
 
@@ -95,54 +86,6 @@ MAIN WINDOW
 ===================================================================
 */
 
-/*
-================
-ClearAllStates
-================
-*/
-void ClearAllStates (void)
-{
-	int		i;
-	
-// send an up event for each key, to make sure the server clears them all
-	for (i=0 ; i<256 ; i++)
-	{
-		Key_Event (i, false);
-	}
-
-	Key_ClearStates ();
-}
-
-void AppActivate(BOOL fActive, BOOL minimize)
-/****************************************************************************
-*
-* Function:     AppActivate
-* Parameters:   fActive - True if app is activating
-*
-* Description:  If the application is activating, then swap the system
-*               into SYSPAL_NOSTATIC mode so that our palettes will display
-*               correctly.
-*
-****************************************************************************/
-{
-    HDC			hdc;
-    int			i, t;
-
-	ActiveApp = fActive;
-	Minimized = minimize;
-
-	if (fActive)
-	{
-		IN_Activate(true);
-	}
-
-	if (!fActive)
-	{
-		IN_Activate(false);
-	}
-}
-
-
 /* main window procedure */
 LONG WINAPI MainWndProc (
     HWND    hWnd,
@@ -186,10 +129,6 @@ LONG WINAPI MainWndProc (
 			fActive = LOWORD(wParam);
 			fMinimized = (BOOL) HIWORD(wParam);
 			AppActivate(!(fActive == WA_INACTIVE), fMinimized);
-
-		// fix the leftover Alt from any Alt-Tab or the like that switched us away
-			ClearAllStates ();
-
 			break;
 
    	    case WM_DESTROY:

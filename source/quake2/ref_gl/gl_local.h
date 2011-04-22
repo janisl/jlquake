@@ -100,14 +100,6 @@ void GL_UpdateSwapInterval( void );
 
 extern	float	gldepthmin, gldepthmax;
 
-typedef struct
-{
-	float	x, y, z;
-	float	s, t;
-	float	r, g, b;
-} glvert_t;
-
-
 #define	MAX_LBM_HEIGHT		480
 
 #define BACKFACE_EPSILON	0.01
