@@ -337,10 +337,6 @@
 				>
 			</File>
 			<File
-				RelativePath="win32\vid_dll.cpp"
-				>
-			</File>
-			<File
 				RelativePath="client\x86.cpp"
 				>
 			</File>
@@ -476,14 +472,6 @@
 			</File>
 			<File
 				RelativePath=".\ref_gl\gl_warp.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\win32\glw_imp.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\win32\glw_win.h"
 				>
 			</File>
 			<File

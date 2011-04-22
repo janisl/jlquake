@@ -370,3 +370,83 @@ void VID_Shutdown (void)
 		VID_FreeReflib ();
 	}
 }
+
+/*
+** GLimp_SetMode
+*/
+int GLimp_SetMode(int mode, qboolean fullscreen)
+{
+	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
+
+	// destroy the existing window
+	GLimp_Shutdown ();
+
+	return GLW_SetMode(mode, r_colorbits->integer, fullscreen);
+}
+
+/*
+** GLimp_EndFrame
+** 
+** Responsible for doing a swapbuffers and possibly for other stuff
+** as yet to be determined.  Probably better not to make this a GLimp
+** function and instead do a call to GLimp_SwapBuffers.
+*/
+void GLimp_EndFrame (void)
+{
+	int err = qglGetError();
+	qassert(err == GL_NO_ERROR);
+
+	if (QStr::ICmp(gl_drawbuffer->string, "GL_BACK") == 0)
+	{
+		GLimp_SwapBuffers();
+	}
+}
+
+/*
+============
+VID_CheckChanges
+
+This function gets called once just before drawing each frame, and it's sole purpose in life
+is to check to see if any of the video mode parameters have changed, and if they have to 
+update the rendering DLL and/or video mode to match.
+============
+*/
+void VID_CheckChanges (void)
+{
+	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
+
+	if ( vid_ref->modified )
+	{
+		cl.force_refdef = true;		// can't use a paused refdef
+		S_StopAllSounds();
+		/*
+		** refresh has changed
+		*/
+		vid_ref->modified = false;
+		//FIXME
+		if (r_fullscreen)
+			r_fullscreen->modified = true;
+		cl.refresh_prepped = false;
+		cls.disable_screen = true;
+
+		if (!VID_LoadRefresh())
+		{
+			Com_Error(ERR_FATAL, "Couldn't init refresh!");
+		}
+		cls.disable_screen = false;
+	}
+}
+
+/*
+============
+VID_Init
+============
+*/
+void VID_Init (void)
+{
+	/* Add some console commands that we want to handle */
+	Cmd_AddCommand ("vid_restart", VID_Restart_f);
+
+	/* Start the graphics mode and load refresh DLL */
+	VID_CheckChanges();
+}
