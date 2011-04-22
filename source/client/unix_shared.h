@@ -33,7 +33,6 @@
 
 extern Display*		dpy;
 extern Window		win;
-extern GLXContext	ctx;
 
 extern QCvar*		in_dgamouse; // user pref for dga mouse
 extern QCvar*		in_nograb; // this is strictly for developers

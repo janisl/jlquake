@@ -42,12 +42,13 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+Display*				dpy = NULL;
+Window					win;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-Display*				dpy = NULL;
-static int				scrnum;
-Window					win;
-GLXContext				ctx = NULL;
+static int						scrnum;
+static GLXContext				ctx = NULL;
 
 static XF86VidModeModeInfo**	vidmodes;
 static int						num_vidmodes;
