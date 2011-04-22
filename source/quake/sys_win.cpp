@@ -80,13 +80,6 @@ void Sys_Error (char *error, ...)
 	char		text[1024];
 	static int	in_sys_error0 = 0;
 	static int	in_sys_error1 = 0;
-	static int	in_sys_error3 = 0;
-
-	if (!in_sys_error3)
-	{
-		in_sys_error3 = 1;
-		VID_ForceUnlockedAndReturnState ();
-	}
 
 	va_start (argptr, error);
 	Q_vsnprintf(text, 1024, error, argptr);
@@ -129,9 +122,6 @@ void Sys_Error (char *error, ...)
 
 void Sys_Quit (void)
 {
-
-	VID_ForceUnlockedAndReturnState ();
-
 	Host_Shutdown();
 
 	if (tevent)

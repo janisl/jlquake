@@ -21,14 +21,4 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../client/windows_shared.h"
 
-#ifndef SERVERONLY
-
-void	VID_LockBuffer (void);
-void	VID_UnlockBuffer (void);
-
-#endif
-
-int VID_ForceUnlockedAndReturnState (void);
-void VID_ForceLockState (int lk);
-
 void VID_SetDefaultMode (void);

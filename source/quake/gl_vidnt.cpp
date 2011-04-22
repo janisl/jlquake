@@ -27,32 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 qboolean		scr_skipupdate;
 
-void VID_UpdateWindowStatus (void);
-
 //====================================
-
-// direct draw software compatability stuff
-
-void VID_HandlePause (qboolean pause)
-{
-}
-
-void VID_ForceLockState (int lk)
-{
-}
-
-void VID_LockBuffer (void)
-{
-}
-
-void VID_UnlockBuffer (void)
-{
-}
-
-int VID_ForceUnlockedAndReturnState (void)
-{
-	return 0;
-}
 
 int VID_SetMode(unsigned char *palette)
 {
@@ -80,8 +55,6 @@ int VID_SetMode(unsigned char *palette)
 
 	IN_Activate(true);
 
-	VID_UpdateWindowStatus ();
-
 	CDAudio_Resume ();
 	scr_disabled_for_loading = temp;
 
@@ -91,19 +64,6 @@ int VID_SetMode(unsigned char *palette)
 
 	return true;
 }
-
-
-/*
-================
-VID_UpdateWindowStatus
-================
-*/
-void VID_UpdateWindowStatus (void)
-{
-}
-
-
-//====================================
 
 void GL_EndRendering (void)
 {
@@ -161,7 +121,6 @@ LONG WINAPI MainWndProc (
 			break;
 
 		case WM_MOVE:
-			VID_UpdateWindowStatus ();
 			break;
 
 		case WM_SYSCHAR:
