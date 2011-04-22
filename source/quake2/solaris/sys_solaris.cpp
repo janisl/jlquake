@@ -24,8 +24,6 @@
 
 QCvar *nostdout;
 
-unsigned	sys_frame_time;
-
 void Sys_Quit (void)
 {
 	Sys_ConsoleInputShutdown();
@@ -143,12 +141,6 @@ void *Sys_GetGameAPI (void *parms)
 
 void Sys_AppActivate (void)
 {
-}
-
-void Sys_SendKeyEvents (void)
-{
-	// grab frame time 
-	sys_frame_time = Sys_Milliseconds_();
 }
 
 /*****************************************************************************/

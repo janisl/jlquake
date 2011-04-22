@@ -22,6 +22,9 @@
 #include "client.h"
 #include "render_local.h"
 #include "unix_shared.h"
+#include <X11/extensions/xf86vmode.h>
+#include <X11/extensions/Xxf86dga.h>
+#include <GL/glx.h>
 #include <pthread.h>
 
 // MACROS ------------------------------------------------------------------

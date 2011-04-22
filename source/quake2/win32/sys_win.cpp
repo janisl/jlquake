@@ -27,8 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <direct.h>
 #include <dsound.h>
 
-unsigned	sys_frame_time;
-
 #define	MAX_NUM_ARGVS	128
 int			argc;
 char		*argv[MAX_NUM_ARGVS];
@@ -114,9 +112,6 @@ void Sys_SendKeyEvents (void)
       	TranslateMessage (&msg);
       	DispatchMessage (&msg);
 	}
-
-	// grab frame time 
-	sys_frame_time = timeGetTime();	// FIXME: should this be at start?
 }
 
 

@@ -26,8 +26,6 @@
 
 QCvar *nostdout;
 
-unsigned	sys_frame_time;
-
 void Sys_Quit (void)
 {
 	Sys_ConsoleInputShutdown();

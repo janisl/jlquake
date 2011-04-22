@@ -46,10 +46,6 @@ void Sys_Quit (void)
 	exit (0);
 }
 
-void Sys_SendKeyEvents (void)
-{
-}
-
 /*
 ==================
 main

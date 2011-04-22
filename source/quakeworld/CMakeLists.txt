@@ -82,7 +82,6 @@ set(GLQWCL_OBJS
 	client/gl_rmisc.cpp
 	client/gl_rsurf.cpp
 	client/gl_screen.cpp
-	client/gl_vidlinuxglx.cpp
 	client/gl_warp.cpp
 )
 

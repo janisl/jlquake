@@ -5,9 +5,6 @@
 
 int	curtime;
 
-unsigned	sys_frame_time;
-
-
 void Sys_Error (char *error, ...)
 {
 	va_list		argptr;
@@ -33,10 +30,6 @@ void	Sys_UnloadGame (void)
 void	*Sys_GetGameAPI (void *parms)
 {
 	return NULL;
-}
-
-void Sys_SendKeyEvents (void)
-{
 }
 
 void Sys_AppActivate (void)

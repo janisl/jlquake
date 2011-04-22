@@ -44,7 +44,6 @@ set(QUAKE2_OBJS
 	linux/q_shlinux.cpp
 	linux/sys_linux.cpp
 	linux/glob.cpp
-	linux/gl_glx.cpp
 	ref_gl/gl_draw.cpp
 	ref_gl/gl_image.cpp
 	ref_gl/gl_light.cpp

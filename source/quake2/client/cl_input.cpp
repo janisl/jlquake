@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 QCvar	*cl_nodelta;
 
-extern	unsigned	sys_frame_time;
+unsigned	sys_frame_time;
 unsigned	frame_msec;
 unsigned	old_sys_frame_time;
 
@@ -418,6 +418,9 @@ CL_CreateCmd
 usercmd_t CL_CreateCmd (void)
 {
 	usercmd_t	cmd;
+
+	// grab frame time 
+	sys_frame_time = Sys_Milliseconds_();
 
 	frame_msec = sys_frame_time - old_sys_frame_time;
 	if (frame_msec < 1)

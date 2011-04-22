@@ -31,4 +31,6 @@ void IN_Init();
 void IN_Shutdown();
 void IN_Frame();
 
+void Sys_SendKeyEvents();
+
 extern int			in_keyCatchers;		// bit flags

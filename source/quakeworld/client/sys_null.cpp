@@ -33,10 +33,6 @@ void Sys_Sleep (void)
 {
 }
 
-void Sys_SendKeyEvents (void)
-{
-}
-
 //=============================================================================
 
 void main (int argc, char **argv)

@@ -22,9 +22,7 @@
 
 #include "../core/system_unix.h"
 
-#include <GL/glx.h>
-#include <X11/extensions/Xxf86dga.h>
-#include <X11/extensions/xf86vmode.h>
+#include <X11/Xlib.h>
 
 #define KEY_MASK	(KeyPressMask | KeyReleaseMask)
 #define MOUSE_MASK	(ButtonPressMask | ButtonReleaseMask | \
@@ -37,11 +35,9 @@ extern Window		win;
 extern QCvar*		in_dgamouse; // user pref for dga mouse
 extern QCvar*		in_nograb; // this is strictly for developers
 
-extern QCvar *  in_joystick;
+extern QCvar*		in_joystick;
 
 void IN_ActivateMouse();
 void IN_DeactivateMouse();
-void HandleEvents();
-void IN_JoyMove();
 
 #endif

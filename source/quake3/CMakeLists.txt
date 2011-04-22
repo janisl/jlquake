@@ -68,7 +68,6 @@ set(QUAKE3_FILES
 	renderer/tr_world.cpp
 	unix/unix_main.cpp
 	unix/unix_shared.cpp
-	unix/linux_glimp.cpp
 	unix/linux_signals.cpp
 )
 

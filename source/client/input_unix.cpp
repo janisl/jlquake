@@ -22,6 +22,8 @@
 #include "client.h"
 #include "render_local.h"
 #include "unix_shared.h"
+#include <X11/Xutil.h>
+#include <X11/extensions/Xxf86dga.h>
 #ifdef __linux__
 #include <linux/joystick.h>
 #include <fcntl.h>
@@ -697,11 +699,11 @@ static int Sys_XTimeToSysTime(unsigned long xtime)
 
 //==========================================================================
 //
-//	HandleEvents
+//	Sys_SendKeyEvents
 //
 //==========================================================================
 
-void HandleEvents()
+void Sys_SendKeyEvents()
 {
 	int t;
 	int key;
@@ -996,7 +998,7 @@ static void IN_StartupJoystick()
 //
 //==========================================================================
 
-void IN_JoyMove()
+static void IN_JoyMove()
 {
 	//	Store instantaneous joystick state. Hack to get around event model
 	// used in Linux joystick driver.
@@ -1099,7 +1101,7 @@ static void IN_StartupJoystick()
 //
 //==========================================================================
 
-void IN_JoyMove()
+static void IN_JoyMove()
 {
 }
 

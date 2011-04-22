@@ -40,10 +40,6 @@ void Sys_Quit (void)
 	exit (0);
 }
 
-void Sys_SendKeyEvents (void)
-{
-}
-
 //=============================================================================
 
 void main (int argc, char **argv)
