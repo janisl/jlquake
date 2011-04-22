@@ -91,6 +91,8 @@ void		QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int le
 qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, QMsg *net_message);
 void		NET_Sleep(int msec);
 
+qboolean	Sys_GetPacket ( netadr_t *net_from, QMsg *net_message );
+
 
 #define	MAX_MSGLEN				16384		// max length of a message, which may
 											// be fragmented into multiple packets
