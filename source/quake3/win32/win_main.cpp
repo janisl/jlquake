@@ -26,19 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/windows_shared.h"
 #include <direct.h>
 
-#define	CD_BASEDIR	"quake3"
-#define	CD_EXE		"quake3.exe"
-#define	CD_BASEDIR_LINUX	"bin\\x86\\glibc-2.1"
-#define	CD_EXE_LINUX "quake3"
 #define MEM_THRESHOLD 96*1024*1024
 
 static char		sys_cmdline[MAX_STRING_CHARS];
-
-typedef struct
-{
-	OSVERSIONINFO	osversion;
-} WinVars_t;
-WinVars_t	g_wv;
 
 /*
 ==================
@@ -119,58 +109,6 @@ void Sys_Quit( void ) {
 }
 
 //========================================================
-
-
-/*
-================
-Sys_ScanForCD
-
-Search all the drives to see if there is a valid CD to grab
-the cddir from
-================
-*/
-qboolean Sys_ScanForCD( void ) {
-	static char	cddir[MAX_OSPATH];
-	char		drive[4];
-	FILE		*f;
-	char		test[MAX_OSPATH];
-#if 0
-	// don't override a cdpath on the command line
-	if ( strstr( sys_cmdline, "cdpath" ) ) {
-		return;
-	}
-#endif
-
-	drive[0] = 'c';
-	drive[1] = ':';
-	drive[2] = '\\';
-	drive[3] = 0;
-
-	// scan the drives
-	for ( drive[0] = 'c' ; drive[0] <= 'z' ; drive[0]++ ) {
-		if ( GetDriveType (drive) != DRIVE_CDROM ) {
-			continue;
-		}
-
-		sprintf (cddir, "%s%s", drive, CD_BASEDIR);
-		sprintf (test, "%s\\%s", cddir, CD_EXE);
-		f = fopen( test, "r" );
-		if ( f ) {
-			fclose (f);
-			return qtrue;
-    } else {
-      sprintf(cddir, "%s%s", drive, CD_BASEDIR_LINUX);
-      sprintf(test, "%s\\%s", cddir, CD_EXE_LINUX);
-  		f = fopen( test, "r" );
-	  	if ( f ) {
-		  	fclose (f);
-			  return qtrue;
-      }
-    }
-	}
-
-	return qfalse;
-}
 
 /*
 ================
@@ -442,9 +380,6 @@ Called after the common systems (cvars, files, etc)
 are initialized
 ================
 */
-#define OSR2_BUILD_NUMBER 1111
-#define WIN98_BUILD_NUMBER 1998
-
 void Sys_Init( void ) {
 	int cpuid;
 
@@ -457,39 +392,16 @@ void Sys_Init( void ) {
 #endif
 	Cmd_AddCommand ("net_restart", Sys_Net_Restart_f);
 
-	g_wv.osversion.dwOSVersionInfoSize = sizeof( g_wv.osversion );
+	OSVERSIONINFO osversion;
+	osversion.dwOSVersionInfoSize = sizeof(osversion);
 
-	if (!GetVersionEx (&g_wv.osversion))
+	if (!GetVersionEx (&osversion))
 		Sys_Error ("Couldn't get OS info");
 
-	if (g_wv.osversion.dwMajorVersion < 4)
-		Sys_Error ("Quake3 requires Windows version 4 or greater");
-	if (g_wv.osversion.dwPlatformId == VER_PLATFORM_WIN32s)
-		Sys_Error ("Quake3 doesn't run on Win32s");
+	if (osversion.dwMajorVersion < 5)
+		Sys_Error ("Quake3 requires Windows version 5 or greater");
 
-	if ( g_wv.osversion.dwPlatformId == VER_PLATFORM_WIN32_NT )
-	{
-		Cvar_Set( "arch", "winnt" );
-	}
-	else if ( g_wv.osversion.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS )
-	{
-		if ( LOWORD( g_wv.osversion.dwBuildNumber ) >= WIN98_BUILD_NUMBER )
-		{
-			Cvar_Set( "arch", "win98" );
-		}
-		else if ( LOWORD( g_wv.osversion.dwBuildNumber ) >= OSR2_BUILD_NUMBER )
-		{
-			Cvar_Set( "arch", "win95 osr2.x" );
-		}
-		else
-		{
-			Cvar_Set( "arch", "win95" );
-		}
-	}
-	else
-	{
-		Cvar_Set( "arch", "unknown Windows variant" );
-	}
+	Cvar_Set("arch", "winnt");
 
 	//
 	// figure out our CPU
@@ -603,10 +515,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	// get the initial time base
 	Sys_Milliseconds();
-#if 0
-	// if we find the CD, add a +set cddir xxx command line
-	Sys_ScanForCD();
-#endif
 
 	Com_Init( sys_cmdline );
 	NET_Init();

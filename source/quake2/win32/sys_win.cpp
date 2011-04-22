@@ -27,13 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <direct.h>
 #include <dsound.h>
 
-#define MINIMUM_WIN_MEMORY	0x0a00000
-#define MAXIMUM_WIN_MEMORY	0x1000000
-
-//#define DEMO
-
 unsigned	sys_frame_time;
-
 
 #define	MAX_NUM_ARGVS	128
 int			argc;
@@ -47,7 +41,6 @@ SYSTEM IO
 
 ===============================================================================
 */
-
 
 void Sys_Error (char *error, ...)
 {
@@ -91,59 +84,6 @@ void Sys_Quit (void)
 }
 
 //================================================================
-
-
-/*
-================
-Sys_ScanForCD
-
-================
-*/
-char *Sys_ScanForCD (void)
-{
-	static char	cddir[MAX_OSPATH];
-	static qboolean	done;
-#ifndef DEMO
-	char		drive[4];
-	FILE		*f;
-	char		test[MAX_QPATH];
-
-	if (done)		// don't re-check
-		return cddir;
-
-	// no abort/retry/fail errors
-	SetErrorMode (SEM_FAILCRITICALERRORS);
-
-	drive[0] = 'c';
-	drive[1] = ':';
-	drive[2] = '\\';
-	drive[3] = 0;
-
-	done = true;
-
-	// scan the drives
-	for (drive[0] = 'c' ; drive[0] <= 'z' ; drive[0]++)
-	{
-		// where activision put the stuff...
-		sprintf (cddir, "%sinstall\\data", drive);
-		sprintf (test, "%sinstall\\data\\quake2.exe", drive);
-		f = fopen(test, "r");
-		if (f)
-		{
-			fclose (f);
-			if (GetDriveType (drive) == DRIVE_CDROM)
-				return cddir;
-		}
-	}
-#endif
-
-	cddir[0] = 0;
-	
-	return NULL;
-}
-
-//================================================================
-
 
 /*
 ================
@@ -393,7 +333,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 {
     MSG				msg;
 	int				time, oldtime, newtime;
-	char			*cddir;
 
     /* previous instances do not exist in Win32 */
     if (hPrevInstance)
@@ -404,24 +343,6 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	Sys_CreateConsole("Quake 2 Console");
 
 	ParseCommandLine (lpCmdLine);
-
-	// if we find the CD, add a +set cddir xxx command line
-	cddir = Sys_ScanForCD ();
-	if (cddir && argc < MAX_NUM_ARGVS - 3)
-	{
-		int		i;
-
-		// don't override a cddir on the command line
-		for (i=0 ; i<argc ; i++)
-			if (!QStr::Cmp(argv[i], "cddir"))
-				break;
-		if (i == argc)
-		{
-			argv[argc++] = "+set";
-			argv[argc++] = "cddir";
-			argv[argc++] = cddir;
-		}
-	}
 
 	Qcommon_Init (argc, argv);
 	oldtime = Sys_Milliseconds_ ();
