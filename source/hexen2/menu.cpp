@@ -163,7 +163,7 @@ void M_DrawCharacter (int cx, int line, int num)
 	Draw_Character ( cx + ((vid.width - 320)>>1), line, num);
 }
 
-void M_Print (int cx, int cy, char *str)
+void M_Print (int cx, int cy, const char *str)
 {
 	while (*str)
 	{
@@ -2155,7 +2155,7 @@ void M_Keys_Draw (void)
 {
 	int		i, l;
 	int		keys[2];
-	char	*name;
+	const char	*name;
 	int		x, y;
 	qpic_t	*p;
 

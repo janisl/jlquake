@@ -1,4 +1,5 @@
 set(CLIENT_FILES
+	input_keys.cpp
 	input_main.cpp
 	input_unix.cpp
 	render_driver_glx.cpp

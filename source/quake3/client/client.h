@@ -409,7 +409,7 @@ void IN_CenterView (void);
 void CL_VerifyCode( void );
 
 float CL_KeyState (kbutton_t *key);
-char *Key_KeynumToString (int keynum);
+const char *Key_KeynumToString (int keynum);
 
 //
 // cl_parse.c

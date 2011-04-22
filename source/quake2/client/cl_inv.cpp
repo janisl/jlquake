@@ -71,7 +71,7 @@ void CL_DrawInventory (void)
 	char	string[1024];
 	int		x, y;
 	char	binding[1024];
-	char	*bind;
+	const char	*bind;
 	int		selected;
 	int		top;
 
