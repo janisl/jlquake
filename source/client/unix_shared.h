@@ -32,14 +32,11 @@
 #define X_MASK		(KEY_MASK | MOUSE_MASK | VisibilityChangeMask | StructureNotifyMask )
 
 extern Display*		dpy;
-extern int			scrnum;
 extern Window		win;
 extern GLXContext	ctx;
 
 extern QCvar*		in_dgamouse; // user pref for dga mouse
 extern QCvar*		in_nograb; // this is strictly for developers
-
-extern bool			vidmode_active;
 
 extern QCvar *  in_joystick;
 

@@ -76,7 +76,7 @@ void GLimp_EndFrame (void)
   // don't flip if drawing to front buffer
   if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
   {
-    glXSwapBuffers(dpy, win);
+	GLimp_SwapBuffers();
   }
 
   // check logging

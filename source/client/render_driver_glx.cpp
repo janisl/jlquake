@@ -44,13 +44,13 @@
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 Display*				dpy = NULL;
-int						scrnum;
+static int				scrnum;
 Window					win;
 GLXContext				ctx = NULL;
 
 static XF86VidModeModeInfo**	vidmodes;
 static int						num_vidmodes;
-bool					vidmode_active = false;
+static bool						vidmode_active = false;
 static bool						vidmode_ext = false;
 static int						vidmode_MajorVersion = 0; // major and minor of XF86VidExtensions
 static int						vidmode_MinorVersion = 0;
@@ -556,4 +556,15 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 	gamma.green = g;
 	gamma.blue = g;
 	XF86VidModeSetGamma(dpy, scrnum, &gamma);
+}
+
+//==========================================================================
+//
+//	GLimp_SwapBuffers
+//
+//==========================================================================
+
+void GLimp_SwapBuffers()
+{
+    glXSwapBuffers(dpy, win);
 }

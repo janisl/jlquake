@@ -51,7 +51,7 @@ void VID_Shutdown(void)
 void GL_EndRendering (void)
 {
 	qglFlush();
-	glXSwapBuffers(dpy, win);
+	GLimp_SwapBuffers();
 }
 
 void Check_Gamma (unsigned char *pal);

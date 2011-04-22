@@ -67,6 +67,7 @@ void* GLimp_GetProcAddress(const char* Name);
 // NOTE TTimo linux works with float gamma value, not the gamma table
 //   the params won't be used, getting the r_gamma cvar directly
 void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned char blue[256]);
+void GLimp_SwapBuffers();
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);

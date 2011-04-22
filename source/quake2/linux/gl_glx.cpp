@@ -51,7 +51,7 @@ int GLimp_SetMode(int mode, qboolean fullscreen )
 void GLimp_EndFrame (void)
 {
 	qglFlush();
-	glXSwapBuffers( dpy, win );
+	GLimp_SwapBuffers();
 }
 
 void Sys_SendKeyEvents (void)
