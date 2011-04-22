@@ -94,7 +94,6 @@ QCvar	*gl_ext_multitexture;
 QCvar	*gl_ext_pointparameters;
 QCvar	*gl_ext_compiled_vertex_array;
 
-QCvar	*gl_bitdepth;
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
 QCvar	*gl_lightmap;
@@ -925,7 +924,6 @@ void R_Register( void )
 	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
 	gl_modulate = Cvar_Get ("gl_modulate", "1", CVAR_ARCHIVE );
-	gl_bitdepth = Cvar_Get( "gl_bitdepth", "0", 0 );
 	gl_lightmap = Cvar_Get ("gl_lightmap", "0", 0);
 	gl_shadows = Cvar_Get ("gl_shadows", "0", CVAR_ARCHIVE );
 	gl_dynamic = Cvar_Get ("gl_dynamic", "1", 0);

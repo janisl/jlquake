@@ -46,7 +46,7 @@ int GLimp_SetMode(int mode, qboolean fullscreen)
 		GLimp_Shutdown ();
 	}
 
-	return GLW_SetMode(mode, gl_bitdepth->integer, fullscreen);
+	return GLW_SetMode(mode, r_colorbits->integer, fullscreen);
 }
 
 /*
