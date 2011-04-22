@@ -577,3 +577,50 @@ void D_ShowLoadingSize(void)
 
 	qglDrawBuffer  (GL_BACK);
 }
+
+void VID_Init(unsigned char *palette)
+{
+	R_SharedRegister();
+
+	if (GLW_SetMode(r_mode->integer, r_colorbits->integer, !!r_fullscreen->integer) != RSERR_OK)
+	{
+		Sys_Error("Couldn't initialise OpenGL");
+	}
+
+	VID_SetPalette(palette);
+
+	GL_Init();
+
+	Sys_ShowConsole(0, false);
+
+	if (COM_CheckParm("-scale2d"))
+	{
+		vid.height = vid.conheight = 200;
+		vid.width = vid.conwidth = 320;
+	}
+	else
+	{
+		vid.height = vid.conheight = glConfig.vidHeight;
+		vid.width = vid.conwidth = glConfig.vidWidth;
+	}
+	vid.numpages = 2;
+
+	vid.recalc_refdef = 1;
+
+	vid.colormap = host_colormap;
+
+	vid_initialized = true;
+}
+
+void VID_Shutdown(void)
+{
+	GLimp_Shutdown();
+
+	// shutdown QGL subsystem
+	QGL_Shutdown();
+}
+
+void GL_EndRendering (void)
+{
+	GLimp_SwapBuffers();
+}
