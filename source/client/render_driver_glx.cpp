@@ -99,11 +99,11 @@ static int qXErrorHandler(Display* dpy, XErrorEvent* ev)
 
 //==========================================================================
 //
-//	GLW_SetMode
+//	GLimp_SetMode
 //
 //==========================================================================
 
-rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen)
+rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 {
 	if (!XInitThreads())
 	{

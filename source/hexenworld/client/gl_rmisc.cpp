@@ -733,7 +733,7 @@ void VID_Init(unsigned char* palette)
 {
 	R_SharedRegister();
 
-	if (GLW_SetMode(r_mode->integer, r_colorbits->integer, !!r_fullscreen->integer) != RSERR_OK)
+	if (GLimp_SetMode(r_mode->integer, r_colorbits->integer, !!r_fullscreen->integer) != RSERR_OK)
 	{
 		Sys_Error("Couldn't initialise OpenGL");
 	}

@@ -1204,7 +1204,7 @@ static void GLW_InitExtensions()
 */
 static qboolean GLW_StartDriverAndSetMode(int mode, int colorbits, qboolean fullscreen )
 {
-	rserr_t err = GLW_SetMode(mode, colorbits, fullscreen);
+	rserr_t err = GLimp_SetMode(mode, colorbits, fullscreen);
 
 	switch (err)
 	{

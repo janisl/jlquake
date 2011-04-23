@@ -925,11 +925,11 @@ static void PrintCDSError(int value)
 
 //==========================================================================
 //
-//	GLW_SetMode
+//	GLimp_SetMode
 //
 //==========================================================================
 
-rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen)
+rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 {
 	const char* win_fs[] = { "W", "FS" };
 

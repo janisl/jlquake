@@ -381,7 +381,7 @@ int GLimp_SetMode(int mode, qboolean fullscreen)
 	// destroy the existing window
 	GLimp_Shutdown ();
 
-	return GLW_SetMode(mode, r_colorbits->integer, fullscreen);
+	return GLimp_SetMode(mode, r_colorbits->integer, fullscreen);
 }
 
 /*
