@@ -897,7 +897,7 @@ static void LoadBMP( const char *name, byte **pic, int *width, int *height )
 	if ( height )
 		*height = rows;
 
-	bmpRGBA = (byte*)ri.Malloc( numPixels * 4 );
+	bmpRGBA = (byte*)Mem_Alloc(numPixels * 4 );
 	*pic = bmpRGBA;
 
 
@@ -1015,7 +1015,7 @@ static void LoadPCX ( const char *filename, byte **pic, byte **palette, int *wid
 		return;
 	}
 
-	out = (byte*)ri.Malloc ( (ymax+1) * (xmax+1) );
+	out = (byte*)Mem_Alloc ( (ymax+1) * (xmax+1) );
 
 	*pic = out;
 
@@ -1023,7 +1023,7 @@ static void LoadPCX ( const char *filename, byte **pic, byte **palette, int *wid
 
 	if (palette)
 	{
-		*palette = (byte*)ri.Malloc(768);
+		*palette = (byte*)Mem_Alloc(768);
 		Com_Memcpy (*palette, (byte *)pcx + len - 768, 768);
 	}
 
@@ -1082,7 +1082,7 @@ static void LoadPCX32 ( const char *filename, byte **pic, int *width, int *heigh
 	}
 
 	c = (*width) * (*height);
-	pic32 = *pic = (byte*)ri.Malloc(4 * c );
+	pic32 = *pic = (byte*)Mem_Alloc(4 * c );
 	for (i = 0 ; i < c ; i++) {
 		p = pic8[i];
 		pic32[0] = palette[p*3];
@@ -1092,8 +1092,8 @@ static void LoadPCX32 ( const char *filename, byte **pic, int *width, int *heigh
 		pic32 += 4;
 	}
 
-	ri.Free (pic8);
-	ri.Free (palette);
+	Mem_Free (pic8);
+	Mem_Free (palette);
 }
 
 /*
@@ -1177,7 +1177,7 @@ static void LoadTGA ( const char *name, byte **pic, int *width, int *height)
 	if (height)
 		*height = rows;
 
-	targa_rgba = (byte*)ri.Malloc (numPixels*4);
+	targa_rgba = (byte*)Mem_Alloc (numPixels*4);
 	*pic = targa_rgba;
 
 	if (targa_header.id_length != 0)
@@ -1557,7 +1557,7 @@ static void LoadJPG( const char *filename, unsigned char **pic, int *width, int 
   /* JSAMPLEs per row in output buffer */
   row_stride = cinfo.output_width * 4;
 
-  out = (byte*)ri.Malloc(cinfo.output_width * cinfo.output_height * 4);
+  out = (byte*)Mem_Alloc(cinfo.output_width * cinfo.output_height * 4);
 
   *pic = out;
   *width = cinfo.output_width;
@@ -1928,7 +1928,7 @@ image_t	*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	}
 
 	image = R_CreateImage( ( char * ) name, pic, width, height, mipmap, allowPicmip, glWrapClampMode );
-	ri.Free( pic );
+	Mem_Free( pic );
 	return image;
 }
 
