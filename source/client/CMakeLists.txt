@@ -3,6 +3,8 @@ set(CLIENT_FILES
 	input_main.cpp
 	input_unix.cpp
 	render_driver_glx.cpp
+	render_image.cpp
+	render_image_bmp.cpp
 	render_init.cpp
 	render_qgl.cpp
 	sound_audiocd_linux.cpp

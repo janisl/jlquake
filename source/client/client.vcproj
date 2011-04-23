@@ -165,6 +165,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_image.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\render_image_bmp.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_init.cpp"
 				>
 			</File>
@@ -220,6 +228,10 @@
 			</File>
 			<File
 				RelativePath=".\input_public.h"
+				>
+			</File>
+			<File
+				RelativePath=".\render_image.h"
 				>
 			</File>
 			<File

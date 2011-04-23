@@ -30,6 +30,7 @@
 #endif
 
 #include "render_qgl.h"
+#include "render_image.h"
 
 /*
 ====================================================================
@@ -74,11 +75,11 @@ init
 // the renderer front end should never modify glstate_t
 struct glstate_t
 {
-	int			currenttextures[2];
-	int			currenttmu;
-	qboolean	finishCalled;
-	int			texEnv[2];
-	int			faceCulling;
+	int				currenttextures[2];
+	int				currenttmu;
+	bool			finishCalled;
+	int				texEnv[2];
+	int				faceCulling;
 	unsigned long	glStateBits;
 };
 
