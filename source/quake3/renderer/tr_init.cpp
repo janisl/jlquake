@@ -129,6 +129,138 @@ QCvar	*r_maxpolyverts;
 int		max_polyverts;
 
 /*
+** GLW_InitExtensions
+*/
+static void GLW_InitExtensions()
+{
+	if ( !r_allowExtensions->integer )
+	{
+		ri.Printf( PRINT_ALL, "*** IGNORING OPENGL EXTENSIONS ***\n" );
+		return;
+	}
+
+	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
+
+	// GL_S3_s3tc
+	glConfig.textureCompression = TC_NONE;
+	if ( strstr( glConfig.extensions_string, "GL_S3_s3tc" ) )
+	{
+		if ( r_ext_compressed_textures->integer )
+		{
+			glConfig.textureCompression = TC_S3TC;
+			ri.Printf( PRINT_ALL, "...using GL_S3_s3tc\n" );
+		}
+		else
+		{
+			glConfig.textureCompression = TC_NONE;
+			ri.Printf( PRINT_ALL, "...ignoring GL_S3_s3tc\n" );
+		}
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "...GL_S3_s3tc not found\n" );
+	}
+
+	// GL_EXT_texture_env_add
+	glConfig.textureEnvAddAvailable = qfalse;
+	if ( strstr( glConfig.extensions_string, "EXT_texture_env_add" ) )
+	{
+		if ( r_ext_texture_env_add->integer )
+		{
+			glConfig.textureEnvAddAvailable = qtrue;
+			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_env_add\n" );
+		}
+		else
+		{
+			glConfig.textureEnvAddAvailable = qfalse;
+			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_env_add\n" );
+		}
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "...GL_EXT_texture_env_add not found\n" );
+	}
+
+#ifdef _WIN32
+	// WGL_EXT_swap_control
+	qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) GLimp_GetProcAddress( "wglSwapIntervalEXT" );
+	if ( qwglSwapIntervalEXT )
+	{
+		ri.Printf( PRINT_ALL, "...using WGL_EXT_swap_control\n" );
+		r_swapInterval->modified = qtrue;	// force a set next frame
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "...WGL_EXT_swap_control not found\n" );
+	}
+#endif
+
+	// GL_ARB_multitexture
+	qglMultiTexCoord2fARB = NULL;
+	qglActiveTextureARB = NULL;
+	qglClientActiveTextureARB = NULL;
+	if ( strstr( glConfig.extensions_string, "GL_ARB_multitexture" ) )
+	{
+		if ( r_ext_multitexture->integer )
+		{
+			qglMultiTexCoord2fARB = (PFNGLMULTITEXCOORD2FARBPROC)GLimp_GetProcAddress("glMultiTexCoord2fARB");
+			qglActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)GLimp_GetProcAddress("glActiveTextureARB");
+			qglClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)GLimp_GetProcAddress("glClientActiveTextureARB");
+
+			if ( qglActiveTextureARB )
+			{
+				qglGetIntegerv( GL_MAX_ACTIVE_TEXTURES_ARB, &glConfig.maxActiveTextures );
+
+				if ( glConfig.maxActiveTextures > 1 )
+				{
+					ri.Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
+				}
+				else
+				{
+					qglMultiTexCoord2fARB = NULL;
+					qglActiveTextureARB = NULL;
+					qglClientActiveTextureARB = NULL;
+					ri.Printf( PRINT_ALL, "...not using GL_ARB_multitexture, < 2 texture units\n" );
+				}
+			}
+		}
+		else
+		{
+			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_multitexture\n" );
+		}
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "...GL_ARB_multitexture not found\n" );
+	}
+
+	// GL_EXT_compiled_vertex_array
+	qglLockArraysEXT = NULL;
+	qglUnlockArraysEXT = NULL;
+	if (strstr(glConfig.extensions_string, "GL_EXT_compiled_vertex_array"))
+	{
+		if ( r_ext_compiled_vertex_array->integer )
+		{
+			ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
+			qglLockArraysEXT = (void (APIENTRY*)(int, int))GLimp_GetProcAddress("glLockArraysEXT");
+			qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
+			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
+			{
+				ri.Error (ERR_FATAL, "bad getprocaddress");
+			}
+		}
+		else
+		{
+			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_compiled_vertex_array\n" );
+		}
+	}
+	else
+	{
+		ri.Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
+	}
+}
+
+/*
 ** InitOpenGL
 **
 ** This function is responsible for initializing a valid OpenGL subsystem.  This
@@ -138,8 +270,6 @@ int		max_polyverts;
 */
 static void InitOpenGL( void )
 {
-	char renderer_buffer[1024];
-
 	//
 	// initialize OS specific portions of the renderer
 	//
@@ -154,22 +284,9 @@ static void InitOpenGL( void )
 	
 	if ( glConfig.vidWidth == 0 )
 	{
-		GLint		temp;
-		
-		GLimp_Init();
+		R_CommonInit();
 
-		QStr::Cpy( renderer_buffer, glConfig.renderer_string );
-		QStr::ToLower( renderer_buffer );
-
-		// OpenGL driver constants
-		qglGetIntegerv( GL_MAX_TEXTURE_SIZE, &temp );
-		glConfig.maxTextureSize = temp;
-
-		// stubbed or broken drivers may have reported 0...
-		if ( glConfig.maxTextureSize <= 0 ) 
-		{
-			glConfig.maxTextureSize = 0;
-		}
+		GLW_InitExtensions();
 	}
 
 	// init command buffers and SMP
@@ -1065,187 +1182,4 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.inPVS = R_inPVS;
 
 	return &re;
-}
-
-/*
-** GLW_InitExtensions
-*/
-static void GLW_InitExtensions()
-{
-	if ( !r_allowExtensions->integer )
-	{
-		ri.Printf( PRINT_ALL, "*** IGNORING OPENGL EXTENSIONS ***\n" );
-		return;
-	}
-
-	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
-
-	// GL_S3_s3tc
-	glConfig.textureCompression = TC_NONE;
-	if ( strstr( glConfig.extensions_string, "GL_S3_s3tc" ) )
-	{
-		if ( r_ext_compressed_textures->integer )
-		{
-			glConfig.textureCompression = TC_S3TC;
-			ri.Printf( PRINT_ALL, "...using GL_S3_s3tc\n" );
-		}
-		else
-		{
-			glConfig.textureCompression = TC_NONE;
-			ri.Printf( PRINT_ALL, "...ignoring GL_S3_s3tc\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_S3_s3tc not found\n" );
-	}
-
-	// GL_EXT_texture_env_add
-	glConfig.textureEnvAddAvailable = qfalse;
-	if ( strstr( glConfig.extensions_string, "EXT_texture_env_add" ) )
-	{
-		if ( r_ext_texture_env_add->integer )
-		{
-			glConfig.textureEnvAddAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_env_add\n" );
-		}
-		else
-		{
-			glConfig.textureEnvAddAvailable = qfalse;
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_env_add\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_texture_env_add not found\n" );
-	}
-
-#ifdef _WIN32
-	// WGL_EXT_swap_control
-	qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) GLimp_GetProcAddress( "wglSwapIntervalEXT" );
-	if ( qwglSwapIntervalEXT )
-	{
-		ri.Printf( PRINT_ALL, "...using WGL_EXT_swap_control\n" );
-		r_swapInterval->modified = qtrue;	// force a set next frame
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...WGL_EXT_swap_control not found\n" );
-	}
-#endif
-
-	// GL_ARB_multitexture
-	qglMultiTexCoord2fARB = NULL;
-	qglActiveTextureARB = NULL;
-	qglClientActiveTextureARB = NULL;
-	if ( strstr( glConfig.extensions_string, "GL_ARB_multitexture" ) )
-	{
-		if ( r_ext_multitexture->integer )
-		{
-			qglMultiTexCoord2fARB = (PFNGLMULTITEXCOORD2FARBPROC)GLimp_GetProcAddress("glMultiTexCoord2fARB");
-			qglActiveTextureARB = (PFNGLACTIVETEXTUREARBPROC)GLimp_GetProcAddress("glActiveTextureARB");
-			qglClientActiveTextureARB = (PFNGLCLIENTACTIVETEXTUREARBPROC)GLimp_GetProcAddress("glClientActiveTextureARB");
-
-			if ( qglActiveTextureARB )
-			{
-				qglGetIntegerv( GL_MAX_ACTIVE_TEXTURES_ARB, &glConfig.maxActiveTextures );
-
-				if ( glConfig.maxActiveTextures > 1 )
-				{
-					ri.Printf( PRINT_ALL, "...using GL_ARB_multitexture\n" );
-				}
-				else
-				{
-					qglMultiTexCoord2fARB = NULL;
-					qglActiveTextureARB = NULL;
-					qglClientActiveTextureARB = NULL;
-					ri.Printf( PRINT_ALL, "...not using GL_ARB_multitexture, < 2 texture units\n" );
-				}
-			}
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_ARB_multitexture\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_ARB_multitexture not found\n" );
-	}
-
-	// GL_EXT_compiled_vertex_array
-	qglLockArraysEXT = NULL;
-	qglUnlockArraysEXT = NULL;
-	if (strstr(glConfig.extensions_string, "GL_EXT_compiled_vertex_array"))
-	{
-		if ( r_ext_compiled_vertex_array->integer )
-		{
-			ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
-			qglLockArraysEXT = (void (APIENTRY*)(int, int))GLimp_GetProcAddress("glLockArraysEXT");
-			qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
-			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
-			{
-				ri.Error (ERR_FATAL, "bad getprocaddress");
-			}
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_compiled_vertex_array\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
-	}
-}
-
-/*
-** GLimp_Init
-**
-** This is the platform specific OpenGL initialization function.  It
-** is responsible for loading OpenGL, initializing it, setting
-** extensions, creating a window of the appropriate size, doing
-** fullscreen manipulations, etc.  Its overall responsibility is
-** to make sure that a functional OpenGL subsystem is operating
-** when it returns to the ref.
-*/
-void GLimp_Init()
-{
-	GLog.Write("Initializing OpenGL subsystem\n");
-
-	//
-	// create the window and set up the context
-	//
-	R_SetMode();
-
-	// load the QGL layer
-	QGL_Init();
-
-	// This values force the UI to disable driver selection
-	glConfig.driverType = GLDRV_ICD;
-	glConfig.hardwareType = GLHW_GENERIC;
-
-	// get our config strings
-	QStr::NCpyZ( glConfig.vendor_string, (char*)qglGetString (GL_VENDOR), sizeof( glConfig.vendor_string ) );
-	QStr::NCpyZ( glConfig.renderer_string, (char*)qglGetString (GL_RENDERER), sizeof( glConfig.renderer_string ) );
-	QStr::NCpyZ( glConfig.version_string, (char*)qglGetString (GL_VERSION), sizeof( glConfig.version_string ) );
-	QStr::NCpyZ( glConfig.extensions_string, (char*)qglGetString (GL_EXTENSIONS), sizeof( glConfig.extensions_string ) );
-
-	QCvar *lastValidRenderer = Cvar_Get( "r_lastValidRenderer", "(uninitialized)", CVAR_ARCHIVE );
-
-	//
-	// NOTE: if changing cvars, do it within this block.  This allows them
-	// to be overridden when testing driver fixes, etc. but only sets
-	// them to their default state when the hardware is first installed/run.
-	//
-	if ( QStr::ICmp( lastValidRenderer->string, glConfig.renderer_string ) )
-	{
-		Cvar_Set( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST" );
-
-		Cvar_Set( "r_picmip", "1" );
-	}
-
-	Cvar_Set( "r_lastValidRenderer", glConfig.renderer_string );
-
-	GLW_InitExtensions();
 }

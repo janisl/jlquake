@@ -379,11 +379,6 @@ void Draw_Init (void)
     gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
     gl_picmip = Cvar_Get("gl_picmip", "0", 0);
 
-	// 3dfx can only handle 256 wide textures
-	if (!QStr::NICmp((char *)gl_renderer, "3dfx",4) ||
-		strstr((char *)gl_renderer, "Glide"))
-		Cvar_Set ("gl_max_size", "256");
-
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 
 	// load the console background and the charset

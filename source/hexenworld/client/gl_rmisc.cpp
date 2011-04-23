@@ -7,11 +7,6 @@ byte *playerTranslation;
 
 byte globalcolormap[VID_GRADES*256];
 
-const char *gl_vendor;
-const char *gl_renderer;
-const char *gl_version;
-const char *gl_extensions;
-
 unsigned	d_8to24table[256];
 unsigned	d_8to24TranslucentTable[256];
 
@@ -659,7 +654,7 @@ void	VID_SetPalette (unsigned char *palette)
 
 static void CheckMultiTextureExtensions()
 {
-	if (strstr(gl_extensions, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
+	if (strstr(glConfig.extensions_string, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
 		Con_Printf("Multitexture extensions found.\n");
 		glMTexCoord2fSGIS = (lpMTexFUNC) GLimp_GetProcAddress("glMTexCoord2fSGIS");
 		glSelectTextureSGIS = (lpSelTexFUNC) GLimp_GetProcAddress("glSelectTextureSGIS");
@@ -674,19 +669,11 @@ GL_Init
 */
 void GL_Init()
 {
-	QGL_Init();
+	Con_Printf ("GL_VENDOR: %s\n", glConfig.vendor_string);
+	Con_Printf ("GL_RENDERER: %s\n", glConfig.renderer_string);
 
-	gl_vendor = (char*)qglGetString (GL_VENDOR);
-	Con_Printf ("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = (char*)qglGetString (GL_RENDERER);
-	Con_Printf ("GL_RENDERER: %s\n", gl_renderer);
-
-	gl_version = (char*)qglGetString (GL_VERSION);
-	Con_Printf ("GL_VERSION: %s\n", gl_version);
-	gl_extensions = (char*)qglGetString (GL_EXTENSIONS);
-	Con_Printf ("GL_EXTENSIONS: %s\n", gl_extensions);
-
-//	Con_Printf ("%s %s\n", gl_renderer, gl_version);
+	Con_Printf ("GL_VERSION: %s\n", glConfig.version_string);
+	Con_Printf ("GL_EXTENSIONS: %s\n", glConfig.extensions_string);
 
 	CheckMultiTextureExtensions ();
 
@@ -733,7 +720,7 @@ void VID_Init(unsigned char* palette)
 {
 	R_SharedRegister();
 
-	R_SetMode();
+	R_CommonInit();
 
 	VID_SetPalette (palette);
 

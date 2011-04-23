@@ -990,19 +990,13 @@ int R_Init()
 
 	R_Register();
 
-	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
-
 	// destroy the existing window
 	GLimp_Shutdown ();
 
 	r_fullscreen->modified = false;
 	r_mode->modified = false;
 
-	// create the window and set up the context
-	R_SetMode();
-
-	// initialize our QGL dynamic bindings
-	QGL_Init();
+	R_CommonInit();
 
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
@@ -1010,13 +1004,9 @@ int R_Init()
 	/*
 	** get our various GL strings
 	*/
-	QStr::NCpyZ(glConfig.vendor_string, (char*)qglGetString (GL_VENDOR), sizeof(glConfig.vendor_string));
 	ri.Con_Printf (PRINT_ALL, "GL_VENDOR: %s\n", glConfig.vendor_string );
-	QStr::NCpyZ(glConfig.renderer_string, (char*)qglGetString (GL_RENDERER), sizeof(glConfig.renderer_string));
 	ri.Con_Printf (PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
-	QStr::NCpyZ(glConfig.version_string, (char*)qglGetString (GL_VERSION), sizeof(glConfig.version_string));
 	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-	QStr::NCpyZ(glConfig.extensions_string, (char*)qglGetString (GL_EXTENSIONS), sizeof(glConfig.extensions_string));
 	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 
 	if ( QStr::ToUpper( gl_monolightmap->string[1] ) != 'F' )

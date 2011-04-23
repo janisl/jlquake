@@ -107,7 +107,7 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 {
 	if (!XInitThreads())
 	{
-		GLog.Write("GLimp_Init() - XInitThreads() failed, disabling r_smp\n");
+		GLog.Write("...XInitThreads() failed, disabling r_smp\n");
 		Cvar_Set("r_smp", "0");
 	}
 

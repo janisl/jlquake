@@ -251,7 +251,7 @@ const char* R_GetTitleForWindow()
 //
 //==========================================================================
 
-void R_SetMode()
+static void R_SetMode()
 {
 	rserr_t err = GLimp_SetMode(r_mode->integer, r_colorbits->integer, !!r_fullscreen->integer);
 	if (err == RSERR_OK)
@@ -296,4 +296,42 @@ void R_SetMode()
 
 	GLog.Write("...WARNING: could not revert to safe mode\n");
 	throw QException("R_SetMode() - could not initialise OpenGL subsystem\n" );
+}
+
+//==========================================================================
+//
+//	R_CommonInit
+//
+//	This is the OpenGL initialization function.  It is responsible for
+// initialising OpenGL, setting extensions, creating a window of the
+// appropriate size, doing fullscreen manipulations, etc.  Its overall
+// responsibility is to make sure that a functional OpenGL subsystem is
+// operating when it returns.
+//
+//==========================================================================
+
+void R_CommonInit()
+{	
+	GLog.Write("Initializing OpenGL subsystem\n");
+
+	//	Ceate the window and set up the context.
+	R_SetMode();
+
+	// 	Initialise our QGL dynamic bindings
+	QGL_Init();
+
+	//	Needed for Quake 3 UI vm.
+	glConfig.driverType = GLDRV_ICD;
+	glConfig.hardwareType = GLHW_GENERIC;
+
+	//	Get our config strings.
+	QStr::NCpyZ(glConfig.vendor_string, (char*)qglGetString(GL_VENDOR), sizeof(glConfig.vendor_string));
+	QStr::NCpyZ(glConfig.renderer_string, (char*)qglGetString(GL_RENDERER), sizeof(glConfig.renderer_string));
+	QStr::NCpyZ(glConfig.version_string, (char*)qglGetString(GL_VERSION), sizeof(glConfig.version_string));
+	QStr::NCpyZ(glConfig.extensions_string, (char*)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
+
+	// OpenGL driver constants
+	GLint temp;
+	qglGetIntegerv(GL_MAX_TEXTURE_SIZE, &temp);
+	glConfig.maxTextureSize = temp;
 }
