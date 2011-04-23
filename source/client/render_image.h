@@ -22,5 +22,5 @@ void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_LoadJPG(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveJPG(const char* FileName, int Quality, int Width, int Height, byte* Buffer);
 
-void LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
+void R_LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha);

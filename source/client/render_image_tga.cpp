@@ -62,11 +62,11 @@ struct TargaHeader
 
 //==========================================================================
 //
-//	LoadTGA
+//	R_LoadTGA
 //
 //==========================================================================
 
-void LoadTGA(const char* name, byte** pic, int* width, int* height)
+void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 {
 	*pic = NULL;
 

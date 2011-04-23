@@ -927,7 +927,7 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
 	}
 
 	if ( !QStr::ICmp( name+len-4, ".tga" ) ) {
-	  LoadTGA( name, pic, width, height );            // try tga first
+	  R_LoadTGA( name, pic, width, height );            // try tga first
     if (!*pic) {                                    //
 		  char altname[MAX_QPATH];                      // try jpg in place of tga 
       QStr::Cpy( altname, name );                      
