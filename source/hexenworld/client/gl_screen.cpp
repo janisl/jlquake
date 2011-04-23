@@ -617,7 +617,7 @@ void SCR_ScreenShot_f (void)
 {
 	byte            *buffer;
 	char            pcxname[80]; 
-	int                     i, c, temp;
+	int                     i;
 
 	// 
 	// find a file name to save it to 
@@ -640,26 +640,11 @@ void SCR_ScreenShot_f (void)
 	}
 
 
-	buffer = (byte*)malloc(glwidth*glheight*3 + 18);
-	Com_Memset(buffer, 0, 18);
-	buffer[2] = 2;          // uncompressed type
-	buffer[12] = glwidth&255;
-	buffer[13] = glwidth>>8;
-	buffer[14] = glheight&255;
-	buffer[15] = glheight>>8;
-	buffer[16] = 24;        // pixel size
+	buffer = (byte*)malloc(glwidth * glheight * 3);
 
-	qglReadPixels (glx, gly, glwidth, glheight, GL_RGB, GL_UNSIGNED_BYTE, buffer+18 ); 
+	qglReadPixels (glx, gly, glwidth, glheight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
-	// swap rgb to bgr
-	c = 18+glwidth*glheight*3;
-	for (i=18 ; i<c ; i+=3)
-	{
-		temp = buffer[i];
-		buffer[i] = buffer[i+2];
-		buffer[i+2] = temp;
-	}
-	FS_WriteFile(pcxname, buffer, glwidth*glheight*3 + 18 );
+	R_SaveTGA(pcxname, buffer, glwidth, glheight, false);
 
 	free (buffer);
 	Con_Printf ("Wrote %s\n", pcxname);

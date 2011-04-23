@@ -144,38 +144,6 @@ FT_Bitmap *R_RenderGlyph(FT_GlyphSlot glyph, glyphInfo_t* glyphOut) {
   return NULL;
 }
 
-void WriteTGA (char *filename, byte *data, int width, int height) {
-	byte	*buffer;
-	int		i, c;
-
-	buffer = Z_Malloc(width*height*4 + 18);
-	Com_Memset (buffer, 0, 18);
-	buffer[2] = 2;		// uncompressed type
-	buffer[12] = width&255;
-	buffer[13] = width>>8;
-	buffer[14] = height&255;
-	buffer[15] = height>>8;
-	buffer[16] = 32;	// pixel size
-
-	// swap rgb to bgr
-	c = 18 + width * height * 4;
-	for (i=18 ; i<c ; i+=4)
-	{
-		buffer[i] = data[i-18+2];		// blue
-		buffer[i+1] = data[i-18+1];		// green
-		buffer[i+2] = data[i-18+0];		// red
-		buffer[i+3] = data[i-18+3];		// alpha
-	}
-
-	FS_WriteFile(filename, buffer, c);
-
-	//f = fopen (filename, "wb");
-	//fwrite (buffer, 1, c, f);
-	//fclose (f);
-
-	Z_Free (buffer);
-}
-
 static glyphInfo_t *RE_ConstructGlyphInfo(unsigned char *imageOut, int *xOut, int *yOut, int *maxHeight, FT_Face face, const unsigned char c, qboolean calcHeight) {
   int i;
   static glyphInfo_t glyph;
@@ -482,7 +450,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
 
 			QStr::Sprintf (name, sizeof(name), "fonts/fontImage_%i_%i.tga", imageNumber++, pointSize);
 			if (r_saveFontData->integer) { 
-			  WriteTGA(name, imageBuff, 256, 256);
+			  R_SaveTGA(name, imageBuff, 256, 256, true);
 			}
 
     	//QStr::Sprintf (name, sizeof(name), "fonts/fontImage_%i_%i", imageNumber++, pointSize);

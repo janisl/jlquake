@@ -368,34 +368,17 @@ RB_TakeScreenshot
 */  
 void RB_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
 	byte		*buffer;
-	int			i, c, temp;
 		
-	buffer = (byte*)ri.Hunk_AllocateTempMemory(glConfig.vidWidth*glConfig.vidHeight*3+18);
+	buffer = (byte*)ri.Hunk_AllocateTempMemory(glConfig.vidWidth*glConfig.vidHeight*3);
 
-	Com_Memset (buffer, 0, 18);
-	buffer[2] = 2;		// uncompressed type
-	buffer[12] = width & 255;
-	buffer[13] = width >> 8;
-	buffer[14] = height & 255;
-	buffer[15] = height >> 8;
-	buffer[16] = 24;	// pixel size
-
-	qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer+18 ); 
-
-	// swap rgb to bgr
-	c = 18 + width * height * 3;
-	for (i=18 ; i<c ; i+=3) {
-		temp = buffer[i];
-		buffer[i] = buffer[i+2];
-		buffer[i+2] = temp;
-	}
+	qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
 	// gamma correct
 	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer + 18, glConfig.vidWidth * glConfig.vidHeight * 3 );
+		R_GammaCorrect( buffer, glConfig.vidWidth * glConfig.vidHeight * 3 );
 	}
 
-	FS_WriteFile( fileName, buffer, c );
+	R_SaveTGA(fileName, buffer, width, height, false);
 
 	ri.Hunk_FreeTempMemory( buffer );
 }
@@ -537,12 +520,7 @@ void R_LevelShot( void ) {
 
 	source = (byte*)ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight * 3 );
 
-	buffer = (byte*)ri.Hunk_AllocateTempMemory( 128 * 128*3 + 18);
-	Com_Memset (buffer, 0, 18);
-	buffer[2] = 2;		// uncompressed type
-	buffer[12] = 128;
-	buffer[14] = 128;
-	buffer[16] = 24;	// pixel size
+	buffer = (byte*)ri.Hunk_AllocateTempMemory(128 * 128 * 3);
 
 	qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source ); 
 
@@ -560,19 +538,19 @@ void R_LevelShot( void ) {
 					b += src[2];
 				}
 			}
-			dst = buffer + 18 + 3 * ( y * 128 + x );
-			dst[0] = b / 12;
+			dst = buffer + 3 * (y * 128 + x);
+			dst[0] = r / 12;
 			dst[1] = g / 12;
-			dst[2] = r / 12;
+			dst[2] = b / 12;
 		}
 	}
 
 	// gamma correct
 	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer + 18, 128 * 128 * 3 );
+		R_GammaCorrect( buffer, 128 * 128 * 3 );
 	}
 
-	FS_WriteFile( checkname, buffer, 128 * 128*3 + 18 );
+	R_SaveTGA(checkname, buffer, 128, 128, false);
 
 	ri.Hunk_FreeTempMemory( buffer );
 	ri.Hunk_FreeTempMemory( source );

@@ -30,6 +30,22 @@
 
 // TYPES -------------------------------------------------------------------
 
+struct TargaHeader
+{
+	quint8		id_length;
+	quint8		colormap_type;
+	quint8		image_type;
+	quint16		colormap_index;
+	quint16		colormap_length;
+	quint8		colormap_size;
+	quint16		x_origin;
+	quint16		y_origin;
+	quint16		width;
+	quint16		height;
+	quint8		pixel_size;
+	quint8		attributes;
+};
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -311,4 +327,41 @@ void LoadTGA(const char* name, byte** pic, int* width, int* height)
 	}
 
 	FS_FreeFile(buffer);
+}
+
+//==========================================================================
+//
+//	R_SaveTGA
+//
+//==========================================================================
+
+void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha)
+{
+	int Bpp = HaveAlpha ? 4 : 3;
+	int Length = 18 + Width * Height * Bpp;
+	byte* Buffer = new byte[Length];
+
+	Com_Memset(Buffer, 0, 18);
+	Buffer[2] = 2;			// uncompressed type
+	Buffer[12] = Width & 255;
+	Buffer[13] = Width >> 8;
+	Buffer[14] = Height & 255;
+	Buffer[15] = Height >> 8;
+	Buffer[16] = 8 * Bpp;	// pixel size
+
+	// swap rgb to bgr
+	for (int i = 18; i < Length; i += Bpp)
+	{
+		Buffer[i] = Data[i - 18 + 2];			// blue
+		Buffer[i + 1] = Data[i - 18 + 1];		// green
+		Buffer[i + 2] = Data[i - 18 + 0];		// red
+		if (HaveAlpha)
+		{
+			Buffer[i + 3] = Data[i - 18 + 3];	// alpha
+		}
+	}
+
+	FS_WriteFile(FileName, Buffer, Length);
+
+	delete[] Buffer;
 }

@@ -89,7 +89,7 @@ void GL_ScreenShot_f (void)
 {
 	byte		*buffer;
 	char		picname[80]; 
-	int			i, c, temp;
+	int			i;
 
 	// 
 	// find a file name to save it to 
@@ -111,29 +111,11 @@ void GL_ScreenShot_f (void)
 		return;
 	}
 
-	buffer = (byte*)malloc(glConfig.vidWidth*glConfig.vidHeight*3 + 18);
-	Com_Memset(buffer, 0, 18);
-	buffer[2] = 2;		// uncompressed type
-	buffer[12] = glConfig.vidWidth&255;
-	buffer[13] = glConfig.vidWidth>>8;
-	buffer[14] = glConfig.vidHeight&255;
-	buffer[15] = glConfig.vidHeight>>8;
-	buffer[16] = 24;	// pixel size
+	buffer = (byte*)malloc(glConfig.vidWidth * glConfig.vidHeight * 3);
 
-	qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer + 18);
+	qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
-	// swap rgb to bgr
-	c = 18 + glConfig.vidWidth * glConfig.vidHeight * 3;
-	for (i = 18; i < c; i += 3)
-	{
-		temp = buffer[i];
-		buffer[i] = buffer[i + 2];
-		buffer[i + 2] = temp;
-	}
-
-	fileHandle_t f = FS_FOpenFileWrite(picname);
-	FS_Write(buffer, c, f);
-	FS_FCloseFile(f);
+	R_SaveTGA(picname, buffer, glConfig.vidWidth, glConfig.vidHeight, false);
 
 	free(buffer);
 	ri.Con_Printf(PRINT_ALL, "Wrote %s\n", picname);
