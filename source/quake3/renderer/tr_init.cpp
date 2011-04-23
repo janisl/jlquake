@@ -1200,67 +1200,6 @@ static void GLW_InitExtensions()
 }
 
 /*
-** GLW_StartDriverAndSetMode
-*/
-static qboolean GLW_StartDriverAndSetMode(int mode, int colorbits, qboolean fullscreen )
-{
-	rserr_t err = GLimp_SetMode(mode, colorbits, fullscreen);
-
-	switch (err)
-	{
-	case RSERR_INVALID_FULLSCREEN:
-		ri.Printf( PRINT_ALL, "...WARNING: fullscreen unavailable in this mode\n" );
-		return qfalse;
-	case RSERR_INVALID_MODE:
-		ri.Printf( PRINT_ALL, "...WARNING: could not set the given mode (%d)\n", mode );
-		return qfalse;
-	default:
-		break;
-	}
-	return qtrue;
-}
-
-/*
-** GLW_LoadOpenGL
-**
-** GLimp_win.c internal function that attempts to load and use 
-** a specific OpenGL DLL.
-*/
-static qboolean GLW_LoadOpenGL()
-{
-	qboolean fullscreen;
-
-	// load the QGL layer
-	if ( QGL_Init() )
-	{
-		fullscreen = r_fullscreen->integer;
-
-		// create the window and set up the context
-		if (!GLW_StartDriverAndSetMode(r_mode->integer, r_colorbits->integer, fullscreen))
-		{
-			// if we're on a 24/32-bit desktop and we're going fullscreen on an ICD,
-			// try it again but with a 16-bit desktop
-			if (r_colorbits->integer != 16 || fullscreen != qtrue || r_mode->integer != 3)
-			{
-				if (!GLW_StartDriverAndSetMode(3, 16, qtrue))
-				{
-					goto fail;
-				}
-			}
-			else
-				goto fail;
-		}
-
-		return qtrue;
-	}
-fail:
-
-	QGL_Shutdown();
-
-	return qfalse;
-}
-
-/*
 ** GLimp_Init
 **
 ** This is the platform specific OpenGL initialization function.  It
@@ -1275,12 +1214,12 @@ void GLimp_Init()
 	GLog.Write("Initializing OpenGL subsystem\n");
 
 	//
-	// load and initialize the specific OpenGL driver
+	// create the window and set up the context
 	//
-	if ( !GLW_LoadOpenGL() )
-	{
-		ri.Error( ERR_FATAL, "GLW_StartOpenGL() - could not load OpenGL subsystem\n" );
-	}
+	R_SetMode();
+
+	// load the QGL layer
+	QGL_Init();
 
 	// This values force the UI to disable driver selection
 	glConfig.driverType = GLDRV_ICD;

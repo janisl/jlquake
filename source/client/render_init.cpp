@@ -244,3 +244,56 @@ const char* R_GetTitleForWindow()
 	}
 	return "Unknown";
 }
+
+//==========================================================================
+//
+//	R_SetMode
+//
+//==========================================================================
+
+void R_SetMode()
+{
+	rserr_t err = GLimp_SetMode(r_mode->integer, r_colorbits->integer, !!r_fullscreen->integer);
+	if (err == RSERR_OK)
+	{
+		return;
+	}
+
+	if (err == RSERR_INVALID_FULLSCREEN)
+	{
+		GLog.Write("...WARNING: fullscreen unavailable in this mode\n");
+
+		Cvar_SetValue("r_fullscreen", 0);
+		r_fullscreen->modified = false;
+
+		err = GLimp_SetMode(r_mode->integer, r_colorbits->integer, false);
+		if (err == RSERR_OK)
+		{
+			return;
+		}
+	}
+
+	GLog.Write("...WARNING: could not set the given mode (%d)\n", r_mode->integer);
+
+	// if we're on a 24/32-bit desktop and we're going fullscreen on an ICD,
+	// try it again but with a 16-bit desktop
+	if (r_colorbits->integer != 16 || r_fullscreen->integer == 0 || r_mode->integer != 3)
+	{
+		err = GLimp_SetMode(3, 16, true);
+		if (err == RSERR_OK)
+		{
+			return;
+		}
+		GLog.Write("...WARNING: could not set default 16-bit fullscreen mode\n");
+	}
+
+	// try setting it back to something safe
+	err = GLimp_SetMode(3, r_colorbits->integer, false);
+	if (err == RSERR_OK)
+	{
+		return;
+	}
+
+	GLog.Write("...WARNING: could not revert to safe mode\n");
+	throw QException("R_SetMode() - could not initialise OpenGL subsystem\n" );
+}

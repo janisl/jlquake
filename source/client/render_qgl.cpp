@@ -619,7 +619,7 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 //
 //==========================================================================
 
-bool QGL_Init()
+void QGL_Init()
 {
 	GLog.Write("...initializing QGL\n");
 
@@ -672,8 +672,6 @@ bool QGL_Init()
 
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
-
-	return true;
 }
 
 //==========================================================================

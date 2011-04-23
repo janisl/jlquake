@@ -372,19 +372,6 @@ void VID_Shutdown (void)
 }
 
 /*
-** GLimp_SetMode
-*/
-int GLimp_SetMode(int mode, qboolean fullscreen)
-{
-	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
-
-	// destroy the existing window
-	GLimp_Shutdown ();
-
-	return GLimp_SetMode(mode, r_colorbits->integer, fullscreen);
-}
-
-/*
 ** GLimp_EndFrame
 ** 
 ** Responsible for doing a swapbuffers and possibly for other stuff

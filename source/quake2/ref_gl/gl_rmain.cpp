@@ -969,52 +969,6 @@ void R_Register( void )
 }
 
 /*
-==================
-R_SetMode
-==================
-*/
-qboolean R_SetMode (void)
-{
-	int err;
-	qboolean fullscreen;
-
-	fullscreen = r_fullscreen->value;
-
-	r_fullscreen->modified = false;
-	r_mode->modified = false;
-
-	if ((err = GLimp_SetMode(r_mode->value, fullscreen)) == RSERR_OK)
-	{
-		gl_state.prev_mode = r_mode->value;
-	}
-	else
-	{
-		if ( err == RSERR_INVALID_FULLSCREEN )
-		{
-			Cvar_SetValueLatched( "r_fullscreen", 0);
-			r_fullscreen->modified = false;
-			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - fullscreen unavailable in this mode\n" );
-			if ((err = GLimp_SetMode(r_mode->value, false)) == RSERR_OK)
-				return true;
-		}
-		else if ( err == RSERR_INVALID_MODE )
-		{
-			Cvar_SetValueLatched( "r_mode", gl_state.prev_mode );
-			r_mode->modified = false;
-			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - invalid mode\n" );
-		}
-
-		// try setting it back to something safe
-		if ((err = GLimp_SetMode(gl_state.prev_mode, false)) != RSERR_OK)
-		{
-			ri.Con_Printf( PRINT_ALL, "ref_gl::R_SetMode() - could not revert to safe mode\n" );
-			return false;
-		}
-	}
-	return true;
-}
-
-/*
 ===============
 R_Init
 ===============
@@ -1036,24 +990,19 @@ int R_Init()
 
 	R_Register();
 
-	// initialize our QGL dynamic bindings
-	if ( !QGL_Init() )
-	{
-		QGL_Shutdown();
-        ri.Con_Printf (PRINT_ALL, "ref_gl::R_Init() - could not load \"%s\"\n", gl_driver->string );
-		return -1;
-	}
+	ri.Con_Printf( PRINT_ALL, "Initializing OpenGL display\n");
 
-	// set our "safe" modes
-	gl_state.prev_mode = 3;
+	// destroy the existing window
+	GLimp_Shutdown ();
+
+	r_fullscreen->modified = false;
+	r_mode->modified = false;
 
 	// create the window and set up the context
-	if ( !R_SetMode () )
-	{
-		QGL_Shutdown();
-        ri.Con_Printf (PRINT_ALL, "ref_gl::R_Init() - could not R_SetMode()\n" );
-		return -1;
-	}
+	R_SetMode();
+
+	// initialize our QGL dynamic bindings
+	QGL_Init();
 
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);

@@ -311,8 +311,6 @@ typedef struct
 {
 	float inverse_intensity;
 
-	int     prev_mode;
-
 	int lightmap_textures;
 
 	float camera_separation;
@@ -355,4 +353,3 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 
 void		GLimp_BeginFrame( float camera_separation );
 void		GLimp_EndFrame( void );
-int     	GLimp_SetMode(int mode, qboolean fullscreen );

@@ -86,6 +86,7 @@ bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_SharedRegister();
 const char* R_GetTitleForWindow();
+void R_SetMode();
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init
