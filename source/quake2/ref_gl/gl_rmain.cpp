@@ -1001,13 +1001,7 @@ int R_Init()
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
 
-	/*
-	** get our various GL strings
-	*/
-	ri.Con_Printf (PRINT_ALL, "GL_VENDOR: %s\n", glConfig.vendor_string );
-	ri.Con_Printf (PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
-	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
+	CommonGfxInfo_f();
 
 	if ( QStr::ToUpper( gl_monolightmap->string[1] ) != 'F' )
 	{

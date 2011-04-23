@@ -335,3 +335,35 @@ void R_CommonInit()
 	qglGetIntegerv(GL_MAX_TEXTURE_SIZE, &temp);
 	glConfig.maxTextureSize = temp;
 }
+
+//==========================================================================
+//
+//	CommonGfxInfo_f
+//
+//==========================================================================
+
+void CommonGfxInfo_f()
+{
+	const char* fsstrings[] =
+	{
+		"windowed",
+		"fullscreen"
+	};
+
+	GLog.Write("\nGL_VENDOR: %s\n", glConfig.vendor_string);
+	GLog.Write("GL_RENDERER: %s\n", glConfig.renderer_string);
+	GLog.Write("GL_VERSION: %s\n", glConfig.version_string);
+	GLog.Write("GL_EXTENSIONS: %s\n", glConfig.extensions_string);
+	GLog.Write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
+	GLog.Write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures );
+	GLog.Write("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
+	GLog.Write("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[r_fullscreen->integer == 1]);
+	if (glConfig.displayFrequency)
+	{
+		GLog.Write("%d\n", glConfig.displayFrequency);
+	}
+	else
+	{
+		GLog.Write("N/A\n");
+	}
+}

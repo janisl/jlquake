@@ -87,6 +87,7 @@ void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegra
 void R_SharedRegister();
 const char* R_GetTitleForWindow();
 void R_CommonInit();
+void CommonGfxInfo_f();
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init

@@ -481,11 +481,7 @@ GL_Init
 */
 void GL_Init()
 {
-	Con_Printf ("GL_VENDOR: %s\n", glConfig.vendor_string);
-	Con_Printf ("GL_RENDERER: %s\n", glConfig.renderer_string);
-
-	Con_Printf ("GL_VERSION: %s\n", glConfig.version_string);
-	Con_Printf ("GL_EXTENSIONS: %s\n", glConfig.extensions_string);
+	CommonGfxInfo_f();
 
 	CheckMultiTextureExtensions ();
 
