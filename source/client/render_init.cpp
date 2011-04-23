@@ -353,7 +353,15 @@ void CommonGfxInfo_f()
 	GLog.Write("\nGL_VENDOR: %s\n", glConfig.vendor_string);
 	GLog.Write("GL_RENDERER: %s\n", glConfig.renderer_string);
 	GLog.Write("GL_VERSION: %s\n", glConfig.version_string);
-	GLog.Write("GL_EXTENSIONS: %s\n", glConfig.extensions_string);
+
+	GLog.WriteLine("GL_EXTENSIONS:");
+	QArray<QStr> Exts;
+	QStr(glConfig.extensions_string).Split(' ', Exts);
+	for (int i = 0; i < Exts.Num(); i++)
+	{
+		GLog.WriteLine(" %s", *Exts[i]);
+	}
+
 	GLog.Write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
 	GLog.Write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures );
 	GLog.Write("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
