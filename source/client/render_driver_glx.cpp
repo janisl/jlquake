@@ -402,22 +402,7 @@ rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen)
 		0, visinfo->depth, InputOutput,
 		visinfo->visual, mask, &attr);
 
-	if (GGameType & GAME_Quake)
-	{
-		XStoreName(dpy, win, "Quake");
-	}
-	else if (GGameType & GAME_Hexen2)
-	{
-		XStoreName(dpy, win, "Hexen II");
-	}
-	else if (GGameType & GAME_Quake2)
-	{
-		XStoreName(dpy, win, "Quake II");
-	}
-	else if (GGameType & GAME_Quake3)
-	{
-		XStoreName(dpy, win, "Quake III: Arena");
-	}
+	XStoreName(dpy, win, R_GetTitleForWindow());
 
 	/* GH: Don't let the window be resized */
 	XSizeHints sizehints;

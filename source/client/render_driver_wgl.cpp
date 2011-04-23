@@ -855,38 +855,8 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 			}
 		}
 
-		const char* Caption;
-		if (GGameType & GAME_QuakeWorld)
-		{
-			Caption = "QuakeWorld";
-		}
-		else if (GGameType & GAME_Quake)
-		{
-			Caption = "Quake";
-		}
-		else if (GGameType & GAME_HexenWorld)
-		{
-			Caption = "HexenWorld";
-		}
-		else if (GGameType & GAME_Hexen2)
-		{
-			Caption = "Hexen II";
-		}
-		else if (GGameType & GAME_Quake2)
-		{
-			Caption = "Quake 2";
-		}
-		else if (GGameType & GAME_Quake3)
-		{
-			Caption = "Quake 3: Arena";
-		}
-		else
-		{
-			Caption = "Unknown";
-		}
-
-		GMainWindow = CreateWindowEx(exstyle, WINDOW_CLASS_NAME, Caption, stylebits,
-			x, y, w, h, NULL, NULL, global_hInstance, NULL);
+		GMainWindow = CreateWindowEx(exstyle, WINDOW_CLASS_NAME, R_GetTitleForWindow(),
+			stylebits, x, y, w, h, NULL, NULL, global_hInstance, NULL);
 
 		if (!GMainWindow)
 		{

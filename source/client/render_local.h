@@ -31,6 +31,14 @@
 
 #include "render_qgl.h"
 
+/*
+====================================================================
+
+IMPLEMENTATION SPECIFIC FUNCTIONS
+
+====================================================================
+*/
+
 enum rserr_t
 {
 	RSERR_OK,
@@ -40,25 +48,6 @@ enum rserr_t
 
 	RSERR_UNKNOWN
 };
-
-// the renderer front end should never modify glstate_t
-struct glstate_t
-{
-	int			currenttextures[2];
-	int			currenttmu;
-	qboolean	finishCalled;
-	int			texEnv[2];
-	int			faceCulling;
-	unsigned long	glStateBits;
-};
-
-/*
-====================================================================
-
-IMPLEMENTATION SPECIFIC FUNCTIONS
-
-====================================================================
-*/
 
 rserr_t GLW_SetMode(int mode, int colorbits, bool fullscreen);
 void GLimp_Shutdown();
@@ -74,9 +63,29 @@ void* GLimp_RendererSleep();
 void GLimp_FrontEndSleep();
 void GLimp_WakeRenderer(void* data);
 
+/*
+====================================================================
+
+init
+
+====================================================================
+*/
+
+// the renderer front end should never modify glstate_t
+struct glstate_t
+{
+	int			currenttextures[2];
+	int			currenttmu;
+	qboolean	finishCalled;
+	int			texEnv[2];
+	int			faceCulling;
+	unsigned long	glStateBits;
+};
+
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_SharedRegister();
+const char* R_GetTitleForWindow();
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init

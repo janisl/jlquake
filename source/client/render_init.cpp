@@ -195,3 +195,38 @@ void R_SharedRegister()
 
 	Cmd_AddCommand("modelist", R_ModeList_f);
 }
+
+//==========================================================================
+//
+//	R_GetTitleForWindow
+//
+//==========================================================================
+
+const char* R_GetTitleForWindow()
+{
+	if (GGameType & GAME_QuakeWorld)
+	{
+		return "QuakeWorld";
+	}
+	if (GGameType & GAME_Quake)
+	{
+		return "Quake";
+	}
+	if (GGameType & GAME_HexenWorld)
+	{
+		return "HexenWorld";
+	}
+	if (GGameType & GAME_Hexen2)
+	{
+		return "Hexen II";
+	}
+	if (GGameType & GAME_Quake2)
+	{
+		return "Quake 2";
+	}
+	if (GGameType & GAME_Quake3)
+	{
+		return "Quake 3: Arena";
+	}
+	return "Unknown";
+}
