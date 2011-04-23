@@ -747,21 +747,7 @@ void R_Register( void )
 	AssertCvarRange( r_picmip, 0, 16, qtrue );
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_texturebits = Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
-	//r_colorbits = Cvar_Get( "r_colorbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
-	//r_stereo = Cvar_Get( "r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
-//#ifdef __linux__
-	//r_stencilbits = Cvar_Get( "r_stencilbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
-//#else
-	//r_stencilbits = Cvar_Get( "r_stencilbits", "8", CVAR_ARCHIVE | CVAR_LATCH2 );
-//#endif
-	//r_depthbits = Cvar_Get( "r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_overBrightBits = Cvar_Get ("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	//r_ignorehwgamma = Cvar_Get( "r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-	//r_mode = Cvar_Get( "r_mode", "3", CVAR_ARCHIVE | CVAR_LATCH2 );
-	//r_fullscreen = Cvar_Get( "r_fullscreen", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	//r_customwidth = Cvar_Get( "r_customwidth", "1600", CVAR_ARCHIVE | CVAR_LATCH2 );
-	//r_customheight = Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH2 );
-	//r_customaspect = Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_simpleMipMaps = Cvar_Get( "r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_uiFullScreen = Cvar_Get( "r_uifullscreen", "0", 0);
@@ -777,8 +763,6 @@ void R_Register( void )
 	//
 	// temporary latched variables that can only change over a restart
 	//
-	//r_displayRefresh = Cvar_Get( "r_displayRefresh", "0", CVAR_LATCH2 );
-	//AssertCvarRange( r_displayRefresh, 0, 200, qtrue );
 	r_fullbright = Cvar_Get ("r_fullbright", "0", CVAR_LATCH2|CVAR_CHEAT );
 	r_mapOverBrightBits = Cvar_Get ("r_mapOverBrightBits", "2", CVAR_LATCH2 );
 	r_intensity = Cvar_Get ("r_intensity", "1", CVAR_LATCH2 );
@@ -801,7 +785,6 @@ void R_Register( void )
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
 	r_textureMode = Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	r_swapInterval = Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
-	//r_gamma = Cvar_Get( "r_gamma", "1", CVAR_ARCHIVE );
 	r_facePlaneCull = Cvar_Get ("r_facePlaneCull", "1", CVAR_ARCHIVE );
 
 	r_railWidth = Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );
@@ -843,8 +826,6 @@ void R_Register( void )
 	r_novis = Cvar_Get ("r_novis", "0", CVAR_CHEAT);
 	r_showcluster = Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
-	//r_verbose = Cvar_Get( "r_verbose", "0", CVAR_CHEAT );
-	//r_logFile = Cvar_Get( "r_logFile", "0", CVAR_CHEAT );
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 	r_nobind = Cvar_Get ("r_nobind", "0", CVAR_CHEAT);
 	r_showtris = Cvar_Get ("r_showtris", "0", CVAR_CHEAT);
