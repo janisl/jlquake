@@ -2172,9 +2172,6 @@ int FS_ReadFile(const char* qpath, QArray<byte>& Buffer)
 				throw QException("Read from journalDataFile failed");
 			}
 
-			// guarantee that it will have a trailing 0 for string operations
-			Buffer[len] = 0;
-
 			return len;
 		}
 	}
