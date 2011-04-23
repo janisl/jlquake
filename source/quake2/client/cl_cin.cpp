@@ -96,7 +96,7 @@ void SCR_LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *h
 		return;
 	}
 
-	out = (byte*)Z_Malloc ( (pcx->ymax+1) * (pcx->xmax+1) );
+	out = (byte*)Mem_Alloc ( (pcx->ymax+1) * (pcx->xmax+1) );
 
 	*pic = out;
 
@@ -104,7 +104,7 @@ void SCR_LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *h
 
 	if (palette)
 	{
-		*palette = (byte*)Z_Malloc(768);
+		*palette = (byte*)Mem_Alloc(768);
 		Com_Memcpy(*palette, (byte *)pcx + len - 768, 768);
 	}
 
@@ -136,7 +136,7 @@ void SCR_LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *h
 	if ( raw - (byte *)pcx > len)
 	{
 		Com_Printf ("PCX file %s was malformed", filename);
-		Z_Free (*pic);
+		Mem_Free (*pic);
 		*pic = NULL;
 	}
 
@@ -155,12 +155,12 @@ void SCR_StopCinematic (void)
 	cl.cinematictime = 0;	// done
 	if (cin.pic)
 	{
-		Z_Free (cin.pic);
+		Mem_Free (cin.pic);
 		cin.pic = NULL;
 	}
 	if (cin.pic_pending)
 	{
-		Z_Free (cin.pic_pending);
+		Mem_Free (cin.pic_pending);
 		cin.pic_pending = NULL;
 	}
 	if (cl.cinematicpalette_active)
@@ -175,7 +175,7 @@ void SCR_StopCinematic (void)
 	}
 	if (cin.hnodes1)
 	{
-		Z_Free (cin.hnodes1);
+		Mem_Free (cin.hnodes1);
 		cin.hnodes1 = NULL;
 	}
 
@@ -252,7 +252,7 @@ void Huff1TableInit (void)
 	byte	counts[256];
 	int		numhnodes;
 
-	cin.hnodes1 = (int*)Z_Malloc (256*256*2*4);
+	cin.hnodes1 = (int*)Mem_Alloc (256*256*2*4);
 	Com_Memset(cin.hnodes1, 0, 256*256*2*4);
 
 	for (prev=0 ; prev<256 ; prev++)
@@ -309,7 +309,7 @@ cblock_t Huff1Decompress (cblock_t in)
 	// get decompressed count
 	count = in.data[0] + (in.data[1]<<8) + (in.data[2]<<16) + (in.data[3]<<24);
 	input = in.data + 4;
-	out_p = out.data = (byte*)Z_Malloc (count);
+	out_p = out.data = (byte*)Mem_Alloc (count);
 
 	// read bits
 
@@ -517,7 +517,7 @@ void SCR_RunCinematic (void)
 		cl.cinematictime = cls.realtime - cl.cinematicframe*1000/14;
 	}
 	if (cin.pic)
-		Z_Free (cin.pic);
+		Mem_Free (cin.pic);
 	cin.pic = cin.pic_pending;
 	cin.pic_pending = NULL;
 	cin.pic_pending = SCR_ReadNextFrame ();
@@ -603,7 +603,7 @@ void SCR_PlayCinematic (char *arg)
 		else
 		{
 			Com_Memcpy(cl.cinematicpalette, palette, sizeof(cl.cinematicpalette));
-			Z_Free (palette);
+			Mem_Free (palette);
 		}
 		return;
 	}

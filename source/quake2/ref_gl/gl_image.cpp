@@ -444,7 +444,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 		return;
 	}
 
-	out = (byte*)malloc ( (pcx->ymax+1) * (pcx->xmax+1) );
+	out = (byte*)Mem_Alloc ( (pcx->ymax+1) * (pcx->xmax+1) );
 
 	*pic = out;
 
@@ -452,7 +452,7 @@ void LoadPCX (char *filename, byte **pic, byte **palette, int *width, int *heigh
 
 	if (palette)
 	{
-		*palette = (byte*)malloc(768);
+		*palette = (byte*)Mem_Alloc(768);
 		Com_Memcpy(*palette, (byte *)pcx + len - 768, 768);
 	}
 
@@ -1076,9 +1076,9 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 
 
 	if (pic)
-		free(pic);
+		Mem_Free(pic);
 	if (palette)
-		free(palette);
+		Mem_Free(palette);
 
 	return image;
 }
@@ -1159,8 +1159,8 @@ int Draw_GetPalette (void)
 
 	d_8to24table[255] &= LittleLong(0xffffff);	// 255 is transparent
 
-	free (pic);
-	free (pal);
+	Mem_Free (pic);
+	Mem_Free (pal);
 
 	return 0;
 }
