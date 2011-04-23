@@ -5,6 +5,7 @@ set(CLIENT_FILES
 	render_driver_glx.cpp
 	render_image.cpp
 	render_image_bmp.cpp
+	render_image_jpg.cpp
 	render_init.cpp
 	render_qgl.cpp
 	sound_audiocd_linux.cpp
@@ -32,4 +33,4 @@ foreach(SRC ${CLIENT_ASM_FILES})
 endforeach(SRC)
 
 add_library(client STATIC ${CLIENT_FILES})
-add_dependencies(client core)
+add_dependencies(client core jpeg)

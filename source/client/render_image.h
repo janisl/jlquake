@@ -17,4 +17,7 @@
 //**
 //**************************************************************************
 
-void R_LoadBMP(const char* name, byte** pic, int* width, int* height);
+void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
+
+void R_LoadJPG(const char* FileName, byte** Pic, int* Width, int* Height);
+void R_SaveJPG(const char* FileName, int Quality, int Width, int Height, byte* Buffer);

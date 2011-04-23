@@ -173,6 +173,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_image_jpg.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_init.cpp"
 				>
 			</File>
