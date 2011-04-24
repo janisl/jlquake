@@ -986,8 +986,6 @@ int R_Init()
 
 	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
 
-	R_InitQ2Palette();
-
 	R_Register();
 
 	// destroy the existing window

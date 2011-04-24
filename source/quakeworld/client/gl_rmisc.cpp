@@ -503,8 +503,6 @@ void VID_Init()
 	
 	R_CommonInit();
 
-	R_InitQ1Palette();
-
 	GL_Init ();
 
 	Sys_ShowConsole(0, false);

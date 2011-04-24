@@ -334,6 +334,16 @@ void R_CommonInit()
 	GLint temp;
 	qglGetIntegerv(GL_MAX_TEXTURE_SIZE, &temp);
 	glConfig.maxTextureSize = temp;
+
+	//	Load palette used by 8-bit graphics files.
+	if (GGameType & GAME_QuakeHexen)
+	{
+		R_InitQ1Palette();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		R_InitQ2Palette();
+	}
 }
 
 //==========================================================================
