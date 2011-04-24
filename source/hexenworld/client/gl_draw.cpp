@@ -183,44 +183,18 @@ image_t* Draw_PicFromFile (char *name)
 		return NULL;
 	}
 
-	gl = (glpic_t *)p->data;
+	image_t* img = new image_t;
+	img->width = p->width;
+	img->height = p->height;
+	gl = (glpic_t *)img->data;
 
-	// load little ones into the scrap
-/*	if (p->width < 64 && p->height < 64)
-	{
-		int		x, y;
-		int		i, j, k;
-		int		texnum;
+	gl->texnum = GL_LoadPicTexture (p);
 
-		texnum = Scrap_AllocBlock (p->width, p->height, &x, &y);
-		if (texnum == -1)
-			goto nonscrap;
-		scrap_dirty = true;
-		k = 0;
-		for (i=0 ; i<p->height ; i++)
-			for (j=0 ; j<p->width ; j++, k++)
-				scrap_texels[texnum][(y+i)*BLOCK_WIDTH + x + j] = p->data[k];
-		texnum += scrap_texnum;
-		gl->texnum = texnum;
-		gl->sl = (x+0.01)/(float)BLOCK_WIDTH;
-		gl->sh = (x+p->width-0.01)/(float)BLOCK_WIDTH;
-		gl->tl = (y+0.01)/(float)BLOCK_WIDTH;
-		gl->th = (y+p->height-0.01)/(float)BLOCK_WIDTH;
-
-		pic_count++;
-		pic_texels += p->width*p->height;
-	}
-	else*/
-	{
-nonscrap:
-		gl->texnum = GL_LoadPicTexture (p);
-
-		gl->sl = 0;
-		gl->sh = 1;
-		gl->tl = 0;
-		gl->th = 1;
-	}
-	return (image_t*)p;
+	gl->sl = 0;
+	gl->sh = 1;
+	gl->tl = 0;
+	gl->th = 1;
+	return img;
 }
 
 image_t* Draw_PicFromWad (char *name)
@@ -229,7 +203,10 @@ image_t* Draw_PicFromWad (char *name)
 	glpic_t	*gl;
 
 	p = (qpic_t*)W_GetLumpName (name);
-	gl = (glpic_t *)p->data;
+	image_t* img = new image_t;
+	img->width = p->width;
+	img->height = p->height;
+	gl = (glpic_t *)img->data;
 
 	// load little ones into the scrap
 	if (p->width < 64 && p->height < 64)
@@ -262,7 +239,7 @@ image_t* Draw_PicFromWad (char *name)
 		gl->tl = 0;
 		gl->th = 1;
 	}
-	return (image_t*)p;
+	return img;
 }
 
 

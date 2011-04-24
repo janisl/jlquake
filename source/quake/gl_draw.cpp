@@ -54,7 +54,7 @@ typedef struct
 struct image_t
 {
 	int			width, height;
-	byte		data[4];			// variably sized
+	byte		data[20];
 };
 
 typedef struct cachepic_s
@@ -190,7 +190,10 @@ image_t* Draw_PicFromWad(char *name)
 	glpic_t	*gl;
 
 	p = (qpic_t*)W_GetLumpName (name);
-	gl = (glpic_t *)p->data;
+	image_t* img = new image_t;
+	img->width = p->width;
+	img->height = p->height;
+	gl = (glpic_t *)img->data;
 
 	// load little ones into the scrap
 	if (p->width < 64 && p->height < 64)
@@ -223,7 +226,7 @@ image_t* Draw_PicFromWad(char *name)
 		gl->tl = 0;
 		gl->th = 1;
 	}
-	return (image_t*)p;
+	return img;
 }
 
 

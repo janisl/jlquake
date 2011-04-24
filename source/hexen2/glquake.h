@@ -42,7 +42,7 @@ typedef struct
 struct image_t
 {
 	int			width, height;
-	byte		data[4];			// variably sized
+	byte		data[20];
 };
 
 extern	int glx, gly, glwidth, glheight;
