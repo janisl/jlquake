@@ -1113,7 +1113,7 @@ void GL_MipMap (byte *in, int width, int height)
 GL_Upload32
 ===============
 */
-void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qboolean alpha)
+void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 {
 	int			samples;
 	static	unsigned	scaled[1024*512];	// [512*256];
@@ -1143,7 +1143,18 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qbool
 	if (scaled_width * scaled_height > sizeof(scaled)/4)
 		Sys_Error ("GL_LoadTexture: too big");
 
-	samples = alpha ? gl_alpha_format : gl_solid_format;
+	// scan the texture for any non-255 alpha
+	int c = width * height;
+	byte* scan = ((byte*)data) + 3;
+	samples = gl_solid_format;
+	for (int i = 0; i < c; i++, scan += 4)
+	{
+		if (*scan != 255)
+		{
+			samples = gl_alpha_format;
+			break;
+		}
+	}
 
 	if (scaled_width == width && scaled_height == height)
 	{
@@ -1344,7 +1355,7 @@ void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean a
 		}
 	}
 
-	GL_Upload32 (trans, width, height, mipmap, alpha);
+	GL_Upload32 (trans, width, height, mipmap);
 }
 
 /*
