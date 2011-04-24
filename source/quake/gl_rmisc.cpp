@@ -296,21 +296,6 @@ void R_TranslatePlayerSkin (int playernum)
 	// instead of sending it through gl_upload 8
     GL_Bind(playertextures + playernum);
 
-#if 0
-	byte	translated[320*200];
-
-	for (i=0 ; i<s ; i+=4)
-	{
-		translated[i] = translate[original[i]];
-		translated[i+1] = translate[original[i+1]];
-		translated[i+2] = translate[original[i+2]];
-		translated[i+3] = translate[original[i+3]];
-	}
-
-
-	// don't mipmap these, because it takes too long
-	GL_Upload8 (translated, paliashdr->skinwidth, paliashdr->skinheight, false, false, true);
-#else
 	scaled_width = gl_max_size->value < 512 ? gl_max_size->value : 512;
 	scaled_height = gl_max_size->value < 256 ? gl_max_size->value : 256;
 
@@ -344,8 +329,6 @@ void R_TranslatePlayerSkin (int playernum)
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-#endif
-
 }
 
 

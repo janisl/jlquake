@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
+void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap);
+
 #define GL_COLOR_INDEX8_EXT     0x80E5
 
 QCvar*		gl_nobind;
@@ -92,7 +94,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
-	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, true);
+	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false);
 	scrap_dirty = false;
 }
 
@@ -938,41 +940,17 @@ done: ;
 GL_Upload8
 ===============
 */
-void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean alpha)
+void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap)
 {
 static	unsigned	trans[640*480];		// FIXME, temporary
 	int			i, s;
-	qboolean	noalpha;
 	int			p;
 
 	s = width*height;
-	// if there are no transparent pixels, make it a 3 component
-	// texture even if it was specified as otherwise
-	if (alpha)
+	for (i=0 ; i<s ; i++)
 	{
-		noalpha = true;
-		for (i=0 ; i<s ; i++)
-		{
-			p = data[i];
-			if (p == 255)
-				noalpha = false;
-			trans[i] = d_8to24table[p];
-		}
-
-		if (alpha && noalpha)
-			alpha = false;
-	}
-	else
-	{
-		if (s&3)
-			Sys_Error ("GL_Upload8: s&3");
-		for (i=0 ; i<s ; i+=4)
-		{
-			trans[i] = d_8to24table[data[i]];
-			trans[i+1] = d_8to24table[data[i+1]];
-			trans[i+2] = d_8to24table[data[i+2]];
-			trans[i+3] = d_8to24table[data[i+3]];
-		}
+		p = data[i];
+		trans[i] = d_8to24table[p];
 	}
 
 	GL_Upload32 (trans, width, height, mipmap);
@@ -1015,7 +993,7 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 
 	GL_Bind(texture_extension_number );
 
-	GL_Upload8 (data, width, height, mipmap, alpha);
+	GL_Upload8 (data, width, height, mipmap);
 
 	texture_extension_number++;
 

@@ -5,6 +5,8 @@
 #include "quakedef.h"
 #include "glquake.h"
 
+void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, int mode);
+
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
 QCvar*		gl_picmip;
@@ -83,7 +85,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
-	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, true, 0);
+	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, 0);
 	scrap_dirty = false;
 }
 
@@ -1437,149 +1439,119 @@ done: ;
 GL_Upload8
 ===============
 */
-void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean alpha, int mode)
+void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, int mode)
 {
 static	unsigned	trans[640*480];		// FIXME, temporary
 	int				i, s;
-	qboolean		noalpha;
 	int				p;
 	static unsigned j;
-	qboolean		sprite = false;
 
 	if (mode >= 10)
 	{
-		sprite = true;
 		mode -= 10;
 	}
 
 	s = width*height;
-	// if there are no transparent pixels, make it a 3 component
-	// texture even if it was specified as otherwise
-	if ((alpha || mode != 0))
+	for (i=0 ; i<s ; i++)
 	{
-		noalpha = true;
-		for (i=0 ; i<s ; i++)
+		p = data[i];
+		trans[i] = d_8to24table[p];
+	}
+
+
+	for (i=0 ; i<s ; i++)
+	{
+		int n;
+		int r = 0, g = 0, b = 0;
+
+		p = data[i];
+		if (p == 255)
 		{
-			p = data[i];
-			if (p == 255)
-				noalpha = false;
-			trans[i] = d_8to24table[p];
-		}
+			unsigned long neighbors[9];
+			int num_neighbors_valid = 0;
+			int neighbor_u, neighbor_v;
 
+			int u, v;
+			u = s % width;
+			v = s / width;
 
-		for (i=0 ; i<s ; i++)
-		{
-			int n;
-			int r = 0, g = 0, b = 0;
-
-			p = data[i];
-			if (p == 255)
+			for( neighbor_u = u - 1; neighbor_u <= u + 1; neighbor_u++ )
 			{
-				unsigned long neighbors[9];
-				int num_neighbors_valid = 0;
-				int neighbor_u, neighbor_v;
-
-				int u, v;
-				u = s % width;
-				v = s / width;
-
-				for( neighbor_u = u - 1; neighbor_u <= u + 1; neighbor_u++ )
+				for( neighbor_v = v - 1; neighbor_v <= v + 1; neighbor_v++ )
 				{
-					for( neighbor_v = v - 1; neighbor_v <= v + 1; neighbor_v++ )
-					{
-						if( neighbor_u == neighbor_v )
-							continue;
-						// Make sure  that we are accessing a texel in the image, not out of range.
-						if( neighbor_u < 0 || neighbor_u > width || neighbor_v < 0 || neighbor_v > height )
-							continue;
-						if( data[neighbor_u + neighbor_v * width] == 255 )
-							continue;
-						neighbors[num_neighbors_valid++] = trans[neighbor_u + neighbor_v * width];
-					}
+					if( neighbor_u == neighbor_v )
+						continue;
+					// Make sure  that we are accessing a texel in the image, not out of range.
+					if( neighbor_u < 0 || neighbor_u > width || neighbor_v < 0 || neighbor_v > height )
+						continue;
+					if( data[neighbor_u + neighbor_v * width] == 255 )
+						continue;
+					neighbors[num_neighbors_valid++] = trans[neighbor_u + neighbor_v * width];
 				}
+			}
 
-				if( num_neighbors_valid == 0 )
-					continue;
+			if( num_neighbors_valid == 0 )
+				continue;
 
-				for( n = 0; n < num_neighbors_valid; n++ )
-				{
-					r += neighbors[n] & 0xff;
-					g += ( neighbors[n] & 0xff00 ) >> 8;
-					b += ( neighbors[n] & 0xff0000 ) >> 16;
-				}
+			for( n = 0; n < num_neighbors_valid; n++ )
+			{
+				r += neighbors[n] & 0xff;
+				g += ( neighbors[n] & 0xff00 ) >> 8;
+				b += ( neighbors[n] & 0xff0000 ) >> 16;
+			}
 
-				r /= num_neighbors_valid;
-				g /= num_neighbors_valid;
-				b /= num_neighbors_valid;
+			r /= num_neighbors_valid;
+			g /= num_neighbors_valid;
+			b /= num_neighbors_valid;
 
-				if( r > 255 )
-					r = 255;
-				if( g > 255 )
-					g = 255;
-				if( b > 255 )
-					b = 255;
+			if( r > 255 )
+				r = 255;
+			if( g > 255 )
+				g = 255;
+			if( b > 255 )
+				b = 255;
 
-				trans[i] = ( b << 16  ) | ( g << 8 ) | r;
+			trans[i] = ( b << 16  ) | ( g << 8 ) | r;
 //				trans[i] = 0;
-			}
-		}
-
-
-		if (alpha && noalpha)
-			alpha = false;
-
-		switch( mode )
-		{
-		case 1:
-			alpha = true;
-			for (i=0 ; i<s ; i++)
-			{
-				p = data[i];
-				if (p == 0)
-					trans[i] &= 0x00ffffff;
-				else if( p & 1 )
-				{
-					trans[i] &= 0x00ffffff;
-					trans[i] |= ( ( int )( 255 * r_wateralpha->value ) ) << 24;
-				}
-				else
-				{
-					trans[i] |= 0xff000000;
-				}
-			}
-			break;
-		case 2:
-			alpha = true;
-			for (i=0 ; i<s ; i++)
-			{
-				p = data[i];
-				if (p == 0)
-					trans[i] &= 0x00ffffff;
-			}
-			break;
-		case 3:
-			alpha = true;
-			for (i=0 ; i<s ; i++)
-			{
-				p = data[i];
-				trans[i] = d_8to24table[ColorIndex[p>>4]] & 0x00ffffff;
-				trans[i] |= ( int )ColorPercent[p&15] << 24;
-				//trans[i] = 0x7fff0000;
-			}
-			break;
 		}
 	}
-	else
+
+	switch( mode )
 	{
-		if (s&3)
-			Sys_Error ("GL_Upload8: s&3");
-		for (i=0 ; i<s ; i+=4)
+	case 1:
+		for (i=0 ; i<s ; i++)
 		{
-			trans[i] = d_8to24table[data[i]];
-			trans[i+1] = d_8to24table[data[i+1]];
-			trans[i+2] = d_8to24table[data[i+2]];
-			trans[i+3] = d_8to24table[data[i+3]];
+			p = data[i];
+			if (p == 0)
+				trans[i] &= 0x00ffffff;
+			else if( p & 1 )
+			{
+				trans[i] &= 0x00ffffff;
+				trans[i] |= ( ( int )( 255 * r_wateralpha->value ) ) << 24;
+			}
+			else
+			{
+				trans[i] |= 0xff000000;
+			}
 		}
+		break;
+	case 2:
+		for (i=0 ; i<s ; i++)
+		{
+			p = data[i];
+			if (p == 0)
+				trans[i] &= 0x00ffffff;
+		}
+		break;
+	case 3:
+		for (i=0 ; i<s ; i++)
+		{
+			p = data[i];
+			trans[i] = d_8to24table[ColorIndex[p>>4]] & 0x00ffffff;
+			trans[i] |= ( int )ColorPercent[p&15] << 24;
+			//trans[i] = 0x7fff0000;
+		}
+		break;
 	}
 
 	GL_Upload32 (trans, width, height, mipmap);
@@ -1621,7 +1593,7 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 
 	GL_Bind(texture_extension_number );
 
-	GL_Upload8 (data, width, height, mipmap, alpha, mode);
+	GL_Upload8 (data, width, height, mipmap, mode);
 
 	texture_extension_number++;
 
