@@ -36,7 +36,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-unsigned	d_8to24table[256];
+byte		host_basepal[768];
+byte		r_palette[256][4];
+unsigned*	d_8to24table;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -53,16 +55,31 @@ void R_SetPalette(byte* pal)
 	//
 	// 8 8 8 encoding
 	//
-	unsigned* table = d_8to24table;
+	d_8to24table = (unsigned*)r_palette;
 	for (int i = 0; i < 256; i++)
 	{
-		unsigned r = pal[0];
-		unsigned g = pal[1];
-		unsigned b = pal[2];
+		r_palette[i][0] = pal[0];
+		r_palette[i][1] = pal[1];
+		r_palette[i][2] = pal[2];
+		r_palette[i][3] = 255;
 		pal += 3;
-
-		unsigned v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
-		*table++ = LittleLong(v);
 	}
-	d_8to24table[255] &= LittleLong(0xffffff);	// 255 is transparent
+	r_palette[255][3] = 0;	// 255 is transparent
+}
+
+//==========================================================================
+//
+//	R_InitQ1Palette
+//
+//==========================================================================
+
+void R_InitQ1Palette()
+{
+	QArray<byte> Pal;
+	if (FS_ReadFile("gfx/palette.lmp", Pal) <= 0)
+	{
+		throw QException("Couldn't load gfx/palette.lmp");
+	}
+	R_SetPalette(Pal.Ptr());
+	Com_Memcpy(host_basepal, Pal.Ptr(), 768);
 }

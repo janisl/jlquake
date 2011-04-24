@@ -702,7 +702,7 @@ void VID_Init()
 
 	R_CommonInit();
 
-	R_SetPalette(host_basepal);
+	R_InitQ1Palette();
 
 	VID_SetPalette();
 

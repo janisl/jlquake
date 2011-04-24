@@ -83,7 +83,6 @@ int			host_framecount;
 
 int			host_hunklevel;
 
-byte		*host_basepal;
 byte		*host_colormap;
 
 netadr_t	master_adr;				// address of the master server
@@ -1317,9 +1316,6 @@ void Host_Init (quakeparms_t *parms)
 
 	R_InitTextures();
  
-	host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
-	if (!host_basepal)
-		Sys_Error ("Couldn't load gfx/palette.lmp");
 	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
 	if (!host_colormap)
 		Sys_Error ("Couldn't load gfx/colormap.lmp");
@@ -1374,7 +1370,6 @@ void Host_Shutdown(void)
 	NET_Shutdown ();
 	S_Shutdown();
 	IN_Shutdown ();
-	if (host_basepal)
-		VID_Shutdown();
+	VID_Shutdown();
 }
 
