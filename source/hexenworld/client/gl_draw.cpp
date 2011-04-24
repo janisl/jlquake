@@ -8,7 +8,6 @@
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
 QCvar*		gl_picmip;
-QCvar*		gl_spritemip;
 
 byte		*draw_chars;				// 8*8 graphic characters
 byte		*draw_smallchars;			// Small characters for status bar
@@ -346,7 +345,6 @@ void Draw_Init (void)
 	gl_nobind = Cvar_Get("gl_nobind", "0", 0);
 	gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
 	gl_picmip = Cvar_Get("gl_picmip", "0", 0);
-	gl_spritemip = Cvar_Get("gl_spritemip", "0", 0);
 
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 
@@ -1343,7 +1341,7 @@ void GL_MipMap (byte *in, int width, int height)
 GL_Upload32
 ===============
 */
-void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qboolean sprite)
+void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 {
 	int			samples;
 static	unsigned	scaled[1024*512];	// [512*256];
@@ -1354,16 +1352,8 @@ static	unsigned	scaled[1024*512];	// [512*256];
 	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
 		;
 
-	if (sprite)
-	{
-		scaled_width >>= (int)gl_spritemip->value;
-		scaled_height >>= (int)gl_spritemip->value;
-	}
-	else
-	{
-		scaled_width >>= (int)gl_picmip->value;
-		scaled_height >>= (int)gl_picmip->value;
-	}
+	scaled_width >>= (int)gl_picmip->value;
+	scaled_height >>= (int)gl_picmip->value;
 	if (scaled_width < 1)
 	{
 		scaled_width = 1;
@@ -1592,7 +1582,7 @@ static	unsigned	trans[640*480];		// FIXME, temporary
 		}
 	}
 
-	GL_Upload32 (trans, width, height, mipmap, sprite);
+	GL_Upload32 (trans, width, height, mipmap);
 }
 
 /*
