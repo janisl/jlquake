@@ -1145,19 +1145,6 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qbool
 
 	samples = alpha ? gl_alpha_format : gl_solid_format;
 
-#if 0
-	if (mipmap)
-		gluBuild2DMipmaps (GL_TEXTURE_2D, samples, width, height, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-	else if (scaled_width == width && scaled_height == height)
-		qglTexImage2D (GL_TEXTURE_2D, 0, samples, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-	else
-	{
-		gluScaleImage (GL_RGBA, width, height, GL_UNSIGNED_BYTE, trans,
-			scaled_width, scaled_height, GL_UNSIGNED_BYTE, scaled);
-		qglTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-	}
-#else
-
 	if (scaled_width == width && scaled_height == height)
 	{
 		if (!mipmap)
@@ -1195,7 +1182,6 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap, qbool
 		}
 	}
 done: ;
-#endif
 
 
 	  if (mipmap)
@@ -1411,80 +1397,6 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 
 	return texture_extension_number-1;
 }
-
-/*
-===============
-GL_Upload8
-===============
-*/
-/*
-void GL_UploadTrans8 (byte *data, int width, int height,  qboolean mipmap, byte Alpha)
-{
-	int			i, s;
-	int			p;
-	unsigned NewAlpha;
-
-	NewAlpha = ((unsigned)Alpha)<<24;
-
-	s = width*height;
-	for (i=0 ; i<s ; i++)
-	{
-		p = data[i];
-		trans[i] = d_8to24table[p];
-		if (p != 255)
-		{
-			trans[i] &= 0x00ffffff;
-			trans[i] |= NewAlpha;
-		}
-	}
-
-	GL_Upload32 (trans, width, height, mipmap, true);
-}
-*/
-
-/*
-================
-GL_LoadTransTexture
-================
-*/
-/*int GL_LoadTransTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, byte Alpha)
-{
-	qboolean	noalpha;
-	int			i, p, s;
-	gltexture_t	*glt;
-
-	// see if the texture is allready present
-	if (identifier[0])
-	{
-		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
-		{
-			if (!QStr::Cmp(identifier, glt->identifier))
-			{
-				if (width != glt->width || height != glt->height)
-					Sys_Error ("GL_LoadTexture: cache mismatch");
-				return gltextures[i].texnum;
-			}
-		}
-	}
-	else
-		glt = &gltextures[numgltextures];
-	numgltextures++;
-
-	QStr::Cpy(glt->identifier, identifier);
-	glt->texnum = texture_extension_number;
-	glt->width = width;
-	glt->height = height;
-	glt->mipmap = mipmap;
-
-	GL_Bind(texture_extension_number );
-
-	GL_UploadTrans8 (data, width, height, mipmap, Alpha);
-
-	texture_extension_number++;
-
-	return texture_extension_number-1;
-}
-*/
 
 /*
 ================
