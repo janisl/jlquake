@@ -223,8 +223,6 @@ void R_PushDlights (void);
 
 extern	model_t	*r_worldmodel;
 
-extern	unsigned	d_8to24table[256];
-
 extern	int		registration_sequence;
 
 

@@ -17,6 +17,8 @@
 //**
 //**************************************************************************
 
+void R_SetPalette(byte* pal);
+
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 
 void R_LoadJPG(const char* FileName, byte** Pic, int* Width, int* Height);
@@ -28,3 +30,5 @@ void R_SavePCXMem(QArray<byte>& buffer, byte* data, int width, int height, byte*
 
 void R_LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha);
+
+extern unsigned		d_8to24table[256];

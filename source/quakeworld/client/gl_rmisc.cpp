@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-unsigned		d_8to24table[256];
-
 int		texture_extension_number = 1;
 
 float		gldepthmin, gldepthmax;
@@ -444,26 +442,6 @@ void R_TimeRefresh_f (void)
 	GL_EndRendering ();
 }
 
-void VID_SetPalette()
-{
-	//
-	// 8 8 8 encoding
-	//
-	byte* pal = host_basepal;
-	unsigned* table = d_8to24table;
-	for (int i = 0; i < 256; i++)
-	{
-		unsigned r = pal[0];
-		unsigned g = pal[1];
-		unsigned b = pal[2];
-		pal += 3;
-		
-		unsigned v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
-		*table++ = v;
-	}
-	d_8to24table[255] &= 0xffffff;	// 255 is transparent
-}
-
 static void CheckMultiTextureExtensions() 
 {
 	if (strstr(glConfig.extensions_string, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
@@ -525,7 +503,7 @@ void VID_Init()
 	
 	R_CommonInit();
 
-	VID_SetPalette();
+	R_SetPalette(host_basepal);
 
 	GL_Init ();
 

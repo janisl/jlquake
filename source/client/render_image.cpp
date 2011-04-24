@@ -36,12 +36,33 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+unsigned	d_8to24table[256];
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
 //
-//
+//	R_SetPalette
 //
 //==========================================================================
+
+void R_SetPalette(byte* pal)
+{
+	//
+	// 8 8 8 encoding
+	//
+	unsigned* table = d_8to24table;
+	for (int i = 0; i < 256; i++)
+	{
+		unsigned r = pal[0];
+		unsigned g = pal[1];
+		unsigned b = pal[2];
+		pal += 3;
+
+		unsigned v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
+		*table++ = LittleLong(v);
+	}
+	d_8to24table[255] &= LittleLong(0xffffff);	// 255 is transparent
+}

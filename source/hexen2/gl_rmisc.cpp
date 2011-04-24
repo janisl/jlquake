@@ -5,7 +5,6 @@
 
 byte *playerTranslation;
 
-unsigned		d_8to24table[256];
 unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
@@ -465,25 +464,6 @@ void VID_SetPalette()
 	int		i,c,p;
 	unsigned	*table;
 
-	//
-	// 8 8 8 encoding
-	//
-	pal = host_basepal;
-	table = d_8to24table;
-	
-	for (i=0 ; i<256 ; i++)
-	{
-		r = pal[0];
-		g = pal[1];
-		b = pal[2];
-		pal += 3;
-		
-		v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
-		*table++ = v;
-	}
-
-	d_8to24table[255] &= 0xffffff;	// 255 is transparent
-
 	pal = host_basepal;
 	table = d_8to24TranslucentTable;
 
@@ -568,6 +548,8 @@ void VID_Init()
 	R_SharedRegister();
 
 	R_CommonInit();
+
+	R_SetPalette(host_basepal);
 
 	VID_SetPalette();
 

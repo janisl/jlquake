@@ -30,7 +30,6 @@ typedef struct
 extern byte globalcolormap[VID_GRADES*256], lastglobalcolor, *lastsourcecolormap;
 
 extern	viddef_t	vid;				// global video state
-extern	unsigned	d_8to24table[256];
 extern	unsigned	d_8to24TranslucentTable[256];
 
 void	VID_Init ();

@@ -47,7 +47,6 @@ typedef struct
 } viddef_t;
 
 extern	viddef_t	vid;				// global video state
-extern	unsigned	d_8to24table[256];
 
 void	VID_Init ();
 // Called at startup to set up translation tables, takes 256 8 bit RGB values

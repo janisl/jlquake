@@ -29,8 +29,6 @@ static unsigned char gammatable[256];
 
 QCvar		*intensity;
 
-unsigned	d_8to24table[256];
-
 qboolean GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean is_sky );
 qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
@@ -1025,9 +1023,6 @@ Draw_GetPalette
 */
 int Draw_GetPalette (void)
 {
-	int		i;
-	int		r, g, b;
-	unsigned	v;
 	byte	*pic, *pal;
 	int		width, height;
 
@@ -1037,17 +1032,7 @@ int Draw_GetPalette (void)
 	if (!pal)
 		ri.Sys_Error (ERR_FATAL, "Couldn't load pics/colormap.pcx");
 
-	for (i=0 ; i<256 ; i++)
-	{
-		r = pal[i*3+0];
-		g = pal[i*3+1];
-		b = pal[i*3+2];
-		
-		v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
-		d_8to24table[i] = LittleLong(v);
-	}
-
-	d_8to24table[255] &= LittleLong(0xffffff);	// 255 is transparent
+	R_SetPalette(pal);
 
 	Mem_Free (pic);
 	Mem_Free (pal);

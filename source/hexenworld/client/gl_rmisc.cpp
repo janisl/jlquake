@@ -7,7 +7,6 @@ byte *playerTranslation;
 
 byte globalcolormap[VID_GRADES*256];
 
-unsigned	d_8to24table[256];
 unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
@@ -607,29 +606,10 @@ void VID_SetPalette()
 {
 	unsigned short r,g,b;
 	int     v;
-	int     r1,g1,b1;
-	int		j,k,l,m;
 	unsigned short i, p, c;
 
-	//
-	// 8 8 8 encoding
-	//
 	byte* pal = host_basepal;
-	unsigned* table = d_8to24table;
-	for (int i = 0; i < 256; i++)
-	{
-		unsigned r = pal[0];
-		unsigned g = pal[1];
-		unsigned b = pal[2];
-		pal += 3;
-		
-		unsigned v = (255 << 24) + (r << 0) + (g << 8) + (b << 16);
-		*table++ = v;
-	}
-	d_8to24table[255] &= 0xffffff;	// 255 is transparent
-
-	pal = host_basepal;
-	table = d_8to24TranslucentTable;
+	unsigned* table = d_8to24TranslucentTable;
 
 	for (i=0; i<16;i++)
 	{
@@ -721,6 +701,8 @@ void VID_Init()
 	R_SharedRegister();
 
 	R_CommonInit();
+
+	R_SetPalette(host_basepal);
 
 	VID_SetPalette();
 
