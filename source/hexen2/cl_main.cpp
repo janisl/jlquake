@@ -332,50 +332,6 @@ void CL_PrintEntities_f (void)
 	}
 }
 
-
-/*
-===============
-SetPal
-
-Debugging tool, just flashes the screen
-===============
-*/
-void SetPal (int i)
-{
-#if 0
-	static int old;
-	byte	pal[768];
-	int		c;
-	
-	if (i == old)
-		return;
-	old = i;
-
-	if (i==0)
-		VID_SetPalette (host_basepal);
-	else if (i==1)
-	{
-		for (c=0 ; c<768 ; c+=3)
-		{
-			pal[c] = 0;
-			pal[c+1] = 255;
-			pal[c+2] = 0;
-		}
-		VID_SetPalette (pal);
-	}
-	else
-	{
-		for (c=0 ; c<768 ; c+=3)
-		{
-			pal[c] = 0;
-			pal[c+1] = 0;
-			pal[c+2] = 255;
-		}
-		VID_SetPalette (pal);
-	}
-#endif
-}
-
 /*
 ===============
 CL_AllocDlight
@@ -488,7 +444,6 @@ float	CL_LerpPoint (void)
 	{
 		if (frac < -0.01)
 		{
-SetPal(1);
 			cl.time = cl.mtime[1];
 //				Con_Printf ("low frac\n");
 		}
@@ -498,14 +453,11 @@ SetPal(1);
 	{
 		if (frac > 1.01)
 		{
-SetPal(2);
 			cl.time = cl.mtime[0];
 //				Con_Printf ("high frac\n");
 		}
 		frac = 1;
 	}
-	else
-		SetPal(0);
 		
 	return frac;
 }
