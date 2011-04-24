@@ -98,9 +98,9 @@ extern QCvar*	crosshair;
 
 qboolean        scr_initialized;                // ready to draw
 
-qpic_t          *scr_ram;
-qpic_t          *scr_net;
-qpic_t          *scr_turtle;
+image_t          *scr_ram;
+image_t          *scr_net;
+image_t          *scr_turtle;
 
 int                     scr_fullupdate;
 
@@ -494,7 +494,7 @@ DrawPause
 */
 void SCR_DrawPause (void)
 {
-	qpic_t  *pic;
+	image_t  *pic;
 
 	if (!scr_showpause->value)               // turn off for screenshots
 		return;
@@ -503,8 +503,8 @@ void SCR_DrawPause (void)
 		return;
 
 	pic = Draw_CachePic ("gfx/pause.lmp");
-	Draw_Pic ( (vid.width - pic->width)/2, 
-		(vid.height - 48 - pic->height)/2, pic);
+	Draw_Pic ( (vid.width - Draw_GetWidth(pic))/2, 
+		(vid.height - 48 - Draw_GetHeight(pic))/2, pic);
 }
 
 
@@ -516,14 +516,14 @@ SCR_DrawLoading
 */
 void SCR_DrawLoading (void)
 {
-	qpic_t  *pic;
+	image_t  *pic;
 
 	if (!scr_drawloading)
 		return;
 		
 	pic = Draw_CachePic ("gfx/loading.lmp");
-	Draw_Pic ( (vid.width - pic->width)/2, 
-		(vid.height - 48 - pic->height)/2, pic);
+	Draw_Pic ( (vid.width - Draw_GetWidth(pic))/2, 
+		(vid.height - 48 - Draw_GetHeight(pic))/2, pic);
 }
 
 

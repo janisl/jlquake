@@ -25,24 +25,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int			sb_updates;		// if >= vid.numpages, no update needed
 
 #define STAT_MINUS		10	// num frame for '-' stats digit
-qpic_t		*sb_nums[2][11];
-qpic_t		*sb_colon, *sb_slash;
-qpic_t		*sb_ibar;
-qpic_t		*sb_sbar;
-qpic_t		*sb_scorebar;
+image_t		*sb_nums[2][11];
+image_t		*sb_colon, *sb_slash;
+image_t		*sb_ibar;
+image_t		*sb_sbar;
+image_t		*sb_scorebar;
 
-qpic_t		*sb_weapons[7][8];	// 0 is active, 1 is owned, 2-5 are flashes
-qpic_t		*sb_ammo[4];
-qpic_t		*sb_sigil[4];
-qpic_t		*sb_armor[3];
-qpic_t		*sb_items[32];
+image_t		*sb_weapons[7][8];	// 0 is active, 1 is owned, 2-5 are flashes
+image_t		*sb_ammo[4];
+image_t		*sb_sigil[4];
+image_t		*sb_armor[3];
+image_t		*sb_items[32];
 
-qpic_t	*sb_faces[7][2];		// 0 is gibbed, 1 is dead, 2-6 are alive
+image_t	*sb_faces[7][2];		// 0 is gibbed, 1 is dead, 2-6 are alive
 							// 0 is static, 1 is temporary animation
-qpic_t	*sb_face_invis;
-qpic_t	*sb_face_quad;
-qpic_t	*sb_face_invuln;
-qpic_t	*sb_face_invis_invuln;
+image_t	*sb_face_invis;
+image_t	*sb_face_quad;
+image_t	*sb_face_invuln;
+image_t	*sb_face_invis_invuln;
 
 qboolean	sb_showscores;
 qboolean	sb_showteamscores;
@@ -229,7 +229,7 @@ void Sbar_Init (void)
 Sbar_DrawPic
 =============
 */
-void Sbar_DrawPic (int x, int y, qpic_t *pic)
+void Sbar_DrawPic (int x, int y, image_t *pic)
 {
 	Draw_Pic (x /* + ((vid.width - 320)>>1) */, y + (vid.height-SBAR_HEIGHT), pic);
 }
@@ -241,7 +241,7 @@ Sbar_DrawSubPic
 JACK: Draws a portion of the picture in the status bar.
 */
 
-void Sbar_DrawSubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height) 
+void Sbar_DrawSubPic(int x, int y, image_t *pic, int srcx, int srcy, int width, int height) 
 {
 	Draw_SubPic (x, y+(vid.height-SBAR_HEIGHT), pic, srcx, srcy, width, height);
 }
@@ -252,7 +252,7 @@ void Sbar_DrawSubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, i
 Sbar_DrawTransPic
 =============
 */
-void Sbar_DrawTransPic (int x, int y, qpic_t *pic)
+void Sbar_DrawTransPic (int x, int y, image_t *pic)
 {
 	Draw_TransPic (x /*+ ((vid.width - 320)>>1) */, y + (vid.height-SBAR_HEIGHT), pic);
 }
@@ -895,7 +895,7 @@ added by Zoid
 */
 void Sbar_TeamOverlay (void)
 {
-	qpic_t			*pic;
+	image_t			*pic;
 	int				i, k, l;
 	int				x, y;
 	char			num[12];
@@ -916,7 +916,7 @@ void Sbar_TeamOverlay (void)
 	scr_fullupdate = 0;
 
 	pic = Draw_CachePic ("gfx/ranking.lmp");
-	Draw_Pic (160-pic->width/2, 0, pic);
+	Draw_Pic (160-Draw_GetWidth(pic)/2, 0, pic);
 
 	y = 24;
 	x = 36;
@@ -988,7 +988,7 @@ ping time frags name
 */
 void Sbar_DeathmatchOverlay (int start)
 {
-	qpic_t			*pic;
+	image_t			*pic;
 	int				i, k, l;
 	int				top, bottom;
 	int				x, y, f;
@@ -1019,7 +1019,7 @@ void Sbar_DeathmatchOverlay (int start)
 
 	if (!start) {
 		pic = Draw_CachePic ("gfx/ranking.lmp");
-		Draw_Pic (160-pic->width/2, 0, pic);
+		Draw_Pic (160-Draw_GetWidth(pic)/2, 0, pic);
 	}
 
 // scores	
@@ -1317,12 +1317,12 @@ Sbar_FinaleOverlay
 */
 void Sbar_FinaleOverlay (void)
 {
-	qpic_t	*pic;
+	image_t	*pic;
 
 	scr_copyeverything = 1;
 
 	pic = Draw_CachePic ("gfx/finale.lmp");
-	Draw_TransPic ( (vid.width-pic->width)/2, 16, pic);
+	Draw_TransPic ( (vid.width-Draw_GetWidth(pic))/2, 16, pic);
 }
 
 

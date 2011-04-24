@@ -34,8 +34,8 @@ QCvar*		gl_max_size;
 QCvar*		gl_picmip;
 
 byte		*draw_chars;				// 8*8 graphic characters
-qpic_t		*draw_disc;
-qpic_t		*draw_backtile;
+image_t		*draw_disc;
+image_t		*draw_backtile;
 
 int			translate_texture;
 int			char_texture;
@@ -59,8 +59,29 @@ typedef struct
 	float	sl, tl, sh, th;
 } glpic_t;
 
-byte		conback_buffer[sizeof(qpic_t) + sizeof(glpic_t)];
-qpic_t		*conback = (qpic_t *)&conback_buffer;
+typedef struct
+{
+	int		texnum;
+	char	identifier[64];
+	int		width, height;
+	qboolean	mipmap;
+} gltexture_t;
+
+struct image_t
+{
+	int			width, height;
+	byte		data[4];			// variably sized
+};
+
+typedef struct cachepic_s
+{
+	char		name[MAX_QPATH];
+	image_t		pic;
+	byte		padding[32];	// for appended glpic
+} cachepic_t;
+
+byte		conback_buffer[sizeof(image_t) + sizeof(glpic_t)];
+image_t		*conback = (image_t*)&conback_buffer;
 
 int		gl_lightmap_format = 4;
 int		gl_solid_format = 3;
@@ -71,14 +92,6 @@ int		gl_filter_max = GL_LINEAR;
 
 
 int		texels;
-
-typedef struct
-{
-	int		texnum;
-	char	identifier[64];
-	int		width, height;
-	qboolean	mipmap;
-} gltexture_t;
 
 #define	MAX_GLTEXTURES	1024
 gltexture_t	gltextures[MAX_GLTEXTURES];
@@ -170,13 +183,6 @@ void Scrap_Upload (void)
 //=============================================================================
 /* Support Routines */
 
-typedef struct cachepic_s
-{
-	char		name[MAX_QPATH];
-	qpic_t		pic;
-	byte		padding[32];	// for appended glpic
-} cachepic_t;
-
 #define	MAX_CACHED_PICS		128
 cachepic_t	menu_cachepics[MAX_CACHED_PICS];
 int			menu_numcachepics;
@@ -186,7 +192,7 @@ byte		menuplyr_pixels[4096];
 int		pic_texels;
 int		pic_count;
 
-qpic_t *Draw_PicFromWad (char *name)
+image_t* Draw_PicFromWad (char *name)
 {
 	qpic_t	*p;
 	glpic_t	*gl;
@@ -225,7 +231,7 @@ qpic_t *Draw_PicFromWad (char *name)
 		gl->tl = 0;
 		gl->th = 1;
 	}
-	return p;
+	return (image_t*)p;
 }
 
 
@@ -234,7 +240,7 @@ qpic_t *Draw_PicFromWad (char *name)
 Draw_CachePic
 ================
 */
-qpic_t	*Draw_CachePic (char *path)
+image_t* Draw_CachePic (char *path)
 {
 	cachepic_t	*pic;
 	int			i;
@@ -604,7 +610,7 @@ void Draw_DebugChar (char num)
 Draw_Pic
 =============
 */
-void Draw_Pic (int x, int y, qpic_t *pic)
+void Draw_Pic (int x, int y, image_t* pic)
 {
 	glpic_t			*gl;
 
@@ -630,7 +636,7 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 Draw_AlphaPic
 =============
 */
-void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
+void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 {
 	glpic_t			*gl;
 
@@ -658,7 +664,7 @@ void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
 	qglDisable (GL_BLEND);
 }
 
-void Draw_SubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height)
+void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
 {
 	glpic_t			*gl;
 	float newsl, newtl, newsh, newth;
@@ -696,7 +702,7 @@ void Draw_SubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int h
 Draw_TransPic
 =============
 */
-void Draw_TransPic (int x, int y, qpic_t *pic)
+void Draw_TransPic (int x, int y, image_t* pic)
 {
 
 	if (x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
@@ -716,7 +722,7 @@ Draw_TransPicTranslate
 Only used for the player color selection menu
 =============
 */
-void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
+void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 {
 	int				v, u, c;
 	unsigned		trans[64*64], *dest;
@@ -1242,4 +1248,14 @@ void GL_SelectTexture (GLenum target)
 	cnttextures[oldtarget-TEXTURE0_SGIS] = currenttexture;
 	currenttexture = cnttextures[target-TEXTURE0_SGIS];
 	oldtarget = target;
+}
+
+int Draw_GetWidth(image_t* pic)
+{
+	return pic->width;
+}
+
+int Draw_GetHeight(image_t* pic)
+{
+	return pic->height;
 }
