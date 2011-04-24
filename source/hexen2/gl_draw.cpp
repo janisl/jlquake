@@ -81,7 +81,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
-	GL_Upload8 (scrap_texels[0], SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, true, 0);
+	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, true, 0);
 	scrap_dirty = false;
 }
 
@@ -143,18 +143,15 @@ image_t *Draw_PicFromWad (char *name)
 	{
 		int		x, y;
 		int		i, j, k;
-		int		texnum;
 
-		texnum = R_ScrapAllocBlock(p->width, p->height, &x, &y);
-		if (texnum == -1)
+		if (!R_ScrapAllocBlock(p->width, p->height, &x, &y))
 			goto nonscrap;
 		scrap_dirty = true;
 		k = 0;
 		for (i=0 ; i<p->height ; i++)
 			for (j=0 ; j<p->width ; j++, k++)
-				scrap_texels[texnum][(y+i)*SCRAP_BLOCK_WIDTH + x + j] = p->data[k];
-		texnum += scrap_texnum;
-		img->texnum = texnum;
+				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH + x + j] = p->data[k];
+		img->texnum = scrap_texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -414,8 +411,7 @@ void Draw_Init (void)
 	translate_texture[4] = texture_extension_number++;
 
 	// save slots for scraps
-	scrap_texnum = texture_extension_number;
-	texture_extension_number += MAX_SCRAPS;
+	scrap_texnum = texture_extension_number++;
 
 	//
 	// get the other pics we need

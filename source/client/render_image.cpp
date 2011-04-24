@@ -40,8 +40,8 @@ byte		host_basepal[768];
 byte		r_palette[256][4];
 unsigned*	d_8to24table;
 
-int			scrap_allocated[MAX_SCRAPS][SCRAP_BLOCK_WIDTH];
-byte		scrap_texels[MAX_SCRAPS][SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
+static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
+byte		scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 bool		scrap_dirty;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -125,42 +125,43 @@ void R_InitQ2Palette()
 //
 //==========================================================================
 
-int R_ScrapAllocBlock(int w, int h, int* x, int* y)
+bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 {
-	int		i, j;
-	int		best, best2;
-	int		texnum;
+	int best = SCRAP_BLOCK_HEIGHT;
 
-	for (texnum=0 ; texnum<MAX_SCRAPS ; texnum++)
+	for (int i = 0; i < SCRAP_BLOCK_WIDTH - w; i++)
 	{
-		best = SCRAP_BLOCK_HEIGHT;
+		int best2 = 0;
 
-		for (i=0 ; i<SCRAP_BLOCK_WIDTH-w ; i++)
+		int j;
+		for (j = 0; j < w; j++)
 		{
-			best2 = 0;
-
-			for (j=0 ; j<w ; j++)
+			if (scrap_allocated[i + j] >= best)
 			{
-				if (scrap_allocated[texnum][i+j] >= best)
-					break;
-				if (scrap_allocated[texnum][i+j] > best2)
-					best2 = scrap_allocated[texnum][i+j];
+				break;
 			}
-			if (j == w)
-			{	// this is a valid spot
-				*x = i;
-				*y = best = best2;
+			if (scrap_allocated[i + j] > best2)
+			{
+				best2 = scrap_allocated[i + j];
 			}
 		}
-
-		if (best + h > SCRAP_BLOCK_HEIGHT)
-			continue;
-
-		for (i=0 ; i<w ; i++)
-			scrap_allocated[texnum][*x + i] = best + h;
-
-		return texnum;
+		if (j == w)
+		{
+			// this is a valid spot
+			*x = i;
+			*y = best = best2;
+		}
 	}
 
-	return -1;
+	if (best + h > SCRAP_BLOCK_HEIGHT)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < w; i++)
+	{
+		scrap_allocated[*x + i] = best + h;
+	}
+
+	return true;
 }

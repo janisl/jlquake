@@ -105,7 +105,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
-	GL_Upload8 (scrap_texels[0], SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, true);
+	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, true);
 	scrap_dirty = false;
 }
 
@@ -135,16 +135,15 @@ image_t* Draw_PicFromWad (char *name)
 	{
 		int		x, y;
 		int		i, j, k;
-		int		texnum;
 
-		texnum = R_ScrapAllocBlock(p->width, p->height, &x, &y);
+		if (!R_ScrapAllocBlock(p->width, p->height, &x, &y))
+			goto noscrap;
 		scrap_dirty = true;
 		k = 0;
 		for (i=0 ; i<p->height ; i++)
 			for (j=0 ; j<p->width ; j++, k++)
-				scrap_texels[texnum][(y+i)*SCRAP_BLOCK_WIDTH + x + j] = p->data[k];
-		texnum += scrap_texnum;
-		img->texnum = texnum;
+				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH + x + j] = p->data[k];
+		img->texnum = scrap_texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -155,6 +154,7 @@ image_t* Draw_PicFromWad (char *name)
 	}
 	else
 	{
+noscrap:
 		img->texnum = GL_LoadPicTexture (p);
 		img->sl = 0;
 		img->sh = 1;
@@ -399,8 +399,7 @@ void Draw_Init (void)
 	translate_texture = texture_extension_number++;
 
 	// save slots for scraps
-	scrap_texnum = texture_extension_number;
-	texture_extension_number += MAX_SCRAPS;
+	scrap_texnum = texture_extension_number++;
 
 	//
 	// get the other pics we need

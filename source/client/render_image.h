@@ -17,13 +17,12 @@
 //**
 //**************************************************************************
 
-#define MAX_SCRAPS			1
 #define SCRAP_BLOCK_WIDTH	256
 #define SCRAP_BLOCK_HEIGHT	256
 
 void R_InitQ1Palette();
 void R_InitQ2Palette();
-int R_ScrapAllocBlock(int w, int h, int* x, int* y);
+bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 
@@ -41,6 +40,5 @@ extern byte			host_basepal[768];
 extern byte			r_palette[256][4];
 extern unsigned*	d_8to24table;
 
-extern int			scrap_allocated[MAX_SCRAPS][SCRAP_BLOCK_WIDTH];
-extern byte			scrap_texels[MAX_SCRAPS][SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
+extern byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 extern bool			scrap_dirty;

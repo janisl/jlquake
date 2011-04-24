@@ -314,7 +314,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(TEXNUM_SCRAPS);
-	GL_Upload8 (scrap_texels[0], SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false );
+	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false );
 	scrap_dirty = false;
 }
 
@@ -773,10 +773,8 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	{
 		int		x, y;
 		int		i, j, k;
-		int		texnum;
 
-		texnum = R_ScrapAllocBlock(image->width, image->height, &x, &y);
-		if (texnum == -1)
+		if (!R_ScrapAllocBlock(image->width, image->height, &x, &y))
 			goto nonscrap;
 		scrap_dirty = true;
 
@@ -784,8 +782,8 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 		k = 0;
 		for (i=0 ; i<image->height ; i++)
 			for (j=0 ; j<image->width ; j++, k++)
-				scrap_texels[texnum][(y+i)*SCRAP_BLOCK_WIDTH + x + j] = pic[k];
-		image->texnum = TEXNUM_SCRAPS + texnum;
+				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH + x + j] = pic[k];
+		image->texnum = TEXNUM_SCRAPS;
 		image->scrap = true;
 		image->has_alpha = true;
 		image->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
