@@ -50,7 +50,7 @@ unsigned*	d_8to24table;
 //
 //==========================================================================
 
-void R_SetPalette(byte* pal)
+static void R_SetPalette(byte* pal)
 {
 	//
 	// 8 8 8 encoding
@@ -82,4 +82,30 @@ void R_InitQ1Palette()
 	}
 	R_SetPalette(Pal.Ptr());
 	Com_Memcpy(host_basepal, Pal.Ptr(), 768);
+}
+
+//==========================================================================
+//
+//	R_InitQ2Palette
+//
+//==========================================================================
+
+void R_InitQ2Palette()
+{
+	// get the palette
+
+	byte* pic;
+	byte* pal;
+	int width;
+	int height;
+	R_LoadPCX("pics/colormap.pcx", &pic, &pal, &width, &height);
+	if (!pal)
+	{
+		throw QException("Couldn't load pics/colormap.pcx");
+	}
+
+	R_SetPalette(pal);
+
+	delete[] pic;
+	delete[] pal;
 }

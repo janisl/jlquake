@@ -1015,32 +1015,6 @@ void GL_FreeUnusedImages (void)
 	}
 }
 
-
-/*
-===============
-Draw_GetPalette
-===============
-*/
-int Draw_GetPalette (void)
-{
-	byte	*pic, *pal;
-	int		width, height;
-
-	// get the palette
-
-	R_LoadPCX("pics/colormap.pcx", &pic, &pal, &width, &height);
-	if (!pal)
-		ri.Sys_Error (ERR_FATAL, "Couldn't load pics/colormap.pcx");
-
-	R_SetPalette(pal);
-
-	Mem_Free (pic);
-	Mem_Free (pal);
-
-	return 0;
-}
-
-
 /*
 ===============
 GL_InitImages
@@ -1060,8 +1034,6 @@ void	GL_InitImages (void)
 		Cvar_SetLatched( "intensity", "1" );
 
 	gl_state.inverse_intensity = 1 / intensity->value;
-
-	Draw_GetPalette ();
 
 	for ( i = 0; i < 256; i++ )
 	{

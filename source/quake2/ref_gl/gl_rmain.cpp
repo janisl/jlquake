@@ -986,7 +986,7 @@ int R_Init()
 
 	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
 
-	Draw_GetPalette ();
+	R_InitQ2Palette();
 
 	R_Register();
 
@@ -1206,12 +1206,12 @@ void R_BeginFrame( float camera_separation )
 
 /*
 =============
-R_SetPalette
+R_CinematicSetPalette
 =============
 */
 unsigned r_rawpalette[256];
 
-void R_SetPalette ( const unsigned char *palette)
+void R_CinematicSetPalette ( const unsigned char *palette)
 {
 	int		i;
 
@@ -1364,7 +1364,7 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	re.Shutdown = R_Shutdown;
 
-	re.CinematicSetPalette = R_SetPalette;
+	re.CinematicSetPalette = R_CinematicSetPalette;
 	re.BeginFrame = R_BeginFrame;
 	re.EndFrame = GLimp_EndFrame;
 

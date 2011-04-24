@@ -17,8 +17,8 @@
 //**
 //**************************************************************************
 
-void R_SetPalette(byte* pal);
 void R_InitQ1Palette();
+void R_InitQ2Palette();
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 
