@@ -1448,7 +1448,7 @@ void Host_Init (quakeparms_t *parms)
 		Sys_Error ("Couldn't load gfx/colormap.lmp");
 
 	IN_Init();
-	VID_Init(host_basepal);
+	VID_Init();
 	Draw_Init();
 	SCR_Init();
 	R_Init();

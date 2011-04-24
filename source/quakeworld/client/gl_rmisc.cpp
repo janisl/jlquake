@@ -444,12 +444,12 @@ void R_TimeRefresh_f (void)
 	GL_EndRendering ();
 }
 
-void	VID_SetPalette (unsigned char *palette)
+void VID_SetPalette()
 {
 	//
 	// 8 8 8 encoding
 	//
-	byte* pal = palette;
+	byte* pal = host_basepal;
 	unsigned* table = d_8to24table;
 	for (int i = 0; i < 256; i++)
 	{
@@ -519,13 +519,13 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 	*height = glConfig.vidHeight;
 }
 
-void VID_Init(unsigned char *palette)
+void VID_Init()
 {
 	R_SharedRegister();
 	
 	R_CommonInit();
 
-	VID_SetPalette(palette);
+	VID_SetPalette();
 
 	GL_Init ();
 

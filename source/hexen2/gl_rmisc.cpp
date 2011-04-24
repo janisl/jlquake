@@ -458,7 +458,7 @@ void R_TimeRefresh_f (void)
 	GL_EndRendering ();
 }
 
-void VID_SetPalette (unsigned char *palette)
+void VID_SetPalette()
 {
 	byte	*pal;
 	int		r,g,b,v;
@@ -468,7 +468,7 @@ void VID_SetPalette (unsigned char *palette)
 	//
 	// 8 8 8 encoding
 	//
-	pal = palette;
+	pal = host_basepal;
 	table = d_8to24table;
 	
 	for (i=0 ; i<256 ; i++)
@@ -484,7 +484,7 @@ void VID_SetPalette (unsigned char *palette)
 
 	d_8to24table[255] &= 0xffffff;	// 255 is transparent
 
-	pal = palette;
+	pal = host_basepal;
 	table = d_8to24TranslucentTable;
 
 	for (i=0; i<16;i++)
@@ -563,13 +563,13 @@ void D_ShowLoadingSize(void)
 	qglDrawBuffer  (GL_BACK);
 }
 
-void VID_Init(unsigned char *palette)
+void VID_Init()
 {
 	R_SharedRegister();
 
 	R_CommonInit();
 
-	VID_SetPalette(palette);
+	VID_SetPalette();
 
 	GL_Init();
 

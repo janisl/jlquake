@@ -33,10 +33,7 @@ extern	viddef_t	vid;				// global video state
 extern	unsigned	d_8to24table[256];
 extern	unsigned	d_8to24TranslucentTable[256];
 
-void	VID_SetPalette (unsigned char *palette);
-// called at startup and after any gamma correction
-
-void	VID_Init (unsigned char *palette);
+void	VID_Init ();
 // Called at startup to set up translation tables, takes 256 8 bit RGB values
 // the palette data will go away after the call, so it must be copied off if
 // the video driver will need it again
