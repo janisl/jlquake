@@ -40,6 +40,10 @@ byte		host_basepal[768];
 byte		r_palette[256][4];
 unsigned*	d_8to24table;
 
+int			scrap_allocated[MAX_SCRAPS][SCRAP_BLOCK_WIDTH];
+byte		scrap_texels[MAX_SCRAPS][SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
+bool		scrap_dirty;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -108,4 +112,55 @@ void R_InitQ2Palette()
 
 	delete[] pic;
 	delete[] pal;
+}
+
+//==========================================================================
+//
+//	R_ScrapAllocBlock
+//
+//	scrap allocation
+//
+//	Allocate all the little status bar obejcts into a single texture
+// to crutch up stupid hardware / drivers
+//
+//==========================================================================
+
+int R_ScrapAllocBlock(int w, int h, int* x, int* y)
+{
+	int		i, j;
+	int		best, best2;
+	int		texnum;
+
+	for (texnum=0 ; texnum<MAX_SCRAPS ; texnum++)
+	{
+		best = SCRAP_BLOCK_HEIGHT;
+
+		for (i=0 ; i<SCRAP_BLOCK_WIDTH-w ; i++)
+		{
+			best2 = 0;
+
+			for (j=0 ; j<w ; j++)
+			{
+				if (scrap_allocated[texnum][i+j] >= best)
+					break;
+				if (scrap_allocated[texnum][i+j] > best2)
+					best2 = scrap_allocated[texnum][i+j];
+			}
+			if (j == w)
+			{	// this is a valid spot
+				*x = i;
+				*y = best = best2;
+			}
+		}
+
+		if (best + h > SCRAP_BLOCK_HEIGHT)
+			continue;
+
+		for (i=0 ; i<w ; i++)
+			scrap_allocated[texnum][*x + i] = best + h;
+
+		return texnum;
+	}
+
+	return -1;
 }

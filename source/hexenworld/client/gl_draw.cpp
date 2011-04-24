@@ -76,67 +76,7 @@ void GL_Bind (int texnum)
 }
 
 
-/*
-=============================================================================
-
-  scrap allocation
-
-  Allocate all the little status bar obejcts into a single texture
-  to crutch up stupid hardware / drivers
-
-=============================================================================
-*/
-
-#define	MAX_SCRAPS		1
-#define	BLOCK_WIDTH		256
-#define	BLOCK_HEIGHT	256
-
-int			scrap_allocated[MAX_SCRAPS][BLOCK_WIDTH];
-byte		scrap_texels[MAX_SCRAPS][BLOCK_WIDTH*BLOCK_HEIGHT*4];
-qboolean	scrap_dirty;
 int			scrap_texnum;
-
-// returns a texture number and the position inside it
-int Scrap_AllocBlock (int w, int h, int *x, int *y)
-{
-	int		i, j;
-	int		best, best2;
-	int		bestx;
-	int		texnum;
-
-	for (texnum=0 ; texnum<MAX_SCRAPS ; texnum++)
-	{
-		best = BLOCK_HEIGHT;
-
-		for (i=0 ; i<BLOCK_WIDTH-w ; i++)
-		{
-			best2 = 0;
-
-			for (j=0 ; j<w ; j++)
-			{
-				if (scrap_allocated[texnum][i+j] >= best)
-					break;
-				if (scrap_allocated[texnum][i+j] > best2)
-					best2 = scrap_allocated[texnum][i+j];
-			}
-			if (j == w)
-			{	// this is a valid spot
-				*x = i;
-				*y = best = best2;
-			}
-		}
-
-		if (best + h > BLOCK_HEIGHT)
-			continue;
-
-		for (i=0 ; i<w ; i++)
-			scrap_allocated[texnum][*x + i] = best + h;
-
-		return texnum;
-	}
-
-	Sys_Error ("Scrap_AllocBlock: full");
-}
 
 int	scrap_uploads;
 
@@ -144,7 +84,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
-	GL_Upload8 (scrap_texels[0], BLOCK_WIDTH, BLOCK_HEIGHT, false, true, 0);
+	GL_Upload8 (scrap_texels[0], SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, true, 0);
 	scrap_dirty = false;
 }
 
@@ -204,18 +144,18 @@ image_t* Draw_PicFromWad (char *name)
 		int		i, j, k;
 		int		texnum;
 
-		texnum = Scrap_AllocBlock (p->width, p->height, &x, &y);
+		texnum = R_ScrapAllocBlock(p->width, p->height, &x, &y);
 		scrap_dirty = true;
 		k = 0;
 		for (i=0 ; i<p->height ; i++)
 			for (j=0 ; j<p->width ; j++, k++)
-				scrap_texels[texnum][(y+i)*BLOCK_WIDTH + x + j] = p->data[k];
+				scrap_texels[texnum][(y+i)*SCRAP_BLOCK_WIDTH + x + j] = p->data[k];
 		texnum += scrap_texnum;
 		img->texnum = texnum;
-		img->sl = (x+0.01)/(float)BLOCK_WIDTH;
-		img->sh = (x+p->width-0.01)/(float)BLOCK_WIDTH;
-		img->tl = (y+0.01)/(float)BLOCK_WIDTH;
-		img->th = (y+p->height-0.01)/(float)BLOCK_WIDTH;
+		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
+		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
+		img->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
+		img->th = (y+p->height-0.01)/(float)SCRAP_BLOCK_WIDTH;
 
 		pic_count++;
 		pic_texels += p->width*p->height;

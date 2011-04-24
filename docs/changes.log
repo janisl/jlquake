@@ -191,4 +191,8 @@
   I finished merging system specific OpenGL stuff, in all games there are no more system specific OpenGL files.
 23.04.2011
   I did some merging of the OpenGL initialisation.
-  I started work on image loading.
+  I started work on image loading. Today I did all 24/32 bit formats supported (BMP, TGA and JPG).
+24.04.2011
+  I started work on 8-bit images. I merged PCX file loading and saving.
+  I added common palette. The way it was stored in Quake was in integer array and had little endian assumptions everywhere. Quake 2 fixed same of this, but still has places where little endian is asumed. New palette is stored as bytes so should not have any problems in case I do a port to some big endian system.
+  I added image structure in Quake and Hexen 2 replacing some hacks that were used. This will also prepare them for common image structure later.
