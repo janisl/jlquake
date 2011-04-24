@@ -37,14 +37,14 @@
 void Sbar_NormalOverlay(void);
 
 void Sbar_SmallDeathmatchOverlay(void);
-void M_DrawPic(int x, int y, qpic_t *pic);
+void M_DrawPic(int x, int y, image_t *pic);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
-static void Sbar_DrawPic(int x, int y, qpic_t *pic);
-static void Sbar_DrawTransPic(int x, int y, qpic_t *pic);
+static void Sbar_DrawPic(int x, int y, image_t *pic);
+static void Sbar_DrawTransPic(int x, int y, image_t *pic);
 static int Sbar_itoa(int num, char *buf);
 static void Sbar_DrawNum(int x, int y, int number, int digits);
 static void Sbar_SortFrags(void);
@@ -95,8 +95,8 @@ QCvar* BarSpeed;
 QCvar* sbtemp;
 QCvar* DMMode;
 
-static qpic_t *sb_nums[11];
-static qpic_t *sb_colon, *sb_slash;
+static image_t *sb_nums[11];
+static image_t *sb_colon, *sb_slash;
 
 static int fragsort[MAX_SCOREBOARD];
 
@@ -994,7 +994,7 @@ void FindColor (int slot, int *color1, int *color2)
 
 void Sbar_DeathmatchOverlay(void)
 {
-	qpic_t			*pic;
+	image_t			*pic;
 	int				i, k, l;
 	int				top, bottom;
 	int				x, y, f;
@@ -1005,7 +1005,7 @@ void Sbar_DeathmatchOverlay(void)
 	scr_fullupdate = 0;
 
 	pic = Draw_CachePic ("gfx/menu/title8.lmp");
-	M_DrawTransPic ((320-pic->width)/2, 0, pic);
+	M_DrawTransPic ((320-Draw_GetWidth(pic))/2, 0, pic);
 
 // scores	
 	Sbar_SortFrags ();
@@ -1108,7 +1108,7 @@ void FindName(char *which, char *name)
 
 void Sbar_NormalOverlay(void)
 {
-	qpic_t			*pic;
+	image_t			*pic;
 	int				i,y,piece;
 	char			Name[40];
 
@@ -1154,7 +1154,7 @@ void Sbar_NormalOverlay(void)
 
 void Sbar_SmallDeathmatchOverlay(void)
 {
-	qpic_t			*pic;
+	image_t			*pic;
 	int				i, k, l;
 	int				top, bottom;
 	int				x, y, f;
@@ -1732,7 +1732,7 @@ void SB_ViewSizeChanged(void)
 //
 //==========================================================================
 
-static void Sbar_DrawPic(int x, int y, qpic_t *pic)
+static void Sbar_DrawPic(int x, int y, image_t *pic)
 {
 	Draw_PicCropped(x+((vid.width-320)>>1),
 		y+(vid.height-(int)BarHeight), pic);
@@ -1746,7 +1746,7 @@ static void Sbar_DrawPic(int x, int y, qpic_t *pic)
 //
 //==========================================================================
 
-static void Sbar_DrawTransPic(int x, int y, qpic_t *pic)
+static void Sbar_DrawTransPic(int x, int y, image_t *pic)
 {
 	Draw_TransPicCropped(x+((vid.width-320)>>1),
 		y+(vid.height-(int)BarHeight), pic);

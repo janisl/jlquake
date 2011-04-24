@@ -77,9 +77,9 @@ extern	QCvar*	crosshair;
 
 qboolean	scr_initialized;		// ready to draw
 
-qpic_t		*scr_ram;
-qpic_t		*scr_net;
-qpic_t		*scr_turtle;
+image_t		*scr_ram;
+image_t		*scr_net;
+image_t		*scr_turtle;
 
 float		introTime = 0.0;
 
@@ -492,7 +492,7 @@ DrawPause
 */
 void SCR_DrawPause (void)
 {
-	qpic_t	*pic;
+	image_t	*pic;
 	float delta;
 	static qboolean newdraw = false;
 	int finaly;
@@ -554,7 +554,7 @@ SCR_DrawLoading
 void SCR_DrawLoading (void)
 {
 	int		size, count, offset;
-	qpic_t	*pic;
+	image_t	*pic;
 
 	if (!scr_drawloading && loading_stage == 0)
 		return;
@@ -959,7 +959,7 @@ void Bottom_Plaque_Draw (char *message)
 
 void SB_IntermissionOverlay(void)
 {
-	qpic_t	*pic;
+	image_t	*pic;
 	int		elapsed, size, bx, by, i;
 	char	*message,temp[80];
 
@@ -1094,7 +1094,7 @@ void SB_IntermissionOverlay(void)
 
 void SB_FinaleOverlay(void)
 {
-	qpic_t	*pic;
+	image_t	*pic;
 
 	scr_copyeverything = 1;
 

@@ -205,22 +205,22 @@ void M_PrintWhite (int cx, int cy, char *str)
 	}
 }
 
-void M_DrawTransPic (int x, int y, qpic_t *pic)
+void M_DrawTransPic (int x, int y, image_t *pic)
 {
 	Draw_TransPic (x + ((vid.width - 320)>>1), y, pic);
 }
 
-void M_DrawTransPic2 (int x, int y, qpic_t *pic)
+void M_DrawTransPic2 (int x, int y, image_t *pic)
 {
 	Draw_TransPic (x + ((vid.width - 320)>>1), y + ((vid.height - 200)>>1), pic);
 }
 
-void M_DrawPic (int x, int y, qpic_t *pic)
+void M_DrawPic (int x, int y, image_t *pic)
 {
 	Draw_Pic (x + ((vid.width - 320)>>1), y, pic);
 }
 
-void M_DrawTransPicCropped (int x, int y, qpic_t *pic)
+void M_DrawTransPicCropped (int x, int y, image_t *pic)
 {
 	Draw_TransPicCropped (x + ((vid.width - 320)>>1), y, pic);
 }
@@ -263,7 +263,7 @@ void M_BuildTranslationTable(int top, int bottom)
 }
 
 
-void M_DrawTransPicTranslate (int x, int y, qpic_t *pic)
+void M_DrawTransPicTranslate (int x, int y, image_t *pic)
 {
 	Draw_TransPicTranslate (x + ((vid.width - 320)>>1), y, pic, translationTable);
 }
@@ -271,7 +271,7 @@ void M_DrawTransPicTranslate (int x, int y, qpic_t *pic)
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
-	qpic_t	*p,*tm,*bm;
+	image_t	*p,*tm,*bm;
 	int		cx, cy;
 	int		n;
 
@@ -327,7 +327,7 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 
 void M_DrawTextBox2 (int x, int y, int width, int lines, qboolean bottom)
 {
-	qpic_t	*p,*tm,*bm;
+	image_t	*p,*tm,*bm;
 	int		cx, cy;
 	int		n;
 
@@ -454,7 +454,7 @@ static char unused_filler;  // cuz the COM_LoadStackFile puts a 0 at the end of 
 void M_BuildBigCharWidth (void)
 {
 #ifdef BUILD_BIG_CHAR
-	qpic_t	*p;
+	image_t	*p;
 	int ypos,xpos;
 	byte			*source;
 	int biggestX,adjustment;
@@ -559,7 +559,7 @@ void M_DrawBigString(int x, int y, char *string)
 void ScrollTitle (char *name)
 {
 	float delta;
-	qpic_t	*p;
+	image_t	*p;
 	static char *LastName = "";
 	int finaly;
 	static qboolean CanSwitch = true;
@@ -657,7 +657,7 @@ void M_Menu_Main_f (void)
 void M_Main_Draw (void)
 {
 	int		f;
-	qpic_t	*p;
+	image_t	*p;
 
 	ScrollTitle("gfx/menu/title0.lmp");
 //	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mainmenu.lmp") );
@@ -743,7 +743,7 @@ int m_enter_portals;
 void M_Difficulty_Draw (void)
 {
 	int		f, i;
-	qpic_t	*p;
+	image_t	*p;
 
 	ScrollTitle("gfx/menu/title5.lmp");
 
@@ -831,7 +831,7 @@ int	m_class_cursor;
 void M_Class_Draw (void)
 {
 	int		f, i;
-	qpic_t	*p;
+	image_t	*p;
 
 	ScrollTitle("gfx/menu/title2.lmp");
 
@@ -909,7 +909,7 @@ void M_Menu_SinglePlayer_f (void)
 void M_SinglePlayer_Draw (void)
 {
 	int		f;
-	qpic_t	*p;
+	image_t	*p;
 
 	ScrollTitle("gfx/menu/title1.lmp");
 	
@@ -1344,7 +1344,7 @@ void M_Menu_MultiPlayer_f (void)
 void M_MultiPlayer_Draw (void)
 {
 	int		f;
-	qpic_t	*p;
+	image_t	*p;
 
 	ScrollTitle("gfx/menu/title4.lmp");
 //	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mp_menu.lmp") );
@@ -1453,7 +1453,7 @@ void M_Menu_Setup_f (void)
 
 void M_Setup_Draw (void)
 {
-	qpic_t	*p;
+	image_t	*p;
 
 	ScrollTitle("gfx/menu/title4.lmp");
 	
@@ -1659,7 +1659,7 @@ void M_Menu_Net_f (void)
 void M_Net_Draw (void)
 {
 	int		f;
-	qpic_t	*p;
+	image_t	*p;
 
 	ScrollTitle("gfx/menu/title4.lmp");
 
@@ -1919,7 +1919,7 @@ void M_DrawCheckbox (int x, int y, int on)
 void M_Options_Draw (void)
 {
 	float		r;
-	qpic_t	*p;
+	image_t	*p;
 	
 	ScrollTitle("gfx/menu/title3.lmp");
 	
@@ -2157,7 +2157,7 @@ void M_Keys_Draw (void)
 	int		keys[2];
 	const char	*name;
 	int		x, y;
-	qpic_t	*p;
+	image_t	*p;
 
 	ScrollTitle("gfx/menu/title6.lmp");
 
@@ -2783,7 +2783,7 @@ void M_Quit_Key (int key)
 void M_Quit_Draw (void)
 {
 	int i,x,y,place,topy;
-	qpic_t	*p;
+	image_t	*p;
 
 	if (wasInMenus)
 	{
@@ -2886,7 +2886,7 @@ void M_Menu_LanConfig_f (void)
 
 void M_LanConfig_Draw (void)
 {
-	qpic_t	*p;
+	image_t	*p;
 	int		basex;
 	char	*startJoin;
 	char	*protocol;
@@ -3252,7 +3252,7 @@ void M_Menu_GameOptions_f (void)
 
 void M_GameOptions_Draw (void)
 {
-	qpic_t	*p;
+	image_t	*p;
 	int		x;
 
 	ScrollTitle("gfx/menu/title4.lmp");
@@ -3586,7 +3586,7 @@ void M_Menu_Search_f (void)
 
 void M_Search_Draw (void)
 {
-	qpic_t	*p;
+	image_t	*p;
 	int x;
 
 	ScrollTitle("gfx/menu/title4.lmp");
@@ -3647,7 +3647,7 @@ void M_ServerList_Draw (void)
 {
 	int		n;
 	char	string [64],*name;
-	qpic_t	*p;
+	image_t	*p;
 
 	if (!slist_sorted)
 	{

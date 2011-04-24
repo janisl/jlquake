@@ -39,6 +39,12 @@ typedef struct
 	float	sl, tl, sh, th;
 } glpic_t;
 
+struct image_t
+{
+	int			width, height;
+	byte		data[4];			// variably sized
+};
+
 extern	int glx, gly, glwidth, glheight;
 
 
