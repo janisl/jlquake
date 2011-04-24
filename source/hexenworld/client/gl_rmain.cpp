@@ -614,7 +614,7 @@ void R_DrawAliasModel (entity_t *e)
 	float entScale;
 	float xyfact;
 	float zfact;
-	qpic_t		*stonepic;
+	image_t		*stonepic;
 	glpic_t			*gl;
 	char		temp[80];
 	int mls;

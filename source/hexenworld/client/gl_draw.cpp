@@ -13,11 +13,11 @@ QCvar*		gl_spritemip;
 byte		*draw_chars;				// 8*8 graphic characters
 byte		*draw_smallchars;			// Small characters for status bar
 byte		*draw_menufont; 			// Big Menu Font
-qpic_t		*draw_disc[MAX_DISC] = 
+image_t		*draw_disc[MAX_DISC] = 
 {
 	NULL  // make the first one null for sure
 };
-qpic_t		*draw_backtile;
+image_t		*draw_backtile;
 
 int			translate_texture[MAX_PLAYER_CLASS];
 int			char_texture;
@@ -38,8 +38,8 @@ static byte cs_data[64] = {
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 };
 
-byte		conback_buffer[sizeof(qpic_t) + sizeof(glpic_t)];
-qpic_t		*conback = (qpic_t *)&conback_buffer;
+byte		conback_buffer[sizeof(image_t) + sizeof(glpic_t)];
+image_t		*conback = (image_t*)&conback_buffer;
 
 int		gl_lightmap_format = 4;
 int		gl_solid_format = 3;
@@ -154,7 +154,7 @@ void Scrap_Upload (void)
 typedef struct cachepic_s
 {
 	char		name[MAX_QPATH];
-	qpic_t		pic;
+	image_t		pic;
 	byte		padding[32];	// for appended glpic
 } cachepic_t;
 
@@ -172,7 +172,7 @@ int		pic_count;
 
 byte		menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
-qpic_t *Draw_PicFromFile (char *name)
+image_t* Draw_PicFromFile (char *name)
 {
 	qpic_t	*p;
 	glpic_t *gl;
@@ -220,10 +220,10 @@ nonscrap:
 		gl->tl = 0;
 		gl->th = 1;
 	}
-	return p;
+	return (image_t*)p;
 }
 
-qpic_t *Draw_PicFromWad (char *name)
+image_t* Draw_PicFromWad (char *name)
 {
 	qpic_t	*p;
 	glpic_t	*gl;
@@ -262,7 +262,7 @@ qpic_t *Draw_PicFromWad (char *name)
 		gl->tl = 0;
 		gl->th = 1;
 	}
-	return p;
+	return (image_t*)p;
 }
 
 
@@ -271,7 +271,7 @@ qpic_t *Draw_PicFromWad (char *name)
 Draw_CachePic
 ================
 */
-qpic_t	*Draw_CachePic (char *path)
+image_t* Draw_CachePic (char *path)
 {
 	cachepic_t	*pic;
 	int			i;
@@ -785,7 +785,7 @@ void Draw_DebugChar (char num)
 Draw_Pic
 =============
 */
-void Draw_Pic (int x, int y, qpic_t *pic)
+void Draw_Pic (int x, int y, image_t* pic)
 {
 	byte			*dest, *source;
 	unsigned short	*pusdest;
@@ -821,7 +821,7 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 Draw_AlphaPic
 =============
 */
-void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
+void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 {
 	byte			*dest, *source;
 	unsigned short	*pusdest;
@@ -852,7 +852,7 @@ void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
 	qglDisable (GL_BLEND);
 }
 
-void Draw_SubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height)
+void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
 {
 	byte			*dest, *source;
 	unsigned short	*pusdest;
@@ -888,7 +888,7 @@ void Draw_SubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int h
 	qglEnd ();
 }
 
-void Draw_PicCropped(int x, int y, qpic_t *pic)
+void Draw_PicCropped(int x, int y, image_t* pic)
 {
 	int height;
 	glpic_t 		*gl;
@@ -946,7 +946,7 @@ void Draw_PicCropped(int x, int y, qpic_t *pic)
 	qglEnd ();
 }
 
-void Draw_SubPicCropped(int x, int y, int h, qpic_t *pic)
+void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 {
 	int height;
 	glpic_t 		*gl;
@@ -1013,7 +1013,7 @@ void Draw_SubPicCropped(int x, int y, int h, qpic_t *pic)
 Draw_TransPic
 =============
 */
-void Draw_TransPic (int x, int y, qpic_t *pic)
+void Draw_TransPic (int x, int y, image_t* pic)
 {
 //	byte	*dest, *source, tbyte;
 //	unsigned short	*pusdest;
@@ -1028,7 +1028,7 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 	Draw_Pic (x, y, pic);
 }
 
-void Draw_TransPicCropped(int x, int y, qpic_t *pic)
+void Draw_TransPicCropped(int x, int y, image_t*pic)
 {
 	Draw_PicCropped (x, y, pic);
 }
@@ -1040,7 +1040,7 @@ Draw_TransPicTranslate
 Only used for the player color selection menu
 =============
 */
-void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
+void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 {
 	int				v, u, c;
 	unsigned		trans[PLAYER_DEST_WIDTH * PLAYER_DEST_HEIGHT], *dest;
