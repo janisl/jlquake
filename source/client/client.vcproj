@@ -177,6 +177,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_image_pcx.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_image_tga.cpp"
 				>
 			</File>

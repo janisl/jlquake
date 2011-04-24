@@ -22,5 +22,9 @@ void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_LoadJPG(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveJPG(const char* FileName, int Quality, int Width, int Height, byte* Buffer);
 
+void R_LoadPCX(const char* FileName, byte** Pic, byte** Palette, int* Width, int* Height);
+void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height);
+void R_SavePCXMem(QArray<byte>& buffer, byte* data, int width, int height, byte* palette);
+
 void R_LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha);

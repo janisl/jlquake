@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "quakedef.h"
+#include "../../client/render_local.h"
 
 QCvar*		baseskin;
 QCvar*		noskins;
@@ -95,12 +96,7 @@ Returns a pointer to the skin bitmap, or NULL to use the default
 byte	*Skin_Cache (skin_t *skin)
 {
 	char	name[1024];
-	byte	*raw;
 	byte	*out, *pix;
-	pcx_t	*pcx;
-	int		x, y;
-	int		dataByte;
-	int		runLength;
 
 	if (cls.downloadtype == dl_skin)
 		return NULL;		// use base until downloaded
@@ -119,91 +115,39 @@ byte	*Skin_Cache (skin_t *skin)
 // load the pic from disk
 //
 	sprintf (name, "skins/%s.pcx", skin->name);
-	raw = COM_LoadTempFile (name);
-	if (!raw)
+	if (!FS_FOpenFileRead(name, NULL, false))
 	{
 		Con_Printf ("Couldn't load skin %s\n", name);
 		sprintf (name, "skins/%s.pcx", baseskin->string);
-		raw = COM_LoadTempFile (name);
-		if (!raw)
+		if (!FS_FOpenFileRead(name, NULL, false))
 		{
 			skin->failedload = true;
 			return NULL;
 		}
 	}
 
-//
-// parse the PCX file
-//
-	pcx = (pcx_t *)raw;
-	raw = &pcx->data;
+	int width;
+	int height;
+	R_LoadPCX(name, &pix, NULL, &width, &height);
 
-	if (pcx->manufacturer != 0x0a
-		|| pcx->version != 5
-		|| pcx->encoding != 1
-		|| pcx->bits_per_pixel != 8
-		|| pcx->xmax >= 320
-		|| pcx->ymax >= 200)
+	if (!pix)
 	{
 		skin->failedload = true;
-		Con_Printf ("Bad skin %s\n", name);
+		Con_Printf ("Skin %s was malformed.  You should delete it.\n", name);
 		return NULL;
 	}
-	
+
 	out = (byte*)Cache_Alloc (&skin->cache, 320*200, skin->name);
 	if (!out)
 		Sys_Error ("Skin_Cache: couldn't allocate");
 
-	pix = out;
 	Com_Memset(out, 0, 320*200);
 
-	for (y=0 ; y<pcx->ymax ; y++, pix += 320)
+	byte* outp = out;
+	byte* pixp = pix;
+	for (int y = 0; y < height; y++, outp += 320, pixp += width)
 	{
-		for (x=0 ; x<=pcx->xmax ; )
-		{
-			if (raw - (byte*)pcx > com_filesize) 
-			{
-				Cache_Free (&skin->cache);
-				skin->failedload = true;
-				Con_Printf ("Skin %s was malformed.  You should delete it.\n", name);
-				return NULL;
-			}
-			dataByte = *raw++;
-
-			if((dataByte & 0xC0) == 0xC0)
-			{
-				runLength = dataByte & 0x3F;
-				if (raw - (byte*)pcx > com_filesize) 
-				{
-					Cache_Free (&skin->cache);
-					skin->failedload = true;
-					Con_Printf ("Skin %s was malformed.  You should delete it.\n", name);
-					return NULL;
-				}
-				dataByte = *raw++;
-			}
-			else
-				runLength = 1;
-
-			// skin sanity check
-			if (runLength + x > pcx->xmax + 2) {
-				Cache_Free (&skin->cache);
-				skin->failedload = true;
-				Con_Printf ("Skin %s was malformed.  You should delete it.\n", name);
-				return NULL;
-			}
-			while(runLength-- > 0)
-				pix[x++] = dataByte;
-		}
-
-	}
-
-	if ( raw - (byte *)pcx > com_filesize)
-	{
-		Cache_Free (&skin->cache);
-		skin->failedload = true;
-		Con_Printf ("Skin %s was malformed.  You should delete it.\n", name);
-		return NULL;
+		Com_Memcpy(outp, pixp, width);
 	}
 
 	skin->failedload = false;

@@ -6,6 +6,7 @@ set(CLIENT_FILES
 	render_image.cpp
 	render_image_bmp.cpp
 	render_image_jpg.cpp
+	render_image_pcx.cpp
 	render_image_tga.cpp
 	render_init.cpp
 	render_qgl.cpp

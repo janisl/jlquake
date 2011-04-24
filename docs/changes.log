@@ -189,3 +189,6 @@
   I mostly worked on merging GL system stuff. I also merged code from GL system files that was the same on both platforms.
 22.04.2011
   I finished merging system specific OpenGL stuff, in all games there are no more system specific OpenGL files.
+23.04.2011
+  I did some merging of the OpenGL initialisation.
+  I started work on image loading.

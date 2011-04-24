@@ -58,31 +58,6 @@ typedef struct {
 	int		bssLength;			// zero filled memory appended to datalength
 } vmHeader_t;
 
-
-/*
-========================================================================
-
-PCX files are used for 8 bit images
-
-========================================================================
-*/
-
-typedef struct {
-    char	manufacturer;
-    char	version;
-    char	encoding;
-    char	bits_per_pixel;
-    unsigned short	xmin,ymin,xmax,ymax;
-    unsigned short	hres,vres;
-    unsigned char	palette[48];
-    char	reserved;
-    char	color_planes;
-    unsigned short	bytes_per_line;
-    unsigned short	palette_type;
-    char	filler[58];
-    unsigned char	data;			// unbounded
-} pcx_t;
-
 /*
 ========================================================================
 
