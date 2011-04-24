@@ -615,7 +615,6 @@ void R_DrawAliasModel (entity_t *e)
 	float xyfact;
 	float zfact;
 	image_t		*stonepic;
-	glpic_t			*gl;
 	char		temp[80];
 	int mls;
 	vec3_t		adjust_origin;
@@ -827,8 +826,7 @@ void R_DrawAliasModel (entity_t *e)
 		{
 			sprintf(temp,"gfx/skin%d.lmp",currententity->skinnum);
 			stonepic = Draw_CachePic(temp);
-			gl = (glpic_t *)stonepic->data;
-			gl_extra_textures[currententity->skinnum-100] = gl->texnum;
+			gl_extra_textures[currententity->skinnum-100] = stonepic->texnum;
 		}
 
 		GL_Bind(gl_extra_textures[currententity->skinnum-100]);

@@ -29,16 +29,12 @@ void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, qboolean a
 int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode);
 int GL_FindTexture (char *identifier);
 
-typedef struct
-{
-	int		texnum;
-	float	sl, tl, sh, th;
-} glpic_t;
-
 struct image_t
 {
 	int			width, height;
-	byte		data[20];
+	int			texnum;
+	float		sl, tl, sh, th;
+	char		name[MAX_QPATH];
 };
 
 extern	int glx, gly, glwidth, glheight;

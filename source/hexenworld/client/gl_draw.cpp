@@ -38,7 +38,7 @@ static byte cs_data[64] = {
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 };
 
-byte		conback_buffer[sizeof(image_t) + sizeof(glpic_t)];
+byte		conback_buffer[sizeof(image_t)];
 image_t		*conback = (image_t*)&conback_buffer;
 
 int		gl_lightmap_format = 4;
@@ -151,15 +151,8 @@ void Scrap_Upload (void)
 //=============================================================================
 /* Support Routines */
 
-typedef struct cachepic_s
-{
-	char		name[MAX_QPATH];
-	image_t		pic;
-	byte		padding[32];	// for appended glpic
-} cachepic_t;
-
 #define	MAX_CACHED_PICS		256
-cachepic_t	menu_cachepics[MAX_CACHED_PICS];
+image_t		menu_cachepics[MAX_CACHED_PICS];
 int			menu_numcachepics;
 
 int		pic_texels;
@@ -175,7 +168,6 @@ byte		menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 image_t* Draw_PicFromFile (char *name)
 {
 	qpic_t	*p;
-	glpic_t *gl;
 
 	p = (qpic_t	*)COM_LoadHunkFile (name);
 	if (!p)
@@ -186,27 +178,24 @@ image_t* Draw_PicFromFile (char *name)
 	image_t* img = new image_t;
 	img->width = p->width;
 	img->height = p->height;
-	gl = (glpic_t *)img->data;
 
-	gl->texnum = GL_LoadPicTexture (p);
+	img->texnum = GL_LoadPicTexture (p);
 
-	gl->sl = 0;
-	gl->sh = 1;
-	gl->tl = 0;
-	gl->th = 1;
+	img->sl = 0;
+	img->sh = 1;
+	img->tl = 0;
+	img->th = 1;
 	return img;
 }
 
 image_t* Draw_PicFromWad (char *name)
 {
 	qpic_t	*p;
-	glpic_t	*gl;
 
 	p = (qpic_t*)W_GetLumpName (name);
 	image_t* img = new image_t;
 	img->width = p->width;
 	img->height = p->height;
-	gl = (glpic_t *)img->data;
 
 	// load little ones into the scrap
 	if (p->width < 64 && p->height < 64)
@@ -222,22 +211,22 @@ image_t* Draw_PicFromWad (char *name)
 			for (j=0 ; j<p->width ; j++, k++)
 				scrap_texels[texnum][(y+i)*BLOCK_WIDTH + x + j] = p->data[k];
 		texnum += scrap_texnum;
-		gl->texnum = texnum;
-		gl->sl = (x+0.01)/(float)BLOCK_WIDTH;
-		gl->sh = (x+p->width-0.01)/(float)BLOCK_WIDTH;
-		gl->tl = (y+0.01)/(float)BLOCK_WIDTH;
-		gl->th = (y+p->height-0.01)/(float)BLOCK_WIDTH;
+		img->texnum = texnum;
+		img->sl = (x+0.01)/(float)BLOCK_WIDTH;
+		img->sh = (x+p->width-0.01)/(float)BLOCK_WIDTH;
+		img->tl = (y+0.01)/(float)BLOCK_WIDTH;
+		img->th = (y+p->height-0.01)/(float)BLOCK_WIDTH;
 
 		pic_count++;
 		pic_texels += p->width*p->height;
 	}
 	else
 	{
-		gl->texnum = GL_LoadPicTexture (p);
-		gl->sl = 0;
-		gl->sh = 1;
-		gl->tl = 0;
-		gl->th = 1;
+		img->texnum = GL_LoadPicTexture (p);
+		img->sl = 0;
+		img->sh = 1;
+		img->tl = 0;
+		img->th = 1;
 	}
 	return img;
 }
@@ -250,14 +239,13 @@ Draw_CachePic
 */
 image_t* Draw_CachePic (char *path)
 {
-	cachepic_t	*pic;
+	image_t*	pic;
 	int			i;
 	qpic_t		*dat;
-	glpic_t		*gl;
 
 	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
 		if (!QStr::Cmp(path, pic->name))
-			return &pic->pic;
+			return pic;
 
 	if (menu_numcachepics == MAX_CACHED_PICS)
 		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS");
@@ -294,21 +282,20 @@ image_t* Draw_CachePic (char *path)
 		Com_Memcpy(menuplyr_pixels[5], dat->data, dat->width*dat->height);
 #endif
 
-	pic->pic.width = dat->width;
-	pic->pic.height = dat->height;
+	pic->width = dat->width;
+	pic->height = dat->height;
 
 	// point sample status bar
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	gl = (glpic_t *)pic->pic.data;
-	gl->texnum = GL_LoadPicTexture (dat);
-	gl->sl = 0;
-	gl->sh = 1;
-	gl->tl = 0;
-	gl->th = 1;
+	pic->texnum = GL_LoadPicTexture (dat);
+	pic->sl = 0;
+	pic->sh = 1;
+	pic->tl = 0;
+	pic->th = 1;
 
-	return &pic->pic;
+	return pic;
 }
 
 
@@ -411,7 +398,6 @@ void Draw_Init (void)
 	byte	*dest, *src;
 	int		x, y;
 	char	ver[40];
-	glpic_t	*gl;
 	int		start;
 	byte    *ncdata;
 	int		f, fstep;
@@ -511,12 +497,11 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	gl = (glpic_t *)conback->data;
-	gl->texnum = GL_LoadTexture ("conback", conback->width, conback->height, ncdata, false, false, 0);
-	gl->sl = 0;
-	gl->sh = 1;
-	gl->tl = 0;
-	gl->th = 1;
+	conback->texnum = GL_LoadTexture ("conback", conback->width, conback->height, ncdata, false, false, 0);
+	conback->sl = 0;
+	conback->sh = 1;
+	conback->tl = 0;
+	conback->th = 1;
 	conback->width = vid.conwidth;
 	conback->height = vid.conheight;
 
@@ -767,25 +752,23 @@ void Draw_Pic (int x, int y, image_t* pic)
 	byte			*dest, *source;
 	unsigned short	*pusdest;
 	int				v, u;
-	glpic_t			*gl;
 
 	if (scrap_dirty)
 		Scrap_Upload ();
-	gl = (glpic_t *)pic->data;
 	qglColor4f (1,1,1,1);
-	GL_Bind (gl->texnum);
+	GL_Bind (pic->texnum);
 	qglBegin (GL_QUADS);
 
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
-	qglTexCoord2f (gl->sl, gl->tl);
+	qglTexCoord2f (pic->sl, pic->tl);
 	qglVertex2f (x, y);
-	qglTexCoord2f (gl->sh, gl->tl);
+	qglTexCoord2f (pic->sh, pic->tl);
 	qglVertex2f (x+pic->width, y);
-	qglTexCoord2f (gl->sh, gl->th);
+	qglTexCoord2f (pic->sh, pic->th);
 	qglVertex2f (x+pic->width, y+pic->height);
-	qglTexCoord2f (gl->sl, gl->th);
+	qglTexCoord2f (pic->sl, pic->th);
 	qglVertex2f (x, y+pic->height);
 	qglEnd ();
 
@@ -803,25 +786,23 @@ void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 	byte			*dest, *source;
 	unsigned short	*pusdest;
 	int				v, u;
-	glpic_t			*gl;
 
 	if (scrap_dirty)
 		Scrap_Upload ();
-	gl = (glpic_t *)pic->data;
 	qglDisable(GL_ALPHA_TEST);
 	qglEnable (GL_BLEND);
 //	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	qglCullFace(GL_FRONT);
 	qglColor4f (1,1,1,alpha);
-	GL_Bind (gl->texnum);
+	GL_Bind (pic->texnum);
 	qglBegin (GL_QUADS);
-	qglTexCoord2f (gl->sl, gl->tl);
+	qglTexCoord2f (pic->sl, pic->tl);
 	qglVertex2f (x, y);
-	qglTexCoord2f (gl->sh, gl->tl);
+	qglTexCoord2f (pic->sh, pic->tl);
 	qglVertex2f (x+pic->width, y);
-	qglTexCoord2f (gl->sh, gl->th);
+	qglTexCoord2f (pic->sh, pic->th);
 	qglVertex2f (x+pic->width, y+pic->height);
-	qglTexCoord2f (gl->sl, gl->th);
+	qglTexCoord2f (pic->sl, pic->th);
 	qglVertex2f (x, y+pic->height);
 	qglEnd ();
 	qglColor4f (1,1,1,1);
@@ -834,25 +815,23 @@ void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int 
 	byte			*dest, *source;
 	unsigned short	*pusdest;
 	int				v, u;
-	glpic_t			*gl;
 	float newsl, newtl, newsh, newth;
 	float oldglwidth, oldglheight;
 
 	if (scrap_dirty)
 		Scrap_Upload ();
-	gl = (glpic_t *)pic->data;
 	
-	oldglwidth = gl->sh - gl->sl;
-	oldglheight = gl->th - gl->tl;
+	oldglwidth = pic->sh - pic->sl;
+	oldglheight = pic->th - pic->tl;
 
-	newsl = gl->sl + (srcx*oldglwidth)/pic->width;
+	newsl = pic->sl + (srcx*oldglwidth)/pic->width;
 	newsh = newsl + (width*oldglwidth)/pic->width;
 
-	newtl = gl->tl + (srcy*oldglheight)/pic->height;
+	newtl = pic->tl + (srcy*oldglheight)/pic->height;
 	newth = newtl + (height*oldglheight)/pic->height;
 	
 	qglColor4f (1,1,1,1);
-	GL_Bind (gl->texnum);
+	GL_Bind (pic->texnum);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (newsl, newtl);
 	qglVertex2f (x, y);
@@ -868,7 +847,6 @@ void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int 
 void Draw_PicCropped(int x, int y, image_t* pic)
 {
 	int height;
-	glpic_t 		*gl;
 	float th,tl;
 
 	if((x < 0) || (x+pic->width > vid.width))
@@ -883,7 +861,6 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 
 	if (scrap_dirty)
 		Scrap_Upload ();
-	gl = (glpic_t *)pic->data;
 
 	// rjr tl/th need to be computed based upon pic->tl and pic->th
 	//     cuz the piece may come from the scrap
@@ -904,21 +881,21 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 	else
 	{
 		height = pic->height;
-		tl = gl->tl;
-		th = gl->th;//(height-0.01)/pic->height;
+		tl = pic->tl;
+		th = pic->th;//(height-0.01)/pic->height;
 	}
 
 
 	qglColor4f (1,1,1,1);
-	GL_Bind (gl->texnum);
+	GL_Bind (pic->texnum);
 	qglBegin (GL_QUADS);
-	qglTexCoord2f (gl->sl, tl);
+	qglTexCoord2f (pic->sl, tl);
 	qglVertex2f (x, y);
-	qglTexCoord2f (gl->sh, tl);
+	qglTexCoord2f (pic->sh, tl);
 	qglVertex2f (x+pic->width, y);
-	qglTexCoord2f (gl->sh, th);
+	qglTexCoord2f (pic->sh, th);
 	qglVertex2f (x+pic->width, y+height);
-	qglTexCoord2f (gl->sl, th);
+	qglTexCoord2f (pic->sl, th);
 	qglVertex2f (x, y+height);
 	qglEnd ();
 }
@@ -926,7 +903,6 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 {
 	int height;
-	glpic_t 		*gl;
 	float th,tl;
 
 	if((x < 0) || (x+pic->width > vid.width))
@@ -941,7 +917,6 @@ void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 
 	if (scrap_dirty)
 		Scrap_Upload ();
-	gl = (glpic_t *)pic->data;
 
 	// rjr tl/th need to be computed based upon pic->tl and pic->th
 	//     cuz the piece may come from the scrap
@@ -962,8 +937,8 @@ void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 	else
 	{
 		height = pic->height;
-		tl = gl->tl;
-		th = gl->th;//(height-0.01)/pic->height;
+		tl = pic->tl;
+		th = pic->th;//(height-0.01)/pic->height;
 	}
 
 	if (height > h) 
@@ -972,15 +947,15 @@ void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 	}
 
 	qglColor4f (1,1,1,1);
-	GL_Bind (gl->texnum);
+	GL_Bind (pic->texnum);
 	qglBegin (GL_QUADS);
-	qglTexCoord2f (gl->sl, tl);
+	qglTexCoord2f (pic->sl, tl);
 	qglVertex2f (x, y);
-	qglTexCoord2f (gl->sh, tl);
+	qglTexCoord2f (pic->sh, tl);
 	qglVertex2f (x+pic->width, y);
-	qglTexCoord2f (gl->sh, th);
+	qglTexCoord2f (pic->sh, th);
 	qglVertex2f (x+pic->width, y+height);
-	qglTexCoord2f (gl->sl, th);
+	qglTexCoord2f (pic->sl, th);
 	qglVertex2f (x, y+height);
 	qglEnd ();
 }
@@ -1182,7 +1157,7 @@ refresh window.
 void Draw_TileClear (int x, int y, int w, int h)
 {
 	qglColor3f (1,1,1);
-	GL_Bind (*(int *)draw_backtile->data);
+	GL_Bind (draw_backtile->texnum);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (x/64.0, y/64.0);
 	qglVertex2f (x, y);
