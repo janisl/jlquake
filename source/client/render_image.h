@@ -41,6 +41,7 @@ void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
 void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
+void R_ResampleTexture(byte* In, int InWidth, int InhHeight, byte* Out, int OutWidth, int OutHeight);
 bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);

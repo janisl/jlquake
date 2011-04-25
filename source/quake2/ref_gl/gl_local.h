@@ -279,8 +279,6 @@ void	Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 void	R_BeginFrame( float camera_separation );
 void	R_SwapBuffers( int );
 
-void GL_ResampleTexture (unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight);
-
 struct image_s *R_RegisterSkin (char *name);
 
 image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type);

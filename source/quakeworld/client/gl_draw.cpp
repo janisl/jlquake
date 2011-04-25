@@ -857,36 +857,6 @@ int GL_FindTexture (char *identifier)
 
 /*
 ================
-GL_ResampleTexture
-================
-*/
-void GL_ResampleTexture (unsigned *in, int inwidth, int inheight, unsigned *out,  int outwidth, int outheight)
-{
-	int		i, j;
-	unsigned	*inrow;
-	unsigned	frac, fracstep;
-
-	fracstep = inwidth*0x10000/outwidth;
-	for (i=0 ; i<outheight ; i++, out += outwidth)
-	{
-		inrow = in + inwidth*(i*inheight/outheight);
-		frac = fracstep >> 1;
-		for (j=0 ; j<outwidth ; j+=4)
-		{
-			out[j] = inrow[frac>>16];
-			frac += fracstep;
-			out[j+1] = inrow[frac>>16];
-			frac += fracstep;
-			out[j+2] = inrow[frac>>16];
-			frac += fracstep;
-			out[j+3] = inrow[frac>>16];
-			frac += fracstep;
-		}
-	}
-}
-
-/*
-================
 GL_MipMap
 
 Operates in place, quartering the size of the texture
@@ -964,7 +934,7 @@ texels += scaled_width * scaled_height;
 		Com_Memcpy(scaled, data, width*height*4);
 	}
 	else
-		GL_ResampleTexture (data, width, height, scaled, scaled_width, scaled_height);
+		R_ResampleTexture((byte*)data, width, height, (byte*)scaled, scaled_width, scaled_height);
 
 	qglTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
 	if (mipmap)
