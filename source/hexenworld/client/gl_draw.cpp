@@ -247,30 +247,6 @@ image_t* Draw_CachePic (char *path)
 }
 
 
-void Draw_CharToConback (int num, byte *dest)
-{
-	int		row, col;
-	byte	*source;
-	int		drawline;
-	int		x;
-
-	row = num>>5;
-	col = num&31;
-	source = draw_chars + (row<<11) + (col<<3);
-
-	drawline = 8;
-
-	while (drawline--)
-	{
-		for (x=0 ; x<8 ; x++)
-			if (source[x] != 255)
-				dest[x] = 0x60 + source[x];
-		source += 256;
-		dest += 320;
-	}
-
-}
-
 typedef struct
 {
 	char *name;
@@ -347,7 +323,6 @@ void Draw_Init (void)
 	int		x, y;
 	char	ver[40];
 	int		start;
-	byte    *ncdata;
 	int		f, fstep;
 	char	temp[MAX_QPATH];
 
@@ -400,51 +375,16 @@ void Draw_Init (void)
 	if (!cb)
 		Sys_Error ("Couldn't load gfx/menu/conback.lmp");
 	SwapPic (cb);
+	byte* pic32 = R_ConvertImage8To32(cb->data, conback->width, conback->height, IMG8MODE_Normal);
 
-/*	sprintf (ver, "%4.2f", VERSION);
-	dest = cb->data + 320 + 320*186 - 11 - 8*QStr::Length(ver);
-	for (x=0 ; x<QStr::Length(ver) ; x++)
-		Draw_CharToConback (ver[x], dest+(x<<3));*/
-
-#if 0
-	conback->width = vid.conwidth;
-	conback->height = vid.conheight;
-
-	// scale console to vid size
-	dest = ncdata = Hunk_AllocName(vid.conwidth * vid.conheight, "conback");
-
-	for (y=0 ; y<vid.conheight ; y++, dest += vid.conwidth)
-	{
-		src = cb->data + cb->width * (y*cb->height/vid.conheight);
-		if (vid.conwidth == cb->width)
-			Com_Memcpy(dest, src, vid.conwidth);
-		else
-		{
-			f = 0;
-			fstep = cb->width*0x10000/vid.conwidth;
-			for (x=0 ; x<vid.conwidth ; x+=4)
-			{
-				dest[x] = src[f>>16];
-				f += fstep;
-				dest[x+1] = src[f>>16];
-				f += fstep;
-				dest[x+2] = src[f>>16];
-				f += fstep;
-				dest[x+3] = src[f>>16];
-				f += fstep;
-			}
-		}
-	}
-#else
 	conback->width = cb->width;
 	conback->height = cb->height;
-	ncdata = cb->data;
-#endif
 	
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	conback->texnum = GL_LoadTexture8("conback", conback->width, conback->height, ncdata, false, false, 0);
+	conback->texnum = GL_LoadTexture("conback", conback->width, conback->height, pic32, false);
+	delete[] pic32;
 	conback->sl = 0;
 	conback->sh = 1;
 	conback->tl = 0;

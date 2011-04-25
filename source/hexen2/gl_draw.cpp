@@ -264,9 +264,15 @@ void Draw_CharToConback (int num, byte *dest)
 	{
 		for (x=0 ; x<8 ; x++)
 			if (source[x] != 255)
-				dest[x] = 0x60 + source[x];
+			{
+				int p = (0x60 + source[x]) & 0xff;
+				dest[x * 4 + 0] = r_palette[p][0];
+				dest[x * 4 + 1] = r_palette[p][1];
+				dest[x * 4 + 2] = r_palette[p][2];
+				dest[x * 4 + 3] = r_palette[p][3];
+			}
 		source += 256;
-		dest += 320;
+		dest += 320 * 4;
 	}
 
 }
@@ -396,19 +402,21 @@ void Draw_Init (void)
 	if (!cb)
 		Sys_Error ("Couldn't load gfx/menu/conback.lmp");
 	SwapPic (cb);
+	byte* pic32 = R_ConvertImage8To32(cb->data, cb->width, cb->height, IMG8MODE_Normal);
 
 	// hack the version number directly into the pic
 
-	dest = cb->data + 320 - 43 + 320*186;
+	dest = pic32 + (320 - 43 + 320*186) * 4;
 	sprintf (ver, "%4.2f", HEXEN2_VERSION);
 
 //	sprintf (ver, "(gl %4.2f) %4.2f", (float)GLQUAKE_VERSION, (float)VERSION);
 //	dest = cb->data + 320*186 + 320 - 11 - 8*QStr::Length(ver);
 	y = QStr::Length(ver);
 	for (x=0 ; x<y ; x++)
-		Draw_CharToConback (ver[x], dest+(x<<3));
+		Draw_CharToConback (ver[x], dest+(x<<5));
 
-	conback->texnum = GL_LoadTexture8("conback", cb->width, cb->height, cb->data, false, false, 0);
+	conback->texnum = GL_LoadTexture("conback", cb->width, cb->height, pic32, false);
+	delete[] pic32;
 	conback->sl = 0;
 	conback->sh = 1;
 	conback->tl = 0;
