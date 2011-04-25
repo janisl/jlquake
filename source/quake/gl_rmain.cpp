@@ -85,7 +85,6 @@ QCvar*	r_fullbright;
 QCvar*	r_lightmap;
 QCvar*	r_shadows;
 QCvar*	r_mirroralpha;
-QCvar*	r_wateralpha;
 QCvar*	r_dynamic;
 QCvar*	r_novis;
 

@@ -1514,13 +1514,13 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 	s = pheader->skinwidth * pheader->skinheight;
 
 	if( mdl_flags & EF_HOLEY )
-		texture_mode = 2;
+		texture_mode = IMG8MODE_Holey;
 	else if( mdl_flags & EF_TRANSPARENT )
-		texture_mode = 1;
+		texture_mode = IMG8MODE_Transparent;
 	else if( mdl_flags & EF_SPECIAL_TRANS )
-		texture_mode = 3;
+		texture_mode = IMG8MODE_SpecialTrans;
 	else
-		texture_mode = 0;
+		texture_mode = IMG8MODE_Normal;
 
 	for (i=0 ; i<numskins ; i++)
 	{

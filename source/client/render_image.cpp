@@ -40,6 +40,16 @@ byte		host_basepal[768];
 byte		r_palette[256][4];
 unsigned*	d_8to24table;
 
+int ColorIndex[16] =
+{
+	0, 31, 47, 63, 79, 95, 111, 127, 143, 159, 175, 191, 199, 207, 223, 231
+};
+
+unsigned ColorPercent[16] =
+{
+	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
+};
+
 static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
 byte		scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 bool		scrap_dirty;
@@ -112,6 +122,144 @@ void R_InitQ2Palette()
 
 	delete[] pic;
 	delete[] pal;
+}
+
+//==========================================================================
+//
+//	R_ConvertImage8To32
+//
+//==========================================================================
+
+byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
+{
+	byte* DataOut = new byte[Width * Height * 4];
+
+	int Count = Width * Height;
+	for (int i = 0; i < Count; i++)
+	{
+		int p = DataIn[i];
+		DataOut[i * 4 + 0] = r_palette[p][0];
+		DataOut[i * 4 + 1] = r_palette[p][1];
+		DataOut[i * 4 + 2] = r_palette[p][2];
+		DataOut[i * 4 + 3] = r_palette[p][3];
+	}
+
+	//	For transparent pixels scan around for another color to avoid alpha fringes
+	for (int i = 0; i < Count; i++)
+	{
+		int p = DataIn[i];
+		if (p == 255)
+		{
+			int u = i % Width;
+			int v = i / Width;
+
+			byte neighbors[9][3];
+			int num_neighbors_valid = 0;
+			for (int neighbor_u = u - 1; neighbor_u <= u + 1; neighbor_u++)
+			{
+				for (int neighbor_v = v - 1; neighbor_v <= v + 1; neighbor_v++)
+				{
+					if (neighbor_u == neighbor_v)
+					{
+						continue;
+					}
+					// Make sure  that we are accessing a texel in the image, not out of range.
+					if (neighbor_u < 0 || neighbor_u > Width || neighbor_v < 0 || neighbor_v > Height)
+					{
+						continue;
+					}
+					if (DataIn[neighbor_u + neighbor_v * Width] == 255)
+					{
+						continue;
+					}
+					neighbors[num_neighbors_valid][0] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 0];
+					neighbors[num_neighbors_valid][1] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 1];
+					neighbors[num_neighbors_valid][2] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 2];
+					num_neighbors_valid++;
+				}
+			}
+
+			if (num_neighbors_valid == 0)
+			{
+				continue;
+			}
+
+			int r = 0, g = 0, b = 0;
+			for (int n = 0; n < num_neighbors_valid; n++)
+			{
+				r += neighbors[n][0];
+				g += neighbors[n][1];
+				b += neighbors[n][2];
+			}
+
+			r /= num_neighbors_valid;
+			g /= num_neighbors_valid;
+			b /= num_neighbors_valid;
+
+			if (r > 255)
+			{
+				r = 255;
+			}
+			if (g > 255)
+			{
+				g = 255;
+			}
+			if (b > 255)
+			{
+				b = 255;
+			}
+
+			DataOut[i * 4 + 0] = r;
+			DataOut[i * 4 + 1] = g;
+			DataOut[i * 4 + 2] = b;
+		}
+	}
+
+	switch (Mode)
+	{
+	case IMG8MODE_Transparent:
+		for (int i = 0; i < Count; i++)
+		{
+			int p = DataIn[i];
+			if (p == 0)
+			{
+				DataOut[i * 4 + 3] = 0;
+			}
+			else if (p & 1)
+			{
+				DataOut[i * 4 + 3] = (int)(255 * r_wateralpha->value);
+			}
+			else
+			{
+				DataOut[i * 4 + 3] = 255;
+			}
+		}
+		break;
+
+	case IMG8MODE_Holey:
+		for (int i = 0; i < Count; i++)
+		{
+			int p = DataIn[i];
+			if (p == 0)
+			{
+				DataOut[i * 4 + 3] = 0;
+			}
+		}
+		break;
+
+	case IMG8MODE_SpecialTrans:
+		for (int i = 0; i < Count; i++)
+		{
+			int p = DataIn[i];
+			DataOut[i * 4 + 0] = r_palette[ColorIndex[p >> 4]][0];
+			DataOut[i * 4 + 1] = r_palette[ColorIndex[p >> 4]][1];
+			DataOut[i * 4 + 2] = r_palette[ColorIndex[p >> 4]][2];
+			DataOut[i * 4 + 3] = ColorPercent[p & 15];
+		}
+		break;
+	}
+
+	return DataOut;
 }
 
 //==========================================================================

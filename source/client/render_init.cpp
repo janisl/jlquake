@@ -67,6 +67,8 @@ QCvar*		r_verbose;
 QCvar*		r_gamma;
 QCvar*		r_ignorehwgamma;
 
+QCvar*		r_wateralpha;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -200,6 +202,7 @@ void R_SharedRegister()
 	// archived variables that can change at any time
 	//
 	r_gamma = Cvar_Get("r_gamma", "1", CVAR_ARCHIVE);
+	r_wateralpha = Cvar_Get("r_wateralpha","0.4", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time

@@ -9,16 +9,6 @@ unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
 
-int ColorIndex[16] =
-{
-	0, 31, 47, 63, 79, 95, 111, 127, 143, 159, 175, 191, 199, 207, 223, 231
-};
-
-unsigned ColorPercent[16] =
-{
-	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
-};
-
 byte globalcolormap[VID_GRADES*256];
 
 //int		texture_mode = GL_NEAREST;
@@ -220,7 +210,6 @@ void R_Init (void)
 	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
 	r_shadows = Cvar_Get("r_shadows", "0", 0);
 	r_mirroralpha = Cvar_Get("r_mirroralpha", "1", 0);
-	r_wateralpha = Cvar_Get("r_wateralpha","0.4", CVAR_ARCHIVE);
 	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
 	r_novis = Cvar_Get("r_novis", "0", 0);
 	r_wholeframe = Cvar_Get("r_wholeframe", "1", CVAR_ARCHIVE);

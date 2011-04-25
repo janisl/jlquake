@@ -184,7 +184,6 @@ extern	QCvar*	r_fullbright;
 extern	QCvar*	r_lightmap;
 extern	QCvar*	r_shadows;
 extern	QCvar*	r_mirroralpha;
-extern	QCvar*	r_wateralpha;
 extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 extern	QCvar*	r_wholeframe;
@@ -247,7 +246,5 @@ void SCR_DrawLoading (void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
 extern float RTint[256],GTint[256],BTint[256];
-extern int ColorIndex[16];
-extern unsigned ColorPercent[16];
 
 extern qboolean	vid_initialized;

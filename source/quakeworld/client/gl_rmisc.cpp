@@ -188,7 +188,6 @@ void R_Init (void)
 	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
 	r_shadows = Cvar_Get("r_shadows", "0", 0);
 	r_mirroralpha = Cvar_Get("r_mirroralpha", "1", 0);
-	r_wateralpha = Cvar_Get("r_wateralpha","0.4", CVAR_ARCHIVE);
 	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
 	r_novis = Cvar_Get("r_novis", "0", 0);
 	r_netgraph = Cvar_Get("r_netgraph", "0", 0);

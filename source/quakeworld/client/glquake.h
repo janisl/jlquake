@@ -122,7 +122,6 @@ extern	QCvar*	r_fullbright;
 extern	QCvar*	r_lightmap;
 extern	QCvar*	r_shadows;
 extern	QCvar*	r_mirroralpha;
-extern	QCvar*	r_wateralpha;
 extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 extern	QCvar*	r_netgraph;

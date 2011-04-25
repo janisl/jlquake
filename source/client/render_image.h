@@ -20,8 +20,22 @@
 #define SCRAP_BLOCK_WIDTH	256
 #define SCRAP_BLOCK_HEIGHT	256
 
+//	Hexen 2 model texture modes.
+enum
+{
+	//	standard
+	IMG8MODE_Normal,
+	//	color 0 transparent, odd - translucent, even - full value
+	IMG8MODE_Transparent,
+	//	color 0 transparent
+	IMG8MODE_Holey,
+	//	special (particle translucency table)
+	IMG8MODE_SpecialTrans,
+};
+
 void R_InitQ1Palette();
 void R_InitQ2Palette();
+byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
 bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
@@ -39,6 +53,9 @@ void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool Hav
 extern byte			host_basepal[768];
 extern byte			r_palette[256][4];
 extern unsigned*	d_8to24table;
+
+extern int			ColorIndex[16];
+extern unsigned		ColorPercent[16];
 
 extern byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 extern bool			scrap_dirty;

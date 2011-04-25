@@ -1029,18 +1029,10 @@ GL_Upload8
 */
 void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap)
 {
-static	unsigned	trans[640*480];		// FIXME, temporary
-	int			i, s;
-	int			p;
+	byte* pic32 = R_ConvertImage8To32(data, width, height, IMG8MODE_Normal);
 
-	s = width*height;
-	for (i=0 ; i<s ; i++)
-	{
-		p = data[i];
-		trans[i] = d_8to24table[p];
-	}
-
-	GL_Upload32 (trans, width, height, mipmap);
+	GL_Upload32((unsigned*)pic32, width, height, mipmap);
+	delete[] pic32;
 }
 
 /*

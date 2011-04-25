@@ -181,7 +181,6 @@ extern	QCvar*	r_fullbright;
 extern	QCvar*	r_lightmap;
 extern	QCvar*	r_shadows;
 extern	QCvar*	r_mirroralpha;
-extern	QCvar*	r_wateralpha;
 extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 extern	QCvar*	r_netgraph;
@@ -267,6 +266,3 @@ void R_DarkFieldParticles (entity_t *ent);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
 
 extern float RTint[256],GTint[256],BTint[256];
-
-extern int ColorIndex[16];
-extern unsigned ColorPercent[16];
