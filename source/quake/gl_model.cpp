@@ -388,7 +388,7 @@ static void Mod_LoadTextures (bsp29_lump_t *l)
 			R_InitSky (tx);
 		else
 		{
-			tx->gl_texturenum = GL_LoadTexture (mt->name, tx->width, tx->height, (byte *)(tx+1), true, false);
+			tx->gl_texturenum = GL_LoadTexture8(mt->name, tx->width, tx->height, (byte *)(tx+1), true, false);
 		}
 	}
 
@@ -1435,7 +1435,7 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 			pheader->gl_texturenum[i][1] =
 			pheader->gl_texturenum[i][2] =
 			pheader->gl_texturenum[i][3] =
-				GL_LoadTexture (name, pheader->skinwidth, 
+				GL_LoadTexture8(name, pheader->skinwidth, 
 				pheader->skinheight, (byte *)(pskintype + 1), true, false);
 			pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + s);
 		} else {
@@ -1457,7 +1457,7 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 					}
 					sprintf (name, "%s_%i_%i", loadmodel->name, i,j);
 					pheader->gl_texturenum[i][j&3] = 
-						GL_LoadTexture (name, pheader->skinwidth, 
+						GL_LoadTexture8(name, pheader->skinwidth, 
 						pheader->skinheight, (byte *)(pskintype), true, false);
 					pskintype = (daliasskintype_t *)((byte *)(pskintype) + s);
 			}
@@ -1676,7 +1676,7 @@ static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int fra
 	pspriteframe->right = width + origin[0];
 
 	sprintf (name, "%s_%i", loadmodel->name, framenum);
-	pspriteframe->gl_texturenum = GL_LoadTexture (name, width, height, (byte *)(pinframe + 1), true, true);
+	pspriteframe->gl_texturenum = GL_LoadTexture8(name, width, height, (byte *)(pinframe + 1), true, true);
 
 	return (void *)((byte *)pinframe + sizeof (dsprite1frame_t) + size);
 }

@@ -11,7 +11,6 @@
 
 #define MAX_DISC 18
 
-void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, int mode);
 void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
 QCvar*		gl_nobind;
@@ -57,9 +56,6 @@ typedef struct
 #define MAX_GLTEXTURES	2048
 gltexture_t	gltextures[MAX_GLTEXTURES];
 int			numgltextures;
-
-int GL_LoadPicTexture (qpic_t *pic);
-
 
 void GL_Bind (int texnum)
 {
@@ -123,7 +119,7 @@ image_t *Draw_PicFromFile (char *name)
 	img->width = p->width;
 	img->height = p->height;
 
-	img->texnum = GL_LoadPicTexture (p);
+	img->texnum = GL_LoadTexture8("", p->width, p->height, p->data, false, true, 0);
 
 	img->sl = 0;
 	img->sh = 1;
@@ -168,7 +164,7 @@ image_t *Draw_PicFromWad (char *name)
 	else
 	{
 nonscrap:
-		img->texnum = GL_LoadPicTexture (p);
+		img->texnum = GL_LoadTexture8("", p->width, p->height, p->data, false, true, 0);
 		img->sl = 0;
 		img->sh = 1;
 		img->tl = 0;
@@ -224,7 +220,7 @@ image_t* Draw_CachePic (char *path)
 	pic->width = dat->width;
 	pic->height = dat->height;
 
-	pic->texnum = GL_LoadPicTexture (dat);
+	pic->texnum = GL_LoadTexture8("", dat->width, dat->height, dat->data, false, true, 0);
 
 	// point sample status bar
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -359,7 +355,7 @@ void Draw_Init (void)
 		if (draw_chars[i] == 0)
 			draw_chars[i] = 255;	// proper transparent color
 
-	char_texture = GL_LoadTexture ("charset", 256, 128, draw_chars, false, true, 0);
+	char_texture = GL_LoadTexture8("charset", 256, 128, draw_chars, false, true, 0);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -370,7 +366,7 @@ void Draw_Init (void)
 			draw_smallchars[i] = 255;	// proper transparent color
 
 	// now turn them into textures
-	char_smalltexture = GL_LoadTexture ("smallcharset", 128, 32, draw_smallchars, false, true, 0);
+	char_smalltexture = GL_LoadTexture8("smallcharset", 128, 32, draw_smallchars, false, true, 0);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -380,7 +376,7 @@ void Draw_Init (void)
 			mf->data[i] = 255;	// proper transparent color
 
 
-	char_menufonttexture = GL_LoadTexture ("menufont", 160, 80, mf->data, false, true, 0);
+	char_menufonttexture = GL_LoadTexture8("menufont", 160, 80, mf->data, false, true, 0);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -400,7 +396,7 @@ void Draw_Init (void)
 	for (x=0 ; x<y ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<3));
 
-	conback->texnum = GL_LoadTexture ("conback", cb->width, cb->height, cb->data, false, false, 0);
+	conback->texnum = GL_LoadTexture8("conback", cb->width, cb->height, cb->data, false, false, 0);
 	conback->sl = 0;
 	conback->sh = 1;
 	conback->tl = 0;
@@ -1212,34 +1208,12 @@ done: ;
 	  }
 }
 
-static	unsigned	trans[640*480]; 	// FIXME, temporary
-
-/*
-===============
-GL_Upload8
-===============
-*/
-/*
-* mode:
-* 0 - standard
-* 1 - color 0 transparent, odd - translucent, even - full value
-* 2 - color 0 transparent
-* 3 - special (particle translucency table)
-*/
-void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, int mode)
-{
-	byte* pic32 = R_ConvertImage8To32(data, width, height, mode);
-
-	GL_Upload32((unsigned*)pic32, width, height, mipmap);
-	delete[] pic32;
-}
-
 /*
 ================
 GL_LoadTexture
 ================
 */
-int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode)
+int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap, int mode)
 {
 	qboolean	noalpha;
 	int			i, p, s;
@@ -1278,21 +1252,19 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 
 	GL_Bind(texture_extension_number );
 
-	GL_Upload8 (data, width, height, mipmap, mode);
+	GL_Upload32((unsigned*)data, width, height, mipmap);
 
 	texture_extension_number++;
 
 	return texture_extension_number-1;
 }
 
-/*
-================
-GL_LoadPicTexture
-================
-*/
-int GL_LoadPicTexture (qpic_t *pic)
+int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode)
 {
-	return GL_LoadTexture ("", pic->width, pic->height, pic->data, false, true, 0);
+	byte* pic32 = R_ConvertImage8To32(data, width, height, mode);
+	int ret = GL_LoadTexture(identifier, width, height, pic32, mipmap, mode);
+	delete[] pic32;
+	return ret;
 }
 
 int Draw_GetWidth(image_t* pic)

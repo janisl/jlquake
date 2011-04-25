@@ -29,7 +29,8 @@ extern	int texture_extension_number;
 
 extern	float	gldepthmin, gldepthmax;
 
-int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha);
+int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
+int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha);
 int GL_FindTexture (char *identifier);
 
 extern	int glx, gly, glwidth, glheight;
@@ -176,7 +177,6 @@ void R_DrawSkyChain (msurface_t *s);
 //
 // gl_draw.c
 //
-int GL_LoadPicTexture (qpic_t *pic);
 void GL_Set2D (void);
 
 //

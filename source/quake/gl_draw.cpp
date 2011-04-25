@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap);
 void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
 #define GL_COLOR_INDEX8_EXT     0x80E5
@@ -72,9 +71,6 @@ int		texels;
 #define	MAX_GLTEXTURES	1024
 gltexture_t	gltextures[MAX_GLTEXTURES];
 int			numgltextures;
-
-int GL_LoadPicTexture (qpic_t *pic);
-
 
 void GL_Bind (int texnum)
 {
@@ -147,7 +143,7 @@ image_t* Draw_PicFromWad(char *name)
 	else
 	{
 noscrap:
-		img->texnum = GL_LoadPicTexture (p);
+		img->texnum = GL_LoadTexture8("", p->width, p->height, p->data, false, true);
 		img->sl = 0;
 		img->sh = 1;
 		img->tl = 0;
@@ -194,7 +190,7 @@ image_t* Draw_CachePic (char *path)
 	pic->width = dat->width;
 	pic->height = dat->height;
 
-	pic->texnum = GL_LoadPicTexture (dat);
+	pic->texnum = GL_LoadTexture8("", dat->width, dat->height, dat->data, false, true);
 	pic->sl = 0;
 	pic->sh = 1;
 	pic->tl = 0;
@@ -324,7 +320,7 @@ void Draw_Init (void)
 			draw_chars[i] = 255;	// proper transparent color
 
 	// now turn them into textures
-	char_texture = GL_LoadTexture ("charset", 128, 128, draw_chars, false, true);
+	char_texture = GL_LoadTexture8("charset", 128, 128, draw_chars, false, true);
 
 	start = Hunk_LowMark();
 
@@ -382,7 +378,7 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	conback->texnum = GL_LoadTexture ("conback", conback->width, conback->height, ncdata, false, false);
+	conback->texnum = GL_LoadTexture8("conback", conback->width, conback->height, ncdata, false, false);
 	conback->sl = 0;
 	conback->sh = 1;
 	conback->tl = 0;
@@ -939,24 +935,11 @@ done: ;
 }
 
 /*
-===============
-GL_Upload8
-===============
-*/
-void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap)
-{
-	byte* pic32 = R_ConvertImage8To32(data, width, height, IMG8MODE_Normal);
-
-	GL_Upload32((unsigned*)pic32, width, height, mipmap);
-	delete[] pic32;
-}
-
-/*
 ================
 GL_LoadTexture
 ================
 */
-int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha)
+int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap)
 {
 	qboolean	noalpha;
 	int			i, p, s;
@@ -988,21 +971,19 @@ int GL_LoadTexture (char *identifier, int width, int height, byte *data, qboolea
 
 	GL_Bind(texture_extension_number );
 
-	GL_Upload8 (data, width, height, mipmap);
+	GL_Upload32((unsigned*)data, width, height, mipmap);
 
 	texture_extension_number++;
 
 	return texture_extension_number-1;
 }
 
-/*
-================
-GL_LoadPicTexture
-================
-*/
-int GL_LoadPicTexture (qpic_t *pic)
+int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha)
 {
-	return GL_LoadTexture ("", pic->width, pic->height, pic->data, false, true);
+	byte* pic32 = R_ConvertImage8To32(data, width, height, IMG8MODE_Normal);
+	int ret = GL_LoadTexture(identifier, width, height, pic32, mipmap);
+	delete[] pic32;
+	return ret;
 }
 
 /****************************************/
