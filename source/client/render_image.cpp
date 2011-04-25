@@ -126,151 +126,13 @@ void R_InitQ2Palette()
 
 //==========================================================================
 //
-//	R_ConvertImage8To32
-//
-//==========================================================================
-
-byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
-{
-	byte* DataOut = new byte[Width * Height * 4];
-
-	int Count = Width * Height;
-	for (int i = 0; i < Count; i++)
-	{
-		int p = DataIn[i];
-		DataOut[i * 4 + 0] = r_palette[p][0];
-		DataOut[i * 4 + 1] = r_palette[p][1];
-		DataOut[i * 4 + 2] = r_palette[p][2];
-		DataOut[i * 4 + 3] = r_palette[p][3];
-	}
-
-	//	For transparent pixels scan around for another color to avoid alpha fringes
-	for (int i = 0; i < Count; i++)
-	{
-		int p = DataIn[i];
-		if (p == 255 || (p == 0 && (Mode == IMG8MODE_Holey || Mode == IMG8MODE_Transparent)))
-		{
-			int u = i % Width;
-			int v = i / Width;
-
-			byte neighbors[9][3];
-			int num_neighbors_valid = 0;
-			for (int neighbor_u = u - 1; neighbor_u <= u + 1; neighbor_u++)
-			{
-				for (int neighbor_v = v - 1; neighbor_v <= v + 1; neighbor_v++)
-				{
-					if (neighbor_u == neighbor_v)
-					{
-						continue;
-					}
-					// Make sure  that we are accessing a texel in the image, not out of range.
-					if (neighbor_u < 0 || neighbor_u > Width || neighbor_v < 0 || neighbor_v > Height)
-					{
-						continue;
-					}
-					if (DataIn[neighbor_u + neighbor_v * Width] == 255)
-					{
-						continue;
-					}
-					neighbors[num_neighbors_valid][0] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 0];
-					neighbors[num_neighbors_valid][1] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 1];
-					neighbors[num_neighbors_valid][2] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 2];
-					num_neighbors_valid++;
-				}
-			}
-
-			if (num_neighbors_valid == 0)
-			{
-				continue;
-			}
-
-			int r = 0, g = 0, b = 0;
-			for (int n = 0; n < num_neighbors_valid; n++)
-			{
-				r += neighbors[n][0];
-				g += neighbors[n][1];
-				b += neighbors[n][2];
-			}
-
-			r /= num_neighbors_valid;
-			g /= num_neighbors_valid;
-			b /= num_neighbors_valid;
-
-			if (r > 255)
-			{
-				r = 255;
-			}
-			if (g > 255)
-			{
-				g = 255;
-			}
-			if (b > 255)
-			{
-				b = 255;
-			}
-
-			DataOut[i * 4 + 0] = r;
-			DataOut[i * 4 + 1] = g;
-			DataOut[i * 4 + 2] = b;
-		}
-	}
-
-	switch (Mode)
-	{
-	case IMG8MODE_Transparent:
-		for (int i = 0; i < Count; i++)
-		{
-			int p = DataIn[i];
-			if (p == 0)
-			{
-				DataOut[i * 4 + 3] = 0;
-			}
-			else if (p & 1)
-			{
-				DataOut[i * 4 + 3] = (int)(255 * r_wateralpha->value);
-			}
-			else
-			{
-				DataOut[i * 4 + 3] = 255;
-			}
-		}
-		break;
-
-	case IMG8MODE_Holey:
-		for (int i = 0; i < Count; i++)
-		{
-			int p = DataIn[i];
-			if (p == 0)
-			{
-				DataOut[i * 4 + 3] = 0;
-			}
-		}
-		break;
-
-	case IMG8MODE_SpecialTrans:
-		for (int i = 0; i < Count; i++)
-		{
-			int p = DataIn[i];
-			DataOut[i * 4 + 0] = r_palette[ColorIndex[p >> 4]][0];
-			DataOut[i * 4 + 1] = r_palette[ColorIndex[p >> 4]][1];
-			DataOut[i * 4 + 2] = r_palette[ColorIndex[p >> 4]][2];
-			DataOut[i * 4 + 3] = ColorPercent[p & 15];
-		}
-		break;
-	}
-
-	return DataOut;
-}
-
-//==========================================================================
-//
 //	R_FloodFillSkin
 //
 //	Fill background pixels so mipmapping doesn't have haloes
 //
 //==========================================================================
 
-void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
+static void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 {
 	int filledcolor = 0;
 	// attempt to find opaque black
@@ -353,6 +215,150 @@ void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 
 #undef FLOODFILL_STEP
 	}
+}
+
+//==========================================================================
+//
+//	R_ConvertImage8To32
+//
+//==========================================================================
+
+byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
+{
+	if (Mode >= IMG8MODE_Skin)
+	{
+		R_FloodFillSkin(DataIn, Width, Height);
+	}
+
+	byte* DataOut = new byte[Width * Height * 4];
+
+	int Count = Width * Height;
+	for (int i = 0; i < Count; i++)
+	{
+		int p = DataIn[i];
+		DataOut[i * 4 + 0] = r_palette[p][0];
+		DataOut[i * 4 + 1] = r_palette[p][1];
+		DataOut[i * 4 + 2] = r_palette[p][2];
+		DataOut[i * 4 + 3] = r_palette[p][3];
+	}
+
+	//	For transparent pixels scan around for another color to avoid alpha fringes
+	for (int i = 0; i < Count; i++)
+	{
+		int p = DataIn[i];
+		if (p == 255 || (p == 0 && (Mode == IMG8MODE_Holey || Mode == IMG8MODE_SkinHoley || Mode == IMG8MODE_SkinTransparent)))
+		{
+			int u = i % Width;
+			int v = i / Width;
+
+			byte neighbors[9][3];
+			int num_neighbors_valid = 0;
+			for (int neighbor_u = u - 1; neighbor_u <= u + 1; neighbor_u++)
+			{
+				for (int neighbor_v = v - 1; neighbor_v <= v + 1; neighbor_v++)
+				{
+					if (neighbor_u == neighbor_v)
+					{
+						continue;
+					}
+					// Make sure  that we are accessing a texel in the image, not out of range.
+					if (neighbor_u < 0 || neighbor_u > Width || neighbor_v < 0 || neighbor_v > Height)
+					{
+						continue;
+					}
+					if (DataIn[neighbor_u + neighbor_v * Width] == 255)
+					{
+						continue;
+					}
+					neighbors[num_neighbors_valid][0] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 0];
+					neighbors[num_neighbors_valid][1] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 1];
+					neighbors[num_neighbors_valid][2] = DataOut[(neighbor_u + neighbor_v * Width) * 4 + 2];
+					num_neighbors_valid++;
+				}
+			}
+
+			if (num_neighbors_valid == 0)
+			{
+				continue;
+			}
+
+			int r = 0, g = 0, b = 0;
+			for (int n = 0; n < num_neighbors_valid; n++)
+			{
+				r += neighbors[n][0];
+				g += neighbors[n][1];
+				b += neighbors[n][2];
+			}
+
+			r /= num_neighbors_valid;
+			g /= num_neighbors_valid;
+			b /= num_neighbors_valid;
+
+			if (r > 255)
+			{
+				r = 255;
+			}
+			if (g > 255)
+			{
+				g = 255;
+			}
+			if (b > 255)
+			{
+				b = 255;
+			}
+
+			DataOut[i * 4 + 0] = r;
+			DataOut[i * 4 + 1] = g;
+			DataOut[i * 4 + 2] = b;
+		}
+	}
+
+	switch (Mode)
+	{
+	case IMG8MODE_SkinTransparent:
+		for (int i = 0; i < Count; i++)
+		{
+			int p = DataIn[i];
+			if (p == 0)
+			{
+				DataOut[i * 4 + 3] = 0;
+			}
+			else if (p & 1)
+			{
+				DataOut[i * 4 + 3] = (int)(255 * r_wateralpha->value);
+			}
+			else
+			{
+				DataOut[i * 4 + 3] = 255;
+			}
+		}
+		break;
+
+	case IMG8MODE_Holey:
+	case IMG8MODE_SkinHoley:
+		for (int i = 0; i < Count; i++)
+		{
+			int p = DataIn[i];
+			if (p == 0)
+			{
+				DataOut[i * 4 + 3] = 0;
+			}
+		}
+		break;
+
+	case IMG8MODE_SkinSpecialTrans:
+		for (int i = 0; i < Count; i++)
+		{
+			int p = DataIn[i];
+			DataOut[i * 4 + 0] = r_palette[ColorIndex[p >> 4]][0];
+			DataOut[i * 4 + 1] = r_palette[ColorIndex[p >> 4]][1];
+			DataOut[i * 4 + 2] = r_palette[ColorIndex[p >> 4]][2];
+			DataOut[i * 4 + 3] = ColorPercent[p & 15];
+		}
+		break;
+	}
+
+	return DataOut;
 }
 
 //==========================================================================

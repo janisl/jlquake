@@ -1440,19 +1440,19 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 	s = pheader->skinwidth * pheader->skinheight;
 
 	if( mdl_flags & EF_HOLEY )
-		texture_mode = IMG8MODE_Holey;
+		texture_mode = IMG8MODE_SkinHoley;
 	else if( mdl_flags & EF_TRANSPARENT )
-		texture_mode = IMG8MODE_Transparent;
+		texture_mode = IMG8MODE_SkinTransparent;
 	else if( mdl_flags & EF_SPECIAL_TRANS )
-		texture_mode = IMG8MODE_SpecialTrans;
+		texture_mode = IMG8MODE_SkinSpecialTrans;
 	else
-		texture_mode = IMG8MODE_Normal;
+		texture_mode = IMG8MODE_Skin;
 
 	for (i=0 ; i<numskins ; i++)
 	{
 		if (pskintype->type == ALIAS_SKIN_SINGLE)
 		{
-			R_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
+			byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
 
 			// save 8 bit texels for the player model to remap
 			if (!QStr::Cmp(loadmodel->name,"models/paladin.mdl"))
@@ -1494,7 +1494,6 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 
 			sprintf (name, "%s_%i", loadmodel->name, i);
 
-			byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
 			pheader->gl_texturenum[i][0] =
 			pheader->gl_texturenum[i][1] =
 			pheader->gl_texturenum[i][2] =
@@ -1516,7 +1515,6 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 
 			for (j=0 ; j<groupskins ; j++)
 			{
-					R_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
 					sprintf (name, "%s_%i_%i", loadmodel->name, i,j);
 					byte* pic32 = R_ConvertImage8To32((byte *)(pskintype), pheader->skinwidth, pheader->skinheight, texture_mode);
 					pheader->gl_texturenum[i][j&3] = 

@@ -20,23 +20,26 @@
 #define SCRAP_BLOCK_WIDTH	256
 #define SCRAP_BLOCK_HEIGHT	256
 
-//	Hexen 2 model texture modes.
+//	Hexen 2 model texture modes, plus special type for skins.
 enum
 {
 	//	standard
 	IMG8MODE_Normal,
-	//	color 0 transparent, odd - translucent, even - full value
-	IMG8MODE_Transparent,
 	//	color 0 transparent
 	IMG8MODE_Holey,
+	//	All skin modes will fllo fill image
+	IMG8MODE_Skin,
+	//	color 0 transparent, odd - translucent, even - full value
+	IMG8MODE_SkinTransparent,
+	//	color 0 transparent
+	IMG8MODE_SkinHoley,
 	//	special (particle translucency table)
-	IMG8MODE_SpecialTrans,
+	IMG8MODE_SkinSpecialTrans,
 };
 
 void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
-void R_FloodFillSkin(byte* Data, int Width, int Height);
 bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
@@ -45,7 +48,7 @@ void R_LoadJPG(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveJPG(const char* FileName, int Quality, int Width, int Height, byte* Buffer);
 
 void R_LoadPCX(const char* FileName, byte** Pic, byte** Palette, int* Width, int* Height);
-void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height);
+void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height, int Mode);
 void R_SavePCXMem(QArray<byte>& buffer, byte* data, int width, int height, byte* palette);
 
 void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal);

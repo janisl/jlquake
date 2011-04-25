@@ -802,7 +802,7 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height ) {
 			R_LoadJPG( altname, pic, width, height );
 		}
   } else if ( !QStr::ICmp(name+len-4, ".pcx") ) {
-    R_LoadPCX32( name, pic, width, height );
+    R_LoadPCX32( name, pic, width, height, IMG8MODE_Normal);
 	} else if ( !QStr::ICmp( name+len-4, ".bmp" ) ) {
 		R_LoadBMP( name, pic, width, height );
 	} else if ( !QStr::ICmp( name+len-4, ".jpg" ) ) {

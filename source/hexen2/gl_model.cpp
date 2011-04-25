@@ -1431,7 +1431,16 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 
 	for (i=0 ; i<numskins ; i++)
 	{
-		R_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
+		if( mdl_flags & EF_HOLEY )
+			texture_mode = IMG8MODE_SkinHoley;
+		else if( mdl_flags & EF_TRANSPARENT )
+			texture_mode = IMG8MODE_SkinTransparent;
+		else if( mdl_flags & EF_SPECIAL_TRANS )
+			texture_mode = IMG8MODE_SkinSpecialTrans;
+		else
+			texture_mode = IMG8MODE_Skin;
+
+		byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
 
 		s = pheader->skinwidth * pheader->skinheight;
 		// save 8 bit texels for the player model to remap
@@ -1467,16 +1476,6 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 		}
 
 		sprintf (name, "%s_%i", loadmodel->name, i);
-		if( mdl_flags & EF_HOLEY )
-			texture_mode = IMG8MODE_Holey;
-		else if( mdl_flags & EF_TRANSPARENT )
-			texture_mode = IMG8MODE_Transparent;
-		else if( mdl_flags & EF_SPECIAL_TRANS )
-			texture_mode = IMG8MODE_SpecialTrans;
-		else
-			texture_mode = IMG8MODE_Normal;
-
-		byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
 		pheader->gl_texturenum[i] = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
 		delete[] pic32;
 		pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + s);

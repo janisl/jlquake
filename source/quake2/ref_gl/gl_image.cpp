@@ -620,9 +620,6 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	image->height = height;
 	image->type = type;
 
-	if (type == it_skin && bits == 8)
-		R_FloodFillSkin(pic, width, height);
-
 	// load little pics into the scrap
 	if (image->type == it_pic && bits == 8
 		&& image->width < 64 && image->height < 64)
@@ -761,7 +758,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	palette = NULL;
 	if (!QStr::Cmp(name+len-4, ".pcx"))
 	{
-		R_LoadPCX32(name, &pic, &width, &height);
+		R_LoadPCX32(name, &pic, &width, &height, type == it_skin ? IMG8MODE_Skin : IMG8MODE_Normal);
 		if (!pic)
 			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
 		image = GL_LoadPic (name, pic, width, height, type, 32);

@@ -187,7 +187,7 @@ void R_LoadPCX(const char* filename, byte** pic, byte** palette, int* width, int
 //
 //==========================================================================
 
-void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height)
+void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height, int Mode)
 {
 	byte* palette;
 	byte* pic8;
@@ -215,7 +215,7 @@ void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height)
 	else
 	{
 		//	In Quake 2 palette from PCX file is ignored.
-		*pic = R_ConvertImage8To32(pic8, *width, *height, IMG8MODE_Normal);
+		*pic = R_ConvertImage8To32(pic8, *width, *height, Mode);
 	}
 
 	delete[] pic8;

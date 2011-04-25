@@ -1371,7 +1371,7 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 	for (i=0 ; i<numskins ; i++)
 	{
 		if (pskintype->type == ALIAS_SKIN_SINGLE) {
-			R_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
+			byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, IMG8MODE_Skin);
 
 			// save 8 bit texels for the player model to remap
 			// save 8 bit texels for the player model to remap
@@ -1382,7 +1382,6 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				Com_Memcpy(player_8bit_texels, (byte *)(pskintype + 1), s);
 			}
 			sprintf (name, "%s_%i", loadmodel->name, i);
-			byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, IMG8MODE_Normal);
 			pheader->gl_texturenum[i][0] =
 			pheader->gl_texturenum[i][1] =
 			pheader->gl_texturenum[i][2] =
@@ -1401,10 +1400,9 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 
 			for (j=0 ; j<groupskins ; j++)
 			{
-					R_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
 					sprintf (name, "%s_%i_%i", loadmodel->name, i,j);
 					
-					byte* pic32 = R_ConvertImage8To32((byte *)(pskintype), pheader->skinwidth, pheader->skinheight, IMG8MODE_Normal);
+					byte* pic32 = R_ConvertImage8To32((byte *)(pskintype), pheader->skinwidth, pheader->skinheight, IMG8MODE_Skin);
 					pheader->gl_texturenum[i][j&3] = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
 					delete[] pic32;
 					pskintype = (daliasskintype_t *)((byte *)(pskintype) + s);
