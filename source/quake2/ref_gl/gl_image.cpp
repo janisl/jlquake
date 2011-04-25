@@ -29,7 +29,6 @@ static unsigned char gammatable[256];
 
 QCvar		*intensity;
 
-qboolean GL_Upload8 (byte *data, int width, int height,  qboolean mipmap);
 qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
 
@@ -569,30 +568,13 @@ done: ;
 }
 
 /*
-===============
-GL_Upload8
-
-Returns has_alpha
-===============
-*/
-qboolean GL_Upload8 (byte *data, int width, int height,  qboolean mipmap)
-{
-	byte* pic32 = R_ConvertImage8To32(data, width, height, IMG8MODE_Normal);
-
-	qboolean ret = GL_Upload32((unsigned*)pic32, width, height, mipmap);
-	delete[] pic32;
-	return ret;
-}
-
-
-/*
 ================
 GL_LoadPic
 
 This is also used as an entry point for the generated r_notexture
 ================
 */
-image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type, int bits)
+image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type)
 {
 	image_t		*image;
 	int			i;
@@ -621,33 +603,7 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	image->type = type;
 
 	// load little pics into the scrap
-	if (image->type == it_pic && bits == 8
-		&& image->width < 64 && image->height < 64)
-	{
-		int		x, y;
-		int		i, j, k;
-
-		if (!R_ScrapAllocBlock(image->width, image->height, &x, &y))
-			goto nonscrap;
-		scrap_dirty = true;
-		byte* pic32 = R_ConvertImage8To32(pic, width, height, IMG8MODE_Normal);
-
-		// copy the texels into the scrap block
-		k = 0;
-		for (i=0 ; i<image->height ; i++)
-			for (j=0 ; j<image->width * 4; j++, k++)
-				scrap_texels[(y + i) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
-		delete[] pic32;
-		image->texnum = TEXNUM_SCRAPS;
-		image->scrap = true;
-		image->has_alpha = true;
-		image->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		image->sh = (x+image->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
-		image->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		image->th = (y+image->height-0.01)/(float)SCRAP_BLOCK_WIDTH;
-	}
-	else if (image->type == it_pic && bits == 32
-		&& image->width < 64 && image->height < 64)
+	if (image->type == it_pic && image->width < 64 && image->height < 64)
 	{
 		int		x, y;
 		int		i, j, k;
@@ -675,10 +631,7 @@ nonscrap:
 		image->scrap = false;
 		image->texnum = TEXNUM_IMAGES + (image - gltextures);
 		GL_Bind(image->texnum);
-		if (bits == 8)
-			image->has_alpha = GL_Upload8 (pic, width, height, (image->type != it_pic && image->type != it_sky));
-		else
-			image->has_alpha = GL_Upload32 ((unsigned *)pic, width, height, (image->type != it_pic && image->type != it_sky) );
+		image->has_alpha = GL_Upload32((unsigned *)pic, width, height, (image->type != it_pic && image->type != it_sky) );
 		image->upload_width = upload_width;		// after power of 2 and scales
 		image->upload_height = upload_height;
 		image->paletted = uploaded_paletted;
@@ -714,8 +667,11 @@ image_t *GL_LoadWal (char *name)
 	height = LittleLong (mt->height);
 	ofs = LittleLong (mt->offsets[0]);
 
-	image = GL_LoadPic (name, (byte *)mt + ofs, width, height, it_wall, 8);
+	byte* pic32 = R_ConvertImage8To32((byte *)mt + ofs, width, height, IMG8MODE_Normal);
 
+	image = GL_LoadPic (name, pic32, width, height, it_wall);
+
+	delete[] pic32;
 	FS_FreeFile ((void *)mt);
 
 	return image;
@@ -761,7 +717,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 		R_LoadPCX32(name, &pic, &width, &height, type == it_skin ? IMG8MODE_Skin : IMG8MODE_Normal);
 		if (!pic)
 			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type, 32);
+		image = GL_LoadPic (name, pic, width, height, type);
 	}
 	else if (!QStr::Cmp(name+len-4, ".wal"))
 	{
@@ -772,7 +728,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 		R_LoadTGA (name, &pic, &width, &height);
 		if (!pic)
 			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type, 32);
+		image = GL_LoadPic (name, pic, width, height, type);
 	}
 	else
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);
