@@ -68,6 +68,7 @@ QCvar*		r_gamma;
 QCvar*		r_ignorehwgamma;
 
 QCvar*		r_wateralpha;
+QCvar*		r_simpleMipMaps;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -190,6 +191,7 @@ void R_SharedRegister()
 	r_depthbits = Cvar_Get("r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_simpleMipMaps = Cvar_Get("r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	//
 	// temporary latched variables that can only change over a restart

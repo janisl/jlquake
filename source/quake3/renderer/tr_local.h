@@ -1053,7 +1053,6 @@ extern	QCvar	*r_overBrightBits;
 extern	QCvar	*r_mapOverBrightBits;
 
 extern	QCvar	*r_debugSurface;
-extern	QCvar	*r_simpleMipMaps;
 
 extern	QCvar	*r_showImages;
 extern	QCvar	*r_debugSort;

@@ -478,6 +478,111 @@ void R_ResampleTexture(byte* in, int inwidth, int inheight, byte* out, int outwi
 
 //==========================================================================
 //
+//	R_MipMap2
+//
+//	Operates in place, quartering the size of the texture
+//	Proper linear filter
+//
+//==========================================================================
+
+static void R_MipMap2(byte* in, int inWidth, int inHeight)
+{
+	int outWidth = inWidth >> 1;
+	int outHeight = inHeight >> 1;
+	QArray<byte> temp;
+	temp.SetNum(outWidth * outHeight * 4);
+
+	int inWidthMask = inWidth - 1;
+	int inHeightMask = inHeight - 1;
+
+	for (int i = 0; i < outHeight; i++)
+	{
+		for (int j = 0; j < outWidth; j++)
+		{
+			byte* outpix = &temp[(i * outWidth + j) * 4];
+			for (int k = 0; k < 4 ; k++)
+			{
+				int total = 
+					1 * in[(((i * 2 - 1) & inHeightMask) * inWidth + ((j * 2 - 1) & inWidthMask)) * 4 + k] +
+					2 * in[(((i * 2 - 1) & inHeightMask) * inWidth + ((j * 2) & inWidthMask)) * 4 + k] +
+					2 * in[(((i * 2 - 1) & inHeightMask) * inWidth + ((j * 2 + 1) & inWidthMask)) * 4 + k] +
+					1 * in[(((i * 2 - 1) & inHeightMask) * inWidth + ((j * 2 + 2) & inWidthMask)) * 4 + k] +
+
+					2 * in[(((i * 2) & inHeightMask) * inWidth + ((j * 2 - 1) & inWidthMask)) * 4 + k] +
+					4 * in[(((i * 2) & inHeightMask) * inWidth + ((j * 2) & inWidthMask)) * 4 + k] +
+					4 * in[(((i * 2) & inHeightMask) * inWidth + ((j * 2 + 1) & inWidthMask)) * 4 + k] +
+					2 * in[(((i * 2) & inHeightMask) * inWidth + ((j * 2 + 2) & inWidthMask)) * 4 + k] +
+
+					2 * in[(((i * 2 + 1) & inHeightMask) * inWidth + ((j * 2 - 1) & inWidthMask)) * 4 + k] +
+					4 * in[(((i * 2 + 1) & inHeightMask) * inWidth + ((j * 2) & inWidthMask)) * 4 + k] +
+					4 * in[(((i * 2 + 1) & inHeightMask) * inWidth + ((j * 2 + 1) & inWidthMask)) * 4 + k] +
+					2 * in[(((i * 2 + 1) & inHeightMask) * inWidth + ((j * 2 + 2) & inWidthMask)) * 4 + k] +
+
+					1 * in[(((i * 2 + 2) & inHeightMask) * inWidth + ((j * 2 - 1) & inWidthMask)) * 4 + k] +
+					2 * in[(((i * 2 + 2) & inHeightMask) * inWidth + ((j * 2) & inWidthMask)) * 4 + k] +
+					2 * in[(((i * 2 + 2) & inHeightMask) * inWidth + ((j * 2 + 1) & inWidthMask)) * 4 + k] +
+					1 * in[(((i * 2 + 2) & inHeightMask) * inWidth + ((j * 2 + 2) & inWidthMask)) * 4 + k];
+				outpix[k] = total / 36;
+			}
+		}
+	}
+
+	Com_Memcpy(in, temp.Ptr(), outWidth * outHeight * 4);
+}
+
+//==========================================================================
+//
+//	R_MipMap
+//
+//	Operates in place, quartering the size of the texture
+//
+//==========================================================================
+
+void R_MipMap(byte* in, int width, int height)
+{
+	if (!r_simpleMipMaps->integer)
+	{
+		R_MipMap2(in, width, height);
+		return;
+	}
+
+	if (width == 1 && height == 1)
+	{
+		return;
+	}
+
+	int row = width * 4;
+	byte* out = in;
+	width >>= 1;
+	height >>= 1;
+
+	if (width == 0 || height == 0)
+	{
+		width += height;	// get largest
+		for (int i = 0; i < width; i++, out += 4, in += 8)
+		{
+			out[0] = (in[0] + in[4]) >> 1;
+			out[1] = (in[1] + in[5]) >> 1;
+			out[2] = (in[2] + in[6]) >> 1;
+			out[3] = (in[3] + in[7]) >> 1;
+		}
+		return;
+	}
+
+	for (int i = 0; i < height; i++, in += row)
+	{
+		for (int j = 0; j < width; j++, out += 4, in += 8)
+		{
+			out[0] = (in[0] + in[4] + in[row+0] + in[row+4]) >> 2;
+			out[1] = (in[1] + in[5] + in[row+1] + in[row+5]) >> 2;
+			out[2] = (in[2] + in[6] + in[row+2] + in[row+6]) >> 2;
+			out[3] = (in[3] + in[7] + in[row+3] + in[row+7]) >> 2;
+		}
+	}
+}
+
+//==========================================================================
+//
 //	R_ScrapAllocBlock
 //
 //	scrap allocation

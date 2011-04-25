@@ -766,33 +766,6 @@ int GL_FindTexture (char *identifier)
 }
 
 /*
-================
-GL_MipMap
-
-Operates in place, quartering the size of the texture
-================
-*/
-void GL_MipMap (byte *in, int width, int height)
-{
-	int		i, j;
-	byte	*out;
-
-	width <<=2;
-	height >>= 1;
-	out = in;
-	for (i=0 ; i<height ; i++, in+=width)
-	{
-		for (j=0 ; j<width ; j+=8, out+=4, in+=8)
-		{
-			out[0] = (in[0] + in[4] + in[width+0] + in[width+4])>>2;
-			out[1] = (in[1] + in[5] + in[width+1] + in[width+5])>>2;
-			out[2] = (in[2] + in[6] + in[width+2] + in[width+6])>>2;
-			out[3] = (in[3] + in[7] + in[width+3] + in[width+7])>>2;
-		}
-	}
-}
-
-/*
 ===============
 GL_Upload32
 ===============
@@ -854,7 +827,7 @@ texels += scaled_width * scaled_height;
 		miplevel = 0;
 		while (scaled_width > 1 || scaled_height > 1)
 		{
-			GL_MipMap ((byte *)scaled, scaled_width, scaled_height);
+			R_MipMap((byte *)scaled, scaled_width, scaled_height);
 			scaled_width >>= 1;
 			scaled_height >>= 1;
 			if (scaled_width < 1)

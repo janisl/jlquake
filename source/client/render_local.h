@@ -109,5 +109,6 @@ extern QCvar*	r_gamma;
 extern QCvar*	r_ignorehwgamma;		// overrides hardware gamma capabilities
 
 extern QCvar*	r_wateralpha;
+extern QCvar*	r_simpleMipMaps;
 
 #endif

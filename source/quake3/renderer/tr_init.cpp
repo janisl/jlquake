@@ -112,7 +112,6 @@ QCvar	*r_overBrightBits;
 QCvar	*r_mapOverBrightBits;
 
 QCvar	*r_debugSurface;
-QCvar	*r_simpleMipMaps;
 
 QCvar	*r_showImages;
 
@@ -823,7 +822,6 @@ void R_Register( void )
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_texturebits = Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_overBrightBits = Cvar_Get ("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_simpleMipMaps = Cvar_Get( "r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_uiFullScreen = Cvar_Get( "r_uifullscreen", "0", 0);
 	r_subdivisions = Cvar_Get ("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2);
