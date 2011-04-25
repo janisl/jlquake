@@ -1494,12 +1494,13 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 
 			sprintf (name, "%s_%i", loadmodel->name, i);
 
+			byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
 			pheader->gl_texturenum[i][0] =
 			pheader->gl_texturenum[i][1] =
 			pheader->gl_texturenum[i][2] =
 			pheader->gl_texturenum[i][3] =
-				GL_LoadTexture8(name, pheader->skinwidth, 
-				pheader->skinheight, (byte *)(pskintype + 1), true, false, texture_mode);
+				GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
+			delete[] pic32;
 			pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + s);
 		} 
 		else 
@@ -1517,9 +1518,10 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 			{
 					R_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
 					sprintf (name, "%s_%i_%i", loadmodel->name, i,j);
+					byte* pic32 = R_ConvertImage8To32((byte *)(pskintype), pheader->skinwidth, pheader->skinheight, texture_mode);
 					pheader->gl_texturenum[i][j&3] = 
-						GL_LoadTexture8(name, pheader->skinwidth, 
-						pheader->skinheight, (byte *)(pskintype), true, false, texture_mode);
+						GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
+					delete[] pic32;
 					pskintype = (daliasskintype_t *)((byte *)(pskintype) + s);
 			}
 			k = j;

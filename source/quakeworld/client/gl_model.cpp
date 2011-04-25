@@ -1382,12 +1382,13 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				Com_Memcpy(player_8bit_texels, (byte *)(pskintype + 1), s);
 			}
 			sprintf (name, "%s_%i", loadmodel->name, i);
+			byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, IMG8MODE_Normal);
 			pheader->gl_texturenum[i][0] =
 			pheader->gl_texturenum[i][1] =
 			pheader->gl_texturenum[i][2] =
 			pheader->gl_texturenum[i][3] =
-				GL_LoadTexture8(name, pheader->skinwidth, 
-				pheader->skinheight, (byte *)(pskintype + 1), true, false);
+				GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
+			delete[] pic32;
 			pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + s);
 		} else {
 			// animating skin group.  yuck.
@@ -1402,9 +1403,10 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 			{
 					R_FloodFillSkin( skin, pheader->skinwidth, pheader->skinheight );
 					sprintf (name, "%s_%i_%i", loadmodel->name, i,j);
-					pheader->gl_texturenum[i][j&3] = 
-						GL_LoadTexture8(name, pheader->skinwidth, 
-						pheader->skinheight, (byte *)(pskintype), true, false);
+					
+					byte* pic32 = R_ConvertImage8To32((byte *)(pskintype), pheader->skinwidth, pheader->skinheight, IMG8MODE_Normal);
+					pheader->gl_texturenum[i][j&3] = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
+					delete[] pic32;
 					pskintype = (daliasskintype_t *)((byte *)(pskintype) + s);
 			}
 			k = j;

@@ -1476,8 +1476,9 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 		else
 			texture_mode = IMG8MODE_Normal;
 
-		pheader->gl_texturenum[i] = GL_LoadTexture8(name, pheader->skinwidth, 
-			pheader->skinheight, (byte *)(pskintype + 1), true, false, texture_mode);
+		byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
+		pheader->gl_texturenum[i] = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
+		delete[] pic32;
 		pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + s);
 	}
 
