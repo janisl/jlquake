@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_image_wal.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_init.cpp"
 				>
 			</File>

@@ -9,6 +9,7 @@ set(CLIENT_FILES
 	render_image_pcx.cpp
 	render_image_pic.cpp
 	render_image_tga.cpp
+	render_image_wal.cpp
 	render_init.cpp
 	render_qgl.cpp
 	sound_audiocd_linux.cpp

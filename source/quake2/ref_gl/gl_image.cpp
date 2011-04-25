@@ -644,40 +644,6 @@ nonscrap:
 	return image;
 }
 
-
-/*
-================
-GL_LoadWal
-================
-*/
-void GL_LoadWal (char *name, byte** pic, int* WidthPtr, int* HeightPtr)
-{
-	miptex_t	*mt;
-
-	*pic = NULL;
-	FS_ReadFile(name, (void **)&mt);
-	if (!mt)
-	{
-		return;
-	}
-
-	int width = LittleLong (mt->width);
-	int height = LittleLong (mt->height);
-	int ofs = LittleLong (mt->offsets[0]);
-	if (WidthPtr)
-	{
-		*WidthPtr = width;
-	}
-	if (HeightPtr)
-	{
-		*HeightPtr = height;
-	}
-
-	*pic = R_ConvertImage8To32((byte *)mt + ofs, width, height, IMG8MODE_Normal);
-
-	FS_FreeFile ((void *)mt);
-}
-
 /*
 ===============
 GL_FindImage
@@ -717,7 +683,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	}
 	else if (!QStr::Cmp(name+len-4, ".wal"))
 	{
-		GL_LoadWal(name, &pic, &width, &height);
+		R_LoadWAL(name, &pic, &width, &height);
 	}
 	else if (!QStr::Cmp(name+len-4, ".tga"))
 	{
