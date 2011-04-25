@@ -264,6 +264,99 @@ byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 
 //==========================================================================
 //
+//	R_FloodFillSkin
+//
+//	Fill background pixels so mipmapping doesn't have haloes
+//
+//==========================================================================
+
+void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
+{
+	int filledcolor = 0;
+	// attempt to find opaque black
+	for (int i = 0; i < 256; ++i)
+		if (r_palette[i][0] == 0 && r_palette[i][1] == 0 && r_palette[i][2] == 0 && r_palette[i][0] == 255)
+		{
+			filledcolor = i;
+			break;
+		}
+
+	byte fillcolor = *skin; // assume this is the pixel to fill
+
+	// can't fill to filled color or to transparent color (used as visited marker)
+	if ((fillcolor == filledcolor) || (fillcolor == 255))
+	{
+		//printf( "not filling skin from %d to %d\n", fillcolor, filledcolor );
+		return;
+	}
+
+	enum
+	{
+		// must be a power of 2
+		FLOODFILL_FIFO_SIZE = 0x1000,
+		FLOODFILL_FIFO_MASK = (FLOODFILL_FIFO_SIZE - 1)
+	};
+
+	struct floodfill_t
+	{
+		short		x, y;
+	};
+
+	int inpt = 0;
+	int outpt = 0;
+	floodfill_t fifo[FLOODFILL_FIFO_SIZE];
+	fifo[inpt].x = 0;
+	fifo[inpt].y = 0;
+	inpt = (inpt + 1) & FLOODFILL_FIFO_MASK;
+
+	while (outpt != inpt)
+	{
+		int x = fifo[outpt].x;
+		int y = fifo[outpt].y;
+		int fdc = filledcolor;
+		byte* pos = &skin[x + skinwidth * y];
+
+		outpt = (outpt + 1) & FLOODFILL_FIFO_MASK;
+
+#define FLOODFILL_STEP( off, dx, dy ) \
+{ \
+	if (pos[off] == fillcolor) \
+	{ \
+		pos[off] = 255; \
+		fifo[inpt].x = x + (dx); \
+		fifo[inpt].y = y + (dy); \
+		inpt = (inpt + 1) & FLOODFILL_FIFO_MASK; \
+	} \
+	else if (pos[off] != 255) \
+	{ \
+		fdc = pos[off]; \
+	} \
+}
+
+		if (x > 0)
+		{
+			FLOODFILL_STEP(-1, -1, 0);
+		}
+		if (x < skinwidth - 1)
+		{
+			FLOODFILL_STEP(1, 1, 0);
+		}
+		if (y > 0)
+		{
+			FLOODFILL_STEP(-skinwidth, 0, -1);
+		}
+		if (y < skinheight - 1)
+		{
+			FLOODFILL_STEP(skinwidth, 0, 1);
+		}
+		skin[x + skinwidth * y] = fdc;
+
+#undef FLOODFILL_STEP
+	}
+}
+
+//==========================================================================
+//
 //	R_ScrapAllocBlock
 //
 //	scrap allocation
