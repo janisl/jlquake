@@ -107,15 +107,14 @@ int		pic_count;
 
 image_t *Draw_PicFromFile (char *name)
 {
-	byte* p = COM_LoadHunkFile (name);
-	if (!p)
-	{
-		return NULL;
-	}
 	int width;
 	int height;
 	byte* pic32;
-	R_LoadPICMem(p, &pic32, &width, &height);
+	R_LoadPIC(name, &pic32, &width, &height);
+	if (!pic32)
+	{
+		return NULL;
+	}
 
 	image_t* img = new image_t;
 	img->width = width;
@@ -216,13 +215,12 @@ image_t* Draw_CachePic (char *path)
 //
 // load the pic from disk
 //
-	byte* dat = COM_LoadTempFile (path);
-	if (!dat)
-		Sys_Error ("Draw_CachePic: failed to load %s", path);
 	int width;
 	int height;
 	byte* pic32;
-	R_LoadPICMem(dat, &pic32, &width, &height, TransPixels);
+	R_LoadPIC(path, &pic32, &width, &height, TransPixels);
+	if (!pic32)
+		Sys_Error ("Draw_CachePic: failed to load %s", path);
 
 	pic->width = width;
 	pic->height = height;
@@ -383,23 +381,21 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	byte* mf = COM_LoadTempFile("gfx/menu/bigfont2.lmp");
 	int mfwidth;
 	int mfheight;
 	byte* mfpic32;
-	R_LoadPICMem(mf, &mfpic32, &mfwidth, &mfheight, NULL, IMG8MODE_Holey);
+	R_LoadPIC("gfx/menu/bigfont2.lmp", &mfpic32, &mfwidth, &mfheight, NULL, IMG8MODE_Holey);
 	char_menufonttexture = GL_LoadTexture("menufont", mfwidth, mfheight, mfpic32, false);
 	delete[] mfpic32;
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	byte* cb = COM_LoadTempFile ("gfx/menu/conback.lmp");
-	if (!cb)
-		Sys_Error ("Couldn't load gfx/menu/conback.lmp");
 	int cbwidth;
 	int cbheight;
 	byte* pic32;
-	R_LoadPICMem(cb, &pic32, &cbwidth, &cbheight);
+	R_LoadPIC("gfx/menu/conback.lmp", &pic32, &cbwidth, &cbheight);
+	if (!pic32)
+		Sys_Error ("Couldn't load gfx/menu/conback.lmp");
 
 	// hack the version number directly into the pic
 

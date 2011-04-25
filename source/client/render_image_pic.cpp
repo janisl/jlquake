@@ -75,3 +75,21 @@ void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPi
 
 	*Pic = R_ConvertImage8To32(QPic->data, w, h, Mode);
 }
+
+//==========================================================================
+//
+//	R_LoadPIC
+//
+//==========================================================================
+
+void R_LoadPIC(const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels, int Mode)
+{
+	QArray<byte> Buffer;
+	if (FS_ReadFile(FileName, Buffer) <= 0)
+	{
+		*Pic = NULL;
+		return;
+	}
+
+	R_LoadPICMem(Buffer.Ptr(), Pic, Width, Height, TransPixels, Mode);
+}

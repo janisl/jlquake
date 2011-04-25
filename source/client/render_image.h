@@ -48,6 +48,7 @@ void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height);
 void R_SavePCXMem(QArray<byte>& buffer, byte* data, int width, int height, byte* palette);
 
 void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal);
+void R_LoadPIC(const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal);
 
 void R_LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha);
