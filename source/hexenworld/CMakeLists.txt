@@ -90,4 +90,4 @@ set(HWCL_FILES
 
 add_executable(vhwcl ${HWCL_FILES})
 set_target_properties(vhwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vhwcl client core zlib ${LDFLAGS})
+target_link_libraries(vhwcl client core zlib jpeg ${LDFLAGS})

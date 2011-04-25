@@ -654,14 +654,11 @@ Finds or loads the given image
 image_t	*GL_FindImage (char *name, imagetype_t type)
 {
 	image_t	*image;
-	int		i, len;
+	int		i;
 	int		width, height;
 
 	if (!name)
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
-	len = QStr::Length(name);
-	if (len<5)
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad name: %s", name);
 
 	// look for it
 	for (i=0, image=gltextures ; i<numgltextures ; i++,image++)
@@ -676,21 +673,8 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	//
 	// load the pic from disk
 	//
-	byte* pic = NULL;
-	if (!QStr::Cmp(name+len-4, ".pcx"))
-	{
-		R_LoadPCX32(name, &pic, &width, &height, type == it_skin ? IMG8MODE_Skin : IMG8MODE_Normal);
-	}
-	else if (!QStr::Cmp(name+len-4, ".wal"))
-	{
-		R_LoadWAL(name, &pic, &width, &height);
-	}
-	else if (!QStr::Cmp(name+len-4, ".tga"))
-	{
-		R_LoadTGA (name, &pic, &width, &height);
-	}
-	else
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);
+	byte* pic;
+	R_LoadImage(name, &pic, &width, &height, type == it_skin ? IMG8MODE_Skin : IMG8MODE_Normal);
 
 	if (!pic)
 	{

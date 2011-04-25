@@ -57,7 +57,7 @@ set(QUAKE2_OBJS
 
 add_executable(vquake2 ${QUAKE2_OBJS})
 set_target_properties(vquake2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake2 client core zlib ${GLLDFLAGS})
+target_link_libraries(vquake2 client core zlib jpeg ${GLLDFLAGS})
 
 set(QUAKE2_DED_OBJS
 	qcommon/m_flash.cpp

@@ -363,6 +363,62 @@ byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 
 //==========================================================================
 //
+//	R_LoadImage
+//
+//	Loads any of the supported image types into a cannonical 32 bit format.
+//
+//==========================================================================
+
+void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode, byte* TransPixels)
+{
+	*pic = NULL;
+	*width = 0;
+	*height = 0;
+
+	int len = QStr::Length(name);
+	if (len < 5)
+	{
+		return;
+	}
+
+	if (!QStr::ICmp(name + len - 4, ".tga"))
+	{
+		R_LoadTGA(name, pic, width, height);            // try tga first
+		if (!*pic)
+		{                                    //
+			char altname[MAX_QPATH];                      // try jpg in place of tga 
+			QStr::Cpy(altname, name);                      
+			len = QStr::Length(altname);                  
+			altname[len - 3] = 'j';
+			altname[len - 2] = 'p';
+			altname[len - 1] = 'g';
+			R_LoadJPG(altname, pic, width, height);
+		}
+	}
+	else if (!QStr::ICmp(name + len - 4, ".pcx"))
+	{
+		R_LoadPCX32(name, pic, width, height, Mode);
+	}
+	else if (!QStr::ICmp(name + len - 4, ".bmp"))
+	{
+		R_LoadBMP(name, pic, width, height);
+	}
+	else if (!QStr::ICmp(name + len - 4, ".jpg"))
+	{
+		R_LoadJPG(name, pic, width, height);
+	}
+	else if (!QStr::ICmp(name + len - 4, ".wal"))
+	{
+		R_LoadWAL(name, pic, width, height);
+	}
+	else if (!QStr::ICmp(name + len - 4, ".lmp"))
+	{
+		R_LoadPIC(name, pic, width, height, TransPixels, Mode);
+	}
+}
+
+//==========================================================================
+//
 //	R_ScrapAllocBlock
 //
 //	scrap allocation

@@ -202,7 +202,7 @@ image_t* Draw_CachePic (char *path)
 	int width;
 	int height;
 	byte* pic32;
-	R_LoadPIC(path, &pic32, &width, &height, TransPixels);
+	R_LoadImage(path, &pic32, &width, &height, IMG8MODE_Normal, TransPixels);
 	if (!pic32)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
 
@@ -351,7 +351,7 @@ void Draw_Init (void)
 	int cbwidth;
 	int cbheight;
 	byte* pic32;
-	R_LoadPIC("gfx/conback.lmp", &pic32, &cbwidth, &cbheight);
+	R_LoadImage("gfx/conback.lmp", &pic32, &cbwidth, &cbheight);
 	if (!pic32)
 		Sys_Error ("Couldn't load gfx/conback.lmp");
 

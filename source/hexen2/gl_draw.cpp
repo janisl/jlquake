@@ -110,7 +110,7 @@ image_t *Draw_PicFromFile (char *name)
 	int width;
 	int height;
 	byte* pic32;
-	R_LoadPIC(name, &pic32, &width, &height);
+	R_LoadImage(name, &pic32, &width, &height);
 	if (!pic32)
 	{
 		return NULL;
@@ -218,7 +218,7 @@ image_t* Draw_CachePic (char *path)
 	int width;
 	int height;
 	byte* pic32;
-	R_LoadPIC(path, &pic32, &width, &height, TransPixels);
+	R_LoadImage(path, &pic32, &width, &height, IMG8MODE_Normal, TransPixels);
 	if (!pic32)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
 
@@ -384,7 +384,7 @@ void Draw_Init (void)
 	int mfwidth;
 	int mfheight;
 	byte* mfpic32;
-	R_LoadPIC("gfx/menu/bigfont2.lmp", &mfpic32, &mfwidth, &mfheight, NULL, IMG8MODE_Holey);
+	R_LoadImage("gfx/menu/bigfont2.lmp", &mfpic32, &mfwidth, &mfheight, IMG8MODE_Holey);
 	char_menufonttexture = GL_LoadTexture("menufont", mfwidth, mfheight, mfpic32, false);
 	delete[] mfpic32;
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -393,7 +393,7 @@ void Draw_Init (void)
 	int cbwidth;
 	int cbheight;
 	byte* pic32;
-	R_LoadPIC("gfx/menu/conback.lmp", &pic32, &cbwidth, &cbheight);
+	R_LoadImage("gfx/menu/conback.lmp", &pic32, &cbwidth, &cbheight);
 	if (!pic32)
 		Sys_Error ("Couldn't load gfx/menu/conback.lmp");
 

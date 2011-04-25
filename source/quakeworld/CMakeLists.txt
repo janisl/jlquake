@@ -87,4 +87,4 @@ set(GLQWCL_OBJS
 
 add_executable(vqwcl ${GLQWCL_OBJS})
 set_target_properties(vqwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vqwcl client core zlib ${LDFLAGS})
+target_link_libraries(vqwcl client core zlib jpeg ${LDFLAGS})
