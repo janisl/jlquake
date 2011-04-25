@@ -650,31 +650,32 @@ nonscrap:
 GL_LoadWal
 ================
 */
-image_t *GL_LoadWal (char *name)
+void GL_LoadWal (char *name, byte** pic, int* WidthPtr, int* HeightPtr)
 {
 	miptex_t	*mt;
-	int			width, height, ofs;
-	image_t		*image;
 
+	*pic = NULL;
 	FS_ReadFile(name, (void **)&mt);
 	if (!mt)
 	{
-		ri.Con_Printf (PRINT_ALL, "GL_FindImage: can't load %s\n", name);
-		return r_notexture;
+		return;
 	}
 
-	width = LittleLong (mt->width);
-	height = LittleLong (mt->height);
-	ofs = LittleLong (mt->offsets[0]);
+	int width = LittleLong (mt->width);
+	int height = LittleLong (mt->height);
+	int ofs = LittleLong (mt->offsets[0]);
+	if (WidthPtr)
+	{
+		*WidthPtr = width;
+	}
+	if (HeightPtr)
+	{
+		*HeightPtr = height;
+	}
 
-	byte* pic32 = R_ConvertImage8To32((byte *)mt + ofs, width, height, IMG8MODE_Normal);
+	*pic = R_ConvertImage8To32((byte *)mt + ofs, width, height, IMG8MODE_Normal);
 
-	image = GL_LoadPic (name, pic32, width, height, it_wall);
-
-	delete[] pic32;
 	FS_FreeFile ((void *)mt);
-
-	return image;
 }
 
 /*
@@ -688,7 +689,6 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 {
 	image_t	*image;
 	int		i, len;
-	byte	*pic, *palette;
 	int		width, height;
 
 	if (!name)
@@ -710,34 +710,33 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	//
 	// load the pic from disk
 	//
-	pic = NULL;
-	palette = NULL;
+	byte* pic = NULL;
 	if (!QStr::Cmp(name+len-4, ".pcx"))
 	{
 		R_LoadPCX32(name, &pic, &width, &height, type == it_skin ? IMG8MODE_Skin : IMG8MODE_Normal);
-		if (!pic)
-			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type);
 	}
 	else if (!QStr::Cmp(name+len-4, ".wal"))
 	{
-		image = GL_LoadWal (name);
+		GL_LoadWal(name, &pic, &width, &height);
 	}
 	else if (!QStr::Cmp(name+len-4, ".tga"))
 	{
 		R_LoadTGA (name, &pic, &width, &height);
-		if (!pic)
-			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type);
 	}
 	else
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: bad extension on: %s", name);
 
+	if (!pic)
+	{
+		return NULL;
+	}
+
+	image = GL_LoadPic (name, pic, width, height, type);
 
 	if (pic)
-		Mem_Free(pic);
-	if (palette)
-		Mem_Free(palette);
+	{
+		delete[] pic;
+	}
 
 	return image;
 }
