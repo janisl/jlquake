@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "glquake.h"
 
 void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap);
+void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
 #define GL_COLOR_INDEX8_EXT     0x80E5
 
@@ -94,7 +95,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
-	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false);
+	GL_Upload32((unsigned*)scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false);
 	scrap_dirty = false;
 }
 
@@ -128,10 +129,12 @@ image_t* Draw_PicFromWad(char *name)
 		if (!R_ScrapAllocBlock(p->width, p->height, &x, &y))
 			goto noscrap;
 		scrap_dirty = true;
+		byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
 		k = 0;
 		for (i=0 ; i<p->height ; i++)
-			for (j=0 ; j<p->width ; j++, k++)
-				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH + x + j] = p->data[k];
+			for (j=0 ; j<p->width * 4; j++, k++)
+				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
+		delete[] pic32;
 		img->texnum = scrap_texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;

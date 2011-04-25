@@ -314,7 +314,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(TEXNUM_SCRAPS);
-	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false);
+	GL_Upload32((unsigned*)scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false);
 	scrap_dirty = false;
 }
 
@@ -716,12 +716,37 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 		if (!R_ScrapAllocBlock(image->width, image->height, &x, &y))
 			goto nonscrap;
 		scrap_dirty = true;
+		byte* pic32 = R_ConvertImage8To32(pic, width, height, IMG8MODE_Normal);
 
 		// copy the texels into the scrap block
 		k = 0;
 		for (i=0 ; i<image->height ; i++)
-			for (j=0 ; j<image->width ; j++, k++)
-				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH + x + j] = pic[k];
+			for (j=0 ; j<image->width * 4; j++, k++)
+				scrap_texels[(y + i) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
+		delete[] pic32;
+		image->texnum = TEXNUM_SCRAPS;
+		image->scrap = true;
+		image->has_alpha = true;
+		image->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
+		image->sh = (x+image->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
+		image->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
+		image->th = (y+image->height-0.01)/(float)SCRAP_BLOCK_WIDTH;
+	}
+	else if (image->type == it_pic && bits == 32
+		&& image->width < 64 && image->height < 64)
+	{
+		int		x, y;
+		int		i, j, k;
+
+		if (!R_ScrapAllocBlock(image->width, image->height, &x, &y))
+			goto nonscrap;
+		scrap_dirty = true;
+
+		// copy the texels into the scrap block
+		k = 0;
+		for (i=0 ; i<image->height ; i++)
+			for (j=0 ; j<image->width * 4; j++, k++)
+				scrap_texels[(y + i) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic[k];
 		image->texnum = TEXNUM_SCRAPS;
 		image->scrap = true;
 		image->has_alpha = true;

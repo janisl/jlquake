@@ -12,6 +12,7 @@
 #define MAX_DISC 18
 
 void GL_Upload8 (byte *data, int width, int height,  qboolean mipmap, int mode);
+void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
@@ -83,7 +84,7 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
-	GL_Upload8 (scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, 0);
+	GL_Upload32((unsigned*)scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false);
 	scrap_dirty = false;
 }
 
@@ -149,10 +150,12 @@ image_t *Draw_PicFromWad (char *name)
 		if (!R_ScrapAllocBlock(p->width, p->height, &x, &y))
 			goto nonscrap;
 		scrap_dirty = true;
+		byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
 		k = 0;
 		for (i=0 ; i<p->height ; i++)
-			for (j=0 ; j<p->width ; j++, k++)
-				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH + x + j] = p->data[k];
+			for (j=0 ; j<p->width * 4; j++, k++)
+				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
+		delete[] pic32;
 		img->texnum = scrap_texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
