@@ -83,6 +83,13 @@ struct glstate_t
 	unsigned long	glStateBits;
 };
 
+struct trGlobals_base_t
+{
+	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
+	int						identityLightByte;	// identityLight * 255
+	int						overbrightBits;		// r_overbrightBits->integer, but set to 0 if no hw gamma
+};
+
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_SharedRegister();
@@ -110,5 +117,11 @@ extern QCvar*	r_ignorehwgamma;		// overrides hardware gamma capabilities
 
 extern QCvar*	r_wateralpha;
 extern QCvar*	r_simpleMipMaps;
+
+extern trGlobals_base_t*	tr_shared;
+#define tr		(*tr_shared)
+
+extern byte		s_gammatable[256];
+extern byte			 s_intensitytable[256];
 
 #endif

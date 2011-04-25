@@ -968,6 +968,8 @@ void R_Register( void )
 	Cmd_AddCommand( "gl_strings", GL_Strings_f );
 }
 
+trGlobals_base_t	_tr;
+
 /*
 ===============
 R_Init
@@ -986,6 +988,7 @@ int R_Init()
 
 	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
 
+	tr_shared = &_tr;
 	R_Register();
 
 	// destroy the existing window

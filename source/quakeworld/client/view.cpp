@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // view.c -- player eye positioning
 
 #include "quakedef.h"
+#include "glquake.h"
 
 /*
 
@@ -259,9 +260,6 @@ cshift_t	cshift_lava = { {255,80,0}, 150 };
 
 QCvar*		v_gamma;
 
-byte		gammatable[256];	// palette is sent through this
-
-
 float		v_blend[4];		// rgba 0.0 - 1.0
 
 void BuildGammaTable (float g)
@@ -271,7 +269,7 @@ void BuildGammaTable (float g)
 	if (g == 1.0)
 	{
 		for (i=0 ; i<256 ; i++)
-			gammatable[i] = i;
+			s_gammatable[i] = i;
 		return;
 	}
 	
@@ -282,7 +280,7 @@ void BuildGammaTable (float g)
 			inf = 0;
 		if (inf > 255)
 			inf = 255;
-		gammatable[i] = inf;
+		s_gammatable[i] = inf;
 	}
 }
 

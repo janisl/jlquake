@@ -47,6 +47,8 @@ struct vidmode_t
 glconfig_t	glConfig;
 glstate_t	glState;
 
+trGlobals_base_t*	tr_shared;
+
 QCvar*		r_logFile;
 
 QCvar*		r_mode;

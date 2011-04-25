@@ -478,8 +478,11 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 	*height = glConfig.vidHeight;
 }
 
+trGlobals_base_t	_tr;
+
 void VID_Init()
 {
+	tr_shared = &tr;
 	R_SharedRegister();
 	
 	R_CommonInit();

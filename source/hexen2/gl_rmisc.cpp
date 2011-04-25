@@ -515,8 +515,11 @@ void D_ShowLoadingSize(void)
 	qglDrawBuffer  (GL_BACK);
 }
 
+trGlobals_base_t	_tr;
+
 void VID_Init()
 {
+	tr_shared = &_tr;
 	R_SharedRegister();
 
 	R_CommonInit();

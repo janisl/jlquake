@@ -283,6 +283,7 @@ static void InitOpenGL( void )
 	
 	if ( glConfig.vidWidth == 0 )
 	{
+		tr_shared = &tr;
 		R_CommonInit();
 
 		GLW_InitExtensions();

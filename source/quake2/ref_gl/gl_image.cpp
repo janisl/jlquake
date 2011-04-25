@@ -24,9 +24,6 @@ image_t		gltextures[MAX_GLTEXTURES];
 int			numgltextures;
 int			base_textureid;		// gltextures[i] = base_textureid+i
 
-static byte			 intensitytable[256];
-static unsigned char gammatable[256];
-
 QCvar		*intensity;
 
 qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
@@ -339,9 +336,9 @@ void GL_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboolean onl
 		c = inwidth*inheight;
 		for (i=0 ; i<c ; i++, p+=4)
 		{
-			p[0] = gammatable[p[0]];
-			p[1] = gammatable[p[1]];
-			p[2] = gammatable[p[2]];
+			p[0] = s_gammatable[p[0]];
+			p[1] = s_gammatable[p[1]];
+			p[2] = s_gammatable[p[2]];
 		}
 	}
 	else
@@ -354,9 +351,9 @@ void GL_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboolean onl
 		c = inwidth*inheight;
 		for (i=0 ; i<c ; i++, p+=4)
 		{
-			p[0] = gammatable[intensitytable[p[0]]];
-			p[1] = gammatable[intensitytable[p[1]]];
-			p[2] = gammatable[intensitytable[p[2]]];
+			p[0] = s_gammatable[s_intensitytable[p[0]]];
+			p[1] = s_gammatable[s_intensitytable[p[1]]];
+			p[2] = s_gammatable[s_intensitytable[p[2]]];
 		}
 	}
 }
@@ -684,7 +681,7 @@ void	GL_InitImages (void)
 	{
 		if ( g == 1 )
 		{
-			gammatable[i] = i;
+			s_gammatable[i] = i;
 		}
 		else
 		{
@@ -695,7 +692,7 @@ void	GL_InitImages (void)
 				inf = 0;
 			if (inf > 255)
 				inf = 255;
-			gammatable[i] = inf;
+			s_gammatable[i] = inf;
 		}
 	}
 
@@ -704,7 +701,7 @@ void	GL_InitImages (void)
 		j = i*intensity->value;
 		if (j > 255)
 			j = 255;
-		intensitytable[i] = j;
+		s_intensitytable[i] = j;
 	}
 }
 

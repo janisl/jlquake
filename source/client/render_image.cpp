@@ -54,6 +54,9 @@ static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
 byte		scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 bool		scrap_dirty;
 
+byte			s_gammatable[256];
+byte			s_intensitytable[256];
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------

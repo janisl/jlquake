@@ -532,8 +532,12 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 VID_Init
 ===================
 */
+
+trGlobals_base_t	_tr;
+
 void VID_Init()
 {
+	tr_shared = &_tr;
 	R_SharedRegister();
 
 	R_CommonInit();
