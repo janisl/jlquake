@@ -844,10 +844,10 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	palette = NULL;
 	if (!QStr::Cmp(name+len-4, ".pcx"))
 	{
-		R_LoadPCX (name, &pic, &palette, &width, &height);
+		R_LoadPCX32(name, &pic, &width, &height);
 		if (!pic)
 			return NULL; // ri.Sys_Error (ERR_DROP, "GL_FindImage: can't load %s", name);
-		image = GL_LoadPic (name, pic, width, height, type, 8);
+		image = GL_LoadPic (name, pic, width, height, type, 32);
 	}
 	else if (!QStr::Cmp(name+len-4, ".wal"))
 	{

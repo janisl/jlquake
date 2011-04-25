@@ -198,16 +198,24 @@ void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height)
 		return;
 	}
 
-	int c = (*width) * (*height);
-	byte* pic32 = *pic = new byte[4 * c];
-	for (int i = 0 ; i < c ; i++)
+	if (GGameType & GAME_Quake3)
 	{
-		int p = pic8[i];
-		pic32[0] = palette[p * 3];
-		pic32[1] = palette[p * 3 + 1];
-		pic32[2] = palette[p * 3 + 2];
-		pic32[3] = 255;
-		pic32 += 4;
+		int c = (*width) * (*height);
+		byte* pic32 = *pic = new byte[4 * c];
+		for (int i = 0 ; i < c ; i++)
+		{
+			int p = pic8[i];
+			pic32[0] = palette[p * 3];
+			pic32[1] = palette[p * 3 + 1];
+			pic32[2] = palette[p * 3 + 2];
+			pic32[3] = 255;
+			pic32 += 4;
+		}
+	}
+	else
+	{
+		//	In Quake 2 palette from PCX file is ignored.
+		*pic = R_ConvertImage8To32(pic8, *width, *height, IMG8MODE_Normal);
 	}
 
 	delete[] pic8;
