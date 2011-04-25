@@ -24,7 +24,7 @@ extern	float	gldepthmin, gldepthmax;
 #define MAX_EXTRA_TEXTURES 156   // 255-100+1
 extern int			gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
-int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap, int mode);
+int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
 int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode);
 int GL_FindTexture (char *identifier);
 

@@ -116,6 +116,8 @@ image_t* Draw_PicFromWad(char *name)
 	img->width = p->width;
 	img->height = p->height;
 
+	byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
+
 	// load little ones into the scrap
 	if (p->width < 64 && p->height < 64)
 	{
@@ -125,12 +127,10 @@ image_t* Draw_PicFromWad(char *name)
 		if (!R_ScrapAllocBlock(p->width, p->height, &x, &y))
 			goto noscrap;
 		scrap_dirty = true;
-		byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
 		k = 0;
 		for (i=0 ; i<p->height ; i++)
 			for (j=0 ; j<p->width * 4; j++, k++)
 				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
-		delete[] pic32;
 		img->texnum = scrap_texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -143,12 +143,13 @@ image_t* Draw_PicFromWad(char *name)
 	else
 	{
 noscrap:
-		img->texnum = GL_LoadTexture8("", p->width, p->height, p->data, false, true);
+		img->texnum = GL_LoadTexture("", p->width, p->height, pic32, false);
 		img->sl = 0;
 		img->sh = 1;
 		img->tl = 0;
 		img->th = 1;
 	}
+	delete[] pic32;
 	return img;
 }
 
@@ -190,7 +191,9 @@ image_t* Draw_CachePic (char *path)
 	pic->width = dat->width;
 	pic->height = dat->height;
 
-	pic->texnum = GL_LoadTexture8("", dat->width, dat->height, dat->data, false, true);
+	byte* pic32 = R_ConvertImage8To32(dat->data, dat->width, dat->height, IMG8MODE_Normal);
+	pic->texnum = GL_LoadTexture("", dat->width, dat->height, pic32, false);
+	delete[] pic32;
 	pic->sl = 0;
 	pic->sh = 1;
 	pic->tl = 0;

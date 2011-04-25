@@ -118,7 +118,9 @@ image_t* Draw_PicFromFile (char *name)
 	img->width = p->width;
 	img->height = p->height;
 
-	img->texnum = GL_LoadTexture8("", p->width, p->height, p->data, false, true, 0);
+	byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
+	img->texnum = GL_LoadTexture("", p->width, p->height, pic32, false);
+	delete[] pic32;
 
 	img->sl = 0;
 	img->sh = 1;
@@ -136,6 +138,8 @@ image_t* Draw_PicFromWad (char *name)
 	img->width = p->width;
 	img->height = p->height;
 
+	byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
+
 	// load little ones into the scrap
 	if (p->width < 64 && p->height < 64)
 	{
@@ -145,12 +149,10 @@ image_t* Draw_PicFromWad (char *name)
 		if (!R_ScrapAllocBlock(p->width, p->height, &x, &y))
 			goto noscrap;
 		scrap_dirty = true;
-		byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
 		k = 0;
 		for (i=0 ; i<p->height ; i++)
 			for (j=0 ; j<p->width * 4; j++, k++)
 				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
-		delete[] pic32;
 		img->texnum = scrap_texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -163,12 +165,13 @@ image_t* Draw_PicFromWad (char *name)
 	else
 	{
 noscrap:
-		img->texnum = GL_LoadTexture8("", p->width, p->height, p->data, false, true, 0);
+		img->texnum = GL_LoadTexture("", p->width, p->height, pic32, false);
 		img->sl = 0;
 		img->sh = 1;
 		img->tl = 0;
 		img->th = 1;
 	}
+	delete[] pic32;
 	return img;
 }
 
@@ -204,10 +207,6 @@ image_t* Draw_CachePic (char *path)
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
 	// configuration dialog
-#if 0
-	if (!QStr::Cmp(path, "gfx/menuplyr.lmp"))
-		Com_Memcpy(menuplyr_pixels, dat->data, dat->width*dat->height);
-#else
 	/* garymct */
 	if (!QStr::Cmp(path, "gfx/menu/netp1.lmp"))
 		Com_Memcpy(menuplyr_pixels[0], dat->data, dat->width*dat->height);
@@ -221,7 +220,6 @@ image_t* Draw_CachePic (char *path)
 		Com_Memcpy(menuplyr_pixels[4], dat->data, dat->width*dat->height);
 	if (!QStr::Cmp(path, "gfx/menu/netp6.lmp"))
 		Com_Memcpy(menuplyr_pixels[5], dat->data, dat->width*dat->height);
-#endif
 
 	pic->width = dat->width;
 	pic->height = dat->height;
@@ -230,7 +228,9 @@ image_t* Draw_CachePic (char *path)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	pic->texnum = GL_LoadTexture8("", dat->width, dat->height, dat->data, false, true, 0);
+	byte* pic32 = R_ConvertImage8To32(dat->data, dat->width, dat->height, IMG8MODE_Normal);
+	pic->texnum = GL_LoadTexture("", dat->width, dat->height, pic32, false);
+	delete[] pic32;
 	pic->sl = 0;
 	pic->sh = 1;
 	pic->tl = 0;
@@ -1439,7 +1439,7 @@ done: ;
 GL_LoadTexture
 ================
 */
-int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap, int mode)
+int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap)
 {
 	qboolean	noalpha;
 	int			i, p, s;
@@ -1480,7 +1480,7 @@ int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean
 int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode)
 {
 	byte* pic32 = R_ConvertImage8To32(data, width, height, mode);
-	int ret = GL_LoadTexture(identifier, width, height, pic32, mipmap, mode);
+	int ret = GL_LoadTexture(identifier, width, height, pic32, mipmap);
 	delete[] pic32;
 	return ret;
 }
