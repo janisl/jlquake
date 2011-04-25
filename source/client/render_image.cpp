@@ -148,7 +148,7 @@ byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode)
 	for (int i = 0; i < Count; i++)
 	{
 		int p = DataIn[i];
-		if (p == 255)
+		if (p == 255 || (p == 0 && (Mode == IMG8MODE_Holey || Mode == IMG8MODE_Transparent)))
 		{
 			int u = i % Width;
 			int v = i / Width;

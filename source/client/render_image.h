@@ -33,12 +33,6 @@ enum
 	IMG8MODE_SpecialTrans,
 };
 
-struct qpic_t
-{
-	int			width, height;
-	byte		data[4];			// variably sized
-};
-
 void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
@@ -52,6 +46,8 @@ void R_SaveJPG(const char* FileName, int Quality, int Width, int Height, byte* B
 void R_LoadPCX(const char* FileName, byte** Pic, byte** Palette, int* Width, int* Height);
 void R_LoadPCX32(const char* filename, byte** pic, int* width, int* height);
 void R_SavePCXMem(QArray<byte>& buffer, byte* data, int width, int height, byte* palette);
+
+void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels = NULL, int Mode = IMG8MODE_Normal);
 
 void R_LoadTGA(const char* FileName, byte** Pic, int* Width, int* Height);
 void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool HaveAlpha);

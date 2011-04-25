@@ -107,50 +107,43 @@ byte		menuplyr_pixels[4096];
 int		pic_texels;
 int		pic_count;
 
-void SwapPic (qpic_t *pic)
-{
-	pic->width = LittleLong(pic->width);
-	pic->height = LittleLong(pic->height);	
-}
-
 image_t* Draw_PicFromWad(char *name)
 {
-	qpic_t	*p;
-
-	p = (qpic_t*)W_GetLumpName (name);
-	SwapPic(p);
+	byte* p = (byte*)W_GetLumpName (name);
+	int width;
+	int height;
+	byte* pic32;
+	R_LoadPICMem(p, &pic32, &width, &height);
 	image_t* img = new image_t;
-	img->width = p->width;
-	img->height = p->height;
-
-	byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
+	img->width = width;
+	img->height = height;
 
 	// load little ones into the scrap
-	if (p->width < 64 && p->height < 64)
+	if (width < 64 && height < 64)
 	{
 		int		x, y;
 		int		i, j, k;
 
-		if (!R_ScrapAllocBlock(p->width, p->height, &x, &y))
+		if (!R_ScrapAllocBlock(width, height, &x, &y))
 			goto noscrap;
 		scrap_dirty = true;
 		k = 0;
-		for (i=0 ; i<p->height ; i++)
-			for (j=0 ; j<p->width * 4; j++, k++)
+		for (i=0 ; i<height ; i++)
+			for (j=0 ; j<width * 4; j++, k++)
 				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
 		img->texnum = scrap_texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
+		img->sh = (x+width-0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		img->th = (y+p->height-0.01)/(float)SCRAP_BLOCK_WIDTH;
+		img->th = (y+height-0.01)/(float)SCRAP_BLOCK_WIDTH;
 
 		pic_count++;
-		pic_texels += p->width*p->height;
+		pic_texels += width*height;
 	}
 	else
 	{
 noscrap:
-		img->texnum = GL_LoadTexture("", p->width, p->height, pic32, false);
+		img->texnum = GL_LoadTexture("", width, height, pic32, false);
 		img->sl = 0;
 		img->sh = 1;
 		img->tl = 0;
@@ -170,7 +163,6 @@ image_t* Draw_CachePic (char *path)
 {
 	image_t*	pic;
 	int			i;
-	qpic_t		*dat;
 
 	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
 		if (!QStr::Cmp(path, pic->name))
@@ -181,25 +173,28 @@ image_t* Draw_CachePic (char *path)
 	menu_numcachepics++;
 	QStr::Cpy(pic->name, path);
 
-//
-// load the pic from disk
-//
-	dat = (qpic_t *)COM_LoadTempFile (path);	
-	if (!dat)
-		Sys_Error ("Draw_CachePic: failed to load %s", path);
-	SwapPic (dat);
-
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
 	// configuration dialog
+	byte* TransPixels = NULL;
 	if (!QStr::Cmp(path, "gfx/menuplyr.lmp"))
-		Com_Memcpy(menuplyr_pixels, dat->data, dat->width*dat->height);
+		TransPixels = menuplyr_pixels;
 
-	pic->width = dat->width;
-	pic->height = dat->height;
+//
+// load the pic from disk
+//
+	byte* dat = COM_LoadTempFile (path);	
+	if (!dat)
+		Sys_Error ("Draw_CachePic: failed to load %s", path);
+	int width;
+	int height;
+	byte* pic32;
+	R_LoadPICMem(dat, &pic32, &width, &height, TransPixels);
 
-	byte* pic32 = R_ConvertImage8To32(dat->data, dat->width, dat->height, IMG8MODE_Normal);
-	pic->texnum = GL_LoadTexture("", dat->width, dat->height, pic32, false);
+	pic->width = width;
+	pic->height = height;
+
+	pic->texnum = GL_LoadTexture("", width, height, pic32, false);
 	delete[] pic32;
 	pic->sl = 0;
 	pic->sh = 1;
@@ -311,7 +306,6 @@ Draw_Init
 void Draw_Init (void)
 {
 	int		i;
-	qpic_t	*cb;
 	byte	*dest, *src;
 	int		x, y;
 	char	ver[40];
@@ -339,10 +333,13 @@ void Draw_Init (void)
 
 	start = Hunk_LowMark();
 
-	cb = (qpic_t *)COM_LoadTempFile ("gfx/conback.lmp");	
+	byte* cb = COM_LoadTempFile ("gfx/conback.lmp");	
 	if (!cb)
 		Sys_Error ("Couldn't load gfx/conback.lmp");
-	SwapPic (cb);
+	int cbwidth;
+	int cbheight;
+	byte* pic32;
+	R_LoadPICMem(cb, &pic32, &cbwidth, &cbheight);
 
 	// hack the version number directly into the pic
 #if defined(__linux__)
@@ -350,26 +347,22 @@ void Draw_Init (void)
 #else
 	sprintf (ver, "(gl %4.2f) %4.2f", (float)GLQUAKE_VERSION, (float)VERSION);
 #endif
-	byte* pic32 = R_ConvertImage8To32(cb->data, cb->width, cb->height, IMG8MODE_Normal);
 	dest = pic32 + (320*186 + 320 - 11 - 8*QStr::Length(ver)) * 4;
 	y = QStr::Length(ver);
 	for (x=0 ; x<y ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<5));
 
-	conback->width = cb->width;
-	conback->height = cb->height;
-
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	conback->texnum = GL_LoadTexture("conback", conback->width, conback->height, pic32, false);
+	conback->texnum = GL_LoadTexture("conback", cbwidth, cbheight, pic32, false);
 	delete[] pic32;
 	conback->sl = 0;
 	conback->sh = 1;
 	conback->tl = 0;
 	conback->th = 1;
-	conback->width = vid.width;
-	conback->height = vid.height;
+	conback->width = vid.conwidth;
+	conback->height = vid.conheight;
 
 	// free loaded console
 	Hunk_FreeToLowMark(start);

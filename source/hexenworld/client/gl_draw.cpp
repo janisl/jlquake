@@ -106,20 +106,21 @@ byte		menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
 image_t* Draw_PicFromFile (char *name)
 {
-	qpic_t	*p;
-
-	p = (qpic_t	*)COM_LoadHunkFile (name);
+	byte* p = COM_LoadHunkFile (name);
 	if (!p)
 	{
 		return NULL;
 	}
+	int width;
+	int height;
+	byte* pic32;
+	R_LoadPICMem(p, &pic32, &width, &height);
 
 	image_t* img = new image_t;
-	img->width = p->width;
-	img->height = p->height;
+	img->width = width;
+	img->height = height;
 
-	byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
-	img->texnum = GL_LoadTexture("", p->width, p->height, pic32, false);
+	img->texnum = GL_LoadTexture("", width, height, pic32, false);
 	delete[] pic32;
 
 	img->sl = 0;
@@ -129,50 +130,43 @@ image_t* Draw_PicFromFile (char *name)
 	return img;
 }
 
-void SwapPic (qpic_t *pic)
-{
-	pic->width = LittleLong(pic->width);
-	pic->height = LittleLong(pic->height);	
-}
-
 image_t* Draw_PicFromWad (char *name)
 {
-	qpic_t	*p;
-
-	p = (qpic_t*)W_GetLumpName (name);
-	SwapPic(p);
+	byte* p = (byte*)W_GetLumpName (name);
+	int width;
+	int height;
+	byte* pic32;
+	R_LoadPICMem(p, &pic32, &width, &height);
 	image_t* img = new image_t;
-	img->width = p->width;
-	img->height = p->height;
-
-	byte* pic32 = R_ConvertImage8To32(p->data, p->width, p->height, IMG8MODE_Normal);
+	img->width = width;
+	img->height = height;
 
 	// load little ones into the scrap
-	if (p->width < 64 && p->height < 64)
+	if (width < 64 && height < 64)
 	{
 		int		x, y;
 		int		i, j, k;
 
-		if (!R_ScrapAllocBlock(p->width, p->height, &x, &y))
+		if (!R_ScrapAllocBlock(width, height, &x, &y))
 			goto noscrap;
 		scrap_dirty = true;
 		k = 0;
-		for (i=0 ; i<p->height ; i++)
-			for (j=0 ; j<p->width * 4; j++, k++)
+		for (i=0 ; i<height ; i++)
+			for (j=0 ; j<width * 4; j++, k++)
 				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
 		img->texnum = scrap_texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		img->sh = (x+p->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
+		img->sh = (x+width-0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		img->th = (y+p->height-0.01)/(float)SCRAP_BLOCK_WIDTH;
+		img->th = (y+height-0.01)/(float)SCRAP_BLOCK_WIDTH;
 
 		pic_count++;
-		pic_texels += p->width*p->height;
+		pic_texels += width*height;
 	}
 	else
 	{
 noscrap:
-		img->texnum = GL_LoadTexture("", p->width, p->height, pic32, false);
+		img->texnum = GL_LoadTexture("", width, height, pic32, false);
 		img->sl = 0;
 		img->sh = 1;
 		img->tl = 0;
@@ -192,7 +186,6 @@ image_t* Draw_CachePic (char *path)
 {
 	image_t*	pic;
 	int			i;
-	qpic_t		*dat;
 
 	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
 		if (!QStr::Cmp(path, pic->name))
@@ -203,40 +196,43 @@ image_t* Draw_CachePic (char *path)
 	menu_numcachepics++;
 	QStr::Cpy(pic->name, path);
 
-//
-// load the pic from disk
-//
-	dat = (qpic_t *)COM_LoadTempFile (path);	
-	if (!dat)
-		Sys_Error ("Draw_CachePic: failed to load %s", path);
-	SwapPic (dat);
-
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
 	// configuration dialog
 	/* garymct */
+	byte* TransPixels = NULL;
 	if (!QStr::Cmp(path, "gfx/menu/netp1.lmp"))
-		Com_Memcpy(menuplyr_pixels[0], dat->data, dat->width*dat->height);
+		TransPixels = menuplyr_pixels[0];
 	if (!QStr::Cmp(path, "gfx/menu/netp2.lmp"))
-		Com_Memcpy(menuplyr_pixels[1], dat->data, dat->width*dat->height);
+		TransPixels = menuplyr_pixels[1];
 	if (!QStr::Cmp(path, "gfx/menu/netp3.lmp"))
-		Com_Memcpy(menuplyr_pixels[2], dat->data, dat->width*dat->height);
+		TransPixels = menuplyr_pixels[2];
 	if (!QStr::Cmp(path, "gfx/menu/netp4.lmp"))
-		Com_Memcpy(menuplyr_pixels[3], dat->data, dat->width*dat->height);
+		TransPixels = menuplyr_pixels[3];
 	if (!QStr::Cmp(path, "gfx/menu/netp5.lmp"))
-		Com_Memcpy(menuplyr_pixels[4], dat->data, dat->width*dat->height);
+		TransPixels = menuplyr_pixels[4];
 	if (!QStr::Cmp(path, "gfx/menu/netp6.lmp"))
-		Com_Memcpy(menuplyr_pixels[5], dat->data, dat->width*dat->height);
+		TransPixels = menuplyr_pixels[5];
 
-	pic->width = dat->width;
-	pic->height = dat->height;
+//
+// load the pic from disk
+//
+	byte* dat = COM_LoadTempFile (path);	
+	if (!dat)
+		Sys_Error ("Draw_CachePic: failed to load %s", path);
+	int width;
+	int height;
+	byte* pic32;
+	R_LoadPICMem(dat, &pic32, &width, &height, TransPixels);
+
+	pic->width = width;
+	pic->height = height;
 
 	// point sample status bar
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	byte* pic32 = R_ConvertImage8To32(dat->data, dat->width, dat->height, IMG8MODE_Normal);
-	pic->texnum = GL_LoadTexture("", dat->width, dat->height, pic32, false);
+	pic->texnum = GL_LoadTexture("", width, height, pic32, false);
 	delete[] pic32;
 	pic->sl = 0;
 	pic->sh = 1;
@@ -318,7 +314,6 @@ Draw_Init
 void Draw_Init (void)
 {
 	int		i;
-	qpic_t	*cb, *mf;
 	byte	*dest, *src;
 	int		x, y;
 	char	ver[40];
@@ -358,32 +353,30 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	mf = (qpic_t *)COM_LoadTempFile("gfx/menu/bigfont2.lmp");
-	for (i=0 ; i<160*80 ; i++)
-		if (mf->data[i] == 0)
-			mf->data[i] = 255;	// proper transparent color
-
-
-	char_menufonttexture = GL_LoadTexture8("menufont", 160, 80, mf->data, false, true, 0);
+	byte* mf = COM_LoadTempFile("gfx/menu/bigfont2.lmp");
+	int mfwidth;
+	int mfheight;
+	byte* mfpic32;
+	R_LoadPICMem(mf, &mfpic32, &mfwidth, &mfheight, NULL, IMG8MODE_Holey);
+	char_menufonttexture = GL_LoadTexture("menufont", mfwidth, mfheight, mfpic32, false);
+	delete[] mfpic32;
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
 
 	start = Hunk_LowMark ();
 
-	cb = (qpic_t *)COM_LoadHunkFile ("gfx/menu/conback.lmp");	
+	byte* cb = COM_LoadHunkFile ("gfx/menu/conback.lmp");	
 	if (!cb)
 		Sys_Error ("Couldn't load gfx/menu/conback.lmp");
-	SwapPic (cb);
-	byte* pic32 = R_ConvertImage8To32(cb->data, conback->width, conback->height, IMG8MODE_Normal);
+	int cbwidth;
+	int cbheight;
+	byte* pic32;
+	R_LoadPICMem(cb, &pic32, &cbwidth, &cbheight);
 
-	conback->width = cb->width;
-	conback->height = cb->height;
-	
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	conback->texnum = GL_LoadTexture("conback", conback->width, conback->height, pic32, false);
+	conback->texnum = GL_LoadTexture("conback", cbwidth, cbheight, pic32, false);
 	delete[] pic32;
 	conback->sl = 0;
 	conback->sh = 1;
