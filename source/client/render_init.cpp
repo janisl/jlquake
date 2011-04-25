@@ -68,6 +68,8 @@ QCvar*		r_verbose;
 
 QCvar*		r_gamma;
 QCvar*		r_ignorehwgamma;
+QCvar*		r_intensity;
+QCvar*		r_overBrightBits;
 
 QCvar*		r_wateralpha;
 QCvar*		r_simpleMipMaps;
@@ -193,6 +195,7 @@ void R_SharedRegister()
 	r_depthbits = Cvar_Get("r_depthbits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_overBrightBits = Cvar_Get("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_simpleMipMaps = Cvar_Get("r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	//
@@ -201,6 +204,7 @@ void R_SharedRegister()
 	r_allowSoftwareGL = Cvar_Get("r_allowSoftwareGL", "0", CVAR_LATCH2);
 	r_displayRefresh = Cvar_Get("r_displayRefresh", "0", CVAR_LATCH2);
 	AssertCvarRange(r_displayRefresh, 0, 200, true);
+	r_intensity = Cvar_Get("r_intensity", "1", CVAR_LATCH2);
 
 	//
 	// archived variables that can change at any time

@@ -1034,8 +1034,6 @@ extern	QCvar	*r_clear;						// force screen clear every frame
 extern	QCvar	*r_shadows;						// controls shadows: 0 = none, 1 = blur, 2 = stencil, 3 = black planar projection
 extern	QCvar	*r_flares;						// light flares
 
-extern	QCvar	*r_intensity;
-
 extern	QCvar	*r_lockpvs;
 extern	QCvar	*r_noportals;
 extern	QCvar	*r_portalOnly;
@@ -1048,7 +1046,6 @@ extern	QCvar	*r_skipBackEnd;
 
 extern	QCvar	*r_ignoreGLErrors;
 
-extern	QCvar	*r_overBrightBits;
 extern	QCvar	*r_mapOverBrightBits;
 
 extern	QCvar	*r_debugSurface;

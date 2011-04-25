@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "quakedef.h"
 
+extern QCvar*		r_gamma;
+
 enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist} m_state, m_quit_prevstate, m_return_state;
 
 void M_Menu_Main_f (void);
@@ -1019,12 +1021,12 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("viewsize", scr_viewsize->value);
 		break;
 	case 4:	// gamma
-		v_gamma->value -= dir * 0.05;
-		if (v_gamma->value < 0.5)
-			v_gamma->value = 0.5;
-		if (v_gamma->value > 1)
-			v_gamma->value = 1;
-		Cvar_SetValue ("gamma", v_gamma->value);
+		r_gamma->value -= dir * 0.05;
+		if (r_gamma->value < 0.5)
+			r_gamma->value = 0.5;
+		if (r_gamma->value > 1)
+			r_gamma->value = 1;
+		Cvar_SetValue ("r_gamma", r_gamma->value);
 		break;
 	case 5:	// mouse speed
 		sensitivity->value += dir * 0.5;
@@ -1130,7 +1132,7 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 56, r);
 
 	M_Print (16, 64, "            Brightness");
-	r = (1.0 - v_gamma->value) / 0.5;
+	r = (1.0 - r_gamma->value) / 0.5;
 	M_DrawSlider (220, 64, r);
 
 	M_Print (16, 72, "           Mouse Speed");

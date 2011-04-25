@@ -1,7 +1,5 @@
 // view.h
 
-extern	QCvar*		v_gamma;
-
 extern float v_blend[4];
 
 extern QCvar* lcd_x;

@@ -256,8 +256,6 @@ cshift_t	cshift_water = { {130,80,50}, 128 };
 cshift_t	cshift_slime = { {0,25,5}, 150 };
 cshift_t	cshift_lava = { {255,80,0}, 150 };
 
-QCvar*		v_gamma;
-
 float		v_blend[4];		// rgba 0.0 - 1.0
 
 void BuildGammaTable (float g)
@@ -291,11 +289,11 @@ qboolean V_CheckGamma (void)
 {
 	static float oldgammavalue;
 	
-	if (v_gamma->value == oldgammavalue)
+	if (r_gamma->value == oldgammavalue)
 		return false;
-	oldgammavalue = v_gamma->value;
+	oldgammavalue = r_gamma->value;
 	
-	BuildGammaTable (v_gamma->value);
+	BuildGammaTable (r_gamma->value);
 	vid.recalc_refdef = 1;				// force a surface cache flush
 	
 	return true;
@@ -968,7 +966,6 @@ void V_Init (void)
     v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);
 	
 	BuildGammaTable (1.0);	// no gamma yet
-    v_gamma = Cvar_Get("gamma", "1", CVAR_ARCHIVE);
 }
 
 

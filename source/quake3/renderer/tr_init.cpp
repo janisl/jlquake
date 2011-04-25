@@ -100,7 +100,6 @@ QCvar	*r_swapInterval;
 QCvar	*r_textureMode;
 QCvar	*r_offsetFactor;
 QCvar	*r_offsetUnits;
-QCvar	*r_intensity;
 QCvar	*r_lockpvs;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
@@ -108,7 +107,6 @@ QCvar	*r_portalOnly;
 QCvar	*r_subdivisions;
 QCvar	*r_lodCurveError;
 
-QCvar	*r_overBrightBits;
 QCvar	*r_mapOverBrightBits;
 
 QCvar	*r_debugSurface;
@@ -822,7 +820,6 @@ void R_Register( void )
 	AssertCvarRange( r_picmip, 0, 16, qtrue );
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_texturebits = Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_overBrightBits = Cvar_Get ("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_uiFullScreen = Cvar_Get( "r_uifullscreen", "0", 0);
 	r_subdivisions = Cvar_Get ("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2);
@@ -839,7 +836,6 @@ void R_Register( void )
 	//
 	r_fullbright = Cvar_Get ("r_fullbright", "0", CVAR_LATCH2|CVAR_CHEAT );
 	r_mapOverBrightBits = Cvar_Get ("r_mapOverBrightBits", "2", CVAR_LATCH2 );
-	r_intensity = Cvar_Get ("r_intensity", "1", CVAR_LATCH2 );
 	r_singleShader = Cvar_Get ("r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH2 );
 
 	//

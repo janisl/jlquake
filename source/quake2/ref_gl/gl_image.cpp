@@ -24,8 +24,6 @@ image_t		gltextures[MAX_GLTEXTURES];
 int			numgltextures;
 int			base_textureid;		// gltextures[i] = base_textureid+i
 
-QCvar		*intensity;
-
 qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
 
@@ -669,13 +667,10 @@ void	GL_InitImages (void)
 
 	registration_sequence = 1;
 
-	// init intensity conversions
-	intensity = Cvar_Get ("intensity", "2", 0);
+	if ( r_intensity->value <= 1 )
+		Cvar_SetLatched( "r_intensity", "1" );
 
-	if ( intensity->value <= 1 )
-		Cvar_SetLatched( "intensity", "1" );
-
-	gl_state.inverse_intensity = 1 / intensity->value;
+	gl_state.inverse_intensity = 1 / r_intensity->value;
 
 	for ( i = 0; i < 256; i++ )
 	{
@@ -698,7 +693,7 @@ void	GL_InitImages (void)
 
 	for (i=0 ; i<256 ; i++)
 	{
-		j = i*intensity->value;
+		j = i*r_intensity->value;
 		if (j > 255)
 			j = 255;
 		s_intensitytable[i] = j;

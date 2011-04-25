@@ -114,6 +114,8 @@ extern QCvar*	r_displayRefresh;		// optional display refresh option
 
 extern QCvar*	r_gamma;
 extern QCvar*	r_ignorehwgamma;		// overrides hardware gamma capabilities
+extern QCvar*	r_intensity;
+extern QCvar*	r_overBrightBits;
 
 extern QCvar*	r_wateralpha;
 extern QCvar*	r_simpleMipMaps;

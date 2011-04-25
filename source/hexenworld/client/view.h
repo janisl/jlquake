@@ -1,6 +1,5 @@
 // view.h
 
-extern	QCvar*		v_gamma;
 extern float v_blend[4];
 
 void V_Init (void);
