@@ -130,11 +130,18 @@ image_t *Draw_PicFromFile (char *name)
 	return img;
 }
 
+void SwapPic (qpic_t *pic)
+{
+	pic->width = LittleLong(pic->width);
+	pic->height = LittleLong(pic->height);	
+}
+
 image_t *Draw_PicFromWad (char *name)
 {
 	qpic_t	*p;
 
 	p = (qpic_t*)W_GetLumpName (name);
+	SwapPic(p);
 	image_t* img = new image_t;
 	img->width = p->width;
 	img->height = p->height;

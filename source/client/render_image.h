@@ -33,6 +33,12 @@ enum
 	IMG8MODE_SpecialTrans,
 };
 
+struct qpic_t
+{
+	int			width, height;
+	byte		data[4];			// variably sized
+};
+
 void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);

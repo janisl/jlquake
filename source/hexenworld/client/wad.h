@@ -19,14 +19,6 @@
 
 typedef struct
 {
-	int			width, height;
-	byte		data[4];			// variably sized
-} qpic_t;
-
-
-
-typedef struct
-{
 	char		identification[4];		// should be WAD2 or 2DAW
 	int			numlumps;
 	int			infotableofs;
@@ -52,5 +44,3 @@ void	W_CleanupName (char *in, char *out);
 lumpinfo_t	*W_GetLumpinfo (char *name);
 void	*W_GetLumpName (char *name);
 void	*W_GetLumpNum (int num);
-
-void SwapPic (qpic_t *pic);
