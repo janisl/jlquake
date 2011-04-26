@@ -102,8 +102,6 @@ QCvar	*gl_dynamic;
 QCvar  *gl_monolightmap;
 QCvar	*gl_modulate;
 QCvar	*gl_nobind;
-QCvar	*gl_round_down;
-QCvar	*gl_picmip;
 QCvar	*gl_skymip;
 QCvar	*gl_showtris;
 QCvar	*gl_ztrick;
@@ -927,8 +925,6 @@ void R_Register( void )
 	gl_shadows = Cvar_Get ("gl_shadows", "0", CVAR_ARCHIVE );
 	gl_dynamic = Cvar_Get ("gl_dynamic", "1", 0);
 	gl_nobind = Cvar_Get ("gl_nobind", "0", 0);
-	gl_round_down = Cvar_Get ("gl_round_down", "1", 0);
-	gl_picmip = Cvar_Get ("gl_picmip", "0", 0);
 	gl_skymip = Cvar_Get ("gl_skymip", "0", 0);
 	gl_showtris = Cvar_Get ("gl_showtris", "0", 0);
 	gl_ztrick = Cvar_Get ("gl_ztrick", "0", 0);

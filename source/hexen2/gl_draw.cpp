@@ -15,8 +15,6 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
-QCvar*		gl_picmip;
-QCvar*		gl_round_down;
 
 byte		*draw_chars;				// 8*8 graphic characters
 byte		*draw_smallchars;			// Small characters for status bar
@@ -349,8 +347,6 @@ void Draw_Init (void)
 
 	gl_nobind = Cvar_Get("gl_nobind", "0", 0);
 	gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
-	gl_picmip = Cvar_Get("gl_picmip", "0", 0);
-	gl_round_down = Cvar_Get("gl_round_down", "0", 0);
 
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 	Cmd_AddCommand ("gl_texels", &GL_Texels_f);
@@ -1060,18 +1056,18 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 
 	for (scaled_width = 1 ; scaled_width < width ; scaled_width<<=1)
 		;
-	if (gl_round_down->value && scaled_width > width)
+	if (r_roundImagesDown->value && scaled_width > width)
 		scaled_width >>= 1;
 	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
 		;
-	if (gl_round_down->value && scaled_height > height)
+	if (r_roundImagesDown->value && scaled_height > height)
 		scaled_height >>= 1;
 
-	if ((scaled_width >> (int)gl_picmip->value) &&
-		(scaled_height >> (int)gl_picmip->value))
+	if ((scaled_width >> (int)r_picmip->value) &&
+		(scaled_height >> (int)r_picmip->value))
 	{
-		scaled_width >>= (int)gl_picmip->value;
-		scaled_height >>= (int)gl_picmip->value;
+		scaled_width >>= (int)r_picmip->value;
+		scaled_height >>= (int)r_picmip->value;
 	}
 
 	if (scaled_width > gl_max_size->value)

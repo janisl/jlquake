@@ -118,6 +118,14 @@ extern QCvar*	r_intensity;
 extern QCvar*	r_overBrightBits;
 
 extern QCvar*	r_wateralpha;
+extern QCvar*	r_roundImagesDown;
+extern QCvar*	r_picmip;				// controls picmip values
+extern QCvar*	r_texturebits;			// number of desired texture bits
+										// 0 = use framebuffer depth
+										// 16 = use 16-bit textures
+										// 32 = use 32-bit textures
+										// all else = error
+extern QCvar*	r_colorMipLevels;		// development aid to see texture mip usage
 extern QCvar*	r_simpleMipMaps;
 
 extern trGlobals_base_t*	tr_shared;

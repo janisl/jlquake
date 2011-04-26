@@ -170,8 +170,6 @@ extern	QCvar	*gl_shadows;
 extern	QCvar	*gl_dynamic;
 extern  QCvar  *gl_monolightmap;
 extern	QCvar	*gl_nobind;
-extern	QCvar	*gl_round_down;
-extern	QCvar	*gl_picmip;
 extern	QCvar	*gl_skymip;
 extern	QCvar	*gl_showtris;
 extern	QCvar	*gl_finish;

@@ -72,6 +72,10 @@ QCvar*		r_intensity;
 QCvar*		r_overBrightBits;
 
 QCvar*		r_wateralpha;
+QCvar*		r_roundImagesDown;
+QCvar*		r_picmip;
+QCvar*		r_texturebits;
+QCvar*		r_colorMipLevels;
 QCvar*		r_simpleMipMaps;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -196,6 +200,10 @@ void R_SharedRegister()
 	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_overBrightBits = Cvar_Get("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_roundImagesDown = Cvar_Get("r_roundImagesDown", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_picmip = Cvar_Get("r_picmip", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	AssertCvarRange(r_picmip, 0, 16, true);
+	r_texturebits = Cvar_Get("r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_simpleMipMaps = Cvar_Get("r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	//
@@ -205,6 +213,7 @@ void R_SharedRegister()
 	r_displayRefresh = Cvar_Get("r_displayRefresh", "0", CVAR_LATCH2);
 	AssertCvarRange(r_displayRefresh, 0, 200, true);
 	r_intensity = Cvar_Get("r_intensity", "1", CVAR_LATCH2);
+	r_colorMipLevels = Cvar_Get("r_colorMipLevels", "0", CVAR_LATCH2);
 
 	//
 	// archived variables that can change at any time

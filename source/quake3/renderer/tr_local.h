@@ -967,12 +967,6 @@ extern QCvar	*r_ignoreFastPath;		// allows us to ignore our Tess fast paths
 
 extern QCvar	*r_znear;				// near Z clip plane
 
-extern QCvar	*r_texturebits;			// number of desired texture bits
-										// 0 = use framebuffer depth
-										// 16 = use 16-bit textures
-										// 32 = use 32-bit textures
-										// all else = error
-
 extern QCvar	*r_measureOverdraw;		// enables stencil buffer overdraw measurement
 
 extern QCvar	*r_lodbias;				// push/pull LOD transitions
@@ -1010,9 +1004,6 @@ extern QCvar	*r_ext_texture_env_add;
 
 extern	QCvar	*r_nobind;						// turns off binding to appropriate textures
 extern	QCvar	*r_singleShader;				// make most world faces use default shader
-extern	QCvar	*r_roundImagesDown;
-extern	QCvar	*r_colorMipLevels;				// development aid to see texture mip usage
-extern	QCvar	*r_picmip;						// controls picmip values
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;
 extern  QCvar  *r_glDriver;

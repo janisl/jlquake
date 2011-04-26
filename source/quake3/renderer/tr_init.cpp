@@ -77,7 +77,6 @@ QCvar	*r_ext_texture_env_add;
 QCvar	*r_ignoreGLErrors;
 
 QCvar	*r_primitives;
-QCvar	*r_texturebits;
 
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
@@ -88,9 +87,6 @@ QCvar	*r_shadows;
 QCvar	*r_flares;
 QCvar	*r_nobind;
 QCvar	*r_singleShader;
-QCvar	*r_roundImagesDown;
-QCvar	*r_colorMipLevels;
-QCvar	*r_picmip;
 QCvar	*r_showtris;
 QCvar	*r_showsky;
 QCvar	*r_shownormals;
@@ -814,12 +810,7 @@ void R_Register( void )
 	r_ext_texture_env_add = Cvar_Get( "r_ext_texture_env_add", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 #endif
 
-	r_picmip = Cvar_Get ("r_picmip", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_roundImagesDown = Cvar_Get ("r_roundImagesDown", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_colorMipLevels = Cvar_Get ("r_colorMipLevels", "0", CVAR_LATCH2 );
-	AssertCvarRange( r_picmip, 0, 16, qtrue );
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_texturebits = Cvar_Get( "r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_uiFullScreen = Cvar_Get( "r_uifullscreen", "0", 0);
 	r_subdivisions = Cvar_Get ("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2);

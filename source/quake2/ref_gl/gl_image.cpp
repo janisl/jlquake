@@ -338,18 +338,18 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 
 	for (scaled_width = 1 ; scaled_width < width ; scaled_width<<=1)
 		;
-	if (gl_round_down->value && scaled_width > width && mipmap)
+	if (r_roundImagesDown->value && scaled_width > width && mipmap)
 		scaled_width >>= 1;
 	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
 		;
-	if (gl_round_down->value && scaled_height > height && mipmap)
+	if (r_roundImagesDown->value && scaled_height > height && mipmap)
 		scaled_height >>= 1;
 
 	// let people sample down the world textures for speed
 	if (mipmap)
 	{
-		scaled_width >>= (int)gl_picmip->value;
-		scaled_height >>= (int)gl_picmip->value;
+		scaled_width >>= (int)r_picmip->value;
+		scaled_height >>= (int)r_picmip->value;
 	}
 
 	// don't ever bother with >256 textures

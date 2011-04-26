@@ -1341,7 +1341,7 @@ extern QCvar *scr_viewsize;
 
 static QCvar *r_mode;
 static QCvar *gl_driver;
-static QCvar *gl_picmip;
+static QCvar *r_picmip;
 static QCvar *gl_ext_palettedtexture;
 static QCvar *gl_finish;
 
@@ -1434,7 +1434,7 @@ static void ApplyChanges( void *unused )
 
 	Cvar_SetValueLatched( "r_gamma", gamma );
 	Cvar_SetValueLatched( "sw_stipplealpha", s_stipple_box.curvalue );
-	Cvar_SetValueLatched( "gl_picmip", 3 - s_tq_slider.curvalue );
+	Cvar_SetValueLatched( "r_picmip", 3 - s_tq_slider.curvalue );
 	Cvar_SetValueLatched( "r_fullscreen", s_fs_box[s_current_menu_index].curvalue );
 	Cvar_SetValueLatched( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
 	Cvar_SetValueLatched( "gl_finish", s_finish_box.curvalue );
@@ -1525,8 +1525,8 @@ static void VID_MenuInit( void )
 
 	if ( !gl_driver )
 		gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
-	if ( !gl_picmip )
-		gl_picmip = Cvar_Get( "gl_picmip", "0", 0 );
+	if ( !r_picmip )
+		r_picmip = Cvar_Get( "r_picmip", "0", 0 );
 	if ( !r_mode )
 		r_mode = Cvar_Get( "r_mode", "3", 0 );
 	if ( !sw_mode )
@@ -1637,7 +1637,7 @@ static void VID_MenuInit( void )
 	s_tq_slider.generic.name	= "texture quality";
 	s_tq_slider.minvalue = 0;
 	s_tq_slider.maxvalue = 3;
-	s_tq_slider.curvalue = 3-gl_picmip->value;
+	s_tq_slider.curvalue = 3-r_picmip->value;
 
 	s_paletted_texture_box.generic.type = MTYPE_SPINCONTROL;
 	s_paletted_texture_box.generic.x	= 0;

@@ -33,7 +33,6 @@ extern QCvar*	crosshaircolor;
 
 QCvar*		gl_nobind;
 QCvar*		gl_max_size;
-QCvar*		gl_picmip;
 
 byte		*draw_chars;				// 8*8 graphic characters
 image_t		*draw_disc;
@@ -328,7 +327,6 @@ void Draw_Init (void)
 
     gl_nobind = Cvar_Get("gl_nobind", "0", 0);
     gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
-    gl_picmip = Cvar_Get("gl_picmip", "0", 0);
 
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 
@@ -871,8 +869,8 @@ static	unsigned	scaled[1024*512];	// [512*256];
 	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
 		;
 
-	scaled_width >>= (int)gl_picmip->value;
-	scaled_height >>= (int)gl_picmip->value;
+	scaled_width >>= (int)r_picmip->value;
+	scaled_height >>= (int)r_picmip->value;
 
 	if (scaled_width > gl_max_size->value)
 		scaled_width = gl_max_size->value;
