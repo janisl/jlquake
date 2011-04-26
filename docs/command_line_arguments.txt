@@ -4,13 +4,7 @@
 -bpp
 -cddev
 -condebug
--force
 -heapsize
--lm_1
--lm_2
--lm_4
--lm_a
--lm_i
 -minmemory
 -nocdaudio
 -nomidi
@@ -152,3 +146,13 @@ Parameter                Console command                      Saved
 
 -wavonly
   Only DirectSound is supported on Windows.
+
+-lm_1
+-lm_2
+-lm_4
+-lm_a
+-lm_i
+  Lightmaps are always in RGB format.
+
+-force
+  Not supported anymore.

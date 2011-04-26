@@ -99,7 +99,6 @@ QCvar  *gl_driver;
 QCvar	*gl_lightmap;
 QCvar	*gl_shadows;
 QCvar	*gl_dynamic;
-QCvar  *gl_monolightmap;
 QCvar	*gl_modulate;
 QCvar	*gl_nobind;
 QCvar	*gl_skymip;
@@ -934,7 +933,6 @@ void R_Register( void )
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_flashblend = Cvar_Get ("gl_flashblend", "0", 0);
 	gl_playermip = Cvar_Get ("gl_playermip", "0", 0);
-	gl_monolightmap = Cvar_Get( "gl_monolightmap", "0", 0 );
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 	gl_texturemode = Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	gl_texturealphamode = Cvar_Get( "gl_texturealphamode", "default", CVAR_ARCHIVE );
@@ -997,11 +995,6 @@ int R_Init()
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
 
 	CommonGfxInfo_f();
-
-	if ( QStr::ToUpper( gl_monolightmap->string[1] ) != 'F' )
-	{
-		Cvar_SetLatched( "gl_monolightmap", "0" );
-	}
 
 	Cvar_SetLatched( "scr_drawall", "0" );
 

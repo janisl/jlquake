@@ -200,7 +200,6 @@ extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 
-extern	int		gl_lightmap_format;
 extern	int		gl_solid_format;
 extern	int		gl_alpha_format;
 

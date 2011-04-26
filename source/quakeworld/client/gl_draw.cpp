@@ -73,7 +73,6 @@ struct image_t
 byte		conback_buffer[sizeof(image_t)];
 image_t		*conback = (image_t*)&conback_buffer;
 
-int		gl_lightmap_format = 4;
 int		gl_solid_format = 3;
 int		gl_alpha_format = 4;
 

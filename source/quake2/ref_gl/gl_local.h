@@ -168,7 +168,6 @@ extern	QCvar	*gl_nosubimage;
 extern	QCvar	*gl_lightmap;
 extern	QCvar	*gl_shadows;
 extern	QCvar	*gl_dynamic;
-extern  QCvar  *gl_monolightmap;
 extern	QCvar	*gl_nobind;
 extern	QCvar	*gl_skymip;
 extern	QCvar	*gl_showtris;
@@ -192,7 +191,6 @@ extern	QCvar	*gl_texturesolidmode;
 extern  QCvar  *gl_saturatelighting;
 extern  QCvar  *gl_lockpvs;
 
-extern	int		gl_lightmap_format;
 extern	int		gl_solid_format;
 extern	int		gl_alpha_format;
 extern	int		gl_tex_solid_format;

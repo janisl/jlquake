@@ -10,8 +10,6 @@ int			skytexturenum;
 #endif
 
 
-int		lightmap_bytes;		// 1, 2, or 4
-
 int		lightmap_textures;
 
 unsigned		blocklights[18*18];
@@ -165,42 +163,19 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 
 // bound, invert, and shift
 store:
-	switch (gl_lightmap_format)
+	stride -= (smax<<2);
+	bl = blocklights;
+	for (i=0 ; i<tmax ; i++, dest += stride)
 	{
-	case GL_RGBA:
-		stride -= (smax<<2);
-		bl = blocklights;
-		for (i=0 ; i<tmax ; i++, dest += stride)
+		for (j=0 ; j<smax ; j++)
 		{
-			for (j=0 ; j<smax ; j++)
-			{
-				t = *bl++;
-				t >>= 7;
-				if (t > 255)
-					t = 255;
-				dest[3] = 255-t;
-				dest += 4;
-			}
+			t = *bl++;
+			t >>= 7;
+			if (t > 255)
+				t = 255;
+			dest[3] = 255-t;
+			dest += 4;
 		}
-		break;
-	case GL_ALPHA:
-	case GL_LUMINANCE:
-	case GL_INTENSITY:
-		bl = blocklights;
-		for (i=0 ; i<tmax ; i++, dest += stride)
-		{
-			for (j=0 ; j<smax ; j++)
-			{
-				t = *bl++;
-				t >>= 7;
-				if (t > 255)
-					t = 255;
-				dest[j] = 255-t;
-			}
-		}
-		break;
-	default:
-		Sys_Error ("Bad lightmap format");
 	}
 }
 
@@ -392,8 +367,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale;
 		EmitSkyPolys (s);
-		if (gl_lightmap_format == GL_LUMINANCE)
-			qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+		qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 
 		qglDisable (GL_BLEND);
 	}
@@ -460,8 +434,8 @@ void R_DrawSequentialPoly (msurface_t *s)
 				lightmap_modified[i] = false;
 				theRect = &lightmap_rectchange[i];
 				qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, 
-					BLOCK_WIDTH, theRect->h, gl_lightmap_format, GL_UNSIGNED_BYTE,
-					lightmaps+(i* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*lightmap_bytes);
+					BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
+					lightmaps+(i* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*4);
 				theRect->l = BLOCK_WIDTH;
 				theRect->t = BLOCK_HEIGHT;
 				theRect->h = 0;
@@ -607,8 +581,8 @@ void R_DrawSequentialPoly (msurface_t *s)
 			lightmap_modified[i] = false;
 			theRect = &lightmap_rectchange[i];
 			qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, 
-				BLOCK_WIDTH, theRect->h, gl_lightmap_format, GL_UNSIGNED_BYTE,
-				lightmaps+(i* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*lightmap_bytes);
+				BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
+				lightmaps+(i* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*4);
 			theRect->l = BLOCK_WIDTH;
 			theRect->t = BLOCK_HEIGHT;
 			theRect->h = 0;
@@ -742,14 +716,7 @@ void R_BlendLightmaps (qboolean Translucent)
 	if (!Translucent)
 		qglDepthMask (0);		// don't bother writing Z
 
-	if (gl_lightmap_format == GL_LUMINANCE)
-		qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
-	else if (gl_lightmap_format == GL_INTENSITY)
-	{
-		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-		qglColor4f (0,0,0,1);
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
+	qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 
 	if (!r_lightmap->value)
 	{
@@ -766,19 +733,9 @@ void R_BlendLightmaps (qboolean Translucent)
 		{
 			lightmap_modified[i] = false;
 			theRect = &lightmap_rectchange[i];
-//			theRect->l = 0;
-//			theRect->t = 0;
-//			theRect->w = BLOCK_WIDTH;
-//			theRect->h = BLOCK_HEIGHT;
-//			qglTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
-//			, BLOCK_WIDTH, BLOCK_HEIGHT, 0, 
-//			gl_lightmap_format, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
-//			qglTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
-//				, BLOCK_WIDTH, theRect->h, 0, 
-//				gl_lightmap_format, GL_UNSIGNED_BYTE, lightmaps+(i*BLOCK_HEIGHT+theRect->t)*BLOCK_WIDTH*lightmap_bytes);
 			qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, theRect->t, 
-				BLOCK_WIDTH, theRect->h, gl_lightmap_format, GL_UNSIGNED_BYTE,
-				lightmaps+(i* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*lightmap_bytes);
+				BLOCK_WIDTH, theRect->h, GL_RGBA, GL_UNSIGNED_BYTE,
+				lightmaps+(i* BLOCK_HEIGHT + theRect->t) *BLOCK_WIDTH*4);
 			theRect->l = BLOCK_WIDTH;
 			theRect->t = BLOCK_HEIGHT;
 			theRect->h = 0;
@@ -807,13 +764,7 @@ void R_BlendLightmaps (qboolean Translucent)
 	}
 
 	qglDisable (GL_BLEND);
-	if (gl_lightmap_format == GL_LUMINANCE)
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	else if (gl_lightmap_format == GL_INTENSITY)
-	{
-		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		qglColor4f (1,1,1,1);
-	}
+	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	if (!Translucent)
 		qglDepthMask (1);		// back to normal Z buffering
@@ -928,9 +879,9 @@ dynamic:
 				theRect->w = (fa->light_s-theRect->l)+smax;
 			if ((theRect->h + theRect->t) < (fa->light_t + tmax))
 				theRect->h = (fa->light_t-theRect->t)+tmax;
-			base = lightmaps + fa->lightmaptexturenum*lightmap_bytes*BLOCK_WIDTH*BLOCK_HEIGHT;
-			base += fa->light_t * BLOCK_WIDTH * lightmap_bytes + fa->light_s * lightmap_bytes;
-			R_BuildLightMap (fa, base, BLOCK_WIDTH*lightmap_bytes);
+			base = lightmaps + fa->lightmaptexturenum*4*BLOCK_WIDTH*BLOCK_HEIGHT;
+			base += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
+			R_BuildLightMap (fa, base, BLOCK_WIDTH*4);
 		}
 	}
 
@@ -993,9 +944,9 @@ dynamic:
 				theRect->w = (fa->light_s-theRect->l)+smax;
 			if ((theRect->h + theRect->t) < (fa->light_t + tmax))
 				theRect->h = (fa->light_t-theRect->t)+tmax;
-			base = lightmaps + fa->lightmaptexturenum*lightmap_bytes*BLOCK_WIDTH*BLOCK_HEIGHT;
-			base += fa->light_t * BLOCK_WIDTH * lightmap_bytes + fa->light_s * lightmap_bytes;
-			R_BuildLightMap (fa, base, BLOCK_WIDTH*lightmap_bytes);
+			base = lightmaps + fa->lightmaptexturenum*4*BLOCK_WIDTH*BLOCK_HEIGHT;
+			base += fa->light_t * BLOCK_WIDTH * 4 + fa->light_s * 4;
+			R_BuildLightMap (fa, base, BLOCK_WIDTH*4);
 		}
 	}
 }
@@ -1715,9 +1666,9 @@ void GL_CreateSurfaceLightmap (msurface_t *surf)
 	tmax = (surf->extents[1]>>4)+1;
 
 	surf->lightmaptexturenum = AllocBlock (smax, tmax, &surf->light_s, &surf->light_t);
-	base = lightmaps + surf->lightmaptexturenum*lightmap_bytes*BLOCK_WIDTH*BLOCK_HEIGHT;
-	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * lightmap_bytes;
-	R_BuildLightMap (surf, base, BLOCK_WIDTH*lightmap_bytes);
+	base = lightmaps + surf->lightmaptexturenum*4*BLOCK_WIDTH*BLOCK_HEIGHT;
+	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * 4;
+	R_BuildLightMap (surf, base, BLOCK_WIDTH*4);
 }
 
 
@@ -1742,33 +1693,6 @@ void GL_BuildLightmaps (void)
 	{
 		lightmap_textures = texture_extension_number;
 		texture_extension_number += MAX_LIGHTMAPS;
-	}
-
-	gl_lightmap_format = GL_LUMINANCE;
-	if (COM_CheckParm ("-lm_1"))
-		gl_lightmap_format = GL_LUMINANCE;
-	if (COM_CheckParm ("-lm_a"))
-		gl_lightmap_format = GL_ALPHA;
-	if (COM_CheckParm ("-lm_i"))
-		gl_lightmap_format = GL_INTENSITY;
-	if (COM_CheckParm ("-lm_2"))
-		gl_lightmap_format = GL_RGBA4;
-	if (COM_CheckParm ("-lm_4"))
-		gl_lightmap_format = GL_RGBA;
-
-	switch (gl_lightmap_format)
-	{
-	case GL_RGBA:
-		lightmap_bytes = 4;
-		break;
-	case GL_RGBA4:
-		lightmap_bytes = 2;
-		break;
-	case GL_LUMINANCE:
-	case GL_INTENSITY:
-	case GL_ALPHA:
-		lightmap_bytes = 1;
-		break;
 	}
 
 	for (j=1 ; j<MAX_MODELS ; j++)
@@ -1809,9 +1733,9 @@ void GL_BuildLightmaps (void)
 		GL_Bind(lightmap_textures + i);
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		qglTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
+		qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGB
 		, BLOCK_WIDTH, BLOCK_HEIGHT, 0, 
-		gl_lightmap_format, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
+		GL_RGBA, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
 	}
 
  	if (!gl_texsort->value)
