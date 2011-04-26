@@ -1428,9 +1428,9 @@ static void ApplyChanges( void *unused )
 	s_ref_list[!s_current_menu_index].curvalue = s_ref_list[s_current_menu_index].curvalue;
 
 	/*
-	** scale to a range of 0.5 to 1.3
+	** scale to a range of 0.8 to 1.5
 	*/
-	gamma = 0.8 + s_brightness_slider[s_current_menu_index].curvalue/10.0;
+	gamma = s_brightness_slider[s_current_menu_index].curvalue / 10.0;
 
 	Cvar_SetValueLatched( "r_gamma", gamma );
 	Cvar_SetValueLatched( "sw_stipplealpha", s_stipple_box.curvalue );
@@ -1600,9 +1600,9 @@ static void VID_MenuInit( void )
 		s_brightness_slider[i].generic.y	= 30;
 		s_brightness_slider[i].generic.name	= "brightness";
 		s_brightness_slider[i].generic.callback = BrightnessCallback;
-		s_brightness_slider[i].minvalue = 5;
-		s_brightness_slider[i].maxvalue = 13;
-		s_brightness_slider[i].curvalue = ( r_gamma->value - 0.8 ) * 10;
+		s_brightness_slider[i].minvalue = 8;
+		s_brightness_slider[i].maxvalue = 20;
+		s_brightness_slider[i].curvalue = r_gamma->value * 10;
 
 		s_fs_box[i].generic.type = MTYPE_SPINCONTROL;
 		s_fs_box[i].generic.x	= 0;
