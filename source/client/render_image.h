@@ -44,6 +44,7 @@ void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int 
 void R_ResampleTexture(byte* In, int InWidth, int InhHeight, byte* Out, int OutWidth, int OutHeight);
 void R_MipMap(byte* in, int width, int height);
 bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
+void R_SetColorMappings();
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 

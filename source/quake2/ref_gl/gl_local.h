@@ -299,8 +299,6 @@ void GL_DrawParticles( int n, const particle_t particles[], const unsigned color
 
 typedef struct
 {
-	float inverse_intensity;
-
 	int lightmap_textures;
 
 	float camera_separation;

@@ -635,3 +635,104 @@ bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 
 	return true;
 }
+
+//==========================================================================
+//
+//	R_SetColorMappings
+//
+//==========================================================================
+
+void R_SetColorMappings()
+{
+	// setup the overbright lighting
+	tr.overbrightBits = r_overBrightBits->integer;
+	if (!glConfig.deviceSupportsGamma)
+	{
+		tr.overbrightBits = 0;		// need hardware gamma for overbright
+	}
+
+	// never overbright in windowed mode
+	if (!glConfig.isFullscreen)
+	{
+		tr.overbrightBits = 0;
+	}
+
+	// allow 2 overbright bits in 24 bit, but only 1 in 16 bit
+	if (glConfig.colorBits > 16)
+	{
+		if (tr.overbrightBits > 2)
+		{
+			tr.overbrightBits = 2;
+		}
+	}
+	else
+	{
+		if (tr.overbrightBits > 1)
+		{
+			tr.overbrightBits = 1;
+		}
+	}
+	if (tr.overbrightBits < 0)
+	{
+		tr.overbrightBits = 0;
+	}
+
+	tr.identityLight = 1.0f / (1 << tr.overbrightBits);
+	tr.identityLightByte = 255 * tr.identityLight;
+
+	if (r_intensity->value <= 1)
+	{
+		Cvar_Set("r_intensity", "1");
+	}
+
+	if (r_gamma->value < 0.5f)
+	{
+		Cvar_Set("r_gamma", "0.5");
+	}
+	else if (r_gamma->value > 3.0f)
+	{
+		Cvar_Set("r_gamma", "3.0");
+	}
+
+	float g = r_gamma->value;
+
+	int shift = tr.overbrightBits;
+
+	for (int i = 0; i < 256; i++)
+	{
+		int inf;
+		if (g == 1)
+		{
+			inf = i;
+		}
+		else
+		{
+			inf = (int)(255 * pow(i / 255.0f, 1.0f / g) + 0.5f);
+		}
+		inf <<= shift;
+		if (inf < 0)
+		{
+			inf = 0;
+		}
+		if (inf > 255)
+		{
+			inf = 255;
+		}
+		s_gammatable[i] = inf;
+	}
+
+	for (int i = 0; i < 256; i++)
+	{
+		int j = (int)(i * r_intensity->value);
+		if (j > 255)
+		{
+			j = 255;
+		}
+		s_intensitytable[i] = j;
+	}
+
+	if (glConfig.deviceSupportsGamma)
+	{
+		GLimp_SetGamma(s_gammatable, s_gammatable, s_gammatable);
+	}
+}

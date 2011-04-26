@@ -25,7 +25,6 @@
 -conwidth
 -dedicated
 -game
--gamma
 -hipnotic
 -ip
 -listen
@@ -42,7 +41,6 @@
 -cheats
 -conheight
 -conwidth
--gamma
 -ip
 -mem
 -noconinput
@@ -86,6 +84,7 @@ Parameter                Console command                      Saved
 -height                  set r_customheight <value>           Yes
 -mode                    set r_mode <value>                   Yes
 -window                  set r_fullscreen 0                   Yes
+-gamma                   set r_gamma <value>                  Yes
 
 -dinput
   Enabled by default, disable with:

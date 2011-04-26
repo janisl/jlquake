@@ -323,28 +323,6 @@ cshift_t	cshift_lava = { {255,80,0}, 150 };
 
 float		v_blend[4];		// rgba 0.0 - 1.0
 
-void BuildGammaTable (float g)
-{
-	int		i, inf;
-	
-	if (g == 1.0)
-	{
-		for (i=0 ; i<256 ; i++)
-			s_gammatable[i] = i;
-		return;
-	}
-	
-	for (i=0 ; i<256 ; i++)
-	{
-		inf = 255 * pow ( (i+0.5)/255.5 , (double)g ) + 0.5;
-		if (inf < 0)
-			inf = 0;
-		if (inf > 255)
-			inf = 255;
-		s_gammatable[i] = inf;
-	}
-}
-
 /*
 =================
 V_CheckGamma
@@ -358,7 +336,7 @@ qboolean V_CheckGamma (void)
 		return false;
 	oldgammavalue = r_gamma->value;
 	
-	BuildGammaTable (r_gamma->value);
+	R_SetColorMappings();
 	vid.recalc_refdef = 1;				// force a surface cache flush
 	
 	return true;
@@ -1046,6 +1024,4 @@ void V_Init (void)
 	v_kicktime = Cvar_Get("v_kicktime", "0.5", 0);
 	v_kickroll = Cvar_Get("v_kickroll", "0.6", 0);
 	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);
-
-	BuildGammaTable (1.0);	// no gamma yet
 }
