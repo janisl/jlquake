@@ -41,7 +41,6 @@ int		c_visible_textures;
 
 typedef struct
 {
-	int internal_format;
 	int	current_lightmap_texture;
 
 	msurface_t	*lightmap_surfaces[MAX_LIGHTMAPS];
@@ -1369,7 +1368,7 @@ static void LM_UploadBlock( qboolean dynamic )
 	{
 		qglTexImage2D( GL_TEXTURE_2D, 
 					   0, 
-					   gl_lms.internal_format,
+					   GL_RGB,
 					   BLOCK_WIDTH, BLOCK_HEIGHT, 
 					   0, 
 					   GL_RGBA, 
@@ -1570,8 +1569,6 @@ void GL_BeginBuildingLightmaps (model_t *m)
 
 	gl_lms.current_lightmap_texture = 1;
 
-	gl_lms.internal_format = gl_tex_solid_format;
-
 	/*
 	** initialize the dynamic lightmap texture
 	*/
@@ -1580,7 +1577,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	qglTexImage2D( GL_TEXTURE_2D, 
 				   0, 
-				   gl_lms.internal_format,
+				   GL_RGB,
 				   BLOCK_WIDTH, BLOCK_HEIGHT, 
 				   0, 
 				   GL_RGBA, 
