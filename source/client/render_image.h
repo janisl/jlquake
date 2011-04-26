@@ -44,6 +44,7 @@ void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int 
 void R_ResampleTexture(byte* In, int InWidth, int InhHeight, byte* Out, int OutWidth, int OutHeight);
 void R_MipMap(byte* in, int width, int height);
 void R_LightScaleTexture (byte* in, int inwidth, int inheight, qboolean only_gamma );
+void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4]);
 bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
@@ -74,3 +75,5 @@ extern unsigned		ColorPercent[16];
 
 extern byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 extern bool			scrap_dirty;
+
+extern byte	mipBlendColors[16][4];

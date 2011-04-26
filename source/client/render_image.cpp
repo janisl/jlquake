@@ -54,6 +54,25 @@ static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
 byte		scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 bool		scrap_dirty;
 
+
+byte	mipBlendColors[16][4] = {
+	{0,0,0,0},
+	{255,0,0,128},
+	{0,255,0,128},
+	{0,0,255,128},
+	{255,0,0,128},
+	{0,255,0,128},
+	{0,0,255,128},
+	{255,0,0,128},
+	{0,255,0,128},
+	{0,0,255,128},
+	{255,0,0,128},
+	{0,255,0,128},
+	{0,0,255,128},
+	{255,0,0,128},
+	{0,255,0,128},
+	{0,0,255,128},
+};
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte			s_gammatable[256];
@@ -632,6 +651,32 @@ void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamm
 				p[2] = s_gammatable[s_intensitytable[p[2]]];
 			}
 		}
+	}
+}
+
+//==========================================================================
+//
+//	R_BlendOverTexture
+//
+//	Apply a color blend over a set of pixels
+//
+//==========================================================================
+
+void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4])
+{
+	int		i;
+	int		inverseAlpha;
+	int		premult[3];
+
+	inverseAlpha = 255 - blend[3];
+	premult[0] = blend[0] * blend[3];
+	premult[1] = blend[1] * blend[3];
+	premult[2] = blend[2] * blend[3];
+
+	for ( i = 0 ; i < pixelCount ; i++, data+=4 ) {
+		data[0] = ( data[0] * inverseAlpha + premult[0] ) >> 9;
+		data[1] = ( data[1] * inverseAlpha + premult[1] ) >> 9;
+		data[2] = ( data[2] * inverseAlpha + premult[2] ) >> 9;
 	}
 }
 
