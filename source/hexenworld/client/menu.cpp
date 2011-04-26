@@ -5,6 +5,7 @@
 #include "quakedef.h"
 #include "glquake.h"
 
+extern QCvar*		r_gamma;
 extern	QCvar*	crosshair;
 
 enum menu_state_t {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, 
@@ -839,6 +840,14 @@ void M_AdjustSliders (int dir)
 		SB_ViewSizeChanged();
 		vid.recalc_refdef = 1;
 		break;
+	case OPT_GAMMA:	// gamma
+		r_gamma->value += dir * 0.1;
+		if (r_gamma->value < 1)
+			r_gamma->value = 1;
+		if (r_gamma->value > 2)
+			r_gamma->value = 2;
+		Cvar_SetValue ("r_gamma", r_gamma->value);
+		break;
 	case OPT_MOUSESPEED:	// mouse speed
 		sensitivity->value += dir * 0.5;
 		if (sensitivity->value < 1)
@@ -977,6 +986,10 @@ void M_Options_Draw (void)
 	r = (scr_viewsize->value - 30) / (120 - 30);
 	M_DrawSlider (220, 60+(3*8), r);
 
+	M_Print (16, 60+(4*8), "            Brightness");
+	r = (r_gamma->value - 1);
+	M_DrawSlider (220, 60+(4*8), r);
+
 	M_Print (16, 60+(5*8), "           Mouse Speed");
 	r = (sensitivity->value - 1)/10;
 	M_DrawSlider (220, 60+(5*8), r);
@@ -1060,9 +1073,6 @@ void M_Options_Key (int k)
 		options_cursor--;
 		if (options_cursor < 0)
 			options_cursor = OPTIONS_ITEMS-1;
-
-		if ((options_cursor == OPT_GAMMA)) options_cursor--;
-
 		break;
 
 	case K_DOWNARROW:
@@ -1070,9 +1080,6 @@ void M_Options_Key (int k)
 		options_cursor++;
 		if (options_cursor >= OPTIONS_ITEMS)
 			options_cursor = 0;
-
-		if ((options_cursor == OPT_GAMMA)) options_cursor++;
-
 		break;	
 
 	case K_LEFTARROW:
