@@ -140,7 +140,7 @@ static void R_FloodFillSkin(byte* skin, int skinwidth, int skinheight)
 	int filledcolor = 0;
 	// attempt to find opaque black
 	for (int i = 0; i < 256; ++i)
-		if (r_palette[i][0] == 0 && r_palette[i][1] == 0 && r_palette[i][2] == 0 && r_palette[i][0] == 255)
+		if (r_palette[i][0] == 0 && r_palette[i][1] == 0 && r_palette[i][2] == 0 && r_palette[i][3] == 255)
 		{
 			filledcolor = i;
 			break;
