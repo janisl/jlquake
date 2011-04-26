@@ -315,48 +315,6 @@ void Scrap_Upload (void)
 //=======================================================
 
 /*
-================
-GL_LightScaleTexture
-
-Scale up the pixel values in a texture to increase the
-lighting range
-================
-*/
-void GL_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboolean only_gamma )
-{
-	if ( only_gamma )
-	{
-		int		i, c;
-		byte	*p;
-
-		p = (byte *)in;
-
-		c = inwidth*inheight;
-		for (i=0 ; i<c ; i++, p+=4)
-		{
-			p[0] = s_gammatable[p[0]];
-			p[1] = s_gammatable[p[1]];
-			p[2] = s_gammatable[p[2]];
-		}
-	}
-	else
-	{
-		int		i, c;
-		byte	*p;
-
-		p = (byte *)in;
-
-		c = inwidth*inheight;
-		for (i=0 ; i<c ; i++, p+=4)
-		{
-			p[0] = s_gammatable[s_intensitytable[p[0]]];
-			p[1] = s_gammatable[s_intensitytable[p[1]]];
-			p[2] = s_gammatable[s_intensitytable[p[2]]];
-		}
-	}
-}
-
-/*
 ===============
 GL_Upload32
 
@@ -448,7 +406,7 @@ qboolean GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 	else
 		R_ResampleTexture((byte*)data, width, height, (byte*)scaled, scaled_width, scaled_height);
 
-	GL_LightScaleTexture (scaled, scaled_width, scaled_height, !mipmap );
+	R_LightScaleTexture((byte*)scaled, scaled_width, scaled_height, !mipmap );
 
 	qglTexImage2D( GL_TEXTURE_2D, 0, comp, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled );
 

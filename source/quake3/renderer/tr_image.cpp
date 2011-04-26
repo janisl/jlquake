@@ -206,64 +206,6 @@ void R_ImageList_f( void ) {
 //=======================================================================
 
 /*
-================
-R_LightScaleTexture
-
-Scale up the pixel values in a texture to increase the
-lighting range
-================
-*/
-void R_LightScaleTexture (unsigned *in, int inwidth, int inheight, qboolean only_gamma )
-{
-	if ( only_gamma )
-	{
-		if ( !glConfig.deviceSupportsGamma )
-		{
-			int		i, c;
-			byte	*p;
-
-			p = (byte *)in;
-
-			c = inwidth*inheight;
-			for (i=0 ; i<c ; i++, p+=4)
-			{
-				p[0] = s_gammatable[p[0]];
-				p[1] = s_gammatable[p[1]];
-				p[2] = s_gammatable[p[2]];
-			}
-		}
-	}
-	else
-	{
-		int		i, c;
-		byte	*p;
-
-		p = (byte *)in;
-
-		c = inwidth*inheight;
-
-		if ( glConfig.deviceSupportsGamma )
-		{
-			for (i=0 ; i<c ; i++, p+=4)
-			{
-				p[0] = s_intensitytable[p[0]];
-				p[1] = s_intensitytable[p[1]];
-				p[2] = s_intensitytable[p[2]];
-			}
-		}
-		else
-		{
-			for (i=0 ; i<c ; i++, p+=4)
-			{
-				p[0] = s_gammatable[s_intensitytable[p[0]]];
-				p[1] = s_gammatable[s_intensitytable[p[1]]];
-				p[2] = s_gammatable[s_intensitytable[p[2]]];
-			}
-		}
-	}
-}
-
-/*
 ==================
 R_BlendOverTexture
 
@@ -479,7 +421,7 @@ static void Upload32( unsigned *data,
 		Com_Memcpy( scaledBuffer, data, width * height * 4 );
 	}
 
-	R_LightScaleTexture (scaledBuffer, scaled_width, scaled_height, !mipmap );
+	R_LightScaleTexture ((byte*)scaledBuffer, scaled_width, scaled_height, !mipmap );
 
 	*pUploadWidth = scaled_width;
 	*pUploadHeight = scaled_height;

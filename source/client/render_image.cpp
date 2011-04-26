@@ -586,6 +586,57 @@ void R_MipMap(byte* in, int width, int height)
 
 //==========================================================================
 //
+//	R_LightScaleTexture
+//
+//	Scale up the pixel values in a texture to increase the lighting range
+//
+//==========================================================================
+
+void R_LightScaleTexture(byte* in, int inwidth, int inheight, qboolean only_gamma)
+{
+	if (only_gamma)
+	{
+		if (!glConfig.deviceSupportsGamma)
+		{
+			byte* p = in;
+			int c = inwidth*inheight;
+			for (int i = 0; i < c; i++, p += 4)
+			{
+				p[0] = s_gammatable[p[0]];
+				p[1] = s_gammatable[p[1]];
+				p[2] = s_gammatable[p[2]];
+			}
+		}
+	}
+	else
+	{
+		byte* p = in;
+
+		int c = inwidth * inheight;
+
+		if (glConfig.deviceSupportsGamma)
+		{
+			for (int i = 0; i < c; i++, p += 4)
+			{
+				p[0] = s_intensitytable[p[0]];
+				p[1] = s_intensitytable[p[1]];
+				p[2] = s_intensitytable[p[2]];
+			}
+		}
+		else
+		{
+			for (int i = 0; i < c; i++, p += 4)
+			{
+				p[0] = s_gammatable[s_intensitytable[p[0]]];
+				p[1] = s_gammatable[s_intensitytable[p[1]]];
+				p[2] = s_gammatable[s_intensitytable[p[2]]];
+			}
+		}
+	}
+}
+
+//==========================================================================
+//
 //	R_ScrapAllocBlock
 //
 //	scrap allocation
