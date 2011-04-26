@@ -1335,7 +1335,7 @@ VIDEO MENU
 #define REF_VERITE	4
 
 extern QCvar *vid_ref;
-extern QCvar *vid_gamma;
+extern QCvar *r_gamma;
 extern QCvar *r_fullscreen;
 extern QCvar *scr_viewsize;
 
@@ -1407,7 +1407,7 @@ static void BrightnessCallback( void *s )
 	{
 		float gamma = ( 0.8 - ( slider->curvalue/10.0 - 0.5 ) ) + 0.5;
 
-		Cvar_SetValueLatched( "vid_gamma", gamma );
+		Cvar_SetValue("r_gamma", gamma );
 	}
 }
 
@@ -1428,11 +1428,11 @@ static void ApplyChanges( void *unused )
 	s_ref_list[!s_current_menu_index].curvalue = s_ref_list[s_current_menu_index].curvalue;
 
 	/*
-	** invert sense so greater = brighter, and scale to a range of 0.5 to 1.3
+	** scale to a range of 0.5 to 1.3
 	*/
-	gamma = ( 0.8 - ( s_brightness_slider[s_current_menu_index].curvalue/10.0 - 0.5 ) ) + 0.5;
+	gamma = 0.8 + s_brightness_slider[s_current_menu_index].curvalue/10.0;
 
-	Cvar_SetValueLatched( "vid_gamma", gamma );
+	Cvar_SetValueLatched( "r_gamma", gamma );
 	Cvar_SetValueLatched( "sw_stipplealpha", s_stipple_box.curvalue );
 	Cvar_SetValueLatched( "gl_picmip", 3 - s_tq_slider.curvalue );
 	Cvar_SetValueLatched( "r_fullscreen", s_fs_box[s_current_menu_index].curvalue );
@@ -1470,24 +1470,9 @@ static void ApplyChanges( void *unused )
 	*/
 	if ( QStr::ICmp( vid_ref->string, "gl" ) == 0 )
 	{
-		if ( vid_gamma->modified )
+		if ( r_gamma->modified )
 		{
 			vid_ref->modified = true;
-			if ( QStr::ICmp( gl_driver->string, "3dfxgl" ) == 0 )
-			{
-				char envbuffer[1024];
-				float g;
-
-				vid_ref->modified = true;
-
-				g = 2.00 * ( 0.8 - ( vid_gamma->value - 0.5 ) ) + 1.0F;
-				QStr::Sprintf( envbuffer, sizeof(envbuffer), "SSTV2_GAMMA=%f", g );
-				putenv( envbuffer );
-				QStr::Sprintf( envbuffer, sizeof(envbuffer), "SST_GAMMA=%f", g );
-				putenv( envbuffer );
-
-				vid_gamma->modified = false;
-			}
 		}
 
 		if ( gl_driver->modified )
@@ -1617,7 +1602,7 @@ static void VID_MenuInit( void )
 		s_brightness_slider[i].generic.callback = BrightnessCallback;
 		s_brightness_slider[i].minvalue = 5;
 		s_brightness_slider[i].maxvalue = 13;
-		s_brightness_slider[i].curvalue = ( 1.3 - vid_gamma->value + 0.5 ) * 10;
+		s_brightness_slider[i].curvalue = ( r_gamma->value - 0.8 ) * 10;
 
 		s_fs_box[i].generic.type = MTYPE_SPINCONTROL;
 		s_fs_box[i].generic.x	= 0;

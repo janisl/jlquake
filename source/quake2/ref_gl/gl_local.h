@@ -194,8 +194,6 @@ extern	QCvar	*gl_texturesolidmode;
 extern  QCvar  *gl_saturatelighting;
 extern  QCvar  *gl_lockpvs;
 
-extern	QCvar	*vid_gamma;
-
 extern	int		gl_lightmap_format;
 extern	int		gl_solid_format;
 extern	int		gl_alpha_format;

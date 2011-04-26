@@ -120,7 +120,6 @@ QCvar	*gl_texturealphamode;
 QCvar	*gl_texturesolidmode;
 QCvar	*gl_lockpvs;
 
-QCvar	*vid_gamma;
 QCvar	*vid_ref;
 
 /*
@@ -959,7 +958,6 @@ void R_Register( void )
 
 	gl_saturatelighting = Cvar_Get( "gl_saturatelighting", "0", 0 );
 
-	vid_gamma = Cvar_Get( "vid_gamma", "1.0", CVAR_ARCHIVE );
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 
 	Cmd_AddCommand( "imagelist", GL_ImageList_f );

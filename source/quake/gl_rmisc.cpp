@@ -28,8 +28,6 @@ float		gldepthmin, gldepthmax;
 
 qboolean gl_mtexable = false;
 
-static float vid_gamma = 1.0;
-
 /*
 ==================
 R_InitTextures

@@ -196,3 +196,11 @@
   I started work on 8-bit images. I merged PCX file loading and saving.
   I added common palette. The way it was stored in Quake was in integer array and had little endian assumptions everywhere. Quake 2 fixed same of this, but still has places where little endian is asumed. New palette is stored as bytes so should not have any problems in case I do a port to some big endian system.
   I added image structure in Quake and Hexen 2 replacing some hacks that were used. This will also prepare them for common image structure later.
+25.04.2011
+  I'm working on 8-bit images in Quake specific formats. I added common method that handles conversion to 32-bit to simplify loading and unify it to always return 32 bit data. Flood filling of model skins is done in it as well.
+  After I gad created common methods for loading LMP and WAL files I could merge loading of all image formats in one method.
+  I merged methods for resampling textures and mipmap generation.
+26.04.2011
+  I merged gamma control. Hardware gamma is now used in all games.
+
+
