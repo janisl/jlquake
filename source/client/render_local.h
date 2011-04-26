@@ -123,7 +123,4 @@ extern QCvar*	r_simpleMipMaps;
 extern trGlobals_base_t*	tr_shared;
 #define tr		(*tr_shared)
 
-extern byte		s_gammatable[256];
-extern byte			 s_intensitytable[256];
-
 #endif

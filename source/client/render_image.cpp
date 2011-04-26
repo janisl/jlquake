@@ -54,10 +54,10 @@ static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
 byte		scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 bool		scrap_dirty;
 
-byte			s_gammatable[256];
-byte			s_intensitytable[256];
-
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+static byte			s_gammatable[256];
+static byte			s_intensitytable[256];
 
 // CODE --------------------------------------------------------------------
 
@@ -785,5 +785,19 @@ void R_SetColorMappings()
 	if (glConfig.deviceSupportsGamma)
 	{
 		GLimp_SetGamma(s_gammatable, s_gammatable, s_gammatable);
+	}
+}
+
+//==========================================================================
+//
+//	R_GammaCorrect
+//
+//==========================================================================
+
+void R_GammaCorrect(byte* Buffer, int BufferSize)
+{
+	for (int i = 0; i < BufferSize; i++)
+	{
+		Buffer[i] = s_gammatable[Buffer[i]];
 	}
 }
