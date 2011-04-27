@@ -128,6 +128,8 @@ extern QCvar*	r_texturebits;			// number of desired texture bits
 extern QCvar*	r_colorMipLevels;		// development aid to see texture mip usage
 extern QCvar*	r_simpleMipMaps;
 
+extern QCvar*	r_ignoreGLErrors;
+
 extern trGlobals_base_t*	tr_shared;
 #define tr		(*tr_shared)
 

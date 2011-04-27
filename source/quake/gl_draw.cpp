@@ -29,7 +29,6 @@ void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
 #define GL_COLOR_INDEX8_EXT     0x80E5
 
 QCvar*		gl_nobind;
-QCvar*		gl_max_size;
 
 byte		*draw_chars;				// 8*8 graphic characters
 image_t*	draw_disc;
@@ -56,15 +55,6 @@ struct image_t
 
 byte		conback_buffer[sizeof(image_t)];
 image_t		*conback = (image_t*)&conback_buffer;
-
-int		gl_solid_format = 3;
-int		gl_alpha_format = 4;
-
-int		gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
-int		gl_filter_max = GL_LINEAR;
-
-
-int		texels;
 
 #define	MAX_GLTEXTURES	1024
 gltexture_t	gltextures[MAX_GLTEXTURES];
@@ -311,7 +301,6 @@ void Draw_Init (void)
 
 
     gl_nobind = Cvar_Get("gl_nobind", "0", 0);
-    gl_max_size = Cvar_Get("gl_max_size", "1024", 0);
 
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 
@@ -568,10 +557,10 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 		}
 	}
 
-	qglTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage((byte*)trans, 64, 64, false, false, false, &format, &UploadWidth, &UploadHeight);
 
 	qglColor3f (1,1,1);
 	qglBegin (GL_QUADS);
@@ -769,85 +758,10 @@ GL_Upload32
 */
 void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
 {
-	int			samples;
-static	unsigned	scaled[1024*512];	// [512*256];
-	int			scaled_width, scaled_height;
-
-	for (scaled_width = 1 ; scaled_width < width ; scaled_width<<=1)
-		;
-	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
-		;
-
-	scaled_width >>= (int)r_picmip->value;
-	scaled_height >>= (int)r_picmip->value;
-
-	if (scaled_width > gl_max_size->value)
-		scaled_width = gl_max_size->value;
-	if (scaled_height > gl_max_size->value)
-		scaled_height = gl_max_size->value;
-
-	if (scaled_width * scaled_height > sizeof(scaled)/4)
-		Sys_Error ("GL_LoadTexture: too big");
-
-	// scan the texture for any non-255 alpha
-	int c = width * height;
-	byte* scan = ((byte*)data) + 3;
-	samples = gl_solid_format;
-	for (int i = 0; i < c; i++, scan += 4)
-	{
-		if (*scan != 255)
-		{
-			samples = gl_alpha_format;
-			break;
-		}
-	}
-
-texels += scaled_width * scaled_height;
-
-	if (scaled_width == width && scaled_height == height)
-	{
-		if (!mipmap)
-		{
-			qglTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			goto done;
-		}
-		Com_Memcpy(scaled, data, width*height*4);
-	}
-	else
-		R_ResampleTexture((byte*)data, width, height, (byte*)scaled, scaled_width, scaled_height);
-
-	qglTexImage2D (GL_TEXTURE_2D, 0, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-	if (mipmap)
-	{
-		int		miplevel;
-
-		miplevel = 0;
-		while (scaled_width > 1 || scaled_height > 1)
-		{
-			R_MipMap((byte *)scaled, scaled_width, scaled_height);
-			scaled_width >>= 1;
-			scaled_height >>= 1;
-			if (scaled_width < 1)
-				scaled_width = 1;
-			if (scaled_height < 1)
-				scaled_height = 1;
-			miplevel++;
-			qglTexImage2D (GL_TEXTURE_2D, miplevel, samples, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaled);
-		}
-	}
-done: ;
-
-
-	if (mipmap)
-	{
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-	}
-	else
-	{
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_max);
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-	}
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage((byte*)data, width, height, mipmap, true, false, &format, &UploadWidth, &UploadHeight);
 }
 
 /*

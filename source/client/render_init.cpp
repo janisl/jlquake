@@ -78,6 +78,8 @@ QCvar*		r_texturebits;
 QCvar*		r_colorMipLevels;
 QCvar*		r_simpleMipMaps;
 
+QCvar*		r_ignoreGLErrors;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -220,6 +222,7 @@ void R_SharedRegister()
 	//
 	r_gamma = Cvar_Get("r_gamma", "1", CVAR_ARCHIVE);
 	r_wateralpha = Cvar_Get("r_wateralpha","0.4", CVAR_ARCHIVE);
+	r_ignoreGLErrors = Cvar_Get("r_ignoreGLErrors", "1", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time

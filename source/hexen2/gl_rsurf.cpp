@@ -460,9 +460,10 @@ void R_BlendLightmaps (qboolean Translucent)
 		if (lightmap_modified[i])
 		{
 			lightmap_modified[i] = false;
-			qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGB
-			, BLOCK_WIDTH, BLOCK_HEIGHT, 0, 
-			GL_RGBA, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
+			int format;
+			int UploadWidth;
+			int UploadHeight;
+			R_UploadImage(lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
 		}
 		for ( ; p ; p=p->chain)
 		{
@@ -1267,11 +1268,10 @@ void GL_BuildLightmaps (void)
 			break;		// no more used
 		lightmap_modified[i] = false;
 		GL_Bind(lightmap_textures + i);
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGB
-		, BLOCK_WIDTH, BLOCK_HEIGHT, 0, 
-		GL_RGBA, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
+		int format;
+		int UploadWidth;
+		int UploadHeight;
+		R_UploadImage(lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
 	}
 }
 

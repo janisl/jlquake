@@ -140,16 +140,11 @@ extern	QCvar*	gl_smoothmodels;
 extern	QCvar*	gl_affinemodels;
 extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_flashblend;
-extern	QCvar*	gl_playermip;
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 extern	QCvar*	gl_doubleeyes;
 
-extern	int		gl_solid_format;
-extern	int		gl_alpha_format;
-
-extern	QCvar*	gl_max_size;
 extern QCvar*	gl_ztrick;
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum

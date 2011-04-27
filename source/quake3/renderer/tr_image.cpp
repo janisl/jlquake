@@ -23,9 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 
 
-int		gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
-int		gl_filter_max = GL_LINEAR;
-
 #define FILE_HASH_SIZE		1024
 static	image_t*		hashTable[FILE_HASH_SIZE];
 
@@ -195,238 +192,13 @@ void R_ImageList_f( void ) {
 //=======================================================================
 
 /*
-===============
-Upload32
-
-===============
-*/
-extern qboolean charSet;
-static void Upload32( unsigned *data, 
-						  int width, int height, 
-						  qboolean mipmap, 
-						  qboolean picmip, 
-							qboolean lightMap,
-						  int *format, 
-						  int *pUploadWidth, int *pUploadHeight )
-{
-	int			samples;
-	unsigned	*scaledBuffer = NULL;
-	unsigned	*resampledBuffer = NULL;
-	int			scaled_width, scaled_height;
-	int			i, c;
-	byte		*scan;
-	GLenum		internalFormat = GL_RGB;
-	float		rMax = 0, gMax = 0, bMax = 0;
-
-	//
-	// convert to exact power of 2 sizes
-	//
-	for (scaled_width = 1 ; scaled_width < width ; scaled_width<<=1)
-		;
-	for (scaled_height = 1 ; scaled_height < height ; scaled_height<<=1)
-		;
-	if ( r_roundImagesDown->integer && scaled_width > width )
-		scaled_width >>= 1;
-	if ( r_roundImagesDown->integer && scaled_height > height )
-		scaled_height >>= 1;
-
-	if ( scaled_width != width || scaled_height != height ) {
-		resampledBuffer = (unsigned*)ri.Hunk_AllocateTempMemory( scaled_width * scaled_height * 4 );
-		R_ResampleTexture((byte*)data, width, height, (byte*)resampledBuffer, scaled_width, scaled_height);
-		data = resampledBuffer;
-		width = scaled_width;
-		height = scaled_height;
-	}
-
-	//
-	// perform optional picmip operation
-	//
-	if ( picmip ) {
-		scaled_width >>= r_picmip->integer;
-		scaled_height >>= r_picmip->integer;
-	}
-
-	//
-	// clamp to minimum size
-	//
-	if (scaled_width < 1) {
-		scaled_width = 1;
-	}
-	if (scaled_height < 1) {
-		scaled_height = 1;
-	}
-
-	//
-	// clamp to the current upper OpenGL limit
-	// scale both axis down equally so we don't have to
-	// deal with a half mip resampling
-	//
-	while ( scaled_width > glConfig.maxTextureSize
-		|| scaled_height > glConfig.maxTextureSize ) {
-		scaled_width >>= 1;
-		scaled_height >>= 1;
-	}
-
-	scaledBuffer = (unsigned*)ri.Hunk_AllocateTempMemory( sizeof( unsigned ) * scaled_width * scaled_height );
-
-	//
-	// scan the texture for each channel's max values
-	// and verify if the alpha channel is being used or not
-	//
-	c = width*height;
-	scan = ((byte *)data);
-	samples = 3;
-	if (!lightMap) {
-		for ( i = 0; i < c; i++ )
-		{
-			if ( scan[i*4+0] > rMax )
-			{
-				rMax = scan[i*4+0];
-			}
-			if ( scan[i*4+1] > gMax )
-			{
-				gMax = scan[i*4+1];
-			}
-			if ( scan[i*4+2] > bMax )
-			{
-				bMax = scan[i*4+2];
-			}
-			if ( scan[i*4 + 3] != 255 ) 
-			{
-				samples = 4;
-				break;
-			}
-		}
-		// select proper internal format
-		if ( samples == 3 )
-		{
-			if ( glConfig.textureCompression == TC_S3TC )
-			{
-				internalFormat = GL_RGB4_S3TC;
-			}
-			else if ( r_texturebits->integer == 16 )
-			{
-				internalFormat = GL_RGB5;
-			}
-			else if ( r_texturebits->integer == 32 )
-			{
-				internalFormat = GL_RGB8;
-			}
-			else
-			{
-				internalFormat = 3;
-			}
-		}
-		else if ( samples == 4 )
-		{
-			if ( r_texturebits->integer == 16 )
-			{
-				internalFormat = GL_RGBA4;
-			}
-			else if ( r_texturebits->integer == 32 )
-			{
-				internalFormat = GL_RGBA8;
-			}
-			else
-			{
-				internalFormat = 4;
-			}
-		}
-	} else {
-		internalFormat = 3;
-	}
-	// copy or resample data as appropriate for first MIP level
-	if ( ( scaled_width == width ) && 
-		( scaled_height == height ) ) {
-		if (!mipmap)
-		{
-			qglTexImage2D (GL_TEXTURE_2D, 0, internalFormat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-			*pUploadWidth = scaled_width;
-			*pUploadHeight = scaled_height;
-			*format = internalFormat;
-
-			goto done;
-		}
-		Com_Memcpy (scaledBuffer, data, width*height*4);
-	}
-	else
-	{
-		// use the normal mip-mapping function to go down from here
-		while ( width > scaled_width || height > scaled_height ) {
-			R_MipMap( (byte *)data, width, height );
-			width >>= 1;
-			height >>= 1;
-			if ( width < 1 ) {
-				width = 1;
-			}
-			if ( height < 1 ) {
-				height = 1;
-			}
-		}
-		Com_Memcpy( scaledBuffer, data, width * height * 4 );
-	}
-
-	R_LightScaleTexture ((byte*)scaledBuffer, scaled_width, scaled_height, !mipmap );
-
-	*pUploadWidth = scaled_width;
-	*pUploadHeight = scaled_height;
-	*format = internalFormat;
-
-	qglTexImage2D (GL_TEXTURE_2D, 0, internalFormat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaledBuffer );
-
-	if (mipmap)
-	{
-		int		miplevel;
-
-		miplevel = 0;
-		while (scaled_width > 1 || scaled_height > 1)
-		{
-			R_MipMap( (byte *)scaledBuffer, scaled_width, scaled_height );
-			scaled_width >>= 1;
-			scaled_height >>= 1;
-			if (scaled_width < 1)
-				scaled_width = 1;
-			if (scaled_height < 1)
-				scaled_height = 1;
-			miplevel++;
-
-			if ( r_colorMipLevels->integer ) {
-				R_BlendOverTexture( (byte *)scaledBuffer, scaled_width * scaled_height, mipBlendColors[miplevel] );
-			}
-
-			qglTexImage2D (GL_TEXTURE_2D, miplevel, internalFormat, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, scaledBuffer );
-		}
-	}
-done:
-
-	if (mipmap)
-	{
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-	}
-	else
-	{
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	}
-
-	GL_CheckErrors();
-
-	if ( scaledBuffer != 0 )
-		ri.Hunk_FreeTempMemory( scaledBuffer );
-	if ( resampledBuffer != 0 )
-		ri.Hunk_FreeTempMemory( resampledBuffer );
-}
-
-
-/*
 ================
 R_CreateImage
 
 This is the only way any image_t are created
 ================
 */
-image_t *R_CreateImage( const char *name, const byte *pic, int width, int height, 
+image_t *R_CreateImage( const char *name, byte *pic, int width, int height, 
 					   qboolean mipmap, qboolean allowPicmip, int glWrapClampMode ) {
 	image_t		*image;
 	qboolean	isLightmap = qfalse;
@@ -469,7 +241,7 @@ image_t *R_CreateImage( const char *name, const byte *pic, int width, int height
 
 	GL_Bind(image);
 
-	Upload32( (unsigned *)pic, image->width, image->height, 
+	R_UploadImage(pic, image->width, image->height, 
 								image->mipmap,
 								allowPicmip,
 								isLightmap,

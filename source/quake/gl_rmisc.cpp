@@ -93,12 +93,12 @@ void R_InitParticleTexture (void)
 			data[y][x][3] = dottexture[x][y]*255;
 		}
 	}
-	qglTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 8, 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage((byte*)data, 8, 8, false, false, false, &format, &UploadWidth, &UploadHeight);
 
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 /*
@@ -205,7 +205,6 @@ void R_Init (void)
 	gl_affinemodels = Cvar_Get("gl_affinemodels", "0", 0);
 	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
 	gl_flashblend = Cvar_Get("gl_flashblend", "0", 0);
-	gl_playermip = Cvar_Get("gl_playermip", "0", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
 
 	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions", "1", CVAR_ARCHIVE);
@@ -293,12 +292,8 @@ void R_TranslatePlayerSkin (int playernum)
 	// instead of sending it through gl_upload 8
     GL_Bind(playertextures + playernum);
 
-	scaled_width = gl_max_size->value < 512 ? gl_max_size->value : 512;
-	scaled_height = gl_max_size->value < 256 ? gl_max_size->value : 256;
-
-	// allow users to crunch sizes down even more if they want
-	scaled_width >>= (int)gl_playermip->value;
-	scaled_height >>= (int)gl_playermip->value;
+	scaled_width = 512;
+	scaled_height = 256;
 
 	for (i=0 ; i<256 ; i++)
 		translate32[i] = d_8to24table[translate[i]];
@@ -321,11 +316,12 @@ void R_TranslatePlayerSkin (int playernum)
 			frac += fracstep;
 		}
 	}
-	qglTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, scaled_width, scaled_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage((byte*)pixels, scaled_width, scaled_height, false, true, false, &format, &UploadWidth, &UploadHeight);
 
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 

@@ -801,8 +801,6 @@ the bits are allocated as follows:
 #define	QSORT_ENTITYNUM_SHIFT	7
 #define	QSORT_FOGNUM_SHIFT		2
 
-extern	int			gl_filter_min, gl_filter_max;
-
 /*
 ** performanceCounters_t
 */
@@ -1035,8 +1033,6 @@ extern	QCvar	*r_smp;
 extern	QCvar	*r_showSmp;
 extern	QCvar	*r_skipBackEnd;
 
-extern	QCvar	*r_ignoreGLErrors;
-
 extern	QCvar	*r_mapOverBrightBits;
 
 extern	QCvar	*r_debugSurface;
@@ -1088,7 +1084,6 @@ void	GL_Bind( image_t *image );
 void	GL_SetDefaultState (void);
 void	GL_SelectTexture( int unit );
 void	GL_TextureMode( const char *string );
-void	GL_CheckErrors( void );
 void	GL_State( unsigned long stateVector );
 void	GL_TexEnv( int env );
 void	GL_Cull( int cullType );
@@ -1146,7 +1141,7 @@ model_t		*R_AllocModel( void );
 void    	R_Init( void );
 image_t		*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmip, int glWrapClampMode );
 
-image_t		*R_CreateImage( const char *name, const byte *pic, int width, int height, qboolean mipmap
+image_t		*R_CreateImage( const char *name, byte *pic, int width, int height, qboolean mipmap
 					, qboolean allowPicmip, int wrapClampMode );
 
 void	R_ImageList_f( void );

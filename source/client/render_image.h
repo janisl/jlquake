@@ -41,10 +41,7 @@ void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
 void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
-void R_ResampleTexture(byte* In, int InWidth, int InhHeight, byte* Out, int OutWidth, int OutHeight);
-void R_MipMap(byte* in, int width, int height);
-void R_LightScaleTexture (byte* in, int inwidth, int inheight, qboolean only_gamma );
-void R_BlendOverTexture(byte* data, int pixelCount, byte blend[4]);
+void R_UploadImage(byte* data, int width, int height, bool mipmap, bool picmip, bool lightMap, int* format, int* pUploadWidth, int* pUploadHeight);
 bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
@@ -76,4 +73,4 @@ extern unsigned		ColorPercent[16];
 extern byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 extern bool			scrap_dirty;
 
-extern byte	mipBlendColors[16][4];
+extern	int			gl_filter_min, gl_filter_max;

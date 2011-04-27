@@ -109,7 +109,6 @@ QCvar	*gl_clear;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
 QCvar	*gl_flashblend;
-QCvar	*gl_playermip;
 QCvar  *gl_saturatelighting;
 QCvar	*gl_swapinterval;
 QCvar	*gl_texturemode;
@@ -932,7 +931,6 @@ void R_Register( void )
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_flashblend = Cvar_Get ("gl_flashblend", "0", 0);
-	gl_playermip = Cvar_Get ("gl_playermip", "0", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 	gl_texturemode = Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	gl_texturealphamode = Cvar_Get( "gl_texturealphamode", "default", CVAR_ARCHIVE );

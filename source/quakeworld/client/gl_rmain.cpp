@@ -93,7 +93,6 @@ QCvar*	gl_smoothmodels;
 QCvar*	gl_affinemodels;
 QCvar*	gl_polyblend;
 QCvar*	gl_flashblend;
-QCvar*	gl_playermip;
 QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;

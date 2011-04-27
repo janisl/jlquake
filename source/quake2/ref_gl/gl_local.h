@@ -77,9 +77,6 @@ typedef struct image_s
 	int		texnum;						// gl texture binding
 	float	sl, tl, sh, th;				// 0,0 - 1,1 unless part of the scrap
 	qboolean	scrap;
-	qboolean	has_alpha;
-
-	qboolean paletted;
 } image_t;
 
 #define	TEXNUM_LIGHTMAPS	1024
@@ -120,8 +117,6 @@ extern	int			r_framecount;
 extern	cplane_t	frustum[4];
 extern	int			c_brush_polys, c_alias_polys;
 
-
-extern	int			gl_filter_min, gl_filter_max;
 
 //
 // view origin
@@ -181,7 +176,6 @@ extern	QCvar	*gl_polyblend;
 extern	QCvar	*gl_flashblend;
 extern	QCvar	*gl_lightmaptype;
 extern	QCvar	*gl_modulate;
-extern	QCvar	*gl_playermip;
 extern	QCvar	*gl_drawbuffer;
 extern  QCvar  *gl_driver;
 extern	QCvar	*gl_swapinterval;
@@ -191,8 +185,6 @@ extern	QCvar	*gl_texturesolidmode;
 extern  QCvar  *gl_saturatelighting;
 extern  QCvar  *gl_lockpvs;
 
-extern	int		gl_solid_format;
-extern	int		gl_alpha_format;
 extern	int		gl_tex_solid_format;
 extern	int		gl_tex_alpha_format;
 

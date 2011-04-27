@@ -350,9 +350,10 @@ void R_InitSky (texture_t *mt)
 	if (!solidskytexture)
 		solidskytexture = texture_extension_number++;
 	GL_Bind (solidskytexture );
-	qglTexImage2D (GL_TEXTURE_2D, 0, gl_solid_format, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
 
 
 	for (i=0 ; i<128 ; i++)
@@ -368,8 +369,6 @@ void R_InitSky (texture_t *mt)
 	if (!alphaskytexture)
 		alphaskytexture = texture_extension_number++;
 	GL_Bind(alphaskytexture);
-	qglTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, trans);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
 }
 

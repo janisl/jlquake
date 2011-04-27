@@ -74,8 +74,6 @@ QCvar	*r_ext_multitexture;
 QCvar	*r_ext_compiled_vertex_array;
 QCvar	*r_ext_texture_env_add;
 
-QCvar	*r_ignoreGLErrors;
-
 QCvar	*r_primitives;
 
 QCvar	*r_drawBuffer;
@@ -291,49 +289,6 @@ static void InitOpenGL( void )
 
 	// set default state
 	GL_SetDefaultState();
-}
-
-/*
-==================
-GL_CheckErrors
-==================
-*/
-void GL_CheckErrors( void ) {
-    int		err;
-    char	s[64];
-
-    err = qglGetError();
-    if ( err == GL_NO_ERROR ) {
-        return;
-    }
-    if ( r_ignoreGLErrors->integer ) {
-        return;
-    }
-    switch( err ) {
-        case GL_INVALID_ENUM:
-            QStr::Cpy( s, "GL_INVALID_ENUM" );
-            break;
-        case GL_INVALID_VALUE:
-            QStr::Cpy( s, "GL_INVALID_VALUE" );
-            break;
-        case GL_INVALID_OPERATION:
-            QStr::Cpy( s, "GL_INVALID_OPERATION" );
-            break;
-        case GL_STACK_OVERFLOW:
-            QStr::Cpy( s, "GL_STACK_OVERFLOW" );
-            break;
-        case GL_STACK_UNDERFLOW:
-            QStr::Cpy( s, "GL_STACK_UNDERFLOW" );
-            break;
-        case GL_OUT_OF_MEMORY:
-            QStr::Cpy( s, "GL_OUT_OF_MEMORY" );
-            break;
-        default:
-            QStr::Sprintf( s, sizeof(s), "%i", err);
-            break;
-    }
-
-    ri.Error( ERR_FATAL, "GL_CheckErrors: %s", s );
 }
 
 /* 
@@ -837,7 +792,6 @@ void R_Register( void )
 	r_flares = Cvar_Get ("r_flares", "0", CVAR_ARCHIVE );
 	r_znear = Cvar_Get( "r_znear", "4", CVAR_CHEAT );
 	AssertCvarRange( r_znear, 0.001f, 200, qtrue );
-	r_ignoreGLErrors = Cvar_Get( "r_ignoreGLErrors", "1", CVAR_ARCHIVE );
 	r_fastsky = Cvar_Get( "r_fastsky", "0", CVAR_ARCHIVE );
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_drawSun = Cvar_Get( "r_drawSun", "0", CVAR_ARCHIVE );

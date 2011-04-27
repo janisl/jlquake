@@ -1343,8 +1343,6 @@ static void LM_UploadBlock( qboolean dynamic )
 	}
 
 	GL_Bind( gl_state.lightmap_textures + texture );
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	if ( dynamic )
 	{
@@ -1366,14 +1364,10 @@ static void LM_UploadBlock( qboolean dynamic )
 	}
 	else
 	{
-		qglTexImage2D( GL_TEXTURE_2D, 
-					   0, 
-					   GL_RGB,
-					   BLOCK_WIDTH, BLOCK_HEIGHT, 
-					   0, 
-					   GL_RGBA, 
-					   GL_UNSIGNED_BYTE, 
-					   gl_lms.lightmap_buffer );
+		int format;
+		int UploadWidth;
+		int UploadHeight;
+		R_UploadImage(gl_lms.lightmap_buffer, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
 		if ( ++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS )
 			ri.Sys_Error( ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n" );
 	}
@@ -1573,16 +1567,10 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	** initialize the dynamic lightmap texture
 	*/
 	GL_Bind( gl_state.lightmap_textures + 0 );
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	qglTexImage2D( GL_TEXTURE_2D, 
-				   0, 
-				   GL_RGB,
-				   BLOCK_WIDTH, BLOCK_HEIGHT, 
-				   0, 
-				   GL_RGBA, 
-				   GL_UNSIGNED_BYTE, 
-				   dummy );
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage((byte*)dummy, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
 }
 
 /*

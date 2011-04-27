@@ -122,13 +122,12 @@ void R_NetGraph (void)
 	
     GL_Bind(netgraphtexture);
 
-	qglTexImage2D (GL_TEXTURE_2D, 0, gl_alpha_format, 
-		NET_TIMINGS, NET_GRAPHHEIGHT, 0, GL_RGBA, 
-		GL_UNSIGNED_BYTE, ngraph_pixels);
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage((byte*)ngraph_pixels, NET_TIMINGS, NET_GRAPHHEIGHT, false, false, false, &format, &UploadWidth, &UploadHeight);
 
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	x = 8;
 	qglColor3f (1,1,1);
