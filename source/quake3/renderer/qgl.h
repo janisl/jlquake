@@ -106,13 +106,4 @@ typedef void (APIENTRY * PFNGLACTIVETEXTUREARBPROC) (GLenum target);
 typedef void (APIENTRY * PFNGLCLIENTACTIVETEXTUREARBPROC) (GLenum target);
 #endif
 
-/*
-** extension constants
-*/
-
-
-// S3TC compression constants
-#define GL_RGB_S3TC							0x83A0
-#define GL_RGB4_S3TC						0x83A1
-
 #endif

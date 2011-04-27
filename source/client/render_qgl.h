@@ -68,3 +68,9 @@ extern	void ( APIENTRY * qglPointParameterfvEXT)( GLenum param, const GLfloat *v
 #if defined( _WIN32 )
 extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 #endif
+
+// S3TC compression constants
+#ifndef GL_RGB_S3TC
+#define GL_RGB_S3TC							0x83A0
+#define GL_RGB4_S3TC						0x83A1
+#endif
