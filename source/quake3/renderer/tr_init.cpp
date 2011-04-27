@@ -66,8 +66,6 @@ QCvar	*r_facePlaneCull;
 QCvar	*r_showcluster;
 QCvar	*r_nocurves;
 
-QCvar	*r_allowExtensions;
-
 QCvar	*r_ext_compressed_textures;
 QCvar	*r_ext_gamma_control;
 QCvar	*r_ext_multitexture;
@@ -124,12 +122,6 @@ int		max_polyverts;
 */
 static void GLW_InitExtensions()
 {
-	if ( !r_allowExtensions->integer )
-	{
-		ri.Printf( PRINT_ALL, "*** IGNORING OPENGL EXTENSIONS ***\n" );
-		return;
-	}
-
 	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
 
 	// GL_S3_s3tc
@@ -754,7 +746,6 @@ void R_Register( void )
 	// latched and archived variables
 	//
 	r_glDriver = Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_allowExtensions = Cvar_Get( "r_allowExtensions", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_compressed_textures = Cvar_Get( "r_ext_compressed_textures", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_gamma_control = Cvar_Get( "r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_multitexture = Cvar_Get( "r_ext_multitexture", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
