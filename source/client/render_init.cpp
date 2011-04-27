@@ -202,7 +202,7 @@ void R_SharedRegister()
 	r_stereo = Cvar_Get("r_stereo", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_overBrightBits = Cvar_Get("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2);
-	r_roundImagesDown = Cvar_Get("r_roundImagesDown", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_roundImagesDown = Cvar_Get("r_roundImagesDown", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_picmip = Cvar_Get("r_picmip", (GGameType & GAME_Quake3) ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	AssertCvarRange(r_picmip, 0, 16, true);
 	r_texturebits = Cvar_Get("r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
