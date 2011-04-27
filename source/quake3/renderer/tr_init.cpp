@@ -66,7 +66,6 @@ QCvar	*r_facePlaneCull;
 QCvar	*r_showcluster;
 QCvar	*r_nocurves;
 
-QCvar	*r_ext_compressed_textures;
 QCvar	*r_ext_gamma_control;
 QCvar	*r_ext_multitexture;
 QCvar	*r_ext_compiled_vertex_array;
@@ -122,28 +121,6 @@ int		max_polyverts;
 */
 static void GLW_InitExtensions()
 {
-	ri.Printf( PRINT_ALL, "Initializing OpenGL extensions\n" );
-
-	// GL_S3_s3tc
-	glConfig.textureCompression = TC_NONE;
-	if ( strstr( glConfig.extensions_string, "GL_S3_s3tc" ) )
-	{
-		if ( r_ext_compressed_textures->integer )
-		{
-			glConfig.textureCompression = TC_S3TC;
-			ri.Printf( PRINT_ALL, "...using GL_S3_s3tc\n" );
-		}
-		else
-		{
-			glConfig.textureCompression = TC_NONE;
-			ri.Printf( PRINT_ALL, "...ignoring GL_S3_s3tc\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_S3_s3tc not found\n" );
-	}
-
 	// GL_EXT_texture_env_add
 	glConfig.textureEnvAddAvailable = qfalse;
 	if ( strstr( glConfig.extensions_string, "EXT_texture_env_add" ) )
@@ -746,7 +723,6 @@ void R_Register( void )
 	// latched and archived variables
 	//
 	r_glDriver = Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_ext_compressed_textures = Cvar_Get( "r_ext_compressed_textures", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_gamma_control = Cvar_Get( "r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_multitexture = Cvar_Get( "r_ext_multitexture", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_compiled_vertex_array = Cvar_Get( "r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH2);

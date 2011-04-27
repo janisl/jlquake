@@ -612,6 +612,26 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 
 //==========================================================================
 //
+//	CheckExtension
+//
+//==========================================================================
+
+static bool CheckExtension(const char* Extension)
+{
+	QArray<QStr> Extensions;
+	QStr((char*)qglGetString(GL_EXTENSIONS)).Split(' ', Extensions);
+	for (int i = 0; i < Extensions.Num(); i++)
+	{
+		if (Extensions[i] == Extension)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+//==========================================================================
+//
 //	QGL_Init
 //
 //	This is responsible for binding our qgl function pointers to the
@@ -669,6 +689,28 @@ void QGL_Init()
 #ifdef _WIN32
 	qwglSwapIntervalEXT = NULL;
 #endif
+
+	GLog.Write("Initializing OpenGL extensions\n");
+
+	// GL_S3_s3tc
+	glConfig.textureCompression = TC_NONE;
+	if (CheckExtension("GL_S3_s3tc"))
+	{
+		if (r_ext_compressed_textures->integer)
+		{
+			glConfig.textureCompression = TC_S3TC;
+			GLog.Write("...using GL_S3_s3tc\n");
+		}
+		else
+		{
+			glConfig.textureCompression = TC_NONE;
+			GLog.Write("...ignoring GL_S3_s3tc\n");
+		}
+	}
+	else
+	{
+		GLog.Write("...GL_S3_s3tc not found\n");
+	}
 
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
