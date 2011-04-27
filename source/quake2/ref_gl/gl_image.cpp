@@ -24,9 +24,6 @@ image_t		gltextures[MAX_GLTEXTURES];
 int			numgltextures;
 int			base_textureid;		// gltextures[i] = base_textureid+i
 
-void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
-
-
 int		gl_tex_solid_format = 3;
 int		gl_tex_alpha_format = 4;
 
@@ -297,24 +294,13 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(TEXNUM_SCRAPS);
-	GL_Upload32((unsigned*)scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false);
+	int format;
+	int upload_width, upload_height;
+	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &upload_width, &upload_height);
 	scrap_dirty = false;
 }
 
 //=======================================================
-
-/*
-===============
-GL_Upload32
-===============
-*/
-int		upload_width, upload_height;
-
-void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
-{
-	int format;
-	R_UploadImage((byte*)data, width, height, mipmap, mipmap, false, &format, &upload_width, &upload_height);
-}
 
 /*
 ================
@@ -379,9 +365,9 @@ nonscrap:
 		image->scrap = false;
 		image->texnum = TEXNUM_IMAGES + (image - gltextures);
 		GL_Bind(image->texnum);
-		GL_Upload32((unsigned *)pic, width, height, (image->type != it_pic && image->type != it_sky) );
-		image->upload_width = upload_width;		// after power of 2 and scales
-		image->upload_height = upload_height;
+		int format;
+		R_UploadImage(pic, width, height, (image->type != it_pic && image->type != it_sky),
+			(image->type != it_pic && image->type != it_sky), false, &format, &image->upload_width, &image->upload_height);
 		image->sl = 0;
 		image->sh = 1;
 		image->tl = 0;

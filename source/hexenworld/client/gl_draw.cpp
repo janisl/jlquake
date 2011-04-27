@@ -5,8 +5,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap);
-
 QCvar*		gl_nobind;
 
 byte		*draw_chars;				// 8*8 graphic characters
@@ -71,7 +69,10 @@ void Scrap_Upload (void)
 {
 	scrap_uploads++;
 	GL_Bind(scrap_texnum);
-	GL_Upload32((unsigned*)scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false);
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &UploadWidth, &UploadHeight);
 	scrap_dirty = false;
 }
 
@@ -1202,19 +1203,6 @@ int GL_FindTexture (char *identifier)
 }
 
 /*
-===============
-GL_Upload32
-===============
-*/
-void GL_Upload32 (unsigned *data, int width, int height,  qboolean mipmap)
-{
-	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage((byte*)data, width, height, mipmap, true, false, &format, &UploadWidth, &UploadHeight);
-}
-
-/*
 ================
 GL_LoadTexture
 ================
@@ -1250,7 +1238,10 @@ int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean
 
 	GL_Bind(texture_extension_number );
 
-	GL_Upload32((unsigned*)data, width, height, mipmap);
+	int format;
+	int UploadWidth;
+	int UploadHeight;
+	R_UploadImage((byte*)data, width, height, mipmap, mipmap, false, &format, &UploadWidth, &UploadHeight);
 
 	texture_extension_number++;
 
