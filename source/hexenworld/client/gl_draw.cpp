@@ -16,7 +16,7 @@ image_t		*draw_disc[MAX_DISC] =
 };
 image_t		*draw_backtile;
 
-int			translate_texture[MAX_PLAYER_CLASS];
+image_t		translate_texture[MAX_PLAYER_CLASS];
 int			char_texture;
 int			cs_texture; // crosshair texture
 int			char_smalltexture;
@@ -35,19 +35,10 @@ static byte cs_data[64] = {
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 };
 
-byte		conback_buffer[sizeof(image_t)];
-image_t		*conback = (image_t*)&conback_buffer;
-
-typedef struct
-{
-	int		texnum;
-	char	identifier[64];
-	int		width, height;
-	qboolean	mipmap;
-} gltexture_t;
+image_t		*conback;
 
 #define	MAX_GLTEXTURES	2048
-gltexture_t	gltextures[MAX_GLTEXTURES];
+image_t		gltextures[MAX_GLTEXTURES];
 int			numgltextures;
 
 void GL_Bind (int texnum)
@@ -61,18 +52,16 @@ void GL_Bind (int texnum)
 }
 
 
-int			scrap_texnum;
+image_t	scrap_image;
 
 int	scrap_uploads;
 
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(scrap_texnum);
+	GL_Bind(scrap_image.texnum);
 	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &UploadWidth, &UploadHeight);
+	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &scrap_image.uploadWidth, &scrap_image.uploadHeight);
 	scrap_dirty = false;
 }
 
@@ -142,7 +131,7 @@ image_t* Draw_PicFromWad (char *name)
 		for (i=0 ; i<height ; i++)
 			for (j=0 ; j<width * 4; j++, k++)
 				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
-		img->texnum = scrap_texnum;
+		img->texnum = scrap_image.texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+width-0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -176,13 +165,13 @@ image_t* Draw_CachePic (char *path)
 	int			i;
 
 	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
-		if (!QStr::Cmp(path, pic->name))
+		if (!QStr::Cmp(path, pic->imgName))
 			return pic;
 
 	if (menu_numcachepics == MAX_CACHED_PICS)
 		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS");
 	menu_numcachepics++;
-	QStr::Cpy(pic->name, path);
+	QStr::Cpy(pic->imgName, path);
 
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
@@ -253,7 +242,7 @@ Draw_TextureMode_f
 void Draw_TextureMode_f (void)
 {
 	int		i;
-	gltexture_t	*glt;
+	image_t	*glt;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -359,6 +348,7 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+	conback = new image_t;
 	conback->texnum = GL_LoadTexture("conback", cbwidth, cbheight, pic32, false);
 	delete[] pic32;
 	conback->sl = 0;
@@ -372,15 +362,15 @@ void Draw_Init (void)
 	Hunk_FreeToLowMark (start);
 
 	// save a texture slot for translated picture
-	translate_texture[0] = texture_extension_number++;
-	translate_texture[1] = texture_extension_number++;
-	translate_texture[2] = texture_extension_number++;
-	translate_texture[3] = texture_extension_number++;
-	translate_texture[4] = texture_extension_number++;
-	translate_texture[5] = texture_extension_number++;//mg-siege
+	translate_texture[0].texnum = texture_extension_number++;
+	translate_texture[1].texnum = texture_extension_number++;
+	translate_texture[2].texnum = texture_extension_number++;
+	translate_texture[3].texnum = texture_extension_number++;
+	translate_texture[4].texnum = texture_extension_number++;
+	translate_texture[5].texnum = texture_extension_number++;//mg-siege
 
 	// save slots for scraps
-	scrap_texnum = texture_extension_number++;
+	scrap_image.texnum = texture_extension_number++;
 
 	//
 	// get the other pics we need
@@ -863,7 +853,7 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 
 	extern int which_class;
 
-	GL_Bind (translate_texture[which_class-1]);
+	GL_Bind (translate_texture[which_class-1].texnum);
 
 	c = pic->width * pic->height;
 
@@ -1191,11 +1181,11 @@ GL_FindTexture
 int GL_FindTexture (char *identifier)
 {
 	int		i;
-	gltexture_t	*glt;
+	image_t	*glt;
 
 	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
 	{
-		if (!QStr::Cmp(identifier, glt->identifier))
+		if (!QStr::Cmp(identifier, glt->imgName))
 			return gltextures[i].texnum;
 	}
 
@@ -1211,14 +1201,14 @@ int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean
 {
 	qboolean	noalpha;
 	int			i, p, s;
-	gltexture_t	*glt;
+	image_t		*glt;
 
 	// see if the texture is allready present
 	if (identifier[0])
 	{
 		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
 		{
-			if (!QStr::Cmp(identifier, glt->identifier))
+			if (!QStr::Cmp(identifier, glt->imgName))
 			{
 				if (width != glt->width || height != glt->height)
 					Sys_Error ("GL_LoadTexture: cache mismatch");
@@ -1230,7 +1220,7 @@ int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean
 		glt = &gltextures[numgltextures];
 	numgltextures++;
 
-	QStr::Cpy(glt->identifier, identifier);
+	QStr::Cpy(glt->imgName, identifier);
 	glt->texnum = texture_extension_number;
 	glt->width = width;
 	glt->height = height;
@@ -1238,10 +1228,7 @@ int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean
 
 	GL_Bind(texture_extension_number );
 
-	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage((byte*)data, width, height, mipmap, mipmap, false, &format, &UploadWidth, &UploadHeight);
+	R_UploadImage((byte*)data, width, height, mipmap, mipmap, false, &glt->internalFormat, &glt->uploadWidth, &glt->uploadHeight);
 
 	texture_extension_number++;
 

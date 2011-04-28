@@ -32,14 +32,6 @@ int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolea
 int GL_LoadTransTexture (char *identifier, int width, int height, byte *data, qboolean mipmap, byte Alpha);
 int GL_FindTexture (char *identifier);
 
-struct image_t
-{
-	int			width, height;
-	int			texnum;
-	float		sl, tl, sh, th;
-	char		name[MAX_QPATH];
-};
-
 extern	int glx, gly, glwidth, glheight;
 
 
@@ -171,8 +163,8 @@ extern	texture_t	*r_notexture_mip;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
-extern	int	particletexture;
-extern	int	playertextures;
+extern	image_t	particletexture;
+extern	image_t	playertextures[16];
 
 extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 

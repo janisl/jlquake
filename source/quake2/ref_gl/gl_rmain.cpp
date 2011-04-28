@@ -1285,13 +1285,13 @@ void R_DrawBeam( entity_t *e )
 
 void	R_BeginRegistration (char *map);
 struct model_s	*R_RegisterModel (char *name);
-struct image_s	*R_RegisterSkin (char *name);
+image_t	*R_RegisterSkin (char *name);
 void R_SetSky (char *name, float rotate, vec3_t axis);
 void	R_EndRegistration (void);
 
 void	R_RenderFrame (refdef_t *fd);
 
-struct image_s	*Draw_FindPic (char *name);
+image_t	*Draw_FindPic (char *name);
 
 void	Draw_Pic (int x, int y, char *name);
 void	Draw_Char (int x, int y, int c);

@@ -37,11 +37,37 @@ enum
 	IMG8MODE_SkinSpecialTrans,
 };
 
+struct image_t
+{
+	char		imgName[MAX_QPATH];			// game path, including extension
+	int			width, height;				// source image
+	int			uploadWidth, uploadHeight;	// after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
+	GLuint		texnum;						// gl texture binding
+
+	int			frameUsed;					// for texture usage in frame statistics
+
+	int			internalFormat;
+	int			TMU;
+
+	bool		mipmap;
+	bool		allowPicmip;
+	int			wrapClampMode;				// GL_CLAMP or GL_REPEAT
+
+	image_t*	next;
+
+	float		sl, tl, sh, th;				// 0,0 - 1,1 unless part of the scrap
+	bool		scrap;
+
+	int			type;
+	int			registration_sequence;		// 0 = free
+	struct msurface_s*	texturechain;	// for sort-by-texture world drawing
+};
+
 void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
 void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
-void R_UploadImage(byte* data, int width, int height, bool mipmap, bool picmip, bool lightMap, int* format, int* pUploadWidth, int* pUploadHeight);
+void R_UploadImage(byte* Data, int Width, int Height, bool MipMap, bool PicMip, bool LightMap, int* Format, int* UploadWidth, int* UploadHeight);
 bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);

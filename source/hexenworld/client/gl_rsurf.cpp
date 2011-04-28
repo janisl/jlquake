@@ -10,8 +10,6 @@ int			skytexturenum;
 #endif
 
 
-int		lightmap_textures;
-
 unsigned		blocklights[18*18];
 
 #define	BLOCK_WIDTH		128
@@ -19,6 +17,8 @@ unsigned		blocklights[18*18];
 
 #define	MAX_LIGHTMAPS	64
 int			active_lightmaps;
+
+image_t	lightmap_textures[MAX_LIGHTMAPS];
 
 typedef struct glRect_s {
 	unsigned char l,t,w,h;
@@ -226,8 +226,8 @@ texture_t *R_TextureAnimation (texture_t *base)
 */
 
 
-extern	int		solidskytexture;
-extern	int		alphaskytexture;
+extern	image_t	solidskytexture;
+extern	image_t	alphaskytexture;
 extern	float	speedscale;		// for top sky and bottom sky
 
 void DrawGLWaterPoly (glpoly_t *p);
@@ -315,7 +315,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		}
 		qglEnd ();
 
-		GL_Bind (lightmap_textures + s->lightmaptexturenum);
+		GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
 		qglEnable (GL_BLEND);
 		qglBegin (GL_POLYGON);
 		v = p->verts[0];
@@ -352,7 +352,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWSKY)
 	{
-		GL_Bind (solidskytexture);
+		GL_Bind (solidskytexture.texnum);
 		speedscale = realtime*8;
 		speedscale -= (int)speedscale;
 
@@ -360,7 +360,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 		qglEnable (GL_BLEND);
 		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		GL_Bind (alphaskytexture);
+		GL_Bind (alphaskytexture.texnum);
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale;
 		EmitSkyPolys (s);
@@ -378,7 +378,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	GL_Bind (t->gl_texturenum);
 	DrawGLWaterPoly (p);
 
-	GL_Bind (lightmap_textures + s->lightmaptexturenum);
+	GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
 	qglEnable (GL_BLEND);
 	DrawGLWaterPolyLightmap (p);
 	qglDisable (GL_BLEND);
@@ -424,7 +424,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			// Binds lightmap to texenv 1
 			GL_EnableMultitexture(); // Same as SelectTexture (TEXTURE1)
-			GL_Bind (lightmap_textures + s->lightmaptexturenum);
+			GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
 			i = s->lightmaptexturenum;
 			if (lightmap_modified[i])
 			{
@@ -501,7 +501,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			}
 			qglEnd ();
 
-			GL_Bind (lightmap_textures + s->lightmaptexturenum);
+			GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
 			qglEnable (GL_BLEND);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
@@ -543,14 +543,14 @@ void R_DrawSequentialPoly (msurface_t *s)
 	if (s->flags & SURF_DRAWSKY)
 	{
 		GL_DisableMultitexture();
-		GL_Bind (solidskytexture);
+		GL_Bind (solidskytexture.texnum);
 		speedscale = realtime*8;
 		speedscale -= (int)speedscale & ~127;
 
 		EmitSkyPolys (s);
 
 		qglEnable (GL_BLEND);
-		GL_Bind (alphaskytexture);
+		GL_Bind (alphaskytexture.texnum);
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale & ~127;
 		EmitSkyPolys (s);
@@ -571,7 +571,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		GL_Bind (t->gl_texturenum);
 		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		GL_EnableMultitexture();
-		GL_Bind (lightmap_textures + s->lightmaptexturenum);
+		GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
 		i = s->lightmaptexturenum;
 		if (lightmap_modified[i])
 		{
@@ -608,7 +608,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		GL_Bind (t->gl_texturenum);
 		DrawGLWaterPoly (p);
 
-		GL_Bind (lightmap_textures + s->lightmaptexturenum);
+		GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
 		qglEnable (GL_BLEND);
 		DrawGLWaterPolyLightmap (p);
 		qglDisable (GL_BLEND);
@@ -725,7 +725,7 @@ void R_BlendLightmaps (qboolean Translucent)
 		p = lightmap_polys[i];
 		if (!p)
 			continue;
-		GL_Bind(lightmap_textures+i);
+		GL_Bind(lightmap_textures[i].texnum);
 		if (lightmap_modified[i])
 		{
 			lightmap_modified[i] = false;
@@ -1684,10 +1684,10 @@ void GL_BuildLightmaps (void)
 
 	r_framecount = 1;		// no dlightcache
 
-	if (!lightmap_textures)
+	if (!lightmap_textures[0].texnum)
 	{
-		lightmap_textures = texture_extension_number;
-		texture_extension_number += MAX_LIGHTMAPS;
+		for (int i = 0; i < MAX_LIGHTMAPS; i++)
+			lightmap_textures[i].texnum = texture_extension_number++;
 	}
 
 	for (j=1 ; j<MAX_MODELS ; j++)
@@ -1725,7 +1725,7 @@ void GL_BuildLightmaps (void)
 		lightmap_rectchange[i].t = BLOCK_HEIGHT;
 		lightmap_rectchange[i].w = 0;
 		lightmap_rectchange[i].h = 0;
-		GL_Bind(lightmap_textures + i);
+		GL_Bind(lightmap_textures[i].texnum);
 		int format;
 		int UploadWidth;
 		int UploadHeight;

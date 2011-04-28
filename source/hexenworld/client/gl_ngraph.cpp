@@ -5,7 +5,7 @@
 
 extern byte		*draw_chars;				// 8*8 graphic characters
 
-int	netgraphtexture;	// netgraph texture
+image_t	netgraphtexture;	// netgraph texture
 
 #define NET_GRAPHHEIGHT 32
 
@@ -120,7 +120,7 @@ void R_NetGraph (void)
 	Draw_String(8, y, st);
 	y += 8;
 	
-    GL_Bind(netgraphtexture);
+    GL_Bind(netgraphtexture.texnum);
 
 	int format;
 	int UploadWidth;

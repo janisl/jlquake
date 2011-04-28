@@ -66,19 +66,6 @@ typedef enum
 	it_sky
 } imagetype_t;
 
-typedef struct image_s
-{
-	char	name[MAX_QPATH];			// game path, including extension
-	imagetype_t	type;
-	int		width, height;				// source image
-	int		upload_width, upload_height;	// after power of two and picmip
-	int		registration_sequence;		// 0 = free
-	struct msurface_s	*texturechain;	// for sort-by-texture world drawing
-	int		texnum;						// gl texture binding
-	float	sl, tl, sh, th;				// 0,0 - 1,1 unless part of the scrap
-	qboolean	scrap;
-} image_t;
-
 #define	TEXNUM_LIGHTMAPS	1024
 #define	TEXNUM_SCRAPS		1152
 #define	TEXNUM_IMAGES		1153
@@ -263,7 +250,7 @@ void	Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 void	R_BeginFrame( float camera_separation );
 void	R_SwapBuffers( int );
 
-struct image_s *R_RegisterSkin (char *name);
+image_t *R_RegisterSkin (char *name);
 
 image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type);
 image_t	*GL_FindImage (char *name, imagetype_t type);
@@ -283,9 +270,11 @@ void GL_TextureSolidMode( char *string );
 */
 void GL_DrawParticles( int n, const particle_t particles[], const unsigned colortable[768] );
 
+#define MAX_LIGHTMAPS	128
+
 typedef struct
 {
-	int lightmap_textures;
+	image_t lightmap_textures[MAX_LIGHTMAPS];
 
 	float camera_separation;
 

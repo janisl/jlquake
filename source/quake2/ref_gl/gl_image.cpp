@@ -254,7 +254,7 @@ void	GL_ImageList_f (void)
 	{
 		if (image->texnum <= 0)
 			continue;
-		texels += image->upload_width*image->upload_height;
+		texels += image->uploadWidth*image->uploadHeight;
 		switch (image->type)
 		{
 		case it_skin:
@@ -275,18 +275,18 @@ void	GL_ImageList_f (void)
 		}
 
 		ri.Con_Printf (PRINT_ALL,  " %3i %3i: %s\n",
-			image->upload_width, image->upload_height, image->name);
+			image->uploadWidth, image->uploadHeight, image->imgName);
 	}
 	ri.Con_Printf (PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels);
 }
 
-
+image_t scrap_image;
 int	scrap_uploads;
 
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(TEXNUM_SCRAPS);
+	GL_Bind(scrap_image.texnum);
 	int format;
 	int upload_width, upload_height;
 	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &upload_width, &upload_height);
@@ -321,9 +321,9 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	}
 	image = &gltextures[i];
 
-	if (QStr::Length(name) >= sizeof(image->name))
+	if (QStr::Length(name) >= sizeof(image->imgName))
 		ri.Sys_Error (ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name);
-	QStr::Cpy(image->name, name);
+	QStr::Cpy(image->imgName, name);
 	image->registration_sequence = registration_sequence;
 
 	image->width = width;
@@ -345,7 +345,7 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 		for (i=0 ; i<image->height ; i++)
 			for (j=0 ; j<image->width * 4; j++, k++)
 				scrap_texels[(y + i) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic[k];
-		image->texnum = TEXNUM_SCRAPS;
+		image->texnum = scrap_image.texnum;
 		image->scrap = true;
 		image->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		image->sh = (x+image->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -360,7 +360,7 @@ nonscrap:
 		GL_Bind(image->texnum);
 		int format;
 		R_UploadImage(pic, width, height, (image->type != it_pic && image->type != it_sky),
-			(image->type != it_pic && image->type != it_sky), false, &format, &image->upload_width, &image->upload_height);
+			(image->type != it_pic && image->type != it_sky), false, &format, &image->uploadWidth, &image->uploadHeight);
 		image->sl = 0;
 		image->sh = 1;
 		image->tl = 0;
@@ -389,7 +389,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	// look for it
 	for (i=0, image=gltextures ; i<numgltextures ; i++,image++)
 	{
-		if (!QStr::Cmp(name, image->name))
+		if (!QStr::Cmp(name, image->imgName))
 		{
 			image->registration_sequence = registration_sequence;
 			return image;
@@ -424,7 +424,7 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 R_RegisterSkin
 ===============
 */
-struct image_s *R_RegisterSkin (char *name)
+image_t *R_RegisterSkin (char *name)
 {
 	return GL_FindImage (name, it_skin);
 }
@@ -471,6 +471,8 @@ void	GL_InitImages (void)
 	registration_sequence = 1;
 
 	R_SetColorMappings();
+
+	scrap_image.texnum = TEXNUM_SCRAPS;
 }
 
 /*

@@ -24,8 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern	model_t	*loadmodel;
 
-int		solidskytexture;
-int		alphaskytexture;
+image_t	solidskytexture;
+image_t	alphaskytexture;
 float	speedscale;		// for top sky and bottom sky
 
 msurface_t	*warpface;
@@ -273,14 +273,14 @@ void EmitBothSkyLayers (msurface_t *fa)
 {
 	GL_DisableMultitexture();
 
-	GL_Bind (solidskytexture);
+	GL_Bind (solidskytexture.texnum);
 	speedscale = realtime*8;
 	speedscale -= (int)speedscale & ~127 ;
 
 	EmitSkyPolys (fa);
 
 	qglEnable (GL_BLEND);
-	GL_Bind (alphaskytexture);
+	GL_Bind (alphaskytexture.texnum);
 	speedscale = realtime*16;
 	speedscale -= (int)speedscale & ~127 ;
 
@@ -301,7 +301,7 @@ void R_DrawSkyChain (msurface_t *s)
 	GL_DisableMultitexture();
 
 	// used when gl_texsort is on
-	GL_Bind(solidskytexture);
+	GL_Bind(solidskytexture.texnum);
 	speedscale = realtime*8;
 	speedscale -= (int)speedscale & ~127 ;
 
@@ -309,7 +309,7 @@ void R_DrawSkyChain (msurface_t *s)
 		EmitSkyPolys (fa);
 
 	qglEnable (GL_BLEND);
-	GL_Bind (alphaskytexture);
+	GL_Bind (alphaskytexture.texnum);
 	speedscale = realtime*16;
 	speedscale -= (int)speedscale & ~127 ;
 
@@ -361,9 +361,9 @@ void R_InitSky (texture_t *mt)
 	((byte *)&transpix)[3] = 0;
 
 
-	if (!solidskytexture)
-		solidskytexture = texture_extension_number++;
-	GL_Bind (solidskytexture );
+	if (!solidskytexture.texnum)
+		solidskytexture.texnum = texture_extension_number++;
+	GL_Bind (solidskytexture.texnum);
 	int format;
 	int UploadWidth;
 	int UploadHeight;
@@ -380,9 +380,9 @@ void R_InitSky (texture_t *mt)
 				trans[(i*128) + j] = d_8to24table[p];
 		}
 
-	if (!alphaskytexture)
-		alphaskytexture = texture_extension_number++;
-	GL_Bind(alphaskytexture);
+	if (!alphaskytexture.texnum)
+		alphaskytexture.texnum = texture_extension_number++;
+	GL_Bind(alphaskytexture.texnum);
 	R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
 }
 
