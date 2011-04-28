@@ -994,7 +994,6 @@ extern	QCvar	*r_showcluster;
 
 extern QCvar	*r_ext_gamma_control;
 extern QCvar	*r_ext_texenv_op;
-extern QCvar	*r_ext_multitexture;
 extern QCvar	*r_ext_compiled_vertex_array;
 extern QCvar	*r_ext_texture_env_add;
 

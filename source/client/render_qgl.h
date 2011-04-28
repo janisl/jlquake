@@ -52,9 +52,6 @@ void QGL_Shutdown();
 void QGL_EnableLogging(bool Enable);
 void QGL_LogComment(const char* Comment);
 
-extern	void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
-extern	void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
-
 extern	void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
 extern	void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
 extern	void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
@@ -73,4 +70,16 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 #ifndef GL_RGB_S3TC
 #define GL_RGB_S3TC							0x83A0
 #define GL_RGB4_S3TC						0x83A1
+#endif
+
+//	multitexture extension definitions
+#ifndef GL_ACTIVE_TEXTURE_ARB
+#define GL_ACTIVE_TEXTURE_ARB				0x84E0
+#define GL_CLIENT_ACTIVE_TEXTURE_ARB		0x84E1
+#define GL_MAX_TEXTURE_UNITS_ARB			0x84E2
+
+#define GL_TEXTURE0_ARB						0x84C0
+#define GL_TEXTURE1_ARB						0x84C1
+#define GL_TEXTURE2_ARB						0x84C2
+#define GL_TEXTURE3_ARB						0x84C3
 #endif

@@ -1041,24 +1041,6 @@ int R_Init()
 		ri.Con_Printf( PRINT_ALL, "...GL_EXT_point_parameters not found\n" );
 	}
 
-	if ( strstr( glConfig.extensions_string, "GL_SGIS_multitexture" ) )
-	{
-		if ( gl_ext_multitexture->value )
-		{
-			ri.Con_Printf( PRINT_ALL, "...using GL_SGIS_multitexture\n" );
-			qglMTexCoord2fSGIS = (void(APIENTRY*)( GLenum, GLfloat, GLfloat )) GLimp_GetProcAddress( "glMTexCoord2fSGIS" );
-			qglSelectTextureSGIS = (void ( APIENTRY *)( GLenum )) GLimp_GetProcAddress( "glSelectTextureSGIS" );
-		}
-		else
-		{
-			ri.Con_Printf( PRINT_ALL, "...ignoring GL_SGIS_multitexture\n" );
-		}
-	}
-	else
-	{
-		ri.Con_Printf( PRINT_ALL, "...GL_SGIS_multitexture not found\n" );
-	}
-
 	GL_SetDefaultState();
 
 	GL_InitImages ();

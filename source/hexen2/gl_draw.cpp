@@ -46,9 +46,9 @@ void GL_Bind (int texnum)
 {
 	if (gl_nobind->value)
 		texnum = char_texture;
-	if (currenttexture == texnum)
+	if (glState.currenttextures[glState.currenttmu] == texnum)
 		return;
-	currenttexture = texnum;
+	glState.currenttextures[glState.currenttmu] = texnum;
 	qglBindTexture(GL_TEXTURE_2D, texnum);
 }
 

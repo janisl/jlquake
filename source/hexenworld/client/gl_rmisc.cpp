@@ -22,8 +22,6 @@ int		texture_extension_number = 1;
 
 float		gldepthmin, gldepthmax;
 
-qboolean gl_mtexable = false;
-
 extern void R_InitBubble();
 
 /*
@@ -196,7 +194,7 @@ void R_Init (void)
 	gl_clear = Cvar_Get("gl_clear", "0", 0);
 	gl_texsort = Cvar_Get("gl_texsort", "1", 0);
 
-	if (gl_mtexable)
+	if (qglActiveTextureARB)
 		Cvar_SetValue ("gl_texsort", 0.0);
 
 	gl_cull = Cvar_Get("gl_cull", "1", 0);
@@ -464,16 +462,6 @@ void VID_SetPalette()
 	}
 }
 
-static void CheckMultiTextureExtensions()
-{
-	if (strstr(glConfig.extensions_string, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex")) {
-		Con_Printf("Multitexture extensions found.\n");
-		glMTexCoord2fSGIS = (lpMTexFUNC) GLimp_GetProcAddress("glMTexCoord2fSGIS");
-		glSelectTextureSGIS = (lpSelTexFUNC) GLimp_GetProcAddress("glSelectTextureSGIS");
-		gl_mtexable = true;
-	}
-}
-
 /*
 ===============
 GL_Init
@@ -486,8 +474,6 @@ void GL_Init()
 
 	Con_Printf ("GL_VERSION: %s\n", glConfig.version_string);
 	Con_Printf ("GL_EXTENSIONS: %s\n", glConfig.extensions_string);
-
-	CheckMultiTextureExtensions ();
 
 	qglClearColor (1,0,0,0);
 	qglCullFace(GL_FRONT);

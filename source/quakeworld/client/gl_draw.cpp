@@ -78,9 +78,9 @@ void GL_Bind (int texnum)
 {
 	if (gl_nobind->value)
 		texnum = char_texture;
-	if (currenttexture == texnum)
+	if (glState.currenttextures[glState.currenttmu] == texnum)
 		return;
-	currenttexture = texnum;
+	glState.currenttextures[glState.currenttmu] = texnum;
 	qglBindTexture (GL_TEXTURE_2D, texnum);
 }
 
@@ -897,18 +897,14 @@ int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolea
 
 /****************************************/
 
-static GLenum oldtarget = TEXTURE0_SGIS;
-
-void GL_SelectTexture (GLenum target) 
+void GL_SelectTexture (int target) 
 {
-	if (!gl_mtexable)
+	if (!qglActiveTextureARB)
 		return;
-	qglSelectTextureSGIS(target);
-	if (target == oldtarget) 
+	qglActiveTextureARB(GL_TEXTURE0_ARB + target);
+	if (target == glState.currenttmu)
 		return;
-	cnttextures[oldtarget-TEXTURE0_SGIS] = currenttexture;
-	currenttexture = cnttextures[target-TEXTURE0_SGIS];
-	oldtarget = target;
+	glState.currenttmu = target;
 }
 
 int Draw_GetWidth(image_t* pic)

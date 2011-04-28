@@ -26,8 +26,6 @@ int		texture_extension_number = 1;
 
 float		gldepthmin, gldepthmax;
 
-qboolean gl_mtexable = false;
-
 /*
 ==================
 R_InitTextures
@@ -197,7 +195,7 @@ void R_Init (void)
 	gl_clear = Cvar_Get("gl_clear", "0", 0);
 	gl_texsort = Cvar_Get("gl_texsort", "1", 0);
 
-	if (gl_mtexable)
+	if (qglActiveTextureARB)
 		Cvar_SetValue ("gl_texsort", 0.0);
 
 	gl_cull = Cvar_Get("gl_cull", "1", 0);
@@ -399,25 +397,6 @@ void R_TimeRefresh_f (void)
 	GL_EndRendering ();
 }
 
-static void CheckMultiTextureExtensions()
-{
-	if (strstr(glConfig.extensions_string, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex"))
-	{
-		Con_Printf("Found GL_SGIS_multitexture...\n");
-
-		qglMTexCoord2fSGIS = (void(APIENTRY*)(GLenum, GLfloat, GLfloat)) GLimp_GetProcAddress("glMTexCoord2fSGIS");
-		qglSelectTextureSGIS = (void(APIENTRY*)(GLenum)) GLimp_GetProcAddress("glSelectTextureSGIS");
-
-		if (qglMTexCoord2fSGIS && qglSelectTextureSGIS)
-		{
-			Con_Printf("Multitexture extensions found.\n");
-			gl_mtexable = true;
-		}
-		else
-			Con_Printf("Symbol not found, disabled.\n");
-	}
-}
-
 /*
 ===============
 GL_Init
@@ -426,8 +405,6 @@ GL_Init
 static void GL_Init()
 {
 	CommonGfxInfo_f();
-
-	CheckMultiTextureExtensions ();
 
 	qglClearColor (1,0,0,0);
 	qglCullFace(GL_FRONT);

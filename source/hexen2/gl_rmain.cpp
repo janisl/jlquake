@@ -22,7 +22,6 @@ cplane_t	frustum[4];
 int			c_brush_polys, c_alias_polys, c_sky_polys;
 
 qboolean	envmap;				// true during envmap command capture 
-int			currenttexture;		// to avoid unnecessary texture sets
 
 int			particletexture;	// little dot for particles
 int			playertextures;		// up to 16 color translated skins

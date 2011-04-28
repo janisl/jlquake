@@ -113,6 +113,7 @@ extern QCvar*	r_stereo;				// desired pixelformat stereo flag
 extern QCvar*	r_displayRefresh;		// optional display refresh option
 
 extern QCvar*	r_ext_compressed_textures;	// these control use of specific extensions
+extern QCvar*	r_ext_multitexture;
 
 extern QCvar*	r_gamma;
 extern QCvar*	r_ignorehwgamma;		// overrides hardware gamma capabilities

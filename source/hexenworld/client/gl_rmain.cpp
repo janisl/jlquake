@@ -19,10 +19,6 @@ int			c_brush_polys, c_alias_polys;
 
 qboolean	envmap;				// true during envmap command capture 
 
-int			currenttexture = -1;		// to avoid unnecessary texture sets
-
-int			cnttextures[2] = {-1, -1};     // cached
-
 int			particletexture;	// little dot for particles
 int			playertextures;		// up to 16 color translated skins
 int			gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models

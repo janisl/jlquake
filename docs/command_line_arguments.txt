@@ -24,7 +24,6 @@
 -listen
 -mem
 -nolan
--nomtex
 -nostdout
 -noudp
 -rogue
@@ -38,7 +37,6 @@
 -ip
 -mem
 -noconinput
--nomtex
 -nostdout
 
 ------------------------ Hexen 2 ---------------------------
@@ -59,7 +57,6 @@
 -conwidth
 -game
 -mem
--nomtex
 
 ------------------------ Removed ----------------------
 
@@ -79,6 +76,7 @@ Parameter                Console command                      Saved
 -mode                    set r_mode <value>                   Yes
 -window                  set r_fullscreen 0                   Yes
 -gamma                   set r_gamma <value>                  Yes
+-nomtex                  set r_ext_multitexture 0             Yes
 
 -dinput
   Enabled by default, disable with:

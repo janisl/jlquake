@@ -71,9 +71,6 @@
 #undef GLF_V9
 #undef GLF_V10
 
-void ( APIENTRY * qglMTexCoord2fSGIS)( GLenum, GLfloat, GLfloat );
-void ( APIENTRY * qglSelectTextureSGIS)( GLenum );
-
 void ( APIENTRY * qglMultiTexCoord2fARB )( GLenum texture, GLfloat s, GLfloat t );
 void ( APIENTRY * qglActiveTextureARB )( GLenum texture );
 void ( APIENTRY * qglClientActiveTextureARB )( GLenum texture );
@@ -673,9 +670,6 @@ void QGL_Init()
 #undef GLF_V9
 #undef GLF_V10
 
-	qglSelectTextureSGIS = NULL;
-	qglMTexCoord2fSGIS = NULL;
-
 	qglActiveTextureARB = NULL;
 	qglClientActiveTextureARB = NULL;
 	qglMultiTexCoord2fARB = NULL;
@@ -710,6 +704,45 @@ void QGL_Init()
 	else
 	{
 		GLog.Write("...GL_S3_s3tc not found\n");
+	}
+
+	// GL_ARB_multitexture
+	qglMultiTexCoord2fARB = NULL;
+	qglActiveTextureARB = NULL;
+	qglClientActiveTextureARB = NULL;
+	if (CheckExtension("GL_ARB_multitexture"))
+	{
+		if (r_ext_multitexture->integer)
+		{
+			qglMultiTexCoord2fARB = (void (APIENTRY*)(GLenum target, GLfloat s, GLfloat t))GLimp_GetProcAddress("glMultiTexCoord2fARB");
+			qglActiveTextureARB = (void (APIENTRY*)(GLenum target))GLimp_GetProcAddress("glActiveTextureARB");
+			qglClientActiveTextureARB = (void (APIENTRY*)(GLenum target))GLimp_GetProcAddress("glClientActiveTextureARB");
+
+			if (qglActiveTextureARB)
+			{
+				qglGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &glConfig.maxActiveTextures);
+
+				if (glConfig.maxActiveTextures > 1)
+				{
+					GLog.Write("...using GL_ARB_multitexture\n");
+				}
+				else
+				{
+					qglMultiTexCoord2fARB = NULL;
+					qglActiveTextureARB = NULL;
+					qglClientActiveTextureARB = NULL;
+					GLog.Write("...not using GL_ARB_multitexture, < 2 texture units\n");
+				}
+			}
+		}
+		else
+		{
+			GLog.Write("...ignoring GL_ARB_multitexture\n");
+		}
+	}
+	else
+	{
+		GLog.Write("...GL_ARB_multitexture not found\n");
 	}
 
 	// check logging
@@ -765,9 +798,6 @@ void QGL_Shutdown()
 #undef GLF_V8
 #undef GLF_V9
 #undef GLF_V10
-
-	qglSelectTextureSGIS = NULL;
-	qglMTexCoord2fSGIS = NULL;
 
 	qglActiveTextureARB = NULL;
 	qglClientActiveTextureARB = NULL;
