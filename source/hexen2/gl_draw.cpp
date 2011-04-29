@@ -386,6 +386,7 @@ void Draw_Init (void)
 	conback->height = vid.conheight;
 
 	// save slots for scraps
+	scrap_image = new image_t;
 	scrap_image->texnum = texture_extension_number++;
 
 	//

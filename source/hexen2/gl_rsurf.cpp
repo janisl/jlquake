@@ -1233,7 +1233,7 @@ void GL_BuildLightmaps (void)
 
 	r_framecount = 1;		// no dlightcache
 
-	if (!lightmap_textures[0]->texnum)
+	if (!lightmap_textures[0])
 	{
 		for (int i = 0; i < MAX_LIGHTMAPS; i++)
 		{
