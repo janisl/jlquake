@@ -752,7 +752,6 @@ void		R_Modellist_f (void);
 //====================================================
 extern	refimport_t		ri;
 
-#define	MAX_DRAWIMAGES			2048
 #define	MAX_LIGHTMAPS			256
 #define	MAX_SKINS				1024
 
@@ -906,9 +905,6 @@ struct trGlobals_t : trGlobals_base_t
 	//
 	model_t					*models[MAX_MOD_KNOWN];
 	int						numModels;
-
-	int						numImages;
-	image_t					*images[MAX_DRAWIMAGES];
 
 	// shader indexes from other modules will be looked up in tr.shaders[]
 	// shader indexes from drawsurfs will be looked up in sortedShaders[]

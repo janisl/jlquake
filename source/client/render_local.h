@@ -83,11 +83,16 @@ struct glstate_t
 	unsigned long	glStateBits;
 };
 
+#define	MAX_DRAWIMAGES			2048
+
 struct trGlobals_base_t
 {
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
 	int						overbrightBits;		// r_overbrightBits->integer, but set to 0 if no hw gamma
+
+	int						numImages;
+	image_t*				images[MAX_DRAWIMAGES];
 };
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);

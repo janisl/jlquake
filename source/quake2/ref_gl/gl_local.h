@@ -71,8 +71,6 @@ typedef enum
 #define	TEXNUM_CINEMATIC	642
 #define	TEXNUM_IMAGES		1024
 
-#define		MAX_GLTEXTURES	1024
-
 //===================================================================
 
 #include "gl_model.h"
@@ -91,9 +89,6 @@ extern	float	gldepthmin, gldepthmax;
 
 
 //====================================================
-
-extern	image_t		gltextures[MAX_GLTEXTURES];
-extern	int			numgltextures;
 
 
 extern	image_t		*r_notexture;

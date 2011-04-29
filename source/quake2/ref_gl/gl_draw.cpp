@@ -312,6 +312,7 @@ void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 	if (!cinematic_image)
 	{
 		cinematic_image = new image_t;
+		Com_Memset(cinematic_image, 0, sizeof(image_t));
 		cinematic_image->texnum = TEXNUM_CINEMATIC;
 	}
 	GL_Bind (cinematic_image->texnum);

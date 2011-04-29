@@ -606,7 +606,6 @@ void DrawTextureChains (void)
 {
 	int		i;
 	msurface_t	*s;
-	image_t		*image;
 
 	c_visible_textures = 0;
 
@@ -614,11 +613,11 @@ void DrawTextureChains (void)
 
 	if ( !qglActiveTextureARB )
 	{
-		for ( i = 0, image=gltextures ; i<numgltextures ; i++,image++)
+		for ( i = 0; i<tr.numImages; i++)
 		{
-			if (!image->registration_sequence)
+			if (!tr.images[i])
 				continue;
-			s = image->texturechain;
+			s = tr.images[i]->texturechain;
 			if (!s)
 				continue;
 			c_visible_textures++;
@@ -626,20 +625,20 @@ void DrawTextureChains (void)
 			for ( ; s ; s=s->texturechain)
 				R_RenderBrushPoly (s);
 
-			image->texturechain = NULL;
+			tr.images[i]->texturechain = NULL;
 		}
 	}
 	else
 	{
-		for ( i = 0, image=gltextures ; i<numgltextures ; i++,image++)
+		for ( i = 0; i<tr.numImages; i++)
 		{
-			if (!image->registration_sequence)
+			if (!tr.images[i])
 				continue;
-			if (!image->texturechain)
+			if (!tr.images[i]->texturechain)
 				continue;
 			c_visible_textures++;
 
-			for ( s = image->texturechain; s ; s=s->texturechain)
+			for ( s = tr.images[i]->texturechain; s ; s=s->texturechain)
 			{
 				if ( !( s->flags & SURF_DRAWTURB ) )
 					R_RenderBrushPoly (s);
@@ -647,11 +646,11 @@ void DrawTextureChains (void)
 		}
 
 		GL_EnableMultitexture( false );
-		for ( i = 0, image=gltextures ; i<numgltextures ; i++,image++)
+		for ( i = 0; i<tr.numImages; i++)
 		{
-			if (!image->registration_sequence)
+			if (!tr.images[i])
 				continue;
-			s = image->texturechain;
+			s = tr.images[i]->texturechain;
 			if (!s)
 				continue;
 
@@ -661,7 +660,7 @@ void DrawTextureChains (void)
 					R_RenderBrushPoly (s);
 			}
 
-			image->texturechain = NULL;
+			tr.images[i]->texturechain = NULL;
 		}
 //		GL_EnableMultitexture( true );
 	}
@@ -1557,6 +1556,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 		for (int i = 0; i < MAX_LIGHTMAPS; i++)
 		{
 			gl_state.lightmap_textures[i] = new image_t;
+			Com_Memset(gl_state.lightmap_textures[i], 0, sizeof(image_t));
 			gl_state.lightmap_textures[i]->texnum = TEXNUM_LIGHTMAPS + i;
 		}
 	}

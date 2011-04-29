@@ -20,8 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-image_t		gltextures[MAX_GLTEXTURES];
-int			numgltextures;
 int			base_textureid;		// gltextures[i] = base_textureid+i
 
 int		gl_tex_solid_format = 3;
@@ -177,9 +175,10 @@ void GL_TextureMode( char *string )
 	gl_filter_max = modes[i].maximize;
 
 	// change all the existing mipmap texture objects
-	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+	for (i=0; i<tr.numImages; i++)
 	{
-		if (glt->type != it_pic && glt->type != it_sky )
+		glt = tr.images[i];
+		if (glt && glt->type != it_pic && glt->type != it_sky )
 		{
 			GL_Bind (glt->texnum);
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
@@ -250,9 +249,10 @@ void	GL_ImageList_f (void)
 	ri.Con_Printf (PRINT_ALL, "------------------\n");
 	texels = 0;
 
-	for (i=0, image=gltextures ; i<numgltextures ; i++, image++)
+	for (i=0; i<tr.numImages; i++)
 	{
-		if (image->texnum <= 0)
+		image = tr.images[i];
+		if (!image)
 			continue;
 		texels += image->uploadWidth*image->uploadHeight;
 		switch (image->type)
@@ -308,18 +308,20 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	int			i;
 
 	// find a free image_t
-	for (i=0, image=gltextures ; i<numgltextures ; i++,image++)
+	for (i=0; i<tr.numImages; i++)
 	{
-		if (!image->texnum)
+		if (!tr.images[i])
 			break;
 	}
-	if (i == numgltextures)
+	if (i == tr.numImages)
 	{
-		if (numgltextures == MAX_GLTEXTURES)
+		if (tr.numImages == MAX_DRAWIMAGES)
 			ri.Sys_Error (ERR_DROP, "MAX_GLTEXTURES");
-		numgltextures++;
+		tr.numImages++;
 	}
-	image = &gltextures[i];
+	image = new image_t;
+	Com_Memset(image, 0, sizeof(image_t));
+	tr.images[i] = image;
 
 	if (QStr::Length(name) >= sizeof(image->imgName))
 		ri.Sys_Error (ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name);
@@ -356,7 +358,7 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	{
 nonscrap:
 		image->scrap = false;
-		image->texnum = TEXNUM_IMAGES + (image - gltextures);
+		image->texnum = TEXNUM_IMAGES + i;
 		GL_Bind(image->texnum);
 		int format;
 		R_UploadImage(pic, width, height, (image->type != it_pic && image->type != it_sky),
@@ -387,12 +389,12 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
 
 	// look for it
-	for (i=0, image=gltextures ; i<numgltextures ; i++,image++)
+	for (i=0; i<tr.numImages; i++)
 	{
-		if (!QStr::Cmp(name, image->imgName))
+		if (tr.images[i] && !QStr::Cmp(name, tr.images[i]->imgName))
 		{
-			image->registration_sequence = registration_sequence;
-			return image;
+			tr.images[i]->registration_sequence = registration_sequence;
+			return tr.images[i];
 		}
 	}
 
@@ -441,23 +443,23 @@ will be freed.
 void GL_FreeUnusedImages (void)
 {
 	int		i;
-	image_t	*image;
 
 	// never free r_notexture or particle texture
 	r_notexture->registration_sequence = registration_sequence;
 	r_particletexture->registration_sequence = registration_sequence;
 
-	for (i=0, image=gltextures ; i<numgltextures ; i++, image++)
+	for (i=0; i<tr.numImages; i++)
 	{
-		if (image->registration_sequence == registration_sequence)
-			continue;		// used this sequence
-		if (!image->registration_sequence)
+		if (!tr.images[i])
 			continue;		// free image_t slot
-		if (image->type == it_pic)
+		if (tr.images[i]->registration_sequence == registration_sequence)
+			continue;		// used this sequence
+		if (tr.images[i]->type == it_pic)
 			continue;		// don't free pics
 		// free it
-		qglDeleteTextures (1, (GLuint*)&image->texnum);
-		Com_Memset(image, 0, sizeof(*image));
+		qglDeleteTextures (1, (GLuint*)&tr.images[i]->texnum);
+		delete tr.images[i];
+		tr.images[i] = NULL;
 	}
 }
 
@@ -473,6 +475,7 @@ void	GL_InitImages (void)
 	R_SetColorMappings();
 
 	scrap_image = new image_t;
+	Com_Memset(scrap_image, 0, sizeof(image_t));
 	scrap_image->texnum = TEXNUM_SCRAPS;
 }
 
@@ -484,15 +487,15 @@ GL_ShutdownImages
 void	GL_ShutdownImages (void)
 {
 	int		i;
-	image_t	*image;
 
-	for (i=0, image=gltextures ; i<numgltextures ; i++, image++)
+	for (i=0; i<tr.numImages; i++)
 	{
-		if (!image->registration_sequence)
+		if (!tr.images[i])
 			continue;		// free image_t slot
 		// free it
-		qglDeleteTextures (1, (GLuint*)&image->texnum);
-		Com_Memset(image, 0, sizeof(*image));
+		qglDeleteTextures (1, (GLuint*)&tr.images[i]->texnum);
+		delete tr.images[i];
+		tr.images[i] = NULL;
 	}
 }
 

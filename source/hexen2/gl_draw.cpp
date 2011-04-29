@@ -29,10 +29,6 @@ image_t*	char_menufonttexture;
 
 image_t		*conback;
 
-#define MAX_GLTEXTURES	2048
-image_t		gltextures[MAX_GLTEXTURES];
-int			numgltextures;
-
 void GL_Bind (int texnum)
 {
 	if (gl_nobind->value)
@@ -154,9 +150,9 @@ image_t* Draw_CachePic (char *path)
 	image_t*	pic;
 	int			i;
 
-	for (pic=gltextures, i=0 ; i<numgltextures; pic++, i++)
-		if (!QStr::Cmp(path, pic->imgName))
-			return pic;
+	for (i=0 ; i<tr.numImages; i++)
+		if (!QStr::Cmp(path, tr.images[i]->imgName))
+			return tr.images[i];
 
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
@@ -286,11 +282,11 @@ void Draw_TextureMode_f (void)
 	gl_filter_max = modes[i].maximize;
 
 	// change all the existing mipmap texture objects
-	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+	for (i=0; i<tr.numImages; i++)
 	{
-		if (glt->mipmap)
+		if (tr.images[i]->mipmap)
 		{
-			GL_Bind (glt->texnum);
+			GL_Bind (tr.images[i]->texnum);
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 		}
@@ -1003,21 +999,21 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 	// see if the texture is allready present
 	if (identifier[0])
 	{
-		for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
+		for (i=0; i<tr.numImages; i++)
 		{
+			glt = tr.images[i];
 			if (!QStr::Cmp(search, glt->imgName))
 			{
 				if (width != glt->width || height != glt->height)
 					Sys_Error ("GL_LoadTexture: cache mismatch");
-				return &gltextures[i];
+				return glt;
 			}
 		}
 	}
-	else
-	{
-		glt = &gltextures[numgltextures];
-	}
-	numgltextures++;
+
+	glt = new image_t;
+	tr.images[tr.numImages] = glt;
+	tr.numImages++;
 
 	QStr::Cpy(glt->imgName, search);
 	glt->texnum = texture_extension_number;
