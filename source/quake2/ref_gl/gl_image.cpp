@@ -327,37 +327,20 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	if (image->type == it_pic && image->width < 64 && image->height < 64)
 	{
 		int		x, y;
-		int		i, j, k;
 
 		if (!R_ScrapAllocBlock(image->width, image->height, &x, &y))
 			goto nonscrap;
-		scrap_dirty = true;
-
-		// copy the texels into the scrap block
-		k = 0;
-		for (i=0 ; i<image->height ; i++)
-			for (j=0 ; j<image->width * 4; j++, k++)
-				scrap_texels[(y + i) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic[k];
+		R_CommonCreateImage(image, pic, width, height, (type != it_pic && type != it_sky),
+			(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, false, true, x, y);
 		image->texnum = scrap_image->texnum;
-		image->scrap = true;
-		image->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		image->sh = (x+image->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
-		image->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		image->th = (y+image->height-0.01)/(float)SCRAP_BLOCK_WIDTH;
 	}
 	else
 	{
 nonscrap:
-		image->scrap = false;
 		image->texnum = TEXNUM_IMAGES + i;
 		GL_Bind(image);
-		int format;
-		R_UploadImage(pic, width, height, (image->type != it_pic && image->type != it_sky),
-			(image->type != it_pic && image->type != it_sky), false, &format, &image->uploadWidth, &image->uploadHeight);
-		image->sl = 0;
-		image->sh = 1;
-		image->tl = 0;
-		image->th = 1;
+		R_CommonCreateImage(image, pic, width, height, (image->type != it_pic && image->type != it_sky),
+			(image->type != it_pic && image->type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, false, false, 0, 0);
 	}
 
 	return image;
@@ -468,6 +451,8 @@ void	GL_InitImages (void)
 	scrap_image = new image_t;
 	Com_Memset(scrap_image, 0, sizeof(image_t));
 	scrap_image->texnum = TEXNUM_SCRAPS;
+	GL_Bind(scrap_image);
+	R_CommonCreateImage(scrap_image, scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false, false, 0, 0);
 }
 
 /*

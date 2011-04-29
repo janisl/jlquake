@@ -241,18 +241,10 @@ image_t *R_CreateImage( const char *name, byte *pic, int width, int height,
 
 	GL_Bind(image);
 
-	R_UploadImage(pic, image->width, image->height, 
-								image->mipmap,
-								allowPicmip,
-								isLightmap,
-								&image->internalFormat,
-								&image->uploadWidth,
-								&image->uploadHeight );
-
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapClampMode );
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapClampMode );
-
-	qglBindTexture( GL_TEXTURE_2D, 0 );
+	R_CommonCreateImage(image, pic, width, height, 
+								mipmap,
+								allowPicmip, glWrapClampMode,
+								isLightmap, false, 0, 0);
 
 	if ( image->TMU == 1 ) {
 		GL_SelectTexture( 0 );

@@ -1686,15 +1686,6 @@ void GL_BuildLightmaps (void)
 
 	r_framecount = 1;		// no dlightcache
 
-	if (!lightmap_textures[0])
-	{
-		for (int i = 0; i < MAX_LIGHTMAPS; i++)
-		{
-			lightmap_textures[i] = new image_t;
-			lightmap_textures[i]->texnum = texture_extension_number++;
-		}
-	}
-
 	for (j=1 ; j<MAX_MODELS ; j++)
 	{
 		m = cl.model_precache[j];
@@ -1717,6 +1708,17 @@ void GL_BuildLightmaps (void)
 
  	if (!gl_texsort->value)
  		GL_SelectTexture(1);
+
+	if (!lightmap_textures[0])
+	{
+		for (int i = 0; i < MAX_LIGHTMAPS; i++)
+		{
+			lightmap_textures[i] = new image_t;
+			lightmap_textures[i]->texnum = texture_extension_number++;
+			GL_Bind(lightmap_textures[i]);
+			R_CommonCreateImage(lightmap_textures[i], lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, true, false, 0, 0);
+		}
+	}
 
 	//
 	// upload all lightmaps that were filled

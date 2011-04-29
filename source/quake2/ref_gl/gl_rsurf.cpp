@@ -1558,6 +1558,8 @@ void GL_BeginBuildingLightmaps (model_t *m)
 			gl_state.lightmap_textures[i] = new image_t;
 			Com_Memset(gl_state.lightmap_textures[i], 0, sizeof(image_t));
 			gl_state.lightmap_textures[i]->texnum = TEXNUM_LIGHTMAPS + i;
+			GL_Bind( gl_state.lightmap_textures[i]);
+			R_CommonCreateImage(gl_state.lightmap_textures[i], (byte*)dummy, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, true, false, 0, 0);
 		}
 	}
 

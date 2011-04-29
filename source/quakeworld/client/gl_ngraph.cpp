@@ -120,14 +120,20 @@ void R_NetGraph (void)
 	{
 		netgraphtexture = new image_t;
 		netgraphtexture->texnum = texture_extension_number++;
+		GL_Bind(netgraphtexture);
+
+		R_CommonCreateImage(netgraphtexture, (byte*)ngraph_pixels, NET_TIMINGS, NET_GRAPHHEIGHT, false, false, GL_CLAMP, false, false, 0, 0);
+		GL_Bind(netgraphtexture);
 	}
+	else
+	{
+		GL_Bind(netgraphtexture);
 
-    GL_Bind(netgraphtexture);
-
-	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage((byte*)ngraph_pixels, NET_TIMINGS, NET_GRAPHHEIGHT, false, false, false, &format, &UploadWidth, &UploadHeight);
+		int format;
+		int UploadWidth;
+		int UploadHeight;
+		R_UploadImage((byte*)ngraph_pixels, NET_TIMINGS, NET_GRAPHHEIGHT, false, false, false, &format, &UploadWidth, &UploadHeight);
+	}
 
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 

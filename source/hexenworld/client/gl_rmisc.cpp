@@ -90,10 +90,7 @@ void R_InitParticleTexture (void)
 			data[y][x][3] = dottexture[x][y]*255;
 		}
 	}
-	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage((byte*)data, 8, 8, false, false, false, &format, &UploadWidth, &UploadHeight);
+	R_CommonCreateImage(particletexture, (byte*)data, 8, 8, false, false, GL_CLAMP, false, false, 0, 0);
 
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
@@ -307,15 +304,6 @@ void R_TranslatePlayerSkin (int playernum)
 //	if (s & 3)
 //		Sys_Error ("R_TranslateSkin: s&3");
 
-	// because this happens during gameplay, do it fast
-	// instead of sending it through gl_upload 8
-	if (!playertextures[playernum])
-	{
-		playertextures[playernum] = new image_t;
-		playertextures[playernum]->texnum = texture_extension_number++;
-	}
-    GL_Bind(playertextures[playernum]);
-
 	for (i=0 ; i<256 ; i++)
 		translate32[i] = d_8to24table[translate[i]];
 	scaled_width = 512;
@@ -341,10 +329,27 @@ void R_TranslatePlayerSkin (int playernum)
 			frac += fracstep;
 		}
 	}
-	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage((byte*)pixels, scaled_width, scaled_height, false, true, false, &format, &UploadWidth, &UploadHeight);
+
+	// because this happens during gameplay, do it fast
+	// instead of sending it through gl_upload 8
+	if (!playertextures[playernum])
+	{
+		playertextures[playernum] = new image_t;
+		playertextures[playernum]->texnum = texture_extension_number++;
+		GL_Bind(playertextures[playernum]);
+
+		R_CommonCreateImage(playertextures[playernum], (byte*)pixels, scaled_width, scaled_height, false, true, GL_CLAMP, false, false, 0, 0);
+		GL_Bind(playertextures[playernum]);
+	}
+	else
+	{
+		GL_Bind(playertextures[playernum]);
+
+		int format;
+		int UploadWidth;
+		int UploadHeight;
+		R_UploadImage((byte*)pixels, scaled_width, scaled_height, false, true, false, &format, &UploadWidth, &UploadHeight);
+	}
 
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }

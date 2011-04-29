@@ -370,12 +370,17 @@ void R_InitSky (texture_t *mt)
 	{
 		solidskytexture = new image_t;
 		solidskytexture->texnum = texture_extension_number++;
+		GL_Bind (solidskytexture);
+		R_CommonCreateImage(solidskytexture, (byte*)trans, 128, 128, false, false, GL_REPEAT, false, false, 0, 0);
 	}
-	GL_Bind (solidskytexture);
-	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
+	else
+	{
+		GL_Bind (solidskytexture);
+		int format;
+		int UploadWidth;
+		int UploadHeight;
+		R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
+	}
 
 
 	for (i=0 ; i<128 ; i++)
@@ -392,8 +397,16 @@ void R_InitSky (texture_t *mt)
 	{
 		alphaskytexture = new image_t;
 		alphaskytexture->texnum = texture_extension_number++;
+		GL_Bind(alphaskytexture);
+		R_CommonCreateImage(alphaskytexture, (byte*)trans, 128, 128, false, false, GL_REPEAT, false, false, 0, 0);
 	}
-	GL_Bind(alphaskytexture);
-	R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
+	else
+	{
+		GL_Bind(alphaskytexture);
+		int format;
+		int UploadWidth;
+		int UploadHeight;
+		R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
+	}
 }
 

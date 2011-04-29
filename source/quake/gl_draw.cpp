@@ -66,9 +66,6 @@ void Scrap_Upload (void)
 
 byte		menuplyr_pixels[4096];
 
-int		pic_texels;
-int		pic_count;
-
 image_t* Draw_PicFromWad(char *name)
 {
 	byte* p = (byte*)W_GetLumpName (name);
@@ -78,41 +75,34 @@ image_t* Draw_PicFromWad(char *name)
 	R_LoadPICMem(p, &pic32, &width, &height);
 	image_t* img;
 
+	img = new image_t;
+	Com_Memset(img, 0, sizeof(image_t));
+	img->width = width;
+	img->height = height;
+	tr.images[tr.numImages] = img;
+	tr.numImages++;
+	img->mipmap = false;
+
 	// load little ones into the scrap
 	if (width < 64 && height < 64)
 	{
 		int		x, y;
-		int		i, j, k;
 
 		if (!R_ScrapAllocBlock(width, height, &x, &y))
 			goto noscrap;
-		scrap_dirty = true;
-		k = 0;
-		for (i=0 ; i<height ; i++)
-			for (j=0 ; j<width * 4; j++, k++)
-				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
-		img = new image_t;
-		img->width = width;
-		img->height = height;
+		R_CommonCreateImage(img, pic32, width, height, false, false, GL_CLAMP, false, true, x, y);
 		img->texnum = scrap_image->texnum;
-		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		img->sh = (x+width-0.01)/(float)SCRAP_BLOCK_WIDTH;
-		img->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
-		img->th = (y+height-0.01)/(float)SCRAP_BLOCK_WIDTH;
-
-		pic_count++;
-		pic_texels += width*height;
 	}
 	else
 	{
 noscrap:
-		img = GL_LoadTexture("", width, height, pic32, false);
-		img->width = width;
-		img->height = height;
-		img->sl = 0;
-		img->sh = 1;
-		img->tl = 0;
-		img->th = 1;
+		img->texnum = texture_extension_number;
+
+		GL_Bind(img);
+
+		R_CommonCreateImage(img, pic32, width, height, false, false, GL_CLAMP, false, false, 0, 0);
+
+		texture_extension_number++;
 	}
 	delete[] pic32;
 	return img;
@@ -326,6 +316,8 @@ void Draw_Init (void)
 	// save slots for scraps
 	scrap_image = new image_t;
 	scrap_image->texnum = texture_extension_number++;
+	GL_Bind(scrap_image);
+	R_CommonCreateImage(scrap_image, scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false, false, 0, 0);
 
 	//
 	// get the other pics we need
@@ -509,15 +501,6 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 	byte			*src;
 	int				p;
 
-	if (!translate_texture)
-	{
-		// save a texture slot for translated picture
-		translate_texture = new image_t;
-		translate_texture->texnum = texture_extension_number++;
-	}
-
-	GL_Bind (translate_texture);
-
 	c = pic->width * pic->height;
 
 	dest = trans;
@@ -534,7 +517,22 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 		}
 	}
 
-	R_UploadImage((byte*)trans, 64, 64, false, false, false, &translate_texture->internalFormat, &translate_texture->uploadWidth, &translate_texture->uploadHeight);
+	if (!translate_texture)
+	{
+		// save a texture slot for translated picture
+		translate_texture = new image_t;
+		translate_texture->texnum = texture_extension_number++;
+		GL_Bind (translate_texture);
+
+		R_CommonCreateImage(translate_texture, (byte*)trans, 64, 64, false, false, GL_CLAMP, false, false, 0, 0);
+		GL_Bind (translate_texture);
+	}
+	else
+	{
+		GL_Bind (translate_texture);
+
+		R_UploadImage((byte*)trans, 64, 64, false, false, false, &translate_texture->internalFormat, &translate_texture->uploadWidth, &translate_texture->uploadHeight);
+	}
 
 	qglColor3f (1,1,1);
 	qglBegin (GL_QUADS);
@@ -579,6 +577,8 @@ void Draw_TileClear (int x, int y, int w, int h)
 {
 	qglColor3f (1,1,1);
 	GL_Bind (draw_backtile);
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (x/64.0, y/64.0);
 	qglVertex2f (x, y);
@@ -589,6 +589,8 @@ void Draw_TileClear (int x, int y, int w, int h)
 	qglTexCoord2f ( x/64.0, (y+h)/64.0 );
 	qglVertex2f (x, y+h);
 	qglEnd ();
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
 }
 
 
@@ -744,7 +746,7 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 
 	GL_Bind(glt);
 
-	R_UploadImage((byte*)data, width, height, mipmap, mipmap, false, &glt->internalFormat, &glt->uploadWidth, &glt->uploadHeight);
+	R_CommonCreateImage(glt, (byte*)data, width, height, mipmap, mipmap, mipmap ? GL_REPEAT : GL_CLAMP, false, false, 0, 0);
 
 	texture_extension_number++;
 

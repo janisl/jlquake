@@ -398,9 +398,6 @@ void R_DrawSpriteModel (entity_t *e)
 
 	qglBegin (GL_QUADS);
 
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
 	qglTexCoord2f (0, 1);
 	VectorMA (e->origin, frame->down, r_spritedesc.vup, point);
 	VectorMA (point, frame->left, r_spritedesc.vright, point);
@@ -422,10 +419,6 @@ void R_DrawSpriteModel (entity_t *e)
 	qglVertex3fv (point);
 
 	qglEnd ();
-
-	//restore tex parms
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	qglDisable( GL_BLEND );
 }

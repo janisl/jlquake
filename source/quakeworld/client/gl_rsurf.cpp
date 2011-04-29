@@ -1558,6 +1558,8 @@ void GL_BuildLightmaps (void)
 		{
 			lightmap_textures[i] = new image_t;
 			lightmap_textures[i]->texnum = texture_extension_number++;
+			GL_Bind(lightmap_textures[i]);
+			R_CommonCreateImage(lightmap_textures[i], lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, true, false, 0, 0);
 		}
 	}
 

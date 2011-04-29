@@ -210,6 +210,8 @@ void Draw_TileClear (int x, int y, int w, int h, char *pic)
 	}
 
 	GL_Bind (image);
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (x/64.0, y/64.0);
 	qglVertex2f (x, y);
@@ -220,6 +222,8 @@ void Draw_TileClear (int x, int y, int w, int h, char *pic)
 	qglTexCoord2f ( x/64.0, (y+h)/64.0 );
 	qglVertex2f (x, y+h);
 	qglEnd ();
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
+	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
 }
 
 
@@ -314,6 +318,8 @@ void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 		cinematic_image = new image_t;
 		Com_Memset(cinematic_image, 0, sizeof(image_t));
 		cinematic_image->texnum = TEXNUM_CINEMATIC;
+		GL_Bind (cinematic_image);
+		R_CommonCreateImage(cinematic_image, (byte*)image32, 256, 256, false, false, GL_CLAMP, false, false, 0, 0);
 	}
 	GL_Bind (cinematic_image);
 

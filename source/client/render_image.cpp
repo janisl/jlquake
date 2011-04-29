@@ -1004,6 +1004,52 @@ bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 
 //==========================================================================
 //
+//	R_CommonCreateImage
+//
+//==========================================================================
+
+void R_CommonCreateImage(image_t* image, byte* data, int width, int height, bool mipmap, bool picmip, GLenum glWrapClampMode, bool lightMap, bool scrap, int x, int y)
+{
+	if (scrap)
+	{
+		scrap_dirty = true;
+
+		// copy the texels into the scrap block
+		int k = 0;
+		for (int i = 0; i < height; i++)
+		{
+			for (int j = 0; j < width * 4; j++, k++)
+			{
+				scrap_texels[(y + i) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = data[k];
+			}
+		}
+
+		image->scrap = true;
+		image->sl = (x + 0.01) / (float)SCRAP_BLOCK_WIDTH;
+		image->sh = (x + width - 0.01) / (float)SCRAP_BLOCK_WIDTH;
+		image->tl = (y + 0.01) / (float)SCRAP_BLOCK_WIDTH;
+		image->th = (y + height - 0.01) / (float)SCRAP_BLOCK_WIDTH;
+	}
+	else
+	{
+		R_UploadImage(data, width, height, mipmap, picmip, lightMap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
+
+		image->scrap = false;
+		image->sl = 0;
+		image->sh = 1;
+		image->tl = 0;
+		image->th = 1;
+
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, glWrapClampMode);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, glWrapClampMode);
+
+		qglBindTexture(GL_TEXTURE_2D, 0);
+		glState.currenttextures[glState.currenttmu] = 0;
+	}
+}
+
+//==========================================================================
+//
 //	R_SetColorMappings
 //
 //==========================================================================
