@@ -271,7 +271,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		p = s->polys;
 
 		t = R_TextureAnimation (s->texinfo->texture);
-		GL_Bind (t->gl_texturenum);
+		GL_Bind (t->gl_texture->texnum);
 		qglBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -307,7 +307,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		GL_Bind (s->texinfo->texture->gl_texturenum);
+		GL_Bind (s->texinfo->texture->gl_texture->texnum);
 		EmitWaterPolys (s);
 		return;
 	}
@@ -340,7 +340,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	p = s->polys;
 
 	t = R_TextureAnimation (s->texinfo->texture);
-	GL_Bind (t->gl_texturenum);
+	GL_Bind (t->gl_texture->texnum);
 	DrawGLWaterPoly (p);
 
 	GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
@@ -547,7 +547,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 	}
 		
 	t = R_TextureAnimation (fa->texinfo->texture);
-	GL_Bind (t->gl_texturenum);
+	GL_Bind (t->gl_texture->texnum);
 
 	if (fa->flags & SURF_DRAWTURB)
 	{	// warp texture, no lightmaps
@@ -650,7 +650,7 @@ void R_DrawWaterSurfaces (void)
 			qglColor4f (1,1,1,1);
 
 		// set modulate mode explicitly
-		GL_Bind (t->gl_texturenum);
+		GL_Bind (t->gl_texture->texnum);
 
 		for ( ; s ; s=s->texturechain)
 			R_RenderBrushPoly (s, true);

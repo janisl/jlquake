@@ -394,7 +394,7 @@ void R_DrawSpriteModel (entity_t *e)
 
 //	R_RotateSprite (psprite->beamlength);
 
-    GL_Bind(frame->gl_texturenum);
+    GL_Bind(frame->gl_texture->texnum);
 
 	qglBegin (GL_QUADS);
 
@@ -863,7 +863,7 @@ void R_DrawAliasModel (entity_t *e)
 	}
 	else
 	{
-		GL_Bind(paliashdr->gl_texturenum[currententity->skinnum]);
+		GL_Bind(paliashdr->gl_texture[currententity->skinnum]->texnum);
 
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.

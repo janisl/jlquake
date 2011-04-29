@@ -300,7 +300,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		p = s->polys;
 
 		t = R_TextureAnimation (s->texinfo->texture);
-		GL_Bind (t->gl_texturenum);
+		GL_Bind (t->gl_texture->texnum);
 		qglBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -331,7 +331,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		GL_Bind (s->texinfo->texture->gl_texturenum);
+		GL_Bind (s->texinfo->texture->gl_texture->texnum);
 		EmitWaterPolys (s);
 		return;
 	}
@@ -364,7 +364,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	p = s->polys;
 
 	t = R_TextureAnimation (s->texinfo->texture);
-	GL_Bind (t->gl_texturenum);
+	GL_Bind (t->gl_texture->texnum);
 	DrawGLWaterPoly (p);
 
 	GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
@@ -405,7 +405,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			t = R_TextureAnimation (s->texinfo->texture);
 			// Binds world to texture env 0
 			GL_SelectTexture(0);
-			GL_Bind (t->gl_texturenum);
+			GL_Bind (t->gl_texture->texnum);
 			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			// Binds lightmap to texenv 1
 			GL_EnableMultitexture(); // Same as SelectTexture (TEXTURE1)
@@ -438,7 +438,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			p = s->polys;
 
 			t = R_TextureAnimation (s->texinfo->texture);
-			GL_Bind (t->gl_texturenum);
+			GL_Bind (t->gl_texture->texnum);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
 			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -472,7 +472,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	if (s->flags & SURF_DRAWTURB)
 	{
 		GL_DisableMultitexture();
-		GL_Bind (s->texinfo->texture->gl_texturenum);
+		GL_Bind (s->texinfo->texture->gl_texture->texnum);
 		EmitWaterPolys (s);
 		return;
 	}
@@ -508,7 +508,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 		t = R_TextureAnimation (s->texinfo->texture);
 		GL_SelectTexture(0);
-		GL_Bind (t->gl_texturenum);
+		GL_Bind (t->gl_texture->texnum);
 		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		GL_EnableMultitexture();
 		GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
@@ -545,7 +545,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		p = s->polys;
 
 		t = R_TextureAnimation (s->texinfo->texture);
-		GL_Bind (t->gl_texturenum);
+		GL_Bind (t->gl_texture->texnum);
 		DrawGLWaterPoly (p);
 
 		GL_Bind (lightmap_textures[s->lightmaptexturenum].texnum);
@@ -727,7 +727,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 	}
 		
 	t = R_TextureAnimation (fa->texinfo->texture);
-	GL_Bind (t->gl_texturenum);
+	GL_Bind (t->gl_texture->texnum);
 
 	if (fa->flags & SURF_DRAWTURB)
 	{	// warp texture, no lightmaps
@@ -892,7 +892,7 @@ void R_DrawWaterSurfaces (void)
 			continue;
 
 		// set modulate mode explicitly
-		GL_Bind (t->gl_texturenum);
+		GL_Bind (t->gl_texture->texnum);
 
 		for ( ; s ; s=s->texturechain)
 			R_RenderBrushPoly (s);
@@ -937,7 +937,7 @@ void R_DrawWaterSurfaces (void)
 			return;
 
 		for ( s = waterchain ; s ; s=s->texturechain) {
-			GL_Bind (s->texinfo->texture->gl_texturenum);
+			GL_Bind (s->texinfo->texture->gl_texture->texnum);
 			EmitWaterPolys (s);
 		}
 		
@@ -957,7 +957,7 @@ void R_DrawWaterSurfaces (void)
 
 			// set modulate mode explicitly
 			
-			GL_Bind (t->gl_texturenum);
+			GL_Bind (t->gl_texture->texnum);
 
 			for ( ; s ; s=s->texturechain)
 				EmitWaterPolys (s);

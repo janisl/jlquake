@@ -388,7 +388,7 @@ static void Mod_LoadTextures (bsp29_lump_t *l)
 			R_InitSky (tx);
 		else
 		{
-			tx->gl_texturenum = GL_LoadTexture8(mt->name, tx->width, tx->height, (byte *)(tx+1), true, false);
+			tx->gl_texture = GL_LoadTexture8(mt->name, tx->width, tx->height, (byte *)(tx+1), true, false);
 		}
 	}
 
@@ -1382,10 +1382,10 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 				Com_Memcpy(player_8bit_texels, (byte *)(pskintype + 1), s);
 			}
 			sprintf (name, "%s_%i", loadmodel->name, i);
-			pheader->gl_texturenum[i][0] =
-			pheader->gl_texturenum[i][1] =
-			pheader->gl_texturenum[i][2] =
-			pheader->gl_texturenum[i][3] =
+			pheader->gl_texture[i][0] =
+			pheader->gl_texture[i][1] =
+			pheader->gl_texture[i][2] =
+			pheader->gl_texture[i][3] =
 				GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
 			delete[] pic32;
 			pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + s);
@@ -1403,14 +1403,14 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 					sprintf (name, "%s_%i_%i", loadmodel->name, i,j);
 					
 					byte* pic32 = R_ConvertImage8To32((byte *)(pskintype), pheader->skinwidth, pheader->skinheight, IMG8MODE_Skin);
-					pheader->gl_texturenum[i][j&3] = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
+					pheader->gl_texture[i][j&3] = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
 					delete[] pic32;
 					pskintype = (daliasskintype_t *)((byte *)(pskintype) + s);
 			}
 			k = j;
 			for (/* */; j < 4; j++)
-				pheader->gl_texturenum[i][j&3] = 
-				pheader->gl_texturenum[i][j - k]; 
+				pheader->gl_texture[i][j&3] = 
+				pheader->gl_texture[i][j - k]; 
 		}
 	}
 
@@ -1646,7 +1646,7 @@ static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int fra
 	pspriteframe->right = width + origin[0];
 
 	sprintf (name, "%s_%i", loadmodel->name, framenum);
-	pspriteframe->gl_texturenum = GL_LoadTexture8(name, width, height, (byte *)(pinframe + 1), true, true);
+	pspriteframe->gl_texture = GL_LoadTexture8(name, width, height, (byte *)(pinframe + 1), true, true);
 
 	return (void *)((byte *)pinframe + sizeof (dsprite1frame_t) + size);
 }

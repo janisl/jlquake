@@ -37,9 +37,8 @@ extern	int texture_extension_number;
 
 extern	float	gldepthmin, gldepthmax;
 
-int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
-int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha);
-int GL_FindTexture (char *identifier);
+image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
+image_t* GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha);
 
 extern	int glx, gly, glwidth, glheight;
 

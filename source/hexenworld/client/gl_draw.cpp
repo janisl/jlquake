@@ -17,10 +17,10 @@ image_t		*draw_disc[MAX_DISC] =
 image_t		*draw_backtile;
 
 image_t		translate_texture[MAX_PLAYER_CLASS];
-int			char_texture;
-int			cs_texture; // crosshair texture
-int			char_smalltexture;
-int			char_menufonttexture;
+image_t*	char_texture;
+image_t*	cs_texture; // crosshair texture
+image_t*	char_smalltexture;
+image_t*	char_menufonttexture;
 
 int	trans_level = 0;
 
@@ -44,7 +44,7 @@ int			numgltextures;
 void GL_Bind (int texnum)
 {
 	if (gl_nobind->value)
-		texnum = char_texture;
+		texnum = char_texture->texnum;
 	if (glState.currenttextures[glState.currenttmu] == texnum)
 		return;
 	glState.currenttextures[glState.currenttmu] = texnum;
@@ -93,11 +93,9 @@ image_t* Draw_PicFromFile (char *name)
 		return NULL;
 	}
 
-	image_t* img = new image_t;
+	image_t* img = GL_LoadTexture("", width, height, pic32, false);
 	img->width = width;
 	img->height = height;
-
-	img->texnum = GL_LoadTexture("", width, height, pic32, false);
 	delete[] pic32;
 
 	img->sl = 0;
@@ -114,9 +112,7 @@ image_t* Draw_PicFromWad (char *name)
 	int height;
 	byte* pic32;
 	R_LoadPICMem(p, &pic32, &width, &height);
-	image_t* img = new image_t;
-	img->width = width;
-	img->height = height;
+	image_t* img;
 
 	// load little ones into the scrap
 	if (width < 64 && height < 64)
@@ -131,6 +127,9 @@ image_t* Draw_PicFromWad (char *name)
 		for (i=0 ; i<height ; i++)
 			for (j=0 ; j<width * 4; j++, k++)
 				scrap_texels[(y+i)*SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic32[k];
+		img = new image_t;
+		img->width = width;
+		img->height = height;
 		img->texnum = scrap_image.texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+width-0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -143,7 +142,9 @@ image_t* Draw_PicFromWad (char *name)
 	else
 	{
 noscrap:
-		img->texnum = GL_LoadTexture("", width, height, pic32, false);
+		img = GL_LoadTexture("", width, height, pic32, false);
+		img->width = width;
+		img->height = height;
 		img->sl = 0;
 		img->sh = 1;
 		img->tl = 0;
@@ -208,7 +209,7 @@ image_t* Draw_CachePic (char *path)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	pic->texnum = GL_LoadTexture("", width, height, pic32, false);
+	pic->texnum = GL_LoadTexture("", width, height, pic32, false)->texnum;
 	delete[] pic32;
 	pic->sl = 0;
 	pic->sh = 1;
@@ -348,8 +349,7 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	conback = new image_t;
-	conback->texnum = GL_LoadTexture("conback", cbwidth, cbheight, pic32, false);
+	conback = GL_LoadTexture("conback", cbwidth, cbheight, pic32, false);
 	delete[] pic32;
 	conback->sl = 0;
 	conback->sh = 1;
@@ -421,7 +421,7 @@ void Draw_Character (int x, int y, unsigned int num)
 	fcol = col*xsize;
 	frow = row*ysize;
 
-	GL_Bind (char_texture);
+	GL_Bind (char_texture->texnum);
 
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (fcol, frow);
@@ -481,7 +481,7 @@ void Draw_Crosshair(void)
 	if (crosshair->value == 2) {
 		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx->value; 
 		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy->value;
-		GL_Bind (cs_texture);
+		GL_Bind (cs_texture->texnum);
 
 		qglBegin (GL_QUADS);
 		qglTexCoord2f (0, 0);
@@ -552,7 +552,7 @@ void Draw_SmallCharacter (int x, int y, int num)
 	fcol = col*xsize;
 	frow = row*ysize;
 
-	GL_Bind (char_smalltexture);
+	GL_Bind (char_smalltexture->texnum);
 
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (fcol, frow);
@@ -939,7 +939,7 @@ int M_DrawBigCharacter (int x, int y, int num, int numNext)
 	fcol = col*xsize;
 	frow = row*ysize;
 
-	GL_Bind (char_menufonttexture);
+	GL_Bind (char_menufonttexture->texnum);
 
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (fcol, frow);
@@ -1175,29 +1175,10 @@ void GL_Set2D (void)
 
 /*
 ================
-GL_FindTexture
-================
-*/
-int GL_FindTexture (char *identifier)
-{
-	int		i;
-	image_t	*glt;
-
-	for (i=0, glt=gltextures ; i<numgltextures ; i++, glt++)
-	{
-		if (!QStr::Cmp(identifier, glt->imgName))
-			return gltextures[i].texnum;
-	}
-
-	return -1;
-}
-
-/*
-================
 GL_LoadTexture
 ================
 */
-int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap)
+image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap)
 {
 	qboolean	noalpha;
 	int			i, p, s;
@@ -1212,7 +1193,7 @@ int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean
 			{
 				if (width != glt->width || height != glt->height)
 					Sys_Error ("GL_LoadTexture: cache mismatch");
-				return gltextures[i].texnum;
+				return &gltextures[i];
 			}
 		}
 	}
@@ -1232,13 +1213,13 @@ int GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean
 
 	texture_extension_number++;
 
-	return texture_extension_number-1;
+	return glt;
 }
 
-int GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode)
+image_t* GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode)
 {
 	byte* pic32 = R_ConvertImage8To32(data, width, height, mode);
-	int ret = GL_LoadTexture(identifier, width, height, pic32, mipmap);
+	image_t* ret = GL_LoadTexture(identifier, width, height, pic32, mipmap);
 	delete[] pic32;
 	return ret;
 }
