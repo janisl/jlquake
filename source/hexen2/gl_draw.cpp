@@ -58,11 +58,6 @@ void Scrap_Upload (void)
 //=============================================================================
 /* Support Routines */
 
-//#define	MAX_CACHED_PICS 	128
-#define MAX_CACHED_PICS 	256
-image_t		menu_cachepics[MAX_CACHED_PICS];
-int			menu_numcachepics;
-
 /*
  * Geometry for the player/skin selection screen image.
  */
@@ -159,14 +154,9 @@ image_t* Draw_CachePic (char *path)
 	image_t*	pic;
 	int			i;
 
-	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
+	for (pic=gltextures, i=0 ; i<numgltextures; pic++, i++)
 		if (!QStr::Cmp(path, pic->imgName))
 			return pic;
-
-	if (menu_numcachepics == MAX_CACHED_PICS)
-		Sys_Error ("menu_numcachepics == MAX_CACHED_PICS");
-	menu_numcachepics++;
-	QStr::Cpy(pic->imgName, path);
 
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
@@ -194,10 +184,11 @@ image_t* Draw_CachePic (char *path)
 	if (!pic32)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
 
+	pic = GL_LoadTexture("", width, height, pic32, false);
+	QStr::Cpy(pic->imgName, path);
 	pic->width = width;
 	pic->height = height;
 
-	pic->texnum = GL_LoadTexture("", width, height, pic32, false)->texnum;
 	delete[] pic32;
 
 	// point sample status bar
