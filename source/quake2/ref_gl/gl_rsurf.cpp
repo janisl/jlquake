@@ -351,7 +351,7 @@ void R_BlendLightmaps (void)
 		{
 			if (currentmodel == r_worldmodel)
 				c_visible_lightmaps++;
-			GL_Bind( gl_state.lightmap_textures[i]->texnum);
+			GL_Bind( gl_state.lightmap_textures[i]);
 
 			for ( surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain )
 			{
@@ -368,7 +368,7 @@ void R_BlendLightmaps (void)
 	{
 		LM_InitBlock();
 
-		GL_Bind( gl_state.lightmap_textures[0]->texnum );
+		GL_Bind( gl_state.lightmap_textures[0]);
 
 		if (currentmodel == r_worldmodel)
 			c_visible_lightmaps++;
@@ -462,7 +462,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 
 	if (fa->flags & SURF_DRAWTURB)
 	{	
-		GL_Bind( image->texnum );
+		GL_Bind( image);
 
 		// warp texture, no lightmaps
 		GL_TexEnv( GL_MODULATE );
@@ -474,7 +474,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 	}
 	else
 	{
-		GL_Bind( image->texnum );
+		GL_Bind( image);
 
 		GL_TexEnv( GL_REPLACE );
 	}
@@ -523,7 +523,7 @@ dynamic:
 			R_BuildLightMap( fa, (byte*)temp, smax*4 );
 			R_SetCacheState( fa );
 
-			GL_Bind( gl_state.lightmap_textures[fa->lightmaptexturenum]->texnum);
+			GL_Bind( gl_state.lightmap_textures[fa->lightmaptexturenum]);
 
 			qglTexSubImage2D( GL_TEXTURE_2D, 0,
 							  fa->light_s, fa->light_t, 
@@ -576,7 +576,7 @@ void R_DrawAlphaSurfaces (void)
 
 	for (s=r_alpha_surfaces ; s ; s=s->texturechain)
 	{
-		GL_Bind(s->texinfo->image->texnum);
+		GL_Bind(s->texinfo->image);
 		c_brush_polys++;
 		if (s->texinfo->flags & BSP38SURF_TRANS33)
 			qglColor4f (intens,intens,intens,0.33);
@@ -711,7 +711,7 @@ dynamic:
 			R_BuildLightMap( surf, (byte*)temp, smax*4 );
 			R_SetCacheState( surf );
 
-			GL_MBind( 1, gl_state.lightmap_textures[surf->lightmaptexturenum]->texnum);
+			GL_MBind( 1, gl_state.lightmap_textures[surf->lightmaptexturenum]);
 
 			lmtex = surf->lightmaptexturenum;
 
@@ -729,7 +729,7 @@ dynamic:
 
 			R_BuildLightMap( surf, (byte*)temp, smax*4 );
 
-			GL_MBind( 1, gl_state.lightmap_textures[0]->texnum );
+			GL_MBind( 1, gl_state.lightmap_textures[0]);
 
 			lmtex = 0;
 
@@ -743,8 +743,8 @@ dynamic:
 
 		c_brush_polys++;
 
-		GL_MBind( 0, image->texnum );
-		GL_MBind( 1, gl_state.lightmap_textures[lmtex]->texnum );
+		GL_MBind( 0, image);
+		GL_MBind( 1, gl_state.lightmap_textures[lmtex]);
 
 //==========
 //PGM
@@ -791,8 +791,8 @@ dynamic:
 	{
 		c_brush_polys++;
 
-		GL_MBind( 0, image->texnum );
-		GL_MBind( 1, gl_state.lightmap_textures[lmtex]->texnum );
+		GL_MBind( 0, image);
+		GL_MBind( 1, gl_state.lightmap_textures[lmtex]);
 
 //==========
 //PGM
@@ -1339,7 +1339,7 @@ static void LM_UploadBlock( qboolean dynamic )
 		texture = gl_lms.current_lightmap_texture;
 	}
 
-	GL_Bind( gl_state.lightmap_textures[texture]->texnum );
+	GL_Bind( gl_state.lightmap_textures[texture]);
 
 	if ( dynamic )
 	{
@@ -1566,7 +1566,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	/*
 	** initialize the dynamic lightmap texture
 	*/
-	GL_Bind( gl_state.lightmap_textures[0]->texnum );
+	GL_Bind( gl_state.lightmap_textures[0]);
 	int format;
 	int UploadWidth;
 	int UploadHeight;

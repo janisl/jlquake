@@ -307,7 +307,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		p = s->polys;
 
 		t = R_TextureAnimation (s->texinfo->texture);
-		GL_Bind (t->gl_texture->texnum);
+		GL_Bind (t->gl_texture);
 		qglBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -317,7 +317,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		}
 		qglEnd ();
 
-		GL_Bind (lightmap_textures[s->lightmaptexturenum]->texnum);
+		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
 		qglEnable (GL_BLEND);
 		qglBegin (GL_POLYGON);
 		v = p->verts[0];
@@ -344,7 +344,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWTURB)
 	{
-		GL_Bind (s->texinfo->texture->gl_texture->texnum);
+		GL_Bind (s->texinfo->texture->gl_texture);
 		EmitWaterPolys (s);
 		return;
 	}
@@ -354,7 +354,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	if (s->flags & SURF_DRAWSKY)
 	{
-		GL_Bind (solidskytexture->texnum);
+		GL_Bind (solidskytexture);
 		speedscale = realtime*8;
 		speedscale -= (int)speedscale;
 
@@ -362,7 +362,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 		qglEnable (GL_BLEND);
 		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		GL_Bind (alphaskytexture->texnum);
+		GL_Bind (alphaskytexture);
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale;
 		EmitSkyPolys (s);
@@ -377,10 +377,10 @@ void R_DrawSequentialPoly (msurface_t *s)
 	p = s->polys;
 
 	t = R_TextureAnimation (s->texinfo->texture);
-	GL_Bind (t->gl_texture->texnum);
+	GL_Bind (t->gl_texture);
 	DrawGLWaterPoly (p);
 
-	GL_Bind (lightmap_textures[s->lightmaptexturenum]->texnum);
+	GL_Bind (lightmap_textures[s->lightmaptexturenum]);
 	qglEnable (GL_BLEND);
 	DrawGLWaterPolyLightmap (p);
 	qglDisable (GL_BLEND);
@@ -422,11 +422,11 @@ void R_DrawSequentialPoly (msurface_t *s)
 			t = R_TextureAnimation (s->texinfo->texture);
 			// Binds world to texture env 0
 			GL_SelectTexture(0);
-			GL_Bind (t->gl_texture->texnum);
+			GL_Bind (t->gl_texture);
 			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 			// Binds lightmap to texenv 1
 			GL_EnableMultitexture(); // Same as SelectTexture (TEXTURE1)
-			GL_Bind (lightmap_textures[s->lightmaptexturenum]->texnum);
+			GL_Bind (lightmap_textures[s->lightmaptexturenum]);
 			i = s->lightmaptexturenum;
 			if (lightmap_modified[i])
 			{
@@ -493,7 +493,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			p = s->polys;
 
 			t = R_TextureAnimation (s->texinfo->texture);
-			GL_Bind (t->gl_texture->texnum);
+			GL_Bind (t->gl_texture);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
 			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -503,7 +503,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			}
 			qglEnd ();
 
-			GL_Bind (lightmap_textures[s->lightmaptexturenum]->texnum);
+			GL_Bind (lightmap_textures[s->lightmaptexturenum]);
 			qglEnable (GL_BLEND);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
@@ -534,7 +534,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	if (s->flags & SURF_DRAWTURB)
 	{
 		GL_DisableMultitexture();
-		GL_Bind (s->texinfo->texture->gl_texture->texnum);
+		GL_Bind (s->texinfo->texture->gl_texture);
 		EmitWaterPolys (s);
 		return;
 	}
@@ -545,14 +545,14 @@ void R_DrawSequentialPoly (msurface_t *s)
 	if (s->flags & SURF_DRAWSKY)
 	{
 		GL_DisableMultitexture();
-		GL_Bind (solidskytexture->texnum);
+		GL_Bind (solidskytexture);
 		speedscale = realtime*8;
 		speedscale -= (int)speedscale & ~127;
 
 		EmitSkyPolys (s);
 
 		qglEnable (GL_BLEND);
-		GL_Bind (alphaskytexture->texnum);
+		GL_Bind (alphaskytexture);
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale & ~127;
 		EmitSkyPolys (s);
@@ -570,10 +570,10 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 		t = R_TextureAnimation (s->texinfo->texture);
 		GL_SelectTexture(0);
-		GL_Bind (t->gl_texture->texnum);
+		GL_Bind (t->gl_texture);
 		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		GL_EnableMultitexture();
-		GL_Bind (lightmap_textures[s->lightmaptexturenum]->texnum);
+		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
 		i = s->lightmaptexturenum;
 		if (lightmap_modified[i])
 		{
@@ -607,10 +607,10 @@ void R_DrawSequentialPoly (msurface_t *s)
 		p = s->polys;
 
 		t = R_TextureAnimation (s->texinfo->texture);
-		GL_Bind (t->gl_texture->texnum);
+		GL_Bind (t->gl_texture);
 		DrawGLWaterPoly (p);
 
-		GL_Bind (lightmap_textures[s->lightmaptexturenum]->texnum);
+		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
 		qglEnable (GL_BLEND);
 		DrawGLWaterPolyLightmap (p);
 		qglDisable (GL_BLEND);
@@ -727,7 +727,7 @@ void R_BlendLightmaps (qboolean Translucent)
 		p = lightmap_polys[i];
 		if (!p)
 			continue;
-		GL_Bind(lightmap_textures[i]->texnum);
+		GL_Bind(lightmap_textures[i]);
 		if (lightmap_modified[i])
 		{
 			lightmap_modified[i] = false;
@@ -828,7 +828,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 	}
 		
 	t = R_TextureAnimation (fa->texinfo->texture);
-	GL_Bind (t->gl_texture->texnum);
+	GL_Bind (t->gl_texture);
 
 	if (fa->flags & SURF_DRAWTURB)
 	{	// warp texture, no lightmaps
@@ -1000,7 +1000,7 @@ void R_DrawWaterSurfaces (void)
 			continue;
 
 		// set modulate mode explicitly
-		GL_Bind (t->gl_texture->texnum);
+		GL_Bind (t->gl_texture);
 
 		for ( ; s ; s=s->texturechain)
 			R_RenderBrushPoly (s);
@@ -1051,7 +1051,7 @@ void R_DrawWaterSurfaces (void)
 			else
 				qglColor4f (1,1,1,1);
 
-			GL_Bind (s->texinfo->texture->gl_texture->texnum);
+			GL_Bind (s->texinfo->texture->gl_texture);
 			EmitWaterPolys (s);
 		}
 		
@@ -1076,7 +1076,7 @@ void R_DrawWaterSurfaces (void)
 
 			// set modulate mode explicitly
 			
-			GL_Bind (t->gl_texture->texnum);
+			GL_Bind (t->gl_texture);
 
 			for ( ; s ; s=s->texturechain)
 				EmitWaterPolys (s);
@@ -1730,7 +1730,7 @@ void GL_BuildLightmaps (void)
 		lightmap_rectchange[i].t = BLOCK_HEIGHT;
 		lightmap_rectchange[i].w = 0;
 		lightmap_rectchange[i].h = 0;
-		GL_Bind(lightmap_textures[i]->texnum);
+		GL_Bind(lightmap_textures[i]);
 		int format;
 		int UploadWidth;
 		int UploadHeight;

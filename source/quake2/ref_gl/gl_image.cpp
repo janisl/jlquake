@@ -73,8 +73,9 @@ void GL_TexEnv( GLenum mode )
 	}
 }
 
-void GL_Bind (int texnum)
+void GL_Bind (image_t* image)
 {
+	int texnum = image->texnum;
 	extern	image_t	*draw_chars;
 
 	if (gl_nobind->value && draw_chars)		// performance evaluation option
@@ -85,20 +86,10 @@ void GL_Bind (int texnum)
 	qglBindTexture (GL_TEXTURE_2D, texnum);
 }
 
-void GL_MBind( int target, int texnum )
+void GL_MBind( int target, image_t* image)
 {
 	GL_SelectTexture( target );
-	if ( target == 0 )
-	{
-		if ( glState.currenttextures[0] == texnum )
-			return;
-	}
-	else
-	{
-		if ( glState.currenttextures[1] == texnum )
-			return;
-	}
-	GL_Bind( texnum );
+	GL_Bind(image);
 }
 
 typedef struct
@@ -180,7 +171,7 @@ void GL_TextureMode( char *string )
 		glt = tr.images[i];
 		if (glt && glt->type != it_pic && glt->type != it_sky )
 		{
-			GL_Bind (glt->texnum);
+			GL_Bind (glt);
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 		}
@@ -286,7 +277,7 @@ int	scrap_uploads;
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(scrap_image->texnum);
+	GL_Bind(scrap_image);
 	int format;
 	int upload_width, upload_height;
 	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &upload_width, &upload_height);
@@ -359,7 +350,7 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 nonscrap:
 		image->scrap = false;
 		image->texnum = TEXNUM_IMAGES + i;
-		GL_Bind(image->texnum);
+		GL_Bind(image);
 		int format;
 		R_UploadImage(pic, width, height, (image->type != it_pic && image->type != it_sky),
 			(image->type != it_pic && image->type != it_sky), false, &format, &image->uploadWidth, &image->uploadHeight);

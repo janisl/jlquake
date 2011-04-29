@@ -80,7 +80,7 @@ void R_InitParticleTexture (void)
 	//
 	particletexture = new image_t;
 	particletexture->texnum = texture_extension_number++;
-    GL_Bind(particletexture->texnum);
+    GL_Bind(particletexture);
 
 	for (x=0 ; x<8 ; x++)
 	{
@@ -291,7 +291,7 @@ void R_TranslatePlayerSkin (int playernum)
 		playertextures[playernum] = new image_t;
 		playertextures[playernum]->texnum = texture_extension_number++;
 	}
-    GL_Bind(playertextures[playernum]->texnum);
+    GL_Bind(playertextures[playernum]);
 
 	scaled_width = 512;
 	scaled_height = 256;

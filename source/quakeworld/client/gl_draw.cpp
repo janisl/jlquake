@@ -53,8 +53,9 @@ static byte cs_data[64] = {
 
 image_t		*conback;
 
-void GL_Bind (int texnum)
+void GL_Bind (image_t* image)
 {
+	int texnum = image->texnum;
 	if (gl_nobind->value)
 		texnum = char_texture->texnum;
 	if (glState.currenttextures[glState.currenttmu] == texnum)
@@ -71,7 +72,7 @@ int	scrap_uploads;
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(scrap_image->texnum);
+	GL_Bind(scrap_image);
 	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &scrap_image->internalFormat, &scrap_image->uploadWidth, &scrap_image->uploadHeight);
 	scrap_dirty = false;
 }
@@ -265,7 +266,7 @@ void Draw_TextureMode_f (void)
 	{
 		if (tr.images[i]->mipmap)
 		{
-			GL_Bind (tr.images[i]->texnum);
+			GL_Bind (tr.images[i]);
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 		}
@@ -374,7 +375,7 @@ void Draw_Character (int x, int y, int num)
 	fcol = col*0.0625;
 	size = 0.0625;
 
-	GL_Bind (char_texture->texnum);
+	GL_Bind (char_texture);
 
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (fcol, frow);
@@ -431,7 +432,7 @@ void Draw_Crosshair(void)
 		qglTexEnvf ( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 		pColor = (unsigned char *) &d_8to24table[(byte) crosshaircolor->value];
 		qglColor4ubv ( pColor );
-		GL_Bind (cs_texture->texnum);
+		GL_Bind (cs_texture);
 
 		qglBegin (GL_QUADS);
 		qglTexCoord2f (0, 0);
@@ -475,7 +476,7 @@ void Draw_Pic (int x, int y, image_t* pic)
 	if (scrap_dirty)
 		Scrap_Upload ();
 	qglColor4f (1,1,1,1);
-	GL_Bind (pic->texnum);
+	GL_Bind (pic);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (pic->sl, pic->tl);
 	qglVertex2f (x, y);
@@ -502,7 +503,7 @@ void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 //	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	qglCullFace(GL_FRONT);
 	qglColor4f (1,1,1,alpha);
-	GL_Bind (pic->texnum);
+	GL_Bind (pic);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (pic->sl, pic->tl);
 	qglVertex2f (x, y);
@@ -536,7 +537,7 @@ void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int 
 	newth = newtl + (height*oldglheight)/pic->height;
 	
 	qglColor4f (1,1,1,1);
-	GL_Bind (pic->texnum);
+	GL_Bind (pic);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (newsl, newtl);
 	qglVertex2f (x, y);
@@ -588,7 +589,7 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 		translate_texture->texnum = texture_extension_number++;
 	}
 
-	GL_Bind (translate_texture->texnum);
+	GL_Bind (translate_texture);
 
 	c = pic->width * pic->height;
 
@@ -667,7 +668,7 @@ refresh window.
 void Draw_TileClear (int x, int y, int w, int h)
 {
 	qglColor3f (1,1,1);
-	GL_Bind (draw_backtile->texnum);
+	GL_Bind (draw_backtile);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (x/64.0, y/64.0);
 	qglVertex2f (x, y);
@@ -830,7 +831,7 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 	glt->height = height;
 	glt->mipmap = mipmap;
 
-	GL_Bind(texture_extension_number );
+	GL_Bind(glt);
 
 	R_UploadImage((byte*)data, width, height, mipmap, mipmap, false, &glt->internalFormat, &glt->uploadWidth, &glt->uploadHeight);
 

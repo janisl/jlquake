@@ -1566,7 +1566,7 @@ void R_DrawParticles (void)
 	unsigned char	temp[4];
 	vec3_t			diff;
     
-	GL_Bind(particletexture->texnum);
+	GL_Bind(particletexture);
 	alphaTestEnabled = qglIsEnabled(GL_ALPHA_TEST);
 	
 	if (alphaTestEnabled)

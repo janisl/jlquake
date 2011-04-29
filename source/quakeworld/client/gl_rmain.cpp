@@ -220,7 +220,7 @@ void R_DrawSpriteModel (entity_t *e)
 
 	GL_DisableMultitexture();
 
-    GL_Bind(frame->gl_texture->texnum);
+    GL_Bind(frame->gl_texture);
 
 	qglEnable (GL_ALPHA_TEST);
 	qglBegin (GL_QUADS);
@@ -534,7 +534,7 @@ void R_DrawAliasModel (entity_t *e)
 	}
 
 	anim = (int)(cl.time*10) & 3;
-    GL_Bind(paliashdr->gl_texture[currententity->skinnum][anim]->texnum);
+    GL_Bind(paliashdr->gl_texture[currententity->skinnum][anim]);
 
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
@@ -546,7 +546,7 @@ void R_DrawAliasModel (entity_t *e)
 			R_TranslatePlayerSkin(i);
 		}
 		if (i >= 0 && i<MAX_CLIENTS)
-		    GL_Bind(playertextures[i]->texnum);
+		    GL_Bind(playertextures[i]);
 	}
 
 	if (gl_smoothmodels->value)

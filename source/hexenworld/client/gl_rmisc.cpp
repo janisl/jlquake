@@ -78,7 +78,7 @@ void R_InitParticleTexture (void)
 	//
 	particletexture = new image_t;
 	particletexture->texnum = texture_extension_number++;
-    GL_Bind(particletexture->texnum);
+    GL_Bind(particletexture);
 
 	for (x=0 ; x<8 ; x++)
 	{
@@ -217,9 +217,6 @@ void R_Init (void)
 	R_InitParticles ();
 	R_InitParticleTexture ();
 
-	for(counter=0;counter<MAX_EXTRA_TEXTURES;counter++)
-		gl_extra_textures[counter] = -1;
-
 	playerTranslation = (byte *)COM_LoadHunkFile ("gfx/player.lmp");
 	if (!playerTranslation)
 		Sys_Error ("Couldn't load gfx/player.lmp");
@@ -317,7 +314,7 @@ void R_TranslatePlayerSkin (int playernum)
 		playertextures[playernum] = new image_t;
 		playertextures[playernum]->texnum = texture_extension_number++;
 	}
-    GL_Bind(playertextures[playernum]->texnum);
+    GL_Bind(playertextures[playernum]);
 
 	for (i=0 ; i<256 ; i++)
 		translate32[i] = d_8to24table[translate[i]];

@@ -177,8 +177,8 @@ extern	int		c_visible_textures;
 extern	float	r_world_matrix[16];
 
 void R_TranslatePlayerSkin (int playernum);
-void GL_Bind (int texnum);
-void GL_MBind( int target, int texnum );
+void GL_Bind(image_t* texnum);
+void GL_MBind( int target, image_t* image);
 void GL_TexEnv( GLenum value );
 void GL_EnableMultitexture( qboolean enable );
 void GL_SelectTexture( int);

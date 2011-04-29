@@ -125,7 +125,7 @@ void R_NetGraph (void)
 		netgraphtexture = new image_t;
 		netgraphtexture->texnum = texture_extension_number++;
 	}
-    GL_Bind(netgraphtexture->texnum);
+    GL_Bind(netgraphtexture);
 
 	int format;
 	int UploadWidth;

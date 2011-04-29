@@ -1352,7 +1352,7 @@ void R_DrawParticles (void)
 
 	float			scale;
 
-	GL_Bind(particletexture->texnum);
+	GL_Bind(particletexture);
 	qglEnable (GL_BLEND);
 	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);

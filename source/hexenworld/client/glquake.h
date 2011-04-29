@@ -22,7 +22,7 @@ extern	int		texture_mode;
 extern	float	gldepthmin, gldepthmax;
 
 #define MAX_EXTRA_TEXTURES 156   // 255-100+1
-extern int			gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
+extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
 image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
 image_t* GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode);
@@ -196,7 +196,7 @@ extern	cplane_t	*mirror_plane;
 extern	float	r_world_matrix[16];
 
 void R_TranslatePlayerSkin (int playernum);
-void GL_Bind (int texnum);
+void GL_Bind (image_t* texnum);
 
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);

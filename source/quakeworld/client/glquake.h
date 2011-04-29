@@ -144,7 +144,7 @@ extern	cplane_t	*mirror_plane;
 extern	float	r_world_matrix[16];
 
 void R_TranslatePlayerSkin (int playernum);
-void GL_Bind (int texnum);
+void GL_Bind (image_t* texnum);
 
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);

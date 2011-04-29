@@ -36,7 +36,7 @@ void Draw_InitLocal (void)
 {
 	// load console characters (don't bilerp characters)
 	draw_chars = GL_FindImage ("pics/conchars.pcx", it_pic);
-	GL_Bind( draw_chars->texnum );
+	GL_Bind( draw_chars);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
@@ -72,7 +72,7 @@ void Draw_Char (int x, int y, int num)
 	fcol = col*0.0625;
 	size = 0.0625;
 
-	GL_Bind (draw_chars->texnum);
+	GL_Bind (draw_chars);
 
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (fcol, frow);
@@ -145,7 +145,7 @@ void Draw_StretchPic (int x, int y, int w, int h, char *pic)
 	if (scrap_dirty)
 		Scrap_Upload ();
 
-	GL_Bind (gl->texnum);
+	GL_Bind (gl);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (gl->sl, gl->tl);
 	qglVertex2f (x, y);
@@ -177,7 +177,7 @@ void Draw_Pic (int x, int y, char *pic)
 	if (scrap_dirty)
 		Scrap_Upload ();
 
-	GL_Bind (gl->texnum);
+	GL_Bind (gl);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (gl->sl, gl->tl);
 	qglVertex2f (x, y);
@@ -209,7 +209,7 @@ void Draw_TileClear (int x, int y, int w, int h, char *pic)
 		return;
 	}
 
-	GL_Bind (image->texnum);
+	GL_Bind (image);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (x/64.0, y/64.0);
 	qglVertex2f (x, y);
@@ -315,7 +315,7 @@ void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 		Com_Memset(cinematic_image, 0, sizeof(image_t));
 		cinematic_image->texnum = TEXNUM_CINEMATIC;
 	}
-	GL_Bind (cinematic_image->texnum);
+	GL_Bind (cinematic_image);
 
 	if (rows<=256)
 	{

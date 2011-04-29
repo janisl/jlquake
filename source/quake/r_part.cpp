@@ -616,7 +616,7 @@ void R_DrawParticles (void)
 	vec3_t			up, right;
 	float			scale;
 
-    GL_Bind(particletexture->texnum);
+    GL_Bind(particletexture);
 	qglEnable (GL_BLEND);
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	qglBegin (GL_TRIANGLES);

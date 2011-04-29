@@ -597,7 +597,7 @@ qglRotatef (r_newrefdef.time * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
 		|| skymins[1][i] >= skymaxs[1][i])
 			continue;
 
-		GL_Bind (sky_images[skytexorder[i]]->texnum);
+		GL_Bind (sky_images[skytexorder[i]]);
 
 		qglBegin (GL_QUADS);
 		MakeSkyVec (skymins[0][i], skymins[1][i], i);

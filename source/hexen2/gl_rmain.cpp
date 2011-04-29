@@ -25,7 +25,7 @@ qboolean	envmap;				// true during envmap command capture
 
 image_t*	particletexture;	// little dot for particles
 image_t*	playertextures[16];		// up to 16 color translated skins
-int			gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
+image_t*	gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
 int			mirrortexturenum;	// quake texturenum, not gltexturenum
 qboolean	mirror;
@@ -394,7 +394,7 @@ void R_DrawSpriteModel (entity_t *e)
 
 //	R_RotateSprite (psprite->beamlength);
 
-    GL_Bind(frame->gl_texture->texnum);
+    GL_Bind(frame->gl_texture);
 
 	qglBegin (GL_QUADS);
 
@@ -647,7 +647,6 @@ void R_DrawAliasModel (entity_t *e)
 	float entScale;
 	float xyfact;
 	float zfact;
-	image_t		*stonepic;
 	char temp[40];
 	int mls;
 	vec3_t		adjust_origin;
@@ -852,18 +851,17 @@ void R_DrawAliasModel (entity_t *e)
 			Sys_Error ("skinnum > 255");
 		}
 
-		if (gl_extra_textures[currententity->skinnum-100] == -1)  // Need to load it in
+		if (!gl_extra_textures[currententity->skinnum-100])  // Need to load it in
 		{
 			sprintf(temp,"gfx/skin%d.lmp",currententity->skinnum);
-			stonepic = Draw_CachePic(temp);
-			gl_extra_textures[currententity->skinnum-100] = stonepic->texnum;
+			gl_extra_textures[currententity->skinnum-100] = Draw_CachePic(temp);
 		}
 
 		GL_Bind(gl_extra_textures[currententity->skinnum-100]);
 	}
 	else
 	{
-		GL_Bind(paliashdr->gl_texture[currententity->skinnum]->texnum);
+		GL_Bind(paliashdr->gl_texture[currententity->skinnum]);
 
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
@@ -878,7 +876,7 @@ void R_DrawAliasModel (entity_t *e)
 			{
 				i = currententity - cl_entities;
 				if (i >= 1 && i<=cl.maxclients)
-					GL_Bind(playertextures[- 1 + i]->texnum);
+					GL_Bind(playertextures[- 1 + i]);
 			}
 		}
 	}

@@ -273,14 +273,14 @@ void EmitBothSkyLayers (msurface_t *fa)
 {
 	GL_DisableMultitexture();
 
-	GL_Bind (solidskytexture->texnum);
+	GL_Bind (solidskytexture);
 	speedscale = realtime*8;
 	speedscale -= (int)speedscale & ~127 ;
 
 	EmitSkyPolys (fa);
 
 	qglEnable (GL_BLEND);
-	GL_Bind (alphaskytexture->texnum);
+	GL_Bind (alphaskytexture);
 	speedscale = realtime*16;
 	speedscale -= (int)speedscale & ~127 ;
 
@@ -301,7 +301,7 @@ void R_DrawSkyChain (msurface_t *s)
 	GL_DisableMultitexture();
 
 	// used when gl_texsort is on
-	GL_Bind(solidskytexture->texnum);
+	GL_Bind(solidskytexture);
 	speedscale = realtime*8;
 	speedscale -= (int)speedscale & ~127 ;
 
@@ -309,7 +309,7 @@ void R_DrawSkyChain (msurface_t *s)
 		EmitSkyPolys (fa);
 
 	qglEnable (GL_BLEND);
-	GL_Bind (alphaskytexture->texnum);
+	GL_Bind (alphaskytexture);
 	speedscale = realtime*16;
 	speedscale -= (int)speedscale & ~127 ;
 
@@ -366,7 +366,7 @@ void R_InitSky (texture_t *mt)
 		solidskytexture = new image_t;
 		solidskytexture->texnum = texture_extension_number++;
 	}
-	GL_Bind (solidskytexture->texnum);
+	GL_Bind (solidskytexture);
 	int format;
 	int UploadWidth;
 	int UploadHeight;
@@ -388,7 +388,7 @@ void R_InitSky (texture_t *mt)
 		alphaskytexture = new image_t;
 		alphaskytexture->texnum = texture_extension_number++;
 	}
-	GL_Bind(alphaskytexture->texnum);
+	GL_Bind(alphaskytexture);
 	R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
 }
 
