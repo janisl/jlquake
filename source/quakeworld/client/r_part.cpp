@@ -459,7 +459,7 @@ void R_DrawParticles (void)
 	float			scale;
 	qboolean		alphaTestEnabled;
     
-	GL_Bind(particletexture.texnum);
+	GL_Bind(particletexture->texnum);
 	alphaTestEnabled = qglIsEnabled(GL_ALPHA_TEST);
 	
 	if (alphaTestEnabled)

@@ -78,8 +78,9 @@ void R_InitParticleTexture (void)
 	//
 	// particle texture
 	//
-	particletexture.texnum = texture_extension_number++;
-    GL_Bind(particletexture.texnum);
+	particletexture = new image_t;
+	particletexture->texnum = texture_extension_number++;
+    GL_Bind(particletexture->texnum);
 
 	for (x=0 ; x<8 ; x++)
 	{
@@ -214,9 +215,6 @@ void R_Init (void)
 
 	R_InitParticles ();
 	R_InitParticleTexture ();
-
-	for (int i = 0; i < 16; i++)
-		playertextures[i].texnum = texture_extension_number++;
 }
 
 /*
@@ -288,7 +286,12 @@ void R_TranslatePlayerSkin (int playernum)
 
 	// because this happens during gameplay, do it fast
 	// instead of sending it through gl_upload 8
-    GL_Bind(playertextures[playernum].texnum);
+	if (!playertextures[playernum])
+	{
+		playertextures[playernum] = new image_t;
+		playertextures[playernum]->texnum = texture_extension_number++;
+	}
+    GL_Bind(playertextures[playernum]->texnum);
 
 	scaled_width = 512;
 	scaled_height = 256;

@@ -23,8 +23,8 @@ int			c_brush_polys, c_alias_polys, c_sky_polys;
 
 qboolean	envmap;				// true during envmap command capture 
 
-image_t	particletexture;	// little dot for particles
-image_t	playertextures[16];		// up to 16 color translated skins
+image_t*	particletexture;	// little dot for particles
+image_t*	playertextures[16];		// up to 16 color translated skins
 int			gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
 int			mirrortexturenum;	// quake texturenum, not gltexturenum
@@ -878,7 +878,7 @@ void R_DrawAliasModel (entity_t *e)
 			{
 				i = currententity - cl_entities;
 				if (i >= 1 && i<=cl.maxclients)
-					GL_Bind(playertextures[- 1 + i].texnum);
+					GL_Bind(playertextures[- 1 + i]->texnum);
 			}
 		}
 	}

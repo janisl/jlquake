@@ -280,13 +280,13 @@ void	GL_ImageList_f (void)
 	ri.Con_Printf (PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels);
 }
 
-image_t scrap_image;
+image_t* scrap_image;
 int	scrap_uploads;
 
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(scrap_image.texnum);
+	GL_Bind(scrap_image->texnum);
 	int format;
 	int upload_width, upload_height;
 	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &upload_width, &upload_height);
@@ -345,7 +345,7 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 		for (i=0 ; i<image->height ; i++)
 			for (j=0 ; j<image->width * 4; j++, k++)
 				scrap_texels[(y + i) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = pic[k];
-		image->texnum = scrap_image.texnum;
+		image->texnum = scrap_image->texnum;
 		image->scrap = true;
 		image->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		image->sh = (x+image->width-0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -472,7 +472,8 @@ void	GL_InitImages (void)
 
 	R_SetColorMappings();
 
-	scrap_image.texnum = TEXNUM_SCRAPS;
+	scrap_image = new image_t;
+	scrap_image->texnum = TEXNUM_SCRAPS;
 }
 
 /*

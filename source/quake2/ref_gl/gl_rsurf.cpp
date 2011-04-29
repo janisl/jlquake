@@ -351,7 +351,7 @@ void R_BlendLightmaps (void)
 		{
 			if (currentmodel == r_worldmodel)
 				c_visible_lightmaps++;
-			GL_Bind( gl_state.lightmap_textures[i].texnum);
+			GL_Bind( gl_state.lightmap_textures[i]->texnum);
 
 			for ( surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain )
 			{
@@ -368,7 +368,7 @@ void R_BlendLightmaps (void)
 	{
 		LM_InitBlock();
 
-		GL_Bind( gl_state.lightmap_textures[0].texnum );
+		GL_Bind( gl_state.lightmap_textures[0]->texnum );
 
 		if (currentmodel == r_worldmodel)
 			c_visible_lightmaps++;
@@ -523,7 +523,7 @@ dynamic:
 			R_BuildLightMap( fa, (byte*)temp, smax*4 );
 			R_SetCacheState( fa );
 
-			GL_Bind( gl_state.lightmap_textures[fa->lightmaptexturenum].texnum);
+			GL_Bind( gl_state.lightmap_textures[fa->lightmaptexturenum]->texnum);
 
 			qglTexSubImage2D( GL_TEXTURE_2D, 0,
 							  fa->light_s, fa->light_t, 
@@ -712,7 +712,7 @@ dynamic:
 			R_BuildLightMap( surf, (byte*)temp, smax*4 );
 			R_SetCacheState( surf );
 
-			GL_MBind( 1, gl_state.lightmap_textures[surf->lightmaptexturenum].texnum);
+			GL_MBind( 1, gl_state.lightmap_textures[surf->lightmaptexturenum]->texnum);
 
 			lmtex = surf->lightmaptexturenum;
 
@@ -730,7 +730,7 @@ dynamic:
 
 			R_BuildLightMap( surf, (byte*)temp, smax*4 );
 
-			GL_MBind( 1, gl_state.lightmap_textures[0].texnum );
+			GL_MBind( 1, gl_state.lightmap_textures[0]->texnum );
 
 			lmtex = 0;
 
@@ -745,7 +745,7 @@ dynamic:
 		c_brush_polys++;
 
 		GL_MBind( 0, image->texnum );
-		GL_MBind( 1, gl_state.lightmap_textures[lmtex].texnum );
+		GL_MBind( 1, gl_state.lightmap_textures[lmtex]->texnum );
 
 //==========
 //PGM
@@ -793,7 +793,7 @@ dynamic:
 		c_brush_polys++;
 
 		GL_MBind( 0, image->texnum );
-		GL_MBind( 1, gl_state.lightmap_textures[lmtex].texnum );
+		GL_MBind( 1, gl_state.lightmap_textures[lmtex]->texnum );
 
 //==========
 //PGM
@@ -1340,7 +1340,7 @@ static void LM_UploadBlock( qboolean dynamic )
 		texture = gl_lms.current_lightmap_texture;
 	}
 
-	GL_Bind( gl_state.lightmap_textures[texture].texnum );
+	GL_Bind( gl_state.lightmap_textures[texture]->texnum );
 
 	if ( dynamic )
 	{
@@ -1552,10 +1552,13 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	}
 	r_newrefdef.lightstyles = lightstyles;
 
-	if (!gl_state.lightmap_textures[0].texnum)
+	if (!gl_state.lightmap_textures[0])
 	{
 		for (int i = 0; i < MAX_LIGHTMAPS; i++)
-			gl_state.lightmap_textures[i].texnum = TEXNUM_LIGHTMAPS + i;
+		{
+			gl_state.lightmap_textures[i] = new image_t;
+			gl_state.lightmap_textures[i]->texnum = TEXNUM_LIGHTMAPS + i;
+		}
 	}
 
 	gl_lms.current_lightmap_texture = 1;
@@ -1563,7 +1566,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	/*
 	** initialize the dynamic lightmap texture
 	*/
-	GL_Bind( gl_state.lightmap_textures[0].texnum );
+	GL_Bind( gl_state.lightmap_textures[0]->texnum );
 	int format;
 	int UploadWidth;
 	int UploadHeight;

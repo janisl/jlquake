@@ -114,8 +114,8 @@ extern	texture_t	*r_notexture_mip;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
-extern	image_t	particletexture;
-extern	image_t	playertextures[16];
+extern	image_t*	particletexture;
+extern	image_t*	playertextures[16];
 
 extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 

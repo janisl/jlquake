@@ -274,7 +274,7 @@ void GL_DrawParticles( int n, const particle_t particles[], const unsigned color
 
 typedef struct
 {
-	image_t lightmap_textures[MAX_LIGHTMAPS];
+	image_t* lightmap_textures[MAX_LIGHTMAPS];
 
 	float camera_separation;
 

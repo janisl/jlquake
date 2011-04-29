@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern byte		*draw_chars;				// 8*8 graphic characters
 
-image_t	netgraphtexture;	// netgraph texture
+image_t*	netgraphtexture;	// netgraph texture
 
 #define NET_GRAPHHEIGHT 32
 
@@ -115,8 +115,14 @@ void R_NetGraph (void)
 	sprintf(st, "%3i%% packet loss", lost);
 	Draw_String(8, y, st);
 	y += 8;
-	
-    GL_Bind(netgraphtexture.texnum);
+
+	if (!netgraphtexture)
+	{
+		netgraphtexture = new image_t;
+		netgraphtexture->texnum = texture_extension_number++;
+	}
+
+    GL_Bind(netgraphtexture->texnum);
 
 	int format;
 	int UploadWidth;

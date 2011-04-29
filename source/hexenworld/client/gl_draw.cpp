@@ -14,9 +14,9 @@ image_t		*draw_disc[MAX_DISC] =
 {
 	NULL  // make the first one null for sure
 };
-image_t		*draw_backtile;
+image_t*	draw_backtile;
 
-image_t		translate_texture[MAX_PLAYER_CLASS];
+image_t*	translate_texture[MAX_PLAYER_CLASS];
 image_t*	char_texture;
 image_t*	cs_texture; // crosshair texture
 image_t*	char_smalltexture;
@@ -52,16 +52,15 @@ void GL_Bind (int texnum)
 }
 
 
-image_t	scrap_image;
+image_t*	scrap_image;
 
 int	scrap_uploads;
 
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(scrap_image.texnum);
-	int format;
-	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &scrap_image.uploadWidth, &scrap_image.uploadHeight);
+	GL_Bind(scrap_image->texnum);
+	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &scrap_image->internalFormat, &scrap_image->uploadWidth, &scrap_image->uploadHeight);
 	scrap_dirty = false;
 }
 
@@ -130,7 +129,7 @@ image_t* Draw_PicFromWad (char *name)
 		img = new image_t;
 		img->width = width;
 		img->height = height;
-		img->texnum = scrap_image.texnum;
+		img->texnum = scrap_image->texnum;
 		img->sl = (x+0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->sh = (x+width-0.01)/(float)SCRAP_BLOCK_WIDTH;
 		img->tl = (y+0.01)/(float)SCRAP_BLOCK_WIDTH;
@@ -361,16 +360,9 @@ void Draw_Init (void)
 	// free loaded console
 	Hunk_FreeToLowMark (start);
 
-	// save a texture slot for translated picture
-	translate_texture[0].texnum = texture_extension_number++;
-	translate_texture[1].texnum = texture_extension_number++;
-	translate_texture[2].texnum = texture_extension_number++;
-	translate_texture[3].texnum = texture_extension_number++;
-	translate_texture[4].texnum = texture_extension_number++;
-	translate_texture[5].texnum = texture_extension_number++;//mg-siege
-
 	// save slots for scraps
-	scrap_image.texnum = texture_extension_number++;
+	scrap_image = new image_t;
+	scrap_image->texnum = texture_extension_number++;
 
 	//
 	// get the other pics we need
@@ -853,7 +845,13 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 
 	extern int which_class;
 
-	GL_Bind (translate_texture[which_class-1].texnum);
+	if (!translate_texture[which_class-1])
+	{
+		translate_texture[which_class-1] = new image_t;
+		translate_texture[which_class-1]->texnum = texture_extension_number++;
+	}
+
+	GL_Bind (translate_texture[which_class-1]->texnum);
 
 	c = pic->width * pic->height;
 
@@ -892,10 +890,7 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 	      }
 	}
 
-	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage((byte*)trans, PLAYER_DEST_WIDTH, PLAYER_DEST_HEIGHT, false, false, false, &format, &UploadWidth, &UploadHeight);
+	R_UploadImage((byte*)trans, PLAYER_DEST_WIDTH, PLAYER_DEST_HEIGHT, false, false, false, &translate_texture[which_class-1]->internalFormat, &translate_texture[which_class-1]->uploadWidth, &translate_texture[which_class-1]->uploadHeight);
 
 	qglColor3f (1,1,1);
 	qglBegin (GL_QUADS);

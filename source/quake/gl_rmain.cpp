@@ -38,8 +38,8 @@ int			c_brush_polys, c_alias_polys;
 
 qboolean	envmap;				// true during envmap command capture 
 
-image_t	particletexture;	// little dot for particles
-image_t	playertextures[16];		// up to 16 color translated skins
+image_t*	particletexture;	// little dot for particles
+image_t*	playertextures[16];		// up to 16 color translated skins
 
 int			mirrortexturenum;	// quake texturenum, not gltexturenum
 qboolean	mirror;
@@ -554,7 +554,7 @@ void R_DrawAliasModel (entity_t *e)
 	{
 		i = currententity - cl_entities;
 		if (i >= 1 && i<=cl.maxclients /* && !QStr::Cmp(currententity->model->name, "progs/player.mdl") */)
-		    GL_Bind(playertextures[- 1 + i].texnum);
+		    GL_Bind(playertextures[- 1 + i]->texnum);
 	}
 
 	if (gl_smoothmodels->value)
