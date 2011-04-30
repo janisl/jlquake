@@ -141,6 +141,14 @@
 		</Configuration>
 	</Configurations>
 	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{0E31D872-F284-45B8-B4FD-11009667B854}"
+			RelativePathToProject=".\source\core\core.vcproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{EF6FDF6A-80E9-4136-8499-67A11C99865D}"
+			RelativePathToProject=".\libs\jpeg\jpeg.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter

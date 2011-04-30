@@ -1042,6 +1042,7 @@ int R_Init()
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
 		ri.Con_Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
+	return 0;
 }
 
 /*
