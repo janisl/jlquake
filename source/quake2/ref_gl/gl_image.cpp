@@ -46,22 +46,6 @@ void GL_EnableMultitexture( qboolean enable )
 	GL_TexEnv( GL_REPLACE );
 }
 
-void GL_SelectTexture(int tmu)
-{
-	if ( !qglActiveTextureARB )
-		return;
-
-	if ( tmu == glState.currenttmu )
-		return;
-
-	glState.currenttmu = tmu;
-
-	if ( tmu == 0 )
-		qglActiveTextureARB( GL_TEXTURE0_ARB );
-	else
-		qglActiveTextureARB( GL_TEXTURE1_ARB );
-}
-
 void GL_TexEnv( GLenum mode )
 {
 	static int lastmodes[2] = { -1, -1 };
@@ -75,6 +59,8 @@ void GL_TexEnv( GLenum mode )
 
 void GL_MBind( int target, image_t* image)
 {
+	if (!qglActiveTextureARB)
+		return;
 	GL_SelectTexture( target );
 	GL_Bind(image);
 }

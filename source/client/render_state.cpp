@@ -76,3 +76,38 @@ void GL_Bind(image_t* image)
 	glState.currenttextures[glState.currenttmu] = texnum;
 	qglBindTexture(GL_TEXTURE_2D, texnum);
 }
+
+//==========================================================================
+//
+//	GL_SelectTexture
+//
+//==========================================================================
+
+void GL_SelectTexture(int unit)
+{
+	if (glState.currenttmu == unit)
+	{
+		return;
+	}
+
+	if (unit == 0)
+	{
+		qglActiveTextureARB(GL_TEXTURE0_ARB);
+		QGL_LogComment("glActiveTextureARB( GL_TEXTURE0_ARB )\n");
+		qglClientActiveTextureARB(GL_TEXTURE0_ARB);
+		QGL_LogComment("glClientActiveTextureARB( GL_TEXTURE0_ARB )\n");
+	}
+	else if (unit == 1)
+	{
+		qglActiveTextureARB(GL_TEXTURE1_ARB);
+		QGL_LogComment("glActiveTextureARB( GL_TEXTURE1_ARB )\n");
+		qglClientActiveTextureARB(GL_TEXTURE1_ARB);
+		QGL_LogComment("glClientActiveTextureARB( GL_TEXTURE1_ARB )\n");
+	}
+	else
+	{
+		throw QDropException(va("GL_SelectTexture: unit = %i", unit));
+	}
+
+	glState.currenttmu = unit;
+}

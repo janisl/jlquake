@@ -1052,7 +1052,6 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, 
 ** GL wrapper/helper functions
 */
 void	GL_SetDefaultState (void);
-void	GL_SelectTexture( int unit );
 void	GL_TextureMode( const char *string );
 void	GL_State( unsigned long stateVector );
 void	GL_TexEnv( int env );

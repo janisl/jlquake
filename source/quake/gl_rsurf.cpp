@@ -256,8 +256,6 @@ void DrawGLWaterPolyLightmap (glpoly_t *p);
 
 qboolean mtexenabled = false;
 
-void GL_SelectTexture (int target);
-
 void GL_DisableMultitexture(void) 
 {
 	if (mtexenabled) {
@@ -1583,7 +1581,7 @@ void GL_BuildLightmaps (void)
 		}
 	}
 
- 	if (!gl_texsort->value)
+ 	if (!gl_texsort->value && qglActiveTextureARB)
  		GL_SelectTexture(1);
 
 	//
@@ -1605,7 +1603,7 @@ void GL_BuildLightmaps (void)
 		R_UploadImage(lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
 	}
 
- 	if (!gl_texsort->value)
+ 	if (!gl_texsort->value && qglActiveTextureARB)
  		GL_SelectTexture(0);
 
 }

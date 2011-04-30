@@ -835,16 +835,6 @@ image_t* GL_LoadTexture8(char *identifier, int width, int height, byte *data, qb
 
 /****************************************/
 
-void GL_SelectTexture (int target) 
-{
-	if (!qglActiveTextureARB)
-		return;
-	qglActiveTextureARB(GL_TEXTURE0_ARB + target);
-	if (target == glState.currenttmu)
-		return;
-	glState.currenttmu = target;
-}
-
 int Draw_GetWidth(image_t* pic)
 {
 	return pic->width;

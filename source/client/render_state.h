@@ -29,5 +29,6 @@ struct glstate_t
 };
 
 void GL_Bind(image_t* Image);
+void GL_SelectTexture(int Unit);
 
 extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init

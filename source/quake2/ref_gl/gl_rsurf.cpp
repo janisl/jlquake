@@ -978,9 +978,11 @@ e->angles[0] = -e->angles[0];	// stupid quake bug
 e->angles[2] = -e->angles[2];	// stupid quake bug
 
 	GL_EnableMultitexture( true );
-	GL_SelectTexture(0);
+	if (qglActiveTextureARB)
+		GL_SelectTexture(0);
 	GL_TexEnv( GL_REPLACE );
-	GL_SelectTexture(1);
+	if (qglActiveTextureARB)
+		GL_SelectTexture(1);
 	GL_TexEnv( GL_MODULATE );
 
 	R_DrawInlineBModel ();
@@ -1536,7 +1538,8 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	tr.frameCount = 1;		// no dlightcache
 
 	GL_EnableMultitexture( true );
-	GL_SelectTexture(1);
+	if (qglActiveTextureARB)
+		GL_SelectTexture(1);
 
 	/*
 	** setup the base lightstyles so the lightmaps won't have to be regenerated

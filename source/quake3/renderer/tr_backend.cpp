@@ -36,37 +36,6 @@ static float	s_flipMatrix[16] = {
 
 
 /*
-** GL_SelectTexture
-*/
-void GL_SelectTexture( int unit )
-{
-	if ( glState.currenttmu == unit )
-	{
-		return;
-	}
-
-	if ( unit == 0 )
-	{
-		qglActiveTextureARB( GL_TEXTURE0_ARB );
-		QGL_LogComment( "glActiveTextureARB( GL_TEXTURE0_ARB )\n" );
-		qglClientActiveTextureARB( GL_TEXTURE0_ARB );
-		QGL_LogComment( "glClientActiveTextureARB( GL_TEXTURE0_ARB )\n" );
-	}
-	else if ( unit == 1 )
-	{
-		qglActiveTextureARB( GL_TEXTURE1_ARB );
-		QGL_LogComment( "glActiveTextureARB( GL_TEXTURE1_ARB )\n" );
-		qglClientActiveTextureARB( GL_TEXTURE1_ARB );
-		QGL_LogComment( "glClientActiveTextureARB( GL_TEXTURE1_ARB )\n" );
-	} else {
-		ri.Error( ERR_DROP, "GL_SelectTexture: unit = %i", unit );
-	}
-
-	glState.currenttmu = unit;
-}
-
-
-/*
 ** GL_BindMultitexture
 */
 void GL_BindMultitexture( image_t *image0, GLuint env0, image_t *image1, GLuint env1 ) {
