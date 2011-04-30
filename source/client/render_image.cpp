@@ -1103,7 +1103,7 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 	else
 	{
 nonscrap:
-		image->texnum = 1024 + tr.numImages - 1;
+		qglGenTextures(1, &image->texnum);
 
 		GL_Bind(image);
 
