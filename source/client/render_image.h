@@ -59,7 +59,6 @@ struct image_t
 	float		sl, tl, sh, th;				// 0,0 - 1,1 unless part of the scrap
 	bool		scrap;
 
-	int			type;
 	struct msurface_s*	texturechain;	// for sort-by-texture world drawing
 };
 

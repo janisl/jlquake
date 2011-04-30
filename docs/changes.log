@@ -213,3 +213,4 @@
   I started work on common image creation method.
 30.04.2011
   I merged method that creates an image.
+  In Quake 2 I removed unloading of unused images as memory is not an issue nowdays and probably later I will do a full reinit of renderer on level change like it's done in Quake 3.

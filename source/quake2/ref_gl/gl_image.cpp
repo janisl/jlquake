@@ -108,7 +108,7 @@ void GL_TextureMode( char *string )
 	for (i=0; i<tr.numImages; i++)
 	{
 		glt = tr.images[i];
-		if (glt && glt->type != it_pic && glt->type != it_sky )
+		if (glt && glt->mipmap)
 		{
 			GL_Bind (glt);
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
@@ -137,26 +137,8 @@ void	GL_ImageList_f (void)
 		if (!image)
 			continue;
 		texels += image->uploadWidth*image->uploadHeight;
-		switch (image->type)
-		{
-		case it_skin:
-			ri.Con_Printf (PRINT_ALL, "M");
-			break;
-		case it_sprite:
-			ri.Con_Printf (PRINT_ALL, "S");
-			break;
-		case it_wall:
-			ri.Con_Printf (PRINT_ALL, "W");
-			break;
-		case it_pic:
-			ri.Con_Printf (PRINT_ALL, "P");
-			break;
-		default:
-			ri.Con_Printf (PRINT_ALL, " ");
-			break;
-		}
 
-		ri.Con_Printf (PRINT_ALL,  " %3i %3i: %s\n",
+		ri.Con_Printf (PRINT_ALL,  "%3i %3i: %s\n",
 			image->uploadWidth, image->uploadHeight, image->imgName);
 	}
 	ri.Con_Printf (PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels);
@@ -185,22 +167,8 @@ This is also used as an entry point for the generated r_notexture
 */
 image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type)
 {
-	image_t		*image;
-	int			i;
-
-	// find a free image_t
-	for (i=0; i<tr.numImages; i++)
-	{
-		if (!tr.images[i])
-			break;
-	}
-	
-	image = R_CreateImage(name, pic, width, height, (type != it_pic && type != it_sky),
+	return R_CreateImage(name, pic, width, height, (type != it_pic && type != it_sky),
 		(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, type == it_pic);
-
-	image->type = type;
-
-	return image;
 }
 
 /*
