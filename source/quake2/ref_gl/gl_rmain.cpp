@@ -44,8 +44,6 @@ int			c_brush_polys, c_alias_polys;
 
 float		v_blend[4];			// final blending color
 
-void GL_Strings_f( void );
-
 //
 // view origin
 //
@@ -948,7 +946,7 @@ void R_Register( void )
 	Cmd_AddCommand( "imagelist", GL_ImageList_f );
 	Cmd_AddCommand( "screenshot", GL_ScreenShot_f );
 	Cmd_AddCommand( "modellist", Mod_Modellist_f );
-	Cmd_AddCommand( "gl_strings", GL_Strings_f );
+	Cmd_AddCommand( "gfxinfo", CommonGfxInfo_f);
 }
 
 trGlobals_base_t	_tr;

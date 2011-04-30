@@ -122,17 +122,6 @@ void GL_ScreenShot_f (void)
 } 
 
 /*
-** GL_Strings_f
-*/
-void GL_Strings_f( void )
-{
-	ri.Con_Printf (PRINT_ALL, "GL_VENDOR: %s\n", glConfig.vendor_string );
-	ri.Con_Printf (PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
-	ri.Con_Printf (PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-	ri.Con_Printf (PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
-}
-
-/*
 ** GL_SetDefaultState
 */
 void GL_SetDefaultState( void )
