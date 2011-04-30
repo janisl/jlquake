@@ -49,7 +49,6 @@ struct image_t
 	int			frameUsed;					// for texture usage in frame statistics
 
 	int			internalFormat;
-	int			TMU;
 
 	bool		mipmap;
 	bool		allowPicmip;

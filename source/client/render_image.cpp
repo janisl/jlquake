@@ -1073,16 +1073,6 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 	image->height = height;
 	image->wrapClampMode = glWrapClampMode;
 
-	// lightmaps are always allocated on TMU 1
-	if (qglActiveTextureARB && isLightmap)
-	{
-		image->TMU = 1;
-	}
-	else
-	{
-		image->TMU = 0;
-	}
-
 	// load little ones into the scrap
 	if (AllowScrap && width < 64 && height < 64)
 	{
@@ -1115,11 +1105,6 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 nonscrap:
 		image->texnum = 1024 + tr.numImages - 1;
 
-		if (qglActiveTextureARB)
-		{
-			GL_SelectTexture(image->TMU);
-		}
-
 		GL_Bind(image);
 
 		R_UploadImage(data, width, height, mipmap, allowPicmip, isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
@@ -1135,11 +1120,6 @@ nonscrap:
 
 		qglBindTexture(GL_TEXTURE_2D, 0);
 		glState.currenttextures[glState.currenttmu] = 0;
-
-		if (image->TMU == 1)
-		{
-			GL_SelectTexture(0);
-		}
 	}
 
 	long hash = generateHashValue(name);
