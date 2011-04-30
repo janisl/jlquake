@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_state.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\sound_audiocd_windows.cpp"
 				>
 			</File>

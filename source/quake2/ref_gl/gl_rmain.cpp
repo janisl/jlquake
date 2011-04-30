@@ -39,7 +39,6 @@ model_t		*currentmodel;
 cplane_t	frustum[4];
 
 int			r_visframecount;	// bumped when going to a new PVS
-int			r_framecount;		// used for dlight push checking
 
 int			c_brush_polys, c_alias_polys;
 
@@ -581,7 +580,7 @@ void R_SetupFrame (void)
 	int i;
 	mleaf_t	*leaf;
 
-	r_framecount++;
+	tr.frameCount++;
 
 // build the transformation matrix for the given view angles
 	VectorCopy (r_newrefdef.vieworg, r_origin);

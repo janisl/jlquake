@@ -115,7 +115,7 @@ void R_RenderDlights (void)
 	if (!gl_flashblend->value)
 		return;
 
-	r_dlightframecount = r_framecount + 1;	// because the count hasn't
+	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
 											//  advanced yet for this frame
 	qglDepthMask (0);
 	qglDisable (GL_TEXTURE_2D);
@@ -206,7 +206,7 @@ void R_PushDlights (void)
 	if (gl_flashblend->value)
 		return;
 
-	r_dlightframecount = r_framecount + 1;	// because the count hasn't
+	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
 											//  advanced yet for this frame
 	l = cl_dlights;
 

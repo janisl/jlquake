@@ -144,7 +144,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	int			maps;
 	unsigned	*bl;
 
-	surf->cached_dlight = (surf->dlightframe == r_framecount);
+	surf->cached_dlight = (surf->dlightframe == tr.frameCount);
 
 	smax = (surf->extents[0]>>4)+1;
 	tmax = (surf->extents[1]>>4)+1;
@@ -176,7 +176,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 		}
 
 // add all the dynamic lights
-	if (surf->dlightframe == r_framecount)
+	if (surf->dlightframe == tr.frameCount)
 		R_AddDynamicLights (surf);
 
 // bound, invert, and shift
@@ -755,7 +755,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 		if (d_lightstylevalue[fa->styles[maps]] != fa->cached_light[maps])
 			goto dynamic;
 
-	if (fa->dlightframe == r_framecount	// dynamic this frame
+	if (fa->dlightframe == tr.frameCount	// dynamic this frame
 		|| fa->cached_dlight)			// dynamic previously
 	{
 dynamic:
@@ -813,7 +813,7 @@ void R_RenderDynamicLightmaps (msurface_t *fa)
 		if (d_lightstylevalue[fa->styles[maps]] != fa->cached_light[maps])
 			goto dynamic;
 
-	if (fa->dlightframe == r_framecount	// dynamic this frame
+	if (fa->dlightframe == tr.frameCount	// dynamic this frame
 		|| fa->cached_dlight)			// dynamic previously
 	{
 dynamic:
@@ -1173,7 +1173,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 		{
 			do
 			{
-				(*mark)->visframe = r_framecount;
+				(*mark)->visframe = tr.frameCount;
 				mark++;
 			} while (--c);
 		}
@@ -1228,7 +1228,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 		{
 			for ( ; c ; c--, surf++)
 			{
-				if (surf->visframe != r_framecount)
+				if (surf->visframe != tr.frameCount)
 					continue;
 
 				// don't backface underwater surfaces, because they warp
@@ -1550,7 +1550,7 @@ void GL_BuildLightmaps (void)
 
 	Com_Memset(allocated, 0, sizeof(allocated));
 
-	r_framecount = 1;		// no dlightcache
+	tr.frameCount = 1;		// no dlightcache
 
 	if (!lightmap_textures[0])
 	{

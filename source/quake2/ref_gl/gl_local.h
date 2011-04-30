@@ -96,7 +96,6 @@ extern	image_t		*r_particletexture;
 extern	entity_t	*currententity;
 extern	model_t		*currentmodel;
 extern	int			r_visframecount;
-extern	int			r_framecount;
 extern	cplane_t	frustum[4];
 extern	int			c_brush_polys, c_alias_polys;
 

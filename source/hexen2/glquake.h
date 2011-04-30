@@ -136,7 +136,6 @@ extern	qboolean	r_cache_thrash;		// compatability
 extern	vec3_t		modelorg, r_entorigin;
 extern	entity_t	*currententity;
 extern	int			r_visframecount;	// ??? what difs?
-extern	int			r_framecount;
 extern	cplane_t	frustum[4];
 extern	int		c_brush_polys, c_alias_polys, c_sky_polys;
 

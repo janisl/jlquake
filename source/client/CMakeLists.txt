@@ -12,6 +12,7 @@ set(CLIENT_FILES
 	render_image_wal.cpp
 	render_init.cpp
 	render_qgl.cpp
+	render_state.cpp
 	sound_audiocd_linux.cpp
 	sound_driver_alsa.cpp
 	sound_main.cpp

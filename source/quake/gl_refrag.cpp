@@ -214,13 +214,13 @@ void R_StoreEfrags (efrag_t **ppefrag)
 		case mod_sprite:
 			pent = pefrag->entity;
 
-			if ((pent->visframe != r_framecount) &&
+			if ((pent->visframe != tr.frameCount) &&
 				(cl_numvisedicts < MAX_VISEDICTS))
 			{
 				cl_visedicts[cl_numvisedicts++] = pent;
 
 			// mark that we've recorded this entity for this frame
-				pent->visframe = r_framecount;
+				pent->visframe = tr.frameCount;
 			}
 
 			ppefrag = &pefrag->leafnext;

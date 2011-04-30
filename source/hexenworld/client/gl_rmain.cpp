@@ -11,7 +11,6 @@ vec3_t		modelorg, r_entorigin;
 entity_t	*currententity;
 
 int			r_visframecount;	// bumped when going to a new PVS
-int			r_framecount;		// used for dlight push checking
 
 cplane_t	frustum[4];
 
@@ -1226,7 +1225,7 @@ void R_SetupFrame (void)
 
 	R_AnimateLight ();
 
-	r_framecount++;
+	tr.frameCount++;
 
 // build the transformation matrix for the given view angles
 	VectorCopy (r_refdef.vieworg, r_origin);

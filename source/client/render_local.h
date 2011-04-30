@@ -30,6 +30,7 @@
 #endif
 
 #include "render_qgl.h"
+#include "render_state.h"
 #include "render_image.h"
 
 /*
@@ -72,21 +73,12 @@ init
 ====================================================================
 */
 
-// the renderer front end should never modify glstate_t
-struct glstate_t
-{
-	int				currenttextures[2];
-	int				currenttmu;
-	bool			finishCalled;
-	int				texEnv[2];
-	int				faceCulling;
-	unsigned long	glStateBits;
-};
-
 #define	MAX_DRAWIMAGES			2048
 
 struct trGlobals_base_t
 {
+	int						frameCount;		// incremented every frame
+
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
 	int						overbrightBits;		// r_overbrightBits->integer, but set to 0 if no hw gamma
@@ -103,7 +95,6 @@ void R_CommonInit();
 void CommonGfxInfo_f();
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
-extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern QCvar*	r_logFile;				// number of frames to emit GL logs
 extern QCvar*	r_verbose;				// used for verbose debug spew

@@ -45,7 +45,6 @@ struct vidmode_t
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 glconfig_t	glConfig;
-glstate_t	glState;
 
 trGlobals_base_t*	tr_shared;
 

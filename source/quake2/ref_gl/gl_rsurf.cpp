@@ -498,7 +498,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 	}
 
 	// dynamic this frame or dynamic previously
-	if ( ( fa->dlightframe == r_framecount ) )
+	if ( ( fa->dlightframe == tr.frameCount ) )
 	{
 dynamic:
 		if ( gl_dynamic->value )
@@ -512,7 +512,7 @@ dynamic:
 
 	if ( is_dynamic )
 	{
-		if ( ( fa->styles[maps] >= 32 || fa->styles[maps] == 0 ) && ( fa->dlightframe != r_framecount ) )
+		if ( ( fa->styles[maps] >= 32 || fa->styles[maps] == 0 ) && ( fa->dlightframe != tr.frameCount ) )
 		{
 			unsigned	temp[34*34];
 			int			smax, tmax;
@@ -686,7 +686,7 @@ static void GL_RenderLightmappedPoly( msurface_t *surf )
 	}
 
 	// dynamic this frame or dynamic previously
-	if ( ( surf->dlightframe == r_framecount ) )
+	if ( ( surf->dlightframe == tr.frameCount ) )
 	{
 dynamic:
 		if ( gl_dynamic->value )
@@ -703,7 +703,7 @@ dynamic:
 		unsigned	temp[128*128];
 		int			smax, tmax;
 
-		if ( ( surf->styles[map] >= 32 || surf->styles[map] == 0 ) && ( surf->dlightframe != r_framecount ) )
+		if ( ( surf->styles[map] >= 32 || surf->styles[map] == 0 ) && ( surf->dlightframe != tr.frameCount ) )
 		{
 			smax = (surf->extents[0]>>4)+1;
 			tmax = (surf->extents[1]>>4)+1;
@@ -1038,7 +1038,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 		{
 			do
 			{
-				(*mark)->visframe = r_framecount;
+				(*mark)->visframe = tr.frameCount;
 				mark++;
 			} while (--c);
 		}
@@ -1084,7 +1084,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 	// draw stuff
 	for ( c = node->numsurfaces, surf = r_worldmodel->surfaces + node->firstsurface; c ; c--, surf++)
 	{
-		if (surf->visframe != r_framecount)
+		if (surf->visframe != tr.frameCount)
 			continue;
 
 		if ( (surf->flags & SURF_PLANEBACK) != sidebit )
@@ -1122,7 +1122,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 /*
 	for ( ; c ; c--, surf++)
 	{
-		if (surf->visframe != r_framecount)
+		if (surf->visframe != tr.frameCount)
 			continue;
 
 		if ( (surf->flags & SURF_PLANEBACK) != sidebit )
@@ -1533,7 +1533,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 
 	Com_Memset( gl_lms.allocated, 0, sizeof(gl_lms.allocated) );
 
-	r_framecount = 1;		// no dlightcache
+	tr.frameCount = 1;		// no dlightcache
 
 	GL_EnableMultitexture( true );
 	GL_SelectTexture(1);
