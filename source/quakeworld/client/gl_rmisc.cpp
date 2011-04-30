@@ -466,7 +466,7 @@ trGlobals_base_t	_tr;
 
 void VID_Init()
 {
-	tr_shared = &tr;
+	tr_shared = &_tr;
 	R_SharedRegister();
 	
 	R_CommonInit();
