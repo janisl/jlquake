@@ -274,104 +274,6 @@ void GL_EnableMultitexture(void)
 	}
 }
 
-#if 0
-/*
-================
-R_DrawSequentialPoly
-
-Systems that have fast state and texture changes can
-just do everything as it passes with no need to sort
-================
-*/
-void R_DrawSequentialPoly (msurface_t *s)
-{
-	glpoly_t	*p;
-	float		*v;
-	int			i;
-	texture_t	*t;
-
-	//
-	// normal lightmaped poly
-	//
-	if (! (s->flags & (SURF_DRAWSKY|SURF_DRAWTURB|SURF_UNDERWATER) ) )
-	{
-		p = s->polys;
-
-		t = R_TextureAnimation (s->texinfo->texture);
-		GL_Bind (t->gl_texture);
-		qglBegin (GL_POLYGON);
-		v = p->verts[0];
-		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
-		{
-			qglTexCoord2f (v[3], v[4]);
-			qglVertex3fv (v);
-		}
-		qglEnd ();
-
-		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
-		qglEnable (GL_BLEND);
-		qglBegin (GL_POLYGON);
-		v = p->verts[0];
-		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
-		{
-			qglTexCoord2f (v[5], v[6]);
-			qglVertex3fv (v);
-		}
-		qglEnd ();
-
-		qglDisable (GL_BLEND);
-
-		return;
-	}
-
-	//
-	// subdivided water surface warp
-	//
-	if (s->flags & SURF_DRAWTURB)
-	{
-		GL_Bind (s->texinfo->texture->gl_texture);
-		EmitWaterPolys (s);
-		return;
-	}
-
-	//
-	// subdivided sky warp
-	//
-	if (s->flags & SURF_DRAWSKY)
-	{
-		GL_Bind (solidskytexture);
-		speedscale = realtime*8;
-		speedscale -= (int)speedscale;
-
-		EmitSkyPolys (s);
-
-		qglEnable (GL_BLEND);
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		GL_Bind (alphaskytexture);
-		speedscale = realtime*16;
-		speedscale -= (int)speedscale;
-		EmitSkyPolys (s);
-		if (GL_RGBA == GL_LUMINANCE)
-			qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
-
-		qglDisable (GL_BLEND);
-	}
-
-	//
-	// underwater warped with lightmap
-	//
-	p = s->polys;
-
-	t = R_TextureAnimation (s->texinfo->texture);
-	GL_Bind (t->gl_texture);
-	DrawGLWaterPoly (p);
-
-	GL_Bind (lightmap_textures[s->lightmaptexturenum]);
-	qglEnable (GL_BLEND);
-	DrawGLWaterPolyLightmap (p);
-	qglDisable (GL_BLEND);
-}
-#else
 /*
 ================
 R_DrawSequentialPoly
@@ -554,7 +456,6 @@ void R_DrawSequentialPoly (msurface_t *s)
 		qglDisable (GL_BLEND);
 	}
 }
-#endif
 
 
 /*

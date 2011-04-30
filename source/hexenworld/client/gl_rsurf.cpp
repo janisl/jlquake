@@ -255,135 +255,6 @@ void GL_EnableMultitexture(void)
 	}
 }
 
-#ifndef _WIN32
-/*
-================
-R_DrawSequentialPoly
-
-Systems that have fast state and texture changes can
-just do everything as it passes with no need to sort
-================
-*/
-void R_DrawSequentialPoly (msurface_t *s)
-{
-	glpoly_t	*p;
-	float		*v;
-	int			i;
-	texture_t	*t;
-	float		alpha_val = 1.0f;
-	float		intensity = 1.0f;
-	//
-	// normal lightmaped poly
-	//
-//	if ((!(s->flags & (SURF_DRAWSKY|SURF_DRAWTURB)))
-//		&& ((r_viewleaf->contents!=CONTENTS_EMPTY && (s->flags & SURF_UNDERWATER)) ||
-//		(r_viewleaf->contents==CONTENTS_EMPTY && !(s->flags & SURF_UNDERWATER))))
-//	if (0)
-	if (! (s->flags & (SURF_DRAWSKY|SURF_DRAWTURB|SURF_UNDERWATER) ) )
-	{
-		if (currententity->drawflags & DRF_TRANSLUCENT)
-		{
-			qglEnable (GL_BLEND);
-//			qglColor4f (1,1,1,r_wateralpha.value);
-			alpha_val = r_wateralpha->value;
-
-			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			intensity = 1;
-			// rjr
-		}
-		if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT)
-		{
-			// currententity->abslight   0 - 255
-			// rjr
-			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			intensity = ( float )currententity->abslight / 255.0f;
-//			intensity = 0;
-		}
-
-		qglColor4f( intensity, intensity, intensity, alpha_val );
-
-		p = s->polys;
-
-		t = R_TextureAnimation (s->texinfo->texture);
-		GL_Bind (t->gl_texture);
-		qglBegin (GL_POLYGON);
-		v = p->verts[0];
-		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
-		{
-			qglTexCoord2f (v[3], v[4]);
-			qglVertex3fv (v);
-		}
-		qglEnd ();
-
-		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
-		qglEnable (GL_BLEND);
-		qglBegin (GL_POLYGON);
-		v = p->verts[0];
-		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
-		{
-			qglTexCoord2f (v[5], v[6]);
-			qglVertex3fv (v);
-		}
-		qglEnd ();
-
-		qglDisable (GL_BLEND);
-
-		if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
-			(currententity->drawflags & DRF_TRANSLUCENT))
-		{
-			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-		}
-
-		return;
-	}
-
-	//
-	// subdivided water surface warp
-	//
-	if (s->flags & SURF_DRAWTURB)
-	{
-		GL_Bind (s->texinfo->texture->gl_texture);
-		EmitWaterPolys (s);
-		return;
-	}
-
-	//
-	// subdivided sky warp
-	//
-	if (s->flags & SURF_DRAWSKY)
-	{
-		GL_Bind (solidskytexture);
-		speedscale = realtime*8;
-		speedscale -= (int)speedscale;
-
-		EmitSkyPolys (s);
-
-		qglEnable (GL_BLEND);
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		GL_Bind (alphaskytexture);
-		speedscale = realtime*16;
-		speedscale -= (int)speedscale;
-		EmitSkyPolys (s);
-		qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
-
-		qglDisable (GL_BLEND);
-	}
-
-	//
-	// underwater warped with lightmap
-	//
-	p = s->polys;
-
-	t = R_TextureAnimation (s->texinfo->texture);
-	GL_Bind (t->gl_texture);
-	DrawGLWaterPoly (p);
-
-	GL_Bind (lightmap_textures[s->lightmaptexturenum]);
-	qglEnable (GL_BLEND);
-	DrawGLWaterPolyLightmap (p);
-	qglDisable (GL_BLEND);
-}
-#else
 /*
 ================
 R_DrawSequentialPoly
@@ -554,6 +425,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale & ~127;
 		EmitSkyPolys (s);
+		qglBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
 
 		qglDisable (GL_BLEND);
 		return;
@@ -614,7 +486,6 @@ void R_DrawSequentialPoly (msurface_t *s)
 		qglDisable (GL_BLEND);
 	}
 }
-#endif
 
 
 /*
