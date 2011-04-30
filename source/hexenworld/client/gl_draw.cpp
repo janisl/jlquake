@@ -66,15 +66,8 @@ image_t* Draw_PicFromFile (char *name)
 		return NULL;
 	}
 
-	image_t* img = GL_LoadTexture("", width, height, pic32, false);
-	img->width = width;
-	img->height = height;
+	image_t* img = R_CreateImage(name, pic32, width, height, false, false, GL_CLAMP, false);
 	delete[] pic32;
-
-	img->sl = 0;
-	img->sh = 1;
-	img->tl = 0;
-	img->th = 1;
 	return img;
 }
 
@@ -132,15 +125,8 @@ image_t* Draw_CachePic (char *path)
 	if (!pic32)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
 
-	image_t* pic = GL_LoadTexture("", width, height, pic32, false);
-	QStr::Cpy(pic->imgName, path);
-	pic->width = width;
-	pic->height = height;
+	image_t* pic = R_CreateImage(false, pic32, width, height, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	pic->sl = 0;
-	pic->sh = 1;
-	pic->tl = 0;
-	pic->th = 1;
 
 	// point sample status bar
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

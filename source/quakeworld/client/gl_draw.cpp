@@ -112,16 +112,8 @@ image_t* Draw_CachePic (char *path)
 	if (!pic32)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
 
-	pic = GL_LoadTexture("", width, height, pic32, false);
-	QStr::Cpy(pic->imgName, path);
-	pic->width = width;
-	pic->height = height;
+	pic = R_CreateImage(path, pic32, width, height, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	pic->sl = 0;
-	pic->sh = 1;
-	pic->tl = 0;
-	pic->th = 1;
-
 	return pic;
 }
 
