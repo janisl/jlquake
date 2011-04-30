@@ -162,13 +162,12 @@ void	GL_ImageList_f (void)
 	ri.Con_Printf (PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels);
 }
 
-image_t* scrap_image;
 int	scrap_uploads;
 
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(scrap_image);
+	GL_Bind(tr.scrapImage);
 	int format;
 	int upload_width, upload_height;
 	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &upload_width, &upload_height);
@@ -195,44 +194,13 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 		if (!tr.images[i])
 			break;
 	}
-	if (i == tr.numImages)
-	{
-		if (tr.numImages == MAX_DRAWIMAGES)
-			ri.Sys_Error (ERR_DROP, "MAX_GLTEXTURES");
-		tr.numImages++;
-	}
-	image = new image_t;
-	Com_Memset(image, 0, sizeof(image_t));
-	tr.images[i] = image;
+	
+	image = R_CreateImage(name, pic, width, height, (type != it_pic && type != it_sky),
+		(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, type == it_pic);
 
-	if (QStr::Length(name) >= sizeof(image->imgName))
-		ri.Sys_Error (ERR_DROP, "Draw_LoadPic: \"%s\" is too long", name);
-	QStr::Cpy(image->imgName, name);
 	image->registration_sequence = registration_sequence;
 
-	image->width = width;
-	image->height = height;
 	image->type = type;
-
-	// load little pics into the scrap
-	if (image->type == it_pic && image->width < 64 && image->height < 64)
-	{
-		int		x, y;
-
-		if (!R_ScrapAllocBlock(image->width, image->height, &x, &y))
-			goto nonscrap;
-		R_CommonCreateImage(image, pic, width, height, (type != it_pic && type != it_sky),
-			(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, false, true, x, y);
-		image->texnum = scrap_image->texnum;
-	}
-	else
-	{
-nonscrap:
-		image->texnum = TEXNUM_IMAGES + i;
-		GL_Bind(image);
-		R_CommonCreateImage(image, pic, width, height, (image->type != it_pic && image->type != it_sky),
-			(image->type != it_pic && image->type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, false, false, 0, 0);
-	}
 
 	return image;
 }
@@ -339,11 +307,7 @@ void	GL_InitImages (void)
 
 	R_SetColorMappings();
 
-	scrap_image = new image_t;
-	Com_Memset(scrap_image, 0, sizeof(image_t));
-	scrap_image->texnum = TEXNUM_SCRAPS;
-	GL_Bind(scrap_image);
-	R_CommonCreateImage(scrap_image, scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false, false, 0, 0);
+	tr.scrapImage = R_CreateImage("*scrap", scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 }
 
 /*

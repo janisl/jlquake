@@ -35,15 +35,13 @@ static byte cs_data[64] = {
 
 image_t		*conback;
 
-image_t*	scrap_image;
-
 int	scrap_uploads;
 
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(scrap_image);
-	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &scrap_image->internalFormat, &scrap_image->uploadWidth, &scrap_image->uploadHeight);
+	GL_Bind(tr.scrapImage);
+	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &tr.scrapImage->internalFormat, &tr.scrapImage->uploadWidth, &tr.scrapImage->uploadHeight);
 	scrap_dirty = false;
 }
 
@@ -89,36 +87,7 @@ image_t* Draw_PicFromWad (char *name)
 	R_LoadPICMem(p, &pic32, &width, &height);
 	image_t* img;
 
-	img = new image_t;
-	Com_Memset(img, 0, sizeof(image_t));
-	img->width = width;
-	img->height = height;
-	img->mipmap = false;
-
-	tr.images[tr.numImages] = img;
-	tr.numImages++;
-
-	// load little ones into the scrap
-	if (width < 64 && height < 64)
-	{
-		int		x, y;
-
-		if (!R_ScrapAllocBlock(width, height, &x, &y))
-			goto noscrap;
-		R_CommonCreateImage(img, pic32, width, height, false, false, GL_CLAMP, false, true, x, y);
-		img->texnum = scrap_image->texnum;
-	}
-	else
-	{
-noscrap:
-		img->texnum = texture_extension_number;
-
-		GL_Bind(img);
-
-		R_CommonCreateImage(img, pic32, width, height, false, false, GL_CLAMP, false, false, 0, 0);
-
-		texture_extension_number++;
-	}
+	img = R_CreateImage(va("*wad:%s", name), pic32, width, height, false, false, GL_CLAMP, true);
 	delete[] pic32;
 	return img;
 }
@@ -320,10 +289,7 @@ void Draw_Init (void)
 	Hunk_FreeToLowMark (start);
 
 	// save slots for scraps
-	scrap_image = new image_t;
-	scrap_image->texnum = texture_extension_number++;
-	GL_Bind(scrap_image);
-	R_CommonCreateImage(scrap_image, scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false, false, 0, 0);
+	tr.scrapImage = R_CreateImage("*scrap", scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 
 	//
 	// get the other pics we need
@@ -828,11 +794,7 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 
 	if (!translate_texture[which_class-1])
 	{
-		translate_texture[which_class-1] = new image_t;
-		translate_texture[which_class-1]->texnum = texture_extension_number++;
-		GL_Bind (translate_texture[which_class-1]);
-
-		R_CommonCreateImage(translate_texture[which_class-1], (byte*)trans, PLAYER_DEST_WIDTH, PLAYER_DEST_HEIGHT, false, false, GL_CLAMP, false, false, 0, 0);
+		translate_texture[which_class-1] = R_CreateImage(va("translate_pic%d", which_class), (byte*)trans, PLAYER_DEST_WIDTH, PLAYER_DEST_HEIGHT, false, false, GL_CLAMP, false);
 		GL_Bind (translate_texture[which_class-1]);
 	}
 	else
@@ -1148,23 +1110,7 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 		}
 	}
 
-	glt = new image_t;
-	tr.images[tr.numImages] = glt;
-	tr.numImages++;
-
-	QStr::Cpy(glt->imgName, identifier);
-	glt->texnum = texture_extension_number;
-	glt->width = width;
-	glt->height = height;
-	glt->mipmap = mipmap;
-
-	GL_Bind(glt);
-
-	R_CommonCreateImage(glt, (byte*)data, width, height, mipmap, mipmap, mipmap ? GL_REPEAT : GL_CLAMP, false, false, 0, 0);
-
-	texture_extension_number++;
-
-	return glt;
+	return R_CreateImage(identifier, (byte*)data, width, height, mipmap, mipmap, mipmap ? GL_REPEAT : GL_CLAMP, false);
 }
 
 image_t* GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode)

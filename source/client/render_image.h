@@ -20,6 +20,8 @@
 #define SCRAP_BLOCK_WIDTH	256
 #define SCRAP_BLOCK_HEIGHT	256
 
+#define FILE_HASH_SIZE		1024
+
 //	Hexen 2 model texture modes, plus special type for skins.
 enum
 {
@@ -68,8 +70,8 @@ void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
 void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
 void R_UploadImage(byte* Data, int Width, int Height, bool MipMap, bool PicMip, bool LightMap, int* Format, int* UploadWidth, int* UploadHeight);
-void R_CommonCreateImage(image_t* image, byte* Data, int Width, int Height, bool MipMap, bool PicMip, GLenum glWrapClampMode, bool LightMap, bool scrap, int x, int y);
-bool R_ScrapAllocBlock(int w, int h, int* x, int* y);
+long generateHashValue(const char* fname);
+image_t* R_CreateImage(const char* Name, byte* Data, int Width, int Height, bool MipMap, bool AllowPicMip, GLenum WrapClampMode, bool AllowScrap);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
 
@@ -101,3 +103,5 @@ extern byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 extern bool			scrap_dirty;
 
 extern	int			gl_filter_min, gl_filter_max;
+
+extern image_t*		ImageHashTable[FILE_HASH_SIZE];

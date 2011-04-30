@@ -202,5 +202,14 @@
   I merged methods for resampling textures and mipmap generation.
 26.04.2011
   I merged gamma control. Hardware gamma is now used in all games.
-
-
+  I removed support for monchrome lightmap formats.
+27.04.2011
+  I merged method that uploads image data to OpenGL.
+  I made compressed texture support available in all games, it's still off by default.
+28.04.2011
+  I changed all games to use ARB multitexture extension. This actually brought it back in them since SGIS extension is not supported by drivers anymore and thus didn't work.
+  I merged image structures and changed everything to use them.
+29.04.2011
+  I started work on common image creation method.
+30.04.2011
+  I merged method that creates an image.

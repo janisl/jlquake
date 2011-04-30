@@ -368,10 +368,7 @@ void R_InitSky (texture_t *mt)
 
 	if (!solidskytexture)
 	{
-		solidskytexture = new image_t;
-		solidskytexture->texnum = texture_extension_number++;
-		GL_Bind (solidskytexture);
-		R_CommonCreateImage(solidskytexture, (byte*)trans, 128, 128, false, false, GL_REPEAT, false, false, 0, 0);
+		solidskytexture = R_CreateImage("*solidsky", (byte*)trans, 128, 128, false, false, GL_REPEAT, false);
 	}
 	else
 	{
@@ -395,10 +392,7 @@ void R_InitSky (texture_t *mt)
 
 	if (!alphaskytexture)
 	{
-		alphaskytexture = new image_t;
-		alphaskytexture->texnum = texture_extension_number++;
-		GL_Bind(alphaskytexture);
-		R_CommonCreateImage(alphaskytexture, (byte*)trans, 128, 128, false, false, GL_REPEAT, false, false, 0, 0);
+		alphaskytexture = R_CreateImage("*alphasky", (byte*)trans, 128, 128, false, false, GL_REPEAT, false);
 	}
 	else
 	{

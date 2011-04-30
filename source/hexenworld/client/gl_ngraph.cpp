@@ -122,11 +122,7 @@ void R_NetGraph (void)
 	
 	if (!netgraphtexture)
 	{
-		netgraphtexture = new image_t;
-		netgraphtexture->texnum = texture_extension_number++;
-		GL_Bind(netgraphtexture);
-
-		R_CommonCreateImage(netgraphtexture, (byte*)ngraph_pixels, NET_TIMINGS, NET_GRAPHHEIGHT, false, false, GL_CLAMP, false, false, 0, 0);
+		netgraphtexture = R_CreateImage("*netgraph", (byte*)ngraph_pixels, NET_TIMINGS, NET_GRAPHHEIGHT, false, false, GL_CLAMP, false);
 		GL_Bind(netgraphtexture);
 	}
 	else

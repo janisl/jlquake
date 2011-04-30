@@ -57,6 +57,8 @@ bool		scrap_dirty;
 int		gl_filter_min = GL_LINEAR_MIPMAP_NEAREST;
 int		gl_filter_max = GL_LINEAR;
 
+image_t*		ImageHashTable[FILE_HASH_SIZE];
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte			s_gammatable[256];
@@ -961,7 +963,7 @@ done:
 //
 //==========================================================================
 
-bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
+static bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 {
 	int best = SCRAP_BLOCK_HEIGHT;
 
@@ -1004,15 +1006,91 @@ bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 
 //==========================================================================
 //
-//	R_CommonCreateImage
+//	generateHashValue
+//
+//	return a hash value for the filename
 //
 //==========================================================================
 
-void R_CommonCreateImage(image_t* image, byte* data, int width, int height, bool mipmap, bool picmip, GLenum glWrapClampMode, bool lightMap, bool scrap, int x, int y)
+long generateHashValue(const char* fname)
 {
-	if (scrap)
+	int		i;
+	long	hash;
+	char	letter;
+
+	hash = 0;
+	i = 0;
+	while (fname[i] != '\0')
 	{
-		scrap_dirty = true;
+		letter = QStr::ToLower(fname[i]);
+		if (letter == '.')
+		{
+			break;				// don't include extension
+		}
+		if (letter =='\\')
+		{
+			letter = '/';		// damn path names
+		}
+		hash += (long)(letter) * (i + 119);
+		i++;
+	}
+	hash &= (FILE_HASH_SIZE - 1);
+	return hash;
+}
+
+//==========================================================================
+//
+//	R_CreateImage
+//
+//	This is the only way any image_t is created
+//
+//==========================================================================
+
+image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap)
+{
+	if (QStr::Length(name) >= MAX_QPATH)
+	{
+		throw QDropException(va("R_CreateImage: \"%s\" is too long\n", name));
+	}
+	if (tr.numImages == MAX_DRAWIMAGES)
+	{
+		throw QDropException("R_CreateImage: MAX_DRAWIMAGES hit\n");
+	}
+
+	bool isLightmap = !QStr::NCmp(name, "*lightmap", 9);
+
+	image_t* image = new image_t;
+	Com_Memset(image, 0, sizeof(image_t));
+	tr.images[tr.numImages] = image;
+	tr.numImages++;
+
+	image->mipmap = mipmap;
+	image->allowPicmip = allowPicmip;
+
+	QStr::Cpy(image->imgName, name);
+
+	image->width = width;
+	image->height = height;
+	image->wrapClampMode = glWrapClampMode;
+
+	// lightmaps are always allocated on TMU 1
+	if (qglActiveTextureARB && isLightmap)
+	{
+		image->TMU = 1;
+	}
+	else
+	{
+		image->TMU = 0;
+	}
+
+	// load little ones into the scrap
+	if (AllowScrap && width < 64 && height < 64)
+	{
+		int x, y;
+		if (!R_ScrapAllocBlock(width, height, &x, &y))
+		{
+			goto nonscrap;
+		}
 
 		// copy the texels into the scrap block
 		int k = 0;
@@ -1023,7 +1101,9 @@ void R_CommonCreateImage(image_t* image, byte* data, int width, int height, bool
 				scrap_texels[(y + i) * SCRAP_BLOCK_WIDTH * 4 + x * 4 + j] = data[k];
 			}
 		}
+		scrap_dirty = true;
 
+		image->texnum = tr.scrapImage->texnum;
 		image->scrap = true;
 		image->sl = (x + 0.01) / (float)SCRAP_BLOCK_WIDTH;
 		image->sh = (x + width - 0.01) / (float)SCRAP_BLOCK_WIDTH;
@@ -1032,7 +1112,17 @@ void R_CommonCreateImage(image_t* image, byte* data, int width, int height, bool
 	}
 	else
 	{
-		R_UploadImage(data, width, height, mipmap, picmip, lightMap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
+nonscrap:
+		image->texnum = 1024 + tr.numImages - 1;
+
+		if (qglActiveTextureARB)
+		{
+			GL_SelectTexture(image->TMU);
+		}
+
+		GL_Bind(image);
+
+		R_UploadImage(data, width, height, mipmap, allowPicmip, isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
 
 		image->scrap = false;
 		image->sl = 0;
@@ -1045,7 +1135,18 @@ void R_CommonCreateImage(image_t* image, byte* data, int width, int height, bool
 
 		qglBindTexture(GL_TEXTURE_2D, 0);
 		glState.currenttextures[glState.currenttmu] = 0;
+
+		if (image->TMU == 1)
+		{
+			GL_SelectTexture(0);
+		}
 	}
+
+	long hash = generateHashValue(name);
+	image->next = ImageHashTable[hash];
+	ImageHashTable[hash] = image;
+
+	return image;
 }
 
 //==========================================================================

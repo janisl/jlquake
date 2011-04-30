@@ -100,10 +100,6 @@ void R_InitParticleTexture (void)
 	//
 	// particle texture
 	//
-	particletexture = new image_t;
-	particletexture->texnum = texture_extension_number++;
-    GL_Bind(particletexture);
-
 	for (x=0 ; x<texsize ; x++)
 	{
 		for (y=0 ; y<texsize ; y++)
@@ -114,7 +110,7 @@ void R_InitParticleTexture (void)
 			data[y][x][3] = dottexture[x][y]*255;
 		}
 	}
-	R_CommonCreateImage(particletexture, (byte*)data, texsize, texsize, false, false, GL_CLAMP, false, false, 0, 0);
+	particletexture = R_CreateImage("*particle", (byte*)data, texsize, texsize, false, false, GL_CLAMP, false);
 
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
@@ -336,11 +332,7 @@ void R_TranslatePlayerSkin (int playernum)
 	// instead of sending it through gl_upload 8
 	if (!playertextures[playernum])
 	{
-		playertextures[playernum] = new image_t;
-		playertextures[playernum]->texnum = texture_extension_number++;
-		GL_Bind(playertextures[playernum]);
-
-		R_CommonCreateImage(playertextures[playernum], (byte*)pixels, scaled_width, scaled_height, false, true, GL_CLAMP, false, false, 0, 0);
+		playertextures[playernum] = R_CreateImage(va("*player%d", playernum), (byte*)pixels, scaled_width, scaled_height, false, true, GL_CLAMP, false);
 		GL_Bind(playertextures[playernum]);
 	}
 	else
