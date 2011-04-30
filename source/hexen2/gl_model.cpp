@@ -372,9 +372,7 @@ static void Mod_LoadTextures (bsp29_lump_t *l)
 			R_InitSky (tx);
 		else
 		{
-			texture_mode = GL_LINEAR_MIPMAP_NEAREST; //_LINEAR;
 			tx->gl_texture = GL_LoadTexture8(mt->name, tx->width, tx->height, (byte *)(tx+1), true, false, 0);
-			texture_mode = GL_LINEAR;
 		}
 	}
 

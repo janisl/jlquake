@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-int		texture_extension_number = 1;
-
 float		gldepthmin, gldepthmax;
 
 /*

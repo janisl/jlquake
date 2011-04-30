@@ -33,8 +33,6 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
 
 
-extern	int texture_extension_number;
-
 extern	float	gldepthmin, gldepthmax;
 
 image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);

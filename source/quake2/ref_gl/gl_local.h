@@ -66,11 +66,6 @@ typedef enum
 	it_sky
 } imagetype_t;
 
-#define	TEXNUM_LIGHTMAPS	512
-#define	TEXNUM_SCRAPS		640
-#define	TEXNUM_CINEMATIC	642
-#define	TEXNUM_IMAGES		1024
-
 //===================================================================
 
 #include "gl_model.h"
