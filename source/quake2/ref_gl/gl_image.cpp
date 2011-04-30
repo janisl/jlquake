@@ -22,9 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int			base_textureid;		// gltextures[i] = base_textureid+i
 
-int		gl_tex_solid_format = 3;
-int		gl_tex_alpha_format = 4;
-
 void GL_EnableMultitexture( qboolean enable )
 {
 	if ( !qglActiveTextureARB )
@@ -82,37 +79,6 @@ glmode_t modes[] = {
 
 #define NUM_GL_MODES (sizeof(modes) / sizeof (glmode_t))
 
-typedef struct
-{
-	char *name;
-	int mode;
-} gltmode_t;
-
-gltmode_t gl_alpha_modes[] = {
-	{"default", 4},
-	{"GL_RGBA", GL_RGBA},
-	{"GL_RGBA8", GL_RGBA8},
-	{"GL_RGB5_A1", GL_RGB5_A1},
-	{"GL_RGBA4", GL_RGBA4},
-	{"GL_RGBA2", GL_RGBA2},
-};
-
-#define NUM_GL_ALPHA_MODES (sizeof(gl_alpha_modes) / sizeof (gltmode_t))
-
-gltmode_t gl_solid_modes[] = {
-	{"default", 3},
-	{"GL_RGB", GL_RGB},
-	{"GL_RGB8", GL_RGB8},
-	{"GL_RGB5", GL_RGB5},
-	{"GL_RGB4", GL_RGB4},
-	{"GL_R3_G3_B2", GL_R3_G3_B2},
-#ifdef GL_RGB2_EXT
-	{"GL_RGB2", GL_RGB2_EXT},
-#endif
-};
-
-#define NUM_GL_SOLID_MODES (sizeof(gl_solid_modes) / sizeof (gltmode_t))
-
 /*
 ===============
 GL_TextureMode
@@ -149,54 +115,6 @@ void GL_TextureMode( char *string )
 			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
 		}
 	}
-}
-
-/*
-===============
-GL_TextureAlphaMode
-===============
-*/
-void GL_TextureAlphaMode( char *string )
-{
-	int		i;
-
-	for (i=0 ; i< NUM_GL_ALPHA_MODES ; i++)
-	{
-		if ( !QStr::ICmp( gl_alpha_modes[i].name, string ) )
-			break;
-	}
-
-	if (i == NUM_GL_ALPHA_MODES)
-	{
-		ri.Con_Printf (PRINT_ALL, "bad alpha texture mode name\n");
-		return;
-	}
-
-	gl_tex_alpha_format = gl_alpha_modes[i].mode;
-}
-
-/*
-===============
-GL_TextureSolidMode
-===============
-*/
-void GL_TextureSolidMode( char *string )
-{
-	int		i;
-
-	for (i=0 ; i< NUM_GL_SOLID_MODES ; i++)
-	{
-		if ( !QStr::ICmp( gl_solid_modes[i].name, string ) )
-			break;
-	}
-
-	if (i == NUM_GL_SOLID_MODES)
-	{
-		ri.Con_Printf (PRINT_ALL, "bad solid texture mode name\n");
-		return;
-	}
-
-	gl_tex_solid_format = gl_solid_modes[i].mode;
 }
 
 /*

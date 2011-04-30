@@ -161,13 +161,8 @@ extern	QCvar	*gl_drawbuffer;
 extern  QCvar  *gl_driver;
 extern	QCvar	*gl_swapinterval;
 extern	QCvar	*gl_texturemode;
-extern	QCvar	*gl_texturealphamode;
-extern	QCvar	*gl_texturesolidmode;
 extern  QCvar  *gl_saturatelighting;
 extern  QCvar  *gl_lockpvs;
-
-extern	int		gl_tex_solid_format;
-extern	int		gl_tex_alpha_format;
 
 extern	int		c_visible_lightmaps;
 extern	int		c_visible_textures;
@@ -253,9 +248,6 @@ void	GL_InitImages (void);
 void	GL_ShutdownImages (void);
 
 void	GL_FreeUnusedImages (void);
-
-void GL_TextureAlphaMode( char *string );
-void GL_TextureSolidMode( char *string );
 
 /*
 ** GL extension emulation functions

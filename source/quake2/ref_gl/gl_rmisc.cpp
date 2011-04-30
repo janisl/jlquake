@@ -154,8 +154,6 @@ void GL_SetDefaultState( void )
 	qglShadeModel (GL_FLAT);
 
 	GL_TextureMode( gl_texturemode->string );
-	GL_TextureAlphaMode( gl_texturealphamode->string );
-	GL_TextureSolidMode( gl_texturesolidmode->string );
 
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
