@@ -5,8 +5,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-QCvar*		gl_nobind;
-
 byte		*draw_chars;				// 8*8 graphic characters
 byte		*draw_smallchars;			// Small characters for status bar
 byte		*draw_menufont; 			// Big Menu Font
@@ -36,18 +34,6 @@ static byte cs_data[64] = {
 };
 
 image_t		*conback;
-
-void GL_Bind (image_t* image)
-{
-	int texnum = image->texnum;
-	if (gl_nobind->value)
-		texnum = char_texture->texnum;
-	if (glState.currenttextures[glState.currenttmu] == texnum)
-		return;
-	glState.currenttextures[glState.currenttmu] = texnum;
-	qglBindTexture(GL_TEXTURE_2D, texnum);
-}
-
 
 image_t*	scrap_image;
 
@@ -271,8 +257,6 @@ void Draw_Init (void)
 	int		start;
 	int		f, fstep;
 	char	temp[MAX_QPATH];
-
-	gl_nobind = Cvar_Get("gl_nobind", "0", 0);
 
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 

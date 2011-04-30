@@ -82,6 +82,8 @@ QCvar*		r_simpleMipMaps;
 
 QCvar*		r_ignoreGLErrors;
 
+QCvar*		r_nobind;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -233,6 +235,7 @@ void R_SharedRegister()
 	//
 	r_logFile = Cvar_Get("r_logFile", "0", CVAR_CHEAT);
 	r_verbose = Cvar_Get("r_verbose", "0", CVAR_CHEAT);
+	r_nobind = Cvar_Get("r_nobind", "0", CVAR_CHEAT);
 
 	Cmd_AddCommand("modelist", R_ModeList_f);
 }

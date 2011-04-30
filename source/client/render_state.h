@@ -28,4 +28,6 @@ struct glstate_t
 	unsigned long	glStateBits;
 };
 
+void GL_Bind(image_t* Image);
+
 extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init

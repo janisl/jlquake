@@ -30,8 +30,8 @@
 #endif
 
 #include "render_qgl.h"
-#include "render_state.h"
 #include "render_image.h"
+#include "render_state.h"
 
 /*
 ====================================================================
@@ -77,7 +77,10 @@ init
 
 struct trGlobals_base_t
 {
-	int						frameCount;		// incremented every frame
+	int						frameCount;			// incremented every frame
+
+	image_t*				defaultImage;
+	image_t*				dlightImage;		// inverse-quare highlight for projective adding
 
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
@@ -128,6 +131,8 @@ extern QCvar*	r_colorMipLevels;		// development aid to see texture mip usage
 extern QCvar*	r_simpleMipMaps;
 
 extern QCvar*	r_ignoreGLErrors;
+
+extern QCvar*	r_nobind;				// turns off binding to appropriate textures
 
 extern trGlobals_base_t*	tr_shared;
 #define tr		(*tr_shared)

@@ -73,19 +73,6 @@ void GL_TexEnv( GLenum mode )
 	}
 }
 
-void GL_Bind (image_t* image)
-{
-	int texnum = image->texnum;
-	extern	image_t	*draw_chars;
-
-	if (gl_nobind->value && draw_chars)		// performance evaluation option
-		texnum = draw_chars->texnum;
-	if ( glState.currenttextures[glState.currenttmu] == texnum)
-		return;
-	glState.currenttextures[glState.currenttmu] = texnum;
-	qglBindTexture (GL_TEXTURE_2D, texnum);
-}
-
 void GL_MBind( int target, image_t* image)
 {
 	GL_SelectTexture( target );

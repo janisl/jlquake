@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define GL_COLOR_INDEX8_EXT     0x80E5
 
-QCvar*		gl_nobind;
-
 byte		*draw_chars;				// 8*8 graphic characters
 image_t*	draw_disc;
 image_t*	draw_backtile;
@@ -36,18 +34,6 @@ image_t*	translate_texture;
 image_t*	char_texture;
 
 image_t*	conback;
-
-void GL_Bind (image_t* image)
-{
-	int texnum = image->texnum;
-	if (gl_nobind->value)
-		texnum = char_texture->texnum;
-	if (glState.currenttextures[glState.currenttmu] == texnum)
-		return;
-	glState.currenttextures[glState.currenttmu] = texnum;
-	qglBindTexture(GL_TEXTURE_2D, texnum);
-}
-
 
 image_t*	scrap_image;
 
@@ -261,8 +247,6 @@ void Draw_Init (void)
 	int		start;
 	int		f, fstep;
 
-
-    gl_nobind = Cvar_Get("gl_nobind", "0", 0);
 
 	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 

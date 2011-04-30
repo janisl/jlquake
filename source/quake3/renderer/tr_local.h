@@ -860,10 +860,8 @@ struct trGlobals_t : trGlobals_base_t
 
 	const byte				*externalVisData;	// from RE_SetWorldVisData, shared with CM_Load
 
-	image_t					*defaultImage;
 	image_t					*scratchImage[32];
 	image_t					*fogImage;
-	image_t					*dlightImage;	// inverse-quare highlight for projective adding
 	image_t					*flareImage;
 	image_t					*whiteImage;			// full of 0xff
 	image_t					*identityLightImage;	// full of tr.identityLightByte
@@ -974,7 +972,6 @@ extern QCvar	*r_ext_texenv_op;
 extern QCvar	*r_ext_compiled_vertex_array;
 extern QCvar	*r_ext_texture_env_add;
 
-extern	QCvar	*r_nobind;						// turns off binding to appropriate textures
 extern	QCvar	*r_singleShader;				// make most world faces use default shader
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;
@@ -1054,7 +1051,6 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, 
 /*
 ** GL wrapper/helper functions
 */
-void	GL_Bind( image_t *image );
 void	GL_SetDefaultState (void);
 void	GL_SelectTexture( int unit );
 void	GL_TextureMode( const char *string );

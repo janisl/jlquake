@@ -79,7 +79,6 @@ QCvar	*r_vertexLight;
 QCvar	*r_uiFullScreen;
 QCvar	*r_shadows;
 QCvar	*r_flares;
-QCvar	*r_nobind;
 QCvar	*r_singleShader;
 QCvar	*r_showtris;
 QCvar	*r_showsky;
@@ -768,7 +767,6 @@ void R_Register( void )
 	r_showcluster = Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
-	r_nobind = Cvar_Get ("r_nobind", "0", CVAR_CHEAT);
 	r_showtris = Cvar_Get ("r_showtris", "0", CVAR_CHEAT);
 	r_showsky = Cvar_Get ("r_showsky", "0", CVAR_CHEAT);
 	r_shownormals = Cvar_Get ("r_shownormals", "0", CVAR_CHEAT);

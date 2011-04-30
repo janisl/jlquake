@@ -44,6 +44,35 @@ glstate_t	glState;
 
 //==========================================================================
 //
-//
+//	GL_Bind
 //
 //==========================================================================
+
+void GL_Bind(image_t* image)
+{
+	int texnum;
+	if (!image)
+	{
+		GLog.Write(S_COLOR_YELLOW "GL_Bind: NULL image\n");
+		texnum = tr.defaultImage->texnum;
+	}
+	else
+	{
+		texnum = image->texnum;
+	}
+
+	if (r_nobind->integer && tr.dlightImage)
+	{
+		// performance evaluation option
+		texnum = tr.dlightImage->texnum;
+	}
+
+	if (glState.currenttextures[glState.currenttmu] == texnum)
+	{
+		return;
+	}
+
+	image->frameUsed = tr.frameCount;
+	glState.currenttextures[glState.currenttmu] = texnum;
+	qglBindTexture(GL_TEXTURE_2D, texnum);
+}
