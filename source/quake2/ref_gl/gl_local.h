@@ -242,8 +242,6 @@ void	GL_ImageList_f (void);
 void	GL_InitImages (void);
 void	GL_ShutdownImages (void);
 
-void	GL_FreeUnusedImages (void);
-
 /*
 ** GL extension emulation functions
 */

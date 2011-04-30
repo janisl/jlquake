@@ -60,7 +60,6 @@ struct image_t
 	bool		scrap;
 
 	int			type;
-	int			registration_sequence;		// 0 = free
 	struct msurface_s*	texturechain;	// for sort-by-texture world drawing
 };
 

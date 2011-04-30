@@ -198,8 +198,6 @@ image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t t
 	image = R_CreateImage(name, pic, width, height, (type != it_pic && type != it_sky),
 		(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, type == it_pic);
 
-	image->registration_sequence = registration_sequence;
-
 	image->type = type;
 
 	return image;
@@ -226,7 +224,6 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 	{
 		if (tr.images[i] && !QStr::Cmp(name, tr.images[i]->imgName))
 		{
-			tr.images[i]->registration_sequence = registration_sequence;
 			return tr.images[i];
 		}
 	}
@@ -264,38 +261,6 @@ image_t *R_RegisterSkin (char *name)
 	return GL_FindImage (name, it_skin);
 }
 
-
-/*
-================
-GL_FreeUnusedImages
-
-Any image that was not touched on this registration sequence
-will be freed.
-================
-*/
-void GL_FreeUnusedImages (void)
-{
-	int		i;
-
-	// never free r_notexture or particle texture
-	r_notexture->registration_sequence = registration_sequence;
-	r_particletexture->registration_sequence = registration_sequence;
-
-	for (i=0; i<tr.numImages; i++)
-	{
-		if (!tr.images[i])
-			continue;		// free image_t slot
-		if (tr.images[i]->registration_sequence == registration_sequence)
-			continue;		// used this sequence
-		if (tr.images[i]->type == it_pic)
-			continue;		// don't free pics
-		// free it
-		qglDeleteTextures (1, (GLuint*)&tr.images[i]->texnum);
-		delete tr.images[i];
-		tr.images[i] = NULL;
-	}
-}
-
 /*
 ===============
 GL_InitImages
@@ -321,8 +286,6 @@ void	GL_ShutdownImages (void)
 
 	for (i=0; i<tr.numImages; i++)
 	{
-		if (!tr.images[i])
-			continue;		// free image_t slot
 		// free it
 		qglDeleteTextures (1, (GLuint*)&tr.images[i]->texnum);
 		delete tr.images[i];

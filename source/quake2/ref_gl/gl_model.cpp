@@ -1153,11 +1153,6 @@ struct model_s *R_RegisterModel (char *name)
 			mod->numframes = pheader->num_frames;
 //PGM
 		}
-		else if (mod->type == mod_brush)
-		{
-			for (i=0 ; i<mod->numtexinfo ; i++)
-				mod->texinfo[i].image->registration_sequence = registration_sequence;
-		}
 	}
 	return mod;
 }
@@ -1183,8 +1178,6 @@ void R_EndRegistration (void)
 			Mod_Free (mod);
 		}
 	}
-
-	GL_FreeUnusedImages ();
 }
 
 
