@@ -67,8 +67,8 @@ void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
 void R_LoadImage(const char* FileName, byte** Pic, int* Width, int* Height, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
 void R_UploadImage(byte* Data, int Width, int Height, bool MipMap, bool PicMip, bool LightMap, int* Format, int* UploadWidth, int* UploadHeight);
-long generateHashValue(const char* fname);
 image_t* R_CreateImage(const char* Name, byte* Data, int Width, int Height, bool MipMap, bool AllowPicMip, GLenum WrapClampMode, bool AllowScrap);
+image_t* R_FindImage(const char* name);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
 

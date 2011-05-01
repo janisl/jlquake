@@ -72,12 +72,9 @@ Draw_CachePic
 */
 image_t* Draw_CachePic (char *path)
 {
-	image_t*	pic;
-	int			i;
-
-	for (i=0 ; i<tr.numImages; i++)
-		if (!QStr::Cmp(path, tr.images[i]->imgName))
-			return tr.images[i];
+	image_t* pic = R_FindImage(path);
+	if (pic)
+		return pic;
 
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
@@ -155,7 +152,6 @@ Draw_TextureMode_f
 void Draw_TextureMode_f (void)
 {
 	int		i;
-	image_t	*glt;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -184,7 +180,7 @@ void Draw_TextureMode_f (void)
 	gl_filter_max = modes[i].maximize;
 
 	// change all the existing mipmap texture objects
-	for (i=0; i<tr.numImages; i++, glt++)
+	for (i=0; i<tr.numImages; i++)
 	{
 		if (tr.images[i]->mipmap)
 		{
@@ -655,15 +651,14 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 	// see if the texture is allready present
 	if (identifier[0])
 	{
-		for (int i=0; i<tr.numImages; i++)
+		image_t* glt = R_FindImage(identifier);
+		if (glt)
 		{
-			image_t* glt = tr.images[i];
-			if (!QStr::Cmp(identifier, glt->imgName))
+			if (width != glt->width || height != glt->height)
 			{
-				if (width != glt->width || height != glt->height)
-					Sys_Error ("GL_LoadTexture: cache mismatch");
-				return glt;
+				Sys_Error ("GL_LoadTexture: cache mismatch");
 			}
+			return glt;
 		}
 	}
 

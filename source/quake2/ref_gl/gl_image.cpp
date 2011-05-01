@@ -181,19 +181,16 @@ Finds or loads the given image
 image_t	*GL_FindImage (char *name, imagetype_t type)
 {
 	image_t	*image;
-	int		i;
 	int		width, height;
 
 	if (!name)
 		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
 
 	// look for it
-	for (i=0; i<tr.numImages; i++)
+	image = R_FindImage(name);
+	if (image)
 	{
-		if (tr.images[i] && !QStr::Cmp(name, tr.images[i]->imgName))
-		{
-			return tr.images[i];
-		}
+		return image;
 	}
 
 	//

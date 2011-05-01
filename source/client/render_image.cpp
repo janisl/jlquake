@@ -1012,7 +1012,7 @@ static bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 //
 //==========================================================================
 
-long generateHashValue(const char* fname)
+static long generateHashValue(const char* fname)
 {
 	int		i;
 	long	hash;
@@ -1127,6 +1127,25 @@ nonscrap:
 	ImageHashTable[hash] = image;
 
 	return image;
+}
+
+//==========================================================================
+//
+//	R_FindImage
+//
+//==========================================================================
+
+image_t* R_FindImage(const char* name)
+{
+	long hash = generateHashValue(name);
+	for (image_t* image = ImageHashTable[hash]; image; image=image->next)
+	{
+		if (!QStr::Cmp(name, image->imgName))
+		{
+			return image;
+		}
+	}
+	return NULL;
 }
 
 //==========================================================================

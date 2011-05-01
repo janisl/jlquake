@@ -177,33 +177,30 @@ image_t	*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmi
 	image_t	*image;
 	int		width, height;
 	byte	*pic;
-	long	hash;
 
 	if (!name) {
 		return NULL;
 	}
 
-	hash = generateHashValue(name);
-
 	//
 	// see if the image is already loaded
 	//
-	for (image=ImageHashTable[hash]; image; image=image->next) {
-		if ( !QStr::Cmp( name, image->imgName ) ) {
-			// the white image can be used with any set of parms, but other mismatches are errors
-			if ( QStr::Cmp( name, "*white" ) ) {
-				if ( image->mipmap != mipmap ) {
-					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
-				}
-				if ( image->allowPicmip != allowPicmip ) {
-					ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed allowPicmip parm\n", name );
-				}
-				if ( image->wrapClampMode != glWrapClampMode ) {
-					ri.Printf( PRINT_ALL, "WARNING: reused image %s with mixed glWrapClampMode parm\n", name );
-				}
+	image = R_FindImage(name);
+	if (image)
+	{
+		// the white image can be used with any set of parms, but other mismatches are errors
+		if ( QStr::Cmp( name, "*white" ) ) {
+			if ( image->mipmap != mipmap ) {
+				ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
 			}
-			return image;
+			if ( image->allowPicmip != allowPicmip ) {
+				ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed allowPicmip parm\n", name );
+			}
+			if ( image->wrapClampMode != glWrapClampMode ) {
+				ri.Printf( PRINT_ALL, "WARNING: reused image %s with mixed glWrapClampMode parm\n", name );
+			}
 		}
+		return image;
 	}
 
 	//
