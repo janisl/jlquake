@@ -137,7 +137,7 @@ void	GL_InitImages (void)
 {
 	registration_sequence = 1;
 
-	R_SetColorMappings();
+	R_CommonInitImages();
 
 	tr.scrapImage = R_CreateImage("*scrap", scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 }

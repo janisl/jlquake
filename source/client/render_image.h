@@ -72,6 +72,7 @@ image_t* R_FindImage(const char* name);
 image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap = false, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
+void R_CommonInitImages();
 void GL_TextureMode(const char* string);
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
@@ -102,5 +103,3 @@ extern byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 extern bool			scrap_dirty;
 
 extern	int			gl_filter_min, gl_filter_max;
-
-extern image_t*		ImageHashTable[FILE_HASH_SIZE];

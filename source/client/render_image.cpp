@@ -64,12 +64,12 @@ bool		scrap_dirty;
 int		gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
 int		gl_filter_max = GL_LINEAR;
 
-image_t*		ImageHashTable[FILE_HASH_SIZE];
-
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte			s_gammatable[256];
 static byte			s_intensitytable[256];
+
+static image_t*		ImageHashTable[FILE_HASH_SIZE];
 
 static byte mipBlendColors[16][4] =
 {
@@ -1349,6 +1349,20 @@ void R_GammaCorrect(byte* Buffer, int BufferSize)
 	{
 		Buffer[i] = s_gammatable[Buffer[i]];
 	}
+}
+
+//==========================================================================
+//
+//	R_CommonInitImages
+//
+//==========================================================================
+
+void R_CommonInitImages()
+{
+	Com_Memset(ImageHashTable, 0, sizeof(ImageHashTable));
+
+	// build brightness translation tables
+	R_SetColorMappings();
 }
 
 //==========================================================================

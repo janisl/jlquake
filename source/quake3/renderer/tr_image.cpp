@@ -328,9 +328,7 @@ R_InitImages
 ===============
 */
 void	R_InitImages( void ) {
-	Com_Memset(ImageHashTable, 0, sizeof(ImageHashTable));
-	// build brightness translation tables
-	R_SetColorMappings();
+	R_CommonInitImages();
 
 	// create default texture and white texture
 	R_CreateBuiltinImages();
