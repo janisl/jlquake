@@ -62,61 +62,6 @@ void GL_MBind( int target, image_t* image)
 	GL_Bind(image);
 }
 
-typedef struct
-{
-	char *name;
-	int	minimize, maximize;
-} glmode_t;
-
-glmode_t modes[] = {
-	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
-	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}
-};
-
-#define NUM_GL_MODES (sizeof(modes) / sizeof (glmode_t))
-
-/*
-===============
-GL_TextureMode
-===============
-*/
-void GL_TextureMode( char *string )
-{
-	int		i;
-	image_t	*glt;
-
-	for (i=0 ; i< NUM_GL_MODES ; i++)
-	{
-		if ( !QStr::ICmp( modes[i].name, string ) )
-			break;
-	}
-
-	if (i == NUM_GL_MODES)
-	{
-		ri.Con_Printf (PRINT_ALL, "bad filter name\n");
-		return;
-	}
-
-	gl_filter_min = modes[i].minimize;
-	gl_filter_max = modes[i].maximize;
-
-	// change all the existing mipmap texture objects
-	for (i=0; i<tr.numImages; i++)
-	{
-		glt = tr.images[i];
-		if (glt && glt->mipmap)
-		{
-			GL_Bind (glt);
-			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-		}
-	}
-}
-
 /*
 ===============
 GL_ImageList_f

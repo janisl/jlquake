@@ -117,21 +117,6 @@ void Draw_CharToConback (int num, byte *dest)
 
 }
 
-typedef struct
-{
-	char *name;
-	int	minimize, maximize;
-} glmode_t;
-
-glmode_t modes[] = {
-	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
-	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
-	{"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
-	{"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}
-};
-
 /*
 ===============
 Draw_TextureMode_f
@@ -139,11 +124,9 @@ Draw_TextureMode_f
 */
 void Draw_TextureMode_f (void)
 {
-	int		i;
-
 	if (Cmd_Argc() == 1)
 	{
-		for (i=0 ; i< 6 ; i++)
+		for (int i=0 ; i< 6 ; i++)
 			if (gl_filter_min == modes[i].minimize)
 			{
 				Con_Printf ("%s\n", modes[i].name);
@@ -153,30 +136,7 @@ void Draw_TextureMode_f (void)
 		return;
 	}
 
-	for (i=0 ; i< 6 ; i++)
-	{
-		if (!QStr::ICmp(modes[i].name, Cmd_Argv(1) ) )
-			break;
-	}
-	if (i == 6)
-	{
-		Con_Printf ("bad filter name\n");
-		return;
-	}
-
-	gl_filter_min = modes[i].minimize;
-	gl_filter_max = modes[i].maximize;
-
-	// change all the existing mipmap texture objects
-	for (i=0; i<tr.numImages; i++)
-	{
-		if (tr.images[i]->mipmap)
-		{
-			GL_Bind (tr.images[i]);
-			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
-			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
-		}
-	}
+	GL_TextureMode(Cmd_Argv(1));
 }
 
 /*

@@ -235,7 +235,6 @@ void	R_SwapBuffers( int );
 image_t *R_RegisterSkin (char *name);
 
 image_t	*GL_FindImage (char *name, imagetype_t type);
-void	GL_TextureMode( char *string );
 void	GL_ImageList_f (void);
 
 void	GL_InitImages (void);

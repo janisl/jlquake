@@ -62,6 +62,13 @@ struct image_t
 	struct msurface_s*	texturechain;	// for sort-by-texture world drawing
 };
 
+struct textureMode_t
+{
+	const char*		name;
+	GLenum			minimize;
+	GLenum			maximize;
+};
+
 void R_InitQ1Palette();
 void R_InitQ2Palette();
 byte* R_ConvertImage8To32(byte* DataIn, int Width, int Height, int Mode);
@@ -72,6 +79,7 @@ image_t* R_FindImage(const char* name);
 image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap = false, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
+void GL_TextureMode(const char* string);
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 
@@ -103,3 +111,5 @@ extern bool			scrap_dirty;
 extern	int			gl_filter_min, gl_filter_max;
 
 extern image_t*		ImageHashTable[FILE_HASH_SIZE];
+
+extern textureMode_t modes[];

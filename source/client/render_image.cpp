@@ -59,6 +59,16 @@ int		gl_filter_max = GL_LINEAR;
 
 image_t*		ImageHashTable[FILE_HASH_SIZE];
 
+textureMode_t modes[] =
+{
+	{"GL_NEAREST", GL_NEAREST, GL_NEAREST},
+	{"GL_LINEAR", GL_LINEAR, GL_LINEAR},
+	{"GL_NEAREST_MIPMAP_NEAREST", GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST},
+	{"GL_LINEAR_MIPMAP_NEAREST", GL_LINEAR_MIPMAP_NEAREST, GL_LINEAR},
+	{"GL_NEAREST_MIPMAP_LINEAR", GL_NEAREST_MIPMAP_LINEAR, GL_NEAREST},
+	{"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}
+};
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static byte			s_gammatable[256];
@@ -1331,5 +1341,45 @@ void R_GammaCorrect(byte* Buffer, int BufferSize)
 	for (int i = 0; i < BufferSize; i++)
 	{
 		Buffer[i] = s_gammatable[Buffer[i]];
+	}
+}
+
+//==========================================================================
+//
+//	GL_TextureMode
+//
+//==========================================================================
+
+void GL_TextureMode(const char* string)
+{
+	int i;
+
+	for (i = 0; i < 6; i++)
+	{
+		if (!QStr::ICmp(modes[i].name, string))
+		{
+			break;
+		}
+	}
+
+	if (i == 6)
+	{
+		GLog.Write("bad filter name\n");
+		return;
+	}
+
+	gl_filter_min = modes[i].minimize;
+	gl_filter_max = modes[i].maximize;
+
+	// change all the existing mipmap texture objects
+	for (i = 0; i < tr.numImages; i++)
+	{
+		image_t* glt = tr.images[i];
+		if (glt->mipmap)
+		{
+			GL_Bind(glt);
+			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, gl_filter_min);
+			qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, gl_filter_max);
+		}
 	}
 }
