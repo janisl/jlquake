@@ -1150,6 +1150,77 @@ image_t* R_FindImage(const char* name)
 
 //==========================================================================
 //
+//	R_FindImageFile
+//
+//	Finds or loads the given image. Returns NULL if it fails, not a default image.
+//
+//==========================================================================
+
+image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
+	GLenum glWrapClampMode, bool AllowScrap, int Mode, byte* TransPixels)
+{
+	if (!name)
+	{
+		return NULL;
+	}
+
+	//
+	// see if the image is already loaded
+	//
+	image_t* image = R_FindImage(name);
+	if (image)
+	{
+		// the white image can be used with any set of parms, but other mismatches are errors
+		if (QStr::Cmp(name, "*white"))
+		{
+			if (image->mipmap != mipmap)
+			{
+				GLog.DWrite(S_COLOR_RED "WARNING: reused image %s with mixed mipmap parm\n", name);
+			}
+			if (image->allowPicmip != allowPicmip)
+			{
+				GLog.DWrite(S_COLOR_RED "WARNING: reused image %s with mixed allowPicmip parm\n", name);
+			}
+			if (image->wrapClampMode != glWrapClampMode)
+			{
+				GLog.Write("WARNING: reused image %s with mixed glWrapClampMode parm\n", name);
+			}
+		}
+		return image;
+	}
+
+	//
+	// load the pic from disk
+	//
+	byte* pic;
+	int width;
+	int height;
+	R_LoadImage(name, &pic, &width, &height, Mode, TransPixels);
+	if (pic == NULL)
+	{
+		//	If we dont get a successful load copy the name and try upper case
+		// extension for unix systems, if that fails bail.
+		char altname[MAX_QPATH];
+		QStr::Cpy(altname, name);
+		int len = QStr::Length(altname);
+		altname[len - 3] = QStr::ToUpper(altname[len - 3]);
+		altname[len - 2] = QStr::ToUpper(altname[len - 2]);
+		altname[len - 1] = QStr::ToUpper(altname[len - 1]);
+		GLog.Write("trying %s...\n", altname);
+		R_LoadImage(altname, &pic, &width, &height);
+		if (pic == NULL)
+		{
+			return NULL;
+		}
+	}
+
+	image = R_CreateImage(name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, AllowScrap);
+	delete[] pic;
+	return image;
+}
+
+//==========================================================================
+//
 //	R_SetColorMappings
 //
 //==========================================================================

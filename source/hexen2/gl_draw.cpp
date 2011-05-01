@@ -52,19 +52,7 @@ byte		menuplyr_pixels[NUM_CLASSES][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
 image_t *Draw_PicFromFile (char *name)
 {
-	int width;
-	int height;
-	byte* pic32;
-	R_LoadImage(name, &pic32, &width, &height);
-	if (!pic32)
-	{
-		return NULL;
-	}
-
-	image_t* img = R_CreateImage(name, pic32, width, height, false, false, GL_CLAMP, false);
-	delete[] pic32;
-
-	return img;
+	return R_FindImageFile(name, false, false, GL_CLAMP);
 }
 
 image_t *Draw_PicFromWad (char *name)
@@ -89,10 +77,6 @@ Draw_CachePic
 */
 image_t* Draw_CachePic (char *path)
 {
-	image_t* pic = R_FindImage(path);
-	if (pic)
-		return pic;
-
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
 	// configuration dialog
@@ -109,19 +93,9 @@ image_t* Draw_CachePic (char *path)
 	else if (!QStr::Cmp(path, "gfx/menu/netp5.lmp"))
 		TransPixels = menuplyr_pixels[4];
 
-//
-// load the pic from disk
-//
-	int width;
-	int height;
-	byte* pic32;
-	R_LoadImage(path, &pic32, &width, &height, IMG8MODE_Normal, TransPixels);
-	if (!pic32)
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
+	if (!pic)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
-
-	pic = R_CreateImage(path, pic32, width, height, false, false, GL_CLAMP, false);
-
-	delete[] pic32;
 
 	// point sample status bar
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -269,12 +243,7 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	int mfwidth;
-	int mfheight;
-	byte* mfpic32;
-	R_LoadImage("gfx/menu/bigfont2.lmp", &mfpic32, &mfwidth, &mfheight, IMG8MODE_Holey);
-	char_menufonttexture = GL_LoadTexture("menufont", mfwidth, mfheight, mfpic32, false);
-	delete[] mfpic32;
+	char_menufonttexture = R_FindImageFile("gfx/menu/bigfont2.lmp", false, false, GL_CLAMP, false, IMG8MODE_Holey);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 

@@ -166,69 +166,6 @@ void R_ImageList_f( void ) {
 //===================================================================
 
 /*
-===============
-R_FindImageFile
-
-Finds or loads the given image.
-Returns NULL if it fails, not a default image.
-==============
-*/
-image_t	*R_FindImageFile( const char *name, qboolean mipmap, qboolean allowPicmip, int glWrapClampMode ) {
-	image_t	*image;
-	int		width, height;
-	byte	*pic;
-
-	if (!name) {
-		return NULL;
-	}
-
-	//
-	// see if the image is already loaded
-	//
-	image = R_FindImage(name);
-	if (image)
-	{
-		// the white image can be used with any set of parms, but other mismatches are errors
-		if ( QStr::Cmp( name, "*white" ) ) {
-			if ( image->mipmap != mipmap ) {
-				ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed mipmap parm\n", name );
-			}
-			if ( image->allowPicmip != allowPicmip ) {
-				ri.Printf( PRINT_DEVELOPER, "WARNING: reused image %s with mixed allowPicmip parm\n", name );
-			}
-			if ( image->wrapClampMode != glWrapClampMode ) {
-				ri.Printf( PRINT_ALL, "WARNING: reused image %s with mixed glWrapClampMode parm\n", name );
-			}
-		}
-		return image;
-	}
-
-	//
-	// load the pic from disk
-	//
-	R_LoadImage( name, &pic, &width, &height );
-	if ( pic == NULL ) {                                    // if we dont get a successful load
-	  char altname[MAX_QPATH];                              // copy the name
-    int len;                                              //  
-    QStr::Cpy( altname, name );                              //
-    len = QStr::Length( altname );                              // 
-    altname[len-3] = QStr::ToUpper(altname[len-3]);             // and try upper case extension for unix systems
-    altname[len-2] = QStr::ToUpper(altname[len-2]);             //
-    altname[len-1] = QStr::ToUpper(altname[len-1]);             //
-		ri.Printf( PRINT_ALL, "trying %s...\n", altname );    // 
-	  R_LoadImage( altname, &pic, &width, &height );        //
-    if (pic == NULL) {                                    // if that fails
-      return NULL;                                        // bail
-    }
-	}
-
-	image = R_CreateImage( ( char * ) name, pic, width, height, mipmap, allowPicmip, glWrapClampMode, false);
-	Mem_Free( pic );
-	return image;
-}
-
-
-/*
 ================
 R_CreateDlightImage
 ================

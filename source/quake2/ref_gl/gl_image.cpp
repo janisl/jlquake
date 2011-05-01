@@ -167,39 +167,8 @@ Finds or loads the given image
 */
 image_t	*GL_FindImage (char *name, imagetype_t type)
 {
-	image_t	*image;
-	int		width, height;
-
-	if (!name)
-		return NULL;	//	ri.Sys_Error (ERR_DROP, "GL_FindImage: NULL name");
-
-	// look for it
-	image = R_FindImage(name);
-	if (image)
-	{
-		return image;
-	}
-
-	//
-	// load the pic from disk
-	//
-	byte* pic;
-	R_LoadImage(name, &pic, &width, &height, type == it_skin ? IMG8MODE_Skin : IMG8MODE_Normal);
-
-	if (!pic)
-	{
-		return NULL;
-	}
-
-	image = R_CreateImage(name, pic, width, height, (type != it_pic && type != it_sky),
-		(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, type == it_pic);
-
-	if (pic)
-	{
-		delete[] pic;
-	}
-
-	return image;
+	return R_FindImageFile(name, (type != it_pic && type != it_sky),
+		(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, type == it_pic, type == it_skin ? IMG8MODE_Skin : IMG8MODE_Normal);
 }
 
 
