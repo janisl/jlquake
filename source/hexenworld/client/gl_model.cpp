@@ -1928,7 +1928,7 @@ static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int fra
 
 	sprintf (name, "%s_%i", loadmodel->name, framenum);
 	byte* pic32 = R_ConvertImage8To32((byte *)(pinframe + 1), width, height, IMG8MODE_Normal);
-	pspriteframe->gl_texture = GL_LoadTexture(name, width, height, pic32, true);
+	pspriteframe->gl_texture = R_CreateImage(name, pic32, width, height, true, true, GL_CLAMP, false);
 	delete[] pic32;
 
 	return (void *)((byte *)pinframe + sizeof (dsprite1frame_t) + size);

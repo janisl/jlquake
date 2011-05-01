@@ -254,7 +254,7 @@ void Draw_Init (void)
 			draw_chars[i] = 255;	// proper transparent color
 
 	byte* draw_chars32 = R_ConvertImage8To32(draw_chars, 256, 128, IMG8MODE_Normal);
-	char_texture = GL_LoadTexture("charset", 256, 128, draw_chars32, false);
+	char_texture = R_CreateImage("charset", draw_chars32, 256, 128, false, false, GL_CLAMP, false);
 	delete[] draw_chars32;
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -267,7 +267,7 @@ void Draw_Init (void)
 
 	// now turn them into textures
 	byte* draw_smallchars32 = R_ConvertImage8To32(draw_smallchars, 128, 32, IMG8MODE_Normal);
-	char_smalltexture = GL_LoadTexture("smallcharset", 128, 32, draw_smallchars32, false);
+	char_smalltexture = R_CreateImage("smallcharset", draw_smallchars32, 128, 32, false, false, GL_CLAMP, false);
 	delete[] draw_smallchars32;
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -299,7 +299,7 @@ void Draw_Init (void)
 	for (x=0 ; x<y ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<5));
 
-	conback = GL_LoadTexture("conback", cbwidth, cbheight, pic32, false);
+	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
 	conback->width = vid.conwidth;
 	conback->height = vid.conheight;

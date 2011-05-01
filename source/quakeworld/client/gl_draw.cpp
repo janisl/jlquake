@@ -237,11 +237,11 @@ void Draw_Init (void)
 
 	// now turn them into textures
 	byte* draw_chars32 = R_ConvertImage8To32(draw_chars, 128, 128, IMG8MODE_Normal);
-	char_texture = GL_LoadTexture("charset", 128, 128, draw_chars32, false);
+	char_texture = R_CreateImage("charset", draw_chars32, 128, 128, false, false, GL_CLAMP, false);
 	delete[] draw_chars32;
 //	Draw_CrosshairAdjust();
 	byte* cs_data32 = R_ConvertImage8To32(cs_data, 8, 8, IMG8MODE_Normal);
-	cs_texture = GL_LoadTexture("crosshair", 8, 8, cs_data32, false);
+	cs_texture = R_CreateImage("crosshair", cs_data32, 8, 8, false, false, GL_CLAMP, false);
 	delete[] cs_data32;
 
 	start = Hunk_LowMark ();
@@ -261,7 +261,7 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	conback = GL_LoadTexture("conback", cbwidth, cbheight, pic32, false);
+	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
 	conback->width = vid.conwidth;
 	conback->height = vid.conheight;
