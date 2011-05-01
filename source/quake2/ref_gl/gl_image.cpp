@@ -159,19 +159,6 @@ void Scrap_Upload (void)
 //=======================================================
 
 /*
-================
-GL_LoadPic
-
-This is also used as an entry point for the generated r_notexture
-================
-*/
-image_t *GL_LoadPic (char *name, byte *pic, int width, int height, imagetype_t type)
-{
-	return R_CreateImage(name, pic, width, height, (type != it_pic && type != it_sky),
-		(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, type == it_pic);
-}
-
-/*
 ===============
 GL_FindImage
 
@@ -204,7 +191,8 @@ image_t	*GL_FindImage (char *name, imagetype_t type)
 		return NULL;
 	}
 
-	image = GL_LoadPic (name, pic, width, height, type);
+	image = R_CreateImage(name, pic, width, height, (type != it_pic && type != it_sky),
+		(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, type == it_pic);
 
 	if (pic)
 	{

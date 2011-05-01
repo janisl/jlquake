@@ -62,7 +62,7 @@ void R_InitParticleTexture (void)
 			data[y][x][3] = dottexture[x][y]*255;
 		}
 	}
-	r_particletexture = GL_LoadPic ("***particle***", (byte *)data, 8, 8, it_sprite);
+	r_particletexture = R_CreateImage("***particle***", (byte *)data, 8, 8, true, true, GL_CLAMP, false);
 
 	//
 	// also use this for bad textures, but without alpha
@@ -77,7 +77,7 @@ void R_InitParticleTexture (void)
 			data[y][x][3] = 255;
 		}
 	}
-	r_notexture = GL_LoadPic ("***r_notexture***", (byte *)data, 8, 8, it_wall);
+	r_notexture = R_CreateImage("***r_notexture***", (byte *)data, 8, 8, true, true, GL_REPEAT, false);
 }
 
 /* 
