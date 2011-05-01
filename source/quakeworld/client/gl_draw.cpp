@@ -221,6 +221,9 @@ void Draw_Init (void)
 	// now turn them into textures
 	byte* draw_chars32 = R_ConvertImage8To32(draw_chars, 128, 128, IMG8MODE_Normal);
 	char_texture = R_CreateImage("charset", draw_chars32, 128, 128, false, false, GL_CLAMP, false);
+	GL_Bind(char_texture);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	delete[] draw_chars32;
 //	Draw_CrosshairAdjust();
 	byte* cs_data32 = R_ConvertImage8To32(cs_data, 8, 8, IMG8MODE_Normal);
@@ -240,9 +243,6 @@ void Draw_Init (void)
 	dest = pic32 + (320 + 320*186 - 11 - 8*QStr::Length(ver)) * 4;
 	for (x=0 ; x<QStr::Length(ver) ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<5));
-
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
