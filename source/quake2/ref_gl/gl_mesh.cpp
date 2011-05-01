@@ -733,7 +733,7 @@ void R_DrawAliasModel (entity_t *e)
 		}
 	}
 	if (!skin)
-		skin = r_notexture;	// fallback...
+		skin = tr.defaultImage;	// fallback...
 	GL_Bind(skin);
 
 	// draw it

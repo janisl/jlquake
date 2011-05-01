@@ -86,7 +86,6 @@ extern	float	gldepthmin, gldepthmax;
 //====================================================
 
 
-extern	image_t		*r_notexture;
 extern	image_t		*r_particletexture;
 extern	entity_t	*currententity;
 extern	model_t		*currentmodel;

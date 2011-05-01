@@ -20,7 +20,7 @@
 #define SCRAP_BLOCK_WIDTH	256
 #define SCRAP_BLOCK_HEIGHT	256
 
-#define FILE_HASH_SIZE		1024
+#define	DEFAULT_SIZE	16
 
 //	Hexen 2 model texture modes, plus special type for skins.
 enum
@@ -72,6 +72,7 @@ image_t* R_FindImage(const char* name);
 image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap = false, int Mode = IMG8MODE_Normal, byte* TransPixels = NULL);
 void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
+void R_CreateDefaultImage();
 void R_CommonInitImages();
 void GL_TextureMode(const char* string);
 

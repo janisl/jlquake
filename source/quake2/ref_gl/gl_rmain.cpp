@@ -30,7 +30,6 @@ float		gldepthmin, gldepthmax;
 
 glstate2_t  gl_state;
 
-image_t		*r_notexture;		// use for bad textures
 image_t		*r_particletexture;	// little dot for particles
 
 entity_t	*currententity;

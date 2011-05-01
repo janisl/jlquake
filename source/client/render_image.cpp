@@ -24,6 +24,8 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define IMAGE_HASH_SIZE		1024
+
 // TYPES -------------------------------------------------------------------
 
 struct textureMode_t
@@ -69,7 +71,7 @@ int		gl_filter_max = GL_LINEAR;
 static byte			s_gammatable[256];
 static byte			s_intensitytable[256];
 
-static image_t*		ImageHashTable[FILE_HASH_SIZE];
+static image_t*		ImageHashTable[IMAGE_HASH_SIZE];
 
 static byte mipBlendColors[16][4] =
 {
@@ -1051,7 +1053,7 @@ static long generateHashValue(const char* fname)
 		hash += (long)(letter) * (i + 119);
 		i++;
 	}
-	hash &= (FILE_HASH_SIZE - 1);
+	hash &= (IMAGE_HASH_SIZE - 1);
 	return hash;
 }
 
@@ -1349,6 +1351,42 @@ void R_GammaCorrect(byte* Buffer, int BufferSize)
 	{
 		Buffer[i] = s_gammatable[Buffer[i]];
 	}
+}
+
+//==========================================================================
+//
+//	R_CreateDefaultImage
+//
+//==========================================================================
+
+void R_CreateDefaultImage()
+{
+	// the default image will be a box, to allow you to see the mapping coordinates
+	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
+	Com_Memset(data, 32, sizeof(data));
+	for (int x = 0; x < DEFAULT_SIZE; x++)
+	{
+		data[0][x][0] =
+		data[0][x][1] =
+		data[0][x][2] =
+		data[0][x][3] = 255;
+
+		data[x][0][0] =
+		data[x][0][1] =
+		data[x][0][2] =
+		data[x][0][3] = 255;
+
+		data[DEFAULT_SIZE-1][x][0] =
+		data[DEFAULT_SIZE-1][x][1] =
+		data[DEFAULT_SIZE-1][x][2] =
+		data[DEFAULT_SIZE-1][x][3] = 255;
+
+		data[x][DEFAULT_SIZE-1][0] =
+		data[x][DEFAULT_SIZE-1][1] =
+		data[x][DEFAULT_SIZE-1][2] =
+		data[x][DEFAULT_SIZE-1][3] = 255;
+	}
+	tr.defaultImage = R_CreateImage("*default", (byte*)data, DEFAULT_SIZE, DEFAULT_SIZE, true, false, GL_REPEAT, false);
 }
 
 //==========================================================================

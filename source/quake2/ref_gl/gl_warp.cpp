@@ -642,7 +642,7 @@ void R_SetSky (char *name, float rotate, vec3_t axis)
 
 		sky_images[i] = GL_FindImage (pathname, it_sky);
 		if (!sky_images[i])
-			sky_images[i] = r_notexture;
+			sky_images[i] = tr.defaultImage;
 
 		if (gl_skymip->value || skyrotate)
 		{	// take less memory

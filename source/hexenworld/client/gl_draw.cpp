@@ -122,6 +122,7 @@ void Draw_Init (void)
 	char	temp[MAX_QPATH];
 
 	R_CommonInitImages();
+	R_CreateDefaultImage();
 
 	// load the console background and the charset
 	// by hand, because we need to write the version

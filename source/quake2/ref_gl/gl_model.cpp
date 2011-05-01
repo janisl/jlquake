@@ -473,7 +473,7 @@ void Mod_LoadTexinfo (bsp38_lump_t *l)
 		if (!out->image)
 		{
 			ri.Con_Printf (PRINT_ALL, "Couldn't load %s\n", name);
-			out->image = r_notexture;
+			out->image = tr.defaultImage;
 		}
 	}
 

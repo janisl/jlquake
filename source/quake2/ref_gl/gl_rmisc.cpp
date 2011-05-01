@@ -64,20 +64,7 @@ void R_InitParticleTexture (void)
 	}
 	r_particletexture = R_CreateImage("***particle***", (byte *)data, 8, 8, true, true, GL_CLAMP, false);
 
-	//
-	// also use this for bad textures, but without alpha
-	//
-	for (x=0 ; x<8 ; x++)
-	{
-		for (y=0 ; y<8 ; y++)
-		{
-			data[y][x][0] = dottexture[x&3][y&3]*255;
-			data[y][x][1] = 0; // dottexture[x&3][y&3]*255;
-			data[y][x][2] = 0; //dottexture[x&3][y&3]*255;
-			data[y][x][3] = 255;
-		}
-	}
-	r_notexture = R_CreateImage("***r_notexture***", (byte *)data, 8, 8, true, true, GL_REPEAT, false);
+	R_CreateDefaultImage();
 }
 
 /* 
