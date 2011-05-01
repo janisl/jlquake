@@ -225,11 +225,15 @@ void Draw_Init (void)
 		if (draw_chars[i] == 0)
 			draw_chars[i] = 255;	// proper transparent color
 
-	char_texture = GL_LoadTexture8("charset", 256, 128, draw_chars, false, true, 0);
+	byte* draw_chars32 = R_ConvertImage8To32(draw_chars, 256, 128, IMG8MODE_Normal);
+	char_texture = GL_LoadTexture("charset", 256, 128, draw_chars32, false);
+	delete[] draw_chars32;
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	cs_texture = GL_LoadTexture8("crosshair", 8, 8, cs_data, false, true, 0);
+	byte* cs_data32 = R_ConvertImage8To32(cs_data, 8, 8, IMG8MODE_Normal);
+	cs_texture = GL_LoadTexture("crosshair", 8, 8, cs_data32, false);
+	delete[] cs_data32;
 
 	draw_smallchars = (byte*)W_GetLumpName("tinyfont");
 	for (i=0 ; i<128*32 ; i++)
@@ -237,7 +241,9 @@ void Draw_Init (void)
 			draw_smallchars[i] = 255;	// proper transparent color
 
 	// now turn them into textures
-	char_smalltexture = GL_LoadTexture8("smallcharset", 128, 32, draw_smallchars, false, true, 0);
+	byte* draw_smallchars32 = R_ConvertImage8To32(draw_smallchars, 128, 32, IMG8MODE_Normal);
+	char_smalltexture = GL_LoadTexture("smallcharset", 128, 32, draw_smallchars32, false);
+	delete[] draw_smallchars32;
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -264,10 +270,6 @@ void Draw_Init (void)
 
 	conback = GL_LoadTexture("conback", cbwidth, cbheight, pic32, false);
 	delete[] pic32;
-	conback->sl = 0;
-	conback->sh = 1;
-	conback->tl = 0;
-	conback->th = 1;
 	conback->width = vid.conwidth;
 	conback->height = vid.conheight;
 
@@ -1097,12 +1099,4 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 	}
 
 	return R_CreateImage(identifier, (byte*)data, width, height, mipmap, mipmap, mipmap ? GL_REPEAT : GL_CLAMP, false);
-}
-
-image_t* GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha, int mode)
-{
-	byte* pic32 = R_ConvertImage8To32(data, width, height, mode);
-	image_t* ret = GL_LoadTexture(identifier, width, height, pic32, mipmap);
-	delete[] pic32;
-	return ret;
 }

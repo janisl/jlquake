@@ -222,7 +222,9 @@ void Draw_Init (void)
 			draw_chars[i] = 255;	// proper transparent color
 
 	// now turn them into textures
-	char_texture = GL_LoadTexture8("charset", 128, 128, draw_chars, false, true);
+	byte* draw_chars32 = R_ConvertImage8To32(draw_chars, 128, 128, IMG8MODE_Normal);
+	char_texture = GL_LoadTexture("charset", 128, 128, draw_chars32, false);
+	delete[] draw_chars32;
 
 	start = Hunk_LowMark();
 
@@ -249,10 +251,6 @@ void Draw_Init (void)
 
 	conback = GL_LoadTexture("***conback", cbwidth, cbheight, pic32, false);
 	delete[] pic32;
-	conback->sl = 0;
-	conback->sh = 1;
-	conback->tl = 0;
-	conback->th = 1;
 	conback->width = vid.conwidth;
 	conback->height = vid.conheight;
 
@@ -670,14 +668,6 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 	}
 
 	return R_CreateImage(identifier, (byte*)data, width, height, mipmap, mipmap, mipmap ? GL_REPEAT : GL_CLAMP, false);
-}
-
-image_t* GL_LoadTexture8(char *identifier, int width, int height, byte *data, qboolean mipmap, qboolean alpha)
-{
-	byte* pic32 = R_ConvertImage8To32(data, width, height, IMG8MODE_Normal);
-	image_t* ret = GL_LoadTexture(identifier, width, height, pic32, mipmap);
-	delete[] pic32;
-	return ret;
 }
 
 int Draw_GetWidth(image_t* pic)

@@ -372,7 +372,9 @@ static void Mod_LoadTextures (bsp29_lump_t *l)
 			R_InitSky (tx);
 		else
 		{
-			tx->gl_texture = GL_LoadTexture8(mt->name, tx->width, tx->height, (byte *)(tx+1), true, false, 0);
+			byte* pic32 = R_ConvertImage8To32((byte *)(tx+1), tx->width, tx->height, IMG8MODE_Normal);
+			tx->gl_texture = GL_LoadTexture(mt->name, tx->width, tx->height, pic32, true);
+			delete[] pic32;
 		}
 	}
 
@@ -1474,7 +1476,7 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype, int md
 		}
 
 		sprintf (name, "%s_%i", loadmodel->name, i);
-		pheader->gl_texture[i] = GL_LoadTexture(name, pheader->skinwidth, pheader->skinheight, pic32, true);
+		pheader->gl_texture[i] = R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
 		delete[] pic32;
 		pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + s);
 	}
@@ -1884,7 +1886,9 @@ static void * Mod_LoadSpriteFrame (model_t *mod, void * pin, mspriteframe_t **pp
 
 	sprintf (name, "%s_%i", loadmodel->name, framenum);
 
-	pspriteframe->gl_texture = GL_LoadTexture8(name, width, height, (byte *)(pinframe + 1), true, true, 0);
+	byte* pic32 = R_ConvertImage8To32((byte *)(pinframe + 1), width, height, IMG8MODE_Normal);
+	pspriteframe->gl_texture = GL_LoadTexture(name, width, height, pic32, true);
+	delete[] pic32;
 
 	return (void *)((byte *)pinframe + sizeof (dsprite1frame_t) + size);
 }
