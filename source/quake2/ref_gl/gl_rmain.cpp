@@ -107,7 +107,6 @@ QCvar	*gl_polyblend;
 QCvar	*gl_flashblend;
 QCvar  *gl_saturatelighting;
 QCvar	*gl_swapinterval;
-QCvar	*gl_texturemode;
 QCvar	*gl_lockpvs;
 
 QCvar	*vid_ref;
@@ -925,7 +924,6 @@ void R_Register( void )
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_flashblend = Cvar_Get ("gl_flashblend", "0", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
-	gl_texturemode = Cvar_Get( "gl_texturemode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	gl_lockpvs = Cvar_Get( "gl_lockpvs", "0", 0 );
 
 	gl_vertex_arrays = Cvar_Get( "gl_vertex_arrays", "0", CVAR_ARCHIVE );
@@ -1135,10 +1133,10 @@ void R_BeginFrame( float camera_separation )
 	/*
 	** texturemode stuff
 	*/
-	if ( gl_texturemode->modified )
+	if ( r_textureMode->modified )
 	{
-		GL_TextureMode( gl_texturemode->string );
-		gl_texturemode->modified = false;
+		GL_TextureMode( r_textureMode->string );
+		r_textureMode->modified = false;
 	}
 
 	/*

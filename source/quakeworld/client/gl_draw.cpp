@@ -134,30 +134,6 @@ void Draw_CharToConback (int num, byte *dest)
 
 /*
 ===============
-Draw_TextureMode_f
-===============
-*/
-void Draw_TextureMode_f (void)
-{
-	int		i;
-
-	if (Cmd_Argc() == 1)
-	{
-		for (i=0 ; i< 6 ; i++)
-			if (gl_filter_min == modes[i].minimize)
-			{
-				Con_Printf ("%s\n", modes[i].name);
-				return;
-			}
-		Con_Printf ("current filter is unknown???\n");
-		return;
-	}
-
-	GL_TextureMode(Cmd_Argv(1));
-}
-
-/*
-===============
 Draw_Init
 ===============
 */
@@ -168,8 +144,6 @@ void Draw_Init (void)
 	int		x;
 	char	ver[40];
 	int start;
-
-	Cmd_AddCommand ("gl_texturemode", &Draw_TextureMode_f);
 
 	// load the console background and the charset
 	// by hand, because we need to write the version

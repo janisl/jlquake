@@ -795,6 +795,15 @@ void R_SetupFrame (void)
 
 	tr.frameCount++;
 
+	//
+	// texturemode stuff
+	//
+	if (r_textureMode->modified)
+	{
+		GL_TextureMode(r_textureMode->string);
+		r_textureMode->modified = false;
+	}
+
 // build the transformation matrix for the given view angles
 	VectorCopy (r_refdef.vieworg, r_origin);
 

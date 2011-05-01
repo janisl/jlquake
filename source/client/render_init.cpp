@@ -79,6 +79,7 @@ QCvar*		r_picmip;
 QCvar*		r_texturebits;
 QCvar*		r_colorMipLevels;
 QCvar*		r_simpleMipMaps;
+QCvar*		r_textureMode;
 
 QCvar*		r_ignoreGLErrors;
 
@@ -229,6 +230,7 @@ void R_SharedRegister()
 	r_gamma = Cvar_Get("r_gamma", "1", CVAR_ARCHIVE);
 	r_wateralpha = Cvar_Get("r_wateralpha","0.4", CVAR_ARCHIVE);
 	r_ignoreGLErrors = Cvar_Get("r_ignoreGLErrors", "1", CVAR_ARCHIVE);
+	r_textureMode = Cvar_Get("r_textureMode", "GL_LINEAR_MIPMAP_LINEAR", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time

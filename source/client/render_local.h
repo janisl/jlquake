@@ -130,6 +130,7 @@ extern QCvar*	r_texturebits;			// number of desired texture bits
 										// all else = error
 extern QCvar*	r_colorMipLevels;		// development aid to see texture mip usage
 extern QCvar*	r_simpleMipMaps;
+extern QCvar*	r_textureMode;
 
 extern QCvar*	r_ignoreGLErrors;
 

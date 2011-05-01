@@ -155,7 +155,6 @@ extern	QCvar	*gl_modulate;
 extern	QCvar	*gl_drawbuffer;
 extern  QCvar  *gl_driver;
 extern	QCvar	*gl_swapinterval;
-extern	QCvar	*gl_texturemode;
 extern  QCvar  *gl_saturatelighting;
 extern  QCvar  *gl_lockpvs;
 

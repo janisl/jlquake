@@ -86,7 +86,6 @@ QCvar	*r_shownormals;
 QCvar	*r_finish;
 QCvar	*r_clear;
 QCvar	*r_swapInterval;
-QCvar	*r_textureMode;
 QCvar	*r_offsetFactor;
 QCvar	*r_offsetUnits;
 QCvar	*r_lockpvs;
@@ -723,7 +722,6 @@ void R_Register( void )
 	r_dynamiclight = Cvar_Get( "r_dynamiclight", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
-	r_textureMode = Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 	r_swapInterval = Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
 	r_facePlaneCull = Cvar_Get ("r_facePlaneCull", "1", CVAR_ARCHIVE );
 
