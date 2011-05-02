@@ -864,7 +864,6 @@ struct trGlobals_t : trGlobals_base_t
 	image_t					*fogImage;
 	image_t					*flareImage;
 	image_t					*whiteImage;			// full of 0xff
-	image_t					*identityLightImage;	// full of tr.identityLightByte
 
 	shader_t				*defaultShader;
 	shader_t				*shadowShader;
