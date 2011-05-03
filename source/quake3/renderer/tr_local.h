@@ -860,10 +860,8 @@ struct trGlobals_t : trGlobals_base_t
 
 	const byte				*externalVisData;	// from RE_SetWorldVisData, shared with CM_Load
 
-	image_t					*scratchImage[32];
 	image_t					*fogImage;
 	image_t					*flareImage;
-	image_t					*whiteImage;			// full of 0xff
 
 	shader_t				*defaultShader;
 	shader_t				*shadowShader;

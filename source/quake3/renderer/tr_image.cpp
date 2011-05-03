@@ -253,19 +253,7 @@ R_CreateBuiltinImages
 ==================
 */
 void R_CreateBuiltinImages( void ) {
-	int		x,y;
-	byte	data[DEFAULT_SIZE][DEFAULT_SIZE][4];
-
-	R_CreateDefaultImage();
-
-	// we use a solid white image instead of disabling texturing
-	Com_Memset( data, 255, sizeof( data ) );
-	tr.whiteImage = R_CreateImage("*white", (byte *)data, 8, 8, qfalse, qfalse, GL_REPEAT, false);
-
-	for(x=0;x<32;x++) {
-		// scratchimage is usually used for cinematic drawing
-		tr.scratchImage[x] = R_CreateImage("*scratch", (byte *)data, DEFAULT_SIZE, DEFAULT_SIZE, qfalse, qtrue, GL_CLAMP, false);
-	}
+	R_CommonCreateBuiltinImages();
 
 	R_CreateDlightImage();
 	R_CreateFogImage();

@@ -64,7 +64,7 @@ void R_InitParticleTexture (void)
 	}
 	r_particletexture = R_CreateImage("***particle***", (byte *)data, 8, 8, true, true, GL_CLAMP, false);
 
-	R_CreateDefaultImage();
+	R_CommonCreateBuiltinImages();
 }
 
 /* 

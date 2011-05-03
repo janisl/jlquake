@@ -82,6 +82,8 @@ struct trGlobals_base_t
 	image_t*				defaultImage;
 	image_t*				scrapImage;			// for small graphics
 	image_t*				dlightImage;		// inverse-quare highlight for projective adding
+	image_t*				whiteImage;			// full of 0xff
+	image_t*				scratchImage[32];
 
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
