@@ -458,15 +458,12 @@ void R_BlendLightmaps (qboolean Translucent)
 		p = lightmap_polys[i];
 		if (!p)
 			continue;
-		GL_Bind(lightmap_textures[i]);
 		if (lightmap_modified[i])
 		{
 			lightmap_modified[i] = false;
-			int format;
-			int UploadWidth;
-			int UploadHeight;
-			R_UploadImage(lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
+			R_ReUploadImage(lightmap_textures[i], lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
 		}
+		GL_Bind(lightmap_textures[i]);
 		for ( ; p ; p=p->chain)
 		{
 			if (p->flags & SURF_UNDERWATER)
@@ -1269,11 +1266,7 @@ void GL_BuildLightmaps (void)
 		if (!allocated[i][0])
 			break;		// no more used
 		lightmap_modified[i] = false;
-		GL_Bind(lightmap_textures[i]);
-		int format;
-		int UploadWidth;
-		int UploadHeight;
-		R_UploadImage(lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
+		R_ReUploadImage(lightmap_textures[i], lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
 	}
 }
 

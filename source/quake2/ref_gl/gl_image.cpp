@@ -92,10 +92,7 @@ int	scrap_uploads;
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(tr.scrapImage);
-	int format;
-	int upload_width, upload_height;
-	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &format, &upload_width, &upload_height);
+	R_ReUploadImage(tr.scrapImage, scrap_texels);
 	scrap_dirty = false;
 }
 

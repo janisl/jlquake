@@ -123,18 +123,13 @@ void R_NetGraph (void)
 	if (!netgraphtexture)
 	{
 		netgraphtexture = R_CreateImage("*netgraph", (byte*)ngraph_pixels, NET_TIMINGS, NET_GRAPHHEIGHT, false, false, GL_CLAMP, false);
-		GL_Bind(netgraphtexture);
 	}
 	else
 	{
-		GL_Bind(netgraphtexture);
-
-		int format;
-		int UploadWidth;
-		int UploadHeight;
-		R_UploadImage((byte*)ngraph_pixels, NET_TIMINGS, NET_GRAPHHEIGHT, false, false, false, &format, &UploadWidth, &UploadHeight);
+		R_ReUploadImage(netgraphtexture, (byte*)ngraph_pixels);
 	}
 
+	GL_Bind(netgraphtexture);
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	x = 8;

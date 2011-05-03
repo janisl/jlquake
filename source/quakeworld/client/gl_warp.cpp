@@ -367,11 +367,7 @@ void R_InitSky (texture_t *mt)
 	}
 	else
 	{
-		GL_Bind (solidskytexture);
-		int format;
-		int UploadWidth;
-		int UploadHeight;
-		R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
+		R_ReUploadImage(solidskytexture, (byte*)trans);
 	}
 
 
@@ -391,11 +387,7 @@ void R_InitSky (texture_t *mt)
 	}
 	else
 	{
-		GL_Bind(alphaskytexture);
-		int format;
-		int UploadWidth;
-		int UploadHeight;
-		R_UploadImage((byte*)trans, 128, 128, false, false, false, &format, &UploadWidth, &UploadHeight);
+		R_ReUploadImage(alphaskytexture, (byte*)trans);
 	}
 }
 

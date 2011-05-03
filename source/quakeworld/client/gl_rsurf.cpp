@@ -1493,11 +1493,7 @@ void GL_BuildLightmaps (void)
 		lightmap_rectchange[i].t = BLOCK_HEIGHT;
 		lightmap_rectchange[i].w = 0;
 		lightmap_rectchange[i].h = 0;
-		GL_Bind(lightmap_textures[i]);
-		int format;
-		int UploadWidth;
-		int UploadHeight;
-		R_UploadImage(lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
+		R_ReUploadImage(lightmap_textures[i], lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
 	}
 
  	if (!gl_texsort->value && qglActiveTextureARB)

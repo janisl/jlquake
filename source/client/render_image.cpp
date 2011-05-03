@@ -755,7 +755,8 @@ static void GL_CheckErrors()
 //
 //==========================================================================
 
-void R_UploadImage(byte* data, int width, int height, bool mipmap, bool picmip, bool lightMap, int* format, int* pUploadWidth, int* pUploadHeight)
+static void R_UploadImage(byte* data, int width, int height, bool mipmap, bool picmip,
+	bool lightMap, int* format, int* pUploadWidth, int* pUploadHeight)
 {
 	//
 	// convert to exact power of 2 sizes
@@ -1146,6 +1147,25 @@ nonscrap:
 	ImageHashTable[hash] = image;
 
 	return image;
+}
+
+//==========================================================================
+//
+//	R_ReUploadImage
+//
+//	Parameters of the image are the same as when it was created.
+//	This is a very bad thing to do, but unfortunately it was a quite common
+// practice to use this for dynamicaly changing images. Most, if not all of
+// those cases can be rewritten not to do reuploading of data.
+//
+//==========================================================================
+
+void R_ReUploadImage(image_t* image, byte* data)
+{
+	GL_Bind(image);
+	bool isLightmap = !QStr::NCmp(image->imgName, "*lightmap", 9);
+	R_UploadImage(data, image->width, image->height, image->mipmap, image->allowPicmip,
+		isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
 }
 
 //==========================================================================

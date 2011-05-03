@@ -1360,10 +1360,7 @@ static void LM_UploadBlock( qboolean dynamic )
 	}
 	else
 	{
-		int format;
-		int UploadWidth;
-		int UploadHeight;
-		R_UploadImage(gl_lms.lightmap_buffer, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
+		R_ReUploadImage(gl_state.lightmap_textures[texture], gl_lms.lightmap_buffer);
 		if ( ++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS )
 			ri.Sys_Error( ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n" );
 	}
@@ -1564,11 +1561,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	/*
 	** initialize the dynamic lightmap texture
 	*/
-	GL_Bind( gl_state.lightmap_textures[0]);
-	int format;
-	int UploadWidth;
-	int UploadHeight;
-	R_UploadImage((byte*)dummy, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, true, &format, &UploadWidth, &UploadHeight);
+	R_ReUploadImage(gl_state.lightmap_textures[0], (byte*)dummy);
 }
 
 /*

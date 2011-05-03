@@ -40,8 +40,7 @@ int	scrap_uploads;
 void Scrap_Upload (void)
 {
 	scrap_uploads++;
-	GL_Bind(tr.scrapImage);
-	R_UploadImage(scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, false, &tr.scrapImage->internalFormat, &tr.scrapImage->uploadWidth, &tr.scrapImage->uploadHeight);
+	R_ReUploadImage(tr.scrapImage, scrap_texels);
 	scrap_dirty = false;
 }
 
@@ -381,14 +380,13 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 	{
 		// save a texture slot for translated picture
 		translate_texture = R_CreateImage("*translate_pic", (byte*)trans, 64, 64, false, false, GL_CLAMP, false);
-		GL_Bind (translate_texture);
 	}
 	else
 	{
-		GL_Bind (translate_texture);
-
-		R_UploadImage((byte*)trans, 64, 64, false, false, false, &translate_texture->internalFormat, &translate_texture->uploadWidth, &translate_texture->uploadHeight);
+		R_ReUploadImage(translate_texture, (byte*)trans);
 	}
+
+	GL_Bind (translate_texture);
 
 	qglColor3f (1,1,1);
 	qglBegin (GL_QUADS);

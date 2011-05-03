@@ -322,18 +322,13 @@ void R_TranslatePlayerSkin (int playernum)
 	if (!playertextures[playernum])
 	{
 		playertextures[playernum] = R_CreateImage(va("*player%d", playernum), (byte*)pixels, scaled_width, scaled_height, false, true, GL_CLAMP, false);
-		GL_Bind(playertextures[playernum]);
 	}
 	else
 	{
-		GL_Bind(playertextures[playernum]);
-
-		int format;
-		int UploadWidth;
-		int UploadHeight;
-		R_UploadImage((byte*)pixels, scaled_width, scaled_height, false, true, false, &format, &UploadWidth, &UploadHeight);
+		R_ReUploadImage(playertextures[playernum], (byte*)pixels);
 	}
 
+	GL_Bind(playertextures[playernum]);
 	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
