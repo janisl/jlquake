@@ -1748,3 +1748,23 @@ void R_ImageList_f()
 	GLog.Write(" %i total texels (not including mipmaps)\n", texels);
 	GLog.Write(" %i total images\n\n", tr.numImages);
 }
+
+//==========================================================================
+//
+//	R_SumOfUsedImages
+//
+//==========================================================================
+
+int R_SumOfUsedImages()
+{
+	int total = 0;
+	for (int i = 0; i < tr.numImages; i++)
+	{
+		if (tr.images[i]->frameUsed == tr.frameCount)
+		{
+			total += tr.images[i]->uploadWidth * tr.images[i]->uploadHeight;
+		}
+	}
+
+	return total;
+}

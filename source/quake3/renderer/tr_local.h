@@ -1106,7 +1106,6 @@ void	R_SkinList_f( void );
 const void *RB_TakeScreenshotCmd( const void *data );
 void	R_ScreenShot_f( void );
 
-int		R_SumOfUsedImages( void );
 void	R_InitSkins( void );
 skin_t	*R_GetSkinByHandle( qhandle_t hSkin );
 
