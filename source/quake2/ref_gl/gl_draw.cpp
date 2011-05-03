@@ -300,7 +300,6 @@ Draw_StretchRaw
 =============
 */
 extern unsigned	r_rawpalette[256];
-image_t*	cinematic_image;
 
 void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data)
 {
@@ -313,11 +312,7 @@ void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 	int			row;
 	float		t;
 
-	if (!cinematic_image)
-	{
-		cinematic_image = R_CreateImage("*cinematic", (byte*)image32, 256, 256, false, false, GL_CLAMP, false);
-	}
-	GL_Bind (cinematic_image);
+	GL_Bind(tr.scratchImage[0]);
 
 	if (rows<=256)
 	{
