@@ -239,7 +239,10 @@ void R_SharedRegister()
 	r_verbose = Cvar_Get("r_verbose", "0", CVAR_CHEAT);
 	r_nobind = Cvar_Get("r_nobind", "0", CVAR_CHEAT);
 
+	// make sure all the commands added here are also
+	// removed in R_Shutdown
 	Cmd_AddCommand("modelist", R_ModeList_f);
+	Cmd_AddCommand("imagelist", R_ImageList_f);
 }
 
 //==========================================================================

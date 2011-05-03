@@ -778,9 +778,6 @@ void R_Register( void )
 	r_maxpolys = Cvar_Get( "r_maxpolys", va("%d", MAX_POLYS), 0);
 	r_maxpolyverts = Cvar_Get( "r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
 
-	// make sure all the commands added here are also
-	// removed in R_Shutdown
-	Cmd_AddCommand( "imagelist", R_ImageList_f );
 	Cmd_AddCommand( "shaderlist", R_ShaderList_f );
 	Cmd_AddCommand( "skinlist", R_SkinList_f );
 	Cmd_AddCommand( "modellist", R_Modellist_f );

@@ -73,6 +73,7 @@ void R_InitImages();
 void R_DeleteTextures();
 void GL_TextureMode(const char* string);
 void R_ScrapUpload();
+void R_ImageList_f();
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 

@@ -940,7 +940,6 @@ void R_Register( void )
 
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 
-	Cmd_AddCommand( "imagelist", GL_ImageList_f );
 	Cmd_AddCommand( "screenshot", GL_ScreenShot_f );
 	Cmd_AddCommand( "modellist", Mod_Modellist_f );
 	Cmd_AddCommand( "gfxinfo", CommonGfxInfo_f);

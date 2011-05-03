@@ -60,33 +60,6 @@ void GL_MBind( int target, image_t* image)
 	GL_Bind(image);
 }
 
-/*
-===============
-GL_ImageList_f
-===============
-*/
-void	GL_ImageList_f (void)
-{
-	int		i;
-	image_t	*image;
-	int		texels;
-
-	ri.Con_Printf (PRINT_ALL, "------------------\n");
-	texels = 0;
-
-	for (i=0; i<tr.numImages; i++)
-	{
-		image = tr.images[i];
-		if (!image)
-			continue;
-		texels += image->uploadWidth*image->uploadHeight;
-
-		ri.Con_Printf (PRINT_ALL,  "%3i %3i: %s\n",
-			image->uploadWidth, image->uploadHeight, image->imgName);
-	}
-	ri.Con_Printf (PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels);
-}
-
 //=======================================================
 
 /*

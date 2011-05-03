@@ -1679,3 +1679,72 @@ void GL_TextureMode(const char* string)
 		}
 	}
 }
+
+//==========================================================================
+//
+//	R_ImageList_f
+//
+//==========================================================================
+
+void R_ImageList_f()
+{
+	const char* yesno[] =
+	{
+		"no ", "yes"
+	};
+
+	GLog.Write("\n      -w-- -h-- -mm- -if-- wrap --name-------\n");
+	int texels = 0;
+
+	for (int i = 0; i < tr.numImages; i++)
+	{
+		image_t* image = tr.images[i];
+
+		texels += image->uploadWidth*image->uploadHeight;
+		GLog.Write("%4i: %4i %4i  %s ", i, image->uploadWidth, image->uploadHeight, yesno[image->mipmap]);
+		switch (image->internalFormat)
+		{
+		case GL_RGB:
+			GLog.Write("RGB  ");
+			break;
+		case GL_RGBA:
+			GLog.Write("RGBA ");
+			break;
+		case GL_RGBA8:
+			GLog.Write("RGBA8");
+			break;
+		case GL_RGB8:
+			GLog.Write("RGB8 ");
+			break;
+		case GL_RGB4_S3TC:
+			GLog.Write("S3TC ");
+			break;
+		case GL_RGBA4:
+			GLog.Write("RGBA4");
+			break;
+		case GL_RGB5:
+			GLog.Write("RGB5 ");
+			break;
+		default:
+			GLog.Write("???? ");
+		}
+
+		switch (image->wrapClampMode)
+		{
+		case GL_REPEAT:
+			GLog.Write("rept ");
+			break;
+		case GL_CLAMP:
+			GLog.Write("clmp ");
+			break;
+		default:
+			GLog.Write("%4i ", image->wrapClampMode);
+			break;
+		}
+		
+		GLog.Write(" %s\n", image->imgName);
+	}
+	GLog.Write(" ---------\n");
+	GLog.Write(" %i total texels (not including mipmaps)\n", texels);
+	GLog.Write(" %i total images\n\n", tr.numImages);
+}
