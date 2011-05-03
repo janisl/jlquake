@@ -87,15 +87,6 @@ void	GL_ImageList_f (void)
 	ri.Con_Printf (PRINT_ALL, "Total texel count (not counting mipmaps): %i\n", texels);
 }
 
-int	scrap_uploads;
-
-void Scrap_Upload (void)
-{
-	scrap_uploads++;
-	R_ReUploadImage(tr.scrapImage, scrap_texels);
-	scrap_dirty = false;
-}
-
 //=======================================================
 
 /*

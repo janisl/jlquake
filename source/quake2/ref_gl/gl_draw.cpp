@@ -24,9 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 image_t		*draw_chars;
 
-void Scrap_Upload (void);
-
-
 /*
 ===============
 Draw_InitLocal
@@ -143,7 +140,7 @@ void Draw_StretchPic (int x, int y, int w, int h, char *pic)
 	}
 
 	if (scrap_dirty)
-		Scrap_Upload ();
+		R_ScrapUpload();
 
 	GL_Bind (gl);
 	qglBegin (GL_QUADS);
@@ -175,7 +172,7 @@ void Draw_Pic (int x, int y, char *pic)
 		return;
 	}
 	if (scrap_dirty)
-		Scrap_Upload ();
+		R_ScrapUpload();
 
 	GL_Bind (gl);
 	qglBegin (GL_QUADS);

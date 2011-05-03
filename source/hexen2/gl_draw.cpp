@@ -27,15 +27,6 @@ image_t*	char_menufonttexture;
 
 image_t		*conback;
 
-int	scrap_uploads;
-
-void Scrap_Upload (void)
-{
-	scrap_uploads++;
-	R_ReUploadImage(tr.scrapImage, scrap_texels);
-	scrap_dirty = false;
-}
-
 //=============================================================================
 /* Support Routines */
 
@@ -384,7 +375,7 @@ void Draw_Pic (int x, int y, image_t* pic)
 //	int				v, u;
 
 	if (scrap_dirty)
-		Scrap_Upload ();
+		R_ScrapUpload();
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
 
@@ -416,7 +407,7 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 	}
 
 	if (scrap_dirty)
-		Scrap_Upload ();
+		R_ScrapUpload();
 
 	// rjr tl/th need to be computed based upon pic->tl and pic->th
 	//     cuz the piece may come from the scrap

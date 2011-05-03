@@ -17,11 +17,6 @@
 //**
 //**************************************************************************
 
-#define SCRAP_BLOCK_WIDTH	256
-#define SCRAP_BLOCK_HEIGHT	256
-
-#define	DEFAULT_SIZE	16
-
 //	Hexen 2 model texture modes, plus special type for skins.
 enum
 {
@@ -76,6 +71,7 @@ void R_InitFogTable();
 float R_FogFactor(float S, float T);
 void R_InitImages();
 void GL_TextureMode(const char* string);
+void R_ScrapUpload();
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 
@@ -101,7 +97,4 @@ extern unsigned*	d_8to24table;
 extern int			ColorIndex[16];
 extern unsigned		ColorPercent[16];
 
-extern byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 extern bool			scrap_dirty;
-
-extern	int			gl_filter_min, gl_filter_max;

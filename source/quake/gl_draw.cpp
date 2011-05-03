@@ -35,15 +35,6 @@ image_t*	char_texture;
 
 image_t*	conback;
 
-int	scrap_uploads;
-
-void Scrap_Upload (void)
-{
-	scrap_uploads++;
-	R_ReUploadImage(tr.scrapImage, scrap_texels);
-	scrap_dirty = false;
-}
-
 //=============================================================================
 /* Support Routines */
 
@@ -274,7 +265,7 @@ void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 	int				v, u;
 
 	if (scrap_dirty)
-		Scrap_Upload ();
+		R_ScrapUpload();
 	qglDisable(GL_ALPHA_TEST);
 	qglEnable (GL_BLEND);
 //	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -309,7 +300,7 @@ void Draw_Pic (int x, int y, image_t* pic)
 	int				v, u;
 
 	if (scrap_dirty)
-		Scrap_Upload ();
+		R_ScrapUpload();
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
 	qglBegin (GL_QUADS);

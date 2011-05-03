@@ -26,6 +26,11 @@
 
 #define IMAGE_HASH_SIZE		1024
 
+#define SCRAP_BLOCK_WIDTH	256
+#define SCRAP_BLOCK_HEIGHT	256
+
+#define DEFAULT_SIZE		16
+
 // TYPES -------------------------------------------------------------------
 
 struct textureMode_t
@@ -59,12 +64,7 @@ unsigned ColorPercent[16] =
 	25, 51, 76, 102, 114, 127, 140, 153, 165, 178, 191, 204, 216, 229, 237, 247
 };
 
-static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
-byte		scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
 bool		scrap_dirty;
-
-int		gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
-int		gl_filter_max = GL_LINEAR;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -72,6 +72,13 @@ static byte			s_gammatable[256];
 static byte			s_intensitytable[256];
 
 static image_t*		ImageHashTable[IMAGE_HASH_SIZE];
+
+static int			gl_filter_min = GL_LINEAR_MIPMAP_LINEAR;
+static int			gl_filter_max = GL_LINEAR;
+
+static int			scrap_allocated[SCRAP_BLOCK_WIDTH];
+static byte			scrap_texels[SCRAP_BLOCK_WIDTH * SCRAP_BLOCK_HEIGHT * 4];
+static int			scrap_uploads;
 
 static byte mipBlendColors[16][4] =
 {
@@ -1022,6 +1029,19 @@ static bool R_ScrapAllocBlock(int w, int h, int* x, int* y)
 	}
 
 	return true;
+}
+
+//==========================================================================
+//
+//	R_ScrapUpload
+//
+//==========================================================================
+
+void R_ScrapUpload()
+{
+	scrap_uploads++;
+	R_ReUploadImage(tr.scrapImage, scrap_texels);
+	scrap_dirty = false;
 }
 
 //==========================================================================

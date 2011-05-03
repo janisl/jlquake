@@ -222,4 +222,4 @@
 03.05.2011
   I changed name of the project to jlquake as vquake name was already used by ID. Will also changed SourceForge UNIX name once that service becomes available again.
   I added common initialisation of built-in images.
-  I added common method that re-uploads image data.
+  I added common method that re-uploads data of an existing image.
