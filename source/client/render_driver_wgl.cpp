@@ -25,7 +25,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define WINDOW_CLASS_NAME	"vQuake"
+#define WINDOW_CLASS_NAME	"JLQuake"
 
 enum
 {
