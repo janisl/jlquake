@@ -214,5 +214,10 @@
 30.04.2011
   I merged method that creates an image.
   In Quake 2 I removed unloading of unused images as memory is not an issue nowdays and probably later I will do a full reinit of renderer on level change like it's done in Quake 3.
-03.04.2011
+01.05.2011
+  I changed loading of embedded model skins and sprites not to search for texture as it will never be found.
+  I merged method that either finds or loads an image from file.
+  I merged methods and cvars for texture filter.
+  I added common default image, the one from Quake 3. Funny, Quake/Hexen 2 also have default mip texture but it's never uploaded to OpenGL.
+03.05.2011
   I changed name of the project to jlquake as vquake name was already used by ID. Will also changed SourceForge UNIX name once that service becomes available again.
