@@ -49,6 +49,6 @@ set(HEXEN2_FILES
 	snd_dma.cpp
 )
 
-add_executable(vhexen2 ${HEXEN2_FILES})
-set_target_properties(vhexen2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vhexen2 client core progsvm zlib jpeg ${LDFLAGS})
+add_executable(jlhexen2 ${HEXEN2_FILES})
+set_target_properties(jlhexen2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+target_link_libraries(jlhexen2 client core progsvm zlib jpeg ${LDFLAGS})

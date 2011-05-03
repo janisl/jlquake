@@ -800,7 +800,7 @@ void Host_Init (quakeparms_t *parms)
 	try
 	{
 	GGameType = GAME_Quake;
-	Sys_SetHomePathSuffix("vquake");
+	Sys_SetHomePathSuffix("jlquake");
 	GLog.AddListener(&MainLog);
 
 	if (standard_quake)

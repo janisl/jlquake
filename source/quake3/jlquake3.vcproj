@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="windows-1253"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="vqwsv"
-	ProjectGUID="{9083E67D-9909-407C-ABE1-441C5B45C8C6}"
-	TargetFrameworkVersion="0"
+	Name="jlquake3"
+	ProjectGUID="{81CB51C4-B434-4E12-B69B-BAEE102F2852}"
+	RootNamespace="quake3"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -15,11 +16,11 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Release|Win32"
+			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="2"
@@ -38,39 +39,44 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Release/qwsv.tlb"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/quake3.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=".,..\client"
-				PreprocessorDefinitions="NDEBUG;SERVERONLY;WIN32;_CONSOLE"
-				StringPooling="true"
-				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/qwsv.pch"
+				Optimization="0"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
+				RuntimeLibrary="1"
+				UsePrecompiledHeader="0"
 				BrowseInformation="1"
+				WarningLevel="3"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
+				PreprocessorDefinitions="_DEBUG"
 				Culture="1033"
+				ResourceOutputFileName="win32\winquake.res"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib iphlpapi.lib odbc32.lib odbccp32.lib winmm.lib"
-				LinkIncremental="1"
+				AdditionalDependencies="winmm.lib wsock32.lib iphlpapi.lib dxguid.lib opengl32.lib"
+				LinkIncremental="2"
 				SuppressStartupBanner="true"
+				GenerateDebugInformation="true"
 				SubSystem="2"
+				StackReserveSize="8388608"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -86,7 +92,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -96,16 +101,19 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				Description="Post build processing.."
+				CommandLine="rem bash -c &quot;perl ./unix/cons -- debug&quot;"
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|Win32"
+			Name="Release|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -121,26 +129,31 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Debug/qwsv.tlb"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/quake3.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories=".,..\client"
-				PreprocessorDefinitions="_DEBUG;SERVERONLY;WIN32;_CONSOLE"
-				RuntimeLibrary="1"
-				PrecompiledHeaderFile=".\Debug/qwsv.pch"
-				BrowseInformation="1"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS"
+				StringPooling="true"
+				RuntimeLibrary="0"
+				EnableFunctionLevelLinking="true"
+				UsePrecompiledHeader="0"
+				WarningLevel="4"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="4"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
+				PreprocessorDefinitions="NDEBUG"
 				Culture="1033"
 			/>
 			<Tool
@@ -148,13 +161,12 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib iphlpapi.lib odbc32.lib odbccp32.lib winmm.lib"
-				LinkIncremental="2"
+				AdditionalDependencies="winmm.lib wsock32.lib iphlpapi.lib dxguid.lib opengl32.lib"
+				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
-				GenerateMapFile="true"
-				MapFileName="$(TargetDir)qwsv.map"
 				SubSystem="2"
+				StackReserveSize="8388608"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="1"
@@ -170,7 +182,6 @@
 			/>
 			<Tool
 				Name="VCBscMakeTool"
-				SuppressStartupBanner="true"
 			/>
 			<Tool
 				Name="VCFxCopTool"
@@ -191,91 +202,135 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="..\client\cmd.cpp"
+				RelativePath=".\client\cl_cgame.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\common.cpp"
+				RelativePath=".\client\cl_cin.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\cvar.cpp"
+				RelativePath=".\client\cl_console.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\quake\v2\client\net.h"
+				RelativePath=".\client\cl_input.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\net_chan.cpp"
+				RelativePath=".\client\cl_keys.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmove.cpp"
+				RelativePath=".\client\cl_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmovetst.cpp"
+				RelativePath=".\client\cl_net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_cmds.cpp"
+				RelativePath=".\client\cl_parse.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_edict.cpp"
+				RelativePath=".\client\cl_scrn.cpp"
 				>
 			</File>
 			<File
-				RelativePath="pr_exec.cpp"
+				RelativePath=".\client\cl_ui.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_ccmds.cpp"
+				RelativePath="qcommon\cmd.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_ents.cpp"
+				RelativePath="qcommon\common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_init.cpp"
+				RelativePath="qcommon\cvar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_main.cpp"
+				RelativePath="qcommon\files.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_move.cpp"
+				RelativePath="qcommon\msg.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_nchan.cpp"
+				RelativePath="qcommon\net_chan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_phys.cpp"
+				RelativePath="game\q_math.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_send.cpp"
+				RelativePath="game\q_shared.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_user.cpp"
+				RelativePath="client\snd_dma.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sys_win.cpp"
+				RelativePath="server\sv_bot.cpp"
 				>
 			</File>
 			<File
-				RelativePath="world.cpp"
+				RelativePath="server\sv_ccmds.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\zone.cpp"
+				RelativePath="server\sv_client.cpp"
+				>
+			</File>
+			<File
+				RelativePath="server\sv_game.cpp"
+				>
+			</File>
+			<File
+				RelativePath="server\sv_init.cpp"
+				>
+			</File>
+			<File
+				RelativePath="server\sv_main.cpp"
+				>
+			</File>
+			<File
+				RelativePath="server\sv_net_chan.cpp"
+				>
+			</File>
+			<File
+				RelativePath="server\sv_snapshot.cpp"
+				>
+			</File>
+			<File
+				RelativePath="server\sv_world.cpp"
+				>
+			</File>
+			<File
+				RelativePath="qcommon\vm.cpp"
+				>
+			</File>
+			<File
+				RelativePath="qcommon\vm_interpreted.cpp"
+				>
+			</File>
+			<File
+				RelativePath="qcommon\vm_x86.cpp"
+				>
+			</File>
+			<File
+				RelativePath="win32\win_main.cpp"
+				>
+			</File>
+			<File
+				RelativePath="win32\win_shared.cpp"
 				>
 			</File>
 		</Filter>
@@ -284,131 +339,75 @@
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
 			<File
-				RelativePath="..\client\bothdefs.h"
+				RelativePath="game\bg_public.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\cdaudio.h"
+				RelativePath="cgame\cg_public.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\client.h"
+				RelativePath="client\client.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\cmd.h"
+				RelativePath="game\g_public.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\common.h"
+				RelativePath="ui\keycodes.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\console.h"
+				RelativePath="client\keys.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\d_iface.h"
+				RelativePath="game\q_shared.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\draw.h"
+				RelativePath="qcommon\qcommon.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\input.h"
+				RelativePath="qcommon\qfiles.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\keys.h"
+				RelativePath="renderer\qgl.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\mathlib.h"
+				RelativePath="win32\resource.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\menu.h"
+				RelativePath="server\server.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\net.h"
+				RelativePath="renderer\tr_local.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmove.h"
+				RelativePath="renderer\tr_public.h"
 				>
 			</File>
 			<File
-				RelativePath="pr_comp.h"
+				RelativePath="cgame\tr_types.h"
 				>
 			</File>
 			<File
-				RelativePath="progdefs.h"
+				RelativePath="ui\ui_public.h"
 				>
 			</File>
 			<File
-				RelativePath="progs.h"
+				RelativePath="qcommon\vm_local.h"
 				>
 			</File>
 			<File
-				RelativePath="..\client\protocol.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\quakedef.h"
-				>
-			</File>
-			<File
-				RelativePath="qwsvdef.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\render.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\sbar.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\screen.h"
-				>
-			</File>
-			<File
-				RelativePath="server.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\sound.h"
-				>
-			</File>
-			<File
-				RelativePath="sys.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\vid.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\view.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\wad.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\winquake.h"
-				>
-			</File>
-			<File
-				RelativePath="world.h"
-				>
-			</File>
-			<File
-				RelativePath="..\client\zone.h"
+				RelativePath="win32\win_local.h"
 				>
 			</File>
 		</Filter>
@@ -416,6 +415,22 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 			>
+			<File
+				RelativePath="win32\cursor2.cur"
+				>
+			</File>
+			<File
+				RelativePath="win32\cursor3.cur"
+				>
+			</File>
+			<File
+				RelativePath="win32\qe3.ico"
+				>
+			</File>
+			<File
+				RelativePath="win32\winquake.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

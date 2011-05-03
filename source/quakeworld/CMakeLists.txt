@@ -38,9 +38,9 @@ set(QWSV_OBJS
 	client/net_chan.cpp
 )
 
-add_executable(vqwsv ${QWSV_OBJS})
-set_target_properties(vqwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
-target_link_libraries(vqwsv core progsvm zlib ${SV_LDFLAGS})
+add_executable(jlqwsv ${QWSV_OBJS})
+set_target_properties(jlqwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
+target_link_libraries(jlqwsv core progsvm zlib ${SV_LDFLAGS})
 
 #############################################################################
 # GL CLIENT
@@ -85,6 +85,6 @@ set(GLQWCL_OBJS
 	client/gl_warp.cpp
 )
 
-add_executable(vqwcl ${GLQWCL_OBJS})
-set_target_properties(vqwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vqwcl client core zlib jpeg ${LDFLAGS})
+add_executable(jlqwcl ${GLQWCL_OBJS})
+set_target_properties(jlqwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+target_link_libraries(jlqwcl client core zlib jpeg ${LDFLAGS})

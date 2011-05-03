@@ -39,9 +39,9 @@ set(HWSV_FILES
 	client/net_chan.cpp
 )
 
-add_executable(vhwsv ${HWSV_FILES})
-set_target_properties(vhwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
-target_link_libraries(vhwsv core progsvm zlib ${SV_LDFLAGS})
+add_executable(jlhwsv ${HWSV_FILES})
+set_target_properties(jlhwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
+target_link_libraries(jlhwsv core progsvm zlib ${SV_LDFLAGS})
 
 #############################################################################
 # GL CLIENT
@@ -88,6 +88,6 @@ set(HWCL_FILES
 	client/gl_warp.cpp
 )
 
-add_executable(vhwcl ${HWCL_FILES})
-set_target_properties(vhwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vhwcl client core zlib jpeg ${LDFLAGS})
+add_executable(jlhwcl ${HWCL_FILES})
+set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+target_link_libraries(jlhwcl client core zlib jpeg ${LDFLAGS})

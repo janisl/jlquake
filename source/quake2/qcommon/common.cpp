@@ -983,7 +983,7 @@ void Qcommon_Init (int argc, char **argv)
 		Sys_Error ("Error during initialization");
 
 	GGameType = GAME_Quake2;
-	Sys_SetHomePathSuffix("vquake2");
+	Sys_SetHomePathSuffix("jlquake2");
 	GLog.AddListener(&MainLog);
 
 	z_chain.next = z_chain.prev = &z_chain;

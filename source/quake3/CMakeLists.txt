@@ -96,10 +96,10 @@ else(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
-add_executable(vquake3 ${QUAKE3_FILES})
-set_target_properties(vquake3 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake3 botlib client core jpeg zlib ${GLLDFLAGS})
-add_dependencies(vquake3 botlib client jpeg)
+add_executable(jlquake3 ${QUAKE3_FILES})
+set_target_properties(jlquake3 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+target_link_libraries(jlquake3 botlib client core jpeg zlib ${GLLDFLAGS})
+add_dependencies(jlquake3 botlib client jpeg)
 
 #############################################################################
 # DEDICATED SERVER                        
@@ -157,7 +157,7 @@ else(${SIZEOF_VOID_PTR} MATCHES "^4$")
 	)
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
-add_executable(vquake3ded ${QUAKE3_DEDICATED_FILES})
-set_target_properties(vquake3ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED -DC_ONLY")
-target_link_libraries(vquake3ded botlib core zlib ${LDFLAGS})
-add_dependencies(vquake3ded core botlib zlib)
+add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})
+set_target_properties(jlquake3ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED -DC_ONLY")
+target_link_libraries(jlquake3ded botlib core zlib ${LDFLAGS})
+add_dependencies(jlquake3ded core botlib zlib)

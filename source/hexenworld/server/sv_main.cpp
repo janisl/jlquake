@@ -1571,7 +1571,7 @@ void SV_Init (quakeparms_t *parms)
 	try
 	{
 	GGameType = GAME_Hexen2 | GAME_HexenWorld;
-	Sys_SetHomePathSuffix("vhexen2");
+	Sys_SetHomePathSuffix("jlhexen2");
 	GLog.AddListener(&MainLog);
 
 	COM_InitArgv2(parms->argc, parms->argv);

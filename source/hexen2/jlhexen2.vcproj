@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="vhexen2"
+	Name="jlhexen2"
 	ProjectGUID="{0BFA9E1B-695A-485F-916D-86A4A0B5E9D9}"
 	RootNamespace="vhexen2"
 	TargetFrameworkVersion="0"

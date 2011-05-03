@@ -915,7 +915,7 @@ void Host_Init (quakeparms_t *parms)
 	try
 	{
 	GGameType = GAME_Hexen2;
-	Sys_SetHomePathSuffix("vhexen2");
+	Sys_SetHomePathSuffix("jlhexen2");
 	GLog.AddListener(&MainLog);
 
 //	if (standard_quake)

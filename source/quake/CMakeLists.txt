@@ -48,6 +48,6 @@ set(QUAKE_FILES
 	zone.cpp
 )
 
-add_executable(vquake ${QUAKE_FILES})
-set_target_properties(vquake PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake client progsvm core zlib jpeg ${LDFLAGS})
+add_executable(jlquake ${QUAKE_FILES})
+set_target_properties(jlquake PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+target_link_libraries(jlquake client progsvm core zlib jpeg ${LDFLAGS})

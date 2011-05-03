@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="vhwsv"
-	ProjectGUID="{3918E6E0-AB3C-4A77-AC60-13AB718DCC1F}"
-	RootNamespace="qwsv"
+	Name="jlquake"
+	ProjectGUID="{E2087682-C86E-4B66-80FB-3C80D3E6E8CF}"
+	RootNamespace="winquake"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -13,6 +13,9 @@
 		/>
 	</Platforms>
 	<ToolFiles>
+		<DefaultToolFile
+			FileName="masm.rules"
+		/>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
@@ -32,6 +35,9 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="MASM"
+			/>
+			<Tool
 				Name="VCXMLDataGeneratorTool"
 			/>
 			<Tool
@@ -39,21 +45,22 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Release/qwsv.tlb"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\release_gl/WinQuake.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories=".,..\client"
-				PreprocessorDefinitions="NDEBUG;SERVERONLY;WIN32;_CONSOLE;MGNET"
-				StringPooling="true"
+				Optimization="4"
+				FavorSizeOrSpeed="1"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="true"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
-				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -68,10 +75,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib iphlpapi.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="dxguid.lib comctl32.lib winmm.lib wsock32.lib iphlpapi.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				GenerateDebugInformation="true"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -117,6 +123,9 @@
 				Name="VCCustomBuildTool"
 			/>
 			<Tool
+				Name="MASM"
+			/>
+			<Tool
 				Name="VCXMLDataGeneratorTool"
 			/>
 			<Tool
@@ -124,15 +133,18 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TypeLibraryName=".\Debug/qwsv.tlb"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\debug_gl/WinQuake.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".,..\client"
-				PreprocessorDefinitions="_DEBUG;SERVERONLY;WIN32;_CONSOLE"
-				MinimalRebuild="true"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				RuntimeLibrary="1"
 				BrowseInformation="1"
 				SuppressStartupBanner="true"
@@ -151,7 +163,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="wsock32.lib iphlpapi.lib odbc32.lib odbccp32.lib"
+				AdditionalDependencies="dxguid.lib comctl32.lib winmm.lib wsock32.lib iphlpapi.lib opengl32.lib glu32.lib odbc32.lib odbccp32.lib"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				GenerateDebugInformation="true"
@@ -192,27 +204,111 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="..\client\cmd.cpp"
+				RelativePath="chase.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\common.cpp"
+				RelativePath="cl_demo.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\cvar.cpp"
+				RelativePath="cl_input.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\net_chan.cpp"
+				RelativePath="cl_main.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmove.cpp"
+				RelativePath="cl_parse.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\pmovetst.cpp"
+				RelativePath="cl_tent.cpp"
+				>
+			</File>
+			<File
+				RelativePath="cmd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="common.cpp"
+				>
+			</File>
+			<File
+				RelativePath="console.cpp"
+				>
+			</File>
+			<File
+				RelativePath="cvar.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_draw.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_mesh.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_model.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_refrag.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_rlight.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_rmain.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_rmisc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_rsurf.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_screen.cpp"
+				>
+			</File>
+			<File
+				RelativePath="gl_warp.cpp"
+				>
+			</File>
+			<File
+				RelativePath="host.cpp"
+				>
+			</File>
+			<File
+				RelativePath="host_cmd.cpp"
+				>
+			</File>
+			<File
+				RelativePath="keys.cpp"
+				>
+			</File>
+			<File
+				RelativePath="menu.cpp"
+				>
+			</File>
+			<File
+				RelativePath="net_dgrm.cpp"
+				>
+			</File>
+			<File
+				RelativePath="net_loop.cpp"
+				>
+			</File>
+			<File
+				RelativePath="net_main.cpp"
 				>
 			</File>
 			<File
@@ -228,23 +324,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\client\strings.cpp"
+				RelativePath="r_part.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_ccmds.cpp"
+				RelativePath="sbar.cpp"
 				>
 			</File>
 			<File
-				RelativePath="sv_effect.cpp"
-				>
-			</File>
-			<File
-				RelativePath="sv_ents.cpp"
-				>
-			</File>
-			<File
-				RelativePath="sv_init.cpp"
+				RelativePath="snd_dma.cpp"
 				>
 			</File>
 			<File
@@ -260,10 +348,6 @@
 				>
 			</File>
 			<File
-				RelativePath="sv_send.cpp"
-				>
-			</File>
-			<File
 				RelativePath="sv_user.cpp"
 				>
 			</File>
@@ -272,11 +356,19 @@
 				>
 			</File>
 			<File
+				RelativePath="view.cpp"
+				>
+			</File>
+			<File
+				RelativePath="wad.cpp"
+				>
+			</File>
+			<File
 				RelativePath="world.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\client\zone.cpp"
+				RelativePath="zone.cpp"
 				>
 			</File>
 		</Filter>
@@ -284,6 +376,66 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
+			<File
+				RelativePath="anorm_dots.h"
+				>
+			</File>
+			<File
+				RelativePath="anorms.h"
+				>
+			</File>
+			<File
+				RelativePath="client.h"
+				>
+			</File>
+			<File
+				RelativePath="cmd.h"
+				>
+			</File>
+			<File
+				RelativePath="common.h"
+				>
+			</File>
+			<File
+				RelativePath="console.h"
+				>
+			</File>
+			<File
+				RelativePath="draw.h"
+				>
+			</File>
+			<File
+				RelativePath="gl_model.h"
+				>
+			</File>
+			<File
+				RelativePath="gl_warp_sin.h"
+				>
+			</File>
+			<File
+				RelativePath="glquake.h"
+				>
+			</File>
+			<File
+				RelativePath="keys.h"
+				>
+			</File>
+			<File
+				RelativePath="menu.h"
+				>
+			</File>
+			<File
+				RelativePath="net.h"
+				>
+			</File>
+			<File
+				RelativePath="net_dgrm.h"
+				>
+			</File>
+			<File
+				RelativePath="net_loop.h"
+				>
+			</File>
 			<File
 				RelativePath="pr_comp.h"
 				>
@@ -297,7 +449,35 @@
 				>
 			</File>
 			<File
-				RelativePath="qwsvdef.h"
+				RelativePath="protocol.h"
+				>
+			</File>
+			<File
+				RelativePath="quakedef.h"
+				>
+			</File>
+			<File
+				RelativePath="r_local.h"
+				>
+			</File>
+			<File
+				RelativePath="r_shared.h"
+				>
+			</File>
+			<File
+				RelativePath="render.h"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
+				>
+			</File>
+			<File
+				RelativePath="sbar.h"
+				>
+			</File>
+			<File
+				RelativePath="screen.h"
 				>
 			</File>
 			<File
@@ -309,7 +489,27 @@
 				>
 			</File>
 			<File
+				RelativePath="vid.h"
+				>
+			</File>
+			<File
+				RelativePath="view.h"
+				>
+			</File>
+			<File
+				RelativePath="wad.h"
+				>
+			</File>
+			<File
+				RelativePath="winquake.h"
+				>
+			</File>
+			<File
 				RelativePath="world.h"
+				>
+			</File>
+			<File
+				RelativePath="zone.h"
 				>
 			</File>
 		</Filter>
@@ -317,6 +517,14 @@
 			Name="Resource Files"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 			>
+			<File
+				RelativePath="quake.ico"
+				>
+			</File>
+			<File
+				RelativePath="winquake.rc"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

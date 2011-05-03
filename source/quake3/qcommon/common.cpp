@@ -2176,7 +2176,7 @@ void Com_Init( char *commandLine )
 	}
 
 	GGameType = GAME_Quake3;
-	Sys_SetHomePathSuffix("vquake3");
+	Sys_SetHomePathSuffix("jlquake3");
 	GLog.AddListener(&MainLog);
 
 	Com_InitByteOrder();

@@ -55,9 +55,9 @@ set(QUAKE2_OBJS
 	ref_gl/gl_warp.cpp
 )
 
-add_executable(vquake2 ${QUAKE2_OBJS})
-set_target_properties(vquake2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
-target_link_libraries(vquake2 client core zlib jpeg ${GLLDFLAGS})
+add_executable(jlquake2 ${QUAKE2_OBJS})
+set_target_properties(jlquake2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+target_link_libraries(jlquake2 client core zlib jpeg ${GLLDFLAGS})
 
 set(QUAKE2_DED_OBJS
 	qcommon/m_flash.cpp
@@ -82,6 +82,6 @@ set(QUAKE2_DED_OBJS
 	null/cl_null.cpp
 )
 
-add_executable(vquake2ded ${QUAKE2_DED_OBJS})
-set_target_properties(vquake2ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED_ONLY")
-target_link_libraries(vquake2ded core zlib dl)
+add_executable(jlquake2ded ${QUAKE2_DED_OBJS})
+set_target_properties(jlquake2ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED_ONLY")
+target_link_libraries(jlquake2ded core zlib dl)
