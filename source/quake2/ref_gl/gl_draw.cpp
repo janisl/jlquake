@@ -32,8 +32,8 @@ Draw_InitLocal
 void Draw_InitLocal (void)
 {
 	// load console characters (don't bilerp characters)
-	draw_chars = GL_FindImage ("pics/conchars.pcx", it_pic);
-	GL_Bind( draw_chars);
+	draw_chars = R_FindImageFile("pics/conchars.pcx", false, false, GL_CLAMP);
+	GL_Bind(draw_chars);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
@@ -96,10 +96,10 @@ image_t	*Draw_FindPic (char *name)
 	if (name[0] != '/' && name[0] != '\\')
 	{
 		QStr::Sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
-		gl = GL_FindImage (fullname, it_pic);
+		gl = R_FindImageFile(fullname, false, false, GL_CLAMP, true);
 	}
 	else
-		gl = GL_FindImage (name+1, it_pic);
+		gl = R_FindImageFile(name + 1, false, false, GL_CLAMP, true);
 
 	return gl;
 }

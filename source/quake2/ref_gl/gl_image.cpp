@@ -64,25 +64,10 @@ void GL_MBind( int target, image_t* image)
 
 /*
 ===============
-GL_FindImage
-
-Finds or loads the given image
-===============
-*/
-image_t	*GL_FindImage (char *name, imagetype_t type)
-{
-	return R_FindImageFile(name, (type != it_pic && type != it_sky),
-		(type != it_pic && type != it_sky), type == it_wall ? GL_REPEAT : GL_CLAMP, type == it_pic, type == it_skin ? IMG8MODE_Skin : IMG8MODE_Normal);
-}
-
-
-
-/*
-===============
 R_RegisterSkin
 ===============
 */
 image_t *R_RegisterSkin (char *name)
 {
-	return GL_FindImage (name, it_skin);
+	return R_FindImageFile(name, true, true, GL_CLAMP, false, IMG8MODE_Skin);
 }
