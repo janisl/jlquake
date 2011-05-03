@@ -1529,7 +1529,7 @@ static void R_CreateFogImage()
 //
 //==========================================================================
 
-void R_CreateBuiltinImages()
+static void R_CreateBuiltinImages()
 {
 	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
 
@@ -1562,6 +1562,9 @@ void R_CommonInitImages()
 
 	// build brightness translation tables
 	R_SetColorMappings();
+
+	// create default texture and white texture
+	R_CreateBuiltinImages();
 }
 
 //==========================================================================

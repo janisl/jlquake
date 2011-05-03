@@ -123,9 +123,6 @@ R_InitImages
 */
 void	R_InitImages( void ) {
 	R_CommonInitImages();
-
-	// create default texture and white texture
-	R_CreateBuiltinImages();
 }
 
 /*
