@@ -199,9 +199,6 @@ void Draw_Init (void)
 	conback->width = vid.conwidth;
 	conback->height = vid.conheight;
 
-	// save slots for scraps
-	tr.scrapImage = R_CreateImage("*scrap", scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false);
-
 	//
 	// get the other pics we need
 	//

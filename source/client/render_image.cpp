@@ -1548,6 +1548,8 @@ static void R_CreateBuiltinImages()
 	R_CreateDlightImage();
 
 	R_CreateFogImage();
+
+	tr.scrapImage = R_CreateImage("*scrap", scrap_texels, SCRAP_BLOCK_WIDTH, SCRAP_BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 }
 
 //==========================================================================

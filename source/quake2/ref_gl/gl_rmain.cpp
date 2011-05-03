@@ -1031,7 +1031,10 @@ int R_Init()
 
 	GL_SetDefaultState();
 
-	GL_InitImages ();
+	registration_sequence = 1;
+
+	R_InitFogTable();
+	R_CommonInitImages();
 	Mod_Init ();
 	R_InitParticleTexture ();
 	Draw_InitLocal ();
