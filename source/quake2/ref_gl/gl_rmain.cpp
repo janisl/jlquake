@@ -1055,11 +1055,11 @@ void R_Shutdown (void)
 	Cmd_RemoveCommand ("modellist");
 	Cmd_RemoveCommand ("screenshot");
 	Cmd_RemoveCommand ("imagelist");
-	Cmd_RemoveCommand ("gl_strings");
+	Cmd_RemoveCommand ("gfxinfo");
 
 	Mod_FreeAll ();
 
-	GL_ShutdownImages ();
+	R_DeleteTextures();
 
 	/*
 	** shut down OS specific OpenGL stuff like contexts, etc.

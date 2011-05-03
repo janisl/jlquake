@@ -113,22 +113,3 @@ image_t *R_RegisterSkin (char *name)
 {
 	return GL_FindImage (name, it_skin);
 }
-
-/*
-===============
-GL_ShutdownImages
-===============
-*/
-void	GL_ShutdownImages (void)
-{
-	int		i;
-
-	for (i=0; i<tr.numImages; i++)
-	{
-		// free it
-		qglDeleteTextures (1, (GLuint*)&tr.images[i]->texnum);
-		delete tr.images[i];
-		tr.images[i] = NULL;
-	}
-}
-

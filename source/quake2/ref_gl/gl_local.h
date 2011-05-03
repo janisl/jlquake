@@ -235,8 +235,6 @@ image_t *R_RegisterSkin (char *name);
 image_t	*GL_FindImage (char *name, imagetype_t type);
 void	GL_ImageList_f (void);
 
-void	GL_ShutdownImages (void);
-
 /*
 ** GL extension emulation functions
 */

@@ -493,6 +493,7 @@ void VID_Init()
 
 void VID_Shutdown(void)
 {
+	R_DeleteTextures();
 	GLimp_Shutdown();
 
 	// shutdown QGL subsystem
