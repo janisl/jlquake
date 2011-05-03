@@ -796,7 +796,6 @@ typedef struct {
 	int		c_dlightSurfacesCulled;
 } frontEndCounters_t;
 
-#define	FOG_TABLE_SIZE		256
 #define FUNCTABLE_SIZE		1024
 #define FUNCTABLE_SIZE2		10
 #define FUNCTABLE_MASK		(FUNCTABLE_SIZE-1)
@@ -860,7 +859,6 @@ struct trGlobals_t : trGlobals_base_t
 
 	const byte				*externalVisData;	// from RE_SetWorldVisData, shared with CM_Load
 
-	image_t					*fogImage;
 	image_t					*flareImage;
 
 	shader_t				*defaultShader;
@@ -915,7 +913,6 @@ struct trGlobals_t : trGlobals_base_t
 	float					triangleTable[FUNCTABLE_SIZE];
 	float					sawToothTable[FUNCTABLE_SIZE];
 	float					inverseSawToothTable[FUNCTABLE_SIZE];
-	float					fogTable[FOG_TABLE_SIZE];
 };
 
 extern backEndState_t	backEnd;
@@ -1110,8 +1107,6 @@ void	R_SkinList_f( void );
 const void *RB_TakeScreenshotCmd( const void *data );
 void	R_ScreenShot_f( void );
 
-void	R_InitFogTable( void );
-float	R_FogFactor( float s, float t );
 void	R_InitImages( void );
 void	R_DeleteTextures( void );
 int		R_SumOfUsedImages( void );

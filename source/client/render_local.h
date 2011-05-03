@@ -73,7 +73,9 @@ init
 ====================================================================
 */
 
-#define	MAX_DRAWIMAGES			2048
+#define MAX_DRAWIMAGES			2048
+
+#define FOG_TABLE_SIZE			256
 
 struct trGlobals_base_t
 {
@@ -84,6 +86,7 @@ struct trGlobals_base_t
 	image_t*				dlightImage;		// inverse-quare highlight for projective adding
 	image_t*				whiteImage;			// full of 0xff
 	image_t*				scratchImage[32];
+	image_t*				fogImage;
 
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
@@ -91,6 +94,8 @@ struct trGlobals_base_t
 
 	int						numImages;
 	image_t*				images[MAX_DRAWIMAGES];
+
+	float					fogTable[FOG_TABLE_SIZE];
 };
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);

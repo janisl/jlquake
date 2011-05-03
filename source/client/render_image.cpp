@@ -1427,11 +1427,109 @@ static void R_CreateDlightImage()
 
 //==========================================================================
 //
-//	R_CommonCreateBuiltinImages
+//	R_InitFogTable
 //
 //==========================================================================
 
-void R_CommonCreateBuiltinImages()
+void R_InitFogTable()
+{
+	float exp = 0.5;
+	for (int i = 0; i < FOG_TABLE_SIZE; i++)
+	{
+		float d = pow((float)i / (FOG_TABLE_SIZE - 1), exp);
+
+		tr.fogTable[i] = d;
+	}
+}
+
+//==========================================================================
+//
+//	R_FogFactor
+//
+//	Returns a 0.0 to 1.0 fog density value. This is called for each texel
+// of the fog texture on startup and for each vertex of transparent shaders
+// in fog dynamically
+//
+//==========================================================================
+
+float R_FogFactor(float s, float t)
+{
+	s -= 1.0 / 512;
+	if (s < 0)
+	{
+		return 0;
+	}
+	if (t < 1.0 / 32)
+	{
+		return 0;
+	}
+	if (t < 31.0 / 32)
+	{
+		s *= (t - 1.0f / 32.0f) / (30.0f / 32.0f);
+	}
+
+	// we need to leave a lot of clamp range
+	s *= 8;
+
+	if (s > 1.0)
+	{
+		s = 1.0;
+	}
+
+	float d = tr.fogTable[(int)(s * (FOG_TABLE_SIZE - 1))];
+
+	return d;
+}
+
+//==========================================================================
+//
+//	R_CreateFogImage
+//
+//==========================================================================
+
+static void R_CreateFogImage()
+{
+	enum { FOG_S = 256 };
+	enum { FOG_T = 32 };
+	byte* data = new byte[FOG_S * FOG_T * 4];
+
+	float g = 2.0;
+
+	// S is distance, T is depth
+	for (int x = 0; x < FOG_S; x++)
+	{
+		for (int y = 0; y < FOG_T; y++)
+		{
+			float d = R_FogFactor((x + 0.5f) / FOG_S, (y + 0.5f) / FOG_T);
+
+			data[(y * FOG_S + x) * 4 + 0] = 
+			data[(y * FOG_S + x) * 4 + 1] = 
+			data[(y * FOG_S + x) * 4 + 2] = 255;
+			data[(y * FOG_S + x) * 4 + 3] = 255 * d;
+		}
+	}
+	// standard openGL clamping doesn't really do what we want -- it includes
+	// the border color at the edges.  OpenGL 1.2 has clamp-to-edge, which does
+	// what we want.
+	tr.fogImage = R_CreateImage("*fog", data, FOG_S, FOG_T, false, false, GL_CLAMP, false);
+	delete[] data;
+
+	float borderColor[4];
+	borderColor[0] = 1.0;
+	borderColor[1] = 1.0;
+	borderColor[2] = 1.0;
+	borderColor[3] = 1;
+
+	qglTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+}
+
+//==========================================================================
+//
+//	R_CreateBuiltinImages
+//
+//==========================================================================
+
+void R_CreateBuiltinImages()
 {
 	byte data[DEFAULT_SIZE][DEFAULT_SIZE][4];
 
@@ -1448,6 +1546,8 @@ void R_CommonCreateBuiltinImages()
 	}
 
 	R_CreateDlightImage();
+
+	R_CreateFogImage();
 }
 
 //==========================================================================

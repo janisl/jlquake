@@ -145,8 +145,9 @@ void Draw_Init (void)
 	char	ver[40];
 	int start;
 
+	R_InitFogTable();
 	R_CommonInitImages();
-	R_CommonCreateBuiltinImages();
+	R_CreateBuiltinImages();
 
 	// load the console background and the charset
 	// by hand, because we need to write the version
