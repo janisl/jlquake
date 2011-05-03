@@ -74,7 +74,7 @@ void R_SetColorMappings();
 void R_GammaCorrect(byte* Buffer, int BufferSize);
 void R_InitFogTable();
 float R_FogFactor(float S, float T);
-void R_CommonInitImages();
+void R_InitImages();
 void GL_TextureMode(const char* string);
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);

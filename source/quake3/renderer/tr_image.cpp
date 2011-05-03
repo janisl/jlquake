@@ -118,15 +118,6 @@ void R_ImageList_f( void ) {
 
 /*
 ===============
-R_InitImages
-===============
-*/
-void	R_InitImages( void ) {
-	R_CommonInitImages();
-}
-
-/*
-===============
 R_DeleteTextures
 ===============
 */

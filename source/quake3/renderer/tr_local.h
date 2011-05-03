@@ -1107,7 +1107,6 @@ void	R_SkinList_f( void );
 const void *RB_TakeScreenshotCmd( const void *data );
 void	R_ScreenShot_f( void );
 
-void	R_InitImages( void );
 void	R_DeleteTextures( void );
 int		R_SumOfUsedImages( void );
 void	R_InitSkins( void );

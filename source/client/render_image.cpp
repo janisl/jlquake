@@ -1554,11 +1554,11 @@ static void R_CreateBuiltinImages()
 
 //==========================================================================
 //
-//	R_CommonInitImages
+//	R_InitImages
 //
 //==========================================================================
 
-void R_CommonInitImages()
+void R_InitImages()
 {
 	Com_Memset(ImageHashTable, 0, sizeof(ImageHashTable));
 

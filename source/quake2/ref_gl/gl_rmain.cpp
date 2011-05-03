@@ -1034,7 +1034,7 @@ int R_Init()
 	registration_sequence = 1;
 
 	R_InitFogTable();
-	R_CommonInitImages();
+	R_InitImages();
 	Mod_Init ();
 	R_InitParticleTexture ();
 	Draw_InitLocal ();
