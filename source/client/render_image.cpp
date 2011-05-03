@@ -1391,6 +1391,42 @@ static void R_CreateDefaultImage()
 
 //==========================================================================
 //
+//	R_CreateDlightImage
+//
+//==========================================================================
+
+static void R_CreateDlightImage()
+{
+	enum { DLIGHT_SIZE = 16 };
+	byte data[DLIGHT_SIZE][DLIGHT_SIZE][4];
+
+	// make a centered inverse-square falloff blob for dynamic lighting
+	for (int x = 0; x < DLIGHT_SIZE; x++)
+	{
+		for (int y = 0; y < DLIGHT_SIZE; y++)
+		{
+			float d = (DLIGHT_SIZE / 2 - 0.5f - x) * (DLIGHT_SIZE / 2 - 0.5f - x) +
+				(DLIGHT_SIZE / 2 - 0.5f - y) * (DLIGHT_SIZE / 2 - 0.5f - y);
+			int b = (int)(4000 / d);
+			if (b > 255)
+			{
+				b = 255;
+			}
+			else if (b < 75)
+			{
+				b = 0;
+			}
+			data[y][x][0] = 
+			data[y][x][1] = 
+			data[y][x][2] = b;
+			data[y][x][3] = 255;			
+		}
+	}
+	tr.dlightImage = R_CreateImage("*dlight", (byte*)data, DLIGHT_SIZE, DLIGHT_SIZE, false, false, GL_CLAMP, false);
+}
+
+//==========================================================================
+//
 //	R_CommonCreateBuiltinImages
 //
 //==========================================================================
@@ -1410,6 +1446,8 @@ void R_CommonCreateBuiltinImages()
 		// scratchimage is usually used for cinematic drawing
 		tr.scratchImage[x] = R_CreateImage("*scratch", (byte*)data, DEFAULT_SIZE, DEFAULT_SIZE, false, true, GL_CLAMP, false);
 	}
+
+	R_CreateDlightImage();
 }
 
 //==========================================================================
