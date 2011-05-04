@@ -1297,7 +1297,6 @@ void Host_Init (quakeparms_t *parms)
 	NET_Init (PORT_CLIENT);
 	Netchan_Init ();
 
-	W_LoadWadFile ("gfx.wad");
 	Key_Init ();
 	Con_Init ();	
 	M_Init ();	

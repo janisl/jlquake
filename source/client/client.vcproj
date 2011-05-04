@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_wad.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\sound_audiocd_windows.cpp"
 				>
 			</File>

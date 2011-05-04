@@ -146,4 +146,15 @@ extern QCvar*	r_nobind;				// turns off binding to appropriate textures
 extern trGlobals_base_t*	tr_shared;
 #define tr		(*tr_shared)
 
+/*
+====================================================================
+
+WAD files
+
+====================================================================
+*/
+
+void R_LoadWadFile();
+void* R_GetWadLumpByName(const char* name);
+
 #endif

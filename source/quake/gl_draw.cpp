@@ -42,7 +42,7 @@ byte		menuplyr_pixels[4096];
 
 image_t* Draw_PicFromWad(char *name)
 {
-	byte* p = (byte*)W_GetLumpName (name);
+	byte* p = (byte*)R_GetWadLumpByName (name);
 	int width;
 	int height;
 	byte* pic32;
@@ -128,7 +128,7 @@ void Draw_Init (void)
 	// by hand, because we need to write the version
 	// string into the background before turning
 	// it into a texture
-	draw_chars = (byte*)W_GetLumpName ("conchars");
+	draw_chars = (byte*)R_GetWadLumpByName ("conchars");
 	for (i=0 ; i<256*64 ; i++)
 		if (draw_chars[i] == 0)
 			draw_chars[i] = 255;	// proper transparent color

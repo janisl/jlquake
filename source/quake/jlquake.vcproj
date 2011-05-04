@@ -360,10 +360,6 @@
 				>
 			</File>
 			<File
-				RelativePath="wad.cpp"
-				>
-			</File>
-			<File
 				RelativePath="world.cpp"
 				>
 			</File>
@@ -494,10 +490,6 @@
 			</File>
 			<File
 				RelativePath="view.h"
-				>
-			</File>
-			<File
-				RelativePath="wad.h"
 				>
 			</File>
 			<File

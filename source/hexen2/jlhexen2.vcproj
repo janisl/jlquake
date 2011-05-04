@@ -383,10 +383,6 @@
 				>
 			</File>
 			<File
-				RelativePath="wad.cpp"
-				>
-			</File>
-			<File
 				RelativePath="world.cpp"
 				>
 			</File>
@@ -521,10 +517,6 @@
 			</File>
 			<File
 				RelativePath="View.h"
-				>
-			</File>
-			<File
-				RelativePath="Wad.h"
 				>
 			</File>
 			<File

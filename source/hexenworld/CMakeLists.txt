@@ -62,7 +62,6 @@ add_executable(jlhwcl
 	client/strings.cpp
 	client/sys_linux.cpp
 	client/view.cpp
-	client/wad.cpp
 	client/zone.cpp
 	client/gl_draw.cpp
 	client/gl_mesh.cpp

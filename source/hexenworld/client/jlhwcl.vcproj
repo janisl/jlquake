@@ -343,10 +343,6 @@
 				>
 			</File>
 			<File
-				RelativePath="wad.cpp"
-				>
-			</File>
-			<File
 				RelativePath="wad.h"
 				>
 			</File>

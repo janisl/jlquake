@@ -1607,6 +1607,11 @@ void R_InitImages()
 
 	// create default texture and white texture
 	R_CreateBuiltinImages();
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		R_LoadWadFile();
+	}
 }
 
 //==========================================================================

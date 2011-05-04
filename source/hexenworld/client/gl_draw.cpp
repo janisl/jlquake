@@ -52,7 +52,7 @@ image_t* Draw_PicFromFile (char *name)
 
 image_t* Draw_PicFromWad (char *name)
 {
-	byte* p = (byte*)W_GetLumpName (name);
+	byte* p = (byte*)R_GetWadLumpByName (name);
 	int width;
 	int height;
 	byte* pic32;
@@ -135,7 +135,7 @@ void Draw_Init (void)
 	cs_texture = R_CreateImage("crosshair", cs_data32, 8, 8, false, false, GL_CLAMP, false);
 	delete[] cs_data32;
 
-	draw_smallchars = (byte*)W_GetLumpName("tinyfont");
+	draw_smallchars = (byte*)R_GetWadLumpByName("tinyfont");
 	for (i=0 ; i<128*32 ; i++)
 		if (draw_smallchars[i] == 0)
 			draw_smallchars[i] = 255;	// proper transparent color

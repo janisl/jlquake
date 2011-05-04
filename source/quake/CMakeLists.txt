@@ -38,7 +38,6 @@ add_executable(jlquake
 	sv_user.cpp
 	sys_linux.cpp
 	view.cpp
-	wad.cpp
 	world.cpp
 	zone.cpp
 )

@@ -13,7 +13,6 @@
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"
-#include "wad.h"
 #include "draw.h"
 #include "screen.h"
 #include "net.h"

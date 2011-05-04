@@ -47,7 +47,7 @@ image_t *Draw_PicFromFile (char *name)
 
 image_t *Draw_PicFromWad (char *name)
 {
-	byte* p = (byte*)W_GetLumpName (name);
+	byte* p = (byte*)R_GetWadLumpByName (name);
 	int width;
 	int height;
 	byte* pic32;
@@ -140,7 +140,6 @@ void Draw_Init (void)
 	// by hand, because we need to write the version
 	// string into the background before turning
 	// it into a texture
-	//draw_chars = W_GetLumpName ("conchars");
 	draw_chars = COM_LoadHunkFile ("gfx/menu/conchars.lmp");
 	for (i=0 ; i<256*128 ; i++)
 		if (draw_chars[i] == 0)
@@ -154,7 +153,7 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 
-	draw_smallchars = (byte*)W_GetLumpName("tinyfont");
+	draw_smallchars = (byte*)R_GetWadLumpByName("tinyfont");
 	for (i=0 ; i<128*32 ; i++)
 		if (draw_smallchars[i] == 0)
 			draw_smallchars[i] = 255;	// proper transparent color

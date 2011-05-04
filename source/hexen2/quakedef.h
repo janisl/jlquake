@@ -228,7 +228,6 @@ typedef struct
 } client_state2_t;
 
 
-#include "wad.h"
 #include "draw.h"
 #include "screen.h"
 #include "net.h"

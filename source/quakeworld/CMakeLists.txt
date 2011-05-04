@@ -58,7 +58,6 @@ add_executable(jlqwcl
 	client/skin.cpp
 	client/snd_dma.cpp
 	client/view.cpp
-	client/wad.cpp
 	client/zone.cpp
 	client/sys_linux.cpp
 	client/gl_draw.cpp
