@@ -1,6 +1,3 @@
-set(RELEASE_CFLAGS "-g -march=pentiumpro -O6 -ffast-math -funroll-loops
-	-fomit-frame-pointer -fexpensive-optimizations")
-set(DEBUG_CFLAGS "-g")
 set(LDFLAGS -L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm -lasound)
 
 set(HEXEN2_FILES
@@ -50,5 +47,5 @@ set(HEXEN2_FILES
 )
 
 add_executable(jlhexen2 ${HEXEN2_FILES})
-set_target_properties(jlhexen2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+set_target_properties(jlhexen2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhexen2 client core progsvm zlib jpeg ${LDFLAGS})

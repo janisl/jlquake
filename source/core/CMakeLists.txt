@@ -54,4 +54,5 @@ foreach(SRC ${CORE_ASM_FILES})
 endforeach(SRC)
 
 add_library(core STATIC ${CORE_FILES})
+set_target_properties(core PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 add_dependencies(core zlib)

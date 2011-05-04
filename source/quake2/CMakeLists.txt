@@ -1,13 +1,6 @@
-set(BASE_CFLAGS "")
-
-set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
-	-fomit-frame-pointer -fexpensive-optimizations -malign-loops=2
-	-malign-jumps=2 -malign-functions=2")
-
-set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
 set(GLLDFLAGS -L/usr/X11R6/lib -lGL -lX11 -lXext -lXxf86dga -lXxf86vm -lasound)
 
-set(QUAKE2_OBJS
+add_executable(jlquake2
 	client/cl_cin.cpp
 	client/cl_ents.cpp
 	client/cl_fx.cpp
@@ -54,12 +47,10 @@ set(QUAKE2_OBJS
 	ref_gl/gl_rsurf.cpp
 	ref_gl/gl_warp.cpp
 )
-
-add_executable(jlquake2 ${QUAKE2_OBJS})
-set_target_properties(jlquake2 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+set_target_properties(jlquake2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlquake2 client core zlib jpeg ${GLLDFLAGS})
 
-set(QUAKE2_DED_OBJS
+add_executable(jlquake2ded
 	qcommon/m_flash.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
@@ -81,7 +72,5 @@ set(QUAKE2_DED_OBJS
 	linux/glob.cpp
 	null/cl_null.cpp
 )
-
-add_executable(jlquake2ded ${QUAKE2_DED_OBJS})
-set_target_properties(jlquake2ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED_ONLY")
+set_target_properties(jlquake2ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED_ONLY")
 target_link_libraries(jlquake2ded core zlib dl)

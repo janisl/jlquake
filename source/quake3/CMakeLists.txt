@@ -1,9 +1,5 @@
 add_subdirectory(botlib)
 
-set(BASE_CFLAGS "-pipe -fsigned-char -I/usr/X11R6/include")
-set(DEBUG_CFLAGS "${BASE_CFLAGS} -g  -Wall -O")
-set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -O6 -mcpu=pentiumpro -march=pentium -fomit-frame-pointer -pipe -ffast-math -malign-loops=2 -malign-jumps=2 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce")
-
 set(THREAD_LDFLAGS -lpthread)
 set(LDFLAGS -ldl -lm)
 set(GLLDFLAGS ${LDFLAGS} -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -lasound -lGL)
@@ -97,7 +93,7 @@ else(${SIZEOF_VOID_PTR} MATCHES "^4$")
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlquake3 ${QUAKE3_FILES})
-set_target_properties(jlquake3 PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+set_target_properties(jlquake3 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlquake3 botlib client core jpeg zlib ${GLLDFLAGS})
 add_dependencies(jlquake3 botlib client jpeg)
 
@@ -158,6 +154,6 @@ else(${SIZEOF_VOID_PTR} MATCHES "^4$")
 endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlquake3ded ${QUAKE3_DEDICATED_FILES})
-set_target_properties(jlquake3ded PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DDEDICATED -DC_ONLY")
+set_target_properties(jlquake3ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED -DC_ONLY")
 target_link_libraries(jlquake3ded botlib core zlib ${LDFLAGS})
 add_dependencies(jlquake3ded core botlib zlib)

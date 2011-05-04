@@ -1,12 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/client)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
-set(BASE_CFLAGS "-Wall")
-set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
-set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
-	-fomit-frame-pointer -fexpensive-optimizations -malign-loops=2
-	-malign-jumps=2 -malign-functions=2")
-
 set(SV_LDFLAGS -lm)
 set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lXxf86vm -lX11 -lXext -lasound)
 
@@ -14,7 +8,7 @@ set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lXxf86vm -lX11 -lXext -lasound)
 # SERVER
 #############################################################################
 
-set(HWSV_FILES
+add_executable(jlhwsv
 	server/pr_cmds.cpp 
 	server/pr_edict.cpp
 	server/pr_exec.cpp
@@ -38,16 +32,14 @@ set(HWSV_FILES
 	client/pmovetst.cpp
 	client/net_chan.cpp
 )
-
-add_executable(jlhwsv ${HWSV_FILES})
-set_target_properties(jlhwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
+set_target_properties(jlhwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")
 target_link_libraries(jlhwsv core progsvm zlib ${SV_LDFLAGS})
 
 #############################################################################
-# GL CLIENT
+# CLIENT
 #############################################################################
 
-set(HWCL_FILES
+add_executable(jlhwcl
 	client/cl_demo.cpp
 	client/cl_effect.cpp
 	client/cl_ents.cpp
@@ -87,7 +79,5 @@ set(HWCL_FILES
 	client/gl_screen.cpp
 	client/gl_warp.cpp
 )
-
-add_executable(jlhwcl ${HWCL_FILES})
-set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhwcl client core zlib jpeg ${LDFLAGS})

@@ -1,6 +1,3 @@
-set(RELEASE_CFLAGS "-g -march=pentiumpro -O6 -ffast-math -funroll-loops
-	-fomit-frame-pointer -fexpensive-optimizations")
-set(DEBUG_CFLAGS "-g")
 set(LDFLAGS -L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm -lasound)
 
 set(QUAKE_FILES
@@ -49,5 +46,5 @@ set(QUAKE_FILES
 )
 
 add_executable(jlquake ${QUAKE_FILES})
-set_target_properties(jlquake PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlquake client progsvm core zlib jpeg ${LDFLAGS})

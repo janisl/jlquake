@@ -1,3 +1,8 @@
+set(BASE_CFLAGS "-Wall -pipe -fsigned-char")
+set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
+set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -march=pentiumpro -O6 -ffast-math -funroll-loops -fomit-frame-pointer -fexpensive-optimizations -malign-loops=2 -malign-jumps=2 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce")
+set(ALL_CFLAGS ${DEBUG_CFLAGS})
+
 add_subdirectory(core)
 add_subdirectory(client)
 add_subdirectory(progsvm)

@@ -1,12 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/client)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
-set(BASE_CFLAGS "-Wall")
-set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
-set(RELEASE_CFLAGS "${BASE_CFLAGS} -m486 -O6 -ffast-math -funroll-loops
-	-fomit-frame-pointer -fexpensive-optimizations -malign-loops=2
-	-malign-jumps=2 -malign-functions=2")
-
 set(SV_LDFLAGS -lm)
 set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lXxf86vm -lX11 -lXext -lasound)
 
@@ -14,7 +8,7 @@ set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lXxf86vm -lX11 -lXext -lasound)
 # SERVER
 #############################################################################
 
-set(QWSV_OBJS
+add_executable(jlqwsv
 	server/pr_cmds.cpp 
 	server/pr_edict.cpp
 	server/pr_exec.cpp
@@ -37,16 +31,14 @@ set(QWSV_OBJS
 	client/pmovetst.cpp
 	client/net_chan.cpp
 )
-
-add_executable(jlqwsv ${QWSV_OBJS})
-set_target_properties(jlqwsv PROPERTIES COMPILE_FLAGS "${DEBUG_CFLAGS} -DSERVERONLY")
+set_target_properties(jlqwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")
 target_link_libraries(jlqwsv core progsvm zlib ${SV_LDFLAGS})
 
 #############################################################################
-# GL CLIENT
+# CLIENT
 #############################################################################
 
-set(GLQWCL_OBJS
+add_executable(jlqwcl
 	client/cl_demo.cpp
 	client/cl_ents.cpp
 	client/cl_input.cpp
@@ -84,7 +76,5 @@ set(GLQWCL_OBJS
 	client/gl_screen.cpp
 	client/gl_warp.cpp
 )
-
-add_executable(jlqwcl ${GLQWCL_OBJS})
-set_target_properties(jlqwcl PROPERTIES COMPILE_FLAGS ${DEBUG_CFLAGS})
+set_target_properties(jlqwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlqwcl client core zlib jpeg ${LDFLAGS})

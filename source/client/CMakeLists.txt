@@ -38,4 +38,5 @@ foreach(SRC ${CLIENT_ASM_FILES})
 endforeach(SRC)
 
 add_library(client STATIC ${CLIENT_FILES})
+set_target_properties(client PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 add_dependencies(client core jpeg)
