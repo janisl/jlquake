@@ -1,8 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/client)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
-set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lXxf86vm -lX11 -lXext -lasound)
-
 #############################################################################
 # SERVER
 #############################################################################
@@ -79,4 +77,4 @@ add_executable(jlhwcl
 	client/gl_warp.cpp
 )
 set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-target_link_libraries(jlhwcl client core zlib jpeg ${LDFLAGS})
+target_link_libraries(jlhwcl ${CLIENTS_LIBS})

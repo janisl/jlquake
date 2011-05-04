@@ -1,8 +1,5 @@
 add_subdirectory(botlib)
 
-set(THREAD_LDFLAGS -lpthread)
-set(GLLDFLAGS -ldl -lm -L/usr/X11R6/lib -lX11 -lXext -lXxf86dga -lXxf86vm -lasound -lGL)
-
 #############################################################################
 # CLIENT/SERVER
 #############################################################################
@@ -93,7 +90,7 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlquake3 ${QUAKE3_FILES})
 set_target_properties(jlquake3 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-target_link_libraries(jlquake3 botlib client core jpeg zlib ${GLLDFLAGS})
+target_link_libraries(jlquake3 botlib ${CLIENTS_LIBS})
 
 #############################################################################
 # DEDICATED SERVER                        

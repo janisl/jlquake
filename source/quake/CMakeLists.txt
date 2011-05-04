@@ -1,6 +1,4 @@
-set(LDFLAGS -L/usr/X11/lib -L/usr/local/lib -lGL -lX11 -lXext -ldl -lXxf86dga -lXxf86vm -lm -lasound)
-
-set(QUAKE_FILES
+add_executable(jlquake
 	cl_demo.cpp
 	cl_input.cpp
 	cl_main.cpp
@@ -44,7 +42,5 @@ set(QUAKE_FILES
 	world.cpp
 	zone.cpp
 )
-
-add_executable(jlquake ${QUAKE_FILES})
 set_target_properties(jlquake PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-target_link_libraries(jlquake client progsvm core zlib jpeg ${LDFLAGS})
+target_link_libraries(jlquake ${CLIENTS_LIBS} progsvm)

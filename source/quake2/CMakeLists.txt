@@ -1,5 +1,3 @@
-set(GLLDFLAGS -L/usr/X11R6/lib -lGL -lX11 -lXext -lXxf86dga -lXxf86vm -lasound)
-
 add_executable(jlquake2
 	client/cl_cin.cpp
 	client/cl_ents.cpp
@@ -48,7 +46,7 @@ add_executable(jlquake2
 	ref_gl/gl_warp.cpp
 )
 set_target_properties(jlquake2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
-target_link_libraries(jlquake2 client core zlib jpeg ${GLLDFLAGS})
+target_link_libraries(jlquake2 ${CLIENTS_LIBS})
 
 add_executable(jlquake2ded
 	qcommon/m_flash.cpp
