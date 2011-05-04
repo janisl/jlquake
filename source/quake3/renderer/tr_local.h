@@ -1046,7 +1046,6 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms, 
 */
 void	GL_SetDefaultState (void);
 void	GL_State( unsigned long stateVector );
-void	GL_TexEnv( int env );
 void	GL_Cull( int cullType );
 
 #define GLS_SRCBLEND_ZERO						0x00000001

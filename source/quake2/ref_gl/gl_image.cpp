@@ -41,17 +41,6 @@ void GL_EnableMultitexture( qboolean enable )
 	GL_TexEnv( GL_REPLACE );
 }
 
-void GL_TexEnv( GLenum mode )
-{
-	static int lastmodes[2] = { -1, -1 };
-
-	if ( mode != lastmodes[glState.currenttmu] )
-	{
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, mode );
-		lastmodes[glState.currenttmu] = mode;
-	}
-}
-
 void GL_MBind( int target, image_t* image)
 {
 	if (!qglActiveTextureARB)

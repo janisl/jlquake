@@ -79,39 +79,6 @@ void GL_Cull( int cullType ) {
 }
 
 /*
-** GL_TexEnv
-*/
-void GL_TexEnv( int env )
-{
-	if ( env == glState.texEnv[glState.currenttmu] )
-	{
-		return;
-	}
-
-	glState.texEnv[glState.currenttmu] = env;
-
-
-	switch ( env )
-	{
-	case GL_MODULATE:
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-		break;
-	case GL_REPLACE:
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-		break;
-	case GL_DECAL:
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
-		break;
-	case GL_ADD:
-		qglTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD );
-		break;
-	default:
-		ri.Error( ERR_DROP, "GL_TexEnv: invalid env '%d' passed\n", env );
-		break;
-	}
-}
-
-/*
 ** GL_State
 **
 ** This routine is responsible for setting the most commonly changed state

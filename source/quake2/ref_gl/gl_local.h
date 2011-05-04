@@ -141,7 +141,6 @@ extern	float	r_world_matrix[16];
 
 void R_TranslatePlayerSkin (int playernum);
 void GL_MBind( int target, image_t* image);
-void GL_TexEnv( GLenum value );
 void GL_EnableMultitexture( qboolean enable );
 
 void R_LightPoint (vec3_t p, vec3_t color);

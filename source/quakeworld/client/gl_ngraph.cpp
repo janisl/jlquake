@@ -126,7 +126,7 @@ void R_NetGraph (void)
 	}
 
 	GL_Bind(netgraphtexture);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	GL_TexEnv(GL_MODULATE);
 
 	x = 8;
 	qglColor3f (1,1,1);

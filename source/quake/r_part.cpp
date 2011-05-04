@@ -618,7 +618,7 @@ void R_DrawParticles (void)
 
     GL_Bind(particletexture);
 	qglEnable (GL_BLEND);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
 
 	VectorScale (vup, 1.5, up);
@@ -732,6 +732,6 @@ void R_DrawParticles (void)
 
 	qglEnd ();
 	qglDisable (GL_BLEND);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	GL_TexEnv(GL_REPLACE);
 }
 

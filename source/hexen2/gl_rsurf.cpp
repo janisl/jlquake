@@ -255,7 +255,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 //			qglColor4f (1,1,1,r_wateralpha.value);
 			alpha_val = r_wateralpha->value;
 
-			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			GL_TexEnv(GL_MODULATE);
 			intensity = 1;
 			// rjr
 		}
@@ -263,7 +263,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		{
 			// currententity->abslight   0 - 255
 			// rjr
-			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			GL_TexEnv(GL_MODULATE);
 			intensity = ( float )currententity->abslight / 255.0f;
 //			intensity = 0;
 		}
@@ -299,7 +299,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
 			(currententity->drawflags & DRF_TRANSLUCENT))
 		{
-			qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+			GL_TexEnv(GL_REPLACE);
 		}
 		return;
 	}
@@ -413,7 +413,6 @@ void DrawGLPoly (glpoly_t *p)
 	float	*v;
 
 	// hack
-//	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 	qglBegin (GL_POLYGON);
 	v = p->verts[0];
 	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -523,7 +522,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 		alpha_val = r_wateralpha->value;
 		// rjr
 
-		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		GL_TexEnv(GL_MODULATE);
 		intensity = 1.0;
 
 	}
@@ -531,7 +530,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 	{
 		// currententity->abslight   0 - 255
 		// rjr
-		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		GL_TexEnv(GL_MODULATE);
 		intensity = ( float )currententity->abslight / 255.0f;
 //		intensity = 0;
 	}
@@ -585,7 +584,7 @@ dynamic:
 	if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
 	    (currententity->drawflags & DRF_TRANSLUCENT))
 	{
-		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		GL_TexEnv(GL_REPLACE);
 	}
 
 	if (currententity->drawflags & DRF_TRANSLUCENT)
@@ -630,7 +629,7 @@ void R_DrawWaterSurfaces (void)
     qglLoadMatrixf (r_world_matrix);
 
 	qglEnable (GL_BLEND);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	GL_TexEnv(GL_MODULATE);
 
 	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
 	{
@@ -657,7 +656,7 @@ void R_DrawWaterSurfaces (void)
 		t->texturechain = NULL;
 	}
 
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	GL_TexEnv(GL_REPLACE);
 
 	qglColor4f (1,1,1,1);
 	qglDisable (GL_BLEND);

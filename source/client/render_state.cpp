@@ -111,3 +111,41 @@ void GL_SelectTexture(int unit)
 
 	glState.currenttmu = unit;
 }
+
+//==========================================================================
+//
+//	GL_TexEnv
+//
+//==========================================================================
+
+void GL_TexEnv(GLenum env)
+{
+	if (env == glState.texEnv[glState.currenttmu])
+	{
+		return;
+	}
+
+	glState.texEnv[glState.currenttmu] = env;
+
+	switch (env)
+	{
+	case GL_MODULATE:
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		break;
+	case GL_REPLACE:
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		break;
+	case GL_DECAL:
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+		break;
+	case GL_ADD:
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+		break;
+	//FIXME wasn't supported.
+	case GL_BLEND:
+		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+		break;
+	default:
+		throw QDropException(va("GL_TexEnv: invalid env '%d' passed\n", env));
+	}
+}

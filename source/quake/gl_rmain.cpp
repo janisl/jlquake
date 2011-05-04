@@ -558,14 +558,14 @@ void R_DrawAliasModel (entity_t *e)
 
 	if (gl_smoothmodels->value)
 		qglShadeModel (GL_SMOOTH);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	GL_TexEnv(GL_MODULATE);
 
 	if (gl_affinemodels->value)
 		qglHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
 	R_SetupAliasFrame (currententity->frame, paliashdr);
 
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	GL_TexEnv(GL_REPLACE);
 
 	qglShadeModel (GL_FLAT);
 	if (gl_affinemodels->value)

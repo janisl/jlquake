@@ -103,7 +103,7 @@ void R_InitParticleTexture (void)
 	}
 	particletexture = R_CreateImage("*particle", (byte*)data, texsize, texsize, false, false, GL_CLAMP, false);
 
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	GL_TexEnv(GL_MODULATE);
 }
 
 /*
@@ -331,7 +331,7 @@ void R_TranslatePlayerSkin (int playernum)
 	}
 
 	GL_Bind(playertextures[playernum]);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+	GL_TexEnv(GL_MODULATE);
 }
 
 
@@ -463,8 +463,7 @@ void GL_Init()
 
 	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-//	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	GL_TexEnv(GL_REPLACE);
 }
 
 /*

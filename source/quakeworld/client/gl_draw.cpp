@@ -258,7 +258,7 @@ void Draw_Crosshair(void)
 		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx->value; 
 		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy->value;
 
-		qglTexEnvf ( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+		GL_TexEnv(GL_MODULATE);
 		pColor = (unsigned char *) &d_8to24table[(byte) crosshaircolor->value];
 		qglColor4ubv ( pColor );
 		GL_Bind (cs_texture);
@@ -274,7 +274,7 @@ void Draw_Crosshair(void)
 		qglVertex2f (x - 4, y+12);
 		qglEnd ();
 		
-		qglTexEnvf ( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+		GL_TexEnv(GL_REPLACE);
 	} else if (crosshair->value)
 		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx->value, 
 			scr_vrect.y + scr_vrect.height/2-4 + cl_crossy->value, 
