@@ -192,9 +192,9 @@ store:
 			t >>= 7;
 			if (t > 255)
 				t = 255;
-			dest[0] = 255-t;
-			dest[1] = 255-t;
-			dest[2] = 255-t;
+			dest[0] = t;
+			dest[1] = t;
+			dest[2] = t;
 			dest += 4;
 		}
 	}
@@ -324,7 +324,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 				theRect->h = 0;
 				theRect->w = 0;
 			}
-			GL_TexEnv(GL_BLEND);
+			GL_TexEnv(GL_MODULATE);
 			qglBegin(GL_POLYGON);
 			v = p->verts[0];
 			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -395,7 +395,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale & ~127;
 		EmitSkyPolys (s);
-		qglBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+		qglBlendFunc(GL_ZERO, GL_SRC_COLOR);
 
 		qglDisable (GL_BLEND);
 		return;
@@ -427,7 +427,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			theRect->h = 0;
 			theRect->w = 0;
 		}
-		GL_TexEnv(GL_BLEND);
+		GL_TexEnv(GL_MODULATE);
 		qglBegin (GL_TRIANGLE_FAN);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -553,7 +553,7 @@ void R_BlendLightmaps (void)
 
 	qglDepthMask (0);		// don't bother writing Z
 
-	qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+	qglBlendFunc (GL_ZERO, GL_SRC_COLOR);
 
 	if (!r_lightmap->value)
 	{

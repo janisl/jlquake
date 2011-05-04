@@ -165,9 +165,9 @@ store:
 			t >>= 7;
 			if (t > 255)
 				t = 255;
-			dest[0] = 255-t;
-			dest[1] = 255-t;
-			dest[2] = 255-t;
+			dest[0] = t;
+			dest[1] = t;
+			dest[2] = t;
 			dest += 4;
 		}
 	}
@@ -331,7 +331,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale;
 		EmitSkyPolys (s, false);
-		qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+		qglBlendFunc (GL_ZERO, GL_SRC_COLOR);
 
 		qglDisable (GL_BLEND);
 	}
@@ -445,7 +445,7 @@ void R_BlendLightmaps (qboolean Translucent)
 	if (!Translucent)
 		qglDepthMask (0);		// don't bother writing Z
 
-	qglBlendFunc (GL_ZERO, GL_ONE_MINUS_SRC_COLOR);
+	qglBlendFunc (GL_ZERO, GL_SRC_COLOR);
 
 	if (!r_lightmap->value)
 	{
