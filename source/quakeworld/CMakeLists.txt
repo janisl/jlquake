@@ -1,7 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/client)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
-set(SV_LDFLAGS -lm)
 set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lXxf86vm -lX11 -lXext -lasound)
 
 #############################################################################
@@ -19,7 +18,7 @@ add_executable(jlqwsv
 	server/sv_send.cpp
 	server/sv_move.cpp
 	server/sv_phys.cpp
-	server/sv_user.cpp
+	server/sv_user.cpp      
 	server/sv_ccmds.cpp
 	server/world.cpp
 	server/sys_unix.cpp
@@ -32,7 +31,7 @@ add_executable(jlqwsv
 	client/net_chan.cpp
 )
 set_target_properties(jlqwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")
-target_link_libraries(jlqwsv core progsvm zlib ${SV_LDFLAGS})
+target_link_libraries(jlqwsv progsvm ${SERVERS_LIBS})
 
 #############################################################################
 # CLIENT

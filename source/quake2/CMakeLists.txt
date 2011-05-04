@@ -73,4 +73,4 @@ add_executable(jlquake2ded
 	null/cl_null.cpp
 )
 set_target_properties(jlquake2ded PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DDEDICATED_ONLY")
-target_link_libraries(jlquake2ded core zlib dl)
+target_link_libraries(jlquake2ded ${SERVERS_LIBS})

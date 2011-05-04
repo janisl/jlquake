@@ -1,7 +1,6 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/client)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/server)
 
-set(SV_LDFLAGS -lm)
 set(LDFLAGS -L/usr/X11/lib -lm -lGL -lXxf86dga -lXxf86vm -lX11 -lXext -lasound)
 
 #############################################################################
@@ -33,7 +32,7 @@ add_executable(jlhwsv
 	client/net_chan.cpp
 )
 set_target_properties(jlhwsv PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -DSERVERONLY")
-target_link_libraries(jlhwsv core progsvm zlib ${SV_LDFLAGS})
+target_link_libraries(jlhwsv progsvm ${SERVERS_LIBS})
 
 #############################################################################
 # CLIENT
