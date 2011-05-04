@@ -17,6 +17,7 @@
 //**
 //**************************************************************************
 
+//==========================================================================
 //
 //	Definitions starting here are also used by Quake 3 vms and should not
 // be changed.
@@ -78,3 +79,12 @@ struct glconfig_t
 	qboolean				stereoEnabled;
 	qboolean				smpActive;		// dual processor
 };
+
+//
+//	End of definitions used by Quake 3 vms.
+//
+//==========================================================================
+
+struct image_t;
+
+image_t* R_PicFromWad(const char* Name);

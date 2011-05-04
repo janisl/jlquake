@@ -224,4 +224,4 @@
   I added common initialisation of built-in images.
   I added common method that re-uploads data of an existing image.
 04.05.2011
-  I merged loading of WAD files.
+  I merged loading of WAD files and images from it.

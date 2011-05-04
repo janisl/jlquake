@@ -195,11 +195,11 @@ void Sbar_Init(void)
 
 	for(i = 0; i < 10; i++)
 	{
-		sb_nums[i] = Draw_PicFromWad(va("num_%i",i));
+		sb_nums[i] = R_PicFromWad(va("num_%i",i));
 	}
-	sb_nums[10] = Draw_PicFromWad("num_minus");
-	sb_colon = Draw_PicFromWad("num_colon");
-	sb_slash = Draw_PicFromWad("num_slash");
+	sb_nums[10] = R_PicFromWad("num_minus");
+	sb_colon = R_PicFromWad("num_colon");
+	sb_slash = R_PicFromWad("num_slash");
 
 	Cmd_AddCommand("+showinfo", ShowInfoDown_f);
 	Cmd_AddCommand("-showinfo", ShowInfoUp_f);

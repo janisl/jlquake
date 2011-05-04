@@ -40,21 +40,6 @@ image_t*	conback;
 
 byte		menuplyr_pixels[4096];
 
-image_t* Draw_PicFromWad(char *name)
-{
-	byte* p = (byte*)R_GetWadLumpByName (name);
-	int width;
-	int height;
-	byte* pic32;
-	R_LoadPICMem(p, &pic32, &width, &height);
-	image_t* img;
-
-	img = R_CreateImage(va("*wad:%s", name), pic32, width, height, false, false, GL_CLAMP, true);
-	delete[] pic32;
-	return img;
-}
-
-
 /*
 ================
 Draw_CachePic
@@ -172,8 +157,8 @@ void Draw_Init (void)
 	//
 	// get the other pics we need
 	//
-	draw_disc = Draw_PicFromWad ("disc");
-	draw_backtile = Draw_PicFromWad ("backtile");
+	draw_disc = R_PicFromWad ("disc");
+	draw_backtile = R_PicFromWad ("backtile");
 }
 
 

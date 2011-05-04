@@ -50,21 +50,6 @@ image_t* Draw_PicFromFile (char *name)
 	return R_FindImageFile(name, false, false, GL_CLAMP);
 }
 
-image_t* Draw_PicFromWad (char *name)
-{
-	byte* p = (byte*)R_GetWadLumpByName (name);
-	int width;
-	int height;
-	byte* pic32;
-	R_LoadPICMem(p, &pic32, &width, &height);
-	image_t* img;
-
-	img = R_CreateImage(va("*wad:%s", name), pic32, width, height, false, false, GL_CLAMP, true);
-	delete[] pic32;
-	return img;
-}
-
-
 /*
 ================
 Draw_CachePic
@@ -172,8 +157,6 @@ void Draw_Init (void)
 		sprintf(temp,"gfx/menu/skull%d.lmp",i);
 		draw_disc[i] = Draw_PicFromFile (temp);
 	}
-//	draw_disc = Draw_PicFromWad ("disc");
-//	draw_backtile = Draw_PicFromWad ("backtile");
 	draw_backtile = Draw_PicFromFile ("gfx/menu/backtile.lmp");
 }
 
