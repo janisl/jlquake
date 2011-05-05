@@ -45,7 +45,7 @@ struct image_t
 
 	bool		mipmap;
 	bool		allowPicmip;
-	int			wrapClampMode;				// GL_CLAMP or GL_REPEAT
+	GLenum		wrapClampMode;				// GL_CLAMP or GL_REPEAT
 
 	image_t*	next;
 

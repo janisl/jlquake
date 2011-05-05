@@ -62,7 +62,7 @@ void QClipMap29::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	}
 
 	// swap all the lumps
-	for (int i = 0; i < sizeof(bsp29_dheader_t) / 4; i++)
+	for (int i = 0; i < (int)sizeof(bsp29_dheader_t) / 4; i++)
 	{
 		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
 	}

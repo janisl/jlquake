@@ -155,7 +155,7 @@ bool SNDDMA_Init()
 		else
 		{
 			//rate succeeded, but is perhaps slightly different
-			if (dir != 0 && dma.speed != r)
+			if (dir != 0 && dma.speed != (int)r)
 			{
 				GLog.Write("ALSA: rate %d not supported, using %d\n", dma.speed, r);
 			}
@@ -165,7 +165,7 @@ bool SNDDMA_Init()
 	if (!dma.speed)
 	{
 		//or all available ones
-		for (int i = 0; i < sizeof(RATES) / sizeof(int); i++)
+		for (int i = 0; i < (int)(sizeof(RATES) / sizeof(int)); i++)
 		{
 			unsigned int r = RATES[i];
 			int dir = 0;

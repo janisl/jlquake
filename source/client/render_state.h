@@ -21,7 +21,7 @@ struct glstate_t
 	int				currenttextures[2];
 	int				currenttmu;
 	bool			finishCalled;
-	int				texEnv[2];
+	GLenum			texEnv[2];
 	int				faceCulling;
 	unsigned long	glStateBits;
 };

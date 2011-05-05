@@ -320,7 +320,7 @@ public:
 
 	//	Static UTF-8 related methods.
 	static int Utf8Length(const char*);
-	static int ByteLengthForUtf8(const char*, size_t);
+	static int ByteLengthForUtf8(const char*, int);
 	static int GetChar(const char*&);
 	static QStr FromChar(int);
 

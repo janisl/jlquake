@@ -1531,8 +1531,6 @@ static void R_CreateFogImage()
 	enum { FOG_T = 32 };
 	byte* data = new byte[FOG_S * FOG_T * 4];
 
-	float g = 2.0;
-
 	// S is distance, T is depth
 	for (int x = 0; x < FOG_S; x++)
 	{

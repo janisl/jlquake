@@ -653,7 +653,7 @@ void Cvar_Update(vmCvar_t* vmCvar)
 {
 	qassert(vmCvar); // bk
 
-	if ((unsigned)vmCvar->handle >= cvar_numIndexes)
+	if ((unsigned)vmCvar->handle >= (unsigned)cvar_numIndexes)
 	{
 		throw QDropException("Cvar_Update: handle out of range" );
 	}
@@ -677,7 +677,7 @@ void Cvar_Update(vmCvar_t* vmCvar)
 	if (QStr::Length(cv->string) + 1 > MAX_CVAR_VALUE_STRING)
 	{
 		throw QDropException(va("Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING",
-			cv->string, QStr::Length(cv->string), sizeof(vmCvar->string)));
+			cv->string, QStr::Length(cv->string)));
 	}
 	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0 
 	// bk001129 - paranoia. Never trust the destination string.

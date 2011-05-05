@@ -96,7 +96,9 @@ private:
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
+#ifdef MEM_DEBUG
 static void Mem_MemDebugDump();
+#endif
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -105,7 +107,9 @@ static void Mem_MemDebugDump();
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static QMemHeap		MainHeap;
+#ifdef MEM_DEBUG
 static MemDebug_t*	MemDebug;
+#endif
 
 // CODE --------------------------------------------------------------------
 

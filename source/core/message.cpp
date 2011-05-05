@@ -697,7 +697,7 @@ const char* QMsg::ReadString()
 
 		String[L] = C;
 		L++;
-	} while (L < sizeof(String) - 1);
+	} while (L < (int)sizeof(String) - 1);
 
 	String[L] = 0;
 
@@ -724,7 +724,7 @@ const char* QMsg::ReadString2()
 		}
 		String[L] = C;
 		L++;
-	} while (L < sizeof(String) - 1);
+	} while (L < (int)sizeof(String) - 1);
 
 	String[L] = 0;
 
@@ -757,7 +757,7 @@ const char* QMsg::ReadBigString()
 
 		String[L] = C;
 		L++;
-	} while (L < sizeof(String) - 1);
+	} while (L < (int)sizeof(String) - 1);
 
 	String[L] = 0;
 
@@ -789,7 +789,7 @@ const char* QMsg::ReadStringLine()
 		}
 		String[L] = C;
 		L++;
-	} while (L < sizeof(String) - 1);
+	} while (L < (int)sizeof(String) - 1);
 
 	String[L] = 0;
 
@@ -816,7 +816,7 @@ const char* QMsg::ReadStringLine2()
 		}
 		String[L] = C;
 		L++;
-	} while (L < sizeof(String) - 1);
+	} while (L < (int)sizeof(String) - 1);
 
 	String[L] = 0;
 

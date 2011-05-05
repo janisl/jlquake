@@ -221,8 +221,6 @@ void SOCK_GetLocalAddress()
 
 void SOCK_OpenSocks(int port)
 {
-	int					err;
-
 	usingSocks = false;
 
 	GLog.Write("Opening connection to SOCKS server.\n");

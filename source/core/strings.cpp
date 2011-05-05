@@ -619,7 +619,7 @@ int QStr::Utf8Length(const char* S)
 //
 //==========================================================================
 
-int QStr::ByteLengthForUtf8(const char* S, size_t N)
+int QStr::ByteLengthForUtf8(const char* S, int N)
 {
 	int Count = 0;
 	const char* c;
@@ -1264,7 +1264,7 @@ void QStr::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	va_start(ArgPtr, Fmt);
 	int Len = Q_vsnprintf(BigBuffer, 32000, Fmt, ArgPtr);
 	va_end(ArgPtr);
-	if (Len >= sizeof(BigBuffer))
+	if (Len >= (int)sizeof(BigBuffer))
 	{
 		throw QException("QStr::Sprintf: overflowed bigbuffer");
 	}
@@ -1624,7 +1624,7 @@ skipwhite:
 				*data_p = data;
 				return com_token;
 			}
-			if (len < sizeof(com_token))
+			if (len < (int)sizeof(com_token))
 			{
 				com_token[len] = c;
 				len++;
@@ -1645,7 +1645,7 @@ skipwhite:
 	// parse a regular word
 	do
 	{
-		if (len < sizeof(com_token))
+		if (len < (int)sizeof(com_token))
 		{
 			com_token[len] = c;
 			len++;
@@ -1724,7 +1724,7 @@ skipwhite:
 				*data_p = data;
 				return com_token;
 			}
-			if (len < sizeof(com_token))
+			if (len < (int)sizeof(com_token))
 			{
 				com_token[len] = c;
 				len++;
@@ -1735,7 +1735,7 @@ skipwhite:
 	// parse a regular word
 	do
 	{
-		if (len < sizeof(com_token))
+		if (len < (int)sizeof(com_token))
 		{
 			com_token[len] = c;
 			len++;
@@ -1878,7 +1878,7 @@ char* QStr::ParseExt(const char** data_p, bool allowLineBreaks)
 				*data_p = ( char * ) data;
 				return com_token;
 			}
-			if (len < sizeof(com_token))
+			if (len < (int)sizeof(com_token))
 			{
 				com_token[len] = c;
 				len++;
@@ -1889,7 +1889,7 @@ char* QStr::ParseExt(const char** data_p, bool allowLineBreaks)
 	// parse a regular word
 	do
 	{
-		if (len < sizeof(com_token))
+		if (len < (int)sizeof(com_token))
 		{
 			com_token[len] = c;
 			len++;

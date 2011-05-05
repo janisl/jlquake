@@ -731,7 +731,7 @@ int Cmd_Argc()
 
 char* Cmd_Argv(int Arg)
 {
-	if ((unsigned)Arg >= cmd_argc)
+	if ((unsigned)Arg >= (unsigned)cmd_argc)
 	{
 		return const_cast<char*>("");
 	}

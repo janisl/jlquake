@@ -256,7 +256,7 @@ void R_LoadJPG(const char* filename, unsigned char** pic, int* width, int* heigh
 		JSAMPROW pSrc = ScanLine.Ptr();
 		byte* pDst = out + (row_stride * cinfo.output_scanline);
 		jpeg_read_scanlines(&cinfo, buffer, 1);
-		for (int i = 0; i < cinfo.output_width; i++, pSrc += cinfo.output_components, pDst += 4)
+		for (int i = 0; i < (int)cinfo.output_width; i++, pSrc += cinfo.output_components, pDst += 4)
 		{
 			pDst[0] = pSrc[0];
 			pDst[1] = pSrc[1];

@@ -105,7 +105,7 @@ struct playsound_t
 	int				entchannel;
 	qboolean		fixed_origin;	// use origin field instead of entnum's origin
 	vec3_t			origin;
-	unsigned		begin;			// begin on this sample
+	int				begin;			// begin on this sample
 };
 
 sfx_t* S_FindName(const char* name, bool create = true);

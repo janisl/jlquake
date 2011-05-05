@@ -68,7 +68,7 @@ void QClipMap38::LoadMap(const char* AName, const QArray<quint8>& Buffer)
 	CheckSum2 = CheckSum;
 
 	bsp38_dheader_t header = *(bsp38_dheader_t*)Buffer.Ptr();
-	for (int i = 0; i < sizeof(bsp38_dheader_t) / 4 ; i++)
+	for (int i = 0; i < (int)sizeof(bsp38_dheader_t) / 4 ; i++)
 	{
 		((int*)&header)[i] = LittleLong(((int*)&header)[i]);
 	}

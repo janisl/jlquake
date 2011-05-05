@@ -127,7 +127,7 @@ void R_LoadBMP(const char* name, byte** pic, int* width, int* height)
 	{
 		throw QDropException(va("LoadBMP: only Windows-style BMP files supported (%s)\n", name));
 	}
-	if (bmpHeader.fileSize != length)
+	if ((int)bmpHeader.fileSize != length)
 	{
 		throw QDropException(va("LoadBMP: header size does not match file size (%d vs. %d) (%s)\n", bmpHeader.fileSize, length, name));
 	}

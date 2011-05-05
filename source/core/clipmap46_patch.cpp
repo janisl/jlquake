@@ -144,7 +144,7 @@ void cGrid_t::SetWrapWidth()
 //
 //	cGrid_t::SubdivideColumns
 //
-//	Adds columns as necessary to the grid until all the aproximating points\
+//	Adds columns as necessary to the grid until all the aproximating points
 // are within SUBDIVIDE_DISTANCE from the true curve
 //
 //==========================================================================

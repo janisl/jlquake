@@ -889,7 +889,7 @@ static void S_UpdateBackgroundTrack()
 
 		// our max buffer size
 		fileBytes = fileSamples * (s_backgroundInfo.width * s_backgroundInfo.channels);
-		if (fileBytes > sizeof(raw))
+		if (fileBytes > (int)sizeof(raw))
 		{
 			fileBytes = sizeof(raw);
 			fileSamples = fileBytes / (s_backgroundInfo.width * s_backgroundInfo.channels);
@@ -2320,7 +2320,6 @@ static void S_Update_()
 	static float	lastTime = 0.0f;
 	static int		ot = -1;
 	
-	unsigned        endtime;
 	int				samps;
 
 	if (!s_soundStarted || s_soundMuted)
@@ -2370,7 +2369,7 @@ static void S_Update_()
 	}
 
 	// mix ahead of current position
-	endtime = s_soundtime + ma;
+	int endtime = s_soundtime + ma;
 
 	if (!(GGameType & GAME_QuakeHexen))
 	{

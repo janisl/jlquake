@@ -575,7 +575,7 @@ void FS_CopyFile(char* fromOSPath, char* toOSPath)
 	fseek(f, 0, SEEK_SET);
 
 	void* buf = Mem_Alloc(len);
-	if (fread(buf, 1, len, f) != len)
+	if ((int)fread(buf, 1, len, f) != len)
 	{
 		throw QException("Short read in FS_Copyfiles()\n");
 	}
@@ -591,7 +591,7 @@ void FS_CopyFile(char* fromOSPath, char* toOSPath)
 	{
 		return;
 	}
-	if (fwrite(buf, 1, len, f) != len)
+	if ((int)fwrite(buf, 1, len, f) != len)
 	{
 		throw QException("Short write in FS_Copyfiles()\n");
 	}
@@ -731,7 +731,7 @@ static pack3_t* FS_LoadZipFile(const char* zipfile, const char* basename)
 
 	len = 0;
 	unzGoToFirstFile(uf);
-	for (i = 0; i < gi.number_entry; i++)
+	for (i = 0; i < (int)gi.number_entry; i++)
 	{
 		err = unzGetCurrentFileInfo(uf, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
 		if (err != UNZ_OK)
@@ -750,7 +750,7 @@ static pack3_t* FS_LoadZipFile(const char* zipfile, const char* basename)
 	// because lots of custom pk3 files have less than 32 or 64 files
 	for (i = 1; i <= MAX_FILEHASH_SIZE; i <<= 1)
 	{
-		if (i > gi.number_entry)
+		if (i > (int)gi.number_entry)
 		{
 			break;
 		}
@@ -778,7 +778,7 @@ static pack3_t* FS_LoadZipFile(const char* zipfile, const char* basename)
 	pack->numfiles = gi.number_entry;
 	unzGoToFirstFile(uf);
 
-	for (i = 0; i < gi.number_entry; i++)
+	for (i = 0; i < (int)gi.number_entry; i++)
 	{
 		err = unzGetCurrentFileInfo(uf, &file_info, filename_inzip, sizeof(filename_inzip), NULL, 0, NULL, 0);
 		if (err != UNZ_OK)
