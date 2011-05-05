@@ -461,8 +461,6 @@ void GL_Init()
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	GL_TexEnv(GL_REPLACE);
 	qglDepthFunc (GL_LEQUAL);
 }
