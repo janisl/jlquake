@@ -225,3 +225,4 @@
   I added common method that re-uploads data of an existing image.
 04.05.2011
   I merged loading of WAD files and images from it.
+  I changed lightmaps in Quake and Hexen 2 not to use inverse colours.
