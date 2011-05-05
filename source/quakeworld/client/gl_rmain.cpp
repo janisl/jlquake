@@ -960,7 +960,6 @@ void R_Clear (void)
 			qglClear (GL_DEPTH_BUFFER_BIT);
 		gldepthmin = 0;
 		gldepthmax = 0.5;
-		qglDepthFunc (GL_LEQUAL);
 	}
 	else
 	{
@@ -970,7 +969,6 @@ void R_Clear (void)
 			qglClear (GL_DEPTH_BUFFER_BIT);
 		gldepthmin = 0;
 		gldepthmax = 1;
-		qglDepthFunc (GL_LEQUAL);
 	}
 
 	qglDepthRange (gldepthmin, gldepthmax);
@@ -1013,7 +1011,6 @@ void R_Mirror (void)
 	gldepthmin = 0.5;
 	gldepthmax = 1;
 	qglDepthRange (gldepthmin, gldepthmax);
-	qglDepthFunc (GL_LEQUAL);
 
 	R_RenderScene ();
 	R_DrawWaterSurfaces ();
@@ -1022,7 +1019,6 @@ void R_Mirror (void)
 	gldepthmin = 0;
 	gldepthmax = 0.5;
 	qglDepthRange (gldepthmin, gldepthmax);
-	qglDepthFunc (GL_LEQUAL);
 
 	// blend on top
 	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);

@@ -716,7 +716,6 @@ void R_Clear (void)
 		qglClear (GL_DEPTH_BUFFER_BIT);
 	gldepthmin = 0;
 	gldepthmax = 1;
-	qglDepthFunc (GL_LEQUAL);
 
 	qglDepthRange (gldepthmin, gldepthmax);
 

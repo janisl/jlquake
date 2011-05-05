@@ -118,6 +118,7 @@ void GL_SetDefaultState( void )
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	qglDisable (GL_CULL_FACE);
+	qglDepthFunc (GL_LEQUAL);
 
 	qglColor4f (1,1,1,1);
 
