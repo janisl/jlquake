@@ -199,18 +199,19 @@ void R_DrawSpriteModel (entity_t *e)
 		alpha = e->alpha;
 
 	if ( alpha != 1.0F )
-		qglEnable( GL_BLEND );
+	{
+		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
+	}
 
 	qglColor4f( 1, 1, 1, alpha );
 
     GL_Bind(currentmodel->skins[e->frame]);
 
 	GL_TexEnv( GL_MODULATE );
-
-	if ( alpha == 1.0 )
-		qglEnable (GL_ALPHA_TEST);
-	else
-		qglDisable( GL_ALPHA_TEST );
 
 	qglBegin (GL_QUADS);
 
@@ -236,11 +237,11 @@ void R_DrawSpriteModel (entity_t *e)
 	
 	qglEnd ();
 
-	qglDisable (GL_ALPHA_TEST);
-	GL_TexEnv( GL_REPLACE );
+	GL_State(GLS_DEFAULT);
+	GL_TexEnv(GL_REPLACE);
 
 	if ( alpha != 1.0F )
-		qglDisable( GL_BLEND );
+		GL_State(GLS_DEFAULT);
 
 	qglColor4f( 1, 1, 1, 1 );
 }
@@ -336,7 +337,6 @@ void R_DrawEntitiesOnList (void)
 
 	// draw transparent entities
 	// we could sort these if it ever becomes a problem...
-	qglDepthMask (0);		// no z writes
 	for (i=0 ; i<r_newrefdef.num_entities ; i++)
 	{
 		currententity = &r_newrefdef.entities[i];
@@ -373,7 +373,7 @@ void R_DrawEntitiesOnList (void)
 			}
 		}
 	}
-	qglDepthMask (1);		// back to writing
+	GL_State(GLS_DEPTHMASK_TRUE);		// back to writing
 
 }
 
@@ -390,8 +390,7 @@ void GL_DrawParticles( int num_particles, const particle_t particles[], const un
 	byte			color[4];
 
     GL_Bind(r_particletexture);
-	qglDepthMask( GL_FALSE );		// no z buffering
-	qglEnable( GL_BLEND );
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);		// no z buffering
 	GL_TexEnv( GL_MODULATE );
 	qglBegin( GL_TRIANGLES );
 
@@ -430,9 +429,8 @@ void GL_DrawParticles( int num_particles, const particle_t particles[], const un
 	}
 
 	qglEnd ();
-	qglDisable( GL_BLEND );
 	qglColor4f( 1,1,1,1 );
-	qglDepthMask( 1 );		// back to normal Z buffering
+	GL_State(GLS_DEPTHMASK_TRUE);		// back to normal Z buffering
 	GL_TexEnv( GL_REPLACE );
 }
 
@@ -449,8 +447,7 @@ void R_DrawParticles (void)
 		unsigned char color[4];
 		const particle_t *p;
 
-		qglDepthMask( GL_FALSE );
-		qglEnable( GL_BLEND );
+		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglDisable( GL_TEXTURE_2D );
 
 		qglPointSize( gl_particle_size->value );
@@ -467,9 +464,8 @@ void R_DrawParticles (void)
 		}
 		qglEnd();
 
-		qglDisable( GL_BLEND );
 		qglColor4f( 1.0F, 1.0F, 1.0F, 1.0F );
-		qglDepthMask( GL_TRUE );
+		GL_State(GLS_DEPTHMASK_TRUE);
 		qglEnable( GL_TEXTURE_2D );
 
 	}
@@ -491,9 +487,7 @@ void R_PolyBlend (void)
 	if (!v_blend[3])
 		return;
 
-	qglDisable (GL_ALPHA_TEST);
-	qglEnable (GL_BLEND);
-	qglDisable (GL_DEPTH_TEST);
+	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable (GL_TEXTURE_2D);
 
     qglLoadIdentity ();
@@ -512,9 +506,8 @@ void R_PolyBlend (void)
 	qglVertex3f (10, 100, -100);
 	qglEnd ();
 
-	qglDisable (GL_BLEND);
 	qglEnable (GL_TEXTURE_2D);
-	qglEnable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
 
 	qglColor4f(1,1,1,1);
 }
@@ -708,9 +701,7 @@ void R_SetupGL (void)
 	else
 		qglDisable(GL_CULL_FACE);
 
-	qglDisable(GL_BLEND);
-	qglDisable(GL_ALPHA_TEST);
-	qglEnable(GL_DEPTH_TEST);
+	GL_State(GLS_DEFAULT);
 }
 
 /*
@@ -829,10 +820,8 @@ void	R_SetGL2D (void)
 	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
-	qglDisable (GL_DEPTH_TEST);
 	qglDisable (GL_CULL_FACE);
-	qglDisable (GL_BLEND);
-	qglEnable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	qglColor4f (1,1,1,1);
 }
 
@@ -1109,10 +1098,8 @@ void R_BeginFrame( float camera_separation )
 	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
-	qglDisable (GL_DEPTH_TEST);
 	qglDisable (GL_CULL_FACE);
-	qglDisable (GL_BLEND);
-	qglEnable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	qglColor4f (1,1,1,1);
 
 	/*
@@ -1231,8 +1218,7 @@ void R_DrawBeam( entity_t *e )
 	}
 
 	qglDisable( GL_TEXTURE_2D );
-	qglEnable( GL_BLEND );
-	qglDepthMask( GL_FALSE );
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
 	r = ( d_8to24table[e->skinnum & 0xFF] ) & 0xFF;
 	g = ( d_8to24table[e->skinnum & 0xFF] >> 8 ) & 0xFF;
@@ -1255,8 +1241,7 @@ void R_DrawBeam( entity_t *e )
 	qglEnd();
 
 	qglEnable( GL_TEXTURE_2D );
-	qglDisable( GL_BLEND );
-	qglDepthMask( GL_TRUE );
+	GL_State(GLS_DEPTHMASK_TRUE);
 }
 
 //===================================================================

@@ -139,11 +139,196 @@ void GL_TexEnv(GLenum env)
 	case GL_ADD:
 		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 		break;
-	//FIXME wasn't supported.
-	case GL_BLEND:
-		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-		break;
 	default:
 		throw QDropException(va("GL_TexEnv: invalid env '%d' passed\n", env));
 	}
+}
+
+//==========================================================================
+//
+//	GL_State
+//
+//	This routine is responsible for setting the most commonly changed state.
+//
+//==========================================================================
+
+void GL_State(unsigned long stateBits)
+{
+	unsigned long diff = stateBits ^ glState.glStateBits;
+
+	if (!diff)
+	{
+		return;
+	}
+
+	//
+	// check depthFunc bits
+	//
+	if (diff & GLS_DEPTHFUNC_EQUAL)
+	{
+		if (stateBits & GLS_DEPTHFUNC_EQUAL)
+		{
+			qglDepthFunc(GL_EQUAL);
+		}
+		else
+		{
+			qglDepthFunc(GL_LEQUAL);
+		}
+	}
+
+	//
+	// check blend bits
+	//
+	if (diff & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS))
+	{
+		if (stateBits & (GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS))
+		{
+			GLenum srcFactor;
+			switch (stateBits & GLS_SRCBLEND_BITS)
+			{
+			case GLS_SRCBLEND_ZERO:
+				srcFactor = GL_ZERO;
+				break;
+			case GLS_SRCBLEND_ONE:
+				srcFactor = GL_ONE;
+				break;
+			case GLS_SRCBLEND_DST_COLOR:
+				srcFactor = GL_DST_COLOR;
+				break;
+			case GLS_SRCBLEND_ONE_MINUS_DST_COLOR:
+				srcFactor = GL_ONE_MINUS_DST_COLOR;
+				break;
+			case GLS_SRCBLEND_SRC_ALPHA:
+				srcFactor = GL_SRC_ALPHA;
+				break;
+			case GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA:
+				srcFactor = GL_ONE_MINUS_SRC_ALPHA;
+				break;
+			case GLS_SRCBLEND_DST_ALPHA:
+				srcFactor = GL_DST_ALPHA;
+				break;
+			case GLS_SRCBLEND_ONE_MINUS_DST_ALPHA:
+				srcFactor = GL_ONE_MINUS_DST_ALPHA;
+				break;
+			case GLS_SRCBLEND_ALPHA_SATURATE:
+				srcFactor = GL_SRC_ALPHA_SATURATE;
+				break;
+			default:
+				throw QDropException("GL_State: invalid src blend state bits\n");
+			}
+
+			GLenum dstFactor;
+			switch (stateBits & GLS_DSTBLEND_BITS)
+			{
+			case GLS_DSTBLEND_ZERO:
+				dstFactor = GL_ZERO;
+				break;
+			case GLS_DSTBLEND_ONE:
+				dstFactor = GL_ONE;
+				break;
+			case GLS_DSTBLEND_SRC_COLOR:
+				dstFactor = GL_SRC_COLOR;
+				break;
+			case GLS_DSTBLEND_ONE_MINUS_SRC_COLOR:
+				dstFactor = GL_ONE_MINUS_SRC_COLOR;
+				break;
+			case GLS_DSTBLEND_SRC_ALPHA:
+				dstFactor = GL_SRC_ALPHA;
+				break;
+			case GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA:
+				dstFactor = GL_ONE_MINUS_SRC_ALPHA;
+				break;
+			case GLS_DSTBLEND_DST_ALPHA:
+				dstFactor = GL_DST_ALPHA;
+				break;
+			case GLS_DSTBLEND_ONE_MINUS_DST_ALPHA:
+				dstFactor = GL_ONE_MINUS_DST_ALPHA;
+				break;
+			default:
+				throw QDropException("GL_State: invalid dst blend state bits\n");
+			}
+
+			qglEnable(GL_BLEND);
+			qglBlendFunc(srcFactor, dstFactor);
+		}
+		else
+		{
+			qglDisable(GL_BLEND);
+		}
+	}
+
+	//
+	// check depthmask
+	//
+	if (diff & GLS_DEPTHMASK_TRUE)
+	{
+		if (stateBits & GLS_DEPTHMASK_TRUE)
+		{
+			qglDepthMask(GL_TRUE);
+		}
+		else
+		{
+			qglDepthMask(GL_FALSE);
+		}
+	}
+
+	//
+	// fill/line mode
+	//
+	if (diff & GLS_POLYMODE_LINE)
+	{
+		if (stateBits & GLS_POLYMODE_LINE)
+		{
+			qglPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else
+		{
+			qglPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+	}
+
+	//
+	// depthtest
+	//
+	if (diff & GLS_DEPTHTEST_DISABLE)
+	{
+		if (stateBits & GLS_DEPTHTEST_DISABLE)
+		{
+			qglDisable(GL_DEPTH_TEST);
+		}
+		else
+		{
+			qglEnable(GL_DEPTH_TEST);
+		}
+	}
+
+	//
+	// alpha test
+	//
+	if (diff & GLS_ATEST_BITS)
+	{
+		switch (stateBits & GLS_ATEST_BITS)
+		{
+		case 0:
+			qglDisable(GL_ALPHA_TEST);
+			break;
+		case GLS_ATEST_GT_0:
+			qglEnable(GL_ALPHA_TEST);
+			qglAlphaFunc(GL_GREATER, 0.0f);
+			break;
+		case GLS_ATEST_LT_80:
+			qglEnable(GL_ALPHA_TEST);
+			qglAlphaFunc(GL_LESS, 0.5f);
+			break;
+		case GLS_ATEST_GE_80:
+			qglEnable(GL_ALPHA_TEST);
+			qglAlphaFunc(GL_GEQUAL, 0.5f);
+			break;
+		default:
+			qassert(0);
+			break;
+		}
+	}
+
+	glState.glStateBits = stateBits;
 }

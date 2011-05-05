@@ -198,6 +198,8 @@ void Draw_Character (int x, int y, int num)
 
 	GL_Bind (char_texture);
 
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
+
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (fcol, frow);
 	qglVertex2f (x, y);
@@ -251,10 +253,7 @@ void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 
 	if (scrap_dirty)
 		R_ScrapUpload();
-	qglDisable(GL_ALPHA_TEST);
-	qglEnable (GL_BLEND);
-//	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	qglCullFace(GL_FRONT);
+	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglColor4f (1,1,1,alpha);
 	GL_Bind (pic);
 	qglBegin (GL_QUADS);
@@ -268,8 +267,7 @@ void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 	qglVertex2f (x, y+pic->height);
 	qglEnd ();
 	qglColor4f (1,1,1,1);
-	qglEnable(GL_ALPHA_TEST);
-	qglDisable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 }
 
 
@@ -288,6 +286,7 @@ void Draw_Pic (int x, int y, image_t* pic)
 		R_ScrapUpload();
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (pic->sl, pic->tl);
 	qglVertex2f (x, y);
@@ -364,6 +363,8 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 
 	GL_Bind (translate_texture);
 
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
+
 	qglColor3f (1,1,1);
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (0, 0);
@@ -407,6 +408,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 {
 	qglColor3f (1,1,1);
 	GL_Bind (draw_backtile);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 	qglBegin (GL_QUADS);
@@ -433,6 +435,7 @@ Fills a box of pixels with a single color
 */
 void Draw_Fill (int x, int y, int w, int h, int c)
 {
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	qglDisable (GL_TEXTURE_2D);
 	qglColor3f (host_basepal[c*3]/255.0,
 		host_basepal[c*3+1]/255.0,
@@ -459,7 +462,7 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen (void)
 {
-	qglEnable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable (GL_TEXTURE_2D);
 	qglColor4f (0, 0, 0, 0.8);
 	qglBegin (GL_QUADS);
@@ -472,7 +475,6 @@ void Draw_FadeScreen (void)
 	qglEnd ();
 	qglColor4f (1,1,1,1);
 	qglEnable (GL_TEXTURE_2D);
-	qglDisable (GL_BLEND);
 
 	Sbar_Changed();
 }
@@ -527,11 +529,8 @@ void GL_Set2D (void)
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
 
-	qglDisable (GL_DEPTH_TEST);
 	qglDisable (GL_CULL_FACE);
-	qglDisable (GL_BLEND);
-	qglEnable (GL_ALPHA_TEST);
-//	qglDisable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	qglColor4f (1,1,1,1);
 }

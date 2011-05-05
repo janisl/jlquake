@@ -148,11 +148,9 @@ void R_RenderDlights (void)
 
 	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
 											//  advanced yet for this frame
-	qglDepthMask (0);
+	GL_State(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
 	qglDisable (GL_TEXTURE_2D);
 	qglShadeModel (GL_SMOOTH);
-	qglEnable (GL_BLEND);
-	qglBlendFunc (GL_ONE, GL_ONE);
 
 	l = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
@@ -163,10 +161,8 @@ void R_RenderDlights (void)
 	}
 
 	qglColor3f (1,1,1);
-	qglDisable (GL_BLEND);
 	qglEnable (GL_TEXTURE_2D);
-	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	qglDepthMask (1);
+	GL_State(GLS_DEPTHMASK_TRUE);
 }
 
 

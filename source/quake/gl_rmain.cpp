@@ -222,7 +222,7 @@ void R_DrawSpriteModel (entity_t *e)
 
     GL_Bind(frame->gl_texture);
 
-	qglEnable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
 	qglBegin (GL_QUADS);
 
 	qglTexCoord2f (0, 1);
@@ -247,7 +247,7 @@ void R_DrawSpriteModel (entity_t *e)
 	
 	qglEnd ();
 
-	qglDisable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT);
 }
 
 /*
@@ -578,11 +578,11 @@ void R_DrawAliasModel (entity_t *e)
 		qglPushMatrix ();
 		R_RotateForEntity (e);
 		qglDisable (GL_TEXTURE_2D);
-		qglEnable (GL_BLEND);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglColor4f (0,0,0,0.5);
 		GL_DrawAliasShadow (paliashdr, lastposenum);
 		qglEnable (GL_TEXTURE_2D);
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 		qglColor4f (1,1,1,1);
 		qglPopMatrix ();
 	}
@@ -721,9 +721,7 @@ void R_PolyBlend (void)
 
 	GL_DisableMultitexture();
 
-	qglDisable (GL_ALPHA_TEST);
-	qglEnable (GL_BLEND);
-	qglDisable (GL_DEPTH_TEST);
+	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable (GL_TEXTURE_2D);
 
     qglLoadIdentity ();
@@ -741,9 +739,8 @@ void R_PolyBlend (void)
 	qglVertex3f(10, 100, -100);
 	qglEnd ();
 
-	qglDisable (GL_BLEND);
 	qglEnable (GL_TEXTURE_2D);
-	qglEnable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
 }
 
 
@@ -924,9 +921,7 @@ void R_SetupGL (void)
 	else
 		qglDisable(GL_CULL_FACE);
 
-	qglDisable(GL_BLEND);
-	qglDisable(GL_ALPHA_TEST);
-	qglEnable(GL_DEPTH_TEST);
+	GL_State(GLS_DEFAULT);
 }
 
 /*
@@ -1059,7 +1054,7 @@ void R_Mirror (void)
 	qglDepthFunc (GL_LEQUAL);
 
 	// blend on top
-	qglEnable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglMatrixMode(GL_PROJECTION);
 	if (mirror_plane->normal[2])
 		qglScalef (1,-1,1);
@@ -1075,7 +1070,7 @@ void R_Mirror (void)
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s);
 	cl.worldmodel->textures[mirrortexturenum]->texturechain = NULL;
-	qglDisable (GL_BLEND);
+	GL_State(GLS_DEFAULT);
 	qglColor4f (1,1,1,1);
 }
 

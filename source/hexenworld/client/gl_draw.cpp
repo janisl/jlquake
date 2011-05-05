@@ -196,6 +196,8 @@ void Draw_Character (int x, int y, unsigned int num)
 	fcol = col*xsize;
 	frow = row*ysize;
 
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
+
 	GL_Bind (char_texture);
 
 	qglBegin (GL_QUADS);
@@ -257,6 +259,8 @@ void Draw_Crosshair(void)
 		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx->value; 
 		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy->value;
 		GL_Bind (cs_texture);
+
+		GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 		qglBegin (GL_QUADS);
 		qglTexCoord2f (0, 0);
@@ -327,6 +331,8 @@ void Draw_SmallCharacter (int x, int y, int num)
 	fcol = col*xsize;
 	frow = row*ysize;
 
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
+
 	GL_Bind (char_smalltexture);
 
 	qglBegin (GL_QUADS);
@@ -384,6 +390,9 @@ void Draw_Pic (int x, int y, image_t* pic)
 		R_ScrapUpload();
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
+
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
+
 	qglBegin (GL_QUADS);
 
 	qglTexCoord2f (pic->sl, pic->tl);
@@ -410,9 +419,7 @@ void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 
 	if (scrap_dirty)
 		R_ScrapUpload();
-	qglDisable(GL_ALPHA_TEST);
-	qglEnable (GL_BLEND);
-//	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglCullFace(GL_FRONT);
 	qglColor4f (1,1,1,alpha);
 	GL_Bind (pic);
@@ -427,8 +434,7 @@ void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 	qglVertex2f (x, y+pic->height);
 	qglEnd ();
 	qglColor4f (1,1,1,1);
-	glEnable(GL_ALPHA_TEST);
-	qglDisable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 }
 
 void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
@@ -450,7 +456,9 @@ void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int 
 
 	newtl = pic->tl + (srcy*oldglheight)/pic->height;
 	newth = newtl + (height*oldglheight)/pic->height;
-	
+
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
+
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
 	qglBegin (GL_QUADS);
@@ -506,6 +514,7 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 		th = pic->th;//(height-0.01)/pic->height;
 	}
 
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
@@ -566,6 +575,8 @@ void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 	{
 		height = h;
 	}
+
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
@@ -657,6 +668,8 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 		R_ReUploadImage(translate_texture[which_class-1], (byte*)trans);
 	}
 
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
+
 	GL_Bind (translate_texture[which_class-1]);
 
 	qglColor3f (1,1,1);
@@ -702,6 +715,8 @@ int M_DrawBigCharacter (int x, int y, int num, int numNext)
 	frow = row*ysize;
 
 	GL_Bind (char_menufonttexture);
+
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (fcol, frow);
@@ -769,6 +784,7 @@ refresh window.
 void Draw_TileClear (int x, int y, int w, int h)
 {
 	qglColor3f (1,1,1);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	GL_Bind (draw_backtile);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
@@ -796,6 +812,7 @@ Fills a box of pixels with a single color
 */
 void Draw_Fill (int x, int y, int w, int h, int c)
 {
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	qglDisable (GL_TEXTURE_2D);
 	qglColor3f (host_basepal[c*3]/255.0,
 		host_basepal[c*3+1]/255.0,
@@ -824,9 +841,8 @@ void Draw_FadeScreen (void)
 {
 	int bx,by,ex,ey;
 	int c;
-	qglAlphaFunc(GL_ALWAYS, 0);
 
-	glEnable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable (GL_TEXTURE_2D);
 
 //	qglColor4f (248.0/255.0, 220.0/255.0, 120.0/255.0, 0.2);
@@ -861,9 +877,8 @@ void Draw_FadeScreen (void)
 
 	qglColor4f (1,1,1,1);
 	glEnable (GL_TEXTURE_2D);
-	qglDisable (GL_BLEND);
 
-	qglAlphaFunc(GL_GREATER, 0.666);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	SB_Changed();
 }
@@ -928,11 +943,8 @@ void GL_Set2D (void)
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
 
-	qglDisable (GL_DEPTH_TEST);
 	qglDisable (GL_CULL_FACE);
-	qglDisable (GL_BLEND);
-	glEnable (GL_ALPHA_TEST);
-//	qglDisable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	qglColor4f (1,1,1,1);
 }

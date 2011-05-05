@@ -743,7 +743,11 @@ void R_DrawAliasModel (entity_t *e)
 	GL_TexEnv( GL_MODULATE );
 	if ( currententity->flags & RF_TRANSLUCENT )
 	{
-		qglEnable (GL_BLEND);
+		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		GL_State(GLS_DEFAULT);
 	}
 
 
@@ -774,21 +778,6 @@ void R_DrawAliasModel (entity_t *e)
 
 	qglPopMatrix ();
 
-#if 0
-	qglDisable( GL_CULL_FACE );
-	qglPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-	qglDisable( GL_TEXTURE_2D );
-	qglBegin( GL_TRIANGLE_STRIP );
-	for ( i = 0; i < 8; i++ )
-	{
-		qglVertex3fv( bbox[i] );
-	}
-	qglEnd();
-	qglEnable( GL_TEXTURE_2D );
-	qglPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-	qglEnable( GL_CULL_FACE );
-#endif
-
 	if ( ( currententity->flags & RF_WEAPONMODEL ) && ( r_lefthand->value == 1.0F ) )
 	{
 		qglMatrixMode( GL_PROJECTION );
@@ -799,7 +788,7 @@ void R_DrawAliasModel (entity_t *e)
 
 	if ( currententity->flags & RF_TRANSLUCENT )
 	{
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 	}
 
 	if (currententity->flags & RF_DEPTHHACK)
@@ -811,11 +800,11 @@ void R_DrawAliasModel (entity_t *e)
 		qglPushMatrix ();
 		R_RotateForEntity (e);
 		qglDisable (GL_TEXTURE_2D);
-		qglEnable (GL_BLEND);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglColor4f (0,0,0,0.5);
 		GL_DrawAliasShadow (paliashdr, currententity->frame );
 		qglEnable (GL_TEXTURE_2D);
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 		qglPopMatrix ();
 	}
 #endif

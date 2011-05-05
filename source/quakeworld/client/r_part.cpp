@@ -457,14 +457,10 @@ void R_DrawParticles (void)
 	unsigned char	theAlpha;
 	vec3_t			up, right;
 	float			scale;
-	qboolean		alphaTestEnabled;
     
 	GL_Bind(particletexture);
-	alphaTestEnabled = qglIsEnabled(GL_ALPHA_TEST);
 	
-	if (alphaTestEnabled)
-		qglDisable(GL_ALPHA_TEST);
-	qglEnable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
 
@@ -590,9 +586,7 @@ void R_DrawParticles (void)
 	}
 
 	qglEnd ();
-	qglDisable (GL_BLEND);
-	if (alphaTestEnabled)
-		qglEnable(GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
 	GL_TexEnv(GL_REPLACE);
 }
 

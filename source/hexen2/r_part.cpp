@@ -1352,9 +1352,9 @@ void R_DrawParticles (void)
 
 	float			scale;
 
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+
 	GL_Bind(particletexture);
-	qglEnable (GL_BLEND);
-	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
 
@@ -1482,7 +1482,7 @@ void R_DrawParticles (void)
 	}
 
 	qglEnd ();
-	qglDisable (GL_BLEND);
+	GL_State(0);
 	GL_TexEnv(GL_REPLACE);
 }
 

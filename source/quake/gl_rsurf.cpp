@@ -350,7 +350,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			qglEnd ();
 
 			GL_Bind (lightmap_textures[s->lightmaptexturenum]);
-			qglEnable (GL_BLEND);
+			GL_State(GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
 			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -360,7 +360,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			}
 			qglEnd ();
 
-			qglDisable (GL_BLEND);
+			GL_State(GLS_DEFAULT);
 		}
 
 		return;
@@ -390,14 +390,13 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 		EmitSkyPolys (s);
 
-		qglEnable (GL_BLEND);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		GL_Bind (alphaskytexture);
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale & ~127;
 		EmitSkyPolys (s);
-		qglBlendFunc(GL_ZERO, GL_SRC_COLOR);
 
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 		return;
 	}
 
@@ -451,9 +450,9 @@ void R_DrawSequentialPoly (msurface_t *s)
 		DrawGLWaterPoly (p);
 
 		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
-		qglEnable (GL_BLEND);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		DrawGLWaterPolyLightmap (p);
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 	}
 }
 
@@ -551,14 +550,12 @@ void R_BlendLightmaps (void)
 	if (!gl_texsort->value)
 		return;
 
-	qglDepthMask (0);		// don't bother writing Z
-
-	qglBlendFunc (GL_ZERO, GL_SRC_COLOR);
-
 	if (!r_lightmap->value)
 	{
-		qglEnable (GL_BLEND);
+		GL_State(GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR);		// don't bother writing Z
 	}
+	else
+		GL_State(0);		// don't bother writing Z
 
 	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
 	{
@@ -596,10 +593,7 @@ void R_BlendLightmaps (void)
 		}
 	}
 
-	qglDisable(GL_BLEND);
-	qglBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	qglDepthMask (1);		// back to normal Z buffering
+	GL_State(GLS_DEPTHMASK_TRUE);		// back to normal Z buffering
 }
 
 /*
@@ -773,7 +767,7 @@ void R_DrawWaterSurfaces (void)
     qglLoadMatrixf (r_world_matrix);
 
 	if (r_wateralpha->value < 1.0) {
-		qglEnable (GL_BLEND);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglColor4f (1,1,1,r_wateralpha->value);
 		GL_TexEnv(GL_MODULATE);
 	}
@@ -817,7 +811,7 @@ void R_DrawWaterSurfaces (void)
 		GL_TexEnv(GL_REPLACE);
 
 		qglColor4f (1,1,1,1);
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 	}
 
 }

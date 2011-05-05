@@ -251,7 +251,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	{
 		if (currententity->drawflags & DRF_TRANSLUCENT)
 		{
-			qglEnable (GL_BLEND);
+			GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 //			qglColor4f (1,1,1,r_wateralpha.value);
 			alpha_val = r_wateralpha->value;
 
@@ -284,7 +284,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		qglEnd ();
 
 		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
-		qglEnable (GL_BLEND);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR);
 		qglBegin (GL_POLYGON);
 		v = p->verts[0];
 		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
@@ -294,7 +294,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		}
 		qglEnd ();
 
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 
 		if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
 			(currententity->drawflags & DRF_TRANSLUCENT))
@@ -325,15 +325,13 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 		EmitSkyPolys (s, true);
 
-		qglEnable (GL_BLEND);
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		GL_Bind (alphaskytexture);
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale;
 		EmitSkyPolys (s, false);
-		qglBlendFunc (GL_ZERO, GL_SRC_COLOR);
 
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 	}
 
 	//
@@ -346,9 +344,9 @@ void R_DrawSequentialPoly (msurface_t *s)
 	DrawGLWaterPoly (p);
 
 	GL_Bind (lightmap_textures[s->lightmaptexturenum]);
-	qglEnable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR);
 	DrawGLWaterPolyLightmap (p);
-	qglDisable (GL_BLEND);
+	GL_State(GLS_DEFAULT);
 }
 
 
@@ -442,15 +440,15 @@ void R_BlendLightmaps (qboolean Translucent)
 	if (!gl_texsort->value)
 		return;
 
+	int NewState = GLS_DEFAULT;
 	if (!Translucent)
-		qglDepthMask (0);		// don't bother writing Z
-
-	qglBlendFunc (GL_ZERO, GL_SRC_COLOR);
+		NewState = 0;		// don't bother writing Z
 
 	if (!r_lightmap->value)
 	{
-		qglEnable (GL_BLEND);
+		NewState |= GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;
 	}
+	GL_State(NewState);
 
 	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
 	{
@@ -481,11 +479,7 @@ void R_BlendLightmaps (qboolean Translucent)
 		}
 	}
 
-	qglDisable (GL_BLEND);
-	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	if (!Translucent)
-		qglDepthMask (1);		// back to normal Z buffering
+	GL_State(GLS_DEPTHMASK_TRUE);		// back to normal Z buffering
 }
 
 /*
@@ -502,22 +496,9 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 
 	c_brush_polys++;
 
-#if 0
 	if (currententity->drawflags & DRF_TRANSLUCENT)
 	{
-		qglEnable (GL_BLEND);
-		qglColor4f (1,1,1,r_wateralpha.value);
-		// rjr
-	}
-	if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT)
-	{
-		// rjr
-	}
-#endif
-	
-	if (currententity->drawflags & DRF_TRANSLUCENT)
-	{
-		qglEnable (GL_BLEND);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		//			qglColor4f (1,1,1,r_wateralpha.value);
 		alpha_val = r_wateralpha->value;
 		// rjr
@@ -589,7 +570,7 @@ dynamic:
 
 	if (currententity->drawflags & DRF_TRANSLUCENT)
 	{
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 	}
 }
 
@@ -621,14 +602,12 @@ void R_DrawWaterSurfaces (void)
 	if (r_wateralpha->value == 1.0)
 		return;
 
-//	qglDepthMask( 0 );
-
 	//
 	// go back to the world matrix
 	//
     qglLoadMatrixf (r_world_matrix);
 
-	qglEnable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	GL_TexEnv(GL_MODULATE);
 
 	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
@@ -659,8 +638,7 @@ void R_DrawWaterSurfaces (void)
 	GL_TexEnv(GL_REPLACE);
 
 	qglColor4f (1,1,1,1);
-	qglDisable (GL_BLEND);
-//	qglDepthMask( 0 );
+	GL_State(GLS_DEFAULT);
 }
 
 /*
@@ -779,6 +757,8 @@ e->angles[2] = -e->angles[2];	// stupid quake bug
 	R_RotateForEntity (e);
 e->angles[0] = -e->angles[0];	// stupid quake bug
 e->angles[2] = -e->angles[2];	// stupid quake bug
+
+	GL_State(GLS_DEPTHMASK_TRUE);
 
 	//
 	// draw texture

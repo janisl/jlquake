@@ -452,8 +452,7 @@ void GL_Init()
 	qglCullFace(GL_FRONT);
 	qglEnable(GL_TEXTURE_2D);
 
-	qglEnable(GL_ALPHA_TEST);
-	qglAlphaFunc(GL_GREATER, 0.666);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
 
 	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 	qglShadeModel (GL_FLAT);

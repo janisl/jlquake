@@ -230,8 +230,8 @@ void R_DrawTriangleOutlines (void)
 	if (!gl_showtris->value)
 		return;
 
+	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE);
 	qglDisable (GL_TEXTURE_2D);
-	qglDisable (GL_DEPTH_TEST);
 	qglColor4f (1,1,1,1);
 
 	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
@@ -256,7 +256,7 @@ void R_DrawTriangleOutlines (void)
 		}
 	}
 
-	qglEnable (GL_DEPTH_TEST);
+	GL_State(GLS_DEFAULT);
 	qglEnable (GL_TEXTURE_2D);
 }
 
@@ -318,25 +318,27 @@ void R_BlendLightmaps (void)
 	if (!r_worldmodel->lightdata)
 		return;
 
-	// don't bother writing Z
-	qglDepthMask( 0 );
-
 	/*
 	** set the appropriate blending mode unless we're only looking at the
 	** lightmaps.
 	*/
 	if (!gl_lightmap->value)
 	{
-		qglEnable (GL_BLEND);
-
 		if ( gl_saturatelighting->value )
 		{
-			qglBlendFunc( GL_ONE, GL_ONE );
+			// don't bother writing Z
+			GL_State(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
 		}
 		else
 		{
-			qglBlendFunc (GL_ZERO, GL_SRC_COLOR );
+			// don't bother writing Z
+			GL_State(GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR);
 		}
+	}
+	else
+	{
+		// don't bother writing Z
+		GL_State(0);
 	}
 
 	if ( currentmodel == r_worldmodel )
@@ -440,9 +442,7 @@ void R_BlendLightmaps (void)
 	/*
 	** restore state
 	*/
-	qglDisable (GL_BLEND);
-	qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	qglDepthMask( 1 );
+	GL_State(GLS_DEPTHMASK_TRUE);
 }
 
 /*
@@ -567,7 +567,7 @@ void R_DrawAlphaSurfaces (void)
 	//
     qglLoadMatrixf (r_world_matrix);
 
-	qglEnable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	GL_TexEnv( GL_MODULATE );
 
 	// the textures are prescaled up for a better lighting range,
@@ -592,7 +592,7 @@ void R_DrawAlphaSurfaces (void)
 
 	GL_TexEnv( GL_REPLACE );
 	qglColor4f (1,1,1,1);
-	qglDisable (GL_BLEND);
+	GL_State(GLS_DEFAULT);
 
 	r_alpha_surfaces = NULL;
 }
@@ -868,9 +868,13 @@ void R_DrawInlineBModel (void)
 
 	if ( currententity->flags & RF_TRANSLUCENT )
 	{
-		qglEnable (GL_BLEND);
 		qglColor4f (1,1,1,0.25);
 		GL_TexEnv( GL_MODULATE );
+		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		GL_State(GLS_DEFAULT);
 	}
 
 	//
@@ -912,7 +916,7 @@ void R_DrawInlineBModel (void)
 	}
 	else
 	{
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 		qglColor4f (1,1,1,1);
 		GL_TexEnv( GL_REPLACE );
 	}

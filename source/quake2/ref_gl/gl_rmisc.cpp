@@ -115,12 +115,9 @@ void GL_SetDefaultState( void )
 	qglCullFace(GL_FRONT);
 	qglEnable(GL_TEXTURE_2D);
 
-	qglEnable(GL_ALPHA_TEST);
-	qglAlphaFunc(GL_GREATER, 0.666);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
-	qglDisable (GL_DEPTH_TEST);
 	qglDisable (GL_CULL_FACE);
-	qglDisable (GL_BLEND);
 
 	qglColor4f (1,1,1,1);
 

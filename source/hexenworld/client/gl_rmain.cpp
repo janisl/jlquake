@@ -266,23 +266,19 @@ void R_DrawSpriteModel (entity_t *e)
 
 	if (currententity->drawflags & DRF_TRANSLUCENT)
 	{
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		qglEnable( GL_BLEND );
 		qglColor4f (1,1,1,r_wateralpha->value);
 	}
 	else if (currententity->model->flags & EF_TRANSPARENT)
 	{
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		qglEnable( GL_BLEND );
 		qglColor3f(1,1,1);
 	}
 	else
 	{
 //		qglColor3f(1,1,1);
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		qglEnable( GL_BLEND );
 		qglColor3f(1,1,1);
 	}
+
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
 	frame = R_GetSpriteFrame (e);
 	psprite = (msprite_t*)currententity->model->cache.data;
@@ -327,7 +323,7 @@ void R_DrawSpriteModel (entity_t *e)
 	
 	qglEnd ();
 
-	qglDisable( GL_BLEND );
+	GL_State(GLS_DEFAULT);
 }
 
 /*
@@ -763,38 +759,34 @@ void R_DrawAliasModel (entity_t *e)
 
 	if ((currententity->model->flags & EF_SPECIAL_TRANS))
 	{
-		qglEnable (GL_BLEND);
-		qglBlendFunc (GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
 //		qglColor3f( 1,1,1);
 		model_constant_alpha = 1.0f;
 		qglDisable( GL_CULL_FACE );
+		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA);
 	}
 	else if (currententity->drawflags & DRF_TRANSLUCENT)
 	{
-		qglEnable (GL_BLEND);
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //		qglColor4f( 1,1,1,r_wateralpha.value);
 		model_constant_alpha = r_wateralpha->value;
+		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	}
 	else if ((currententity->model->flags & EF_TRANSPARENT))
 	{
-		qglEnable (GL_BLEND);
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //		qglColor3f( 1,1,1);
 		model_constant_alpha = 1.0f;
+		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	}
 	else if ((currententity->model->flags & EF_HOLEY))
 	{
-		qglEnable (GL_BLEND);
-		qglBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 //		qglColor3f( 1,1,1);
 		model_constant_alpha = 1.0f;
+		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	}
 	else
 	{
 		qglColor3f( 1,1,1);
 		model_constant_alpha = 1.0f;
+		GL_State(GLS_DEPTHMASK_TRUE);
 	}
 
 //	if(cl.players[currententity->scoreboard - cl.players].siege_team==ST_DEFENDER)
@@ -857,15 +849,8 @@ void R_DrawAliasModel (entity_t *e)
 		qglHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
 	R_SetupAliasFrame (currententity->frame, paliashdr);
-	if ((currententity->drawflags & DRF_TRANSLUCENT) ||
-		(currententity->model->flags & EF_SPECIAL_TRANS))
-		qglDisable (GL_BLEND);
 
-	if ((currententity->model->flags & EF_TRANSPARENT))
-		qglDisable (GL_BLEND);
-
-	if ((currententity->model->flags & EF_HOLEY))
-		qglDisable (GL_BLEND);
+	GL_State(GLS_DEFAULT);
 
 	if ((currententity->model->flags & EF_SPECIAL_TRANS))
 	{
@@ -886,11 +871,11 @@ void R_DrawAliasModel (entity_t *e)
 		qglPushMatrix ();
 		R_RotateForEntity2 (e);
 		qglDisable (GL_TEXTURE_2D);
-		qglEnable (GL_BLEND);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglColor4f (0,0,0,0.5);
 		GL_DrawAliasShadow (paliashdr, lastposenum);
 		qglEnable (GL_TEXTURE_2D);
-		qglDisable (GL_BLEND);
+		GL_State(GLS_DEFAULT);
 		qglColor4f (1,1,1,1);
 		qglPopMatrix ();
 	}
@@ -1017,7 +1002,6 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 	int i;
 	int numents;
 	sortedent_t *theents;
-	int depthMaskWrite = 0;
 	vec3_t result;
 
 	theents = (inwater) ? cl_transwateredicts : cl_transvisedicts;
@@ -1036,7 +1020,6 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 	qsort((void *) theents, numents, sizeof(sortedent_t), transCompare);
 	// Add in BETTER sorting here
 
-	qglDepthMask(0);
 	for (i=0;i<numents;i++)
 	{
 		currententity = theents[i].ent;
@@ -1044,33 +1027,17 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 		switch (currententity->model->type)
 		{
 		case mod_alias:
-			if (!depthMaskWrite)
-			{
-				depthMaskWrite = 1;
-				qglDepthMask(1);
-			}
 			R_DrawAliasModel (currententity);
 			break;
 		case mod_brush:
-			if (!depthMaskWrite)
-			{
-				depthMaskWrite = 1;
-				qglDepthMask(1);
-			}
 			R_DrawBrushModel (currententity,true);
 			break;
 		case mod_sprite:
-			if (depthMaskWrite)
-			{
-				depthMaskWrite = 0;
-				qglDepthMask(0);
-			}
 			R_DrawSpriteModel (currententity);
 			break;
 		}
 	}
-	if (!depthMaskWrite) 
-		qglDepthMask(1);
+	GL_State(GLS_DEPTHMASK_TRUE);
 }
 
 /*
@@ -1161,9 +1128,7 @@ void R_PolyBlend (void)
 
  	GL_DisableMultitexture();
 
-	qglDisable (GL_ALPHA_TEST);
-	qglEnable (GL_BLEND);
-	qglDisable (GL_DEPTH_TEST);
+	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable (GL_TEXTURE_2D);
 
     qglLoadIdentity ();
@@ -1181,9 +1146,8 @@ void R_PolyBlend (void)
 	qglVertex3f (10, 10, -10);
 	qglEnd ();
 
-	qglDisable (GL_BLEND);
 	qglEnable (GL_TEXTURE_2D);
-	qglEnable (GL_ALPHA_TEST);
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
 }
 
 
@@ -1398,9 +1362,7 @@ void R_SetupGL (void)
 	else
 		qglDisable(GL_CULL_FACE);
 
-	qglDisable(GL_BLEND);
-	qglDisable(GL_ALPHA_TEST);
-	qglEnable(GL_DEPTH_TEST);
+	GL_State(GLS_DEFAULT);
 
 	qglGetFloatv(GL_MODELVIEW_MATRIX, (float *)ModelviewMatrix.M);
 //	ModelviewMatrix.M[0][3] = 0;
@@ -1532,8 +1494,6 @@ void R_Mirror (void)
 	qglDepthRange (gldepthmin, gldepthmax);
 	qglDepthFunc (GL_LEQUAL);
 
-	qglDepthMask(0);
-
 	R_DrawParticles ();
 // THIS IS THE F*S*D(KCING MIRROR ROUTINE!  Go down!!!
 	R_DrawTransEntitiesOnList( true ); // This restores the depth mask
@@ -1549,7 +1509,7 @@ void R_Mirror (void)
 	qglDepthFunc (GL_LEQUAL);
 
 	// blend on top
-	qglEnable (GL_BLEND);
+	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglMatrixMode(GL_PROJECTION);
 	if (mirror_plane->normal[2])
 		qglScalef (1,-1,1);
@@ -1565,7 +1525,7 @@ void R_Mirror (void)
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s, true);
 	cl.worldmodel->textures[mirrortexturenum]->texturechain = NULL;
-	qglDisable (GL_BLEND);
+	GL_State(GLS_DEFAULT);
 	qglColor4f (1,1,1,1);
 }
 #endif
@@ -1626,8 +1586,6 @@ void R_RenderView (void)
 
 	// render normal view
 	R_RenderScene ();
-
-	qglDepthMask(0);
 
 	R_DrawParticles ();
 
