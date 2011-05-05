@@ -131,8 +131,6 @@ extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 extern	QCvar*	gl_finish;
 
-extern	QCvar*	gl_ztrick;
-
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;
 extern	cplane_t	*mirror_plane;

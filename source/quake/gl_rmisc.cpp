@@ -202,8 +202,6 @@ void R_Init (void)
 
 	gl_doubleeyes = Cvar_Get("gl_doubleeys", "1", 0);
 
-	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
-
 	R_InitParticles ();
 	R_InitParticleTexture ();
 }

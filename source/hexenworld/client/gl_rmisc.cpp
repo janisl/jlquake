@@ -194,8 +194,6 @@ void R_Init (void)
 
 	r_teamcolor = Cvar_Get("r_teamcolor", "187", CVAR_ARCHIVE);
 
-    gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
-
 	R_InitBubble();
 	
 	R_InitParticles ();

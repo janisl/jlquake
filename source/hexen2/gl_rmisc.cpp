@@ -211,8 +211,6 @@ void R_Init (void)
 	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions", "1", CVAR_ARCHIVE);
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
-    gl_ztrick = Cvar_Get("gl_ztrick", "1", CVAR_ARCHIVE);
-
 	R_InitParticles ();
 	R_InitParticleTexture ();
 

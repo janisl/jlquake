@@ -200,8 +200,6 @@ void R_Init (void)
 
 	gl_finish = Cvar_Get("gl_finish", "0", 0);
 
-	gl_ztrick = Cvar_Get("gl_ztrick", "1", 0);
-
 	R_InitBubble();
 
 	R_InitParticles ();
