@@ -666,6 +666,8 @@ void R_DrawViewModel (void)
 	currententity = &gun;
 	entity_t* pent = &cl.viewent;
 
+	rent->reType = RT_MODEL;
+	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	rent->keynum = pent->keynum;
 	VectorCopy(pent->origin, rent->origin);
 	VectorCopy(pent->angles, rent->angles);
@@ -679,9 +681,6 @@ void R_DrawViewModel (void)
 	rent->visframe = pent->visframe;
 	rent->dlightframe = pent->dlightframe;
 	rent->dlightbits = pent->dlightbits;
-
-	cl.viewent.reType = RT_MODEL;
-	cl.viewent.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 
 	R_DrawAliasModel (currententity);
 }

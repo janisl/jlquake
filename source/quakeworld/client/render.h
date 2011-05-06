@@ -33,7 +33,7 @@ typedef struct efrag_s
 	struct efrag_s		*entnext;
 } efrag_t;
 
-struct entity_t : refEntity_base_t
+struct entity_t
 {
 	int						keynum;			// for matching entities in different frames
 	vec3_t					origin;
