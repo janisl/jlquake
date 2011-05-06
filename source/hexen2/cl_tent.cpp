@@ -77,8 +77,6 @@ static entity_t *NewStreamEntity(void);
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static stream_t cl_Streams[MAX_STREAMS];
-static entity_t StreamEntities[MAX_STREAM_ENTITIES];
-static int StreamEntityCount;
 static sfxHandle_t cl_sfx_wizhit;
 static sfxHandle_t cl_sfx_knighthit;
 static sfxHandle_t cl_sfx_tink1;
@@ -423,7 +421,6 @@ void CL_UpdateTEnts(void)
 	int offset;
 
 	// Update streams
-	StreamEntityCount = 0;
 	for(i = 0, stream = cl_Streams; i < MAX_STREAMS; i++, stream++)
 	{
 		if(!stream->models[0])// || stream->endTime < cl.time)
@@ -667,13 +664,8 @@ static entity_t *NewStreamEntity(void)
 	{
 		return NULL;
 	}
-	if(StreamEntityCount == MAX_STREAM_ENTITIES)
-	{
-		return NULL;
-	}
-	ent = &StreamEntities[StreamEntityCount++];
+	ent = &cl_visedicts[cl_numvisedicts++];
 	Com_Memset(ent, 0, sizeof(*ent));
-	cl_visedicts[cl_numvisedicts++] = ent;
 	ent->colormap = vid.colormap;
 	return ent;
 }

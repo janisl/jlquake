@@ -2021,7 +2021,7 @@ void CL_LinkEntity(entity_t *ent)
 {
 	if (cl_numvisedicts < MAX_VISEDICTS)
 	{
-		cl_visedicts[cl_numvisedicts++] = ent;
+		cl_visedicts[cl_numvisedicts++] = *ent;
 	}
 }
 
