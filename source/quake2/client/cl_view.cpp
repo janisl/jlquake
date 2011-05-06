@@ -78,6 +78,7 @@ void V_AddEntity (entity_t *ent)
 {
 	if (r_numentities >= MAX_ENTITIES)
 		return;
+	ent->reType = RT_MODEL;
 	r_entities[r_numentities++] = *ent;
 }
 

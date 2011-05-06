@@ -726,15 +726,6 @@ void R_Flash( void )
 	R_PolyBlend ();
 }
 
-static void UpdateRefEntityData()
-{
-	for (int i = 0; i < r_newrefdef.num_entities; i++)
-	{
-		entity_t* e = &r_newrefdef.entities[i];
-		e->reType = RT_MODEL;
-	}
-}
-
 /*
 ================
 R_RenderView
@@ -757,8 +748,6 @@ void R_RenderView (refdef_t *fd)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	UpdateRefEntityData();
 
 	R_PushDlights ();
 
