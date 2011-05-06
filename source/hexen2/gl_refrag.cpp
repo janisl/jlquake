@@ -3,9 +3,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-mnode_t	*r_pefragtopnode;
-
-
 //===========================================================================
 
 /*
@@ -85,9 +82,6 @@ void R_SplitEntityOnNode (mnode_t *node)
 
 	if ( node->contents < 0)
 	{
-		if (!r_pefragtopnode)
-			r_pefragtopnode = node;
-
 		leaf = (mleaf_t *)node;
 
 // grab an efrag off the free list
@@ -119,14 +113,6 @@ void R_SplitEntityOnNode (mnode_t *node)
 	splitplane = node->plane;
 	sides = BOX_ON_PLANE_SIDE(r_emins, r_emaxs, splitplane);
 	
-	if (sides == 3)
-	{
-	// split on this plane
-	// if this is the first splitter of this bmodel, remember it
-		if (!r_pefragtopnode)
-			r_pefragtopnode = node;
-	}
-	
 // recurse down the contacted sides
 	if (sides & 1)
 		R_SplitEntityOnNode (node->children[0]);
@@ -153,7 +139,6 @@ void R_AddEfrags (entity_t *ent)
 	r_addent = ent;
 			
 	lastlink = &ent->efrag;
-	r_pefragtopnode = NULL;
 	
 	entmodel = ent->model;
 
@@ -164,8 +149,6 @@ void R_AddEfrags (entity_t *ent)
 	}
 
 	R_SplitEntityOnNode (cl.worldmodel->nodes);
-
-	ent->topnode = r_pefragtopnode;
 }
 
 

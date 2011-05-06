@@ -40,8 +40,6 @@ struct entity_t : refEntity_base_t
 {
 	qboolean				forcelink;		// model changed
 
-	int						update_type;
-
 	entity_state_t			baseline;		// to fill in defaults in updates
 
 	double					msgtime;		// time of last update
@@ -61,12 +59,6 @@ struct entity_t : refEntity_base_t
 											
 	int						dlightframe;	// dynamic lighting
 	int						dlightbits;
-	
-// FIXME: could turn these into a union
-	int						trivial_accept;
-	struct mnode_s			*topnode;		// for bmodels, first world node
-											//  that splits bmodel, or NULL if
-											//  not split
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
