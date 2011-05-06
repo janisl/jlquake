@@ -614,7 +614,7 @@ void R_DrawEntitiesOnList (void)
 	// draw sprites seperately, because of alpha blending
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
-		currententity = cl_visedicts[i];
+		currententity = &cl_visedicts[i];
 
 		switch (currententity->model->type)
 		{
@@ -633,7 +633,7 @@ void R_DrawEntitiesOnList (void)
 
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
-		currententity = cl_visedicts[i];
+		currententity = &cl_visedicts[i];
 
 		switch (currententity->model->type)
 		{
@@ -986,7 +986,7 @@ void R_Mirror (void)
 	ent = &cl_entities[cl.viewentity];
 	if (cl_numvisedicts < MAX_VISEDICTS)
 	{
-		cl_visedicts[cl_numvisedicts] = ent;
+		cl_visedicts[cl_numvisedicts] = *ent;
 		cl_numvisedicts++;
 	}
 
@@ -1026,7 +1026,7 @@ static void UpdateRefEntityData()
 {
 	for (int i = 0; i < cl_numvisedicts; i++)
 	{
-		entity_t* e = cl_visedicts[i];
+		entity_t* e = &cl_visedicts[i];
 		e->reType = RT_MODEL;
 		e->renderfx = 0;
 	}

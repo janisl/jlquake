@@ -265,7 +265,6 @@ extern	entity_t		cl_entities[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 extern	dlight_t		cl_dlights[MAX_DLIGHTS];
-extern	entity_t		cl_temp_entities[MAX_TEMP_ENTITIES];
 extern	beam_t			cl_beams[MAX_BEAMS];
 
 //=============================================================================
@@ -290,7 +289,7 @@ void CL_NextDemo (void);
 
 #define			MAX_VISEDICTS	256
 extern	int				cl_numvisedicts;
-extern	entity_t		*cl_visedicts[MAX_VISEDICTS];
+extern	entity_t		cl_visedicts[MAX_VISEDICTS];
 
 //
 // cl_input

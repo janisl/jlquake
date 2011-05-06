@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-int			num_temp_entities;
-entity_t	cl_temp_entities[MAX_TEMP_ENTITIES];
 beam_t		cl_beams[MAX_BEAMS];
 
 static sfxHandle_t		cl_sfx_wizhit;
@@ -253,30 +251,6 @@ void CL_ParseTEnt (void)
 
 /*
 =================
-CL_NewTempEntity
-=================
-*/
-entity_t *CL_NewTempEntity (void)
-{
-	entity_t	*ent;
-
-	if (cl_numvisedicts == MAX_VISEDICTS)
-		return NULL;
-	if (num_temp_entities == MAX_TEMP_ENTITIES)
-		return NULL;
-	ent = &cl_temp_entities[num_temp_entities];
-	Com_Memset(ent, 0, sizeof(*ent));
-	num_temp_entities++;
-	cl_visedicts[cl_numvisedicts] = ent;
-	cl_numvisedicts++;
-
-	ent->colormap = vid.colormap;
-	return ent;
-}
-
-
-/*
-=================
 CL_UpdateTEnts
 =================
 */
@@ -286,11 +260,8 @@ void CL_UpdateTEnts (void)
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
-	entity_t	*ent;
 	float		yaw, pitch;
 	float		forward;
-
-	num_temp_entities = 0;
 
 // update lightning
 	for (i=0, b=cl_beams ; i< MAX_BEAMS ; i++, b++)
@@ -332,14 +303,17 @@ void CL_UpdateTEnts (void)
 		d = VectorNormalize(dist);
 		while (d > 0)
 		{
-			ent = CL_NewTempEntity ();
-			if (!ent)
+			if (cl_numvisedicts == MAX_VISEDICTS)
 				return;
-			VectorCopy (org, ent->origin);
-			ent->model = b->model;
-			ent->angles[0] = pitch;
-			ent->angles[1] = yaw;
-			ent->angles[2] = rand()%360;
+			entity_t ent;
+			Com_Memset(&ent, 0, sizeof(ent));
+			ent.colormap = vid.colormap;
+			VectorCopy (org, ent.origin);
+			ent.model = b->model;
+			ent.angles[0] = pitch;
+			ent.angles[1] = yaw;
+			ent.angles[2] = rand()%360;
+			cl_visedicts[cl_numvisedicts++] = ent;
 
 			for (i=0 ; i<3 ; i++)
 				org[i] += dist[i]*30;

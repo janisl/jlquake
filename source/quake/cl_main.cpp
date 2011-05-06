@@ -51,7 +51,7 @@ lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t		cl_dlights[MAX_DLIGHTS];
 
 int				cl_numvisedicts;
-entity_t		*cl_visedicts[MAX_VISEDICTS];
+entity_t		cl_visedicts[MAX_VISEDICTS];
 
 /*
 =====================
@@ -76,7 +76,6 @@ void CL_ClearState (void)
 	Com_Memset(cl_entities, 0, sizeof(cl_entities));
 	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
 	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
-	Com_Memset(cl_temp_entities, 0, sizeof(cl_temp_entities));
 	Com_Memset(cl_beams, 0, sizeof(cl_beams));
 
 //
@@ -543,7 +542,7 @@ void CL_RelinkEntities (void)
 
 		if (cl_numvisedicts < MAX_VISEDICTS)
 		{
-			cl_visedicts[cl_numvisedicts] = ent;
+			cl_visedicts[cl_numvisedicts] = *ent;
 			cl_numvisedicts++;
 		}
 	}
