@@ -986,7 +986,7 @@ void SCR_UpdateScreen (void)
 			return;
 	}
 
-	if (!scr_initialized || !con_initialized)
+	if (!scr_initialized || !con_initialized || !glConfig.vidWidth)
 		return;                         // not initialized yet
 
 
