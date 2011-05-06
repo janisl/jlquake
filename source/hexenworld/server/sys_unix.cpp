@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #else
 #include <sys/dir.h>
 #endif
+#include <fcntl.h>
 
 QCvar*	sys_nostdout;
 QCvar*	sys_extrasleep;
@@ -55,6 +56,7 @@ void Sys_Error (char *error, ...)
 	va_list		argptr;
 	char		string[1024];
 
+	fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
 	if (ttycon_on)
 	{
 		tty_Hide();
@@ -77,6 +79,7 @@ Sys_Quit
 void Sys_Quit (void)
 {
 	Sys_ConsoleInputShutdown();
+	fcntl (0, F_SETFL, fcntl (0, F_GETFL, 0) & ~FNDELAY);
 	exit (0);		// appkit isn't running
 }
 
@@ -129,6 +132,8 @@ int main(int argc, char *argv[])
 
 	Sys_ConsoleInputInit();
 
+	fcntl(0, F_SETFL, fcntl (0, F_GETFL, 0) | FNDELAY);
+	
 //
 // main loop
 //
