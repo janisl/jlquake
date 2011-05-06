@@ -33,8 +33,30 @@ typedef struct efrag_s
 	struct efrag_s		*entnext;
 } efrag_t;
 
-
 struct entity_t : refEntity_base_t
+{
+	int						keynum;			// for matching entities in different frames
+	vec3_t					origin;
+	vec3_t					angles;	
+	struct model_s			*model;			// NULL = no model
+	int						frame;
+	byte					*colormap;
+	int						skinnum;		// for Alias models
+
+	struct player_info_s	*scoreboard;	// identify player
+
+	float					syncbase;
+
+	struct efrag_s			*efrag;			// linked list of efrags (FIXME)
+	int						visframe;		// last frame this entity was
+											// found in an active leaf
+											// only used for static objects
+											
+	int						dlightframe;	// dynamic lighting
+	int						dlightbits;
+};
+
+struct refEntity_t : refEntity_base_t
 {
 	int						keynum;			// for matching entities in different frames
 	vec3_t					origin;

@@ -76,7 +76,7 @@ typedef struct particle_s
 extern	entity_t	r_worldentity;
 extern	qboolean	r_cache_thrash;		// compatability
 extern	vec3_t		modelorg, r_entorigin;
-extern	entity_t	*currententity;
+extern	refEntity_t	*currententity;
 extern	int			r_visframecount;	// ??? what difs?
 extern	cplane_t	frustum[4];
 extern	int		c_brush_polys, c_alias_polys;
@@ -160,7 +160,7 @@ void GL_Set2D (void);
 // gl_rmain.c
 //
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-void R_RotateForEntity (entity_t *e);
+void R_RotateForEntity (refEntity_t *e);
 
 //
 // gl_rlight.c
@@ -183,7 +183,7 @@ void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
 //
 // gl_rsurf.c
 //
-void R_DrawBrushModel (entity_t *e);
+void R_DrawBrushModel (refEntity_t *e);
 void R_DrawWorld (void);
 void GL_BuildLightmaps (void);
 

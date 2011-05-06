@@ -408,7 +408,7 @@ CL_LinkPacketEntities
 */
 void CL_LinkPacketEntities (void)
 {
-	entity_t			*ent;
+	refEntity_t			*ent;
 	packet_entities_t	*pack;
 	entity_state_t		*s1, *s2;
 	float				f;
@@ -619,7 +619,7 @@ void CL_LinkProjectiles (void)
 {
 	int		i;
 	projectile_t	*pr;
-	entity_t		*ent;
+	refEntity_t		*ent;
 
 	for (i=0, pr=cl_projectiles ; i<cl_num_projectiles ; i++, pr++)
 	{
@@ -646,7 +646,7 @@ void CL_LinkProjectiles (void)
 
 extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
-entity_t *CL_NewTempEntity (void);
+refEntity_t *CL_NewTempEntity (void);
 
 /*
 ===================
@@ -733,12 +733,12 @@ CL_AddFlagModels
 Called when the CTF flags are set
 ================
 */
-void CL_AddFlagModels (entity_t *ent, int team)
+void CL_AddFlagModels (refEntity_t *ent, int team)
 {
 	int		i;
 	float	f;
 	vec3_t	v_forward, v_right, v_up;
-	entity_t	*newent;
+	refEntity_t	*newent;
 
 	if (cl_flagindex == -1)
 		return;
@@ -796,7 +796,7 @@ void CL_LinkPlayers (void)
 	player_state_t	*state;
 	player_state_t	exact;
 	double			playertime;
-	entity_t		*ent;
+	refEntity_t		*ent;
 	int				msec;
 	frame_t			*frame;
 	int				oldphysent;

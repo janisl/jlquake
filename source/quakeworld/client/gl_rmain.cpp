@@ -27,7 +27,7 @@ entity_t	r_worldentity;
 qboolean	r_cache_thrash;		// compatability
 
 vec3_t		modelorg, r_entorigin;
-entity_t	*currententity;
+refEntity_t	*currententity;
 
 int			r_visframecount;	// bumped when going to a new PVS
 
@@ -113,7 +113,7 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 }
 
 
-void R_RotateForEntity (entity_t *e)
+void R_RotateForEntity (refEntity_t *e)
 {
     qglTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
 
@@ -136,7 +136,7 @@ void R_RotateForEntity (entity_t *e)
 R_GetSpriteFrame
 ================
 */
-mspriteframe_t *R_GetSpriteFrame (entity_t *currententity)
+mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
 {
 	msprite_t		*psprite;
 	mspritegroup_t	*pspritegroup;
@@ -189,7 +189,7 @@ R_DrawSpriteModel
 
 =================
 */
-void R_DrawSpriteModel (entity_t *e)
+void R_DrawSpriteModel (refEntity_t *e)
 {
 	vec3_t	point;
 	mspriteframe_t	*frame;
@@ -427,7 +427,7 @@ R_DrawAliasModel
 
 =================
 */
-void R_DrawAliasModel (entity_t *e)
+void R_DrawAliasModel (refEntity_t *e)
 {
 	int			i;
 	int			lnum;
@@ -659,9 +659,26 @@ void R_DrawViewModel (void)
 	if (cl.stats[STAT_HEALTH] <= 0)
 		return;
 
-	currententity = &cl.viewent;
-	if (!currententity->model)
+	if (!cl.viewent.model)
 		return;
+	refEntity_t gun;
+	refEntity_t* rent = &gun;
+	currententity = &gun;
+	entity_t* pent = &cl.viewent;
+
+	rent->keynum = pent->keynum;
+	VectorCopy(pent->origin, rent->origin);
+	VectorCopy(pent->angles, rent->angles);
+	rent->model = pent->model;
+	rent->frame = pent->frame;
+	rent->colormap = pent->colormap;
+	rent->skinnum = pent->skinnum;
+	rent->scoreboard = pent->scoreboard;
+	rent->syncbase = pent->syncbase;
+	rent->efrag = pent->efrag;
+	rent->visframe = pent->visframe;
+	rent->dlightframe = pent->dlightframe;
+	rent->dlightbits = pent->dlightbits;
 
 	cl.viewent.reType = RT_MODEL;
 	cl.viewent.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
@@ -949,79 +966,11 @@ void R_Clear (void)
 	qglDepthRange (gldepthmin, gldepthmax);
 }
 
-#if 0 //!!! FIXME, Zoid, mirror is disabled for now
-/*
-=============
-R_Mirror
-=============
-*/
-void R_Mirror (void)
-{
-	float		d;
-	msurface_t	*s;
-	entity_t	*ent;
-
-	if (!mirror)
-		return;
-
-	Com_Memcpy(r_base_world_matrix, r_world_matrix, sizeof(r_base_world_matrix));
-
-	d = DotProduct (r_refdef.vieworg, mirror_plane->normal) - mirror_plane->dist;
-	VectorMA (r_refdef.vieworg, -2*d, mirror_plane->normal, r_refdef.vieworg);
-
-	d = DotProduct (vpn, mirror_plane->normal);
-	VectorMA (vpn, -2*d, mirror_plane->normal, vpn);
-
-	r_refdef.viewangles[0] = -asin (vpn[2])/M_PI*180;
-	r_refdef.viewangles[1] = atan2 (vpn[1], vpn[0])/M_PI*180;
-	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
-
-	ent = &cl_entities[cl.viewentity];
-	if (cl_numvisedicts < MAX_VISEDICTS)
-	{
-		cl_visedicts[cl_numvisedicts] = ent;
-		cl_numvisedicts++;
-	}
-
-	gldepthmin = 0.5;
-	gldepthmax = 1;
-	qglDepthRange (gldepthmin, gldepthmax);
-
-	R_RenderScene ();
-	R_DrawWaterSurfaces ();
-
-
-	gldepthmin = 0;
-	gldepthmax = 0.5;
-	qglDepthRange (gldepthmin, gldepthmax);
-
-	// blend on top
-	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	qglMatrixMode(GL_PROJECTION);
-	if (mirror_plane->normal[2])
-		qglScalef (1,-1,1);
-	else
-		qglScalef (-1,1,1);
-	qglCullFace(GL_FRONT);
-	qglMatrixMode(GL_MODELVIEW);
-
-	qglLoadMatrixf (r_base_world_matrix);
-
-	qglColor4f (1,1,1,r_mirroralpha.value);
-	s = cl.worldmodel->textures[mirrortexturenum]->texturechain;
-	for ( ; s ; s=s->texturechain)
-		R_RenderBrushPoly (s);
-	cl.worldmodel->textures[mirrortexturenum]->texturechain = NULL;
-	GL_State(GLS_DEFAULT);
-	qglColor4f (1,1,1,1);
-}
-#endif
-
 static void UpdateRefEntityData()
 {
 	for (int i = 0; i < cl_numvisedicts; i++)
 	{
-		entity_t* e = &cl_visedicts[i];
+		refEntity_t* e = &cl_visedicts[i];
 		e->reType = RT_MODEL;
 		e->renderfx = 0;
 	}
@@ -1067,9 +1016,6 @@ void R_RenderView (void)
 	R_RenderScene ();
 	R_DrawViewModel ();
 	R_DrawWaterSurfaces ();
-
-	// render mirror view
-//	R_Mirror ();
 
 	R_PolyBlend ();
 

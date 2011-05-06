@@ -200,7 +200,20 @@ void R_StoreEfrags (efrag_t **ppefrag)
 			if ((pent->visframe != tr.frameCount) &&
 				(cl_numvisedicts < MAX_VISEDICTS))
 			{
-				cl_visedicts[cl_numvisedicts++] = *pent;
+				refEntity_t* rent = &cl_visedicts[cl_numvisedicts++];
+				rent->keynum = pent->keynum;
+				VectorCopy(pent->origin, rent->origin);
+				VectorCopy(pent->angles, rent->angles);
+				rent->model = pent->model;
+				rent->frame = pent->frame;
+				rent->colormap = pent->colormap;
+				rent->skinnum = pent->skinnum;
+				rent->scoreboard = pent->scoreboard;
+				rent->syncbase = pent->syncbase;
+				rent->efrag = pent->efrag;
+				rent->visframe = pent->visframe;
+				rent->dlightframe = pent->dlightframe;
+				rent->dlightbits = pent->dlightbits;
 
 			// mark that we've recorded this entity for this frame
 				pent->visframe = tr.frameCount;

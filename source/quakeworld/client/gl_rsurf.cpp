@@ -874,7 +874,7 @@ void DrawTextureChains (void)
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (entity_t *e)
+void R_DrawBrushModel (refEntity_t *e)
 {
 	int			i;
 	int			k;
@@ -1115,7 +1115,7 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	entity_t	ent;
+	refEntity_t	ent;
 
 	Com_Memset(&ent, 0, sizeof(ent));
 	ent.model = cl.worldmodel;

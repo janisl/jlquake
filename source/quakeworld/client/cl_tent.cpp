@@ -325,9 +325,9 @@ void CL_ParseTEnt (void)
 CL_NewTempEntity
 =================
 */
-entity_t *CL_NewTempEntity (void)
+refEntity_t *CL_NewTempEntity (void)
 {
-	entity_t	*ent;
+	refEntity_t	*ent;
 
 	if (cl_numvisedicts == MAX_VISEDICTS)
 		return NULL;
@@ -353,7 +353,7 @@ void CL_UpdateBeams (void)
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
-	entity_t	*ent;
+	refEntity_t	*ent;
 	float		yaw, pitch;
 	float		forward;
 
@@ -425,7 +425,7 @@ void CL_UpdateExplosions (void)
 	int			i;
 	int			f;
 	explosion_t	*ex;
-	entity_t	*ent;
+	refEntity_t	*ent;
 
 	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
 	{
