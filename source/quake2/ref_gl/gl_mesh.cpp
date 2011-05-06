@@ -524,13 +524,13 @@ void R_DrawAliasModel (entity_t *e)
 	vec3_t		bbox[8];
 	image_t		*skin;
 
-	if ( !( e->flags & RF_WEAPONMODEL ) )
+	if ( !( e->renderfx & RF_FIRST_PERSON) )
 	{
 		if ( R_CullAliasModel( bbox, e ) )
 			return;
 	}
 
-	if ( e->flags & RF_WEAPONMODEL )
+	if ( e->renderfx & RF_FIRST_PERSON)
 	{
 		if ( r_lefthand->value == 2 )
 			return;
@@ -618,7 +618,7 @@ void R_DrawAliasModel (entity_t *e)
 
 		// player lighting hack for communication back to server
 		// big hack!
-		if ( currententity->flags & RF_WEAPONMODEL )
+		if ( currententity->renderfx & RF_FIRST_PERSON)
 		{
 			// pick the greatest component, which should be the same
 			// as the mono value returned by software
@@ -640,7 +640,7 @@ void R_DrawAliasModel (entity_t *e)
 		}
 	}
 
-	if ( currententity->flags & RF_MINLIGHT )
+	if ( currententity->renderfx & RF_MINLIGHT )
 	{
 		for (i=0 ; i<3 ; i++)
 			if (shadelight[i] > 0.1)
@@ -696,10 +696,10 @@ void R_DrawAliasModel (entity_t *e)
 	//
 	// draw all the triangles
 	//
-	if (currententity->flags & RF_DEPTHHACK) // hack the depth range to prevent view model from poking into walls
+	if (currententity->renderfx & RF_DEPTHHACK) // hack the depth range to prevent view model from poking into walls
 		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 
-	if ( ( currententity->flags & RF_WEAPONMODEL ) && ( r_lefthand->value == 1.0F ) )
+	if ( ( currententity->renderfx & RF_FIRST_PERSON) && ( r_lefthand->value == 1.0F ) )
 	{
 		extern void MYgluPerspective( GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar );
 
@@ -778,7 +778,7 @@ void R_DrawAliasModel (entity_t *e)
 
 	qglPopMatrix ();
 
-	if ( ( currententity->flags & RF_WEAPONMODEL ) && ( r_lefthand->value == 1.0F ) )
+	if ( ( currententity->renderfx & RF_FIRST_PERSON) && ( r_lefthand->value == 1.0F ) )
 	{
 		qglMatrixMode( GL_PROJECTION );
 		qglPopMatrix();
@@ -791,11 +791,11 @@ void R_DrawAliasModel (entity_t *e)
 		GL_State(GLS_DEFAULT);
 	}
 
-	if (currententity->flags & RF_DEPTHHACK)
+	if (currententity->renderfx & RF_DEPTHHACK)
 		qglDepthRange (gldepthmin, gldepthmax);
 
 #if 1
-	if (gl_shadows->value && !(currententity->flags & (RF_TRANSLUCENT | RF_WEAPONMODEL)))
+	if (gl_shadows->value && !(currententity->renderfx & (RF_TRANSLUCENT | RF_FIRST_PERSON)))
 	{
 		qglPushMatrix ();
 		R_RotateForEntity (e);

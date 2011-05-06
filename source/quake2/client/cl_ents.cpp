@@ -837,7 +837,7 @@ void CL_AddPacketEntities (frame_t *frame)
 	centity_t			*cent;
 	int					autoanim;
 	clientinfo_t		*ci;
-	unsigned int		effects, renderfx;
+	unsigned int		effects, renderfx_old, renderfx;
 
 	// bonus items rotate at a fixed rate
 	autorotate = AngleMod(cl.time/10);
@@ -854,7 +854,26 @@ void CL_AddPacketEntities (frame_t *frame)
 		cent = &cl_entities[s1->number];
 
 		effects = s1->effects;
-		renderfx = s1->renderfx;
+		renderfx_old = s1->renderfx;
+
+		//	Convert Quake 2 render flags to new ones.
+		renderfx = 0;
+		if (renderfx_old & Q2RF_MINLIGHT)
+		{
+			renderfx |= RF_MINLIGHT;
+		}
+		if (renderfx_old & Q2RF_VIEWERMODEL)
+		{
+			renderfx |= RF_THIRD_PERSON;
+		}
+		if (renderfx_old & Q2RF_WEAPONMODEL)
+		{
+			renderfx |= RF_FIRST_PERSON;
+		}
+		if (renderfx_old & Q2RF_DEPTHHACK)
+		{
+			renderfx |= RF_DEPTHHACK;
+		}
 
 			// set frame
 		if (effects & EF_ANIM01)
@@ -873,14 +892,14 @@ void CL_AddPacketEntities (frame_t *frame)
 		{
 			effects &= ~EF_PENT;
 			effects |= EF_COLOR_SHELL;
-			renderfx |= RF_SHELL_RED;
+			renderfx_old |= RF_SHELL_RED;
 		}
 
 		if (effects & EF_QUAD)
 		{
 			effects &= ~EF_QUAD;
 			effects |= EF_COLOR_SHELL;
-			renderfx |= RF_SHELL_BLUE;
+			renderfx_old |= RF_SHELL_BLUE;
 		}
 //======
 // PMM
@@ -888,21 +907,21 @@ void CL_AddPacketEntities (frame_t *frame)
 		{
 			effects &= ~EF_DOUBLE;
 			effects |= EF_COLOR_SHELL;
-			renderfx |= RF_SHELL_DOUBLE;
+			renderfx_old |= RF_SHELL_DOUBLE;
 		}
 
 		if (effects & EF_HALF_DAMAGE)
 		{
 			effects &= ~EF_HALF_DAMAGE;
 			effects |= EF_COLOR_SHELL;
-			renderfx |= RF_SHELL_HALF_DAM;
+			renderfx_old |= RF_SHELL_HALF_DAM;
 		}
 // pmm
 //======
 		ent.oldframe = cent->prev.frame;
 		ent.backlerp = 1.0 - cl.lerpfrac;
 
-		if (renderfx & (RF_FRAMELERP|RF_BEAM))
+		if (renderfx_old & (RF_FRAMELERP|RF_BEAM))
 		{	// step origin discretely, because the frames
 			// do the animation properly
 			VectorCopy (cent->current.origin, ent.origin);
@@ -920,7 +939,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		// create a new entity
 	
 		// tweak the color of beams
-		if ( renderfx & RF_BEAM )
+		if ( renderfx_old & RF_BEAM )
 		{	// the four beam colors are encoded in 32 bits of skinnum (hack)
 			ent.alpha = 0.30;
 			ent.skinnum = (s1->skinnum >> ((rand() % 4)*8)) & 0xff;
@@ -943,7 +962,7 @@ void CL_AddPacketEntities (frame_t *frame)
 
 //============
 //PGM
-				if (renderfx & RF_USE_DISGUISE)
+				if (renderfx_old & RF_USE_DISGUISE)
 				{
 					if(!QStr::NCmp((char *)ent.skin, "players/male", 12))
 					{
@@ -973,14 +992,20 @@ void CL_AddPacketEntities (frame_t *frame)
 		}
 
 		// only used for black hole model right now, FIXME: do better
-		if (renderfx == RF_TRANSLUCENT)
+		if (renderfx_old == RF_TRANSLUCENT)
 			ent.alpha = 0.70;
 
 		// render effects (fullbright, translucent, etc)
 		if ((effects & EF_COLOR_SHELL))
+		{
 			ent.flags = 0;	// renderfx go on color shell entity
+			ent.renderfx = 0;
+		}
 		else
-			ent.flags = renderfx;
+		{
+			ent.flags = renderfx_old;
+			ent.renderfx = renderfx;
+		}
 
 		// calculate angles
 		if (effects & EF_ROTATE)
@@ -1018,7 +1043,7 @@ void CL_AddPacketEntities (frame_t *frame)
 
 		if (s1->number == cl.playernum+1)
 		{
-			ent.flags |= RF_VIEWERMODEL;	// only draw from mirrors
+			ent.renderfx |= RF_THIRD_PERSON;	// only draw from mirrors
 			// FIXME: still pass to refresh
 
 			if (effects & EF_FLAG1)
@@ -1067,7 +1092,8 @@ void CL_AddPacketEntities (frame_t *frame)
 		// color shells generate a seperate entity for the main model
 		if (effects & EF_COLOR_SHELL)
 		{
-			ent.flags = renderfx | RF_TRANSLUCENT;
+			ent.flags = renderfx_old | RF_TRANSLUCENT;
+			ent.renderfx = renderfx;
 			ent.alpha = 0.30;
 			V_AddEntity (&ent);
 		}
@@ -1323,7 +1349,7 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 			gun.oldframe = ops->gunframe;
 	}
 
-	gun.flags = RF_MINLIGHT | RF_DEPTHHACK | RF_WEAPONMODEL;
+	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	gun.backlerp = 1.0 - cl.lerpfrac;
 	VectorCopy (gun.origin, gun.oldorigin);	// don't lerp at all
 	V_AddEntity (&gun);

@@ -460,6 +460,11 @@ void R_DrawAliasModel (entity_t *e)
 	if (R_CullBox (mins, maxs))
 		return;
 
+	// hack the depth range to prevent view model from poking into walls
+	if (e->renderfx & RF_DEPTHHACK)
+	{
+		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
+	}
 
 	VectorCopy (currententity->origin, r_entorigin);
 	VectorSubtract (r_origin, r_entorigin, modelorg);
@@ -471,7 +476,7 @@ void R_DrawAliasModel (entity_t *e)
 	ambientlight = shadelight = R_LightPoint (currententity->origin);
 
 	// allways give the gun some light
-	if (e == &cl.viewent && ambientlight < 24)
+	if ((e->renderfx & RF_MINLIGHT) && ambientlight < 24)
 		ambientlight = shadelight = 24;
 
 	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
@@ -571,6 +576,11 @@ void R_DrawAliasModel (entity_t *e)
 
 	qglPopMatrix ();
 
+	if (e->renderfx & RF_DEPTHHACK)
+	{
+		qglDepthRange (gldepthmin, gldepthmax);
+	}
+
 	if (r_shadows->value)
 	{
 		qglPushMatrix ();
@@ -641,14 +651,6 @@ R_DrawViewModel
 */
 void R_DrawViewModel (void)
 {
-	float		ambient[4], diffuse[4];
-	int			j;
-	int			lnum;
-	vec3_t		dist;
-	float		add;
-	dlight_t	*dl;
-	int			ambientlight, shadelight;
-
 	if (!r_drawviewmodel->value)
 		return;
 
@@ -671,37 +673,10 @@ void R_DrawViewModel (void)
 	if (!currententity->model)
 		return;
 
-	j = R_LightPoint (currententity->origin);
+	cl.viewent.reType = RT_MODEL;
+	cl.viewent.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 
-	if (j < 24)
-		j = 24;		// allways give some light on gun
-	ambientlight = j;
-	shadelight = j;
-
-// add dynamic lights		
-	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
-	{
-		dl = &cl_dlights[lnum];
-		if (!dl->radius)
-			continue;
-		if (!dl->radius)
-			continue;
-		if (dl->die < cl.time)
-			continue;
-
-		VectorSubtract (currententity->origin, dl->origin, dist);
-		add = dl->radius - VectorLength(dist);
-		if (add > 0)
-			ambientlight += add;
-	}
-
-	ambient[0] = ambient[1] = ambient[2] = ambient[3] = (float)ambientlight / 128;
-	diffuse[0] = diffuse[1] = diffuse[2] = diffuse[3] = (float)shadelight / 128;
-
-	// hack the depth range to prevent view model from poking into walls
-	qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 	R_DrawAliasModel (currententity);
-	qglDepthRange (gldepthmin, gldepthmax);
 }
 
 
@@ -1053,6 +1028,7 @@ static void UpdateRefEntityData()
 	{
 		entity_t* e = cl_visedicts[i];
 		e->reType = RT_MODEL;
+		e->renderfx = 0;
 	}
 }
 

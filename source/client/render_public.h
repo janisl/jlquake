@@ -94,9 +94,25 @@ enum refEntityType_t
 	RT_MAX_REF_ENTITY_TYPE
 };
 
+// renderfx flags
+#define RF_MINLIGHT			1		// allways have some light (viewmodel, some items)
+#define RF_THIRD_PERSON		2		// don't draw through eyes, only mirrors (player bodies, chat sprites)
+#define RF_FIRST_PERSON		4		// only draw through eyes (view weapon, damage blood blob)
+#define RF_DEPTHHACK		8		// for view weapon Z crunching
+#define RF_NOSHADOW			64		// don't add stencil shadows
+#define RF_LIGHTING_ORIGIN	128		// use refEntity->lightingOrigin instead of refEntity->origin
+									// for lighting.  This allows entities to sink into the floor
+									// with their origin going solid, and allows all parts of a
+									// player to get the same lighting
+#define RF_SHADOW_PLANE		256		// use refEntity->shadowPlane
+#define	RF_WRAP_FRAMES		512		// mod the model frames by the maxframes to allow continuous
+									// animation without needing to know the frame count
+
 struct refEntity_base_t
 {
 	refEntityType_t	reType;
+	int				renderfx;
+
 };
 
 //
