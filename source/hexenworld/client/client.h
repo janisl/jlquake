@@ -458,8 +458,8 @@ qboolean CL_DemoBehind(void);
 
 #define			MAX_VISEDICTS	512
 extern	int				cl_numvisedicts, cl_oldnumvisedicts;
-extern	entity_t		*cl_visedicts, *cl_oldvisedicts;
-extern	entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
+extern	refEntity_t		*cl_visedicts, *cl_oldvisedicts;
+extern	refEntity_t		cl_visedicts_list[2][MAX_VISEDICTS];
 
 //
 // cl_input
@@ -537,13 +537,13 @@ extern	float	v_targDist;
 //
 void CL_InitTEnts (void);
 void CL_ClearTEnts (void);
-void CL_UpdateHammer(entity_t *ent, int edict_num);
-void CL_UpdateBug(entity_t *ent);
-void CL_UpdateIceStorm(entity_t *ent, int edict_num);
-void CL_UpdatePoisonGas(entity_t *ent, int edict_num);
-void CL_UpdateAcidBlob(entity_t *ent, int edict_num);
-void CL_UpdateOnFire(entity_t *ent, int edict_num);
-void CL_UpdatePowerFlameBurn(entity_t *ent, int edict_num);
+void CL_UpdateHammer(refEntity_t *ent, int edict_num);
+void CL_UpdateBug(refEntity_t *ent);
+void CL_UpdateIceStorm(refEntity_t *ent, int edict_num);
+void CL_UpdatePoisonGas(refEntity_t *ent, int edict_num);
+void CL_UpdateAcidBlob(refEntity_t *ent, int edict_num);
+void CL_UpdateOnFire(refEntity_t *ent, int edict_num);
+void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num);
 
 //
 // cl_ents.c

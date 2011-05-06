@@ -228,7 +228,7 @@ void Sbar_Init(void)
 void SB_PlacePlayerNames(void)
 {
 	int			i,j;
-	entity_t	*currententity;
+	refEntity_t	*currententity;
 
 	for (j=0;j<cl_numvisedicts;j++)
 	{

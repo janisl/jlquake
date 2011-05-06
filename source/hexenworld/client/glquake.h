@@ -126,7 +126,7 @@ typedef struct particle_s
 extern	entity_t	r_worldentity;
 extern	qboolean	r_cache_thrash;		// compatability
 extern	vec3_t		modelorg, r_entorigin;
-extern	entity_t	*currententity;
+extern	refEntity_t	*currententity;
 extern	int			r_visframecount;	// ??? what difs?
 extern	cplane_t	frustum[4];
 extern	int		c_brush_polys, c_alias_polys;
@@ -204,13 +204,13 @@ void EmitBothSkyLayers (msurface_t *fa);
 void R_DrawSkyChain (msurface_t *s);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
 void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
-void R_RotateForEntity (entity_t *e);
+void R_RotateForEntity (refEntity_t *e);
 void R_StoreEfrags (efrag_t **ppefrag);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void GL_BuildLightmaps (void);
 int R_LightPoint (vec3_t p);
-void R_DrawBrushModel (entity_t *e, qboolean Translucent);
+void R_DrawBrushModel (refEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);
 void V_CalcBlend (void);
 void R_DrawWorld (void);
@@ -226,7 +226,7 @@ void R_ParseParticleEffect4 (void);
 void R_ParseRainEffect(void);
 void R_NetGraph (void);
 model_t *Mod_FindName (char *name);
-void R_DarkFieldParticles (entity_t *ent);
+void R_DarkFieldParticles (refEntity_t *ent);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
 
 extern float RTint[256],GTint[256],BTint[256];

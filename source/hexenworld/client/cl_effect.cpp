@@ -1620,7 +1620,27 @@ void CL_LinkEntity(entity_t *ent)
 //		ent->model = 3;
 //	}
 
-	cl_visedicts[cl_numvisedicts++] = *ent;
+	refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
+	rent->keynum = ent->keynum;
+	VectorCopy(ent->origin, rent->origin);
+	VectorCopy(ent->angles, rent->angles);
+	VectorCopy(ent->angleAdd, rent->angleAdd);
+	rent->model = ent->model;
+	rent->frame = ent->frame;
+	rent->colormap = ent->colormap;
+	rent->sourcecolormap = ent->sourcecolormap;
+	rent->colorshade = ent->colorshade;
+	rent->skinnum = ent->skinnum;
+	rent->scale = ent->scale;
+	rent->drawflags = ent->drawflags;
+	rent->abslight = ent->abslight;
+	rent->scoreboard = ent->scoreboard;
+	rent->syncbase = ent->syncbase;
+	rent->efrag = ent->efrag;
+	rent->visframe = ent->visframe;
+	rent->dlightframe = ent->dlightframe;
+	rent->dlightbits = ent->dlightbits;
+	cl_numvisedicts++;
 }
 
 void R_RunQuakeEffect (vec3_t org, float distance);

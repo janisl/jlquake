@@ -81,7 +81,7 @@ void R_InitParticles (void)
 }
 
 
-void R_DarkFieldParticles (entity_t *ent)
+void R_DarkFieldParticles (refEntity_t *ent)
 {
 	int			i, j, k;
 	particle_t	*p;
@@ -207,7 +207,7 @@ void R_EntityParticles (entity_t *ent)
 	}
 }
 
-void R_SuccubusInvincibleParticles (entity_t *ent)
+void R_SuccubusInvincibleParticles (refEntity_t *ent)
 {
 	int			count;
 	particle_t	*p;

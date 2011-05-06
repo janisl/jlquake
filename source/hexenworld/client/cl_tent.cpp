@@ -3571,9 +3571,9 @@ void CL_ParseTEnt (void)
 CL_NewTempEntity
 =================
 */
-entity_t *CL_NewTempEntity (void)
+refEntity_t *CL_NewTempEntity (void)
 {
-	entity_t	*ent;
+	refEntity_t	*ent;
 
 	if (cl_numvisedicts == MAX_VISEDICTS)
 		return NULL;
@@ -3599,7 +3599,7 @@ void CL_UpdateBeams (void)
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
-	entity_t	*ent;
+	refEntity_t	*ent;
 	float		yaw, pitch;
 	float		forward;
 
@@ -3671,7 +3671,7 @@ void CL_UpdateExplosions (void)
 	int			i;
 	int			f;
 	explosion_t	*ex;
-	entity_t	*ent;
+	refEntity_t	*ent;
 	mleaf_t		*l;
 
 	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
@@ -3779,7 +3779,7 @@ void CL_UpdateStreams(void)
 	vec3_t			discard, right, up;
 	float			cosTime, sinTime, lifeTime, cos2Time, sin2Time;
 	float			d;
-	entity_t		*ent;
+	refEntity_t		*ent;
 	float			yaw, pitch;
 	float			forward;
 	int				segmentCount;
@@ -4912,7 +4912,7 @@ void updateAcidBall(explosion_t *ex)
 //
 //*****************************************************************************
 
-void CL_UpdatePoisonGas(entity_t *ent, int edict_num)
+void CL_UpdatePoisonGas(refEntity_t *ent, int edict_num)
 {
 	explosion_t	*ex;
 	float		smokeCount;
@@ -4961,7 +4961,7 @@ void CL_UpdatePoisonGas(entity_t *ent, int edict_num)
 	}
 }
 
-void CL_UpdateAcidBlob(entity_t *ent, int edict_num)
+void CL_UpdateAcidBlob(refEntity_t *ent, int edict_num)
 {
 	explosion_t	*ex;
 	int testVal, testVal2;
@@ -4996,7 +4996,7 @@ void CL_UpdateAcidBlob(entity_t *ent, int edict_num)
 	}
 }
 
-void CL_UpdateOnFire(entity_t *ent, int edict_num)
+void CL_UpdateOnFire(refEntity_t *ent, int edict_num)
 {
 	explosion_t *ex;
 
@@ -5130,7 +5130,7 @@ void PowerFlameBurnRemove(explosion_t *ex)
 	if(rand()&1)S_StartSound(ex2->origin, TempSoundChannel(), 1, cl_sfx_flameend, 1, 1);
 }
 
-void CL_UpdatePowerFlameBurn(entity_t *ent, int edict_num)
+void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 {
 	explosion_t *ex, *ex2;
 	vec3_t		srcVec;
@@ -5170,7 +5170,7 @@ void CL_UpdatePowerFlameBurn(entity_t *ent, int edict_num)
 	}
 }
 
-void CL_UpdateHammer(entity_t *ent, int edict_num)
+void CL_UpdateHammer(refEntity_t *ent, int edict_num)
 {
 	int testVal, testVal2;
 	// do this every .3 seconds
@@ -5187,7 +5187,7 @@ void CL_UpdateHammer(entity_t *ent, int edict_num)
 	}
 }
 
-void CL_UpdateBug(entity_t *ent)
+void CL_UpdateBug(refEntity_t *ent)
 {
 	int testVal, testVal2;
 	testVal = (int)(cl.time * 10.0);
@@ -5203,7 +5203,7 @@ void CL_UpdateBug(entity_t *ent)
 	}
 }
 
-void CL_UpdateIceStorm(entity_t *ent, int edict_num)
+void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 {
 	vec3_t			center, side1, tempVect, wishLoc;
 	vec3_t			side2 = {160, 160, 128};

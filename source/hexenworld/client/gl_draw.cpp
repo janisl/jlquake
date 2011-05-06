@@ -75,7 +75,7 @@ image_t* Draw_CachePic (char *path)
 	if (!QStr::Cmp(path, "gfx/menu/netp6.lmp"))
 		TransPixels = menuplyr_pixels[5];
 
-	image_t* pic = R_FindImageFile(false, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
 	if (!pic)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
 	return pic;

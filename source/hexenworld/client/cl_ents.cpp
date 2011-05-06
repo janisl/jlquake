@@ -479,7 +479,7 @@ nextword:
 }
 
 
-void HandleEffects(int effects, int number, entity_t *ent, vec3_t oldOrg)
+void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t oldOrg)
 {
 	dlight_t			*dl;
 	int					rotateSet = 0;
@@ -614,7 +614,7 @@ CL_LinkPacketEntities
 */
 void CL_LinkPacketEntities (void)
 {
-	entity_t			*ent;
+	refEntity_t			*ent;
 	packet_entities_t	*pack;
 	entity_state_t		*s1, *s2;
 	float				f;
@@ -936,7 +936,7 @@ void CL_LinkProjectiles (void)
 {
 	int		i;
 	projectile_t	*pr;
-	entity_t		*ent;
+	refEntity_t		*ent;
 
 	for (i=0, pr=cl_projectiles ; i<cl_num_projectiles ; i++, pr++)
 	{
@@ -1032,7 +1032,7 @@ void CL_LinkMissiles (void)
 {
 	int		i;
 	missile_t	*pr;
-	entity_t		*ent;
+	refEntity_t		*ent;
 
 	missilestar_angle[1] += host_frametime * 300; 
 	missilestar_angle[2] += host_frametime * 400; 
@@ -1298,7 +1298,7 @@ void CL_LinkPlayers (void)
 	player_state_t	*state;
 	player_state_t	exact;
 	double			enttime, playertime;
-	entity_t		*ent;
+	refEntity_t		*ent;
 	int				msec;
 	frame_t			*frame;
 	int				oldphysent;

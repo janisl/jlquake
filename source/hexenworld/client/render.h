@@ -15,7 +15,35 @@ typedef struct efrag_s
 } efrag_t;
 
 
-struct entity_t : refEntity_base_t
+struct entity_t
+{
+	int						keynum;			// for matching entities in different frames
+	vec3_t					origin;
+	vec3_t					angles;
+	vec3_t					angleAdd;		// For clientside rotation stuff
+	struct model_s			*model;			// NULL = no model
+	int						frame;
+	byte					*colormap, *sourcecolormap;
+	byte					colorshade;
+	int						skinnum;		// for Alias models
+	int						scale;			// for Alias models
+	int						drawflags;		// for Alias models
+	int						abslight;		// for Alias models
+
+	struct player_info_s	*scoreboard;	// identify player
+
+	float					syncbase;
+
+	struct efrag_s			*efrag;			// linked list of efrags (FIXME)
+	int						visframe;		// last frame this entity was
+											// found in an active leaf
+											// only used for static objects
+											
+	int						dlightframe;	// dynamic lighting
+	int						dlightbits;
+};
+
+struct refEntity_t : refEntity_base_t
 {
 	int						keynum;			// for matching entities in different frames
 	vec3_t					origin;
@@ -123,7 +151,7 @@ void R_RainEffect2 (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int 
 void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter);
 
 void R_EntityParticles (entity_t *ent);
-void R_SuccubusInvincibleParticles (entity_t *ent);
+void R_SuccubusInvincibleParticles (refEntity_t *ent);
 void R_BlobExplosion (vec3_t org);
 void R_ParticleExplosion (vec3_t org);
 void R_LavaSplash (vec3_t org);
