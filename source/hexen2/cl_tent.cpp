@@ -68,7 +68,7 @@ typedef struct
 
 static void ParseStream(int type);
 static stream_t *NewStream(int ent, int tag);
-static entity_t *NewStreamEntity(void);
+static refEntity_t *NewStreamEntity(void);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -414,7 +414,7 @@ void CL_UpdateTEnts(void)
 	vec3_t dist;
 	vec3_t org;
 	float d;
-	entity_t *ent;
+	refEntity_t *ent;
 	float yaw, pitch;
 	float forward;
 	int segmentCount;
@@ -656,9 +656,9 @@ void CL_UpdateTEnts(void)
 //
 //==========================================================================
 
-static entity_t *NewStreamEntity(void)
+static refEntity_t *NewStreamEntity(void)
 {
-	entity_t	*ent;
+	refEntity_t	*ent;
 
 	if(cl_numvisedicts == MAX_VISEDICTS)
 	{

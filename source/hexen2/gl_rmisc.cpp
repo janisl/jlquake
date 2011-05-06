@@ -275,8 +275,8 @@ void R_TranslatePlayerSkin (int playernum)
 	//
 	// locate the original skin pixels
 	//
-	currententity = &cl_entities[1+playernum];
-	model = currententity->model;
+	entity_t* ent = &cl_entities[1+playernum];
+	model = ent->model;
 	if (!model)
 		return;		// player doesn't have a model yet
 	paliashdr = (aliashdr_t *)Mod_Extradata (model);

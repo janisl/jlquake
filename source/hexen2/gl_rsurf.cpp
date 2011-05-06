@@ -684,7 +684,7 @@ void DrawTextureChains (void)
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (entity_t *e, qboolean Translucent)
+void R_DrawBrushModel (refEntity_t *e, qboolean Translucent)
 {
 	int			j, k;
 	vec3_t		mins, maxs;
@@ -924,7 +924,7 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	entity_t	ent;
+	refEntity_t	ent;
 	int			i;
 
 	Com_Memset(&ent, 0, sizeof(ent));
