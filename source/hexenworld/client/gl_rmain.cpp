@@ -1089,7 +1089,6 @@ void R_DrawViewModel (void)
 	rent->model = ent->model;
 	rent->frame = ent->frame;
 	rent->colormap = ent->colormap;
-	rent->sourcecolormap = ent->sourcecolormap;
 	rent->colorshade = ent->colorshade;
 	rent->skinnum = ent->skinnum;
 	rent->scale = ent->scale;
@@ -1097,10 +1096,6 @@ void R_DrawViewModel (void)
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;
 	rent->syncbase = ent->syncbase;
-	rent->efrag = ent->efrag;
-	rent->visframe = ent->visframe;
-	rent->dlightframe = ent->dlightframe;
-	rent->dlightbits = ent->dlightbits;
 
 	R_DrawAliasModel (currententity);
 }

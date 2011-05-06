@@ -1628,7 +1628,6 @@ void CL_LinkEntity(entity_t *ent)
 	rent->model = ent->model;
 	rent->frame = ent->frame;
 	rent->colormap = ent->colormap;
-	rent->sourcecolormap = ent->sourcecolormap;
 	rent->colorshade = ent->colorshade;
 	rent->skinnum = ent->skinnum;
 	rent->scale = ent->scale;
@@ -1636,10 +1635,6 @@ void CL_LinkEntity(entity_t *ent)
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;
 	rent->syncbase = ent->syncbase;
-	rent->efrag = ent->efrag;
-	rent->visframe = ent->visframe;
-	rent->dlightframe = ent->dlightframe;
-	rent->dlightbits = ent->dlightbits;
 	cl_numvisedicts++;
 }
 

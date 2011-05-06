@@ -662,11 +662,10 @@ void CL_LinkPacketEntities (void)
 		ent->keynum = s1->number;
 		ent->model = model = cl.model_precache[s1->modelindex];
 	
-		ent->sourcecolormap = vid.colormap;
 		if (!s1->colormap)
 		{
 			ent->colorshade = 0;
-			ent->colormap = ent->sourcecolormap;
+			ent->colormap = vid.colormap;
 			ent->scoreboard = NULL;
 		}
 		else
@@ -1347,9 +1346,8 @@ void CL_LinkPlayers (void)
 		ent->skinnum = state->skinnum;
 		ent->frame = state->frame;
 
-		ent->sourcecolormap = info->translations;
 		ent->colorshade = 0;
-		ent->colormap = ent->sourcecolormap;
+		ent->colormap = info->translations;
 
 		ent->drawflags = state->drawflags;
 		ent->scale = state->scale;

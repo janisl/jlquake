@@ -210,10 +210,6 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->skinnum = pent->skinnum;
 				rent->scoreboard = pent->scoreboard;
 				rent->syncbase = pent->syncbase;
-				rent->efrag = pent->efrag;
-				rent->visframe = pent->visframe;
-				rent->dlightframe = pent->dlightframe;
-				rent->dlightbits = pent->dlightbits;
 
 			// mark that we've recorded this entity for this frame
 				pent->visframe = tr.frameCount;

@@ -183,30 +183,17 @@ void R_StoreEfrags (efrag_t **ppefrag)
 			{
 				entity_t* ent = pent;
 				refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
-				rent->forcelink = ent->forcelink;
-				rent->baseline = ent->baseline;
-				rent->msgtime = ent->msgtime;
-				VectorCopy(ent->msg_origins[0], rent->msg_origins[0]);
-				VectorCopy(ent->msg_origins[1], rent->msg_origins[1]);
 				VectorCopy(ent->origin, rent->origin);
-				VectorCopy(ent->msg_angles[0], rent->msg_angles[0]);
-				VectorCopy(ent->msg_angles[1], rent->msg_angles[1]);
 				VectorCopy(ent->angles, rent->angles);
 				rent->model = ent->model;
-				rent->efrag = ent->efrag;
 				rent->frame = ent->frame;
 				rent->syncbase = ent->syncbase;
 				rent->colormap = ent->colormap;
-				rent->sourcecolormap = ent->sourcecolormap;
 				rent->colorshade = ent->colorshade;
-				rent->effects = ent->effects;
 				rent->skinnum = ent->skinnum;
 				rent->scale = ent->scale;
 				rent->drawflags = ent->drawflags;
 				rent->abslight = ent->abslight;
-				rent->visframe = ent->visframe;
-				rent->dlightframe = ent->dlightframe;
-				rent->dlightbits = ent->dlightbits;
 				rent->playernum = 0;
 				cl_numvisedicts++;
 

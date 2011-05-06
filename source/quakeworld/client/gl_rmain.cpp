@@ -677,10 +677,6 @@ void R_DrawViewModel (void)
 	rent->skinnum = pent->skinnum;
 	rent->scoreboard = pent->scoreboard;
 	rent->syncbase = pent->syncbase;
-	rent->efrag = pent->efrag;
-	rent->visframe = pent->visframe;
-	rent->dlightframe = pent->dlightframe;
-	rent->dlightbits = pent->dlightbits;
 
 	R_DrawAliasModel (currententity);
 }
