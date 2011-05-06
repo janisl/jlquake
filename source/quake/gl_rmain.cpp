@@ -27,7 +27,7 @@ entity_t	r_worldentity;
 qboolean	r_cache_thrash;		// compatability
 
 vec3_t		modelorg, r_entorigin;
-entity_t	*currententity;
+refEntity_t	*currententity;
 
 int			r_visframecount;	// bumped when going to a new PVS
 
@@ -114,7 +114,7 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 }
 
 
-void R_RotateForEntity (entity_t *e)
+void R_RotateForEntity (refEntity_t *e)
 {
     qglTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
 
@@ -136,7 +136,7 @@ void R_RotateForEntity (entity_t *e)
 R_GetSpriteFrame
 ================
 */
-mspriteframe_t *R_GetSpriteFrame (entity_t *currententity)
+mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
 {
 	msprite_t		*psprite;
 	mspritegroup_t	*pspritegroup;
@@ -189,7 +189,7 @@ R_DrawSpriteModel
 
 =================
 */
-void R_DrawSpriteModel (entity_t *e)
+void R_DrawSpriteModel (refEntity_t *e)
 {
 	vec3_t	point;
 	mspriteframe_t	*frame;
@@ -438,7 +438,7 @@ R_DrawAliasModel
 
 =================
 */
-void R_DrawAliasModel (entity_t *e)
+void R_DrawAliasModel (refEntity_t *e)
 {
 	int			i, j;
 	int			lnum;
@@ -503,8 +503,7 @@ void R_DrawAliasModel (entity_t *e)
 		shadelight = 192 - ambientlight;
 
 	// ZOID: never allow players to go totally black
-	i = currententity - cl_entities;
-	if (i >= 1 && i<=cl.maxclients /* && !QStr::Cmp(currententity->model->name, "progs/player.mdl") */)
+	if (e->playernum /* && !QStr::Cmp(currententity->model->name, "progs/player.mdl") */)
 		if (ambientlight < 8)
 			ambientlight = shadelight = 8;
 
@@ -554,9 +553,7 @@ void R_DrawAliasModel (entity_t *e)
 	// seperately for the players.  Heads are just uncolored.
 	if (currententity->colormap != vid.colormap && !gl_nocolors->value)
 	{
-		i = currententity - cl_entities;
-		if (i >= 1 && i<=cl.maxclients /* && !QStr::Cmp(currententity->model->name, "progs/player.mdl") */)
-		    GL_Bind(playertextures[- 1 + i]);
+	    GL_Bind(playertextures[e->playernum - 1]);
 	}
 
 	if (gl_smoothmodels->value)
@@ -669,12 +666,36 @@ void R_DrawViewModel (void)
 	if (cl.stats[STAT_HEALTH] <= 0)
 		return;
 
-	currententity = &cl.viewent;
-	if (!currententity->model)
+	if (!cl.viewent.model)
 		return;
 
-	cl.viewent.reType = RT_MODEL;
-	cl.viewent.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
+	refEntity_t gun;
+	refEntity_t* rent = &gun;
+	currententity = &gun;
+	entity_t* ent = &cl.viewent;
+
+	rent->reType = RT_MODEL;
+	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
+	rent->forcelink = ent->forcelink;
+	rent->baseline = ent->baseline;
+	rent->msgtime = ent->msgtime;
+	VectorCopy(ent->msg_origins[0], rent->msg_origins[0]);
+	VectorCopy(ent->msg_origins[1], rent->msg_origins[1]);
+	VectorCopy(ent->origin, rent->origin);
+	VectorCopy(ent->msg_angles[0], rent->msg_angles[0]);
+	VectorCopy(ent->msg_angles[1], rent->msg_angles[1]);
+	VectorCopy(ent->angles, rent->angles);	
+	rent->model = ent->model;
+	rent->efrag = ent->efrag;
+	rent->frame = ent->frame;
+	rent->syncbase = ent->syncbase;
+	rent->colormap = ent->colormap;
+	rent->effects = ent->effects;
+	rent->skinnum = ent->skinnum;
+	rent->visframe = ent->visframe;
+	rent->dlightframe = ent->dlightframe;
+	rent->dlightbits = ent->dlightbits;
+	rent->playernum = 0;
 
 	R_DrawAliasModel (currententity);
 }
@@ -986,7 +1007,26 @@ void R_Mirror (void)
 	ent = &cl_entities[cl.viewentity];
 	if (cl_numvisedicts < MAX_VISEDICTS)
 	{
-		cl_visedicts[cl_numvisedicts] = *ent;
+		refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
+		rent->forcelink = ent->forcelink;
+		rent->baseline = ent->baseline;
+		rent->msgtime = ent->msgtime;
+		VectorCopy(ent->msg_origins[0], rent->msg_origins[0]);
+		VectorCopy(ent->msg_origins[1], rent->msg_origins[1]);
+		VectorCopy(ent->origin, rent->origin);
+		VectorCopy(ent->msg_angles[0], rent->msg_angles[0]);
+		VectorCopy(ent->msg_angles[1], rent->msg_angles[1]);
+		VectorCopy(ent->angles, rent->angles);	
+		rent->model = ent->model;
+		rent->efrag = ent->efrag;
+		rent->frame = ent->frame;
+		rent->syncbase = ent->syncbase;
+		rent->colormap = ent->colormap;
+		rent->effects = ent->effects;
+		rent->skinnum = ent->skinnum;
+		rent->visframe = ent->visframe;
+		rent->dlightframe = ent->dlightframe;
+		rent->dlightbits = ent->dlightbits;
 		cl_numvisedicts++;
 	}
 
@@ -1026,7 +1066,7 @@ static void UpdateRefEntityData()
 {
 	for (int i = 0; i < cl_numvisedicts; i++)
 	{
-		entity_t* e = &cl_visedicts[i];
+		refEntity_t* e = &cl_visedicts[i];
 		e->reType = RT_MODEL;
 		e->renderfx = 0;
 	}

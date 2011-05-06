@@ -253,8 +253,8 @@ void R_TranslatePlayerSkin (int playernum)
 	//
 	// locate the original skin pixels
 	//
-	currententity = &cl_entities[1+playernum];
-	model = currententity->model;
+	entity_t* ent = &cl_entities[1+playernum];
+	model = ent->model;
 	if (!model)
 		return;		// player doesn't have a model yet
 	if (model->type != mod_alias)
@@ -262,11 +262,11 @@ void R_TranslatePlayerSkin (int playernum)
 
 	paliashdr = (aliashdr_t *)Mod_Extradata (model);
 	s = paliashdr->skinwidth * paliashdr->skinheight;
-	if (currententity->skinnum < 0 || currententity->skinnum >= paliashdr->numskins) {
-		Con_Printf("(%d): Invalid player skin #%d\n", playernum, currententity->skinnum);
+	if (ent->skinnum < 0 || ent->skinnum >= paliashdr->numskins) {
+		Con_Printf("(%d): Invalid player skin #%d\n", playernum, ent->skinnum);
 		original = (byte *)paliashdr + paliashdr->texels[0];
 	} else
-		original = (byte *)paliashdr + paliashdr->texels[currententity->skinnum];
+		original = (byte *)paliashdr + paliashdr->texels[ent->skinnum];
 	if (s & 3)
 		Sys_Error ("R_TranslateSkin: s&3");
 

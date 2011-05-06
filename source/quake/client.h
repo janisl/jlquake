@@ -289,7 +289,7 @@ void CL_NextDemo (void);
 
 #define			MAX_VISEDICTS	256
 extern	int				cl_numvisedicts;
-extern	entity_t		cl_visedicts[MAX_VISEDICTS];
+extern refEntity_t		cl_visedicts[MAX_VISEDICTS];
 
 //
 // cl_input

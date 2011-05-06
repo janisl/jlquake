@@ -305,7 +305,7 @@ void CL_UpdateTEnts (void)
 		{
 			if (cl_numvisedicts == MAX_VISEDICTS)
 				return;
-			entity_t ent;
+			refEntity_t ent;
 			Com_Memset(&ent, 0, sizeof(ent));
 			ent.colormap = vid.colormap;
 			VectorCopy (org, ent.origin);

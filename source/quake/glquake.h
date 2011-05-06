@@ -84,7 +84,7 @@ typedef struct particle_s
 extern	entity_t	r_worldentity;
 extern	qboolean	r_cache_thrash;		// compatability
 extern	vec3_t		modelorg, r_entorigin;
-extern	entity_t	*currententity;
+extern	refEntity_t	*currententity;
 extern	int			r_visframecount;	// ??? what difs?
 extern	cplane_t	frustum[4];
 extern	int		c_brush_polys, c_alias_polys;
@@ -156,13 +156,13 @@ void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
 void R_DrawSkyChain (msurface_t *s);
 void EmitBothSkyLayers (msurface_t *fa);
 void EmitWaterPolys (msurface_t *fa);
-void R_RotateForEntity (entity_t *e);
+void R_RotateForEntity (refEntity_t *e);
 void EmitSkyPolys (msurface_t *fa);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void GL_BuildLightmaps (void);
 int R_LightPoint (vec3_t p);
-void R_DrawBrushModel (entity_t *e);
+void R_DrawBrushModel (refEntity_t *e);
 void R_AnimateLight (void);
 void R_DrawWorld (void);
 void R_RenderDlights (void);
