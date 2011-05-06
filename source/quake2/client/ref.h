@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define SHELL_WHITE_COLOR	0xD7
 
-typedef struct entity_s
+struct entity_t : refEntity_base_t
 {
 	struct model_s		*model;			// opaque type outside refresh
 	float				angles[3];
@@ -76,7 +76,7 @@ typedef struct entity_s
 	struct image_t	*skin;			// NULL for inline skin
 	int		flags;
 
-} entity_t;
+};
 
 #define ENTITY_FLAGS  68
 

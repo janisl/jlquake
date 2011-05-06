@@ -1042,6 +1042,15 @@ void R_Mirror (void)
 }
 #endif
 
+static void UpdateRefEntityData()
+{
+	for (int i = 0; i < cl_numvisedicts; i++)
+	{
+		entity_t* e = &cl_visedicts[i];
+		e->reType = RT_MODEL;
+	}
+}
+
 /*
 ================
 R_RenderView
@@ -1066,6 +1075,8 @@ void R_RenderView (void)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
+
+	UpdateRefEntityData();
 
 	mirror = false;
 

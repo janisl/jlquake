@@ -58,21 +58,8 @@ typedef struct poly_s {
 	polyVert_t			*verts;
 } poly_t;
 
-typedef enum {
-	RT_MODEL,
-	RT_POLY,
-	RT_SPRITE,
-	RT_BEAM,
-	RT_RAIL_CORE,
-	RT_RAIL_RINGS,
-	RT_LIGHTNING,
-	RT_PORTALSURFACE,		// doesn't draw anything, just info for portals
-
-	RT_MAX_REF_ENTITY_TYPE
-} refEntityType_t;
-
-typedef struct {
-	refEntityType_t	reType;
+struct refEntity_t : refEntity_base_t
+{
 	int			renderfx;
 
 	qhandle_t	hModel;				// opaque type outside refresh
@@ -104,7 +91,7 @@ typedef struct {
 	// extra sprite information
 	float		radius;
 	float		rotation;
-} refEntity_t;
+};
 
 
 #define	MAX_RENDER_STRINGS			8

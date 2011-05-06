@@ -29,12 +29,12 @@ typedef struct efrag_s
 {
 	struct mleaf_s		*leaf;
 	struct efrag_s		*leafnext;
-	struct entity_s		*entity;
+	struct entity_t		*entity;
 	struct efrag_s		*entnext;
 } efrag_t;
 
 
-typedef struct entity_s
+struct entity_t : refEntity_base_t
 {
 	int						keynum;			// for matching entities in different frames
 	vec3_t					origin;
@@ -61,7 +61,7 @@ typedef struct entity_s
 	struct mnode_s			*topnode;		// for bmodels, first world node
 											//  that splits bmodel, or NULL if
 											//  not split
-} entity_t;
+};
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct
