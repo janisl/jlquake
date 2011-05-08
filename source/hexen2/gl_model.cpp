@@ -38,6 +38,9 @@ Mod_Init
 void Mod_Init (void)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
+
+	mod_numknown = 1;
+	mod_known[0].type = mod_bad;
 }
 
 /*
@@ -159,7 +162,7 @@ void Mod_ClearAll (void)
 	int		i;
 	model_t	*mod;
 	
-	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
 		if (mod->type != mod_alias)
 			mod->needload = true;
 }
@@ -181,7 +184,7 @@ model_t *Mod_FindName (char *name)
 //
 // search the currently loaded models
 //
-	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
 		if (!QStr::Cmp(mod->name, name) )
 			break;
 			

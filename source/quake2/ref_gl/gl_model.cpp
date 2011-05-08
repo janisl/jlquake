@@ -32,8 +32,8 @@ model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 byte	mod_novis[BSP38MAX_MAP_LEAFS/8];
 
 #define	MAX_MOD_KNOWN	512
-model_t	mod_known[MAX_MOD_KNOWN];
-int		mod_numknown;
+static model_t	mod_known[MAX_MOD_KNOWN];
+static int		mod_numknown;
 
 // the inline * models from the current map are kept seperate
 model_t	mod_inline[MAX_MOD_KNOWN];
@@ -163,6 +163,9 @@ Mod_Init
 void Mod_Init (void)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
+
+	mod_numknown = 1;
+	mod_known[0].type = mod_bad;
 }
 
 
@@ -197,7 +200,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	// search the currently loaded models
 	//
-	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
 	{
 		if (!mod->name[0])
 			continue;
@@ -208,7 +211,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	// find a free model slot spot
 	//
-	for (i=0 , mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
 	{
 		if (!mod->name[0])
 			break;	// free spot
@@ -1107,10 +1110,10 @@ void R_BeginRegistration (char *model)
 	QStr::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
 
 	// explicitly free the old map if different
-	// this guarantees that mod_known[0] is the world map
+	// this guarantees that mod_known[1] is the world map
 	flushmap = Cvar_Get ("flushmap", "0", 0);
-	if ( QStr::Cmp(mod_known[0].name, fullname) || flushmap->value)
-		Mod_Free (&mod_known[0]);
+	if ( QStr::Cmp(mod_known[1].name, fullname) || flushmap->value)
+		Mod_Free (&mod_known[1]);
 	r_worldmodel = Mod_ForName(fullname, true);
 
 	r_viewcluster = -1;
@@ -1167,7 +1170,7 @@ void R_EndRegistration (void)
 	int		i;
 	model_t	*mod;
 
-	for (i=0, mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
 	{
 		if (!mod->name[0])
 			continue;
@@ -1202,7 +1205,7 @@ void Mod_FreeAll (void)
 {
 	int		i;
 
-	for (i=0 ; i<mod_numknown ; i++)
+	for (i=1; i<mod_numknown ; i++)
 	{
 		if (mod_known[i].extradatasize)
 			Mod_Free (&mod_known[i]);
