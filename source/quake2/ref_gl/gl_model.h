@@ -259,3 +259,6 @@ void	Hunk_Free (void *base);
 
 void	Mod_FreeAll (void);
 void	Mod_Free (model_t *mod);
+
+qhandle_t Mod_GetHandle(model_t* model);
+model_t* Mod_GetModel(qhandle_t handle);

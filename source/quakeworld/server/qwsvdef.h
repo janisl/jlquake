@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "protocol.h"
 #include "cmd.h"
 typedef void efrag_t;
+typedef int qhandle_t;
 #include "gl_model.h"
 #include "progs.h"
 

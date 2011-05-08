@@ -2043,3 +2043,21 @@ void Mod_Print (void)
 		Con_Printf ("%8p : %s\n",mod->cache.data, mod->name);
 	}
 }
+
+qhandle_t Mod_GetHandle(model_t* model)
+{
+	if (!model)
+	{
+		return 0;
+	}
+	return model - mod_known;
+}
+
+model_t* Mod_GetModel(qhandle_t handle)
+{
+	if (handle < 1 || handle >= mod_numknown)
+	{
+		return &mod_known[0];
+	}
+	return &mod_known[handle];
+}

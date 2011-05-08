@@ -17,6 +17,7 @@
 #include "protocol.h"
 #include "cmd.h"
 typedef void efrag_t;
+typedef int qhandle_t;
 #include "gl_model.h"
 #include "cl_effect.h"
 #include "progs.h"
