@@ -200,7 +200,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	// search the currently loaded models
 	//
-	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
 	{
 		if (!mod->name[0])
 			continue;
@@ -211,7 +211,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	// find a free model slot spot
 	//
-	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
 	{
 		if (!mod->name[0])
 			break;	// free spot
@@ -852,7 +852,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	mmodel_t 	*bm;
 	
 	loadmodel->type = mod_brush;
-	if (loadmodel != mod_known)
+	if (loadmodel != &mod_known[1])
 		ri.Sys_Error (ERR_DROP, "Loaded a brush model after the world");
 
 	header = (bsp38_dheader_t *)buffer;
@@ -1170,7 +1170,7 @@ void R_EndRegistration (void)
 	int		i;
 	model_t	*mod;
 
-	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
 	{
 		if (!mod->name[0])
 			continue;

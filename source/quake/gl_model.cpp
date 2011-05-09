@@ -175,7 +175,7 @@ void Mod_ClearAll (void)
 	int		i;
 	model_t	*mod;
 	
-	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
 		if (mod->type != mod_alias)
 			mod->needload = true;
 }
@@ -197,7 +197,7 @@ static model_t *Mod_FindName (const char *name)
 //
 // search the currently loaded models
 //
-	for (i=1, mod=mod_known ; i<mod_numknown ; i++, mod++)
+	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
 		if (!QStr::Cmp(mod->name, name) )
 			break;
 			
