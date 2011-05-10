@@ -35,9 +35,6 @@ byte	mod_novis[BSP38MAX_MAP_LEAFS/8];
 static model_t	mod_known[MAX_MOD_KNOWN];
 static int		mod_numknown;
 
-// the inline * models from the current map are kept seperate
-model_t	mod_inline[MAX_MOD_KNOWN];
-
 int		registration_sequence;
 
 /*
@@ -168,7 +165,26 @@ void Mod_Init (void)
 	mod_known[0].type = mod_bad;
 }
 
-
+static model_t* Mod_AllocModel()
+{
+	//
+	// find a free model slot spot
+	//
+	model_t* mod = &mod_known[1];
+	for (int i = 1; i < mod_numknown; i++, mod++)
+	{
+		if (!mod->name[0])
+		{
+			return mod;	// free spot
+		}
+	}
+	if (mod_numknown == MAX_MOD_KNOWN)
+	{
+		ri.Sys_Error(ERR_DROP, "mod_numknown == MAX_MOD_KNOWN");
+	}
+	mod_numknown++;
+	return mod;
+}
 
 /*
 ==================
@@ -185,17 +201,6 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	
 	if (!name[0])
 		ri.Sys_Error (ERR_DROP, "Mod_ForName: NULL name");
-		
-	//
-	// inline models are grabbed only from worldmodel
-	//
-	if (name[0] == '*')
-	{
-		i = QStr::Atoi(name+1);
-		if (i < 1 || !r_worldmodel || i >= r_worldmodel->numsubmodels)
-			ri.Sys_Error (ERR_DROP, "bad inline model number");
-		return &mod_inline[i];
-	}
 
 	//
 	// search the currently loaded models
@@ -208,20 +213,8 @@ model_t *Mod_ForName (char *name, qboolean crash)
 			return mod;
 	}
 	
-	//
-	// find a free model slot spot
-	//
-	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
-	{
-		if (!mod->name[0])
-			break;	// free spot
-	}
-	if (i == mod_numknown)
-	{
-		if (mod_numknown == MAX_MOD_KNOWN)
-			ri.Sys_Error (ERR_DROP, "mod_numknown == MAX_MOD_KNOWN");
-		mod_numknown++;
-	}
+	mod = Mod_AllocModel();
+
 	QStr::Cpy(mod->name, name);
 	
 	//
@@ -891,10 +884,20 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		model_t	*starmod;
 
 		bm = &mod->submodels[i];
-		starmod = &mod_inline[i];
+		if (i == 0)
+		{
+			starmod = loadmodel;
+		}
+		else
+		{
+			starmod = Mod_AllocModel();
 
-		*starmod = *loadmodel;
-		
+			*starmod = *loadmodel;
+			QStr::Sprintf(starmod->name, sizeof(starmod->name), "*%d", i);
+	
+			starmod->numleafs = bm->visleafs;
+		}
+
 		starmod->firstmodelsurface = bm->firstface;
 		starmod->nummodelsurfaces = bm->numfaces;
 		starmod->firstnode = bm->headnode;
@@ -904,11 +907,6 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 		VectorCopy (bm->maxs, starmod->maxs);
 		VectorCopy (bm->mins, starmod->mins);
 		starmod->radius = bm->radius;
-	
-		if (i == 0)
-			*loadmodel = *starmod;
-
-		starmod->numleafs = bm->visleafs;
 	}
 }
 
@@ -1113,7 +1111,17 @@ void R_BeginRegistration (char *model)
 	// this guarantees that mod_known[1] is the world map
 	flushmap = Cvar_Get ("flushmap", "0", 0);
 	if ( QStr::Cmp(mod_known[1].name, fullname) || flushmap->value)
+	{
 		Mod_Free (&mod_known[1]);
+		//	Clear submodels.
+		for (int i = 1; i < mod_numknown; i++)
+		{
+			if (mod_known[i].name[0] == '*')
+			{
+				Com_Memset(&mod_known[i], 0, sizeof(mod_known[i]));
+			}
+		}
+	}
 	r_worldmodel = Mod_ForName(fullname, true);
 
 	r_viewcluster = -1;
@@ -1172,7 +1180,7 @@ void R_EndRegistration (void)
 
 	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
 	{
-		if (!mod->name[0])
+		if (!mod->name[0] || mod->name[0] == '*')
 			continue;
 		if (mod->registration_sequence != registration_sequence)
 		{	// don't need this model
@@ -1207,7 +1215,7 @@ void Mod_FreeAll (void)
 
 	for (i=1; i<mod_numknown ; i++)
 	{
-		if (mod_known[i].extradatasize)
+		if (mod_known[i].extradatasize && mod_known[i].name[0] != '*')
 			Mod_Free (&mod_known[i]);
 	}
 }
