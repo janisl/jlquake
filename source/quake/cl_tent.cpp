@@ -309,7 +309,7 @@ void CL_UpdateTEnts (void)
 			Com_Memset(&ent, 0, sizeof(ent));
 			ent.colormap = vid.colormap;
 			VectorCopy (org, ent.origin);
-			ent.model = b->model;
+			ent.hModel = Mod_GetHandle(b->model);
 			ent.angles[0] = pitch;
 			ent.angles[1] = yaw;
 			ent.angles[2] = rand()%360;

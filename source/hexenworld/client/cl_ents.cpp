@@ -660,7 +660,8 @@ void CL_LinkPacketEntities (void)
 		cl_numvisedicts++;
 
 		ent->keynum = s1->number;
-		ent->model = model = cl.model_precache[s1->modelindex];
+		model = cl.model_precache[s1->modelindex];
+		ent->hModel = Mod_GetHandle(model);
 	
 		if (!s1->colormap)
 		{
@@ -766,15 +767,15 @@ void CL_LinkPacketEntities (void)
 			continue;
 
 		// Model Flags
-		if (ent->model->flags & EF_GIB)
+		if (Mod_GetModel(ent->hModel)->flags & EF_GIB)
 			R_RocketTrail (old_origin, ent->origin, 2);
-		else if (ent->model->flags & EF_ZOMGIB)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_ZOMGIB)
 			R_RocketTrail (old_origin, ent->origin, 4);
-		else if (ent->model->flags & EF_TRACER)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_TRACER)
 			R_RocketTrail (old_origin, ent->origin, 3);
-		else if (ent->model->flags & EF_TRACER2)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_TRACER2)
 			R_RocketTrail (old_origin, ent->origin, 5);
-		else if (ent->model->flags & EF_ROCKET)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_ROCKET)
 		{
 			R_RocketTrail (old_origin, ent->origin, 0);
 /*			dl = CL_AllocDlight (i);
@@ -782,7 +783,7 @@ void CL_LinkPacketEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;*/
 		}
-		else if (ent->model->flags & EF_FIREBALL)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_FIREBALL)
 		{
 			R_RocketTrail (old_origin, ent->origin, rt_fireball);
 			dl = CL_AllocDlight (i);
@@ -790,11 +791,11 @@ void CL_LinkPacketEntities (void)
 			dl->radius = 120 - (rand() % 20);
 			dl->die = cl.time + 0.01;
 		}
-		else if (ent->model->flags & EF_ICE)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_ICE)
 		{
 			R_RocketTrail (old_origin, ent->origin, rt_ice);
 		}
-		else if (ent->model->flags & EF_SPIT)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_SPIT)
 		{
 			R_RocketTrail (old_origin, ent->origin, rt_spit);
 			dl = CL_AllocDlight (i);
@@ -802,37 +803,37 @@ void CL_LinkPacketEntities (void)
 			dl->radius = -120 - (rand() % 20);
 			dl->die = cl.time + 0.05;
 		}
-		else if (ent->model->flags & EF_SPELL)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_SPELL)
 		{
 			R_RocketTrail (old_origin, ent->origin, rt_spell);
 		}
-		else if (ent->model->flags & EF_GRENADE)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_GRENADE)
 		{
 //			R_RunParticleEffect4(old_origin,3,284,pt_slowgrav,3);
 			R_RocketTrail (old_origin, ent->origin, rt_grensmoke);
 		}
-		else if (ent->model->flags & EF_TRACER3)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_TRACER3)
 			R_RocketTrail (old_origin, ent->origin, 6);
-		else if (ent->model->flags & EF_VORP_MISSILE)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_VORP_MISSILE)
 		{
 			R_RocketTrail (old_origin, ent->origin, rt_vorpal);
 		}
-		else if (ent->model->flags & EF_SET_STAFF)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_SET_STAFF)
 		{
 			R_RocketTrail (old_origin, ent->origin,rt_setstaff);
 		}
-		else if (ent->model->flags & EF_MAGICMISSILE)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
 				R_RocketTrail (old_origin, ent->origin, rt_magicmissile);
 		}
-		else if (ent->model->flags & EF_BONESHARD)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_BONESHARD)
 			R_RocketTrail (old_origin, ent->origin, rt_boneshard);
-		else if (ent->model->flags & EF_SCARAB)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_SCARAB)
 			R_RocketTrail (old_origin, ent->origin, rt_scarab);
-		else if (ent->model->flags & EF_ACIDBALL)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_ACIDBALL)
 			R_RocketTrail (old_origin, ent->origin, rt_acidball);
-		else if (ent->model->flags & EF_BLOODSHOT)
+		else if (Mod_GetModel(ent->hModel)->flags & EF_BLOODSHOT)
 			R_RocketTrail (old_origin, ent->origin, rt_bloodshot);
 	}
 }
@@ -948,7 +949,7 @@ void CL_LinkProjectiles (void)
 
 		if (pr->modelindex < 1)
 			continue;
-		ent->model = cl.model_precache[pr->modelindex];
+		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
 		ent->skinnum = 0;
 		ent->frame = 0;
 		ent->colormap = vid.colormap;
@@ -1051,12 +1052,12 @@ void CL_LinkMissiles (void)
 
 		if(pr->type == 1)
 		{	//ball
-			ent->model = cl.model_precache[cl_ballindex];
+			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
 			ent->scale = 10;
 		}
 		else
 		{	//missilestar
-			ent->model = cl.model_precache[cl_missilestarindex];
+			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
 			ent->scale = 50;
 			VectorCopy (missilestar_angle , ent->angles);
 		}
@@ -1342,7 +1343,7 @@ void CL_LinkPlayers (void)
 		ent = &cl_visedicts[cl_numvisedicts];
 		ent->keynum = 0;
 
-		ent->model = cl.model_precache[state->modelindex];
+		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
 		ent->skinnum = state->skinnum;
 		ent->frame = state->frame;
 
@@ -1352,12 +1353,12 @@ void CL_LinkPlayers (void)
 		ent->drawflags = state->drawflags;
 		ent->scale = state->scale;
 		ent->abslight = state->abslight;
-		if (ent->model == player_models[0] ||
-			ent->model == player_models[1] ||
-			ent->model == player_models[2] ||
-			ent->model == player_models[3] ||
-			ent->model == player_models[4] ||//mg-siege
-			ent->model == player_models[5])
+		if (ent->hModel == Mod_GetHandle(player_models[0]) ||
+			ent->hModel == Mod_GetHandle(player_models[1]) ||
+			ent->hModel == Mod_GetHandle(player_models[2]) ||
+			ent->hModel == Mod_GetHandle(player_models[3]) ||
+			ent->hModel == Mod_GetHandle(player_models[4]) ||//mg-siege
+			ent->hModel == Mod_GetHandle(player_models[5]))
 		{
 			ent->scoreboard = info;		// use custom skin
 		}

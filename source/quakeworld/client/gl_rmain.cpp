@@ -144,7 +144,7 @@ mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
-	psprite = (msprite_t*)currententity->model->cache.data;
+	psprite = (msprite_t*)Mod_GetModel(currententity->hModel)->cache.data;
 	frame = currententity->frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
@@ -200,7 +200,7 @@ void R_DrawSpriteModel (refEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite_t*)currententity->model->cache.data;
+	psprite = (msprite_t*)Mod_GetModel(currententity->hModel)->cache.data;
 
 	if (psprite->type == SPR_ORIENTED)
 	{	// bullet marks on walls
@@ -439,7 +439,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	float		an;
 	int			anim;
 
-	clmodel = currententity->model;
+	clmodel = Mod_GetModel(currententity->hModel);
 
 	VectorAdd (currententity->origin, clmodel->mins, mins);
 	VectorAdd (currententity->origin, clmodel->maxs, maxs);
@@ -511,7 +511,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	//
 	// locate the proper data
 	//
-	paliashdr = (aliashdr_t *)Mod_Extradata (currententity->model);
+	paliashdr = (aliashdr_t *)Mod_Extradata (Mod_GetModel(currententity->hModel));
 
 	c_alias_polys += paliashdr->numtris;
 
@@ -606,7 +606,7 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
-		switch (currententity->model->type)
+		switch (Mod_GetModel(currententity->hModel)->type)
 		{
 		case mod_alias:
 			R_DrawAliasModel (currententity);
@@ -625,7 +625,7 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
-		switch (currententity->model->type)
+		switch (Mod_GetModel(currententity->hModel)->type)
 		{
 		case mod_sprite:
 			R_DrawSpriteModel (currententity);
@@ -671,7 +671,7 @@ void R_DrawViewModel (void)
 	rent->keynum = pent->keynum;
 	VectorCopy(pent->origin, rent->origin);
 	VectorCopy(pent->angles, rent->angles);
-	rent->model = pent->model;
+	rent->hModel = Mod_GetHandle(pent->model);
 	rent->frame = pent->frame;
 	rent->colormap = pent->colormap;
 	rent->skinnum = pent->skinnum;

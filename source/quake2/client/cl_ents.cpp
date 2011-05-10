@@ -943,7 +943,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		{	// the four beam colors are encoded in 32 bits of skinnum (hack)
 			ent.alpha = 0.30;
 			ent.skinnum = (s1->skinnum >> ((rand() % 4)*8)) & 0xff;
-			ent.model = NULL;
+			ent.hModel = 0;
 		}
 		else
 		{
@@ -953,11 +953,11 @@ void CL_AddPacketEntities (frame_t *frame)
 				ent.skinnum = 0;
 				ci = &cl.clientinfo[s1->skinnum & 0xff];
 				ent.skin = ci->skin;
-				ent.model = ci->model;
-				if (!ent.skin || !ent.model)
+				ent.hModel = Mod_GetHandle(ci->model);
+				if (!ent.skin || !ent.hModel)
 				{
 					ent.skin = cl.baseclientinfo.skin;
-					ent.model = cl.baseclientinfo.model;
+					ent.hModel = Mod_GetHandle(cl.baseclientinfo.model);
 				}
 
 //============
@@ -967,17 +967,17 @@ void CL_AddPacketEntities (frame_t *frame)
 					if(!QStr::NCmp((char *)ent.skin, "players/male", 12))
 					{
 						ent.skin = re.RegisterSkin ("players/male/disguise.pcx");
-						ent.model = re.RegisterModel ("players/male/tris.md2");
+						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/male/tris.md2"));
 					}
 					else if(!QStr::NCmp((char *)ent.skin, "players/female", 14))
 					{
 						ent.skin = re.RegisterSkin ("players/female/disguise.pcx");
-						ent.model = re.RegisterModel ("players/female/tris.md2");
+						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/female/tris.md2"));
 					}
 					else if(!QStr::NCmp((char *)ent.skin, "players/cyborg", 14))
 					{
 						ent.skin = re.RegisterSkin ("players/cyborg/disguise.pcx");
-						ent.model = re.RegisterModel ("players/cyborg/tris.md2");
+						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/cyborg/tris.md2"));
 					}
 				}
 //PGM
@@ -987,7 +987,7 @@ void CL_AddPacketEntities (frame_t *frame)
 			{
 				ent.skinnum = s1->skinnum;
 				ent.skin = NULL;
-				ent.model = cl.model_draw[s1->modelindex];
+				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex]);
 			}
 		}
 
@@ -1112,25 +1112,25 @@ void CL_AddPacketEntities (frame_t *frame)
 				i = (s1->skinnum >> 8); // 0 is default weapon model
 				if (!cl_vwep->value || i > MAX_CLIENTWEAPONMODELS - 1)
 					i = 0;
-				ent.model = ci->weaponmodel[i];
-				if (!ent.model) {
+				ent.hModel = Mod_GetHandle(ci->weaponmodel[i]);
+				if (!ent.hModel) {
 					if (i != 0)
-						ent.model = ci->weaponmodel[0];
-					if (!ent.model)
-						ent.model = cl.baseclientinfo.weaponmodel[0];
+						ent.hModel = Mod_GetHandle(ci->weaponmodel[0]);
+					if (!ent.hModel)
+						ent.hModel = Mod_GetHandle(cl.baseclientinfo.weaponmodel[0]);
 				}
 			}
 			//PGM - hack to allow translucent linked models (defender sphere's shell)
 			//		set the high bit 0x80 on modelindex2 to enable translucency
 			else if(s1->modelindex2 & 0x80)
 			{
-				ent.model = cl.model_draw[s1->modelindex2 & 0x7F];
+				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex2 & 0x7F]);
 				ent.alpha = 0.32;
 				ent.flags = RF_TRANSLUCENT;
 			}
 			//PGM
 			else
-				ent.model = cl.model_draw[s1->modelindex2];
+				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex2]);
 			V_AddEntity (&ent);
 
 			//PGM - make sure these get reset.
@@ -1140,18 +1140,18 @@ void CL_AddPacketEntities (frame_t *frame)
 		}
 		if (s1->modelindex3)
 		{
-			ent.model = cl.model_draw[s1->modelindex3];
+			ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex3]);
 			V_AddEntity (&ent);
 		}
 		if (s1->modelindex4)
 		{
-			ent.model = cl.model_draw[s1->modelindex4];
+			ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex4]);
 			V_AddEntity (&ent);
 		}
 
 		if ( effects & EF_POWERSCREEN )
 		{
-			ent.model = cl_mod_powerscreen;
+			ent.hModel = Mod_GetHandle(cl_mod_powerscreen);
 			ent.oldframe = 0;
 			ent.frame = 0;
 			ent.flags |= (RF_TRANSLUCENT | RF_SHELL_GREEN);
@@ -1320,10 +1320,10 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 	Com_Memset(&gun, 0, sizeof(gun));
 
 	if (gun_model)
-		gun.model = gun_model;	// development tool
+		gun.hModel = Mod_GetHandle(gun_model);	// development tool
 	else
-		gun.model = cl.model_draw[ps->gunindex];
-	if (!gun.model)
+		gun.hModel = Mod_GetHandle(cl.model_draw[ps->gunindex]);
+	if (!gun.hModel)
 		return;
 
 	// set up gun position

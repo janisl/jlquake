@@ -46,7 +46,6 @@ struct refEntity_t : refEntity_base_t
 	vec3_t					origin;
 	vec3_t					angles;
 	vec3_t					angleAdd;		// For clientside rotation stuff
-	struct model_s			*model;			// NULL = no model
 	int						frame;
 	byte					*colormap;
 	byte					colorshade;

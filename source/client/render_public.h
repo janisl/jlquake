@@ -113,6 +113,8 @@ struct refEntity_base_t
 	refEntityType_t	reType;
 	int				renderfx;
 
+	qhandle_t		hModel;				// opaque type outside refresh
+
 };
 
 //

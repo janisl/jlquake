@@ -727,7 +727,7 @@ void CL_RelinkEntities (void)
 			refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
 			VectorCopy(ent->origin, rent->origin);
 			VectorCopy(ent->angles, rent->angles);
-			rent->model = ent->model;
+			rent->hModel = Mod_GetHandle(ent->model);
 			rent->frame = ent->frame;
 			rent->syncbase = ent->syncbase;
 			rent->colormap = ent->colormap;

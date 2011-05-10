@@ -310,22 +310,20 @@ void R_DrawEntitiesOnList (void)
 		}
 		else
 		{
-			currentmodel = currententity->model;
-			if (!currentmodel)
-			{
-				R_DrawNullModel ();
-				continue;
-			}
+			currentmodel = Mod_GetModel(currententity->hModel);
 			switch (currentmodel->type)
 			{
+			case mod_bad:
+				R_DrawNullModel();
+				break;
 			case mod_alias:
-				R_DrawAliasModel (currententity);
+				R_DrawAliasModel(currententity);
 				break;
 			case mod_brush:
-				R_DrawBrushModel (currententity);
+				R_DrawBrushModel(currententity);
 				break;
 			case mod_sprite:
-				R_DrawSpriteModel (currententity);
+				R_DrawSpriteModel(currententity);
 				break;
 			default:
 				ri.Sys_Error (ERR_DROP, "Bad modeltype");
@@ -348,23 +346,20 @@ void R_DrawEntitiesOnList (void)
 		}
 		else
 		{
-			currentmodel = currententity->model;
-
-			if (!currentmodel)
-			{
-				R_DrawNullModel ();
-				continue;
-			}
+			currentmodel = Mod_GetModel(currententity->hModel);
 			switch (currentmodel->type)
 			{
+			case mod_bad:
+				R_DrawNullModel();
+				break;
 			case mod_alias:
-				R_DrawAliasModel (currententity);
+				R_DrawAliasModel(currententity);
 				break;
 			case mod_brush:
-				R_DrawBrushModel (currententity);
+				R_DrawBrushModel(currententity);
 				break;
 			case mod_sprite:
-				R_DrawSpriteModel (currententity);
+				R_DrawSpriteModel(currententity);
 				break;
 			default:
 				ri.Sys_Error (ERR_DROP, "Bad modeltype");

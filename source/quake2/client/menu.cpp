@@ -4119,7 +4119,7 @@ void PlayerConfig_MenuDraw( void )
 		Com_Memset( &entity, 0, sizeof( entity ) );
 
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/tris.md2", s_pmi[s_player_model_box.curvalue].directory );
-		entity.model = re.RegisterModel( scratch );
+		entity.hModel = Mod_GetHandle(re.RegisterModel( scratch ));
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
 		entity.skin = re.RegisterSkin( scratch );
 		entity.flags = RF_FULLBRIGHT;

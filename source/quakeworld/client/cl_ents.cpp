@@ -454,11 +454,12 @@ void CL_LinkPacketEntities (void)
 		cl_numvisedicts++;
 
 		ent->keynum = s1->number;
-		ent->model = model = cl.model_precache[s1->modelindex];
+		model = cl.model_precache[s1->modelindex];
+		ent->hModel = Mod_GetHandle(model);
 	
 		// set colormap
 		if (s1->colormap && (s1->colormap < MAX_CLIENTS) 
-			&& !QStr::Cmp(ent->model->name,"progs/player.mdl") )
+			&& !QStr::Cmp(model->name,"progs/player.mdl") )
 		{
 			ent->colormap = cl.players[s1->colormap-1].translations;
 			ent->scoreboard = &cl.players[s1->colormap-1];
@@ -632,7 +633,7 @@ void CL_LinkProjectiles (void)
 
 		if (pr->modelindex < 1)
 			continue;
-		ent->model = cl.model_precache[pr->modelindex];
+		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
 		ent->skinnum = 0;
 		ent->frame = 0;
 		ent->colormap = vid.colormap;
@@ -768,7 +769,7 @@ void CL_AddFlagModels (refEntity_t *ent, int team)
 	}
 
 	newent = CL_NewTempEntity ();
-	newent->model = cl.model_precache[cl_flagindex];
+	newent->hModel = Mod_GetHandle(cl.model_precache[cl_flagindex]);
 	newent->skinnum = team;
 
 	AngleVectors (ent->angles, v_forward, v_right, v_up);
@@ -844,7 +845,7 @@ void CL_LinkPlayers (void)
 		cl_numvisedicts++;
 		ent->keynum = 0;
 
-		ent->model = cl.model_precache[state->modelindex];
+		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
 		ent->skinnum = state->skinnum;
 		ent->frame = state->frame;
 		ent->colormap = info->translations;

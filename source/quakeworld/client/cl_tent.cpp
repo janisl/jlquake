@@ -402,7 +402,7 @@ void CL_UpdateBeams (void)
 			if (!ent)
 				return;
 			VectorCopy (org, ent->origin);
-			ent->model = b->model;
+			ent->hModel = Mod_GetHandle(b->model);
 			ent->angles[0] = pitch;
 			ent->angles[1] = yaw;
 			ent->angles[2] = rand()%360;
@@ -442,7 +442,7 @@ void CL_UpdateExplosions (void)
 		if (!ent)
 			return;
 		VectorCopy (ex->origin, ent->origin);
-		ent->model = ex->model;
+		ent->hModel = Mod_GetHandle(ex->model);
 		ent->frame = f;
 	}
 }

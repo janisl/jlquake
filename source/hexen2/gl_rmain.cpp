@@ -135,7 +135,7 @@ static void R_RotateForEntity2(refEntity_t *e)
 
 	qglTranslatef(e->origin[0], e->origin[1], e->origin[2]);
 
-	if (e->model->flags & EF_FACE_VIEW)
+	if (Mod_GetModel(e->hModel)->flags & EF_FACE_VIEW)
 	{
 		VectorSubtract(e->origin,r_origin,angles);
 		VectorSubtract(r_origin,e->origin,angles);
@@ -172,7 +172,7 @@ static void R_RotateForEntity2(refEntity_t *e)
 	}
 	else 
 	{
-		if (e->model->flags & EF_ROTATE)
+		if (Mod_GetModel(e->hModel)->flags & EF_ROTATE)
 		{
 			qglRotatef(AngleMod((e->origin[0]+e->origin[1])*0.8
 				+(108*cl.time)), 0, 0, 1);
@@ -266,7 +266,7 @@ void R_DrawSpriteModel (refEntity_t *e)
 	spritedesc_t			r_spritedesc;
 	int i;
 
-	psprite = (msprite_t*)currententity->model->cache.data;
+	psprite = (msprite_t*)Mod_GetModel(currententity->hModel)->cache.data;
 
 	frame = R_GetSpriteFrame (psprite);
 
@@ -275,7 +275,7 @@ void R_DrawSpriteModel (refEntity_t *e)
 		// rjr
 		qglColor4f (1,1,1,r_wateralpha->value);
 	}
-	else if (currententity->model->flags & EF_TRANSPARENT)
+	else if (Mod_GetModel(currententity->hModel)->flags & EF_TRANSPARENT)
 	{
 		// rjr
 		qglColor3f(1,1,1);
@@ -636,7 +636,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	int mls;
 	vec3_t		adjust_origin;
 
-	clmodel = currententity->model;
+	clmodel = Mod_GetModel(currententity->hModel);
 
 	VectorAdd (currententity->origin, clmodel->mins, mins);
 	VectorAdd (currententity->origin, clmodel->maxs, maxs);
@@ -658,7 +658,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	//
 
 	VectorCopy(currententity->origin, adjust_origin);
-	adjust_origin[2] += (currententity->model->mins[2] + currententity->model->maxs[2]) / 2;
+	adjust_origin[2] += (clmodel->mins[2] + clmodel->maxs[2]) / 2;
 	ambientlight = shadelight = R_LightPoint (adjust_origin);
 
 	// allways give the gun some light
@@ -689,7 +689,7 @@ void R_DrawAliasModel (refEntity_t *e)
 		shadelight = 192 - ambientlight;
 
 	mls = currententity->drawflags&MLS_MASKIN;
-	if(currententity->model->flags&EF_ROTATE)
+	if(clmodel->flags&EF_ROTATE)
 	{
 		ambientlight = shadelight =
 			60+34+sin(currententity->origin[0]+currententity->origin[1]
@@ -717,7 +717,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	//
 	// locate the proper data
 	//
-	paliashdr = (aliashdr_t *)Mod_Extradata (currententity->model);
+	paliashdr = (aliashdr_t *)Mod_Extradata (clmodel);
 
 	c_alias_polys += paliashdr->numtris;
 
@@ -796,7 +796,7 @@ void R_DrawAliasModel (refEntity_t *e)
 //	qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 	qglScalef (tmatrix[0][0],tmatrix[1][1],tmatrix[2][2]);
 
-	if ((currententity->model->flags & EF_SPECIAL_TRANS))
+	if ((clmodel->flags & EF_SPECIAL_TRANS))
 	{
 		// rjr
 //		qglColor3f( 1,1,1);
@@ -811,14 +811,14 @@ void R_DrawAliasModel (refEntity_t *e)
 		model_constant_alpha = r_wateralpha->value;
 		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	}
-	else if ((currententity->model->flags & EF_TRANSPARENT))
+	else if ((clmodel->flags & EF_TRANSPARENT))
 	{
 		// rjr
 //		qglColor3f( 1,1,1);
 		model_constant_alpha = 1.0f;
 		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	}
-	else if ((currententity->model->flags & EF_HOLEY))
+	else if ((clmodel->flags & EF_HOLEY))
 	{
 		// rjr
 //		qglColor3f( 1,1,1);
@@ -857,11 +857,11 @@ void R_DrawAliasModel (refEntity_t *e)
 	
 		if (currententity->colormap != vid.colormap && !gl_nocolors->value)
 		{
-			if (currententity->model == player_models[0] ||
-			    currententity->model == player_models[1] ||
-			    currententity->model == player_models[2] ||
-			    currententity->model == player_models[3] ||
-			    currententity->model == player_models[4])
+			if (clmodel == player_models[0] ||
+			    clmodel == player_models[1] ||
+			    clmodel == player_models[2] ||
+			    clmodel == player_models[3] ||
+			    clmodel == player_models[4])
 			{
 				if (e->playernum)
 					GL_Bind(playertextures[e->playernum - 1]);
@@ -880,7 +880,7 @@ void R_DrawAliasModel (refEntity_t *e)
 
 	GL_State(GLS_DEFAULT);
 
-	if ((currententity->model->flags & EF_SPECIAL_TRANS))
+	if ((clmodel->flags & EF_SPECIAL_TRANS))
 	{
 		// rjr
 		qglEnable( GL_CULL_FACE );
@@ -950,11 +950,11 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
-		switch (currententity->model->type)
+		switch (Mod_GetModel(currententity->hModel)->type)
 		{
 		case mod_alias:
 			item_trans = ((currententity->drawflags & DRF_TRANSLUCENT) ||
-						  (currententity->model->flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
+						  (Mod_GetModel(currententity->hModel)->flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
 				R_DrawAliasModel (currententity);
 
@@ -1027,7 +1027,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater) {
 	for (i=0;i<numents;i++) {
 		currententity = theents[i].ent;
 
-		switch (currententity->model->type)
+		switch (Mod_GetModel(currententity->hModel)->type)
 		{
 		case mod_alias:
 			R_DrawAliasModel (currententity);
@@ -1079,7 +1079,7 @@ void R_DrawViewModel (void)
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(ent->origin, rent->origin);
 	VectorCopy(ent->angles, rent->angles);
-	rent->model = ent->model;
+	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
 	rent->syncbase = ent->syncbase;
 	rent->colormap = ent->colormap;
@@ -1383,7 +1383,7 @@ void R_Mirror (void)
 		refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
 		VectorCopy(ent->origin, rent->origin);
 		VectorCopy(ent->angles, rent->angles);
-		rent->model = ent->model;
+		rent->hModel = Mod_GetHandle(ent->model);
 		rent->frame = ent->frame;
 		rent->syncbase = ent->syncbase;
 		rent->colormap = ent->colormap;

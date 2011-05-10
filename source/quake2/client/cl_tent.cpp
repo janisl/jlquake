@@ -270,7 +270,7 @@ void CL_SmokeAndFlash(vec3_t origin)
 	ex->frames = 4;
 	ex->ent.flags = RF_TRANSLUCENT;
 	ex->start = cl.frame.servertime - 100;
-	ex->ent.model = cl_mod_smoke;
+	ex->ent.hModel = Mod_GetHandle(cl_mod_smoke);
 
 	ex = CL_AllocExplosion ();
 	VectorCopy (origin, ex->ent.origin);
@@ -278,7 +278,7 @@ void CL_SmokeAndFlash(vec3_t origin)
 	ex->ent.flags = RF_FULLBRIGHT;
 	ex->frames = 2;
 	ex->start = cl.frame.servertime - 100;
-	ex->ent.model = cl_mod_flash;
+	ex->ent.hModel = Mod_GetHandle(cl_mod_flash);
 }
 
 /*
@@ -544,7 +544,7 @@ void CL_ParseLaser (int colors)
 			VectorCopy (end, l->ent.oldorigin);
 			l->ent.alpha = 0.30;
 			l->ent.skinnum = (colors >> ((rand() % 4)*8)) & 0xff;
-			l->ent.model = NULL;
+			l->ent.hModel = 0;
 			l->ent.frame = 4;
 			l->endtime = cl.time + 100;
 			return;
@@ -819,7 +819,7 @@ void CL_ParseTEnt (void)
 		ex->light = 150;
 		ex->lightcolor[0] = 1;
 		ex->lightcolor[1] = 1;
-		ex->ent.model = cl_mod_explode;
+		ex->ent.hModel = Mod_GetHandle(cl_mod_explode);
 		ex->frames = 4;
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
@@ -845,7 +845,7 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 0.5;
 		ex->lightcolor[2] = 0.5;
-		ex->ent.model = cl_mod_explo4;
+		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
 		ex->frames = 19;
 		ex->baseframe = 30;
 		ex->ent.angles[1] = rand() % 360;
@@ -869,7 +869,7 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[1] = 0.5;
 		ex->lightcolor[2] = 0.5;
 		ex->ent.angles[1] = rand() % 360;
-		ex->ent.model = cl_mod_explo4;
+		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
 		if (frand() < 0.5)
 			ex->baseframe = 15;
 		ex->frames = 15;
@@ -895,9 +895,9 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[2] = 0.5;
 		ex->ent.angles[1] = rand() % 360;
 		if (type != TE_EXPLOSION1_BIG)				// PMM
-			ex->ent.model = cl_mod_explo4;			// PMM
+			ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);			// PMM
 		else
-			ex->ent.model = cl_mod_explo4_big;
+			ex->ent.hModel = Mod_GetHandle(cl_mod_explo4_big);
 		if (frand() < 0.5)
 			ex->baseframe = 15;
 		ex->frames = 15;
@@ -920,7 +920,7 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 0.0;
 		ex->lightcolor[1] = 1.0;
 		ex->lightcolor[2] = 0.0;
-		ex->ent.model = cl_mod_bfg_explo;
+		ex->ent.hModel = Mod_GetHandle(cl_mod_bfg_explo);
 		ex->ent.flags |= RF_TRANSLUCENT;
 		ex->ent.alpha = 0.30;
 		ex->frames = 4;
@@ -975,7 +975,7 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 1.0;
 		ex->lightcolor[2] = 0.3;
-		ex->ent.model = cl_mod_flash;
+		ex->ent.hModel = Mod_GetHandle(cl_mod_flash);
 		ex->frames = 2;
 		break;
 
@@ -1041,7 +1041,7 @@ void CL_ParseTEnt (void)
 			ex->lightcolor[1] = 0.41;
 			ex->lightcolor[2] = 0.75;
 		}
-		ex->ent.model = cl_mod_explode;
+		ex->ent.hModel = Mod_GetHandle(cl_mod_explode);
 		ex->frames = 4;
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
@@ -1071,7 +1071,7 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[1] = 0.5;
 		ex->lightcolor[2] = 0.5;
 		ex->ent.angles[1] = rand() % 360;
-		ex->ent.model = cl_mod_explo4;
+		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
 		if (frand() < 0.5)
 			ex->baseframe = 15;
 		ex->frames = 15;
@@ -1285,7 +1285,7 @@ void CL_AddBeams (void)
 			// for this beam)
 //			for (j=0 ; j<3 ; j++)
 //				ent.origin[j] -= dist[j]*10.0;
-			ent.model = b->model;
+			ent.hModel = Mod_GetHandle(b->model);
 			ent.flags = RF_FULLBRIGHT;
 			ent.angles[0] = pitch;
 			ent.angles[1] = yaw;
@@ -1296,7 +1296,7 @@ void CL_AddBeams (void)
 		while (d > 0)
 		{
 			VectorCopy (org, ent.origin);
-			ent.model = b->model;
+			ent.hModel = Mod_GetHandle(b->model);
 			if (b->model == cl_mod_lightning)
 			{
 				ent.flags = RF_FULLBRIGHT;
@@ -1541,7 +1541,7 @@ void CL_AddPlayerBeams (void)
 			// for this beam)
 //			for (j=0 ; j<3 ; j++)
 //				ent.origin[j] -= dist[j]*10.0;
-			ent.model = b->model;
+			ent.hModel = Mod_GetHandle(b->model);
 			ent.flags = RF_FULLBRIGHT;
 			ent.angles[0] = pitch;
 			ent.angles[1] = yaw;
@@ -1552,7 +1552,7 @@ void CL_AddPlayerBeams (void)
 		while (d > 0)
 		{
 			VectorCopy (org, ent.origin);
-			ent.model = b->model;
+			ent.hModel = Mod_GetHandle(b->model);
 			if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam))
 			{
 //				ent.flags = RF_FULLBRIGHT|RF_TRANSLUCENT;

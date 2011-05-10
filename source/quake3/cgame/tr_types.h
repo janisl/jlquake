@@ -45,8 +45,6 @@ typedef struct poly_s {
 
 struct refEntity_t : refEntity_base_t
 {
-	qhandle_t	hModel;				// opaque type outside refresh
-
 	// most recent data
 	vec3_t		lightingOrigin;		// so multi-part models can be lit identically (RF_LIGHTING_ORIGIN)
 	float		shadowPlane;		// projection shadows go here, stencils go slightly lower

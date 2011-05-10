@@ -887,7 +887,7 @@ void R_DrawBrushModel (refEntity_t *e)
 
 	currententity = e;
 
-	clmodel = e->model;
+	clmodel = Mod_GetModel(e->hModel);
 
 	if (e->angles[0] || e->angles[1] || e->angles[2])
 	{
@@ -1118,7 +1118,7 @@ void R_DrawWorld (void)
 	refEntity_t	ent;
 
 	Com_Memset(&ent, 0, sizeof(ent));
-	ent.model = cl.worldmodel;
+	ent.hModel = Mod_GetHandle(cl.worldmodel);
 
 	VectorCopy (r_refdef.vieworg, modelorg);
 

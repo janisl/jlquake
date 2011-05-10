@@ -49,7 +49,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct entity_t : refEntity_base_t
 {
-	struct model_s		*model;			// opaque type outside refresh
 	float				angles[3];
 
 	/*
@@ -189,5 +188,8 @@ typedef struct
 
 // this is the only function actually exported at the linker level
 typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
+
+qhandle_t Mod_GetHandle(struct model_s* model);
+struct model_s* Mod_GetModel(qhandle_t handle);
 
 #endif

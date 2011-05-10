@@ -61,7 +61,6 @@ struct refEntity_t : refEntity_base_t
 {
 	vec3_t					origin;
 	vec3_t					angles;	
-	struct model_s			*model;			// NULL = no model
 	int						frame;
 	float					syncbase;		// for client-side animations
 	byte					*colormap;

@@ -488,7 +488,7 @@ void CL_UpdateTEnts(void)
 				return;
 			}
 			VectorCopy(org, ent->origin);
-			ent->model = stream->models[0];
+			ent->hModel = Mod_GetHandle(stream->models[0]);
 			ent->angles[0] = pitch;
 			ent->angles[1] = yaw;
 			switch(stream->type)
@@ -510,7 +510,7 @@ void CL_UpdateTEnts(void)
 					return;
 				}
 				VectorCopy(org, ent->origin);
-				ent->model = stream->models[1];
+				ent->hModel = Mod_GetHandle(stream->models[1]);
 				ent->angles[0] = pitch;
 				ent->angles[1] = yaw;
 				ent->angles[2] = (int)(cl.time*50)%360;
@@ -630,7 +630,7 @@ void CL_UpdateTEnts(void)
 				return;
 			}
 			VectorCopy(stream->dest, ent->origin);
-			ent->model = stream->models[2];
+			ent->hModel = Mod_GetHandle(stream->models[2]);
 			ent->drawflags = MLS_ABSLIGHT;
 			ent->abslight = 128;
 			ent->scale = 80+(rand()&15);
@@ -642,7 +642,7 @@ void CL_UpdateTEnts(void)
 				return;
 			}
 			VectorCopy(stream->dest, ent->origin);
-			ent->model = stream->models[3];
+			ent->hModel = Mod_GetHandle(stream->models[3]);
 			ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 			ent->abslight = 128;
 			ent->scale = 150+(rand()&15);

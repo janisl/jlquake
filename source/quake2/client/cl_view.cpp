@@ -199,7 +199,7 @@ void V_TestEntities (void)
 			ent->origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j]*f +
 			cl.v_right[j]*r;
 
-		ent->model = cl.baseclientinfo.model;
+		ent->hModel = Mod_GetHandle(cl.baseclientinfo.model);
 		ent->skin = cl.baseclientinfo.skin;
 	}
 }

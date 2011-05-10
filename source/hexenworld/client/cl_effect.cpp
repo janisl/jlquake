@@ -1066,14 +1066,14 @@ void CL_ParseEffect(void)
 				ent->angles[2] = 90;
 				if(cl.Effects[index].type == CE_HWMISSILESTAR)
 				{
-					ent->model = Mod_ForName("models/star.mdl", true);	
+					ent->model = Mod_ForName("models/star.mdl", true);
 					ent->scale = 0.3;
 					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_mmfire, 1, 1);
 
 				}
 				else
 				{
-					ent->model = Mod_ForName("models/glowball.mdl", true);	
+					ent->model = Mod_ForName("models/glowball.mdl", true);
 					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_eidolon, 1, 1);
 				}
 			}
@@ -1625,7 +1625,7 @@ void CL_LinkEntity(entity_t *ent)
 	VectorCopy(ent->origin, rent->origin);
 	VectorCopy(ent->angles, rent->angles);
 	VectorCopy(ent->angleAdd, rent->angleAdd);
-	rent->model = ent->model;
+	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
 	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;

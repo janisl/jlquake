@@ -204,7 +204,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->keynum = pent->keynum;
 				VectorCopy(pent->origin, rent->origin);
 				VectorCopy(pent->angles, rent->angles);
-				rent->model = pent->model;
+				rent->hModel = Mod_GetHandle(pent->model);
 				rent->frame = pent->frame;
 				rent->colormap = pent->colormap;
 				rent->skinnum = pent->skinnum;

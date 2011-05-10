@@ -187,7 +187,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				VectorCopy(ent->origin, rent->origin);
 				VectorCopy(ent->angles, rent->angles);
 				VectorCopy(ent->angleAdd, rent->angleAdd);
-				rent->model = ent->model;
+				rent->hModel = Mod_GetHandle(ent->model);
 				rent->frame = ent->frame;
 				rent->colormap = ent->colormap;
 				rent->colorshade = ent->colorshade;
