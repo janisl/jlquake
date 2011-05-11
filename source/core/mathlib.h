@@ -59,9 +59,9 @@ qint16 ClampShort(int i);
 #define Square(x) ((x)*(x))
 
 // angle indexes
-#define	PITCH				0		// up / down
-#define	YAW					1		// left / right
-#define	ROLL				2		// fall over
+#define PITCH				0		// up / down
+#define YAW					1		// left / right
+#define ROLL				2		// fall over
 
 typedef float vec_t;
 typedef vec_t vec2_t[2];
