@@ -310,9 +310,11 @@ void CL_UpdateTEnts (void)
 			ent.colormap = vid.colormap;
 			VectorCopy (org, ent.origin);
 			ent.hModel = Mod_GetHandle(b->model);
-			ent.angles[0] = pitch;
-			ent.angles[1] = yaw;
-			ent.angles[2] = rand()%360;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
+			angles[2] = rand()%360;
+			CL_SetRefEntAxis(&ent, angles);
 			cl_visedicts[cl_numvisedicts++] = ent;
 
 			for (i=0 ; i<3 ; i++)

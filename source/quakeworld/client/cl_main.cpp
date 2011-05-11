@@ -1497,3 +1497,20 @@ void Host_Shutdown(void)
 	VID_Shutdown();
 }
 
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
+{
+	vec3_t angles;
+	angles[YAW] = ent_angles[YAW];
+	angles[ROLL] = ent_angles[ROLL];
+	if (Mod_GetModel(ent->hModel)->type == mod_alias)
+	{
+		// stupid quake bug
+		angles[PITCH] = -ent_angles[PITCH];
+	}
+	else
+	{
+		angles[PITCH] = ent_angles[PITCH];
+	}
+
+	AnglesToAxis(angles, ent->axis);
+}

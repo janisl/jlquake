@@ -889,7 +889,7 @@ void R_DrawBrushModel (refEntity_t *e)
 
 	clmodel = Mod_GetModel(e->hModel);
 
-	if (e->angles[0] || e->angles[1] || e->angles[2])
+	if (e->axis[0][0] != 1 || e->axis[1][1] != 1 || e->axis[2][2] != 1)
 	{
 		rotated = true;
 		for (i=0 ; i<3 ; i++)
@@ -915,13 +915,11 @@ void R_DrawBrushModel (refEntity_t *e)
 	if (rotated)
 	{
 		vec3_t	temp;
-		vec3_t	forward, right, up;
 
 		VectorCopy (modelorg, temp);
-		AngleVectors (e->angles, forward, right, up);
-		modelorg[0] = DotProduct (temp, forward);
-		modelorg[1] = -DotProduct (temp, right);
-		modelorg[2] = DotProduct (temp, up);
+		modelorg[0] = DotProduct(temp, e->axis[0]);
+		modelorg[1] = DotProduct(temp, e->axis[1]);
+		modelorg[2] = DotProduct(temp, e->axis[2]);
 	}
 
 	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
@@ -942,9 +940,7 @@ void R_DrawBrushModel (refEntity_t *e)
 	}
 
     qglPushMatrix ();
-e->angles[0] = -e->angles[0];	// stupid quake bug
 	R_RotateForEntity (e);
-e->angles[0] = -e->angles[0];	// stupid quake bug
 
 	//
 	// draw texture

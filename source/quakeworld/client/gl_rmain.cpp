@@ -115,12 +115,26 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 
 void R_RotateForEntity (refEntity_t *e)
 {
-    qglTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
+	GLfloat glmat[16];
 
-    qglRotatef (e->angles[1],  0, 0, 1);
-    qglRotatef (-e->angles[0],  0, 1, 0);
-	//ZOID: fixed z angle
-    qglRotatef (e->angles[2],  1, 0, 0);
+	glmat[0] = e->axis[0][0];
+	glmat[1] = e->axis[0][1];
+	glmat[2] = e->axis[0][2];
+	glmat[3] = 0;
+	glmat[4] = e->axis[1][0];
+	glmat[5] = e->axis[1][1];
+	glmat[6] = e->axis[1][2];
+	glmat[7] = 0;
+	glmat[8] = e->axis[2][0];
+	glmat[9] = e->axis[2][1];
+	glmat[10] = e->axis[2][2];
+	glmat[11] = 0;
+	glmat[12] = e->origin[0];
+	glmat[13] = e->origin[1];
+	glmat[14] = e->origin[2];
+	glmat[15] = 1;
+
+	qglMultMatrixf(glmat);
 }
 
 /*
@@ -194,7 +208,7 @@ void R_DrawSpriteModel (refEntity_t *e)
 	vec3_t	point;
 	mspriteframe_t	*frame;
 	float		*up, *right;
-	vec3_t		v_forward, v_right, v_up;
+	vec3_t		v_right;
 	msprite_t		*psprite;
 
 	// don't even bother culling, because it's just a single
@@ -203,9 +217,10 @@ void R_DrawSpriteModel (refEntity_t *e)
 	psprite = (msprite_t*)Mod_GetModel(currententity->hModel)->cache.data;
 
 	if (psprite->type == SPR_ORIENTED)
-	{	// bullet marks on walls
-		AngleVectors (currententity->angles, v_forward, v_right, v_up);
-		up = v_up;
+	{
+		// bullet marks on walls
+		up = currententity->axis[2];
+		VectorSubtract(vec3_origin, currententity->axis[1], v_right);
 		right = v_right;
 	}
 	else
@@ -436,7 +451,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	model_t		*clmodel;
 	vec3_t		mins, maxs;
 	aliashdr_t	*paliashdr;
-	float		an;
 	int			anim;
 
 	clmodel = Mod_GetModel(currententity->hModel);
@@ -499,14 +513,14 @@ void R_DrawAliasModel (refEntity_t *e)
 		// HACK HACK HACK -- no fullbright colors, so make torches full light
 		ambientlight = shadelight = 256;
 
-	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
+	vec3_t tmp_angles;
+	VecToAngles(e->axis[0], tmp_angles);
+	shadedots = r_avertexnormal_dots[((int)(tmp_angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	shadelight = shadelight / 200.0;
 	
-	an = e->angles[1]/180*M_PI;
-	shadevector[0] = cos(-an);
-	shadevector[1] = sin(-an);
+	VectorCopy(e->axis[0], shadevector);
 	shadevector[2] = 1;
-	VectorNormalize (shadevector);
+	VectorNormalize(shadevector);
 
 	//
 	// locate the proper data
@@ -670,8 +684,8 @@ void R_DrawViewModel (void)
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	rent->keynum = pent->keynum;
 	VectorCopy(pent->origin, rent->origin);
-	VectorCopy(pent->angles, rent->angles);
 	rent->hModel = Mod_GetHandle(pent->model);
+	CL_SetRefEntAxis(rent, pent->angles);
 	rent->frame = pent->frame;
 	rent->colormap = pent->colormap;
 	rent->skinnum = pent->skinnum;

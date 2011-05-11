@@ -403,9 +403,11 @@ void CL_UpdateBeams (void)
 				return;
 			VectorCopy (org, ent->origin);
 			ent->hModel = Mod_GetHandle(b->model);
-			ent->angles[0] = pitch;
-			ent->angles[1] = yaw;
-			ent->angles[2] = rand()%360;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
+			angles[2] = rand()%360;
+			CL_SetRefEntAxis(ent, angles);
 
 			for (i=0 ; i<3 ; i++)
 				org[i] += dist[i]*30;

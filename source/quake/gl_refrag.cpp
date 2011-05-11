@@ -203,8 +203,8 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				entity_t* ent = pent;
 				refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
 				VectorCopy(ent->origin, rent->origin);
-				VectorCopy(ent->angles, rent->angles);	
 				rent->hModel = Mod_GetHandle(ent->model);
+				CL_SetRefEntAxis(rent, ent->angles);	
 				rent->frame = ent->frame;
 				rent->syncbase = ent->syncbase;
 				rent->colormap = ent->colormap;

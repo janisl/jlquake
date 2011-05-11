@@ -477,11 +477,12 @@ void CL_LinkPacketEntities (void)
 		ent->frame = s1->frame;
 
 		// rotate binary objects locally
+		vec3_t angles;
 		if (model->flags & EF_ROTATE)
 		{
-			ent->angles[0] = 0;
-			ent->angles[1] = autorotate;
-			ent->angles[2] = 0;
+			angles[0] = 0;
+			angles[1] = autorotate;
+			angles[2] = 0;
 		}
 		else
 		{
@@ -495,9 +496,10 @@ void CL_LinkPacketEntities (void)
 					a1 -= 360;
 				if (a1 - a2 < -180)
 					a1 += 360;
-				ent->angles[i] = a2 + f * (a1 - a2);
+				angles[i] = a2 + f * (a1 - a2);
 			}
 		}
+		CL_SetRefEntAxis(ent, angles);
 
 		// calculate origin
 		for (i=0 ; i<3 ; i++)
@@ -639,7 +641,7 @@ void CL_LinkProjectiles (void)
 		ent->colormap = vid.colormap;
 		ent->scoreboard = NULL;
 		VectorCopy (pr->origin, ent->origin);
-		VectorCopy (pr->angles, ent->angles);
+		CL_SetRefEntAxis(ent, pr->angles);
 	}
 }
 
@@ -734,7 +736,7 @@ CL_AddFlagModels
 Called when the CTF flags are set
 ================
 */
-void CL_AddFlagModels (refEntity_t *ent, int team)
+void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 {
 	int		i;
 	float	f;
@@ -772,14 +774,16 @@ void CL_AddFlagModels (refEntity_t *ent, int team)
 	newent->hModel = Mod_GetHandle(cl.model_precache[cl_flagindex]);
 	newent->skinnum = team;
 
-	AngleVectors (ent->angles, v_forward, v_right, v_up);
+	AngleVectors (angles, v_forward, v_right, v_up);
 	v_forward[2] = -v_forward[2]; // reverse z component
 	for (i=0 ; i<3 ; i++)
 		newent->origin[i] = ent->origin[i] - f*v_forward[i] + 22*v_right[i];
 	newent->origin[2] -= 16;
 
-	VectorCopy (ent->angles, newent->angles);
-	newent->angles[2] -= 45;
+	vec3_t flag_angles;
+	VectorCopy(angles, flag_angles);
+	flag_angles[2] -= 45;
+	CL_SetRefEntAxis(newent, flag_angles);
 }
 
 /*
@@ -857,10 +861,12 @@ void CL_LinkPlayers (void)
 		//
 		// angles
 		//
-		ent->angles[PITCH] = -state->viewangles[PITCH]/3;
-		ent->angles[YAW] = state->viewangles[YAW];
-		ent->angles[ROLL] = 0;
-		ent->angles[ROLL] = V_CalcRoll (ent->angles, state->velocity)*4;
+		vec3_t angles;
+		angles[PITCH] = -state->viewangles[PITCH]/3;
+		angles[YAW] = state->viewangles[YAW];
+		angles[ROLL] = 0;
+		angles[ROLL] = V_CalcRoll(angles, state->velocity)*4;
+		CL_SetRefEntAxis(ent, angles);
 
 		// only predict half the move to minimize overruns
 		msec = 500*(playertime - state->state_time);
@@ -885,9 +891,9 @@ void CL_LinkPlayers (void)
 		}
 
 		if (state->effects & EF_FLAG1)
-			CL_AddFlagModels (ent, 0);
+			CL_AddFlagModels (ent, 0, angles);
 		else if (state->effects & EF_FLAG2)
-			CL_AddFlagModels (ent, 1);
+			CL_AddFlagModels (ent, 1, angles);
 
 	}
 }

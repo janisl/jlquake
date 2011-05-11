@@ -544,8 +544,8 @@ void CL_RelinkEntities (void)
 		{
 			refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
 			VectorCopy(ent->origin, rent->origin);
-			VectorCopy(ent->angles, rent->angles);	
 			rent->hModel = Mod_GetHandle(ent->model);
+			CL_SetRefEntAxis(rent, ent->angles);	
 			rent->frame = ent->frame;
 			rent->syncbase = ent->syncbase;
 			rent->colormap = ent->colormap;
@@ -687,3 +687,20 @@ void CL_Init (void)
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 }
 
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
+{
+	vec3_t angles;
+	angles[YAW] = ent_angles[YAW];
+	angles[ROLL] = ent_angles[ROLL];
+	if (Mod_GetModel(ent->hModel)->type == mod_alias)
+	{
+		// stupid quake bug
+		angles[PITCH] = -ent_angles[PITCH];
+	}
+	else
+	{
+		angles[PITCH] = ent_angles[PITCH];
+	}
+
+	AnglesToAxis(angles, ent->axis);
+}

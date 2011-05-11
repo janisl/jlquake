@@ -60,7 +60,6 @@ struct entity_t
 struct refEntity_t : refEntity_base_t
 {
 	vec3_t					origin;
-	vec3_t					angles;	
 	int						frame;
 	float					syncbase;		// for client-side animations
 	byte					*colormap;
