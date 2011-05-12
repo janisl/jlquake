@@ -446,6 +446,7 @@ void CL_UpdateExplosions (void)
 		VectorCopy (ex->origin, ent->origin);
 		ent->hModel = Mod_GetHandle(ex->model);
 		ent->frame = f;
+		CL_SetRefEntAxis(ent, vec3_origin);
 	}
 }
 

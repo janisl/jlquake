@@ -1372,3 +1372,50 @@ void Host_Shutdown(void)
 	VID_Shutdown();
 }
 
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd)
+{
+	vec3_t angles;
+	if (Mod_GetModel(ent->hModel)->type == mod_alias)
+	{
+		if (Mod_GetModel(ent->hModel)->flags & EF_FACE_VIEW)
+		{
+			//	yaw and pitch must be 0 so that renderer can safely multply matrices.
+			angles[PITCH] = 0;
+			angles[YAW] = 0;
+			angles[ROLL] = ent_angles[ROLL];
+
+			AnglesToAxis(angles, ent->axis);
+		}
+		else 
+		{
+			if (Mod_GetModel(ent->hModel)->flags & EF_ROTATE)
+			{
+				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.time));
+			}
+			else
+			{
+				angles[YAW] = ent_angles[YAW];
+			}
+			angles[ROLL] = ent_angles[ROLL];
+			// stupid quake bug
+			angles[PITCH] = -ent_angles[PITCH];
+
+			float BaseAxis[3][3];
+			AnglesToAxis(angles, BaseAxis);
+
+			// For clientside rotation stuff
+			float AddAxis[3][3];
+			AnglesToAxis(angleAdd, AddAxis);
+
+			MatrixMultiply(AddAxis, BaseAxis, ent->axis);
+		}
+	}
+	else
+	{
+		angles[YAW] = ent_angles[YAW];
+		angles[ROLL] = ent_angles[ROLL];
+		angles[PITCH] = ent_angles[PITCH];
+
+		AnglesToAxis(angles, ent->axis);
+	}
+}

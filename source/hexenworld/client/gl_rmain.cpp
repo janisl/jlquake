@@ -102,87 +102,88 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 }
 
 
-void R_RotateForEntity (refEntity_t *e)
-{
-    qglTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
-
-    qglRotatef (e->angles[1],  0, 0, 1);
-    qglRotatef (-e->angles[0],  0, 1, 0);
-    qglRotatef (e->angles[2],  1, 0, 0);	//RDM: switched sign so it matches software
-}
-
 //==========================================================================
 //
-// R_RotateForEntity2
+// R_RotateForEntity
 //
 // Same as R_RotateForEntity(), but checks for EF_ROTATE and modifies
 // yaw appropriately.
 //
 //==========================================================================
 
-static void R_RotateForEntity2(refEntity_t *e)
+void R_RotateForEntity(refEntity_t *e)
 {
-	float	forward;
-	float	yaw, pitch;
-	vec3_t			angles;
-
-	qglTranslatef(e->origin[0], e->origin[1], e->origin[2]);
+	GLfloat glmat[16];
 
 	if (Mod_GetModel(e->hModel)->flags & EF_FACE_VIEW)
 	{
-		VectorSubtract(e->origin,r_origin,angles);
-		VectorSubtract(r_origin,e->origin,angles);
-		VectorNormalize(angles);
+		float fvaxis[3][3];
 
-		if (angles[1] == 0 && angles[0] == 0)
+		VectorSubtract(r_origin, e->origin, fvaxis[0]);
+		VectorNormalize(fvaxis[0]);
+
+		if (fvaxis[0][1] == 0 && fvaxis[0][0] == 0)
 		{
-			yaw = 0;
-			if (angles[2] > 0)
-				pitch = 90;
+			fvaxis[1][0] = 0;
+			fvaxis[1][1] = 1;
+			fvaxis[1][2] = 0;
+			fvaxis[2][1] = 0;
+			fvaxis[2][2] = 0;
+			if (fvaxis[0][2] > 0)
+			{
+				fvaxis[2][0] = -1;
+			}
 			else
-				pitch = 270;
+			{
+				fvaxis[2][0] = 1;
+			}
 		}
 		else
 		{
-			yaw = (int) (atan2(angles[1], angles[0]) * 180 / M_PI);
-			if (yaw < 0)
-				yaw += 360;
-
-			forward = sqrt (angles[0]*angles[0] + angles[1]*angles[1]);
-			pitch = (int) (atan2(angles[2], forward) * 180 / M_PI);
-			if (pitch < 0)
-				pitch += 360;
+			fvaxis[2][0] = 0;
+			fvaxis[2][1] = 0;
+			fvaxis[2][2] = 1;
+			CrossProduct(fvaxis[2], fvaxis[0], fvaxis[1]);
+			VectorNormalize(fvaxis[1]);
+			CrossProduct(fvaxis[0], fvaxis[1], fvaxis[2]);
+			VectorNormalize(fvaxis[2]);
 		}
 
-		angles[0] = pitch;
-		angles[1] = yaw;
-		angles[2] = 0;
+		float CombAxis[3][3];
+		MatrixMultiply(e->axis, fvaxis, CombAxis);
 
-		qglRotatef(-angles[0], 0, 1, 0);
-		qglRotatef(angles[1], 0, 0, 1);
-//		qglRotatef(-angles[2], 1, 0, 0);
-		qglRotatef(-e->angles[2], 1, 0, 0);
+		glmat[0] = CombAxis[0][0];
+		glmat[1] = CombAxis[0][1];
+		glmat[2] = CombAxis[0][2];
+		glmat[4] = CombAxis[1][0];
+		glmat[5] = CombAxis[1][1];
+		glmat[6] = CombAxis[1][2];
+		glmat[8] = CombAxis[2][0];
+		glmat[9] = CombAxis[2][1];
+		glmat[10] = CombAxis[2][2];
 	}
-	else 
+	else
 	{
-		if (Mod_GetModel(e->hModel)->flags & EF_ROTATE)
-		{
-			qglRotatef(AngleMod((e->origin[0]+e->origin[1])*0.8
-				+(108*cl.time)), 0, 0, 1);
-		}
-		else
-		{
-			qglRotatef(e->angles[1], 0, 0, 1);
-		}
-
-		qglRotatef(-e->angles[0], 0, 1, 0);
-		qglRotatef(-e->angles[2], 1, 0, 0);
-
-		// For clientside rotation stuff
-		qglRotatef(e->angleAdd[0], 0, 1, 0);
-		qglRotatef(e->angleAdd[1], 0, 0, 1);
-		qglRotatef(e->angleAdd[2], 1, 0, 0);
+		glmat[0] = e->axis[0][0];
+		glmat[1] = e->axis[0][1];
+		glmat[2] = e->axis[0][2];
+		glmat[4] = e->axis[1][0];
+		glmat[5] = e->axis[1][1];
+		glmat[6] = e->axis[1][2];
+		glmat[8] = e->axis[2][0];
+		glmat[9] = e->axis[2][1];
+		glmat[10] = e->axis[2][2];
 	}
+
+	glmat[3] = 0;
+	glmat[7] = 0;
+	glmat[11] = 0;
+	glmat[12] = e->origin[0];
+	glmat[13] = e->origin[1];
+	glmat[14] = e->origin[2];
+	glmat[15] = 1;
+
+	qglMultMatrixf(glmat);
 }
 
 /*
@@ -256,7 +257,7 @@ void R_DrawSpriteModel (refEntity_t *e)
 	vec3_t	point;
 	mspriteframe_t	*frame;
 	float		*up, *right;
-	vec3_t		v_forward, v_right, v_up;
+	vec3_t		v_right;
 	msprite_t		*psprite;
 
 	// don't even bother culling, because it's just a single
@@ -282,9 +283,10 @@ void R_DrawSpriteModel (refEntity_t *e)
 	psprite = (msprite_t*)Mod_GetModel(currententity->hModel)->cache.data;
 
 	if (psprite->type == SPR_ORIENTED)
-	{	// bullet marks on walls
-		AngleVectors (currententity->angles, v_forward, v_right, v_up);
-		up = v_up;
+	{
+		// bullet marks on walls
+		up = e->axis[2];
+		VectorSubtract(vec3_origin, currententity->axis[1], v_right);
 		right = v_right;
 	}
 	else
@@ -670,12 +672,12 @@ void R_DrawAliasModel (refEntity_t *e)
 		ambientlight = shadelight = d_lightstylevalue[24+mls]/2;
 	}
 
-	shadedots = r_avertexnormal_dots[((int)(e->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
+	vec3_t tmp_angles;
+	VecToAngles(e->axis[0], tmp_angles);
+	shadedots = r_avertexnormal_dots[((int)(tmp_angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	shadelight = shadelight / 200.0;
 	
-	an = e->angles[1]/180*M_PI;
-	shadevector[0] = cos(-an);
-	shadevector[1] = sin(-an);
+	VectorCopy(e->axis[0], shadevector);
 	shadevector[2] = 1;
 	VectorNormalize (shadevector);
 
@@ -693,7 +695,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	GL_DisableMultitexture();
 
     qglPushMatrix ();
-	R_RotateForEntity2(e);
+	R_RotateForEntity(e);
 
 	if(currententity->scale != 0 && currententity->scale != 100)
 	{
@@ -880,7 +882,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	if (r_shadows->value)
 	{
 		qglPushMatrix ();
-		R_RotateForEntity2 (e);
+		R_RotateForEntity(e);
 		qglDisable (GL_TEXTURE_2D);
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglColor4f (0,0,0,0.5);
@@ -1084,8 +1086,6 @@ void R_DrawViewModel (void)
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	rent->keynum = ent->keynum;
 	VectorCopy(ent->origin, rent->origin);
-	VectorCopy(ent->angles, rent->angles);
-	VectorCopy(ent->angleAdd, rent->angleAdd);
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
 	rent->colormap = ent->colormap;
@@ -1096,6 +1096,7 @@ void R_DrawViewModel (void)
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;
 	rent->syncbase = ent->syncbase;
+	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd);
 
 	R_DrawAliasModel (currententity);
 }

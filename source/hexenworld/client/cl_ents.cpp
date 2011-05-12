@@ -479,7 +479,7 @@ nextword:
 }
 
 
-void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t oldOrg)
+void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec3_t angleAdd, vec3_t oldOrg)
 {
 	dlight_t			*dl;
 	int					rotateSet = 0;
@@ -503,14 +503,11 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t oldOrg)
 		R_DarkFieldParticles (ent);
 	if (effects & EF_MUZZLEFLASH)
 	{
-		vec3_t		fv, rv, uv;
-
 		dl = CL_AllocDlight (number);
 		VectorCopy (ent->origin,  dl->origin);
 		dl->origin[2] += 16;
-		AngleVectors (ent->angles, fv, rv, uv);
 		 
-		VectorMA (dl->origin, 18, fv, dl->origin);
+		VectorMA(dl->origin, 18, ent->axis[0], dl->origin);
 		dl->radius = 200 + (rand()&31);
 		dl->minlight = 32;
 		dl->die = cl.time + 0.1;
@@ -549,21 +546,21 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t oldOrg)
 
 	if(effects & EF_POISON_GAS)
 	{
-		CL_UpdatePoisonGas(ent, number);
+		CL_UpdatePoisonGas(ent, angles, number);
 	}
 	if(effects & EF_ACIDBLOB)
 	{
-		ent->angleAdd[0] = 0;
-		ent->angleAdd[1] = 0;
-		ent->angleAdd[2] = 200 * cl.time;
+		angleAdd[0] = 0;
+		angleAdd[1] = 0;
+		angleAdd[2] = 200 * cl.time;
 
 		rotateSet = 1;
 
-		CL_UpdateAcidBlob(ent, number);
+		CL_UpdateAcidBlob(ent, angles, number);
 	}
 	if(effects & EF_ONFIRE)
 	{
-		CL_UpdateOnFire(ent, number);
+		CL_UpdateOnFire(ent, angles, number);
 	}
 	if(effects & EF_POWERFLAMEBURN)
 	{
@@ -575,9 +572,9 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t oldOrg)
 	}
 	if (effects & EF_HAMMER_EFFECTS)
 	{
-		ent->angleAdd[0] = 200 * cl.time;
-		ent->angleAdd[1] = 0;
-		ent->angleAdd[2] = 0;
+		angleAdd[0] = 200 * cl.time;
+		angleAdd[1] = 0;
+		angleAdd[2] = 0;
 
 		rotateSet = 1;
 
@@ -600,9 +597,9 @@ void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t oldOrg)
 
 	if(!rotateSet)
 	{
-		ent->angleAdd[0] = 0;
-		ent->angleAdd[1] = 0;
-		ent->angleAdd[2] = 0;
+		angleAdd[0] = 0;
+		angleAdd[1] = 0;
+		angleAdd[2] = 0;
 	}
 }
 
@@ -700,6 +697,7 @@ void CL_LinkPacketEntities (void)
 		ent->scale = s1->scale;
 		ent->abslight = s1->abslight;
 
+		vec3_t angles;
 		// rotate binary objects locally
 /*	rjr rotate them in renderer	if (model->flags & EF_ROTATE)
 		{
@@ -719,7 +717,7 @@ void CL_LinkPacketEntities (void)
 					a1 -= 360;
 				if (a1 - a2 < -180)
 					a1 += 360;
-				ent->angles[i] = a2 + f * (a1 - a2);
+				angles[i] = a2 + f * (a1 - a2);
 			}
 		}
 
@@ -727,6 +725,7 @@ void CL_LinkPacketEntities (void)
 		for (i=0 ; i<3 ; i++)
 			ent->origin[i] = s2->origin[i] + 
 			f * (s1->origin[i] - s2->origin[i]);
+		CL_SetRefEntAxis(ent, angles, vec3_origin);
 
 		// scan the old entity display list for a matching
 		for (i=0 ; i<cl_oldnumvisedicts ; i++)
@@ -760,7 +759,9 @@ void CL_LinkPacketEntities (void)
 //				cl.players[s1->number].invis=true;
 			}
 
-		HandleEffects(s1->effects, s1->number, ent, old_origin);
+		vec3_t angleAdd;
+		HandleEffects(s1->effects, s1->number, ent, angles, angleAdd, old_origin);
+		CL_SetRefEntAxis(ent, angles, angleAdd);
 
 		// add automatic particle trails
 		if (!model->flags)
@@ -956,7 +957,7 @@ void CL_LinkProjectiles (void)
 		ent->scoreboard = NULL;
 		ent->frame = pr->frame;
 		VectorCopy (pr->origin, ent->origin);
-		VectorCopy (pr->angles, ent->angles);
+		CL_SetRefEntAxis(ent, pr->angles, vec3_origin);
 	}
 }
 
@@ -1050,23 +1051,24 @@ void CL_LinkMissiles (void)
 		cl_numvisedicts++;
 		ent->keynum = 0;
 
+		VectorCopy (pr->origin, ent->origin);
 		if(pr->type == 1)
 		{	//ball
 			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
 			ent->scale = 10;
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin);
 		}
 		else
 		{	//missilestar
 			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
 			ent->scale = 50;
-			VectorCopy (missilestar_angle , ent->angles);
+			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin);
 		}
 		ent->skinnum = 0;
 		ent->frame = 0;
 		ent->colormap = vid.colormap;
 		ent->scoreboard = NULL;
 		ent->drawflags = SCALE_ORIGIN_CENTER;
-		VectorCopy (pr->origin, ent->origin);
 	}
 }
 
@@ -1370,10 +1372,11 @@ void CL_LinkPlayers (void)
 		//
 		// angles
 		//
-		ent->angles[PITCH] = -state->viewangles[PITCH]/3;
-		ent->angles[YAW] = state->viewangles[YAW];
-		ent->angles[ROLL] = 0;
-		ent->angles[ROLL] = V_CalcRoll (ent->angles, state->velocity)*4;
+		vec3_t angles;
+		angles[PITCH] = -state->viewangles[PITCH]/3;
+		angles[YAW] = state->viewangles[YAW];
+		angles[ROLL] = 0;
+		angles[ROLL] = V_CalcRoll(angles, state->velocity)*4;
 
 		// only predict half the move to minimize overruns
 		msec = 500*(playertime - state->state_time);
@@ -1405,7 +1408,9 @@ void CL_LinkPlayers (void)
 				state->effects &= ~EF_NODRAW;
 			}
 
-		HandleEffects(state->effects, j+1, ent, NULL);
+		vec3_t angleAdd;
+		HandleEffects(state->effects, j+1, ent, angles, angleAdd, NULL);
+		CL_SetRefEntAxis(ent, angles, angleAdd);
 
 		// the player object never gets added
 		if (j == cl.playernum)

@@ -1623,8 +1623,6 @@ void CL_LinkEntity(entity_t *ent)
 	refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
 	rent->keynum = ent->keynum;
 	VectorCopy(ent->origin, rent->origin);
-	VectorCopy(ent->angles, rent->angles);
-	VectorCopy(ent->angleAdd, rent->angleAdd);
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
 	rent->colormap = ent->colormap;
@@ -1635,6 +1633,7 @@ void CL_LinkEntity(entity_t *ent)
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;
 	rent->syncbase = ent->syncbase;
+	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd);
 	cl_numvisedicts++;
 }
 

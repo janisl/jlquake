@@ -726,7 +726,6 @@ void CL_RelinkEntities (void)
 		{
 			refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
 			VectorCopy(ent->origin, rent->origin);
-			VectorCopy(ent->angles, rent->angles);
 			rent->hModel = Mod_GetHandle(ent->model);
 			rent->frame = ent->frame;
 			rent->syncbase = ent->syncbase;
@@ -736,6 +735,7 @@ void CL_RelinkEntities (void)
 			rent->scale = ent->scale;
 			rent->drawflags = ent->drawflags;
 			rent->abslight = ent->abslight;
+			CL_SetRefEntAxis(rent, ent->angles);
 			rent->playernum = i <= cl.maxclients ? i : 0;
 			cl_numvisedicts++;
 		}
@@ -893,4 +893,41 @@ void CL_Init (void)
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 	Cmd_AddCommand ("sensitivity_save", CL_Sensitivity_save_f);
+}
+
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
+{
+	vec3_t angles;
+	if (Mod_GetModel(ent->hModel)->type == mod_alias)
+	{
+		if (Mod_GetModel(ent->hModel)->flags & EF_FACE_VIEW)
+		{
+			//	yaw and pitch must be 0 so that renderer can safely multply matrices.
+			angles[PITCH] = 0;
+			angles[YAW] = 0;
+			angles[ROLL] = ent_angles[ROLL];
+		}
+		else 
+		{
+			if (Mod_GetModel(ent->hModel)->flags & EF_ROTATE)
+			{
+				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.time));
+			}
+			else
+			{
+				angles[YAW] = ent_angles[YAW];
+			}
+			angles[ROLL] = ent_angles[ROLL];
+			// stupid quake bug
+			angles[PITCH] = -ent_angles[PITCH];
+		}
+	}
+	else
+	{
+		angles[YAW] = ent_angles[YAW];
+		angles[ROLL] = ent_angles[ROLL];
+		angles[PITCH] = ent_angles[PITCH];
+	}
+
+	AnglesToAxis(angles, ent->axis);
 }

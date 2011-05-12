@@ -489,20 +489,22 @@ void CL_UpdateTEnts(void)
 			}
 			VectorCopy(org, ent->origin);
 			ent->hModel = Mod_GetHandle(stream->models[0]);
-			ent->angles[0] = pitch;
-			ent->angles[1] = yaw;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
 			switch(stream->type)
 			{
 			case TE_STREAM_CHAIN:
-				ent->angles[2] = 0;
+				angles[2] = 0;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				break;
 			case TE_STREAM_SUNSTAFF1:
-				ent->angles[2] = (int)(cl.time*10)%360;
+				angles[2] = (int)(cl.time*10)%360;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				//ent->frame = (int)(cl.time*20)%20;
+				CL_SetRefEntAxis(ent, angles);
 
 				ent = NewStreamEntity();
 				if(!ent)
@@ -511,14 +513,14 @@ void CL_UpdateTEnts(void)
 				}
 				VectorCopy(org, ent->origin);
 				ent->hModel = Mod_GetHandle(stream->models[1]);
-				ent->angles[0] = pitch;
-				ent->angles[1] = yaw;
-				ent->angles[2] = (int)(cl.time*50)%360;
+				angles[0] = pitch;
+				angles[1] = yaw;
+				angles[2] = (int)(cl.time*50)%360;
 				ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 				ent->abslight = 128;
 				break;
 			case TE_STREAM_SUNSTAFF2:
-				ent->angles[2] = (int)(cl.time*10)%360;
+				angles[2] = (int)(cl.time*10)%360;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->frame = (int)(cl.time*10)%8;
@@ -528,10 +530,11 @@ void CL_UpdateTEnts(void)
 				{//fixme: keep last non-translucent frame and angle
 					ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 					ent->abslight = 128 + (stream->endTime - cl.time)*192;
+					angles[2] = 0;
 				}
 				else
 				{
-					ent->angles[2] = rand()%360;
+					angles[2] = rand()%360;
 					ent->drawflags = MLS_ABSLIGHT;
 					ent->abslight = 128;
 					ent->frame = rand()%6;
@@ -542,72 +545,44 @@ void CL_UpdateTEnts(void)
 				{
 					ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 					ent->abslight = 128 + (stream->endTime - cl.time)*192;
+					angles[2] = 0;
 				}
 				else
 				{
-					ent->angles[2] = rand()%360;
+					angles[2] = rand()%360;
 					ent->frame = rand()%6;
 					ent->drawflags = MLS_ABSLIGHT;
 					ent->abslight = 128;
 				}
 				break;
 			case TE_STREAM_FAMINE:
-				ent->angles[2] = rand()%360;
+				angles[2] = rand()%360;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->frame = 0;
 				break;
 			case TE_STREAM_COLORBEAM:
-				ent->angles[2] = 0;
+				angles[2] = 0;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->skinnum = stream->skin;
 				break;
 			case TE_STREAM_GAZE:
-				ent->angles[2] = 0;
+				angles[2] = 0;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->frame = (int)(cl.time*40)%36;
 				break;
 			case TE_STREAM_ICECHUNKS:
-				ent->angles[2] = rand()%360;
+				angles[2] = rand()%360;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->frame = rand()%5;
 				break;
-
-/*				ent->angles[2] = (int)(cl.time*80)%360;
-				ent->origin[0] += (rand()%4)-2;
-				ent->origin[1] += (rand()%4)-2;
-				ent->origin[2] += (rand()%4)-2;
-				ent->frame = segmentCount%4;
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
-				if((rand()&255) > 128)
-				{
-					break;
-				}
-				ent = NewStreamEntity();
-				if(!ent)
-				{
-					return;
-				}
-				VectorCopy(org, ent->origin);
-				ent->model = stream->models[0];
-				ent->angles[0] = pitch;
-				ent->angles[1] = yaw;
-				ent->angles[2] = rand()%360;
-				ent->origin[0] += (rand()%20)-10;
-				ent->origin[1] += (rand()%20)-10;
-				ent->origin[2] += (rand()%20)-10;
-				ent->frame = 4+(rand()&1);
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
-				break;
-*/
 			default:
-				ent->angles[2] = 0;
+				angles[2] = 0;
 			}
+			CL_SetRefEntAxis(ent, angles);
 			for(i = 0; i < 3; i++)
 			{
 				org[i] += dist[i]*30;

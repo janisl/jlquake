@@ -44,8 +44,6 @@ struct refEntity_t : refEntity_base_t
 {
 	int						keynum;			// for matching entities in different frames
 	vec3_t					origin;
-	vec3_t					angles;
-	vec3_t					angleAdd;		// For clientside rotation stuff
 	int						frame;
 	byte					*colormap;
 	byte					colorshade;

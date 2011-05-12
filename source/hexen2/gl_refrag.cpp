@@ -184,7 +184,6 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				entity_t* ent = pent;
 				refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
 				VectorCopy(ent->origin, rent->origin);
-				VectorCopy(ent->angles, rent->angles);
 				rent->hModel = Mod_GetHandle(ent->model);
 				rent->frame = ent->frame;
 				rent->syncbase = ent->syncbase;
@@ -194,6 +193,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->scale = ent->scale;
 				rent->drawflags = ent->drawflags;
 				rent->abslight = ent->abslight;
+				CL_SetRefEntAxis(rent, ent->angles);
 				rent->playernum = 0;
 				cl_numvisedicts++;
 

@@ -456,6 +456,8 @@ void CL_Disconnect_f (void);
 void CL_NextDemo (void);
 qboolean CL_DemoBehind(void);
 
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd);
+
 #define			MAX_VISEDICTS	512
 extern	int				cl_numvisedicts, cl_oldnumvisedicts;
 extern	refEntity_t		*cl_visedicts, *cl_oldvisedicts;
@@ -540,9 +542,9 @@ void CL_ClearTEnts (void);
 void CL_UpdateHammer(refEntity_t *ent, int edict_num);
 void CL_UpdateBug(refEntity_t *ent);
 void CL_UpdateIceStorm(refEntity_t *ent, int edict_num);
-void CL_UpdatePoisonGas(refEntity_t *ent, int edict_num);
-void CL_UpdateAcidBlob(refEntity_t *ent, int edict_num);
-void CL_UpdateOnFire(refEntity_t *ent, int edict_num);
+void CL_UpdatePoisonGas(refEntity_t *ent, vec3_t angles, int edict_num);
+void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num);
+void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num);
 void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num);
 
 //

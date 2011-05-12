@@ -293,6 +293,8 @@ void CL_Disconnect (void);
 void CL_Disconnect_f (void);
 void CL_NextDemo (void);
 
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
+
 #define			MAX_VISEDICTS	256
 extern	int				cl_numvisedicts;
 extern	refEntity_t		cl_visedicts[MAX_VISEDICTS];

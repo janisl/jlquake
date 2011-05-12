@@ -3579,8 +3579,6 @@ refEntity_t *CL_NewTempEntity (void)
 		return NULL;
 	ent = &cl_visedicts[cl_numvisedicts];
 	cl_numvisedicts++;
-	ent->keynum = 0;
-	
 	Com_Memset(ent, 0, sizeof(*ent));
 
 	ent->colormap = vid.colormap;
@@ -3649,9 +3647,11 @@ void CL_UpdateBeams (void)
 				return;
 			VectorCopy (org, ent->origin);
 			ent->hModel = Mod_GetHandle(b->model);
-			ent->angles[0] = pitch;
-			ent->angles[1] = yaw;
-			ent->angles[2] = rand()%360;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
+			angles[2] = rand()%360;
+			CL_SetRefEntAxis(ent, angles, vec3_origin);
 
 			for (i=0 ; i<3 ; i++)
 				org[i] += dist[i]*30;
@@ -3753,12 +3753,12 @@ void CL_UpdateExplosions (void)
 		if (!ent)
 			continue;
 		VectorCopy (ex->origin, ent->origin);
-		VectorCopy (ex->angles, ent->angles);
 		ent->hModel = Mod_GetHandle(ex->model);
 		ent->frame = f;
 		ent->skinnum = ex->skin;
 		ent->drawflags = ex->flags;
-		
+		CL_SetRefEntAxis(ent, ex->angles, vec3_origin);
+
 		if(ex->flags & MLS_ABSLIGHT)
 		{
 			ent->abslight = ex->abslight;
@@ -3875,21 +3875,24 @@ void CL_UpdateStreams(void)
 			}
 			VectorCopy(org, ent->origin);
 			ent->hModel = Mod_GetHandle(stream->models[0]);
-			ent->angles[0] = pitch;
-			ent->angles[1] = yaw;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
 			switch(stream->type)
 			{
 			case TE_STREAM_CHAIN:
-				ent->angles[2] = 0;
+				angles[2] = 0;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 				break;
 			case TE_STREAM_SUNSTAFF1:
-				ent->angles[2] = (int)(cl.time*10)%360;
+				angles[2] = (int)(cl.time*10)%360;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->scale = 50 + 100 * ((stream->endTime - cl.time)/.3);
 				//ent->frame = (int)(cl.time*20)%20;
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 
 				ent = CL_NewTempEntity();
 				if(!ent)
@@ -3898,22 +3901,23 @@ void CL_UpdateStreams(void)
 				}
 				VectorCopy(org, ent->origin);
 				ent->hModel = Mod_GetHandle(stream->models[1]);
-				ent->angles[0] = pitch;
-				ent->angles[1] = yaw;
-				ent->angles[2] = (int)(cl.time*50)%360;
+				angles[0] = pitch;
+				angles[1] = yaw;
+				angles[2] = (int)(cl.time*50)%360;
 				ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 				ent->abslight = 128;
 				ent->scale = 50 + 100 * ((stream->endTime - cl.time)/.5);
 				//stream->endTime = cl.time+0.3;	// FIXME
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 				break;
 			case TE_STREAM_SUNSTAFF2:
-				ent->angles[2] = (int)(cl.time*100)%360;
+				angles[2] = (int)(cl.time*100)%360;
 				ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 				ent->abslight = 128;
 				ent->scale =  100 + 150 * lifeTime;
 				VectorMA(ent->origin, cosTime * (40 * lifeTime), right,  ent->origin);
 				VectorMA(ent->origin, sinTime * (40 * lifeTime), up,  ent->origin);
-
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 
 				ent = CL_NewTempEntity();
 				if(!ent)
@@ -3922,14 +3926,15 @@ void CL_UpdateStreams(void)
 				}
 				VectorCopy(org, ent->origin);
 				ent->hModel = Mod_GetHandle(stream->models[0]);
-				ent->angles[0] = pitch;
-				ent->angles[1] = yaw;
-				ent->angles[2] = (int)(cl.time*100)%360;
+				angles[0] = pitch;
+				angles[1] = yaw;
+				angles[2] = (int)(cl.time*100)%360;
 				ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 				ent->abslight = 128;
 				ent->scale =  100 + 150 * lifeTime;
 				VectorMA(ent->origin, cos2Time * (40 * lifeTime), right,  ent->origin);
 				VectorMA(ent->origin, sin2Time * (40 * lifeTime), up,  ent->origin);
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 
 				{
 					int ix;
@@ -3953,12 +3958,13 @@ void CL_UpdateStreams(void)
 							VectorMA(ent->origin, sinTime * (40 * lifeTime), up,  ent->origin);
 						}
 						ent->hModel = Mod_GetHandle(stream->models[1]);
-						ent->angles[0] = pitch;
-						ent->angles[1] = yaw;
-						ent->angles[2] = (int)(cl.time*20)%360;
+						angles[0] = pitch;
+						angles[1] = yaw;
+						angles[2] = (int)(cl.time*20)%360;
 						ent->drawflags = MLS_ABSLIGHT;
 						ent->abslight = 128;
 						ent->scale =  100 + 150 * lifeTime;
+						CL_SetRefEntAxis(ent, angles, vec3_origin);
 					}
 				}
 				break;
@@ -3970,11 +3976,12 @@ void CL_UpdateStreams(void)
 				}
 				else
 				{
-					ent->angles[2] = rand()%360;
+					angles[2] = rand()%360;
 					ent->drawflags = MLS_ABSLIGHT;
 					ent->abslight = 128;
 					ent->frame = rand()%6;
 				}
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 				break;
 			case TE_STREAM_LIGHTNING_SMALL:
 				if(stream->endTime < cl.time)
@@ -3984,67 +3991,44 @@ void CL_UpdateStreams(void)
 				}
 				else
 				{
-					ent->angles[2] = rand()%360;
+					angles[2] = rand()%360;
 					ent->frame = rand()%6;
 					ent->drawflags = MLS_ABSLIGHT;
 					ent->abslight = 128;
 				}
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
+				break;
 			case TE_STREAM_FAMINE:
-				ent->angles[2] = rand()%360;
+				angles[2] = rand()%360;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->frame = 0;
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 				break;
 			case TE_STREAM_COLORBEAM:
-				ent->angles[2] = 0;
+				angles[2] = 0;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->skinnum = stream->skin;
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 				break;
 			case TE_STREAM_GAZE:
-				ent->angles[2] = 0;
+				angles[2] = 0;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->frame = (int)(cl.time*40)%36;
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 				break;
 			case TE_STREAM_ICECHUNKS:
-				ent->angles[2] = rand()%360;
+				angles[2] = rand()%360;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				ent->frame = rand()%5;
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 				break;
-
-/*				ent->angles[2] = (int)(cl.time*80)%360;
-				ent->origin[0] += (rand()%4)-2;
-				ent->origin[1] += (rand()%4)-2;
-				ent->origin[2] += (rand()%4)-2;
-				ent->frame = segmentCount%4;
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
-				if((rand()&255) > 128)
-				{
-					break;
-				}
-				ent = NewStreamEntity();
-				if(!ent)
-				{
-					return;
-				}
-				VectorCopy(org, ent->origin);
-				ent->model = stream->models[0];
-				ent->angles[0] = pitch;
-				ent->angles[1] = yaw;
-				ent->angles[2] = rand()%360;
-				ent->origin[0] += (rand()%20)-10;
-				ent->origin[1] += (rand()%20)-10;
-				ent->origin[2] += (rand()%20)-10;
-				ent->frame = 4+(rand()&1);
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
-				break;
-*/
 			default:
-				ent->angles[2] = 0;
+				angles[2] = 0;
+				CL_SetRefEntAxis(ent, angles, vec3_origin);
 			}
 			for(i = 0; i < 3; i++)
 			{
@@ -4072,6 +4056,7 @@ void CL_UpdateStreams(void)
 			ent->abslight = 128;
 			ent->scale = 80+(rand()&15);
 			//ent->frame = (int)(cl.time*20)%20;
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin);
 
 			ent = CL_NewTempEntity();
 			if(ent == NULL)
@@ -4083,6 +4068,7 @@ void CL_UpdateStreams(void)
 			ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 			ent->abslight = 128;
 			ent->scale = 150+(rand()&15);
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin);
 		}
 	}
 }
@@ -4912,7 +4898,7 @@ void updateAcidBall(explosion_t *ex)
 //
 //*****************************************************************************
 
-void CL_UpdatePoisonGas(refEntity_t *ent, int edict_num)
+void CL_UpdatePoisonGas(refEntity_t *ent, vec3_t angles, int edict_num)
 {
 	explosion_t	*ex;
 	float		smokeCount;
@@ -4945,7 +4931,7 @@ void CL_UpdatePoisonGas(refEntity_t *ent, int edict_num)
 
 		ex->scale = 100;
 
-		VectorCopy(ent->angles, ex->angles);
+		VectorCopy(angles, ex->angles);
 		ex->angles[2] += 90;
 		//ex->exflags |= EXFLAG_STILL_FRAME;
 		//ex->data = 0;
@@ -4961,7 +4947,7 @@ void CL_UpdatePoisonGas(refEntity_t *ent, int edict_num)
 	}
 }
 
-void CL_UpdateAcidBlob(refEntity_t *ent, int edict_num)
+void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num)
 {
 	explosion_t	*ex;
 	int testVal, testVal2;
@@ -4981,7 +4967,7 @@ void CL_UpdateAcidBlob(refEntity_t *ent, int edict_num)
 
 			ex->scale = 100;
 
-			VectorCopy(ent->angles, ex->angles);
+			VectorCopy(angles, ex->angles);
 			ex->angles[2] += 90;
 			//ex->exflags |= EXFLAG_STILL_FRAME;
 			//ex->data = 0;
@@ -4996,7 +4982,7 @@ void CL_UpdateAcidBlob(refEntity_t *ent, int edict_num)
 	}
 }
 
-void CL_UpdateOnFire(refEntity_t *ent, int edict_num)
+void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 {
 	explosion_t *ex;
 
@@ -5031,7 +5017,7 @@ void CL_UpdateOnFire(refEntity_t *ent, int edict_num)
 
 		ex->scale = 100;
 
-		VectorCopy(ent->angles, ex->angles);
+		VectorCopy(angles, ex->angles);
 		ex->angles[2] += 90;
 
 		ex->velocity[0] = (rand()%40)-20;
