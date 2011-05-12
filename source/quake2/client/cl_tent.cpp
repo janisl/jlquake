@@ -701,6 +701,7 @@ void CL_ParseTEnt (void)
 	int		r;
 	int		ent;
 	int		magnitude;
+	vec3_t	angles;
 
 	type = net_message.ReadByte ();
 
@@ -802,16 +803,18 @@ void CL_ParseTEnt (void)
 
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
-		ex->ent.angles[0] = acos(dir[2])/M_PI*180;
+		angles[0] = acos(dir[2])/M_PI*180;
 	// PMM - fixed to correct for pitch of 0
 		if (dir[0])
-			ex->ent.angles[1] = atan2(dir[1], dir[0])/M_PI*180;
+			angles[1] = atan2(dir[1], dir[0])/M_PI*180;
 		else if (dir[1] > 0)
-			ex->ent.angles[1] = 90;
+			angles[1] = 90;
 		else if (dir[1] < 0)
-			ex->ent.angles[1] = 270;
+			angles[1] = 270;
 		else
-			ex->ent.angles[1] = 0;
+			angles[1] = 0;
+		angles[2] = 0;
+		AnglesToAxis(angles, ex->ent.axis);
 
 		ex->type = ex_misc;
 		ex->ent.flags = RF_FULLBRIGHT|RF_TRANSLUCENT;
@@ -848,7 +851,10 @@ void CL_ParseTEnt (void)
 		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
 		ex->frames = 19;
 		ex->baseframe = 30;
-		ex->ent.angles[1] = rand() % 360;
+		angles[0] = 0;
+		angles[1] = rand() % 360;
+		angles[2] = 0;
+		AnglesToAxis(angles, ex->ent.axis);
 		CL_ExplosionParticles (pos);
 		if (type == TE_GRENADE_EXPLOSION_WATER)
 			S_StartSound (pos, 0, 0, cl_sfx_watrexp, 1, ATTN_NORM, 0);
@@ -868,7 +874,10 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 1.0; 
 		ex->lightcolor[1] = 0.5;
 		ex->lightcolor[2] = 0.5;
-		ex->ent.angles[1] = rand() % 360;
+		angles[0] = 0;
+		angles[1] = rand() % 360;
+		angles[2] = 0;
+		AnglesToAxis(angles, ex->ent.axis);
 		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
 		if (frand() < 0.5)
 			ex->baseframe = 15;
@@ -893,7 +902,10 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 0.5;
 		ex->lightcolor[2] = 0.5;
-		ex->ent.angles[1] = rand() % 360;
+		angles[0] = 0;
+		angles[1] = rand() % 360;
+		angles[2] = 0;
+		AnglesToAxis(angles, ex->ent.axis);
 		if (type != TE_EXPLOSION1_BIG)				// PMM
 			ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);			// PMM
 		else
@@ -1010,16 +1022,18 @@ void CL_ParseTEnt (void)
 
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
-		ex->ent.angles[0] = acos(dir[2])/M_PI*180;
+		angles[0] = acos(dir[2])/M_PI*180;
 	// PMM - fixed to correct for pitch of 0
 		if (dir[0])
-			ex->ent.angles[1] = atan2(dir[1], dir[0])/M_PI*180;
+			angles[1] = atan2(dir[1], dir[0])/M_PI*180;
 		else if (dir[1] > 0)
-			ex->ent.angles[1] = 90;
+			angles[1] = 90;
 		else if (dir[1] < 0)
-			ex->ent.angles[1] = 270;
+			angles[1] = 270;
 		else
-			ex->ent.angles[1] = 0;
+			angles[1] = 0;
+		angles[2] = 0;
+		AnglesToAxis(angles, ex->ent.axis);
 
 		ex->type = ex_misc;
 		ex->ent.flags = RF_FULLBRIGHT|RF_TRANSLUCENT;
@@ -1070,7 +1084,10 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 0.5;
 		ex->lightcolor[2] = 0.5;
-		ex->ent.angles[1] = rand() % 360;
+		angles[0] = 0;
+		angles[1] = rand() % 360;
+		angles[2] = 0;
+		AnglesToAxis(angles, ex->ent.axis);
 		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
 		if (frand() < 0.5)
 			ex->baseframe = 15;
@@ -1287,9 +1304,11 @@ void CL_AddBeams (void)
 //				ent.origin[j] -= dist[j]*10.0;
 			ent.hModel = Mod_GetHandle(b->model);
 			ent.flags = RF_FULLBRIGHT;
-			ent.angles[0] = pitch;
-			ent.angles[1] = yaw;
-			ent.angles[2] = rand()%360;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
+			angles[2] = rand()%360;
+			AnglesToAxis(angles, ent.axis);
 			V_AddEntity (&ent);			
 			return;
 		}
@@ -1297,19 +1316,21 @@ void CL_AddBeams (void)
 		{
 			VectorCopy (org, ent.origin);
 			ent.hModel = Mod_GetHandle(b->model);
+			vec3_t angles;
 			if (b->model == cl_mod_lightning)
 			{
 				ent.flags = RF_FULLBRIGHT;
-				ent.angles[0] = -pitch;
-				ent.angles[1] = yaw + 180.0;
-				ent.angles[2] = rand()%360;
+				angles[0] = -pitch;
+				angles[1] = yaw + 180.0;
+				angles[2] = rand()%360;
 			}
 			else
 			{
-				ent.angles[0] = pitch;
-				ent.angles[1] = yaw;
-				ent.angles[2] = rand()%360;
+				angles[0] = pitch;
+				angles[1] = yaw;
+				angles[2] = rand()%360;
 			}
+			AnglesToAxis(angles, ent.axis);
 			
 //			Com_Printf("B: %d -> %d\n", b->entity, b->dest_entity);
 			V_AddEntity (&ent);
@@ -1379,7 +1400,6 @@ void CL_AddPlayerBeams (void)
 // update beams
 	for (i=0, b=cl_playerbeams ; i< MAX_BEAMS ; i++, b++)
 	{
-		vec3_t		f,r,u;
 		if (!b->model || b->endtime < cl.time)
 			continue;
 
@@ -1408,11 +1428,6 @@ void CL_AddPlayerBeams (void)
 				if ((hand) && (hand->value == 2)) {
 					VectorMA (org, -1, cl.v_up, org);
 				}
-				// FIXME - take these out when final
-				VectorCopy (cl.v_right, r);
-				VectorCopy (cl.v_forward, f);
-				VectorCopy (cl.v_up, u);
-
 			}
 			else
 				VectorCopy (b->start, org);
@@ -1437,10 +1452,10 @@ void CL_AddPlayerBeams (void)
 			vec_t len;
 
 			len = VectorLength (dist);
-			VectorScale (f, len, dist);
-			VectorMA (dist, (hand_multiplier * b->offset[0]), r, dist);
-			VectorMA (dist, b->offset[1], f, dist);
-			VectorMA (dist, b->offset[2], u, dist);
+			VectorScale (cl.v_forward, len, dist);
+			VectorMA (dist, (hand_multiplier * b->offset[0]), cl.v_right, dist);
+			VectorMA (dist, b->offset[1], cl.v_forward, dist);
+			VectorMA (dist, b->offset[2], cl.v_up, dist);
 			if ((hand) && (hand->value == 2)) {
 				VectorMA (org, -1, cl.v_up, org);
 			}
@@ -1479,18 +1494,19 @@ void CL_AddPlayerBeams (void)
 			{
 				framenum = 2;
 //				Com_Printf ("Third person\n");
-				ent.angles[0] = -pitch;
-				ent.angles[1] = yaw + 180.0;
-				ent.angles[2] = 0;
+				vec3_t angles;
+				angles[0] = -pitch;
+				angles[1] = yaw + 180.0;
+				angles[2] = 0;
+				AnglesToAxis(angles, ent.axis);
 //				Com_Printf ("%f %f - %f %f %f\n", -pitch, yaw+180.0, b->offset[0], b->offset[1], b->offset[2]);
-				AngleVectors(ent.angles, f, r, u);
 					
 				// if it's a non-origin offset, it's a player, so use the hardcoded player offset
 				if (!VectorCompare (b->offset, vec3_origin))
 				{
-					VectorMA (org, -(b->offset[0])+1, r, org);
-					VectorMA (org, -(b->offset[1]), f, org);
-					VectorMA (org, -(b->offset[2])-10, u, org);
+					VectorMA (org, (b->offset[0])-1, ent.axis[1], org);
+					VectorMA (org, -(b->offset[1]), ent.axis[0], org);
+					VectorMA (org, -(b->offset[2])-10, ent.axis[2], org);
 				}
 				else
 				{
@@ -1543,9 +1559,11 @@ void CL_AddPlayerBeams (void)
 //				ent.origin[j] -= dist[j]*10.0;
 			ent.hModel = Mod_GetHandle(b->model);
 			ent.flags = RF_FULLBRIGHT;
-			ent.angles[0] = pitch;
-			ent.angles[1] = yaw;
-			ent.angles[2] = rand()%360;
+			vec3_t angles;
+			angles[0] = pitch;
+			angles[1] = yaw;
+			angles[2] = rand()%360;
+			AnglesToAxis(angles, ent.axis);
 			V_AddEntity (&ent);			
 			return;
 		}
@@ -1553,30 +1571,29 @@ void CL_AddPlayerBeams (void)
 		{
 			VectorCopy (org, ent.origin);
 			ent.hModel = Mod_GetHandle(b->model);
+			vec3_t angles;
 			if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam))
 			{
-//				ent.flags = RF_FULLBRIGHT|RF_TRANSLUCENT;
-//				ent.alpha = 0.3;
 				ent.flags = RF_FULLBRIGHT;
-				ent.angles[0] = -pitch;
-				ent.angles[1] = yaw + 180.0;
-				ent.angles[2] = (cl.time) % 360;
-//				ent.angles[2] = rand()%360;
+				angles[0] = -pitch;
+				angles[1] = yaw + 180.0;
+				angles[2] = (cl.time) % 360;
 				ent.frame = framenum;
 			}
 			else if (b->model == cl_mod_lightning)
 			{
 				ent.flags = RF_FULLBRIGHT;
-				ent.angles[0] = -pitch;
-				ent.angles[1] = yaw + 180.0;
-				ent.angles[2] = rand()%360;
+				angles[0] = -pitch;
+				angles[1] = yaw + 180.0;
+				angles[2] = rand()%360;
 			}
 			else
 			{
-				ent.angles[0] = pitch;
-				ent.angles[1] = yaw;
-				ent.angles[2] = rand()%360;
+				angles[0] = pitch;
+				angles[1] = yaw;
+				angles[2] = rand()%360;
 			}
+			AnglesToAxis(angles, ent.axis);
 			
 //			Com_Printf("B: %d -> %d\n", b->entity, b->dest_entity);
 			V_AddEntity (&ent);

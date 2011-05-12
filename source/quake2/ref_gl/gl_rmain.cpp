@@ -132,11 +132,26 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 
 void R_RotateForEntity (entity_t *e)
 {
-    qglTranslatef (e->origin[0],  e->origin[1],  e->origin[2]);
+	GLfloat glmat[16];
 
-    qglRotatef (e->angles[1],  0, 0, 1);
-    qglRotatef (-e->angles[0],  0, 1, 0);
-    qglRotatef (-e->angles[2],  1, 0, 0);
+	glmat[0] = e->axis[0][0];
+	glmat[1] = e->axis[0][1];
+	glmat[2] = e->axis[0][2];
+	glmat[3] = 0;
+	glmat[4] = e->axis[1][0];
+	glmat[5] = e->axis[1][1];
+	glmat[6] = e->axis[1][2];
+	glmat[7] = 0;
+	glmat[8] = e->axis[2][0];
+	glmat[9] = e->axis[2][1];
+	glmat[10] = e->axis[2][2];
+	glmat[11] = 0;
+	glmat[12] = e->origin[0];
+	glmat[13] = e->origin[1];
+	glmat[14] = e->origin[2];
+	glmat[15] = 1;
+
+	qglMultMatrixf(glmat);
 }
 
 /*

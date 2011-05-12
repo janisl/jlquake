@@ -96,7 +96,7 @@ void GL_DrawAliasFrameLerp (dmdl_t *paliashdr, float backlerp)
 	int		count;
 	float	frontlerp;
 	float	alpha;
-	vec3_t	move, delta, vectors[3];
+	vec3_t	move, delta;
 	vec3_t	frontv, backv;
 	int		i;
 	int		index_xyz;
@@ -128,11 +128,10 @@ void GL_DrawAliasFrameLerp (dmdl_t *paliashdr, float backlerp)
 
 	// move should be the delta back to the previous frame * backlerp
 	VectorSubtract (currententity->oldorigin, currententity->origin, delta);
-	AngleVectors (currententity->angles, vectors[0], vectors[1], vectors[2]);
 
-	move[0] = DotProduct (delta, vectors[0]);	// forward
-	move[1] = -DotProduct (delta, vectors[1]);	// left
-	move[2] = DotProduct (delta, vectors[2]);	// up
+	move[0] = DotProduct(delta, currententity->axis[0]);	// forward
+	move[1] = DotProduct(delta, currententity->axis[1]);	// left
+	move[2] = DotProduct(delta, currententity->axis[2]);	// up
 
 	VectorAdd (move, oldframe->translate, move);
 
@@ -464,7 +463,8 @@ static qboolean R_CullAliasModel( vec3_t bbox[8], entity_t *e )
 	/*
 	** rotate the bounding box
 	*/
-	VectorCopy( e->angles, angles );
+	VecToAngles(e->axis[0], angles);
+	//JL: WTF?
 	angles[YAW] = -angles[YAW];
 	AngleVectors( angles, vectors[0], vectors[1], vectors[2] );
 
@@ -520,7 +520,6 @@ void R_DrawAliasModel (entity_t *e)
 {
 	int			i;
 	dmdl_t		*paliashdr;
-	float		an;
 	vec3_t		bbox[8];
 	image_t		*skin;
 
@@ -679,11 +678,11 @@ void R_DrawAliasModel (entity_t *e)
 // PGM	
 // =================
 
-	shadedots = r_avertexnormal_dots[((int)(currententity->angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
+	vec3_t tmp_angles;
+	VecToAngles(e->axis[0], tmp_angles);
+	shadedots = r_avertexnormal_dots[((int)(tmp_angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	
-	an = currententity->angles[1]/180*M_PI;
-	shadevector[0] = cos(-an);
-	shadevector[1] = sin(-an);
+	VectorCopy(e->axis[0], shadevector);
 	shadevector[2] = 1;
 	VectorNormalize (shadevector);
 
@@ -714,9 +713,7 @@ void R_DrawAliasModel (entity_t *e)
 	}
 
     qglPushMatrix ();
-	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 	R_RotateForEntity (e);
-	e->angles[PITCH] = -e->angles[PITCH];	// sigh.
 
 	// select skin
 	if (currententity->skin)

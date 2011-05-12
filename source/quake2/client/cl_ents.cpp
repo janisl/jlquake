@@ -1008,23 +1008,24 @@ void CL_AddPacketEntities (frame_t *frame)
 		}
 
 		// calculate angles
+		vec3_t angles;
 		if (effects & EF_ROTATE)
 		{	// some bonus items auto-rotate
-			ent.angles[0] = 0;
-			ent.angles[1] = autorotate;
-			ent.angles[2] = 0;
+			angles[0] = 0;
+			angles[1] = autorotate;
+			angles[2] = 0;
 		}
 		// RAFAEL
 		else if (effects & EF_SPINNINGLIGHTS)
 		{
-			ent.angles[0] = 0;
-			ent.angles[1] = AngleMod(cl.time/2) + s1->angles[1];
-			ent.angles[2] = 180;
+			angles[0] = 0;
+			angles[1] = AngleMod(cl.time/2) + s1->angles[1];
+			angles[2] = 180;
 			{
 				vec3_t forward;
 				vec3_t start;
 
-				AngleVectors (ent.angles, forward, NULL, NULL);
+				AngleVectors (angles, forward, NULL, NULL);
 				VectorMA (ent.origin, 64, forward, start);
 				V_AddLight (start, 100, 1, 0, 0);
 			}
@@ -1037,9 +1038,10 @@ void CL_AddPacketEntities (frame_t *frame)
 			{
 				a1 = cent->current.angles[i];
 				a2 = cent->prev.angles[i];
-				ent.angles[i] = LerpAngle (a2, a1, cl.lerpfrac);
+				angles[i] = LerpAngle (a2, a1, cl.lerpfrac);
 			}
 		}
+		AnglesToAxis(angles, ent.axis);
 
 		if (s1->number == cl.playernum+1)
 		{
@@ -1327,13 +1329,15 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 		return;
 
 	// set up gun position
+	vec3_t angles;
 	for (i=0 ; i<3 ; i++)
 	{
 		gun.origin[i] = cl.refdef.vieworg[i] + ops->gunoffset[i]
 			+ cl.lerpfrac * (ps->gunoffset[i] - ops->gunoffset[i]);
-		gun.angles[i] = cl.refdef.viewangles[i] + LerpAngle (ops->gunangles[i],
+		angles[i] = cl.refdef.viewangles[i] + LerpAngle (ops->gunangles[i],
 			ps->gunangles[i], cl.lerpfrac);
 	}
+	AnglesToAxis(angles, gun.axis);
 
 	if (gun_frame)
 	{
@@ -1512,3 +1516,4 @@ void CL_GetEntitySoundOrigin (int ent, vec3_t org)
 
 	// FIXME: bmodel issues...
 }
+
