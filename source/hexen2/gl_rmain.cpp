@@ -790,12 +790,6 @@ void R_DrawAliasModel (refEntity_t *e)
 		tmatrix[2][3] = paliashdr->scale_origin[2];
 	}
 
-	if(clmodel->flags&EF_ROTATE)
-	{ // Floating motion
-		tmatrix[2][3] += sin(currententity->origin[0]
-			+currententity->origin[1]+(cl.time*3))*5.5;
-	}
-
 // [0][3] [1][3] [2][3]
 //	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
 	qglTranslatef (tmatrix[0][3],tmatrix[1][3],tmatrix[2][3]);

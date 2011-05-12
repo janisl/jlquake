@@ -921,6 +921,12 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 			// stupid quake bug
 			angles[PITCH] = -ent_angles[PITCH];
 		}
+
+		if (Mod_GetModel(ent->hModel)->flags & EF_ROTATE)
+		{
+			// Floating motion
+			ent->origin[2] += sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
+		}
 	}
 	else
 	{
