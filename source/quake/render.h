@@ -50,7 +50,7 @@ struct entity_t
 	struct efrag_s			*efrag;			// linked list of efrags
 	int						frame;
 	float					syncbase;		// for client-side animations
-	byte					*colormap;
+	int						colormap;
 	int						effects;		// light, particals, etc
 	int						skinnum;		// for Alias models
 	int						visframe;		// last frame this entity was
@@ -59,7 +59,7 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	byte					*colormap;
+	int						colormap;
 	int						playernum;
 };
 

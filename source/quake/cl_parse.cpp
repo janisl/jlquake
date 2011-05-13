@@ -85,7 +85,7 @@ entity_t	*CL_EntityNum (int num)
 			Host_Error ("CL_EntityNum: %i is an invalid number",num);
 		while (cl.num_entities<=num)
 		{
-			cl_entities[cl.num_entities].colormap = vid.colormap;
+			cl_entities[cl.num_entities].colormap = 0;
 			cl.num_entities++;
 		}
 	}
@@ -403,14 +403,9 @@ if (bits&(1<<i))
 		i = net_message.ReadByte();
 	else
 		i = ent->baseline.colormap;
-	if (!i)
-		ent->colormap = vid.colormap;
-	else
-	{
-		if (i > cl.maxclients)
-			Sys_Error ("i >= cl.maxclients");
-		ent->colormap = cl.scores[i-1].translations;
-	}
+	if (i > cl.maxclients)
+		Sys_Error ("i >= cl.maxclients");
+	ent->colormap = i;
 
 	if (bits & U_SKIN)
 		skin = net_message.ReadByte();
@@ -660,13 +655,13 @@ void CL_ParseStatic (void)
 	if (i >= MAX_STATIC_ENTITIES)
 		Host_Error ("Too many static entities");
 	ent = &cl_static_entities[i];
+	Com_Memset(ent, 0, sizeof(*ent));
 	cl.num_statics++;
 	CL_ParseBaseline (ent);
 
 // copy it to the current state
 	ent->model = cl.model_precache[ent->baseline.modelindex];
 	ent->frame = ent->baseline.frame;
-	ent->colormap = vid.colormap;
 	ent->skinnum = ent->baseline.skin;
 	ent->effects = ent->baseline.effects;
 
