@@ -45,17 +45,6 @@ typedef struct poly_s {
 
 struct refEntity_t : refEntity_base_t
 {
-	qhandle_t	customSkin;			// NULL for default skin
-	qhandle_t	customShader;		// use one image for the entire thing
-
-	// misc
-	byte		shaderRGBA[4];		// colors used by rgbgen entity shaders
-	float		shaderTexCoord[2];	// texture coordinates used by tcMod entity modifiers
-	float		shaderTime;			// subtracted from refdef time to control effect start times
-
-	// extra sprite information
-	float		radius;
-	float		rotation;
 };
 
 
