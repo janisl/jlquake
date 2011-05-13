@@ -45,7 +45,6 @@ typedef struct poly_s {
 
 struct refEntity_t : refEntity_base_t
 {
-	float		origin[3];			// also used as MODEL_BEAM's "from"
 	int			frame;				// also used as MODEL_BEAM's diameter
 
 	// previous data for frame interpolation
