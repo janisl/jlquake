@@ -543,6 +543,8 @@ void CL_RelinkEntities (void)
 		if (cl_numvisedicts < MAX_VISEDICTS)
 		{
 			refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
+			Com_Memset(rent, 0, sizeof(*rent));
+			rent->reType = RT_MODEL;
 			VectorCopy(ent->origin, rent->origin);
 			rent->hModel = Mod_GetHandle(ent->model);
 			CL_SetRefEntAxis(rent, ent->angles);	

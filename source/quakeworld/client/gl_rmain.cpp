@@ -975,16 +975,6 @@ void R_Clear (void)
 	qglDepthRange (gldepthmin, gldepthmax);
 }
 
-static void UpdateRefEntityData()
-{
-	for (int i = 0; i < cl_numvisedicts; i++)
-	{
-		refEntity_t* e = &cl_visedicts[i];
-		e->reType = RT_MODEL;
-		e->renderfx = 0;
-	}
-}
-
 /*
 ================
 R_RenderView
@@ -1009,8 +999,6 @@ void R_RenderView (void)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	UpdateRefEntityData();
 
 	mirror = false;
 

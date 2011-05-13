@@ -452,6 +452,8 @@ void CL_LinkPacketEntities (void)
 
 		ent = &cl_visedicts[cl_numvisedicts];
 		cl_numvisedicts++;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 
 		ent->keynum = s1->number;
 		model = cl.model_precache[s1->modelindex];
@@ -629,17 +631,14 @@ void CL_LinkProjectiles (void)
 		// grab an entity to fill in
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		ent->keynum = 0;
-
 		if (pr->modelindex < 1)
 			continue;
+		ent = &cl_visedicts[cl_numvisedicts];
+		cl_numvisedicts++;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
-		ent->skinnum = 0;
-		ent->frame = 0;
 		ent->colormap = vid.colormap;
-		ent->scoreboard = NULL;
 		VectorCopy (pr->origin, ent->origin);
 		CL_SetRefEntAxis(ent, pr->angles);
 	}
@@ -847,7 +846,8 @@ void CL_LinkPlayers (void)
 			break;		// object list is full
 		ent = &cl_visedicts[cl_numvisedicts];
 		cl_numvisedicts++;
-		ent->keynum = 0;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 
 		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
 		ent->skinnum = state->skinnum;

@@ -1013,6 +1013,7 @@ void R_DrawViewModel (void)
 	currententity = &gun;
 	entity_t* ent = &cl.viewent;
 
+	Com_Memset(rent, 0, sizeof(*rent));
 	rent->reType = RT_MODEL;
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	rent->keynum = ent->keynum;
@@ -1372,16 +1373,6 @@ void R_PrintTimes(void)
 }
 
 
-static void UpdateRefEntityData()
-{
-	for (int i = 0; i < cl_numvisedicts; i++)
-	{
-		refEntity_t* e = &cl_visedicts[i];
-		e->reType = RT_MODEL;
-		e->renderfx = 0;
-	}
-}
-
 /*
 ================
 R_RenderView
@@ -1406,8 +1397,6 @@ void R_RenderView (void)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	UpdateRefEntityData();
 
 	mirror = false;
 

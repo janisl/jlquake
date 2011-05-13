@@ -655,7 +655,9 @@ void CL_LinkPacketEntities (void)
 
 		ent = &cl_visedicts[cl_numvisedicts];
 		cl_numvisedicts++;
+		Com_Memset(ent, 0, sizeof(*ent));
 
+		ent->reType = RT_MODEL;
 		ent->keynum = s1->number;
 		model = cl.model_precache[s1->modelindex];
 		ent->hModel = Mod_GetHandle(model);
@@ -724,7 +726,6 @@ void CL_LinkPacketEntities (void)
 		for (i=0 ; i<3 ; i++)
 			ent->origin[i] = s2->origin[i] + 
 			f * (s1->origin[i] - s2->origin[i]);
-		CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale);
 
 		// scan the old entity display list for a matching
 		for (i=0 ; i<cl_oldnumvisedicts ; i++)
@@ -736,7 +737,10 @@ void CL_LinkPacketEntities (void)
 			}
 		}
 		if (i == cl_oldnumvisedicts)
+		{
+			CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale);
 			continue;		// not in last message
+		}
 
 		for (i=0 ; i<3 ; i++)
 			//if ( abs(old_origin[i] - ent->origin[i]) > 128)
@@ -943,12 +947,13 @@ void CL_LinkProjectiles (void)
 		// grab an entity to fill in
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		ent->keynum = 0;
-
 		if (pr->modelindex < 1)
 			continue;
+		ent = &cl_visedicts[cl_numvisedicts];
+		cl_numvisedicts++;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
+
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
 		ent->skinnum = 0;
 		ent->frame = 0;
@@ -1043,12 +1048,9 @@ void CL_LinkMissiles (void)
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
 		ent = &cl_visedicts[cl_numvisedicts];
-		if(rand() % 10 < 3)		
-		{
-			R_RunParticleEffect4 (ent->origin, 7, 148 + rand() % 11, pt_grav, 10 + rand() % 10);
-		}
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 		cl_numvisedicts++;
-		ent->keynum = 0;
 
 		VectorCopy (pr->origin, ent->origin);
 		ent->skinnum = 0;
@@ -1065,6 +1067,10 @@ void CL_LinkMissiles (void)
 		{	//missilestar
 			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
 			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin, 50);
+		}
+		if(rand() % 10 < 3)		
+		{
+			R_RunParticleEffect4 (ent->origin, 7, 148 + rand() % 11, pt_grav, 10 + rand() % 10);
 		}
 	}
 }
@@ -1340,13 +1346,13 @@ void CL_LinkPlayers (void)
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
 		ent = &cl_visedicts[cl_numvisedicts];
-		ent->keynum = 0;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 
 		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
 		ent->skinnum = state->skinnum;
 		ent->frame = state->frame;
 
-		ent->colorshade = 0;
 		ent->colormap = info->translations;
 
 		ent->drawflags = state->drawflags;

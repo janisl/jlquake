@@ -3580,7 +3580,7 @@ refEntity_t *CL_NewTempEntity (void)
 	ent = &cl_visedicts[cl_numvisedicts];
 	cl_numvisedicts++;
 	Com_Memset(ent, 0, sizeof(*ent));
-
+	ent->reType = RT_MODEL;
 	ent->colormap = vid.colormap;
 	return ent;
 }

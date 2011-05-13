@@ -1013,6 +1013,7 @@ void R_DrawViewModel (void)
 	currententity = &gun;
 	entity_t* ent = &cl.viewent;
 
+	Com_Memset(rent, 0, sizeof(*rent));
 	rent->reType = RT_MODEL;
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(ent->origin, rent->origin);
@@ -1024,10 +1025,9 @@ void R_DrawViewModel (void)
 	rent->skinnum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
-	rent->playernum = 0;
 	CL_SetRefEntAxis(rent, ent->angles, ent->scale);
 
-	R_DrawAliasModel (currententity);
+	R_DrawAliasModel(currententity);
 }
 
 
@@ -1318,6 +1318,7 @@ void R_Mirror (void)
 	if (cl_numvisedicts < MAX_VISEDICTS)
 	{
 		refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
+		Com_Memset(rent, 0, sizeof(*rent));
 		VectorCopy(ent->origin, rent->origin);
 		rent->hModel = Mod_GetHandle(ent->model);
 		rent->frame = ent->frame;
@@ -1390,16 +1391,6 @@ void R_PrintTimes(void)
 		fps, ms, c_brush_polys, c_alias_polys, c_sky_polys);
 }
 
-static void UpdateRefEntityData()
-{
-	for (int i = 0; i < cl_numvisedicts; i++)
-	{
-		refEntity_t* e = &cl_visedicts[i];
-		e->reType = RT_MODEL;
-		e->renderfx = 0;
-	}
-}
-
 /*
 ================
 R_RenderView
@@ -1427,8 +1418,6 @@ void R_RenderView (void)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	UpdateRefEntityData();
 
 	mirror = false;
 

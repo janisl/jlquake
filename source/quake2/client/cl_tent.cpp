@@ -539,6 +539,7 @@ void CL_ParseLaser (int colors)
 	{
 		if (l->endtime < cl.time)
 		{
+			l->ent.reType = RT_MODEL;
 			l->ent.flags = RF_TRANSLUCENT | RF_BEAM;
 			VectorCopy (start, l->ent.origin);
 			VectorCopy (end, l->ent.oldorigin);
@@ -1279,6 +1280,7 @@ void CL_AddBeams (void)
 		d = VectorNormalize(dist);
 
 		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
 		if (b->model == cl_mod_lightning)
 		{
 			model_length = 35.0;
@@ -1530,6 +1532,7 @@ void CL_AddPlayerBeams (void)
 		d = VectorNormalize(dist);
 
 		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
 		if (b->model == cl_mod_heatbeam)
 		{
 			model_length = 32.0;
@@ -1618,8 +1621,6 @@ void CL_AddExplosions (void)
 	float		frac;
 	int			f;
 
-	Com_Memset(&ent, 0, sizeof(ent));
-
 	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
 	{
 		if (ex->type == ex_free)
@@ -1628,6 +1629,7 @@ void CL_AddExplosions (void)
 		f = floor(frac);
 
 		ent = &ex->ent;
+		ent->reType = RT_MODEL;
 
 		switch (ex->type)
 		{
