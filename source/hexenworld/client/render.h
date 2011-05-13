@@ -47,8 +47,6 @@ struct refEntity_t : refEntity_base_t
 	int						abslight;		// for Alias models
 
 	struct player_info_s	*scoreboard;	// identify player
-
-	float					syncbase;
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!

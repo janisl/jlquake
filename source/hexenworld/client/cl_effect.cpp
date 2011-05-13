@@ -1632,7 +1632,7 @@ void CL_LinkEntity(entity_t *ent)
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;
-	rent->syncbase = ent->syncbase;
+	rent->shaderTime = ent->syncbase;
 	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale);
 	cl_numvisedicts++;
 }

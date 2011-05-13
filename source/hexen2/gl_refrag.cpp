@@ -188,7 +188,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				VectorCopy(ent->origin, rent->origin);
 				rent->hModel = Mod_GetHandle(ent->model);
 				rent->frame = ent->frame;
-				rent->syncbase = ent->syncbase;
+				rent->shaderTime = ent->syncbase;
 				rent->colormap = ent->colormap;
 				rent->colorshade = ent->colorshade;
 				rent->skinNum = ent->skinnum;

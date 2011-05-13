@@ -138,6 +138,7 @@ struct refEntity_base_t
 	byte			shaderRGBA[4];		// colors used by rgbgen entity shaders
 	float			shaderTexCoord[2];	// texture coordinates used by tcMod entity modifiers
 	float			shaderTime;			// subtracted from refdef time to control effect start times
+										// Also used for synctime
 
 	// extra sprite information
 	float			radius;

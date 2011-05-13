@@ -179,7 +179,7 @@ mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
 
-		time = cl.time + currententity->syncbase;
+		time = cl.time + currententity->shaderTime;
 
 	// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
 	// are positive, so we don't have to worry about division by 0
@@ -696,7 +696,7 @@ void R_DrawViewModel (void)
 	rent->hModel = Mod_GetHandle(ent->model);
 	CL_SetRefEntAxis(rent, ent->angles);	
 	rent->frame = ent->frame;
-	rent->syncbase = ent->syncbase;
+	rent->shaderTime = ent->syncbase;
 	rent->colormap = ent->colormap;
 	rent->skinNum = ent->skinnum;
 	rent->playernum = 0;
@@ -1018,7 +1018,7 @@ void R_Mirror (void)
 		rent->hModel = Mod_GetHandle(ent->model);
 		CL_SetRefEntAxis(rent, ent->angles);	
 		rent->frame = ent->frame;
-		rent->syncbase = ent->syncbase;
+		rent->shaderTime = ent->syncbase;
 		rent->colormap = ent->colormap;
 		rent->skinNum = ent->skinnum;
 		cl_numvisedicts++;

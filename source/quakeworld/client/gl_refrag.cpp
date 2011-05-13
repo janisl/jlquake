@@ -210,7 +210,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->colormap = pent->colormap;
 				rent->skinNum = pent->skinnum;
 				rent->scoreboard = pent->scoreboard;
-				rent->syncbase = pent->syncbase;
+				rent->shaderTime = pent->syncbase;
 
 			// mark that we've recorded this entity for this frame
 				pent->visframe = tr.frameCount;

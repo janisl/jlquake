@@ -57,8 +57,6 @@ struct refEntity_t : refEntity_base_t
 	byte					*colormap;
 
 	struct player_info_s	*scoreboard;	// identify player
-
-	float					syncbase;
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!

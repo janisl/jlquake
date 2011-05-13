@@ -49,7 +49,6 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	float					syncbase;		// for client-side animations
 	byte					*colormap;
 	byte					colorshade;
 	int						drawflags;		// for Alias models
