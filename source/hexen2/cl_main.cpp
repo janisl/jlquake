@@ -896,7 +896,6 @@ void CL_Init (void)
 	Cmd_AddCommand ("sensitivity_save", CL_Sensitivity_save_f);
 }
 
-static QCvar* scale_test;
 void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale)
 {
 	vec3_t angles;
@@ -926,6 +925,12 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale)
 
 		AnglesToAxis(angles, ent->axis);
 
+		if ((Mod_GetModel(ent->hModel)->flags & EF_ROTATE) || (scale != 0 && scale != 100))
+		{
+			ent->renderfx |= RF_LIGHTING_ORIGIN;
+			VectorCopy(ent->origin, ent->lightingOrigin);
+		}
+
 		if (Mod_GetModel(ent->hModel)->flags & EF_ROTATE)
 		{
 			// Floating motion
@@ -933,20 +938,13 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale)
 			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
 		}
 
-		if (!scale_test) scale_test = Cvar_Get("scale_test", "0", 0);
-		if ((scale != 0 && scale != 100) || scale_test->integer)
+		if (scale != 0 && scale != 100)
 		{
 			float entScale = (float)scale / 100.0;
-			int drawflags = ent->drawflags;
-			if (scale_test->integer)
-			{
-				entScale = 1.1 + sin(cl.time);
-				drawflags = scale_test->integer;
-			}
 			float esx;
 			float esy;
 			float esz;
-			switch (drawflags & SCALE_TYPE_MASKIN)
+			switch (ent->drawflags & SCALE_TYPE_MASKIN)
 			{
 			case SCALE_TYPE_UNIFORM:
 				esx = entScale;
@@ -965,7 +963,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale)
 				break;
 			}
 			float etz;
-			switch (drawflags & SCALE_ORIGIN_MASKIN)
+			switch (ent->drawflags & SCALE_ORIGIN_MASKIN)
 			{
 			case SCALE_ORIGIN_CENTER:
 				etz = 0.5;

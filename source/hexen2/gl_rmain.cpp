@@ -660,7 +660,12 @@ void R_DrawAliasModel (refEntity_t *e)
 	// get lighting information
 	//
 
-	VectorCopy(currententity->origin, adjust_origin);
+	float* lorg = e->origin;
+	if (e->renderfx & RF_LIGHTING_ORIGIN)
+	{
+		lorg = e->lightingOrigin;
+	}
+	VectorCopy(lorg, adjust_origin);
 	adjust_origin[2] += (clmodel->mins[2] + clmodel->maxs[2]) / 2;
 	ambientlight = shadelight = R_LightPoint (adjust_origin);
 
@@ -672,7 +677,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	{
 		if (cl_dlights[lnum].die >= cl.time)
 		{
-			VectorSubtract (currententity->origin,
+			VectorSubtract(lorg,
 							cl_dlights[lnum].origin,
 							dist);
 			add = cl_dlights[lnum].radius - VectorLength(dist);
