@@ -45,11 +45,6 @@ typedef struct poly_s {
 
 struct refEntity_t : refEntity_base_t
 {
-	// previous data for frame interpolation
-	float		oldorigin[3];		// also used as MODEL_BEAM's "to"
-	int			oldframe;
-	float		backlerp;			// 0.0 = current, 1.0 = old
-
 	// texturing
 	int			skinNum;			// inline skin index
 	qhandle_t	customSkin;			// NULL for default skin

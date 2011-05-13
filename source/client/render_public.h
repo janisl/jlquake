@@ -124,6 +124,11 @@ struct refEntity_base_t
 	vec3_t			origin;				// also used as MODEL_BEAM's "from"
 	int				frame;				// also used as MODEL_BEAM's diameter
 
+	// previous data for frame interpolation
+	vec3_t			oldorigin;			// also used as MODEL_BEAM's "to"
+	int				oldframe;
+	float			backlerp;			// 0.0 = current, 1.0 = old
+
 };
 
 //

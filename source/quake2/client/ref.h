@@ -49,16 +49,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct entity_t : refEntity_base_t
 {
-	/*
-	** previous data for lerping
-	*/
-	float				oldorigin[3];	// also used as RF_BEAM's "to"
-	int					oldframe;
-
-	/*
-	** misc
-	*/
-	float	backlerp;				// 0.0 = current, 1.0 = old
 	int		skinnum;				// also used as RF_BEAM's palette index
 
 	int		lightstyle;				// for flashing entities
