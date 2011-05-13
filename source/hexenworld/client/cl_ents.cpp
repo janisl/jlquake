@@ -1609,10 +1609,6 @@ void CL_EmitEntities (void)
 	if (!cl.validsequence)
 		return;
 
-	cl_oldnumvisedicts = cl_numvisedicts;
-	cl_oldvisedicts = cl_visedicts_list[(cls.netchan.incoming_sequence-1)&1];
-	cl_visedicts = cl_visedicts_list[cls.netchan.incoming_sequence&1];
-
 	cl_numvisedicts = 0;
 
 	CL_LinkPlayers ();
