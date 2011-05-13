@@ -122,6 +122,8 @@ struct refEntity_base_t
 	vec3_t			axis[3];			// rotation vectors
 	qboolean		nonNormalizedAxes;	// axis are not normalized, i.e. they have scale
 	vec3_t			origin;				// also used as MODEL_BEAM's "from"
+	int				frame;				// also used as MODEL_BEAM's diameter
+
 };
 
 //

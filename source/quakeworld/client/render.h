@@ -56,7 +56,6 @@ struct entity_t
 struct refEntity_t : refEntity_base_t
 {
 	int						keynum;			// for matching entities in different frames
-	int						frame;
 	byte					*colormap;
 	int						skinnum;		// for Alias models
 

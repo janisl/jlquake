@@ -49,7 +49,6 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	int						frame;
 	float					syncbase;		// for client-side animations
 	byte					*colormap;
 	byte					colorshade;
