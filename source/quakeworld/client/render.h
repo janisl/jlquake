@@ -57,7 +57,6 @@ struct refEntity_t : refEntity_base_t
 {
 	int						keynum;			// for matching entities in different frames
 	byte					*colormap;
-	int						skinnum;		// for Alias models
 
 	struct player_info_s	*scoreboard;	// identify player
 

@@ -1629,7 +1629,7 @@ void CL_LinkEntity(entity_t *ent)
 	rent->frame = ent->frame;
 	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;
-	rent->skinnum = ent->skinnum;
+	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;

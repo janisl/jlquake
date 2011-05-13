@@ -544,7 +544,7 @@ void CL_ParseLaser (int colors)
 			VectorCopy (start, l->ent.origin);
 			VectorCopy (end, l->ent.oldorigin);
 			l->ent.alpha = 0.30;
-			l->ent.skinnum = (colors >> ((rand() % 4)*8)) & 0xff;
+			l->ent.skinNum = (colors >> ((rand() % 4)*8)) & 0xff;
 			l->ent.hModel = 0;
 			l->ent.frame = 4;
 			l->endtime = cl.time + 100;
@@ -1041,9 +1041,9 @@ void CL_ParseTEnt (void)
 
 		// PMM
 		if (type == TE_BLASTER2)
-			ex->ent.skinnum = 1;
+			ex->ent.skinNum = 1;
 		else // flechette
-			ex->ent.skinnum = 2;
+			ex->ent.skinNum = 2;
 
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 150;
@@ -1664,17 +1664,17 @@ void CL_AddExplosions (void)
 
 			if (f < 10)
 			{
-				ent->skinnum = (f>>1);
-				if (ent->skinnum < 0)
-					ent->skinnum = 0;
+				ent->skinNum = (f>>1);
+				if (ent->skinNum < 0)
+					ent->skinNum = 0;
 			}
 			else
 			{
 				ent->flags |= RF_TRANSLUCENT;
 				if (f < 13)
-					ent->skinnum = 5;
+					ent->skinNum = 5;
 				else
-					ent->skinnum = 6;
+					ent->skinNum = 6;
 			}
 			break;
 		case ex_poly2:
@@ -1685,7 +1685,7 @@ void CL_AddExplosions (void)
 			}
 
 			ent->alpha = (5.0 - (float)f)/5.0;
-			ent->skinnum = 0;
+			ent->skinNum = 0;
 			ent->flags |= RF_TRANSLUCENT;
 			break;
 		}

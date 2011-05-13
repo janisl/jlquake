@@ -129,6 +129,8 @@ struct refEntity_base_t
 	int				oldframe;
 	float			backlerp;			// 0.0 = current, 1.0 = old
 
+	// texturing
+	int				skinNum;			// inline skin index
 };
 
 //

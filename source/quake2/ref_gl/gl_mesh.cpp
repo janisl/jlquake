@@ -720,11 +720,11 @@ void R_DrawAliasModel (entity_t *e)
 		skin = currententity->skin;	// custom player skin
 	else
 	{
-		if (currententity->skinnum >= MAX_MD2SKINS)
+		if (currententity->skinNum >= MAX_MD2SKINS)
 			skin = currentmodel->skins[0];
 		else
 		{
-			skin = currentmodel->skins[currententity->skinnum];
+			skin = currentmodel->skins[currententity->skinNum];
 			if (!skin)
 				skin = currentmodel->skins[0];
 		}

@@ -45,8 +45,6 @@ typedef struct poly_s {
 
 struct refEntity_t : refEntity_base_t
 {
-	// texturing
-	int			skinNum;			// inline skin index
 	qhandle_t	customSkin;			// NULL for default skin
 	qhandle_t	customShader;		// use one image for the entire thing
 

@@ -473,7 +473,7 @@ void CL_LinkPacketEntities (void)
 		}
 
 		// set skin
-		ent->skinnum = s1->skinnum;
+		ent->skinNum = s1->skinnum;
 		
 		// set frame
 		ent->frame = s1->frame;
@@ -771,7 +771,7 @@ void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 
 	newent = CL_NewTempEntity ();
 	newent->hModel = Mod_GetHandle(cl.model_precache[cl_flagindex]);
-	newent->skinnum = team;
+	newent->skinNum = team;
 
 	AngleVectors (angles, v_forward, v_right, v_up);
 	v_forward[2] = -v_forward[2]; // reverse z component
@@ -850,7 +850,7 @@ void CL_LinkPlayers (void)
 		ent->reType = RT_MODEL;
 
 		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
-		ent->skinnum = state->skinnum;
+		ent->skinNum = state->skinnum;
 		ent->frame = state->frame;
 		ent->colormap = info->translations;
 		if (state->modelindex == cl_playerindex)

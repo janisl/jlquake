@@ -690,7 +690,7 @@ void CL_LinkPacketEntities (void)
 */
 
 		// set skin
-		ent->skinnum = s1->skinnum;
+		ent->skinNum = s1->skinnum;
 		
 		// set frame
 		ent->frame = s1->frame;
@@ -756,7 +756,7 @@ void CL_LinkPacketEntities (void)
 		if(cl_siege)
 			if((int)s1->effects & EF_NODRAW)
 			{
-				ent->skinnum=101;//ice, but in siege will be invis skin for dwarf to see
+				ent->skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
 				ent->drawflags|=DRF_TRANSLUCENT;
 				s1->effects &= ~EF_NODRAW;
 //				cl.players[s1->number].invis=true;
@@ -955,7 +955,7 @@ void CL_LinkProjectiles (void)
 		ent->reType = RT_MODEL;
 
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
-		ent->skinnum = 0;
+		ent->skinNum = 0;
 		ent->frame = 0;
 		ent->colormap = vid.colormap;
 		ent->scoreboard = NULL;
@@ -1053,7 +1053,7 @@ void CL_LinkMissiles (void)
 		cl_numvisedicts++;
 
 		VectorCopy (pr->origin, ent->origin);
-		ent->skinnum = 0;
+		ent->skinNum = 0;
 		ent->frame = 0;
 		ent->colormap = vid.colormap;
 		ent->scoreboard = NULL;
@@ -1350,7 +1350,7 @@ void CL_LinkPlayers (void)
 		ent->reType = RT_MODEL;
 
 		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
-		ent->skinnum = state->skinnum;
+		ent->skinNum = state->skinnum;
 		ent->frame = state->frame;
 
 		ent->colormap = info->translations;
@@ -1405,7 +1405,7 @@ void CL_LinkPlayers (void)
 		if(cl_siege)
 			if((int)state->effects & EF_NODRAW)
 			{
-				ent->skinnum=101;//ice, but in siege will be invis skin for dwarf to see
+				ent->skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
 				ent->drawflags|=DRF_TRANSLUCENT;
 				state->effects &= ~EF_NODRAW;
 			}

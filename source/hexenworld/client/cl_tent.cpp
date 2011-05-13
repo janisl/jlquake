@@ -3755,7 +3755,7 @@ void CL_UpdateExplosions (void)
 		VectorCopy (ex->origin, ent->origin);
 		ent->hModel = Mod_GetHandle(ex->model);
 		ent->frame = f;
-		ent->skinnum = ex->skin;
+		ent->skinNum = ex->skin;
 		ent->drawflags = ex->flags;
 		CL_SetRefEntAxis(ent, ex->angles, vec3_origin, ex->scale);
 
@@ -4000,7 +4000,7 @@ void CL_UpdateStreams(void)
 				angles[2] = 0;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
-				ent->skinnum = stream->skin;
+				ent->skinNum = stream->skin;
 				CL_SetRefEntAxis(ent, angles, vec3_origin, 0);
 				break;
 			case TE_STREAM_GAZE:

@@ -1203,9 +1203,9 @@ void R_DrawBeam( entity_t *e )
 	qglDisable( GL_TEXTURE_2D );
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
-	r = ( d_8to24table[e->skinnum & 0xFF] ) & 0xFF;
-	g = ( d_8to24table[e->skinnum & 0xFF] >> 8 ) & 0xFF;
-	b = ( d_8to24table[e->skinnum & 0xFF] >> 16 ) & 0xFF;
+	r = ( d_8to24table[e->skinNum & 0xFF] ) & 0xFF;
+	g = ( d_8to24table[e->skinNum & 0xFF] >> 8 ) & 0xFF;
+	b = ( d_8to24table[e->skinNum & 0xFF] >> 16 ) & 0xFF;
 
 	r *= 1/255.0F;
 	g *= 1/255.0F;

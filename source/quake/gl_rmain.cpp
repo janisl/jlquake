@@ -562,7 +562,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	}
 
 	anim = (int)(cl.time*10) & 3;
-    GL_Bind(paliashdr->gl_texture[currententity->skinnum][anim]);
+    GL_Bind(paliashdr->gl_texture[currententity->skinNum][anim]);
 
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
@@ -698,7 +698,7 @@ void R_DrawViewModel (void)
 	rent->frame = ent->frame;
 	rent->syncbase = ent->syncbase;
 	rent->colormap = ent->colormap;
-	rent->skinnum = ent->skinnum;
+	rent->skinNum = ent->skinnum;
 	rent->playernum = 0;
 
 	R_DrawAliasModel (currententity);
@@ -1020,7 +1020,7 @@ void R_Mirror (void)
 		rent->frame = ent->frame;
 		rent->syncbase = ent->syncbase;
 		rent->colormap = ent->colormap;
-		rent->skinnum = ent->skinnum;
+		rent->skinNum = ent->skinnum;
 		cl_numvisedicts++;
 	}
 

@@ -209,7 +209,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				CL_SetRefEntAxis(rent, pent->angles);
 				rent->frame = pent->frame;
 				rent->colormap = pent->colormap;
-				rent->skinnum = pent->skinnum;
+				rent->skinNum = pent->skinnum;
 				rent->scoreboard = pent->scoreboard;
 				rent->syncbase = pent->syncbase;
 

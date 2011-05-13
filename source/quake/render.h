@@ -61,7 +61,6 @@ struct refEntity_t : refEntity_base_t
 {
 	float					syncbase;		// for client-side animations
 	byte					*colormap;
-	int						skinnum;		// for Alias models
 	int						playernum;
 };
 

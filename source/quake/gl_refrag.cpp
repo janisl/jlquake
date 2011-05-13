@@ -210,7 +210,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->frame = ent->frame;
 				rent->syncbase = ent->syncbase;
 				rent->colormap = ent->colormap;
-				rent->skinnum = ent->skinnum;
+				rent->skinNum = ent->skinnum;
 				cl_numvisedicts++;
 
 			// mark that we've recorded this entity for this frame

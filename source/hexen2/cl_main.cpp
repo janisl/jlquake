@@ -733,7 +733,7 @@ void CL_RelinkEntities (void)
 			rent->syncbase = ent->syncbase;
 			rent->colormap = ent->colormap;
 			rent->colorshade = ent->colorshade;
-			rent->skinnum = ent->skinnum;
+			rent->skinNum = ent->skinnum;
 			rent->drawflags = ent->drawflags;
 			rent->abslight = ent->abslight;
 			CL_SetRefEntAxis(rent, ent->angles, ent->scale);

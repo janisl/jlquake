@@ -551,7 +551,7 @@ void CL_RelinkEntities (void)
 			rent->frame = ent->frame;
 			rent->syncbase = ent->syncbase;
 			rent->colormap = ent->colormap;
-			rent->skinnum = ent->skinnum;
+			rent->skinNum = ent->skinnum;
 			rent->playernum = i <= cl.maxclients ? i : 0;
 			cl_numvisedicts++;
 		}

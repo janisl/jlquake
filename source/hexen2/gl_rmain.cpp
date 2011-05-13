@@ -776,24 +776,24 @@ void R_DrawAliasModel (refEntity_t *e)
 		GL_State(GLS_DEPTHMASK_TRUE);
 	}
 
-	if (currententity->skinnum >= 100)
+	if (currententity->skinNum >= 100)
 	{
-		if (currententity->skinnum > 255) 
+		if (currententity->skinNum > 255) 
 		{
 			Sys_Error ("skinnum > 255");
 		}
 
-		if (!gl_extra_textures[currententity->skinnum-100])  // Need to load it in
+		if (!gl_extra_textures[currententity->skinNum - 100])  // Need to load it in
 		{
-			sprintf(temp,"gfx/skin%d.lmp",currententity->skinnum);
-			gl_extra_textures[currententity->skinnum-100] = Draw_CachePic(temp);
+			sprintf(temp, "gfx/skin%d.lmp", currententity->skinNum);
+			gl_extra_textures[currententity->skinNum - 100] = Draw_CachePic(temp);
 		}
 
-		GL_Bind(gl_extra_textures[currententity->skinnum-100]);
+		GL_Bind(gl_extra_textures[currententity->skinNum - 100]);
 	}
 	else
 	{
-		GL_Bind(paliashdr->gl_texture[currententity->skinnum]);
+		GL_Bind(paliashdr->gl_texture[currententity->skinNum]);
 
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
@@ -1027,7 +1027,7 @@ void R_DrawViewModel (void)
 	rent->syncbase = ent->syncbase;
 	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;
-	rent->skinnum = ent->skinnum;
+	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
 	CL_SetRefEntAxis(rent, ent->angles, ent->scale);
@@ -1330,7 +1330,7 @@ void R_Mirror (void)
 		rent->syncbase = ent->syncbase;
 		rent->colormap = ent->colormap;
 		rent->colorshade = ent->colorshade;
-		rent->skinnum = ent->skinnum;
+		rent->skinNum = ent->skinnum;
 		rent->drawflags = ent->drawflags;
 		rent->abslight = ent->abslight;
 		CL_SetRefEntAxis(rent, ent->angles, ent->scale);

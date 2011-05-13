@@ -565,7 +565,7 @@ void CL_UpdateTEnts(void)
 				angles[2] = 0;
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
-				ent->skinnum = stream->skin;
+				ent->skinNum = stream->skin;
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;

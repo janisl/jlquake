@@ -788,7 +788,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		if ( renderfx_old & RF_BEAM )
 		{	// the four beam colors are encoded in 32 bits of skinnum (hack)
 			ent.alpha = 0.30;
-			ent.skinnum = (s1->skinnum >> ((rand() % 4)*8)) & 0xff;
+			ent.skinNum = (s1->skinnum >> ((rand() % 4)*8)) & 0xff;
 			ent.hModel = 0;
 		}
 		else
@@ -796,7 +796,7 @@ void CL_AddPacketEntities (frame_t *frame)
 			// set skin
 			if (s1->modelindex == 255)
 			{	// use custom player skin
-				ent.skinnum = 0;
+				ent.skinNum = 0;
 				ci = &cl.clientinfo[s1->skinnum & 0xff];
 				ent.skin = ci->skin;
 				ent.hModel = Mod_GetHandle(ci->model);
@@ -831,7 +831,7 @@ void CL_AddPacketEntities (frame_t *frame)
 			}
 			else
 			{
-				ent.skinnum = s1->skinnum;
+				ent.skinNum = s1->skinnum;
 				ent.skin = NULL;
 				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex]);
 			}
@@ -947,7 +947,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		}
 
 		ent.skin = NULL;		// never use a custom skin on others
-		ent.skinnum = 0;
+		ent.skinNum = 0;
 		ent.flags = 0;
 		ent.alpha = 0;
 

@@ -396,7 +396,7 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 			cl.players[i].shownames_off = true;
 		if(cl_siege)
 		{
-			if(cl.players[cl.playernum].playerclass==CLASS_DWARF&&currententity->skinnum==101)
+			if(cl.players[cl.playernum].playerclass==CLASS_DWARF&&currententity->skinNum==101)
 			{
 				ColorShade = 133;
 				if(ambientlight<128)
@@ -736,25 +736,25 @@ void R_DrawAliasModel (refEntity_t *e)
 //	if(cl.players[currententity->scoreboard - cl.players].siege_team==ST_DEFENDER)
 //		currententity->skinnum = cl.players[currententity->scoreboard - cl.players].playerclass+110;
 
-	if (currententity->skinnum >= 100)
+	if (currententity->skinNum >= 100)
 	{
-		if (currententity->skinnum > 255) 
+		if (currententity->skinNum > 255) 
 		{
 			Sys_Error ("skinnum > 255");
 		}
 
-		if (!gl_extra_textures[currententity->skinnum-100])  // Need to load it in
+		if (!gl_extra_textures[currententity->skinNum-100])  // Need to load it in
 		{
-			sprintf(temp,"gfx/skin%d.lmp",currententity->skinnum);
-			gl_extra_textures[currententity->skinnum-100] = Draw_CachePic(temp);
+			sprintf(temp,"gfx/skin%d.lmp",currententity->skinNum);
+			gl_extra_textures[currententity->skinNum-100] = Draw_CachePic(temp);
 		}
 
-		GL_Bind(gl_extra_textures[currententity->skinnum-100]);
+		GL_Bind(gl_extra_textures[currententity->skinNum-100]);
 	}
 	else
 	{
 		anim = (int)(cl.time*10) & 3;
-		GL_Bind(paliashdr->gl_texture[currententity->skinnum][anim]);
+		GL_Bind(paliashdr->gl_texture[currententity->skinNum][anim]);
 
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
@@ -1027,7 +1027,7 @@ void R_DrawViewModel (void)
 	rent->frame = ent->frame;
 	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;
-	rent->skinnum = ent->skinnum;
+	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;
