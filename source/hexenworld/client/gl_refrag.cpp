@@ -185,7 +185,6 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
 				Com_Memset(rent, 0, sizeof(*rent));
 				rent->reType = RT_MODEL;
-				rent->keynum = ent->keynum;
 				VectorCopy(ent->origin, rent->origin);
 				rent->hModel = Mod_GetHandle(ent->model);
 				rent->frame = ent->frame;

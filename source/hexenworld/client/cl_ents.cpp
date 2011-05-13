@@ -623,6 +623,7 @@ void CL_LinkPacketEntities (void)
 	dlight_t			*dl;
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
+	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
 
 	autorotate = AngleMod(100*cl.time);
 
@@ -633,18 +634,6 @@ void CL_LinkPacketEntities (void)
 		s1 = &pack->entities[pnum];
 		s2 = s1;	// FIXME: no interpolation right now
 
-/*		// spawn light flashes, even ones coming from invisible objects
-		if (s1->effects & (EF_BLUE | EF_RED) == (EF_BLUE | EF_RED))
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 3);
-		else if (s1->effects & EF_BLUE)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 1);
-		else if (s1->effects & EF_RED)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 2);
-		else if (s1->effects & EF_BRIGHTLIGHT)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
-		else if (s1->effects & EF_DIMLIGHT)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 0);
-*/
 		// if set to invisible, skip
 		if (!s1->modelindex)
 			continue;
@@ -658,7 +647,6 @@ void CL_LinkPacketEntities (void)
 		Com_Memset(ent, 0, sizeof(*ent));
 
 		ent->reType = RT_MODEL;
-		ent->keynum = s1->number;
 		model = cl.model_precache[s1->modelindex];
 		ent->hModel = Mod_GetHandle(model);
 	
@@ -675,20 +663,6 @@ void CL_LinkPacketEntities (void)
 			ent->scoreboard = NULL;
 		}
 		
-/*		// set colormap
-		if (s1->colormap && (s1->colormap < MAX_CLIENTS) 
-			&& !QStr::Cmp(ent->model->name,"models/paladin.mdl") )
-		{
-			ent->colormap = cl.players[s1->colormap-1].translations;
-			ent->scoreboard = &cl.players[s1->colormap-1];
-		}
-		else
-		{
-			ent->colormap = vid.colormap;
-			ent->scoreboard = NULL;
-		}
-*/
-
 		// set skin
 		ent->skinNum = s1->skinnum;
 		
@@ -728,15 +702,15 @@ void CL_LinkPacketEntities (void)
 			f * (s1->origin[i] - s2->origin[i]);
 
 		// scan the old entity display list for a matching
-		for (i=0 ; i<cl_oldnumvisedicts ; i++)
+		for (i = 0; i < PrevPack->num_entities; i++)
 		{
-			if (cl_oldvisedicts[i].keynum == ent->keynum)
+			if (PrevPack->entities[i].number == s1->number)
 			{
-				VectorCopy (cl_oldvisedicts[i].origin, old_origin);
+				VectorCopy(PrevPack->entities[i].origin, old_origin);
 				break;
 			}
 		}
-		if (i == cl_oldnumvisedicts)
+		if (i == PrevPack->num_entities)
 		{
 			CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale);
 			continue;		// not in last message

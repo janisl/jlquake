@@ -682,7 +682,6 @@ void R_DrawViewModel (void)
 
 	rent->reType = RT_MODEL;
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	rent->keynum = pent->keynum;
 	VectorCopy(pent->origin, rent->origin);
 	rent->hModel = Mod_GetHandle(pent->model);
 	CL_SetRefEntAxis(rent, pent->angles);

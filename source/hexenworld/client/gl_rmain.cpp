@@ -1021,7 +1021,6 @@ void R_DrawViewModel (void)
 	Com_Memset(rent, 0, sizeof(*rent));
 	rent->reType = RT_MODEL;
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	rent->keynum = ent->keynum;
 	VectorCopy(ent->origin, rent->origin);
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;

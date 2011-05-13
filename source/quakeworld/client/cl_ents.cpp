@@ -420,6 +420,7 @@ void CL_LinkPacketEntities (void)
 	dlight_t			*dl;
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
+	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
 
 	autorotate = AngleMod(100*cl.time);
 
@@ -455,7 +456,6 @@ void CL_LinkPacketEntities (void)
 		Com_Memset(ent, 0, sizeof(*ent));
 		ent->reType = RT_MODEL;
 
-		ent->keynum = s1->number;
 		model = cl.model_precache[s1->modelindex];
 		ent->hModel = Mod_GetHandle(model);
 	
@@ -513,16 +513,18 @@ void CL_LinkPacketEntities (void)
 			continue;
 
 		// scan the old entity display list for a matching
-		for (i=0 ; i<cl_oldnumvisedicts ; i++)
+		for (i = 0; i < PrevPack->num_entities; i++)
 		{
-			if (cl_oldvisedicts[i].keynum == ent->keynum)
+			if (PrevPack->entities[i].number == s1->number)
 			{
-				VectorCopy (cl_oldvisedicts[i].origin, old_origin);
+				VectorCopy(PrevPack->entities[i].origin, old_origin);
 				break;
 			}
 		}
-		if (i == cl_oldnumvisedicts)
+		if (i == PrevPack->num_entities)
+		{
 			continue;		// not in last message
+		}
 
 		for (i=0 ; i<3 ; i++)
 			if ( abs(old_origin[i] - ent->origin[i]) > 128)
