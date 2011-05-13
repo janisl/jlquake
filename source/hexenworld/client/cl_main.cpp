@@ -1372,7 +1372,8 @@ void Host_Shutdown(void)
 	VID_Shutdown();
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd)
+static QCvar* scale_test;
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale)
 {
 	vec3_t angles;
 	if (Mod_GetModel(ent->hModel)->type == mod_alias)
@@ -1413,7 +1414,64 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd)
 		if (Mod_GetModel(ent->hModel)->flags & EF_ROTATE)
 		{
 			// Floating motion
-			ent->origin[2] += sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
+			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
+			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
+		}
+
+		if (!scale_test) scale_test = Cvar_Get("scale_test", "0", 0);
+		if ((scale != 0 && scale != 100) || scale_test->integer)
+		{
+			float entScale = (float)scale / 100.0;
+			int drawflags = ent->drawflags;
+			if (scale_test->integer)
+			{
+				entScale = 1.1 + sin(cl.time);
+				drawflags = scale_test->integer;
+			}
+			float esx;
+			float esy;
+			float esz;
+			switch (drawflags & SCALE_TYPE_MASKIN)
+			{
+			case SCALE_TYPE_UNIFORM:
+				esx = entScale;
+				esy = entScale;
+				esz = entScale;
+				break;
+			case SCALE_TYPE_XYONLY:
+				esx = entScale;
+				esy = entScale;
+				esz = 1;
+				break;
+			case SCALE_TYPE_ZONLY:
+				esx = 1;
+				esy = 1;
+				esz = entScale;
+				break;
+			}
+			float etz;
+			switch (drawflags & SCALE_ORIGIN_MASKIN)
+			{
+			case SCALE_ORIGIN_CENTER:
+				etz = 0.5;
+				break;
+			case SCALE_ORIGIN_BOTTOM:
+				etz = 0;
+				break;
+			case SCALE_ORIGIN_TOP:
+				etz = 1.0;
+				break;
+			}
+
+			vec3_t Out;
+			Mod_CalcScaleOffset(ent->hModel, esx, esy, esz, etz, Out);
+			VectorMA(ent->origin, Out[0], ent->axis[0], ent->origin);
+			VectorMA(ent->origin, Out[1], ent->axis[1], ent->origin);
+			VectorMA(ent->origin, Out[2], ent->axis[2], ent->origin);
+			VectorScale(ent->axis[0], esx, ent->axis[0]);
+			VectorScale(ent->axis[1], esy, ent->axis[1]);
+			VectorScale(ent->axis[2], esz, ent->axis[2]);
+			ent->nonNormalizedAxes = true;
 		}
 	}
 	else

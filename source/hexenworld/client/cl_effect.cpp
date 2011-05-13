@@ -1628,12 +1628,11 @@ void CL_LinkEntity(entity_t *ent)
 	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;
 	rent->skinnum = ent->skinnum;
-	rent->scale = ent->scale;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;
 	rent->syncbase = ent->syncbase;
-	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd);
+	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale);
 	cl_numvisedicts++;
 }
 

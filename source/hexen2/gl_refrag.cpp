@@ -190,10 +190,9 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->colormap = ent->colormap;
 				rent->colorshade = ent->colorshade;
 				rent->skinnum = ent->skinnum;
-				rent->scale = ent->scale;
 				rent->drawflags = ent->drawflags;
 				rent->abslight = ent->abslight;
-				CL_SetRefEntAxis(rent, ent->angles);
+				CL_SetRefEntAxis(rent, ent->angles, ent->scale);
 				rent->playernum = 0;
 				cl_numvisedicts++;
 

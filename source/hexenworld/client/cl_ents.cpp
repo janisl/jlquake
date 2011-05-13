@@ -694,7 +694,6 @@ void CL_LinkPacketEntities (void)
 		ent->frame = s1->frame;
 
 		ent->drawflags = s1->drawflags;
-		ent->scale = s1->scale;
 		ent->abslight = s1->abslight;
 
 		vec3_t angles;
@@ -725,7 +724,7 @@ void CL_LinkPacketEntities (void)
 		for (i=0 ; i<3 ; i++)
 			ent->origin[i] = s2->origin[i] + 
 			f * (s1->origin[i] - s2->origin[i]);
-		CL_SetRefEntAxis(ent, angles, vec3_origin);
+		CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale);
 
 		// scan the old entity display list for a matching
 		for (i=0 ; i<cl_oldnumvisedicts ; i++)
@@ -761,7 +760,7 @@ void CL_LinkPacketEntities (void)
 
 		vec3_t angleAdd;
 		HandleEffects(s1->effects, s1->number, ent, angles, angleAdd, old_origin);
-		CL_SetRefEntAxis(ent, angles, angleAdd);
+		CL_SetRefEntAxis(ent, angles, angleAdd, s1->scale);
 
 		// add automatic particle trails
 		if (!model->flags)
@@ -957,7 +956,7 @@ void CL_LinkProjectiles (void)
 		ent->scoreboard = NULL;
 		ent->frame = pr->frame;
 		VectorCopy (pr->origin, ent->origin);
-		CL_SetRefEntAxis(ent, pr->angles, vec3_origin);
+		CL_SetRefEntAxis(ent, pr->angles, vec3_origin, 0);
 	}
 }
 
@@ -1052,23 +1051,21 @@ void CL_LinkMissiles (void)
 		ent->keynum = 0;
 
 		VectorCopy (pr->origin, ent->origin);
-		if(pr->type == 1)
-		{	//ball
-			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
-			ent->scale = 10;
-			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin);
-		}
-		else
-		{	//missilestar
-			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
-			ent->scale = 50;
-			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin);
-		}
 		ent->skinnum = 0;
 		ent->frame = 0;
 		ent->colormap = vid.colormap;
 		ent->scoreboard = NULL;
 		ent->drawflags = SCALE_ORIGIN_CENTER;
+		if(pr->type == 1)
+		{	//ball
+			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 10);
+		}
+		else
+		{	//missilestar
+			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
+			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin, 50);
+		}
 	}
 }
 
@@ -1353,7 +1350,6 @@ void CL_LinkPlayers (void)
 		ent->colormap = info->translations;
 
 		ent->drawflags = state->drawflags;
-		ent->scale = state->scale;
 		ent->abslight = state->abslight;
 		if (ent->hModel == Mod_GetHandle(player_models[0]) ||
 			ent->hModel == Mod_GetHandle(player_models[1]) ||
@@ -1410,7 +1406,7 @@ void CL_LinkPlayers (void)
 
 		vec3_t angleAdd;
 		HandleEffects(state->effects, j+1, ent, angles, angleAdd, NULL);
-		CL_SetRefEntAxis(ent, angles, angleAdd);
+		CL_SetRefEntAxis(ent, angles, angleAdd, state->scale);
 
 		// the player object never gets added
 		if (j == cl.playernum)

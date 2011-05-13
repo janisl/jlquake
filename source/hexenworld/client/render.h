@@ -48,7 +48,6 @@ struct refEntity_t : refEntity_base_t
 	byte					*colormap;
 	byte					colorshade;
 	int						skinnum;		// for Alias models
-	int						scale;			// for Alias models
 	int						drawflags;		// for Alias models
 	int						abslight;		// for Alias models
 
@@ -159,3 +158,4 @@ void D_DeleteSurfaceCache (void);
 void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
+void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);

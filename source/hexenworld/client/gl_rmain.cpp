@@ -592,10 +592,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	int			index;
 	float		s, t, an;
 	int			anim;
-	static float	tmatrix[3][4];
-	float entScale;
-	float xyfact;
-	float zfact;
 	char		temp[80];
 	int mls;
 	vec3_t		adjust_origin;
@@ -697,67 +693,8 @@ void R_DrawAliasModel (refEntity_t *e)
     qglPushMatrix ();
 	R_RotateForEntity(e);
 
-	if(currententity->scale != 0 && currententity->scale != 100)
-	{
-		entScale = (float)currententity->scale/100.0;
-		switch(currententity->drawflags&SCALE_TYPE_MASKIN)
-		{
-		case SCALE_TYPE_UNIFORM:
-			tmatrix[0][0] = paliashdr->scale[0]*entScale;
-			tmatrix[1][1] = paliashdr->scale[1]*entScale;
-			tmatrix[2][2] = paliashdr->scale[2]*entScale;
-			xyfact = zfact = (entScale-1.0)*127.95;
-			break;
-		case SCALE_TYPE_XYONLY:
-			tmatrix[0][0] = paliashdr->scale[0]*entScale;
-			tmatrix[1][1] = paliashdr->scale[1]*entScale;
-			tmatrix[2][2] = paliashdr->scale[2];
-			xyfact = (entScale-1.0)*127.95;
-			zfact = 1.0;
-			break;
-		case SCALE_TYPE_ZONLY:
-			tmatrix[0][0] = paliashdr->scale[0];
-			tmatrix[1][1] = paliashdr->scale[1];
-			tmatrix[2][2] = paliashdr->scale[2]*entScale;
-			xyfact = 1.0;
-			zfact = (entScale-1.0)*127.95;
-			break;
-		}
-		switch(currententity->drawflags&SCALE_ORIGIN_MASKIN)
-		{
-		case SCALE_ORIGIN_CENTER:
-			tmatrix[0][3] = paliashdr->scale_origin[0]-paliashdr->scale[0]*xyfact;
-			tmatrix[1][3] = paliashdr->scale_origin[1]-paliashdr->scale[1]*xyfact;
-			tmatrix[2][3] = paliashdr->scale_origin[2]-paliashdr->scale[2]*zfact;
-			break;
-		case SCALE_ORIGIN_BOTTOM:
-			tmatrix[0][3] = paliashdr->scale_origin[0]-paliashdr->scale[0]*xyfact;
-			tmatrix[1][3] = paliashdr->scale_origin[1]-paliashdr->scale[1]*xyfact;
-			tmatrix[2][3] = paliashdr->scale_origin[2];
-			break;
-		case SCALE_ORIGIN_TOP:
-			tmatrix[0][3] = paliashdr->scale_origin[0]-paliashdr->scale[0]*xyfact;
-			tmatrix[1][3] = paliashdr->scale_origin[1]-paliashdr->scale[1]*xyfact;
-			tmatrix[2][3] = paliashdr->scale_origin[2]-paliashdr->scale[2]*zfact*2.0;
-			break;
-		}
-	}
-	else
-	{
-		tmatrix[0][0] = paliashdr->scale[0];
-		tmatrix[1][1] = paliashdr->scale[1];
-		tmatrix[2][2] = paliashdr->scale[2];
-		tmatrix[0][3] = paliashdr->scale_origin[0];
-		tmatrix[1][3] = paliashdr->scale_origin[1];
-		tmatrix[2][3] = paliashdr->scale_origin[2];
-	}
-
-// [0][3] [1][3] [2][3]
-//	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
-	qglTranslatef (tmatrix[0][3],tmatrix[1][3],tmatrix[2][3]);
-// [0][0] [1][1] [2][2]
-//	qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
-	qglScalef (tmatrix[0][0],tmatrix[1][1],tmatrix[2][2]);
+	qglTranslatef(paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
+	qglScalef(paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 
 	if ((clmodel->flags & EF_SPECIAL_TRANS))
 	{
@@ -1085,12 +1022,11 @@ void R_DrawViewModel (void)
 	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;
 	rent->skinnum = ent->skinnum;
-	rent->scale = ent->scale;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
 	rent->scoreboard = ent->scoreboard;
 	rent->syncbase = ent->syncbase;
-	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd);
+	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale);
 
 	R_DrawAliasModel (currententity);
 }
