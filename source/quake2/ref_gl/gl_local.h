@@ -90,11 +90,6 @@ extern	QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light l
 
 extern QCvar	*gl_vertex_arrays;
 
-extern QCvar	*gl_ext_swapinterval;
-extern QCvar	*gl_ext_palettedtexture;
-extern QCvar	*gl_ext_multitexture;
-extern QCvar	*gl_ext_compiled_vertex_array;
-
 extern QCvar	*gl_particle_min_size;
 extern QCvar	*gl_particle_max_size;
 extern QCvar	*gl_particle_size;

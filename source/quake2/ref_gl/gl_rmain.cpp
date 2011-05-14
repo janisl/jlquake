@@ -84,11 +84,6 @@ QCvar	*gl_particle_att_a;
 QCvar	*gl_particle_att_b;
 QCvar	*gl_particle_att_c;
 
-QCvar	*gl_ext_swapinterval;
-QCvar	*gl_ext_palettedtexture;
-QCvar	*gl_ext_multitexture;
-QCvar	*gl_ext_compiled_vertex_array;
-
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
 QCvar	*gl_lightmap;
@@ -896,11 +891,6 @@ void R_Register( void )
 	gl_lockpvs = Cvar_Get( "gl_lockpvs", "0", 0 );
 
 	gl_vertex_arrays = Cvar_Get( "gl_vertex_arrays", "0", CVAR_ARCHIVE );
-
-	gl_ext_swapinterval = Cvar_Get( "gl_ext_swapinterval", "1", CVAR_ARCHIVE );
-	gl_ext_palettedtexture = Cvar_Get( "gl_ext_palettedtexture", "1", CVAR_ARCHIVE );
-	gl_ext_multitexture = Cvar_Get( "gl_ext_multitexture", "1", CVAR_ARCHIVE );
-	gl_ext_compiled_vertex_array = Cvar_Get( "gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE );
 
 	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
 
