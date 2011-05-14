@@ -116,6 +116,7 @@ extern QCvar*	r_depthbits;			// number of desired depth bits
 extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for fullscreen
 extern QCvar*	r_stereo;				// desired pixelformat stereo flag
 extern QCvar*	r_displayRefresh;		// optional display refresh option
+extern QCvar*	r_swapInterval;
 
 extern QCvar*	r_ext_compressed_textures;	// these control use of specific extensions
 extern QCvar*	r_ext_multitexture;

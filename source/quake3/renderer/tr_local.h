@@ -969,7 +969,6 @@ extern	QCvar	*r_singleShader;				// make most world faces use default shader
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;
 extern  QCvar  *r_glDriver;
-extern	QCvar	*r_swapInterval;
 extern	QCvar	*r_offsetFactor;
 extern	QCvar	*r_offsetUnits;
 

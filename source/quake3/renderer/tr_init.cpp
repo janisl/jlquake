@@ -84,7 +84,6 @@ QCvar	*r_showsky;
 QCvar	*r_shownormals;
 QCvar	*r_finish;
 QCvar	*r_clear;
-QCvar	*r_swapInterval;
 QCvar	*r_offsetFactor;
 QCvar	*r_offsetUnits;
 QCvar	*r_lockpvs;
@@ -117,20 +116,6 @@ int		max_polyverts;
 */
 static void GLW_InitExtensions()
 {
-
-#ifdef _WIN32
-	// WGL_EXT_swap_control
-	qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) GLimp_GetProcAddress( "wglSwapIntervalEXT" );
-	if ( qwglSwapIntervalEXT )
-	{
-		ri.Printf( PRINT_ALL, "...using WGL_EXT_swap_control\n" );
-		r_swapInterval->modified = qtrue;	// force a set next frame
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...WGL_EXT_swap_control not found\n" );
-	}
-#endif
 
 	// GL_EXT_compiled_vertex_array
 	qglLockArraysEXT = NULL;
@@ -696,7 +681,6 @@ void R_Register( void )
 	r_dynamiclight = Cvar_Get( "r_dynamiclight", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
-	r_swapInterval = Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
 	r_facePlaneCull = Cvar_Get ("r_facePlaneCull", "1", CVAR_ARCHIVE );
 
 	r_railWidth = Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );

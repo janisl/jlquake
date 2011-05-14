@@ -60,6 +60,7 @@ QCvar*		r_depthbits;
 QCvar*		r_colorbits;
 QCvar*		r_stereo;
 QCvar*		r_displayRefresh;
+QCvar*		r_swapInterval;
 
 QCvar*		r_verbose;
 
@@ -227,6 +228,7 @@ void R_SharedRegister()
 	//
 	// archived variables that can change at any time
 	//
+	r_swapInterval = Cvar_Get("r_swapInterval", "0", CVAR_ARCHIVE);
 	r_gamma = Cvar_Get("r_gamma", "1", CVAR_ARCHIVE);
 	r_wateralpha = Cvar_Get("r_wateralpha","0.4", CVAR_ARCHIVE);
 	r_ignoreGLErrors = Cvar_Get("r_ignoreGLErrors", "1", CVAR_ARCHIVE);

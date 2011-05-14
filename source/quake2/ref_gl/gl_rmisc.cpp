@@ -151,15 +151,15 @@ void GL_SetDefaultState( void )
 
 void GL_UpdateSwapInterval( void )
 {
-	if ( gl_swapinterval->modified )
+	if ( r_swapInterval->modified )
 	{
-		gl_swapinterval->modified = false;
+		r_swapInterval->modified = false;
 
 		if ( !glConfig.stereoEnabled ) 
 		{
 #ifdef _WIN32
 			if ( qwglSwapIntervalEXT )
-				qwglSwapIntervalEXT( gl_swapinterval->value );
+				qwglSwapIntervalEXT( r_swapInterval->value );
 #endif
 		}
 	}

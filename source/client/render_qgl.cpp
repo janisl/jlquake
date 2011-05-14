@@ -763,6 +763,27 @@ void QGL_Init()
 		GLog.Write("...GL_EXT_texture_env_add not found\n");
 	}
 
+#ifdef _WIN32
+	// WGL_EXT_swap_control
+	if (CheckExtension("WGL_EXT_swap_control"))
+	{
+		qwglSwapIntervalEXT = (BOOL (WINAPI*)(int))GLimp_GetProcAddress("wglSwapIntervalEXT");
+		if (qwglSwapIntervalEXT)
+		{
+			GLog.Write("...using WGL_EXT_swap_control\n");
+			r_swapInterval->modified = true;	// force a set next frame
+		}
+		else
+		{
+			GLog.Write("...WGL_EXT_swap_control not found\n");
+		}
+	}
+	else
+	{
+		GLog.Write("...WGL_EXT_swap_control not found\n");
+	}
+#endif
+
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
 }

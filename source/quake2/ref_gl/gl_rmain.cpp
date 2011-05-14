@@ -104,7 +104,6 @@ QCvar	*gl_cull;
 QCvar	*gl_polyblend;
 QCvar	*gl_flashblend;
 QCvar  *gl_saturatelighting;
-QCvar	*gl_swapinterval;
 QCvar	*gl_lockpvs;
 
 QCvar	*vid_ref;
@@ -906,7 +905,6 @@ void R_Register( void )
 	gl_ext_compiled_vertex_array = Cvar_Get( "gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE );
 
 	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
-	gl_swapinterval = Cvar_Get( "gl_swapinterval", "1", CVAR_ARCHIVE );
 
 	gl_saturatelighting = Cvar_Get( "gl_saturatelighting", "0", 0 );
 
@@ -969,18 +967,6 @@ int R_Init()
 	{
 		ri.Con_Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
 	}
-
-#ifdef WIN32
-	if ( strstr( glConfig.extensions_string, "WGL_EXT_swap_control" ) )
-	{
-		qwglSwapIntervalEXT = ( BOOL (WINAPI *)(int)) GLimp_GetProcAddress( "wglSwapIntervalEXT" );
-		ri.Con_Printf( PRINT_ALL, "...enabling WGL_EXT_swap_control\n" );
-	}
-	else
-	{
-		ri.Con_Printf( PRINT_ALL, "...WGL_EXT_swap_control not found\n" );
-	}
-#endif
 
 	if ( strstr( glConfig.extensions_string, "GL_EXT_point_parameters" ) )
 	{
