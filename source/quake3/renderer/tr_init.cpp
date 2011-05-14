@@ -67,7 +67,6 @@ QCvar	*r_showcluster;
 QCvar	*r_nocurves;
 
 QCvar	*r_ext_gamma_control;
-QCvar	*r_ext_compiled_vertex_array;
 
 QCvar	*r_primitives;
 
@@ -116,31 +115,6 @@ int		max_polyverts;
 */
 static void GLW_InitExtensions()
 {
-
-	// GL_EXT_compiled_vertex_array
-	qglLockArraysEXT = NULL;
-	qglUnlockArraysEXT = NULL;
-	if (strstr(glConfig.extensions_string, "GL_EXT_compiled_vertex_array"))
-	{
-		if ( r_ext_compiled_vertex_array->integer )
-		{
-			ri.Printf( PRINT_ALL, "...using GL_EXT_compiled_vertex_array\n" );
-			qglLockArraysEXT = (void (APIENTRY*)(int, int))GLimp_GetProcAddress("glLockArraysEXT");
-			qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
-			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
-			{
-				ri.Error (ERR_FATAL, "bad getprocaddress");
-			}
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_compiled_vertex_array\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
-	}
 }
 
 /*
@@ -646,7 +620,6 @@ void R_Register( void )
 	//
 	r_glDriver = Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_gamma_control = Cvar_Get( "r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_ext_compiled_vertex_array = Cvar_Get( "r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );

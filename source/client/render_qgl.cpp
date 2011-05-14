@@ -705,9 +705,6 @@ void QGL_Init()
 	}
 
 	// GL_ARB_multitexture
-	qglMultiTexCoord2fARB = NULL;
-	qglActiveTextureARB = NULL;
-	qglClientActiveTextureARB = NULL;
 	if (CheckExtension("GL_ARB_multitexture"))
 	{
 		if (r_ext_multitexture->integer)
@@ -783,6 +780,29 @@ void QGL_Init()
 		GLog.Write("...WGL_EXT_swap_control not found\n");
 	}
 #endif
+
+	// GL_EXT_compiled_vertex_array
+	if (CheckExtension("GL_EXT_compiled_vertex_array"))
+	{
+		if (r_ext_compiled_vertex_array->integer)
+		{
+			GLog.Write("...using GL_EXT_compiled_vertex_array\n");
+			qglLockArraysEXT = (void (APIENTRY*)(int, int))GLimp_GetProcAddress("glLockArraysEXT");
+			qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
+			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
+			{
+				throw QException("bad getprocaddress");
+			}
+		}
+		else
+		{
+			GLog.Write("...ignoring GL_EXT_compiled_vertex_array\n");
+		}
+	}
+	else
+	{
+		GLog.Write("...GL_EXT_compiled_vertex_array not found\n");
+	}
 
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);

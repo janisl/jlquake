@@ -963,7 +963,6 @@ extern	QCvar	*r_showcluster;
 
 extern QCvar	*r_ext_gamma_control;
 extern QCvar	*r_ext_texenv_op;
-extern QCvar	*r_ext_compiled_vertex_array;
 
 extern	QCvar	*r_singleShader;				// make most world faces use default shader
 extern	QCvar	*r_finish;

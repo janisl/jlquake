@@ -953,21 +953,6 @@ int R_Init()
 
 	Cvar_SetLatched( "scr_drawall", "0" );
 
-	/*
-	** grab extensions
-	*/
-	if ( strstr( glConfig.extensions_string, "GL_EXT_compiled_vertex_array" ) || 
-		 strstr( glConfig.extensions_string, "GL_SGI_compiled_vertex_array" ) )
-	{
-		ri.Con_Printf( PRINT_ALL, "...enabling GL_EXT_compiled_vertex_array\n" );
-		qglLockArraysEXT = (void(APIENTRY*)(int, int)) GLimp_GetProcAddress( "glLockArraysEXT" );
-		qglUnlockArraysEXT = (void(APIENTRY*)()) GLimp_GetProcAddress( "glUnlockArraysEXT" );
-	}
-	else
-	{
-		ri.Con_Printf( PRINT_ALL, "...GL_EXT_compiled_vertex_array not found\n" );
-	}
-
 	if ( strstr( glConfig.extensions_string, "GL_EXT_point_parameters" ) )
 	{
 		if ( gl_ext_pointparameters->value )

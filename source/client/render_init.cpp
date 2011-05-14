@@ -67,6 +67,7 @@ QCvar*		r_verbose;
 QCvar*		r_ext_compressed_textures;
 QCvar*		r_ext_multitexture;
 QCvar*		r_ext_texture_env_add;
+QCvar*		r_ext_compiled_vertex_array;
 
 QCvar*		r_gamma;
 QCvar*		r_ignorehwgamma;
@@ -208,6 +209,7 @@ void R_SharedRegister()
 	r_ext_compressed_textures = Cvar_Get("r_ext_compressed_textures", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ext_multitexture = Cvar_Get("r_ext_multitexture", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ext_texture_env_add = Cvar_Get("r_ext_texture_env_add", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_ext_compiled_vertex_array = Cvar_Get("r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_ignorehwgamma = Cvar_Get("r_ignorehwgamma", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_overBrightBits = Cvar_Get("r_overBrightBits", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_roundImagesDown = Cvar_Get("r_roundImagesDown", "0", CVAR_ARCHIVE | CVAR_LATCH2);
