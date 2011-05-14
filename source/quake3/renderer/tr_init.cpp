@@ -111,13 +111,6 @@ QCvar	*r_maxpolyverts;
 int		max_polyverts;
 
 /*
-** GLW_InitExtensions
-*/
-static void GLW_InitExtensions()
-{
-}
-
-/*
 ** InitOpenGL
 **
 ** This function is responsible for initializing a valid OpenGL subsystem.  This
@@ -142,8 +135,6 @@ static void InitOpenGL( void )
 	if ( glConfig.vidWidth == 0 )
 	{
 		R_CommonInit();
-
-		GLW_InitExtensions();
 	}
 
 	// init command buffers and SMP

@@ -804,6 +804,28 @@ void QGL_Init()
 		GLog.Write("...GL_EXT_compiled_vertex_array not found\n");
 	}
 
+	if (CheckExtension("GL_EXT_point_parameters"))
+	{
+		if (r_ext_point_parameters->integer)
+		{
+			GLog.Write("...using GL_EXT_point_parameters\n");
+			qglPointParameterfEXT = (void (APIENTRY*)(GLenum, GLfloat))GLimp_GetProcAddress("glPointParameterfEXT");
+			qglPointParameterfvEXT = (void (APIENTRY*)(GLenum, const GLfloat*))GLimp_GetProcAddress("glPointParameterfvEXT");
+			if (!qglPointParameterfEXT || !qglPointParameterfvEXT)
+			{
+				throw QException("bad getprocaddress");
+			}
+		}
+		else
+		{
+			GLog.Write("...ignoring GL_EXT_point_parameters\n");
+		}
+	}
+	else
+	{
+		GLog.Write("...GL_EXT_point_parameters not found\n");
+	}
+
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
 }

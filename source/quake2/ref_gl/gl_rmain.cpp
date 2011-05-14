@@ -87,7 +87,6 @@ QCvar	*gl_particle_att_c;
 QCvar	*gl_ext_swapinterval;
 QCvar	*gl_ext_palettedtexture;
 QCvar	*gl_ext_multitexture;
-QCvar	*gl_ext_pointparameters;
 QCvar	*gl_ext_compiled_vertex_array;
 
 QCvar	*gl_drawbuffer;
@@ -449,7 +448,7 @@ R_DrawParticles
 */
 void R_DrawParticles (void)
 {
-	if ( gl_ext_pointparameters->value && qglPointParameterfEXT )
+	if (qglPointParameterfEXT )
 	{
 		int i;
 		unsigned char color[4];
@@ -901,7 +900,6 @@ void R_Register( void )
 	gl_ext_swapinterval = Cvar_Get( "gl_ext_swapinterval", "1", CVAR_ARCHIVE );
 	gl_ext_palettedtexture = Cvar_Get( "gl_ext_palettedtexture", "1", CVAR_ARCHIVE );
 	gl_ext_multitexture = Cvar_Get( "gl_ext_multitexture", "1", CVAR_ARCHIVE );
-	gl_ext_pointparameters = Cvar_Get( "gl_ext_pointparameters", "1", CVAR_ARCHIVE );
 	gl_ext_compiled_vertex_array = Cvar_Get( "gl_ext_compiled_vertex_array", "1", CVAR_ARCHIVE );
 
 	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
@@ -952,24 +950,6 @@ int R_Init()
 	CommonGfxInfo_f();
 
 	Cvar_SetLatched( "scr_drawall", "0" );
-
-	if ( strstr( glConfig.extensions_string, "GL_EXT_point_parameters" ) )
-	{
-		if ( gl_ext_pointparameters->value )
-		{
-			qglPointParameterfEXT = ( void (APIENTRY *)( GLenum, GLfloat ) ) GLimp_GetProcAddress( "glPointParameterfEXT" );
-			qglPointParameterfvEXT = ( void (APIENTRY *)( GLenum, const GLfloat * ) ) GLimp_GetProcAddress( "glPointParameterfvEXT" );
-			ri.Con_Printf( PRINT_ALL, "...using GL_EXT_point_parameters\n" );
-		}
-		else
-		{
-			ri.Con_Printf( PRINT_ALL, "...ignoring GL_EXT_point_parameters\n" );
-		}
-	}
-	else
-	{
-		ri.Con_Printf( PRINT_ALL, "...GL_EXT_point_parameters not found\n" );
-	}
 
 	GL_SetDefaultState();
 

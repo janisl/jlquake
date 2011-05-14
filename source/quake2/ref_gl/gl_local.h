@@ -93,7 +93,6 @@ extern QCvar	*gl_vertex_arrays;
 extern QCvar	*gl_ext_swapinterval;
 extern QCvar	*gl_ext_palettedtexture;
 extern QCvar	*gl_ext_multitexture;
-extern QCvar	*gl_ext_pointparameters;
 extern QCvar	*gl_ext_compiled_vertex_array;
 
 extern QCvar	*gl_particle_min_size;
