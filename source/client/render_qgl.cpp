@@ -745,7 +745,7 @@ void QGL_Init()
 
 	// GL_EXT_texture_env_add
 	glConfig.textureEnvAddAvailable = false;
-	if (CheckExtension("EXT_texture_env_add"))
+	if (CheckExtension("GL_EXT_texture_env_add"))
 	{
 		if (r_ext_texture_env_add->integer)
 		{
