@@ -28,7 +28,6 @@ typedef struct
 
 typedef struct
 {
-	qboolean	restart_sound;
 	int		s_rate;
 	int		s_width;
 	int		s_channels;
@@ -83,14 +82,6 @@ void SCR_StopCinematic (void)
 		Mem_Free (cin.hnodes1);
 		cin.hnodes1 = NULL;
 	}
-
-	// switch back down to 11 khz sound if necessary
-	if (cin.restart_sound)
-	{
-		cin.restart_sound = false;
-		CL_Snd_Restart_f ();
-	}
-
 }
 
 /*
@@ -485,7 +476,6 @@ void SCR_PlayCinematic (char *arg)
 	int		width, height;
 	byte	*palette;
 	char	name[MAX_OSPATH], *dot;
-	int		old_khz;
 
 	// make sure CD isn't playing music
 	CDAudio_Stop();
@@ -540,16 +530,6 @@ void SCR_PlayCinematic (char *arg)
 	cin.s_channels = LittleLong(cin.s_channels);
 
 	Huff1TableInit ();
-
-	// switch up to 22 khz sound if necessary
-	old_khz = Cvar_VariableValue ("s_khz");
-	if (old_khz != cin.s_rate/1000)
-	{
-		cin.restart_sound = true;
-		Cvar_SetValueLatched("s_khz", cin.s_rate/1000);
-		CL_Snd_Restart_f ();
-		Cvar_SetValueLatched("s_khz", old_khz);
-	}
 
 	cl.cinematicframe = 0;
 	cin.pic = SCR_ReadNextFrame ();
