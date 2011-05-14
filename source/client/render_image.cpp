@@ -1769,3 +1769,21 @@ int R_SumOfUsedImages()
 
 	return total;
 }
+
+//==========================================================================
+//
+//	R_GetImageHandle
+//
+//==========================================================================
+
+qhandle_t R_GetImageHandle(image_t* Image)
+{
+	for (int i = 0; i < tr.numImages; i++)
+	{
+		if (tr.images[i] == Image)
+		{
+			return i;
+		}
+	}
+	return 0;
+}
