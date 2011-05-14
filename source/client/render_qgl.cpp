@@ -743,6 +743,26 @@ void QGL_Init()
 		GLog.Write("...GL_ARB_multitexture not found\n");
 	}
 
+	// GL_EXT_texture_env_add
+	glConfig.textureEnvAddAvailable = false;
+	if (CheckExtension("EXT_texture_env_add"))
+	{
+		if (r_ext_texture_env_add->integer)
+		{
+			glConfig.textureEnvAddAvailable = true;
+			GLog.Write("...using GL_EXT_texture_env_add\n");
+		}
+		else
+		{
+			glConfig.textureEnvAddAvailable = false;
+			GLog.Write("...ignoring GL_EXT_texture_env_add\n");
+		}
+	}
+	else
+	{
+		GLog.Write("...GL_EXT_texture_env_add not found\n");
+	}
+
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
 }

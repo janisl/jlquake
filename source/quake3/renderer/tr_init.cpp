@@ -68,7 +68,6 @@ QCvar	*r_nocurves;
 
 QCvar	*r_ext_gamma_control;
 QCvar	*r_ext_compiled_vertex_array;
-QCvar	*r_ext_texture_env_add;
 
 QCvar	*r_primitives;
 
@@ -118,25 +117,6 @@ int		max_polyverts;
 */
 static void GLW_InitExtensions()
 {
-	// GL_EXT_texture_env_add
-	glConfig.textureEnvAddAvailable = qfalse;
-	if ( strstr( glConfig.extensions_string, "EXT_texture_env_add" ) )
-	{
-		if ( r_ext_texture_env_add->integer )
-		{
-			glConfig.textureEnvAddAvailable = qtrue;
-			ri.Printf( PRINT_ALL, "...using GL_EXT_texture_env_add\n" );
-		}
-		else
-		{
-			glConfig.textureEnvAddAvailable = qfalse;
-			ri.Printf( PRINT_ALL, "...ignoring GL_EXT_texture_env_add\n" );
-		}
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "...GL_EXT_texture_env_add not found\n" );
-	}
 
 #ifdef _WIN32
 	// WGL_EXT_swap_control
@@ -682,11 +662,6 @@ void R_Register( void )
 	r_glDriver = Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_gamma_control = Cvar_Get( "r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_ext_compiled_vertex_array = Cvar_Get( "r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH2);
-#ifdef __linux__ // broken on linux
-	r_ext_texture_env_add = Cvar_Get( "r_ext_texture_env_add", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-#else
-	r_ext_texture_env_add = Cvar_Get( "r_ext_texture_env_add", "1", CVAR_ARCHIVE | CVAR_LATCH2);
-#endif
 
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
