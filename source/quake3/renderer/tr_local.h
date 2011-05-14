@@ -961,9 +961,6 @@ extern	QCvar	*r_facePlaneCull;		// enables culling of planar surfaces with back 
 extern	QCvar	*r_nocurves;
 extern	QCvar	*r_showcluster;
 
-extern QCvar	*r_ext_gamma_control;
-extern QCvar	*r_ext_texenv_op;
-
 extern	QCvar	*r_singleShader;				// make most world faces use default shader
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;

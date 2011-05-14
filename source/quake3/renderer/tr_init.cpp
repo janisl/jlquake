@@ -66,8 +66,6 @@ QCvar	*r_facePlaneCull;
 QCvar	*r_showcluster;
 QCvar	*r_nocurves;
 
-QCvar	*r_ext_gamma_control;
-
 QCvar	*r_primitives;
 
 QCvar	*r_drawBuffer;
@@ -610,7 +608,6 @@ void R_Register( void )
 	// latched and archived variables
 	//
 	r_glDriver = Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_ext_gamma_control = Cvar_Get( "r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );

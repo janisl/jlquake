@@ -764,15 +764,22 @@ void QGL_Init()
 	// WGL_EXT_swap_control
 	if (CheckExtension("WGL_EXT_swap_control"))
 	{
-		qwglSwapIntervalEXT = (BOOL (WINAPI*)(int))GLimp_GetProcAddress("wglSwapIntervalEXT");
-		if (qwglSwapIntervalEXT)
+		if (r_ext_gamma_control->integer)
 		{
-			GLog.Write("...using WGL_EXT_swap_control\n");
-			r_swapInterval->modified = true;	// force a set next frame
+			qwglSwapIntervalEXT = (BOOL (WINAPI*)(int))GLimp_GetProcAddress("wglSwapIntervalEXT");
+			if (qwglSwapIntervalEXT)
+			{
+				GLog.Write("...using WGL_EXT_swap_control\n");
+				r_swapInterval->modified = true;	// force a set next frame
+			}
+			else
+			{
+				GLog.Write("...WGL_EXT_swap_control not found\n");
+			}
 		}
 		else
 		{
-			GLog.Write("...WGL_EXT_swap_control not found\n");
+			GLog.Write("...ignoring WGL_EXT_swap_control\n");
 		}
 	}
 	else
