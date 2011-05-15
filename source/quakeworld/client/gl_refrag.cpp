@@ -207,9 +207,7 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->hModel = Mod_GetHandle(pent->model);
 				CL_SetRefEntAxis(rent, pent->angles);
 				rent->frame = pent->frame;
-				rent->colormap = pent->colormap;
 				rent->skinNum = pent->skinnum;
-				rent->scoreboard = pent->scoreboard;
 				rent->shaderTime = pent->syncbase;
 
 			// mark that we've recorded this entity for this frame

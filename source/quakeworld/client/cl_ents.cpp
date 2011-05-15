@@ -460,16 +460,9 @@ void CL_LinkPacketEntities (void)
 		ent->hModel = Mod_GetHandle(model);
 	
 		// set colormap
-		if (s1->colormap && (s1->colormap < MAX_CLIENTS) 
-			&& !QStr::Cmp(model->name,"progs/player.mdl") )
+		if (s1->colormap && (s1->colormap < MAX_CLIENTS) && s1->modelindex == cl_playerindex)
 		{
-			ent->colormap = cl.players[s1->colormap-1].translations;
-			ent->scoreboard = &cl.players[s1->colormap-1];
-		}
-		else
-		{
-			ent->colormap = vid.colormap;
-			ent->scoreboard = NULL;
+			R_HandlePlayerSkin(ent, s1->colormap - 1);
 		}
 
 		// set skin
@@ -640,15 +633,12 @@ void CL_LinkProjectiles (void)
 		Com_Memset(ent, 0, sizeof(*ent));
 		ent->reType = RT_MODEL;
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
-		ent->colormap = vid.colormap;
 		VectorCopy (pr->origin, ent->origin);
 		CL_SetRefEntAxis(ent, pr->angles);
 	}
 }
 
 //========================================
-
-extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
 refEntity_t *CL_NewTempEntity (void);
 
@@ -854,11 +844,11 @@ void CL_LinkPlayers (void)
 		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
 		ent->skinNum = state->skinnum;
 		ent->frame = state->frame;
-		ent->colormap = info->translations;
 		if (state->modelindex == cl_playerindex)
-			ent->scoreboard = info;		// use custom skin
-		else
-			ent->scoreboard = NULL;
+		{
+			// use custom skin
+			R_HandlePlayerSkin(ent, j);
+		}
 
 		//
 		// angles

@@ -54,9 +54,6 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	byte					*colormap;
-
-	struct player_info_s	*scoreboard;	// identify player
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
@@ -150,3 +147,4 @@ void D_DeleteSurfaceCache (void);
 void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
+void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum);

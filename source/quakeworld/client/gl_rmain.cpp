@@ -434,7 +434,20 @@ void R_SetupAliasFrame (int frame, aliashdr_t *paliashdr)
 	GL_DrawAliasFrame (paliashdr, pose);
 }
 
-
+void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
+{
+	// we can't dynamically colormap textures, so they are cached
+	// seperately for the players.  Heads are just uncolored.
+	if (!gl_nocolors->value)
+	{
+		if (!cl.players[PlayerNum].skin)
+		{
+			Skin_Find(&cl.players[PlayerNum]);
+			R_TranslatePlayerSkin(PlayerNum);
+		}
+		Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
+	}
+}
 
 /*
 =================
@@ -451,7 +464,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	model_t		*clmodel;
 	vec3_t		mins, maxs;
 	aliashdr_t	*paliashdr;
-	int			anim;
 
 	clmodel = Mod_GetModel(currententity->hModel);
 
@@ -541,20 +553,14 @@ void R_DrawAliasModel (refEntity_t *e)
 	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
 	qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 
-	anim = (int)(cl.time*10) & 3;
-    GL_Bind(paliashdr->gl_texture[currententity->skinNum][anim]);
-
-	// we can't dynamically colormap textures, so they are cached
-	// seperately for the players.  Heads are just uncolored.
-	if (currententity->scoreboard && !gl_nocolors->value)
+	if (e->customSkin)
 	{
-		i = currententity->scoreboard - cl.players;
-		if (!currententity->scoreboard->skin) {
-			Skin_Find(currententity->scoreboard);
-			R_TranslatePlayerSkin(i);
-		}
-		if (i >= 0 && i<MAX_CLIENTS)
-		    GL_Bind(playertextures[i]);
+		GL_Bind(tr.images[e->customSkin]);
+	}
+	else
+	{
+		int anim = (int)(cl.time * 10) & 3;
+		GL_Bind(paliashdr->gl_texture[e->skinNum][anim]);
 	}
 
 	if (gl_smoothmodels->value)
@@ -680,9 +686,7 @@ void R_DrawViewModel (void)
 	rent->hModel = Mod_GetHandle(pent->model);
 	CL_SetRefEntAxis(rent, pent->angles);
 	rent->frame = pent->frame;
-	rent->colormap = pent->colormap;
 	rent->skinNum = pent->skinnum;
-	rent->scoreboard = pent->scoreboard;
 	rent->shaderTime = pent->syncbase;
 
 	R_DrawAliasModel (currententity);

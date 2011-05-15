@@ -337,7 +337,6 @@ refEntity_t *CL_NewTempEntity (void)
 	Com_Memset(ent, 0, sizeof(*ent));
 
 	ent->reType = RT_MODEL;
-	ent->colormap = vid.colormap;
 	return ent;
 }
 
