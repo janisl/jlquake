@@ -199,7 +199,7 @@ void V_TestEntities (void)
 			cl.v_right[j]*r;
 
 		ent->hModel = Mod_GetHandle(cl.baseclientinfo.model);
-		ent->skin = cl.baseclientinfo.skin;
+		ent->customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
 	}
 }
 

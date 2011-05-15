@@ -798,11 +798,11 @@ void CL_AddPacketEntities (frame_t *frame)
 			{	// use custom player skin
 				ent.skinNum = 0;
 				ci = &cl.clientinfo[s1->skinnum & 0xff];
-				ent.skin = ci->skin;
+				ent.customSkin = R_GetImageHandle(ci->skin);
 				ent.hModel = Mod_GetHandle(ci->model);
-				if (!ent.skin || !ent.hModel)
+				if (!ent.customSkin || !ent.hModel)
 				{
-					ent.skin = cl.baseclientinfo.skin;
+					ent.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
 					ent.hModel = Mod_GetHandle(cl.baseclientinfo.model);
 				}
 
@@ -810,19 +810,19 @@ void CL_AddPacketEntities (frame_t *frame)
 //PGM
 				if (renderfx_old & RF_USE_DISGUISE)
 				{
-					if(!QStr::NCmp((char *)ent.skin, "players/male", 12))
+					if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/male", 12))
 					{
-						ent.skin = re.RegisterSkin ("players/male/disguise.pcx");
+						ent.customSkin = R_GetImageHandle(re.RegisterSkin ("players/male/disguise.pcx"));
 						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/male/tris.md2"));
 					}
-					else if(!QStr::NCmp((char *)ent.skin, "players/female", 14))
+					else if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/female", 14))
 					{
-						ent.skin = re.RegisterSkin ("players/female/disguise.pcx");
+						ent.customSkin = R_GetImageHandle(re.RegisterSkin ("players/female/disguise.pcx"));
 						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/female/tris.md2"));
 					}
-					else if(!QStr::NCmp((char *)ent.skin, "players/cyborg", 14))
+					else if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/cyborg", 14))
 					{
-						ent.skin = re.RegisterSkin ("players/cyborg/disguise.pcx");
+						ent.customSkin = R_GetImageHandle(re.RegisterSkin ("players/cyborg/disguise.pcx"));
 						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/cyborg/tris.md2"));
 					}
 				}
@@ -832,7 +832,6 @@ void CL_AddPacketEntities (frame_t *frame)
 			else
 			{
 				ent.skinNum = s1->skinnum;
-				ent.skin = NULL;
 				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex]);
 			}
 		}
@@ -946,7 +945,6 @@ void CL_AddPacketEntities (frame_t *frame)
 			V_AddEntity (&ent);
 		}
 
-		ent.skin = NULL;		// never use a custom skin on others
 		ent.skinNum = 0;
 		ent.flags = 0;
 		ent.alpha = 0;

@@ -1787,3 +1787,14 @@ qhandle_t R_GetImageHandle(image_t* Image)
 	}
 	return 0;
 }
+
+//==========================================================================
+//
+//	R_GetImageName
+//
+//==========================================================================
+
+const char* R_GetImageName(qhandle_t Handle)
+{
+	return tr.images[Handle]->imgName;
+}

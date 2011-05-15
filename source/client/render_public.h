@@ -154,3 +154,4 @@ struct image_t;
 
 image_t* R_PicFromWad(const char* Name);
 qhandle_t R_GetImageHandle(image_t* Image);
+const char* R_GetImageName(qhandle_t Handle);

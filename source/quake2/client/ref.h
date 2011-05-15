@@ -51,9 +51,7 @@ struct entity_t : refEntity_base_t
 {
 	float	alpha;					// ignore if RF_TRANSLUCENT isn't set
 
-	struct image_t	*skin;			// NULL for inline skin
 	int		flags;
-
 };
 
 #define ENTITY_FLAGS  68

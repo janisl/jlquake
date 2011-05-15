@@ -716,8 +716,8 @@ void R_DrawAliasModel (entity_t *e)
 	R_RotateForEntity (e);
 
 	// select skin
-	if (currententity->skin)
-		skin = currententity->skin;	// custom player skin
+	if (currententity->customSkin)
+		skin = tr.images[currententity->customSkin];	// custom player skin
 	else
 	{
 		if (currententity->skinNum >= MAX_MD2SKINS)
