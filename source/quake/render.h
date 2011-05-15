@@ -59,8 +59,6 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	int						colormap;
-	int						playernum;
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
@@ -149,5 +147,7 @@ int	D_SurfaceCacheForRes (int width, int height);
 void D_DeleteSurfaceCache (void);
 void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
+
+void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap);
 
 extern	QCvar*	gl_doubleeyes;

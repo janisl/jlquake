@@ -550,9 +550,8 @@ void CL_RelinkEntities (void)
 			CL_SetRefEntAxis(rent, ent->angles);	
 			rent->frame = ent->frame;
 			rent->shaderTime = ent->syncbase;
-			rent->colormap = ent->colormap;
+			R_HandleRefEntColormap(rent, ent->colormap);
 			rent->skinNum = ent->skinnum;
-			rent->playernum = i <= cl.maxclients ? i : 0;
 			cl_numvisedicts++;
 		}
 	}

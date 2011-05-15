@@ -446,7 +446,15 @@ void R_SetupAliasFrame (int frame, aliashdr_t *paliashdr)
 	GL_DrawAliasFrame (paliashdr, pose);
 }
 
-
+void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
+{
+	// we can't dynamically colormap textures, so they are cached
+	// seperately for the players.  Heads are just uncolored.
+	if (ColorMap && !gl_nocolors->value && !QStr::Cmp(Mod_GetModel(Ent->hModel)->name, "progs/player.mdl"))
+	{
+	    Ent->customSkin = R_GetImageHandle(playertextures[ColorMap - 1]);
+	}
+}
 
 /*
 =================
@@ -465,7 +473,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	aliashdr_t	*paliashdr;
 	trivertx_t	*verts, *v;
 	int			index;
-	int			anim;
 
 	clmodel = Mod_GetModel(currententity->hModel);
 
@@ -518,7 +525,7 @@ void R_DrawAliasModel (refEntity_t *e)
 		shadelight = 192 - ambientlight;
 
 	// ZOID: never allow players to go totally black
-	if (e->playernum /* && !QStr::Cmp(currententity->model->name, "progs/player.mdl") */)
+	if (!QStr::Cmp(clmodel->name, "progs/player.mdl"))
 		if (ambientlight < 8)
 			ambientlight = shadelight = 8;
 
@@ -555,14 +562,14 @@ void R_DrawAliasModel (refEntity_t *e)
 	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
 	qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 
-	anim = (int)(cl.time*10) & 3;
-    GL_Bind(paliashdr->gl_texture[currententity->skinNum][anim]);
-
-	// we can't dynamically colormap textures, so they are cached
-	// seperately for the players.  Heads are just uncolored.
-	if (e->colormap && !gl_nocolors->value)
+	if (e->customSkin)
 	{
-	    GL_Bind(playertextures[e->colormap - 1]);
+		GL_Bind(tr.images[e->customSkin]);
+	}
+	else
+	{
+		int anim = (int)(cl.time * 10) & 3;
+		GL_Bind(paliashdr->gl_texture[e->skinNum][anim]);
 	}
 
 	if (gl_smoothmodels->value)
@@ -691,9 +698,7 @@ void R_DrawViewModel (void)
 	CL_SetRefEntAxis(rent, ent->angles);	
 	rent->frame = ent->frame;
 	rent->shaderTime = ent->syncbase;
-	rent->colormap = ent->colormap;
 	rent->skinNum = ent->skinnum;
-	rent->playernum = 0;
 
 	R_DrawAliasModel (currententity);
 }
@@ -1013,7 +1018,7 @@ void R_Mirror (void)
 		CL_SetRefEntAxis(rent, ent->angles);	
 		rent->frame = ent->frame;
 		rent->shaderTime = ent->syncbase;
-		rent->colormap = ent->colormap;
+		R_HandleRefEntColormap(rent, ent->colormap);
 		rent->skinNum = ent->skinnum;
 		cl_numvisedicts++;
 	}
