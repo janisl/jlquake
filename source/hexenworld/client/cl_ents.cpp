@@ -623,6 +623,7 @@ void CL_LinkPacketEntities (void)
 	dlight_t			*dl;
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
+	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
 
 	autorotate = AngleMod(100*cl.time);
 
@@ -633,18 +634,6 @@ void CL_LinkPacketEntities (void)
 		s1 = &pack->entities[pnum];
 		s2 = s1;	// FIXME: no interpolation right now
 
-/*		// spawn light flashes, even ones coming from invisible objects
-		if (s1->effects & (EF_BLUE | EF_RED) == (EF_BLUE | EF_RED))
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 3);
-		else if (s1->effects & EF_BLUE)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 1);
-		else if (s1->effects & EF_RED)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 2);
-		else if (s1->effects & EF_BRIGHTLIGHT)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
-		else if (s1->effects & EF_DIMLIGHT)
-			CL_NewDlight (s1->number, s1->origin[0], s1->origin[1], s1->origin[2], 200 + (rand()&31), 0.1, 0);
-*/
 		// if set to invisible, skip
 		if (!s1->modelindex)
 			continue;
@@ -655,8 +644,9 @@ void CL_LinkPacketEntities (void)
 
 		ent = &cl_visedicts[cl_numvisedicts];
 		cl_numvisedicts++;
+		Com_Memset(ent, 0, sizeof(*ent));
 
-		ent->keynum = s1->number;
+		ent->reType = RT_MODEL;
 		model = cl.model_precache[s1->modelindex];
 		ent->hModel = Mod_GetHandle(model);
 	
@@ -673,28 +663,13 @@ void CL_LinkPacketEntities (void)
 			ent->scoreboard = NULL;
 		}
 		
-/*		// set colormap
-		if (s1->colormap && (s1->colormap < MAX_CLIENTS) 
-			&& !QStr::Cmp(ent->model->name,"models/paladin.mdl") )
-		{
-			ent->colormap = cl.players[s1->colormap-1].translations;
-			ent->scoreboard = &cl.players[s1->colormap-1];
-		}
-		else
-		{
-			ent->colormap = vid.colormap;
-			ent->scoreboard = NULL;
-		}
-*/
-
 		// set skin
-		ent->skinnum = s1->skinnum;
+		ent->skinNum = s1->skinnum;
 		
 		// set frame
 		ent->frame = s1->frame;
 
 		ent->drawflags = s1->drawflags;
-		ent->scale = s1->scale;
 		ent->abslight = s1->abslight;
 
 		vec3_t angles;
@@ -725,19 +700,21 @@ void CL_LinkPacketEntities (void)
 		for (i=0 ; i<3 ; i++)
 			ent->origin[i] = s2->origin[i] + 
 			f * (s1->origin[i] - s2->origin[i]);
-		CL_SetRefEntAxis(ent, angles, vec3_origin);
 
 		// scan the old entity display list for a matching
-		for (i=0 ; i<cl_oldnumvisedicts ; i++)
+		for (i = 0; i < PrevPack->num_entities; i++)
 		{
-			if (cl_oldvisedicts[i].keynum == ent->keynum)
+			if (PrevPack->entities[i].number == s1->number)
 			{
-				VectorCopy (cl_oldvisedicts[i].origin, old_origin);
+				VectorCopy(PrevPack->entities[i].origin, old_origin);
 				break;
 			}
 		}
-		if (i == cl_oldnumvisedicts)
+		if (i == PrevPack->num_entities)
+		{
+			CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale);
 			continue;		// not in last message
+		}
 
 		for (i=0 ; i<3 ; i++)
 			//if ( abs(old_origin[i] - ent->origin[i]) > 128)
@@ -753,7 +730,7 @@ void CL_LinkPacketEntities (void)
 		if(cl_siege)
 			if((int)s1->effects & EF_NODRAW)
 			{
-				ent->skinnum=101;//ice, but in siege will be invis skin for dwarf to see
+				ent->skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
 				ent->drawflags|=DRF_TRANSLUCENT;
 				s1->effects &= ~EF_NODRAW;
 //				cl.players[s1->number].invis=true;
@@ -761,7 +738,7 @@ void CL_LinkPacketEntities (void)
 
 		vec3_t angleAdd;
 		HandleEffects(s1->effects, s1->number, ent, angles, angleAdd, old_origin);
-		CL_SetRefEntAxis(ent, angles, angleAdd);
+		CL_SetRefEntAxis(ent, angles, angleAdd, s1->scale);
 
 		// add automatic particle trails
 		if (!model->flags)
@@ -944,20 +921,21 @@ void CL_LinkProjectiles (void)
 		// grab an entity to fill in
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		ent->keynum = 0;
-
 		if (pr->modelindex < 1)
 			continue;
+		ent = &cl_visedicts[cl_numvisedicts];
+		cl_numvisedicts++;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
+
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
-		ent->skinnum = 0;
+		ent->skinNum = 0;
 		ent->frame = 0;
 		ent->colormap = vid.colormap;
 		ent->scoreboard = NULL;
 		ent->frame = pr->frame;
 		VectorCopy (pr->origin, ent->origin);
-		CL_SetRefEntAxis(ent, pr->angles, vec3_origin);
+		CL_SetRefEntAxis(ent, pr->angles, vec3_origin, 0);
 	}
 }
 
@@ -1044,31 +1022,30 @@ void CL_LinkMissiles (void)
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
 		ent = &cl_visedicts[cl_numvisedicts];
-		if(rand() % 10 < 3)		
-		{
-			R_RunParticleEffect4 (ent->origin, 7, 148 + rand() % 11, pt_grav, 10 + rand() % 10);
-		}
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 		cl_numvisedicts++;
-		ent->keynum = 0;
 
 		VectorCopy (pr->origin, ent->origin);
-		if(pr->type == 1)
-		{	//ball
-			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
-			ent->scale = 10;
-			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin);
-		}
-		else
-		{	//missilestar
-			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
-			ent->scale = 50;
-			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin);
-		}
-		ent->skinnum = 0;
+		ent->skinNum = 0;
 		ent->frame = 0;
 		ent->colormap = vid.colormap;
 		ent->scoreboard = NULL;
 		ent->drawflags = SCALE_ORIGIN_CENTER;
+		if(pr->type == 1)
+		{	//ball
+			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 10);
+		}
+		else
+		{	//missilestar
+			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
+			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin, 50);
+		}
+		if(rand() % 10 < 3)		
+		{
+			R_RunParticleEffect4 (ent->origin, 7, 148 + rand() % 11, pt_grav, 10 + rand() % 10);
+		}
 	}
 }
 
@@ -1343,17 +1320,16 @@ void CL_LinkPlayers (void)
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
 		ent = &cl_visedicts[cl_numvisedicts];
-		ent->keynum = 0;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 
 		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
-		ent->skinnum = state->skinnum;
+		ent->skinNum = state->skinnum;
 		ent->frame = state->frame;
 
-		ent->colorshade = 0;
 		ent->colormap = info->translations;
 
 		ent->drawflags = state->drawflags;
-		ent->scale = state->scale;
 		ent->abslight = state->abslight;
 		if (ent->hModel == Mod_GetHandle(player_models[0]) ||
 			ent->hModel == Mod_GetHandle(player_models[1]) ||
@@ -1403,14 +1379,14 @@ void CL_LinkPlayers (void)
 		if(cl_siege)
 			if((int)state->effects & EF_NODRAW)
 			{
-				ent->skinnum=101;//ice, but in siege will be invis skin for dwarf to see
+				ent->skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
 				ent->drawflags|=DRF_TRANSLUCENT;
 				state->effects &= ~EF_NODRAW;
 			}
 
 		vec3_t angleAdd;
 		HandleEffects(state->effects, j+1, ent, angles, angleAdd, NULL);
-		CL_SetRefEntAxis(ent, angles, angleAdd);
+		CL_SetRefEntAxis(ent, angles, angleAdd, state->scale);
 
 		// the player object never gets added
 		if (j == cl.playernum)
@@ -1632,10 +1608,6 @@ void CL_EmitEntities (void)
 		return;
 	if (!cl.validsequence)
 		return;
-
-	cl_oldnumvisedicts = cl_numvisedicts;
-	cl_oldvisedicts = cl_visedicts_list[(cls.netchan.incoming_sequence-1)&1];
-	cl_visedicts = cl_visedicts_list[cls.netchan.incoming_sequence&1];
 
 	cl_numvisedicts = 0;
 

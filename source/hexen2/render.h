@@ -49,13 +49,8 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	vec3_t					origin;
-	int						frame;
-	float					syncbase;		// for client-side animations
 	byte					*colormap;
 	byte					colorshade;
-	int						skinnum;		// for Alias models
-	int						scale;			// for Alias models
 	int						drawflags;		// for Alias models
 	int						abslight;		// for Alias models
 	int						playernum;
@@ -157,3 +152,5 @@ void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
 void R_ClearParticles (void);
+
+void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);

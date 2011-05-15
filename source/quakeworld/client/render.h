@@ -35,7 +35,6 @@ typedef struct efrag_s
 
 struct entity_t
 {
-	int						keynum;			// for matching entities in different frames
 	vec3_t					origin;
 	vec3_t					angles;	
 	struct model_s			*model;			// NULL = no model
@@ -55,15 +54,9 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	int						keynum;			// for matching entities in different frames
-	vec3_t					origin;
-	int						frame;
 	byte					*colormap;
-	int						skinnum;		// for Alias models
 
 	struct player_info_s	*scoreboard;	// identify player
-
-	float					syncbase;
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!

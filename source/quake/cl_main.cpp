@@ -543,13 +543,15 @@ void CL_RelinkEntities (void)
 		if (cl_numvisedicts < MAX_VISEDICTS)
 		{
 			refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
+			Com_Memset(rent, 0, sizeof(*rent));
+			rent->reType = RT_MODEL;
 			VectorCopy(ent->origin, rent->origin);
 			rent->hModel = Mod_GetHandle(ent->model);
 			CL_SetRefEntAxis(rent, ent->angles);	
 			rent->frame = ent->frame;
-			rent->syncbase = ent->syncbase;
+			rent->shaderTime = ent->syncbase;
 			rent->colormap = ent->colormap;
-			rent->skinnum = ent->skinnum;
+			rent->skinNum = ent->skinnum;
 			rent->playernum = i <= cl.maxclients ? i : 0;
 			cl_numvisedicts++;
 		}

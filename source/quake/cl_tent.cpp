@@ -307,7 +307,6 @@ void CL_UpdateTEnts (void)
 				return;
 			refEntity_t ent;
 			Com_Memset(&ent, 0, sizeof(ent));
-			ent.colormap = vid.colormap;
 			VectorCopy (org, ent.origin);
 			ent.hModel = Mod_GetHandle(b->model);
 			vec3_t angles;

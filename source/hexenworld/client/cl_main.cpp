@@ -65,9 +65,8 @@ dlight_t		cl_dlights[MAX_DLIGHTS];
 // refresh list
 // this is double buffered so the last frame
 // can be scanned for oldorigins of trailing objects
-int				cl_numvisedicts, cl_oldnumvisedicts;
-refEntity_t		*cl_visedicts, *cl_oldvisedicts;
-refEntity_t		cl_visedicts_list[2][MAX_VISEDICTS];
+int				cl_numvisedicts;
+refEntity_t		cl_visedicts[MAX_VISEDICTS];
 
 double			connect_time = -1;		// for connection retransmits
 
@@ -1372,7 +1371,7 @@ void Host_Shutdown(void)
 	VID_Shutdown();
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd)
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale)
 {
 	vec3_t angles;
 	if (Mod_GetModel(ent->hModel)->type == mod_alias)
@@ -1410,10 +1409,66 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd)
 			MatrixMultiply(AddAxis, BaseAxis, ent->axis);
 		}
 
+		if ((Mod_GetModel(ent->hModel)->flags & EF_ROTATE) || (scale != 0 && scale != 100))
+		{
+			ent->renderfx |= RF_LIGHTING_ORIGIN;
+			VectorCopy(ent->origin, ent->lightingOrigin);
+		}
+
 		if (Mod_GetModel(ent->hModel)->flags & EF_ROTATE)
 		{
 			// Floating motion
-			ent->origin[2] += sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
+			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
+			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
+		}
+
+		if (scale != 0 && scale != 100)
+		{
+			float entScale = (float)scale / 100.0;
+			float esx;
+			float esy;
+			float esz;
+			switch (ent->drawflags & SCALE_TYPE_MASKIN)
+			{
+			case SCALE_TYPE_UNIFORM:
+				esx = entScale;
+				esy = entScale;
+				esz = entScale;
+				break;
+			case SCALE_TYPE_XYONLY:
+				esx = entScale;
+				esy = entScale;
+				esz = 1;
+				break;
+			case SCALE_TYPE_ZONLY:
+				esx = 1;
+				esy = 1;
+				esz = entScale;
+				break;
+			}
+			float etz;
+			switch (ent->drawflags & SCALE_ORIGIN_MASKIN)
+			{
+			case SCALE_ORIGIN_CENTER:
+				etz = 0.5;
+				break;
+			case SCALE_ORIGIN_BOTTOM:
+				etz = 0;
+				break;
+			case SCALE_ORIGIN_TOP:
+				etz = 1.0;
+				break;
+			}
+
+			vec3_t Out;
+			Mod_CalcScaleOffset(ent->hModel, esx, esy, esz, etz, Out);
+			VectorMA(ent->origin, Out[0], ent->axis[0], ent->origin);
+			VectorMA(ent->origin, Out[1], ent->axis[1], ent->origin);
+			VectorMA(ent->origin, Out[2], ent->axis[2], ent->origin);
+			VectorScale(ent->axis[0], esx, ent->axis[0]);
+			VectorScale(ent->axis[1], esy, ent->axis[1]);
+			VectorScale(ent->axis[2], esz, ent->axis[2]);
+			ent->nonNormalizedAxes = true;
 		}
 	}
 	else

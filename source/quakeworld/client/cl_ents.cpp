@@ -420,6 +420,7 @@ void CL_LinkPacketEntities (void)
 	dlight_t			*dl;
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
+	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
 
 	autorotate = AngleMod(100*cl.time);
 
@@ -452,8 +453,9 @@ void CL_LinkPacketEntities (void)
 
 		ent = &cl_visedicts[cl_numvisedicts];
 		cl_numvisedicts++;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 
-		ent->keynum = s1->number;
 		model = cl.model_precache[s1->modelindex];
 		ent->hModel = Mod_GetHandle(model);
 	
@@ -471,7 +473,7 @@ void CL_LinkPacketEntities (void)
 		}
 
 		// set skin
-		ent->skinnum = s1->skinnum;
+		ent->skinNum = s1->skinnum;
 		
 		// set frame
 		ent->frame = s1->frame;
@@ -511,16 +513,18 @@ void CL_LinkPacketEntities (void)
 			continue;
 
 		// scan the old entity display list for a matching
-		for (i=0 ; i<cl_oldnumvisedicts ; i++)
+		for (i = 0; i < PrevPack->num_entities; i++)
 		{
-			if (cl_oldvisedicts[i].keynum == ent->keynum)
+			if (PrevPack->entities[i].number == s1->number)
 			{
-				VectorCopy (cl_oldvisedicts[i].origin, old_origin);
+				VectorCopy(PrevPack->entities[i].origin, old_origin);
 				break;
 			}
 		}
-		if (i == cl_oldnumvisedicts)
+		if (i == PrevPack->num_entities)
+		{
 			continue;		// not in last message
+		}
 
 		for (i=0 ; i<3 ; i++)
 			if ( abs(old_origin[i] - ent->origin[i]) > 128)
@@ -629,17 +633,14 @@ void CL_LinkProjectiles (void)
 		// grab an entity to fill in
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		ent->keynum = 0;
-
 		if (pr->modelindex < 1)
 			continue;
+		ent = &cl_visedicts[cl_numvisedicts];
+		cl_numvisedicts++;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
-		ent->skinnum = 0;
-		ent->frame = 0;
 		ent->colormap = vid.colormap;
-		ent->scoreboard = NULL;
 		VectorCopy (pr->origin, ent->origin);
 		CL_SetRefEntAxis(ent, pr->angles);
 	}
@@ -772,7 +773,7 @@ void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 
 	newent = CL_NewTempEntity ();
 	newent->hModel = Mod_GetHandle(cl.model_precache[cl_flagindex]);
-	newent->skinnum = team;
+	newent->skinNum = team;
 
 	AngleVectors (angles, v_forward, v_right, v_up);
 	v_forward[2] = -v_forward[2]; // reverse z component
@@ -847,10 +848,11 @@ void CL_LinkPlayers (void)
 			break;		// object list is full
 		ent = &cl_visedicts[cl_numvisedicts];
 		cl_numvisedicts++;
-		ent->keynum = 0;
+		Com_Memset(ent, 0, sizeof(*ent));
+		ent->reType = RT_MODEL;
 
 		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
-		ent->skinnum = state->skinnum;
+		ent->skinNum = state->skinnum;
 		ent->frame = state->frame;
 		ent->colormap = info->translations;
 		if (state->modelindex == cl_playerindex)
@@ -1068,10 +1070,6 @@ void CL_EmitEntities (void)
 		return;
 	if (!cl.validsequence)
 		return;
-
-	cl_oldnumvisedicts = cl_numvisedicts;
-	cl_oldvisedicts = cl_visedicts_list[(cls.netchan.incoming_sequence-1)&1];
-	cl_visedicts = cl_visedicts_list[cls.netchan.incoming_sequence&1];
 
 	cl_numvisedicts = 0;
 

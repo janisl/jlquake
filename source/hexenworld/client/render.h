@@ -17,7 +17,6 @@ typedef struct efrag_s
 
 struct entity_t
 {
-	int						keynum;			// for matching entities in different frames
 	vec3_t					origin;
 	vec3_t					angles;
 	vec3_t					angleAdd;		// For clientside rotation stuff
@@ -42,19 +41,12 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	int						keynum;			// for matching entities in different frames
-	vec3_t					origin;
-	int						frame;
 	byte					*colormap;
 	byte					colorshade;
-	int						skinnum;		// for Alias models
-	int						scale;			// for Alias models
 	int						drawflags;		// for Alias models
 	int						abslight;		// for Alias models
 
 	struct player_info_s	*scoreboard;	// identify player
-
-	float					syncbase;
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
@@ -159,3 +151,4 @@ void D_DeleteSurfaceCache (void);
 void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
+void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);

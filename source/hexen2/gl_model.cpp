@@ -2061,3 +2061,18 @@ model_t* Mod_GetModel(qhandle_t handle)
 	}
 	return &mod_known[handle];
 }
+
+void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out)
+{
+	model_t* Model = Mod_GetModel(Handle);
+	if (Model->type != mod_alias)
+	{
+		throw QException("Not an alias model");
+	}
+
+	aliashdr_t* AliasHdr = (aliashdr_t*)Mod_Extradata(Model);
+
+	Out[0] = -(ScaleX - 1.0) * (AliasHdr->scale[0] * 127.95 + AliasHdr->scale_origin[0]);
+	Out[1] = -(ScaleY - 1.0) * (AliasHdr->scale[1] * 127.95 + AliasHdr->scale_origin[1]);
+	Out[2] = -(ScaleZ - 1.0) * (ScaleZOrigin * 2.0 * AliasHdr->scale[2] * 127.95 + AliasHdr->scale_origin[2]);
+}

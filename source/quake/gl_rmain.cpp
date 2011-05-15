@@ -179,7 +179,7 @@ mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
 
-		time = cl.time + currententity->syncbase;
+		time = cl.time + currententity->shaderTime;
 
 	// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
 	// are positive, so we don't have to worry about division by 0
@@ -562,13 +562,13 @@ void R_DrawAliasModel (refEntity_t *e)
 	}
 
 	anim = (int)(cl.time*10) & 3;
-    GL_Bind(paliashdr->gl_texture[currententity->skinnum][anim]);
+    GL_Bind(paliashdr->gl_texture[currententity->skinNum][anim]);
 
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (currententity->colormap != vid.colormap && !gl_nocolors->value)
+	if (e->colormap && !gl_nocolors->value)
 	{
-	    GL_Bind(playertextures[e->playernum - 1]);
+	    GL_Bind(playertextures[e->colormap - 1]);
 	}
 
 	if (gl_smoothmodels->value)
@@ -689,15 +689,16 @@ void R_DrawViewModel (void)
 	currententity = &gun;
 	entity_t* ent = &cl.viewent;
 
+	Com_Memset(rent, 0, sizeof(*rent));
 	rent->reType = RT_MODEL;
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(ent->origin, rent->origin);
 	rent->hModel = Mod_GetHandle(ent->model);
 	CL_SetRefEntAxis(rent, ent->angles);	
 	rent->frame = ent->frame;
-	rent->syncbase = ent->syncbase;
+	rent->shaderTime = ent->syncbase;
 	rent->colormap = ent->colormap;
-	rent->skinnum = ent->skinnum;
+	rent->skinNum = ent->skinnum;
 	rent->playernum = 0;
 
 	R_DrawAliasModel (currententity);
@@ -1011,13 +1012,15 @@ void R_Mirror (void)
 	if (cl_numvisedicts < MAX_VISEDICTS)
 	{
 		refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
+		Com_Memset(rent, 0, sizeof(*rent));
+		rent->reType = RT_MODEL;
 		VectorCopy(ent->origin, rent->origin);
 		rent->hModel = Mod_GetHandle(ent->model);
 		CL_SetRefEntAxis(rent, ent->angles);	
 		rent->frame = ent->frame;
-		rent->syncbase = ent->syncbase;
+		rent->shaderTime = ent->syncbase;
 		rent->colormap = ent->colormap;
-		rent->skinnum = ent->skinnum;
+		rent->skinNum = ent->skinnum;
 		cl_numvisedicts++;
 	}
 
@@ -1053,16 +1056,6 @@ void R_Mirror (void)
 	qglColor4f (1,1,1,1);
 }
 
-static void UpdateRefEntityData()
-{
-	for (int i = 0; i < cl_numvisedicts; i++)
-	{
-		refEntity_t* e = &cl_visedicts[i];
-		e->reType = RT_MODEL;
-		e->renderfx = 0;
-	}
-}
-
 /*
 ================
 R_RenderView
@@ -1088,8 +1081,6 @@ void R_RenderView (void)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	UpdateRefEntityData();
 
 	mirror = false;
 

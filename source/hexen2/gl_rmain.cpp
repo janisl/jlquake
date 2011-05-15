@@ -229,7 +229,7 @@ mspriteframe_t *R_GetSpriteFrame (msprite_t *psprite)
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
 
-		time = cl.time + currententity->syncbase;
+		time = cl.time + currententity->shaderTime;
 
 	// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
 	// are positive, so we don't have to worry about division by 0
@@ -635,10 +635,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	trivertx_t	*verts, *v;
 	int			index;
 	float		s, t, an;
-	static float	tmatrix[3][4];
-	float entScale;
-	float xyfact;
-	float zfact;
 	char temp[40];
 	int mls;
 	vec3_t		adjust_origin;
@@ -664,7 +660,12 @@ void R_DrawAliasModel (refEntity_t *e)
 	// get lighting information
 	//
 
-	VectorCopy(currententity->origin, adjust_origin);
+	float* lorg = e->origin;
+	if (e->renderfx & RF_LIGHTING_ORIGIN)
+	{
+		lorg = e->lightingOrigin;
+	}
+	VectorCopy(lorg, adjust_origin);
 	adjust_origin[2] += (clmodel->mins[2] + clmodel->maxs[2]) / 2;
 	ambientlight = shadelight = R_LightPoint (adjust_origin);
 
@@ -676,7 +677,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	{
 		if (cl_dlights[lnum].die >= cl.time)
 		{
-			VectorSubtract (currententity->origin,
+			VectorSubtract(lorg,
 							cl_dlights[lnum].origin,
 							dist);
 			add = cl_dlights[lnum].radius - VectorLength(dist);
@@ -735,67 +736,8 @@ void R_DrawAliasModel (refEntity_t *e)
     qglPushMatrix ();
 	R_RotateForEntity(e);
 
-	if(currententity->scale != 0 && currententity->scale != 100)
-	{
-		entScale = (float)currententity->scale/100.0;
-		switch(currententity->drawflags&SCALE_TYPE_MASKIN)
-		{
-		case SCALE_TYPE_UNIFORM:
-			tmatrix[0][0] = paliashdr->scale[0]*entScale;
-			tmatrix[1][1] = paliashdr->scale[1]*entScale;
-			tmatrix[2][2] = paliashdr->scale[2]*entScale;
-			xyfact = zfact = (entScale-1.0)*127.95;
-			break;
-		case SCALE_TYPE_XYONLY:
-			tmatrix[0][0] = paliashdr->scale[0]*entScale;
-			tmatrix[1][1] = paliashdr->scale[1]*entScale;
-			tmatrix[2][2] = paliashdr->scale[2];
-			xyfact = (entScale-1.0)*127.95;
-			zfact = 1.0;
-			break;
-		case SCALE_TYPE_ZONLY:
-			tmatrix[0][0] = paliashdr->scale[0];
-			tmatrix[1][1] = paliashdr->scale[1];
-			tmatrix[2][2] = paliashdr->scale[2]*entScale;
-			xyfact = 1.0;
-			zfact = (entScale-1.0)*127.95;
-			break;
-		}
-		switch(currententity->drawflags&SCALE_ORIGIN_MASKIN)
-		{
-		case SCALE_ORIGIN_CENTER:
-			tmatrix[0][3] = paliashdr->scale_origin[0]-paliashdr->scale[0]*xyfact;
-			tmatrix[1][3] = paliashdr->scale_origin[1]-paliashdr->scale[1]*xyfact;
-			tmatrix[2][3] = paliashdr->scale_origin[2]-paliashdr->scale[2]*zfact;
-			break;
-		case SCALE_ORIGIN_BOTTOM:
-			tmatrix[0][3] = paliashdr->scale_origin[0]-paliashdr->scale[0]*xyfact;
-			tmatrix[1][3] = paliashdr->scale_origin[1]-paliashdr->scale[1]*xyfact;
-			tmatrix[2][3] = paliashdr->scale_origin[2];
-			break;
-		case SCALE_ORIGIN_TOP:
-			tmatrix[0][3] = paliashdr->scale_origin[0]-paliashdr->scale[0]*xyfact;
-			tmatrix[1][3] = paliashdr->scale_origin[1]-paliashdr->scale[1]*xyfact;
-			tmatrix[2][3] = paliashdr->scale_origin[2]-paliashdr->scale[2]*zfact*2.0;
-			break;
-		}
-	}
-	else
-	{
-		tmatrix[0][0] = paliashdr->scale[0];
-		tmatrix[1][1] = paliashdr->scale[1];
-		tmatrix[2][2] = paliashdr->scale[2];
-		tmatrix[0][3] = paliashdr->scale_origin[0];
-		tmatrix[1][3] = paliashdr->scale_origin[1];
-		tmatrix[2][3] = paliashdr->scale_origin[2];
-	}
-
-// [0][3] [1][3] [2][3]
-//	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
-	qglTranslatef (tmatrix[0][3],tmatrix[1][3],tmatrix[2][3]);
-// [0][0] [1][1] [2][2]
-//	qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
-	qglScalef (tmatrix[0][0],tmatrix[1][1],tmatrix[2][2]);
+	qglTranslatef(paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
+	qglScalef(paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 
 	if ((clmodel->flags & EF_SPECIAL_TRANS))
 	{
@@ -834,24 +776,24 @@ void R_DrawAliasModel (refEntity_t *e)
 		GL_State(GLS_DEPTHMASK_TRUE);
 	}
 
-	if (currententity->skinnum >= 100)
+	if (currententity->skinNum >= 100)
 	{
-		if (currententity->skinnum > 255) 
+		if (currententity->skinNum > 255) 
 		{
 			Sys_Error ("skinnum > 255");
 		}
 
-		if (!gl_extra_textures[currententity->skinnum-100])  // Need to load it in
+		if (!gl_extra_textures[currententity->skinNum - 100])  // Need to load it in
 		{
-			sprintf(temp,"gfx/skin%d.lmp",currententity->skinnum);
-			gl_extra_textures[currententity->skinnum-100] = Draw_CachePic(temp);
+			sprintf(temp, "gfx/skin%d.lmp", currententity->skinNum);
+			gl_extra_textures[currententity->skinNum - 100] = Draw_CachePic(temp);
 		}
 
-		GL_Bind(gl_extra_textures[currententity->skinnum-100]);
+		GL_Bind(gl_extra_textures[currententity->skinNum - 100]);
 	}
 	else
 	{
-		GL_Bind(paliashdr->gl_texture[currententity->skinnum]);
+		GL_Bind(paliashdr->gl_texture[currententity->skinNum]);
 
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
@@ -1076,22 +1018,21 @@ void R_DrawViewModel (void)
 	currententity = &gun;
 	entity_t* ent = &cl.viewent;
 
+	Com_Memset(rent, 0, sizeof(*rent));
 	rent->reType = RT_MODEL;
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(ent->origin, rent->origin);
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
-	rent->syncbase = ent->syncbase;
+	rent->shaderTime = ent->syncbase;
 	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;
-	rent->skinnum = ent->skinnum;
-	rent->scale = ent->scale;
+	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
-	rent->playernum = 0;
-	CL_SetRefEntAxis(rent, ent->angles);
+	CL_SetRefEntAxis(rent, ent->angles, ent->scale);
 
-	R_DrawAliasModel (currententity);
+	R_DrawAliasModel(currententity);
 }
 
 
@@ -1382,17 +1323,17 @@ void R_Mirror (void)
 	if (cl_numvisedicts < MAX_VISEDICTS)
 	{
 		refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
+		Com_Memset(rent, 0, sizeof(*rent));
 		VectorCopy(ent->origin, rent->origin);
 		rent->hModel = Mod_GetHandle(ent->model);
 		rent->frame = ent->frame;
-		rent->syncbase = ent->syncbase;
+		rent->shaderTime = ent->syncbase;
 		rent->colormap = ent->colormap;
 		rent->colorshade = ent->colorshade;
-		rent->skinnum = ent->skinnum;
-		rent->scale = ent->scale;
+		rent->skinNum = ent->skinnum;
 		rent->drawflags = ent->drawflags;
 		rent->abslight = ent->abslight;
-		CL_SetRefEntAxis(rent, ent->angles);
+		CL_SetRefEntAxis(rent, ent->angles, ent->scale);
 		rent->playernum = cl.viewentity <= cl.maxclients ? cl.viewentity : 0;
 		cl_numvisedicts++;
 	}
@@ -1455,16 +1396,6 @@ void R_PrintTimes(void)
 		fps, ms, c_brush_polys, c_alias_polys, c_sky_polys);
 }
 
-static void UpdateRefEntityData()
-{
-	for (int i = 0; i < cl_numvisedicts; i++)
-	{
-		refEntity_t* e = &cl_visedicts[i];
-		e->reType = RT_MODEL;
-		e->renderfx = 0;
-	}
-}
-
 /*
 ================
 R_RenderView
@@ -1492,8 +1423,6 @@ void R_RenderView (void)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	UpdateRefEntityData();
 
 	mirror = false;
 

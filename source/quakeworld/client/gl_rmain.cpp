@@ -178,7 +178,7 @@ mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
 
-		time = cl.time + currententity->syncbase;
+		time = cl.time + currententity->shaderTime;
 
 	// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
 	// are positive, so we don't have to worry about division by 0
@@ -548,7 +548,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	}
 
 	anim = (int)(cl.time*10) & 3;
-    GL_Bind(paliashdr->gl_texture[currententity->skinnum][anim]);
+    GL_Bind(paliashdr->gl_texture[currententity->skinNum][anim]);
 
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
@@ -682,15 +682,14 @@ void R_DrawViewModel (void)
 
 	rent->reType = RT_MODEL;
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	rent->keynum = pent->keynum;
 	VectorCopy(pent->origin, rent->origin);
 	rent->hModel = Mod_GetHandle(pent->model);
 	CL_SetRefEntAxis(rent, pent->angles);
 	rent->frame = pent->frame;
 	rent->colormap = pent->colormap;
-	rent->skinnum = pent->skinnum;
+	rent->skinNum = pent->skinnum;
 	rent->scoreboard = pent->scoreboard;
-	rent->syncbase = pent->syncbase;
+	rent->shaderTime = pent->syncbase;
 
 	R_DrawAliasModel (currententity);
 }
@@ -975,16 +974,6 @@ void R_Clear (void)
 	qglDepthRange (gldepthmin, gldepthmax);
 }
 
-static void UpdateRefEntityData()
-{
-	for (int i = 0; i < cl_numvisedicts; i++)
-	{
-		refEntity_t* e = &cl_visedicts[i];
-		e->reType = RT_MODEL;
-		e->renderfx = 0;
-	}
-}
-
 /*
 ================
 R_RenderView
@@ -1009,8 +998,6 @@ void R_RenderView (void)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	UpdateRefEntityData();
 
 	mirror = false;
 

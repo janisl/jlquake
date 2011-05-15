@@ -183,18 +183,18 @@ void R_StoreEfrags (efrag_t **ppefrag)
 			{
 				entity_t* ent = pent;
 				refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
+				Com_Memset(rent, 0, sizeof(*rent));
+				rent->reType = RT_MODEL;
 				VectorCopy(ent->origin, rent->origin);
 				rent->hModel = Mod_GetHandle(ent->model);
 				rent->frame = ent->frame;
-				rent->syncbase = ent->syncbase;
+				rent->shaderTime = ent->syncbase;
 				rent->colormap = ent->colormap;
 				rent->colorshade = ent->colorshade;
-				rent->skinnum = ent->skinnum;
-				rent->scale = ent->scale;
+				rent->skinNum = ent->skinnum;
 				rent->drawflags = ent->drawflags;
 				rent->abslight = ent->abslight;
-				CL_SetRefEntAxis(rent, ent->angles);
-				rent->playernum = 0;
+				CL_SetRefEntAxis(rent, ent->angles, ent->scale);
 				cl_numvisedicts++;
 
 			// mark that we've recorded this entity for this frame
