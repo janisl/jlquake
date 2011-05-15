@@ -1104,6 +1104,7 @@ void CL_ParsePlayerinfo (void)
 	state->origin[0] = net_message.ReadCoord ();
 	state->origin[1] = net_message.ReadCoord ();
 	state->origin[2] = net_message.ReadCoord ();
+	VectorCopy(state->origin, info->origin);
 
 	state->frame = net_message.ReadByte ();
 
@@ -1292,6 +1293,7 @@ void CL_LinkPlayers (void)
 	for (j=0, info=cl.players, state=frame->playerstate ; j < MAX_CLIENTS 
 		; j++, info++, state++)
 	{
+		info->shownames_off = true;
 		if (state->messagenum != cl.parsecount)
 			continue;	// not present this frame
 
@@ -1339,6 +1341,7 @@ void CL_LinkPlayers (void)
 			ent->hModel == Mod_GetHandle(player_models[5]))
 		{
 			ent->scoreboard = info;		// use custom skin
+			info->shownames_off = false;
 		}
 		else
 		{

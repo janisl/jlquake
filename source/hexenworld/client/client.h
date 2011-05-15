@@ -62,6 +62,8 @@ typedef struct player_info_s
 	qboolean	Translated;
 	int			siege_team;
 	qboolean	shownames_off;
+
+	vec3_t		origin;
 } player_info_t;
 
 
