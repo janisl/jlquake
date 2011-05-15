@@ -705,4 +705,17 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	}
 
 	AnglesToAxis(angles, ent->axis);
+
+	if (!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/eyes.mdl") && gl_doubleeyes->value)
+	{
+		// double size of eyes, since they are really hard to see in gl
+		ent->renderfx |= RF_LIGHTING_ORIGIN;
+		VectorCopy(ent->origin, ent->lightingOrigin);
+		ent->origin[2] -= (22 + 8);
+
+		VectorScale(ent->axis[0], 2, ent->axis[0]);
+		VectorScale(ent->axis[1], 2, ent->axis[1]);
+		VectorScale(ent->axis[2], 2, ent->axis[2]);
+		ent->nonNormalizedAxes = true;
+	}
 }

@@ -136,7 +136,6 @@ extern	QCvar*	gl_flashblend;
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
-extern	QCvar*	gl_doubleeyes;
 
 extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
 extern	qboolean	mirror;

@@ -552,14 +552,8 @@ void R_DrawAliasModel (refEntity_t *e)
     qglPushMatrix ();
 	R_RotateForEntity (e);
 
-	if (!QStr::Cmp(clmodel->name, "progs/eyes.mdl") && gl_doubleeyes->value) {
-		qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2] - (22 + 8));
-// double size of eyes, since they are really hard to see in gl
-		qglScalef (paliashdr->scale[0]*2, paliashdr->scale[1]*2, paliashdr->scale[2]*2);
-	} else {
-		qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
-		qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
-	}
+	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
+	qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 
 	anim = (int)(cl.time*10) & 3;
     GL_Bind(paliashdr->gl_texture[currententity->skinNum][anim]);
