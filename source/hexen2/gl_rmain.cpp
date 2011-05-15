@@ -615,6 +615,39 @@ void R_SetupAliasFrame (int frame, aliashdr_t *paliashdr)
 	GL_DrawAliasFrame (paliashdr, pose);
 }
 
+void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
+{
+	if (Ent->skinNum >= 100)
+	{
+		if (Ent->skinNum > 255) 
+		{
+			Sys_Error ("skinnum > 255");
+		}
+
+		if (!gl_extra_textures[Ent->skinNum - 100])  // Need to load it in
+		{
+			char temp[40];
+			QStr::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
+			gl_extra_textures[Ent->skinNum - 100] = Draw_CachePic(temp);
+		}
+
+		Ent->customSkin = R_GetImageHandle(gl_extra_textures[Ent->skinNum - 100]);
+	}
+	else if (PlayerNum >= 0 && !gl_nocolors->value)
+	{
+		// we can't dynamically colormap textures, so they are cached
+		// seperately for the players.  Heads are just uncolored.
+		model_t* clmodel = Mod_GetModel(Ent->hModel);
+		if (clmodel == player_models[0] ||
+			clmodel == player_models[1] ||
+			clmodel == player_models[2] ||
+			clmodel == player_models[3] ||
+			clmodel == player_models[4])
+		{
+			Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
+		}
+	}
+}
 
 
 /*
@@ -635,7 +668,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	trivertx_t	*verts, *v;
 	int			index;
 	float		s, t, an;
-	char temp[40];
 	int mls;
 	vec3_t		adjust_origin;
 
@@ -776,40 +808,13 @@ void R_DrawAliasModel (refEntity_t *e)
 		GL_State(GLS_DEPTHMASK_TRUE);
 	}
 
-	if (currententity->skinNum >= 100)
+	if (e->customSkin)
 	{
-		if (currententity->skinNum > 255) 
-		{
-			Sys_Error ("skinnum > 255");
-		}
-
-		if (!gl_extra_textures[currententity->skinNum - 100])  // Need to load it in
-		{
-			sprintf(temp, "gfx/skin%d.lmp", currententity->skinNum);
-			gl_extra_textures[currententity->skinNum - 100] = Draw_CachePic(temp);
-		}
-
-		GL_Bind(gl_extra_textures[currententity->skinNum - 100]);
+		GL_Bind(tr.images[e->customSkin]);
 	}
 	else
 	{
 		GL_Bind(paliashdr->gl_texture[currententity->skinNum]);
-
-		// we can't dynamically colormap textures, so they are cached
-		// seperately for the players.  Heads are just uncolored.
-	
-		if (currententity->colormap != vid.colormap && !gl_nocolors->value)
-		{
-			if (clmodel == player_models[0] ||
-			    clmodel == player_models[1] ||
-			    clmodel == player_models[2] ||
-			    clmodel == player_models[3] ||
-			    clmodel == player_models[4])
-			{
-				if (e->playernum)
-					GL_Bind(playertextures[e->playernum - 1]);
-			}
-		}
 	}
 
 	if (gl_smoothmodels->value)
@@ -1025,12 +1030,12 @@ void R_DrawViewModel (void)
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
 	rent->shaderTime = ent->syncbase;
-	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;
 	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
 	CL_SetRefEntAxis(rent, ent->angles, ent->scale);
+	R_HandleCustomSkin(rent, -1);
 
 	R_DrawAliasModel(currententity);
 }
@@ -1328,13 +1333,12 @@ void R_Mirror (void)
 		rent->hModel = Mod_GetHandle(ent->model);
 		rent->frame = ent->frame;
 		rent->shaderTime = ent->syncbase;
-		rent->colormap = ent->colormap;
 		rent->colorshade = ent->colorshade;
 		rent->skinNum = ent->skinnum;
 		rent->drawflags = ent->drawflags;
 		rent->abslight = ent->abslight;
 		CL_SetRefEntAxis(rent, ent->angles, ent->scale);
-		rent->playernum = cl.viewentity <= cl.maxclients ? cl.viewentity : 0;
+		R_HandleCustomSkin(rent, cl.viewentity <= cl.maxclients ? cl.viewentity - 1 : -1);
 		cl_numvisedicts++;
 	}
 

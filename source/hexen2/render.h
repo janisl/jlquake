@@ -49,11 +49,9 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	byte					*colormap;
 	byte					colorshade;
 	int						drawflags;		// for Alias models
 	int						abslight;		// for Alias models
-	int						playernum;
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
@@ -154,3 +152,4 @@ void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int 
 void R_ClearParticles (void);
 
 void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
+void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);

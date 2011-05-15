@@ -189,12 +189,12 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->hModel = Mod_GetHandle(ent->model);
 				rent->frame = ent->frame;
 				rent->shaderTime = ent->syncbase;
-				rent->colormap = ent->colormap;
 				rent->colorshade = ent->colorshade;
 				rent->skinNum = ent->skinnum;
 				rent->drawflags = ent->drawflags;
 				rent->abslight = ent->abslight;
 				CL_SetRefEntAxis(rent, ent->angles, ent->scale);
+				R_HandleCustomSkin(rent, -1);
 				cl_numvisedicts++;
 
 			// mark that we've recorded this entity for this frame
