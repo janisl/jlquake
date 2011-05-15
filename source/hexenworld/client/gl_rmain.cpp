@@ -571,7 +571,44 @@ void R_SetupAliasFrame (int frame, aliashdr_t *paliashdr)
 	GL_DrawAliasFrame (paliashdr, pose);
 }
 
+void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
+{
+	if (Ent->skinNum >= 100)
+	{
+		if (Ent->skinNum > 255) 
+		{
+			Sys_Error("skinnum > 255");
+		}
 
+		if (!gl_extra_textures[Ent->skinNum - 100])  // Need to load it in
+		{
+			char temp[80];
+			QStr::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
+			gl_extra_textures[Ent->skinNum - 100] = Draw_CachePic(temp);
+		}
+
+		Ent->customSkin = R_GetImageHandle(gl_extra_textures[Ent->skinNum - 100]);
+	}
+	else if (PlayerNum >= 0 && !gl_nocolors->value)
+	{
+		// we can't dynamically colormap textures, so they are cached
+		// seperately for the players.  Heads are just uncolored.
+		//FIXME? What about Demoness and Dwarf?
+		model_t* clmodel = Mod_GetModel(Ent->hModel);
+		if (clmodel == player_models[0] ||
+			clmodel == player_models[1] ||
+			clmodel == player_models[2] ||
+			clmodel == player_models[3])
+		{
+			if (!cl.players[PlayerNum].Translated)
+			{
+				R_TranslatePlayerSkin(PlayerNum);
+			}
+
+			Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
+		}
+	}
+}
 
 /*
 =================
@@ -591,8 +628,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	trivertx_t	*verts, *v;
 	int			index;
 	float		s, t, an;
-	int			anim;
-	char		temp[80];
 	int mls;
 	vec3_t		adjust_origin;
 
@@ -733,56 +768,16 @@ void R_DrawAliasModel (refEntity_t *e)
 		GL_State(GLS_DEPTHMASK_TRUE);
 	}
 
-//	if(cl.players[currententity->scoreboard - cl.players].siege_team==ST_DEFENDER)
-//		currententity->skinnum = cl.players[currententity->scoreboard - cl.players].playerclass+110;
+	R_HandleCustomSkin(e, e->scoreboard ? e->scoreboard - cl.players : -1);
 
-	if (currententity->skinNum >= 100)
+	if (e->customSkin)
 	{
-		if (currententity->skinNum > 255) 
-		{
-			Sys_Error ("skinnum > 255");
-		}
-
-		if (!gl_extra_textures[currententity->skinNum-100])  // Need to load it in
-		{
-			sprintf(temp,"gfx/skin%d.lmp",currententity->skinNum);
-			gl_extra_textures[currententity->skinNum-100] = Draw_CachePic(temp);
-		}
-
-		GL_Bind(gl_extra_textures[currententity->skinNum-100]);
+		GL_Bind(tr.images[e->customSkin]);
 	}
 	else
 	{
-		anim = (int)(cl.time*10) & 3;
+		int anim = (int)(cl.time * 10) & 3;
 		GL_Bind(paliashdr->gl_texture[currententity->skinNum][anim]);
-
-		// we can't dynamically colormap textures, so they are cached
-		// seperately for the players.  Heads are just uncolored.
-	
-		if (currententity->colormap != vid.colormap && !gl_nocolors->value)
-		{//FIXME? What about Demoness and Dwarf?
-			if (clmodel == player_models[0] ||
-			    clmodel == player_models[1] ||
-			    clmodel == player_models[2] ||
-			    clmodel == player_models[3])
-			{
-				i = currententity->scoreboard - cl.players;
-//				if (currententity->scoreboard && !currententity->scoreboard->skin)
-//				{
-//					//Skin_Find(currententity->scoreboard);
-//					R_TranslatePlayerSkin(i);
-//				}
-				if (i >= 0 && i<MAX_CLIENTS)
-				{
-					if (!cl.players[i].Translated)
-					{
-						R_TranslatePlayerSkin(i);
-					}
-
-					GL_Bind(playertextures[i]);
-				}
-			}
-		}
 	}
 
 	if (gl_smoothmodels->value)
@@ -1024,7 +1019,6 @@ void R_DrawViewModel (void)
 	VectorCopy(ent->origin, rent->origin);
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
-	rent->colormap = ent->colormap;
 	rent->colorshade = ent->colorshade;
 	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
@@ -1032,6 +1026,7 @@ void R_DrawViewModel (void)
 	rent->scoreboard = ent->scoreboard;
 	rent->shaderTime = ent->syncbase;
 	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale);
+	R_HandleCustomSkin(rent, -1);
 
 	R_DrawAliasModel (currententity);
 }

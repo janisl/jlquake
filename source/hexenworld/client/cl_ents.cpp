@@ -650,18 +650,8 @@ void CL_LinkPacketEntities (void)
 		model = cl.model_precache[s1->modelindex];
 		ent->hModel = Mod_GetHandle(model);
 	
-		if (!s1->colormap)
-		{
-			ent->colorshade = 0;
-			ent->colormap = vid.colormap;
-			ent->scoreboard = NULL;
-		}
-		else
-		{
-			ent->colorshade = s1->colormap;
-			ent->colormap = globalcolormap;
-			ent->scoreboard = NULL;
-		}
+		ent->colorshade = s1->colormap;
+		ent->scoreboard = NULL;
 		
 		// set skin
 		ent->skinNum = s1->skinnum;
@@ -929,10 +919,6 @@ void CL_LinkProjectiles (void)
 		ent->reType = RT_MODEL;
 
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
-		ent->skinNum = 0;
-		ent->frame = 0;
-		ent->colormap = vid.colormap;
-		ent->scoreboard = NULL;
 		ent->frame = pr->frame;
 		VectorCopy (pr->origin, ent->origin);
 		CL_SetRefEntAxis(ent, pr->angles, vec3_origin, 0);
@@ -1027,10 +1013,6 @@ void CL_LinkMissiles (void)
 		cl_numvisedicts++;
 
 		VectorCopy (pr->origin, ent->origin);
-		ent->skinNum = 0;
-		ent->frame = 0;
-		ent->colormap = vid.colormap;
-		ent->scoreboard = NULL;
 		ent->drawflags = SCALE_ORIGIN_CENTER;
 		if(pr->type == 1)
 		{	//ball
@@ -1329,8 +1311,6 @@ void CL_LinkPlayers (void)
 		ent->skinNum = state->skinnum;
 		ent->frame = state->frame;
 
-		ent->colormap = info->translations;
-
 		ent->drawflags = state->drawflags;
 		ent->abslight = state->abslight;
 		if (ent->hModel == Mod_GetHandle(player_models[0]) ||
@@ -1390,6 +1370,7 @@ void CL_LinkPlayers (void)
 		vec3_t angleAdd;
 		HandleEffects(state->effects, j+1, ent, angles, angleAdd, NULL);
 		CL_SetRefEntAxis(ent, angles, angleAdd, state->scale);
+		R_HandleCustomSkin(ent, j);
 
 		// the player object never gets added
 		if (j == cl.playernum)

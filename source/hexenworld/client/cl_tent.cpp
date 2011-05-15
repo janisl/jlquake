@@ -3581,7 +3581,6 @@ refEntity_t *CL_NewTempEntity (void)
 	cl_numvisedicts++;
 	Com_Memset(ent, 0, sizeof(*ent));
 	ent->reType = RT_MODEL;
-	ent->colormap = vid.colormap;
 	return ent;
 }
 
@@ -3758,6 +3757,7 @@ void CL_UpdateExplosions (void)
 		ent->skinNum = ex->skin;
 		ent->drawflags = ex->flags;
 		CL_SetRefEntAxis(ent, ex->angles, vec3_origin, ex->scale);
+		R_HandleCustomSkin(ent, -1);
 
 		if(ex->flags & MLS_ABSLIGHT)
 		{
@@ -4002,6 +4002,7 @@ void CL_UpdateStreams(void)
 				ent->abslight = 128;
 				ent->skinNum = stream->skin;
 				CL_SetRefEntAxis(ent, angles, vec3_origin, 0);
+				R_HandleCustomSkin(ent, -1);
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;
