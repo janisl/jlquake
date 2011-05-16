@@ -288,7 +288,7 @@ typedef struct
 #define Q2RF_DEPTHHACK		16		// for view weapon Z crunching
 #define Q2RF_TRANSLUCENT	32
 #define Q2RF_FRAMELERP		64
-#define RF_BEAM				128
+#define Q2RF_BEAM			128
 #define Q2RF_CUSTOMSKIN		256		// skin is an index in image_precache
 #define Q2RF_GLOW			512		// pulse lighting for bonus items
 #define Q2RF_SHELL_RED		1024

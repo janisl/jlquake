@@ -597,7 +597,7 @@ void SV_BuildClientFrame (client_t *client)
 			}
 
 			// beams just check one point for PHS
-			if (ent->s.renderfx & RF_BEAM)
+			if (ent->s.renderfx & Q2RF_BEAM)
 			{
 				l = ent->clusternums[0];
 				if ( !(clientphs[l >> 3] & (1 << (l&7) )) )

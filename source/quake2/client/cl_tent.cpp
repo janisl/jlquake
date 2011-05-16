@@ -540,8 +540,7 @@ void CL_ParseLaser (int colors)
 	{
 		if (l->endtime < cl.time)
 		{
-			l->ent.reType = RT_MODEL;
-			l->ent.flags = RF_BEAM;
+			l->ent.reType = RT_BEAM;
 			l->ent.renderfx = RF_TRANSLUCENT;
 			VectorCopy (start, l->ent.origin);
 			VectorCopy (end, l->ent.oldorigin);
@@ -989,7 +988,7 @@ void CL_ParseTEnt (void)
 		ex->type = ex_flash;
 		// note to self
 		// we need a better no draw flag
-		ex->ent.flags = RF_BEAM;
+		ex->ent.reType = RT_BEAM;
 		ex->start = cl.frame.servertime - 0.1;
 		ex->light = 100 + (rand()%75);
 		ex->lightcolor[0] = 1.0;

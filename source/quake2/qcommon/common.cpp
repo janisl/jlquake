@@ -473,7 +473,7 @@ void MSG_WriteDeltaEntity (entity_state_t *from, entity_state_t *to, QMsg *msg, 
 	if ( to->sound != from->sound )
 		bits |= U_SOUND;
 
-	if (newentity || (to->renderfx & RF_BEAM))
+	if (newentity || (to->renderfx & Q2RF_BEAM))
 		bits |= U_OLDORIGIN;
 
 	//

@@ -779,7 +779,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		ent.oldframe = cent->prev.frame;
 		ent.backlerp = 1.0 - cl.lerpfrac;
 
-		if (renderfx_old & (Q2RF_FRAMELERP | RF_BEAM))
+		if (renderfx_old & (Q2RF_FRAMELERP | Q2RF_BEAM))
 		{	// step origin discretely, because the frames
 			// do the animation properly
 			VectorCopy (cent->current.origin, ent.origin);
@@ -797,10 +797,12 @@ void CL_AddPacketEntities (frame_t *frame)
 		// create a new entity
 	
 		// tweak the color of beams
-		if ( renderfx_old & RF_BEAM )
-		{	// the four beam colors are encoded in 32 bits of skinnum (hack)
+		if ( renderfx_old & Q2RF_BEAM )
+		{
+			// the four beam colors are encoded in 32 bits of skinnum (hack)
+			ent.reType = RT_BEAM;
 			ent.shaderRGBA[3] = 76;
-			ent.skinNum = (s1->skinnum >> ((rand() % 4)*8)) & 0xff;
+			ent.skinNum = (s1->skinnum >> ((rand() % 4) * 8)) & 0xff;
 			ent.hModel = 0;
 		}
 		else

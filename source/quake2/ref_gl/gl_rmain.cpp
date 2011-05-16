@@ -312,7 +312,7 @@ void R_DrawEntitiesOnList (void)
 		if (currententity->renderfx & RF_TRANSLUCENT)
 			continue;	// solid
 
-		if ( currententity->flags & RF_BEAM )
+		if (currententity->reType == RT_BEAM)
 		{
 			R_DrawBeam( currententity );
 		}
@@ -348,7 +348,7 @@ void R_DrawEntitiesOnList (void)
 		if (!(currententity->renderfx & RF_TRANSLUCENT))
 			continue;	// solid
 
-		if ( currententity->flags & RF_BEAM )
+		if (currententity->reType == RT_BEAM)
 		{
 			R_DrawBeam( currententity );
 		}
