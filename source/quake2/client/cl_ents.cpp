@@ -728,6 +728,10 @@ void CL_AddPacketEntities (frame_t *frame)
 		{
 			renderfx |= RF_GLOW;
 		}
+		if (renderfx_old & Q2RF_IR_VISIBLE)
+		{
+			renderfx |= RF_IR_VISIBLE;
+		}
 
 			// set frame
 		if (effects & EF_ANIM01)
