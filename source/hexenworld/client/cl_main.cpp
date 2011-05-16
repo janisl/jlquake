@@ -1420,7 +1420,9 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 			// Floating motion
 			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
 			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
-		}
+			ent->abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.time * 3.8)) * 34;
+			ent->drawflags |= MLS_ABSLIGHT;
+ 		}
 
 		if (scale != 0 && scale != 100)
 		{

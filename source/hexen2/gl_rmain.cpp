@@ -729,13 +729,7 @@ void R_DrawAliasModel (refEntity_t *e)
 		shadelight = 192 - ambientlight;
 
 	mls = currententity->drawflags&MLS_MASKIN;
-	if(clmodel->flags&EF_ROTATE)
-	{
-		ambientlight = shadelight =
-			60+34+sin(currententity->origin[0]+currententity->origin[1]
-				+(cl.time*3.8))*34;
-	}
-	else if (mls == MLS_ABSLIGHT)
+	if (mls == MLS_ABSLIGHT)
 	{
 		ambientlight = shadelight = currententity->abslight;
 	}
