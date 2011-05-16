@@ -107,6 +107,8 @@ enum refEntityType_t
 #define RF_SHADOW_PLANE		256		// use refEntity->shadowPlane
 #define	RF_WRAP_FRAMES		512		// mod the model frames by the maxframes to allow continuous
 									// animation without needing to know the frame count
+//	New flags
+#define RF_WATERTRANS		16		// translucent, alpha from r_wateralpha cvar.
 
 struct refEntity_base_t
 {

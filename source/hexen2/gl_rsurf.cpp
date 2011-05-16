@@ -249,7 +249,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	if (! (s->flags & (SURF_DRAWSKY|SURF_DRAWTURB|SURF_UNDERWATER) ) )
 	{
-		if (currententity->drawflags & DRF_TRANSLUCENT)
+		if (currententity->renderfx & RF_WATERTRANS)
 		{
 			GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 //			qglColor4f (1,1,1,r_wateralpha.value);
@@ -297,7 +297,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		GL_State(GLS_DEFAULT);
 
 		if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
-			(currententity->drawflags & DRF_TRANSLUCENT))
+			(currententity->renderfx & RF_WATERTRANS))
 		{
 			GL_TexEnv(GL_REPLACE);
 		}
@@ -496,7 +496,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 
 	c_brush_polys++;
 
-	if (currententity->drawflags & DRF_TRANSLUCENT)
+	if (currententity->renderfx & RF_WATERTRANS)
 	{
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		//			qglColor4f (1,1,1,r_wateralpha.value);
@@ -563,12 +563,12 @@ dynamic:
 		}
 	}
 	if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
-	    (currententity->drawflags & DRF_TRANSLUCENT))
+	    (currententity->renderfx & RF_WATERTRANS))
 	{
 		GL_TexEnv(GL_REPLACE);
 	}
 
-	if (currententity->drawflags & DRF_TRANSLUCENT)
+	if (currententity->renderfx & RF_WATERTRANS)
 	{
 		GL_State(GLS_DEFAULT);
 	}

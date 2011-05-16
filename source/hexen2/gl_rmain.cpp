@@ -274,7 +274,7 @@ void R_DrawSpriteModel (refEntity_t *e)
 
 	frame = R_GetSpriteFrame (psprite);
 
-	if (currententity->drawflags & DRF_TRANSLUCENT)
+	if (currententity->renderfx & RF_WATERTRANS)
 	{
 		// rjr
 		qglColor4f (1,1,1,r_wateralpha->value);
@@ -773,7 +773,7 @@ void R_DrawAliasModel (refEntity_t *e)
 		qglDisable( GL_CULL_FACE );
 		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA);
 	}
-	else if (currententity->drawflags & DRF_TRANSLUCENT)
+	else if (currententity->renderfx & RF_WATERTRANS)
 	{
 		// rjr
 //		qglColor4f( 1,1,1,r_wateralpha.value);
@@ -895,7 +895,7 @@ void R_DrawEntitiesOnList (void)
 		switch (Mod_GetModel(currententity->hModel)->type)
 		{
 		case mod_alias:
-			item_trans = ((currententity->drawflags & DRF_TRANSLUCENT) ||
+			item_trans = ((currententity->renderfx & RF_WATERTRANS) ||
 						  (Mod_GetModel(currententity->hModel)->flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
 				R_DrawAliasModel (currententity);
@@ -903,7 +903,7 @@ void R_DrawEntitiesOnList (void)
 			break;
 
 		case mod_brush:
-			item_trans = ((currententity->drawflags & DRF_TRANSLUCENT)) != 0;
+			item_trans = ((currententity->renderfx & RF_WATERTRANS)) != 0;
 			if (!item_trans)
 				R_DrawBrushModel (currententity,false);
 

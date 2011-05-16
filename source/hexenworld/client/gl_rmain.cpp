@@ -263,7 +263,7 @@ void R_DrawSpriteModel (refEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	if (currententity->drawflags & DRF_TRANSLUCENT)
+	if (currententity->renderfx & RF_WATERTRANS)
 	{
 		qglColor4f (1,1,1,r_wateralpha->value);
 	}
@@ -690,7 +690,7 @@ void R_DrawAliasModel (refEntity_t *e)
 		qglDisable( GL_CULL_FACE );
 		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA);
 	}
-	else if (currententity->drawflags & DRF_TRANSLUCENT)
+	else if (currententity->renderfx & RF_WATERTRANS)
 	{
 //		qglColor4f( 1,1,1,r_wateralpha.value);
 		model_constant_alpha = r_wateralpha->value;
@@ -831,14 +831,14 @@ void R_DrawEntitiesOnList (void)
 				continue;
 			}
 
-			item_trans = ((currententity->drawflags & DRF_TRANSLUCENT) ||
+			item_trans = ((currententity->renderfx & RF_WATERTRANS) ||
 						  (Mod_GetModel(currententity->hModel)->flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
 				R_DrawAliasModel (currententity);
 			break;
 
 		case mod_brush:
-			item_trans = ((currententity->drawflags & DRF_TRANSLUCENT)) != 0;
+			item_trans = ((currententity->renderfx & RF_WATERTRANS)) != 0;
 			if (!item_trans)
 				R_DrawBrushModel (currententity,false);
 			break;

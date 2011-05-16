@@ -1373,6 +1373,11 @@ void Host_Shutdown(void)
 
 void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale)
 {
+	if (ent->drawflags & DRF_TRANSLUCENT)
+	{
+		ent->renderfx |= RF_WATERTRANS;
+	}
+
 	vec3_t angles;
 	if (Mod_GetModel(ent->hModel)->type == mod_alias)
 	{
