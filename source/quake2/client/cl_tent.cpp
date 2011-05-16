@@ -872,7 +872,7 @@ void CL_ParseTEnt (void)
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
-		ex->ent.flags = RF_ABSOLUTE_LIGHT;
+		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
 		ex->ent.radius = 1;
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 350;

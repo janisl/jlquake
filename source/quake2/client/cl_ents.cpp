@@ -857,12 +857,11 @@ void CL_AddPacketEntities (frame_t *frame)
 		// render effects (fullbright, translucent, etc)
 		if ((effects & EF_COLOR_SHELL))
 		{
-			ent.flags = 0;	// renderfx go on color shell entity
+			// renderfx go on color shell entity
 			ent.renderfx = 0;
 		}
 		else
 		{
-			ent.flags = renderfx_old;
 			ent.renderfx = renderfx;
 		}
 
@@ -953,7 +952,6 @@ void CL_AddPacketEntities (frame_t *frame)
 		// color shells generate a seperate entity for the main model
 		if (effects & EF_COLOR_SHELL)
 		{
-			ent.flags = renderfx_old;
 			ent.renderfx = renderfx | RF_TRANSLUCENT | RF_COLOUR_SHELL;
 			// PMM - rewrote, reordered to handle new shells & mixing
 			// PMM -special case for godmode
@@ -1019,7 +1017,6 @@ void CL_AddPacketEntities (frame_t *frame)
 		}
 
 		ent.skinNum = 0;
-		ent.flags = 0;
 		ent.renderfx = 0;
 		ent.shaderRGBA[3] = 0;
 
@@ -1054,7 +1051,6 @@ void CL_AddPacketEntities (frame_t *frame)
 			V_AddEntity (&ent);
 
 			//PGM - make sure these get reset.
-			ent.flags = 0;
 			ent.renderfx = 0;
 			ent.shaderRGBA[3] = 0;
 			//PGM

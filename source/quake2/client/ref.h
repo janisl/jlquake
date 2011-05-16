@@ -49,7 +49,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct entity_t : refEntity_base_t
 {
-	int		flags;
 };
 
 #define ENTITY_FLAGS  68
