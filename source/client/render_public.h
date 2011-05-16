@@ -105,13 +105,14 @@ enum refEntityType_t
 									// with their origin going solid, and allows all parts of a
 									// player to get the same lighting
 #define RF_SHADOW_PLANE		256		// use refEntity->shadowPlane
-#define	RF_WRAP_FRAMES		512		// mod the model frames by the maxframes to allow continuous
+#define RF_WRAP_FRAMES		512		// mod the model frames by the maxframes to allow continuous
 									// animation without needing to know the frame count
 //	New flags
 #define RF_WATERTRANS		16		// translucent, alpha from r_wateralpha cvar.
 #define RF_TRANSLUCENT		32		// translucent, alpha in shaderRGBA
 #define RF_COLORSHADE		1024	// multiply light with colour in shaderRGBA
 #define RF_ABSOLUTE_LIGHT	2048	// fixed light, value in radius
+#define RF_COLOUR_SHELL		4096	// draws coloured shell for the model
 
 struct refEntity_base_t
 {

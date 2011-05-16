@@ -742,14 +742,14 @@ void CL_AddPacketEntities (frame_t *frame)
 		{
 			effects &= ~EF_PENT;
 			effects |= EF_COLOR_SHELL;
-			renderfx_old |= RF_SHELL_RED;
+			renderfx_old |= Q2RF_SHELL_RED;
 		}
 
 		if (effects & EF_QUAD)
 		{
 			effects &= ~EF_QUAD;
 			effects |= EF_COLOR_SHELL;
-			renderfx_old |= RF_SHELL_BLUE;
+			renderfx_old |= Q2RF_SHELL_BLUE;
 		}
 //======
 // PMM
@@ -757,14 +757,14 @@ void CL_AddPacketEntities (frame_t *frame)
 		{
 			effects &= ~EF_DOUBLE;
 			effects |= EF_COLOR_SHELL;
-			renderfx_old |= RF_SHELL_DOUBLE;
+			renderfx_old |= Q2RF_SHELL_DOUBLE;
 		}
 
 		if (effects & EF_HALF_DAMAGE)
 		{
 			effects &= ~EF_HALF_DAMAGE;
 			effects |= EF_COLOR_SHELL;
-			renderfx_old |= RF_SHELL_HALF_DAM;
+			renderfx_old |= Q2RF_SHELL_HALF_DAM;
 		}
 // pmm
 //======
@@ -944,7 +944,66 @@ void CL_AddPacketEntities (frame_t *frame)
 		if (effects & EF_COLOR_SHELL)
 		{
 			ent.flags = renderfx_old;
-			ent.renderfx = renderfx | RF_TRANSLUCENT;
+			ent.renderfx = renderfx | RF_TRANSLUCENT | RF_COLOUR_SHELL;
+			// PMM - rewrote, reordered to handle new shells & mixing
+			// PMM -special case for godmode
+			if ((renderfx_old & Q2RF_SHELL_RED) &&
+				(renderfx_old & Q2RF_SHELL_BLUE) &&
+				(renderfx_old & Q2RF_SHELL_GREEN))
+			{
+				ent.shaderRGBA[0] = 255;
+				ent.shaderRGBA[1] = 255;
+				ent.shaderRGBA[2] = 255;
+			}
+			else if (renderfx_old & (Q2RF_SHELL_RED | Q2RF_SHELL_BLUE | Q2RF_SHELL_DOUBLE))
+			{
+				ent.shaderRGBA[0] = 0;
+				ent.shaderRGBA[1] = 0;
+				ent.shaderRGBA[2] = 0;
+
+				if (renderfx_old & Q2RF_SHELL_RED)
+				{
+					ent.shaderRGBA[0] = 255;
+					if (renderfx_old & (Q2RF_SHELL_BLUE | Q2RF_SHELL_DOUBLE))
+					{
+						ent.shaderRGBA[2] = 255;
+					}
+				}
+				else if (renderfx_old & Q2RF_SHELL_BLUE)
+				{
+					if (renderfx_old & Q2RF_SHELL_DOUBLE)
+					{
+						ent.shaderRGBA[1] = 255;
+						ent.shaderRGBA[2] = 255;
+					}
+					else
+					{
+						ent.shaderRGBA[2] = 255;
+					}
+				}
+				else if (renderfx_old & Q2RF_SHELL_DOUBLE)
+				{
+					ent.shaderRGBA[0] = 230;
+					ent.shaderRGBA[1] = 178;
+				}
+			}
+			else if (renderfx_old & (Q2RF_SHELL_HALF_DAM | Q2RF_SHELL_GREEN))
+			{
+				ent.shaderRGBA[0] = 0;
+				ent.shaderRGBA[1] = 0;
+				ent.shaderRGBA[2] = 0;
+				// PMM - new colors
+				if (renderfx_old & Q2RF_SHELL_HALF_DAM)
+				{
+					ent.shaderRGBA[0] = 143;
+					ent.shaderRGBA[1] = 150;
+					ent.shaderRGBA[2] = 115;
+				}
+				if (renderfx_old & Q2RF_SHELL_GREEN)
+				{
+					ent.shaderRGBA[1] = 255;
+				}
+			}
 			ent.shaderRGBA[3] = 76;
 			V_AddEntity (&ent);
 		}
@@ -1001,15 +1060,17 @@ void CL_AddPacketEntities (frame_t *frame)
 			V_AddEntity (&ent);
 		}
 
-		if ( effects & EF_POWERSCREEN )
+		if (effects & EF_POWERSCREEN)
 		{
 			ent.hModel = Mod_GetHandle(cl_mod_powerscreen);
 			ent.oldframe = 0;
 			ent.frame = 0;
-			ent.flags |= (RF_SHELL_GREEN);
-			ent.renderfx |= RF_TRANSLUCENT;
+			ent.renderfx |= RF_TRANSLUCENT | RF_COLOUR_SHELL;
+			ent.shaderRGBA[0] = 0;
+			ent.shaderRGBA[1] = 255;
+			ent.shaderRGBA[2] = 0;
 			ent.shaderRGBA[3] = 76;
-			V_AddEntity (&ent);
+			V_AddEntity(&ent);
 		}
 
 		// add automatic particle trails
