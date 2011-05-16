@@ -192,7 +192,6 @@ void R_StoreEfrags (efrag_t **ppefrag)
 				rent->skinNum = ent->skinnum;
 				rent->drawflags = ent->drawflags;
 				rent->abslight = ent->abslight;
-				rent->scoreboard = ent->scoreboard;
 				rent->shaderTime = ent->syncbase;
 				CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale);
 				R_HandleCustomSkin(rent, -1);

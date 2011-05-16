@@ -44,8 +44,6 @@ struct refEntity_t : refEntity_base_t
 	byte					colorshade;
 	int						drawflags;		// for Alias models
 	int						abslight;		// for Alias models
-
-	struct player_info_s	*scoreboard;	// identify player
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!

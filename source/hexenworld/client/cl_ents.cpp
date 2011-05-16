@@ -651,7 +651,6 @@ void CL_LinkPacketEntities (void)
 		ent->hModel = Mod_GetHandle(model);
 	
 		ent->colorshade = s1->colormap;
-		ent->scoreboard = NULL;
 		
 		// set skin
 		ent->skinNum = s1->skinnum;
@@ -1320,12 +1319,8 @@ void CL_LinkPlayers (void)
 			ent->hModel == Mod_GetHandle(player_models[4]) ||//mg-siege
 			ent->hModel == Mod_GetHandle(player_models[5]))
 		{
-			ent->scoreboard = info;		// use custom skin
+			// use custom skin
 			info->shownames_off = false;
-		}
-		else
-		{
-			ent->scoreboard = NULL;
 		}
 
 		//

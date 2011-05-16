@@ -722,8 +722,6 @@ void R_DrawAliasModel (refEntity_t *e)
 		GL_State(GLS_DEPTHMASK_TRUE);
 	}
 
-	R_HandleCustomSkin(e, e->scoreboard ? e->scoreboard - cl.players : -1);
-
 	if (e->customSkin)
 	{
 		GL_Bind(tr.images[e->customSkin]);
@@ -977,7 +975,6 @@ void R_DrawViewModel (void)
 	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
-	rent->scoreboard = ent->scoreboard;
 	rent->shaderTime = ent->syncbase;
 	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale);
 	R_HandleCustomSkin(rent, -1);
