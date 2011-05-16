@@ -771,7 +771,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		ent.oldframe = cent->prev.frame;
 		ent.backlerp = 1.0 - cl.lerpfrac;
 
-		if (renderfx_old & (RF_FRAMELERP|RF_BEAM))
+		if (renderfx_old & (Q2RF_FRAMELERP | RF_BEAM))
 		{	// step origin discretely, because the frames
 			// do the animation properly
 			VectorCopy (cent->current.origin, ent.origin);
@@ -812,7 +812,7 @@ void CL_AddPacketEntities (frame_t *frame)
 
 //============
 //PGM
-				if (renderfx_old & RF_USE_DISGUISE)
+				if (renderfx_old & Q2RF_USE_DISGUISE)
 				{
 					if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/male", 12))
 					{

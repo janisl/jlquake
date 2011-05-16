@@ -287,9 +287,9 @@ typedef struct
 #define Q2RF_FULLBRIGHT		8		// allways draw full intensity
 #define Q2RF_DEPTHHACK		16		// for view weapon Z crunching
 #define Q2RF_TRANSLUCENT	32
-#define	RF_FRAMELERP		64
+#define Q2RF_FRAMELERP		64
 #define RF_BEAM				128
-#define	RF_CUSTOMSKIN		256		// skin is an index in image_precache
+#define Q2RF_CUSTOMSKIN		256		// skin is an index in image_precache
 #define	RF_GLOW				512		// pulse lighting for bonus items
 #define Q2RF_SHELL_RED		1024
 #define Q2RF_SHELL_GREEN	2048
@@ -299,7 +299,7 @@ typedef struct
 #define RF_IR_VISIBLE		0x00008000		// 32768
 #define Q2RF_SHELL_DOUBLE	0x00010000		// 65536
 #define Q2RF_SHELL_HALF_DAM	0x00020000
-#define RF_USE_DISGUISE		0x00040000
+#define Q2RF_USE_DISGUISE	0x00040000
 //ROGUE
 
 // player_state_t->refdef flags
