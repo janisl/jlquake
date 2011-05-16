@@ -927,7 +927,7 @@ void R_DrawInlineBModel (void)
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (entity_t *e)
+void R_DrawBrushModel (refEntity_t *e)
 {
 	vec3_t		mins, maxs;
 	int			i;
@@ -1164,7 +1164,7 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	entity_t	ent;
+	refEntity_t	ent;
 
 	if (!r_drawworld->value)
 		return;

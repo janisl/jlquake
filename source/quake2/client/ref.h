@@ -47,7 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define SHELL_WHITE_COLOR	0xD7
 
-struct entity_t : refEntity_base_t
+struct refEntity_t : refEntity_base_t
 {
 };
 
@@ -88,7 +88,7 @@ typedef struct
 	lightstyle_t	*lightstyles;	// [MAX_LIGHTSTYLES]
 
 	int			num_entities;
-	entity_t	*entities;
+	refEntity_t	*entities;
 
 	int			num_dlights;
 	dlight_t	*dlights;

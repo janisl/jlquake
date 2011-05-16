@@ -674,7 +674,7 @@ CL_AddPacketEntities
 */
 void CL_AddPacketEntities (frame_t *frame)
 {
-	entity_t			ent;
+	refEntity_t			ent;
 	entity_state_t		*s1;
 	float				autorotate;
 	int					i;
@@ -1226,7 +1226,7 @@ CL_AddViewWeapon
 */
 void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 {
-	entity_t	gun;		// view model
+	refEntity_t	gun;		// view model
 	int			i;
 
 	// allow the gun to be completely removed

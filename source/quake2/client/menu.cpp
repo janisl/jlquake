@@ -4101,7 +4101,7 @@ void PlayerConfig_MenuDraw( void )
 	{
 		static int yaw;
 		int maxframe = 29;
-		entity_t entity;
+		refEntity_t entity;
 		vec3_t angles;
 
 		Com_Memset( &entity, 0, sizeof( entity ) );

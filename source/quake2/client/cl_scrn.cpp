@@ -606,7 +606,7 @@ void SCR_Loading_f (void)
 SCR_TimeRefresh_f
 ================
 */
-int entitycmpfnc( const entity_t *a, const entity_t *b )
+int entitycmpfnc(const refEntity_t* a, const refEntity_t* b)
 {
 	/*
 	** all other models are sorted by model then skin

@@ -32,7 +32,7 @@ glstate2_t  gl_state;
 
 image_t		*r_particletexture;	// little dot for particles
 
-entity_t	*currententity;
+refEntity_t	*currententity;
 model_t		*currentmodel;
 
 cplane_t	frustum[4];
@@ -123,7 +123,7 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 }
 
 
-void R_RotateForEntity (entity_t *e)
+void R_RotateForEntity (refEntity_t *e)
 {
 	GLfloat glmat[16];
 
@@ -162,7 +162,7 @@ R_DrawSpriteModel
 
 =================
 */
-void R_DrawSpriteModel (entity_t *e)
+void R_DrawSpriteModel (refEntity_t *e)
 {
 	float alpha = 1.0F;
 	vec3_t	point;
@@ -1104,7 +1104,7 @@ void R_CinematicSetPalette ( const unsigned char *palette)
 /*
 ** R_DrawBeam
 */
-void R_DrawBeam( entity_t *e )
+void R_DrawBeam( refEntity_t *e )
 {
 #define NUM_BEAM_SEGS 6
 

@@ -29,7 +29,7 @@ typedef enum
 typedef struct
 {
 	exptype_t	type;
-	entity_t	ent;
+	refEntity_t	ent;
 
 	int			frames;
 	float		light;
@@ -62,7 +62,7 @@ beam_t		cl_playerbeams[MAX_BEAMS];
 #define	MAX_LASERS	32
 typedef struct
 {
-	entity_t	ent;
+	refEntity_t	ent;
 	int			endtime;
 } laser_t;
 laser_t		cl_lasers[MAX_LASERS];
@@ -1235,7 +1235,7 @@ void CL_AddBeams (void)
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
-	entity_t	ent;
+	refEntity_t	ent;
 	float		yaw, pitch;
 	float		forward;
 	float		len, steps;
@@ -1382,7 +1382,7 @@ void CL_AddPlayerBeams (void)
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
-	entity_t	ent;
+	refEntity_t	ent;
 	float		yaw, pitch;
 	float		forward;
 	float		len, steps;
@@ -1628,7 +1628,7 @@ CL_AddExplosions
 */
 void CL_AddExplosions (void)
 {
-	entity_t	*ent;
+	refEntity_t	*ent;
 	int			i;
 	explosion_t	*ex;
 	float		frac;

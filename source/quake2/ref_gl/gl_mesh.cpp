@@ -362,7 +362,7 @@ void GL_DrawAliasShadow (dmdl_t *paliashdr, int posenum)
 /*
 ** R_CullAliasModel
 */
-static qboolean R_CullAliasModel( vec3_t bbox[8], entity_t *e )
+static qboolean R_CullAliasModel( vec3_t bbox[8], refEntity_t *e )
 {
 	int i;
 	vec3_t		mins, maxs;
@@ -509,7 +509,7 @@ R_DrawAliasModel
 
 =================
 */
-void R_DrawAliasModel (entity_t *e)
+void R_DrawAliasModel (refEntity_t *e)
 {
 	int			i;
 	dmdl_t		*paliashdr;

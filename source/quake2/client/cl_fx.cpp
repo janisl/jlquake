@@ -1892,7 +1892,7 @@ CL_BfgParticles
 */
 
 #define	BEAMLENGTH			16
-void CL_BfgParticles (entity_t *ent)
+void CL_BfgParticles (refEntity_t *ent)
 {
 	int			i;
 	cparticle_t	*p;
@@ -1961,7 +1961,7 @@ CL_TrapParticles
 ===============
 */
 // RAFAEL
-void CL_TrapParticles (entity_t *ent)
+void CL_TrapParticles (refEntity_t *ent)
 {
 	vec3_t		move;
 	vec3_t		vec;
