@@ -116,7 +116,7 @@ enum refEntityType_t
 #define RF_GLOW				8192	// pulse lighting for bonus items
 #define RF_IR_VISIBLE		16384	// in red light when infrared googles are on
 
-struct refEntity_base_t
+struct refEntity_t
 {
 	refEntityType_t	reType;
 	int				renderfx;

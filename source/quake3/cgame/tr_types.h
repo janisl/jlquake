@@ -43,11 +43,6 @@ typedef struct poly_s {
 	polyVert_t			*verts;
 } poly_t;
 
-struct refEntity_t : refEntity_base_t
-{
-};
-
-
 #define	MAX_RENDER_STRINGS			8
 #define	MAX_RENDER_STRING_LENGTH	32
 

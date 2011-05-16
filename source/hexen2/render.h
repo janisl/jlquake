@@ -47,10 +47,6 @@ struct entity_t
 											//  found in an active leaf
 };
 
-struct refEntity_t : refEntity_base_t
-{
-};
-
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
 typedef struct
 {
