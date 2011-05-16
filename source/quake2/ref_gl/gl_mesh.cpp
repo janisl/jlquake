@@ -584,8 +584,9 @@ void R_DrawAliasModel (entity_t *e)
 		}
 	}
 
-	if ( currententity->flags & RF_GLOW )
-	{	// bonus items will pulse with time
+	if (currententity->renderfx & RF_GLOW)
+	{
+		// bonus items will pulse with time
 		float	scale;
 		float	min;
 

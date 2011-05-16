@@ -290,7 +290,7 @@ typedef struct
 #define Q2RF_FRAMELERP		64
 #define RF_BEAM				128
 #define Q2RF_CUSTOMSKIN		256		// skin is an index in image_precache
-#define	RF_GLOW				512		// pulse lighting for bonus items
+#define Q2RF_GLOW			512		// pulse lighting for bonus items
 #define Q2RF_SHELL_RED		1024
 #define Q2RF_SHELL_GREEN	2048
 #define Q2RF_SHELL_BLUE		4096
