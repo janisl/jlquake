@@ -1378,6 +1378,69 @@ void CL_LinkPlayers (void)
 			continue;
 		}
 
+		//	This uses behavior of software renderer as GL version was fucked
+		// up because it didn't take into the account the fact that shadelight
+		// has divided by 200 at this point.
+		if (!info->shownames_off)
+		{
+			int my_team = cl.players[cl.playernum].siege_team;
+			int ve_team = info->siege_team;
+			float ambientlight = R_CalcEntityLight(ent);
+			float shadelight = ambientlight;
+
+			// clamp lighting so it doesn't overbright as much
+			if (ambientlight > 128)
+			{
+				ambientlight = 128;
+			}
+			if (ambientlight + shadelight > 192)
+			{
+				shadelight = 192 - ambientlight;
+			}
+			if ((ambientlight + shadelight) > 75 || (cl_siege && my_team == ve_team))
+			{
+				info->shownames_off = false;
+			}
+			else
+			{
+				info->shownames_off = true;
+			}
+			if (cl_siege)
+			{
+				if (cl.players[cl.playernum].playerclass == CLASS_DWARF && ent->skinNum == 101)
+				{
+					ent->colorshade = 141;
+					info->shownames_off = false;
+				}
+				else if (cl.players[cl.playernum].playerclass == CLASS_DWARF && (ambientlight + shadelight) < 151)
+				{
+					ent->colorshade = 138 + (int)((ambientlight + shadelight) / 30);
+					info->shownames_off = false;
+				}
+				else if (ve_team == ST_DEFENDER)
+				{
+					//tint gold since we can't have seperate skins
+					ent->colorshade = 165;
+				}
+			}
+			else
+			{
+				char client_team[16];
+				QStr::NCpy(client_team, Info_ValueForKey(cl.players[cl.playernum].userinfo, "team"), 16);
+				client_team[15] = 0;
+				if (client_team[0])
+				{
+					char this_team[16];
+					QStr::NCpy(this_team, Info_ValueForKey(info->userinfo, "team"), 16);
+					this_team[15] = 0;
+					if (QStr::ICmp(client_team, this_team) == 0)
+					{
+						ent->colorshade = r_teamcolor->value;
+					}
+				}
+			}
+		}
+
 		cl_numvisedicts++;
 
 //		if (state->effects & EF_FLAG1)

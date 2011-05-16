@@ -363,7 +363,6 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 {
 	float		s, t;
 	float 		l;
-	int			i, j;
 	int			index;
 	trivertx_t	*v, *verts;
 	int			list;
@@ -372,10 +371,7 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 	float		*normal;
 	int			count;
 	float		r,g,b,p;
-	char		client_team[16], this_team[16];
-	qboolean	OnTeam = false;
 	byte		ColorShade;
-	int			my_team, ve_team;
 
 	lastposenum = posenum;
 
@@ -384,53 +380,6 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 	order = (int *)((byte *)paliashdr + paliashdr->commands);
 
 	ColorShade = currententity->colorshade;
-
-	i = currententity->scoreboard - cl.players;
-	if (i >= 0 && i<MAX_CLIENTS)
-	{
-		my_team = cl.players[cl.playernum].siege_team;
-		ve_team = cl.players[i].siege_team;
-		if((ambientlight+shadelight)>50||(cl_siege&&my_team==ve_team))
-			cl.players[i].shownames_off = false;
-		else
-			cl.players[i].shownames_off = true;
-		if(cl_siege)
-		{
-			if(cl.players[cl.playernum].playerclass==CLASS_DWARF&&currententity->skinNum==101)
-			{
-				ColorShade = 133;
-				if(ambientlight<128)
-					shadelight += (128 - ambientlight);
-				cl.players[i].shownames_off = false;
-			}
-			else if(cl.players[cl.playernum].playerclass==CLASS_DWARF&&(ambientlight+shadelight)<51)//OOps, use darkmaps in GL
-			{
-				ColorShade = 128 + (int)((ambientlight+shadelight)/5);
-				shadelight += (51 - ambientlight);
-				cl.players[i].shownames_off = false;
-			}
-			else if(ve_team==ST_DEFENDER)
-			{//tint gold since we can't have seperate skins
-				OnTeam = true;
-				ColorShade = 165;
-			}
-		}
-		else
-		{
-			QStr::NCpy(client_team, Info_ValueForKey(cl.players[cl.playernum].userinfo, "team"), 16);
-			client_team[15] = 0;
-			if (client_team[0])
-			{
-				QStr::NCpy(this_team, Info_ValueForKey(cl.players[i].userinfo, "team"), 16);
-				this_team[15] = 0;
-				if (QStr::ICmp(client_team, this_team) == 0)
-				{
-					OnTeam = true;
-					ColorShade = r_teamcolor->value;
-				}
-			}
-		}
-	}
 
 	if (ColorShade)
 	{
@@ -610,6 +559,43 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 	}
 }
 
+float R_CalcEntityLight(refEntity_t* e)
+{
+	float* lorg = e->origin;
+	if (e->renderfx & RF_LIGHTING_ORIGIN)
+	{
+		lorg = e->lightingOrigin;
+	}
+
+	vec3_t adjust_origin;
+	VectorCopy(lorg, adjust_origin);
+	model_t* clmodel = Mod_GetModel(e->hModel);
+	adjust_origin[2] += (clmodel->mins[2] + clmodel->maxs[2]) / 2;
+	float light = R_LightPoint(adjust_origin);
+
+	// allways give the gun some light
+	if ((e->renderfx & RF_MINLIGHT) && light < 24)
+	{
+		light = 24;
+	}
+
+	for (int lnum = 0; lnum < MAX_DLIGHTS; lnum++)
+	{
+		if (cl_dlights[lnum].die >= cl.time)
+		{
+			vec3_t dist;
+			VectorSubtract(lorg, cl_dlights[lnum].origin, dist);
+			float add = cl_dlights[lnum].radius - VectorLength(dist);
+
+			if (add > 0)
+			{
+				light += add;
+			}
+		}
+	}
+	return light;
+}
+
 /*
 =================
 R_DrawAliasModel
@@ -619,9 +605,6 @@ R_DrawAliasModel
 void R_DrawAliasModel (refEntity_t *e)
 {
 	int			i, j;
-	int			lnum;
-	vec3_t		dist;
-	float		add;
 	model_t		*clmodel;
 	vec3_t		mins, maxs;
 	aliashdr_t	*paliashdr;
@@ -629,7 +612,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	int			index;
 	float		s, t, an;
 	int mls;
-	vec3_t		adjust_origin;
 
 	clmodel = Mod_GetModel(currententity->hModel);
 
@@ -652,35 +634,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	// get lighting information
 	//
 
-	float* lorg = e->origin;
-	if (e->renderfx & RF_LIGHTING_ORIGIN)
-	{
-		lorg = e->lightingOrigin;
-	}
-	VectorCopy(lorg, adjust_origin);
-	adjust_origin[2] += (clmodel->mins[2] + clmodel->maxs[2]) / 2;
-	ambientlight = shadelight = R_LightPoint (adjust_origin);
-
-	// allways give the gun some light
-	if ((e->renderfx & RF_MINLIGHT) && ambientlight < 24)
-		ambientlight = shadelight = 24;
-
-	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
-	{
-		if (cl_dlights[lnum].die >= cl.time)
-		{
-			VectorSubtract(lorg,
-							cl_dlights[lnum].origin,
-							dist);
-			add = cl_dlights[lnum].radius - VectorLength(dist);
-
-			if (add > 0) {
-				ambientlight += add;
-				//ZOID models should be affected by dlights as well
-				shadelight += add;
-			}
-		}
-	}
+	ambientlight = shadelight = R_CalcEntityLight(e);
 
 	if (e->renderfx & RF_FIRST_PERSON)
 		cl.light_level = ambientlight;

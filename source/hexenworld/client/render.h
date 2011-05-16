@@ -152,3 +152,4 @@ void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
+float R_CalcEntityLight(refEntity_t* e);
