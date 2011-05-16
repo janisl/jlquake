@@ -202,8 +202,8 @@ void R_DrawSpriteModel (entity_t *e)
 		right = vright;
 	}
 
-	if ( e->flags & RF_TRANSLUCENT )
-		alpha = e->alpha;
+	if ( e->renderfx & RF_TRANSLUCENT )
+		alpha = e->shaderRGBA[3] / 255.0;
 
 	if ( alpha != 1.0F )
 	{
@@ -309,7 +309,7 @@ void R_DrawEntitiesOnList (void)
 	for (i=0 ; i<r_newrefdef.num_entities ; i++)
 	{
 		currententity = &r_newrefdef.entities[i];
-		if (currententity->flags & RF_TRANSLUCENT)
+		if (currententity->renderfx & RF_TRANSLUCENT)
 			continue;	// solid
 
 		if ( currententity->flags & RF_BEAM )
@@ -345,7 +345,7 @@ void R_DrawEntitiesOnList (void)
 	for (i=0 ; i<r_newrefdef.num_entities ; i++)
 	{
 		currententity = &r_newrefdef.entities[i];
-		if (!(currententity->flags & RF_TRANSLUCENT))
+		if (!(currententity->renderfx & RF_TRANSLUCENT))
 			continue;	// solid
 
 		if ( currententity->flags & RF_BEAM )
@@ -1152,7 +1152,7 @@ void R_DrawBeam( entity_t *e )
 	g *= 1/255.0F;
 	b *= 1/255.0F;
 
-	qglColor4f( r, g, b, e->alpha );
+	qglColor4f( r, g, b, e->shaderRGBA[3] / 255.0 );
 
 	qglBegin( GL_TRIANGLE_STRIP );
 	for ( i = 0; i < NUM_BEAM_SEGS; i++ )

@@ -866,7 +866,7 @@ void R_DrawInlineBModel (void)
 
 	psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
 
-	if ( currententity->flags & RF_TRANSLUCENT )
+	if ( currententity->renderfx & RF_TRANSLUCENT )
 	{
 		qglColor4f (1,1,1,0.25);
 		GL_TexEnv( GL_MODULATE );
@@ -909,7 +909,7 @@ void R_DrawInlineBModel (void)
 		}
 	}
 
-	if ( !(currententity->flags & RF_TRANSLUCENT) )
+	if ( !(currententity->renderfx & RF_TRANSLUCENT) )
 	{
 		if ( !qglMultiTexCoord2fARB )
 			R_BlendLightmaps ();

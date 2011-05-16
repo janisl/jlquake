@@ -268,7 +268,7 @@ void CL_SmokeAndFlash(vec3_t origin)
 	VectorCopy (origin, ex->ent.origin);
 	ex->type = ex_misc;
 	ex->frames = 4;
-	ex->ent.flags = RF_TRANSLUCENT;
+	ex->ent.renderfx = RF_TRANSLUCENT;
 	ex->start = cl.frame.servertime - 100;
 	ex->ent.hModel = Mod_GetHandle(cl_mod_smoke);
 
@@ -540,10 +540,11 @@ void CL_ParseLaser (int colors)
 		if (l->endtime < cl.time)
 		{
 			l->ent.reType = RT_MODEL;
-			l->ent.flags = RF_TRANSLUCENT | RF_BEAM;
+			l->ent.flags = RF_BEAM;
+			l->ent.renderfx = RF_TRANSLUCENT;
 			VectorCopy (start, l->ent.origin);
 			VectorCopy (end, l->ent.oldorigin);
-			l->ent.alpha = 0.30;
+			l->ent.shaderRGBA[3] = 76;
 			l->ent.skinNum = (colors >> ((rand() % 4)*8)) & 0xff;
 			l->ent.hModel = 0;
 			l->ent.frame = 4;
@@ -818,7 +819,8 @@ void CL_ParseTEnt (void)
 		AnglesToAxis(angles, ex->ent.axis);
 
 		ex->type = ex_misc;
-		ex->ent.flags = RF_FULLBRIGHT|RF_TRANSLUCENT;
+		ex->ent.flags = RF_FULLBRIGHT;
+		ex->ent.renderfx = RF_TRANSLUCENT;
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 150;
 		ex->lightcolor[0] = 1;
@@ -934,8 +936,8 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[1] = 1.0;
 		ex->lightcolor[2] = 0.0;
 		ex->ent.hModel = Mod_GetHandle(cl_mod_bfg_explo);
-		ex->ent.flags |= RF_TRANSLUCENT;
-		ex->ent.alpha = 0.30;
+		ex->ent.renderfx |= RF_TRANSLUCENT;
+		ex->ent.shaderRGBA[3] = 76;
 		ex->frames = 4;
 		break;
 
@@ -1037,7 +1039,8 @@ void CL_ParseTEnt (void)
 		AnglesToAxis(angles, ex->ent.axis);
 
 		ex->type = ex_misc;
-		ex->ent.flags = RF_FULLBRIGHT|RF_TRANSLUCENT;
+		ex->ent.flags = RF_FULLBRIGHT;
+		ex->ent.renderfx = RF_TRANSLUCENT;
 
 		// PMM
 		if (type == TE_BLASTER2)
@@ -1643,7 +1646,7 @@ void CL_AddExplosions (void)
 				ex->type = ex_free;
 				break;
 			}
-			ent->alpha = 1.0 - frac/(ex->frames-1);
+			ent->shaderRGBA[3] = (int)((1.0 - frac/(ex->frames-1)) * 255);
 			break;
 		case ex_flash:
 			if (f >= 1)
@@ -1651,7 +1654,7 @@ void CL_AddExplosions (void)
 				ex->type = ex_free;
 				break;
 			}
-			ent->alpha = 1.0;
+			ent->shaderRGBA[3] = 255;
 			break;
 		case ex_poly:
 			if (f >= ex->frames-1)
@@ -1660,7 +1663,7 @@ void CL_AddExplosions (void)
 				break;
 			}
 
-			ent->alpha = (16.0 - (float)f)/16.0;
+			ent->shaderRGBA[3] = (int)((16.0 - (float)f) / 16.0 * 255);
 
 			if (f < 10)
 			{
@@ -1670,7 +1673,7 @@ void CL_AddExplosions (void)
 			}
 			else
 			{
-				ent->flags |= RF_TRANSLUCENT;
+				ent->renderfx |= RF_TRANSLUCENT;
 				if (f < 13)
 					ent->skinNum = 5;
 				else
@@ -1684,9 +1687,9 @@ void CL_AddExplosions (void)
 				break;
 			}
 
-			ent->alpha = (5.0 - (float)f)/5.0;
+			ent->shaderRGBA[3] = (int)((5.0 - (float)f) / 5.0 * 255);
 			ent->skinNum = 0;
-			ent->flags |= RF_TRANSLUCENT;
+			ent->renderfx |= RF_TRANSLUCENT;
 			break;
 		}
 
@@ -1694,7 +1697,7 @@ void CL_AddExplosions (void)
 			continue;
 		if (ex->light)
 		{
-			V_AddLight (ent->origin, ex->light*ent->alpha,
+			V_AddLight(ent->origin, ex->light * (float)ent->shaderRGBA[3] / 255.0,
 				ex->lightcolor[0], ex->lightcolor[1], ex->lightcolor[2]);
 		}
 

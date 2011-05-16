@@ -109,6 +109,7 @@ enum refEntityType_t
 									// animation without needing to know the frame count
 //	New flags
 #define RF_WATERTRANS		16		// translucent, alpha from r_wateralpha cvar.
+#define RF_TRANSLUCENT		32		// translucent, alpha in shaderRGBA
 
 struct refEntity_base_t
 {

@@ -115,8 +115,8 @@ void GL_DrawAliasFrameLerp (dmdl_t *paliashdr, float backlerp)
 //	qglTranslatef (frame->translate[0], frame->translate[1], frame->translate[2]);
 //	qglScalef (frame->scale[0], frame->scale[1], frame->scale[2]);
 
-	if (currententity->flags & RF_TRANSLUCENT)
-		alpha = currententity->alpha;
+	if (currententity->renderfx & RF_TRANSLUCENT)
+		alpha = currententity->shaderRGBA[3] / 255.0;
 	else
 		alpha = 1.0;
 
@@ -738,7 +738,7 @@ void R_DrawAliasModel (entity_t *e)
 	qglShadeModel (GL_SMOOTH);
 
 	GL_TexEnv( GL_MODULATE );
-	if ( currententity->flags & RF_TRANSLUCENT )
+	if ( currententity->renderfx & RF_TRANSLUCENT )
 	{
 		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	}
@@ -783,7 +783,7 @@ void R_DrawAliasModel (entity_t *e)
 		qglCullFace( GL_FRONT );
 	}
 
-	if ( currententity->flags & RF_TRANSLUCENT )
+	if ( currententity->renderfx & RF_TRANSLUCENT )
 	{
 		GL_State(GLS_DEFAULT);
 	}

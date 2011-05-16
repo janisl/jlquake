@@ -720,6 +720,10 @@ void CL_AddPacketEntities (frame_t *frame)
 		{
 			renderfx |= RF_DEPTHHACK;
 		}
+		if (renderfx_old & Q2RF_TRANSLUCENT)
+		{
+			renderfx |= RF_TRANSLUCENT;
+		}
 
 			// set frame
 		if (effects & EF_ANIM01)
@@ -787,7 +791,7 @@ void CL_AddPacketEntities (frame_t *frame)
 		// tweak the color of beams
 		if ( renderfx_old & RF_BEAM )
 		{	// the four beam colors are encoded in 32 bits of skinnum (hack)
-			ent.alpha = 0.30;
+			ent.shaderRGBA[3] = 76;
 			ent.skinNum = (s1->skinnum >> ((rand() % 4)*8)) & 0xff;
 			ent.hModel = 0;
 		}
@@ -837,8 +841,8 @@ void CL_AddPacketEntities (frame_t *frame)
 		}
 
 		// only used for black hole model right now, FIXME: do better
-		if (renderfx_old == RF_TRANSLUCENT)
-			ent.alpha = 0.70;
+		if (renderfx_old == Q2RF_TRANSLUCENT)
+			ent.shaderRGBA[3] = 178;
 
 		// render effects (fullbright, translucent, etc)
 		if ((effects & EF_COLOR_SHELL))
@@ -911,25 +915,25 @@ void CL_AddPacketEntities (frame_t *frame)
 
 		if (effects & EF_BFG)
 		{
-			ent.flags |= RF_TRANSLUCENT;
-			ent.alpha = 0.30;
+			ent.renderfx |= RF_TRANSLUCENT;
+			ent.shaderRGBA[3] = 76;
 		}
 
 		// RAFAEL
 		if (effects & EF_PLASMA)
 		{
-			ent.flags |= RF_TRANSLUCENT;
-			ent.alpha = 0.6;
+			ent.renderfx |= RF_TRANSLUCENT;
+			ent.shaderRGBA[3] = 153;
 		}
 
 		if (effects & EF_SPHERETRANS)
 		{
-			ent.flags |= RF_TRANSLUCENT;
+			ent.renderfx |= RF_TRANSLUCENT;
 			// PMM - *sigh*  yet more EF overloading
 			if (effects & EF_TRACKERTRAIL)
-				ent.alpha = 0.6;
+				ent.shaderRGBA[3] = 153;
 			else
-				ent.alpha = 0.3;
+				ent.shaderRGBA[3] = 76;
 		}
 //pmm
 
@@ -939,15 +943,16 @@ void CL_AddPacketEntities (frame_t *frame)
 		// color shells generate a seperate entity for the main model
 		if (effects & EF_COLOR_SHELL)
 		{
-			ent.flags = renderfx_old | RF_TRANSLUCENT;
-			ent.renderfx = renderfx;
-			ent.alpha = 0.30;
+			ent.flags = renderfx_old;
+			ent.renderfx = renderfx | RF_TRANSLUCENT;
+			ent.shaderRGBA[3] = 76;
 			V_AddEntity (&ent);
 		}
 
 		ent.skinNum = 0;
 		ent.flags = 0;
-		ent.alpha = 0;
+		ent.renderfx = 0;
+		ent.shaderRGBA[3] = 0;
 
 		// duplicate for linked models
 		if (s1->modelindex2)
@@ -971,8 +976,8 @@ void CL_AddPacketEntities (frame_t *frame)
 			else if(s1->modelindex2 & 0x80)
 			{
 				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex2 & 0x7F]);
-				ent.alpha = 0.32;
-				ent.flags = RF_TRANSLUCENT;
+				ent.shaderRGBA[3] = 82;
+				ent.renderfx = RF_TRANSLUCENT;
 			}
 			//PGM
 			else
@@ -981,7 +986,8 @@ void CL_AddPacketEntities (frame_t *frame)
 
 			//PGM - make sure these get reset.
 			ent.flags = 0;
-			ent.alpha = 0;
+			ent.renderfx = 0;
+			ent.shaderRGBA[3] = 0;
 			//PGM
 		}
 		if (s1->modelindex3)
@@ -1000,8 +1006,9 @@ void CL_AddPacketEntities (frame_t *frame)
 			ent.hModel = Mod_GetHandle(cl_mod_powerscreen);
 			ent.oldframe = 0;
 			ent.frame = 0;
-			ent.flags |= (RF_TRANSLUCENT | RF_SHELL_GREEN);
-			ent.alpha = 0.30;
+			ent.flags |= (RF_SHELL_GREEN);
+			ent.renderfx |= RF_TRANSLUCENT;
+			ent.shaderRGBA[3] = 76;
 			V_AddEntity (&ent);
 		}
 
