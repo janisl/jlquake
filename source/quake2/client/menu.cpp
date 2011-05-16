@@ -4110,7 +4110,8 @@ void PlayerConfig_MenuDraw( void )
 		entity.hModel = Mod_GetHandle(re.RegisterModel( scratch ));
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
 		entity.customSkin = R_GetImageHandle(re.RegisterSkin(scratch));
-		entity.flags = RF_FULLBRIGHT;
+		entity.renderfx = RF_ABSOLUTE_LIGHT;
+		entity.radius = 1;
 		entity.origin[0] = 80;
 		entity.origin[1] = 0;
 		entity.origin[2] = 0;

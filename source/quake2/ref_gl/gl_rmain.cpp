@@ -265,8 +265,8 @@ void R_DrawNullModel (void)
 	vec3_t	shadelight;
 	int		i;
 
-	if ( currententity->flags & RF_FULLBRIGHT )
-		shadelight[0] = shadelight[1] = shadelight[2] = 1.0F;
+	if ( currententity->renderfx & RF_ABSOLUTE_LIGHT)
+		shadelight[0] = shadelight[1] = shadelight[2] = currententity->radius;
 	else
 		R_LightPoint (currententity->origin, shadelight);
 

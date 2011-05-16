@@ -732,9 +732,7 @@ void CL_RelinkEntities (void)
 			rent->frame = ent->frame;
 			rent->shaderTime = ent->syncbase;
 			rent->skinNum = ent->skinnum;
-			rent->drawflags = ent->drawflags;
-			rent->abslight = ent->abslight;
-			CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade);
+			CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
 			R_HandleCustomSkin(rent, i <= cl.maxclients ? i - 1 : -1);
 			cl_numvisedicts++;
 		}
@@ -894,9 +892,9 @@ void CL_Init (void)
 	Cmd_AddCommand ("sensitivity_save", CL_Sensitivity_save_f);
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colorshade)
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colorshade, int abslight, int drawflags)
 {
-	if (ent->drawflags & DRF_TRANSLUCENT)
+	if (drawflags & DRF_TRANSLUCENT)
 	{
 		ent->renderfx |= RF_WATERTRANS;
 	}
@@ -939,8 +937,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 			// Floating motion
 			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
 			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
-			ent->abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.time * 3.8)) * 34;
-			ent->drawflags |= MLS_ABSLIGHT;
+			abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.time * 3.8)) * 34;
+			drawflags |= MLS_ABSLIGHT;
 		}
 
 		if (scale != 0 && scale != 100)
@@ -949,7 +947,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 			float esx;
 			float esy;
 			float esz;
-			switch (ent->drawflags & SCALE_TYPE_MASKIN)
+			switch (drawflags & SCALE_TYPE_MASKIN)
 			{
 			case SCALE_TYPE_UNIFORM:
 				esx = entScale;
@@ -968,7 +966,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 				break;
 			}
 			float etz;
-			switch (ent->drawflags & SCALE_ORIGIN_MASKIN)
+			switch (drawflags & SCALE_ORIGIN_MASKIN)
 			{
 			case SCALE_ORIGIN_CENTER:
 				etz = 0.5;
@@ -1007,5 +1005,18 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 		ent->shaderRGBA[0] = (int)(RTint[colorshade] * 255);
 		ent->shaderRGBA[1] = (int)(GTint[colorshade] * 255);
 		ent->shaderRGBA[2] = (int)(BTint[colorshade] * 255);
+	}
+
+	int mls = drawflags & MLS_MASKIN;
+	if (mls == MLS_ABSLIGHT)
+	{
+		ent->renderfx |= RF_ABSOLUTE_LIGHT;
+		ent->radius = abslight / 256.0;
+	}
+	else if (mls != MLS_NONE)
+	{
+		// Use a model light style (25-30)
+		ent->renderfx |= RF_ABSOLUTE_LIGHT;
+		ent->radius = d_lightstylevalue[24 + mls] / 2 / 256.0;
 	}
 }

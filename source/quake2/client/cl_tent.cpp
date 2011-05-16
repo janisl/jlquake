@@ -275,7 +275,8 @@ void CL_SmokeAndFlash(vec3_t origin)
 	ex = CL_AllocExplosion ();
 	VectorCopy (origin, ex->ent.origin);
 	ex->type = ex_flash;
-	ex->ent.flags = RF_FULLBRIGHT;
+	ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
+	ex->ent.radius = 1;
 	ex->frames = 2;
 	ex->start = cl.frame.servertime - 100;
 	ex->ent.hModel = Mod_GetHandle(cl_mod_flash);
@@ -819,8 +820,8 @@ void CL_ParseTEnt (void)
 		AnglesToAxis(angles, ex->ent.axis);
 
 		ex->type = ex_misc;
-		ex->ent.flags = RF_FULLBRIGHT;
-		ex->ent.renderfx = RF_TRANSLUCENT;
+		ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
+		ex->ent.radius = 1;
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 150;
 		ex->lightcolor[0] = 1;
@@ -845,7 +846,8 @@ void CL_ParseTEnt (void)
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
-		ex->ent.flags = RF_FULLBRIGHT;
+		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
+		ex->ent.radius = 1;
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 1.0;
@@ -871,7 +873,8 @@ void CL_ParseTEnt (void)
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
-		ex->ent.flags = RF_FULLBRIGHT;
+		ex->ent.flags = RF_ABSOLUTE_LIGHT;
+		ex->ent.radius = 1;
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 1.0; 
@@ -899,7 +902,8 @@ void CL_ParseTEnt (void)
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
-		ex->ent.flags = RF_FULLBRIGHT;
+		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
+		ex->ent.radius = 1;
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 1.0;
@@ -929,7 +933,8 @@ void CL_ParseTEnt (void)
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
-		ex->ent.flags = RF_FULLBRIGHT;
+		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
+		ex->ent.radius = 1;
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 0.0;
@@ -1039,8 +1044,8 @@ void CL_ParseTEnt (void)
 		AnglesToAxis(angles, ex->ent.axis);
 
 		ex->type = ex_misc;
-		ex->ent.flags = RF_FULLBRIGHT;
-		ex->ent.renderfx = RF_TRANSLUCENT;
+		ex->ent.renderfx = RF_TRANSLUCENT | RF_ABSOLUTE_LIGHT;
+		ex->ent.radius = 1;
 
 		// PMM
 		if (type == TE_BLASTER2)
@@ -1082,7 +1087,8 @@ void CL_ParseTEnt (void)
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->ent.origin);
 		ex->type = ex_poly;
-		ex->ent.flags = RF_FULLBRIGHT;
+		ex->ent.renderfx = RF_ABSOLUTE_LIGHT;
+		ex->ent.radius = 1;
 		ex->start = cl.frame.servertime - 100;
 		ex->light = 350;
 		ex->lightcolor[0] = 1.0;
@@ -1308,7 +1314,8 @@ void CL_AddBeams (void)
 //			for (j=0 ; j<3 ; j++)
 //				ent.origin[j] -= dist[j]*10.0;
 			ent.hModel = Mod_GetHandle(b->model);
-			ent.flags = RF_FULLBRIGHT;
+			ent.renderfx = RF_ABSOLUTE_LIGHT;
+			ent.radius = 1;
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
@@ -1324,7 +1331,8 @@ void CL_AddBeams (void)
 			vec3_t angles;
 			if (b->model == cl_mod_lightning)
 			{
-				ent.flags = RF_FULLBRIGHT;
+				ent.renderfx = RF_ABSOLUTE_LIGHT;
+				ent.radius = 1;
 				angles[0] = -pitch;
 				angles[1] = yaw + 180.0;
 				angles[2] = rand()%360;
@@ -1564,7 +1572,8 @@ void CL_AddPlayerBeams (void)
 //			for (j=0 ; j<3 ; j++)
 //				ent.origin[j] -= dist[j]*10.0;
 			ent.hModel = Mod_GetHandle(b->model);
-			ent.flags = RF_FULLBRIGHT;
+			ent.renderfx = RF_ABSOLUTE_LIGHT;
+			ent.radius = 1;
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
@@ -1580,7 +1589,8 @@ void CL_AddPlayerBeams (void)
 			vec3_t angles;
 			if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam))
 			{
-				ent.flags = RF_FULLBRIGHT;
+				ent.renderfx = RF_ABSOLUTE_LIGHT;
+				ent.radius = 1;
 				angles[0] = -pitch;
 				angles[1] = yaw + 180.0;
 				angles[2] = (cl.time) % 360;
@@ -1588,7 +1598,8 @@ void CL_AddPlayerBeams (void)
 			}
 			else if (b->model == cl_mod_lightning)
 			{
-				ent.flags = RF_FULLBRIGHT;
+				ent.renderfx = RF_ABSOLUTE_LIGHT;
+				ent.radius = 1;
 				angles[0] = -pitch;
 				angles[1] = yaw + 180.0;
 				angles[2] = rand()%360;

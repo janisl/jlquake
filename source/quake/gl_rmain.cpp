@@ -529,10 +529,10 @@ void R_DrawAliasModel (refEntity_t *e)
 		if (ambientlight < 8)
 			ambientlight = shadelight = 8;
 
-	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!QStr::Cmp(clmodel->name, "progs/flame2.mdl")
-		|| !QStr::Cmp(clmodel->name, "progs/flame.mdl") )
-		ambientlight = shadelight = 256;
+	if (e->renderfx & RF_ABSOLUTE_LIGHT)
+	{
+		ambientlight = shadelight = currententity->radius * 256.0;
+	}
 
 	vec3_t tmp_angles;
 	VecToAngles(e->axis[0], tmp_angles);

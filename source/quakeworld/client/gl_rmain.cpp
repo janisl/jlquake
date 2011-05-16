@@ -516,14 +516,17 @@ void R_DrawAliasModel (refEntity_t *e)
 		shadelight = 192 - ambientlight;
 
 	// ZOID: never allow players to go totally black
-	if (!QStr::Cmp(clmodel->name, "progs/player.mdl")) {
+	if (!QStr::Cmp(clmodel->name, "progs/player.mdl"))
+	{
 		if (ambientlight < 8)
 			ambientlight = shadelight = 8;
 
-	} else if (!QStr::Cmp(clmodel->name, "progs/flame2.mdl")
-		|| !QStr::Cmp(clmodel->name, "progs/flame.mdl") )
-		// HACK HACK HACK -- no fullbright colors, so make torches full light
-		ambientlight = shadelight = 256;
+	}
+	
+	if (e->renderfx & RF_ABSOLUTE_LIGHT)
+	{
+		ambientlight = shadelight = currententity->radius * 256;
+	}
 
 	vec3_t tmp_angles;
 	VecToAngles(e->axis[0], tmp_angles);

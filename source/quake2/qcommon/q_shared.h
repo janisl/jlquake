@@ -284,7 +284,7 @@ typedef struct
 #define Q2RF_MINLIGHT		1		// allways have some light (viewmodel)
 #define Q2RF_VIEWERMODEL	2		// don't draw through eyes, only mirrors
 #define Q2RF_WEAPONMODEL	4		// only draw through eyes
-#define	RF_FULLBRIGHT		8		// allways draw full intensity
+#define	Q2RF_FULLBRIGHT		8		// allways draw full intensity
 #define Q2RF_DEPTHHACK		16		// for view weapon Z crunching
 #define	Q2RF_TRANSLUCENT	32
 #define	RF_FRAMELERP		64

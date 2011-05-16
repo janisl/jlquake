@@ -1372,9 +1372,9 @@ void Host_Shutdown(void)
 	VID_Shutdown();
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade)
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags)
 {
-	if (ent->drawflags & DRF_TRANSLUCENT)
+	if (drawflags & DRF_TRANSLUCENT)
 	{
 		ent->renderfx |= RF_WATERTRANS;
 	}
@@ -1426,8 +1426,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 			// Floating motion
 			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
 			VectorMA(ent->origin, delta, ent->axis[2], ent->origin);
-			ent->abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.time * 3.8)) * 34;
-			ent->drawflags |= MLS_ABSLIGHT;
+			abslight = 60 + 34 + sin(ent->origin[0] + ent->origin[1] + (cl.time * 3.8)) * 34;
+			drawflags |= MLS_ABSLIGHT;
  		}
 
 		if (scale != 0 && scale != 100)
@@ -1436,7 +1436,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 			float esx;
 			float esy;
 			float esz;
-			switch (ent->drawflags & SCALE_TYPE_MASKIN)
+			switch (drawflags & SCALE_TYPE_MASKIN)
 			{
 			case SCALE_TYPE_UNIFORM:
 				esx = entScale;
@@ -1455,7 +1455,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 				break;
 			}
 			float etz;
-			switch (ent->drawflags & SCALE_ORIGIN_MASKIN)
+			switch (drawflags & SCALE_ORIGIN_MASKIN)
 			{
 			case SCALE_ORIGIN_CENTER:
 				etz = 0.5;
@@ -1494,5 +1494,12 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 		ent->shaderRGBA[0] = (int)(RTint[colorshade] * 255);
 		ent->shaderRGBA[1] = (int)(GTint[colorshade] * 255);
 		ent->shaderRGBA[2] = (int)(BTint[colorshade] * 255);
+	}
+
+	int mls = drawflags & MLS_MASKIN;
+	if (mls == MLS_ABSLIGHT)
+	{
+		ent->renderfx |= RF_ABSOLUTE_LIGHT;
+		ent->radius = abslight / 256.0;
 	}
 }

@@ -284,7 +284,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	{
 		R_RenderDynamicLightmaps (s);
 		if (qglActiveTextureARB  && !(currententity->renderfx & RF_WATERTRANS) &&
-			(currententity->drawflags & MLS_ABSLIGHT) != MLS_ABSLIGHT)
+			!(currententity->renderfx & RF_ABSOLUTE_LIGHT))
 		{
 			p = s->polys;
 
@@ -323,7 +323,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			}
 			qglEnd ();
 
-			if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
+			if ((currententity->renderfx & RF_ABSOLUTE_LIGHT) ||
 				(currententity->renderfx & RF_WATERTRANS))
 			{
 				GL_TexEnv(GL_REPLACE);
@@ -348,12 +348,12 @@ void R_DrawSequentialPoly (msurface_t *s)
 				intensity = 1;
 				// rjr
 			}
-			if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT)
+			if (currententity->renderfx & RF_ABSOLUTE_LIGHT)
 			{
 				// currententity->abslight   0 - 255
 				// rjr
 				GL_TexEnv(GL_MODULATE);
-				intensity = ( float )currententity->abslight / 255.0f;
+				intensity = currententity->radius;
 	//			intensity = 0;
 			}
 
@@ -385,7 +385,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 			GL_State(GLS_DEFAULT);
 		
-			if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
+			if ((currententity->renderfx & RF_ABSOLUTE_LIGHT) ||
 				(currententity->renderfx & RF_WATERTRANS))
 			{
 				GL_TexEnv(GL_REPLACE);
@@ -660,12 +660,12 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 		intensity = 1.0;
 
 	}
-	if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT)
+	if (currententity->renderfx & RF_ABSOLUTE_LIGHT)
 	{
 		// currententity->abslight   0 - 255
 		// rjr
 		GL_TexEnv(GL_MODULATE);
-		intensity = ( float )currententity->abslight / 255.0f;
+		intensity = currententity->radius;
 //		intensity = 0;
 	}
 	
@@ -735,7 +735,7 @@ dynamic:
 		}
 	}
 
-	if ((currententity->drawflags & MLS_ABSLIGHT) == MLS_ABSLIGHT ||
+	if ((currententity->renderfx & RF_ABSOLUTE_LIGHT) ||
 	    (currententity->renderfx & RF_WATERTRANS))
 	{
 		GL_TexEnv(GL_REPLACE);
@@ -1047,8 +1047,7 @@ void R_DrawBrushModel (refEntity_t *e, qboolean Translucent)
 		}
 	}
 
-	if (!Translucent && 
-        (currententity->drawflags & MLS_ABSLIGHT) != MLS_ABSLIGHT)
+	if (!Translucent &&  !(currententity->renderfx & RF_ABSOLUTE_LIGHT))
 		R_BlendLightmaps (Translucent);
 
 	qglPopMatrix ();

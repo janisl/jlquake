@@ -1523,4 +1523,12 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 		VectorScale(ent->axis[2], 2, ent->axis[2]);
 		ent->nonNormalizedAxes = true;
 	}
+
+	// HACK HACK HACK -- no fullbright colors, so make torches full light
+	if (!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/flame2.mdl") ||
+		!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/flame.mdl"))
+	{
+		ent->renderfx |= RF_ABSOLUTE_LIGHT;
+		ent->radius = 1;
+	}
 }

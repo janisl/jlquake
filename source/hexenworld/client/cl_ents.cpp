@@ -656,8 +656,7 @@ void CL_LinkPacketEntities (void)
 		// set frame
 		ent->frame = s1->frame;
 
-		ent->drawflags = s1->drawflags;
-		ent->abslight = s1->abslight;
+		int drawflags = s1->drawflags;
 
 		vec3_t angles;
 		// rotate binary objects locally
@@ -699,7 +698,7 @@ void CL_LinkPacketEntities (void)
 		}
 		if (i == PrevPack->num_entities)
 		{
-			CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale, s1->colormap);
+			CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags);
 			continue;		// not in last message
 		}
 
@@ -718,14 +717,14 @@ void CL_LinkPacketEntities (void)
 			if((int)s1->effects & EF_NODRAW)
 			{
 				ent->skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
-				ent->drawflags|=DRF_TRANSLUCENT;
+				drawflags|=DRF_TRANSLUCENT;
 				s1->effects &= ~EF_NODRAW;
 //				cl.players[s1->number].invis=true;
 			}
 
 		vec3_t angleAdd;
 		HandleEffects(s1->effects, s1->number, ent, angles, angleAdd, old_origin);
-		CL_SetRefEntAxis(ent, angles, angleAdd, s1->scale, s1->colormap);
+		CL_SetRefEntAxis(ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags);
 
 		// add automatic particle trails
 		if (!model->flags)
@@ -918,7 +917,7 @@ void CL_LinkProjectiles (void)
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
 		ent->frame = pr->frame;
 		VectorCopy (pr->origin, ent->origin);
-		CL_SetRefEntAxis(ent, pr->angles, vec3_origin, 0, 0);
+		CL_SetRefEntAxis(ent, pr->angles, vec3_origin, 0, 0, 0, 0);
 	}
 }
 
@@ -1010,16 +1009,15 @@ void CL_LinkMissiles (void)
 		cl_numvisedicts++;
 
 		VectorCopy (pr->origin, ent->origin);
-		ent->drawflags = SCALE_ORIGIN_CENTER;
 		if(pr->type == 1)
 		{	//ball
 			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
-			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 10, 0);
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 10, 0, 0, SCALE_ORIGIN_CENTER);
 		}
 		else
 		{	//missilestar
 			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
-			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin, 50, 0);
+			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin, 50, 0, 0, SCALE_ORIGIN_CENTER);
 		}
 		if(rand() % 10 < 3)		
 		{
@@ -1314,8 +1312,7 @@ void CL_LinkPlayers (void)
 		ent->skinNum = state->skinnum;
 		ent->frame = state->frame;
 
-		ent->drawflags = state->drawflags;
-		ent->abslight = state->abslight;
+		int drawflags = state->drawflags;
 		if (ent->hModel == Mod_GetHandle(player_models[0]) ||
 			ent->hModel == Mod_GetHandle(player_models[1]) ||
 			ent->hModel == Mod_GetHandle(player_models[2]) ||
@@ -1362,7 +1359,7 @@ void CL_LinkPlayers (void)
 			if((int)state->effects & EF_NODRAW)
 			{
 				ent->skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
-				ent->drawflags|=DRF_TRANSLUCENT;
+				drawflags|=DRF_TRANSLUCENT;
 				state->effects &= ~EF_NODRAW;
 			}
 
@@ -1433,7 +1430,7 @@ void CL_LinkPlayers (void)
 			}
 		}
 
-		CL_SetRefEntAxis(ent, angles, angleAdd, state->scale, colorshade);
+		CL_SetRefEntAxis(ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags);
 		R_HandleCustomSkin(ent, j);
 
 		cl_numvisedicts++;

@@ -2029,9 +2029,7 @@ void CL_LinkEntity(entity_t *ent)
 		rent->frame = ent->frame;
 		rent->shaderTime = ent->syncbase;
 		rent->skinNum = ent->skinnum;
-		rent->drawflags = ent->drawflags;
-		rent->abslight = ent->abslight;
-		CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade);
+		CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
 		R_HandleCustomSkin(rent, -1);
 		cl_numvisedicts++;
 	}

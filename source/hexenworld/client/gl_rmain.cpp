@@ -608,7 +608,6 @@ void R_DrawAliasModel (refEntity_t *e)
 	trivertx_t	*verts, *v;
 	int			index;
 	float		s, t, an;
-	int mls;
 
 	clmodel = Mod_GetModel(currententity->hModel);
 
@@ -642,14 +641,9 @@ void R_DrawAliasModel (refEntity_t *e)
 	if (ambientlight + shadelight > 192)
 		shadelight = 192 - ambientlight;
 
-	mls = currententity->drawflags&MLS_MASKIN;
-	if (mls == MLS_ABSLIGHT)
+	if (e->renderfx & RF_ABSOLUTE_LIGHT)
 	{
-		ambientlight = shadelight = currententity->abslight;
-	}
-	else if (mls != MLS_NONE)
-	{ // Use a model light style (25-30)
-		ambientlight = shadelight = d_lightstylevalue[24+mls]/2;
+		ambientlight = shadelight = currententity->radius * 256.0;
 	}
 
 	vec3_t tmp_angles;
@@ -962,10 +956,8 @@ void R_DrawViewModel (void)
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
 	rent->skinNum = ent->skinnum;
-	rent->drawflags = ent->drawflags;
-	rent->abslight = ent->abslight;
 	rent->shaderTime = ent->syncbase;
-	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale, ent->colorshade);
+	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
 	R_HandleCustomSkin(rent, -1);
 
 	R_DrawAliasModel (currententity);

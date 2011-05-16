@@ -3650,7 +3650,7 @@ void CL_UpdateBeams (void)
 			angles[0] = pitch;
 			angles[1] = yaw;
 			angles[2] = rand()%360;
-			CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
+			CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 0, 0);
 
 			for (i=0 ; i<3 ; i++)
 				org[i] += dist[i]*30;
@@ -3755,14 +3755,8 @@ void CL_UpdateExplosions (void)
 		ent->hModel = Mod_GetHandle(ex->model);
 		ent->frame = f;
 		ent->skinNum = ex->skin;
-		ent->drawflags = ex->flags;
-		CL_SetRefEntAxis(ent, ex->angles, vec3_origin, ex->scale, 0);
+		CL_SetRefEntAxis(ent, ex->angles, vec3_origin, ex->scale, 0, ex->abslight, ex->flags);
 		R_HandleCustomSkin(ent, -1);
-
-		if(ex->flags & MLS_ABSLIGHT)
-		{
-			ent->abslight = ex->abslight;
-		}
 	}
 }
 
@@ -3878,16 +3872,12 @@ void CL_UpdateStreams(void)
 			{
 			case TE_STREAM_CHAIN:
 				angles[2] = 0;
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
 				break;
 			case TE_STREAM_SUNSTAFF1:
 				angles[2] = (int)(cl.time*10)%360;
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
 				//ent->frame = (int)(cl.time*20)%20;
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.time)/.3), 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.time)/.3), 0, 128, MLS_ABSLIGHT);
 
 				ent = CL_NewTempEntity();
 				if(!ent)
@@ -3899,18 +3889,14 @@ void CL_UpdateStreams(void)
 				angles[0] = pitch;
 				angles[1] = yaw;
 				angles[2] = (int)(cl.time*50)%360;
-				ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
-				ent->abslight = 128;
 				//stream->endTime = cl.time+0.3;	// FIXME
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.time)/.5), 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 50 + 100 * ((stream->endTime - cl.time)/.5), 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				break;
 			case TE_STREAM_SUNSTAFF2:
 				angles[2] = (int)(cl.time*100)%360;
-				ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
-				ent->abslight = 128;
 				VectorMA(ent->origin, cosTime * (40 * lifeTime), right,  ent->origin);
 				VectorMA(ent->origin, sinTime * (40 * lifeTime), up,  ent->origin);
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 100 + 150 * lifeTime, 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 
 				ent = CL_NewTempEntity();
 				if(!ent)
@@ -3922,11 +3908,9 @@ void CL_UpdateStreams(void)
 				angles[0] = pitch;
 				angles[1] = yaw;
 				angles[2] = (int)(cl.time*100)%360;
-				ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
-				ent->abslight = 128;
 				VectorMA(ent->origin, cos2Time * (40 * lifeTime), right,  ent->origin);
 				VectorMA(ent->origin, sin2Time * (40 * lifeTime), up,  ent->origin);
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 100 + 150 * lifeTime, 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 
 				{
 					int ix;
@@ -3953,74 +3937,58 @@ void CL_UpdateStreams(void)
 						angles[0] = pitch;
 						angles[1] = yaw;
 						angles[2] = (int)(cl.time*20)%360;
-						ent->drawflags = MLS_ABSLIGHT;
-						ent->abslight = 128;
-						CL_SetRefEntAxis(ent, angles, vec3_origin, 100 + 150 * lifeTime, 0);
+						CL_SetRefEntAxis(ent, angles, vec3_origin, 100 + 150 * lifeTime, 0, 128, MLS_ABSLIGHT);
 					}
 				}
 				break;
 			case TE_STREAM_LIGHTNING:
 				if(stream->endTime < cl.time)
 				{//fixme: keep last non-translucent frame and angle
-					ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
-					ent->abslight = 128 + (stream->endTime - cl.time)*192;
+					CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.time)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				}
 				else
 				{
 					angles[2] = rand()%360;
-					ent->drawflags = MLS_ABSLIGHT;
-					ent->abslight = 128;
 					ent->frame = rand()%6;
+					CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
 				}
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
 				break;
 			case TE_STREAM_LIGHTNING_SMALL:
 				if(stream->endTime < cl.time)
 				{
-					ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
-					ent->abslight = 128 + (stream->endTime - cl.time)*192;
+					CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128 + (stream->endTime - cl.time)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				}
 				else
 				{
 					angles[2] = rand()%360;
 					ent->frame = rand()%6;
-					ent->drawflags = MLS_ABSLIGHT;
-					ent->abslight = 128;
+					CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
 				}
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
 				break;
 			case TE_STREAM_FAMINE:
 				angles[2] = rand()%360;
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
 				ent->frame = 0;
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
 				break;
 			case TE_STREAM_COLORBEAM:
 				angles[2] = 0;
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
 				ent->skinNum = stream->skin;
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
 				R_HandleCustomSkin(ent, -1);
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
 				ent->frame = (int)(cl.time*40)%36;
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
 				break;
 			case TE_STREAM_ICECHUNKS:
 				angles[2] = rand()%360;
-				ent->drawflags = MLS_ABSLIGHT;
-				ent->abslight = 128;
 				ent->frame = rand()%5;
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 128, MLS_ABSLIGHT);
 				break;
 			default:
 				angles[2] = 0;
-				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0);
+				CL_SetRefEntAxis(ent, angles, vec3_origin, 0, 0, 0, 0);
 			}
 			for(i = 0; i < 3; i++)
 			{
@@ -4044,10 +4012,8 @@ void CL_UpdateStreams(void)
 			}
 			VectorCopy(stream->dest, ent->origin);
 			ent->hModel = Mod_GetHandle(stream->models[2]);
-			ent->drawflags = MLS_ABSLIGHT;
-			ent->abslight = 128;
 			//ent->frame = (int)(cl.time*20)%20;
-			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 80 + (rand() & 15), 0);
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 80 + (rand() & 15), 0, 128, MLS_ABSLIGHT);
 
 			ent = CL_NewTempEntity();
 			if(ent == NULL)
@@ -4056,9 +4022,7 @@ void CL_UpdateStreams(void)
 			}
 			VectorCopy(stream->dest, ent->origin);
 			ent->hModel = Mod_GetHandle(stream->models[3]);
-			ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
-			ent->abslight = 128;
-			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 150 + (rand() & 15), 0);
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 150 + (rand() & 15), 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 		}
 	}
 }

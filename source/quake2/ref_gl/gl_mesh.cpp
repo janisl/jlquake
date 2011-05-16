@@ -606,10 +606,10 @@ void R_DrawAliasModel (entity_t *e)
 	//			}
 	//		}
 	// pmm
-	else if ( currententity->flags & RF_FULLBRIGHT )
+	else if (currententity->renderfx & RF_ABSOLUTE_LIGHT)
 	{
 		for (i=0 ; i<3 ; i++)
-			shadelight[i] = 1.0;
+			shadelight[i] = e->radius;
 	}
 	else
 	{
