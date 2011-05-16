@@ -650,8 +650,6 @@ void CL_LinkPacketEntities (void)
 		model = cl.model_precache[s1->modelindex];
 		ent->hModel = Mod_GetHandle(model);
 	
-		ent->colorshade = s1->colormap;
-		
 		// set skin
 		ent->skinNum = s1->skinnum;
 		
@@ -701,7 +699,7 @@ void CL_LinkPacketEntities (void)
 		}
 		if (i == PrevPack->num_entities)
 		{
-			CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale);
+			CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale, s1->colormap);
 			continue;		// not in last message
 		}
 
@@ -727,7 +725,7 @@ void CL_LinkPacketEntities (void)
 
 		vec3_t angleAdd;
 		HandleEffects(s1->effects, s1->number, ent, angles, angleAdd, old_origin);
-		CL_SetRefEntAxis(ent, angles, angleAdd, s1->scale);
+		CL_SetRefEntAxis(ent, angles, angleAdd, s1->scale, s1->colormap);
 
 		// add automatic particle trails
 		if (!model->flags)
@@ -920,7 +918,7 @@ void CL_LinkProjectiles (void)
 		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
 		ent->frame = pr->frame;
 		VectorCopy (pr->origin, ent->origin);
-		CL_SetRefEntAxis(ent, pr->angles, vec3_origin, 0);
+		CL_SetRefEntAxis(ent, pr->angles, vec3_origin, 0, 0);
 	}
 }
 
@@ -1016,12 +1014,12 @@ void CL_LinkMissiles (void)
 		if(pr->type == 1)
 		{	//ball
 			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
-			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 10);
+			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 10, 0);
 		}
 		else
 		{	//missilestar
 			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
-			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin, 50);
+			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin, 50, 0);
 		}
 		if(rand() % 10 < 3)		
 		{
@@ -1299,6 +1297,12 @@ void CL_LinkPlayers (void)
 
 		cl.players[j].modelindex = state->modelindex;
 
+		// the player object never gets added
+		if (j == cl.playernum)
+		{
+			continue;
+		}
+
 		// grab an entity to fill in
 		if (cl_numvisedicts == MAX_VISEDICTS)
 			break;		// object list is full
@@ -1364,18 +1368,11 @@ void CL_LinkPlayers (void)
 
 		vec3_t angleAdd;
 		HandleEffects(state->effects, j+1, ent, angles, angleAdd, NULL);
-		CL_SetRefEntAxis(ent, angles, angleAdd, state->scale);
-		R_HandleCustomSkin(ent, j);
-
-		// the player object never gets added
-		if (j == cl.playernum)
-		{
-			continue;
-		}
 
 		//	This uses behavior of software renderer as GL version was fucked
 		// up because it didn't take into the account the fact that shadelight
 		// has divided by 200 at this point.
+		int colorshade = 0;
 		if (!info->shownames_off)
 		{
 			int my_team = cl.players[cl.playernum].siege_team;
@@ -1404,18 +1401,18 @@ void CL_LinkPlayers (void)
 			{
 				if (cl.players[cl.playernum].playerclass == CLASS_DWARF && ent->skinNum == 101)
 				{
-					ent->colorshade = 141;
+					colorshade = 141;
 					info->shownames_off = false;
 				}
 				else if (cl.players[cl.playernum].playerclass == CLASS_DWARF && (ambientlight + shadelight) < 151)
 				{
-					ent->colorshade = 138 + (int)((ambientlight + shadelight) / 30);
+					colorshade = 138 + (int)((ambientlight + shadelight) / 30);
 					info->shownames_off = false;
 				}
 				else if (ve_team == ST_DEFENDER)
 				{
 					//tint gold since we can't have seperate skins
-					ent->colorshade = 165;
+					colorshade = 165;
 				}
 			}
 			else
@@ -1430,11 +1427,14 @@ void CL_LinkPlayers (void)
 					this_team[15] = 0;
 					if (QStr::ICmp(client_team, this_team) == 0)
 					{
-						ent->colorshade = r_teamcolor->value;
+						colorshade = r_teamcolor->value;
 					}
 				}
 			}
 		}
+
+		CL_SetRefEntAxis(ent, angles, angleAdd, state->scale, colorshade);
+		R_HandleCustomSkin(ent, j);
 
 		cl_numvisedicts++;
 

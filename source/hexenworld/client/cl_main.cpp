@@ -4,6 +4,7 @@
 #ifdef _WIN32 
 #include "../../client/windows_shared.h"
 #endif
+#include "glquake.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
@@ -1371,7 +1372,7 @@ void Host_Shutdown(void)
 	VID_Shutdown();
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale)
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade)
 {
 	if (ent->drawflags & DRF_TRANSLUCENT)
 	{
@@ -1485,5 +1486,13 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 		angles[PITCH] = ent_angles[PITCH];
 
 		AnglesToAxis(angles, ent->axis);
+	}
+
+	if (colorshade)
+	{
+		ent->renderfx |= RF_COLORSHADE;
+		ent->shaderRGBA[0] = (int)(RTint[colorshade] * 255);
+		ent->shaderRGBA[1] = (int)(GTint[colorshade] * 255);
+		ent->shaderRGBA[2] = (int)(BTint[colorshade] * 255);
 	}
 }

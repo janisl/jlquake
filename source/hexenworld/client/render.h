@@ -41,7 +41,6 @@ struct entity_t
 
 struct refEntity_t : refEntity_base_t
 {
-	byte					colorshade;
 	int						drawflags;		// for Alias models
 	int						abslight;		// for Alias models
 };

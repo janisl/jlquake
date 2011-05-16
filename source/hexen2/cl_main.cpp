@@ -731,11 +731,10 @@ void CL_RelinkEntities (void)
 			rent->hModel = Mod_GetHandle(ent->model);
 			rent->frame = ent->frame;
 			rent->shaderTime = ent->syncbase;
-			rent->colorshade = ent->colorshade;
 			rent->skinNum = ent->skinnum;
 			rent->drawflags = ent->drawflags;
 			rent->abslight = ent->abslight;
-			CL_SetRefEntAxis(rent, ent->angles, ent->scale);
+			CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade);
 			R_HandleCustomSkin(rent, i <= cl.maxclients ? i - 1 : -1);
 			cl_numvisedicts++;
 		}
@@ -895,7 +894,7 @@ void CL_Init (void)
 	Cmd_AddCommand ("sensitivity_save", CL_Sensitivity_save_f);
 }
 
-void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale)
+void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colorshade)
 {
 	if (ent->drawflags & DRF_TRANSLUCENT)
 	{
@@ -1000,5 +999,13 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale)
 		angles[PITCH] = ent_angles[PITCH];
 
 		AnglesToAxis(angles, ent->axis);
+	}
+
+	if (colorshade)
+	{
+		ent->renderfx |= RF_COLORSHADE;
+		ent->shaderRGBA[0] = (int)(RTint[colorshade] * 255);
+		ent->shaderRGBA[1] = (int)(GTint[colorshade] * 255);
+		ent->shaderRGBA[2] = (int)(BTint[colorshade] * 255);
 	}
 }

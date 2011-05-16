@@ -110,6 +110,7 @@ enum refEntityType_t
 //	New flags
 #define RF_WATERTRANS		16		// translucent, alpha from r_wateralpha cvar.
 #define RF_TRANSLUCENT		32		// translucent, alpha in shaderRGBA
+#define RF_COLORSHADE		1024	// multiply light with colour in shaderRGBA
 
 struct refEntity_base_t
 {

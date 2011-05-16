@@ -504,7 +504,7 @@ void CL_UpdateTEnts(void)
 				ent->drawflags = MLS_ABSLIGHT;
 				ent->abslight = 128;
 				//ent->frame = (int)(cl.time*20)%20;
-				CL_SetRefEntAxis(ent, angles, 0);
+				CL_SetRefEntAxis(ent, angles, 0, 0);
 
 				ent = NewStreamEntity();
 				if(!ent)
@@ -582,7 +582,7 @@ void CL_UpdateTEnts(void)
 			default:
 				angles[2] = 0;
 			}
-			CL_SetRefEntAxis(ent, angles, 0);
+			CL_SetRefEntAxis(ent, angles, 0, 0);
 			for(i = 0; i < 3; i++)
 			{
 				org[i] += dist[i]*30;
@@ -608,7 +608,7 @@ void CL_UpdateTEnts(void)
 			ent->hModel = Mod_GetHandle(stream->models[2]);
 			ent->drawflags = MLS_ABSLIGHT;
 			ent->abslight = 128;
-			CL_SetRefEntAxis(ent, vec3_origin, 80 + (rand() & 15));
+			CL_SetRefEntAxis(ent, vec3_origin, 80 + (rand() & 15), 0);
 			//ent->frame = (int)(cl.time*20)%20;
 
 			ent = NewStreamEntity();
@@ -620,7 +620,7 @@ void CL_UpdateTEnts(void)
 			ent->hModel = Mod_GetHandle(stream->models[3]);
 			ent->drawflags = MLS_ABSLIGHT|DRF_TRANSLUCENT;
 			ent->abslight = 128;
-			CL_SetRefEntAxis(ent, vec3_origin, 150 + (rand() & 15));
+			CL_SetRefEntAxis(ent, vec3_origin, 150 + (rand() & 15), 0);
 		}
 	}
 }

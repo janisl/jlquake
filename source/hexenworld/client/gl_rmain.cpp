@@ -371,7 +371,6 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 	float		*normal;
 	int			count;
 	float		r,g,b,p;
-	byte		ColorShade;
 
 	lastposenum = posenum;
 
@@ -379,13 +378,11 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 	verts += posenum * paliashdr->poseverts;
 	order = (int *)((byte *)paliashdr + paliashdr->commands);
 
-	ColorShade = currententity->colorshade;
-
-	if (ColorShade)
+	if (currententity->renderfx & RF_COLORSHADE)
 	{
-		r = RTint[ColorShade];
-		g = GTint[ColorShade];
-		b = BTint[ColorShade];
+		r = currententity->shaderRGBA[0] / 255.0;
+		g = currententity->shaderRGBA[1] / 255.0;
+		b = currententity->shaderRGBA[2] / 255.0;
 	}
 	else
 		r = g = b = 1;
@@ -964,12 +961,11 @@ void R_DrawViewModel (void)
 	VectorCopy(ent->origin, rent->origin);
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
-	rent->colorshade = ent->colorshade;
 	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
 	rent->shaderTime = ent->syncbase;
-	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale);
+	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale, ent->colorshade);
 	R_HandleCustomSkin(rent, -1);
 
 	R_DrawAliasModel (currententity);

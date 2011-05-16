@@ -475,11 +475,11 @@ lastposenum = posenum;
 	verts += posenum * paliashdr->poseverts;
 	order = (int *)((byte *)paliashdr + paliashdr->commands);
 
-	if (currententity->colorshade)
+	if (currententity->renderfx & RF_COLORSHADE)
 	{
-		r = RTint[currententity->colorshade];
-		g = GTint[currententity->colorshade];
-		b = BTint[currententity->colorshade];
+		r = currententity->shaderRGBA[0] / 255.0;
+		g = currententity->shaderRGBA[1] / 255.0;
+		b = currententity->shaderRGBA[2] / 255.0;
 	}
 	else
 		r = g = b = 1;
@@ -1024,11 +1024,10 @@ void R_DrawViewModel (void)
 	rent->hModel = Mod_GetHandle(ent->model);
 	rent->frame = ent->frame;
 	rent->shaderTime = ent->syncbase;
-	rent->colorshade = ent->colorshade;
 	rent->skinNum = ent->skinnum;
 	rent->drawflags = ent->drawflags;
 	rent->abslight = ent->abslight;
-	CL_SetRefEntAxis(rent, ent->angles, ent->scale);
+	CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade);
 	R_HandleCustomSkin(rent, -1);
 
 	R_DrawAliasModel(currententity);
@@ -1327,11 +1326,10 @@ void R_Mirror (void)
 		rent->hModel = Mod_GetHandle(ent->model);
 		rent->frame = ent->frame;
 		rent->shaderTime = ent->syncbase;
-		rent->colorshade = ent->colorshade;
 		rent->skinNum = ent->skinnum;
 		rent->drawflags = ent->drawflags;
 		rent->abslight = ent->abslight;
-		CL_SetRefEntAxis(rent, ent->angles, ent->scale);
+		CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade);
 		R_HandleCustomSkin(rent, cl.viewentity <= cl.maxclients ? cl.viewentity - 1 : -1);
 		cl_numvisedicts++;
 	}
