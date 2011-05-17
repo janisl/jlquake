@@ -145,5 +145,7 @@ void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap);
+void R_ClearScene();
+void R_AddRefEntToScene(refEntity_t* Ent);
 
 extern	QCvar*	gl_doubleeyes;

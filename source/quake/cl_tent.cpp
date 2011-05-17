@@ -303,8 +303,6 @@ void CL_UpdateTEnts (void)
 		d = VectorNormalize(dist);
 		while (d > 0)
 		{
-			if (cl_numvisedicts == MAX_VISEDICTS)
-				return;
 			refEntity_t ent;
 			Com_Memset(&ent, 0, sizeof(ent));
 			VectorCopy (org, ent.origin);
@@ -314,7 +312,7 @@ void CL_UpdateTEnts (void)
 			angles[1] = yaw;
 			angles[2] = rand()%360;
 			CL_SetRefEntAxis(&ent, angles);
-			cl_visedicts[cl_numvisedicts++] = ent;
+			R_AddRefEntToScene(&ent);
 
 			for (i=0 ; i<3 ; i++)
 				org[i] += dist[i]*30;

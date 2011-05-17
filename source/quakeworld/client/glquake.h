@@ -137,6 +137,10 @@ extern	cplane_t	*mirror_plane;
 
 extern	float	r_world_matrix[16];
 
+#define			MAX_VISEDICTS	256
+extern	int				cl_numvisedicts;
+extern	refEntity_t		cl_visedicts[MAX_VISEDICTS];
+
 void R_TranslatePlayerSkin (int playernum);
 
 void GL_DisableMultitexture(void);

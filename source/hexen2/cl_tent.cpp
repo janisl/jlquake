@@ -68,7 +68,6 @@ typedef struct
 
 static void ParseStream(int type);
 static stream_t *NewStream(int ent, int tag);
-static refEntity_t *NewStreamEntity(void);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -414,7 +413,6 @@ void CL_UpdateTEnts(void)
 	vec3_t dist;
 	vec3_t org;
 	float d;
-	refEntity_t *ent;
 	float yaw, pitch;
 	float forward;
 	int segmentCount;
@@ -482,93 +480,99 @@ void CL_UpdateTEnts(void)
 		}
 		while(d > 0)
 		{
-			ent = NewStreamEntity();
-			if(!ent)
-			{
-				return;
-			}
-			VectorCopy(org, ent->origin);
-			ent->hModel = Mod_GetHandle(stream->models[0]);
+			refEntity_t ent;
+			Com_Memset(&ent, 0, sizeof(ent));
+			ent.reType = RT_MODEL;
+			VectorCopy(org, ent.origin);
+			ent.hModel = Mod_GetHandle(stream->models[0]);
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
-			switch(stream->type)
+			switch (stream->type)
 			{
 			case TE_STREAM_CHAIN:
 				angles[2] = 0;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				R_AddRefEntToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF1:
 				angles[2] = (int)(cl.time*10)%360;
 				//ent->frame = (int)(cl.time*20)%20;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				R_AddRefEntToScene(&ent);
 
-				ent = NewStreamEntity();
-				if(!ent)
-				{
-					return;
-				}
-				VectorCopy(org, ent->origin);
-				ent->hModel = Mod_GetHandle(stream->models[1]);
+				Com_Memset(&ent, 0, sizeof(ent));
+				ent.reType = RT_MODEL;
+				VectorCopy(org, ent.origin);
+				ent.hModel = Mod_GetHandle(stream->models[1]);
 				angles[0] = pitch;
 				angles[1] = yaw;
 				angles[2] = (int)(cl.time*50)%360;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+				R_AddRefEntToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF2:
 				angles[2] = (int)(cl.time*10)%360;
-				ent->frame = (int)(cl.time*10)%8;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				ent.frame = (int)(cl.time*10)%8;
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				R_AddRefEntToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING:
 				if (stream->endTime < cl.time)
 				{//fixme: keep last non-translucent frame and angle
 					angles[2] = 0;
-					CL_SetRefEntAxis(ent, angles, 0, 0, 128 + (stream->endTime - cl.time) * 192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+					CL_SetRefEntAxis(&ent, angles, 0, 0, 128 + (stream->endTime - cl.time) * 192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				}
 				else
 				{
 					angles[2] = rand()%360;
-					ent->frame = rand()%6;
-					CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+					ent.frame = rand()%6;
+					CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
 				}
+				R_AddRefEntToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING_SMALL:
 				if (stream->endTime < cl.time)
 				{
 					angles[2] = 0;
-					CL_SetRefEntAxis(ent, angles, 0, 0, 128 + (stream->endTime - cl.time)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+					CL_SetRefEntAxis(&ent, angles, 0, 0, 128 + (stream->endTime - cl.time)*192, MLS_ABSLIGHT|DRF_TRANSLUCENT);
 				}
 				else
 				{
 					angles[2] = rand()%360;
-					ent->frame = rand()%6;
-					CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+					ent.frame = rand()%6;
+					CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
 				}
+				R_AddRefEntToScene(&ent);
 				break;
 			case TE_STREAM_FAMINE:
 				angles[2] = rand()%360;
-				ent->frame = 0;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				ent.frame = 0;
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				R_AddRefEntToScene(&ent);
 				break;
 			case TE_STREAM_COLORBEAM:
 				angles[2] = 0;
-				ent->skinNum = stream->skin;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				ent.skinNum = stream->skin;
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				R_AddRefEntToScene(&ent);
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;
-				ent->frame = (int)(cl.time*40)%36;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				ent.frame = (int)(cl.time*40)%36;
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				R_AddRefEntToScene(&ent);
 				break;
 			case TE_STREAM_ICECHUNKS:
 				angles[2] = rand()%360;
-				ent->frame = rand()%5;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				ent.frame = rand()%5;
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
+				R_AddRefEntToScene(&ent);
 				break;
 			default:
 				angles[2] = 0;
-				CL_SetRefEntAxis(ent, angles, 0, 0, 0, 0);
+				CL_SetRefEntAxis(&ent, angles, 0, 0, 0, 0);
+				R_AddRefEntToScene(&ent);
 			}
 			for(i = 0; i < 3; i++)
 			{
@@ -577,53 +581,30 @@ void CL_UpdateTEnts(void)
 			d -= 30;
 			segmentCount++;
 		}
-		if(stream->type == TE_STREAM_SUNSTAFF1
-			|| stream->type == TE_STREAM_SUNSTAFF2)
+		if (stream->type == TE_STREAM_SUNSTAFF1 ||
+			stream->type == TE_STREAM_SUNSTAFF2)
 		{
-			if(stream->lastTrailTime+0.2 < cl.time)
+			if (stream->lastTrailTime + 0.2 < cl.time)
 			{
 				stream->lastTrailTime = cl.time;
 				R_SunStaffTrail(stream->source, stream->dest);
 			}
 
-			ent = NewStreamEntity();
-			if(ent == NULL)
-			{
-				return;
-			}
-			VectorCopy(stream->dest, ent->origin);
-			ent->hModel = Mod_GetHandle(stream->models[2]);
-			CL_SetRefEntAxis(ent, vec3_origin, 80 + (rand() & 15), 0, 128, MLS_ABSLIGHT);
+			refEntity_t ent;
+			Com_Memset(&ent, 0, sizeof(ent));
+			ent.reType = RT_MODEL;
+			VectorCopy(stream->dest, ent.origin);
+			ent.hModel = Mod_GetHandle(stream->models[2]);
+			CL_SetRefEntAxis(&ent, vec3_origin, 80 + (rand() & 15), 0, 128, MLS_ABSLIGHT);
 			//ent->frame = (int)(cl.time*20)%20;
+			R_AddRefEntToScene(&ent);
 
-			ent = NewStreamEntity();
-			if(ent == NULL)
-			{
-				return;
-			}
-			VectorCopy(stream->dest, ent->origin);
-			ent->hModel = Mod_GetHandle(stream->models[3]);
-			CL_SetRefEntAxis(ent, vec3_origin, 150 + (rand() & 15), 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
+			Com_Memset(&ent, 0, sizeof(ent));
+			ent.reType = RT_MODEL;
+			VectorCopy(stream->dest, ent.origin);
+			ent.hModel = Mod_GetHandle(stream->models[3]);
+			CL_SetRefEntAxis(&ent, vec3_origin, 150 + (rand() & 15), 0, 128, MLS_ABSLIGHT | DRF_TRANSLUCENT);
+			R_AddRefEntToScene(&ent);
 		}
 	}
-}
-
-//==========================================================================
-//
-// NewStreamEntity
-//
-//==========================================================================
-
-static refEntity_t *NewStreamEntity(void)
-{
-	refEntity_t	*ent;
-
-	if(cl_numvisedicts == MAX_VISEDICTS)
-	{
-		return NULL;
-	}
-	ent = &cl_visedicts[cl_numvisedicts++];
-	Com_Memset(ent, 0, sizeof(*ent));
-	ent->reType = RT_MODEL;
-	return ent;
 }

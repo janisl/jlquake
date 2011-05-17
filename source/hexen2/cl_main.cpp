@@ -44,8 +44,6 @@ entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t		cl_dlights[MAX_DLIGHTS];
 
-int				cl_numvisedicts;
-refEntity_t		cl_visedicts[MAX_VISEDICTS];
 /*
 =====================
 CL_ClearState
@@ -484,7 +482,7 @@ void CL_RelinkEntities (void)
 // determine partial update time	
 	frac = CL_LerpPoint ();
 
-	cl_numvisedicts = 0;
+	R_ClearScene();
 
 //
 // interpolate player info
@@ -722,20 +720,18 @@ void CL_RelinkEntities (void)
 
 		if ( ent->effects & EF_NODRAW )
 			continue;
-		if (cl_numvisedicts < MAX_VISEDICTS)
-		{
-			refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
-			Com_Memset(rent, 0, sizeof(*rent));
-			rent->reType = RT_MODEL;
-			VectorCopy(ent->origin, rent->origin);
-			rent->hModel = Mod_GetHandle(ent->model);
-			rent->frame = ent->frame;
-			rent->shaderTime = ent->syncbase;
-			rent->skinNum = ent->skinnum;
-			CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
-			R_HandleCustomSkin(rent, i <= cl.maxclients ? i - 1 : -1);
-			cl_numvisedicts++;
-		}
+
+		refEntity_t rent;
+		Com_Memset(&rent, 0, sizeof(rent));
+		rent.reType = RT_MODEL;
+		VectorCopy(ent->origin, rent.origin);
+		rent.hModel = Mod_GetHandle(ent->model);
+		rent.frame = ent->frame;
+		rent.shaderTime = ent->syncbase;
+		rent.skinNum = ent->skinnum;
+		CL_SetRefEntAxis(&rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
+		R_HandleCustomSkin(&rent, i <= cl.maxclients ? i - 1 : -1);
+		R_AddRefEntToScene(&rent);
 	}
 
 /*	if (c != lastc)

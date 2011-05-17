@@ -66,6 +66,10 @@ texture_t	*r_notexture_mip;
 
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
+// refresh list
+int				cl_numvisedicts;
+refEntity_t		cl_visedicts[MAX_VISEDICTS];
+
 
 void R_MarkLeaves (void);
 
@@ -683,6 +687,7 @@ void R_DrawViewModel (void)
 	currententity = &gun;
 	entity_t* pent = &cl.viewent;
 
+	Com_Memset(&gun, 0, sizeof(gun));
 	rent->reType = RT_MODEL;
 	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(pent->origin, rent->origin);
@@ -1022,4 +1027,19 @@ void R_RenderView (void)
 		time2 = Sys_DoubleTime ();
 		Con_Printf ("%3i ms  %4i wpoly %4i epoly\n", (int)((time2-time1)*1000), c_brush_polys, c_alias_polys); 
 	}
+}
+
+void R_ClearScene()
+{
+	cl_numvisedicts = 0;
+}
+
+void R_AddRefEntToScene(refEntity_t* Ent)
+{
+	if (cl_numvisedicts == MAX_VISEDICTS)
+	{
+		return;
+	}
+	cl_visedicts[cl_numvisedicts] = *Ent;
+	cl_numvisedicts++;
 }

@@ -319,28 +319,6 @@ void CL_ParseTEnt (void)
 	}
 }
 
-
-/*
-=================
-CL_NewTempEntity
-=================
-*/
-refEntity_t *CL_NewTempEntity (void)
-{
-	refEntity_t	*ent;
-
-	if (cl_numvisedicts == MAX_VISEDICTS)
-		return NULL;
-	ent = &cl_visedicts[cl_numvisedicts];
-	cl_numvisedicts++;
-	
-	Com_Memset(ent, 0, sizeof(*ent));
-
-	ent->reType = RT_MODEL;
-	return ent;
-}
-
-
 /*
 =================
 CL_UpdateBeams
@@ -352,7 +330,6 @@ void CL_UpdateBeams (void)
 	beam_t		*b;
 	vec3_t		dist, org;
 	float		d;
-	refEntity_t	*ent;
 	float		yaw, pitch;
 	float		forward;
 
@@ -397,16 +374,18 @@ void CL_UpdateBeams (void)
 		d = VectorNormalize(dist);
 		while (d > 0)
 		{
-			ent = CL_NewTempEntity ();
-			if (!ent)
-				return;
-			VectorCopy (org, ent->origin);
-			ent->hModel = Mod_GetHandle(b->model);
+			refEntity_t ent;
+			Com_Memset(&ent, 0, sizeof(ent));
+
+			ent.reType = RT_MODEL;
+			VectorCopy(org, ent.origin);
+			ent.hModel = Mod_GetHandle(b->model);
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
-			angles[2] = rand()%360;
-			CL_SetRefEntAxis(ent, angles);
+			angles[2] = rand() % 360;
+			CL_SetRefEntAxis(&ent, angles);
+			R_AddRefEntToScene(&ent);
 
 			for (i=0 ; i<3 ; i++)
 				org[i] += dist[i]*30;
@@ -426,7 +405,6 @@ void CL_UpdateExplosions (void)
 	int			i;
 	int			f;
 	explosion_t	*ex;
-	refEntity_t	*ent;
 
 	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
 	{
@@ -439,13 +417,15 @@ void CL_UpdateExplosions (void)
 			continue;
 		}
 
-		ent = CL_NewTempEntity ();
-		if (!ent)
-			return;
-		VectorCopy (ex->origin, ent->origin);
-		ent->hModel = Mod_GetHandle(ex->model);
-		ent->frame = f;
-		CL_SetRefEntAxis(ent, vec3_origin);
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+
+		ent.reType = RT_MODEL;
+		VectorCopy(ex->origin, ent.origin);
+		ent.hModel = Mod_GetHandle(ex->model);
+		ent.frame = f;
+		CL_SetRefEntAxis(&ent, vec3_origin);
+		R_AddRefEntToScene(&ent);
 	}
 }
 

@@ -31,6 +31,10 @@ float		model_constant_alpha;
 float		r_time1;
 float		r_lasttime1 = 0;
 
+// refresh list
+int				cl_numvisedicts;
+refEntity_t		cl_visedicts[MAX_VISEDICTS];
+
 extern model_t *player_models[MAX_PLAYER_CLASS];
 
 //
@@ -1413,5 +1417,17 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 		Draw_String (u, v, Name);
 }
 
+void R_ClearScene()
+{
+	cl_numvisedicts = 0;
+}
 
-
+void R_AddRefEntToScene(refEntity_t* Ent)
+{
+	if (cl_numvisedicts == MAX_VISEDICTS)
+	{
+		return;
+	}
+	cl_visedicts[cl_numvisedicts] = *Ent;
+	cl_numvisedicts++;
+}

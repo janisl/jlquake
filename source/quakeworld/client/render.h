@@ -144,3 +144,5 @@ void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum);
+void R_ClearScene();
+void R_AddRefEntToScene(refEntity_t* Ent);

@@ -35,6 +35,9 @@ float		model_constant_alpha;
 float		r_time1;
 float		r_lasttime1 = 0;
 
+int				cl_numvisedicts;
+refEntity_t		cl_visedicts[MAX_VISEDICTS];
+
 extern model_t *player_models[NUM_CLASSES];
 
 //
@@ -1310,19 +1313,16 @@ void R_Mirror (void)
 	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 
 	ent = &cl_entities[cl.viewentity];
-	if (cl_numvisedicts < MAX_VISEDICTS)
-	{
-		refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
-		Com_Memset(rent, 0, sizeof(*rent));
-		VectorCopy(ent->origin, rent->origin);
-		rent->hModel = Mod_GetHandle(ent->model);
-		rent->frame = ent->frame;
-		rent->shaderTime = ent->syncbase;
-		rent->skinNum = ent->skinnum;
-		CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
-		R_HandleCustomSkin(rent, cl.viewentity <= cl.maxclients ? cl.viewentity - 1 : -1);
-		cl_numvisedicts++;
-	}
+	refEntity_t rent;
+	Com_Memset(&rent, 0, sizeof(rent));
+	VectorCopy(ent->origin, rent.origin);
+	rent.hModel = Mod_GetHandle(ent->model);
+	rent.frame = ent->frame;
+	rent.shaderTime = ent->syncbase;
+	rent.skinNum = ent->skinnum;
+	CL_SetRefEntAxis(&rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
+	R_HandleCustomSkin(&rent, cl.viewentity <= cl.maxclients ? cl.viewentity - 1 : -1);
+	R_AddRefEntToScene(&rent);
 
 	gldepthmin = 0.5;
 	gldepthmax = 1;
@@ -1438,4 +1438,19 @@ void R_RenderView (void)
 
 	if (r_speeds->value)
 		R_PrintTimes ();
+}
+
+void R_ClearScene()
+{
+	cl_numvisedicts = 0;
+}
+
+void R_AddRefEntToScene(refEntity_t* Ent)
+{
+	if (cl_numvisedicts == MAX_VISEDICTS)
+	{
+		return;
+	}
+	cl_visedicts[cl_numvisedicts] = *Ent;
+	cl_numvisedicts++;
 }

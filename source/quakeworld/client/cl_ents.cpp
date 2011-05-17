@@ -408,7 +408,6 @@ CL_LinkPacketEntities
 */
 void CL_LinkPacketEntities (void)
 {
-	refEntity_t			*ent;
 	packet_entities_t	*pack;
 	entity_state_t		*s1, *s2;
 	float				f;
@@ -448,28 +447,24 @@ void CL_LinkPacketEntities (void)
 			continue;
 
 		// create a new entity
-		if (cl_numvisedicts == MAX_VISEDICTS)
-			break;		// object list is full
-
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		Com_Memset(ent, 0, sizeof(*ent));
-		ent->reType = RT_MODEL;
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
 
 		model = cl.model_precache[s1->modelindex];
-		ent->hModel = Mod_GetHandle(model);
+		ent.hModel = Mod_GetHandle(model);
 	
 		// set colormap
 		if (s1->colormap && (s1->colormap < MAX_CLIENTS) && s1->modelindex == cl_playerindex)
 		{
-			R_HandlePlayerSkin(ent, s1->colormap - 1);
+			R_HandlePlayerSkin(&ent, s1->colormap - 1);
 		}
 
 		// set skin
-		ent->skinNum = s1->skinnum;
+		ent.skinNum = s1->skinnum;
 		
 		// set frame
-		ent->frame = s1->frame;
+		ent.frame = s1->frame;
 
 		// rotate binary objects locally
 		vec3_t angles;
@@ -494,12 +489,13 @@ void CL_LinkPacketEntities (void)
 				angles[i] = a2 + f * (a1 - a2);
 			}
 		}
-		CL_SetRefEntAxis(ent, angles);
+		CL_SetRefEntAxis(&ent, angles);
 
 		// calculate origin
 		for (i=0 ; i<3 ; i++)
-			ent->origin[i] = s2->origin[i] + 
+			ent.origin[i] = s2->origin[i] + 
 			f * (s1->origin[i] - s2->origin[i]);
+		R_AddRefEntToScene(&ent);
 
 		// add automatic particle trails
 		if (!model->flags)
@@ -520,31 +516,31 @@ void CL_LinkPacketEntities (void)
 		}
 
 		for (i=0 ; i<3 ; i++)
-			if ( abs(old_origin[i] - ent->origin[i]) > 128)
+			if ( abs(old_origin[i] - ent.origin[i]) > 128)
 			{	// no trail if too far
-				VectorCopy (ent->origin, old_origin);
+				VectorCopy (ent.origin, old_origin);
 				break;
 			}
 		if (model->flags & EF_ROCKET)
 		{
-			R_RocketTrail (old_origin, ent->origin, 0);
+			R_RocketTrail (old_origin, ent.origin, 0);
 			dl = CL_AllocDlight (s1->number);
-			VectorCopy (ent->origin, dl->origin);
+			VectorCopy (ent.origin, dl->origin);
 			dl->radius = 200;
 			dl->die = cl.time + 0.1;
 		}
 		else if (model->flags & EF_GRENADE)
-			R_RocketTrail (old_origin, ent->origin, 1);
+			R_RocketTrail (old_origin, ent.origin, 1);
 		else if (model->flags & EF_GIB)
-			R_RocketTrail (old_origin, ent->origin, 2);
+			R_RocketTrail (old_origin, ent.origin, 2);
 		else if (model->flags & EF_ZOMGIB)
-			R_RocketTrail (old_origin, ent->origin, 4);
+			R_RocketTrail (old_origin, ent.origin, 4);
 		else if (model->flags & EF_TRACER)
-			R_RocketTrail (old_origin, ent->origin, 3);
+			R_RocketTrail (old_origin, ent.origin, 3);
 		else if (model->flags & EF_TRACER2)
-			R_RocketTrail (old_origin, ent->origin, 5);
+			R_RocketTrail (old_origin, ent.origin, 5);
 		else if (model->flags & EF_TRACER3)
-			R_RocketTrail (old_origin, ent->origin, 6);
+			R_RocketTrail (old_origin, ent.origin, 6);
 	}
 }
 
@@ -619,28 +615,23 @@ void CL_LinkProjectiles (void)
 {
 	int		i;
 	projectile_t	*pr;
-	refEntity_t		*ent;
 
 	for (i=0, pr=cl_projectiles ; i<cl_num_projectiles ; i++, pr++)
 	{
 		// grab an entity to fill in
-		if (cl_numvisedicts == MAX_VISEDICTS)
-			break;		// object list is full
 		if (pr->modelindex < 1)
 			continue;
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		Com_Memset(ent, 0, sizeof(*ent));
-		ent->reType = RT_MODEL;
-		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
-		VectorCopy (pr->origin, ent->origin);
-		CL_SetRefEntAxis(ent, pr->angles);
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
+		ent.hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
+		VectorCopy(pr->origin, ent.origin);
+		CL_SetRefEntAxis(&ent, pr->angles);
+		R_AddRefEntToScene(&ent);
 	}
 }
 
 //========================================
-
-refEntity_t *CL_NewTempEntity (void);
 
 /*
 ===================
@@ -732,7 +723,6 @@ void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 	int		i;
 	float	f;
 	vec3_t	v_forward, v_right, v_up;
-	refEntity_t	*newent;
 
 	if (cl_flagindex == -1)
 		return;
@@ -761,20 +751,24 @@ void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 		else if (ent->frame >= 112 && ent->frame <= 118) f = f + 7;  //shotattack
 	}
 
-	newent = CL_NewTempEntity ();
-	newent->hModel = Mod_GetHandle(cl.model_precache[cl_flagindex]);
-	newent->skinNum = team;
+	refEntity_t newent;
+	Com_Memset(&newent, 0, sizeof(newent));
 
-	AngleVectors (angles, v_forward, v_right, v_up);
+	newent.reType = RT_MODEL;
+	newent.hModel = Mod_GetHandle(cl.model_precache[cl_flagindex]);
+	newent.skinNum = team;
+
+	AngleVectors(angles, v_forward, v_right, v_up);
 	v_forward[2] = -v_forward[2]; // reverse z component
 	for (i=0 ; i<3 ; i++)
-		newent->origin[i] = ent->origin[i] - f*v_forward[i] + 22*v_right[i];
-	newent->origin[2] -= 16;
+		newent.origin[i] = ent->origin[i] - f*v_forward[i] + 22*v_right[i];
+	newent.origin[2] -= 16;
 
 	vec3_t flag_angles;
 	VectorCopy(angles, flag_angles);
 	flag_angles[2] -= 45;
-	CL_SetRefEntAxis(newent, flag_angles);
+	CL_SetRefEntAxis(&newent, flag_angles);
+	R_AddRefEntToScene(&newent);
 }
 
 /*
@@ -792,7 +786,6 @@ void CL_LinkPlayers (void)
 	player_state_t	*state;
 	player_state_t	exact;
 	double			playertime;
-	refEntity_t		*ent;
 	int				msec;
 	frame_t			*frame;
 	int				oldphysent;
@@ -834,20 +827,17 @@ void CL_LinkPlayers (void)
 			continue;
 
 		// grab an entity to fill in
-		if (cl_numvisedicts == MAX_VISEDICTS)
-			break;		// object list is full
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		Com_Memset(ent, 0, sizeof(*ent));
-		ent->reType = RT_MODEL;
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
 
-		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
-		ent->skinNum = state->skinnum;
-		ent->frame = state->frame;
+		ent.hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
+		ent.skinNum = state->skinnum;
+		ent.frame = state->frame;
 		if (state->modelindex == cl_playerindex)
 		{
 			// use custom skin
-			R_HandlePlayerSkin(ent, j);
+			R_HandlePlayerSkin(&ent, j);
 		}
 
 		//
@@ -858,13 +848,13 @@ void CL_LinkPlayers (void)
 		angles[YAW] = state->viewangles[YAW];
 		angles[ROLL] = 0;
 		angles[ROLL] = V_CalcRoll(angles, state->velocity)*4;
-		CL_SetRefEntAxis(ent, angles);
+		CL_SetRefEntAxis(&ent, angles);
 
 		// only predict half the move to minimize overruns
 		msec = 500*(playertime - state->state_time);
 		if (msec <= 0 || (!cl_predict_players->value && !cl_predict_players2->value))
 		{
-			VectorCopy (state->origin, ent->origin);
+			VectorCopy (state->origin, ent.origin);
 //Con_DPrintf ("nopredict\n");
 		}
 		else
@@ -879,14 +869,14 @@ void CL_LinkPlayers (void)
 			CL_SetSolidPlayers (j);
 			CL_PredictUsercmd (state, &exact, &state->command, false);
 			pmove.numphysent = oldphysent;
-			VectorCopy (exact.origin, ent->origin);
+			VectorCopy (exact.origin, ent.origin);
 		}
+		R_AddRefEntToScene(&ent);
 
 		if (state->effects & EF_FLAG1)
-			CL_AddFlagModels (ent, 0, angles);
+			CL_AddFlagModels(&ent, 0, angles);
 		else if (state->effects & EF_FLAG2)
-			CL_AddFlagModels (ent, 1, angles);
-
+			CL_AddFlagModels(&ent, 1, angles);
 	}
 }
 
@@ -1061,7 +1051,7 @@ void CL_EmitEntities (void)
 	if (!cl.validsequence)
 		return;
 
-	cl_numvisedicts = 0;
+	R_ClearScene();
 
 	CL_LinkPlayers ();
 	CL_LinkPacketEntities ();

@@ -69,6 +69,8 @@ texture_t	*r_notexture_mip;
 
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
+int				cl_numvisedicts;
+refEntity_t		cl_visedicts[MAX_VISEDICTS];
 
 void R_MarkLeaves (void);
 
@@ -1008,20 +1010,17 @@ void R_Mirror (void)
 	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 
 	ent = &cl_entities[cl.viewentity];
-	if (cl_numvisedicts < MAX_VISEDICTS)
-	{
-		refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
-		Com_Memset(rent, 0, sizeof(*rent));
-		rent->reType = RT_MODEL;
-		VectorCopy(ent->origin, rent->origin);
-		rent->hModel = Mod_GetHandle(ent->model);
-		CL_SetRefEntAxis(rent, ent->angles);	
-		rent->frame = ent->frame;
-		rent->shaderTime = ent->syncbase;
-		R_HandleRefEntColormap(rent, ent->colormap);
-		rent->skinNum = ent->skinnum;
-		cl_numvisedicts++;
-	}
+	refEntity_t rent;
+	Com_Memset(&rent, 0, sizeof(rent));
+	rent.reType = RT_MODEL;
+	VectorCopy(ent->origin, rent.origin);
+	rent.hModel = Mod_GetHandle(ent->model);
+	CL_SetRefEntAxis(&rent, ent->angles);	
+	rent.frame = ent->frame;
+	rent.shaderTime = ent->syncbase;
+	R_HandleRefEntColormap(&rent, ent->colormap);
+	rent.skinNum = ent->skinnum;
+	R_AddRefEntToScene(&rent);
 
 	gldepthmin = 0.5;
 	gldepthmax = 1;
@@ -1119,4 +1118,19 @@ void R_RenderView (void)
 		time2 = Sys_DoubleTime ();
 		Con_Printf ("%3i ms  %4i wpoly %4i epoly\n", (int)((time2-time1)*1000), c_brush_polys, c_alias_polys); 
 	}
+}
+
+void R_ClearScene()
+{
+	cl_numvisedicts = 0;
+}
+
+void R_AddRefEntToScene(refEntity_t* Ent)
+{
+	if (cl_numvisedicts == MAX_VISEDICTS)
+	{
+		return;
+	}
+	cl_visedicts[cl_numvisedicts] = *Ent;
+	cl_numvisedicts++;
 }

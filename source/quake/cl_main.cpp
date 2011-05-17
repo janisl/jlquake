@@ -50,9 +50,6 @@ entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t		cl_dlights[MAX_DLIGHTS];
 
-int				cl_numvisedicts;
-refEntity_t		cl_visedicts[MAX_VISEDICTS];
-
 /*
 =====================
 CL_ClearState
@@ -403,7 +400,7 @@ void CL_RelinkEntities (void)
 // determine partial update time	
 	frac = CL_LerpPoint ();
 
-	cl_numvisedicts = 0;
+	R_ClearScene();
 
 //
 // interpolate player info
@@ -540,20 +537,17 @@ void CL_RelinkEntities (void)
 		if (i == cl.viewentity && !chase_active->value)
 			continue;
 
-		if (cl_numvisedicts < MAX_VISEDICTS)
-		{
-			refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
-			Com_Memset(rent, 0, sizeof(*rent));
-			rent->reType = RT_MODEL;
-			VectorCopy(ent->origin, rent->origin);
-			rent->hModel = Mod_GetHandle(ent->model);
-			CL_SetRefEntAxis(rent, ent->angles);	
-			rent->frame = ent->frame;
-			rent->shaderTime = ent->syncbase;
-			R_HandleRefEntColormap(rent, ent->colormap);
-			rent->skinNum = ent->skinnum;
-			cl_numvisedicts++;
-		}
+		refEntity_t rent;
+		Com_Memset(&rent, 0, sizeof(rent));
+		rent.reType = RT_MODEL;
+		VectorCopy(ent->origin, rent.origin);
+		rent.hModel = Mod_GetHandle(ent->model);
+		CL_SetRefEntAxis(&rent, ent->angles);	
+		rent.frame = ent->frame;
+		rent.shaderTime = ent->syncbase;
+		R_HandleRefEntColormap(&rent, ent->colormap);
+		rent.skinNum = ent->skinnum;
+		R_AddRefEntToScene(&rent);
 	}
 
 }

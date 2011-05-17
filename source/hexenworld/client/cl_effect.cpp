@@ -1608,29 +1608,23 @@ void CL_TurnEffect(void)
 
 void CL_LinkEntity(entity_t *ent)
 {
-	if (cl_numvisedicts == MAX_VISEDICTS)
-	{	// object list is full
-		//Sys_Error("CL_LinkEntity: Out of vis edicts\n");
-		return;
-	}
-
 	//debug: if visedicts getting messed up, it should appear here.
 //	if (ent->model < 10)
 //	{
 //		ent->model = 3;
 //	}
 
-	refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
-	Com_Memset(rent, 0, sizeof(*rent));
-	rent->reType = RT_MODEL;
-	VectorCopy(ent->origin, rent->origin);
-	rent->hModel = Mod_GetHandle(ent->model);
-	rent->frame = ent->frame;
-	rent->skinNum = ent->skinnum;
-	rent->shaderTime = ent->syncbase;
-	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
-	R_HandleCustomSkin(rent, -1);
-	cl_numvisedicts++;
+	refEntity_t rent;
+	Com_Memset(&rent, 0, sizeof(rent));
+	rent.reType = RT_MODEL;
+	VectorCopy(ent->origin, rent.origin);
+	rent.hModel = Mod_GetHandle(ent->model);
+	rent.frame = ent->frame;
+	rent.skinNum = ent->skinnum;
+	rent.shaderTime = ent->syncbase;
+	CL_SetRefEntAxis(&rent, ent->angles, ent->angleAdd, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
+	R_HandleCustomSkin(&rent, -1);
+	R_AddRefEntToScene(&rent);
 }
 
 void R_RunQuakeEffect (vec3_t org, float distance);
@@ -2399,10 +2393,6 @@ static int NewEffectEntity(void)
 	entity_t	*ent;
 	int counter;
 
-	if(cl_numvisedicts == MAX_VISEDICTS)
-	{
-		return -1;
-	}
 	if(EffectEntityCount == MAX_EFFECT_ENTITIES)
 	{
 		return -1;

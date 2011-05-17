@@ -146,3 +146,5 @@ void R_ClearParticles (void);
 
 void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
+void R_ClearScene();
+void R_AddRefEntToScene(refEntity_t* Ent);

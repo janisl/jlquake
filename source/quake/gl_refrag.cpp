@@ -197,20 +197,18 @@ void R_StoreEfrags (efrag_t **ppefrag)
 		case mod_sprite:
 			pent = pefrag->entity;
 
-			if ((pent->visframe != tr.frameCount) &&
-				(cl_numvisedicts < MAX_VISEDICTS))
+			if (pent->visframe != tr.frameCount)
 			{
-				entity_t* ent = pent;
-				refEntity_t* rent = &cl_visedicts[cl_numvisedicts];
-				Com_Memset(rent, 0, sizeof(*rent));
-				rent->reType = RT_MODEL;
-				VectorCopy(ent->origin, rent->origin);
-				rent->hModel = Mod_GetHandle(ent->model);
-				CL_SetRefEntAxis(rent, ent->angles);	
-				rent->frame = ent->frame;
-				rent->shaderTime = ent->syncbase;
-				rent->skinNum = ent->skinnum;
-				cl_numvisedicts++;
+				refEntity_t rent;
+				Com_Memset(&rent, 0, sizeof(rent));
+				rent.reType = RT_MODEL;
+				VectorCopy(pent->origin, rent.origin);
+				rent.hModel = Mod_GetHandle(pent->model);
+				CL_SetRefEntAxis(&rent, pent->angles);	
+				rent.frame = pent->frame;
+				rent.shaderTime = pent->syncbase;
+				rent.skinNum = pent->skinnum;
+				R_AddRefEntToScene(&rent);
 
 			// mark that we've recorded this entity for this frame
 				pent->visframe = tr.frameCount;

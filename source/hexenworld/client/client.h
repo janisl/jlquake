@@ -460,10 +460,6 @@ qboolean CL_DemoBehind(void);
 
 void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int scale, int colorshade, int abslight, int drawflags);
 
-#define			MAX_VISEDICTS	512
-extern	int				cl_numvisedicts;
-extern	refEntity_t		cl_visedicts[MAX_VISEDICTS];
-
 //
 // cl_input
 //

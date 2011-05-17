@@ -611,7 +611,6 @@ CL_LinkPacketEntities
 */
 void CL_LinkPacketEntities (void)
 {
-	refEntity_t			*ent;
 	packet_entities_t	*pack;
 	entity_state_t		*s1, *s2;
 	float				f;
@@ -639,22 +638,18 @@ void CL_LinkPacketEntities (void)
 			continue;
 
 		// create a new entity
-		if (cl_numvisedicts == MAX_VISEDICTS)
-			break;		// object list is full
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
 
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		Com_Memset(ent, 0, sizeof(*ent));
-
-		ent->reType = RT_MODEL;
+		ent.reType = RT_MODEL;
 		model = cl.model_precache[s1->modelindex];
-		ent->hModel = Mod_GetHandle(model);
+		ent.hModel = Mod_GetHandle(model);
 	
 		// set skin
-		ent->skinNum = s1->skinnum;
+		ent.skinNum = s1->skinnum;
 		
 		// set frame
-		ent->frame = s1->frame;
+		ent.frame = s1->frame;
 
 		int drawflags = s1->drawflags;
 
@@ -684,7 +679,7 @@ void CL_LinkPacketEntities (void)
 
 		// calculate origin
 		for (i=0 ; i<3 ; i++)
-			ent->origin[i] = s2->origin[i] + 
+			ent.origin[i] = s2->origin[i] + 
 			f * (s1->origin[i] - s2->origin[i]);
 
 		// scan the old entity display list for a matching
@@ -698,15 +693,16 @@ void CL_LinkPacketEntities (void)
 		}
 		if (i == PrevPack->num_entities)
 		{
-			CL_SetRefEntAxis(ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags);
+			CL_SetRefEntAxis(&ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags);
+			R_AddRefEntToScene(&ent);
 			continue;		// not in last message
 		}
 
 		for (i=0 ; i<3 ; i++)
 			//if ( abs(old_origin[i] - ent->origin[i]) > 128)
-			if ( abs(old_origin[i] - ent->origin[i]) > 512)	// this is an issue for laggy situations...
+			if ( abs(old_origin[i] - ent.origin[i]) > 512)	// this is an issue for laggy situations...
 			{	// no trail if too far
-				VectorCopy (ent->origin, old_origin);
+				VectorCopy (ent.origin, old_origin);
 				break;
 			}
 
@@ -716,89 +712,90 @@ void CL_LinkPacketEntities (void)
 		if(cl_siege)
 			if((int)s1->effects & EF_NODRAW)
 			{
-				ent->skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
+				ent.skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
 				drawflags|=DRF_TRANSLUCENT;
 				s1->effects &= ~EF_NODRAW;
 //				cl.players[s1->number].invis=true;
 			}
 
 		vec3_t angleAdd;
-		HandleEffects(s1->effects, s1->number, ent, angles, angleAdd, old_origin);
-		CL_SetRefEntAxis(ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags);
+		HandleEffects(s1->effects, s1->number, &ent, angles, angleAdd, old_origin);
+		CL_SetRefEntAxis(&ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags);
+		R_AddRefEntToScene(&ent);
 
 		// add automatic particle trails
 		if (!model->flags)
 			continue;
 
 		// Model Flags
-		if (Mod_GetModel(ent->hModel)->flags & EF_GIB)
-			R_RocketTrail (old_origin, ent->origin, 2);
-		else if (Mod_GetModel(ent->hModel)->flags & EF_ZOMGIB)
-			R_RocketTrail (old_origin, ent->origin, 4);
-		else if (Mod_GetModel(ent->hModel)->flags & EF_TRACER)
-			R_RocketTrail (old_origin, ent->origin, 3);
-		else if (Mod_GetModel(ent->hModel)->flags & EF_TRACER2)
-			R_RocketTrail (old_origin, ent->origin, 5);
-		else if (Mod_GetModel(ent->hModel)->flags & EF_ROCKET)
+		if (Mod_GetModel(ent.hModel)->flags & EF_GIB)
+			R_RocketTrail (old_origin, ent.origin, 2);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_ZOMGIB)
+			R_RocketTrail (old_origin, ent.origin, 4);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_TRACER)
+			R_RocketTrail (old_origin, ent.origin, 3);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_TRACER2)
+			R_RocketTrail (old_origin, ent.origin, 5);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_ROCKET)
 		{
-			R_RocketTrail (old_origin, ent->origin, 0);
+			R_RocketTrail (old_origin, ent.origin, 0);
 /*			dl = CL_AllocDlight (i);
 			VectorCopy (ent->origin, dl->origin);
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;*/
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_FIREBALL)
+		else if (Mod_GetModel(ent.hModel)->flags & EF_FIREBALL)
 		{
-			R_RocketTrail (old_origin, ent->origin, rt_fireball);
+			R_RocketTrail (old_origin, ent.origin, rt_fireball);
 			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin, dl->origin);
+			VectorCopy (ent.origin, dl->origin);
 			dl->radius = 120 - (rand() % 20);
 			dl->die = cl.time + 0.01;
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_ICE)
+		else if (Mod_GetModel(ent.hModel)->flags & EF_ICE)
 		{
-			R_RocketTrail (old_origin, ent->origin, rt_ice);
+			R_RocketTrail (old_origin, ent.origin, rt_ice);
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_SPIT)
+		else if (Mod_GetModel(ent.hModel)->flags & EF_SPIT)
 		{
-			R_RocketTrail (old_origin, ent->origin, rt_spit);
+			R_RocketTrail (old_origin, ent.origin, rt_spit);
 			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin, dl->origin);
+			VectorCopy (ent.origin, dl->origin);
 			dl->radius = -120 - (rand() % 20);
 			dl->die = cl.time + 0.05;
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_SPELL)
+		else if (Mod_GetModel(ent.hModel)->flags & EF_SPELL)
 		{
-			R_RocketTrail (old_origin, ent->origin, rt_spell);
+			R_RocketTrail (old_origin, ent.origin, rt_spell);
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_GRENADE)
+		else if (Mod_GetModel(ent.hModel)->flags & EF_GRENADE)
 		{
 //			R_RunParticleEffect4(old_origin,3,284,pt_slowgrav,3);
-			R_RocketTrail (old_origin, ent->origin, rt_grensmoke);
+			R_RocketTrail (old_origin, ent.origin, rt_grensmoke);
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_TRACER3)
-			R_RocketTrail (old_origin, ent->origin, 6);
-		else if (Mod_GetModel(ent->hModel)->flags & EF_VORP_MISSILE)
+		else if (Mod_GetModel(ent.hModel)->flags & EF_TRACER3)
+			R_RocketTrail (old_origin, ent.origin, 6);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_VORP_MISSILE)
 		{
-			R_RocketTrail (old_origin, ent->origin, rt_vorpal);
+			R_RocketTrail (old_origin, ent.origin, rt_vorpal);
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_SET_STAFF)
+		else if (Mod_GetModel(ent.hModel)->flags & EF_SET_STAFF)
 		{
-			R_RocketTrail (old_origin, ent->origin,rt_setstaff);
+			R_RocketTrail (old_origin, ent.origin,rt_setstaff);
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_MAGICMISSILE)
+		else if (Mod_GetModel(ent.hModel)->flags & EF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
-				R_RocketTrail (old_origin, ent->origin, rt_magicmissile);
+				R_RocketTrail (old_origin, ent.origin, rt_magicmissile);
 		}
-		else if (Mod_GetModel(ent->hModel)->flags & EF_BONESHARD)
-			R_RocketTrail (old_origin, ent->origin, rt_boneshard);
-		else if (Mod_GetModel(ent->hModel)->flags & EF_SCARAB)
-			R_RocketTrail (old_origin, ent->origin, rt_scarab);
-		else if (Mod_GetModel(ent->hModel)->flags & EF_ACIDBALL)
-			R_RocketTrail (old_origin, ent->origin, rt_acidball);
-		else if (Mod_GetModel(ent->hModel)->flags & EF_BLOODSHOT)
-			R_RocketTrail (old_origin, ent->origin, rt_bloodshot);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_BONESHARD)
+			R_RocketTrail (old_origin, ent.origin, rt_boneshard);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_SCARAB)
+			R_RocketTrail (old_origin, ent.origin, rt_scarab);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_ACIDBALL)
+			R_RocketTrail (old_origin, ent.origin, rt_acidball);
+		else if (Mod_GetModel(ent.hModel)->flags & EF_BLOODSHOT)
+			R_RocketTrail (old_origin, ent.origin, rt_bloodshot);
 	}
 }
 
@@ -900,24 +897,21 @@ void CL_LinkProjectiles (void)
 {
 	int		i;
 	projectile_t	*pr;
-	refEntity_t		*ent;
 
 	for (i=0, pr=cl_projectiles ; i<cl_num_projectiles ; i++, pr++)
 	{
 		// grab an entity to fill in
-		if (cl_numvisedicts == MAX_VISEDICTS)
-			break;		// object list is full
 		if (pr->modelindex < 1)
 			continue;
-		ent = &cl_visedicts[cl_numvisedicts];
-		cl_numvisedicts++;
-		Com_Memset(ent, 0, sizeof(*ent));
-		ent->reType = RT_MODEL;
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
 
-		ent->hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
-		ent->frame = pr->frame;
-		VectorCopy (pr->origin, ent->origin);
-		CL_SetRefEntAxis(ent, pr->angles, vec3_origin, 0, 0, 0, 0);
+		ent.hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
+		ent.frame = pr->frame;
+		VectorCopy(pr->origin, ent.origin);
+		CL_SetRefEntAxis(&ent, pr->angles, vec3_origin, 0, 0, 0, 0);
+		R_AddRefEntToScene(&ent);
 	}
 }
 
@@ -993,7 +987,6 @@ void CL_LinkMissiles (void)
 {
 	int		i;
 	missile_t	*pr;
-	refEntity_t		*ent;
 
 	missilestar_angle[1] += host_frametime * 300; 
 	missilestar_angle[2] += host_frametime * 400; 
@@ -1001,36 +994,32 @@ void CL_LinkMissiles (void)
 	for (i=0, pr=cl_missiles ; i<cl_num_missiles ; i++, pr++)
 	{
 		// grab an entity to fill in for missile itself
-		if (cl_numvisedicts == MAX_VISEDICTS)
-			break;		// object list is full
-		ent = &cl_visedicts[cl_numvisedicts];
-		Com_Memset(ent, 0, sizeof(*ent));
-		ent->reType = RT_MODEL;
-		cl_numvisedicts++;
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
 
-		VectorCopy (pr->origin, ent->origin);
+		VectorCopy (pr->origin, ent.origin);
 		if(pr->type == 1)
 		{	//ball
-			ent->hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
-			CL_SetRefEntAxis(ent, vec3_origin, vec3_origin, 10, 0, 0, SCALE_ORIGIN_CENTER);
+			ent.hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
+			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 10, 0, 0, SCALE_ORIGIN_CENTER);
 		}
 		else
 		{	//missilestar
-			ent->hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
-			CL_SetRefEntAxis(ent, missilestar_angle, vec3_origin, 50, 0, 0, SCALE_ORIGIN_CENTER);
+			ent.hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
+			CL_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, SCALE_ORIGIN_CENTER);
 		}
 		if(rand() % 10 < 3)		
 		{
-			R_RunParticleEffect4 (ent->origin, 7, 148 + rand() % 11, pt_grav, 10 + rand() % 10);
+			R_RunParticleEffect4 (ent.origin, 7, 148 + rand() % 11, pt_grav, 10 + rand() % 10);
 		}
+		R_AddRefEntToScene(&ent);
 	}
 }
 
 //========================================
 
 extern	int		cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
-
-entity_t *CL_NewTempEntity (void);
 
 /*
 ===================
@@ -1184,62 +1173,6 @@ void CL_ParsePlayerinfo (void)
 	VectorCopy (state->command.angles, state->viewangles);
 }
 
-
-/*
-================
-CL_AddFlagModels
-
-Called when the CTF flags are set
-================
-*/
-void CL_AddFlagModels (entity_t *ent, int team)
-{
-	int		i;
-	float	f;
-	vec3_t	v_forward, v_right, v_up;
-	entity_t	*newent;
-
-	if (cl_flagindex == -1)
-		return;
-
-	f = 14;
-	if (ent->frame >= 29 && ent->frame <= 40) {
-		if (ent->frame >= 29 && ent->frame <= 34) { //axpain
-			if      (ent->frame == 29) f = f + 2; 
-			else if (ent->frame == 30) f = f + 8;
-			else if (ent->frame == 31) f = f + 12;
-			else if (ent->frame == 32) f = f + 11;
-			else if (ent->frame == 33) f = f + 10;
-			else if (ent->frame == 34) f = f + 4;
-		} else if (ent->frame >= 35 && ent->frame <= 40) { // pain
-			if      (ent->frame == 35) f = f + 2; 
-			else if (ent->frame == 36) f = f + 10;
-			else if (ent->frame == 37) f = f + 10;
-			else if (ent->frame == 38) f = f + 8;
-			else if (ent->frame == 39) f = f + 4;
-			else if (ent->frame == 40) f = f + 2;
-		}
-	} else if (ent->frame >= 103 && ent->frame <= 118) {
-		if      (ent->frame >= 103 && ent->frame <= 104) f = f + 6;  //nailattack
-		else if (ent->frame >= 105 && ent->frame <= 106) f = f + 6;  //light 
-		else if (ent->frame >= 107 && ent->frame <= 112) f = f + 7;  //rocketattack
-		else if (ent->frame >= 112 && ent->frame <= 118) f = f + 7;  //shotattack
-	}
-
-	newent = CL_NewTempEntity ();
-	newent->model = cl.model_precache[cl_flagindex];
-	newent->skinnum = team;
-
-	AngleVectors (ent->angles, v_forward, v_right, v_up);
-	v_forward[2] = -v_forward[2]; // reverse z component
-	for (i=0 ; i<3 ; i++)
-		newent->origin[i] = ent->origin[i] - f*v_forward[i] + 22*v_right[i];
-	newent->origin[2] -= 16;
-
-	VectorCopy (ent->angles, newent->angles);
-	newent->angles[2] -= 45;
-}
-
 /*
 =============
 CL_LinkPlayers
@@ -1255,7 +1188,6 @@ void CL_LinkPlayers (void)
 	player_state_t	*state;
 	player_state_t	exact;
 	double			enttime, playertime;
-	refEntity_t		*ent;
 	int				msec;
 	frame_t			*frame;
 	int				oldphysent;
@@ -1302,23 +1234,21 @@ void CL_LinkPlayers (void)
 		}
 
 		// grab an entity to fill in
-		if (cl_numvisedicts == MAX_VISEDICTS)
-			break;		// object list is full
-		ent = &cl_visedicts[cl_numvisedicts];
-		Com_Memset(ent, 0, sizeof(*ent));
-		ent->reType = RT_MODEL;
+		refEntity_t ent;
+		Com_Memset(&ent, 0, sizeof(ent));
+		ent.reType = RT_MODEL;
 
-		ent->hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
-		ent->skinNum = state->skinnum;
-		ent->frame = state->frame;
+		ent.hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
+		ent.skinNum = state->skinnum;
+		ent.frame = state->frame;
 
 		int drawflags = state->drawflags;
-		if (ent->hModel == Mod_GetHandle(player_models[0]) ||
-			ent->hModel == Mod_GetHandle(player_models[1]) ||
-			ent->hModel == Mod_GetHandle(player_models[2]) ||
-			ent->hModel == Mod_GetHandle(player_models[3]) ||
-			ent->hModel == Mod_GetHandle(player_models[4]) ||//mg-siege
-			ent->hModel == Mod_GetHandle(player_models[5]))
+		if (ent.hModel == Mod_GetHandle(player_models[0]) ||
+			ent.hModel == Mod_GetHandle(player_models[1]) ||
+			ent.hModel == Mod_GetHandle(player_models[2]) ||
+			ent.hModel == Mod_GetHandle(player_models[3]) ||
+			ent.hModel == Mod_GetHandle(player_models[4]) ||//mg-siege
+			ent.hModel == Mod_GetHandle(player_models[5]))
 		{
 			// use custom skin
 			info->shownames_off = false;
@@ -1337,7 +1267,7 @@ void CL_LinkPlayers (void)
 		msec = 500*(playertime - state->state_time);
 		if (msec <= 0 || (!cl_predict_players->value && !cl_predict_players2->value) || j == cl.playernum)
 		{
-			VectorCopy (state->origin, ent->origin);
+			VectorCopy (state->origin, ent.origin);
 			//Con_DPrintf ("nopredict\n");
 		}
 		else
@@ -1352,19 +1282,19 @@ void CL_LinkPlayers (void)
 			CL_SetSolidPlayers (j);
 			CL_PredictUsercmd (state, &exact, &state->command, false);
 			pmove.numphysent = oldphysent;
-			VectorCopy (exact.origin, ent->origin);
+			VectorCopy (exact.origin, ent.origin);
 		}
 
 		if(cl_siege)
 			if((int)state->effects & EF_NODRAW)
 			{
-				ent->skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
+				ent.skinNum = 101;//ice, but in siege will be invis skin for dwarf to see
 				drawflags|=DRF_TRANSLUCENT;
 				state->effects &= ~EF_NODRAW;
 			}
 
 		vec3_t angleAdd;
-		HandleEffects(state->effects, j+1, ent, angles, angleAdd, NULL);
+		HandleEffects(state->effects, j+1, &ent, angles, angleAdd, NULL);
 
 		//	This uses behavior of software renderer as GL version was fucked
 		// up because it didn't take into the account the fact that shadelight
@@ -1374,7 +1304,7 @@ void CL_LinkPlayers (void)
 		{
 			int my_team = cl.players[cl.playernum].siege_team;
 			int ve_team = info->siege_team;
-			float ambientlight = R_CalcEntityLight(ent);
+			float ambientlight = R_CalcEntityLight(&ent);
 			float shadelight = ambientlight;
 
 			// clamp lighting so it doesn't overbright as much
@@ -1396,7 +1326,7 @@ void CL_LinkPlayers (void)
 			}
 			if (cl_siege)
 			{
-				if (cl.players[cl.playernum].playerclass == CLASS_DWARF && ent->skinNum == 101)
+				if (cl.players[cl.playernum].playerclass == CLASS_DWARF && ent.skinNum == 101)
 				{
 					colorshade = 141;
 					info->shownames_off = false;
@@ -1430,16 +1360,9 @@ void CL_LinkPlayers (void)
 			}
 		}
 
-		CL_SetRefEntAxis(ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags);
-		R_HandleCustomSkin(ent, j);
-
-		cl_numvisedicts++;
-
-//		if (state->effects & EF_FLAG1)
-//			CL_AddFlagModels (ent, 0);
-//		else if (state->effects & EF_FLAG2)
-//			CL_AddFlagModels (ent, 1);
-
+		CL_SetRefEntAxis(&ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags);
+		R_HandleCustomSkin(&ent, j);
+		R_AddRefEntToScene(&ent);
 	}
 }
 
@@ -1648,7 +1571,7 @@ void CL_EmitEntities (void)
 	if (!cl.validsequence)
 		return;
 
-	cl_numvisedicts = 0;
+	R_ClearScene();
 
 	CL_LinkPlayers ();
 	CL_LinkPacketEntities ();
