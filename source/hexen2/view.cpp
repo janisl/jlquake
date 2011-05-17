@@ -937,6 +937,38 @@ else
 }
 
 /*
+=============
+CL_AddViewModel
+=============
+*/
+static void CL_AddViewModel()
+{
+	if (cl.items & IT_INVISIBILITY)
+		return;
+
+	if (cl.v.health <= 0)
+		return;
+
+	if (!cl.viewent.model)
+		return;
+
+	refEntity_t gun;
+
+	Com_Memset(&gun, 0, sizeof(gun));
+	gun.reType = RT_MODEL;
+	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
+	VectorCopy(cl.viewent.origin, gun.origin);
+	gun.hModel = Mod_GetHandle(cl.viewent.model);
+	gun.frame = cl.viewent.frame;
+	gun.shaderTime = cl.viewent.syncbase;
+	gun.skinNum = cl.viewent.skinnum;
+	CL_SetRefEntAxis(&gun, cl.viewent.angles, cl.viewent.scale, cl.viewent.colorshade, cl.viewent.abslight, cl.viewent.drawflags);
+	R_HandleCustomSkin(&gun, -1);
+
+	R_AddRefEntToScene(&gun);
+}
+
+/*
 ==================
 V_RenderView
 
@@ -968,6 +1000,7 @@ void V_RenderView (void)
 		if (!cl.paused /* && (sv.maxclients > 1 || in_keyCatchers == 0) */ )
 			V_CalcRefdef ();
 	}
+	CL_AddViewModel();
 
 	R_PushDlights ();
 

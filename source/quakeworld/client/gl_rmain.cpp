@@ -627,6 +627,18 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
+		if (currententity->renderfx & RF_FIRST_PERSON)
+		{
+			if (!r_drawviewmodel->value || envmap)
+			{
+				continue;
+			}
+		}
+		if (currententity->renderfx & RF_THIRD_PERSON)
+		{
+			continue;
+		}
+
 		switch (Mod_GetModel(currententity->hModel)->type)
 		{
 		case mod_alias:
@@ -657,49 +669,6 @@ void R_DrawEntitiesOnList (void)
 		}
 	}
 }
-
-/*
-=============
-R_DrawViewModel
-=============
-*/
-void R_DrawViewModel (void)
-{
-	if (!r_drawviewmodel->value || !Cam_DrawViewModel())
-		return;
-
-	if (envmap)
-		return;
-
-	if (!r_drawentities->value)
-		return;
-
-	if (cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
-		return;
-
-	if (cl.stats[STAT_HEALTH] <= 0)
-		return;
-
-	if (!cl.viewent.model)
-		return;
-	refEntity_t gun;
-	refEntity_t* rent = &gun;
-	currententity = &gun;
-	entity_t* pent = &cl.viewent;
-
-	Com_Memset(&gun, 0, sizeof(gun));
-	rent->reType = RT_MODEL;
-	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	VectorCopy(pent->origin, rent->origin);
-	rent->hModel = Mod_GetHandle(pent->model);
-	CL_SetRefEntAxis(rent, pent->angles);
-	rent->frame = pent->frame;
-	rent->skinNum = pent->skinnum;
-	rent->shaderTime = pent->syncbase;
-
-	R_DrawAliasModel (currententity);
-}
-
 
 /*
 ============
@@ -1016,7 +985,6 @@ void R_RenderView (void)
 
 	// render normal view
 	R_RenderScene ();
-	R_DrawViewModel ();
 	R_DrawWaterSurfaces ();
 
 	R_PolyBlend ();

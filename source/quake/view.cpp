@@ -846,6 +846,37 @@ the entity origin, so any view position inside that will be valid
 */
 extern vrect_t	scr_vrect;
 
+/*
+=============
+R_DrawViewModel
+=============
+*/
+static void CL_AddViewModel()
+{
+	if (cl.items & IT_INVISIBILITY)
+		return;
+
+	if (cl.stats[STAT_HEALTH] <= 0)
+		return;
+
+	if (!cl.viewent.model)
+		return;
+
+	refEntity_t gun;
+
+	Com_Memset(&gun, 0, sizeof(gun));
+	gun.reType = RT_MODEL;
+	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
+	VectorCopy(cl.viewent.origin, gun.origin);
+	gun.hModel = Mod_GetHandle(cl.viewent.model);
+	CL_SetRefEntAxis(&gun, cl.viewent.angles);	
+	gun.frame = cl.viewent.frame;
+	gun.shaderTime = cl.viewent.syncbase;
+	gun.skinNum = cl.viewent.skinnum;
+
+	R_AddRefEntToScene(&gun);
+}
+
 void V_RenderView (void)
 {
 	if (con_forcedup)
@@ -868,6 +899,7 @@ void V_RenderView (void)
 		if (!cl.paused /* && (sv.maxclients > 1 || in_keyCatchers == 0) */ )
 			V_CalcRefdef ();
 	}
+	CL_AddViewModel();
 
 	R_PushDlights ();
 

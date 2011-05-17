@@ -40,6 +40,8 @@ refEntity_t		cl_visedicts[MAX_VISEDICTS];
 
 extern model_t *player_models[NUM_CLASSES];
 
+bool		r_third_person;
+
 //
 // view origin
 //
@@ -889,6 +891,21 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
+		if (currententity->renderfx & RF_FIRST_PERSON)
+		{
+			if (r_third_person || !r_drawviewmodel->value || envmap)
+			{
+				continue;
+			}
+		}
+		if (currententity->renderfx & RF_THIRD_PERSON)
+		{
+			if (!r_third_person)
+			{
+				continue;
+			}
+		}
+
 		switch (Mod_GetModel(currententity->hModel)->type)
 		{
 		case mod_alias:
@@ -981,53 +998,6 @@ void R_DrawTransEntitiesOnList ( qboolean inwater) {
 	}
 	GL_State(GLS_DEPTHMASK_TRUE);
 }
-
-/*
-=============
-R_DrawViewModel
-=============
-*/
-void R_DrawViewModel (void)
-{
-	if (!r_drawviewmodel->value)
-		return;
-
-	if (chase_active->value)
-		return;
-
-	if (envmap)
-		return;
-
-	if (!r_drawentities->value)
-		return;
-
-	if (cl.items & IT_INVISIBILITY)
-		return;
-
-	if (cl.v.health <= 0)
-		return;
-
-	if (!cl.viewent.model)
-		return;
-	refEntity_t gun;
-	refEntity_t* rent = &gun;
-	currententity = &gun;
-	entity_t* ent = &cl.viewent;
-
-	Com_Memset(rent, 0, sizeof(*rent));
-	rent->reType = RT_MODEL;
-	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	VectorCopy(ent->origin, rent->origin);
-	rent->hModel = Mod_GetHandle(ent->model);
-	rent->frame = ent->frame;
-	rent->shaderTime = ent->syncbase;
-	rent->skinNum = ent->skinnum;
-	CL_SetRefEntAxis(rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
-	R_HandleCustomSkin(rent, -1);
-
-	R_DrawAliasModel(currententity);
-}
-
 
 /*
 ============
@@ -1312,17 +1282,7 @@ void R_Mirror (void)
 	r_refdef.viewangles[1] = atan2 (vpn[1], vpn[0])/M_PI*180;
 	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 
-	ent = &cl_entities[cl.viewentity];
-	refEntity_t rent;
-	Com_Memset(&rent, 0, sizeof(rent));
-	VectorCopy(ent->origin, rent.origin);
-	rent.hModel = Mod_GetHandle(ent->model);
-	rent.frame = ent->frame;
-	rent.shaderTime = ent->syncbase;
-	rent.skinNum = ent->skinnum;
-	CL_SetRefEntAxis(&rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
-	R_HandleCustomSkin(&rent, cl.viewentity <= cl.maxclients ? cl.viewentity - 1 : -1);
-	R_AddRefEntToScene(&rent);
+	r_third_person = true;
 
 	gldepthmin = 0.5;
 	gldepthmax = 1;
@@ -1418,6 +1378,8 @@ void R_RenderView (void)
 
 	R_Clear ();
 
+	r_third_person = !!chase_active->value;
+
 	// render normal view
 	R_RenderScene ();
 
@@ -1428,8 +1390,6 @@ void R_RenderView (void)
 	R_DrawWaterSurfaces ();
 
 	R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY );
-
-	R_DrawViewModel();
 
 	// render mirror view
 	R_Mirror ();

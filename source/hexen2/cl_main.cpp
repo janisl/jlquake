@@ -715,9 +715,6 @@ void CL_RelinkEntities (void)
 
 		ent->forcelink = false;
 
-		if (i == cl.viewentity && !chase_active->value)
-			continue;
-
 		if ( ent->effects & EF_NODRAW )
 			continue;
 
@@ -731,6 +728,10 @@ void CL_RelinkEntities (void)
 		rent.skinNum = ent->skinnum;
 		CL_SetRefEntAxis(&rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
 		R_HandleCustomSkin(&rent, i <= cl.maxclients ? i - 1 : -1);
+		if (i == cl.viewentity)
+		{
+			rent.renderfx |= RF_THIRD_PERSON;
+		}
 		R_AddRefEntToScene(&rent);
 	}
 

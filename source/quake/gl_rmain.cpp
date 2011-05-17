@@ -44,6 +44,8 @@ int			mirrortexturenum;	// quake texturenum, not gltexturenum
 qboolean	mirror;
 cplane_t	*mirror_plane;
 
+bool		r_third_person;
+
 //
 // view origin
 //
@@ -631,6 +633,21 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
+		if (currententity->renderfx & RF_FIRST_PERSON)
+		{
+			if (r_third_person || !r_drawviewmodel->value || envmap)
+			{
+				continue;
+			}
+		}
+		if (currententity->renderfx & RF_THIRD_PERSON)
+		{
+			if (!r_third_person)
+			{
+				continue;
+			}
+		}
+
 		switch (Mod_GetModel(currententity->hModel)->type)
 		{
 		case mod_alias:
@@ -658,53 +675,6 @@ void R_DrawEntitiesOnList (void)
 		}
 	}
 }
-
-/*
-=============
-R_DrawViewModel
-=============
-*/
-void R_DrawViewModel (void)
-{
-	if (!r_drawviewmodel->value)
-		return;
-
-	if (chase_active->value)
-		return;
-
-	if (envmap)
-		return;
-
-	if (!r_drawentities->value)
-		return;
-
-	if (cl.items & IT_INVISIBILITY)
-		return;
-
-	if (cl.stats[STAT_HEALTH] <= 0)
-		return;
-
-	if (!cl.viewent.model)
-		return;
-
-	refEntity_t gun;
-	refEntity_t* rent = &gun;
-	currententity = &gun;
-	entity_t* ent = &cl.viewent;
-
-	Com_Memset(rent, 0, sizeof(*rent));
-	rent->reType = RT_MODEL;
-	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	VectorCopy(ent->origin, rent->origin);
-	rent->hModel = Mod_GetHandle(ent->model);
-	CL_SetRefEntAxis(rent, ent->angles);	
-	rent->frame = ent->frame;
-	rent->shaderTime = ent->syncbase;
-	rent->skinNum = ent->skinnum;
-
-	R_DrawAliasModel (currententity);
-}
-
 
 /*
 ============
@@ -992,7 +962,6 @@ void R_Mirror (void)
 {
 	float		d;
 	msurface_t	*s;
-	entity_t	*ent;
 
 	if (!mirror)
 		return;
@@ -1009,22 +978,11 @@ void R_Mirror (void)
 	r_refdef.viewangles[1] = atan2 (vpn[1], vpn[0])/M_PI*180;
 	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 
-	ent = &cl_entities[cl.viewentity];
-	refEntity_t rent;
-	Com_Memset(&rent, 0, sizeof(rent));
-	rent.reType = RT_MODEL;
-	VectorCopy(ent->origin, rent.origin);
-	rent.hModel = Mod_GetHandle(ent->model);
-	CL_SetRefEntAxis(&rent, ent->angles);	
-	rent.frame = ent->frame;
-	rent.shaderTime = ent->syncbase;
-	R_HandleRefEntColormap(&rent, ent->colormap);
-	rent.skinNum = ent->skinnum;
-	R_AddRefEntToScene(&rent);
-
 	gldepthmin = 0.5;
 	gldepthmax = 1;
 	qglDepthRange (gldepthmin, gldepthmax);
+
+	r_third_person = true;
 
 	R_RenderScene ();
 	R_DrawWaterSurfaces ();
@@ -1099,8 +1057,9 @@ void R_RenderView (void)
 	qglEnable(GL_FOG);
 ********************************************/
 
+	r_third_person = !!chase_active->value;
+
 	R_RenderScene ();
-	R_DrawViewModel ();
 	R_DrawWaterSurfaces ();
 
 //  More fog right here :)

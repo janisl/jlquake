@@ -948,6 +948,41 @@ void DropPunchAngle (void)
 }
 
 /*
+=============
+CL_AddViewModel
+=============
+*/
+static void CL_AddViewModel()
+{
+	if (cl.spectator)
+		return;
+
+//rjr	if (cl.items & IT_INVISIBILITY)
+//rjr		return;
+
+	if (cl.v.health <= 0)
+		return;
+
+	if (!cl.viewent.model)
+		return;
+
+	refEntity_t gun;
+
+	Com_Memset(&gun, 0, sizeof(gun));
+	gun.reType = RT_MODEL;
+	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
+	VectorCopy(cl.viewent.origin, gun.origin);
+	gun.hModel = Mod_GetHandle(cl.viewent.model);
+	gun.frame = cl.viewent.frame;
+	gun.skinNum = cl.viewent.skinnum;
+	gun.shaderTime = cl.viewent.syncbase;
+	CL_SetRefEntAxis(&gun, cl.viewent.angles, cl.viewent.angleAdd, cl.viewent.scale, cl.viewent.colorshade, cl.viewent.abslight, cl.viewent.drawflags);
+	R_HandleCustomSkin(&gun, -1);
+
+	R_AddRefEntToScene(&gun);
+}
+
+/*
 ==================
 V_RenderView
 
@@ -978,6 +1013,7 @@ void V_RenderView (void)
 	{
 		V_CalcRefdef ();
 	}
+	CL_AddViewModel();
 
 	CL_UpdateEffects ();
 

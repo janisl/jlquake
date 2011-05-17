@@ -821,6 +821,40 @@ void DropPunchAngle (void)
 }
 
 /*
+=============
+CL_AddViewModel
+=============
+*/
+static void CL_AddViewModel()
+{
+	if (!Cam_DrawViewModel())
+		return;
+
+	if (cl.stats[STAT_ITEMS] & IT_INVISIBILITY)
+		return;
+
+	if (cl.stats[STAT_HEALTH] <= 0)
+		return;
+
+	if (!cl.viewent.model)
+		return;
+
+	refEntity_t gun;
+
+	Com_Memset(&gun, 0, sizeof(gun));
+	gun.reType = RT_MODEL;
+	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
+	VectorCopy(cl.viewent.origin, gun.origin);
+	gun.hModel = Mod_GetHandle(cl.viewent.model);
+	CL_SetRefEntAxis(&gun, cl.viewent.angles);
+	gun.frame = cl.viewent.frame;
+	gun.skinNum = cl.viewent.skinnum;
+	gun.shaderTime = cl.viewent.syncbase;
+
+	R_AddRefEntToScene(&gun);
+}
+
+/*
 ==================
 V_RenderView
 
@@ -851,6 +885,7 @@ cl.simangles[ROLL] = 0;	// FIXME @@@
 	{
 		V_CalcRefdef ();
 	}
+	CL_AddViewModel();
 
 	R_PushDlights ();
 	R_RenderView ();

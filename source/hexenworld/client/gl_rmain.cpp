@@ -812,9 +812,17 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
-//		if(currententity->drawflags&5)//MLS_INVIS - but dwarf can see
-//			if(cl.v.playerclass!=CLASS_DWARF)
-//				continue;
+		if (currententity->renderfx & RF_FIRST_PERSON)
+		{
+			if (!r_drawviewmodel->value || envmap)
+			{
+				continue;
+			}
+		}
+		if (currententity->renderfx & RF_THIRD_PERSON)
+		{
+			continue;
+		}
 
 		switch (Mod_GetModel(currententity->hModel)->type)
 		{
@@ -923,50 +931,6 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 	}
 	GL_State(GLS_DEPTHMASK_TRUE);
 }
-
-/*
-=============
-R_DrawViewModel
-=============
-*/
-void R_DrawViewModel (void)
-{
-	if (!r_drawviewmodel->value || cl.spectator)
-		return;
-
-	if (envmap)
-		return;
-
-	if (!r_drawentities->value)
-		return;
-
-//rjr	if (cl.items & IT_INVISIBILITY)
-//rjr		return;
-
-	if (cl.v.health <= 0)
-		return;
-
-	if (!cl.viewent.model)
-		return;
-	refEntity_t gun;
-	refEntity_t* rent = &gun;
-	currententity = &gun;
-	entity_t* ent = &cl.viewent;
-
-	Com_Memset(rent, 0, sizeof(*rent));
-	rent->reType = RT_MODEL;
-	rent->renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
-	VectorCopy(ent->origin, rent->origin);
-	rent->hModel = Mod_GetHandle(ent->model);
-	rent->frame = ent->frame;
-	rent->skinNum = ent->skinnum;
-	rent->shaderTime = ent->syncbase;
-	CL_SetRefEntAxis(rent, ent->angles, ent->angleAdd, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
-	R_HandleCustomSkin(rent, -1);
-
-	R_DrawAliasModel (currententity);
-}
-
 
 /*
 ============
@@ -1351,8 +1315,6 @@ void R_RenderView (void)
 	R_DrawWaterSurfaces ();
 
 	R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY );
-
-	R_DrawViewModel();
 
 	R_PolyBlend ();
 

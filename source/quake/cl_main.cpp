@@ -534,9 +534,6 @@ void CL_RelinkEntities (void)
 
 		ent->forcelink = false;
 
-		if (i == cl.viewentity && !chase_active->value)
-			continue;
-
 		refEntity_t rent;
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
@@ -547,9 +544,12 @@ void CL_RelinkEntities (void)
 		rent.shaderTime = ent->syncbase;
 		R_HandleRefEntColormap(&rent, ent->colormap);
 		rent.skinNum = ent->skinnum;
+		if (i == cl.viewentity)
+		{
+			rent.renderfx |= RF_THIRD_PERSON;
+		}
 		R_AddRefEntToScene(&rent);
 	}
-
 }
 
 
