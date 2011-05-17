@@ -19,48 +19,6 @@ vec3_t		r_emins, r_emaxs;
 
 entity_t	*r_addent;
 
-
-/*
-================
-R_RemoveEfrags
-
-Call when removing an object from the world or moving it to another position
-================
-*/
-void R_RemoveEfrags (entity_t *ent)
-{
-	efrag_t		*ef, *old, *walk, **prev;
-	
-	ef = ent->efrag;
-	
-	while (ef)
-	{
-		prev = &ef->leaf->efrags;
-		while (1)
-		{
-			walk = *prev;
-			if (!walk)
-				break;
-			if (walk == ef)
-			{	// remove this fragment
-				*prev = ef->leafnext;
-				break;
-			}
-			else
-				prev = &walk->leafnext;
-		}
-				
-		old = ef;
-		ef = ef->entnext;
-		
-	// put it on the free list
-		old->entnext = cl.free_efrags;
-		cl.free_efrags = old;
-	}
-	
-	ent->efrag = NULL; 
-}
-
 /*
 ===================
 R_SplitEntityOnNode

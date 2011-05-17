@@ -429,9 +429,8 @@ void CL_RelinkEntities (void)
 	for (i=1,ent=cl_entities+1 ; i<cl.num_entities ; i++,ent++)
 	{
 		if (!ent->model)
-		{	// empty slot
-			if (ent->forcelink)
-				R_RemoveEfrags (ent);	// just became empty
+		{
+			// empty slot
 			continue;
 		}
 
