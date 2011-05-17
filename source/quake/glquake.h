@@ -154,7 +154,6 @@ void GL_EnableMultitexture(void);
 
 void GL_Set2D (void);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-void R_StoreEfrags (efrag_t **ppefrag);
 void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
 void R_DrawSkyChain (msurface_t *s);
 void EmitBothSkyLayers (msurface_t *fa);

@@ -326,7 +326,6 @@ typedef struct
 
 // refresh related state
 	struct model_s	*worldmodel;	// cl_entitites[0].model
-	struct efrag_s	*free_efrags;
 	int			num_entities;	// stored bottom up in cl_entities array
 	int			num_statics;	// stored top down in cl_entitiers
 
@@ -425,7 +424,6 @@ extern	client_state_t	cl;
 
 // FIXME, allocate dynamically
 extern	entity_state_t	cl_baselines[MAX_EDICTS];
-extern	efrag_t			cl_efrags[MAX_EFRAGS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 extern	dlight_t		cl_dlights[MAX_DLIGHTS];

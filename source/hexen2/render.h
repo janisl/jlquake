@@ -12,15 +12,6 @@
 
 //=============================================================================
 
-typedef struct efrag_s
-{
-	struct mleaf_s		*leaf;
-	struct efrag_s		*leafnext;
-	struct entity_t		*entity;
-	struct efrag_s		*entnext;
-} efrag_t;
-
-
 struct entity_t
 {
 	qboolean				forcelink;		// model changed
@@ -33,7 +24,6 @@ struct entity_t
 	vec3_t					msg_angles[2];	// last two updates (0 is newest)
 	vec3_t					angles;
 	struct model_s			*model;			// NULL = no model
-	struct efrag_s			*efrag;			// linked list of efrags
 	int						frame;
 	float					syncbase;		// for client-side animations
 	byte					*colormap, *sourcecolormap;
@@ -43,8 +33,6 @@ struct entity_t
 	int						scale;			// for Alias models
 	int						drawflags;		// for Alias models
 	int						abslight;		// for Alias models
-	int						visframe;		// last frame this entity was
-											//  found in an active leaf
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
@@ -100,8 +88,6 @@ void R_RenderView (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change
 void R_InitSky (struct texture_s *mt);	// called at level load
-
-void R_AddEfrags (entity_t *ent);
 
 void R_NewMap (void);
 

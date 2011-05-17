@@ -44,7 +44,6 @@ QCvar*	m_side;
 client_static_t	cls;
 client_state_t	cl;
 // FIXME: put these on hunk?
-efrag_t			cl_efrags[MAX_EFRAGS];
 entity_t		cl_entities[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
@@ -69,19 +68,10 @@ void CL_ClearState (void)
 	cls.message.Clear();
 
 // clear other arrays	
-	Com_Memset(cl_efrags, 0, sizeof(cl_efrags));
 	Com_Memset(cl_entities, 0, sizeof(cl_entities));
 	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
 	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
 	Com_Memset(cl_beams, 0, sizeof(cl_beams));
-
-//
-// allocate the efrags and chain together into a free list
-//
-	cl.free_efrags = cl_efrags;
-	for (i=0 ; i<MAX_EFRAGS-1 ; i++)
-		cl.free_efrags[i].entnext = &cl.free_efrags[i+1];
-	cl.free_efrags[i].entnext = NULL;
 }
 
 /*

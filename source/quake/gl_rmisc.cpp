@@ -329,11 +329,6 @@ void R_NewMap (void)
 	Com_Memset(&r_worldentity, 0, sizeof(r_worldentity));
 	r_worldentity.model = cl.worldmodel;
 
-// clear out efrags in case the level hasn't been reloaded
-// FIXME: is this one short?
-	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
-		cl.worldmodel->leafs[i].efrags = NULL;
-		 	
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 

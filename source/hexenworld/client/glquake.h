@@ -209,7 +209,6 @@ void R_DrawSkyChain (msurface_t *s);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
 void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
 void R_RotateForEntity (refEntity_t *e);
-void R_StoreEfrags (efrag_t **ppefrag);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void GL_BuildLightmaps (void);

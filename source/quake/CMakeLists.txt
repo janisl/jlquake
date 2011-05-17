@@ -12,7 +12,6 @@ add_executable(jlquake
 	gl_draw.cpp
 	gl_mesh.cpp
 	gl_model.cpp
-	gl_refrag.cpp
 	gl_rlight.cpp
 	gl_rmain.cpp
 	gl_rmisc.cpp

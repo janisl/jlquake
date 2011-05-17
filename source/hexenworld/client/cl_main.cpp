@@ -58,7 +58,6 @@ client_static_t	cls;
 client_state_t	cl;
 
 entity_state_t	cl_baselines[MAX_EDICTS];
-efrag_t			cl_efrags[MAX_EFRAGS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t		cl_dlights[MAX_DLIGHTS];
@@ -298,17 +297,8 @@ void CL_ClearState (void)
 	cls.netchan.message.Clear();
 
 // clear other arrays	
-	Com_Memset(cl_efrags, 0, sizeof(cl_efrags));
 	Com_Memset(cl_dlights, 0, sizeof(cl_dlights));
 	Com_Memset(cl_lightstyle, 0, sizeof(cl_lightstyle));
-
-//
-// allocate the efrags and chain together into a free list
-//
-	cl.free_efrags = cl_efrags;
-	for (i=0 ; i<MAX_EFRAGS-1 ; i++)
-		cl.free_efrags[i].entnext = &cl.free_efrags[i+1];
-	cl.free_efrags[i].entnext = NULL;
 
 	plaquemessage = "";
 

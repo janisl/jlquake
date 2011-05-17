@@ -6,15 +6,6 @@
 
 //=============================================================================
 
-typedef struct efrag_s
-{
-	struct mleaf_s		*leaf;
-	struct efrag_s		*leafnext;
-	struct entity_t		*entity;
-	struct efrag_s		*entnext;
-} efrag_t;
-
-
 struct entity_t
 {
 	vec3_t					origin;
@@ -32,11 +23,6 @@ struct entity_t
 	struct player_info_s	*scoreboard;	// identify player
 
 	float					syncbase;
-
-	struct efrag_s			*efrag;			// linked list of efrags (FIXME)
-	int						visframe;		// last frame this entity was
-											// found in an active leaf
-											// only used for static objects
 };
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
@@ -93,8 +79,6 @@ void R_RenderView (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change
 void R_InitSky (struct texture_s *mt);	// called at level load
-
-void R_AddEfrags (entity_t *ent);
 
 void R_NewMap (void);
 

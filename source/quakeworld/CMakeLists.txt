@@ -64,7 +64,6 @@ add_executable(jlqwcl
 	client/gl_mesh.cpp
 	client/gl_model.cpp
 	client/gl_ngraph.cpp
-	client/gl_refrag.cpp
 	client/gl_rlight.cpp
 	client/gl_rmain.cpp
 	client/gl_rmisc.cpp
