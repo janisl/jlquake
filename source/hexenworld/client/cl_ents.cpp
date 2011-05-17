@@ -1554,6 +1554,24 @@ void CL_SetSolidPlayers (int playernum)
 	}
 }
 
+static void CL_LinkStaticEntities()
+{
+	entity_t* pent = cl_static_entities;
+	for (int i = 0; i < cl.num_statics; i++, pent++)
+	{
+		refEntity_t rent;
+		Com_Memset(&rent, 0, sizeof(rent));
+		rent.reType = RT_MODEL;
+		VectorCopy(pent->origin, rent.origin);
+		rent.hModel = Mod_GetHandle(pent->model);
+		rent.frame = pent->frame;
+		rent.skinNum = pent->skinnum;
+		rent.shaderTime = pent->syncbase;
+		CL_SetRefEntAxis(&rent, pent->angles, pent->angleAdd, pent->scale, pent->colorshade, pent->abslight, pent->drawflags);
+		R_HandleCustomSkin(&rent, -1);
+		R_AddRefEntToScene(&rent);
+	}
+}
 
 /*
 ===============
@@ -1578,5 +1596,6 @@ void CL_EmitEntities (void)
 	CL_LinkProjectiles ();
 	CL_LinkMissiles();
 	CL_UpdateTEnts ();
+	CL_LinkStaticEntities();
 }
 

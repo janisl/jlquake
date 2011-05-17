@@ -759,8 +759,6 @@ void CL_ParseStatic (void)
 
 	VectorCopy (es.origin, ent->origin);
 	VectorCopy (es.angles, ent->angles);
-	
-	R_AddEfrags (ent);
 }
 
 /*

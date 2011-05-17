@@ -13,18 +13,18 @@
 ===============================================================================
 */
 
-efrag_t		**lastlink;
+static efrag_t		**lastlink;
 
-vec3_t		r_emins, r_emaxs;
+static vec3_t		r_emins, r_emaxs;
 
-entity_t	*r_addent;
+static entity_t	*r_addent;
 
 /*
 ===================
 R_SplitEntityOnNode
 ===================
 */
-void R_SplitEntityOnNode (mnode_t *node)
+static void R_SplitEntityOnNode (mnode_t *node)
 {
 	efrag_t		*ef;
 	cplane_t	*splitplane;
