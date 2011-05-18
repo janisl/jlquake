@@ -70,22 +70,6 @@ typedef struct dlight_s {
 } dlight_t;
 
 
-// a trRefEntity_t has all the information passed in by
-// the client game, as well as some locally derived info
-typedef struct {
-	refEntity_t	e;
-
-	float		axisLength;		// compensate for non-normalized axis
-
-	qboolean	needDlights;	// true for bmodels that touch a dlight
-	qboolean	lightingCalculated;
-	vec3_t		lightDir;		// normalized direction towards light
-	vec3_t		ambientLight;	// color normalized to 0-255
-	int			ambientLightInt;	// 32 bit rgba packed
-	vec3_t		directedLight;
-} trRefEntity_t;
-
-
 typedef struct {
 	vec3_t		origin;			// in world coordinates
 	vec3_t		axis[3];		// orientation in world

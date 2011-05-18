@@ -71,6 +71,22 @@ init
 ====================================================================
 */
 
+// a trRefEntity_t has all the information passed in by
+// the client game, as well as some locally derived info
+struct trRefEntity_t
+{
+	refEntity_t	e;
+
+	float		axisLength;		// compensate for non-normalized axis
+
+	bool		needDlights;	// true for bmodels that touch a dlight
+	bool		lightingCalculated;
+	vec3_t		lightDir;		// normalized direction towards light
+	vec3_t		ambientLight;	// color normalized to 0-255
+	int			ambientLightInt;	// 32 bit rgba packed
+	vec3_t		directedLight;
+};
+
 #define MAX_DRAWIMAGES			2048
 
 #define FOG_TABLE_SIZE			256
