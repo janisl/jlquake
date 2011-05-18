@@ -2023,7 +2023,7 @@ void CL_LinkEntity(entity_t *ent)
 	Com_Memset(&rent, 0, sizeof(rent));
 	rent.reType = RT_MODEL;
 	VectorCopy(ent->origin, rent.origin);
-	rent.hModel = Mod_GetHandle(ent->model);
+	rent.hModel = ent->model;
 	rent.frame = ent->frame;
 	rent.shaderTime = ent->syncbase;
 	rent.skinNum = ent->skinnum;
@@ -2183,7 +2183,7 @@ void CL_UpdateEffects(void)
 					cl.Effects[index].Smoke.time_amount -= smoketime;
 				}
 
-				if (ent->frame >= ent->model->numframes)
+				if (ent->frame >= Mod_GetModel(ent->model)->numframes)
 				{
 					CL_FreeEffect(index);
 				}
@@ -2245,7 +2245,7 @@ void CL_UpdateEffects(void)
 						cl.Effects[index].Smoke.time_amount -= HX_FRAME_TIME * 2;
 					}
 				}
-				if (ent->frame >= ent->model->numframes)
+				if (ent->frame >= Mod_GetModel(ent->model)->numframes)
 				{
 					CL_FreeEffect(index);
 				}
@@ -2281,7 +2281,7 @@ void CL_UpdateEffects(void)
 				{
 					if (!cl.Effects[index].Flash.reverse)
 					{
-						if (ent->frame >= ent->model->numframes-1)  // Ran through forward animation
+						if (ent->frame >= Mod_GetModel(ent->model)->numframes-1)  // Ran through forward animation
 						{
 							cl.Effects[index].Flash.reverse = 1;
 							ent->frame--;
@@ -2369,7 +2369,7 @@ void CL_UpdateEffects(void)
 				}
 				cur_frame = ent->frame;
 
-				if (cur_frame >= ent->model->numframes)
+				if (cur_frame >= Mod_GetModel(ent->model)->numframes)
 				{
 					CL_FreeEffect(index);
 					break;
@@ -2454,7 +2454,7 @@ void CL_UpdateEffects(void)
 						ent->origin[1] += frametime * cl.Effects[index].Chunk.velocity[i][1];
 						ent->origin[2] += frametime * cl.Effects[index].Chunk.velocity[i][2];
 
-						l = Mod_PointInLeaf (ent->origin, cl.worldmodel);
+						l = Mod_PointInLeaf (ent->origin, Mod_GetModel(cl.worldmodel));
 						if(l->contents!=BSP29CONTENTS_EMPTY) //||in_solid==true
 						{	// bouncing prolly won't work...
 							VectorCopy(oldorg, ent->origin);

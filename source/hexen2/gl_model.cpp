@@ -298,13 +298,13 @@ Mod_ForName
 Loads in a model for the given name
 ==================
 */
-model_t *Mod_ForName (char *name, qboolean crash)
+qhandle_t Mod_ForName (char *name, qboolean crash)
 {
 	model_t	*mod;
 	
 	mod = Mod_FindName (name);
 	
-	return Mod_LoadModel (mod, crash);
+	return Mod_GetHandle(Mod_LoadModel (mod, crash));
 }
 
 

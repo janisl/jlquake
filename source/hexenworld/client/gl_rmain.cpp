@@ -35,7 +35,7 @@ float		r_lasttime1 = 0;
 int				cl_numvisedicts;
 refEntity_t		cl_visedicts[MAX_VISEDICTS];
 
-extern model_t *player_models[MAX_PLAYER_CLASS];
+extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 
 //
 // view origin
@@ -544,11 +544,10 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
 		//FIXME? What about Demoness and Dwarf?
-		model_t* clmodel = Mod_GetModel(Ent->hModel);
-		if (clmodel == player_models[0] ||
-			clmodel == player_models[1] ||
-			clmodel == player_models[2] ||
-			clmodel == player_models[3])
+		if (Ent->hModel == player_models[0] ||
+			Ent->hModel == player_models[1] ||
+			Ent->hModel == player_models[2] ||
+			Ent->hModel == player_models[3])
 		{
 			if (!cl.players[PlayerNum].Translated)
 			{
@@ -864,7 +863,7 @@ void R_DrawEntitiesOnList (void)
 
 		if (item_trans)
 		{
-			pLeaf = Mod_PointInLeaf (currententity->origin, cl.worldmodel);
+			pLeaf = Mod_PointInLeaf (currententity->origin, Mod_GetModel(cl.worldmodel));
 //			if (pLeaf->contents == CONTENTS_EMPTY)
 			if (pLeaf->contents != BSP29CONTENTS_WATER)
 				cl_transvisedicts[cl_numtransvisedicts++].ent = currententity;
@@ -1027,7 +1026,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (r_origin, cl.worldmodel);
+	r_viewleaf = Mod_PointInLeaf (r_origin, Mod_GetModel(cl.worldmodel));
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();

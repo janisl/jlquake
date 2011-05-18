@@ -38,7 +38,7 @@ float		r_lasttime1 = 0;
 int				cl_numvisedicts;
 refEntity_t		cl_visedicts[MAX_VISEDICTS];
 
-extern model_t *player_models[NUM_CLASSES];
+extern qhandle_t	player_models[NUM_CLASSES];
 
 bool		r_third_person;
 
@@ -638,16 +638,15 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 
 		Ent->customSkin = R_GetImageHandle(gl_extra_textures[Ent->skinNum - 100]);
 	}
-	else if (PlayerNum >= 0 && !gl_nocolors->value)
+	else if (PlayerNum >= 0 && !gl_nocolors->value && Ent->hModel)
 	{
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.
-		model_t* clmodel = Mod_GetModel(Ent->hModel);
-		if (clmodel == player_models[0] ||
-			clmodel == player_models[1] ||
-			clmodel == player_models[2] ||
-			clmodel == player_models[3] ||
-			clmodel == player_models[4])
+		if (Ent->hModel == player_models[0] ||
+			Ent->hModel == player_models[1] ||
+			Ent->hModel == player_models[2] ||
+			Ent->hModel == player_models[3] ||
+			Ent->hModel == player_models[4])
 		{
 			Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
 		}
@@ -935,7 +934,7 @@ void R_DrawEntitiesOnList (void)
 		}
 		
 		if (item_trans) {
-			pLeaf = Mod_PointInLeaf (currententity->origin, cl.worldmodel);
+			pLeaf = Mod_PointInLeaf (currententity->origin, Mod_GetModel(cl.worldmodel));
 //			if (pLeaf->contents == CONTENTS_EMPTY)
 			if (pLeaf->contents != BSP29CONTENTS_WATER)
 				cl_transvisedicts[cl_numtransvisedicts++].ent = currententity;
@@ -1091,7 +1090,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (r_origin, cl.worldmodel);
+	r_viewleaf = Mod_PointInLeaf (r_origin, Mod_GetModel(cl.worldmodel));
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();
@@ -1315,10 +1314,10 @@ void R_Mirror (void)
 	qglLoadMatrixf (r_base_world_matrix);
 
 	qglColor4f (1,1,1,r_mirroralpha->value);
-	s = cl.worldmodel->textures[mirrortexturenum]->texturechain;
+	s = Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum]->texturechain;
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s, true);
-	cl.worldmodel->textures[mirrortexturenum]->texturechain = NULL;
+	Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum]->texturechain = NULL;
 	GL_State(GLS_DEFAULT);
 	qglColor4f (1,1,1,1);
 }

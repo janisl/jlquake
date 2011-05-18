@@ -231,5 +231,6 @@ void R_NetGraph (void);
 model_t *Mod_FindName (char *name);
 void R_DarkFieldParticles (refEntity_t *ent);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
+void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
 
 extern float RTint[256],GTint[256],BTint[256];

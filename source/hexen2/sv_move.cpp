@@ -22,7 +22,6 @@ is not a staircase.
 qboolean SV_CheckBottom (edict_t *ent)
 {//By this point, ent has been moved to it's new position after the
 	//move, and adjusted for steps
-	model_t		*model;
 	vec3_t	mins, maxs, start, stop, check,size;
 	q1trace_t	trace;
 	hull_t	*wclip_hull;

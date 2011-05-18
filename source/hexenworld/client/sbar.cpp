@@ -1110,7 +1110,6 @@ void Sbar_DeathmatchOverlay(void)
 	player_info_t	*s;
 	float			total;
 	int				minutes;
-	struct model_s	*play_mdl;
 
 	if (realtime - cl.last_ping_request > 2)
 	{

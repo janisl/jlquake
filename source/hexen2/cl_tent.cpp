@@ -52,7 +52,7 @@ typedef struct
 	int tag;
 	int flags;
 	int skin;
-	struct model_s *models[4];
+	qhandle_t models[4];
 	vec3_t source;
 	vec3_t dest;
 	vec3_t offset;
@@ -287,7 +287,7 @@ static void ParseStream(int type)
 	vec3_t dest;
 	stream_t *stream;
 	float duration;
-	model_t *models[4];
+	qhandle_t models[4];
 
 	ent = net_message.ReadShort();
 	flags = net_message.ReadByte();
@@ -305,7 +305,7 @@ static void ParseStream(int type)
 	dest[1] = net_message.ReadCoord();
 	dest[2] = net_message.ReadCoord();
 
-	models[1] = models[2] = models[3] = NULL;
+	models[1] = models[2] = models[3] = 0;
 	switch(type)
 	{
 	case TE_STREAM_CHAIN:
@@ -484,7 +484,7 @@ void CL_UpdateTEnts(void)
 			Com_Memset(&ent, 0, sizeof(ent));
 			ent.reType = RT_MODEL;
 			VectorCopy(org, ent.origin);
-			ent.hModel = Mod_GetHandle(stream->models[0]);
+			ent.hModel = stream->models[0];
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
@@ -504,7 +504,7 @@ void CL_UpdateTEnts(void)
 				Com_Memset(&ent, 0, sizeof(ent));
 				ent.reType = RT_MODEL;
 				VectorCopy(org, ent.origin);
-				ent.hModel = Mod_GetHandle(stream->models[1]);
+				ent.hModel = stream->models[1];
 				angles[0] = pitch;
 				angles[1] = yaw;
 				angles[2] = (int)(cl.time*50)%360;
@@ -594,7 +594,7 @@ void CL_UpdateTEnts(void)
 			Com_Memset(&ent, 0, sizeof(ent));
 			ent.reType = RT_MODEL;
 			VectorCopy(stream->dest, ent.origin);
-			ent.hModel = Mod_GetHandle(stream->models[2]);
+			ent.hModel = stream->models[2];
 			CL_SetRefEntAxis(&ent, vec3_origin, 80 + (rand() & 15), 0, 128, MLS_ABSLIGHT);
 			//ent->frame = (int)(cl.time*20)%20;
 			R_AddRefEntToScene(&ent);
@@ -602,7 +602,7 @@ void CL_UpdateTEnts(void)
 			Com_Memset(&ent, 0, sizeof(ent));
 			ent.reType = RT_MODEL;
 			VectorCopy(stream->dest, ent.origin);
-			ent.hModel = Mod_GetHandle(stream->models[3]);
+			ent.hModel = stream->models[3];
 			CL_SetRefEntAxis(&ent, vec3_origin, 150 + (rand() & 15), 0, 128, MLS_ABSLIGHT | DRF_TRANSLUCENT);
 			R_AddRefEntToScene(&ent);
 		}

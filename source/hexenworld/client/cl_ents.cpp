@@ -7,7 +7,7 @@ extern	QCvar*	cl_predict_players;
 extern	QCvar*	cl_predict_players2;
 extern	QCvar*	cl_solid_players;
 
-extern model_t *player_models[MAX_PLAYER_CLASS];
+extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 
 static struct predicted_player {
 	int flags;
@@ -614,7 +614,7 @@ void CL_LinkPacketEntities (void)
 	packet_entities_t	*pack;
 	entity_state_t		*s1, *s2;
 	float				f;
-	model_t				*model;
+	qhandle_t			model;
 	vec3_t				old_origin;
 	float				autorotate;
 	int					i, j;
@@ -643,7 +643,7 @@ void CL_LinkPacketEntities (void)
 
 		ent.reType = RT_MODEL;
 		model = cl.model_precache[s1->modelindex];
-		ent.hModel = Mod_GetHandle(model);
+		ent.hModel = model;
 	
 		// set skin
 		ent.skinNum = s1->skinnum;
@@ -724,7 +724,7 @@ void CL_LinkPacketEntities (void)
 		R_AddRefEntToScene(&ent);
 
 		// add automatic particle trails
-		if (!model->flags)
+		if (!Mod_GetModel(model)->flags)
 			continue;
 
 		// Model Flags
@@ -907,7 +907,7 @@ void CL_LinkProjectiles (void)
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		ent.hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
+		ent.hModel = cl.model_precache[pr->modelindex];
 		ent.frame = pr->frame;
 		VectorCopy(pr->origin, ent.origin);
 		CL_SetRefEntAxis(&ent, pr->angles, vec3_origin, 0, 0, 0, 0);
@@ -1001,12 +1001,12 @@ void CL_LinkMissiles (void)
 		VectorCopy (pr->origin, ent.origin);
 		if(pr->type == 1)
 		{	//ball
-			ent.hModel = Mod_GetHandle(cl.model_precache[cl_ballindex]);
+			ent.hModel = cl.model_precache[cl_ballindex];
 			CL_SetRefEntAxis(&ent, vec3_origin, vec3_origin, 10, 0, 0, SCALE_ORIGIN_CENTER);
 		}
 		else
 		{	//missilestar
-			ent.hModel = Mod_GetHandle(cl.model_precache[cl_missilestarindex]);
+			ent.hModel = cl.model_precache[cl_missilestarindex];
 			CL_SetRefEntAxis(&ent, missilestar_angle, vec3_origin, 50, 0, 0, SCALE_ORIGIN_CENTER);
 		}
 		if(rand() % 10 < 3)		
@@ -1238,17 +1238,17 @@ void CL_LinkPlayers (void)
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		ent.hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
+		ent.hModel = cl.model_precache[state->modelindex];
 		ent.skinNum = state->skinnum;
 		ent.frame = state->frame;
 
 		int drawflags = state->drawflags;
-		if (ent.hModel == Mod_GetHandle(player_models[0]) ||
-			ent.hModel == Mod_GetHandle(player_models[1]) ||
-			ent.hModel == Mod_GetHandle(player_models[2]) ||
-			ent.hModel == Mod_GetHandle(player_models[3]) ||
-			ent.hModel == Mod_GetHandle(player_models[4]) ||//mg-siege
-			ent.hModel == Mod_GetHandle(player_models[5]))
+		if (ent.hModel == player_models[0] ||
+			ent.hModel == player_models[1] ||
+			ent.hModel == player_models[2] ||
+			ent.hModel == player_models[3] ||
+			ent.hModel == player_models[4] ||//mg-siege
+			ent.hModel == player_models[5])
 		{
 			// use custom skin
 			info->shownames_off = false;
@@ -1563,7 +1563,7 @@ static void CL_LinkStaticEntities()
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->origin, rent.origin);
-		rent.hModel = Mod_GetHandle(pent->model);
+		rent.hModel = pent->model;
 		rent.frame = pent->frame;
 		rent.skinNum = pent->skinnum;
 		rent.shaderTime = pent->syncbase;

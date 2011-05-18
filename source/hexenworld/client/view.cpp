@@ -792,7 +792,7 @@ void V_CalcIntermissionRefdef (void)
 
 	VectorCopy (cl.simorg, r_refdef.vieworg);
 	VectorCopy (cl.simangles, r_refdef.viewangles);
-	view->model = NULL;
+	view->model = 0;
 
 // allways idle in intermission
 	old = v_idlescale->value;
@@ -894,7 +894,7 @@ void V_CalcRefdef (void)
 		view->origin[2] += 0.5;
 
 	if (view_message->flags & (PF_DEAD) )
- 		view->model = NULL;
+ 		view->model = 0;
  	else
 		view->model = cl.model_precache[cl.stats[STAT_WEAPON]];
 	view->frame = view_message->weaponframe;
@@ -972,7 +972,7 @@ static void CL_AddViewModel()
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(cl.viewent.origin, gun.origin);
-	gun.hModel = Mod_GetHandle(cl.viewent.model);
+	gun.hModel = cl.viewent.model;
 	gun.frame = cl.viewent.frame;
 	gun.skinNum = cl.viewent.skinnum;
 	gun.shaderTime = cl.viewent.syncbase;

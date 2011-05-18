@@ -1609,16 +1609,16 @@ void CL_TurnEffect(void)
 void CL_LinkEntity(entity_t *ent)
 {
 	//debug: if visedicts getting messed up, it should appear here.
-//	if (ent->model < 10)
+//	if (ent->_model < 10)
 //	{
-//		ent->model = 3;
+//		ent->_model = 3;
 //	}
 
 	refEntity_t rent;
 	Com_Memset(&rent, 0, sizeof(rent));
 	rent.reType = RT_MODEL;
 	VectorCopy(ent->origin, rent.origin);
-	rent.hModel = Mod_GetHandle(ent->model);
+	rent.hModel = ent->model;
 	rent.frame = ent->frame;
 	rent.skinNum = ent->skinnum;
 	rent.shaderTime = ent->syncbase;
@@ -1773,7 +1773,7 @@ void CL_UpdateEffects(void)
 					cl.Effects[index].Smoke.time_amount -= smoketime;
 				}
 
-				if (ent->frame >= ent->model->numframes)
+				if (ent->frame >= Mod_GetModel(ent->model)->numframes)
 				{
 					CL_FreeEffect(index);
 				}
@@ -1790,7 +1790,7 @@ void CL_UpdateEffects(void)
 					ent->origin[2] -= (frametime/smoketime) * cl.Effects[index].Smoke.velocity[2];
 
 					ent->frame += i;
-					if (ent->frame < ent->model->numframes)
+					if (ent->frame < Mod_GetModel(ent->model)->numframes)
 					{
 						CL_LinkEntity(ent);
 					}
@@ -1852,7 +1852,7 @@ void CL_UpdateEffects(void)
 				}
 
 
-				if (ent->frame >= ent->model->numframes)
+				if (ent->frame >= Mod_GetModel(ent->model)->numframes)
 				{
 					CL_FreeEffect(index);
 				}
@@ -1874,7 +1874,7 @@ void CL_UpdateEffects(void)
 				{
 					if (!cl.Effects[index].Flash.reverse)
 					{
-						if (ent->frame >= ent->model->numframes-1)  // Ran through forward animation
+						if (ent->frame >= Mod_GetModel(ent->model)->numframes-1)  // Ran through forward animation
 						{
 							cl.Effects[index].Flash.reverse = 1;
 							ent->frame--;
@@ -1944,7 +1944,7 @@ void CL_UpdateEffects(void)
 				}
 				cur_frame = ent->frame;
 
-				if (cur_frame >= ent->model->numframes)
+				if (cur_frame >= Mod_GetModel(ent->model)->numframes)
 				{
 					CL_FreeEffect(index);
 					break;
@@ -2071,7 +2071,7 @@ void CL_UpdateEffects(void)
 								}
 
 
-								if (ent->frame >= ent->model->numframes)
+								if (ent->frame >= Mod_GetModel(ent->model)->numframes)
 								{
 									cl.Effects[index].Xbow.state[i] = 2;//if anim is over, set me to inactive state
 								}
@@ -2115,7 +2115,7 @@ void CL_UpdateEffects(void)
 						VectorCopy(es->origin,org);
 						VectorAdd(org,cl.Effects[index].Bubble.offset,org);
 
-						l = Mod_PointInLeaf (org, cl.worldmodel);
+						l = Mod_PointInLeaf (org, Mod_GetModel(cl.worldmodel));
 						if(l->contents!=BSP29CONTENTS_WATER) 
 						{	//not in water anymore
 							CL_FreeEffect(index);

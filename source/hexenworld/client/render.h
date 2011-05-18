@@ -11,7 +11,7 @@ struct entity_t
 	vec3_t					origin;
 	vec3_t					angles;
 	vec3_t					angleAdd;		// For clientside rotation stuff
-	struct model_s			*model;			// NULL = no model
+	qhandle_t				model;			// 0 = no model
 	int						frame;
 	byte					*colormap;
 	byte					colorshade;

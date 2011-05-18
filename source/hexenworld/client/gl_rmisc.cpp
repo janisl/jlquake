@@ -205,7 +205,7 @@ void R_Init (void)
 }
 
 extern int color_offsets[MAX_PLAYER_CLASS];
-extern model_t *player_models[MAX_PLAYER_CLASS];
+extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 
 /*
 ===============
@@ -270,7 +270,7 @@ void R_TranslatePlayerSkin (int playernum)
 		return;
 
 
-	model = player_models[cl.players[playernum].playerclass-1];
+	model = Mod_GetModel(player_models[cl.players[playernum].playerclass-1]);
 	if (!model)
 		return;
 	// player doesn't have a model yet
@@ -353,15 +353,15 @@ void R_NewMap (void)
 	// identify sky texture
 	skytexturenum = -1;
 	mirrortexturenum = -1;
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->numtextures ; i++)
 	{
-		if (!cl.worldmodel->textures[i])
+		if (!Mod_GetModel(cl.worldmodel)->textures[i])
 			continue;
-		if (!QStr::NCmp(cl.worldmodel->textures[i]->name,"sky",3) )
+		if (!QStr::NCmp(Mod_GetModel(cl.worldmodel)->textures[i]->name,"sky",3) )
 			skytexturenum = i;
-		if (!QStr::NCmp(cl.worldmodel->textures[i]->name,"window02_1",10) )
+		if (!QStr::NCmp(Mod_GetModel(cl.worldmodel)->textures[i]->name,"window02_1",10) )
 			mirrortexturenum = i;
- 		cl.worldmodel->textures[i]->texturechain = NULL;
+ 		Mod_GetModel(cl.worldmodel)->textures[i]->texturechain = NULL;
 	}
 }
 

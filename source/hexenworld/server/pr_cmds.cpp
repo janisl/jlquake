@@ -263,18 +263,6 @@ void PF_setmodel (void)
 	{
 		SetMinMaxSize(e, vec3_origin, vec3_origin, true);
 	}
-
-	/* rjr
-// if it is an inline model, get the size information for it
-	if (m[0] == '*')
-	{
-		mod = Mod_ForName (m, true);
-		VectorCopy (mod->mins, e->v.mins);
-		VectorCopy (mod->maxs, e->v.maxs);
-		VectorSubtract (mod->maxs, mod->mins, e->v.size);
-		SV_LinkEdict (e, false);
-	}
-*/
 }
 
 void PF_setpuzzlemodel (void)
@@ -303,12 +291,11 @@ void PF_setpuzzlemodel (void)
 		Con_Printf("**** %s\n",NewName);
 
 		sv.model_precache[i] = PR_GetString(e->v.model);
-		//sv.models[i] = Mod_ForName (NewName, true);
 	}
 		
-	e->v.modelindex = i; //SV_ModelIndex (m);
+	e->v.modelindex = i;
 
-	mod = sv.models[ (int)e->v.modelindex];  // Mod_ForName (m, true);
+	mod = sv.models[ (int)e->v.modelindex];
 	
 	if (mod)
 	{
@@ -1539,7 +1526,6 @@ void PF_precache_model (void)
 		if (!sv.model_precache[i])
 		{
 			sv.model_precache[i] = s;
-//			sv.models[i] = Mod_ForName (s, true);
 			return;
 		}
 		if (!QStr::Cmp(sv.model_precache[i], s))
@@ -1586,7 +1572,6 @@ void PF_precache_puzzle_model (void)
 		if (!sv.model_precache[i])
 		{
 			sv.model_precache[i] = s;
-//			sv.models[i] = Mod_ForName (s, true);
 			return;
 		}
 		if (!QStr::Cmp(sv.model_precache[i], s))

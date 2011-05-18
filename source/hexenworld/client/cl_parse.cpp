@@ -109,7 +109,7 @@ int	oldparsecountmod;
 int	parsecountmod;
 double	parsecounttime;
 
-model_t *player_models[MAX_PLAYER_CLASS];
+qhandle_t	player_models[MAX_PLAYER_CLASS];
 
 int		cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
 int		cl_ballindex, cl_missilestarindex, cl_ravenindex, cl_raven2index;
@@ -202,7 +202,7 @@ void Model_NextDownload (void)
 	{
 		if (!cl.model_name[i][0])
 			break;
-		cl.model_precache[i] = Mod_ForName (cl.model_name[i], false);
+		cl.model_precache[i] = Mod_ForName(cl.model_name[i], false);
 		if (i == 1)
 		{
 			CM_LoadMap(cl.model_name[i], true, NULL);
@@ -224,8 +224,8 @@ void Model_NextDownload (void)
 	}
 
 	// all done
-	cl.worldmodel = cl.model_precache[1];	
-	R_NewMap ();
+	cl.worldmodel = cl.model_precache[1];
+	R_NewMap();
 
 	PR_LoadStrings();
 
@@ -616,13 +616,13 @@ void CL_ParseModellist (void)
 			cl_raven2index = nummodels;
 	}
 
-	player_models[0] = (model_t *)Mod_FindName ("models/paladin.mdl");
-	player_models[1] = (model_t *)Mod_FindName ("models/crusader.mdl");
-	player_models[2] = (model_t *)Mod_FindName ("models/necro.mdl");
-	player_models[3] = (model_t *)Mod_FindName ("models/assassin.mdl");
-	player_models[4] = (model_t *)Mod_FindName ("models/succubus.mdl");
+	player_models[0] = Mod_ForName("models/paladin.mdl", false);
+	player_models[1] = Mod_ForName("models/crusader.mdl", false);
+	player_models[2] = Mod_ForName("models/necro.mdl", false);
+	player_models[3] = Mod_ForName("models/assassin.mdl", false);
+	player_models[4] = Mod_ForName("models/succubus.mdl", false);
 //siege
-	player_models[5] = (model_t *)Mod_FindName ("models/hank.mdl");
+	player_models[5] = Mod_ForName("models/hank.mdl", false);
 
 	cls.downloadnumber = 0;
 	cls.downloadtype = dl_model;

@@ -244,7 +244,7 @@ void PF_setmodel (void)
 	e->v.model = PR_SetString(m);
 	e->v.modelindex = i; //SV_ModelIndex (m);
 
-	mod = sv.models[ (int)e->v.modelindex];  // Mod_ForName (m, true);
+	mod = sv.models[ (int)e->v.modelindex];
 	
 	if (mod)
 	{
@@ -288,9 +288,9 @@ void PF_setpuzzlemodel (void)
 		sv.models[i] = CM_PrecacheModel(NewName);
 	}
 		
-	e->v.modelindex = i; //SV_ModelIndex (m);
+	e->v.modelindex = i;
 
-	mod = sv.models[ (int)e->v.modelindex];  // Mod_ForName (m, true);
+	mod = sv.models[ (int)e->v.modelindex];
 	
 	if (mod)
 	{

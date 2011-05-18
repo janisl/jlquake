@@ -13,7 +13,7 @@
 extern	QCvar*	sv_flypitch;
 extern	QCvar*	sv_walkpitch;
 
-model_t *player_models[NUM_CLASSES];
+qhandle_t	player_models[NUM_CLASSES];
 
 char *svc_strings[] =
 {
@@ -316,7 +316,7 @@ void CL_ParseServerInfo (void)
 		current_loading_size++;
 		D_ShowLoadingSize();
 
-		if (cl.model_precache[i] == NULL)
+		if (cl.model_precache[i] == 0)
 		{
 			Con_Printf("Model %s not found\n", model_precache[i]);
 			return;
@@ -324,11 +324,11 @@ void CL_ParseServerInfo (void)
 		CL_KeepaliveMessage ();
 	}
 
-	player_models[0] = (model_t *)Mod_FindName ("models/paladin.mdl");
-	player_models[1] = (model_t *)Mod_FindName ("models/crusader.mdl");
-	player_models[2] = (model_t *)Mod_FindName ("models/necro.mdl");
-	player_models[3] = (model_t *)Mod_FindName ("models/assassin.mdl");
-	player_models[4] = (model_t *)Mod_FindName ("models/succubus.mdl");
+	player_models[0] = Mod_ForName("models/paladin.mdl", false);
+	player_models[1] = Mod_ForName("models/crusader.mdl", false);
+	player_models[2] = Mod_ForName("models/necro.mdl", false);
+	player_models[3] = Mod_ForName("models/assassin.mdl", false);
+	player_models[4] = Mod_ForName("models/succubus.mdl", false);
 
 	S_BeginRegistration();
 	for (i=1 ; i<numsounds ; i++)
@@ -346,47 +346,11 @@ void CL_ParseServerInfo (void)
 
 
 // local state
-	cl_entities[0].model = cl.worldmodel = cl.model_precache[1];
+	cl_entities[0].model = cl.model_precache[1];
+	cl.worldmodel = cl.model_precache[1];
 	CM_LoadMap(model_precache[1], true, NULL);
-/*	rjr experimental client side physics - suspect memory is caching out
-	if (!sv.active)
-	{
-		sv.worldmodel = cl.worldmodel;
-		sv.models[1] = sv.worldmodel;
-		
-		// load progs to get entity field count
-		PR_LoadProgs ();
-
-		// allocate server memory
-		sv.max_edicts = MAX_EDICTS;
-		
-		sv.edicts = Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
-
-		sv.num_edicts = 1;
-		sv.models[1] = sv.worldmodel;
-		
-		//
-		// clear world interaction links
-		//
-		SV_ClearWorld ();
-
-		ent = EDICT_NUM(0);
-		Com_Memset(&ent->v, 0, progs->entityfields * 4);
-		ent->free = false;
-		ent->v.model = PR_SetString(sv.worldmodel->name);
-		ent->v.modelindex = 1;		// world model
-		ent->v.solid = SOLID_BSP;
-		ent->v.movetype = MOVETYPE_PUSH;
-	}
-*/
 	
 	R_NewMap ();
-
-/*	if (!sv.active)
-	{
-		PR_LoadStrings();
-		PR_LoadInfoStrings();
-	}*/
 
 	puzzle_strings = (char *)COM_LoadHunkFile ("puzzles.txt");
 
@@ -410,7 +374,7 @@ void CL_ParseUpdate (int bits)
 {
 	int			i;
 	float		f;
-	model_t		*model;
+	qhandle_t	model;
 	int			modnum;
 	qboolean	forcelink;
 	entity_t	*ent;
@@ -517,7 +481,7 @@ void CL_ParseUpdate (int bits)
 	// or randomized
 		if (model)
 		{
-			if (model->synctype == ST_RAND)
+			if (Mod_GetModel(model)->synctype == ST_RAND)
 				ent->syncbase = rand()*(1.0/RAND_MAX);//(float)(rand()&0x7fff) / 0x7fff;
 			else
 				ent->syncbase = 0.0;
@@ -647,12 +611,6 @@ void CL_ParseUpdate (int bits)
 void CL_ParseUpdate2 (int bits)
 {
 	int			i;
-	model_t		*model;
-	int			modnum;
-	qboolean	forcelink;
-	entity_t	*ent;
-	int			num;
-	entity_state2_t *ref_ent,*set_ent,build_ent,dummy;
 
 	if (bits & U_MOREBITS)
 	{

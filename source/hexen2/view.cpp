@@ -777,7 +777,7 @@ void V_CalcIntermissionRefdef (void)
 
 	VectorCopy (ent->origin, r_refdef.vieworg);
 	VectorCopy (ent->angles, r_refdef.viewangles);
-	view->model = NULL;
+	view->model = 0;
 	r_refdef.vieworg[2] += cl.viewheight;
 
 // allways idle in intermission
@@ -879,9 +879,6 @@ void V_CalcRefdef (void)
 // fudge position around to keep amount of weapon visible
 // roughly equal with different FOV
 
-#if 0
-	if (cl.model_precache[cl.stats[STAT_WEAPON]] && QStr::Cmp(cl.model_precache[cl.stats[STAT_WEAPON]]->name,  "progs/v_shot2.mdl"))
-#endif
 	if (scr_viewsize->value == 110)
 		view->origin[2] += 1;
 	else if (scr_viewsize->value == 100)
@@ -958,7 +955,7 @@ static void CL_AddViewModel()
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(cl.viewent.origin, gun.origin);
-	gun.hModel = Mod_GetHandle(cl.viewent.model);
+	gun.hModel = cl.viewent.model;
 	gun.frame = cl.viewent.frame;
 	gun.shaderTime = cl.viewent.syncbase;
 	gun.skinNum = cl.viewent.skinnum;

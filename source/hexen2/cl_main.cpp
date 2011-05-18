@@ -316,7 +316,7 @@ void CL_PrintEntities_f (void)
 			continue;
 		}
 		Con_Printf ("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n"
-		,ent->model->name,ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
+		,Mod_GetModel(ent->model)->name,ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
 	}
 }
 
@@ -509,7 +509,7 @@ void CL_RelinkEntities (void)
 // if the object wasn't included in the last packet, remove it
 		if (ent->msgtime != cl.mtime[0] && !(ent->baseline.flags & BE_ON))
 		{
-			ent->model = NULL;
+			ent->model = 0;
 			continue;
 		}
 
@@ -621,25 +621,22 @@ void CL_RelinkEntities (void)
 			}
 		}
 
-		if (ent->model->flags & EF_GIB)
+		int ModelFlags = Mod_GetModel(ent->model)->flags;
+		if (ModelFlags & EF_GIB)
 			R_RocketTrail (oldorg, ent->origin, 2);
-		else if (ent->model->flags & EF_ZOMGIB)
+		else if (ModelFlags & EF_ZOMGIB)
 			R_RocketTrail (oldorg, ent->origin, 4);
-		else if (ent->model->flags & EF_BLOODSHOT)
+		else if (ModelFlags & EF_BLOODSHOT)
 			R_RocketTrail (oldorg, ent->origin, 17);
-		else if (ent->model->flags & EF_TRACER)
+		else if (ModelFlags & EF_TRACER)
 			R_RocketTrail (oldorg, ent->origin, 3);
-		else if (ent->model->flags & EF_TRACER2)
+		else if (ModelFlags & EF_TRACER2)
 			R_RocketTrail (oldorg, ent->origin, 5);
-		else if (ent->model->flags & EF_ROCKET)
+		else if (ModelFlags & EF_ROCKET)
 		{
 			R_RocketTrail (oldorg, ent->origin, 0);
-/*			dl = CL_AllocDlight (i);
-			VectorCopy (ent->origin, dl->origin);
-			dl->radius = 200;
-			dl->die = cl.time + 0.01;*/
 		}
-		else if (ent->model->flags & EF_FIREBALL)
+		else if (ModelFlags & EF_FIREBALL)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_fireball);
 			if (cl_prettylights->value)
@@ -650,7 +647,7 @@ void CL_RelinkEntities (void)
 				dl->die = cl.time + 0.01;
 			}
 		}
-		else if (ent->model->flags & EF_ACIDBALL)
+		else if (ModelFlags & EF_ACIDBALL)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_acidball);
 			if (cl_prettylights->value)
@@ -661,11 +658,11 @@ void CL_RelinkEntities (void)
 				dl->die = cl.time + 0.01;
 			}
 		}
-		else if (ent->model->flags & EF_ICE)
+		else if (ModelFlags & EF_ICE)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_ice);
 		}
-		else if (ent->model->flags & EF_SPIT)
+		else if (ModelFlags & EF_SPIT)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_spit);
 			if (cl_prettylights->value)
@@ -676,30 +673,30 @@ void CL_RelinkEntities (void)
 				dl->die = cl.time + 0.05;
 			}
 		}
-		else if (ent->model->flags & EF_SPELL)
+		else if (ModelFlags & EF_SPELL)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_spell);
 		}
-		else if (ent->model->flags & EF_GRENADE)
+		else if (ModelFlags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, 1);
-		else if (ent->model->flags & EF_TRACER3)
+		else if (ModelFlags & EF_TRACER3)
 			R_RocketTrail (oldorg, ent->origin, 6);
-		else if (ent->model->flags & EF_VORP_MISSILE)
+		else if (ModelFlags & EF_VORP_MISSILE)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_vorpal);
 		}
-		else if (ent->model->flags & EF_SET_STAFF)
+		else if (ModelFlags & EF_SET_STAFF)
 		{
 			R_RocketTrail (oldorg, ent->origin,rt_setstaff);
 		}
-		else if (ent->model->flags & EF_MAGICMISSILE)
+		else if (ModelFlags & EF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
 				R_RocketTrail (oldorg, ent->origin, rt_magicmissile);
 		}
-		else if (ent->model->flags & EF_BONESHARD)
+		else if (ModelFlags & EF_BONESHARD)
 			R_RocketTrail (oldorg, ent->origin, rt_boneshard);
-		else if (ent->model->flags & EF_SCARAB)
+		else if (ModelFlags & EF_SCARAB)
 			R_RocketTrail (oldorg, ent->origin, rt_scarab);
 
 		ent->forcelink = false;
@@ -711,7 +708,7 @@ void CL_RelinkEntities (void)
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(ent->origin, rent.origin);
-		rent.hModel = Mod_GetHandle(ent->model);
+		rent.hModel = ent->model;
 		rent.frame = ent->frame;
 		rent.shaderTime = ent->syncbase;
 		rent.skinNum = ent->skinnum;
@@ -740,7 +737,7 @@ static void CL_LinkStaticEntities()
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->origin, rent.origin);
-		rent.hModel = Mod_GetHandle(pent->model);
+		rent.hModel = pent->model;
 		rent.frame = pent->frame;
 		rent.shaderTime = pent->syncbase;
 		rent.skinNum = pent->skinnum;

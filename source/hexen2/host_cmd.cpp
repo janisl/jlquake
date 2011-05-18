@@ -2051,14 +2051,14 @@ Host_Viewmodel_f
 */
 void Host_Viewmodel_f (void)
 {
-	edict_t	*e;
-	model_t	*m;
+	edict_t*	e;
+	qhandle_t	m;
 
 	e = FindViewthing ();
 	if (!e)
 		return;
 
-	m = Mod_ForName (Cmd_Argv(1), false);
+	m = Mod_ForName(Cmd_Argv(1), false);
 	if (!m)
 	{
 		Con_Printf ("Can't load %s\n", Cmd_Argv(1));
@@ -2078,7 +2078,7 @@ void Host_Viewframe_f (void)
 {
 	edict_t	*e;
 	int		f;
-	model_t	*m;
+	qhandle_t	m;
 
 	e = FindViewthing ();
 	if (!e)
@@ -2086,19 +2086,19 @@ void Host_Viewframe_f (void)
 	m = cl.model_precache[(int)e->v.modelindex];
 
 	f = QStr::Atoi(Cmd_Argv(1));
-	if (f >= m->numframes)
-		f = m->numframes-1;
+	if (f >= Mod_GetModel(m)->numframes)
+		f = Mod_GetModel(m)->numframes-1;
 
 	e->v.frame = f;		
 }
 
 
-void PrintFrameName (model_t *m, int frame)
+void PrintFrameName(qhandle_t m, int frame)
 {
 	aliashdr_t 			*hdr;
 	maliasframedesc_t	*pframedesc;
 
-	hdr = (aliashdr_t *)Mod_Extradata (m);
+	hdr = (aliashdr_t *)Mod_Extradata(Mod_GetModel(m));
 	if (!hdr)
 		return;
 	pframedesc = &hdr->frames[frame];
@@ -2114,7 +2114,7 @@ Host_Viewnext_f
 void Host_Viewnext_f (void)
 {
 	edict_t	*e;
-	model_t	*m;
+	qhandle_t	m;
 	
 	e = FindViewthing ();
 	if (!e)
@@ -2122,8 +2122,8 @@ void Host_Viewnext_f (void)
 	m = cl.model_precache[(int)e->v.modelindex];
 
 	e->v.frame = e->v.frame + 1;
-	if (e->v.frame >= m->numframes)
-		e->v.frame = m->numframes - 1;
+	if (e->v.frame >= Mod_GetModel(m)->numframes)
+		e->v.frame = Mod_GetModel(m)->numframes - 1;
 
 	PrintFrameName (m, e->v.frame);		
 }
@@ -2136,7 +2136,7 @@ Host_Viewprev_f
 void Host_Viewprev_f (void)
 {
 	edict_t	*e;
-	model_t	*m;
+	qhandle_t	m;
 
 	e = FindViewthing ();
 	if (!e)
