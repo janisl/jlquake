@@ -186,7 +186,7 @@ texture_t *R_TextureAnimation (texture_t *base)
 	int		reletive;
 	int		count;
 
-	if (currententity->frame)
+	if (currententity->e.frame)
 	{
 		if (base->alternate_anims)
 			base = base->alternate_anims;
@@ -249,7 +249,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	if (! (s->flags & (SURF_DRAWSKY|SURF_DRAWTURB|SURF_UNDERWATER) ) )
 	{
-		if (currententity->renderfx & RF_WATERTRANS)
+		if (currententity->e.renderfx & RF_WATERTRANS)
 		{
 			GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 //			qglColor4f (1,1,1,r_wateralpha.value);
@@ -259,12 +259,12 @@ void R_DrawSequentialPoly (msurface_t *s)
 			intensity = 1;
 			// rjr
 		}
-		if (currententity->renderfx & RF_ABSOLUTE_LIGHT)
+		if (currententity->e.renderfx & RF_ABSOLUTE_LIGHT)
 		{
 			// currententity->abslight   0 - 255
 			// rjr
 			GL_TexEnv(GL_MODULATE);
-			intensity = currententity->radius;
+			intensity = currententity->e.radius;
 //			intensity = 0;
 		}
 
@@ -296,8 +296,8 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 		GL_State(GLS_DEFAULT);
 
-		if ((currententity->renderfx & RF_ABSOLUTE_LIGHT) ||
-			(currententity->renderfx & RF_WATERTRANS))
+		if ((currententity->e.renderfx & RF_ABSOLUTE_LIGHT) ||
+			(currententity->e.renderfx & RF_WATERTRANS))
 		{
 			GL_TexEnv(GL_REPLACE);
 		}
@@ -496,7 +496,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 
 	c_brush_polys++;
 
-	if (currententity->renderfx & RF_WATERTRANS)
+	if (currententity->e.renderfx & RF_WATERTRANS)
 	{
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		//			qglColor4f (1,1,1,r_wateralpha.value);
@@ -507,12 +507,12 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 		intensity = 1.0;
 
 	}
-	if (currententity->renderfx & RF_ABSOLUTE_LIGHT)
+	if (currententity->e.renderfx & RF_ABSOLUTE_LIGHT)
 	{
 		// currententity->abslight   0 - 255
 		// rjr
 		GL_TexEnv(GL_MODULATE);
-		intensity = currententity->radius;
+		intensity = currententity->e.radius;
 //		intensity = 0;
 	}
 	
@@ -562,13 +562,13 @@ dynamic:
 			R_BuildLightMap (fa, base, BLOCK_WIDTH*4);
 		}
 	}
-	if ((currententity->renderfx & RF_ABSOLUTE_LIGHT) ||
-	    (currententity->renderfx & RF_WATERTRANS))
+	if ((currententity->e.renderfx & RF_ABSOLUTE_LIGHT) ||
+	    (currententity->e.renderfx & RF_WATERTRANS))
 	{
 		GL_TexEnv(GL_REPLACE);
 	}
 
-	if (currententity->renderfx & RF_WATERTRANS)
+	if (currententity->e.renderfx & RF_WATERTRANS)
 	{
 		GL_State(GLS_DEFAULT);
 	}
@@ -684,7 +684,7 @@ void DrawTextureChains (void)
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (refEntity_t *e, qboolean Translucent)
+void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent)
 {
 	int			j, k;
 	vec3_t		mins, maxs;
@@ -697,22 +697,22 @@ void R_DrawBrushModel (refEntity_t *e, qboolean Translucent)
 
 	currententity = e;
 
-	clmodel = Mod_GetModel(e->hModel);
+	clmodel = Mod_GetModel(e->e.hModel);
 
-	if (e->axis[0][0] != 1 || e->axis[1][1] != 1 || e->axis[2][2] != 1)
+	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
 	{
 		rotated = true;
 		for (i=0 ; i<3 ; i++)
 		{
-			mins[i] = e->origin[i] - clmodel->radius;
-			maxs[i] = e->origin[i] + clmodel->radius;
+			mins[i] = e->e.origin[i] - clmodel->radius;
+			maxs[i] = e->e.origin[i] + clmodel->radius;
 		}
 	}
 	else
 	{
 		rotated = false;
-		VectorAdd (e->origin, clmodel->mins, mins);
-		VectorAdd (e->origin, clmodel->maxs, maxs);
+		VectorAdd (e->e.origin, clmodel->mins, mins);
+		VectorAdd (e->e.origin, clmodel->maxs, maxs);
 	}
 
 	if (R_CullBox (mins, maxs))
@@ -721,15 +721,15 @@ void R_DrawBrushModel (refEntity_t *e, qboolean Translucent)
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
+	VectorSubtract (r_refdef.vieworg, e->e.origin, modelorg);
 	if (rotated)
 	{
 		vec3_t	temp;
 
 		VectorCopy (modelorg, temp);
-		modelorg[0] = DotProduct(temp, e->axis[0]);
-		modelorg[1] = DotProduct(temp, e->axis[1]);
-		modelorg[2] = DotProduct(temp, e->axis[2]);
+		modelorg[0] = DotProduct(temp, e->e.axis[0]);
+		modelorg[1] = DotProduct(temp, e->e.axis[1]);
+		modelorg[2] = DotProduct(temp, e->e.axis[2]);
 	}
 
 	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
@@ -775,7 +775,7 @@ void R_DrawBrushModel (refEntity_t *e, qboolean Translucent)
 		}
 	}
 
-	if (!Translucent && !(currententity->renderfx & RF_ABSOLUTE_LIGHT))
+	if (!Translucent && !(currententity->e.renderfx & RF_ABSOLUTE_LIGHT))
 		R_BlendLightmaps(Translucent);
 
 	qglPopMatrix ();
@@ -912,11 +912,11 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	refEntity_t	ent;
+	trRefEntity_t	ent;
 	int			i;
 
 	Com_Memset(&ent, 0, sizeof(ent));
-	ent.hModel = cl.worldmodel;
+	ent.e.hModel = cl.worldmodel;
 
 	VectorCopy (r_refdef.vieworg, modelorg);
 

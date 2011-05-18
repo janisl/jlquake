@@ -82,7 +82,7 @@ image_t *R_TextureAnimation (mtexinfo_t *tex)
 	if (!tex->next)
 		return tex->image;
 
-	c = currententity->frame % tex->numframes;
+	c = currententity->e.frame % tex->numframes;
 	while (c)
 	{
 		tex = tex->next;
@@ -866,7 +866,7 @@ void R_DrawInlineBModel (void)
 
 	psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
 
-	if ( currententity->renderfx & RF_TRANSLUCENT )
+	if ( currententity->e.renderfx & RF_TRANSLUCENT )
 	{
 		qglColor4f (1,1,1,0.25);
 		GL_TexEnv( GL_MODULATE );
@@ -909,7 +909,7 @@ void R_DrawInlineBModel (void)
 		}
 	}
 
-	if ( !(currententity->renderfx & RF_TRANSLUCENT) )
+	if ( !(currententity->e.renderfx & RF_TRANSLUCENT) )
 	{
 		if ( !qglMultiTexCoord2fARB )
 			R_BlendLightmaps ();
@@ -927,7 +927,7 @@ void R_DrawInlineBModel (void)
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (refEntity_t *e)
+void R_DrawBrushModel (trRefEntity_t *e)
 {
 	vec3_t		mins, maxs;
 	int			i;
@@ -938,20 +938,20 @@ void R_DrawBrushModel (refEntity_t *e)
 
 	currententity = e;
 
-	if (e->axis[0][0] != 1 || e->axis[1][1] != 1 || e->axis[2][2] != 1)
+	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
 	{
 		rotated = true;
 		for (i=0 ; i<3 ; i++)
 		{
-			mins[i] = e->origin[i] - currentmodel->radius;
-			maxs[i] = e->origin[i] + currentmodel->radius;
+			mins[i] = e->e.origin[i] - currentmodel->radius;
+			maxs[i] = e->e.origin[i] + currentmodel->radius;
 		}
 	}
 	else
 	{
 		rotated = false;
-		VectorAdd (e->origin, currentmodel->mins, mins);
-		VectorAdd (e->origin, currentmodel->maxs, maxs);
+		VectorAdd (e->e.origin, currentmodel->mins, mins);
+		VectorAdd (e->e.origin, currentmodel->maxs, maxs);
 	}
 
 	if (R_CullBox (mins, maxs))
@@ -960,15 +960,15 @@ void R_DrawBrushModel (refEntity_t *e)
 	qglColor3f (1,1,1);
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 
-	VectorSubtract (r_newrefdef.vieworg, e->origin, modelorg);
+	VectorSubtract (r_newrefdef.vieworg, e->e.origin, modelorg);
 	if (rotated)
 	{
 		vec3_t	temp;
 
 		VectorCopy (modelorg, temp);
-		modelorg[0] = DotProduct(temp, e->axis[0]);
-		modelorg[1] = DotProduct(temp, e->axis[1]);
-		modelorg[2] = DotProduct(temp, e->axis[2]);
+		modelorg[0] = DotProduct(temp, e->e.axis[0]);
+		modelorg[1] = DotProduct(temp, e->e.axis[1]);
+		modelorg[2] = DotProduct(temp, e->e.axis[2]);
 	}
 
     qglPushMatrix ();
@@ -1164,7 +1164,7 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	refEntity_t	ent;
+	trRefEntity_t	ent;
 
 	if (!r_drawworld->value)
 		return;
@@ -1178,7 +1178,7 @@ void R_DrawWorld (void)
 
 	// auto cycle the world frame for texture animation
 	Com_Memset(&ent, 0, sizeof(ent));
-	ent.frame = (int)(r_newrefdef.time*2);
+	ent.e.frame = (int)(r_newrefdef.time*2);
 	currententity = &ent;
 
 	qglColor3f (1,1,1);

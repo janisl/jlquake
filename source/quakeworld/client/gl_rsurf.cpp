@@ -212,7 +212,7 @@ texture_t *R_TextureAnimation (texture_t *base)
 	int		reletive;
 	int		count;
 
-	if (currententity->frame)
+	if (currententity->e.frame)
 	{
 		if (base->alternate_anims)
 			base = base->alternate_anims;
@@ -874,7 +874,7 @@ void DrawTextureChains (void)
 R_DrawBrushModel
 =================
 */
-void R_DrawBrushModel (refEntity_t *e)
+void R_DrawBrushModel (trRefEntity_t *e)
 {
 	int			i;
 	int			k;
@@ -887,22 +887,22 @@ void R_DrawBrushModel (refEntity_t *e)
 
 	currententity = e;
 
-	clmodel = Mod_GetModel(e->hModel);
+	clmodel = Mod_GetModel(e->e.hModel);
 
-	if (e->axis[0][0] != 1 || e->axis[1][1] != 1 || e->axis[2][2] != 1)
+	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
 	{
 		rotated = true;
 		for (i=0 ; i<3 ; i++)
 		{
-			mins[i] = e->origin[i] - clmodel->radius;
-			maxs[i] = e->origin[i] + clmodel->radius;
+			mins[i] = e->e.origin[i] - clmodel->radius;
+			maxs[i] = e->e.origin[i] + clmodel->radius;
 		}
 	}
 	else
 	{
 		rotated = false;
-		VectorAdd (e->origin, clmodel->mins, mins);
-		VectorAdd (e->origin, clmodel->maxs, maxs);
+		VectorAdd (e->e.origin, clmodel->mins, mins);
+		VectorAdd (e->e.origin, clmodel->maxs, maxs);
 	}
 
 	if (R_CullBox (mins, maxs))
@@ -911,15 +911,15 @@ void R_DrawBrushModel (refEntity_t *e)
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-	VectorSubtract (r_refdef.vieworg, e->origin, modelorg);
+	VectorSubtract (r_refdef.vieworg, e->e.origin, modelorg);
 	if (rotated)
 	{
 		vec3_t	temp;
 
 		VectorCopy (modelorg, temp);
-		modelorg[0] = DotProduct(temp, e->axis[0]);
-		modelorg[1] = DotProduct(temp, e->axis[1]);
-		modelorg[2] = DotProduct(temp, e->axis[2]);
+		modelorg[0] = DotProduct(temp, e->e.axis[0]);
+		modelorg[1] = DotProduct(temp, e->e.axis[1]);
+		modelorg[2] = DotProduct(temp, e->e.axis[2]);
 	}
 
 	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
@@ -1107,10 +1107,10 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	refEntity_t	ent;
+	trRefEntity_t	ent;
 
 	Com_Memset(&ent, 0, sizeof(ent));
-	ent.hModel = cl.worldmodel;
+	ent.e.hModel = cl.worldmodel;
 
 	VectorCopy (r_refdef.vieworg, modelorg);
 

@@ -27,7 +27,7 @@ entity_t	r_worldentity;
 qboolean	r_cache_thrash;		// compatability
 
 vec3_t		modelorg, r_entorigin;
-refEntity_t	*currententity;
+trRefEntity_t*	currententity;
 
 int			r_visframecount;	// bumped when going to a new PVS
 
@@ -72,7 +72,7 @@ texture_t	*r_notexture_mip;
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 int				cl_numvisedicts;
-refEntity_t		cl_visedicts[MAX_VISEDICTS];
+trRefEntity_t	cl_visedicts[MAX_VISEDICTS];
 
 void R_MarkLeaves (void);
 
@@ -118,25 +118,25 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 }
 
 
-void R_RotateForEntity (refEntity_t *e)
+void R_RotateForEntity (trRefEntity_t *e)
 {
 	GLfloat glmat[16];
 
-	glmat[0] = e->axis[0][0];
-	glmat[1] = e->axis[0][1];
-	glmat[2] = e->axis[0][2];
+	glmat[0] = e->e.axis[0][0];
+	glmat[1] = e->e.axis[0][1];
+	glmat[2] = e->e.axis[0][2];
 	glmat[3] = 0;
-	glmat[4] = e->axis[1][0];
-	glmat[5] = e->axis[1][1];
-	glmat[6] = e->axis[1][2];
+	glmat[4] = e->e.axis[1][0];
+	glmat[5] = e->e.axis[1][1];
+	glmat[6] = e->e.axis[1][2];
 	glmat[7] = 0;
-	glmat[8] = e->axis[2][0];
-	glmat[9] = e->axis[2][1];
-	glmat[10] = e->axis[2][2];
+	glmat[8] = e->e.axis[2][0];
+	glmat[9] = e->e.axis[2][1];
+	glmat[10] = e->e.axis[2][2];
 	glmat[11] = 0;
-	glmat[12] = e->origin[0];
-	glmat[13] = e->origin[1];
-	glmat[14] = e->origin[2];
+	glmat[12] = e->e.origin[0];
+	glmat[13] = e->e.origin[1];
+	glmat[14] = e->e.origin[2];
 	glmat[15] = 1;
 
 	qglMultMatrixf(glmat);
@@ -155,7 +155,7 @@ void R_RotateForEntity (refEntity_t *e)
 R_GetSpriteFrame
 ================
 */
-mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
+mspriteframe_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 {
 	msprite_t		*psprite;
 	mspritegroup_t	*pspritegroup;
@@ -163,8 +163,8 @@ mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
-	psprite = (msprite_t*)Mod_GetModel(currententity->hModel)->cache.data;
-	frame = currententity->frame;
+	psprite = (msprite_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	frame = currententity->e.frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
 	{
@@ -183,7 +183,7 @@ mspriteframe_t *R_GetSpriteFrame (refEntity_t *currententity)
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
 
-		time = cl.time + currententity->shaderTime;
+		time = cl.time + currententity->e.shaderTime;
 
 	// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
 	// are positive, so we don't have to worry about division by 0
@@ -208,7 +208,7 @@ R_DrawSpriteModel
 
 =================
 */
-void R_DrawSpriteModel (refEntity_t *e)
+void R_DrawSpriteModel (trRefEntity_t *e)
 {
 	vec3_t	point;
 	mspriteframe_t	*frame;
@@ -219,13 +219,13 @@ void R_DrawSpriteModel (refEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite_t*)Mod_GetModel(currententity->hModel)->cache.data;
+	psprite = (msprite_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
 
 	if (psprite->type == SPR_ORIENTED)
 	{
 		// bullet marks on walls
-		up = currententity->axis[2];
-		VectorSubtract(vec3_origin, currententity->axis[1], v_right);
+		up = currententity->e.axis[2];
+		VectorSubtract(vec3_origin, currententity->e.axis[1], v_right);
 		right = v_right;
 	}
 	else
@@ -244,22 +244,22 @@ void R_DrawSpriteModel (refEntity_t *e)
 	qglBegin (GL_QUADS);
 
 	qglTexCoord2f (0, 1);
-	VectorMA (e->origin, frame->down, up, point);
+	VectorMA (e->e.origin, frame->down, up, point);
 	VectorMA (point, frame->left, right, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (0, 0);
-	VectorMA (e->origin, frame->up, up, point);
+	VectorMA (e->e.origin, frame->up, up, point);
 	VectorMA (point, frame->left, right, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (1, 0);
-	VectorMA (e->origin, frame->up, up, point);
+	VectorMA (e->e.origin, frame->up, up, point);
 	VectorMA (point, frame->right, right, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (1, 1);
-	VectorMA (e->origin, frame->down, up, point);
+	VectorMA (e->e.origin, frame->down, up, point);
 	VectorMA (point, frame->right, right, point);
 	qglVertex3fv (point);
 	
@@ -372,7 +372,7 @@ void GL_DrawAliasShadow (aliashdr_t *paliashdr, int posenum)
 	float	height, lheight;
 	int		count;
 
-	lheight = currententity->origin[2] - lightspot[2];
+	lheight = currententity->e.origin[2] - lightspot[2];
 
 	height = 0;
 	verts = (trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
@@ -466,7 +466,7 @@ R_DrawAliasModel
 
 =================
 */
-void R_DrawAliasModel (refEntity_t *e)
+void R_DrawAliasModel (trRefEntity_t *e)
 {
 	int			i, j;
 	int			lnum;
@@ -478,38 +478,38 @@ void R_DrawAliasModel (refEntity_t *e)
 	trivertx_t	*verts, *v;
 	int			index;
 
-	clmodel = Mod_GetModel(currententity->hModel);
+	clmodel = Mod_GetModel(currententity->e.hModel);
 
-	VectorAdd (currententity->origin, clmodel->mins, mins);
-	VectorAdd (currententity->origin, clmodel->maxs, maxs);
+	VectorAdd (currententity->e.origin, clmodel->mins, mins);
+	VectorAdd (currententity->e.origin, clmodel->maxs, maxs);
 
 	if (R_CullBox (mins, maxs))
 		return;
 
 	// hack the depth range to prevent view model from poking into walls
-	if (e->renderfx & RF_DEPTHHACK)
+	if (e->e.renderfx & RF_DEPTHHACK)
 	{
 		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 	}
 
-	VectorCopy (currententity->origin, r_entorigin);
+	VectorCopy (currententity->e.origin, r_entorigin);
 	VectorSubtract (r_origin, r_entorigin, modelorg);
 
 	//
 	// get lighting information
 	//
 
-	ambientlight = shadelight = R_LightPoint (currententity->origin);
+	ambientlight = shadelight = R_LightPoint (currententity->e.origin);
 
 	// allways give the gun some light
-	if ((e->renderfx & RF_MINLIGHT) && ambientlight < 24)
+	if ((e->e.renderfx & RF_MINLIGHT) && ambientlight < 24)
 		ambientlight = shadelight = 24;
 
 	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
 	{
 		if (cl_dlights[lnum].die >= cl.time)
 		{
-			VectorSubtract (currententity->origin,
+			VectorSubtract (currententity->e.origin,
 							cl_dlights[lnum].origin,
 							dist);
 			add = cl_dlights[lnum].radius - VectorLength(dist);
@@ -533,24 +533,24 @@ void R_DrawAliasModel (refEntity_t *e)
 		if (ambientlight < 8)
 			ambientlight = shadelight = 8;
 
-	if (e->renderfx & RF_ABSOLUTE_LIGHT)
+	if (e->e.renderfx & RF_ABSOLUTE_LIGHT)
 	{
-		ambientlight = shadelight = currententity->radius * 256.0;
+		ambientlight = shadelight = currententity->e.radius * 256.0;
 	}
 
 	vec3_t tmp_angles;
-	VecToAngles(e->axis[0], tmp_angles);
+	VecToAngles(e->e.axis[0], tmp_angles);
 	shadedots = r_avertexnormal_dots[((int)(tmp_angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
 	shadelight = shadelight / 200.0;
 
-	VectorCopy(e->axis[0], shadevector);
+	VectorCopy(e->e.axis[0], shadevector);
 	shadevector[2] = 1;
 	VectorNormalize(shadevector);
 
 	//
 	// locate the proper data
 	//
-	paliashdr = (aliashdr_t *)Mod_Extradata(Mod_GetModel(currententity->hModel));
+	paliashdr = (aliashdr_t *)Mod_Extradata(Mod_GetModel(currententity->e.hModel));
 
 	c_alias_polys += paliashdr->numtris;
 
@@ -566,14 +566,14 @@ void R_DrawAliasModel (refEntity_t *e)
 	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
 	qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 
-	if (e->customSkin)
+	if (e->e.customSkin)
 	{
-		GL_Bind(tr.images[e->customSkin]);
+		GL_Bind(tr.images[e->e.customSkin]);
 	}
 	else
 	{
 		int anim = (int)(cl.time * 10) & 3;
-		GL_Bind(paliashdr->gl_texture[e->skinNum][anim]);
+		GL_Bind(paliashdr->gl_texture[e->e.skinNum][anim]);
 	}
 
 	if (gl_smoothmodels->value)
@@ -583,7 +583,7 @@ void R_DrawAliasModel (refEntity_t *e)
 	if (gl_affinemodels->value)
 		qglHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
-	R_SetupAliasFrame (currententity->frame, paliashdr);
+	R_SetupAliasFrame (currententity->e.frame, paliashdr);
 
 	GL_TexEnv(GL_REPLACE);
 
@@ -593,7 +593,7 @@ void R_DrawAliasModel (refEntity_t *e)
 
 	qglPopMatrix ();
 
-	if (e->renderfx & RF_DEPTHHACK)
+	if (e->e.renderfx & RF_DEPTHHACK)
 	{
 		qglDepthRange (gldepthmin, gldepthmax);
 	}
@@ -633,14 +633,14 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
-		if (currententity->renderfx & RF_FIRST_PERSON)
+		if (currententity->e.renderfx & RF_FIRST_PERSON)
 		{
 			if (r_third_person || !r_drawviewmodel->value || envmap)
 			{
 				continue;
 			}
 		}
-		if (currententity->renderfx & RF_THIRD_PERSON)
+		if (currententity->e.renderfx & RF_THIRD_PERSON)
 		{
 			if (!r_third_person)
 			{
@@ -648,7 +648,7 @@ void R_DrawEntitiesOnList (void)
 			}
 		}
 
-		switch (Mod_GetModel(currententity->hModel)->type)
+		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
 		case mod_alias:
 			R_DrawAliasModel (currententity);
@@ -667,7 +667,7 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
-		switch (Mod_GetModel(currententity->hModel)->type)
+		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
 		case mod_sprite:
 			R_DrawSpriteModel (currententity);
@@ -1090,6 +1090,6 @@ void R_AddRefEntToScene(refEntity_t* Ent)
 	{
 		return;
 	}
-	cl_visedicts[cl_numvisedicts] = *Ent;
+	cl_visedicts[cl_numvisedicts].e = *Ent;
 	cl_numvisedicts++;
 }

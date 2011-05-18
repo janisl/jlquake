@@ -32,7 +32,7 @@ glstate2_t  gl_state;
 
 image_t		*r_particletexture;	// little dot for particles
 
-refEntity_t	*currententity;
+trRefEntity_t	*currententity;
 model_t		*currentmodel;
 
 cplane_t	frustum[4];
@@ -123,25 +123,25 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 }
 
 
-void R_RotateForEntity (refEntity_t *e)
+void R_RotateForEntity (trRefEntity_t *e)
 {
 	GLfloat glmat[16];
 
-	glmat[0] = e->axis[0][0];
-	glmat[1] = e->axis[0][1];
-	glmat[2] = e->axis[0][2];
+	glmat[0] = e->e.axis[0][0];
+	glmat[1] = e->e.axis[0][1];
+	glmat[2] = e->e.axis[0][2];
 	glmat[3] = 0;
-	glmat[4] = e->axis[1][0];
-	glmat[5] = e->axis[1][1];
-	glmat[6] = e->axis[1][2];
+	glmat[4] = e->e.axis[1][0];
+	glmat[5] = e->e.axis[1][1];
+	glmat[6] = e->e.axis[1][2];
 	glmat[7] = 0;
-	glmat[8] = e->axis[2][0];
-	glmat[9] = e->axis[2][1];
-	glmat[10] = e->axis[2][2];
+	glmat[8] = e->e.axis[2][0];
+	glmat[9] = e->e.axis[2][1];
+	glmat[10] = e->e.axis[2][2];
 	glmat[11] = 0;
-	glmat[12] = e->origin[0];
-	glmat[13] = e->origin[1];
-	glmat[14] = e->origin[2];
+	glmat[12] = e->e.origin[0];
+	glmat[13] = e->e.origin[1];
+	glmat[14] = e->e.origin[2];
 	glmat[15] = 1;
 
 	qglMultMatrixf(glmat);
@@ -162,7 +162,7 @@ R_DrawSpriteModel
 
 =================
 */
-void R_DrawSpriteModel (refEntity_t *e)
+void R_DrawSpriteModel (trRefEntity_t *e)
 {
 	float alpha = 1.0F;
 	vec3_t	point;
@@ -182,9 +182,9 @@ void R_DrawSpriteModel (refEntity_t *e)
 		e->frame = 0;
 	}
 #endif
-	e->frame %= psprite->numframes;
+	e->e.frame %= psprite->numframes;
 
-	frame = &psprite->frames[e->frame];
+	frame = &psprite->frames[e->e.frame];
 
 #if 0
 	if (psprite->type == SPR_ORIENTED)
@@ -202,8 +202,8 @@ void R_DrawSpriteModel (refEntity_t *e)
 		right = vright;
 	}
 
-	if ( e->renderfx & RF_TRANSLUCENT )
-		alpha = e->shaderRGBA[3] / 255.0;
+	if ( e->e.renderfx & RF_TRANSLUCENT )
+		alpha = e->e.shaderRGBA[3] / 255.0;
 
 	if ( alpha != 1.0F )
 	{
@@ -216,29 +216,29 @@ void R_DrawSpriteModel (refEntity_t *e)
 
 	qglColor4f( 1, 1, 1, alpha );
 
-    GL_Bind(currentmodel->skins[e->frame]);
+    GL_Bind(currentmodel->skins[e->e.frame]);
 
 	GL_TexEnv( GL_MODULATE );
 
 	qglBegin (GL_QUADS);
 
 	qglTexCoord2f (0, 1);
-	VectorMA (e->origin, -frame->origin_y, up, point);
+	VectorMA (e->e.origin, -frame->origin_y, up, point);
 	VectorMA (point, -frame->origin_x, right, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (0, 0);
-	VectorMA (e->origin, frame->height - frame->origin_y, up, point);
+	VectorMA (e->e.origin, frame->height - frame->origin_y, up, point);
 	VectorMA (point, -frame->origin_x, right, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (1, 0);
-	VectorMA (e->origin, frame->height - frame->origin_y, up, point);
+	VectorMA (e->e.origin, frame->height - frame->origin_y, up, point);
 	VectorMA (point, frame->width - frame->origin_x, right, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (1, 1);
-	VectorMA (e->origin, -frame->origin_y, up, point);
+	VectorMA (e->e.origin, -frame->origin_y, up, point);
 	VectorMA (point, frame->width - frame->origin_x, right, point);
 	qglVertex3fv (point);
 	
@@ -265,10 +265,10 @@ void R_DrawNullModel (void)
 	vec3_t	shadelight;
 	int		i;
 
-	if ( currententity->renderfx & RF_ABSOLUTE_LIGHT)
-		shadelight[0] = shadelight[1] = shadelight[2] = currententity->radius;
+	if ( currententity->e.renderfx & RF_ABSOLUTE_LIGHT)
+		shadelight[0] = shadelight[1] = shadelight[2] = currententity->e.radius;
 	else
-		R_LightPoint (currententity->origin, shadelight);
+		R_LightPoint (currententity->e.origin, shadelight);
 
     qglPushMatrix ();
 	R_RotateForEntity (currententity);
@@ -309,16 +309,16 @@ void R_DrawEntitiesOnList (void)
 	for (i=0 ; i<r_newrefdef.num_entities ; i++)
 	{
 		currententity = &r_newrefdef.entities[i];
-		if (currententity->renderfx & RF_TRANSLUCENT)
+		if (currententity->e.renderfx & RF_TRANSLUCENT)
 			continue;	// solid
 
-		if (currententity->reType == RT_BEAM)
+		if (currententity->e.reType == RT_BEAM)
 		{
 			R_DrawBeam( currententity );
 		}
 		else
 		{
-			currentmodel = Mod_GetModel(currententity->hModel);
+			currentmodel = Mod_GetModel(currententity->e.hModel);
 			switch (currentmodel->type)
 			{
 			case mod_bad:
@@ -345,16 +345,16 @@ void R_DrawEntitiesOnList (void)
 	for (i=0 ; i<r_newrefdef.num_entities ; i++)
 	{
 		currententity = &r_newrefdef.entities[i];
-		if (!(currententity->renderfx & RF_TRANSLUCENT))
+		if (!(currententity->e.renderfx & RF_TRANSLUCENT))
 			continue;	// solid
 
-		if (currententity->reType == RT_BEAM)
+		if (currententity->e.reType == RT_BEAM)
 		{
 			R_DrawBeam( currententity );
 		}
 		else
 		{
-			currentmodel = Mod_GetModel(currententity->hModel);
+			currentmodel = Mod_GetModel(currententity->e.hModel);
 			switch (currentmodel->type)
 			{
 			case mod_bad:
@@ -1104,7 +1104,7 @@ void R_CinematicSetPalette ( const unsigned char *palette)
 /*
 ** R_DrawBeam
 */
-void R_DrawBeam( refEntity_t *e )
+void R_DrawBeam( trRefEntity_t *e )
 {
 #define NUM_BEAM_SEGS 6
 
@@ -1116,13 +1116,13 @@ void R_DrawBeam( refEntity_t *e )
 	vec3_t	start_points[NUM_BEAM_SEGS], end_points[NUM_BEAM_SEGS];
 	vec3_t oldorigin, origin;
 
-	oldorigin[0] = e->oldorigin[0];
-	oldorigin[1] = e->oldorigin[1];
-	oldorigin[2] = e->oldorigin[2];
+	oldorigin[0] = e->e.oldorigin[0];
+	oldorigin[1] = e->e.oldorigin[1];
+	oldorigin[2] = e->e.oldorigin[2];
 
-	origin[0] = e->origin[0];
-	origin[1] = e->origin[1];
-	origin[2] = e->origin[2];
+	origin[0] = e->e.origin[0];
+	origin[1] = e->e.origin[1];
+	origin[2] = e->e.origin[2];
 
 	normalized_direction[0] = direction[0] = oldorigin[0] - origin[0];
 	normalized_direction[1] = direction[1] = oldorigin[1] - origin[1];
@@ -1132,7 +1132,7 @@ void R_DrawBeam( refEntity_t *e )
 		return;
 
 	PerpendicularVector( perpvec, normalized_direction );
-	VectorScale( perpvec, e->frame / 2, perpvec );
+	VectorScale( perpvec, e->e.frame / 2, perpvec );
 
 	for ( i = 0; i < 6; i++ )
 	{
@@ -1144,15 +1144,15 @@ void R_DrawBeam( refEntity_t *e )
 	qglDisable( GL_TEXTURE_2D );
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
-	r = ( d_8to24table[e->skinNum & 0xFF] ) & 0xFF;
-	g = ( d_8to24table[e->skinNum & 0xFF] >> 8 ) & 0xFF;
-	b = ( d_8to24table[e->skinNum & 0xFF] >> 16 ) & 0xFF;
+	r = ( d_8to24table[e->e.skinNum & 0xFF] ) & 0xFF;
+	g = ( d_8to24table[e->e.skinNum & 0xFF] >> 8 ) & 0xFF;
+	b = ( d_8to24table[e->e.skinNum & 0xFF] >> 16 ) & 0xFF;
 
 	r *= 1/255.0F;
 	g *= 1/255.0F;
 	b *= 1/255.0F;
 
-	qglColor4f( r, g, b, e->shaderRGBA[3] / 255.0 );
+	qglColor4f( r, g, b, e->e.shaderRGBA[3] / 255.0 );
 
 	qglBegin( GL_TRIANGLE_STRIP );
 	for ( i = 0; i < NUM_BEAM_SEGS; i++ )

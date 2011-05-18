@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_view.c -- player rendering positioning
 
 #include "client.h"
+#include "../ref_gl/gl_local.h"
 
 //=============
 //
@@ -43,7 +44,7 @@ int			r_numdlights;
 dlight_t	r_dlights[MAX_DLIGHTS];
 
 int			r_numentities;
-refEntity_t	r_entities[MAX_ENTITIES];
+trRefEntity_t	r_entities[MAX_ENTITIES];
 
 int			r_numparticles;
 particle_t	r_particles[MAX_PARTICLES];
@@ -78,7 +79,7 @@ void V_AddEntity (refEntity_t *ent)
 {
 	if (r_numentities >= MAX_ENTITIES)
 		return;
-	r_entities[r_numentities++] = *ent;
+	r_entities[r_numentities++].e = *ent;
 }
 
 
@@ -182,7 +183,7 @@ void V_TestEntities (void)
 {
 	int			i, j;
 	float		f, r;
-	refEntity_t	*ent;
+	trRefEntity_t	*ent;
 
 	r_numentities = 32;
 	Com_Memset(r_entities, 0, sizeof(r_entities));
@@ -195,11 +196,11 @@ void V_TestEntities (void)
 		f = 64 * (i/4) + 128;
 
 		for (j=0 ; j<3 ; j++)
-			ent->origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j]*f +
+			ent->e.origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j]*f +
 			cl.v_right[j]*r;
 
-		ent->hModel = cl.baseclientinfo.model;
-		ent->customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
+		ent->e.hModel = cl.baseclientinfo.model;
+		ent->e.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
 	}
 }
 

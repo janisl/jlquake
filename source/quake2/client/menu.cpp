@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include "client.h"
 #include "../client/qmenu.h"
+#include "../ref_gl/gl_local.h"
 
 static int	m_main_cursor;
 
@@ -1338,11 +1339,6 @@ extern QCvar *vid_ref;
 extern QCvar *r_gamma;
 extern QCvar *r_fullscreen;
 extern QCvar *scr_viewsize;
-
-static QCvar *r_mode;
-static QCvar *gl_driver;
-static QCvar *r_picmip;
-static QCvar *gl_finish;
 
 static QCvar *sw_mode;
 static QCvar *sw_stipplealpha;
@@ -4101,28 +4097,28 @@ void PlayerConfig_MenuDraw( void )
 	{
 		static int yaw;
 		int maxframe = 29;
-		refEntity_t entity;
+		trRefEntity_t entity;
 		vec3_t angles;
 
 		Com_Memset( &entity, 0, sizeof( entity ) );
 
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/tris.md2", s_pmi[s_player_model_box.curvalue].directory );
-		entity.hModel = re.RegisterModel( scratch );
+		entity.e.hModel = re.RegisterModel( scratch );
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
-		entity.customSkin = R_GetImageHandle(re.RegisterSkin(scratch));
-		entity.renderfx = RF_ABSOLUTE_LIGHT;
-		entity.radius = 1;
-		entity.origin[0] = 80;
-		entity.origin[1] = 0;
-		entity.origin[2] = 0;
-		VectorCopy( entity.origin, entity.oldorigin );
-		entity.frame = 0;
-		entity.oldframe = 0;
-		entity.backlerp = 0.0;
+		entity.e.customSkin = R_GetImageHandle(re.RegisterSkin(scratch));
+		entity.e.renderfx = RF_ABSOLUTE_LIGHT;
+		entity.e.radius = 1;
+		entity.e.origin[0] = 80;
+		entity.e.origin[1] = 0;
+		entity.e.origin[2] = 0;
+		VectorCopy( entity.e.origin, entity.e.oldorigin );
+		entity.e.frame = 0;
+		entity.e.oldframe = 0;
+		entity.e.backlerp = 0.0;
 		angles[0] = 0;
 		angles[1] = yaw++;
 		angles[2] = 0;
-		AnglesToAxis(angles, entity.axis);
+		AnglesToAxis(angles, entity.e.axis);
 		if ( ++yaw > 360 )
 			yaw -= 360;
 

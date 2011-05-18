@@ -50,6 +50,7 @@ typedef struct
 	float		white;			// highest of rgb
 } lightstyle_t;
 
+struct trRefEntity_t;
 typedef struct
 {
 	int			x, y, width, height;// in virtual screen coordinates
@@ -65,7 +66,7 @@ typedef struct
 	lightstyle_t	*lightstyles;	// [MAX_LIGHTSTYLES]
 
 	int			num_entities;
-	refEntity_t	*entities;
+	trRefEntity_t	*entities;
 
 	int			num_dlights;
 	dlight_t	*dlights;

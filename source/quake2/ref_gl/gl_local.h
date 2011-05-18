@@ -55,7 +55,7 @@ extern	float	gldepthmin, gldepthmax;
 
 
 extern	image_t		*r_particletexture;
-extern	refEntity_t	*currententity;
+extern	trRefEntity_t	*currententity;
 extern	model_t		*currentmodel;
 extern	int			r_visframecount;
 extern	cplane_t	frustum[4];
@@ -143,10 +143,10 @@ void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
 void GL_ScreenShot_f (void);
-void R_DrawAliasModel (refEntity_t *e);
-void R_DrawBrushModel (refEntity_t *e);
-void R_DrawSpriteModel (refEntity_t *e);
-void R_DrawBeam( refEntity_t *e );
+void R_DrawAliasModel (trRefEntity_t *e);
+void R_DrawBrushModel (trRefEntity_t *e);
+void R_DrawSpriteModel (trRefEntity_t *e);
+void R_DrawBeam( trRefEntity_t *e );
 void R_DrawWorld (void);
 void R_RenderDlights (void);
 void R_DrawAlphaSurfaces (void);
@@ -155,7 +155,7 @@ void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
 void GL_SubdivideSurface (msurface_t *fa);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-void R_RotateForEntity (refEntity_t *e);
+void R_RotateForEntity (trRefEntity_t *e);
 void R_MarkLeaves (void);
 
 glpoly_t *WaterWarpPolyVerts (glpoly_t *p);
