@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 
 
-extern	struct model_s	*cl_mod_powerscreen;
+extern qhandle_t	cl_mod_powerscreen;
 
 /*
 =========================================================================
@@ -611,62 +611,6 @@ void CL_ParseFrame (void)
 }
 
 /*
-==========================================================================
-
-INTERPOLATE BETWEEN FRAMES TO GET RENDERING PARMS
-
-==========================================================================
-*/
-
-struct model_s *S_RegisterSexedModel (entity_state_t *ent, char *base)
-{
-	int				n;
-	char			*p;
-	struct model_s	*mdl;
-	char			model[MAX_QPATH];
-	char			buffer[MAX_QPATH];
-
-	// determine what model the client is using
-	model[0] = 0;
-	n = CS_PLAYERSKINS + ent->number - 1;
-	if (cl.configstrings[n][0])
-	{
-		p = strchr(cl.configstrings[n], '\\');
-		if (p)
-		{
-			p += 1;
-			QStr::Cpy(model, p);
-			p = strchr(model, '/');
-			if (p)
-				*p = 0;
-		}
-	}
-	// if we can't figure it out, they're male
-	if (!model[0])
-		QStr::Cpy(model, "male");
-
-	QStr::Sprintf (buffer, sizeof(buffer), "players/%s/%s", model, base+1);
-	mdl = re.RegisterModel(buffer);
-	if (!mdl) {
-		// not found, try default weapon model
-		QStr::Sprintf (buffer, sizeof(buffer), "players/%s/weapon.md2", model);
-		mdl = re.RegisterModel(buffer);
-		if (!mdl) {
-			// no, revert to the male model
-			QStr::Sprintf (buffer, sizeof(buffer), "players/%s/%s", "male", base+1);
-			mdl = re.RegisterModel(buffer);
-			if (!mdl) {
-				// last try, default male weapon.md2
-				QStr::Sprintf (buffer, sizeof(buffer), "players/male/weapon.md2");
-				mdl = re.RegisterModel(buffer);
-			}
-		} 
-	}
-
-	return mdl;
-}
-
-/*
 ===============
 CL_AddPacketEntities
 
@@ -813,11 +757,11 @@ void CL_AddPacketEntities (frame_t *frame)
 				ent.skinNum = 0;
 				ci = &cl.clientinfo[s1->skinnum & 0xff];
 				ent.customSkin = R_GetImageHandle(ci->skin);
-				ent.hModel = Mod_GetHandle(ci->model);
+				ent.hModel = ci->model;
 				if (!ent.customSkin || !ent.hModel)
 				{
 					ent.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
-					ent.hModel = Mod_GetHandle(cl.baseclientinfo.model);
+					ent.hModel = cl.baseclientinfo.model;
 				}
 
 //============
@@ -827,17 +771,17 @@ void CL_AddPacketEntities (frame_t *frame)
 					if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/male", 12))
 					{
 						ent.customSkin = R_GetImageHandle(re.RegisterSkin ("players/male/disguise.pcx"));
-						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/male/tris.md2"));
+						ent.hModel = re.RegisterModel ("players/male/tris.md2");
 					}
 					else if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/female", 14))
 					{
 						ent.customSkin = R_GetImageHandle(re.RegisterSkin ("players/female/disguise.pcx"));
-						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/female/tris.md2"));
+						ent.hModel = re.RegisterModel ("players/female/tris.md2");
 					}
 					else if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/cyborg", 14))
 					{
 						ent.customSkin = R_GetImageHandle(re.RegisterSkin ("players/cyborg/disguise.pcx"));
-						ent.hModel = Mod_GetHandle(re.RegisterModel ("players/cyborg/tris.md2"));
+						ent.hModel = re.RegisterModel ("players/cyborg/tris.md2");
 					}
 				}
 //PGM
@@ -846,7 +790,7 @@ void CL_AddPacketEntities (frame_t *frame)
 			else
 			{
 				ent.skinNum = s1->skinnum;
-				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex]);
+				ent.hModel = cl.model_draw[s1->modelindex];
 			}
 		}
 
@@ -1029,25 +973,25 @@ void CL_AddPacketEntities (frame_t *frame)
 				i = (s1->skinnum >> 8); // 0 is default weapon model
 				if (!cl_vwep->value || i > MAX_CLIENTWEAPONMODELS - 1)
 					i = 0;
-				ent.hModel = Mod_GetHandle(ci->weaponmodel[i]);
+				ent.hModel = ci->weaponmodel[i];
 				if (!ent.hModel) {
 					if (i != 0)
-						ent.hModel = Mod_GetHandle(ci->weaponmodel[0]);
+						ent.hModel = ci->weaponmodel[0];
 					if (!ent.hModel)
-						ent.hModel = Mod_GetHandle(cl.baseclientinfo.weaponmodel[0]);
+						ent.hModel = cl.baseclientinfo.weaponmodel[0];
 				}
 			}
 			//PGM - hack to allow translucent linked models (defender sphere's shell)
 			//		set the high bit 0x80 on modelindex2 to enable translucency
 			else if(s1->modelindex2 & 0x80)
 			{
-				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex2 & 0x7F]);
+				ent.hModel = cl.model_draw[s1->modelindex2 & 0x7F];
 				ent.shaderRGBA[3] = 82;
 				ent.renderfx = RF_TRANSLUCENT;
 			}
 			//PGM
 			else
-				ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex2]);
+				ent.hModel = cl.model_draw[s1->modelindex2];
 			V_AddEntity (&ent);
 
 			//PGM - make sure these get reset.
@@ -1057,18 +1001,18 @@ void CL_AddPacketEntities (frame_t *frame)
 		}
 		if (s1->modelindex3)
 		{
-			ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex3]);
+			ent.hModel = cl.model_draw[s1->modelindex3];
 			V_AddEntity (&ent);
 		}
 		if (s1->modelindex4)
 		{
-			ent.hModel = Mod_GetHandle(cl.model_draw[s1->modelindex4]);
+			ent.hModel = cl.model_draw[s1->modelindex4];
 			V_AddEntity (&ent);
 		}
 
 		if (effects & EF_POWERSCREEN)
 		{
-			ent.hModel = Mod_GetHandle(cl_mod_powerscreen);
+			ent.hModel = cl_mod_powerscreen;
 			ent.oldframe = 0;
 			ent.frame = 0;
 			ent.renderfx |= RF_TRANSLUCENT | RF_COLOUR_SHELL;
@@ -1240,9 +1184,9 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 	Com_Memset(&gun, 0, sizeof(gun));
 
 	if (gun_model)
-		gun.hModel = Mod_GetHandle(gun_model);	// development tool
+		gun.hModel = gun_model;	// development tool
 	else
-		gun.hModel = Mod_GetHandle(cl.model_draw[ps->gunindex]);
+		gun.hModel = cl.model_draw[ps->gunindex];
 	if (!gun.hModel)
 		return;
 

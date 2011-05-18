@@ -49,7 +49,7 @@ typedef struct
 {
 	int		entity;
 	int		dest_entity;
-	struct model_s	*model;
+	qhandle_t	model;
 	int		endtime;
 	vec3_t	offset;
 	vec3_t	start, end;
@@ -96,25 +96,23 @@ static sfxHandle_t	cl_sfx_watrexp;
 static sfxHandle_t	cl_sfx_plasexp;
 sfxHandle_t			cl_sfx_footsteps[4];
 
-struct model_s	*cl_mod_explode;
-struct model_s	*cl_mod_smoke;
-struct model_s	*cl_mod_flash;
-struct model_s	*cl_mod_parasite_segment;
-struct model_s	*cl_mod_grapple_cable;
-struct model_s	*cl_mod_parasite_tip;
-struct model_s	*cl_mod_explo4;
-struct model_s	*cl_mod_bfg_explo;
-struct model_s	*cl_mod_powerscreen;
-// RAFAEL
-struct model_s	*cl_mod_plasmaexplo;
+static qhandle_t	cl_mod_explode;
+static qhandle_t	cl_mod_smoke;
+static qhandle_t	cl_mod_flash;
+static qhandle_t	cl_mod_parasite_segment;
+static qhandle_t	cl_mod_grapple_cable;
+static qhandle_t	cl_mod_parasite_tip;
+static qhandle_t	cl_mod_explo4;
+static qhandle_t	cl_mod_bfg_explo;
+qhandle_t			cl_mod_powerscreen;
 
 //ROGUE
 static sfxHandle_t	cl_sfx_lightning;
 static sfxHandle_t	cl_sfx_disrexp;
-struct model_s	*cl_mod_lightning;
-struct model_s	*cl_mod_heatbeam;
-struct model_s	*cl_mod_monster_heatbeam;
-struct model_s	*cl_mod_explo4_big;
+static qhandle_t	cl_mod_lightning;
+static qhandle_t	cl_mod_heatbeam;
+static qhandle_t	cl_mod_monster_heatbeam;
+static qhandle_t	cl_mod_explo4_big;
 
 //ROGUE
 /*
@@ -270,7 +268,7 @@ void CL_SmokeAndFlash(vec3_t origin)
 	ex->frames = 4;
 	ex->ent.renderfx = RF_TRANSLUCENT;
 	ex->start = cl.frame.servertime - 100;
-	ex->ent.hModel = Mod_GetHandle(cl_mod_smoke);
+	ex->ent.hModel = cl_mod_smoke;
 
 	ex = CL_AllocExplosion ();
 	VectorCopy (origin, ex->ent.origin);
@@ -279,7 +277,7 @@ void CL_SmokeAndFlash(vec3_t origin)
 	ex->ent.radius = 1;
 	ex->frames = 2;
 	ex->start = cl.frame.servertime - 100;
-	ex->ent.hModel = Mod_GetHandle(cl_mod_flash);
+	ex->ent.hModel = cl_mod_flash;
 }
 
 /*
@@ -307,7 +305,7 @@ void CL_ParseParticles (void)
 CL_ParseBeam
 =================
 */
-int CL_ParseBeam (struct model_s *model)
+static int CL_ParseBeam (qhandle_t model)
 {
 	int		ent;
 	vec3_t	start, end;
@@ -355,7 +353,7 @@ int CL_ParseBeam (struct model_s *model)
 CL_ParseBeam2
 =================
 */
-int CL_ParseBeam2 (struct model_s *model)
+static int CL_ParseBeam2 (qhandle_t model)
 {
 	int		ent;
 	vec3_t	start, end, offset;
@@ -409,7 +407,7 @@ CL_ParsePlayerBeam
   - adds to the cl_playerbeam array instead of the cl_beams array
 =================
 */
-int CL_ParsePlayerBeam (struct model_s *model)
+static int CL_ParsePlayerBeam (qhandle_t model)
 {
 	int		ent;
 	vec3_t	start, end, offset;
@@ -473,7 +471,7 @@ int CL_ParsePlayerBeam (struct model_s *model)
 CL_ParseLightning
 =================
 */
-int CL_ParseLightning (struct model_s *model)
+static int CL_ParseLightning (qhandle_t model)
 {
 	int		srcEnt, destEnt;
 	vec3_t	start, end;
@@ -825,7 +823,7 @@ void CL_ParseTEnt (void)
 		ex->light = 150;
 		ex->lightcolor[0] = 1;
 		ex->lightcolor[1] = 1;
-		ex->ent.hModel = Mod_GetHandle(cl_mod_explode);
+		ex->ent.hModel = cl_mod_explode;
 		ex->frames = 4;
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
@@ -852,7 +850,7 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 0.5;
 		ex->lightcolor[2] = 0.5;
-		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
+		ex->ent.hModel = cl_mod_explo4;
 		ex->frames = 19;
 		ex->baseframe = 30;
 		angles[0] = 0;
@@ -883,7 +881,7 @@ void CL_ParseTEnt (void)
 		angles[1] = rand() % 360;
 		angles[2] = 0;
 		AnglesToAxis(angles, ex->ent.axis);
-		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
+		ex->ent.hModel = cl_mod_explo4;
 		if (frand() < 0.5)
 			ex->baseframe = 15;
 		ex->frames = 15;
@@ -913,9 +911,9 @@ void CL_ParseTEnt (void)
 		angles[2] = 0;
 		AnglesToAxis(angles, ex->ent.axis);
 		if (type != TE_EXPLOSION1_BIG)				// PMM
-			ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);			// PMM
+			ex->ent.hModel = cl_mod_explo4;			// PMM
 		else
-			ex->ent.hModel = Mod_GetHandle(cl_mod_explo4_big);
+			ex->ent.hModel = cl_mod_explo4_big;
 		if (frand() < 0.5)
 			ex->baseframe = 15;
 		ex->frames = 15;
@@ -939,7 +937,7 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 0.0;
 		ex->lightcolor[1] = 1.0;
 		ex->lightcolor[2] = 0.0;
-		ex->ent.hModel = Mod_GetHandle(cl_mod_bfg_explo);
+		ex->ent.hModel = cl_mod_bfg_explo;
 		ex->ent.renderfx |= RF_TRANSLUCENT;
 		ex->ent.shaderRGBA[3] = 76;
 		ex->frames = 4;
@@ -994,7 +992,7 @@ void CL_ParseTEnt (void)
 		ex->lightcolor[0] = 1.0;
 		ex->lightcolor[1] = 1.0;
 		ex->lightcolor[2] = 0.3;
-		ex->ent.hModel = Mod_GetHandle(cl_mod_flash);
+		ex->ent.hModel = cl_mod_flash;
 		ex->frames = 2;
 		break;
 
@@ -1063,7 +1061,7 @@ void CL_ParseTEnt (void)
 			ex->lightcolor[1] = 0.41;
 			ex->lightcolor[2] = 0.75;
 		}
-		ex->ent.hModel = Mod_GetHandle(cl_mod_explode);
+		ex->ent.hModel = cl_mod_explode;
 		ex->frames = 4;
 		S_StartSound (pos,  0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
 		break;
@@ -1097,7 +1095,7 @@ void CL_ParseTEnt (void)
 		angles[1] = rand() % 360;
 		angles[2] = 0;
 		AnglesToAxis(angles, ex->ent.axis);
-		ex->ent.hModel = Mod_GetHandle(cl_mod_explo4);
+		ex->ent.hModel = cl_mod_explo4;
 		if (frand() < 0.5)
 			ex->baseframe = 15;
 		ex->frames = 15;
@@ -1312,7 +1310,7 @@ void CL_AddBeams (void)
 			// for this beam)
 //			for (j=0 ; j<3 ; j++)
 //				ent.origin[j] -= dist[j]*10.0;
-			ent.hModel = Mod_GetHandle(b->model);
+			ent.hModel = b->model;
 			ent.renderfx = RF_ABSOLUTE_LIGHT;
 			ent.radius = 1;
 			vec3_t angles;
@@ -1326,7 +1324,7 @@ void CL_AddBeams (void)
 		while (d > 0)
 		{
 			VectorCopy (org, ent.origin);
-			ent.hModel = Mod_GetHandle(b->model);
+			ent.hModel = b->model;
 			vec3_t angles;
 			if (b->model == cl_mod_lightning)
 			{
@@ -1570,7 +1568,7 @@ void CL_AddPlayerBeams (void)
 			// for this beam)
 //			for (j=0 ; j<3 ; j++)
 //				ent.origin[j] -= dist[j]*10.0;
-			ent.hModel = Mod_GetHandle(b->model);
+			ent.hModel = b->model;
 			ent.renderfx = RF_ABSOLUTE_LIGHT;
 			ent.radius = 1;
 			vec3_t angles;
@@ -1584,7 +1582,7 @@ void CL_AddPlayerBeams (void)
 		while (d > 0)
 		{
 			VectorCopy (org, ent.origin);
-			ent.hModel = Mod_GetHandle(b->model);
+			ent.hModel = b->model;
 			vec3_t angles;
 			if(cl_mod_heatbeam && (b->model == cl_mod_heatbeam))
 			{

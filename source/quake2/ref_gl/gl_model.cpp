@@ -1134,7 +1134,7 @@ R_RegisterModel
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-struct model_s *R_RegisterModel (char *name)
+qhandle_t R_RegisterModel (char *name)
 {
 	model_t	*mod;
 	int		i;
@@ -1142,28 +1142,29 @@ struct model_s *R_RegisterModel (char *name)
 	dmdl_t		*pheader;
 
 	mod = Mod_ForName (name, false);
-	if (mod)
+	if (!mod)
 	{
-		mod->registration_sequence = registration_sequence;
-
-		// register any images used by the models
-		if (mod->type == mod_sprite)
-		{
-			sprout = (dsprite_t *)mod->extradata;
-			for (i=0 ; i<sprout->numframes ; i++)
-				mod->skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
-		}
-		else if (mod->type == mod_alias)
-		{
-			pheader = (dmdl_t *)mod->extradata;
-			for (i=0 ; i<pheader->num_skins ; i++)
-				mod->skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
-//PGM
-			mod->numframes = pheader->num_frames;
-//PGM
-		}
+		return 0;
 	}
-	return mod;
+	mod->registration_sequence = registration_sequence;
+
+	// register any images used by the models
+	if (mod->type == mod_sprite)
+	{
+		sprout = (dsprite_t *)mod->extradata;
+		for (i=0 ; i<sprout->numframes ; i++)
+			mod->skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
+	}
+	else if (mod->type == mod_alias)
+	{
+		pheader = (dmdl_t *)mod->extradata;
+		for (i=0 ; i<pheader->num_skins ; i++)
+			mod->skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
+//PGM
+		mod->numframes = pheader->num_frames;
+//PGM
+	}
+	return mod - mod_known;
 }
 
 
@@ -1218,15 +1219,6 @@ void Mod_FreeAll (void)
 		if (mod_known[i].extradatasize && mod_known[i].name[0] != '*')
 			Mod_Free (&mod_known[i]);
 	}
-}
-
-qhandle_t Mod_GetHandle(model_t* model)
-{
-	if (!model)
-	{
-		return 0;
-	}
-	return model - mod_known;
 }
 
 model_t* Mod_GetModel(qhandle_t handle)

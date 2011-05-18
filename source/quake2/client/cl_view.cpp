@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // development tools for weapons
 //
 int			gun_frame;
-struct model_s	*gun_model;
+qhandle_t	gun_model;
 
 //=============
 
@@ -198,7 +198,7 @@ void V_TestEntities (void)
 			ent->origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j]*f +
 			cl.v_right[j]*r;
 
-		ent->hModel = Mod_GetHandle(cl.baseclientinfo.model);
+		ent->hModel = cl.baseclientinfo.model;
 		ent->customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
 	}
 }
@@ -403,7 +403,7 @@ void V_Gun_Model_f (void)
 
 	if (Cmd_Argc() != 2)
 	{
-		gun_model = NULL;
+		gun_model = 0;
 		return;
 	}
 	QStr::Sprintf (name, sizeof(name), "models/%s/tris.md2", Cmd_Argv(1));

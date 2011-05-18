@@ -90,7 +90,7 @@ typedef struct
 	// if necessary.
 	//
 	// EndRegistration will free any remaining data that wasn't registered.
-	// Any model_s or skin_s pointers from before the BeginRegistration
+	// Any qhandle_t or skin_s pointers from before the BeginRegistration
 	// are no longer valid after EndRegistration.
 	//
 	// Skins and images need to be differentiated, because skins
@@ -98,7 +98,7 @@ typedef struct
 	// an implicit "pics/" prepended to the name. (a pic name that starts with a
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
 	void	(*BeginRegistration) (char *map);
-	struct model_s *(*RegisterModel) (char *name);
+	qhandle_t (*RegisterModel) (char *name);
 	struct image_t *(*RegisterSkin) (char *name);
 	struct image_t *(*RegisterPic) (char *name);
 	void	(*SetSky) (char *name, float rotate, vec3_t axis);
@@ -139,8 +139,5 @@ typedef struct
 
 // this is the only function actually exported at the linker level
 typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
-
-qhandle_t Mod_GetHandle(struct model_s* model);
-struct model_s* Mod_GetModel(qhandle_t handle);
 
 #endif

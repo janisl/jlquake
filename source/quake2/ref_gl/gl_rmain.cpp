@@ -1172,7 +1172,7 @@ void R_DrawBeam( refEntity_t *e )
 
 
 void	R_BeginRegistration (char *map);
-struct model_s	*R_RegisterModel (char *name);
+qhandle_t R_RegisterModel (char *name);
 image_t	*R_RegisterSkin (char *name);
 void R_SetSky (char *name, float rotate, vec3_t axis);
 void	R_EndRegistration (void);

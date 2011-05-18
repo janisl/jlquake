@@ -459,8 +459,8 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 	{
 		ci->skin = NULL;
 		ci->icon = NULL;
-		ci->model = NULL;
-		ci->weaponmodel[0] = NULL;
+		ci->model = 0;
+		ci->weaponmodel[0] = 0;
 		return;
 	}
 }
