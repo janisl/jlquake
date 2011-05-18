@@ -421,7 +421,6 @@ void	Mod_TouchModel (char *name);
 mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
 byte	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
 
-qhandle_t Mod_GetHandle(model_t* model);
 model_t* Mod_GetModel(qhandle_t handle);
 
 #endif	// __MODEL__

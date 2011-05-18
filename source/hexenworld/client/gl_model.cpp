@@ -298,9 +298,14 @@ qhandle_t Mod_ForName (char *name, qboolean crash)
 {
 	model_t	*mod;
 	
-	mod = Mod_FindName (name);
+	mod = Mod_FindName(name);
 	
-	return Mod_GetHandle(Mod_LoadModel (mod, crash));
+	mod = Mod_LoadModel(mod, crash);
+	if (!mod)
+	{
+		return 0;
+	}
+	return mod - mod_known;
 }
 
 
@@ -2082,15 +2087,6 @@ void Mod_Print (void)
 	{
 		Con_Printf ("%8p : %s\n",mod->cache.data, mod->name);
 	}
-}
-
-qhandle_t Mod_GetHandle(model_t* model)
-{
-	if (!model)
-	{
-		return 0;
-	}
-	return model - mod_known;
 }
 
 model_t* Mod_GetModel(qhandle_t handle)
