@@ -52,7 +52,7 @@ void CL_InitTEnts (void)
 CL_ParseBeam
 =================
 */
-void CL_ParseBeam (model_t *m)
+static void CL_ParseBeam(qhandle_t m)
 {
 	int		ent;
 	vec3_t	start, end;
@@ -197,20 +197,20 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_LIGHTNING1:				// lightning bolts
-		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true));
+		CL_ParseBeam(Mod_ForName("progs/bolt.mdl", true));
 		break;
 	
 	case TE_LIGHTNING2:				// lightning bolts
-		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true));
+		CL_ParseBeam(Mod_ForName("progs/bolt2.mdl", true));
 		break;
 	
 	case TE_LIGHTNING3:				// lightning bolts
-		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true));
+		CL_ParseBeam(Mod_ForName("progs/bolt3.mdl", true));
 		break;
 	
 // PGM 01/21/97 
 	case TE_BEAM:				// grappling hook beam
-		CL_ParseBeam (Mod_ForName("progs/beam.mdl", true));
+		CL_ParseBeam(Mod_ForName("progs/beam.mdl", true));
 		break;
 // PGM 01/21/97
 
@@ -306,7 +306,7 @@ void CL_UpdateTEnts (void)
 			refEntity_t ent;
 			Com_Memset(&ent, 0, sizeof(ent));
 			VectorCopy (org, ent.origin);
-			ent.hModel = Mod_GetHandle(b->model);
+			ent.hModel = b->model;
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;

@@ -411,7 +411,7 @@ void CL_LinkPacketEntities (void)
 	packet_entities_t	*pack;
 	entity_state_t		*s1, *s2;
 	float				f;
-	model_t				*model;
+	qhandle_t			model;
 	vec3_t				old_origin;
 	float				autorotate;
 	int					i;
@@ -452,7 +452,7 @@ void CL_LinkPacketEntities (void)
 		ent.reType = RT_MODEL;
 
 		model = cl.model_precache[s1->modelindex];
-		ent.hModel = Mod_GetHandle(model);
+		ent.hModel = model;
 	
 		// set colormap
 		if (s1->colormap && (s1->colormap < MAX_CLIENTS) && s1->modelindex == cl_playerindex)
@@ -466,9 +466,10 @@ void CL_LinkPacketEntities (void)
 		// set frame
 		ent.frame = s1->frame;
 
+		int ModelFlags = Mod_GetModel(model)->flags;
 		// rotate binary objects locally
 		vec3_t angles;
-		if (model->flags & EF_ROTATE)
+		if (ModelFlags & EF_ROTATE)
 		{
 			angles[0] = 0;
 			angles[1] = autorotate;
@@ -498,7 +499,7 @@ void CL_LinkPacketEntities (void)
 		R_AddRefEntToScene(&ent);
 
 		// add automatic particle trails
-		if (!model->flags)
+		if (!ModelFlags)
 			continue;
 
 		// scan the old entity display list for a matching
@@ -521,7 +522,7 @@ void CL_LinkPacketEntities (void)
 				VectorCopy (ent.origin, old_origin);
 				break;
 			}
-		if (model->flags & EF_ROCKET)
+		if (ModelFlags & EF_ROCKET)
 		{
 			R_RocketTrail (old_origin, ent.origin, 0);
 			dl = CL_AllocDlight (s1->number);
@@ -529,17 +530,17 @@ void CL_LinkPacketEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.1;
 		}
-		else if (model->flags & EF_GRENADE)
+		else if (ModelFlags & EF_GRENADE)
 			R_RocketTrail (old_origin, ent.origin, 1);
-		else if (model->flags & EF_GIB)
+		else if (ModelFlags & EF_GIB)
 			R_RocketTrail (old_origin, ent.origin, 2);
-		else if (model->flags & EF_ZOMGIB)
+		else if (ModelFlags & EF_ZOMGIB)
 			R_RocketTrail (old_origin, ent.origin, 4);
-		else if (model->flags & EF_TRACER)
+		else if (ModelFlags & EF_TRACER)
 			R_RocketTrail (old_origin, ent.origin, 3);
-		else if (model->flags & EF_TRACER2)
+		else if (ModelFlags & EF_TRACER2)
 			R_RocketTrail (old_origin, ent.origin, 5);
-		else if (model->flags & EF_TRACER3)
+		else if (ModelFlags & EF_TRACER3)
 			R_RocketTrail (old_origin, ent.origin, 6);
 	}
 }
@@ -624,7 +625,7 @@ void CL_LinkProjectiles (void)
 		refEntity_t ent;
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
-		ent.hModel = Mod_GetHandle(cl.model_precache[pr->modelindex]);
+		ent.hModel = cl.model_precache[pr->modelindex];
 		VectorCopy(pr->origin, ent.origin);
 		CL_SetRefEntAxis(&ent, pr->angles);
 		R_AddRefEntToScene(&ent);
@@ -755,7 +756,7 @@ void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 	Com_Memset(&newent, 0, sizeof(newent));
 
 	newent.reType = RT_MODEL;
-	newent.hModel = Mod_GetHandle(cl.model_precache[cl_flagindex]);
+	newent.hModel = cl.model_precache[cl_flagindex];
 	newent.skinNum = team;
 
 	AngleVectors(angles, v_forward, v_right, v_up);
@@ -831,7 +832,7 @@ void CL_LinkPlayers (void)
 		Com_Memset(&ent, 0, sizeof(ent));
 		ent.reType = RT_MODEL;
 
-		ent.hModel = Mod_GetHandle(cl.model_precache[state->modelindex]);
+		ent.hModel = cl.model_precache[state->modelindex];
 		ent.skinNum = state->skinnum;
 		ent.frame = state->frame;
 		if (state->modelindex == cl_playerindex)
@@ -1043,7 +1044,7 @@ static void CL_LinkStaticEntities()
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->origin, rent.origin);
-		rent.hModel = Mod_GetHandle(pent->model);
+		rent.hModel = pent->model;
 		CL_SetRefEntAxis(&rent, pent->angles);
 		rent.frame = pent->frame;
 		rent.skinNum = pent->skinnum;

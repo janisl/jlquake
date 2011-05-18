@@ -270,8 +270,8 @@ typedef struct
 	char		model_name[MAX_MODELS][MAX_QPATH];
 	char		sound_name[MAX_SOUNDS][MAX_QPATH];
 
-	struct model_s	*model_precache[MAX_MODELS];
-	sfxHandle_t		sound_precache[MAX_SOUNDS];
+	qhandle_t	model_precache[MAX_MODELS];
+	sfxHandle_t	sound_precache[MAX_SOUNDS];
 
 	char		levelname[40];	// for display on solo scoreboard
 	int			playernum;
@@ -279,7 +279,7 @@ typedef struct
 	clipHandle_t	clip_models[MAX_MODELS];
 
 	// refresh related state
-	struct model_s	*worldmodel;	// cl_entitites[0].model
+	qhandle_t	worldmodel;		// cl_entitites[0].model
 	int			num_entities;	// stored bottom up in cl_entities array
 	int			num_statics;	// stored top down in cl_entitiers
 

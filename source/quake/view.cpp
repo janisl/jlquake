@@ -700,7 +700,7 @@ void V_CalcIntermissionRefdef (void)
 
 	VectorCopy (ent->origin, r_refdef.vieworg);
 	VectorCopy (ent->angles, r_refdef.viewangles);
-	view->model = NULL;
+	view->model = 0;
 
 // allways idle in intermission
 	old = v_idlescale->value;
@@ -868,7 +868,7 @@ static void CL_AddViewModel()
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	VectorCopy(cl.viewent.origin, gun.origin);
-	gun.hModel = Mod_GetHandle(cl.viewent.model);
+	gun.hModel = cl.viewent.model;
 	CL_SetRefEntAxis(&gun, cl.viewent.angles);	
 	gun.frame = cl.viewent.frame;
 	gun.shaderTime = cl.viewent.syncbase;

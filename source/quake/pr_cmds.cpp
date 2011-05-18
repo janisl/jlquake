@@ -250,9 +250,9 @@ void PF_setmodel (void)
 		PR_RunError ("no precache: %s\n", m);
 
 	e->v.model = PR_SetString(m);
-	e->v.modelindex = i; //SV_ModelIndex (m);
+	e->v.modelindex = i;
 
-	mod = sv.models[ (int)e->v.modelindex];  // Mod_ForName (m, true);
+	mod = sv.models[ (int)e->v.modelindex];
 	
 	if (mod)
 	{

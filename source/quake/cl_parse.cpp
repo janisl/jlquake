@@ -304,7 +304,8 @@ void CL_ParseServerInfo (void)
 
 
 // local state
-	cl_entities[0].model = cl.worldmodel = cl.model_precache[1];
+	cl_entities[0].model = cl.model_precache[1];
+	cl.worldmodel = cl.model_precache[1];
 	CM_LoadMap(model_precache[1], true, NULL);
 
 	R_NewMap ();
@@ -329,7 +330,7 @@ int	bitcounts[16];
 void CL_ParseUpdate (int bits)
 {
 	int			i;
-	model_t		*model;
+	qhandle_t	model;
 	int			modnum;
 	qboolean	forcelink;
 	entity_t	*ent;
@@ -383,7 +384,7 @@ if (bits&(1<<i))
 	// or randomized
 		if (model)
 		{
-			if (model->synctype == ST_RAND)
+			if (Mod_GetModel(model)->synctype == ST_RAND)
 				ent->syncbase = (float)(rand()&0x7fff) / 0x7fff;
 			else
 				ent->syncbase = 0.0;

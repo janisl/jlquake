@@ -1446,14 +1446,14 @@ Host_Viewmodel_f
 */
 void Host_Viewmodel_f (void)
 {
-	edict_t	*e;
-	model_t	*m;
+	edict_t*	e;
+	qhandle_t	m;
 
 	e = FindViewthing ();
 	if (!e)
 		return;
 
-	m = Mod_ForName (Cmd_Argv(1), false);
+	m = Mod_ForName(Cmd_Argv(1), false);
 	if (!m)
 	{
 		Con_Printf ("Can't load %s\n", Cmd_Argv(1));
@@ -1478,7 +1478,7 @@ void Host_Viewframe_f (void)
 	e = FindViewthing ();
 	if (!e)
 		return;
-	m = cl.model_precache[(int)e->v.modelindex];
+	m = Mod_GetModel(cl.model_precache[(int)e->v.modelindex]);
 
 	f = QStr::Atoi(Cmd_Argv(1));
 	if (f >= m->numframes)
@@ -1514,7 +1514,7 @@ void Host_Viewnext_f (void)
 	e = FindViewthing ();
 	if (!e)
 		return;
-	m = cl.model_precache[(int)e->v.modelindex];
+	m = Mod_GetModel(cl.model_precache[(int)e->v.modelindex]);
 
 	e->v.frame = e->v.frame + 1;
 	if (e->v.frame >= m->numframes)
@@ -1537,7 +1537,7 @@ void Host_Viewprev_f (void)
 	if (!e)
 		return;
 
-	m = cl.model_precache[(int)e->v.modelindex];
+	m = Mod_GetModel(cl.model_precache[(int)e->v.modelindex]);
 
 	e->v.frame = e->v.frame - 1;
 	if (e->v.frame < 0)

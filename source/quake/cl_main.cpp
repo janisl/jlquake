@@ -246,7 +246,7 @@ void CL_PrintEntities_f (void)
 			continue;
 		}
 		Con_Printf ("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n"
-		,ent->model->name,ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
+		,Mod_GetModel(ent->model)->name,ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
 	}
 }
 
@@ -427,7 +427,7 @@ void CL_RelinkEntities (void)
 // if the object wasn't included in the last packet, remove it
 		if (ent->msgtime != cl.mtime[0])
 		{
-			ent->model = NULL;
+			ent->model = 0;
 			continue;
 		}
 
@@ -464,8 +464,9 @@ void CL_RelinkEntities (void)
 			
 		}
 
+		int ModelFlags = Mod_GetModel(ent->model)->flags;
 // rotate binary objects locally
-		if (ent->model->flags & EF_ROTATE)
+		if (ModelFlags & EF_ROTATE)
 			ent->angles[1] = bobjrotate;
 
 		if (ent->effects & EF_BRIGHTFIELD)
@@ -500,15 +501,15 @@ void CL_RelinkEntities (void)
 			dl->die = cl.time + 0.001;
 		}
 
-		if (ent->model->flags & EF_GIB)
+		if (ModelFlags & EF_GIB)
 			R_RocketTrail (oldorg, ent->origin, 2);
-		else if (ent->model->flags & EF_ZOMGIB)
+		else if (ModelFlags & EF_ZOMGIB)
 			R_RocketTrail (oldorg, ent->origin, 4);
-		else if (ent->model->flags & EF_TRACER)
+		else if (ModelFlags & EF_TRACER)
 			R_RocketTrail (oldorg, ent->origin, 3);
-		else if (ent->model->flags & EF_TRACER2)
+		else if (ModelFlags & EF_TRACER2)
 			R_RocketTrail (oldorg, ent->origin, 5);
-		else if (ent->model->flags & EF_ROCKET)
+		else if (ModelFlags & EF_ROCKET)
 		{
 			R_RocketTrail (oldorg, ent->origin, 0);
 			dl = CL_AllocDlight (i);
@@ -516,9 +517,9 @@ void CL_RelinkEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;
 		}
-		else if (ent->model->flags & EF_GRENADE)
+		else if (ModelFlags & EF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, 1);
-		else if (ent->model->flags & EF_TRACER3)
+		else if (ModelFlags & EF_TRACER3)
 			R_RocketTrail (oldorg, ent->origin, 6);
 
 		ent->forcelink = false;
@@ -527,7 +528,7 @@ void CL_RelinkEntities (void)
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(ent->origin, rent.origin);
-		rent.hModel = Mod_GetHandle(ent->model);
+		rent.hModel = ent->model;
 		CL_SetRefEntAxis(&rent, ent->angles);	
 		rent.frame = ent->frame;
 		rent.shaderTime = ent->syncbase;
@@ -550,7 +551,7 @@ static void CL_LinkStaticEntities()
 		Com_Memset(&rent, 0, sizeof(rent));
 		rent.reType = RT_MODEL;
 		VectorCopy(pent->origin, rent.origin);
-		rent.hModel = Mod_GetHandle(pent->model);
+		rent.hModel = pent->model;
 		CL_SetRefEntAxis(&rent, pent->angles);	
 		rent.frame = pent->frame;
 		rent.shaderTime = pent->syncbase;

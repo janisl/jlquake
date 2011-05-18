@@ -80,10 +80,10 @@ typedef struct
 #define	MAX_BEAMS	24
 typedef struct
 {
-	int		entity;
-	struct model_s	*model;
-	float	endtime;
-	vec3_t	start, end;
+	int			entity;
+	qhandle_t	model;
+	float		endtime;
+	vec3_t		start, end;
 } beam_t;
 
 #define	MAX_EFRAGS		640
@@ -201,8 +201,8 @@ typedef struct
 //
 // information that is static for the entire time connected to a server
 //
-	struct model_s	*model_precache[MAX_MODELS];
-	sfxHandle_t		sound_precache[MAX_SOUNDS];
+	qhandle_t	model_precache[MAX_MODELS];
+	sfxHandle_t	sound_precache[MAX_SOUNDS];
 
 	char		levelname[40];	// for display on solo scoreboard
 	int			viewentity;		// cl_entitites[cl.viewentity] = player
@@ -210,7 +210,7 @@ typedef struct
 	int			gametype;
 
 // refresh related state
-	struct model_s	*worldmodel;	// cl_entitites[0].model
+	qhandle_t	worldmodel;	// cl_entitites[0].model
 	int			num_entities;	// held in cl_entities array
 	int			num_statics;	// held in cl_staticentities array
 	entity_t	viewent;			// the gun model

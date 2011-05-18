@@ -261,7 +261,7 @@ void Model_NextDownload (void)
 	// done with modellist, request first of static signon messages
 	cls.netchan.message.WriteByte(clc_stringcmd);
 //	cls.netchan.message.WriteString2(va("prespawn %i 0 %i", cl.servercount, cl.worldmodel->checksum2));
-	cls.netchan.message.WriteString2(va(prespawn_name, cl.servercount, cl.worldmodel->checksum2));
+	cls.netchan.message.WriteString2(va(prespawn_name, cl.servercount, Mod_GetModel(cl.worldmodel)->checksum2));
 }
 
 /*

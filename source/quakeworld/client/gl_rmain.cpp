@@ -779,7 +779,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (r_origin, cl.worldmodel);
+	r_viewleaf = Mod_PointInLeaf (r_origin, Mod_GetModel(cl.worldmodel));
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();

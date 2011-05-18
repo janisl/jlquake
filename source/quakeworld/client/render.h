@@ -29,7 +29,7 @@ struct entity_t
 {
 	vec3_t					origin;
 	vec3_t					angles;	
-	struct model_s			*model;			// NULL = no model
+	qhandle_t				model;			// 0 = no model
 	int						frame;
 	byte					*colormap;
 	int						skinnum;		// for Alias models

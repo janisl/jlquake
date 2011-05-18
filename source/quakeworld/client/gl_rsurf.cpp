@@ -152,7 +152,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
 	lightmap = surf->samples;
 
 // set to full bright if no light data
-	if (/* r_fullbright.value || */ !cl.worldmodel->lightdata)
+	if (/* r_fullbright.value || */ !Mod_GetModel(cl.worldmodel)->lightdata)
 	{
 		for (i=0 ; i<size ; i++)
 			blocklights[i] = 255*256;
@@ -788,9 +788,9 @@ void R_DrawWaterSurfaces (void)
 		waterchain = NULL;
 	} else {
 
-		for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+		for (i=0 ; i<Mod_GetModel(cl.worldmodel)->numtextures ; i++)
 		{
-			t = cl.worldmodel->textures[i];
+			t = Mod_GetModel(cl.worldmodel)->textures[i];
 			if (!t)
 				continue;
 			s = t->texturechain;
@@ -842,9 +842,9 @@ void DrawTextureChains (void)
 		return;
 	} 
 
-	for (i=0 ; i<cl.worldmodel->numtextures ; i++)
+	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->numtextures ; i++)
 	{
-		t = cl.worldmodel->textures[i];
+		t = Mod_GetModel(cl.worldmodel)->textures[i];
 		if (!t)
 			continue;
 		s = t->texturechain;
@@ -1051,7 +1051,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 
 	if (c)
 	{
-		surf = cl.worldmodel->surfaces + node->firstsurface;
+		surf = Mod_GetModel(cl.worldmodel)->surfaces + node->firstsurface;
 
 		if (dot < 0 -BACKFACE_EPSILON)
 			side = SURF_PLANEBACK;
@@ -1075,7 +1075,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 				if (gl_texsort->value)
 				{
 					if (!mirror
-					|| surf->texinfo->texture != cl.worldmodel->textures[mirrortexturenum])
+					|| surf->texinfo->texture != Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum])
 					{
 						surf->texturechain = surf->texinfo->texture->texturechain;
 						surf->texinfo->texture->texturechain = surf;
@@ -1110,7 +1110,7 @@ void R_DrawWorld (void)
 	refEntity_t	ent;
 
 	Com_Memset(&ent, 0, sizeof(ent));
-	ent.hModel = Mod_GetHandle(cl.worldmodel);
+	ent.hModel = cl.worldmodel;
 
 	VectorCopy (r_refdef.vieworg, modelorg);
 
@@ -1119,7 +1119,7 @@ void R_DrawWorld (void)
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-	R_RecursiveWorldNode (cl.worldmodel->nodes);
+	R_RecursiveWorldNode (Mod_GetModel(cl.worldmodel)->nodes);
 
 		DrawTextureChains ();
 
@@ -1151,16 +1151,16 @@ void R_MarkLeaves (void)
 	if (r_novis->value)
 	{
 		vis = solid;
-		Com_Memset(solid, 0xff, (cl.worldmodel->numleafs+7)>>3);
+		Com_Memset(solid, 0xff, (Mod_GetModel(cl.worldmodel)->numleafs+7)>>3);
 	}
 	else
-		vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
+		vis = Mod_LeafPVS (r_viewleaf, Mod_GetModel(cl.worldmodel));
 		
-	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
+	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->numleafs ; i++)
 	{
 		if (vis[i>>3] & (1<<(i&7)))
 		{
-			node = (mnode_t *)&cl.worldmodel->leafs[i+1];
+			node = (mnode_t *)&Mod_GetModel(cl.worldmodel)->leafs[i+1];
 			do
 			{
 				if (node->visframe == r_visframecount)
@@ -1394,7 +1394,7 @@ void GL_BuildLightmaps (void)
 
 	for (j=1 ; j<MAX_MODELS ; j++)
 	{
-		m = cl.model_precache[j];
+		m = Mod_GetModel(cl.model_precache[j]);
 		if (!m)
 			break;
 		if (m->name[0] == '*')

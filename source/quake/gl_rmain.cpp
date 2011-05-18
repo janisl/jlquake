@@ -784,7 +784,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (r_origin, cl.worldmodel);
+	r_viewleaf = Mod_PointInLeaf (r_origin, Mod_GetModel(cl.worldmodel));
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();
@@ -1004,10 +1004,10 @@ void R_Mirror (void)
 	qglLoadMatrixf (r_base_world_matrix);
 
 	qglColor4f (1,1,1,r_mirroralpha->value);
-	s = cl.worldmodel->textures[mirrortexturenum]->texturechain;
+	s = Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum]->texturechain;
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s);
-	cl.worldmodel->textures[mirrortexturenum]->texturechain = NULL;
+	Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum]->texturechain = NULL;
 	GL_State(GLS_DEFAULT);
 	qglColor4f (1,1,1,1);
 }

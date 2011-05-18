@@ -25,10 +25,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	MAX_BEAMS	8
 typedef struct
 {
-	int		entity;
-	struct model_s	*model;
-	float	endtime;
-	vec3_t	start, end;
+	int			entity;
+	qhandle_t	model;
+	float		endtime;
+	vec3_t		start, end;
 } beam_t;
 
 beam_t		cl_beams[MAX_BEAMS];
@@ -36,9 +36,9 @@ beam_t		cl_beams[MAX_BEAMS];
 #define	MAX_EXPLOSIONS	8
 typedef struct
 {
-	vec3_t	origin;
-	float	start;
-	model_t	*model;
+	vec3_t		origin;
+	float		start;
+	qhandle_t	model;
 } explosion_t;
 
 explosion_t	cl_explosions[MAX_EXPLOSIONS];
@@ -111,7 +111,7 @@ explosion_t *CL_AllocExplosion (void)
 CL_ParseBeam
 =================
 */
-void CL_ParseBeam (model_t *m)
+static void CL_ParseBeam (qhandle_t m)
 {
 	int		ent;
 	vec3_t	start, end;
@@ -253,7 +253,7 @@ void CL_ParseTEnt (void)
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->origin);
 		ex->start = cl.time;
-		ex->model = Mod_ForName ("progs/s_explod.spr", true);
+		ex->model = Mod_ForName("progs/s_explod.spr", true);
 		break;
 		
 	case TE_TAREXPLOSION:			// tarbaby explosion
@@ -266,15 +266,15 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_LIGHTNING1:				// lightning bolts
-		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true));
+		CL_ParseBeam(Mod_ForName("progs/bolt.mdl", true));
 		break;
 	
 	case TE_LIGHTNING2:				// lightning bolts
-		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true));
+		CL_ParseBeam(Mod_ForName("progs/bolt2.mdl", true));
 		break;
 	
 	case TE_LIGHTNING3:				// lightning bolts
-		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true));
+		CL_ParseBeam(Mod_ForName("progs/bolt3.mdl", true));
 		break;
 	
 	case TE_LAVASPLASH:	
@@ -379,7 +379,7 @@ void CL_UpdateBeams (void)
 
 			ent.reType = RT_MODEL;
 			VectorCopy(org, ent.origin);
-			ent.hModel = Mod_GetHandle(b->model);
+			ent.hModel = b->model;
 			vec3_t angles;
 			angles[0] = pitch;
 			angles[1] = yaw;
@@ -411,9 +411,9 @@ void CL_UpdateExplosions (void)
 		if (!ex->model)
 			continue;
 		f = 10*(cl.time - ex->start);
-		if (f >= ex->model->numframes)
+		if (f >= Mod_GetModel(ex->model)->numframes)
 		{
-			ex->model = NULL;
+			ex->model = 0;
 			continue;
 		}
 
@@ -422,7 +422,7 @@ void CL_UpdateExplosions (void)
 
 		ent.reType = RT_MODEL;
 		VectorCopy(ex->origin, ent.origin);
-		ent.hModel = Mod_GetHandle(ex->model);
+		ent.hModel = ex->model;
 		ent.frame = f;
 		CL_SetRefEntAxis(&ent, vec3_origin);
 		R_AddRefEntToScene(&ent);

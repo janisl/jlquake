@@ -38,7 +38,7 @@ struct entity_t
 	vec3_t					origin;
 	vec3_t					msg_angles[2];	// last two updates (0 is newest)
 	vec3_t					angles;	
-	struct model_s			*model;			// NULL = no model
+	qhandle_t				model;			// NULL = no model
 	int						frame;
 	float					syncbase;		// for client-side animations
 	int						colormap;
