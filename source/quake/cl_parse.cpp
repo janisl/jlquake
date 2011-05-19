@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 #include "../core/sprfile.h"
-#include "glquake.h"
 
 char *svc_strings[] =
 {

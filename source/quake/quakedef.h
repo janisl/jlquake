@@ -151,6 +151,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define HIT_WETSUIT         (1<<(23+2))
 #define HIT_EMPATHY_SHIELDS (1<<(23+3))
 
+// entity effects
+
+#define	EF_BRIGHTFIELD			1
+#define	EF_MUZZLEFLASH 			2
+#define	EF_BRIGHTLIGHT 			4
+#define	EF_DIMLIGHT 			8
+
 //===========================================
 
 #define	MAX_SCOREBOARD		16

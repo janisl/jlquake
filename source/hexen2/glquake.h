@@ -83,29 +83,6 @@ typedef enum {
 	pt_redfire
 } ptype_t;
 
-// Changes to rtype_t must also be made in glquake.h
-typedef enum
-{
-   rt_rocket_trail = 0,
-	rt_smoke,
-	rt_blood,
-	rt_tracer,
-	rt_slight_blood,
-	rt_tracer2,
-	rt_voor_trail,
-	rt_fireball,
-	rt_ice,
-	rt_spit,
-	rt_spell,
-	rt_vorpal,
-	rt_setstaff,
-	rt_magicmissile,
-	rt_boneshard,
-	rt_scarab,
-	rt_acidball,
-	rt_bloodshot,
-} rt_type_t;
-
 // !!! if this is changed, it must be changed in d_iface.h too !!!
 typedef struct particle_s
 {
@@ -154,7 +131,6 @@ extern	vec3_t	r_origin;
 extern	refdef_t	r_refdef;
 extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
 extern	texture_t	*r_notexture_mip;
-extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
 extern	image_t*	particletexture;
@@ -195,11 +171,8 @@ extern	float	r_world_matrix[16];
 extern	int				cl_numvisedicts;
 extern	trRefEntity_t		cl_visedicts[MAX_VISEDICTS];
 
-void R_TranslatePlayerSkin (int playernum);
-
 extern byte *playerTranslation;
 
-void D_ShowLoadingSize(void);
 model_t *Mod_FindName (char *name);
 void GL_SubdivideSurface (msurface_t *fa);
 void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
@@ -224,7 +197,5 @@ void R_RotateForEntity (trRefEntity_t *e);
 void GL_Set2D (void);
 void SCR_DrawLoading (void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);
-
-extern float RTint[256],GTint[256],BTint[256];
 
 extern qboolean	vid_initialized;

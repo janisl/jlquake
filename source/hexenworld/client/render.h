@@ -4,6 +4,94 @@
 #define	TOP_RANGE		16			// soldier uniform colors
 #define	BOTTOM_RANGE	96
 
+// EF_ changes must also be made in model.h
+
+#define	EF_ROCKET		       1			// leave a trail
+#define	EF_GRENADE		       2			// leave a trail
+#define	EF_GIB			       4			// leave a trail
+#define	EF_ROTATE		       8			// rotate (bonus items)
+#define	EF_TRACER		      16			// green split trail
+#define	EF_ZOMGIB			  32			// small blood trail
+#define	EF_TRACER2			  64			// orange split trail + rotate
+#define	EF_TRACER3			 128			// purple trail
+#define  EF_FIREBALL		 256			// Yellow transparent trail in all directions
+#define  EF_ICE				 512			// Blue-white transparent trail, with gravity
+#define  EF_MIP_MAP			1024			// This model has mip-maps
+#define  EF_SPIT			2048			// Black transparent trail with negative light
+#define  EF_TRANSPARENT		4096		    // Transparent sprite
+#define  EF_SPELL			8192			// Vertical spray of particles
+#define  EF_HOLEY		   16384			// Solid model with color 0
+#define  EF_SPECIAL_TRANS  32768			// Translucency through the particle table
+#define  EF_FACE_VIEW	   65536			// Poly Model always faces you
+#define  EF_VORP_MISSILE  131072			// leave a trail at top and bottom of model
+#define  EF_SET_STAFF     262144			// slowly move up and left/right
+#define  EF_MAGICMISSILE  524288            // a trickle of blue/white particles with gravity
+#define  EF_BONESHARD    1048576           // a trickle of brown particles with gravity
+#define  EF_SCARAB       2097152           // white transparent particles with little gravity
+#define  EF_ACIDBALL	 4194304			// Green drippy acid shit
+#define  EF_BLOODSHOT	 8388608			// Blood rain shot trail
+
+#define  EF_MIP_MAP_FAR	  0x1000000	// Set per frame, this model will use the far mip map
+
+// Changes to ptype_t must also be made in d_iface.h
+typedef enum {
+	pt_static,
+	pt_grav,
+	pt_fastgrav,
+	pt_slowgrav,
+	pt_fire,
+	pt_explode,
+	pt_explode2,
+	pt_blob,
+	pt_blob2,
+	pt_rain,
+	pt_c_explode,
+	pt_c_explode2,
+	pt_spit,
+	pt_fireball,
+	pt_ice,
+	pt_spell,
+	pt_test,
+	pt_quake,
+	pt_rd,			// rider's death
+	pt_vorpal,
+	pt_setstaff,
+	pt_magicmissile,
+	pt_boneshard,
+	pt_scarab,
+	pt_darken,
+	pt_grensmoke,
+	pt_redfire,
+	pt_acidball,
+	pt_bluestep
+} ptype_t;
+
+// Changes to rtype_t must also be made in glquake.h
+typedef enum
+{
+   rt_rocket_trail = 0,
+	rt_smoke,
+	rt_blood,
+	rt_tracer,
+	rt_slight_blood,
+	rt_tracer2,
+	rt_voor_trail,
+	rt_fireball,
+	rt_ice,
+	rt_spit,
+	rt_spell,
+	rt_vorpal,
+	rt_setstaff,
+	rt_magicmissile,
+	rt_boneshard,
+	rt_scarab,
+	rt_grensmoke,
+	rt_purify,
+	rt_darken,
+	rt_acidball,
+	rt_bloodshot
+} rt_type_t;
+
 //=============================================================================
 
 struct entity_t
@@ -72,6 +160,10 @@ extern	struct texture_s	*r_notexture_mip;
 
 extern	entity_t	r_worldentity;
 
+extern	QCvar*	r_teamcolor;
+
+extern float RTint[256],GTint[256],BTint[256];
+
 void R_Init (void);
 void R_InitTextures (void);
 void R_InitEfrags (void);
@@ -129,7 +221,13 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 float R_CalcEntityLight(refEntity_t* e);
 void R_ClearScene();
 void R_AddRefEntToScene(refEntity_t* Ent);
+void R_TranslatePlayerSkin (int playernum);
+void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
+void R_DarkFieldParticles (refEntity_t *ent);
 
+void	Mod_Init (void);
+void	Mod_ClearAll (void);
+qhandle_t Mod_ForName (char *name, qboolean crash);
 int Mod_GetNumFrames(qhandle_t Handle);
 int Mod_GetFlags(qhandle_t Handle);
 bool Mod_IsAliasModel(qhandle_t Handle);

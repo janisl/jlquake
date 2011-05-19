@@ -1843,8 +1843,6 @@ void PF_lightstyle (void)
 //
 //==========================================================================
 
-extern int d_lightstylevalue[256];
-
 void PF_lightstylevalue(void)
 {
 	int style;

@@ -25,6 +25,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	TOP_RANGE		16			// soldier uniform colors
 #define	BOTTOM_RANGE	96
 
+//	Model effects
+#define	EF_ROCKET	1			// leave a trail
+#define	EF_GRENADE	2			// leave a trail
+#define	EF_GIB		4			// leave a trail
+#define	EF_ROTATE	8			// rotate (bonus items)
+#define	EF_TRACER	16			// green split trail
+#define	EF_ZOMGIB	32			// small blood trail
+#define	EF_TRACER2	64			// orange split trail + rotate
+#define	EF_TRACER3	128			// purple trail
+
 //=============================================================================
 
 struct entity_t
@@ -133,6 +143,7 @@ void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap);
 void R_ClearScene();
 void R_AddRefEntToScene(refEntity_t* Ent);
+void R_TranslatePlayerSkin (int playernum);
 
 void	Mod_Init (void);
 void	Mod_ClearAll (void);

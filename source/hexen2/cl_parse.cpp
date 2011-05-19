@@ -6,7 +6,6 @@
 
 #include "quakedef.h"
 #include "../core/sprfile.h"
-#include "glquake.h"
 #ifdef _WIN32
 #include <windows.h>
 #endif

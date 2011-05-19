@@ -1,7 +1,6 @@
 // cl_ents.c -- entity parsing and management
 
 #include "quakedef.h"
-#include "glquake.h"
 
 extern	QCvar*	cl_predict_players;
 extern	QCvar*	cl_predict_players2;
@@ -1206,22 +1205,6 @@ void CL_LinkPlayers (void)
 		info->shownames_off = true;
 		if (state->messagenum != cl.parsecount)
 			continue;	// not present this frame
-
-		// spawn light flashes, even ones coming from invisible objects
-		if (!gl_flashblend->value || j != cl.playernum)
-		{
-/*			if (state->effects & (EF_BLUE | EF_RED) == (EF_BLUE | EF_RED))
-				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 3);
-			else if (state->effects & EF_BLUE)
-				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 1);
-			else if (state->effects & EF_RED)
-				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 2);
-			else if (state->effects & EF_BRIGHTLIGHT)
-				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2] + 16, 400 + (rand()&31), 0.1, 0);
-			else if (state->effects & EF_DIMLIGHT)
-				CL_NewDlight (j, state->origin[0], state->origin[1], state->origin[2], 200 + (rand()&31), 0.1, 0);
-*/
-		}
 
 		if (!state->modelindex)
 			continue;

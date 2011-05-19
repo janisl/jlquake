@@ -23,7 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef _WIN32
 #include "../../client/windows_shared.h"
 #endif
-#include "gl_model.h"
 
 
 // we need to declare some mouse variables here, because the menu system

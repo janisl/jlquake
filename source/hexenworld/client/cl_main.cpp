@@ -4,7 +4,6 @@
 #ifdef _WIN32 
 #include "../../client/windows_shared.h"
 #endif
-#include "glquake.h"
 
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.

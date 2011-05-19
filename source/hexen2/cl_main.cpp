@@ -5,7 +5,6 @@
  */
 
 #include "quakedef.h"
-#include "glquake.h"
 
 #ifdef _WIN32
 #include <windows.h>
