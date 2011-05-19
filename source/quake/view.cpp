@@ -31,7 +31,6 @@ when crossing a water boudnary.
 
 */
 
-QCvar*		lcd_x;
 QCvar*		lcd_yaw;
 
 QCvar*	scr_ofsx;
@@ -903,31 +902,7 @@ void V_RenderView (void)
 
 	R_PushDlights ();
 
-	if (lcd_x->value)
-	{
-		//
-		// render two interleaved views
-		//
-		int		i;
-
-		r_refdef.viewangles[YAW] -= lcd_yaw->value;
-		for (i=0 ; i<3 ; i++)
-			r_refdef.vieworg[i] -= right[i]*lcd_x->value;
-		R_RenderView ();
-
-		R_PushDlights ();
-
-		r_refdef.viewangles[YAW] += lcd_yaw->value*2;
-		for (i=0 ; i<3 ; i++)
-			r_refdef.vieworg[i] += 2*right[i]*lcd_x->value;
-		R_RenderView ();
-
-		r_refdef.height <<= 1;
-	}
-	else
-	{
-		R_RenderView ();
-	}
+	R_RenderView ();
 }
 
 //============================================================================
@@ -942,9 +917,6 @@ void V_Init (void)
 	Cmd_AddCommand ("v_cshift", V_cshift_f);	
 	Cmd_AddCommand ("bf", V_BonusFlash_f);
 	Cmd_AddCommand ("centerview", V_StartPitchDrift);
-
-    lcd_x = Cvar_Get("lcd_x", "0", 0);
-    lcd_yaw = Cvar_Get("lcd_yaw", "0", 0);
 
     v_centermove = Cvar_Get("v_centermove", "0.15", 0);
     v_centerspeed = Cvar_Get("v_centerspeed","500", 0);
