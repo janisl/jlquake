@@ -413,7 +413,6 @@ typedef struct model_s
 //============================================================================
 
 void	*Mod_Extradata (model_t *mod);	// handles caching
-void	Mod_TouchModel (char *name);
 
 mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
 byte	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_parse.c  -- parse a message received from the server
 
 #include "quakedef.h"
+#include "../core/sprfile.h"
 #include "glquake.h"
 
 char *svc_strings[] =
@@ -242,12 +243,6 @@ void CL_ParseServerInfo (void)
 	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
 	Con_Printf ("%c%s\n", 2, str);
 
-//
-// first we go through and touch all of the precache data that still
-// happens to be in the cache, so precaching something else doesn't
-// needlessly purge it
-//
-
 // precache models
 	Com_Memset(cl.model_precache, 0, sizeof(cl.model_precache));
 	for (nummodels=1 ; ; nummodels++)
@@ -261,7 +256,6 @@ void CL_ParseServerInfo (void)
 			return;
 		}
 		QStr::Cpy(model_precache[nummodels], str);
-		Mod_TouchModel (str);
 	}
 
 // precache sounds

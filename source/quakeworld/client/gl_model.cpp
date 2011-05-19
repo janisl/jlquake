@@ -214,25 +214,6 @@ static model_t *Mod_FindName (char *name)
 
 /*
 ==================
-Mod_TouchModel
-
-==================
-*/
-void Mod_TouchModel (char *name)
-{
-	model_t	*mod;
-	
-	mod = Mod_FindName (name);
-	
-	if (!mod->needload)
-	{
-		if (mod->type == mod_alias)
-			Cache_Check (&mod->cache);
-	}
-}
-
-/*
-==================
 Mod_LoadModel
 
 Loads a model into the cache

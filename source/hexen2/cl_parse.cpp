@@ -5,6 +5,7 @@
  */
 
 #include "quakedef.h"
+#include "../core/sprfile.h"
 #include "glquake.h"
 #ifdef _WIN32
 #include <windows.h>
@@ -282,7 +283,6 @@ void CL_ParseServerInfo (void)
 			return;
 		}
 		QStr::Cpy(model_precache[nummodels], str);
-		Mod_TouchModel (str);
 	}
 
 // precache sounds
