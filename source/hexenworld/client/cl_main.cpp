@@ -1364,7 +1364,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 	}
 
 	vec3_t angles;
-	if (Mod_GetModel(ent->hModel)->type == mod_alias)
+	if (Mod_IsAliasModel(ent->hModel))
 	{
 		if (Mod_GetFlags(ent->hModel) & EF_FACE_VIEW)
 		{

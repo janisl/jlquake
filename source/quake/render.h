@@ -140,5 +140,6 @@ qhandle_t Mod_ForName (char *name, qboolean crash);
 int Mod_GetNumFrames(qhandle_t Handle);
 int Mod_GetFlags(qhandle_t Handle);
 void Mod_PrintFrameName(qhandle_t m, int frame);
+bool Mod_IsAliasModel(qhandle_t Handle);
 
 extern	QCvar*	gl_doubleeyes;

@@ -1798,3 +1798,8 @@ void Mod_PrintFrameName (qhandle_t m, int frame)
 	
 	Con_Printf ("frame %i: %s\n", frame, pframedesc->name);
 }
+
+bool Mod_IsAliasModel(qhandle_t Handle)
+{
+	return Mod_GetModel(Handle)->type == mod_alias;
+}

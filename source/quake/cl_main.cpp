@@ -696,7 +696,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	vec3_t angles;
 	angles[YAW] = ent_angles[YAW];
 	angles[ROLL] = ent_angles[ROLL];
-	if (Mod_GetModel(ent->hModel)->type == mod_alias)
+	if (Mod_IsAliasModel(ent->hModel))
 	{
 		// stupid quake bug
 		angles[PITCH] = -ent_angles[PITCH];

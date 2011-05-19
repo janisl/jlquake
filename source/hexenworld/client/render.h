@@ -132,3 +132,4 @@ void R_AddRefEntToScene(refEntity_t* Ent);
 
 int Mod_GetNumFrames(qhandle_t Handle);
 int Mod_GetFlags(qhandle_t Handle);
+bool Mod_IsAliasModel(qhandle_t Handle);

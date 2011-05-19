@@ -2122,3 +2122,8 @@ int Mod_GetFlags(qhandle_t Handle)
 {
 	return Mod_GetModel(Handle)->flags;
 }
+
+bool Mod_IsAliasModel(qhandle_t Handle)
+{
+	return Mod_GetModel(Handle)->type == mod_alias;
+}
