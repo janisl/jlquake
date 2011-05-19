@@ -3,7 +3,6 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "quakedef.h"
-#include "glquake.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -2725,7 +2724,6 @@ void CL_ParseTEnt (void)
 				float fireCounts;
 				dlight_t			*dlx;
 				vec3_t				endPos, curPos, posAdd;
-				mleaf_t				*l;
 
 				pos[0] = net_message.ReadCoord();
 				pos[1] = net_message.ReadCoord();
@@ -2767,11 +2765,12 @@ void CL_ParseTEnt (void)
 					ex->startTime = cl.time + .3/8.0 * i;
 					ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
 
+					int PtContents;
 					do
 					{	// I dunno how expensive this is, but it kind of sucks anyway around it...
-						l = Mod_PointInLeaf (ex->origin, Mod_GetModel(cl.worldmodel));
+						PtContents = CM_PointContentsQ1(ex->origin, 0);
 
-						if(l->contents == BSP29CONTENTS_EMPTY)
+						if (PtContents == BSP29CONTENTS_EMPTY)
 						{
 							ex->origin[2] -= 16;
 						}
@@ -2779,7 +2778,8 @@ void CL_ParseTEnt (void)
 						{
 							ex->origin[2] += 16;
 						}
-					}while(l->contents == BSP29CONTENTS_EMPTY);
+					}
+					while (PtContents == BSP29CONTENTS_EMPTY);
 					ex->origin[0] += (rand()%8)-4;
 					ex->origin[1] += (rand()%8)-4;
 					ex->origin[2] += (rand()%6)+21;
@@ -3650,7 +3650,6 @@ void CL_UpdateExplosions (void)
 	int			i;
 	int			f;
 	explosion_t	*ex;
-	mleaf_t		*l;
 
 	for (i=0, ex=cl_explosions ; i< MAX_EXPLOSIONS ; i++, ex++)
 	{
@@ -3659,8 +3658,7 @@ void CL_UpdateExplosions (void)
 
 		if(ex->exflags & EXFLAG_COLLIDE)
 		{
-			l = Mod_PointInLeaf (ex->origin, Mod_GetModel(cl.worldmodel));
-			if(l->contents != BSP29CONTENTS_EMPTY)
+			if (CM_PointContentsQ1(ex->origin, 0) != BSP29CONTENTS_EMPTY)
 			{
 				if (ex->removeFunc)
 				{
@@ -4233,12 +4231,11 @@ void MultiGrenadePiece2Think (explosion_t *ex)
 void ChunkThink(explosion_t *ex)
 {
 	vec3_t oldorg;
-	mleaf_t		*l;
 	int			moving = 1;
 
-	l = Mod_PointInLeaf (ex->origin, Mod_GetModel(cl.worldmodel));
-	if(l->contents!=BSP29CONTENTS_EMPTY) //||in_solid==true
-	{	//collided with world
+	if (CM_PointContentsQ1(ex->origin, 0) != BSP29CONTENTS_EMPTY) //||in_solid==true
+	{
+		//collided with world
 		VectorCopy(ex->oldorg, ex->origin);
 
 		if((int)ex->data == THINGTYPE_FLESH)
@@ -4373,11 +4370,10 @@ void ChunkThink(explosion_t *ex)
 void BubbleThink(explosion_t *ex)
 {
 	vec3_t oldorg;
-	mleaf_t		*l;
 
-	l = Mod_PointInLeaf (ex->origin, Mod_GetModel(cl.worldmodel));
-	if(l->contents==BSP29CONTENTS_WATER) 
-	{	//still in water
+	if (CM_PointContentsQ1(ex->origin, 0) == BSP29CONTENTS_WATER) 
+	{
+		//still in water
 
 		if (ex->data < cl.time)//change course
 		{
@@ -4429,11 +4425,7 @@ void TeleportFlashThink(explosion_t *ex)
 // remove tent if not in open air
 void CheckSpaceThink(explosion_t *ex)
 {
-
-	mleaf_t		*l;
-
-	l = Mod_PointInLeaf (ex->origin, Mod_GetModel(cl.worldmodel));
-	if(l->contents!=BSP29CONTENTS_EMPTY) 
+	if (CM_PointContentsQ1(ex->origin, 0) != BSP29CONTENTS_EMPTY) 
 	{
 		ex->endTime = ex->startTime;
 	}
@@ -4565,7 +4557,6 @@ void purify1Update(explosion_t *ex)
 void MeteorBlastThink(explosion_t *ex)
 {
 	int i, maxI;
-	mleaf_t		*l;
 	explosion_t *ex2;
 	vec3_t		tempVect, oldPos;
 	int			hitWall = 0;
@@ -4588,8 +4579,7 @@ void MeteorBlastThink(explosion_t *ex)
 			VectorCopy(tempVect, oldPos);
 			VectorScale(ex->origin, .1 * (i+1), tempVect);
 			VectorMA(tempVect, 1.0 - (.1 * (i+1)), ex->oldorg, tempVect);
-			l = Mod_PointInLeaf (tempVect, Mod_GetModel(cl.worldmodel));
-			if(l->contents != BSP29CONTENTS_EMPTY)
+			if (CM_PointContentsQ1(tempVect, 0) != BSP29CONTENTS_EMPTY)
 			{
 				hitWall = 1;
 			}

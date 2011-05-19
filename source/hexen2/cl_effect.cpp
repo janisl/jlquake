@@ -11,7 +11,6 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "quakedef.h"
-#include "glquake.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -2443,7 +2442,6 @@ void CL_UpdateEffects(void)
 					for (i=0;i < cl.Effects[index].Chunk.numChunks;i++)
 					{
 						vec3_t oldorg;
-						mleaf_t		*l;
 						int			moving = 1;
 
 						ent = &EffectEntities[cl.Effects[index].Chunk.entity_index[i]];
@@ -2454,9 +2452,9 @@ void CL_UpdateEffects(void)
 						ent->origin[1] += frametime * cl.Effects[index].Chunk.velocity[i][1];
 						ent->origin[2] += frametime * cl.Effects[index].Chunk.velocity[i][2];
 
-						l = Mod_PointInLeaf (ent->origin, Mod_GetModel(cl.worldmodel));
-						if(l->contents!=BSP29CONTENTS_EMPTY) //||in_solid==true
-						{	// bouncing prolly won't work...
+						if (CM_PointContentsQ1(ent->origin, 0) != BSP29CONTENTS_EMPTY) //||in_solid==true
+						{
+							// bouncing prolly won't work...
 							VectorCopy(oldorg, ent->origin);
 
 							cl.Effects[index].Chunk.velocity[i][0] = 0;

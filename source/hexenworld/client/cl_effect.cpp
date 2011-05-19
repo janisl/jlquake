@@ -12,7 +12,6 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "quakedef.h"
-#include "glquake.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -1643,7 +1642,6 @@ void CL_UpdateEffects(void)
 	float		distance,smoketime;
 	int			i;
 	entity_state_t	*es;
-	mleaf_t		*l;
 
 	frametime = host_frametime;
 	if (!frametime) return;
@@ -2115,9 +2113,9 @@ void CL_UpdateEffects(void)
 						VectorCopy(es->origin,org);
 						VectorAdd(org,cl.Effects[index].Bubble.offset,org);
 
-						l = Mod_PointInLeaf (org, Mod_GetModel(cl.worldmodel));
-						if(l->contents!=BSP29CONTENTS_WATER) 
-						{	//not in water anymore
+						if (CM_PointContentsQ1(org, 0) != BSP29CONTENTS_WATER) 
+						{
+							//not in water anymore
 							CL_FreeEffect(index);
 							break;
 						}
