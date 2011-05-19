@@ -1808,3 +1808,8 @@ const char* Mod_GetName(qhandle_t Handle)
 {
 	return Mod_GetModel(Handle)->name;
 }
+
+int Mod_GetSyncType(qhandle_t Handle)
+{
+	return Mod_GetModel(Handle)->synctype;
+}

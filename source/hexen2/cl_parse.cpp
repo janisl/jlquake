@@ -481,7 +481,7 @@ void CL_ParseUpdate (int bits)
 	// or randomized
 		if (model)
 		{
-			if (Mod_GetModel(model)->synctype == ST_RAND)
+			if (Mod_GetSyncType(model) == ST_RAND)
 				ent->syncbase = rand()*(1.0/RAND_MAX);//(float)(rand()&0x7fff) / 0x7fff;
 			else
 				ent->syncbase = 0.0;
