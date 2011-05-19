@@ -239,7 +239,6 @@ typedef struct
 #include "progs.h"
 #include "client.h"
 #include "server.h"
-#include "gl_model.h"
 #include "world.h"
 #include "keys.h"
 #include "console.h"

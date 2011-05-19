@@ -8,6 +8,7 @@
 #include <windows.h>
 #endif
 #include <time.h>
+#include "gl_model.h"
 
 extern QCvar*	pausable;
 extern QCvar*	sv_flypitch;

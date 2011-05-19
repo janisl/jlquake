@@ -23,7 +23,6 @@
 #include "render.h"
 #include "cl_effect.h"
 #include "client.h"
-#include "gl_model.h"
 #include "keys.h"
 #include "console.h"
 #include "view.h"

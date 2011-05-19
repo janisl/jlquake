@@ -9,6 +9,7 @@
 #endif
 
 #include "../../client/render_local.h"
+#include "gl_model.h"
 
 #include <GL/glu.h>
 

@@ -24,7 +24,6 @@ qboolean SV_CheckBottom (edict_t *ent)
 	//move, and adjusted for steps
 	vec3_t	mins, maxs, start, stop, check,size;
 	q1trace_t	trace;
-	hull_t	*wclip_hull;
 	int		x, y;
 	float	mid, bottom;
 	float	save_hull;

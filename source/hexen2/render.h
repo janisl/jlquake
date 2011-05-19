@@ -133,3 +133,7 @@ void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float Sca
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 void R_ClearScene();
 void R_AddRefEntToScene(refEntity_t* Ent);
+
+void	Mod_Init (void);
+void	Mod_ClearAll (void);
+qhandle_t Mod_ForName (char *name, qboolean crash);

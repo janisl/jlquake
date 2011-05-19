@@ -134,4 +134,8 @@ void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap);
 void R_ClearScene();
 void R_AddRefEntToScene(refEntity_t* Ent);
 
+void	Mod_Init (void);
+void	Mod_ClearAll (void);
+qhandle_t Mod_ForName (char *name, qboolean crash);
+
 extern	QCvar*	gl_doubleeyes;

@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include "../client/render_local.h"
+#include "gl_model.h"
 
 #include <GL/glu.h>
 
