@@ -1803,3 +1803,8 @@ bool Mod_IsAliasModel(qhandle_t Handle)
 {
 	return Mod_GetModel(Handle)->type == mod_alias;
 }
+
+const char* Mod_GetName(qhandle_t Handle)
+{
+	return Mod_GetModel(Handle)->name;
+}

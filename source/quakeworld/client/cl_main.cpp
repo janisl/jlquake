@@ -1498,7 +1498,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 
 	AnglesToAxis(angles, ent->axis);
 
-	if (!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/eyes.mdl"))
+	if (!QStr::Cmp(Mod_GetName(ent->hModel), "progs/eyes.mdl"))
 	{
 		// double size of eyes, since they are really hard to see in gl
 		ent->renderfx |= RF_LIGHTING_ORIGIN;
@@ -1512,8 +1512,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	}
 
 	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/flame2.mdl") ||
-		!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/flame.mdl"))
+	if (!QStr::Cmp(Mod_GetName(ent->hModel), "progs/flame2.mdl") ||
+		!QStr::Cmp(Mod_GetName(ent->hModel), "progs/flame.mdl"))
 	{
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
 		ent->radius = 1;

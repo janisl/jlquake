@@ -247,7 +247,7 @@ void CL_PrintEntities_f (void)
 			continue;
 		}
 		Con_Printf ("%s:%2i  (%5.1f,%5.1f,%5.1f) [%5.1f %5.1f %5.1f]\n"
-		,Mod_GetModel(ent->model)->name,ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
+		,Mod_GetName(ent->model),ent->frame, ent->origin[0], ent->origin[1], ent->origin[2], ent->angles[0], ent->angles[1], ent->angles[2]);
 	}
 }
 
@@ -708,7 +708,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 
 	AnglesToAxis(angles, ent->axis);
 
-	if (!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/eyes.mdl") && gl_doubleeyes->value)
+	if (!QStr::Cmp(Mod_GetName(ent->hModel), "progs/eyes.mdl") && gl_doubleeyes->value)
 	{
 		// double size of eyes, since they are really hard to see in gl
 		ent->renderfx |= RF_LIGHTING_ORIGIN;
@@ -722,8 +722,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	}
 
 	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/flame2.mdl") ||
-		!QStr::Cmp(Mod_GetModel(ent->hModel)->name, "progs/flame.mdl"))
+	if (!QStr::Cmp(Mod_GetName(ent->hModel), "progs/flame2.mdl") ||
+		!QStr::Cmp(Mod_GetName(ent->hModel), "progs/flame.mdl"))
 	{
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
 		ent->radius = 1.0;
