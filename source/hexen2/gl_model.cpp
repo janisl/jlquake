@@ -2077,6 +2077,11 @@ int Mod_GetNumFrames(qhandle_t Handle)
 	return Mod_GetModel(Handle)->numframes;
 }
 
+int Mod_GetFlags(qhandle_t Handle)
+{
+	return Mod_GetModel(Handle)->flags;
+}
+
 void Mod_PrintFrameName(qhandle_t m, int frame)
 {
 	aliashdr_t 			*hdr;

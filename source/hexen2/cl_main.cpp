@@ -621,7 +621,7 @@ void CL_RelinkEntities (void)
 			}
 		}
 
-		int ModelFlags = Mod_GetModel(ent->model)->flags;
+		int ModelFlags = Mod_GetFlags(ent->model);
 		if (ModelFlags & EF_GIB)
 			R_RocketTrail (oldorg, ent->origin, 2);
 		else if (ModelFlags & EF_ZOMGIB)
@@ -904,7 +904,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 	vec3_t angles;
 	if (Mod_GetModel(ent->hModel)->type == mod_alias)
 	{
-		if (Mod_GetModel(ent->hModel)->flags & EF_FACE_VIEW)
+		if (Mod_GetFlags(ent->hModel) & EF_FACE_VIEW)
 		{
 			//	yaw and pitch must be 0 so that renderer can safely multply matrices.
 			angles[PITCH] = 0;
@@ -913,7 +913,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 		}
 		else 
 		{
-			if (Mod_GetModel(ent->hModel)->flags & EF_ROTATE)
+			if (Mod_GetFlags(ent->hModel) & EF_ROTATE)
 			{
 				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.time));
 			}
@@ -928,13 +928,13 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 
 		AnglesToAxis(angles, ent->axis);
 
-		if ((Mod_GetModel(ent->hModel)->flags & EF_ROTATE) || (scale != 0 && scale != 100))
+		if ((Mod_GetFlags(ent->hModel) & EF_ROTATE) || (scale != 0 && scale != 100))
 		{
 			ent->renderfx |= RF_LIGHTING_ORIGIN;
 			VectorCopy(ent->origin, ent->lightingOrigin);
 		}
 
-		if (Mod_GetModel(ent->hModel)->flags & EF_ROTATE)
+		if (Mod_GetFlags(ent->hModel) & EF_ROTATE)
 		{
 			// Floating motion
 			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;

@@ -466,7 +466,7 @@ void CL_LinkPacketEntities (void)
 		// set frame
 		ent.frame = s1->frame;
 
-		int ModelFlags = Mod_GetModel(model)->flags;
+		int ModelFlags = Mod_GetFlags(model);
 		// rotate binary objects locally
 		vec3_t angles;
 		if (ModelFlags & EF_ROTATE)

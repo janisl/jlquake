@@ -465,7 +465,7 @@ void CL_RelinkEntities (void)
 			
 		}
 
-		int ModelFlags = Mod_GetModel(ent->model)->flags;
+		int ModelFlags = Mod_GetFlags(ent->model);
 // rotate binary objects locally
 		if (ModelFlags & EF_ROTATE)
 			ent->angles[1] = bobjrotate;

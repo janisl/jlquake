@@ -724,19 +724,20 @@ void CL_LinkPacketEntities (void)
 		R_AddRefEntToScene(&ent);
 
 		// add automatic particle trails
-		if (!Mod_GetModel(model)->flags)
+		int ModelFlags = Mod_GetFlags(ent.hModel);
+		if (!ModelFlags)
 			continue;
 
 		// Model Flags
-		if (Mod_GetModel(ent.hModel)->flags & EF_GIB)
+		if (ModelFlags & EF_GIB)
 			R_RocketTrail (old_origin, ent.origin, 2);
-		else if (Mod_GetModel(ent.hModel)->flags & EF_ZOMGIB)
+		else if (ModelFlags & EF_ZOMGIB)
 			R_RocketTrail (old_origin, ent.origin, 4);
-		else if (Mod_GetModel(ent.hModel)->flags & EF_TRACER)
+		else if (ModelFlags & EF_TRACER)
 			R_RocketTrail (old_origin, ent.origin, 3);
-		else if (Mod_GetModel(ent.hModel)->flags & EF_TRACER2)
+		else if (ModelFlags & EF_TRACER2)
 			R_RocketTrail (old_origin, ent.origin, 5);
-		else if (Mod_GetModel(ent.hModel)->flags & EF_ROCKET)
+		else if (ModelFlags & EF_ROCKET)
 		{
 			R_RocketTrail (old_origin, ent.origin, 0);
 /*			dl = CL_AllocDlight (i);
@@ -744,7 +745,7 @@ void CL_LinkPacketEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;*/
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_FIREBALL)
+		else if (ModelFlags & EF_FIREBALL)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_fireball);
 			dl = CL_AllocDlight (i);
@@ -752,11 +753,11 @@ void CL_LinkPacketEntities (void)
 			dl->radius = 120 - (rand() % 20);
 			dl->die = cl.time + 0.01;
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_ICE)
+		else if (ModelFlags & EF_ICE)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_ice);
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_SPIT)
+		else if (ModelFlags & EF_SPIT)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_spit);
 			dl = CL_AllocDlight (i);
@@ -764,37 +765,37 @@ void CL_LinkPacketEntities (void)
 			dl->radius = -120 - (rand() % 20);
 			dl->die = cl.time + 0.05;
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_SPELL)
+		else if (ModelFlags & EF_SPELL)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_spell);
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_GRENADE)
+		else if (ModelFlags & EF_GRENADE)
 		{
 //			R_RunParticleEffect4(old_origin,3,284,pt_slowgrav,3);
 			R_RocketTrail (old_origin, ent.origin, rt_grensmoke);
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_TRACER3)
+		else if (ModelFlags & EF_TRACER3)
 			R_RocketTrail (old_origin, ent.origin, 6);
-		else if (Mod_GetModel(ent.hModel)->flags & EF_VORP_MISSILE)
+		else if (ModelFlags & EF_VORP_MISSILE)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_vorpal);
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_SET_STAFF)
+		else if (ModelFlags & EF_SET_STAFF)
 		{
 			R_RocketTrail (old_origin, ent.origin,rt_setstaff);
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_MAGICMISSILE)
+		else if (ModelFlags & EF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
 				R_RocketTrail (old_origin, ent.origin, rt_magicmissile);
 		}
-		else if (Mod_GetModel(ent.hModel)->flags & EF_BONESHARD)
+		else if (ModelFlags & EF_BONESHARD)
 			R_RocketTrail (old_origin, ent.origin, rt_boneshard);
-		else if (Mod_GetModel(ent.hModel)->flags & EF_SCARAB)
+		else if (ModelFlags & EF_SCARAB)
 			R_RocketTrail (old_origin, ent.origin, rt_scarab);
-		else if (Mod_GetModel(ent.hModel)->flags & EF_ACIDBALL)
+		else if (ModelFlags & EF_ACIDBALL)
 			R_RocketTrail (old_origin, ent.origin, rt_acidball);
-		else if (Mod_GetModel(ent.hModel)->flags & EF_BLOODSHOT)
+		else if (ModelFlags & EF_BLOODSHOT)
 			R_RocketTrail (old_origin, ent.origin, rt_bloodshot);
 	}
 }
