@@ -224,6 +224,12 @@ void R_AddRefEntToScene(refEntity_t* Ent);
 void R_TranslatePlayerSkin (int playernum);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
 void R_DarkFieldParticles (refEntity_t *ent);
+void R_ParseParticleEffect2 (void);
+void R_ParseParticleEffect3 (void);
+void R_ParseParticleEffect4 (void);
+void R_ParseRainEffect(void);
+void R_DrawName(vec3_t origin, char *Name, int Red);
+int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
 void	Mod_Init (void);
 void	Mod_ClearAll (void);

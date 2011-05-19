@@ -10,7 +10,6 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "quakedef.h"
-#include "glquake.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -1122,7 +1121,7 @@ void Sbar_DeathmatchOverlay(void)
 	scr_fullupdate = 0;
 
 	pic = Draw_CachePic ("gfx/menu/title8.lmp");
-	M_DrawTransPic ((320-pic->width)/2, 0, pic);
+	M_DrawTransPic ((320-Draw_GetWidth(pic))/2, 0, pic);
 
 // scores	
 	Sbar_SortFrags (true);

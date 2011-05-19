@@ -190,6 +190,7 @@ void R_ClearScene();
 void R_AddRefEntToScene(refEntity_t* Ent);
 void R_TranslatePlayerSkin (int playernum);
 void D_ShowLoadingSize(void);
+int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
 void	Mod_Init (void);
 void	Mod_ClearAll (void);

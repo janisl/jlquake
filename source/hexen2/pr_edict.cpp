@@ -5,7 +5,6 @@
  */
 
 #include "quakedef.h"
-#include "glquake.h"
 
 globalvars_t	*pr_global_struct;
 int				pr_edict_size;	// in bytes

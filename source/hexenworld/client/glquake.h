@@ -138,7 +138,6 @@ void GL_EnableMultitexture(void);
 
 extern byte *playerTranslation;
 
-void R_DrawName(vec3_t origin, char *Name, int Red);
 void GL_Set2D (void);
 void Draw_Crosshair(void);
 void EmitWaterPolys (msurface_t *fa);
@@ -159,13 +158,8 @@ void R_DrawWorld (void);
 void R_RenderDlights (void);
 void R_DrawParticles (void);
 void R_DrawWaterSurfaces (void);
-int M_DrawBigCharacter (int x, int y, int num, int numNext);
 void Draw_RedString (int x, int y, char *str);
 void GL_SubdivideSurface (msurface_t *fa);
-void R_ParseParticleEffect2 (void);
-void R_ParseParticleEffect3 (void);
-void R_ParseParticleEffect4 (void);
-void R_ParseRainEffect(void);
 void R_NetGraph (void);
 model_t *Mod_FindName (char *name);
 void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);

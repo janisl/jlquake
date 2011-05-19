@@ -974,3 +974,13 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 
 	return R_CreateImage(identifier, (byte*)data, width, height, mipmap, mipmap, mipmap ? GL_REPEAT : GL_CLAMP, false);
 }
+
+int Draw_GetWidth(image_t* pic)
+{
+	return pic->width;
+}
+
+int Draw_GetHeight(image_t* pic)
+{
+	return pic->height;
+}

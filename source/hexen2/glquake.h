@@ -196,6 +196,5 @@ void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
 void R_RotateForEntity (trRefEntity_t *e);
 void GL_Set2D (void);
 void SCR_DrawLoading (void);
-int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
 extern qboolean	vid_initialized;

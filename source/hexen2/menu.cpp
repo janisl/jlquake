@@ -3,7 +3,6 @@
  */
 
 #include "quakedef.h"
-#include "glquake.h"
 
 extern QCvar*		r_gamma;
 
@@ -625,13 +624,13 @@ void ScrollTitle (char *name)
 	}
 
 	p = Draw_CachePic(LastName);
-	finaly = ((float)p->height * TitlePercent) - p->height;
-	M_DrawTransPicCropped( (320-p->width)/2, finaly , p);
+	finaly = ((float)Draw_GetHeight(p) * TitlePercent) - Draw_GetHeight(p);
+	M_DrawTransPicCropped( (320-Draw_GetWidth(p))/2, finaly , p);
 
 	if (m_state != m_keys)
 	{
 		p = Draw_CachePic("gfx/menu/hplaque.lmp");
-		finaly = ((float)p->height * LogoPercent) - p->height;
+		finaly = ((float)Draw_GetHeight(p) * LogoPercent) - Draw_GetHeight(p);
 		M_DrawTransPicCropped(10, finaly, p);
 	}		
 }

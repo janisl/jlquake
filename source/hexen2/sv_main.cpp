@@ -5,7 +5,6 @@
  */
 
 #include "quakedef.h"
-#include "glquake.h"
 
 server_t		sv;
 server_static_t	svs;
