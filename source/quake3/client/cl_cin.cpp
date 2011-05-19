@@ -106,8 +106,6 @@ typedef struct {
 	unsigned int		roq_id;
 	long				screenDelta;
 
-	long				samplesPerPixel;				// defaults to 2
-	byte*				gray;
 	unsigned int		xsize, ysize, maxsize, minsize;
 
 	qboolean			inMemory;
@@ -624,71 +622,28 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags )
 
 	bptr = (unsigned short *)vq2;
 
-	if (cinTable[currentHandle].samplesPerPixel==2) {
-		for(i=0;i<two;i++) {
-			y0 = (long)*input++;
-			y1 = (long)*input++;
-			y2 = (long)*input++;
-			y3 = (long)*input++;
-			cr = (long)*input++;
-			cb = (long)*input++;
-			*bptr++ = yuv_to_rgb( y0, cr, cb );
-			*bptr++ = yuv_to_rgb( y1, cr, cb );
-			*bptr++ = yuv_to_rgb( y2, cr, cb );
-			*bptr++ = yuv_to_rgb( y3, cr, cb );
-		}
+	ibptr = (unsigned int *)bptr;
+	for(i=0;i<two;i++) {
+		y0 = (long)*input++;
+		y1 = (long)*input++;
+		y2 = (long)*input++;
+		y3 = (long)*input++;
+		cr = (long)*input++;
+		cb = (long)*input++;
+		*ibptr++ = yuv_to_rgb24( y0, cr, cb );
+		*ibptr++ = yuv_to_rgb24( y1, cr, cb );
+		*ibptr++ = yuv_to_rgb24( y2, cr, cb );
+		*ibptr++ = yuv_to_rgb24( y3, cr, cb );
+	}
 
-		cptr = (unsigned short *)vq4;
-		dptr = (unsigned short *)vq8;
+	icptr = (unsigned int *)vq4;
+	idptr = (unsigned int *)vq8;
 
-		for(i=0;i<four;i++) {
-			aptr = (unsigned short *)vq2 + (*input++)*4;
-			bptr = (unsigned short *)vq2 + (*input++)*4;
-			for(j=0;j<2;j++)
-				VQ2TO4(aptr,bptr,cptr,dptr);
-		}
-	} else if (cinTable[currentHandle].samplesPerPixel==4) {
-		ibptr = (unsigned int *)bptr;
-		for(i=0;i<two;i++) {
-			y0 = (long)*input++;
-			y1 = (long)*input++;
-			y2 = (long)*input++;
-			y3 = (long)*input++;
-			cr = (long)*input++;
-			cb = (long)*input++;
-			*ibptr++ = yuv_to_rgb24( y0, cr, cb );
-			*ibptr++ = yuv_to_rgb24( y1, cr, cb );
-			*ibptr++ = yuv_to_rgb24( y2, cr, cb );
-			*ibptr++ = yuv_to_rgb24( y3, cr, cb );
-		}
-
-		icptr = (unsigned int *)vq4;
-		idptr = (unsigned int *)vq8;
-
-		for(i=0;i<four;i++) {
-			iaptr = (unsigned int *)vq2 + (*input++)*4;
-			ibptr = (unsigned int *)vq2 + (*input++)*4;
-			for(j=0;j<2;j++) 
-				VQ2TO4(iaptr, ibptr, icptr, idptr);
-		}
-	} else if (cinTable[currentHandle].samplesPerPixel==1) {
-		bbptr = (byte *)bptr;
-		for(i=0;i<two;i++) {
-			*bbptr++ = cinTable[currentHandle].gray[*input++];
-			*bbptr++ = cinTable[currentHandle].gray[*input++];
-			*bbptr++ = cinTable[currentHandle].gray[*input++];
-			*bbptr++ = cinTable[currentHandle].gray[*input]; input +=3;
-		}
-
-		bcptr = (byte *)vq4;
-		bdptr = (byte *)vq8;
-
-		for(i=0;i<four;i++) {
-			baptr = (byte *)vq2 + (*input++)*4;
-			bbptr = (byte *)vq2 + (*input++)*4;
-			for(j=0;j<2;j++) 
-				VQ2TO4(baptr,bbptr,bcptr,bdptr);
-		}
+	for(i=0;i<four;i++) {
+		iaptr = (unsigned int *)vq2 + (*input++)*4;
+		ibptr = (unsigned int *)vq2 + (*input++)*4;
+		for(j=0;j<2;j++) 
+			VQ2TO4(iaptr, ibptr, icptr, idptr);
 	}
 }
 
@@ -717,7 +672,7 @@ static void recurseQuad( long startX, long startY, long quadSize, long xOff, lon
 
 	if ( (startX >= lowx) && (startX+quadSize) <= (bigx) && (startY+quadSize) <= (bigy) && (startY >= lowy) && quadSize <= MAXSIZE) {
 		useY = startY;
-		scroff = cin.linbuf + (useY+((cinTable[currentHandle].CIN_HEIGHT-bigy)>>1)+yOff)*(cinTable[currentHandle].samplesPerLine) + (((startX+xOff))*cinTable[currentHandle].samplesPerPixel);
+		scroff = cin.linbuf + (useY+((cinTable[currentHandle].CIN_HEIGHT-bigy)>>1)+yOff)*(cinTable[currentHandle].samplesPerLine) + (((startX+xOff)) * 4);
 
 		cin.qStatus[0][cinTable[currentHandle].onQuad  ] = scroff;
 		cin.qStatus[1][cinTable[currentHandle].onQuad++] = scroff+offset;
@@ -797,7 +752,7 @@ static void readQuadInfo( byte *qData )
 	cinTable[currentHandle].CIN_HEIGHT = cinTable[currentHandle].ysize;
 	cinTable[currentHandle].CIN_WIDTH  = cinTable[currentHandle].xsize;
 
-	cinTable[currentHandle].samplesPerLine = cinTable[currentHandle].CIN_WIDTH*cinTable[currentHandle].samplesPerPixel;
+	cinTable[currentHandle].samplesPerLine = cinTable[currentHandle].CIN_WIDTH * 4;
 	cinTable[currentHandle].screenDelta = cinTable[currentHandle].CIN_HEIGHT*cinTable[currentHandle].samplesPerLine;
 
 	cinTable[currentHandle].t[0] = cinTable[currentHandle].screenDelta;
@@ -819,7 +774,7 @@ static void RoQPrepMcomp( long xoff, long yoff )
 {
 	long i, j, x, y, temp, temp2;
 
-	i=cinTable[currentHandle].samplesPerLine; j=cinTable[currentHandle].samplesPerPixel;
+	i=cinTable[currentHandle].samplesPerLine; j = 4;
 	if ( cinTable[currentHandle].xsize == (cinTable[currentHandle].ysize*4) ) { j = j+j; i = i+i; }
 	
 	for(y=0;y<16;y++) {
@@ -843,7 +798,6 @@ static void initRoQ()
 {
 	if (currentHandle < 0) return;
 
-	cinTable[currentHandle].samplesPerPixel = 4;
 	ROQ_GenYUVTables();
 	RllSetupTable();
 }
