@@ -8,7 +8,6 @@
 #include <windows.h>
 #endif
 #include <time.h>
-#include "gl_model.h"
 
 extern QCvar*	pausable;
 extern QCvar*	sv_flypitch;
@@ -2093,20 +2092,6 @@ void Host_Viewframe_f (void)
 	e->v.frame = f;		
 }
 
-
-void PrintFrameName(qhandle_t m, int frame)
-{
-	aliashdr_t 			*hdr;
-	maliasframedesc_t	*pframedesc;
-
-	hdr = (aliashdr_t *)Mod_Extradata(Mod_GetModel(m));
-	if (!hdr)
-		return;
-	pframedesc = &hdr->frames[frame];
-	
-	Con_Printf ("frame %i: %s\n", frame, pframedesc->name);
-}
-
 /*
 ==================
 Host_Viewnext_f
@@ -2126,7 +2111,7 @@ void Host_Viewnext_f (void)
 	if (e->v.frame >= Mod_GetNumFrames(m))
 		e->v.frame = Mod_GetNumFrames(m) - 1;
 
-	PrintFrameName (m, e->v.frame);		
+	Mod_PrintFrameName (m, e->v.frame);		
 }
 
 /*
@@ -2149,7 +2134,7 @@ void Host_Viewprev_f (void)
 	if (e->v.frame < 0)
 		e->v.frame = 0;
 
-	PrintFrameName (m, e->v.frame);		
+	Mod_PrintFrameName (m, e->v.frame);		
 }
 
 /*

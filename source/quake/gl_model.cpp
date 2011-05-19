@@ -1780,3 +1780,16 @@ int Mod_GetNumFrames(qhandle_t Handle)
 {
 	return Mod_GetModel(Handle)->numframes;
 }
+
+void Mod_PrintFrameName (qhandle_t m, int frame)
+{
+	aliashdr_t 			*hdr;
+	maliasframedesc_t	*pframedesc;
+
+	hdr = (aliashdr_t *)Mod_Extradata (Mod_GetModel(m));
+	if (!hdr)
+		return;
+	pframedesc = &hdr->frames[frame];
+	
+	Con_Printf ("frame %i: %s\n", frame, pframedesc->name);
+}
