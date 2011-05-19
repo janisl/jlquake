@@ -109,11 +109,6 @@ typedef struct {
 	unsigned int		roq_id;
 	long				screenDelta;
 
-	void ( *VQ0)(byte *status, void *qdata );
-	void ( *VQ1)(byte *status, void *qdata );
-	void ( *VQNormal)(byte *status, void *qdata );
-	void ( *VQBuffer)(byte *status, void *qdata );
-
 	long				samplesPerPixel;				// defaults to 2
 	byte*				gray;
 	unsigned int		xsize, ysize, maxsize, minsize;
@@ -876,9 +871,6 @@ static void readQuadInfo( byte *qData )
 	cinTable[currentHandle].samplesPerLine = cinTable[currentHandle].CIN_WIDTH*cinTable[currentHandle].samplesPerPixel;
 	cinTable[currentHandle].screenDelta = cinTable[currentHandle].CIN_HEIGHT*cinTable[currentHandle].samplesPerLine;
 
-	cinTable[currentHandle].VQ0 = cinTable[currentHandle].VQNormal;
-	cinTable[currentHandle].VQ1 = cinTable[currentHandle].VQBuffer;
-
 	cinTable[currentHandle].t[0] = cinTable[currentHandle].screenDelta;
 	cinTable[currentHandle].t[1] = -cinTable[currentHandle].screenDelta;
 
@@ -938,8 +930,6 @@ static void initRoQ()
 {
 	if (currentHandle < 0) return;
 
-	cinTable[currentHandle].VQNormal = (void (*)(byte *, void *))blitVQQuad32fs;
-	cinTable[currentHandle].VQBuffer = (void (*)(byte *, void *))blitVQQuad32fs;
 	cinTable[currentHandle].samplesPerPixel = 4;
 	ROQ_GenYUVTables();
 	RllSetupTable();
@@ -1020,12 +1010,12 @@ redump:
 			if ((cinTable[currentHandle].numQuads&1)) {
 				cinTable[currentHandle].normalBuffer0 = cinTable[currentHandle].t[1];
 				RoQPrepMcomp( cinTable[currentHandle].roqF0, cinTable[currentHandle].roqF1 );
-				cinTable[currentHandle].VQ1( (byte *)cin.qStatus[1], framedata);
+				blitVQQuad32fs(cin.qStatus[1], framedata);
 				cinTable[currentHandle].buf = 	cin.linbuf + cinTable[currentHandle].screenDelta;
 			} else {
 				cinTable[currentHandle].normalBuffer0 = cinTable[currentHandle].t[0];
 				RoQPrepMcomp( cinTable[currentHandle].roqF0, cinTable[currentHandle].roqF1 );
-				cinTable[currentHandle].VQ0( (byte *)cin.qStatus[0], framedata );
+				blitVQQuad32fs(cin.qStatus[0], framedata );
 				cinTable[currentHandle].buf = 	cin.linbuf;
 			}
 			if (cinTable[currentHandle].numQuads == 0) {		// first frame
