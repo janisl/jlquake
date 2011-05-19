@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_parse.c  -- parse a message received from the server
 
 #include "quakedef.h"
-#include "glquake.h"
 
 char *svc_strings[] =
 {
@@ -258,10 +257,14 @@ void Model_NextDownload (void)
 	R_NewMap ();
 	Hunk_Check ();		// make sure nothing is hurt
 
+	int CheckSum1;
+	int CheckSum2;
+	CM_MapChecksums(CheckSum1, CheckSum2);
+
 	// done with modellist, request first of static signon messages
 	cls.netchan.message.WriteByte(clc_stringcmd);
 //	cls.netchan.message.WriteString2(va("prespawn %i 0 %i", cl.servercount, cl.worldmodel->checksum2));
-	cls.netchan.message.WriteString2(va(prespawn_name, cl.servercount, Mod_GetModel(cl.worldmodel)->checksum2));
+	cls.netchan.message.WriteString2(va(prespawn_name, cl.servercount, CheckSum2));
 }
 
 /*
