@@ -1773,7 +1773,7 @@ void CL_UpdateEffects(void)
 					cl.Effects[index].Smoke.time_amount -= smoketime;
 				}
 
-				if (ent->frame >= Mod_GetModel(ent->model)->numframes)
+				if (ent->frame >= Mod_GetNumFrames(ent->model))
 				{
 					CL_FreeEffect(index);
 				}
@@ -1790,7 +1790,7 @@ void CL_UpdateEffects(void)
 					ent->origin[2] -= (frametime/smoketime) * cl.Effects[index].Smoke.velocity[2];
 
 					ent->frame += i;
-					if (ent->frame < Mod_GetModel(ent->model)->numframes)
+					if (ent->frame < Mod_GetNumFrames(ent->model))
 					{
 						CL_LinkEntity(ent);
 					}
@@ -1852,7 +1852,7 @@ void CL_UpdateEffects(void)
 				}
 
 
-				if (ent->frame >= Mod_GetModel(ent->model)->numframes)
+				if (ent->frame >= Mod_GetNumFrames(ent->model))
 				{
 					CL_FreeEffect(index);
 				}
@@ -1874,7 +1874,7 @@ void CL_UpdateEffects(void)
 				{
 					if (!cl.Effects[index].Flash.reverse)
 					{
-						if (ent->frame >= Mod_GetModel(ent->model)->numframes-1)  // Ran through forward animation
+						if (ent->frame >= Mod_GetNumFrames(ent->model) - 1)  // Ran through forward animation
 						{
 							cl.Effects[index].Flash.reverse = 1;
 							ent->frame--;
@@ -1944,7 +1944,7 @@ void CL_UpdateEffects(void)
 				}
 				cur_frame = ent->frame;
 
-				if (cur_frame >= Mod_GetModel(ent->model)->numframes)
+				if (cur_frame >= Mod_GetNumFrames(ent->model))
 				{
 					CL_FreeEffect(index);
 					break;
@@ -2071,7 +2071,7 @@ void CL_UpdateEffects(void)
 								}
 
 
-								if (ent->frame >= Mod_GetModel(ent->model)->numframes)
+								if (ent->frame >= Mod_GetNumFrames(ent->model))
 								{
 									cl.Effects[index].Xbow.state[i] = 2;//if anim is over, set me to inactive state
 								}

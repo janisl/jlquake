@@ -137,5 +137,6 @@ void R_AddRefEntToScene(refEntity_t* Ent);
 void	Mod_Init (void);
 void	Mod_ClearAll (void);
 qhandle_t Mod_ForName (char *name, qboolean crash);
+int Mod_GetNumFrames(qhandle_t Handle);
 
 extern	QCvar*	gl_doubleeyes;

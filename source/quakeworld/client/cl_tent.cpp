@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_tent.c -- client side temporary entities
 
 #include "quakedef.h"
-#include "gl_model.h"
 
 
 #define	MAX_BEAMS	8
@@ -412,7 +411,7 @@ void CL_UpdateExplosions (void)
 		if (!ex->model)
 			continue;
 		f = 10*(cl.time - ex->start);
-		if (f >= Mod_GetModel(ex->model)->numframes)
+		if (f >= Mod_GetNumFrames(ex->model))
 		{
 			ex->model = 0;
 			continue;

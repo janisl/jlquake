@@ -1775,3 +1775,8 @@ model_t* Mod_GetModel(qhandle_t handle)
 	}
 	return &mod_known[handle];
 }
+
+int Mod_GetNumFrames(qhandle_t Handle)
+{
+	return Mod_GetModel(Handle)->numframes;
+}

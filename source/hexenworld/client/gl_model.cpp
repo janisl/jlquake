@@ -2112,3 +2112,8 @@ void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float Sca
 	Out[1] = -(ScaleY - 1.0) * (AliasHdr->scale[1] * 127.95 + AliasHdr->scale_origin[1]);
 	Out[2] = -(ScaleZ - 1.0) * (ScaleZOrigin * 2.0 * AliasHdr->scale[2] * 127.95 + AliasHdr->scale_origin[2]);
 }
+
+int Mod_GetNumFrames(qhandle_t Handle)
+{
+	return Mod_GetModel(Handle)->numframes;
+}

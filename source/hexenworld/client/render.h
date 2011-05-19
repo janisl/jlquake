@@ -129,3 +129,5 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 float R_CalcEntityLight(refEntity_t* e);
 void R_ClearScene();
 void R_AddRefEntToScene(refEntity_t* Ent);
+
+int Mod_GetNumFrames(qhandle_t Handle);
