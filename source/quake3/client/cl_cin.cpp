@@ -118,7 +118,7 @@ typedef struct {
 	byte*				gray;
 	unsigned int		xsize, ysize, maxsize, minsize;
 
-	qboolean			half, smootheddouble, inMemory;
+	qboolean			smootheddouble, inMemory;
 	long				normalBuffer0;
 	long				roq_flags;
 	long				roqF0;
@@ -700,234 +700,168 @@ static void decodeCodeBook( byte *input, unsigned short roq_flags )
 
 	bptr = (unsigned short *)vq2;
 
-	if (!cinTable[currentHandle].half) {
-		if (!cinTable[currentHandle].smootheddouble) {
+	if (!cinTable[currentHandle].smootheddouble) {
 //
 // normal height
 //
-			if (cinTable[currentHandle].samplesPerPixel==2) {
-				for(i=0;i<two;i++) {
-					y0 = (long)*input++;
-					y1 = (long)*input++;
-					y2 = (long)*input++;
-					y3 = (long)*input++;
-					cr = (long)*input++;
-					cb = (long)*input++;
-					*bptr++ = yuv_to_rgb( y0, cr, cb );
-					*bptr++ = yuv_to_rgb( y1, cr, cb );
-					*bptr++ = yuv_to_rgb( y2, cr, cb );
-					*bptr++ = yuv_to_rgb( y3, cr, cb );
-				}
-
-				cptr = (unsigned short *)vq4;
-				dptr = (unsigned short *)vq8;
-		
-				for(i=0;i<four;i++) {
-					aptr = (unsigned short *)vq2 + (*input++)*4;
-					bptr = (unsigned short *)vq2 + (*input++)*4;
-					for(j=0;j<2;j++)
-						VQ2TO4(aptr,bptr,cptr,dptr);
-				}
-			} else if (cinTable[currentHandle].samplesPerPixel==4) {
-				ibptr = (unsigned int *)bptr;
-				for(i=0;i<two;i++) {
-					y0 = (long)*input++;
-					y1 = (long)*input++;
-					y2 = (long)*input++;
-					y3 = (long)*input++;
-					cr = (long)*input++;
-					cb = (long)*input++;
-					*ibptr++ = yuv_to_rgb24( y0, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y1, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y2, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y3, cr, cb );
-				}
-
-				icptr = (unsigned int *)vq4;
-				idptr = (unsigned int *)vq8;
-	
-				for(i=0;i<four;i++) {
-					iaptr = (unsigned int *)vq2 + (*input++)*4;
-					ibptr = (unsigned int *)vq2 + (*input++)*4;
-					for(j=0;j<2;j++) 
-						VQ2TO4(iaptr, ibptr, icptr, idptr);
-				}
-			} else if (cinTable[currentHandle].samplesPerPixel==1) {
-				bbptr = (byte *)bptr;
-				for(i=0;i<two;i++) {
-					*bbptr++ = cinTable[currentHandle].gray[*input++];
-					*bbptr++ = cinTable[currentHandle].gray[*input++];
-					*bbptr++ = cinTable[currentHandle].gray[*input++];
-					*bbptr++ = cinTable[currentHandle].gray[*input]; input +=3;
-				}
-
-				bcptr = (byte *)vq4;
-				bdptr = (byte *)vq8;
-	
-				for(i=0;i<four;i++) {
-					baptr = (byte *)vq2 + (*input++)*4;
-					bbptr = (byte *)vq2 + (*input++)*4;
-					for(j=0;j<2;j++) 
-						VQ2TO4(baptr,bbptr,bcptr,bdptr);
-				}
-			}
-		} else {
-//
-// double height, smoothed
-//
-			if (cinTable[currentHandle].samplesPerPixel==2) {
-				for(i=0;i<two;i++) {
-					y0 = (long)*input++;
-					y1 = (long)*input++;
-					y2 = (long)*input++;
-					y3 = (long)*input++;
-					cr = (long)*input++;
-					cb = (long)*input++;
-					*bptr++ = yuv_to_rgb( y0, cr, cb );
-					*bptr++ = yuv_to_rgb( y1, cr, cb );
-					*bptr++ = yuv_to_rgb( ((y0*3)+y2)/4, cr, cb );
-					*bptr++ = yuv_to_rgb( ((y1*3)+y3)/4, cr, cb );
-					*bptr++ = yuv_to_rgb( (y0+(y2*3))/4, cr, cb );
-					*bptr++ = yuv_to_rgb( (y1+(y3*3))/4, cr, cb );
-					*bptr++ = yuv_to_rgb( y2, cr, cb );
-					*bptr++ = yuv_to_rgb( y3, cr, cb );
-				}
-
-				cptr = (unsigned short *)vq4;
-				dptr = (unsigned short *)vq8;
-		
-				for(i=0;i<four;i++) {
-					aptr = (unsigned short *)vq2 + (*input++)*8;
-					bptr = (unsigned short *)vq2 + (*input++)*8;
-					for(j=0;j<2;j++) {
-						VQ2TO4(aptr,bptr,cptr,dptr);
-						VQ2TO4(aptr,bptr,cptr,dptr);
-					}
-				}
-			} else if (cinTable[currentHandle].samplesPerPixel==4) {
-				ibptr = (unsigned int *)bptr;
-				for(i=0;i<two;i++) {
-					y0 = (long)*input++;
-					y1 = (long)*input++;
-					y2 = (long)*input++;
-					y3 = (long)*input++;
-					cr = (long)*input++;
-					cb = (long)*input++;
-					*ibptr++ = yuv_to_rgb24( y0, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y1, cr, cb );
-					*ibptr++ = yuv_to_rgb24( ((y0*3)+y2)/4, cr, cb );
-					*ibptr++ = yuv_to_rgb24( ((y1*3)+y3)/4, cr, cb );
-					*ibptr++ = yuv_to_rgb24( (y0+(y2*3))/4, cr, cb );
-					*ibptr++ = yuv_to_rgb24( (y1+(y3*3))/4, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y2, cr, cb );
-					*ibptr++ = yuv_to_rgb24( y3, cr, cb );
-				}
-
-				icptr = (unsigned int *)vq4;
-				idptr = (unsigned int *)vq8;
-	
-				for(i=0;i<four;i++) {
-					iaptr = (unsigned int *)vq2 + (*input++)*8;
-					ibptr = (unsigned int *)vq2 + (*input++)*8;
-					for(j=0;j<2;j++) {
-						VQ2TO4(iaptr, ibptr, icptr, idptr);
-						VQ2TO4(iaptr, ibptr, icptr, idptr);
-					}
-				}
-			} else if (cinTable[currentHandle].samplesPerPixel==1) {
-				bbptr = (byte *)bptr;
-				for(i=0;i<two;i++) {
-					y0 = (long)*input++;
-					y1 = (long)*input++;
-					y2 = (long)*input++;
-					y3 = (long)*input; input+= 3;
-					*bbptr++ = cinTable[currentHandle].gray[y0];
-					*bbptr++ = cinTable[currentHandle].gray[y1];
-					*bbptr++ = cinTable[currentHandle].gray[((y0*3)+y2)/4];
-					*bbptr++ = cinTable[currentHandle].gray[((y1*3)+y3)/4];
-					*bbptr++ = cinTable[currentHandle].gray[(y0+(y2*3))/4];
-					*bbptr++ = cinTable[currentHandle].gray[(y1+(y3*3))/4];						
-					*bbptr++ = cinTable[currentHandle].gray[y2];
-					*bbptr++ = cinTable[currentHandle].gray[y3];
-				}
-
-				bcptr = (byte *)vq4;
-				bdptr = (byte *)vq8;
-	
-				for(i=0;i<four;i++) {
-					baptr = (byte *)vq2 + (*input++)*8;
-					bbptr = (byte *)vq2 + (*input++)*8;
-					for(j=0;j<2;j++) {
-						VQ2TO4(baptr,bbptr,bcptr,bdptr);
-						VQ2TO4(baptr,bbptr,bcptr,bdptr);
-					}
-				}
-			}			
-		}
-	} else {
-//
-// 1/4 screen
-//
 		if (cinTable[currentHandle].samplesPerPixel==2) {
 			for(i=0;i<two;i++) {
-				y0 = (long)*input; input+=2;
-				y2 = (long)*input; input+=2;
+				y0 = (long)*input++;
+				y1 = (long)*input++;
+				y2 = (long)*input++;
+				y3 = (long)*input++;
 				cr = (long)*input++;
 				cb = (long)*input++;
 				*bptr++ = yuv_to_rgb( y0, cr, cb );
+				*bptr++ = yuv_to_rgb( y1, cr, cb );
 				*bptr++ = yuv_to_rgb( y2, cr, cb );
+				*bptr++ = yuv_to_rgb( y3, cr, cb );
 			}
 
 			cptr = (unsigned short *)vq4;
 			dptr = (unsigned short *)vq8;
 	
 			for(i=0;i<four;i++) {
-				aptr = (unsigned short *)vq2 + (*input++)*2;
-				bptr = (unsigned short *)vq2 + (*input++)*2;
-				for(j=0;j<2;j++) { 
-					VQ2TO2(aptr,bptr,cptr,dptr);
-				}
+				aptr = (unsigned short *)vq2 + (*input++)*4;
+				bptr = (unsigned short *)vq2 + (*input++)*4;
+				for(j=0;j<2;j++)
+					VQ2TO4(aptr,bptr,cptr,dptr);
 			}
-		} else if (cinTable[currentHandle].samplesPerPixel == 1) {
-			bbptr = (byte *)bptr;
-				
+		} else if (cinTable[currentHandle].samplesPerPixel==4) {
+			ibptr = (unsigned int *)bptr;
 			for(i=0;i<two;i++) {
-				*bbptr++ = cinTable[currentHandle].gray[*input]; input+=2;
-				*bbptr++ = cinTable[currentHandle].gray[*input]; input+=4;
-			}
-
-			bcptr = (byte *)vq4;
-			bdptr = (byte *)vq8;
-	
-			for(i=0;i<four;i++) {
-				baptr = (byte *)vq2 + (*input++)*2;
-				bbptr = (byte *)vq2 + (*input++)*2;
-				for(j=0;j<2;j++) { 
-					VQ2TO2(baptr,bbptr,bcptr,bdptr);
-				}
-			}			
-		} else if (cinTable[currentHandle].samplesPerPixel == 4) {
-			ibptr = (unsigned int *) bptr;
-			for(i=0;i<two;i++) {
-				y0 = (long)*input; input+=2;
-				y2 = (long)*input; input+=2;
+				y0 = (long)*input++;
+				y1 = (long)*input++;
+				y2 = (long)*input++;
+				y3 = (long)*input++;
 				cr = (long)*input++;
 				cb = (long)*input++;
 				*ibptr++ = yuv_to_rgb24( y0, cr, cb );
+				*ibptr++ = yuv_to_rgb24( y1, cr, cb );
 				*ibptr++ = yuv_to_rgb24( y2, cr, cb );
+				*ibptr++ = yuv_to_rgb24( y3, cr, cb );
 			}
 
 			icptr = (unsigned int *)vq4;
 			idptr = (unsigned int *)vq8;
-	
+
 			for(i=0;i<four;i++) {
-				iaptr = (unsigned int *)vq2 + (*input++)*2;
-				ibptr = (unsigned int *)vq2 + (*input++)*2;
-				for(j=0;j<2;j++) { 
-					VQ2TO2(iaptr,ibptr,icptr,idptr);
-				}
+				iaptr = (unsigned int *)vq2 + (*input++)*4;
+				ibptr = (unsigned int *)vq2 + (*input++)*4;
+				for(j=0;j<2;j++) 
+					VQ2TO4(iaptr, ibptr, icptr, idptr);
+			}
+		} else if (cinTable[currentHandle].samplesPerPixel==1) {
+			bbptr = (byte *)bptr;
+			for(i=0;i<two;i++) {
+				*bbptr++ = cinTable[currentHandle].gray[*input++];
+				*bbptr++ = cinTable[currentHandle].gray[*input++];
+				*bbptr++ = cinTable[currentHandle].gray[*input++];
+				*bbptr++ = cinTable[currentHandle].gray[*input]; input +=3;
+			}
+
+			bcptr = (byte *)vq4;
+			bdptr = (byte *)vq8;
+
+			for(i=0;i<four;i++) {
+				baptr = (byte *)vq2 + (*input++)*4;
+				bbptr = (byte *)vq2 + (*input++)*4;
+				for(j=0;j<2;j++) 
+					VQ2TO4(baptr,bbptr,bcptr,bdptr);
 			}
 		}
+	} else {
+//
+// double height, smoothed
+//
+		if (cinTable[currentHandle].samplesPerPixel==2) {
+			for(i=0;i<two;i++) {
+				y0 = (long)*input++;
+				y1 = (long)*input++;
+				y2 = (long)*input++;
+				y3 = (long)*input++;
+				cr = (long)*input++;
+				cb = (long)*input++;
+				*bptr++ = yuv_to_rgb( y0, cr, cb );
+				*bptr++ = yuv_to_rgb( y1, cr, cb );
+				*bptr++ = yuv_to_rgb( ((y0*3)+y2)/4, cr, cb );
+				*bptr++ = yuv_to_rgb( ((y1*3)+y3)/4, cr, cb );
+				*bptr++ = yuv_to_rgb( (y0+(y2*3))/4, cr, cb );
+				*bptr++ = yuv_to_rgb( (y1+(y3*3))/4, cr, cb );
+				*bptr++ = yuv_to_rgb( y2, cr, cb );
+				*bptr++ = yuv_to_rgb( y3, cr, cb );
+			}
+
+			cptr = (unsigned short *)vq4;
+			dptr = (unsigned short *)vq8;
+	
+			for(i=0;i<four;i++) {
+				aptr = (unsigned short *)vq2 + (*input++)*8;
+				bptr = (unsigned short *)vq2 + (*input++)*8;
+				for(j=0;j<2;j++) {
+					VQ2TO4(aptr,bptr,cptr,dptr);
+					VQ2TO4(aptr,bptr,cptr,dptr);
+				}
+			}
+		} else if (cinTable[currentHandle].samplesPerPixel==4) {
+			ibptr = (unsigned int *)bptr;
+			for(i=0;i<two;i++) {
+				y0 = (long)*input++;
+				y1 = (long)*input++;
+				y2 = (long)*input++;
+				y3 = (long)*input++;
+				cr = (long)*input++;
+				cb = (long)*input++;
+				*ibptr++ = yuv_to_rgb24( y0, cr, cb );
+				*ibptr++ = yuv_to_rgb24( y1, cr, cb );
+				*ibptr++ = yuv_to_rgb24( ((y0*3)+y2)/4, cr, cb );
+				*ibptr++ = yuv_to_rgb24( ((y1*3)+y3)/4, cr, cb );
+				*ibptr++ = yuv_to_rgb24( (y0+(y2*3))/4, cr, cb );
+				*ibptr++ = yuv_to_rgb24( (y1+(y3*3))/4, cr, cb );
+				*ibptr++ = yuv_to_rgb24( y2, cr, cb );
+				*ibptr++ = yuv_to_rgb24( y3, cr, cb );
+			}
+
+			icptr = (unsigned int *)vq4;
+			idptr = (unsigned int *)vq8;
+
+			for(i=0;i<four;i++) {
+				iaptr = (unsigned int *)vq2 + (*input++)*8;
+				ibptr = (unsigned int *)vq2 + (*input++)*8;
+				for(j=0;j<2;j++) {
+					VQ2TO4(iaptr, ibptr, icptr, idptr);
+					VQ2TO4(iaptr, ibptr, icptr, idptr);
+				}
+			}
+		} else if (cinTable[currentHandle].samplesPerPixel==1) {
+			bbptr = (byte *)bptr;
+			for(i=0;i<two;i++) {
+				y0 = (long)*input++;
+				y1 = (long)*input++;
+				y2 = (long)*input++;
+				y3 = (long)*input; input+= 3;
+				*bbptr++ = cinTable[currentHandle].gray[y0];
+				*bbptr++ = cinTable[currentHandle].gray[y1];
+				*bbptr++ = cinTable[currentHandle].gray[((y0*3)+y2)/4];
+				*bbptr++ = cinTable[currentHandle].gray[((y1*3)+y3)/4];
+				*bbptr++ = cinTable[currentHandle].gray[(y0+(y2*3))/4];
+				*bbptr++ = cinTable[currentHandle].gray[(y1+(y3*3))/4];						
+				*bbptr++ = cinTable[currentHandle].gray[y2];
+				*bbptr++ = cinTable[currentHandle].gray[y3];
+			}
+
+			bcptr = (byte *)vq4;
+			bdptr = (byte *)vq8;
+
+			for(i=0;i<four;i++) {
+				baptr = (byte *)vq2 + (*input++)*8;
+				bbptr = (byte *)vq2 + (*input++)*8;
+				for(j=0;j<2;j++) {
+					VQ2TO4(baptr,bbptr,bcptr,bdptr);
+					VQ2TO4(baptr,bbptr,bcptr,bdptr);
+				}
+			}
+		}			
 	}
 }
 
@@ -1039,7 +973,6 @@ static void readQuadInfo( byte *qData )
 	cinTable[currentHandle].samplesPerLine = cinTable[currentHandle].CIN_WIDTH*cinTable[currentHandle].samplesPerPixel;
 	cinTable[currentHandle].screenDelta = cinTable[currentHandle].CIN_HEIGHT*cinTable[currentHandle].samplesPerLine;
 
-	cinTable[currentHandle].half = qfalse;
 	cinTable[currentHandle].smootheddouble = qfalse;
 	
 	cinTable[currentHandle].VQ0 = cinTable[currentHandle].VQNormal;
@@ -1081,7 +1014,7 @@ static void RoQPrepMcomp( long xoff, long yoff )
 	long i, j, x, y, temp, temp2;
 
 	i=cinTable[currentHandle].samplesPerLine; j=cinTable[currentHandle].samplesPerPixel;
-	if ( cinTable[currentHandle].xsize == (cinTable[currentHandle].ysize*4) && !cinTable[currentHandle].half ) { j = j+j; i = i+i; }
+	if ( cinTable[currentHandle].xsize == (cinTable[currentHandle].ysize*4) ) { j = j+j; i = i+i; }
 	
 	for(y=0;y<16;y++) {
 		temp2 = (y+yoff-8)*i;
