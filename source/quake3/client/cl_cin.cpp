@@ -27,8 +27,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * $Archive: /MissionPack/code/client/cl_cin.c $
  *
- * cl_glconfig.hwtype trtypes 3dfx/ragepro need 256x256
- *
  *****************************************************************************/
 
 #include "client.h"
@@ -52,7 +50,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_VIDEO_HANDLES	16
 
-extern glconfig_t glConfig;
 extern	int		s_rawend;
 
 
@@ -876,22 +873,6 @@ static void readQuadInfo( byte *qData )
 
 	cinTable[currentHandle].drawX = cinTable[currentHandle].CIN_WIDTH;
 	cinTable[currentHandle].drawY = cinTable[currentHandle].CIN_HEIGHT;
-        
-	if (glConfig.maxTextureSize <= 256)
-	{
-		if (cinTable[currentHandle].drawX > 256)
-		{
-			cinTable[currentHandle].drawX = 256;
-		}
-		if (cinTable[currentHandle].drawY > 256)
-		{
-			cinTable[currentHandle].drawY = 256;
-		}
-	}
-#if defined(MACOS_X)
-	cinTable[currentHandle].drawX = 256;
-	cinTable[currentHandle].drawX = 256;
-#endif
 }
 
 /******************************************************************************
