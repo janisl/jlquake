@@ -1027,7 +1027,7 @@ void V_RenderView (void)
 
 		vid.buffer -= vid.rowbytes>>1;
 
-		r_refdef.vrect.height <<= 1;
+		r_refdef.height <<= 1;
 
 		vid.rowbytes >>= 1;
 		vid.aspect *= 2;

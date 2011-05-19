@@ -348,21 +348,24 @@ static void SCR_CalcRefdef (void)
 	size /= 100;
 
 	h = vid.height - sb_lines;
-	r_refdef.vrect.width = vid.width * size;
-	if (r_refdef.vrect.width < 96)
+	r_refdef.width = vid.width * size;
+	if (r_refdef.width < 96)
 	{
 		size = 96.0 / vid.width;
-		r_refdef.vrect.width = 96;	// min for icons
+		r_refdef.width = 96;	// min for icons
 	}
 
-	r_refdef.vrect.height = vid.height * size;
-	if (r_refdef.vrect.height > vid.height - sb_lines)
-		r_refdef.vrect.height = vid.height - sb_lines;
+	r_refdef.height = vid.height * size;
+	if (r_refdef.height > vid.height - sb_lines)
+		r_refdef.height = vid.height - sb_lines;
 
-	r_refdef.vrect.x = (vid.width - r_refdef.vrect.width)/2;
-	r_refdef.vrect.y = (h - r_refdef.vrect.height)/2;
+	r_refdef.x = (vid.width - r_refdef.width)/2;
+	r_refdef.y = (h - r_refdef.height)/2;
 
-	scr_vrect = r_refdef.vrect;
+	scr_vrect.x = r_refdef.x;
+	scr_vrect.y = r_refdef.y;
+	scr_vrect.width = r_refdef.width;
+	scr_vrect.height = r_refdef.height;
 }
 
 
@@ -834,18 +837,18 @@ void SCR_BringDownConsole (void)
 
 void SCR_TileClear (void)
 {
-	if (r_refdef.vrect.x > 0)
+	if (r_refdef.x > 0)
 	{
-		Draw_TileClear (0,0,r_refdef.vrect.x,vid.height);
-		Draw_TileClear (r_refdef.vrect.x + r_refdef.vrect.width, 0
-			, vid.width - r_refdef.vrect.x + r_refdef.vrect.width,vid.height);
+		Draw_TileClear (0,0,r_refdef.x,vid.height);
+		Draw_TileClear (r_refdef.x + r_refdef.width, 0
+			, vid.width - r_refdef.x + r_refdef.width,vid.height);
 	}
-//	if (r_refdef.vrect.height < vid.height-44)
+//	if (r_refdef.height < vid.height-44)
 	{
-		Draw_TileClear (r_refdef.vrect.x, 0, r_refdef.vrect.width, r_refdef.vrect.y);
-		Draw_TileClear (r_refdef.vrect.x, r_refdef.vrect.y + r_refdef.vrect.height,
-			r_refdef.vrect.width,
-			vid.height - (r_refdef.vrect.y + r_refdef.vrect.height) );
+		Draw_TileClear (r_refdef.x, 0, r_refdef.width, r_refdef.y);
+		Draw_TileClear (r_refdef.x, r_refdef.y + r_refdef.height,
+			r_refdef.width,
+			vid.height - (r_refdef.y + r_refdef.height) );
 	}
 }
 

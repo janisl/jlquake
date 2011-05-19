@@ -1136,10 +1136,10 @@ void R_SetupGL (void)
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
 	// JACK: Changes for non-scaled
-	x = r_refdef.vrect.x * glwidth/vid.width /*320*/;
-	x2 = (r_refdef.vrect.x + r_refdef.vrect.width) * glwidth/vid.width /*320*/;
-	y = (vid.height/*200*/-r_refdef.vrect.y) * glheight/vid.height /*200*/;
-	y2 = (vid.height/*200*/ - (r_refdef.vrect.y + r_refdef.vrect.height)) * glheight/vid.height /*200*/;
+	x = r_refdef.x * glwidth/vid.width /*320*/;
+	x2 = (r_refdef.x + r_refdef.width) * glwidth/vid.width /*320*/;
+	y = (vid.height/*200*/-r_refdef.y) * glheight/vid.height /*200*/;
+	y2 = (vid.height/*200*/ - (r_refdef.y + r_refdef.height)) * glheight/vid.height /*200*/;
 
 	// fudge around because of frac screen scale
 	if (x > 0)
@@ -1161,8 +1161,8 @@ void R_SetupGL (void)
 	}
 
 	qglViewport (glx + x, gly + y2, w, h);
-    screenaspect = (float)r_refdef.vrect.width/r_refdef.vrect.height;
-	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*180/M_PI;
+    screenaspect = (float)r_refdef.width/r_refdef.height;
+	yfov = 2*atan((float)r_refdef.height/r_refdef.width)*180/M_PI;
     MYgluPerspective (yfov,  screenaspect,  4,  4096);
 
 	if (mirror)

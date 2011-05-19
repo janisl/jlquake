@@ -108,10 +108,10 @@ void R_Envmap_f (void)
 	qglReadBuffer  (GL_FRONT);
 	envmap = true;
 
-	r_refdef.vrect.x = 0;
-	r_refdef.vrect.y = 0;
-	r_refdef.vrect.width = 256;
-	r_refdef.vrect.height = 256;
+	r_refdef.x = 0;
+	r_refdef.y = 0;
+	r_refdef.width = 256;
+	r_refdef.height = 256;
 
 	r_refdef.viewangles[0] = 0;
 	r_refdef.viewangles[1] = 0;

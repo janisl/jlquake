@@ -922,7 +922,7 @@ void V_RenderView (void)
 			r_refdef.vieworg[i] += 2*right[i]*lcd_x->value;
 		R_RenderView ();
 
-		r_refdef.vrect.height <<= 1;
+		r_refdef.height <<= 1;
 	}
 	else
 	{
