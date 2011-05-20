@@ -17,15 +17,19 @@
 
 class QCinematic : public QInterface
 {
+public:
+	byte*		buf;
+
+	QCinematic()
+	: buf(NULL)
+	{}
+	~QCinematic();
 };
 
 class QCinematicCin : public QCinematic
 {
 public:
-	byte*		buf;
-
 	QCinematicCin()
-	: buf(NULL)
 	{}
 	~QCinematicCin();
 };
@@ -33,10 +37,7 @@ public:
 class QCinematicPcx : public QCinematic
 {
 public:
-	byte*		buf;
-
 	QCinematicPcx()
-	: buf(NULL)
 	{}
 	~QCinematicPcx();
 };
