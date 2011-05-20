@@ -15,18 +15,18 @@
 //**
 //**************************************************************************
 
-#ifndef _CLIENT_H
-#define _CLIENT_H
+class QCinematic : public QInterface
+{
+};
 
-#include "../core/core.h"
+class QCinematicCin : public QCinematic
+{
+};
 
-#include "sound_public.h"
-#include "render_public.h"
-#include "input_keycodes.h"
-#include "input_public.h"
-#include "cinematic_public.h"
+class QCinematicPcx : public QCinematic
+{
+};
 
-//	Called by Windows driver.
-void Key_ClearStates();
-
-#endif
+class QCinematicRoq : public QCinematic
+{
+};

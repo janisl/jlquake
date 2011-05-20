@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 #include "../../client/sound_local.h"
+#include "../../client/cinematic_local.h"
 
 #define MAXSIZE				8
 #define MINSIZE				4
@@ -88,6 +89,8 @@ typedef struct {
 } cinematics_t;
 
 typedef struct {
+	QCinematicRoq*		Cin;
+
 	char				fileName[MAX_OSPATH];
 	int					CIN_WIDTH, CIN_HEIGHT;
 	int					xpos, ypos, width, height;
@@ -1005,6 +1008,8 @@ static void RoQShutdown( void ) {
 		CL_handle = -1;
 	}
 	cinTable[currentHandle].fileName[0] = 0;
+	delete cinTable[currentHandle].Cin;
+	cinTable[currentHandle].Cin = NULL;
 	currentHandle = -1;
 }
 
@@ -1146,6 +1151,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	cin.currentHandle = currentHandle;
 
+	cinTable[currentHandle].Cin = new QCinematicRoq();
 	QStr::Cpy(cinTable[currentHandle].fileName, name);
 
 	cinTable[currentHandle].ROQSize = 0;

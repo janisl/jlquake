@@ -157,6 +157,22 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\cinematic_cin.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cinematic_main.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cinematic_pcx.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\cinematic_roq.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\input_keys.cpp"
 				>
 			</File>

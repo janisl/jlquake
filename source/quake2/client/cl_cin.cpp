@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "client.h"
 #include "../../client/render_local.h"
+#include "../../client/cinematic_local.h"
 
 typedef struct
 {
@@ -28,6 +29,9 @@ typedef struct
 
 typedef struct
 {
+	QCinematicCin*	Cin;
+	QCinematicPcx*	Pcx;
+
 	int		s_rate;
 	int		s_width;
 	int		s_channels;
@@ -81,6 +85,16 @@ void SCR_StopCinematic (void)
 	{
 		Mem_Free (cin.hnodes1);
 		cin.hnodes1 = NULL;
+	}
+	if (cin.Cin)
+	{
+		delete cin.Cin;
+		cin.Cin = NULL;
+	}
+	if (cin.Pcx)
+	{
+		delete cin.Pcx;
+		cin.Pcx = NULL;
 	}
 }
 
@@ -484,6 +498,7 @@ void SCR_PlayCinematic (char *arg)
 	dot = strstr (arg, ".");
 	if (dot && !QStr::Cmp(dot, ".pcx"))
 	{	// static pcx image
+		cin.Pcx = new QCinematicPcx();
 		QStr::Sprintf (name, sizeof(name), "pics/%s", arg);
 		R_LoadPCX(name, &cin.pic, &palette, &cin.width, &cin.height);
 		cl.cinematicframe = -1;
@@ -517,6 +532,7 @@ void SCR_PlayCinematic (char *arg)
 
 	cls.state = ca_active;
 
+	cin.Cin = new QCinematicCin();
 	FS_Read (&width, 4, cl.cinematic_file);
 	FS_Read (&height, 4, cl.cinematic_file);
 	cin.width = LittleLong(width);

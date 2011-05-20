@@ -14,19 +14,3 @@
 //**  GNU General Public License for more details.
 //**
 //**************************************************************************
-
-#ifndef _CLIENT_H
-#define _CLIENT_H
-
-#include "../core/core.h"
-
-#include "sound_public.h"
-#include "render_public.h"
-#include "input_keycodes.h"
-#include "input_public.h"
-#include "cinematic_public.h"
-
-//	Called by Windows driver.
-void Key_ClearStates();
-
-#endif

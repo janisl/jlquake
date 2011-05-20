@@ -1,4 +1,8 @@
 set(CLIENT_FILES
+	cinematic_cin.cpp
+	cinematic_main.cpp
+	cinematic_pcx.cpp
+	cinematic_roq.cpp
 	input_keys.cpp
 	input_main.cpp
 	input_unix.cpp
