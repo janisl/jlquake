@@ -90,6 +90,7 @@ public:
 	QCinematicPcx()
 	{}
 	~QCinematicPcx();
+	bool Open(const char* FileName);
 };
 
 class QCinematicRoq : public QCinematic

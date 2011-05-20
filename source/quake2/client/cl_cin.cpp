@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "client.h"
-#include "../../client/render_local.h"
 #include "../../client/cinematic_local.h"
 
 typedef struct
@@ -151,7 +150,6 @@ SCR_PlayCinematic
 */
 void SCR_PlayCinematic (char *arg)
 {
-	byte	*palette;
 	char	name[MAX_OSPATH], *dot;
 
 	// make sure CD isn't playing music
@@ -162,28 +160,13 @@ void SCR_PlayCinematic (char *arg)
 	{	// static pcx image
 		cin.Pcx = new QCinematicPcx();
 		QStr::Sprintf (name, sizeof(name), "pics/%s", arg);
-		byte* pic;
-		R_LoadPCX(name, &pic, &palette, &cin.Pcx->width, &cin.Pcx->height);
 		cl.cinematictime = 1;
 		SCR_EndLoadingPlaque ();
 		cls.state = ca_active;
-		if (!pic)
+		if (!cin.Pcx->Open(name))
 		{
 			Com_Printf ("%s not found.\n", name);
 			cl.cinematictime = 0;
-		}
-		else
-		{
-			cin.Pcx->buf = new byte[cin.Pcx->width * cin.Pcx->height * 4];
-			for (int i = 0; i < cin.Pcx->width * cin.Pcx->height; i++)
-			{
-				cin.Pcx->buf[i * 4 + 0] = palette[pic[i] * 3 + 0];
-				cin.Pcx->buf[i * 4 + 1] = palette[pic[i] * 3 + 1];
-				cin.Pcx->buf[i * 4 + 2] = palette[pic[i] * 3 + 2];
-				cin.Pcx->buf[i * 4 + 3] = 255;
-			}
-			delete[] pic;
-			delete[] palette;
 		}
 		return;
 	}

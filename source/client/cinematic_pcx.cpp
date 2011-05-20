@@ -19,6 +19,7 @@
 
 #include "client.h"
 #include "cinematic_local.h"
+#include "render_local.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -51,4 +52,34 @@ QCinematicPcx::~QCinematicPcx()
 		delete[] buf;
 		buf = NULL;
 	}
+}
+
+//==========================================================================
+//
+//	QCinematicPcx::Open
+//
+//==========================================================================
+
+bool QCinematicPcx::Open(const char* FileName)
+{
+	byte* pic;
+	byte* palette;
+	R_LoadPCX(FileName, &pic, &palette, &width, &height);
+	if (!pic)
+	{
+		return false;
+	}
+
+	buf = new byte[width * height * 4];
+	for (int i = 0; i < width * height; i++)
+	{
+		buf[i * 4 + 0] = palette[pic[i] * 3 + 0];
+		buf[i * 4 + 1] = palette[pic[i] * 3 + 1];
+		buf[i * 4 + 2] = palette[pic[i] * 3 + 2];
+		buf[i * 4 + 3] = 255;
+	}
+
+	delete[] pic;
+	delete[] palette;
+	return true;
 }
