@@ -117,7 +117,6 @@ typedef struct {
 	long				roqFPS;
 	int					playonwalls;
 	byte*				buf;
-	long				drawX, drawY;
 } cin_cache;
 
 static cinematics_t		cin;
@@ -518,41 +517,6 @@ static void ROQ_GenYUVTables( void )
 	*d++ = b[1];	\
 	a += 2; b += 2; }
  
-#define VQ2TO2(a,b,c,d) { \
-	*c++ = *a;	\
-	*d++ = *a;	\
-	*d++ = *a;	\
-	*c++ = *b;	\
-	*d++ = *b;	\
-	*d++ = *b;	\
-	*d++ = *a;	\
-	*d++ = *a;	\
-	*d++ = *b;	\
-	*d++ = *b;	\
-	a++; b++; }
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static unsigned short yuv_to_rgb( long y, long u, long v )
-{ 
-	long r,g,b,YY = (long)(ROQ_YY_tab[(y)]);
-
-	r = (YY + ROQ_VR_tab[v]) >> 9;
-	g = (YY + ROQ_UG_tab[u] + ROQ_VG_tab[v]) >> 8;
-	b = (YY + ROQ_UB_tab[u]) >> 9;
-	
-	if (r<0) r = 0; if (g<0) g = 0; if (b<0) b = 0;
-	if (r > 31) r = 31; if (g > 63) g = 63; if (b > 31) b = 31;
-
-	return (unsigned short)((r<<11)+(g<<5)+(b));
-}
-
 /******************************************************************************
 *
 * Function:		
@@ -757,9 +721,6 @@ static void readQuadInfo( byte *qData )
 
 	cinTable[currentHandle].t[0] = cinTable[currentHandle].screenDelta;
 	cinTable[currentHandle].t[1] = -cinTable[currentHandle].screenDelta;
-
-	cinTable[currentHandle].drawX = cinTable[currentHandle].CIN_WIDTH;
-	cinTable[currentHandle].drawY = cinTable[currentHandle].CIN_HEIGHT;
 }
 
 /******************************************************************************
@@ -1282,62 +1243,7 @@ void CIN_DrawCinematic (int handle) {
 	buf = cinTable[handle].buf;
 	SCR_AdjustFrom640( &x, &y, &w, &h );
 
-	if (cinTable[handle].dirty && (cinTable[handle].CIN_WIDTH != cinTable[handle].drawX || cinTable[handle].CIN_HEIGHT != cinTable[handle].drawY)) {
-		int ix, iy, *buf2, *buf3, xm, ym, ll;
-                
-		xm = cinTable[handle].CIN_WIDTH/256;
-		ym = cinTable[handle].CIN_HEIGHT/256;
-                ll = 8;
-                if (cinTable[handle].CIN_WIDTH==512) {
-                    ll = 9;
-                }
-                
-		buf3 = (int*)buf;
-		buf2 = (int*)Hunk_AllocateTempMemory( 256*256*4 );
-                if (xm==2 && ym==2) {
-                    byte *bc2, *bc3;
-                    int	ic, iiy;
-                    
-                    bc2 = (byte *)buf2;
-                    bc3 = (byte *)buf3;
-                    for (iy = 0; iy<256; iy++) {
-                            iiy = iy<<12;
-                            for (ix = 0; ix<2048; ix+=8) {
-                                for(ic = ix;ic<(ix+4);ic++) {
-                                    *bc2=(bc3[iiy+ic]+bc3[iiy+4+ic]+bc3[iiy+2048+ic]+bc3[iiy+2048+4+ic])>>2;
-                                    bc2++;
-                                }
-                            }
-                    }
-                } else if (xm==2 && ym==1) {
-                    byte *bc2, *bc3;
-                    int	ic, iiy;
-                    
-                    bc2 = (byte *)buf2;
-                    bc3 = (byte *)buf3;
-                    for (iy = 0; iy<256; iy++) {
-                            iiy = iy<<11;
-                            for (ix = 0; ix<2048; ix+=8) {
-                                for(ic = ix;ic<(ix+4);ic++) {
-                                    *bc2=(bc3[iiy+ic]+bc3[iiy+4+ic])>>1;
-                                    bc2++;
-                                }
-                            }
-                    }
-                } else {
-                    for (iy = 0; iy<256; iy++) {
-                            for (ix = 0; ix<256; ix++) {
-                                    buf2[(iy<<8)+ix] = buf3[((iy*ym)<<ll) + (ix*xm)];
-                            }
-                    }
-                }
-		re.DrawStretchRaw( x, y, w, h, 256, 256, (byte *)buf2, handle, qtrue);
-		cinTable[handle].dirty = qfalse;
-		Hunk_FreeTempMemory(buf2);
-		return;
-	}
-
-	re.DrawStretchRaw( x, y, w, h, cinTable[handle].drawX, cinTable[handle].drawY, buf, handle, cinTable[handle].dirty);
+	re.DrawStretchRaw( x, y, w, h, cinTable[handle].CIN_WIDTH, cinTable[handle].CIN_HEIGHT, buf, handle, cinTable[handle].dirty);
 	cinTable[handle].dirty = qfalse;
 }
 
