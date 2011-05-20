@@ -136,8 +136,6 @@ typedef struct
 	fileHandle_t	cinematic_file;
 	int			cinematictime;		// cls.realtime for first cinematic frame
 	int			cinematicframe;
-	char		cinematicpalette[768];
-	qboolean	cinematicpalette_active;
 
 	//
 	// server state information

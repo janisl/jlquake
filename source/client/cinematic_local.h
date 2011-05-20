@@ -21,10 +21,24 @@ class QCinematic : public QInterface
 
 class QCinematicCin : public QCinematic
 {
+public:
+	byte*		buf;
+
+	QCinematicCin()
+	: buf(NULL)
+	{}
+	~QCinematicCin();
 };
 
 class QCinematicPcx : public QCinematic
 {
+public:
+	byte*		buf;
+
+	QCinematicPcx()
+	: buf(NULL)
+	{}
+	~QCinematicPcx();
 };
 
 class QCinematicRoq : public QCinematic

@@ -1316,7 +1316,6 @@ void SCR_UpdateScreen (void)
 		{	//  loading plaque over black screen
 			int		w, h;
 
-			re.CinematicSetPalette(NULL);
 			scr_draw_loading = false;
 			re.DrawGetPicSize (&w, &h, "loading");
 			re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
@@ -1329,22 +1328,12 @@ void SCR_UpdateScreen (void)
 		{
 			if (in_keyCatchers & KEYCATCH_UI)
 			{
-				if (cl.cinematicpalette_active)
-				{
-					re.CinematicSetPalette(NULL);
-					cl.cinematicpalette_active = false;
-				}
 				M_Draw ();
 //				re.EndFrame();
 //				return;
 			}
 			else if (in_keyCatchers & KEYCATCH_CONSOLE)
 			{
-				if (cl.cinematicpalette_active)
-				{
-					re.CinematicSetPalette(NULL);
-					cl.cinematicpalette_active = false;
-				}
 				SCR_DrawConsole ();
 //				re.EndFrame();
 //				return;
@@ -1358,14 +1347,6 @@ void SCR_UpdateScreen (void)
 		}
 		else 
 		{
-
-			// make sure the game palette is active
-			if (cl.cinematicpalette_active)
-			{
-				re.CinematicSetPalette(NULL);
-				cl.cinematicpalette_active = false;
-			}
-
 			// do 3D refresh drawing, and then update the screen
 			SCR_CalcVrect ();
 

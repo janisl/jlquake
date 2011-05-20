@@ -121,7 +121,6 @@ typedef struct
 	/*
 	** video mode and refresh state management entry points
 	*/
-	void	(*CinematicSetPalette)( const unsigned char *palette);	// NULL = game palette
 	void	(*BeginFrame)( float camera_separation );
 	void	(*EndFrame) (void);
 

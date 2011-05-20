@@ -50,6 +50,7 @@ typedef struct
 } cinematics_t;
 
 cinematics_t	cin;
+byte		cinematicpalette[768];
 
 //=============================================================
 
@@ -70,11 +71,6 @@ void SCR_StopCinematic (void)
 	{
 		Mem_Free (cin.pic_pending);
 		cin.pic_pending = NULL;
-	}
-	if (cl.cinematicpalette_active)
-	{
-		re.CinematicSetPalette(NULL);
-		cl.cinematicpalette_active = false;
 	}
 	if (cl.cinematic_file)
 	{
@@ -357,9 +353,9 @@ byte *SCR_ReadNextFrame (void)
 		return NULL;	// last frame marker
 
 	if (command == 1)
-	{	// read palette
-		FS_Read (cl.cinematicpalette, sizeof(cl.cinematicpalette), cl.cinematic_file);
-		cl.cinematicpalette_active=0;	// dubious....  exposes an edge case
+	{
+		// read palette
+		FS_Read (cinematicpalette, sizeof(cinematicpalette), cl.cinematic_file);
 	}
 
 	// decompress the next frame
@@ -458,23 +454,31 @@ qboolean SCR_DrawCinematic (void)
 	}
 
 	if (in_keyCatchers & KEYCATCH_UI)
-	{	// blank screen and pause if menu is up
-		re.CinematicSetPalette(NULL);
-		cl.cinematicpalette_active = false;
-		return true;
-	}
-
-	if (!cl.cinematicpalette_active)
 	{
-		re.CinematicSetPalette((byte*)cl.cinematicpalette);
-		cl.cinematicpalette_active = true;
+		// pause if menu is up
+		return true;
 	}
 
 	if (!cin.pic)
 		return true;
 
-	re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
-		cin.width, cin.height, cin.pic);
+	if (cin.Cin)
+	{
+		for (int i = 0; i < cin.width * cin.height; i++)
+		{
+			cin.Cin->buf[i * 4 + 0] = cinematicpalette[cin.pic[i] * 3 + 0];
+			cin.Cin->buf[i * 4 + 1] = cinematicpalette[cin.pic[i] * 3 + 1];
+			cin.Cin->buf[i * 4 + 2] = cinematicpalette[cin.pic[i] * 3 + 2];
+			cin.Cin->buf[i * 4 + 3] = 255;
+		}
+		re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
+			cin.width, cin.height, cin.Cin->buf);
+	}
+	else
+	{
+		re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
+			cin.width, cin.height, cin.Pcx->buf);
+	}
 
 	return true;
 }
@@ -512,8 +516,15 @@ void SCR_PlayCinematic (char *arg)
 		}
 		else
 		{
-			Com_Memcpy(cl.cinematicpalette, palette, sizeof(cl.cinematicpalette));
-			Mem_Free (palette);
+			cin.Pcx->buf = new byte[cin.width * cin.height * 4];
+			for (int i = 0; i < cin.width * cin.height; i++)
+			{
+				cin.Pcx->buf[i * 4 + 0] = palette[cin.pic[i] * 3 + 0];
+				cin.Pcx->buf[i * 4 + 1] = palette[cin.pic[i] * 3 + 1];
+				cin.Pcx->buf[i * 4 + 2] = palette[cin.pic[i] * 3 + 2];
+				cin.Pcx->buf[i * 4 + 3] = 255;
+			}
+			Mem_Free(palette);
 		}
 		return;
 	}
@@ -546,6 +557,15 @@ void SCR_PlayCinematic (char *arg)
 	cin.s_channels = LittleLong(cin.s_channels);
 
 	Huff1TableInit ();
+
+	cin.Cin->buf = new byte[cin.width * cin.height * 4];
+	//	Initialise palette to game palette
+	for (int i = 0; i < 256; i++)
+	{
+		cinematicpalette[i * 3 + 0] = r_palette[i][0];
+		cinematicpalette[i * 3 + 1] = r_palette[i][1];
+		cinematicpalette[i * 3 + 2] = r_palette[i][2];
+	}
 
 	cl.cinematicframe = 0;
 	cin.pic = SCR_ReadNextFrame ();

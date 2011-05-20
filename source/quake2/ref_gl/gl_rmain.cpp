@@ -1063,45 +1063,6 @@ void R_BeginFrame( float camera_separation )
 }
 
 /*
-=============
-R_CinematicSetPalette
-=============
-*/
-unsigned r_rawpalette[256];
-
-void R_CinematicSetPalette ( const unsigned char *palette)
-{
-	int		i;
-
-	byte *rp = ( byte * ) r_rawpalette;
-
-	if ( palette )
-	{
-		for ( i = 0; i < 256; i++ )
-		{
-			rp[i*4+0] = palette[i*3+0];
-			rp[i*4+1] = palette[i*3+1];
-			rp[i*4+2] = palette[i*3+2];
-			rp[i*4+3] = 0xff;
-		}
-	}
-	else
-	{
-		for ( i = 0; i < 256; i++ )
-		{
-			rp[i*4+0] = d_8to24table[i] & 0xff;
-			rp[i*4+1] = ( d_8to24table[i] >> 8 ) & 0xff;
-			rp[i*4+2] = ( d_8to24table[i] >> 16 ) & 0xff;
-			rp[i*4+3] = 0xff;
-		}
-	}
-
-	qglClearColor (0,0,0,0);
-	qglClear (GL_COLOR_BUFFER_BIT);
-	qglClearColor (1,0, 0.5 , 0.5);
-}
-
-/*
 ** R_DrawBeam
 */
 void R_DrawBeam( trRefEntity_t *e )
@@ -1220,7 +1181,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	re.Shutdown = R_Shutdown;
 
-	re.CinematicSetPalette = R_CinematicSetPalette;
 	re.BeginFrame = R_BeginFrame;
 	re.EndFrame = GLimp_EndFrame;
 

@@ -296,50 +296,42 @@ void Draw_FadeScreen (void)
 Draw_StretchRaw
 =============
 */
-extern unsigned	r_rawpalette[256];
-
 void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data)
 {
-	unsigned	image32[256*256];
-	unsigned char image8[256*256];
-	int			i, j, trows;
-	byte		*source;
-	int			frac, fracstep;
-	float		hscale;
-	int			row;
-	float		t;
-
-	GL_Bind(tr.scratchImage[0]);
-
-	if (rows<=256)
+	int trows;
+	float hscale;
+	if (rows <= 256)
 	{
 		hscale = 1;
 		trows = rows;
 	}
 	else
 	{
-		hscale = rows/256.0;
+		hscale = rows / 256.0;
 		trows = 256;
 	}
-	t = rows*hscale / 256;
+	float t = rows * hscale / 256;
 
-	unsigned *dest;
-
-	for (i=0 ; i<trows ; i++)
+	unsigned image32[256 * 256];
+	for (int i = 0; i < trows; i++)
 	{
-		row = (int)(i*hscale);
+		int row = (int)(i * hscale);
 		if (row > rows)
-			break;
-		source = data + cols*row;
-		dest = &image32[i*256];
-		fracstep = cols*0x10000/256;
-		frac = fracstep >> 1;
-		for (j=0 ; j<256 ; j++)
 		{
-			dest[j] = r_rawpalette[source[frac>>16]];
+			break;
+		}
+		unsigned* source = (unsigned*)data + cols * row;
+		unsigned* dest = &image32[i * 256];
+		int fracstep = cols * 0x10000 / 256;
+		int frac = fracstep >> 1;
+		for (int j = 0; j < 256; j++)
+		{
+			dest[j] = source[frac >> 16];
 			frac += fracstep;
 		}
 	}
+
+	GL_Bind(tr.scratchImage[0]);
 
 	qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, image32);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
