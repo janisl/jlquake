@@ -65,10 +65,10 @@ public:
 
 	QCinematicCin()
 	: cinematic_file(0)
+	, cinematicframe(0)
 	, pic(NULL)
 	, pic_pending(NULL)
 	, pic32(NULL)
-	, cinematicframe(0)
 	, hnodes1(NULL)
 	{}
 	~QCinematicCin();
@@ -93,6 +93,50 @@ public:
 	bool Open(const char* FileName);
 };
 
+#define DEFAULT_CIN_WIDTH	512
+#define DEFAULT_CIN_HEIGHT	512
+
 class QCinematicRoq : public QCinematic
 {
+private:
+	void recurseQuad(long startX, long startY, long quadSize);
+
+public:
+	long				samplesPerLine;
+	unsigned int		xsize;
+	unsigned int		ysize;
+	long				normalBuffer0;
+	long				screenDelta;
+	int					CIN_WIDTH;
+	int					CIN_HEIGHT;
+	long				onQuad;
+	unsigned int		maxsize;
+	unsigned int		minsize;
+	long				t[2];
+
+	byte				file[65536];
+	byte				linbuf[DEFAULT_CIN_WIDTH * DEFAULT_CIN_HEIGHT * 4 * 2];
+	byte*				qStatus[2][32768];
+
+	QCinematicRoq()
+	: samplesPerLine(0)
+	, xsize(0)
+	, ysize(0)
+	, normalBuffer0(0)
+	, screenDelta(0)
+	, CIN_WIDTH(0)
+	, CIN_HEIGHT(0)
+	, onQuad(0)
+	, maxsize(0)
+	, minsize(0)
+	{}
+	void readQuadInfo(byte* qData);
+	void setupQuad();
+	void RoQPrepMcomp(long xoff, long yoff);
+	void blitVQQuad32fs(byte** status, unsigned char* data);
 };
+
+void initRoQ();
+long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag);
+long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag);
+void decodeCodeBook(byte* input, unsigned short roq_flags);

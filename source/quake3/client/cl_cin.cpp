@@ -33,12 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/sound_local.h"
 #include "../../client/cinematic_local.h"
 
-#define MAXSIZE				8
-#define MINSIZE				4
-
-#define DEFAULT_CIN_WIDTH	512
-#define DEFAULT_CIN_HEIGHT	512
-
 #define ROQ_QUAD			0x1000
 #define ROQ_QUAD_INFO		0x1001
 #define ROQ_CODEBOOK		0x1002
@@ -65,26 +59,7 @@ static void RoQ_init( void );
 *
 ******************************************************************************/
 
-static	long				ROQ_YY_tab[256];
-static	long				ROQ_UB_tab[256];
-static	long				ROQ_UG_tab[256];
-static	long				ROQ_VG_tab[256];
-static	long				ROQ_VR_tab[256];
-static	unsigned short		vq2[256*16*4];
-static	unsigned short		vq4[256*64*4];
-static	unsigned short		vq8[256*256*4];
-
-
 typedef struct {
-	byte				linbuf[DEFAULT_CIN_WIDTH*DEFAULT_CIN_HEIGHT*4*2];
-	byte				file[65536];
-	short				sqrTable[256];
-
-	int		mcomp[256];
-	byte				*qStatus[2][32768];
-
-	long				oldXOff, oldYOff, oldysize, oldxsize;
-
 	int					currentHandle;
 } cinematics_t;
 
@@ -92,7 +67,6 @@ typedef struct {
 	QCinematicRoq*		Cin;
 
 	char				fileName[MAX_OSPATH];
-	int					CIN_WIDTH, CIN_HEIGHT;
 	int					xpos, ypos, width, height;
 	qboolean			looping, holdAtEnd, dirty, alterGameState, silent, shader;
 	fileHandle_t		iFile;
@@ -103,20 +77,13 @@ typedef struct {
 	long				RoQPlayed;
 	long				ROQSize;
 	unsigned int		RoQFrameSize;
-	long				onQuad;
 	long				numQuads;
-	long				samplesPerLine;
 	unsigned int		roq_id;
-	long				screenDelta;
-
-	unsigned int		xsize, ysize, maxsize, minsize;
 
 	qboolean			inMemory;
-	long				normalBuffer0;
 	long				roq_flags;
 	long				roqF0;
 	long				roqF1;
-	long				t[2];
 	long				roqFPS;
 	int					playonwalls;
 } cin_cache;
@@ -152,95 +119,6 @@ static int CIN_HandleForVideo(void) {
 
 extern int CL_ScaledMilliseconds(void);
 
-//-----------------------------------------------------------------------------
-// RllSetupTable
-//
-// Allocates and initializes the square table.
-//
-// Parameters:	None
-//
-// Returns:		Nothing
-//-----------------------------------------------------------------------------
-static void RllSetupTable()
-{
-	int z;
-
-	for (z=0;z<128;z++) {
-		cin.sqrTable[z] = (short)(z*z);
-		cin.sqrTable[z+128] = (short)(-cin.sqrTable[z]);
-	}
-}
-
-//-----------------------------------------------------------------------------
-// RllDecodeMonoToStereo
-//
-// Decode mono source data into a stereo buffer. Output is 4 times the number
-// of bytes in the input.
-//
-// Parameters:	from -> buffer holding encoded data
-//				to ->	buffer to hold decoded data
-//				size =	number of bytes of input (= 1/4 # of bytes of output)
-//				signedOutput = 0 for unsigned output, non-zero for signed output
-//				flag = flags from asset header
-//
-// Returns:		Number of samples placed in output buffer
-//-----------------------------------------------------------------------------
-long RllDecodeMonoToStereo(unsigned char *from,short *to,unsigned int size,char signedOutput,unsigned short flag)
-{
-	unsigned int z;
-	int prev;
-	
-	if (signedOutput)	
-		prev =  flag - 0x8000;
-	else 
-		prev = flag;
-
-	for (z = 0; z < size; z++) {
-		prev = (short)(prev + cin.sqrTable[from[z]]);
-		to[z*2+0] = to[z*2+1] = (short)(prev);
-	}
-	
-	return size;	// * 2 * sizeof(short));
-}
-
-
-//-----------------------------------------------------------------------------
-// RllDecodeStereoToStereo
-//
-// Decode stereo source data into a stereo buffer.
-//
-// Parameters:	from -> buffer holding encoded data
-//				to ->	buffer to hold decoded data
-//				size =	number of bytes of input (= 1/2 # of bytes of output)
-//				signedOutput = 0 for unsigned output, non-zero for signed output
-//				flag = flags from asset header
-//
-// Returns:		Number of samples placed in output buffer
-//-----------------------------------------------------------------------------
-long RllDecodeStereoToStereo(unsigned char *from,short *to,unsigned int size,char signedOutput, unsigned short flag)
-{
-	unsigned int z;
-	unsigned char *zz = from;
-	int	prevL, prevR;
-
-	if (signedOutput) {
-		prevL = (flag & 0xff00) - 0x8000;
-		prevR = ((flag & 0x00ff) << 8) - 0x8000;
-	} else {
-		prevL = flag & 0xff00;
-		prevR = (flag & 0x00ff) << 8;
-	}
-
-	for (z=0;z<size;z+=2) {
-                prevL = (short)(prevL + cin.sqrTable[*zz++]); 
-                prevR = (short)(prevR + cin.sqrTable[*zz++]);
-                to[z+0] = (short)(prevL);
-                to[z+1] = (short)(prevR);
-	}
-	
-	return (size>>1);	//*sizeof(short));
-}
-
 /******************************************************************************
 *
 * Function:		
@@ -248,553 +126,13 @@ long RllDecodeStereoToStereo(unsigned char *from,short *to,unsigned int size,cha
 * Description:	
 *
 ******************************************************************************/
-
-static void move8_32( byte *src, byte *dst, int spl )
-{
-	double *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (double *)src;
-	ddst = (double *)dst;
-	dspl = spl>>3;
-
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void move4_32( byte *src, byte *dst, int spl  )
-{
-	double *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (double *)src;
-	ddst = (double *)dst;
-	dspl = spl>>3;
-
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += dspl; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void blit8_32( byte *src, byte *dst, int spl  )
-{
-	double *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (double *)src;
-	ddst = (double *)dst;
-	dspl = spl>>3;
-
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-	dsrc += 4; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1]; ddst[2] = dsrc[2]; ddst[3] = dsrc[3];
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-#define movs double
-static void blit4_32( byte *src, byte *dst, int spl  )
-{
-	movs *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (movs *)src;
-	ddst = (movs *)dst;
-	dspl = spl>>3;
-
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += 2; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += 2; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-	dsrc += 2; ddst += dspl;
-	ddst[0] = dsrc[0]; ddst[1] = dsrc[1];
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void blit2_32( byte *src, byte *dst, int spl  )
-{
-	double *dsrc, *ddst;
-	int dspl;
-
-	dsrc = (double *)src;
-	ddst = (double *)dst;
-	dspl = spl>>3;
-
-	ddst[0] = dsrc[0];
-	ddst[dspl] = dsrc[1];
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void blitVQQuad32fs( byte **status, unsigned char *data )
-{
-unsigned short	newd, celdata, code;
-unsigned int	index, i;
-int		spl;
-
-	newd	= 0;
-	celdata = 0;
-	index	= 0;
-	
-        spl = cinTable[currentHandle].samplesPerLine;
-        
-	do {
-		if (!newd) { 
-			newd = 7;
-			celdata = data[0] + data[1]*256;
-			data += 2;
-		} else {
-			newd--;
-		}
-
-		code = (unsigned short)(celdata&0xc000); 
-		celdata <<= 2;
-		
-		switch (code) {
-			case	0x8000:													// vq code
-				blit8_32( (byte *)&vq8[(*data)*128], status[index], spl );
-				data++;
-				index += 5;
-				break;
-			case	0xc000:													// drop
-				index++;													// skip 8x8
-				for(i=0;i<4;i++) {
-					if (!newd) { 
-						newd = 7;
-						celdata = data[0] + data[1]*256;
-						data += 2;
-					} else {
-						newd--;
-					}
-						
-					code = (unsigned short)(celdata&0xc000); celdata <<= 2; 
-
-					switch (code) {											// code in top two bits of code
-						case	0x8000:										// 4x4 vq code
-							blit4_32( (byte *)&vq4[(*data)*32], status[index], spl );
-							data++;
-							break;
-						case	0xc000:										// 2x2 vq code
-							blit2_32( (byte *)&vq2[(*data)*8], status[index], spl );
-							data++;
-							blit2_32( (byte *)&vq2[(*data)*8], status[index]+8, spl );
-							data++;
-							blit2_32( (byte *)&vq2[(*data)*8], status[index]+spl*2, spl );
-							data++;
-							blit2_32( (byte *)&vq2[(*data)*8], status[index]+spl*2+8, spl );
-							data++;
-							break;
-						case	0x4000:										// motion compensation
-							move4_32( status[index] + cin.mcomp[(*data)], status[index], spl );
-							data++;
-							break;
-					}
-					index++;
-				}
-				break;
-			case	0x4000:													// motion compensation
-				move8_32( status[index] + cin.mcomp[(*data)], status[index], spl );
-				data++;
-				index += 5;
-				break;
-			case	0x0000:
-				index += 5;
-				break;
-		}
-	} while ( status[index] != NULL );
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void ROQ_GenYUVTables( void )
-{
-	float t_ub,t_vr,t_ug,t_vg;
-	long i;
-
-	t_ub = (1.77200f/2.0f) * (float)(1<<6) + 0.5f;
-	t_vr = (1.40200f/2.0f) * (float)(1<<6) + 0.5f;
-	t_ug = (0.34414f/2.0f) * (float)(1<<6) + 0.5f;
-	t_vg = (0.71414f/2.0f) * (float)(1<<6) + 0.5f;
-	for(i=0;i<256;i++) {
-		float x = (float)(2 * i - 255);
-	
-		ROQ_UB_tab[i] = (long)( ( t_ub * x) + (1<<5));
-		ROQ_VR_tab[i] = (long)( ( t_vr * x) + (1<<5));
-		ROQ_UG_tab[i] = (long)( (-t_ug * x)		 );
-		ROQ_VG_tab[i] = (long)( (-t_vg * x) + (1<<5));
-		ROQ_YY_tab[i] = (long)( (i << 6) | (i >> 2) );
-	}
-}
-
-#define VQ2TO4(a,b,c,d) { \
-    	*c++ = a[0];	\
-	*d++ = a[0];	\
-	*d++ = a[0];	\
-	*c++ = a[1];	\
-	*d++ = a[1];	\
-	*d++ = a[1];	\
-	*c++ = b[0];	\
-	*d++ = b[0];	\
-	*d++ = b[0];	\
-	*c++ = b[1];	\
-	*d++ = b[1];	\
-	*d++ = b[1];	\
-	*d++ = a[0];	\
-	*d++ = a[0];	\
-	*d++ = a[1];	\
-	*d++ = a[1];	\
-	*d++ = b[0];	\
-	*d++ = b[0];	\
-	*d++ = b[1];	\
-	*d++ = b[1];	\
-	a += 2; b += 2; }
- 
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-#if defined(MACOS_X)
-
-static inline unsigned int yuv_to_rgb24( long y, long u, long v )
-{ 
-	long r,g,b,YY;
-        
-        YY = (long)(ROQ_YY_tab[(y)]);
-
-	r = (YY + ROQ_VR_tab[v]) >> 6;
-	g = (YY + ROQ_UG_tab[u] + ROQ_VG_tab[v]) >> 6;
-	b = (YY + ROQ_UB_tab[u]) >> 6;
-	
-	if (r<0) r = 0; if (g<0) g = 0; if (b<0) b = 0;
-	if (r > 255) r = 255; if (g > 255) g = 255; if (b > 255) b = 255;
-	
-	return ((r<<24)|(g<<16)|(b<<8))|(255);	//+(255<<24));
-}
-
-#else
-static unsigned int yuv_to_rgb24( long y, long u, long v )
-{ 
-	long r,g,b,YY = (long)(ROQ_YY_tab[(y)]);
-
-	r = (YY + ROQ_VR_tab[v]) >> 6;
-	g = (YY + ROQ_UG_tab[u] + ROQ_VG_tab[v]) >> 6;
-	b = (YY + ROQ_UB_tab[u]) >> 6;
-	
-	if (r<0) r = 0; if (g<0) g = 0; if (b<0) b = 0;
-	if (r > 255) r = 255; if (g > 255) g = 255; if (b > 255) b = 255;
-	
-	return LittleLong ((r)|(g<<8)|(b<<16)|(255<<24));
-}
-#endif
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void decodeCodeBook( byte *input, unsigned short roq_flags )
-{
-	long	i, j, two, four;
-	unsigned short	*aptr, *bptr, *cptr, *dptr;
-	long	y0,y1,y2,y3,cr,cb;
-	byte	*bbptr, *baptr, *bcptr, *bdptr;
-	unsigned int *iaptr, *ibptr, *icptr, *idptr;
-
-	if (!roq_flags) {
-		two = four = 256;
-	} else {
-		two  = roq_flags>>8;
-		if (!two) two = 256;
-		four = roq_flags&0xff;
-	}
-
-	four *= 2;
-
-	bptr = (unsigned short *)vq2;
-
-	ibptr = (unsigned int *)bptr;
-	for(i=0;i<two;i++) {
-		y0 = (long)*input++;
-		y1 = (long)*input++;
-		y2 = (long)*input++;
-		y3 = (long)*input++;
-		cr = (long)*input++;
-		cb = (long)*input++;
-		*ibptr++ = yuv_to_rgb24( y0, cr, cb );
-		*ibptr++ = yuv_to_rgb24( y1, cr, cb );
-		*ibptr++ = yuv_to_rgb24( y2, cr, cb );
-		*ibptr++ = yuv_to_rgb24( y3, cr, cb );
-	}
-
-	icptr = (unsigned int *)vq4;
-	idptr = (unsigned int *)vq8;
-
-	for(i=0;i<four;i++) {
-		iaptr = (unsigned int *)vq2 + (*input++)*4;
-		ibptr = (unsigned int *)vq2 + (*input++)*4;
-		for(j=0;j<2;j++) 
-			VQ2TO4(iaptr, ibptr, icptr, idptr);
-	}
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void recurseQuad( long startX, long startY, long quadSize, long xOff, long yOff )
-{
-	byte *scroff;
-	long bigx, bigy, lowx, lowy, useY;
-	long offset;
-
-	offset = cinTable[currentHandle].screenDelta;
-	
-	lowx = lowy = 0;
-	bigx = cinTable[currentHandle].xsize;
-	bigy = cinTable[currentHandle].ysize;
-
-	if (bigx > cinTable[currentHandle].CIN_WIDTH) bigx = cinTable[currentHandle].CIN_WIDTH;
-	if (bigy > cinTable[currentHandle].CIN_HEIGHT) bigy = cinTable[currentHandle].CIN_HEIGHT;
-
-	if ( (startX >= lowx) && (startX+quadSize) <= (bigx) && (startY+quadSize) <= (bigy) && (startY >= lowy) && quadSize <= MAXSIZE) {
-		useY = startY;
-		scroff = cin.linbuf + (useY+((cinTable[currentHandle].CIN_HEIGHT-bigy)>>1)+yOff)*(cinTable[currentHandle].samplesPerLine) + (((startX+xOff)) * 4);
-
-		cin.qStatus[0][cinTable[currentHandle].onQuad  ] = scroff;
-		cin.qStatus[1][cinTable[currentHandle].onQuad++] = scroff+offset;
-	}
-
-	if ( quadSize != MINSIZE ) {
-		quadSize >>= 1;
-		recurseQuad( startX,		  startY		  , quadSize, xOff, yOff );
-		recurseQuad( startX+quadSize, startY		  , quadSize, xOff, yOff );
-		recurseQuad( startX,		  startY+quadSize , quadSize, xOff, yOff );
-		recurseQuad( startX+quadSize, startY+quadSize , quadSize, xOff, yOff );
-	}
-}
-
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void setupQuad( long xOff, long yOff )
-{
-	long numQuadCels, i,x,y;
-	byte *temp;
-
-	if (xOff == cin.oldXOff && yOff == cin.oldYOff && cinTable[currentHandle].ysize == cin.oldysize && cinTable[currentHandle].xsize == cin.oldxsize) {
-		return;
-	}
-
-	cin.oldXOff = xOff;
-	cin.oldYOff = yOff;
-	cin.oldysize = cinTable[currentHandle].ysize;
-	cin.oldxsize = cinTable[currentHandle].xsize;
-
-	numQuadCels  = (cinTable[currentHandle].CIN_WIDTH*cinTable[currentHandle].CIN_HEIGHT) / (16);
-	numQuadCels += numQuadCels/4 + numQuadCels/16;
-	numQuadCels += 64;							  // for overflow
-
-	numQuadCels  = (cinTable[currentHandle].xsize*cinTable[currentHandle].ysize) / (16);
-	numQuadCels += numQuadCels/4;
-	numQuadCels += 64;							  // for overflow
-
-	cinTable[currentHandle].onQuad = 0;
-
-	for(y=0;y<(long)cinTable[currentHandle].ysize;y+=16) 
-		for(x=0;x<(long)cinTable[currentHandle].xsize;x+=16) 
-			recurseQuad( x, y, 16, xOff, yOff );
-
-	temp = NULL;
-
-	for(i=(numQuadCels-64);i<numQuadCels;i++) {
-		cin.qStatus[0][i] = temp;			  // eoq
-		cin.qStatus[1][i] = temp;			  // eoq
-	}
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void readQuadInfo( byte *qData )
-{
-	if (currentHandle < 0) return;
-
-	cinTable[currentHandle].xsize    = qData[0]+qData[1]*256;
-	cinTable[currentHandle].ysize    = qData[2]+qData[3]*256;
-	cinTable[currentHandle].maxsize  = qData[4]+qData[5]*256;
-	cinTable[currentHandle].minsize  = qData[6]+qData[7]*256;
-	
-	cinTable[currentHandle].CIN_HEIGHT = cinTable[currentHandle].ysize;
-	cinTable[currentHandle].CIN_WIDTH  = cinTable[currentHandle].xsize;
-
-	cinTable[currentHandle].samplesPerLine = cinTable[currentHandle].CIN_WIDTH * 4;
-	cinTable[currentHandle].screenDelta = cinTable[currentHandle].CIN_HEIGHT*cinTable[currentHandle].samplesPerLine;
-
-	cinTable[currentHandle].t[0] = cinTable[currentHandle].screenDelta;
-	cinTable[currentHandle].t[1] = -cinTable[currentHandle].screenDelta;
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void RoQPrepMcomp( long xoff, long yoff ) 
-{
-	long i, j, x, y, temp, temp2;
-
-	i=cinTable[currentHandle].samplesPerLine; j = 4;
-	if ( cinTable[currentHandle].xsize == (cinTable[currentHandle].ysize*4) ) { j = j+j; i = i+i; }
-	
-	for(y=0;y<16;y++) {
-		temp2 = (y+yoff-8)*i;
-		for(x=0;x<16;x++) {
-			temp = (x+xoff-8)*j;
-			cin.mcomp[(x*16)+y] = cinTable[currentHandle].normalBuffer0-(temp2+temp);
-		}
-	}
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-
-static void initRoQ() 
-{
-	if (currentHandle < 0) return;
-
-	ROQ_GenYUVTables();
-	RllSetupTable();
-}
-
-/******************************************************************************
-*
-* Function:		
-*
-* Description:	
-*
-******************************************************************************/
-/*
-static byte* RoQFetchInterlaced( byte *source ) {
-	int x, *src, *dst;
-
-	if (currentHandle < 0) return NULL;
-
-	src = (int *)source;
-	dst = (int *)cinTable[currentHandle].buf2;
-
-	for(x=0;x<256*256;x++) {
-		*dst = *src;
-		dst++; src += 2;
-	}
-	return cinTable[currentHandle].buf2;
-}
-*/
 static void RoQReset() {
 	
 	if (currentHandle < 0) return;
 
 	FS_FCloseFile( cinTable[currentHandle].iFile );
 	FS_FOpenFileRead (cinTable[currentHandle].fileName, &cinTable[currentHandle].iFile, qtrue);
-	FS_Read(cin.file, 16, cinTable[currentHandle].iFile);
+	FS_Read(cinTable[currentHandle].Cin->file, 16, cinTable[currentHandle].iFile);
 	RoQ_init();
 	cinTable[currentHandle].status = FMV_LOOPED;
 }
@@ -815,7 +153,7 @@ static void RoQInterrupt(void)
         
 	if (currentHandle < 0) return;
 
-	FS_Read(cin.file, cinTable[currentHandle].RoQFrameSize+8, cinTable[currentHandle].iFile);
+	FS_Read(cinTable[currentHandle].Cin->file, cinTable[currentHandle].RoQFrameSize+8, cinTable[currentHandle].iFile);
 	if ( cinTable[currentHandle].RoQPlayed >= cinTable[currentHandle].ROQSize ) { 
 		if (cinTable[currentHandle].holdAtEnd==qfalse) {
 			if (cinTable[currentHandle].looping) {
@@ -829,7 +167,7 @@ static void RoQInterrupt(void)
 		return; 
 	}
 
-	framedata = cin.file;
+	framedata = cinTable[currentHandle].Cin->file;
 //
 // new frame is ready
 //
@@ -838,18 +176,18 @@ redump:
 	{
 		case	ROQ_QUAD_VQ:
 			if ((cinTable[currentHandle].numQuads&1)) {
-				cinTable[currentHandle].normalBuffer0 = cinTable[currentHandle].t[1];
-				RoQPrepMcomp( cinTable[currentHandle].roqF0, cinTable[currentHandle].roqF1 );
-				blitVQQuad32fs(cin.qStatus[1], framedata);
-				cinTable[currentHandle].Cin->buf = 	cin.linbuf + cinTable[currentHandle].screenDelta;
+				cinTable[currentHandle].Cin->normalBuffer0 = cinTable[currentHandle].Cin->t[1];
+				cinTable[currentHandle].Cin->RoQPrepMcomp( cinTable[currentHandle].roqF0, cinTable[currentHandle].roqF1 );
+				cinTable[currentHandle].Cin->blitVQQuad32fs(cinTable[currentHandle].Cin->qStatus[1], framedata);
+				cinTable[currentHandle].Cin->buf = 	cinTable[currentHandle].Cin->linbuf + cinTable[currentHandle].Cin->screenDelta;
 			} else {
-				cinTable[currentHandle].normalBuffer0 = cinTable[currentHandle].t[0];
-				RoQPrepMcomp( cinTable[currentHandle].roqF0, cinTable[currentHandle].roqF1 );
-				blitVQQuad32fs(cin.qStatus[0], framedata );
-				cinTable[currentHandle].Cin->buf = cin.linbuf;
+				cinTable[currentHandle].Cin->normalBuffer0 = cinTable[currentHandle].Cin->t[0];
+				cinTable[currentHandle].Cin->RoQPrepMcomp( cinTable[currentHandle].roqF0, cinTable[currentHandle].roqF1 );
+				cinTable[currentHandle].Cin->blitVQQuad32fs(cinTable[currentHandle].Cin->qStatus[0], framedata );
+				cinTable[currentHandle].Cin->buf = cinTable[currentHandle].Cin->linbuf;
 			}
 			if (cinTable[currentHandle].numQuads == 0) {		// first frame
-				Com_Memcpy(cin.linbuf+cinTable[currentHandle].screenDelta, cin.linbuf, cinTable[currentHandle].samplesPerLine*cinTable[currentHandle].ysize);
+				Com_Memcpy(cinTable[currentHandle].Cin->linbuf+cinTable[currentHandle].Cin->screenDelta, cinTable[currentHandle].Cin->linbuf, cinTable[currentHandle].Cin->samplesPerLine*cinTable[currentHandle].Cin->ysize);
 			}
 			cinTable[currentHandle].numQuads++;
 			cinTable[currentHandle].dirty = qtrue;
@@ -875,10 +213,8 @@ redump:
 			break;
 		case	ROQ_QUAD_INFO:
 			if (cinTable[currentHandle].numQuads == -1) {
-				readQuadInfo( framedata );
-				setupQuad( 0, 0 );
-				// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
-				cinTable[currentHandle].startTime = cinTable[currentHandle].lastTime = CL_ScaledMilliseconds()*com_timescale->value;
+				cinTable[currentHandle].Cin->readQuadInfo( framedata );
+				cinTable[currentHandle].Cin->setupQuad();
 			}
 			if (cinTable[currentHandle].numQuads != 1) cinTable[currentHandle].numQuads = 0;
 			break;
@@ -951,20 +287,15 @@ static void RoQ_init( void )
 	cinTable[currentHandle].RoQPlayed = 24;
 
 /*	get frame rate */	
-	cinTable[currentHandle].roqFPS	 = cin.file[ 6] + cin.file[ 7]*256;
+	cinTable[currentHandle].roqFPS	 = cinTable[currentHandle].Cin->file[ 6] + cinTable[currentHandle].Cin->file[ 7]*256;
 	
 	if (!cinTable[currentHandle].roqFPS) cinTable[currentHandle].roqFPS = 30;
 
 	cinTable[currentHandle].numQuads = -1;
 
-	cinTable[currentHandle].roq_id		= cin.file[ 8] + cin.file[ 9]*256;
-	cinTable[currentHandle].RoQFrameSize	= cin.file[10] + cin.file[11]*256 + cin.file[12]*65536;
-	cinTable[currentHandle].roq_flags	= cin.file[14] + cin.file[15]*256;
-
-	if (cinTable[currentHandle].RoQFrameSize > 65536 || !cinTable[currentHandle].RoQFrameSize) { 
-		return;
-	}
-
+	cinTable[currentHandle].roq_id		= cinTable[currentHandle].Cin->file[ 8] + cinTable[currentHandle].Cin->file[ 9]*256;
+	cinTable[currentHandle].RoQFrameSize	= cinTable[currentHandle].Cin->file[10] + cinTable[currentHandle].Cin->file[11]*256 + cinTable[currentHandle].Cin->file[12]*65536;
+	cinTable[currentHandle].roq_flags	= cinTable[currentHandle].Cin->file[14] + cinTable[currentHandle].Cin->file[15]*256;
 }
 
 /******************************************************************************
@@ -1167,8 +498,8 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	CIN_SetExtents(currentHandle, x, y, w, h);
 	CIN_SetLooping(currentHandle, (systemBits & CIN_loop)!=0);
 
-	cinTable[currentHandle].CIN_HEIGHT = DEFAULT_CIN_HEIGHT;
-	cinTable[currentHandle].CIN_WIDTH  =  DEFAULT_CIN_WIDTH;
+	cinTable[currentHandle].Cin->CIN_HEIGHT = DEFAULT_CIN_HEIGHT;
+	cinTable[currentHandle].Cin->CIN_WIDTH  =  DEFAULT_CIN_WIDTH;
 	cinTable[currentHandle].holdAtEnd = (systemBits & CIN_hold) != 0;
 	cinTable[currentHandle].alterGameState = (systemBits & CIN_system) != 0;
 	cinTable[currentHandle].playonwalls = 1;
@@ -1186,9 +517,9 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	initRoQ();
 					
-	FS_Read (cin.file, 16, cinTable[currentHandle].iFile);
+	FS_Read (cinTable[currentHandle].Cin->file, 16, cinTable[currentHandle].iFile);
 
-	RoQID = (unsigned short)(cin.file[0]) + (unsigned short)(cin.file[1])*256;
+	RoQID = (unsigned short)(cinTable[currentHandle].Cin->file[0]) + (unsigned short)(cinTable[currentHandle].Cin->file[1])*256;
 	if (RoQID == 0x1084)
 	{
 		RoQ_init();
@@ -1251,7 +582,7 @@ void CIN_DrawCinematic (int handle) {
 	buf = cinTable[handle].Cin->buf;
 	SCR_AdjustFrom640( &x, &y, &w, &h );
 
-	re.DrawStretchRaw( x, y, w, h, cinTable[handle].CIN_WIDTH, cinTable[handle].CIN_HEIGHT, buf, handle, cinTable[handle].dirty);
+	re.DrawStretchRaw( x, y, w, h, cinTable[handle].Cin->CIN_WIDTH, cinTable[handle].Cin->CIN_HEIGHT, buf, handle, cinTable[handle].dirty);
 	cinTable[handle].dirty = qfalse;
 }
 
