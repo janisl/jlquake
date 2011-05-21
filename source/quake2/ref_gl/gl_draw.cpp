@@ -298,53 +298,16 @@ Draw_StretchRaw
 */
 void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data)
 {
-	int trows;
-	float hscale;
-	if (rows <= 256)
-	{
-		hscale = 1;
-		trows = rows;
-	}
-	else
-	{
-		hscale = rows / 256.0;
-		trows = 256;
-	}
-	float t = rows * hscale / 256;
-
-	unsigned image32[256 * 256];
-	for (int i = 0; i < trows; i++)
-	{
-		int row = (int)(i * hscale);
-		if (row > rows)
-		{
-			break;
-		}
-		unsigned* source = (unsigned*)data + cols * row;
-		unsigned* dest = &image32[i * 256];
-		int fracstep = cols * 0x10000 / 256;
-		int frac = fracstep >> 1;
-		for (int j = 0; j < 256; j++)
-		{
-			dest[j] = source[frac >> 16];
-			frac += fracstep;
-		}
-	}
-
-	GL_Bind(tr.scratchImage[0]);
-
-	qglTexImage2D (GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, image32);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	R_UploadCinematic(cols, rows, data, 0, true);
 
 	qglBegin (GL_QUADS);
 	qglTexCoord2f (0, 0);
 	qglVertex2f (x, y);
 	qglTexCoord2f (1, 0);
 	qglVertex2f (x+w, y);
-	qglTexCoord2f (1, t);
+	qglTexCoord2f (1, 1);
 	qglVertex2f (x+w, y+h);
-	qglTexCoord2f (0, t);
+	qglTexCoord2f (0, 1);
 	qglVertex2f (x, y+h);
 	qglEnd ();
 }

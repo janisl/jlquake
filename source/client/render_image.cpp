@@ -482,7 +482,7 @@ void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode
 //
 //==========================================================================
 
-static void R_ResampleTexture(byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
+void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
 {
 	if (outwidth > 2048)
 	{
@@ -512,14 +512,14 @@ static void R_ResampleTexture(byte* in, int inwidth, int inheight, byte* out, in
 
 	for (int i = 0; i < outheight; i++)
 	{
-		byte* inrow = in + inwidth * (int)((i + 0.25) * inheight / outheight) * 4;
-		byte* inrow2 = in + inwidth * (int)((i + 0.75) * inheight / outheight) * 4;
+		const byte* inrow = in + inwidth * (int)((i + 0.25) * inheight / outheight) * 4;
+		const byte* inrow2 = in + inwidth * (int)((i + 0.75) * inheight / outheight) * 4;
 		for (int j = 0; j < outwidth; j++)
 		{
-			byte* pix1 = inrow + p1[j];
-			byte* pix2 = inrow + p2[j];
-			byte* pix3 = inrow2 + p1[j];
-			byte* pix4 = inrow2 + p2[j];
+			const byte* pix1 = inrow + p1[j];
+			const byte* pix2 = inrow + p2[j];
+			const byte* pix3 = inrow2 + p1[j];
+			const byte* pix4 = inrow2 + p2[j];
 			*out++ = (pix1[0] + pix2[0] + pix3[0] + pix4[0]) >> 2;
 			*out++ = (pix1[1] + pix2[1] + pix3[1] + pix4[1]) >> 2;
 			*out++ = (pix1[2] + pix2[2] + pix3[2] + pix4[2]) >> 2;

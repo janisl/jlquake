@@ -185,6 +185,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_backend.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_driver_wgl.cpp"
 				>
 			</File>
