@@ -89,10 +89,10 @@ bool QCinematicCin::Open(const char* FileName)
 		return false;
 	}
 
-	FS_Read(&width, 4, cinematic_file);
-	FS_Read(&height, 4, cinematic_file);
-	width = LittleLong(width);
-	height = LittleLong(height);
+	FS_Read(&Width, 4, cinematic_file);
+	FS_Read(&Height, 4, cinematic_file);
+	Width = LittleLong(Width);
+	Height = LittleLong(Height);
 
 	FS_Read(&s_rate, 4, cinematic_file);
 	s_rate = LittleLong(s_rate);
@@ -103,7 +103,7 @@ bool QCinematicCin::Open(const char* FileName)
 
 	Huff1TableInit();
 
-	pic32 = new byte[width * height * 4];
+	pic32 = new byte[Width * Height * 4];
 
 	//	Initialise palette to game palette
 	for (int i = 0; i < 256; i++)
@@ -232,19 +232,16 @@ bool QCinematicCin::Update(int NewTime)
 		pic_pending = NULL;
 		if (pic)
 		{
-			for (int i = 0; i < width * height; i++)
+			for (int i = 0; i < Width * Height; i++)
 			{
 				pic32[i * 4 + 0] = cinematicpalette[pic[i] * 3 + 0];
 				pic32[i * 4 + 1] = cinematicpalette[pic[i] * 3 + 1];
 				pic32[i * 4 + 2] = cinematicpalette[pic[i] * 3 + 2];
 				pic32[i * 4 + 3] = 255;
 			}
-			buf = pic32;
+			OutputFrame = pic32;
 		}
-		else
-		{
-			buf = NULL;
-		}
+		Dirty = true;
 		pic_pending = ReadNextFrame();
 	}
 	while (pic_pending && frame > cinematicframe);
@@ -285,7 +282,7 @@ byte* QCinematicCin::ReadNextFrame()
 	FS_Read(&size, 4, cinematic_file);
 	size = LittleLong(size);
 	byte compressed[0x20000];
-	if (size > sizeof(compressed) || size < 1)
+	if (size > (int)sizeof(compressed) || size < 1)
 	{
 		throw QDropException("Bad compressed frame size");
 	}

@@ -47,10 +47,10 @@
 
 QCinematicPcx::~QCinematicPcx()
 {
-	if (buf)
+	if (OutputFrame)
 	{
-		delete[] buf;
-		buf = NULL;
+		delete[] OutputFrame;
+		OutputFrame = NULL;
 	}
 }
 
@@ -65,19 +65,19 @@ bool QCinematicPcx::Open(const char* FileName)
 	QStr::Cpy(Name, FileName);
 	byte* pic;
 	byte* palette;
-	R_LoadPCX(FileName, &pic, &palette, &width, &height);
+	R_LoadPCX(FileName, &pic, &palette, &Width, &Height);
 	if (!pic)
 	{
 		return false;
 	}
 
-	buf = new byte[width * height * 4];
-	for (int i = 0; i < width * height; i++)
+	OutputFrame = new byte[Width * Height * 4];
+	for (int i = 0; i < Width * Height; i++)
 	{
-		buf[i * 4 + 0] = palette[pic[i] * 3 + 0];
-		buf[i * 4 + 1] = palette[pic[i] * 3 + 1];
-		buf[i * 4 + 2] = palette[pic[i] * 3 + 2];
-		buf[i * 4 + 3] = 255;
+		OutputFrame[i * 4 + 0] = palette[pic[i] * 3 + 0];
+		OutputFrame[i * 4 + 1] = palette[pic[i] * 3 + 1];
+		OutputFrame[i * 4 + 2] = palette[pic[i] * 3 + 2];
+		OutputFrame[i * 4 + 3] = 255;
 	}
 
 	delete[] pic;

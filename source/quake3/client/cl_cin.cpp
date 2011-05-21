@@ -123,7 +123,7 @@ static void RoQReset() {
 static void RoQShutdown( void ) {
 	const char *s;
 
-	if (!cinTable[currentHandle].Cin->buf)
+	if (!cinTable[currentHandle].Cin->OutputFrame)
 	{
 		return;
 	}
@@ -164,7 +164,7 @@ e_status CIN_StopCinematic(int handle) {
 
 	Com_DPrintf("trFMV::stop(), closing %s\n", cinTable[currentHandle].Cin->Name);
 
-	if (!cinTable[currentHandle].Cin->buf)
+	if (!cinTable[currentHandle].Cin->OutputFrame)
 	{
 		return FMV_EOF;
 	}
@@ -311,7 +311,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	cinTable[currentHandle].holdAtEnd = (systemBits & CIN_hold) != 0;
 	cinTable[currentHandle].alterGameState = (systemBits & CIN_system) != 0;
 	cinTable[currentHandle].playonwalls = 1;
-	cinTable[currentHandle].Cin->silent = (systemBits & CIN_silent) != 0;
+	cinTable[currentHandle].Cin->Silent = (systemBits & CIN_silent) != 0;
 	cinTable[currentHandle].shader = (systemBits & CIN_shader) != 0;
 
 	if (cinTable[currentHandle].alterGameState) {
@@ -347,7 +347,7 @@ void CIN_SetExtents (int handle, int x, int y, int w, int h) {
 	cinTable[handle].ypos = y;
 	cinTable[handle].width = w;
 	cinTable[handle].height = h;
-	cinTable[handle].Cin->dirty = qtrue;
+	cinTable[handle].Cin->Dirty = qtrue;
 }
 
 void CIN_SetLooping(int handle, qboolean loop) {
@@ -367,7 +367,7 @@ void CIN_DrawCinematic (int handle) {
 
 	if (handle < 0 || handle>= MAX_VIDEO_HANDLES || cinTable[handle].status == FMV_EOF) return;
 
-	if (!cinTable[handle].Cin->buf)
+	if (!cinTable[handle].Cin->OutputFrame)
 	{
 		return;
 	}
@@ -376,11 +376,11 @@ void CIN_DrawCinematic (int handle) {
 	y = cinTable[handle].ypos;
 	w = cinTable[handle].width;
 	h = cinTable[handle].height;
-	buf = cinTable[handle].Cin->buf;
+	buf = cinTable[handle].Cin->OutputFrame;
 	SCR_AdjustFrom640( &x, &y, &w, &h );
 
-	re.DrawStretchRaw( x, y, w, h, cinTable[handle].Cin->xsize, cinTable[handle].Cin->ysize, buf, handle, cinTable[handle].Cin->dirty);
-	cinTable[handle].Cin->dirty = qfalse;
+	re.DrawStretchRaw( x, y, w, h, cinTable[handle].Cin->Width, cinTable[handle].Cin->Height, buf, handle, cinTable[handle].Cin->Dirty);
+	cinTable[handle].Cin->Dirty = qfalse;
 }
 
 void CL_PlayCinematic_f(void) {
@@ -410,7 +410,7 @@ void CL_PlayCinematic_f(void) {
 	if (CL_handle >= 0) {
 		do {
 			SCR_RunCinematic();
-		} while (cinTable[currentHandle].Cin->buf == NULL && cinTable[currentHandle].status == FMV_PLAY);		// wait for first frame (load codebook and sound)
+		} while (cinTable[currentHandle].Cin->OutputFrame == NULL && cinTable[currentHandle].status == FMV_PLAY);		// wait for first frame (load codebook and sound)
 	}
 }
 
@@ -438,22 +438,23 @@ void SCR_StopCinematic(void) {
 
 void CIN_UploadCinematic(int handle) {
 	if (handle >= 0 && handle < MAX_VIDEO_HANDLES) {
-		if (!cinTable[handle].Cin->buf)
+		if (!cinTable[handle].Cin->OutputFrame)
 		{
 			return;
 		}
-		if (cinTable[handle].playonwalls <= 0 && cinTable[handle].Cin->dirty) {
+		if (cinTable[handle].playonwalls <= 0 && cinTable[handle].Cin->Dirty)
+		{
 			if (cinTable[handle].playonwalls == 0) {
 				cinTable[handle].playonwalls = -1;
 			} else {
 				if (cinTable[handle].playonwalls == -1) {
 					cinTable[handle].playonwalls = -2;
 				} else {
-					cinTable[handle].Cin->dirty = qfalse;
+					cinTable[handle].Cin->Dirty = qfalse;
 				}
 			}
 		}
-		re.UploadCinematic( 256, 256, 256, 256, cinTable[handle].Cin->buf, handle, cinTable[handle].Cin->dirty);
+		re.UploadCinematic( 256, 256, 256, 256, cinTable[handle].Cin->OutputFrame, handle, cinTable[handle].Cin->Dirty);
 		if (cl_inGameVideo->integer == 0 && cinTable[handle].playonwalls == 1) {
 			cinTable[handle].playonwalls--;
 		}

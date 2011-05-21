@@ -124,19 +124,19 @@ qboolean SCR_DrawCinematic (void)
 
 	if (cin.Cin)
 	{
-		if (!cin.Cin->buf)
+		if (!cin.Cin->OutputFrame)
 			return true;
 
 		re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
-			cin.Cin->width, cin.Cin->height, cin.Cin->buf);
+			cin.Cin->Width, cin.Cin->Height, cin.Cin->OutputFrame);
 	}
 	else
 	{
-		if (!cin.Pcx->buf)
+		if (!cin.Pcx->OutputFrame)
 			return true;
 
 		re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
-			cin.Pcx->width, cin.Pcx->height, cin.Pcx->buf);
+			cin.Pcx->Width, cin.Pcx->Height, cin.Pcx->OutputFrame);
 	}
 
 	return true;
@@ -165,7 +165,9 @@ void SCR_PlayCinematic (char *arg)
 		cls.state = ca_active;
 		if (!cin.Pcx->Open(name))
 		{
-			Com_Printf ("%s not found.\n", name);
+			delete cin.Pcx;
+			cin.Pcx = NULL;
+			GLog.Write("%s not found.\n", name);
 			cl.cinematictime = 0;
 		}
 		return;
@@ -176,6 +178,7 @@ void SCR_PlayCinematic (char *arg)
 	if (!cin.Cin->Open(name))
 	{
 		delete cin.Cin;
+		cin.Cin = NULL;
 //		Com_Error (ERR_DROP, "Cinematic %s not found.\n", name);
 		SCR_FinishCinematic ();
 		cl.cinematictime = 0;	// done

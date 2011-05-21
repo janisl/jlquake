@@ -213,13 +213,13 @@ bool QCinematicRoq::Update(int NewTime)
 
 void QCinematicRoq::readQuadInfo(byte* qData)
 {
-	xsize = qData[0] + qData[1] * 256;
-	ysize = qData[2] + qData[3] * 256;
+	Width = qData[0] + qData[1] * 256;
+	Height = qData[2] + qData[3] * 256;
 	maxsize = qData[4] + qData[5] * 256;
 	minsize = qData[6] + qData[7] * 256;
 	
-	samplesPerLine = xsize * 4;
-	screenDelta = ysize * samplesPerLine;
+	samplesPerLine = Width * 4;
+	screenDelta = Height * samplesPerLine;
 
 	t[0] = screenDelta;
 	t[1] = -screenDelta;
@@ -233,15 +233,15 @@ void QCinematicRoq::readQuadInfo(byte* qData)
 
 void QCinematicRoq::setupQuad()
 {
-	long numQuadCels = (xsize * ysize) / 16;
+	long numQuadCels = (Width * Height) / 16;
 	numQuadCels += numQuadCels / 4;
 	numQuadCels += 64;							  // for overflow
 
 	onQuad = 0;
 
-	for (long y = 0; y < (long)ysize; y+=16)
+	for (int y = 0; y < Height; y+=16)
 	{
-		for (long x = 0; x < (long)xsize; x += 16)
+		for (int x = 0; x < Width; x += 16)
 		{
 			recurseQuad(x, y, 16);
 		}
@@ -262,7 +262,7 @@ void QCinematicRoq::setupQuad()
 
 void QCinematicRoq::recurseQuad(long startX, long startY, long quadSize)
 {
-	if ((startX >= 0) && (startX + quadSize) <= xsize && (startY + quadSize) <= ysize && (startY >= 0) && quadSize <= MAXSIZE)
+	if ((startX >= 0) && (startX + quadSize) <= Width && (startY + quadSize) <= Height && (startY >= 0) && quadSize <= MAXSIZE)
 	{
 		byte* scroff = linbuf + startY * samplesPerLine + startX * 4;
 
@@ -368,16 +368,21 @@ static long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int
 
 void QCinematicRoq::RoQPrepMcomp(long xoff, long yoff)
 {
-	long i, j, x, y, temp, temp2;
-
-	i=samplesPerLine; j = 4;
-	if ( xsize == (ysize*4) ) { j = j+j; i = i+i; }
+	long i = samplesPerLine;
+	long j = 4;
+	if (Width == (Height * 4))
+	{
+		j = j + j;
+		i = i + i;
+	}
 	
-	for(y=0;y<16;y++) {
-		temp2 = (y+yoff-8)*i;
-		for(x=0;x<16;x++) {
-			temp = (x+xoff-8)*j;
-			mcomp[(x*16)+y] = normalBuffer0-(temp2+temp);
+	for (long y = 0; y < 16; y++)
+	{
+		long temp2 = (y + yoff - 8) * i;
+		for (long x = 0; x < 16; x++)
+		{
+			long temp = (x + xoff - 8) * j;
+			mcomp[(x * 16) + y] = normalBuffer0 - (temp2 + temp);
 		}
 	}
 }
@@ -745,22 +750,22 @@ redump:
 			normalBuffer0 = t[1];
 			RoQPrepMcomp(roqF0, roqF1);
 			blitVQQuad32fs(qStatus[1], framedata);
-			buf = linbuf + screenDelta;
+			OutputFrame = linbuf + screenDelta;
 		}
 		else
 		{
 			normalBuffer0 = t[0];
 			RoQPrepMcomp(roqF0, roqF1);
 			blitVQQuad32fs(qStatus[0], framedata);
-			buf = linbuf;
+			OutputFrame = linbuf;
 		}
 		if (numQuads == 0)
 		{
 			// first frame
-			Com_Memcpy(linbuf + screenDelta, linbuf, samplesPerLine * ysize);
+			Com_Memcpy(linbuf + screenDelta, linbuf, samplesPerLine * Height);
 		}
 		numQuads++;
-		dirty = true;
+		Dirty = true;
 		break;
 
 	case ROQ_CODEBOOK:
@@ -768,7 +773,7 @@ redump:
 		break;
 
 	case ZA_SOUND_MONO:
-		if (!silent)
+		if (!Silent)
 		{
 			int ssize = RllDecodeMonoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
 			S_RawSamples(ssize, 22050, 2, 1, (byte*)sbuf, 1.0f);
@@ -776,7 +781,7 @@ redump:
 		break;
 
 	case ZA_SOUND_STEREO:
-		if (!silent)
+		if (!Silent)
 		{
 			if (numQuads == -1)
 			{

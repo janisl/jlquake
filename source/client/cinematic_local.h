@@ -22,11 +22,18 @@ class QCinematic : public QInterface
 {
 public:
 	char		Name[MAX_OSPATH];
-
-	byte*		buf;
+	int			Width;
+	int			Height;
+	byte*		OutputFrame;
+	bool		Dirty;
+	bool		Silent;
 
 	QCinematic()
-	: buf(NULL)
+	: Width(0)
+	, Height(0)
+	, OutputFrame(NULL)
+	, Dirty(false)
+	, Silent(false)
 	{
 		Name[0] = 0;
 	}
@@ -69,9 +76,6 @@ public:
 	int		s_width;
 	int		s_channels;
 
-	int		width;
-	int		height;
-
 	QCinematicCin()
 	: cinematic_file(0)
 	, cinematicframe(0)
@@ -96,9 +100,6 @@ public:
 class QCinematicPcx : public QCinematic
 {
 public:
-	int		width;
-	int		height;
-
 	QCinematicPcx()
 	{}
 	~QCinematicPcx();
@@ -157,11 +158,6 @@ private:
 	bool ReadFrame();
 
 public:
-	unsigned int		xsize;
-	unsigned int		ysize;
-	bool				dirty;
-	bool				silent;
-
 	QCinematicRoq()
 	: samplesPerLine(0)
 	, normalBuffer0(0)
@@ -178,12 +174,8 @@ public:
 	, roqF1(0)
 	, inMemory(0)
 	, roqFPS(0)
-	, numQuads(0)
-	, xsize(0)
-	, ysize(0)
 	, iFile(0)
-	, dirty(false)
-	, silent(false)
+	, numQuads(0)
 	{}
 	~QCinematicRoq();
 	bool Open(const char* FileName);
