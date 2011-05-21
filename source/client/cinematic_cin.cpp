@@ -65,7 +65,7 @@ QCinematicCin::~QCinematicCin()
 	if (cinematic_file)
 	{
 		FS_FCloseFile(cinematic_file);
-		cinematic_file = NULL;
+		cinematic_file = 0;
 	}
 	if (hnodes1)
 	{
@@ -450,4 +450,52 @@ QCinematicCin::cblock_t QCinematicCin::Huff1Decompress(QCinematicCin::cblock_t i
 	out.count = out_p - out.data;
 
 	return out;
+}
+
+//==========================================================================
+//
+//	QCinematicCin::GetCinematicTime
+//
+//==========================================================================
+
+int QCinematicCin::GetCinematicTime() const
+{
+	return cinematicframe * 1000 / 14;
+}
+
+//==========================================================================
+//
+//	QCinematicCin::Reset
+//
+//==========================================================================
+
+void QCinematicCin::Reset()
+{
+	if (pic)
+	{
+		delete[] pic;
+		pic = NULL;
+	}
+	if (pic_pending)
+	{
+		delete[] pic_pending;
+		pic_pending = NULL;
+	}
+	if (pic32)
+	{
+		delete[] pic32;
+		pic32 = NULL;
+	}
+	if (cinematic_file)
+	{
+		FS_FCloseFile(cinematic_file);
+		cinematic_file = 0;
+	}
+	if (hnodes1)
+	{
+		delete[] hnodes1;
+		hnodes1 = NULL;
+	}
+
+	Open(Name);
 }

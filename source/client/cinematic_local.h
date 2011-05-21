@@ -37,6 +37,10 @@ public:
 	{
 		Name[0] = 0;
 	}
+	virtual bool Open(const char* FileName) = 0;
+	virtual bool Update(int NewTime) = 0;
+	virtual int GetCinematicTime() const = 0;
+	virtual void Reset() = 0;
 };
 
 //
@@ -60,6 +64,10 @@ private:
 	byte*	pic_pending;
 	byte*	pic32;
 
+	int		s_rate;
+	int		s_width;
+	int		s_channels;
+
 	int		h_used[512];
 	int		h_count[512];
 
@@ -69,29 +77,26 @@ private:
 
 	void Huff1TableInit();
 	int SmallestNode1(int numhnodes);
+	byte* ReadNextFrame();
 	cblock_t Huff1Decompress(cblock_t in);
 
 public:
-	int		s_rate;
-	int		s_width;
-	int		s_channels;
-
 	QCinematicCin()
 	: cinematic_file(0)
 	, cinematicframe(0)
 	, pic(NULL)
 	, pic_pending(NULL)
 	, pic32(NULL)
+	, s_rate(0)
+	, s_width(0)
+	, s_channels(0)
 	, hnodes1(NULL)
 	{}
 	~QCinematicCin();
 	bool Open(const char* FileName);
 	bool Update(int NewTime);
-	byte* ReadNextFrame();
-	int GetCinematicTime() const
-	{
-		return cinematicframe * 1000 / 14;
-	}
+	int GetCinematicTime() const;
+	void Reset();
 };
 
 //
@@ -104,6 +109,9 @@ public:
 	{}
 	~QCinematicPcx();
 	bool Open(const char* FileName);
+	bool Update(int NewTime);
+	int GetCinematicTime() const;
+	void Reset();
 };
 
 //
@@ -180,5 +188,6 @@ public:
 	~QCinematicRoq();
 	bool Open(const char* FileName);
 	bool Update(int NewTime);
+	int GetCinematicTime() const;
 	void Reset();
 };

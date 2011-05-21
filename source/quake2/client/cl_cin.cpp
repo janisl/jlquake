@@ -22,8 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	QCinematicCin*	Cin;
-	QCinematicPcx*	Pcx;
+	QCinematic*		Cin;
 } cinematics_t;
 
 cinematics_t	cin;
@@ -42,11 +41,6 @@ void SCR_StopCinematic (void)
 	{
 		delete cin.Cin;
 		cin.Cin = NULL;
-	}
-	if (cin.Pcx)
-	{
-		delete cin.Pcx;
-		cin.Pcx = NULL;
 	}
 }
 
@@ -81,11 +75,9 @@ void SCR_RunCinematic (void)
 		return;
 	}
 
-	if (cin.Pcx)
-		return;		// static image
-
 	if (in_keyCatchers != 0)
-	{	// pause if menu or console is up
+	{
+		// pause if menu or console is up
 		cl.cinematictime = cls.realtime - cin.Cin->GetCinematicTime();
 		return;
 	}
@@ -122,22 +114,11 @@ qboolean SCR_DrawCinematic (void)
 		return true;
 	}
 
-	if (cin.Cin)
-	{
-		if (!cin.Cin->OutputFrame)
-			return true;
+	if (!cin.Cin->OutputFrame)
+		return true;
 
-		re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
-			cin.Cin->Width, cin.Cin->Height, cin.Cin->OutputFrame);
-	}
-	else
-	{
-		if (!cin.Pcx->OutputFrame)
-			return true;
-
-		re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
-			cin.Pcx->Width, cin.Pcx->Height, cin.Pcx->OutputFrame);
-	}
+	re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
+		cin.Cin->Width, cin.Cin->Height, cin.Cin->OutputFrame);
 
 	return true;
 }
@@ -158,15 +139,15 @@ void SCR_PlayCinematic (char *arg)
 	dot = strstr (arg, ".");
 	if (dot && !QStr::Cmp(dot, ".pcx"))
 	{	// static pcx image
-		cin.Pcx = new QCinematicPcx();
+		cin.Cin = new QCinematicPcx();
 		QStr::Sprintf (name, sizeof(name), "pics/%s", arg);
 		cl.cinematictime = 1;
 		SCR_EndLoadingPlaque ();
 		cls.state = ca_active;
-		if (!cin.Pcx->Open(name))
+		if (!cin.Cin->Open(name))
 		{
-			delete cin.Pcx;
-			cin.Pcx = NULL;
+			delete cin.Cin;
+			cin.Cin = NULL;
 			GLog.Write("%s not found.\n", name);
 			cl.cinematictime = 0;
 		}

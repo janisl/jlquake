@@ -52,7 +52,7 @@ typedef struct {
 } cinematics_t;
 
 typedef struct {
-	QCinematicRoq*		Cin;
+	QCinematic*			Cin;
 
 	int					xpos, ypos, width, height;
 	qboolean			looping, holdAtEnd, alterGameState, shader;
