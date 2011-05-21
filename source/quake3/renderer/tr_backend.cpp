@@ -419,6 +419,11 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 	}
 	R_SyncRenderThread();
 
+	// finish any 2D drawing if needed
+	if ( tess.numIndexes ) {
+		RB_EndSurface();
+	}
+
 	// we definately want to sync every frame for the cinematics
 	qglFinish();
 
