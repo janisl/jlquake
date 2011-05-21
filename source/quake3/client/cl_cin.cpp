@@ -48,10 +48,6 @@ extern	int		s_rawend;
 ******************************************************************************/
 
 typedef struct {
-	int					currentHandle;
-} cinematics_t;
-
-typedef struct {
 	QCinematic*			Cin;
 
 	int					xpos, ypos, width, height;
@@ -63,7 +59,6 @@ typedef struct {
 	int					playonwalls;
 } cin_cache;
 
-static cinematics_t		cin;
 static cin_cache		cinTable[MAX_VIDEO_HANDLES];
 static int				currentHandle = -1;
 static int				CL_handle = -1;
@@ -196,9 +191,9 @@ e_status CIN_RunCinematic (int handle)
 
 	if (handle < 0 || handle>= MAX_VIDEO_HANDLES || cinTable[handle].status == FMV_EOF) return FMV_EOF;
 
-	if (cin.currentHandle != handle) {
+	if (currentHandle != handle)
+	{
 		currentHandle = handle;
-		cin.currentHandle = currentHandle;
 		cinTable[currentHandle].status = FMV_EOF;
 		RoQReset();
 	}
@@ -281,10 +276,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	Com_DPrintf("SCR_PlayCinematic( %s )\n", arg);
 
-	Com_Memset(&cin, 0, sizeof(cinematics_t) );
 	currentHandle = CIN_HandleForVideo();
-
-	cin.currentHandle = currentHandle;
 
 	cinTable[currentHandle].Cin = CIN_Open(name);
 
