@@ -19,11 +19,22 @@
 
 #include "client.h"
 #include "cinematic_local.h"
+#include "sound_local.h"
 
 // MACROS ------------------------------------------------------------------
 
 #define MAXSIZE				8
 #define MINSIZE				4
+
+#define ROQ_QUAD			0x1000
+#define ROQ_QUAD_INFO		0x1001
+#define ROQ_CODEBOOK		0x1002
+#define ROQ_QUAD_VQ			0x1011
+#define ROQ_QUAD_JPEG		0x1012
+#define ROQ_QUAD_HANG		0x1013
+#define ROQ_PACKET			0x1030
+#define ZA_SOUND_MONO		0x1020
+#define ZA_SOUND_STEREO		0x1021
 
 // TYPES -------------------------------------------------------------------
 
@@ -54,6 +65,21 @@ static unsigned short	vq8[256 * 256 * 4];
 static int				mcomp[256];
 
 // CODE --------------------------------------------------------------------
+
+//==========================================================================
+//
+//	QCinematicRoq::~QCinematicRoq
+//
+//==========================================================================
+
+QCinematicRoq::~QCinematicRoq()
+{
+	if (iFile)
+	{
+		FS_FCloseFile(iFile);
+		iFile = 0;
+	}
+}
 
 //==========================================================================
 //
@@ -102,10 +128,87 @@ static void RllSetupTable()
 //
 //==========================================================================
 
-void initRoQ()
+static void initRoQ()
 {
 	ROQ_GenYUVTables();
 	RllSetupTable();
+}
+
+//==========================================================================
+//
+//	QCinematicRoq::Open
+//
+//==========================================================================
+
+bool QCinematicRoq::Open(const char* FileName)
+{
+	QStr::Cpy(fileName, FileName);
+	ROQSize = FS_FOpenFileRead(fileName, &iFile, true);
+
+	if (ROQSize <= 0)
+	{
+		GLog.DWrite("play(%s), ROQSize<=0\n", FileName);
+		return false;
+	}
+
+	initRoQ();
+
+	FS_Read(file, 16, iFile);
+
+	unsigned short RoQID = (unsigned short)(file[0]) + (unsigned short)(file[1]) * 256;
+	if (RoQID != 0x1084)
+	{
+		GLog.DWrite("trFMV::play(), invalid RoQ ID\n");
+		return false;
+	}
+
+	init();
+	return true;
+}
+
+//==========================================================================
+//
+//	QCinematicRoq::init
+//
+//==========================================================================
+
+void QCinematicRoq::init()
+{
+	RoQPlayed = 24;
+
+	//	get frame rate
+	roqFPS = file[6] + file[7] * 256;
+	
+	if (!roqFPS)
+	{
+		roqFPS = 30;
+	}
+
+	numQuads = -1;
+
+	roq_id = file[8] + file[9] * 256;
+	RoQFrameSize = file[10] + file[11] * 256 + file[12] * 65536;
+	roq_flags = file[14] + file[15]*256;
+}
+
+//==========================================================================
+//
+//	QCinematicRoq::Update
+//
+//==========================================================================
+
+bool QCinematicRoq::Update(int NewTime)
+{
+	int tfps = (NewTime * 3) / 100;
+
+	while (tfps != numQuads)
+	{
+		if (!ReadFrame())
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 //==========================================================================
@@ -216,7 +319,7 @@ void QCinematicRoq::recurseQuad(long startX, long startY, long quadSize)
 //
 //==========================================================================
 
-long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
+static long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
 {
 	int prev;
 	if (signedOutput)
@@ -253,7 +356,7 @@ long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, ch
 //
 //==========================================================================
 
-long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
+static long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag)
 {
 	int prevL, prevR;
 	if (signedOutput)
@@ -563,7 +666,7 @@ static void yuv_to_rgb24(long y, long u, long v, byte* out)
 //
 //==========================================================================
 
-void decodeCodeBook(byte* input, unsigned short roq_flags)
+static void decodeCodeBook(byte* input, unsigned short roq_flags)
 {
 	int two, four;
 	if (!roq_flags)
@@ -633,4 +736,154 @@ void decodeCodeBook(byte* input, unsigned short roq_flags)
 			VQ2TO4(iaptr, ibptr, icptr, idptr);
 		}
 	}
+}
+
+//==========================================================================
+//
+//	QCinematicRoq::ReadFrame
+//
+//==========================================================================
+
+bool QCinematicRoq::ReadFrame()
+{
+	FS_Read(file, RoQFrameSize + 8, iFile);
+	if (RoQPlayed >= ROQSize)
+	{ 
+		return false;
+	}
+
+	short sbuf[32768];
+        
+	byte* framedata = file;
+//
+// new frame is ready
+//
+redump:
+	switch (roq_id)
+	{
+	case ROQ_QUAD_VQ:
+		if (numQuads & 1)
+		{
+			normalBuffer0 = t[1];
+			RoQPrepMcomp(roqF0, roqF1);
+			blitVQQuad32fs(qStatus[1], framedata);
+			buf = linbuf + screenDelta;
+		}
+		else
+		{
+			normalBuffer0 = t[0];
+			RoQPrepMcomp(roqF0, roqF1);
+			blitVQQuad32fs(qStatus[0], framedata);
+			buf = linbuf;
+		}
+		if (numQuads == 0)
+		{
+			// first frame
+			Com_Memcpy(linbuf + screenDelta, linbuf, samplesPerLine * ysize);
+		}
+		numQuads++;
+		dirty = true;
+		break;
+
+	case ROQ_CODEBOOK:
+		decodeCodeBook(framedata, (unsigned short)roq_flags);
+		break;
+
+	case ZA_SOUND_MONO:
+		if (!silent)
+		{
+			int ssize = RllDecodeMonoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
+			S_RawSamples(ssize, 22050, 2, 1, (byte*)sbuf, 1.0f);
+		}
+		break;
+
+	case ZA_SOUND_STEREO:
+		if (!silent)
+		{
+			if (numQuads == -1)
+			{
+				S_Update();
+				s_rawend = s_soundtime;
+			}
+			int ssize = RllDecodeStereoToStereo(framedata, sbuf, RoQFrameSize, 0, (unsigned short)roq_flags);
+			S_RawSamples(ssize, 22050, 2, 2, (byte*)sbuf, 1.0f);
+		}
+		break;
+
+	case ROQ_QUAD_INFO:
+		if (numQuads == -1)
+		{
+			readQuadInfo(framedata);
+			setupQuad();
+		}
+		if (numQuads != 1)
+		{
+			numQuads = 0;
+		}
+		break;
+
+	case ROQ_PACKET:
+		inMemory = roq_flags;
+		RoQFrameSize = 0;           // for header
+		break;
+
+	case ROQ_QUAD_HANG:
+		RoQFrameSize = 0;
+		break;
+
+	case ROQ_QUAD_JPEG:
+		break;
+
+	default:
+		return false;
+	}
+
+	//
+	// read in next frame data
+	//
+	if (RoQPlayed >= ROQSize)
+	{
+		return false;
+	}
+
+	framedata += RoQFrameSize;
+	roq_id = framedata[0] + framedata[1] * 256;
+	RoQFrameSize = framedata[2] + framedata[3] * 256 + framedata[4] * 65536;
+	roq_flags = framedata[6] + framedata[7] * 256;
+	roqF0 = (char)framedata[7];
+	roqF1 = (char)framedata[6];
+
+	if (RoQFrameSize > 65536 || roq_id == 0x1084)
+	{
+		GLog.DWrite("roq_size>65536||roq_id==0x1084\n");
+		return false;
+	}
+
+	if (inMemory)
+	{
+		inMemory--;
+		framedata += 8;
+		goto redump;
+	}
+
+	//
+	// one more frame hits the dust
+	//
+	RoQPlayed += RoQFrameSize + 8;
+	return true;
+}
+
+//==========================================================================
+//
+//	QCinematicRoq::Reset
+//
+//==========================================================================
+
+void QCinematicRoq::Reset()
+{
+	FS_FCloseFile(iFile);
+	FS_FOpenFileRead(fileName, &iFile, true);
+	FS_Read(file, 16, iFile);
+
+	init();
 }

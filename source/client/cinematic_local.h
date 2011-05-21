@@ -15,6 +15,9 @@
 //**
 //**************************************************************************
 
+//
+//	Base class for cinematics.
+//
 class QCinematic : public QInterface
 {
 public:
@@ -26,6 +29,9 @@ public:
 	~QCinematic();
 };
 
+//
+//	Quake 2 CIN file.
+//
 class QCinematicCin : public QCinematic
 {
 private:
@@ -81,6 +87,9 @@ public:
 	}
 };
 
+//
+//	Quake 2 static PCX image.
+//
 class QCinematicPcx : public QCinematic
 {
 public:
@@ -93,30 +102,58 @@ public:
 	bool Open(const char* FileName);
 };
 
-#define DEFAULT_CIN_WIDTH	512
-#define DEFAULT_CIN_HEIGHT	512
-
+//
+//	Quake 3 RoQ file.
+//
 class QCinematicRoq : public QCinematic
 {
 private:
-	void recurseQuad(long startX, long startY, long quadSize);
+	enum
+	{
+		DEFAULT_CIN_WIDTH = 512,
+		DEFAULT_CIN_HEIGHT = 512,
+	};
 
-public:
 	long				samplesPerLine;
 	unsigned int		xsize;
 	unsigned int		ysize;
 	long				normalBuffer0;
 	long				screenDelta;
-	int					CIN_WIDTH;
-	int					CIN_HEIGHT;
 	long				onQuad;
 	unsigned int		maxsize;
 	unsigned int		minsize;
 	long				t[2];
+	long				ROQSize;
+	long				RoQPlayed;
+	unsigned int		RoQFrameSize;
+	unsigned int		roq_id;
+	long				roq_flags;
+	long				roqF0;
+	long				roqF1;
+	int					inMemory;
+	long				roqFPS;
+	fileHandle_t		iFile;
+	long				numQuads;
 
 	byte				file[65536];
 	byte				linbuf[DEFAULT_CIN_WIDTH * DEFAULT_CIN_HEIGHT * 4 * 2];
 	byte*				qStatus[2][32768];
+
+	void init();
+	void recurseQuad(long startX, long startY, long quadSize);
+	void readQuadInfo(byte* qData);
+	void setupQuad();
+	void RoQPrepMcomp(long xoff, long yoff);
+	void blitVQQuad32fs(byte** status, unsigned char* data);
+	bool ReadFrame();
+
+public:
+	int					CIN_WIDTH;
+	int					CIN_HEIGHT;
+	bool				dirty;
+	bool				silent;
+
+	char				fileName[MAX_OSPATH];
 
 	QCinematicRoq()
 	: samplesPerLine(0)
@@ -124,19 +161,27 @@ public:
 	, ysize(0)
 	, normalBuffer0(0)
 	, screenDelta(0)
-	, CIN_WIDTH(0)
-	, CIN_HEIGHT(0)
 	, onQuad(0)
 	, maxsize(0)
 	, minsize(0)
+	, ROQSize(0)
+	, RoQPlayed(0)
+	, RoQFrameSize(0)
+	, roq_id(0)
+	, roq_flags(0)
+	, roqF0(0)
+	, roqF1(0)
+	, inMemory(0)
+	, roqFPS(0)
+	, numQuads(0)
+	, CIN_WIDTH(0)
+	, CIN_HEIGHT(0)
+	, iFile(0)
+	, dirty(false)
+	, silent(false)
 	{}
-	void readQuadInfo(byte* qData);
-	void setupQuad();
-	void RoQPrepMcomp(long xoff, long yoff);
-	void blitVQQuad32fs(byte** status, unsigned char* data);
+	~QCinematicRoq();
+	bool Open(const char* FileName);
+	bool Update(int NewTime);
+	void Reset();
 };
-
-void initRoQ();
-long RllDecodeMonoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag);
-long RllDecodeStereoToStereo(unsigned char* from, short* to, unsigned int size, char signedOutput, unsigned short flag);
-void decodeCodeBook(byte* input, unsigned short roq_flags);
