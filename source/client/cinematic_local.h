@@ -134,8 +134,15 @@ private:
 	long				numQuads;
 
 	byte				file[65536];
+
 	byte				linbuf[DEFAULT_CIN_WIDTH * DEFAULT_CIN_HEIGHT * 4 * 2];
 	byte*				qStatus[2][32768];
+
+	unsigned short		vq2[256 * 16 * 4];
+	unsigned short		vq4[256 * 64 * 4];
+	unsigned short		vq8[256 * 256 * 4];
+
+	int					mcomp[256];
 
 	void init();
 	void recurseQuad(long startX, long startY, long quadSize);
@@ -143,6 +150,7 @@ private:
 	void setupQuad();
 	void RoQPrepMcomp(long xoff, long yoff);
 	void blitVQQuad32fs(byte** status, unsigned char* data);
+	void decodeCodeBook(byte* input);
 	bool ReadFrame();
 
 public:

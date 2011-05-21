@@ -58,12 +58,6 @@ static long				ROQ_VR_tab[256];
 
 static short			sqrTable[256];
 
-static unsigned short	vq2[256 * 16 * 4];
-static unsigned short	vq4[256 * 64 * 4];
-static unsigned short	vq8[256 * 256 * 4];
-
-static int				mcomp[256];
-
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -188,7 +182,7 @@ void QCinematicRoq::init()
 
 	roq_id = file[8] + file[9] * 256;
 	RoQFrameSize = file[10] + file[11] * 256 + file[12] * 65536;
-	roq_flags = file[14] + file[15]*256;
+	roq_flags = file[14] + file[15] * 256;
 }
 
 //==========================================================================
@@ -646,11 +640,11 @@ static void yuv_to_rgb24(long y, long u, long v, byte* out)
 
 //==========================================================================
 //
-//	decodeCodeBook
+//	QCinematicRoq::decodeCodeBook
 //
 //==========================================================================
 
-static void decodeCodeBook(byte* input, unsigned short roq_flags)
+void QCinematicRoq::decodeCodeBook(byte* input)
 {
 	int two, four;
 	if (!roq_flags)
@@ -659,7 +653,7 @@ static void decodeCodeBook(byte* input, unsigned short roq_flags)
 	}
 	else
 	{
-		two = roq_flags >> 8;
+		two = (quint16)roq_flags >> 8;
 		if (!two)
 		{
 			two = 256;
@@ -770,7 +764,7 @@ redump:
 		break;
 
 	case ROQ_CODEBOOK:
-		decodeCodeBook(framedata, (unsigned short)roq_flags);
+		decodeCodeBook(framedata);
 		break;
 
 	case ZA_SOUND_MONO:
