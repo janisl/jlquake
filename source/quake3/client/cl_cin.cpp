@@ -266,11 +266,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	char	name[MAX_OSPATH];
 	int		i;
 
-	if (strstr(arg, "/") == NULL && strstr(arg, "\\") == NULL) {
-		QStr::Sprintf (name, sizeof(name), "video/%s", arg);
-	} else {
-		QStr::Sprintf (name, sizeof(name), "%s", arg);
-	}
+	CIN_MakeFullName(arg, name);
 
 	if (!(systemBits & CIN_system))
 	{
@@ -290,18 +286,11 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 	cin.currentHandle = currentHandle;
 
-	cinTable[currentHandle].Cin = new QCinematicRoq();
+	cinTable[currentHandle].Cin = CIN_Open(name);
 
-	if (!cinTable[currentHandle].Cin->Open(name))
+	if (!cinTable[currentHandle].Cin)
 	{
-		RoQShutdown();
-		//JL at this point RoQShutdown most likely will do nothing
-		// so we still must delete cinematic object.
-		if (cinTable[currentHandle].Cin)
-		{
-			delete cinTable[currentHandle].Cin;
-			cinTable[currentHandle].Cin = NULL;
-		}
+		//RoQShutdown();
 		return -1;
 	}
 

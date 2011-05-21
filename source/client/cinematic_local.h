@@ -191,3 +191,6 @@ public:
 	int GetCinematicTime() const;
 	void Reset();
 };
+
+void CIN_MakeFullName(const char* Name, char* FullName);
+QCinematic* CIN_Open(const char* Name);

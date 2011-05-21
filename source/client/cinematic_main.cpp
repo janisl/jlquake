@@ -40,6 +40,65 @@
 
 //==========================================================================
 //
-//
+//	CIN_MakeFullName
 //
 //==========================================================================
+
+void CIN_MakeFullName(const char* Name, char* FullName)
+{
+	const char* Dot = strstr(Name, ".");
+	if (Dot && !QStr::ICmp(Dot, ".pcx"))
+	{
+		// static pcx image
+		QStr::Sprintf(FullName, MAX_QPATH, "pics/%s", Name);
+	}
+	if (strstr(Name, "/") == NULL && strstr(Name, "\\") == NULL)
+	{
+		QStr::Sprintf(FullName, MAX_QPATH, "video/%s", Name);
+	}
+	else
+	{
+		QStr::Sprintf(FullName, MAX_QPATH, "%s", Name);
+	}
+}
+
+//==========================================================================
+//
+//	CIN_Open
+//
+//==========================================================================
+
+QCinematic* CIN_Open(const char* Name)
+{
+	const char* dot = strstr(Name, ".");
+	if (dot && !QStr::ICmp(dot, ".pcx"))
+	{
+		// static pcx image
+		QCinematicPcx* Cin = new QCinematicPcx();
+		if (!Cin->Open(Name))
+		{
+			delete Cin;
+			return NULL;
+		}
+		return Cin;
+	}
+
+	if (dot && !QStr::ICmp(dot, ".cin"))
+	{
+		QCinematicCin* Cin = new QCinematicCin();
+		if (!Cin->Open(Name))
+		{
+			delete Cin;
+			return NULL;
+		}
+		return Cin;
+	}
+
+	QCinematicRoq* Cin = new QCinematicRoq();
+	if (!Cin->Open(Name))
+	{
+		delete Cin;
+		return NULL;
+	}
+	return Cin;
+}

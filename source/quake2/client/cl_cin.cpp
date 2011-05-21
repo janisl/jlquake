@@ -131,37 +131,16 @@ SCR_PlayCinematic
 */
 void SCR_PlayCinematic (char *arg)
 {
-	char	name[MAX_OSPATH], *dot;
-
 	// make sure CD isn't playing music
 	CDAudio_Stop();
 
-	dot = strstr (arg, ".");
-	if (dot && !QStr::Cmp(dot, ".pcx"))
-	{	// static pcx image
-		cin.Cin = new QCinematicPcx();
-		QStr::Sprintf (name, sizeof(name), "pics/%s", arg);
-		cl.cinematictime = 1;
-		SCR_EndLoadingPlaque ();
-		cls.state = ca_active;
-		if (!cin.Cin->Open(name))
-		{
-			delete cin.Cin;
-			cin.Cin = NULL;
-			GLog.Write("%s not found.\n", name);
-			cl.cinematictime = 0;
-		}
-		return;
-	}
+	char FullName[MAX_QPATH];
+	CIN_MakeFullName(arg, FullName);
 
-	cin.Cin = new QCinematicCin();
-	QStr::Sprintf (name, sizeof(name), "video/%s", arg);
-	if (!cin.Cin->Open(name))
+	cin.Cin = CIN_Open(FullName);
+	if (!cin.Cin)
 	{
-		delete cin.Cin;
-		cin.Cin = NULL;
-//		Com_Error (ERR_DROP, "Cinematic %s not found.\n", name);
-		SCR_FinishCinematic ();
+		SCR_FinishCinematic();
 		cl.cinematictime = 0;	// done
 		return;
 	}
