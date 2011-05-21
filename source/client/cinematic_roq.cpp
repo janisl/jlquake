@@ -136,8 +136,8 @@ static void initRoQ()
 
 bool QCinematicRoq::Open(const char* FileName)
 {
-	QStr::Cpy(fileName, FileName);
-	ROQSize = FS_FOpenFileRead(fileName, &iFile, true);
+	QStr::Cpy(Name, FileName);
+	ROQSize = FS_FOpenFileRead(Name, &iFile, true);
 
 	if (ROQSize <= 0)
 	{
@@ -860,7 +860,7 @@ redump:
 void QCinematicRoq::Reset()
 {
 	FS_FCloseFile(iFile);
-	FS_FOpenFileRead(fileName, &iFile, true);
+	FS_FOpenFileRead(Name, &iFile, true);
 	FS_Read(file, 16, iFile);
 
 	init();

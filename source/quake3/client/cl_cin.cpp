@@ -162,7 +162,7 @@ e_status CIN_StopCinematic(int handle) {
 	if (handle < 0 || handle>= MAX_VIDEO_HANDLES || cinTable[handle].status == FMV_EOF) return FMV_EOF;
 	currentHandle = handle;
 
-	Com_DPrintf("trFMV::stop(), closing %s\n", cinTable[currentHandle].Cin->fileName);
+	Com_DPrintf("trFMV::stop(), closing %s\n", cinTable[currentHandle].Cin->Name);
 
 	if (!cinTable[currentHandle].Cin->buf)
 	{
@@ -272,9 +272,12 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 		QStr::Sprintf (name, sizeof(name), "%s", arg);
 	}
 
-	if (!(systemBits & CIN_system)) {
-		for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ ) {
-			if (cinTable[i].Cin && !QStr::Cmp(cinTable[i].Cin->fileName, name) ) {
+	if (!(systemBits & CIN_system))
+	{
+		for ( i = 0 ; i < MAX_VIDEO_HANDLES ; i++ )
+		{
+			if (cinTable[i].Cin && !QStr::Cmp(cinTable[i].Cin->Name, name))
+			{
 				return i;
 			}
 		}

@@ -21,12 +21,15 @@
 class QCinematic : public QInterface
 {
 public:
+	char		Name[MAX_OSPATH];
+
 	byte*		buf;
 
 	QCinematic()
 	: buf(NULL)
-	{}
-	~QCinematic();
+	{
+		Name[0] = 0;
+	}
 };
 
 //
@@ -158,8 +161,6 @@ public:
 	unsigned int		ysize;
 	bool				dirty;
 	bool				silent;
-
-	char				fileName[MAX_OSPATH];
 
 	QCinematicRoq()
 	: samplesPerLine(0)
