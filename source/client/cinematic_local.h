@@ -115,8 +115,6 @@ private:
 	};
 
 	long				samplesPerLine;
-	unsigned int		xsize;
-	unsigned int		ysize;
 	long				normalBuffer0;
 	long				screenDelta;
 	long				onQuad;
@@ -148,8 +146,8 @@ private:
 	bool ReadFrame();
 
 public:
-	int					CIN_WIDTH;
-	int					CIN_HEIGHT;
+	unsigned int		xsize;
+	unsigned int		ysize;
 	bool				dirty;
 	bool				silent;
 
@@ -157,8 +155,6 @@ public:
 
 	QCinematicRoq()
 	: samplesPerLine(0)
-	, xsize(0)
-	, ysize(0)
 	, normalBuffer0(0)
 	, screenDelta(0)
 	, onQuad(0)
@@ -174,8 +170,8 @@ public:
 	, inMemory(0)
 	, roqFPS(0)
 	, numQuads(0)
-	, CIN_WIDTH(0)
-	, CIN_HEIGHT(0)
+	, xsize(0)
+	, ysize(0)
 	, iFile(0)
 	, dirty(false)
 	, silent(false)

@@ -224,11 +224,8 @@ void QCinematicRoq::readQuadInfo(byte* qData)
 	maxsize = qData[4] + qData[5] * 256;
 	minsize = qData[6] + qData[7] * 256;
 	
-	CIN_HEIGHT = ysize;
-	CIN_WIDTH  = xsize;
-
-	samplesPerLine = CIN_WIDTH * 4;
-	screenDelta = CIN_HEIGHT * samplesPerLine;
+	samplesPerLine = xsize * 4;
+	screenDelta = ysize * samplesPerLine;
 
 	t[0] = screenDelta;
 	t[1] = -screenDelta;
@@ -243,7 +240,7 @@ void QCinematicRoq::readQuadInfo(byte* qData)
 void QCinematicRoq::setupQuad()
 {
 	long numQuadCels = (xsize * ysize) / 16;
-	numQuadCels += numQuadCels/4;
+	numQuadCels += numQuadCels / 4;
 	numQuadCels += 64;							  // for overflow
 
 	onQuad = 0;
@@ -271,22 +268,9 @@ void QCinematicRoq::setupQuad()
 
 void QCinematicRoq::recurseQuad(long startX, long startY, long quadSize)
 {
-	long bigx = xsize;
-	long bigy = ysize;
-
-	if (bigx > CIN_WIDTH)
+	if ((startX >= 0) && (startX + quadSize) <= xsize && (startY + quadSize) <= ysize && (startY >= 0) && quadSize <= MAXSIZE)
 	{
-		bigx = CIN_WIDTH;
-	}
-	if (bigy > CIN_HEIGHT)
-	{
-		bigy = CIN_HEIGHT;
-	}
-
-	if ((startX >= 0) && (startX + quadSize) <= bigx && (startY + quadSize) <= bigy && (startY >= 0) && quadSize <= MAXSIZE)
-	{
-		long useY = startY;
-		byte* scroff = linbuf + (useY + ((CIN_HEIGHT - bigy) >> 1)) * (samplesPerLine) + (startX * 4);
+		byte* scroff = linbuf + startY * samplesPerLine + startX * 4;
 
 		qStatus[0][onQuad] = scroff;
 		qStatus[1][onQuad++] = scroff + screenDelta;
