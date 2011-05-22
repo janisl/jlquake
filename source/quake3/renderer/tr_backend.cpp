@@ -224,7 +224,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 	// we don't want to pump the event loop too often and waste time, so
 	// we are going to check every shader change
-	macEventTime = ri.Milliseconds() + MAC_EVENT_PUMP_MSEC;
+	macEventTime = CL_ScaledMilliseconds() + MAC_EVENT_PUMP_MSEC;
 #endif
 
 	// save original time for entity shader offsets
@@ -264,7 +264,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 #ifdef __MACOS__	// crutch up the mac's limited buffer queue size
 				int		t;
 
-				t = ri.Milliseconds();
+				t = CL_ScaledMilliseconds();
 				if ( t > macEventTime ) {
 					macEventTime = t + MAC_EVENT_PUMP_MSEC;
 					Sys_PumpEvents();
@@ -396,7 +396,7 @@ void	RB_SetGL2D (void) {
 	qglDisable( GL_CLIP_PLANE0 );
 
 	// set time for 2D shaders
-	backEnd.refdef.time = ri.Milliseconds();
+	backEnd.refdef.time = CL_ScaledMilliseconds();
 	backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
 }
 
@@ -428,13 +428,13 @@ void RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 
 	start = end = 0;
 	if ( r_speeds->integer ) {
-		start = ri.Milliseconds();
+		start = CL_ScaledMilliseconds();
 	}
 
 	R_UploadCinematic(cols, rows, data, client, dirty);
 
 	if ( r_speeds->integer ) {
-		end = ri.Milliseconds();
+		end = CL_ScaledMilliseconds();
 		ri.Printf( PRINT_ALL, "qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
 	}
 
@@ -621,7 +621,7 @@ void RB_ShowImages( void ) {
 
 	qglFinish();
 
-	start = ri.Milliseconds();
+	start = CL_ScaledMilliseconds();
 
 	for ( i=0 ; i<tr.numImages ; i++ ) {
 		image = tr.images[i];
@@ -652,7 +652,7 @@ void RB_ShowImages( void ) {
 
 	qglFinish();
 
-	end = ri.Milliseconds();
+	end = CL_ScaledMilliseconds();
 	ri.Printf( PRINT_ALL, "%i msec to draw all images\n", end - start );
 
 }
@@ -722,7 +722,7 @@ smp extensions, or asynchronously by another thread.
 void RB_ExecuteRenderCommands( const void *data ) {
 	int		t1, t2;
 
-	t1 = ri.Milliseconds ();
+	t1 = CL_ScaledMilliseconds ();
 
 	if ( !r_smp->integer || data == backEndData[0]->commands.cmds ) {
 		backEnd.smpFrame = 0;
@@ -754,7 +754,7 @@ void RB_ExecuteRenderCommands( const void *data ) {
 		case RC_END_OF_LIST:
 		default:
 			// stop rendering on this thread
-			t2 = ri.Milliseconds ();
+			t2 = CL_ScaledMilliseconds ();
 			backEnd.pc.msec = t2 - t1;
 			return;
 		}

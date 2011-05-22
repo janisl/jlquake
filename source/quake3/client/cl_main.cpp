@@ -2169,7 +2169,6 @@ void CL_InitRef( void ) {
 
 	ri.Printf = CL_RefPrintf;
 	ri.Error = Com_Error;
-	ri.Milliseconds = CL_ScaledMilliseconds;
 	ri.Malloc = CL_RefMalloc;
 	ri.Free = Z_Free;
 #ifdef HUNK_DEBUG

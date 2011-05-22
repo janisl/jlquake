@@ -108,10 +108,6 @@ typedef struct {
 	// abort the game
 	void	(QDECL *Error)( int errorLevel, const char *fmt, ...);
 
-	// milliseconds should only be used for profiling, never
-	// for anything game related.  Get time from the refdef
-	int		(*Milliseconds)( void );
-
 	// stack based memory allocation for per-level things that
 	// won't be freed
 #ifdef HUNK_DEBUG
