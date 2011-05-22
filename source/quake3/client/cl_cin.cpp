@@ -87,8 +87,6 @@ static int CIN_HandleForVideo()
 	throw QDropException("CIN_HandleForVideo: none free");
 }
 
-extern int CL_ScaledMilliseconds(void);
-
 /******************************************************************************
 *
 * Function:		

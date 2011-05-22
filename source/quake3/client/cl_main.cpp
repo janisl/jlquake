@@ -2156,10 +2156,6 @@ void *CL_RefMalloc( int size ) {
 	return Z_TagMalloc( size, TAG_RENDERER );
 }
 
-int CL_ScaledMilliseconds(void) {
-	return Sys_Milliseconds()*com_timescale->value;
-}
-
 /*
 ============
 CL_InitRef

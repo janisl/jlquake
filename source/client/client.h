@@ -27,6 +27,7 @@
 #include "cinematic_public.h"
 
 void CL_SharedInit();
+int CL_ScaledMilliseconds();
 
 //	Called by Windows driver.
 void Key_ClearStates();

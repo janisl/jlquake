@@ -46,3 +46,14 @@
 void CL_SharedInit()
 {
 }
+
+//==========================================================================
+//
+//	CL_ScaledMilliseconds
+//
+//==========================================================================
+
+int CL_ScaledMilliseconds()
+{
+	return Sys_Milliseconds() * com_timescale->value;
+}
