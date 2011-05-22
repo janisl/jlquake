@@ -744,3 +744,14 @@ int COM_CheckParm(const char *parm)
 
 	return 0;
 }
+
+//==========================================================================
+//
+//	COM_InitCommonCvars
+//
+//==========================================================================
+
+void COM_InitCommonCvars()
+{
+	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
+}

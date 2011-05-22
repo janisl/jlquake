@@ -257,8 +257,8 @@ void Host_InitLocal (void)
 	Cmd_AddCommand ("saveconfig", Host_SaveConfig_f);
 
 	Host_InitCommands ();
-	
-	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
+
+	COM_InitCommonCvars();
 
 	sys_quake2 = Cvar_Get("sys_quake2", "1", CVAR_ARCHIVE);
 

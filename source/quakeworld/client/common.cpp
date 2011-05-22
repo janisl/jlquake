@@ -290,7 +290,7 @@ void COM_Init (void)
 {
 	Com_InitByteOrder();
 
-	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
+	COM_InitCommonCvars();
 
 	registered = Cvar_Get("registered", "0", 0);
 
