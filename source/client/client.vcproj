@@ -173,6 +173,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\client_main.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\input_keys.cpp"
 				>
 			</File>

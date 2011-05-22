@@ -2235,6 +2235,8 @@ CL_Init
 void CL_Init( void ) {
 	Com_Printf( "----- Client Initialization -----\n" );
 
+	CL_SharedInit();
+
 	Con_Init ();	
 
 	CL_ClearState ();

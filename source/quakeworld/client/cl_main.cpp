@@ -1012,6 +1012,8 @@ void CL_Init (void)
 	extern	QCvar*		noskins;
 	char st[80];
 
+	CL_SharedInit();
+
 	cls.state = ca_disconnected;
 
 	Info_SetValueForKey(cls.userinfo, "name", "unnamed", MAX_INFO_STRING, 64, 64, false, false);

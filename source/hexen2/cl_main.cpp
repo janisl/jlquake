@@ -854,6 +854,8 @@ void CL_Init (void)
 {	
 	cls.message.InitOOB(cls.message_buf, sizeof(cls.message_buf));
 
+	CL_SharedInit();
+
 	CL_InitInput ();
 	CL_InitTEnts ();
 

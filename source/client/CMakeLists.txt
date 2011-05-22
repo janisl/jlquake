@@ -3,6 +3,7 @@ set(CLIENT_FILES
 	cinematic_main.cpp
 	cinematic_pcx.cpp
 	cinematic_roq.cpp
+	client_main.cpp
 	input_keys.cpp
 	input_main.cpp
 	input_unix.cpp

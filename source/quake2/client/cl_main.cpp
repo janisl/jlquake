@@ -1791,6 +1791,8 @@ void CL_Init (void)
 	if (com_dedicated->value)
 		return;		// nothing running on the client
 
+	CL_SharedInit();
+
 	// all archived variables will now be loaded
 
 	Con_Init ();	

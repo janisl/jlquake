@@ -26,6 +26,8 @@
 #include "input_public.h"
 #include "cinematic_public.h"
 
+void CL_SharedInit();
+
 //	Called by Windows driver.
 void Key_ClearStates();
 
