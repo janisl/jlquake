@@ -623,6 +623,7 @@ void CL_Disconnect (void)
 			time/1000.0, cl.timedemo_frames*1000.0 / time);
 	}
 
+	R_ClearScreen();
 	VectorClear (cl.refdef.blend);
 
 	M_ForceMenuOff ();

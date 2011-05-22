@@ -558,7 +558,7 @@ void SCR_DrawConsole (void)
 SCR_BeginLoadingPlaque
 ================
 */
-void SCR_BeginLoadingPlaque (void)
+void SCR_BeginLoadingPlaque(bool Clear)
 {
 	S_StopAllSounds ();
 	cl.sound_prepped = false;		// don't play ambients
@@ -571,7 +571,7 @@ void SCR_BeginLoadingPlaque (void)
 		return;	// if at console, don't bring up the plaque
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 		return;
-	scr_draw_loading = 1;
+	scr_draw_loading = Clear ? 2 : 1;
 	SCR_UpdateScreen ();
 	cls.disable_screen = Sys_Milliseconds_ ();
 	cls.disable_servercount = cl.servercount;
@@ -1311,6 +1311,7 @@ void SCR_UpdateScreen (void)
 		{	//  loading plaque over black screen
 			int		w, h;
 
+			R_ClearScreen();
 			scr_draw_loading = false;
 			re.DrawGetPicSize (&w, &h, "loading");
 			re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");

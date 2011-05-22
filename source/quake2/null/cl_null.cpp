@@ -40,7 +40,7 @@ void SCR_DebugGraph (float value, int color)
 {
 }
 
-void SCR_BeginLoadingPlaque (void)
+void SCR_BeginLoadingPlaque (bool)
 {
 }
 

@@ -486,7 +486,7 @@ void CL_Drop (void);
 void CL_Shutdown (void);
 void CL_Frame (int msec);
 void Con_Print (char *text);
-void SCR_BeginLoadingPlaque (void);
+void SCR_BeginLoadingPlaque(bool Clear = false);
 
 void SV_Init (void);
 void SV_Shutdown (char *finalmsg, qboolean reconnect);

@@ -78,6 +78,7 @@ void SCR_RunCinematic (void)
 
 	if (CIN_RunCinematic(CL_handle) == FMV_EOF)
 	{
+		SCR_BeginLoadingPlaque(true);
 		CL_handle = -1;
 	}
 }
@@ -144,6 +145,7 @@ void CIN_SkipCinematic()
 		// skip the rest of the cinematic
 		SCR_StopCinematic();
 		CIN_FinishCinematic();
+		SCR_BeginLoadingPlaque(true);
 	}
 }
 

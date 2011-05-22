@@ -1186,3 +1186,10 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	return re;
 }
+
+void R_ClearScreen()
+{
+	qglClearColor(0, 0, 0, 0);
+	qglClear(GL_COLOR_BUFFER_BIT);
+	qglClearColor(1,0, 0.5, 0.5);
+}
