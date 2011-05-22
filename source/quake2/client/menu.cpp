@@ -4299,10 +4299,7 @@ void M_Draw (void)
 	SCR_DirtyScreen ();
 
 	// dim everything behind it down
-	if (cl.cinematictime > 0)
-		re.DrawFill (0,0,viddef.width, viddef.height, 0);
-	else
-		re.DrawFadeScreen ();
+	re.DrawFadeScreen ();
 
 	m_drawfunc ();
 

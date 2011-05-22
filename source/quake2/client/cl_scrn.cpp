@@ -571,10 +571,7 @@ void SCR_BeginLoadingPlaque (void)
 		return;	// if at console, don't bring up the plaque
 	if (in_keyCatchers & KEYCATCH_CONSOLE)
 		return;
-	if (cl.cinematictime > 0)
-		scr_draw_loading = 2;	// clear to balack first
-	else
-		scr_draw_loading = 1;
+	scr_draw_loading = 1;
 	SCR_UpdateScreen ();
 	cls.disable_screen = Sys_Milliseconds_ ();
 	cls.disable_servercount = cl.servercount;
@@ -702,8 +699,6 @@ void SCR_TileClear (void)
 		return;		// full screen console
 	if (scr_viewsize->value == 100)
 		return;		// full screen rendering
-	if (cl.cinematictime > 0)
-		return;		// full screen cinematic
 
 	// erase rect will be the union of the past three frames
 	// so tripple buffering works properly
@@ -1324,7 +1319,7 @@ void SCR_UpdateScreen (void)
 		} 
 		// if a cinematic is supposed to be running, handle menus
 		// and console specially
-		else if (cl.cinematictime > 0)
+		else if (SCR_DrawCinematic())
 		{
 			if (in_keyCatchers & KEYCATCH_UI)
 			{
@@ -1335,12 +1330,6 @@ void SCR_UpdateScreen (void)
 			else if (in_keyCatchers & KEYCATCH_CONSOLE)
 			{
 				SCR_DrawConsole ();
-//				re.EndFrame();
-//				return;
-			}
-			else
-			{
-				SCR_DrawCinematic();
 //				re.EndFrame();
 //				return;
 			}

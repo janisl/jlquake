@@ -20,12 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "../../client/cinematic_local.h"
 
-typedef struct
-{
-	QCinematic*		Cin;
-} cinematics_t;
-
-cinematics_t	cin;
+static int				CL_handle = 0;
 
 //=============================================================
 
@@ -36,22 +31,22 @@ SCR_StopCinematic
 */
 void SCR_StopCinematic (void)
 {
-	cl.cinematictime = 0;	// done
-	if (cin.Cin)
+	if (CL_handle >= 0 && CL_handle < MAX_VIDEO_HANDLES && cinTable[CL_handle])
 	{
-		delete cin.Cin;
-		cin.Cin = NULL;
+		delete cinTable[CL_handle];
+		cinTable[CL_handle] = NULL;
+		CL_handle = -1;
 	}
 }
 
 /*
 ====================
-SCR_FinishCinematic
+CIN_FinishCinematic
 
 Called when either the cinematic completes, or it is aborted
 ====================
 */
-void SCR_FinishCinematic (void)
+void CIN_FinishCinematic()
 {
 	// tell the server to advance to the next map / cinematic
 	cls.netchan.message.WriteByte(clc_stringcmd);
@@ -69,27 +64,21 @@ SCR_RunCinematic
 */
 void SCR_RunCinematic (void)
 {
-	if (cl.cinematictime <= 0)
+	if (CL_handle < 0 || CL_handle >= MAX_VIDEO_HANDLES || !cinTable[CL_handle])
 	{
-		SCR_StopCinematic ();
 		return;
 	}
 
 	if (in_keyCatchers != 0)
 	{
 		// pause if menu or console is up
-		cl.cinematictime = cls.realtime - cin.Cin->GetCinematicTime();
+		cinTable[CL_handle]->StartTime = cls.realtime - cinTable[CL_handle]->Cin->GetCinematicTime();
 		return;
 	}
 
-	if (!cin.Cin->Update(cls.realtime - cl.cinematictime))
+	if (CIN_RunCinematic(CL_handle) == FMV_EOF)
 	{
-		SCR_StopCinematic ();
-		SCR_FinishCinematic ();
-		cl.cinematictime = 1;	// hack to get the black screen behind loading
-		SCR_BeginLoadingPlaque ();
-		cl.cinematictime = 0;
-		return;
+		CL_handle = -1;
 	}
 }
 
@@ -103,7 +92,7 @@ should be skipped
 */
 qboolean SCR_DrawCinematic (void)
 {
-	if (cl.cinematictime <= 0)
+	if (CL_handle < 0 || CL_handle >= MAX_VIDEO_HANDLES || !cinTable[CL_handle])
 	{
 		return false;
 	}
@@ -114,13 +103,20 @@ qboolean SCR_DrawCinematic (void)
 		return true;
 	}
 
-	if (!cin.Cin->OutputFrame)
+	if (!cinTable[CL_handle]->Cin->OutputFrame)
 		return true;
 
 	re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
-		cin.Cin->Width, cin.Cin->Height, cin.Cin->OutputFrame);
+		cinTable[CL_handle]->Cin->Width, cinTable[CL_handle]->Cin->Height, cinTable[CL_handle]->Cin->OutputFrame);
 
 	return true;
+}
+
+void CIN_StartedPlayback()
+{
+	SCR_EndLoadingPlaque();
+
+	cls.state = ca_active;
 }
 
 /*
@@ -134,20 +130,24 @@ void SCR_PlayCinematic (char *arg)
 	// make sure CD isn't playing music
 	CDAudio_Stop();
 
-	char FullName[MAX_QPATH];
-	CIN_MakeFullName(arg, FullName);
+	CL_handle = CIN_PlayCinematic(arg, 0, 0, 640, 480, CIN_system);
+}
 
-	cin.Cin = CIN_Open(FullName);
-	if (!cin.Cin)
+void CIN_SkipCinematic()
+{
+	if (CL_handle < 0 || CL_handle >= MAX_VIDEO_HANDLES || !cinTable[CL_handle])
 	{
-		SCR_FinishCinematic();
-		cl.cinematictime = 0;	// done
 		return;
 	}
+	if (!cl.attractloop && cls.realtime - cinTable[CL_handle]->StartTime > 1000)
+	{
+		// skip the rest of the cinematic
+		SCR_StopCinematic();
+		CIN_FinishCinematic();
+	}
+}
 
-	SCR_EndLoadingPlaque ();
-
-	cls.state = ca_active;
-
-	cl.cinematictime = Sys_Milliseconds_ ();
+bool CIN_IsInCinematicState()
+{
+	return true;
 }

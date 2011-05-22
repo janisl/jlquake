@@ -58,5 +58,3 @@ void SCR_PlayCinematic (char *name);
 qboolean SCR_DrawCinematic (void);
 void SCR_RunCinematic (void);
 void SCR_StopCinematic (void);
-void SCR_FinishCinematic (void);
-

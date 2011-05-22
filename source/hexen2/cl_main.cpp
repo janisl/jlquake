@@ -1023,3 +1023,16 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 		ent->radius = d_lightstylevalue[24 + mls] / 2 / 256.0;
 	}
 }
+
+void CIN_StartedPlayback()
+{
+}
+
+bool CIN_IsInCinematicState()
+{
+	return false;
+}
+
+void CIN_FinishCinematic()
+{
+}

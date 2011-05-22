@@ -557,10 +557,10 @@ void CL_SendCmd (void)
 
 	buf.InitOOB(data, sizeof(data));
 
-	if (cmd->buttons && cl.cinematictime > 0 && !cl.attractloop 
-		&& cls.realtime - cl.cinematictime > 1000)
-	{	// skip the rest of the cinematic
-		SCR_FinishCinematic ();
+	if (cmd->buttons)
+	{
+		// skip the rest of the cinematic
+		CIN_SkipCinematic();
 	}
 
 	// begin a client move command

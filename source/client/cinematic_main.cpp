@@ -34,6 +34,8 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+QCinematicPlayer*	cinTable[MAX_VIDEO_HANDLES];
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -101,4 +103,264 @@ QCinematic* CIN_Open(const char* Name)
 		return NULL;
 	}
 	return Cin;
+}
+
+//==========================================================================
+//
+//	CIN_HandleForVideo
+//
+//==========================================================================
+
+int CIN_HandleForVideo()
+{
+	for (int i = 0; i < MAX_VIDEO_HANDLES; i++)
+	{
+		if (!cinTable[i])
+		{
+			return i;
+		}
+	}
+	throw QDropException("CIN_HandleForVideo: none free");
+}
+
+//==========================================================================
+//
+//	CIN_PlayCinematic
+//
+//==========================================================================
+
+int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBits)
+{
+	char name[MAX_OSPATH];
+	CIN_MakeFullName(arg, name);
+
+	if (!(systemBits & CIN_system))
+	{
+		for (int i = 0; i < MAX_VIDEO_HANDLES; i++ )
+		{
+			if (cinTable[i] && !QStr::Cmp(cinTable[i]->Cin->Name, name))
+			{
+				return i;
+			}
+		}
+	}
+
+	GLog.DWrite("SCR_PlayCinematic( %s )\n", arg);
+
+	int Handle = CIN_HandleForVideo();
+
+	QCinematic* Cin = CIN_Open(name);
+
+	if (!Cin)
+	{
+		if (systemBits & CIN_system)
+		{
+			CIN_FinishCinematic();
+		}
+		return -1;
+	}
+
+	cinTable[Handle] = new QCinematicPlayer(Cin, x, y, w, h, systemBits);
+
+	if (cinTable[Handle]->AlterGameState)
+	{
+		CIN_StartedPlayback();
+	}
+
+	GLog.DWrite("trFMV::play(), playing %s\n", arg);
+
+	return Handle;
+}
+
+//==========================================================================
+//
+//	CIN_RunCinematic
+//
+//==========================================================================
+
+e_status CIN_RunCinematic(int handle)
+{
+	if (handle < 0 || handle>= MAX_VIDEO_HANDLES || !cinTable[handle])
+	{
+		return FMV_EOF;
+	}
+
+	e_status Status = cinTable[handle]->Run();
+
+	if (Status == FMV_EOF)
+	{
+		delete cinTable[handle];
+		cinTable[handle] = NULL;
+	}
+
+	return Status;
+}
+
+//==========================================================================
+//
+//	CIN_UploadCinematic
+//
+//==========================================================================
+
+void CIN_UploadCinematic(int handle)
+{
+	if (handle >= 0 && handle < MAX_VIDEO_HANDLES && cinTable[handle])
+	{
+		cinTable[handle]->Upload(handle);
+	}
+}
+
+//==========================================================================
+//
+//	QCinematicPlayer::~QCinematicPlayer
+//
+//==========================================================================
+
+QCinematicPlayer::~QCinematicPlayer()
+{
+	if (Cin)
+	{
+		delete Cin;
+		Cin = NULL;
+	}
+}
+
+//==========================================================================
+//
+//	QCinematicPlayer::SetExtents
+//
+//==========================================================================
+
+void QCinematicPlayer::SetExtents(int x, int y, int w, int h)
+{
+	XPos = x;
+	YPos = y;
+	Width = w;
+	Height = h;
+	Cin->Dirty = true;
+}
+
+//==========================================================================
+//
+//	QCinematicPlayer::Run
+//
+//==========================================================================
+
+e_status QCinematicPlayer::Run()
+{
+	if (PlayOnWalls < -1)
+	{
+		return Status;
+	}
+
+	if (AlterGameState)
+	{
+		if (!CIN_IsInCinematicState())
+		{
+			return Status;
+		}
+	}
+
+	if (Status == FMV_IDLE)
+	{
+		return Status;
+	}
+
+	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
+	int thisTime = CL_ScaledMilliseconds();
+	if (Shader && (abs(thisTime - (int)LastTime)) > 100)
+	{
+		StartTime += thisTime - LastTime;
+	}
+	if (!Cin->Update(CL_ScaledMilliseconds() - StartTime))
+	{ 
+		if (!HoldAtEnd)
+		{
+			if (Looping)
+			{
+				Reset();
+			}
+			else
+			{
+				Status = FMV_EOF;
+			}
+		}
+		else
+		{
+			Status = FMV_IDLE;
+		}
+	}
+
+	LastTime = thisTime;
+
+	if (Status == FMV_LOOPED)
+	{
+		Status = FMV_PLAY;
+	}
+
+	if (Status == FMV_EOF)
+	{
+		if (Looping)
+		{
+			Reset();
+		}
+		else
+		{
+			GLog.DWrite("finished cinematic\n");
+			if (AlterGameState)
+			{
+				CIN_FinishCinematic();
+			}
+		}
+	}
+	return Status;
+}
+
+//==========================================================================
+//
+//	QCinematicPlayer::Reset
+//
+//==========================================================================
+
+void QCinematicPlayer::Reset()
+{
+	Cin->Reset();
+
+	StartTime = LastTime = CL_ScaledMilliseconds();
+
+	Status = FMV_LOOPED;
+}
+
+//==========================================================================
+//
+//	QCinematicPlayer::Upload
+//
+//==========================================================================
+
+void QCinematicPlayer::Upload(int Handle)
+{
+	if (!Cin->OutputFrame)
+	{
+		return;
+	}
+	if (PlayOnWalls <= 0 && Cin->Dirty)
+	{
+		if (PlayOnWalls == 0)
+		{
+			PlayOnWalls = -1;
+		}
+		else if (PlayOnWalls == -1)
+		{
+			PlayOnWalls = -2;
+		}
+		else
+		{
+			Cin->Dirty = false;
+		}
+	}
+	R_UploadCinematic(256, 256, Cin->OutputFrame, Handle, Cin->Dirty);
+	if (cl_inGameVideo->integer == 0 && PlayOnWalls == 1)
+	{
+		PlayOnWalls--;
+	}
 }

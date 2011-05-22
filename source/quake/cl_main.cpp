@@ -730,3 +730,16 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 		ent->radius = 1.0;
 	}
 }
+
+void CIN_StartedPlayback()
+{
+}
+
+bool CIN_IsInCinematicState()
+{
+	return false;
+}
+
+void CIN_FinishCinematic()
+{
+}

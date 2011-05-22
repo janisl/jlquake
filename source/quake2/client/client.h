@@ -131,11 +131,6 @@ typedef struct
 	int			inventory[MAX_ITEMS];
 
 	//
-	// non-gameserver infornamtion
-	// FIXME: move this cinematic stuff into the cin_t structure
-	int			cinematictime;		// cls.realtime for first cinematic frame
-
-	//
 	// server state information
 	//
 	qboolean	attractloop;		// running the attract loop, any key will menu
@@ -566,6 +561,8 @@ void CL_DrawInventory (void);
 // cl_pred.c
 //
 void CL_PredictMovement (void);
+
+void CIN_SkipCinematic();
 
 #if id386
 void x86_TimerStart( void );

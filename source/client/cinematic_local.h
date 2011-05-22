@@ -192,5 +192,60 @@ public:
 	void Reset();
 };
 
+//
+//	Handles playback of cinematic
+//
+class QCinematicPlayer
+{
+public:
+	QCinematic*		Cin;
+	int				XPos;
+	int				YPos;
+	int				Width;
+	int				Height;
+	bool			AlterGameState;
+	bool			Looping;
+	bool			HoldAtEnd;
+	bool			Shader;
+	e_status		Status;
+	unsigned int	StartTime;
+	unsigned int	LastTime;
+	int				PlayOnWalls;
+
+	QCinematicPlayer(QCinematic* ACin, int x, int y, int w, int h, int SystemBits)
+	: Cin(ACin)
+	, XPos(x)
+	, YPos(y)
+	, Width(w)
+	, Height(h)
+	, AlterGameState((SystemBits & CIN_system) != 0)
+	, Looping((SystemBits & CIN_loop) != 0)
+	, HoldAtEnd((SystemBits & CIN_hold) != 0)
+	, Shader((SystemBits & CIN_shader) != 0)
+	, Status(FMV_PLAY)
+	, StartTime(0)
+	, LastTime(0)
+	, PlayOnWalls(1)
+	{
+		Cin->Silent = (SystemBits & CIN_silent) != 0;
+		Cin->Dirty = true;
+		if (!AlterGameState)
+		{
+			PlayOnWalls = cl_inGameVideo->integer;
+		}
+		StartTime = LastTime = CL_ScaledMilliseconds();
+	}
+	~QCinematicPlayer();
+	void SetExtents(int x, int y, int w, int h);
+	e_status Run();
+	void Reset();
+	void Upload(int Handle);
+};
+
 void CIN_MakeFullName(const char* Name, char* FullName);
 QCinematic* CIN_Open(const char* Name);
+int CIN_HandleForVideo();
+
+#define MAX_VIDEO_HANDLES	16
+
+extern QCinematicPlayer*	cinTable[MAX_VIDEO_HANDLES];
