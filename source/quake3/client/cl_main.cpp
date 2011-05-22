@@ -64,7 +64,6 @@ QCvar	*cl_motdString;
 
 QCvar	*cl_allowDownload;
 QCvar	*cl_conXOffset;
-QCvar	*cl_inGameVideo;
 
 QCvar	*cl_serverStatusResendTime;
 QCvar	*cl_trn;
@@ -2281,12 +2280,6 @@ void CL_Init( void ) {
 	cl_allowDownload = Cvar_Get ("cl_allowDownload", "0", CVAR_ARCHIVE);
 
 	cl_conXOffset = Cvar_Get ("cl_conXOffset", "0", 0);
-#ifdef MACOS_X
-        // In game video is REALLY slow in Mac OS X right now due to driver slowness
-	cl_inGameVideo = Cvar_Get ("r_inGameVideo", "0", CVAR_ARCHIVE);
-#else
-	cl_inGameVideo = Cvar_Get ("r_inGameVideo", "1", CVAR_ARCHIVE);
-#endif
 
 	cl_serverStatusResendTime = Cvar_Get ("cl_serverStatusResendTime", "750", 0);
 

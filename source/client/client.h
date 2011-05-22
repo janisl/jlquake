@@ -26,6 +26,8 @@
 #include "input_public.h"
 #include "cinematic_public.h"
 
+extern QCvar*		cl_inGameVideo;
+
 void CL_SharedInit();
 int CL_ScaledMilliseconds();
 

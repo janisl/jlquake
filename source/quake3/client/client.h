@@ -346,7 +346,6 @@ extern	QCvar	*cl_activeAction;
 
 extern	QCvar	*cl_allowDownload;
 extern	QCvar	*cl_conXOffset;
-extern	QCvar	*cl_inGameVideo;
 
 //=================================================
 
