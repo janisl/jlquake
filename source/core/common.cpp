@@ -37,6 +37,7 @@
 
 QCvar*			com_dedicated;
 QCvar*			com_viewlog;
+QCvar*			com_timescale;
 
 QCvar*			com_journal;
 
@@ -754,4 +755,5 @@ int COM_CheckParm(const char *parm)
 void COM_InitCommonCvars()
 {
 	com_viewlog = Cvar_Get("viewlog", "0", CVAR_CHEAT);
+	com_timescale = Cvar_Get("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO);
 }

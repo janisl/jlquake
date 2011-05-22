@@ -46,7 +46,6 @@ static fileHandle_t logfile;
 
 QCvar	*com_speeds;
 QCvar	*com_developer;
-QCvar	*com_timescale;
 QCvar	*com_fixedtime;
 QCvar	*com_dropsim;		// 0.0 to 1.0, simulated packet drops
 QCvar	*com_maxfps;
@@ -2248,7 +2247,6 @@ void Com_Init( char *commandLine )
 	com_developer = Cvar_Get ("developer", "0", CVAR_TEMP );
 	com_logfile = Cvar_Get ("logfile", "0", CVAR_TEMP );
 
-	com_timescale = Cvar_Get ("timescale", "1", CVAR_CHEAT | CVAR_SYSTEMINFO );
 	com_fixedtime = Cvar_Get ("fixedtime", "0", CVAR_CHEAT);
 	com_showtrace = Cvar_Get ("com_showtrace", "0", CVAR_CHEAT);
 	com_dropsim = Cvar_Get ("com_dropsim", "0", CVAR_CHEAT);
