@@ -482,7 +482,7 @@ void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode
 //
 //==========================================================================
 
-void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
+static void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* out, int outwidth, int outheight)
 {
 	if (outwidth > 2048)
 	{
@@ -1797,4 +1797,62 @@ qhandle_t R_GetImageHandle(image_t* Image)
 const char* R_GetImageName(qhandle_t Handle)
 {
 	return tr.images[Handle]->imgName;
+}
+
+//==========================================================================
+//
+//	R_UploadCinematic
+//
+//==========================================================================
+
+void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool dirty)
+{
+	GL_Bind(tr.scratchImage[client]);
+
+	int i = 1;
+	while (i < cols)
+	{
+		i <<= 1;
+	}
+	int j = 1;
+	while (j < rows)
+	{
+		j <<= 1;
+	}
+	byte* resampled = NULL;
+	if (i != cols || j != rows)
+	{
+		//ri.Error (ERR_DROP, "Draw_StretchRaw: size not a power of 2: %i by %i", cols, rows);
+		resampled = new byte[i * j * 4];
+		R_ResampleTexture(data, cols, rows, resampled, i, j);
+		cols = i;
+		rows = j;
+		data = resampled;
+	}
+
+	// if the scratchImage isn't in the format we want, specify it as a new texture
+	if (cols != tr.scratchImage[client]->width || rows != tr.scratchImage[client]->height)
+	{
+		tr.scratchImage[client]->width = tr.scratchImage[client]->uploadWidth = cols;
+		tr.scratchImage[client]->height = tr.scratchImage[client]->uploadHeight = rows;
+		qglTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);	
+	}
+	else
+	{
+		if (dirty)
+		{
+			// otherwise, just subimage upload it so that drivers can tell we are going to be changing
+			// it and don't try and do a texture compression
+			qglTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, cols, rows, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		}
+	}
+
+	if (resampled)
+	{
+		delete[] resampled;
+	}
 }

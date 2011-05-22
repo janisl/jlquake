@@ -6,7 +6,6 @@ set(CLIENT_FILES
 	input_keys.cpp
 	input_main.cpp
 	input_unix.cpp
-	render_backend.cpp
 	render_driver_glx.cpp
 	render_image.cpp
 	render_image_bmp.cpp
