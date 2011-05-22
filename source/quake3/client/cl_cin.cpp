@@ -102,7 +102,7 @@ static void RoQReset() {
 
 	cinTable[currentHandle].Cin->Reset();
 	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
-	cinTable[currentHandle].startTime = cinTable[currentHandle].lastTime = CL_ScaledMilliseconds()*com_timescale->value;
+	cinTable[currentHandle].startTime = cinTable[currentHandle].lastTime = CL_ScaledMilliseconds();
 
 	cinTable[currentHandle].status = FMV_LOOPED;
 }
@@ -216,12 +216,12 @@ e_status CIN_RunCinematic (int handle)
 	}
 
 	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
-	thisTime = CL_ScaledMilliseconds()*com_timescale->value;
+	thisTime = CL_ScaledMilliseconds();
 	if (cinTable[currentHandle].shader && (abs(thisTime - (int)cinTable[currentHandle].lastTime))>100) {
 		cinTable[currentHandle].startTime += thisTime - cinTable[currentHandle].lastTime;
 	}
 	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
-	if (!cinTable[currentHandle].Cin->Update((CL_ScaledMilliseconds()*com_timescale->value) - cinTable[currentHandle].startTime))
+	if (!cinTable[currentHandle].Cin->Update(CL_ScaledMilliseconds() - cinTable[currentHandle].startTime))
 	{ 
 		if (cinTable[currentHandle].holdAtEnd==qfalse) {
 			if (cinTable[currentHandle].looping) {
@@ -306,7 +306,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 
 
 	// we need to use CL_ScaledMilliseconds because of the smp mode calls from the renderer
-	cinTable[currentHandle].startTime = cinTable[currentHandle].lastTime = CL_ScaledMilliseconds()*com_timescale->value;
+	cinTable[currentHandle].startTime = cinTable[currentHandle].lastTime = CL_ScaledMilliseconds();
 
 	cinTable[currentHandle].status = FMV_PLAY;
 	Com_DPrintf("trFMV::play(), playing %s\n", arg);
