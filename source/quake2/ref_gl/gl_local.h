@@ -198,13 +198,7 @@ void GL_DrawParticles( int n, const particle_t particles[], const unsigned color
 
 typedef struct
 {
-	image_t* lightmap_textures[MAX_LIGHTMAPS];
-
 	float camera_separation;
-
-	unsigned char originalRedGammaTable[256];
-	unsigned char originalGreenGammaTable[256];
-	unsigned char originalBlueGammaTable[256];
 } glstate2_t;
 
 extern glstate2_t   gl_state;

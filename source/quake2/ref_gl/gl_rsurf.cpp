@@ -353,7 +353,7 @@ void R_BlendLightmaps (void)
 		{
 			if (currentmodel == r_worldmodel)
 				c_visible_lightmaps++;
-			GL_Bind( gl_state.lightmap_textures[i]);
+			GL_Bind( tr.lightmaps[i]);
 
 			for ( surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain )
 			{
@@ -370,7 +370,7 @@ void R_BlendLightmaps (void)
 	{
 		LM_InitBlock();
 
-		GL_Bind( gl_state.lightmap_textures[0]);
+		GL_Bind( tr.lightmaps[0]);
 
 		if (currentmodel == r_worldmodel)
 			c_visible_lightmaps++;
@@ -523,7 +523,7 @@ dynamic:
 			R_BuildLightMap( fa, (byte*)temp, smax*4 );
 			R_SetCacheState( fa );
 
-			GL_Bind( gl_state.lightmap_textures[fa->lightmaptexturenum]);
+			GL_Bind( tr.lightmaps[fa->lightmaptexturenum]);
 
 			qglTexSubImage2D( GL_TEXTURE_2D, 0,
 							  fa->light_s, fa->light_t, 
@@ -711,7 +711,7 @@ dynamic:
 			R_BuildLightMap( surf, (byte*)temp, smax*4 );
 			R_SetCacheState( surf );
 
-			GL_MBind( 1, gl_state.lightmap_textures[surf->lightmaptexturenum]);
+			GL_MBind( 1, tr.lightmaps[surf->lightmaptexturenum]);
 
 			lmtex = surf->lightmaptexturenum;
 
@@ -729,7 +729,7 @@ dynamic:
 
 			R_BuildLightMap( surf, (byte*)temp, smax*4 );
 
-			GL_MBind( 1, gl_state.lightmap_textures[0]);
+			GL_MBind( 1, tr.lightmaps[0]);
 
 			lmtex = 0;
 
@@ -744,7 +744,7 @@ dynamic:
 		c_brush_polys++;
 
 		GL_MBind( 0, image);
-		GL_MBind( 1, gl_state.lightmap_textures[lmtex]);
+		GL_MBind( 1, tr.lightmaps[lmtex]);
 
 //==========
 //PGM
@@ -792,7 +792,7 @@ dynamic:
 		c_brush_polys++;
 
 		GL_MBind( 0, image);
-		GL_MBind( 1, gl_state.lightmap_textures[lmtex]);
+		GL_MBind( 1, tr.lightmaps[lmtex]);
 
 //==========
 //PGM
@@ -1336,7 +1336,7 @@ static void LM_UploadBlock( qboolean dynamic )
 		texture = gl_lms.current_lightmap_texture;
 	}
 
-	GL_Bind( gl_state.lightmap_textures[texture]);
+	GL_Bind(tr.lightmaps[texture]);
 
 	if ( dynamic )
 	{
@@ -1358,7 +1358,7 @@ static void LM_UploadBlock( qboolean dynamic )
 	}
 	else
 	{
-		R_ReUploadImage(gl_state.lightmap_textures[texture], gl_lms.lightmap_buffer);
+		R_ReUploadImage(tr.lightmaps[texture], gl_lms.lightmap_buffer);
 		if ( ++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS )
 			ri.Sys_Error( ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n" );
 	}
@@ -1546,11 +1546,11 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	}
 	r_newrefdef.lightstyles = lightstyles;
 
-	if (!gl_state.lightmap_textures[0])
+	if (!tr.lightmaps[0])
 	{
 		for (int i = 0; i < MAX_LIGHTMAPS; i++)
 		{
-			gl_state.lightmap_textures[i] = R_CreateImage(va("*lightmap%d", i), (byte*)dummy, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false);
+			tr.lightmaps[i] = R_CreateImage(va("*lightmap%d", i), (byte*)dummy, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 		}
 	}
 
@@ -1559,7 +1559,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	/*
 	** initialize the dynamic lightmap texture
 	*/
-	R_ReUploadImage(gl_state.lightmap_textures[0], (byte*)dummy);
+	R_ReUploadImage(tr.lightmaps[0], (byte*)dummy);
 }
 
 /*

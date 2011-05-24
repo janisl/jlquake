@@ -34,10 +34,6 @@ unsigned		blocklights[18*18];
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	128
 
-int			active_lightmaps;
-
-image_t*	lightmap_textures[MAX_LIGHTMAPS];
-
 typedef struct glRect_s {
 	unsigned char l,t,w,h;
 } glRect_t;
@@ -308,7 +304,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			GL_TexEnv(GL_REPLACE);
 			// Binds lightmap to texenv 1
 			GL_EnableMultitexture(); // Same as SelectTexture (TEXTURE1)
-			GL_Bind (lightmap_textures[s->lightmaptexturenum]);
+			GL_Bind (tr.lightmaps[s->lightmaptexturenum]);
 			i = s->lightmaptexturenum;
 			if (lightmap_modified[i])
 			{
@@ -347,7 +343,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			}
 			qglEnd ();
 
-			GL_Bind (lightmap_textures[s->lightmaptexturenum]);
+			GL_Bind (tr.lightmaps[s->lightmaptexturenum]);
 			GL_State(GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
@@ -410,7 +406,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		GL_Bind (t->gl_texture);
 		GL_TexEnv(GL_REPLACE);
 		GL_EnableMultitexture();
-		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
+		GL_Bind (tr.lightmaps[s->lightmaptexturenum]);
 		i = s->lightmaptexturenum;
 		if (lightmap_modified[i])
 		{
@@ -447,7 +443,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		GL_Bind (t->gl_texture);
 		DrawGLWaterPoly (p);
 
-		GL_Bind (lightmap_textures[s->lightmaptexturenum]);
+		GL_Bind (tr.lightmaps[s->lightmaptexturenum]);
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR);
 		DrawGLWaterPolyLightmap (p);
 		GL_State(GLS_DEFAULT);
@@ -560,7 +556,7 @@ void R_BlendLightmaps (void)
 		p = lightmap_polys[i];
 		if (!p)
 			continue;
-		GL_Bind(lightmap_textures[i]);
+		GL_Bind(tr.lightmaps[i]);
 		if (lightmap_modified[i])
 		{
 			lightmap_modified[i] = false;
@@ -1383,11 +1379,11 @@ void GL_BuildLightmaps (void)
 
 	tr.frameCount = 1;		// no dlightcache
 
-	if (!lightmap_textures[0])
+	if (!tr.lightmaps[0])
 	{
 		for (int i = 0; i < MAX_LIGHTMAPS; i++)
 		{
-			lightmap_textures[i] = R_CreateImage(va("*lightmap%d", i), lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false);
+			tr.lightmaps[i] = R_CreateImage(va("*lightmap%d", i), lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false);
 		}
 	}
 
@@ -1426,7 +1422,7 @@ void GL_BuildLightmaps (void)
 		lightmap_rectchange[i].t = BLOCK_HEIGHT;
 		lightmap_rectchange[i].w = 0;
 		lightmap_rectchange[i].h = 0;
-		R_ReUploadImage(lightmap_textures[i], lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
+		R_ReUploadImage(tr.lightmaps[i], lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
 	}
 
  	if (!gl_texsort->value && qglActiveTextureARB)
