@@ -419,7 +419,6 @@ void		R_Modellist_f (void);
 //====================================================
 extern	refimport_t		ri;
 
-#define	MAX_LIGHTMAPS			256
 #define	MAX_SKINS				1024
 
 
@@ -534,9 +533,6 @@ struct trGlobals_t : trGlobals_base_t
 
 	shader_t				*flareShader;
 	shader_t				*sunShader;
-
-	int						numLightmaps;
-	image_t					*lightmaps[MAX_LIGHTMAPS];
 
 	trRefEntity_t			*currentEntity;
 	trRefEntity_t			worldEntity;		// point currentEntity at this when rendering world

@@ -89,6 +89,7 @@ struct trRefEntity_t
 };
 
 #define MAX_DRAWIMAGES			2048
+#define MAX_LIGHTMAPS			256
 
 #define FOG_TABLE_SIZE			256
 
@@ -106,6 +107,9 @@ struct trGlobals_base_t
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
 	int						overbrightBits;		// r_overbrightBits->integer, but set to 0 if no hw gamma
+
+	int						numLightmaps;
+	image_t*				lightmaps[MAX_LIGHTMAPS];
 
 	int						numImages;
 	image_t*				images[MAX_DRAWIMAGES];

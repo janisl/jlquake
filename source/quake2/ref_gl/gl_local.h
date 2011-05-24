@@ -196,8 +196,6 @@ image_t *R_RegisterSkin (char *name);
 */
 void GL_DrawParticles( int n, const particle_t particles[], const unsigned colortable[768] );
 
-#define MAX_LIGHTMAPS	128
-
 typedef struct
 {
 	image_t* lightmap_textures[MAX_LIGHTMAPS];
