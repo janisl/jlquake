@@ -22,8 +22,8 @@
 #define IDPOLYHEADER		(('O' << 24) + ('P' << 16) + ('D' << 8) + 'I')
 #define RAPOLYHEADER		(('O' << 24) + ('P' << 16) + ('A' << 8) + 'R')
 
-#define ALIAS_VERSION		6
-#define ALIAS_NEWVERSION	50
+#define MESH1_VERSION		6
+#define MESH1_NEWVERSION	50
 
 #define ALIAS_ONSEAM		0x0020
 

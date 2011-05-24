@@ -313,10 +313,10 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 	mdl_t* pinmodel = (mdl_t *)buffer;
 
 	int version = LittleLong (pinmodel->version);
-	if (version != ALIAS_VERSION)
+	if (version != MESH1_VERSION)
 	{
 		throw QDropException(va("%s has wrong version number (%i should be %i)",
-			 *mod->Name, version, ALIAS_VERSION));
+			 *mod->Name, version, MESH1_VERSION));
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);
@@ -374,10 +374,10 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 	newmdl_t* pinmodel = (newmdl_t *)buffer;
 
 	int version = LittleLong(pinmodel->version);
-	if (version != ALIAS_NEWVERSION)
+	if (version != MESH1_NEWVERSION)
 	{
 		throw QDropException(va("%s has wrong version number (%i should be %i)",
-			*mod->Name, version, ALIAS_NEWVERSION));
+			*mod->Name, version, MESH1_NEWVERSION));
 	}
 
 	int numskins = LittleLong(pinmodel->numskins);

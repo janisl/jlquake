@@ -29,6 +29,7 @@
 
 #include "../core/sprfile.h"
 #include "../core/mdlfile.h"
+#include "../core/md2file.h"
 
 #include "render_qgl.h"
 #include "render_image.h"

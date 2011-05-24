@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_main.c  -- client main loop
 
 #include "client.h"
+#include "../../core/md2file.h"
 
 QCvar	*freelook;
 
@@ -1102,7 +1103,7 @@ void CL_RequestNextDownload (void)
 {
 	int	map_checksum;		// for detecting cheater maps
 	char fn[MAX_OSPATH];
-	dmdl_t *pheader;
+	dmd2_t *pheader;
 
 	if (cls.state != ca_connected)
 		return;
@@ -1143,7 +1144,7 @@ void CL_RequestNextDownload (void)
 						precache_check++;
 						continue; // couldn't load it
 					}
-					if (LittleLong(*(unsigned *)precache_model) != IDALIASHEADER) {
+					if (LittleLong(*(unsigned *)precache_model) != IDMESH2HEADER) {
 						// not an alias model
 						FS_FreeFile(precache_model);
 						precache_model = 0;
@@ -1151,20 +1152,20 @@ void CL_RequestNextDownload (void)
 						precache_check++;
 						continue;
 					}
-					pheader = (dmdl_t *)precache_model;
-					if (LittleLong (pheader->version) != ALIAS_VERSION) {
+					pheader = (dmd2_t *)precache_model;
+					if (LittleLong (pheader->version) != MESH2_VERSION) {
 						precache_check++;
 						precache_model_skin = 0;
 						continue; // couldn't load it
 					}
 				}
 
-				pheader = (dmdl_t *)precache_model;
+				pheader = (dmd2_t *)precache_model;
 
 				while (precache_model_skin - 1 < LittleLong(pheader->num_skins)) {
 					if (!CL_CheckOrDownloadFile((char *)precache_model +
 						LittleLong(pheader->ofs_skins) + 
-						(precache_model_skin - 1)*MAX_SKINNAME)) {
+						(precache_model_skin - 1)*MAX_MD2_SKINNAME)) {
 						precache_model_skin++;
 						return; // started a download
 					}

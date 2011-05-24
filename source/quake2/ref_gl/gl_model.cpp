@@ -242,7 +242,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	
 	switch (LittleLong(*(unsigned *)buf))
 	{
-	case IDALIASHEADER:
+	case IDMESH2HEADER:
 		loadmodel->extradata = Hunk_Begin (0x200000);
 		Mod_LoadAliasModel (mod, buf);
 		break;
@@ -928,24 +928,24 @@ Mod_LoadAliasModel
 void Mod_LoadAliasModel (model_t *mod, void *buffer)
 {
 	int					i, j;
-	dmdl_t				*pinmodel, *pheader;
-	dstvert_t			*pinst, *poutst;
-	dtriangle_t			*pintri, *pouttri;
-	daliasframe_t		*pinframe, *poutframe;
+	dmd2_t				*pinmodel, *pheader;
+	dmd2_stvert_t			*pinst, *poutst;
+	dmd2_triangle_t			*pintri, *pouttri;
+	dmd2_frame_t		*pinframe, *poutframe;
 	int					*pincmd, *poutcmd;
 	int					version;
 
-	pinmodel = (dmdl_t *)buffer;
+	pinmodel = (dmd2_t *)buffer;
 
 	version = LittleLong (pinmodel->version);
-	if (version != ALIAS_VERSION)
+	if (version != MESH2_VERSION)
 		ri.Sys_Error (ERR_DROP, "%s has wrong version number (%i should be %i)",
-				 mod->name, version, ALIAS_VERSION);
+				 mod->name, version, MESH2_VERSION);
 
-	pheader = (dmdl_t*)Hunk_Alloc (LittleLong(pinmodel->ofs_end));
+	pheader = (dmd2_t*)Hunk_Alloc (LittleLong(pinmodel->ofs_end));
 	
 	// byte swap the header fields and sanity check
-	for (i=0 ; i<sizeof(dmdl_t)/4 ; i++)
+	for (i=0 ; i<sizeof(dmd2_t)/4 ; i++)
 		((int *)pheader)[i] = LittleLong (((int *)buffer)[i]);
 
 	if (pheader->skinheight > MAX_LBM_HEIGHT)
@@ -955,7 +955,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	if (pheader->num_xyz <= 0)
 		ri.Sys_Error (ERR_DROP, "model %s has no vertices", mod->name);
 
-	if (pheader->num_xyz > MAX_VERTS)
+	if (pheader->num_xyz > MAX_MD2_VERTS)
 		ri.Sys_Error (ERR_DROP, "model %s has too many vertices", mod->name);
 
 	if (pheader->num_st <= 0)
@@ -970,8 +970,8 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 //
 // load base s and t vertices (not used in gl version)
 //
-	pinst = (dstvert_t *) ((byte *)pinmodel + pheader->ofs_st);
-	poutst = (dstvert_t *) ((byte *)pheader + pheader->ofs_st);
+	pinst = (dmd2_stvert_t *) ((byte *)pinmodel + pheader->ofs_st);
+	poutst = (dmd2_stvert_t *) ((byte *)pheader + pheader->ofs_st);
 
 	for (i=0 ; i<pheader->num_st ; i++)
 	{
@@ -982,8 +982,8 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 //
 // load triangle lists
 //
-	pintri = (dtriangle_t *) ((byte *)pinmodel + pheader->ofs_tris);
-	pouttri = (dtriangle_t *) ((byte *)pheader + pheader->ofs_tris);
+	pintri = (dmd2_triangle_t *) ((byte *)pinmodel + pheader->ofs_tris);
+	pouttri = (dmd2_triangle_t *) ((byte *)pheader + pheader->ofs_tris);
 
 	for (i=0 ; i<pheader->num_tris ; i++)
 	{
@@ -999,9 +999,9 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 //
 	for (i=0 ; i<pheader->num_frames ; i++)
 	{
-		pinframe = (daliasframe_t *) ((byte *)pinmodel 
+		pinframe = (dmd2_frame_t *) ((byte *)pinmodel 
 			+ pheader->ofs_frames + i * pheader->framesize);
-		poutframe = (daliasframe_t *) ((byte *)pheader 
+		poutframe = (dmd2_frame_t *) ((byte *)pheader 
 			+ pheader->ofs_frames + i * pheader->framesize);
 
 		Com_Memcpy(poutframe->name, pinframe->name, sizeof(poutframe->name));
@@ -1012,7 +1012,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 		}
 		// verts are all 8 bit, so no swapping needed
 		Com_Memcpy(poutframe->verts, pinframe->verts, 
-			pheader->num_xyz*sizeof(dtrivertx_t));
+			pheader->num_xyz*sizeof(dmd2_trivertx_t));
 
 	}
 
@@ -1029,10 +1029,10 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 	// register all skins
 	Com_Memcpy((char *)pheader + pheader->ofs_skins, (char *)pinmodel + pheader->ofs_skins,
-		pheader->num_skins*MAX_SKINNAME);
+		pheader->num_skins*MAX_MD2_SKINNAME);
 	for (i=0 ; i<pheader->num_skins ; i++)
 	{
-		mod->skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
+		mod->skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_MD2_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
 	}
 
 	mod->mins[0] = -32;
@@ -1072,9 +1072,9 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		ri.Sys_Error (ERR_DROP, "%s has wrong version number (%i should be %i)",
 				 mod->name, sprout->version, SPRITE_VERSION);
 
-	if (sprout->numframes > MAX_MD2SKINS)
+	if (sprout->numframes > MAX_MD2_SKINS)
 		ri.Sys_Error (ERR_DROP, "%s has too many frames (%i > %i)",
-				 mod->name, sprout->numframes, MAX_MD2SKINS);
+				 mod->name, sprout->numframes, MAX_MD2_SKINS);
 
 	// byte swap everything
 	for (i=0 ; i<sprout->numframes ; i++)
@@ -1083,7 +1083,7 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		sprout->frames[i].height = LittleLong (sprin->frames[i].height);
 		sprout->frames[i].origin_x = LittleLong (sprin->frames[i].origin_x);
 		sprout->frames[i].origin_y = LittleLong (sprin->frames[i].origin_y);
-		Com_Memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SKINNAME);
+		Com_Memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SP2_SKINNAME);
 		mod->skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
 	}
 
@@ -1141,7 +1141,7 @@ qhandle_t R_RegisterModel (char *name)
 	model_t	*mod;
 	int		i;
 	dsprite_t	*sprout;
-	dmdl_t		*pheader;
+	dmd2_t		*pheader;
 
 	mod = Mod_ForName (name, false);
 	if (!mod)
@@ -1159,9 +1159,9 @@ qhandle_t R_RegisterModel (char *name)
 	}
 	else if (mod->type == MOD_MESH2)
 	{
-		pheader = (dmdl_t *)mod->extradata;
+		pheader = (dmd2_t *)mod->extradata;
 		for (i=0 ; i<pheader->num_skins ; i++)
-			mod->skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
+			mod->skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_MD2_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
 //PGM
 		mod->numframes = pheader->num_frames;
 //PGM

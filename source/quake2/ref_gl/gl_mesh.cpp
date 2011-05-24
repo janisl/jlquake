@@ -37,8 +37,8 @@ float	r_avertexnormals[NUMVERTEXNORMALS][3] = {
 
 typedef float vec4_t[4];
 
-static	vec4_t	s_lerped[MAX_VERTS];
-//static	vec3_t	lerped[MAX_VERTS];
+static	vec4_t	s_lerped[MAX_MD2_VERTS];
+//static	vec3_t	lerped[MAX_MD2_VERTS];
 
 vec3_t	shadevector;
 float	shadelight[3];
@@ -51,7 +51,7 @@ float	r_avertexnormal_dots[SHADEDOT_QUANT][256] =
 
 float	*shadedots = r_avertexnormal_dots[0];
 
-void GL_LerpVerts( int nverts, dtrivertx_t *v, dtrivertx_t *ov, dtrivertx_t *verts, float *lerp, float move[3], float frontv[3], float backv[3] )
+void GL_LerpVerts( int nverts, dmd2_trivertx_t *v, dmd2_trivertx_t *ov, dmd2_trivertx_t *verts, float *lerp, float move[3], float frontv[3], float backv[3] )
 {
 	int i;
 
@@ -86,11 +86,11 @@ interpolates between two frames and origins
 FIXME: batch lerp all vertexes
 =============
 */
-void GL_DrawAliasFrameLerp (dmdl_t *paliashdr, float backlerp)
+void GL_DrawAliasFrameLerp (dmd2_t *paliashdr, float backlerp)
 {
 	float 	l;
-	daliasframe_t	*frame, *oldframe;
-	dtrivertx_t	*v, *ov, *verts;
+	dmd2_frame_t	*frame, *oldframe;
+	dmd2_trivertx_t	*v, *ov, *verts;
 	int		*order;
 	int		count;
 	float	frontlerp;
@@ -101,11 +101,11 @@ void GL_DrawAliasFrameLerp (dmdl_t *paliashdr, float backlerp)
 	int		index_xyz;
 	float	*lerp;
 
-	frame = (daliasframe_t *)((byte *)paliashdr + paliashdr->ofs_frames 
+	frame = (dmd2_frame_t *)((byte *)paliashdr + paliashdr->ofs_frames 
 		+ currententity->e.frame * paliashdr->framesize);
 	verts = v = frame->verts;
 
-	oldframe = (daliasframe_t *)((byte *)paliashdr + paliashdr->ofs_frames 
+	oldframe = (dmd2_frame_t *)((byte *)paliashdr + paliashdr->ofs_frames 
 		+ currententity->e.oldframe * paliashdr->framesize);
 	ov = oldframe->verts;
 
@@ -150,7 +150,7 @@ void GL_DrawAliasFrameLerp (dmdl_t *paliashdr, float backlerp)
 
 	if ( gl_vertex_arrays->value )
 	{
-		float colorArray[MAX_VERTS*4];
+		float colorArray[MAX_MD2_VERTS*4];
 
 		qglEnableClientState( GL_VERTEX_ARRAY );
 		qglVertexPointer( 3, GL_FLOAT, 16, s_lerped );	// padded for SIMD
@@ -295,18 +295,18 @@ GL_DrawAliasShadow
 */
 extern	vec3_t			lightspot;
 
-void GL_DrawAliasShadow (dmdl_t *paliashdr, int posenum)
+void GL_DrawAliasShadow (dmd2_t *paliashdr, int posenum)
 {
-	dtrivertx_t	*verts;
+	dmd2_trivertx_t	*verts;
 	int		*order;
 	vec3_t	point;
 	float	height, lheight;
 	int		count;
-	daliasframe_t	*frame;
+	dmd2_frame_t	*frame;
 
 	lheight = currententity->e.origin[2] - lightspot[2];
 
-	frame = (daliasframe_t *)((byte *)paliashdr + paliashdr->ofs_frames 
+	frame = (dmd2_frame_t *)((byte *)paliashdr + paliashdr->ofs_frames 
 		+ currententity->e.frame * paliashdr->framesize);
 	verts = frame->verts;
 
@@ -366,13 +366,13 @@ static qboolean R_CullAliasModel( vec3_t bbox[8], trRefEntity_t *e )
 {
 	int i;
 	vec3_t		mins, maxs;
-	dmdl_t		*paliashdr;
+	dmd2_t		*paliashdr;
 	vec3_t		vectors[3];
 	vec3_t		thismins, oldmins, thismaxs, oldmaxs;
-	daliasframe_t *pframe, *poldframe;
+	dmd2_frame_t *pframe, *poldframe;
 	vec3_t angles;
 
-	paliashdr = (dmdl_t *)currentmodel->extradata;
+	paliashdr = (dmd2_t *)currentmodel->extradata;
 
 	if ( ( e->e.frame >= paliashdr->num_frames ) || ( e->e.frame < 0 ) )
 	{
@@ -387,11 +387,11 @@ static qboolean R_CullAliasModel( vec3_t bbox[8], trRefEntity_t *e )
 		e->e.oldframe = 0;
 	}
 
-	pframe = ( daliasframe_t * ) ( ( byte * ) paliashdr + 
+	pframe = ( dmd2_frame_t * ) ( ( byte * ) paliashdr + 
 		                              paliashdr->ofs_frames +
 									  e->e.frame * paliashdr->framesize);
 
-	poldframe = ( daliasframe_t * ) ( ( byte * ) paliashdr + 
+	poldframe = ( dmd2_frame_t * ) ( ( byte * ) paliashdr + 
 		                              paliashdr->ofs_frames +
 									  e->e.oldframe * paliashdr->framesize);
 
@@ -512,7 +512,7 @@ R_DrawAliasModel
 void R_DrawAliasModel (trRefEntity_t *e)
 {
 	int			i;
-	dmdl_t		*paliashdr;
+	dmd2_t		*paliashdr;
 	vec3_t		bbox[8];
 	image_t		*skin;
 
@@ -528,7 +528,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 			return;
 	}
 
-	paliashdr = (dmdl_t *)currentmodel->extradata;
+	paliashdr = (dmd2_t *)currentmodel->extradata;
 
 	//
 	// get lighting information
@@ -653,7 +653,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		skin = tr.images[currententity->e.customSkin];	// custom player skin
 	else
 	{
-		if (currententity->e.skinNum >= MAX_MD2SKINS)
+		if (currententity->e.skinNum >= MAX_MD2_SKINS)
 			skin = currentmodel->skins[0];
 		else
 		{

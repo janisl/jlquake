@@ -1413,9 +1413,9 @@ static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	pinmodel = (mdl_t *)buffer;
 
 	version = LittleLong (pinmodel->version);
-	if (version != ALIAS_VERSION)
+	if (version != MESH1_VERSION)
 		Sys_Error ("%s has wrong version number (%i should be %i)",
-				 mod->name, version, ALIAS_VERSION);
+				 mod->name, version, MESH1_VERSION);
 
 //
 // allocate space for a working header, plus all the data except the frames,
