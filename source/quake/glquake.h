@@ -171,5 +171,5 @@ void R_DrawParticles (void);
 void V_CalcBlend (void);
 void R_DrawWaterSurfaces (void);
 void R_RenderBrushPoly (msurface_t *fa);
-void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
+void GL_MakeAliasModelDisplayLists (model_t *m, mesh1hdr_t *hdr);
 void GL_SubdivideSurface (msurface_t *fa);

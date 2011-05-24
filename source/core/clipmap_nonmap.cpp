@@ -148,7 +148,7 @@ public:
 
 	void LoadAliasModel(QClipMapNonMap* mod, const void* buffer);
 	void LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer);
-	void* LoadAllSkins(int numskins, daliasskintype_t* pskintype);
+	void* LoadAllSkins(int numskins, dmdl_skintype_t* pskintype);
 	void* LoadAliasFrame(void* pin);
 	void* LoadAliasGroup(void* pin);
 	void AliasTransformVector(vec3_t in, vec3_t out);
@@ -332,24 +332,24 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 		scale_origin[i] = LittleFloat (pinmodel->scale_origin[i]);
 	}
 
-	daliasskintype_t* pskintype = (daliasskintype_t*)&pinmodel[1];
-	pskintype = (daliasskintype_t*)LoadAllSkins(numskins, pskintype);
-	stvert_t* pinstverts = (stvert_t*)pskintype;
-	dtriangle_t* pintriangles = (dtriangle_t*)&pinstverts[numverts];
-	daliasframetype_t* pframetype = (daliasframetype_t*)&pintriangles[numtris];
+	dmdl_skintype_t* pskintype = (dmdl_skintype_t*)&pinmodel[1];
+	pskintype = (dmdl_skintype_t*)LoadAllSkins(numskins, pskintype);
+	dmdl_stvert_t* pinstverts = (dmdl_stvert_t*)pskintype;
+	dmdl_triangle_t* pintriangles = (dmdl_triangle_t*)&pinstverts[numverts];
+	dmdl_frametype_t* pframetype = (dmdl_frametype_t*)&pintriangles[numtris];
 
 	mins[0] = mins[1] = mins[2] = 32768;
 	maxs[0] = maxs[1] = maxs[2] = -32768;
 	for (int i = 0; i < numframes; i++)
 	{
-		aliasframetype_t frametype = (aliasframetype_t)LittleLong(pframetype->type);
+		mdl_frametype_t frametype = (mdl_frametype_t)LittleLong(pframetype->type);
 		if (frametype == ALIAS_SINGLE)
 		{
-			pframetype = (daliasframetype_t*)LoadAliasFrame(pframetype + 1);
+			pframetype = (dmdl_frametype_t*)LoadAliasFrame(pframetype + 1);
 		}
 		else
 		{
-			pframetype = (daliasframetype_t*)LoadAliasGroup(pframetype + 1);
+			pframetype = (dmdl_frametype_t*)LoadAliasGroup(pframetype + 1);
 		}
 	}
 
@@ -394,24 +394,24 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 		scale_origin[i] = LittleFloat (pinmodel->scale_origin[i]);
 	}
 
-	daliasskintype_t* pskintype = (daliasskintype_t*)&pinmodel[1];
-	pskintype = (daliasskintype_t*)LoadAllSkins(numskins, pskintype);
-	stvert_t* pinstverts = (stvert_t*)pskintype;
-	dnewtriangle_t* pintriangles = (dnewtriangle_t*)&pinstverts[numstverts];
-	daliasframetype_t* pframetype = (daliasframetype_t*)&pintriangles[numtris];
+	dmdl_skintype_t* pskintype = (dmdl_skintype_t*)&pinmodel[1];
+	pskintype = (dmdl_skintype_t*)LoadAllSkins(numskins, pskintype);
+	dmdl_stvert_t* pinstverts = (dmdl_stvert_t*)pskintype;
+	dmdl_newtriangle_t* pintriangles = (dmdl_newtriangle_t*)&pinstverts[numstverts];
+	dmdl_frametype_t* pframetype = (dmdl_frametype_t*)&pintriangles[numtris];
 
 	mins[0] = mins[1] = mins[2] = 32768;
 	maxs[0] = maxs[1] = maxs[2] = -32768;
 	for (int i = 0; i < numframes; i++)
 	{
-		aliasframetype_t frametype = (aliasframetype_t)LittleLong (pframetype->type);
+		mdl_frametype_t frametype = (mdl_frametype_t)LittleLong (pframetype->type);
 		if (frametype == ALIAS_SINGLE)
 		{
-			pframetype = (daliasframetype_t*)LoadAliasFrame(pframetype + 1);
+			pframetype = (dmdl_frametype_t*)LoadAliasFrame(pframetype + 1);
 		}
 		else
 		{
-			pframetype = (daliasframetype_t*)LoadAliasGroup(pframetype + 1);
+			pframetype = (dmdl_frametype_t*)LoadAliasGroup(pframetype + 1);
 		}
 	}
 
@@ -429,12 +429,12 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 //
 //==========================================================================
 
-void* QMdlBoundsLoader::LoadAllSkins(int numskins, daliasskintype_t* pskintype)
+void* QMdlBoundsLoader::LoadAllSkins(int numskins, dmdl_skintype_t* pskintype)
 {
 	for (int i = 0; i < numskins; i++)
 	{
 		int s = skinwidth * skinheight;
-		pskintype = (daliasskintype_t*)((byte*)(pskintype + 1) + s);
+		pskintype = (dmdl_skintype_t*)((byte*)(pskintype + 1) + s);
 	}
 	return (void *)pskintype;
 }
@@ -447,8 +447,8 @@ void* QMdlBoundsLoader::LoadAllSkins(int numskins, daliasskintype_t* pskintype)
 
 void* QMdlBoundsLoader::LoadAliasFrame(void* pin)
 {
-	daliasframe_t* pdaliasframe = (daliasframe_t*)pin;
-	trivertx_t* pinframe = (trivertx_t*)(pdaliasframe + 1);
+	dmdl_frame_t* pdaliasframe = (dmdl_frame_t*)pin;
+	dmdl_trivertx_t* pinframe = (dmdl_trivertx_t*)(pdaliasframe + 1);
 
 	aliastransform[0][0] = scale[0];
 	aliastransform[1][1] = scale[1];
@@ -488,9 +488,9 @@ void* QMdlBoundsLoader::LoadAliasFrame(void* pin)
 
 void* QMdlBoundsLoader::LoadAliasGroup(void* pin)
 {
-	daliasgroup_t* pingroup = (daliasgroup_t*)pin;
+	dmdl_group_t* pingroup = (dmdl_group_t*)pin;
 	int numframes = LittleLong (pingroup->numframes);
-	daliasinterval_t* pin_intervals = (daliasinterval_t *)(pingroup + 1);
+	dmdl_interval_t* pin_intervals = (dmdl_interval_t *)(pingroup + 1);
 	pin_intervals += numframes;
 	void* ptemp = (void*)pin_intervals;
 
@@ -503,7 +503,7 @@ void* QMdlBoundsLoader::LoadAliasGroup(void* pin)
 
 	for (int i = 0; i < numframes; i++)
 	{
-		trivertx_t* poseverts = (trivertx_t*)((daliasframe_t*)ptemp + 1);
+		dmdl_trivertx_t* poseverts = (dmdl_trivertx_t*)((dmdl_frame_t*)ptemp + 1);
 		for (int j = 0; j < numverts; j++)
 		{
 			vec3_t in, out;
@@ -519,7 +519,7 @@ void* QMdlBoundsLoader::LoadAliasGroup(void* pin)
 					maxs[k] = out[k];
 			}
 		}
-		ptemp = (trivertx_t *)((daliasframe_t *)ptemp + 1) + numverts;
+		ptemp = (dmdl_trivertx_t*)((dmdl_frame_t *)ptemp + 1) + numverts;
 	}
 	return ptemp;
 }

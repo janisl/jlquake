@@ -460,13 +460,13 @@ int	lastposenum;
 GL_DrawAliasFrame
 =============
 */
-void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
+void GL_DrawAliasFrame (mesh1hdr_t *paliashdr, int posenum)
 {
 	float	s, t;
 	float 	l;
 	int		i, j;
 	int		index;
-	trivertx_t	*v, *verts;
+	dmdl_trivertx_t	*v, *verts;
 	int		list;
 	int		*order;
 	vec3_t	point;
@@ -476,7 +476,7 @@ void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
 
 lastposenum = posenum;
 
-	verts = (trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
+	verts = (dmdl_trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
 	verts += posenum * paliashdr->poseverts;
 	order = (int *)((byte *)paliashdr + paliashdr->commands);
 
@@ -529,12 +529,12 @@ GL_DrawAliasShadow
 */
 extern	vec3_t			lightspot;
 
-void GL_DrawAliasShadow (aliashdr_t *paliashdr, int posenum)
+void GL_DrawAliasShadow (mesh1hdr_t *paliashdr, int posenum)
 {
 	float	s, t, l;
 	int		i, j;
 	int		index;
-	trivertx_t	*v, *verts;
+	dmdl_trivertx_t	*v, *verts;
 	int		list;
 	int		*order;
 	vec3_t	point;
@@ -545,7 +545,7 @@ void GL_DrawAliasShadow (aliashdr_t *paliashdr, int posenum)
 	lheight = currententity->e.origin[2] - lightspot[2];
 
 	height = 0;
-	verts = (trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
+	verts = (dmdl_trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
 	verts += posenum * paliashdr->poseverts;
 	order = (int *)((byte *)paliashdr + paliashdr->commands);
 
@@ -597,7 +597,7 @@ R_SetupAliasFrame
 
 =================
 */
-void R_SetupAliasFrame (int frame, aliashdr_t *paliashdr)
+void R_SetupAliasFrame (int frame, mesh1hdr_t *paliashdr)
 {
 	int				pose, numposes;
 	float			interval;
@@ -668,8 +668,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	float		add;
 	model_t		*clmodel;
 	vec3_t		mins, maxs;
-	aliashdr_t	*paliashdr;
-	trivertx_t	*verts, *v;
+	mesh1hdr_t	*paliashdr;
+	dmdl_trivertx_t	*verts, *v;
 	int			index;
 	float		s, t, an;
 	vec3_t		adjust_origin;
@@ -749,7 +749,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	//
 	// locate the proper data
 	//
-	paliashdr = (aliashdr_t *)Mod_Extradata (clmodel);
+	paliashdr = (mesh1hdr_t *)Mod_Extradata (clmodel);
 
 	c_alias_polys += paliashdr->numtris;
 
@@ -806,7 +806,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	}
 	else
 	{
-		GL_Bind(paliashdr->gl_texture[currententity->e.skinNum]);
+		GL_Bind(paliashdr->gl_texture[currententity->e.skinNum][0]);
 	}
 
 	if (gl_smoothmodels->value)

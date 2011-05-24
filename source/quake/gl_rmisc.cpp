@@ -220,7 +220,7 @@ void R_TranslatePlayerSkin (int playernum)
 	unsigned	translate32[256];
 	int		i, j, s;
 	model_t	*model;
-	aliashdr_t *paliashdr;
+	mesh1hdr_t *paliashdr;
 	byte	*original;
 	unsigned	pixels[512*256], *out;
 	unsigned	scaled_width, scaled_height;
@@ -260,7 +260,7 @@ void R_TranslatePlayerSkin (int playernum)
 	if (model->type != MOD_MESH1)
 		return; // only translate skins on alias models
 
-	paliashdr = (aliashdr_t *)Mod_Extradata (model);
+	paliashdr = (mesh1hdr_t *)Mod_Extradata (model);
 	s = paliashdr->skinwidth * paliashdr->skinheight;
 	if (ent->skinnum < 0 || ent->skinnum >= paliashdr->numskins) {
 		Con_Printf("(%d): Invalid player skin #%d\n", playernum, ent->skinnum);

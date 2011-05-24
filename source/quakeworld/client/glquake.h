@@ -176,7 +176,7 @@ int R_LightPoint (vec3_t p);
 //
 // gl_mesh.c
 //
-void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
+void GL_MakeAliasModelDisplayLists (model_t *m, mesh1hdr_t *hdr);
 
 //
 // gl_rsurf.c

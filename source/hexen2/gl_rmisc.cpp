@@ -237,7 +237,7 @@ void R_TranslatePlayerSkin (int playernum)
 	unsigned	translate32[256];
 	int		i, j, s;
 	model_t	*model;
-	aliashdr_t *paliashdr;
+	mesh1hdr_t *paliashdr;
 	byte	*original;
 	unsigned	pixels[512*256], *out;
 	unsigned	scaled_width, scaled_height;
@@ -279,7 +279,7 @@ void R_TranslatePlayerSkin (int playernum)
 	model = Mod_GetModel(ent->model);
 	if (model->type != MOD_MESH1)
 		return;		// player doesn't have a model yet
-	paliashdr = (aliashdr_t *)Mod_Extradata (model);
+	paliashdr = (mesh1hdr_t *)Mod_Extradata (model);
 	s = paliashdr->skinwidth * paliashdr->skinheight;
 
 	if (playerclass >= 1 && 

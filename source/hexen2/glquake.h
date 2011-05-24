@@ -175,7 +175,7 @@ extern byte *playerTranslation;
 
 model_t *Mod_FindName (char *name);
 void GL_SubdivideSurface (msurface_t *fa);
-void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
+void GL_MakeAliasModelDisplayLists (model_t *m, mesh1hdr_t *hdr);
 int R_LightPoint (vec3_t p);
 void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);

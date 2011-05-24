@@ -300,16 +300,16 @@ int	lastposenum;
 GL_DrawAliasFrame
 =============
 */
-void GL_DrawAliasFrame (aliashdr_t *paliashdr, int posenum)
+void GL_DrawAliasFrame (mesh1hdr_t *paliashdr, int posenum)
 {
 	float 	l;
-	trivertx_t	*verts;
+	dmdl_trivertx_t	*verts;
 	int		*order;
 	int		count;
 
 lastposenum = posenum;
 
-	verts = (trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
+	verts = (dmdl_trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
 	verts += posenum * paliashdr->poseverts;
 	order = (int *)((byte *)paliashdr + paliashdr->commands);
 
@@ -352,9 +352,9 @@ GL_DrawAliasShadow
 */
 extern	vec3_t			lightspot;
 
-void GL_DrawAliasShadow (aliashdr_t *paliashdr, int posenum)
+void GL_DrawAliasShadow (mesh1hdr_t *paliashdr, int posenum)
 {
-	trivertx_t	*verts;
+	dmdl_trivertx_t	*verts;
 	int		*order;
 	vec3_t	point;
 	float	height, lheight;
@@ -363,7 +363,7 @@ void GL_DrawAliasShadow (aliashdr_t *paliashdr, int posenum)
 	lheight = currententity->e.origin[2] - lightspot[2];
 
 	height = 0;
-	verts = (trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
+	verts = (dmdl_trivertx_t *)((byte *)paliashdr + paliashdr->posedata);
 	verts += posenum * paliashdr->poseverts;
 	order = (int *)((byte *)paliashdr + paliashdr->commands);
 
@@ -415,7 +415,7 @@ R_SetupAliasFrame
 
 =================
 */
-void R_SetupAliasFrame (int frame, aliashdr_t *paliashdr)
+void R_SetupAliasFrame (int frame, mesh1hdr_t *paliashdr)
 {
 	int				pose, numposes;
 	float			interval;
@@ -467,7 +467,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	float		add;
 	model_t		*clmodel;
 	vec3_t		mins, maxs;
-	aliashdr_t	*paliashdr;
+	mesh1hdr_t	*paliashdr;
 
 	clmodel = Mod_GetModel(currententity->e.hModel);
 
@@ -544,7 +544,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	//
 	// locate the proper data
 	//
-	paliashdr = (aliashdr_t *)Mod_Extradata (Mod_GetModel(currententity->e.hModel));
+	paliashdr = (mesh1hdr_t *)Mod_Extradata (Mod_GetModel(currententity->e.hModel));
 
 	c_alias_polys += paliashdr->numtris;
 

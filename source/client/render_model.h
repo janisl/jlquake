@@ -18,7 +18,7 @@
 /*
 ==============================================================================
 
-SPRITE MODELS
+QUAKE SPRITE MODELS
 
 ==============================================================================
 */
@@ -52,6 +52,75 @@ struct msprite1_t
 	int					numframes;
 	float				beamlength;		// remove?
 	msprite1framedesc_t	frames[1];
+};
+
+/*
+==============================================================================
+
+QUAKE MESH MODELS
+
+==============================================================================
+*/
+
+#define MAX_MESH1_SKINS		32
+
+struct mmesh1framedesc_t
+{
+	int					firstpose;
+	int					numposes;
+	float				interval;
+	dmdl_trivertx_t		bboxmin;
+	dmdl_trivertx_t		bboxmax;
+	int					frame;
+	char				name[16];
+};
+
+struct mmesh1groupframedesc_t
+{
+	dmdl_trivertx_t		bboxmin;
+	dmdl_trivertx_t		bboxmax;
+	int					frame;
+};
+
+struct mmesh1group_t
+{
+	int						numframes;
+	int						intervals;
+	mmesh1groupframedesc_t	frames[1];
+};
+
+struct mmesh1triangle_t
+{
+	int					facesfront;
+	int					vertindex[3];
+	int					stindex[3];
+};
+
+struct mesh1hdr_t
+{
+	int			ident;
+	int			version;
+	vec3_t		scale;
+	vec3_t		scale_origin;
+	float		boundingradius;
+	vec3_t		eyeposition;
+	int			numskins;
+	int			skinwidth;
+	int			skinheight;
+	int			numverts;
+	int			numtris;
+	int			numframes;
+	synctype_t	synctype;
+	int			flags;
+	float		size;
+
+	int					numposes;
+	int					poseverts;
+	int					posedata;	// numposes*poseverts trivert_t
+	int					commands;	// gl command list with embedded s/t
+	image_t*			gl_texture[MAX_MESH1_SKINS][4];
+	int					texels[MAX_MESH1_SKINS];	// only for player skins
+	mmesh1framedesc_t	frames[1];	// variable sized
 };
 
 enum modtype_t

@@ -162,4 +162,4 @@ void Draw_RedString (int x, int y, char *str);
 void GL_SubdivideSurface (msurface_t *fa);
 void R_NetGraph (void);
 model_t *Mod_FindName (char *name);
-void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr);
+void GL_MakeAliasModelDisplayLists (model_t *m, mesh1hdr_t *hdr);

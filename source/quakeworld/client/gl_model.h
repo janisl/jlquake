@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __MODEL__
 #define __MODEL__
 
-#include "../../core/mdlfile.h"
-
 /*
 
 d*_t structures are on-disk representations
@@ -193,71 +191,13 @@ Alias models are position independent, so the cache manager can move them.
 ==============================================================================
 */
 
-typedef struct
-{
-	int					firstpose;
-	int					numposes;
-	float				interval;
-	trivertx_t			bboxmin;
-	trivertx_t			bboxmax;
-	int					frame;
-	char				name[16];
-} maliasframedesc_t;
-
-typedef struct
-{
-	trivertx_t			bboxmin;
-	trivertx_t			bboxmax;
-	int					frame;
-} maliasgroupframedesc_t;
-
-typedef struct
-{
-	int						numframes;
-	int						intervals;
-	maliasgroupframedesc_t	frames[1];
-} maliasgroup_t;
-
-// !!! if this is changed, it must be changed in asm_draw.h too !!!
-typedef struct mtriangle_s {
-	int					facesfront;
-	int					vertindex[3];
-} mtriangle_t;
-
-
-#define	MAX_SKINS	32
-typedef struct {
-	int			ident;
-	int			version;
-	vec3_t		scale;
-	vec3_t		scale_origin;
-	float		boundingradius;
-	vec3_t		eyeposition;
-	int			numskins;
-	int			skinwidth;
-	int			skinheight;
-	int			numverts;
-	int			numtris;
-	int			numframes;
-	synctype_t	synctype;
-	int			flags;
-	float		size;
-
-	int					numposes;
-	int					poseverts;
-	int					posedata;	// numposes*poseverts trivert_t
-	int					commands;	// gl command list with embedded s/t
-	image_t*			gl_texture[MAX_SKINS][4];
-	maliasframedesc_t	frames[1];	// variable sized
-} aliashdr_t;
-
 #define	MAXALIASVERTS	1024
 #define	MAXALIASFRAMES	256
 #define	MAXALIASTRIS	2048
-extern	aliashdr_t	*pheader;
-extern	stvert_t	stverts[MAXALIASVERTS];
-extern	mtriangle_t	triangles[MAXALIASTRIS];
-extern	trivertx_t	*poseverts[MAXALIASFRAMES];
+extern	mesh1hdr_t	*pheader;
+extern	dmdl_stvert_t	stverts[MAXALIASVERTS];
+extern	mmesh1triangle_t	triangles[MAXALIASTRIS];
+extern	dmdl_trivertx_t	*poseverts[MAXALIASFRAMES];
 
 //===================================================================
 

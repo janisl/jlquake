@@ -1240,14 +1240,14 @@ ALIAS MODELS
 ==============================================================================
 */
 
-aliashdr_t	*pheader;
+mesh1hdr_t	*pheader;
 
-stvert_t	stverts[MAXALIASVERTS];
-mtriangle_t	triangles[MAXALIASTRIS];
+dmdl_stvert_t	stverts[MAXALIASVERTS];
+mmesh1triangle_t	triangles[MAXALIASTRIS];
 
 // a pose is a single set of vertexes.  a frame may be
 // an animating sequence of poses
-trivertx_t	*poseverts[MAXALIASFRAMES];
+dmdl_trivertx_t	*poseverts[MAXALIASFRAMES];
 static int			posenum;
 
 byte		player_8bit_texels[320*200];
@@ -1257,13 +1257,13 @@ byte		player_8bit_texels[320*200];
 Mod_LoadAliasFrame
 =================
 */
-static void * Mod_LoadAliasFrame (void * pin, maliasframedesc_t *frame)
+static void * Mod_LoadAliasFrame (void * pin, mmesh1framedesc_t *frame)
 {
-	trivertx_t		*pinframe;
+	dmdl_trivertx_t		*pinframe;
 	int				i;
-	daliasframe_t	*pdaliasframe;
+	dmdl_frame_t	*pdaliasframe;
 	
-	pdaliasframe = (daliasframe_t *)pin;
+	pdaliasframe = (dmdl_frame_t *)pin;
 
 	QStr::Cpy(frame->name, pdaliasframe->name);
 	frame->firstpose = posenum;
@@ -1277,7 +1277,7 @@ static void * Mod_LoadAliasFrame (void * pin, maliasframedesc_t *frame)
 		frame->bboxmin.v[i] = pdaliasframe->bboxmax.v[i];
 	}
 
-	pinframe = (trivertx_t *)(pdaliasframe + 1);
+	pinframe = (dmdl_trivertx_t *)(pdaliasframe + 1);
 
 	poseverts[posenum] = pinframe;
 	posenum++;
@@ -1293,14 +1293,14 @@ static void * Mod_LoadAliasFrame (void * pin, maliasframedesc_t *frame)
 Mod_LoadAliasGroup
 =================
 */
-static void *Mod_LoadAliasGroup (void * pin,  maliasframedesc_t *frame)
+static void *Mod_LoadAliasGroup (void * pin,  mmesh1framedesc_t *frame)
 {
-	daliasgroup_t		*pingroup;
+	dmdl_group_t		*pingroup;
 	int					i, numframes;
-	daliasinterval_t	*pin_intervals;
+	dmdl_interval_t	*pin_intervals;
 	void				*ptemp;
 	
-	pingroup = (daliasgroup_t *)pin;
+	pingroup = (dmdl_group_t *)pin;
 
 	numframes = LittleLong (pingroup->numframes);
 
@@ -1314,7 +1314,7 @@ static void *Mod_LoadAliasGroup (void * pin,  maliasframedesc_t *frame)
 		frame->bboxmin.v[i] = pingroup->bboxmax.v[i];
 	}
 
-	pin_intervals = (daliasinterval_t *)(pingroup + 1);
+	pin_intervals = (dmdl_interval_t *)(pingroup + 1);
 
 	frame->interval = LittleFloat (pin_intervals->interval);
 
@@ -1324,10 +1324,10 @@ static void *Mod_LoadAliasGroup (void * pin,  maliasframedesc_t *frame)
 
 	for (i=0 ; i<numframes ; i++)
 	{
-		poseverts[posenum] = (trivertx_t *)((daliasframe_t *)ptemp + 1);
+		poseverts[posenum] = (dmdl_trivertx_t *)((dmdl_frame_t *)ptemp + 1);
 		posenum++;
 
-		ptemp = (trivertx_t *)((daliasframe_t *)ptemp + 1) + pheader->numverts;
+		ptemp = (dmdl_trivertx_t *)((dmdl_frame_t *)ptemp + 1) + pheader->numverts;
 	}
 
 	return ptemp;
@@ -1340,19 +1340,19 @@ static void *Mod_LoadAliasGroup (void * pin,  maliasframedesc_t *frame)
 Mod_LoadAllSkins
 ===============
 */
-static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
+static void *Mod_LoadAllSkins (int numskins, dmdl_skintype_t *pskintype)
 {
 	int		i, j, k;
 	char	name[32];
 	int		s;
 	byte	*skin;
-	daliasskingroup_t		*pinskingroup;
+	dmdl_skingroup_t		*pinskingroup;
 	int		groupskins;
-	daliasskininterval_t	*pinskinintervals;
+	dmdl_skininterval_t	*pinskinintervals;
 	
 	skin = (byte *)(pskintype + 1);
 
-	if (numskins < 1 || numskins > MAX_SKINS)
+	if (numskins < 1 || numskins > MAX_MESH1_SKINS)
 		Sys_Error ("Mod_LoadAliasModel: Invalid # of skins: %d\n", numskins);
 
 	s = pheader->skinwidth * pheader->skinheight;
@@ -1377,15 +1377,15 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 			pheader->gl_texture[i][3] =
 				R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
 			delete[] pic32;
-			pskintype = (daliasskintype_t *)((byte *)(pskintype+1) + s);
+			pskintype = (dmdl_skintype_t *)((byte *)(pskintype+1) + s);
 		} else {
 			// animating skin group.  yuck.
 			pskintype++;
-			pinskingroup = (daliasskingroup_t *)pskintype;
+			pinskingroup = (dmdl_skingroup_t *)pskintype;
 			groupskins = LittleLong (pinskingroup->numskins);
-			pinskinintervals = (daliasskininterval_t *)(pinskingroup + 1);
+			pinskinintervals = (dmdl_skininterval_t *)(pinskingroup + 1);
 
-			pskintype = (daliasskintype_t*)(pinskinintervals + groupskins);
+			pskintype = (dmdl_skintype_t*)(pinskinintervals + groupskins);
 
 			for (j=0 ; j<groupskins ; j++)
 			{
@@ -1394,7 +1394,7 @@ static void *Mod_LoadAllSkins (int numskins, daliasskintype_t *pskintype)
 					byte* pic32 = R_ConvertImage8To32((byte *)(pskintype), pheader->skinwidth, pheader->skinheight, IMG8MODE_Skin);
 					pheader->gl_texture[i][j&3] = R_CreateImage(name, pic32, pheader->skinwidth, pheader->skinheight, true, true, GL_REPEAT, false);
 					delete[] pic32;
-					pskintype = (daliasskintype_t *)((byte *)(pskintype) + s);
+					pskintype = (dmdl_skintype_t *)((byte *)(pskintype) + s);
 			}
 			k = j;
 			for (/* */; j < 4; j++)
@@ -1418,12 +1418,12 @@ static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 {
 	int					i, j;
 	mdl_t				*pinmodel;
-	stvert_t			*pinstverts;
-	dtriangle_t			*pintriangles;
+	dmdl_stvert_t			*pinstverts;
+	dmdl_triangle_t			*pintriangles;
 	int					version, numframes;
 	int					size;
-	daliasframetype_t	*pframetype;
-	daliasskintype_t	*pskintype;
+	dmdl_frametype_t	*pframetype;
+	dmdl_skintype_t	*pskintype;
 	int					start, end, total;
 
 	if (!QStr::Cmp(loadmodel->name, "progs/player.mdl") ||
@@ -1464,10 +1464,10 @@ static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 // allocate space for a working header, plus all the data except the frames,
 // skin and group info
 //
-	size = 	sizeof (aliashdr_t) 
+	size = 	sizeof (mesh1hdr_t) 
 			+ (LittleLong (pinmodel->numframes) - 1) *
 			sizeof (pheader->frames[0]);
-	pheader = (aliashdr_t*)Hunk_AllocName (size, loadname);
+	pheader = (mesh1hdr_t*)Hunk_AllocName (size, loadname);
 	
 	mod->flags = LittleLong (pinmodel->flags);
 
@@ -1516,13 +1516,13 @@ static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 //
 // load the skins
 //
-	pskintype = (daliasskintype_t *)&pinmodel[1];
-	pskintype = (daliasskintype_t *)Mod_LoadAllSkins (pheader->numskins, pskintype);
+	pskintype = (dmdl_skintype_t *)&pinmodel[1];
+	pskintype = (dmdl_skintype_t *)Mod_LoadAllSkins (pheader->numskins, pskintype);
 
 //
 // load base s and t vertices
 //
-	pinstverts = (stvert_t *)pskintype;
+	pinstverts = (dmdl_stvert_t *)pskintype;
 
 	for (i=0 ; i<pheader->numverts ; i++)
 	{
@@ -1534,7 +1534,7 @@ static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 //
 // load triangle lists
 //
-	pintriangles = (dtriangle_t *)&pinstverts[pheader->numverts];
+	pintriangles = (dmdl_triangle_t *)&pinstverts[pheader->numverts];
 
 	for (i=0 ; i<pheader->numtris ; i++)
 	{
@@ -1551,22 +1551,22 @@ static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 // load the frames
 //
 	posenum = 0;
-	pframetype = (daliasframetype_t *)&pintriangles[pheader->numtris];
+	pframetype = (dmdl_frametype_t *)&pintriangles[pheader->numtris];
 
 	for (i=0 ; i<numframes ; i++)
 	{
-		aliasframetype_t	frametype;
+		mdl_frametype_t	frametype;
 
-		frametype = (aliasframetype_t)LittleLong (pframetype->type);
+		frametype = (mdl_frametype_t)LittleLong (pframetype->type);
 
 		if (frametype == ALIAS_SINGLE)
 		{
-			pframetype = (daliasframetype_t *)
+			pframetype = (dmdl_frametype_t *)
 					Mod_LoadAliasFrame (pframetype + 1, &pheader->frames[i]);
 		}
 		else
 		{
-			pframetype = (daliasframetype_t *)
+			pframetype = (dmdl_frametype_t *)
 					Mod_LoadAliasGroup (pframetype + 1, &pheader->frames[i]);
 		}
 	}

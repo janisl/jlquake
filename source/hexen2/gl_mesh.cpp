@@ -12,7 +12,7 @@ ALIAS MODEL DISPLAY LIST GENERATION
 */
 
 model_t		*aliasmodel;
-aliashdr_t	*paliashdr;
+mesh1hdr_t	*paliashdr;
 
 qboolean	used[8192];
 
@@ -43,7 +43,7 @@ int	StripLength (int starttri, int startv)
 	int			m1, m2;
 	int			st1, st2;
 	int			j;
-	mtriangle_t	*last, *check;
+	mmesh1triangle_t	*last, *check;
 	int			k;
 
 	used[starttri] = 2;
@@ -131,7 +131,7 @@ int	FanLength (int starttri, int startv)
 	int		m1, m2;
 	int		st1, st2;
 	int		j;
-	mtriangle_t	*last, *check;
+	mmesh1triangle_t	*last, *check;
 	int		k;
 
 	used[starttri] = 2;
@@ -215,11 +215,11 @@ void BuildTris (void)
 {
 	int		i, j, k;
 	int		startv;
-	mtriangle_t	*last, *check;
+	mmesh1triangle_t	*last, *check;
 	int		m1, m2;
 	int		striplength;
-	trivertx_t	*v;
-	mtriangle_t *tv;
+	dmdl_trivertx_t	*v;
+	mmesh1triangle_t *tv;
 	float	s, t;
 	int		index;
 	int		len, bestlen, besttype;
@@ -311,19 +311,19 @@ void BuildTris (void)
 GL_MakeAliasModelDisplayLists
 ================
 */
-void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
+void GL_MakeAliasModelDisplayLists (model_t *m, mesh1hdr_t *hdr)
 {
 	int		i, j;
-	maliasgroup_t	*paliasgroup;
+	mmesh1group_t	*paliasgroup;
 	int			*cmds;
-	trivertx_t	*verts;
+	dmdl_trivertx_t	*verts;
 	char	cache[MAX_QPATH], fullpath[MAX_OSPATH], *c;
 	fileHandle_t	f;
 	int		len;
 	byte	*data;
 
 	aliasmodel = m;
-	paliashdr = hdr;	// (aliashdr_t *)Mod_Extradata (m);
+	paliashdr = hdr;	// (mesh1hdr_t *)Mod_Extradata (m);
 
 	//
 	// look for a cached version
@@ -373,8 +373,8 @@ void GL_MakeAliasModelDisplayLists (model_t *m, aliashdr_t *hdr)
 	paliashdr->commands = (byte *)cmds - (byte *)paliashdr;
 	Com_Memcpy(cmds, commands, numcommands * 4);
 
-	verts = (trivertx_t*)Hunk_Alloc (paliashdr->numposes * paliashdr->poseverts 
-		* sizeof(trivertx_t) );
+	verts = (dmdl_trivertx_t*)Hunk_Alloc (paliashdr->numposes * paliashdr->poseverts 
+		* sizeof(dmdl_trivertx_t) );
 	paliashdr->posedata = (byte *)verts - (byte *)paliashdr;
 	for (i=0 ; i<paliashdr->numposes ; i++)
 		for (j=0 ; j<numorder ; j++)

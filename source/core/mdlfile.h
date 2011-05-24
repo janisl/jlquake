@@ -39,13 +39,13 @@ enum synctype_t
 };
 #endif
 
-enum aliasskintype_t
+enum mdl_skintype_t
 {
 	ALIAS_SKIN_SINGLE = 0,
 	ALIAS_SKIN_GROUP
 };
 
-enum aliasframetype_t
+enum mdl_frametype_t
 {
 	ALIAS_SINGLE = 0,
 	ALIAS_GROUP
@@ -90,67 +90,67 @@ struct newmdl_t
 	qint32		num_st_verts;
 };
 
-struct daliasskintype_t
+struct dmdl_skintype_t
 {
 	qint32		type;
 };
 
-struct daliasskingroup_t
+struct dmdl_skingroup_t
 {
 	qint32		numskins;
 };
 
-struct daliasskininterval_t
+struct dmdl_skininterval_t
 {
 	float		interval;
 };
 
-struct stvert_t
+struct dmdl_stvert_t
 {
 	qint32		onseam;
 	qint32		s;
 	qint32		t;
 };
 
-struct dtriangle_t
+struct dmdl_triangle_t
 {
 	qint32		facesfront;
 	qint32		vertindex[3];
 };
 
-struct dnewtriangle_t
+struct dmdl_newtriangle_t
 {
 	qint32		facesfront;
 	quint16		vertindex[3];
 	quint16		stindex[3];
 };
 
-struct daliasframetype_t
+struct dmdl_frametype_t
 {
 	qint32		type;
 };
 
-struct trivertx_t
+struct dmdl_trivertx_t
 {
 	quint8		v[3];
 	quint8		lightnormalindex;
 };
 
-struct daliasframe_t
+struct dmdl_frame_t
 {
-	trivertx_t	bboxmin;	// lightnormal isn't used
-	trivertx_t	bboxmax;	// lightnormal isn't used
+	dmdl_trivertx_t	bboxmin;	// lightnormal isn't used
+	dmdl_trivertx_t	bboxmax;	// lightnormal isn't used
 	char		name[16];	// frame name from grabbing
 };
 
-struct daliasgroup_t
+struct dmdl_group_t
 {
 	qint32		numframes;
-	trivertx_t	bboxmin;	// lightnormal isn't used
-	trivertx_t	bboxmax;	// lightnormal isn't used
+	dmdl_trivertx_t	bboxmin;	// lightnormal isn't used
+	dmdl_trivertx_t	bboxmax;	// lightnormal isn't used
 };
 
-struct daliasinterval_t
+struct dmdl_interval_t
 {
 	float		interval;
 };

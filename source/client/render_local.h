@@ -28,6 +28,7 @@
 #endif
 
 #include "../core/sprfile.h"
+#include "../core/mdlfile.h"
 
 #include "render_qgl.h"
 #include "render_image.h"
