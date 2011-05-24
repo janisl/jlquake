@@ -15,7 +15,6 @@ unsigned		blocklights[18*18];
 #define	BLOCK_WIDTH		128
 #define	BLOCK_HEIGHT	128
 
-#define	MAX_LIGHTMAPS	64
 int			active_lightmaps;
 
 image_t*	lightmap_textures[MAX_LIGHTMAPS];
