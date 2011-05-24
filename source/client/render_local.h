@@ -28,6 +28,7 @@
 #endif
 
 #include "../core/sprfile.h"
+#include "../core/sp2file.h"
 #include "../core/mdlfile.h"
 #include "../core/md2file.h"
 

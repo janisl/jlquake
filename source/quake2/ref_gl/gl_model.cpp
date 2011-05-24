@@ -247,7 +247,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 		Mod_LoadAliasModel (mod, buf);
 		break;
 		
-	case IDSPRITEHEADER:
+	case IDSPRITE2HEADER:
 		loadmodel->extradata = Hunk_Begin (0x10000);
 		Mod_LoadSpriteModel (mod, buf);
 		break;
@@ -1058,19 +1058,19 @@ Mod_LoadSpriteModel
 */
 void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 {
-	dsprite_t	*sprin, *sprout;
+	dsprite2_t	*sprin, *sprout;
 	int			i;
 
-	sprin = (dsprite_t *)buffer;
-	sprout = (dsprite_t*)Hunk_Alloc (modfilelen);
+	sprin = (dsprite2_t *)buffer;
+	sprout = (dsprite2_t*)Hunk_Alloc (modfilelen);
 
 	sprout->ident = LittleLong (sprin->ident);
 	sprout->version = LittleLong (sprin->version);
 	sprout->numframes = LittleLong (sprin->numframes);
 
-	if (sprout->version != SPRITE_VERSION)
+	if (sprout->version != SPRITE2_VERSION)
 		ri.Sys_Error (ERR_DROP, "%s has wrong version number (%i should be %i)",
-				 mod->name, sprout->version, SPRITE_VERSION);
+				 mod->name, sprout->version, SPRITE2_VERSION);
 
 	if (sprout->numframes > MAX_MD2_SKINS)
 		ri.Sys_Error (ERR_DROP, "%s has too many frames (%i > %i)",
@@ -1140,7 +1140,7 @@ qhandle_t R_RegisterModel (char *name)
 {
 	model_t	*mod;
 	int		i;
-	dsprite_t	*sprout;
+	dsprite2_t	*sprout;
 	dmd2_t		*pheader;
 
 	mod = Mod_ForName (name, false);
@@ -1153,7 +1153,7 @@ qhandle_t R_RegisterModel (char *name)
 	// register any images used by the models
 	if (mod->type == MOD_SPRITE2)
 	{
-		sprout = (dsprite_t *)mod->extradata;
+		sprout = (dsprite2_t *)mod->extradata;
 		for (i=0 ; i<sprout->numframes ; i++)
 			mod->skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
 	}

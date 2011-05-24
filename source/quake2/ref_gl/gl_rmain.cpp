@@ -166,14 +166,14 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 {
 	float alpha = 1.0F;
 	vec3_t	point;
-	dsprframe_t	*frame;
+	dsp2_frame_t	*frame;
 	float		*up, *right;
-	dsprite_t		*psprite;
+	dsprite2_t		*psprite;
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	psprite = (dsprite_t *)currentmodel->extradata;
+	psprite = (dsprite2_t *)currentmodel->extradata;
 
 #if 0
 	if (e->frame < 0 || e->frame >= psprite->numframes)
