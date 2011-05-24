@@ -548,9 +548,6 @@ struct trGlobals_t : trGlobals_base_t
 
 	int						viewCluster;
 
-	vec3_t					sunLight;			// from the sky shader for this level
-	vec3_t					sunDirection;
-
 	frontEndCounters_t		pc;
 	int						frontEndMsec;		// not in pc due to clearing issue
 

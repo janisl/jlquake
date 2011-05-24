@@ -108,6 +108,9 @@ struct trGlobals_base_t
 	int						identityLightByte;	// identityLight * 255
 	int						overbrightBits;		// r_overbrightBits->integer, but set to 0 if no hw gamma
 
+	vec3_t					sunLight;			// from the sky shader for this level
+	vec3_t					sunDirection;
+
 	int						numLightmaps;
 	image_t*				lightmaps[MAX_LIGHTMAPS];
 
@@ -180,5 +183,8 @@ WAD files
 
 void R_LoadWadFile();
 void* R_GetWadLumpByName(const char* name);
+
+//	Temporarily must be defined in game.
+void R_InitSkyTexCoords( float cloudLayerHeight );
 
 #endif

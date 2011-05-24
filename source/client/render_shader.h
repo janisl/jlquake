@@ -329,8 +329,7 @@ struct shader_t
 	shader_t*	next;
 };
 
-bool ParseVector(const char** text, int count, float* v);
-bool ParseStage( shaderStage_t *stage, const char **text );
-void ParseDeform( const char **text );
+bool ParseShader(const char** text);
 
 extern shader_t		shader;
+extern shaderStage_t	stages[MAX_SHADER_STAGES];		

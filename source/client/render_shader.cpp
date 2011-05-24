@@ -19,10 +19,19 @@
 
 #include "client.h"
 #include "render_local.h"
+#include "../core/bsp46file.h"
 
 // MACROS ------------------------------------------------------------------
 
 // TYPES -------------------------------------------------------------------
+
+struct infoParm_t
+{
+	const char	*name;
+	int			clearSolid;
+	int			surfaceFlags;
+	int			contents;
+};
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -34,9 +43,58 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+// the shader is parsed into these global variables, then copied into
+// dynamically allocated memory if it is valid.
 shader_t		shader;
+shaderStage_t	stages[MAX_SHADER_STAGES];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+// this table is also present in q3map
+
+static infoParm_t infoParms[] =
+{
+	// server relevant contents
+	{"water",		1,	0,	BSP46CONTENTS_WATER },
+	{"slime",		1,	0,	BSP46CONTENTS_SLIME },		// mildly damaging
+	{"lava",		1,	0,	BSP46CONTENTS_LAVA },		// very damaging
+	{"playerclip",	1,	0,	BSP46CONTENTS_PLAYERCLIP },
+	{"monsterclip",	1,	0,	BSP46CONTENTS_MONSTERCLIP },
+	{"nodrop",		1,	0,	BSP46CONTENTS_NODROP },		// don't drop items or leave bodies (death fog, lava, etc)
+	{"nonsolid",	1,	BSP46SURF_NONSOLID,	0},						// clears the solid flag
+
+	// utility relevant attributes
+	{"origin",		1,	0,	BSP46CONTENTS_ORIGIN },			// center of rotating brushes
+	{"trans",		0,	0,	BSP46CONTENTS_TRANSLUCENT },	// don't eat contained surfaces
+	{"detail",		0,	0,	BSP46CONTENTS_DETAIL },			// don't include in structural bsp
+	{"structural",	0,	0,	BSP46CONTENTS_STRUCTURAL },		// force into structural bsp even if trnas
+	{"areaportal",	1,	0,	BSP46CONTENTS_AREAPORTAL },		// divides areas
+	{"clusterportal", 1,0,  BSP46CONTENTS_CLUSTERPORTAL },	// for bots
+	{"donotenter",  1,  0,  BSP46CONTENTS_DONOTENTER },		// for bots
+
+	{"fog",			1,	0,	BSP46CONTENTS_FOG},			// carves surfaces entering
+	{"sky",			0,	BSP46SURF_SKY,		0 },		// emit light from an environment map
+	{"lightfilter",	0,	BSP46SURF_LIGHTFILTER, 0 },		// filter light going through it
+	{"alphashadow",	0,	BSP46SURF_ALPHASHADOW, 0 },		// test light on a per-pixel basis
+	{"hint",		0,	BSP46SURF_HINT,		0 },		// use as a primary splitter
+
+	// server attributes
+	{"slick",		0,	BSP46SURF_SLICK,		0 },
+	{"noimpact",	0,	BSP46SURF_NOIMPACT,	0 },		// don't make impact explosions or marks
+	{"nomarks",		0,	BSP46SURF_NOMARKS,	0 },		// don't make impact marks, but still explode
+	{"ladder",		0,	BSP46SURF_LADDER,	0 },
+	{"nodamage",	0,	BSP46SURF_NODAMAGE,	0 },
+	{"metalsteps",	0,	BSP46SURF_METALSTEPS,0 },
+	{"flesh",		0,	BSP46SURF_FLESH,		0 },
+	{"nosteps",		0,	BSP46SURF_NOSTEPS,	0 },
+
+	// drawsurf attributes
+	{"nodraw",		0,	BSP46SURF_NODRAW,	0 },	// don't generate a drawsurface (or a lightmap)
+	{"pointlight",	0,	BSP46SURF_POINTLIGHT, 0 },	// sample lighting at vertexes
+	{"nolightmap",	0,	BSP46SURF_NOLIGHTMAP,0 },	// don't generate a lightmap
+	{"nodlight",	0,	BSP46SURF_NODLIGHT, 0 },	// don't ever add dynamic lights
+	{"dust",		0,	BSP46SURF_DUST, 0}			// leave a dust trail when walking on this surface
+};
 
 // CODE --------------------------------------------------------------------
 
@@ -46,7 +104,7 @@ shader_t		shader;
 //
 //==========================================================================
 
-bool ParseVector(const char** text, int count, float* v)
+static bool ParseVector(const char** text, int count, float* v)
 {
 	// FIXME: spaces are currently required after parens, should change parseext...
 	char* token = QStr::ParseExt(text, false);
@@ -517,7 +575,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 //
 //==========================================================================
 
-bool ParseStage(shaderStage_t* stage, const char** text)
+static bool ParseStage(shaderStage_t* stage, const char** text)
 {
 	int depthMaskBits = GLS_DEPTHMASK_TRUE, blendSrcBits = 0, blendDstBits = 0, atestBits = 0, depthFuncBits = 0;
 	qboolean depthMaskExplicit = false;
@@ -981,7 +1039,8 @@ bool ParseStage(shaderStage_t* stage, const char** text)
 	}
 
 	// decide which agens we can skip
-	if (stage->alphaGen == CGEN_IDENTITY)
+	//JL was CGEN_IDENTITY which is equal to AGEN_ENTITY
+	if (stage->alphaGen == AGEN_IDENTITY)
 	{
 		if (stage->rgbGen == CGEN_IDENTITY || stage->rgbGen == CGEN_LIGHTING_DIFFUSE)
 		{
@@ -1015,7 +1074,7 @@ bool ParseStage(shaderStage_t* stage, const char** text)
 //
 //==========================================================================
 
-void ParseDeform(const char** text)
+static void ParseDeform(const char** text)
 {
 	char* token = QStr::ParseExt(text, false);
 	if (token[0] == 0)
@@ -1157,4 +1216,386 @@ void ParseDeform(const char** text)
 	}
 
 	GLog.Write(S_COLOR_YELLOW "WARNING: unknown deformVertexes subtype '%s' found in shader '%s'\n", token, shader.name);
+}
+
+//==========================================================================
+//
+//	ParseSkyParms
+//
+//	skyParms <outerbox> <cloudheight> <innerbox>
+//
+//==========================================================================
+
+static void ParseSkyParms(const char** text)
+{
+	static const char* suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
+
+	// outerbox
+	char* token = QStr::ParseExt(text, false);
+	if (token[0] == 0)
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
+		return;
+	}
+	if (QStr::Cmp(token, "-"))
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			char pathname[MAX_QPATH];
+			QStr::Sprintf(pathname, sizeof(pathname), "%s_%s.tga", token, suf[i]);
+			shader.sky.outerbox[i] = R_FindImageFile(pathname, true, true, GL_CLAMP);
+			if (!shader.sky.outerbox[i])
+			{
+				shader.sky.outerbox[i] = tr.defaultImage;
+			}
+		}
+	}
+
+	// cloudheight
+	token = QStr::ParseExt(text, false);
+	if (token[0] == 0)
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
+		return;
+	}
+	shader.sky.cloudHeight = QStr::Atof(token);
+	if (!shader.sky.cloudHeight)
+	{
+		shader.sky.cloudHeight = 512;
+	}
+	R_InitSkyTexCoords(shader.sky.cloudHeight);
+
+	// innerbox
+	token = QStr::ParseExt(text, false);
+	if (token[0] == 0)
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
+		return;
+	}
+	if (QStr::Cmp(token, "-"))
+	{
+		for (int i = 0; i < 6; i++)
+		{
+			char pathname[MAX_QPATH];
+			QStr::Sprintf(pathname, sizeof(pathname), "%s_%s.tga", token, suf[i]);
+			shader.sky.innerbox[i] = R_FindImageFile(pathname, true, true, GL_REPEAT);
+			if (!shader.sky.innerbox[i])
+			{
+				shader.sky.innerbox[i] = tr.defaultImage;
+			}
+		}
+	}
+
+	shader.isSky = true;
+}
+
+//==========================================================================
+//
+//	ParseSort
+//
+//==========================================================================
+
+static void ParseSort(const char** text)
+{
+	char* token = QStr::ParseExt(text, false);
+	if (token[0] == 0)
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: missing sort parameter in shader '%s'\n", shader.name);
+		return;
+	}
+
+	if (!QStr::ICmp( token, "portal"))
+	{
+		shader.sort = SS_PORTAL;
+	}
+	else if (!QStr::ICmp(token, "sky"))
+	{
+		shader.sort = SS_ENVIRONMENT;
+	}
+	else if (!QStr::ICmp(token, "opaque"))
+	{
+		shader.sort = SS_OPAQUE;
+	}
+	else if (!QStr::ICmp(token, "decal"))
+	{
+		shader.sort = SS_DECAL;
+	}
+	else if (!QStr::ICmp(token, "seeThrough"))
+	{
+		shader.sort = SS_SEE_THROUGH;
+	}
+	else if (!QStr::ICmp(token, "banner"))
+	{
+		shader.sort = SS_BANNER;
+	}
+	else if (!QStr::ICmp(token, "additive"))
+	{
+		shader.sort = SS_BLEND1;
+	}
+	else if (!QStr::ICmp(token, "nearest"))
+	{
+		shader.sort = SS_NEAREST;
+	}
+	else if (!QStr::ICmp(token, "underwater"))
+	{
+		shader.sort = SS_UNDERWATER;
+	}
+	else
+	{
+		shader.sort = QStr::Atof(token);
+	}
+}
+
+//==========================================================================
+//
+//	ParseSurfaceParm
+//
+//	surfaceparm <name>
+//
+//==========================================================================
+
+static void ParseSurfaceParm(const char** text)
+{
+	int numInfoParms = sizeof(infoParms) / sizeof(infoParms[0]);
+
+	char* token = QStr::ParseExt(text, false);
+	for (int i = 0; i < numInfoParms; i++)
+	{
+		if (!QStr::ICmp(token, infoParms[i].name))
+		{
+			shader.surfaceFlags |= infoParms[i].surfaceFlags;
+			shader.contentFlags |= infoParms[i].contents;
+			break;
+		}
+	}
+}
+
+//==========================================================================
+//
+//	ParseShader
+//
+//	The current text pointer is at the explicit text definition of the
+// shader.  Parse it into the global shader variable.  Later functions
+// will optimize it.
+//
+//==========================================================================
+
+bool ParseShader(const char** text)
+{
+	int s;
+
+	s = 0;
+
+	char* token = QStr::ParseExt(text, true);
+	if (token[0] != '{')
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: expecting '{', found '%s' instead in shader '%s'\n", token, shader.name);
+		return false;
+	}
+
+	while (1)
+	{
+		token = QStr::ParseExt(text, true);
+		if (!token[0])
+		{
+			GLog.Write(S_COLOR_YELLOW "WARNING: no concluding '}' in shader %s\n", shader.name);
+			return false;
+		}
+
+		// end of shader definition
+		if (token[0] == '}')
+		{
+			break;
+		}
+		// stage definition
+		else if (token[0] == '{')
+		{
+			if (!ParseStage(&stages[s], text))
+			{
+				return false;
+			}
+			stages[s].active = true;
+			s++;
+			continue;
+		}
+		// skip stuff that only the QuakeEdRadient needs
+		else if (!QStr::NICmp(token, "qer", 3))
+		{
+			QStr::SkipRestOfLine(text);
+			continue;
+		}
+		// sun parms
+		else if (!QStr::ICmp(token, "q3map_sun"))
+		{
+			float	a, b;
+
+			token = QStr::ParseExt(text, false);
+			tr.sunLight[0] = QStr::Atof(token);
+			token = QStr::ParseExt(text, false);
+			tr.sunLight[1] = QStr::Atof(token);
+			token = QStr::ParseExt(text, false);
+			tr.sunLight[2] = QStr::Atof(token);
+			
+			VectorNormalize(tr.sunLight);
+
+			token = QStr::ParseExt(text, false);
+			a = QStr::Atof(token);
+			VectorScale(tr.sunLight, a, tr.sunLight);
+
+			token = QStr::ParseExt(text, false);
+			a = QStr::Atof(token);
+			a = a / 180 * M_PI;
+
+			token = QStr::ParseExt(text, false);
+			b = QStr::Atof(token);
+			b = b / 180 * M_PI;
+
+			tr.sunDirection[0] = cos(a) * cos(b);
+			tr.sunDirection[1] = sin(a) * cos(b);
+			tr.sunDirection[2] = sin(b);
+		}
+		else if (!QStr::ICmp(token, "deformVertexes"))
+		{
+			ParseDeform(text);
+			continue;
+		}
+		else if (!QStr::ICmp(token, "tesssize"))
+		{
+			QStr::SkipRestOfLine(text);
+			continue;
+		}
+		else if (!QStr::ICmp(token, "clampTime"))
+		{
+			token = QStr::ParseExt(text, false);
+			if (token[0])
+			{
+				shader.clampTime = QStr::Atof(token);
+			}
+		}
+		// skip stuff that only the q3map needs
+		else if (!QStr::NICmp(token, "q3map", 5))
+		{
+			QStr::SkipRestOfLine(text);
+			continue;
+		}
+		// skip stuff that only q3map or the server needs
+		else if (!QStr::ICmp(token, "surfaceParm"))
+		{
+			ParseSurfaceParm(text);
+			continue;
+		}
+		// no mip maps
+		else if (!QStr::ICmp(token, "nomipmaps"))
+		{
+			shader.noMipMaps = true;
+			shader.noPicMip = true;
+			continue;
+		}
+		// no picmip adjustment
+		else if (!QStr::ICmp(token, "nopicmip"))
+		{
+			shader.noPicMip = true;
+			continue;
+		}
+		// polygonOffset
+		else if (!QStr::ICmp(token, "polygonOffset"))
+		{
+			shader.polygonOffset = true;
+			continue;
+		}
+		// entityMergable, allowing sprite surfaces from multiple entities
+		// to be merged into one batch.  This is a savings for smoke
+		// puffs and blood, but can't be used for anything where the
+		// shader calcs (not the surface function) reference the entity color or scroll
+		else if (!QStr::ICmp(token, "entityMergable"))
+		{
+			shader.entityMergable = true;
+			continue;
+		}
+		// fogParms
+		else if (!QStr::ICmp(token, "fogParms")) 
+		{
+			if (!ParseVector(text, 3, shader.fogParms.color))
+			{
+				return false;
+			}
+
+			token = QStr::ParseExt(text, false);
+			if (!token[0])
+			{
+				GLog.Write(S_COLOR_YELLOW "WARNING: missing parm for 'fogParms' keyword in shader '%s'\n", shader.name);
+				continue;
+			}
+			shader.fogParms.depthForOpaque = QStr::Atof(token);
+
+			// skip any old gradient directions
+			QStr::SkipRestOfLine(text);
+			continue;
+		}
+		// portal
+		else if (!QStr::ICmp(token, "portal"))
+		{
+			shader.sort = SS_PORTAL;
+			continue;
+		}
+		// skyparms <cloudheight> <outerbox> <innerbox>
+		else if (!QStr::ICmp(token, "skyparms"))
+		{
+			ParseSkyParms(text);
+			continue;
+		}
+		// light <value> determines flaring in q3map, not needed here
+		else if (!QStr::ICmp(token, "light"))
+		{
+			token = QStr::ParseExt(text, false);
+			continue;
+		}
+		// cull <face>
+		else if (!QStr::ICmp(token, "cull"))
+		{
+			token = QStr::ParseExt(text, false);
+			if (token[0] == 0)
+			{
+				GLog.Write(S_COLOR_YELLOW "WARNING: missing cull parms in shader '%s'\n", shader.name);
+				continue;
+			}
+
+			if (!QStr::ICmp(token, "none") || !QStr::ICmp(token, "twosided") || !QStr::ICmp(token, "disable"))
+			{
+				shader.cullType = CT_TWO_SIDED;
+			}
+			else if (!QStr::ICmp(token, "back") || !QStr::ICmp(token, "backside") || !QStr::ICmp(token, "backsided"))
+			{
+				shader.cullType = CT_BACK_SIDED;
+			}
+			else
+			{
+				GLog.Write(S_COLOR_YELLOW "WARNING: invalid cull parm '%s' in shader '%s'\n", token, shader.name);
+			}
+			continue;
+		}
+		// sort
+		else if (!QStr::ICmp(token, "sort"))
+		{
+			ParseSort(text);
+			continue;
+		}
+		else
+		{
+			GLog.Write(S_COLOR_YELLOW "WARNING: unknown general shader parameter '%s' in '%s'\n", token, shader.name);
+			return false;
+		}
+	}
+
+	//
+	// ignore shaders that don't have any stages, unless it is a sky or fog
+	//
+	if (s == 0 && !shader.isSky && !(shader.contentFlags & BSP46CONTENTS_FOG))
+	{
+		return false;
+	}
+
+	shader.explicitlyDefined = true;
+
+	return true;
 }
