@@ -53,7 +53,7 @@ void Mod_Init (void)
 
 	//	Reserve 0 for default model.
 	mod_numknown = 1;
-	mod_known[0].type = mod_bad;
+	mod_known[0].type = MOD_BAD;
 }
 
 /*
@@ -176,7 +176,7 @@ void Mod_ClearAll (void)
 	model_t	*mod;
 	
 	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
-		if (mod->type != mod_alias)
+		if (mod->type != MOD_MESH1)
 			mod->needload = true;
 }
 
@@ -207,6 +207,7 @@ static model_t *Mod_FindName (const char *name)
 			Sys_Error ("mod_numknown == MAX_MOD_KNOWN");
 		QStr::Cpy(mod->name, name);
 		mod->needload = true;
+		mod->index = mod_numknown;
 		mod_numknown++;
 	}
 
@@ -228,7 +229,7 @@ static model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 
 	if (!mod->needload)
 	{
-		if (mod->type == mod_alias)
+		if (mod->type == MOD_MESH1)
 		{
 			d = Cache_Check (&mod->cache);
 			if (d)
@@ -1135,7 +1136,7 @@ static void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	bsp29_dheader_t	*header;
 	bsp29_dmodel_q1_t 	*bm;
 	
-	loadmodel->type = mod_brush;
+	loadmodel->type = MOD_BRUSH29;
 	
 	header = (bsp29_dheader_t *)buffer;
 
@@ -1529,7 +1530,7 @@ static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 	pheader->numposes = posenum;
 
-	mod->type = mod_alias;
+	mod->type = MOD_MESH1;
 
 // FIXME: do this right
 	mod->mins[0] = mod->mins[1] = mod->mins[2] = -16;
@@ -1561,10 +1562,10 @@ static void Mod_LoadAliasModel (model_t *mod, void *buffer)
 Mod_LoadSpriteFrame
 =================
 */
-static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int framenum)
+static void * Mod_LoadSpriteFrame (void * pin, msprite1frame_t **ppframe, int framenum)
 {
 	dsprite1frame_t		*pinframe;
-	mspriteframe_t		*pspriteframe;
+	msprite1frame_t		*pspriteframe;
 	int					i, width, height, size, origin[2];
 	unsigned short		*ppixout;
 	byte				*ppixin;
@@ -1576,9 +1577,9 @@ static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int fra
 	height = LittleLong (pinframe->height);
 	size = width * height;
 
-	pspriteframe = (mspriteframe_t*)Hunk_AllocName (sizeof (mspriteframe_t),loadname);
+	pspriteframe = (msprite1frame_t*)Hunk_AllocName (sizeof (msprite1frame_t),loadname);
 
-	Com_Memset(pspriteframe, 0, sizeof (mspriteframe_t));
+	Com_Memset(pspriteframe, 0, sizeof (msprite1frame_t));
 
 	*ppframe = pspriteframe;
 
@@ -1606,10 +1607,10 @@ static void * Mod_LoadSpriteFrame (void * pin, mspriteframe_t **ppframe, int fra
 Mod_LoadSpriteGroup
 =================
 */
-static void * Mod_LoadSpriteGroup (void * pin, mspriteframe_t **ppframe, int framenum)
+static void * Mod_LoadSpriteGroup (void * pin, msprite1frame_t **ppframe, int framenum)
 {
 	dsprite1group_t		*pingroup;
-	mspritegroup_t		*pspritegroup;
+	msprite1group_t		*pspritegroup;
 	int					i, numframes;
 	dsprite1interval_t	*pin_intervals;
 	float				*poutintervals;
@@ -1619,12 +1620,12 @@ static void * Mod_LoadSpriteGroup (void * pin, mspriteframe_t **ppframe, int fra
 
 	numframes = LittleLong (pingroup->numframes);
 
-	pspritegroup = (mspritegroup_t*)Hunk_AllocName (sizeof (mspritegroup_t) +
+	pspritegroup = (msprite1group_t*)Hunk_AllocName (sizeof (msprite1group_t) +
 				(numframes - 1) * sizeof (pspritegroup->frames[0]), loadname);
 
 	pspritegroup->numframes = numframes;
 
-	*ppframe = (mspriteframe_t *)pspritegroup;
+	*ppframe = (msprite1frame_t *)pspritegroup;
 
 	pin_intervals = (dsprite1interval_t *)(pingroup + 1);
 
@@ -1663,7 +1664,7 @@ static void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 	int					i;
 	int					version;
 	dsprite1_t			*pin;
-	msprite_t			*psprite;
+	msprite1_t			*psprite;
 	int					numframes;
 	int					size;
 	dsprite1frametype_t	*pframetype;
@@ -1677,9 +1678,9 @@ static void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 
 	numframes = LittleLong (pin->numframes);
 
-	size = sizeof (msprite_t) +	(numframes - 1) * sizeof (psprite->frames);
+	size = sizeof (msprite1_t) +	(numframes - 1) * sizeof (psprite->frames);
 
-	psprite = (msprite_t*)Hunk_AllocName (size, loadname);
+	psprite = (msprite1_t*)Hunk_AllocName (size, loadname);
 
 	mod->cache.data = psprite;
 
@@ -1726,7 +1727,7 @@ static void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		}
 	}
 
-	mod->type = mod_sprite;
+	mod->type = MOD_SPRITE;
 }
 
 //=============================================================================
@@ -1782,7 +1783,7 @@ void Mod_PrintFrameName (qhandle_t m, int frame)
 
 bool Mod_IsAliasModel(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->type == mod_alias;
+	return Mod_GetModel(Handle)->type == MOD_MESH1;
 }
 
 const char* Mod_GetName(qhandle_t Handle)

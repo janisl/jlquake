@@ -385,25 +385,15 @@ typedef struct {
 
 //======================================================================
 
-typedef enum {
-	MOD_BAD,
-	MOD_BRUSH,
-	MOD_MESH,
-	MOD_MD4
-} modtype_t;
-
-typedef struct model_s {
-	char		name[MAX_QPATH];
-	modtype_t	type;
-	int			index;				// model = tr.models[model->index]
-
+struct model_t : model_common_t
+{
 	int			dataSize;			// just for listing purposes
 	bmodel_t	*bmodel;			// only if type == MOD_BRUSH
 	md3Header_t	*md3[MD3_MAX_LODS];	// only if type == MOD_MESH
 	md4Header_t	*md4;				// only if type == MOD_MD4
 
 	int			 numLods;
-} model_t;
+};
 
 
 #define	MAX_MOD_KNOWN	1024

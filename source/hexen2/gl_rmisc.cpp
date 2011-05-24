@@ -277,7 +277,7 @@ void R_TranslatePlayerSkin (int playernum)
 	//
 	entity_t* ent = &cl_entities[1+playernum];
 	model = Mod_GetModel(ent->model);
-	if (model->type != mod_alias)
+	if (model->type != MOD_MESH1)
 		return;		// player doesn't have a model yet
 	paliashdr = (aliashdr_t *)Mod_Extradata (model);
 	s = paliashdr->skinwidth * paliashdr->skinheight;

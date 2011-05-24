@@ -1319,7 +1319,7 @@ static	void R_LoadSubmodels( bsp46_lump_t *l ) {
 
 		assert( model != NULL );			// this should never happen
 
-		model->type = MOD_BRUSH;
+		model->type = MOD_BRUSH46;
 		model->bmodel = out;
 		QStr::Sprintf( model->name, sizeof( model->name ), "*%d", i );
 

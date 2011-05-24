@@ -169,15 +169,10 @@ typedef struct mleaf_s
 // Whole model
 //
 
-typedef enum {mod_bad, mod_brush, mod_sprite, mod_alias } modtype_t;
-
-typedef struct model_s
+struct model_t : model_common_t
 {
-	char		name[MAX_QPATH];
-
 	int			registration_sequence;
 
-	modtype_t	type;
 	int			numframes;
 	
 	int			flags;
@@ -240,7 +235,7 @@ typedef struct model_s
 
 	int			extradatasize;
 	void		*extradata;
-} model_t;
+};
 
 //============================================================================
 

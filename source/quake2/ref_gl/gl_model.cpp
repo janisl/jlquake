@@ -162,7 +162,7 @@ void Mod_Init (void)
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 
 	mod_numknown = 1;
-	mod_known[0].type = mod_bad;
+	mod_known[0].type = MOD_BAD;
 }
 
 static model_t* Mod_AllocModel()
@@ -175,6 +175,7 @@ static model_t* Mod_AllocModel()
 	{
 		if (!mod->name[0])
 		{
+			mod->index = i;
 			return mod;	// free spot
 		}
 	}
@@ -182,6 +183,7 @@ static model_t* Mod_AllocModel()
 	{
 		ri.Sys_Error(ERR_DROP, "mod_numknown == MAX_MOD_KNOWN");
 	}
+	mod->index = mod_numknown;
 	mod_numknown++;
 	return mod;
 }
@@ -844,7 +846,7 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	bsp38_dheader_t	*header;
 	mmodel_t 	*bm;
 	
-	loadmodel->type = mod_brush;
+	loadmodel->type = MOD_BRUSH38;
 	if (loadmodel != &mod_known[1])
 		ri.Sys_Error (ERR_DROP, "Loaded a brush model after the world");
 
@@ -1014,7 +1016,7 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 
 	}
 
-	mod->type = mod_alias;
+	mod->type = MOD_MESH2;
 
 	//
 	// load the glcmds
@@ -1085,7 +1087,7 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		mod->skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
 	}
 
-	mod->type = mod_sprite;
+	mod->type = MOD_SPRITE2;
 }
 
 //=============================================================================
@@ -1149,13 +1151,13 @@ qhandle_t R_RegisterModel (char *name)
 	mod->registration_sequence = registration_sequence;
 
 	// register any images used by the models
-	if (mod->type == mod_sprite)
+	if (mod->type == MOD_SPRITE2)
 	{
 		sprout = (dsprite_t *)mod->extradata;
 		for (i=0 ; i<sprout->numframes ; i++)
 			mod->skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
 	}
-	else if (mod->type == mod_alias)
+	else if (mod->type == MOD_MESH2)
 	{
 		pheader = (dmdl_t *)mod->extradata;
 		for (i=0 ; i<pheader->num_skins ; i++)

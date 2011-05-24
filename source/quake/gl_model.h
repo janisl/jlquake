@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define __MODEL__
 
 #include "../core/mdlfile.h"
-#include "../core/sprfile.h"
 
 /*
 
@@ -186,49 +185,6 @@ typedef struct
 /*
 ==============================================================================
 
-SPRITE MODELS
-
-==============================================================================
-*/
-
-
-// FIXME: shorten these?
-typedef struct mspriteframe_s
-{
-	int		width;
-	int		height;
-	float	up, down, left, right;
-	image_t*	gl_texture;
-} mspriteframe_t;
-
-typedef struct
-{
-	int				numframes;
-	float			*intervals;
-	mspriteframe_t	*frames[1];
-} mspritegroup_t;
-
-typedef struct
-{
-	sprite1frametype_t	type;
-	mspriteframe_t		*frameptr;
-} mspriteframedesc_t;
-
-typedef struct
-{
-	int					type;
-	int					maxwidth;
-	int					maxheight;
-	int					numframes;
-	float				beamlength;		// remove?
-	void				*cachespot;		// remove?
-	mspriteframedesc_t	frames[1];
-} msprite_t;
-
-
-/*
-==============================================================================
-
 ALIAS MODELS
 
 Alias models are position independent, so the cache manager can move them.
@@ -308,14 +264,10 @@ extern	trivertx_t	*poseverts[MAXALIASFRAMES];
 // Whole model
 //
 
-typedef enum {mod_bad, mod_brush, mod_sprite, mod_alias} modtype_t;
-
-typedef struct model_s
+struct model_t : model_common_t
 {
-	char		name[MAX_QPATH];
 	qboolean	needload;		// bmodels and sprites don't cache normally
 
-	modtype_t	type;
 	int			numframes;
 	synctype_t	synctype;
 	
@@ -385,7 +337,7 @@ typedef struct model_s
 //
 	cache_user_t	cache;		// only access through Mod_Extradata
 
-} model_t;
+};
 
 //============================================================================
 

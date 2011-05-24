@@ -154,15 +154,15 @@ void R_RotateForEntity (trRefEntity_t *e)
 R_GetSpriteFrame
 ================
 */
-mspriteframe_t *R_GetSpriteFrame (trRefEntity_t *currententity)
+msprite1frame_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 {
-	msprite_t		*psprite;
-	mspritegroup_t	*pspritegroup;
-	mspriteframe_t	*pspriteframe;
+	msprite1_t		*psprite;
+	msprite1group_t	*pspritegroup;
+	msprite1frame_t	*pspriteframe;
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
-	psprite = (msprite_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
 	frame = currententity->e.frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
@@ -177,7 +177,7 @@ mspriteframe_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 	}
 	else
 	{
-		pspritegroup = (mspritegroup_t *)psprite->frames[frame].frameptr;
+		pspritegroup = (msprite1group_t *)psprite->frames[frame].frameptr;
 		pintervals = pspritegroup->intervals;
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
@@ -210,15 +210,15 @@ R_DrawSpriteModel
 void R_DrawSpriteModel (trRefEntity_t *e)
 {
 	vec3_t	point;
-	mspriteframe_t	*frame;
+	msprite1frame_t	*frame;
 	float		*up, *right;
 	vec3_t		v_right;
-	msprite_t		*psprite;
+	msprite1_t		*psprite;
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
 
 	if (psprite->type == SPR_ORIENTED)
 	{
@@ -641,11 +641,11 @@ void R_DrawEntitiesOnList (void)
 
 		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
-		case mod_alias:
+		case MOD_MESH1:
 			R_DrawAliasModel (currententity);
 			break;
 
-		case mod_brush:
+		case MOD_BRUSH29:
 			R_DrawBrushModel (currententity);
 			break;
 
@@ -660,7 +660,7 @@ void R_DrawEntitiesOnList (void)
 
 		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
-		case mod_sprite:
+		case MOD_SPRITE:
 			R_DrawSpriteModel (currententity);
 			break;
 

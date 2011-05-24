@@ -1337,13 +1337,13 @@ void R_AddEntitySurfaces (void) {
 				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0 );
 			} else {
 				switch ( tr.currentModel->type ) {
-				case MOD_MESH:
+				case MOD_MESH3:
 					R_AddMD3Surfaces( ent );
 					break;
 				case MOD_MD4:
 					R_AddAnimSurfaces( ent );
 					break;
-				case MOD_BRUSH:
+				case MOD_BRUSH46:
 					R_AddBrushModelSurfaces( ent );
 					break;
 				case MOD_BAD:		// null model axis

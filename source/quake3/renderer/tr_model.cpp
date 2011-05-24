@@ -236,7 +236,7 @@ static qboolean R_LoadMD3 (model_t *mod, int lod, void *buffer, const char *mod_
 		return qfalse;
 	}
 
-	mod->type = MOD_MESH;
+	mod->type = MOD_MESH3;
 	size = LittleLong(pinmodel->ofsEnd);
 	mod->dataSize += size;
 	mod->md3[lod] = (md3Header_t*)ri.Hunk_Alloc( size, h_low );

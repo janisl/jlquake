@@ -208,10 +208,10 @@ void R_RotateForEntity(trRefEntity_t *e)
 R_GetSpriteFrame
 ================
 */
-mspriteframe_t *R_GetSpriteFrame (msprite_t *psprite)
+msprite1frame_t *R_GetSpriteFrame (msprite1_t *psprite)
 {
-	mspritegroup_t	*pspritegroup;
-	mspriteframe_t	*pspriteframe;
+	msprite1group_t	*pspritegroup;
+	msprite1frame_t	*pspriteframe;
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
@@ -229,7 +229,7 @@ mspriteframe_t *R_GetSpriteFrame (msprite_t *psprite)
 	}
 	else
 	{
-		pspritegroup = (mspritegroup_t *)psprite->frames[frame].frameptr;
+		pspritegroup = (msprite1group_t *)psprite->frames[frame].frameptr;
 		pintervals = pspritegroup->intervals;
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
@@ -267,15 +267,15 @@ typedef struct
 void R_DrawSpriteModel (trRefEntity_t *e)
 {
 	vec3_t	point;
-	mspriteframe_t	*frame;
-	msprite_t		*psprite;
+	msprite1frame_t	*frame;
+	msprite1_t		*psprite;
 	
 	vec3_t			tvec;
 	float			dot, angle, sr, cr;
 	spritedesc_t			r_spritedesc;
 	int i;
 
-	psprite = (msprite_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
 
 	frame = R_GetSpriteFrame (psprite);
 
@@ -907,7 +907,7 @@ void R_DrawEntitiesOnList (void)
 
 		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
-		case mod_alias:
+		case MOD_MESH1:
 			item_trans = ((currententity->e.renderfx & RF_WATERTRANS) ||
 						  (Mod_GetModel(currententity->e.hModel)->flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
@@ -915,7 +915,7 @@ void R_DrawEntitiesOnList (void)
 
 			break;
 
-		case mod_brush:
+		case MOD_BRUSH29:
 			item_trans = ((currententity->e.renderfx & RF_WATERTRANS)) != 0;
 			if (!item_trans)
 				R_DrawBrushModel (currententity,false);
@@ -923,7 +923,7 @@ void R_DrawEntitiesOnList (void)
 			break;
 
 
-		case mod_sprite:
+		case MOD_SPRITE:
 			item_trans = true;
 
 			break;
@@ -984,13 +984,13 @@ void R_DrawTransEntitiesOnList ( qboolean inwater) {
 
 		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
-		case mod_alias:
+		case MOD_MESH1:
 			R_DrawAliasModel (currententity);
 			break;
-		case mod_brush:
+		case MOD_BRUSH29:
 			R_DrawBrushModel (currententity,true);
 			break;
-		case mod_sprite:
+		case MOD_SPRITE:
 			R_DrawSpriteModel (currententity);
 			break;
 		}

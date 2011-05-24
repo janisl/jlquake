@@ -203,15 +203,15 @@ void R_RotateForEntity(trRefEntity_t *e)
 R_GetSpriteFrame
 ================
 */
-mspriteframe_t *R_GetSpriteFrame (trRefEntity_t *currententity)
+msprite1frame_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 {
-	msprite_t		*psprite;
-	mspritegroup_t	*pspritegroup;
-	mspriteframe_t	*pspriteframe;
+	msprite1_t		*psprite;
+	msprite1group_t	*pspritegroup;
+	msprite1frame_t	*pspriteframe;
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
-	psprite = (msprite_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
 	frame = currententity->e.frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
@@ -226,7 +226,7 @@ mspriteframe_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 	}
 	else
 	{
-		pspritegroup = (mspritegroup_t *)psprite->frames[frame].frameptr;
+		pspritegroup = (msprite1group_t *)psprite->frames[frame].frameptr;
 		pintervals = pspritegroup->intervals;
 		numframes = pspritegroup->numframes;
 		fullinterval = pintervals[numframes-1];
@@ -259,10 +259,10 @@ R_DrawSpriteModel
 void R_DrawSpriteModel (trRefEntity_t *e)
 {
 	vec3_t	point;
-	mspriteframe_t	*frame;
+	msprite1frame_t	*frame;
 	float		*up, *right;
 	vec3_t		v_right;
-	msprite_t		*psprite;
+	msprite1_t		*psprite;
 
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
@@ -284,7 +284,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
 
 	if (psprite->type == SPR_ORIENTED)
 	{
@@ -825,7 +825,7 @@ void R_DrawEntitiesOnList (void)
 
 		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
-		case mod_alias:
+		case MOD_MESH1:
 			VectorSubtract(currententity->e.origin, r_origin, diff);
 			calc_length = (diff[0]*diff[0]) + (diff[1]*diff[1]) + (diff[2]*diff[2]);
 			if (calc_length > test_length)
@@ -839,13 +839,13 @@ void R_DrawEntitiesOnList (void)
 				R_DrawAliasModel (currententity);
 			break;
 
-		case mod_brush:
+		case MOD_BRUSH29:
 			item_trans = ((currententity->e.renderfx & RF_WATERTRANS)) != 0;
 			if (!item_trans)
 				R_DrawBrushModel (currententity,false);
 			break;
 
-		case mod_sprite:
+		case MOD_SPRITE:
 			VectorSubtract(currententity->e.origin, r_origin, diff);
 			calc_length = (diff[0]*diff[0]) + (diff[1]*diff[1]) + (diff[2]*diff[2]);
 			if (calc_length > test_length)
@@ -917,13 +917,13 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 
 		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
-		case mod_alias:
+		case MOD_MESH1:
 			R_DrawAliasModel (currententity);
 			break;
-		case mod_brush:
+		case MOD_BRUSH29:
 			R_DrawBrushModel (currententity,true);
 			break;
-		case mod_sprite:
+		case MOD_SPRITE:
 			R_DrawSpriteModel (currententity);
 			break;
 		}

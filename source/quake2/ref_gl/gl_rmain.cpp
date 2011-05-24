@@ -321,16 +321,16 @@ void R_DrawEntitiesOnList (void)
 			currentmodel = Mod_GetModel(currententity->e.hModel);
 			switch (currentmodel->type)
 			{
-			case mod_bad:
+			case MOD_BAD:
 				R_DrawNullModel();
 				break;
-			case mod_alias:
+			case MOD_MESH2:
 				R_DrawAliasModel(currententity);
 				break;
-			case mod_brush:
+			case MOD_BRUSH38:
 				R_DrawBrushModel(currententity);
 				break;
-			case mod_sprite:
+			case MOD_SPRITE2:
 				R_DrawSpriteModel(currententity);
 				break;
 			default:
@@ -357,16 +357,16 @@ void R_DrawEntitiesOnList (void)
 			currentmodel = Mod_GetModel(currententity->e.hModel);
 			switch (currentmodel->type)
 			{
-			case mod_bad:
+			case MOD_BAD:
 				R_DrawNullModel();
 				break;
-			case mod_alias:
+			case MOD_MESH2:
 				R_DrawAliasModel(currententity);
 				break;
-			case mod_brush:
+			case MOD_BRUSH38:
 				R_DrawBrushModel(currententity);
 				break;
-			case mod_sprite:
+			case MOD_SPRITE2:
 				R_DrawSpriteModel(currententity);
 				break;
 			default:

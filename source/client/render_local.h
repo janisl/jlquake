@@ -27,9 +27,12 @@
 #define APIENTRY
 #endif
 
+#include "../core/sprfile.h"
+
 #include "render_qgl.h"
 #include "render_image.h"
 #include "render_shader.h"
+#include "render_model.h"
 #include "render_state.h"
 
 /*
