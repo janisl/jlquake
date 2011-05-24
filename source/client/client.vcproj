@@ -229,6 +229,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_shader.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_state.cpp"
 				>
 			</File>

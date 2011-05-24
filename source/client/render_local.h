@@ -29,6 +29,7 @@
 
 #include "render_qgl.h"
 #include "render_image.h"
+#include "render_shader.h"
 #include "render_state.h"
 
 /*
