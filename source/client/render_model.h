@@ -760,3 +760,7 @@ struct model_t
 
 	int			 q3_numLods;
 };
+
+void Mod_LoadSpriteModel(model_t* mod, void* buffer);
+
+extern model_t	*loadmodel;

@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-extern	model_t	*loadmodel;
-
 image_t*	solidskytexture;
 image_t*	alphaskytexture;
 float	speedscale;		// for top sky and bottom sky

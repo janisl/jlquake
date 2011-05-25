@@ -35,6 +35,8 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+model_t*		loadmodel;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // this table is also present in q3map

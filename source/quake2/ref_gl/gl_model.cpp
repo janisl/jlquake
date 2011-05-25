@@ -21,10 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-model_t	*loadmodel;
 int		modfilelen;
 
-void Mod_LoadSpriteModel (model_t *mod, void *buffer);
+void Mod_LoadSprite2Model (model_t *mod, void *buffer);
 void Mod_LoadBrushModel (model_t *mod, void *buffer);
 void Mod_LoadAliasModel (model_t *mod, void *buffer);
 model_t *Mod_LoadModel (model_t *mod, qboolean crash);
@@ -249,7 +248,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 		
 	case IDSPRITE2HEADER:
 		loadmodel->q2_extradata = Hunk_Begin (0x10000);
-		Mod_LoadSpriteModel (mod, buf);
+		Mod_LoadSprite2Model (mod, buf);
 		break;
 	
 	case BSP38_HEADER:
@@ -1056,7 +1055,7 @@ SPRITE MODELS
 Mod_LoadSpriteModel
 =================
 */
-void Mod_LoadSpriteModel (model_t *mod, void *buffer)
+void Mod_LoadSprite2Model (model_t *mod, void *buffer)
 {
 	dsprite2_t	*sprin, *sprout;
 	int			i;

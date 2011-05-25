@@ -28,8 +28,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static qboolean R_LoadMD3 (model_t *mod, int lod, void *buffer, const char *name );
 static qboolean R_LoadMD4 (model_t *mod, void *buffer, const char *name );
 
-model_t	*loadmodel;
-
 /*
 ** R_GetModelByHandle
 */

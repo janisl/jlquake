@@ -3,8 +3,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-extern	model_t	*loadmodel;
-
 image_t*	solidskytexture;
 image_t*	alphaskytexture;
 float	speedscale;		// for top sky and bottom sky

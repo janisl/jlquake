@@ -225,6 +225,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_model.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\render_model_spr.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_qgl.cpp"
 				>
 			</File>

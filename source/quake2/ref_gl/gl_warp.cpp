@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-extern	model_t	*loadmodel;
-
 char	skyname[MAX_QPATH];
 float	skyrotate;
 vec3_t	skyaxis;
