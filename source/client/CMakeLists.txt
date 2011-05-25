@@ -17,6 +17,7 @@ set(CLIENT_FILES
 	render_image_wal.cpp
 	render_init.cpp
 	render_model.cpp
+	render_model_sp2.cpp
 	render_model_spr.cpp
 	render_qgl.cpp
 	render_shader.cpp

@@ -19,7 +19,6 @@
 
 #include "client.h"
 #include "render_local.h"
-#include "../core/bsp46file.h"
 
 // MACROS ------------------------------------------------------------------
 

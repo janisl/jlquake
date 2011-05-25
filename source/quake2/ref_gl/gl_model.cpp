@@ -21,9 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-int		modfilelen;
-
-void Mod_LoadSprite2Model (model_t *mod, void *buffer);
 void Mod_LoadBrushModel (model_t *mod, void *buffer);
 void Mod_LoadAliasModel (model_t *mod, void *buffer);
 model_t *Mod_LoadModel (model_t *mod, qboolean crash);
@@ -221,7 +218,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	// load the file
 	//
-	modfilelen = FS_ReadFile(mod->name, (void**)&buf);
+	int modfilelen = FS_ReadFile(mod->name, (void**)&buf);
 	if (!buf)
 	{
 		if (crash)
@@ -244,24 +241,23 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	case IDMESH2HEADER:
 		loadmodel->q2_extradata = Hunk_Begin (0x200000);
 		Mod_LoadAliasModel (mod, buf);
+		loadmodel->q2_extradatasize = Hunk_End ();
 		break;
 		
 	case IDSPRITE2HEADER:
-		loadmodel->q2_extradata = Hunk_Begin (0x10000);
-		Mod_LoadSprite2Model (mod, buf);
+		Mod_LoadSprite2Model (mod, buf, modfilelen);
 		break;
 	
 	case BSP38_HEADER:
 		loadmodel->q2_extradata = Hunk_Begin (0x1000000);
 		Mod_LoadBrushModel (mod, buf);
+		loadmodel->q2_extradatasize = Hunk_End ();
 		break;
 
 	default:
 		ri.Sys_Error (ERR_DROP,"Mod_NumForName: unknown fileid for %s", mod->name);
 		break;
 	}
-
-	loadmodel->q2_extradatasize = Hunk_End ();
 
 	FS_FreeFile (buf);
 
@@ -1042,53 +1038,6 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 	mod->q2_maxs[2] = 32;
 }
 
-/*
-==============================================================================
-
-SPRITE MODELS
-
-==============================================================================
-*/
-
-/*
-=================
-Mod_LoadSpriteModel
-=================
-*/
-void Mod_LoadSprite2Model (model_t *mod, void *buffer)
-{
-	dsprite2_t	*sprin, *sprout;
-	int			i;
-
-	sprin = (dsprite2_t *)buffer;
-	sprout = (dsprite2_t*)Hunk_Alloc (modfilelen);
-
-	sprout->ident = LittleLong (sprin->ident);
-	sprout->version = LittleLong (sprin->version);
-	sprout->numframes = LittleLong (sprin->numframes);
-
-	if (sprout->version != SPRITE2_VERSION)
-		ri.Sys_Error (ERR_DROP, "%s has wrong version number (%i should be %i)",
-				 mod->name, sprout->version, SPRITE2_VERSION);
-
-	if (sprout->numframes > MAX_MD2_SKINS)
-		ri.Sys_Error (ERR_DROP, "%s has too many frames (%i > %i)",
-				 mod->name, sprout->numframes, MAX_MD2_SKINS);
-
-	// byte swap everything
-	for (i=0 ; i<sprout->numframes ; i++)
-	{
-		sprout->frames[i].width = LittleLong (sprin->frames[i].width);
-		sprout->frames[i].height = LittleLong (sprin->frames[i].height);
-		sprout->frames[i].origin_x = LittleLong (sprin->frames[i].origin_x);
-		sprout->frames[i].origin_y = LittleLong (sprin->frames[i].origin_y);
-		Com_Memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SP2_SKINNAME);
-		mod->q2_skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
-	}
-
-	mod->type = MOD_SPRITE2;
-}
-
 //=============================================================================
 
 /*
@@ -1202,7 +1151,14 @@ Mod_Free
 */
 void Mod_Free (model_t *mod)
 {
-	Hunk_Free (mod->q2_extradata);
+	if (mod->type == MOD_SPRITE2)
+	{
+		Mod_FreeSprite2Model(mod);
+	}
+	else
+	{
+		Hunk_Free(mod->q2_extradata);
+	}
 	Com_Memset(mod, 0, sizeof(*mod));
 }
 

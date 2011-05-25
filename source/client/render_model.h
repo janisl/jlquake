@@ -762,5 +762,7 @@ struct model_t
 };
 
 void Mod_LoadSpriteModel(model_t* mod, void* buffer);
+void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen);
+void Mod_FreeSprite2Model(model_t* mod);
 
 extern model_t	*loadmodel;
