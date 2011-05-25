@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // server.h
 
 #include "../../core/core.h"
+#include "../../core/bsp38file.h"
 
 //define	PARANOID			// speed sapping error checking
 

@@ -9,7 +9,6 @@
 #include "bothdefs.h"
 
 #include "common.h"
-#include "../../core/bsp29file.h"
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"

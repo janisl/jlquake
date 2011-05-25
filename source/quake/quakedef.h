@@ -170,7 +170,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // #define IDGODS
 
 #include "common.h"
-#include "../core/bsp29file.h"
 #include "vid.h"
 #include "sys.h"
 #include "zone.h"

@@ -39,6 +39,7 @@ BRUSH MODELS
 ==============================================================================
 */
 
+#include "../core/bsp29file.h"
 
 //
 // in memory representation

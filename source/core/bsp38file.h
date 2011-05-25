@@ -64,43 +64,6 @@
 
 #define BSP38_MAXLIGHTMAPS		4
 
-// contents flags are seperate bits
-// a given brush can contribute multiple content bits
-// multiple brushes can be in a single leaf
-
-// lower bits are stronger, and will eat weaker brushes completely
-#define BSP38CONTENTS_SOLID			1		// an eye is never valid in a solid
-#define BSP38CONTENTS_WINDOW		2		// translucent, but not watery
-#define BSP38CONTENTS_AUX			4
-#define BSP38CONTENTS_LAVA			8
-#define BSP38CONTENTS_SLIME			16
-#define BSP38CONTENTS_WATER			32
-#define BSP38CONTENTS_MIST			64
-#define BSP38_LAST_VISIBLE_CONTENTS	64
-
-// remaining contents are non-visible, and don't eat brushes
-
-#define BSP38CONTENTS_AREAPORTAL	0x8000
-
-#define BSP38CONTENTS_PLAYERCLIP	0x10000
-#define BSP38CONTENTS_MONSTERCLIP	0x20000
-
-// currents can be added to any other contents, and may be mixed
-#define BSP38CONTENTS_CURRENT_0		0x40000
-#define BSP38CONTENTS_CURRENT_90	0x80000
-#define BSP38CONTENTS_CURRENT_180	0x100000
-#define BSP38CONTENTS_CURRENT_270	0x200000
-#define BSP38CONTENTS_CURRENT_UP	0x400000
-#define BSP38CONTENTS_CURRENT_DOWN	0x800000
-
-#define BSP38CONTENTS_ORIGIN		0x1000000	// removed before bsping an entity
-
-#define BSP38CONTENTS_MONSTER		0x2000000	// should never be on a brush, only in game
-#define BSP38CONTENTS_DEADMONSTER	0x4000000
-#define BSP38CONTENTS_DETAIL		0x8000000	// brushes to be added after vis leafs
-#define BSP38CONTENTS_TRANSLUCENT	0x10000000	// auto set if any surface has trans
-#define BSP38CONTENTS_LADDER		0x20000000
-
 #define BSP38SURF_LIGHT		0x1		// value will hold the light strength
 #define BSP38SURF_SLICK		0x2		// effects game physics
 #define BSP38SURF_SKY		0x4		// don't draw, but add to skybox

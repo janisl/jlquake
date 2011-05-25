@@ -58,14 +58,4 @@ typedef struct {
 	int		bssLength;			// zero filled memory appended to datalength
 } vmHeader_t;
 
-/*
-==============================================================================
-
-  .BSP file format
-
-==============================================================================
-*/
-
-#include "../../core/bsp46file.h"
-
 #endif

@@ -7,6 +7,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include "../core/bsp29file.h"
 
 #define	RETURN_EDICT(e) (((int *)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
 

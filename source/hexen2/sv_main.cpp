@@ -5,6 +5,7 @@
  */
 
 #include "quakedef.h"
+#include "../core/bsp29file.h"
 
 server_t		sv;
 server_static_t	svs;
