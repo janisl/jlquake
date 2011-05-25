@@ -315,7 +315,7 @@ void R_BlendLightmaps (void)
 	// don't bother if we're set to fullbright
 	if (r_fullbright->value)
 		return;
-	if (!r_worldmodel->lightdata)
+	if (!r_worldmodel->brush38_lightdata)
 		return;
 
 	/*
@@ -860,11 +860,11 @@ void R_DrawInlineBModel (void)
 		lt = r_newrefdef.dlights;
 		for (k=0 ; k<r_newrefdef.num_dlights ; k++, lt++)
 		{
-			R_MarkLights (lt, 1<<k, currentmodel->nodes + currentmodel->firstnode);
+			R_MarkLights (lt, 1<<k, currentmodel->brush38_nodes + currentmodel->brush38_firstnode);
 		}
 	}
 
-	psurf = &currentmodel->surfaces[currentmodel->firstmodelsurface];
+	psurf = &currentmodel->brush38_surfaces[currentmodel->brush38_firstmodelsurface];
 
 	if ( currententity->e.renderfx & RF_TRANSLUCENT )
 	{
@@ -880,7 +880,7 @@ void R_DrawInlineBModel (void)
 	//
 	// draw texture
 	//
-	for (i=0 ; i<currentmodel->nummodelsurfaces ; i++, psurf++)
+	for (i=0 ; i<currentmodel->brush38_nummodelsurfaces ; i++, psurf++)
 	{
 	// find which side of the node we are on
 		pplane = psurf->plane;
@@ -933,7 +933,7 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	int			i;
 	qboolean	rotated;
 
-	if (currentmodel->nummodelsurfaces == 0)
+	if (currentmodel->brush38_nummodelsurfaces == 0)
 		return;
 
 	currententity = e;
@@ -943,15 +943,15 @@ void R_DrawBrushModel (trRefEntity_t *e)
 		rotated = true;
 		for (i=0 ; i<3 ; i++)
 		{
-			mins[i] = e->e.origin[i] - currentmodel->radius;
-			maxs[i] = e->e.origin[i] + currentmodel->radius;
+			mins[i] = e->e.origin[i] - currentmodel->q2_radius;
+			maxs[i] = e->e.origin[i] + currentmodel->q2_radius;
 		}
 	}
 	else
 	{
 		rotated = false;
-		VectorAdd (e->e.origin, currentmodel->mins, mins);
-		VectorAdd (e->e.origin, currentmodel->maxs, maxs);
+		VectorAdd (e->e.origin, currentmodel->q2_mins, mins);
+		VectorAdd (e->e.origin, currentmodel->q2_maxs, maxs);
 	}
 
 	if (R_CullBox (mins, maxs))
@@ -1081,7 +1081,7 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 	R_RecursiveWorldNode (node->children[side]);
 
 	// draw stuff
-	for ( c = node->numsurfaces, surf = r_worldmodel->surfaces + node->firstsurface; c ; c--, surf++)
+	for ( c = node->numsurfaces, surf = r_worldmodel->brush38_surfaces + node->firstsurface; c ; c--, surf++)
 	{
 		if (surf->visframe != tr.frameCount)
 			continue;
@@ -1198,13 +1198,13 @@ void R_DrawWorld (void)
 		else 
 			GL_TexEnv( GL_MODULATE );
 
-		R_RecursiveWorldNode (r_worldmodel->nodes);
+		R_RecursiveWorldNode (r_worldmodel->brush38_nodes);
 
 		GL_EnableMultitexture( false );
 	}
 	else
 	{
-		R_RecursiveWorldNode (r_worldmodel->nodes);
+		R_RecursiveWorldNode (r_worldmodel->brush38_nodes);
 	}
 
 	/*
@@ -1249,13 +1249,13 @@ void R_MarkLeaves (void)
 	r_oldviewcluster = r_viewcluster;
 	r_oldviewcluster2 = r_viewcluster2;
 
-	if (r_novis->value || r_viewcluster == -1 || !r_worldmodel->vis)
+	if (r_novis->value || r_viewcluster == -1 || !r_worldmodel->brush38_vis)
 	{
 		// mark everything
-		for (i=0 ; i<r_worldmodel->numleafs ; i++)
-			r_worldmodel->leafs[i].visframe = r_visframecount;
-		for (i=0 ; i<r_worldmodel->numnodes ; i++)
-			r_worldmodel->nodes[i].visframe = r_visframecount;
+		for (i=0 ; i<r_worldmodel->brush38_numleafs ; i++)
+			r_worldmodel->brush38_leafs[i].visframe = r_visframecount;
+		for (i=0 ; i<r_worldmodel->brush38_numnodes ; i++)
+			r_worldmodel->brush38_nodes[i].visframe = r_visframecount;
 		return;
 	}
 
@@ -1263,15 +1263,15 @@ void R_MarkLeaves (void)
 	// may have to combine two clusters because of solid water boundaries
 	if (r_viewcluster2 != r_viewcluster)
 	{
-		Com_Memcpy(fatvis, vis, (r_worldmodel->numleafs+7)/8);
+		Com_Memcpy(fatvis, vis, (r_worldmodel->brush38_numleafs+7)/8);
 		vis = Mod_ClusterPVS (r_viewcluster2, r_worldmodel);
-		c = (r_worldmodel->numleafs+31)/32;
+		c = (r_worldmodel->brush38_numleafs+31)/32;
 		for (i=0 ; i<c ; i++)
 			((int *)fatvis)[i] |= ((int *)vis)[i];
 		vis = fatvis;
 	}
 	
-	for (i=0,leaf=r_worldmodel->leafs ; i<r_worldmodel->numleafs ; i++, leaf++)
+	for (i=0,leaf=r_worldmodel->brush38_leafs ; i<r_worldmodel->brush38_numleafs ; i++, leaf++)
 	{
 		cluster = leaf->cluster;
 		if (cluster == -1)
@@ -1415,7 +1415,7 @@ void GL_BuildPolygonFromSurface(mbrush38_surface_t *fa)
 	vec3_t		total;
 
 // reconstruct the polygon
-	pedges = currentmodel->edges;
+	pedges = currentmodel->brush38_edges;
 	lnumverts = fa->numedges;
 	vertpage = 0;
 
@@ -1431,17 +1431,17 @@ void GL_BuildPolygonFromSurface(mbrush38_surface_t *fa)
 
 	for (i=0 ; i<lnumverts ; i++)
 	{
-		lindex = currentmodel->surfedges[fa->firstedge + i];
+		lindex = currentmodel->brush38_surfedges[fa->firstedge + i];
 
 		if (lindex > 0)
 		{
 			r_pedge = &pedges[lindex];
-			vec = currentmodel->vertexes[r_pedge->v[0]].position;
+			vec = currentmodel->brush38_vertexes[r_pedge->v[0]].position;
 		}
 		else
 		{
 			r_pedge = &pedges[-lindex];
-			vec = currentmodel->vertexes[r_pedge->v[1]].position;
+			vec = currentmodel->brush38_vertexes[r_pedge->v[1]].position;
 		}
 		s = DotProduct (vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
 		s /= fa->texinfo->image->width;

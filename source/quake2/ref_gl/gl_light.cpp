@@ -136,7 +136,7 @@ void R_MarkLights (dlight_t *light, int bit, mbrush38_node_t *node)
 	}
 		
 // mark the polygons
-	surf = r_worldmodel->surfaces + node->firstsurface;
+	surf = r_worldmodel->brush38_surfaces + node->firstsurface;
 	for (i=0 ; i<node->numsurfaces ; i++, surf++)
 	{
 		if (surf->dlightframe != r_dlightframecount)
@@ -169,7 +169,7 @@ void R_PushDlights (void)
 											//  advanced yet for this frame
 	l = r_newrefdef.dlights;
 	for (i=0 ; i<r_newrefdef.num_dlights ; i++, l++)
-		R_MarkLights ( l, 1<<i, r_worldmodel->nodes );
+		R_MarkLights ( l, 1<<i, r_worldmodel->brush38_nodes );
 }
 
 
@@ -230,7 +230,7 @@ int RecursiveLightPoint (mbrush38_node_t *node, vec3_t start, vec3_t end)
 	VectorCopy (mid, lightspot);
 	lightplane = plane;
 
-	surf = r_worldmodel->surfaces + node->firstsurface;
+	surf = r_worldmodel->brush38_surfaces + node->firstsurface;
 	for (i=0 ; i<node->numsurfaces ; i++, surf++)
 	{
 		if (surf->flags&(BRUSH38_SURF_DRAWTURB|BRUSH38_SURF_DRAWSKY)) 
@@ -301,7 +301,7 @@ void R_LightPoint (vec3_t p, vec3_t color)
 	vec3_t		dist;
 	float		add;
 	
-	if (!r_worldmodel->lightdata)
+	if (!r_worldmodel->brush38_lightdata)
 	{
 		color[0] = color[1] = color[2] = 1.0;
 		return;
@@ -311,7 +311,7 @@ void R_LightPoint (vec3_t p, vec3_t color)
 	end[1] = p[1];
 	end[2] = p[2] - 2048;
 	
-	r = RecursiveLightPoint (r_worldmodel->nodes, p, end);
+	r = RecursiveLightPoint (r_worldmodel->brush38_nodes, p, end);
 	
 	if (r == -1)
 	{

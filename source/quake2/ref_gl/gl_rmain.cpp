@@ -173,7 +173,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	psprite = (dsprite2_t *)currentmodel->extradata;
+	psprite = (dsprite2_t *)currentmodel->q2_extradata;
 
 #if 0
 	if (e->frame < 0 || e->frame >= psprite->numframes)
@@ -216,7 +216,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 
 	qglColor4f( 1, 1, 1, alpha );
 
-    GL_Bind(currentmodel->skins[e->e.frame]);
+    GL_Bind(currentmodel->q2_skins[e->e.frame]);
 
 	GL_TexEnv( GL_MODULATE );
 

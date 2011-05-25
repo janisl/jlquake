@@ -31,64 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct model_t : model_common_t
 {
-	int			registration_sequence;
-
-	int			numframes;
-	
-	int			flags;
-
-//
-// volume occupied by the model graphics
-//		
-	vec3_t		mins, maxs;
-	float		radius;
-
-//
-// brush model
-//
-	int			firstmodelsurface, nummodelsurfaces;
-	int			lightmap;		// only for submodels
-
-	int			numsubmodels;
-	mbrush38_model_t	*submodels;
-
-	int			numplanes;
-	cplane_t	*planes;
-
-	int			numleafs;		// number of visible leafs, not counting 0
-	mbrush38_leaf_t		*leafs;
-
-	int			numvertexes;
-	mbrush38_vertex_t	*vertexes;
-
-	int			numedges;
-	mbrush38_edge_t		*edges;
-
-	int			numnodes;
-	int			firstnode;
-	mbrush38_node_t		*nodes;
-
-	int			numtexinfo;
-	mbrush38_texinfo_t	*texinfo;
-
-	int			numsurfaces;
-	mbrush38_surface_t	*surfaces;
-
-	int			numsurfedges;
-	int			*surfedges;
-
-	int			nummarksurfaces;
-	mbrush38_surface_t	**marksurfaces;
-
-	bsp38_dvis_t		*vis;
-
-	byte		*lightdata;
-
-	// for alias models and skins
-	image_t		*skins[MAX_MD2_SKINS];
-
-	int			extradatasize;
-	void		*extradata;
 };
 
 //============================================================================

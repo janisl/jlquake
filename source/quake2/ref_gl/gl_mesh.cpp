@@ -372,7 +372,7 @@ static qboolean R_CullAliasModel( vec3_t bbox[8], trRefEntity_t *e )
 	dmd2_frame_t *pframe, *poldframe;
 	vec3_t angles;
 
-	paliashdr = (dmd2_t *)currentmodel->extradata;
+	paliashdr = (dmd2_t *)currentmodel->q2_extradata;
 
 	if ( ( e->e.frame >= paliashdr->num_frames ) || ( e->e.frame < 0 ) )
 	{
@@ -528,7 +528,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 			return;
 	}
 
-	paliashdr = (dmd2_t *)currentmodel->extradata;
+	paliashdr = (dmd2_t *)currentmodel->q2_extradata;
 
 	//
 	// get lighting information
@@ -654,12 +654,12 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	else
 	{
 		if (currententity->e.skinNum >= MAX_MD2_SKINS)
-			skin = currentmodel->skins[0];
+			skin = currentmodel->q2_skins[0];
 		else
 		{
-			skin = currentmodel->skins[currententity->e.skinNum];
+			skin = currentmodel->q2_skins[currententity->e.skinNum];
 			if (!skin)
-				skin = currentmodel->skins[0];
+				skin = currentmodel->q2_skins[0];
 		}
 	}
 	if (!skin)

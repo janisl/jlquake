@@ -693,4 +693,63 @@ struct model_common_t
 // additional model data
 //
 	void*		q1_cache;		// only access through Mod_Extradata
+
+	int			q2_registration_sequence;
+
+	int			q2_numframes;
+	
+	int			q2_flags;
+
+//
+// volume occupied by the model graphics
+//		
+	vec3_t		q2_mins, q2_maxs;
+	float		q2_radius;
+
+//
+// Quake 2 brush model
+//
+	int			brush38_firstmodelsurface, brush38_nummodelsurfaces;
+	int			brush38_lightmap;		// only for submodels
+
+	int			brush38_numsubmodels;
+	mbrush38_model_t	*brush38_submodels;
+
+	int			brush38_numplanes;
+	cplane_t	*brush38_planes;
+
+	int			brush38_numleafs;		// number of visible leafs, not counting 0
+	mbrush38_leaf_t		*brush38_leafs;
+
+	int			brush38_numvertexes;
+	mbrush38_vertex_t	*brush38_vertexes;
+
+	int			brush38_numedges;
+	mbrush38_edge_t		*brush38_edges;
+
+	int			brush38_numnodes;
+	int			brush38_firstnode;
+	mbrush38_node_t		*brush38_nodes;
+
+	int			brush38_numtexinfo;
+	mbrush38_texinfo_t	*brush38_texinfo;
+
+	int			brush38_numsurfaces;
+	mbrush38_surface_t	*brush38_surfaces;
+
+	int			brush38_numsurfedges;
+	int			*brush38_surfedges;
+
+	int			brush38_nummarksurfaces;
+	mbrush38_surface_t	**brush38_marksurfaces;
+
+	bsp38_dvis_t		*brush38_vis;
+
+	byte		*brush38_lightdata;
+
+	// for alias models and skins
+	image_t		*q2_skins[MAX_MD2_SKINS];
+
+	int			q2_extradatasize;
+	void		*q2_extradata;
 };

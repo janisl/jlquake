@@ -48,10 +48,10 @@ mbrush38_leaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 	float		d;
 	cplane_t	*plane;
 	
-	if (!model || !model->nodes)
+	if (!model || !model->brush38_nodes)
 		ri.Sys_Error (ERR_DROP, "Mod_PointInLeaf: bad model");
 
-	node = model->nodes;
+	node = model->brush38_nodes;
 	while (1)
 	{
 		if (node->contents != -1)
@@ -80,7 +80,7 @@ byte *Mod_DecompressVis (byte *in, model_t *model)
 	byte	*out;
 	int		row;
 
-	row = (model->vis->numclusters+7)>>3;	
+	row = (model->brush38_vis->numclusters+7)>>3;	
 	out = decompressed;
 
 	if (!in)
@@ -120,9 +120,9 @@ Mod_ClusterPVS
 */
 byte *Mod_ClusterPVS (int cluster, model_t *model)
 {
-	if (cluster == -1 || !model->vis)
+	if (cluster == -1 || !model->brush38_vis)
 		return mod_novis;
-	return Mod_DecompressVis ( (byte *)model->vis + model->vis->bitofs[cluster][BSP38DVIS_PVS],
+	return Mod_DecompressVis ( (byte *)model->brush38_vis + model->brush38_vis->bitofs[cluster][BSP38DVIS_PVS],
 		model);
 }
 
@@ -146,8 +146,8 @@ void Mod_Modellist_f (void)
 	{
 		if (!mod->name[0])
 			continue;
-		ri.Con_Printf (PRINT_ALL, "%8i : %s\n",mod->extradatasize, mod->name);
-		total += mod->extradatasize;
+		ri.Con_Printf (PRINT_ALL, "%8i : %s\n",mod->q2_extradatasize, mod->name);
+		total += mod->q2_extradatasize;
 	}
 	ri.Con_Printf (PRINT_ALL, "Total resident: %i\n", total);
 }
@@ -243,17 +243,17 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	switch (LittleLong(*(unsigned *)buf))
 	{
 	case IDMESH2HEADER:
-		loadmodel->extradata = Hunk_Begin (0x200000);
+		loadmodel->q2_extradata = Hunk_Begin (0x200000);
 		Mod_LoadAliasModel (mod, buf);
 		break;
 		
 	case IDSPRITE2HEADER:
-		loadmodel->extradata = Hunk_Begin (0x10000);
+		loadmodel->q2_extradata = Hunk_Begin (0x10000);
 		Mod_LoadSpriteModel (mod, buf);
 		break;
 	
 	case BSP38_HEADER:
-		loadmodel->extradata = Hunk_Begin (0x1000000);
+		loadmodel->q2_extradata = Hunk_Begin (0x1000000);
 		Mod_LoadBrushModel (mod, buf);
 		break;
 
@@ -262,7 +262,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 		break;
 	}
 
-	loadmodel->extradatasize = Hunk_End ();
+	loadmodel->q2_extradatasize = Hunk_End ();
 
 	FS_FreeFile (buf);
 
@@ -289,11 +289,11 @@ void Mod_LoadLighting (bsp38_lump_t *l)
 {
 	if (!l->filelen)
 	{
-		loadmodel->lightdata = NULL;
+		loadmodel->brush38_lightdata = NULL;
 		return;
 	}
-	loadmodel->lightdata = (byte*)Hunk_Alloc ( l->filelen);	
-	Com_Memcpy(loadmodel->lightdata, mod_base + l->fileofs, l->filelen);
+	loadmodel->brush38_lightdata = (byte*)Hunk_Alloc ( l->filelen);	
+	Com_Memcpy(loadmodel->brush38_lightdata, mod_base + l->fileofs, l->filelen);
 }
 
 
@@ -308,17 +308,17 @@ void Mod_LoadVisibility (bsp38_lump_t *l)
 
 	if (!l->filelen)
 	{
-		loadmodel->vis = NULL;
+		loadmodel->brush38_vis = NULL;
 		return;
 	}
-	loadmodel->vis = (bsp38_dvis_t*)Hunk_Alloc ( l->filelen);	
-	Com_Memcpy(loadmodel->vis, mod_base + l->fileofs, l->filelen);
+	loadmodel->brush38_vis = (bsp38_dvis_t*)Hunk_Alloc ( l->filelen);	
+	Com_Memcpy(loadmodel->brush38_vis, mod_base + l->fileofs, l->filelen);
 
-	loadmodel->vis->numclusters = LittleLong (loadmodel->vis->numclusters);
-	for (i=0 ; i<loadmodel->vis->numclusters ; i++)
+	loadmodel->brush38_vis->numclusters = LittleLong (loadmodel->brush38_vis->numclusters);
+	for (i=0 ; i<loadmodel->brush38_vis->numclusters ; i++)
 	{
-		loadmodel->vis->bitofs[i][0] = LittleLong (loadmodel->vis->bitofs[i][0]);
-		loadmodel->vis->bitofs[i][1] = LittleLong (loadmodel->vis->bitofs[i][1]);
+		loadmodel->brush38_vis->bitofs[i][0] = LittleLong (loadmodel->brush38_vis->bitofs[i][0]);
+		loadmodel->brush38_vis->bitofs[i][1] = LittleLong (loadmodel->brush38_vis->bitofs[i][1]);
 	}
 }
 
@@ -340,8 +340,8 @@ void Mod_LoadVertexes (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (mbrush38_vertex_t*)Hunk_Alloc ( count*sizeof(*out));	
 
-	loadmodel->vertexes = out;
-	loadmodel->numvertexes = count;
+	loadmodel->brush38_vertexes = out;
+	loadmodel->brush38_numvertexes = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -387,8 +387,8 @@ void Mod_LoadSubmodels (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (mbrush38_model_t*)Hunk_Alloc ( count*sizeof(*out));	
 
-	loadmodel->submodels = out;
-	loadmodel->numsubmodels = count;
+	loadmodel->brush38_submodels = out;
+	loadmodel->brush38_numsubmodels = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -422,8 +422,8 @@ void Mod_LoadEdges (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (mbrush38_edge_t*)Hunk_Alloc ( (count + 1) * sizeof(*out));	
 
-	loadmodel->edges = out;
-	loadmodel->numedges = count;
+	loadmodel->brush38_edges = out;
+	loadmodel->brush38_numedges = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -451,8 +451,8 @@ void Mod_LoadTexinfo (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (mbrush38_texinfo_t*)Hunk_Alloc ( count*sizeof(*out));	
 
-	loadmodel->texinfo = out;
-	loadmodel->numtexinfo = count;
+	loadmodel->brush38_texinfo = out;
+	loadmodel->brush38_numtexinfo = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -462,7 +462,7 @@ void Mod_LoadTexinfo (bsp38_lump_t *l)
 		out->flags = LittleLong (in->flags);
 		next = LittleLong (in->nexttexinfo);
 		if (next > 0)
-			out->next = loadmodel->texinfo + next;
+			out->next = loadmodel->brush38_texinfo + next;
 		else
 		    out->next = NULL;
 		QStr::Sprintf (name, sizeof(name), "textures/%s.wal", in->texture);
@@ -478,7 +478,7 @@ void Mod_LoadTexinfo (bsp38_lump_t *l)
 	// count animation frames
 	for (i=0 ; i<count ; i++)
 	{
-		out = &loadmodel->texinfo[i];
+		out = &loadmodel->brush38_texinfo[i];
 		out->numframes = 1;
 		for (step = out->next ; step && step != out ; step=step->next)
 			out->numframes++;
@@ -507,11 +507,11 @@ void CalcSurfaceExtents (mbrush38_surface_t *s)
 	
 	for (i=0 ; i<s->numedges ; i++)
 	{
-		e = loadmodel->surfedges[s->firstedge+i];
+		e = loadmodel->brush38_surfedges[s->firstedge+i];
 		if (e >= 0)
-			v = &loadmodel->vertexes[loadmodel->edges[e].v[0]];
+			v = &loadmodel->brush38_vertexes[loadmodel->brush38_edges[e].v[0]];
 		else
-			v = &loadmodel->vertexes[loadmodel->edges[-e].v[1]];
+			v = &loadmodel->brush38_vertexes[loadmodel->brush38_edges[-e].v[1]];
 		
 		for (j=0 ; j<2 ; j++)
 		{
@@ -564,8 +564,8 @@ void Mod_LoadFaces (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (mbrush38_surface_t*)Hunk_Alloc ( count*sizeof(*out));	
 
-	loadmodel->surfaces = out;
-	loadmodel->numsurfaces = count;
+	loadmodel->brush38_surfaces = out;
+	loadmodel->brush38_numsurfaces = count;
 
 	currentmodel = loadmodel;
 
@@ -583,12 +583,12 @@ void Mod_LoadFaces (bsp38_lump_t *l)
 		if (side)
 			out->flags |= BRUSH38_SURF_PLANEBACK;			
 
-		out->plane = loadmodel->planes + planenum;
+		out->plane = loadmodel->brush38_planes + planenum;
 
 		ti = LittleShort (in->texinfo);
-		if (ti < 0 || ti >= loadmodel->numtexinfo)
+		if (ti < 0 || ti >= loadmodel->brush38_numtexinfo)
 			ri.Sys_Error (ERR_DROP, "MOD_LoadBmodel: bad texinfo number");
-		out->texinfo = loadmodel->texinfo + ti;
+		out->texinfo = loadmodel->brush38_texinfo + ti;
 
 		CalcSurfaceExtents (out);
 				
@@ -600,7 +600,7 @@ void Mod_LoadFaces (bsp38_lump_t *l)
 		if (i == -1)
 			out->samples = NULL;
 		else
-			out->samples = loadmodel->lightdata + i;
+			out->samples = loadmodel->brush38_lightdata + i;
 		
 	// set the drawing flags
 		
@@ -659,8 +659,8 @@ void Mod_LoadNodes (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (mbrush38_node_t*)Hunk_Alloc ( count*sizeof(*out));	
 
-	loadmodel->nodes = out;
-	loadmodel->numnodes = count;
+	loadmodel->brush38_nodes = out;
+	loadmodel->brush38_numnodes = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -671,7 +671,7 @@ void Mod_LoadNodes (bsp38_lump_t *l)
 		}
 	
 		p = LittleLong(in->planenum);
-		out->plane = loadmodel->planes + p;
+		out->plane = loadmodel->brush38_planes + p;
 
 		out->firstsurface = LittleShort (in->firstface);
 		out->numsurfaces = LittleShort (in->numfaces);
@@ -681,13 +681,13 @@ void Mod_LoadNodes (bsp38_lump_t *l)
 		{
 			p = LittleLong (in->children[j]);
 			if (p >= 0)
-				out->children[j] = loadmodel->nodes + p;
+				out->children[j] = loadmodel->brush38_nodes + p;
 			else
-				out->children[j] = (mbrush38_node_t *)(loadmodel->leafs + (-1 - p));
+				out->children[j] = (mbrush38_node_t *)(loadmodel->brush38_leafs + (-1 - p));
 		}
 	}
 	
-	Mod_SetParent (loadmodel->nodes, NULL);	// sets nodes and leafs
+	Mod_SetParent (loadmodel->brush38_nodes, NULL);	// sets nodes and leafs
 }
 
 /*
@@ -708,8 +708,8 @@ void Mod_LoadLeafs (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (mbrush38_leaf_t*)Hunk_Alloc ( count*sizeof(*out));	
 
-	loadmodel->leafs = out;
-	loadmodel->numleafs = count;
+	loadmodel->brush38_leafs = out;
+	loadmodel->brush38_numleafs = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -725,7 +725,7 @@ void Mod_LoadLeafs (bsp38_lump_t *l)
 		out->cluster = LittleShort(in->cluster);
 		out->area = LittleShort(in->area);
 
-		out->firstmarksurface = loadmodel->marksurfaces +
+		out->firstmarksurface = loadmodel->brush38_marksurfaces +
 			LittleShort(in->firstleafface);
 		out->nummarksurfaces = LittleShort(in->numleaffaces);
 		
@@ -761,15 +761,15 @@ void Mod_LoadMarksurfaces (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (mbrush38_surface_t**)Hunk_Alloc ( count*sizeof(*out));	
 
-	loadmodel->marksurfaces = out;
-	loadmodel->nummarksurfaces = count;
+	loadmodel->brush38_marksurfaces = out;
+	loadmodel->brush38_nummarksurfaces = count;
 
 	for ( i=0 ; i<count ; i++)
 	{
 		j = LittleShort(in[i]);
-		if (j < 0 ||  j >= loadmodel->numsurfaces)
+		if (j < 0 ||  j >= loadmodel->brush38_numsurfaces)
 			ri.Sys_Error (ERR_DROP, "Mod_ParseMarksurfaces: bad surface number");
-		out[i] = loadmodel->surfaces + j;
+		out[i] = loadmodel->brush38_surfaces + j;
 	}
 }
 
@@ -793,8 +793,8 @@ void Mod_LoadSurfedges (bsp38_lump_t *l)
 
 	out = (int*)Hunk_Alloc ( count*sizeof(*out));	
 
-	loadmodel->surfedges = out;
-	loadmodel->numsurfedges = count;
+	loadmodel->brush38_surfedges = out;
+	loadmodel->brush38_numsurfedges = count;
 
 	for ( i=0 ; i<count ; i++)
 		out[i] = LittleLong (in[i]);
@@ -819,8 +819,8 @@ void Mod_LoadPlanes (bsp38_lump_t *l)
 	count = l->filelen / sizeof(*in);
 	out = (cplane_t*)Hunk_Alloc ( count*2*sizeof(*out));	
 	
-	loadmodel->planes = out;
-	loadmodel->numplanes = count;
+	loadmodel->brush38_planes = out;
+	loadmodel->brush38_numplanes = count;
 
 	for ( i=0 ; i<count ; i++, in++, out++)
 	{
@@ -876,16 +876,16 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 	Mod_LoadLeafs (&header->lumps[BSP38LUMP_LEAFS]);
 	Mod_LoadNodes (&header->lumps[BSP38LUMP_NODES]);
 	Mod_LoadSubmodels (&header->lumps[BSP38LUMP_MODELS]);
-	mod->numframes = 2;		// regular and alternate animation
+	mod->q2_numframes = 2;		// regular and alternate animation
 	
 //
 // set up the submodels
 //
-	for (i=0 ; i<mod->numsubmodels ; i++)
+	for (i=0 ; i<mod->brush38_numsubmodels ; i++)
 	{
 		model_t	*starmod;
 
-		bm = &mod->submodels[i];
+		bm = &mod->brush38_submodels[i];
 		if (i == 0)
 		{
 			starmod = loadmodel;
@@ -897,18 +897,18 @@ void Mod_LoadBrushModel (model_t *mod, void *buffer)
 			*starmod = *loadmodel;
 			QStr::Sprintf(starmod->name, sizeof(starmod->name), "*%d", i);
 	
-			starmod->numleafs = bm->visleafs;
+			starmod->brush38_numleafs = bm->visleafs;
 		}
 
-		starmod->firstmodelsurface = bm->firstface;
-		starmod->nummodelsurfaces = bm->numfaces;
-		starmod->firstnode = bm->headnode;
-		if (starmod->firstnode >= loadmodel->numnodes)
+		starmod->brush38_firstmodelsurface = bm->firstface;
+		starmod->brush38_nummodelsurfaces = bm->numfaces;
+		starmod->brush38_firstnode = bm->headnode;
+		if (starmod->brush38_firstnode >= loadmodel->brush38_numnodes)
 			ri.Sys_Error (ERR_DROP, "Inline model %i has bad firstnode", i);
 
-		VectorCopy (bm->maxs, starmod->maxs);
-		VectorCopy (bm->mins, starmod->mins);
-		starmod->radius = bm->radius;
+		VectorCopy (bm->maxs, starmod->q2_maxs);
+		VectorCopy (bm->mins, starmod->q2_mins);
+		starmod->q2_radius = bm->radius;
 	}
 }
 
@@ -1032,15 +1032,15 @@ void Mod_LoadAliasModel (model_t *mod, void *buffer)
 		pheader->num_skins*MAX_MD2_SKINNAME);
 	for (i=0 ; i<pheader->num_skins ; i++)
 	{
-		mod->skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_MD2_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
+		mod->q2_skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_MD2_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
 	}
 
-	mod->mins[0] = -32;
-	mod->mins[1] = -32;
-	mod->mins[2] = -32;
-	mod->maxs[0] = 32;
-	mod->maxs[1] = 32;
-	mod->maxs[2] = 32;
+	mod->q2_mins[0] = -32;
+	mod->q2_mins[1] = -32;
+	mod->q2_mins[2] = -32;
+	mod->q2_maxs[0] = 32;
+	mod->q2_maxs[1] = 32;
+	mod->q2_maxs[2] = 32;
 }
 
 /*
@@ -1084,7 +1084,7 @@ void Mod_LoadSpriteModel (model_t *mod, void *buffer)
 		sprout->frames[i].origin_x = LittleLong (sprin->frames[i].origin_x);
 		sprout->frames[i].origin_y = LittleLong (sprin->frames[i].origin_y);
 		Com_Memcpy(sprout->frames[i].name, sprin->frames[i].name, MAX_SP2_SKINNAME);
-		mod->skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
+		mod->q2_skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
 	}
 
 	mod->type = MOD_SPRITE2;
@@ -1148,22 +1148,22 @@ qhandle_t R_RegisterModel (char *name)
 	{
 		return 0;
 	}
-	mod->registration_sequence = registration_sequence;
+	mod->q2_registration_sequence = registration_sequence;
 
 	// register any images used by the models
 	if (mod->type == MOD_SPRITE2)
 	{
-		sprout = (dsprite2_t *)mod->extradata;
+		sprout = (dsprite2_t *)mod->q2_extradata;
 		for (i=0 ; i<sprout->numframes ; i++)
-			mod->skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
+			mod->q2_skins[i] = R_FindImageFile(sprout->frames[i].name, true, true, GL_CLAMP);
 	}
 	else if (mod->type == MOD_MESH2)
 	{
-		pheader = (dmd2_t *)mod->extradata;
+		pheader = (dmd2_t *)mod->q2_extradata;
 		for (i=0 ; i<pheader->num_skins ; i++)
-			mod->skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_MD2_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
+			mod->q2_skins[i] = R_FindImageFile((char*)pheader + pheader->ofs_skins + i * MAX_MD2_SKINNAME, true, true, GL_CLAMP, false, IMG8MODE_Skin);
 //PGM
-		mod->numframes = pheader->num_frames;
+		mod->q2_numframes = pheader->num_frames;
 //PGM
 	}
 	return mod - mod_known;
@@ -1185,7 +1185,7 @@ void R_EndRegistration (void)
 	{
 		if (!mod->name[0] || mod->name[0] == '*')
 			continue;
-		if (mod->registration_sequence != registration_sequence)
+		if (mod->q2_registration_sequence != registration_sequence)
 		{	// don't need this model
 			Mod_Free (mod);
 		}
@@ -1203,7 +1203,7 @@ Mod_Free
 */
 void Mod_Free (model_t *mod)
 {
-	Hunk_Free (mod->extradata);
+	Hunk_Free (mod->q2_extradata);
 	Com_Memset(mod, 0, sizeof(*mod));
 }
 
@@ -1218,7 +1218,7 @@ void Mod_FreeAll (void)
 
 	for (i=1; i<mod_numknown ; i++)
 	{
-		if (mod_known[i].extradatasize && mod_known[i].name[0] != '*')
+		if (mod_known[i].q2_extradatasize && mod_known[i].name[0] != '*')
 			Mod_Free (&mod_known[i]);
 	}
 }
