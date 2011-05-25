@@ -23,16 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	SIDE_ON		2
 
 
-//===================================================================
-
-//
-// Whole model
-//
-
-struct model_t : model_common_t
-{
-};
-
 //============================================================================
 
 void	Mod_Init (void);

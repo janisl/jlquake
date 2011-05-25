@@ -45,16 +45,6 @@ extern	dmdl_stvert_t	stverts[MAXALIASVERTS];
 extern	mmesh1triangle_t	triangles[MAXALIASTRIS];
 extern	dmdl_trivertx_t	*poseverts[MAXALIASFRAMES];
 
-//===================================================================
-
-//
-// Whole model
-//
-
-struct model_t : model_common_t
-{
-};
-
 //============================================================================
 
 void	*Mod_Extradata (model_t *mod);	// handles caching

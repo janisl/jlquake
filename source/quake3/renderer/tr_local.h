@@ -175,11 +175,6 @@ BRUSH MODELS
 
 //======================================================================
 
-struct model_t : model_common_t
-{
-};
-
-
 #define	MAX_MOD_KNOWN	1024
 
 void		R_ModelInit (void);

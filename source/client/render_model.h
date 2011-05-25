@@ -621,7 +621,7 @@ enum modtype_t
 	MOD_MD4
 };
 
-struct model_common_t
+struct model_t
 {
 	char		name[MAX_QPATH];
 	modtype_t	type;
