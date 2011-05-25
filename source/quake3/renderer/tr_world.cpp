@@ -256,7 +256,7 @@ that is touched by one or more dlights, so try to throw out
 more dlights if possible.
 ====================
 */
-static int R_DlightSurface( msurface_t *surf, int dlightBits ) {
+static int R_DlightSurface( mbrush46_surface_t *surf, int dlightBits ) {
 	if ( *surf->data == SF_FACE ) {
 		dlightBits = R_DlightFace( (srfSurfaceFace_t *)surf->data, dlightBits );
 	} else if ( *surf->data == SF_GRID ) {
@@ -281,7 +281,7 @@ static int R_DlightSurface( msurface_t *surf, int dlightBits ) {
 R_AddWorldSurface
 ======================
 */
-static void R_AddWorldSurface( msurface_t *surf, int dlightBits ) {
+static void R_AddWorldSurface( mbrush46_surface_t *surf, int dlightBits ) {
 	if ( surf->viewCount == tr.viewCount ) {
 		return;		// already in this view
 	}
@@ -353,7 +353,7 @@ void R_AddBrushModelSurfaces ( trRefEntity_t *ent ) {
 R_RecursiveWorldNode
 ================
 */
-static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits ) {
+static void R_RecursiveWorldNode( mbrush46_node_t *node, int planeBits, int dlightBits ) {
 
 	do {
 		int			newDlights[2];
@@ -453,7 +453,7 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits )
 	{
 		// leaf node, so add mark surfaces
 		int			c;
-		msurface_t	*surf, **mark;
+		mbrush46_surface_t	*surf, **mark;
 
 		tr.pc.c_leafs++;
 
@@ -498,8 +498,8 @@ static void R_RecursiveWorldNode( mnode_t *node, int planeBits, int dlightBits )
 R_PointInLeaf
 ===============
 */
-static mnode_t *R_PointInLeaf( const vec3_t p ) {
-	mnode_t		*node;
+static mbrush46_node_t *R_PointInLeaf( const vec3_t p ) {
+	mbrush46_node_t		*node;
 	float		d;
 	cplane_t	*plane;
 	
@@ -543,7 +543,7 @@ R_inPVS
 =================
 */
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 ) {
-	mnode_t *leaf;
+	mbrush46_node_t *leaf;
 	byte	*vis;
 
 	leaf = R_PointInLeaf( p1 );
@@ -566,7 +566,7 @@ cluster
 */
 static void R_MarkLeaves (void) {
 	const byte	*vis;
-	mnode_t	*leaf, *parent;
+	mbrush46_node_t	*leaf, *parent;
 	int		i;
 	int		cluster;
 

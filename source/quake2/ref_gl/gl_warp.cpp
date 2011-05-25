@@ -28,7 +28,7 @@ float	skyrotate;
 vec3_t	skyaxis;
 image_t	*sky_images[6];
 
-msurface_t	*warpface;
+mbrush38_surface_t	*warpface;
 
 #define	SUBDIVIDE_SIZE	64
 //#define	SUBDIVIDE_SIZE	1024
@@ -61,7 +61,7 @@ void SubdividePolygon (int numverts, float *verts)
 	int		f, b;
 	float	dist[64];
 	float	frac;
-	glpoly_t	*poly;
+	mbrush38_glpoly_t	*poly;
 	float	s, t;
 	vec3_t	total;
 	float	total_s, total_t;
@@ -123,7 +123,7 @@ void SubdividePolygon (int numverts, float *verts)
 	}
 
 	// add a point in the center to help keep warp valid
-	poly = (glpoly_t*)Hunk_Alloc (sizeof(glpoly_t) + ((numverts-4)+2) * VERTEXSIZE*sizeof(float));
+	poly = (mbrush38_glpoly_t*)Hunk_Alloc (sizeof(mbrush38_glpoly_t) + ((numverts-4)+2) * BRUSH38_VERTEXSIZE*sizeof(float));
 	poly->next = warpface->polys;
 	warpface->polys = poly;
 	poly->numverts = numverts+2;
@@ -161,7 +161,7 @@ boundaries so that turbulent and sky warps
 can be done reasonably.
 ================
 */
-void GL_SubdivideSurface (msurface_t *fa)
+void GL_SubdivideSurface (mbrush38_surface_t *fa)
 {
 	vec3_t		verts[64];
 	int			numverts;
@@ -205,12 +205,12 @@ float	r_turbsin[] =
 =============
 EmitWaterPolys
 
-Does a water warp on the pre-fragmented glpoly_t chain
+Does a water warp on the pre-fragmented mbrush38_glpoly_t chain
 =============
 */
-void EmitWaterPolys (msurface_t *fa)
+void EmitWaterPolys (mbrush38_surface_t *fa)
 {
-	glpoly_t	*p, *bp;
+	mbrush38_glpoly_t	*p, *bp;
 	float		*v;
 	int			i;
 	float		s, t, os, ot;
@@ -226,7 +226,7 @@ void EmitWaterPolys (msurface_t *fa)
 		p = bp;
 
 		qglBegin (GL_TRIANGLE_FAN);
-		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=VERTEXSIZE)
+		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=BRUSH38_VERTEXSIZE)
 		{
 			os = v[3];
 			ot = v[4];
@@ -482,11 +482,11 @@ void ClipSkyPolygon (int nump, vec3_t vecs, int stage)
 R_AddSkySurface
 =================
 */
-void R_AddSkySurface (msurface_t *fa)
+void R_AddSkySurface (mbrush38_surface_t *fa)
 {
 	int			i;
 	vec3_t		verts[MAX_CLIP_VERTS];
-	glpoly_t	*p;
+	mbrush38_glpoly_t	*p;
 
 	// calculate vertex values for sky box
 	for (p=fa->polys ; p ; p=p->next)

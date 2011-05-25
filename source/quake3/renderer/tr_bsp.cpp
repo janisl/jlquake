@@ -300,7 +300,7 @@ static shader_t *ShaderForShaderNum( int shaderNum, int lightmapNum ) {
 ParseFace
 ===============
 */
-static void ParseFace( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf, int *indexes  ) {
+static void ParseFace( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf, int *indexes  ) {
 	int			i, j;
 	srfSurfaceFace_t	*cv;
 	int			numPoints, numIndexes;
@@ -372,7 +372,7 @@ static void ParseFace( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t
 ParseMesh
 ===============
 */
-static void ParseMesh ( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf ) {
+static void ParseMesh ( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf ) {
 	srfGridMesh_t	*grid;
 	int				i, j;
 	int				width, height, numPoints;
@@ -439,7 +439,7 @@ static void ParseMesh ( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_
 ParseTriSurf
 ===============
 */
-static void ParseTriSurf( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf, int *indexes ) {
+static void ParseTriSurf( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf, int *indexes ) {
 	srfTriangles_t	*tri;
 	int				i, j;
 	int				numVerts, numIndexes;
@@ -498,7 +498,7 @@ static void ParseTriSurf( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurfac
 ParseFlare
 ===============
 */
-static void ParseFlare( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, msurface_t *surf, int *indexes ) {
+static void ParseFlare( bsp46_dsurface_t *ds, bsp46_drawVert_t *verts, mbrush46_surface_t *surf, int *indexes ) {
 	srfFlare_t		*flare;
 	int				i;
 
@@ -1226,7 +1226,7 @@ R_LoadSurfaces
 */
 static	void R_LoadSurfaces( bsp46_lump_t *surfs, bsp46_lump_t *verts, bsp46_lump_t *indexLump ) {
 	bsp46_dsurface_t	*in;
-	msurface_t	*out;
+	mbrush46_surface_t	*out;
 	bsp46_drawVert_t	*dv;
 	int			*indexes;
 	int			count;
@@ -1251,7 +1251,7 @@ static	void R_LoadSurfaces( bsp46_lump_t *surfs, bsp46_lump_t *verts, bsp46_lump
 	if ( indexLump->filelen % sizeof(*indexes))
 		ri.Error (ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name);
 
-	out = (msurface_t*)ri.Hunk_Alloc ( count * sizeof(*out), h_low );	
+	out = (mbrush46_surface_t*)ri.Hunk_Alloc ( count * sizeof(*out), h_low );	
 
 	s_worldData.surfaces = out;
 	s_worldData.numsurfaces = count;
@@ -1342,7 +1342,7 @@ static	void R_LoadSubmodels( bsp46_lump_t *l ) {
 R_SetParent
 =================
 */
-static	void R_SetParent (mnode_t *node, mnode_t *parent)
+static	void R_SetParent (mbrush46_node_t *node, mbrush46_node_t *parent)
 {
 	node->parent = parent;
 	if (node->contents != -1)
@@ -1360,7 +1360,7 @@ static	void R_LoadNodesAndLeafs (bsp46_lump_t *nodeLump, bsp46_lump_t *leafLump)
 	int			i, j, p;
 	bsp46_dnode_t		*in;
 	bsp46_dleaf_t		*inLeaf;
-	mnode_t 	*out;
+	mbrush46_node_t 	*out;
 	int			numNodes, numLeafs;
 
 	in = (bsp46_dnode_t*)(fileBase + nodeLump->fileofs);
@@ -1371,7 +1371,7 @@ static	void R_LoadNodesAndLeafs (bsp46_lump_t *nodeLump, bsp46_lump_t *leafLump)
 	numNodes = nodeLump->filelen / sizeof(bsp46_dnode_t);
 	numLeafs = leafLump->filelen / sizeof(bsp46_dleaf_t);
 
-	out = (mnode_t*)ri.Hunk_Alloc ( (numNodes + numLeafs) * sizeof(*out), h_low);	
+	out = (mbrush46_node_t*)ri.Hunk_Alloc ( (numNodes + numLeafs) * sizeof(*out), h_low);	
 
 	s_worldData.nodes = out;
 	s_worldData.numnodes = numNodes + numLeafs;
@@ -1465,13 +1465,13 @@ static	void R_LoadMarksurfaces (bsp46_lump_t *l)
 {	
 	int		i, j, count;
 	int		*in;
-	msurface_t **out;
+	mbrush46_surface_t **out;
 	
 	in = (int*)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		ri.Error (ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name);
 	count = l->filelen / sizeof(*in);
-	out = (msurface_t**)ri.Hunk_Alloc ( count*sizeof(*out), h_low);	
+	out = (mbrush46_surface_t**)ri.Hunk_Alloc ( count*sizeof(*out), h_low);	
 
 	s_worldData.marksurfaces = out;
 	s_worldData.nummarksurfaces = count;

@@ -150,20 +150,20 @@ void R_DrawBeam( trRefEntity_t *e );
 void R_DrawWorld (void);
 void R_RenderDlights (void);
 void R_DrawAlphaSurfaces (void);
-void R_RenderBrushPoly (msurface_t *fa);
+void R_RenderBrushPoly (mbrush38_surface_t *fa);
 void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
-void GL_SubdivideSurface (msurface_t *fa);
+void GL_SubdivideSurface (mbrush38_surface_t *fa);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
 void R_RotateForEntity (trRefEntity_t *e);
 void R_MarkLeaves (void);
 
-glpoly_t *WaterWarpPolyVerts (glpoly_t *p);
-void EmitWaterPolys (msurface_t *fa);
-void R_AddSkySurface (msurface_t *fa);
+mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
+void EmitWaterPolys (mbrush38_surface_t *fa);
+void R_AddSkySurface (mbrush38_surface_t *fa);
 void R_ClearSkyBox (void);
 void R_DrawSkyBox (void);
-void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
+void R_MarkLights (dlight_t *light, int bit, mbrush38_node_t *node);
 
 #if 0
 short LittleShort (short l);

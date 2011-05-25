@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static vec3_t	modelorg;		// relative to viewpoint
 
-msurface_t	*r_alpha_surfaces;
+mbrush38_surface_t	*r_alpha_surfaces;
 
 #define DYNAMIC_LIGHT_WIDTH  128
 #define DYNAMIC_LIGHT_HEIGHT 128
@@ -41,7 +41,7 @@ typedef struct
 {
 	int	current_lightmap_texture;
 
-	msurface_t	*lightmap_surfaces[MAX_LIGHTMAPS];
+	mbrush38_surface_t	*lightmap_surfaces[MAX_LIGHTMAPS];
 
 	int			allocated[BLOCK_WIDTH];
 
@@ -57,8 +57,8 @@ static void		LM_InitBlock( void );
 static void		LM_UploadBlock( qboolean dynamic );
 static qboolean	LM_AllocBlock (int w, int h, int *x, int *y);
 
-extern void R_SetCacheState( msurface_t *surf );
-extern void R_BuildLightMap (msurface_t *surf, byte *dest, int stride);
+extern void R_SetCacheState( mbrush38_surface_t *surf );
+extern void R_BuildLightMap (mbrush38_surface_t *surf, byte *dest, int stride);
 
 /*
 =============================================================
@@ -75,7 +75,7 @@ R_TextureAnimation
 Returns the proper texture for a given time and base texture
 ===============
 */
-image_t *R_TextureAnimation (mtexinfo_t *tex)
+image_t *R_TextureAnimation (mbrush38_texinfo_t *tex)
 {
 	int		c;
 
@@ -101,19 +101,19 @@ Mangles the x and y coordinates in a copy of the poly
 so that any drawing routine can be water warped
 =================
 */
-glpoly_t *WaterWarpPolyVerts (glpoly_t *p)
+mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p)
 {
 	int		i;
 	float	*v, *nv;
 	static byte	buffer[1024];
-	glpoly_t *out;
+	mbrush38_glpoly_t *out;
 
-	out = (glpoly_t *)buffer;
+	out = (mbrush38_glpoly_t *)buffer;
 
 	out->numverts = p->numverts;
 	v = p->verts[0];
 	nv = out->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE, nv+=VERTEXSIZE)
+	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE, nv+=BRUSH38_VERTEXSIZE)
 	{
 		nv[0] = v[0] + 4*sin(v[1]*0.05+r_newrefdef.time)*sin(v[2]*0.05+r_newrefdef.time);
 		nv[1] = v[1] + 4*sin(v[0]*0.05+r_newrefdef.time)*sin(v[2]*0.05+r_newrefdef.time);
@@ -135,7 +135,7 @@ DrawGLWaterPoly
 Warp the vertex coordinates
 ================
 */
-void DrawGLWaterPoly (glpoly_t *p)
+void DrawGLWaterPoly (mbrush38_glpoly_t *p)
 {
 	int		i;
 	float	*v;
@@ -143,14 +143,14 @@ void DrawGLWaterPoly (glpoly_t *p)
 	p = WaterWarpPolyVerts (p);
 	qglBegin (GL_TRIANGLE_FAN);
 	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE)
 	{
 		qglTexCoord2f (v[3], v[4]);
 		qglVertex3fv (v);
 	}
 	qglEnd ();
 }
-void DrawGLWaterPolyLightmap (glpoly_t *p)
+void DrawGLWaterPolyLightmap (mbrush38_glpoly_t *p)
 {
 	int		i;
 	float	*v;
@@ -158,7 +158,7 @@ void DrawGLWaterPolyLightmap (glpoly_t *p)
 	p = WaterWarpPolyVerts (p);
 	qglBegin (GL_TRIANGLE_FAN);
 	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE)
 	{
 		qglTexCoord2f (v[5], v[6]);
 		qglVertex3fv (v);
@@ -172,14 +172,14 @@ void DrawGLWaterPolyLightmap (glpoly_t *p)
 DrawGLPoly
 ================
 */
-void DrawGLPoly (glpoly_t *p)
+void DrawGLPoly (mbrush38_glpoly_t *p)
 {
 	int		i;
 	float	*v;
 
 	qglBegin (GL_POLYGON);
 	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE)
 	{
 		qglTexCoord2f (v[3], v[4]);
 		qglVertex3fv (v);
@@ -194,11 +194,11 @@ void DrawGLPoly (glpoly_t *p)
 DrawGLFlowingPoly -- version of DrawGLPoly that handles scrolling texture
 ================
 */
-void DrawGLFlowingPoly (msurface_t *fa)
+void DrawGLFlowingPoly (mbrush38_surface_t *fa)
 {
 	int		i;
 	float	*v;
-	glpoly_t *p;
+	mbrush38_glpoly_t *p;
 	float	scroll;
 
 	p = fa->polys;
@@ -209,7 +209,7 @@ void DrawGLFlowingPoly (msurface_t *fa)
 
 	qglBegin (GL_POLYGON);
 	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE)
 	{
 		qglTexCoord2f ((v[3] + scroll), v[4]);
 		qglVertex3fv (v);
@@ -225,7 +225,7 @@ void DrawGLFlowingPoly (msurface_t *fa)
 void R_DrawTriangleOutlines (void)
 {
 	int			i, j;
-	glpoly_t	*p;
+	mbrush38_glpoly_t	*p;
 
 	if (!gl_showtris->value)
 		return;
@@ -236,7 +236,7 @@ void R_DrawTriangleOutlines (void)
 
 	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
 	{
-		msurface_t *surf;
+		mbrush38_surface_t *surf;
 
 		for ( surf = gl_lms.lightmap_surfaces[i]; surf != 0; surf = surf->lightmapchain )
 		{
@@ -263,7 +263,7 @@ void R_DrawTriangleOutlines (void)
 /*
 ** DrawGLPolyChain
 */
-void DrawGLPolyChain( glpoly_t *p, float soffset, float toffset )
+void DrawGLPolyChain( mbrush38_glpoly_t *p, float soffset, float toffset )
 {
 	if ( soffset == 0 && toffset == 0 )
 	{
@@ -274,7 +274,7 @@ void DrawGLPolyChain( glpoly_t *p, float soffset, float toffset )
 
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
-			for (j=0 ; j<p->numverts ; j++, v+= VERTEXSIZE)
+			for (j=0 ; j<p->numverts ; j++, v+= BRUSH38_VERTEXSIZE)
 			{
 				qglTexCoord2f (v[5], v[6] );
 				qglVertex3fv (v);
@@ -291,7 +291,7 @@ void DrawGLPolyChain( glpoly_t *p, float soffset, float toffset )
 
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
-			for (j=0 ; j<p->numverts ; j++, v+= VERTEXSIZE)
+			for (j=0 ; j<p->numverts ; j++, v+= BRUSH38_VERTEXSIZE)
 			{
 				qglTexCoord2f (v[5] - soffset, v[6] - toffset );
 				qglVertex3fv (v);
@@ -310,7 +310,7 @@ void DrawGLPolyChain( glpoly_t *p, float soffset, float toffset )
 void R_BlendLightmaps (void)
 {
 	int			i;
-	msurface_t	*surf, *newdrawsurf = 0;
+	mbrush38_surface_t	*surf, *newdrawsurf = 0;
 
 	// don't bother if we're set to fullbright
 	if (r_fullbright->value)
@@ -394,7 +394,7 @@ void R_BlendLightmaps (void)
 			}
 			else
 			{
-				msurface_t *drawsurf;
+				mbrush38_surface_t *drawsurf;
 
 				// upload what we have so far
 				LM_UploadBlock( true );
@@ -450,7 +450,7 @@ void R_BlendLightmaps (void)
 R_RenderBrushPoly
 ================
 */
-void R_RenderBrushPoly (msurface_t *fa)
+void R_RenderBrushPoly (mbrush38_surface_t *fa)
 {
 	int			maps;
 	image_t		*image;
@@ -460,7 +460,7 @@ void R_RenderBrushPoly (msurface_t *fa)
 
 	image = R_TextureAnimation (fa->texinfo);
 
-	if (fa->flags & SURF_DRAWTURB)
+	if (fa->flags & BRUSH38_SURF_DRAWTURB)
 	{	
 		GL_Bind( image);
 
@@ -559,7 +559,7 @@ of alpha_surfaces will draw back to front, giving proper ordering.
 */
 void R_DrawAlphaSurfaces (void)
 {
-	msurface_t	*s;
+	mbrush38_surface_t	*s;
 	float		intens;
 
 	//
@@ -584,7 +584,7 @@ void R_DrawAlphaSurfaces (void)
 			qglColor4f (intens,intens,intens,0.66);
 		else
 			qglColor4f (intens,intens,intens,1);
-		if (s->flags & SURF_DRAWTURB)
+		if (s->flags & BRUSH38_SURF_DRAWTURB)
 			EmitWaterPolys (s);
 		else
 			DrawGLPoly (s->polys);
@@ -605,7 +605,7 @@ DrawTextureChains
 void DrawTextureChains (void)
 {
 	int		i;
-	msurface_t	*s;
+	mbrush38_surface_t	*s;
 
 	c_visible_textures = 0;
 
@@ -640,7 +640,7 @@ void DrawTextureChains (void)
 
 			for ( s = tr.images[i]->texturechain; s ; s=s->texturechain)
 			{
-				if ( !( s->flags & SURF_DRAWTURB ) )
+				if ( !( s->flags & BRUSH38_SURF_DRAWTURB ) )
 					R_RenderBrushPoly (s);
 			}
 		}
@@ -656,7 +656,7 @@ void DrawTextureChains (void)
 
 			for ( ; s ; s=s->texturechain)
 			{
-				if ( s->flags & SURF_DRAWTURB )
+				if ( s->flags & BRUSH38_SURF_DRAWTURB )
 					R_RenderBrushPoly (s);
 			}
 
@@ -669,7 +669,7 @@ void DrawTextureChains (void)
 }
 
 
-static void GL_RenderLightmappedPoly( msurface_t *surf )
+static void GL_RenderLightmappedPoly( mbrush38_surface_t *surf )
 {
 	int		i, nv = surf->polys->numverts;
 	int		map;
@@ -677,7 +677,7 @@ static void GL_RenderLightmappedPoly( msurface_t *surf )
 	image_t *image = R_TextureAnimation( surf->texinfo );
 	qboolean is_dynamic = false;
 	unsigned lmtex = surf->lightmaptexturenum;
-	glpoly_t *p;
+	mbrush38_glpoly_t *p;
 
 	for ( map = 0; map < BSP38_MAXLIGHTMAPS && surf->styles[map] != 255; map++ )
 	{
@@ -760,7 +760,7 @@ dynamic:
 			{
 				v = p->verts[0];
 				qglBegin (GL_POLYGON);
-				for (i=0 ; i< nv; i++, v+= VERTEXSIZE)
+				for (i=0 ; i< nv; i++, v+= BRUSH38_VERTEXSIZE)
 				{
 					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, (v[3]+scroll), v[4]);
 					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[5], v[6]);
@@ -775,7 +775,7 @@ dynamic:
 			{
 				v = p->verts[0];
 				qglBegin (GL_POLYGON);
-				for (i=0 ; i< nv; i++, v+= VERTEXSIZE)
+				for (i=0 ; i< nv; i++, v+= BRUSH38_VERTEXSIZE)
 				{
 					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[3], v[4]);
 					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[5], v[6]);
@@ -808,7 +808,7 @@ dynamic:
 			{
 				v = p->verts[0];
 				qglBegin (GL_POLYGON);
-				for (i=0 ; i< nv; i++, v+= VERTEXSIZE)
+				for (i=0 ; i< nv; i++, v+= BRUSH38_VERTEXSIZE)
 				{
 					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, (v[3]+scroll), v[4]);
 					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[5], v[6]);
@@ -825,7 +825,7 @@ dynamic:
 			{
 				v = p->verts[0];
 				qglBegin (GL_POLYGON);
-				for (i=0 ; i< nv; i++, v+= VERTEXSIZE)
+				for (i=0 ; i< nv; i++, v+= BRUSH38_VERTEXSIZE)
 				{
 					qglMultiTexCoord2fARB( GL_TEXTURE0_ARB, v[3], v[4]);
 					qglMultiTexCoord2fARB( GL_TEXTURE1_ARB, v[5], v[6]);
@@ -851,7 +851,7 @@ void R_DrawInlineBModel (void)
 	int			i, k;
 	cplane_t	*pplane;
 	float		dot;
-	msurface_t	*psurf;
+	mbrush38_surface_t	*psurf;
 	dlight_t	*lt;
 
 	// calculate dynamic lighting for bmodel
@@ -888,15 +888,15 @@ void R_DrawInlineBModel (void)
 		dot = DotProduct (modelorg, pplane->normal) - pplane->dist;
 
 	// draw the polygon
-		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
-			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
+		if (((psurf->flags & BRUSH38_SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
+			(!(psurf->flags & BRUSH38_SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			if (psurf->texinfo->flags & (BSP38SURF_TRANS33|BSP38SURF_TRANS66) )
 			{	// add to the translucent chain
 				psurf->texturechain = r_alpha_surfaces;
 				r_alpha_surfaces = psurf;
 			}
-			else if ( qglMultiTexCoord2fARB && !( psurf->flags & SURF_DRAWTURB ) )
+			else if ( qglMultiTexCoord2fARB && !( psurf->flags & BRUSH38_SURF_DRAWTURB ) )
 			{
 				GL_RenderLightmappedPoly( psurf );
 			}
@@ -1001,12 +1001,12 @@ void R_DrawBrushModel (trRefEntity_t *e)
 R_RecursiveWorldNode
 ================
 */
-void R_RecursiveWorldNode (mnode_t *node)
+void R_RecursiveWorldNode (mbrush38_node_t *node)
 {
 	int			c, side, sidebit;
 	cplane_t	*plane;
-	msurface_t	*surf, **mark;
-	mleaf_t		*pleaf;
+	mbrush38_surface_t	*surf, **mark;
+	mbrush38_leaf_t		*pleaf;
 	float		dot;
 	image_t		*image;
 
@@ -1021,7 +1021,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 // if a leaf node, draw stuff
 	if (node->contents != -1)
 	{
-		pleaf = (mleaf_t *)node;
+		pleaf = (mbrush38_leaf_t *)node;
 
 		// check for door connected areas
 		if (r_newrefdef.areabits)
@@ -1074,7 +1074,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 	else
 	{
 		side = 1;
-		sidebit = SURF_PLANEBACK;
+		sidebit = BRUSH38_SURF_PLANEBACK;
 	}
 
 // recurse down the children, front side first
@@ -1086,7 +1086,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 		if (surf->visframe != tr.frameCount)
 			continue;
 
-		if ( (surf->flags & SURF_PLANEBACK) != sidebit )
+		if ( (surf->flags & BRUSH38_SURF_PLANEBACK) != sidebit )
 			continue;		// wrong side
 
 		if (surf->texinfo->flags & BSP38SURF_SKY)
@@ -1100,7 +1100,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 		}
 		else
 		{
-			if ( qglMultiTexCoord2fARB && !( surf->flags & SURF_DRAWTURB ) )
+			if ( qglMultiTexCoord2fARB && !( surf->flags & BRUSH38_SURF_DRAWTURB ) )
 			{
 				GL_RenderLightmappedPoly( surf );
 			}
@@ -1124,7 +1124,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 		if (surf->visframe != tr.frameCount)
 			continue;
 
-		if ( (surf->flags & SURF_PLANEBACK) != sidebit )
+		if ( (surf->flags & BRUSH38_SURF_PLANEBACK) != sidebit )
 			continue;		// wrong side
 
 		if (surf->texinfo->flags & SURF_SKY)
@@ -1138,7 +1138,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 		}
 		else
 		{
-			if ( qglMultiTexCoord2fARB && !( surf->flags & SURF_DRAWTURB ) )
+			if ( qglMultiTexCoord2fARB && !( surf->flags & BRUSH38_SURF_DRAWTURB ) )
 			{
 				GL_RenderLightmappedPoly( surf );
 			}
@@ -1232,9 +1232,9 @@ void R_MarkLeaves (void)
 {
 	byte	*vis;
 	byte	fatvis[BSP38MAX_MAP_LEAFS/8];
-	mnode_t	*node;
+	mbrush38_node_t	*node;
 	int		i, c;
-	mleaf_t	*leaf;
+	mbrush38_leaf_t	*leaf;
 	int		cluster;
 
 	if (r_oldviewcluster == r_viewcluster && r_oldviewcluster2 == r_viewcluster2 && !r_novis->value && r_viewcluster != -1)
@@ -1278,7 +1278,7 @@ void R_MarkLeaves (void)
 			continue;
 		if (vis[cluster>>3] & (1<<(cluster&7)))
 		{
-			node = (mnode_t *)leaf;
+			node = (mbrush38_node_t *)leaf;
 			do
 			{
 				if (node->visframe == r_visframecount)
@@ -1294,7 +1294,7 @@ void R_MarkLeaves (void)
 	{
 		if (vis[i>>3] & (1<<(i&7)))
 		{
-			node = (mnode_t *)&r_worldmodel->leafs[i];	// FIXME: cluster
+			node = (mbrush38_node_t *)&r_worldmodel->leafs[i];	// FIXME: cluster
 			do
 			{
 				if (node->visframe == r_visframecount)
@@ -1404,14 +1404,14 @@ static qboolean LM_AllocBlock (int w, int h, int *x, int *y)
 GL_BuildPolygonFromSurface
 ================
 */
-void GL_BuildPolygonFromSurface(msurface_t *fa)
+void GL_BuildPolygonFromSurface(mbrush38_surface_t *fa)
 {
 	int			i, lindex, lnumverts;
-	medge_t		*pedges, *r_pedge;
+	mbrush38_edge_t		*pedges, *r_pedge;
 	int			vertpage;
 	float		*vec;
 	float		s, t;
-	glpoly_t	*poly;
+	mbrush38_glpoly_t	*poly;
 	vec3_t		total;
 
 // reconstruct the polygon
@@ -1423,7 +1423,7 @@ void GL_BuildPolygonFromSurface(msurface_t *fa)
 	//
 	// draw texture
 	//
-	poly = (glpoly_t*)Hunk_Alloc (sizeof(glpoly_t) + (lnumverts-4) * VERTEXSIZE*sizeof(float));
+	poly = (mbrush38_glpoly_t*)Hunk_Alloc (sizeof(mbrush38_glpoly_t) + (lnumverts-4) * BRUSH38_VERTEXSIZE*sizeof(float));
 	poly->next = fa->polys;
 	poly->flags = fa->flags;
 	fa->polys = poly;
@@ -1482,12 +1482,12 @@ void GL_BuildPolygonFromSurface(msurface_t *fa)
 GL_CreateSurfaceLightmap
 ========================
 */
-void GL_CreateSurfaceLightmap (msurface_t *surf)
+void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf)
 {
 	int		smax, tmax;
 	byte	*base;
 
-	if (surf->flags & (SURF_DRAWSKY|SURF_DRAWTURB))
+	if (surf->flags & (BRUSH38_SURF_DRAWSKY|BRUSH38_SURF_DRAWTURB))
 		return;
 
 	smax = (surf->extents[0]>>4)+1;

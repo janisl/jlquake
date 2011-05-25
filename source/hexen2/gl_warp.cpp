@@ -9,7 +9,7 @@ image_t*	solidskytexture;
 image_t*	alphaskytexture;
 float	speedscale;		// for top sky and bottom sky
 
-msurface_t	*warpface;
+mbrush29_surface_t	*warpface;
 
 #define	SUBDIVIDE_SIZE	64
 
@@ -41,7 +41,7 @@ void SubdividePolygon (int numverts, float *verts)
 	int		f, b;
 	float	dist[64];
 	float	frac;
-	glpoly_t	*poly;
+	mbrush29_glpoly_t	*poly;
 	float	s, t;
 
 	if (numverts > 60)
@@ -100,7 +100,7 @@ void SubdividePolygon (int numverts, float *verts)
 		return;
 	}
 
-	poly = (glpoly_t*)Hunk_Alloc (sizeof(glpoly_t) + (numverts-4) * VERTEXSIZE*sizeof(float));
+	poly = (mbrush29_glpoly_t*)Hunk_Alloc (sizeof(mbrush29_glpoly_t) + (numverts-4) * BRUSH29_VERTEXSIZE*sizeof(float));
 	poly->next = warpface->polys;
 	warpface->polys = poly;
 	poly->numverts = numverts;
@@ -123,14 +123,14 @@ boundaries so that turbulent and sky warps
 can be done reasonably.
 ================
 */
-void GL_SubdivideSurface (msurface_t *fa)
+void GL_SubdivideSurface (mbrush29_surface_t *fa)
 {
 	vec3_t		verts[64];
 	int			numverts;
 	int			i;
 	int			lindex;
 	float		*vec;
-	texture_t	*t;
+	mbrush29_texture_t	*t;
 
 	warpface = fa;
 
@@ -168,12 +168,12 @@ float	turbsin[] =
 =============
 EmitWaterPolys
 
-Does a water warp on the pre-fragmented glpoly_t chain
+Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
 =============
 */
-void EmitWaterPolys (msurface_t *fa)
+void EmitWaterPolys (mbrush29_surface_t *fa)
 {
-	glpoly_t	*p;
+	mbrush29_glpoly_t	*p;
 	float		*v;
 	int			i;
 	float		s, t, os, ot;
@@ -182,7 +182,7 @@ void EmitWaterPolys (msurface_t *fa)
 	for (p=fa->polys ; p ; p=p->next)
 	{
 		qglBegin (GL_POLYGON);
-		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=VERTEXSIZE)
+		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=BRUSH29_VERTEXSIZE)
 		{
 			os = v[3];
 			ot = v[4];
@@ -212,9 +212,9 @@ static int buffer_pos;
 EmitSkyPolys
 =============
 */
-void EmitSkyPolys (msurface_t *fa, qboolean save)
+void EmitSkyPolys (mbrush29_surface_t *fa, qboolean save)
 {
-	glpoly_t	*p;
+	mbrush29_glpoly_t	*p;
 	float		*v;
 	int			i;
 	float	s, t;
@@ -226,7 +226,7 @@ void EmitSkyPolys (msurface_t *fa, qboolean save)
 		c_sky_polys++;
 
 		qglBegin (GL_POLYGON);
-		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=VERTEXSIZE)
+		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=BRUSH29_VERTEXSIZE)
 		{
 			if (save || buffer_pos >= MAX_SAVE)
 			{
@@ -284,12 +284,12 @@ void EmitSkyPolys (msurface_t *fa, qboolean save)
 ===============
 EmitBothSkyLayers
 
-Does a sky warp on the pre-fragmented glpoly_t chain
+Does a sky warp on the pre-fragmented mbrush29_glpoly_t chain
 This will be called for brushmodels, the world
 will have them chained together.
 ===============
 */
-void EmitBothSkyLayers (msurface_t *fa)
+void EmitBothSkyLayers (mbrush29_surface_t *fa)
 {
 	int			i;
 	int			lindex;
@@ -318,9 +318,9 @@ void EmitBothSkyLayers (msurface_t *fa)
 R_DrawSkyChain
 =================
 */
-void R_DrawSkyChain (msurface_t *s)
+void R_DrawSkyChain (mbrush29_surface_t *s)
 {
-	msurface_t	*fa;
+	mbrush29_surface_t	*fa;
 
 	// used when gl_texsort is on
 	GL_Bind(solidskytexture);
@@ -356,7 +356,7 @@ R_InitSky
 A sky texture is 256*128, with the right side being a masked overlay
 ==============
 */
-void R_InitSky (texture_t *mt)
+void R_InitSky (mbrush29_texture_t *mt)
 {
 	int			i, j, p;
 	byte		*src;

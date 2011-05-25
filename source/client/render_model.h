@@ -15,52 +15,276 @@
 //**
 //**************************************************************************
 
-/*
-==============================================================================
+//==============================================================================
+//
+//	QUAKE BRUSH MODELS
+//
+//==============================================================================
 
-QUAKE SPRITE MODELS
+#define BRUSH29_VERTEXSIZE	7
 
-==============================================================================
-*/
+#define BRUSH29_SURF_PLANEBACK		2
+#define BRUSH29_SURF_DRAWSKY		4
+#define BRUSH29_SURF_DRAWTURB		0x10
+#define BRUSH29_SURF_DRAWTILED		0x20
+#define BRUSH29_SURF_UNDERWATER		0x80
+#define BRUSH29_SURF_DONTWARP		0x100
+#define BRUSH29_SURF_TRANSLUCENT	0x200
 
-struct msprite1frame_t
+struct mbrush29_surface_t;
+
+struct mbrush29_vertex_t
 {
-	int			width;
-	int			height;
-	float		up, down, left, right;
+	vec3_t		position;
+};
+
+struct mbrush29_texture_t
+{
+	char		name[16];
+	unsigned	width, height;
 	image_t*	gl_texture;
+	mbrush29_surface_t	*texturechain;	// for gl_texsort drawing
+	int			anim_total;				// total tenths in sequence ( 0 = no)
+	int			anim_min, anim_max;		// time for this frame min <=time< max
+	mbrush29_texture_t*	anim_next;		// in the animation sequence
+	mbrush29_texture_t*	alternate_anims;	// bmodels in frmae 1 use these
+	unsigned	offsets[BSP29_MIPLEVELS];		// four mip maps stored
 };
 
-struct msprite1group_t
+struct mbrush29_edge_t
 {
-	int					numframes;
-	float*				intervals;
-	msprite1frame_t*	frames[1];
+	unsigned short	v[2];
+	unsigned int	cachededgeoffset;
 };
 
-struct msprite1framedesc_t
+struct mbrush29_texinfo_t
 {
-	sprite1frametype_t	type;
-	msprite1frame_t		*frameptr;
+	float		vecs[2][4];
+	float		mipadjust;
+	mbrush29_texture_t	*texture;
+	int			flags;
 };
 
-struct msprite1_t
+struct mbrush29_glpoly_t
 {
-	int					type;
-	int					maxwidth;
-	int					maxheight;
-	int					numframes;
-	float				beamlength;		// remove?
-	msprite1framedesc_t	frames[1];
+	mbrush29_glpoly_t*	next;
+	mbrush29_glpoly_t*	chain;
+	int		numverts;
+	int		flags;			// for BRUSH29_SURF_UNDERWATER
+	float	verts[4][BRUSH29_VERTEXSIZE];	// variable sized (xyz s1t1 s2t2)
 };
 
-/*
-==============================================================================
+struct mbrush29_surface_t
+{
+	int			visframe;		// should be drawn when node is crossed
 
-QUAKE MESH MODELS
+	cplane_t	*plane;
+	int			flags;
 
-==============================================================================
-*/
+	int			firstedge;	// look up in model->surfedges[], negative numbers
+	int			numedges;	// are backwards edges
+	
+	short		texturemins[2];
+	short		extents[2];
+
+	int			light_s, light_t;	// gl lightmap coordinates
+
+	mbrush29_glpoly_t	*polys;				// multiple if warped
+	mbrush29_surface_t	*texturechain;
+
+	mbrush29_texinfo_t	*texinfo;
+	
+// lighting info
+	int			dlightframe;
+	int			dlightbits;
+
+	int			lightmaptexturenum;
+	byte		styles[BSP29_MAXLIGHTMAPS];
+	int			cached_light[BSP29_MAXLIGHTMAPS];	// values currently used in lightmap
+	qboolean	cached_dlight;				// true if dynamic light in cache
+	byte		*samples;		// [numstyles*surfsize]
+};
+
+struct mbrush29_node_t
+{
+// common with leaf
+	int			contents;		// 0, to differentiate from leafs
+	int			visframe;		// node needs to be traversed if current
+	
+	float		minmaxs[6];		// for bounding box culling
+
+	mbrush29_node_t	*parent;
+
+// node specific
+	cplane_t	*plane;
+	mbrush29_node_t	*children[2];	
+
+	unsigned short		firstsurface;
+	unsigned short		numsurfaces;
+};
+
+struct mbrush29_leaf_t
+{
+// common with node
+	int			contents;		// wil be a negative contents number
+	int			visframe;		// node needs to be traversed if current
+
+	float		minmaxs[6];		// for bounding box culling
+
+	mbrush29_node_t	*parent;
+
+// leaf specific
+	byte		*compressed_vis;
+
+	mbrush29_surface_t	**firstmarksurface;
+	int			nummarksurfaces;
+	int			key;			// BSP sequence number for leaf's contents
+	byte		ambient_sound_level[BSP29_NUM_AMBIENTS];
+};
+
+struct mbrush29_hull_t
+{
+	bsp29_dclipnode_t	*clipnodes;
+	cplane_t	*planes;
+	int			firstclipnode;
+	int			lastclipnode;
+	vec3_t		clip_mins;
+	vec3_t		clip_maxs;
+};
+
+//==============================================================================
+//
+//	QUAKE 2 BRUSH MODELS
+//
+//==============================================================================
+
+#define BRUSH38_VERTEXSIZE	7
+
+#define BRUSH38_SURF_PLANEBACK		2
+#define BRUSH38_SURF_DRAWSKY		4
+#define BRUSH38_SURF_DRAWTURB		0x10
+#define BRUSH38_SURF_UNDERWATER		0x80
+
+struct mbrush38_vertex_t
+{
+	vec3_t		position;
+};
+
+struct mbrush38_edge_t
+{
+	unsigned short	v[2];
+	unsigned int	cachededgeoffset;
+};
+
+struct mbrush38_texinfo_t
+{
+	float		vecs[2][4];
+	int			flags;
+	int			numframes;
+	mbrush38_texinfo_t	*next;		// animation chain
+	image_t		*image;
+};
+
+struct mbrush38_glpoly_t
+{
+	mbrush38_glpoly_t*	next;
+	mbrush38_glpoly_t*	chain;
+	int		numverts;
+	int		flags;			// for BRUSH29_SURF_UNDERWATER (not needed anymore?)
+	float	verts[4][BRUSH38_VERTEXSIZE];	// variable sized (xyz s1t1 s2t2)
+};
+
+struct mbrush38_surface_t
+{
+	int			visframe;		// should be drawn when node is crossed
+
+	cplane_t	*plane;
+	int			flags;
+
+	int			firstedge;	// look up in model->surfedges[], negative numbers
+	int			numedges;	// are backwards edges
+	
+	short		texturemins[2];
+	short		extents[2];
+
+	int			light_s, light_t;	// gl lightmap coordinates
+	int			dlight_s, dlight_t; // gl lightmap coordinates for dynamic lightmaps
+
+	mbrush38_glpoly_t	*polys;				// multiple if warped
+	mbrush38_surface_t	*texturechain;
+	mbrush38_surface_t	*lightmapchain;
+
+	mbrush38_texinfo_t	*texinfo;
+	
+// lighting info
+	int			dlightframe;
+	int			dlightbits;
+
+	int			lightmaptexturenum;
+	byte		styles[BSP38_MAXLIGHTMAPS];
+	float		cached_light[BSP38_MAXLIGHTMAPS];	// values currently used in lightmap
+	byte		*samples;		// [numstyles*surfsize]
+};
+
+struct mbrush38_node_t
+{
+// common with leaf
+	int			contents;		// -1, to differentiate from leafs
+	int			visframe;		// node needs to be traversed if current
+	
+	float		minmaxs[6];		// for bounding box culling
+
+	mbrush38_node_t	*parent;
+
+// node specific
+	cplane_t	*plane;
+	mbrush38_node_t	*children[2];	
+
+	unsigned short		firstsurface;
+	unsigned short		numsurfaces;
+};
+
+struct mbrush38_leaf_t
+{
+// common with node
+	int			contents;		// wil be a negative contents number
+	int			visframe;		// node needs to be traversed if current
+
+	float		minmaxs[6];		// for bounding box culling
+
+	mbrush38_node_t	*parent;
+
+// leaf specific
+	int			cluster;
+	int			area;
+
+	mbrush38_surface_t	**firstmarksurface;
+	int			nummarksurfaces;
+};
+
+struct mbrush38_model_t
+{
+	vec3_t		mins, maxs;
+	vec3_t		origin;		// for sounds or lights
+	float		radius;
+	int			headnode;
+	int			visleafs;		// not including the solid leaf 0
+	int			firstface, numfaces;
+};
+
+//==============================================================================
+//
+//	QUAKE 3 BRUSH MODELS
+//
+//==============================================================================
+
+#define BRUSH46_VERTEXSIZE	8
+
+//==============================================================================
+//
+//	QUAKE MESH MODELS
+//
+//==============================================================================
 
 #define MAX_MESH1_SKINS		32
 
@@ -122,6 +346,49 @@ struct mesh1hdr_t
 	int					texels[MAX_MESH1_SKINS];	// only for player skins
 	mmesh1framedesc_t	frames[1];	// variable sized
 };
+
+//==============================================================================
+//
+//	QUAKE SPRITE MODELS
+//
+//==============================================================================
+
+struct msprite1frame_t
+{
+	int			width;
+	int			height;
+	float		up, down, left, right;
+	image_t*	gl_texture;
+};
+
+struct msprite1group_t
+{
+	int					numframes;
+	float*				intervals;
+	msprite1frame_t*	frames[1];
+};
+
+struct msprite1framedesc_t
+{
+	sprite1frametype_t	type;
+	msprite1frame_t		*frameptr;
+};
+
+struct msprite1_t
+{
+	int					type;
+	int					maxwidth;
+	int					maxheight;
+	int					numframes;
+	float				beamlength;		// remove?
+	msprite1framedesc_t	frames[1];
+};
+
+//==============================================================================
+//
+//	Whole model
+//
+//==============================================================================
 
 enum modtype_t
 {

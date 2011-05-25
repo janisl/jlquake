@@ -566,7 +566,7 @@ R_SetupFrame
 void R_SetupFrame (void)
 {
 	int i;
-	mleaf_t	*leaf;
+	mbrush38_leaf_t	*leaf;
 
 	tr.frameCount++;
 

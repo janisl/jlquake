@@ -70,9 +70,9 @@ void *Mod_Extradata (model_t *mod)
 Mod_PointInLeaf
 ===============
 */
-mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
+mbrush29_leaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 {
-	mnode_t		*node;
+	mbrush29_node_t		*node;
 	float		d;
 	cplane_t	*plane;
 	
@@ -83,7 +83,7 @@ mleaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
 	while (1)
 	{
 		if (node->contents < 0)
-			return (mleaf_t *)node;
+			return (mbrush29_leaf_t *)node;
 		plane = node->plane;
 		d = DotProduct (p,plane->normal) - plane->dist;
 		if (d > 0)
@@ -145,7 +145,7 @@ static byte *Mod_DecompressVis (byte *in, model_t *model)
 	return decompressed;
 }
 
-byte *Mod_LeafPVS (mleaf_t *leaf, model_t *model)
+byte *Mod_LeafPVS (mbrush29_leaf_t *leaf, model_t *model)
 {
 	if (leaf == model->leafs)
 		return mod_novis;
@@ -315,9 +315,9 @@ static void Mod_LoadTextures (bsp29_lump_t *l)
 {
 	int		i, j, pixels, num, max, altmax;
 	bsp29_miptex_t	*mt;
-	texture_t	*tx, *tx2;
-	texture_t	*anims[10];
-	texture_t	*altanims[10];
+	mbrush29_texture_t	*tx, *tx2;
+	mbrush29_texture_t	*anims[10];
+	mbrush29_texture_t	*altanims[10];
 	bsp29_dmiptexlump_t *m;
 
 	if (!l->filelen)
@@ -330,7 +330,7 @@ static void Mod_LoadTextures (bsp29_lump_t *l)
 	m->nummiptex = LittleLong (m->nummiptex);
 	
 	loadmodel->numtextures = m->nummiptex;
-	loadmodel->textures = (texture_t**)Hunk_AllocName (m->nummiptex * sizeof(*loadmodel->textures) , loadname);
+	loadmodel->textures = (mbrush29_texture_t**)Hunk_AllocName (m->nummiptex * sizeof(*loadmodel->textures) , loadname);
 
 	for (i=0 ; i<m->nummiptex ; i++)
 	{
@@ -346,14 +346,14 @@ static void Mod_LoadTextures (bsp29_lump_t *l)
 		if ( (mt->width & 15) || (mt->height & 15) )
 			Sys_Error ("Texture %s is not 16 aligned", mt->name);
 		pixels = mt->width*mt->height/64*85;
-		tx = (texture_t*)Hunk_AllocName (sizeof(texture_t) +pixels, loadname );
+		tx = (mbrush29_texture_t*)Hunk_AllocName (sizeof(mbrush29_texture_t) +pixels, loadname );
 		loadmodel->textures[i] = tx;
 
 		Com_Memcpy(tx->name, mt->name, sizeof(tx->name));
 		tx->width = mt->width;
 		tx->height = mt->height;
 		for (j=0 ; j<BSP29_MIPLEVELS ; j++)
-			tx->offsets[j] = mt->offsets[j] + sizeof(texture_t) - sizeof(bsp29_miptex_t);
+			tx->offsets[j] = mt->offsets[j] + sizeof(mbrush29_texture_t) - sizeof(bsp29_miptex_t);
 		// the pixels immediately follow the structures
 		Com_Memcpy( tx+1, mt+1, pixels);
 		
@@ -522,14 +522,14 @@ Mod_LoadVertexes
 static void Mod_LoadVertexes (bsp29_lump_t *l)
 {
 	bsp29_dvertex_t	*in;
-	mvertex_t	*out;
+	mbrush29_vertex_t	*out;
 	int			i, count;
 
 	in = (bsp29_dvertex_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (mvertex_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (mbrush29_vertex_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	loadmodel->vertexes = out;
 	loadmodel->numvertexes = count;
@@ -586,14 +586,14 @@ Mod_LoadEdges
 static void Mod_LoadEdges (bsp29_lump_t *l)
 {
 	bsp29_dedge_t *in;
-	medge_t *out;
+	mbrush29_edge_t *out;
 	int 	i, count;
 
 	in = (bsp29_dedge_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (medge_t*)Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);	
+	out = (mbrush29_edge_t*)Hunk_AllocName ( (count + 1) * sizeof(*out), loadname);	
 
 	loadmodel->edges = out;
 	loadmodel->numedges = count;
@@ -613,7 +613,7 @@ Mod_LoadTexinfo
 static void Mod_LoadTexinfo (bsp29_lump_t *l)
 {
 	bsp29_texinfo_t *in;
-	mtexinfo_t *out;
+	mbrush29_texinfo_t *out;
 	int 	i, j, count;
 	int		miptex;
 	float	len1, len2;
@@ -622,7 +622,7 @@ static void Mod_LoadTexinfo (bsp29_lump_t *l)
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (mtexinfo_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (mbrush29_texinfo_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	loadmodel->texinfo = out;
 	loadmodel->numtexinfo = count;
@@ -678,12 +678,12 @@ CalcSurfaceExtents
 Fills in s->texturemins[] and s->extents[]
 ================
 */
-static void CalcSurfaceExtents (msurface_t *s)
+static void CalcSurfaceExtents (mbrush29_surface_t *s)
 {
 	float	mins[2], maxs[2], val;
 	int		i,j, e;
-	mvertex_t	*v;
-	mtexinfo_t	*tex;
+	mbrush29_vertex_t	*v;
+	mbrush29_texinfo_t	*tex;
 	int		bmins[2], bmaxs[2];
 
 	mins[0] = mins[1] = 999999;
@@ -733,7 +733,7 @@ Mod_LoadFaces
 static void Mod_LoadFaces (bsp29_lump_t *l)
 {
 	bsp29_dface_t		*in;
-	msurface_t 	*out;
+	mbrush29_surface_t 	*out;
 	int			i, count, surfnum;
 	int			planenum, side;
 
@@ -741,7 +741,7 @@ static void Mod_LoadFaces (bsp29_lump_t *l)
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (msurface_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (mbrush29_surface_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	loadmodel->surfaces = out;
 	loadmodel->numsurfaces = count;
@@ -755,7 +755,7 @@ static void Mod_LoadFaces (bsp29_lump_t *l)
 		planenum = LittleShort(in->planenum);
 		side = LittleShort(in->side);
 		if (side)
-			out->flags |= SURF_PLANEBACK;			
+			out->flags |= BRUSH29_SURF_PLANEBACK;			
 
 		out->plane = loadmodel->planes + planenum;
 
@@ -777,14 +777,14 @@ static void Mod_LoadFaces (bsp29_lump_t *l)
 		
 		if (!QStr::NCmp(out->texinfo->texture->name,"sky",3))	// sky
 		{
-			out->flags |= (SURF_DRAWSKY | SURF_DRAWTILED);
+			out->flags |= (BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED);
 			GL_SubdivideSurface (out);	// cut up polygon for warps
 			continue;
 		}
 		
 		if (out->texinfo->texture->name[0]=='*')		// turbulent
 		{
-			out->flags |= (SURF_DRAWTURB | SURF_DRAWTILED);
+			out->flags |= (BRUSH29_SURF_DRAWTURB | BRUSH29_SURF_DRAWTILED);
 			for (i=0 ; i<2 ; i++)
 			{
 				out->extents[i] = 16384;
@@ -794,7 +794,7 @@ static void Mod_LoadFaces (bsp29_lump_t *l)
 
 			if ((!QStr::NICmp(out->texinfo->texture->name,"*rtex078",8)) ||
 				(!QStr::NICmp(out->texinfo->texture->name,"*lowlight",9)))
-				out->flags |= SURF_TRANSLUCENT;
+				out->flags |= BRUSH29_SURF_TRANSLUCENT;
 
 			continue;
 		}
@@ -807,7 +807,7 @@ static void Mod_LoadFaces (bsp29_lump_t *l)
 Mod_SetParent
 =================
 */
-static void Mod_SetParent (mnode_t *node, mnode_t *parent)
+static void Mod_SetParent (mbrush29_node_t *node, mbrush29_node_t *parent)
 {
 	node->parent = parent;
 	if (node->contents < 0)
@@ -825,13 +825,13 @@ static void Mod_LoadNodes (bsp29_lump_t *l)
 {
 	int			i, j, count, p;
 	bsp29_dnode_t		*in;
-	mnode_t 	*out;
+	mbrush29_node_t 	*out;
 
 	in = (bsp29_dnode_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (mnode_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (mbrush29_node_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	loadmodel->nodes = out;
 	loadmodel->numnodes = count;
@@ -856,7 +856,7 @@ static void Mod_LoadNodes (bsp29_lump_t *l)
 			if (p >= 0)
 				out->children[j] = loadmodel->nodes + p;
 			else
-				out->children[j] = (mnode_t *)(loadmodel->leafs + (-1 - p));
+				out->children[j] = (mbrush29_node_t *)(loadmodel->leafs + (-1 - p));
 		}
 	}
 	
@@ -871,14 +871,14 @@ Mod_LoadLeafs
 static void Mod_LoadLeafs (bsp29_lump_t *l)
 {
 	bsp29_dleaf_t 	*in;
-	mleaf_t 	*out;
+	mbrush29_leaf_t 	*out;
 	int			i, j, count, p;
 
 	in = (bsp29_dleaf_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (mleaf_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (mbrush29_leaf_t*)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	loadmodel->leafs = out;
 	loadmodel->numleafs = count;
@@ -911,7 +911,7 @@ static void Mod_LoadLeafs (bsp29_lump_t *l)
 		if (out->contents != BSP29CONTENTS_EMPTY)
 		{
 			for (j=0 ; j<out->nummarksurfaces ; j++)
-				out->firstmarksurface[j]->flags |= SURF_UNDERWATER;
+				out->firstmarksurface[j]->flags |= BRUSH29_SURF_UNDERWATER;
 		}
 	}	
 }
@@ -925,7 +925,7 @@ static void Mod_LoadClipnodes (bsp29_lump_t *l)
 {
 	bsp29_dclipnode_t *in, *out;
 	int			i, count;
-	hull_t		*hull;
+	mbrush29_hull_t		*hull;
 
 	in = (bsp29_dclipnode_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
@@ -1022,10 +1022,10 @@ Deplicate the drawing hull structure as a clipping hull
 */
 static void Mod_MakeHull0 (void)
 {
-	mnode_t		*in, *child;
+	mbrush29_node_t		*in, *child;
 	bsp29_dclipnode_t *out;
 	int			i, j, count;
-	hull_t		*hull;
+	mbrush29_hull_t		*hull;
 	
 	hull = &loadmodel->hulls[0];	
 	
@@ -1061,13 +1061,13 @@ static void Mod_LoadMarksurfaces (bsp29_lump_t *l)
 {	
 	int		i, j, count;
 	short		*in;
-	msurface_t **out;
+	mbrush29_surface_t **out;
 	
 	in = (short*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 		Sys_Error ("MOD_LoadBmodel: funny lump size in %s",loadmodel->name);
 	count = l->filelen / sizeof(*in);
-	out = (msurface_t**)Hunk_AllocName ( count*sizeof(*out), loadname);	
+	out = (mbrush29_surface_t**)Hunk_AllocName ( count*sizeof(*out), loadname);	
 
 	loadmodel->marksurfaces = out;
 	loadmodel->nummarksurfaces = count;

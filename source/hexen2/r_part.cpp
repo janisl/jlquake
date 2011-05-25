@@ -1232,7 +1232,7 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 {
 	int i,j,holdint;
 	particle_t	*p;
-	mleaf_t		*l;
+	mbrush29_leaf_t		*l;
 	
 	count *= Cvar_VariableValue("snow_active");
 	for (i=0 ; i<count ; i++)
@@ -1581,7 +1581,7 @@ void R_UpdateParticles (void)
 			else
 			{//FIXME: If flake going fast enough, can go through, do a check in increments ot 10, max?
 				//if not in_bounds Get length of diff, add in increments of 4 & check solid
-				mleaf_t		*l;
+				mbrush29_leaf_t		*l;
 
 				if (Cvar_VariableValue("snow_flurry")==1)
 				if(rand()&31)

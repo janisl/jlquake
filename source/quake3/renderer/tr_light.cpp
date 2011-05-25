@@ -62,7 +62,7 @@ void R_DlightBmodel( bmodel_t *bmodel ) {
 	int			i, j;
 	dlight_t	*dl;
 	int			mask;
-	msurface_t	*surf;
+	mbrush46_surface_t	*surf;
 
 	// transform all the lights
 	R_TransformDlights( tr.refdef.num_dlights, tr.refdef.dlights, &tr.orient );

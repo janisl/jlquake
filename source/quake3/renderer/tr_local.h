@@ -245,8 +245,6 @@ typedef struct srfGridMesh_s {
 } srfGridMesh_t;
 
 
-
-#define	VERTEXSIZE	8
 typedef struct {
 	surfaceType_t	surfaceType;
 	cplane_t	plane;
@@ -258,7 +256,7 @@ typedef struct {
 	int			numPoints;
 	int			numIndices;
 	int			ofsIndices;
-	float		points[1][VERTEXSIZE];	// variable sized
+	float		points[1][BRUSH46_VERTEXSIZE];	// variable sized
 										// there is a variable length list of indices here also
 } srfSurfaceFace_t;
 
@@ -309,7 +307,7 @@ typedef struct msurface_s {
 	int					fogIndex;
 
 	surfaceType_t		*data;			// any of srf*_t
-} msurface_t;
+} mbrush46_surface_t;
 
 
 
@@ -329,13 +327,13 @@ typedef struct mnode_s {
 	int			cluster;
 	int			area;
 
-	msurface_t	**firstmarksurface;
+	mbrush46_surface_t	**firstmarksurface;
 	int			nummarksurfaces;
-} mnode_t;
+} mbrush46_node_t;
 
 typedef struct {
 	vec3_t		bounds[2];		// for culling
-	msurface_t	*firstSurface;
+	mbrush46_surface_t	*firstSurface;
 	int			numSurfaces;
 } bmodel_t;
 
@@ -355,13 +353,13 @@ typedef struct {
 
 	int			numnodes;		// includes leafs
 	int			numDecisionNodes;
-	mnode_t		*nodes;
+	mbrush46_node_t		*nodes;
 
 	int			numsurfaces;
-	msurface_t	*surfaces;
+	mbrush46_surface_t	*surfaces;
 
 	int			nummarksurfaces;
-	msurface_t	**marksurfaces;
+	mbrush46_surface_t	**marksurfaces;
 
 	int			numfogs;
 	fog_t		*fogs;

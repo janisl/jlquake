@@ -45,7 +45,7 @@ extern	int glx, gly, glwidth, glheight;
 
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
-texture_t *R_TextureAnimation (texture_t *base);
+mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base);
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
 typedef struct particle_s
@@ -89,8 +89,8 @@ extern	vec3_t	r_origin;
 // screen size info
 //
 extern	refdef_t	r_refdef;
-extern	mleaf_t		*r_viewleaf, *r_oldviewleaf;
-extern	texture_t	*r_notexture_mip;
+extern	mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
+extern	mbrush29_texture_t	*r_notexture_mip;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
@@ -140,12 +140,12 @@ extern byte *playerTranslation;
 
 void GL_Set2D (void);
 void Draw_Crosshair(void);
-void EmitWaterPolys (msurface_t *fa);
-void EmitSkyPolys (msurface_t *fa);
-void EmitBothSkyLayers (msurface_t *fa);
-void R_DrawSkyChain (msurface_t *s);
+void EmitWaterPolys (mbrush29_surface_t *fa);
+void EmitSkyPolys (mbrush29_surface_t *fa);
+void EmitBothSkyLayers (mbrush29_surface_t *fa);
+void R_DrawSkyChain (mbrush29_surface_t *s);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-void R_MarkLights (dlight_t *light, int bit, mnode_t *node);
+void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_RotateForEntity (trRefEntity_t *e);
 void R_InitParticles (void);
 void R_ClearParticles (void);
@@ -159,7 +159,8 @@ void R_RenderDlights (void);
 void R_DrawParticles (void);
 void R_DrawWaterSurfaces (void);
 void Draw_RedString (int x, int y, char *str);
-void GL_SubdivideSurface (msurface_t *fa);
+void GL_SubdivideSurface (mbrush29_surface_t *fa);
 void R_NetGraph (void);
 model_t *Mod_FindName (char *name);
 void GL_MakeAliasModelDisplayLists (model_t *m, mesh1hdr_t *hdr);
+void R_InitSky (mbrush29_texture_t *mt);	// called at level load

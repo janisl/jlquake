@@ -19,7 +19,7 @@ typedef struct glRect_s {
 	unsigned char l,t,w,h;
 } glRect_t;
 
-glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
+mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 qboolean	lightmap_modified[MAX_LIGHTMAPS];
 glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
 
@@ -30,17 +30,17 @@ int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
 byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
 
 // For gl_texsort 0
-msurface_t  *skychain = NULL;
-msurface_t  *waterchain = NULL;
+mbrush29_surface_t  *skychain = NULL;
+mbrush29_surface_t  *waterchain = NULL;
 
-void R_RenderDynamicLightmaps (msurface_t *fa);
+void R_RenderDynamicLightmaps (mbrush29_surface_t *fa);
 
 /*
 ===============
 R_AddDynamicLights
 ===============
 */
-void R_AddDynamicLights (msurface_t *surf)
+void R_AddDynamicLights (mbrush29_surface_t *surf)
 {
 	int			lnum;
 	int			sd, td;
@@ -49,7 +49,7 @@ void R_AddDynamicLights (msurface_t *surf)
 	int			s, t;
 	int			i;
 	int			smax, tmax;
-	mtexinfo_t	*tex;
+	mbrush29_texinfo_t	*tex;
 
 	smax = (surf->extents[0]>>4)+1;
 	tmax = (surf->extents[1]>>4)+1;
@@ -110,7 +110,7 @@ R_BuildLightMap
 Combine and scale multiple lightmaps into the 8.8 format in blocklights
 ===============
 */
-void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
+void R_BuildLightMap (mbrush29_surface_t *surf, byte *dest, int stride)
 {
 	int			smax, tmax;
 	int			t;
@@ -184,7 +184,7 @@ R_TextureAnimation
 Returns the proper texture for a given time and base texture
 ===============
 */
-texture_t *R_TextureAnimation (texture_t *base)
+mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base)
 {
 	int		reletive;
 	int		count;
@@ -227,8 +227,8 @@ extern	image_t*	solidskytexture;
 extern	image_t*	alphaskytexture;
 extern	float	speedscale;		// for top sky and bottom sky
 
-void DrawGLWaterPoly (glpoly_t *p);
-void DrawGLWaterPolyLightmap (glpoly_t *p);
+void DrawGLWaterPoly (mbrush29_glpoly_t *p);
+void DrawGLWaterPolyLightmap (mbrush29_glpoly_t *p);
 
 qboolean mtexenabled = false;
 
@@ -258,12 +258,12 @@ Systems that have fast state and texture changes can
 just do everything as it passes with no need to sort
 ================
 */
-void R_DrawSequentialPoly (msurface_t *s)
+void R_DrawSequentialPoly (mbrush29_surface_t *s)
 {
-	glpoly_t	*p;
+	mbrush29_glpoly_t	*p;
 	float		*v;
 	int			i;
-	texture_t	*t;
+	mbrush29_texture_t	*t;
 	vec3_t		nv, dir;
 	float		ss, ss2, length;
 	float		s1, t1;
@@ -275,7 +275,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	// normal lightmaped poly
 	//
 
-	if (! (s->flags & (SURF_DRAWSKY|SURF_DRAWTURB|SURF_UNDERWATER) ) )
+	if (! (s->flags & (BRUSH29_SURF_DRAWSKY|BRUSH29_SURF_DRAWTURB|BRUSH29_SURF_UNDERWATER) ) )
 	{
 		R_RenderDynamicLightmaps (s);
 		if (qglActiveTextureARB  && !(currententity->e.renderfx & RF_WATERTRANS) &&
@@ -310,7 +310,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 
 			qglBegin(GL_POLYGON);
 			v = p->verts[0];
-			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+			for (i=0 ; i<p->numverts ; i++, v+= BRUSH29_VERTEXSIZE)
 			{
 				qglMultiTexCoord2fARB(GL_TEXTURE0_ARB, v[3], v[4]);
 				qglMultiTexCoord2fARB(GL_TEXTURE1_ARB, v[5], v[6]);
@@ -360,7 +360,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			GL_Bind (t->gl_texture);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
-			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+			for (i=0 ; i<p->numverts ; i++, v+= BRUSH29_VERTEXSIZE)
 			{
 				qglTexCoord2f (v[3], v[4]);
 				qglVertex3fv (v);
@@ -371,7 +371,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 			GL_State(GLS_DEFAULT | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
-			for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+			for (i=0 ; i<p->numverts ; i++, v+= BRUSH29_VERTEXSIZE)
 			{
 				qglTexCoord2f (v[5], v[6]);
 				qglVertex3fv (v);
@@ -395,7 +395,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	// subdivided water surface warp
 	//
 
-	if (s->flags & SURF_DRAWTURB)
+	if (s->flags & BRUSH29_SURF_DRAWTURB)
 	{
 		GL_DisableMultitexture();
 		GL_Bind (s->texinfo->texture->gl_texture);
@@ -406,7 +406,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 	//
 	// subdivided sky warp
 	//
-	if (s->flags & SURF_DRAWSKY)
+	if (s->flags & BRUSH29_SURF_DRAWSKY)
 	{
 		GL_DisableMultitexture();
 		GL_Bind (solidskytexture);
@@ -454,7 +454,7 @@ void R_DrawSequentialPoly (msurface_t *s)
 		GL_TexEnv(GL_MODULATE);
 		qglBegin (GL_TRIANGLE_FAN);
 		v = p->verts[0];
-		for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+		for (i=0 ; i<p->numverts ; i++, v+= BRUSH29_VERTEXSIZE)
 		{
 			qglMultiTexCoord2fARB(GL_TEXTURE0_ARB, v[3], v[4]);
 			qglMultiTexCoord2fARB(GL_TEXTURE1_ARB, v[5], v[6]);
@@ -489,7 +489,7 @@ DrawGLWaterPoly
 Warp the vertex coordinates
 ================
 */
-void DrawGLWaterPoly (glpoly_t *p)
+void DrawGLWaterPoly (mbrush29_glpoly_t *p)
 {
 	int		i;
 	float	*v;
@@ -500,7 +500,7 @@ void DrawGLWaterPoly (glpoly_t *p)
 
 	qglBegin (GL_TRIANGLE_FAN);
 	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	for (i=0 ; i<p->numverts ; i++, v+= BRUSH29_VERTEXSIZE)
 	{
 		qglTexCoord2f (v[3], v[4]);
 
@@ -513,7 +513,7 @@ void DrawGLWaterPoly (glpoly_t *p)
 	qglEnd ();
 }
 
-void DrawGLWaterPolyLightmap (glpoly_t *p)
+void DrawGLWaterPolyLightmap (mbrush29_glpoly_t *p)
 {
 	int		i;
 	float	*v;
@@ -524,7 +524,7 @@ void DrawGLWaterPolyLightmap (glpoly_t *p)
 
 	qglBegin (GL_TRIANGLE_FAN);
 	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	for (i=0 ; i<p->numverts ; i++, v+= BRUSH29_VERTEXSIZE)
 	{
 		qglTexCoord2f (v[5], v[6]);
 
@@ -542,14 +542,14 @@ void DrawGLWaterPolyLightmap (glpoly_t *p)
 DrawGLPoly
 ================
 */
-void DrawGLPoly (glpoly_t *p)
+void DrawGLPoly (mbrush29_glpoly_t *p)
 {
 	int		i;
 	float	*v;
 
 	qglBegin (GL_POLYGON);
 	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= VERTEXSIZE)
+	for (i=0 ; i<p->numverts ; i++, v+= BRUSH29_VERTEXSIZE)
 	{
 		qglTexCoord2f (v[3], v[4]);
 		qglVertex3fv (v);
@@ -566,7 +566,7 @@ R_BlendLightmaps
 void R_BlendLightmaps (qboolean Translucent)
 {
 	int			i, j;
-	glpoly_t	*p;
+	mbrush29_glpoly_t	*p;
 	float		*v;
 	glRect_t	*theRect;
 
@@ -605,17 +605,17 @@ void R_BlendLightmaps (qboolean Translucent)
 		}
 		for ( ; p ; p=p->chain)
 		{
-//			if (p->flags & SURF_UNDERWATER)
+//			if (p->flags & BRUSH29_SURF_UNDERWATER)
 //				DrawGLWaterPolyLightmap (p);
-			if (((r_viewleaf->contents==BSP29CONTENTS_EMPTY && (p->flags & SURF_UNDERWATER)) ||
-				(r_viewleaf->contents!=BSP29CONTENTS_EMPTY && !(p->flags & SURF_UNDERWATER)))
-				&& !(p->flags & SURF_DONTWARP))
+			if (((r_viewleaf->contents==BSP29CONTENTS_EMPTY && (p->flags & BRUSH29_SURF_UNDERWATER)) ||
+				(r_viewleaf->contents!=BSP29CONTENTS_EMPTY && !(p->flags & BRUSH29_SURF_UNDERWATER)))
+				&& !(p->flags & BRUSH29_SURF_DONTWARP))
 				DrawGLWaterPolyLightmap (p);
 			else
 			{
 				qglBegin (GL_POLYGON);
 				v = p->verts[0];
-				for (j=0 ; j<p->numverts ; j++, v+= VERTEXSIZE)
+				for (j=0 ; j<p->numverts ; j++, v+= BRUSH29_VERTEXSIZE)
 				{
 					qglTexCoord2f (v[5], v[6]);
 					qglVertex3fv (v);
@@ -633,9 +633,9 @@ void R_BlendLightmaps (qboolean Translucent)
 R_RenderBrushPoly
 ================
 */
-void R_RenderBrushPoly (msurface_t *fa, qboolean override)
+void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override)
 {
-	texture_t	*t;
+	mbrush29_texture_t	*t;
 	byte		*base;
 	int			maps;
 	glRect_t    *theRect;
@@ -667,7 +667,7 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 	if (!override)
 		qglColor4f( intensity, intensity, intensity, alpha_val );
 
-	if (fa->flags & SURF_DRAWSKY)
+	if (fa->flags & BRUSH29_SURF_DRAWSKY)
 	{	// warp texture, no lightmaps
 		EmitBothSkyLayers (fa);
 		return;
@@ -676,15 +676,15 @@ void R_RenderBrushPoly (msurface_t *fa, qboolean override)
 	t = R_TextureAnimation (fa->texinfo->texture);
 	GL_Bind (t->gl_texture);
 
-	if (fa->flags & SURF_DRAWTURB)
+	if (fa->flags & BRUSH29_SURF_DRAWTURB)
 	{	// warp texture, no lightmaps
 		EmitWaterPolys (fa);
 		return;
 	}
 
-	if (((r_viewleaf->contents==BSP29CONTENTS_EMPTY && (fa->flags & SURF_UNDERWATER)) ||
-		(r_viewleaf->contents!=BSP29CONTENTS_EMPTY && !(fa->flags & SURF_UNDERWATER)))
-		&& !(fa->flags & SURF_DONTWARP))
+	if (((r_viewleaf->contents==BSP29CONTENTS_EMPTY && (fa->flags & BRUSH29_SURF_UNDERWATER)) ||
+		(r_viewleaf->contents!=BSP29CONTENTS_EMPTY && !(fa->flags & BRUSH29_SURF_UNDERWATER)))
+		&& !(fa->flags & BRUSH29_SURF_DONTWARP))
 		DrawGLWaterPoly (fa->polys);
 	else
 		DrawGLPoly (fa->polys);
@@ -743,9 +743,9 @@ R_RenderDynamicLightmaps
 Multitexture
 ================
 */
-void R_RenderDynamicLightmaps (msurface_t *fa)
+void R_RenderDynamicLightmaps (mbrush29_surface_t *fa)
 {
-	texture_t	*t;
+	mbrush29_texture_t	*t;
 	byte		*base;
 	int			maps;
 	glRect_t    *theRect;
@@ -753,7 +753,7 @@ void R_RenderDynamicLightmaps (msurface_t *fa)
 
 	c_brush_polys++;
 
-	if (fa->flags & ( SURF_DRAWSKY | SURF_DRAWTURB) )
+	if (fa->flags & ( BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTURB) )
 		return;
 		
 	fa->polys->chain = lightmap_polys[fa->lightmaptexturenum];
@@ -801,7 +801,7 @@ dynamic:
 R_MirrorChain
 ================
 */
-void R_MirrorChain (msurface_t *s)
+void R_MirrorChain (mbrush29_surface_t *s)
 {
 	if (mirror)
 		return;
@@ -818,8 +818,8 @@ R_DrawWaterSurfaces
 void R_DrawWaterSurfaces (void)
 {
 	int			i;
-	msurface_t	*s;
-	texture_t	*t;
+	mbrush29_surface_t	*s;
+	mbrush29_texture_t	*t;
 
 	if (r_wateralpha->value == 1.0 && gl_texsort->value)
 		return;
@@ -842,7 +842,7 @@ void R_DrawWaterSurfaces (void)
 
 		for ( s = waterchain ; s ; s=s->texturechain)
 		{
-			if (s->flags & SURF_TRANSLUCENT)
+			if (s->flags & BRUSH29_SURF_TRANSLUCENT)
 				qglColor4f (1,1,1,r_wateralpha->value);
 			else
 				qglColor4f (1,1,1,1);
@@ -862,10 +862,10 @@ void R_DrawWaterSurfaces (void)
 			s = t->texturechain;
 			if (!s)
 				continue;
-			if ( !(s->flags & SURF_DRAWTURB ) )
+			if ( !(s->flags & BRUSH29_SURF_DRAWTURB ) )
 				continue;
 
-			if (s->flags & SURF_TRANSLUCENT)
+			if (s->flags & BRUSH29_SURF_TRANSLUCENT)
 				qglColor4f (1,1,1,r_wateralpha->value);
 			else
 				qglColor4f (1,1,1,1);
@@ -899,8 +899,8 @@ DrawTextureChains
 void DrawTextureChains (void)
 {
 	int		i;
-	msurface_t	*s;
-	texture_t	*t;
+	mbrush29_surface_t	*s;
+	mbrush29_texture_t	*t;
 
 	if (!gl_texsort->value) {
 		GL_DisableMultitexture();
@@ -930,10 +930,10 @@ void DrawTextureChains (void)
 		}
 		else
 		{
-			if ((s->flags & SURF_DRAWTURB) && r_wateralpha->value != 1.0)
+			if ((s->flags & BRUSH29_SURF_DRAWTURB) && r_wateralpha->value != 1.0)
 				continue;	// draw translucent water later
 
-			if (s->flags & SURF_TRANSLUCENT)
+			if (s->flags & BRUSH29_SURF_TRANSLUCENT)
 				qglColor4f (1,1,1,r_wateralpha->value);
 			else
 				qglColor4f (1,1,1,1);
@@ -956,7 +956,7 @@ void R_DrawBrushModel (trRefEntity_t* e, qboolean Translucent)
 	int			j, k;
 	vec3_t		mins, maxs;
 	int			i, numsurfaces;
-	msurface_t	*psurf;
+	mbrush29_surface_t	*psurf;
 	float		dot;
 	cplane_t	*pplane;
 	model_t		*clmodel;
@@ -1032,8 +1032,8 @@ void R_DrawBrushModel (trRefEntity_t* e, qboolean Translucent)
 		dot = DotProduct (modelorg, pplane->normal) - pplane->dist;
 
 	// draw the polygon
-		if (((psurf->flags & SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
-			(!(psurf->flags & SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
+		if (((psurf->flags & BRUSH29_SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
+			(!(psurf->flags & BRUSH29_SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			if (gl_texsort->value)
 				R_RenderBrushPoly (psurf, false);
@@ -1061,13 +1061,13 @@ void R_DrawBrushModel (trRefEntity_t* e, qboolean Translucent)
 R_RecursiveWorldNode
 ================
 */
-void R_RecursiveWorldNode (mnode_t *node)
+void R_RecursiveWorldNode (mbrush29_node_t *node)
 {
 	int			i, c, side, *pindex;
 	vec3_t		acceptpt, rejectpt;
 	cplane_t	*plane;
-	msurface_t	*surf, **mark;
-	mleaf_t		*pleaf;
+	mbrush29_surface_t	*surf, **mark;
+	mbrush29_leaf_t		*pleaf;
 	double		d, dot;
 	vec3_t		mins, maxs;
 
@@ -1082,7 +1082,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 // if a leaf node, draw stuff
 	if (node->contents < 0)
 	{
-		pleaf = (mleaf_t *)node;
+		pleaf = (mbrush29_leaf_t *)node;
 
 		mark = pleaf->firstmarksurface;
 		c = pleaf->nummarksurfaces;
@@ -1136,7 +1136,7 @@ void R_RecursiveWorldNode (mnode_t *node)
 		surf = Mod_GetModel(cl.worldmodel)->surfaces + node->firstsurface;
 
 		if (dot < 0 -BACKFACE_EPSILON)
-			side = SURF_PLANEBACK;
+			side = BRUSH29_SURF_PLANEBACK;
 		else if (dot > BACKFACE_EPSILON)
 			side = 0;
 		{
@@ -1146,11 +1146,11 @@ void R_RecursiveWorldNode (mnode_t *node)
 					continue;
 
 				// don't backface underwater surfaces, because they warp
-//				if ( !(surf->flags & SURF_UNDERWATER) && ( (dot < 0) ^ !!(surf->flags & SURF_PLANEBACK)) )
+//				if ( !(surf->flags & BRUSH29_SURF_UNDERWATER) && ( (dot < 0) ^ !!(surf->flags & BRUSH29_SURF_PLANEBACK)) )
 //					continue;		// wrong side
-				if ( !(((r_viewleaf->contents==BSP29CONTENTS_EMPTY && (surf->flags & SURF_UNDERWATER)) ||
-					(r_viewleaf->contents!=BSP29CONTENTS_EMPTY && !(surf->flags & SURF_UNDERWATER)))
-					&& !(surf->flags & SURF_DONTWARP)) && ( (dot < 0) ^ !!(surf->flags & SURF_PLANEBACK)) )
+				if ( !(((r_viewleaf->contents==BSP29CONTENTS_EMPTY && (surf->flags & BRUSH29_SURF_UNDERWATER)) ||
+					(r_viewleaf->contents!=BSP29CONTENTS_EMPTY && !(surf->flags & BRUSH29_SURF_UNDERWATER)))
+					&& !(surf->flags & BRUSH29_SURF_DONTWARP)) && ( (dot < 0) ^ !!(surf->flags & BRUSH29_SURF_PLANEBACK)) )
 					continue;		// wrong side
 
 				// if sorting by texture, just store it out
@@ -1162,10 +1162,10 @@ void R_RecursiveWorldNode (mnode_t *node)
 						surf->texturechain = surf->texinfo->texture->texturechain;
 						surf->texinfo->texture->texturechain = surf;
 					}
-				} else if (surf->flags & SURF_DRAWSKY) {
+				} else if (surf->flags & BRUSH29_SURF_DRAWSKY) {
 					surf->texturechain = skychain;
 					skychain = surf;
-				} else if (surf->flags & SURF_DRAWTURB) {
+				} else if (surf->flags & BRUSH29_SURF_DRAWTURB) {
 					surf->texturechain = waterchain;
 					waterchain = surf;
 				} else
@@ -1218,7 +1218,7 @@ R_MarkLeaves
 void R_MarkLeaves (void)
 {
 	byte	*vis;
-	mnode_t	*node;
+	mbrush29_node_t	*node;
 	int		i;
 	byte	solid[4096];
 
@@ -1243,7 +1243,7 @@ void R_MarkLeaves (void)
 	{
 		if (vis[i>>3] & (1<<(i&7)))
 		{
-			node = (mnode_t *)&Mod_GetModel(cl.worldmodel)->leafs[i+1];
+			node = (mbrush29_node_t *)&Mod_GetModel(cl.worldmodel)->leafs[i+1];
 			do
 			{
 				if (node->visframe == r_visframecount)
@@ -1308,7 +1308,7 @@ int AllocBlock (int w, int h, int *x, int *y)
 }
 
 
-mvertex_t	*r_pcurrentvertbase;
+mbrush29_vertex_t	*r_pcurrentvertbase;
 model_t		*currentmodel;
 
 int	nColinElim;
@@ -1318,19 +1318,19 @@ int	nColinElim;
 BuildSurfaceDisplayList
 ================
 */
-void BuildSurfaceDisplayList (msurface_t *fa)
+void BuildSurfaceDisplayList (mbrush29_surface_t *fa)
 {
 	int			i, lindex, lnumverts, s_axis, t_axis;
 	float		dist, lastdist, lzi, scale, u, v, frac;
 	unsigned	mask;
 	vec3_t		local, transformed;
-	medge_t		*pedges, *r_pedge;
+	mbrush29_edge_t		*pedges, *r_pedge;
 	cplane_t	*pplane;
 	int			vertpage, newverts, newpage, lastvert;
 	qboolean	visible;
 	float		*vec;
 	float		s, t;
-	glpoly_t	*poly;
+	mbrush29_glpoly_t	*poly;
 
 // reconstruct the polygon
 	pedges = currentmodel->edges;
@@ -1340,7 +1340,7 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 	//
 	// draw texture
 	//
-	poly = (glpoly_t*)Hunk_Alloc (sizeof(glpoly_t) + (lnumverts-4) * VERTEXSIZE*sizeof(float));
+	poly = (mbrush29_glpoly_t*)Hunk_Alloc (sizeof(mbrush29_glpoly_t) + (lnumverts-4) * BRUSH29_VERTEXSIZE*sizeof(float));
 	poly->next = fa->polys;
 	poly->flags = fa->flags;
 	fa->polys = poly;
@@ -1392,7 +1392,7 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 	//
 	// remove co-linear points - Ed
 	//
-	if (!gl_keeptjunctions->value && !(fa->flags & SURF_UNDERWATER) )
+	if (!gl_keeptjunctions->value && !(fa->flags & BRUSH29_SURF_UNDERWATER) )
 	{
 		for (i = 0 ; i < lnumverts ; ++i)
 		{
@@ -1419,7 +1419,7 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 				for (j = i + 1; j < lnumverts; ++j)
 				{
 					int k;
-					for (k = 0; k < VERTEXSIZE; ++k)
+					for (k = 0; k < BRUSH29_VERTEXSIZE; ++k)
 						poly->verts[j - 1][k] = poly->verts[j][k];
 				}
 				--lnumverts;
@@ -1438,12 +1438,12 @@ void BuildSurfaceDisplayList (msurface_t *fa)
 GL_CreateSurfaceLightmap
 ========================
 */
-void GL_CreateSurfaceLightmap (msurface_t *surf)
+void GL_CreateSurfaceLightmap (mbrush29_surface_t *surf)
 {
 	int		smax, tmax, s, t, l, i;
 	byte	*base;
 
-	if (surf->flags & (SURF_DRAWSKY|SURF_DRAWTURB))
+	if (surf->flags & (BRUSH29_SURF_DRAWSKY|BRUSH29_SURF_DRAWTURB))
 		return;
 
 	smax = (surf->extents[0]>>4)+1;
@@ -1485,9 +1485,9 @@ void GL_BuildLightmaps (void)
 		for (i=0 ; i<m->numsurfaces ; i++)
 		{
 			GL_CreateSurfaceLightmap (m->surfaces + i);
-			if ( m->surfaces[i].flags & SURF_DRAWTURB )
+			if ( m->surfaces[i].flags & BRUSH29_SURF_DRAWTURB )
 				continue;
-			if ( m->surfaces[i].flags & SURF_DRAWSKY )
+			if ( m->surfaces[i].flags & BRUSH29_SURF_DRAWSKY )
 				continue;
 			BuildSurfaceDisplayList (m->surfaces + i);
 		}

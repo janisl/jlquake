@@ -111,11 +111,11 @@ DYNAMIC LIGHTS
 R_MarkLights
 =============
 */
-void R_MarkLights (dlight_t *light, int bit, mnode_t *node)
+void R_MarkLights (dlight_t *light, int bit, mbrush38_node_t *node)
 {
 	cplane_t	*splitplane;
 	float		dist;
-	msurface_t	*surf;
+	mbrush38_surface_t	*surf;
 	int			i;
 	
 	if (node->contents != -1)
@@ -185,16 +185,16 @@ vec3_t			pointcolor;
 cplane_t		*lightplane;		// used as shadow plane
 vec3_t			lightspot;
 
-int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
+int RecursiveLightPoint (mbrush38_node_t *node, vec3_t start, vec3_t end)
 {
 	float		front, back, frac;
 	int			side;
 	cplane_t	*plane;
 	vec3_t		mid;
-	msurface_t	*surf;
+	mbrush38_surface_t	*surf;
 	int			s, t, ds, dt;
 	int			i;
-	mtexinfo_t	*tex;
+	mbrush38_texinfo_t	*tex;
 	byte		*lightmap;
 	int			maps;
 	int			r;
@@ -233,7 +233,7 @@ int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
 	surf = r_worldmodel->surfaces + node->firstsurface;
 	for (i=0 ; i<node->numsurfaces ; i++, surf++)
 	{
-		if (surf->flags&(SURF_DRAWTURB|SURF_DRAWSKY)) 
+		if (surf->flags&(BRUSH38_SURF_DRAWTURB|BRUSH38_SURF_DRAWSKY)) 
 			continue;	// no lightmaps
 
 		tex = surf->texinfo;
@@ -352,7 +352,7 @@ static float s_blocklights[34*34*3];
 R_AddDynamicLights
 ===============
 */
-void R_AddDynamicLights (msurface_t *surf)
+void R_AddDynamicLights (mbrush38_surface_t *surf)
 {
 	int			lnum;
 	int			sd, td;
@@ -361,7 +361,7 @@ void R_AddDynamicLights (msurface_t *surf)
 	int			s, t;
 	int			i;
 	int			smax, tmax;
-	mtexinfo_t	*tex;
+	mbrush38_texinfo_t	*tex;
 	dlight_t	*dl;
 	float		*pfBL;
 	float		fsacc, ftacc;
@@ -430,7 +430,7 @@ void R_AddDynamicLights (msurface_t *surf)
 /*
 ** R_SetCacheState
 */
-void R_SetCacheState( msurface_t *surf )
+void R_SetCacheState( mbrush38_surface_t *surf )
 {
 	int maps;
 
@@ -448,7 +448,7 @@ R_BuildLightMap
 Combine and scale multiple lightmaps into the floating format in blocklights
 ===============
 */
-void R_BuildLightMap (msurface_t *surf, byte *dest, int stride)
+void R_BuildLightMap (mbrush38_surface_t *surf, byte *dest, int stride)
 {
 	int			smax, tmax;
 	int			r, g, b, a, max;

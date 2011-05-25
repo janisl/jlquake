@@ -135,8 +135,6 @@ extern "C"
 extern vec3_t	vpn, vright, vup;
 }
 
-extern	struct texture_s	*r_notexture_mip;
-
 extern	entity_t	r_worldentity;
 
 extern	QCvar*	r_teamcolor;
@@ -149,7 +147,6 @@ void R_InitEfrags (void);
 void R_RenderView (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change
-void R_InitSky (struct texture_s *mt);	// called at level load
 
 void R_NewMap (void);
 

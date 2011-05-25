@@ -131,10 +131,10 @@ R_BoxSurfaces_r
 
 =================
 */
-void R_BoxSurfaces_r(mnode_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **list, int listsize, int *listlength, vec3_t dir) {
+void R_BoxSurfaces_r(mbrush46_node_t *node, vec3_t mins, vec3_t maxs, surfaceType_t **list, int listsize, int *listlength, vec3_t dir) {
 
 	int			s, c;
-	msurface_t	*surf, **mark;
+	mbrush46_surface_t	*surf, **mark;
 
 	// do the tail recursion in a loop
 	while ( node->contents == -1 ) {
@@ -415,7 +415,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 			indexes = (int *)( (byte *)surf + surf->ofsIndices );
 			for ( k = 0 ; k < surf->numIndices ; k += 3 ) {
 				for ( j = 0 ; j < 3 ; j++ ) {
-					v = surf->points[0] + VERTEXSIZE * indexes[k+j];;
+					v = surf->points[0] + BRUSH46_VERTEXSIZE * indexes[k+j];;
 					VectorMA( v, MARKER_OFFSET, surf->plane.normal, clipPoints[0][j] );
 				}
 				// add the fragments of this face

@@ -179,11 +179,11 @@ DYNAMIC LIGHTS
 R_MarkLights
 =============
 */
-void R_MarkLights (dlight_t *light, int bit, mnode_t *node)
+void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node)
 {
 	cplane_t	*splitplane;
 	float		dist;
-	msurface_t	*surf;
+	mbrush29_surface_t	*surf;
 	int			i;
 	
 	if (node->contents < 0)
@@ -257,17 +257,17 @@ LIGHT SAMPLING
 cplane_t		*lightplane;
 vec3_t			lightspot;
 
-int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
+int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
 {
 	int			r;
 	float		front, back, frac;
 	int			side;
 	cplane_t	*plane;
 	vec3_t		mid;
-	msurface_t	*surf;
+	mbrush29_surface_t	*surf;
 	int			s, t, ds, dt;
 	int			i;
-	mtexinfo_t	*tex;
+	mbrush29_texinfo_t	*tex;
 	byte		*lightmap;
 	unsigned	scale;
 	int			maps;
@@ -306,7 +306,7 @@ int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
 	surf = Mod_GetModel(cl.worldmodel)->surfaces + node->firstsurface;
 	for (i=0 ; i<node->numsurfaces ; i++, surf++)
 	{
-		if (surf->flags & SURF_DRAWTILED)
+		if (surf->flags & BRUSH29_SURF_DRAWTILED)
 			continue;	// no lightmaps
 
 		tex = surf->texinfo;
