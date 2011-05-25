@@ -162,7 +162,7 @@ msprite1frame_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
 	frame = currententity->e.frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
@@ -218,7 +218,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
 
 	if (psprite->type == SPR_ORIENTED)
 	{
@@ -471,8 +471,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	clmodel = Mod_GetModel(currententity->e.hModel);
 
-	VectorAdd (currententity->e.origin, clmodel->mins, mins);
-	VectorAdd (currententity->e.origin, clmodel->maxs, maxs);
+	VectorAdd (currententity->e.origin, clmodel->q1_mins, mins);
+	VectorAdd (currententity->e.origin, clmodel->q1_maxs, maxs);
 
 	if (R_CullBox (mins, maxs))
 		return;

@@ -173,7 +173,7 @@ void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node)
 	}
 		
 // mark the polygons
-	surf = Mod_GetModel(cl.worldmodel)->surfaces + node->firstsurface;
+	surf = Mod_GetModel(cl.worldmodel)->brush29_surfaces + node->firstsurface;
 	for (i=0 ; i<node->numsurfaces ; i++, surf++)
 	{
 		if (surf->dlightframe != r_dlightframecount)
@@ -210,7 +210,7 @@ void R_PushDlights (void)
 	{
 		if (l->die < cl.time || !l->radius)
 			continue;
-		R_MarkLights ( l, 1<<i, Mod_GetModel(cl.worldmodel)->nodes );
+		R_MarkLights ( l, 1<<i, Mod_GetModel(cl.worldmodel)->brush29_nodes );
 	}
 }
 
@@ -272,7 +272,7 @@ int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
 	VectorCopy (mid, lightspot);
 	lightplane = plane;
 
-	surf = Mod_GetModel(cl.worldmodel)->surfaces + node->firstsurface;
+	surf = Mod_GetModel(cl.worldmodel)->brush29_surfaces + node->firstsurface;
 	for (i=0 ; i<node->numsurfaces ; i++, surf++)
 	{
 		if (surf->flags & BRUSH29_SURF_DRAWTILED)
@@ -330,14 +330,14 @@ int R_LightPoint (vec3_t p)
 	vec3_t		end;
 	int			r;
 	
-	if (!Mod_GetModel(cl.worldmodel)->lightdata)
+	if (!Mod_GetModel(cl.worldmodel)->brush29_lightdata)
 		return 255;
 	
 	end[0] = p[0];
 	end[1] = p[1];
 	end[2] = p[2] - 2048;
 	
-	r = RecursiveLightPoint (Mod_GetModel(cl.worldmodel)->nodes, p, end);
+	r = RecursiveLightPoint (Mod_GetModel(cl.worldmodel)->brush29_nodes, p, end);
 	
 	if (r == -1)
 		r = 0;

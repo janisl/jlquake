@@ -627,4 +627,70 @@ struct model_common_t
 	modtype_t	type;
 	int			index;				// model = tr.models[model->index]
 
+	qboolean	q1_needload;		// bmodels and sprites don't cache normally
+
+	int			q1_numframes;
+	synctype_t	q1_synctype;
+	
+	int			q1_flags;
+
+//
+// volume occupied by the model graphics
+//		
+	vec3_t		q1_mins, q1_maxs;
+	float		q1_radius;
+
+//
+// Quake brush model
+//
+	int			brush29_firstmodelsurface;
+	int			brush29_nummodelsurfaces;
+
+	int			brush29_numsubmodels;
+	bsp29_dmodel_q1_t*	brush29_submodels_q1;
+	bsp29_dmodel_h2_t*	brush29_submodels_h2;
+
+	int			brush29_numplanes;
+	cplane_t*	brush29_planes;
+
+	int			brush29_numleafs;		// number of visible leafs, not counting 0
+	mbrush29_leaf_t		*brush29_leafs;
+
+	int			brush29_numvertexes;
+	mbrush29_vertex_t	*brush29_vertexes;
+
+	int			brush29_numedges;
+	mbrush29_edge_t		*brush29_edges;
+
+	int			brush29_numnodes;
+	mbrush29_node_t		*brush29_nodes;
+
+	int			brush29_numtexinfo;
+	mbrush29_texinfo_t	*brush29_texinfo;
+
+	int			brush29_numsurfaces;
+	mbrush29_surface_t	*brush29_surfaces;
+
+	int			brush29_numsurfedges;
+	int			*brush29_surfedges;
+
+	int			brush29_numclipnodes;
+	bsp29_dclipnode_t	*brush29_clipnodes;
+
+	int			brush29_nummarksurfaces;
+	mbrush29_surface_t	**brush29_marksurfaces;
+
+	mbrush29_hull_t		brush29_hulls[BSP29_MAX_MAP_HULLS_H2];
+
+	int			brush29_numtextures;
+	mbrush29_texture_t	**brush29_textures;
+
+	byte		*brush29_visdata;
+	byte		*brush29_lightdata;
+	char		*brush29_entities;
+
+//
+// additional model data
+//
+	void*		q1_cache;		// only access through Mod_Extradata
 };

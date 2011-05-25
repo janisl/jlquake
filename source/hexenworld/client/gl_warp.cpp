@@ -140,12 +140,12 @@ void GL_SubdivideSurface (mbrush29_surface_t *fa)
 	numverts = 0;
 	for (i=0 ; i<fa->numedges ; i++)
 	{
-		lindex = loadmodel->surfedges[fa->firstedge + i];
+		lindex = loadmodel->brush29_surfedges[fa->firstedge + i];
 
 		if (lindex > 0)
-			vec = loadmodel->vertexes[loadmodel->edges[lindex].v[0]].position;
+			vec = loadmodel->brush29_vertexes[loadmodel->brush29_edges[lindex].v[0]].position;
 		else
-			vec = loadmodel->vertexes[loadmodel->edges[-lindex].v[1]].position;
+			vec = loadmodel->brush29_vertexes[loadmodel->brush29_edges[-lindex].v[1]].position;
 		VectorCopy (vec, verts[numverts]);
 		numverts++;
 	}

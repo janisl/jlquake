@@ -148,7 +148,7 @@ void R_BuildLightMap (mbrush29_surface_t *surf, byte *dest, int stride)
 	lightmap = surf->samples;
 
 // set to full bright if no light data
-	if (r_fullbright->value || !Mod_GetModel(cl.worldmodel)->lightdata)
+	if (r_fullbright->value || !Mod_GetModel(cl.worldmodel)->brush29_lightdata)
 	{
 		for (i=0 ; i<size ; i++)
 			blocklights[i] = 255*256;
@@ -779,9 +779,9 @@ void R_DrawWaterSurfaces (void)
 		waterchain = NULL;
 	} else {
 
-		for (i=0 ; i<Mod_GetModel(cl.worldmodel)->numtextures ; i++)
+		for (i=0 ; i<Mod_GetModel(cl.worldmodel)->brush29_numtextures ; i++)
 		{
-			t = Mod_GetModel(cl.worldmodel)->textures[i];
+			t = Mod_GetModel(cl.worldmodel)->brush29_textures[i];
 			if (!t)
 				continue;
 			s = t->texturechain;
@@ -833,9 +833,9 @@ void DrawTextureChains (void)
 		return;
 	} 
 
-	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->numtextures ; i++)
+	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->brush29_numtextures ; i++)
 	{
-		t = Mod_GetModel(cl.worldmodel)->textures[i];
+		t = Mod_GetModel(cl.worldmodel)->brush29_textures[i];
 		if (!t)
 			continue;
 		s = t->texturechain;
@@ -885,15 +885,15 @@ void R_DrawBrushModel (trRefEntity_t *e)
 		rotated = true;
 		for (i=0 ; i<3 ; i++)
 		{
-			mins[i] = e->e.origin[i] - clmodel->radius;
-			maxs[i] = e->e.origin[i] + clmodel->radius;
+			mins[i] = e->e.origin[i] - clmodel->q1_radius;
+			maxs[i] = e->e.origin[i] + clmodel->q1_radius;
 		}
 	}
 	else
 	{
 		rotated = false;
-		VectorAdd (e->e.origin, clmodel->mins, mins);
-		VectorAdd (e->e.origin, clmodel->maxs, maxs);
+		VectorAdd (e->e.origin, clmodel->q1_mins, mins);
+		VectorAdd (e->e.origin, clmodel->q1_maxs, maxs);
 	}
 
 	if (R_CullBox (mins, maxs))
@@ -913,11 +913,11 @@ void R_DrawBrushModel (trRefEntity_t *e)
 		modelorg[2] = DotProduct(temp, e->e.axis[2]);
 	}
 
-	psurf = &clmodel->surfaces[clmodel->firstmodelsurface];
+	psurf = &clmodel->brush29_surfaces[clmodel->brush29_firstmodelsurface];
 
 // calculate dynamic lighting for bmodel if it's not an
 // instanced model
-	if (clmodel->firstmodelsurface != 0 && !gl_flashblend->value)
+	if (clmodel->brush29_firstmodelsurface != 0 && !gl_flashblend->value)
 	{
 		for (k=0 ; k<MAX_DLIGHTS ; k++)
 		{
@@ -926,7 +926,7 @@ void R_DrawBrushModel (trRefEntity_t *e)
 				continue;
 
 			R_MarkLights (&cl_dlights[k], 1<<k,
-				clmodel->nodes + clmodel->hulls[0].firstclipnode);
+				clmodel->brush29_nodes + clmodel->brush29_hulls[0].firstclipnode);
 		}
 	}
 
@@ -936,7 +936,7 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	//
 	// draw texture
 	//
-	for (i=0 ; i<clmodel->nummodelsurfaces ; i++, psurf++)
+	for (i=0 ; i<clmodel->brush29_nummodelsurfaces ; i++, psurf++)
 	{
 	// find which side of the node we are on
 		pplane = psurf->plane;
@@ -1044,7 +1044,7 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 
 	if (c)
 	{
-		surf = Mod_GetModel(cl.worldmodel)->surfaces + node->firstsurface;
+		surf = Mod_GetModel(cl.worldmodel)->brush29_surfaces + node->firstsurface;
 
 		if (dot < 0 -BACKFACE_EPSILON)
 			side = BRUSH29_SURF_PLANEBACK;
@@ -1064,7 +1064,7 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 				if (gl_texsort->value)
 				{
 					if (!mirror
-					|| surf->texinfo->texture != Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum])
+					|| surf->texinfo->texture != Mod_GetModel(cl.worldmodel)->brush29_textures[mirrortexturenum])
 					{
 						surf->texturechain = surf->texinfo->texture->texturechain;
 						surf->texinfo->texture->texturechain = surf;
@@ -1109,7 +1109,7 @@ void R_DrawWorld (void)
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-	R_RecursiveWorldNode (Mod_GetModel(cl.worldmodel)->nodes);
+	R_RecursiveWorldNode (Mod_GetModel(cl.worldmodel)->brush29_nodes);
 
 	DrawTextureChains ();
 
@@ -1141,16 +1141,16 @@ void R_MarkLeaves (void)
 	if (r_novis->value)
 	{
 		vis = solid;
-		Com_Memset(solid, 0xff, (Mod_GetModel(cl.worldmodel)->numleafs+7)>>3);
+		Com_Memset(solid, 0xff, (Mod_GetModel(cl.worldmodel)->brush29_numleafs+7)>>3);
 	}
 	else
 		vis = Mod_LeafPVS (r_viewleaf, Mod_GetModel(cl.worldmodel));
 		
-	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->numleafs ; i++)
+	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->brush29_numleafs ; i++)
 	{
 		if (vis[i>>3] & (1<<(i&7)))
 		{
-			node = (mbrush29_node_t *)&Mod_GetModel(cl.worldmodel)->leafs[i+1];
+			node = (mbrush29_node_t *)&Mod_GetModel(cl.worldmodel)->brush29_leafs[i+1];
 			do
 			{
 				if (node->visframe == r_visframecount)
@@ -1240,7 +1240,7 @@ void BuildSurfaceDisplayList (mbrush29_surface_t *fa)
 	mbrush29_glpoly_t	*poly;
 
 // reconstruct the polygon
-	pedges = currentmodel->edges;
+	pedges = currentmodel->brush29_edges;
 	lnumverts = fa->numedges;
 	vertpage = 0;
 
@@ -1255,7 +1255,7 @@ void BuildSurfaceDisplayList (mbrush29_surface_t *fa)
 
 	for (i=0 ; i<lnumverts ; i++)
 	{
-		lindex = currentmodel->surfedges[fa->firstedge + i];
+		lindex = currentmodel->brush29_surfedges[fa->firstedge + i];
 
 		if (lindex > 0)
 		{
@@ -1395,16 +1395,16 @@ void GL_BuildLightmaps (void)
 			break;
 		if (m->name[0] == '*')
 			continue;
-		r_pcurrentvertbase = m->vertexes;
+		r_pcurrentvertbase = m->brush29_vertexes;
 		currentmodel = m;
-		for (i=0 ; i<m->numsurfaces ; i++)
+		for (i=0 ; i<m->brush29_numsurfaces ; i++)
 		{
-			GL_CreateSurfaceLightmap (m->surfaces + i);
-			if ( m->surfaces[i].flags & BRUSH29_SURF_DRAWTURB )
+			GL_CreateSurfaceLightmap (m->brush29_surfaces + i);
+			if ( m->brush29_surfaces[i].flags & BRUSH29_SURF_DRAWTURB )
 				continue;
-			if ( m->surfaces[i].flags & BRUSH29_SURF_DRAWSKY )
+			if ( m->brush29_surfaces[i].flags & BRUSH29_SURF_DRAWSKY )
 				continue;
-			BuildSurfaceDisplayList (m->surfaces + i);
+			BuildSurfaceDisplayList (m->brush29_surfaces + i);
 		}
 	}
 

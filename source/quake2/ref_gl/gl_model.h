@@ -44,12 +44,6 @@ struct model_t : model_common_t
 	float		radius;
 
 //
-// solid volume for clipping 
-//
-	qboolean	clipbox;
-	vec3_t		clipmins, clipmaxs;
-
-//
 // brush model
 //
 	int			firstmodelsurface, nummodelsurfaces;

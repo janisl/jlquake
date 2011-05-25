@@ -337,15 +337,15 @@ void R_NewMap (void)
 	// identify sky texture
 	skytexturenum = -1;
 	mirrortexturenum = -1;
-	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->numtextures ; i++)
+	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->brush29_numtextures ; i++)
 	{
-		if (!Mod_GetModel(cl.worldmodel)->textures[i])
+		if (!Mod_GetModel(cl.worldmodel)->brush29_textures[i])
 			continue;
-		if (!QStr::NCmp(Mod_GetModel(cl.worldmodel)->textures[i]->name,"sky",3) )
+		if (!QStr::NCmp(Mod_GetModel(cl.worldmodel)->brush29_textures[i]->name,"sky",3) )
 			skytexturenum = i;
-		if (!QStr::NCmp(Mod_GetModel(cl.worldmodel)->textures[i]->name,"window02_1",10) )
+		if (!QStr::NCmp(Mod_GetModel(cl.worldmodel)->brush29_textures[i]->name,"window02_1",10) )
 			mirrortexturenum = i;
- 		Mod_GetModel(cl.worldmodel)->textures[i]->texturechain = NULL;
+ 		Mod_GetModel(cl.worldmodel)->brush29_textures[i]->texturechain = NULL;
 	}
 }
 

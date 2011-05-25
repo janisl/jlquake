@@ -124,7 +124,7 @@ void R_RotateForEntity(trRefEntity_t *e)
 {
 	GLfloat glmat[16];
 
-	if (Mod_GetModel(e->e.hModel)->flags & EF_FACE_VIEW)
+	if (Mod_GetModel(e->e.hModel)->q1_flags & EF_FACE_VIEW)
 	{
 		float fvaxis[3][3];
 
@@ -275,7 +275,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	spritedesc_t			r_spritedesc;
 	int i;
 
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
 
 	frame = R_GetSpriteFrame (psprite);
 
@@ -284,7 +284,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 		// rjr
 		qglColor4f (1,1,1,r_wateralpha->value);
 	}
-	else if (Mod_GetModel(currententity->e.hModel)->flags & EF_TRANSPARENT)
+	else if (Mod_GetModel(currententity->e.hModel)->q1_flags & EF_TRANSPARENT)
 	{
 		// rjr
 		qglColor3f(1,1,1);
@@ -676,8 +676,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	clmodel = Mod_GetModel(currententity->e.hModel);
 
-	VectorAdd (currententity->e.origin, clmodel->mins, mins);
-	VectorAdd (currententity->e.origin, clmodel->maxs, maxs);
+	VectorAdd (currententity->e.origin, clmodel->q1_mins, mins);
+	VectorAdd (currententity->e.origin, clmodel->q1_maxs, maxs);
 
 	if (!(e->e.renderfx & RF_FIRST_PERSON) && R_CullBox (mins, maxs))
 		return;
@@ -701,7 +701,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		lorg = e->e.lightingOrigin;
 	}
 	VectorCopy(lorg, adjust_origin);
-	adjust_origin[2] += (clmodel->mins[2] + clmodel->maxs[2]) / 2;
+	adjust_origin[2] += (clmodel->q1_mins[2] + clmodel->q1_maxs[2]) / 2;
 	ambientlight = shadelight = R_LightPoint (adjust_origin);
 
 	// allways give the gun some light
@@ -763,7 +763,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	qglTranslatef(paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
 	qglScalef(paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
 
-	if ((clmodel->flags & EF_SPECIAL_TRANS))
+	if ((clmodel->q1_flags & EF_SPECIAL_TRANS))
 	{
 		// rjr
 //		qglColor3f( 1,1,1);
@@ -778,14 +778,14 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		model_constant_alpha = r_wateralpha->value;
 		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	}
-	else if ((clmodel->flags & EF_TRANSPARENT))
+	else if ((clmodel->q1_flags & EF_TRANSPARENT))
 	{
 		// rjr
 //		qglColor3f( 1,1,1);
 		model_constant_alpha = 1.0f;
 		GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	}
-	else if ((clmodel->flags & EF_HOLEY))
+	else if ((clmodel->q1_flags & EF_HOLEY))
 	{
 		// rjr
 //		qglColor3f( 1,1,1);
@@ -820,7 +820,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	GL_State(GLS_DEFAULT);
 
-	if ((clmodel->flags & EF_SPECIAL_TRANS))
+	if ((clmodel->q1_flags & EF_SPECIAL_TRANS))
 	{
 		// rjr
 		qglEnable( GL_CULL_FACE );
@@ -909,7 +909,7 @@ void R_DrawEntitiesOnList (void)
 		{
 		case MOD_MESH1:
 			item_trans = ((currententity->e.renderfx & RF_WATERTRANS) ||
-						  (Mod_GetModel(currententity->e.hModel)->flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
+						  (Mod_GetModel(currententity->e.hModel)->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
 				R_DrawAliasModel (currententity);
 
@@ -1314,10 +1314,10 @@ void R_Mirror (void)
 	qglLoadMatrixf (r_base_world_matrix);
 
 	qglColor4f (1,1,1,r_mirroralpha->value);
-	s = Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum]->texturechain;
+	s = Mod_GetModel(cl.worldmodel)->brush29_textures[mirrortexturenum]->texturechain;
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s, true);
-	Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum]->texturechain = NULL;
+	Mod_GetModel(cl.worldmodel)->brush29_textures[mirrortexturenum]->texturechain = NULL;
 	GL_State(GLS_DEFAULT);
 	qglColor4f (1,1,1,1);
 }

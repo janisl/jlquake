@@ -163,7 +163,7 @@ msprite1frame_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
 	frame = currententity->e.frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
@@ -219,7 +219,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->cache.data;
+	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
 
 	if (psprite->type == SPR_ORIENTED)
 	{
@@ -480,8 +480,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	clmodel = Mod_GetModel(currententity->e.hModel);
 
-	VectorAdd (currententity->e.origin, clmodel->mins, mins);
-	VectorAdd (currententity->e.origin, clmodel->maxs, maxs);
+	VectorAdd (currententity->e.origin, clmodel->q1_mins, mins);
+	VectorAdd (currententity->e.origin, clmodel->q1_maxs, maxs);
 
 	if (R_CullBox (mins, maxs))
 		return;
@@ -1004,10 +1004,10 @@ void R_Mirror (void)
 	qglLoadMatrixf (r_base_world_matrix);
 
 	qglColor4f (1,1,1,r_mirroralpha->value);
-	s = Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum]->texturechain;
+	s = Mod_GetModel(cl.worldmodel)->brush29_textures[mirrortexturenum]->texturechain;
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s);
-	Mod_GetModel(cl.worldmodel)->textures[mirrortexturenum]->texturechain = NULL;
+	Mod_GetModel(cl.worldmodel)->brush29_textures[mirrortexturenum]->texturechain = NULL;
 	GL_State(GLS_DEFAULT);
 	qglColor4f (1,1,1,1);
 }
