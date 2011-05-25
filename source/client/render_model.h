@@ -752,4 +752,11 @@ struct model_common_t
 
 	int			q2_extradatasize;
 	void		*q2_extradata;
+
+	int			q3_dataSize;			// just for listing purposes
+	mbrush46_model_t	*q3_bmodel;			// only if type == MOD_BRUSH
+	md3Header_t	*q3_md3[MD3_MAX_LODS];	// only if type == MOD_MESH
+	md4Header_t	*q3_md4;				// only if type == MOD_MD4
+
+	int			 q3_numLods;
 };

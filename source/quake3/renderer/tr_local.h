@@ -177,12 +177,6 @@ BRUSH MODELS
 
 struct model_t : model_common_t
 {
-	int			dataSize;			// just for listing purposes
-	mbrush46_model_t	*bmodel;			// only if type == MOD_BRUSH
-	md3Header_t	*md3[MD3_MAX_LODS];	// only if type == MOD_MESH
-	md4Header_t	*md4;				// only if type == MOD_MD4
-
-	int			 numLods;
 };
 
 

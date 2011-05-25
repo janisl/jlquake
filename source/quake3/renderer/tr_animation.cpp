@@ -45,7 +45,7 @@ void R_AddAnimSurfaces( trRefEntity_t *ent ) {
 	shader_t		*shader;
 	int				i;
 
-	header = tr.currentModel->md4;
+	header = tr.currentModel->q3_md4;
 	lod = (md4LOD_t *)( (byte *)header + header->ofsLODs );
 
 	surface = (md4Surface_t *)( (byte *)lod + lod->ofsSurfaces );

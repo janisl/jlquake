@@ -124,7 +124,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	mod->numLods = 0;
+	mod->q3_numLods = 0;
 
 	//
 	// load the files
@@ -174,7 +174,7 @@ qhandle_t RE_RegisterModel( const char *name ) {
 				break;
 			}
 		} else {
-			mod->numLods++;
+			mod->q3_numLods++;
 			numLoaded++;
 			// if we have a valid model and are biased
 			// so that we won't see any higher detail ones,
@@ -189,8 +189,8 @@ qhandle_t RE_RegisterModel( const char *name ) {
 		// duplicate into higher lod spots that weren't
 		// loaded, in case the user changes r_lodbias on the fly
 		for ( lod-- ; lod >= 0 ; lod-- ) {
-			mod->numLods++;
-			mod->md3[lod] = mod->md3[lod+1];
+			mod->q3_numLods++;
+			mod->q3_md3[lod] = mod->q3_md3[lod+1];
 		}
 
 		return mod->index;
@@ -238,29 +238,29 @@ static qboolean R_LoadMD3 (model_t *mod, int lod, void *buffer, const char *mod_
 
 	mod->type = MOD_MESH3;
 	size = LittleLong(pinmodel->ofsEnd);
-	mod->dataSize += size;
-	mod->md3[lod] = (md3Header_t*)ri.Hunk_Alloc( size, h_low );
+	mod->q3_dataSize += size;
+	mod->q3_md3[lod] = (md3Header_t*)ri.Hunk_Alloc( size, h_low );
 
-	Com_Memcpy (mod->md3[lod], buffer, LittleLong(pinmodel->ofsEnd) );
+	Com_Memcpy (mod->q3_md3[lod], buffer, LittleLong(pinmodel->ofsEnd) );
 
-    LL(mod->md3[lod]->ident);
-    LL(mod->md3[lod]->version);
-    LL(mod->md3[lod]->numFrames);
-    LL(mod->md3[lod]->numTags);
-    LL(mod->md3[lod]->numSurfaces);
-    LL(mod->md3[lod]->ofsFrames);
-    LL(mod->md3[lod]->ofsTags);
-    LL(mod->md3[lod]->ofsSurfaces);
-    LL(mod->md3[lod]->ofsEnd);
+    LL(mod->q3_md3[lod]->ident);
+    LL(mod->q3_md3[lod]->version);
+    LL(mod->q3_md3[lod]->numFrames);
+    LL(mod->q3_md3[lod]->numTags);
+    LL(mod->q3_md3[lod]->numSurfaces);
+    LL(mod->q3_md3[lod]->ofsFrames);
+    LL(mod->q3_md3[lod]->ofsTags);
+    LL(mod->q3_md3[lod]->ofsSurfaces);
+    LL(mod->q3_md3[lod]->ofsEnd);
 
-	if ( mod->md3[lod]->numFrames < 1 ) {
+	if ( mod->q3_md3[lod]->numFrames < 1 ) {
 		ri.Printf( PRINT_WARNING, "R_LoadMD3: %s has no frames\n", mod_name );
 		return qfalse;
 	}
     
 	// swap all the frames
-    frame = (md3Frame_t *) ( (byte *)mod->md3[lod] + mod->md3[lod]->ofsFrames );
-    for ( i = 0 ; i < mod->md3[lod]->numFrames ; i++, frame++) {
+    frame = (md3Frame_t *) ( (byte *)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsFrames );
+    for ( i = 0 ; i < mod->q3_md3[lod]->numFrames ; i++, frame++) {
     	frame->radius = LittleFloat( frame->radius );
         for ( j = 0 ; j < 3 ; j++ ) {
             frame->bounds[0][j] = LittleFloat( frame->bounds[0][j] );
@@ -270,8 +270,8 @@ static qboolean R_LoadMD3 (model_t *mod, int lod, void *buffer, const char *mod_
 	}
 
 	// swap all the tags
-    tag = (md3Tag_t *) ( (byte *)mod->md3[lod] + mod->md3[lod]->ofsTags );
-    for ( i = 0 ; i < mod->md3[lod]->numTags * mod->md3[lod]->numFrames ; i++, tag++) {
+    tag = (md3Tag_t *) ( (byte *)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsTags );
+    for ( i = 0 ; i < mod->q3_md3[lod]->numTags * mod->q3_md3[lod]->numFrames ; i++, tag++) {
         for ( j = 0 ; j < 3 ; j++ ) {
 			tag->origin[j] = LittleFloat( tag->origin[j] );
 			tag->axis[0][j] = LittleFloat( tag->axis[0][j] );
@@ -281,8 +281,8 @@ static qboolean R_LoadMD3 (model_t *mod, int lod, void *buffer, const char *mod_
 	}
 
 	// swap all the surfaces
-	surf = (md3Surface_t *) ( (byte *)mod->md3[lod] + mod->md3[lod]->ofsSurfaces );
-	for ( i = 0 ; i < mod->md3[lod]->numSurfaces ; i++) {
+	surf = (md3Surface_t *) ( (byte *)mod->q3_md3[lod] + mod->q3_md3[lod]->ofsSurfaces );
+	for ( i = 0 ; i < mod->q3_md3[lod]->numSurfaces ; i++) {
 
         LL(surf->ident);
         LL(surf->flags);
@@ -396,8 +396,8 @@ static qboolean R_LoadMD4( model_t *mod, void *buffer, const char *mod_name ) {
 
 	mod->type = MOD_MD4;
 	size = LittleLong(pinmodel->ofsEnd);
-	mod->dataSize += size;
-	md4 = mod->md4 = (md4Header_t*)ri.Hunk_Alloc( size, h_low );
+	mod->q3_dataSize += size;
+	md4 = mod->q3_md4 = (md4Header_t*)ri.Hunk_Alloc( size, h_low );
 
 	Com_Memcpy( md4, buffer, LittleLong(pinmodel->ofsEnd) );
 
@@ -580,12 +580,12 @@ void R_Modellist_f( void ) {
 		mod = tr.models[i];
 		lods = 1;
 		for ( j = 1 ; j < MD3_MAX_LODS ; j++ ) {
-			if ( mod->md3[j] && mod->md3[j] != mod->md3[j-1] ) {
+			if ( mod->q3_md3[j] && mod->q3_md3[j] != mod->q3_md3[j-1] ) {
 				lods++;
 			}
 		}
-		ri.Printf( PRINT_ALL, "%8i : (%i) %s\n",mod->dataSize, lods, mod->name );
-		total += mod->dataSize;
+		ri.Printf( PRINT_ALL, "%8i : (%i) %s\n",mod->q3_dataSize, lods, mod->name );
+		total += mod->q3_dataSize;
 	}
 	ri.Printf( PRINT_ALL, "%8i : Total models\n", total );
 
@@ -637,14 +637,14 @@ int R_LerpTag( orientation_t *tag, qhandle_t handle, int startFrame, int endFram
 	model_t		*model;
 
 	model = R_GetModelByHandle( handle );
-	if ( !model->md3[0] ) {
+	if ( !model->q3_md3[0] ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
 		return qfalse;
 	}
 
-	start = R_GetTag( model->md3[0], startFrame, tagName );
-	end = R_GetTag( model->md3[0], endFrame, tagName );
+	start = R_GetTag( model->q3_md3[0], startFrame, tagName );
+	end = R_GetTag( model->q3_md3[0], endFrame, tagName );
 	if ( !start || !end ) {
 		AxisClear( tag->axis );
 		VectorClear( tag->origin );
@@ -679,19 +679,19 @@ void R_ModelBounds( qhandle_t handle, vec3_t mins, vec3_t maxs ) {
 
 	model = R_GetModelByHandle( handle );
 
-	if ( model->bmodel ) {
-		VectorCopy( model->bmodel->bounds[0], mins );
-		VectorCopy( model->bmodel->bounds[1], maxs );
+	if ( model->q3_bmodel ) {
+		VectorCopy( model->q3_bmodel->bounds[0], mins );
+		VectorCopy( model->q3_bmodel->bounds[1], maxs );
 		return;
 	}
 
-	if ( !model->md3[0] ) {
+	if ( !model->q3_md3[0] ) {
 		VectorClear( mins );
 		VectorClear( maxs );
 		return;
 	}
 
-	header = model->md3[0];
+	header = model->q3_md3[0];
 
 	frame = (md3Frame_t *)( (byte *)header + header->ofsFrames );
 
