@@ -617,7 +617,7 @@ Blends a fog texture on top of everything else
 ===================
 */
 static void RB_FogPass( void ) {
-	fog_t		*fog;
+	mbrush46_fog_t		*fog;
 	int			i;
 
 	qglEnableClientState( GL_COLOR_ARRAY );
@@ -715,7 +715,7 @@ static void ComputeColors( shaderStage_t *pStage )
 			break;
 		case CGEN_FOG:
 			{
-				fog_t		*fog;
+				mbrush46_fog_t		*fog;
 
 				fog = tr.world->fogs + tess.fogNum;
 

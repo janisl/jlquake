@@ -27,6 +27,11 @@
 #define APIENTRY
 #endif
 
+// everything that is needed by the backend needs
+// to be double buffered to allow it to run in
+// parallel on a dual cpu machine
+#define	SMP_FRAMES		2
+
 #include "../core/bsp29file.h"
 #include "../core/bsp38file.h"
 #include "../core/bsp46file.h"

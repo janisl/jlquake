@@ -274,11 +274,228 @@ struct mbrush38_model_t
 
 //==============================================================================
 //
-//	QUAKE 3 BRUSH MODELS
+//	SURFACES
 //
 //==============================================================================
 
 #define BRUSH46_VERTEXSIZE	8
+
+// any changes in surfaceType must be mirrored in rb_surfaceTable[]
+enum surfaceType_t
+{
+	SF_BAD,
+	SF_SKIP,				// ignore
+	SF_FACE,
+	SF_GRID,
+	SF_TRIANGLES,
+	SF_POLY,
+	SF_MD3,
+	SF_MD4,
+	SF_FLARE,
+	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
+	SF_DISPLAY_LIST,
+
+	SF_NUM_SURFACE_TYPES,
+	SF_MAX = 0x7fffffff			// ensures that sizeof( surfaceType_t ) == sizeof( int )
+};
+
+struct drawSurf_t
+{
+	unsigned			sort;			// bit combination for fast compares
+	surfaceType_t*		surface;		// any of surface*_t
+};
+
+// when cgame directly specifies a polygon, it becomes a srfPoly_t
+// as soon as it is called
+struct srfPoly_t
+{
+	surfaceType_t	surfaceType;
+	qhandle_t		hShader;
+	int				fogIndex;
+	int				numVerts;
+	polyVert_t*		verts;
+};
+
+struct srfDisplayList_t
+{
+	surfaceType_t	surfaceType;
+	int				listNum;
+};
+
+struct srfFlare_t
+{
+	surfaceType_t	surfaceType;
+	vec3_t			origin;
+	vec3_t			normal;
+	vec3_t			color;
+};
+
+struct srfGridMesh_t
+{
+	surfaceType_t	surfaceType;
+
+	// dynamic lighting information
+	int				dlightBits[SMP_FRAMES];
+
+	// culling information
+	vec3_t			meshBounds[2];
+	vec3_t			localOrigin;
+	float			meshRadius;
+
+	// lod information, which may be different
+	// than the culling information to allow for
+	// groups of curves that LOD as a unit
+	vec3_t			lodOrigin;
+	float			lodRadius;
+	int				lodFixed;
+	int				lodStitched;
+
+	// vertexes
+	int				width, height;
+	float*			widthLodError;
+	float*			heightLodError;
+	bsp46_drawVert_t	verts[1];		// variable sized
+};
+
+struct srfSurfaceFace_t
+{
+	surfaceType_t	surfaceType;
+	cplane_t	plane;
+
+	// dynamic lighting information
+	int			dlightBits[SMP_FRAMES];
+
+	// triangle definitions (no normals at points)
+	int			numPoints;
+	int			numIndices;
+	int			ofsIndices;
+	float		points[1][BRUSH46_VERTEXSIZE];	// variable sized
+										// there is a variable length list of indices here also
+};
+
+// misc_models in maps are turned into direct geometry by q3map
+struct srfTriangles_t
+{
+	surfaceType_t	surfaceType;
+
+	// dynamic lighting information
+	int				dlightBits[SMP_FRAMES];
+
+	// culling information (FIXME: use this!)
+	vec3_t			bounds[2];
+	vec3_t			localOrigin;
+	float			radius;
+
+	// triangle definitions
+	int				numIndexes;
+	int				*indexes;
+
+	int				numVerts;
+	bsp46_drawVert_t		*verts;
+};
+
+//==============================================================================
+//
+//	QUAKE 3 BRUSH MODELS
+//
+//==============================================================================
+
+#define BRUSH46_CONTENTS_NODE		-1
+
+struct mbrush46_surface_t
+{
+	int						viewCount;		// if == tr.viewCount, already added
+	shader_t*				shader;
+	int						fogIndex;
+
+	surfaceType_t*			data;			// any of srf*_t
+};
+
+struct mbrush46_node_t
+{
+	// common with leaf and node
+	int						contents;		// -1 for nodes, to differentiate from leafs
+	int						visframe;		// node needs to be traversed if current
+	vec3_t					mins, maxs;		// for bounding box culling
+	mbrush46_node_t*		parent;
+
+	// node specific
+	cplane_t*				plane;
+	mbrush46_node_t*		children[2];	
+
+	// leaf specific
+	int						cluster;
+	int						area;
+
+	mbrush46_surface_t**	firstmarksurface;
+	int						nummarksurfaces;
+};
+
+struct mbrush46_model_t
+{
+	vec3_t					bounds[2];		// for culling
+	mbrush46_surface_t*		firstSurface;
+	int						numSurfaces;
+};
+
+struct mbrush46_fog_t
+{
+	int			originalBrushNumber;
+	vec3_t		bounds[2];
+
+	unsigned	colorInt;				// in packed byte format
+	float		tcScale;				// texture coordinate vector scales
+	fogParms_t	parms;
+
+	// for clipping distance in fog when outside
+	qboolean	hasSurface;
+	float		surface[4];
+};
+
+struct world_t
+{
+	char		name[MAX_QPATH];		// ie: maps/tim_dm2.bsp
+	char		baseName[MAX_QPATH];	// ie: tim_dm2
+
+	int			dataSize;
+
+	int			numShaders;
+	bsp46_dshader_t	*shaders;
+
+	mbrush46_model_t	*bmodels;
+
+	int			numplanes;
+	cplane_t	*planes;
+
+	int			numnodes;		// includes leafs
+	int			numDecisionNodes;
+	mbrush46_node_t		*nodes;
+
+	int			numsurfaces;
+	mbrush46_surface_t	*surfaces;
+
+	int			nummarksurfaces;
+	mbrush46_surface_t	**marksurfaces;
+
+	int			numfogs;
+	mbrush46_fog_t		*fogs;
+
+	vec3_t		lightGridOrigin;
+	vec3_t		lightGridSize;
+	vec3_t		lightGridInverseSize;
+	int			lightGridBounds[3];
+	byte		*lightGridData;
+
+
+	int			numClusters;
+	int			clusterBytes;
+	const byte	*vis;			// may be passed in by CM_LoadMap to save space
+
+	byte		*novis;			// clusterBytes of 0xff
+
+	char		*entityString;
+	char		*entityParsePoint;
+};
 
 //==============================================================================
 //

@@ -31,18 +31,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define RDF_NOWORLDMODEL	1		// used for player configuration screen
 #define RDF_HYPERSPACE		4		// teleportation effect
 
-typedef struct {
-	vec3_t		xyz;
-	float		st[2];
-	byte		modulate[4];
-} polyVert_t;
-
-typedef struct poly_s {
-	qhandle_t			hShader;
-	int					numVerts;
-	polyVert_t			*verts;
-} poly_t;
-
 #define	MAX_RENDER_STRINGS			8
 #define	MAX_RENDER_STRING_LENGTH	32
 

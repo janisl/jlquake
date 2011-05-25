@@ -153,6 +153,20 @@ struct refEntity_t
 	float			rotation;
 };
 
+struct polyVert_t
+{
+	vec3_t			xyz;
+	float			st[2];
+	byte			modulate[4];
+};
+
+struct poly_t
+{
+	qhandle_t		hShader;
+	int				numVerts;
+	polyVert_t		*verts;
+};
+
 //
 //	End of definitions used by Quake 3 vms.
 //

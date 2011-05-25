@@ -229,7 +229,7 @@ R_ComputeFogNum
 */
 int R_ComputeFogNum( md3Header_t *header, trRefEntity_t *ent ) {
 	int				i, j;
-	fog_t			*fog;
+	mbrush46_fog_t			*fog;
 	md3Frame_t		*md3Frame;
 	vec3_t			localOrigin;
 

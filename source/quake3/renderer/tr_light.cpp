@@ -58,7 +58,7 @@ R_DlightBmodel
 Determine which dynamic lights may effect this bmodel
 =============
 */
-void R_DlightBmodel( bmodel_t *bmodel ) {
+void R_DlightBmodel( mbrush46_model_t *bmodel ) {
 	int			i, j;
 	dlight_t	*dl;
 	int			mask;

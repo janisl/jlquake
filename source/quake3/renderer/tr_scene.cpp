@@ -119,7 +119,7 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 	srfPoly_t	*poly;
 	int			i, j;
 	int			fogIndex;
-	fog_t		*fog;
+	mbrush46_fog_t		*fog;
 	vec3_t		bounds[2];
 
 	if ( !tr.registered ) {

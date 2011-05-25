@@ -1302,7 +1302,7 @@ R_LoadSubmodels
 */
 static	void R_LoadSubmodels( bsp46_lump_t *l ) {
 	bsp46_dmodel_t	*in;
-	bmodel_t	*out;
+	mbrush46_model_t	*out;
 	int			i, j, count;
 
 	in = (bsp46_dmodel_t*)(fileBase + l->fileofs);
@@ -1310,7 +1310,7 @@ static	void R_LoadSubmodels( bsp46_lump_t *l ) {
 		ri.Error (ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name);
 	count = l->filelen / sizeof(*in);
 
-	s_worldData.bmodels = out = (bmodel_t*)ri.Hunk_Alloc( count * sizeof(*out), h_low );
+	s_worldData.bmodels = out = (mbrush46_model_t*)ri.Hunk_Alloc( count * sizeof(*out), h_low );
 
 	for ( i=0 ; i<count ; i++, in++, out++ ) {
 		model_t *model;
@@ -1389,7 +1389,7 @@ static	void R_LoadNodesAndLeafs (bsp46_lump_t *nodeLump, bsp46_lump_t *leafLump)
 		p = LittleLong(in->planeNum);
 		out->plane = s_worldData.planes + p;
 
-		out->contents = CONTENTS_NODE;	// differentiate from leafs
+		out->contents = BRUSH46_CONTENTS_NODE;	// differentiate from leafs
 
 		for (j=0 ; j<2 ; j++)
 		{
@@ -1526,8 +1526,8 @@ R_LoadFogs
 */
 static	void R_LoadFogs( bsp46_lump_t *l, bsp46_lump_t *brushesLump, bsp46_lump_t *sidesLump ) {
 	int			i;
-	fog_t		*out;
-	bsp46_dfog_t		*fogs;
+	mbrush46_fog_t		*out;
+	bsp46_dmbrush46_fog_t		*fogs;
 	bsp46_dbrush_t 	*brushes, *brush;
 	bsp46_dbrushside_t	*sides;
 	int			count, brushesCount, sidesCount;
@@ -1537,7 +1537,7 @@ static	void R_LoadFogs( bsp46_lump_t *l, bsp46_lump_t *brushesLump, bsp46_lump_t
 	float		d;
 	int			firstSide;
 
-	fogs = (bsp46_dfog_t *)(fileBase + l->fileofs);
+	fogs = (bsp46_dmbrush46_fog_t *)(fileBase + l->fileofs);
 	if (l->filelen % sizeof(*fogs)) {
 		ri.Error (ERR_DROP, "LoadMap: funny lump size in %s",s_worldData.name);
 	}
@@ -1545,7 +1545,7 @@ static	void R_LoadFogs( bsp46_lump_t *l, bsp46_lump_t *brushesLump, bsp46_lump_t
 
 	// create fog strucutres for them
 	s_worldData.numfogs = count + 1;
-	s_worldData.fogs = (fog_t*)ri.Hunk_Alloc ( s_worldData.numfogs*sizeof(*out), h_low);
+	s_worldData.fogs = (mbrush46_fog_t*)ri.Hunk_Alloc ( s_worldData.numfogs*sizeof(*out), h_low);
 	out = s_worldData.fogs + 1;
 
 	if ( !count ) {

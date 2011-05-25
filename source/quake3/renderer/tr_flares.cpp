@@ -197,7 +197,7 @@ RB_AddDlightFlares
 void RB_AddDlightFlares( void ) {
 	dlight_t		*l;
 	int				i, j, k;
-	fog_t			*fog;
+	mbrush46_fog_t			*fog;
 
 	if ( !r_flares->integer ) {
 		return;

@@ -44,11 +44,6 @@ long myftol( float f );
 #endif
 
 
-// everything that is needed by the backend needs
-// to be double buffered to allow it to run in
-// parallel on a dual cpu machine
-#define	SMP_FRAMES		2
-
 // 12 bits
 // see QSORT_SHADERNUM_SHIFT
 #define	MAX_SHADERS				16384
@@ -104,10 +99,10 @@ typedef struct {
 	struct dlight_s	*dlights;
 
 	int			numPolys;
-	struct srfPoly_s	*polys;
+	srfPoly_t	*polys;
 
 	int			numDrawSurfs;
-	struct drawSurf_s	*drawSurfs;
+	drawSurf_t	*drawSurfs;
 
 
 } trRefdef_t;
@@ -127,19 +122,6 @@ typedef struct skin_s {
 	skinSurface_t	*surfaces[MD3_MAX_SURFACES];
 } skin_t;
 
-
-typedef struct {
-	int			originalBrushNumber;
-	vec3_t		bounds[2];
-
-	unsigned	colorInt;				// in packed byte format
-	float		tcScale;				// texture coordinate vector scales
-	fogParms_t	parms;
-
-	// for clipping distance in fog when outside
-	qboolean	hasSurface;
-	float		surface[4];
-} fog_t;
 
 typedef struct {
 	orientationr_t	orient;
@@ -167,120 +149,10 @@ SURFACES
 ==============================================================================
 */
 
-// any changes in surfaceType must be mirrored in rb_surfaceTable[]
-typedef enum {
-	SF_BAD,
-	SF_SKIP,				// ignore
-	SF_FACE,
-	SF_GRID,
-	SF_TRIANGLES,
-	SF_POLY,
-	SF_MD3,
-	SF_MD4,
-	SF_FLARE,
-	SF_ENTITY,				// beams, rails, lightning, etc that can be determined by entity
-	SF_DISPLAY_LIST,
-
-	SF_NUM_SURFACE_TYPES,
-	SF_MAX = 0x7fffffff			// ensures that sizeof( surfaceType_t ) == sizeof( int )
-} surfaceType_t;
-
-typedef struct drawSurf_s {
-	unsigned			sort;			// bit combination for fast compares
-	surfaceType_t		*surface;		// any of surface*_t
-} drawSurf_t;
-
 #define	MAX_FACE_POINTS		64
 
 #define	MAX_PATCH_SIZE		32			// max dimensions of a patch mesh in map file
 #define	MAX_GRID_SIZE		65			// max dimensions of a grid mesh in memory
-
-// when cgame directly specifies a polygon, it becomes a srfPoly_t
-// as soon as it is called
-typedef struct srfPoly_s {
-	surfaceType_t	surfaceType;
-	qhandle_t		hShader;
-	int				fogIndex;
-	int				numVerts;
-	polyVert_t		*verts;
-} srfPoly_t;
-
-typedef struct srfDisplayList_s {
-	surfaceType_t	surfaceType;
-	int				listNum;
-} srfDisplayList_t;
-
-
-typedef struct srfFlare_s {
-	surfaceType_t	surfaceType;
-	vec3_t			origin;
-	vec3_t			normal;
-	vec3_t			color;
-} srfFlare_t;
-
-typedef struct srfGridMesh_s {
-	surfaceType_t	surfaceType;
-
-	// dynamic lighting information
-	int				dlightBits[SMP_FRAMES];
-
-	// culling information
-	vec3_t			meshBounds[2];
-	vec3_t			localOrigin;
-	float			meshRadius;
-
-	// lod information, which may be different
-	// than the culling information to allow for
-	// groups of curves that LOD as a unit
-	vec3_t			lodOrigin;
-	float			lodRadius;
-	int				lodFixed;
-	int				lodStitched;
-
-	// vertexes
-	int				width, height;
-	float			*widthLodError;
-	float			*heightLodError;
-	bsp46_drawVert_t	verts[1];		// variable sized
-} srfGridMesh_t;
-
-
-typedef struct {
-	surfaceType_t	surfaceType;
-	cplane_t	plane;
-
-	// dynamic lighting information
-	int			dlightBits[SMP_FRAMES];
-
-	// triangle definitions (no normals at points)
-	int			numPoints;
-	int			numIndices;
-	int			ofsIndices;
-	float		points[1][BRUSH46_VERTEXSIZE];	// variable sized
-										// there is a variable length list of indices here also
-} srfSurfaceFace_t;
-
-
-// misc_models in maps are turned into direct geometry by q3map
-typedef struct {
-	surfaceType_t	surfaceType;
-
-	// dynamic lighting information
-	int				dlightBits[SMP_FRAMES];
-
-	// culling information (FIXME: use this!)
-	vec3_t			bounds[2];
-	vec3_t			localOrigin;
-	float			radius;
-
-	// triangle definitions
-	int				numIndexes;
-	int				*indexes;
-
-	int				numVerts;
-	bsp46_drawVert_t		*verts;
-} srfTriangles_t;
-
 
 extern	void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])(void *);
 
@@ -301,92 +173,12 @@ BRUSH MODELS
 #define	SIDE_BACK	1
 #define	SIDE_ON		2
 
-typedef struct msurface_s {
-	int					viewCount;		// if == tr.viewCount, already added
-	shader_t		*shader;
-	int					fogIndex;
-
-	surfaceType_t		*data;			// any of srf*_t
-} mbrush46_surface_t;
-
-
-
-#define	CONTENTS_NODE		-1
-typedef struct mnode_s {
-	// common with leaf and node
-	int			contents;		// -1 for nodes, to differentiate from leafs
-	int			visframe;		// node needs to be traversed if current
-	vec3_t		mins, maxs;		// for bounding box culling
-	struct mnode_s	*parent;
-
-	// node specific
-	cplane_t	*plane;
-	struct mnode_s	*children[2];	
-
-	// leaf specific
-	int			cluster;
-	int			area;
-
-	mbrush46_surface_t	**firstmarksurface;
-	int			nummarksurfaces;
-} mbrush46_node_t;
-
-typedef struct {
-	vec3_t		bounds[2];		// for culling
-	mbrush46_surface_t	*firstSurface;
-	int			numSurfaces;
-} bmodel_t;
-
-typedef struct {
-	char		name[MAX_QPATH];		// ie: maps/tim_dm2.bsp
-	char		baseName[MAX_QPATH];	// ie: tim_dm2
-
-	int			dataSize;
-
-	int			numShaders;
-	bsp46_dshader_t	*shaders;
-
-	bmodel_t	*bmodels;
-
-	int			numplanes;
-	cplane_t	*planes;
-
-	int			numnodes;		// includes leafs
-	int			numDecisionNodes;
-	mbrush46_node_t		*nodes;
-
-	int			numsurfaces;
-	mbrush46_surface_t	*surfaces;
-
-	int			nummarksurfaces;
-	mbrush46_surface_t	**marksurfaces;
-
-	int			numfogs;
-	fog_t		*fogs;
-
-	vec3_t		lightGridOrigin;
-	vec3_t		lightGridSize;
-	vec3_t		lightGridInverseSize;
-	int			lightGridBounds[3];
-	byte		*lightGridData;
-
-
-	int			numClusters;
-	int			clusterBytes;
-	const byte	*vis;			// may be passed in by CM_LoadMap to save space
-
-	byte		*novis;			// clusterBytes of 0xff
-
-	char		*entityString;
-	char		*entityParsePoint;
-} world_t;
-
 //======================================================================
 
 struct model_t : model_common_t
 {
 	int			dataSize;			// just for listing purposes
-	bmodel_t	*bmodel;			// only if type == MOD_BRUSH
+	mbrush46_model_t	*bmodel;			// only if type == MOD_BRUSH
 	md3Header_t	*md3[MD3_MAX_LODS];	// only if type == MOD_MESH
 	md4Header_t	*md4;				// only if type == MOD_MD4
 
@@ -836,7 +628,7 @@ LIGHTS
 ============================================================
 */
 
-void R_DlightBmodel( bmodel_t *bmodel );
+void R_DlightBmodel( mbrush46_model_t *bmodel );
 void R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent );
 void R_TransformDlights( int count, dlight_t *dl, orientationr_t *orient );
 int R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );

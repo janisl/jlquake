@@ -965,7 +965,7 @@ See if a sprite is inside a fog volume
 */
 int R_SpriteFogNum( trRefEntity_t *ent ) {
 	int				i, j;
-	fog_t			*fog;
+	mbrush46_fog_t			*fog;
 
 	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL ) {
 		return 0;

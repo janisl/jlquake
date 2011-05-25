@@ -317,7 +317,7 @@ R_AddBrushModelSurfaces
 =================
 */
 void R_AddBrushModelSurfaces ( trRefEntity_t *ent ) {
-	bmodel_t	*bmodel;
+	mbrush46_model_t	*bmodel;
 	int			clip;
 	model_t		*pModel;
 	int			i;
