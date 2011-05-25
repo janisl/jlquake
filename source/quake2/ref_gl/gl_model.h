@@ -33,8 +33,6 @@ BRUSH MODELS
 ==============================================================================
 */
 
-#include "../../core/bsp38file.h"
-
 //
 // in memory representation
 //

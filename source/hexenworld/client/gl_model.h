@@ -17,10 +17,6 @@ BRUSH MODELS
 ==============================================================================
 */
 
-#include "../../core/bsp29file.h"
-
-struct image_t;
-
 //
 // in memory representation
 //

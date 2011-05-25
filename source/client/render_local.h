@@ -27,10 +27,15 @@
 #define APIENTRY
 #endif
 
-#include "../core/sprfile.h"
-#include "../core/sp2file.h"
+#include "../core/bsp29file.h"
+#include "../core/bsp38file.h"
+#include "../core/bsp46file.h"
 #include "../core/mdlfile.h"
 #include "../core/md2file.h"
+#include "../core/md3file.h"
+#include "../core/md4file.h"
+#include "../core/sprfile.h"
+#include "../core/sp2file.h"
 
 #include "render_qgl.h"
 #include "render_image.h"
