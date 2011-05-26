@@ -731,32 +731,7 @@ void R_Init( void ) {
 	}
 	Com_Memset( tess.constantColor255, 255, sizeof( tess.constantColor255 ) );
 
-	//
-	// init function tables
-	//
-	for ( i = 0; i < FUNCTABLE_SIZE; i++ )
-	{
-		tr.sinTable[i]		= sin( DEG2RAD( i * 360.0f / ( ( float ) ( FUNCTABLE_SIZE - 1 ) ) ) );
-		tr.squareTable[i]	= ( i < FUNCTABLE_SIZE/2 ) ? 1.0f : -1.0f;
-		tr.sawToothTable[i] = (float)i / FUNCTABLE_SIZE;
-		tr.inverseSawToothTable[i] = 1.0f - tr.sawToothTable[i];
-
-		if ( i < FUNCTABLE_SIZE / 2 )
-		{
-			if ( i < FUNCTABLE_SIZE / 4 )
-			{
-				tr.triangleTable[i] = ( float ) i / ( FUNCTABLE_SIZE / 4 );
-			}
-			else
-			{
-				tr.triangleTable[i] = 1.0f - tr.triangleTable[i-FUNCTABLE_SIZE / 4];
-			}
-		}
-		else
-		{
-			tr.triangleTable[i] = -tr.triangleTable[i-FUNCTABLE_SIZE/2];
-		}
-	}
+	R_InitFunctionTables();
 
 	R_InitFogTable();
 

@@ -120,6 +120,7 @@ void Draw_Init (void)
 	char	ver[40];
 	int start;
 
+	R_InitFunctionTables();
 	R_InitFogTable();
 	R_InitImages();
 

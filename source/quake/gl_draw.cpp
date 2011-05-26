@@ -106,6 +106,7 @@ void Draw_Init (void)
 	int		start;
 	int		f, fstep;
 
+	R_InitFunctionTables();
 	R_InitFogTable();
 	R_InitImages();
 

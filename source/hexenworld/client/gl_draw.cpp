@@ -96,6 +96,7 @@ void Draw_Init (void)
 	int		f, fstep;
 	char	temp[MAX_QPATH];
 
+	R_InitFunctionTables();
 	R_InitFogTable();
 	R_InitImages();
 

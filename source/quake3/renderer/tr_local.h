@@ -231,7 +231,6 @@ typedef struct {
 	int		c_dlightSurfacesCulled;
 } frontEndCounters_t;
 
-#define FUNCTABLE_SIZE		1024
 #define FUNCTABLE_SIZE2		10
 #define FUNCTABLE_MASK		(FUNCTABLE_SIZE-1)
 
@@ -336,12 +335,6 @@ struct trGlobals_t : trGlobals_base_t
 
 	int						numSkins;
 	skin_t					*skins[MAX_SKINS];
-
-	float					sinTable[FUNCTABLE_SIZE];
-	float					squareTable[FUNCTABLE_SIZE];
-	float					triangleTable[FUNCTABLE_SIZE];
-	float					sawToothTable[FUNCTABLE_SIZE];
-	float					inverseSawToothTable[FUNCTABLE_SIZE];
 };
 
 extern backEndState_t	backEnd;

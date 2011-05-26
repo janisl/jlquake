@@ -108,6 +108,7 @@ struct trRefEntity_t
 #define MAX_LIGHTMAPS			256
 
 #define FOG_TABLE_SIZE			256
+#define FUNCTABLE_SIZE			1024
 
 struct trGlobals_base_t
 {
@@ -134,6 +135,12 @@ struct trGlobals_base_t
 	image_t*				images[MAX_DRAWIMAGES];
 
 	float					fogTable[FOG_TABLE_SIZE];
+
+	float					sinTable[FUNCTABLE_SIZE];
+	float					squareTable[FUNCTABLE_SIZE];
+	float					triangleTable[FUNCTABLE_SIZE];
+	float					sawToothTable[FUNCTABLE_SIZE];
+	float					inverseSawToothTable[FUNCTABLE_SIZE];
 };
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
@@ -142,6 +149,7 @@ void R_SharedRegister();
 const char* R_GetTitleForWindow();
 void R_CommonInit();
 void CommonGfxInfo_f();
+void R_InitFunctionTables();
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
