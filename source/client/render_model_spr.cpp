@@ -195,3 +195,31 @@ void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 
 	mod->type = MOD_SPRITE;
 }
+
+//==========================================================================
+//
+//	Mod_LoadSpriteModel
+//
+//==========================================================================
+
+void Mod_FreeSpriteModel(model_t* mod)
+{
+	msprite1_t* psprite = (msprite1_t*)mod->q1_cache;
+	for (int i = 0; i < psprite->numframes; i++)
+	{
+		if (psprite->frames[i].type == SPR_SINGLE)
+		{
+			delete psprite->frames[i].frameptr;
+		}
+		else
+		{
+			msprite1group_t* pspritegroup = (msprite1group_t*)psprite->frames[i].frameptr;
+			for (int j = 0; j < pspritegroup->numframes; j++)
+			{
+				delete pspritegroup->frames[j];
+			}
+			delete[] pspritegroup->intervals;
+			Mem_Free(pspritegroup);
+		}
+	}
+}
