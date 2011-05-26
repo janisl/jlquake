@@ -945,6 +945,7 @@ int R_Init()
 
 	registration_sequence = 1;
 
+	R_InitFunctionTables();
 	R_InitFogTable();
 	R_InitImages();
 	Mod_Init ();
