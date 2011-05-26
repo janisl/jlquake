@@ -1533,3 +1533,33 @@ bool CIN_IsInCinematicState()
 void CIN_FinishCinematic()
 {
 }
+
+void CL_SendModelChecksum(const char* name, const void* buffer)
+{
+	if (!QStr::Cmp(name, "progs/player.mdl") ||
+		!QStr::Cmp(name, "progs/eyes.mdl"))
+	{
+		unsigned short crc;
+		byte *p;
+		int len;
+		char st[40];
+
+		CRC_Init(&crc);
+		for (len = com_filesize, p = (byte*)buffer; len; len--, p++)
+			CRC_ProcessByte(&crc, *p);
+	
+		sprintf(st, "%d", (int)crc);
+		Info_SetValueForKey(cls.userinfo, 
+			!QStr::Cmp(name, "progs/player.mdl") ? pmodel_name : emodel_name,
+			st, MAX_INFO_STRING, 64, 64, true, false);
+
+		if (cls.state >= ca_connected)
+		{
+			cls.netchan.message.WriteByte(clc_stringcmd);
+			sprintf(st, "setinfo %s %d", 
+				!QStr::Cmp(name, "progs/player.mdl") ? pmodel_name : emodel_name,
+				(int)crc);
+			cls.netchan.message.WriteString2(st);
+		}
+	}
+}

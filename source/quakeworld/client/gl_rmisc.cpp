@@ -227,7 +227,6 @@ void R_TranslatePlayerSkin (int playernum)
 	byte		*inrow;
 	unsigned	frac, fracstep;
 	player_info_t *player;
-	extern	byte		player_8bit_texels[320*200];
 	char s[512];
 
 	GL_DisableMultitexture();
@@ -283,7 +282,7 @@ void R_TranslatePlayerSkin (int playernum)
 			inwidth = 320;
 			inheight = 200;
 		} else {
-			original = player_8bit_texels;
+			original = q1_player_8bit_texels;
 			inwidth = 296;
 			inheight = 194;
 		}

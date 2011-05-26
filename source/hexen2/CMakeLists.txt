@@ -11,7 +11,6 @@ add_executable(jlhexen2
 	console.cpp
 	cvar.cpp
 	gl_draw.cpp
-	gl_mesh.cpp
 	gl_model.cpp
 	gl_rlight.cpp
 	gl_rmain.cpp

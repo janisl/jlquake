@@ -230,8 +230,6 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin (int playernum)
 {
-	extern	byte		player_8bit_texels[NUM_CLASSES][620*245];
-
 	int		top, bottom;
 	byte	translate[256];
 	unsigned	translate32[256];
@@ -284,9 +282,9 @@ void R_TranslatePlayerSkin (int playernum)
 
 	if (playerclass >= 1 && 
 		playerclass <= NUM_CLASSES)
-		original = player_8bit_texels[playerclass-1];
+		original = h2_player_8bit_texels[playerclass-1];
 	else
-		original = player_8bit_texels[0];
+		original = h2_player_8bit_texels[0];
 
 	if (s & 3)
 		Sys_Error ("R_TranslateSkin: s&3");

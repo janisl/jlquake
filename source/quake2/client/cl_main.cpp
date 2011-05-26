@@ -1854,3 +1854,7 @@ void CL_Shutdown(void)
 }
 
 
+
+void CL_SendModelChecksum(const char* name, const void* buffer)
+{
+}

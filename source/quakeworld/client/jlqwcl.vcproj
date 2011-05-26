@@ -247,10 +247,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_mesh.cpp"
-				>
-			</File>
-			<File
 				RelativePath="gl_model.cpp"
 				>
 			</File>

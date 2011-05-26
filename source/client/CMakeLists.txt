@@ -18,6 +18,7 @@ set(CLIENT_FILES
 	render_init.cpp
 	render_model.cpp
 	render_model_md2.cpp
+	render_model_mdl.cpp
 	render_model_sp2.cpp
 	render_model_spr.cpp
 	render_qgl.cpp

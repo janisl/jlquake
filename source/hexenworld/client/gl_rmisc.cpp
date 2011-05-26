@@ -228,7 +228,6 @@ void R_TranslatePlayerSkin (int playernum)
 	int				inwidth, inheight;
 	byte			*inrow;
 	unsigned		frac, fracstep;
-	extern	byte	player_8bit_texels[MAX_PLAYER_CLASS][620*245];
 	byte			*sourceA, *sourceB, *colorA, *colorB;
 	player_info_t	*player;
 
@@ -280,11 +279,11 @@ void R_TranslatePlayerSkin (int playernum)
 	if (cl.players[playernum].playerclass >= 1 && 
 		cl.players[playernum].playerclass <= MAX_PLAYER_CLASS)
 	{
-		original = player_8bit_texels[(int)cl.players[playernum].playerclass-1];
+		original = h2_player_8bit_texels[(int)cl.players[playernum].playerclass-1];
 		cl.players[playernum].Translated = true;
 	}
 	else
-		original = player_8bit_texels[0];
+		original = h2_player_8bit_texels[0];
 
 //	if (s & 3)
 //		Sys_Error ("R_TranslateSkin: s&3");

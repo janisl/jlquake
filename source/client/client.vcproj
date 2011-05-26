@@ -233,6 +233,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_model_mdl.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_model_sp2.cpp"
 				>
 			</File>

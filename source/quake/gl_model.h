@@ -28,23 +28,6 @@ m*_t structures are in-memory
 
 */
 
-/*
-==============================================================================
-
-ALIAS MODELS
-
-Alias models are position independent, so the cache manager can move them.
-==============================================================================
-*/
-
-#define	MAXALIASVERTS	1024
-#define	MAXALIASFRAMES	256
-#define	MAXALIASTRIS	2048
-extern	mesh1hdr_t	*pheader;
-extern	dmdl_stvert_t	stverts[MAXALIASVERTS];
-extern	mmesh1triangle_t	triangles[MAXALIASTRIS];
-extern	dmdl_trivertx_t	*poseverts[MAXALIASFRAMES];
-
 //============================================================================
 
 void	*Mod_Extradata (model_t *mod);	// handles caching

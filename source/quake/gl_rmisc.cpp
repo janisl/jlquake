@@ -227,7 +227,6 @@ void R_TranslatePlayerSkin (int playernum)
 	int			inwidth, inheight;
 	byte		*inrow;
 	unsigned	frac, fracstep;
-	extern	byte		**player_8bit_texels_tbl;
 
 	GL_DisableMultitexture();
 
@@ -262,11 +261,7 @@ void R_TranslatePlayerSkin (int playernum)
 
 	paliashdr = (mesh1hdr_t *)Mod_Extradata (model);
 	s = paliashdr->skinwidth * paliashdr->skinheight;
-	if (ent->skinnum < 0 || ent->skinnum >= paliashdr->numskins) {
-		Con_Printf("(%d): Invalid player skin #%d\n", playernum, ent->skinnum);
-		original = (byte *)paliashdr + paliashdr->texels[0];
-	} else
-		original = (byte *)paliashdr + paliashdr->texels[ent->skinnum];
+	original = q1_player_8bit_texels;
 	if (s & 3)
 		Sys_Error ("R_TranslateSkin: s&3");
 

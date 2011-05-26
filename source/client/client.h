@@ -33,5 +33,7 @@ int CL_ScaledMilliseconds();
 
 //	Called by Windows driver.
 void Key_ClearStates();
+//	For QuakeWorld
+void CL_SendModelChecksum(const char* name, const void* buffer);
 
 #endif
