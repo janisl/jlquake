@@ -186,7 +186,6 @@ Con_DPrintf ("CL_SignonReply: %i\n", cls.signon);
 	case 3:	
 		cls.message.WriteByte(clc_stringcmd);
 		cls.message.WriteString2("begin");
-		Cache_Report ();		// print remaining memory
 		break;
 		
 	case 4:

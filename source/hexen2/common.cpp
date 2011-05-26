@@ -260,7 +260,6 @@ Filename are reletive to the quake directory.
 Allways appends a 0 byte.
 ============
 */
-cache_user_t *loadcache;
 byte    *loadbuf;
 int             loadsize;
 byte *COM_LoadFile (char *path, int usehunk, int *size)
@@ -284,12 +283,8 @@ byte *COM_LoadFile (char *path, int usehunk, int *size)
 	
 	if (usehunk == 1)
 		buf = (byte*)Hunk_AllocName (len+1, path);
-	else if (usehunk == 2)
-		buf = (byte*)Hunk_TempAlloc (len+1);
 	else if (usehunk == 0)
 		buf = (byte*)Z_Malloc (len+1);
-	else if (usehunk == 3)
-		buf = (byte*)Cache_Alloc (loadcache, len+1, path);
 	else if (usehunk == 4)
 	{
 		if (len+1 > loadsize)
@@ -316,22 +311,6 @@ byte *COM_LoadFile (char *path, int usehunk, int *size)
 byte *COM_LoadHunkFile (char *path)
 {
 	return COM_LoadFile (path, 1, NULL);
-}
-
-byte *COM_LoadHunkFile2 (char *path, int *size)
-{
-	return COM_LoadFile (path, 1, size);
-}
-
-byte *COM_LoadTempFile (char *path)
-{
-	return COM_LoadFile (path, 2, NULL);
-}
-
-void COM_LoadCacheFile (char *path, struct cache_user_s *cu)
-{
-	loadcache = cu;
-	COM_LoadFile (path, 3, NULL);
 }
 
 // uses temp hunk if larger than bufsize

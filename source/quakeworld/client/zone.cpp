@@ -797,16 +797,6 @@ void Cache_Report (void)
 
 /*
 ============
-Cache_Compact
-
-============
-*/
-void Cache_Compact (void)
-{
-}
-
-/*
-============
 Cache_Init
 
 ============
