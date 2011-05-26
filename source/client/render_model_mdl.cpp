@@ -722,11 +722,11 @@ static void GL_MakeAliasModelDisplayLists(model_t* m, mesh1hdr_t* hdr)
 	paliashdr->poseverts = numorder;
 
 	int* cmds = new int[numcommands];
-	paliashdr->commands = (byte*)cmds - (byte*)paliashdr;
+	paliashdr->commands = cmds;
 	Com_Memcpy(cmds, commands, numcommands * 4);
 
 	dmdl_trivertx_t* verts = new dmdl_trivertx_t[paliashdr->numposes * paliashdr->poseverts];
-	paliashdr->posedata = (byte*)verts - (byte*)paliashdr;
+	paliashdr->posedata = verts;
 	for (int i = 0; i < paliashdr->numposes; i++)
 	{
 		for (int j = 0; j < numorder; j++)
@@ -1053,4 +1053,18 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 	GL_MakeAliasModelDisplayLists(mod, pheader);
 
 	mod->q1_cache = pheader;
+}
+
+//==========================================================================
+//
+//	Mod_FreeMdlModel
+//
+//==========================================================================
+
+void Mod_FreeMdlModel(model_t* mod)
+{
+	mesh1hdr_t* pheader = (mesh1hdr_t*)mod->q1_cache;
+	delete[] pheader->commands;
+	delete[] pheader->posedata;
+	Mem_Free(pheader);
 }

@@ -557,8 +557,8 @@ struct mesh1hdr_t
 
 	int					numposes;
 	int					poseverts;
-	int					posedata;	// numposes*poseverts trivert_t
-	int					commands;	// gl command list with embedded s/t
+	dmdl_trivertx_t*	posedata;	// numposes*poseverts trivert_t
+	int*				commands;	// gl command list with embedded s/t
 	image_t*			gl_texture[MAX_MESH1_SKINS][4];
 	mmesh1framedesc_t	frames[1];	// variable sized
 };
@@ -766,6 +766,7 @@ void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen);
 void Mod_FreeSprite2Model(model_t* mod);
 void Mod_LoadMdlModel(model_t* mod, const void* buffer);
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
+void Mod_FreeMdlModel(model_t* mod);
 void Mod_LoadMd2Model(model_t* mod, const void* buffer);
 void Mod_FreeMd2Model(model_t* mod);
 
