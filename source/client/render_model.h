@@ -769,6 +769,7 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
 void Mod_FreeMdlModel(model_t* mod);
 void Mod_LoadMd2Model(model_t* mod, const void* buffer);
 void Mod_FreeMd2Model(model_t* mod);
+bool R_LoadMD3(model_t* mod, int lod, const void* buffer, const char* mod_name);
 
 extern model_t	*loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];

@@ -15,6 +15,10 @@
 //**
 //**************************************************************************
 
+// surface geometry should not exceed these limits
+#define SHADER_MAX_VERTEXES	1000
+#define SHADER_MAX_INDEXES	(6 * SHADER_MAX_VERTEXES)
+
 #define MAX_IMAGE_ANIMATIONS	8
 #define TR_MAX_TEXMODS			4
 #define NUM_TEXTURE_BUNDLES		2

@@ -210,5 +210,6 @@ void* R_GetWadLumpByName(const char* name);
 
 //	Temporarily must be defined in game.
 void R_InitSkyTexCoords( float cloudLayerHeight );
+shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 
 #endif
