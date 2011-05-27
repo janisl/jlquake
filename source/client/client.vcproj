@@ -237,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_model_md4.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_model_mdl.cpp"
 				>
 			</File>
