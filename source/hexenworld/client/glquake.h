@@ -85,7 +85,6 @@ extern	vec3_t	r_origin;
 //
 extern	refdef_t	r_refdef;
 extern	mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
-extern	mbrush29_texture_t	*r_notexture_mip;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
@@ -156,5 +155,4 @@ void R_DrawWaterSurfaces (void);
 void Draw_RedString (int x, int y, char *str);
 void GL_SubdivideSurface (mbrush29_surface_t *fa);
 void R_NetGraph (void);
-model_t *Mod_FindName (char *name);
 void R_InitSky (mbrush29_texture_t *mt);	// called at level load

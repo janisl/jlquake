@@ -269,9 +269,6 @@ model_t *Mod_ForName (char *name, qboolean crash)
 ===============================================================================
 */
 
-byte	*mod_base;
-
-
 /*
 =================
 Mod_LoadLighting

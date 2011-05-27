@@ -31,6 +31,6 @@ extern	QCvar*		scr_viewsize;
 extern	int			scr_copytop;
 extern	int			scr_copyeverything;
 
-extern int			total_loading_size, current_loading_size, entity_file_size, loading_stage;
+extern int			total_loading_size, current_loading_size, loading_stage;
 
 void SCR_UpdateWholeScreen (void);

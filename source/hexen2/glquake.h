@@ -125,7 +125,6 @@ extern	vec3_t	r_origin;
 //
 extern	refdef_t	r_refdef;
 extern	mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
-extern	mbrush29_texture_t	*r_notexture_mip;
 
 extern	qboolean	envmap;
 extern	image_t*	particletexture;
@@ -168,7 +167,6 @@ extern	trRefEntity_t		cl_visedicts[MAX_VISEDICTS];
 
 extern byte *playerTranslation;
 
-model_t *Mod_FindName (char *name);
 void GL_SubdivideSurface (mbrush29_surface_t *fa);
 int R_LightPoint (vec3_t p);
 void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent);

@@ -17,6 +17,7 @@ set(CLIENT_FILES
 	render_image_wal.cpp
 	render_init.cpp
 	render_model.cpp
+	render_model_bsp29.cpp
 	render_model_md2.cpp
 	render_model_md3.cpp
 	render_model_md4.cpp

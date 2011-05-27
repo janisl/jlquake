@@ -62,8 +62,6 @@ refdef_t	r_refdef;
 
 mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
 
-mbrush29_texture_t	*r_notexture_mip;
-
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 // refresh list

@@ -773,7 +773,17 @@ bool R_LoadMd3(model_t* mod, void* buffer);
 void R_FreeMd3(model_t* mod);
 bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name);
 void R_FreeMd4(model_t* mod);
+void Mod_LoadBrush29Model(model_t* mod, void* buffer);
+void Mod_FreeBsp29(model_t* mod);
 
 extern model_t	*loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];
 extern byte		h2_player_8bit_texels[6][620 * 245];
+extern byte*	mod_base;
+extern mbrush29_texture_t	*r_notexture_mip;
+
+//Stubs
+void R_InitSky(mbrush29_texture_t *mt);
+image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
+void GL_SubdivideSurface (mbrush29_surface_t *fa);
+model_t *Mod_FindName (const char *name);

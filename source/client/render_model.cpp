@@ -35,6 +35,7 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 model_t*		loadmodel;
+byte*			mod_base;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

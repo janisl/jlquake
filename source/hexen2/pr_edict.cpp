@@ -967,8 +967,6 @@ sprintf (token, "0 %s 0", temp);
 }
 
 
-extern int entity_file_size;
-
 /*
 ================
 ED_LoadFromFile
@@ -998,7 +996,7 @@ void ED_LoadFromFile (const char *data)
 	inhibit = 0;
 	pr_global_struct->time = sv.time;
 	orig = data;
-	entity_file_size = QStr::Length(data);
+	int entity_file_size = QStr::Length(data);
 	
 	start_amount = current_loading_size;
 // parse ents
