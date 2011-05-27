@@ -78,7 +78,6 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	int			ident;
 	qboolean	loaded;
 	qhandle_t	hModel;
-	int			numLoaded;
 
 	if ( !name || !name[0] ) {
 		ri.Printf( PRINT_ALL, "RE_RegisterModel: NULL name\n" );
@@ -117,84 +116,43 @@ qhandle_t RE_RegisterModel( const char *name ) {
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
-	mod->q3_numLods = 0;
-
-	//
-	// load the files
-	//
-	numLoaded = 0;
-
-	for ( lod = MD3_MAX_LODS - 1 ; lod >= 0 ; lod-- ) {
-		char filename[1024];
-
-		QStr::Cpy( filename, name );
-
-		if ( lod != 0 ) {
-			char namebuf[80];
-
-			if ( QStr::RChr( filename, '.' ) ) {
-				*QStr::RChr( filename, '.' ) = 0;
-			}
-			sprintf( namebuf, "_%d.md3", lod );
-			QStr::Cat( filename, sizeof(filename), namebuf );
-		}
-
-		FS_ReadFile( filename, (void **)&buf );
-		if ( !buf ) {
-			continue;
-		}
-		
-		loadmodel = mod;
-		
-		ident = LittleLong(*(unsigned *)buf);
-		if ( ident == MD4_IDENT ) {
-			loaded = R_LoadMD4( mod, buf, name );
-		} else {
-			if ( ident != MD3_IDENT ) {
-				ri.Printf (PRINT_WARNING,"RE_RegisterModel: unknown fileid for %s\n", name);
-				goto fail;
-			}
-
-			loaded = R_LoadMD3( mod, lod, buf, name );
-		}
-		
-		FS_FreeFile (buf);
-
-		if ( !loaded ) {
-			if ( lod == 0 ) {
-				goto fail;
-			} else {
-				break;
-			}
-		} else {
-			mod->q3_numLods++;
-			numLoaded++;
-			// if we have a valid model and are biased
-			// so that we won't see any higher detail ones,
-			// stop loading them
-//			if ( lod <= r_lodbias->integer ) {
-//				break;
-//			}
-		}
+	FS_ReadFile(name, (void**)&buf);
+	if (!buf)
+	{
+		goto fail;
 	}
 
-	if ( numLoaded ) {
-		// duplicate into higher lod spots that weren't
-		// loaded, in case the user changes r_lodbias on the fly
-		for ( lod-- ; lod >= 0 ; lod-- ) {
-			mod->q3_numLods++;
-			mod->q3_md3[lod] = mod->q3_md3[lod+1];
+	loadmodel = mod;
+
+	ident = LittleLong(*(unsigned *)buf);
+	if (ident == MD4_IDENT)
+	{
+		loaded = R_LoadMD4(mod, buf, name);
+	}
+	else
+	{
+		if (ident != MD3_IDENT)
+		{
+			ri.Printf (PRINT_WARNING,"RE_RegisterModel: unknown fileid for %s\n", name);
+			goto fail;
 		}
 
-		return mod->index;
+		loaded = R_LoadMd3(mod, buf);
 	}
-#ifdef _DEBUG
-	else {
-		ri.Printf (PRINT_WARNING,"RE_RegisterModel: couldn't load %s\n", name);
+
+	FS_FreeFile (buf);
+
+	if (!loaded)
+	{
+		goto fail;
 	}
-#endif
+
+	return mod->index;
 
 fail:
+#ifdef _DEBUG
+	ri.Printf (PRINT_WARNING,"RE_RegisterModel: couldn't load %s\n", name);
+#endif
 	// we still keep the model_t around, so if the model name is asked for
 	// again, we won't bother scanning the filesystem
 	mod->type = MOD_BAD;
