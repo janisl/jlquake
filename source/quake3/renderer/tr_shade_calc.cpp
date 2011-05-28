@@ -56,39 +56,6 @@ DEFORMATIONS
 */
 
 /*
-=========================
-RB_CalcDeformNormals
-
-Wiggle the normals for wavy environment mapping
-=========================
-*/
-void RB_CalcDeformNormals( deformStage_t *ds ) {
-	int i;
-	float	scale;
-	float	*xyz = ( float * ) tess.xyz;
-	float	*normal = ( float * ) tess.normal;
-
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 ) {
-		scale = 0.98f;
-		scale = R_NoiseGet4f( xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
-			tess.shaderTime * ds->deformationWave.frequency );
-		normal[ 0 ] += ds->deformationWave.amplitude * scale;
-
-		scale = 0.98f;
-		scale = R_NoiseGet4f( 100 + xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
-			tess.shaderTime * ds->deformationWave.frequency );
-		normal[ 1 ] += ds->deformationWave.amplitude * scale;
-
-		scale = 0.98f;
-		scale = R_NoiseGet4f( 200 + xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
-			tess.shaderTime * ds->deformationWave.frequency );
-		normal[ 2 ] += ds->deformationWave.amplitude * scale;
-
-		VectorNormalizeFast( normal );
-	}
-}
-
-/*
 ========================
 RB_CalcBulgeVertexes
 

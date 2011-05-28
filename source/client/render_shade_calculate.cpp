@@ -164,6 +164,40 @@ void RB_CalcDeformVertexes(deformStage_t* ds)
 
 //==========================================================================
 //
+//	RB_CalcDeformNormals
+//
+//	Wiggle the normals for wavy environment mapping
+//
+//==========================================================================
+
+void RB_CalcDeformNormals(deformStage_t* ds)
+{
+	float* xyz = (float*)tess.xyz;
+	float* normal = (float*)tess.normal;
+
+	for (int i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4)
+	{
+		float scale = 0.98f;
+		scale = R_NoiseGet4f(xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
+			tess.shaderTime * ds->deformationWave.frequency);
+		normal[0] += ds->deformationWave.amplitude * scale;
+
+		scale = 0.98f;
+		scale = R_NoiseGet4f(100 + xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
+			tess.shaderTime * ds->deformationWave.frequency);
+		normal[1] += ds->deformationWave.amplitude * scale;
+
+		scale = 0.98f;
+		scale = R_NoiseGet4f(200 + xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
+			tess.shaderTime * ds->deformationWave.frequency);
+		normal[2] += ds->deformationWave.amplitude * scale;
+
+		VectorNormalizeFast(normal);
+	}
+}
+
+//==========================================================================
+//
 //	myftol
 //
 //==========================================================================
