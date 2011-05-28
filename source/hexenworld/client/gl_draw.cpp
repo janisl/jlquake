@@ -98,6 +98,7 @@ void Draw_Init (void)
 
 	R_InitFunctionTables();
 	R_InitFogTable();
+	R_NoiseInit();
 	R_InitImages();
 
 	// load the console background and the charset

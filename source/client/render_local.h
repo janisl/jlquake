@@ -159,6 +159,9 @@ long myftol(float f);
 #define	myftol(x) ((int)(x))
 #endif
 
+void R_NoiseInit();
+float R_NoiseGet4f(float x, float y, float z, float t);
+
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern QCvar*	r_logFile;				// number of frames to emit GL logs

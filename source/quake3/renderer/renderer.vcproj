@@ -216,10 +216,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_noise.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_scene.cpp"
 				>
 			</File>

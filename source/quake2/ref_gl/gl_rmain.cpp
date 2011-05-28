@@ -947,6 +947,7 @@ int R_Init()
 
 	R_InitFunctionTables();
 	R_InitFogTable();
+	R_NoiseInit();
 	R_InitImages();
 	Mod_Init ();
 	R_InitParticleTexture ();

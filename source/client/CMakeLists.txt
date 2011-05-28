@@ -24,6 +24,7 @@ set(CLIENT_FILES
 	render_model_mdl.cpp
 	render_model_sp2.cpp
 	render_model_spr.cpp
+	render_noise.cpp
 	render_qgl.cpp
 	render_shade.cpp
 	render_shade_calculate.cpp
