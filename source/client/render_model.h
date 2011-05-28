@@ -152,6 +152,17 @@ struct mbrush29_hull_t
 	vec3_t		clip_maxs;
 };
 
+struct mbrush29_submodel_t
+{
+	float		mins[3];
+	float		maxs[3];
+	float		origin[3];
+	qint32		headnode[BSP29_MAX_MAP_HULLS_H2];
+	qint32		visleafs;		// not including the solid leaf 0
+	qint32		firstface;
+	qint32		numfaces;
+};
+
 //==============================================================================
 //
 //	QUAKE 2 BRUSH MODELS
@@ -646,8 +657,7 @@ struct model_t
 	int			brush29_nummodelsurfaces;
 
 	int			brush29_numsubmodels;
-	bsp29_dmodel_q1_t*	brush29_submodels_q1;
-	bsp29_dmodel_h2_t*	brush29_submodels_h2;
+	mbrush29_submodel_t*	brush29_submodels;
 
 	int			brush29_numplanes;
 	cplane_t*	brush29_planes;

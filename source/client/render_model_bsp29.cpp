@@ -943,10 +943,9 @@ static void Mod_LoadSubmodelsQ1(bsp29_lump_t* l)
 		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
-	bsp29_dmodel_q1_t* out = new bsp29_dmodel_q1_t[count];
-	Com_Memset(out, 0, sizeof(bsp29_dmodel_q1_t) * count);
+	mbrush29_submodel_t* out = new mbrush29_submodel_t[count];
 
-	loadmodel->brush29_submodels_q1 = out;
+	loadmodel->brush29_submodels = out;
 	loadmodel->brush29_numsubmodels = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
@@ -982,10 +981,9 @@ static void Mod_LoadSubmodelsH2(bsp29_lump_t* l)
 		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
-	bsp29_dmodel_h2_t* out = new bsp29_dmodel_h2_t[count];
-	Com_Memset(out, 0, sizeof(bsp29_dmodel_h2_t) * count);
+	mbrush29_submodel_t* out = new mbrush29_submodel_t[count];
 
-	loadmodel->brush29_submodels_h2 = out;
+	loadmodel->brush29_submodels = out;
 	loadmodel->brush29_numsubmodels = count;
 
 	for (int i = 0; i < count; i++, in++, out++)
@@ -1065,76 +1063,48 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 	//
 	// set up the submodels (FIXME: this is confusing)
 	//
-	if (GGameType & GAME_Hexen2)
+	for (int i = 0; i < mod->brush29_numsubmodels; i++)
 	{
-		for (int i = 0; i < mod->brush29_numsubmodels; i++)
-		{
-			bsp29_dmodel_h2_t* bm = &mod->brush29_submodels_h2[i];
+		mbrush29_submodel_t* bm = &mod->brush29_submodels[i];
 
-			mod->brush29_hulls[0].firstclipnode = bm->headnode[0];
+		mod->brush29_hulls[0].firstclipnode = bm->headnode[0];
+		if (GGameType & GAME_Hexen2)
+		{
 			for (int j = 1; j < BSP29_MAX_MAP_HULLS_H2; j++)
 			{
 				mod->brush29_hulls[j].firstclipnode = bm->headnode[j];
 				mod->brush29_hulls[j].lastclipnode = mod->brush29_numclipnodes-1;
 			}
-			
-			mod->brush29_firstmodelsurface = bm->firstface;
-			mod->brush29_nummodelsurfaces = bm->numfaces;
-			
-			VectorCopy (bm->maxs, mod->q1_maxs);
-			VectorCopy (bm->mins, mod->q1_mins);
-
-			mod->q1_radius = RadiusFromBounds (mod->q1_mins, mod->q1_maxs);
-
-			mod->brush29_numleafs = bm->visleafs;
-
-			if (i < mod->brush29_numsubmodels-1)
-			{
-				// duplicate the basic information
-				char	name[10];
-
-				sprintf (name, "*%i", i+1);
-				loadmodel = Mod_FindName(name);
-				*loadmodel = *mod;
-				QStr::Cpy(loadmodel->name, name);
-				mod = loadmodel;
-			}
 		}
-	}
-	else
-	{
-		for (int i = 0; i < mod->brush29_numsubmodels; i++)
+		else
 		{
-			bsp29_dmodel_q1_t* bm = &mod->brush29_submodels_q1[i];
-
-			mod->brush29_hulls[0].firstclipnode = bm->headnode[0];
 			for (int j = 1; j < BSP29_MAX_MAP_HULLS_Q1; j++)
 			{
 				mod->brush29_hulls[j].firstclipnode = bm->headnode[j];
 				mod->brush29_hulls[j].lastclipnode = mod->brush29_numclipnodes-1;
 			}
-			
-			mod->brush29_firstmodelsurface = bm->firstface;
-			mod->brush29_nummodelsurfaces = bm->numfaces;
-			
-			VectorCopy (bm->maxs, mod->q1_maxs);
-			VectorCopy (bm->mins, mod->q1_mins);
+		}
 
-			mod->q1_radius = RadiusFromBounds (mod->q1_mins, mod->q1_maxs);
+		mod->brush29_firstmodelsurface = bm->firstface;
+		mod->brush29_nummodelsurfaces = bm->numfaces;
 
-			mod->brush29_numleafs = bm->visleafs;
+		VectorCopy (bm->maxs, mod->q1_maxs);
+		VectorCopy (bm->mins, mod->q1_mins);
 
-			if (i < mod->brush29_numsubmodels-1)
-			{
-				// duplicate the basic information
-				char	name[10];
+		mod->q1_radius = RadiusFromBounds (mod->q1_mins, mod->q1_maxs);
 
-				sprintf (name, "*%i", i+1);
-				loadmodel = Mod_FindName (name);
-				*loadmodel = *mod;
-				QStr::Cpy(loadmodel->name, name);
-				mod = loadmodel;
-			}
+		mod->brush29_numleafs = bm->visleafs;
+
+		if (i < mod->brush29_numsubmodels-1)
+		{
+			// duplicate the basic information
+			char	name[10];
+
+			sprintf (name, "*%i", i+1);
+			loadmodel = Mod_FindName (name);
+			*loadmodel = *mod;
+			QStr::Cpy(loadmodel->name, name);
+			mod = loadmodel;
 		}
 	}
 }
@@ -1181,12 +1151,5 @@ void Mod_FreeBsp29(model_t* mod)
 	delete[] mod->brush29_marksurfaces;
 	delete[] mod->brush29_surfedges;
 	delete[] mod->brush29_planes;
-	if (mod->brush29_submodels_q1)
-	{
-		delete[] mod->brush29_submodels_q1;
-	}
-	if (mod->brush29_submodels_h2)
-	{
-		delete[] mod->brush29_submodels_h2;
-	}
+	delete[] mod->brush29_submodels;
 }
