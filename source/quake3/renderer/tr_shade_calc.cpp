@@ -26,60 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define	WAVEVALUE( table, base, amplitude, phase, freq )  ((base) + table[ myftol( ( ( (phase) + tess.shaderTime * (freq) ) * FUNCTABLE_SIZE ) ) & FUNCTABLE_MASK ] * (amplitude))
 
-static float *TableForFunc( genFunc_t func ) 
-{
-	switch ( func )
-	{
-	case GF_SIN:
-		return tr.sinTable;
-	case GF_TRIANGLE:
-		return tr.triangleTable;
-	case GF_SQUARE:
-		return tr.squareTable;
-	case GF_SAWTOOTH:
-		return tr.sawToothTable;
-	case GF_INVERSE_SAWTOOTH:
-		return tr.inverseSawToothTable;
-	case GF_NONE:
-	default:
-		break;
-	}
-
-	ri.Error( ERR_DROP, "TableForFunc called with invalid function '%d' in shader '%s'\n", func, tess.shader->name );
-	return NULL;
-}
-
-/*
-** EvalWaveForm
-**
-** Evaluates a given waveForm_t, referencing backEnd.refdef.time directly
-*/
-static float EvalWaveForm( const waveForm_t *wf ) 
-{
-	float	*table;
-
-	table = TableForFunc( wf->func );
-
-	return WAVEVALUE( table, wf->base, wf->amplitude, wf->phase, wf->frequency );
-}
-
-static float EvalWaveFormClamped( const waveForm_t *wf )
-{
-	float glow  = EvalWaveForm( wf );
-
-	if ( glow < 0 )
-	{
-		return 0;
-	}
-
-	if ( glow > 1 )
-	{
-		return 1;
-	}
-
-	return glow;
-}
-
 /*
 ** RB_CalcStretchTexCoords
 */
@@ -108,56 +54,6 @@ DEFORMATIONS
 
 ====================================================================
 */
-
-/*
-========================
-RB_CalcDeformVertexes
-
-========================
-*/
-void RB_CalcDeformVertexes( deformStage_t *ds )
-{
-	int i;
-	vec3_t	offset;
-	float	scale;
-	float	*xyz = ( float * ) tess.xyz;
-	float	*normal = ( float * ) tess.normal;
-	float	*table;
-
-	if ( ds->deformationWave.frequency == 0 )
-	{
-		scale = EvalWaveForm( &ds->deformationWave );
-
-		for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
-		{
-			VectorScale( normal, scale, offset );
-			
-			xyz[0] += offset[0];
-			xyz[1] += offset[1];
-			xyz[2] += offset[2];
-		}
-	}
-	else
-	{
-		table = TableForFunc( ds->deformationWave.func );
-
-		for ( i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4 )
-		{
-			float off = ( xyz[0] + xyz[1] + xyz[2] ) * ds->deformationSpread;
-
-			scale = WAVEVALUE( table, ds->deformationWave.base, 
-				ds->deformationWave.amplitude,
-				ds->deformationWave.phase + off,
-				ds->deformationWave.frequency );
-
-			VectorScale( normal, scale, offset );
-			
-			xyz[0] += offset[0];
-			xyz[1] += offset[1];
-			xyz[2] += offset[2];
-		}
-	}
-}
 
 /*
 =========================
@@ -1017,18 +913,6 @@ void RB_CalcRotateTexCoords( float degsPerSecond, float *st )
 
 
 
-
-
-#if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123
-
-long myftol( float f ) {
-	static int tmp;
-	__asm fld f
-	__asm fistp tmp
-	__asm mov eax, tmp
-}
-
-#endif
 
 /*
 ** RB_CalcSpecularAlpha

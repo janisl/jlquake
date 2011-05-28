@@ -26,6 +26,7 @@ set(CLIENT_FILES
 	render_model_spr.cpp
 	render_qgl.cpp
 	render_shade.cpp
+	render_shade_calculate.cpp
 	render_shader.cpp
 	render_state.cpp
 	render_wad.cpp

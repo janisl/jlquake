@@ -378,6 +378,11 @@ struct shaderCommands_t
 
 bool ParseShader(const char** text);
 
+float* TableForFunc(genFunc_t func) ;
+float EvalWaveForm(const waveForm_t* wf);
+float EvalWaveFormClamped(const waveForm_t* wf);
+void RB_CalcDeformVertexes(deformStage_t* ds);
+
 extern shaderCommands_t		tess;
 
 extern shader_t		shader;

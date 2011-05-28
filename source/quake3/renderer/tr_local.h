@@ -33,14 +33,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #undef tr
 
-// fast float to int conversion
-#if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123
-long myftol( float f );
-#else
-#define	myftol(x) ((int)(x))
-#endif
-
-
 // 12 bits
 // see QSORT_SHADERNUM_SHIFT
 #define	MAX_SHADERS				16384
@@ -229,7 +221,6 @@ typedef struct {
 } frontEndCounters_t;
 
 #define FUNCTABLE_SIZE2		10
-#define FUNCTABLE_MASK		(FUNCTABLE_SIZE-1)
 
 
 typedef struct {

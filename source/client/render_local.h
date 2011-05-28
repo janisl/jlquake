@@ -109,6 +109,7 @@ struct trRefEntity_t
 
 #define FOG_TABLE_SIZE			256
 #define FUNCTABLE_SIZE			1024
+#define FUNCTABLE_MASK			(FUNCTABLE_SIZE - 1)
 
 struct trGlobals_base_t
 {
@@ -150,6 +151,13 @@ const char* R_GetTitleForWindow();
 void R_CommonInit();
 void CommonGfxInfo_f();
 void R_InitFunctionTables();
+
+// fast float to int conversion
+#if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123
+long myftol(float f);
+#else
+#define	myftol(x) ((int)(x))
+#endif
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
