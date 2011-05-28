@@ -33,7 +33,6 @@ glstate2_t  gl_state;
 image_t		*r_particletexture;	// little dot for particles
 
 trRefEntity_t	*currententity;
-model_t		*currentmodel;
 
 cplane_t	frustum[4];
 

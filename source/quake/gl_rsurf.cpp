@@ -1216,7 +1216,6 @@ int AllocBlock (int w, int h, int *x, int *y)
 
 
 mbrush29_vertex_t	*r_pcurrentvertbase;
-model_t		*currentmodel;
 
 int	nColinElim;
 
