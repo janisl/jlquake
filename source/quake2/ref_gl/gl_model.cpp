@@ -407,9 +407,6 @@ image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qbo
 {
 	return NULL;
 }
-void GL_SubdivideSurface (mbrush29_surface_t *fa)
-{
-}
 model_t *Mod_FindName (const char *name)
 {
 	return NULL;

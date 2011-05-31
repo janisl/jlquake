@@ -29,7 +29,6 @@ image_t	*sky_images[6];
 mbrush38_surface_t	*warpface;
 
 #define	SUBDIVIDE_SIZE	64
-//#define	SUBDIVIDE_SIZE	1024
 
 void BoundPoly (int numverts, float *verts, vec3_t mins, vec3_t maxs)
 {

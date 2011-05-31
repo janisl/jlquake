@@ -163,5 +163,4 @@ void R_DrawParticles (void);
 void V_CalcBlend (void);
 void R_DrawWaterSurfaces (void);
 void R_RenderBrushPoly (mbrush29_surface_t *fa);
-void GL_SubdivideSurface (mbrush29_surface_t *fa);
 void R_InitSky (mbrush29_texture_t *mt);	// called at level load

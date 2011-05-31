@@ -24,6 +24,8 @@
 
 #define ANIM_CYCLE		2
 
+#define SUBDIVIDE_SIZE	64
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -40,7 +42,9 @@ mbrush29_texture_t*		r_notexture_mip;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static byte*			mod_base;
+static byte*				mod_base;
+
+static mbrush29_surface_t*	warpface;
 
 // CODE --------------------------------------------------------------------
 
@@ -468,6 +472,155 @@ static void CalcSurfaceExtents(mbrush29_surface_t* s)
 			throw QException("Bad surface extents");
 		}
 	}
+}
+
+//==========================================================================
+//
+//	BoundPoly
+//
+//==========================================================================
+
+static void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
+{
+	ClearBounds(mins, maxs);
+	float* v = verts;
+	for (int i = 0; i < numverts; i++, v += 3)
+	{
+		AddPointToBounds(v, mins, maxs);
+	}
+}
+
+//==========================================================================
+//
+//	SubdividePolygon
+//
+//==========================================================================
+
+static void SubdividePolygon(int numverts, float* verts)
+{
+
+	if (numverts > 60)
+	{
+		throw QException(va("numverts = %i", numverts));
+	}
+
+	vec3_t mins, maxs;
+	BoundPoly(numverts, verts, mins, maxs);
+
+	for (int i = 0; i < 3; i++)
+	{
+		float m = (mins[i] + maxs[i]) * 0.5;
+		m = SUBDIVIDE_SIZE * floor (m / SUBDIVIDE_SIZE + 0.5);
+		if (maxs[i] - m < 8)
+		{
+			continue;
+		}
+		if (m - mins[i] < 8)
+		{
+			continue;
+		}
+
+		// cut it
+		float* v = verts + i;
+		float dist[64];
+		for (int j = 0; j < numverts; j++, v+= 3)
+		{
+			dist[j] = *v - m;
+		}
+
+		// wrap cases
+		dist[numverts] = dist[0];
+		v -= i;
+		VectorCopy(verts, v);
+
+		int f = 0;
+		int b = 0;
+		v = verts;
+		vec3_t front[64], back[64];
+		for (int j = 0; j < numverts; j++, v+= 3)
+		{
+			if (dist[j] >= 0)
+			{
+				VectorCopy(v, front[f]);
+				f++;
+			}
+			if (dist[j] <= 0)
+			{
+				VectorCopy(v, back[b]);
+				b++;
+			}
+			if (dist[j] == 0 || dist[j+1] == 0)
+			{
+				continue;
+			}
+			if ((dist[j] > 0) != (dist[j + 1] > 0))
+			{
+				// clip point
+				float frac = dist[j] / (dist[j] - dist[j + 1]);
+				for (int k = 0; k < 3; k++)
+				{
+					front[f][k] = back[b][k] = v[k] + frac * (v[3 + k] - v[k]);
+				}
+				f++;
+				b++;
+			}
+		}
+
+		SubdividePolygon(f, front[0]);
+		SubdividePolygon(b, back[0]);
+		return;
+	}
+
+	mbrush29_glpoly_t* poly = (mbrush29_glpoly_t*)Mem_Alloc(sizeof(mbrush29_glpoly_t) + (numverts - 4) * BRUSH29_VERTEXSIZE * sizeof(float));
+	poly->next = warpface->polys;
+	warpface->polys = poly;
+	poly->numverts = numverts;
+	for (int i = 0; i < numverts; i++, verts += 3)
+	{
+		VectorCopy(verts, poly->verts[i]);
+		float s = DotProduct(verts, warpface->texinfo->vecs[0]);
+		float t = DotProduct(verts, warpface->texinfo->vecs[1]);
+		poly->verts[i][3] = s;
+		poly->verts[i][4] = t;
+	}
+}
+
+//==========================================================================
+//
+//	GL_SubdivideSurface
+//
+//	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
+// sky warps can be done reasonably.
+//
+//==========================================================================
+
+static void GL_SubdivideSurface(mbrush29_surface_t* fa)
+{
+	warpface = fa;
+
+	//
+	// convert edges back to a normal polygon
+	//
+	vec3_t verts[64];
+	int numverts = 0;
+	for (int i = 0; i < fa->numedges; i++)
+	{
+		int lindex = loadmodel->brush29_surfedges[fa->firstedge + i];
+
+		float* vec;
+		if (lindex > 0)
+		{
+			vec = loadmodel->brush29_vertexes[loadmodel->brush29_edges[lindex].v[0]].position;
+		}
+		else
+		{
+			vec = loadmodel->brush29_vertexes[loadmodel->brush29_edges[-lindex].v[1]].position;
+		}
+		VectorCopy(vec, verts[numverts]);
+		numverts++;
+	}
+
+	SubdividePolygon(numverts, verts[0]);
 }
 
 //==========================================================================

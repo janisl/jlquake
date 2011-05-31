@@ -16,8 +16,6 @@ static byte	mod_novis[BSP29_MAX_MAP_LEAFS/8];
 static model_t	mod_known[MAX_MOD_KNOWN];
 static int		mod_numknown;
 
-QCvar* gl_subdivide_size;
-
 /*
 ===============
 Mod_Init
@@ -25,7 +23,6 @@ Mod_Init
 */
 void Mod_Init (void)
 {
-	gl_subdivide_size = Cvar_Get("gl_subdivide_size", "128", CVAR_ARCHIVE);
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 
 	mod_numknown = 1;

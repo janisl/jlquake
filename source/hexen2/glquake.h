@@ -165,7 +165,6 @@ extern	trRefEntity_t		cl_visedicts[MAX_VISEDICTS];
 
 extern byte *playerTranslation;
 
-void GL_SubdivideSurface (mbrush29_surface_t *fa);
 int R_LightPoint (vec3_t p);
 void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);

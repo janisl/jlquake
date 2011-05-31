@@ -233,7 +233,6 @@ shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 void R_SyncRenderThread();
 void R_InitSky(mbrush29_texture_t *mt);
 image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
-void GL_SubdivideSurface (mbrush29_surface_t *fa);
 model_t *Mod_FindName (const char *name);
 void GL_BuildPolygonFromSurface(mbrush38_surface_t *fa);
 void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
