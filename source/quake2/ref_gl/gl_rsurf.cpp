@@ -322,7 +322,7 @@ void R_BlendLightmaps (void)
 	** set the appropriate blending mode unless we're only looking at the
 	** lightmaps.
 	*/
-	if (!gl_lightmap->value)
+	if (!r_lightmap->value)
 	{
 		if ( gl_saturatelighting->value )
 		{
@@ -1193,7 +1193,7 @@ void R_DrawWorld (void)
 		GL_TexEnv( GL_REPLACE );
 		GL_SelectTexture(1);
 
-		if ( gl_lightmap->value )
+		if ( r_lightmap->value )
 			GL_TexEnv( GL_REPLACE );
 		else 
 			GL_TexEnv( GL_MODULATE );

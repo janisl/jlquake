@@ -156,7 +156,7 @@ typedef struct {
 	netadr_t	serverAddress;
 	int			connectTime;				// for connection retransmits
 	int			connectPacketCount;			// for display on connection dialog
-	char		serverMessage[MAX_STRING_TOKENS];	// for display on connection dialog
+	char		serverMessage[MAX_TOKEN_CHARS_Q3];	// for display on connection dialog
 
 	int			challenge;					// from the server to use for connecting
 	int			checksumFeed;				// from the server for checksum calculations
@@ -287,7 +287,7 @@ typedef struct {
 
 	// update server info
 	netadr_t	updateServer;
-	char		updateChallenge[MAX_TOKEN_CHARS];
+	char		updateChallenge[MAX_TOKEN_CHARS_Q3];
 	char		updateInfoString[MAX_INFO_STRING];
 
 	netadr_t	authorizeServer;

@@ -237,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_model_bsp46.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_model_md2.cpp"
 				>
 			</File>

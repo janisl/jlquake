@@ -88,6 +88,12 @@ QCvar*		r_ignoreGLErrors;
 
 QCvar*		r_nobind;
 
+QCvar*		r_mapOverBrightBits;
+QCvar*		r_vertexLight;
+QCvar*		r_lightmap;
+QCvar*		r_fullbright;
+QCvar*		r_singleShader;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -221,6 +227,7 @@ void R_SharedRegister()
 	AssertCvarRange(r_picmip, 0, 16, true);
 	r_texturebits = Cvar_Get("r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_simpleMipMaps = Cvar_Get("r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_vertexLight = Cvar_Get("r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	//
 	// temporary latched variables that can only change over a restart
@@ -230,6 +237,9 @@ void R_SharedRegister()
 	AssertCvarRange(r_displayRefresh, 0, 200, true);
 	r_intensity = Cvar_Get("r_intensity", "1", CVAR_LATCH2);
 	r_colorMipLevels = Cvar_Get("r_colorMipLevels", "0", CVAR_LATCH2);
+	r_mapOverBrightBits = Cvar_Get("r_mapOverBrightBits", "2", CVAR_LATCH2);
+	r_fullbright = Cvar_Get("r_fullbright", "0", CVAR_LATCH2 | CVAR_CHEAT);
+	r_singleShader = Cvar_Get("r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH2);
 
 	//
 	// archived variables that can change at any time
@@ -246,6 +256,7 @@ void R_SharedRegister()
 	r_logFile = Cvar_Get("r_logFile", "0", CVAR_CHEAT);
 	r_verbose = Cvar_Get("r_verbose", "0", CVAR_CHEAT);
 	r_nobind = Cvar_Get("r_nobind", "0", CVAR_CHEAT);
+	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

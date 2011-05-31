@@ -361,7 +361,7 @@ void SV_ReadServerFile (void)
 	fileHandle_t	f;
 	char	name[MAX_OSPATH], string[128];
 	char	comment[32];
-	char	mapcmd[MAX_TOKEN_CHARS];
+	char	mapcmd[MAX_TOKEN_CHARS_Q2];
 
 	Com_DPrintf("SV_ReadServerFile()\n");
 

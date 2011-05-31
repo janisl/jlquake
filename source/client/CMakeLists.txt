@@ -19,6 +19,7 @@ set(CLIENT_FILES
 	render_model.cpp
 	render_model_bsp29.cpp
 	render_model_bsp38.cpp
+	render_model_bsp46.cpp
 	render_model_md2.cpp
 	render_model_md3.cpp
 	render_model_md4.cpp

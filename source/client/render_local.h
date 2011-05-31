@@ -122,6 +122,8 @@ struct trGlobals_base_t
 	image_t*				scratchImage[32];
 	image_t*				fogImage;
 
+	shader_t*				defaultShader;
+
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
 	int						overbrightBits;		// r_overbrightBits->integer, but set to 0 if no hw gamma
@@ -205,6 +207,12 @@ extern QCvar*	r_ignoreGLErrors;
 
 extern QCvar*	r_nobind;				// turns off binding to appropriate textures
 
+extern QCvar*	r_mapOverBrightBits;
+extern QCvar*	r_vertexLight;			// vertex lighting mode for better performance
+extern QCvar*	r_lightmap;				// render lightmaps only
+extern QCvar*	r_fullbright;			// avoid lightmap pass
+extern QCvar*	r_singleShader;			// make most world faces use default shader
+
 extern trGlobals_base_t*	tr_shared;
 #define tr		(*tr_shared)
 
@@ -222,5 +230,23 @@ void* R_GetWadLumpByName(const char* name);
 //	Temporarily must be defined in game.
 void R_InitSkyTexCoords( float cloudLayerHeight );
 shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
+void R_SyncRenderThread();
+void R_InitSky(mbrush29_texture_t *mt);
+image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
+void GL_SubdivideSurface (mbrush29_surface_t *fa);
+model_t *Mod_FindName (const char *name);
+void GL_BuildPolygonFromSurface(mbrush38_surface_t *fa);
+void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
+void GL_EndBuildingLightmaps (void);
+void GL_BeginBuildingLightmaps (model_t *m);
+void GL_SubdivideSurface (mbrush38_surface_t *fa);
+model_t* Mod_AllocModel();
+srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
+								bsp46_drawVert_t points[MAX_PATCH_SIZE*MAX_PATCH_SIZE] );
+srfGridMesh_t *R_GridInsertColumn( srfGridMesh_t *grid, int column, int row, vec3_t point, float loderror );
+srfGridMesh_t *R_GridInsertRow( srfGridMesh_t *grid, int row, int column, vec3_t point, float loderror );
+void R_FreeSurfaceGridMesh( srfGridMesh_t *grid );
+void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset);
+model_t		*R_AllocModel( void );
 
 #endif

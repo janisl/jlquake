@@ -75,8 +75,6 @@ QCvar*	r_norefresh;
 QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
 QCvar*	r_speeds;
-QCvar*	r_fullbright;
-QCvar*	r_lightmap;
 QCvar*	r_shadows;
 QCvar*	r_mirroralpha;
 QCvar*	r_dynamic;

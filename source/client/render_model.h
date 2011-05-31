@@ -291,6 +291,9 @@ struct mbrush38_model_t
 
 #define BRUSH46_VERTEXSIZE	8
 
+#define MAX_PATCH_SIZE		32			// max dimensions of a patch mesh in map file
+#define MAX_GRID_SIZE		65			// max dimensions of a grid mesh in memory
+
 // any changes in surfaceType must be mirrored in rb_surfaceTable[]
 enum surfaceType_t
 {
@@ -787,22 +790,12 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer);
 void Mod_FreeBsp29(model_t* mod);
 void Mod_LoadBrush38Model(model_t* mod, void* buffer);
 void Mod_FreeBsp38(model_t* mod);
+void R_LoadBrush46Model(void* buffer);
+void R_FreeBsp46(world_t* mod);
 
 extern model_t*	currentmodel;
 extern model_t*	loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];
 extern byte		h2_player_8bit_texels[6][620 * 245];
-extern byte*	mod_base;
 extern mbrush29_texture_t	*r_notexture_mip;
-
-//Stubs
-void R_InitSky(mbrush29_texture_t *mt);
-image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
-void GL_SubdivideSurface (mbrush29_surface_t *fa);
-model_t *Mod_FindName (const char *name);
-void GL_BuildPolygonFromSurface(mbrush38_surface_t *fa);
-void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
-void GL_EndBuildingLightmaps (void);
-void GL_BeginBuildingLightmaps (model_t *m);
-void GL_SubdivideSurface (mbrush38_surface_t *fa);
-model_t* Mod_AllocModel();
+extern world_t		s_worldData;

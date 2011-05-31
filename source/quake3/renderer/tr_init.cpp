@@ -59,7 +59,6 @@ QCvar	*r_norefresh;
 QCvar	*r_drawentities;
 QCvar	*r_drawworld;
 QCvar	*r_speeds;
-QCvar	*r_fullbright;
 QCvar	*r_novis;
 QCvar	*r_nocull;
 QCvar	*r_facePlaneCull;
@@ -70,12 +69,9 @@ QCvar	*r_primitives;
 
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
-QCvar	*r_lightmap;
-QCvar	*r_vertexLight;
 QCvar	*r_uiFullScreen;
 QCvar	*r_shadows;
 QCvar	*r_flares;
-QCvar	*r_singleShader;
 QCvar	*r_showtris;
 QCvar	*r_showsky;
 QCvar	*r_shownormals;
@@ -89,8 +85,6 @@ QCvar	*r_portalOnly;
 
 QCvar	*r_subdivisions;
 QCvar	*r_lodCurveError;
-
-QCvar	*r_mapOverBrightBits;
 
 QCvar	*r_debugSurface;
 
@@ -610,7 +604,6 @@ void R_Register( void )
 	r_glDriver = Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
 
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_vertexLight = Cvar_Get( "r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_uiFullScreen = Cvar_Get( "r_uifullscreen", "0", 0);
 	r_subdivisions = Cvar_Get ("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2);
 #if defined(MACOS_X) || defined(__linux__)
@@ -620,13 +613,6 @@ void R_Register( void )
 	r_smp = Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 #endif
 	r_ignoreFastPath = Cvar_Get( "r_ignoreFastPath", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-
-	//
-	// temporary latched variables that can only change over a restart
-	//
-	r_fullbright = Cvar_Get ("r_fullbright", "0", CVAR_LATCH2|CVAR_CHEAT );
-	r_mapOverBrightBits = Cvar_Get ("r_mapOverBrightBits", "2", CVAR_LATCH2 );
-	r_singleShader = Cvar_Get ("r_singleShader", "0", CVAR_CHEAT | CVAR_LATCH2 );
 
 	//
 	// archived variables that can change at any time
@@ -665,7 +651,6 @@ void R_Register( void )
 
 	r_nocurves = Cvar_Get ("r_nocurves", "0", CVAR_CHEAT );
 	r_drawworld = Cvar_Get ("r_drawworld", "1", CVAR_CHEAT );
-	r_lightmap = Cvar_Get ("r_lightmap", "0", 0 );
 	r_portalOnly = Cvar_Get ("r_portalOnly", "0", CVAR_CHEAT );
 
 	r_flareSize = Cvar_Get ("r_flareSize", "40", CVAR_CHEAT);
@@ -865,7 +850,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.RegisterShader = RE_RegisterShader;
 	re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
 	re.LoadWorld = RE_LoadWorldMap;
-	re.SetWorldVisData = RE_SetWorldVisData;
 	re.EndRegistration = RE_EndRegistration;
 
 	re.BeginFrame = RE_BeginFrame;

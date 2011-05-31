@@ -183,9 +183,6 @@ void Sys_PumpEvents( void );
 
 enum {qfalse, qtrue};
 
-#define	MAX_STRING_TOKENS	1024	// max tokens resulting from Cmd_TokenizeString
-#define	MAX_TOKEN_CHARS		1024	// max length of an individual token
-
 #define	MAX_INFO_STRING		1024
 #define	MAX_INFO_KEY		1024
 #define	MAX_INFO_VALUE		1024
@@ -313,10 +310,6 @@ extern vec4_t	g_color_table[8];
 int DirToByte( vec3_t dir );
 void ByteToDir( int b, vec3_t dir );
 
-unsigned ColorBytes3 (float r, float g, float b);
-unsigned ColorBytes4 (float r, float g, float b, float a);
-
-float NormalizeColor( const vec3_t in, vec3_t out );
 
 int		Q_rand( int *seed );
 float	Q_random( int *seed );

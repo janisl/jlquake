@@ -78,7 +78,6 @@ extern	QCvar	*r_lefthand;
 extern	QCvar	*r_drawentities;
 extern	QCvar	*r_drawworld;
 extern	QCvar	*r_speeds;
-extern	QCvar	*r_fullbright;
 extern	QCvar	*r_novis;
 extern	QCvar	*r_nocull;
 extern	QCvar	*r_lerpmodels;
@@ -95,7 +94,6 @@ extern QCvar	*gl_particle_att_b;
 extern QCvar	*gl_particle_att_c;
 
 extern	QCvar	*gl_nosubimage;
-extern	QCvar	*gl_lightmap;
 extern	QCvar	*gl_shadows;
 extern	QCvar	*gl_dynamic;
 extern	QCvar	*gl_skymip;

@@ -2746,8 +2746,8 @@ void StartServer_MenuInit( void )
 
 	for ( i = 0; i < nummaps; i++ )
 	{
-    char  shortname[MAX_TOKEN_CHARS];
-    char  longname[MAX_TOKEN_CHARS];
+    char  shortname[MAX_TOKEN_CHARS_Q2];
+    char  longname[MAX_TOKEN_CHARS_Q2];
 		char  scratch[200];
 		int		j, l;
 

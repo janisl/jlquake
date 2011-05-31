@@ -106,8 +106,6 @@ extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_speeds;
-extern	QCvar*	r_fullbright;
-extern	QCvar*	r_lightmap;
 extern	QCvar*	r_shadows;
 extern	QCvar*	r_mirroralpha;
 extern	QCvar*	r_dynamic;

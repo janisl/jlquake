@@ -51,10 +51,6 @@ typedef struct {
 	qhandle_t (*RegisterShaderNoMip)( const char *name );
 	void	(*LoadWorld)( const char *name );
 
-	// the vis data is a large enough block of data that we go to the trouble
-	// of sharing it with the clipmodel subsystem
-	void	(*SetWorldVisData)( const byte *vis );
-
 	// EndRegistration will draw a tiny polygon with each texture, forcing
 	// them to be loaded into card memory
 	void	(*EndRegistration)( void );

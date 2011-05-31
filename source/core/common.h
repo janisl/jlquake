@@ -143,6 +143,9 @@ public:
 // centralized and cleaned, that's the max string you can send to a Com_Printf / Com_DPrintf (above gets truncated)
 #define	MAXPRINTMSG	4096
 
+#define MAX_TOKEN_CHARS_Q2	128		// max length of an individual token
+#define MAX_TOKEN_CHARS_Q3	1024	// max length of an individual token
+
 #define	ANGLE2SHORT(x)		((int)((x)*65536/360) & 65535)
 #define	SHORT2ANGLE(x)		((x)*(360.0/65536))
 

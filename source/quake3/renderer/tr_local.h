@@ -138,11 +138,6 @@ SURFACES
 ==============================================================================
 */
 
-#define	MAX_FACE_POINTS		64
-
-#define	MAX_PATCH_SIZE		32			// max dimensions of a patch mesh in map file
-#define	MAX_GRID_SIZE		65			// max dimensions of a grid mesh in memory
-
 extern	void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])(void *);
 
 /*
@@ -279,11 +274,8 @@ struct trGlobals_t : trGlobals_base_t
 	qboolean				worldMapLoaded;
 	world_t					*world;
 
-	const byte				*externalVisData;	// from RE_SetWorldVisData, shared with CM_Load
-
 	image_t					*flareImage;
 
-	shader_t				*defaultShader;
 	shader_t				*shadowShader;
 	shader_t				*projectionShadowShader;
 
@@ -371,16 +363,12 @@ extern	QCvar	*r_facePlaneCull;		// enables culling of planar surfaces with back 
 extern	QCvar	*r_nocurves;
 extern	QCvar	*r_showcluster;
 
-extern	QCvar	*r_singleShader;				// make most world faces use default shader
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;
 extern  QCvar  *r_glDriver;
 extern	QCvar	*r_offsetFactor;
 extern	QCvar	*r_offsetUnits;
 
-extern	QCvar	*r_fullbright;					// avoid lightmap pass
-extern	QCvar	*r_lightmap;					// render lightmaps only
-extern	QCvar	*r_vertexLight;					// vertex lighting mode for better performance
 extern	QCvar	*r_uiFullScreen;				// ui is running fullscreen
 
 extern	QCvar	*r_showtris;					// enables wireframe rendering of the world
@@ -400,8 +388,6 @@ extern	QCvar	*r_lodCurveError;
 extern	QCvar	*r_smp;
 extern	QCvar	*r_showSmp;
 extern	QCvar	*r_skipBackEnd;
-
-extern	QCvar	*r_mapOverBrightBits;
 
 extern	QCvar	*r_debugSurface;
 
@@ -453,7 +439,6 @@ void	RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
 void		RE_BeginRegistration( glconfig_t *glconfig );
 void		RE_LoadWorldMap( const char *mapname );
-void		RE_SetWorldVisData( const byte *vis );
 qhandle_t	RE_RegisterModel( const char *name );
 qhandle_t	RE_RegisterSkin( const char *name );
 void		RE_Shutdown( qboolean destroyWindow );
@@ -597,8 +582,6 @@ CURVE TESSELATION
 
 ============================================================
 */
-
-#define PATCH_STITCHING
 
 srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
 								bsp46_drawVert_t points[MAX_PATCH_SIZE*MAX_PATCH_SIZE] );

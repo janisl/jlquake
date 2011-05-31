@@ -64,7 +64,6 @@ QCvar	*r_norefresh;
 QCvar	*r_drawentities;
 QCvar	*r_drawworld;
 QCvar	*r_speeds;
-QCvar	*r_fullbright;
 QCvar	*r_novis;
 QCvar	*r_nocull;
 QCvar	*r_lerpmodels;
@@ -85,7 +84,6 @@ QCvar	*gl_particle_att_c;
 
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
-QCvar	*gl_lightmap;
 QCvar	*gl_shadows;
 QCvar	*gl_dynamic;
 QCvar	*gl_modulate;
@@ -856,7 +854,6 @@ void R_Register( void )
 	R_SharedRegister();
 	r_lefthand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 	r_norefresh = Cvar_Get ("r_norefresh", "0", 0);
-	r_fullbright = Cvar_Get ("r_fullbright", "0", 0);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", 0);
 	r_drawworld = Cvar_Get ("r_drawworld", "1", 0);
 	r_novis = Cvar_Get ("r_novis", "0", 0);
@@ -876,7 +873,6 @@ void R_Register( void )
 	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
 	gl_modulate = Cvar_Get ("gl_modulate", "1", CVAR_ARCHIVE );
-	gl_lightmap = Cvar_Get ("gl_lightmap", "0", 0);
 	gl_shadows = Cvar_Get ("gl_shadows", "0", CVAR_ARCHIVE );
 	gl_dynamic = Cvar_Get ("gl_dynamic", "1", 0);
 	gl_skymip = Cvar_Get ("gl_skymip", "0", 0);
