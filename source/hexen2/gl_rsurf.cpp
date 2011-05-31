@@ -12,9 +12,6 @@ int			skytexturenum;
 
 unsigned		blocklights[18*18];
 
-#define	BLOCK_WIDTH		128
-#define	BLOCK_HEIGHT	128
-
 mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 qboolean	lightmap_modified[MAX_LIGHTMAPS];
 

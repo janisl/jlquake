@@ -12,9 +12,6 @@ int			skytexturenum;
 
 unsigned		blocklights[18*18];
 
-#define	BLOCK_WIDTH		128
-#define	BLOCK_HEIGHT	128
-
 typedef struct glRect_s {
 	unsigned char l,t,w,h;
 } glRect_t;

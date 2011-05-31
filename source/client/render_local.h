@@ -234,11 +234,9 @@ void R_SyncRenderThread();
 void R_InitSky(mbrush29_texture_t *mt);
 image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
 model_t *Mod_FindName (const char *name);
-void GL_BuildPolygonFromSurface(mbrush38_surface_t *fa);
 void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
 void GL_EndBuildingLightmaps (void);
 void GL_BeginBuildingLightmaps (model_t *m);
-void GL_SubdivideSurface (mbrush38_surface_t *fa);
 model_t* Mod_AllocModel();
 srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
 								bsp46_drawVert_t points[MAX_PATCH_SIZE*MAX_PATCH_SIZE] );

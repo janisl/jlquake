@@ -31,9 +31,6 @@ mbrush38_surface_t	*r_alpha_surfaces;
 
 #define LIGHTMAP_BYTES 4
 
-#define	BLOCK_WIDTH		128
-#define	BLOCK_HEIGHT	128
-
 int		c_visible_lightmaps;
 int		c_visible_textures;
 
@@ -1397,84 +1394,6 @@ static qboolean LM_AllocBlock (int w, int h, int *x, int *y)
 		gl_lms.allocated[*x + i] = best + h;
 
 	return true;
-}
-
-/*
-================
-GL_BuildPolygonFromSurface
-================
-*/
-void GL_BuildPolygonFromSurface(mbrush38_surface_t *fa)
-{
-	int			i, lindex, lnumverts;
-	mbrush38_edge_t		*pedges, *r_pedge;
-	int			vertpage;
-	float		*vec;
-	float		s, t;
-	mbrush38_glpoly_t	*poly;
-	vec3_t		total;
-
-// reconstruct the polygon
-	pedges = currentmodel->brush38_edges;
-	lnumverts = fa->numedges;
-	vertpage = 0;
-
-	VectorClear (total);
-	//
-	// draw texture
-	//
-	poly = (mbrush38_glpoly_t*)Hunk_Alloc (sizeof(mbrush38_glpoly_t) + (lnumverts-4) * BRUSH38_VERTEXSIZE*sizeof(float));
-	poly->next = fa->polys;
-	poly->flags = fa->flags;
-	fa->polys = poly;
-	poly->numverts = lnumverts;
-
-	for (i=0 ; i<lnumverts ; i++)
-	{
-		lindex = currentmodel->brush38_surfedges[fa->firstedge + i];
-
-		if (lindex > 0)
-		{
-			r_pedge = &pedges[lindex];
-			vec = currentmodel->brush38_vertexes[r_pedge->v[0]].position;
-		}
-		else
-		{
-			r_pedge = &pedges[-lindex];
-			vec = currentmodel->brush38_vertexes[r_pedge->v[1]].position;
-		}
-		s = DotProduct (vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
-		s /= fa->texinfo->image->width;
-
-		t = DotProduct (vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
-		t /= fa->texinfo->image->height;
-
-		VectorAdd (total, vec, total);
-		VectorCopy (vec, poly->verts[i]);
-		poly->verts[i][3] = s;
-		poly->verts[i][4] = t;
-
-		//
-		// lightmap texture coordinates
-		//
-		s = DotProduct (vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
-		s -= fa->texturemins[0];
-		s += fa->light_s*16;
-		s += 8;
-		s /= BLOCK_WIDTH*16; //fa->texinfo->texture->width;
-
-		t = DotProduct (vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
-		t -= fa->texturemins[1];
-		t += fa->light_t*16;
-		t += 8;
-		t /= BLOCK_HEIGHT*16; //fa->texinfo->texture->height;
-
-		poly->verts[i][5] = s;
-		poly->verts[i][6] = t;
-	}
-
-	poly->numverts = lnumverts;
-
 }
 
 /*

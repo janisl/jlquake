@@ -148,7 +148,6 @@ void R_DrawAlphaSurfaces (void);
 void R_RenderBrushPoly (mbrush38_surface_t *fa);
 void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
-void GL_SubdivideSurface (mbrush38_surface_t *fa);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
 void R_RotateForEntity (trRefEntity_t *e);
 void R_MarkLeaves (void);

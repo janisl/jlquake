@@ -22,6 +22,8 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define	SUBDIVIDE_SIZE	64
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -36,7 +38,9 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static byte*			mod_base;
+static byte*				mod_base;
+
+static mbrush38_surface_t*	warpface;
 
 // CODE --------------------------------------------------------------------
 
@@ -251,6 +255,247 @@ static void CalcSurfaceExtents(mbrush38_surface_t* s)
 		s->texturemins[i] = bmins[i] * 16;
 		s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
 	}
+}
+
+//==========================================================================
+//
+//	BoundPoly
+//
+//==========================================================================
+
+static void BoundPoly(int numverts, float* verts, vec3_t mins, vec3_t maxs)
+{
+	ClearBounds(mins, maxs);
+	float* v = verts;
+	for (int i = 0; i < numverts; i++, v += 3)
+	{
+		AddPointToBounds(v, mins, maxs);
+	}
+}
+
+//==========================================================================
+//
+//	SubdividePolygon
+//
+//==========================================================================
+
+static void SubdividePolygon(int numverts, float* verts)
+{
+	if (numverts > 60)
+	{
+		throw QDropException(va("numverts = %i", numverts));
+	}
+
+	vec3_t mins, maxs;
+	BoundPoly(numverts, verts, mins, maxs);
+
+	for (int i = 0; i < 3; i++)
+	{
+		float m = (mins[i] + maxs[i]) * 0.5;
+		m = SUBDIVIDE_SIZE * floor (m / SUBDIVIDE_SIZE + 0.5);
+		if (maxs[i] - m < 8)
+		{
+			continue;
+		}
+		if (m - mins[i] < 8)
+		{
+			continue;
+		}
+
+		// cut it
+		float* v = verts + i;
+		float dist[64];
+		for (int j = 0; j < numverts; j++, v+= 3)
+		{
+			dist[j] = *v - m;
+		}
+
+		// wrap cases
+		dist[numverts] = dist[0];
+		v -= i;
+		VectorCopy(verts, v);
+
+		int f = 0;
+		int b = 0;
+		v = verts;
+		vec3_t front[64], back[64];
+		for (int j = 0; j < numverts; j++, v += 3)
+		{
+			if (dist[j] >= 0)
+			{
+				VectorCopy(v, front[f]);
+				f++;
+			}
+			if (dist[j] <= 0)
+			{
+				VectorCopy(v, back[b]);
+				b++;
+			}
+			if (dist[j] == 0 || dist[j + 1] == 0)
+			{
+				continue;
+			}
+			if ((dist[j] > 0) != (dist[j + 1] > 0))
+			{
+				// clip point
+				float frac = dist[j] / (dist[j] - dist[j + 1]);
+				for (int k = 0 ; k < 3; k++)
+				{
+					front[f][k] = back[b][k] = v[k] + frac*(v[3+k] - v[k]);
+				}
+				f++;
+				b++;
+			}
+		}
+
+		SubdividePolygon(f, front[0]);
+		SubdividePolygon(b, back[0]);
+		return;
+	}
+
+	// add a point in the center to help keep warp valid
+	mbrush38_glpoly_t* poly = (mbrush38_glpoly_t*)Mem_Alloc(sizeof(mbrush38_glpoly_t) + ((numverts - 4) + 2) * BRUSH38_VERTEXSIZE * sizeof(float));
+	Com_Memset(poly, 0, sizeof(mbrush38_glpoly_t) + ((numverts - 4) + 2) * BRUSH38_VERTEXSIZE * sizeof(float));
+	poly->next = warpface->polys;
+	warpface->polys = poly;
+	poly->numverts = numverts + 2;
+	vec3_t total;
+	VectorClear(total);
+	float total_s = 0;
+	float total_t = 0;
+	for (int i = 0 ; i < numverts; i++, verts += 3)
+	{
+		VectorCopy(verts, poly->verts[i + 1]);
+		float s = DotProduct(verts, warpface->texinfo->vecs[0]);
+		float t = DotProduct(verts, warpface->texinfo->vecs[1]);
+
+		total_s += s;
+		total_t += t;
+		VectorAdd(total, verts, total);
+
+		poly->verts[i + 1][3] = s;
+		poly->verts[i + 1][4] = t;
+	}
+
+	VectorScale(total, (1.0 / numverts), poly->verts[0]);
+	poly->verts[0][3] = total_s / numverts;
+	poly->verts[0][4] = total_t / numverts;
+
+	// copy first vertex to last
+	Com_Memcpy(poly->verts[numverts + 1], poly->verts[1], sizeof(poly->verts[0]));
+}
+
+//==========================================================================
+//
+//	GL_SubdivideSurface
+//
+//	Breaks a polygon up along axial 64 unit boundaries so that turbulent and
+// sky warps can be done reasonably.
+//
+//==========================================================================
+
+static void GL_SubdivideSurface(mbrush38_surface_t* fa)
+{
+	warpface = fa;
+
+	//
+	// convert edges back to a normal polygon
+	//
+	int numverts = 0;
+	vec3_t verts[64];
+	for (int i = 0; i < fa->numedges; i++)
+	{
+		int lindex = loadmodel->brush38_surfedges[fa->firstedge + i];
+
+		float* vec;
+		if (lindex > 0)
+		{
+			vec = loadmodel->brush38_vertexes[loadmodel->brush38_edges[lindex].v[0]].position;
+		}
+		else
+		{
+			vec = loadmodel->brush38_vertexes[loadmodel->brush38_edges[-lindex].v[1]].position;
+		}
+		VectorCopy(vec, verts[numverts]);
+		numverts++;
+	}
+
+	SubdividePolygon(numverts, verts[0]);
+}
+
+//==========================================================================
+//
+//	GL_BuildPolygonFromSurface
+//
+//==========================================================================
+
+static void GL_BuildPolygonFromSurface(mbrush38_surface_t* fa)
+{
+	// reconstruct the polygon
+	mbrush38_edge_t* pedges = currentmodel->brush38_edges;
+	int lnumverts = fa->numedges;
+	int vertpage = 0;
+
+	vec3_t total;
+	VectorClear(total);
+	//
+	// draw texture
+	//
+	mbrush38_glpoly_t* poly = (mbrush38_glpoly_t*)Mem_Alloc(sizeof(mbrush38_glpoly_t) + (lnumverts - 4) * BRUSH38_VERTEXSIZE * sizeof(float));
+	Com_Memset(poly, 0, sizeof(mbrush38_glpoly_t) + (lnumverts - 4) * BRUSH38_VERTEXSIZE * sizeof(float));
+	poly->next = fa->polys;
+	poly->flags = fa->flags;
+	fa->polys = poly;
+	poly->numverts = lnumverts;
+
+	for (int i = 0; i < lnumverts; i++)
+	{
+		int lindex = currentmodel->brush38_surfedges[fa->firstedge + i];
+
+		mbrush38_edge_t* r_pedge;
+		float* vec;
+		if (lindex > 0)
+		{
+			r_pedge = &pedges[lindex];
+			vec = currentmodel->brush38_vertexes[r_pedge->v[0]].position;
+		}
+		else
+		{
+			r_pedge = &pedges[-lindex];
+			vec = currentmodel->brush38_vertexes[r_pedge->v[1]].position;
+		}
+		float s = DotProduct(vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
+		s /= fa->texinfo->image->width;
+
+		float t = DotProduct(vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
+		t /= fa->texinfo->image->height;
+
+		VectorAdd(total, vec, total);
+		VectorCopy(vec, poly->verts[i]);
+		poly->verts[i][3] = s;
+		poly->verts[i][4] = t;
+
+		//
+		// lightmap texture coordinates
+		//
+		s = DotProduct(vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
+		s -= fa->texturemins[0];
+		s += fa->light_s * 16;
+		s += 8;
+		s /= BLOCK_WIDTH * 16; //fa->texinfo->texture->width;
+
+		t = DotProduct(vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
+		t -= fa->texturemins[1];
+		t += fa->light_t * 16;
+		t += 8;
+		t /= BLOCK_HEIGHT * 16; //fa->texinfo->texture->height;
+
+		poly->verts[i][5] = s;
+		poly->verts[i][6] = t;
+	}
+
+	poly->numverts = lnumverts;
+
 }
 
 //==========================================================================
