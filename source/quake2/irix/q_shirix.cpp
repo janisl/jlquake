@@ -11,58 +11,6 @@
 
 #include "../qcommon/qcommon.h"
 
-//===============================================================================
-
-byte *membase;
-int maxhunksize;
-int curhunksize;
-
-void *Hunk_Begin (int maxsize)
-{
-	maxhunksize = maxsize + sizeof(int);
-	curhunksize = 0;
-/* 	membase = mmap(0, maxhunksize, PROT_READ|PROT_WRITE,  */
-/* 		MAP_PRIVATE, -1, 0); */
-/* 	if ((membase == NULL) || (membase == MAP_FAILED)) */
-	membase = malloc(maxhunksize);
-	if (membase == NULL)
-		Com_Error(ERR_FATAL, "unable to virtual allocate %d bytes", maxsize);
-
-	*((int *)membase) = curhunksize;
-
-	return membase + sizeof(int);
-}
-
-void *Hunk_Alloc (int size)
-{
-	byte *buf;
-
-	// round to cacheline
-	size = (size+31)&~31;
-	if (curhunksize + size > maxhunksize)
-		Com_Error(ERR_FATAL, "Hunk_Alloc overflow");
-	buf = membase + sizeof(int) + curhunksize;
-	curhunksize += size;
-	return buf;
-}
-
-int Hunk_End (void)
-{
-	return curhunksize;
-}
-
-void Hunk_Free (void *base)
-{
-	byte *m;
-
-	if (base) {
-		m = ((byte *)base) - sizeof(int);
-		free(m);
-	}
-}
-
-//===============================================================================
-
 int curtime;
 
 //============================================

@@ -94,12 +94,6 @@ inline int Sys_Milliseconds_()
 	return curtime;
 }
 
-// large block stack allocation routines
-void	*Hunk_Begin (int maxsize);
-void	*Hunk_Alloc (int size);
-void	Hunk_Free (void *buf);
-int		Hunk_End (void);
-
 // directory searching
 #define SFF_ARCH    0x01
 #define SFF_HIDDEN  0x02

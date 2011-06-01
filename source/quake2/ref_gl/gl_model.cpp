@@ -363,7 +363,6 @@ void Mod_Free(model_t* mod)
 	else if (mod->type == MOD_BRUSH38)
 	{
 		Mod_FreeBsp29(mod);
-		Hunk_Free(mod->q2_extradata);
 	}
 	Com_Memset(mod, 0, sizeof(*mod));
 }
