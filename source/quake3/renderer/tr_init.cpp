@@ -83,7 +83,6 @@ QCvar	*r_lockpvs;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
 
-QCvar	*r_subdivisions;
 QCvar	*r_lodCurveError;
 
 QCvar	*r_debugSurface;
@@ -605,7 +604,6 @@ void R_Register( void )
 
 	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
 	r_uiFullScreen = Cvar_Get( "r_uifullscreen", "0", 0);
-	r_subdivisions = Cvar_Get ("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2);
 #if defined(MACOS_X) || defined(__linux__)
   // Default to using SMP on Mac OS X or Linux if we have multiple processors
 	r_smp = Cvar_Get( "r_smp", Sys_ProcessorCount() > 1 ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2);

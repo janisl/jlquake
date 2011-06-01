@@ -434,7 +434,6 @@ static void GL_BuildPolygonFromSurface(mbrush38_surface_t* fa)
 	// reconstruct the polygon
 	mbrush38_edge_t* pedges = currentmodel->brush38_edges;
 	int lnumverts = fa->numedges;
-	int vertpage = 0;
 
 	vec3_t total;
 	VectorClear(total);

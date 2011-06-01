@@ -94,6 +94,8 @@ QCvar*		r_lightmap;
 QCvar*		r_fullbright;
 QCvar*		r_singleShader;
 
+QCvar*		r_subdivisions;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -228,6 +230,7 @@ void R_SharedRegister()
 	r_texturebits = Cvar_Get("r_texturebits", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_simpleMipMaps = Cvar_Get("r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_vertexLight = Cvar_Get("r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_subdivisions = Cvar_Get("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	//
 	// temporary latched variables that can only change over a restart

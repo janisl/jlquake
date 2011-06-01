@@ -383,7 +383,6 @@ extern	QCvar	*r_lockpvs;
 extern	QCvar	*r_noportals;
 extern	QCvar	*r_portalOnly;
 
-extern	QCvar	*r_subdivisions;
 extern	QCvar	*r_lodCurveError;
 extern	QCvar	*r_smp;
 extern	QCvar	*r_showSmp;
@@ -574,20 +573,6 @@ void R_InitSkyTexCoords( float cloudLayerHeight );
 void R_DrawSkyBox( shaderCommands_t *shader );
 void RB_DrawSun( void );
 void RB_ClipSkyPolygons( shaderCommands_t *shader );
-
-/*
-============================================================
-
-CURVE TESSELATION
-
-============================================================
-*/
-
-srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
-								bsp46_drawVert_t points[MAX_PATCH_SIZE*MAX_PATCH_SIZE] );
-srfGridMesh_t *R_GridInsertColumn( srfGridMesh_t *grid, int column, int row, vec3_t point, float loderror );
-srfGridMesh_t *R_GridInsertRow( srfGridMesh_t *grid, int row, int column, vec3_t point, float loderror );
-void R_FreeSurfaceGridMesh( srfGridMesh_t *grid );
 
 /*
 ============================================================

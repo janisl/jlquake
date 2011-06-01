@@ -1618,39 +1618,6 @@ static void R_StitchAllPatches()
 
 //==========================================================================
 //
-//	R_MovePatchSurfacesToHunk
-//
-//==========================================================================
-
-static void R_MovePatchSurfacesToHunk()
-{
-	for (int i = 0; i < s_worldData.numsurfaces; i++)
-	{
-		srfGridMesh_t* grid = (srfGridMesh_t*)s_worldData.surfaces[i].data;
-		// if this surface is not a grid
-		if (grid->surfaceType != SF_GRID)
-		{
-			continue;
-		}
-
-		int size = (grid->width * grid->height - 1) * sizeof(bsp46_drawVert_t) + sizeof(*grid);
-		srfGridMesh_t* hunkgrid = (srfGridMesh_t*)Mem_Alloc(size);
-		Com_Memcpy(hunkgrid, grid, size);
-
-		hunkgrid->widthLodError = new float[grid->width];
-		Com_Memcpy(hunkgrid->widthLodError, grid->widthLodError, grid->width * 4);
-
-		hunkgrid->heightLodError = new float[grid->height];
-		Com_Memcpy(grid->heightLodError, grid->heightLodError, grid->height * 4);
-
-		R_FreeSurfaceGridMesh(grid);
-
-		s_worldData.surfaces[i].data = (surfaceType_t*)hunkgrid;
-	}
-}
-
-//==========================================================================
-//
 //	R_LoadSurfaces
 //
 //==========================================================================
@@ -1715,8 +1682,6 @@ static void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_
 	R_StitchAllPatches();
 
 	R_FixSharedVertexLodError();
-
-	R_MovePatchSurfacesToHunk();
 
 	GLog.Write("...loaded %d faces, %i meshes, %i trisurfs, %i flares\n", 
 		numFaces, numMeshes, numTriSurfs, numFlares);
@@ -2266,12 +2231,7 @@ void R_FreeBsp46(world_t* mod)
 		switch (*mod->surfaces[i].data)
 		{
 		case SF_GRID:
-			{
-				srfGridMesh_t* grid = (srfGridMesh_t*)mod->surfaces[i].data;
-				delete[] grid->widthLodError;
-				delete[] grid->heightLodError;
-				Mem_Free(grid);
-			}	
+			R_FreeSurfaceGridMesh((srfGridMesh_t*)mod->surfaces[i].data);
 			break;
 		case SF_TRIANGLES:
 			Mem_Free(mod->surfaces[i].data);

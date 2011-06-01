@@ -176,10 +176,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_curve.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_flares.cpp"
 				>
 			</File>

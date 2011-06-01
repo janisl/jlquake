@@ -213,6 +213,8 @@ extern QCvar*	r_lightmap;				// render lightmaps only
 extern QCvar*	r_fullbright;			// avoid lightmap pass
 extern QCvar*	r_singleShader;			// make most world faces use default shader
 
+extern QCvar*	r_subdivisions;
+
 extern trGlobals_base_t*	tr_shared;
 #define tr		(*tr_shared)
 
@@ -237,11 +239,6 @@ void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
 void GL_EndBuildingLightmaps (void);
 void GL_BeginBuildingLightmaps (model_t *m);
 model_t* Mod_AllocModel();
-srfGridMesh_t *R_SubdividePatchToGrid( int width, int height,
-								bsp46_drawVert_t points[MAX_PATCH_SIZE*MAX_PATCH_SIZE] );
-srfGridMesh_t *R_GridInsertColumn( srfGridMesh_t *grid, int column, int row, vec3_t point, float loderror );
-srfGridMesh_t *R_GridInsertRow( srfGridMesh_t *grid, int row, int column, vec3_t point, float loderror );
-void R_FreeSurfaceGridMesh( srfGridMesh_t *grid );
 void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset);
 model_t		*R_AllocModel( void );
 

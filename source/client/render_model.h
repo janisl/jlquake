@@ -796,6 +796,15 @@ void Mod_FreeBsp38(model_t* mod);
 void R_LoadBrush46Model(void* buffer);
 void R_FreeBsp46(world_t* mod);
 
+//
+//	CURVE TESSELATION
+//
+srfGridMesh_t* R_SubdividePatchToGrid(int Width, int Height,
+	bsp46_drawVert_t Points[MAX_PATCH_SIZE*MAX_PATCH_SIZE]);
+srfGridMesh_t* R_GridInsertColumn(srfGridMesh_t* Grid, int Column, int Row, vec3_t Point, float LodError);
+srfGridMesh_t* R_GridInsertRow(srfGridMesh_t* Grid, int Row, int Column, vec3_t Point, float LodError);
+void R_FreeSurfaceGridMesh(srfGridMesh_t* Grid);
+
 extern model_t*	currentmodel;
 extern model_t*	loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];
