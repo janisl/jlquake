@@ -798,7 +798,7 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos, vel, movedir, offset;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 	int		rnd;
 	explosion_t	*ex;
 	int		cnt, cnt2, i, chType;
@@ -2722,7 +2722,7 @@ void CL_ParseTEnt (void)
 			{
 				float travelAng, travelPitch;
 				float fireCounts;
-				dlight_t			*dlx;
+				cdlight_t			*dlx;
 				vec3_t				endPos, curPos, posAdd;
 
 				pos[0] = net_message.ReadCoord();
@@ -2842,7 +2842,7 @@ void CL_ParseTEnt (void)
 			{
 				float travelAng, travelPitch;
 				float fireCounts;
-				dlight_t			*dlx;
+				cdlight_t			*dlx;
 				vec3_t				endPos, curPos, posAdd;
 				vec3_t				angles, forward, right, up;
 				float				cVal, sVal;

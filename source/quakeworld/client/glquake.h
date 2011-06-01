@@ -157,7 +157,7 @@ void R_RotateForEntity (trRefEntity_t *e);
 //
 // gl_rlight.c
 //
-void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
+void R_MarkLights (cdlight_t *light, int bit, mbrush29_node_t *node);
 void R_AnimateLight (void);
 void R_RenderDlights (void);
 int R_LightPoint (vec3_t p);

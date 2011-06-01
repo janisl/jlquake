@@ -47,7 +47,7 @@ client_state_t	cl;
 entity_t		cl_entities[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
-dlight_t		cl_dlights[MAX_DLIGHTS];
+cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 /*
 =====================
@@ -255,10 +255,10 @@ CL_AllocDlight
 
 ===============
 */
-dlight_t *CL_AllocDlight (int key)
+cdlight_t *CL_AllocDlight (int key)
 {
 	int		i;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 
 // first look for an exact key match
 	if (key)
@@ -303,7 +303,7 @@ CL_DecayLights
 void CL_DecayLights (void)
 {
 	int			i;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 	float		time;
 	
 	time = cl.time - cl.oldtime;
@@ -384,7 +384,7 @@ void CL_RelinkEntities (void)
 	vec3_t		delta;
 	float		bobjrotate;
 	vec3_t		oldorg;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 
 // determine partial update time	
 	frac = CL_LerpPoint ();

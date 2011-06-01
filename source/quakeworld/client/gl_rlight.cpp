@@ -92,7 +92,7 @@ void R_InitBubble() {
 	}
 }
 
-void R_RenderDlight (dlight_t *light)
+void R_RenderDlight (cdlight_t *light)
 {
 	int		i, j;
 //	float	a;
@@ -141,7 +141,7 @@ R_RenderDlights
 void R_RenderDlights (void)
 {
 	int		i;
-	dlight_t	*l;
+	cdlight_t	*l;
 
 	if (!gl_flashblend->value)
 		return;
@@ -179,7 +179,7 @@ DYNAMIC LIGHTS
 R_MarkLights
 =============
 */
-void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node)
+void R_MarkLights (cdlight_t *light, int bit, mbrush29_node_t *node)
 {
 	cplane_t	*splitplane;
 	float		dist;
@@ -228,7 +228,7 @@ R_PushDlights
 void R_PushDlights (void)
 {
 	int		i;
-	dlight_t	*l;
+	cdlight_t	*l;
 
 	if (gl_flashblend->value)
 		return;

@@ -106,7 +106,7 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 	int		rnd;
 	int		colorStart, colorLength;
 

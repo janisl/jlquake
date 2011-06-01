@@ -39,10 +39,10 @@ CL_AllocDlight
 
 ===============
 */
-dlight_t *CL_AllocDlight (int key)
+cdlight_t *CL_AllocDlight (int key)
 {
 	int		i;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 
 // first look for an exact key match
 	if (key)
@@ -85,7 +85,7 @@ CL_NewDlight
 void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
 				   int type)
 {
-	dlight_t	*dl;
+	cdlight_t	*dl;
 
 	dl = CL_AllocDlight (key);
 	dl->origin[0] = x;
@@ -126,7 +126,7 @@ CL_DecayLights
 void CL_DecayLights (void)
 {
 	int			i;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
@@ -415,7 +415,7 @@ void CL_LinkPacketEntities (void)
 	float				autorotate;
 	int					i;
 	int					pnum;
-	dlight_t			*dl;
+	cdlight_t			*dl;
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
 	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;

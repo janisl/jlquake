@@ -63,7 +63,7 @@ typedef struct
 	float	minlight;			// don't add when contributing less
 	int		key;
 	qboolean	dark;			// subtracts light instead of adding
-} dlight_t;
+} cdlight_t;
 
 #define	MAX_EFRAGS		640
 
@@ -268,14 +268,14 @@ extern	client_state_t	cl;
 extern	entity_t		cl_entities[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
-extern	dlight_t		cl_dlights[MAX_DLIGHTS];
+extern	cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 //=============================================================================
 
 //
 // cl_main
 //
-dlight_t *CL_AllocDlight (int key);
+cdlight_t *CL_AllocDlight (int key);
 void	CL_DecayLights (void);
 
 void CL_Init (void);

@@ -74,7 +74,7 @@ typedef struct
 	float	decay;				// drop this each second
 	float	minlight;			// don't add when contributing less
 	int		key;
-} dlight_t;
+} cdlight_t;
 
 
 #define	MAX_BEAMS	24
@@ -262,7 +262,7 @@ extern	client_state_t	cl;
 extern	entity_t		cl_entities[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
-extern	dlight_t		cl_dlights[MAX_DLIGHTS];
+extern	cdlight_t		cl_dlights[MAX_DLIGHTS];
 extern	beam_t			cl_beams[MAX_BEAMS];
 
 //=============================================================================
@@ -270,7 +270,7 @@ extern	beam_t			cl_beams[MAX_BEAMS];
 //
 // cl_main
 //
-dlight_t *CL_AllocDlight (int key);
+cdlight_t *CL_AllocDlight (int key);
 void	CL_DecayLights (void);
 
 void CL_Init (void);

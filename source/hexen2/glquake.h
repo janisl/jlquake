@@ -179,7 +179,7 @@ void EmitSkyPolys (mbrush29_surface_t *fa, qboolean save);
 void EmitBothSkyLayers (mbrush29_surface_t *fa);
 void R_DrawSkyChain (mbrush29_surface_t *s);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
+void R_MarkLights (cdlight_t *light, int bit, mbrush29_node_t *node);
 void R_RotateForEntity (trRefEntity_t *e);
 void GL_Set2D (void);
 void SCR_DrawLoading (void);

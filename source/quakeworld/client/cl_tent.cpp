@@ -165,7 +165,7 @@ void CL_ParseTEnt (void)
 {
 	int		type;
 	vec3_t	pos;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 	int		rnd;
 	explosion_t	*ex;
 	int		cnt;

@@ -51,10 +51,10 @@ CL_AllocDlight
 
 ===============
 */
-dlight_t *CL_AllocDlight (int key)
+cdlight_t *CL_AllocDlight (int key)
 {
 	int		i;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 
 // first look for an exact key match
 	if (key)
@@ -97,7 +97,7 @@ CL_NewDlight
 void CL_NewDlight (int key, float x, float y, float z, float radius, float time,
 				   int type)
 {
-	dlight_t	*dl;
+	cdlight_t	*dl;
 
 	dl = CL_AllocDlight (key);
 	dl->origin[0] = x;
@@ -138,7 +138,7 @@ CL_DecayLights
 void CL_DecayLights (void)
 {
 	int			i;
-	dlight_t	*dl;
+	cdlight_t	*dl;
 
 	dl = cl_dlights;
 	for (i=0 ; i<MAX_DLIGHTS ; i++, dl++)
@@ -480,7 +480,7 @@ nextword:
 
 void HandleEffects(int effects, int number, refEntity_t *ent, vec3_t angles, vec3_t angleAdd, vec3_t oldOrg)
 {
-	dlight_t			*dl;
+	cdlight_t			*dl;
 	int					rotateSet = 0;
 
 	// Effect Flags
@@ -618,7 +618,7 @@ void CL_LinkPacketEntities (void)
 	float				autorotate;
 	int					i, j;
 	int					pnum;
-	dlight_t			*dl;
+	cdlight_t			*dl;
 
 	pack = &cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].packet_entities;
 	packet_entities_t* PrevPack = &cl.frames[(cls.netchan.incoming_sequence - 1) & UPDATE_MASK].packet_entities;
@@ -1191,7 +1191,7 @@ void CL_LinkPlayers (void)
 	int				msec;
 	frame_t			*frame;
 	int				oldphysent;
-	dlight_t		*dl;
+	cdlight_t		*dl;
 
 	playertime = realtime - cls.latency + 0.02;
 	if (playertime > realtime)

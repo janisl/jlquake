@@ -111,7 +111,7 @@ typedef struct
 	float	minlight;			// don't add when contributing less
 	float   color[4];
 	qboolean	dark;			// subtracts light instead of adding
-} dlight_t;
+} cdlight_t;
 
 typedef struct
 {
@@ -426,7 +426,7 @@ extern	client_state_t	cl;
 extern	entity_state_t	cl_baselines[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
-extern	dlight_t		cl_dlights[MAX_DLIGHTS];
+extern	cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 extern	int				color_offsets[MAX_PLAYER_CLASS];
 
@@ -444,7 +444,7 @@ extern float	server_version;	// version of server we connected to
 //
 // cl_main
 //
-dlight_t *CL_AllocDlight (int key);
+cdlight_t *CL_AllocDlight (int key);
 void	CL_DecayLights (void);
 
 void CL_Init (void);
