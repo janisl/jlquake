@@ -403,10 +403,6 @@ shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 void R_InitSky(mbrush29_texture_t *mt)
 {
 }
-image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap)
-{
-	return NULL;
-}
 model_t *Mod_FindName (const char *name)
 {
 	return NULL;

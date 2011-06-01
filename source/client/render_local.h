@@ -232,7 +232,6 @@ void R_InitSkyTexCoords( float cloudLayerHeight );
 shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 void R_SyncRenderThread();
 void R_InitSky(mbrush29_texture_t *mt);
-image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
 model_t *Mod_FindName (const char *name);
 void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
 void GL_EndBuildingLightmaps (void);

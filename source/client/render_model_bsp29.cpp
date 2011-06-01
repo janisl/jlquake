@@ -109,9 +109,17 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 		}
 		else
 		{
-			byte* pic32 = R_ConvertImage8To32((byte*)(tx + 1), tx->width, tx->height, IMG8MODE_Normal);
-			tx->gl_texture = GL_LoadTexture(mt->name, tx->width, tx->height, pic32, true);
-			delete[] pic32;
+			// see if the texture is allready present
+			char search[64];
+			sprintf(search, "%s_%d_%d", mt->name, tx->width, tx->height);
+			tx->gl_texture = R_FindImage(search);
+
+			if (!tx->gl_texture)
+			{
+				byte* pic32 = R_ConvertImage8To32((byte*)(tx + 1), tx->width, tx->height, IMG8MODE_Normal);
+				tx->gl_texture = R_CreateImage(search, pic32, tx->width, tx->height, true, true, GL_REPEAT, false);
+				delete[] pic32;
+			}
 		}
 	}
 

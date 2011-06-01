@@ -28,8 +28,6 @@ void GL_EndRendering (void);
 
 extern	float	gldepthmin, gldepthmax;
 
-image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap);
-
 extern	int glx, gly, glwidth, glheight;
 
 // r_local.h -- private refresh defs

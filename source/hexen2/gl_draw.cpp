@@ -772,39 +772,6 @@ void GL_Set2D (void)
 	qglColor4f (1,1,1,1);
 }
 
-//====================================================================
-
-/*
-================
-GL_LoadTexture
-================
-*/
-image_t* GL_LoadTexture(char *identifier, int width, int height, byte *data, qboolean mipmap)
-{
-	char search[64];
-
-	if (!vid_initialized)
-		return NULL;
-
-	sprintf (search, "%s%d%d",identifier,width,height);
-
-	// see if the texture is allready present
-	if (identifier[0])
-	{
-		image_t* glt = R_FindImage(search);
-		if (glt)
-		{
-			if (width != glt->width || height != glt->height)
-			{
-				Sys_Error ("GL_LoadTexture: cache mismatch");
-			}
-			return glt;
-		}
-	}
-
-	return R_CreateImage(search, (byte*)data, width, height, mipmap, mipmap, mipmap ? GL_REPEAT : GL_CLAMP, false);
-}
-
 int Draw_GetWidth(image_t* pic)
 {
 	return pic->width;
