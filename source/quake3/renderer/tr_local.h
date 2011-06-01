@@ -42,16 +42,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // can't be increased without changing bit packing for drawsurfs
 
 
-typedef struct dlight_s {
-	vec3_t	origin;
-	vec3_t	color;				// range from 0.0 to 1.0, should be color normalized
-	float	radius;
-
-	vec3_t	transformed;		// origin in local coordinate system
-	int		additive;			// texture detail is lost tho when the lightmap is dark
-} dlight_t;
-
-
 typedef struct {
 	vec3_t		origin;			// in world coordinates
 	vec3_t		axis[3];		// orientation in world
@@ -63,7 +53,8 @@ typedef struct {
 
 // trRefdef_t holds everything that comes in refdef_t,
 // as well as the locally generated scene information
-typedef struct {
+struct trRefdef_t
+{
 	int			x, y, width, height;
 	float		fov_x, fov_y;
 	vec3_t		vieworg;
@@ -85,16 +76,14 @@ typedef struct {
 	trRefEntity_t	*entities;
 
 	int			num_dlights;
-	struct dlight_s	*dlights;
+	dlight_t	*dlights;
 
 	int			numPolys;
 	srfPoly_t	*polys;
 
 	int			numDrawSurfs;
 	drawSurf_t	*drawSurfs;
-
-
-} trRefdef_t;
+};
 
 
 //=================================================================================

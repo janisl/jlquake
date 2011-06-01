@@ -115,7 +115,7 @@ void V_AddLight (vec3_t org, float intensity, float r, float g, float b)
 		return;
 	dl = &r_dlights[r_numdlights++];
 	VectorCopy (org, dl->origin);
-	dl->intensity = intensity;
+	dl->radius = intensity;
 	dl->color[0] = r;
 	dl->color[1] = g;
 	dl->color[2] = b;
@@ -233,7 +233,7 @@ void V_TestLights (void)
 		dl->color[0] = ((i%6)+1) & 1;
 		dl->color[1] = (((i%6)+1) & 2)>>1;
 		dl->color[2] = (((i%6)+1) & 4)>>2;
-		dl->intensity = 200;
+		dl->radius = 200;
 	}
 }
 

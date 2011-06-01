@@ -33,13 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 	vec3_t	origin;
-	vec3_t	color;
-	float	intensity;
-} dlight_t;
-
-typedef struct
-{
-	vec3_t	origin;
 	int		color;
 	float	alpha;
 } particle_t;
@@ -51,6 +44,7 @@ typedef struct
 } lightstyle_t;
 
 struct trRefEntity_t;
+struct dlight_t;
 typedef struct
 {
 	int			x, y, width, height;// in virtual screen coordinates

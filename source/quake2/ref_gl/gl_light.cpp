@@ -40,7 +40,7 @@ void R_RenderDlight (dlight_t *light)
 	vec3_t	v;
 	float	rad;
 
-	rad = light->intensity * 0.35;
+	rad = light->radius * 0.35;
 
 	VectorSubtract (light->origin, r_origin, v);
 #if 0
@@ -124,12 +124,12 @@ void R_MarkLights (dlight_t *light, int bit, mbrush38_node_t *node)
 	splitplane = node->plane;
 	dist = DotProduct (light->origin, splitplane->normal) - splitplane->dist;
 	
-	if (dist > light->intensity-DLIGHT_CUTOFF)
+	if (dist > light->radius-DLIGHT_CUTOFF)
 	{
 		R_MarkLights (light, bit, node->children[0]);
 		return;
 	}
-	if (dist < -light->intensity+DLIGHT_CUTOFF)
+	if (dist < -light->radius+DLIGHT_CUTOFF)
 	{
 		R_MarkLights (light, bit, node->children[1]);
 		return;
@@ -332,7 +332,7 @@ void R_LightPoint (vec3_t p, vec3_t color)
 		VectorSubtract (currententity->e.origin,
 						dl->origin,
 						dist);
-		add = dl->intensity - VectorLength(dist);
+		add = dl->radius - VectorLength(dist);
 		add *= (1.0/256);
 		if (add > 0)
 		{
@@ -376,7 +376,7 @@ void R_AddDynamicLights (mbrush38_surface_t *surf)
 			continue;		// not lit by this light
 
 		dl = &r_newrefdef.dlights[lnum];
-		frad = dl->intensity;
+		frad = dl->radius;
 		fdist = DotProduct (dl->origin, surf->plane->normal) -
 				surf->plane->dist;
 		frad -= fabs(fdist);

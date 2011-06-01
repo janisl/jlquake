@@ -88,6 +88,16 @@ init
 ====================================================================
 */
 
+struct dlight_t
+{
+	vec3_t	origin;
+	vec3_t	color;				// range from 0.0 to 1.0, should be color normalized
+	float	radius;
+
+	vec3_t	transformed;		// origin in local coordinate system
+	int		additive;			// texture detail is lost tho when the lightmap is dark
+};
+
 // a trRefEntity_t has all the information passed in by
 // the client game, as well as some locally derived info
 struct trRefEntity_t
