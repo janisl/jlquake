@@ -36,9 +36,9 @@ int		ramp12[8] = { 136,137,138,139,140,141,142,143};
 byte *transTable;
 byte MyTable[256];
 
-particle_t	*active_particles, *free_particles;
+cparticle_t	*active_particles, *free_particles;
 
-particle_t	*particles;
+cparticle_t	*particles;
 int			r_numparticles;
 
 vec3_t			r_pright, r_pup, r_ppn;
@@ -49,7 +49,7 @@ QCvar*		leak_color;
 QCvar*		snow_flurry;
 QCvar*		snow_active;
 
-static particle_t *AllocParticle(void);
+static cparticle_t *AllocParticle(void);
 
 void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, int effect, int count);
 void R_RunParticleEffect4 (vec3_t org, float radius, int color, int effect, int count);
@@ -96,8 +96,8 @@ void R_InitParticles (void)
 		r_numparticles = MAX_PARTICLES;
 	}
 
-	particles = (particle_t *)
-			Hunk_AllocName (r_numparticles * sizeof(particle_t), "particles");
+	particles = (cparticle_t *)
+			Hunk_AllocName (r_numparticles * sizeof(cparticle_t), "particles");
 
 	leak_color = Cvar_Get("leak_color", "251", CVAR_ARCHIVE);
 
@@ -122,7 +122,7 @@ void R_InitParticles (void)
 void R_DarkFieldParticles (entity_t *ent)
 {
 	int			i, j, k;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		vel;
 	vec3_t		dir;
 	vec3_t		org;
@@ -162,9 +162,9 @@ void R_DarkFieldParticles (entity_t *ent)
 //
 //==========================================================================
 
-static particle_t *AllocParticle(void)
+static cparticle_t *AllocParticle(void)
 {
-	particle_t *p;
+	cparticle_t *p;
 
 	if(!free_particles)
 	{
@@ -195,7 +195,7 @@ void R_EntityParticles (entity_t *ent)
 {
 	int			count;
 	int			i;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		angle;
 	float		sr, sp, sy, cr, cp, cy;
 	vec3_t		forward;
@@ -268,7 +268,7 @@ void R_ClearParticles (void)
 	vec3_t	org;
 	int		r;
 	int		c;
-	particle_t	*p;
+	cparticle_t	*p;
 	char	name[MAX_OSPATH];
 	byte	color;
 	
@@ -416,7 +416,7 @@ R_ParticleExplosion
 void R_ParticleExplosion (vec3_t org)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	
 	for (i=0 ; i<1024 ; i++)
 	{
@@ -458,7 +458,7 @@ R_ParticleExplosion2
 void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	int			colorMod = 0;
 
 	for (i=0; i<512; i++)
@@ -490,7 +490,7 @@ tar
 void R_BlobExplosion (vec3_t org)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	
 	for (i=0 ; i<1024 ; i++)
 	{
@@ -532,7 +532,7 @@ R_RunParticleEffect
 void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	
 	for (i=0 ; i<count ; i++)
 	{
@@ -591,7 +591,7 @@ R_RunParticleEffect2
 void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		num;
 
 	for (i=0 ; i<count ; i++)
@@ -624,7 +624,7 @@ R_RunParticleEffect3
 void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, int effect, int count)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		num;
 
 	for (i=0 ; i<count ; i++)
@@ -656,7 +656,7 @@ R_RunParticleEffect4
 void R_RunParticleEffect4 (vec3_t org, float radius, int color, int effect, int count)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		num;
 
 	for (i=0 ; i<count ; i++)
@@ -691,7 +691,7 @@ R_LavaSplash
 void R_LavaSplash (vec3_t org)
 {
 	int			i, j, k;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		vel;
 	vec3_t		dir;
 
@@ -730,7 +730,7 @@ R_TeleportSplash
 void R_TeleportSplash (vec3_t org)
 {
 	int			i, j, k;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		vel;
 	vec3_t		dir;
 
@@ -769,7 +769,7 @@ R_RunQuakeEffect
 void R_RunQuakeEffect (vec3_t org, float distance)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		num,num2;
 
 	for (i=0 ; i<100 ; i++)
@@ -812,7 +812,7 @@ void R_SunStaffTrail(vec3_t source, vec3_t dest)
 	int i;
 	vec3_t vec, dist;
 	float length, size;
-	particle_t *p;
+	cparticle_t *p;
 
 	VectorSubtract(dest, source, vec);
 	length = VectorNormalize(vec);
@@ -854,7 +854,7 @@ void R_SunStaffTrail(vec3_t source, vec3_t dest)
 void RiderParticle(int count, vec3_t origin)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		num;
 	float radius,angle;
 
@@ -890,7 +890,7 @@ void RiderParticle(int count, vec3_t origin)
 void GravityWellParticle(int count, vec3_t origin, int color)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		num;
 	float radius,angle;
 
@@ -932,7 +932,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 	vec3_t	vec, dist;
 	float	len,size,lifetime;
 	int			j;
-	particle_t	*p;
+	cparticle_t	*p;
 	static int tracercount;
 
 	VectorSubtract (end, start, vec);
@@ -1187,7 +1187,7 @@ R_RainEffect
 void R_RainEffect (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int count)
 {
 	int i,holdint;
-	particle_t	*p;
+	cparticle_t	*p;
 	float z_time;
 	
 	for (i=0 ; i<count ; i++)
@@ -1231,7 +1231,7 @@ MG
 void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 {
 	int i,j,holdint;
-	particle_t	*p;
+	cparticle_t	*p;
 	mbrush29_leaf_t		*l;
 	
 	count *= Cvar_VariableValue("snow_active");
@@ -1303,7 +1303,7 @@ R_ColoredParticleExplosion
 void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 
 	for (i=0 ; i<counter ; i++)
 	{
@@ -1345,7 +1345,7 @@ extern	QCvar*	sv_gravity;
 
 void R_DrawParticles (void)
 {
-	particle_t		*p, *kill;
+	cparticle_t		*p, *kill;
 	int				i;
 	float			vel0, vel1, vel2;
 	vec3_t			save_org;
@@ -1491,7 +1491,7 @@ void R_DrawParticles (void)
 
 void R_UpdateParticles (void)
 {
-	particle_t		*p, *kill;
+	cparticle_t		*p, *kill;
 	float			grav,grav2,percent,speed;
 	int				i,j;
 	qboolean		in_solid;

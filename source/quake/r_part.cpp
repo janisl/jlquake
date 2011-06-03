@@ -30,9 +30,9 @@ int		ramp1[8] = {0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61};
 int		ramp2[8] = {0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66};
 int		ramp3[8] = {0x6d, 0x6b, 6, 5, 4, 3};
 
-particle_t	*active_particles, *free_particles;
+cparticle_t	*active_particles, *free_particles;
 
-particle_t	*particles;
+cparticle_t	*particles;
 int			r_numparticles;
 
 vec3_t			r_pright, r_pup, r_ppn;
@@ -60,8 +60,8 @@ void R_InitParticles (void)
 		r_numparticles = MAX_PARTICLES;
 	}
 
-	particles = (particle_t *)
-			Hunk_AllocName (r_numparticles * sizeof(particle_t), "particles");
+	particles = (cparticle_t *)
+			Hunk_AllocName (r_numparticles * sizeof(cparticle_t), "particles");
 }
 
 /*
@@ -82,7 +82,7 @@ void R_EntityParticles (entity_t *ent)
 {
 	int			count;
 	int			i;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		angle;
 	float		sr, sp, sy, cr, cp, cy;
 	vec3_t		forward;
@@ -156,7 +156,7 @@ void R_ClearParticles (void)
 	vec3_t	org;
 	int		r;
 	int		c;
-	particle_t	*p;
+	cparticle_t	*p;
 	char	name[MAX_OSPATH];
 	
 	sprintf (name,"maps/%s.pts", sv.name);
@@ -234,7 +234,7 @@ R_ParticleExplosion
 void R_ParticleExplosion (vec3_t org)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	
 	for (i=0 ; i<1024 ; i++)
 	{
@@ -278,7 +278,7 @@ R_ParticleExplosion2
 void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	int			colorMod = 0;
 
 	for (i=0; i<512; i++)
@@ -312,7 +312,7 @@ R_BlobExplosion
 void R_BlobExplosion (vec3_t org)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	
 	for (i=0 ; i<1024 ; i++)
 	{
@@ -357,7 +357,7 @@ R_RunParticleEffect
 void R_RunParticleEffect (const vec3_t org, const vec3_t dir, int color, int count)
 {
 	int			i, j;
-	particle_t	*p;
+	cparticle_t	*p;
 	
 	for (i=0 ; i<count ; i++)
 	{
@@ -416,7 +416,7 @@ R_LavaSplash
 void R_LavaSplash (vec3_t org)
 {
 	int			i, j, k;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		vel;
 	vec3_t		dir;
 
@@ -458,7 +458,7 @@ R_TeleportSplash
 void R_TeleportSplash (vec3_t org)
 {
 	int			i, j, k;
-	particle_t	*p;
+	cparticle_t	*p;
 	float		vel;
 	vec3_t		dir;
 
@@ -496,7 +496,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 	vec3_t		vec;
 	float		len;
 	int			j;
-	particle_t	*p;
+	cparticle_t	*p;
 	int			dec;
 	static int	tracercount;
 
@@ -605,7 +605,7 @@ extern	QCvar*	sv_gravity;
 
 void R_DrawParticles (void)
 {
-	particle_t		*p, *kill;
+	cparticle_t		*p, *kill;
 	float			grav;
 	int				i;
 	float			time2, time3;

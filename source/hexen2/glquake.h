@@ -92,7 +92,7 @@ typedef struct particle_s
 	byte		type;
 	byte		flags;
 	byte		count;
-} particle_t;
+} cparticle_t;
 
 
 //====================================================

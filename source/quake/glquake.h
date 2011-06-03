@@ -69,7 +69,7 @@ typedef struct particle_s
 	float		ramp;
 	float		die;
 	ptype_t		type;
-} particle_t;
+} cparticle_t;
 
 
 //====================================================
