@@ -44,7 +44,7 @@
 //
 //==========================================================================
 
-void R_CommonRenderScene(const refdef_base_t* fd)
+void R_CommonRenderScene(const refdef_t* fd)
 {
 	tr.refdef.x = fd->x;
 	tr.refdef.y = fd->y;

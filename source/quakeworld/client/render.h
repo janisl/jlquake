@@ -60,10 +60,6 @@ struct entity_t
 	float					syncbase;
 };
 
-struct refdef_t : refdef_base_t
-{
-};
-
 
 //
 // refresh

@@ -233,7 +233,7 @@ long myftol(float f);
 void R_NoiseInit();
 float R_NoiseGet4f(float x, float y, float z, float t);
 
-void R_CommonRenderScene(const refdef_base_t* fd);
+void R_CommonRenderScene(const refdef_t* fd);
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 

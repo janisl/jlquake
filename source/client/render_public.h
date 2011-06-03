@@ -176,7 +176,7 @@ struct poly_t
 #define MAX_RENDER_STRINGS			8
 #define MAX_RENDER_STRING_LENGTH	32
 
-struct refdef_base_t
+struct refdef_t
 {
 	int			x;
 	int			y;

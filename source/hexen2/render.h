@@ -87,10 +87,6 @@ struct entity_t
 	int						abslight;		// for Alias models
 };
 
-struct refdef_t : refdef_base_t
-{
-};
-
 
 //
 // refresh

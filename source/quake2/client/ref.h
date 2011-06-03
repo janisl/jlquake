@@ -30,10 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define POWERSUIT_SCALE		4.0F
 
-struct refdef_t : refdef_base_t
-{
-};
-
 
 
 //

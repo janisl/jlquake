@@ -27,10 +27,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	MAX_DLIGHTS		32			// can't be increased, because bit flags are used on surfaces
 #define	MAX_ENTITIES	1023		// can't be increased without changing drawsurf bit packing
 
-struct refdef_t : refdef_base_t
-{
-};
-
 
 typedef enum {
 	STEREO_CENTER,
