@@ -30,27 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define POWERSUIT_SCALE		4.0F
 
-typedef struct
-{
-	vec3_t	origin;
-	int		color;
-	float	alpha;
-} particle_t;
-
-typedef struct
-{
-	float		rgb[3];			// 0.0 - 2.0
-	float		white;			// highest of rgb
-} lightstyle_t;
-
 struct refdef_t : refdef_base_t
 {
-	float		blend[4];			// rgba 0-1 full screen blend
-
-	lightstyle_t	*lightstyles;	// [MAX_LIGHTSTYLES]
-
-	int			num_particles;
-	particle_t	*particles;
 };
 
 
@@ -119,5 +100,7 @@ typedef struct
 typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
 
 void R_ClearScreen();
+
+extern float		v_blend[4];
 
 #endif

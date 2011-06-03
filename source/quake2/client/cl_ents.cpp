@@ -1304,7 +1304,7 @@ void CL_CalcViewValues (void)
 
 	// don't interpolate blend color
 	for (i=0 ; i<4 ; i++)
-		cl.refdef.blend[i] = ps->blend[i];
+		v_blend[i] = ps->blend[i];
 
 	// add the weapon
 	CL_AddViewWeapon(ps, ops, viewangles);

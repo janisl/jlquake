@@ -112,8 +112,8 @@ mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p)
 	nv = out->verts[0];
 	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE, nv+=BRUSH38_VERTEXSIZE)
 	{
-		nv[0] = v[0] + 4*sin(v[1]*0.05+r_newrefdef.time)*sin(v[2]*0.05+r_newrefdef.time);
-		nv[1] = v[1] + 4*sin(v[0]*0.05+r_newrefdef.time)*sin(v[2]*0.05+r_newrefdef.time);
+		nv[0] = v[0] + 4*sin(v[1]*0.05+tr.refdef.floatTime)*sin(v[2]*0.05+tr.refdef.floatTime);
+		nv[1] = v[1] + 4*sin(v[0]*0.05+tr.refdef.floatTime)*sin(v[2]*0.05+tr.refdef.floatTime);
 
 		nv[2] = v[2];
 		nv[3] = v[3];
@@ -490,7 +490,7 @@ void R_RenderBrushPoly (mbrush38_surface_t *fa)
 	*/
 	for ( maps = 0; maps < BSP38_MAXLIGHTMAPS && fa->styles[maps] != 255; maps++ )
 	{
-		if ( r_newrefdef.lightstyles[fa->styles[maps]].white != fa->cached_light[maps] )
+		if (tr.refdef.lightstyles[fa->styles[maps]].white != fa->cached_light[maps])
 			goto dynamic;
 	}
 
@@ -678,7 +678,7 @@ static void GL_RenderLightmappedPoly( mbrush38_surface_t *surf )
 
 	for ( map = 0; map < BSP38_MAXLIGHTMAPS && surf->styles[map] != 255; map++ )
 	{
-		if ( r_newrefdef.lightstyles[surf->styles[map]].white != surf->cached_light[map] )
+		if (tr.refdef.lightstyles[surf->styles[map]].white != surf->cached_light[map])
 			goto dynamic;
 	}
 
@@ -1460,7 +1460,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 		lightstyles[i].rgb[2] = 1;
 		lightstyles[i].white = 3;
 	}
-	r_newrefdef.lightstyles = lightstyles;
+	tr.refdef.lightstyles = lightstyles;
 
 	if (!tr.lightmaps[0])
 	{

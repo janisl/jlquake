@@ -625,7 +625,7 @@ void CL_Disconnect (void)
 	}
 
 	R_ClearScreen();
-	VectorClear (cl.refdef.blend);
+	VectorClear(v_blend);
 
 	M_ForceMenuOff ();
 

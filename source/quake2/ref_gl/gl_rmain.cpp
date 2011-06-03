@@ -26,6 +26,9 @@ extern int				r_numdlights;
 extern dlight_t			r_dlights[MAX_DLIGHTS];
 extern int				r_numentities;
 extern trRefEntity_t	r_entities[MAX_ENTITIES];
+extern lightstyle_t		r_lightstyles[MAX_LIGHTSTYLES];
+extern int				r_numparticles;
+extern particle_t		r_particles[MAX_PARTICLES];
 
 refimport_t	ri;
 
@@ -457,7 +460,7 @@ void R_DrawParticles (void)
 		qglPointSize( gl_particle_size->value );
 
 		qglBegin( GL_POINTS );
-		for ( i = 0, p = r_newrefdef.particles; i < r_newrefdef.num_particles; i++, p++ )
+		for ( i = 0, p = tr.refdef.particles; i < tr.refdef.num_particles; i++, p++ )
 		{
 			*(int *)color = d_8to24table[p->color];
 			color[3] = p->alpha*255;
@@ -475,7 +478,7 @@ void R_DrawParticles (void)
 	}
 	else
 	{
-		GL_DrawParticles( r_newrefdef.num_particles, r_newrefdef.particles, d_8to24table );
+		GL_DrawParticles(tr.refdef.num_particles, tr.refdef.particles, d_8to24table);
 	}
 }
 
@@ -612,9 +615,6 @@ void R_SetupFrame (void)
 		}
 	}
 
-	for (i=0 ; i<4 ; i++)
-		v_blend[i] = r_newrefdef.blend[i];
-
 	c_brush_polys = 0;
 	c_alias_polys = 0;
 
@@ -677,7 +677,6 @@ void R_SetupGL (void)
 	// set up projection matrix
 	//
     screenaspect = (float)tr.refdef.width/tr.refdef.height;
-//	yfov = 2*atan((float)r_newrefdef.height/r_newrefdef.width)*180/M_PI;
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
     MYgluPerspective (tr.refdef.fov_y,  screenaspect,  4,  4096);
@@ -768,6 +767,9 @@ void R_RenderView (refdef_t *fd)
 	tr.refdef.entities = r_entities;
 	tr.refdef.num_dlights = r_numdlights;
 	tr.refdef.dlights = r_dlights;
+	tr.refdef.lightstyles = r_lightstyles;
+	tr.refdef.num_particles = r_numparticles;
+	tr.refdef.particles = r_particles;
 	r_newrefdef = *fd;
 
 	if (!r_worldmodel && !(tr.refdef.rdflags & RDF_NOWORLDMODEL))

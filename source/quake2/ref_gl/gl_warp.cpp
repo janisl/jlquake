@@ -65,7 +65,7 @@ void EmitWaterPolys (mbrush38_surface_t *fa)
 			ot = v[4];
 
 #if !id386
-			s = os + r_turbsin[(int)((ot*0.125+r_newrefdef.time) * TURBSCALE) & 255];
+			s = os + r_turbsin[(int)((ot*0.125+rdt) * TURBSCALE) & 255];
 #else
 			s = os + r_turbsin[Q_ftol( ((ot*0.125+rdt) * TURBSCALE) ) & 255];
 #endif

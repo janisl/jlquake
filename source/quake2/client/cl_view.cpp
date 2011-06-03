@@ -478,10 +478,10 @@ void V_RenderView( float stereo_separation )
 			V_TestLights ();
 		if (cl_testblend->value)
 		{
-			cl.refdef.blend[0] = 1;
-			cl.refdef.blend[1] = 0.5;
-			cl.refdef.blend[2] = 0.25;
-			cl.refdef.blend[3] = 0.5;
+			v_blend[0] = 1;
+			v_blend[1] = 0.5;
+			v_blend[2] = 0.25;
+			v_blend[3] = 0.5;
 		}
 
 		// offset vieworg appropriately if we're doing stereo separation
@@ -520,12 +520,8 @@ void V_RenderView( float stereo_separation )
 			r_numdlights = 0;
 		if (!cl_add_blend->value)
 		{
-			VectorClear (cl.refdef.blend);
+			VectorClear(v_blend);
 		}
-
-		cl.refdef.num_particles = r_numparticles;
-		cl.refdef.particles = r_particles;
-		cl.refdef.lightstyles = r_lightstyles;
 
 		cl.refdef.rdflags = 0;
 		if (cl.frame.playerstate.rdflags & Q2RDF_NOWORLDMODEL)

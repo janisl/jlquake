@@ -3975,9 +3975,9 @@ void PlayerConfig_MenuDraw( void )
 			yaw -= 360;
 		V_ClearScene();
 		V_AddEntity(&entity);
+		VectorClear(v_blend);
 
 		Com_Memset(refdef.areamask, 0, sizeof(refdef.areamask));
-		refdef.lightstyles = 0;
 		refdef.rdflags = RDF_NOWORLDMODEL;
 
 		Menu_Draw( &s_player_config_menu );

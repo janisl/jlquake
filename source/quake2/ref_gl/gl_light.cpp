@@ -269,7 +269,7 @@ int RecursiveLightPoint (mbrush38_node_t *node, vec3_t start, vec3_t end)
 					maps++)
 			{
 				for (i=0 ; i<3 ; i++)
-					scale[i] = gl_modulate->value*r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];
+					scale[i] = gl_modulate->value*tr.refdef.lightstyles[surf->styles[maps]].rgb[i];
 
 				pointcolor[0] += lightmap[0] * scale[0] * (1.0/255);
 				pointcolor[1] += lightmap[1] * scale[1] * (1.0/255);
@@ -437,7 +437,7 @@ void R_SetCacheState( mbrush38_surface_t *surf )
 	for (maps = 0 ; maps < BSP38_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 		 maps++)
 	{
-		surf->cached_light[maps] = r_newrefdef.lightstyles[surf->styles[maps]].white;
+		surf->cached_light[maps] = tr.refdef.lightstyles[surf->styles[maps]].white;
 	}
 }
 
@@ -478,7 +478,7 @@ void R_BuildLightMap (mbrush38_surface_t *surf, byte *dest, int stride)
 		for (maps = 0 ; maps < BSP38_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 			 maps++)
 		{
-			style = &r_newrefdef.lightstyles[surf->styles[maps]];
+			style = &tr.refdef.lightstyles[surf->styles[maps]];
 		}
 		goto store;
 	}
@@ -501,7 +501,7 @@ void R_BuildLightMap (mbrush38_surface_t *surf, byte *dest, int stride)
 			bl = s_blocklights;
 
 			for (i=0 ; i<3 ; i++)
-				scale[i] = gl_modulate->value*r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];
+				scale[i] = gl_modulate->value * tr.refdef.lightstyles[surf->styles[maps]].rgb[i];
 
 			if ( scale[0] == 1.0F &&
 				 scale[1] == 1.0F &&
@@ -538,7 +538,7 @@ void R_BuildLightMap (mbrush38_surface_t *surf, byte *dest, int stride)
 			bl = s_blocklights;
 
 			for (i=0 ; i<3 ; i++)
-				scale[i] = gl_modulate->value*r_newrefdef.lightstyles[surf->styles[maps]].rgb[i];
+				scale[i] = gl_modulate->value * tr.refdef.lightstyles[surf->styles[maps]].rgb[i];
 
 			if ( scale[0] == 1.0F &&
 				 scale[1] == 1.0F &&

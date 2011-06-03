@@ -98,6 +98,19 @@ struct dlight_t
 	int		additive;			// texture detail is lost tho when the lightmap is dark
 };
 
+struct lightstyle_t
+{
+	float		rgb[3];			// 0.0 - 2.0
+	float		white;			// highest of rgb
+};
+
+struct particle_t
+{
+	vec3_t	origin;
+	int		color;
+	float	alpha;
+};
+
 // a trRefEntity_t has all the information passed in by
 // the client game, as well as some locally derived info
 struct trRefEntity_t
@@ -118,38 +131,44 @@ struct trRefEntity_t
 // as well as the locally generated scene information
 struct trRefdef_t
 {
-	int			x;
-	int			y;
-	int			width;
-	int			height;
-	float		fov_x;
-	float		fov_y;
-	vec3_t		vieworg;
-	vec3_t		viewaxis[3];		// transformation matrix
+	int				x;
+	int				y;
+	int				width;
+	int				height;
+	float			fov_x;
+	float			fov_y;
+	vec3_t			vieworg;
+	vec3_t			viewaxis[3];		// transformation matrix
 
-	int			time;				// time in milliseconds for shader effects and other time dependent rendering issues
-	int			rdflags;			// RDF_NOWORLDMODEL, etc
+	int				time;				// time in milliseconds for shader effects and other time dependent rendering issues
+	int				rdflags;			// RDF_NOWORLDMODEL, etc
 
 	// 1 bits will prevent the associated area from rendering at all
-	byte		areamask[MAX_MAP_AREA_BYTES];
-	bool		areamaskModified;	// true if areamask changed since last scene
+	byte			areamask[MAX_MAP_AREA_BYTES];
+	bool			areamaskModified;	// true if areamask changed since last scene
 
-	float		floatTime;			// tr.refdef.time / 1000.0
+	float			floatTime;			// tr.refdef.time / 1000.0
 
 	// text messages for deform text shaders
-	char		text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
+	char			text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
 
-	int			num_entities;
-	trRefEntity_t	*entities;
+	int				num_entities;
+	trRefEntity_t*	entities;
 
-	int			num_dlights;
-	dlight_t*	dlights;
+	int				num_dlights;
+	dlight_t*		dlights;
 
-	int			numPolys;
-	srfPoly_t	*polys;
+	int				numPolys;
+	srfPoly_t*		polys;
 
-	int			numDrawSurfs;
-	drawSurf_t	*drawSurfs;
+	int				numDrawSurfs;
+	drawSurf_t*		drawSurfs;
+
+	//	From Quake 2
+	lightstyle_t*	lightstyles;	// [MAX_LIGHTSTYLES]
+
+	int				num_particles;
+	particle_t*		particles;
 };
 
 #define MAX_DRAWIMAGES			2048
