@@ -108,20 +108,8 @@ extern	int		c_brush_polys, c_alias_polys, c_sky_polys;
 
 
 //
-// view origin
-//
-extern "C"
-{
-extern	vec3_t	vup;
-extern	vec3_t	vpn;
-extern	vec3_t	vright;
-}
-extern	vec3_t	r_origin;
-
-//
 // screen size info
 //
-extern	refdef_t	r_refdef;
 extern	mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
 
 extern	qboolean	envmap;

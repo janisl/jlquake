@@ -122,8 +122,6 @@ typedef struct
 
 	refdef_t	refdef;
 
-	vec3_t		v_forward, v_right, v_up;	// set when refdef.angles is set
-
 	//
 	// transient data from server
 	//

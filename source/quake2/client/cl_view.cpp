@@ -164,8 +164,8 @@ void V_TestParticles (void)
 		p = &r_particles[i];
 
 		for (j=0 ; j<3 ; j++)
-			p->origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j]*d +
-			cl.v_right[j]*r + cl.v_up[j]*u;
+			p->origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*d -
+			cl.refdef.viewaxis[1][j]*r + cl.refdef.viewaxis[2][j]*u;
 
 		p->color = 8;
 		p->alpha = cl_testparticles->value;
@@ -196,8 +196,8 @@ void V_TestEntities (void)
 		f = 64 * (i/4) + 128;
 
 		for (j=0 ; j<3 ; j++)
-			ent->e.origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j]*f +
-			cl.v_right[j]*r;
+			ent->e.origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*f -
+			cl.refdef.viewaxis[1][j]*r;
 
 		ent->e.hModel = cl.baseclientinfo.model;
 		ent->e.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
@@ -228,8 +228,8 @@ void V_TestLights (void)
 		f = 64 * (i/4) + 128;
 
 		for (j=0 ; j<3 ; j++)
-			dl->origin[j] = cl.refdef.vieworg[j] + cl.v_forward[j]*f +
-			cl.v_right[j]*r;
+			dl->origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*f -
+			cl.refdef.viewaxis[1][j]*r;
 		dl->color[0] = ((i%6)+1) & 1;
 		dl->color[1] = (((i%6)+1) & 2)>>1;
 		dl->color[2] = (((i%6)+1) & 4)>>2;
@@ -489,7 +489,7 @@ void V_RenderView( float stereo_separation )
 		{
 			vec3_t tmp;
 
-			VectorScale( cl.v_right, stereo_separation, tmp );
+			VectorScale( cl.refdef.viewaxis[1], -stereo_separation, tmp );
 			VectorAdd(cl.refdef.vieworg, tmp, cl.refdef.vieworg);
 		}
 

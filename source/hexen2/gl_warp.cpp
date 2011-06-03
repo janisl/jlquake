@@ -81,7 +81,7 @@ void EmitSkyPolys (mbrush29_surface_t *fa, qboolean save)
 		{
 			if (save || buffer_pos >= MAX_SAVE)
 			{
-				VectorSubtract (v, r_origin, dir);
+				VectorSubtract (v, tr.refdef.vieworg, dir);
 				dir[2] *= 3;	// flatten the sphere
 
 	/*			VectorCopy(dir,sort);

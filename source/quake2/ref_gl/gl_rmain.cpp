@@ -50,14 +50,6 @@ int			c_brush_polys, c_alias_polys;
 
 float		v_blend[4];			// final blending color
 
-//
-// view origin
-//
-vec3_t	vup;
-vec3_t	vpn;
-vec3_t	vright;
-vec3_t	r_origin;
-
 float	r_world_matrix[16];
 float	r_base_world_matrix[16];
 
@@ -172,7 +164,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	float alpha = 1.0F;
 	vec3_t	point;
 	dsp2_frame_t	*frame;
-	float		*up, *right;
+	float		*up, *left;
 	dsprite2_t		*psprite;
 
 	// don't even bother culling, because it's just a single
@@ -203,8 +195,8 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	else
 #endif
 	{	// normal sprite
-		up = vup;
-		right = vright;
+		up = tr.refdef.viewaxis[2];
+		left = tr.refdef.viewaxis[1];
 	}
 
 	if ( e->e.renderfx & RF_TRANSLUCENT )
@@ -229,22 +221,22 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 
 	qglTexCoord2f (0, 1);
 	VectorMA (e->e.origin, -frame->origin_y, up, point);
-	VectorMA (point, -frame->origin_x, right, point);
+	VectorMA (point, frame->origin_x, left, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (0, 0);
 	VectorMA (e->e.origin, frame->height - frame->origin_y, up, point);
-	VectorMA (point, -frame->origin_x, right, point);
+	VectorMA (point, frame->origin_x, left, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (1, 0);
 	VectorMA (e->e.origin, frame->height - frame->origin_y, up, point);
-	VectorMA (point, frame->width - frame->origin_x, right, point);
+	VectorMA (point, -(frame->width - frame->origin_x), left, point);
 	qglVertex3fv (point);
 
 	qglTexCoord2f (1, 1);
 	VectorMA (e->e.origin, -frame->origin_y, up, point);
-	VectorMA (point, frame->width - frame->origin_x, right, point);
+	VectorMA (point, -(frame->width - frame->origin_x), left, point);
 	qglVertex3fv (point);
 	
 	qglEnd ();
@@ -401,15 +393,15 @@ void GL_DrawParticles( int num_particles, const particle_t particles[], const un
 	GL_TexEnv( GL_MODULATE );
 	qglBegin( GL_TRIANGLES );
 
-	VectorScale (vup, 1.5, up);
-	VectorScale (vright, 1.5, right);
+	VectorScale(tr.refdef.viewaxis[2], 1.5, up);
+	VectorScale(tr.refdef.viewaxis[1], -1.5, right);
 
 	for ( p = particles, i=0 ; i < num_particles ; i++,p++)
 	{
 		// hack a scale up to keep particles from disapearing
-		scale = ( p->origin[0] - r_origin[0] ) * vpn[0] + 
-			    ( p->origin[1] - r_origin[1] ) * vpn[1] +
-			    ( p->origin[2] - r_origin[2] ) * vpn[2];
+		scale = ( p->origin[0] - tr.refdef.vieworg[0] ) * tr.refdef.viewaxis[0][0] + 
+			    ( p->origin[1] - tr.refdef.vieworg[1] ) * tr.refdef.viewaxis[0][1] +
+			    ( p->origin[2] - tr.refdef.vieworg[2] ) * tr.refdef.viewaxis[0][2];
 
 		if (scale < 20)
 			scale = 1;
@@ -544,19 +536,19 @@ void R_SetFrustum (void)
 	VectorNormalize( frustum[3].normal );
 #else
 	// rotate VPN right by FOV_X/2 degrees
-	RotatePointAroundVector( frustum[0].normal, vup, vpn, -(90-tr.refdef.fov_x / 2 ) );
+	RotatePointAroundVector(frustum[0].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_x / 2));
 	// rotate VPN left by FOV_X/2 degrees
-	RotatePointAroundVector( frustum[1].normal, vup, vpn, 90-tr.refdef.fov_x / 2 );
+	RotatePointAroundVector(frustum[1].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_x / 2);
 	// rotate VPN up by FOV_X/2 degrees
-	RotatePointAroundVector( frustum[2].normal, vright, vpn, 90-tr.refdef.fov_y / 2 );
+	RotatePointAroundVector(frustum[2].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_y / 2));
 	// rotate VPN down by FOV_X/2 degrees
-	RotatePointAroundVector( frustum[3].normal, vright, vpn, -( 90 - tr.refdef.fov_y / 2 ) );
+	RotatePointAroundVector(frustum[3].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_y / 2);
 #endif
 
 	for (i=0 ; i<4 ; i++)
 	{
 		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = DotProduct (r_origin, frustum[i].normal);
+		frustum[i].dist = DotProduct(tr.refdef.vieworg, frustum[i].normal);
 		SetPlaneSignbits(&frustum[i]);
 	}
 }
@@ -575,19 +567,12 @@ void R_SetupFrame (void)
 
 	tr.frameCount++;
 
-// build the transformation matrix for the given view angles
-	VectorCopy(tr.refdef.vieworg, r_origin);
-
-	VectorCopy(tr.refdef.viewaxis[0], vpn);
-	VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], vright);
-	VectorCopy(tr.refdef.viewaxis[2], vup);
-
 // current viewcluster
 	if (!(tr.refdef.rdflags & RDF_NOWORLDMODEL))
 	{
 		r_oldviewcluster = r_viewcluster;
 		r_oldviewcluster2 = r_viewcluster2;
-		leaf = Mod_PointInLeaf (r_origin, r_worldmodel);
+		leaf = Mod_PointInLeaf (tr.refdef.vieworg, r_worldmodel);
 		r_viewcluster = r_viewcluster2 = leaf->cluster;
 
 		// check above and below so crossing solid water doesn't draw wrong
@@ -595,7 +580,7 @@ void R_SetupFrame (void)
 		{	// look down a bit
 			vec3_t	temp;
 
-			VectorCopy (r_origin, temp);
+			VectorCopy (tr.refdef.vieworg, temp);
 			temp[2] -= 16;
 			leaf = Mod_PointInLeaf (temp, r_worldmodel);
 			if ( !(leaf->contents & BSP38CONTENTS_SOLID) &&
@@ -606,7 +591,7 @@ void R_SetupFrame (void)
 		{	// look up a bit
 			vec3_t	temp;
 
-			VectorCopy (r_origin, temp);
+			VectorCopy (tr.refdef.vieworg, temp);
 			temp[2] += 16;
 			leaf = Mod_PointInLeaf (temp, r_worldmodel);
 			if ( !(leaf->contents & BSP38CONTENTS_SOLID) &&

@@ -44,14 +44,6 @@ int			mirrortexturenum;	// quake texturenum, not gltexturenum
 qboolean	mirror;
 cplane_t	*mirror_plane;
 
-//
-// view origin
-//
-vec3_t	vup;
-vec3_t	vpn;
-vec3_t	vright;
-vec3_t	r_origin;
-
 float	r_world_matrix[16];
 float	r_base_world_matrix[16];
 
@@ -225,8 +217,9 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	}
 	else
 	{	// normal sprite
-		up = vup;
-		right = vright;
+		up = tr.refdef.viewaxis[2];
+		VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], v_right);
+		right = v_right;
 	}
 
 	qglColor3f (1,1,1);
@@ -480,7 +473,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	}
 
 	VectorCopy (currententity->e.origin, r_entorigin);
-	VectorSubtract (r_origin, r_entorigin, modelorg);
+	VectorSubtract (tr.refdef.vieworg, r_entorigin, modelorg);
 
 	//
 	// get lighting information
@@ -713,29 +706,29 @@ void R_SetFrustum (void)
 	{
 		// front side is visible
 
-		VectorAdd (vpn, vright, frustum[0].normal);
-		VectorSubtract (vpn, vright, frustum[1].normal);
+		VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], frustum[0].normal);
+		VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], frustum[1].normal);
 
-		VectorAdd (vpn, vup, frustum[2].normal);
-		VectorSubtract (vpn, vup, frustum[3].normal);
+		VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], frustum[2].normal);
+		VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], frustum[3].normal);
 	}
 	else
 	{
 
 		// rotate VPN right by FOV_X/2 degrees
-		RotatePointAroundVector( frustum[0].normal, vup, vpn, -(90-tr.refdef.fov_x / 2 ) );
+		RotatePointAroundVector( frustum[0].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_x / 2));
 		// rotate VPN left by FOV_X/2 degrees
-		RotatePointAroundVector( frustum[1].normal, vup, vpn, 90-tr.refdef.fov_x / 2 );
+		RotatePointAroundVector( frustum[1].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_x / 2);
 		// rotate VPN up by FOV_X/2 degrees
-		RotatePointAroundVector( frustum[2].normal, vright, vpn, 90-tr.refdef.fov_y / 2 );
+		RotatePointAroundVector( frustum[2].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_y / 2));
 		// rotate VPN down by FOV_X/2 degrees
-		RotatePointAroundVector( frustum[3].normal, vright, vpn, -( 90 - tr.refdef.fov_y / 2 ) );
+		RotatePointAroundVector( frustum[3].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_y / 2);
 	}
 
 	for (i=0 ; i<4 ; i++)
 	{
 		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = DotProduct (r_origin, frustum[i].normal);
+		frustum[i].dist = DotProduct(tr.refdef.vieworg, frustum[i].normal);
 		SetPlaneSignbits(&frustum[i]);
 	}
 }
@@ -768,16 +761,9 @@ void R_SetupFrame (void)
 		r_textureMode->modified = false;
 	}
 
-// build the transformation matrix for the given view angles
-	VectorCopy (tr.refdef.vieworg, r_origin);
-
-	VectorCopy(tr.refdef.viewaxis[0], vpn);
-	VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], vright);
-	VectorCopy(tr.refdef.viewaxis[2], vup);
-
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (r_origin, Mod_GetModel(cl.worldmodel));
+	r_viewleaf = Mod_PointInLeaf (tr.refdef.vieworg, Mod_GetModel(cl.worldmodel));
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();

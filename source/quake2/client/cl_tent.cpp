@@ -1432,11 +1432,11 @@ void CL_AddPlayerBeams (void)
 					b->start[j] = cl.refdef.vieworg[j] + ops->gunoffset[j]
 						+ cl.lerpfrac * (ps->gunoffset[j] - ops->gunoffset[j]);
 				}
-				VectorMA (b->start, (hand_multiplier * b->offset[0]), cl.v_right, org);
-				VectorMA (     org, b->offset[1], cl.v_forward, org);
-				VectorMA (     org, b->offset[2], cl.v_up, org);
+				VectorMA (b->start, -(hand_multiplier * b->offset[0]), cl.refdef.viewaxis[1], org);
+				VectorMA (     org, b->offset[1], cl.refdef.viewaxis[0], org);
+				VectorMA (     org, b->offset[2], cl.refdef.viewaxis[2], org);
 				if ((hand) && (hand->value == 2)) {
-					VectorMA (org, -1, cl.v_up, org);
+					VectorMA (org, -1, cl.refdef.viewaxis[2], org);
 				}
 			}
 			else
@@ -1462,12 +1462,12 @@ void CL_AddPlayerBeams (void)
 			vec_t len;
 
 			len = VectorLength (dist);
-			VectorScale (cl.v_forward, len, dist);
-			VectorMA (dist, (hand_multiplier * b->offset[0]), cl.v_right, dist);
-			VectorMA (dist, b->offset[1], cl.v_forward, dist);
-			VectorMA (dist, b->offset[2], cl.v_up, dist);
+			VectorScale (cl.refdef.viewaxis[0], len, dist);
+			VectorMA (dist, -(hand_multiplier * b->offset[0]), cl.refdef.viewaxis[1], dist);
+			VectorMA (dist, b->offset[1], cl.refdef.viewaxis[0], dist);
+			VectorMA (dist, b->offset[2], cl.refdef.viewaxis[2], dist);
 			if ((hand) && (hand->value == 2)) {
-				VectorMA (org, -1, cl.v_up, org);
+				VectorMA (org, -1, cl.refdef.viewaxis[2], org);
 			}
 		}
 //PMM

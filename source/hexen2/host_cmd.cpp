@@ -1737,10 +1737,10 @@ void Host_Create_f(void)
 	ent = ED_Alloc ();
 
 	ent->v.classname = func->s_name;
-	VectorCopy(r_origin,ent->v.origin);
-	ent->v.origin[0] += vpn[0] * 80;
-	ent->v.origin[1] += vpn[1] * 80;
-	ent->v.origin[2] += vpn[2] * 80;
+	VectorCopy(r_refdef.vieworg, ent->v.origin);
+	ent->v.origin[0] += r_refdef.viewaxis[0][0] * 80;
+	ent->v.origin[1] += r_refdef.viewaxis[0][1] * 80;
+	ent->v.origin[2] += r_refdef.viewaxis[0][2] * 80;
 	VectorCopy(ent->v.origin,ent->v.absmin);
 	VectorCopy(ent->v.origin,ent->v.absmax);
 	ent->v.absmin[0] -= 16;

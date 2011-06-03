@@ -1513,8 +1513,8 @@ void R_RenderParticle(cparticle_t *p)
 	}
 
 	// hack a scale up to keep particles from disapearing
-	scale = (p->org[0] - r_origin[0])*vpn[0] + (p->org[1] - r_origin[1])*vpn[1]
-		+ (p->org[2] - r_origin[2])*vpn[2];
+	scale = (p->org[0] - tr.refdef.vieworg[0])*tr.refdef.viewaxis[0][0] + (p->org[1] - tr.refdef.vieworg[1])*tr.refdef.viewaxis[0][1]
+		+ (p->org[2] - tr.refdef.vieworg[2])*tr.refdef.viewaxis[0][2];
 	if (scale < 20)
 		scale = 1;
 	else
@@ -1572,8 +1572,8 @@ void R_DrawParticles (void)
 	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
 
-	VectorScale (vup, 1.5, up);
-	VectorScale (vright, 1.5, right);
+	VectorScale(tr.refdef.viewaxis[2], 1.5, up);
+	VectorScale(tr.refdef.viewaxis[1], -1.5, right);
 
 	frametime = host_frametime;
 	time4 = frametime * 20;

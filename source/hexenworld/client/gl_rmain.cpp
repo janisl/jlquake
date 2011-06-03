@@ -37,14 +37,6 @@ trRefEntity_t		cl_visedicts[MAX_VISEDICTS];
 
 extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 
-//
-// view origin
-//
-vec3_t	vup;
-vec3_t	vpn;
-vec3_t	vright;
-vec3_t	r_origin;
-
 float	r_world_matrix[16];
 float	r_base_world_matrix[16];
 
@@ -119,7 +111,7 @@ void R_RotateForEntity(trRefEntity_t *e)
 	{
 		float fvaxis[3][3];
 
-		VectorSubtract(r_origin, e->e.origin, fvaxis[0]);
+		VectorSubtract(tr.refdef.vieworg, e->e.origin, fvaxis[0]);
 		VectorNormalize(fvaxis[0]);
 
 		if (fvaxis[0][1] == 0 && fvaxis[0][0] == 0)
@@ -291,8 +283,9 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	}
 	else
 	{	// normal sprite
-		up = vup;
-		right = vright;
+		up = tr.refdef.viewaxis[2];
+		VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], v_right);
+		right = v_right;
 	}
 
 	GL_DisableMultitexture();
@@ -623,7 +616,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	}
 
 	VectorCopy (currententity->e.origin, r_entorigin);
-	VectorSubtract (r_origin, r_entorigin, modelorg);
+	VectorSubtract (tr.refdef.vieworg, r_entorigin, modelorg);
 
 	//
 	// get lighting information
@@ -822,7 +815,7 @@ void R_DrawEntitiesOnList (void)
 		switch (Mod_GetModel(currententity->e.hModel)->type)
 		{
 		case MOD_MESH1:
-			VectorSubtract(currententity->e.origin, r_origin, diff);
+			VectorSubtract(currententity->e.origin, tr.refdef.vieworg, diff);
 			calc_length = (diff[0]*diff[0]) + (diff[1]*diff[1]) + (diff[2]*diff[2]);
 			if (calc_length > test_length)
 			{
@@ -842,7 +835,7 @@ void R_DrawEntitiesOnList (void)
 			break;
 
 		case MOD_SPRITE:
-			VectorSubtract(currententity->e.origin, r_origin, diff);
+			VectorSubtract(currententity->e.origin, tr.refdef.vieworg, diff);
 			calc_length = (diff[0]*diff[0]) + (diff[1]*diff[1]) + (diff[2]*diff[2]);
 			if (calc_length > test_length)
 			{
@@ -898,7 +891,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 	{
 		VectorSubtract(
 			theents[i].ent->e.origin, 
-			r_origin, 
+			tr.refdef.vieworg, 
 			result);
 //		theents[i].len = Length(result);
 		theents[i].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
@@ -972,16 +965,16 @@ void R_SetFrustum (void)
 
 	// front side is visible
 
-	VectorAdd (vpn, vright, frustum[0].normal);
-	VectorSubtract (vpn, vright, frustum[1].normal);
+	VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], frustum[0].normal);
+	VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], frustum[1].normal);
 
-	VectorAdd (vpn, vup, frustum[2].normal);
-	VectorSubtract (vpn, vup, frustum[3].normal);
+	VectorAdd (tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], frustum[2].normal);
+	VectorSubtract (tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], frustum[3].normal);
 
 	for (i=0 ; i<4 ; i++)
 	{
 		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = DotProduct (r_origin, frustum[i].normal);
+		frustum[i].dist = DotProduct(tr.refdef.vieworg, frustum[i].normal);
 		SetPlaneSignbits(&frustum[i]);
 	}
 }
@@ -1015,16 +1008,9 @@ void R_SetupFrame (void)
 		r_textureMode->modified = false;
 	}
 
-// build the transformation matrix for the given view angles
-	VectorCopy(tr.refdef.vieworg, r_origin);
-
-	VectorCopy(tr.refdef.viewaxis[0], vpn);
-	VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], vright);
-	VectorCopy(tr.refdef.viewaxis[2], vup);
-
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (r_origin, Mod_GetModel(cl.worldmodel));
+	r_viewleaf = Mod_PointInLeaf(tr.refdef.vieworg, Mod_GetModel(cl.worldmodel));
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();

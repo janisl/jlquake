@@ -100,7 +100,7 @@ void R_RenderDlight (cdlight_t *light)
 	bub_cos = bubble_costable;
 	rad = light->radius * 0.35;
 
-	VectorSubtract (light->origin, r_origin, v);
+	VectorSubtract (light->origin, tr.refdef.vieworg, v);
 	if (VectorLength(v) < rad)
 	{	// view is inside the dlight
 		AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
@@ -113,15 +113,15 @@ void R_RenderDlight (cdlight_t *light)
 	qglColor4f (light->color[0], light->color[1], light->color[2],
 		light->color[3]);
 	for (i=0 ; i<3 ; i++)
-		v[i] = light->origin[i] - vpn[i]*rad;
+		v[i] = light->origin[i] - tr.refdef.viewaxis[0][i]*rad;
 	qglVertex3fv (v);
 	qglColor3f (0,0,0);
 	for (i=16 ; i>=0 ; i--)
 	{
 //		a = i/16.0 * M_PI*2;
 		for (j=0 ; j<3 ; j++)
-			v[j] = light->origin[j] + (vright[j]*(*bub_cos) +
-				+ vup[j]*(*bub_sin)) * rad;
+			v[j] = light->origin[j] - (tr.refdef.viewaxis[1][j]*(*bub_cos) +
+				+ tr.refdef.viewaxis[2][j]*(*bub_sin)) * rad;
 		bub_sin++; 
 		bub_cos++;
 		qglVertex3fv (v);

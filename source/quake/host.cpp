@@ -722,7 +722,7 @@ void _Host_Frame (float time)
 // update audio
 	if (cls.signon == SIGNONS)
 	{
-		S_Respatialize(cl.viewentity, r_origin, r_refdef.viewaxis, 0);
+		S_Respatialize(cl.viewentity, r_refdef.vieworg, r_refdef.viewaxis, 0);
 		CL_DecayLights ();
 	}
 

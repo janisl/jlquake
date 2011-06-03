@@ -42,7 +42,7 @@ void R_RenderDlight (dlight_t *light)
 
 	rad = light->radius * 0.35;
 
-	VectorSubtract (light->origin, r_origin, v);
+	VectorSubtract (light->origin, tr.refdef.vieworg, v);
 #if 0
 	// FIXME?
 	if (VectorLength (v) < rad)
@@ -55,15 +55,15 @@ void R_RenderDlight (dlight_t *light)
 	qglBegin (GL_TRIANGLE_FAN);
 	qglColor3f (light->color[0]*0.2, light->color[1]*0.2, light->color[2]*0.2);
 	for (i=0 ; i<3 ; i++)
-		v[i] = light->origin[i] - vpn[i]*rad;
+		v[i] = light->origin[i] - tr.refdef.viewaxis[0][i]*rad;
 	qglVertex3fv (v);
 	qglColor3f (0,0,0);
 	for (i=16 ; i>=0 ; i--)
 	{
 		a = i/16.0 * M_PI*2;
 		for (j=0 ; j<3 ; j++)
-			v[j] = light->origin[j] + vright[j]*cos(a)*rad
-				+ vup[j]*sin(a)*rad;
+			v[j] = light->origin[j] - tr.refdef.viewaxis[1][j]*cos(a)*rad
+				+ tr.refdef.viewaxis[2][j]*sin(a)*rad;
 		qglVertex3fv (v);
 	}
 	qglEnd ();

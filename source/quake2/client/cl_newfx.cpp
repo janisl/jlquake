@@ -540,8 +540,8 @@ void CL_Heatbeam (vec3_t start, vec3_t forward)
 
 	// FIXME - pmm - these might end up using old values?
 //	MakeNormalVectors (vec, right, up);
-	VectorCopy (cl.v_right, right);
-	VectorCopy (cl.v_up, up);
+	VectorSubtract(vec3_origin, cl.refdef.viewaxis[1], right);
+	VectorCopy (cl.refdef.viewaxis[2], up);
 	VectorMA (move, -0.5, right, move);
 	VectorMA (move, -0.5, up, move);
 

@@ -93,7 +93,7 @@ void EmitSkyPolys (mbrush29_surface_t *fa)
 		qglBegin (GL_POLYGON);
 		for (i=0,v=p->verts[0] ; i<p->numverts ; i++, v+=BRUSH29_VERTEXSIZE)
 		{
-			VectorSubtract (v, r_origin, dir);
+			VectorSubtract (v, tr.refdef.vieworg, dir);
 			dir[2] *= 3;	// flatten the sphere
 
 			length = dir[0]*dir[0] + dir[1]*dir[1] + dir[2]*dir[2];

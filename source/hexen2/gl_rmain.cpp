@@ -42,17 +42,6 @@ extern qhandle_t	player_models[NUM_CLASSES];
 
 bool		r_third_person;
 
-//
-// view origin
-//
-extern "C"
-{
-vec3_t	vup;
-vec3_t	vpn;
-vec3_t	vright;
-}
-vec3_t	r_origin;
-
 float	r_world_matrix[16];
 float	r_base_world_matrix[16];
 
@@ -124,7 +113,7 @@ void R_RotateForEntity(trRefEntity_t *e)
 	{
 		float fvaxis[3][3];
 
-		VectorSubtract(r_origin, e->e.origin, fvaxis[0]);
+		VectorSubtract(tr.refdef.vieworg, e->e.origin, fvaxis[0]);
 		VectorNormalize(fvaxis[0]);
 
 		if (fvaxis[0][1] == 0 && fvaxis[0][0] == 0)
@@ -331,9 +320,9 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	// position relative to the viewer
 		for (i=0 ; i<3 ; i++)
 		{
-			r_spritedesc.vup[i] = vup[i];
-			r_spritedesc.vright[i] = vright[i];
-			r_spritedesc.vpn[i] = vpn[i];
+			r_spritedesc.vup[i] = tr.refdef.viewaxis[2][i];
+			r_spritedesc.vright[i] = -tr.refdef.viewaxis[1][i];
+			r_spritedesc.vpn[i] = tr.refdef.viewaxis[0][i];
 		}
 	}
 	else if (psprite->type == SPR_VP_PARALLEL_UPRIGHT)
@@ -344,16 +333,16 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	// down, because the cross product will be between two nearly parallel
 	// vectors and starts to approach an undefined state, so we don't draw if
 	// the two vectors are less than 1 degree apart
-		dot = vpn[2];	// same as DotProduct (vpn, r_spritedesc.vup) because
+		dot = tr.refdef.viewaxis[0][2];	// same as DotProduct (vpn, r_spritedesc.vup) because
 						//  r_spritedesc.vup is 0, 0, 1
 		if ((dot > 0.999848) || (dot < -0.999848))	// cos(1 degree) = 0.999848
 			return;
 		r_spritedesc.vup[0] = 0;
 		r_spritedesc.vup[1] = 0;
 		r_spritedesc.vup[2] = 1;
-		r_spritedesc.vright[0] = vpn[1];
+		r_spritedesc.vright[0] = tr.refdef.viewaxis[0][1];
 										// CrossProduct (r_spritedesc.vup, vpn,
-		r_spritedesc.vright[1] = -vpn[0];	//  r_spritedesc.vright)
+		r_spritedesc.vright[1] = -tr.refdef.viewaxis[0][0];	//  r_spritedesc.vright)
 		r_spritedesc.vright[2] = 0;
 		VectorNormalize (r_spritedesc.vright);
 		r_spritedesc.vpn[0] = -r_spritedesc.vright[1];
@@ -382,9 +371,9 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 
 		for (i=0 ; i<3 ; i++)
 		{
-			r_spritedesc.vpn[i] = vpn[i];
-			r_spritedesc.vright[i] = vright[i] * cr + vup[i] * sr;
-			r_spritedesc.vup[i] = vright[i] * -sr + vup[i] * cr;
+			r_spritedesc.vpn[i] = tr.refdef.viewaxis[0][i];
+			r_spritedesc.vright[i] = -tr.refdef.viewaxis[1][i] * cr + tr.refdef.viewaxis[2][i] * sr;
+			r_spritedesc.vup[i] = tr.refdef.viewaxis[1][i] * sr + tr.refdef.viewaxis[2][i] * cr;
 		}
 	}
 	else
@@ -684,8 +673,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 	}
 
-	VectorCopy (currententity->e.origin, r_entorigin);
-	VectorSubtract (r_origin, r_entorigin, modelorg);
+	VectorCopy(currententity->e.origin, r_entorigin);
+	VectorSubtract(tr.refdef.vieworg, r_entorigin, modelorg);
 
 	//
 	// get lighting information
@@ -966,7 +955,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater) {
 	for (i=0; i<numents; i++) {
 		VectorSubtract(
 			theents[i].ent->e.origin, 
-			r_origin, 
+			tr.refdef.vieworg, 
 			result);
 //		theents[i].len = Length(result);
 		theents[i].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
@@ -1035,16 +1024,16 @@ void R_SetFrustum (void)
 
 	// front side is visible
 
-	VectorAdd (vpn, vright, frustum[0].normal);
-	VectorSubtract (vpn, vright, frustum[1].normal);
+	VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], frustum[0].normal);
+	VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], frustum[1].normal);
 
-	VectorAdd (vpn, vup, frustum[2].normal);
-	VectorSubtract (vpn, vup, frustum[3].normal);
+	VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], frustum[2].normal);
+	VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], frustum[3].normal);
 
 	for (i=0 ; i<4 ; i++)
 	{
 		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = DotProduct (r_origin, frustum[i].normal);
+		frustum[i].dist = DotProduct(tr.refdef.vieworg, frustum[i].normal);
 		SetPlaneSignbits(&frustum[i]);
 	}
 }
@@ -1079,16 +1068,9 @@ void R_SetupFrame (void)
 		r_textureMode->modified = false;
 	}
 
-// build the transformation matrix for the given view angles
-	VectorCopy (tr.refdef.vieworg, r_origin);
-
-	VectorCopy(tr.refdef.viewaxis[0], vpn);
-	VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], vright);
-	VectorCopy(tr.refdef.viewaxis[2], vup);
-
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (r_origin, Mod_GetModel(cl.worldmodel));
+	r_viewleaf = Mod_PointInLeaf(tr.refdef.vieworg, Mod_GetModel(cl.worldmodel));
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();
@@ -1297,9 +1279,6 @@ void R_Mirror (void)
 
 	d = DotProduct(tr.refdef.viewaxis[2], mirror_plane->normal);
 	VectorMA(tr.refdef.viewaxis[2], -2 * d, mirror_plane->normal, tr.refdef.viewaxis[2]);
-
-	d = DotProduct (vpn, mirror_plane->normal);
-	VectorMA (vpn, -2*d, mirror_plane->normal, vpn);
 
 	r_third_person = true;
 

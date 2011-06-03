@@ -1321,7 +1321,7 @@ void Host_Frame (float time)
 	// update audio
 	if (cls.state == ca_active)
 	{
-		S_Respatialize(cl.playernum + 1, r_origin, r_refdef.viewaxis, 0);
+		S_Respatialize(cl.playernum + 1, r_refdef.vieworg, r_refdef.viewaxis, 0);
 		CL_DecayLights ();
 	}
 

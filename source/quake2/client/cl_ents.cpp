@@ -1297,7 +1297,6 @@ void CL_CalcViewValues (void)
 		viewangles[i] += LerpAngle (ops->kick_angles[i], ps->kick_angles[i], lerp);
 
 	AnglesToAxis(viewangles, cl.refdef.viewaxis);
-	AngleVectors(viewangles, cl.v_forward, cl.v_right, cl.v_up);
 
 	// interpolate field of view
 	cl.refdef.fov_x = ops->fov + lerp * (ps->fov - ops->fov);
