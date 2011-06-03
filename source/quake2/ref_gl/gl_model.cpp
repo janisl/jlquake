@@ -281,14 +281,14 @@ void R_BeginRegistration (char *model)
 	flushmap = Cvar_Get ("flushmap", "0", 0);
 	if ((tr.models[1] && QStr::Cmp(tr.models[1]->name, fullname)) || flushmap->value)
 	{
-		Mod_Free(tr.models[1]);
+		R_FreeModel(tr.models[1]);
 		tr.models[1] = NULL;
 		//	Clear submodels.
 		for (int i = 1; i < tr.numModels; i++)
 		{
 			if (tr.models[i] && tr.models[i]->name[0] == '*')
 			{
-				Mod_Free(tr.models[i]);
+				R_FreeModel(tr.models[i]);
 				tr.models[i] = NULL;
 			}
 		}
@@ -334,7 +334,7 @@ void R_EndRegistration (void)
 			continue;
 		if (tr.models[i]->q2_registration_sequence != registration_sequence)
 		{	// don't need this model
-			Mod_Free(tr.models[i]);
+			R_FreeModel(tr.models[i]);
 			tr.models[i] = NULL;
 		}
 	}
@@ -342,46 +342,6 @@ void R_EndRegistration (void)
 
 
 //=============================================================================
-
-
-/*
-================
-Mod_Free
-================
-*/
-void Mod_Free(model_t* mod)
-{
-	if (mod->type == MOD_SPRITE2)
-	{
-		Mod_FreeSprite2Model(mod);
-	}
-	else if (mod->type == MOD_MESH2)
-	{
-		Mod_FreeMd2Model(mod);
-	}
-	else if (mod->type == MOD_BRUSH38)
-	{
-		Mod_FreeBsp38(mod);
-	}
-	delete mod;
-}
-
-/*
-================
-Mod_FreeAll
-================
-*/
-void Mod_FreeAll (void)
-{
-	for (int i=1; i<tr.numModels ; i++)
-	{
-		if (tr.models[i])
-		{
-			Mod_Free(tr.models[i]);
-			tr.models[i] = NULL;
-		}
-	}
-}
 
 model_t* Mod_GetModel(qhandle_t handle)
 {

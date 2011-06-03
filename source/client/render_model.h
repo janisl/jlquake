@@ -776,6 +776,9 @@ struct model_t
 	int			 q3_numLods;
 };
 
+void R_FreeModel(model_t* mod);
+void R_FreeModels();
+
 void Mod_LoadSpriteModel(model_t* mod, void* buffer);
 void Mod_FreeSpriteModel(model_t* mod);
 void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen);
@@ -795,6 +798,7 @@ void Mod_LoadBrush38Model(model_t* mod, void* buffer);
 void Mod_FreeBsp38(model_t* mod);
 void R_LoadBrush46Model(void* buffer);
 void R_FreeBsp46(world_t* mod);
+void R_FreeBsp46Model(model_t* mod);
 
 //
 //	CURVE TESSELATION

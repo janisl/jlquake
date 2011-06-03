@@ -33,7 +33,4 @@ byte	*Mod_ClusterPVS (int cluster, model_t *model);
 
 void	Mod_Modellist_f (void);
 
-void	Mod_FreeAll (void);
-void	Mod_Free (model_t *mod);
-
 model_t* Mod_GetModel(qhandle_t handle);

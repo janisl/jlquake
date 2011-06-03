@@ -2256,3 +2256,13 @@ void R_FreeBsp46(world_t* mod)
 	delete[] mod->entityString;
 	delete[] mod->bmodels;
 }
+
+//==========================================================================
+//
+//	R_FreeBsp46Model
+//
+//==========================================================================
+
+void R_FreeBsp46Model(model_t* mod)
+{
+}

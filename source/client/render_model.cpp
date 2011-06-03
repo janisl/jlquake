@@ -43,6 +43,66 @@ model_t*		currentmodel;
 
 //==========================================================================
 //
-//
+//	R_FreeModel
 //
 //==========================================================================
+
+void R_FreeModel(model_t* mod)
+{
+	if (mod->type == MOD_SPRITE)
+	{
+		Mod_FreeSpriteModel(mod);
+	}
+	else if (mod->type == MOD_SPRITE2)
+	{
+		Mod_FreeSprite2Model(mod);
+	}
+	else if (mod->type == MOD_MESH1)
+	{
+		Mod_FreeMdlModel(mod);
+	}
+	else if (mod->type == MOD_MESH2)
+	{
+		Mod_FreeMd2Model(mod);
+	}
+	else if (mod->type == MOD_MESH3)
+	{
+		R_FreeMd3(mod);
+	}
+	else if (mod->type == MOD_MD4)
+	{
+		R_FreeMd4(mod);
+	}
+	else if (mod->type == MOD_BRUSH29)
+	{
+		Mod_FreeBsp29(mod);
+	}
+	else if (mod->type == MOD_BRUSH38)
+	{
+		Mod_FreeBsp38(mod);
+	}
+	else if (mod->type == MOD_BRUSH46)
+	{
+		R_FreeBsp46Model(mod);
+	}
+	delete mod;
+}
+
+//==========================================================================
+//
+//	R_FreeModels
+//
+//==========================================================================
+
+void R_FreeModels()
+{
+	for (int i = 0; i < tr.numModels; i++)
+	{
+		if (tr.models[i])
+		{
+			R_FreeModel(tr.models[i]);
+			tr.models[i] = NULL;
+		}
+	}
+	tr.numModels = 0;
+}

@@ -979,7 +979,7 @@ void R_Shutdown (void)
 	Cmd_RemoveCommand ("imagelist");
 	Cmd_RemoveCommand ("gfxinfo");
 
-	Mod_FreeAll ();
+	R_FreeModels();
 
 	R_DeleteTextures();
 
