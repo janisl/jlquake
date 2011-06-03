@@ -13,8 +13,6 @@ float RTint[256],GTint[256],BTint[256];
 
 float		gldepthmin, gldepthmax;
 
-extern void R_InitBubble();
-
 /*
 ==================
 R_InitTextures
@@ -191,7 +189,6 @@ void R_Init (void)
 	gl_smoothmodels = Cvar_Get("gl_smoothmodels", "1", 0);
 	gl_affinemodels = Cvar_Get("gl_affinemodels", "0", 0);
 	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
-	gl_flashblend = Cvar_Get("gl_flashblend", "0", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
 
 	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions", "1", CVAR_ARCHIVE);
@@ -199,8 +196,6 @@ void R_Init (void)
 
 	r_teamcolor = Cvar_Get("r_teamcolor", "187", CVAR_ARCHIVE);
 
-	R_InitBubble();
-	
 	R_InitParticles ();
 	R_InitParticleTexture ();
 

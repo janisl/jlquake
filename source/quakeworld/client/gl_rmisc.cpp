@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 float		gldepthmin, gldepthmax;
 
-extern void R_InitBubble();
-
 /*
 ==================
 R_InitTextures
@@ -197,15 +195,12 @@ void R_Init (void)
 	gl_smoothmodels = Cvar_Get("gl_smoothmodels", "1", 0);
 	gl_affinemodels = Cvar_Get("gl_affinemodels", "0", 0);
 	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
-	gl_flashblend = Cvar_Get("gl_flashblend", "0", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
 
 	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions", "1", CVAR_ARCHIVE);
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
 	gl_finish = Cvar_Get("gl_finish", "0", 0);
-
-	R_InitBubble();
 
 	R_InitParticles ();
 	R_InitParticleTexture ();

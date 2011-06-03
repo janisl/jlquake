@@ -93,7 +93,6 @@ QCvar	*gl_finish;
 QCvar	*gl_clear;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
-QCvar	*gl_flashblend;
 QCvar  *gl_saturatelighting;
 QCvar	*gl_lockpvs;
 
@@ -783,8 +782,6 @@ void R_RenderView (refdef_t *fd)
 
 	R_DrawEntitiesOnList ();
 
-	R_RenderDlights ();
-
 	R_DrawParticles ();
 
 	R_DrawAlphaSurfaces ();
@@ -898,7 +895,6 @@ void R_Register( void )
 	gl_clear = Cvar_Get ("gl_clear", "0", 0);
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
-	gl_flashblend = Cvar_Get ("gl_flashblend", "0", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 	gl_lockpvs = Cvar_Get( "gl_lockpvs", "0", 0 );
 

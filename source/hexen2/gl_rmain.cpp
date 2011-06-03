@@ -73,7 +73,6 @@ QCvar*	gl_texsort;
 QCvar*	gl_smoothmodels;
 QCvar*	gl_affinemodels;
 QCvar*	gl_polyblend;
-QCvar*	gl_flashblend;
 QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
@@ -1217,8 +1216,6 @@ void R_RenderScene ()
 	S_ExtraUpdate ();	// don't let sound get messed up if going slow
 	
 	R_DrawEntitiesOnList ();
-
-	R_RenderDlights ();
 }
 
 

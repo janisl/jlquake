@@ -104,7 +104,6 @@ extern	QCvar*	gl_texsort;
 extern	QCvar*	gl_smoothmodels;
 extern	QCvar*	gl_affinemodels;
 extern	QCvar*	gl_polyblend;
-extern	QCvar*	gl_flashblend;
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
@@ -147,7 +146,6 @@ void R_RotateForEntity (trRefEntity_t *e);
 //
 void R_MarkLights (cdlight_t *light, int bit, mbrush29_node_t *node);
 void R_AnimateLight (void);
-void R_RenderDlights (void);
 int R_LightPoint (vec3_t p);
 
 //

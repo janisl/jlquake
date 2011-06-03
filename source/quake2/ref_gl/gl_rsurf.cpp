@@ -852,13 +852,10 @@ void R_DrawInlineBModel (void)
 	dlight_t	*lt;
 
 	// calculate dynamic lighting for bmodel
-	if ( !gl_flashblend->value )
+	lt = tr.refdef.dlights;
+	for (k=0 ; k<tr.refdef.num_dlights ; k++, lt++)
 	{
-		lt = tr.refdef.dlights;
-		for (k=0 ; k<tr.refdef.num_dlights ; k++, lt++)
-		{
-			R_MarkLights (lt, 1<<k, currentmodel->brush38_nodes + currentmodel->brush38_firstnode);
-		}
+		R_MarkLights (lt, 1<<k, currentmodel->brush38_nodes + currentmodel->brush38_firstnode);
 	}
 
 	psurf = &currentmodel->brush38_surfaces[currentmodel->brush38_firstmodelsurface];

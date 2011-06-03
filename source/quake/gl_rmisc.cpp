@@ -199,7 +199,6 @@ void R_Init (void)
 	gl_smoothmodels = Cvar_Get("gl_smoothmodels", "1", 0);
 	gl_affinemodels = Cvar_Get("gl_affinemodels", "0", 0);
 	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
-	gl_flashblend = Cvar_Get("gl_flashblend", "0", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
 
 	gl_keeptjunctions = Cvar_Get("gl_keeptjunctions", "1", CVAR_ARCHIVE);

@@ -28,79 +28,6 @@ int	r_dlightframecount;
 /*
 =============================================================================
 
-DYNAMIC LIGHTS BLEND RENDERING
-
-=============================================================================
-*/
-
-void R_RenderDlight (dlight_t *light)
-{
-	int		i, j;
-	float	a;
-	vec3_t	v;
-	float	rad;
-
-	rad = light->radius * 0.35;
-
-	VectorSubtract (light->origin, tr.refdef.vieworg, v);
-#if 0
-	// FIXME?
-	if (VectorLength (v) < rad)
-	{	// view is inside the dlight
-		V_AddBlend (light->color[0], light->color[1], light->color[2], light->intensity * 0.0003, v_blend);
-		return;
-	}
-#endif
-
-	qglBegin (GL_TRIANGLE_FAN);
-	qglColor3f (light->color[0]*0.2, light->color[1]*0.2, light->color[2]*0.2);
-	for (i=0 ; i<3 ; i++)
-		v[i] = light->origin[i] - tr.refdef.viewaxis[0][i]*rad;
-	qglVertex3fv (v);
-	qglColor3f (0,0,0);
-	for (i=16 ; i>=0 ; i--)
-	{
-		a = i/16.0 * M_PI*2;
-		for (j=0 ; j<3 ; j++)
-			v[j] = light->origin[j] - tr.refdef.viewaxis[1][j]*cos(a)*rad
-				+ tr.refdef.viewaxis[2][j]*sin(a)*rad;
-		qglVertex3fv (v);
-	}
-	qglEnd ();
-}
-
-/*
-=============
-R_RenderDlights
-=============
-*/
-void R_RenderDlights (void)
-{
-	int		i;
-	dlight_t	*l;
-
-	if (!gl_flashblend->value)
-		return;
-
-	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
-											//  advanced yet for this frame
-	GL_State(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
-	qglDisable (GL_TEXTURE_2D);
-	qglShadeModel (GL_SMOOTH);
-
-	l = tr.refdef.dlights;
-	for (i=0 ; i<tr.refdef.num_dlights ; i++, l++)
-		R_RenderDlight (l);
-
-	qglColor3f (1,1,1);
-	qglEnable (GL_TEXTURE_2D);
-	GL_State(GLS_DEPTHMASK_TRUE);
-}
-
-
-/*
-=============================================================================
-
 DYNAMIC LIGHTS
 
 =============================================================================
@@ -161,9 +88,6 @@ void R_PushDlights (void)
 {
 	int		i;
 	dlight_t	*l;
-
-	if (gl_flashblend->value)
-		return;
 
 	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
 											//  advanced yet for this frame

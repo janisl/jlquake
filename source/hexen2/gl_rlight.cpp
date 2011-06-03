@@ -51,93 +51,6 @@ void R_AnimateLight(void)
 /*
 =============================================================================
 
-DYNAMIC LIGHTS BLEND RENDERING
-
-=============================================================================
-*/
-
-void AddLightBlend (float r, float g, float b, float a2)
-{
-	float	a;
-
-	v_blend[3] = a = v_blend[3] + a2*(1-v_blend[3]);
-
-	a2 = a2/a;
-
-	v_blend[0] = v_blend[1]*(1-a2) + r*a2;
-	v_blend[1] = v_blend[1]*(1-a2) + g*a2;
-	v_blend[2] = v_blend[2]*(1-a2) + b*a2;
-}
-
-void R_RenderDlight (cdlight_t *light)
-{
-	int		i, j;
-	float	a;
-	vec3_t	v;
-	float	rad;
-
-	rad = light->radius * 0.35;
-
-	VectorSubtract(light->origin, tr.refdef.vieworg, v);
-	if (VectorLength(v) < rad)
-	{	// view is inside the dlight
-		AddLightBlend (1, 0.5, 0, light->radius * 0.0003);
-		return;
-	}
-
-	qglBegin (GL_TRIANGLE_FAN);
-	qglColor3f (0.2,0.1,0.0);
-	for (i=0 ; i<3 ; i++)
-		v[i] = light->origin[i] - tr.refdef.viewaxis[0][i]*rad;
-	qglVertex3fv (v);
-	qglColor3f (0,0,0);
-	for (i=16 ; i>=0 ; i--)
-	{
-		a = i/16.0 * M_PI*2;
-		for (j=0 ; j<3 ; j++)
-			v[j] = light->origin[j] - tr.refdef.viewaxis[1][j]*cos(a)*rad
-				+ tr.refdef.viewaxis[2][j]*sin(a)*rad;
-		qglVertex3fv (v);
-	}
-	qglEnd ();
-}
-
-/*
-=============
-R_RenderDlights
-=============
-*/
-void R_RenderDlights (void)
-{
-	int		i;
-	cdlight_t	*l;
-
-	if (!gl_flashblend->value)
-		return;
-
-	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
-											//  advanced yet for this frame
-	GL_State(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
-	qglDisable (GL_TEXTURE_2D);
-	qglShadeModel (GL_SMOOTH);
-
-	l = cl_dlights;
-	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
-	{
-		if (l->die < cl.time || !l->radius)
-			continue;
-		R_RenderDlight (l);
-	}
-
-	qglColor3f (1,1,1);
-	qglEnable (GL_TEXTURE_2D);
-	GL_State(GLS_DEPTHMASK_TRUE);
-}
-
-
-/*
-=============================================================================
-
 DYNAMIC LIGHTS
 
 =============================================================================
@@ -198,9 +111,6 @@ void R_PushDlights (void)
 {
 	int		i;
 	cdlight_t	*l;
-
-	if (gl_flashblend->value)
-		return;
 
 	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
 											//  advanced yet for this frame
