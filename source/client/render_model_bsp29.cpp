@@ -1265,7 +1265,9 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 
 			sprintf (name, "*%i", i+1);
 			loadmodel = Mod_FindName (name);
+			int saved_index = loadmodel->index;
 			*loadmodel = *mod;
+			loadmodel->index = saved_index;
 			QStr::Cpy(loadmodel->name, name);
 			mod = loadmodel;
 		}

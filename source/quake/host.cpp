@@ -826,7 +826,6 @@ void Host_Init (quakeparms_t *parms)
 	Con_Init ();	
 	M_Init ();	
 	PR_Init ();
-	Mod_Init ();
 	SV_Init ();
 
 	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
@@ -853,6 +852,7 @@ void Host_Init (quakeparms_t *parms)
 		IN_Init();
 		VID_Init();
 		Draw_Init();
+		Mod_Init ();
 		SCR_Init();
 		R_Init();
 		S_Init();

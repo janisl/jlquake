@@ -12,10 +12,6 @@ static model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
 static byte	mod_novis[BSP29_MAX_MAP_LEAFS/8];
 
-#define	MAX_MOD_KNOWN	1500
-static model_t	mod_known[MAX_MOD_KNOWN];
-static int		mod_numknown;
-
 /*
 ===============
 Mod_Init
@@ -25,8 +21,10 @@ void Mod_Init (void)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 
-	mod_numknown = 1;
-	mod_known[0].type = MOD_BAD;
+	tr.numModels = 1;
+	tr.models[0] = new model_t;
+	Com_Memset(tr.models[0], 0, sizeof(model_t));
+	tr.models[0]->type = MOD_BAD;
 }
 
 /*
@@ -135,12 +133,9 @@ Mod_ClearAll
 */
 void Mod_ClearAll (void)
 {
-	int		i;
-	model_t	*mod;
-	
-	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
-		if (mod->type != MOD_MESH1)
-			mod->q1_needload = true;
+	for (int i=1; i<tr.numModels ; i++)
+		if (tr.models[i]->type != MOD_MESH1)
+			tr.models[i]->q1_needload = true;
 }
 
 /*
@@ -151,28 +146,25 @@ Mod_FindName
 */
 model_t *Mod_FindName (const char *name)
 {
-	int		i;
-	model_t	*mod;
-	
 	if (!name[0])
 		Sys_Error ("Mod_ForName: NULL name");
 		
 //
 // search the currently loaded models
 //
-	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
-		if (!QStr::Cmp(mod->name, name) )
-			break;
+	for (int i = 1; i < tr.numModels; i++)
+		if (!QStr::Cmp(tr.models[i]->name, name))
+			return tr.models[i];
 			
-	if (i == mod_numknown)
-	{
-		if (mod_numknown == MAX_MOD_KNOWN)
-			Sys_Error ("mod_numknown == MAX_MOD_KNOWN");
-		QStr::Cpy(mod->name, name);
-		mod->q1_needload = true;
-		mod->index = mod_numknown;
-		mod_numknown++;
-	}
+	if (tr.numModels == MAX_MOD_KNOWN)
+		Sys_Error ("tr.numModels == MAX_MOD_KNOWN");
+	model_t	*mod = new model_t;
+	Com_Memset(mod, 0, sizeof(model_t));
+	tr.models[tr.numModels] = mod;
+	QStr::Cpy(mod->name, name);
+	mod->q1_needload = true;
+	mod->index = tr.numModels;
+	tr.numModels++;
 
 	return mod;
 }
@@ -259,7 +251,7 @@ qhandle_t Mod_ForName (char *name, qboolean crash)
 	{
 		return 0;
 	}
-	return mod - mod_known;
+	return mod->index;
 }
 
 /*
@@ -269,23 +261,20 @@ Mod_Print
 */
 void Mod_Print (void)
 {
-	int		i;
-	model_t	*mod;
-
 	Con_Printf ("Cached models:\n");
-	for (i=0, mod=mod_known ; i < mod_numknown ; i++, mod++)
+	for (int i = 0; i < tr.numModels; i++)
 	{
-		Con_Printf ("%8p : %s\n",mod->q1_cache, mod->name);
+		Con_Printf ("%8p : %s\n", tr.models[i]->q1_cache, tr.models[i]->name);
 	}
 }
 
 model_t* Mod_GetModel(qhandle_t handle)
 {
-	if (handle < 1 || handle >= mod_numknown)
+	if (handle < 1 || handle >= tr.numModels || !tr.models[handle])
 	{
-		return &mod_known[0];
+		return tr.models[0];
 	}
-	return &mod_known[handle];
+	return tr.models[handle];
 }
 
 void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out)

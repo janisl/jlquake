@@ -113,8 +113,6 @@ BRUSH MODELS
 
 //======================================================================
 
-#define	MAX_MOD_KNOWN	1024
-
 void		R_ModelInit (void);
 model_t		*R_GetModelByHandle( qhandle_t hModel );
 int			R_LerpTag( orientation_t *tag, qhandle_t handle, int startFrame, int endFrame, 
@@ -250,13 +248,6 @@ struct trGlobals_t : trGlobals_base_t
 
 	frontEndCounters_t		pc;
 	int						frontEndMsec;		// not in pc due to clearing issue
-
-	//
-	// put large tables at the end, so most elements will be
-	// within the +/32K indexed range on risc processors
-	//
-	model_t					*models[MAX_MOD_KNOWN];
-	int						numModels;
 
 	// shader indexes from other modules will be looked up in tr.shaders[]
 	// shader indexes from drawsurfs will be looked up in sortedShaders[]

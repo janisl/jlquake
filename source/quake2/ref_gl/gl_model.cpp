@@ -25,10 +25,6 @@ model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
 byte	mod_novis[BSP38MAX_MAP_LEAFS/8];
 
-#define	MAX_MOD_KNOWN	512
-static model_t	mod_known[MAX_MOD_KNOWN];
-static int		mod_numknown;
-
 int		registration_sequence;
 
 /*
@@ -130,18 +126,14 @@ Mod_Modellist_f
 */
 void Mod_Modellist_f (void)
 {
-	int		i;
-	model_t	*mod;
-	int		total;
-
-	total = 0;
+	int total = 0;
 	ri.Con_Printf (PRINT_ALL,"Loaded models:\n");
-	for (i=0, mod=mod_known ; i < mod_numknown ; i++, mod++)
+	for (int i = 0; i < tr.numModels; i++)
 	{
-		if (!mod->name[0])
+		if (!tr.models[i])
 			continue;
-		ri.Con_Printf (PRINT_ALL, "%8i : %s\n",mod->q2_extradatasize, mod->name);
-		total += mod->q2_extradatasize;
+		ri.Con_Printf(PRINT_ALL, "%8i : %s\n", tr.models[i]->q2_extradatasize, tr.models[i]->name);
+		total += tr.models[i]->q2_extradatasize;
 	}
 	ri.Con_Printf (PRINT_ALL, "Total resident: %i\n", total);
 }
@@ -155,8 +147,10 @@ void Mod_Init (void)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 
-	mod_numknown = 1;
-	mod_known[0].type = MOD_BAD;
+	tr.numModels = 1;
+	tr.models[0] = new model_t;
+	Com_Memset(tr.models[0], 0, sizeof(model_t));
+	tr.models[0]->type = MOD_BAD;
 }
 
 model_t* Mod_AllocModel()
@@ -164,21 +158,26 @@ model_t* Mod_AllocModel()
 	//
 	// find a free model slot spot
 	//
-	model_t* mod = &mod_known[1];
-	for (int i = 1; i < mod_numknown; i++, mod++)
+	for (int i = 1; i < tr.numModels; i++)
 	{
-		if (!mod->name[0])
+		if (!tr.models[i])
 		{
+			model_t* mod = new model_t;
+			Com_Memset(mod, 0, sizeof(model_t));
+			tr.models[i] = mod;
 			mod->index = i;
 			return mod;	// free spot
 		}
 	}
-	if (mod_numknown == MAX_MOD_KNOWN)
+	if (tr.numModels == MAX_MOD_KNOWN)
 	{
-		ri.Sys_Error(ERR_DROP, "mod_numknown == MAX_MOD_KNOWN");
+		ri.Sys_Error(ERR_DROP, "tr.numModels == MAX_MOD_KNOWN");
 	}
-	mod->index = mod_numknown;
-	mod_numknown++;
+	model_t* mod = new model_t;
+	Com_Memset(mod, 0, sizeof(model_t));
+	tr.models[tr.numModels] = mod;
+	mod->index = tr.numModels;
+	tr.numModels++;
 	return mod;
 }
 
@@ -201,12 +200,12 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	// search the currently loaded models
 	//
-	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
+	for (int i = 1; i < tr.numModels; i++)
 	{
-		if (!mod->name[0])
+		if (!tr.models[i])
 			continue;
-		if (!QStr::Cmp(mod->name, name) )
-			return mod;
+		if (!QStr::Cmp(tr.models[i]->name, name) )
+			return tr.models[i];
 	}
 	
 	mod = Mod_AllocModel();
@@ -245,7 +244,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 		break;
 	
 	case BSP38_HEADER:
-		if (loadmodel != &mod_known[1])
+		if (loadmodel != tr.models[1])
 			ri.Sys_Error (ERR_DROP, "Loaded a brush model after the world");
 		Mod_LoadBrush38Model(mod, buf);
 		break;
@@ -280,15 +279,17 @@ void R_BeginRegistration (char *model)
 	// explicitly free the old map if different
 	// this guarantees that mod_known[1] is the world map
 	flushmap = Cvar_Get ("flushmap", "0", 0);
-	if ( QStr::Cmp(mod_known[1].name, fullname) || flushmap->value)
+	if ((tr.models[1] && QStr::Cmp(tr.models[1]->name, fullname)) || flushmap->value)
 	{
-		Mod_Free (&mod_known[1]);
+		Mod_Free(tr.models[1]);
+		tr.models[1] = NULL;
 		//	Clear submodels.
-		for (int i = 1; i < mod_numknown; i++)
+		for (int i = 1; i < tr.numModels; i++)
 		{
-			if (mod_known[i].name[0] == '*')
+			if (tr.models[i] && tr.models[i]->name[0] == '*')
 			{
-				Com_Memset(&mod_known[i], 0, sizeof(mod_known[i]));
+				Mod_Free(tr.models[i]);
+				tr.models[i] = NULL;
 			}
 		}
 	}
@@ -315,7 +316,7 @@ qhandle_t R_RegisterModel (char *name)
 	}
 	mod->q2_registration_sequence = registration_sequence;
 
-	return mod - mod_known;
+	return mod->index;
 }
 
 
@@ -327,16 +328,14 @@ R_EndRegistration
 */
 void R_EndRegistration (void)
 {
-	int		i;
-	model_t	*mod;
-
-	for (i=1, mod=&mod_known[1] ; i<mod_numknown ; i++, mod++)
+	for (int i = 1; i < tr.numModels; i++)
 	{
-		if (!mod->name[0] || mod->name[0] == '*')
+		if (!tr.models[i])
 			continue;
-		if (mod->q2_registration_sequence != registration_sequence)
+		if (tr.models[i]->q2_registration_sequence != registration_sequence)
 		{	// don't need this model
-			Mod_Free (mod);
+			Mod_Free(tr.models[i]);
+			tr.models[i] = NULL;
 		}
 	}
 }
@@ -362,9 +361,9 @@ void Mod_Free(model_t* mod)
 	}
 	else if (mod->type == MOD_BRUSH38)
 	{
-		Mod_FreeBsp29(mod);
+		Mod_FreeBsp38(mod);
 	}
-	Com_Memset(mod, 0, sizeof(*mod));
+	delete mod;
 }
 
 /*
@@ -374,20 +373,21 @@ Mod_FreeAll
 */
 void Mod_FreeAll (void)
 {
-	int		i;
-
-	for (i=1; i<mod_numknown ; i++)
+	for (int i=1; i<tr.numModels ; i++)
 	{
-		if (mod_known[i].q2_extradatasize && mod_known[i].name[0] != '*')
-			Mod_Free (&mod_known[i]);
+		if (tr.models[i])
+		{
+			Mod_Free(tr.models[i]);
+			tr.models[i] = NULL;
+		}
 	}
 }
 
 model_t* Mod_GetModel(qhandle_t handle)
 {
-	if (handle < 1 || handle >= mod_numknown)
+	if (handle < 1 || handle >= tr.numModels || !tr.models[handle])
 	{
-		return &mod_known[0];
+		return tr.models[0];
 	}
-	return &mod_known[handle];
+	return tr.models[handle];
 }

@@ -173,6 +173,7 @@ struct trRefdef_t
 
 #define MAX_DRAWIMAGES			2048
 #define MAX_LIGHTMAPS			256
+#define MAX_MOD_KNOWN			1500
 
 #define FOG_TABLE_SIZE			256
 #define FUNCTABLE_SIZE			1024
@@ -199,6 +200,13 @@ struct trGlobals_base_t
 	vec3_t					sunDirection;
 
 	trRefdef_t				refdef;
+
+	//
+	// put large tables at the end, so most elements will be
+	// within the +/32K indexed range on risc processors
+	//
+	model_t*				models[MAX_MOD_KNOWN];
+	int						numModels;
 
 	int						numLightmaps;
 	image_t*				lightmaps[MAX_LIGHTMAPS];

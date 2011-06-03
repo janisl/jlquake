@@ -888,7 +888,9 @@ void Mod_LoadBrush38Model(model_t* mod, void* buffer)
 		{
 			starmod = Mod_AllocModel();
 
+			int saved_index = starmod->index;
 			*starmod = *loadmodel;
+			starmod->index = saved_index;
 			QStr::Sprintf(starmod->name, sizeof(starmod->name), "*%d", i);
 	
 			starmod->brush38_numleafs = bm->visleafs;
