@@ -1521,3 +1521,24 @@ void GLimp_EndFrame()
 	// check logging
 	QGL_EnableLogging(!!r_logFile->integer);
 }
+
+void R_InitSky(mbrush29_texture_t *mt)
+{
+}
+model_t *Mod_FindName (const char *name)
+{
+	return NULL;
+}
+void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf)
+{
+}
+void GL_EndBuildingLightmaps (void)
+{
+}
+void GL_BeginBuildingLightmaps (model_t *m)
+{
+}
+model_t* Mod_AllocModel()
+{
+	return NULL;
+}

@@ -391,18 +391,3 @@ model_t* Mod_GetModel(qhandle_t handle)
 	}
 	return &mod_known[handle];
 }
-
-void R_InitSkyTexCoords( float cloudLayerHeight )
-{
-}
-shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage )
-{
-	return NULL;
-}
-void R_InitSky(mbrush29_texture_t *mt)
-{
-}
-model_t *Mod_FindName (const char *name)
-{
-	return NULL;
-}

@@ -1094,3 +1094,34 @@ void R_AddRefEntToScene(refEntity_t* Ent)
 	cl_visedicts[cl_numvisedicts].e = *Ent;
 	cl_numvisedicts++;
 }
+
+void R_InitSkyTexCoords( float cloudLayerHeight )
+{
+}
+shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage )
+{
+	return NULL;
+}
+void R_SyncRenderThread()
+{
+}
+void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf)
+{
+}
+void GL_EndBuildingLightmaps (void)
+{
+}
+void GL_BeginBuildingLightmaps (model_t *m)
+{
+}
+model_t* Mod_AllocModel()
+{
+	return NULL;
+}
+void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset)
+{
+}
+model_t		*R_AllocModel( void )
+{
+	return NULL;
+}

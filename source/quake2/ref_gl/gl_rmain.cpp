@@ -1203,3 +1203,28 @@ void R_ClearScreen()
 	qglClear(GL_COLOR_BUFFER_BIT);
 	qglClearColor(1,0, 0.5, 0.5);
 }
+
+void R_InitSkyTexCoords( float cloudLayerHeight )
+{
+}
+shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage )
+{
+	return NULL;
+}
+void R_InitSky(mbrush29_texture_t *mt)
+{
+}
+model_t *Mod_FindName (const char *name)
+{
+	return NULL;
+}
+void R_SyncRenderThread()
+{
+}
+void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset)
+{
+}
+model_t		*R_AllocModel( void )
+{
+	return NULL;
+}
