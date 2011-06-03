@@ -129,7 +129,7 @@ typedef struct
 {
 	int		length;
 	char	map[MAX_STYLESTRING];
-} lightstyle_t;
+} clightstyle_t;
 
 
 
@@ -331,7 +331,7 @@ extern	client_state_t	cl;
 // FIXME, allocate dynamically
 extern	entity_state_t	cl_baselines[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
-extern	lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
+extern	clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 extern	cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 extern	qboolean	nomaster;

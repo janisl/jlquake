@@ -43,8 +43,6 @@ typedef struct
 	float		white;			// highest of rgb
 } lightstyle_t;
 
-struct trRefEntity_t;
-struct dlight_t;
 struct refdef_t : refdef_base_t
 {
 	float		blend[4];			// rgba 0-1 full screen blend
