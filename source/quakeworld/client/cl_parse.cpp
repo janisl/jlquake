@@ -196,6 +196,30 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	return false;
 }
 
+static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
+{
+	QArray<byte> Buffer;
+	if (!FS_ReadFile(ModelName, Buffer))
+	{
+		throw QDropException(va("Couldn't load %s", ModelName));
+	}
+
+	unsigned short crc;
+	CRC_Init(&crc);
+	for (int i = 0; i < Buffer.Num(); i++)
+	{
+		CRC_ProcessByte(&crc, Buffer[i]);
+	}
+
+	char st[40];
+	sprintf(st, "%d", (int)crc);
+	Info_SetValueForKey(cls.userinfo, CVarName, st, MAX_INFO_STRING, 64, 64, true, false);
+
+	cls.netchan.message.WriteByte(clc_stringcmd);
+	sprintf(st, "setinfo %s %d", CVarName, (int)crc);
+	cls.netchan.message.WriteString2(st);
+}
+
 /*
 =================
 Model_NextDownload
@@ -251,6 +275,9 @@ void Model_NextDownload (void)
 			return;
 		}
 	}
+
+	CL_CalcModelChecksum("progs/player.mdl", pmodel_name);
+	CL_CalcModelChecksum("progs/eyes.mdl", emodel_name);
 
 	// all done
 	cl.worldmodel = cl.model_precache[1];

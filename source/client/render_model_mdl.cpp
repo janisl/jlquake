@@ -744,8 +744,6 @@ static void GL_MakeAliasModelDisplayLists(model_t* m, mesh1hdr_t* hdr)
 
 void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 {
-	CL_SendModelChecksum(mod->name, buffer);
-
 	mdl_t* pinmodel = (mdl_t*)buffer;
 
 	int version = LittleLong(pinmodel->version);

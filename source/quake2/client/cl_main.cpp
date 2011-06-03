@@ -1849,9 +1849,3 @@ void CL_Shutdown(void)
 	IN_Shutdown ();
 	VID_Shutdown();
 }
-
-
-
-void CL_SendModelChecksum(const char* name, const void* buffer)
-{
-}

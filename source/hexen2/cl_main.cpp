@@ -1035,7 +1035,3 @@ bool CIN_IsInCinematicState()
 void CIN_FinishCinematic()
 {
 }
-
-void CL_SendModelChecksum(const char* name, const void* buffer)
-{
-}

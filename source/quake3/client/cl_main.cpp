@@ -3269,9 +3269,3 @@ qboolean CL_CDKeyValidate( const char *key, const char *checksum ) {
 
 	return qfalse;
 }
-
-
-
-void CL_SendModelChecksum(const char* name, const void* buffer)
-{
-}
