@@ -192,12 +192,6 @@ enum {qfalse, qtrue};
 
 #define	MAX_SAY_TEXT	150
 
-//
-// these aren't needed by any of the VMs.  put in another header?
-//
-#define	MAX_MAP_AREA_BYTES		32		// bit vector of area visibility
-
-
 // print levels from renderer (FIXME: set up for game / cgame?)
 typedef enum {
 	PRINT_ALL,

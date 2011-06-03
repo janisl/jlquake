@@ -113,13 +113,9 @@ struct entity_t
 	float					syncbase;
 };
 
-// !!! if this is changed, it must be changed in asm_draw.h too !!!
-typedef struct
+struct refdef_t : refdef_base_t
 {
-	int			x,y,width,height;	// subwindow in video for refresh
-	vec3_t		vieworg;
-	vec3_t		viewangles;
-} refdef_t;
+};
 
 
 //

@@ -88,8 +88,8 @@ void R_RenderDlights (void)
 	qglDisable (GL_TEXTURE_2D);
 	qglShadeModel (GL_SMOOTH);
 
-	l = r_newrefdef.dlights;
-	for (i=0 ; i<r_newrefdef.num_dlights ; i++, l++)
+	l = tr.refdef.dlights;
+	for (i=0 ; i<tr.refdef.num_dlights ; i++, l++)
 		R_RenderDlight (l);
 
 	qglColor3f (1,1,1);
@@ -167,8 +167,8 @@ void R_PushDlights (void)
 
 	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
 											//  advanced yet for this frame
-	l = r_newrefdef.dlights;
-	for (i=0 ; i<r_newrefdef.num_dlights ; i++, l++)
+	l = tr.refdef.dlights;
+	for (i=0 ; i<tr.refdef.num_dlights ; i++, l++)
 		R_MarkLights ( l, 1<<i, r_worldmodel->brush38_nodes );
 }
 
@@ -326,8 +326,8 @@ void R_LightPoint (vec3_t p, vec3_t color)
 	// add dynamic lights
 	//
 	light = 0;
-	dl = r_newrefdef.dlights;
-	for (lnum=0 ; lnum<r_newrefdef.num_dlights ; lnum++, dl++)
+	dl = tr.refdef.dlights;
+	for (lnum=0 ; lnum<tr.refdef.num_dlights ; lnum++, dl++)
 	{
 		VectorSubtract (currententity->e.origin,
 						dl->origin,
@@ -370,12 +370,12 @@ void R_AddDynamicLights (mbrush38_surface_t *surf)
 	tmax = (surf->extents[1]>>4)+1;
 	tex = surf->texinfo;
 
-	for (lnum=0 ; lnum<r_newrefdef.num_dlights ; lnum++)
+	for (lnum=0 ; lnum<tr.refdef.num_dlights ; lnum++)
 	{
 		if ( !(surf->dlightbits & (1<<lnum) ) )
 			continue;		// not lit by this light
 
-		dl = &r_newrefdef.dlights[lnum];
+		dl = &tr.refdef.dlights[lnum];
 		frad = dl->radius;
 		fdist = DotProduct (dl->origin, surf->plane->normal) -
 				surf->plane->dist;

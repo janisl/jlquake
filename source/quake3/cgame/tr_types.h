@@ -27,30 +27,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define	MAX_DLIGHTS		32			// can't be increased, because bit flags are used on surfaces
 #define	MAX_ENTITIES	1023		// can't be increased without changing drawsurf bit packing
 
-// refdef flags
-#define RDF_NOWORLDMODEL	1		// used for player configuration screen
-#define RDF_HYPERSPACE		4		// teleportation effect
-
-#define	MAX_RENDER_STRINGS			8
-#define	MAX_RENDER_STRING_LENGTH	32
-
-typedef struct {
-	int			x, y, width, height;
-	float		fov_x, fov_y;
-	vec3_t		vieworg;
-	vec3_t		viewaxis[3];		// transformation matrix
-
-	// time in milliseconds for shader effects and other time dependent rendering issues
-	int			time;
-
-	int			rdflags;			// RDF_NOWORLDMODEL, etc
-
-	// 1 bits will prevent the associated area from rendering at all
-	byte		areamask[MAX_MAP_AREA_BYTES];
-
-	// text messages for deform text shaders
-	char		text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
-} refdef_t;
+struct refdef_t : refdef_base_t
+{
+};
 
 
 typedef enum {

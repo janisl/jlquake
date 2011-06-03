@@ -903,7 +903,7 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-	VectorSubtract (r_refdef.vieworg, e->e.origin, modelorg);
+	VectorSubtract (tr.refdef.vieworg, e->e.origin, modelorg);
 	if (rotated)
 	{
 		vec3_t	temp;
@@ -1104,7 +1104,7 @@ void R_DrawWorld (void)
 	Com_Memset(&ent, 0, sizeof(ent));
 	ent.e.hModel = cl.worldmodel;
 
-	VectorCopy (r_refdef.vieworg, modelorg);
+	VectorCopy (tr.refdef.vieworg, modelorg);
 
 	currententity = &ent;
 

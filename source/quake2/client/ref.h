@@ -45,29 +45,15 @@ typedef struct
 
 struct trRefEntity_t;
 struct dlight_t;
-typedef struct
+struct refdef_t : refdef_base_t
 {
-	int			x, y, width, height;// in virtual screen coordinates
-	float		fov_x, fov_y;
-	float		vieworg[3];
-	float		viewangles[3];
 	float		blend[4];			// rgba 0-1 full screen blend
-	float		time;				// time is uesed to auto animate
-	int			rdflags;			// RDF_UNDERWATER, etc
-
-	byte		*areabits;			// if not NULL, only areas with set bits will be drawn
 
 	lightstyle_t	*lightstyles;	// [MAX_LIGHTSTYLES]
 
-	int			num_entities;
-	trRefEntity_t	*entities;
-
-	int			num_dlights;
-	dlight_t	*dlights;
-
 	int			num_particles;
 	particle_t	*particles;
-} refdef_t;
+};
 
 
 

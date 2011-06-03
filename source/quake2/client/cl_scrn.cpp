@@ -629,12 +629,17 @@ void SCR_TimeRefresh_f (void)
 
 	start = Sys_Milliseconds_ ();
 
+	vec3_t viewangles;
+	viewangles[0] = 0;
+	viewangles[1] = 0;
+	viewangles[2] = 0;
 	if (Cmd_Argc() == 2)
 	{	// run without page flipping
 		re.BeginFrame( 0 );
 		for (i=0 ; i<128 ; i++)
 		{
-			cl.refdef.viewangles[1] = i/128.0*360.0;
+			viewangles[1] = i/128.0*360.0;
+			AnglesToAxis(viewangles, cl.refdef.viewaxis);
 			re.RenderFrame (&cl.refdef);
 		}
 		re.EndFrame();
@@ -643,7 +648,8 @@ void SCR_TimeRefresh_f (void)
 	{
 		for (i=0 ; i<128 ; i++)
 		{
-			cl.refdef.viewangles[1] = i/128.0*360.0;
+			viewangles[1] = i/128.0*360.0;
+			AnglesToAxis(viewangles, cl.refdef.viewaxis);
 
 			re.BeginFrame( 0 );
 			re.RenderFrame (&cl.refdef);

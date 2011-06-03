@@ -590,7 +590,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		float	scale;
 		float	min;
 
-		scale = 0.1 * sin(r_newrefdef.time*7);
+		scale = 0.1 * sin(tr.refdef.floatTime * 7);
 		for (i=0 ; i<3 ; i++)
 		{
 			min = shadelight[i] * 0.8;
@@ -602,7 +602,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 // =================
 // PGM	ir goggles color override
-	if ( r_newrefdef.rdflags & RDF_IRGOGGLES && currententity->e.renderfx & RF_IR_VISIBLE)
+	if (tr.refdef.rdflags & RDF_IRGOGGLES && currententity->e.renderfx & RF_IR_VISIBLE)
 	{
 		shadelight[0] = 1.0;
 		shadelight[1] = 0.0;
@@ -639,7 +639,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		qglPushMatrix();
 		qglLoadIdentity();
 		qglScalef( -1, 1, 1 );
-	    MYgluPerspective( r_newrefdef.fov_y, ( float ) r_newrefdef.width / r_newrefdef.height,  4,  4096);
+	    MYgluPerspective( tr.refdef.fov_y, ( float ) tr.refdef.width / tr.refdef.height,  4,  4096);
 		qglMatrixMode( GL_MODELVIEW );
 
 		qglCullFace( GL_BACK );

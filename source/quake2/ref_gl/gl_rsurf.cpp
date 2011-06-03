@@ -200,7 +200,7 @@ void DrawGLFlowingPoly (mbrush38_surface_t *fa)
 
 	p = fa->polys;
 
-	scroll = -64 * ( (r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0) );
+	scroll = -64 * ((tr.refdef.floatTime / 40.0) - (int)(tr.refdef.floatTime / 40.0));
 	if(scroll == 0.0)
 		scroll = -64.0;
 
@@ -749,7 +749,7 @@ dynamic:
 		{
 			float scroll;
 		
-			scroll = -64 * ( (r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0) );
+			scroll = -64 * ((tr.refdef.floatTime / 40.0) - (int)(tr.refdef.floatTime / 40.0));
 			if(scroll == 0.0)
 				scroll = -64.0;
 
@@ -797,7 +797,7 @@ dynamic:
 		{
 			float scroll;
 		
-			scroll = -64 * ( (r_newrefdef.time / 40.0) - (int)(r_newrefdef.time / 40.0) );
+			scroll = -64 * ((tr.refdef.floatTime / 40.0) - (int)(tr.refdef.floatTime / 40.0));
 			if(scroll == 0.0)
 				scroll = -64.0;
 
@@ -854,8 +854,8 @@ void R_DrawInlineBModel (void)
 	// calculate dynamic lighting for bmodel
 	if ( !gl_flashblend->value )
 	{
-		lt = r_newrefdef.dlights;
-		for (k=0 ; k<r_newrefdef.num_dlights ; k++, lt++)
+		lt = tr.refdef.dlights;
+		for (k=0 ; k<tr.refdef.num_dlights ; k++, lt++)
 		{
 			R_MarkLights (lt, 1<<k, currentmodel->brush38_nodes + currentmodel->brush38_firstnode);
 		}
@@ -957,7 +957,7 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	qglColor3f (1,1,1);
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 
-	VectorSubtract (r_newrefdef.vieworg, e->e.origin, modelorg);
+	VectorSubtract(tr.refdef.vieworg, e->e.origin, modelorg);
 	if (rotated)
 	{
 		vec3_t	temp;
@@ -1021,11 +1021,8 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 		pleaf = (mbrush38_leaf_t *)node;
 
 		// check for door connected areas
-		if (r_newrefdef.areabits)
-		{
-			if (! (r_newrefdef.areabits[pleaf->area>>3] & (1<<(pleaf->area&7)) ) )
-				return;		// not visible
-		}
+		if (tr.refdef.areamask[pleaf->area >> 3] & (1 << (pleaf->area & 7)))
+			return;		// not visible
 
 		mark = pleaf->firstmarksurface;
 		c = pleaf->nummarksurfaces;
@@ -1166,16 +1163,16 @@ void R_DrawWorld (void)
 	if (!r_drawworld->value)
 		return;
 
-	if ( r_newrefdef.rdflags & RDF_NOWORLDMODEL )
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 		return;
 
 	currentmodel = r_worldmodel;
 
-	VectorCopy (r_newrefdef.vieworg, modelorg);
+	VectorCopy(tr.refdef.vieworg, modelorg);
 
 	// auto cycle the world frame for texture animation
 	Com_Memset(&ent, 0, sizeof(ent));
-	ent.e.frame = (int)(r_newrefdef.time*2);
+	ent.e.frame = (int)(tr.refdef.floatTime * 2);
 	currententity = &ent;
 
 	qglColor3f (1,1,1);

@@ -348,24 +348,26 @@ static void SCR_CalcRefdef (void)
 	size /= 100;
 
 	h = vid.height - sb_lines;
-	r_refdef.width = vid.width * size;
-	if (r_refdef.width < 96)
+	scr_vrect.width = vid.width * size;
+	if (scr_vrect.width < 96)
 	{
 		size = 96.0 / vid.width;
-		r_refdef.width = 96;	// min for icons
+		scr_vrect.width = 96;	// min for icons
 	}
 
-	r_refdef.height = vid.height * size;
-	if (r_refdef.height > vid.height - sb_lines)
-		r_refdef.height = vid.height - sb_lines;
+	scr_vrect.height = vid.height * size;
+	if (scr_vrect.height > vid.height - sb_lines)
+		scr_vrect.height = vid.height - sb_lines;
 
-	r_refdef.x = (vid.width - r_refdef.width)/2;
-	r_refdef.y = (h - r_refdef.height)/2;
+	scr_vrect.x = (vid.width - scr_vrect.width)/2;
+	scr_vrect.y = (h - scr_vrect.height)/2;
 
-	scr_vrect.x = r_refdef.x;
-	scr_vrect.y = r_refdef.y;
-	scr_vrect.width = r_refdef.width;
-	scr_vrect.height = r_refdef.height;
+	r_refdef.x = scr_vrect.x * glwidth / vid.width;
+	r_refdef.y = scr_vrect.y * glheight / vid.height;
+	r_refdef.width = scr_vrect.width * glwidth / vid.width;
+	r_refdef.height = scr_vrect.height * glheight / vid.height;
+	r_refdef.fov_x = 90;
+	r_refdef.fov_y = 2 * atan((float)r_refdef.height / r_refdef.width) * 180 / M_PI;
 }
 
 
@@ -837,18 +839,18 @@ void SCR_BringDownConsole (void)
 
 void SCR_TileClear (void)
 {
-	if (r_refdef.x > 0)
+	if (scr_vrect.x > 0)
 	{
-		Draw_TileClear (0,0,r_refdef.x,vid.height);
-		Draw_TileClear (r_refdef.x + r_refdef.width, 0
-			, vid.width - r_refdef.x + r_refdef.width,vid.height);
+		Draw_TileClear (0,0,scr_vrect.x,vid.height);
+		Draw_TileClear (scr_vrect.x + scr_vrect.width, 0
+			, vid.width - scr_vrect.x + scr_vrect.width,vid.height);
 	}
-//	if (r_refdef.height < vid.height-44)
+//	if (scr_vrect.height < vid.height-44)
 	{
-		Draw_TileClear (r_refdef.x, 0, r_refdef.width, r_refdef.y);
-		Draw_TileClear (r_refdef.x, r_refdef.y + r_refdef.height,
-			r_refdef.width,
-			vid.height - (r_refdef.y + r_refdef.height) );
+		Draw_TileClear (scr_vrect.x, 0, scr_vrect.width, scr_vrect.y);
+		Draw_TileClear (scr_vrect.x, scr_vrect.y + scr_vrect.height,
+			scr_vrect.width,
+			vid.height - (scr_vrect.y + scr_vrect.height) );
 	}
 }
 

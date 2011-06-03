@@ -1741,9 +1741,7 @@ void CL_Frame (int msec)
 	// update audio
 	CL_UpdateSounds();
 
-	vec3_t axis[3];
-	AnglesToAxis(cl.refdef.viewangles, axis);
-	S_Respatialize(cl.playernum + 1, cl.refdef.vieworg, axis, 0);
+	S_Respatialize(cl.playernum + 1, cl.refdef.vieworg, cl.refdef.viewaxis, 0);
 
 	S_Update();
 	

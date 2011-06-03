@@ -294,12 +294,12 @@ typedef struct
 //ROGUE
 
 // player_state_t->refdef flags
-#define	RDF_UNDERWATER		1		// warp the screen as apropriate
-#define RDF_NOWORLDMODEL	2		// used for player configuration screen
+#define Q2RDF_UNDERWATER	1		// warp the screen as apropriate (UNUSED)
+#define Q2RDF_NOWORLDMODEL	2		// used for player configuration screen
 
 //ROGUE
-#define	RDF_IRGOGGLES		4
-#define RDF_UVGOGGLES		8
+#define Q2RDF_IRGOGGLES		4
+#define Q2RDF_UVGOGGLES		8//UNUSED
 //ROGUE
 
 //

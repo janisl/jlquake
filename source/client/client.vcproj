@@ -277,6 +277,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_scene.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_shade.cpp"
 				>
 			</File>

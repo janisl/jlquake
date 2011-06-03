@@ -112,41 +112,48 @@ void R_Envmap_f (void)
 	r_refdef.width = 256;
 	r_refdef.height = 256;
 
-	r_refdef.viewangles[0] = 0;
-	r_refdef.viewangles[1] = 0;
-	r_refdef.viewangles[2] = 0;
+	vec3_t viewangles;
+	viewangles[0] = 0;
+	viewangles[1] = 0;
+	viewangles[2] = 0;
+	AnglesToAxis(viewangles, r_refdef.viewaxis);
 	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env0.rgb", buffer, sizeof(buffer));		
 
-	r_refdef.viewangles[1] = 90;
+	viewangles[1] = 90;
+	AnglesToAxis(viewangles, r_refdef.viewaxis);
 	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env1.rgb", buffer, sizeof(buffer));		
 
-	r_refdef.viewangles[1] = 180;
+	viewangles[1] = 180;
+	AnglesToAxis(viewangles, r_refdef.viewaxis);
 	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env2.rgb", buffer, sizeof(buffer));		
 
-	r_refdef.viewangles[1] = 270;
+	viewangles[1] = 270;
+	AnglesToAxis(viewangles, r_refdef.viewaxis);
 	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env3.rgb", buffer, sizeof(buffer));		
 
-	r_refdef.viewangles[0] = -90;
-	r_refdef.viewangles[1] = 0;
+	viewangles[0] = -90;
+	viewangles[1] = 0;
+	AnglesToAxis(viewangles, r_refdef.viewaxis);
 	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env4.rgb", buffer, sizeof(buffer));		
 
-	r_refdef.viewangles[0] = 90;
-	r_refdef.viewangles[1] = 0;
+	viewangles[0] = 90;
+	viewangles[1] = 0;
+	AnglesToAxis(viewangles, r_refdef.viewaxis);
 	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
@@ -360,10 +367,15 @@ void R_TimeRefresh_f (void)
 	qglDrawBuffer  (GL_FRONT);
 	qglFinish ();
 
-	start = Sys_DoubleTime ();
+	start = Sys_DoubleTime();
+	vec3_t viewangles;
+	viewangles[0] = 0;
+	viewangles[1] = 0;
+	viewangles[2] = 0;
 	for (i=0 ; i<128 ; i++)
 	{
-		r_refdef.viewangles[1] = i/128.0*360.0;
+		viewangles[1] = i/128.0*360.0;
+		AnglesToAxis(viewangles, r_refdef.viewaxis);
 		R_RenderView ();
 	}
 

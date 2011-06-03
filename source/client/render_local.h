@@ -114,6 +114,44 @@ struct trRefEntity_t
 	vec3_t		directedLight;
 };
 
+// trRefdef_t holds everything that comes in refdef_t,
+// as well as the locally generated scene information
+struct trRefdef_t
+{
+	int			x;
+	int			y;
+	int			width;
+	int			height;
+	float		fov_x;
+	float		fov_y;
+	vec3_t		vieworg;
+	vec3_t		viewaxis[3];		// transformation matrix
+
+	int			time;				// time in milliseconds for shader effects and other time dependent rendering issues
+	int			rdflags;			// RDF_NOWORLDMODEL, etc
+
+	// 1 bits will prevent the associated area from rendering at all
+	byte		areamask[MAX_MAP_AREA_BYTES];
+	bool		areamaskModified;	// true if areamask changed since last scene
+
+	float		floatTime;			// tr.refdef.time / 1000.0
+
+	// text messages for deform text shaders
+	char		text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
+
+	int			num_entities;
+	trRefEntity_t	*entities;
+
+	int			num_dlights;
+	dlight_t*	dlights;
+
+	int			numPolys;
+	srfPoly_t	*polys;
+
+	int			numDrawSurfs;
+	drawSurf_t	*drawSurfs;
+};
+
 #define MAX_DRAWIMAGES			2048
 #define MAX_LIGHTMAPS			256
 
@@ -140,6 +178,8 @@ struct trGlobals_base_t
 
 	vec3_t					sunLight;			// from the sky shader for this level
 	vec3_t					sunDirection;
+
+	trRefdef_t				refdef;
 
 	int						numLightmaps;
 	image_t*				lightmaps[MAX_LIGHTMAPS];
@@ -173,6 +213,8 @@ long myftol(float f);
 
 void R_NoiseInit();
 float R_NoiseGet4f(float x, float y, float z, float t);
+
+void R_CommonRenderScene(const refdef_base_t* fd);
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 

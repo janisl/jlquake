@@ -593,7 +593,6 @@ void CL_ParseFrame (void)
 		if (cls.state != ca_active)
 		{
 			cls.state = ca_active;
-			cl.force_refdef = true;
 			cl.predicted_origin[0] = cl.frame.playerstate.pmove.origin[0]*0.125;
 			cl.predicted_origin[1] = cl.frame.playerstate.pmove.origin[1]*0.125;
 			cl.predicted_origin[2] = cl.frame.playerstate.pmove.origin[2]*0.125;
@@ -1168,7 +1167,7 @@ void CL_AddPacketEntities (frame_t *frame)
 CL_AddViewWeapon
 ==============
 */
-void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
+static void CL_AddViewWeapon(player_state_t *ps, player_state_t *ops, vec3_t viewangles)
 {
 	refEntity_t	gun;		// view model
 	int			i;
@@ -1196,7 +1195,7 @@ void CL_AddViewWeapon (player_state_t *ps, player_state_t *ops)
 	{
 		gun.origin[i] = cl.refdef.vieworg[i] + ops->gunoffset[i]
 			+ cl.lerpfrac * (ps->gunoffset[i] - ops->gunoffset[i]);
-		angles[i] = cl.refdef.viewangles[i] + LerpAngle (ops->gunangles[i],
+		angles[i] = viewangles[i] + LerpAngle (ops->gunangles[i],
 			ps->gunangles[i], cl.lerpfrac);
 	}
 	AnglesToAxis(angles, gun.axis);
@@ -1282,21 +1281,23 @@ void CL_CalcViewValues (void)
 	}
 
 	// if not running a demo or on a locked frame, add the local angle movement
+	vec3_t viewangles;
 	if ( cl.frame.playerstate.pmove.pm_type < PM_DEAD )
 	{	// use predicted values
 		for (i=0 ; i<3 ; i++)
-			cl.refdef.viewangles[i] = cl.predicted_angles[i];
+			viewangles[i] = cl.predicted_angles[i];
 	}
 	else
 	{	// just use interpolated values
 		for (i=0 ; i<3 ; i++)
-			cl.refdef.viewangles[i] = LerpAngle (ops->viewangles[i], ps->viewangles[i], lerp);
+			viewangles[i] = LerpAngle (ops->viewangles[i], ps->viewangles[i], lerp);
 	}
 
 	for (i=0 ; i<3 ; i++)
-		cl.refdef.viewangles[i] += LerpAngle (ops->kick_angles[i], ps->kick_angles[i], lerp);
+		viewangles[i] += LerpAngle (ops->kick_angles[i], ps->kick_angles[i], lerp);
 
-	AngleVectors (cl.refdef.viewangles, cl.v_forward, cl.v_right, cl.v_up);
+	AnglesToAxis(viewangles, cl.refdef.viewaxis);
+	AngleVectors(viewangles, cl.v_forward, cl.v_right, cl.v_up);
 
 	// interpolate field of view
 	cl.refdef.fov_x = ops->fov + lerp * (ps->fov - ops->fov);
@@ -1306,7 +1307,7 @@ void CL_CalcViewValues (void)
 		cl.refdef.blend[i] = ps->blend[i];
 
 	// add the weapon
-	CL_AddViewWeapon (ps, ops);
+	CL_AddViewWeapon(ps, ops, viewangles);
 }
 
 /*

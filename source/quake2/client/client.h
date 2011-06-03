@@ -90,7 +90,6 @@ typedef struct
 
 	qboolean	refresh_prepped;	// false if on new level or new ref dll
 	qboolean	sound_prepped;		// ambient sounds can start
-	qboolean	force_refdef;		// vid has changed, so we can't use a paused refdef
 
 	int			parse_entities;		// index (not anded off) into cl_parse_entities[]
 
@@ -503,6 +502,7 @@ extern	qhandle_t	gun_model;
 
 void V_Init (void);
 void V_RenderView( float stereo_separation );
+void V_ClearScene (void);
 void V_AddEntity (refEntity_t *ent);
 void V_AddParticle (vec3_t org, int color, float alpha);
 void V_AddLight (vec3_t org, float intensity, float r, float g, float b);

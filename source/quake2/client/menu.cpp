@@ -3941,41 +3941,42 @@ void PlayerConfig_MenuDraw( void )
 	refdef.width = 144;
 	refdef.height = 168;
 	refdef.fov_x = 40;
-	refdef.fov_y = CalcFov( refdef.fov_x, refdef.width, refdef.height );
-	refdef.time = cls.realtime*0.001;
+	refdef.fov_y = CalcFov(refdef.fov_x, refdef.width, refdef.height);
+	refdef.time = cls.realtime;
+	AxisClear(refdef.viewaxis);
 
 	if ( s_pmi[s_player_model_box.curvalue].skindisplaynames )
 	{
 		static int yaw;
 		int maxframe = 29;
-		trRefEntity_t entity;
+		refEntity_t entity;
 		vec3_t angles;
 
 		Com_Memset( &entity, 0, sizeof( entity ) );
 
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/tris.md2", s_pmi[s_player_model_box.curvalue].directory );
-		entity.e.hModel = re.RegisterModel( scratch );
+		entity.hModel = re.RegisterModel( scratch );
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
-		entity.e.customSkin = R_GetImageHandle(re.RegisterSkin(scratch));
-		entity.e.renderfx = RF_ABSOLUTE_LIGHT;
-		entity.e.radius = 1;
-		entity.e.origin[0] = 80;
-		entity.e.origin[1] = 0;
-		entity.e.origin[2] = 0;
-		VectorCopy( entity.e.origin, entity.e.oldorigin );
-		entity.e.frame = 0;
-		entity.e.oldframe = 0;
-		entity.e.backlerp = 0.0;
+		entity.customSkin = R_GetImageHandle(re.RegisterSkin(scratch));
+		entity.renderfx = RF_ABSOLUTE_LIGHT;
+		entity.radius = 1;
+		entity.origin[0] = 80;
+		entity.origin[1] = 0;
+		entity.origin[2] = 0;
+		VectorCopy(entity.origin, entity.oldorigin);
+		entity.frame = 0;
+		entity.oldframe = 0;
+		entity.backlerp = 0.0;
 		angles[0] = 0;
 		angles[1] = yaw++;
 		angles[2] = 0;
-		AnglesToAxis(angles, entity.e.axis);
+		AnglesToAxis(angles, entity.axis);
 		if ( ++yaw > 360 )
 			yaw -= 360;
+		V_ClearScene();
+		V_AddEntity(&entity);
 
-		refdef.areabits = 0;
-		refdef.num_entities = 1;
-		refdef.entities = &entity;
+		Com_Memset(refdef.areamask, 0, sizeof(refdef.areamask));
 		refdef.lightstyles = 0;
 		refdef.rdflags = RDF_NOWORLDMODEL;
 

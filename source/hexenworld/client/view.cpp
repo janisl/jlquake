@@ -651,53 +651,10 @@ float angledelta (float a)
 CalcGunAngle
 ==================
 */
-void CalcGunAngle (void)
+void CalcGunAngle(vec3_t viewangles)
 {	
-	float	yaw, pitch, move;
-	static float oldyaw = 0;
-	static float oldpitch = 0;
-	
-	yaw = r_refdef.viewangles[YAW];
-	pitch = -r_refdef.viewangles[PITCH];
-
-	yaw = angledelta(yaw - r_refdef.viewangles[YAW]) * 0.4;
-	if (yaw > 10)
-		yaw = 10;
-	if (yaw < -10)
-		yaw = -10;
-	pitch = angledelta(-pitch - r_refdef.viewangles[PITCH]) * 0.4;
-	if (pitch > 10)
-		pitch = 10;
-	if (pitch < -10)
-		pitch = -10;
-	move = host_frametime*20;
-	if (yaw > oldyaw)
-	{
-		if (oldyaw + move < yaw)
-			yaw = oldyaw + move;
-	}
-	else
-	{
-		if (oldyaw - move > yaw)
-			yaw = oldyaw - move;
-	}
-	
-	if (pitch > oldpitch)
-	{
-		if (oldpitch + move < pitch)
-			pitch = oldpitch + move;
-	}
-	else
-	{
-		if (oldpitch - move > pitch)
-			pitch = oldpitch - move;
-	}
-	
-	oldyaw = yaw;
-	oldpitch = pitch;
-
-	cl.viewent.angles[YAW] = r_refdef.viewangles[YAW] + yaw;
-	cl.viewent.angles[PITCH] = - (r_refdef.viewangles[PITCH] + pitch);
+	cl.viewent.angles[YAW] = viewangles[YAW];
+	cl.viewent.angles[PITCH] = -viewangles[PITCH];
 
 	cl.viewent.angles[ROLL] -= v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
 	cl.viewent.angles[PITCH] -= v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
@@ -735,11 +692,11 @@ V_AddIdle
 Idle swaying
 ==============
 */
-void V_AddIdle (void)
+void V_AddIdle(vec3_t viewangles)
 {
-	r_refdef.viewangles[ROLL] += v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
-	r_refdef.viewangles[PITCH] += v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
-	r_refdef.viewangles[YAW] += v_idlescale->value * sin(cl.time*v_iyaw_cycle->value) * v_iyaw_level->value;
+	viewangles[ROLL] += v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
+	viewangles[PITCH] += v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
+	viewangles[YAW] += v_idlescale->value * sin(cl.time*v_iyaw_cycle->value) * v_iyaw_level->value;
 
 //	cl.viewent.angles[ROLL] -= v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
 //	cl.viewent.angles[PITCH] -= v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
@@ -754,23 +711,23 @@ V_CalcViewRoll
 Roll is induced by movement and damage
 ==============
 */
-void V_CalcViewRoll (void)
+void V_CalcViewRoll(vec3_t viewangles)
 {
 	float		side;
 		
 	side = V_CalcRoll (cl.simangles, cl.simvel);
-	r_refdef.viewangles[ROLL] += side;
+	viewangles[ROLL] += side;
 
 	if (v_dmg_time > 0)
 	{
-		r_refdef.viewangles[ROLL] += v_dmg_time/v_kicktime->value*v_dmg_roll;
-		r_refdef.viewangles[PITCH] += v_dmg_time/v_kicktime->value*v_dmg_pitch;
+		viewangles[ROLL] += v_dmg_time/v_kicktime->value*v_dmg_roll;
+		viewangles[PITCH] += v_dmg_time/v_kicktime->value*v_dmg_pitch;
 		v_dmg_time -= host_frametime;
 	}
 
 	if (cl.v.health <= 0 && !cl.spectator)
 	{
-		r_refdef.viewangles[ROLL] = 80;	// dead view angle
+		viewangles[ROLL] = 80;	// dead view angle
 		return;
 	}
 }
@@ -791,13 +748,15 @@ void V_CalcIntermissionRefdef (void)
 	view = &cl.viewent;
 
 	VectorCopy (cl.simorg, r_refdef.vieworg);
-	VectorCopy (cl.simangles, r_refdef.viewangles);
+	vec3_t viewangles;
+	VectorCopy(cl.simangles, viewangles);
 	view->model = 0;
 
 // allways idle in intermission
 	old = v_idlescale->value;
 	v_idlescale->value = 1;
-	V_AddIdle ();
+	V_AddIdle(viewangles);
+	AnglesToAxis(viewangles, r_refdef.viewaxis);
 	v_idlescale->value = old;
 }
 
@@ -830,7 +789,7 @@ void V_CalcRefdef (void)
 		bob = 1;
 
 // refresh position from simulated origin
-	VectorCopy (cl.simorg, r_refdef.vieworg);
+	VectorCopy (cl.simorg, tr.refdef.vieworg);
 
 	r_refdef.vieworg[2] += bob;
 
@@ -841,9 +800,10 @@ void V_CalcRefdef (void)
 	r_refdef.vieworg[1] += 1.0/32;
 	r_refdef.vieworg[2] += 1.0/32;
 
-	VectorCopy (cl.simangles, r_refdef.viewangles);
-	V_CalcViewRoll ();
-	V_AddIdle ();
+	vec3_t viewangles;
+	VectorCopy (cl.simangles, viewangles);
+	V_CalcViewRoll(viewangles);
+	V_AddIdle(viewangles);
 
 	if (cl.spectator)
 	{
@@ -859,7 +819,7 @@ void V_CalcRefdef (void)
 			r_refdef.vieworg[2] += 50;	// view height
 
 		if (view_message->flags & PF_DEAD)		// PF_GIB will also set PF_DEAD
-			r_refdef.viewangles[ROLL] = 80;	// dead view angle
+			viewangles[ROLL] = 80;	// dead view angle
 	}
 
 // offsets
@@ -868,7 +828,7 @@ void V_CalcRefdef (void)
 // set up gun position
 	VectorCopy (cl.simangles, view->angles);
 	
-	CalcGunAngle ();
+	CalcGunAngle(viewangles);
 
 	VectorCopy (r_refdef.vieworg, view->origin);
 //	view->origin[2] += 56;
@@ -914,7 +874,8 @@ void V_CalcRefdef (void)
 		view->drawflags = (view->drawflags & MLS_MASKOUT) | 0;
 
 // set up the refresh position
-	r_refdef.viewangles[PITCH] += cl.punchangle;
+	viewangles[PITCH] += cl.punchangle;
+	AnglesToAxis(viewangles, r_refdef.viewaxis);
 
 // smooth out stair step ups
 	if ( (view_message->onground != -1) && (cl.simorg[2] - oldz > 0) )

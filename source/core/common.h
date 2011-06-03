@@ -152,6 +152,11 @@ public:
 #define random()	((rand () & 0x7fff) / ((float)0x7fff))
 #define crandom()	(2.0 * (random() - 0.5))
 
+//
+//	!!! Used in refdef which is used in Quake 3 VMs, Do not change!
+//
+#define	MAX_MAP_AREA_BYTES		32		// bit vector of area visibility
+
 //==========================================================================
 //
 //	Library method replacements.

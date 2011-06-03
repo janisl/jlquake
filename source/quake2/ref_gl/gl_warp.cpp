@@ -48,10 +48,10 @@ void EmitWaterPolys (mbrush38_surface_t *fa)
 	int			i;
 	float		s, t, os, ot;
 	float		scroll;
-	float		rdt = r_newrefdef.time;
+	float		rdt = tr.refdef.floatTime;
 
 	if (fa->texinfo->flags & BSP38SURF_FLOWING)
-		scroll = -64 * ( (r_newrefdef.time*0.5) - (int)(r_newrefdef.time*0.5) );
+		scroll = -64 * ((tr.refdef.floatTime * 0.5) - (int)(tr.refdef.floatTime * 0.5));
 	else
 		scroll = 0;
 	for (bp=fa->polys ; bp ; bp=bp->next)
@@ -408,7 +408,7 @@ void R_DrawSkyBox (void)
 
 qglPushMatrix ();
 qglTranslatef (r_origin[0], r_origin[1], r_origin[2]);
-qglRotatef (r_newrefdef.time * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
+qglRotatef (tr.refdef.floatTime * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
 
 	for (i=0 ; i<6 ; i++)
 	{

@@ -244,8 +244,6 @@ void VID_NewWindow ( int width, int height)
 {
 	viddef.width  = width;
 	viddef.height = height;
-
-	cl.force_refdef = true;		// can't use a paused refdef
 }
 
 void VID_FreeReflib (void)
@@ -333,7 +331,6 @@ void VID_CheckChanges (void)
 
 	if ( vid_ref->modified )
 	{
-		cl.force_refdef = true;		// can't use a paused refdef
 		S_StopAllSounds();
 		/*
 		** refresh has changed

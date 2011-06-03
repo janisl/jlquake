@@ -353,7 +353,6 @@ void CL_PrepRefresh (void)
 
 	SCR_UpdateScreen ();
 	cl.refresh_prepped = true;
-	cl.force_refdef = true;	// make sure we have a valid refdef
 
 	// start the cd track
 	CDAudio_Play (QStr::Atoi(cl.configstrings[CS_CDTRACK]), true);
@@ -462,10 +461,8 @@ void V_RenderView( float stereo_separation )
 
 	// an invalid frame will just use the exact previous refdef
 	// we can't use the old frame if the video mode has changed, though...
-	if ( cl.frame.valid && (cl.force_refdef || !cl_paused->value) )
+	if (cl.frame.valid)
 	{
-		cl.force_refdef = false;
-
 		V_ClearScene ();
 
 		// build a refresh entity list and calc cl.sim*
@@ -493,7 +490,7 @@ void V_RenderView( float stereo_separation )
 			vec3_t tmp;
 
 			VectorScale( cl.v_right, stereo_separation, tmp );
-			VectorAdd( cl.refdef.vieworg, tmp, cl.refdef.vieworg );
+			VectorAdd(cl.refdef.vieworg, tmp, cl.refdef.vieworg);
 		}
 
 		// never let it sit exactly on a node line, because a water plane can
@@ -508,9 +505,12 @@ void V_RenderView( float stereo_separation )
 		cl.refdef.width = scr_vrect.width;
 		cl.refdef.height = scr_vrect.height;
 		cl.refdef.fov_y = CalcFov (cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
-		cl.refdef.time = cl.time*0.001;
+		cl.refdef.time = cl.time;
 
-		cl.refdef.areabits = cl.frame.areabits;
+		for (int i = 0; i < MAX_MAP_AREA_BYTES; i++)
+		{
+			cl.refdef.areamask[i] = ~cl.frame.areabits[i];
+		}
 
 		if (!cl_add_entities->value)
 			r_numentities = 0;
@@ -523,18 +523,22 @@ void V_RenderView( float stereo_separation )
 			VectorClear (cl.refdef.blend);
 		}
 
-		cl.refdef.num_entities = r_numentities;
-		cl.refdef.entities = r_entities;
 		cl.refdef.num_particles = r_numparticles;
 		cl.refdef.particles = r_particles;
-		cl.refdef.num_dlights = r_numdlights;
-		cl.refdef.dlights = r_dlights;
 		cl.refdef.lightstyles = r_lightstyles;
 
-		cl.refdef.rdflags = cl.frame.playerstate.rdflags;
+		cl.refdef.rdflags = 0;
+		if (cl.frame.playerstate.rdflags & Q2RDF_NOWORLDMODEL)
+		{
+			cl.refdef.rdflags |= RDF_NOWORLDMODEL;
+		}
+		if (cl.frame.playerstate.rdflags & Q2RDF_IRGOGGLES)
+		{
+			cl.refdef.rdflags |= RDF_IRGOGGLES;
+		}
 
 		// sort entities for better cache locality
-        qsort( cl.refdef.entities, cl.refdef.num_entities, sizeof( cl.refdef.entities[0] ), (int (*)(const void *, const void *))entitycmpfnc );
+        qsort(r_entities, r_numentities, sizeof(r_entities[0]), (int (*)(const void *, const void *))entitycmpfnc);
 	}
 
 	re.RenderFrame (&cl.refdef);
@@ -561,7 +565,7 @@ void V_Viewpos_f (void)
 {
 	Com_Printf ("(%i %i %i) : %i\n", (int)cl.refdef.vieworg[0],
 		(int)cl.refdef.vieworg[1], (int)cl.refdef.vieworg[2], 
-		(int)cl.refdef.viewangles[YAW]);
+		(int)(atan2(cl.refdef.viewaxis[0][1], cl.refdef.viewaxis[0][0]) * 180 / M_PI));
 }
 
 /*

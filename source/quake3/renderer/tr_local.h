@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef TR_LOCAL_H
 #define TR_LOCAL_H
 
+#define FULL_REFDEF
+
 #include "../../client/client.h"
 #include "../game/q_shared.h"
 #include "../qcommon/qfiles.h"
@@ -48,43 +50,6 @@ typedef struct {
 	vec3_t		viewOrigin;		// viewParms->or.origin in local coordinates
 	float		modelMatrix[16];
 } orientationr_t;
-
-//===============================================================================
-
-// trRefdef_t holds everything that comes in refdef_t,
-// as well as the locally generated scene information
-struct trRefdef_t
-{
-	int			x, y, width, height;
-	float		fov_x, fov_y;
-	vec3_t		vieworg;
-	vec3_t		viewaxis[3];		// transformation matrix
-
-	int			time;				// time in milliseconds for shader effects and other time dependent rendering issues
-	int			rdflags;			// RDF_NOWORLDMODEL, etc
-
-	// 1 bits will prevent the associated area from rendering at all
-	byte		areamask[MAX_MAP_AREA_BYTES];
-	qboolean	areamaskModified;	// qtrue if areamask changed since last scene
-
-	float		floatTime;			// tr.refdef.time / 1000.0
-
-	// text messages for deform text shaders
-	char		text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
-
-	int			num_entities;
-	trRefEntity_t	*entities;
-
-	int			num_dlights;
-	dlight_t	*dlights;
-
-	int			numPolys;
-	srfPoly_t	*polys;
-
-	int			numDrawSurfs;
-	drawSurf_t	*drawSurfs;
-};
-
 
 //=================================================================================
 
@@ -280,8 +245,6 @@ struct trGlobals_t : trGlobals_base_t
 	viewParms_t				viewParms;
 
 	orientationr_t			orient;					// for current entity
-
-	trRefdef_t				refdef;
 
 	int						viewCluster;
 

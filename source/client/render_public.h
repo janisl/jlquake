@@ -167,6 +167,38 @@ struct poly_t
 	polyVert_t		*verts;
 };
 
+// refdef flags
+#define RDF_NOWORLDMODEL	1		// used for player configuration screen
+#define RDF_HYPERSPACE		4		// teleportation effect
+//	New flags
+#define RDF_IRGOGGLES		2
+
+#define MAX_RENDER_STRINGS			8
+#define MAX_RENDER_STRING_LENGTH	32
+
+struct refdef_base_t
+{
+	int			x;
+	int			y;
+	int			width;
+	int			height;
+	float		fov_x;
+	float		fov_y;
+	vec3_t		vieworg;
+	vec3_t		viewaxis[3];		// transformation matrix
+
+	// time in milliseconds for shader effects and other time dependent rendering issues
+	int			time;
+
+	int			rdflags;			// RDF_NOWORLDMODEL, etc
+
+	// 1 bits will prevent the associated area from rendering at all
+	byte		areamask[MAX_MAP_AREA_BYTES];
+
+	// text messages for deform text shaders
+	char		text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
+};
+
 //
 //	End of definitions used by Quake 3 vms.
 //

@@ -1080,9 +1080,11 @@ void R_SetupFrame (void)
 	}
 
 // build the transformation matrix for the given view angles
-	VectorCopy (r_refdef.vieworg, r_origin);
+	VectorCopy (tr.refdef.vieworg, r_origin);
 
-	AngleVectors (r_refdef.viewangles, vpn, vright, vup);
+	VectorCopy(tr.refdef.viewaxis[0], vpn);
+	VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], vright);
+	VectorCopy(tr.refdef.viewaxis[2], vup);
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
@@ -1132,10 +1134,10 @@ void R_SetupGL (void)
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
 	// JACK: Changes for non-scaled
-	x = r_refdef.x * glwidth/vid.width /*320*/;
-	x2 = (r_refdef.x + r_refdef.width) * glwidth/vid.width /*320*/;
-	y = (vid.height/*200*/-r_refdef.y) * glheight/vid.height /*200*/;
-	y2 = (vid.height/*200*/ - (r_refdef.y + r_refdef.height)) * glheight/vid.height /*200*/;
+	x = tr.refdef.x;
+	x2 = tr.refdef.x + tr.refdef.width;
+	y = vid.height * glheight/vid.height-tr.refdef.y;
+	y2 = vid.height * glheight/vid.height - (tr.refdef.y + tr.refdef.height);
 
 	// fudge around because of frac screen scale
 	if (x > 0)
@@ -1157,9 +1159,8 @@ void R_SetupGL (void)
 	}
 
 	qglViewport (glx + x, gly + y2, w, h);
-    screenaspect = (float)r_refdef.width/r_refdef.height;
-	yfov = 2*atan((float)r_refdef.height/r_refdef.width)*180/M_PI;
-    MYgluPerspective (yfov,  screenaspect,  4,  4096);
+    screenaspect = (float)tr.refdef.width / tr.refdef.height;
+    MYgluPerspective(tr.refdef.fov_y,  screenaspect,  4,  4096);
 
 	if (mirror)
 	{
@@ -1177,10 +1178,27 @@ void R_SetupGL (void)
 
     qglRotatef (-90,  1, 0, 0);	    // put Z going up
     qglRotatef (90,  0, 0, 1);	    // put Z going up
-    qglRotatef (-r_refdef.viewangles[2],  1, 0, 0);
-    qglRotatef (-r_refdef.viewangles[0],  0, 1, 0);
-    qglRotatef (-r_refdef.viewangles[1],  0, 0, 1);
-    qglTranslatef (-r_refdef.vieworg[0],  -r_refdef.vieworg[1],  -r_refdef.vieworg[2]);
+
+	GLfloat glmat[16];
+
+	glmat[0] = tr.refdef.viewaxis[0][0];
+	glmat[1] = tr.refdef.viewaxis[1][0];
+	glmat[2] = tr.refdef.viewaxis[2][0];
+	glmat[3] = 0;
+	glmat[4] = tr.refdef.viewaxis[0][1];
+	glmat[5] = tr.refdef.viewaxis[1][1];
+	glmat[6] = tr.refdef.viewaxis[2][1];
+	glmat[7] = 0;
+	glmat[8] = tr.refdef.viewaxis[0][2];
+	glmat[9] = tr.refdef.viewaxis[1][2];
+	glmat[10] = tr.refdef.viewaxis[2][2];
+	glmat[11] = 0;
+	glmat[12] = 0;
+	glmat[13] = 0;
+	glmat[14] = 0;
+	glmat[15] = 1;
+	qglMultMatrixf(glmat);
+    qglTranslatef (-tr.refdef.vieworg[0],  -tr.refdef.vieworg[1],  -tr.refdef.vieworg[2]);
 
 	qglGetFloatv (GL_MODELVIEW_MATRIX, r_world_matrix);
 
@@ -1267,15 +1285,21 @@ void R_Mirror (void)
 
 	Com_Memcpy(r_base_world_matrix, r_world_matrix, sizeof(r_base_world_matrix));
 
-	d = DotProduct (r_refdef.vieworg, mirror_plane->normal) - mirror_plane->dist;
-	VectorMA (r_refdef.vieworg, -2*d, mirror_plane->normal, r_refdef.vieworg);
+	d = DotProduct(tr.refdef.vieworg, mirror_plane->normal) - mirror_plane->dist;
+	VectorMA(tr.refdef.vieworg, -2 * d, mirror_plane->normal, tr.refdef.vieworg);
+
+	d = DotProduct(tr.refdef.viewaxis[0], mirror_plane->normal);
+	VectorMA(tr.refdef.viewaxis[0], -2 * d, mirror_plane->normal, tr.refdef.viewaxis[0]);
+
+	d = DotProduct(tr.refdef.viewaxis[1], mirror_plane->normal);
+	VectorMA(tr.refdef.viewaxis[1], -2 * d, mirror_plane->normal, tr.refdef.viewaxis[1]);
+	VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], tr.refdef.viewaxis[1]);
+
+	d = DotProduct(tr.refdef.viewaxis[2], mirror_plane->normal);
+	VectorMA(tr.refdef.viewaxis[2], -2 * d, mirror_plane->normal, tr.refdef.viewaxis[2]);
 
 	d = DotProduct (vpn, mirror_plane->normal);
 	VectorMA (vpn, -2*d, mirror_plane->normal, vpn);
-
-	r_refdef.viewangles[0] = -asin (vpn[2])/M_PI*180;
-	r_refdef.viewangles[1] = atan2 (vpn[1], vpn[0])/M_PI*180;
-	r_refdef.viewangles[2] = -r_refdef.viewangles[2];
 
 	r_third_person = true;
 
@@ -1368,6 +1392,9 @@ void R_RenderView (void)
 	mirror = false;
 
 	QGL_EnableLogging(!!r_logFile->integer);
+
+	r_refdef.time = (int)(cl.time * 1000);
+	R_CommonRenderScene(&r_refdef);
 
 //	qglFinish ();
 

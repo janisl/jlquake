@@ -22,6 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void R_Clear (void);
 
+extern int				r_numdlights;
+extern dlight_t			r_dlights[MAX_DLIGHTS];
+extern int				r_numentities;
+extern trRefEntity_t	r_entities[MAX_ENTITIES];
+
 refimport_t	ri;
 
 model_t		*r_worldmodel;
@@ -303,9 +308,9 @@ void R_DrawEntitiesOnList (void)
 		return;
 
 	// draw non-transparent first
-	for (i=0 ; i<r_newrefdef.num_entities ; i++)
+	for (i=0 ; i<tr.refdef.num_entities ; i++)
 	{
-		currententity = &r_newrefdef.entities[i];
+		currententity = &tr.refdef.entities[i];
 		if (currententity->e.renderfx & RF_TRANSLUCENT)
 			continue;	// solid
 
@@ -339,9 +344,9 @@ void R_DrawEntitiesOnList (void)
 
 	// draw transparent entities
 	// we could sort these if it ever becomes a problem...
-	for (i=0 ; i<r_newrefdef.num_entities ; i++)
+	for (i=0 ; i<tr.refdef.num_entities ; i++)
 	{
-		currententity = &r_newrefdef.entities[i];
+		currententity = &tr.refdef.entities[i];
 		if (!(currententity->e.renderfx & RF_TRANSLUCENT))
 			continue;	// solid
 
@@ -536,13 +541,13 @@ void R_SetFrustum (void)
 	VectorNormalize( frustum[3].normal );
 #else
 	// rotate VPN right by FOV_X/2 degrees
-	RotatePointAroundVector( frustum[0].normal, vup, vpn, -(90-r_newrefdef.fov_x / 2 ) );
+	RotatePointAroundVector( frustum[0].normal, vup, vpn, -(90-tr.refdef.fov_x / 2 ) );
 	// rotate VPN left by FOV_X/2 degrees
-	RotatePointAroundVector( frustum[1].normal, vup, vpn, 90-r_newrefdef.fov_x / 2 );
+	RotatePointAroundVector( frustum[1].normal, vup, vpn, 90-tr.refdef.fov_x / 2 );
 	// rotate VPN up by FOV_X/2 degrees
-	RotatePointAroundVector( frustum[2].normal, vright, vpn, 90-r_newrefdef.fov_y / 2 );
+	RotatePointAroundVector( frustum[2].normal, vright, vpn, 90-tr.refdef.fov_y / 2 );
 	// rotate VPN down by FOV_X/2 degrees
-	RotatePointAroundVector( frustum[3].normal, vright, vpn, -( 90 - r_newrefdef.fov_y / 2 ) );
+	RotatePointAroundVector( frustum[3].normal, vright, vpn, -( 90 - tr.refdef.fov_y / 2 ) );
 #endif
 
 	for (i=0 ; i<4 ; i++)
@@ -568,12 +573,14 @@ void R_SetupFrame (void)
 	tr.frameCount++;
 
 // build the transformation matrix for the given view angles
-	VectorCopy (r_newrefdef.vieworg, r_origin);
+	VectorCopy(tr.refdef.vieworg, r_origin);
 
-	AngleVectors (r_newrefdef.viewangles, vpn, vright, vup);
+	VectorCopy(tr.refdef.viewaxis[0], vpn);
+	VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], vright);
+	VectorCopy(tr.refdef.viewaxis[2], vup);
 
 // current viewcluster
-	if ( !( r_newrefdef.rdflags & RDF_NOWORLDMODEL ) )
+	if (!(tr.refdef.rdflags & RDF_NOWORLDMODEL))
 	{
 		r_oldviewcluster = r_viewcluster;
 		r_oldviewcluster2 = r_viewcluster2;
@@ -612,11 +619,11 @@ void R_SetupFrame (void)
 	c_alias_polys = 0;
 
 	// clear out the portion of the screen that the NOWORLDMODEL defines
-	if ( r_newrefdef.rdflags & RDF_NOWORLDMODEL )
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 	{
 		qglEnable( GL_SCISSOR_TEST );
 		qglClearColor( 0.3, 0.3, 0.3, 1 );
-		qglScissor( r_newrefdef.x, glConfig.vidHeight - r_newrefdef.height - r_newrefdef.y, r_newrefdef.width, r_newrefdef.height );
+		qglScissor( tr.refdef.x, glConfig.vidHeight - tr.refdef.height - tr.refdef.y, tr.refdef.width, tr.refdef.height );
 		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 		qglClearColor( 1, 0, 0.5, 0.5 );
 		qglDisable( GL_SCISSOR_TEST );
@@ -656,10 +663,10 @@ void R_SetupGL (void)
 	//
 	// set up viewport
 	//
-	x = floor((double)r_newrefdef.x);
-	x2 = ceil((double)(r_newrefdef.x + r_newrefdef.width));
-	y = floor((double)glConfig.vidHeight - r_newrefdef.y);
-	y2 = ceil((double)glConfig.vidHeight - (r_newrefdef.y + r_newrefdef.height));
+	x = floor((double)tr.refdef.x);
+	x2 = ceil((double)(tr.refdef.x + tr.refdef.width));
+	y = floor((double)glConfig.vidHeight - tr.refdef.y);
+	y2 = ceil((double)glConfig.vidHeight - (tr.refdef.y + tr.refdef.height));
 
 	w = x2 - x;
 	h = y - y2;
@@ -669,11 +676,11 @@ void R_SetupGL (void)
 	//
 	// set up projection matrix
 	//
-    screenaspect = (float)r_newrefdef.width/r_newrefdef.height;
+    screenaspect = (float)tr.refdef.width/tr.refdef.height;
 //	yfov = 2*atan((float)r_newrefdef.height/r_newrefdef.width)*180/M_PI;
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
-    MYgluPerspective (r_newrefdef.fov_y,  screenaspect,  4,  4096);
+    MYgluPerspective (tr.refdef.fov_y,  screenaspect,  4,  4096);
 
 	qglCullFace(GL_FRONT);
 
@@ -682,10 +689,27 @@ void R_SetupGL (void)
 
     qglRotatef (-90,  1, 0, 0);	    // put Z going up
     qglRotatef (90,  0, 0, 1);	    // put Z going up
-    qglRotatef (-r_newrefdef.viewangles[2],  1, 0, 0);
-    qglRotatef (-r_newrefdef.viewangles[0],  0, 1, 0);
-    qglRotatef (-r_newrefdef.viewangles[1],  0, 0, 1);
-    qglTranslatef (-r_newrefdef.vieworg[0],  -r_newrefdef.vieworg[1],  -r_newrefdef.vieworg[2]);
+
+	GLfloat glmat[16];
+
+	glmat[0] = tr.refdef.viewaxis[0][0];
+	glmat[1] = tr.refdef.viewaxis[1][0];
+	glmat[2] = tr.refdef.viewaxis[2][0];
+	glmat[3] = 0;
+	glmat[4] = tr.refdef.viewaxis[0][1];
+	glmat[5] = tr.refdef.viewaxis[1][1];
+	glmat[6] = tr.refdef.viewaxis[2][1];
+	glmat[7] = 0;
+	glmat[8] = tr.refdef.viewaxis[0][2];
+	glmat[9] = tr.refdef.viewaxis[1][2];
+	glmat[10] = tr.refdef.viewaxis[2][2];
+	glmat[11] = 0;
+	glmat[12] = 0;
+	glmat[13] = 0;
+	glmat[14] = 0;
+	glmat[15] = 1;
+	qglMultMatrixf(glmat);
+    qglTranslatef(-tr.refdef.vieworg[0],  -tr.refdef.vieworg[1],  -tr.refdef.vieworg[2]);
 
 //	if ( gl_state.camera_separation != 0 && glConfig.stereoEnabled )
 //		qglTranslatef ( gl_state.camera_separation, 0, 0 );
@@ -738,9 +762,15 @@ void R_RenderView (refdef_t *fd)
 	if (r_norefresh->value)
 		return;
 
+	R_CommonRenderScene(fd);
+
+	tr.refdef.num_entities = r_numentities;
+	tr.refdef.entities = r_entities;
+	tr.refdef.num_dlights = r_numdlights;
+	tr.refdef.dlights = r_dlights;
 	r_newrefdef = *fd;
 
-	if (!r_worldmodel && !( r_newrefdef.rdflags & RDF_NOWORLDMODEL ) )
+	if (!r_worldmodel && !(tr.refdef.rdflags & RDF_NOWORLDMODEL))
 		ri.Sys_Error (ERR_DROP, "R_RenderView: NULL worldmodel");
 
 	if (r_speeds->value)
@@ -809,12 +839,12 @@ void R_SetLightLevel (void)
 {
 	vec3_t		shadelight;
 
-	if (r_newrefdef.rdflags & RDF_NOWORLDMODEL)
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 		return;
 
 	// save off light value for server to look at (BIG HACK!)
 
-	R_LightPoint (r_newrefdef.vieworg, shadelight);
+	R_LightPoint (tr.refdef.vieworg, shadelight);
 
 	// pick the greatest component, which should be the same
 	// as the mono value returned by software

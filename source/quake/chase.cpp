@@ -60,7 +60,6 @@ void TraceLine (vec3_t start, vec3_t end, vec3_t impact)
 void Chase_Update (void)
 {
 	int		i;
-	float	dist;
 	vec3_t	forward, up, right;
 	vec3_t	dest, stop;
 
@@ -80,11 +79,9 @@ void Chase_Update (void)
 	TraceLine (r_refdef.vieworg, dest, stop);
 
 	// calculate pitch to look at the same spot from camera
-	VectorSubtract (stop, r_refdef.vieworg, stop);
-	dist = DotProduct (stop, forward);
-	if (dist < 1)
-		dist = 1;
-	r_refdef.viewangles[PITCH] = -atan(stop[2] / dist) / M_PI * 180;
+	VectorSubtract(stop, r_refdef.vieworg, r_refdef.viewaxis[0]);
+	VectorNormalize(r_refdef.viewaxis[0]);
+	CrossProduct(r_refdef.viewaxis[2], r_refdef.viewaxis[0], r_refdef.viewaxis[1]);
 
 	// move towards destination
 	VectorCopy (chase_dest, r_refdef.vieworg);
