@@ -312,7 +312,7 @@ void R_BlendLightmaps (void)
 	// don't bother if we're set to fullbright
 	if (r_fullbright->value)
 		return;
-	if (!r_worldmodel->brush38_lightdata)
+	if (!tr.worldModel->brush38_lightdata)
 		return;
 
 	/*
@@ -338,7 +338,7 @@ void R_BlendLightmaps (void)
 		GL_State(0);
 	}
 
-	if ( currentmodel == r_worldmodel )
+	if ( currentmodel == tr.worldModel )
 		c_visible_lightmaps = 0;
 
 	/*
@@ -348,7 +348,7 @@ void R_BlendLightmaps (void)
 	{
 		if ( gl_lms.lightmap_surfaces[i] )
 		{
-			if (currentmodel == r_worldmodel)
+			if (currentmodel == tr.worldModel)
 				c_visible_lightmaps++;
 			GL_Bind( tr.lightmaps[i]);
 
@@ -369,7 +369,7 @@ void R_BlendLightmaps (void)
 
 		GL_Bind( tr.lightmaps[0]);
 
-		if (currentmodel == r_worldmodel)
+		if (currentmodel == tr.worldModel)
 			c_visible_lightmaps++;
 
 		newdrawsurf = gl_lms.lightmap_surfaces[0];
@@ -1072,7 +1072,7 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 	R_RecursiveWorldNode (node->children[side]);
 
 	// draw stuff
-	for ( c = node->numsurfaces, surf = r_worldmodel->brush38_surfaces + node->firstsurface; c ; c--, surf++)
+	for ( c = node->numsurfaces, surf = tr.worldModel->brush38_surfaces + node->firstsurface; c ; c--, surf++)
 	{
 		if (surf->visframe != tr.frameCount)
 			continue;
@@ -1163,7 +1163,7 @@ void R_DrawWorld (void)
 	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 		return;
 
-	currentmodel = r_worldmodel;
+	currentmodel = tr.worldModel;
 
 	VectorCopy(tr.refdef.vieworg, modelorg);
 
@@ -1189,13 +1189,13 @@ void R_DrawWorld (void)
 		else 
 			GL_TexEnv( GL_MODULATE );
 
-		R_RecursiveWorldNode (r_worldmodel->brush38_nodes);
+		R_RecursiveWorldNode (tr.worldModel->brush38_nodes);
 
 		GL_EnableMultitexture( false );
 	}
 	else
 	{
-		R_RecursiveWorldNode (r_worldmodel->brush38_nodes);
+		R_RecursiveWorldNode (tr.worldModel->brush38_nodes);
 	}
 
 	/*
@@ -1240,29 +1240,29 @@ void R_MarkLeaves (void)
 	r_oldviewcluster = r_viewcluster;
 	r_oldviewcluster2 = r_viewcluster2;
 
-	if (r_novis->value || r_viewcluster == -1 || !r_worldmodel->brush38_vis)
+	if (r_novis->value || r_viewcluster == -1 || !tr.worldModel->brush38_vis)
 	{
 		// mark everything
-		for (i=0 ; i<r_worldmodel->brush38_numleafs ; i++)
-			r_worldmodel->brush38_leafs[i].visframe = r_visframecount;
-		for (i=0 ; i<r_worldmodel->brush38_numnodes ; i++)
-			r_worldmodel->brush38_nodes[i].visframe = r_visframecount;
+		for (i=0 ; i<tr.worldModel->brush38_numleafs ; i++)
+			tr.worldModel->brush38_leafs[i].visframe = r_visframecount;
+		for (i=0 ; i<tr.worldModel->brush38_numnodes ; i++)
+			tr.worldModel->brush38_nodes[i].visframe = r_visframecount;
 		return;
 	}
 
-	vis = Mod_ClusterPVS (r_viewcluster, r_worldmodel);
+	vis = Mod_ClusterPVS (r_viewcluster, tr.worldModel);
 	// may have to combine two clusters because of solid water boundaries
 	if (r_viewcluster2 != r_viewcluster)
 	{
-		Com_Memcpy(fatvis, vis, (r_worldmodel->brush38_numleafs+7)/8);
-		vis = Mod_ClusterPVS (r_viewcluster2, r_worldmodel);
-		c = (r_worldmodel->brush38_numleafs+31)/32;
+		Com_Memcpy(fatvis, vis, (tr.worldModel->brush38_numleafs+7)/8);
+		vis = Mod_ClusterPVS (r_viewcluster2, tr.worldModel);
+		c = (tr.worldModel->brush38_numleafs+31)/32;
 		for (i=0 ; i<c ; i++)
 			((int *)fatvis)[i] |= ((int *)vis)[i];
 		vis = fatvis;
 	}
 	
-	for (i=0,leaf=r_worldmodel->brush38_leafs ; i<r_worldmodel->brush38_numleafs ; i++, leaf++)
+	for (i=0,leaf=tr.worldModel->brush38_leafs ; i<tr.worldModel->brush38_numleafs ; i++, leaf++)
 	{
 		cluster = leaf->cluster;
 		if (cluster == -1)
@@ -1281,11 +1281,11 @@ void R_MarkLeaves (void)
 	}
 
 #if 0
-	for (i=0 ; i<r_worldmodel->vis->numclusters ; i++)
+	for (i=0 ; i<tr.worldModel->vis->numclusters ; i++)
 	{
 		if (vis[i>>3] & (1<<(i&7)))
 		{
-			node = (mbrush38_node_t *)&r_worldmodel->leafs[i];	// FIXME: cluster
+			node = (mbrush38_node_t *)&tr.worldModel->leafs[i];	// FIXME: cluster
 			do
 			{
 				if (node->visframe == r_visframecount)

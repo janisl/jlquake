@@ -762,7 +762,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (tr.refdef.vieworg, Mod_GetModel(cl.worldmodel));
+	r_viewleaf = Mod_PointInLeaf (tr.refdef.vieworg, tr.worldModel);
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();
@@ -961,7 +961,7 @@ void R_RenderView (void)
 	if (r_norefresh->value)
 		return;
 
-	if (!r_worldentity.model || !cl.worldmodel)
+	if (!r_worldentity.model || !tr.worldModel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
 	if (r_speeds->value)

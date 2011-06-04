@@ -32,8 +32,6 @@ extern particle_t		r_particles[MAX_PARTICLES];
 
 refimport_t	ri;
 
-model_t		*r_worldmodel;
-
 float		gldepthmin, gldepthmax;
 
 glstate2_t  gl_state;
@@ -571,7 +569,7 @@ void R_SetupFrame (void)
 	{
 		r_oldviewcluster = r_viewcluster;
 		r_oldviewcluster2 = r_viewcluster2;
-		leaf = Mod_PointInLeaf (tr.refdef.vieworg, r_worldmodel);
+		leaf = Mod_PointInLeaf (tr.refdef.vieworg, tr.worldModel);
 		r_viewcluster = r_viewcluster2 = leaf->cluster;
 
 		// check above and below so crossing solid water doesn't draw wrong
@@ -581,7 +579,7 @@ void R_SetupFrame (void)
 
 			VectorCopy (tr.refdef.vieworg, temp);
 			temp[2] -= 16;
-			leaf = Mod_PointInLeaf (temp, r_worldmodel);
+			leaf = Mod_PointInLeaf (temp, tr.worldModel);
 			if ( !(leaf->contents & BSP38CONTENTS_SOLID) &&
 				(leaf->cluster != r_viewcluster2) )
 				r_viewcluster2 = leaf->cluster;
@@ -592,7 +590,7 @@ void R_SetupFrame (void)
 
 			VectorCopy (tr.refdef.vieworg, temp);
 			temp[2] += 16;
-			leaf = Mod_PointInLeaf (temp, r_worldmodel);
+			leaf = Mod_PointInLeaf (temp, tr.worldModel);
 			if ( !(leaf->contents & BSP38CONTENTS_SOLID) &&
 				(leaf->cluster != r_viewcluster2) )
 				r_viewcluster2 = leaf->cluster;
@@ -756,7 +754,7 @@ void R_RenderView (refdef_t *fd)
 	tr.refdef.particles = r_particles;
 	r_newrefdef = *fd;
 
-	if (!r_worldmodel && !(tr.refdef.rdflags & RDF_NOWORLDMODEL))
+	if (!tr.worldModel && !(tr.refdef.rdflags & RDF_NOWORLDMODEL))
 		ri.Sys_Error (ERR_DROP, "R_RenderView: NULL worldmodel");
 
 	if (r_speeds->value)

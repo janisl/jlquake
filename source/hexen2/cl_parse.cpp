@@ -348,7 +348,6 @@ void CL_ParseServerInfo (void)
 
 // local state
 	cl_entities[0].model = cl.model_precache[1];
-	cl.worldmodel = cl.model_precache[1];
 	
 	R_NewMap ();
 

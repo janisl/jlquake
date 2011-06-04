@@ -117,8 +117,6 @@ void R_PushDlights (void);
 
 //====================================================================
 
-extern	model_t	*r_worldmodel;
-
 
 void V_AddBlend (float r, float g, float b, float a, float *v_blend);
 

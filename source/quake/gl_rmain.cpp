@@ -764,7 +764,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf (tr.refdef.vieworg, Mod_GetModel(cl.worldmodel));
+	r_viewleaf = Mod_PointInLeaf (tr.refdef.vieworg, tr.worldModel);
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();
@@ -1002,10 +1002,10 @@ void R_Mirror (void)
 	qglLoadMatrixf (r_base_world_matrix);
 
 	qglColor4f (1,1,1,r_mirroralpha->value);
-	s = Mod_GetModel(cl.worldmodel)->brush29_textures[mirrortexturenum]->texturechain;
+	s = tr.worldModel->brush29_textures[mirrortexturenum]->texturechain;
 	for ( ; s ; s=s->texturechain)
 		R_RenderBrushPoly (s);
-	Mod_GetModel(cl.worldmodel)->brush29_textures[mirrortexturenum]->texturechain = NULL;
+	tr.worldModel->brush29_textures[mirrortexturenum]->texturechain = NULL;
 	GL_State(GLS_DEFAULT);
 	qglColor4f (1,1,1,1);
 }
@@ -1025,7 +1025,7 @@ void R_RenderView (void)
 	if (r_norefresh->value)
 		return;
 
-	if (!r_worldentity.model || !cl.worldmodel)
+	if (!r_worldentity.model || !tr.worldModel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
 	if (r_speeds->value)

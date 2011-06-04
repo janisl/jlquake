@@ -243,6 +243,7 @@ qhandle_t Mod_LoadWorld(const char *name)
 // call the apropriate loader
 	Mod_LoadBrush29Model (mod, buf);
 
+	tr.worldModel = mod;
 	return mod->index;
 }
 

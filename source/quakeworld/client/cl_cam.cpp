@@ -134,14 +134,6 @@ void Cam_Lock(int playernum)
 
 q1trace_t Cam_DoTrace(vec3_t vec1, vec3_t vec2)
 {
-#if 0
-	Com_Memset(&pmove, 0, sizeof(pmove));
-
-	pmove.numphysent = 1;
-	VectorCopy (vec3_origin, pmove.physents[0].origin);
-	pmove.physents[0].model = cl.worldmodel;
-#endif
-
 	VectorCopy (vec1, pmove.origin);
 	return PM_PlayerMove(pmove.origin, vec2);
 }

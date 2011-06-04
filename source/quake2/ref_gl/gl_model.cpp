@@ -260,7 +260,7 @@ static void Mod_LoadWorld(const char* name)
 
 	FS_FreeFile (buf);
 
-	r_worldmodel = mod;
+	tr.worldModel = mod;
 }
 
 /*

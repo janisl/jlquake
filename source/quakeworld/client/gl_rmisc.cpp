@@ -342,7 +342,7 @@ void R_NewMap (void)
 		d_lightstylevalue[i] = 264;		// normal light value
 
 	Com_Memset(&r_worldentity, 0, sizeof(r_worldentity));
-	r_worldentity.model = cl.worldmodel;
+	r_worldentity.model = tr.worldModel->index;
 
 	r_viewleaf = NULL;
 	R_ClearParticles ();
@@ -352,15 +352,15 @@ void R_NewMap (void)
 	// identify sky texture
 	skytexturenum = -1;
 	mirrortexturenum = -1;
-	for (i=0 ; i<Mod_GetModel(cl.worldmodel)->brush29_numtextures ; i++)
+	for (i=0 ; i<tr.worldModel->brush29_numtextures ; i++)
 	{
-		if (!Mod_GetModel(cl.worldmodel)->brush29_textures[i])
+		if (!tr.worldModel->brush29_textures[i])
 			continue;
-		if (!QStr::NCmp(Mod_GetModel(cl.worldmodel)->brush29_textures[i]->name,"sky",3) )
+		if (!QStr::NCmp(tr.worldModel->brush29_textures[i]->name,"sky",3) )
 			skytexturenum = i;
-		if (!QStr::NCmp(Mod_GetModel(cl.worldmodel)->brush29_textures[i]->name,"window02_1",10) )
+		if (!QStr::NCmp(tr.worldModel->brush29_textures[i]->name,"window02_1",10) )
 			mirrortexturenum = i;
- 		Mod_GetModel(cl.worldmodel)->brush29_textures[i]->texturechain = NULL;
+ 		tr.worldModel->brush29_textures[i]->texturechain = NULL;
 	}
 }
 

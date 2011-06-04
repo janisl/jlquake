@@ -507,7 +507,7 @@ void SCR_SetUpToDrawConsole (void)
 		return;		// never a console with loading plaque
 		
 // decide on the height of the console
-	con_forcedup = !cl.worldmodel || cls.signon != SIGNONS;
+	con_forcedup = !tr.worldModel || cls.signon != SIGNONS;
 
 	if (con_forcedup)
 	{

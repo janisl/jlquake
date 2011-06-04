@@ -325,7 +325,6 @@ typedef struct
 	clipHandle_t	clip_models[MAX_MODELS];
 
 // refresh related state
-	qhandle_t	worldmodel;	// cl_entitites[0].model
 	int			num_entities;	// stored bottom up in cl_entities array
 	int			num_statics;	// stored top down in cl_entitiers
 

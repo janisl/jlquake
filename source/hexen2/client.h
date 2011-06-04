@@ -199,7 +199,6 @@ typedef struct
 	int			gametype;
 
 // refresh related state
-	qhandle_t	worldmodel;		// cl_entitites[0].model
 	int			num_entities;	// held in cl_entities array
 	int			num_statics;	// held in cl_staticentities array
 	entity_t	viewent;			// the gun model

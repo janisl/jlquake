@@ -185,6 +185,7 @@ struct trGlobals_base_t
 
 	bool					worldMapLoaded;
 	world_t*				world;
+	model_t*				worldModel;
 
 	image_t*				defaultImage;
 	image_t*				scrapImage;			// for small graphics

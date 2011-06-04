@@ -222,7 +222,6 @@ void Model_NextDownload (void)
 	}
 
 	// all done
-	cl.worldmodel = cl.model_precache[1];
 	R_NewMap();
 
 	PR_LoadStrings();
