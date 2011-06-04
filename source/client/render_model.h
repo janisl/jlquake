@@ -643,8 +643,6 @@ struct model_t
 	modtype_t	type;
 	int			index;				// model = tr.models[model->index]
 
-	qboolean	q1_needload;		// bmodels and sprites don't cache normally
-
 	int			q1_numframes;
 	synctype_t	q1_synctype;
 	

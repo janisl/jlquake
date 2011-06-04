@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-model_t *Mod_LoadModel (model_t *mod, qboolean crash);
-
 byte	mod_novis[BSP38MAX_MAP_LEAFS/8];
 
 /*

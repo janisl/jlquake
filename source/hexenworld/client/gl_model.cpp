@@ -6,10 +6,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-static char	loadname[32];	// for hunk tags
-
-static model_t *Mod_LoadModel (model_t *mod, qboolean crash);
-
 static byte	mod_novis[BSP29_MAX_MAP_LEAFS/8];
 
 /*
@@ -136,11 +132,12 @@ void Mod_ClearAll (void)
 
 /*
 ==================
-Mod_FindName
+Mod_ForName
 
+Loads in a model for the given name
 ==================
 */
-model_t *Mod_FindName (const char *name)
+qhandle_t Mod_ForName (char *name, qboolean crash)
 {
 	if (!name[0])
 		Sys_Error ("Mod_ForName: NULL name");
@@ -150,32 +147,14 @@ model_t *Mod_FindName (const char *name)
 //
 	for (int i = 1; i < tr.numModels; i++)
 		if (!QStr::Cmp(tr.models[i]->name, name))
-			return tr.models[i];
+			return tr.models[i]->index;
 			
 	model_t	*mod = R_AllocModel();
 	QStr::Cpy(mod->name, name);
-	mod->q1_needload = true;
 
-	return mod;
-}
-
-/*
-==================
-Mod_LoadModel
-
-Loads a model into the cache
-==================
-*/
-static model_t *Mod_LoadModel (model_t *mod, qboolean crash)
-{
 	void	*d;
 	unsigned *buf;
 	byte	stackbuf[1024];		// avoid dirtying the cache heap
-
-	if (!mod->q1_needload)
-	{
-		return mod;
-	}
 
 //
 // load the file
@@ -185,14 +164,12 @@ static model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 	{
 		if (crash)
 			Sys_Error ("Mod_NumForName: %s not found", mod->name);
-		return NULL;
+		return 0;
 	}
 	
 //
 // allocate a new model
 //
-	QStr::FileBase (mod->name, loadname);
-	
 	loadmodel = mod;
 
 //
@@ -200,8 +177,6 @@ static model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 //
 
 // call the apropriate loader
-	mod->q1_needload = false;
-	
 	switch (LittleLong(*(unsigned *)buf))
 	{
 	case RAPOLYHEADER:
@@ -220,27 +195,6 @@ static model_t *Mod_LoadModel (model_t *mod, qboolean crash)
 		break;
 	}
 
-	return mod;
-}
-
-/*
-==================
-Mod_ForName
-
-Loads in a model for the given name
-==================
-*/
-qhandle_t Mod_ForName (char *name, qboolean crash)
-{
-	model_t	*mod;
-	
-	mod = Mod_FindName(name);
-	
-	mod = Mod_LoadModel(mod, crash);
-	if (!mod)
-	{
-		return 0;
-	}
 	return mod->index;
 }
 
