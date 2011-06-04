@@ -105,4 +105,9 @@ void R_FreeModels()
 		}
 	}
 	tr.numModels = 0;
+
+	if (tr.world)
+	{
+		R_FreeBsp46(tr.world);
+	}
 }

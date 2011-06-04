@@ -183,6 +183,9 @@ struct trGlobals_base_t
 {
 	int						frameCount;			// incremented every frame
 
+	bool					worldMapLoaded;
+	world_t*				world;
+
 	image_t*				defaultImage;
 	image_t*				scrapImage;			// for small graphics
 	image_t*				dlightImage;		// inverse-quare highlight for projective adding

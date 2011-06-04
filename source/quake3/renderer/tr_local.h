@@ -223,9 +223,6 @@ struct trGlobals_t : trGlobals_base_t
 
 	int						frameSceneNum;	// zeroed at RE_BeginFrame
 
-	qboolean				worldMapLoaded;
-	world_t					*world;
-
 	image_t					*flareImage;
 
 	shader_t				*shadowShader;
