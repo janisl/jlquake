@@ -133,9 +133,8 @@ Mod_ClearAll
 */
 void Mod_ClearAll (void)
 {
-	for (int i=1; i<tr.numModels ; i++)
-		if (tr.models[i]->type != MOD_MESH1)
-			tr.models[i]->q1_needload = true;
+	R_FreeModels();
+	Mod_Init();
 }
 
 /*
