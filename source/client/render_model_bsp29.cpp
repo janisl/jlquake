@@ -1313,6 +1313,20 @@ void Mod_FreeBsp29(model_t* mod)
 	delete[] mod->brush29_vertexes;
 	delete[] mod->brush29_edges;
 	delete[] mod->brush29_texinfo;
+	for (int i = 0; i < mod->brush29_numsurfaces; i++)
+	{
+		if ((mod->brush29_surfaces[i].flags & BRUSH29_SURF_DRAWTURB) ||
+			(mod->brush29_surfaces[i].flags & BRUSH29_SURF_DRAWSKY))
+		{
+			mbrush29_glpoly_t* poly = mod->brush29_surfaces[i].polys;
+			while (poly)
+			{
+				mbrush29_glpoly_t* tmp = poly;
+				poly = poly->next;
+				Mem_Free(tmp);
+			}
+		}
+	}
 	delete[] mod->brush29_surfaces;
 	delete[] mod->brush29_nodes;
 	delete[] mod->brush29_leafs;

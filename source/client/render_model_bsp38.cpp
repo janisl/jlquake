@@ -934,6 +934,16 @@ void Mod_FreeBsp38(model_t* mod)
 	delete[] mod->brush38_vertexes;
 	delete[] mod->brush38_edges;
 	delete[] mod->brush38_texinfo;
+	for (int i = 0; i < mod->brush38_numsurfaces; i++)
+	{
+		mbrush38_glpoly_t* poly = mod->brush38_surfaces[i].polys;
+		while (poly)
+		{
+			mbrush38_glpoly_t* tmp = poly;
+			poly = poly->next;
+			Mem_Free(tmp);
+		}
+	}
 	delete[] mod->brush38_surfaces;
 	delete[] mod->brush38_nodes;
 	delete[] mod->brush38_leafs;

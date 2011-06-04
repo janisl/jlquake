@@ -220,4 +220,5 @@ void Mod_FreeSpriteModel(model_t* mod)
 			Mem_Free(pspritegroup);
 		}
 	}
+	Mem_Free(psprite);
 }
