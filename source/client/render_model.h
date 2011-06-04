@@ -774,6 +774,7 @@ struct model_t
 	int			 q3_numLods;
 };
 
+model_t* R_AllocModel();
 void R_FreeModel(model_t* mod);
 void R_FreeModels();
 

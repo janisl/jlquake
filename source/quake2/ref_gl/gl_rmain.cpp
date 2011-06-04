@@ -1212,17 +1212,9 @@ shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImag
 void R_InitSky(mbrush29_texture_t *mt)
 {
 }
-model_t *Mod_FindName (const char *name)
-{
-	return NULL;
-}
 void R_SyncRenderThread()
 {
 }
 void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset)
 {
-}
-model_t		*R_AllocModel( void )
-{
-	return NULL;
 }

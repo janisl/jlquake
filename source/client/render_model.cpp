@@ -43,6 +43,28 @@ model_t*		currentmodel;
 
 //==========================================================================
 //
+//	R_AllocModel
+//
+//==========================================================================
+
+model_t* R_AllocModel()
+{
+	if (tr.numModels == MAX_MOD_KNOWN)
+	{
+		return NULL;
+	}
+
+	model_t* mod = new model_t;
+	Com_Memset(mod, 0, sizeof(model_t));
+	mod->index = tr.numModels;
+	tr.models[tr.numModels] = mod;
+	tr.numModels++;
+
+	return mod;
+}
+
+//==========================================================================
+//
 //	R_FreeModel
 //
 //==========================================================================

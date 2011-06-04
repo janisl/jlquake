@@ -42,25 +42,6 @@ model_t	*R_GetModelByHandle( qhandle_t index ) {
 //===============================================================================
 
 /*
-** R_AllocModel
-*/
-model_t *R_AllocModel( void ) {
-	model_t		*mod;
-
-	if ( tr.numModels == MAX_MOD_KNOWN ) {
-		return NULL;
-	}
-
-	mod = new model_t;
-	Com_Memset(mod, 0, sizeof(model_t));
-	mod->index = tr.numModels;
-	tr.models[tr.numModels] = mod;
-	tr.numModels++;
-
-	return mod;
-}
-
-/*
 ====================
 RE_RegisterModel
 

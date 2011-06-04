@@ -1032,14 +1032,6 @@ void GL_EndBuildingLightmaps (void)
 void GL_BeginBuildingLightmaps (model_t *m)
 {
 }
-model_t* Mod_AllocModel()
-{
-	return NULL;
-}
 void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset)
 {
-}
-model_t		*R_AllocModel( void )
-{
-	return NULL;
 }

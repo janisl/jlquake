@@ -21,10 +21,8 @@ void Mod_Init (void)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 
-	tr.numModels = 1;
-	tr.models[0] = new model_t;
-	Com_Memset(tr.models[0], 0, sizeof(model_t));
-	tr.models[0]->type = MOD_BAD;
+	model_t* mod = R_AllocModel();
+	mod->type = MOD_BAD;
 }
 
 /*
@@ -155,15 +153,9 @@ model_t *Mod_FindName (const char *name)
 		if (!QStr::Cmp(tr.models[i]->name, name))
 			return tr.models[i];
 			
-	if (tr.numModels == MAX_MOD_KNOWN)
-		Sys_Error ("tr.numModels == MAX_MOD_KNOWN");
-	model_t	*mod = new model_t;
-	Com_Memset(mod, 0, sizeof(model_t));
-	tr.models[tr.numModels] = mod;
+	model_t	*mod = R_AllocModel();
 	QStr::Cpy(mod->name, name);
 	mod->q1_needload = true;
-	mod->index = tr.numModels;
-	tr.numModels++;
 
 	return mod;
 }

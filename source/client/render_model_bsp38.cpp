@@ -886,7 +886,7 @@ void Mod_LoadBrush38Model(model_t* mod, void* buffer)
 		}
 		else
 		{
-			starmod = Mod_AllocModel();
+			starmod = R_AllocModel();
 
 			int saved_index = starmod->index;
 			*starmod = *loadmodel;

@@ -1261,14 +1261,11 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 		if (i < mod->brush29_numsubmodels-1)
 		{
 			// duplicate the basic information
-			char	name[10];
-
-			sprintf (name, "*%i", i+1);
-			loadmodel = Mod_FindName (name);
+			loadmodel = R_AllocModel();
 			int saved_index = loadmodel->index;
 			*loadmodel = *mod;
 			loadmodel->index = saved_index;
-			QStr::Cpy(loadmodel->name, name);
+			QStr::Sprintf(loadmodel->name, sizeof(loadmodel->name), "*%i", i + 1);
 			mod = loadmodel;
 		}
 	}
