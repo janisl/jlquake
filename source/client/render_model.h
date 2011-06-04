@@ -145,22 +145,12 @@ struct mbrush29_leaf_t
 	byte		ambient_sound_level[BSP29_NUM_AMBIENTS];
 };
 
-struct mbrush29_hull_t
-{
-	bsp29_dclipnode_t	*clipnodes;
-	cplane_t	*planes;
-	int			firstclipnode;
-	int			lastclipnode;
-	vec3_t		clip_mins;
-	vec3_t		clip_maxs;
-};
-
 struct mbrush29_submodel_t
 {
 	float		mins[3];
 	float		maxs[3];
 	float		origin[3];
-	qint32		headnode[BSP29_MAX_MAP_HULLS_H2];
+	qint32		headnode;
 	qint32		visleafs;		// not including the solid leaf 0
 	qint32		firstface;
 	qint32		numfaces;
@@ -676,6 +666,7 @@ struct model_t
 	mbrush29_edge_t		*brush29_edges;
 
 	int			brush29_numnodes;
+	int			brush29_firstnode;
 	mbrush29_node_t		*brush29_nodes;
 
 	int			brush29_numtexinfo;
@@ -687,13 +678,8 @@ struct model_t
 	int			brush29_numsurfedges;
 	int			*brush29_surfedges;
 
-	int			brush29_numclipnodes;
-	bsp29_dclipnode_t	*brush29_clipnodes;
-
 	int			brush29_nummarksurfaces;
 	mbrush29_surface_t	**brush29_marksurfaces;
-
-	mbrush29_hull_t		brush29_hulls[BSP29_MAX_MAP_HULLS_H2];
 
 	int			brush29_numtextures;
 	mbrush29_texture_t	**brush29_textures;

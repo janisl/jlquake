@@ -863,149 +863,6 @@ static void Mod_LoadLeafs(bsp29_lump_t* l)
 
 //==========================================================================
 //
-//	Mod_LoadClipnodes
-//
-//==========================================================================
-
-static void Mod_LoadClipnodes(bsp29_lump_t* l)
-{
-	bsp29_dclipnode_t* in = (bsp29_dclipnode_t*)(mod_base + l->fileofs);
-	if (l->filelen % sizeof(*in))
-	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
-	}
-	int count = l->filelen / sizeof(*in);
-	bsp29_dclipnode_t* out = new bsp29_dclipnode_t[count];
-
-	loadmodel->brush29_clipnodes = out;
-	loadmodel->brush29_numclipnodes = count;
-
-	mbrush29_hull_t* hull = &loadmodel->brush29_hulls[1];
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count-1;
-	hull->planes = loadmodel->brush29_planes;
-	hull->clip_mins[0] = -16;
-	hull->clip_mins[1] = -16;
-	hull->clip_mins[2] = -24;
-	hull->clip_maxs[0] = 16;
-	hull->clip_maxs[1] = 16;
-	hull->clip_maxs[2] = 32;
-
-	if (GGameType & GAME_Quake)
-	{
-		hull = &loadmodel->brush29_hulls[2];
-		hull->clipnodes = out;
-		hull->firstclipnode = 0;
-		hull->lastclipnode = count-1;
-		hull->planes = loadmodel->brush29_planes;
-		hull->clip_mins[0] = -32;
-		hull->clip_mins[1] = -32;
-		hull->clip_mins[2] = -24;
-		hull->clip_maxs[0] = 32;
-		hull->clip_maxs[1] = 32;
-		hull->clip_maxs[2] = 64;
-	}
-	else
-	{
-		hull = &loadmodel->brush29_hulls[2];
-		hull->clipnodes = out;
-		hull->firstclipnode = 0;
-		hull->lastclipnode = count-1;
-		hull->planes = loadmodel->brush29_planes;
-		hull->clip_mins[0] = -24;
-		hull->clip_mins[1] = -24;
-		hull->clip_mins[2] = -20;
-		hull->clip_maxs[0] = 24;
-		hull->clip_maxs[1] = 24;
-		hull->clip_maxs[2] = 20;
-
-		hull = &loadmodel->brush29_hulls[3];
-		hull->clipnodes = out;
-		hull->firstclipnode = 0;
-		hull->lastclipnode = count-1;
-		hull->planes = loadmodel->brush29_planes;
-		hull->clip_mins[0] = -16;
-		hull->clip_mins[1] = -16;
-		hull->clip_mins[2] = -12;
-		hull->clip_maxs[0] = 16;
-		hull->clip_maxs[1] = 16;
-		hull->clip_maxs[2] = 16;
-
-		hull = &loadmodel->brush29_hulls[4];
-		hull->clipnodes = out;
-		hull->firstclipnode = 0;
-		hull->lastclipnode = count-1;
-		hull->planes = loadmodel->brush29_planes;
-		hull->clip_mins[0] = -40;
-		hull->clip_mins[1] = -40;
-		hull->clip_mins[2] = -42;
-		hull->clip_maxs[0] = 40;
-		hull->clip_maxs[1] = 40;
-		hull->clip_maxs[2] = 42;
-
-		hull = &loadmodel->brush29_hulls[5];
-		hull->clipnodes = out;
-		hull->firstclipnode = 0;
-		hull->lastclipnode = count-1;
-		hull->planes = loadmodel->brush29_planes;
-		hull->clip_mins[0] = -48;
-		hull->clip_mins[1] = -48;
-		hull->clip_mins[2] = -50;
-		hull->clip_maxs[0] = 48;
-		hull->clip_maxs[1] = 48;
-		hull->clip_maxs[2] = 50;
-	}
-
-	for (int i = 0; i < count; i++, out++, in++)
-	{
-		out->planenum = LittleLong(in->planenum);
-		out->children[0] = LittleShort(in->children[0]);
-		out->children[1] = LittleShort(in->children[1]);
-	}
-}
-
-//==========================================================================
-//
-//	Mod_MakeHull0
-//
-//	Deplicate the drawing hull structure as a clipping hull
-//
-//==========================================================================
-
-static void Mod_MakeHull0()
-{
-	mbrush29_hull_t* hull = &loadmodel->brush29_hulls[0];	
-
-	mbrush29_node_t* in = loadmodel->brush29_nodes;
-	int count = loadmodel->brush29_numnodes;
-	bsp29_dclipnode_t* out = new bsp29_dclipnode_t[count];
-
-	hull->clipnodes = out;
-	hull->firstclipnode = 0;
-	hull->lastclipnode = count-1;
-	hull->planes = loadmodel->brush29_planes;
-
-	for (int i = 0; i < count; i++, out++, in++)
-	{
-		out->planenum = in->plane - loadmodel->brush29_planes;
-		for (int j = 0; j < 2; j++)
-		{
-			mbrush29_node_t* child = in->children[j];
-			if (child->contents < 0)
-			{
-				out->children[j] = child->contents;
-			}
-			else
-			{
-				out->children[j] = child - loadmodel->brush29_nodes;
-			}
-		}
-	}
-}
-
-//==========================================================================
-//
 //	Mod_LoadMarksurfaces
 //
 //==========================================================================
@@ -1120,10 +977,7 @@ static void Mod_LoadSubmodelsQ1(bsp29_lump_t* l)
 			out->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 			out->origin[j] = LittleFloat(in->origin[j]);
 		}
-		for (int j = 0; j < BSP29_MAX_MAP_HULLS_Q1; j++)
-		{
-			out->headnode[j] = LittleLong(in->headnode[j]);
-		}
+		out->headnode = LittleLong(in->headnode[0]);
 		out->visleafs = LittleLong(in->visleafs);
 		out->firstface = LittleLong(in->firstface);
 		out->numfaces = LittleLong(in->numfaces);
@@ -1158,10 +1012,7 @@ static void Mod_LoadSubmodelsH2(bsp29_lump_t* l)
 			out->maxs[j] = LittleFloat(in->maxs[j]) + 1;
 			out->origin[j] = LittleFloat(in->origin[j]);
 		}
-		for (int j = 0; j < BSP29_MAX_MAP_HULLS_H2; j++)
-		{
-			out->headnode[j] = LittleLong(in->headnode[j]);
-		}
+		out->headnode = LittleLong(in->headnode[0]);
 		out->visleafs = LittleLong(in->visleafs);
 		out->firstface = LittleLong(in->firstface);
 		out->numfaces = LittleLong(in->numfaces);
@@ -1208,7 +1059,6 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 	Mod_LoadVisibility(&header->lumps[BSP29LUMP_VISIBILITY]);
 	Mod_LoadLeafs(&header->lumps[BSP29LUMP_LEAFS]);
 	Mod_LoadNodes(&header->lumps[BSP29LUMP_NODES]);
-	Mod_LoadClipnodes(&header->lumps[BSP29LUMP_CLIPNODES]);
 	Mod_LoadEntities(&header->lumps[BSP29LUMP_ENTITIES]);
 	if (GGameType & GAME_Hexen2)
 	{
@@ -1219,8 +1069,6 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 		Mod_LoadSubmodelsQ1(&header->lumps[BSP29LUMP_MODELS]);
 	}
 
-	Mod_MakeHull0();
-
 	mod->q1_numframes = 2;		// regular and alternate animation
 
 	//
@@ -1230,24 +1078,7 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 	{
 		mbrush29_submodel_t* bm = &mod->brush29_submodels[i];
 
-		mod->brush29_hulls[0].firstclipnode = bm->headnode[0];
-		if (GGameType & GAME_Hexen2)
-		{
-			for (int j = 1; j < BSP29_MAX_MAP_HULLS_H2; j++)
-			{
-				mod->brush29_hulls[j].firstclipnode = bm->headnode[j];
-				mod->brush29_hulls[j].lastclipnode = mod->brush29_numclipnodes-1;
-			}
-		}
-		else
-		{
-			for (int j = 1; j < BSP29_MAX_MAP_HULLS_Q1; j++)
-			{
-				mod->brush29_hulls[j].firstclipnode = bm->headnode[j];
-				mod->brush29_hulls[j].lastclipnode = mod->brush29_numclipnodes-1;
-			}
-		}
-
+		mod->brush29_firstnode = bm->headnode;
 		mod->brush29_firstmodelsurface = bm->firstface;
 		mod->brush29_nummodelsurfaces = bm->numfaces;
 
@@ -1327,8 +1158,6 @@ void Mod_FreeBsp29(model_t* mod)
 	delete[] mod->brush29_surfaces;
 	delete[] mod->brush29_nodes;
 	delete[] mod->brush29_leafs;
-	delete[] mod->brush29_clipnodes;
-	delete[] mod->brush29_hulls[0].clipnodes;
 	delete[] mod->brush29_marksurfaces;
 	delete[] mod->brush29_surfedges;
 	delete[] mod->brush29_planes;

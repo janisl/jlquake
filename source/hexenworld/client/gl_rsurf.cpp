@@ -1009,7 +1009,7 @@ void R_DrawBrushModel (trRefEntity_t* e, qboolean Translucent)
 				continue;
 
 			R_MarkLights (&cl_dlights[k], 1<<k,
-				clmodel->brush29_nodes + clmodel->brush29_hulls[0].firstclipnode);
+				clmodel->brush29_nodes + clmodel->brush29_firstnode);
 		}
 	}
 
