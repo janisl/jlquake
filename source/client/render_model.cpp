@@ -98,11 +98,8 @@ void R_FreeModels()
 {
 	for (int i = 0; i < tr.numModels; i++)
 	{
-		if (tr.models[i])
-		{
-			R_FreeModel(tr.models[i]);
-			tr.models[i] = NULL;
-		}
+		R_FreeModel(tr.models[i]);
+		tr.models[i] = NULL;
 	}
 	tr.numModels = 0;
 

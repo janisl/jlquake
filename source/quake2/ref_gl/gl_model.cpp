@@ -128,8 +128,6 @@ void Mod_Modellist_f (void)
 	ri.Con_Printf (PRINT_ALL,"Loaded models:\n");
 	for (int i = 0; i < tr.numModels; i++)
 	{
-		if (!tr.models[i])
-			continue;
 		ri.Con_Printf(PRINT_ALL, "%8i : %s\n", tr.models[i]->q2_extradatasize, tr.models[i]->name);
 		total += tr.models[i]->q2_extradatasize;
 	}
@@ -153,20 +151,6 @@ void Mod_Init (void)
 
 model_t* Mod_AllocModel()
 {
-	//
-	// find a free model slot spot
-	//
-	for (int i = 1; i < tr.numModels; i++)
-	{
-		if (!tr.models[i])
-		{
-			model_t* mod = new model_t;
-			Com_Memset(mod, 0, sizeof(model_t));
-			tr.models[i] = mod;
-			mod->index = i;
-			return mod;	// free spot
-		}
-	}
 	if (tr.numModels == MAX_MOD_KNOWN)
 	{
 		ri.Sys_Error(ERR_DROP, "tr.numModels == MAX_MOD_KNOWN");
@@ -200,8 +184,6 @@ model_t *Mod_ForName (char *name, qboolean crash)
 	//
 	for (int i = 1; i < tr.numModels; i++)
 	{
-		if (!tr.models[i])
-			continue;
 		if (!QStr::Cmp(tr.models[i]->name, name) )
 			return tr.models[i];
 	}
@@ -316,7 +298,7 @@ void R_EndRegistration (void)
 
 model_t* Mod_GetModel(qhandle_t handle)
 {
-	if (handle < 1 || handle >= tr.numModels || !tr.models[handle])
+	if (handle < 1 || handle >= tr.numModels)
 	{
 		return tr.models[0];
 	}
