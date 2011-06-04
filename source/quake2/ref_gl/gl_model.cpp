@@ -25,8 +25,6 @@ model_t *Mod_LoadModel (model_t *mod, qboolean crash);
 
 byte	mod_novis[BSP38MAX_MAP_LEAFS/8];
 
-int		registration_sequence;
-
 /*
 ===============
 Mod_PointInLeaf
@@ -269,30 +267,14 @@ Specifies the model that will be used as the world
 void R_BeginRegistration (char *model)
 {
 	char	fullname[MAX_QPATH];
-	QCvar	*flushmap;
 
-	registration_sequence++;
 	r_oldviewcluster = -1;		// force markleafs
 
 	QStr::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
 
-	// explicitly free the old map if different
-	// this guarantees that mod_known[1] is the world map
-	flushmap = Cvar_Get ("flushmap", "0", 0);
-	if ((tr.models[1] && QStr::Cmp(tr.models[1]->name, fullname)) || flushmap->value)
-	{
-		R_FreeModel(tr.models[1]);
-		tr.models[1] = NULL;
-		//	Clear submodels.
-		for (int i = 1; i < tr.numModels; i++)
-		{
-			if (tr.models[i] && tr.models[i]->name[0] == '*')
-			{
-				R_FreeModel(tr.models[i]);
-				tr.models[i] = NULL;
-			}
-		}
-	}
+	R_FreeModels();
+	Mod_Init();
+
 	r_worldmodel = Mod_ForName(fullname, true);
 
 	r_viewcluster = -1;
@@ -314,7 +296,6 @@ qhandle_t R_RegisterModel (char *name)
 	{
 		return 0;
 	}
-	mod->q2_registration_sequence = registration_sequence;
 
 	return mod->index;
 }
@@ -328,16 +309,6 @@ R_EndRegistration
 */
 void R_EndRegistration (void)
 {
-	for (int i = 1; i < tr.numModels; i++)
-	{
-		if (!tr.models[i])
-			continue;
-		if (tr.models[i]->q2_registration_sequence != registration_sequence)
-		{	// don't need this model
-			R_FreeModel(tr.models[i]);
-			tr.models[i] = NULL;
-		}
-	}
 }
 
 

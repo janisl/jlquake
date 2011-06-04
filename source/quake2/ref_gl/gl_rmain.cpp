@@ -951,8 +951,6 @@ int R_Init()
 
 	GL_SetDefaultState();
 
-	registration_sequence = 1;
-
 	R_InitFunctionTables();
 	R_InitFogTable();
 	R_NoiseInit();

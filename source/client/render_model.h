@@ -709,8 +709,6 @@ struct model_t
 //
 	void*		q1_cache;		// only access through Mod_Extradata
 
-	int			q2_registration_sequence;
-
 	int			q2_numframes;
 	
 	int			q2_flags;
