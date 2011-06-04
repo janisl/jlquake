@@ -40,9 +40,7 @@ void Mod_Init (void)
 {
 	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
 
-	//	Reserve 0 for default model.
-	model_t* mod = R_AllocModel();
-	mod->type = MOD_BAD;
+	R_ModelInit();
 }
 
 /*

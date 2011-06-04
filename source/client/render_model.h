@@ -775,6 +775,7 @@ struct model_t
 };
 
 model_t* R_AllocModel();
+void R_ModelInit();
 void R_FreeModel(model_t* mod);
 void R_FreeModels();
 

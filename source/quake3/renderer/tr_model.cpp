@@ -169,22 +169,6 @@ void RE_BeginRegistration( glconfig_t *glconfigOut ) {
 //=============================================================================
 
 /*
-===============
-R_ModelInit
-===============
-*/
-void R_ModelInit( void ) {
-	model_t		*mod;
-
-	// leave a space for NULL model
-	tr.numModels = 0;
-
-	mod = R_AllocModel();
-	mod->type = MOD_BAD;
-}
-
-
-/*
 ================
 R_Modellist_f
 ================
