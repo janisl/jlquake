@@ -217,6 +217,51 @@ qhandle_t Mod_ForName (char *name, qboolean crash)
 	return mod->index;
 }
 
+/*
+==================
+Mod_ForName
+
+Loads in a model for the given name
+==================
+*/
+qhandle_t Mod_LoadWorld(const char *name)
+{
+	int		i;
+	model_t	*mod;
+	
+	if (!name[0])
+		Sys_Error ("Mod_ForName: NULL name");
+		
+	mod = R_AllocModel();
+	QStr::Cpy(mod->name, name);
+
+	unsigned *buf;
+	byte	stackbuf[1024];		// avoid dirtying the cache heap
+
+//
+// load the file
+//
+	buf = (unsigned *)COM_LoadStackFile (mod->name, stackbuf, sizeof(stackbuf));
+	if (!buf)
+	{
+		return 0;
+	}
+	
+//
+// allocate a new model
+//
+	loadmodel = mod;
+
+//
+// fill it in
+//
+
+// call the apropriate loader
+	Mod_LoadBrush29Model (mod, buf);
+
+	return mod->index;
+}
+
 
 /*
 ===============================================================================

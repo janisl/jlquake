@@ -276,7 +276,11 @@ void CL_ParseServerInfo (void)
 // now we try to load everything else until a cache allocation fails
 //
 
-	for (i=1 ; i<nummodels ; i++)
+	CM_LoadMap(model_precache[1], true, NULL);
+	cl.model_precache[1] = Mod_LoadWorld(model_precache[1]);
+	CL_KeepaliveMessage();
+
+	for (i = 2; i < nummodels; i++)
 	{
 		cl.model_precache[i] = Mod_ForName (model_precache[i], false);
 		if (cl.model_precache[i] == NULL)
@@ -299,7 +303,6 @@ void CL_ParseServerInfo (void)
 // local state
 	cl_entities[0].model = cl.model_precache[1];
 	cl.worldmodel = cl.model_precache[1];
-	CM_LoadMap(model_precache[1], true, NULL);
 
 	R_NewMap ();
 

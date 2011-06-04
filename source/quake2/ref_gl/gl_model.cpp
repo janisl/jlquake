@@ -204,9 +204,52 @@ model_t *Mod_ForName (char *name, qboolean crash)
 		Mod_LoadSprite2Model (mod, buf, modfilelen);
 		break;
 	
+	default:
+		ri.Sys_Error (ERR_DROP,"Mod_NumForName: unknown fileid for %s", mod->name);
+		break;
+	}
+
+	FS_FreeFile (buf);
+
+	return mod;
+}
+
+/*
+==================
+Mod_ForName
+
+Loads in a model for the given name
+==================
+*/
+static void Mod_LoadWorld(const char* name)
+{
+	unsigned *buf;
+	
+	model_t* mod = R_AllocModel();
+
+	QStr::Cpy(mod->name, name);
+	
+	//
+	// load the file
+	//
+	int modfilelen = FS_ReadFile(mod->name, (void**)&buf);
+	if (!buf)
+	{
+		ri.Sys_Error (ERR_DROP, "Mod_NumForName: %s not found", mod->name);
+	}
+	
+	loadmodel = mod;
+
+	//
+	// fill it in
+	//
+
+
+	// call the apropriate loader
+	
+	switch (LittleLong(*(unsigned *)buf))
+	{
 	case BSP38_HEADER:
-		if (loadmodel != tr.models[1])
-			ri.Sys_Error (ERR_DROP, "Loaded a brush model after the world");
 		Mod_LoadBrush38Model(mod, buf);
 		break;
 
@@ -217,7 +260,7 @@ model_t *Mod_ForName (char *name, qboolean crash)
 
 	FS_FreeFile (buf);
 
-	return mod;
+	r_worldmodel = mod;
 }
 
 /*
@@ -238,7 +281,7 @@ void R_BeginRegistration (char *model)
 	R_FreeModels();
 	Mod_Init();
 
-	r_worldmodel = Mod_ForName(fullname, true);
+	Mod_LoadWorld(fullname);
 
 	r_viewcluster = -1;
 }

@@ -107,6 +107,7 @@ void R_TranslatePlayerSkin (int playernum);
 
 void	Mod_Init (void);
 void	Mod_ClearAll (void);
+qhandle_t Mod_LoadWorld(const char *name);
 qhandle_t Mod_ForName (char *name, qboolean crash);
 int Mod_GetNumFrames(qhandle_t Handle);
 int Mod_GetFlags(qhandle_t Handle);

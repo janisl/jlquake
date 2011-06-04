@@ -308,7 +308,9 @@ void CL_ParseServerInfo (void)
 	loading_stage = 2;
 
 	//always precache the world!!!
-	cl.model_precache[1] = Mod_ForName (model_precache[1], false);
+	CM_LoadMap(model_precache[1], true, NULL);
+	cl.model_precache[1] = Mod_LoadWorld(model_precache[1]);
+
 	for (i=2 ; i<nummodels ; i++)
 	{
 		cl.model_precache[i] = Mod_ForName (model_precache[i], false);
@@ -347,7 +349,6 @@ void CL_ParseServerInfo (void)
 // local state
 	cl_entities[0].model = cl.model_precache[1];
 	cl.worldmodel = cl.model_precache[1];
-	CM_LoadMap(model_precache[1], true, NULL);
 	
 	R_NewMap ();
 

@@ -249,18 +249,17 @@ void Model_NextDownload (void)
 			return;		// started a download
 	}
 
-	for (i=1 ; i<MAX_MODELS ; i++)
+	CM_LoadMap(cl.model_name[1], true, NULL);
+	cl.clip_models[i] = 0;
+	cl.model_precache[1] = Mod_LoadWorld(cl.model_name[1]);
+
+	for (i = 2; i < MAX_MODELS; i++)
 	{
 		if (!cl.model_name[i][0])
 			break;
 
 		cl.model_precache[i] = Mod_ForName (cl.model_name[i], false);
-		if (i == 1)
-		{
-			CM_LoadMap(cl.model_name[i], true, NULL);
-			cl.clip_models[i] = 0;
-		}
-		else if (cl.model_name[i][0] == '*')
+		if (cl.model_name[i][0] == '*')
 		{
 			cl.clip_models[i] = CM_InlineModel(QStr::Atoi(cl.model_name[i] + 1));
 		}
