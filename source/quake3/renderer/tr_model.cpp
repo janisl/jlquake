@@ -51,7 +51,8 @@ model_t *R_AllocModel( void ) {
 		return NULL;
 	}
 
-	mod = (model_t*)ri.Hunk_Alloc( sizeof( *tr.models[tr.numModels] ), h_low );
+	mod = new model_t;
+	Com_Memset(mod, 0, sizeof(model_t));
 	mod->index = tr.numModels;
 	tr.models[tr.numModels] = mod;
 	tr.numModels++;
