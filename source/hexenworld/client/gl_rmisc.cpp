@@ -533,6 +533,7 @@ void VID_Init()
 
 void VID_Shutdown(void)
 {
+	R_FreeModels();
 	R_DeleteTextures();
 	GLimp_Shutdown();
 

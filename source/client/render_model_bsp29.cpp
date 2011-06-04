@@ -1282,6 +1282,11 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 
 void Mod_FreeBsp29(model_t* mod)
 {
+	if (mod->name[0] == '*')
+	{
+		return;
+	}
+
 	if (mod->brush29_textures)
 	{
 		for (int i = 0; i < mod->brush29_numtextures; i++)
