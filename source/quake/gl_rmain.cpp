@@ -147,7 +147,7 @@ msprite1frame_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
+	psprite = (msprite1_t*)R_GetModelByHandle(currententity->e.hModel)->q1_cache;
 	frame = currententity->e.frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
@@ -203,7 +203,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
+	psprite = (msprite1_t*)R_GetModelByHandle(currententity->e.hModel)->q1_cache;
 
 	if (psprite->type == SPR_ORIENTED)
 	{
@@ -439,7 +439,7 @@ void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
 {
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (ColorMap && !gl_nocolors->value && !QStr::Cmp(Mod_GetModel(Ent->hModel)->name, "progs/player.mdl"))
+	if (ColorMap && !gl_nocolors->value && !QStr::Cmp(R_GetModelByHandle(Ent->hModel)->name, "progs/player.mdl"))
 	{
 	    Ent->customSkin = R_GetImageHandle(playertextures[ColorMap - 1]);
 	}
@@ -463,7 +463,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	dmdl_trivertx_t	*verts, *v;
 	int			index;
 
-	clmodel = Mod_GetModel(currententity->e.hModel);
+	clmodel = R_GetModelByHandle(currententity->e.hModel);
 
 	VectorAdd (currententity->e.origin, clmodel->q1_mins, mins);
 	VectorAdd (currententity->e.origin, clmodel->q1_maxs, maxs);
@@ -535,7 +535,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	//
 	// locate the proper data
 	//
-	paliashdr = (mesh1hdr_t *)Mod_Extradata(Mod_GetModel(currententity->e.hModel));
+	paliashdr = (mesh1hdr_t *)Mod_Extradata(R_GetModelByHandle(currententity->e.hModel));
 
 	c_alias_polys += paliashdr->numtris;
 
@@ -633,7 +633,7 @@ void R_DrawEntitiesOnList (void)
 			}
 		}
 
-		switch (Mod_GetModel(currententity->e.hModel)->type)
+		switch (R_GetModelByHandle(currententity->e.hModel)->type)
 		{
 		case MOD_MESH1:
 			R_DrawAliasModel (currententity);
@@ -652,7 +652,7 @@ void R_DrawEntitiesOnList (void)
 	{
 		currententity = &cl_visedicts[i];
 
-		switch (Mod_GetModel(currententity->e.hModel)->type)
+		switch (R_GetModelByHandle(currententity->e.hModel)->type)
 		{
 		case MOD_SPRITE:
 			R_DrawSpriteModel (currententity);

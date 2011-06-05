@@ -16,6 +16,4 @@ void	*Mod_Extradata (model_t *mod);	// handles caching
 mbrush29_leaf_t *Mod_PointInLeaf (float *p, model_t *model);
 byte	*Mod_LeafPVS (mbrush29_leaf_t *leaf, model_t *model);
 
-model_t* Mod_GetModel(qhandle_t handle);
-
 #endif	// __MODEL__

@@ -23,22 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-/*
-** R_GetModelByHandle
-*/
-model_t	*R_GetModelByHandle( qhandle_t index ) {
-	model_t		*mod;
-
-	// out of range gets the defualt model
-	if ( index < 1 || index >= tr.numModels ) {
-		return tr.models[0];
-	}
-
-	mod = tr.models[index];
-
-	return mod;
-}
-
 //===============================================================================
 
 /*

@@ -288,23 +288,14 @@ void Mod_Print (void)
 	}
 }
 
-model_t* Mod_GetModel(qhandle_t handle)
-{
-	if (handle < 1 || handle >= tr.numModels || !tr.models[handle])
-	{
-		return tr.models[0];
-	}
-	return tr.models[handle];
-}
-
 int Mod_GetNumFrames(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->q1_numframes;
+	return R_GetModelByHandle(Handle)->q1_numframes;
 }
 
 int Mod_GetFlags(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->q1_flags;
+	return R_GetModelByHandle(Handle)->q1_flags;
 }
 
 void Mod_PrintFrameName (qhandle_t m, int frame)
@@ -312,7 +303,7 @@ void Mod_PrintFrameName (qhandle_t m, int frame)
 	mesh1hdr_t 			*hdr;
 	mmesh1framedesc_t	*pframedesc;
 
-	hdr = (mesh1hdr_t *)Mod_Extradata (Mod_GetModel(m));
+	hdr = (mesh1hdr_t *)Mod_Extradata (R_GetModelByHandle(m));
 	if (!hdr)
 		return;
 	pframedesc = &hdr->frames[frame];
@@ -322,15 +313,15 @@ void Mod_PrintFrameName (qhandle_t m, int frame)
 
 bool Mod_IsAliasModel(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->type == MOD_MESH1;
+	return R_GetModelByHandle(Handle)->type == MOD_MESH1;
 }
 
 const char* Mod_GetName(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->name;
+	return R_GetModelByHandle(Handle)->name;
 }
 
 int Mod_GetSyncType(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->q1_synctype;
+	return R_GetModelByHandle(Handle)->q1_synctype;
 }

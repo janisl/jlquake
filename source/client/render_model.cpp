@@ -145,3 +145,20 @@ void R_FreeModels()
 		R_FreeBsp46(tr.world);
 	}
 }
+
+//==========================================================================
+//
+//	R_GetModelByHandle
+//
+//==========================================================================
+
+model_t* R_GetModelByHandle(qhandle_t index)
+{
+	// out of range gets the defualt model
+	if (index < 1 || index >= tr.numModels)
+	{
+		return tr.models[0];
+	}
+
+	return tr.models[index];
+}

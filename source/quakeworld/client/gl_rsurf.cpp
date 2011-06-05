@@ -879,7 +879,7 @@ void R_DrawBrushModel (trRefEntity_t *e)
 
 	currententity = e;
 
-	clmodel = Mod_GetModel(e->e.hModel);
+	clmodel = R_GetModelByHandle(e->e.hModel);
 
 	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
 	{
@@ -1385,7 +1385,7 @@ void GL_BuildLightmaps (void)
 
 	for (j=1 ; j<MAX_MODELS ; j++)
 	{
-		m = Mod_GetModel(cl.model_precache[j]);
+		m = R_GetModelByHandle(cl.model_precache[j]);
 		if (!m)
 			break;
 		if (m->name[0] == '*')

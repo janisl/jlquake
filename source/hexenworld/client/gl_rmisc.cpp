@@ -269,7 +269,7 @@ void R_TranslatePlayerSkin (int playernum)
 		return;
 
 
-	model = Mod_GetModel(player_models[cl.players[playernum].playerclass-1]);
+	model = R_GetModelByHandle(player_models[cl.players[playernum].playerclass-1]);
 	if (!model)
 		return;
 	// player doesn't have a model yet

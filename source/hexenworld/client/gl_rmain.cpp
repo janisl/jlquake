@@ -106,7 +106,7 @@ void R_RotateForEntity(trRefEntity_t *e)
 {
 	GLfloat glmat[16];
 
-	if (Mod_GetModel(e->e.hModel)->q1_flags & EF_FACE_VIEW)
+	if (R_GetModelByHandle(e->e.hModel)->q1_flags & EF_FACE_VIEW)
 	{
 		float fvaxis[3][3];
 
@@ -198,7 +198,7 @@ msprite1frame_t *R_GetSpriteFrame (trRefEntity_t *currententity)
 	int				i, numframes, frame;
 	float			*pintervals, fullinterval, targettime, time;
 
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
+	psprite = (msprite1_t*)R_GetModelByHandle(currententity->e.hModel)->q1_cache;
 	frame = currententity->e.frame;
 
 	if ((frame >= psprite->numframes) || (frame < 0))
@@ -258,7 +258,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	{
 		qglColor4f (1,1,1,r_wateralpha->value);
 	}
-	else if (Mod_GetModel(currententity->e.hModel)->q1_flags & EF_TRANSPARENT)
+	else if (R_GetModelByHandle(currententity->e.hModel)->q1_flags & EF_TRANSPARENT)
 	{
 		qglColor3f(1,1,1);
 	}
@@ -271,7 +271,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
+	psprite = (msprite1_t*)R_GetModelByHandle(currententity->e.hModel)->q1_cache;
 
 	if (psprite->type == SPR_ORIENTED)
 	{
@@ -557,7 +557,7 @@ float R_CalcEntityLight(refEntity_t* e)
 
 	vec3_t adjust_origin;
 	VectorCopy(lorg, adjust_origin);
-	model_t* clmodel = Mod_GetModel(e->hModel);
+	model_t* clmodel = R_GetModelByHandle(e->hModel);
 	adjust_origin[2] += (clmodel->q1_mins[2] + clmodel->q1_maxs[2]) / 2;
 	float light = R_LightPoint(adjust_origin);
 
@@ -600,7 +600,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	int			index;
 	float		s, t, an;
 
-	clmodel = Mod_GetModel(currententity->e.hModel);
+	clmodel = R_GetModelByHandle(currententity->e.hModel);
 
 	VectorAdd (currententity->e.origin, clmodel->q1_mins, mins);
 	VectorAdd (currententity->e.origin, clmodel->q1_maxs, maxs);
@@ -811,7 +811,7 @@ void R_DrawEntitiesOnList (void)
 			continue;
 		}
 
-		switch (Mod_GetModel(currententity->e.hModel)->type)
+		switch (R_GetModelByHandle(currententity->e.hModel)->type)
 		{
 		case MOD_MESH1:
 			VectorSubtract(currententity->e.origin, tr.refdef.vieworg, diff);
@@ -822,7 +822,7 @@ void R_DrawEntitiesOnList (void)
 			}
 
 			item_trans = ((currententity->e.renderfx & RF_WATERTRANS) ||
-						  (Mod_GetModel(currententity->e.hModel)->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
+						  (R_GetModelByHandle(currententity->e.hModel)->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
 				R_DrawAliasModel (currententity);
 			break;
@@ -903,7 +903,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 	{
 		currententity = theents[i].ent;
 
-		switch (Mod_GetModel(currententity->e.hModel)->type)
+		switch (R_GetModelByHandle(currententity->e.hModel)->type)
 		{
 		case MOD_MESH1:
 			R_DrawAliasModel (currententity);

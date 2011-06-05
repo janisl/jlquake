@@ -255,18 +255,9 @@ void Mod_Print (void)
 	}
 }
 
-model_t* Mod_GetModel(qhandle_t handle)
-{
-	if (handle < 1 || handle >= tr.numModels || !tr.models[handle])
-	{
-		return tr.models[0];
-	}
-	return tr.models[handle];
-}
-
 void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out)
 {
-	model_t* Model = Mod_GetModel(Handle);
+	model_t* Model = R_GetModelByHandle(Handle);
 	if (Model->type != MOD_MESH1)
 	{
 		throw QException("Not an alias model");
@@ -281,20 +272,20 @@ void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float Sca
 
 int Mod_GetNumFrames(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->q1_numframes;
+	return R_GetModelByHandle(Handle)->q1_numframes;
 }
 
 int Mod_GetFlags(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->q1_flags;
+	return R_GetModelByHandle(Handle)->q1_flags;
 }
 
 bool Mod_IsAliasModel(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->type == MOD_MESH1;
+	return R_GetModelByHandle(Handle)->type == MOD_MESH1;
 }
 
 const char* Mod_GetName(qhandle_t Handle)
 {
-	return Mod_GetModel(Handle)->name;
+	return R_GetModelByHandle(Handle)->name;
 }

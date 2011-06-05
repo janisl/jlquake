@@ -312,7 +312,7 @@ void R_DrawEntitiesOnList (void)
 		}
 		else
 		{
-			currentmodel = Mod_GetModel(currententity->e.hModel);
+			currentmodel = R_GetModelByHandle(currententity->e.hModel);
 			switch (currentmodel->type)
 			{
 			case MOD_BAD:
@@ -348,7 +348,7 @@ void R_DrawEntitiesOnList (void)
 		}
 		else
 		{
-			currentmodel = Mod_GetModel(currententity->e.hModel);
+			currentmodel = R_GetModelByHandle(currententity->e.hModel);
 			switch (currentmodel->type)
 			{
 			case MOD_BAD:

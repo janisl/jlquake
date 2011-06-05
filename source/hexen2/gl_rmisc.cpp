@@ -278,7 +278,7 @@ void R_TranslatePlayerSkin (int playernum)
 	// locate the original skin pixels
 	//
 	entity_t* ent = &cl_entities[1+playernum];
-	model = Mod_GetModel(ent->model);
+	model = R_GetModelByHandle(ent->model);
 	if (model->type != MOD_MESH1)
 		return;		// player doesn't have a model yet
 	paliashdr = (mesh1hdr_t *)Mod_Extradata (model);

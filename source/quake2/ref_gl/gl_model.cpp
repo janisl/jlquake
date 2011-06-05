@@ -316,15 +316,3 @@ R_EndRegistration
 void R_EndRegistration (void)
 {
 }
-
-
-//=============================================================================
-
-model_t* Mod_GetModel(qhandle_t handle)
-{
-	if (handle < 1 || handle >= tr.numModels)
-	{
-		return tr.models[0];
-	}
-	return tr.models[handle];
-}

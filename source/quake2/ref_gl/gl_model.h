@@ -32,5 +32,3 @@ mbrush38_leaf_t *Mod_PointInLeaf (float *p, model_t *model);
 byte	*Mod_ClusterPVS (int cluster, model_t *model);
 
 void	Mod_Modellist_f (void);
-
-model_t* Mod_GetModel(qhandle_t handle);

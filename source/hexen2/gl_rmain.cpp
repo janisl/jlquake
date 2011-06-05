@@ -108,7 +108,7 @@ void R_RotateForEntity(trRefEntity_t *e)
 {
 	GLfloat glmat[16];
 
-	if (Mod_GetModel(e->e.hModel)->q1_flags & EF_FACE_VIEW)
+	if (R_GetModelByHandle(e->e.hModel)->q1_flags & EF_FACE_VIEW)
 	{
 		float fvaxis[3][3];
 
@@ -259,7 +259,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	spritedesc_t			r_spritedesc;
 	int i;
 
-	psprite = (msprite1_t*)Mod_GetModel(currententity->e.hModel)->q1_cache;
+	psprite = (msprite1_t*)R_GetModelByHandle(currententity->e.hModel)->q1_cache;
 
 	frame = R_GetSpriteFrame (psprite);
 
@@ -268,7 +268,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 		// rjr
 		qglColor4f (1,1,1,r_wateralpha->value);
 	}
-	else if (Mod_GetModel(currententity->e.hModel)->q1_flags & EF_TRANSPARENT)
+	else if (R_GetModelByHandle(currententity->e.hModel)->q1_flags & EF_TRANSPARENT)
 	{
 		// rjr
 		qglColor3f(1,1,1);
@@ -658,7 +658,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	float		s, t, an;
 	vec3_t		adjust_origin;
 
-	clmodel = Mod_GetModel(currententity->e.hModel);
+	clmodel = R_GetModelByHandle(currententity->e.hModel);
 
 	VectorAdd (currententity->e.origin, clmodel->q1_mins, mins);
 	VectorAdd (currententity->e.origin, clmodel->q1_maxs, maxs);
@@ -889,11 +889,11 @@ void R_DrawEntitiesOnList (void)
 			}
 		}
 
-		switch (Mod_GetModel(currententity->e.hModel)->type)
+		switch (R_GetModelByHandle(currententity->e.hModel)->type)
 		{
 		case MOD_MESH1:
 			item_trans = ((currententity->e.renderfx & RF_WATERTRANS) ||
-						  (Mod_GetModel(currententity->e.hModel)->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
+						  (R_GetModelByHandle(currententity->e.hModel)->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
 				R_DrawAliasModel (currententity);
 
@@ -966,7 +966,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater) {
 	for (i=0;i<numents;i++) {
 		currententity = theents[i].ent;
 
-		switch (Mod_GetModel(currententity->e.hModel)->type)
+		switch (R_GetModelByHandle(currententity->e.hModel)->type)
 		{
 		case MOD_MESH1:
 			R_DrawAliasModel (currententity);

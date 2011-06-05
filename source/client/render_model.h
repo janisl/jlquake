@@ -760,8 +760,9 @@ struct model_t
 
 model_t* R_AllocModel();
 void R_ModelInit();
-void R_FreeModel(model_t* mod);
+void R_FreeModel(model_t* Mod);
 void R_FreeModels();
+model_t* R_GetModelByHandle(qhandle_t Index);
 
 void Mod_LoadSpriteModel(model_t* mod, void* buffer);
 void Mod_FreeSpriteModel(model_t* mod);
