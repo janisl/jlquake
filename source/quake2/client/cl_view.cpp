@@ -302,7 +302,7 @@ void CL_PrepRefresh (void)
 		} 
 		else
 		{
-			cl.model_draw[i] = re.RegisterModel (cl.configstrings[CS_MODELS+i]);
+			cl.model_draw[i] = R_RegisterModel(cl.configstrings[CS_MODELS+i]);
 			if (name[0] == '*')
 				cl.model_clip[i] = CM_InlineModel(QStr::Atoi(cl.configstrings[CS_MODELS + i] + 1));
 			else
@@ -407,7 +407,7 @@ void V_Gun_Model_f (void)
 		return;
 	}
 	QStr::Sprintf (name, sizeof(name), "models/%s/tris.md2", Cmd_Argv(1));
-	gun_model = re.RegisterModel (name);
+	gun_model = R_RegisterModel(name);
 }
 
 //============================================================================

@@ -246,7 +246,7 @@ bool R_LoadMd3(model_t* mod, void* buffer)
 		int ident = LittleLong(*(unsigned*)buf);
 		if (ident != MD3_IDENT)
 		{
-			GLog.Write(S_COLOR_YELLOW "RE_RegisterModel: unknown fileid for %s\n", filename);
+			GLog.Write(S_COLOR_YELLOW "R_LoadMd3: unknown fileid for %s\n", filename);
 			return false;
 		}
 

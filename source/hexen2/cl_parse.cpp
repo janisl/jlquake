@@ -313,7 +313,7 @@ void CL_ParseServerInfo (void)
 
 	for (i=2 ; i<nummodels ; i++)
 	{
-		cl.model_precache[i] = Mod_ForName (model_precache[i], false);
+		cl.model_precache[i] = R_RegisterModel (model_precache[i]);
 		current_loading_size++;
 		D_ShowLoadingSize();
 
@@ -325,11 +325,11 @@ void CL_ParseServerInfo (void)
 		CL_KeepaliveMessage ();
 	}
 
-	player_models[0] = Mod_ForName("models/paladin.mdl", false);
-	player_models[1] = Mod_ForName("models/crusader.mdl", false);
-	player_models[2] = Mod_ForName("models/necro.mdl", false);
-	player_models[3] = Mod_ForName("models/assassin.mdl", false);
-	player_models[4] = Mod_ForName("models/succubus.mdl", false);
+	player_models[0] = R_RegisterModel("models/paladin.mdl");
+	player_models[1] = R_RegisterModel("models/crusader.mdl");
+	player_models[2] = R_RegisterModel("models/necro.mdl");
+	player_models[3] = R_RegisterModel("models/assassin.mdl");
+	player_models[4] = R_RegisterModel("models/succubus.mdl");
 
 	S_BeginRegistration();
 	for (i=1 ; i<numsounds ; i++)

@@ -849,7 +849,7 @@ int CL_UISystemCalls( int *args ) {
 		return FS_Seek( args[1], args[2], args[3] );
 	
 	case UI_R_REGISTERMODEL:
-		return re.RegisterModel( (char*)VMA(1) );
+		return R_RegisterModel( (char*)VMA(1) );
 
 	case UI_R_REGISTERSKIN:
 		return re.RegisterSkin( (char*)VMA(1) );

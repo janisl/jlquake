@@ -392,41 +392,41 @@ void CL_ParseEffect(void)
 
 				if ((cl.Effects[index].type == CE_WHITE_SMOKE) || 
 					(cl.Effects[index].type == CE_SLOW_WHITE_SMOKE))
-					ent->model = Mod_ForName("models/whtsmk1.spr", true);
+					ent->model = R_RegisterModel("models/whtsmk1.spr");
 				else if (cl.Effects[index].type == CE_GREEN_SMOKE)
-					ent->model = Mod_ForName("models/grnsmk1.spr", true);
+					ent->model = R_RegisterModel("models/grnsmk1.spr");
 				else if (cl.Effects[index].type == CE_GREY_SMOKE)
-					ent->model = Mod_ForName("models/grysmk1.spr", true);
+					ent->model = R_RegisterModel("models/grysmk1.spr");
 				else if (cl.Effects[index].type == CE_RED_SMOKE)
-					ent->model = Mod_ForName("models/redsmk1.spr", true);
+					ent->model = R_RegisterModel("models/redsmk1.spr");
 				else if (cl.Effects[index].type == CE_TELESMK1)
-					ent->model = Mod_ForName("models/telesmk1.spr", true);
+					ent->model = R_RegisterModel("models/telesmk1.spr");
 				else if (cl.Effects[index].type == CE_TELESMK2)
-					ent->model = Mod_ForName("models/telesmk2.spr", true);
+					ent->model = R_RegisterModel("models/telesmk2.spr");
 				else if (cl.Effects[index].type == CE_REDCLOUD)
-					ent->model = Mod_ForName("models/rcloud.spr", true);
+					ent->model = R_RegisterModel("models/rcloud.spr");
 				else if (cl.Effects[index].type == CE_FLAMESTREAM)
-					ent->model = Mod_ForName("models/flamestr.spr", true);
+					ent->model = R_RegisterModel("models/flamestr.spr");
 				else if (cl.Effects[index].type == CE_ACID_MUZZFL)
 				{
-					ent->model = Mod_ForName("models/muzzle1.spr", true);
+					ent->model = R_RegisterModel("models/muzzle1.spr");
 					ent->drawflags=DRF_TRANSLUCENT|MLS_ABSLIGHT;
 					ent->abslight=0.2;
 				}
 				else if (cl.Effects[index].type == CE_FLAMEWALL)
-					ent->model = Mod_ForName("models/firewal1.spr", true);
+					ent->model = R_RegisterModel("models/firewal1.spr");
 				else if (cl.Effects[index].type == CE_FLAMEWALL2)
-					ent->model = Mod_ForName("models/firewal2.spr", true);
+					ent->model = R_RegisterModel("models/firewal2.spr");
 				else if (cl.Effects[index].type == CE_ONFIRE)
 				{
 					float rdm = rand() & 3;
 
 					if (rdm < 1)
-						ent->model = Mod_ForName("models/firewal1.spr", true);
+						ent->model = R_RegisterModel("models/firewal1.spr");
 					else if (rdm < 2)
-						ent->model = Mod_ForName("models/firewal2.spr", true);
+						ent->model = R_RegisterModel("models/firewal2.spr");
 					else
-						ent->model = Mod_ForName("models/firewal3.spr", true);
+						ent->model = R_RegisterModel("models/firewal3.spr");
 					
 					ent->drawflags = DRF_TRANSLUCENT;
 					ent->abslight = 1;
@@ -444,7 +444,7 @@ void CL_ParseEffect(void)
 					else
 						S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_ripple, 1, 1);
 					cl.Effects[index].Smoke.framelength=0.05;
-					ent->model = Mod_ForName("models/ripple.spr", true);
+					ent->model = R_RegisterModel("models/ripple.spr");
 					ent->drawflags = DRF_TRANSLUCENT;//|SCALE_TYPE_XYONLY|SCALE_ORIGIN_CENTER;
 					ent->angles[0]=90;
 					//ent->scale = 1;
@@ -467,7 +467,7 @@ void CL_ParseEffect(void)
 
 				if (cl.Effects[index].type == CE_GHOST)
 				{		
-					ent->model = Mod_ForName("models/ghost.spr", true);
+					ent->model = R_RegisterModel("models/ghost.spr");
 					ent->drawflags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
 					ent->abslight = .5;
 				}
@@ -479,7 +479,7 @@ void CL_ParseEffect(void)
 					{
 						ent = &EffectEntities[cl.Effects[index].Smoke.entity_index2];
 						VectorCopy(cl.Effects[index].Smoke.origin, ent->origin);
-						ent->model = Mod_ForName("models/telesmk1.spr", true);
+						ent->model = R_RegisterModel("models/telesmk1.spr");
 						ent->drawflags = DRF_TRANSLUCENT;
 					}
 				}
@@ -531,89 +531,89 @@ void CL_ParseEffect(void)
 				VectorCopy(cl.Effects[index].Smoke.origin, ent->origin);
 
 				if (cl.Effects[index].type == CE_BLUESPARK)
-					ent->model = Mod_ForName("models/bspark.spr", true);
+					ent->model = R_RegisterModel("models/bspark.spr");
 				else if (cl.Effects[index].type == CE_YELLOWSPARK)
-					ent->model = Mod_ForName("models/spark.spr", true);
+					ent->model = R_RegisterModel("models/spark.spr");
 				else if (cl.Effects[index].type == CE_SM_CIRCLE_EXP)
-					ent->model = Mod_ForName("models/fcircle.spr", true);
+					ent->model = R_RegisterModel("models/fcircle.spr");
 				else if (cl.Effects[index].type == CE_BG_CIRCLE_EXP)
-					ent->model = Mod_ForName("models/xplod29.spr", true);
+					ent->model = R_RegisterModel("models/xplod29.spr");
 				else if (cl.Effects[index].type == CE_SM_WHITE_FLASH)
-					ent->model = Mod_ForName("models/sm_white.spr", true);
+					ent->model = R_RegisterModel("models/sm_white.spr");
 				else if (cl.Effects[index].type == CE_YELLOWRED_FLASH)
 				{
-					ent->model = Mod_ForName("models/yr_flsh.spr", true);
+					ent->model = R_RegisterModel("models/yr_flsh.spr");
 					ent->drawflags = DRF_TRANSLUCENT;
 				}
 				else if (cl.Effects[index].type == CE_SM_EXPLOSION)
-					ent->model = Mod_ForName("models/sm_expld.spr", true);
+					ent->model = R_RegisterModel("models/sm_expld.spr");
 				else if (cl.Effects[index].type == CE_SM_EXPLOSION2)
 				{
-					ent->model = Mod_ForName("models/sm_expld.spr", true);
+					ent->model = R_RegisterModel("models/sm_expld.spr");
 					S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
 
 				}
 				else if (cl.Effects[index].type == CE_BG_EXPLOSION)
 				{
-					ent->model = Mod_ForName("models/bg_expld.spr", true);
+					ent->model = R_RegisterModel("models/bg_expld.spr");
 					S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
 				}
 				else if (cl.Effects[index].type == CE_FLOOR_EXPLOSION)
-					ent->model = Mod_ForName("models/fl_expld.spr", true);
+					ent->model = R_RegisterModel("models/fl_expld.spr");
 				else if (cl.Effects[index].type == CE_BLUE_EXPLOSION)
-					ent->model = Mod_ForName("models/xpspblue.spr", true);
+					ent->model = R_RegisterModel("models/xpspblue.spr");
 				else if (cl.Effects[index].type == CE_REDSPARK)
-					ent->model = Mod_ForName("models/rspark.spr", true);
+					ent->model = R_RegisterModel("models/rspark.spr");
 				else if (cl.Effects[index].type == CE_GREENSPARK)
-					ent->model = Mod_ForName("models/gspark.spr", true);
+					ent->model = R_RegisterModel("models/gspark.spr");
 				else if (cl.Effects[index].type == CE_ICEHIT)
-					ent->model = Mod_ForName("models/icehit.spr", true);
+					ent->model = R_RegisterModel("models/icehit.spr");
 				else if (cl.Effects[index].type == CE_MEDUSA_HIT)
-					ent->model = Mod_ForName("models/medhit.spr", true);
+					ent->model = R_RegisterModel("models/medhit.spr");
 				else if (cl.Effects[index].type == CE_MEZZO_REFLECT)
-					ent->model = Mod_ForName("models/mezzoref.spr", true);
+					ent->model = R_RegisterModel("models/mezzoref.spr");
 				else if (cl.Effects[index].type == CE_FLOOR_EXPLOSION2)
-					ent->model = Mod_ForName("models/flrexpl2.spr", true);
+					ent->model = R_RegisterModel("models/flrexpl2.spr");
 				else if (cl.Effects[index].type == CE_XBOW_EXPLOSION)
-					ent->model = Mod_ForName("models/xbowexpl.spr", true);
+					ent->model = R_RegisterModel("models/xbowexpl.spr");
 				else if (cl.Effects[index].type == CE_NEW_EXPLOSION)
-					ent->model = Mod_ForName("models/gen_expl.spr", true);
+					ent->model = R_RegisterModel("models/gen_expl.spr");
 				else if (cl.Effects[index].type == CE_MAGIC_MISSILE_EXPLOSION)
 				{
-					ent->model = Mod_ForName("models/mm_expld.spr", true);
+					ent->model = R_RegisterModel("models/mm_expld.spr");
 					S_StartSound(cl.Effects[index].Smoke.origin, TempSoundChannel(), 1, cl_fxsfx_explode, 1, 1);
 				}
 				else if (cl.Effects[index].type == CE_BONE_EXPLOSION)
-					ent->model = Mod_ForName("models/bonexpld.spr", true);
+					ent->model = R_RegisterModel("models/bonexpld.spr");
 				else if (cl.Effects[index].type == CE_BLDRN_EXPL)
-					ent->model = Mod_ForName("models/xplsn_1.spr", true);
+					ent->model = R_RegisterModel("models/xplsn_1.spr");
 				else if (cl.Effects[index].type == CE_ACID_HIT)
-					ent->model = Mod_ForName("models/axplsn_2.spr", true);
+					ent->model = R_RegisterModel("models/axplsn_2.spr");
 				else if (cl.Effects[index].type == CE_ACID_SPLAT)
-					ent->model = Mod_ForName("models/axplsn_1.spr", true);
+					ent->model = R_RegisterModel("models/axplsn_1.spr");
 				else if (cl.Effects[index].type == CE_ACID_EXPL)
 				{
-					ent->model = Mod_ForName("models/axplsn_5.spr", true);
+					ent->model = R_RegisterModel("models/axplsn_5.spr");
 					ent->drawflags = MLS_ABSLIGHT;
 					ent->abslight = 1;
 				}
 				else if (cl.Effects[index].type == CE_FBOOM)
-					ent->model = Mod_ForName("models/fboom.spr", true);
+					ent->model = R_RegisterModel("models/fboom.spr");
 				else if (cl.Effects[index].type == CE_BOMB)
-					ent->model = Mod_ForName("models/pow.spr", true);
+					ent->model = R_RegisterModel("models/pow.spr");
 				else if (cl.Effects[index].type == CE_LBALL_EXPL)
-					ent->model = Mod_ForName("models/Bluexp3.spr", true);
+					ent->model = R_RegisterModel("models/Bluexp3.spr");
 				else if (cl.Effects[index].type == CE_FIREWALL_SMALL)
-					ent->model = Mod_ForName("models/firewal1.spr", true);
+					ent->model = R_RegisterModel("models/firewal1.spr");
 				else if (cl.Effects[index].type == CE_FIREWALL_MEDIUM)
-					ent->model = Mod_ForName("models/firewal5.spr", true);
+					ent->model = R_RegisterModel("models/firewal5.spr");
 				else if (cl.Effects[index].type == CE_FIREWALL_LARGE)
-					ent->model = Mod_ForName("models/firewal4.spr", true);
+					ent->model = R_RegisterModel("models/firewal4.spr");
 				else if (cl.Effects[index].type == CE_BRN_BOUNCE)
-					ent->model = Mod_ForName("models/spark.spr", true);
+					ent->model = R_RegisterModel("models/spark.spr");
 				else if (cl.Effects[index].type == CE_LSHOCK)
 				{
-					ent->model = Mod_ForName("models/vorpshok.mdl", true);
+					ent->model = R_RegisterModel("models/vorpshok.mdl");
 					ent->drawflags=MLS_TORCH;
 					ent->angles[2]=90;
 					ent->scale=255;
@@ -640,16 +640,16 @@ void CL_ParseEffect(void)
 				VectorCopy(cl.Effects[index].Flash.origin, ent->origin);
 
 				if (cl.Effects[index].type == CE_WHITE_FLASH)
-					ent->model = Mod_ForName("models/gryspt.spr", true);
+					ent->model = R_RegisterModel("models/gryspt.spr");
 				else if (cl.Effects[index].type == CE_BLUE_FLASH)
-					ent->model = Mod_ForName("models/bluflash.spr", true);
+					ent->model = R_RegisterModel("models/bluflash.spr");
 				else if (cl.Effects[index].type == CE_SM_BLUE_FLASH)
-					ent->model = Mod_ForName("models/sm_blue.spr", true);
+					ent->model = R_RegisterModel("models/sm_blue.spr");
 				else if (cl.Effects[index].type == CE_RED_FLASH)
-					ent->model = Mod_ForName("models/redspt.spr", true);
+					ent->model = R_RegisterModel("models/redspt.spr");
 				else if (cl.Effects[index].type == CE_HWSPLITFLASH)
 				{
-					ent->model = Mod_ForName("models/sm_blue.spr", true);
+					ent->model = R_RegisterModel("models/sm_blue.spr");
 					S_StartSound(cl.Effects[index].Flash.origin, TempSoundChannel(), 1, cl_fxsfx_ravensplit, 1, 1);
 				}
 				ent->drawflags = DRF_TRANSLUCENT;
@@ -691,7 +691,7 @@ void CL_ParseEffect(void)
 					cl.Effects[index].Teleporter.velocity[i][2] = 0;
 					dir += 45;
 
-					ent->model = Mod_ForName("models/telesmk2.spr", true);
+					ent->model = R_RegisterModel("models/telesmk2.spr");
 					ent->drawflags = DRF_TRANSLUCENT;
 				}
 			}
@@ -715,7 +715,7 @@ void CL_ParseEffect(void)
 				ent = &EffectEntities[cl.Effects[index].Teleporter.entity_index[0]];
 				VectorCopy(cl.Effects[index].Teleporter.origin, ent->origin);
 
-				ent->model = Mod_ForName("models/teleport.mdl", true);
+				ent->model = R_RegisterModel("models/teleport.mdl");
 				ent->drawflags = SCALE_TYPE_XYONLY | DRF_TRANSLUCENT;
 				ent->scale = 100;
 				ent->skinnum = skinnum;
@@ -746,10 +746,10 @@ void CL_ParseEffect(void)
 				VectorCopy(cl.Effects[index].Missile.origin, ent->origin);
 				VectorCopy(cl.Effects[index].Missile.angle, ent->angles);
 				if (cl.Effects[index].type == CE_BONESHRAPNEL)
-					ent->model = Mod_ForName("models/boneshrd.mdl", true);
+					ent->model = R_RegisterModel("models/boneshrd.mdl");
 				else if (cl.Effects[index].type == CE_HWBONEBALL)
 				{
-					ent->model = Mod_ForName("models/bonelump.mdl", true);
+					ent->model = R_RegisterModel("models/bonelump.mdl");
 					S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_bonefpow, 1, 1);
 				}
 			}
@@ -777,17 +777,17 @@ void CL_ParseEffect(void)
 				if (cl.Effects[index].type == CE_HWRAVENSTAFF)
 				{
 					cl.Effects[index].Missile.avelocity[2] = 1000;
-					ent->model = Mod_ForName("models/vindsht1.mdl", true);
+					ent->model = R_RegisterModel("models/vindsht1.mdl");
 				}
 				else if (cl.Effects[index].type == CE_BONESHARD)
 				{
 					cl.Effects[index].Missile.avelocity[0] = (rand() % 1554) - 777;
-					ent->model = Mod_ForName("models/boneshot.mdl", true);
+					ent->model = R_RegisterModel("models/boneshot.mdl");
 					S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_bone, 1, 1);
 				}
 				else if (cl.Effects[index].type == CE_HWRAVENPOWER)
 				{
-					ent->model = Mod_ForName("models/ravproj.mdl", true);
+					ent->model = R_RegisterModel("models/ravproj.mdl");
 					S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_ravengo, 1, 1);
 				}
 			}
@@ -873,9 +873,9 @@ void CL_ParseEffect(void)
 					VectorCopy(cl.Effects[index].Xbow.origin[i], ent->origin);
 					vectoangles(cl.Effects[index].Xbow.vel[i],ent->angles);
 					if (cl.Effects[index].Xbow.bolts == 5)
-						ent->model = Mod_ForName("models/flaming.mdl", true);
+						ent->model = R_RegisterModel("models/flaming.mdl");
 					else
-						ent->model = Mod_ForName("models/arrow.mdl", true);
+						ent->model = R_RegisterModel("models/arrow.mdl");
 				}
 			}
 
@@ -933,7 +933,7 @@ void CL_ParseEffect(void)
 					ent = &EffectEntities[cl.Effects[index].Xbow.ent[i]];
 					VectorCopy(cl.Effects[index].Xbow.origin[i], ent->origin);
 					vectoangles(cl.Effects[index].Xbow.vel[i],ent->angles);
-					ent->model = Mod_ForName("models/polymrph.spr", true);
+					ent->model = R_RegisterModel("models/polymrph.spr");
 				}
 			}
 
@@ -960,7 +960,7 @@ void CL_ParseEffect(void)
 				ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
 				VectorCopy(cl.Effects[index].Missile.origin, ent->origin);
 				VectorCopy(cl.Effects[index].Missile.angle, ent->angles);
-				ent->model = Mod_ForName("models/scrbstp1.mdl", true);
+				ent->model = R_RegisterModel("models/scrbstp1.mdl");
 			}
 			else
 				ImmediateFree = true;
@@ -986,7 +986,7 @@ void CL_ParseEffect(void)
 			{
 				ent = &EffectEntities[cl.Effects[index].Chain.ent1];
 				VectorCopy(cl.Effects[index].Chain.origin, ent->origin);
-				ent->model = Mod_ForName("models/scrbpbdy.mdl", true);
+				ent->model = R_RegisterModel("models/scrbpbdy.mdl");
 			}
 			else
 				ImmediateFree = true;
@@ -1004,7 +1004,7 @@ void CL_ParseEffect(void)
 			{
 				ent = &EffectEntities[cl.Effects[index].Chain.ent1];
 				VectorCopy(cl.Effects[index].Chain.origin, ent->origin);
-				ent->model = Mod_ForName("models/twspike.mdl", true);
+				ent->model = R_RegisterModel("models/twspike.mdl");
 			}
 			else
 				ImmediateFree = true;
@@ -1023,7 +1023,7 @@ void CL_ParseEffect(void)
 			{
 				ent = &EffectEntities[cl.Effects[index].Chain.ent1];
 				VectorCopy(cl.Effects[index].Chain.velocity, ent->origin);
-				ent->model = Mod_ForName("models/twspike.mdl", true);
+				ent->model = R_RegisterModel("models/twspike.mdl");
 			}
 			else
 			{
@@ -1048,7 +1048,7 @@ void CL_ParseEffect(void)
 				ent = &EffectEntities[cl.Effects[index].Star.entity_index];
 				VectorCopy(cl.Effects[index].Star.origin, ent->origin);
 				VectorCopy(cl.Effects[index].Star.angle, ent->angles);
-				ent->model = Mod_ForName("models/ball.mdl", true);
+				ent->model = R_RegisterModel("models/ball.mdl");
 			}
 			else
 				ImmediateFree = true;
@@ -1065,14 +1065,14 @@ void CL_ParseEffect(void)
 				ent->angles[2] = 90;
 				if(cl.Effects[index].type == CE_HWMISSILESTAR)
 				{
-					ent->model = Mod_ForName("models/star.mdl", true);
+					ent->model = R_RegisterModel("models/star.mdl");
 					ent->scale = 0.3;
 					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_mmfire, 1, 1);
 
 				}
 				else
 				{
-					ent->model = Mod_ForName("models/glowball.mdl", true);
+					ent->model = R_RegisterModel("models/glowball.mdl");
 					S_StartSound(ent->origin, TempSoundChannel(), 1, cl_fxsfx_eidolon, 1, 1);
 				}
 			}
@@ -1082,7 +1082,7 @@ void CL_ParseEffect(void)
 				{
 					ent = &EffectEntities[cl.Effects[index].Star.ent2];
 					VectorCopy(cl.Effects[index].Star.origin, ent->origin);
-					ent->model = Mod_ForName("models/star.mdl", true);
+					ent->model = R_RegisterModel("models/star.mdl");
 					ent->drawflags |= MLS_ABSLIGHT;
 					ent->abslight = 0.5;
 					ent->scale = 0.3;
@@ -2045,7 +2045,7 @@ void CL_UpdateEffects(void)
 									VectorAdd(ent->origin,cl.Effects[index].Xbow.vel[i],ent->origin);
 
 									//turn bolt entity into an explosion
-									ent->model = Mod_ForName("models/xbowexpl.spr", true);
+									ent->model = R_RegisterModel("models/xbowexpl.spr");
 									ent->frame = 0;
 
 									//set frame change counter
@@ -2184,7 +2184,7 @@ void CL_UpdateEffects(void)
 						cl.Effects[index].type = CE_RED_FLASH;
 						VectorCopy(ent->origin,cl.Effects[index].Flash.origin);
 						cl.Effects[index].Flash.reverse = 0;
-						ent->model = Mod_ForName("models/redspt.spr", true);
+						ent->model = R_RegisterModel("models/redspt.spr");
 						ent->frame = 0;
 						ent->drawflags = DRF_TRANSLUCENT;
 					}
@@ -2366,7 +2366,7 @@ void CL_ParseMultiEffect(void)
 				ent = &EffectEntities[cl.Effects[index].Missile.entity_index];
 				VectorCopy(cl.Effects[index].Missile.origin, ent->origin);
 				VectorCopy(cl.Effects[index].Missile.angle, ent->angles);
-				ent->model = Mod_ForName("models/ravproj.mdl", true);
+				ent->model = R_RegisterModel("models/ravproj.mdl");
 				S_StartSound(cl.Effects[index].Missile.origin, TempSoundChannel(), 1, cl_fxsfx_ravengo, 1, 1);
 			}
 		}

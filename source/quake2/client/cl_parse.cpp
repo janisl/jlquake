@@ -380,9 +380,9 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/male/weapon.md2");
 		QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/male/grunt.pcx");
 		QStr::Sprintf (ci->iconname, sizeof(ci->iconname), "/players/male/grunt_i.pcx");
-		ci->model = re.RegisterModel (model_filename);
+		ci->model = R_RegisterModel(model_filename);
 		Com_Memset(ci->weaponmodel, 0, sizeof(ci->weaponmodel));
-		ci->weaponmodel[0] = re.RegisterModel (weapon_filename);
+		ci->weaponmodel[0] = R_RegisterModel(weapon_filename);
 		ci->skin = re.RegisterSkin (skin_filename);
 		ci->icon = re.RegisterPic (ci->iconname);
 	}
@@ -402,12 +402,12 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 
 		// model file
 		QStr::Sprintf (model_filename, sizeof(model_filename), "players/%s/tris.md2", model_name);
-		ci->model = re.RegisterModel (model_filename);
+		ci->model = R_RegisterModel(model_filename);
 		if (!ci->model)
 		{
 			QStr::Cpy(model_name, "male");
 			QStr::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
-			ci->model = re.RegisterModel (model_filename);
+			ci->model = R_RegisterModel(model_filename);
 		}
 
 		// skin file
@@ -421,7 +421,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 			// change model to male
 			QStr::Cpy(model_name, "male");
 			QStr::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
-			ci->model = re.RegisterModel (model_filename);
+			ci->model = R_RegisterModel(model_filename);
 
 			// see if the skin exists for the male model
 			QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
@@ -439,11 +439,11 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 		// weapon file
 		for (i = 0; i < num_cl_weaponmodels; i++) {
 			QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/%s/%s", model_name, cl_weaponmodels[i]);
-			ci->weaponmodel[i] = re.RegisterModel(weapon_filename);
+			ci->weaponmodel[i] = R_RegisterModel(weapon_filename);
 			if (!ci->weaponmodel[i] && QStr::Cmp(model_name, "cyborg") == 0) {
 				// try male
 				QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/male/%s", cl_weaponmodels[i]);
-				ci->weaponmodel[i] = re.RegisterModel(weapon_filename);
+				ci->weaponmodel[i] = R_RegisterModel(weapon_filename);
 			}
 			if (!cl_vwep->value)
 				break; // only one when vwep is off
@@ -514,7 +514,7 @@ void CL_ParseConfigString (void)
 	{
 		if (cl.refresh_prepped)
 		{
-			cl.model_draw[i-CS_MODELS] = re.RegisterModel (cl.configstrings[i]);
+			cl.model_draw[i-CS_MODELS] = R_RegisterModel(cl.configstrings[i]);
 			if (cl.configstrings[i][0] == '*')
 				cl.model_clip[i-CS_MODELS] = CM_InlineModel(QStr::Atoi(cl.configstrings[i] + 1));
 			else

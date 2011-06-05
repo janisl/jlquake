@@ -253,7 +253,7 @@ void CL_ParseTEnt (void)
 		ex = CL_AllocExplosion ();
 		VectorCopy (pos, ex->origin);
 		ex->start = cl.time;
-		ex->model = Mod_ForName("progs/s_explod.spr", true);
+		ex->model = R_RegisterModel("progs/s_explod.spr");
 		break;
 		
 	case TE_TAREXPLOSION:			// tarbaby explosion
@@ -266,15 +266,15 @@ void CL_ParseTEnt (void)
 		break;
 
 	case TE_LIGHTNING1:				// lightning bolts
-		CL_ParseBeam(Mod_ForName("progs/bolt.mdl", true));
+		CL_ParseBeam(R_RegisterModel("progs/bolt.mdl"));
 		break;
 	
 	case TE_LIGHTNING2:				// lightning bolts
-		CL_ParseBeam(Mod_ForName("progs/bolt2.mdl", true));
+		CL_ParseBeam(R_RegisterModel("progs/bolt2.mdl"));
 		break;
 	
 	case TE_LIGHTNING3:				// lightning bolts
-		CL_ParseBeam(Mod_ForName("progs/bolt3.mdl", true));
+		CL_ParseBeam(R_RegisterModel("progs/bolt3.mdl"));
 		break;
 	
 	case TE_LAVASPLASH:	

@@ -309,38 +309,38 @@ static void ParseStream(int type)
 	switch(type)
 	{
 	case TE_STREAM_CHAIN:
-		models[0] = Mod_ForName("models/stchain.mdl", true);
+		models[0] = R_RegisterModel("models/stchain.mdl");
 		break;
 	case TE_STREAM_SUNSTAFF1:
-		models[0] = Mod_ForName("models/stsunsf1.mdl", true);
-		models[1] = Mod_ForName("models/stsunsf2.mdl", true);
-		models[2] = Mod_ForName("models/stsunsf3.mdl", true);
-		models[3] = Mod_ForName("models/stsunsf4.mdl", true);
+		models[0] = R_RegisterModel("models/stsunsf1.mdl");
+		models[1] = R_RegisterModel("models/stsunsf2.mdl");
+		models[2] = R_RegisterModel("models/stsunsf3.mdl");
+		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
 	case TE_STREAM_SUNSTAFF2:
-		models[0] = Mod_ForName("models/stsunsf5.mdl", true);
-		models[2] = Mod_ForName("models/stsunsf3.mdl", true);
-		models[3] = Mod_ForName("models/stsunsf4.mdl", true);
+		models[0] = R_RegisterModel("models/stsunsf5.mdl");
+		models[2] = R_RegisterModel("models/stsunsf3.mdl");
+		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
 	case TE_STREAM_LIGHTNING:
-		models[0] = Mod_ForName("models/stlghtng.mdl", true);
+		models[0] = R_RegisterModel("models/stlghtng.mdl");
 //		duration*=2;
 		break;
 	case TE_STREAM_LIGHTNING_SMALL:
-		models[0] = Mod_ForName("models/stltng2.mdl", true);
+		models[0] = R_RegisterModel("models/stltng2.mdl");
 //		duration*=2;
 		break;
 	case TE_STREAM_FAMINE:
-		models[0] = Mod_ForName("models/fambeam.mdl", true);
+		models[0] = R_RegisterModel("models/fambeam.mdl");
 		break;
 	case TE_STREAM_COLORBEAM:
-		models[0] = Mod_ForName("models/stclrbm.mdl", true);
+		models[0] = R_RegisterModel("models/stclrbm.mdl");
 		break;
 	case TE_STREAM_ICECHUNKS:
-		models[0] = Mod_ForName("models/stice.mdl", true);
+		models[0] = R_RegisterModel("models/stice.mdl");
 		break;
 	case TE_STREAM_GAZE:
-		models[0] = Mod_ForName("models/stmedgaz.mdl", true);
+		models[0] = R_RegisterModel("models/stmedgaz.mdl");
 		break;
 	default:
 		Sys_Error("ParseStream: bad type");

@@ -205,7 +205,7 @@ void Model_NextDownload (void)
 	{
 		if (!cl.model_name[i][0])
 			break;
-		cl.model_precache[i] = Mod_ForName(cl.model_name[i], false);
+		cl.model_precache[i] = R_RegisterModel(cl.model_name[i]);
 		if (cl.model_name[i][0] == '*')
 		{
 			cl.clip_models[i] = CM_InlineModel(QStr::Atoi(cl.model_name[i] + 1));
@@ -613,13 +613,13 @@ void CL_ParseModellist (void)
 			cl_raven2index = nummodels;
 	}
 
-	player_models[0] = Mod_ForName("models/paladin.mdl", false);
-	player_models[1] = Mod_ForName("models/crusader.mdl", false);
-	player_models[2] = Mod_ForName("models/necro.mdl", false);
-	player_models[3] = Mod_ForName("models/assassin.mdl", false);
-	player_models[4] = Mod_ForName("models/succubus.mdl", false);
+	player_models[0] = R_RegisterModel("models/paladin.mdl");
+	player_models[1] = R_RegisterModel("models/crusader.mdl");
+	player_models[2] = R_RegisterModel("models/necro.mdl");
+	player_models[3] = R_RegisterModel("models/assassin.mdl");
+	player_models[4] = R_RegisterModel("models/succubus.mdl");
 //siege
-	player_models[5] = Mod_ForName("models/hank.mdl", false);
+	player_models[5] = R_RegisterModel("models/hank.mdl");
 
 	cls.downloadnumber = 0;
 	cls.downloadtype = dl_model;

@@ -2058,7 +2058,7 @@ void Host_Viewmodel_f (void)
 	if (!e)
 		return;
 
-	m = Mod_ForName(Cmd_Argv(1), false);
+	m = R_RegisterModel(Cmd_Argv(1));
 	if (!m)
 	{
 		Con_Printf ("Can't load %s\n", Cmd_Argv(1));

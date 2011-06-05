@@ -258,7 +258,7 @@ void Model_NextDownload (void)
 		if (!cl.model_name[i][0])
 			break;
 
-		cl.model_precache[i] = Mod_ForName (cl.model_name[i], false);
+		cl.model_precache[i] = R_RegisterModel(cl.model_name[i]);
 		if (cl.model_name[i][0] == '*')
 		{
 			cl.clip_models[i] = CM_InlineModel(QStr::Atoi(cl.model_name[i] + 1));

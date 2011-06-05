@@ -132,75 +132,7 @@ void Mod_ClearAll (void)
 
 /*
 ==================
-Mod_ForName
-
-Loads in a model for the given name
-==================
-*/
-qhandle_t Mod_ForName (char *name, qboolean crash)
-{
-	if (!name[0])
-		Sys_Error ("Mod_ForName: NULL name");
-		
-//
-// search the currently loaded models
-//
-	for (int i = 1; i < tr.numModels; i++)
-		if (!QStr::Cmp(tr.models[i]->name, name))
-			return tr.models[i]->index;
-			
-	model_t	*mod = R_AllocModel();
-	QStr::Cpy(mod->name, name);
-
-	void	*d;
-	unsigned *buf;
-	byte	stackbuf[1024];		// avoid dirtying the cache heap
-
-//
-// load the file
-//
-	buf = (unsigned *)COM_LoadStackFile (mod->name, stackbuf, sizeof(stackbuf));
-	if (!buf)
-	{
-		if (crash)
-			Sys_Error ("Mod_NumForName: %s not found", mod->name);
-		return 0;
-	}
-	
-//
-// allocate a new model
-//
-	loadmodel = mod;
-
-//
-// fill it in
-//
-
-// call the apropriate loader
-	switch (LittleLong(*(unsigned *)buf))
-	{
-	case RAPOLYHEADER:
-		Mod_LoadMdlModelNew (mod, buf);
-		break;
-	case IDPOLYHEADER:
-		Mod_LoadMdlModel (mod, buf);
-		break;
-		
-	case IDSPRITE1HEADER:
-		Mod_LoadSpriteModel (mod, buf);
-		break;
-	
-	default:
-		Mod_LoadBrush29Model (mod, buf);
-		break;
-	}
-
-	return mod->index;
-}
-
-/*
-==================
-Mod_ForName
+R_RegisterModel
 
 Loads in a model for the given name
 ==================
@@ -208,7 +140,7 @@ Loads in a model for the given name
 qhandle_t Mod_LoadWorld(const char *name)
 {
 	if (!name[0])
-		Sys_Error ("Mod_ForName: NULL name");
+		Sys_Error ("R_RegisterModel: NULL name");
 		
 	model_t	*mod = R_AllocModel();
 	QStr::Cpy(mod->name, name);

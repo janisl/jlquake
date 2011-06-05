@@ -436,36 +436,36 @@ void CreateStream(int type, int ent, int flags, int tag, float duration, int ski
 	switch(type)
 	{
 	case TE_STREAM_CHAIN:
-		models[0] = Mod_ForName("models/stchain.mdl", true);
+		models[0] = R_RegisterModel("models/stchain.mdl");
 		break;
 	case TE_STREAM_SUNSTAFF1:
-		models[0] = Mod_ForName("models/stsunsf1.mdl", true);
-		models[1] = Mod_ForName("models/stsunsf2.mdl", true);
-		models[2] = Mod_ForName("models/stsunsf3.mdl", true);
-		models[3] = Mod_ForName("models/stsunsf4.mdl", true);
+		models[0] = R_RegisterModel("models/stsunsf1.mdl");
+		models[1] = R_RegisterModel("models/stsunsf2.mdl");
+		models[2] = R_RegisterModel("models/stsunsf3.mdl");
+		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
 	case TE_STREAM_SUNSTAFF2:
-		models[0] = Mod_ForName("models/stsunsf5.mdl", true);
-		models[2] = Mod_ForName("models/stsunsf3.mdl", true);
-		models[3] = Mod_ForName("models/stsunsf4.mdl", true);
+		models[0] = R_RegisterModel("models/stsunsf5.mdl");
+		models[2] = R_RegisterModel("models/stsunsf3.mdl");
+		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
 	case TE_STREAM_LIGHTNING:
-		models[0] = Mod_ForName("models/stlghtng.mdl", true);
+		models[0] = R_RegisterModel("models/stlghtng.mdl");
 		break;
 	case TE_STREAM_LIGHTNING_SMALL:
-		models[0] = Mod_ForName("models/stltng2.mdl", true);
+		models[0] = R_RegisterModel("models/stltng2.mdl");
 		break;
 	case TE_STREAM_FAMINE:
-		models[0] = Mod_ForName("models/fambeam.mdl", true);
+		models[0] = R_RegisterModel("models/fambeam.mdl");
 		break;
 	case TE_STREAM_COLORBEAM:
-		models[0] = Mod_ForName("models/stclrbm.mdl", true);
+		models[0] = R_RegisterModel("models/stclrbm.mdl");
 		break;
 	case TE_STREAM_ICECHUNKS:
-		models[0] = Mod_ForName("models/stice.mdl", true);
+		models[0] = R_RegisterModel("models/stice.mdl");
 		break;
 	case TE_STREAM_GAZE:
-		models[0] = Mod_ForName("models/stmedgaz.mdl", true);
+		models[0] = R_RegisterModel("models/stmedgaz.mdl");
 		break;
 	default:
 		Sys_Error("CreateStream: bad type");
@@ -515,7 +515,7 @@ void CLTENT_SpawnDeathBubble(vec3_t pos)
 	ex->frameFunc = BubbleThink;
 	ex->startTime=cl.time;
 	ex->endTime=cl.time+15;
-	ex->model=Mod_ForName ("models/s_bubble.spr", true);
+	ex->model=R_RegisterModel ("models/s_bubble.spr");
 	ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
 	ex->abslight=175;
 }
@@ -537,7 +537,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 	ex->frameFunc = MissileFlashThink;
 	ex->startTime=cl.time;
 	ex->endTime=cl.time+0.3;
-	ex->model=Mod_ForName ("models/arrowhit.mdl", true);
+	ex->model=R_RegisterModel ("models/arrowhit.mdl");
 	ex->exflags = EXFLAG_ROTATE;
 	ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
 	ex->abslight=175;
@@ -555,7 +555,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 		vectoangles(vel,ex->angles);
 		ex->startTime=cl.time;
 		ex->endTime=cl.time+0.35;
-		ex->model=Mod_ForName ("models/whtsmk1.spr", true);
+		ex->model=R_RegisterModel ("models/whtsmk1.spr");
 		ex->flags = DRF_TRANSLUCENT;
 
 
@@ -596,13 +596,13 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 					final = (rand()%100)*.01;
 
 					if (final < 0.25)
-						ex->model = Mod_ForName ("models/splnter1.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter1.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/splnter2.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter2.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/splnter3.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter3.mdl");
 					else 
-						ex->model = Mod_ForName ("models/splnter4.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter4.mdl");
 
 					ex->startTime = cl.time;
 					ex->endTime = ex->startTime + 4.0;
@@ -633,7 +633,7 @@ void CLTENT_XbowImpact(vec3_t pos, vec3_t vel, int chType, int damage, int arrow
 
 					ex->data = THINGTYPE_WOOD;
 
-					ex->model = Mod_ForName ("models/arrow.mdl", true);
+					ex->model = R_RegisterModel ("models/arrow.mdl");
 
 					ex->startTime = cl.time;
 					ex->endTime = ex->startTime + 4.0;
@@ -682,36 +682,36 @@ static void ParseStream(int type)
 	switch(type)
 	{
 	case TE_STREAM_CHAIN:
-		models[0] = Mod_ForName("models/stchain.mdl", true);
+		models[0] = R_RegisterModel("models/stchain.mdl");
 		break;
 	case TE_STREAM_SUNSTAFF1:
-		models[0] = Mod_ForName("models/stsunsf1.mdl", true);
-		models[1] = Mod_ForName("models/stsunsf2.mdl", true);
-		models[2] = Mod_ForName("models/stsunsf3.mdl", true);
-		models[3] = Mod_ForName("models/stsunsf4.mdl", true);
+		models[0] = R_RegisterModel("models/stsunsf1.mdl");
+		models[1] = R_RegisterModel("models/stsunsf2.mdl");
+		models[2] = R_RegisterModel("models/stsunsf3.mdl");
+		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
 	case TE_STREAM_SUNSTAFF2:
-		models[0] = Mod_ForName("models/stsunsf5.mdl", true);
-		models[2] = Mod_ForName("models/stsunsf3.mdl", true);
-		models[3] = Mod_ForName("models/stsunsf4.mdl", true);
+		models[0] = R_RegisterModel("models/stsunsf5.mdl");
+		models[2] = R_RegisterModel("models/stsunsf3.mdl");
+		models[3] = R_RegisterModel("models/stsunsf4.mdl");
 		break;
 	case TE_STREAM_LIGHTNING:
-		models[0] = Mod_ForName("models/stlghtng.mdl", true);
+		models[0] = R_RegisterModel("models/stlghtng.mdl");
 		break;
 	case TE_STREAM_LIGHTNING_SMALL:
-		models[0] = Mod_ForName("models/stltng2.mdl", true);
+		models[0] = R_RegisterModel("models/stltng2.mdl");
 		break;
 	case TE_STREAM_FAMINE:
-		models[0] = Mod_ForName("models/fambeam.mdl", true);
+		models[0] = R_RegisterModel("models/fambeam.mdl");
 		break;
 	case TE_STREAM_COLORBEAM:
-		models[0] = Mod_ForName("models/stclrbm.mdl", true);
+		models[0] = R_RegisterModel("models/stclrbm.mdl");
 		break;
 	case TE_STREAM_ICECHUNKS:
-		models[0] = Mod_ForName("models/stice.mdl", true);
+		models[0] = R_RegisterModel("models/stice.mdl");
 		break;
 	case TE_STREAM_GAZE:
-		models[0] = Mod_ForName("models/stmedgaz.mdl", true);
+		models[0] = R_RegisterModel("models/stmedgaz.mdl");
 		break;
 	default:
 		Sys_Error("ParseStream: bad type");
@@ -873,7 +873,7 @@ void CL_ParseTEnt (void)
 			ex = CL_AllocExplosion();
 			VectorCopy(pos,ex->origin);
 
-			ex->model = Mod_ForName("models/gen_expl.spr", true);
+			ex->model = R_RegisterModel("models/gen_expl.spr");
 
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
@@ -985,7 +985,7 @@ void CL_ParseTEnt (void)
 
 			ex->data=250;
 
-			ex->model = Mod_ForName("models/sm_expld.spr", true);
+			ex->model = R_RegisterModel("models/sm_expld.spr");
 
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
@@ -1096,15 +1096,15 @@ void CL_ParseTEnt (void)
 						(chType==THINGTYPE_CLEARGLASS) || (chType==THINGTYPE_WEBS))
 				{
 					if (final<0.20)
-						ex->model = Mod_ForName ("models/shard1.mdl", true);
+						ex->model = R_RegisterModel ("models/shard1.mdl");
 					else if (final<0.40)
-						ex->model = Mod_ForName ("models/shard2.mdl", true);
+						ex->model = R_RegisterModel ("models/shard2.mdl");
 					else if (final<0.60)
-						ex->model = Mod_ForName ("models/shard3.mdl", true);
+						ex->model = R_RegisterModel ("models/shard3.mdl");
 					else if (final<0.80)
-						ex->model = Mod_ForName ("models/shard4.mdl", true);
+						ex->model = R_RegisterModel ("models/shard4.mdl");
 					else 
-						ex->model = Mod_ForName ("models/shard5.mdl", true);
+						ex->model = R_RegisterModel ("models/shard5.mdl");
 
 					if (chType==THINGTYPE_CLEARGLASS)
 					{
@@ -1124,178 +1124,178 @@ void CL_ParseTEnt (void)
 				else if (chType==THINGTYPE_WOOD)
 				{
 					if (final < 0.25)
-						ex->model = Mod_ForName ("models/splnter1.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter1.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/splnter2.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter2.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/splnter3.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter3.mdl");
 					else 
-						ex->model = Mod_ForName ("models/splnter4.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter4.mdl");
 				}
 				else if (chType==THINGTYPE_METAL)
 				{
 					if (final < 0.25)
-						ex->model = Mod_ForName ("models/metlchk1.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk1.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/metlchk2.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk2.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/metlchk3.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk3.mdl");
 					else 
-						ex->model = Mod_ForName ("models/metlchk4.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk4.mdl");
 				}
 				else if (chType==THINGTYPE_FLESH)
 				{
 					if (final < 0.33)
-						ex->model = Mod_ForName ("models/flesh1.mdl", true);
+						ex->model = R_RegisterModel ("models/flesh1.mdl");
 					else if (final < 0.66)
-						ex->model = Mod_ForName ("models/flesh2.mdl", true);
+						ex->model = R_RegisterModel ("models/flesh2.mdl");
 					else
-						ex->model = Mod_ForName ("models/flesh3.mdl", true);
+						ex->model = R_RegisterModel ("models/flesh3.mdl");
 				}
 				else if (chType==THINGTYPE_BROWNSTONE||chType==THINGTYPE_DIRT)
 				{
 					if (final < 0.25)
-						ex->model = Mod_ForName ("models/schunk1.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk1.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/schunk2.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk2.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/schunk3.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk3.mdl");
 					else 
-						ex->model = Mod_ForName ("models/schunk4.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk4.mdl");
 					ex->skin = 1;
 				}
 				else if (chType==THINGTYPE_CLAY)
 				{
 					if (final < 0.25)
-						ex->model = Mod_ForName ("models/clshard1.mdl", true);
+						ex->model = R_RegisterModel ("models/clshard1.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/clshard2.mdl", true);
+						ex->model = R_RegisterModel ("models/clshard2.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/clshard3.mdl", true);
+						ex->model = R_RegisterModel ("models/clshard3.mdl");
 					else 
-						ex->model = Mod_ForName ("models/clshard4.mdl", true);
+						ex->model = R_RegisterModel ("models/clshard4.mdl");
 				}
 				else if (chType==THINGTYPE_LEAVES)
 				{
 					if (final < 0.33)
-						ex->model = Mod_ForName ("models/leafchk1.mdl", true);
+						ex->model = R_RegisterModel ("models/leafchk1.mdl");
 					else if (final < 0.66)
-						ex->model = Mod_ForName ("models/leafchk2.mdl", true);
+						ex->model = R_RegisterModel ("models/leafchk2.mdl");
 					else 
-						ex->model = Mod_ForName ("models/leafchk3.mdl", true);
+						ex->model = R_RegisterModel ("models/leafchk3.mdl");
 				}
 				else if (chType==THINGTYPE_HAY)
 				{
 					if (final < 0.33)
-						ex->model = Mod_ForName ("models/hay1.mdl", true);
+						ex->model = R_RegisterModel ("models/hay1.mdl");
 					else if (final < 0.66)
-						ex->model = Mod_ForName ("models/hay2.mdl", true);
+						ex->model = R_RegisterModel ("models/hay2.mdl");
 					else 
-						ex->model = Mod_ForName ("models/hay3.mdl", true);
+						ex->model = R_RegisterModel ("models/hay3.mdl");
 				}
 				else if (chType==THINGTYPE_CLOTH)
 				{
 					if (final < 0.33)
-						ex->model = Mod_ForName ("models/clthchk1.mdl", true);
+						ex->model = R_RegisterModel ("models/clthchk1.mdl");
 					else if (final < 0.66)
-						ex->model = Mod_ForName ("models/clthchk2.mdl", true);
+						ex->model = R_RegisterModel ("models/clthchk2.mdl");
 					else 
-						ex->model = Mod_ForName ("models/clthchk3.mdl", true);
+						ex->model = R_RegisterModel ("models/clthchk3.mdl");
 				}
 				else if (chType==THINGTYPE_WOOD_LEAF)
 				{
 					if (final < 0.14)
-						ex->model = Mod_ForName ("models/splnter1.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter1.mdl");
 					else if (final < 0.28)
-						ex->model = Mod_ForName ("models/leafchk1.mdl", true);
+						ex->model = R_RegisterModel ("models/leafchk1.mdl");
 					else if (final < 0.42)
-						ex->model = Mod_ForName ("models/splnter2.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter2.mdl");
 					else if (final < 0.56)
-						ex->model = Mod_ForName ("models/leafchk2.mdl", true);
+						ex->model = R_RegisterModel ("models/leafchk2.mdl");
 					else if (final < 0.70)
-						ex->model = Mod_ForName ("models/splnter3.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter3.mdl");
 					else if (final < 0.84)
-						ex->model = Mod_ForName ("models/leafchk3.mdl", true);
+						ex->model = R_RegisterModel ("models/leafchk3.mdl");
 					else 
-						ex->model = Mod_ForName ("models/splnter4.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter4.mdl");
 				}
 				else if (chType==THINGTYPE_WOOD_METAL)
 				{
 					if (final < 0.125)
-						ex->model = Mod_ForName ("models/splnter1.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter1.mdl");
 					else if (final < 0.25)
-						ex->model = Mod_ForName ("models/metlchk1.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk1.mdl");
 					else if (final < 0.375)
-						ex->model = Mod_ForName ("models/splnter2.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter2.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/metlchk2.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk2.mdl");
 					else if (final < 0.625)
-						ex->model = Mod_ForName ("models/splnter3.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter3.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/metlchk3.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk3.mdl");
 					else if (final < 0.875)
-						ex->model = Mod_ForName ("models/splnter4.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter4.mdl");
 					else 
-						ex->model = Mod_ForName ("models/metlchk4.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk4.mdl");
 				}
 				else if (chType==THINGTYPE_WOOD_STONE)
 				{
 					if (final < 0.125)
-						ex->model = Mod_ForName ("models/splnter1.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter1.mdl");
 					else if (final < 0.25)
-						ex->model = Mod_ForName ("models/schunk1.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk1.mdl");
 					else if (final < 0.375)
-						ex->model = Mod_ForName ("models/splnter2.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter2.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/schunk2.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk2.mdl");
 					else if (final < 0.625)
-						ex->model = Mod_ForName ("models/splnter3.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter3.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/schunk3.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk3.mdl");
 					else if (final < 0.875)
-						ex->model = Mod_ForName ("models/splnter4.mdl", true);
+						ex->model = R_RegisterModel ("models/splnter4.mdl");
 					else 
-						ex->model = Mod_ForName ("models/schunk4.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk4.mdl");
 				}
 				else if (chType==THINGTYPE_METAL_STONE)
 				{
 					if (final < 0.125)
-						ex->model = Mod_ForName ("models/metlchk1.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk1.mdl");
 					else if (final < 0.25)
-						ex->model = Mod_ForName ("models/schunk1.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk1.mdl");
 					else if (final < 0.375)
-						ex->model = Mod_ForName ("models/metlchk2.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk2.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/schunk2.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk2.mdl");
 					else if (final < 0.625)
-						ex->model = Mod_ForName ("models/metlchk3.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk3.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/schunk3.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk3.mdl");
 					else if (final < 0.875)
-						ex->model = Mod_ForName ("models/metlchk4.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk4.mdl");
 					else 
-						ex->model = Mod_ForName ("models/schunk4.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk4.mdl");
 				}
 				else if (chType==THINGTYPE_METAL_CLOTH)
 				{
 					if (final < 0.14)
-						ex->model = Mod_ForName ("models/metlchk1.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk1.mdl");
 					else if (final < 0.28)
-						ex->model = Mod_ForName ("models/clthchk1.mdl", true);
+						ex->model = R_RegisterModel ("models/clthchk1.mdl");
 					else if (final < 0.42)
-						ex->model = Mod_ForName ("models/metlchk2.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk2.mdl");
 					else if (final < 0.56)
-						ex->model = Mod_ForName ("models/clthchk2.mdl", true);
+						ex->model = R_RegisterModel ("models/clthchk2.mdl");
 					else if (final < 0.70)
-						ex->model = Mod_ForName ("models/metlchk3.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk3.mdl");
 					else if (final < 0.84)
-						ex->model = Mod_ForName ("models/clthchk3.mdl", true);
+						ex->model = R_RegisterModel ("models/clthchk3.mdl");
 					else 
-						ex->model = Mod_ForName ("models/metlchk4.mdl", true);
+						ex->model = R_RegisterModel ("models/metlchk4.mdl");
 				}
 				else if (chType==THINGTYPE_ICE)
 				{
-					ex->model = Mod_ForName("models/shard.mdl", true);
+					ex->model = R_RegisterModel("models/shard.mdl");
 					ex->skin = 0;
 					//ent->frame = rand()%2;
 					ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
@@ -1303,37 +1303,37 @@ void CL_ParseTEnt (void)
 				}
 				else if (chType==THINGTYPE_METEOR)
 				{
-					ex->model = Mod_ForName("models/tempmetr.mdl", true);
+					ex->model = R_RegisterModel("models/tempmetr.mdl");
 					ex->skin = 0;
 					//ex->scale *= .6;
 					VectorScale(ex->avel, 4.0, ex->avel);
 				}
 				else if (chType==THINGTYPE_ACID)
 				{	// no spinning if possible...
-					ex->model = Mod_ForName("models/sucwp2p.mdl", true);
+					ex->model = R_RegisterModel("models/sucwp2p.mdl");
 					ex->skin = 0;
 				}
 				else if (chType==THINGTYPE_GREENFLESH)
 				{	// spider guts
 					if (final < 0.33)
-						ex->model = Mod_ForName ("models/sflesh1.mdl", true);
+						ex->model = R_RegisterModel ("models/sflesh1.mdl");
 					else if (final < 0.66)
-						ex->model = Mod_ForName ("models/sflesh2.mdl", true);
+						ex->model = R_RegisterModel ("models/sflesh2.mdl");
 					else
-						ex->model = Mod_ForName ("models/sflesh3.mdl", true);
+						ex->model = R_RegisterModel ("models/sflesh3.mdl");
 
 					ex->skin = 0;
 				}
 				else// if (chType==THINGTYPE_GREYSTONE)
 				{
 					if (final < 0.25)
-						ex->model = Mod_ForName ("models/schunk1.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk1.mdl");
 					else if (final < 0.50)
-						ex->model = Mod_ForName ("models/schunk2.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk2.mdl");
 					else if (final < 0.75)
-						ex->model = Mod_ForName ("models/schunk3.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk3.mdl");
 					else 
-						ex->model = Mod_ForName ("models/schunk4.mdl", true);
+						ex->model = R_RegisterModel ("models/schunk4.mdl");
 					ex->skin = 0;
 				}
 
@@ -1378,7 +1378,7 @@ void CL_ParseTEnt (void)
 			ex->scale=10;
 			ex->startTime=cl.time;
 			ex->endTime=cl.time+0.3;
-			ex->model=Mod_ForName ("models/arrowhit.mdl", true);
+			ex->model=R_RegisterModel ("models/arrowhit.mdl");
 			ex->exflags = EXFLAG_ROTATE;
 			ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
 			ex->abslight=128;
@@ -1396,7 +1396,7 @@ void CL_ParseTEnt (void)
 				vectoangles(vel,ex->angles);
 				ex->startTime=cl.time;
 				ex->endTime=cl.time+0.35;
-				ex->model=Mod_ForName ("models/whtsmk1.spr", true);
+				ex->model=R_RegisterModel ("models/whtsmk1.spr");
 				ex->flags = DRF_TRANSLUCENT;
 			}
 
@@ -1436,7 +1436,7 @@ void CL_ParseTEnt (void)
 				ex->data = THINGTYPE_METEOR;
 
 				final = (rand()%100)*.01;
-				ex->model = Mod_ForName("models/tempmetr.mdl", true);
+				ex->model = R_RegisterModel("models/tempmetr.mdl");
 				ex->skin = 0;
 				VectorScale(ex->avel, 4.0, ex->avel);
 
@@ -1470,13 +1470,13 @@ void CL_ParseTEnt (void)
 				{
 				case 0:
 				case 1:
-					ex->model = Mod_ForName("models/sm_expld.spr", true);
+					ex->model = R_RegisterModel("models/sm_expld.spr");
 					break;
 				case 2:
-					ex->model = Mod_ForName("models/bg_expld.spr", true);
+					ex->model = R_RegisterModel("models/bg_expld.spr");
 					break;
 				case 3:
-					ex->model = Mod_ForName("models/gen_expl.spr", true);
+					ex->model = R_RegisterModel("models/gen_expl.spr");
 					break;
 				}
 				if(host_frametime < .07)
@@ -1507,7 +1507,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			VectorMA(ex->origin, -6, movedir, ex->origin);
 			ex->data=250;
-			ex->model = Mod_ForName("models/sm_expld.spr", true);
+			ex->model = R_RegisterModel("models/sm_expld.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
 			for(cnt2=0; cnt2<cnt; cnt2++)
@@ -1521,7 +1521,7 @@ void CL_ParseTEnt (void)
 				VectorCopy(offset, ex->velocity);
 				ex->velocity[2] += 30;
 				ex->data=250;
-				ex->model = Mod_ForName("models/ghost.spr", true);
+				ex->model = R_RegisterModel("models/ghost.spr");
 				ex->abslight = 128;
 				ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
 				ex->startTime = cl.time;
@@ -1544,7 +1544,7 @@ void CL_ParseTEnt (void)
 				VectorMA(pos, 1/700, offset, ex->origin); 
 				VectorCopy(offset, ex->velocity);
 				ex->data=250;
-				ex->model = Mod_ForName("models/boneshrd.mdl", true);
+				ex->model = R_RegisterModel("models/boneshrd.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + rand() * 50 / 100;
 				ex->flags |= EXFLAG_ROTATE|EXFLAG_COLLIDE;
@@ -1569,7 +1569,7 @@ void CL_ParseTEnt (void)
 			// white smoke
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
-			ex->model = Mod_ForName("models/whtsmk1.spr", true);
+			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
 	
@@ -1595,14 +1595,14 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->velocity[1] = 8;
 			ex->velocity[2] = -10;
-			ex->model = Mod_ForName("models/whtsmk1.spr", true);
+			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->velocity[2] = -10;
-			ex->model = Mod_ForName("models/redsmk1.spr", true);
+			ex->model = R_RegisterModel("models/redsmk1.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
@@ -1610,7 +1610,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->velocity[1] = -8;
 			ex->velocity[2] = -10;
-			ex->model = Mod_ForName("models/whtsmk1.spr", true);
+			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 			
@@ -1624,7 +1624,7 @@ void CL_ParseTEnt (void)
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->velocity[2] = 8;
-			ex->model = Mod_ForName("models/whtsmk1.spr", true);
+			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
@@ -1632,7 +1632,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->origin[2] -= 5;
 			ex->velocity[2] = 8;
-			ex->model = Mod_ForName("models/whtsmk1.spr", true);
+			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
@@ -1640,7 +1640,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->origin[2] -= 10;
 			ex->velocity[2] = 8;
-			ex->model = Mod_ForName("models/whtsmk1.spr", true);
+			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
@@ -1687,7 +1687,7 @@ void CL_ParseTEnt (void)
 					}
 					ex->data = THINGTYPE_ICE;
 
-					ex->model = Mod_ForName("models/shard.mdl", true);
+					ex->model = R_RegisterModel("models/shard.mdl");
 					ex->skin = 0;
 					//ent->frame = rand()%2;
 					ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
@@ -1711,7 +1711,7 @@ void CL_ParseTEnt (void)
 			// make the actual explosion
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
-			ex->model = Mod_ForName("models/icehit.spr", true);
+			ex->model = R_RegisterModel("models/icehit.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
 
@@ -1756,7 +1756,7 @@ void CL_ParseTEnt (void)
 
 					for (i = 0; i < 5; i++)
 					{	// make some ice beams...
-						models[0] = Mod_ForName("models/stice.mdl", true);
+						models[0] = R_RegisterModel("models/stice.mdl");
 
 						if((stream = NewStream(ent, i, NULL)) == NULL)
 						{
@@ -1799,7 +1799,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			VectorCopy(vel, ex->angles);
 			ex->frameFunc = MissileFlashThink;
-			ex->model = Mod_ForName("models/handfx.mdl", true);
+			ex->model = R_RegisterModel("models/handfx.mdl");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + 2;
 			ex->exflags = EXFLAG_ROTATE;
@@ -1849,10 +1849,10 @@ void CL_ParseTEnt (void)
 					// actually create the sun model pieces
 					for ( i = 0; i < reflect_count + 1; i++)
 					{
-						models[0] = Mod_ForName("models/stsunsf1.mdl", true);
-						models[1] = Mod_ForName("models/stsunsf2.mdl", true);
-						models[2] = Mod_ForName("models/stsunsf3.mdl", true);
-						models[3] = Mod_ForName("models/stsunsf4.mdl", true);
+						models[0] = R_RegisterModel("models/stsunsf1.mdl");
+						models[1] = R_RegisterModel("models/stsunsf2.mdl");
+						models[2] = R_RegisterModel("models/stsunsf3.mdl");
+						models[3] = R_RegisterModel("models/stsunsf4.mdl");
 
 						//if((stream = NewStream(ent, i, NULL)) == NULL)
 						if((stream = NewStream(ent, i, NULL)) == NULL)
@@ -1924,7 +1924,7 @@ void CL_ParseTEnt (void)
 
 					for (i = 0; i < 5; i++)
 					{	// make some lightning
-						models[0] = Mod_ForName("models/stlghtng.mdl", true);
+						models[0] = R_RegisterModel("models/stlghtng.mdl");
 
 						if((stream = NewStream(ent, i, NULL)) == NULL)
 						{
@@ -1963,7 +1963,7 @@ void CL_ParseTEnt (void)
 			ex = CL_AllocExplosion ();
 			VectorCopy(pos, ex->origin);
 			ex->frameFunc = TeleportFlashThink;	
-			ex->model = Mod_ForName("models/teleport.mdl", true);
+			ex->model = R_RegisterModel("models/teleport.mdl");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + 2;
 			ex->avel[2] = rand() * 360 + 360;
@@ -1977,7 +1977,7 @@ void CL_ParseTEnt (void)
 				sinval = 10 * sin(dir *M_PI*2 / 360);
 				ex = CL_AllocExplosion ();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/telesmk2.spr", true);
+				ex->model = R_RegisterModel("models/telesmk2.spr");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + .5;
 				ex->velocity[0] = cosval;
@@ -1987,7 +1987,7 @@ void CL_ParseTEnt (void)
 				ex = CL_AllocExplosion ();
 				VectorCopy(pos, ex->origin);
 				ex->origin[2] += 64;
-				ex->model = Mod_ForName("models/telesmk2.spr", true);
+				ex->model = R_RegisterModel("models/telesmk2.spr");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + .5;
 				ex->velocity[0] = cosval;
@@ -2025,7 +2025,7 @@ void CL_ParseTEnt (void)
 
 					for (i = 0; i < 5; i++)
 					{	// make some lightning
-						models[0] = Mod_ForName("models/stlghtng.mdl", true);
+						models[0] = R_RegisterModel("models/stlghtng.mdl");
 
 						if((stream = NewStream(ent, i, NULL)) == NULL)
 						{
@@ -2053,7 +2053,7 @@ void CL_ParseTEnt (void)
 				}
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/vorpshok.mdl", true);
+				ex->model = R_RegisterModel("models/vorpshok.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + 1.0;
 				ex->flags |= MLS_ABSLIGHT;
@@ -2074,7 +2074,7 @@ void CL_ParseTEnt (void)
 
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
-			ex->model = Mod_ForName("models/spark.spr", true);
+			ex->model = R_RegisterModel("models/spark.spr");
 			ex->startTime = cl.time;
 			ex->flags |= MLS_ABSLIGHT;
 			ex->abslight = 128;
@@ -2108,16 +2108,16 @@ void CL_ParseTEnt (void)
 				{
 				case 0:
 				case 1:
-					ex->model = Mod_ForName("models/xpspblue.spr", true);
+					ex->model = R_RegisterModel("models/xpspblue.spr");
 					break;
 				case 2:
 				case 3:
-					ex->model = Mod_ForName("models/xpspblue.spr", true);
+					ex->model = R_RegisterModel("models/xpspblue.spr");
 					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
 					break;
 				case 4:
 				case 5:
-					ex->model = Mod_ForName("models/spark0.spr", true);
+					ex->model = R_RegisterModel("models/spark0.spr");
 					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
 					break;
 				}
@@ -2154,14 +2154,14 @@ void CL_ParseTEnt (void)
 				switch(rand()%4)
 				{
 				case 0:
-					ex->model = Mod_ForName("models/sm_expld.spr", true);
+					ex->model = R_RegisterModel("models/sm_expld.spr");
 					break;
 				case 2:
-					ex->model = Mod_ForName("models/bg_expld.spr", true);
+					ex->model = R_RegisterModel("models/bg_expld.spr");
 					break;
 				case 1:
 				case 3:
-					ex->model = Mod_ForName("models/gen_expl.spr", true);
+					ex->model = R_RegisterModel("models/gen_expl.spr");
 					break;
 				}
 				ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
@@ -2182,7 +2182,7 @@ void CL_ParseTEnt (void)
 
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
-			ex->model = Mod_ForName("models/blast.mdl", true);
+			ex->model = R_RegisterModel("models/blast.mdl");
 			ex->flags |= MLS_ABSLIGHT|SCALE_TYPE_UNIFORM|SCALE_ORIGIN_CENTER;
 			ex->abslight = 128;
 			ex->skin = 0;
@@ -2223,13 +2223,13 @@ void CL_ParseTEnt (void)
 					VectorCopy(pos, ex->origin);
 					if(i)
 					{
-						ex->model = Mod_ForName("models/stsunsf3.mdl", true);
+						ex->model = R_RegisterModel("models/stsunsf3.mdl");
 						ex->scale = 200;
 						ex->frameFunc = sunPowerUpdate;
 					}
 					else
 					{
-						ex->model = Mod_ForName("models/blast.mdl", true);
+						ex->model = R_RegisterModel("models/blast.mdl");
 						ex->flags |= DRF_TRANSLUCENT;
 						ex->frameFunc = sunBallUpdate;
 						ex->scale = 120;
@@ -2258,10 +2258,10 @@ void CL_ParseTEnt (void)
 				{
 					S_StartSound(state->origin, TempSoundChannel(), 0, cl_sfx_sunstaff, 1, 1);
 
-					models[0] = Mod_ForName("models/stsunsf2.mdl", true);
-					models[1] = Mod_ForName("models/stsunsf1.mdl", true);
-					models[2] = Mod_ForName("models/stsunsf3.mdl", true);
-					models[3] = Mod_ForName("models/stsunsf4.mdl", true);
+					models[0] = R_RegisterModel("models/stsunsf2.mdl");
+					models[1] = R_RegisterModel("models/stsunsf1.mdl");
+					models[2] = R_RegisterModel("models/stsunsf3.mdl");
+					models[3] = R_RegisterModel("models/stsunsf4.mdl");
 
 					if((stream = NewStream(ent, 0, NULL)) == NULL)
 					{
@@ -2299,7 +2299,7 @@ void CL_ParseTEnt (void)
 
 			ex = CL_AllocExplosion();
 			VectorCopy(pos, ex->origin);
-			ex->model = Mod_ForName("models/xplod29.spr", true);
+			ex->model = R_RegisterModel("models/xplod29.spr");
 			ex->startTime = cl.time;
 			ex->flags |= MLS_ABSLIGHT;
 			ex->abslight = 128;
@@ -2324,13 +2324,13 @@ void CL_ParseTEnt (void)
 				{
 				case 0:
 				case 1:
-					ex->model = Mod_ForName("models/sm_expld.spr", true);
+					ex->model = R_RegisterModel("models/sm_expld.spr");
 					break;
 				case 2:
-					ex->model = Mod_ForName("models/bg_expld.spr", true);
+					ex->model = R_RegisterModel("models/bg_expld.spr");
 					break;
 				case 3:
-					ex->model = Mod_ForName("models/gen_expl.spr", true);
+					ex->model = R_RegisterModel("models/gen_expl.spr");
 					break;
 				}
 				if(host_frametime < 0.07)
@@ -2400,13 +2400,13 @@ void CL_ParseTEnt (void)
 					switch(rand()%3)
 					{
 					case 0:
-						ex->model = Mod_ForName("models/flesh1.mdl", true);
+						ex->model = R_RegisterModel("models/flesh1.mdl");
 						break;
 					case 1:
-						ex->model = Mod_ForName("models/flesh2.mdl", true);
+						ex->model = R_RegisterModel("models/flesh2.mdl");
 						break;
 					case 2:
-						ex->model = Mod_ForName("models/flesh3.mdl", true);
+						ex->model = R_RegisterModel("models/flesh3.mdl");
 						break;
 					}
 					
@@ -2465,7 +2465,7 @@ void CL_ParseTEnt (void)
 
 				ex = CL_AllocExplosion();
 				VectorCopy(endPos, ex->origin);
-				ex->model = Mod_ForName("models/fcircle.spr", true);
+				ex->model = R_RegisterModel("models/fcircle.spr");
 				ex->startTime = cl.time;
 				ex->flags |= MLS_ABSLIGHT;
 				ex->abslight = 128;
@@ -2487,7 +2487,7 @@ void CL_ParseTEnt (void)
 
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/bspark.spr", true);
+				ex->model = R_RegisterModel("models/bspark.spr");
 				ex->startTime = cl.time;
 				ex->flags |= MLS_ABSLIGHT;
 				ex->abslight = 128;
@@ -2530,13 +2530,13 @@ void CL_ParseTEnt (void)
 						switch(rand()%3)
 						{
 						case 0:
-							ex->model = Mod_ForName("models/gen_expl.spr", true);
+							ex->model = R_RegisterModel("models/gen_expl.spr");
 							break;
 						case 1:
-							ex->model = Mod_ForName("models/bg_expld.spr", true);
+							ex->model = R_RegisterModel("models/bg_expld.spr");
 							break;
 						case 2:
-							ex->model = Mod_ForName("models/sm_expld.spr", true);
+							ex->model = R_RegisterModel("models/sm_expld.spr");
 							break;
 						}
 						ex->flags |= MLS_ABSLIGHT;
@@ -2560,13 +2560,13 @@ void CL_ParseTEnt (void)
 						switch(rand()%3)
 						{
 						case 0:
-							ex->model = Mod_ForName("models/gen_expl.spr", true);
+							ex->model = R_RegisterModel("models/gen_expl.spr");
 							break;
 						case 1:
-							ex->model = Mod_ForName("models/bg_expld.spr", true);
+							ex->model = R_RegisterModel("models/bg_expld.spr");
 							break;
 						case 2:
-							ex->model = Mod_ForName("models/sm_expld.spr", true);
+							ex->model = R_RegisterModel("models/sm_expld.spr");
 							break;
 						}
 						ex->flags |= MLS_ABSLIGHT;
@@ -2594,7 +2594,7 @@ void CL_ParseTEnt (void)
 
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/null.spr", true);
+				ex->model = R_RegisterModel("models/null.spr");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + 0.4;
 				ex->frameFunc = MeteorCrushSpawnThink;
@@ -2623,7 +2623,7 @@ void CL_ParseTEnt (void)
 				ex->velocity[1] = (ex->origin[1] - pos[1])*6;
 				ex->velocity[2] = (ex->origin[2] - pos[2])*6;
 
-				ex->model = Mod_ForName("models/axplsn_2.spr", true);
+				ex->model = R_RegisterModel("models/axplsn_2.spr");
 				if(host_frametime < 0.07)
 				{
 					ex->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
@@ -2660,14 +2660,14 @@ void CL_ParseTEnt (void)
 				switch(rand()%4)
 				{
 				case 0:
-					ex->model = Mod_ForName("models/axplsn_2.spr", true);
+					ex->model = R_RegisterModel("models/axplsn_2.spr");
 					break;
 				case 1:
-					ex->model = Mod_ForName("models/axplsn_1.spr", true);
+					ex->model = R_RegisterModel("models/axplsn_1.spr");
 					break;
 				case 2:
 				case 3:
-					ex->model = Mod_ForName("models/axplsn_5.spr", true);
+					ex->model = R_RegisterModel("models/axplsn_5.spr");
 					break;
 				}
 				if(host_frametime < 0.07)
@@ -2707,7 +2707,7 @@ void CL_ParseTEnt (void)
 				ex->scale = 45 + rand()%10;
 				ex->data = THINGTYPE_ACID;
 
-				ex->model = Mod_ForName("models/sucwp2p.mdl", true);
+				ex->model = R_RegisterModel("models/sucwp2p.mdl");
 				ex->skin = 0;
 				VectorScale(ex->avel, 4.0, ex->avel);
 
@@ -2753,13 +2753,13 @@ void CL_ParseTEnt (void)
 					switch(rand()%3)
 					{
 					case 0:
-						ex->model = Mod_ForName("models/firewal1.spr", true);
+						ex->model = R_RegisterModel("models/firewal1.spr");
 						break;
 					case 1:
-						ex->model = Mod_ForName("models/firewal5.spr", true);
+						ex->model = R_RegisterModel("models/firewal5.spr");
 						break;
 					case 2:
-						ex->model = Mod_ForName("models/firewal4.spr", true);
+						ex->model = R_RegisterModel("models/firewal4.spr");
 						break;
 					}
 					ex->startTime = cl.time + .3/8.0 * i;
@@ -2790,7 +2790,7 @@ void CL_ParseTEnt (void)
 					ex->origin[0] += (rand()%8)-4;
 					ex->origin[1] += (rand()%8)-4;
 					ex->origin[2] += (rand()%6)-3;
-					ex->model = Mod_ForName("models/flamestr.spr", true);
+					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.time + .3/8.0 * i;
 					ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
@@ -2814,7 +2814,7 @@ void CL_ParseTEnt (void)
 				ex->origin[0] += (rand()%32)-16;
 				ex->origin[1] += (rand()%32)-16;
 				ex->origin[2] += (rand()%32)-16;
-				ex->model = Mod_ForName("models/fboom.spr", true);
+				ex->model = R_RegisterModel("models/fboom.spr");
 				ex->startTime = cl.time + ((rand()%150)/200);
 				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
 			}
@@ -2892,7 +2892,7 @@ void CL_ParseTEnt (void)
 					ex->origin[0] += (rand()%8)-4;
 					ex->origin[1] += (rand()%8)-4;
 					ex->origin[2] += (rand()%6)-3;
-					ex->model = Mod_ForName("models/flamestr.spr", true);
+					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.time + .3/8.0 * i;
 					ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
@@ -2910,7 +2910,7 @@ void CL_ParseTEnt (void)
 					ex->origin[0] += (rand()%8)-4;
 					ex->origin[1] += (rand()%8)-4;
 					ex->origin[2] += (rand()%6)-3;
-					ex->model = Mod_ForName("models/flamestr.spr", true);
+					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.time + .3/8.0 * i;
 					ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
@@ -2949,7 +2949,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/sucwp1p.mdl", true);
+				ex->model = R_RegisterModel("models/sucwp1p.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3/240.0;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -2970,7 +2970,7 @@ void CL_ParseTEnt (void)
 					ex = CL_AllocExplosion();
 					VectorCopy(pos, ex->origin);
 					VectorMA(ex->origin, 7, right, ex->origin);
-					ex->model = Mod_ForName("models/sucwp1p.mdl", true);
+					ex->model = R_RegisterModel("models/sucwp1p.mdl");
 					ex->startTime = cl.time;
 					ex->endTime = ex->startTime + trailLen*.3/240.0;
 					ex->angles[0] = travelPitch*360/6.28;
@@ -2983,7 +2983,7 @@ void CL_ParseTEnt (void)
 					ex = CL_AllocExplosion();
 					VectorCopy(pos, ex->origin);
 					VectorMA(ex->origin, -7, right, ex->origin);
-					ex->model = Mod_ForName("models/sucwp1p.mdl", true);
+					ex->model = R_RegisterModel("models/sucwp1p.mdl");
 					ex->startTime = cl.time;
 					ex->endTime = ex->startTime + trailLen*.3/240.0;
 					ex->angles[0] = travelPitch*360/6.28;
@@ -3018,7 +3018,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/axblade.mdl", true);
+				ex->model = R_RegisterModel("models/axblade.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3028,7 +3028,7 @@ void CL_ParseTEnt (void)
 
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/axtail.mdl", true);
+				ex->model = R_RegisterModel("models/axtail.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3063,7 +3063,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/drgnball.mdl", true);
+				ex->model = R_RegisterModel("models/drgnball.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3095,7 +3095,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/vorpshot.mdl", true);
+				ex->model = R_RegisterModel("models/vorpshot.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3129,7 +3129,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/iceshot1.mdl", true);
+				ex->model = R_RegisterModel("models/iceshot1.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3150,7 +3150,7 @@ void CL_ParseTEnt (void)
 
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/iceshot2.mdl", true);
+				ex->model = R_RegisterModel("models/iceshot2.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3187,7 +3187,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/tempmetr.mdl", true);
+				ex->model = R_RegisterModel("models/tempmetr.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3237,7 +3237,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/lball.mdl", true);
+				ex->model = R_RegisterModel("models/lball.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.2;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3274,7 +3274,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/tempmetr.mdl", true);
+				ex->model = R_RegisterModel("models/tempmetr.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3385,7 +3385,7 @@ void CL_ParseTEnt (void)
 
 				for (i = 0; i < 10; i++)
 				{	// make some lightning
-					models[0] = Mod_ForName("models/stlghtng.mdl", true);
+					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
 					if((stream = NewStream(ent, i, NULL)) == NULL)
 					{
@@ -3432,7 +3432,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/sucwp2p.mdl", true);
+				ex->model = R_RegisterModel("models/sucwp2p.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3462,7 +3462,7 @@ void CL_ParseTEnt (void)
 				
 				ex = CL_AllocExplosion();
 				VectorCopy(pos, ex->origin);
-				ex->model = Mod_ForName("models/sucwp2p.mdl", true);
+				ex->model = R_RegisterModel("models/sucwp2p.mdl");
 				ex->startTime = cl.time;
 				ex->endTime = ex->startTime + trailLen*.3;
 				ex->angles[0] = travelPitch*360/6.28;
@@ -3519,7 +3519,7 @@ void CL_ParseTEnt (void)
 				for(temp = 0; temp < numTargs - 1; temp++)
 				{
 					// make the connecting lightning...
-					models[0] = Mod_ForName("models/stlghtng.mdl", true);
+					models[0] = R_RegisterModel("models/stlghtng.mdl");
 
 					if((stream = NewStream(ent, temp, NULL)) == NULL)
 					{
@@ -3540,7 +3540,7 @@ void CL_ParseTEnt (void)
 
 					ex = CL_AllocExplosion();
 					VectorCopy(points[temp+1], ex->origin);
-					ex->model = Mod_ForName("models/vorpshok.mdl", true);
+					ex->model = R_RegisterModel("models/vorpshok.mdl");
 					ex->startTime = cl.time;
 					ex->endTime = ex->startTime + .3;
 					ex->flags |= MLS_ABSLIGHT;//|DRF_TRANSLUCENT;
@@ -4056,9 +4056,9 @@ void MultiGrenadeThink (explosion_t *ex)
         VectorCopy(ex->origin,missile->origin);
 
 		if (rand()&1)
-			missile->model = Mod_ForName("models/gen_expl.spr", true);
+			missile->model = R_RegisterModel("models/gen_expl.spr");
 		else
-			missile->model = Mod_ForName("models/bg_expld.spr", true);
+			missile->model = R_RegisterModel("models/bg_expld.spr");
 
 		switch (attack_counter % 3)
 		{
@@ -4159,9 +4159,9 @@ void MultiGrenadePieceThink (explosion_t *ex)
         missile->data=ex->data*(0.7  +  ftemp);
 
 		if (rand()&7)
-			missile->model = Mod_ForName("models/bg_expld.spr", true);
+			missile->model = R_RegisterModel("models/bg_expld.spr");
 		else
-			missile->model = Mod_ForName("models/fl_expld.spr", true);
+			missile->model = R_RegisterModel("models/fl_expld.spr");
 
 		ftemp = ( rand() / RAND_MAX * (0.5) );
 
@@ -4217,9 +4217,9 @@ void MultiGrenadePiece2Think (explosion_t *ex)
         missile->data=ex->data - ftemp * 10 - 20;
 
 		if (rand()&1)
-			missile->model = Mod_ForName("models/gen_expl.spr", true);
+			missile->model = R_RegisterModel("models/gen_expl.spr");
 		else
-			missile->model = Mod_ForName("models/bg_expld.spr", true);
+			missile->model = R_RegisterModel("models/bg_expld.spr");
 
 		ftemp = ( rand() / RAND_MAX * (0.5) );
 
@@ -4440,7 +4440,7 @@ void CreateRavenExplosions(vec3_t pos)
 	ex = CL_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->velocity[2] = 8;
-	ex->model = Mod_ForName("models/whtsmk1.spr", true);
+	ex->model = R_RegisterModel("models/whtsmk1.spr");
 	ex->startTime = cl.time;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
@@ -4448,7 +4448,7 @@ void CreateRavenExplosions(vec3_t pos)
 	VectorCopy(pos, ex->origin);
 	ex->origin[2] -= 5;
 	ex->velocity[2] = 8;
-	ex->model = Mod_ForName("models/whtsmk1.spr", true);
+	ex->model = R_RegisterModel("models/whtsmk1.spr");
 	ex->startTime = cl.time;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
@@ -4456,7 +4456,7 @@ void CreateRavenExplosions(vec3_t pos)
 	VectorCopy(pos, ex->origin);
 	ex->origin[2] -= 10;
 	ex->velocity[2] = 8;
-	ex->model = Mod_ForName("models/whtsmk1.spr", true);
+	ex->model = R_RegisterModel("models/whtsmk1.spr");
 	ex->startTime = cl.time;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 }
@@ -4469,14 +4469,14 @@ void CreateRavenDeath(vec3_t pos)
 	VectorCopy(pos, ex->origin);
 	ex->velocity[1] = 8;
 	ex->velocity[2] = -10;
-	ex->model = Mod_ForName("models/whtsmk1.spr", true);
+	ex->model = R_RegisterModel("models/whtsmk1.spr");
 	ex->startTime = cl.time;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
 	ex = CL_AllocExplosion ();
 	VectorCopy(pos, ex->origin);
 	ex->velocity[2] = -10;
-	ex->model = Mod_ForName("models/redsmk1.spr", true);
+	ex->model = R_RegisterModel("models/redsmk1.spr");
 	ex->startTime = cl.time;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 
@@ -4484,7 +4484,7 @@ void CreateRavenDeath(vec3_t pos)
 	VectorCopy(pos, ex->origin);
 	ex->velocity[1] = -8;
 	ex->velocity[2] = -10;
-	ex->model = Mod_ForName("models/whtsmk1.spr", true);
+	ex->model = R_RegisterModel("models/whtsmk1.spr");
 	ex->startTime = cl.time;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
 	
@@ -4499,7 +4499,7 @@ void CreateExplosionWithSound(vec3_t pos)
 	VectorCopy(pos, ex->origin);
 	ex->startTime = cl.time;
 	ex->endTime = ex->startTime + HX_FRAME_TIME * 10;
-	ex->model = Mod_ForName("models/sm_expld.spr", true);
+	ex->model = R_RegisterModel("models/sm_expld.spr");
 	
 	S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_explode, 1, 1);
 }
@@ -4607,13 +4607,13 @@ void MeteorBlastThink(explosion_t *ex)
 			{
 			case 0:
 			case 1:
-				ex2->model = Mod_ForName("models/sm_expld.spr", true);
+				ex2->model = R_RegisterModel("models/sm_expld.spr");
 				break;
 			case 2:
-				ex2->model = Mod_ForName("models/bg_expld.spr", true);
+				ex2->model = R_RegisterModel("models/bg_expld.spr");
 				break;
 			case 3:
-				ex2->model = Mod_ForName("models/gen_expl.spr", true);
+				ex2->model = R_RegisterModel("models/gen_expl.spr");
 				break;
 			}
 			ex2->flags |= MLS_ABSLIGHT|DRF_TRANSLUCENT;
@@ -4661,7 +4661,7 @@ void MeteorCrushSpawnThink(explosion_t *ex)
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->origin[0] += (rand()%160) - 80;
 		ex2->origin[1] += (rand()%160) - 80;
-		ex2->model = Mod_ForName("models/tempmetr.mdl", true);
+		ex2->model = R_RegisterModel("models/tempmetr.mdl");
 		ex2->startTime = cl.time;
 		ex2->endTime = ex2->startTime + 2.0;
 		ex2->frameFunc = MeteorBlastThink;
@@ -4717,7 +4717,7 @@ void updatePurify2(explosion_t *ex)
 	{
 		ex2 = CL_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
-		ex2->model = Mod_ForName("models/ring.mdl", true);
+		ex2->model = R_RegisterModel("models/ring.mdl");
 		ex2->startTime = cl.time;
 		ex2->endTime = ex2->startTime + 1.2;
 
@@ -4786,7 +4786,7 @@ void updateAcidBlob(explosion_t *ex)
 		{
 			ex2 = CL_AllocExplosion();
 			VectorCopy(ex->origin, ex2->origin);
-			ex2->model = Mod_ForName("models/muzzle1.spr", true);
+			ex2->model = R_RegisterModel("models/muzzle1.spr");
 			ex2->startTime = cl.time;
 			ex2->endTime = ex2->startTime + .4;
 
@@ -4843,7 +4843,7 @@ void CL_UpdatePoisonGas(refEntity_t *ent, vec3_t angles, int edict_num)
 
 		ex = CL_AllocExplosion();
 		VectorCopy(ent->origin, ex->origin);
-		ex->model = Mod_ForName("models/grnsmk1.spr", true);
+		ex->model = R_RegisterModel("models/grnsmk1.spr");
 		ex->startTime = cl.time;
 		ex->endTime = ex->startTime + .7 + (rand()%200)*.001;
 
@@ -4879,7 +4879,7 @@ void CL_UpdateAcidBlob(refEntity_t *ent, vec3_t angles, int edict_num)
 		{
 			ex = CL_AllocExplosion();
 			VectorCopy(ent->origin, ex->origin);
-			ex->model = Mod_ForName("models/muzzle1.spr", true);
+			ex->model = R_RegisterModel("models/muzzle1.spr");
 			ex->startTime = cl.time;
 			ex->endTime = ex->startTime + .4;
 
@@ -4920,13 +4920,13 @@ void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 		switch(rand()%3)
 		{
 		case 0:
-			ex->model = Mod_ForName("models/firewal1.spr", true);
+			ex->model = R_RegisterModel("models/firewal1.spr");
 			break;
 		case 1:
-			ex->model = Mod_ForName("models/firewal2.spr", true);
+			ex->model = R_RegisterModel("models/firewal2.spr");
 			break;
 		case 2:
-			ex->model = Mod_ForName("models/firewal3.spr", true);
+			ex->model = R_RegisterModel("models/firewal3.spr");
 			break;
 		}
 		
@@ -4957,13 +4957,13 @@ void PowerFlameBurnRemove(explosion_t *ex)
 	switch(rand()%3)
 	{
 	case 0:
-		ex2->model = Mod_ForName("models/sm_expld.spr", true);
+		ex2->model = R_RegisterModel("models/sm_expld.spr");
 		break;
 	case 1:
-		ex2->model = Mod_ForName("models/fboom.spr", true);
+		ex2->model = R_RegisterModel("models/fboom.spr");
 		break;
 	case 2:
-		ex2->model = Mod_ForName("models/pow.spr", true);
+		ex2->model = R_RegisterModel("models/pow.spr");
 		break;
 	}
 	ex2->startTime = cl.time;
@@ -4990,7 +4990,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		ex->origin[0] += (rand()%120)-60;
 		ex->origin[1] += (rand()%120)-60;
 		ex->origin[2] += (rand()%120)-60+120;
-		ex->model = Mod_ForName("models/sucwp1p.mdl", true);
+		ex->model = R_RegisterModel("models/sucwp1p.mdl");
 		ex->startTime = cl.time;
 		ex->endTime = ex->startTime + .25;
 		ex->removeFunc = PowerFlameBurnRemove;
@@ -5011,7 +5011,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		// I'm not seeing this right now... (?)
 		ex2 = CL_AllocExplosion();
 		VectorCopy(ex->origin, ex2->origin);
-		ex2->model = Mod_ForName("models/flamestr.spr", true);
+		ex2->model = R_RegisterModel("models/flamestr.spr");
 		ex2->startTime = cl.time;
 		ex2->endTime = ex2->startTime + Mod_GetNumFrames(ex2->model) * 0.05;
 		ex2->flags |= DRF_TRANSLUCENT;
@@ -5113,7 +5113,7 @@ void CL_UpdateIceStorm(refEntity_t *ent, int edict_num)
 
 		ex->data = THINGTYPE_ICE;
 
-		ex->model = Mod_ForName("models/shard.mdl", true);
+		ex->model = R_RegisterModel("models/shard.mdl");
 		ex->skin = 0;
 		//ent->frame = rand()%2;
 		ex->flags |= DRF_TRANSLUCENT|MLS_ABSLIGHT;
@@ -5179,7 +5179,7 @@ void telEffectUpdate (explosion_t *ex)
 
 			VectorSubtract(ex->origin, ex2->origin, tvec);
 			VectorScale(tvec,20,tvec);
-			ex2->model = Mod_ForName("models/sm_blue.spr", true);
+			ex2->model = R_RegisterModel("models/sm_blue.spr");
 			ex2->startTime = cl.time;
 			ex2->endTime = ex2->startTime + 3.2;
 
@@ -5222,7 +5222,7 @@ void CL_UpdateTargetBall(void)
 
 	// search for the two thingies.  If they don't exist, make new ones and set v_oldTargOrg
 
-	iceMod = Mod_ForName("models/iceshot2.mdl", true);
+	iceMod = R_RegisterModel("models/iceshot2.mdl");
 
 	for(i = 0; i < MAX_EXPLOSIONS; i++)
 	{

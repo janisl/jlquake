@@ -151,76 +151,6 @@ Mod_ForName
 Loads in a model for the given name
 ==================
 */
-model_t *Mod_ForName (char *name, qboolean crash)
-{
-	model_t	*mod;
-	unsigned *buf;
-	int		i;
-	
-	if (!name[0])
-		ri.Sys_Error (ERR_DROP, "Mod_ForName: NULL name");
-
-	//
-	// search the currently loaded models
-	//
-	for (int i = 1; i < tr.numModels; i++)
-	{
-		if (!QStr::Cmp(tr.models[i]->name, name) )
-			return tr.models[i];
-	}
-	
-	mod = R_AllocModel();
-
-	QStr::Cpy(mod->name, name);
-	
-	//
-	// load the file
-	//
-	int modfilelen = FS_ReadFile(mod->name, (void**)&buf);
-	if (!buf)
-	{
-		if (crash)
-			ri.Sys_Error (ERR_DROP, "Mod_NumForName: %s not found", mod->name);
-		Com_Memset(mod->name, 0, sizeof(mod->name));
-		return NULL;
-	}
-	
-	loadmodel = mod;
-
-	//
-	// fill it in
-	//
-
-
-	// call the apropriate loader
-	
-	switch (LittleLong(*(unsigned *)buf))
-	{
-	case IDMESH2HEADER:
-		Mod_LoadMd2Model(mod, buf);
-		break;
-		
-	case IDSPRITE2HEADER:
-		Mod_LoadSprite2Model (mod, buf, modfilelen);
-		break;
-	
-	default:
-		ri.Sys_Error (ERR_DROP,"Mod_NumForName: unknown fileid for %s", mod->name);
-		break;
-	}
-
-	FS_FreeFile (buf);
-
-	return mod;
-}
-
-/*
-==================
-Mod_ForName
-
-Loads in a model for the given name
-==================
-*/
 static void Mod_LoadWorld(const char* name)
 {
 	unsigned *buf;
@@ -285,27 +215,6 @@ void R_BeginRegistration (char *model)
 
 	r_viewcluster = -1;
 }
-
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-R_RegisterModel
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-qhandle_t R_RegisterModel (char *name)
-{
-	model_t	*mod;
-
-	mod = Mod_ForName (name, false);
-	if (!mod)
-	{
-		return 0;
-	}
-
-	return mod->index;
-}
-
 
 /*
 @@@@@@@@@@@@@@@@@@@@@

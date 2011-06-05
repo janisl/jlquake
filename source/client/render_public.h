@@ -210,3 +210,4 @@ image_t* R_PicFromWad(const char* Name);
 qhandle_t R_GetImageHandle(image_t* Image);
 const char* R_GetImageName(qhandle_t Handle);
 void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool Dirty);
+qhandle_t R_RegisterModel(const char* Name);

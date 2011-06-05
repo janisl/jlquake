@@ -162,3 +162,132 @@ model_t* R_GetModelByHandle(qhandle_t index)
 
 	return tr.models[index];
 }
+
+//==========================================================================
+//
+//	R_RegisterModel
+//
+//	Loads in a model for the given name
+//	Zero will be returned if the model fails to load. An entry will be
+// retained for failed models as an optimization to prevent disk rescanning
+// if they are asked for again.
+//
+//==========================================================================
+
+int R_RegisterModel(const char* name)
+{
+	if (!name || !name[0])
+	{
+		GLog.Write("R_RegisterModel: NULL name\n");
+		return 0;
+	}
+
+	if (QStr::Length(name) >= MAX_QPATH)
+	{
+		GLog.Write("Model name exceeds MAX_QPATH\n");
+		return 0;
+	}
+
+	//
+	// search the currently loaded models
+	//
+	for (int hModel = 1; hModel < tr.numModels; hModel++)
+	{
+		model_t* mod = tr.models[hModel];
+		if (!QStr::Cmp(mod->name, name))
+		{
+			if (mod->type == MOD_BAD)
+			{
+				return 0;
+			}
+			return hModel;
+		}
+	}
+
+	// allocate a new model_t
+	model_t* mod = R_AllocModel();
+	if (mod == NULL)
+	{
+		GLog.Write(S_COLOR_YELLOW "R_RegisterModel: R_AllocModel() failed for '%s'\n", name);
+		return 0;
+	}
+
+	// only set the name after the model has been successfully loaded
+	QStr::NCpyZ(mod->name, name, sizeof(mod->name));
+
+	// make sure the render thread is stopped
+	R_SyncRenderThread();
+
+	void* buf;
+	int modfilelen = FS_ReadFile(name, &buf);
+	if (!buf)
+	{
+		GLog.Write(S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name);
+		// we still keep the model_t around, so if the model name is asked for
+		// again, we won't bother scanning the filesystem
+		mod->type = MOD_BAD;
+		return 0;
+	}
+
+	loadmodel = mod;
+
+	//	call the apropriate loader
+	bool loaded;
+	switch (LittleLong(*(qint32*)buf))
+	{
+	case IDPOLYHEADER:
+		Mod_LoadMdlModel(mod, buf);
+		loaded = true;
+		break;
+
+	case RAPOLYHEADER:
+		Mod_LoadMdlModelNew(mod, buf);
+		loaded = true;
+		break;
+
+	case IDSPRITE1HEADER:
+		Mod_LoadSpriteModel(mod, buf);
+		loaded = true;
+		break;
+
+	case BSP29_VERSION:
+		Mod_LoadBrush29Model(mod, buf);
+		loaded = true;
+		break;
+
+	case IDMESH2HEADER:
+		Mod_LoadMd2Model(mod, buf);
+		loaded = true;
+		break;
+
+	case IDSPRITE2HEADER:
+		Mod_LoadSprite2Model(mod, buf, modfilelen);
+		loaded = true;
+		break;
+
+	case MD3_IDENT:
+		loaded = R_LoadMd3(mod, buf);
+		break;
+
+	case MD4_IDENT:
+		loaded = R_LoadMD4(mod, buf, name);
+		break;
+
+	default:
+		GLog.Write(S_COLOR_YELLOW "R_RegisterModel: unknown fileid for %s\n", name);
+		loaded = false;
+	}
+
+	FS_FreeFile(buf);
+
+	if (!loaded)
+	{
+		GLog.Write(S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name);
+		// we still keep the model_t around, so if the model name is asked for
+		// again, we won't bother scanning the filesystem
+		mod->type = MOD_BAD;
+		return 0;
+	}
+
+	return mod->index;
+}
