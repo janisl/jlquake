@@ -92,6 +92,12 @@ init
 #define MAX_LIGHTMAPS			256
 #define MAX_MOD_KNOWN			1500
 
+// 12 bits
+// see QSORT_SHADERNUM_SHIFT
+#define MAX_SHADERS				16384
+
+#define MAX_SKINS				1024
+
 #define FOG_TABLE_SIZE			256
 #define FUNCTABLE_SIZE			1024
 #define FUNCTABLE_MASK			(FUNCTABLE_SIZE - 1)
@@ -247,7 +253,15 @@ struct backEndCounters_t
 	int		msec;			// total msec for backend run
 };
 
-struct trGlobals_base_t
+/*
+** trGlobals_t 
+**
+** Most renderer globals are defined here.
+** backend functions should never modify any of these fields,
+** but may read fields that aren't dynamically modified
+** by the frontend.
+*/
+struct trGlobals_t
 {
 	bool					registered;			// cleared at shutdown, set at beginRegistration
 
@@ -299,6 +313,11 @@ struct trGlobals_base_t
 
 	orientationr_t			orient;				// for current entity
 
+	int						viewCluster;
+
+	frontEndCounters_t		pc;
+	int						frontEndMsec;		// not in pc due to clearing issue
+
 	//
 	// put large tables at the end, so most elements will be
 	// within the +/32K indexed range on risc processors
@@ -311,6 +330,16 @@ struct trGlobals_base_t
 
 	int						numImages;
 	image_t*				images[MAX_DRAWIMAGES];
+
+	// shader indexes from other modules will be looked up in tr.shaders[]
+	// shader indexes from drawsurfs will be looked up in sortedShaders[]
+	// lower indexed sortedShaders must be rendered first (opaque surfaces before translucent)
+	int						numShaders;
+	shader_t*				shaders[MAX_SHADERS];
+	shader_t*				sortedShaders[MAX_SHADERS];
+
+	int						numSkins;
+	skin_t*					skins[MAX_SKINS];
 
 	float					fogTable[FOG_TABLE_SIZE];
 
@@ -510,8 +539,7 @@ extern QCvar*	r_singleShader;			// make most world faces use default shader
 
 extern QCvar*	r_subdivisions;
 
-extern trGlobals_base_t*	tr_shared;
-#define tr		(*tr_shared)
+extern trGlobals_t	tr;
 
 /*
 ====================================================================

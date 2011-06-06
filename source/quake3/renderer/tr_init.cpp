@@ -700,7 +700,6 @@ void R_Init( void ) {
 	byte *ptr;
 
 	ri.Printf( PRINT_ALL, "----- R_Init -----\n" );
-	tr_shared = &tr;
 
 	// clear all our internal state
 	Com_Memset( &tr, 0, sizeof( tr ) );

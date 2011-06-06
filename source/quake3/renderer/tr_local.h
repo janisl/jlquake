@@ -33,15 +33,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_public.h"
 #include "qgl.h"
 
-#undef tr
-
-// 12 bits
-// see QSORT_SHADERNUM_SHIFT
-#define	MAX_SHADERS				16384
-
 #define MAX_STATE_NAME 32
-
-// can't be increased without changing bit packing for drawsurfs
 
 
 /*
@@ -82,9 +74,6 @@ void		R_Modellist_f (void);
 //====================================================
 extern	refimport_t		ri;
 
-#define	MAX_SKINS				1024
-
-
 /*
 
 the drawsurf sort data is packed into a single 32 bit value so it can be
@@ -109,34 +98,7 @@ the bits are allocated as follows:
 #define	QSORT_FOGNUM_SHIFT		2
 
 
-/*
-** trGlobals_t 
-**
-** Most renderer globals are defined here.
-** backend functions should never modify any of these fields,
-** but may read fields that aren't dynamically modified
-** by the frontend.
-*/
-struct trGlobals_t : trGlobals_base_t
-{
-	int						viewCluster;
-
-	frontEndCounters_t		pc;
-	int						frontEndMsec;		// not in pc due to clearing issue
-
-	// shader indexes from other modules will be looked up in tr.shaders[]
-	// shader indexes from drawsurfs will be looked up in sortedShaders[]
-	// lower indexed sortedShaders must be rendered first (opaque surfaces before translucent)
-	int						numShaders;
-	shader_t				*shaders[MAX_SHADERS];
-	shader_t				*sortedShaders[MAX_SHADERS];
-
-	int						numSkins;
-	skin_t					*skins[MAX_SKINS];
-};
-
 extern backEndState_t	backEnd;
-extern trGlobals_t	tr;
 
 
 //
