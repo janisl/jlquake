@@ -76,7 +76,6 @@ typedef struct particle_s
 
 
 extern	qboolean	r_cache_thrash;		// compatability
-extern	vec3_t		modelorg, r_entorigin;
 extern	int		c_brush_polys, c_alias_polys;
 
 

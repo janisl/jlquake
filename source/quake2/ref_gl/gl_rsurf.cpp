@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-static vec3_t	modelorg;		// relative to viewpoint
-
 mbrush38_surface_t	*r_alpha_surfaces;
 
 #define DYNAMIC_LIGHT_WIDTH  128
@@ -879,7 +877,7 @@ void R_DrawInlineBModel (void)
 	// find which side of the node we are on
 		pplane = psurf->plane;
 
-		dot = DotProduct (modelorg, pplane->normal) - pplane->dist;
+		dot = DotProduct (tr.orient.viewOrigin, pplane->normal) - pplane->dist;
 
 	// draw the polygon
 		if (((psurf->flags & BRUSH38_SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
@@ -952,15 +950,15 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	qglColor3f (1,1,1);
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 
-	VectorSubtract(tr.refdef.vieworg, e->e.origin, modelorg);
+	VectorSubtract(tr.refdef.vieworg, e->e.origin, tr.orient.viewOrigin);
 	if (rotated)
 	{
 		vec3_t	temp;
 
-		VectorCopy (modelorg, temp);
-		modelorg[0] = DotProduct(temp, e->e.axis[0]);
-		modelorg[1] = DotProduct(temp, e->e.axis[1]);
-		modelorg[2] = DotProduct(temp, e->e.axis[2]);
+		VectorCopy (tr.orient.viewOrigin, temp);
+		tr.orient.viewOrigin[0] = DotProduct(temp, e->e.axis[0]);
+		tr.orient.viewOrigin[1] = DotProduct(temp, e->e.axis[1]);
+		tr.orient.viewOrigin[2] = DotProduct(temp, e->e.axis[2]);
 	}
 
     qglPushMatrix ();
@@ -1042,16 +1040,16 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 	switch (plane->type)
 	{
 	case PLANE_X:
-		dot = modelorg[0] - plane->dist;
+		dot = tr.orient.viewOrigin[0] - plane->dist;
 		break;
 	case PLANE_Y:
-		dot = modelorg[1] - plane->dist;
+		dot = tr.orient.viewOrigin[1] - plane->dist;
 		break;
 	case PLANE_Z:
-		dot = modelorg[2] - plane->dist;
+		dot = tr.orient.viewOrigin[2] - plane->dist;
 		break;
 	default:
-		dot = DotProduct (modelorg, plane->normal) - plane->dist;
+		dot = DotProduct (tr.orient.viewOrigin, plane->normal) - plane->dist;
 		break;
 	}
 
@@ -1125,7 +1123,7 @@ void R_DrawWorld (void)
 
 	tr.currentModel = tr.worldModel;
 
-	VectorCopy(tr.refdef.vieworg, modelorg);
+	VectorCopy(tr.refdef.vieworg, tr.orient.viewOrigin);
 
 	// auto cycle the world frame for texture animation
 	tr.worldEntity.e.frame = (int)(tr.refdef.floatTime * 2);

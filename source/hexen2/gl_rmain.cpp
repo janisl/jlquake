@@ -9,8 +9,6 @@
 
 qboolean	r_cache_thrash;		// compatability
 
-vec3_t		modelorg, r_entorigin;
-
 int			c_brush_polys, c_alias_polys, c_sky_polys;
 
 qboolean	envmap;				// true during envmap command capture 
@@ -277,14 +275,14 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	if (psprite->type == SPR_FACING_UPRIGHT)
 	{
 	// generate the sprite's axes, with vup straight up in worldspace, and
-	// r_spritedesc.vright perpendicular to modelorg.
+	// r_spritedesc.vright perpendicular to tr.refdef.vieworg.
 	// This will not work if the view direction is very close to straight up or
 	// down, because the cross product will be between two nearly parallel
 	// vectors and starts to approach an undefined state, so we don't draw if
 	// the two vectors are less than 1 degree apart
-		tvec[0] = -modelorg[0];
-		tvec[1] = -modelorg[1];
-		tvec[2] = -modelorg[2];
+		tvec[0] = -tr.refdef.vieworg[0];
+		tvec[1] = -tr.refdef.vieworg[1];
+		tvec[2] = -tr.refdef.vieworg[2];
 		VectorNormalize (tvec);
 		dot = tvec[2];	// same as DotProduct (tvec, r_spritedesc.vup) because
 						//  r_spritedesc.vup is 0, 0, 1
@@ -294,7 +292,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 		r_spritedesc.vup[1] = 0;
 		r_spritedesc.vup[2] = 1;
 		r_spritedesc.vright[0] = tvec[1];
-								// CrossProduct(r_spritedesc.vup, -modelorg,
+								// CrossProduct(r_spritedesc.vup, -tr.refdef.vieworg,
 		r_spritedesc.vright[1] = -tvec[0];
 								//              r_spritedesc.vright)
 		r_spritedesc.vright[2] = 0;
@@ -665,8 +663,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 	}
 
-	VectorCopy(tr.currentEntity->e.origin, r_entorigin);
-	VectorSubtract(tr.refdef.vieworg, r_entorigin, modelorg);
+	VectorCopy(tr.currentEntity->e.origin, tr.orient.origin);
+	VectorSubtract(tr.refdef.vieworg, tr.orient.origin, tr.orient.viewOrigin);
 
 	//
 	// get lighting information

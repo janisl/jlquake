@@ -5,8 +5,6 @@
 
 qboolean	r_cache_thrash;		// compatability
 
-vec3_t		modelorg, r_entorigin;
-
 int			c_brush_polys, c_alias_polys;
 
 qboolean	envmap;				// true during envmap command capture 
@@ -607,8 +605,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 	}
 
-	VectorCopy (tr.currentEntity->e.origin, r_entorigin);
-	VectorSubtract (tr.refdef.vieworg, r_entorigin, modelorg);
+	VectorCopy (tr.currentEntity->e.origin, tr.orient.origin);
+	VectorSubtract (tr.refdef.vieworg, tr.orient.origin, tr.orient.viewOrigin);
 
 	//
 	// get lighting information

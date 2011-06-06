@@ -711,15 +711,15 @@ void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent)
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-	VectorSubtract(tr.refdef.vieworg, e->e.origin, modelorg);
+	VectorSubtract(tr.refdef.vieworg, e->e.origin, tr.orient.viewOrigin);
 	if (rotated)
 	{
 		vec3_t	temp;
 
-		VectorCopy (modelorg, temp);
-		modelorg[0] = DotProduct(temp, e->e.axis[0]);
-		modelorg[1] = DotProduct(temp, e->e.axis[1]);
-		modelorg[2] = DotProduct(temp, e->e.axis[2]);
+		VectorCopy (tr.orient.viewOrigin, temp);
+		tr.orient.viewOrigin[0] = DotProduct(temp, e->e.axis[0]);
+		tr.orient.viewOrigin[1] = DotProduct(temp, e->e.axis[1]);
+		tr.orient.viewOrigin[2] = DotProduct(temp, e->e.axis[2]);
 	}
 
 	psurf = &clmodel->brush29_surfaces[clmodel->brush29_firstmodelsurface];
@@ -752,7 +752,7 @@ void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent)
 	// find which side of the node we are on
 		pplane = psurf->plane;
 
-		dot = DotProduct (modelorg, pplane->normal) - pplane->dist;
+		dot = DotProduct (tr.orient.viewOrigin, pplane->normal) - pplane->dist;
 
 	// draw the polygon
 		if (((psurf->flags & BRUSH29_SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
@@ -829,16 +829,16 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 	switch (plane->type)
 	{
 	case PLANE_X:
-		dot = modelorg[0] - plane->dist;
+		dot = tr.orient.viewOrigin[0] - plane->dist;
 		break;
 	case PLANE_Y:
-		dot = modelorg[1] - plane->dist;
+		dot = tr.orient.viewOrigin[1] - plane->dist;
 		break;
 	case PLANE_Z:
-		dot = modelorg[2] - plane->dist;
+		dot = tr.orient.viewOrigin[2] - plane->dist;
 		break;
 	default:
-		dot = DotProduct (modelorg, plane->normal) - plane->dist;
+		dot = DotProduct (tr.orient.viewOrigin, plane->normal) - plane->dist;
 		break;
 	}
 
@@ -904,7 +904,7 @@ void R_DrawWorld (void)
 {
 	int			i;
 
-	VectorCopy (tr.refdef.vieworg, modelorg);
+	VectorCopy (tr.refdef.vieworg, tr.orient.viewOrigin);
 
 	tr.currentEntity = &tr.worldEntity;
 
