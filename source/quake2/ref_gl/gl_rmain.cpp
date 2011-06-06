@@ -38,8 +38,6 @@ glstate2_t  gl_state;
 
 image_t		*r_particletexture;	// little dot for particles
 
-cplane_t	frustum[4];
-
 int			c_brush_polys, c_alias_polys;
 
 float		v_blend[4];			// final blending color
@@ -107,7 +105,7 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 		return false;
 
 	for (i=0 ; i<4 ; i++)
-		if ( BOX_ON_PLANE_SIDE(mins, maxs, &frustum[i]) == 2)
+		if ( BOX_ON_PLANE_SIDE(mins, maxs, &tr.viewParms.frustum[i]) == 2)
 			return true;
 	return false;
 }
@@ -516,33 +514,33 @@ void R_SetFrustum (void)
 	** horizontal and vertical plane
 	*/
 	// front side is visible
-	VectorAdd (vpn, vright, frustum[0].normal);
-	VectorSubtract (vpn, vright, frustum[1].normal);
-	VectorAdd (vpn, vup, frustum[2].normal);
-	VectorSubtract (vpn, vup, frustum[3].normal);
+	VectorAdd (vpn, vright, tr.viewParms.frustum[0].normal);
+	VectorSubtract (vpn, vright, tr.viewParms.frustum[1].normal);
+	VectorAdd (vpn, vup, tr.viewParms.frustum[2].normal);
+	VectorSubtract (vpn, vup, tr.viewParms.frustum[3].normal);
 
 	// we theoretically don't need to normalize these vectors, but I do it
 	// anyway so that debugging is a little easier
-	VectorNormalize( frustum[0].normal );
-	VectorNormalize( frustum[1].normal );
-	VectorNormalize( frustum[2].normal );
-	VectorNormalize( frustum[3].normal );
+	VectorNormalize( tr.viewParms.frustum[0].normal );
+	VectorNormalize( tr.viewParms.frustum[1].normal );
+	VectorNormalize( tr.viewParms.frustum[2].normal );
+	VectorNormalize( tr.viewParms.frustum[3].normal );
 #else
 	// rotate VPN right by FOV_X/2 degrees
-	RotatePointAroundVector(frustum[0].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_x / 2));
+	RotatePointAroundVector(tr.viewParms.frustum[0].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_x / 2));
 	// rotate VPN left by FOV_X/2 degrees
-	RotatePointAroundVector(frustum[1].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_x / 2);
+	RotatePointAroundVector(tr.viewParms.frustum[1].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_x / 2);
 	// rotate VPN up by FOV_X/2 degrees
-	RotatePointAroundVector(frustum[2].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_y / 2));
+	RotatePointAroundVector(tr.viewParms.frustum[2].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_y / 2));
 	// rotate VPN down by FOV_X/2 degrees
-	RotatePointAroundVector(frustum[3].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_y / 2);
+	RotatePointAroundVector(tr.viewParms.frustum[3].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_y / 2);
 #endif
 
 	for (i=0 ; i<4 ; i++)
 	{
-		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = DotProduct(tr.refdef.vieworg, frustum[i].normal);
-		SetPlaneSignbits(&frustum[i]);
+		tr.viewParms.frustum[i].type = PLANE_ANYZ;
+		tr.viewParms.frustum[i].dist = DotProduct(tr.refdef.vieworg, tr.viewParms.frustum[i].normal);
+		SetPlaneSignbits(&tr.viewParms.frustum[i]);
 	}
 }
 

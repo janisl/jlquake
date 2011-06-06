@@ -53,7 +53,6 @@ extern	float	gldepthmin, gldepthmax;
 
 
 extern	image_t		*r_particletexture;
-extern	cplane_t	frustum[4];
 extern	int			c_brush_polys, c_alias_polys;
 
 

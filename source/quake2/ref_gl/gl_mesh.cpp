@@ -483,9 +483,9 @@ static qboolean R_CullAliasModel( vec3_t bbox[8], trRefEntity_t *e )
 
 			for ( f = 0; f < 4; f++ )
 			{
-				float dp = DotProduct( frustum[f].normal, bbox[p] );
+				float dp = DotProduct( tr.viewParms.frustum[f].normal, bbox[p] );
 
-				if ( ( dp - frustum[f].dist ) < 0 )
+				if ( ( dp - tr.viewParms.frustum[f].dist ) < 0 )
 				{
 					mask |= ( 1 << f );
 				}

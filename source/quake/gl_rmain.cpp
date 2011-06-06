@@ -26,8 +26,6 @@ qboolean	r_cache_thrash;		// compatability
 
 vec3_t		modelorg, r_entorigin;
 
-cplane_t	frustum[4];
-
 int			c_brush_polys, c_alias_polys;
 
 qboolean	envmap;				// true during envmap command capture 
@@ -91,7 +89,7 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 	int		i;
 
 	for (i=0 ; i<4 ; i++)
-		if (BoxOnPlaneSide (mins, maxs, &frustum[i]) == 2)
+		if (BoxOnPlaneSide (mins, maxs, &tr.viewParms.frustum[i]) == 2)
 			return true;
 	return false;
 }
@@ -701,29 +699,29 @@ void R_SetFrustum (void)
 	{
 		// front side is visible
 
-		VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], frustum[0].normal);
-		VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], frustum[1].normal);
+		VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], tr.viewParms.frustum[0].normal);
+		VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], tr.viewParms.frustum[1].normal);
 
-		VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], frustum[2].normal);
-		VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], frustum[3].normal);
+		VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], tr.viewParms.frustum[2].normal);
+		VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], tr.viewParms.frustum[3].normal);
 	}
 	else
 	{
 		// rotate VPN right by FOV_X/2 degrees
-		RotatePointAroundVector( frustum[0].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_x / 2));
+		RotatePointAroundVector( tr.viewParms.frustum[0].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_x / 2));
 		// rotate VPN left by FOV_X/2 degrees
-		RotatePointAroundVector( frustum[1].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_x / 2);
+		RotatePointAroundVector( tr.viewParms.frustum[1].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_x / 2);
 		// rotate VPN up by FOV_X/2 degrees
-		RotatePointAroundVector( frustum[2].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_y / 2));
+		RotatePointAroundVector( tr.viewParms.frustum[2].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_y / 2));
 		// rotate VPN down by FOV_X/2 degrees
-		RotatePointAroundVector( frustum[3].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_y / 2);
+		RotatePointAroundVector( tr.viewParms.frustum[3].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_y / 2);
 	}
 
 	for (i=0 ; i<4 ; i++)
 	{
-		frustum[i].type = PLANE_ANYZ;
-		frustum[i].dist = DotProduct(tr.refdef.vieworg, frustum[i].normal);
-		SetPlaneSignbits(&frustum[i]);
+		tr.viewParms.frustum[i].type = PLANE_ANYZ;
+		tr.viewParms.frustum[i].dist = DotProduct(tr.refdef.vieworg, tr.viewParms.frustum[i].normal);
+		SetPlaneSignbits(&tr.viewParms.frustum[i]);
 	}
 }
 
