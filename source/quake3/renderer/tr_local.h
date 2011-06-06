@@ -98,8 +98,6 @@ the bits are allocated as follows:
 #define	QSORT_FOGNUM_SHIFT		2
 
 
-extern backEndState_t	backEnd;
-
 
 //
 // cvars
@@ -443,8 +441,6 @@ RENDERER BACK END COMMAND QUEUE
 
 extern	int		max_polys;
 extern	int		max_polyverts;
-
-extern	backEndData_t	*backEndData[SMP_FRAMES];	// the second one may not be allocated
 
 extern	volatile renderCommandList_t	*renderCommandList;
 

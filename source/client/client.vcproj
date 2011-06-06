@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_backend.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_curve.cpp"
 				>
 			</File>

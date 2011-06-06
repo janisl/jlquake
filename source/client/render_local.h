@@ -541,6 +541,9 @@ extern QCvar*	r_subdivisions;
 
 extern trGlobals_t	tr;
 
+extern backEndState_t	backEnd;
+extern backEndData_t*	backEndData[SMP_FRAMES];	// the second one may not be allocated
+
 /*
 ====================================================================
 
