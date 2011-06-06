@@ -1007,7 +1007,7 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 	if (node->contents == BSP38CONTENTS_SOLID)
 		return;		// solid
 
-	if (node->visframe != r_visframecount)
+	if (node->visframe != tr.visCount)
 		return;
 	if (R_CullBox (node->minmaxs, node->minmaxs+3))
 		return;
@@ -1236,7 +1236,7 @@ void R_MarkLeaves (void)
 	if (gl_lockpvs->value)
 		return;
 
-	r_visframecount++;
+	tr.visCount++;
 	r_oldviewcluster = r_viewcluster;
 	r_oldviewcluster2 = r_viewcluster2;
 
@@ -1244,9 +1244,9 @@ void R_MarkLeaves (void)
 	{
 		// mark everything
 		for (i=0 ; i<tr.worldModel->brush38_numleafs ; i++)
-			tr.worldModel->brush38_leafs[i].visframe = r_visframecount;
+			tr.worldModel->brush38_leafs[i].visframe = tr.visCount;
 		for (i=0 ; i<tr.worldModel->brush38_numnodes ; i++)
-			tr.worldModel->brush38_nodes[i].visframe = r_visframecount;
+			tr.worldModel->brush38_nodes[i].visframe = tr.visCount;
 		return;
 	}
 
@@ -1272,30 +1272,13 @@ void R_MarkLeaves (void)
 			node = (mbrush38_node_t *)leaf;
 			do
 			{
-				if (node->visframe == r_visframecount)
+				if (node->visframe == tr.visCount)
 					break;
-				node->visframe = r_visframecount;
+				node->visframe = tr.visCount;
 				node = node->parent;
 			} while (node);
 		}
 	}
-
-#if 0
-	for (i=0 ; i<tr.worldModel->vis->numclusters ; i++)
-	{
-		if (vis[i>>3] & (1<<(i&7)))
-		{
-			node = (mbrush38_node_t *)&tr.worldModel->leafs[i];	// FIXME: cluster
-			do
-			{
-				if (node->visframe == r_visframecount)
-					break;
-				node->visframe = r_visframecount;
-				node = node->parent;
-			} while (node);
-		}
-	}
-#endif
 }
 
 

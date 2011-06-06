@@ -250,6 +250,7 @@ struct backEndCounters_t
 struct trGlobals_base_t
 {
 	int						frameCount;			// incremented every frame
+	int						visCount;			// incremented every time a new vis cluster is entered
 
 	bool					worldMapLoaded;
 	world_t*				world;

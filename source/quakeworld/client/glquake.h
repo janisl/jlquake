@@ -71,7 +71,6 @@ extern	entity_t	r_worldentity;
 extern	qboolean	r_cache_thrash;		// compatability
 extern	vec3_t		modelorg, r_entorigin;
 extern	trRefEntity_t	*currententity;
-extern	int			r_visframecount;	// ??? what difs?
 extern	cplane_t	frustum[4];
 extern	int		c_brush_polys, c_alias_polys;
 

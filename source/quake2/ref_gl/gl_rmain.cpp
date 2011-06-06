@@ -42,8 +42,6 @@ trRefEntity_t	*currententity;
 
 cplane_t	frustum[4];
 
-int			r_visframecount;	// bumped when going to a new PVS
-
 int			c_brush_polys, c_alias_polys;
 
 float		v_blend[4];			// final blending color

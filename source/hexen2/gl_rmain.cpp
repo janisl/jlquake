@@ -14,8 +14,6 @@ qboolean	r_cache_thrash;		// compatability
 vec3_t		modelorg, r_entorigin;
 trRefEntity_t	*currententity;
 
-int			r_visframecount;	// bumped when going to a new PVS
-
 cplane_t	frustum[4];
 
 int			c_brush_polys, c_alias_polys, c_sky_polys;

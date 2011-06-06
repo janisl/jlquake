@@ -1071,7 +1071,7 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 	if (node->contents == BSP29CONTENTS_SOLID)
 		return;		// solid
 
-	if (node->visframe != r_visframecount)
+	if (node->visframe != tr.visCount)
 		return;
 	if (R_CullBox (node->minmaxs, node->minmaxs+3))
 		return;
@@ -1225,7 +1225,7 @@ void R_MarkLeaves (void)
 	if (mirror)
 		return;
 
-	r_visframecount++;
+	tr.visCount++;
 	r_oldviewleaf = r_viewleaf;
 
 	if (r_novis->value)
@@ -1243,9 +1243,9 @@ void R_MarkLeaves (void)
 			node = (mbrush29_node_t *)&tr.worldModel->brush29_leafs[i+1];
 			do
 			{
-				if (node->visframe == r_visframecount)
+				if (node->visframe == tr.visCount)
 					break;
-				node->visframe = r_visframecount;
+				node->visframe = tr.visCount;
 				node = node->parent;
 			} while (node);
 		}

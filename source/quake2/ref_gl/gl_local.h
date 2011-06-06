@@ -54,7 +54,6 @@ extern	float	gldepthmin, gldepthmax;
 
 extern	image_t		*r_particletexture;
 extern	trRefEntity_t	*currententity;
-extern	int			r_visframecount;
 extern	cplane_t	frustum[4];
 extern	int			c_brush_polys, c_alias_polys;
 
