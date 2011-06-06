@@ -116,28 +116,24 @@ void R_Envmap_f (void)
 	viewangles[1] = 0;
 	viewangles[2] = 0;
 	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env0.rgb", buffer, sizeof(buffer));		
 
 	viewangles[1] = 90;
 	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env1.rgb", buffer, sizeof(buffer));		
 
 	viewangles[1] = 180;
 	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env2.rgb", buffer, sizeof(buffer));		
 
 	viewangles[1] = 270;
 	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env3.rgb", buffer, sizeof(buffer));		
@@ -145,7 +141,6 @@ void R_Envmap_f (void)
 	viewangles[0] = -90;
 	viewangles[1] = 0;
 	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env4.rgb", buffer, sizeof(buffer));		
@@ -153,7 +148,6 @@ void R_Envmap_f (void)
 	viewangles[0] = 90;
 	viewangles[1] = 0;
 	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
 	R_RenderView ();
 	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	FS_WriteFile("env5.rgb", buffer, sizeof(buffer));		
@@ -417,19 +411,6 @@ void GL_Init()
 
 	GL_TexEnv(GL_REPLACE);
 	qglDepthFunc (GL_LEQUAL);
-}
-
-/*
-=================
-GL_BeginRendering
-
-=================
-*/
-void GL_BeginRendering (int *x, int *y, int *width, int *height)
-{
-	*x = *y = 0;
-	*width = glConfig.vidWidth;
-	*height = glConfig.vidHeight;
 }
 
 void VID_Init()

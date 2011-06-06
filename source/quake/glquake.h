@@ -30,13 +30,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <GL/glu.h>
 
-void GL_BeginRendering (int *x, int *y, int *width, int *height);
 void GL_EndRendering (void);
 
 
 extern	float	gldepthmin, gldepthmax;
-
-extern	int glx, gly, glwidth, glheight;
 
 // r_local.h -- private refresh defs
 

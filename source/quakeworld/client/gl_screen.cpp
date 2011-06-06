@@ -72,9 +72,6 @@ console is:
 
 */
 
-
-int                     glx, gly, glwidth, glheight;
-
 // only the refresh window will be updated unless these variables are flagged 
 int                     scr_copytop;
 int                     scr_copyeverything;
@@ -330,10 +327,10 @@ static void SCR_CalcRefdef (void)
 	else 
 		scr_vrect.y = (h - scr_vrect.height)/2;
 
-	r_refdef.x = scr_vrect.x * glwidth / vid.width;
-	r_refdef.y = scr_vrect.y * glheight / vid.height;
-	r_refdef.width = scr_vrect.width * glwidth / vid.width;
-	r_refdef.height = scr_vrect.height * glheight / vid.height;
+	r_refdef.x = scr_vrect.x * glConfig.vidWidth / vid.width;
+	r_refdef.y = scr_vrect.y * glConfig.vidHeight / vid.height;
+	r_refdef.width = scr_vrect.width * glConfig.vidWidth / vid.width;
+	r_refdef.height = scr_vrect.height * glConfig.vidHeight / vid.height;
 	r_refdef.fov_x = scr_fov->value;
 	r_refdef.fov_y = CalcFov (r_refdef.fov_x, r_refdef.width, r_refdef.height);
 }
@@ -641,11 +638,11 @@ void SCR_ScreenShot_f (void)
 	}
 
 
-	buffer = (byte*)malloc(glwidth * glheight * 3);
+	buffer = (byte*)malloc(glConfig.vidWidth * glConfig.vidHeight * 3);
 
-	qglReadPixels (glx, gly, glwidth, glheight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
+	qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
-	R_SaveTGA(pcxname, buffer, glwidth, glheight, false);
+	R_SaveTGA(pcxname, buffer, glConfig.vidWidth, glConfig.vidHeight, false);
 
 	free (buffer);
 	Con_Printf ("Wrote %s\n", pcxname);
@@ -758,15 +755,15 @@ void SCR_RSShot_f (void)
 // 
 // save the pcx file 
 // 
-	newbuf = (byte*)malloc(glheight * glwidth * 3);
+	newbuf = (byte*)malloc(glConfig.vidHeight * glConfig.vidWidth * 3);
 
-	qglReadPixels (glx, gly, glwidth, glheight, GL_RGB, GL_UNSIGNED_BYTE, newbuf ); 
+	qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, newbuf ); 
 
-	w = (vid.width < RSSHOT_WIDTH) ? glwidth : RSSHOT_WIDTH;
-	h = (vid.height < RSSHOT_HEIGHT) ? glheight : RSSHOT_HEIGHT;
+	w = (vid.width < RSSHOT_WIDTH) ? glConfig.vidWidth : RSSHOT_WIDTH;
+	h = (vid.height < RSSHOT_HEIGHT) ? glConfig.vidHeight : RSSHOT_HEIGHT;
 
-	fracw = (float)glwidth / (float)w;
-	frach = (float)glheight / (float)h;
+	fracw = (float)glConfig.vidWidth / (float)w;
+	frach = (float)glConfig.vidHeight / (float)h;
 
 	for (y = 0; y < h; y++) {
 		dest = newbuf + (w*3 * y);
@@ -783,7 +780,7 @@ void SCR_RSShot_f (void)
 
 			count = 0;
 			for (/* */; dy < dey; dy++) {
-				src = newbuf + (glwidth * 3 * dy) + dx * 3;
+				src = newbuf + (glConfig.vidWidth * 3 * dy) + dx * 3;
 				for (nx = dx; nx < dex; nx++) {
 					r += *src++;
 					g += *src++;
@@ -993,8 +990,6 @@ void SCR_UpdateScreen (void)
 		vid.recalc_refdef = true;
 	}
 
-	GL_BeginRendering (&glx, &gly, &glwidth, &glheight);
-	
 	//
 	// determine size of refresh window
 	//

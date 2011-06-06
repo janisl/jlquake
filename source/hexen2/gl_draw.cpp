@@ -756,7 +756,7 @@ Setup as if the screen was 320*200
 */
 void GL_Set2D (void)
 {
-	qglViewport (glx, gly, glwidth, glheight);
+	qglViewport (0, 0, glConfig.vidWidth, glConfig.vidHeight);
 
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();

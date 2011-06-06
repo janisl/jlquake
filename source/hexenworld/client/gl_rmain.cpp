@@ -1080,7 +1080,6 @@ void R_SetupGL (void)
 	float	screenaspect;
 	float	yfov;
 	int		i;
-	extern	int glwidth, glheight;
 	int		x, x2, y2, y, w, h;
 
 	//
@@ -1090,17 +1089,17 @@ void R_SetupGL (void)
     qglLoadIdentity ();
 	x = tr.refdef.x;
 	x2 = tr.refdef.x + tr.refdef.width;
-	y = vid.height * glheight/vid.height-tr.refdef.y;
-	y2 = vid.height * glheight/vid.height - (tr.refdef.y + tr.refdef.height);
+	y = glConfig.vidHeight - tr.refdef.y;
+	y2 = glConfig.vidHeight - (tr.refdef.y + tr.refdef.height);
 
 	// fudge around because of frac screen scale
 	if (x > 0)
 		x--;
-	if (x2 < glwidth)
+	if (x2 < glConfig.vidWidth)
 		x2++;
 	if (y2 < 0)
 		y2--;
-	if (y < glheight)
+	if (y < glConfig.vidHeight)
 		y++;
 
 	w = x2 - x;
@@ -1112,7 +1111,7 @@ void R_SetupGL (void)
 		w = h = 256;
 	}
 
-	qglViewport (glx + x, gly + y2, w, h);
+	qglViewport (x, y2, w, h);
     screenaspect = (float)tr.refdef.width/tr.refdef.height;
     MYgluPerspective(tr.refdef.fov_y,  screenaspect,  4,  4096);
 
