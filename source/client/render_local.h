@@ -249,7 +249,7 @@ struct backEndCounters_t
 
 struct trGlobals_base_t
 {
-	bool					registered;		// cleared at shutdown, set at beginRegistration
+	bool					registered;			// cleared at shutdown, set at beginRegistration
 
 	int						frameCount;			// incremented every frame
 	int						visCount;			// incremented every time a new vis cluster is entered
@@ -296,6 +296,8 @@ struct trGlobals_base_t
 	model_t*				currentModel;
 
 	viewParms_t				viewParms;
+
+	orientationr_t			orient;				// for current entity
 
 	//
 	// put large tables at the end, so most elements will be
