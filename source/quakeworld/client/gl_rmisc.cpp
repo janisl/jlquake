@@ -180,7 +180,6 @@ void R_Init (void)
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
 	r_speeds = Cvar_Get("r_speeds", "0", 0);
 	r_shadows = Cvar_Get("r_shadows", "0", 0);
-	r_mirroralpha = Cvar_Get("r_mirroralpha", "1", 0);
 	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
 	r_novis = Cvar_Get("r_novis", "0", 0);
 	r_netgraph = Cvar_Get("r_netgraph", "0", 0);
@@ -348,15 +347,12 @@ void R_NewMap (void)
 
 	// identify sky texture
 	skytexturenum = -1;
-	mirrortexturenum = -1;
 	for (i=0 ; i<tr.worldModel->brush29_numtextures ; i++)
 	{
 		if (!tr.worldModel->brush29_textures[i])
 			continue;
 		if (!QStr::NCmp(tr.worldModel->brush29_textures[i]->name,"sky",3) )
 			skytexturenum = i;
-		if (!QStr::NCmp(tr.worldModel->brush29_textures[i]->name,"window02_1",10) )
-			mirrortexturenum = i;
  		tr.worldModel->brush29_textures[i]->texturechain = NULL;
 	}
 }

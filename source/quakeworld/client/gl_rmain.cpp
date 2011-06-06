@@ -31,10 +31,6 @@ qboolean	envmap;				// true during envmap command capture
 image_t*	particletexture;	// little dot for particles
 image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
 
-int			mirrortexturenum;	// quake texturenum, not gltexturenum
-qboolean	mirror;
-cplane_t	*mirror_plane;
-
 float	r_world_matrix[16];
 float	r_base_world_matrix[16];
 
@@ -59,7 +55,6 @@ QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
 QCvar*	r_speeds;
 QCvar*	r_shadows;
-QCvar*	r_mirroralpha;
 QCvar*	r_dynamic;
 QCvar*	r_novis;
 QCvar*	r_netgraph;
@@ -829,16 +824,7 @@ void R_SetupGL (void)
 //    MYgluPerspective (yfov,  screenaspect,  4,  4096);
     MYgluPerspective (tr.refdef.fov_y,  screenaspect,  4,  4096);
 
-	if (mirror)
-	{
-		if (mirror_plane->normal[2])
-			qglScalef (1, -1, 1);
-		else
-			qglScalef (-1, 1, 1);
-		qglCullFace(GL_BACK);
-	}
-	else
-		qglCullFace(GL_FRONT);
+	qglCullFace(GL_FRONT);
 
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
@@ -916,24 +902,12 @@ R_Clear
 */
 void R_Clear (void)
 {
-	if (r_mirroralpha->value != 1.0)
-	{
-		if (gl_clear->value)
-			qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		else
-			qglClear (GL_DEPTH_BUFFER_BIT);
-		gldepthmin = 0;
-		gldepthmax = 0.5;
-	}
+	if (gl_clear->value)
+		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	else
-	{
-		if (gl_clear->value)
-			qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		else
-			qglClear (GL_DEPTH_BUFFER_BIT);
-		gldepthmin = 0;
-		gldepthmax = 1;
-	}
+		qglClear (GL_DEPTH_BUFFER_BIT);
+	gldepthmin = 0;
+	gldepthmax = 1;
 
 	qglDepthRange (gldepthmin, gldepthmax);
 }
@@ -967,8 +941,6 @@ void R_RenderView (void)
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	mirror = false;
 
 	if (gl_finish->value)
 		qglFinish ();

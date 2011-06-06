@@ -88,7 +88,6 @@ extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_speeds;
 extern	QCvar*	r_shadows;
-extern	QCvar*	r_mirroralpha;
 extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 extern	QCvar*	r_netgraph;
@@ -103,10 +102,6 @@ extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 extern	QCvar*	gl_finish;
-
-extern	int			mirrortexturenum;	// quake texturenum, not gltexturenum
-extern	qboolean	mirror;
-extern	cplane_t	*mirror_plane;
 
 extern	float	r_world_matrix[16];
 
