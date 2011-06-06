@@ -35,7 +35,6 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 model_t*		loadmodel;
-model_t*		currentmodel;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

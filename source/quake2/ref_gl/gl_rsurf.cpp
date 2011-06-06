@@ -79,7 +79,7 @@ image_t *R_TextureAnimation (mbrush38_texinfo_t *tex)
 	if (!tex->next)
 		return tex->image;
 
-	c = currententity->e.frame % tex->numframes;
+	c = tr.currentEntity->e.frame % tex->numframes;
 	while (c)
 	{
 		tex = tex->next;
@@ -338,7 +338,7 @@ void R_BlendLightmaps (void)
 		GL_State(0);
 	}
 
-	if ( currentmodel == tr.worldModel )
+	if ( tr.currentModel == tr.worldModel )
 		c_visible_lightmaps = 0;
 
 	/*
@@ -348,7 +348,7 @@ void R_BlendLightmaps (void)
 	{
 		if ( gl_lms.lightmap_surfaces[i] )
 		{
-			if (currentmodel == tr.worldModel)
+			if (tr.currentModel == tr.worldModel)
 				c_visible_lightmaps++;
 			GL_Bind( tr.lightmaps[i]);
 
@@ -369,7 +369,7 @@ void R_BlendLightmaps (void)
 
 		GL_Bind( tr.lightmaps[0]);
 
-		if (currentmodel == tr.worldModel)
+		if (tr.currentModel == tr.worldModel)
 			c_visible_lightmaps++;
 
 		newdrawsurf = gl_lms.lightmap_surfaces[0];
@@ -855,12 +855,12 @@ void R_DrawInlineBModel (void)
 	lt = tr.refdef.dlights;
 	for (k=0 ; k<tr.refdef.num_dlights ; k++, lt++)
 	{
-		R_MarkLights (lt, 1<<k, currentmodel->brush38_nodes + currentmodel->brush38_firstnode);
+		R_MarkLights (lt, 1<<k, tr.currentModel->brush38_nodes + tr.currentModel->brush38_firstnode);
 	}
 
-	psurf = &currentmodel->brush38_surfaces[currentmodel->brush38_firstmodelsurface];
+	psurf = &tr.currentModel->brush38_surfaces[tr.currentModel->brush38_firstmodelsurface];
 
-	if ( currententity->e.renderfx & RF_TRANSLUCENT )
+	if ( tr.currentEntity->e.renderfx & RF_TRANSLUCENT )
 	{
 		qglColor4f (1,1,1,0.25);
 		GL_TexEnv( GL_MODULATE );
@@ -874,7 +874,7 @@ void R_DrawInlineBModel (void)
 	//
 	// draw texture
 	//
-	for (i=0 ; i<currentmodel->brush38_nummodelsurfaces ; i++, psurf++)
+	for (i=0 ; i<tr.currentModel->brush38_nummodelsurfaces ; i++, psurf++)
 	{
 	// find which side of the node we are on
 		pplane = psurf->plane;
@@ -903,7 +903,7 @@ void R_DrawInlineBModel (void)
 		}
 	}
 
-	if ( !(currententity->e.renderfx & RF_TRANSLUCENT) )
+	if ( !(tr.currentEntity->e.renderfx & RF_TRANSLUCENT) )
 	{
 		if ( !qglMultiTexCoord2fARB )
 			R_BlendLightmaps ();
@@ -927,25 +927,23 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	int			i;
 	qboolean	rotated;
 
-	if (currentmodel->brush38_nummodelsurfaces == 0)
+	if (tr.currentModel->brush38_nummodelsurfaces == 0)
 		return;
-
-	currententity = e;
 
 	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
 	{
 		rotated = true;
 		for (i=0 ; i<3 ; i++)
 		{
-			mins[i] = e->e.origin[i] - currentmodel->q2_radius;
-			maxs[i] = e->e.origin[i] + currentmodel->q2_radius;
+			mins[i] = e->e.origin[i] - tr.currentModel->q2_radius;
+			maxs[i] = e->e.origin[i] + tr.currentModel->q2_radius;
 		}
 	}
 	else
 	{
 		rotated = false;
-		VectorAdd (e->e.origin, currentmodel->q2_mins, mins);
-		VectorAdd (e->e.origin, currentmodel->q2_maxs, maxs);
+		VectorAdd (e->e.origin, tr.currentModel->q2_mins, mins);
+		VectorAdd (e->e.origin, tr.currentModel->q2_maxs, maxs);
 	}
 
 	if (R_CullBox (mins, maxs))
@@ -1119,22 +1117,19 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	trRefEntity_t	ent;
-
 	if (!r_drawworld->value)
 		return;
 
 	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 		return;
 
-	currentmodel = tr.worldModel;
+	tr.currentModel = tr.worldModel;
 
 	VectorCopy(tr.refdef.vieworg, modelorg);
 
 	// auto cycle the world frame for texture animation
-	Com_Memset(&ent, 0, sizeof(ent));
-	ent.e.frame = (int)(tr.refdef.floatTime * 2);
-	currententity = &ent;
+	tr.worldEntity.e.frame = (int)(tr.refdef.floatTime * 2);
+	tr.currentEntity = &tr.worldEntity;
 
 	qglColor3f (1,1,1);
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));

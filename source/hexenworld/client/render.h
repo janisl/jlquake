@@ -122,7 +122,6 @@ extern	int		reinit_surfcache;
 
 extern	refdef_t	r_refdef;
 
-extern	entity_t	r_worldentity;
 
 extern	QCvar*	r_teamcolor;
 

@@ -119,12 +119,6 @@ the bits are allocated as follows:
 */
 struct trGlobals_t : trGlobals_base_t
 {
-	trRefEntity_t			*currentEntity;
-	trRefEntity_t			worldEntity;		// point currentEntity at this when rendering world
-	int						currentEntityNum;
-	int						shiftedEntityNum;	// currentEntityNum << QSORT_ENTITYNUM_SHIFT
-	model_t					*currentModel;
-
 	viewParms_t				viewParms;
 
 	orientationr_t			orient;					// for current entity

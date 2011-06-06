@@ -69,8 +69,6 @@ extern	int		reinit_surfcache;
 
 extern	refdef_t	r_refdef;
 
-extern	entity_t	r_worldentity;
-
 void R_Init (void);
 void R_InitTextures (void);
 void R_InitEfrags (void);

@@ -205,7 +205,7 @@ mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base)
 	int		reletive;
 	int		count;
 
-	if (currententity->e.frame)
+	if (tr.currentEntity->e.frame)
 	{
 		if (base->alternate_anims)
 			base = base->alternate_anims;
@@ -873,8 +873,6 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	model_t		*clmodel;
 	qboolean	rotated;
 
-	currententity = e;
-
 	clmodel = R_GetModelByHandle(e->e.hModel);
 
 	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
@@ -1093,15 +1091,11 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	trRefEntity_t	ent;
 	int			i;
-
-	Com_Memset(&ent, 0, sizeof(ent));
-	ent.e.hModel = tr.worldModel->index;
 
 	VectorCopy (tr.refdef.vieworg, modelorg);
 
-	currententity = &ent;
+	tr.currentEntity = &tr.worldEntity;
 
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
@@ -1236,7 +1230,7 @@ void BuildSurfaceDisplayList (mbrush29_surface_t *fa)
 	mbrush29_glpoly_t	*poly;
 
 // reconstruct the polygon
-	pedges = currentmodel->brush29_edges;
+	pedges = tr.currentModel->brush29_edges;
 	lnumverts = fa->numedges;
 	vertpage = 0;
 
@@ -1251,7 +1245,7 @@ void BuildSurfaceDisplayList (mbrush29_surface_t *fa)
 
 	for (i=0 ; i<lnumverts ; i++)
 	{
-		lindex = currentmodel->brush29_surfedges[fa->firstedge + i];
+		lindex = tr.currentModel->brush29_surfedges[fa->firstedge + i];
 
 		if (lindex > 0)
 		{
@@ -1392,7 +1386,7 @@ void GL_BuildLightmaps (void)
 		if (m->name[0] == '*')
 			continue;
 		r_pcurrentvertbase = m->brush29_vertexes;
-		currentmodel = m;
+		tr.currentModel = m;
 		for (i=0 ; i<m->brush29_numsurfaces ; i++)
 		{
 			GL_CreateSurfaceLightmap (m->brush29_surfaces + i);

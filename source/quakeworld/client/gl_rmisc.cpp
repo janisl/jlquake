@@ -341,9 +341,6 @@ void R_NewMap (void)
 	for (i=0 ; i<256 ; i++)
 		d_lightstylevalue[i] = 264;		// normal light value
 
-	Com_Memset(&r_worldentity, 0, sizeof(r_worldentity));
-	r_worldentity.model = tr.worldModel->index;
-
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 

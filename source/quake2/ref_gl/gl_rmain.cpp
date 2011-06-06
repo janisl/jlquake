@@ -38,8 +38,6 @@ glstate2_t  gl_state;
 
 image_t		*r_particletexture;	// little dot for particles
 
-trRefEntity_t	*currententity;
-
 cplane_t	frustum[4];
 
 int			c_brush_polys, c_alias_polys;
@@ -165,7 +163,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 
-	psprite = (dsprite2_t *)currentmodel->q2_extradata;
+	psprite = (dsprite2_t *)tr.currentModel->q2_extradata;
 
 #if 0
 	if (e->frame < 0 || e->frame >= psprite->numframes)
@@ -183,7 +181,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	{	// bullet marks on walls
 	vec3_t		v_forward, v_right, v_up;
 
-	AngleVectors (currententity->angles, v_forward, v_right, v_up);
+	AngleVectors (tr.currentEntity->angles, v_forward, v_right, v_up);
 		up = v_up;
 		right = v_right;
 	}
@@ -208,7 +206,7 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 
 	qglColor4f( 1, 1, 1, alpha );
 
-    GL_Bind(currentmodel->q2_skins[e->e.frame]);
+    GL_Bind(tr.currentModel->q2_skins[e->e.frame]);
 
 	GL_TexEnv( GL_MODULATE );
 
@@ -257,13 +255,13 @@ void R_DrawNullModel (void)
 	vec3_t	shadelight;
 	int		i;
 
-	if ( currententity->e.renderfx & RF_ABSOLUTE_LIGHT)
-		shadelight[0] = shadelight[1] = shadelight[2] = currententity->e.radius;
+	if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT)
+		shadelight[0] = shadelight[1] = shadelight[2] = tr.currentEntity->e.radius;
 	else
-		R_LightPoint (currententity->e.origin, shadelight);
+		R_LightPoint (tr.currentEntity->e.origin, shadelight);
 
     qglPushMatrix ();
-	R_RotateForEntity (currententity);
+	R_RotateForEntity (tr.currentEntity);
 
 	qglDisable (GL_TEXTURE_2D);
 	qglColor3fv (shadelight);
@@ -300,30 +298,30 @@ void R_DrawEntitiesOnList (void)
 	// draw non-transparent first
 	for (i=0 ; i<tr.refdef.num_entities ; i++)
 	{
-		currententity = &tr.refdef.entities[i];
-		if (currententity->e.renderfx & RF_TRANSLUCENT)
+		tr.currentEntity = &tr.refdef.entities[i];
+		if (tr.currentEntity->e.renderfx & RF_TRANSLUCENT)
 			continue;	// solid
 
-		if (currententity->e.reType == RT_BEAM)
+		if (tr.currentEntity->e.reType == RT_BEAM)
 		{
-			R_DrawBeam( currententity );
+			R_DrawBeam( tr.currentEntity );
 		}
 		else
 		{
-			currentmodel = R_GetModelByHandle(currententity->e.hModel);
-			switch (currentmodel->type)
+			tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+			switch (tr.currentModel->type)
 			{
 			case MOD_BAD:
 				R_DrawNullModel();
 				break;
 			case MOD_MESH2:
-				R_DrawAliasModel(currententity);
+				R_DrawAliasModel(tr.currentEntity);
 				break;
 			case MOD_BRUSH38:
-				R_DrawBrushModel(currententity);
+				R_DrawBrushModel(tr.currentEntity);
 				break;
 			case MOD_SPRITE2:
-				R_DrawSpriteModel(currententity);
+				R_DrawSpriteModel(tr.currentEntity);
 				break;
 			default:
 				ri.Sys_Error (ERR_DROP, "Bad modeltype");
@@ -336,30 +334,30 @@ void R_DrawEntitiesOnList (void)
 	// we could sort these if it ever becomes a problem...
 	for (i=0 ; i<tr.refdef.num_entities ; i++)
 	{
-		currententity = &tr.refdef.entities[i];
-		if (!(currententity->e.renderfx & RF_TRANSLUCENT))
+		tr.currentEntity = &tr.refdef.entities[i];
+		if (!(tr.currentEntity->e.renderfx & RF_TRANSLUCENT))
 			continue;	// solid
 
-		if (currententity->e.reType == RT_BEAM)
+		if (tr.currentEntity->e.reType == RT_BEAM)
 		{
-			R_DrawBeam( currententity );
+			R_DrawBeam( tr.currentEntity );
 		}
 		else
 		{
-			currentmodel = R_GetModelByHandle(currententity->e.hModel);
-			switch (currentmodel->type)
+			tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+			switch (tr.currentModel->type)
 			{
 			case MOD_BAD:
 				R_DrawNullModel();
 				break;
 			case MOD_MESH2:
-				R_DrawAliasModel(currententity);
+				R_DrawAliasModel(tr.currentEntity);
 				break;
 			case MOD_BRUSH38:
-				R_DrawBrushModel(currententity);
+				R_DrawBrushModel(tr.currentEntity);
 				break;
 			case MOD_SPRITE2:
-				R_DrawSpriteModel(currententity);
+				R_DrawSpriteModel(tr.currentEntity);
 				break;
 			default:
 				ri.Sys_Error (ERR_DROP, "Bad modeltype");

@@ -432,7 +432,7 @@ static void GL_SubdivideSurface(mbrush38_surface_t* fa)
 static void GL_BuildPolygonFromSurface(mbrush38_surface_t* fa)
 {
 	// reconstruct the polygon
-	mbrush38_edge_t* pedges = currentmodel->brush38_edges;
+	mbrush38_edge_t* pedges = tr.currentModel->brush38_edges;
 	int lnumverts = fa->numedges;
 
 	vec3_t total;
@@ -449,19 +449,19 @@ static void GL_BuildPolygonFromSurface(mbrush38_surface_t* fa)
 
 	for (int i = 0; i < lnumverts; i++)
 	{
-		int lindex = currentmodel->brush38_surfedges[fa->firstedge + i];
+		int lindex = tr.currentModel->brush38_surfedges[fa->firstedge + i];
 
 		mbrush38_edge_t* r_pedge;
 		float* vec;
 		if (lindex > 0)
 		{
 			r_pedge = &pedges[lindex];
-			vec = currentmodel->brush38_vertexes[r_pedge->v[0]].position;
+			vec = tr.currentModel->brush38_vertexes[r_pedge->v[0]].position;
 		}
 		else
 		{
 			r_pedge = &pedges[-lindex];
-			vec = currentmodel->brush38_vertexes[r_pedge->v[1]].position;
+			vec = tr.currentModel->brush38_vertexes[r_pedge->v[1]].position;
 		}
 		float s = DotProduct(vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
 		s /= fa->texinfo->image->width;
@@ -517,7 +517,7 @@ static void Mod_LoadFaces(bsp38_lump_t* l)
 	loadmodel->brush38_surfaces = out;
 	loadmodel->brush38_numsurfaces = count;
 
-	currentmodel = loadmodel;
+	tr.currentModel = loadmodel;
 
 	GL_BeginBuildingLightmaps(loadmodel);
 

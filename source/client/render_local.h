@@ -289,6 +289,12 @@ struct trGlobals_base_t
 
 	trRefdef_t				refdef;
 
+	trRefEntity_t*			currentEntity;
+	trRefEntity_t			worldEntity;		// point currentEntity at this when rendering world
+	int						currentEntityNum;
+	int						shiftedEntityNum;	// currentEntityNum << QSORT_ENTITYNUM_SHIFT
+	model_t*				currentModel;
+
 	//
 	// put large tables at the end, so most elements will be
 	// within the +/32K indexed range on risc processors

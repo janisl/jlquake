@@ -178,7 +178,7 @@ mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base)
 	int		reletive;
 	int		count;
 
-	if (currententity->e.frame)
+	if (tr.currentEntity->e.frame)
 	{
 		if (base->alternate_anims)
 			base = base->alternate_anims;
@@ -241,7 +241,7 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 	//
 	if (! (s->flags & (BRUSH29_SURF_DRAWSKY|BRUSH29_SURF_DRAWTURB|BRUSH29_SURF_UNDERWATER) ) )
 	{
-		if (currententity->e.renderfx & RF_WATERTRANS)
+		if (tr.currentEntity->e.renderfx & RF_WATERTRANS)
 		{
 			GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 //			qglColor4f (1,1,1,r_wateralpha.value);
@@ -251,12 +251,12 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 			intensity = 1;
 			// rjr
 		}
-		if (currententity->e.renderfx & RF_ABSOLUTE_LIGHT)
+		if (tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT)
 		{
-			// currententity->abslight   0 - 255
+			// tr.currentEntity->abslight   0 - 255
 			// rjr
 			GL_TexEnv(GL_MODULATE);
-			intensity = currententity->e.radius;
+			intensity = tr.currentEntity->e.radius;
 //			intensity = 0;
 		}
 
@@ -288,8 +288,8 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 
 		GL_State(GLS_DEFAULT);
 
-		if ((currententity->e.renderfx & RF_ABSOLUTE_LIGHT) ||
-			(currententity->e.renderfx & RF_WATERTRANS))
+		if ((tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT) ||
+			(tr.currentEntity->e.renderfx & RF_WATERTRANS))
 		{
 			GL_TexEnv(GL_REPLACE);
 		}
@@ -488,7 +488,7 @@ void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override)
 
 	c_brush_polys++;
 
-	if (currententity->e.renderfx & RF_WATERTRANS)
+	if (tr.currentEntity->e.renderfx & RF_WATERTRANS)
 	{
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		//			qglColor4f (1,1,1,r_wateralpha.value);
@@ -499,12 +499,12 @@ void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override)
 		intensity = 1.0;
 
 	}
-	if (currententity->e.renderfx & RF_ABSOLUTE_LIGHT)
+	if (tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT)
 	{
-		// currententity->abslight   0 - 255
+		// tr.currentEntity->abslight   0 - 255
 		// rjr
 		GL_TexEnv(GL_MODULATE);
-		intensity = currententity->e.radius;
+		intensity = tr.currentEntity->e.radius;
 //		intensity = 0;
 	}
 	
@@ -554,13 +554,13 @@ dynamic:
 			R_BuildLightMap (fa, base, BLOCK_WIDTH*4);
 		}
 	}
-	if ((currententity->e.renderfx & RF_ABSOLUTE_LIGHT) ||
-	    (currententity->e.renderfx & RF_WATERTRANS))
+	if ((tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT) ||
+	    (tr.currentEntity->e.renderfx & RF_WATERTRANS))
 	{
 		GL_TexEnv(GL_REPLACE);
 	}
 
-	if (currententity->e.renderfx & RF_WATERTRANS)
+	if (tr.currentEntity->e.renderfx & RF_WATERTRANS)
 	{
 		GL_State(GLS_DEFAULT);
 	}
@@ -687,8 +687,6 @@ void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent)
 	model_t		*clmodel;
 	qboolean	rotated;
 
-	currententity = e;
-
 	clmodel = R_GetModelByHandle(e->e.hModel);
 
 	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
@@ -767,7 +765,7 @@ void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent)
 		}
 	}
 
-	if (!Translucent && !(currententity->e.renderfx & RF_ABSOLUTE_LIGHT))
+	if (!Translucent && !(tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT))
 		R_BlendLightmaps(Translucent);
 
 	qglPopMatrix ();
@@ -904,15 +902,11 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	trRefEntity_t	ent;
 	int			i;
-
-	Com_Memset(&ent, 0, sizeof(ent));
-	ent.e.hModel = tr.worldModel->index;
 
 	VectorCopy (tr.refdef.vieworg, modelorg);
 
-	currententity = &ent;
+	tr.currentEntity = &tr.worldEntity;
 
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
@@ -1048,7 +1042,7 @@ void BuildSurfaceDisplayList (mbrush29_surface_t *fa)
 	mbrush29_glpoly_t	*poly;
 
 // reconstruct the polygon
-	pedges = currentmodel->brush29_edges;
+	pedges = tr.currentModel->brush29_edges;
 	lnumverts = fa->numedges;
 	vertpage = 0;
 
@@ -1063,7 +1057,7 @@ void BuildSurfaceDisplayList (mbrush29_surface_t *fa)
 
 	for (i=0 ; i<lnumverts ; i++)
 	{
-		lindex = currentmodel->brush29_surfedges[fa->firstedge + i];
+		lindex = tr.currentModel->brush29_surfedges[fa->firstedge + i];
 
 		if (lindex > 0)
 		{
@@ -1204,7 +1198,7 @@ void GL_BuildLightmaps (void)
 		if (m->name[0] == '*')
 			continue;
 		r_pcurrentvertbase = m->brush29_vertexes;
-		currentmodel = m;
+		tr.currentModel = m;
 		for (i=0 ; i<m->brush29_numsurfaces ; i++)
 		{
 			GL_CreateSurfaceLightmap (m->brush29_surfaces + i);

@@ -22,12 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-entity_t	r_worldentity;
-
 qboolean	r_cache_thrash;		// compatability
 
 vec3_t		modelorg, r_entorigin;
-trRefEntity_t*	currententity;
 
 cplane_t	frustum[4];
 
@@ -203,13 +200,13 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
 	frame = R_GetSpriteFrame (e);
-	psprite = (msprite1_t*)R_GetModelByHandle(currententity->e.hModel)->q1_cache;
+	psprite = (msprite1_t*)R_GetModelByHandle(tr.currentEntity->e.hModel)->q1_cache;
 
 	if (psprite->type == SPR_ORIENTED)
 	{
 		// bullet marks on walls
-		up = currententity->e.axis[2];
-		VectorSubtract(vec3_origin, currententity->e.axis[1], v_right);
+		up = tr.currentEntity->e.axis[2];
+		VectorSubtract(vec3_origin, tr.currentEntity->e.axis[1], v_right);
 		right = v_right;
 	}
 	else
@@ -346,7 +343,7 @@ void GL_DrawAliasShadow (mesh1hdr_t *paliashdr, int posenum)
 	float	height, lheight;
 	int		count;
 
-	lheight = currententity->e.origin[2] - lightspot[2];
+	lheight = tr.currentEntity->e.origin[2] - lightspot[2];
 
 	height = 0;
 	verts = paliashdr->posedata;
@@ -455,10 +452,10 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	vec3_t		mins, maxs;
 	mesh1hdr_t	*paliashdr;
 
-	clmodel = R_GetModelByHandle(currententity->e.hModel);
+	clmodel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
-	VectorAdd (currententity->e.origin, clmodel->q1_mins, mins);
-	VectorAdd (currententity->e.origin, clmodel->q1_maxs, maxs);
+	VectorAdd (tr.currentEntity->e.origin, clmodel->q1_mins, mins);
+	VectorAdd (tr.currentEntity->e.origin, clmodel->q1_maxs, maxs);
 
 	if (R_CullBox (mins, maxs))
 		return;
@@ -469,14 +466,14 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 	}
 
-	VectorCopy (currententity->e.origin, r_entorigin);
+	VectorCopy (tr.currentEntity->e.origin, r_entorigin);
 	VectorSubtract (tr.refdef.vieworg, r_entorigin, modelorg);
 
 	//
 	// get lighting information
 	//
 
-	ambientlight = shadelight = R_LightPoint (currententity->e.origin);
+	ambientlight = shadelight = R_LightPoint (tr.currentEntity->e.origin);
 
 	// allways give the gun some light
 	if ((e->e.renderfx & RF_MINLIGHT) && ambientlight < 24)
@@ -486,7 +483,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	{
 		if (cl_dlights[lnum].die >= cl.time)
 		{
-			VectorSubtract (currententity->e.origin,
+			VectorSubtract (tr.currentEntity->e.origin,
 							cl_dlights[lnum].origin,
 							dist);
 			add = cl_dlights[lnum].radius - VectorLength(dist);
@@ -515,7 +512,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	
 	if (e->e.renderfx & RF_ABSOLUTE_LIGHT)
 	{
-		ambientlight = shadelight = currententity->e.radius * 256;
+		ambientlight = shadelight = tr.currentEntity->e.radius * 256;
 	}
 
 	vec3_t tmp_angles;
@@ -530,7 +527,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	//
 	// locate the proper data
 	//
-	paliashdr = (mesh1hdr_t *)Mod_Extradata (R_GetModelByHandle(currententity->e.hModel));
+	paliashdr = (mesh1hdr_t *)Mod_Extradata (R_GetModelByHandle(tr.currentEntity->e.hModel));
 
 	c_alias_polys += paliashdr->numtris;
 
@@ -563,7 +560,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	if (gl_affinemodels->value)
 		qglHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
-	R_SetupAliasFrame (currententity->e.frame, paliashdr);
+	R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr);
 
 	GL_TexEnv(GL_REPLACE);
 
@@ -611,28 +608,28 @@ void R_DrawEntitiesOnList (void)
 	// draw sprites seperately, because of alpha blending
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
-		currententity = &cl_visedicts[i];
+		tr.currentEntity = &cl_visedicts[i];
 
-		if (currententity->e.renderfx & RF_FIRST_PERSON)
+		if (tr.currentEntity->e.renderfx & RF_FIRST_PERSON)
 		{
 			if (!r_drawviewmodel->value || envmap)
 			{
 				continue;
 			}
 		}
-		if (currententity->e.renderfx & RF_THIRD_PERSON)
+		if (tr.currentEntity->e.renderfx & RF_THIRD_PERSON)
 		{
 			continue;
 		}
 
-		switch (R_GetModelByHandle(currententity->e.hModel)->type)
+		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
 		{
 		case MOD_MESH1:
-			R_DrawAliasModel (currententity);
+			R_DrawAliasModel(tr.currentEntity);
 			break;
 
 		case MOD_BRUSH29:
-			R_DrawBrushModel (currententity);
+			R_DrawBrushModel(tr.currentEntity);
 			break;
 
 		default:
@@ -642,12 +639,12 @@ void R_DrawEntitiesOnList (void)
 
 	for (i=0 ; i<cl_numvisedicts ; i++)
 	{
-		currententity = &cl_visedicts[i];
+		tr.currentEntity = &cl_visedicts[i];
 
-		switch (R_GetModelByHandle(currententity->e.hModel)->type)
+		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
 		{
 		case MOD_SPRITE:
-			R_DrawSpriteModel (currententity);
+			R_DrawSpriteModel(tr.currentEntity);
 			break;
 
 		default :
@@ -964,7 +961,7 @@ void R_RenderView (void)
 	tr.frameSceneNum = 0;
 	tr.frameSceneNum++;
 
-	if (!r_worldentity.model || !tr.worldModel)
+	if (!tr.worldModel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
 	if (r_speeds->value)
