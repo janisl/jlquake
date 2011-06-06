@@ -295,6 +295,8 @@ struct trGlobals_base_t
 	int						shiftedEntityNum;	// currentEntityNum << QSORT_ENTITYNUM_SHIFT
 	model_t*				currentModel;
 
+	viewParms_t				viewParms;
+
 	//
 	// put large tables at the end, so most elements will be
 	// within the +/32K indexed range on risc processors

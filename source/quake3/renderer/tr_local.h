@@ -119,8 +119,6 @@ the bits are allocated as follows:
 */
 struct trGlobals_t : trGlobals_base_t
 {
-	viewParms_t				viewParms;
-
 	orientationr_t			orient;					// for current entity
 
 	int						viewCluster;
