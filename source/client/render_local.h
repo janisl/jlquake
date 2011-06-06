@@ -251,6 +251,7 @@ struct trGlobals_base_t
 {
 	int						frameCount;			// incremented every frame
 	int						visCount;			// incremented every time a new vis cluster is entered
+	int						sceneCount;			// incremented every scene
 
 	bool					worldMapLoaded;
 	world_t*				world;

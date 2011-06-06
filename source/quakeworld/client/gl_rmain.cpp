@@ -959,6 +959,8 @@ void R_RenderView (void)
 	if (r_norefresh->value)
 		return;
 
+	tr.sceneCount++;
+
 	if (!r_worldentity.model || !tr.worldModel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 

@@ -741,6 +741,8 @@ void R_RenderView (refdef_t *fd)
 	if (r_norefresh->value)
 		return;
 
+	tr.sceneCount++;
+
 	R_CommonRenderScene(fd);
 
 	tr.refdef.num_entities = r_numentities;

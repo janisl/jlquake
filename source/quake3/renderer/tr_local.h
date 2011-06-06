@@ -121,7 +121,6 @@ struct trGlobals_t : trGlobals_base_t
 {
 	qboolean				registered;		// cleared at shutdown, set at beginRegistration
 
-	int						sceneCount;		// incremented every scene
 	int						viewCount;		// incremented every view (twice a scene if portaled)
 											// and every R_MarkFragments call
 
