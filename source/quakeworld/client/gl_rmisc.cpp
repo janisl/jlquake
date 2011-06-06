@@ -483,6 +483,8 @@ void VID_Init()
 	vid.recalc_refdef = 1;
 
 	vid.colormap = host_colormap;
+
+	tr.registered = true;
 }
 
 void VID_Shutdown(void)
@@ -493,6 +495,8 @@ void VID_Shutdown(void)
 
 	// shutdown QGL subsystem
 	QGL_Shutdown();
+
+	tr.registered = false;
 }
 
 void GL_EndRendering (void)

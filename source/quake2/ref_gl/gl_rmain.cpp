@@ -962,6 +962,8 @@ int R_Init()
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
 		ri.Con_Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
+
+	tr.registered = true;
 	return 0;
 }
 
@@ -990,6 +992,8 @@ void R_Shutdown (void)
 	** shutdown our QGL subsystem
 	*/
 	QGL_Shutdown();
+
+	tr.registered = false;
 }
 
 

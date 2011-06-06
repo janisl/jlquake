@@ -249,6 +249,8 @@ struct backEndCounters_t
 
 struct trGlobals_base_t
 {
+	bool					registered;		// cleared at shutdown, set at beginRegistration
+
 	int						frameCount;			// incremented every frame
 	int						visCount;			// incremented every time a new vis cluster is entered
 	int						sceneCount;			// incremented every scene

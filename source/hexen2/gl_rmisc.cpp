@@ -521,6 +521,8 @@ void VID_Init()
 	vid.colormap = host_colormap;
 
 	vid_initialized = true;
+
+	tr.registered = true;
 }
 
 void VID_Shutdown(void)
@@ -531,6 +533,8 @@ void VID_Shutdown(void)
 
 	// shutdown QGL subsystem
 	QGL_Shutdown();
+
+	tr.registered = false;
 }
 
 void GL_EndRendering (void)

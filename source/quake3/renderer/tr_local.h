@@ -119,10 +119,6 @@ the bits are allocated as follows:
 */
 struct trGlobals_t : trGlobals_base_t
 {
-	qboolean				registered;		// cleared at shutdown, set at beginRegistration
-
-	image_t					*flareImage;
-
 	shader_t				*shadowShader;
 	shader_t				*projectionShadowShader;
 
