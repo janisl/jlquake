@@ -119,12 +119,6 @@ the bits are allocated as follows:
 */
 struct trGlobals_t : trGlobals_base_t
 {
-	shader_t				*shadowShader;
-	shader_t				*projectionShadowShader;
-
-	shader_t				*flareShader;
-	shader_t				*sunShader;
-
 	trRefEntity_t			*currentEntity;
 	trRefEntity_t			worldEntity;		// point currentEntity at this when rendering world
 	int						currentEntityNum;

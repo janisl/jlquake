@@ -274,6 +274,12 @@ struct trGlobals_base_t
 
 	shader_t*				defaultShader;
 
+	shader_t*				shadowShader;
+	shader_t*				projectionShadowShader;
+
+	shader_t*				flareShader;
+	shader_t*				sunShader;
+
 	float					identityLight;		// 1.0 / ( 1 << overbrightBits )
 	int						identityLightByte;	// identityLight * 255
 	int						overbrightBits;		// r_overbrightBits->integer, but set to 0 if no hw gamma
