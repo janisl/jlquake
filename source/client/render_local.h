@@ -88,6 +88,15 @@ init
 ====================================================================
 */
 
+#define MAX_DRAWIMAGES			2048
+#define MAX_LIGHTMAPS			256
+#define MAX_MOD_KNOWN			1500
+
+#define FOG_TABLE_SIZE			256
+#define FUNCTABLE_SIZE			1024
+#define FUNCTABLE_MASK			(FUNCTABLE_SIZE - 1)
+#define FUNCTABLE_SIZE2			10
+
 struct dlight_t
 {
 	vec3_t	origin;
@@ -109,6 +118,32 @@ struct particle_t
 	vec3_t	origin;
 	int		color;
 	float	alpha;
+};
+
+struct orientationr_t
+{
+	vec3_t		origin;			// in world coordinates
+	vec3_t		axis[3];		// orientation in world
+	vec3_t		viewOrigin;		// viewParms->or.origin in local coordinates
+	float		modelMatrix[16];
+};
+
+struct viewParms_t
+{
+	orientationr_t	orient;
+	orientationr_t	world;
+	vec3_t		pvsOrigin;			// may be different than or.origin for portals
+	qboolean	isPortal;			// true if this view is through a portal
+	qboolean	isMirror;			// the portal is a mirror, invert the face culling
+	int			frameSceneNum;		// copied from tr.frameSceneNum
+	int			frameCount;			// copied from tr.frameCount
+	cplane_t	portalPlane;		// clip anything behind this if mirroring
+	int			viewportX, viewportY, viewportWidth, viewportHeight;
+	float		fovX, fovY;
+	float		projectionMatrix[16];
+	cplane_t	frustum[4];
+	vec3_t		visBounds[2];
+	float		zFar;
 };
 
 // a trRefEntity_t has all the information passed in by
@@ -171,13 +206,46 @@ struct trRefdef_t
 	particle_t*		particles;
 };
 
-#define MAX_DRAWIMAGES			2048
-#define MAX_LIGHTMAPS			256
-#define MAX_MOD_KNOWN			1500
+// skins allow models to be retextured without modifying the model file
+struct skinSurface_t
+{
+	char		name[MAX_QPATH];
+	shader_t	*shader;
+};
 
-#define FOG_TABLE_SIZE			256
-#define FUNCTABLE_SIZE			1024
-#define FUNCTABLE_MASK			(FUNCTABLE_SIZE - 1)
+struct skin_t
+{
+	char		name[MAX_QPATH];		// game path, including extension
+	int			numSurfaces;
+	skinSurface_t	*surfaces[MD3_MAX_SURFACES];
+};
+
+struct frontEndCounters_t
+{
+	int		c_sphere_cull_patch_in, c_sphere_cull_patch_clip, c_sphere_cull_patch_out;
+	int		c_box_cull_patch_in, c_box_cull_patch_clip, c_box_cull_patch_out;
+	int		c_sphere_cull_md3_in, c_sphere_cull_md3_clip, c_sphere_cull_md3_out;
+	int		c_box_cull_md3_in, c_box_cull_md3_clip, c_box_cull_md3_out;
+
+	int		c_leafs;
+	int		c_dlightSurfaces;
+	int		c_dlightSurfacesCulled;
+};
+
+struct backEndCounters_t
+{
+	int		c_surfaces, c_shaders, c_vertexes, c_indexes, c_totalIndexes;
+	float	c_overDraw;
+	
+	int		c_dlightVertexes;
+	int		c_dlightIndexes;
+
+	int		c_flareAdds;
+	int		c_flareTests;
+	int		c_flareRenders;
+
+	int		msec;			// total msec for backend run
+};
 
 struct trGlobals_base_t
 {
@@ -225,6 +293,124 @@ struct trGlobals_base_t
 	float					triangleTable[FUNCTABLE_SIZE];
 	float					sawToothTable[FUNCTABLE_SIZE];
 	float					inverseSawToothTable[FUNCTABLE_SIZE];
+};
+
+/*
+=============================================================
+
+RENDERER BACK END COMMAND QUEUE
+
+=============================================================
+*/
+
+#define MAX_RENDER_COMMANDS		0x40000
+
+#define MAX_DRAWSURFS			0x10000
+#define DRAWSURF_MASK			(MAX_DRAWSURFS-1)
+
+#define MAX_ENTITIES			1023		// can't be increased without changing drawsurf bit packing
+
+// these are sort of arbitrary limits.
+// the limits apply to the sum of all scenes in a frame --
+// the main view, all the 3D icons, etc
+#define MAX_POLYS		600
+#define MAX_POLYVERTS	3000
+
+enum renderCommand_t
+{
+	RC_END_OF_LIST,
+	RC_SET_COLOR,
+	RC_STRETCH_PIC,
+	RC_DRAW_SURFS,
+	RC_DRAW_BUFFER,
+	RC_SWAP_BUFFERS,
+	RC_SCREENSHOT
+};
+
+struct renderCommandList_t
+{
+	byte	cmds[MAX_RENDER_COMMANDS];
+	int		used;
+};
+
+struct setColorCommand_t
+{
+	int		commandId;
+	float	color[4];
+};
+
+struct stretchPicCommand_t
+{
+	int		commandId;
+	shader_t	*shader;
+	float	x, y;
+	float	w, h;
+	float	s1, t1;
+	float	s2, t2;
+};
+
+struct drawSurfsCommand_t
+{
+	int		commandId;
+	trRefdef_t	refdef;
+	viewParms_t	viewParms;
+	drawSurf_t *drawSurfs;
+	int		numDrawSurfs;
+};
+
+struct drawBufferCommand_t
+{
+	int		commandId;
+	int		buffer;
+};
+
+struct swapBuffersCommand_t
+{
+	int		commandId;
+};
+
+struct screenshotCommand_t
+{
+	int commandId;
+	int x;
+	int y;
+	int width;
+	int height;
+	char *fileName;
+	qboolean jpeg;
+};
+
+// all state modified by the back end is seperated
+// from the front end state
+struct backEndState_t
+{
+	int			smpFrame;
+	trRefdef_t	refdef;
+	viewParms_t	viewParms;
+	orientationr_t	orient;
+	backEndCounters_t	pc;
+	qboolean	isHyperspace;
+	trRefEntity_t	*currentEntity;
+	qboolean	skyRenderedThisView;	// flag for drawing sun
+
+	qboolean	projection2D;	// if qtrue, drawstretchpic doesn't need to change modes
+	byte		color2D[4];
+	qboolean	vertexes2D;		// shader needs to be finished
+	trRefEntity_t	entity2D;	// currentEntity will point at this when doing 2D rendering
+};
+
+// all of the information needed by the back end must be
+// contained in a backEndData_t.  This entire structure is
+// duplicated so the front and back end can run in parallel
+// on an SMP machine
+struct backEndData_t
+{
+	drawSurf_t			drawSurfs[MAX_DRAWSURFS];
+	dlight_t			dlights[MAX_DLIGHTS];
+	trRefEntity_t		entities[MAX_ENTITIES];
+	srfPoly_t*			polys;//[MAX_POLYS];
+	polyVert_t*			polyVerts;//[MAX_POLYVERTS];
+	renderCommandList_t	commands;
 };
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);

@@ -44,46 +44,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // can't be increased without changing bit packing for drawsurfs
 
 
-typedef struct {
-	vec3_t		origin;			// in world coordinates
-	vec3_t		axis[3];		// orientation in world
-	vec3_t		viewOrigin;		// viewParms->or.origin in local coordinates
-	float		modelMatrix[16];
-} orientationr_t;
-
-//=================================================================================
-
-// skins allow models to be retextured without modifying the model file
-typedef struct {
-	char		name[MAX_QPATH];
-	shader_t	*shader;
-} skinSurface_t;
-
-typedef struct skin_s {
-	char		name[MAX_QPATH];		// game path, including extension
-	int			numSurfaces;
-	skinSurface_t	*surfaces[MD3_MAX_SURFACES];
-} skin_t;
-
-
-typedef struct {
-	orientationr_t	orient;
-	orientationr_t	world;
-	vec3_t		pvsOrigin;			// may be different than or.origin for portals
-	qboolean	isPortal;			// true if this view is through a portal
-	qboolean	isMirror;			// the portal is a mirror, invert the face culling
-	int			frameSceneNum;		// copied from tr.frameSceneNum
-	int			frameCount;			// copied from tr.frameCount
-	cplane_t	portalPlane;		// clip anything behind this if mirroring
-	int			viewportX, viewportY, viewportWidth, viewportHeight;
-	float		fovX, fovY;
-	float		projectionMatrix[16];
-	cplane_t	frustum[4];
-	vec3_t		visBounds[2];
-	float		zFar;
-} viewParms_t;
-
-
 /*
 ==============================================================================
 
@@ -125,9 +85,6 @@ extern	refimport_t		ri;
 #define	MAX_SKINS				1024
 
 
-#define	MAX_DRAWSURFS			0x10000
-#define	DRAWSURF_MASK			(MAX_DRAWSURFS-1)
-
 /*
 
 the drawsurf sort data is packed into a single 32 bit value so it can be
@@ -151,54 +108,6 @@ the bits are allocated as follows:
 #define	QSORT_ENTITYNUM_SHIFT	7
 #define	QSORT_FOGNUM_SHIFT		2
 
-/*
-** performanceCounters_t
-*/
-typedef struct {
-	int		c_sphere_cull_patch_in, c_sphere_cull_patch_clip, c_sphere_cull_patch_out;
-	int		c_box_cull_patch_in, c_box_cull_patch_clip, c_box_cull_patch_out;
-	int		c_sphere_cull_md3_in, c_sphere_cull_md3_clip, c_sphere_cull_md3_out;
-	int		c_box_cull_md3_in, c_box_cull_md3_clip, c_box_cull_md3_out;
-
-	int		c_leafs;
-	int		c_dlightSurfaces;
-	int		c_dlightSurfacesCulled;
-} frontEndCounters_t;
-
-#define FUNCTABLE_SIZE2		10
-
-
-typedef struct {
-	int		c_surfaces, c_shaders, c_vertexes, c_indexes, c_totalIndexes;
-	float	c_overDraw;
-	
-	int		c_dlightVertexes;
-	int		c_dlightIndexes;
-
-	int		c_flareAdds;
-	int		c_flareTests;
-	int		c_flareRenders;
-
-	int		msec;			// total msec for backend run
-} backEndCounters_t;
-
-// all state modified by the back end is seperated
-// from the front end state
-typedef struct {
-	int			smpFrame;
-	trRefdef_t	refdef;
-	viewParms_t	viewParms;
-	orientationr_t	orient;
-	backEndCounters_t	pc;
-	qboolean	isHyperspace;
-	trRefEntity_t	*currentEntity;
-	qboolean	skyRenderedThisView;	// flag for drawing sun
-
-	qboolean	projection2D;	// if qtrue, drawstretchpic doesn't need to change modes
-	byte		color2D[4];
-	qboolean	vertexes2D;		// shader needs to be finished
-	trRefEntity_t	entity2D;	// currentEntity will point at this when doing 2D rendering
-} backEndState_t;
 
 /*
 ** trGlobals_t 
@@ -598,97 +507,6 @@ RENDERER BACK END COMMAND QUEUE
 
 =============================================================
 */
-
-#define	MAX_RENDER_COMMANDS	0x40000
-
-typedef struct {
-	byte	cmds[MAX_RENDER_COMMANDS];
-	int		used;
-} renderCommandList_t;
-
-typedef struct {
-	int		commandId;
-	float	color[4];
-} setColorCommand_t;
-
-typedef struct {
-	int		commandId;
-	int		buffer;
-} drawBufferCommand_t;
-
-typedef struct {
-	int		commandId;
-	image_t	*image;
-	int		width;
-	int		height;
-	void	*data;
-} subImageCommand_t;
-
-typedef struct {
-	int		commandId;
-} swapBuffersCommand_t;
-
-typedef struct {
-	int		commandId;
-	int		buffer;
-} endFrameCommand_t;
-
-typedef struct {
-	int		commandId;
-	shader_t	*shader;
-	float	x, y;
-	float	w, h;
-	float	s1, t1;
-	float	s2, t2;
-} stretchPicCommand_t;
-
-typedef struct {
-	int		commandId;
-	trRefdef_t	refdef;
-	viewParms_t	viewParms;
-	drawSurf_t *drawSurfs;
-	int		numDrawSurfs;
-} drawSurfsCommand_t;
-
-typedef struct {
-	int commandId;
-	int x;
-	int y;
-	int width;
-	int height;
-	char *fileName;
-	qboolean jpeg;
-} screenshotCommand_t;
-
-typedef enum {
-	RC_END_OF_LIST,
-	RC_SET_COLOR,
-	RC_STRETCH_PIC,
-	RC_DRAW_SURFS,
-	RC_DRAW_BUFFER,
-	RC_SWAP_BUFFERS,
-	RC_SCREENSHOT
-} renderCommand_t;
-
-
-// these are sort of arbitrary limits.
-// the limits apply to the sum of all scenes in a frame --
-// the main view, all the 3D icons, etc
-#define	MAX_POLYS		600
-#define	MAX_POLYVERTS	3000
-
-// all of the information needed by the back end must be
-// contained in a backEndData_t.  This entire structure is
-// duplicated so the front and back end can run in parallel
-// on an SMP machine
-typedef struct {
-	drawSurf_t	drawSurfs[MAX_DRAWSURFS];
-	dlight_t	dlights[MAX_DLIGHTS];
-	trRefEntity_t	entities[MAX_ENTITIES];
-	srfPoly_t	*polys;//[MAX_POLYS];
-	polyVert_t	*polyVerts;//[MAX_POLYVERTS];
-	renderCommandList_t	commands;
-} backEndData_t;
 
 extern	int		max_polys;
 extern	int		max_polyverts;

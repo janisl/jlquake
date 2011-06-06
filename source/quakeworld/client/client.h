@@ -25,7 +25,7 @@ typedef struct
 	char		name[16];
 	qboolean	failedload;		// the name isn't a valid skin
 	cache_user_t	cache;
-} skin_t;
+} qw_skin_t;
 
 // player_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
@@ -77,7 +77,7 @@ typedef struct player_info_s
 
 	int		spectator;
 	byte	translations[VID_GRADES*256];
-	skin_t	*skin;
+	qw_skin_t	*skin;
 } player_info_t;
 
 
@@ -113,7 +113,6 @@ typedef struct
 //
 // client_state_t should hold all pieces of the client state
 //
-#define	MAX_DLIGHTS		32
 typedef struct
 {
 	int		key;				// so entities can reuse same entry
@@ -483,7 +482,7 @@ void CL_InitCam(void);
 //
 
 void	Skin_Find (player_info_t *sc);
-byte	*Skin_Cache (skin_t *skin);
+byte	*Skin_Cache (qw_skin_t *skin);
 void	Skin_Skins_f (void);
 void	Skin_AllSkins_f (void);
 void	Skin_NextDownload (void);

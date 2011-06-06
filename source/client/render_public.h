@@ -23,6 +23,8 @@ typedef int qhandle_t;
 // be changed.
 //
 
+#define MAX_DLIGHTS		32			// can't be increased, because bit flags are used on surfaces
+
 /*
 ** glconfig_t
 **

@@ -7,7 +7,7 @@ QCvar*		noskins;
 
 char		allskins[128];
 #define	MAX_CACHED_SKINS		128
-skin_t		skins[MAX_CACHED_SKINS];
+qw_skin_t		skins[MAX_CACHED_SKINS];
 int			numskins;
 
 /*
@@ -21,7 +21,7 @@ Skin_Find
 */
 void Skin_Find (player_info_t *sc)
 {
-	skin_t		*skin;
+	qw_skin_t		*skin;
 	int			i;
 	char		name[128];
 	const char *s;
@@ -74,7 +74,7 @@ Skin_Cache
 Returns a pointer to the skin bitmap, or NULL to use the default
 ==========
 */
-byte	*Skin_Cache (skin_t *skin)
+byte	*Skin_Cache (qw_skin_t *skin)
 {
 	char	name[1024];
 	byte	*out, *pix;
