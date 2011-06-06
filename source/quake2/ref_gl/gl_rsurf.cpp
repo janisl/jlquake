@@ -1028,7 +1028,7 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 		{
 			do
 			{
-				(*mark)->visframe = tr.frameCount;
+				(*mark)->visframe = tr.viewCount;
 				mark++;
 			} while (--c);
 		}
@@ -1074,7 +1074,7 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 	// draw stuff
 	for ( c = node->numsurfaces, surf = tr.worldModel->brush38_surfaces + node->firstsurface; c ; c--, surf++)
 	{
-		if (surf->visframe != tr.frameCount)
+		if (surf->visframe != tr.viewCount)
 			continue;
 
 		if ( (surf->flags & BRUSH38_SURF_PLANEBACK) != sidebit )
@@ -1109,42 +1109,6 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 
 	// recurse down the back side
 	R_RecursiveWorldNode (node->children[!side]);
-/*
-	for ( ; c ; c--, surf++)
-	{
-		if (surf->visframe != tr.frameCount)
-			continue;
-
-		if ( (surf->flags & BRUSH38_SURF_PLANEBACK) != sidebit )
-			continue;		// wrong side
-
-		if (surf->texinfo->flags & SURF_SKY)
-		{	// just adds to visible sky bounds
-			R_AddSkySurface (surf);
-		}
-		else if (surf->texinfo->flags & (SURF_TRANS33|SURF_TRANS66))
-		{	// add to the translucent chain
-//			surf->texturechain = alpha_surfaces;
-//			alpha_surfaces = surf;
-		}
-		else
-		{
-			if ( qglMultiTexCoord2fARB && !( surf->flags & BRUSH38_SURF_DRAWTURB ) )
-			{
-				GL_RenderLightmappedPoly( surf );
-			}
-			else
-			{
-				// the polygon is visible, so add it to the texture
-				// sorted chain
-				// FIXME: this is a hack for animation
-				image = R_TextureAnimation (surf->texinfo);
-				surf->texturechain = image->texturechain;
-				image->texturechain = surf;
-			}
-		}
-	}
-*/
 }
 
 

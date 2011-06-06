@@ -560,7 +560,7 @@ void R_SetupFrame (void)
 	int i;
 	mbrush38_leaf_t	*leaf;
 
-	tr.frameCount++;
+	tr.viewCount++;
 
 // current viewcluster
 	if (!(tr.refdef.rdflags & RDF_NOWORLDMODEL))
@@ -742,6 +742,8 @@ void R_RenderView (refdef_t *fd)
 		return;
 
 	tr.sceneCount++;
+	tr.frameSceneNum = 0;
+	tr.frameSceneNum++;
 
 	R_CommonRenderScene(fd);
 
@@ -999,6 +1001,7 @@ R_BeginFrame
 */
 void R_BeginFrame( float camera_separation )
 {
+	tr.frameCount++;
 
 	gl_state.camera_separation = camera_separation;
 

@@ -1088,7 +1088,7 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 		{
 			do
 			{
-				(*mark)->visframe = tr.frameCount;
+				(*mark)->visframe = tr.viewCount;
 				mark++;
 			} while (--c);
 		}
@@ -1139,7 +1139,7 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 		{
 			for ( ; c ; c--, surf++)
 			{
-				if (surf->visframe != tr.frameCount)
+				if (surf->visframe != tr.viewCount)
 					continue;
 
 				// don't backface underwater surfaces, because they warp

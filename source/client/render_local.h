@@ -252,6 +252,12 @@ struct trGlobals_base_t
 	int						frameCount;			// incremented every frame
 	int						visCount;			// incremented every time a new vis cluster is entered
 	int						sceneCount;			// incremented every scene
+	int						viewCount;			// incremented every view (twice a scene if portaled)
+												// and every R_MarkFragments call
+
+	int						smpFrame;			// toggles from 0 to 1 every endFrame
+
+	int						frameSceneNum;		// zeroed at RE_BeginFrame
 
 	bool					worldMapLoaded;
 	world_t*				world;

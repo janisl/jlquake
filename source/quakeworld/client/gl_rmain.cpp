@@ -747,7 +747,7 @@ void R_SetupFrame (void)
 
 	R_AnimateLight ();
 
-	tr.frameCount++;
+	tr.viewCount++;
 
 	//
 	// texturemode stuff
@@ -959,7 +959,10 @@ void R_RenderView (void)
 	if (r_norefresh->value)
 		return;
 
+	tr.frameCount++;
 	tr.sceneCount++;
+	tr.frameSceneNum = 0;
+	tr.frameSceneNum++;
 
 	if (!r_worldentity.model || !tr.worldModel)
 		Sys_Error ("R_RenderView: NULL worldmodel");

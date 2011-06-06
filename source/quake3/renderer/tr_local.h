@@ -121,13 +121,6 @@ struct trGlobals_t : trGlobals_base_t
 {
 	qboolean				registered;		// cleared at shutdown, set at beginRegistration
 
-	int						viewCount;		// incremented every view (twice a scene if portaled)
-											// and every R_MarkFragments call
-
-	int						smpFrame;		// toggles from 0 to 1 every endFrame
-
-	int						frameSceneNum;	// zeroed at RE_BeginFrame
-
 	image_t					*flareImage;
 
 	shader_t				*shadowShader;
