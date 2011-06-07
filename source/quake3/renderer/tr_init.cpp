@@ -768,6 +768,7 @@ void RE_Shutdown( qboolean destroyWindow ) {
 		R_SyncRenderThread();
 		R_ShutdownCommandBuffers();
 		R_FreeModels();
+		R_FreeShaders();
 		R_DeleteTextures();
 	}
 

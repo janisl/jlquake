@@ -26,6 +26,7 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define SHADER_HASH_SIZE	1024
 #define MAX_SHADERTEXT_HASH	2048
 #define MAX_SHADER_FILES	4096
 
@@ -58,9 +59,9 @@ struct collapse_t
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-shader_t*		ShaderHashTable[SHADER_HASH_SIZE];
-
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+static shader_t*		ShaderHashTable[SHADER_HASH_SIZE];
 
 // the shader is parsed into these global variables, then copied into
 // dynamically allocated memory if it is valid.
@@ -3108,6 +3109,39 @@ void R_InitShaders()
 	ScanAndLoadShaderFiles();
 
 	CreateExternalShaders();
+}
+
+//==========================================================================
+//
+//	R_FreeShaders
+//
+//==========================================================================
+
+void R_FreeShaders()
+{
+	for (int i = 0; i < tr.numShaders; i++)
+	{
+		shader_t* sh = tr.shaders[i];
+		for (int j = 0; j < MAX_SHADER_STAGES; j++)
+		{
+			if (!sh->stages[j])
+			{
+				break;
+			}
+			for (int b = 0; b < NUM_TEXTURE_BUNDLES; b++)
+			{
+				delete[] sh->stages[j]->bundle[b].texMods;
+			}
+			delete sh->stages[j];
+		}
+		delete sh;
+	}
+	if (s_shaderText)
+	{
+		delete[] shaderTextHashTable[0];
+		delete[] s_shaderText;
+		s_shaderText = NULL;
+	}
 }
 
 //==========================================================================

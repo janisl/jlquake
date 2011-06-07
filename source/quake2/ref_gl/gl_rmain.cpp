@@ -975,6 +975,7 @@ void R_Shutdown (void)
 
 	R_FreeModels();
 
+	R_FreeShaders();
 	R_DeleteTextures();
 
 	/*

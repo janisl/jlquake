@@ -377,6 +377,7 @@ struct shaderCommands_t
 };
 
 void R_InitShaders();
+void R_FreeShaders();
 shader_t* R_FindShader(const char* Name, int LightmapIndex, bool MipRawImage);
 qhandle_t R_RegisterShaderFromImage(const char* Name, int LightmapIndex, image_t* Image, bool MipRawImage);
 shader_t* R_GetShaderByHandle(qhandle_t hShader);
@@ -389,7 +390,3 @@ void RB_CalcDeformVertexes(deformStage_t* ds);
 void RB_CalcDeformNormals(deformStage_t* ds);
 
 extern shaderCommands_t		tess;
-
-#define SHADER_HASH_SIZE		1024
-
-extern shader_t*		ShaderHashTable[SHADER_HASH_SIZE];
