@@ -1,5 +1,4 @@
 add_subdirectory(botlib)
-include_directories(/usr/include/freetype2)
 
 #############################################################################
 # CLIENT/SERVER
@@ -41,7 +40,6 @@ set(QUAKE3_FILES
 	renderer/tr_bsp.cpp
 	renderer/tr_cmds.cpp
 	renderer/tr_flares.cpp
-	renderer/tr_font.cpp
 	renderer/tr_image.cpp
 	renderer/tr_init.cpp
 	renderer/tr_light.cpp
@@ -88,7 +86,7 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlquake3 ${QUAKE3_FILES})
 set_target_properties(jlquake3 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlquake3 botlib ${CLIENTS_LIBS} freetype)
+target_link_libraries(jlquake3 botlib ${CLIENTS_LIBS})
 
 #############################################################################
 # DEDICATED SERVER                        

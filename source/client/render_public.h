@@ -248,3 +248,4 @@ qhandle_t R_RegisterModel(const char* Name);
 qhandle_t R_RegisterShader(const char* Name);
 qhandle_t R_RegisterShaderNoMip(const char* Name);
 void R_RemapShader(const char* OldShader, const char* NewShader, const char* TimeOffset);
+void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);

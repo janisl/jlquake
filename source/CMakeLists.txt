@@ -3,8 +3,12 @@ set(DEBUG_CFLAGS "${BASE_CFLAGS} -g")
 set(RELEASE_CFLAGS "${BASE_CFLAGS} -DNDEBUG -march=pentiumpro -O6 -ffast-math -funroll-loops -fomit-frame-pointer -fexpensive-optimizations -malign-loops=2 -malign-jumps=2 -malign-functions=2 -fno-strict-aliasing -fstrength-reduce")
 set(ALL_CFLAGS ${DEBUG_CFLAGS})
 
-set(CLIENTS_LIBS core client zlib jpeg asound X11 Xext Xxf86vm Xxf86dga GL)
+set(CLIENTS_LIBS core client zlib jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype)
 set(SERVERS_LIBS core zlib dl)
+
+add_definitions(-DBUILD_FREETYPE)
+
+include_directories(/usr/include/freetype2)
 
 add_subdirectory(core)
 add_subdirectory(client)

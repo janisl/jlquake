@@ -463,6 +463,7 @@ void VID_Shutdown(void)
 	R_FreeModels();
 	R_FreeShaders();
 	R_DeleteTextures();
+	R_DoneFreeType();
 	GLimp_Shutdown();
 
 	// shutdown QGL subsystem

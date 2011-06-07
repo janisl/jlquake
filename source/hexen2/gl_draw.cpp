@@ -123,6 +123,7 @@ void Draw_Init (void)
 	R_NoiseInit();
 	R_InitImages();
 	R_InitShaders();
+	R_InitFreeType();
 
 	// load the console background and the charset
 	// by hand, because we need to write the version

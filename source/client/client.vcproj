@@ -201,6 +201,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_font.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_image.cpp"
 				>
 			</File>

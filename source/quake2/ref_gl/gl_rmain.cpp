@@ -949,6 +949,7 @@ int R_Init()
 	R_NoiseInit();
 	R_InitImages();
 	R_InitShaders();
+	R_InitFreeType();
 	Mod_Init ();
 	R_InitParticleTexture ();
 	Draw_InitLocal ();
@@ -977,6 +978,7 @@ void R_Shutdown (void)
 
 	R_FreeShaders();
 	R_DeleteTextures();
+	R_DoneFreeType();
 
 	/*
 	** shut down OS specific OpenGL stuff like contexts, etc.

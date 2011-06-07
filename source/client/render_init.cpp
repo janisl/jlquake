@@ -97,6 +97,8 @@ QCvar*		r_detailTextures;
 QCvar*		r_uiFullScreen;
 QCvar*		r_printShaders;
 
+QCvar*		r_saveFontData;
+
 QCvar*		r_smp;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
@@ -269,6 +271,7 @@ void R_SharedRegister()
 	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
 	r_uiFullScreen = Cvar_Get("r_uifullscreen", "0", 0);
 	r_printShaders = Cvar_Get("r_printShaders", "0", 0);
+	r_saveFontData = Cvar_Get("r_saveFontData", "0", 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

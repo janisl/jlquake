@@ -141,8 +141,6 @@ extern	QCvar	*r_debugSurface;
 extern	QCvar	*r_showImages;
 extern	QCvar	*r_debugSort;
 
-extern	QCvar	*r_saveFontData;
-
 //====================================================================
 
 void R_SwapBuffers( int );
@@ -417,11 +415,5 @@ void RE_StretchPic ( float x, float y, float w, float h,
 					  float s1, float t1, float s2, float t2, qhandle_t hShader );
 void RE_BeginFrame( stereoFrame_t stereoFrame );
 void RE_EndFrame( int *frontEndMsec, int *backEndMsec );
-
-// font stuff
-void R_InitFreeType();
-void R_DoneFreeType();
-void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font);
-
 
 #endif //TR_LOCAL_H

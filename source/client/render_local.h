@@ -490,6 +490,10 @@ void R_CommonRenderScene(const refdef_t* fd);
 
 void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
 
+// font stuff
+void R_InitFreeType();
+void R_DoneFreeType();
+
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern QCvar*	r_logFile;				// number of frames to emit GL logs
@@ -545,6 +549,8 @@ extern QCvar*	r_ignoreFastPath;		// allows us to ignore our Tess fast paths
 extern QCvar*	r_detailTextures;		// enables/disables detail texturing stages
 extern QCvar*	r_uiFullScreen;			// ui is running fullscreen
 extern QCvar*	r_printShaders;
+
+extern QCvar*	r_saveFontData;
 
 extern QCvar*	r_smp;
 

@@ -87,7 +87,6 @@ QCvar	*r_ambientScale;
 QCvar	*r_directedScale;
 QCvar	*r_debugLight;
 QCvar	*r_debugSort;
-QCvar	*r_saveFontData;
 
 QCvar	*r_maxpolys;
 int		max_polys;
@@ -627,7 +626,6 @@ void R_Register( void )
 
 	r_debugLight = Cvar_Get( "r_debuglight", "0", CVAR_TEMP );
 	r_debugSort = Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
-	r_saveFontData = Cvar_Get( "r_saveFontData", "0", 0 );
 
 	r_nocurves = Cvar_Get ("r_nocurves", "0", CVAR_CHEAT );
 	r_drawworld = Cvar_Get ("r_drawworld", "1", CVAR_CHEAT );
@@ -848,7 +846,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.DrawStretchPic = RE_StretchPic;
 	re.DrawStretchRaw = RE_StretchRaw;
 
-	re.RegisterFont = RE_RegisterFont;
 	re.GetEntityToken = R_GetEntityToken;
 	re.inPVS = R_inPVS;
 

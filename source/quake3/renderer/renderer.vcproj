@@ -180,10 +180,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_font.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_image.cpp"
 				>
 			</File>
