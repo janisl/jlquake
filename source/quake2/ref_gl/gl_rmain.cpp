@@ -948,6 +948,7 @@ int R_Init()
 	R_InitFogTable();
 	R_NoiseInit();
 	R_InitImages();
+	R_InitShaders();
 	Mod_Init ();
 	R_InitParticleTexture ();
 	Draw_InitLocal ();
@@ -1201,16 +1202,21 @@ void R_ClearScreen()
 void R_InitSkyTexCoords( float cloudLayerHeight )
 {
 }
-shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage )
-{
-	return NULL;
-}
 void R_InitSky(mbrush29_texture_t *mt)
 {
 }
 void R_SyncRenderThread()
 {
 }
-void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset)
+void RB_StageIteratorGeneric( void )
+{
+}
+void RB_StageIteratorSky( void )
+{
+}
+void RB_StageIteratorVertexLitTexture( void )
+{
+}
+void RB_StageIteratorLightmappedMultitexture( void )
 {
 }

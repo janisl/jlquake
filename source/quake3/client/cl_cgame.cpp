@@ -543,9 +543,9 @@ int CL_CgameSystemCalls( int *args ) {
 	case CG_R_REGISTERSKIN:
 		return re.RegisterSkin( (char*)VMA(1) );
 	case CG_R_REGISTERSHADER:
-		return re.RegisterShader( (char*)VMA(1) );
+		return R_RegisterShader( (char*)VMA(1) );
 	case CG_R_REGISTERSHADERNOMIP:
-		return re.RegisterShaderNoMip( (char*)VMA(1) );
+		return R_RegisterShaderNoMip( (char*)VMA(1) );
 	case CG_R_REGISTERFONT:
 		re.RegisterFont( (char*)VMA(1), args[2], (fontInfo_t*)VMA(3));
 	case CG_R_CLEARSCENE:
@@ -679,7 +679,7 @@ int CL_CgameSystemCalls( int *args ) {
 	  return 0;
 
 	case CG_R_REMAP_SHADER:
-		re.RemapShader( (char*)VMA(1), (char*)VMA(2), (char*)VMA(3) );
+		R_RemapShader( (char*)VMA(1), (char*)VMA(2), (char*)VMA(3) );
 		return 0;
 
 /*

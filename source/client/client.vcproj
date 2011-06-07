@@ -233,6 +233,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_main.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_model.cpp"
 				>
 			</File>

@@ -359,7 +359,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
 //		Com_Memcpy(font, faceData, sizeof(fontInfo_t));
 		QStr::NCpyZ(font->name, name, sizeof(font->name));
 		for (i = GLYPH_START; i < GLYPH_END; i++) {
-			font->glyphs[i].glyph = RE_RegisterShaderNoMip(font->glyphs[i].shaderName);
+			font->glyphs[i].glyph = R_RegisterShaderNoMip(font->glyphs[i].shaderName);
 		}
 	  Com_Memcpy(&registeredFont[registeredFontCount++], font, sizeof(fontInfo_t));
 		return;
@@ -455,7 +455,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
 
     	//QStr::Sprintf (name, sizeof(name), "fonts/fontImage_%i_%i", imageNumber++, pointSize);
       image = R_CreateImage(name, imageBuff, 256, 256, qfalse, qfalse, GL_CLAMP, false);
-      h = RE_RegisterShaderFromImage(name, LIGHTMAP_2D, image, qfalse);
+      h = R_RegisterShaderFromImage(name, LIGHTMAP_2D, image, qfalse);
       for (j = lastStart; j < i; j++) {
         font->glyphs[j].glyph = h;
 				QStr::NCpyZ(font->glyphs[j].shaderName, name, sizeof(font->glyphs[j].shaderName));

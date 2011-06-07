@@ -224,10 +224,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_shader.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_shadows.cpp"
 				>
 			</File>

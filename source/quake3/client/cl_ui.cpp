@@ -855,7 +855,7 @@ int CL_UISystemCalls( int *args ) {
 		return re.RegisterSkin( (char*)VMA(1) );
 
 	case UI_R_REGISTERSHADERNOMIP:
-		return re.RegisterShaderNoMip( (char*)VMA(1) );
+		return R_RegisterShaderNoMip( (char*)VMA(1) );
 
 	case UI_R_CLEARSCENE:
 		re.ClearScene();
@@ -1104,7 +1104,7 @@ int CL_UISystemCalls( int *args ) {
 	  return 0;
 
 	case UI_R_REMAP_SHADER:
-		re.RemapShader( (char*)VMA(1), (char*)VMA(2), (char*)VMA(3) );
+		R_RemapShader( (char*)VMA(1), (char*)VMA(2), (char*)VMA(3) );
 		return 0;
 
 	case UI_VERIFY_CDKEY:

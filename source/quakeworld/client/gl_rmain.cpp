@@ -983,10 +983,6 @@ void R_AddRefEntToScene(refEntity_t* Ent)
 void R_InitSkyTexCoords( float cloudLayerHeight )
 {
 }
-shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage )
-{
-	return NULL;
-}
 void R_SyncRenderThread()
 {
 }
@@ -999,6 +995,15 @@ void GL_EndBuildingLightmaps (void)
 void GL_BeginBuildingLightmaps (model_t *m)
 {
 }
-void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset)
+void RB_StageIteratorGeneric( void )
+{
+}
+void RB_StageIteratorSky( void )
+{
+}
+void RB_StageIteratorVertexLitTexture( void )
+{
+}
+void RB_StageIteratorLightmappedMultitexture( void )
 {
 }

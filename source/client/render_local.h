@@ -488,6 +488,8 @@ float R_NoiseGet4f(float x, float y, float z, float t);
 
 void R_CommonRenderScene(const refdef_t* fd);
 
+void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
+
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern QCvar*	r_logFile;				// number of frames to emit GL logs
@@ -539,6 +541,13 @@ extern QCvar*	r_singleShader;			// make most world faces use default shader
 
 extern QCvar*	r_subdivisions;
 
+extern QCvar*	r_ignoreFastPath;		// allows us to ignore our Tess fast paths
+extern QCvar*	r_detailTextures;		// enables/disables detail texturing stages
+extern QCvar*	r_uiFullScreen;			// ui is running fullscreen
+extern QCvar*	r_printShaders;
+
+extern QCvar*	r_smp;
+
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;
@@ -557,12 +566,14 @@ void* R_GetWadLumpByName(const char* name);
 
 //	Temporarily must be defined in game.
 void R_InitSkyTexCoords( float cloudLayerHeight );
-shader_t* R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 void R_SyncRenderThread();
 void R_InitSky(mbrush29_texture_t *mt);
 void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
 void GL_EndBuildingLightmaps (void);
 void GL_BeginBuildingLightmaps (model_t *m);
-void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset);
+void RB_StageIteratorGeneric( void );
+void RB_StageIteratorSky( void );
+void RB_StageIteratorVertexLitTexture( void );
+void RB_StageIteratorLightmappedMultitexture( void );
 
 #endif

@@ -42,10 +42,6 @@ struct vidmode_t
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-glconfig_t	glConfig;
-
-trGlobals_t	tr;
-
 QCvar*		r_logFile;
 
 QCvar*		r_mode;
@@ -95,6 +91,13 @@ QCvar*		r_fullbright;
 QCvar*		r_singleShader;
 
 QCvar*		r_subdivisions;
+
+QCvar*		r_ignoreFastPath;
+QCvar*		r_detailTextures;
+QCvar*		r_uiFullScreen;
+QCvar*		r_printShaders;
+
+QCvar*		r_smp;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -231,6 +234,10 @@ void R_SharedRegister()
 	r_simpleMipMaps = Cvar_Get("r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_vertexLight = Cvar_Get("r_vertexLight", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 	r_subdivisions = Cvar_Get("r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_ignoreFastPath = Cvar_Get("r_ignoreFastPath", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	r_detailTextures = Cvar_Get("r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2);
+	//	Disabled until I fix it on Linux.
+	r_smp = Cvar_Get("r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2);
 
 	//
 	// temporary latched variables that can only change over a restart
@@ -260,11 +267,14 @@ void R_SharedRegister()
 	r_verbose = Cvar_Get("r_verbose", "0", CVAR_CHEAT);
 	r_nobind = Cvar_Get("r_nobind", "0", CVAR_CHEAT);
 	r_lightmap = Cvar_Get("r_lightmap", "0", 0);
+	r_uiFullScreen = Cvar_Get("r_uifullscreen", "0", 0);
+	r_printShaders = Cvar_Get("r_printShaders", "0", 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
 	Cmd_AddCommand("modelist", R_ModeList_f);
 	Cmd_AddCommand("imagelist", R_ImageList_f);
+	Cmd_AddCommand("shaderlist", R_ShaderList_f);
 }
 
 //==========================================================================

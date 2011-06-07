@@ -32,15 +32,10 @@ QCvar	*r_railWidth;
 QCvar	*r_railCoreWidth;
 QCvar	*r_railSegmentLength;
 
-QCvar	*r_ignoreFastPath;
-
 QCvar	*r_ignore;
-
-QCvar	*r_detailTextures;
 
 QCvar	*r_znear;
 
-QCvar	*r_smp;
 QCvar	*r_showSmp;
 QCvar	*r_skipBackEnd;
 
@@ -69,7 +64,6 @@ QCvar	*r_primitives;
 
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
-QCvar	*r_uiFullScreen;
 QCvar	*r_shadows;
 QCvar	*r_flares;
 QCvar	*r_showtris;
@@ -93,7 +87,6 @@ QCvar	*r_ambientScale;
 QCvar	*r_directedScale;
 QCvar	*r_debugLight;
 QCvar	*r_debugSort;
-QCvar	*r_printShaders;
 QCvar	*r_saveFontData;
 
 QCvar	*r_maxpolys;
@@ -602,16 +595,6 @@ void R_Register( void )
 	//
 	r_glDriver = Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
 
-	r_detailTextures = Cvar_Get( "r_detailtextures", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-	r_uiFullScreen = Cvar_Get( "r_uifullscreen", "0", 0);
-#if defined(MACOS_X) || defined(__linux__)
-  // Default to using SMP on Mac OS X or Linux if we have multiple processors
-	r_smp = Cvar_Get( "r_smp", Sys_ProcessorCount() > 1 ? "1" : "0", CVAR_ARCHIVE | CVAR_LATCH2);
-#else        
-	r_smp = Cvar_Get( "r_smp", "0", CVAR_ARCHIVE | CVAR_LATCH2);
-#endif
-	r_ignoreFastPath = Cvar_Get( "r_ignoreFastPath", "1", CVAR_ARCHIVE | CVAR_LATCH2 );
-
 	//
 	// archived variables that can change at any time
 	//
@@ -644,7 +627,6 @@ void R_Register( void )
 
 	r_debugLight = Cvar_Get( "r_debuglight", "0", CVAR_TEMP );
 	r_debugSort = Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
-	r_printShaders = Cvar_Get( "r_printShaders", "0", 0 );
 	r_saveFontData = Cvar_Get( "r_saveFontData", "0", 0 );
 
 	r_nocurves = Cvar_Get ("r_nocurves", "0", CVAR_CHEAT );
@@ -681,7 +663,6 @@ void R_Register( void )
 	r_maxpolys = Cvar_Get( "r_maxpolys", va("%d", MAX_POLYS), 0);
 	r_maxpolyverts = Cvar_Get( "r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
 
-	Cmd_AddCommand( "shaderlist", R_ShaderList_f );
 	Cmd_AddCommand( "skinlist", R_SkinList_f );
 	Cmd_AddCommand( "modellist", R_Modellist_f );
 	Cmd_AddCommand( "screenshot", R_ScreenShot_f );
@@ -844,8 +825,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 
 	re.BeginRegistration = RE_BeginRegistration;
 	re.RegisterSkin = RE_RegisterSkin;
-	re.RegisterShader = RE_RegisterShader;
-	re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
 	re.LoadWorld = RE_LoadWorldMap;
 	re.EndRegistration = RE_EndRegistration;
 
@@ -869,7 +848,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.DrawStretchRaw = RE_StretchRaw;
 
 	re.RegisterFont = RE_RegisterFont;
-	re.RemapShader = R_RemapShader;
 	re.GetEntityToken = R_GetEntityToken;
 	re.inPVS = R_inPVS;
 

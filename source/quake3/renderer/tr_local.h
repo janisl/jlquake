@@ -74,31 +74,6 @@ void		R_Modellist_f (void);
 //====================================================
 extern	refimport_t		ri;
 
-/*
-
-the drawsurf sort data is packed into a single 32 bit value so it can be
-compared quickly during the qsorting process
-
-the bits are allocated as follows:
-
-21 - 31	: sorted shader index
-11 - 20	: entity index
-2 - 6	: fog index
-//2		: used to be clipped flag REMOVED - 03.21.00 rad
-0 - 1	: dlightmap index
-
-	TTimo - 1.32
-17-31 : sorted shader index
-7-16  : entity index
-2-6   : fog index
-0-1   : dlightmap index
-*/
-#define	QSORT_SHADERNUM_SHIFT	17
-#define	QSORT_ENTITYNUM_SHIFT	7
-#define	QSORT_FOGNUM_SHIFT		2
-
-
-
 //
 // cvars
 //
@@ -110,7 +85,6 @@ extern QCvar	*r_railCoreWidth;
 extern QCvar	*r_railSegmentLength;
 
 extern QCvar	*r_ignore;				// used for debugging anything
-extern QCvar	*r_ignoreFastPath;		// allows us to ignore our Tess fast paths
 
 extern QCvar	*r_znear;				// near Z clip plane
 
@@ -134,7 +108,6 @@ extern	QCvar	*r_norefresh;			// bypasses the ref rendering
 extern	QCvar	*r_drawentities;		// disable/enable entity rendering
 extern	QCvar	*r_drawworld;			// disable/enable world rendering
 extern	QCvar	*r_speeds;				// various levels of information display
-extern  QCvar	*r_detailTextures;		// enables/disables detail texturing stages
 extern	QCvar	*r_novis;				// disable/enable usage of PVS
 extern	QCvar	*r_nocull;
 extern	QCvar	*r_facePlaneCull;		// enables culling of planar surfaces with back side test
@@ -146,8 +119,6 @@ extern	QCvar	*r_drawBuffer;
 extern  QCvar  *r_glDriver;
 extern	QCvar	*r_offsetFactor;
 extern	QCvar	*r_offsetUnits;
-
-extern	QCvar	*r_uiFullScreen;				// ui is running fullscreen
 
 extern	QCvar	*r_showtris;					// enables wireframe rendering of the world
 extern	QCvar	*r_showsky;						// forces sky in front of all surfaces
@@ -162,7 +133,6 @@ extern	QCvar	*r_noportals;
 extern	QCvar	*r_portalOnly;
 
 extern	QCvar	*r_lodCurveError;
-extern	QCvar	*r_smp;
 extern	QCvar	*r_showSmp;
 extern	QCvar	*r_skipBackEnd;
 
@@ -171,7 +141,6 @@ extern	QCvar	*r_debugSurface;
 extern	QCvar	*r_showImages;
 extern	QCvar	*r_debugSort;
 
-extern	QCvar	*r_printShaders;
 extern	QCvar	*r_saveFontData;
 
 //====================================================================
@@ -187,9 +156,6 @@ void R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
 void R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
 void R_AddPolygonSurfaces( void );
-
-void R_DecomposeSort( unsigned sort, int *entityNum, shader_t **shader, 
-					 int *fogNum, int *dlightMap );
 
 void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int fogIndex, int dlightMap );
 
@@ -235,18 +201,7 @@ skin_t	*R_GetSkinByHandle( qhandle_t hSkin );
 //
 // tr_shader.c
 //
-qhandle_t		 RE_RegisterShaderLightMap( const char *name, int lightmapIndex );
-qhandle_t		 RE_RegisterShader( const char *name );
-qhandle_t		 RE_RegisterShaderNoMip( const char *name );
-qhandle_t RE_RegisterShaderFromImage(const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage);
-
-shader_t	*R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
-shader_t	*R_GetShaderByHandle( qhandle_t hShader );
 shader_t	*R_GetShaderByState( int index, long *cycleTime );
-shader_t *R_FindShaderByName( const char *name );
-void		R_InitShaders( void );
-void		R_ShaderList_f( void );
-void    R_RemapShader(const char *oldShader, const char *newShader, const char *timeOffset);
 
 /*
 ====================================================================

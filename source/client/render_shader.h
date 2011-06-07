@@ -376,7 +376,11 @@ struct shaderCommands_t
 	shaderStage_t**	xstages;
 };
 
-bool ParseShader(const char** text);
+void R_InitShaders();
+shader_t* R_FindShader(const char* Name, int LightmapIndex, bool MipRawImage);
+qhandle_t R_RegisterShaderFromImage(const char* Name, int LightmapIndex, image_t* Image, bool MipRawImage);
+shader_t* R_GetShaderByHandle(qhandle_t hShader);
+void R_ShaderList_f();
 
 float* TableForFunc(genFunc_t func) ;
 float EvalWaveForm(const waveForm_t* wf);
@@ -386,5 +390,6 @@ void RB_CalcDeformNormals(deformStage_t* ds);
 
 extern shaderCommands_t		tess;
 
-extern shader_t		shader;
-extern shaderStage_t	stages[MAX_SHADER_STAGES];		
+#define SHADER_HASH_SIZE		1024
+
+extern shader_t*		ShaderHashTable[SHADER_HASH_SIZE];

@@ -46,8 +46,6 @@ typedef struct {
 	// size display elements
 	void	(*BeginRegistration)( glconfig_t *config );
 	qhandle_t (*RegisterSkin)( const char *name );
-	qhandle_t (*RegisterShader)( const char *name );
-	qhandle_t (*RegisterShaderNoMip)( const char *name );
 	void	(*LoadWorld)( const char *name );
 
 	// EndRegistration will draw a tiny polygon with each texture, forcing
@@ -88,7 +86,6 @@ typedef struct {
 	void    (*A3D_RenderGeometry) (void *pVoidA3D, void *pVoidGeom, void *pVoidMat, void *pVoidGeomStatus);
 #endif
 	void	(*RegisterFont)(const char *fontName, int pointSize, fontInfo_t *font);
-	void	(*RemapShader)(const char *oldShader, const char *newShader, const char *offsetTime);
 	qboolean (*GetEntityToken)( char *buffer, int size );
 	qboolean (*inPVS)( const vec3_t p1, const vec3_t p2 );
 } refexport_t;
