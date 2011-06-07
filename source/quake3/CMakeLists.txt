@@ -1,4 +1,5 @@
 add_subdirectory(botlib)
+include_directories(/usr/include/freetype2)
 
 #############################################################################
 # CLIENT/SERVER
@@ -87,7 +88,7 @@ endif(${SIZEOF_VOID_PTR} MATCHES "^4$")
 
 add_executable(jlquake3 ${QUAKE3_FILES})
 set_target_properties(jlquake3 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS} -O")
-target_link_libraries(jlquake3 botlib ${CLIENTS_LIBS})
+target_link_libraries(jlquake3 botlib ${CLIENTS_LIBS} freetype)
 
 #############################################################################
 # DEDICATED SERVER                        

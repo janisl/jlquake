@@ -73,12 +73,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 #include "../qcommon/qcommon.h"
 
+#define BUILD_FREETYPE
+
 #ifdef BUILD_FREETYPE
-#include "../ft2/fterrors.h"
-#include "../ft2/ftsystem.h"
-#include "../ft2/ftimage.h"
-#include "../ft2/freetype.h"
-#include "../ft2/ftoutln.h"
+//#include <freetype/fterrors.h>
+#include <freetype/ftsystem.h>
+#include <freetype/ftimage.h>
+#include <freetype/freetype.h>
+#include <freetype/ftoutln.h>
 
 #define _FLOOR(x)  ((x) & -64)
 #define _CEIL(x)   (((x)+63) & -64)
@@ -115,14 +117,14 @@ FT_Bitmap *R_RenderGlyph(FT_GlyphSlot glyph, glyphInfo_t* glyphOut) {
   if ( glyph->format == ft_glyph_format_outline ) {
     size   = pitch*height; 
 
-    bit2 = Z_Malloc(sizeof(FT_Bitmap));
+    bit2 = (FT_Bitmap*)Z_Malloc(sizeof(FT_Bitmap));
 
     bit2->width      = width;
     bit2->rows       = height;
     bit2->pitch      = pitch;
     bit2->pixel_mode = ft_pixel_mode_grays;
     //bit2->pixel_mode = ft_pixel_mode_mono;
-    bit2->buffer     = Z_Malloc(pitch*height);
+    bit2->buffer     = (byte*)Z_Malloc(pitch*height);
     bit2->num_grays = 256;
 
     Com_Memset( bit2->buffer, 0, size );
@@ -380,7 +382,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
   }
 
   // allocate on the stack first in case we fail
-  if (FT_New_Memory_Face( ftLibrary, faceData, len, 0, &face )) {
+  if (FT_New_Memory_Face( ftLibrary, (FT_Byte*)faceData, len, 0, &face )) {
     ri.Printf(PRINT_ALL, "RE_RegisterFont: FreeType2, unable to allocate new face.\n");
     return;
   }
@@ -396,7 +398,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
   // make a 256x256 image buffer, once it is full, register it, clean it and keep going 
   // until all glyphs are rendered
 
-  out = Z_Malloc(1024*1024);
+  out = (byte*)Z_Malloc(1024*1024);
   if (out == NULL) {
     ri.Printf(PRINT_ALL, "RE_RegisterFont: Z_Malloc failure during output image creation.\n");
     return;
@@ -426,7 +428,7 @@ void RE_RegisterFont(const char *fontName, int pointSize, fontInfo_t *font) {
 
       scaledSize = 256*256;
       newSize = scaledSize * 4;
-      imageBuff = Z_Malloc(newSize);
+      imageBuff = (byte*)Z_Malloc(newSize);
       left = 0;
       max = 0;
       satLevels = 255;
