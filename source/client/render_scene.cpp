@@ -39,6 +39,9 @@ int			r_firstSceneDrawSurf;
 int			r_numentities;
 int			r_firstSceneEntity;
 
+int			r_numdlights;
+int			r_firstSceneDlight;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -55,6 +58,9 @@ void R_CommonToggleSmpFrame()
 
 	r_numentities = 0;
 	r_firstSceneEntity = 0;
+
+	r_numdlights = 0;
+	r_firstSceneDlight = 0;
 }
 
 //==========================================================================
@@ -66,6 +72,7 @@ void R_CommonToggleSmpFrame()
 void R_CommonClearScene()
 {
 	r_firstSceneEntity = r_numentities;
+	r_firstSceneDlight = r_numdlights;
 }
 
 //==========================================================================
@@ -150,4 +157,7 @@ void R_CommonRenderScene(const refdef_t* fd)
 
 	tr.refdef.num_entities = r_numentities - r_firstSceneEntity;
 	tr.refdef.entities = &backEndData[tr.smpFrame]->entities[r_firstSceneEntity];
+
+	tr.refdef.num_dlights = r_numdlights - r_firstSceneDlight;
+	tr.refdef.dlights = &backEndData[tr.smpFrame]->dlights[r_firstSceneDlight];
 }

@@ -307,7 +307,9 @@ void R_AddDynamicLights (mbrush38_surface_t *surf)
 
 		fminlight = DLIGHT_CUTOFF;	// FIXME: make configurable?
 		if (frad < fminlight)
+		{
 			continue;
+		}
 		fminlight = frad - fminlight;
 
 		for (i=0 ; i<3 ; i++)

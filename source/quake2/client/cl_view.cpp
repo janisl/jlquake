@@ -40,9 +40,6 @@ QCvar		*cl_testblend;
 QCvar		*cl_stats;
 
 
-int			r_numdlights;
-dlight_t	r_dlights[MAX_DLIGHTS];
-
 int			r_numparticles;
 particle_t	r_particles[MAX_PARTICLES];
 
@@ -61,7 +58,6 @@ Specifies the model that will be used as the world
 void V_ClearScene (void)
 {
 	R_CommonClearScene();
-	r_numdlights = 0;
 	r_numparticles = 0;
 }
 
@@ -96,7 +92,7 @@ void V_AddLight (vec3_t org, float intensity, float r, float g, float b)
 
 	if (r_numdlights >= MAX_DLIGHTS)
 		return;
-	dl = &r_dlights[r_numdlights++];
+	dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
 	VectorCopy (org, dl->origin);
 	dl->radius = intensity;
 	dl->color[0] = r;
@@ -203,11 +199,11 @@ void V_TestLights (void)
 	dlight_t	*dl;
 
 	r_numdlights = 32;
-	Com_Memset(r_dlights, 0, sizeof(r_dlights));
+	Com_Memset(backEndData[tr.smpFrame]->dlights, 0, sizeof(backEndData[tr.smpFrame]->dlights));
 
 	for (i=0 ; i<r_numdlights ; i++)
 	{
-		dl = &r_dlights[i];
+		dl = &backEndData[tr.smpFrame]->dlights[i];
 
 		r = 64 * ( (i%4) - 1.5 );
 		f = 64 * (i/4) + 128;
@@ -500,7 +496,7 @@ void V_RenderView( float stereo_separation )
 		if (!cl_add_particles->value)
 			r_numparticles = 0;
 		if (!cl_add_lights->value)
-			r_numdlights = 0;
+			r_numdlights = r_firstSceneDlight;
 		if (!cl_add_blend->value)
 		{
 			VectorClear(v_blend);

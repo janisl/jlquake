@@ -572,6 +572,8 @@ extern int		max_polyverts;
 extern int			r_firstSceneDrawSurf;
 extern int			r_numentities;
 extern int			r_firstSceneEntity;
+extern int			r_numdlights;
+extern int			r_firstSceneDlight;
 
 /*
 ====================================================================

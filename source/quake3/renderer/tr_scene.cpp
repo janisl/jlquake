@@ -22,9 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-int			r_numdlights;
-int			r_firstSceneDlight;
-
 int			r_numpolys;
 int			r_firstScenePoly;
 
@@ -50,9 +47,6 @@ void R_ToggleSmpFrame( void ) {
 
 	R_CommonToggleSmpFrame();
 
-	r_numdlights = 0;
-	r_firstSceneDlight = 0;
-
 	r_numpolys = 0;
 	r_firstScenePoly = 0;
 
@@ -68,7 +62,6 @@ RE_ClearScene
 */
 void RE_ClearScene( void ) {
 	R_CommonClearScene();
-	r_firstSceneDlight = r_numdlights;
 	r_firstScenePoly = r_numpolys;
 }
 
@@ -262,9 +255,6 @@ void RE_RenderScene( const refdef_t *fd ) {
 	}
 
 	R_CommonRenderScene(fd);
-
-	tr.refdef.num_dlights = r_numdlights - r_firstSceneDlight;
-	tr.refdef.dlights = &backEndData[tr.smpFrame]->dlights[r_firstSceneDlight];
 
 	tr.refdef.numPolys = r_numpolys - r_firstScenePoly;
 	tr.refdef.polys = &backEndData[tr.smpFrame]->polys[r_firstScenePoly];
