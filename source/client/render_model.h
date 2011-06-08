@@ -791,6 +791,7 @@ void Mod_LoadSpriteModel(model_t* mod, void* buffer);
 void Mod_FreeSpriteModel(model_t* mod);
 void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen);
 void Mod_FreeSprite2Model(model_t* mod);
+
 void Mod_LoadMdlModel(model_t* mod, const void* buffer);
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
 void Mod_FreeMdlModel(model_t* mod);
@@ -800,13 +801,22 @@ bool R_LoadMd3(model_t* mod, void* buffer);
 void R_FreeMd3(model_t* mod);
 bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name);
 void R_FreeMd4(model_t* mod);
+
 void Mod_LoadBrush29Model(model_t* mod, void* buffer);
 void Mod_FreeBsp29(model_t* mod);
+byte* Mod_LeafPVS(mbrush29_leaf_t* Leaf, model_t* Model);
+mbrush29_leaf_t* Mod_PointInLeafQ1(vec3_t P, model_t* Model);
+
 void Mod_LoadBrush38Model(model_t* mod, void* buffer);
 void Mod_FreeBsp38(model_t* mod);
+byte* Mod_ClusterPVS(int cluster, model_t* model);
+mbrush38_leaf_t* Mod_PointInLeafQ2(float* p, model_t* model);
+
 void R_LoadBrush46Model(void* buffer);
 void R_FreeBsp46(world_t* mod);
 void R_FreeBsp46Model(model_t* mod);
+const byte* R_ClusterPVS(int cluster);
+mbrush46_node_t* R_PointInLeaf(const vec3_t p);
 
 //
 //	CURVE TESSELATION

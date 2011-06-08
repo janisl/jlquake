@@ -1276,7 +1276,7 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 		
 
 		j=50;
-		l = Mod_PointInLeaf (p->org, tr.worldModel);
+		l = Mod_PointInLeafQ1 (p->org, tr.worldModel);
 //		while(SV_PointContents(p->org)!=CONTENTS_EMPTY && j<50)
 		while(l->contents!=BSP29CONTENTS_EMPTY && j)
 		{//Make sure it doesn't start in a solid
@@ -1285,7 +1285,7 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 			holdint=org2[1] - org1[1];
 			p->org[1] = org1[1] + (rand() % holdint);
 			j--;//No infinite loops
-			l = Mod_PointInLeaf (p->org, tr.worldModel);
+			l = Mod_PointInLeafQ1 (p->org, tr.worldModel);
 		}
 		if(l->contents!=BSP29CONTENTS_EMPTY)
 			Sys_Error ("Snow entity top plane is not in an empty area (sorry!)");
@@ -1617,7 +1617,7 @@ void R_UpdateParticles (void)
 				else
 				{
 					//IF hit solid, go to last position, no velocity, fade out.
-					l = Mod_PointInLeaf (p->org, tr.worldModel);
+					l = Mod_PointInLeafQ1 (p->org, tr.worldModel);
 					if(l->contents!=BSP29CONTENTS_EMPTY) //||in_solid==true
 					{
 						if(p->flags&SFL_NO_MELT)
@@ -1639,7 +1639,7 @@ void R_UpdateParticles (void)
 									p->die=-1;	//should never happen now!
 									break;
 								}
-								l = Mod_PointInLeaf (p->org, tr.worldModel);
+								l = Mod_PointInLeafQ1 (p->org, tr.worldModel);
 							}
 							p->vel[0]=p->vel[1]=p->vel[2]=0;
 							p->ramp=0;

@@ -6,8 +6,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-static byte	mod_novis[BSP29_MAX_MAP_LEAFS/8];
-
 /*
 ===============
 Mod_Init
@@ -15,8 +13,6 @@ Mod_Init
 */
 void Mod_Init (void)
 {
-	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
-
 	R_ModelInit();
 }
 
@@ -30,93 +26,6 @@ Caches the data if needed
 void *Mod_Extradata (model_t *mod)
 {
 	return mod->q1_cache;
-}
-
-/*
-===============
-Mod_PointInLeaf
-===============
-*/
-mbrush29_leaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
-{
-	mbrush29_node_t		*node;
-	float		d;
-	cplane_t	*plane;
-	
-	if (!model || !model->brush29_nodes)
-		Sys_Error ("Mod_PointInLeaf: bad model");
-
-	node = model->brush29_nodes;
-	while (1)
-	{
-		if (node->contents < 0)
-			return (mbrush29_leaf_t *)node;
-		plane = node->plane;
-		d = DotProduct (p,plane->normal) - plane->dist;
-		if (d > 0)
-			node = node->children[0];
-		else
-			node = node->children[1];
-	}
-	
-	return NULL;	// never reached
-}
-
-
-/*
-===================
-Mod_DecompressVis
-===================
-*/
-static byte *Mod_DecompressVis (byte *in, model_t *model)
-{
-	static byte	decompressed[BSP29_MAX_MAP_LEAFS/8];
-	int		c;
-	byte	*out;
-	int		row;
-
-	row = (model->brush29_numleafs+7)>>3;	
-	out = decompressed;
-
-#if 0
-	Com_Memcpy(out, in, row);
-#else
-	if (!in)
-	{	// no vis info, so make all visible
-		while (row)
-		{
-			*out++ = 0xff;
-			row--;
-		}
-		return decompressed;		
-	}
-
-	do
-	{
-		if (*in)
-		{
-			*out++ = *in++;
-			continue;
-		}
-	
-		c = in[1];
-		in += 2;
-		while (c)
-		{
-			*out++ = 0;
-			c--;
-		}
-	} while (out - decompressed < row);
-#endif
-	
-	return decompressed;
-}
-
-byte *Mod_LeafPVS (mbrush29_leaf_t *leaf, model_t *model)
-{
-	if (leaf == model->brush29_leafs)
-		return mod_novis;
-	return Mod_DecompressVis (leaf->compressed_vis, model);
 }
 
 /*

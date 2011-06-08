@@ -2266,3 +2266,54 @@ void R_FreeBsp46(world_t* mod)
 void R_FreeBsp46Model(model_t* mod)
 {
 }
+
+//==========================================================================
+//
+//	R_ClusterPVS
+//
+//==========================================================================
+
+const byte* R_ClusterPVS(int cluster)
+{
+	if (!tr.world || !tr.world->vis || cluster < 0 || cluster >= tr.world->numClusters)
+	{
+		return tr.world->novis;
+	}
+
+	return tr.world->vis + cluster * tr.world->clusterBytes;
+}
+
+//==========================================================================
+//
+//	R_PointInLeaf
+//
+//==========================================================================
+
+mbrush46_node_t* R_PointInLeaf(const vec3_t p)
+{
+	if (!tr.world)
+	{
+		throw QDropException("R_PointInLeaf: bad model");
+	}
+
+	mbrush46_node_t* node = tr.world->nodes;
+	while (1)
+	{
+		if (node->contents != -1)
+		{
+			break;
+		}
+		cplane_t* plane = node->plane;
+		float d = DotProduct(p, plane->normal) - plane->dist;
+		if (d > 0)
+		{
+			node = node->children[0];
+		}
+		else
+		{
+			node = node->children[1];
+		}
+	}
+
+	return node;
+}

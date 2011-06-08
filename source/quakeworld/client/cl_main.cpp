@@ -1428,8 +1428,8 @@ void Host_Init (quakeparms_t *parms)
 	VID_Init();
 	Draw_Init();
 	Mod_Init ();
-	SCR_Init();
 	R_Init();
+	SCR_Init();
 	S_Init();
 	CDAudio_Init();
 	Sbar_Init();

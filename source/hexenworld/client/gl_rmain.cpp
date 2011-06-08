@@ -837,7 +837,7 @@ void R_DrawEntitiesOnList (void)
 
 		if (item_trans)
 		{
-			pLeaf = Mod_PointInLeaf (tr.currentEntity->e.origin, tr.worldModel);
+			pLeaf = Mod_PointInLeafQ1 (tr.currentEntity->e.origin, tr.worldModel);
 //			if (pLeaf->contents == CONTENTS_EMPTY)
 			if (pLeaf->contents != BSP29CONTENTS_WATER)
 				cl_transvisedicts[cl_numtransvisedicts++].ent = tr.currentEntity;
@@ -995,7 +995,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeaf(tr.refdef.vieworg, tr.worldModel);
+	r_viewleaf = Mod_PointInLeafQ1(tr.refdef.vieworg, tr.worldModel);
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();

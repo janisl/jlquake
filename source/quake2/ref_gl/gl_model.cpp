@@ -21,100 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-byte	mod_novis[BSP38MAX_MAP_LEAFS/8];
-
-/*
-===============
-Mod_PointInLeaf
-===============
-*/
-mbrush38_leaf_t *Mod_PointInLeaf (vec3_t p, model_t *model)
-{
-	mbrush38_node_t		*node;
-	float		d;
-	cplane_t	*plane;
-	
-	if (!model || !model->brush38_nodes)
-		ri.Sys_Error (ERR_DROP, "Mod_PointInLeaf: bad model");
-
-	node = model->brush38_nodes;
-	while (1)
-	{
-		if (node->contents != -1)
-			return (mbrush38_leaf_t *)node;
-		plane = node->plane;
-		d = DotProduct (p,plane->normal) - plane->dist;
-		if (d > 0)
-			node = node->children[0];
-		else
-			node = node->children[1];
-	}
-	
-	return NULL;	// never reached
-}
-
-
-/*
-===================
-Mod_DecompressVis
-===================
-*/
-byte *Mod_DecompressVis (byte *in, model_t *model)
-{
-	static byte	decompressed[BSP38MAX_MAP_LEAFS/8];
-	int		c;
-	byte	*out;
-	int		row;
-
-	row = (model->brush38_vis->numclusters+7)>>3;	
-	out = decompressed;
-
-	if (!in)
-	{	// no vis info, so make all visible
-		while (row)
-		{
-			*out++ = 0xff;
-			row--;
-		}
-		return decompressed;		
-	}
-
-	do
-	{
-		if (*in)
-		{
-			*out++ = *in++;
-			continue;
-		}
-	
-		c = in[1];
-		in += 2;
-		while (c)
-		{
-			*out++ = 0;
-			c--;
-		}
-	} while (out - decompressed < row);
-	
-	return decompressed;
-}
-
-/*
-==============
-Mod_ClusterPVS
-==============
-*/
-byte *Mod_ClusterPVS (int cluster, model_t *model)
-{
-	if (cluster == -1 || !model->brush38_vis)
-		return mod_novis;
-	return Mod_DecompressVis ( (byte *)model->brush38_vis + model->brush38_vis->bitofs[cluster][BSP38DVIS_PVS],
-		model);
-}
-
-
-//===============================================================================
-
 /*
 ================
 Mod_Modellist_f
@@ -139,8 +45,6 @@ Mod_Init
 */
 void Mod_Init (void)
 {
-	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
-
 	R_ModelInit();
 }
 

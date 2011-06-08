@@ -42,6 +42,8 @@ static byte*				mod_base;
 
 static mbrush38_surface_t*	warpface;
 
+static byte					mod_novis[BSP38MAX_MAP_LEAFS / 8];
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -838,6 +840,8 @@ static void Mod_LoadSubmodels(bsp38_lump_t* l)
 
 void Mod_LoadBrush38Model(model_t* mod, void* buffer)
 {
+	Com_Memset(mod_novis, 0xff, sizeof(mod_novis));
+
 	loadmodel->type = MOD_BRUSH38;
 
 	bsp38_dheader_t* header = (bsp38_dheader_t*)buffer;
@@ -951,4 +955,98 @@ void Mod_FreeBsp38(model_t* mod)
 	delete[] mod->brush38_surfedges;
 	delete[] mod->brush38_planes;
 	delete[] mod->brush38_submodels;
+}
+
+//==========================================================================
+//
+//	Mod_DecompressVis
+//
+//==========================================================================
+
+static byte* Mod_DecompressVis(byte* in, model_t* model)
+{
+	static byte	decompressed[BSP38MAX_MAP_LEAFS / 8];
+
+	int row = (model->brush38_vis->numclusters + 7) >> 3;	
+	byte* out = decompressed;
+
+	if (!in)
+	{
+		// no vis info, so make all visible
+		while (row)
+		{
+			*out++ = 0xff;
+			row--;
+		}
+		return decompressed;		
+	}
+
+	do
+	{
+		if (*in)
+		{
+			*out++ = *in++;
+			continue;
+		}
+
+		int c = in[1];
+		in += 2;
+		while (c)
+		{
+			*out++ = 0;
+			c--;
+		}
+	} while (out - decompressed < row);
+
+	return decompressed;
+}
+
+//==========================================================================
+//
+//	Mod_ClusterPVS
+//
+//==========================================================================
+
+byte* Mod_ClusterPVS (int cluster, model_t *model)
+{
+	if (cluster == -1 || !model->brush38_vis)
+	{
+		return mod_novis;
+	}
+	return Mod_DecompressVis((byte*)model->brush38_vis + model->brush38_vis->bitofs[cluster][BSP38DVIS_PVS], model);
+}
+
+//==========================================================================
+//
+//	Mod_PointInLeafQ2
+//
+//==========================================================================
+
+mbrush38_leaf_t* Mod_PointInLeafQ2(vec3_t p, model_t* model)
+{
+	if (!model || !model->brush38_nodes)
+	{
+		throw QDropException("Mod_PointInLeafQ2: bad model");
+	}
+
+	mbrush38_node_t* node = model->brush38_nodes;
+	while (1)
+	{
+		if (node->contents != -1)
+		{
+			return (mbrush38_leaf_t*)node;
+		}
+		cplane_t* plane = node->plane;
+		float d = DotProduct(p, plane->normal) - plane->dist;
+		if (d > 0)
+		{
+			node = node->children[0];
+		}
+		else
+		{
+			node = node->children[1];
+		}
+	}
+
+	return NULL;	// never reached
 }
