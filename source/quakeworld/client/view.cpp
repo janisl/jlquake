@@ -812,7 +812,7 @@ static void CL_AddViewModel()
 	gun.skinNum = cl.viewent.skinnum;
 	gun.shaderTime = cl.viewent.syncbase;
 
-	R_AddRefEntToScene(&gun);
+	R_AddRefEntityToScene(&gun);
 }
 
 /*

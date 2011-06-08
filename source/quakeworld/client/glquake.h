@@ -102,10 +102,6 @@ extern	QCvar*	gl_finish;
 
 extern	float	r_world_matrix[16];
 
-#define			MAX_VISEDICTS	256
-extern	int				cl_numvisedicts;
-extern	trRefEntity_t	cl_visedicts[MAX_VISEDICTS];
-
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);
 

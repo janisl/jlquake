@@ -920,7 +920,7 @@ static void CL_AddViewModel()
 	CL_SetRefEntAxis(&gun, cl.viewent.angles, cl.viewent.scale, cl.viewent.colorshade, cl.viewent.abslight, cl.viewent.drawflags);
 	R_HandleCustomSkin(&gun, -1);
 
-	R_AddRefEntToScene(&gun);
+	R_AddRefEntityToScene(&gun);
 }
 
 /*

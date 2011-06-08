@@ -693,7 +693,7 @@ void CL_LinkPacketEntities (void)
 		if (i == PrevPack->num_entities)
 		{
 			CL_SetRefEntAxis(&ent, angles, vec3_origin, s1->scale, s1->colormap, s1->abslight, drawflags);
-			R_AddRefEntToScene(&ent);
+			R_AddRefEntityToScene(&ent);
 			continue;		// not in last message
 		}
 
@@ -720,7 +720,7 @@ void CL_LinkPacketEntities (void)
 		vec3_t angleAdd;
 		HandleEffects(s1->effects, s1->number, &ent, angles, angleAdd, old_origin);
 		CL_SetRefEntAxis(&ent, angles, angleAdd, s1->scale, s1->colormap, s1->abslight, drawflags);
-		R_AddRefEntToScene(&ent);
+		R_AddRefEntityToScene(&ent);
 
 		// add automatic particle trails
 		int ModelFlags = Mod_GetFlags(ent.hModel);
@@ -911,7 +911,7 @@ void CL_LinkProjectiles (void)
 		ent.frame = pr->frame;
 		VectorCopy(pr->origin, ent.origin);
 		CL_SetRefEntAxis(&ent, pr->angles, vec3_origin, 0, 0, 0, 0);
-		R_AddRefEntToScene(&ent);
+		R_AddRefEntityToScene(&ent);
 	}
 }
 
@@ -1013,7 +1013,7 @@ void CL_LinkMissiles (void)
 		{
 			R_RunParticleEffect4 (ent.origin, 7, 148 + rand() % 11, pt_grav, 10 + rand() % 10);
 		}
-		R_AddRefEntToScene(&ent);
+		R_AddRefEntityToScene(&ent);
 	}
 }
 
@@ -1346,7 +1346,7 @@ void CL_LinkPlayers (void)
 
 		CL_SetRefEntAxis(&ent, angles, angleAdd, state->scale, colorshade, state->abslight, drawflags);
 		R_HandleCustomSkin(&ent, j);
-		R_AddRefEntToScene(&ent);
+		R_AddRefEntityToScene(&ent);
 	}
 }
 
@@ -1553,7 +1553,7 @@ static void CL_LinkStaticEntities()
 		rent.shaderTime = pent->syncbase;
 		CL_SetRefEntAxis(&rent, pent->angles, pent->angleAdd, pent->scale, pent->colorshade, pent->abslight, pent->drawflags);
 		R_HandleCustomSkin(&rent, -1);
-		R_AddRefEntToScene(&rent);
+		R_AddRefEntityToScene(&rent);
 	}
 }
 

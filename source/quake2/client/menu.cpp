@@ -3974,7 +3974,7 @@ void PlayerConfig_MenuDraw( void )
 		if ( ++yaw > 360 )
 			yaw -= 360;
 		V_ClearScene();
-		V_AddEntity(&entity);
+		R_AddRefEntityToScene(&entity);
 		VectorClear(v_blend);
 
 		Com_Memset(refdef.areamask, 0, sizeof(refdef.areamask));

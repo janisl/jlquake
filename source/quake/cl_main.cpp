@@ -537,7 +537,7 @@ void CL_RelinkEntities (void)
 		{
 			rent.renderfx |= RF_THIRD_PERSON;
 		}
-		R_AddRefEntToScene(&rent);
+		R_AddRefEntityToScene(&rent);
 	}
 }
 
@@ -555,7 +555,7 @@ static void CL_LinkStaticEntities()
 		rent.frame = pent->frame;
 		rent.shaderTime = pent->syncbase;
 		rent.skinNum = pent->skinnum;
-		R_AddRefEntToScene(&rent);
+		R_AddRefEntityToScene(&rent);
 	}
 }
 

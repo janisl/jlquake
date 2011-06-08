@@ -716,7 +716,7 @@ void CL_RelinkEntities (void)
 		{
 			rent.renderfx |= RF_THIRD_PERSON;
 		}
-		R_AddRefEntToScene(&rent);
+		R_AddRefEntityToScene(&rent);
 	}
 
 /*	if (c != lastc)
@@ -741,7 +741,7 @@ static void CL_LinkStaticEntities()
 		rent.skinNum = pent->skinnum;
 		CL_SetRefEntAxis(&rent, pent->angles, pent->scale, pent->colorshade, pent->abslight, pent->drawflags);
 		R_HandleCustomSkin(&rent, -1);
-		R_AddRefEntToScene(&rent);
+		R_AddRefEntityToScene(&rent);
 	}
 }
 

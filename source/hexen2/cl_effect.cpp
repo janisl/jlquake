@@ -2028,7 +2028,7 @@ void CL_LinkEntity(entity_t *ent)
 	rent.skinNum = ent->skinnum;
 	CL_SetRefEntAxis(&rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
 	R_HandleCustomSkin(&rent, -1);
-	R_AddRefEntToScene(&rent);
+	R_AddRefEntityToScene(&rent);
 }
 
 void R_RunQuakeEffect (vec3_t org, float distance);

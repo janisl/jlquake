@@ -495,7 +495,7 @@ void CL_LinkPacketEntities (void)
 		for (i=0 ; i<3 ; i++)
 			ent.origin[i] = s2->origin[i] + 
 			f * (s1->origin[i] - s2->origin[i]);
-		R_AddRefEntToScene(&ent);
+		R_AddRefEntityToScene(&ent);
 
 		// add automatic particle trails
 		if (!ModelFlags)
@@ -627,7 +627,7 @@ void CL_LinkProjectiles (void)
 		ent.hModel = cl.model_precache[pr->modelindex];
 		VectorCopy(pr->origin, ent.origin);
 		CL_SetRefEntAxis(&ent, pr->angles);
-		R_AddRefEntToScene(&ent);
+		R_AddRefEntityToScene(&ent);
 	}
 }
 
@@ -768,7 +768,7 @@ void CL_AddFlagModels (refEntity_t *ent, int team, vec3_t angles)
 	VectorCopy(angles, flag_angles);
 	flag_angles[2] -= 45;
 	CL_SetRefEntAxis(&newent, flag_angles);
-	R_AddRefEntToScene(&newent);
+	R_AddRefEntityToScene(&newent);
 }
 
 /*
@@ -869,7 +869,7 @@ void CL_LinkPlayers (void)
 			pmove.numphysent = oldphysent;
 			VectorCopy (exact.origin, ent.origin);
 		}
-		R_AddRefEntToScene(&ent);
+		R_AddRefEntityToScene(&ent);
 
 		if (state->effects & EF_FLAG1)
 			CL_AddFlagModels(&ent, 0, angles);
@@ -1046,7 +1046,7 @@ static void CL_LinkStaticEntities()
 		rent.frame = pent->frame;
 		rent.skinNum = pent->skinnum;
 		rent.shaderTime = pent->syncbase;
-		R_AddRefEntToScene(&rent);
+		R_AddRefEntityToScene(&rent);
 	}
 }
 

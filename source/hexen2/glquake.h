@@ -130,10 +130,6 @@ extern	QCvar*	gl_reporttjunctions;
 
 extern	float	r_world_matrix[16];
 
-#define			MAX_VISEDICTS	256
-extern	int				cl_numvisedicts;
-extern	trRefEntity_t		cl_visedicts[MAX_VISEDICTS];
-
 extern byte *playerTranslation;
 
 int R_LightPoint (vec3_t p);

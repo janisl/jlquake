@@ -43,9 +43,6 @@ QCvar		*cl_stats;
 int			r_numdlights;
 dlight_t	r_dlights[MAX_DLIGHTS];
 
-int			r_numentities;
-trRefEntity_t	r_entities[MAX_ENTITIES];
-
 int			r_numparticles;
 particle_t	r_particles[MAX_PARTICLES];
 
@@ -63,23 +60,9 @@ Specifies the model that will be used as the world
 */
 void V_ClearScene (void)
 {
+	R_CommonClearScene();
 	r_numdlights = 0;
-	r_numentities = 0;
 	r_numparticles = 0;
-}
-
-
-/*
-=====================
-V_AddEntity
-
-=====================
-*/
-void V_AddEntity (refEntity_t *ent)
-{
-	if (r_numentities >= MAX_ENTITIES)
-		return;
-	r_entities[r_numentities++].e = *ent;
 }
 
 
@@ -186,11 +169,12 @@ void V_TestEntities (void)
 	trRefEntity_t	*ent;
 
 	r_numentities = 32;
-	Com_Memset(r_entities, 0, sizeof(r_entities));
+	r_firstSceneEntity = 0;
+	Com_Memset(backEndData[tr.smpFrame]->entities, 0, sizeof(backEndData[tr.smpFrame]->entities));
 
 	for (i=0 ; i<r_numentities ; i++)
 	{
-		ent = &r_entities[i];
+		ent = &backEndData[tr.smpFrame]->entities[i];
 
 		r = 64 * ( (i%4) - 1.5 );
 		f = 64 * (i/4) + 128;
@@ -198,6 +182,7 @@ void V_TestEntities (void)
 		for (j=0 ; j<3 ; j++)
 			ent->e.origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*f -
 			cl.refdef.viewaxis[1][j]*r;
+		AxisClear(ent->e.axis);
 
 		ent->e.hModel = cl.baseclientinfo.model;
 		ent->e.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
@@ -444,8 +429,6 @@ V_RenderView
 */
 void V_RenderView( float stereo_separation )
 {
-	extern int entitycmpfnc( const refEntity_t *, const refEntity_t * );
-
 	if (cls.state != ca_active)
 		return;
 
@@ -513,7 +496,7 @@ void V_RenderView( float stereo_separation )
 		}
 
 		if (!cl_add_entities->value)
-			r_numentities = 0;
+			r_numentities = r_firstSceneEntity;
 		if (!cl_add_particles->value)
 			r_numparticles = 0;
 		if (!cl_add_lights->value)
@@ -532,9 +515,6 @@ void V_RenderView( float stereo_separation )
 		{
 			cl.refdef.rdflags |= RDF_IRGOGGLES;
 		}
-
-		// sort entities for better cache locality
-        qsort(r_entities, r_numentities, sizeof(r_entities[0]), (int (*)(const void *, const void *))entitycmpfnc);
 	}
 
 	re.RenderFrame (&cl.refdef);

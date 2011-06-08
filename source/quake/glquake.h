@@ -88,10 +88,6 @@ extern	image_t*	playertextures[16];
 
 extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 
-#define			MAX_VISEDICTS	256
-extern	int				cl_numvisedicts;
-extern trRefEntity_t	cl_visedicts[MAX_VISEDICTS];
-
 extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;

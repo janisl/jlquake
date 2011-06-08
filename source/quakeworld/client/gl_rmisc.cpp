@@ -477,4 +477,5 @@ void GL_EndRendering (void)
 {
 	//qglFlush();
 	GLimp_SwapBuffers();
+	R_CommonToggleSmpFrame();
 }

@@ -182,7 +182,6 @@ void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float Sca
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 float R_CalcEntityLight(refEntity_t* e);
 void R_ClearScene();
-void R_AddRefEntToScene(refEntity_t* Ent);
 void R_TranslatePlayerSkin (int playernum);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
 void R_DarkFieldParticles (refEntity_t *ent);

@@ -385,7 +385,7 @@ void CL_UpdateBeams (void)
 			angles[1] = yaw;
 			angles[2] = rand() % 360;
 			CL_SetRefEntAxis(&ent, angles);
-			R_AddRefEntToScene(&ent);
+			R_AddRefEntityToScene(&ent);
 
 			for (i=0 ; i<3 ; i++)
 				org[i] += dist[i]*30;
@@ -425,7 +425,7 @@ void CL_UpdateExplosions (void)
 		ent.hModel = ex->model;
 		ent.frame = f;
 		CL_SetRefEntAxis(&ent, vec3_origin);
-		R_AddRefEntToScene(&ent);
+		R_AddRefEntityToScene(&ent);
 	}
 }
 

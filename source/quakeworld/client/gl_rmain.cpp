@@ -43,11 +43,6 @@ mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
 
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-// refresh list
-int				cl_numvisedicts;
-trRefEntity_t	cl_visedicts[MAX_VISEDICTS];
-
-
 void R_MarkLeaves (void);
 
 QCvar*	r_norefresh;
@@ -597,9 +592,9 @@ void R_DrawEntitiesOnList (void)
 		return;
 
 	// draw sprites seperately, because of alpha blending
-	for (i=0 ; i<cl_numvisedicts ; i++)
+	for (i=0 ; i<tr.refdef.num_entities; i++)
 	{
-		tr.currentEntity = &cl_visedicts[i];
+		tr.currentEntity = &tr.refdef.entities[i];
 
 		if (tr.currentEntity->e.renderfx & RF_FIRST_PERSON)
 		{
@@ -628,9 +623,9 @@ void R_DrawEntitiesOnList (void)
 		}
 	}
 
-	for (i=0 ; i<cl_numvisedicts ; i++)
+	for (i=0 ; i<tr.refdef.num_entities; i++)
 	{
-		tr.currentEntity = &cl_visedicts[i];
+		tr.currentEntity = &tr.refdef.entities[i];
 
 		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
 		{
@@ -967,17 +962,7 @@ void R_RenderView (void)
 
 void R_ClearScene()
 {
-	cl_numvisedicts = 0;
-}
-
-void R_AddRefEntToScene(refEntity_t* Ent)
-{
-	if (cl_numvisedicts == MAX_VISEDICTS)
-	{
-		return;
-	}
-	cl_visedicts[cl_numvisedicts].e = *Ent;
-	cl_numvisedicts++;
+	R_CommonClearScene();
 }
 
 void R_InitSkyTexCoords( float cloudLayerHeight )

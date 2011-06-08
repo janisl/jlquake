@@ -22,9 +22,6 @@ float		model_constant_alpha;
 float		r_time1;
 float		r_lasttime1 = 0;
 
-int				cl_numvisedicts;
-trRefEntity_t		cl_visedicts[MAX_VISEDICTS];
-
 extern qhandle_t	player_models[NUM_CLASSES];
 
 bool		r_third_person;
@@ -832,8 +829,8 @@ typedef struct sortedent_s {
 	vec_t len;
 } sortedent_t;
 
-sortedent_t     cl_transvisedicts[MAX_VISEDICTS];
-sortedent_t		cl_transwateredicts[MAX_VISEDICTS];
+sortedent_t     cl_transvisedicts[MAX_ENTITIES];
+sortedent_t		cl_transwateredicts[MAX_ENTITIES];
 
 int				cl_numtransvisedicts;
 int				cl_numtranswateredicts;
@@ -856,9 +853,9 @@ void R_DrawEntitiesOnList (void)
 		return;
 
 	// draw sprites seperately, because of alpha blending
-	for (i=0 ; i<cl_numvisedicts ; i++)
+	for (i=0 ; i<tr.refdef.num_entities; i++)
 	{
-		tr.currentEntity = &cl_visedicts[i];
+		tr.currentEntity = &tr.refdef.entities[i];
 
 		if (tr.currentEntity->e.renderfx & RF_FIRST_PERSON)
 		{
@@ -1294,17 +1291,7 @@ void R_RenderView (void)
 
 void R_ClearScene()
 {
-	cl_numvisedicts = 0;
-}
-
-void R_AddRefEntToScene(refEntity_t* Ent)
-{
-	if (cl_numvisedicts == MAX_VISEDICTS)
-	{
-		return;
-	}
-	cl_visedicts[cl_numvisedicts].e = *Ent;
-	cl_numvisedicts++;
+	R_CommonClearScene();
 }
 
 void R_InitSkyTexCoords( float cloudLayerHeight )

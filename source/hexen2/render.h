@@ -150,7 +150,6 @@ void R_ClearParticles (void);
 void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 void R_ClearScene();
-void R_AddRefEntToScene(refEntity_t* Ent);
 void R_TranslatePlayerSkin (int playernum);
 void D_ShowLoadingSize(void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);

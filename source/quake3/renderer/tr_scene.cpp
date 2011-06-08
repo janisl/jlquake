@@ -25,9 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 int			r_numdlights;
 int			r_firstSceneDlight;
 
-int			r_numentities;
-int			r_firstSceneEntity;
-
 int			r_numpolys;
 int			r_firstScenePoly;
 
@@ -51,13 +48,10 @@ void R_ToggleSmpFrame( void ) {
 
 	backEndData[tr.smpFrame]->commands.used = 0;
 
-	r_firstSceneDrawSurf = 0;
+	R_CommonToggleSmpFrame();
 
 	r_numdlights = 0;
 	r_firstSceneDlight = 0;
-
-	r_numentities = 0;
-	r_firstSceneEntity = 0;
 
 	r_numpolys = 0;
 	r_firstScenePoly = 0;
@@ -73,8 +67,8 @@ RE_ClearScene
 ====================
 */
 void RE_ClearScene( void ) {
+	R_CommonClearScene();
 	r_firstSceneDlight = r_numdlights;
-	r_firstSceneEntity = r_numentities;
 	r_firstScenePoly = r_numpolys;
 }
 
@@ -192,31 +186,6 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 
 /*
 =====================
-RE_AddRefEntityToScene
-
-=====================
-*/
-void RE_AddRefEntityToScene( const refEntity_t *ent ) {
-	if ( !tr.registered ) {
-		return;
-	}
-  // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=402
-	if ( r_numentities >= ENTITYNUM_WORLD ) {
-		return;
-	}
-	if ( ent->reType < 0 || ent->reType >= RT_MAX_REF_ENTITY_TYPE ) {
-		ri.Error( ERR_DROP, "RE_AddRefEntityToScene: bad reType %i", ent->reType );
-	}
-
-	backEndData[tr.smpFrame]->entities[r_numentities].e = *ent;
-	backEndData[tr.smpFrame]->entities[r_numentities].lightingCalculated = qfalse;
-
-	r_numentities++;
-}
-
-
-/*
-=====================
 RE_AddDynamicLightToScene
 
 =====================
@@ -294,9 +263,6 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	R_CommonRenderScene(fd);
 
-	tr.refdef.num_entities = r_numentities - r_firstSceneEntity;
-	tr.refdef.entities = &backEndData[tr.smpFrame]->entities[r_firstSceneEntity];
-
 	tr.refdef.num_dlights = r_numdlights - r_firstSceneDlight;
 	tr.refdef.dlights = &backEndData[tr.smpFrame]->dlights[r_firstSceneDlight];
 
@@ -345,9 +311,7 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	// the next scene rendered in this frame will tack on after this one
 	r_firstSceneDrawSurf = tr.refdef.numDrawSurfs;
-	r_firstSceneEntity = r_numentities;
-	r_firstSceneDlight = r_numdlights;
-	r_firstScenePoly = r_numpolys;
+	RE_ClearScene();
 
 	tr.frontEndMsec += CL_ScaledMilliseconds() - startTime;
 }

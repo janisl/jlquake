@@ -1318,7 +1318,7 @@ void CL_AddBeams (void)
 			angles[1] = yaw;
 			angles[2] = rand()%360;
 			AnglesToAxis(angles, ent.axis);
-			V_AddEntity (&ent);			
+			R_AddRefEntityToScene (&ent);			
 			return;
 		}
 		while (d > 0)
@@ -1343,7 +1343,7 @@ void CL_AddBeams (void)
 			AnglesToAxis(angles, ent.axis);
 			
 //			Com_Printf("B: %d -> %d\n", b->entity, b->dest_entity);
-			V_AddEntity (&ent);
+			R_AddRefEntityToScene (&ent);
 
 			for (j=0 ; j<3 ; j++)
 				org[j] += dist[j]*len;
@@ -1576,7 +1576,7 @@ void CL_AddPlayerBeams (void)
 			angles[1] = yaw;
 			angles[2] = rand()%360;
 			AnglesToAxis(angles, ent.axis);
-			V_AddEntity (&ent);			
+			R_AddRefEntityToScene (&ent);			
 			return;
 		}
 		while (d > 0)
@@ -1610,7 +1610,7 @@ void CL_AddPlayerBeams (void)
 			AnglesToAxis(angles, ent.axis);
 			
 //			Com_Printf("B: %d -> %d\n", b->entity, b->dest_entity);
-			V_AddEntity (&ent);
+			R_AddRefEntityToScene (&ent);
 
 			for (j=0 ; j<3 ; j++)
 				org[j] += dist[j]*len;
@@ -1717,7 +1717,7 @@ void CL_AddExplosions (void)
 		ent->oldframe = ex->baseframe + f;
 		ent->backlerp = 1.0 - cl.lerpfrac;
 
-		V_AddEntity (ent);
+		R_AddRefEntityToScene (ent);
 	}
 }
 
@@ -1735,7 +1735,7 @@ void CL_AddLasers (void)
 	for (i=0, l=cl_lasers ; i< MAX_LASERS ; i++, l++)
 	{
 		if (l->endtime >= cl.time)
-			V_AddEntity (&l->ent);
+			R_AddRefEntityToScene (&l->ent);
 	}
 }
 

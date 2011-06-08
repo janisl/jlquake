@@ -24,8 +24,6 @@ void R_Clear (void);
 
 extern int				r_numdlights;
 extern dlight_t			r_dlights[MAX_DLIGHTS];
-extern int				r_numentities;
-extern trRefEntity_t	r_entities[MAX_ENTITIES];
 extern lightstyle_t		r_lightstyles[MAX_LIGHTSTYLES];
 extern int				r_numparticles;
 extern particle_t		r_particles[MAX_PARTICLES];
@@ -743,8 +741,6 @@ void R_RenderView (refdef_t *fd)
 
 	R_CommonRenderScene(fd);
 
-	tr.refdef.num_entities = r_numentities;
-	tr.refdef.entities = r_entities;
 	tr.refdef.num_dlights = r_numdlights;
 	tr.refdef.dlights = r_dlights;
 	tr.refdef.lightstyles = r_lightstyles;

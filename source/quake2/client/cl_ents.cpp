@@ -890,7 +890,7 @@ void CL_AddPacketEntities (frame_t *frame)
 //pmm
 
 		// add to refresh list
-		V_AddEntity (&ent);
+		R_AddRefEntityToScene (&ent);
 
 		// color shells generate a seperate entity for the main model
 		if (effects & EF_COLOR_SHELL)
@@ -956,7 +956,7 @@ void CL_AddPacketEntities (frame_t *frame)
 				}
 			}
 			ent.shaderRGBA[3] = 76;
-			V_AddEntity (&ent);
+			R_AddRefEntityToScene (&ent);
 		}
 
 		ent.skinNum = 0;
@@ -991,7 +991,7 @@ void CL_AddPacketEntities (frame_t *frame)
 			//PGM
 			else
 				ent.hModel = cl.model_draw[s1->modelindex2];
-			V_AddEntity (&ent);
+			R_AddRefEntityToScene (&ent);
 
 			//PGM - make sure these get reset.
 			ent.renderfx = 0;
@@ -1001,12 +1001,12 @@ void CL_AddPacketEntities (frame_t *frame)
 		if (s1->modelindex3)
 		{
 			ent.hModel = cl.model_draw[s1->modelindex3];
-			V_AddEntity (&ent);
+			R_AddRefEntityToScene (&ent);
 		}
 		if (s1->modelindex4)
 		{
 			ent.hModel = cl.model_draw[s1->modelindex4];
-			V_AddEntity (&ent);
+			R_AddRefEntityToScene (&ent);
 		}
 
 		if (effects & EF_POWERSCREEN)
@@ -1019,7 +1019,7 @@ void CL_AddPacketEntities (frame_t *frame)
 			ent.shaderRGBA[1] = 255;
 			ent.shaderRGBA[2] = 0;
 			ent.shaderRGBA[3] = 76;
-			V_AddEntity(&ent);
+			R_AddRefEntityToScene(&ent);
 		}
 
 		// add automatic particle trails
@@ -1218,7 +1218,7 @@ static void CL_AddViewWeapon(player_state_t *ps, player_state_t *ops, vec3_t vie
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
 	gun.backlerp = 1.0 - cl.lerpfrac;
 	VectorCopy (gun.origin, gun.oldorigin);	// don't lerp at all
-	V_AddEntity (&gun);
+	R_AddRefEntityToScene (&gun);
 }
 
 

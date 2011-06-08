@@ -486,6 +486,8 @@ long myftol(float f);
 void R_NoiseInit();
 float R_NoiseGet4f(float x, float y, float z, float t);
 
+void R_CommonToggleSmpFrame();
+void R_CommonClearScene();
 void R_CommonRenderScene(const refdef_t* fd);
 
 void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
@@ -568,6 +570,8 @@ extern int		max_polys;
 extern int		max_polyverts;
 
 extern int			r_firstSceneDrawSurf;
+extern int			r_numentities;
+extern int			r_firstSceneEntity;
 
 /*
 ====================================================================

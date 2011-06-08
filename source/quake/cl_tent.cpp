@@ -312,7 +312,7 @@ void CL_UpdateTEnts (void)
 			angles[1] = yaw;
 			angles[2] = rand()%360;
 			CL_SetRefEntAxis(&ent, angles);
-			R_AddRefEntToScene(&ent);
+			R_AddRefEntityToScene(&ent);
 
 			for (i=0 ; i<3 ; i++)
 				org[i] += dist[i]*30;

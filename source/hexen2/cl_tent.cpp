@@ -493,13 +493,13 @@ void CL_UpdateTEnts(void)
 			case TE_STREAM_CHAIN:
 				angles[2] = 0;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF1:
 				angles[2] = (int)(cl.time*10)%360;
 				//ent->frame = (int)(cl.time*20)%20;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 
 				Com_Memset(&ent, 0, sizeof(ent));
 				ent.reType = RT_MODEL;
@@ -509,13 +509,13 @@ void CL_UpdateTEnts(void)
 				angles[1] = yaw;
 				angles[2] = (int)(cl.time*50)%360;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT|DRF_TRANSLUCENT);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_SUNSTAFF2:
 				angles[2] = (int)(cl.time*10)%360;
 				ent.frame = (int)(cl.time*10)%8;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING:
 				if (stream->endTime < cl.time)
@@ -529,7 +529,7 @@ void CL_UpdateTEnts(void)
 					ent.frame = rand()%6;
 					CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
 				}
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_LIGHTNING_SMALL:
 				if (stream->endTime < cl.time)
@@ -543,36 +543,36 @@ void CL_UpdateTEnts(void)
 					ent.frame = rand()%6;
 					CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
 				}
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_FAMINE:
 				angles[2] = rand()%360;
 				ent.frame = 0;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_COLORBEAM:
 				angles[2] = 0;
 				ent.skinNum = stream->skin;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_GAZE:
 				angles[2] = 0;
 				ent.frame = (int)(cl.time*40)%36;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			case TE_STREAM_ICECHUNKS:
 				angles[2] = rand()%360;
 				ent.frame = rand()%5;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 128, MLS_ABSLIGHT);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 				break;
 			default:
 				angles[2] = 0;
 				CL_SetRefEntAxis(&ent, angles, 0, 0, 0, 0);
-				R_AddRefEntToScene(&ent);
+				R_AddRefEntityToScene(&ent);
 			}
 			for(i = 0; i < 3; i++)
 			{
@@ -597,14 +597,14 @@ void CL_UpdateTEnts(void)
 			ent.hModel = stream->models[2];
 			CL_SetRefEntAxis(&ent, vec3_origin, 80 + (rand() & 15), 0, 128, MLS_ABSLIGHT);
 			//ent->frame = (int)(cl.time*20)%20;
-			R_AddRefEntToScene(&ent);
+			R_AddRefEntityToScene(&ent);
 
 			Com_Memset(&ent, 0, sizeof(ent));
 			ent.reType = RT_MODEL;
 			VectorCopy(stream->dest, ent.origin);
 			ent.hModel = stream->models[3];
 			CL_SetRefEntAxis(&ent, vec3_origin, 150 + (rand() & 15), 0, 128, MLS_ABSLIGHT | DRF_TRANSLUCENT);
-			R_AddRefEntToScene(&ent);
+			R_AddRefEntityToScene(&ent);
 		}
 	}
 }

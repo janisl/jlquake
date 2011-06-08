@@ -36,9 +36,64 @@
 
 int			r_firstSceneDrawSurf;
 
+int			r_numentities;
+int			r_firstSceneEntity;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
+
+//==========================================================================
+//
+//	R_CommonToggleSmpFrame
+//
+//==========================================================================
+
+void R_CommonToggleSmpFrame()
+{
+	r_firstSceneDrawSurf = 0;
+
+	r_numentities = 0;
+	r_firstSceneEntity = 0;
+}
+
+//==========================================================================
+//
+//	R_CommonClearScene
+//
+//==========================================================================
+
+void R_CommonClearScene()
+{
+	r_firstSceneEntity = r_numentities;
+}
+
+//==========================================================================
+//
+//	R_AddRefEntityToScene
+//
+//==========================================================================
+
+void R_AddRefEntityToScene(const refEntity_t* ent)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	if (r_numentities >= MAX_ENTITIES)
+	{
+		return;
+	}
+	if (ent->reType < 0 || ent->reType >= RT_MAX_REF_ENTITY_TYPE)
+	{
+		throw QDropException(va("R_AddRefEntityToScene: bad reType %i", ent->reType));
+	}
+
+	backEndData[tr.smpFrame]->entities[r_numentities].e = *ent;
+	backEndData[tr.smpFrame]->entities[r_numentities].lightingCalculated = false;
+
+	r_numentities++;
+}
 
 //==========================================================================
 //
@@ -92,4 +147,7 @@ void R_CommonRenderScene(const refdef_t* fd)
 
 	tr.refdef.numDrawSurfs = r_firstSceneDrawSurf;
 	tr.refdef.drawSurfs = backEndData[tr.smpFrame]->drawSurfs;
+
+	tr.refdef.num_entities = r_numentities - r_firstSceneEntity;
+	tr.refdef.entities = &backEndData[tr.smpFrame]->entities[r_firstSceneEntity];
 }
