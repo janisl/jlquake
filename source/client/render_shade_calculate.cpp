@@ -116,6 +116,40 @@ DEFORMATIONS
 
 //==========================================================================
 //
+//	RB_CalcDeformNormals
+//
+//	Wiggle the normals for wavy environment mapping
+//
+//==========================================================================
+
+void RB_CalcDeformNormals(deformStage_t* ds)
+{
+	float* xyz = (float*)tess.xyz;
+	float* normal = (float*)tess.normal;
+
+	for (int i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4)
+	{
+		float scale = 0.98f;
+		scale = R_NoiseGet4f(xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
+			tess.shaderTime * ds->deformationWave.frequency);
+		normal[0] += ds->deformationWave.amplitude * scale;
+
+		scale = 0.98f;
+		scale = R_NoiseGet4f(100 + xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
+			tess.shaderTime * ds->deformationWave.frequency);
+		normal[1] += ds->deformationWave.amplitude * scale;
+
+		scale = 0.98f;
+		scale = R_NoiseGet4f(200 + xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
+			tess.shaderTime * ds->deformationWave.frequency);
+		normal[2] += ds->deformationWave.amplitude * scale;
+
+		VectorNormalizeFast(normal);
+	}
+}
+
+//==========================================================================
+//
 //	RB_CalcDeformVertexes
 //
 //==========================================================================
@@ -164,35 +198,54 @@ void RB_CalcDeformVertexes(deformStage_t* ds)
 
 //==========================================================================
 //
-//	RB_CalcDeformNormals
-//
-//	Wiggle the normals for wavy environment mapping
+//	RB_CalcBulgeVertexes
 //
 //==========================================================================
 
-void RB_CalcDeformNormals(deformStage_t* ds)
+void RB_CalcBulgeVertexes(deformStage_t* ds)
 {
-	float* xyz = (float*)tess.xyz;
+	const float* st = (const float*)tess.texCoords[0];
+	float* xyz = (float*) tess.xyz;
 	float* normal = (float*)tess.normal;
 
-	for (int i = 0; i < tess.numVertexes; i++, xyz += 4, normal += 4)
+	float now = backEnd.refdef.time * ds->bulgeSpeed * 0.001f;
+
+	for (int i = 0; i < tess.numVertexes; i++, xyz += 4, st += 4, normal += 4)
 	{
-		float scale = 0.98f;
-		scale = R_NoiseGet4f(xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
-			tess.shaderTime * ds->deformationWave.frequency);
-		normal[0] += ds->deformationWave.amplitude * scale;
+		int off = (int)((float)(FUNCTABLE_SIZE / (M_PI * 2)) * (st[0] * ds->bulgeWidth + now));
 
-		scale = 0.98f;
-		scale = R_NoiseGet4f(100 + xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
-			tess.shaderTime * ds->deformationWave.frequency);
-		normal[1] += ds->deformationWave.amplitude * scale;
+		float scale = tr.sinTable[off & FUNCTABLE_MASK] * ds->bulgeHeight;
 
-		scale = 0.98f;
-		scale = R_NoiseGet4f(200 + xyz[0] * scale, xyz[1] * scale, xyz[2] * scale,
-			tess.shaderTime * ds->deformationWave.frequency);
-		normal[2] += ds->deformationWave.amplitude * scale;
+		xyz[0] += normal[0] * scale;
+		xyz[1] += normal[1] * scale;
+		xyz[2] += normal[2] * scale;
+	}
+}
 
-		VectorNormalizeFast(normal);
+//==========================================================================
+//
+//	RB_CalcMoveVertexes
+//
+//	A deformation that can move an entire surface along a wave path
+//
+//==========================================================================
+
+void RB_CalcMoveVertexes(deformStage_t* ds)
+{
+	float* table = TableForFunc(ds->deformationWave.func);
+
+	float scale = WAVEVALUE(table, ds->deformationWave.base, 
+		ds->deformationWave.amplitude,
+		ds->deformationWave.phase,
+		ds->deformationWave.frequency);
+
+	vec3_t offset;
+	VectorScale(ds->moveVector, scale, offset);
+
+	float* xyz = (float*)tess.xyz;
+	for (int i = 0; i < tess.numVertexes; i++, xyz += 4)
+	{
+		VectorAdd(xyz, offset, xyz);
 	}
 }
 

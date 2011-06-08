@@ -55,65 +55,6 @@ DEFORMATIONS
 ====================================================================
 */
 
-/*
-========================
-RB_CalcBulgeVertexes
-
-========================
-*/
-void RB_CalcBulgeVertexes( deformStage_t *ds ) {
-	int i;
-	const float *st = ( const float * ) tess.texCoords[0];
-	float		*xyz = ( float * ) tess.xyz;
-	float		*normal = ( float * ) tess.normal;
-	float		now;
-
-	now = backEnd.refdef.time * ds->bulgeSpeed * 0.001f;
-
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4, st += 4, normal += 4 ) {
-		int		off;
-		float scale;
-
-		off = (float)( FUNCTABLE_SIZE / (M_PI*2) ) * ( st[0] * ds->bulgeWidth + now );
-
-		scale = tr.sinTable[ off & FUNCTABLE_MASK ] * ds->bulgeHeight;
-			
-		xyz[0] += normal[0] * scale;
-		xyz[1] += normal[1] * scale;
-		xyz[2] += normal[2] * scale;
-	}
-}
-
-
-/*
-======================
-RB_CalcMoveVertexes
-
-A deformation that can move an entire surface along a wave path
-======================
-*/
-void RB_CalcMoveVertexes( deformStage_t *ds ) {
-	int			i;
-	float		*xyz;
-	float		*table;
-	float		scale;
-	vec3_t		offset;
-
-	table = TableForFunc( ds->deformationWave.func );
-
-	scale = WAVEVALUE( table, ds->deformationWave.base, 
-		ds->deformationWave.amplitude,
-		ds->deformationWave.phase,
-		ds->deformationWave.frequency );
-
-	VectorScale( ds->moveVector, scale, offset );
-
-	xyz = ( float * ) tess.xyz;
-	for ( i = 0; i < tess.numVertexes; i++, xyz += 4 ) {
-		VectorAdd( xyz, offset, xyz );
-	}
-}
-
 
 /*
 =============

@@ -388,5 +388,7 @@ float EvalWaveForm(const waveForm_t* wf);
 float EvalWaveFormClamped(const waveForm_t* wf);
 void RB_CalcDeformVertexes(deformStage_t* ds);
 void RB_CalcDeformNormals(deformStage_t* ds);
+void RB_CalcBulgeVertexes(deformStage_t* ds);
+void RB_CalcMoveVertexes(deformStage_t* ds);
 
 extern shaderCommands_t		tess;
