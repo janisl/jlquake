@@ -89,8 +89,7 @@ void R_PushDlights (void)
 	int		i;
 	dlight_t	*l;
 
-	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
-											//  advanced yet for this frame
+	r_dlightframecount = tr.frameCount;
 	l = tr.refdef.dlights;
 	for (i=0 ; i<tr.refdef.num_dlights ; i++, l++)
 		R_MarkLights ( l, 1<<i, tr.worldModel->brush38_nodes );
