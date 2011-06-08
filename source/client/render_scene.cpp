@@ -34,6 +34,8 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
+int			r_firstSceneDrawSurf;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -87,4 +89,7 @@ void R_CommonRenderScene(const refdef_t* fd)
 	// derived info
 
 	tr.refdef.floatTime = tr.refdef.time * 0.001f;
+
+	tr.refdef.numDrawSurfs = r_firstSceneDrawSurf;
+	tr.refdef.drawSurfs = backEndData[tr.smpFrame]->drawSurfs;
 }

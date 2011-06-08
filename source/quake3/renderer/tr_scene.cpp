@@ -22,8 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-int			r_firstSceneDrawSurf;
-
 int			r_numdlights;
 int			r_firstSceneDlight;
 
@@ -295,9 +293,6 @@ void RE_RenderScene( const refdef_t *fd ) {
 	}
 
 	R_CommonRenderScene(fd);
-
-	tr.refdef.numDrawSurfs = r_firstSceneDrawSurf;
-	tr.refdef.drawSurfs = backEndData[tr.smpFrame]->drawSurfs;
 
 	tr.refdef.num_entities = r_numentities - r_firstSceneEntity;
 	tr.refdef.entities = &backEndData[tr.smpFrame]->entities[r_firstSceneEntity];

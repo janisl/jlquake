@@ -567,6 +567,8 @@ extern backEndData_t*	backEndData[SMP_FRAMES];	// the second one may not be allo
 extern int		max_polys;
 extern int		max_polyverts;
 
+extern int			r_firstSceneDrawSurf;
+
 /*
 ====================================================================
 
