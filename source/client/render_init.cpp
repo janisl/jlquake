@@ -100,6 +100,8 @@ QCvar*		r_printShaders;
 QCvar*		r_saveFontData;
 
 QCvar*		r_smp;
+QCvar*		r_maxpolys;
+QCvar*		r_maxpolyverts;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -272,6 +274,8 @@ void R_SharedRegister()
 	r_uiFullScreen = Cvar_Get("r_uifullscreen", "0", 0);
 	r_printShaders = Cvar_Get("r_printShaders", "0", 0);
 	r_saveFontData = Cvar_Get("r_saveFontData", "0", 0);
+	r_maxpolys = Cvar_Get("r_maxpolys", va("%d", MAX_POLYS), 0);
+	r_maxpolyverts = Cvar_Get("r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

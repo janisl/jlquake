@@ -392,9 +392,6 @@ RENDERER BACK END COMMAND QUEUE
 =============================================================
 */
 
-extern	int		max_polys;
-extern	int		max_polyverts;
-
 extern	volatile renderCommandList_t	*renderCommandList;
 
 extern	volatile qboolean	renderThreadActive;

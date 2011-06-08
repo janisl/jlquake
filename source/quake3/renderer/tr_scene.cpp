@@ -294,8 +294,6 @@ void RE_RenderScene( const refdef_t *fd ) {
 		ri.Error (ERR_DROP, "R_RenderScene: NULL worldmodel");
 	}
 
-	Com_Memcpy( tr.refdef.text, fd->text, sizeof( tr.refdef.text ) );
-
 	R_CommonRenderScene(fd);
 
 	tr.refdef.numDrawSurfs = r_firstSceneDrawSurf;

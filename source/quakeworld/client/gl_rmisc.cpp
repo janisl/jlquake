@@ -462,6 +462,7 @@ void VID_Shutdown(void)
 {
 	R_FreeModels();
 	R_FreeShaders();
+	R_FreeBackEndData();
 	R_DeleteTextures();
 	R_DoneFreeType();
 	GLimp_Shutdown();

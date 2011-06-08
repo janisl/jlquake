@@ -494,6 +494,9 @@ void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogN
 void R_InitFreeType();
 void R_DoneFreeType();
 
+void R_InitBackEndData();
+void R_FreeBackEndData();
+
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern QCvar*	r_logFile;				// number of frames to emit GL logs
@@ -553,11 +556,16 @@ extern QCvar*	r_printShaders;
 extern QCvar*	r_saveFontData;
 
 extern QCvar*	r_smp;
+extern QCvar*	r_maxpolys;
+extern QCvar*	r_maxpolyverts;
 
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;
 extern backEndData_t*	backEndData[SMP_FRAMES];	// the second one may not be allocated
+
+extern int		max_polys;
+extern int		max_polyverts;
 
 /*
 ====================================================================

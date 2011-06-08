@@ -46,6 +46,8 @@
 
 void R_CommonRenderScene(const refdef_t* fd)
 {
+	Com_Memcpy(tr.refdef.text, fd->text, sizeof(tr.refdef.text));
+
 	tr.refdef.x = fd->x;
 	tr.refdef.y = fd->y;
 	tr.refdef.width = fd->width;

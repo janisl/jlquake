@@ -947,6 +947,7 @@ int R_Init()
 	R_InitFunctionTables();
 	R_InitFogTable();
 	R_NoiseInit();
+	R_InitBackEndData();
 	R_InitImages();
 	R_InitShaders();
 	R_InitFreeType();
@@ -977,6 +978,7 @@ void R_Shutdown (void)
 	R_FreeModels();
 
 	R_FreeShaders();
+	R_FreeBackEndData();
 	R_DeleteTextures();
 	R_DoneFreeType();
 

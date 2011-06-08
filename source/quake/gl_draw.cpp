@@ -109,6 +109,7 @@ void Draw_Init (void)
 	R_InitFunctionTables();
 	R_InitFogTable();
 	R_NoiseInit();
+	R_InitBackEndData();
 	R_InitImages();
 	R_InitShaders();
 	R_InitFreeType();

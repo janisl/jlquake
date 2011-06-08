@@ -88,11 +88,6 @@ QCvar	*r_directedScale;
 QCvar	*r_debugLight;
 QCvar	*r_debugSort;
 
-QCvar	*r_maxpolys;
-int		max_polys;
-QCvar	*r_maxpolyverts;
-int		max_polyverts;
-
 /*
 ** InitOpenGL
 **
@@ -658,9 +653,6 @@ void R_Register( void )
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
 	r_shadows = Cvar_Get( "cg_shadows", "1", 0 );
 
-	r_maxpolys = Cvar_Get( "r_maxpolys", va("%d", MAX_POLYS), 0);
-	r_maxpolyverts = Cvar_Get( "r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
-
 	Cmd_AddCommand( "skinlist", R_SkinList_f );
 	Cmd_AddCommand( "modellist", R_Modellist_f );
 	Cmd_AddCommand( "screenshot", R_ScreenShot_f );
@@ -676,7 +668,6 @@ R_Init
 void R_Init( void ) {	
 	int	err;
 	int i;
-	byte *ptr;
 
 	ri.Printf( PRINT_ALL, "----- R_Init -----\n" );
 
@@ -700,26 +691,7 @@ void R_Init( void ) {
 
 	R_Register();
 
-	max_polys = r_maxpolys->integer;
-	if (max_polys < MAX_POLYS)
-		max_polys = MAX_POLYS;
-
-	max_polyverts = r_maxpolyverts->integer;
-	if (max_polyverts < MAX_POLYVERTS)
-		max_polyverts = MAX_POLYVERTS;
-
-	ptr = (byte*)ri.Hunk_Alloc( sizeof( *backEndData[0] ) + sizeof(srfPoly_t) * max_polys + sizeof(polyVert_t) * max_polyverts, h_low);
-	backEndData[0] = (backEndData_t *) ptr;
-	backEndData[0]->polys = (srfPoly_t *) ((char *) ptr + sizeof( *backEndData[0] ));
-	backEndData[0]->polyVerts = (polyVert_t *) ((char *) ptr + sizeof( *backEndData[0] ) + sizeof(srfPoly_t) * max_polys);
-	if ( r_smp->integer ) {
-		ptr = (byte*)ri.Hunk_Alloc( sizeof( *backEndData[1] ) + sizeof(srfPoly_t) * max_polys + sizeof(polyVert_t) * max_polyverts, h_low);
-		backEndData[1] = (backEndData_t *) ptr;
-		backEndData[1]->polys = (srfPoly_t *) ((char *) ptr + sizeof( *backEndData[1] ));
-		backEndData[1]->polyVerts = (polyVert_t *) ((char *) ptr + sizeof( *backEndData[1] ) + sizeof(srfPoly_t) * max_polys);
-	} else {
-		backEndData[1] = NULL;
-	}
+	R_InitBackEndData();
 	R_ToggleSmpFrame();
 
 	InitOpenGL();
@@ -768,6 +740,7 @@ void RE_Shutdown( qboolean destroyWindow ) {
 		R_FreeModels();
 		R_FreeShaders();
 		R_DeleteTextures();
+		R_FreeBackEndData();
 	}
 
 	R_DoneFreeType();

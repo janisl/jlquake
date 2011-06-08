@@ -37,12 +37,64 @@
 backEndData_t*	backEndData[SMP_FRAMES];
 backEndState_t	backEnd;
 
+int				max_polys;
+int				max_polyverts;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
 //
-//
+//	R_InitBackEndData
 //
 //==========================================================================
+
+void R_InitBackEndData()
+{
+	max_polys = r_maxpolys->integer;
+	if (max_polys < MAX_POLYS)
+	{
+		max_polys = MAX_POLYS;
+	}
+
+	max_polyverts = r_maxpolyverts->integer;
+	if (max_polyverts < MAX_POLYVERTS)
+	{
+		max_polyverts = MAX_POLYVERTS;
+	}
+
+	byte* ptr = (byte*)Mem_Alloc(sizeof(*backEndData[0]) + sizeof(srfPoly_t) * max_polys + sizeof(polyVert_t) * max_polyverts);
+	backEndData[0] = (backEndData_t*)ptr;
+	backEndData[0]->polys = (srfPoly_t*)((char*)ptr + sizeof(*backEndData[0]));
+	backEndData[0]->polyVerts = (polyVert_t*)((char*)ptr + sizeof(*backEndData[0]) + sizeof(srfPoly_t) * max_polys);
+	if (r_smp->integer)
+	{
+		ptr = (byte*)Mem_Alloc(sizeof(*backEndData[1]) + sizeof(srfPoly_t) * max_polys + sizeof(polyVert_t) * max_polyverts);
+		backEndData[1] = (backEndData_t*)ptr;
+		backEndData[1]->polys = (srfPoly_t*)((char*)ptr + sizeof(*backEndData[1]));
+		backEndData[1]->polyVerts = (polyVert_t*)((char*)ptr + sizeof(*backEndData[1]) + sizeof(srfPoly_t) * max_polys);
+	}
+	else
+	{
+		backEndData[1] = NULL;
+	}
+}
+
+//==========================================================================
+//
+//	R_FreeBackEndData
+//
+//==========================================================================
+
+void R_FreeBackEndData()
+{
+	Mem_Free(backEndData[0]);
+	backEndData[0] = NULL;
+
+	if (backEndData[1])
+	{
+		Mem_Free(backEndData[1]);
+		backEndData[1] = NULL;
+	}
+}
