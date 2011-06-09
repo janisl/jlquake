@@ -130,6 +130,7 @@ void R_RotateForEntity (trRefEntity_t *e);
 void R_MarkLights (cdlight_t *light, int bit, mbrush29_node_t *node);
 void R_AnimateLight (void);
 int R_LightPoint (vec3_t p);
+void R_PushDlights (void);
 
 //
 // gl_rsurf.c

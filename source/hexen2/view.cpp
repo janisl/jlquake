@@ -957,8 +957,6 @@ void V_RenderView (void)
 	}
 	CL_AddViewModel();
 
-	R_PushDlights ();
-
 	R_RenderView ();
 }
 

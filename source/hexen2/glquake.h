@@ -152,5 +152,6 @@ void R_RotateForEntity (trRefEntity_t *e);
 void GL_Set2D (void);
 void SCR_DrawLoading (void);
 void R_InitSky (mbrush29_texture_t *mt);	// called at level load
+void R_PushDlights (void);
 
 extern qboolean	vid_initialized;

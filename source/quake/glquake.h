@@ -131,3 +131,4 @@ void V_CalcBlend (void);
 void R_DrawWaterSurfaces (void);
 void R_RenderBrushPoly (mbrush29_surface_t *fa);
 void R_InitSky (mbrush29_texture_t *mt);	// called at level load
+void R_PushDlights (void);

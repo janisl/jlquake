@@ -1261,6 +1261,8 @@ void R_RenderView (void)
 	r_refdef.time = (int)(cl.time * 1000);
 	R_CommonRenderScene(&r_refdef);
 
+	R_PushDlights ();
+
 //	qglFinish ();
 
 	R_Clear ();

@@ -112,8 +112,7 @@ void R_PushDlights (void)
 	int		i;
 	cdlight_t	*l;
 
-	r_dlightframecount = tr.frameCount + 1;	// because the count hasn't
-											//  advanced yet for this frame
+	r_dlightframecount = tr.frameCount;
 	l = cl_dlights;
 
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)

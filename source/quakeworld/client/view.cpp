@@ -848,7 +848,6 @@ cl.simangles[ROLL] = 0;	// FIXME @@@
 	}
 	CL_AddViewModel();
 
-	R_PushDlights ();
 	R_RenderView ();
 }
 

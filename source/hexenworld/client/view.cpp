@@ -978,7 +978,6 @@ void V_RenderView (void)
 
 	CL_UpdateEffects ();
 
-	R_PushDlights ();
 	R_RenderView ();
 }
 

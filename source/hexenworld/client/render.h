@@ -164,8 +164,6 @@ void R_TeleportSplash (vec3_t org);
 void R_TargetBallEffect (vec3_t org);
 void R_BrightFieldSource (vec3_t org);
 
-void R_PushDlights (void);
-
 
 //
 // surface cache related
