@@ -228,7 +228,6 @@ extern	QCvar	*cl_stereo_separation;
 
 extern	QCvar	*cl_gun;
 extern	QCvar	*cl_add_blend;
-extern	QCvar	*cl_add_lights;
 extern	QCvar	*cl_add_particles;
 extern	QCvar	*cl_add_entities;
 extern	QCvar	*cl_predict;

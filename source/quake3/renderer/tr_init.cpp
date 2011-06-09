@@ -44,7 +44,6 @@ QCvar	*r_measureOverdraw;
 QCvar	*r_inGameVideo;
 QCvar	*r_fastsky;
 QCvar	*r_drawSun;
-QCvar	*r_dynamiclight;
 QCvar	*r_dlightBacks;
 
 QCvar	*r_lodbias;
@@ -600,7 +599,6 @@ void R_Register( void )
 	r_fastsky = Cvar_Get( "r_fastsky", "0", CVAR_ARCHIVE );
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_drawSun = Cvar_Get( "r_drawSun", "0", CVAR_ARCHIVE );
-	r_dynamiclight = Cvar_Get( "r_dynamiclight", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
 	r_facePlaneCull = Cvar_Get ("r_facePlaneCull", "1", CVAR_ARCHIVE );

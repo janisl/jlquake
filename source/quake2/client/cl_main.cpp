@@ -49,7 +49,6 @@ QCvar	*cl_maxfps;
 QCvar	*cl_gun;
 
 QCvar	*cl_add_particles;
-QCvar	*cl_add_lights;
 QCvar	*cl_add_entities;
 QCvar	*cl_add_blend;
 
@@ -1407,7 +1406,6 @@ void CL_InitLocal (void)
 	cl_stereo_separation = Cvar_Get( "cl_stereo_separation", "0.4", CVAR_ARCHIVE );
 
 	cl_add_blend = Cvar_Get ("cl_blend", "1", 0);
-	cl_add_lights = Cvar_Get ("cl_lights", "1", 0);
 	cl_add_particles = Cvar_Get ("cl_particles", "1", 0);
 	cl_add_entities = Cvar_Get ("cl_entities", "1", 0);
 	cl_gun = Cvar_Get ("cl_gun", "1", 0);

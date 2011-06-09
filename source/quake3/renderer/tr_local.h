@@ -101,7 +101,6 @@ extern QCvar	*r_primitives;			// "0" = based on compiled vertex array existance
 extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
 extern QCvar	*r_fastsky;				// controls whether sky should be cleared or drawn
 extern QCvar	*r_drawSun;				// controls drawing of sun quad
-extern QCvar	*r_dynamiclight;		// dynamic lights enabled/disabled
 extern QCvar	*r_dlightBacks;			// dlight non-facing surfaces for continuity
 
 extern	QCvar	*r_norefresh;			// bypasses the ref rendering

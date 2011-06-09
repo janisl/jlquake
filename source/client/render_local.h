@@ -560,6 +560,8 @@ extern QCvar*	r_smp;
 extern QCvar*	r_maxpolys;
 extern QCvar*	r_maxpolyverts;
 
+extern QCvar*	r_dynamiclight;		// dynamic lights enabled/disabled
+
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;

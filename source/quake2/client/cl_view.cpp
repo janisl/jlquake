@@ -474,8 +474,6 @@ void V_RenderView( float stereo_separation )
 			r_numentities = r_firstSceneEntity;
 		if (!cl_add_particles->value)
 			r_numparticles = 0;
-		if (!cl_add_lights->value)
-			r_numdlights = r_firstSceneDlight;
 		if (!cl_add_blend->value)
 		{
 			VectorClear(v_blend);

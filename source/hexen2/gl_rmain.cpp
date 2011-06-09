@@ -1240,9 +1240,7 @@ void R_RenderView (void)
 		return;
 
 	tr.frameCount++;
-	tr.sceneCount++;
 	tr.frameSceneNum = 0;
-	tr.frameSceneNum++;
 
 	if (!tr.worldModel)
 		Sys_Error ("R_RenderView: NULL worldmodel");

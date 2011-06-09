@@ -733,9 +733,7 @@ void R_RenderView (refdef_t *fd)
 	if (r_norefresh->value)
 		return;
 
-	tr.sceneCount++;
 	tr.frameSceneNum = 0;
-	tr.frameSceneNum++;
 
 	R_CommonRenderScene(fd);
 
