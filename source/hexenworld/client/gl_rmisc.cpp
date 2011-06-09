@@ -459,6 +459,8 @@ VID_Init
 
 void VID_Init()
 {
+	R_CommonInit1();
+
 	R_SharedRegister();
 
 	R_CommonInitOpenGL();

@@ -665,27 +665,8 @@ R_Init
 */
 void R_Init( void ) {	
 	int	err;
-	int i;
 
-	ri.Printf( PRINT_ALL, "----- R_Init -----\n" );
-
-	// clear all our internal state
-	Com_Memset( &tr, 0, sizeof( tr ) );
-	Com_Memset( &backEnd, 0, sizeof( backEnd ) );
-	Com_Memset( &tess, 0, sizeof( tess ) );
-
-//	Swap_Init();
-
-	if ( (qintptr)tess.xyz & 15 ) {
-		Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );
-	}
-	Com_Memset( tess.constantColor255, 255, sizeof( tess.constantColor255 ) );
-
-	R_InitFunctionTables();
-
-	R_InitFogTable();
-
-	R_NoiseInit();
+	R_CommonInit1();
 
 	R_Register();
 

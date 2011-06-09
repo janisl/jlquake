@@ -425,6 +425,34 @@ void R_CommonInitOpenGL()
 
 //==========================================================================
 //
+//	R_CommonInit1
+//
+//==========================================================================
+
+void R_CommonInit1()
+{
+	GLog.Write("----- R_Init -----\n");
+
+	// clear all our internal state
+	Com_Memset(&tr, 0, sizeof(tr));
+	Com_Memset(&backEnd, 0, sizeof(backEnd));
+	Com_Memset(&tess, 0, sizeof(tess));
+
+	if ((qintptr)tess.xyz & 15)
+	{
+		GLog.Write("WARNING: tess.xyz not 16 byte aligned\n");
+	}
+	Com_Memset(tess.constantColor255, 255, sizeof(tess.constantColor255));
+
+	R_InitFunctionTables();
+
+	R_InitFogTable();
+
+	R_NoiseInit();
+}
+
+//==========================================================================
+//
 //	CommonGfxInfo_f
 //
 //==========================================================================

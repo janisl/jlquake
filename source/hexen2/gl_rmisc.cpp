@@ -465,6 +465,8 @@ void D_ShowLoadingSize(void)
 
 void VID_Init()
 {
+	R_CommonInit1();
+
 	R_SharedRegister();
 
 	R_CommonInitOpenGL();

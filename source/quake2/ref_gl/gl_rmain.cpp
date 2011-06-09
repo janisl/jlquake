@@ -915,10 +915,9 @@ int R_Init()
 
 	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
 
-	R_Register();
+	R_CommonInit1();
 
-	// destroy the existing window
-	GLimp_Shutdown ();
+	R_Register();
 
 	r_fullscreen->modified = false;
 	r_mode->modified = false;
@@ -934,9 +933,6 @@ int R_Init()
 
 	GL_SetDefaultState();
 
-	R_InitFunctionTables();
-	R_InitFogTable();
-	R_NoiseInit();
 	R_InitBackEndData();
 	R_InitImages();
 	R_InitShaders();

@@ -473,6 +473,7 @@ void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegra
 void R_SharedRegister();
 const char* R_GetTitleForWindow();
 void R_CommonInitOpenGL();
+void R_CommonInit1();
 void CommonGfxInfo_f();
 void R_InitFunctionTables();
 
