@@ -150,7 +150,6 @@ void R_TranslatePlayerSkin (int playernum);
 void D_ShowLoadingSize(void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
-void	Mod_Init (void);
 void	Mod_ClearAll (void);
 qhandle_t Mod_LoadWorld(const char *name);
 int Mod_GetNumFrames(qhandle_t Handle);

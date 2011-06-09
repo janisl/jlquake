@@ -935,8 +935,6 @@ int R_Init()
 
 	R_InitBackEndData();
 	R_CommonInit2();
-	R_InitFreeType();
-	Mod_Init ();
 	R_InitParticleTexture ();
 	Draw_InitLocal ();
 

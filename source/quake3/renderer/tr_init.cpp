@@ -662,9 +662,8 @@ void R_Register( void )
 R_Init
 ===============
 */
-void R_Init( void ) {	
-	int	err;
-
+void R_Init()
+{	
 	R_CommonInit1();
 
 	R_Register();
@@ -674,17 +673,6 @@ void R_Init( void ) {
 	InitOpenGL();
 
 	R_CommonInit2();
-
-	R_ModelInit();
-
-	R_InitFreeType();
-
-
-	err = qglGetError();
-	if ( err != GL_NO_ERROR )
-		ri.Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
-
-	ri.Printf( PRINT_ALL, "----- finished R_Init -----\n" );
 }
 
 /*

@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //============================================================================
 
-void	Mod_Init (void);
 void	Mod_ClearAll (void);
 
 void	Mod_Modellist_f (void);

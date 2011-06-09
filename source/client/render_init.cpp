@@ -541,4 +541,16 @@ void R_CommonInit2()
 	R_InitShaders();
 
 	R_InitSkins();
+
+	R_ModelInit();
+
+	R_InitFreeType();
+
+	int err = qglGetError();
+	if (err != GL_NO_ERROR)
+	{
+		GLog.Write("glGetError() = 0x%x\n", err);
+	}
+
+	GLog.Write("----- finished R_Init -----\n");
 }

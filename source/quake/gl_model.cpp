@@ -28,16 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 /*
 ===============
 Mod_Init
-===============
-*/
-void Mod_Init (void)
-{
-	R_ModelInit();
-}
-
-/*
-===============
-Mod_Init
 
 Caches the data if needed
 ===============
@@ -55,7 +45,7 @@ Mod_ClearAll
 void Mod_ClearAll (void)
 {
 	R_FreeModels();
-	Mod_Init();
+	R_ModelInit();
 }
 
 /*

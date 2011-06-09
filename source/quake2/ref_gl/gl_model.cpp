@@ -39,16 +39,6 @@ void Mod_Modellist_f (void)
 }
 
 /*
-===============
-Mod_Init
-===============
-*/
-void Mod_Init (void)
-{
-	R_ModelInit();
-}
-
-/*
 ==================
 Mod_ForName
 
@@ -113,7 +103,7 @@ void R_BeginRegistration (char *model)
 	QStr::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
 
 	R_FreeModels();
-	Mod_Init();
+	R_ModelInit();
 
 	Mod_LoadWorld(fullname);
 

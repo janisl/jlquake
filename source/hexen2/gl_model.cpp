@@ -13,16 +13,6 @@
 /*
 ===============
 Mod_Init
-===============
-*/
-void Mod_Init (void)
-{
-	R_ModelInit();
-}
-
-/*
-===============
-Mod_Init
 
 Caches the data if needed
 ===============
@@ -40,7 +30,7 @@ Mod_ClearAll
 void Mod_ClearAll (void)
 {
 	R_FreeModels();
-	Mod_Init();
+	R_ModelInit();
 }
 
 /*

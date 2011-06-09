@@ -122,7 +122,6 @@ void Draw_Init (void)
 
 	R_InitBackEndData();
 	R_CommonInit2();
-	R_InitFreeType();
 
 	// load the console background and the charset
 	// by hand, because we need to write the version
