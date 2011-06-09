@@ -71,23 +71,23 @@ void R_AddDynamicLights (mbrush29_surface_t *surf)
 	tmax = (surf->extents[1]>>4)+1;
 	tex = surf->texinfo;
 
-	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
+	for (lnum=0 ; lnum<tr.refdef.num_dlights; lnum++)
 	{
 		if ( !(surf->dlightbits & (1<<lnum) ) )
 			continue;		// not lit by this light
 
-		rad = cl_dlights[lnum].radius;
-		dist = DotProduct (cl_dlights[lnum].origin, surf->plane->normal) -
+		rad = tr.refdef.dlights[lnum].radius;
+		dist = DotProduct (tr.refdef.dlights[lnum].origin, surf->plane->normal) -
 				surf->plane->dist;
 		rad -= fabs(dist);
-		minlight = cl_dlights[lnum].minlight;
+		minlight = 0;////tr.refdef.dlights[lnum].minlight;
 		if (rad < minlight)
 			continue;
 		minlight = rad - minlight;
 
 		for (i=0 ; i<3 ; i++)
 		{
-			impact[i] = cl_dlights[lnum].origin[i] -
+			impact[i] = tr.refdef.dlights[lnum].origin[i] -
 					surf->plane->normal[i]*dist;
 		}
 
@@ -899,13 +899,9 @@ void R_DrawBrushModel (trRefEntity_t *e)
 // instanced model
 	if (clmodel->brush29_firstmodelsurface != 0)
 	{
-		for (k=0 ; k<MAX_DLIGHTS ; k++)
+		for (k=0 ; k<tr.refdef.num_dlights; k++)
 		{
-			if ((cl_dlights[k].die < cl.time) ||
-				(!cl_dlights[k].radius))
-				continue;
-
-			R_MarkLights (&cl_dlights[k], 1<<k,
+			R_MarkLights (&tr.refdef.dlights[k], 1<<k,
 				clmodel->brush29_nodes + clmodel->brush29_firstnode);
 		}
 	}

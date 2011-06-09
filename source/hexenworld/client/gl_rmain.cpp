@@ -549,18 +549,15 @@ float R_CalcEntityLight(refEntity_t* e)
 		light = 24;
 	}
 
-	for (int lnum = 0; lnum < MAX_DLIGHTS; lnum++)
+	for (int lnum = 0; lnum < tr.refdef.num_dlights; lnum++)
 	{
-		if (cl_dlights[lnum].die >= cl.time)
-		{
-			vec3_t dist;
-			VectorSubtract(lorg, cl_dlights[lnum].origin, dist);
-			float add = cl_dlights[lnum].radius - VectorLength(dist);
+		vec3_t dist;
+		VectorSubtract(lorg, tr.refdef.dlights[lnum].origin, dist);
+		float add = tr.refdef.dlights[lnum].radius - VectorLength(dist);
 
-			if (add > 0)
-			{
-				light += add;
-			}
+		if (add > 0)
+		{
+			light += add;
 		}
 	}
 	return light;

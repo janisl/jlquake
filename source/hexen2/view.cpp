@@ -957,6 +957,16 @@ void V_RenderView (void)
 	}
 	CL_AddViewModel();
 
+	cdlight_t* l = cl_dlights;
+	for (int i = 0; i < MAX_DLIGHTS; i++, l++)
+	{
+		if (l->die < cl.time || !l->radius)
+		{
+			continue;
+		}
+		R_AddLightToScene(l->origin, l->radius, 1, 1, 1);
+	}
+
 	R_RenderView ();
 }
 

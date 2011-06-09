@@ -61,7 +61,7 @@ DYNAMIC LIGHTS
 R_MarkLights
 =============
 */
-void R_MarkLights (cdlight_t *light, int bit, mbrush29_node_t *node)
+void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node)
 {
 	cplane_t	*splitplane;
 	float		dist;
@@ -110,15 +110,13 @@ R_PushDlights
 void R_PushDlights (void)
 {
 	int		i;
-	cdlight_t	*l;
+	dlight_t	*l;
 
 	r_dlightframecount = tr.frameCount;
-	l = cl_dlights;
+	l = tr.refdef.dlights;
 
-	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
+	for (i=0 ; i<tr.refdef.num_dlights; i++, l++)
 	{
-		if (l->die < cl.time || !l->radius)
-			continue;
 		R_MarkLights ( l, 1<<i, tr.worldModel->brush29_nodes );
 	}
 }

@@ -675,18 +675,15 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	if ((e->e.renderfx & RF_MINLIGHT) && ambientlight < 24)
 		ambientlight = shadelight = 24;
 
-	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
+	for (lnum=0 ; lnum<tr.refdef.num_dlights; lnum++)
 	{
-		if (cl_dlights[lnum].die >= cl.time)
-		{
-			VectorSubtract(lorg,
-							cl_dlights[lnum].origin,
-							dist);
-			add = cl_dlights[lnum].radius - VectorLength(dist);
+		VectorSubtract(lorg,
+						tr.refdef.dlights[lnum].origin,
+						dist);
+		add = tr.refdef.dlights[lnum].radius - VectorLength(dist);
 
-			if (add > 0)
-				ambientlight += add;
-		}
+		if (add > 0)
+			ambientlight += add;
 	}
 
 	if (e->e.renderfx & RF_FIRST_PERSON)
