@@ -682,14 +682,8 @@ RE_Shutdown
 */
 void RE_Shutdown( qboolean destroyWindow ) {	
 
-	ri.Printf( PRINT_ALL, "RE_Shutdown( %i )\n", destroyWindow );
-
-	Cmd_RemoveCommand ("modellist");
 	Cmd_RemoveCommand ("screenshotJPEG");
 	Cmd_RemoveCommand ("screenshot");
-	Cmd_RemoveCommand ("imagelist");
-	Cmd_RemoveCommand ("shaderlist");
-	Cmd_RemoveCommand ("skinlist");
 	Cmd_RemoveCommand ("gfxinfo");
 	Cmd_RemoveCommand( "modelist" );
 	Cmd_RemoveCommand( "shaderstate" );
@@ -698,23 +692,9 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	if ( tr.registered ) {
 		R_SyncRenderThread();
 		R_ShutdownCommandBuffers();
-		R_FreeModels();
-		R_FreeShaders();
-		R_DeleteTextures();
-		R_FreeBackEndData();
 	}
 
-	R_DoneFreeType();
-
-	// shut down platform specific OpenGL stuff
-	if ( destroyWindow ) {
-		GLimp_Shutdown();
-
-		// shutdown QGL subsystem
-		QGL_Shutdown();
-	}
-
-	tr.registered = qfalse;
+	R_CommonShutdown(destroyWindow);
 }
 
 

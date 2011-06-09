@@ -955,27 +955,9 @@ void R_Shutdown (void)
 {	
 	Cmd_RemoveCommand ("modellist");
 	Cmd_RemoveCommand ("screenshot");
-	Cmd_RemoveCommand ("imagelist");
 	Cmd_RemoveCommand ("gfxinfo");
 
-	R_FreeModels();
-
-	R_FreeShaders();
-	R_FreeBackEndData();
-	R_DeleteTextures();
-	R_DoneFreeType();
-
-	/*
-	** shut down OS specific OpenGL stuff like contexts, etc.
-	*/
-	GLimp_Shutdown();
-
-	/*
-	** shutdown our QGL subsystem
-	*/
-	QGL_Shutdown();
-
-	tr.registered = false;
+	R_CommonShutdown(true);
 }
 
 

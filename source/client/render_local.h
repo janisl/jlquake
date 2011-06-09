@@ -476,6 +476,7 @@ void R_CommonInitOpenGL();
 void R_CommonInit1();
 void R_CommonInit2();
 void CommonGfxInfo_f();
+void R_CommonShutdown(bool destroyWindow);
 
 // fast float to int conversion
 #if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123

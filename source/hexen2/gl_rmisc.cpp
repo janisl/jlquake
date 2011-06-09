@@ -500,17 +500,7 @@ void VID_Init()
 
 void VID_Shutdown(void)
 {
-	R_FreeModels();
-	R_FreeShaders();
-	R_DeleteTextures();
-	R_FreeBackEndData();
-	R_DoneFreeType();
-	GLimp_Shutdown();
-
-	// shutdown QGL subsystem
-	QGL_Shutdown();
-
-	tr.registered = false;
+	R_CommonShutdown(true);
 }
 
 void GL_EndRendering (void)

@@ -554,3 +554,43 @@ void R_CommonInit2()
 
 	GLog.Write("----- finished R_Init -----\n");
 }
+
+//==========================================================================
+//
+//	R_CommonShutdown
+//
+//==========================================================================
+
+void R_CommonShutdown(bool destroyWindow)
+{
+	GLog.Write("RE_Shutdown( %i )\n", destroyWindow);
+
+	Cmd_RemoveCommand("modellist");
+	Cmd_RemoveCommand("imagelist");
+	Cmd_RemoveCommand("shaderlist");
+	Cmd_RemoveCommand("skinlist");
+
+	if (tr.registered)
+	{
+		R_FreeModels();
+
+		R_FreeShaders();
+
+		R_DeleteTextures();
+
+		R_FreeBackEndData();
+	}
+
+	R_DoneFreeType();
+
+	// shut down platform specific OpenGL stuff
+	if (destroyWindow)
+	{
+		GLimp_Shutdown();
+
+		// shutdown QGL subsystem
+		QGL_Shutdown();
+	}
+
+	tr.registered = false;
+}
