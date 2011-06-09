@@ -472,7 +472,7 @@ bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_SharedRegister();
 const char* R_GetTitleForWindow();
-void R_CommonInit();
+void R_CommonInitOpenGL();
 void CommonGfxInfo_f();
 void R_InitFunctionTables();
 

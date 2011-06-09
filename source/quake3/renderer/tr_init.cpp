@@ -111,7 +111,7 @@ static void InitOpenGL( void )
 	
 	if ( glConfig.vidWidth == 0 )
 	{
-		R_CommonInit();
+		R_CommonInitOpenGL();
 	}
 
 	// init command buffers and SMP

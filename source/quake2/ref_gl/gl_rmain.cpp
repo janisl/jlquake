@@ -923,7 +923,7 @@ int R_Init()
 	r_fullscreen->modified = false;
 	r_mode->modified = false;
 
-	R_CommonInit();
+	R_CommonInitOpenGL();
 
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);

@@ -377,7 +377,7 @@ static void R_SetMode()
 
 //==========================================================================
 //
-//	R_CommonInit
+//	R_CommonInitOpenGL
 //
 //	This is the OpenGL initialization function.  It is responsible for
 // initialising OpenGL, setting extensions, creating a window of the
@@ -387,7 +387,7 @@ static void R_SetMode()
 //
 //==========================================================================
 
-void R_CommonInit()
+void R_CommonInitOpenGL()
 {	
 	GLog.Write("Initializing OpenGL subsystem\n");
 

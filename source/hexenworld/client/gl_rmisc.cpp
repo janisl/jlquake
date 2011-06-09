@@ -461,7 +461,7 @@ void VID_Init()
 {
 	R_SharedRegister();
 
-	R_CommonInit();
+	R_CommonInitOpenGL();
 
 	VID_SetPalette();
 
