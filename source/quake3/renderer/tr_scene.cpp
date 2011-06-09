@@ -176,54 +176,6 @@ void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts
 
 //=================================================================================
 
-
-/*
-=====================
-RE_AddDynamicLightToScene
-
-=====================
-*/
-void RE_AddDynamicLightToScene( const vec3_t org, float intensity, float r, float g, float b, int additive ) {
-	dlight_t	*dl;
-
-	if ( !tr.registered ) {
-		return;
-	}
-	if ( r_numdlights >= MAX_DLIGHTS ) {
-		return;
-	}
-	if ( intensity <= 0 ) {
-		return;
-	}
-	dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
-	VectorCopy (org, dl->origin);
-	dl->radius = intensity;
-	dl->color[0] = r;
-	dl->color[1] = g;
-	dl->color[2] = b;
-	dl->additive = additive;
-}
-
-/*
-=====================
-RE_AddLightToScene
-
-=====================
-*/
-void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b ) {
-	RE_AddDynamicLightToScene( org, intensity, r, g, b, qfalse );
-}
-
-/*
-=====================
-RE_AddAdditiveLightToScene
-
-=====================
-*/
-void RE_AddAdditiveLightToScene( const vec3_t org, float intensity, float r, float g, float b ) {
-	RE_AddDynamicLightToScene( org, intensity, r, g, b, qtrue );
-}
-
 /*
 @@@@@@@@@@@@@@@@@@@@@
 RE_RenderScene

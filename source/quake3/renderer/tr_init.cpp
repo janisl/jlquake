@@ -808,11 +808,8 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.ModelBounds = R_ModelBounds;
 
 	re.ClearScene = RE_ClearScene;
-	re.AddRefEntityToScene = R_AddRefEntityToScene;
 	re.AddPolyToScene = RE_AddPolyToScene;
 	re.LightForPoint = R_LightForPoint;
-	re.AddLightToScene = RE_AddLightToScene;
-	re.AddAdditiveLightToScene = RE_AddAdditiveLightToScene;
 	re.RenderScene = RE_RenderScene;
 
 	re.SetColor = RE_SetColor;

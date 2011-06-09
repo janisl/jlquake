@@ -552,7 +552,7 @@ int CL_CgameSystemCalls( int *args ) {
 		re.ClearScene();
 		return 0;
 	case CG_R_ADDREFENTITYTOSCENE:
-		re.AddRefEntityToScene( (refEntity_t*)VMA(1) );
+		R_AddRefEntityToScene( (refEntity_t*)VMA(1) );
 		return 0;
 	case CG_R_ADDPOLYTOSCENE:
 		re.AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), 1 );
@@ -563,10 +563,10 @@ int CL_CgameSystemCalls( int *args ) {
 	case CG_R_LIGHTFORPOINT:
 		return re.LightForPoint( (float*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4) );
 	case CG_R_ADDLIGHTTOSCENE:
-		re.AddLightToScene( (float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
+		R_AddLightToScene( (float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 		return 0;
 	case CG_R_ADDADDITIVELIGHTTOSCENE:
-		re.AddAdditiveLightToScene( (float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
+		R_AddAdditiveLightToScene( (float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 		return 0;
 	case CG_R_RENDERSCENE:
 		re.RenderScene( (refdef_t*)VMA(1) );

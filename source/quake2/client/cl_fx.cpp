@@ -114,7 +114,7 @@ void CL_AddLightStyles (void)
 	clightstyle_t	*ls;
 
 	for (i=0,ls=cl_lightstyle ; i<MAX_LIGHTSTYLES ; i++, ls++)
-		V_AddLightStyle (i, ls->value[0], ls->value[1], ls->value[2]);
+		R_AddLightToSceneStyle (i, ls->value[0], ls->value[1], ls->value[2]);
 }
 
 /*
@@ -817,7 +817,7 @@ void CL_AddDLights (void)
 	{
 		if (!dl->radius)
 			continue;
-		V_AddLight (dl->origin, dl->radius,
+		R_AddLightToScene (dl->origin, dl->radius,
 			dl->color[0], dl->color[1], dl->color[2]);
 	}
 }

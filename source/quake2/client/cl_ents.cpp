@@ -828,7 +828,7 @@ void CL_AddPacketEntities (frame_t *frame)
 
 				AngleVectors (angles, forward, NULL, NULL);
 				VectorMA (ent.origin, 64, forward, start);
-				V_AddLight (start, 100, 1, 0, 0);
+				R_AddLightToScene (start, 100, 1, 0, 0);
 			}
 		}
 		else
@@ -850,13 +850,13 @@ void CL_AddPacketEntities (frame_t *frame)
 			// FIXME: still pass to refresh
 
 			if (effects & EF_FLAG1)
-				V_AddLight (ent.origin, 225, 1.0, 0.1, 0.1);
+				R_AddLightToScene (ent.origin, 225, 1.0, 0.1, 0.1);
 			else if (effects & EF_FLAG2)
-				V_AddLight (ent.origin, 225, 0.1, 0.1, 1.0);
+				R_AddLightToScene (ent.origin, 225, 0.1, 0.1, 1.0);
 			else if (effects & EF_TAGTRAIL)						//PGM
-				V_AddLight (ent.origin, 225, 1.0, 1.0, 0.0);	//PGM
+				R_AddLightToScene (ent.origin, 225, 1.0, 1.0, 0.0);	//PGM
 			else if (effects & EF_TRACKERTRAIL)					//PGM
-				V_AddLight (ent.origin, 225, -1.0, -1.0, -1.0);	//PGM
+				R_AddLightToScene (ent.origin, 225, -1.0, -1.0, -1.0);	//PGM
 
 			continue;
 		}
@@ -1028,7 +1028,7 @@ void CL_AddPacketEntities (frame_t *frame)
 			if (effects & EF_ROCKET)
 			{
 				CL_RocketTrail (cent->lerp_origin, ent.origin, cent);
-				V_AddLight (ent.origin, 200, 1, 1, 0);
+				R_AddLightToScene (ent.origin, 200, 1, 1, 0);
 			}
 			// PGM - Do not reorder EF_BLASTER and EF_HYPERBLASTER. 
 			// EF_BLASTER | EF_TRACKER is a special case for EF_BLASTER2... Cheese!
@@ -1039,21 +1039,21 @@ void CL_AddPacketEntities (frame_t *frame)
 				if (effects & EF_TRACKER)	// lame... problematic?
 				{
 					CL_BlasterTrail2 (cent->lerp_origin, ent.origin);
-					V_AddLight (ent.origin, 200, 0, 1, 0);		
+					R_AddLightToScene (ent.origin, 200, 0, 1, 0);		
 				}
 				else
 				{
 					CL_BlasterTrail (cent->lerp_origin, ent.origin);
-					V_AddLight (ent.origin, 200, 1, 1, 0);
+					R_AddLightToScene (ent.origin, 200, 1, 1, 0);
 				}
 //PGM
 			}
 			else if (effects & EF_HYPERBLASTER)
 			{
 				if (effects & EF_TRACKER)						// PGM	overloaded for blaster2.
-					V_AddLight (ent.origin, 200, 0, 1, 0);		// PGM
+					R_AddLightToScene (ent.origin, 200, 0, 1, 0);		// PGM
 				else											// PGM
-					V_AddLight (ent.origin, 200, 1, 1, 0);
+					R_AddLightToScene (ent.origin, 200, 1, 1, 0);
 			}
 			else if (effects & EF_GIB)
 			{
@@ -1080,7 +1080,7 @@ void CL_AddPacketEntities (frame_t *frame)
 				{
 					i = bfg_lightramp[s1->frame];
 				}
-				V_AddLight (ent.origin, i, 0, 1, 0);
+				R_AddLightToScene (ent.origin, i, 0, 1, 0);
 			}
 			// RAFAEL
 			else if (effects & EF_TRAP)
@@ -1088,24 +1088,24 @@ void CL_AddPacketEntities (frame_t *frame)
 				ent.origin[2] += 32;
 				CL_TrapParticles (&ent);
 				i = (rand()%100) + 100;
-				V_AddLight (ent.origin, i, 1, 0.8, 0.1);
+				R_AddLightToScene (ent.origin, i, 1, 0.8, 0.1);
 			}
 			else if (effects & EF_FLAG1)
 			{
 				CL_FlagTrail (cent->lerp_origin, ent.origin, 242);
-				V_AddLight (ent.origin, 225, 1, 0.1, 0.1);
+				R_AddLightToScene (ent.origin, 225, 1, 0.1, 0.1);
 			}
 			else if (effects & EF_FLAG2)
 			{
 				CL_FlagTrail (cent->lerp_origin, ent.origin, 115);
-				V_AddLight (ent.origin, 225, 0.1, 0.1, 1);
+				R_AddLightToScene (ent.origin, 225, 0.1, 0.1, 1);
 			}
 //======
 //ROGUE
 			else if (effects & EF_TAGTRAIL)
 			{
 				CL_TagTrail (cent->lerp_origin, ent.origin, 220);
-				V_AddLight (ent.origin, 225, 1.0, 1.0, 0.0);
+				R_AddLightToScene (ent.origin, 225, 1.0, 1.0, 0.0);
 			}
 			else if (effects & EF_TRACKERTRAIL)
 			{
@@ -1114,18 +1114,18 @@ void CL_AddPacketEntities (frame_t *frame)
 					float intensity;
 
 					intensity = 50 + (500 * (sin(cl.time/500.0) + 1.0));
-					V_AddLight (ent.origin, intensity, -1.0, -1.0, -1.0);
+					R_AddLightToScene (ent.origin, intensity, -1.0, -1.0, -1.0);
 				}
 				else
 				{
 					CL_Tracker_Shell (cent->lerp_origin);
-					V_AddLight (ent.origin, 155, -1.0, -1.0, -1.0);
+					R_AddLightToScene (ent.origin, 155, -1.0, -1.0, -1.0);
 				}
 			}
 			else if (effects & EF_TRACKER)
 			{
 				CL_TrackerTrail (cent->lerp_origin, ent.origin, 0);
-				V_AddLight (ent.origin, 200, -1, -1, -1);
+				R_AddLightToScene (ent.origin, 200, -1, -1, -1);
 			}
 //ROGUE
 //======
@@ -1138,12 +1138,12 @@ void CL_AddPacketEntities (frame_t *frame)
 			else if (effects & EF_IONRIPPER)
 			{
 				CL_IonripperTrail (cent->lerp_origin, ent.origin);
-				V_AddLight (ent.origin, 100, 1, 0.5, 0.5);
+				R_AddLightToScene (ent.origin, 100, 1, 0.5, 0.5);
 			}
 			// RAFAEL
 			else if (effects & EF_BLUEHYPERBLASTER)
 			{
-				V_AddLight (ent.origin, 200, 0, 0, 1);
+				R_AddLightToScene (ent.origin, 200, 0, 0, 1);
 			}
 			// RAFAEL
 			else if (effects & EF_PLASMA)
@@ -1152,7 +1152,7 @@ void CL_AddPacketEntities (frame_t *frame)
 				{
 					CL_BlasterTrail (cent->lerp_origin, ent.origin);
 				}
-				V_AddLight (ent.origin, 130, 1, 0.5, 0.5);
+				R_AddLightToScene (ent.origin, 130, 1, 0.5, 0.5);
 			}
 		}
 

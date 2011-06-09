@@ -1705,7 +1705,7 @@ void CL_AddExplosions (void)
 			continue;
 		if (ex->light)
 		{
-			V_AddLight(ent->origin, ex->light * (float)ent->shaderRGBA[3] / 255.0,
+			R_AddLightToScene(ent->origin, ex->light * (float)ent->shaderRGBA[3] / 255.0,
 				ex->lightcolor[0], ex->lightcolor[1], ex->lightcolor[2]);
 		}
 

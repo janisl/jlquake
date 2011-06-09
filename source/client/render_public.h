@@ -255,3 +255,5 @@ void R_RemapShader(const char* OldShader, const char* NewShader, const char* Tim
 void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);
 
 void R_AddRefEntityToScene(const refEntity_t* Entity);
+void R_AddLightToScene(const vec3_t org, float intensity, float r, float g, float b);
+void R_AddAdditiveLightToScene(const vec3_t org, float intensity, float r, float g, float b);

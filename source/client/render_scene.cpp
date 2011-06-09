@@ -104,6 +104,57 @@ void R_AddRefEntityToScene(const refEntity_t* ent)
 
 //==========================================================================
 //
+//	R_AddDynamicLightToScene
+//
+//==========================================================================
+
+static void R_AddDynamicLightToScene(const vec3_t org, float intensity, float r, float g, float b, bool additive)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	if (r_numdlights >= MAX_DLIGHTS)
+	{
+		return;
+	}
+	if (intensity <= 0)
+	{
+		return;
+	}
+	dlight_t* dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
+	VectorCopy (org, dl->origin);
+	dl->radius = intensity;
+	dl->color[0] = r;
+	dl->color[1] = g;
+	dl->color[2] = b;
+	dl->additive = additive;
+}
+
+//==========================================================================
+//
+//	R_AddLightToScene
+//
+//==========================================================================
+
+void R_AddLightToScene(const vec3_t org, float intensity, float r, float g, float b)
+{
+	R_AddDynamicLightToScene(org, intensity, r, g, b, false);
+}
+
+//==========================================================================
+//
+//	R_AddAdditiveLightToScene
+//
+//==========================================================================
+
+void R_AddAdditiveLightToScene(const vec3_t org, float intensity, float r, float g, float b)
+{
+	R_AddDynamicLightToScene(org, intensity, r, g, b, true);
+}
+
+//==========================================================================
+//
 //	R_CommonRenderScene
 //
 //==========================================================================

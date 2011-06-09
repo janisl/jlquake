@@ -82,32 +82,11 @@ void V_AddParticle (vec3_t org, int color, float alpha)
 
 /*
 =====================
-V_AddLight
+R_AddLightToSceneStyle
 
 =====================
 */
-void V_AddLight (vec3_t org, float intensity, float r, float g, float b)
-{
-	dlight_t	*dl;
-
-	if (r_numdlights >= MAX_DLIGHTS)
-		return;
-	dl = &backEndData[tr.smpFrame]->dlights[r_numdlights++];
-	VectorCopy (org, dl->origin);
-	dl->radius = intensity;
-	dl->color[0] = r;
-	dl->color[1] = g;
-	dl->color[2] = b;
-}
-
-
-/*
-=====================
-V_AddLightStyle
-
-=====================
-*/
-void V_AddLightStyle (int style, float r, float g, float b)
+void R_AddLightToSceneStyle (int style, float r, float g, float b)
 {
 	lightstyle_t	*ls;
 
