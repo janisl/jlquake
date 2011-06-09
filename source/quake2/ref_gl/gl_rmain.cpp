@@ -1130,7 +1130,7 @@ void R_DrawBeam( trRefEntity_t *e )
 
 
 void	R_BeginRegistration (char *map);
-image_t	*R_RegisterSkin (char *name);
+image_t	*R_RegisterSkinQ2 (char *name);
 void R_SetSky (char *name, float rotate, vec3_t axis);
 void	R_EndRegistration (void);
 
@@ -1157,7 +1157,7 @@ refexport_t GetRefAPI (refimport_t rimp )
 	ri = rimp;
 
 	re.BeginRegistration = R_BeginRegistration;
-	re.RegisterSkin = R_RegisterSkin;
+	re.RegisterSkin = R_RegisterSkinQ2;
 	re.RegisterPic = Draw_FindPic;
 	re.SetSky = R_SetSky;
 	re.EndRegistration = R_EndRegistration;

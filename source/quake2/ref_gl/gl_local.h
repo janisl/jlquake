@@ -155,7 +155,7 @@ void	Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 void	R_BeginFrame( float camera_separation );
 void	R_SwapBuffers( int );
 
-image_t *R_RegisterSkin (char *name);
+image_t *R_RegisterSkinQ2 (char *name);
 
 /*
 ** GL extension emulation functions

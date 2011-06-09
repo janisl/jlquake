@@ -216,14 +216,14 @@ struct trRefdef_t
 struct skinSurface_t
 {
 	char		name[MAX_QPATH];
-	shader_t	*shader;
+	shader_t*	shader;
 };
 
 struct skin_t
 {
-	char		name[MAX_QPATH];		// game path, including extension
-	int			numSurfaces;
-	skinSurface_t	*surfaces[MD3_MAX_SURFACES];
+	char			name[MAX_QPATH];		// game path, including extension
+	int				numSurfaces;
+	skinSurface_t*	surfaces[MD3_MAX_SURFACES];
 };
 
 struct frontEndCounters_t
@@ -476,7 +476,6 @@ void R_CommonInitOpenGL();
 void R_CommonInit1();
 void R_CommonInit2();
 void CommonGfxInfo_f();
-void R_InitFunctionTables();
 
 // fast float to int conversion
 #if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123
@@ -499,6 +498,10 @@ void R_DoneFreeType();
 
 void R_InitBackEndData();
 void R_FreeBackEndData();
+
+void R_InitSkins();
+skin_t* R_GetSkinByHandle(qhandle_t hSkin);
+void R_SkinList_f();
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 

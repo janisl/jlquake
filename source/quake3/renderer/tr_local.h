@@ -179,21 +179,15 @@ void	RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
 void		RE_BeginRegistration( glconfig_t *glconfig );
 void		RE_LoadWorldMap( const char *mapname );
-qhandle_t	RE_RegisterSkin( const char *name );
 void		RE_Shutdown( qboolean destroyWindow );
 
 qboolean	R_GetEntityToken( char *buffer, int size );
 
 void    	R_Init( void );
 
-void	R_SkinList_f( void );
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=516
 const void *RB_TakeScreenshotCmd( const void *data );
 void	R_ScreenShot_f( void );
-
-void	R_InitSkins( void );
-skin_t	*R_GetSkinByHandle( qhandle_t hSkin );
-
 
 //
 // tr_shader.c

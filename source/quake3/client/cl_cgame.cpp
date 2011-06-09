@@ -541,7 +541,7 @@ int CL_CgameSystemCalls( int *args ) {
 	case CG_R_REGISTERMODEL:
 		return R_RegisterModel( (char*)VMA(1) );
 	case CG_R_REGISTERSKIN:
-		return re.RegisterSkin( (char*)VMA(1) );
+		return R_RegisterSkin( (char*)VMA(1) );
 	case CG_R_REGISTERSHADER:
 		return R_RegisterShader( (char*)VMA(1) );
 	case CG_R_REGISTERSHADERNOMIP:

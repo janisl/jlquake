@@ -285,6 +285,7 @@ void R_SharedRegister()
 	Cmd_AddCommand("modelist", R_ModeList_f);
 	Cmd_AddCommand("imagelist", R_ImageList_f);
 	Cmd_AddCommand("shaderlist", R_ShaderList_f);
+	Cmd_AddCommand("skinlist", R_SkinList_f);
 }
 
 //==========================================================================
@@ -425,47 +426,6 @@ void R_CommonInitOpenGL()
 
 //==========================================================================
 //
-//	R_CommonInit1
-//
-//==========================================================================
-
-void R_CommonInit1()
-{
-	GLog.Write("----- R_Init -----\n");
-
-	// clear all our internal state
-	Com_Memset(&tr, 0, sizeof(tr));
-	Com_Memset(&backEnd, 0, sizeof(backEnd));
-	Com_Memset(&tess, 0, sizeof(tess));
-
-	if ((qintptr)tess.xyz & 15)
-	{
-		GLog.Write("WARNING: tess.xyz not 16 byte aligned\n");
-	}
-	Com_Memset(tess.constantColor255, 255, sizeof(tess.constantColor255));
-
-	R_InitFunctionTables();
-
-	R_InitFogTable();
-
-	R_NoiseInit();
-}
-
-//==========================================================================
-//
-//	R_CommonInit2
-//
-//==========================================================================
-
-void R_CommonInit2()
-{
-	R_InitImages();
-
-	R_InitShaders();
-}
-
-//==========================================================================
-//
 //	CommonGfxInfo_f
 //
 //==========================================================================
@@ -510,7 +470,7 @@ void CommonGfxInfo_f()
 //
 //==========================================================================
 
-void R_InitFunctionTables()
+static void R_InitFunctionTables()
 {
 	//
 	// init function tables
@@ -538,4 +498,47 @@ void R_InitFunctionTables()
 			tr.triangleTable[i] = -tr.triangleTable[i - FUNCTABLE_SIZE / 2];
 		}
 	}
+}
+
+//==========================================================================
+//
+//	R_CommonInit1
+//
+//==========================================================================
+
+void R_CommonInit1()
+{
+	GLog.Write("----- R_Init -----\n");
+
+	// clear all our internal state
+	Com_Memset(&tr, 0, sizeof(tr));
+	Com_Memset(&backEnd, 0, sizeof(backEnd));
+	Com_Memset(&tess, 0, sizeof(tess));
+
+	if ((qintptr)tess.xyz & 15)
+	{
+		GLog.Write("WARNING: tess.xyz not 16 byte aligned\n");
+	}
+	Com_Memset(tess.constantColor255, 255, sizeof(tess.constantColor255));
+
+	R_InitFunctionTables();
+
+	R_InitFogTable();
+
+	R_NoiseInit();
+}
+
+//==========================================================================
+//
+//	R_CommonInit2
+//
+//==========================================================================
+
+void R_CommonInit2()
+{
+	R_InitImages();
+
+	R_InitShaders();
+
+	R_InitSkins();
 }

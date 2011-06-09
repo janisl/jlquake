@@ -45,7 +45,6 @@ typedef struct {
 	// and height, which can be used by the client to intelligently
 	// size display elements
 	void	(*BeginRegistration)( glconfig_t *config );
-	qhandle_t (*RegisterSkin)( const char *name );
 	void	(*LoadWorld)( const char *name );
 
 	// EndRegistration will draw a tiny polygon with each texture, forcing

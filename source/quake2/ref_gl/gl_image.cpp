@@ -53,10 +53,10 @@ void GL_MBind( int target, image_t* image)
 
 /*
 ===============
-R_RegisterSkin
+R_RegisterSkinQ2
 ===============
 */
-image_t *R_RegisterSkin (char *name)
+image_t *R_RegisterSkinQ2 (char *name)
 {
 	return R_FindImageFile(name, true, true, GL_CLAMP, false, IMG8MODE_Skin);
 }

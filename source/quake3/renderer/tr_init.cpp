@@ -651,7 +651,6 @@ void R_Register( void )
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
 	r_shadows = Cvar_Get( "cg_shadows", "1", 0 );
 
-	Cmd_AddCommand( "skinlist", R_SkinList_f );
 	Cmd_AddCommand( "modellist", R_Modellist_f );
 	Cmd_AddCommand( "screenshot", R_ScreenShot_f );
 	Cmd_AddCommand( "screenshotJPEG", R_ScreenShotJPEG_f );
@@ -675,8 +674,6 @@ void R_Init( void ) {
 	InitOpenGL();
 
 	R_CommonInit2();
-
-	R_InitSkins();
 
 	R_ModelInit();
 
@@ -772,7 +769,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.Shutdown = RE_Shutdown;
 
 	re.BeginRegistration = RE_BeginRegistration;
-	re.RegisterSkin = RE_RegisterSkin;
 	re.LoadWorld = RE_LoadWorldMap;
 	re.EndRegistration = RE_EndRegistration;
 
