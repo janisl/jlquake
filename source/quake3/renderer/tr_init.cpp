@@ -692,7 +692,6 @@ void R_Init( void ) {
 	R_Register();
 
 	R_InitBackEndData();
-	R_ToggleSmpFrame();
 
 	InitOpenGL();
 
@@ -807,8 +806,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.LerpTag = R_LerpTag;
 	re.ModelBounds = R_ModelBounds;
 
-	re.ClearScene = RE_ClearScene;
-	re.AddPolyToScene = RE_AddPolyToScene;
 	re.LightForPoint = R_LightForPoint;
 	re.RenderScene = RE_RenderScene;
 

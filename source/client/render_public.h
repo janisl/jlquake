@@ -254,6 +254,10 @@ void R_RemapShader(const char* OldShader, const char* NewShader, const char* Tim
 
 void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);
 
+// a scene is built up by calls to R_ClearScene and the various R_Add functions.
+// Nothing is drawn until R_RenderScene is called.
+void R_ClearScene();
 void R_AddRefEntityToScene(const refEntity_t* Entity);
-void R_AddLightToScene(const vec3_t org, float intensity, float r, float g, float b);
-void R_AddAdditiveLightToScene(const vec3_t org, float intensity, float r, float g, float b);
+void R_AddLightToScene(const vec3_t Origin, float Intensity, float r, float g, float b);
+void R_AddAdditiveLightToScene(const vec3_t Origin, float Intensity, float r, float g, float b);
+void R_AddPolyToScene(qhandle_t hShader , int NumVerts, const polyVert_t* Verts, int Num);

@@ -79,6 +79,7 @@ void R_InitBackEndData()
 	{
 		backEndData[1] = NULL;
 	}
+	R_ToggleSmpFrame();
 }
 
 //==========================================================================

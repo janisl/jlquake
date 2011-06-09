@@ -57,7 +57,7 @@ Specifies the model that will be used as the world
 */
 void V_ClearScene (void)
 {
-	R_CommonClearScene();
+	R_ClearScene();
 	r_numparticles = 0;
 }
 

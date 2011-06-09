@@ -858,7 +858,7 @@ int CL_UISystemCalls( int *args ) {
 		return R_RegisterShaderNoMip( (char*)VMA(1) );
 
 	case UI_R_CLEARSCENE:
-		re.ClearScene();
+		R_ClearScene();
 		return 0;
 
 	case UI_R_ADDREFENTITYTOSCENE:
@@ -866,7 +866,7 @@ int CL_UISystemCalls( int *args ) {
 		return 0;
 
 	case UI_R_ADDPOLYTOSCENE:
-		re.AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), 1 );
+		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), 1 );
 		return 0;
 
 	case UI_R_ADDLIGHTTOSCENE:

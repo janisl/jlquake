@@ -549,16 +549,16 @@ int CL_CgameSystemCalls( int *args ) {
 	case CG_R_REGISTERFONT:
 		R_RegisterFont( (char*)VMA(1), args[2], (fontInfo_t*)VMA(3));
 	case CG_R_CLEARSCENE:
-		re.ClearScene();
+		R_ClearScene();
 		return 0;
 	case CG_R_ADDREFENTITYTOSCENE:
 		R_AddRefEntityToScene( (refEntity_t*)VMA(1) );
 		return 0;
 	case CG_R_ADDPOLYTOSCENE:
-		re.AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), 1 );
+		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), 1 );
 		return 0;
 	case CG_R_ADDPOLYSTOSCENE:
-		re.AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), args[4] );
+		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), args[4] );
 		return 0;
 	case CG_R_LIGHTFORPOINT:
 		return re.LightForPoint( (float*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4) );

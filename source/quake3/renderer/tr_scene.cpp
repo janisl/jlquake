@@ -22,49 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-int			r_numpolys;
-int			r_firstScenePoly;
-
-int			r_numpolyverts;
-
-
-/*
-====================
-R_ToggleSmpFrame
-
-====================
-*/
-void R_ToggleSmpFrame( void ) {
-	if ( r_smp->integer ) {
-		// use the other buffers next frame, because another CPU
-		// may still be rendering into the current ones
-		tr.smpFrame ^= 1;
-	} else {
-		tr.smpFrame = 0;
-	}
-
-	backEndData[tr.smpFrame]->commands.used = 0;
-
-	R_CommonToggleSmpFrame();
-
-	r_numpolys = 0;
-	r_firstScenePoly = 0;
-
-	r_numpolyverts = 0;
-}
-
-
-/*
-====================
-RE_ClearScene
-
-====================
-*/
-void RE_ClearScene( void ) {
-	R_CommonClearScene();
-	r_firstScenePoly = r_numpolys;
-}
-
 /*
 ===========================================================================
 
@@ -93,86 +50,6 @@ void R_AddPolygonSurfaces( void ) {
 		R_AddDrawSurf( ( surfaceType_t* )poly, sh, poly->fogIndex, qfalse );
 	}
 }
-
-/*
-=====================
-RE_AddPolyToScene
-
-=====================
-*/
-void RE_AddPolyToScene( qhandle_t hShader, int numVerts, const polyVert_t *verts, int numPolys ) {
-	srfPoly_t	*poly;
-	int			i, j;
-	int			fogIndex;
-	mbrush46_fog_t		*fog;
-	vec3_t		bounds[2];
-
-	if ( !tr.registered ) {
-		return;
-	}
-
-	if ( !hShader ) {
-		ri.Printf( PRINT_WARNING, "WARNING: RE_AddPolyToScene: NULL poly shader\n");
-		return;
-	}
-
-	for ( j = 0; j < numPolys; j++ ) {
-		if ( r_numpolyverts + numVerts > max_polyverts || r_numpolys >= max_polys ) {
-      /*
-      NOTE TTimo this was initially a PRINT_WARNING
-      but it happens a lot with high fighting scenes and particles
-      since we don't plan on changing the const and making for room for those effects
-      simply cut this message to developer only
-      */
-			ri.Printf( PRINT_DEVELOPER, "WARNING: RE_AddPolyToScene: r_max_polys or r_max_polyverts reached\n");
-			return;
-		}
-
-		poly = &backEndData[tr.smpFrame]->polys[r_numpolys];
-		poly->surfaceType = SF_POLY;
-		poly->hShader = hShader;
-		poly->numVerts = numVerts;
-		poly->verts = &backEndData[tr.smpFrame]->polyVerts[r_numpolyverts];
-		
-		Com_Memcpy( poly->verts, &verts[numVerts*j], numVerts * sizeof( *verts ) );
-
-		// done.
-		r_numpolys++;
-		r_numpolyverts += numVerts;
-
-		// if no world is loaded
-		if ( tr.world == NULL ) {
-			fogIndex = 0;
-		}
-		// see if it is in a fog volume
-		else if ( tr.world->numfogs == 1 ) {
-			fogIndex = 0;
-		} else {
-			// find which fog volume the poly is in
-			VectorCopy( poly->verts[0].xyz, bounds[0] );
-			VectorCopy( poly->verts[0].xyz, bounds[1] );
-			for ( i = 1 ; i < poly->numVerts ; i++ ) {
-				AddPointToBounds( poly->verts[i].xyz, bounds[0], bounds[1] );
-			}
-			for ( fogIndex = 1 ; fogIndex < tr.world->numfogs ; fogIndex++ ) {
-				fog = &tr.world->fogs[fogIndex]; 
-				if ( bounds[1][0] >= fog->bounds[0][0]
-					&& bounds[1][1] >= fog->bounds[0][1]
-					&& bounds[1][2] >= fog->bounds[0][2]
-					&& bounds[0][0] <= fog->bounds[1][0]
-					&& bounds[0][1] <= fog->bounds[1][1]
-					&& bounds[0][2] <= fog->bounds[1][2] ) {
-					break;
-				}
-			}
-			if ( fogIndex == tr.world->numfogs ) {
-				fogIndex = 0;
-			}
-		}
-		poly->fogIndex = fogIndex;
-	}
-}
-
 
 //=================================================================================
 
@@ -208,13 +85,10 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	R_CommonRenderScene(fd);
 
-	tr.refdef.numPolys = r_numpolys - r_firstScenePoly;
-	tr.refdef.polys = &backEndData[tr.smpFrame]->polys[r_firstScenePoly];
-
 	// turn off dynamic lighting globally by clearing all the
 	// dlights if it needs to be disabled or if vertex lighting is enabled
-	if ( r_dynamiclight->integer == 0 ||
-		 r_vertexLight->integer == 1) {
+	if (r_dynamiclight->integer == 0 || r_vertexLight->integer == 1)
+	{
 		tr.refdef.num_dlights = 0;
 	}
 
@@ -253,7 +127,7 @@ void RE_RenderScene( const refdef_t *fd ) {
 
 	// the next scene rendered in this frame will tack on after this one
 	r_firstSceneDrawSurf = tr.refdef.numDrawSurfs;
-	RE_ClearScene();
+	R_ClearScene();
 
 	tr.frontEndMsec += CL_ScaledMilliseconds() - startTime;
 }

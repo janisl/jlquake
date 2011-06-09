@@ -959,11 +959,6 @@ void R_RenderView (void)
 	}
 }
 
-void R_ClearScene()
-{
-	R_CommonClearScene();
-}
-
 void R_InitSkyTexCoords( float cloudLayerHeight )
 {
 }

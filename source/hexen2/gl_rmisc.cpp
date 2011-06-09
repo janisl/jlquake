@@ -514,5 +514,5 @@ void VID_Shutdown(void)
 void GL_EndRendering (void)
 {
 	GLimp_SwapBuffers();
-	R_CommonToggleSmpFrame();
+	R_ToggleSmpFrame();
 }

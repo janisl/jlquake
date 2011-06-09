@@ -1288,11 +1288,6 @@ void R_RenderView (void)
 		R_PrintTimes ();
 }
 
-void R_ClearScene()
-{
-	R_CommonClearScene();
-}
-
 void R_InitSkyTexCoords( float cloudLayerHeight )
 {
 }

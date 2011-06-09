@@ -1338,11 +1338,6 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 		Draw_String (u, v, Name);
 }
 
-void R_ClearScene()
-{
-	R_CommonClearScene();
-}
-
 void R_InitSkyTexCoords( float cloudLayerHeight )
 {
 }

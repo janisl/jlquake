@@ -313,7 +313,7 @@ void GLimp_EndFrame (void)
 	if (QStr::ICmp(gl_drawbuffer->string, "GL_BACK") == 0)
 	{
 		GLimp_SwapBuffers();
-		R_CommonToggleSmpFrame();
+		R_ToggleSmpFrame();
 	}
 }
 

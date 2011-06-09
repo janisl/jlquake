@@ -42,18 +42,36 @@ int			r_firstSceneEntity;
 int			r_numdlights;
 int			r_firstSceneDlight;
 
+int			r_numpolys;
+int			r_firstScenePoly;
+
+int			r_numpolyverts;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
 //
-//	R_CommonToggleSmpFrame
+//	R_ToggleSmpFrame
 //
 //==========================================================================
 
-void R_CommonToggleSmpFrame()
+void R_ToggleSmpFrame()
 {
+	if (r_smp->integer)
+	{
+		// use the other buffers next frame, because another CPU
+		// may still be rendering into the current ones
+		tr.smpFrame ^= 1;
+	}
+	else
+	{
+		tr.smpFrame = 0;
+	}
+
+	backEndData[tr.smpFrame]->commands.used = 0;
+
 	r_firstSceneDrawSurf = 0;
 
 	r_numentities = 0;
@@ -61,18 +79,24 @@ void R_CommonToggleSmpFrame()
 
 	r_numdlights = 0;
 	r_firstSceneDlight = 0;
+
+	r_numpolys = 0;
+	r_firstScenePoly = 0;
+
+	r_numpolyverts = 0;
 }
 
 //==========================================================================
 //
-//	R_CommonClearScene
+//	R_ClearScene
 //
 //==========================================================================
 
-void R_CommonClearScene()
+void R_ClearScene()
 {
 	r_firstSceneEntity = r_numentities;
 	r_firstSceneDlight = r_numdlights;
+	r_firstScenePoly = r_numpolys;
 }
 
 //==========================================================================
@@ -155,6 +179,94 @@ void R_AddAdditiveLightToScene(const vec3_t org, float intensity, float r, float
 
 //==========================================================================
 //
+//	R_AddPolyToScene
+//
+//==========================================================================
+
+void R_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t* verts, int numPolys)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+
+	if (!hShader)
+	{
+		GLog.Write(S_COLOR_YELLOW "WARNING: R_AddPolyToScene: NULL poly shader\n");
+		return;
+	}
+
+	for (int j = 0; j < numPolys; j++)
+	{
+		if (r_numpolyverts + numVerts > max_polyverts || r_numpolys >= max_polys)
+		{
+			/*
+			NOTE TTimo this was initially a PRINT_WARNING
+			but it happens a lot with high fighting scenes and particles
+			since we don't plan on changing the const and making for room for those effects
+			simply cut this message to developer only
+			*/
+			GLog.DWrite(S_COLOR_RED "WARNING: R_AddPolyToScene: r_max_polys or r_max_polyverts reached\n");
+			return;
+		}
+
+		srfPoly_t* poly = &backEndData[tr.smpFrame]->polys[r_numpolys];
+		poly->surfaceType = SF_POLY;
+		poly->hShader = hShader;
+		poly->numVerts = numVerts;
+		poly->verts = &backEndData[tr.smpFrame]->polyVerts[r_numpolyverts];
+
+		Com_Memcpy(poly->verts, &verts[numVerts * j], numVerts * sizeof(*verts));
+
+		// done.
+		r_numpolys++;
+		r_numpolyverts += numVerts;
+
+		// if no world is loaded
+		int fogIndex;
+		if (tr.world == NULL)
+		{
+			fogIndex = 0;
+		}
+		// see if it is in a fog volume
+		else if (tr.world->numfogs == 1)
+		{
+			fogIndex = 0;
+		}
+		else
+		{
+			// find which fog volume the poly is in
+			vec3_t bounds[2];
+			VectorCopy(poly->verts[0].xyz, bounds[0]);
+			VectorCopy(poly->verts[0].xyz, bounds[1]);
+			for (int i = 1; i < poly->numVerts; i++)
+			{
+				AddPointToBounds(poly->verts[i].xyz, bounds[0], bounds[1]);
+			}
+			for (fogIndex = 1; fogIndex < tr.world->numfogs; fogIndex++)
+			{
+				mbrush46_fog_t* fog = &tr.world->fogs[fogIndex]; 
+				if (bounds[1][0] >= fog->bounds[0][0] &&
+					bounds[1][1] >= fog->bounds[0][1] &&
+					bounds[1][2] >= fog->bounds[0][2] &&
+					bounds[0][0] <= fog->bounds[1][0] &&
+					bounds[0][1] <= fog->bounds[1][1] &&
+					bounds[0][2] <= fog->bounds[1][2])
+				{
+					break;
+				}
+			}
+			if (fogIndex == tr.world->numfogs)
+			{
+				fogIndex = 0;
+			}
+		}
+		poly->fogIndex = fogIndex;
+	}
+}
+
+//==========================================================================
+//
 //	R_CommonRenderScene
 //
 //==========================================================================
@@ -211,4 +323,7 @@ void R_CommonRenderScene(const refdef_t* fd)
 
 	tr.refdef.num_dlights = r_numdlights - r_firstSceneDlight;
 	tr.refdef.dlights = &backEndData[tr.smpFrame]->dlights[r_firstSceneDlight];
+
+	tr.refdef.numPolys = r_numpolys - r_firstScenePoly;
+	tr.refdef.polys = &backEndData[tr.smpFrame]->polys[r_firstScenePoly];
 }
