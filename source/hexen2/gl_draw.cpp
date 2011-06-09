@@ -119,8 +119,7 @@ void Draw_Init (void)
 	char temp[MAX_QPATH];
 
 	R_InitBackEndData();
-	R_InitImages();
-	R_InitShaders();
+	R_CommonInit2();
 	R_InitFreeType();
 
 	// load the console background and the charset

@@ -934,8 +934,7 @@ int R_Init()
 	GL_SetDefaultState();
 
 	R_InitBackEndData();
-	R_InitImages();
-	R_InitShaders();
+	R_CommonInit2();
 	R_InitFreeType();
 	Mod_Init ();
 	R_InitParticleTexture ();

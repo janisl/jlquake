@@ -474,6 +474,7 @@ void R_SharedRegister();
 const char* R_GetTitleForWindow();
 void R_CommonInitOpenGL();
 void R_CommonInit1();
+void R_CommonInit2();
 void CommonGfxInfo_f();
 void R_InitFunctionTables();
 

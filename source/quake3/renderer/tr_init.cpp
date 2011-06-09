@@ -674,9 +674,7 @@ void R_Init( void ) {
 
 	InitOpenGL();
 
-	R_InitImages();
-
-	R_InitShaders();
+	R_CommonInit2();
 
 	R_InitSkins();
 
