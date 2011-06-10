@@ -1001,21 +1001,6 @@ void R_SetupFrame (void)
 }
 
 
-void MYgluPerspective( GLdouble fovy, GLdouble aspect,
-		     GLdouble zNear, GLdouble zFar )
-{
-   GLdouble xmin, xmax, ymin, ymax;
-
-   ymax = zNear * tan( fovy * M_PI / 360.0 );
-   ymin = -ymax;
-
-   xmin = ymin * aspect;
-   xmax = ymax * aspect;
-
-   qglFrustum( xmin, xmax, ymin, ymax, zNear, zFar );
-}
-
-
 typedef struct _MATRIX {
     GLfloat M[4][4];
 } MATRIX;
@@ -1026,9 +1011,9 @@ typedef struct _point3d {
     GLfloat z;
 } POINT3D;
 
-static MATRIX	ModelviewMatrix, ProjectionMatrix, FinalMatrix;
+static MATRIX	ModelviewMatrix, FinalMatrix;
 
-void MultiplyMatrix( MATRIX *m1, MATRIX *m2, MATRIX *m3 )
+void MultiplyMatrix( MATRIX *m1, float *m2, MATRIX *m3 )
 {
     int i, j;
 
@@ -1036,10 +1021,10 @@ void MultiplyMatrix( MATRIX *m1, MATRIX *m2, MATRIX *m3 )
 	{
 		for( i = 0; i < 4; i ++ )
 		{
-			m1->M[j][i] = m2->M[j][0] * m3->M[0][i] +
-				m2->M[j][1] * m3->M[1][i] +
-				m2->M[j][2] * m3->M[2][i] +
-				m2->M[j][3] * m3->M[3][i];
+			m1->M[j][i] = m2[j * 4 + 0] * m3->M[0][i] +
+				m2[j * 4 + 1] * m3->M[1][i] +
+				m2[j * 4 + 2] * m3->M[2][i] +
+				m2[j * 4 + 3] * m3->M[3][i];
 		}
     }
 }
@@ -1070,9 +1055,6 @@ R_SetupGL
 */
 void R_SetupGL (void)
 {
-	float	screenaspect;
-	float	yfov;
-	int		i;
 	int		x, x2, y2, y, w, h;
 
 	//
@@ -1105,8 +1087,8 @@ void R_SetupGL (void)
 	}
 
 	qglViewport (x, y2, w, h);
-    screenaspect = (float)tr.refdef.width/tr.refdef.height;
-    MYgluPerspective(tr.refdef.fov_y,  screenaspect,  4,  4096);
+	R_SetupProjection();
+	qglMultMatrixf(tr.viewParms.projectionMatrix);
 
 	qglCullFace(GL_FRONT);
 
@@ -1150,13 +1132,7 @@ void R_SetupGL (void)
 	GL_State(GLS_DEFAULT);
 
 	qglGetFloatv(GL_MODELVIEW_MATRIX, (float *)ModelviewMatrix.M);
-//	ModelviewMatrix.M[0][3] = 0;
-//	ModelviewMatrix.M[1][3] = 0;
-//	ModelviewMatrix.M[2][3] = 0;
-//	ModelviewMatrix.M[3][3] = 0;
-	qglGetFloatv(GL_PROJECTION_MATRIX, (float *)ProjectionMatrix.M);
-//	MultiplyMatrix(&FinalMatrix, &ModelviewMatrix, &ProjectionMatrix);
-	MultiplyMatrix(&FinalMatrix, &ProjectionMatrix, &ModelviewMatrix);
+	MultiplyMatrix(&FinalMatrix, tr.viewParms.projectionMatrix, &ModelviewMatrix);
 }
 
 /*

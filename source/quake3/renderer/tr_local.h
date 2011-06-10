@@ -86,8 +86,6 @@ extern QCvar	*r_railSegmentLength;
 
 extern QCvar	*r_ignore;				// used for debugging anything
 
-extern QCvar	*r_znear;				// near Z clip plane
-
 extern QCvar	*r_measureOverdraw;		// enables stencil buffer overdraw measurement
 
 extern QCvar	*r_lodbias;				// push/pull LOD transitions

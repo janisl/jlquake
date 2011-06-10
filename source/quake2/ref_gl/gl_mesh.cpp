@@ -633,13 +633,11 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	if ( ( tr.currentEntity->e.renderfx & RF_FIRST_PERSON) && ( r_lefthand->value == 1.0F ) )
 	{
-		extern void MYgluPerspective( GLdouble fovy, GLdouble aspect, GLdouble zNear, GLdouble zFar );
-
 		qglMatrixMode( GL_PROJECTION );
 		qglPushMatrix();
 		qglLoadIdentity();
 		qglScalef( -1, 1, 1 );
-	    MYgluPerspective( tr.refdef.fov_y, ( float ) tr.refdef.width / tr.refdef.height,  4,  4096);
+		qglMultMatrixf(tr.viewParms.projectionMatrix);
 		qglMatrixMode( GL_MODELVIEW );
 
 		qglCullFace( GL_BACK );

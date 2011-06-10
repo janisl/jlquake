@@ -602,25 +602,6 @@ void R_SetupFrame (void)
 	}
 }
 
-
-void MYgluPerspective( GLdouble fovy, GLdouble aspect,
-		     GLdouble zNear, GLdouble zFar )
-{
-   GLdouble xmin, xmax, ymin, ymax;
-
-   ymax = zNear * tan( fovy * M_PI / 360.0 );
-   ymin = -ymax;
-
-   xmin = ymin * aspect;
-   xmax = ymax * aspect;
-
-   xmin += -( 2 * gl_state.camera_separation ) / zNear;
-   xmax += -( 2 * gl_state.camera_separation ) / zNear;
-
-   qglFrustum( xmin, xmax, ymin, ymax, zNear, zFar );
-}
-
-
 /*
 =============
 R_SetupGL
@@ -628,8 +609,6 @@ R_SetupGL
 */
 void R_SetupGL (void)
 {
-	float	screenaspect;
-//	float	yfov;
 	int		x, x2, y2, y, w, h;
 
 	//
@@ -648,10 +627,10 @@ void R_SetupGL (void)
 	//
 	// set up projection matrix
 	//
-    screenaspect = (float)tr.refdef.width/tr.refdef.height;
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
-    MYgluPerspective (tr.refdef.fov_y,  screenaspect,  4,  4096);
+	R_SetupProjection();
+	qglMultMatrixf(tr.viewParms.projectionMatrix);
 
 	qglCullFace(GL_FRONT);
 

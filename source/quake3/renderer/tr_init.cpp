@@ -34,8 +34,6 @@ QCvar	*r_railSegmentLength;
 
 QCvar	*r_ignore;
 
-QCvar	*r_znear;
-
 QCvar	*r_showSmp;
 QCvar	*r_skipBackEnd;
 
@@ -594,8 +592,6 @@ void R_Register( void )
 	r_lodCurveError = Cvar_Get( "r_lodCurveError", "250", CVAR_ARCHIVE|CVAR_CHEAT );
 	r_lodbias = Cvar_Get( "r_lodbias", "0", CVAR_ARCHIVE );
 	r_flares = Cvar_Get ("r_flares", "0", CVAR_ARCHIVE );
-	r_znear = Cvar_Get( "r_znear", "4", CVAR_CHEAT );
-	AssertCvarRange( r_znear, 0.001f, 200, qtrue );
 	r_fastsky = Cvar_Get( "r_fastsky", "0", CVAR_ARCHIVE );
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_drawSun = Cvar_Get( "r_drawSun", "0", CVAR_ARCHIVE );

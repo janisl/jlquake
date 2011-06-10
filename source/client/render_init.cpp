@@ -104,6 +104,7 @@ QCvar*		r_maxpolys;
 QCvar*		r_maxpolyverts;
 
 QCvar*		r_dynamiclight;
+QCvar*		r_znear;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -182,7 +183,7 @@ static void R_ModeList_f()
 //
 //==========================================================================
 
-void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
+static void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
 {
 	if (shouldBeIntegral)
 	{
@@ -279,6 +280,8 @@ void R_SharedRegister()
 	r_saveFontData = Cvar_Get("r_saveFontData", "0", 0);
 	r_maxpolys = Cvar_Get("r_maxpolys", va("%d", MAX_POLYS), 0);
 	r_maxpolyverts = Cvar_Get("r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
+	r_znear = Cvar_Get("r_znear", "4", CVAR_CHEAT);
+	AssertCvarRange(r_znear, 0.001f, 200, true);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

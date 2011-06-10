@@ -469,7 +469,6 @@ struct backEndData_t
 };
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
-void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral);
 void R_SharedRegister();
 const char* R_GetTitleForWindow();
 void R_CommonInitOpenGL();
@@ -492,6 +491,7 @@ void R_ToggleSmpFrame();
 void R_CommonRenderScene(const refdef_t* fd);
 
 void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
+void R_SetupProjection();
 
 // font stuff
 void R_InitFreeType();
@@ -566,7 +566,8 @@ extern QCvar*	r_smp;
 extern QCvar*	r_maxpolys;
 extern QCvar*	r_maxpolyverts;
 
-extern QCvar*	r_dynamiclight;		// dynamic lights enabled/disabled
+extern QCvar*	r_dynamiclight;			// dynamic lights enabled/disabled
+extern QCvar*	r_znear;				// near Z clip plane
 
 extern trGlobals_t	tr;
 
