@@ -376,46 +376,6 @@ void R_RotateForViewer (void)
 
 /*
 =================
-R_SetupFrustum
-
-Setup that culling frustum planes for the current view
-=================
-*/
-void R_SetupFrustum (void) {
-	int		i;
-	float	xs, xc;
-	float	ang;
-
-	ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
-	xs = sin( ang );
-	xc = cos( ang );
-
-	VectorScale( tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[0].normal );
-	VectorMA( tr.viewParms.frustum[0].normal, xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[0].normal );
-
-	VectorScale( tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[1].normal );
-	VectorMA( tr.viewParms.frustum[1].normal, -xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[1].normal );
-
-	ang = tr.viewParms.fovY / 180 * M_PI * 0.5f;
-	xs = sin( ang );
-	xc = cos( ang );
-
-	VectorScale( tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[2].normal );
-	VectorMA( tr.viewParms.frustum[2].normal, xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[2].normal );
-
-	VectorScale( tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[3].normal );
-	VectorMA( tr.viewParms.frustum[3].normal, -xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[3].normal );
-
-	for (i=0 ; i<4 ; i++) {
-		tr.viewParms.frustum[i].type = PLANE_NON_AXIAL;
-		tr.viewParms.frustum[i].dist = DotProduct (tr.viewParms.orient.origin, tr.viewParms.frustum[i].normal);
-		SetPlaneSignbits( &tr.viewParms.frustum[i] );
-	}
-}
-
-
-/*
-=================
 R_MirrorPoint
 =================
 */

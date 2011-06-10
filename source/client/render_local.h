@@ -492,6 +492,7 @@ void R_CommonRenderScene(const refdef_t* fd);
 
 void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
 void R_SetupProjection();
+void R_SetupFrustum();
 
 // font stuff
 void R_InitFreeType();

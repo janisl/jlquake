@@ -500,48 +500,6 @@ void R_PolyBlend (void)
 
 //=======================================================================
 
-void R_SetFrustum (void)
-{
-	int		i;
-
-#if 0
-	/*
-	** this code is wrong, since it presume a 90 degree FOV both in the
-	** horizontal and vertical plane
-	*/
-	// front side is visible
-	VectorAdd (vpn, vright, tr.viewParms.frustum[0].normal);
-	VectorSubtract (vpn, vright, tr.viewParms.frustum[1].normal);
-	VectorAdd (vpn, vup, tr.viewParms.frustum[2].normal);
-	VectorSubtract (vpn, vup, tr.viewParms.frustum[3].normal);
-
-	// we theoretically don't need to normalize these vectors, but I do it
-	// anyway so that debugging is a little easier
-	VectorNormalize( tr.viewParms.frustum[0].normal );
-	VectorNormalize( tr.viewParms.frustum[1].normal );
-	VectorNormalize( tr.viewParms.frustum[2].normal );
-	VectorNormalize( tr.viewParms.frustum[3].normal );
-#else
-	// rotate VPN right by FOV_X/2 degrees
-	RotatePointAroundVector(tr.viewParms.frustum[0].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_x / 2));
-	// rotate VPN left by FOV_X/2 degrees
-	RotatePointAroundVector(tr.viewParms.frustum[1].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_x / 2);
-	// rotate VPN up by FOV_X/2 degrees
-	RotatePointAroundVector(tr.viewParms.frustum[2].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_y / 2));
-	// rotate VPN down by FOV_X/2 degrees
-	RotatePointAroundVector(tr.viewParms.frustum[3].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_y / 2);
-#endif
-
-	for (i=0 ; i<4 ; i++)
-	{
-		tr.viewParms.frustum[i].type = PLANE_ANYZ;
-		tr.viewParms.frustum[i].dist = DotProduct(tr.refdef.vieworg, tr.viewParms.frustum[i].normal);
-		SetPlaneSignbits(&tr.viewParms.frustum[i]);
-	}
-}
-
-//=======================================================================
-
 /*
 ===============
 R_SetupFrame
@@ -737,7 +695,13 @@ void R_RenderView (refdef_t *fd)
 
 	R_SetupFrame ();
 
-	R_SetFrustum ();
+	VectorCopy(tr.refdef.vieworg, tr.viewParms.orient.origin);
+	VectorCopy(tr.refdef.viewaxis[0], tr.viewParms.orient.axis[0]);
+	VectorCopy(tr.refdef.viewaxis[1], tr.viewParms.orient.axis[1]);
+	VectorCopy(tr.refdef.viewaxis[2], tr.viewParms.orient.axis[2]);
+	tr.viewParms.fovX = tr.refdef.fov_x;
+	tr.viewParms.fovY = tr.refdef.fov_y;
+	R_SetupFrustum();
 
 	R_SetupGL ();
 

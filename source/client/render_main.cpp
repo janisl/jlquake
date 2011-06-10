@@ -143,10 +143,10 @@ void R_SetupProjection()
 	float zNear	= r_znear->value;
 	float zFar	= tr.viewParms.zFar;
 
-	float ymax = zNear * tan( tr.refdef.fov_y * M_PI / 360.0f );
+	float ymax = zNear * tan(tr.viewParms.fovY * M_PI / 360.0f);
 	float ymin = -ymax;
 
-	float xmax = zNear * tan(tr.refdef.fov_x * M_PI / 360.0f);
+	float xmax = zNear * tan(tr.viewParms.fovX * M_PI / 360.0f);
 	float xmin = -xmax;
 
 	float width = xmax - xmin;
@@ -172,4 +172,42 @@ void R_SetupProjection()
 	tr.viewParms.projectionMatrix[7] = 0;
 	tr.viewParms.projectionMatrix[11] = -1;
 	tr.viewParms.projectionMatrix[15] = 0;
+}
+
+//==========================================================================
+//
+//	R_SetupFrustum
+//
+//	Setup that culling frustum planes for the current view
+//
+//==========================================================================
+
+void R_SetupFrustum()
+{
+	float ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
+	float xs = sin(ang);
+	float xc = cos(ang);
+
+	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[0].normal);
+	VectorMA(tr.viewParms.frustum[0].normal, xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[0].normal);
+
+	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[1].normal);
+	VectorMA(tr.viewParms.frustum[1].normal, -xc, tr.viewParms.orient.axis[1], tr.viewParms.frustum[1].normal);
+
+	ang = tr.viewParms.fovY / 180 * M_PI * 0.5f;
+	xs = sin(ang);
+	xc = cos(ang);
+
+	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[2].normal);
+	VectorMA(tr.viewParms.frustum[2].normal, xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[2].normal);
+
+	VectorScale(tr.viewParms.orient.axis[0], xs, tr.viewParms.frustum[3].normal);
+	VectorMA(tr.viewParms.frustum[3].normal, -xc, tr.viewParms.orient.axis[2], tr.viewParms.frustum[3].normal);
+
+	for (int i = 0; i < 4; i++)
+	{
+		tr.viewParms.frustum[i].type = PLANE_NON_AXIAL;
+		tr.viewParms.frustum[i].dist = DotProduct(tr.viewParms.orient.origin, tr.viewParms.frustum[i].normal);
+		SetPlaneSignbits(&tr.viewParms.frustum[i]);
+	}
 }

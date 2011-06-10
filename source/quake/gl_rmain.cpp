@@ -677,43 +677,6 @@ void R_PolyBlend (void)
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
 }
 
-
-void R_SetFrustum (void)
-{
-	int		i;
-
-	if (tr.refdef.fov_x == 90)
-	{
-		// front side is visible
-
-		VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], tr.viewParms.frustum[0].normal);
-		VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], tr.viewParms.frustum[1].normal);
-
-		VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], tr.viewParms.frustum[2].normal);
-		VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], tr.viewParms.frustum[3].normal);
-	}
-	else
-	{
-		// rotate VPN right by FOV_X/2 degrees
-		RotatePointAroundVector( tr.viewParms.frustum[0].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_x / 2));
-		// rotate VPN left by FOV_X/2 degrees
-		RotatePointAroundVector( tr.viewParms.frustum[1].normal, tr.refdef.viewaxis[2], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_x / 2);
-		// rotate VPN up by FOV_X/2 degrees
-		RotatePointAroundVector( tr.viewParms.frustum[2].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], -(90 - tr.refdef.fov_y / 2));
-		// rotate VPN down by FOV_X/2 degrees
-		RotatePointAroundVector( tr.viewParms.frustum[3].normal, tr.refdef.viewaxis[1], tr.refdef.viewaxis[0], 90 - tr.refdef.fov_y / 2);
-	}
-
-	for (i=0 ; i<4 ; i++)
-	{
-		tr.viewParms.frustum[i].type = PLANE_ANYZ;
-		tr.viewParms.frustum[i].dist = DotProduct(tr.refdef.vieworg, tr.viewParms.frustum[i].normal);
-		SetPlaneSignbits(&tr.viewParms.frustum[i]);
-	}
-}
-
-
-
 /*
 ===============
 R_SetupFrame
@@ -853,7 +816,13 @@ void R_RenderScene (void)
 {
 	R_SetupFrame ();
 
-	R_SetFrustum ();
+	VectorCopy(tr.refdef.vieworg, tr.viewParms.orient.origin);
+	VectorCopy(tr.refdef.viewaxis[0], tr.viewParms.orient.axis[0]);
+	VectorCopy(tr.refdef.viewaxis[1], tr.viewParms.orient.axis[1]);
+	VectorCopy(tr.refdef.viewaxis[2], tr.viewParms.orient.axis[2]);
+	tr.viewParms.fovX = tr.refdef.fov_x;
+	tr.viewParms.fovY = tr.refdef.fov_y;
+	R_SetupFrustum();
 
 	R_SetupGL ();
 

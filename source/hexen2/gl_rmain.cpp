@@ -997,28 +997,6 @@ void R_PolyBlend (void)
 }
 
 
-void R_SetFrustum (void)
-{
-	int		i;
-
-	// front side is visible
-
-	VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], tr.viewParms.frustum[0].normal);
-	VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[1], tr.viewParms.frustum[1].normal);
-
-	VectorAdd(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], tr.viewParms.frustum[2].normal);
-	VectorSubtract(tr.refdef.viewaxis[0], tr.refdef.viewaxis[2], tr.viewParms.frustum[3].normal);
-
-	for (i=0 ; i<4 ; i++)
-	{
-		tr.viewParms.frustum[i].type = PLANE_ANYZ;
-		tr.viewParms.frustum[i].dist = DotProduct(tr.refdef.vieworg, tr.viewParms.frustum[i].normal);
-		SetPlaneSignbits(&tr.viewParms.frustum[i]);
-	}
-}
-
-
-
 /*
 ===============
 R_SetupFrame
@@ -1157,7 +1135,13 @@ void R_RenderScene ()
 {
 	R_SetupFrame ();
 
-	R_SetFrustum ();
+	VectorCopy(tr.refdef.vieworg, tr.viewParms.orient.origin);
+	VectorCopy(tr.refdef.viewaxis[0], tr.viewParms.orient.axis[0]);
+	VectorCopy(tr.refdef.viewaxis[1], tr.viewParms.orient.axis[1]);
+	VectorCopy(tr.refdef.viewaxis[2], tr.viewParms.orient.axis[2]);
+	tr.viewParms.fovX = tr.refdef.fov_x;
+	tr.viewParms.fovY = tr.refdef.fov_y;
+	R_SetupFrustum();
 
 	R_SetupGL ();
 
