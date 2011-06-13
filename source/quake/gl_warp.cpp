@@ -128,8 +128,6 @@ void EmitBothSkyLayers (mbrush29_surface_t *fa)
 	int			lindex;
 	float		*vec;
 
-	GL_DisableMultitexture();
-
 	GL_Bind (solidskytexture);
 	speedscale = realtime*8;
 	speedscale -= (int)speedscale & ~127 ;
@@ -154,8 +152,6 @@ R_DrawSkyChain
 void R_DrawSkyChain (mbrush29_surface_t *s)
 {
 	mbrush29_surface_t	*fa;
-
-	GL_DisableMultitexture();
 
 	// used when gl_texsort is on
 	GL_Bind(solidskytexture);

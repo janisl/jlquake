@@ -20,37 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-void GL_EnableMultitexture( qboolean enable )
-{
-	if ( !qglActiveTextureARB )
-		return;
-
-	if ( enable )
-	{
-		GL_SelectTexture(1);
-		qglEnable( GL_TEXTURE_2D );
-		GL_TexEnv( GL_REPLACE );
-	}
-	else
-	{
-		GL_SelectTexture(1);
-		qglDisable( GL_TEXTURE_2D );
-		GL_TexEnv( GL_REPLACE );
-	}
-	GL_SelectTexture(0);
-	GL_TexEnv( GL_REPLACE );
-}
-
-void GL_MBind( int target, image_t* image)
-{
-	if (!qglActiveTextureARB)
-		return;
-	GL_SelectTexture( target );
-	GL_Bind(image);
-}
-
-//=======================================================
-
 /*
 ===============
 R_RegisterSkinQ2

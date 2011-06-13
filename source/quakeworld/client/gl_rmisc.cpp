@@ -222,8 +222,6 @@ void R_TranslatePlayerSkin (int playernum)
 	player_info_t *player;
 	char s[512];
 
-	GL_DisableMultitexture();
-
 	player = &cl.players[playernum];
 	if (!player->name[0])
 		return;

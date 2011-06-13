@@ -640,7 +640,6 @@ void DrawTextureChains (void)
 			}
 		}
 
-		GL_EnableMultitexture( false );
 		for ( i = 0; i<tr.numImages; i++)
 		{
 			if (!tr.images[i])
@@ -657,12 +656,17 @@ void DrawTextureChains (void)
 
 			tr.images[i]->texturechain = NULL;
 		}
-//		GL_EnableMultitexture( true );
 	}
 
 	GL_TexEnv( GL_REPLACE );
 }
 
+
+static void GL_MBind( int target, image_t* image)
+{
+	GL_SelectTexture( target );
+	GL_Bind(image);
+}
 
 static void GL_RenderLightmappedPoly( mbrush38_surface_t *surf )
 {
@@ -673,6 +677,18 @@ static void GL_RenderLightmappedPoly( mbrush38_surface_t *surf )
 	qboolean is_dynamic = false;
 	unsigned lmtex = surf->lightmaptexturenum;
 	mbrush38_glpoly_t *p;
+
+	GL_SelectTexture(0);
+	GL_TexEnv( GL_REPLACE );
+	GL_SelectTexture(1);
+
+	GL_SelectTexture(1);
+	qglEnable( GL_TEXTURE_2D );
+
+	if ( r_lightmap->value )
+		GL_TexEnv( GL_REPLACE );
+	else 
+		GL_TexEnv( GL_MODULATE );
 
 	for ( map = 0; map < BSP38_MAXLIGHTMAPS && surf->styles[map] != 255; map++ )
 	{
@@ -834,6 +850,12 @@ dynamic:
 //PGM
 //==========
 	}
+
+	GL_SelectTexture(1);
+	qglDisable( GL_TEXTURE_2D );
+	GL_TexEnv( GL_REPLACE );
+	GL_SelectTexture(0);
+	GL_TexEnv( GL_REPLACE );
 }
 
 /*
@@ -894,9 +916,7 @@ void R_DrawInlineBModel (void)
 			}
 			else
 			{
-				GL_EnableMultitexture( false );
 				R_RenderBrushPoly( psurf );
-				GL_EnableMultitexture( true );
 			}
 		}
 	}
@@ -937,16 +957,7 @@ void R_DrawBrushModel (trRefEntity_t *e)
     qglPushMatrix ();
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
-	GL_EnableMultitexture( true );
-	if (qglActiveTextureARB)
-		GL_SelectTexture(0);
-	GL_TexEnv( GL_REPLACE );
-	if (qglActiveTextureARB)
-		GL_SelectTexture(1);
-	GL_TexEnv( GL_MODULATE );
-
 	R_DrawInlineBModel ();
-	GL_EnableMultitexture( false );
 
 	qglPopMatrix ();
 }
@@ -1108,27 +1119,7 @@ void R_DrawWorld (void)
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 	R_ClearSkyBox ();
 
-	if ( qglMultiTexCoord2fARB )
-	{
-		GL_EnableMultitexture( true );
-
-		GL_SelectTexture(0);
-		GL_TexEnv( GL_REPLACE );
-		GL_SelectTexture(1);
-
-		if ( r_lightmap->value )
-			GL_TexEnv( GL_REPLACE );
-		else 
-			GL_TexEnv( GL_MODULATE );
-
-		R_RecursiveWorldNode (tr.worldModel->brush38_nodes);
-
-		GL_EnableMultitexture( false );
-	}
-	else
-	{
-		R_RecursiveWorldNode (tr.worldModel->brush38_nodes);
-	}
+	R_RecursiveWorldNode (tr.worldModel->brush38_nodes);
 
 	/*
 	** theoretically nothing should happen in the next two functions
@@ -1357,10 +1348,6 @@ void GL_BeginBuildingLightmaps (model_t *m)
 
 	tr.frameCount = 1;		// no dlightcache
 
-	GL_EnableMultitexture( true );
-	if (qglActiveTextureARB)
-		GL_SelectTexture(1);
-
 	/*
 	** setup the base lightstyles so the lightmaps won't have to be regenerated
 	** the first time they're seen
@@ -1398,6 +1385,4 @@ GL_EndBuildingLightmaps
 void GL_EndBuildingLightmaps (void)
 {
 	LM_UploadBlock( false );
-	GL_EnableMultitexture( false );
 }
-

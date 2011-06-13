@@ -90,9 +90,6 @@ extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 
-void GL_DisableMultitexture(void);
-void GL_EnableMultitexture(void);
-
 extern byte *playerTranslation;
 
 void GL_Set2D (void);

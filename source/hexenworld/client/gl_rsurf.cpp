@@ -227,26 +227,6 @@ extern	float	speedscale;		// for top sky and bottom sky
 void DrawGLWaterPoly (mbrush29_glpoly_t *p);
 void DrawGLWaterPolyLightmap (mbrush29_glpoly_t *p);
 
-qboolean mtexenabled = false;
-
-void GL_DisableMultitexture(void) 
-{
-	if (mtexenabled) {
-		qglDisable(GL_TEXTURE_2D);
-		GL_SelectTexture(0);
-		mtexenabled = false;
-	}
-}
-
-void GL_EnableMultitexture(void) 
-{
-	if (qglActiveTextureARB) {
-		GL_SelectTexture(1);
-		qglEnable(GL_TEXTURE_2D);
-		mtexenabled = true;
-	}
-}
-
 /*
 ================
 R_DrawSequentialPoly
@@ -286,7 +266,8 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 			GL_Bind (t->gl_texture);
 			GL_TexEnv(GL_REPLACE);
 			// Binds lightmap to texenv 1
-			GL_EnableMultitexture(); // Same as SelectTexture (TEXTURE1)
+			GL_SelectTexture(1);
+			qglEnable(GL_TEXTURE_2D);
 			GL_Bind (tr.lightmaps[s->lightmaptexturenum]);
 			i = s->lightmaptexturenum;
 			if (lightmap_modified[i])
@@ -320,16 +301,13 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 			{
 				GL_TexEnv(GL_REPLACE);
 			}
+			qglDisable(GL_TEXTURE_2D);
+			GL_SelectTexture(0);
 
 			return;
 		} 
 		else 
 		{
-			if (qglActiveTextureARB)
-			{
-				GL_DisableMultitexture();
-			}
-
 			if (tr.currentEntity->e.renderfx & RF_WATERTRANS)
 			{
 				GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
@@ -394,7 +372,6 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 
 	if (s->flags & BRUSH29_SURF_DRAWTURB)
 	{
-		GL_DisableMultitexture();
 		GL_Bind (s->texinfo->texture->gl_texture);
 		EmitWaterPolys (s);
 		return;
@@ -405,7 +382,6 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 	//
 	if (s->flags & BRUSH29_SURF_DRAWSKY)
 	{
-		GL_DisableMultitexture();
 		GL_Bind (solidskytexture);
 		speedscale = realtime*8;
 		speedscale -= (int)speedscale & ~127;
@@ -433,7 +409,8 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 		GL_SelectTexture(0);
 		GL_Bind (t->gl_texture);
 		GL_TexEnv(GL_REPLACE);
-		GL_EnableMultitexture();
+		GL_SelectTexture(1);
+		qglEnable(GL_TEXTURE_2D);
 		GL_Bind (tr.lightmaps[s->lightmaptexturenum]);
 		i = s->lightmaptexturenum;
 		if (lightmap_modified[i])
@@ -464,7 +441,11 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 		}
 		qglEnd ();
 
-	} else {
+		qglDisable(GL_TEXTURE_2D);
+		GL_SelectTexture(0);
+	}
+	else
+	{
 		p = s->polys;
 
 		t = R_TextureAnimation (s->texinfo->texture);
@@ -493,8 +474,6 @@ void DrawGLWaterPoly (mbrush29_glpoly_t *p)
 	float	s, t, os, ot;
 	vec3_t	nv;
 
-	GL_DisableMultitexture();
-
 	qglBegin (GL_TRIANGLE_FAN);
 	v = p->verts[0];
 	for (i=0 ; i<p->numverts ; i++, v+= BRUSH29_VERTEXSIZE)
@@ -516,8 +495,6 @@ void DrawGLWaterPolyLightmap (mbrush29_glpoly_t *p)
 	float	*v;
 	float	s, t, os, ot;
 	vec3_t	nv;
-
-	GL_DisableMultitexture();
 
 	qglBegin (GL_TRIANGLE_FAN);
 	v = p->verts[0];
@@ -886,8 +863,6 @@ void DrawTextureChains (void)
 	mbrush29_texture_t	*t;
 
 	if (!gl_texsort->value) {
-		GL_DisableMultitexture();
-
 		if (skychain) {
 			R_DrawSkyChain(skychain);
 			skychain = NULL;

@@ -159,8 +159,6 @@ void R_DrawSpriteModel (trRefEntity_t *e)
 
 	qglColor3f (1,1,1);
 
-	GL_DisableMultitexture();
-
     GL_Bind(frame->gl_texture);
 
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
@@ -468,8 +466,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	// draw all the triangles
 	//
 
-	GL_DisableMultitexture();
-
     qglPushMatrix ();
 	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
 
@@ -601,8 +597,6 @@ void R_PolyBlend (void)
 		return;
 
 //Con_Printf("R_PolyBlend(): %4.2f %4.2f %4.2f %4.2f\n",v_blend[0], v_blend[1],	v_blend[2],	v_blend[3]);
-
- 	GL_DisableMultitexture();
 
 	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable (GL_TEXTURE_2D);
@@ -754,8 +748,6 @@ void R_RenderScene (void)
 	S_ExtraUpdate ();	// don't let sound get messed up if going slow
 
 	R_DrawEntitiesOnList ();
-
-	GL_DisableMultitexture();
 
 	R_DrawParticles ();
 }

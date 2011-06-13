@@ -100,9 +100,6 @@ extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 extern	QCvar*	gl_finish;
 
-void GL_DisableMultitexture(void);
-void GL_EnableMultitexture(void);
-
 //
 // gl_warp.c
 //
