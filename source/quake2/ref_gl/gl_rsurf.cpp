@@ -923,14 +923,12 @@ void R_DrawBrushModel (trRefEntity_t *e)
 {
 	vec3_t		mins, maxs;
 	int			i;
-	qboolean	rotated;
 
 	if (tr.currentModel->brush38_nummodelsurfaces == 0)
 		return;
 
 	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
 	{
-		rotated = true;
 		for (i=0 ; i<3 ; i++)
 		{
 			mins[i] = e->e.origin[i] - tr.currentModel->q2_radius;
@@ -939,7 +937,6 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	}
 	else
 	{
-		rotated = false;
 		VectorAdd (e->e.origin, tr.currentModel->q2_mins, mins);
 		VectorAdd (e->e.origin, tr.currentModel->q2_maxs, maxs);
 	}
@@ -950,19 +947,10 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	qglColor3f (1,1,1);
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 
-	VectorSubtract(tr.refdef.vieworg, e->e.origin, tr.orient.viewOrigin);
-	if (rotated)
-	{
-		vec3_t	temp;
-
-		VectorCopy (tr.orient.viewOrigin, temp);
-		tr.orient.viewOrigin[0] = DotProduct(temp, e->e.axis[0]);
-		tr.orient.viewOrigin[1] = DotProduct(temp, e->e.axis[1]);
-		tr.orient.viewOrigin[2] = DotProduct(temp, e->e.axis[2]);
-	}
-
     qglPushMatrix ();
-	R_RotateForEntity (e);
+	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
+
+	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	GL_EnableMultitexture( true );
 	if (qglActiveTextureARB)

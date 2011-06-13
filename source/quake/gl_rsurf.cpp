@@ -852,13 +852,11 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	float		dot;
 	cplane_t	*pplane;
 	model_t		*clmodel;
-	qboolean	rotated;
 
 	clmodel = R_GetModelByHandle(e->e.hModel);
 
 	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
 	{
-		rotated = true;
 		for (i=0 ; i<3 ; i++)
 		{
 			mins[i] = e->e.origin[i] - clmodel->q1_radius;
@@ -867,7 +865,6 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	}
 	else
 	{
-		rotated = false;
 		VectorAdd (e->e.origin, clmodel->q1_mins, mins);
 		VectorAdd (e->e.origin, clmodel->q1_maxs, maxs);
 	}
@@ -878,16 +875,10 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-	VectorSubtract (tr.refdef.vieworg, e->e.origin, tr.orient.viewOrigin);
-	if (rotated)
-	{
-		vec3_t	temp;
+    qglPushMatrix ();
+	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
 
-		VectorCopy (tr.orient.viewOrigin, temp);
-		tr.orient.viewOrigin[0] = DotProduct(temp, e->e.axis[0]);
-		tr.orient.viewOrigin[1] = DotProduct(temp, e->e.axis[1]);
-		tr.orient.viewOrigin[2] = DotProduct(temp, e->e.axis[2]);
-	}
+	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	psurf = &clmodel->brush29_surfaces[clmodel->brush29_firstmodelsurface];
 
@@ -901,9 +892,6 @@ void R_DrawBrushModel (trRefEntity_t *e)
 				clmodel->brush29_nodes + clmodel->brush29_firstnode);
 		}
 	}
-
-    qglPushMatrix ();
-	R_RotateForEntity (e);
 
 	//
 	// draw texture

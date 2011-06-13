@@ -535,6 +535,8 @@ struct world_t
 
 #define MAX_MESH1_SKINS		32
 
+#define H2EF_FACE_VIEW		65536		// Poly Model always faces you
+
 struct mmesh1framedesc_t
 {
 	int					firstpose;

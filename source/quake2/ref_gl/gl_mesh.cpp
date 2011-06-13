@@ -644,7 +644,9 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	}
 
     qglPushMatrix ();
-	R_RotateForEntity (e);
+	R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
+
+	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	// select skin
 	if (tr.currentEntity->e.customSkin)
@@ -726,7 +728,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	if (gl_shadows->value && !(tr.currentEntity->e.renderfx & (RF_TRANSLUCENT | RF_FIRST_PERSON)))
 	{
 		qglPushMatrix ();
-		R_RotateForEntity (e);
+		qglLoadMatrixf(tr.orient.modelMatrix);
 		qglDisable (GL_TEXTURE_2D);
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglColor4f (0,0,0,0.5);

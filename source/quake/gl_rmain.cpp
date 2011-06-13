@@ -81,31 +81,6 @@ qboolean R_CullBox (vec3_t mins, vec3_t maxs)
 	return false;
 }
 
-
-void R_RotateForEntity (trRefEntity_t *e)
-{
-	GLfloat glmat[16];
-
-	glmat[0] = e->e.axis[0][0];
-	glmat[1] = e->e.axis[0][1];
-	glmat[2] = e->e.axis[0][2];
-	glmat[3] = 0;
-	glmat[4] = e->e.axis[1][0];
-	glmat[5] = e->e.axis[1][1];
-	glmat[6] = e->e.axis[1][2];
-	glmat[7] = 0;
-	glmat[8] = e->e.axis[2][0];
-	glmat[9] = e->e.axis[2][1];
-	glmat[10] = e->e.axis[2][2];
-	glmat[11] = 0;
-	glmat[12] = e->e.origin[0];
-	glmat[13] = e->e.origin[1];
-	glmat[14] = e->e.origin[2];
-	glmat[15] = 1;
-
-	qglMultMatrixf(glmat);
-}
-
 /*
 =============================================================
 
@@ -457,9 +432,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 	}
 
-	VectorCopy (tr.currentEntity->e.origin, tr.orient.origin);
-	VectorSubtract(tr.refdef.vieworg, tr.orient.origin, tr.orient.viewOrigin);
-
 	//
 	// get lighting information
 	//
@@ -523,7 +495,9 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	GL_DisableMultitexture();
 
     qglPushMatrix ();
-	R_RotateForEntity (e);
+	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
+
+	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
 	qglScalef (paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
@@ -563,7 +537,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	if (r_shadows->value)
 	{
 		qglPushMatrix ();
-		R_RotateForEntity (e);
+		qglLoadMatrixf(tr.orient.modelMatrix);
 		qglDisable (GL_TEXTURE_2D);
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglColor4f (0,0,0,0.5);

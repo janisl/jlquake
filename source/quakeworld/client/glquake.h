@@ -120,7 +120,6 @@ void GL_Set2D (void);
 // gl_rmain.c
 //
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-void R_RotateForEntity (trRefEntity_t *e);
 
 //
 // gl_rlight.c

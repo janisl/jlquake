@@ -129,7 +129,6 @@ void R_RenderBrushPoly (mbrush38_surface_t *fa);
 void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
 qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-void R_RotateForEntity (trRefEntity_t *e);
 void R_MarkLeaves (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);

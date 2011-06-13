@@ -365,3 +365,122 @@ void R_TransformClipToWindow(const vec4_t clip, const viewParms_t* view, vec4_t 
 	window[0] = (int)(window[0] + 0.5);
 	window[1] = (int)(window[1] + 0.5);
 }
+
+//==========================================================================
+//
+//	R_RotateForEntity
+//
+//	Generates an orientation for an entity and viewParms
+//	Does NOT produce any GL calls
+//	Called by both the front end and the back end
+//
+//==========================================================================
+
+void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
+	orientationr_t* orient)
+{
+	if (ent->e.reType != RT_MODEL)
+	{
+		*orient = viewParms->world;
+		return;
+	}
+
+	VectorCopy(ent->e.origin, orient->origin);
+
+	if ((GGameType & GAME_Hexen2) && (R_GetModelByHandle(ent->e.hModel)->q1_flags & H2EF_FACE_VIEW))
+	{
+		float fvaxis[3][3];
+
+		VectorSubtract(viewParms->orient.origin, ent->e.origin, fvaxis[0]);
+		VectorNormalize(fvaxis[0]);
+
+		if (fvaxis[0][1] == 0 && fvaxis[0][0] == 0)
+		{
+			fvaxis[1][0] = 0;
+			fvaxis[1][1] = 1;
+			fvaxis[1][2] = 0;
+			fvaxis[2][1] = 0;
+			fvaxis[2][2] = 0;
+			if (fvaxis[0][2] > 0)
+			{
+				fvaxis[2][0] = -1;
+			}
+			else
+			{
+				fvaxis[2][0] = 1;
+			}
+		}
+		else
+		{
+			fvaxis[2][0] = 0;
+			fvaxis[2][1] = 0;
+			fvaxis[2][2] = 1;
+			CrossProduct(fvaxis[2], fvaxis[0], fvaxis[1]);
+			VectorNormalize(fvaxis[1]);
+			CrossProduct(fvaxis[0], fvaxis[1], fvaxis[2]);
+			VectorNormalize(fvaxis[2]);
+		}
+
+		MatrixMultiply(ent->e.axis, fvaxis, orient->axis);
+	}
+	else
+	{
+		VectorCopy(ent->e.axis[0], orient->axis[0]);
+		VectorCopy(ent->e.axis[1], orient->axis[1]);
+		VectorCopy(ent->e.axis[2], orient->axis[2]);
+	}
+
+	float glMatrix[16];
+
+	glMatrix[0] = orient->axis[0][0];
+	glMatrix[4] = orient->axis[1][0];
+	glMatrix[8] = orient->axis[2][0];
+	glMatrix[12] = orient->origin[0];
+
+	glMatrix[1] = orient->axis[0][1];
+	glMatrix[5] = orient->axis[1][1];
+	glMatrix[9] = orient->axis[2][1];
+	glMatrix[13] = orient->origin[1];
+
+	glMatrix[2] = orient->axis[0][2];
+	glMatrix[6] = orient->axis[1][2];
+	glMatrix[10] = orient->axis[2][2];
+	glMatrix[14] = orient->origin[2];
+
+	glMatrix[3] = 0;
+	glMatrix[7] = 0;
+	glMatrix[11] = 0;
+	glMatrix[15] = 1;
+
+	myGlMultMatrix(glMatrix, viewParms->world.modelMatrix, orient->modelMatrix);
+
+	// calculate the viewer origin in the model's space
+	// needed for fog, specular, and environment mapping
+	vec3_t delta;
+	VectorSubtract(viewParms->orient.origin, orient->origin, delta);
+
+	// compensate for scale in the axes if necessary
+	if (ent->e.nonNormalizedAxes)
+	{
+		//	In Hexen 2 axis can have different scales.
+		for (int i = 0; i < 3; i++)
+		{
+			float axisLength = VectorLength(ent->e.axis[i]);
+			if (!axisLength)
+			{
+				axisLength = 0;
+			}
+			else
+			{
+				axisLength = 1.0f / axisLength;
+			}
+			orient->viewOrigin[i] = DotProduct(delta, orient->axis[i]) * axisLength;
+		}
+	}
+	else
+	{
+		orient->viewOrigin[0] = DotProduct(delta, orient->axis[0]);
+		orient->viewOrigin[1] = DotProduct(delta, orient->axis[1]);
+		orient->viewOrigin[2] = DotProduct(delta, orient->axis[2]);
+	}
+}
