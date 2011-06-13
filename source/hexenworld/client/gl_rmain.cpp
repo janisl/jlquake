@@ -20,9 +20,6 @@ float		r_lasttime1 = 0;
 
 extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 
-float	r_world_matrix[16];
-float	r_base_world_matrix[16];
-
 //
 // screen size info
 //
@@ -988,23 +985,7 @@ typedef struct _point3d {
     GLfloat z;
 } POINT3D;
 
-static MATRIX	ModelviewMatrix, FinalMatrix;
-
-void MultiplyMatrix( MATRIX *m1, float *m2, MATRIX *m3 )
-{
-    int i, j;
-
-    for( j = 0; j < 4; j ++ )
-	{
-		for( i = 0; i < 4; i ++ )
-		{
-			m1->M[j][i] = m2[j * 4 + 0] * m3->M[0][i] +
-				m2[j * 4 + 1] * m3->M[1][i] +
-				m2[j * 4 + 2] * m3->M[2][i] +
-				m2[j * 4 + 3] * m3->M[3][i];
-		}
-    }
-}
+static MATRIX	FinalMatrix;
 
 void TransformPoint(POINT3D *ptOut, POINT3D *ptIn, MATRIX *mat)
 {
@@ -1070,33 +1051,9 @@ void R_SetupGL (void)
 	qglCullFace(GL_FRONT);
 
 	qglMatrixMode(GL_MODELVIEW);
-    qglLoadIdentity ();
 
-    qglRotatef (-90,  1, 0, 0);	    // put Z going up
-    qglRotatef (90,  0, 0, 1);	    // put Z going up
-
-	GLfloat glmat[16];
-
-	glmat[0] = tr.refdef.viewaxis[0][0];
-	glmat[1] = tr.refdef.viewaxis[1][0];
-	glmat[2] = tr.refdef.viewaxis[2][0];
-	glmat[3] = 0;
-	glmat[4] = tr.refdef.viewaxis[0][1];
-	glmat[5] = tr.refdef.viewaxis[1][1];
-	glmat[6] = tr.refdef.viewaxis[2][1];
-	glmat[7] = 0;
-	glmat[8] = tr.refdef.viewaxis[0][2];
-	glmat[9] = tr.refdef.viewaxis[1][2];
-	glmat[10] = tr.refdef.viewaxis[2][2];
-	glmat[11] = 0;
-	glmat[12] = 0;
-	glmat[13] = 0;
-	glmat[14] = 0;
-	glmat[15] = 1;
-	qglMultMatrixf(glmat);
-    qglTranslatef (-tr.refdef.vieworg[0],  -tr.refdef.vieworg[1],  -tr.refdef.vieworg[2]);
-
-	qglGetFloatv (GL_MODELVIEW_MATRIX, r_world_matrix);
+	R_RotateForViewer();
+	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	//
 	// set drawing parms
@@ -1108,8 +1065,7 @@ void R_SetupGL (void)
 
 	GL_State(GLS_DEFAULT);
 
-	qglGetFloatv(GL_MODELVIEW_MATRIX, (float *)ModelviewMatrix.M);
-	MultiplyMatrix(&FinalMatrix, tr.viewParms.projectionMatrix, &ModelviewMatrix);
+	myGlMultMatrix(tr.viewParms.projectionMatrix, tr.viewParms.world.modelMatrix, (float *)FinalMatrix.M);
 }
 
 /*

@@ -23,16 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-static float	s_flipMatrix[16] = {
-	// convert from our coordinate system (looking down X)
-	// to OpenGL's coordinate system (looking down -Z)
-	0, 0, -1, 0,
-	-1, 0, 0, 0,
-	0, 1, 0, 0,
-	0, 0, 0, 1
-};
-
-
 refimport_t	ri;
 
 // entities that will have procedurally generated surfaces will just
@@ -235,27 +225,6 @@ void R_TransformClipToWindow( const vec4_t clip, const viewParms_t *view, vec4_t
 	window[1] = (int) ( window[1] + 0.5 );
 }
 
-
-/*
-==========================
-myGlMultMatrix
-
-==========================
-*/
-void myGlMultMatrix( const float *a, const float *b, float *out ) {
-	int		i, j;
-
-	for ( i = 0 ; i < 4 ; i++ ) {
-		for ( j = 0 ; j < 4 ; j++ ) {
-			out[ i * 4 + j ] =
-				a [ i * 4 + 0 ] * b [ 0 * 4 + j ]
-				+ a [ i * 4 + 1 ] * b [ 1 * 4 + j ]
-				+ a [ i * 4 + 2 ] * b [ 2 * 4 + j ]
-				+ a [ i * 4 + 3 ] * b [ 3 * 4 + j ];
-		}
-	}
-}
-
 /*
 =================
 R_RotateForEntity
@@ -323,55 +292,6 @@ void R_RotateForEntity( const trRefEntity_t *ent, const viewParms_t *viewParms,
 	orient->viewOrigin[0] = DotProduct( delta, orient->axis[0] ) * axisLength;
 	orient->viewOrigin[1] = DotProduct( delta, orient->axis[1] ) * axisLength;
 	orient->viewOrigin[2] = DotProduct( delta, orient->axis[2] ) * axisLength;
-}
-
-/*
-=================
-R_RotateForViewer
-
-Sets up the modelview matrix for a given viewParm
-=================
-*/
-void R_RotateForViewer (void) 
-{
-	float	viewerMatrix[16];
-	vec3_t	origin;
-
-	Com_Memset (&tr.orient, 0, sizeof(tr.orient));
-	tr.orient.axis[0][0] = 1;
-	tr.orient.axis[1][1] = 1;
-	tr.orient.axis[2][2] = 1;
-	VectorCopy (tr.viewParms.orient.origin, tr.orient.viewOrigin);
-
-	// transform by the camera placement
-	VectorCopy( tr.viewParms.orient.origin, origin );
-
-	viewerMatrix[0] = tr.viewParms.orient.axis[0][0];
-	viewerMatrix[4] = tr.viewParms.orient.axis[0][1];
-	viewerMatrix[8] = tr.viewParms.orient.axis[0][2];
-	viewerMatrix[12] = -origin[0] * viewerMatrix[0] + -origin[1] * viewerMatrix[4] + -origin[2] * viewerMatrix[8];
-
-	viewerMatrix[1] = tr.viewParms.orient.axis[1][0];
-	viewerMatrix[5] = tr.viewParms.orient.axis[1][1];
-	viewerMatrix[9] = tr.viewParms.orient.axis[1][2];
-	viewerMatrix[13] = -origin[0] * viewerMatrix[1] + -origin[1] * viewerMatrix[5] + -origin[2] * viewerMatrix[9];
-
-	viewerMatrix[2] = tr.viewParms.orient.axis[2][0];
-	viewerMatrix[6] = tr.viewParms.orient.axis[2][1];
-	viewerMatrix[10] = tr.viewParms.orient.axis[2][2];
-	viewerMatrix[14] = -origin[0] * viewerMatrix[2] + -origin[1] * viewerMatrix[6] + -origin[2] * viewerMatrix[10];
-
-	viewerMatrix[3] = 0;
-	viewerMatrix[7] = 0;
-	viewerMatrix[11] = 0;
-	viewerMatrix[15] = 1;
-
-	// convert from our coordinate system (looking down X)
-	// to OpenGL's coordinate system (looking down -Z)
-	myGlMultMatrix( viewerMatrix, s_flipMatrix, tr.orient.modelMatrix );
-
-	tr.viewParms.world = tr.orient;
-
 }
 
 /*

@@ -31,9 +31,6 @@ qboolean	envmap;				// true during envmap command capture
 image_t*	particletexture;	// little dot for particles
 image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
 
-float	r_world_matrix[16];
-float	r_base_world_matrix[16];
-
 //
 // screen size info
 //
@@ -759,33 +756,9 @@ void R_SetupGL (void)
 	qglCullFace(GL_FRONT);
 
 	qglMatrixMode(GL_MODELVIEW);
-    qglLoadIdentity ();
 
-    qglRotatef (-90,  1, 0, 0);	    // put Z going up
-    qglRotatef (90,  0, 0, 1);	    // put Z going up
-
-	GLfloat glmat[16];
-
-	glmat[0] = tr.refdef.viewaxis[0][0];
-	glmat[1] = tr.refdef.viewaxis[1][0];
-	glmat[2] = tr.refdef.viewaxis[2][0];
-	glmat[3] = 0;
-	glmat[4] = tr.refdef.viewaxis[0][1];
-	glmat[5] = tr.refdef.viewaxis[1][1];
-	glmat[6] = tr.refdef.viewaxis[2][1];
-	glmat[7] = 0;
-	glmat[8] = tr.refdef.viewaxis[0][2];
-	glmat[9] = tr.refdef.viewaxis[1][2];
-	glmat[10] = tr.refdef.viewaxis[2][2];
-	glmat[11] = 0;
-	glmat[12] = 0;
-	glmat[13] = 0;
-	glmat[14] = 0;
-	glmat[15] = 1;
-	qglMultMatrixf(glmat);
-    qglTranslatef (-tr.refdef.vieworg[0],  -tr.refdef.vieworg[1],  -tr.refdef.vieworg[2]);
-
-	qglGetFloatv (GL_MODELVIEW_MATRIX, r_world_matrix);
+	R_RotateForViewer();
+	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	//
 	// set drawing parms

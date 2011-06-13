@@ -21,16 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 #include "tr_local.h"
 
-static float	s_flipMatrix[16] = {
-	// convert from our coordinate system (looking down X)
-	// to OpenGL's coordinate system (looking down -Z)
-	0, 0, -1, 0,
-	-1, 0, 0, 0,
-	0, 1, 0, 0,
-	0, 0, 0, 1
-};
-
-
 /*
 ** GL_Cull
 */

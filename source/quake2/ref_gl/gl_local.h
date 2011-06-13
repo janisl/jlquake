@@ -102,8 +102,6 @@ extern  QCvar  *gl_lockpvs;
 extern	int		c_visible_lightmaps;
 extern	int		c_visible_textures;
 
-extern	float	r_world_matrix[16];
-
 void R_TranslatePlayerSkin (int playernum);
 void GL_MBind( int target, image_t* image);
 void GL_EnableMultitexture( qboolean enable );

@@ -490,9 +490,11 @@ float R_NoiseGet4f(float x, float y, float z, float t);
 void R_ToggleSmpFrame();
 void R_CommonRenderScene(const refdef_t* fd);
 
+void myGlMultMatrix(const float* a, const float* b, float* out);
 void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
 void R_SetupProjection();
 void R_SetupFrustum();
+void R_RotateForViewer();
 
 // font stuff
 void R_InitFreeType();
@@ -586,6 +588,8 @@ extern int			r_firstSceneDlight;
 extern int			r_numpolys;
 extern int			r_firstScenePoly;
 extern int			r_numpolyverts;
+
+extern float		s_flipMatrix[16];
 
 /*
 ====================================================================

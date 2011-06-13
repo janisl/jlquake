@@ -100,8 +100,6 @@ extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 extern	QCvar*	gl_finish;
 
-extern	float	r_world_matrix[16];
-
 void GL_DisableMultitexture(void);
 void GL_EnableMultitexture(void);
 

@@ -128,8 +128,6 @@ extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 
-extern	float	r_world_matrix[16];
-
 extern byte *playerTranslation;
 
 int R_LightPoint (vec3_t p);

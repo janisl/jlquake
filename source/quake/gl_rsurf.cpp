@@ -742,7 +742,7 @@ void R_DrawWaterSurfaces (void)
 	// go back to the world matrix
 	//
 
-    qglLoadMatrixf (r_world_matrix);
+    qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	if (r_wateralpha->value < 1.0) {
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);

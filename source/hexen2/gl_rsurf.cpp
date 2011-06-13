@@ -583,7 +583,7 @@ void R_DrawWaterSurfaces (void)
 	//
 	// go back to the world matrix
 	//
-    qglLoadMatrixf (r_world_matrix);
+    qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	GL_TexEnv(GL_MODULATE);
