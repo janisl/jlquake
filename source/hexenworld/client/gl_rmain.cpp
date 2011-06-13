@@ -55,23 +55,6 @@ QCvar*	r_teamcolor;
 extern	QCvar*	scr_fov;
 
 /*
-=================
-R_CullBox
-
-Returns true if the box is completely outside the frustom
-=================
-*/
-qboolean R_CullBox (vec3_t mins, vec3_t maxs)
-{
-	int		i;
-
-	for (i=0 ; i<4 ; i++)
-		if (BoxOnPlaneSide (mins, maxs, &tr.viewParms.frustum[i]) == 2)
-			return true;
-	return false;
-}
-
-/*
 =============================================================
 
   SPRITE MODELS
@@ -496,8 +479,10 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	VectorAdd (tr.currentEntity->e.origin, clmodel->q1_mins, mins);
 	VectorAdd (tr.currentEntity->e.origin, clmodel->q1_maxs, maxs);
 
-	if (!(e->e.renderfx & RF_FIRST_PERSON) && R_CullBox (mins, maxs))
+	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)
+	{
 		return;
+	}
 
 	// hack the depth range to prevent view model from poking into walls
 	if (e->e.renderfx & RF_DEPTHHACK)

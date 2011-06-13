@@ -921,35 +921,20 @@ R_DrawBrushModel
 */
 void R_DrawBrushModel (trRefEntity_t *e)
 {
-	vec3_t		mins, maxs;
-	int			i;
-
 	if (tr.currentModel->brush38_nummodelsurfaces == 0)
 		return;
 
-	if (e->e.axis[0][0] != 1 || e->e.axis[1][1] != 1 || e->e.axis[2][2] != 1)
-	{
-		for (i=0 ; i<3 ; i++)
-		{
-			mins[i] = e->e.origin[i] - tr.currentModel->q2_radius;
-			maxs[i] = e->e.origin[i] + tr.currentModel->q2_radius;
-		}
-	}
-	else
-	{
-		VectorAdd (e->e.origin, tr.currentModel->q2_mins, mins);
-		VectorAdd (e->e.origin, tr.currentModel->q2_maxs, maxs);
-	}
+	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
 
-	if (R_CullBox (mins, maxs))
+	if (R_CullLocalBox(&tr.currentModel->q2_mins) == CULL_OUT)
+	{
 		return;
+	}
 
 	qglColor3f (1,1,1);
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 
     qglPushMatrix ();
-	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
-
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	GL_EnableMultitexture( true );
@@ -993,8 +978,10 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 
 	if (node->visframe != tr.visCount)
 		return;
-	if (R_CullBox (node->minmaxs, node->minmaxs+3))
+	if (R_CullLocalBox((vec3_t*)node->minmaxs) == CULL_OUT)
+	{
 		return;
+	}
 	
 // if a leaf node, draw stuff
 	if (node->contents != -1)

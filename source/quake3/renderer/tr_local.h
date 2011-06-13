@@ -106,7 +106,6 @@ extern	QCvar	*r_drawentities;		// disable/enable entity rendering
 extern	QCvar	*r_drawworld;			// disable/enable world rendering
 extern	QCvar	*r_speeds;				// various levels of information display
 extern	QCvar	*r_novis;				// disable/enable usage of PVS
-extern	QCvar	*r_nocull;
 extern	QCvar	*r_facePlaneCull;		// enables culling of planar surfaces with back side test
 extern	QCvar	*r_nocurves;
 extern	QCvar	*r_showcluster;
@@ -153,14 +152,6 @@ void R_AddLightningBoltSurfaces( trRefEntity_t *e );
 void R_AddPolygonSurfaces( void );
 
 void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int fogIndex, int dlightMap );
-
-
-#define	CULL_IN		0		// completely unclipped
-#define	CULL_CLIP	1		// clipped by one or more planes
-#define	CULL_OUT	2		// completely outside the clipping planes
-int R_CullLocalBox (vec3_t bounds[2]);
-int R_CullPointAndRadius( vec3_t origin, float radius );
-int R_CullLocalPointAndRadius( vec3_t origin, float radius );
 
 /*
 ** GL wrapper/helper functions

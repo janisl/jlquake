@@ -484,3 +484,126 @@ void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
 		orient->viewOrigin[2] = DotProduct(delta, orient->axis[2]);
 	}
 }
+
+//==========================================================================
+//
+//	R_CullLocalBox
+//
+//	Returns CULL_IN, CULL_CLIP, or CULL_OUT
+//
+//==========================================================================
+
+int R_CullLocalBox(vec3_t bounds[2])
+{
+	if (r_nocull->integer)
+	{
+		return CULL_CLIP;
+	}
+
+	// transform into world space
+	vec3_t transformed[8];
+	for (int i = 0; i < 8; i++)
+	{
+		vec3_t v;
+		v[0] = bounds[i & 1][0];
+		v[1] = bounds[(i >> 1) & 1][1];
+		v[2] = bounds[(i >> 2) & 1][2];
+
+		VectorCopy(tr.orient.origin, transformed[i]);
+		VectorMA(transformed[i], v[0], tr.orient.axis[0], transformed[i]);
+		VectorMA(transformed[i], v[1], tr.orient.axis[1], transformed[i]);
+		VectorMA(transformed[i], v[2], tr.orient.axis[2], transformed[i]);
+	}
+
+	// check against frustum planes
+	bool anyBack = false;
+	for (int i = 0; i < 4; i++)
+	{
+		cplane_t* frust = &tr.viewParms.frustum[i];
+
+		bool front = false;
+		bool back = false;
+		for (int j = 0; j < 8; j++)
+		{
+			float dist = DotProduct(transformed[j], frust->normal);
+			if (dist > frust->dist)
+			{
+				front = true;
+				if (back)
+				{
+					break;		// a point is in front
+				}
+			}
+			else
+			{
+				back = true;
+			}
+		}
+		if (!front)
+		{
+			// all points were behind one of the planes
+			return CULL_OUT;
+		}
+		anyBack |= back;
+	}
+
+	if (!anyBack)
+	{
+		return CULL_IN;		// completely inside frustum
+	}
+
+	return CULL_CLIP;		// partially clipped
+}
+
+//==========================================================================
+//
+//	R_CullPointAndRadius
+//
+//==========================================================================
+
+int R_CullPointAndRadius(vec3_t pt, float radius)
+{
+	if (r_nocull->integer)
+	{
+		return CULL_CLIP;
+	}
+
+	// check against frustum planes
+	bool mightBeClipped = false;
+	for (int i = 0; i < 4; i++) 
+	{
+		cplane_t* frust = &tr.viewParms.frustum[i];
+
+		float dist = DotProduct(pt, frust->normal) - frust->dist;
+		if (dist < -radius)
+		{
+			return CULL_OUT;
+		}
+		else if (dist <= radius)
+		{
+			mightBeClipped = true;
+		}
+	}
+
+	if (mightBeClipped)
+	{
+		return CULL_CLIP;
+	}
+
+	return CULL_IN;		// completely inside frustum
+}
+
+//==========================================================================
+//
+//	R_CullLocalPointAndRadius
+//
+//==========================================================================
+
+int R_CullLocalPointAndRadius(vec3_t pt, float radius)
+{
+	vec3_t transformed;
+
+	R_LocalPointToWorld(pt, transformed);
+
+	return R_CullPointAndRadius(transformed, radius);
+}

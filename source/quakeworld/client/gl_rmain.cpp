@@ -65,23 +65,6 @@ QCvar*	gl_finish;
 extern	QCvar*	scr_fov;
 
 /*
-=================
-R_CullBox
-
-Returns true if the box is completely outside the frustom
-=================
-*/
-qboolean R_CullBox (vec3_t mins, vec3_t maxs)
-{
-	int		i;
-
-	for (i=0 ; i<4 ; i++)
-		if (BoxOnPlaneSide (mins, maxs, &tr.viewParms.frustum[i]) == 2)
-			return true;
-	return false;
-}
-
-/*
 =============================================================
 
   SPRITE MODELS
@@ -407,16 +390,14 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	vec3_t		dist;
 	float		add;
 	model_t		*clmodel;
-	vec3_t		mins, maxs;
 	mesh1hdr_t	*paliashdr;
 
 	clmodel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
-	VectorAdd (tr.currentEntity->e.origin, clmodel->q1_mins, mins);
-	VectorAdd (tr.currentEntity->e.origin, clmodel->q1_maxs, maxs);
-
-	if (R_CullBox (mins, maxs))
+	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)
+	{
 		return;
+	}
 
 	// hack the depth range to prevent view model from poking into walls
 	if (e->e.renderfx & RF_DEPTHHACK)

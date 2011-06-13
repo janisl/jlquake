@@ -50,7 +50,6 @@ QCvar	*r_drawentities;
 QCvar	*r_drawworld;
 QCvar	*r_speeds;
 QCvar	*r_novis;
-QCvar	*r_nocull;
 QCvar	*r_lerpmodels;
 QCvar	*r_lefthand;
 
@@ -82,26 +81,6 @@ QCvar  *gl_saturatelighting;
 QCvar	*gl_lockpvs;
 
 QCvar	*vid_ref;
-
-/*
-=================
-R_CullBox
-
-Returns true if the box is completely outside the frustom
-=================
-*/
-qboolean R_CullBox (vec3_t mins, vec3_t maxs)
-{
-	int		i;
-
-	if (r_nocull->value)
-		return false;
-
-	for (i=0 ; i<4 ; i++)
-		if ( BOX_ON_PLANE_SIDE(mins, maxs, &tr.viewParms.frustum[i]) == 2)
-			return true;
-	return false;
-}
 
 /*
 =============================================================
@@ -747,7 +726,6 @@ void R_Register( void )
 	r_drawentities = Cvar_Get ("r_drawentities", "1", 0);
 	r_drawworld = Cvar_Get ("r_drawworld", "1", 0);
 	r_novis = Cvar_Get ("r_novis", "0", 0);
-	r_nocull = Cvar_Get ("r_nocull", "0", 0);
 	r_lerpmodels = Cvar_Get ("r_lerpmodels", "1", 0);
 	r_speeds = Cvar_Get ("r_speeds", "0", 0);
 

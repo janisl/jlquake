@@ -52,7 +52,6 @@ QCvar	*r_drawentities;
 QCvar	*r_drawworld;
 QCvar	*r_speeds;
 QCvar	*r_novis;
-QCvar	*r_nocull;
 QCvar	*r_facePlaneCull;
 QCvar	*r_showcluster;
 QCvar	*r_nocurves;
@@ -631,7 +630,6 @@ void R_Register( void )
 	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", CVAR_CHEAT );
 	r_ignore = Cvar_Get( "r_ignore", "1", CVAR_CHEAT );
-	r_nocull = Cvar_Get ("r_nocull", "0", CVAR_CHEAT);
 	r_novis = Cvar_Get ("r_novis", "0", CVAR_CHEAT);
 	r_showcluster = Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);

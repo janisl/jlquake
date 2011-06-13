@@ -67,7 +67,6 @@ extern	QCvar	*r_drawentities;
 extern	QCvar	*r_drawworld;
 extern	QCvar	*r_speeds;
 extern	QCvar	*r_novis;
-extern	QCvar	*r_nocull;
 extern	QCvar	*r_lerpmodels;
 
 extern	QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
@@ -128,7 +127,6 @@ void R_DrawAlphaSurfaces (void);
 void R_RenderBrushPoly (mbrush38_surface_t *fa);
 void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
-qboolean R_CullBox (vec3_t mins, vec3_t maxs);
 void R_MarkLeaves (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);

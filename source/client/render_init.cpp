@@ -106,6 +106,8 @@ QCvar*		r_maxpolyverts;
 QCvar*		r_dynamiclight;
 QCvar*		r_znear;
 
+QCvar*		r_nocull;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -282,6 +284,7 @@ void R_SharedRegister()
 	r_maxpolyverts = Cvar_Get("r_maxpolyverts", va("%d", MAX_POLYVERTS), 0);
 	r_znear = Cvar_Get("r_znear", "4", CVAR_CHEAT);
 	AssertCvarRange(r_znear, 0.001f, 200, true);
+	r_nocull = Cvar_Get("r_nocull", "0", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

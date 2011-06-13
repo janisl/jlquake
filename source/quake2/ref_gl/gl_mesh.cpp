@@ -364,143 +364,72 @@ void GL_DrawAliasShadow (dmd2_t *paliashdr, int posenum)
 */
 static qboolean R_CullAliasModel( vec3_t bbox[8], trRefEntity_t *e )
 {
-	int i;
-	vec3_t		mins, maxs;
-	dmd2_t		*paliashdr;
-	vec3_t		vectors[3];
-	vec3_t		thismins, oldmins, thismaxs, oldmaxs;
-	dmd2_frame_t *pframe, *poldframe;
-	vec3_t angles;
+	dmd2_t* paliashdr = (dmd2_t*)tr.currentModel->q2_extradata;
 
-	paliashdr = (dmd2_t *)tr.currentModel->q2_extradata;
-
-	if ( ( e->e.frame >= paliashdr->num_frames ) || ( e->e.frame < 0 ) )
+	if ((e->e.frame >= paliashdr->num_frames) || (e->e.frame < 0))
 	{
-		ri.Con_Printf (PRINT_ALL, "R_CullAliasModel %s: no such frame %d\n", 
+		GLog.Write("R_CullAliasModel %s: no such frame %d\n", 
 			tr.currentModel->name, e->e.frame);
 		e->e.frame = 0;
 	}
-	if ( ( e->e.oldframe >= paliashdr->num_frames ) || ( e->e.oldframe < 0 ) )
+	if ((e->e.oldframe >= paliashdr->num_frames) || (e->e.oldframe < 0))
 	{
-		ri.Con_Printf (PRINT_ALL, "R_CullAliasModel %s: no such oldframe %d\n", 
+		GLog.Write("R_CullAliasModel %s: no such oldframe %d\n", 
 			tr.currentModel->name, e->e.oldframe);
 		e->e.oldframe = 0;
 	}
 
-	pframe = ( dmd2_frame_t * ) ( ( byte * ) paliashdr + 
-		                              paliashdr->ofs_frames +
-									  e->e.frame * paliashdr->framesize);
+	dmd2_frame_t* pframe = (dmd2_frame_t*)((byte*)paliashdr + 
+		paliashdr->ofs_frames + e->e.frame * paliashdr->framesize);
 
-	poldframe = ( dmd2_frame_t * ) ( ( byte * ) paliashdr + 
-		                              paliashdr->ofs_frames +
-									  e->e.oldframe * paliashdr->framesize);
+	dmd2_frame_t* poldframe = (dmd2_frame_t*)((byte*)paliashdr + 
+		paliashdr->ofs_frames + e->e.oldframe * paliashdr->framesize);
 
 	/*
 	** compute axially aligned mins and maxs
 	*/
-	if ( pframe == poldframe )
+	vec3_t bounds[2];
+	if (pframe == poldframe)
 	{
-		for ( i = 0; i < 3; i++ )
+		for (int i = 0; i < 3; i++)
 		{
-			mins[i] = pframe->translate[i];
-			maxs[i] = mins[i] + pframe->scale[i]*255;
+			bounds[0][i] = pframe->translate[i];
+			bounds[1][i] = bounds[0][i] + pframe->scale[i] * 255;
 		}
 	}
 	else
 	{
-		for ( i = 0; i < 3; i++ )
+		for (int i = 0; i < 3; i++)
 		{
+			vec3_t thismins, thismaxs;
 			thismins[i] = pframe->translate[i];
-			thismaxs[i] = thismins[i] + pframe->scale[i]*255;
+			thismaxs[i] = thismins[i] + pframe->scale[i] * 255;
 
+			vec3_t oldmins, oldmaxs;
 			oldmins[i]  = poldframe->translate[i];
-			oldmaxs[i]  = oldmins[i] + poldframe->scale[i]*255;
+			oldmaxs[i]  = oldmins[i] + poldframe->scale[i] * 255;
 
-			if ( thismins[i] < oldmins[i] )
-				mins[i] = thismins[i];
-			else
-				mins[i] = oldmins[i];
-
-			if ( thismaxs[i] > oldmaxs[i] )
-				maxs[i] = thismaxs[i];
-			else
-				maxs[i] = oldmaxs[i];
-		}
-	}
-
-	/*
-	** compute a full bounding box
-	*/
-	for ( i = 0; i < 8; i++ )
-	{
-		vec3_t   tmp;
-
-		if ( i & 1 )
-			tmp[0] = mins[0];
-		else
-			tmp[0] = maxs[0];
-
-		if ( i & 2 )
-			tmp[1] = mins[1];
-		else
-			tmp[1] = maxs[1];
-
-		if ( i & 4 )
-			tmp[2] = mins[2];
-		else
-			tmp[2] = maxs[2];
-
-		VectorCopy( tmp, bbox[i] );
-	}
-
-	/*
-	** rotate the bounding box
-	*/
-	VecToAngles(e->e.axis[0], angles);
-	//JL: WTF?
-	angles[YAW] = -angles[YAW];
-	AngleVectors( angles, vectors[0], vectors[1], vectors[2] );
-
-	for ( i = 0; i < 8; i++ )
-	{
-		vec3_t tmp;
-
-		VectorCopy( bbox[i], tmp );
-
-		bbox[i][0] = DotProduct( vectors[0], tmp );
-		bbox[i][1] = -DotProduct( vectors[1], tmp );
-		bbox[i][2] = DotProduct( vectors[2], tmp );
-
-		VectorAdd( e->e.origin, bbox[i], bbox[i] );
-	}
-
-	{
-		int p, f, aggregatemask = ~0;
-
-		for ( p = 0; p < 8; p++ )
-		{
-			int mask = 0;
-
-			for ( f = 0; f < 4; f++ )
+			if (thismins[i] < oldmins[i])
 			{
-				float dp = DotProduct( tr.viewParms.frustum[f].normal, bbox[p] );
-
-				if ( ( dp - tr.viewParms.frustum[f].dist ) < 0 )
-				{
-					mask |= ( 1 << f );
-				}
+				bounds[0][i] = thismins[i];
+			}
+			else
+			{
+				bounds[0][i] = oldmins[i];
 			}
 
-			aggregatemask &= mask;
+			if (thismaxs[i] > oldmaxs[i])
+			{
+				bounds[1][i] = thismaxs[i];
+			}
+			else
+			{
+				bounds[1][i] = oldmaxs[i];
+			}
 		}
-
-		if ( aggregatemask )
-		{
-			return true;
-		}
-
-		return false;
 	}
+
+	return R_CullLocalBox(bounds) == CULL_OUT;
 }
 
 /*
@@ -515,6 +444,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	dmd2_t		*paliashdr;
 	vec3_t		bbox[8];
 	image_t		*skin;
+
+	R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
 
 	if ( !( e->e.renderfx & RF_FIRST_PERSON) )
 	{
@@ -644,8 +575,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	}
 
     qglPushMatrix ();
-	R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
-
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	// select skin

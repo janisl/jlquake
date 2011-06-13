@@ -117,11 +117,6 @@ void R_DrawSkyChain (mbrush29_surface_t *s);
 void GL_Set2D (void);
 
 //
-// gl_rmain.c
-//
-qboolean R_CullBox (vec3_t mins, vec3_t maxs);
-
-//
 // gl_rlight.c
 //
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
