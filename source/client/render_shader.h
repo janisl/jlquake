@@ -391,4 +391,9 @@ void RB_CalcDeformNormals(deformStage_t* ds);
 void RB_CalcBulgeVertexes(deformStage_t* ds);
 void RB_CalcMoveVertexes(deformStage_t* ds);
 
+//
+//	SHADOWS
+//
+void RB_ProjectionShadowDeform();
+
 extern shaderCommands_t		tess;
