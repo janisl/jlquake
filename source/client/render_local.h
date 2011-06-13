@@ -364,6 +364,7 @@ RENDERER BACK END COMMAND QUEUE
 #define DRAWSURF_MASK			(MAX_DRAWSURFS-1)
 
 #define MAX_ENTITIES			1023		// can't be increased without changing drawsurf bit packing
+#define REF_ENTITYNUM_WORLD		MAX_ENTITIES
 
 // these are sort of arbitrary limits.
 // the limits apply to the sum of all scenes in a frame --
