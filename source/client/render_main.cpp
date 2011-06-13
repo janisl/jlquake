@@ -291,3 +291,77 @@ void R_RotateForViewer()
 
 	tr.viewParms.world = tr.orient;
 }
+
+//==========================================================================
+//
+//	R_LocalNormalToWorld
+//
+//==========================================================================
+
+void R_LocalNormalToWorld(vec3_t local, vec3_t world)
+{
+	world[0] = local[0] * tr.orient.axis[0][0] + local[1] * tr.orient.axis[1][0] + local[2] * tr.orient.axis[2][0];
+	world[1] = local[0] * tr.orient.axis[0][1] + local[1] * tr.orient.axis[1][1] + local[2] * tr.orient.axis[2][1];
+	world[2] = local[0] * tr.orient.axis[0][2] + local[1] * tr.orient.axis[1][2] + local[2] * tr.orient.axis[2][2];
+}
+
+//==========================================================================
+//
+//	R_LocalPointToWorld
+//
+//==========================================================================
+
+void R_LocalPointToWorld(vec3_t local, vec3_t world)
+{
+	world[0] = local[0] * tr.orient.axis[0][0] + local[1] * tr.orient.axis[1][0] + local[2] * tr.orient.axis[2][0] + tr.orient.origin[0];
+	world[1] = local[0] * tr.orient.axis[0][1] + local[1] * tr.orient.axis[1][1] + local[2] * tr.orient.axis[2][1] + tr.orient.origin[1];
+	world[2] = local[0] * tr.orient.axis[0][2] + local[1] * tr.orient.axis[1][2] + local[2] * tr.orient.axis[2][2] + tr.orient.origin[2];
+}
+
+//==========================================================================
+//
+//	R_TransformModelToClip
+//
+//==========================================================================
+
+void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
+	vec4_t eye, vec4_t dst)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		eye[i] =
+			src[0] * modelMatrix[i + 0 * 4] +
+			src[1] * modelMatrix[i + 1 * 4] +
+			src[2] * modelMatrix[i + 2 * 4] +
+			1 * modelMatrix[i + 3 * 4];
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		dst[i] = 
+			eye[0] * projectionMatrix[i + 0 * 4] +
+			eye[1] * projectionMatrix[i + 1 * 4] +
+			eye[2] * projectionMatrix[i + 2 * 4] +
+			eye[3] * projectionMatrix[i + 3 * 4];
+	}
+}
+
+//==========================================================================
+//
+//	R_TransformClipToWindow
+//
+//==========================================================================
+
+void R_TransformClipToWindow(const vec4_t clip, const viewParms_t* view, vec4_t normalized, vec4_t window)
+{
+	normalized[0] = clip[0] / clip[3];
+	normalized[1] = clip[1] / clip[3];
+	normalized[2] = (clip[2] + clip[3]) / (2 * clip[3]);
+
+	window[0] = 0.5f * (1.0f + normalized[0]) * view->viewportWidth;
+	window[1] = 0.5f * (1.0f + normalized[1]) * view->viewportHeight;
+	window[2] = normalized[2];
+
+	window[0] = (int)(window[0] + 0.5);
+	window[1] = (int)(window[1] + 0.5);
+}

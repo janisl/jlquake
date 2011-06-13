@@ -974,38 +974,6 @@ void R_SetupFrame (void)
 
 }
 
-
-typedef struct _MATRIX {
-    GLfloat M[4][4];
-} MATRIX;
-
-typedef struct _point3d {
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
-} POINT3D;
-
-static MATRIX	FinalMatrix;
-
-void TransformPoint(POINT3D *ptOut, POINT3D *ptIn, MATRIX *mat)
-{
-    double x, y, z;
-
-    x = (ptIn->x * mat->M[0][0]) + (ptIn->y * mat->M[0][1]) +
-        (ptIn->z * mat->M[0][2]) + mat->M[0][3];
-
-    y = (ptIn->x * mat->M[1][0]) + (ptIn->y * mat->M[1][1]) +
-        (ptIn->z * mat->M[1][2]) + mat->M[1][3];
-
-    z = (ptIn->x * mat->M[2][0]) + (ptIn->y * mat->M[2][1]) +
-        (ptIn->z * mat->M[2][2]) + mat->M[2][3];
-
-    ptOut->x = (float) x;
-    ptOut->y = (float) y;
-    ptOut->z = (float) z;
-}
-
-
 /*
 =============
 R_SetupGL
@@ -1064,8 +1032,6 @@ void R_SetupGL (void)
 		qglDisable(GL_CULL_FACE);
 
 	GL_State(GLS_DEFAULT);
-
-	myGlMultMatrix(tr.viewParms.projectionMatrix, tr.viewParms.world.modelMatrix, (float *)FinalMatrix.M);
 }
 
 /*
@@ -1198,28 +1164,25 @@ void R_RenderView (void)
 
 void R_DrawName(vec3_t origin, char *Name, int Red)
 {
-	float	zi;
-	int		u, v;
-	POINT3D	In, Out;
-
 	if (!Name)
 	{
 		return;
 	}
 
-	In.x = origin[0];
-	In.y = origin[1];
-	In.z = origin[2];
-	TransformPoint(&Out, &In, &FinalMatrix);
+	vec4_t eye;
+	vec4_t Out;
+	R_TransformModelToClip(origin, tr.viewParms.world.modelMatrix, tr.viewParms.projectionMatrix, eye, Out);
 
-	if (Out.z < 0)
+	if (eye[2] > -r_znear->value)
 	{
 		return;
 	}
 
-	zi = 1.0 / (Out.z + 8);
-	u = (int)(tr.refdef.width / 2 * (zi * Out.x + 1) ) + tr.refdef.x;
-	v = (int)(tr.refdef.height / 2 * (zi * (-Out.y) + 1) ) + tr.refdef.y;
+	vec4_t normalized;
+	vec4_t window;
+	R_TransformClipToWindow(Out, &tr.viewParms, normalized, window);
+	int u = tr.refdef.x + (int)window[0];
+	int v = tr.refdef.y + tr.refdef.height - (int)window[1];
 
 	u -= QStr::Length(Name) * 4;
 

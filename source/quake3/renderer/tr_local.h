@@ -158,8 +158,6 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int fogIndex, int 
 #define	CULL_IN		0		// completely unclipped
 #define	CULL_CLIP	1		// clipped by one or more planes
 #define	CULL_OUT	2		// completely outside the clipping planes
-void R_LocalNormalToWorld (vec3_t local, vec3_t world);
-void R_LocalPointToWorld (vec3_t local, vec3_t world);
 int R_CullLocalBox (vec3_t bounds[2]);
 int R_CullPointAndRadius( vec3_t origin, float radius );
 int R_CullLocalPointAndRadius( vec3_t origin, float radius );
@@ -331,10 +329,6 @@ void RB_SurfaceAnim( md4Surface_t *surfType );
 =============================================================
 =============================================================
 */
-void	R_TransformModelToClip( const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
-							vec4_t eye, vec4_t dst );
-void	R_TransformClipToWindow( const vec4_t clip, const viewParms_t *view, vec4_t normalized, vec4_t window );
-
 void	RB_DeformTessGeometry( void );
 
 void	RB_CalcEnvironmentTexCoords( float *dstTexCoords );
