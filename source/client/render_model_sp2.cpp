@@ -91,3 +91,81 @@ void Mod_FreeSprite2Model(model_t* mod)
 {
 	Mem_Free(mod->q2_extradata);
 }
+
+//==========================================================================
+//
+//	R_DrawSp2Model
+//
+//==========================================================================
+
+void R_DrawSp2Model(trRefEntity_t* e)
+{
+	vec3_t	point;
+
+	// don't even bother culling, because it's just a single
+	// polygon without a surface cache
+
+	dsprite2_t* psprite = (dsprite2_t *)tr.currentModel->q2_extradata;
+
+	e->e.frame %= psprite->numframes;
+
+	dsp2_frame_t* frame = &psprite->frames[e->e.frame];
+
+	float* up = tr.viewParms.orient.axis[2];
+	float* left = tr.viewParms.orient.axis[1];
+
+	float alpha = 1.0F;
+	if (e->e.renderfx & RF_TRANSLUCENT)
+	{
+		alpha = e->e.shaderRGBA[3] / 255.0;
+	}
+
+	if (alpha != 1.0F)
+	{
+		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	}
+	else
+	{
+		GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
+	}
+
+	qglColor4f(1, 1, 1, alpha);
+
+    GL_Bind(tr.currentModel->q2_skins[e->e.frame]);
+
+	GL_TexEnv(GL_MODULATE);
+
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(0, 1);
+	VectorMA(e->e.origin, -frame->origin_y, up, point);
+	VectorMA(point, frame->origin_x, left, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(0, 0);
+	VectorMA(e->e.origin, frame->height - frame->origin_y, up, point);
+	VectorMA(point, frame->origin_x, left, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(1, 0);
+	VectorMA(e->e.origin, frame->height - frame->origin_y, up, point);
+	VectorMA(point, -(frame->width - frame->origin_x), left, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(1, 1);
+	VectorMA(e->e.origin, -frame->origin_y, up, point);
+	VectorMA(point, -(frame->width - frame->origin_x), left, point);
+	qglVertex3fv(point);
+	
+	qglEnd();
+
+	GL_State(GLS_DEFAULT);
+	GL_TexEnv(GL_REPLACE);
+
+	if (alpha != 1.0F)
+	{
+		GL_State(GLS_DEFAULT);
+	}
+
+	qglColor4f(1, 1, 1, 1);
+}

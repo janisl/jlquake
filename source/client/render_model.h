@@ -794,6 +794,7 @@ void Mod_FreeSpriteModel(model_t* mod);
 void R_DrawSprModel(struct trRefEntity_t* e);
 void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen);
 void Mod_FreeSprite2Model(model_t* mod);
+void R_DrawSp2Model(struct trRefEntity_t* e);
 
 void Mod_LoadMdlModel(model_t* mod, const void* buffer);
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);

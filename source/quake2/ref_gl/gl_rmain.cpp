@@ -83,114 +83,6 @@ QCvar	*gl_lockpvs;
 QCvar	*vid_ref;
 
 /*
-=============================================================
-
-  SPRITE MODELS
-
-=============================================================
-*/
-
-
-/*
-=================
-R_DrawSpriteModel
-
-=================
-*/
-void R_DrawSpriteModel (trRefEntity_t *e)
-{
-	float alpha = 1.0F;
-	vec3_t	point;
-	dsp2_frame_t	*frame;
-	float		*up, *left;
-	dsprite2_t		*psprite;
-
-	// don't even bother culling, because it's just a single
-	// polygon without a surface cache
-
-	psprite = (dsprite2_t *)tr.currentModel->q2_extradata;
-
-#if 0
-	if (e->frame < 0 || e->frame >= psprite->numframes)
-	{
-		ri.Con_Printf (PRINT_ALL, "no such sprite frame %i\n", e->frame);
-		e->frame = 0;
-	}
-#endif
-	e->e.frame %= psprite->numframes;
-
-	frame = &psprite->frames[e->e.frame];
-
-#if 0
-	if (psprite->type == SPR_ORIENTED)
-	{	// bullet marks on walls
-	vec3_t		v_forward, v_right, v_up;
-
-	AngleVectors (tr.currentEntity->angles, v_forward, v_right, v_up);
-		up = v_up;
-		right = v_right;
-	}
-	else
-#endif
-	{	// normal sprite
-		up = tr.refdef.viewaxis[2];
-		left = tr.refdef.viewaxis[1];
-	}
-
-	if ( e->e.renderfx & RF_TRANSLUCENT )
-		alpha = e->e.shaderRGBA[3] / 255.0;
-
-	if ( alpha != 1.0F )
-	{
-		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	}
-	else
-	{
-		GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
-	}
-
-	qglColor4f( 1, 1, 1, alpha );
-
-    GL_Bind(tr.currentModel->q2_skins[e->e.frame]);
-
-	GL_TexEnv( GL_MODULATE );
-
-	qglBegin (GL_QUADS);
-
-	qglTexCoord2f (0, 1);
-	VectorMA (e->e.origin, -frame->origin_y, up, point);
-	VectorMA (point, frame->origin_x, left, point);
-	qglVertex3fv (point);
-
-	qglTexCoord2f (0, 0);
-	VectorMA (e->e.origin, frame->height - frame->origin_y, up, point);
-	VectorMA (point, frame->origin_x, left, point);
-	qglVertex3fv (point);
-
-	qglTexCoord2f (1, 0);
-	VectorMA (e->e.origin, frame->height - frame->origin_y, up, point);
-	VectorMA (point, -(frame->width - frame->origin_x), left, point);
-	qglVertex3fv (point);
-
-	qglTexCoord2f (1, 1);
-	VectorMA (e->e.origin, -frame->origin_y, up, point);
-	VectorMA (point, -(frame->width - frame->origin_x), left, point);
-	qglVertex3fv (point);
-	
-	qglEnd ();
-
-	GL_State(GLS_DEFAULT);
-	GL_TexEnv(GL_REPLACE);
-
-	if ( alpha != 1.0F )
-		GL_State(GLS_DEFAULT);
-
-	qglColor4f( 1, 1, 1, 1 );
-}
-
-//==================================================================================
-
-/*
 =============
 R_DrawNullModel
 =============
@@ -268,7 +160,7 @@ void R_DrawEntitiesOnList (void)
 				R_DrawBrushModel(tr.currentEntity);
 				break;
 			case MOD_SPRITE2:
-				R_DrawSpriteModel(tr.currentEntity);
+				R_DrawSp2Model(tr.currentEntity);
 				break;
 			default:
 				ri.Sys_Error (ERR_DROP, "Bad modeltype");
@@ -304,7 +196,7 @@ void R_DrawEntitiesOnList (void)
 				R_DrawBrushModel(tr.currentEntity);
 				break;
 			case MOD_SPRITE2:
-				R_DrawSpriteModel(tr.currentEntity);
+				R_DrawSp2Model(tr.currentEntity);
 				break;
 			default:
 				ri.Sys_Error (ERR_DROP, "Bad modeltype");
