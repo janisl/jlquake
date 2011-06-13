@@ -222,3 +222,193 @@ void Mod_FreeSpriteModel(model_t* mod)
 	}
 	Mem_Free(psprite);
 }
+
+//==========================================================================
+//
+//	R_GetSpriteFrame
+//
+//==========================================================================
+
+static msprite1frame_t* R_GetSpriteFrame(msprite1_t* psprite, trRefEntity_t* currententity)
+{
+	int frame = currententity->e.frame;
+
+	if (frame >= psprite->numframes || frame < 0)
+	{
+		GLog.Write("R_DrawSprite: no such frame %d\n", frame);
+		frame = 0;
+	}
+
+	if (psprite->frames[frame].type == SPR_SINGLE)
+	{
+		return psprite->frames[frame].frameptr;
+	}
+	else
+	{
+		msprite1group_t* pspritegroup = (msprite1group_t*)psprite->frames[frame].frameptr;
+		float* pintervals = pspritegroup->intervals;
+		int numframes = pspritegroup->numframes;
+		float fullinterval = pintervals[numframes - 1];
+
+		float time = tr.refdef.floatTime + currententity->e.shaderTime;
+
+		// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
+		// are positive, so we don't have to worry about division by 0
+		float targettime = time - ((int)(time / fullinterval)) * fullinterval;
+
+		int i;
+		for (i = 0; i < (numframes - 1); i++)
+		{
+			if (pintervals[i] > targettime)
+			{
+				break;
+			}
+		}
+
+		return pspritegroup->frames[i];
+	}
+}
+
+//==========================================================================
+//
+//	R_DrawSprModel
+//
+//==========================================================================
+
+void R_DrawSprModel(trRefEntity_t* e)
+{
+	vec3_t	point;
+
+	// don't even bother culling, because it's just a single
+	// polygon without a surface cache
+
+	if (tr.currentEntity->e.renderfx & RF_WATERTRANS)
+	{
+		qglColor4f(1, 1, 1, r_wateralpha->value);
+	}
+	else
+	{
+		qglColor3f(1, 1, 1);
+	}
+
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+
+	msprite1_t* psprite = (msprite1_t*)R_GetModelByHandle(tr.currentEntity->e.hModel)->q1_cache;
+
+	msprite1frame_t* frame = R_GetSpriteFrame(psprite, e);
+
+	vec3_t up;
+	vec3_t right;
+	if (psprite->type == SPR_FACING_UPRIGHT)
+	{
+		// generate the sprite's axes, with vup straight up in worldspace, and
+		// r_spritedesc.vright perpendicular to tr.refdef.vieworg.
+		// This will not work if the view direction is very close to straight up or
+		// down, because the cross product will be between two nearly parallel
+		// vectors and starts to approach an undefined state, so we don't draw if
+		// the two vectors are less than 1 degree apart
+		vec3_t tvec;
+		tvec[0] = -tr.viewParms.orient.origin[0];
+		tvec[1] = -tr.viewParms.orient.origin[1];
+		tvec[2] = -tr.viewParms.orient.origin[2];
+		VectorNormalize (tvec);
+		float dot = tvec[2];	// same as DotProduct (tvec, r_spritedesc.vup) because
+								//  r_spritedesc.vup is 0, 0, 1
+		if ((dot > 0.999848) || (dot < -0.999848))	// cos(1 degree) = 0.999848
+		{
+			return;
+		}
+		up[0] = 0;
+		up[1] = 0;
+		up[2] = 1;
+		right[0] = tvec[1];		// CrossProduct(r_spritedesc.vup, -tr.refdef.vieworg,
+		right[1] = -tvec[0];	//              r_spritedesc.vright)
+		right[2] = 0;
+		VectorNormalize(right);
+	}
+	else if (psprite->type == SPR_VP_PARALLEL)
+	{
+		// generate the sprite's axes, completely parallel to the viewplane. There
+		// are no problem situations, because the sprite is always in the same
+		// position relative to the viewer
+		VectorCopy(tr.viewParms.orient.axis[2], up);
+		VectorSubtract(vec3_origin, tr.viewParms.orient.axis[1], right);
+	}
+	else if (psprite->type == SPR_VP_PARALLEL_UPRIGHT)
+	{
+		// generate the sprite's axes, with vup straight up in worldspace, and
+		// r_spritedesc.vright parallel to the viewplane.
+		// This will not work if the view direction is very close to straight up or
+		// down, because the cross product will be between two nearly parallel
+		// vectors and starts to approach an undefined state, so we don't draw if
+		// the two vectors are less than 1 degree apart
+		float dot = tr.viewParms.orient.axis[0][2];	// same as DotProduct (vpn, r_spritedesc.vup) because
+						//  r_spritedesc.vup is 0, 0, 1
+		if ((dot > 0.999848) || (dot < -0.999848))	// cos(1 degree) = 0.999848
+		{
+			return;
+		}
+		up[0] = 0;
+		up[1] = 0;
+		up[2] = 1;
+		right[0] = tr.viewParms.orient.axis[0][1];	// CrossProduct (r_spritedesc.vup, vpn,
+		right[1] = -tr.viewParms.orient.axis[0][0];	//  r_spritedesc.vright)
+		right[2] = 0;
+		VectorNormalize(right);
+	}
+	else if (psprite->type == SPR_ORIENTED)
+	{
+		// generate the sprite's axes, according to the sprite's world orientation
+		VectorCopy(tr.currentEntity->e.axis[2], up);
+		VectorSubtract(vec3_origin, tr.currentEntity->e.axis[1], right);
+	}
+	else if (psprite->type == SPR_VP_PARALLEL_ORIENTED)
+	{
+		// generate the sprite's axes, parallel to the viewplane, but rotated in
+		// that plane around the center according to the sprite entity's roll
+		// angle. So vpn stays the same, but vright and vup rotate
+		vec3_t tmp_angles;
+		VecToAngles(e->e.axis[0], tmp_angles);
+		float angle = tmp_angles[ROLL] * (M_PI * 2 / 360);
+		float sr = sin(angle);
+		float cr = cos(angle);
+
+		for (int i = 0; i < 3; i++)
+		{
+			right[i] = -tr.viewParms.orient.axis[1][i] * cr + tr.viewParms.orient.axis[2][i] * sr;
+			up[i] = tr.viewParms.orient.axis[1][i] * sr + tr.viewParms.orient.axis[2][i] * cr;
+		}
+	}
+	else
+	{
+		throw QException(va("R_DrawSprite: Bad sprite type %d", psprite->type));
+	}
+
+    GL_Bind(frame->gl_texture);
+
+	qglBegin(GL_QUADS);
+
+	qglTexCoord2f(0, 1);
+	VectorMA(e->e.origin, frame->down, up, point);
+	VectorMA(point, frame->left, right, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(0, 0);
+	VectorMA(e->e.origin, frame->up, up, point);
+	VectorMA(point, frame->left, right, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(1, 0);
+	VectorMA(e->e.origin, frame->up, up, point);
+	VectorMA(point, frame->right, right, point);
+	qglVertex3fv(point);
+
+	qglTexCoord2f(1, 1);
+	VectorMA(e->e.origin, frame->down, up, point);
+	VectorMA(point, frame->right, right, point);
+	qglVertex3fv(point);
+	
+	qglEnd();
+
+	GL_State(GLS_DEFAULT);
+}

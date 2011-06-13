@@ -67,131 +67,6 @@ extern	QCvar*	scr_fov;
 /*
 =============================================================
 
-  SPRITE MODELS
-
-=============================================================
-*/
-
-/*
-================
-R_GetSpriteFrame
-================
-*/
-msprite1frame_t *R_GetSpriteFrame (trRefEntity_t *currententity)
-{
-	msprite1_t		*psprite;
-	msprite1group_t	*pspritegroup;
-	msprite1frame_t	*pspriteframe;
-	int				i, numframes, frame;
-	float			*pintervals, fullinterval, targettime, time;
-
-	psprite = (msprite1_t*)R_GetModelByHandle(currententity->e.hModel)->q1_cache;
-	frame = currententity->e.frame;
-
-	if ((frame >= psprite->numframes) || (frame < 0))
-	{
-		Con_Printf ("R_DrawSprite: no such frame %d\n", frame);
-		frame = 0;
-	}
-
-	if (psprite->frames[frame].type == SPR_SINGLE)
-	{
-		pspriteframe = psprite->frames[frame].frameptr;
-	}
-	else
-	{
-		pspritegroup = (msprite1group_t *)psprite->frames[frame].frameptr;
-		pintervals = pspritegroup->intervals;
-		numframes = pspritegroup->numframes;
-		fullinterval = pintervals[numframes-1];
-
-		time = cl.time + currententity->e.shaderTime;
-
-	// when loading in Mod_LoadSpriteGroup, we guaranteed all interval values
-	// are positive, so we don't have to worry about division by 0
-		targettime = time - ((int)(time / fullinterval)) * fullinterval;
-
-		for (i=0 ; i<(numframes-1) ; i++)
-		{
-			if (pintervals[i] > targettime)
-				break;
-		}
-
-		pspriteframe = pspritegroup->frames[i];
-	}
-
-	return pspriteframe;
-}
-
-
-/*
-=================
-R_DrawSpriteModel
-
-=================
-*/
-void R_DrawSpriteModel (trRefEntity_t *e)
-{
-	vec3_t	point;
-	msprite1frame_t	*frame;
-	float		*up, *right;
-	vec3_t		v_right;
-	msprite1_t		*psprite;
-
-	// don't even bother culling, because it's just a single
-	// polygon without a surface cache
-	frame = R_GetSpriteFrame (e);
-	psprite = (msprite1_t*)R_GetModelByHandle(tr.currentEntity->e.hModel)->q1_cache;
-
-	if (psprite->type == SPR_ORIENTED)
-	{
-		// bullet marks on walls
-		up = tr.currentEntity->e.axis[2];
-		VectorSubtract(vec3_origin, tr.currentEntity->e.axis[1], v_right);
-		right = v_right;
-	}
-	else
-	{	// normal sprite
-		up = tr.refdef.viewaxis[2];
-		VectorSubtract(vec3_origin, tr.refdef.viewaxis[1], v_right);
-		right = v_right;
-	}
-
-	qglColor3f (1,1,1);
-
-    GL_Bind(frame->gl_texture);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
-	qglBegin (GL_QUADS);
-
-	qglTexCoord2f (0, 1);
-	VectorMA (e->e.origin, frame->down, up, point);
-	VectorMA (point, frame->left, right, point);
-	qglVertex3fv (point);
-
-	qglTexCoord2f (0, 0);
-	VectorMA (e->e.origin, frame->up, up, point);
-	VectorMA (point, frame->left, right, point);
-	qglVertex3fv (point);
-
-	qglTexCoord2f (1, 0);
-	VectorMA (e->e.origin, frame->up, up, point);
-	VectorMA (point, frame->right, right, point);
-	qglVertex3fv (point);
-
-	qglTexCoord2f (1, 1);
-	VectorMA (e->e.origin, frame->down, up, point);
-	VectorMA (point, frame->right, right, point);
-	qglVertex3fv (point);
-	
-	qglEnd ();
-
-	GL_State(GLS_DEFAULT);
-}
-
-/*
-=============================================================
-
   ALIAS MODELS
 
 =============================================================
@@ -575,7 +450,7 @@ void R_DrawEntitiesOnList (void)
 		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
 		{
 		case MOD_SPRITE:
-			R_DrawSpriteModel(tr.currentEntity);
+			R_DrawSprModel(tr.currentEntity);
 			break;
 
 		default :
