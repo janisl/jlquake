@@ -56,8 +56,6 @@ QCvar	*r_facePlaneCull;
 QCvar	*r_showcluster;
 QCvar	*r_nocurves;
 
-QCvar	*r_primitives;
-
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
 QCvar	*r_shadows;
@@ -601,8 +599,6 @@ void R_Register( void )
 	r_railWidth = Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );
 	r_railCoreWidth = Cvar_Get( "r_railCoreWidth", "6", CVAR_ARCHIVE );
 	r_railSegmentLength = Cvar_Get( "r_railSegmentLength", "32", CVAR_ARCHIVE );
-
-	r_primitives = Cvar_Get( "r_primitives", "0", CVAR_ARCHIVE );
 
 	r_ambientScale = Cvar_Get( "r_ambientScale", "0.6", CVAR_CHEAT );
 	r_directedScale = Cvar_Get( "r_directedScale", "1", CVAR_CHEAT );

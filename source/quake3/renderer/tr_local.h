@@ -91,11 +91,6 @@ extern QCvar	*r_measureOverdraw;		// enables stencil buffer overdraw measurement
 extern QCvar	*r_lodbias;				// push/pull LOD transitions
 extern QCvar	*r_lodscale;
 
-extern QCvar	*r_primitives;			// "0" = based on compiled vertex array existance
-										// "1" = glDrawElemet tristrips
-										// "2" = glDrawElements triangles
-										// "-1" = no drawing
-
 extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
 extern QCvar	*r_fastsky;				// controls whether sky should be cleared or drawn
 extern QCvar	*r_drawSun;				// controls drawing of sun quad

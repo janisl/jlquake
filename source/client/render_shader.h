@@ -383,6 +383,8 @@ qhandle_t R_RegisterShaderFromImage(const char* Name, int LightmapIndex, image_t
 shader_t* R_GetShaderByHandle(qhandle_t hShader);
 void R_ShaderList_f();
 
+void R_DrawElements(int numIndexes, const glIndex_t* indexes);
+
 float* TableForFunc(genFunc_t func) ;
 float EvalWaveForm(const waveForm_t* wf);
 float EvalWaveFormClamped(const waveForm_t* wf);

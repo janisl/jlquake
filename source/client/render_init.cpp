@@ -108,6 +108,8 @@ QCvar*		r_znear;
 
 QCvar*		r_nocull;
 
+QCvar*		r_primitives;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -269,6 +271,7 @@ void R_SharedRegister()
 	r_ignoreGLErrors = Cvar_Get("r_ignoreGLErrors", "1", CVAR_ARCHIVE);
 	r_textureMode = Cvar_Get("r_textureMode", "GL_LINEAR_MIPMAP_LINEAR", CVAR_ARCHIVE);
 	r_dynamiclight = Cvar_Get("r_dynamiclight", "1", CVAR_ARCHIVE);
+	r_primitives = Cvar_Get("r_primitives", "0", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time

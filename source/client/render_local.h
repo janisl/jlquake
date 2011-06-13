@@ -589,6 +589,11 @@ extern QCvar*	r_znear;				// near Z clip plane
 
 extern QCvar*	r_nocull;
 
+extern QCvar*	r_primitives;			// "0" = based on compiled vertex array existance
+										// "1" = glDrawElemet tristrips
+										// "2" = glDrawElements triangles
+										// "-1" = no drawing
+
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;
