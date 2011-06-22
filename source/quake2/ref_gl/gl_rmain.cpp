@@ -51,7 +51,6 @@ QCvar	*r_drawworld;
 QCvar	*r_speeds;
 QCvar	*r_novis;
 QCvar	*r_lerpmodels;
-QCvar	*r_lefthand;
 
 QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
@@ -611,7 +610,6 @@ void R_RenderFrame (refdef_t *fd)
 void R_Register( void )
 {
 	R_SharedRegister();
-	r_lefthand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 	r_norefresh = Cvar_Get ("r_norefresh", "0", 0);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", 0);
 	r_drawworld = Cvar_Get ("r_drawworld", "1", 0);

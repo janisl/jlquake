@@ -50,12 +50,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 			return;
 	}
 
-	if ( e->e.renderfx & RF_FIRST_PERSON)
-	{
-		if ( r_lefthand->value == 2 )
-			return;
-	}
-
 	paliashdr = (dmd2_t *)tr.currentModel->q2_extradata;
 
 	//
@@ -159,19 +153,19 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	if (tr.currentEntity->e.renderfx & RF_DEPTHHACK) // hack the depth range to prevent view model from poking into walls
 		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
 
-	if ( ( tr.currentEntity->e.renderfx & RF_FIRST_PERSON) && ( r_lefthand->value == 1.0F ) )
+	if (tr.currentEntity->e.renderfx & RF_LEFTHAND)
 	{
-		qglMatrixMode( GL_PROJECTION );
+		qglMatrixMode(GL_PROJECTION);
 		qglPushMatrix();
 		qglLoadIdentity();
-		qglScalef( -1, 1, 1 );
+		qglScalef(-1, 1, 1);
 		qglMultMatrixf(tr.viewParms.projectionMatrix);
-		qglMatrixMode( GL_MODELVIEW );
+		qglMatrixMode(GL_MODELVIEW);
 
-		qglCullFace( GL_BACK );
+		qglCullFace(GL_BACK);
 	}
 
-    qglPushMatrix ();
+    qglPushMatrix();
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	// select skin
@@ -234,7 +228,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	qglPopMatrix ();
 
-	if ( ( tr.currentEntity->e.renderfx & RF_FIRST_PERSON) && ( r_lefthand->value == 1.0F ) )
+	if (tr.currentEntity->e.renderfx & RF_LEFTHAND)
 	{
 		qglMatrixMode( GL_PROJECTION );
 		qglPopMatrix();
@@ -250,7 +244,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	if (tr.currentEntity->e.renderfx & RF_DEPTHHACK)
 		qglDepthRange (gldepthmin, gldepthmax);
 
-#if 1
 	if (gl_shadows->value && !(tr.currentEntity->e.renderfx & (RF_TRANSLUCENT | RF_FIRST_PERSON)))
 	{
 		qglPushMatrix ();
@@ -263,7 +256,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		GL_State(GLS_DEFAULT);
 		qglPopMatrix ();
 	}
-#endif
 	qglColor4f (1,1,1,1);
 }
 

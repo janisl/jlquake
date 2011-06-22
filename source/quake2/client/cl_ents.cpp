@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern qhandle_t	cl_mod_powerscreen;
 
+extern QCvar *hand;
+
 /*
 =========================================================================
 
@@ -1174,20 +1176,30 @@ static void CL_AddViewWeapon(player_state_t *ps, player_state_t *ops, vec3_t vie
 
 	// allow the gun to be completely removed
 	if (!cl_gun->value)
+	{
 		return;
+	}
 
 	// don't draw gun if in wide angle view
 	if (ps->fov > 90)
+	{
 		return;
+	}
 
 	Com_Memset(&gun, 0, sizeof(gun));
 
 	if (gun_model)
+	{
 		gun.hModel = gun_model;	// development tool
+	}
 	else
+	{
 		gun.hModel = cl.model_draw[ps->gunindex];
+	}
 	if (!gun.hModel)
+	{
 		return;
+	}
 
 	// set up gun position
 	vec3_t angles;
@@ -1216,6 +1228,10 @@ static void CL_AddViewWeapon(player_state_t *ps, player_state_t *ops, vec3_t vie
 
 	gun.reType = RT_MODEL;
 	gun.renderfx = RF_MINLIGHT | RF_FIRST_PERSON | RF_DEPTHHACK;
+	if (hand->integer == 1)
+	{
+		gun.renderfx |= RF_LEFTHAND;
+	}
 	gun.backlerp = 1.0 - cl.lerpfrac;
 	VectorCopy (gun.origin, gun.oldorigin);	// don't lerp at all
 	R_AddRefEntityToScene (&gun);

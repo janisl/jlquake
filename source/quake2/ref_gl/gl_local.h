@@ -62,7 +62,6 @@ extern	refdef_t	r_newrefdef;
 extern	int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 extern	QCvar	*r_norefresh;
-extern	QCvar	*r_lefthand;
 extern	QCvar	*r_drawentities;
 extern	QCvar	*r_drawworld;
 extern	QCvar	*r_speeds;

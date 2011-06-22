@@ -117,6 +117,7 @@ enum refEntityType_t
 #define RF_COLOUR_SHELL		4096	// draws coloured shell for the model
 #define RF_GLOW				8192	// pulse lighting for bonus items
 #define RF_IR_VISIBLE		16384	// in red light when infrared googles are on
+#define RF_LEFTHAND			0x8000	// left hand weapon, flip projection matrix.
 
 struct refEntity_t
 {
