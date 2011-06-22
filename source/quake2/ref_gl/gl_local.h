@@ -89,7 +89,6 @@ extern	QCvar	*gl_poly;
 extern	QCvar	*gl_texsort;
 extern	QCvar	*gl_polyblend;
 extern	QCvar	*gl_lightmaptype;
-extern	QCvar	*gl_modulate;
 extern	QCvar	*gl_drawbuffer;
 extern  QCvar  *gl_driver;
 extern  QCvar  *gl_saturatelighting;
@@ -100,7 +99,6 @@ extern	int		c_visible_textures;
 
 void R_TranslatePlayerSkin (int playernum);
 
-void R_LightPoint (vec3_t p, vec3_t color);
 void R_PushDlights (void);
 
 //====================================================================

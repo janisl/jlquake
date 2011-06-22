@@ -104,168 +104,6 @@ LIGHT SAMPLING
 =============================================================================
 */
 
-vec3_t			pointcolor;
-cplane_t		*lightplane;		// used as shadow plane
-
-int RecursiveLightPoint (mbrush38_node_t *node, vec3_t start, vec3_t end)
-{
-	float		front, back, frac;
-	int			side;
-	cplane_t	*plane;
-	vec3_t		mid;
-	mbrush38_surface_t	*surf;
-	int			s, t, ds, dt;
-	int			i;
-	mbrush38_texinfo_t	*tex;
-	byte		*lightmap;
-	int			maps;
-	int			r;
-
-	if (node->contents != -1)
-		return -1;		// didn't hit anything
-	
-// calculate mid point
-
-// FIXME: optimize for axial
-	plane = node->plane;
-	front = DotProduct (start, plane->normal) - plane->dist;
-	back = DotProduct (end, plane->normal) - plane->dist;
-	side = front < 0;
-	
-	if ( (back < 0) == side)
-		return RecursiveLightPoint (node->children[side], start, end);
-	
-	frac = front / (front-back);
-	mid[0] = start[0] + (end[0] - start[0])*frac;
-	mid[1] = start[1] + (end[1] - start[1])*frac;
-	mid[2] = start[2] + (end[2] - start[2])*frac;
-	
-// go down front side	
-	r = RecursiveLightPoint (node->children[side], start, mid);
-	if (r >= 0)
-		return r;		// hit something
-		
-	if ( (back < 0) == side )
-		return -1;		// didn't hit anuthing
-		
-// check for impact on this node
-	VectorCopy (mid, lightspot);
-	lightplane = plane;
-
-	surf = tr.worldModel->brush38_surfaces + node->firstsurface;
-	for (i=0 ; i<node->numsurfaces ; i++, surf++)
-	{
-		if (surf->flags&(BRUSH38_SURF_DRAWTURB|BRUSH38_SURF_DRAWSKY)) 
-			continue;	// no lightmaps
-
-		tex = surf->texinfo;
-		
-		s = DotProduct (mid, tex->vecs[0]) + tex->vecs[0][3];
-		t = DotProduct (mid, tex->vecs[1]) + tex->vecs[1][3];;
-
-		if (s < surf->texturemins[0] ||
-		t < surf->texturemins[1])
-			continue;
-		
-		ds = s - surf->texturemins[0];
-		dt = t - surf->texturemins[1];
-		
-		if ( ds > surf->extents[0] || dt > surf->extents[1] )
-			continue;
-
-		if (!surf->samples)
-			return 0;
-
-		ds >>= 4;
-		dt >>= 4;
-
-		lightmap = surf->samples;
-		VectorCopy (vec3_origin, pointcolor);
-		if (lightmap)
-		{
-			vec3_t scale;
-
-			lightmap += 3*(dt * ((surf->extents[0]>>4)+1) + ds);
-
-			for (maps = 0 ; maps < BSP38_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
-					maps++)
-			{
-				for (i=0 ; i<3 ; i++)
-					scale[i] = gl_modulate->value*tr.refdef.lightstyles[surf->styles[maps]].rgb[i];
-
-				pointcolor[0] += lightmap[0] * scale[0] * (1.0/255);
-				pointcolor[1] += lightmap[1] * scale[1] * (1.0/255);
-				pointcolor[2] += lightmap[2] * scale[2] * (1.0/255);
-				lightmap += 3*((surf->extents[0]>>4)+1) *
-						((surf->extents[1]>>4)+1);
-			}
-		}
-		
-		return 1;
-	}
-
-// go down back side
-	return RecursiveLightPoint (node->children[!side], mid, end);
-}
-
-/*
-===============
-R_LightPoint
-===============
-*/
-void R_LightPoint (vec3_t p, vec3_t color)
-{
-	vec3_t		end;
-	float		r;
-	int			lnum;
-	dlight_t	*dl;
-	float		light;
-	vec3_t		dist;
-	float		add;
-	
-	if (!tr.worldModel->brush38_lightdata)
-	{
-		color[0] = color[1] = color[2] = 1.0;
-		return;
-	}
-	
-	end[0] = p[0];
-	end[1] = p[1];
-	end[2] = p[2] - 2048;
-	
-	r = RecursiveLightPoint (tr.worldModel->brush38_nodes, p, end);
-	
-	if (r == -1)
-	{
-		VectorCopy (vec3_origin, color);
-	}
-	else
-	{
-		VectorCopy (pointcolor, color);
-	}
-
-	//
-	// add dynamic lights
-	//
-	light = 0;
-	dl = tr.refdef.dlights;
-	for (lnum=0 ; lnum<tr.refdef.num_dlights ; lnum++, dl++)
-	{
-		VectorSubtract (tr.currentEntity->e.origin,
-						dl->origin,
-						dist);
-		add = dl->radius - VectorLength(dist);
-		add *= (1.0/256);
-		if (add > 0)
-		{
-			VectorMA (color, add, dl->color, color);
-		}
-	}
-
-	VectorScale (color, gl_modulate->value, color);
-}
-
-
 //===================================================================
 
 static float s_blocklights[34*34*3];
@@ -425,7 +263,7 @@ void R_BuildLightMap (mbrush38_surface_t *surf, byte *dest, int stride)
 			bl = s_blocklights;
 
 			for (i=0 ; i<3 ; i++)
-				scale[i] = gl_modulate->value * tr.refdef.lightstyles[surf->styles[maps]].rgb[i];
+				scale[i] = r_modulate->value * tr.refdef.lightstyles[surf->styles[maps]].rgb[i];
 
 			if ( scale[0] == 1.0F &&
 				 scale[1] == 1.0F &&
@@ -462,7 +300,7 @@ void R_BuildLightMap (mbrush38_surface_t *surf, byte *dest, int stride)
 			bl = s_blocklights;
 
 			for (i=0 ; i<3 ; i++)
-				scale[i] = gl_modulate->value * tr.refdef.lightstyles[surf->styles[maps]].rgb[i];
+				scale[i] = r_modulate->value * tr.refdef.lightstyles[surf->styles[maps]].rgb[i];
 
 			if ( scale[0] == 1.0F &&
 				 scale[1] == 1.0F &&

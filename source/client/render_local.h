@@ -522,6 +522,8 @@ void R_InitSkins();
 skin_t* R_GetSkinByHandle(qhandle_t hSkin);
 void R_SkinList_f();
 
+void R_LightPointQ2(vec3_t p, vec3_t color);
+
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern QCvar*	r_logFile;				// number of frames to emit GL logs
@@ -594,6 +596,8 @@ extern QCvar*	r_primitives;			// "0" = based on compiled vertex array existance
 										// "2" = glDrawElements triangles
 										// "-1" = no drawing
 extern QCvar*	r_vertex_arrays;
+
+extern QCvar*	r_modulate;
 
 extern trGlobals_t	tr;
 

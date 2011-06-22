@@ -67,7 +67,6 @@ QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
 QCvar	*gl_shadows;
 QCvar	*gl_dynamic;
-QCvar	*gl_modulate;
 QCvar	*gl_skymip;
 QCvar	*gl_showtris;
 QCvar	*gl_finish;
@@ -92,7 +91,7 @@ void R_DrawNullModel (void)
 	if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT)
 		shadelight[0] = shadelight[1] = shadelight[2] = tr.currentEntity->e.radius;
 	else
-		R_LightPoint (tr.currentEntity->e.origin, shadelight);
+		R_LightPointQ2 (tr.currentEntity->e.origin, shadelight);
 
     qglPushMatrix ();
 	R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
@@ -572,7 +571,7 @@ void R_SetLightLevel (void)
 
 	// save off light value for server to look at (BIG HACK!)
 
-	R_LightPoint (tr.refdef.vieworg, shadelight);
+	R_LightPointQ2 (tr.refdef.vieworg, shadelight);
 
 	// pick the greatest component, which should be the same
 	// as the mono value returned by software
@@ -628,7 +627,6 @@ void R_Register( void )
 	gl_particle_att_b = Cvar_Get( "gl_particle_att_b", "0.0", CVAR_ARCHIVE );
 	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
-	gl_modulate = Cvar_Get ("gl_modulate", "1", CVAR_ARCHIVE );
 	gl_shadows = Cvar_Get ("gl_shadows", "0", CVAR_ARCHIVE );
 	gl_dynamic = Cvar_Get ("gl_dynamic", "1", 0);
 	gl_skymip = Cvar_Get ("gl_skymip", "0", 0);

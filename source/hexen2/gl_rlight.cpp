@@ -130,8 +130,6 @@ LIGHT SAMPLING
 =============================================================================
 */
 
-cplane_t		*lightplane;
-
 int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
 {
 	int			r;
@@ -176,7 +174,6 @@ int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
 		
 // check for impact on this node
 	VectorCopy (mid, lightspot);
-	lightplane = plane;
 
 	surf = tr.worldModel->brush29_surfaces + node->firstsurface;
 	for (i=0 ; i<node->numsurfaces ; i++, surf++)
