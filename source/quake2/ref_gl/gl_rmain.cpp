@@ -225,15 +225,15 @@ void GL_DrawParticles( int num_particles, const particle_t particles[], const un
 	GL_TexEnv( GL_MODULATE );
 	qglBegin( GL_TRIANGLES );
 
-	VectorScale(tr.refdef.viewaxis[2], 1.5, up);
-	VectorScale(tr.refdef.viewaxis[1], -1.5, right);
+	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
+	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
 
 	for ( p = particles, i=0 ; i < num_particles ; i++,p++)
 	{
 		// hack a scale up to keep particles from disapearing
-		scale = ( p->origin[0] - tr.refdef.vieworg[0] ) * tr.refdef.viewaxis[0][0] + 
-			    ( p->origin[1] - tr.refdef.vieworg[1] ) * tr.refdef.viewaxis[0][1] +
-			    ( p->origin[2] - tr.refdef.vieworg[2] ) * tr.refdef.viewaxis[0][2];
+		scale = ( p->origin[0] - tr.viewParms.orient.origin[0] ) * tr.viewParms.orient.axis[0][0] + 
+			    ( p->origin[1] - tr.viewParms.orient.origin[1] ) * tr.viewParms.orient.axis[0][1] +
+			    ( p->origin[2] - tr.viewParms.orient.origin[2] ) * tr.viewParms.orient.axis[0][2];
 
 		if (scale < 20)
 			scale = 1;

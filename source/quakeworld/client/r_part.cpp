@@ -464,8 +464,8 @@ void R_DrawParticles (void)
 	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
 
-	VectorScale(tr.refdef.viewaxis[2], 1.5, up);
-	VectorScale(tr.refdef.viewaxis[1], -1.5, right);
+	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
+	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
 
 	frametime = host_frametime;
 	time3 = frametime * 15;
@@ -503,8 +503,8 @@ void R_DrawParticles (void)
 		}
 
 		// hack a scale up to keep particles from disapearing
-		scale = (p->org[0] - tr.refdef.vieworg[0])*tr.refdef.viewaxis[0][0] + (p->org[1] - tr.refdef.vieworg[1])*tr.refdef.viewaxis[0][1]
-			+ (p->org[2] - tr.refdef.vieworg[2])*tr.refdef.viewaxis[0][2];
+		scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
+			+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
 		if (scale < 20)
 			scale = 1;
 		else

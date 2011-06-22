@@ -1358,8 +1358,8 @@ void R_DrawParticles (void)
 	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
 
-	VectorScale(tr.refdef.viewaxis[2], 1.5, r_pup);
-	VectorScale(tr.refdef.viewaxis[1], -1.5, r_pright);
+	VectorScale(tr.viewParms.orient.axis[2], 1.5, r_pup);
+	VectorScale(tr.viewParms.orient.axis[1], -1.5, r_pright);
 
 	for ( ;; ) 
 	{
@@ -1392,8 +1392,8 @@ void R_DrawParticles (void)
 		if (p->type==pt_rain)
 		{
 			// hack a scale up to keep particles from disapearing
-			scale = (p->org[0] - tr.refdef.vieworg[0])*tr.refdef.viewaxis[0][0] + (p->org[1] - tr.refdef.vieworg[1])*tr.refdef.viewaxis[0][1]
-				+ (p->org[2] - tr.refdef.vieworg[2])*tr.refdef.viewaxis[0][2];
+			scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
+				+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
 			if (scale < 20)
 				scale = 1;
 			else
@@ -1415,8 +1415,8 @@ void R_DrawParticles (void)
 		{
 //IDEA: Put a snowflake texture on two-sided poly
 //texture comes from glrmisc.c: R_InitParticleTexture 
-			scale = (p->org[0] - tr.refdef.vieworg[0])*tr.refdef.viewaxis[0][0] + (p->org[1] - tr.refdef.vieworg[1])*tr.refdef.viewaxis[0][1]
-				+ (p->org[2] - tr.refdef.vieworg[2])*tr.refdef.viewaxis[0][2];
+			scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
+				+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
 			if (scale < 20)
 				scale = p->count/10;	
 			else
@@ -1462,8 +1462,8 @@ void R_DrawParticles (void)
 		else
 		{
 			// hack a scale up to keep particles from disapearing
-			scale = (p->org[0] - tr.refdef.vieworg[0])*tr.refdef.viewaxis[0][0] + (p->org[1] - tr.refdef.vieworg[1])*tr.refdef.viewaxis[0][1]
-				+ (p->org[2] - tr.refdef.vieworg[2])*tr.refdef.viewaxis[0][2];
+			scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
+				+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
 			if (scale < 20)
 				scale = 1;
 			else
