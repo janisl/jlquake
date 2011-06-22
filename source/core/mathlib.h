@@ -261,3 +261,10 @@ void RotatePoint(vec3_t point, const vec3_t matrix[3]);
 void TransposeMatrix(const vec3_t matrix[3], vec3_t transpose[3]);
 
 extern const vec3_t		axisDefault[3];
+
+#define NUMVERTEXNORMALS	162
+
+extern float			bytedirs[NUMVERTEXNORMALS][3];
+
+int DirToByte(vec3_t dir);
+void ByteToDir(int b, vec3_t dir);

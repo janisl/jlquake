@@ -274,11 +274,6 @@ Handles byte ordering and avoids alignment errors
 ==============================================================================
 */
 
-vec3_t	bytedirs[NUMVERTEXNORMALS] =
-{
-#include "../client/anorms.h"
-};
-
 //
 // writing functions
 //
@@ -344,38 +339,14 @@ void MSG_WriteDeltaUsercmd (QMsg *buf, usercmd_t *from, usercmd_t *cmd)
 
 void MSG_WriteDir (QMsg *sb, vec3_t dir)
 {
-	int		i, best;
-	float	d, bestd;
-	
-	if (!dir)
-	{
-		sb->WriteByte(0);
-		return;
-	}
-
-	bestd = 0;
-	best = 0;
-	for (i=0 ; i<NUMVERTEXNORMALS ; i++)
-	{
-		d = DotProduct (dir, bytedirs[i]);
-		if (d > bestd)
-		{
-			bestd = d;
-			best = i;
-		}
-	}
-	sb->WriteByte(best);
+	sb->WriteByte(DirToByte(dir));
 }
 
 
 void MSG_ReadDir (QMsg *sb, vec3_t dir)
 {
-	int		b;
-
-	b = sb->ReadByte();
-	if (b >= NUMVERTEXNORMALS)
-		Com_Error (ERR_DROP, "MSF_ReadDir: out of range");
-	VectorCopy (bytedirs[b], dir);
+	int b = sb->ReadByte();
+	ByteToDir(b, dir);
 }
 
 

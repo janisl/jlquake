@@ -29,12 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 =============================================================
 */
 
-#define NUMVERTEXNORMALS	162
-
-float	r_avertexnormals[NUMVERTEXNORMALS][3] = {
-#include "anorms.h"
-};
-
 typedef float vec4_t[4];
 
 static	vec4_t	s_lerped[MAX_MD2_VERTS];
@@ -59,7 +53,7 @@ void GL_LerpVerts( int nverts, dmd2_trivertx_t *v, dmd2_trivertx_t *ov, dmd2_tri
 	{
 		for (i=0 ; i < nverts; i++, v++, ov++, lerp+=4 )
 		{
-			float *normal = r_avertexnormals[verts[i].lightnormalindex];
+			float *normal = bytedirs[verts[i].lightnormalindex];
 
 			lerp[0] = move[0] + ov->v[0]*backv[0] + v->v[0]*frontv[0] + normal[0] * POWERSUIT_SCALE;
 			lerp[1] = move[1] + ov->v[1]*backv[1] + v->v[1]*frontv[1] + normal[1] * POWERSUIT_SCALE;

@@ -73,12 +73,6 @@ QCvar*	gl_doubleeyes;
 */
 
 
-#define NUMVERTEXNORMALS	162
-
-float	r_avertexnormals[NUMVERTEXNORMALS][3] = {
-#include "anorms.h"
-};
-
 vec3_t	shadevector;
 float	shadelight, ambientlight;
 

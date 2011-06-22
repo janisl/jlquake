@@ -262,10 +262,6 @@ MATHLIB
 ==============================================================
 */
 
-
-#define NUMVERTEXNORMALS	162
-extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
-
 // all drawing is done to a 640*480 virtual screen size
 // and will be automatically scaled to the real resolution
 #define	SCREEN_WIDTH		640
@@ -299,10 +295,6 @@ extern vec4_t	g_color_table[8];
 
 #define	MAKERGB( v, r, g, b ) v[0]=r;v[1]=g;v[2]=b
 #define	MAKERGBA( v, r, g, b, a ) v[0]=r;v[1]=g;v[2]=b;v[3]=a
-
-// this isn't a real cheap function to call!
-int DirToByte( vec3_t dir );
-void ByteToDir( int b, vec3_t dir );
 
 
 int		Q_rand( int *seed );
