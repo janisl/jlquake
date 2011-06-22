@@ -37,12 +37,6 @@ static	vec4_t	s_lerped[MAX_MD2_VERTS];
 vec3_t	shadevector;
 float	shadelight[3];
 
-// precalculated dot products for quantized angles
-#define SHADEDOT_QUANT 16
-float	r_avertexnormal_dots[SHADEDOT_QUANT][256] =
-#include "anormtab.h"
-;
-
 float	*shadedots = r_avertexnormal_dots[0];
 
 void GL_LerpVerts( int nverts, dmd2_trivertx_t *v, dmd2_trivertx_t *ov, dmd2_trivertx_t *verts, float *lerp, float move[3], float frontv[3], float backv[3] )

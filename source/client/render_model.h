@@ -18,6 +18,8 @@
 #define BLOCK_WIDTH		128
 #define BLOCK_HEIGHT	128
 
+#define SHADEDOT_QUANT	16
+
 //==============================================================================
 //
 //	QUAKE BRUSH MODELS
@@ -836,3 +838,4 @@ extern byte		q1_player_8bit_texels[320 * 200];
 extern byte		h2_player_8bit_texels[6][620 * 245];
 extern mbrush29_texture_t	*r_notexture_mip;
 extern world_t		s_worldData;
+extern float			r_avertexnormal_dots[SHADEDOT_QUANT][256];
