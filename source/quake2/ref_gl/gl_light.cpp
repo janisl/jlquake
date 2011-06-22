@@ -106,7 +106,6 @@ LIGHT SAMPLING
 
 vec3_t			pointcolor;
 cplane_t		*lightplane;		// used as shadow plane
-vec3_t			lightspot;
 
 int RecursiveLightPoint (mbrush38_node_t *node, vec3_t start, vec3_t end)
 {

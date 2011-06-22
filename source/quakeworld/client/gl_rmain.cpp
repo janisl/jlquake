@@ -72,10 +72,7 @@ extern	QCvar*	scr_fov;
 =============================================================
 */
 
-vec3_t	shadevector;
 float	shadelight, ambientlight;
-
-float	*shadedots = r_avertexnormal_dots[0];
 
 int	lastposenum;
 
@@ -134,8 +131,6 @@ lastposenum = posenum;
 GL_DrawAliasShadow
 =============
 */
-extern	vec3_t			lightspot;
-
 void GL_DrawAliasShadow (mesh1hdr_t *paliashdr, int posenum)
 {
 	dmdl_trivertx_t	*verts;

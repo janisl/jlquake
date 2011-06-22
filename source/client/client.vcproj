@@ -237,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_light.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_main.cpp"
 				>
 			</File>

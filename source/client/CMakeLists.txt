@@ -19,6 +19,7 @@ set(CLIENT_FILES
 	render_image_tga.cpp
 	render_image_wal.cpp
 	render_init.cpp
+	render_light.cpp
 	render_main.cpp
 	render_model.cpp
 	render_model_bsp29.cpp

@@ -29,397 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 =============================================================
 */
 
-typedef float vec4_t[4];
-
-static	vec4_t	s_lerped[MAX_MD2_VERTS];
-//static	vec3_t	lerped[MAX_MD2_VERTS];
-
-vec3_t	shadevector;
-float	shadelight[3];
-
-float	*shadedots = r_avertexnormal_dots[0];
-
-void GL_LerpVerts( int nverts, dmd2_trivertx_t *v, dmd2_trivertx_t *ov, dmd2_trivertx_t *verts, float *lerp, float move[3], float frontv[3], float backv[3] )
-{
-	int i;
-
-	if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
-	{
-		for (i=0 ; i < nverts; i++, v++, ov++, lerp+=4 )
-		{
-			float *normal = bytedirs[verts[i].lightnormalindex];
-
-			lerp[0] = move[0] + ov->v[0]*backv[0] + v->v[0]*frontv[0] + normal[0] * POWERSUIT_SCALE;
-			lerp[1] = move[1] + ov->v[1]*backv[1] + v->v[1]*frontv[1] + normal[1] * POWERSUIT_SCALE;
-			lerp[2] = move[2] + ov->v[2]*backv[2] + v->v[2]*frontv[2] + normal[2] * POWERSUIT_SCALE; 
-		}
-	}
-	else
-	{
-		for (i=0 ; i < nverts; i++, v++, ov++, lerp+=4)
-		{
-			lerp[0] = move[0] + ov->v[0]*backv[0] + v->v[0]*frontv[0];
-			lerp[1] = move[1] + ov->v[1]*backv[1] + v->v[1]*frontv[1];
-			lerp[2] = move[2] + ov->v[2]*backv[2] + v->v[2]*frontv[2];
-		}
-	}
-
-}
-
-/*
-=============
-GL_DrawAliasFrameLerp
-
-interpolates between two frames and origins
-FIXME: batch lerp all vertexes
-=============
-*/
-void GL_DrawAliasFrameLerp (dmd2_t *paliashdr, float backlerp)
-{
-	float 	l;
-	dmd2_frame_t	*frame, *oldframe;
-	dmd2_trivertx_t	*v, *ov, *verts;
-	int		*order;
-	int		count;
-	float	frontlerp;
-	float	alpha;
-	vec3_t	move, delta;
-	vec3_t	frontv, backv;
-	int		i;
-	int		index_xyz;
-	float	*lerp;
-
-	frame = (dmd2_frame_t *)((byte *)paliashdr + paliashdr->ofs_frames 
-		+ tr.currentEntity->e.frame * paliashdr->framesize);
-	verts = v = frame->verts;
-
-	oldframe = (dmd2_frame_t *)((byte *)paliashdr + paliashdr->ofs_frames 
-		+ tr.currentEntity->e.oldframe * paliashdr->framesize);
-	ov = oldframe->verts;
-
-	order = (int *)((byte *)paliashdr + paliashdr->ofs_glcmds);
-
-//	qglTranslatef (frame->translate[0], frame->translate[1], frame->translate[2]);
-//	qglScalef (frame->scale[0], frame->scale[1], frame->scale[2]);
-
-	if (tr.currentEntity->e.renderfx & RF_TRANSLUCENT)
-		alpha = tr.currentEntity->e.shaderRGBA[3] / 255.0;
-	else
-		alpha = 1.0;
-
-	if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
-		qglDisable( GL_TEXTURE_2D );
-
-	frontlerp = 1.0 - backlerp;
-
-	// move should be the delta back to the previous frame * backlerp
-	VectorSubtract (tr.currentEntity->e.oldorigin, tr.currentEntity->e.origin, delta);
-
-	move[0] = DotProduct(delta, tr.currentEntity->e.axis[0]);	// forward
-	move[1] = DotProduct(delta, tr.currentEntity->e.axis[1]);	// left
-	move[2] = DotProduct(delta, tr.currentEntity->e.axis[2]);	// up
-
-	VectorAdd (move, oldframe->translate, move);
-
-	for (i=0 ; i<3 ; i++)
-	{
-		move[i] = backlerp*move[i] + frontlerp*frame->translate[i];
-	}
-
-	for (i=0 ; i<3 ; i++)
-	{
-		frontv[i] = frontlerp*frame->scale[i];
-		backv[i] = backlerp*oldframe->scale[i];
-	}
-
-	lerp = s_lerped[0];
-
-	GL_LerpVerts( paliashdr->num_xyz, v, ov, verts, lerp, move, frontv, backv );
-
-	if ( gl_vertex_arrays->value )
-	{
-		float colorArray[MAX_MD2_VERTS*4];
-
-		qglEnableClientState( GL_VERTEX_ARRAY );
-		qglVertexPointer( 3, GL_FLOAT, 16, s_lerped );	// padded for SIMD
-
-		if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
-		{
-			qglColor4f( shadelight[0], shadelight[1], shadelight[2], alpha );
-		}
-		else
-		{
-			qglEnableClientState( GL_COLOR_ARRAY );
-			qglColorPointer( 3, GL_FLOAT, 0, colorArray );
-
-			//
-			// pre light everything
-			//
-			for ( i = 0; i < paliashdr->num_xyz; i++ )
-			{
-				float l = shadedots[verts[i].lightnormalindex];
-
-				colorArray[i*3+0] = l * shadelight[0];
-				colorArray[i*3+1] = l * shadelight[1];
-				colorArray[i*3+2] = l * shadelight[2];
-			}
-		}
-
-		if ( qglLockArraysEXT != 0 )
-			qglLockArraysEXT( 0, paliashdr->num_xyz );
-
-		while (1)
-		{
-			// get the vertex count and primitive type
-			count = *order++;
-			if (!count)
-				break;		// done
-			if (count < 0)
-			{
-				count = -count;
-				qglBegin (GL_TRIANGLE_FAN);
-			}
-			else
-			{
-				qglBegin (GL_TRIANGLE_STRIP);
-			}
-
-			if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
-			{
-				do
-				{
-					index_xyz = order[2];
-					order += 3;
-
-					qglVertex3fv( s_lerped[index_xyz] );
-
-				} while (--count);
-			}
-			else
-			{
-				do
-				{
-					// texture coordinates come from the draw list
-					qglTexCoord2f (((float *)order)[0], ((float *)order)[1]);
-					index_xyz = order[2];
-
-					order += 3;
-
-					// normals and vertexes come from the frame list
-//					l = shadedots[verts[index_xyz].lightnormalindex];
-					
-//					qglColor4f (l* shadelight[0], l*shadelight[1], l*shadelight[2], alpha);
-					qglArrayElement( index_xyz );
-
-				} while (--count);
-			}
-			qglEnd ();
-		}
-
-		if ( qglUnlockArraysEXT != 0 )
-			qglUnlockArraysEXT();
-	}
-	else
-	{
-		while (1)
-		{
-			// get the vertex count and primitive type
-			count = *order++;
-			if (!count)
-				break;		// done
-			if (count < 0)
-			{
-				count = -count;
-				qglBegin (GL_TRIANGLE_FAN);
-			}
-			else
-			{
-				qglBegin (GL_TRIANGLE_STRIP);
-			}
-
-			if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
-			{
-				do
-				{
-					index_xyz = order[2];
-					order += 3;
-
-					qglColor4f( shadelight[0], shadelight[1], shadelight[2], alpha);
-					qglVertex3fv (s_lerped[index_xyz]);
-
-				} while (--count);
-			}
-			else
-			{
-				do
-				{
-					// texture coordinates come from the draw list
-					qglTexCoord2f (((float *)order)[0], ((float *)order)[1]);
-					index_xyz = order[2];
-					order += 3;
-
-					// normals and vertexes come from the frame list
-					l = shadedots[verts[index_xyz].lightnormalindex];
-					
-					qglColor4f (l* shadelight[0], l*shadelight[1], l*shadelight[2], alpha);
-					qglVertex3fv (s_lerped[index_xyz]);
-				} while (--count);
-			}
-
-			qglEnd ();
-		}
-	}
-
-	if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
-		qglEnable( GL_TEXTURE_2D );
-}
-
-
-#if 1
-/*
-=============
-GL_DrawAliasShadow
-=============
-*/
-extern	vec3_t			lightspot;
-
-void GL_DrawAliasShadow (dmd2_t *paliashdr, int posenum)
-{
-	dmd2_trivertx_t	*verts;
-	int		*order;
-	vec3_t	point;
-	float	height, lheight;
-	int		count;
-	dmd2_frame_t	*frame;
-
-	lheight = tr.currentEntity->e.origin[2] - lightspot[2];
-
-	frame = (dmd2_frame_t *)((byte *)paliashdr + paliashdr->ofs_frames 
-		+ tr.currentEntity->e.frame * paliashdr->framesize);
-	verts = frame->verts;
-
-	height = 0;
-
-	order = (int *)((byte *)paliashdr + paliashdr->ofs_glcmds);
-
-	height = -lheight + 1.0;
-
-	while (1)
-	{
-		// get the vertex count and primitive type
-		count = *order++;
-		if (!count)
-			break;		// done
-		if (count < 0)
-		{
-			count = -count;
-			qglBegin (GL_TRIANGLE_FAN);
-		}
-		else
-			qglBegin (GL_TRIANGLE_STRIP);
-
-		do
-		{
-			// normals and vertexes come from the frame list
-/*
-			point[0] = verts[order[2]].v[0] * frame->scale[0] + frame->translate[0];
-			point[1] = verts[order[2]].v[1] * frame->scale[1] + frame->translate[1];
-			point[2] = verts[order[2]].v[2] * frame->scale[2] + frame->translate[2];
-*/
-
-			Com_Memcpy( point, s_lerped[order[2]], sizeof( point )  );
-
-			point[0] -= shadevector[0]*(point[2]+lheight);
-			point[1] -= shadevector[1]*(point[2]+lheight);
-			point[2] = height;
-//			height -= 0.001;
-			qglVertex3fv (point);
-
-			order += 3;
-
-//			verts++;
-
-		} while (--count);
-
-		qglEnd ();
-	}	
-}
-
-#endif
-
-/*
-** R_CullAliasModel
-*/
-static qboolean R_CullAliasModel( vec3_t bbox[8], trRefEntity_t *e )
-{
-	dmd2_t* paliashdr = (dmd2_t*)tr.currentModel->q2_extradata;
-
-	if ((e->e.frame >= paliashdr->num_frames) || (e->e.frame < 0))
-	{
-		GLog.Write("R_CullAliasModel %s: no such frame %d\n", 
-			tr.currentModel->name, e->e.frame);
-		e->e.frame = 0;
-	}
-	if ((e->e.oldframe >= paliashdr->num_frames) || (e->e.oldframe < 0))
-	{
-		GLog.Write("R_CullAliasModel %s: no such oldframe %d\n", 
-			tr.currentModel->name, e->e.oldframe);
-		e->e.oldframe = 0;
-	}
-
-	dmd2_frame_t* pframe = (dmd2_frame_t*)((byte*)paliashdr + 
-		paliashdr->ofs_frames + e->e.frame * paliashdr->framesize);
-
-	dmd2_frame_t* poldframe = (dmd2_frame_t*)((byte*)paliashdr + 
-		paliashdr->ofs_frames + e->e.oldframe * paliashdr->framesize);
-
-	/*
-	** compute axially aligned mins and maxs
-	*/
-	vec3_t bounds[2];
-	if (pframe == poldframe)
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			bounds[0][i] = pframe->translate[i];
-			bounds[1][i] = bounds[0][i] + pframe->scale[i] * 255;
-		}
-	}
-	else
-	{
-		for (int i = 0; i < 3; i++)
-		{
-			vec3_t thismins, thismaxs;
-			thismins[i] = pframe->translate[i];
-			thismaxs[i] = thismins[i] + pframe->scale[i] * 255;
-
-			vec3_t oldmins, oldmaxs;
-			oldmins[i]  = poldframe->translate[i];
-			oldmaxs[i]  = oldmins[i] + poldframe->scale[i] * 255;
-
-			if (thismins[i] < oldmins[i])
-			{
-				bounds[0][i] = thismins[i];
-			}
-			else
-			{
-				bounds[0][i] = oldmins[i];
-			}
-
-			if (thismaxs[i] > oldmaxs[i])
-			{
-				bounds[1][i] = thismaxs[i];
-			}
-			else
-			{
-				bounds[1][i] = oldmaxs[i];
-			}
-		}
-	}
-
-	return R_CullLocalBox(bounds) == CULL_OUT;
-}
-
 /*
 =================
 R_DrawAliasModel
@@ -437,7 +46,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	if ( !( e->e.renderfx & RF_FIRST_PERSON) )
 	{
-		if ( R_CullAliasModel( bbox, e ) )
+		if ( R_CullMd2Model( bbox, e ) )
 			return;
 	}
 
@@ -455,16 +64,16 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
 	{
 		for (i = 0; i < 3; i++)
-			shadelight[i] = tr.currentEntity->e.shaderRGBA[i] / 255.0;
+			md2_shadelight[i] = tr.currentEntity->e.shaderRGBA[i] / 255.0;
 	}
 	else if (tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT)
 	{
 		for (i=0 ; i<3 ; i++)
-			shadelight[i] = e->e.radius;
+			md2_shadelight[i] = e->e.radius;
 	}
 	else
 	{
-		R_LightPoint (tr.currentEntity->e.origin, shadelight);
+		R_LightPoint (tr.currentEntity->e.origin, md2_shadelight);
 
 		// player lighting hack for communication back to server
 		// big hack!
@@ -472,19 +81,19 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		{
 			// pick the greatest component, which should be the same
 			// as the mono value returned by software
-			if (shadelight[0] > shadelight[1])
+			if (md2_shadelight[0] > md2_shadelight[1])
 			{
-				if (shadelight[0] > shadelight[2])
-					r_lightlevel->value = 150*shadelight[0];
+				if (md2_shadelight[0] > md2_shadelight[2])
+					r_lightlevel->value = 150*md2_shadelight[0];
 				else
-					r_lightlevel->value = 150*shadelight[2];
+					r_lightlevel->value = 150*md2_shadelight[2];
 			}
 			else
 			{
-				if (shadelight[1] > shadelight[2])
-					r_lightlevel->value = 150*shadelight[1];
+				if (md2_shadelight[1] > md2_shadelight[2])
+					r_lightlevel->value = 150*md2_shadelight[1];
 				else
-					r_lightlevel->value = 150*shadelight[2];
+					r_lightlevel->value = 150*md2_shadelight[2];
 			}
 
 		}
@@ -493,13 +102,13 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	if ( tr.currentEntity->e.renderfx & RF_MINLIGHT )
 	{
 		for (i=0 ; i<3 ; i++)
-			if (shadelight[i] > 0.1)
+			if (md2_shadelight[i] > 0.1)
 				break;
 		if (i == 3)
 		{
-			shadelight[0] = 0.1;
-			shadelight[1] = 0.1;
-			shadelight[2] = 0.1;
+			md2_shadelight[0] = 0.1;
+			md2_shadelight[1] = 0.1;
+			md2_shadelight[2] = 0.1;
 		}
 	}
 
@@ -512,10 +121,10 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		scale = 0.1 * sin(tr.refdef.floatTime * 7);
 		for (i=0 ; i<3 ; i++)
 		{
-			min = shadelight[i] * 0.8;
-			shadelight[i] += scale;
-			if (shadelight[i] < min)
-				shadelight[i] = min;
+			min = md2_shadelight[i] * 0.8;
+			md2_shadelight[i] += scale;
+			if (md2_shadelight[i] < min)
+				md2_shadelight[i] = min;
 		}
 	}
 
@@ -523,9 +132,9 @@ void R_DrawAliasModel (trRefEntity_t *e)
 // PGM	ir goggles color override
 	if (tr.refdef.rdflags & RDF_IRGOGGLES && tr.currentEntity->e.renderfx & RF_IR_VISIBLE)
 	{
-		shadelight[0] = 1.0;
-		shadelight[1] = 0.0;
-		shadelight[2] = 0.0;
+		md2_shadelight[0] = 1.0;
+		md2_shadelight[1] = 0.0;
+		md2_shadelight[2] = 0.0;
 	}
 // PGM	
 // =================
@@ -618,7 +227,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	if ( !r_lerpmodels->value )
 		tr.currentEntity->e.backlerp = 0;
-	GL_DrawAliasFrameLerp (paliashdr, tr.currentEntity->e.backlerp);
+	GL_DrawMd2FrameLerp (paliashdr, tr.currentEntity->e.backlerp);
 
 	GL_TexEnv( GL_REPLACE );
 	qglShadeModel (GL_FLAT);
@@ -649,7 +258,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		qglDisable (GL_TEXTURE_2D);
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		qglColor4f (0,0,0,0.5);
-		GL_DrawAliasShadow (paliashdr, tr.currentEntity->e.frame );
+		GL_DrawMd2Shadow (paliashdr, tr.currentEntity->e.frame );
 		qglEnable (GL_TEXTURE_2D);
 		GL_State(GLS_DEFAULT);
 		qglPopMatrix ();

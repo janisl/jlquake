@@ -593,6 +593,7 @@ extern QCvar*	r_primitives;			// "0" = based on compiled vertex array existance
 										// "1" = glDrawElemet tristrips
 										// "2" = glDrawElements triangles
 										// "-1" = no drawing
+extern QCvar*	r_vertex_arrays;
 
 extern trGlobals_t	tr;
 
@@ -612,6 +613,8 @@ extern int			r_firstScenePoly;
 extern int			r_numpolyverts;
 
 extern float		s_flipMatrix[16];
+
+extern vec3_t		lightspot;
 
 /*
 ====================================================================

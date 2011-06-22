@@ -57,8 +57,6 @@ QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
 QCvar	*gl_nosubimage;
 
-QCvar	*gl_vertex_arrays;
-
 QCvar	*gl_particle_min_size;
 QCvar	*gl_particle_max_size;
 QCvar	*gl_particle_size;
@@ -643,8 +641,6 @@ void R_Register( void )
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 	gl_lockpvs = Cvar_Get( "gl_lockpvs", "0", 0 );
-
-	gl_vertex_arrays = Cvar_Get( "gl_vertex_arrays", "0", CVAR_ARCHIVE );
 
 	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
 

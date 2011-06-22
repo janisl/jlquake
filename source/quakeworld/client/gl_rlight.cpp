@@ -135,7 +135,6 @@ LIGHT SAMPLING
 */
 
 cplane_t		*lightplane;
-vec3_t			lightspot;
 
 int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
 {

@@ -832,6 +832,9 @@ srfGridMesh_t* R_SubdividePatchToGrid(int Width, int Height,
 srfGridMesh_t* R_GridInsertColumn(srfGridMesh_t* Grid, int Column, int Row, vec3_t Point, float LodError);
 srfGridMesh_t* R_GridInsertRow(srfGridMesh_t* Grid, int Row, int Column, vec3_t Point, float LodError);
 void R_FreeSurfaceGridMesh(srfGridMesh_t* Grid);
+void GL_DrawMd2FrameLerp (dmd2_t *paliashdr, float backlerp);
+void GL_DrawMd2Shadow(dmd2_t* paliashdr, int posenum);
+bool R_CullMd2Model(vec3_t bbox[8], trRefEntity_t* e);
 
 extern model_t*	loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];
@@ -839,3 +842,7 @@ extern byte		h2_player_8bit_texels[6][620 * 245];
 extern mbrush29_texture_t	*r_notexture_mip;
 extern world_t		s_worldData;
 extern float			r_avertexnormal_dots[SHADEDOT_QUANT][256];
+extern vec3_t	shadevector;
+extern float*			shadedots;
+extern float	md2_shadelight[3];
+extern vec4_t	s_lerped[MAX_MD2_VERTS];

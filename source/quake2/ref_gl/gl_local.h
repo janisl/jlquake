@@ -71,8 +71,6 @@ extern	QCvar	*r_lerpmodels;
 
 extern	QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
-extern QCvar	*gl_vertex_arrays;
-
 extern QCvar	*gl_particle_min_size;
 extern QCvar	*gl_particle_max_size;
 extern QCvar	*gl_particle_size;

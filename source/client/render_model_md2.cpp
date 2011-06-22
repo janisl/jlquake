@@ -22,6 +22,8 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define POWERSUIT_SCALE			4.0F
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -33,6 +35,9 @@
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
+
+float	md2_shadelight[3];
+vec4_t	s_lerped[MAX_MD2_VERTS];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -176,4 +181,376 @@ void Mod_LoadMd2Model(model_t* mod, const void* buffer)
 void Mod_FreeMd2Model(model_t* mod)
 {
 	Mem_Free(mod->q2_extradata);
+}
+
+//==========================================================================
+//
+//	GL_LerpVerts
+//
+//==========================================================================
+
+static void GL_LerpVerts(int nverts, dmd2_trivertx_t* v, dmd2_trivertx_t* ov, dmd2_trivertx_t* verts,
+	float* lerp, float move[3], float frontv[3], float backv[3])
+{
+	if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
+	{
+		for (int i = 0; i < nverts; i++, v++, ov++, lerp += 4)
+		{
+			float* normal = bytedirs[verts[i].lightnormalindex];
+
+			lerp[0] = move[0] + ov->v[0] * backv[0] + v->v[0] * frontv[0] + normal[0] * POWERSUIT_SCALE;
+			lerp[1] = move[1] + ov->v[1] * backv[1] + v->v[1] * frontv[1] + normal[1] * POWERSUIT_SCALE;
+			lerp[2] = move[2] + ov->v[2] * backv[2] + v->v[2] * frontv[2] + normal[2] * POWERSUIT_SCALE; 
+		}
+	}
+	else
+	{
+		for (int i = 0; i < nverts; i++, v++, ov++, lerp += 4)
+		{
+			lerp[0] = move[0] + ov->v[0] * backv[0] + v->v[0] * frontv[0];
+			lerp[1] = move[1] + ov->v[1] * backv[1] + v->v[1] * frontv[1];
+			lerp[2] = move[2] + ov->v[2] * backv[2] + v->v[2] * frontv[2];
+		}
+	}
+}
+
+//==========================================================================
+//
+//	GL_DrawMd2FrameLerp
+//
+//	interpolates between two frames and origins
+//	FIXME: batch lerp all vertexes
+//
+//==========================================================================
+
+void GL_DrawMd2FrameLerp(dmd2_t* paliashdr, float backlerp)
+{
+	dmd2_frame_t* frame = (dmd2_frame_t*)((byte*)paliashdr + paliashdr->ofs_frames +
+		tr.currentEntity->e.frame * paliashdr->framesize);
+	dmd2_trivertx_t* verts = frame->verts;
+	dmd2_trivertx_t* v = verts;
+
+	dmd2_frame_t* oldframe = (dmd2_frame_t*)((byte*)paliashdr + paliashdr->ofs_frames +
+		tr.currentEntity->e.oldframe * paliashdr->framesize);
+	dmd2_trivertx_t* ov = oldframe->verts;
+
+	int* order = (int*)((byte*)paliashdr + paliashdr->ofs_glcmds);
+
+	float alpha;
+	if (tr.currentEntity->e.renderfx & RF_TRANSLUCENT)
+	{
+		alpha = tr.currentEntity->e.shaderRGBA[3] / 255.0;
+	}
+	else
+	{
+		alpha = 1.0;
+	}
+
+	if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
+	{
+		qglDisable(GL_TEXTURE_2D);
+	}
+
+	float frontlerp = 1.0 - backlerp;
+
+	// move should be the delta back to the previous frame * backlerp
+	vec3_t delta;
+	VectorSubtract(tr.currentEntity->e.oldorigin, tr.currentEntity->e.origin, delta);
+
+	vec3_t move;
+	move[0] = DotProduct(delta, tr.currentEntity->e.axis[0]);	// forward
+	move[1] = DotProduct(delta, tr.currentEntity->e.axis[1]);	// left
+	move[2] = DotProduct(delta, tr.currentEntity->e.axis[2]);	// up
+
+	VectorAdd(move, oldframe->translate, move);
+
+	for (int i = 0; i < 3; i++)
+	{
+		move[i] = backlerp * move[i] + frontlerp * frame->translate[i];
+	}
+
+	vec3_t frontv, backv;
+	for (int i = 0; i < 3; i++)
+	{
+		frontv[i] = frontlerp * frame->scale[i];
+		backv[i] = backlerp * oldframe->scale[i];
+	}
+
+	float* lerp = s_lerped[0];
+
+	GL_LerpVerts(paliashdr->num_xyz, v, ov, verts, lerp, move, frontv, backv);
+
+	if (r_vertex_arrays->value)
+	{
+		float colorArray[MAX_MD2_VERTS * 4];
+
+		qglEnableClientState(GL_VERTEX_ARRAY);
+		qglVertexPointer(3, GL_FLOAT, 16, s_lerped);	// padded for SIMD
+
+		if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
+		{
+			qglColor4f(md2_shadelight[0], md2_shadelight[1], md2_shadelight[2], alpha);
+		}
+		else
+		{
+			qglEnableClientState(GL_COLOR_ARRAY);
+			qglColorPointer(3, GL_FLOAT, 0, colorArray);
+
+			//
+			// pre light everything
+			//
+			for (int i = 0; i < paliashdr->num_xyz; i++)
+			{
+				float l = shadedots[verts[i].lightnormalindex];
+
+				colorArray[i * 3 + 0] = l * md2_shadelight[0];
+				colorArray[i * 3 + 1] = l * md2_shadelight[1];
+				colorArray[i * 3 + 2] = l * md2_shadelight[2];
+			}
+		}
+
+		if (qglLockArraysEXT)
+		{
+			qglLockArraysEXT(0, paliashdr->num_xyz);
+		}
+
+		while (1)
+		{
+			// get the vertex count and primitive type
+			int count = *order++;
+			if (!count)
+			{
+				break;		// done
+			}
+			if (count < 0)
+			{
+				count = -count;
+				qglBegin(GL_TRIANGLE_FAN);
+			}
+			else
+			{
+				qglBegin(GL_TRIANGLE_STRIP);
+			}
+
+			if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
+			{
+				do
+				{
+					int index_xyz = order[2];
+					order += 3;
+
+					qglVertex3fv(s_lerped[index_xyz]);
+				}
+				while (--count);
+			}
+			else
+			{
+				do
+				{
+					// texture coordinates come from the draw list
+					qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+					int index_xyz = order[2];
+
+					order += 3;
+
+					// normals and vertexes come from the frame list
+					qglArrayElement(index_xyz);
+				}
+				while (--count);
+			}
+			qglEnd();
+		}
+
+		if (qglUnlockArraysEXT)
+		{
+			qglUnlockArraysEXT();
+		}
+	}
+	else
+	{
+		while (1)
+		{
+			// get the vertex count and primitive type
+			int count = *order++;
+			if (!count)
+			{
+				break;		// done
+			}
+			if (count < 0)
+			{
+				count = -count;
+				qglBegin(GL_TRIANGLE_FAN);
+			}
+			else
+			{
+				qglBegin(GL_TRIANGLE_STRIP);
+			}
+
+			if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
+			{
+				do
+				{
+					int index_xyz = order[2];
+					order += 3;
+
+					qglColor4f(md2_shadelight[0], md2_shadelight[1], md2_shadelight[2], alpha);
+					qglVertex3fv(s_lerped[index_xyz]);
+				}
+				while (--count);
+			}
+			else
+			{
+				do
+				{
+					// texture coordinates come from the draw list
+					qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+					int index_xyz = order[2];
+					order += 3;
+
+					// normals and vertexes come from the frame list
+					float l = shadedots[verts[index_xyz].lightnormalindex];
+					
+					qglColor4f(l * md2_shadelight[0], l * md2_shadelight[1], l * md2_shadelight[2], alpha);
+					qglVertex3fv(s_lerped[index_xyz]);
+				}
+				while (--count);
+			}
+			qglEnd();
+		}
+	}
+
+	if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
+	{
+		qglEnable(GL_TEXTURE_2D);
+	}
+}
+
+//==========================================================================
+//
+//	GL_DrawMd2Shadow
+//
+//==========================================================================
+
+void GL_DrawMd2Shadow(dmd2_t* paliashdr, int posenum)
+{
+	float lheight = tr.currentEntity->e.origin[2] - lightspot[2];
+
+	dmd2_frame_t* frame = (dmd2_frame_t*)((byte*)paliashdr + paliashdr->ofs_frames +
+		tr.currentEntity->e.frame * paliashdr->framesize);
+	dmd2_trivertx_t* verts = frame->verts;
+
+	int* order = (int*)((byte*)paliashdr + paliashdr->ofs_glcmds);
+
+	float height = -lheight + 1.0;
+
+	while (1)
+	{
+		// get the vertex count and primitive type
+		int count = *order++;
+		if (!count)
+		{
+			break;		// done
+		}
+		if (count < 0)
+		{
+			count = -count;
+			qglBegin(GL_TRIANGLE_FAN);
+		}
+		else
+		{
+			qglBegin(GL_TRIANGLE_STRIP);
+		}
+
+		do
+		{
+			vec3_t point;
+			Com_Memcpy(point, s_lerped[order[2]], sizeof(point));
+
+			point[0] -= shadevector[0] * (point[2] + lheight);
+			point[1] -= shadevector[1] * (point[2] + lheight);
+			point[2] = height;
+			qglVertex3fv(point);
+
+			order += 3;
+		}
+		while (--count);
+
+		qglEnd();
+	}	
+}
+
+//==========================================================================
+//
+//	R_CullMd2Model
+//
+//==========================================================================
+
+bool R_CullMd2Model(vec3_t bbox[8], trRefEntity_t* e)
+{
+	dmd2_t* paliashdr = (dmd2_t*)tr.currentModel->q2_extradata;
+
+	if ((e->e.frame >= paliashdr->num_frames) || (e->e.frame < 0))
+	{
+		GLog.Write("R_CullMd2Model %s: no such frame %d\n", 
+			tr.currentModel->name, e->e.frame);
+		e->e.frame = 0;
+	}
+	if ((e->e.oldframe >= paliashdr->num_frames) || (e->e.oldframe < 0))
+	{
+		GLog.Write("R_CullMd2Model %s: no such oldframe %d\n", 
+			tr.currentModel->name, e->e.oldframe);
+		e->e.oldframe = 0;
+	}
+
+	dmd2_frame_t* pframe = (dmd2_frame_t*)((byte*)paliashdr + 
+		paliashdr->ofs_frames + e->e.frame * paliashdr->framesize);
+
+	dmd2_frame_t* poldframe = (dmd2_frame_t*)((byte*)paliashdr + 
+		paliashdr->ofs_frames + e->e.oldframe * paliashdr->framesize);
+
+	/*
+	** compute axially aligned mins and maxs
+	*/
+	vec3_t bounds[2];
+	if (pframe == poldframe)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			bounds[0][i] = pframe->translate[i];
+			bounds[1][i] = bounds[0][i] + pframe->scale[i] * 255;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			vec3_t thismins, thismaxs;
+			thismins[i] = pframe->translate[i];
+			thismaxs[i] = thismins[i] + pframe->scale[i] * 255;
+
+			vec3_t oldmins, oldmaxs;
+			oldmins[i]  = poldframe->translate[i];
+			oldmaxs[i]  = oldmins[i] + poldframe->scale[i] * 255;
+
+			if (thismins[i] < oldmins[i])
+			{
+				bounds[0][i] = thismins[i];
+			}
+			else
+			{
+				bounds[0][i] = oldmins[i];
+			}
+
+			if (thismaxs[i] > oldmaxs[i])
+			{
+				bounds[1][i] = thismaxs[i];
+			}
+			else
+			{
+				bounds[1][i] = oldmaxs[i];
+			}
+		}
+	}
+
+	return R_CullLocalBox(bounds) == CULL_OUT;
 }
