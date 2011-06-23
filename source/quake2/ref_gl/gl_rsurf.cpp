@@ -1340,7 +1340,7 @@ GL_BeginBuildingLightmaps
 */
 void GL_BeginBuildingLightmaps (model_t *m)
 {
-	static lightstyle_t	lightstyles[MAX_LIGHTSTYLES];
+	static lightstyle_t	lightstyles[MAX_LIGHTSTYLES_Q2];
 	int				i;
 	unsigned		dummy[128*128];
 
@@ -1352,7 +1352,7 @@ void GL_BeginBuildingLightmaps (model_t *m)
 	** setup the base lightstyles so the lightmaps won't have to be regenerated
 	** the first time they're seen
 	*/
-	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
+	for (i=0 ; i<MAX_LIGHTSTYLES_Q2 ; i++)
 	{
 		lightstyles[i].rgb[0] = 1;
 		lightstyles[i].rgb[1] = 1;

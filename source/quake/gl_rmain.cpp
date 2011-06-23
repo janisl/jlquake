@@ -274,7 +274,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	// get lighting information
 	//
 
-	ambientlight = shadelight = R_LightPoint (tr.currentEntity->e.origin);
+	ambientlight = shadelight = R_LightPointQ1 (tr.currentEntity->e.origin);
 
 	// allways give the gun some light
 	if ((e->e.renderfx & RF_MINLIGHT) && ambientlight < 24)

@@ -503,7 +503,7 @@ void CL_ParseConfigString (void)
 
 	// do something apropriate 
 
-	if (i >= CS_LIGHTS && i < CS_LIGHTS+MAX_LIGHTSTYLES)
+	if (i >= CS_LIGHTS && i < CS_LIGHTS+MAX_LIGHTSTYLES_Q2)
 		CL_SetLightstyle (i - CS_LIGHTS);
 	else if (i == CS_CDTRACK)
 	{

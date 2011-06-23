@@ -41,7 +41,7 @@ typedef struct
 	float	map[MAX_QPATH];
 } clightstyle_t;
 
-clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
+clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q2];
 int			lastofs;
 
 /*
@@ -71,7 +71,7 @@ void CL_RunLightStyles (void)
 		return;
 	lastofs = ofs;
 
-	for (i=0,ls=cl_lightstyle ; i<MAX_LIGHTSTYLES ; i++, ls++)
+	for (i=0,ls=cl_lightstyle ; i<MAX_LIGHTSTYLES_Q2 ; i++, ls++)
 	{
 		if (!ls->length)
 		{
@@ -113,8 +113,8 @@ void CL_AddLightStyles (void)
 	int		i;
 	clightstyle_t	*ls;
 
-	for (i=0,ls=cl_lightstyle ; i<MAX_LIGHTSTYLES ; i++, ls++)
-		R_AddLightToSceneStyle (i, ls->value[0], ls->value[1], ls->value[2]);
+	for (i=0,ls=cl_lightstyle ; i<MAX_LIGHTSTYLES_Q2 ; i++, ls++)
+		R_AddLightStyleToScene (i, ls->value[0], ls->value[1], ls->value[2]);
 }
 
 /*

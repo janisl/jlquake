@@ -43,8 +43,6 @@ QCvar		*cl_stats;
 int			r_numparticles;
 particle_t	r_particles[MAX_PARTICLES];
 
-lightstyle_t	r_lightstyles[MAX_LIGHTSTYLES];
-
 char cl_weaponmodels[MAX_CLIENTWEAPONMODELS][MAX_QPATH];
 int num_cl_weaponmodels;
 
@@ -78,26 +76,6 @@ void V_AddParticle (vec3_t org, int color, float alpha)
 	VectorCopy (org, p->origin);
 	p->color = color;
 	p->alpha = alpha;
-}
-
-/*
-=====================
-R_AddLightToSceneStyle
-
-=====================
-*/
-void R_AddLightToSceneStyle (int style, float r, float g, float b)
-{
-	lightstyle_t	*ls;
-
-	if (style < 0 || style > MAX_LIGHTSTYLES)
-		Com_Error (ERR_DROP, "Bad light style %i", style);
-	ls = &r_lightstyles[style];
-
-	ls->white = r+g+b;
-	ls->rgb[0] = r;
-	ls->rgb[1] = g;
-	ls->rgb[2] = b;
 }
 
 /*

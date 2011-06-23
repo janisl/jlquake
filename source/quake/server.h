@@ -49,7 +49,7 @@ typedef struct
 	const char*	model_precache[MAX_MODELS];	// NULL terminated
 	clipHandle_t	models[MAX_MODELS];
 	const char*	sound_precache[MAX_SOUNDS];	// NULL terminated
-	const char*	lightstyles[MAX_LIGHTSTYLES];
+	const char*	lightstyles[MAX_LIGHTSTYLES_Q1];
 	int			num_edicts;
 	int			max_edicts;
 	edict_t		*edicts;			// can NOT be array indexed, because

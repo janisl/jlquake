@@ -313,7 +313,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	}
 	VectorCopy(lorg, adjust_origin);
 	adjust_origin[2] += (clmodel->q1_mins[2] + clmodel->q1_maxs[2]) / 2;
-	ambientlight = shadelight = R_LightPoint (adjust_origin);
+	ambientlight = shadelight = R_LightPointQ1 (adjust_origin);
 
 	// allways give the gun some light
 	if ((e->e.renderfx & RF_MINLIGHT) && ambientlight < 24)

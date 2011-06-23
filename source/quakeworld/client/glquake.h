@@ -117,7 +117,7 @@ void GL_Set2D (void);
 //
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_AnimateLight (void);
-int R_LightPoint (vec3_t p);
+int R_LightPointQ1 (vec3_t p);
 void R_PushDlights (void);
 
 //

@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void R_Clear (void);
 
-extern lightstyle_t		r_lightstyles[MAX_LIGHTSTYLES];
 extern int				r_numparticles;
 extern particle_t		r_particles[MAX_PARTICLES];
 
@@ -480,7 +479,6 @@ void R_RenderView (refdef_t *fd)
 
 	R_CommonRenderScene(fd);
 
-	tr.refdef.lightstyles = r_lightstyles;
 	tr.refdef.num_particles = r_numparticles;
 	tr.refdef.particles = r_particles;
 	r_newrefdef = *fd;

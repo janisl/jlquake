@@ -46,7 +46,7 @@ client_state_t	cl;
 // FIXME: put these on hunk?
 entity_t		cl_entities[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
-clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
+clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
 cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 /*

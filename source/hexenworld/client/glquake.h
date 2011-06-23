@@ -101,7 +101,7 @@ void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void GL_BuildLightmaps (void);
-int R_LightPoint (vec3_t p);
+int R_LightPointQ1 (vec3_t p);
 void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);
 void V_CalcBlend (void);

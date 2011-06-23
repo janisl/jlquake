@@ -1184,8 +1184,8 @@ void CL_ParseServerMessage (void)
 			
 		case svc_lightstyle:
 			i = net_message.ReadByte ();
-			if (i >= MAX_LIGHTSTYLES)
-				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");
+			if (i >= MAX_LIGHTSTYLES_Q1)
+				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES_Q1");
 			QStr::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
 			cl_lightstyle[i].length = QStr::Length(cl_lightstyle[i].map);
 			break;

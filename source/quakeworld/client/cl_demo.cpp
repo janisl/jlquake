@@ -616,7 +616,7 @@ void CL_Record_f (void)
 	}
 	
 // send all current light styles
-	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
+	for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
 	{
 		buf.WriteByte(svc_lightstyle);
 		buf.WriteByte((char)i);

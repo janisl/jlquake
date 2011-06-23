@@ -49,7 +49,7 @@
 // per-level limits
 //
 #define	MAX_EDICTS		600			// FIXME: ouch! ouch! ouch!
-#define	MAX_LIGHTSTYLES	64
+#define	MAX_LIGHTSTYLES_Q1	64
 
 #define	MAX_MODELS		512			// Sent over the net as a word
 

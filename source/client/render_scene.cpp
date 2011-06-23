@@ -267,6 +267,25 @@ void R_AddPolyToScene(qhandle_t hShader, int numVerts, const polyVert_t* verts, 
 
 //==========================================================================
 //
+//	R_AddLightStyleToScene
+//
+//==========================================================================
+
+void R_AddLightStyleToScene(int style, float r, float g, float b)
+{
+	if (style < 0 || style > MAX_LIGHTSTYLES)
+	{
+		throw QDropException(va("Bad light style %i", style));
+	}
+	lightstyle_t* ls = &backEndData[tr.smpFrame]->lightstyles[style];
+	ls->white = r + g + b;
+	ls->rgb[0] = r;
+	ls->rgb[1] = g;
+	ls->rgb[2] = b;
+}
+
+//==========================================================================
+//
 //	R_CommonRenderScene
 //
 //==========================================================================
@@ -326,6 +345,8 @@ void R_CommonRenderScene(const refdef_t* fd)
 
 	tr.refdef.numPolys = r_numpolys - r_firstScenePoly;
 	tr.refdef.polys = &backEndData[tr.smpFrame]->polys[r_firstScenePoly];
+
+	tr.refdef.lightstyles = backEndData[tr.smpFrame]->lightstyles;
 
 	// turn off dynamic lighting globally by clearing all the
 	// dlights if it needs to be disabled or if vertex lighting is enabled

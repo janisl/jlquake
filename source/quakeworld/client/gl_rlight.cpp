@@ -38,7 +38,7 @@ void R_AnimateLight (void)
 // light animations
 // 'm' is normal light, 'a' is no light, 'z' is double bright
 	i = (int)(cl.time*10);
-	for (j=0 ; j<MAX_LIGHTSTYLES ; j++)
+	for (j=0 ; j<MAX_LIGHTSTYLES_Q1 ; j++)
 	{
 		if (!cl_lightstyle[j].length)
 		{
@@ -134,7 +134,7 @@ LIGHT SAMPLING
 =============================================================================
 */
 
-int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
+int RecursiveLightPointQ1 (mbrush29_node_t *node, vec3_t start, vec3_t end)
 {
 	int			r;
 	float		front, back, frac;
@@ -161,7 +161,7 @@ int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
 	side = front < 0;
 	
 	if ( (back < 0) == side)
-		return RecursiveLightPoint (node->children[side], start, end);
+		return RecursiveLightPointQ1 (node->children[side], start, end);
 	
 	frac = front / (front-back);
 	mid[0] = start[0] + (end[0] - start[0])*frac;
@@ -169,7 +169,7 @@ int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
 	mid[2] = start[2] + (end[2] - start[2])*frac;
 	
 // go down front side	
-	r = RecursiveLightPoint (node->children[side], start, mid);
+	r = RecursiveLightPointQ1 (node->children[side], start, mid);
 	if (r >= 0)
 		return r;		// hit something
 		
@@ -229,10 +229,10 @@ int RecursiveLightPoint (mbrush29_node_t *node, vec3_t start, vec3_t end)
 	}
 
 // go down back side
-	return RecursiveLightPoint (node->children[!side], mid, end);
+	return RecursiveLightPointQ1 (node->children[!side], mid, end);
 }
 
-int R_LightPoint (vec3_t p)
+int R_LightPointQ1 (vec3_t p)
 {
 	vec3_t		end;
 	int			r;
@@ -244,7 +244,7 @@ int R_LightPoint (vec3_t p)
 	end[1] = p[1];
 	end[2] = p[2] - 2048;
 	
-	r = RecursiveLightPoint (tr.worldModel->brush29_nodes, p, end);
+	r = RecursiveLightPointQ1 (tr.worldModel->brush29_nodes, p, end);
 	
 	if (r == -1)
 		r = 0;

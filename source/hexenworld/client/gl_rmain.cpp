@@ -277,7 +277,7 @@ float R_CalcEntityLight(refEntity_t* e)
 	VectorCopy(lorg, adjust_origin);
 	model_t* clmodel = R_GetModelByHandle(e->hModel);
 	adjust_origin[2] += (clmodel->q1_mins[2] + clmodel->q1_maxs[2]) / 2;
-	float light = R_LightPoint(adjust_origin);
+	float light = R_LightPointQ1(adjust_origin);
 
 	// allways give the gun some light
 	if ((e->renderfx & RF_MINLIGHT) && light < 24)

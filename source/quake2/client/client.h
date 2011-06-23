@@ -501,7 +501,6 @@ void V_Init (void);
 void V_RenderView( float stereo_separation );
 void V_ClearScene (void);
 void V_AddParticle (vec3_t org, int color, float alpha);
-void R_AddLightToSceneStyle (int style, float r, float g, float b);
 
 //
 // cl_tent.c

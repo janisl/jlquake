@@ -340,7 +340,7 @@ void SV_Spawn_f (void)
 		SV_FullClientUpdateToClient (client, host_client);
 	
 // send all current light styles
-	for (i=0 ; i<MAX_LIGHTSTYLES ; i++)
+	for (i=0 ; i<MAX_LIGHTSTYLES_Q1 ; i++)
 	{
 		ClientReliableWrite_Begin (host_client, svc_lightstyle, 
 			3 + (sv.lightstyles[i] ? QStr::Length(sv.lightstyles[i]) : 1));
