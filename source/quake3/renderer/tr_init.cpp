@@ -76,9 +76,6 @@ QCvar	*r_debugSurface;
 
 QCvar	*r_showImages;
 
-QCvar	*r_ambientScale;
-QCvar	*r_directedScale;
-QCvar	*r_debugLight;
 QCvar	*r_debugSort;
 
 /*
@@ -599,15 +596,11 @@ void R_Register( void )
 	r_railCoreWidth = Cvar_Get( "r_railCoreWidth", "6", CVAR_ARCHIVE );
 	r_railSegmentLength = Cvar_Get( "r_railSegmentLength", "32", CVAR_ARCHIVE );
 
-	r_ambientScale = Cvar_Get( "r_ambientScale", "0.6", CVAR_CHEAT );
-	r_directedScale = Cvar_Get( "r_directedScale", "1", CVAR_CHEAT );
-
 	//
 	// temporary variables that can change at any time
 	//
 	r_showImages = Cvar_Get( "r_showImages", "0", CVAR_TEMP );
 
-	r_debugLight = Cvar_Get( "r_debuglight", "0", CVAR_TEMP );
 	r_debugSort = Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
 
 	r_nocurves = Cvar_Get ("r_nocurves", "0", CVAR_CHEAT );

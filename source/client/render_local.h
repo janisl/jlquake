@@ -528,6 +528,8 @@ void R_SkinList_f();
 
 int R_LightPointQ1(vec3_t p);
 void R_LightPointQ2(vec3_t p, vec3_t color);
+void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent);
+int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
@@ -605,6 +607,9 @@ extern QCvar*	r_lerpmodels;
 extern QCvar*	r_shadows;				// controls shadows: 0 = none, 1 = blur, 2 = stencil, 3 = black planar projection
 
 extern QCvar*	r_modulate;
+extern QCvar*	r_ambientScale;
+extern QCvar*	r_directedScale;
+extern QCvar*	r_debugLight;
 
 extern QCvar*	r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 

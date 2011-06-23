@@ -114,6 +114,9 @@ QCvar*		r_lerpmodels;
 QCvar*		r_shadows;
 
 QCvar*		r_modulate;
+QCvar*		r_ambientScale;
+QCvar*		r_directedScale;
+QCvar*		r_debugLight;
 
 QCvar*		r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
@@ -307,6 +310,9 @@ void R_SharedRegister()
 	r_nocull = Cvar_Get("r_nocull", "0", CVAR_CHEAT);
 	r_lightlevel = Cvar_Get("r_lightlevel", "0", 0);
 	r_lerpmodels = Cvar_Get("r_lerpmodels", "1", 0);
+	r_ambientScale = Cvar_Get("r_ambientScale", "0.6", CVAR_CHEAT);
+	r_directedScale = Cvar_Get("r_directedScale", "1", CVAR_CHEAT);
+	r_debugLight = Cvar_Get("r_debuglight", "0", CVAR_TEMP);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
