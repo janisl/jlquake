@@ -43,7 +43,6 @@ QCvar*	r_entdistance;
 QCvar*	gl_clear;
 QCvar*	gl_cull;
 QCvar*	gl_texsort;
-QCvar*	gl_affinemodels;
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
 QCvar*	gl_keeptjunctions;
@@ -419,9 +418,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	qglShadeModel (GL_SMOOTH);
 	GL_TexEnv(GL_MODULATE);
 
-	if (gl_affinemodels->value)
-		qglHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-
 	R_SetupAliasFrame (tr.currentEntity->e.frame, paliashdr);
 
 	GL_State(GLS_DEFAULT);
@@ -435,8 +431,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	GL_TexEnv(GL_REPLACE);
 
 	qglShadeModel (GL_FLAT);
-	if (gl_affinemodels->value)
-		qglHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 	qglPopMatrix ();
 
