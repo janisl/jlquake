@@ -11,8 +11,6 @@ float RTint[256],GTint[256],BTint[256];
 
 byte globalcolormap[VID_GRADES*256];
 
-float		gldepthmin, gldepthmax;
-
 qboolean	vid_initialized = false;
 
 /*

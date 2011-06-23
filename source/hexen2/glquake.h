@@ -19,8 +19,6 @@
 
 void GL_EndRendering (void);
 
-extern	float	gldepthmin, gldepthmax;
-
 #define MAX_EXTRA_TEXTURES 156   // 255-100+1
 extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 

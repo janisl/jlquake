@@ -326,7 +326,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	// hack the depth range to prevent view model from poking into walls
 	if (e->e.renderfx & RF_DEPTHHACK)
 	{
-		qglDepthRange (gldepthmin, gldepthmin + 0.3*(gldepthmax-gldepthmin));
+		qglDepthRange(0, 0.3);
 	}
 
 	//
@@ -444,7 +444,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 
 	if (e->e.renderfx & RF_DEPTHHACK)
 	{
-		qglDepthRange (gldepthmin, gldepthmax);
+		qglDepthRange(0, 1);
 	}
 
 	if (r_shadows->value)
@@ -808,10 +808,8 @@ void R_Clear (void)
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	else
 		qglClear (GL_DEPTH_BUFFER_BIT);
-	gldepthmin = 0;
-	gldepthmax = 1;
 
-	qglDepthRange (gldepthmin, gldepthmax);
+	qglDepthRange(0, 1);
 }
 
 /*
