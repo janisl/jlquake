@@ -49,7 +49,6 @@ QCvar*	r_wholeframe;
 QCvar*	gl_clear;
 QCvar*	gl_cull;
 QCvar*	gl_texsort;
-QCvar*	gl_smoothmodels;
 QCvar*	gl_affinemodels;
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
@@ -415,8 +414,7 @@ void R_DrawAliasModel (trRefEntity_t *e)
 		GL_Bind(paliashdr->gl_texture[tr.currentEntity->e.skinNum][0]);
 	}
 
-	if (gl_smoothmodels->value)
-		qglShadeModel (GL_SMOOTH);
+	qglShadeModel (GL_SMOOTH);
 	GL_TexEnv(GL_MODULATE);
 
 	if (gl_affinemodels->value)
