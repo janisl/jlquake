@@ -55,7 +55,7 @@ typedef struct particle_s
 
 
 extern	qboolean	r_cache_thrash;		// compatability
-extern	int		c_brush_polys, c_alias_polys;
+extern	int		c_brush_polys;
 
 
 //
@@ -74,7 +74,6 @@ extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_speeds;
-extern	QCvar*	r_shadows;
 extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 extern	QCvar*	r_netgraph;

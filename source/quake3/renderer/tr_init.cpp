@@ -58,7 +58,6 @@ QCvar	*r_nocurves;
 
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
-QCvar	*r_shadows;
 QCvar	*r_flares;
 QCvar	*r_showtris;
 QCvar	*r_showsky;
@@ -639,7 +638,6 @@ void R_Register( void )
 	r_drawBuffer = Cvar_Get( "r_drawBuffer", "GL_BACK", CVAR_CHEAT );
 	r_lockpvs = Cvar_Get ("r_lockpvs", "0", CVAR_CHEAT);
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
-	r_shadows = Cvar_Get( "cg_shadows", "1", 0 );
 
 	Cmd_AddCommand( "modellist", R_Modellist_f );
 	Cmd_AddCommand( "screenshot", R_ScreenShot_f );

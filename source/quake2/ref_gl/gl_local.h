@@ -43,8 +43,6 @@ void GL_EndRendering (void);
 void GL_SetDefaultState( void );
 void GL_UpdateSwapInterval( void );
 
-extern	float	gldepthmin, gldepthmax;
-
 #define BACKFACE_EPSILON	0.01
 
 
@@ -52,7 +50,7 @@ extern	float	gldepthmin, gldepthmax;
 
 
 extern	image_t		*r_particletexture;
-extern	int			c_brush_polys, c_alias_polys;
+extern	int			c_brush_polys;
 
 
 //
@@ -66,9 +64,6 @@ extern	QCvar	*r_drawentities;
 extern	QCvar	*r_drawworld;
 extern	QCvar	*r_speeds;
 extern	QCvar	*r_novis;
-extern	QCvar	*r_lerpmodels;
-
-extern	QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
 extern QCvar	*gl_particle_min_size;
 extern QCvar	*gl_particle_max_size;
@@ -78,7 +73,6 @@ extern QCvar	*gl_particle_att_b;
 extern QCvar	*gl_particle_att_c;
 
 extern	QCvar	*gl_nosubimage;
-extern	QCvar	*gl_shadows;
 extern	QCvar	*gl_dynamic;
 extern	QCvar	*gl_skymip;
 extern	QCvar	*gl_showtris;
@@ -111,7 +105,6 @@ void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
 void GL_ScreenShot_f (void);
-void R_DrawAliasModel (trRefEntity_t *e);
 void R_DrawBrushModel (trRefEntity_t *e);
 void R_DrawBeam( trRefEntity_t *e );
 void R_DrawWorld (void);

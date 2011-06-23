@@ -596,8 +596,12 @@ extern QCvar*	r_primitives;			// "0" = based on compiled vertex array existance
 										// "2" = glDrawElements triangles
 										// "-1" = no drawing
 extern QCvar*	r_vertex_arrays;
+extern QCvar*	r_lerpmodels;
+extern QCvar*	r_shadows;				// controls shadows: 0 = none, 1 = blur, 2 = stencil, 3 = black planar projection
 
 extern QCvar*	r_modulate;
+
+extern QCvar*	r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
 extern trGlobals_t	tr;
 
@@ -619,6 +623,8 @@ extern int			r_numpolyverts;
 extern float		s_flipMatrix[16];
 
 extern vec3_t		lightspot;
+
+extern int			c_alias_polys;
 
 /*
 ====================================================================

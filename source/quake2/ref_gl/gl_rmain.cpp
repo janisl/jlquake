@@ -28,13 +28,11 @@ extern particle_t		r_particles[MAX_PARTICLES];
 
 refimport_t	ri;
 
-float		gldepthmin, gldepthmax;
-
 glstate2_t  gl_state;
 
 image_t		*r_particletexture;	// little dot for particles
 
-int			c_brush_polys, c_alias_polys;
+int			c_brush_polys;
 
 float		v_blend[4];			// final blending color
 
@@ -50,9 +48,6 @@ QCvar	*r_drawentities;
 QCvar	*r_drawworld;
 QCvar	*r_speeds;
 QCvar	*r_novis;
-QCvar	*r_lerpmodels;
-
-QCvar	*r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
 QCvar	*gl_nosubimage;
 
@@ -65,7 +60,6 @@ QCvar	*gl_particle_att_c;
 
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
-QCvar	*gl_shadows;
 QCvar	*gl_dynamic;
 QCvar	*gl_skymip;
 QCvar	*gl_showtris;
@@ -150,7 +144,7 @@ void R_DrawEntitiesOnList (void)
 				R_DrawNullModel();
 				break;
 			case MOD_MESH2:
-				R_DrawAliasModel(tr.currentEntity);
+				R_DrawMd2Model(tr.currentEntity);
 				break;
 			case MOD_BRUSH38:
 				R_DrawBrushModel(tr.currentEntity);
@@ -186,7 +180,7 @@ void R_DrawEntitiesOnList (void)
 				R_DrawNullModel();
 				break;
 			case MOD_MESH2:
-				R_DrawAliasModel(tr.currentEntity);
+				R_DrawMd2Model(tr.currentEntity);
 				break;
 			case MOD_BRUSH38:
 				R_DrawBrushModel(tr.currentEntity);
@@ -460,10 +454,8 @@ void R_Clear (void)
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	else
 		qglClear (GL_DEPTH_BUFFER_BIT);
-	gldepthmin = 0;
-	gldepthmax = 1;
 
-	qglDepthRange (gldepthmin, gldepthmax);
+	qglDepthRange(0, 1);
 
 }
 
@@ -613,10 +605,7 @@ void R_Register( void )
 	r_drawentities = Cvar_Get ("r_drawentities", "1", 0);
 	r_drawworld = Cvar_Get ("r_drawworld", "1", 0);
 	r_novis = Cvar_Get ("r_novis", "0", 0);
-	r_lerpmodels = Cvar_Get ("r_lerpmodels", "1", 0);
 	r_speeds = Cvar_Get ("r_speeds", "0", 0);
-
-	r_lightlevel = Cvar_Get ("r_lightlevel", "0", 0);
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
 
@@ -627,7 +616,6 @@ void R_Register( void )
 	gl_particle_att_b = Cvar_Get( "gl_particle_att_b", "0.0", CVAR_ARCHIVE );
 	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
-	gl_shadows = Cvar_Get ("gl_shadows", "0", CVAR_ARCHIVE );
 	gl_dynamic = Cvar_Get ("gl_dynamic", "1", 0);
 	gl_skymip = Cvar_Get ("gl_skymip", "0", 0);
 	gl_showtris = Cvar_Get ("gl_showtris", "0", 0);

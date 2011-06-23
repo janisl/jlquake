@@ -794,6 +794,7 @@ model_t* R_GetModelByHandle(qhandle_t Index);
 void Mod_LoadSpriteModel(model_t* mod, void* buffer);
 void Mod_FreeSpriteModel(model_t* mod);
 void R_DrawSprModel(struct trRefEntity_t* e);
+
 void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen);
 void Mod_FreeSprite2Model(model_t* mod);
 void R_DrawSp2Model(struct trRefEntity_t* e);
@@ -801,10 +802,14 @@ void R_DrawSp2Model(struct trRefEntity_t* e);
 void Mod_LoadMdlModel(model_t* mod, const void* buffer);
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
 void Mod_FreeMdlModel(model_t* mod);
+
 void Mod_LoadMd2Model(model_t* mod, const void* buffer);
 void Mod_FreeMd2Model(model_t* mod);
+void R_DrawMd2Model(struct trRefEntity_t* e);
+
 bool R_LoadMd3(model_t* mod, void* buffer);
 void R_FreeMd3(model_t* mod);
+
 bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name);
 void R_FreeMd4(model_t* mod);
 
@@ -832,9 +837,6 @@ srfGridMesh_t* R_SubdividePatchToGrid(int Width, int Height,
 srfGridMesh_t* R_GridInsertColumn(srfGridMesh_t* Grid, int Column, int Row, vec3_t Point, float LodError);
 srfGridMesh_t* R_GridInsertRow(srfGridMesh_t* Grid, int Row, int Column, vec3_t Point, float LodError);
 void R_FreeSurfaceGridMesh(srfGridMesh_t* Grid);
-void GL_DrawMd2FrameLerp (dmd2_t *paliashdr, float backlerp);
-void GL_DrawMd2Shadow(dmd2_t* paliashdr, int posenum);
-bool R_CullMd2Model(vec3_t bbox[8], trRefEntity_t* e);
 
 extern model_t*	loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];

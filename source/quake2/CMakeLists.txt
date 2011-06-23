@@ -38,7 +38,6 @@ add_executable(jlquake2
 	ref_gl/gl_draw.cpp
 	ref_gl/gl_image.cpp
 	ref_gl/gl_light.cpp
-	ref_gl/gl_mesh.cpp
 	ref_gl/gl_model.cpp
 	ref_gl/gl_rmain.cpp
 	ref_gl/gl_rmisc.cpp

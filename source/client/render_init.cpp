@@ -110,8 +110,12 @@ QCvar*		r_nocull;
 
 QCvar*		r_primitives;
 QCvar*		r_vertex_arrays;
+QCvar*		r_lerpmodels;
+QCvar*		r_shadows;
 
 QCvar*		r_modulate;
+
+QCvar*		r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -277,6 +281,14 @@ void R_SharedRegister()
 	r_primitives = Cvar_Get("r_primitives", "0", CVAR_ARCHIVE);
 	r_vertex_arrays = Cvar_Get("r_vertex_arrays", "0", CVAR_ARCHIVE);
 	r_modulate = Cvar_Get("r_modulate", "1", CVAR_ARCHIVE);
+	if (GGameType & GAME_Quake3)
+	{
+		r_shadows = Cvar_Get("cg_shadows", "1", 0);
+	}
+	else
+	{
+		r_shadows = Cvar_Get("r_shadows", "0", CVAR_ARCHIVE);
+	}
 
 	//
 	// temporary variables that can change at any time
@@ -293,6 +305,8 @@ void R_SharedRegister()
 	r_znear = Cvar_Get("r_znear", "4", CVAR_CHEAT);
 	AssertCvarRange(r_znear, 0.001f, 200, true);
 	r_nocull = Cvar_Get("r_nocull", "0", CVAR_CHEAT);
+	r_lightlevel = Cvar_Get("r_lightlevel", "0", 0);
+	r_lerpmodels = Cvar_Get("r_lerpmodels", "1", 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

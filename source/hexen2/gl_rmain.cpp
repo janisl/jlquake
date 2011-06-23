@@ -9,7 +9,7 @@
 
 qboolean	r_cache_thrash;		// compatability
 
-int			c_brush_polys, c_alias_polys, c_sky_polys;
+int			c_brush_polys, c_sky_polys;
 
 qboolean	envmap;				// true during envmap command capture 
 
@@ -42,7 +42,6 @@ QCvar*	r_norefresh;
 QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
 QCvar*	r_speeds;
-QCvar*	r_shadows;
 QCvar*	r_dynamic;
 QCvar*	r_novis;
 QCvar*	r_wholeframe;

@@ -423,14 +423,6 @@
 			Name="Renderer"
 			>
 			<File
-				RelativePath=".\ref_gl\anorms.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ref_gl\anormtab.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ref_gl\gl_draw.cpp"
 				>
 			</File>
@@ -444,10 +436,6 @@
 			</File>
 			<File
 				RelativePath=".\ref_gl\gl_local.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ref_gl\gl_mesh.cpp"
 				>
 			</File>
 			<File

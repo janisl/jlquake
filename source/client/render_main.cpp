@@ -38,6 +38,8 @@ glconfig_t	glConfig;
 
 trGlobals_t	tr;
 
+int			c_alias_polys;
+
 float	s_flipMatrix[16] =
 {
 	// convert from our coordinate system (looking down X)
