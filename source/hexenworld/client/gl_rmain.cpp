@@ -838,6 +838,12 @@ void R_RenderView (void)
 	if (r_norefresh->value)
 		return;
 
+	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+	{
+		float Val = d_lightstylevalue[i] / 256.0;
+		R_AddLightStyleToScene(i, Val, Val, Val);
+	}
+
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
 

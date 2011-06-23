@@ -110,7 +110,6 @@ void EmitSkyPolys (mbrush29_surface_t *fa);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void GL_BuildLightmaps (void);
-int R_LightPointQ1 (vec3_t p);
 void R_DrawBrushModel (trRefEntity_t *e);
 void R_AnimateLight (void);
 void R_DrawWorld (void);

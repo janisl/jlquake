@@ -526,6 +526,7 @@ void R_InitSkins();
 skin_t* R_GetSkinByHandle(qhandle_t hSkin);
 void R_SkinList_f();
 
+int R_LightPointQ1(vec3_t p);
 void R_LightPointQ2(vec3_t p, vec3_t color);
 
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init

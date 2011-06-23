@@ -42,6 +42,144 @@ static vec3_t	pointcolor;
 
 // CODE --------------------------------------------------------------------
 
+/*
+=============================================================================
+
+LIGHT SAMPLING
+
+=============================================================================
+*/
+
+//==========================================================================
+//
+//	RecursiveLightPointQ1
+//
+//==========================================================================
+
+static int RecursiveLightPointQ1(mbrush29_node_t* node, vec3_t start, vec3_t end)
+{
+	if (node->contents < 0)
+	{
+		return -1;		// didn't hit anything
+	}
+
+	// calculate mid point
+
+	// FIXME: optimize for axial
+	cplane_t* plane = node->plane;
+	float front = DotProduct(start, plane->normal) - plane->dist;
+	float back = DotProduct(end, plane->normal) - plane->dist;
+	int side = front < 0;
+	
+	if ((back < 0) == side)
+	{
+		return RecursiveLightPointQ1(node->children[side], start, end);
+	}
+
+	float frac = front / (front - back);
+	vec3_t mid;
+	mid[0] = start[0] + (end[0] - start[0]) * frac;
+	mid[1] = start[1] + (end[1] - start[1]) * frac;
+	mid[2] = start[2] + (end[2] - start[2]) * frac;
+	
+	// go down front side	
+	int r = RecursiveLightPointQ1(node->children[side], start, mid);
+	if (r >= 0)
+	{
+		return r;		// hit something
+	}
+		
+	if ((back < 0) == side)
+	{
+		return -1;		// didn't hit anuthing
+	}
+
+	// check for impact on this node
+	VectorCopy(mid, lightspot);
+
+	mbrush29_surface_t* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
+	for (int i = 0; i < node->numsurfaces; i++, surf++)
+	{
+		if (surf->flags & BRUSH29_SURF_DRAWTILED)
+		{
+			continue;	// no lightmaps
+		}
+
+		mbrush29_texinfo_t* tex = surf->texinfo;
+
+		int s = DotProduct(mid, tex->vecs[0]) + tex->vecs[0][3];
+		int t = DotProduct(mid, tex->vecs[1]) + tex->vecs[1][3];;
+
+		if (s < surf->texturemins[0] || t < surf->texturemins[1])
+		{
+			continue;
+		}
+		
+		int ds = s - surf->texturemins[0];
+		int dt = t - surf->texturemins[1];
+		
+		if (ds > surf->extents[0] || dt > surf->extents[1])
+		{
+			continue;
+		}
+
+		if (!surf->samples)
+		{
+			return 0;
+		}
+
+		ds >>= 4;
+		dt >>= 4;
+
+		byte* lightmap = surf->samples;
+		r = 0;
+		if (lightmap)
+		{
+
+			lightmap += dt * ((surf->extents[0]>>4)+1) + ds;
+
+			for (int maps = 0; maps < BSP29_MAXLIGHTMAPS && surf->styles[maps] != 255; maps++)
+			{
+				r += *lightmap * tr.refdef.lightstyles[surf->styles[maps]].rgb[0];
+				lightmap += ((surf->extents[0] >> 4) + 1) * ((surf->extents[1] >> 4) + 1);
+			}
+		}
+
+		return r;
+	}
+
+	// go down back side
+	return RecursiveLightPointQ1(node->children[!side], mid, end);
+}
+
+//==========================================================================
+//
+//	R_LightPointQ1
+//
+//==========================================================================
+
+int R_LightPointQ1(vec3_t p)
+{
+	if (!tr.worldModel->brush29_lightdata)
+	{
+		return 255;
+	}
+
+	vec3_t end;
+	end[0] = p[0];
+	end[1] = p[1];
+	end[2] = p[2] - 2048;
+	
+	int r = RecursiveLightPointQ1(tr.worldModel->brush29_nodes, p, end);
+	
+	if (r == -1)
+	{
+		r = 0;
+	}
+
+	return r;
+}
+
 //==========================================================================
 //
 //	RecursiveLightPointQ2

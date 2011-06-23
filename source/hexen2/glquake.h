@@ -125,7 +125,6 @@ extern	QCvar*	gl_reporttjunctions;
 
 extern byte *playerTranslation;
 
-int R_LightPointQ1 (vec3_t p);
 void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);
 void V_CalcBlend (void);
