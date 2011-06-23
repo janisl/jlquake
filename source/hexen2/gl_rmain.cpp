@@ -279,17 +279,15 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	vec3_t		dist;
 	float		add;
 	model_t		*clmodel;
-	vec3_t		mins, maxs;
 	mesh1hdr_t	*paliashdr;
 	dmdl_trivertx_t	*verts, *v;
 	int			index;
 	float		s, t, an;
 	vec3_t		adjust_origin;
 
-	clmodel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
 
-	VectorAdd (tr.currentEntity->e.origin, clmodel->q1_mins, mins);
-	VectorAdd (tr.currentEntity->e.origin, clmodel->q1_maxs, maxs);
+	clmodel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
 	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)
 	{
@@ -366,8 +364,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	//
 
     qglPushMatrix ();
-	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
-
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	qglTranslatef(paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);

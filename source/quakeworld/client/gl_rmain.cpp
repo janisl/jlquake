@@ -246,6 +246,8 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	model_t		*clmodel;
 	mesh1hdr_t	*paliashdr;
 
+	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
+
 	clmodel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
 	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)
@@ -323,8 +325,6 @@ void R_DrawAliasModel (trRefEntity_t *e)
 	//
 
     qglPushMatrix ();
-	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
-
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	qglTranslatef (paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
