@@ -352,7 +352,7 @@ void CL_BaseMove (usercmd_t *cmd)
 		cmd->upmove = cmd->upmove * cl.v.hasted;
 	}
 
-	cmd->light_level = cl.light_level;
+	cmd->light_level = (byte)cl_lightlevel->value;
 }
 
 void CL_MouseEvent(int mx, int my)

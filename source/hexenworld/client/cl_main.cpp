@@ -52,6 +52,8 @@ QCvar*	noaim;
 QCvar*  talksounds;
 QCvar*	msg;
 
+QCvar	*cl_lightlevel;
+
 
 client_static_t	cls;
 client_state_t	cl;
@@ -966,6 +968,8 @@ void CL_Init (void)
 
 	baseskin = Cvar_Get("baseskin", "base", 0);
 	noskins = Cvar_Get("noskins", "1", 0);
+
+	cl_lightlevel = Cvar_Get ("r_lightlevel", "0", 0);
 
 	//
 	// info mirrors

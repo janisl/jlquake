@@ -33,6 +33,8 @@ QCvar*	m_yaw;
 QCvar*	m_forward;
 QCvar*	m_side;
 
+QCvar	*cl_lightlevel;
+
 
 client_static_t	cls;
 client_state_t	cl;
@@ -884,6 +886,8 @@ void CL_Init (void)
 	m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
 	m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
 	cl_prettylights = Cvar_Get("cl_prettylights", "1", 0);
+
+	cl_lightlevel = Cvar_Get ("r_lightlevel", "0", 0);
 
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);

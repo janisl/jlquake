@@ -36,10 +36,10 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-float	md2_shadelight[3];
-vec4_t	s_lerped[MAX_MD2_VERTS];
-
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+static float	md2_shadelight[3];
+static vec4_t	s_lerped[MAX_MD2_VERTS];
 
 // CODE --------------------------------------------------------------------
 

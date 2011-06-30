@@ -87,6 +87,11 @@ static int				striptris[128];
 static int				stripstverts[128];
 static int				stripcount;
 
+static int				lastposenum;
+static float			shadelight;
+static float			ambientlight;
+static float			model_constant_alpha;
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -1065,4 +1070,365 @@ void Mod_FreeMdlModel(model_t* mod)
 	delete[] pheader->commands;
 	delete[] pheader->posedata;
 	Mem_Free(pheader);
+}
+
+//==========================================================================
+//
+//	GL_DrawAliasFrame
+//
+//==========================================================================
+
+static void GL_DrawAliasFrame(mesh1hdr_t* paliashdr, int posenum)
+{
+	lastposenum = posenum;
+
+	dmdl_trivertx_t* verts = paliashdr->posedata;
+	verts += posenum * paliashdr->poseverts;
+	int* order = paliashdr->commands;
+
+	float r, g, b;
+	if (tr.currentEntity->e.renderfx & RF_COLORSHADE)
+	{
+		r = tr.currentEntity->e.shaderRGBA[0] / 255.0;
+		g = tr.currentEntity->e.shaderRGBA[1] / 255.0;
+		b = tr.currentEntity->e.shaderRGBA[2] / 255.0;
+	}
+	else
+	{
+		r = g = b = 1;
+	}
+
+	while (1)
+	{
+		// get the vertex count and primitive type
+		int count = *order++;
+		if (!count)
+		{
+			break;		// done
+		}
+		if (count < 0)
+		{
+			count = -count;
+			qglBegin(GL_TRIANGLE_FAN);
+		}
+		else
+		{
+			qglBegin(GL_TRIANGLE_STRIP);
+		}
+
+		do
+		{
+			// texture coordinates come from the draw list
+			qglTexCoord2f(((float*)order)[0], ((float*)order)[1]);
+			order += 2;
+
+			// normals and vertexes come from the frame list
+			float l = shadedots[verts->lightnormalindex] * shadelight;
+			qglColor4f(r * l, g * l, b * l, model_constant_alpha);
+			qglVertex3f(verts->v[0], verts->v[1], verts->v[2]);
+			verts++;
+		}
+		while (--count);
+
+		qglEnd();
+	}
+}
+
+//==========================================================================
+//
+//	GL_DrawAliasShadow
+//
+//==========================================================================
+
+static void GL_DrawAliasShadow(mesh1hdr_t* paliashdr, int posenum)
+{
+	float lheight = tr.currentEntity->e.origin[2] - lightspot[2];
+
+	float height = 0;
+	dmdl_trivertx_t* verts = paliashdr->posedata;
+	verts += posenum * paliashdr->poseverts;
+	int* order = paliashdr->commands;
+
+	height = -lheight + 1.0;
+
+	while (1)
+	{
+		// get the vertex count and primitive type
+		int count = *order++;
+		if (!count)
+		{
+			break;		// done
+		}
+		if (count < 0)
+		{
+			count = -count;
+			qglBegin(GL_TRIANGLE_FAN);
+		}
+		else
+		{
+			qglBegin(GL_TRIANGLE_STRIP);
+		}
+
+		do
+		{
+			// texture coordinates come from the draw list
+			// (skipped for shadows)
+			order += 2;
+
+			// normals and vertexes come from the frame list
+			vec3_t point;
+			point[0] = verts->v[0] * paliashdr->scale[0] + paliashdr->scale_origin[0];
+			point[1] = verts->v[1] * paliashdr->scale[1] + paliashdr->scale_origin[1];
+			point[2] = verts->v[2] * paliashdr->scale[2] + paliashdr->scale_origin[2];
+
+			point[0] -= shadevector[0] * (point[2] + lheight);
+			point[1] -= shadevector[1] * (point[2] + lheight);
+			point[2] = height;
+			qglVertex3fv(point);
+
+			verts++;
+		}
+		while (--count);
+
+		qglEnd();
+	}
+}
+
+//==========================================================================
+//
+//	R_SetupAliasFrame
+//
+//==========================================================================
+
+static void R_SetupAliasFrame(int frame, mesh1hdr_t* paliashdr)
+{
+	if (frame >= paliashdr->numframes || frame < 0)
+	{
+		GLog.DWrite("R_AliasSetupFrame: no such frame %d\n", frame);
+		frame = 0;
+	}
+
+	int pose = paliashdr->frames[frame].firstpose;
+	int numposes = paliashdr->frames[frame].numposes;
+
+	if (numposes > 1)
+	{
+		float interval = paliashdr->frames[frame].interval;
+		pose += (int)(tr.refdef.floatTime / interval) % numposes;
+	}
+
+	GL_DrawAliasFrame(paliashdr, pose);
+}
+
+//==========================================================================
+//
+//	R_CalcEntityLight
+//
+//==========================================================================
+
+float R_CalcEntityLight(refEntity_t* e)
+{
+	float* lorg = e->origin;
+	if (e->renderfx & RF_LIGHTING_ORIGIN)
+	{
+		lorg = e->lightingOrigin;
+	}
+
+	float light;
+	if (GGameType & GAME_Hexen2)
+	{
+		vec3_t adjust_origin;
+		VectorCopy(lorg, adjust_origin);
+		model_t* clmodel = R_GetModelByHandle(e->hModel);
+		adjust_origin[2] += (clmodel->q1_mins[2] + clmodel->q1_maxs[2]) / 2;
+		light = R_LightPointQ1(adjust_origin);
+	}
+	else
+	{
+		light = R_LightPointQ1(lorg);
+	}
+
+	// allways give the gun some light
+	if ((e->renderfx & RF_MINLIGHT) && light < 24)
+	{
+		light = 24;
+	}
+
+	for (int lnum = 0; lnum < tr.refdef.num_dlights; lnum++)
+	{
+		vec3_t dist;
+		VectorSubtract(lorg, tr.refdef.dlights[lnum].origin, dist);
+		float add = tr.refdef.dlights[lnum].radius - VectorLength(dist);
+
+		if (add > 0)
+		{
+			light += add;
+		}
+	}
+	return light;
+}
+
+//==========================================================================
+//
+//	R_DrawMdlModel
+//
+//==========================================================================
+
+void R_DrawMdlModel(trRefEntity_t* e)
+{
+	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
+
+	model_t* clmodel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+
+	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)
+	{
+		return;
+	}
+
+	// hack the depth range to prevent view model from poking into walls
+	if (e->e.renderfx & RF_DEPTHHACK)
+	{
+		qglDepthRange(0, 0.3);
+	}
+
+	//
+	// get lighting information
+	//
+	ambientlight = shadelight = R_CalcEntityLight(&e->e);
+
+	if (e->e.renderfx & RF_FIRST_PERSON)
+	{
+		r_lightlevel->value = ambientlight;
+	}
+
+	// clamp lighting so it doesn't overbright as much
+	if (ambientlight > 128)
+	{
+		ambientlight = 128;
+	}
+	if (ambientlight + shadelight > 192)
+	{
+		shadelight = 192 - ambientlight;
+	}
+
+	// ZOID: never allow players to go totally black
+	if ((GGameType & GAME_Quake) && !QStr::Cmp(clmodel->name, "progs/player.mdl"))
+	{
+		if (ambientlight < 8)
+		{
+			ambientlight = shadelight = 8;
+		}
+	}
+
+	if (e->e.renderfx & RF_ABSOLUTE_LIGHT)
+	{
+		ambientlight = shadelight = tr.currentEntity->e.radius * 256.0;
+	}
+
+	vec3_t tmp_angles;
+	VecToAngles(e->e.axis[0], tmp_angles);
+	shadedots = r_avertexnormal_dots[((int)(tmp_angles[1] * (SHADEDOT_QUANT / 360.0))) & (SHADEDOT_QUANT - 1)];
+	shadelight = shadelight / 200.0;
+
+	VectorCopy(e->e.axis[0], shadevector);
+	shadevector[2] = 1;
+	VectorNormalize(shadevector);
+
+	//
+	// locate the proper data
+	//
+	mesh1hdr_t* paliashdr = (mesh1hdr_t*)clmodel->q1_cache;
+
+	c_alias_polys += paliashdr->numtris;
+
+	//
+	// draw all the triangles
+	//
+
+    qglPushMatrix();
+	qglLoadMatrixf(tr.orient.modelMatrix);
+
+	qglTranslatef(paliashdr->scale_origin[0], paliashdr->scale_origin[1], paliashdr->scale_origin[2]);
+	qglScalef(paliashdr->scale[0], paliashdr->scale[1], paliashdr->scale[2]);
+
+	if (GGameType & GAME_Hexen2)
+	{
+		if (clmodel->q1_flags & EF_SPECIAL_TRANS)
+		{
+			model_constant_alpha = 1.0f;
+			qglDisable(GL_CULL_FACE);
+			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA);
+		}
+		else if (tr.currentEntity->e.renderfx & RF_WATERTRANS)
+		{
+			model_constant_alpha = r_wateralpha->value;
+			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+		}
+		else if (clmodel->q1_flags & EF_TRANSPARENT)
+		{
+			model_constant_alpha = 1.0f;
+			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+		}
+		else if (clmodel->q1_flags & EF_HOLEY)
+		{
+			model_constant_alpha = 1.0f;
+			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+		}
+		else
+		{
+			model_constant_alpha = 1.0f;
+			GL_State(GLS_DEPTHMASK_TRUE);
+		}
+	}
+	else
+	{
+		model_constant_alpha = 1.0f;
+	}
+
+	if (e->e.customSkin)
+	{
+		GL_Bind(tr.images[e->e.customSkin]);
+	}
+	else
+	{
+		int anim = (int)(tr.refdef.floatTime * 10) & 3;
+		GL_Bind(paliashdr->gl_texture[e->e.skinNum][anim]);
+	}
+
+	qglShadeModel(GL_SMOOTH);
+	GL_TexEnv(GL_MODULATE);
+
+	R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr);
+
+	GL_State(GLS_DEFAULT);
+
+	if ((GGameType & GAME_Hexen2) && (clmodel->q1_flags & EF_SPECIAL_TRANS))
+	{
+		qglEnable(GL_CULL_FACE);
+	}
+
+	GL_TexEnv(GL_REPLACE);
+
+	qglShadeModel(GL_FLAT);
+
+	qglPopMatrix();
+
+	if (e->e.renderfx & RF_DEPTHHACK)
+	{
+		qglDepthRange(0, 1);
+	}
+
+	if (r_shadows->value)
+	{
+		qglPushMatrix();
+		qglLoadMatrixf(tr.orient.modelMatrix);
+		qglDisable(GL_TEXTURE_2D);
+		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+		qglColor4f(0, 0, 0, 0.5);
+		GL_DrawAliasShadow(paliashdr, lastposenum);
+		qglEnable(GL_TEXTURE_2D);
+		GL_State(GLS_DEFAULT);
+		qglColor4f(1,1,1,1);
+		qglPopMatrix();
+	}
 }

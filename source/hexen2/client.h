@@ -212,11 +212,6 @@ typedef struct
 // frag scoreboard
 	scoreboard_t	*scores;		// [cl.maxclients]
 
-// light level at player's position including dlights
-// this is sent back to the server each frame
-// architectually ugly but it works
-	int			light_level;
-
 	client_frames2_t frames[3]; // 0 = base, 1 = building, 2 = 0 & 1 merged
 	short RemoveList[MAX_CLIENT_STATES],NumToRemove;
 
@@ -256,6 +251,8 @@ extern	QCvar*	m_pitch;
 extern	QCvar*	m_yaw;
 extern	QCvar*	m_forward;
 extern	QCvar*	m_side;
+
+extern	QCvar	*cl_lightlevel;	// FIXME HACK
 
 
 #define	MAX_STATIC_ENTITIES	256			// torches, etc

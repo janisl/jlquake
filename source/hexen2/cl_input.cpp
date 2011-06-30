@@ -339,7 +339,10 @@ void CL_BaseMove (usercmd_t *cmd)
 		cmd->upmove = cmd->upmove * cl.v.hasted;
 	}
 
-	cmd->lightlevel = cl.light_level;
+	// light level at player's position including dlights
+	// this is sent back to the server each frame
+	// architectually ugly but it works
+	cmd->lightlevel = (byte)cl_lightlevel->value;
 }
 
 

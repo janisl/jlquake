@@ -802,6 +802,7 @@ void R_DrawSp2Model(struct trRefEntity_t* e);
 void Mod_LoadMdlModel(model_t* mod, const void* buffer);
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
 void Mod_FreeMdlModel(model_t* mod);
+void R_DrawMdlModel(struct trRefEntity_t* e);
 
 void Mod_LoadMd2Model(model_t* mod, const void* buffer);
 void Mod_FreeMd2Model(model_t* mod);
@@ -846,5 +847,3 @@ extern world_t		s_worldData;
 extern float			r_avertexnormal_dots[SHADEDOT_QUANT][256];
 extern vec3_t	shadevector;
 extern float*			shadedots;
-extern float	md2_shadelight[3];
-extern vec4_t	s_lerped[MAX_MD2_VERTS];

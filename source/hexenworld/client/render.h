@@ -178,7 +178,6 @@ void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
-float R_CalcEntityLight(refEntity_t* e);
 void R_TranslatePlayerSkin (int playernum);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
 void R_DarkFieldParticles (refEntity_t *ent);

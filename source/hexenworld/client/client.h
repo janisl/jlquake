@@ -298,8 +298,6 @@ typedef struct
 	double		laststop;
 
 
-	byte		light_level;
-
 	float		crouch;			// local amount for smoothing stepups
 
 	qboolean	paused;			// send over by server
@@ -414,6 +412,8 @@ extern	QCvar*	m_side;
 
 extern	QCvar*	playerclass;
 extern	QCvar*	spectator;
+
+extern	QCvar	*cl_lightlevel;	// FIXME HACK
 
 
 #define	MAX_STATIC_ENTITIES	256			// torches, etc
