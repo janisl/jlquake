@@ -392,6 +392,10 @@ void RB_CalcDeformVertexes(deformStage_t* ds);
 void RB_CalcDeformNormals(deformStage_t* ds);
 void RB_CalcBulgeVertexes(deformStage_t* ds);
 void RB_CalcMoveVertexes(deformStage_t* ds);
+void RB_CalcDiffuseColor(byte* colors);
+void RB_CalcWaveColor(const waveForm_t* wf, unsigned char* dstColors);
+void RB_CalcColorFromEntity(byte* dstColors);
+void RB_CalcColorFromOneMinusEntity(byte* dstColors);
 
 //
 //	SHADOWS

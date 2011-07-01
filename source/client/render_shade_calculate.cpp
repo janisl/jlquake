@@ -249,20 +249,156 @@ void RB_CalcMoveVertexes(deformStage_t* ds)
 	}
 }
 
+/*
+====================================================================
+
+COLORS
+
+====================================================================
+*/
+
 //==========================================================================
 //
-//	myftol
+//	RB_CalcDiffuseColor
+//
+//	The basic vertex lighting calc
 //
 //==========================================================================
 
-#if id386 && !((defined __linux__ || defined __FreeBSD__) && (defined __i386__)) // rb010123
-
-long myftol(float f)
+void RB_CalcDiffuseColor(byte* colors)
 {
-	static int tmp;
-	__asm fld f
-	__asm fistp tmp
-	__asm mov eax, tmp
+	trRefEntity_t* ent = backEnd.currentEntity;
+	int ambientLightInt = ent->ambientLightInt;
+	vec3_t ambientLight;
+	VectorCopy(ent->ambientLight, ambientLight);
+	vec3_t directedLight;
+	VectorCopy(ent->directedLight, directedLight);
+	vec3_t lightDir;
+	VectorCopy(ent->lightDir, lightDir);
+
+	float* v = tess.xyz[0];
+	float* normal = tess.normal[0];
+
+	int numVertexes = tess.numVertexes;
+	for (int i = 0; i < numVertexes; i++, v += 4, normal += 4)
+	{
+		float incoming = DotProduct(normal, lightDir);
+		if (incoming <= 0)
+		{
+			*(int*)&colors[i * 4] = ambientLightInt;
+			continue;
+		} 
+		int j = myftol(ambientLight[0] + incoming * directedLight[0]);
+		if (j > 255)
+		{
+			j = 255;
+		}
+		colors[i * 4 + 0] = j;
+
+		j = myftol(ambientLight[1] + incoming * directedLight[1]);
+		if (j > 255)
+		{
+			j = 255;
+		}
+		colors[i * 4 + 1] = j;
+
+		j = myftol(ambientLight[2] + incoming * directedLight[2]);
+		if (j > 255)
+		{
+			j = 255;
+		}
+		colors[i * 4 + 2] = j;
+
+		colors[i * 4 + 3] = 255;
+	}
 }
 
-#endif
+//==========================================================================
+//
+//	RB_CalcWaveColor
+//
+//==========================================================================
+
+void RB_CalcWaveColor(const waveForm_t* wf, byte* dstColors)
+{
+	float glow;
+	if (wf->func == GF_NOISE)
+	{
+		glow = wf->base + R_NoiseGet4f(0, 0, 0, (tess.shaderTime + wf->phase) * wf->frequency) * wf->amplitude;
+	}
+	else
+	{
+		glow = EvalWaveForm(wf) * tr.identityLight;
+	}
+	
+	if (glow < 0)
+	{
+		glow = 0;
+	}
+	else if (glow > 1)
+	{
+		glow = 1;
+	}
+
+	int v = myftol(255 * glow);
+	byte color[4];
+	color[0] = color[1] = color[2] = v;
+	color[3] = 255;
+	v = *(int*)color;
+
+	int* colors = (int*)dstColors;
+	for (int i = 0; i < tess.numVertexes; i++, colors++)
+	{
+		*colors = v;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcColorFromEntity
+//
+//==========================================================================
+
+void RB_CalcColorFromEntity(byte* dstColors)
+{
+	if (!backEnd.currentEntity)
+	{
+		return;
+	}
+
+	int c = *(int*)backEnd.currentEntity->e.shaderRGBA;
+	int* pColors = (int*)dstColors;
+
+	for (int i = 0; i < tess.numVertexes; i++, pColors++)
+	{
+		*pColors = c;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcColorFromOneMinusEntity
+//
+//==========================================================================
+
+void RB_CalcColorFromOneMinusEntity(byte* dstColors)
+{
+	if (!backEnd.currentEntity)
+	{
+		return;
+	}
+
+	byte invModulate[4];
+	invModulate[0] = 255 - backEnd.currentEntity->e.shaderRGBA[0];
+	invModulate[1] = 255 - backEnd.currentEntity->e.shaderRGBA[1];
+	invModulate[2] = 255 - backEnd.currentEntity->e.shaderRGBA[2];
+	invModulate[3] = 255 - backEnd.currentEntity->e.shaderRGBA[3];	// this trashes alpha, but the AGEN block fixes it
+
+	int c = *(int*)invModulate;
+	int* pColors = (int*)dstColors;
+
+	for (int i = 0; i < tess.numVertexes; i++, pColors++)
+	{
+		*pColors = c;
+	}
+}
