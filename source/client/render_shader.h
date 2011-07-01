@@ -385,17 +385,19 @@ void R_ShaderList_f();
 
 void R_DrawElements(int numIndexes, const glIndex_t* indexes);
 
-float* TableForFunc(genFunc_t func) ;
 float EvalWaveForm(const waveForm_t* wf);
-float EvalWaveFormClamped(const waveForm_t* wf);
 void RB_CalcDeformVertexes(deformStage_t* ds);
 void RB_CalcDeformNormals(deformStage_t* ds);
 void RB_CalcBulgeVertexes(deformStage_t* ds);
 void RB_CalcMoveVertexes(deformStage_t* ds);
 void RB_CalcDiffuseColor(byte* colors);
-void RB_CalcWaveColor(const waveForm_t* wf, unsigned char* dstColors);
+void RB_CalcWaveColor(const waveForm_t* wf, byte* dstColors);
 void RB_CalcColorFromEntity(byte* dstColors);
 void RB_CalcColorFromOneMinusEntity(byte* dstColors);
+void RB_CalcWaveAlpha(const waveForm_t* wf, byte* dstColors);
+void RB_CalcSpecularAlpha(byte* alphas);
+void RB_CalcAlphaFromEntity(byte* dstColors);
+void RB_CalcAlphaFromOneMinusEntity(byte* dstColors);
 
 //
 //	SHADOWS

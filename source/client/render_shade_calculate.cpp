@@ -38,6 +38,8 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+static vec3_t lightOrigin = { -960, 1980, 96 };		// FIXME: track dynamically
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -46,7 +48,7 @@
 //
 //==========================================================================
 
-float* TableForFunc(genFunc_t func)
+static float* TableForFunc(genFunc_t func)
 {
 	switch (func)
 	{
@@ -89,7 +91,7 @@ float EvalWaveForm(const waveForm_t* wf)
 //
 //==========================================================================
 
-float EvalWaveFormClamped(const waveForm_t* wf)
+static float EvalWaveFormClamped(const waveForm_t* wf)
 {
 	float glow = EvalWaveForm(wf);
 
@@ -400,5 +402,123 @@ void RB_CalcColorFromOneMinusEntity(byte* dstColors)
 	for (int i = 0; i < tess.numVertexes; i++, pColors++)
 	{
 		*pColors = c;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcWaveAlpha
+//
+//==========================================================================
+
+void RB_CalcWaveAlpha(const waveForm_t* wf, byte* dstColors)
+{
+	float glow = EvalWaveFormClamped(wf);
+
+	int v = 255 * glow;
+
+	for (int i = 0; i < tess.numVertexes; i++, dstColors += 4)
+	{
+		dstColors[3] = v;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcSpecularAlpha
+//
+//	Calculates specular coefficient and places it in the alpha channel
+//
+//==========================================================================
+
+void RB_CalcSpecularAlpha(byte* alphas)
+{
+	float* v = tess.xyz[0];
+	float* normal = tess.normal[0];
+
+	alphas += 3;
+
+	int numVertexes = tess.numVertexes;
+	for (int i = 0; i < numVertexes; i++, v += 4, normal += 4, alphas += 4)
+	{
+		vec3_t lightDir;
+		VectorSubtract(lightOrigin, v, lightDir);
+		VectorNormalizeFast(lightDir);
+
+		// calculate the specular color
+		float d = DotProduct(normal, lightDir);
+
+		// we don't optimize for the d < 0 case since this tends to
+		// cause visual artifacts such as faceted "snapping"
+		vec3_t reflected;
+		reflected[0] = normal[0] * 2 * d - lightDir[0];
+		reflected[1] = normal[1] * 2 * d - lightDir[1];
+		reflected[2] = normal[2] * 2 * d - lightDir[2];
+
+		vec3_t viewer;
+		VectorSubtract(backEnd.orient.viewOrigin, v, viewer);
+		float ilength = Q_rsqrt(DotProduct(viewer, viewer));
+		float l = DotProduct(reflected, viewer);
+		l *= ilength;
+
+		int b;
+		if (l < 0)
+		{
+			b = 0;
+		}
+		else
+		{
+			l = l * l;
+			l = l * l;
+			b = l * 255;
+			if (b > 255)
+			{
+				b = 255;
+			}
+		}
+
+		*alphas = b;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcAlphaFromEntity
+//
+//==========================================================================
+
+void RB_CalcAlphaFromEntity(byte* dstColors)
+{
+	if (!backEnd.currentEntity)
+	{
+		return;
+	}
+
+	dstColors += 3;
+
+	for (int i = 0; i < tess.numVertexes; i++, dstColors += 4)
+	{
+		*dstColors = backEnd.currentEntity->e.shaderRGBA[3];
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcAlphaFromOneMinusEntity
+//
+//==========================================================================
+
+void RB_CalcAlphaFromOneMinusEntity(byte* dstColors)
+{
+	if (!backEnd.currentEntity)
+	{
+		return;
+	}
+
+	dstColors += 3;
+
+	for (int i = 0; i < tess.numVertexes; i++, dstColors += 4)
+	{
+		*dstColors = 0xff - backEnd.currentEntity->e.shaderRGBA[3];
 	}
 }
