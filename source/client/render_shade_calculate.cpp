@@ -522,3 +522,118 @@ void RB_CalcAlphaFromOneMinusEntity(byte* dstColors)
 		*dstColors = 0xff - backEnd.currentEntity->e.shaderRGBA[3];
 	}
 }
+
+/*
+====================================================================
+
+TEX COORDS
+
+====================================================================
+*/
+
+//==========================================================================
+//
+//	RB_CalcFogTexCoords
+//
+//	To do the clipped fog plane really correctly, we should use projected
+// textures, but I don't trust the drivers and it doesn't fit our shader data.
+//
+//==========================================================================
+
+void RB_CalcFogTexCoords(float* st)
+{
+	mbrush46_fog_t* fog = tr.world->fogs + tess.fogNum;
+
+	// all fogging distance is based on world Z units
+	vec3_t local;
+	VectorSubtract(backEnd.orient.origin, backEnd.viewParms.orient.origin, local);
+	vec4_t fogDistanceVector;
+	fogDistanceVector[0] = -backEnd.orient.modelMatrix[2];
+	fogDistanceVector[1] = -backEnd.orient.modelMatrix[6];
+	fogDistanceVector[2] = -backEnd.orient.modelMatrix[10];
+	fogDistanceVector[3] = DotProduct(local, backEnd.viewParms.orient.axis[0]);
+
+	// scale the fog vectors based on the fog's thickness
+	fogDistanceVector[0] *= fog->tcScale;
+	fogDistanceVector[1] *= fog->tcScale;
+	fogDistanceVector[2] *= fog->tcScale;
+	fogDistanceVector[3] *= fog->tcScale;
+
+	// rotate the gradient vector for this orientation
+	vec4_t fogDepthVector;
+	float eyeT;
+	if (fog->hasSurface)
+	{
+		fogDepthVector[0] = fog->surface[0] * backEnd.orient.axis[0][0] + 
+			fog->surface[1] * backEnd.orient.axis[0][1] + fog->surface[2] * backEnd.orient.axis[0][2];
+		fogDepthVector[1] = fog->surface[0] * backEnd.orient.axis[1][0] + 
+			fog->surface[1] * backEnd.orient.axis[1][1] + fog->surface[2] * backEnd.orient.axis[1][2];
+		fogDepthVector[2] = fog->surface[0] * backEnd.orient.axis[2][0] + 
+			fog->surface[1] * backEnd.orient.axis[2][1] + fog->surface[2] * backEnd.orient.axis[2][2];
+		fogDepthVector[3] = -fog->surface[3] + DotProduct(backEnd.orient.origin, fog->surface);
+
+		eyeT = DotProduct(backEnd.orient.viewOrigin, fogDepthVector) + fogDepthVector[3];
+	}
+	else
+	{
+		eyeT = 1;	// non-surface fog always has eye inside
+
+		//JL Don't leave memory uninitialised.
+		fogDepthVector[0] = 0;
+		fogDepthVector[1] = 0;
+		fogDepthVector[2] = 0;
+		fogDepthVector[3] = 0;
+	}
+
+	// see if the viewpoint is outside
+	// this is needed for clipping distance even for constant fog
+
+	bool eyeOutside;
+	if (eyeT < 0)
+	{
+		eyeOutside = true;
+	}
+	else
+	{
+		eyeOutside = false;
+	}
+
+	fogDistanceVector[3] += 1.0 / 512;
+
+	// calculate density for each point
+	float* v = tess.xyz[0];
+	for (int i = 0; i < tess.numVertexes; i++, v += 4)
+	{
+		// calculate the length in fog
+		float s = DotProduct(v, fogDistanceVector) + fogDistanceVector[3];
+		float t = DotProduct(v, fogDepthVector) + fogDepthVector[3];
+
+		// partially clipped fogs use the T axis		
+		if (eyeOutside)
+		{
+			if (t < 1.0)
+			{
+				t = 1.0 / 32;	// point is outside, so no fogging
+			}
+			else
+			{
+				t = 1.0 / 32 + 30.0 / 32 * t / (t - eyeT);	// cut the distance at the fog plane
+			}
+		}
+		else
+		{
+			if (t < 0)
+			{
+				t = 1.0 / 32;	// point is outside, so no fogging
+			}
+			else
+			{
+				t = 31.0 / 32;
+			}
+		}
+
+		st[0] = s;
+		st[1] = t;
+		st += 2;
+	}
+}

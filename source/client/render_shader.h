@@ -398,6 +398,7 @@ void RB_CalcWaveAlpha(const waveForm_t* wf, byte* dstColors);
 void RB_CalcSpecularAlpha(byte* alphas);
 void RB_CalcAlphaFromEntity(byte* dstColors);
 void RB_CalcAlphaFromOneMinusEntity(byte* dstColors);
+void RB_CalcFogTexCoords(float* dstTexCoords);
 
 //
 //	SHADOWS

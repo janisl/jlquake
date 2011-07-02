@@ -312,7 +312,6 @@ void RB_SurfaceAnim( md4Surface_t *surfType );
 void	RB_DeformTessGeometry( void );
 
 void	RB_CalcEnvironmentTexCoords( float *dstTexCoords );
-void	RB_CalcFogTexCoords( float *dstTexCoords );
 void	RB_CalcScrollTexCoords( const float scroll[2], float *dstTexCoords );
 void	RB_CalcRotateTexCoords( float rotSpeed, float *dstTexCoords );
 void	RB_CalcScaleTexCoords( const float scale[2], float *dstTexCoords );
