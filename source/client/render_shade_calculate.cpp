@@ -321,7 +321,7 @@ void RB_CalcDiffuseColor(byte* colors)
 //
 //==========================================================================
 
-void RB_CalcWaveColor(const waveForm_t* wf, byte* dstColors)
+static void RB_CalcWaveColor(const waveForm_t* wf, byte* dstColors)
 {
 	float glow;
 	if (wf->func == GF_NOISE)
@@ -361,7 +361,7 @@ void RB_CalcWaveColor(const waveForm_t* wf, byte* dstColors)
 //
 //==========================================================================
 
-void RB_CalcColorFromEntity(byte* dstColors)
+static void RB_CalcColorFromEntity(byte* dstColors)
 {
 	if (!backEnd.currentEntity)
 	{
@@ -383,7 +383,7 @@ void RB_CalcColorFromEntity(byte* dstColors)
 //
 //==========================================================================
 
-void RB_CalcColorFromOneMinusEntity(byte* dstColors)
+static void RB_CalcColorFromOneMinusEntity(byte* dstColors)
 {
 	if (!backEnd.currentEntity)
 	{
@@ -411,7 +411,7 @@ void RB_CalcColorFromOneMinusEntity(byte* dstColors)
 //
 //==========================================================================
 
-void RB_CalcWaveAlpha(const waveForm_t* wf, byte* dstColors)
+static void RB_CalcWaveAlpha(const waveForm_t* wf, byte* dstColors)
 {
 	float glow = EvalWaveFormClamped(wf);
 
@@ -431,7 +431,7 @@ void RB_CalcWaveAlpha(const waveForm_t* wf, byte* dstColors)
 //
 //==========================================================================
 
-void RB_CalcSpecularAlpha(byte* alphas)
+static void RB_CalcSpecularAlpha(byte* alphas)
 {
 	float* v = tess.xyz[0];
 	float* normal = tess.normal[0];
@@ -487,7 +487,7 @@ void RB_CalcSpecularAlpha(byte* alphas)
 //
 //==========================================================================
 
-void RB_CalcAlphaFromEntity(byte* dstColors)
+static void RB_CalcAlphaFromEntity(byte* dstColors)
 {
 	if (!backEnd.currentEntity)
 	{
@@ -508,7 +508,7 @@ void RB_CalcAlphaFromEntity(byte* dstColors)
 //
 //==========================================================================
 
-void RB_CalcAlphaFromOneMinusEntity(byte* dstColors)
+static void RB_CalcAlphaFromOneMinusEntity(byte* dstColors)
 {
 	if (!backEnd.currentEntity)
 	{
@@ -529,7 +529,7 @@ void RB_CalcAlphaFromOneMinusEntity(byte* dstColors)
 //
 //==========================================================================
 
-void RB_CalcModulateColorsByFog(byte* colors)
+static void RB_CalcModulateColorsByFog(byte* colors)
 {
 	// calculate texcoords so we can derive density
 	// this is not wasted, because it would only have
@@ -552,7 +552,7 @@ void RB_CalcModulateColorsByFog(byte* colors)
 //
 //==========================================================================
 
-void RB_CalcModulateAlphasByFog(byte* colors)
+static void RB_CalcModulateAlphasByFog(byte* colors)
 {
 	// calculate texcoords so we can derive density
 	// this is not wasted, because it would only have
@@ -573,7 +573,7 @@ void RB_CalcModulateAlphasByFog(byte* colors)
 //
 //==========================================================================
 
-void RB_CalcModulateRGBAsByFog(byte* colors)
+static void RB_CalcModulateRGBAsByFog(byte* colors)
 {
 	// calculate texcoords so we can derive density
 	// this is not wasted, because it would only have
@@ -588,6 +588,223 @@ void RB_CalcModulateRGBAsByFog(byte* colors)
 		colors[1] *= f;
 		colors[2] *= f;
 		colors[3] *= f;
+	}
+}
+
+//==========================================================================
+//
+//	ComputeColors
+//
+//==========================================================================
+
+void ComputeColors(shaderStage_t* pStage)
+{
+	//
+	// rgbGen
+	//
+	switch (pStage->rgbGen)
+	{
+	case CGEN_IDENTITY:
+		Com_Memset(tess.svars.colors, 0xff, tess.numVertexes * 4);
+		break;
+
+	default:
+	case CGEN_IDENTITY_LIGHTING:
+		Com_Memset(tess.svars.colors, tr.identityLightByte, tess.numVertexes * 4);
+		break;
+
+	case CGEN_LIGHTING_DIFFUSE:
+		RB_CalcDiffuseColor((byte*)tess.svars.colors);
+		break;
+
+	case CGEN_EXACT_VERTEX:
+		Com_Memcpy(tess.svars.colors, tess.vertexColors, tess.numVertexes * sizeof(tess.vertexColors[0]));
+		break;
+
+	case CGEN_CONST:
+		for (int i = 0; i < tess.numVertexes; i++)
+		{
+			*(int*)tess.svars.colors[i] = *(int*)pStage->constantColor;
+		}
+		break;
+
+	case CGEN_VERTEX:
+		if (tr.identityLight == 1)
+		{
+			Com_Memcpy(tess.svars.colors, tess.vertexColors, tess.numVertexes * sizeof(tess.vertexColors[0]));
+		}
+		else
+		{
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				tess.svars.colors[i][0] = tess.vertexColors[i][0] * tr.identityLight;
+				tess.svars.colors[i][1] = tess.vertexColors[i][1] * tr.identityLight;
+				tess.svars.colors[i][2] = tess.vertexColors[i][2] * tr.identityLight;
+				tess.svars.colors[i][3] = tess.vertexColors[i][3];
+			}
+		}
+		break;
+
+	case CGEN_ONE_MINUS_VERTEX:
+		if (tr.identityLight == 1)
+		{
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				tess.svars.colors[i][0] = 255 - tess.vertexColors[i][0];
+				tess.svars.colors[i][1] = 255 - tess.vertexColors[i][1];
+				tess.svars.colors[i][2] = 255 - tess.vertexColors[i][2];
+			}
+		}
+		else
+		{
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				tess.svars.colors[i][0] = (255 - tess.vertexColors[i][0]) * tr.identityLight;
+				tess.svars.colors[i][1] = (255 - tess.vertexColors[i][1]) * tr.identityLight;
+				tess.svars.colors[i][2] = (255 - tess.vertexColors[i][2]) * tr.identityLight;
+			}
+		}
+		break;
+
+	case CGEN_FOG:
+		{
+			mbrush46_fog_t* fog = tr.world->fogs + tess.fogNum;
+
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				*(int*)&tess.svars.colors[i] = fog->colorInt;
+			}
+		}
+		break;
+
+	case CGEN_WAVEFORM:
+		RB_CalcWaveColor(&pStage->rgbWave, (byte*)tess.svars.colors);
+		break;
+
+	case CGEN_ENTITY:
+		RB_CalcColorFromEntity((byte*)tess.svars.colors);
+		break;
+
+	case CGEN_ONE_MINUS_ENTITY:
+		RB_CalcColorFromOneMinusEntity((byte*)tess.svars.colors);
+		break;
+	}
+
+	//
+	// alphaGen
+	//
+	switch (pStage->alphaGen)
+	{
+	case AGEN_SKIP:
+		break;
+
+	case AGEN_IDENTITY:
+		if (pStage->rgbGen != CGEN_IDENTITY)
+		{
+			if ((pStage->rgbGen == CGEN_VERTEX && tr.identityLight != 1) ||
+				pStage->rgbGen != CGEN_VERTEX)
+			{
+				for (int i = 0; i < tess.numVertexes; i++)
+				{
+					tess.svars.colors[i][3] = 0xff;
+				}
+			}
+		}
+		break;
+
+	case AGEN_CONST:
+		if (pStage->rgbGen != CGEN_CONST)
+		{
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				tess.svars.colors[i][3] = pStage->constantColor[3];
+			}
+		}
+		break;
+
+	case AGEN_WAVEFORM:
+		RB_CalcWaveAlpha(&pStage->alphaWave, (byte*)tess.svars.colors);
+		break;
+
+	case AGEN_LIGHTING_SPECULAR:
+		RB_CalcSpecularAlpha((byte*)tess.svars.colors);
+		break;
+
+	case AGEN_ENTITY:
+		RB_CalcAlphaFromEntity(( byte*)tess.svars.colors);
+		break;
+
+	case AGEN_ONE_MINUS_ENTITY:
+		RB_CalcAlphaFromOneMinusEntity((byte*)tess.svars.colors);
+		break;
+
+    case AGEN_VERTEX:
+		if (pStage->rgbGen != CGEN_VERTEX)
+		{
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				tess.svars.colors[i][3] = tess.vertexColors[i][3];
+			}
+		}
+		break;
+
+	case AGEN_ONE_MINUS_VERTEX:
+		for (int i = 0; i < tess.numVertexes; i++)
+		{
+			tess.svars.colors[i][3] = 255 - tess.vertexColors[i][3];
+		}
+		break;
+
+	case AGEN_PORTAL:
+		for (int i = 0; i < tess.numVertexes; i++ )
+		{
+			vec3_t v;
+			VectorSubtract(tess.xyz[i], backEnd.viewParms.orient.origin, v);
+			float len = VectorLength(v);
+
+			len /= tess.shader->portalRange;
+
+			byte alpha;
+			if (len < 0)
+			{
+				alpha = 0;
+			}
+			else if (len > 1)
+			{
+				alpha = 0xff;
+			}
+			else
+			{
+				alpha = len * 0xff;
+			}
+
+			tess.svars.colors[i][3] = alpha;
+		}
+		break;
+	}
+
+	//
+	// fog adjustment for colors to fade out as fog increases
+	//
+	if (tess.fogNum)
+	{
+		switch (pStage->adjustColorsForFog)
+		{
+		case ACFF_MODULATE_RGB:
+			RB_CalcModulateColorsByFog((byte*)tess.svars.colors);
+			break;
+
+		case ACFF_MODULATE_ALPHA:
+			RB_CalcModulateAlphasByFog((byte*)tess.svars.colors);
+			break;
+
+		case ACFF_MODULATE_RGBA:
+			RB_CalcModulateRGBAsByFog((byte*)tess.svars.colors);
+			break;
+
+		case ACFF_NONE:
+			break;
+		}
 	}
 }
 

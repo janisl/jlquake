@@ -391,16 +391,7 @@ void RB_CalcDeformNormals(deformStage_t* ds);
 void RB_CalcBulgeVertexes(deformStage_t* ds);
 void RB_CalcMoveVertexes(deformStage_t* ds);
 void RB_CalcDiffuseColor(byte* colors);
-void RB_CalcWaveColor(const waveForm_t* wf, byte* dstColors);
-void RB_CalcColorFromEntity(byte* dstColors);
-void RB_CalcColorFromOneMinusEntity(byte* dstColors);
-void RB_CalcWaveAlpha(const waveForm_t* wf, byte* dstColors);
-void RB_CalcSpecularAlpha(byte* alphas);
-void RB_CalcAlphaFromEntity(byte* dstColors);
-void RB_CalcAlphaFromOneMinusEntity(byte* dstColors);
-void RB_CalcModulateColorsByFog(byte* dstColors);
-void RB_CalcModulateAlphasByFog(byte* dstColors);
-void RB_CalcModulateRGBAsByFog(byte* dstColors);
+void ComputeColors(shaderStage_t* pStage);
 void RB_CalcFogTexCoords(float* dstTexCoords);
 
 //
