@@ -514,6 +514,7 @@ void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
 int R_CullLocalBox(vec3_t bounds[2]);
 int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
+void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 
 // font stuff
 void R_InitFreeType();
