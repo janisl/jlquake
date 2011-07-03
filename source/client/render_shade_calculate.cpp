@@ -251,6 +251,82 @@ void RB_CalcMoveVertexes(deformStage_t* ds)
 	}
 }
 
+//==========================================================================
+//
+//	DeformText
+//
+//	Change a polygon into a bunch of text polygons
+//
+//==========================================================================
+
+void DeformText(const char* text)
+{
+	vec3_t height;
+	height[0] = 0;
+	height[1] = 0;
+	height[2] = -1;
+	vec3_t width;
+	CrossProduct(tess.normal[0], height, width);
+
+	// find the midpoint of the box
+	vec3_t mid;
+	VectorClear(mid);
+	float bottom = 999999;
+	float top = -999999;
+	for (int i = 0; i < 4; i++)
+	{
+		VectorAdd(tess.xyz[i], mid, mid);
+		if (tess.xyz[i][2] < bottom)
+		{
+			bottom = tess.xyz[i][2];
+		}
+		if (tess.xyz[i][2] > top)
+		{
+			top = tess.xyz[i][2];
+		}
+	}
+	vec3_t origin;
+	VectorScale(mid, 0.25f, origin);
+
+	// determine the individual character size
+	height[0] = 0;
+	height[1] = 0;
+	height[2] = (top - bottom) * 0.5f;
+
+	VectorScale(width, height[2] * -0.75f, width);
+
+	// determine the starting position
+	int len = QStr::Length(text);
+	VectorMA(origin, (len - 1), width, origin);
+
+	// clear the shader indexes
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
+
+	byte color[4];
+	color[0] = color[1] = color[2] = color[3] = 255;
+
+	// draw each character
+	for (int i = 0; i < len; i++)
+	{
+		int ch = text[i];
+		ch &= 255;
+
+		if (ch != ' ')
+		{
+			int row = ch >> 4;
+			int col = ch & 15;
+
+			float frow = row * 0.0625f;
+			float fcol = col * 0.0625f;
+			float size = 0.0625f;
+
+			RB_AddQuadStampExt(origin, width, height, color, fcol, frow, fcol + size, frow + size);
+		}
+		VectorMA(origin, -2, width, origin);
+	}
+}
+
 /*
 ====================================================================
 
