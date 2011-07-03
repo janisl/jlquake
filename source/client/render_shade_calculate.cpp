@@ -134,7 +134,7 @@ DEFORMATIONS
 //
 //==========================================================================
 
-void RB_CalcDeformNormals(deformStage_t* ds)
+static void RB_CalcDeformNormals(deformStage_t* ds)
 {
 	float* xyz = (float*)tess.xyz;
 	float* normal = (float*)tess.normal;
@@ -166,7 +166,7 @@ void RB_CalcDeformNormals(deformStage_t* ds)
 //
 //==========================================================================
 
-void RB_CalcDeformVertexes(deformStage_t* ds)
+static void RB_CalcDeformVertexes(deformStage_t* ds)
 {
 	float* xyz = (float*)tess.xyz;
 	float* normal = (float*)tess.normal;
@@ -214,7 +214,7 @@ void RB_CalcDeformVertexes(deformStage_t* ds)
 //
 //==========================================================================
 
-void RB_CalcBulgeVertexes(deformStage_t* ds)
+static void RB_CalcBulgeVertexes(deformStage_t* ds)
 {
 	const float* st = (const float*)tess.texCoords[0];
 	float* xyz = (float*) tess.xyz;
@@ -242,7 +242,7 @@ void RB_CalcBulgeVertexes(deformStage_t* ds)
 //
 //==========================================================================
 
-void RB_CalcMoveVertexes(deformStage_t* ds)
+static void RB_CalcMoveVertexes(deformStage_t* ds)
 {
 	float* table = TableForFunc(ds->deformationWave.func);
 
@@ -269,7 +269,7 @@ void RB_CalcMoveVertexes(deformStage_t* ds)
 //
 //==========================================================================
 
-void DeformText(const char* text)
+static void DeformText(const char* text)
 {
 	vec3_t height;
 	height[0] = 0;
@@ -359,7 +359,7 @@ static void GlobalVectorToLocal(const vec3_t in, vec3_t out)
 //
 //==========================================================================
 
-void AutospriteDeform()
+static void AutospriteDeform()
 {
 	if (tess.numVertexes & 3)
 	{
@@ -437,7 +437,7 @@ void AutospriteDeform()
 //
 //==========================================================================
 
-void Autosprite2Deform()
+static void Autosprite2Deform()
 {
 	if (tess.numVertexes & 3)
 	{
@@ -545,6 +545,65 @@ void Autosprite2Deform()
 				VectorMA(mid[j], -l, minor, v1);
 				VectorMA(mid[j], l, minor, v2);
 			}
+		}
+	}
+}
+
+//==========================================================================
+//
+//	RB_DeformTessGeometry
+//
+//==========================================================================
+
+void RB_DeformTessGeometry()
+{
+	for (int i = 0; i < tess.shader->numDeforms; i++)
+	{
+		deformStage_t* ds = &tess.shader->deforms[i];
+
+		switch (ds->deformation)
+		{
+		case DEFORM_NONE:
+			break;
+
+		case DEFORM_NORMALS:
+			RB_CalcDeformNormals(ds);
+			break;
+
+		case DEFORM_WAVE:
+			RB_CalcDeformVertexes(ds);
+			break;
+
+		case DEFORM_BULGE:
+			RB_CalcBulgeVertexes(ds);
+			break;
+
+		case DEFORM_MOVE:
+			RB_CalcMoveVertexes(ds);
+			break;
+
+		case DEFORM_PROJECTION_SHADOW:
+			RB_ProjectionShadowDeform();
+			break;
+
+		case DEFORM_AUTOSPRITE:
+			AutospriteDeform();
+			break;
+
+		case DEFORM_AUTOSPRITE2:
+			Autosprite2Deform();
+			break;
+
+		case DEFORM_TEXT0:
+		case DEFORM_TEXT1:
+		case DEFORM_TEXT2:
+		case DEFORM_TEXT3:
+		case DEFORM_TEXT4:
+		case DEFORM_TEXT5:
+		case DEFORM_TEXT6:
+		case DEFORM_TEXT7:
+			DeformText(backEnd.refdef.text[ds->deformation - DEFORM_TEXT0]);
+			break;
 		}
 	}
 }

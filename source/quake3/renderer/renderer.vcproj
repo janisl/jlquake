@@ -212,10 +212,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_shade_calc.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_shadows.cpp"
 				>
 			</File>

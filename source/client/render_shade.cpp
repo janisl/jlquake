@@ -207,7 +207,7 @@ void R_DrawElements(int numIndexes, const glIndex_t* indexes)
 //
 //==========================================================================
 
-void DrawTris(shaderCommands_t* input)
+static void DrawTris(shaderCommands_t* input)
 {
 	GL_Bind(tr.whiteImage);
 	qglColor3f(1, 1, 1);
@@ -244,7 +244,7 @@ void DrawTris(shaderCommands_t* input)
 //
 //==========================================================================
 
-void DrawNormals(shaderCommands_t* input)
+static void DrawNormals(shaderCommands_t* input)
 {
 	GL_Bind(tr.whiteImage);
 	qglColor3f(1, 1, 1);
