@@ -115,6 +115,8 @@ QCvar*		r_shadows;
 QCvar*		r_debugSort;
 QCvar*		r_showtris;
 QCvar*		r_shownormals;
+QCvar*		r_offsetFactor;
+QCvar*		r_offsetUnits;
 
 QCvar*		r_modulate;
 QCvar*		r_ambientScale;
@@ -319,6 +321,8 @@ void R_SharedRegister()
 	r_debugSort = Cvar_Get("r_debugSort", "0", CVAR_CHEAT);
 	r_showtris = Cvar_Get("r_showtris", "0", CVAR_CHEAT);
 	r_shownormals = Cvar_Get("r_shownormals", "0", CVAR_CHEAT);
+	r_offsetFactor = Cvar_Get("r_offsetfactor", "-1", CVAR_CHEAT);
+	r_offsetUnits = Cvar_Get("r_offsetunits", "-2", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

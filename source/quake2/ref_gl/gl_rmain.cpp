@@ -921,9 +921,6 @@ void R_InitSky(mbrush29_texture_t *mt)
 void R_SyncRenderThread()
 {
 }
-void RB_StageIteratorGeneric( void )
-{
-}
 void RB_StageIteratorSky( void )
 {
 }

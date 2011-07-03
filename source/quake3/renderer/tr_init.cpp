@@ -62,8 +62,6 @@ QCvar	*r_flares;
 QCvar	*r_showsky;
 QCvar	*r_finish;
 QCvar	*r_clear;
-QCvar	*r_offsetFactor;
-QCvar	*r_offsetUnits;
 QCvar	*r_lockpvs;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
@@ -619,8 +617,6 @@ void R_Register( void )
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 	r_showsky = Cvar_Get ("r_showsky", "0", CVAR_CHEAT);
 	r_clear = Cvar_Get ("r_clear", "0", CVAR_CHEAT);
-	r_offsetFactor = Cvar_Get( "r_offsetfactor", "-1", CVAR_CHEAT );
-	r_offsetUnits = Cvar_Get( "r_offsetunits", "-2", CVAR_CHEAT );
 	r_drawBuffer = Cvar_Get( "r_drawBuffer", "GL_BACK", CVAR_CHEAT );
 	r_lockpvs = Cvar_Get ("r_lockpvs", "0", CVAR_CHEAT);
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);

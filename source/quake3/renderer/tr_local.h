@@ -108,8 +108,6 @@ extern	QCvar	*r_showcluster;
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;
 extern  QCvar  *r_glDriver;
-extern	QCvar	*r_offsetFactor;
-extern	QCvar	*r_offsetUnits;
 
 extern	QCvar	*r_showsky;						// forces sky in front of all surfaces
 extern	QCvar	*r_clear;						// force screen clear every frame
@@ -187,7 +185,6 @@ TESSELATOR/SHADER DECLARATIONS
 ====================================================================
 */
 
-void RB_StageIteratorGeneric( void );
 void RB_StageIteratorSky( void );
 void RB_StageIteratorVertexLitTexture( void );
 void RB_StageIteratorLightmappedMultitexture( void );

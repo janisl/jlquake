@@ -608,6 +608,8 @@ extern QCvar*	r_shadows;				// controls shadows: 0 = none, 1 = blur, 2 = stencil
 extern QCvar*	r_debugSort;
 extern QCvar*	r_showtris;				// enables wireframe rendering of the world
 extern QCvar*	r_shownormals;			// draws wireframe normals
+extern QCvar*	r_offsetFactor;
+extern QCvar*	r_offsetUnits;
 
 extern QCvar*	r_modulate;
 extern QCvar*	r_ambientScale;
@@ -670,7 +672,6 @@ void R_InitSky(mbrush29_texture_t *mt);
 void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
 void GL_EndBuildingLightmaps (void);
 void GL_BeginBuildingLightmaps (model_t *m);
-void RB_StageIteratorGeneric( void );
 void RB_StageIteratorSky( void );
 void RB_StageIteratorVertexLitTexture( void );
 void RB_StageIteratorLightmappedMultitexture( void );

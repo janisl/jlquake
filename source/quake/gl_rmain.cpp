@@ -408,9 +408,6 @@ void GL_EndBuildingLightmaps (void)
 void GL_BeginBuildingLightmaps (model_t *m)
 {
 }
-void RB_StageIteratorGeneric( void )
-{
-}
 void RB_StageIteratorSky( void )
 {
 }
