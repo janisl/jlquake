@@ -401,5 +401,6 @@ void ComputeTexCoords(shaderStage_t* pStage);
 //	SHADOWS
 //
 void RB_ProjectionShadowDeform();
+void RB_ShadowTessEnd();
 
 extern shaderCommands_t		tess;
