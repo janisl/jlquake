@@ -83,7 +83,7 @@ static void R_DrawStripElements(int numIndexes, const glIndex_t *indexes, void (
 	element(indexes[1]);
 	element(indexes[2]);
 
-	int last[3] = { -1, -1, -1 };
+	glIndex_t last[3] = { -1, -1, -1 };
 	last[0] = indexes[0];
 	last[1] = indexes[1];
 	last[2] = indexes[2];
@@ -99,7 +99,7 @@ static void R_DrawStripElements(int numIndexes, const glIndex_t *indexes, void (
 			if ((indexes[i + 0] == last[2]) && (indexes[i + 1] == last[1]))
 			{
 				element(indexes[i + 2]);
-				qassert(indexes[i + 2] < tess.numVertexes);
+				qassert(indexes[i + 2] < (glIndex_t)tess.numVertexes);
 				even = true;
 			}
 			// otherwise we're done with this strip so finish it and start
@@ -197,4 +197,98 @@ void R_DrawElements(int numIndexes, const glIndex_t* indexes)
 	}
 
 	// anything else will cause no drawing
+}
+
+//==========================================================================
+//
+//	DrawTris
+//
+//	Draws triangle outlines for debugging
+//
+//==========================================================================
+
+void DrawTris(shaderCommands_t* input)
+{
+	GL_Bind(tr.whiteImage);
+	qglColor3f(1, 1, 1);
+
+	GL_State(GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE);
+	qglDepthRange(0, 0);
+
+	qglDisableClientState(GL_COLOR_ARRAY);
+	qglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	qglVertexPointer(3, GL_FLOAT, 16, input->xyz);	// padded for SIMD
+
+	if (qglLockArraysEXT)
+	{
+		qglLockArraysEXT(0, input->numVertexes);
+		QGL_LogComment("glLockArraysEXT\n");
+	}
+
+	R_DrawElements(input->numIndexes, input->indexes);
+
+	if (qglUnlockArraysEXT)
+	{
+		qglUnlockArraysEXT();
+		QGL_LogComment("glUnlockArraysEXT\n");
+	}
+	qglDepthRange(0, 1);
+}
+
+//==========================================================================
+//
+//	DrawNormals
+//
+//	Draws vertex normals for debugging
+//
+//==========================================================================
+
+void DrawNormals(shaderCommands_t* input)
+{
+	GL_Bind(tr.whiteImage);
+	qglColor3f(1, 1, 1);
+	qglDepthRange(0, 0);	// never occluded
+	GL_State(GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE);
+
+	qglBegin(GL_LINES);
+	for (int i = 0 ; i < input->numVertexes ; i++)
+	{
+		qglVertex3fv(input->xyz[i]);
+		vec3_t temp;
+		VectorMA(input->xyz[i], 2, input->normal[i], temp);
+		qglVertex3fv(temp);
+	}
+	qglEnd();
+
+	qglDepthRange(0, 1);
+}
+
+//==========================================================================
+//
+//	RB_BeginSurface
+//
+//	We must set some things up before beginning any tesselation, because a
+// surface may be forced to perform a RB_End due to overflow.
+//
+//==========================================================================
+
+void RB_BeginSurface(shader_t* shader, int fogNum)
+{
+	shader_t* state = shader->remappedShader ? shader->remappedShader : shader;
+
+	tess.numIndexes = 0;
+	tess.numVertexes = 0;
+	tess.shader = state;
+	tess.fogNum = fogNum;
+	tess.dlightBits = 0;		// will be OR'd in by surface functions
+	tess.xstages = state->stages;
+	tess.numPasses = state->numUnfoggedPasses;
+	tess.currentStageIteratorFunc = state->optimalStageIteratorFunc;
+
+	tess.shaderTime = backEnd.refdef.floatTime - tess.shader->timeOffset;
+	if (tess.shader->clampTime && tess.shaderTime >= tess.shader->clampTime)
+	{
+		tess.shaderTime = tess.shader->clampTime;
+	}
 }

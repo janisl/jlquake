@@ -384,6 +384,9 @@ shader_t* R_GetShaderByHandle(qhandle_t hShader);
 void R_ShaderList_f();
 
 void R_DrawElements(int numIndexes, const glIndex_t* indexes);
+void DrawTris(shaderCommands_t* input);
+void DrawNormals(shaderCommands_t* input);
+void RB_BeginSurface(shader_t* shader, int fogNum );
 
 void RB_CalcDeformVertexes(deformStage_t* ds);
 void RB_CalcDeformNormals(deformStage_t* ds);
