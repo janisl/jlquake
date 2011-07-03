@@ -356,8 +356,6 @@ void R_SetupGL (void)
 	R_SetupProjection();
 	qglMultMatrixf(tr.viewParms.projectionMatrix);
 
-	qglCullFace(GL_FRONT);
-
 	qglMatrixMode(GL_MODELVIEW);
 
 	R_RotateForViewer();
@@ -366,10 +364,15 @@ void R_SetupGL (void)
 	//
 	// set drawing parms
 	//
+	glState.faceCulling = -1;
 	if (gl_cull->value)
-		qglEnable(GL_CULL_FACE);
+	{
+		GL_Cull(CT_FRONT_SIDED);
+	}
 	else
-		qglDisable(GL_CULL_FACE);
+	{
+		GL_Cull(CT_TWO_SIDED);
+	}
 
 	GL_State(GLS_DEFAULT);
 }

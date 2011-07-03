@@ -65,5 +65,6 @@ void GL_Bind(image_t* Image);
 void GL_SelectTexture(int Unit);
 void GL_TexEnv(GLenum Value);
 void GL_State(unsigned long StateVector);
+void GL_Cull(int cullType);
 
 extern glstate_t	glState;		// outside of TR since it shouldn't be cleared during ref re-init

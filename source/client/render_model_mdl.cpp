@@ -1356,7 +1356,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 		if (clmodel->q1_flags & EF_SPECIAL_TRANS)
 		{
 			model_constant_alpha = 1.0f;
-			qglDisable(GL_CULL_FACE);
+			GL_Cull(CT_TWO_SIDED);
 			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA | GLS_DSTBLEND_SRC_ALPHA);
 		}
 		else if (tr.currentEntity->e.renderfx & RF_WATERTRANS)
@@ -1404,7 +1404,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 
 	if ((GGameType & GAME_Hexen2) && (clmodel->q1_flags & EF_SPECIAL_TRANS))
 	{
-		qglEnable(GL_CULL_FACE);
+		GL_Cull(CT_FRONT_SIDED);
 	}
 
 	GL_TexEnv(GL_REPLACE);

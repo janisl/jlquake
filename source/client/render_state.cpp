@@ -332,3 +332,51 @@ void GL_State(unsigned long stateBits)
 
 	glState.glStateBits = stateBits;
 }
+
+//==========================================================================
+//
+//	GL_Cull
+//
+//==========================================================================
+
+void GL_Cull(int cullType)
+{
+	if (glState.faceCulling == cullType)
+	{
+		return;
+	}
+
+	glState.faceCulling = cullType;
+
+	if (cullType == CT_TWO_SIDED)
+	{
+		qglDisable(GL_CULL_FACE);
+	} 
+	else 
+	{
+		qglEnable(GL_CULL_FACE);
+
+		if (cullType == CT_BACK_SIDED)
+		{
+			if (backEnd.viewParms.isMirror)
+			{
+				qglCullFace(GL_FRONT);
+			}
+			else
+			{
+				qglCullFace(GL_BACK);
+			}
+		}
+		else
+		{
+			if (backEnd.viewParms.isMirror)
+			{
+				qglCullFace(GL_BACK);
+			}
+			else
+			{
+				qglCullFace(GL_FRONT);
+			}
+		}
+	}
+}

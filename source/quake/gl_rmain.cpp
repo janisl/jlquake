@@ -262,18 +262,21 @@ void R_SetupGL (void)
 
 	qglMatrixMode(GL_MODELVIEW);
 
-	qglCullFace(GL_FRONT);
-
 	R_RotateForViewer();
 	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	//
 	// set drawing parms
 	//
+	glState.faceCulling = -1;
 	if (gl_cull->value)
-		qglEnable(GL_CULL_FACE);
+	{
+		GL_Cull(CT_FRONT_SIDED);
+	}
 	else
-		qglDisable(GL_CULL_FACE);
+	{
+		GL_Cull(CT_TWO_SIDED);
+	}
 
 	GL_State(GLS_DEFAULT);
 }

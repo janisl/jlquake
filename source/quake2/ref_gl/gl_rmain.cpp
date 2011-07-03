@@ -434,10 +434,15 @@ void R_SetupGL (void)
 	//
 	// set drawing parms
 	//
+	glState.faceCulling = -1;
 	if (gl_cull->value)
-		qglEnable(GL_CULL_FACE);
+	{
+		GL_Cull(CT_FRONT_SIDED);
+	}
 	else
-		qglDisable(GL_CULL_FACE);
+	{
+		GL_Cull(CT_TWO_SIDED);
+	}
 
 	GL_State(GLS_DEFAULT);
 }
@@ -541,7 +546,7 @@ void	R_SetGL2D (void)
 	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
-	qglDisable (GL_CULL_FACE);
+	GL_Cull(CT_TWO_SIDED);
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	qglColor4f (1,1,1,1);
 }
@@ -737,7 +742,7 @@ void R_BeginFrame( float camera_separation )
 	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
-	qglDisable (GL_CULL_FACE);
+	GL_Cull(CT_TWO_SIDED);
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	qglColor4f (1,1,1,1);
 

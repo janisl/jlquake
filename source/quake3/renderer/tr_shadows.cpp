@@ -55,7 +55,7 @@ void RB_ShadowFinish( void ) {
 	qglStencilFunc( GL_NOTEQUAL, 0, 255 );
 
 	qglDisable (GL_CLIP_PLANE0);
-	qglDisable (GL_CULL_FACE);
+	GL_Cull(CT_TWO_SIDED);
 
 	GL_Bind( tr.whiteImage );
 

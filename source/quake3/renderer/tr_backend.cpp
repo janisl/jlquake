@@ -22,49 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 
 /*
-** GL_Cull
-*/
-void GL_Cull( int cullType ) {
-	if ( glState.faceCulling == cullType ) {
-		return;
-	}
-
-	glState.faceCulling = cullType;
-
-	if ( cullType == CT_TWO_SIDED ) 
-	{
-		qglDisable( GL_CULL_FACE );
-	} 
-	else 
-	{
-		qglEnable( GL_CULL_FACE );
-
-		if ( cullType == CT_BACK_SIDED )
-		{
-			if ( backEnd.viewParms.isMirror )
-			{
-				qglCullFace( GL_FRONT );
-			}
-			else
-			{
-				qglCullFace( GL_BACK );
-			}
-		}
-		else
-		{
-			if ( backEnd.viewParms.isMirror )
-			{
-				qglCullFace( GL_BACK );
-			}
-			else
-			{
-				qglCullFace( GL_FRONT );
-			}
-		}
-	}
-}
-
-/*
 ================
 RB_Hyperspace
 

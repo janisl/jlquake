@@ -112,12 +112,12 @@ void GL_ScreenShot_f (void)
 void GL_SetDefaultState( void )
 {
 	qglClearColor (1,0, 0.5 , 0.5);
-	qglCullFace(GL_FRONT);
 	qglEnable(GL_TEXTURE_2D);
 
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
-	qglDisable (GL_CULL_FACE);
+	glState.faceCulling = -1;
+	GL_Cull(CT_TWO_SIDED);
 	qglDepthFunc (GL_LEQUAL);
 
 	qglColor4f (1,1,1,1);

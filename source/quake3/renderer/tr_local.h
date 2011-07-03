@@ -151,7 +151,6 @@ void R_AddDrawSurf( surfaceType_t *surface, shader_t *shader, int fogIndex, int 
 ** GL wrapper/helper functions
 */
 void	GL_SetDefaultState (void);
-void	GL_Cull( int cullType );
 
 void	RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *data, int client, qboolean dirty);
 

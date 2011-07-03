@@ -943,7 +943,7 @@ void GL_Set2D (void)
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
 
-	qglDisable (GL_CULL_FACE);
+	GL_Cull(CT_TWO_SIDED);
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	qglColor4f (1,1,1,1);

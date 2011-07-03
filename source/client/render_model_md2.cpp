@@ -698,7 +698,7 @@ void R_DrawMd2Model(trRefEntity_t* e)
 		qglMultMatrixf(tr.viewParms.projectionMatrix);
 		qglMatrixMode(GL_MODELVIEW);
 
-		qglCullFace(GL_BACK);
+		GL_Cull(CT_BACK_SIDED);
 	}
 
 	qglPushMatrix();
@@ -778,7 +778,7 @@ void R_DrawMd2Model(trRefEntity_t* e)
 		qglMatrixMode(GL_PROJECTION);
 		qglPopMatrix();
 		qglMatrixMode(GL_MODELVIEW);
-		qglCullFace(GL_FRONT);
+		GL_Cull(CT_FRONT_SIDED);
 	}
 
 	if (tr.currentEntity->e.renderfx & RF_TRANSLUCENT)
