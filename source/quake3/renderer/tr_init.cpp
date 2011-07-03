@@ -59,9 +59,7 @@ QCvar	*r_nocurves;
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
 QCvar	*r_flares;
-QCvar	*r_showtris;
 QCvar	*r_showsky;
-QCvar	*r_shownormals;
 QCvar	*r_finish;
 QCvar	*r_clear;
 QCvar	*r_offsetFactor;
@@ -75,8 +73,6 @@ QCvar	*r_lodCurveError;
 QCvar	*r_debugSurface;
 
 QCvar	*r_showImages;
-
-QCvar	*r_debugSort;
 
 /*
 ** InitOpenGL
@@ -602,8 +598,6 @@ void R_Register( void )
 	//
 	r_showImages = Cvar_Get( "r_showImages", "0", CVAR_TEMP );
 
-	r_debugSort = Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
-
 	r_nocurves = Cvar_Get ("r_nocurves", "0", CVAR_CHEAT );
 	r_drawworld = Cvar_Get ("r_drawworld", "1", CVAR_CHEAT );
 	r_portalOnly = Cvar_Get ("r_portalOnly", "0", CVAR_CHEAT );
@@ -623,9 +617,7 @@ void R_Register( void )
 	r_showcluster = Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
-	r_showtris = Cvar_Get ("r_showtris", "0", CVAR_CHEAT);
 	r_showsky = Cvar_Get ("r_showsky", "0", CVAR_CHEAT);
-	r_shownormals = Cvar_Get ("r_shownormals", "0", CVAR_CHEAT);
 	r_clear = Cvar_Get ("r_clear", "0", CVAR_CHEAT);
 	r_offsetFactor = Cvar_Get( "r_offsetfactor", "-1", CVAR_CHEAT );
 	r_offsetUnits = Cvar_Get( "r_offsetunits", "-2", CVAR_CHEAT );

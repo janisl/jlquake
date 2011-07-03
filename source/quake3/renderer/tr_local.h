@@ -111,9 +111,7 @@ extern  QCvar  *r_glDriver;
 extern	QCvar	*r_offsetFactor;
 extern	QCvar	*r_offsetUnits;
 
-extern	QCvar	*r_showtris;					// enables wireframe rendering of the world
 extern	QCvar	*r_showsky;						// forces sky in front of all surfaces
-extern	QCvar	*r_shownormals;					// draws wireframe normals
 extern	QCvar	*r_clear;						// force screen clear every frame
 
 extern	QCvar	*r_flares;						// light flares
@@ -129,7 +127,6 @@ extern	QCvar	*r_skipBackEnd;
 extern	QCvar	*r_debugSurface;
 
 extern	QCvar	*r_showImages;
-extern	QCvar	*r_debugSort;
 
 //====================================================================
 
@@ -190,7 +187,6 @@ TESSELATOR/SHADER DECLARATIONS
 ====================================================================
 */
 
-void RB_EndSurface(void);
 void RB_CheckOverflow( int verts, int indexes );
 #define RB_CHECKOVERFLOW(v,i) if (tess.numVertexes + (v) >= SHADER_MAX_VERTEXES || tess.numIndexes + (i) >= SHADER_MAX_INDEXES ) {RB_CheckOverflow(v,i);}
 

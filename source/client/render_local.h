@@ -605,6 +605,9 @@ extern QCvar*	r_primitives;			// "0" = based on compiled vertex array existance
 extern QCvar*	r_vertex_arrays;
 extern QCvar*	r_lerpmodels;
 extern QCvar*	r_shadows;				// controls shadows: 0 = none, 1 = blur, 2 = stencil, 3 = black planar projection
+extern QCvar*	r_debugSort;
+extern QCvar*	r_showtris;				// enables wireframe rendering of the world
+extern QCvar*	r_shownormals;			// draws wireframe normals
 
 extern QCvar*	r_modulate;
 extern QCvar*	r_ambientScale;

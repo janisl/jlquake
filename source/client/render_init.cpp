@@ -112,6 +112,9 @@ QCvar*		r_primitives;
 QCvar*		r_vertex_arrays;
 QCvar*		r_lerpmodels;
 QCvar*		r_shadows;
+QCvar*		r_debugSort;
+QCvar*		r_showtris;
+QCvar*		r_shownormals;
 
 QCvar*		r_modulate;
 QCvar*		r_ambientScale;
@@ -313,6 +316,9 @@ void R_SharedRegister()
 	r_ambientScale = Cvar_Get("r_ambientScale", "0.6", CVAR_CHEAT);
 	r_directedScale = Cvar_Get("r_directedScale", "1", CVAR_CHEAT);
 	r_debugLight = Cvar_Get("r_debuglight", "0", CVAR_TEMP);
+	r_debugSort = Cvar_Get("r_debugSort", "0", CVAR_CHEAT);
+	r_showtris = Cvar_Get("r_showtris", "0", CVAR_CHEAT);
+	r_shownormals = Cvar_Get("r_shownormals", "0", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
