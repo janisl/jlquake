@@ -38,7 +38,6 @@ QCvar*	r_dynamic;
 QCvar*	r_novis;
 QCvar*	r_netgraph;
 QCvar*	r_entdistance;
-QCvar*	gl_clear;
 QCvar*	gl_cull;
 QCvar*	gl_texsort;
 QCvar*	gl_polyblend;
@@ -439,7 +438,7 @@ R_Clear
 */
 void R_Clear (void)
 {
-	if (gl_clear->value)
+	if (r_clear->value)
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	else
 		qglClear (GL_DEPTH_BUFFER_BIT);

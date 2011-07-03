@@ -522,6 +522,8 @@ void R_DoneFreeType();
 
 void R_InitBackEndData();
 void R_FreeBackEndData();
+const void* RB_SetColor(const void* data);
+const void* RB_DrawBuffer(const void* data);
 
 void R_InitSkins();
 skin_t* R_GetSkinByHandle(qhandle_t hSkin);
@@ -611,6 +613,7 @@ extern QCvar*	r_showtris;				// enables wireframe rendering of the world
 extern QCvar*	r_shownormals;			// draws wireframe normals
 extern QCvar*	r_offsetFactor;
 extern QCvar*	r_offsetUnits;
+extern QCvar*	r_clear;				// force screen clear every frame
 
 extern QCvar*	r_modulate;
 extern QCvar*	r_ambientScale;
@@ -618,6 +621,9 @@ extern QCvar*	r_directedScale;
 extern QCvar*	r_debugLight;
 
 extern QCvar*	r_lightlevel;	// FIXME: This is a HACK to get the client's light level
+
+extern QCvar*	r_lodbias;				// push/pull LOD transitions
+extern QCvar*	r_lodscale;
 
 extern trGlobals_t	tr;
 

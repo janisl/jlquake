@@ -63,7 +63,6 @@ QCvar	*gl_dynamic;
 QCvar	*gl_skymip;
 QCvar	*gl_showtris;
 QCvar	*gl_finish;
-QCvar	*gl_clear;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
 QCvar  *gl_saturatelighting;
@@ -454,7 +453,7 @@ R_Clear
 */
 void R_Clear (void)
 {
-	if (gl_clear->value)
+	if (r_clear->value)
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	else
 		qglClear (GL_DEPTH_BUFFER_BIT);
@@ -623,7 +622,6 @@ void R_Register( void )
 	gl_skymip = Cvar_Get ("gl_skymip", "0", 0);
 	gl_showtris = Cvar_Get ("gl_showtris", "0", 0);
 	gl_finish = Cvar_Get ("gl_finish", "0", CVAR_ARCHIVE);
-	gl_clear = Cvar_Get ("gl_clear", "0", 0);
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );

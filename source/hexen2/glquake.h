@@ -115,7 +115,6 @@ extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 extern	QCvar*	r_wholeframe;
 
-extern	QCvar*	gl_clear;
 extern	QCvar*	gl_cull;
 extern	QCvar*	gl_texsort;
 extern	QCvar*	gl_polyblend;

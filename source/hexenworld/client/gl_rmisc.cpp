@@ -169,7 +169,6 @@ void R_Init (void)
 	r_netgraph = Cvar_Get("r_netgraph","0", 0);
 	r_entdistance = Cvar_Get("r_entdistance", "0", CVAR_ARCHIVE);
 
-	gl_clear = Cvar_Get("gl_clear", "0", 0);
 	gl_texsort = Cvar_Get("gl_texsort", "1", 0);
 
 	if (qglActiveTextureARB)

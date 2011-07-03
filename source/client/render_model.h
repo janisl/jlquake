@@ -785,6 +785,8 @@ struct model_t
 	int			 q3_numLods;
 };
 
+struct trRefEntity_t;
+
 model_t* R_AllocModel();
 void R_ModelInit();
 void R_FreeModel(model_t* Mod);
@@ -793,23 +795,24 @@ model_t* R_GetModelByHandle(qhandle_t Index);
 
 void Mod_LoadSpriteModel(model_t* mod, void* buffer);
 void Mod_FreeSpriteModel(model_t* mod);
-void R_DrawSprModel(struct trRefEntity_t* e);
+void R_DrawSprModel(trRefEntity_t* e);
 
 void Mod_LoadSprite2Model(model_t* mod, void* buffer, int modfilelen);
 void Mod_FreeSprite2Model(model_t* mod);
-void R_DrawSp2Model(struct trRefEntity_t* e);
+void R_DrawSp2Model(trRefEntity_t* e);
 
 void Mod_LoadMdlModel(model_t* mod, const void* buffer);
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
 void Mod_FreeMdlModel(model_t* mod);
-void R_DrawMdlModel(struct trRefEntity_t* e);
+void R_DrawMdlModel(trRefEntity_t* e);
 
 void Mod_LoadMd2Model(model_t* mod, const void* buffer);
 void Mod_FreeMd2Model(model_t* mod);
-void R_DrawMd2Model(struct trRefEntity_t* e);
+void R_DrawMd2Model(trRefEntity_t* e);
 
 bool R_LoadMd3(model_t* mod, void* buffer);
 void R_FreeMd3(model_t* mod);
+void R_AddMD3Surfaces(trRefEntity_t* e);
 
 bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name);
 void R_FreeMd4(model_t* mod);

@@ -58,7 +58,6 @@ QCvar  *r_glDriver;
 QCvar	*r_flares;
 QCvar	*r_showsky;
 QCvar	*r_finish;
-QCvar	*r_clear;
 QCvar	*r_lockpvs;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
@@ -611,7 +610,6 @@ void R_Register( void )
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 	r_showsky = Cvar_Get ("r_showsky", "0", CVAR_CHEAT);
-	r_clear = Cvar_Get ("r_clear", "0", CVAR_CHEAT);
 	r_drawBuffer = Cvar_Get( "r_drawBuffer", "GL_BACK", CVAR_CHEAT );
 	r_lockpvs = Cvar_Get ("r_lockpvs", "0", CVAR_CHEAT);
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);

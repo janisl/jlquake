@@ -175,7 +175,6 @@ void R_Init (void)
 	r_novis = Cvar_Get("r_novis", "0", 0);
 	r_netgraph = Cvar_Get("r_netgraph", "0", 0);
 
-	gl_clear = Cvar_Get("gl_clear", "0", 0);
 	gl_texsort = Cvar_Get("gl_texsort", "1", 0);
 
 	if (qglActiveTextureARB)
