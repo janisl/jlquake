@@ -88,9 +88,6 @@ extern QCvar	*r_ignore;				// used for debugging anything
 
 extern QCvar	*r_measureOverdraw;		// enables stencil buffer overdraw measurement
 
-extern QCvar	*r_lodbias;				// push/pull LOD transitions
-extern QCvar	*r_lodscale;
-
 extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
 extern QCvar	*r_fastsky;				// controls whether sky should be cleared or drawn
 extern QCvar	*r_drawSun;				// controls drawing of sun quad
@@ -132,7 +129,6 @@ void R_SwapBuffers( int );
 
 void R_RenderView( viewParms_t *parms );
 
-void R_AddMD3Surfaces( trRefEntity_t *e );
 void R_AddNullModelSurfaces( trRefEntity_t *e );
 void R_AddBeamSurfaces( trRefEntity_t *e );
 void R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );

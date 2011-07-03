@@ -44,9 +44,6 @@ QCvar	*r_fastsky;
 QCvar	*r_drawSun;
 QCvar	*r_dlightBacks;
 
-QCvar	*r_lodbias;
-QCvar	*r_lodscale;
-
 QCvar	*r_norefresh;
 QCvar	*r_drawentities;
 QCvar	*r_drawworld;
@@ -578,7 +575,6 @@ void R_Register( void )
 	// archived variables that can change at any time
 	//
 	r_lodCurveError = Cvar_Get( "r_lodCurveError", "250", CVAR_ARCHIVE|CVAR_CHEAT );
-	r_lodbias = Cvar_Get( "r_lodbias", "0", CVAR_ARCHIVE );
 	r_flares = Cvar_Get ("r_flares", "0", CVAR_ARCHIVE );
 	r_fastsky = Cvar_Get( "r_fastsky", "0", CVAR_ARCHIVE );
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
@@ -607,7 +603,6 @@ void R_Register( void )
 	r_skipBackEnd = Cvar_Get ("r_skipBackEnd", "0", CVAR_CHEAT);
 
 	r_measureOverdraw = Cvar_Get( "r_measureOverdraw", "0", CVAR_CHEAT );
-	r_lodscale = Cvar_Get( "r_lodscale", "5", CVAR_CHEAT );
 	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", CVAR_CHEAT );
 	r_ignore = Cvar_Get( "r_ignore", "1", CVAR_CHEAT );

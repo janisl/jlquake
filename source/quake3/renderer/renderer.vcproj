@@ -196,10 +196,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_mesh.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_model.cpp"
 				>
 			</File>
