@@ -601,9 +601,3 @@ void GL_BeginBuildingLightmaps (model_t *m)
 void RB_StageIteratorSky( void )
 {
 }
-void RB_StageIteratorVertexLitTexture( void )
-{
-}
-void RB_StageIteratorLightmappedMultitexture( void )
-{
-}

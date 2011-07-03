@@ -208,10 +208,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_shade.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_shadows.cpp"
 				>
 			</File>

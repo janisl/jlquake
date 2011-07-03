@@ -186,8 +186,6 @@ TESSELATOR/SHADER DECLARATIONS
 */
 
 void RB_StageIteratorSky( void );
-void RB_StageIteratorVertexLitTexture( void );
-void RB_StageIteratorLightmappedMultitexture( void );
 
 void RB_ShowImages( void );
 

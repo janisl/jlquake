@@ -383,12 +383,10 @@ qhandle_t R_RegisterShaderFromImage(const char* Name, int LightmapIndex, image_t
 shader_t* R_GetShaderByHandle(qhandle_t hShader);
 void R_ShaderList_f();
 
-void R_DrawElements(int numIndexes, const glIndex_t* indexes);
-void R_BindAnimatedImage(textureBundle_t* bundle);
 void RB_BeginSurface(shader_t* shader, int fogNum );
-void ProjectDlightTexture();
-void RB_FogPass();
 void RB_StageIteratorGeneric();
+void RB_StageIteratorVertexLitTexture();
+void RB_StageIteratorLightmappedMultitexture();
 void RB_EndSurface();
 
 void RB_DeformTessGeometry();

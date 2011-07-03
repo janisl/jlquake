@@ -169,7 +169,7 @@ static void R_DrawStripElements(int numIndexes, const glIndex_t *indexes, void (
 //
 //==========================================================================
 
-void R_DrawElements(int numIndexes, const glIndex_t* indexes)
+static void R_DrawElements(int numIndexes, const glIndex_t* indexes)
 {
 	int primitives = r_primitives->integer;
 
@@ -221,7 +221,7 @@ SURFACE SHADERS
 //
 //==========================================================================
 
-void R_BindAnimatedImage(textureBundle_t* bundle)
+static void R_BindAnimatedImage(textureBundle_t* bundle)
 {
 	if (bundle->isVideoMap)
 	{
@@ -481,7 +481,7 @@ static void RB_IterateStagesGeneric(shaderCommands_t* input)
 //
 //==========================================================================
 
-void ProjectDlightTexture()
+static void ProjectDlightTexture()
 {
 	if (!backEnd.refdef.num_dlights)
 	{
@@ -622,7 +622,7 @@ void ProjectDlightTexture()
 //
 //==========================================================================
 
-void RB_FogPass()
+static void RB_FogPass()
 {
 	qglEnableClientState(GL_COLOR_ARRAY);
 	qglColorPointer(4, GL_UNSIGNED_BYTE, 0, tess.svars.colors);
@@ -766,6 +766,190 @@ void RB_StageIteratorGeneric()
 	if (input->shader->polygonOffset)
 	{
 		qglDisable(GL_POLYGON_OFFSET_FILL);
+	}
+}
+
+//==========================================================================
+//
+//	RB_StageIteratorVertexLitTexture
+//
+//==========================================================================
+
+void RB_StageIteratorVertexLitTexture()
+{
+	shaderCommands_t* input = &tess;
+
+	//
+	// compute colors
+	//
+	RB_CalcDiffuseColor((byte*)tess.svars.colors);
+
+	//
+	// log this call
+	//
+	if (r_logFile->integer) 
+	{
+		// don't just call LogComment, or we will get
+		// a call to va() every frame!
+		QGL_LogComment(va("--- RB_StageIteratorVertexLitTexturedUnfogged( %s ) ---\n", tess.shader->name));
+	}
+
+	//
+	// set face culling appropriately
+	//
+	GL_Cull(input->shader->cullType);
+
+	//
+	// set arrays and lock
+	//
+	qglEnableClientState(GL_COLOR_ARRAY);
+	qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	qglColorPointer(4, GL_UNSIGNED_BYTE, 0, tess.svars.colors);
+	qglTexCoordPointer(2, GL_FLOAT, 16, tess.texCoords[0][0]);
+	qglVertexPointer(3, GL_FLOAT, 16, input->xyz);
+
+	if (qglLockArraysEXT)
+	{
+		qglLockArraysEXT(0, input->numVertexes);
+		QGL_LogComment("glLockArraysEXT\n");
+	}
+
+	//
+	// call special shade routine
+	//
+	R_BindAnimatedImage(&tess.xstages[0]->bundle[0]);
+	GL_State(tess.xstages[0]->stateBits);
+	R_DrawElements(input->numIndexes, input->indexes);
+
+	// 
+	// now do any dynamic lighting needed
+	//
+	if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE)
+	{
+		ProjectDlightTexture();
+	}
+
+	//
+	// now do fog
+	//
+	if (tess.fogNum && tess.shader->fogPass)
+	{
+		RB_FogPass();
+	}
+
+	// 
+	// unlock arrays
+	//
+	if (qglUnlockArraysEXT) 
+	{
+		qglUnlockArraysEXT();
+		QGL_LogComment("glUnlockArraysEXT\n");
+	}
+}
+
+//==========================================================================
+//
+//	RB_StageIteratorLightmappedMultitexture
+//
+//==========================================================================
+
+void RB_StageIteratorLightmappedMultitexture()
+{
+	shaderCommands_t* input = &tess;
+
+	//
+	// log this call
+	//
+	if (r_logFile->integer)
+	{
+		// don't just call LogComment, or we will get
+		// a call to va() every frame!
+		QGL_LogComment(va("--- RB_StageIteratorLightmappedMultitexture( %s ) ---\n", tess.shader->name));
+	}
+
+	//
+	// set face culling appropriately
+	//
+	GL_Cull(input->shader->cullType);
+
+	//
+	// set color, pointers, and lock
+	//
+	GL_State(GLS_DEFAULT);
+	qglVertexPointer(3, GL_FLOAT, 16, input->xyz);
+
+	qglEnableClientState(GL_COLOR_ARRAY);
+	qglColorPointer(4, GL_UNSIGNED_BYTE, 0, tess.constantColor255);
+
+	//
+	// select base stage
+	//
+	GL_SelectTexture(0);
+
+	qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	R_BindAnimatedImage(&tess.xstages[0]->bundle[0]);
+	qglTexCoordPointer(2, GL_FLOAT, 16, tess.texCoords[0][0]);
+
+	//
+	// configure second stage
+	//
+	GL_SelectTexture(1);
+	qglEnable(GL_TEXTURE_2D);
+	if (r_lightmap->integer)
+	{
+		GL_TexEnv(GL_REPLACE);
+	}
+	else
+	{
+		GL_TexEnv(GL_MODULATE);
+	}
+	R_BindAnimatedImage(&tess.xstages[0]->bundle[1]);
+	qglEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	qglTexCoordPointer(2, GL_FLOAT, 16, tess.texCoords[0][1]);
+
+	//
+	// lock arrays
+	//
+	if (qglLockArraysEXT)
+	{
+		qglLockArraysEXT(0, input->numVertexes);
+		QGL_LogComment("glLockArraysEXT\n");
+	}
+
+	R_DrawElements(input->numIndexes, input->indexes);
+
+	//
+	// disable texturing on TEXTURE1, then select TEXTURE0
+	//
+	qglDisable(GL_TEXTURE_2D);
+	qglDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	GL_SelectTexture(0);
+
+	// 
+	// now do any dynamic lighting needed
+	//
+	if (tess.dlightBits && tess.shader->sort <= SS_OPAQUE)
+	{
+		ProjectDlightTexture();
+	}
+
+	//
+	// now do fog
+	//
+	if (tess.fogNum && tess.shader->fogPass)
+	{
+		RB_FogPass();
+	}
+
+	//
+	// unlock arrays
+	//
+	if (qglUnlockArraysEXT)
+	{
+		qglUnlockArraysEXT();
+		QGL_LogComment("glUnlockArraysEXT\n");
 	}
 }
 

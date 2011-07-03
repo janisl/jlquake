@@ -673,7 +673,5 @@ void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
 void GL_EndBuildingLightmaps (void);
 void GL_BeginBuildingLightmaps (model_t *m);
 void RB_StageIteratorSky( void );
-void RB_StageIteratorVertexLitTexture( void );
-void RB_StageIteratorLightmappedMultitexture( void );
 
 #endif
