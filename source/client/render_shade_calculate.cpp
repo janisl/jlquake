@@ -78,7 +78,7 @@ static float* TableForFunc(genFunc_t func)
 //
 //==========================================================================
 
-float EvalWaveForm(const waveForm_t* wf)
+static float EvalWaveForm(const waveForm_t* wf)
 {
 	float* table = TableForFunc(wf->func);
 
@@ -920,5 +920,272 @@ void RB_CalcFogTexCoords(float* st)
 		st[0] = s;
 		st[1] = t;
 		st += 2;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcEnvironmentTexCoords
+//
+//==========================================================================
+
+static void RB_CalcEnvironmentTexCoords(float* st) 
+{
+	float* v = tess.xyz[0];
+	float* normal = tess.normal[0];
+
+	for (int i = 0; i < tess.numVertexes; i++, v += 4, normal += 4, st += 2)
+	{
+		vec3_t viewer;
+		VectorSubtract(backEnd.orient.viewOrigin, v, viewer);
+		VectorNormalizeFast(viewer);
+
+		float d = DotProduct(normal, viewer);
+
+		vec3_t reflected;
+		reflected[0] = normal[0] * 2 * d - viewer[0];
+		reflected[1] = normal[1] * 2 * d - viewer[1];
+		reflected[2] = normal[2] * 2 * d - viewer[2];
+
+		st[0] = 0.5 + reflected[1] * 0.5;
+		st[1] = 0.5 - reflected[2] * 0.5;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcTurbulentTexCoords
+//
+//==========================================================================
+
+static void RB_CalcTurbulentTexCoords(const waveForm_t* wf, float* st)
+{
+	float now = wf->phase + tess.shaderTime * wf->frequency;
+
+	for (int i = 0; i < tess.numVertexes; i++, st += 2)
+	{
+		float s = st[0];
+		float t = st[1];
+
+		st[0] = s + tr.sinTable[((int)(((tess.xyz[i][0] + tess.xyz[i][2]) * 1.0 / 128 * 0.125 + now) * FUNCTABLE_SIZE)) & FUNCTABLE_MASK] * wf->amplitude;
+		st[1] = t + tr.sinTable[((int)((tess.xyz[i][1] * 1.0 / 128 * 0.125 + now) * FUNCTABLE_SIZE)) & FUNCTABLE_MASK] * wf->amplitude;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcScrollTexCoords
+//
+//==========================================================================
+
+static void RB_CalcScrollTexCoords(const float scrollSpeed[2], float* st)
+{
+	float timeScale = tess.shaderTime;
+
+	float adjustedScrollS = scrollSpeed[0] * timeScale;
+	float adjustedScrollT = scrollSpeed[1] * timeScale;
+
+	// clamp so coordinates don't continuously get larger, causing problems
+	// with hardware limits
+	adjustedScrollS = adjustedScrollS - floor(adjustedScrollS);
+	adjustedScrollT = adjustedScrollT - floor(adjustedScrollT);
+
+	for (int i = 0; i < tess.numVertexes; i++, st += 2)
+	{
+		st[0] += adjustedScrollS;
+		st[1] += adjustedScrollT;
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcScaleTexCoords
+//
+//==========================================================================
+
+static void RB_CalcScaleTexCoords(const float scale[2], float* st)
+{
+	for (int i = 0; i < tess.numVertexes; i++, st += 2)
+	{
+		st[0] *= scale[0];
+		st[1] *= scale[1];
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcTransformTexCoords
+//
+//==========================================================================
+
+static void RB_CalcTransformTexCoords(const texModInfo_t* tmi, float* st)
+{
+	for (int i = 0; i < tess.numVertexes; i++, st += 2)
+	{
+		float s = st[0];
+		float t = st[1];
+
+		st[0] = s * tmi->matrix[0][0] + t * tmi->matrix[1][0] + tmi->translate[0];
+		st[1] = s * tmi->matrix[0][1] + t * tmi->matrix[1][1] + tmi->translate[1];
+	}
+}
+
+//==========================================================================
+//
+//	RB_CalcStretchTexCoords
+//
+//==========================================================================
+
+static void RB_CalcStretchTexCoords(const waveForm_t* wf, float* st)
+{
+	float p = 1.0f / EvalWaveForm(wf);
+
+	texModInfo_t tmi;
+	tmi.matrix[0][0] = p;
+	tmi.matrix[1][0] = 0;
+	tmi.translate[0] = 0.5f - 0.5f * p;
+
+	tmi.matrix[0][1] = 0;
+	tmi.matrix[1][1] = p;
+	tmi.translate[1] = 0.5f - 0.5f * p;
+
+	RB_CalcTransformTexCoords(&tmi, st);
+}
+
+//==========================================================================
+//
+//	RB_CalcRotateTexCoords
+//
+//==========================================================================
+
+static void RB_CalcRotateTexCoords(float degsPerSecond, float* st)
+{
+	float timeScale = tess.shaderTime;
+	texModInfo_t tmi;
+
+	float degs = -degsPerSecond * timeScale;
+	int index = (int)(degs * (FUNCTABLE_SIZE / 360.0f));
+
+	float sinValue = tr.sinTable[index & FUNCTABLE_MASK];
+	float cosValue = tr.sinTable[(index + FUNCTABLE_SIZE / 4) & FUNCTABLE_MASK];
+
+	tmi.matrix[0][0] = cosValue;
+	tmi.matrix[1][0] = -sinValue;
+	tmi.translate[0] = 0.5 - 0.5 * cosValue + 0.5 * sinValue;
+
+	tmi.matrix[0][1] = sinValue;
+	tmi.matrix[1][1] = cosValue;
+	tmi.translate[1] = 0.5 - 0.5 * sinValue - 0.5 * cosValue;
+
+	RB_CalcTransformTexCoords(&tmi, st);
+}
+
+//==========================================================================
+//
+//	ComputeTexCoords
+//
+//==========================================================================
+
+void ComputeTexCoords(shaderStage_t* pStage)
+{
+	for (int b = 0; b < NUM_TEXTURE_BUNDLES; b++)
+	{
+		//
+		// generate the texture coordinates
+		//
+		switch (pStage->bundle[b].tcGen)
+		{
+		case TCGEN_IDENTITY:
+			Com_Memset(tess.svars.texcoords[b], 0, sizeof(float) * 2 * tess.numVertexes);
+			break;
+
+		case TCGEN_TEXTURE:
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				tess.svars.texcoords[b][i][0] = tess.texCoords[i][0][0];
+				tess.svars.texcoords[b][i][1] = tess.texCoords[i][0][1];
+			}
+			break;
+
+		case TCGEN_LIGHTMAP:
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				tess.svars.texcoords[b][i][0] = tess.texCoords[i][1][0];
+				tess.svars.texcoords[b][i][1] = tess.texCoords[i][1][1];
+			}
+			break;
+
+		case TCGEN_VECTOR:
+			for (int i = 0; i < tess.numVertexes; i++)
+			{
+				tess.svars.texcoords[b][i][0] = DotProduct(tess.xyz[i], pStage->bundle[b].tcGenVectors[0]);
+				tess.svars.texcoords[b][i][1] = DotProduct(tess.xyz[i], pStage->bundle[b].tcGenVectors[1]);
+			}
+			break;
+
+		case TCGEN_FOG:
+			RB_CalcFogTexCoords((float*)tess.svars.texcoords[b]);
+			break;
+
+		case TCGEN_ENVIRONMENT_MAPPED:
+			RB_CalcEnvironmentTexCoords((float*)tess.svars.texcoords[b]);
+			break;
+
+		case TCGEN_BAD:
+			return;
+		}
+
+		//
+		// alter texture coordinates
+		//
+		for (int tm = 0; tm < pStage->bundle[b].numTexMods ; tm++)
+		{
+			switch (pStage->bundle[b].texMods[tm].type)
+			{
+			case TMOD_NONE:
+				tm = TR_MAX_TEXMODS;		// break out of for loop
+				break;
+
+			case TMOD_TURBULENT:
+				RB_CalcTurbulentTexCoords(&pStage->bundle[b].texMods[tm].wave, 
+					(float*)tess.svars.texcoords[b]);
+				break;
+
+			case TMOD_ENTITY_TRANSLATE:
+				RB_CalcScrollTexCoords(backEnd.currentEntity->e.shaderTexCoord,
+					(float*)tess.svars.texcoords[b]);
+				break;
+
+			case TMOD_SCROLL:
+				RB_CalcScrollTexCoords(pStage->bundle[b].texMods[tm].scroll,
+					(float*)tess.svars.texcoords[b]);
+				break;
+
+			case TMOD_SCALE:
+				RB_CalcScaleTexCoords(pStage->bundle[b].texMods[tm].scale,
+					(float*)tess.svars.texcoords[b]);
+				break;
+			
+			case TMOD_STRETCH:
+				RB_CalcStretchTexCoords(&pStage->bundle[b].texMods[tm].wave, 
+					(float*)tess.svars.texcoords[b]);
+				break;
+
+			case TMOD_TRANSFORM:
+				RB_CalcTransformTexCoords(&pStage->bundle[b].texMods[tm],
+					(float*)tess.svars.texcoords[b]);
+				break;
+
+			case TMOD_ROTATE:
+				RB_CalcRotateTexCoords(pStage->bundle[b].texMods[tm].rotateSpeed,
+					(float*)tess.svars.texcoords[b]);
+				break;
+
+			default:
+				throw QDropException(va("ERROR: unknown texmod '%d' in shader '%s'\n",
+					pStage->bundle[b].texMods[tm].type, tess.shader->name));
+				break;
+			}
+		}
 	}
 }

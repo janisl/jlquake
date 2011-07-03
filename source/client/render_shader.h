@@ -385,7 +385,6 @@ void R_ShaderList_f();
 
 void R_DrawElements(int numIndexes, const glIndex_t* indexes);
 
-float EvalWaveForm(const waveForm_t* wf);
 void RB_CalcDeformVertexes(deformStage_t* ds);
 void RB_CalcDeformNormals(deformStage_t* ds);
 void RB_CalcBulgeVertexes(deformStage_t* ds);
@@ -393,6 +392,7 @@ void RB_CalcMoveVertexes(deformStage_t* ds);
 void RB_CalcDiffuseColor(byte* colors);
 void ComputeColors(shaderStage_t* pStage);
 void RB_CalcFogTexCoords(float* dstTexCoords);
+void ComputeTexCoords(shaderStage_t* pStage);
 
 //
 //	SHADOWS
