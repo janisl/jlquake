@@ -40,6 +40,7 @@ set(CLIENT_FILES
 	render_shadows.cpp
 	render_skin.cpp
 	render_state.cpp
+	render_surface3.cpp
 	render_wad.cpp
 	sound_audiocd_linux.cpp
 	sound_driver_alsa.cpp

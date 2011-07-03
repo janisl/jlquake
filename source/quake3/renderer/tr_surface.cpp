@@ -23,48 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 
 /*
-
-  THIS ENTIRE FILE IS BACK END
-
-backEnd.currentEntity will be valid.
-
-Tess_Begin has already been called for the surface's shader.
-
-The modelview matrix will be set.
-
-It is safe to actually issue drawing commands here if you don't want to
-use the shader system.
-*/
-
-
-//============================================================================
-
-
-/*
-==============
-RB_CheckOverflow
-==============
-*/
-void RB_CheckOverflow( int verts, int indexes ) {
-	if (tess.numVertexes + verts < SHADER_MAX_VERTEXES
-		&& tess.numIndexes + indexes < SHADER_MAX_INDEXES) {
-		return;
-	}
-
-	RB_EndSurface();
-
-	if ( verts >= SHADER_MAX_VERTEXES ) {
-		ri.Error(ERR_DROP, "RB_CheckOverflow: verts > MAX (%d > %d)", verts, SHADER_MAX_VERTEXES );
-	}
-	if ( indexes >= SHADER_MAX_INDEXES ) {
-		ri.Error(ERR_DROP, "RB_CheckOverflow: indices > MAX (%d > %d)", indexes, SHADER_MAX_INDEXES );
-	}
-
-	RB_BeginSurface(tess.shader, tess.fogNum );
-}
-
-
-/*
 ==============
 RB_AddQuadStampExt
 ==============

@@ -650,6 +650,17 @@ WAD files
 void R_LoadWadFile();
 void* R_GetWadLumpByName(const char* name);
 
+/*
+====================================================================
+
+Surfaces
+
+====================================================================
+*/
+
+void RB_CheckOverflow(int verts, int indexes);
+#define RB_CHECKOVERFLOW(v,i) if (tess.numVertexes + (v) >= SHADER_MAX_VERTEXES || tess.numIndexes + (i) >= SHADER_MAX_INDEXES) {RB_CheckOverflow(v,i);}
+
 //	Temporarily must be defined in game.
 void R_InitSkyTexCoords( float cloudLayerHeight );
 void R_SyncRenderThread();
