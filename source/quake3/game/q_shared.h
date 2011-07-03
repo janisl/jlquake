@@ -196,7 +196,6 @@ enum {qfalse, qtrue};
 typedef enum {
 	PRINT_ALL,
 	PRINT_DEVELOPER,		// only print when "developer 1"
-	PRINT_WARNING,
 	PRINT_ERROR
 } printParm_t;
 

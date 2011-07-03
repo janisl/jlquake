@@ -38,6 +38,16 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+static int edgeVerts[6][2] =
+{
+	{ 0, 1 },
+	{ 0, 2 },
+	{ 0, 3 },
+	{ 1, 2 },
+	{ 1, 3 },
+	{ 2, 3 }
+};
+
 static vec3_t lightOrigin = { -960, 1980, 96 };		// FIXME: track dynamically
 
 // CODE --------------------------------------------------------------------
@@ -324,6 +334,218 @@ void DeformText(const char* text)
 			RB_AddQuadStampExt(origin, width, height, color, fcol, frow, fcol + size, frow + size);
 		}
 		VectorMA(origin, -2, width, origin);
+	}
+}
+
+//==========================================================================
+//
+//	GlobalVectorToLocal
+//
+//==========================================================================
+
+static void GlobalVectorToLocal(const vec3_t in, vec3_t out)
+{
+	out[0] = DotProduct(in, backEnd.orient.axis[0]);
+	out[1] = DotProduct(in, backEnd.orient.axis[1]);
+	out[2] = DotProduct(in, backEnd.orient.axis[2]);
+}
+
+//==========================================================================
+//
+//	AutospriteDeform
+//
+//	Assuming all the triangles for this shader are independant quads, rebuild
+// them as forward facing sprites
+//
+//==========================================================================
+
+void AutospriteDeform()
+{
+	if (tess.numVertexes & 3)
+	{
+		GLog.Write(S_COLOR_YELLOW "Autosprite shader %s had odd vertex count", tess.shader->name);
+	}
+	if (tess.numIndexes != (tess.numVertexes >> 2) * 6)
+	{
+		GLog.Write(S_COLOR_YELLOW "Autosprite shader %s had odd index count", tess.shader->name);
+	}
+
+	int oldVerts = tess.numVertexes;
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
+
+	vec3_t leftDir, upDir;
+	if (backEnd.currentEntity != &tr.worldEntity)
+	{
+		GlobalVectorToLocal(backEnd.viewParms.orient.axis[1], leftDir);
+		GlobalVectorToLocal(backEnd.viewParms.orient.axis[2], upDir);
+	}
+	else
+	{
+		VectorCopy(backEnd.viewParms.orient.axis[1], leftDir);
+		VectorCopy(backEnd.viewParms.orient.axis[2], upDir);
+	}
+
+	for (int i = 0; i < oldVerts; i += 4)
+	{
+		// find the midpoint
+		float* xyz = tess.xyz[i];
+
+		vec3_t mid;
+		mid[0] = 0.25f * (xyz[0] + xyz[4] + xyz[8] + xyz[12]);
+		mid[1] = 0.25f * (xyz[1] + xyz[5] + xyz[9] + xyz[13]);
+		mid[2] = 0.25f * (xyz[2] + xyz[6] + xyz[10] + xyz[14]);
+
+		vec3_t delta;
+		VectorSubtract(xyz, mid, delta);
+		float radius = VectorLength(delta) * 0.707f;		// / sqrt(2)
+
+		vec3_t left, up;
+		VectorScale(leftDir, radius, left);
+		VectorScale(upDir, radius, up);
+
+		if (backEnd.viewParms.isMirror)
+		{
+			VectorSubtract(vec3_origin, left, left);
+		}
+
+		// compensate for scale in the axes if necessary
+		if (backEnd.currentEntity->e.nonNormalizedAxes)
+		{
+			float axisLength = VectorLength(backEnd.currentEntity->e.axis[0]);
+			if (!axisLength)
+			{
+				axisLength = 0;
+			}
+			else
+			{
+				axisLength = 1.0f / axisLength;
+			}
+			VectorScale(left, axisLength, left);
+			VectorScale(up, axisLength, up);
+		}
+
+		RB_AddQuadStamp(mid, left, up, tess.vertexColors[i]);
+	}
+}
+
+//==========================================================================
+//
+//	Autosprite2Deform
+//
+//	Autosprite2 will pivot a rectangular quad along the center of its long axis
+//
+//==========================================================================
+
+void Autosprite2Deform()
+{
+	if (tess.numVertexes & 3)
+	{
+		GLog.Write(S_COLOR_YELLOW "Autosprite2 shader %s had odd vertex count", tess.shader->name);
+	}
+	if (tess.numIndexes != (tess.numVertexes >> 2) * 6)
+	{
+		GLog.Write(S_COLOR_YELLOW "Autosprite2 shader %s had odd index count", tess.shader->name);
+	}
+
+	vec3_t forward;
+	if (backEnd.currentEntity != &tr.worldEntity)
+	{
+		GlobalVectorToLocal(backEnd.viewParms.orient.axis[0], forward);
+	}
+	else
+	{
+		VectorCopy(backEnd.viewParms.orient.axis[0], forward);
+	}
+
+	// this is a lot of work for two triangles...
+	// we could precalculate a lot of it is an issue, but it would mess up
+	// the shader abstraction
+	for (int i = 0, indexes = 0; i < tess.numVertexes; i+=4, indexes += 6)
+	{
+		// find the midpoint
+		float* xyz = tess.xyz[i];
+
+		// identify the two shortest edges
+		int nums[2];
+		nums[0] = nums[1] = 0;
+		float lengths[2];
+		lengths[0] = lengths[1] = 999999;
+
+		for (int j = 0; j < 6; j++)
+		{
+			float* v1 = xyz + 4 * edgeVerts[j][0];
+			float* v2 = xyz + 4 * edgeVerts[j][1];
+
+			vec3_t temp;
+			VectorSubtract(v1, v2, temp);
+
+			float l = DotProduct(temp, temp);
+			if (l < lengths[0])
+			{
+				nums[1] = nums[0];
+				lengths[1] = lengths[0];
+				nums[0] = j;
+				lengths[0] = l;
+			}
+			else if (l < lengths[1])
+			{
+				nums[1] = j;
+				lengths[1] = l;
+			}
+		}
+
+		vec3_t mid[2];
+		for (int j = 0; j < 2; j++)
+		{
+			float* v1 = xyz + 4 * edgeVerts[nums[j]][0];
+			float* v2 = xyz + 4 * edgeVerts[nums[j]][1];
+
+			mid[j][0] = 0.5f * (v1[0] + v2[0]);
+			mid[j][1] = 0.5f * (v1[1] + v2[1]);
+			mid[j][2] = 0.5f * (v1[2] + v2[2]);
+		}
+
+		// find the vector of the major axis
+		vec3_t major;
+		VectorSubtract(mid[1], mid[0], major);
+
+		// cross this with the view direction to get minor axis
+		vec3_t minor;
+		CrossProduct(major, forward, minor);
+		VectorNormalize(minor);
+		
+		// re-project the points
+		for (int j = 0; j < 2; j++)
+		{
+			float* v1 = xyz + 4 * edgeVerts[nums[j]][0];
+			float* v2 = xyz + 4 * edgeVerts[nums[j]][1];
+
+			float l = 0.5 * sqrt(lengths[j]);
+			
+			// we need to see which direction this edge
+			// is used to determine direction of projection
+			int k;
+			for (k = 0; k < 5; k++)
+			{
+				if (tess.indexes[indexes + k] == (glIndex_t)(i + edgeVerts[nums[j]][0]) &&
+					tess.indexes[indexes + k + 1] == (glIndex_t)(i + edgeVerts[nums[j]][1]))
+				{
+					break;
+				}
+			}
+
+			if (k == 5)
+			{
+				VectorMA(mid[j], l, minor, v1);
+				VectorMA(mid[j], -l, minor, v2);
+			}
+			else
+			{
+				VectorMA(mid[j], -l, minor, v1);
+				VectorMA(mid[j], l, minor, v2);
+			}
+		}
 	}
 }
 

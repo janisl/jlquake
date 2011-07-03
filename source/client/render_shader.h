@@ -394,6 +394,8 @@ void RB_CalcDeformNormals(deformStage_t* ds);
 void RB_CalcBulgeVertexes(deformStage_t* ds);
 void RB_CalcMoveVertexes(deformStage_t* ds);
 void DeformText(const char* text);
+void AutospriteDeform();
+void Autosprite2Deform();
 void RB_CalcDiffuseColor(byte* colors);
 void ComputeColors(shaderStage_t* pStage);
 void RB_CalcFogTexCoords(float* dstTexCoords);
