@@ -21,12 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-char	skyname[MAX_QPATH];
-float	skyrotate;
-vec3_t	skyaxis;
-image_t	*sky_images[6];
-
-
 // speed up sin calculations - Ed
 float	r_turbsin[] =
 {
@@ -132,9 +126,6 @@ int	vec_to_st[6][3] =
 //	{1,2,-3}
 };
 
-float	skymins[2][6], skymaxs[2][6];
-float	sky_min, sky_max;
-
 void DrawSkyPolygon (int nump, vec3_t vecs)
 {
 	int		i,j;
@@ -206,14 +197,14 @@ return;
 		else
 			t = vecs[j-1] / dv;
 
-		if (s < skymins[0][axis])
-			skymins[0][axis] = s;
-		if (t < skymins[1][axis])
-			skymins[1][axis] = t;
-		if (s > skymaxs[0][axis])
-			skymaxs[0][axis] = s;
-		if (t > skymaxs[1][axis])
-			skymaxs[1][axis] = t;
+		if (s < sky_mins[0][axis])
+			sky_mins[0][axis] = s;
+		if (t < sky_mins[1][axis])
+			sky_mins[1][axis] = t;
+		if (s > sky_maxs[0][axis])
+			sky_maxs[0][axis] = s;
+		if (t > sky_maxs[1][axis])
+			sky_maxs[1][axis] = t;
 	}
 }
 
@@ -344,8 +335,8 @@ void R_ClearSkyBox (void)
 
 	for (i=0 ; i<6 ; i++)
 	{
-		skymins[0][i] = skymins[1][i] = 9999;
-		skymaxs[0][i] = skymaxs[1][i] = -9999;
+		sky_mins[0][i] = sky_mins[1][i] = 9999;
+		sky_maxs[0][i] = sky_maxs[1][i] = -9999;
 	}
 }
 
@@ -399,8 +390,8 @@ void R_DrawSkyBox (void)
 	if (skyrotate)
 	{	// check for no sky at all
 		for (i=0 ; i<6 ; i++)
-			if (skymins[0][i] < skymaxs[0][i]
-			&& skymins[1][i] < skymaxs[1][i])
+			if (sky_mins[0][i] < sky_maxs[0][i]
+			&& sky_mins[1][i] < sky_maxs[1][i])
 				break;
 		if (i == 6)
 			return;		// nothing visible
@@ -414,67 +405,24 @@ qglRotatef (tr.refdef.floatTime * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2])
 	{
 		if (skyrotate)
 		{	// hack, forces full sky to draw when rotating
-			skymins[0][i] = -1;
-			skymins[1][i] = -1;
-			skymaxs[0][i] = 1;
-			skymaxs[1][i] = 1;
+			sky_mins[0][i] = -1;
+			sky_mins[1][i] = -1;
+			sky_maxs[0][i] = 1;
+			sky_maxs[1][i] = 1;
 		}
 
-		if (skymins[0][i] >= skymaxs[0][i]
-		|| skymins[1][i] >= skymaxs[1][i])
+		if (sky_mins[0][i] >= sky_maxs[0][i]
+		|| sky_mins[1][i] >= sky_maxs[1][i])
 			continue;
 
 		GL_Bind (sky_images[skytexorder[i]]);
 
 		qglBegin (GL_QUADS);
-		MakeSkyVec (skymins[0][i], skymins[1][i], i);
-		MakeSkyVec (skymins[0][i], skymaxs[1][i], i);
-		MakeSkyVec (skymaxs[0][i], skymaxs[1][i], i);
-		MakeSkyVec (skymaxs[0][i], skymins[1][i], i);
+		MakeSkyVec (sky_mins[0][i], sky_mins[1][i], i);
+		MakeSkyVec (sky_mins[0][i], sky_maxs[1][i], i);
+		MakeSkyVec (sky_maxs[0][i], sky_maxs[1][i], i);
+		MakeSkyVec (sky_maxs[0][i], sky_mins[1][i], i);
 		qglEnd ();
 	}
 qglPopMatrix ();
-}
-
-
-/*
-============
-R_SetSky
-============
-*/
-// 3dstudio environment map names
-char	*suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
-void R_SetSky (char *name, float rotate, vec3_t axis)
-{
-	int		i;
-	char	pathname[MAX_QPATH];
-
-	QStr::NCpy(skyname, name, sizeof(skyname)-1);
-	skyrotate = rotate;
-	VectorCopy (axis, skyaxis);
-
-	for (i=0 ; i<6 ; i++)
-	{
-		// chop down rotating skies for less memory
-		if (gl_skymip->value || skyrotate)
-			r_picmip->value++;
-
-		QStr::Sprintf (pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
-
-		sky_images[i] = R_FindImageFile(pathname, false, false, GL_CLAMP);
-		if (!sky_images[i])
-			sky_images[i] = tr.defaultImage;
-
-		if (gl_skymip->value || skyrotate)
-		{	// take less memory
-			r_picmip->value--;
-			sky_min = 1.0/256;
-			sky_max = 255.0/256;
-		}
-		else	
-		{
-			sky_min = 1.0/512;
-			sky_max = 511.0/512;
-		}
-	}
 }

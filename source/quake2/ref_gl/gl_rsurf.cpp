@@ -222,7 +222,7 @@ void R_DrawTriangleOutlines (void)
 	int			i, j;
 	mbrush38_glpoly_t	*p;
 
-	if (!gl_showtris->value)
+	if (!r_showtris->value)
 		return;
 
 	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE);

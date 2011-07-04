@@ -50,7 +50,6 @@ typedef struct
 	void	(*BeginRegistration) (char *map);
 	struct image_t *(*RegisterSkin) (char *name);
 	struct image_t *(*RegisterPic) (char *name);
-	void	(*SetSky) (char *name, float rotate, vec3_t axis);
 	void	(*EndRegistration) (void);
 
 	void	(*RenderFrame) (refdef_t *fd);

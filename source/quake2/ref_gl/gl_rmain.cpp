@@ -60,8 +60,6 @@ QCvar	*gl_particle_att_c;
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
 QCvar	*gl_dynamic;
-QCvar	*gl_skymip;
-QCvar	*gl_showtris;
 QCvar	*gl_finish;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
@@ -619,8 +617,6 @@ void R_Register( void )
 	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
 	gl_dynamic = Cvar_Get ("gl_dynamic", "1", 0);
-	gl_skymip = Cvar_Get ("gl_skymip", "0", 0);
-	gl_showtris = Cvar_Get ("gl_showtris", "0", 0);
 	gl_finish = Cvar_Get ("gl_finish", "0", CVAR_ARCHIVE);
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
@@ -852,7 +848,6 @@ void R_DrawBeam( trRefEntity_t *e )
 
 void	R_BeginRegistration (char *map);
 image_t	*R_RegisterSkinQ2 (char *name);
-void R_SetSky (char *name, float rotate, vec3_t axis);
 void	R_EndRegistration (void);
 
 void	R_RenderFrame (refdef_t *fd);
@@ -880,7 +875,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.BeginRegistration = R_BeginRegistration;
 	re.RegisterSkin = R_RegisterSkinQ2;
 	re.RegisterPic = Draw_FindPic;
-	re.SetSky = R_SetSky;
 	re.EndRegistration = R_EndRegistration;
 
 	re.RenderFrame = R_RenderFrame;

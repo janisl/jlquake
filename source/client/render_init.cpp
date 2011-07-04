@@ -118,6 +118,7 @@ QCvar*		r_shownormals;
 QCvar*		r_offsetFactor;
 QCvar*		r_offsetUnits;
 QCvar*		r_clear;
+QCvar*		r_skymip;
 
 QCvar*		r_modulate;
 QCvar*		r_ambientScale;
@@ -330,6 +331,7 @@ void R_SharedRegister()
 	r_offsetUnits = Cvar_Get("r_offsetunits", "-2", CVAR_CHEAT);
 	r_lodscale = Cvar_Get("r_lodscale", "5", CVAR_CHEAT);
 	r_clear = Cvar_Get("r_clear", "0", CVAR_CHEAT);
+	r_skymip = Cvar_Get("r_skymip", "0", 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

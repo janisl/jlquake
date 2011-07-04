@@ -617,6 +617,7 @@ extern QCvar*	r_shownormals;			// draws wireframe normals
 extern QCvar*	r_offsetFactor;
 extern QCvar*	r_offsetUnits;
 extern QCvar*	r_clear;				// force screen clear every frame
+extern QCvar*	r_skymip;
 
 extern QCvar*	r_modulate;
 extern QCvar*	r_ambientScale;
@@ -688,7 +689,13 @@ void EmitSkyPolys(mbrush29_surface_t* fa);
 void EmitBothSkyLayers(mbrush29_surface_t* fa);
 void R_DrawSkyChain(mbrush29_surface_t* s);
 
-extern	float	speedscale;		// for top sky and bottom sky
+extern float	speedscale;		// for top sky and bottom sky
+extern char		skyname[MAX_QPATH];
+extern float	skyrotate;
+extern vec3_t	skyaxis;
+extern image_t*	sky_images[6];
+extern float	sky_mins[2][6], sky_maxs[2][6];
+extern float	sky_min, sky_max;
 
 //	Temporarily must be defined in game.
 void R_InitSkyTexCoords( float cloudLayerHeight );

@@ -36,7 +36,18 @@
 
 float		speedscale;		// for top sky and bottom sky
 
+char		skyname[MAX_QPATH];
+float		skyrotate;
+vec3_t		skyaxis;
+image_t*	sky_images[6];
+
+float		sky_mins[2][6], sky_maxs[2][6];
+float		sky_min, sky_max;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+// 3dstudio environment map names
+static const char* suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
 
 // CODE --------------------------------------------------------------------
 
@@ -212,4 +223,48 @@ void R_DrawSkyChain(mbrush29_surface_t* s)
 	}
 
 	GL_State(GLS_DEFAULT);
+}
+
+//==========================================================================
+//
+//	R_SetSky
+//
+//==========================================================================
+
+void R_SetSky(const char *name, float rotate, vec3_t axis)
+{
+	QStr::NCpy(skyname, name, sizeof(skyname) - 1);
+	skyrotate = rotate;
+	VectorCopy(axis, skyaxis);
+
+	for (int i = 0; i < 6; i++)
+	{
+		// chop down rotating skies for less memory
+		if (r_skymip->value || skyrotate)
+		{
+			r_picmip->value++;
+		}
+
+		char pathname[MAX_QPATH];
+		QStr::Sprintf(pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
+
+		sky_images[i] = R_FindImageFile(pathname, false, false, GL_CLAMP);
+		if (!sky_images[i])
+		{
+			sky_images[i] = tr.defaultImage;
+		}
+
+		if (r_skymip->value || skyrotate)
+		{
+			// take less memory
+			r_picmip->value--;
+			sky_min = 1.0 / 256;
+			sky_max = 255.0 / 256;
+		}
+		else	
+		{
+			sky_min = 1.0 / 512;
+			sky_max = 511.0 / 512;
+		}
+	}
 }
