@@ -9,7 +9,7 @@
 
 qboolean	r_cache_thrash;		// compatability
 
-int			c_brush_polys, c_sky_polys;
+int			c_brush_polys;
 
 qboolean	envmap;				// true during envmap command capture 
 
@@ -307,7 +307,7 @@ void R_SetupFrame (void)
 
 	r_cache_thrash = false;
 
-	c_brush_polys = c_alias_polys = c_sky_polys = 0;
+	c_brush_polys = c_alias_polys = 0;
 
 }
 
@@ -437,8 +437,8 @@ void R_PrintTimes(void)
 	ms = 1000*(r_time2-r_time1);
 	fps = 1000/ms;
 
-	Con_Printf("%3.1f fps %5.0f ms\n%4i wpoly  %4i epoly %4i spoly\n",
-		fps, ms, c_brush_polys, c_alias_polys, c_sky_polys);
+	Con_Printf("%3.1f fps %5.0f ms\n%4i wpoly  %4i epoly\n",
+		fps, ms, c_brush_polys, c_alias_polys);
 }
 
 /*

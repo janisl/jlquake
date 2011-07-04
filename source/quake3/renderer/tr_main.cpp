@@ -987,9 +987,6 @@ void GLimp_EndFrame()
 	QGL_EnableLogging(!!r_logFile->integer);
 }
 
-void R_InitSky(mbrush29_texture_t *mt)
-{
-}
 void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf)
 {
 }

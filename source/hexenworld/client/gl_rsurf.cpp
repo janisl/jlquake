@@ -220,10 +220,6 @@ mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base)
 */
 
 
-extern	image_t*	solidskytexture;
-extern	image_t*	alphaskytexture;
-extern	float	speedscale;		// for top sky and bottom sky
-
 void DrawGLWaterPoly (mbrush29_glpoly_t *p);
 void DrawGLWaterPolyLightmap (mbrush29_glpoly_t *p);
 
@@ -382,14 +378,14 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 	//
 	if (s->flags & BRUSH29_SURF_DRAWSKY)
 	{
-		GL_Bind (solidskytexture);
+		GL_Bind (tr.solidskytexture);
 		speedscale = realtime*8;
 		speedscale -= (int)speedscale & ~127;
 
 		EmitSkyPolys (s);
 
 		GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-		GL_Bind (alphaskytexture);
+		GL_Bind (tr.alphaskytexture);
 		speedscale = realtime*16;
 		speedscale -= (int)speedscale & ~127;
 		EmitSkyPolys (s);

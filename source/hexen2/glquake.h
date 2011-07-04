@@ -93,7 +93,7 @@ typedef struct particle_s
 
 
 extern	qboolean	r_cache_thrash;		// compatability
-extern	int		c_brush_polys, c_sky_polys;
+extern	int		c_brush_polys;
 
 
 //
@@ -134,13 +134,9 @@ void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override);
 void R_InitParticles (void);
 void GL_BuildLightmaps (void);
 void EmitWaterPolys (mbrush29_surface_t *fa);
-void EmitSkyPolys (mbrush29_surface_t *fa, qboolean save);
-void EmitBothSkyLayers (mbrush29_surface_t *fa);
-void R_DrawSkyChain (mbrush29_surface_t *s);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void GL_Set2D (void);
 void SCR_DrawLoading (void);
-void R_InitSky (mbrush29_texture_t *mt);	// called at level load
 void R_PushDlights (void);
 
 extern qboolean	vid_initialized;

@@ -97,10 +97,7 @@ extern	QCvar*	gl_finish;
 //
 // gl_warp.c
 //
-void EmitBothSkyLayers (mbrush29_surface_t *fa);
 void EmitWaterPolys (mbrush29_surface_t *fa);
-void EmitSkyPolys (mbrush29_surface_t *fa);
-void R_DrawSkyChain (mbrush29_surface_t *s);
 
 //
 // gl_draw.c
@@ -125,5 +122,3 @@ void GL_BuildLightmaps (void);
 // gl_ngraph.c
 //
 void R_NetGraph (void);
-
-void R_InitSky (mbrush29_texture_t *mt);	// called at level load

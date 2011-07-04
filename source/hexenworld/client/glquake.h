@@ -89,9 +89,6 @@ extern byte *playerTranslation;
 void GL_Set2D (void);
 void Draw_Crosshair(void);
 void EmitWaterPolys (mbrush29_surface_t *fa);
-void EmitSkyPolys (mbrush29_surface_t *fa);
-void EmitBothSkyLayers (mbrush29_surface_t *fa);
-void R_DrawSkyChain (mbrush29_surface_t *s);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_InitParticles (void);
 void R_ClearParticles (void);
@@ -104,5 +101,4 @@ void R_DrawParticles (void);
 void R_DrawWaterSurfaces (void);
 void Draw_RedString (int x, int y, char *str);
 void R_NetGraph (void);
-void R_InitSky (mbrush29_texture_t *mt);	// called at level load
 void R_PushDlights (void);

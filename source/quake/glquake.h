@@ -102,10 +102,7 @@ extern	QCvar*	gl_reporttjunctions;
 
 void GL_Set2D (void);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
-void R_DrawSkyChain (mbrush29_surface_t *s);
-void EmitBothSkyLayers (mbrush29_surface_t *fa);
 void EmitWaterPolys (mbrush29_surface_t *fa);
-void EmitSkyPolys (mbrush29_surface_t *fa);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void GL_BuildLightmaps (void);
@@ -116,5 +113,4 @@ void R_DrawParticles (void);
 void V_CalcBlend (void);
 void R_DrawWaterSurfaces (void);
 void R_RenderBrushPoly (mbrush29_surface_t *fa);
-void R_InitSky (mbrush29_texture_t *mt);	// called at level load
 void R_PushDlights (void);

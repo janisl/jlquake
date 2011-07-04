@@ -289,6 +289,9 @@ struct trGlobals_t
 	image_t*				scratchImage[32];
 	image_t*				fogImage;
 
+	image_t*				solidskytexture;
+	image_t*				alphaskytexture;
+
 	shader_t*				defaultShader;
 
 	shader_t*				shadowShader;
@@ -672,10 +675,24 @@ void RB_CheckOverflow(int verts, int indexes);
 void RB_AddQuadStamp(vec3_t origin, vec3_t left, vec3_t up, byte* color);
 void RB_AddQuadStampExt(vec3_t origin, vec3_t left, vec3_t up, byte* color, float s1, float t1, float s2, float t2);
 
+/*
+====================================================================
+
+Skies
+
+====================================================================
+*/
+
+void R_InitSky(mbrush29_texture_t* mt);
+void EmitSkyPolys(mbrush29_surface_t* fa);
+void EmitBothSkyLayers(mbrush29_surface_t* fa);
+void R_DrawSkyChain(mbrush29_surface_t* s);
+
+extern	float	speedscale;		// for top sky and bottom sky
+
 //	Temporarily must be defined in game.
 void R_InitSkyTexCoords( float cloudLayerHeight );
 void R_SyncRenderThread();
-void R_InitSky(mbrush29_texture_t *mt);
 void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
 void GL_EndBuildingLightmaps (void);
 void GL_BeginBuildingLightmaps (model_t *m);

@@ -6,7 +6,7 @@
 
 #include "../client/client.h"
 
-#define MISSIONPACK
+//#define MISSIONPACK
 
 #define HEXEN2_VERSION		1.12
 

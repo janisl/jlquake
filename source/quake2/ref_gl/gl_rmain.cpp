@@ -913,9 +913,6 @@ void R_ClearScreen()
 void R_InitSkyTexCoords( float cloudLayerHeight )
 {
 }
-void R_InitSky(mbrush29_texture_t *mt)
-{
-}
 void R_SyncRenderThread()
 {
 }

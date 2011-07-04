@@ -39,6 +39,7 @@ set(CLIENT_FILES
 	render_shader.cpp
 	render_shadows.cpp
 	render_skin.cpp
+	render_sky.cpp
 	render_state.cpp
 	render_surface3.cpp
 	render_wad.cpp
