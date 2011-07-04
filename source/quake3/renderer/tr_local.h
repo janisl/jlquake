@@ -59,10 +59,6 @@ BRUSH MODELS
 // in memory representation
 //
 
-#define	SIDE_FRONT	0
-#define	SIDE_BACK	1
-#define	SIDE_ON		2
-
 //======================================================================
 
 int			R_LerpTag( orientation_t *tag, qhandle_t handle, int startFrame, int endFrame, 
@@ -242,9 +238,7 @@ SKIES
 
 void R_BuildCloudData( shaderCommands_t *shader );
 void R_InitSkyTexCoords( float cloudLayerHeight );
-void R_DrawSkyBox( shaderCommands_t *shader );
 void RB_DrawSun( void );
-void RB_ClipSkyPolygons( shaderCommands_t *shader );
 
 /*
 ============================================================

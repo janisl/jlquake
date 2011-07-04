@@ -22,6 +22,14 @@
 
 // MACROS ------------------------------------------------------------------
 
+#define ON_EPSILON		0.1f			// point on plane side epsilon
+
+#define SIDE_FRONT		0
+#define SIDE_BACK		1
+#define SIDE_ON			2
+
+#define MAX_CLIP_VERTS	64
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -44,10 +52,51 @@ image_t*	sky_images[6];
 float		sky_mins[2][6], sky_maxs[2][6];
 float		sky_min, sky_max;
 
+int sky_texorder[6] = {0, 2, 1, 3, 4, 5};
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // 3dstudio environment map names
 static const char* suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
+
+static vec3_t sky_clip[6] =
+{
+	{1,1,0},
+	{1,-1,0},
+	{0,-1,1},
+	{0,1,1},
+	{1,0,1},
+	{-1,0,1} 
+};
+
+// 1 = s, 2 = t, 3 = 2048
+static int st_to_vec[6][3] =
+{
+	{3,-1,2},
+	{-3,1,2},
+
+	{1,3,2},
+	{-1,-3,2},
+
+	{-2,-1,3},		// 0 degrees yaw, look straight up
+	{2,-1,-3}		// look straight down
+};
+
+// s = [0]/[2], t = [1]/[2]
+static int vec_to_st[6][3] =
+{
+	{-2,3,1},
+	{2,3,-1},
+
+	{1,3,2},
+	{-1,3,-2},
+
+	{-2,-1,3},
+	{-2,1,-3}
+
+//	{-1,2,3},
+//	{1,2,-3}
+};
 
 // CODE --------------------------------------------------------------------
 
@@ -266,5 +315,344 @@ void R_SetSky(const char *name, float rotate, vec3_t axis)
 			sky_min = 1.0 / 512;
 			sky_max = 511.0 / 512;
 		}
+	}
+}
+
+/*
+===================================================================================
+
+POLYGON TO BOX SIDE PROJECTION
+
+===================================================================================
+*/
+
+//==========================================================================
+//
+//	AddSkyPolygon
+//
+//==========================================================================
+
+static void AddSkyPolygon(int nump, vec3_t vecs)
+{
+	// decide which face it maps to
+	vec3_t v;
+	VectorCopy(vec3_origin, v);
+	float* vp = vecs;
+	for (int i = 0; i < nump; i++, vp += 3)
+	{
+		VectorAdd(vp, v, v);
+	}
+	vec3_t av;
+	av[0] = fabs(v[0]);
+	av[1] = fabs(v[1]);
+	av[2] = fabs(v[2]);
+	int axis;
+	if (av[0] > av[1] && av[0] > av[2])
+	{
+		if (v[0] < 0)
+		{
+			axis = 1;
+		}
+		else
+		{
+			axis = 0;
+		}
+	}
+	else if (av[1] > av[2] && av[1] > av[0])
+	{
+		if (v[1] < 0)
+		{
+			axis = 3;
+		}
+		else
+		{
+			axis = 2;
+		}
+	}
+	else
+	{
+		if (v[2] < 0)
+		{
+			axis = 5;
+		}
+		else
+		{
+			axis = 4;
+		}
+	}
+
+	// project new texture coords
+	for (int i = 0; i < nump; i++, vecs += 3)
+	{
+		int j = vec_to_st[axis][2];
+		float dv;
+		if (j > 0)
+		{
+			dv = vecs[j - 1];
+		}
+		else
+		{
+			dv = -vecs[-j - 1];
+		}
+		if (dv < 0.001)
+		{
+			continue;	// don't divide by zero
+		}
+		j = vec_to_st[axis][0];
+		float s;
+		if (j < 0)
+		{
+			s = -vecs[-j - 1] / dv;
+		}
+		else
+		{
+			s = vecs[j - 1] / dv;
+		}
+		j = vec_to_st[axis][1];
+		float t;
+		if (j < 0)
+		{
+			t = -vecs[-j - 1] / dv;
+		}
+		else
+		{
+			t = vecs[j - 1] / dv;
+		}
+
+		if (s < sky_mins[0][axis])
+		{
+			sky_mins[0][axis] = s;
+		}
+		if (t < sky_mins[1][axis])
+		{
+			sky_mins[1][axis] = t;
+		}
+		if (s > sky_maxs[0][axis])
+		{
+			sky_maxs[0][axis] = s;
+		}
+		if (t > sky_maxs[1][axis])
+		{
+			sky_maxs[1][axis] = t;
+		}
+	}
+}
+
+//==========================================================================
+//
+//	ClipSkyPolygon
+//
+//==========================================================================
+
+static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
+{
+	if (nump > MAX_CLIP_VERTS - 2)
+	{
+		throw QDropException("ClipSkyPolygon: MAX_CLIP_VERTS");
+	}
+	if (stage == 6)
+	{
+		// fully clipped, so draw it
+		AddSkyPolygon(nump, vecs);
+		return;
+	}
+
+	bool front = false;
+	bool back = false;
+	float* norm = sky_clip[stage];
+	int sides[MAX_CLIP_VERTS];
+	float dists[MAX_CLIP_VERTS];
+	float* v = vecs;
+	for (int i = 0; i < nump; i++, v += 3)
+	{
+		float d = DotProduct(v, norm);
+		if (d > ON_EPSILON)
+		{
+			front = true;
+			sides[i] = SIDE_FRONT;
+		}
+		else if (d < -ON_EPSILON)
+		{
+			back = true;
+			sides[i] = SIDE_BACK;
+		}
+		else
+		{
+			sides[i] = SIDE_ON;
+		}
+		dists[i] = d;
+	}
+
+	if (!front || !back)
+	{
+		// not clipped
+		ClipSkyPolygon(nump, vecs, stage + 1);
+		return;
+	}
+
+	// clip it
+	sides[nump] = sides[0];
+	dists[nump] = dists[0];
+	VectorCopy(vecs, (vecs + (nump * 3)));
+	int newc[2];
+	newc[0] = newc[1] = 0;
+	vec3_t newv[2][MAX_CLIP_VERTS];
+
+	v = vecs;
+	for (int i = 0; i < nump; i++, v += 3)
+	{
+		switch (sides[i])
+		{
+		case SIDE_FRONT:
+			VectorCopy(v, newv[0][newc[0]]);
+			newc[0]++;
+			break;
+
+		case SIDE_BACK:
+			VectorCopy(v, newv[1][newc[1]]);
+			newc[1]++;
+			break;
+
+		case SIDE_ON:
+			VectorCopy(v, newv[0][newc[0]]);
+			newc[0]++;
+			VectorCopy(v, newv[1][newc[1]]);
+			newc[1]++;
+			break;
+		}
+
+		if (sides[i] == SIDE_ON || sides[i + 1] == SIDE_ON || sides[i + 1] == sides[i])
+		{
+			continue;
+		}
+
+		float d = dists[i] / (dists[i] - dists[i + 1]);
+		for (int j = 0; j < 3; j++)
+		{
+			float e = v[j] + d * (v[j + 3] - v[j]);
+			newv[0][newc[0]][j] = e;
+			newv[1][newc[1]][j] = e;
+		}
+		newc[0]++;
+		newc[1]++;
+	}
+
+	// continue
+	ClipSkyPolygon(newc[0], newv[0][0], stage + 1);
+	ClipSkyPolygon(newc[1], newv[1][0], stage + 1);
+}
+
+//==========================================================================
+//
+//	R_ClearSkyBox
+//
+//==========================================================================
+
+void R_ClearSkyBox()
+{
+	for (int i = 0; i < 6; i++)
+	{
+		sky_mins[0][i] = sky_mins[1][i] = 9999;
+		sky_maxs[0][i] = sky_maxs[1][i] = -9999;
+	}
+}
+
+//==========================================================================
+//
+//	R_AddSkySurface
+//
+//==========================================================================
+
+void R_AddSkySurface(mbrush38_surface_t* fa)
+{
+	// calculate vertex values for sky box
+	for (mbrush38_glpoly_t* p = fa->polys; p; p = p->next)
+	{
+		vec3_t verts[MAX_CLIP_VERTS];
+		for (int i = 0; i < p->numverts; i++)
+		{
+			VectorSubtract(p->verts[i], tr.viewParms.orient.origin, verts[i]);
+		}
+		ClipSkyPolygon(p->numverts, verts[0], 0);
+	}
+}
+
+//==========================================================================
+//
+//	RB_ClipSkyPolygons
+//
+//==========================================================================
+
+void RB_ClipSkyPolygons(shaderCommands_t* input)
+{
+	R_ClearSkyBox();
+
+	for (int i = 0; i < input->numIndexes; i += 3)
+	{
+		vec3_t p[5];	// need one extra point for clipping
+		for (int j = 0; j < 3; j++) 
+		{
+			VectorSubtract(input->xyz[input->indexes[i + j]], backEnd.viewParms.orient.origin, p[j]);
+		}
+		ClipSkyPolygon(3, p[0], 0);
+	}
+}
+
+//==========================================================================
+//
+//	MakeSkyVec
+//
+//	Parms: s, t range from -1 to 1
+//
+//==========================================================================
+
+void MakeSkyVec(float s, float t, int axis, float outSt[2], vec3_t outXYZ)
+{
+	float boxSize = (GGameType & GAME_Quake3) ? backEnd.viewParms.zFar / 1.75 : 2300;		// div sqrt(3)
+	vec3_t b;
+	b[0] = s * boxSize;
+	b[1] = t * boxSize;
+	b[2] = boxSize;
+
+	for (int j = 0; j < 3; j++)
+	{
+		int k = st_to_vec[axis][j];
+		if (k < 0)
+		{
+			outXYZ[j] = -b[-k - 1];
+		}
+		else
+		{
+			outXYZ[j] = b[k - 1];
+		}
+	}
+
+	// avoid bilerp seam
+	s = (s + 1) * 0.5;
+	t = (t + 1) * 0.5;
+
+	if (s < sky_min)
+	{
+		s = sky_min;
+	}
+	else if (s > sky_max)
+	{
+		s = sky_max;
+	}
+	if (t < sky_min)
+	{
+		t = sky_min;
+	}
+	else if (t > sky_max)
+	{
+		t = sky_max;
+	}
+
+	t = 1.0 - t;
+
+	if (outSt)
+	{
+		outSt[0] = s;
+		outSt[1] = t;
 	}
 }

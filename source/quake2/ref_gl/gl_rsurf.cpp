@@ -1128,7 +1128,7 @@ void R_DrawWorld (void)
 	DrawTextureChains ();
 	R_BlendLightmaps ();
 	
-	R_DrawSkyBox ();
+	R_DrawSkyBoxQ2 ();
 
 	R_DrawTriangleOutlines ();
 }

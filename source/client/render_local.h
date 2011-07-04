@@ -688,6 +688,10 @@ void R_InitSky(mbrush29_texture_t* mt);
 void EmitSkyPolys(mbrush29_surface_t* fa);
 void EmitBothSkyLayers(mbrush29_surface_t* fa);
 void R_DrawSkyChain(mbrush29_surface_t* s);
+void R_ClearSkyBox();
+void R_AddSkySurface(mbrush38_surface_t* fa);
+void RB_ClipSkyPolygons(shaderCommands_t* shader);
+void MakeSkyVec(float s, float t, int axis, float outSt[2], vec3_t outXYZ);
 
 extern float	speedscale;		// for top sky and bottom sky
 extern char		skyname[MAX_QPATH];
@@ -696,6 +700,7 @@ extern vec3_t	skyaxis;
 extern image_t*	sky_images[6];
 extern float	sky_mins[2][6], sky_maxs[2][6];
 extern float	sky_min, sky_max;
+extern int sky_texorder[6];
 
 //	Temporarily must be defined in game.
 void R_InitSkyTexCoords( float cloudLayerHeight );
