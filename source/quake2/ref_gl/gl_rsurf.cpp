@@ -1109,7 +1109,7 @@ void R_DrawWorld (void)
 
 	tr.currentModel = tr.worldModel;
 
-	VectorCopy(tr.refdef.vieworg, tr.orient.viewOrigin);
+	VectorCopy(tr.viewParms.orient.origin, tr.orient.viewOrigin);
 
 	// auto cycle the world frame for texture animation
 	tr.worldEntity.e.frame = (int)(tr.refdef.floatTime * 2);

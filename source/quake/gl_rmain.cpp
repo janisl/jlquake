@@ -204,7 +204,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeafQ1 (tr.refdef.vieworg, tr.worldModel);
+	r_viewleaf = Mod_PointInLeafQ1 (tr.viewParms.orient.origin, tr.worldModel);
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();

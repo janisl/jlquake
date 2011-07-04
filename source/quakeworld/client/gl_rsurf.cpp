@@ -1020,7 +1020,7 @@ R_DrawWorld
 */
 void R_DrawWorld (void)
 {
-	VectorCopy (tr.refdef.vieworg, tr.orient.viewOrigin);
+	VectorCopy (tr.viewParms.orient.origin, tr.orient.viewOrigin);
 
 	tr.currentEntity = &tr.worldEntity;
 

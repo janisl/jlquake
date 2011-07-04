@@ -849,7 +849,7 @@ void R_DrawWorld (void)
 {
 	int			i;
 
-	VectorCopy (tr.refdef.vieworg, tr.orient.viewOrigin);
+	VectorCopy (tr.viewParms.orient.origin, tr.orient.viewOrigin);
 
 	tr.currentEntity = &tr.worldEntity;
 

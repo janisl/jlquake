@@ -207,7 +207,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater) {
 	for (i=0; i<numents; i++) {
 		VectorSubtract(
 			theents[i].ent->e.origin, 
-			tr.refdef.vieworg, 
+			tr.viewParms.orient.origin, 
 			result);
 //		theents[i].len = Length(result);
 		theents[i].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
@@ -300,7 +300,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeafQ1(tr.refdef.vieworg, tr.worldModel);
+	r_viewleaf = Mod_PointInLeafQ1(tr.viewParms.orient.origin, tr.worldModel);
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();

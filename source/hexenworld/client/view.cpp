@@ -789,7 +789,7 @@ void V_CalcRefdef (void)
 		bob = 1;
 
 // refresh position from simulated origin
-	VectorCopy (cl.simorg, tr.refdef.vieworg);
+	VectorCopy (cl.simorg, r_refdef.vieworg);
 
 	r_refdef.vieworg[2] += bob;
 

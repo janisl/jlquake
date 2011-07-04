@@ -302,7 +302,7 @@ void R_DrawSprModel(trRefEntity_t* e)
 	if (psprite->type == SPR_FACING_UPRIGHT)
 	{
 		// generate the sprite's axes, with vup straight up in worldspace, and
-		// r_spritedesc.vright perpendicular to tr.refdef.vieworg.
+		// r_spritedesc.vright perpendicular to tr.viewParms.orient.origin.
 		// This will not work if the view direction is very close to straight up or
 		// down, because the cross product will be between two nearly parallel
 		// vectors and starts to approach an undefined state, so we don't draw if
@@ -321,7 +321,7 @@ void R_DrawSprModel(trRefEntity_t* e)
 		up[0] = 0;
 		up[1] = 0;
 		up[2] = 1;
-		right[0] = tvec[1];		// CrossProduct(r_spritedesc.vup, -tr.refdef.vieworg,
+		right[0] = tvec[1];		// CrossProduct(r_spritedesc.vup, -tr.viewParms.orient.origin,
 		right[1] = -tvec[0];	//              r_spritedesc.vright)
 		right[2] = 0;
 		VectorNormalize(right);

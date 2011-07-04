@@ -155,7 +155,7 @@ void R_DrawEntitiesOnList (void)
 		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
 		{
 		case MOD_MESH1:
-			VectorSubtract(tr.currentEntity->e.origin, tr.refdef.vieworg, diff);
+			VectorSubtract(tr.currentEntity->e.origin, tr.viewParms.orient.origin, diff);
 			calc_length = (diff[0]*diff[0]) + (diff[1]*diff[1]) + (diff[2]*diff[2]);
 			if (calc_length > test_length)
 			{
@@ -175,7 +175,7 @@ void R_DrawEntitiesOnList (void)
 			break;
 
 		case MOD_SPRITE:
-			VectorSubtract(tr.currentEntity->e.origin, tr.refdef.vieworg, diff);
+			VectorSubtract(tr.currentEntity->e.origin, tr.viewParms.orient.origin, diff);
 			calc_length = (diff[0]*diff[0]) + (diff[1]*diff[1]) + (diff[2]*diff[2]);
 			if (calc_length > test_length)
 			{
@@ -231,7 +231,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 	{
 		VectorSubtract(
 			theents[i].ent->e.origin, 
-			tr.refdef.vieworg, 
+			tr.viewParms.orient.origin, 
 			result);
 //		theents[i].len = Length(result);
 		theents[i].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
@@ -325,7 +325,7 @@ void R_SetupFrame (void)
 
 // current viewleaf
 	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeafQ1(tr.refdef.vieworg, tr.worldModel);
+	r_viewleaf = Mod_PointInLeafQ1(tr.viewParms.orient.origin, tr.worldModel);
 
 	V_SetContentsColor (r_viewleaf->contents);
 	V_CalcBlend ();

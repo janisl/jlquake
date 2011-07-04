@@ -196,7 +196,7 @@ void EmitSkyPolys(mbrush29_surface_t* fa)
 		for (int i = 0; i < p->numverts; i++, v += BRUSH29_VERTEXSIZE)
 		{
 			vec3_t dir;
-			VectorSubtract(v, tr.refdef.vieworg, dir);
+			VectorSubtract(v, tr.viewParms.orient.origin, dir);
 			dir[2] *= 3;	// flatten the sphere
 
 			float length = dir[0] * dir[0] + dir[1] * dir[1] + dir[2] * dir[2];
@@ -699,7 +699,7 @@ void R_DrawSkyBoxQ2()
 	}
 
 	qglPushMatrix();
-	qglTranslatef(tr.refdef.vieworg[0], tr.refdef.vieworg[1], tr.refdef.vieworg[2]);
+	qglTranslatef(tr.viewParms.orient.origin[0], tr.viewParms.orient.origin[1], tr.viewParms.orient.origin[2]);
 	qglRotatef(tr.refdef.floatTime * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
 
 	for (int i = 0; i < 6; i++)
