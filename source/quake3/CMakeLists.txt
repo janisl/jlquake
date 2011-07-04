@@ -35,7 +35,6 @@ set(QUAKE3_FILES
 	qcommon/vm_interpreted.cpp
 	game/q_shared.cpp
 	game/q_math.cpp
-	renderer/tr_animation.cpp
 	renderer/tr_backend.cpp
 	renderer/tr_bsp.cpp
 	renderer/tr_cmds.cpp

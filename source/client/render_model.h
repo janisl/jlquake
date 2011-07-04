@@ -817,6 +817,8 @@ void RB_SurfaceMesh(md3Surface_t* surface);
 
 bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name);
 void R_FreeMd4(model_t* mod);
+void R_AddAnimSurfaces(trRefEntity_t* ent);
+void RB_SurfaceAnim(md4Surface_t* surfType);
 
 void Mod_LoadBrush29Model(model_t* mod, void* buffer);
 void Mod_FreeBsp29(model_t* mod);

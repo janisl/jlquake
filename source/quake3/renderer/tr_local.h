@@ -271,18 +271,6 @@ void RE_RenderScene( const refdef_t *fd );
 /*
 =============================================================
 
-ANIMATED MODELS
-
-=============================================================
-*/
-
-void R_MakeAnimModel( model_t *model );
-void R_AddAnimSurfaces( trRefEntity_t *ent );
-void RB_SurfaceAnim( md4Surface_t *surfType );
-
-/*
-=============================================================
-
 RENDERER BACK END FUNCTIONS
 
 =============================================================
