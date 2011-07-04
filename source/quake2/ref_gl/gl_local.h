@@ -113,7 +113,6 @@ void R_MarkLeaves (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
 void EmitWaterPolys (mbrush38_surface_t *fa);
-void R_DrawSkyBoxQ2 (void);
 void R_MarkLights (dlight_t *light, int bit, mbrush38_node_t *node);
 
 void COM_StripExtension (char *in, char *out);

@@ -692,6 +692,7 @@ void R_ClearSkyBox();
 void R_AddSkySurface(mbrush38_surface_t* fa);
 void RB_ClipSkyPolygons(shaderCommands_t* shader);
 void MakeSkyVec(float s, float t, int axis, float outSt[2], vec3_t outXYZ);
+void R_DrawSkyBoxQ2();
 
 extern float	speedscale;		// for top sky and bottom sky
 extern char		skyname[MAX_QPATH];

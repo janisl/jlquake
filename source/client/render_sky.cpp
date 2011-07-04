@@ -656,3 +656,77 @@ void MakeSkyVec(float s, float t, int axis, float outSt[2], vec3_t outXYZ)
 		outSt[1] = t;
 	}
 }
+
+//==========================================================================
+//
+//	EmitSkyVertex
+//
+//==========================================================================
+
+static void EmitSkyVertex(float s, float t, int axis)
+{
+	vec3_t v;
+	float St[2];	
+	MakeSkyVec(s, t, axis, St, v);
+	qglTexCoord2f(St[0], St[1]);
+	qglVertex3fv(v);
+}
+
+//==========================================================================
+//
+//	R_DrawSkyBoxQ2
+//
+//==========================================================================
+
+void R_DrawSkyBoxQ2()
+{
+	if (skyrotate)
+	{
+		// check for no sky at all
+		int i;
+		for (i = 0; i < 6; i++)
+		{
+			if (sky_mins[0][i] < sky_maxs[0][i] &&
+				sky_mins[1][i] < sky_maxs[1][i])
+			{
+				break;
+			}
+		}
+		if (i == 6)
+		{
+			return;		// nothing visible
+		}
+	}
+
+	qglPushMatrix();
+	qglTranslatef(tr.refdef.vieworg[0], tr.refdef.vieworg[1], tr.refdef.vieworg[2]);
+	qglRotatef(tr.refdef.floatTime * skyrotate, skyaxis[0], skyaxis[1], skyaxis[2]);
+
+	for (int i = 0; i < 6; i++)
+	{
+		if (skyrotate)
+		{
+			// hack, forces full sky to draw when rotating
+			sky_mins[0][i] = -1;
+			sky_mins[1][i] = -1;
+			sky_maxs[0][i] = 1;
+			sky_maxs[1][i] = 1;
+		}
+
+		if (sky_mins[0][i] >= sky_maxs[0][i] ||
+			sky_mins[1][i] >= sky_maxs[1][i])
+		{
+			continue;
+		}
+
+		GL_Bind(sky_images[sky_texorder[i]]);
+
+		qglBegin(GL_QUADS);
+		EmitSkyVertex(sky_mins[0][i], sky_mins[1][i], i);
+		EmitSkyVertex(sky_mins[0][i], sky_maxs[1][i], i);
+		EmitSkyVertex(sky_maxs[0][i], sky_maxs[1][i], i);
+		EmitSkyVertex(sky_maxs[0][i], sky_mins[1][i], i);
+		qglEnd();
+	}
+	qglPopMatrix();
+}
