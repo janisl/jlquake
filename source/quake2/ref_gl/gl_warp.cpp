@@ -51,11 +51,11 @@ void EmitWaterPolys (mbrush38_surface_t *fa)
 			os = v[3];
 			ot = v[4];
 
-			s = os + r_turbsin[Q_ftol( ((ot*0.125+rdt) * TURBSCALE) ) & 255];
+			s = os + r_turbsin[Q_ftol( ((ot*0.125+rdt) * TURBSCALE) ) & 255] * 0.5;
 			s += scroll;
 			s *= (1.0/64);
 
-			t = ot + r_turbsin[Q_ftol( ((os*0.125+rdt) * TURBSCALE) ) & 255];
+			t = ot + r_turbsin[Q_ftol( ((os*0.125+rdt) * TURBSCALE) ) & 255] * 0.5;
 			t *= (1.0/64);
 
 			qglTexCoord2f (s, t);

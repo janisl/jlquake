@@ -643,12 +643,6 @@ int R_Init()
 {	
 	int		err;
 	int		j;
-	extern float r_turbsin[256];
-
-	for ( j = 0; j < 256; j++ )
-	{
-		r_turbsin[j] *= 0.5;
-	}
 
 	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
 
