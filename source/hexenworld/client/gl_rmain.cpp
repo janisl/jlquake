@@ -582,9 +582,6 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 		Draw_String (u, v, Name);
 }
 
-void R_InitSkyTexCoords( float cloudLayerHeight )
-{
-}
 void R_SyncRenderThread()
 {
 }
@@ -595,8 +592,5 @@ void GL_EndBuildingLightmaps (void)
 {
 }
 void GL_BeginBuildingLightmaps (model_t *m)
-{
-}
-void RB_StageIteratorSky( void )
 {
 }

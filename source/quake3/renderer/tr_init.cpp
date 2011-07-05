@@ -40,8 +40,6 @@ QCvar	*r_skipBackEnd;
 QCvar	*r_measureOverdraw;
 
 QCvar	*r_inGameVideo;
-QCvar	*r_fastsky;
-QCvar	*r_drawSun;
 QCvar	*r_dlightBacks;
 
 QCvar	*r_norefresh;
@@ -56,7 +54,6 @@ QCvar	*r_nocurves;
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
 QCvar	*r_flares;
-QCvar	*r_showsky;
 QCvar	*r_finish;
 QCvar	*r_lockpvs;
 QCvar	*r_noportals;
@@ -575,9 +572,7 @@ void R_Register( void )
 	//
 	r_lodCurveError = Cvar_Get( "r_lodCurveError", "250", CVAR_ARCHIVE|CVAR_CHEAT );
 	r_flares = Cvar_Get ("r_flares", "0", CVAR_ARCHIVE );
-	r_fastsky = Cvar_Get( "r_fastsky", "0", CVAR_ARCHIVE );
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
-	r_drawSun = Cvar_Get( "r_drawSun", "0", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
 	r_facePlaneCull = Cvar_Get ("r_facePlaneCull", "1", CVAR_ARCHIVE );
@@ -609,7 +604,6 @@ void R_Register( void )
 	r_showcluster = Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
-	r_showsky = Cvar_Get ("r_showsky", "0", CVAR_CHEAT);
 	r_drawBuffer = Cvar_Get( "r_drawBuffer", "GL_BACK", CVAR_CHEAT );
 	r_lockpvs = Cvar_Get ("r_lockpvs", "0", CVAR_CHEAT);
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);

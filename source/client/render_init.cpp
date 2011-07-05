@@ -118,7 +118,6 @@ QCvar*		r_shownormals;
 QCvar*		r_offsetFactor;
 QCvar*		r_offsetUnits;
 QCvar*		r_clear;
-QCvar*		r_skymip;
 
 QCvar*		r_modulate;
 QCvar*		r_ambientScale;
@@ -129,6 +128,11 @@ QCvar*		r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
 QCvar*		r_lodbias;
 QCvar*		r_lodscale;
+
+QCvar*		r_skymip;
+QCvar*		r_fastsky;
+QCvar*		r_showsky;
+QCvar*		r_drawSun;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -303,6 +307,8 @@ void R_SharedRegister()
 		r_shadows = Cvar_Get("r_shadows", "0", CVAR_ARCHIVE);
 	}
 	r_lodbias = Cvar_Get("r_lodbias", "0", CVAR_ARCHIVE);
+	r_fastsky = Cvar_Get("r_fastsky", "0", CVAR_ARCHIVE);
+	r_drawSun = Cvar_Get("r_drawSun", "0", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time
@@ -332,6 +338,7 @@ void R_SharedRegister()
 	r_lodscale = Cvar_Get("r_lodscale", "5", CVAR_CHEAT);
 	r_clear = Cvar_Get("r_clear", "0", CVAR_CHEAT);
 	r_skymip = Cvar_Get("r_skymip", "0", 0);
+	r_showsky = Cvar_Get("r_showsky", "0", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

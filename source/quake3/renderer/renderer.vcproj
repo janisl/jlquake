@@ -204,10 +204,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_sky.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_surface.cpp"
 				>
 			</File>

@@ -617,7 +617,6 @@ extern QCvar*	r_shownormals;			// draws wireframe normals
 extern QCvar*	r_offsetFactor;
 extern QCvar*	r_offsetUnits;
 extern QCvar*	r_clear;				// force screen clear every frame
-extern QCvar*	r_skymip;
 
 extern QCvar*	r_modulate;
 extern QCvar*	r_ambientScale;
@@ -628,6 +627,11 @@ extern QCvar*	r_lightlevel;	// FIXME: This is a HACK to get the client's light l
 
 extern QCvar*	r_lodbias;				// push/pull LOD transitions
 extern QCvar*	r_lodscale;
+
+extern QCvar*	r_skymip;
+extern QCvar*	r_fastsky;				// controls whether sky should be cleared or drawn
+extern QCvar*	r_showsky;				// forces sky in front of all surfaces
+extern QCvar*	r_drawSun;				// controls drawing of sun quad
 
 extern trGlobals_t	tr;
 
@@ -690,25 +694,17 @@ void EmitBothSkyLayers(mbrush29_surface_t* fa);
 void R_DrawSkyChain(mbrush29_surface_t* s);
 void R_ClearSkyBox();
 void R_AddSkySurface(mbrush38_surface_t* fa);
-void RB_ClipSkyPolygons(shaderCommands_t* shader);
-void MakeSkyVec(float s, float t, int axis, float outSt[2], vec3_t outXYZ);
 void R_DrawSkyBoxQ2();
+void R_InitSkyTexCoords(float cloudLayerHeight);
+void RB_StageIteratorSky();
+void RB_DrawSun();
 
 extern float	speedscale;		// for top sky and bottom sky
-extern char		skyname[MAX_QPATH];
-extern float	skyrotate;
-extern vec3_t	skyaxis;
-extern image_t*	sky_images[6];
-extern float	sky_mins[2][6], sky_maxs[2][6];
-extern float	sky_min, sky_max;
-extern int sky_texorder[6];
 
 //	Temporarily must be defined in game.
-void R_InitSkyTexCoords( float cloudLayerHeight );
 void R_SyncRenderThread();
 void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
 void GL_EndBuildingLightmaps (void);
 void GL_BeginBuildingLightmaps (model_t *m);
-void RB_StageIteratorSky( void );
 
 #endif

@@ -85,8 +85,6 @@ extern QCvar	*r_ignore;				// used for debugging anything
 extern QCvar	*r_measureOverdraw;		// enables stencil buffer overdraw measurement
 
 extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
-extern QCvar	*r_fastsky;				// controls whether sky should be cleared or drawn
-extern QCvar	*r_drawSun;				// controls drawing of sun quad
 extern QCvar	*r_dlightBacks;			// dlight non-facing surfaces for continuity
 
 extern	QCvar	*r_norefresh;			// bypasses the ref rendering
@@ -101,8 +99,6 @@ extern	QCvar	*r_showcluster;
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;
 extern  QCvar  *r_glDriver;
-
-extern	QCvar	*r_showsky;						// forces sky in front of all surfaces
 
 extern	QCvar	*r_flares;						// light flares
 
@@ -174,8 +170,6 @@ TESSELATOR/SHADER DECLARATIONS
 ====================================================================
 */
 
-void RB_StageIteratorSky( void );
-
 void RB_ShowImages( void );
 
 
@@ -227,18 +221,6 @@ SHADOWS
 */
 
 void RB_ShadowFinish( void );
-
-/*
-============================================================
-
-SKIES
-
-============================================================
-*/
-
-void R_BuildCloudData( shaderCommands_t *shader );
-void R_InitSkyTexCoords( float cloudLayerHeight );
-void RB_DrawSun( void );
 
 /*
 ============================================================

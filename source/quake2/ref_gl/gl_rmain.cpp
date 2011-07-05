@@ -904,12 +904,6 @@ void R_ClearScreen()
 	qglClearColor(1,0, 0.5, 0.5);
 }
 
-void R_InitSkyTexCoords( float cloudLayerHeight )
-{
-}
 void R_SyncRenderThread()
-{
-}
-void RB_StageIteratorSky( void )
 {
 }
