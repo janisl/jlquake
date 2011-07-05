@@ -1,12 +1,5 @@
 // client.h
 
-typedef struct
-{
-	char		name[16];
-	qboolean	failedload;		// the name isn't a valid skin
-	cache_user_t	cache;
-} qw_skin_t;
-
 // player_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
 typedef struct
@@ -57,7 +50,6 @@ typedef struct player_info_s
 	int			level;
 	int			spectator;
 	byte		translations[VID_GRADES*256];
-	qw_skin_t		*skin;
 	int			modelindex;
 	qboolean	Translated;
 	int			siege_team;
@@ -137,7 +129,6 @@ typedef enum {
 	dl_none,
 	dl_model,
 	dl_sound,
-	dl_skin,
 	dl_single
 } dltype_t;		// download type
 
@@ -550,16 +541,6 @@ void CL_SetSolidPlayers (int playernum);
 //
 void CL_InitPrediction (void);
 void CL_PredictMove (void);
-
-//
-// skin.c
-//
-
-void	Skin_Find (player_info_t *sc);
-byte	*Skin_Cache (qw_skin_t *skin);
-void	Skin_Skins_f (void);
-void	Skin_AllSkins_f (void);
-void	Skin_NextDownload (void);
 
 void CL_UpdateEffects(void);
 qboolean CL_CheckOrDownloadFile (char *filename);

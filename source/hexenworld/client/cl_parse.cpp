@@ -288,9 +288,6 @@ void CL_RequestNextDownload (void)
 	{
 	case dl_single:
 		break;
-	case dl_skin:
-		Skin_NextDownload ();
-		break;
 	case dl_model:
 		Model_NextDownload ();
 		break;
@@ -340,15 +337,7 @@ void CL_ParseDownload (void)
 	// open the file if not opened yet
 	if (!cls.download)
 	{
-		if (QStr::NCmp(cls.downloadtempname,"skins/",6))
-		{
-			cls.download = FS_FOpenFileWrite(cls.downloadtempname);
-		}
-		else
-		{
-			sprintf(name, "hw/%s", cls.downloadtempname);
-			cls.download = FS_SV_FOpenFileWrite(name);
-		}
+		cls.download = FS_FOpenFileWrite(cls.downloadtempname);
 
 		if (!cls.download)
 		{
@@ -391,16 +380,7 @@ void CL_ParseDownload (void)
 		FS_FCloseFile (cls.download);
 
 		// rename the temp file to it's final name
-		if (QStr::NCmp(cls.downloadtempname,"skins/",6))
-		{
-			FS_Rename(cls.downloadtempname, cls.downloadname);
-		}
-		else
-		{
-			sprintf (oldn, "hw/%s", cls.downloadtempname);
-			sprintf (newn, "hw/%s", cls.downloadname);
-			FS_SV_Rename(oldn, newn);
-		}
+		FS_Rename(cls.downloadtempname, cls.downloadname);
 
 		cls.download = NULL;
 		cls.downloadpercent = 0;
@@ -853,9 +833,6 @@ void CL_UpdateUserinfo (void)
 		player->spectator = true;
 	else
 		player->spectator = false;
-
-	if (cls.state == ca_active)
-		Skin_Find (player);
 
 	player->playerclass = QStr::Atoi(Info_ValueForKey (player->userinfo, "playerclass"));
 /*	if (cl.playernum == slot && player->playerclass != playerclass.value)
