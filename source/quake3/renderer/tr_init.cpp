@@ -32,8 +32,6 @@ QCvar	*r_railWidth;
 QCvar	*r_railCoreWidth;
 QCvar	*r_railSegmentLength;
 
-QCvar	*r_ignore;
-
 QCvar	*r_showSmp;
 QCvar	*r_skipBackEnd;
 
@@ -58,8 +56,6 @@ QCvar	*r_finish;
 QCvar	*r_lockpvs;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
-
-QCvar	*r_lodCurveError;
 
 QCvar	*r_debugSurface;
 
@@ -570,7 +566,6 @@ void R_Register( void )
 	//
 	// archived variables that can change at any time
 	//
-	r_lodCurveError = Cvar_Get( "r_lodCurveError", "250", CVAR_ARCHIVE|CVAR_CHEAT );
 	r_flares = Cvar_Get ("r_flares", "0", CVAR_ARCHIVE );
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
@@ -599,7 +594,6 @@ void R_Register( void )
 	r_measureOverdraw = Cvar_Get( "r_measureOverdraw", "0", CVAR_CHEAT );
 	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", CVAR_CHEAT );
-	r_ignore = Cvar_Get( "r_ignore", "1", CVAR_CHEAT );
 	r_novis = Cvar_Get ("r_novis", "0", CVAR_CHEAT);
 	r_showcluster = Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);

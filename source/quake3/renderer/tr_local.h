@@ -80,8 +80,6 @@ extern QCvar	*r_railWidth;
 extern QCvar	*r_railCoreWidth;
 extern QCvar	*r_railSegmentLength;
 
-extern QCvar	*r_ignore;				// used for debugging anything
-
 extern QCvar	*r_measureOverdraw;		// enables stencil buffer overdraw measurement
 
 extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
@@ -106,7 +104,6 @@ extern	QCvar	*r_lockpvs;
 extern	QCvar	*r_noportals;
 extern	QCvar	*r_portalOnly;
 
-extern	QCvar	*r_lodCurveError;
 extern	QCvar	*r_showSmp;
 extern	QCvar	*r_skipBackEnd;
 

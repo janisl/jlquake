@@ -633,6 +633,10 @@ extern QCvar*	r_fastsky;				// controls whether sky should be cleared or drawn
 extern QCvar*	r_showsky;				// forces sky in front of all surfaces
 extern QCvar*	r_drawSun;				// controls drawing of sun quad
 
+extern QCvar*	r_lodCurveError;
+
+extern QCvar*	r_ignore;				// used for debugging anything
+
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;
@@ -679,6 +683,13 @@ void RB_CheckOverflow(int verts, int indexes);
 #define RB_CHECKOVERFLOW(v,i) if (tess.numVertexes + (v) >= SHADER_MAX_VERTEXES || tess.numIndexes + (i) >= SHADER_MAX_INDEXES) {RB_CheckOverflow(v,i);}
 void RB_AddQuadStamp(vec3_t origin, vec3_t left, vec3_t up, byte* color);
 void RB_AddQuadStampExt(vec3_t origin, vec3_t left, vec3_t up, byte* color, float s1, float t1, float s2, float t2);
+void RB_SurfaceBad(surfaceType_t* surfType);
+void RB_SurfaceSkip(void* surf);
+void RB_SurfaceFace(srfSurfaceFace_t* surf);
+void RB_SurfaceGrid(srfGridMesh_t* cv);
+void RB_SurfaceTriangles(srfTriangles_t* srf);
+void RB_SurfacePolychain(srfPoly_t* p);
+void RB_SurfaceFlare(srfFlare_t *surf);
 
 /*
 ====================================================================
