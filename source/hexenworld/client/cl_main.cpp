@@ -902,6 +902,33 @@ void CL_Sensitivity_save_f (void)
 }
 
 /*
+==========
+Skin_Skins_f
+
+HexenWorld doesn't use custom skins but we need this because it's
+used during connection to the server.
+==========
+*/
+static void Skin_Skins_f()
+{
+	if (cls.state == ca_disconnected)
+	{
+		Con_Printf("WARNING: cannot complete command because there is no connection to a server\n");
+		return;
+	}
+
+	cls.downloadnumber = 0;
+	cls.downloadtype = dl_none;
+
+	if (cls.state != ca_active)
+	{	// get next signon phase
+		cls.netchan.message.WriteByte(clc_stringcmd);
+		cls.netchan.message.WriteString2(
+			va("begin %i", cl.servercount));
+	}
+}
+
+/*
 =================
 CL_Init
 =================
@@ -909,9 +936,6 @@ CL_Init
 void Host_SaveConfig_f (void);
 void CL_Init (void)
 {
-	extern	QCvar*		baseskin;
-	extern	QCvar*		noskins;
-
 	CL_SharedInit();
 
 	cls.state = ca_disconnected;
@@ -966,9 +990,6 @@ void CL_Init (void)
 	cl_predict_players2 = Cvar_Get("cl_predict_players2", "1", 0);
 	cl_solid_players = Cvar_Get("cl_solid_players", "1", 0);
 
-	baseskin = Cvar_Get("baseskin", "base", 0);
-	noskins = Cvar_Get("noskins", "1", 0);
-
 	cl_lightlevel = Cvar_Get ("r_lightlevel", "0", 0);
 
 	//
@@ -998,7 +1019,6 @@ void CL_Init (void)
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 
 	Cmd_AddCommand ("skins", Skin_Skins_f);
-	Cmd_AddCommand ("allskins", Skin_AllSkins_f);
 
 	Cmd_AddCommand ("quit", CL_Quit_f);
 

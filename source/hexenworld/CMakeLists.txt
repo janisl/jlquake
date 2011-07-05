@@ -57,7 +57,6 @@ add_executable(jlhwcl
 	client/pmovetst.cpp
 	client/r_part.cpp
 	client/sbar.cpp
-	client/skin.cpp
 	client/snd_dma.cpp
 	client/strings.cpp
 	client/sys_linux.cpp
