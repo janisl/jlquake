@@ -21,13 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_local.h"
 
-// speed up sin calculations - Ed
-float	r_turbsin[] =
-{
-	#include "warpsin.h"
-};
-#define TURBSCALE (256.0 / (2 * M_PI))
-
 /*
 =============
 EmitWaterPolys
@@ -58,19 +51,11 @@ void EmitWaterPolys (mbrush38_surface_t *fa)
 			os = v[3];
 			ot = v[4];
 
-#if !id386
-			s = os + r_turbsin[(int)((ot*0.125+rdt) * TURBSCALE) & 255];
-#else
 			s = os + r_turbsin[Q_ftol( ((ot*0.125+rdt) * TURBSCALE) ) & 255];
-#endif
 			s += scroll;
 			s *= (1.0/64);
 
-#if !id386
-			t = ot + r_turbsin[(int)((os*0.125+rdt) * TURBSCALE) & 255];
-#else
 			t = ot + r_turbsin[Q_ftol( ((os*0.125+rdt) * TURBSCALE) ) & 255];
-#endif
 			t *= (1.0/64);
 
 			qglTexCoord2f (s, t);

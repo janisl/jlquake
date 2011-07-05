@@ -3,13 +3,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-// speed up sin calculations - Ed
-float	turbsin[] =
-{
-	#include "gl_warp_sin.h"
-};
-#define TURBSCALE (256.0 / (2 * M_PI))
-
 /*
 =============
 EmitWaterPolys
@@ -33,10 +26,10 @@ void EmitWaterPolys (mbrush29_surface_t *fa)
 			os = v[3];
 			ot = v[4];
 
-			s = os + turbsin[(int)((ot*0.125+realtime) * TURBSCALE) & 255];
+			s = os + r_turbsin[(int)((ot*0.125+realtime) * TURBSCALE) & 255];
 			s *= (1.0/64);
 
-			t = ot + turbsin[(int)((os*0.125+realtime) * TURBSCALE) & 255];
+			t = ot + r_turbsin[(int)((os*0.125+realtime) * TURBSCALE) & 255];
 			t *= (1.0/64);
 
 			qglTexCoord2f (s, t);

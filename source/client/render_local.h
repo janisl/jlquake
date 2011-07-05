@@ -660,6 +660,9 @@ extern vec3_t		lightspot;
 
 extern int			c_alias_polys;
 
+#define TURBSCALE (256.0 / (2 * M_PI))
+extern float		r_turbsin[256];
+
 /*
 ====================================================================
 
