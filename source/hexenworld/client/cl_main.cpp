@@ -925,7 +925,6 @@ static void Skin_Skins_f()
 		cls.netchan.message.WriteByte(clc_stringcmd);
 		cls.netchan.message.WriteString2(
 			va("begin %i", cl.servercount));
-		Cache_Report ();		// print remaining memory
 	}
 }
 
