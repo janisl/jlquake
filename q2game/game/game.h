@@ -132,7 +132,7 @@ typedef struct
 	// and misc data like the sky definition and cdtrack.
 	// All of the current configstrings are sent to clients when
 	// they connect, and changes are sent to all connected clients.
-	void	(*configstring) (int num, char *string);
+	void	(*configstring) (int num, const char *string);
 
 	void	(*error) (const char *fmt, ...);
 

@@ -60,7 +60,7 @@ static int pr_depth;
 static int localstack[LOCALSTACK_SIZE];
 static int localstack_used;
 
-static char *pr_opnames[] =
+static const char *pr_opnames[] =
 {
 	"DONE",
 	"MUL_F", "MUL_V",  "MUL_FV", "MUL_VF",

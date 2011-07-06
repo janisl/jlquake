@@ -351,7 +351,7 @@ extern int			sv_net_port;
 //
 void SV_Shutdown (void);
 void SV_Frame (float time);
-void SV_FinalMessage (char *message);
+void SV_FinalMessage (const char *message);
 void SV_DropClient (client_t *drop);
 
 int SV_CalcPing (client_t *cl);

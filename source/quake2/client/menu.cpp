@@ -28,9 +28,9 @@ static int	m_main_cursor;
 
 #define NUM_CURSOR_FRAMES 15
 
-static char *menu_in_sound		= "misc/menu1.wav";
-static char *menu_move_sound	= "misc/menu2.wav";
-static char *menu_out_sound		= "misc/menu3.wav";
+static const char *menu_in_sound		= "misc/menu1.wav";
+static const char *menu_move_sound	= "misc/menu2.wav";
+static const char *menu_out_sound		= "misc/menu3.wav";
 
 void M_Menu_Main_f (void);
 	void M_Menu_Game_f (void);
@@ -72,7 +72,7 @@ typedef struct
 menulayer_t	m_layers[MAX_MENU_DEPTH];
 int		m_menudepth;
 
-static void M_Banner( char *name )
+static void M_Banner(const char *name)
 {
 	int w, h;
 
@@ -271,7 +271,7 @@ void M_DrawCharacter (int cx, int cy, int num)
 	re.DrawChar ( cx + ((viddef.width - 320)>>1), cy + ((viddef.height - 240)>>1), num);
 }
 
-void M_Print (int cx, int cy, char *str)
+void M_Print (int cx, int cy, const char *str)
 {
 	while (*str)
 	{
@@ -281,7 +281,7 @@ void M_Print (int cx, int cy, char *str)
 	}
 }
 
-void M_PrintWhite (int cx, int cy, char *str)
+void M_PrintWhite (int cx, int cy, const char *str)
 {
 	while (*str)
 	{
@@ -391,7 +391,7 @@ void M_Main_Draw (void)
 	int widest = -1;
 	int totalheight = 0;
 	char litname[80];
-	char *names[] =
+	const char *names[] =
 	{
 		"m_main_game",
 		"m_main_multiplayer",
@@ -578,7 +578,7 @@ KEYS MENU
 
 =======================================================================
 */
-char *bindnames[][2] =
+const char *bindnames[][2] =
 {
 {"+attack", 		"attack"},
 {"weapnext", 		"next weapon"},
@@ -637,7 +637,7 @@ static menuaction_s		s_keys_inv_next_action;
 
 static menuaction_s		s_keys_help_computer_action;
 
-static void M_UnbindCommand (char *command)
+static void M_UnbindCommand (const char *command)
 {
 	int		j;
 	int		l;
@@ -655,7 +655,7 @@ static void M_UnbindCommand (char *command)
 	}
 }
 
-static void M_FindKeysForCommand (char *command, int *twokeys)
+static void M_FindKeysForCommand (const char *command, int *twokeys)
 {
 	int		count;
 	int		j;
@@ -2630,7 +2630,7 @@ void StartServerActionFunc( void *self )
 	int		timelimit;
 	int		fraglimit;
 	int		maxclients;
-	char	*spot;
+	const char	*spot;
 
 	QStr::Cpy( startmap, strchr( mapnames[s_startmap_list.curvalue], '\n' ) + 1 );
 

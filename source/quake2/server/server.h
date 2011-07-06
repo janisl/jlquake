@@ -211,7 +211,7 @@ extern	edict_t		*sv_player;
 //
 // sv_main.c
 //
-void SV_FinalMessage (char *message, qboolean reconnect);
+void SV_FinalMessage (const char *message, qboolean reconnect);
 void SV_DropClient (client_t *drop);
 
 int SV_ModelIndex (char *name);

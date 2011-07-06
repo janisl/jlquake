@@ -23,7 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "client.h"
 
-char *svc_strings[256] = {
+const char *svc_strings[256] = {
 	"svc_bad",
 
 	"svc_nop",
@@ -35,7 +35,7 @@ char *svc_strings[256] = {
 	"svc_snapshot"
 };
 
-void SHOWNET( QMsg *msg, char *s) {
+void SHOWNET( QMsg *msg, const char *s) {
 	if ( cl_shownet->integer >= 2) {
 		Com_Printf ("%3i:%s\n", msg->readcount-1, s);
 	}

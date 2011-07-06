@@ -1112,7 +1112,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void Host_WriteConfiguration (char *fname)
+void Host_WriteConfiguration (const char *fname)
 {
 	if (host_initialized)
 	{

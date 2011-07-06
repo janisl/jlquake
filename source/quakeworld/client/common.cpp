@@ -29,9 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 usercmd_t nullcmd; // guarenteed to be zero
 
-static char	*argvdummy = " ";
-
-static char	*safeargvs[NUM_SAFE_ARGVS] =
+static const char	*safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
 
 QCvar*	registered;
@@ -331,7 +329,7 @@ Allways appends a 0 byte to the loaded data.
 */
 byte	*loadbuf;
 int		loadsize;
-byte *COM_LoadFile (char *path, int usehunk)
+byte *COM_LoadFile (const char *path, int usehunk)
 {
 	fileHandle_t	h;
 	byte	*buf;
@@ -378,13 +376,13 @@ byte *COM_LoadFile (char *path, int usehunk)
 	return buf;
 }
 
-byte *COM_LoadHunkFile (char *path)
+byte *COM_LoadHunkFile (const char *path)
 {
 	return COM_LoadFile (path, 1);
 }
 
 // uses temp hunk if larger than bufsize
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize)
+byte *COM_LoadStackFile (const char *path, void *buffer, int bufsize)
 {
 	byte	*buf;
 	
@@ -550,8 +548,8 @@ byte	COM_BlockSequenceCRCByte (byte *base, int length, int sequence)
 }
 
 // char *date = "Oct 24 1996";
-static char *date = __DATE__ ;
-static char *mon[12] = 
+static const char *date = __DATE__ ;
+static const char *mon[12] = 
 { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 static char mond[12] = 
 { 31,    28,    31,    30,    31,    30,    31,    31,    30,    31,    30,    31 };

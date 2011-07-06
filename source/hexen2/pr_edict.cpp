@@ -221,7 +221,7 @@ ddef_t *ED_FieldAtOfs (int ofs)
 ED_FindField
 ============
 */
-ddef_t *ED_FindField (char *name)
+ddef_t *ED_FindField (const char *name)
 {
 	ddef_t		*def;
 	int			i;
@@ -241,7 +241,7 @@ ddef_t *ED_FindField (char *name)
 ED_FindGlobal
 ============
 */
-ddef_t *ED_FindGlobal (char *name)
+ddef_t *ED_FindGlobal (const char *name)
 {
 	ddef_t		*def;
 	int			i;
@@ -290,7 +290,7 @@ dfunction_t *ED_FindFunctioni (char *name)
 }
 
 
-eval_t *GetEdictFieldValue(edict_t *ed, char *field)
+eval_t *GetEdictFieldValue(edict_t *ed, const char *field)
 {
 	ddef_t			*def = NULL;
 	int				i;
@@ -759,7 +759,7 @@ const char* ED_ParseGlobals(const char* data)
 ED_NewString
 =============
 */
-char *ED_NewString (char *string)
+char *ED_NewString (const char *string)
 {
 	char	*news, *new_p;
 	int		i,l;

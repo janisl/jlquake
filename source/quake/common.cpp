@@ -23,9 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_SAFE_ARGVS  7
 
-static char     *argvdummy = " ";
-
-static char     *safeargvs[NUM_SAFE_ARGVS] =
+static const char     *safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
 QCvar*  registered;
@@ -223,7 +221,7 @@ void COM_InitArgv2(int argc, char **argv)
 COM_Init
 ================
 */
-void COM_Init (char *basedir)
+void COM_Init (const char *basedir)
 {
 	Com_InitByteOrder();
 
@@ -265,7 +263,7 @@ Allways appends a 0 byte.
 */
 byte    *loadbuf;
 int             loadsize;
-byte *COM_LoadFile (char *path, int usehunk)
+byte *COM_LoadFile (const char *path, int usehunk)
 {
 	fileHandle_t	h;
 	byte    *buf;
@@ -310,13 +308,13 @@ byte *COM_LoadFile (char *path, int usehunk)
 	return buf;
 }
 
-byte *COM_LoadHunkFile (char *path)
+byte *COM_LoadHunkFile (const char *path)
 {
 	return COM_LoadFile (path, 1);
 }
 
 // uses temp hunk if larger than bufsize
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize)
+byte *COM_LoadStackFile (const char *path, void *buffer, int bufsize)
 {
 	byte    *buf;
 	

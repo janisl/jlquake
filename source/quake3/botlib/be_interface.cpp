@@ -215,7 +215,7 @@ int Export_BotLibShutdown(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int Export_BotLibVarSet(char *var_name, char *value)
+int Export_BotLibVarSet(const char *var_name, char *value)
 {
 	LibVarSet(var_name, value);
 	return BLERR_NOERROR;

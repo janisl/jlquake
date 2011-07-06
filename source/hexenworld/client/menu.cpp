@@ -96,7 +96,7 @@ static double message_time;
 void M_ConfigureNetSubsystem(void);
 void M_Menu_Class_f (void);
 
-char *ClassNames[MAX_PLAYER_CLASS] = 
+const char *ClassNames[MAX_PLAYER_CLASS] = 
 {
 	"Paladin",
 	"Crusader",
@@ -106,7 +106,7 @@ char *ClassNames[MAX_PLAYER_CLASS] =
 	"Dwarf"
 };
 
-char *ClassNamesU[MAX_PLAYER_CLASS] = 
+const char *ClassNamesU[MAX_PLAYER_CLASS] = 
 {
 	"PALADIN",
 	"CRUSADER",
@@ -116,7 +116,7 @@ char *ClassNamesU[MAX_PLAYER_CLASS] =
 	"DWARF"
 };
 
-char *DiffNames[MAX_PLAYER_CLASS][4] =
+const char *DiffNames[MAX_PLAYER_CLASS][4] =
 {
 	{	// Paladin
 		"APPRENTICE",
@@ -186,7 +186,7 @@ void M_DrawCharacter2 (int cx, int line, int num)
 	Draw_Character ( cx + ((vid.width - 320)>>1), line + ((vid.height - 200)>>1), num);
 }
 
-void M_Print2 (int cx, int cy, char *str)
+void M_Print2 (int cx, int cy, const char *str)
 {
 	while (*str)
 	{
@@ -196,7 +196,7 @@ void M_Print2 (int cx, int cy, char *str)
 	}
 }
 
-void M_PrintWhite (int cx, int cy, char *str)
+void M_PrintWhite (int cx, int cy, const char *str)
 {
 	while (*str)
 	{
@@ -508,7 +508,7 @@ smoothly scrolled off.
 ================
 */
 
-void M_DrawBigString(int x, int y, char *string)
+void M_DrawBigString(int x, int y, const char *string)
 {
 	int c,length;
 
@@ -526,11 +526,11 @@ void M_DrawBigString(int x, int y, char *string)
 
 
 
-void ScrollTitle (char *name)
+void ScrollTitle (const char *name)
 {
 	float delta;
 	image_t	*p;
-	static char *LastName = "";
+	static const char *LastName = "";
 	int finaly;
 	static qboolean CanSwitch = true;
 
@@ -1095,7 +1095,7 @@ void M_Options_Key (int k)
 //=============================================================================
 /* KEYS MENU */
 
-char *bindnames[][2] =
+const char *bindnames[][2] =
 {
 {"+attack", 		"attack"},
 {"impulse 10", 		"change weapon"},
@@ -1158,7 +1158,7 @@ void M_Menu_Keys_f (void)
 }
 
 
-void M_FindKeysForCommand (char *command, int *twokeys)
+void M_FindKeysForCommand (const char *command, int *twokeys)
 {
 	int		count;
 	int		j;
@@ -1188,7 +1188,7 @@ void M_FindKeysForCommand (char *command, int *twokeys)
 	}
 }
 
-void M_UnbindCommand (char *command)
+void M_UnbindCommand (const char *command)
 {
 	int		j;
 	int		l;
@@ -1447,7 +1447,7 @@ menu_state_t	m_quit_prevstate;
 qboolean	wasInMenus;
 
 #ifndef	_WIN32
-char *quitMessage [] = 
+const char *quitMessage [] = 
 {
 /* .........1.........2.... */
   "   Look! Behind you!    ",
@@ -1495,13 +1495,13 @@ char *quitMessage [] =
 static float LinePos;
 static int LineTimes;
 static int MaxLines;
-char **LineText;
+const char **LineText;
 static qboolean SoundPlayed;
 
 
 #define MAX_LINES 145+25
 
-char *CreditText[MAX_LINES] =
+const char *CreditText[MAX_LINES] =
 {
    "HexenWorld",
    "",
@@ -1681,7 +1681,7 @@ char *CreditText[MAX_LINES] =
 
 #define MAX_LINES2 158+27
 
-char *Credit2Text[MAX_LINES2] =
+const char *Credit2Text[MAX_LINES2] =
 {
    "HexenWorld",
    "",

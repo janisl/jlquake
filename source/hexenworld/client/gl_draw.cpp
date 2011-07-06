@@ -55,7 +55,7 @@ image_t* Draw_PicFromFile (char *name)
 Draw_CachePic
 ================
 */
-image_t* Draw_CachePic (char *path)
+image_t* Draw_CachePic (const char *path)
 {
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
@@ -217,7 +217,7 @@ void Draw_Character (int x, int y, unsigned int num)
 Draw_String
 ================
 */
-void Draw_String (int x, int y, char *str)
+void Draw_String (int x, int y, const char *str)
 {
 	while (*str)
 	{
@@ -227,21 +227,11 @@ void Draw_String (int x, int y, char *str)
 	}
 }
 
-void Draw_RedString (int x, int y, char *str)
+void Draw_RedString (int x, int y, const char *str)
 {
 	while (*str)
 	{
 		Draw_Character (x, y, ((unsigned char)(*str))+256);
-		str++;
-		x += 8;
-	}
-}
-
-void Draw_Red_String (int x, int y, char *str)
-{
-	while (*str)
-	{
-		Draw_Character (x, y, *str+128);
 		str++;
 		x += 8;
 	}
@@ -352,7 +342,7 @@ void Draw_SmallCharacter (int x, int y, int num)
 // Draw_SmallString
 //
 //==========================================================================
-void Draw_SmallString(int x, int y, char *str)
+void Draw_SmallString(int x, int y, const char *str)
 {
 	while (*str)
 	{

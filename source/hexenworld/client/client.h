@@ -438,8 +438,6 @@ void	CL_DecayLights (void);
 
 void CL_Init (void);
 
-void CL_EstablishConnection (char *host);
-
 void CL_Disconnect (void);
 void CL_Disconnect_f (void);
 void CL_NextDemo (void);
@@ -565,7 +563,7 @@ void CL_EmitEntities (void);
 void CL_WriteDemoCmd (usercmd_t *pcmd);
 void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, qboolean spectator);
 void CL_SendConnectPacket (void);
-void Host_WriteConfiguration (char *fname);
+void Host_WriteConfiguration (const char *fname);
 void Cam_Track(usercmd_t *cmd);
 void Cam_FinishMove(usercmd_t *cmd);
 void Cam_Reset(void);

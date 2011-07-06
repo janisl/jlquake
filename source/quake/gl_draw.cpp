@@ -45,7 +45,7 @@ byte		menuplyr_pixels[4096];
 Draw_CachePic
 ================
 */
-image_t* Draw_CachePic (char *path)
+image_t* Draw_CachePic (const char *path)
 {
 	// HACK HACK HACK --- we need to keep the bytes for
 	// the translatable player picture just for the menu
@@ -217,7 +217,7 @@ void Draw_Character (int x, int y, int num)
 Draw_String
 ================
 */
-void Draw_String (int x, int y, char *str)
+void Draw_String (int x, int y, const char *str)
 {
 	while (*str)
 	{

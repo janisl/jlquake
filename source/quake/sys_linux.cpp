@@ -13,7 +13,7 @@ qboolean			isDedicated;
 
 int nostdout = 0;
 
-char *basedir = ".";
+const char *basedir = ".";
 
 // =======================================================================
 // General routines

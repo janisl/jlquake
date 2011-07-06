@@ -32,7 +32,7 @@ void SCR_CenterPrint (const char *str);
 void SCR_BeginLoadingPlaque (void);
 void SCR_EndLoadingPlaque (void);
 
-int SCR_ModalMessage (char *text);
+int SCR_ModalMessage (const char *text);
 
 extern	float		scr_con_current;
 extern	float		scr_conlines;		// lines of console to display

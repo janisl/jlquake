@@ -115,7 +115,7 @@ void SV_Edicts(const char *Name)
 void Sv_Edicts_f(void)
 {
 	FILE *FH;
-	char *Name;
+	const char *Name;
 	int i;
 	edict_t *e;
 

@@ -151,7 +151,7 @@ SV_WipeSavegame
 Delete save/<XXX>/
 =====================
 */
-void SV_WipeSavegame (char *savename)
+void SV_WipeSavegame (const char *savename)
 {
 	Com_DPrintf("SV_WipeSaveGame(%s)\n", savename);
 
@@ -186,7 +186,7 @@ void SV_WipeSavegame (char *savename)
 SV_CopySaveGame
 ================
 */
-void SV_CopySaveGame (char *src, char *dst)
+void SV_CopySaveGame (const char *src, const char *dst)
 {
 	Com_DPrintf("SV_CopySaveGame(%s, %s)\n", src, dst);
 

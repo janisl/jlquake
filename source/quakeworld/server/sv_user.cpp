@@ -552,7 +552,7 @@ void SV_NextDownload_f (void)
 
 }
 
-void OutofBandPrintf(netadr_t where, char *fmt, ...)
+void OutofBandPrintf(netadr_t where, const char *fmt, ...)
 {
 	va_list		argptr;
 	char	send[1024];
@@ -1121,7 +1121,7 @@ void SV_NoSnap_f(void)
 
 typedef struct
 {
-	char	*name;
+	const char	*name;
 	void	(*func) (void);
 } ucmd_t;
 

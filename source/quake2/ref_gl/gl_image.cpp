@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 R_RegisterSkinQ2
 ===============
 */
-image_t *R_RegisterSkinQ2 (char *name)
+image_t *R_RegisterSkinQ2 (const char *name)
 {
 	return R_FindImageFile(name, true, true, GL_CLAMP, false, IMG8MODE_Skin);
 }

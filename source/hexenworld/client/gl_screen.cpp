@@ -92,7 +92,7 @@ qboolean        scr_drawloading;
 float           scr_disabled_time;
 
 void SCR_ScreenShot_f (void);
-void Plaque_Draw (char *message, qboolean AlwaysDraw);
+void Plaque_Draw (const char *message, qboolean AlwaysDraw);
 
 /*
 ===============================================================================
@@ -112,7 +112,7 @@ int			scr_erase_center;
 static int lines;
 static int StartC[20],EndC[20];
 
-void FindTextBreaks(char *message, int Width)
+void FindTextBreaks(const char *message, int Width)
 {
 	int length,pos,start,lastspace,oldlast;
 
@@ -658,7 +658,7 @@ void SCR_ScreenShot_f (void)
 
 //=============================================================================
 
-char    *scr_notifystring;
+const char    *scr_notifystring;
 qboolean        scr_drawdialog;
 
 void SCR_DrawNotifyString (void)
@@ -674,7 +674,7 @@ Displays a text string in the center of the screen and waits for a Y or N
 keypress.  
 ==================
 */
-int SCR_ModalMessage (char *text)
+int SCR_ModalMessage (const char *text)
 {
 	scr_notifystring = text;
  
@@ -778,7 +778,7 @@ float oldsbar = 0;
 // This is also located in screen.c
 #define PLAQUE_WIDTH 26
 
-void Plaque_Draw (char *message, qboolean AlwaysDraw)
+void Plaque_Draw (const char *message, qboolean AlwaysDraw)
 {
 	int i;
 	char temp[80];
@@ -830,7 +830,8 @@ void SB_IntermissionOverlay(void)
 {
 	image_t	*pic;
 	int		elapsed, size, bx, by, i;
-	char	*message,temp[80];
+	const char	*message;
+	char	temp[80];
 
 	scr_copyeverything = 1;
 	scr_fullupdate = 0;

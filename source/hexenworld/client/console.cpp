@@ -331,7 +331,7 @@ void Con_Print (const char *txt)
 }
 
 
-static void Con_DebugLog(char *file, char *fmt, ...)
+static void Con_DebugLog(const char *file, const char *fmt, ...)
 {
 	va_list argptr; 
 	static char data[1024];

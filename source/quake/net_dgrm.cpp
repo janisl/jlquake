@@ -1134,7 +1134,7 @@ void Datagram_SearchForHosts (qboolean xmit)
 }
 
 
-static qsocket_t *_Datagram_Connect (char *host)
+static qsocket_t *_Datagram_Connect (const char *host)
 {
 	netadr_t sendaddr;
 	netadr_t readaddr;
@@ -1287,7 +1287,7 @@ ErrorReturn2:
 	return NULL;
 }
 
-qsocket_t *Datagram_Connect (char *host)
+qsocket_t *Datagram_Connect (const char *host)
 {
 	qsocket_t *ret = NULL;
 

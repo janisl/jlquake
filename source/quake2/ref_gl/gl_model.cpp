@@ -94,7 +94,7 @@ R_BeginRegistration
 Specifies the model that will be used as the world
 @@@@@@@@@@@@@@@@@@@@@
 */
-void R_BeginRegistration (char *model)
+void R_BeginRegistration (const char *model)
 {
 	char	fullname[MAX_QPATH];
 

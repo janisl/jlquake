@@ -32,7 +32,7 @@ void MSG_ReadUsercmd (struct usercmd_s *cmd, qboolean long_msg);
 
 //============================================================================
 
-void COM_Init (char *path);
+void COM_Init (const char *path);
 void COM_InitArgv2(int argc, char **argv);
 
 
@@ -40,8 +40,8 @@ void COM_InitArgv2(int argc, char **argv);
 
 extern int com_filesize;
 
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
-byte *COM_LoadHunkFile (char *path);
+byte *COM_LoadStackFile (const char *path, void *buffer, int bufsize);
+byte *COM_LoadHunkFile (const char *path);
 void COM_Gamedir (char *dir);
 
 extern	QCvar*	registered;

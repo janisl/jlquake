@@ -210,7 +210,7 @@ typedef struct
 
 typedef struct
 {
-	char	*basedir;
+	const char	*basedir;
 	int		argc;
 	char	**argv;
 	void	*membase;

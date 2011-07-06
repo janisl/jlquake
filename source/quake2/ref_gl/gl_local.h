@@ -117,11 +117,11 @@ void R_MarkLights (dlight_t *light, int bit, mbrush38_node_t *node);
 
 void COM_StripExtension (char *in, char *out);
 
-void	Draw_GetPicSize (int *w, int *h, char *name);
+void	Draw_GetPicSize (int *w, int *h, const char *name);
 void	Draw_Pic (int x, int y, char *name);
-void	Draw_StretchPic (int x, int y, int w, int h, char *name);
+void	Draw_StretchPic (int x, int y, int w, int h, const char *name);
 void	Draw_Char (int x, int y, int c);
-void	Draw_TileClear (int x, int y, int w, int h, char *name);
+void	Draw_TileClear (int x, int y, int w, int h, const char *name);
 void	Draw_Fill (int x, int y, int w, int h, int c);
 void	Draw_FadeScreen (void);
 void	Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data);
@@ -129,7 +129,7 @@ void	Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 void	R_BeginFrame( float camera_separation );
 void	R_SwapBuffers( int );
 
-image_t *R_RegisterSkinQ2 (char *name);
+image_t *R_RegisterSkinQ2 (const char *name);
 
 /*
 ** GL extension emulation functions

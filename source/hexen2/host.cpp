@@ -17,7 +17,7 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 */
 
-void Host_WriteConfiguration (char *fname);
+void Host_WriteConfiguration (const char *fname);
 
 quakeparms_t host_parms;
 
@@ -298,7 +298,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void Host_WriteConfiguration (char *fname)
+void Host_WriteConfiguration (const char *fname)
 {
 	// dedicated servers initialize the host but don't parse and set the
 	// config.cfg cvars

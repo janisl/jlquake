@@ -444,7 +444,7 @@ void SV_Nextserver_f (void)
 
 typedef struct
 {
-	char	*name;
+	const char	*name;
 	void	(*func) (void);
 } ucmd_t;
 
