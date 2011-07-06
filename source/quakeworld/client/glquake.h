@@ -87,10 +87,8 @@ extern	QCvar*	r_novis;
 extern	QCvar*	r_netgraph;
 
 extern	QCvar*	gl_cull;
-extern	QCvar*	gl_texsort;
 extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_nocolors;
-extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 extern	QCvar*	gl_finish;
 
@@ -116,7 +114,6 @@ void R_PushDlights (void);
 //
 void R_DrawBrushModel (trRefEntity_t *e);
 void R_DrawWorld (void);
-void GL_BuildLightmaps (void);
 
 //
 // gl_ngraph.c

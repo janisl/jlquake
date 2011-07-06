@@ -78,10 +78,8 @@ extern	QCvar*	r_netgraph;
 extern	QCvar*	r_entdistance;
 
 extern	QCvar*	gl_cull;
-extern	QCvar*	gl_texsort;
 extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_nocolors;
-extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 
 extern byte *playerTranslation;
@@ -92,7 +90,6 @@ void EmitWaterPolys (mbrush29_surface_t *fa);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_InitParticles (void);
 void R_ClearParticles (void);
-void GL_BuildLightmaps (void);
 void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);
 void V_CalcBlend (void);

@@ -94,10 +94,8 @@ extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 
 extern	QCvar*	gl_cull;
-extern	QCvar*	gl_texsort;
 extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_nocolors;
-extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 
 void GL_Set2D (void);
@@ -105,7 +103,6 @@ void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void EmitWaterPolys (mbrush29_surface_t *fa);
 void R_InitParticles (void);
 void R_ClearParticles (void);
-void GL_BuildLightmaps (void);
 void R_DrawBrushModel (trRefEntity_t *e);
 void R_AnimateLight (void);
 void R_DrawWorld (void);

@@ -51,10 +51,8 @@ QCvar*	r_novis;
 QCvar*	r_netgraph;
 
 QCvar*	gl_cull;
-QCvar*	gl_texsort;
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
-QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 QCvar*	gl_finish;
 

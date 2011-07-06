@@ -116,10 +116,8 @@ extern	QCvar*	r_novis;
 extern	QCvar*	r_wholeframe;
 
 extern	QCvar*	gl_cull;
-extern	QCvar*	gl_texsort;
 extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_nocolors;
-extern	QCvar*	gl_keeptjunctions;
 extern	QCvar*	gl_reporttjunctions;
 
 extern byte *playerTranslation;
@@ -132,7 +130,6 @@ void R_DrawParticles (void);
 void R_DrawWaterSurfaces (void);
 void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override);
 void R_InitParticles (void);
-void GL_BuildLightmaps (void);
 void EmitWaterPolys (mbrush29_surface_t *fa);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void GL_Set2D (void);

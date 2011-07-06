@@ -637,6 +637,9 @@ extern QCvar*	r_lodCurveError;
 
 extern QCvar*	r_ignore;				// used for debugging anything
 
+extern QCvar*	r_keeptjunctions;
+extern QCvar*	r_texsort;
+
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;
@@ -682,6 +685,11 @@ Surfaces
 ====================================================================
 */
 
+struct glRect_t
+{
+	byte	l, t, w, h;
+};
+
 #define LIGHTMAP_BYTES 4
 
 struct gllightmapstate_t
@@ -696,6 +704,9 @@ struct gllightmapstate_t
 	// main memory so texsubimage can update properly
 	byte		lightmap_buffer[4*BLOCK_WIDTH*BLOCK_HEIGHT];
 };
+
+void R_BuildLightMapQ1(mbrush29_surface_t* surf, byte* dest, int stride);
+void GL_BuildLightmaps();
 
 void LM_InitBlock();
 bool LM_AllocBlock(int w, int h, int *x, int *y);
@@ -717,6 +728,11 @@ void RB_SurfaceGrid(srfGridMesh_t* cv);
 void RB_SurfaceTriangles(srfTriangles_t* srf);
 void RB_SurfacePolychain(srfPoly_t* p);
 void RB_SurfaceFlare(srfFlare_t *surf);
+
+extern byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
+extern bool		lightmap_modified[MAX_LIGHTMAPS];
+extern mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
+extern glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
 
 extern gllightmapstate_t gl_lms;
 

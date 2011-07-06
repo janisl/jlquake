@@ -53,10 +53,8 @@ QCvar*	r_novis;
 
 QCvar*	gl_finish;
 QCvar*	gl_cull;
-QCvar*	gl_texsort;
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
-QCvar*	gl_keeptjunctions;
 QCvar*	gl_reporttjunctions;
 QCvar*	gl_doubleeyes;
 

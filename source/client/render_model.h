@@ -48,7 +48,7 @@ struct mbrush29_texture_t
 	char		name[16];
 	unsigned	width, height;
 	image_t*	gl_texture;
-	mbrush29_surface_t	*texturechain;	// for gl_texsort drawing
+	mbrush29_surface_t	*texturechain;	// for r_texsort drawing
 	int			anim_total;				// total tenths in sequence ( 0 = no)
 	int			anim_min, anim_max;		// time for this frame min <=time< max
 	mbrush29_texture_t*	anim_next;		// in the animation sequence

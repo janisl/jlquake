@@ -583,6 +583,8 @@ static void SubdividePolygon(int numverts, float* verts)
 
 	mbrush29_glpoly_t* poly = (mbrush29_glpoly_t*)Mem_Alloc(sizeof(mbrush29_glpoly_t) + (numverts - 4) * BRUSH29_VERTEXSIZE * sizeof(float));
 	poly->next = warpface->polys;
+	poly->flags = 0;
+	poly->chain = NULL;
 	warpface->polys = poly;
 	poly->numverts = numverts;
 	for (int i = 0; i < numverts; i++, verts += 3)
@@ -1147,16 +1149,12 @@ void Mod_FreeBsp29(model_t* mod)
 	delete[] mod->brush29_texinfo;
 	for (int i = 0; i < mod->brush29_numsurfaces; i++)
 	{
-		if ((mod->brush29_surfaces[i].flags & BRUSH29_SURF_DRAWTURB) ||
-			(mod->brush29_surfaces[i].flags & BRUSH29_SURF_DRAWSKY))
+		mbrush29_glpoly_t* poly = mod->brush29_surfaces[i].polys;
+		while (poly)
 		{
-			mbrush29_glpoly_t* poly = mod->brush29_surfaces[i].polys;
-			while (poly)
-			{
-				mbrush29_glpoly_t* tmp = poly;
-				poly = poly->next;
-				Mem_Free(tmp);
-			}
+			mbrush29_glpoly_t* tmp = poly;
+			poly = poly->next;
+			Mem_Free(tmp);
 		}
 	}
 	delete[] mod->brush29_surfaces;

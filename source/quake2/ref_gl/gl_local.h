@@ -77,7 +77,6 @@ extern	QCvar	*gl_dynamic;
 extern	QCvar	*gl_finish;
 extern	QCvar	*gl_cull;
 extern	QCvar	*gl_poly;
-extern	QCvar	*gl_texsort;
 extern	QCvar	*gl_polyblend;
 extern	QCvar	*gl_lightmaptype;
 extern	QCvar	*gl_drawbuffer;

@@ -261,7 +261,7 @@ void EmitBothSkyLayers(mbrush29_surface_t* fa)
 
 void R_DrawSkyChain(mbrush29_surface_t* s)
 {
-	// used when gl_texsort is on
+	// used when r_texsort is on
 	GL_Bind(tr.solidskytexture);
 	speedscale = tr.refdef.floatTime * 8;
 	speedscale -= (int)speedscale & ~127;

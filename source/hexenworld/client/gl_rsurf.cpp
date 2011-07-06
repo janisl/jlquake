@@ -10,169 +10,11 @@ int			skytexturenum;
 #endif
 
 
-unsigned		blocklights_q1[18*18];
-
-typedef struct glRect_s {
-	unsigned char l,t,w,h;
-} glRect_t;
-
-mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
-qboolean	lightmap_modified[MAX_LIGHTMAPS];
-glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
-
-int			allocated[MAX_LIGHTMAPS][BLOCK_WIDTH];
-
-// the lightmap texture data needs to be kept in
-// main memory so texsubimage can update properly
-byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
-
-// For gl_texsort 0
+// For r_texsort 0
 mbrush29_surface_t  *skychain = NULL;
 mbrush29_surface_t  *waterchain = NULL;
 
 void R_RenderDynamicLightmaps (mbrush29_surface_t *fa);
-
-/*
-===============
-R_AddDynamicLightsQ1
-===============
-*/
-void R_AddDynamicLightsQ1 (mbrush29_surface_t *surf)
-{
-	int			lnum;
-	int			sd, td;
-	float		dist, rad, minlight;
-	vec3_t		impact, local;
-	int			s, t;
-	int			i;
-	int			smax, tmax;
-	mbrush29_texinfo_t	*tex;
-
-	smax = (surf->extents[0]>>4)+1;
-	tmax = (surf->extents[1]>>4)+1;
-	tex = surf->texinfo;
-
-	for (lnum=0 ; lnum<tr.refdef.num_dlights; lnum++)
-	{
-		if ( !(surf->dlightbits & (1<<lnum) ) )
-			continue;		// not lit by this light
-
-		rad = tr.refdef.dlights[lnum].radius;
-		dist = DotProduct (tr.refdef.dlights[lnum].origin, surf->plane->normal) -
-				surf->plane->dist;
-		rad -= Q_fabs(dist);
-		minlight = 0;//tr.refdef.dlights[lnum].minlight;
-		if (rad < minlight)
-			continue;
-		minlight = rad - minlight;
-
-		for (i=0 ; i<3 ; i++)
-		{
-			impact[i] = tr.refdef.dlights[lnum].origin[i] -
-					surf->plane->normal[i]*dist;
-		}
-
-		local[0] = DotProduct (impact, tex->vecs[0]) + tex->vecs[0][3];
-		local[1] = DotProduct (impact, tex->vecs[1]) + tex->vecs[1][3];
-
-		local[0] -= surf->texturemins[0];
-		local[1] -= surf->texturemins[1];
-		
-		for (t = 0 ; t<tmax ; t++)
-		{
-			td = local[1] - t*16;
-			if (td < 0)
-				td = -td;
-			for (s=0 ; s<smax ; s++)
-			{
-				sd = local[0] - s*16;
-				if (sd < 0)
-					sd = -sd;
-				if (sd > td)
-					dist = sd + (td>>1);
-				else
-					dist = td + (sd>>1);
-				if (dist < minlight)
-					blocklights_q1[t*smax + s] += (rad - dist)*256;
-			}
-		}
-	}
-}
-
-
-/*
-===============
-R_BuildLightMapQ1
-
-Combine and scale multiple lightmaps into the 8.8 format in blocklights_q1
-===============
-*/
-void R_BuildLightMapQ1 (mbrush29_surface_t *surf, byte *dest, int stride)
-{
-	int			smax, tmax;
-	int			t;
-	int			i, j, size;
-	byte		*lightmap;
-	unsigned	scale;
-	int			maps;
-	int			lightadj[4];
-	unsigned	*bl;
-
-	surf->cached_dlight = (surf->dlightframe == tr.frameCount);
-
-	smax = (surf->extents[0]>>4)+1;
-	tmax = (surf->extents[1]>>4)+1;
-	size = smax*tmax;
-	lightmap = surf->samples;
-
-// set to full bright if no light data
-	if (r_fullbright->value || !tr.worldModel->brush29_lightdata)
-	{
-		for (i=0 ; i<size ; i++)
-			blocklights_q1[i] = 255*256;
-		goto store;
-	}
-
-// clear to no light
-	for (i=0 ; i<size ; i++)
-		blocklights_q1[i] = 0;
-
-// add all the lightmaps
-	if (lightmap)
-		for (maps = 0 ; maps < BSP29_MAXLIGHTMAPS && surf->styles[maps] != 255 ;
-			 maps++)
-		{
-			scale = d_lightstylevalue[surf->styles[maps]];
-			surf->cached_light[maps] = scale;	// 8.8 fraction
-			for (i=0 ; i<size ; i++)
-				blocklights_q1[i] += lightmap[i] * scale;
-			lightmap += size;	// skip to next lightmap
-		}
-
-// add all the dynamic lights
-	if (surf->dlightframe == tr.frameCount)
-		R_AddDynamicLightsQ1 (surf);
-
-// bound, invert, and shift
-store:
-	stride -= (smax<<2);
-	bl = blocklights_q1;
-	for (i=0 ; i<tmax ; i++, dest += stride)
-	{
-		for (j=0 ; j<smax ; j++)
-		{
-			t = *bl++;
-			t >>= 7;
-			if (t > 255)
-				t = 255;
-			dest[0] = t;
-			dest[1] = t;
-			dest[2] = t;
-			dest += 4;
-		}
-	}
-}
-
 
 /*
 ===============
@@ -542,7 +384,7 @@ void R_BlendLightmaps (qboolean Translucent)
 
 	if (r_fullbright->value)
 		return;
-	if (!gl_texsort->value)
+	if (!r_texsort->value)
 		return;
 
 	int NewState = GLS_DEFAULT;
@@ -777,7 +619,7 @@ void R_DrawWaterSurfaces (void)
 	mbrush29_surface_t	*s;
 	mbrush29_texture_t	*t;
 
-	if (r_wateralpha->value == 1.0 && gl_texsort->value)
+	if (r_wateralpha->value == 1.0 && r_texsort->value)
 		return;
 
 	//
@@ -792,7 +634,7 @@ void R_DrawWaterSurfaces (void)
 		GL_TexEnv(GL_MODULATE);
 	}
 
-	if (!gl_texsort->value) {
+	if (!r_texsort->value) {
 		if (!waterchain)
 			return;
 
@@ -858,7 +700,7 @@ void DrawTextureChains (void)
 	mbrush29_surface_t	*s;
 	mbrush29_texture_t	*t;
 
-	if (!gl_texsort->value) {
+	if (!r_texsort->value) {
 		if (skychain) {
 			R_DrawSkyChain(skychain);
 			skychain = NULL;
@@ -953,7 +795,7 @@ void R_DrawBrushModel (trRefEntity_t* e, qboolean Translucent)
 		if (((psurf->flags & BRUSH29_SURF_PLANEBACK) && (dot < -BACKFACE_EPSILON)) ||
 			(!(psurf->flags & BRUSH29_SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
-			if (gl_texsort->value)
+			if (r_texsort->value)
 				R_RenderBrushPoly (psurf, false);
 			else
 				R_DrawSequentialPoly (psurf);
@@ -1074,7 +916,7 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 					continue;		// wrong side
 
 				// if sorting by texture, just store it out
-				if (gl_texsort->value)
+				if (r_texsort->value)
 				{
 					surf->texturechain = surf->texinfo->texture->texturechain;
 					surf->texinfo->texture->texturechain = surf;
@@ -1163,272 +1005,3 @@ void R_MarkLeaves (void)
 		}
 	}
 }
-
-
-
-/*
-=============================================================================
-
-  LIGHTMAP ALLOCATION
-
-=============================================================================
-*/
-
-// returns a texture number and the position inside it
-int AllocBlock (int w, int h, int *x, int *y)
-{
-	int		i, j;
-	int		best, best2;
-	int		bestx;
-	int		texnum;
-
-	for (texnum=0 ; texnum<MAX_LIGHTMAPS ; texnum++)
-	{
-		best = BLOCK_HEIGHT;
-
-		for (i=0 ; i<BLOCK_WIDTH-w ; i++)
-		{
-			best2 = 0;
-
-			for (j=0 ; j<w ; j++)
-			{
-				if (allocated[texnum][i+j] >= best)
-					break;
-				if (allocated[texnum][i+j] > best2)
-					best2 = allocated[texnum][i+j];
-			}
-			if (j == w)
-			{	// this is a valid spot
-				*x = i;
-				*y = best = best2;
-			}
-		}
-
-		if (best + h > BLOCK_HEIGHT)
-			continue;
-
-		for (i=0 ; i<w ; i++)
-			allocated[texnum][*x + i] = best + h;
-
-		return texnum;
-	}
-
-	Sys_Error ("AllocBlock: full");
-}
-
-
-mbrush29_vertex_t	*r_pcurrentvertbase;
-
-int	nColinElim;
-
-/*
-================
-BuildSurfaceDisplayList
-================
-*/
-void BuildSurfaceDisplayList (mbrush29_surface_t *fa)
-{
-	int			i, lindex, lnumverts, s_axis, t_axis;
-	float		dist, lastdist, lzi, scale, u, v, frac;
-	unsigned	mask;
-	vec3_t		local, transformed;
-	mbrush29_edge_t		*pedges, *r_pedge;
-	cplane_t	*pplane;
-	int			vertpage, newverts, newpage, lastvert;
-	qboolean	visible;
-	float		*vec;
-	float		s, t;
-	mbrush29_glpoly_t	*poly;
-
-// reconstruct the polygon
-	pedges = tr.currentModel->brush29_edges;
-	lnumverts = fa->numedges;
-	vertpage = 0;
-
-	//
-	// draw texture
-	//
-	poly = (mbrush29_glpoly_t*)Hunk_Alloc (sizeof(mbrush29_glpoly_t) + (lnumverts-4) * BRUSH29_VERTEXSIZE*sizeof(float));
-	poly->next = fa->polys;
-	poly->flags = fa->flags;
-	fa->polys = poly;
-	poly->numverts = lnumverts;
-
-	for (i=0 ; i<lnumverts ; i++)
-	{
-		lindex = tr.currentModel->brush29_surfedges[fa->firstedge + i];
-
-		if (lindex > 0)
-		{
-			r_pedge = &pedges[lindex];
-			vec = r_pcurrentvertbase[r_pedge->v[0]].position;
-		}
-		else
-		{
-			r_pedge = &pedges[-lindex];
-			vec = r_pcurrentvertbase[r_pedge->v[1]].position;
-		}
-		s = DotProduct (vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
-		s /= fa->texinfo->texture->width;
-
-		t = DotProduct (vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
-		t /= fa->texinfo->texture->height;
-
-		VectorCopy (vec, poly->verts[i]);
-		poly->verts[i][3] = s;
-		poly->verts[i][4] = t;
-
-		//
-		// lightmap texture coordinates
-		//
-		s = DotProduct (vec, fa->texinfo->vecs[0]) + fa->texinfo->vecs[0][3];
-		s -= fa->texturemins[0];
-		s += fa->light_s*16;
-		s += 8;
-		s /= BLOCK_WIDTH*16; //fa->texinfo->texture->width;
-
-		t = DotProduct (vec, fa->texinfo->vecs[1]) + fa->texinfo->vecs[1][3];
-		t -= fa->texturemins[1];
-		t += fa->light_t*16;
-		t += 8;
-		t /= BLOCK_HEIGHT*16; //fa->texinfo->texture->height;
-
-		poly->verts[i][5] = s;
-		poly->verts[i][6] = t;
-	}
-
-	//
-	// remove co-linear points - Ed
-	//
-	if (!gl_keeptjunctions->value && !(fa->flags & BRUSH29_SURF_UNDERWATER) )
-	{
-		for (i = 0 ; i < lnumverts ; ++i)
-		{
-			vec3_t v1, v2;
-			float *prev, *thisv, *next;
-			float f;
-
-			prev = poly->verts[(i + lnumverts - 1) % lnumverts];
-			thisv = poly->verts[i];
-			next = poly->verts[(i + 1) % lnumverts];
-
-			VectorSubtract( thisv, prev, v1 );
-			VectorNormalize( v1 );
-			VectorSubtract( next, prev, v2 );
-			VectorNormalize( v2 );
-
-			// skip co-linear points
-			#define COLINEAR_EPSILON 0.001
-			if ((Q_fabs( v1[0] - v2[0] ) <= COLINEAR_EPSILON) &&
-				(Q_fabs( v1[1] - v2[1] ) <= COLINEAR_EPSILON) && 
-				(Q_fabs( v1[2] - v2[2] ) <= COLINEAR_EPSILON))
-			{
-				int j;
-				for (j = i + 1; j < lnumverts; ++j)
-				{
-					int k;
-					for (k = 0; k < BRUSH29_VERTEXSIZE; ++k)
-						poly->verts[j - 1][k] = poly->verts[j][k];
-				}
-				--lnumverts;
-				++nColinElim;
-				// retry next vertex next time, which is now current vertex
-				--i;
-			}
-		}
-	}
-	poly->numverts = lnumverts;
-
-}
-
-/*
-========================
-GL_CreateSurfaceLightmapQ1
-========================
-*/
-void GL_CreateSurfaceLightmapQ1 (mbrush29_surface_t *surf)
-{
-	int		smax, tmax, s, t, l, i;
-	byte	*base;
-
-	if (surf->flags & (BRUSH29_SURF_DRAWSKY|BRUSH29_SURF_DRAWTURB))
-		return;
-
-	smax = (surf->extents[0]>>4)+1;
-	tmax = (surf->extents[1]>>4)+1;
-
-	surf->lightmaptexturenum = AllocBlock (smax, tmax, &surf->light_s, &surf->light_t);
-	base = lightmaps + surf->lightmaptexturenum*4*BLOCK_WIDTH*BLOCK_HEIGHT;
-	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * 4;
-	R_BuildLightMapQ1 (surf, base, BLOCK_WIDTH*4);
-}
-
-
-/*
-==================
-GL_BuildLightmaps
-
-Builds the lightmap texture
-with all the surfaces from all brush models
-==================
-*/
-void GL_BuildLightmaps (void)
-{
-	int		i, j;
-	model_t	*m;
-
-	Com_Memset(allocated, 0, sizeof(allocated));
-
-	tr.frameCount = 1;		// no dlightcache
-
-	for (j=1 ; j<MAX_MODELS ; j++)
-	{
-		m = R_GetModelByHandle(cl.model_precache[j]);
-		if (!m)
-			break;
-		if (m->name[0] == '*')
-			continue;
-		r_pcurrentvertbase = m->brush29_vertexes;
-		tr.currentModel = m;
-		for (i=0 ; i<m->brush29_numsurfaces ; i++)
-		{
-			GL_CreateSurfaceLightmapQ1 (m->brush29_surfaces + i);
-			if ( m->brush29_surfaces[i].flags & BRUSH29_SURF_DRAWTURB )
-				continue;
-			if ( m->brush29_surfaces[i].flags & BRUSH29_SURF_DRAWSKY )
-				continue;
-			BuildSurfaceDisplayList (m->brush29_surfaces + i);
-		}
-	}
-
- 	if (!gl_texsort->value && qglActiveTextureARB)
- 		GL_SelectTexture(1);
-
-	if (!tr.lightmaps[0])
-	{
-		for (int i = 0; i < MAX_LIGHTMAPS; i++)
-		{
-			tr.lightmaps[i] = R_CreateImage(va("*lightmap%d", i), lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false);
-		}
-	}
-
-	//
-	// upload all lightmaps that were filled
-	//
-	for (i=0 ; i<MAX_LIGHTMAPS ; i++)
-	{
-		if (!allocated[i][0])
-			break;		// no more used
-		lightmap_modified[i] = false;
-		lightmap_rectchange[i].l = BLOCK_WIDTH;
-		lightmap_rectchange[i].t = BLOCK_HEIGHT;
-		lightmap_rectchange[i].w = 0;
-		lightmap_rectchange[i].h = 0;
-		R_ReUploadImage(tr.lightmaps[i], lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*4);
-	}
-
- 	if (!gl_texsort->value && qglActiveTextureARB)
- 		GL_SelectTexture(0);
-
-}
-

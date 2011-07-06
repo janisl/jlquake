@@ -138,6 +138,9 @@ QCvar*		r_lodCurveError;
 
 QCvar*		r_ignore;
 
+QCvar*		r_keeptjunctions;
+QCvar*		r_texsort;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -314,6 +317,7 @@ void R_SharedRegister()
 	r_fastsky = Cvar_Get("r_fastsky", "0", CVAR_ARCHIVE);
 	r_drawSun = Cvar_Get("r_drawSun", "0", CVAR_ARCHIVE);
 	r_lodCurveError = Cvar_Get("r_lodCurveError", "250", CVAR_ARCHIVE | CVAR_CHEAT);
+	r_keeptjunctions = Cvar_Get("r_keeptjunctions", "1", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time
@@ -345,6 +349,7 @@ void R_SharedRegister()
 	r_skymip = Cvar_Get("r_skymip", "0", 0);
 	r_showsky = Cvar_Get("r_showsky", "0", CVAR_CHEAT);
 	r_ignore = Cvar_Get("r_ignore", "1", CVAR_CHEAT);
+	r_texsort = Cvar_Get("r_texsort", "1", 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
