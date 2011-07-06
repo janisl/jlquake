@@ -595,7 +595,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 Con_NotifyBox
 ==================
 */
-void Con_NotifyBox (char *text)
+void Con_NotifyBox (const char *text)
 {
 	double		t1, t2;
 
