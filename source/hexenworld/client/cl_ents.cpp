@@ -19,7 +19,7 @@ static struct predicted_player {
 #define U_DRAWFLAGS (1<<18)
 #define U_ABSLIGHT  (1<<19)
 
-char *parsedelta_strings[] =
+const char *parsedelta_strings[] =
 {
 	"U_ANGLE1",	//0
 	"U_ANGLE3",	//1

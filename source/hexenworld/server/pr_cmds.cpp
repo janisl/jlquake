@@ -1754,9 +1754,9 @@ void PF_lightstylestatic(void)
 	int j;
 	int value;
 	int styleNumber;
-	char *styleString;
+	const char *styleString;
 	client_t *client;
-	static char *styleDefs[] =
+	static const char *styleDefs[] =
 	{
 		"a", "b", "c", "d", "e", "f", "g",
 		"h", "i", "j", "k", "l", "m", "n",

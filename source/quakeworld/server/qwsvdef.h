@@ -48,7 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	char	*basedir;
+	const char	*basedir;
 	int		argc;
 	char	**argv;
 	void	*membase;
@@ -70,9 +70,9 @@ extern	double		host_frametime;
 extern	double		realtime;			// not bounded in any way, changed at
 										// start of every frame, never reset
 
-void SV_Error (char *error, ...);
+void SV_Error (const char *error, ...);
 void SV_Init (quakeparms_t *parms);
 
-void Con_Printf (char *fmt, ...);
-void Con_DPrintf (char *fmt, ...);
+void Con_Printf (const char *fmt, ...);
+void Con_DPrintf (const char *fmt, ...);
 

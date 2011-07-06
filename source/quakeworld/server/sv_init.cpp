@@ -173,7 +173,7 @@ void SV_SaveSpawnparms (void)
 	}
 }
 
-unsigned SV_CheckModel(char *mdl)
+unsigned SV_CheckModel(const char *mdl)
 {
 	byte	stackbuf[1024];		// avoid dirtying the cache heap
 	byte *buf;

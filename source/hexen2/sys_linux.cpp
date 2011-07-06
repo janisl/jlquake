@@ -11,7 +11,7 @@ qboolean			isDedicated;
 
 int nostdout = 0;
 
-char *basedir = ".";
+const char *basedir = ".";
 
 // =======================================================================
 // General routines
@@ -26,7 +26,7 @@ void Sys_Quit (void)
 	exit(0);
 }
 
-void Sys_Error (char *error, ...)
+void Sys_Error (const char *error, ...)
 { 
 	va_list     argptr;
 	char        string[1024];

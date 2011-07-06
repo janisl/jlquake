@@ -95,7 +95,7 @@ Netchan_OutOfBandPrint
 Sends a text message in an out-of-band datagram
 ================
 */
-void Netchan_OutOfBandPrint (netadr_t adr, char *format, ...)
+void Netchan_OutOfBandPrint (netadr_t adr, const char *format, ...)
 {
 	va_list		argptr;
 	static char		string[8192];		// ??? why static?

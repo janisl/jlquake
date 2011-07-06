@@ -1136,7 +1136,7 @@ void BotFreeMatchPieces(bot_matchpiece_t *matchpieces)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-bot_matchpiece_t *BotLoadMatchPieces(source_t *source, char *endtoken)
+bot_matchpiece_t *BotLoadMatchPieces(source_t *source, const char *endtoken)
 {
 	int lastwasvariable, emptystring;
 	token_t token;

@@ -211,7 +211,7 @@ extern	edict_t		*sv_player;
 //
 // sv_main.c
 //
-void SV_FinalMessage (char *message, qboolean reconnect);
+void SV_FinalMessage (const char *message, qboolean reconnect);
 void SV_DropClient (client_t *drop);
 
 int SV_ModelIndex (char *name);
@@ -259,9 +259,9 @@ void SV_Multicast (vec3_t origin, multicast_t to);
 void SV_StartSound (vec3_t origin, edict_t *entity, int channel,
 					int soundindex, float volume,
 					float attenuation, float timeofs);
-void SV_ClientPrintf (client_t *cl, int level, char *fmt, ...);
-void SV_BroadcastPrintf (int level, char *fmt, ...);
-void SV_BroadcastCommand (char *fmt, ...);
+void SV_ClientPrintf (client_t *cl, int level, const char *fmt, ...);
+void SV_BroadcastPrintf (int level, const char *fmt, ...);
+void SV_BroadcastCommand (const char *fmt, ...);
 
 //
 // sv_user.c
@@ -282,8 +282,6 @@ void SV_WriteFrameToClient (client_t *client, QMsg *msg);
 void SV_RecordDemoMessage (void);
 void SV_BuildClientFrame (client_t *client);
 
-
-void SV_Error (char *error, ...);
 
 //
 // sv_game.c

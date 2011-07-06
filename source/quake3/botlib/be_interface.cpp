@@ -101,7 +101,7 @@ qboolean ValidClientNumber(int num, char *str)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-qboolean ValidEntityNumber(int num, char *str)
+qboolean ValidEntityNumber(int num, const char *str)
 {
 	if (num < 0 || num > botlibglobals.maxentities)
 	{
@@ -117,7 +117,7 @@ qboolean ValidEntityNumber(int num, char *str)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-qboolean BotLibSetup(char *str)
+qboolean BotLibSetup(const char *str)
 {
 	if (!botlibglobals.botlibsetup)
 	{
@@ -215,7 +215,7 @@ int Export_BotLibShutdown(void)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int Export_BotLibVarSet(char *var_name, char *value)
+int Export_BotLibVarSet(const char *var_name, char *value)
 {
 	LibVarSet(var_name, value);
 	return BLERR_NOERROR;

@@ -836,12 +836,12 @@ void SCR_RSShot_f (void)
 
 //=============================================================================
 
-char    *scr_notifystring;
+const char    *scr_notifystring;
 qboolean        scr_drawdialog;
 
 void SCR_DrawNotifyString (void)
 {
-	char    *start;
+	const char    *start;
 	int             l;
 	int             j;
 	int             x, y;
@@ -879,7 +879,7 @@ Displays a text string in the center of the screen and waits for a Y or N
 keypress.  
 ==================
 */
-int SCR_ModalMessage (char *text)
+int SCR_ModalMessage (const char *text)
 {
 	scr_notifystring = text;
  

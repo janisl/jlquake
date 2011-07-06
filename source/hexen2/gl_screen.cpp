@@ -101,9 +101,9 @@ int			total_loading_size, current_loading_size, loading_stage;
 
 
 void SCR_ScreenShot_f (void);
-void Plaque_Draw (char *message, qboolean AlwaysDraw);
-void Info_Plaque_Draw (char *message);
-void Bottom_Plaque_Draw (char *message);
+void Plaque_Draw (const char *message, qboolean AlwaysDraw);
+void Info_Plaque_Draw (const char *message);
+void Bottom_Plaque_Draw (const char *message);
 
 /*
 ===============================================================================
@@ -171,7 +171,7 @@ void UpdateInfoMessage(void)
 }
 #endif
 
-void FindTextBreaks(char *message, int Width)
+void FindTextBreaks(const char *message, int Width)
 {
 	int length,pos,start,lastspace,oldlast;
 
@@ -769,7 +769,7 @@ void SCR_EndLoadingPlaque (void)
 
 //=============================================================================
 
-char	*scr_notifystring;
+const char	*scr_notifystring;
 qboolean	scr_drawdialog;
 
 void SCR_DrawNotifyString (void)
@@ -785,7 +785,7 @@ Displays a text string in the center of the screen and waits for a Y or N
 keypress.  
 ==================
 */
-int SCR_ModalMessage (char *text)
+int SCR_ModalMessage (const char *text)
 {
 	if (cls.state == ca_dedicated)
 		return true;
@@ -855,7 +855,7 @@ void SCR_TileClear (void)
 // This is also located in screen.c
 #define PLAQUE_WIDTH 26
 
-void Plaque_Draw (char *message, qboolean AlwaysDraw)
+void Plaque_Draw (const char *message, qboolean AlwaysDraw)
 {
 	int i;
 	char temp[80];
@@ -881,7 +881,7 @@ void Plaque_Draw (char *message, qboolean AlwaysDraw)
 	}
 }
 
-void Info_Plaque_Draw (char *message)
+void Info_Plaque_Draw (const char *message)
 {
 	int i;
 	char temp[80];
@@ -929,7 +929,7 @@ void I_Print (int cx, int cy, char *str)
 	}
 }
 
-void Bottom_Plaque_Draw (char *message)
+void Bottom_Plaque_Draw (const char *message)
 {
 	int i;
 	char temp[80];
@@ -964,7 +964,8 @@ void SB_IntermissionOverlay(void)
 {
 	image_t	*pic;
 	int		elapsed, size, bx, by, i;
-	char	*message,temp[80];
+	const char	*message;
+	char		temp[80];
 
 	scr_copyeverything = 1;
 	scr_fullupdate = 0;

@@ -187,7 +187,7 @@ Con_Init
 */
 void Con_Init (void)
 {
-	char	*t2 = "qconsole.log";
+	const char	*t2 = "qconsole.log";
 
 	con_debuglog = COM_CheckParm("-condebug");
 
@@ -329,7 +329,7 @@ void Con_Print (const char *txt)
 Con_DebugLog
 ================
 */
-void Con_DebugLog(char *file, char *fmt, ...)
+void Con_DebugLog(const char *file, const char *fmt, ...)
 {
 	va_list argptr; 
 	static char data[1024];
@@ -595,7 +595,7 @@ void Con_DrawConsole (int lines, qboolean drawinput)
 Con_NotifyBox
 ==================
 */
-void Con_NotifyBox (char *text)
+void Con_NotifyBox (const char *text)
 {
 	double		t1, t2;
 

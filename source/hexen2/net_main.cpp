@@ -270,7 +270,7 @@ static void PrintSlistHeader(void)
 static void PrintSlist(void)
 {
 	int n;
-	char *name;
+	const char *name;
 
 	for (n = slistLastShown; n < hostCacheCount; n++)
 	{
@@ -371,7 +371,7 @@ NET_Connect
 int hostCacheCount = 0;
 hostcache_t hostcache[HOSTCACHESIZE];
 
-qsocket_t *NET_Connect (char *host)
+qsocket_t *NET_Connect (const char *host)
 {
 	qsocket_t		*ret;
 	int				n;

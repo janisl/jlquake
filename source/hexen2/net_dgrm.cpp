@@ -1113,7 +1113,7 @@ void Datagram_SearchForHosts (qboolean xmit)
 }
 
 
-static qsocket_t *_Datagram_Connect (char *host)
+static qsocket_t *_Datagram_Connect (const char *host)
 {
 	netadr_t sendaddr;
 	netadr_t readaddr;
@@ -1123,7 +1123,7 @@ static qsocket_t *_Datagram_Connect (char *host)
 	int			reps;
 	double		start_time;
 	int			control;
-	char		*reason;
+	const char	*reason;
 
 	// see if we can resolve the host name
 	if (UDP_GetAddrFromName(host, &sendaddr) == -1)
@@ -1266,7 +1266,7 @@ ErrorReturn2:
 	return NULL;
 }
 
-qsocket_t *Datagram_Connect (char *host)
+qsocket_t *Datagram_Connect (const char *host)
 {
 	qsocket_t *ret = NULL;
 

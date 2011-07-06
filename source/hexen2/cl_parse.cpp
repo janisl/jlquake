@@ -15,7 +15,7 @@ extern	QCvar*	sv_walkpitch;
 
 qhandle_t	player_models[NUM_CLASSES];
 
-char *svc_strings[] =
+const char *svc_strings[] =
 {
 	"svc_bad",
 	"svc_nop",

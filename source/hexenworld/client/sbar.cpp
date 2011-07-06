@@ -55,7 +55,7 @@ static void Sbar_DrawCharacter(int x, int y, int num);
 static void Sbar_DrawString(int x, int y, char *str);
 static void Sbar_DrawRedString (int cx, int cy, char *str);
 static void Sbar_DrawSmallCharacter(int x, int y, int num);
-static void Sbar_DrawSmallString(int x, int y, char *str);
+static void Sbar_DrawSmallString(int x, int y, const char *str);
 static void DrawBarArtifactNumber(int x, int y, int number);
 
 static void DrawFullScreenInfo(void);
@@ -2206,7 +2206,7 @@ static void Sbar_DrawSmallCharacter(int x, int y, int num)
 //
 //==========================================================================
 
-static void Sbar_DrawSmallString(int x, int y, char *str)
+static void Sbar_DrawSmallString(int x, int y, const char *str)
 {
 	Draw_SmallString(x+((vid.width-320)>>1),
 		y+vid.height-(int)BarHeight, str);

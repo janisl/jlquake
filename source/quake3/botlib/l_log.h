@@ -30,15 +30,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *****************************************************************************/
 
 //open a log file
-void Log_Open(char *filename);
+void Log_Open(const char *filename);
 //close the current log file
 void Log_Close(void);
 //close log file if present
 void Log_Shutdown(void);
 //write to the current opened log file
-void QDECL Log_Write(char *fmt, ...);
+void QDECL Log_Write(const char *fmt, ...);
 //write to the current opened log file with a time stamp
-void QDECL Log_WriteTimeStamped(char *fmt, ...);
+void QDECL Log_WriteTimeStamped(const char *fmt, ...);
 //returns a pointer to the log file
 FILE *Log_FilePointer(void);
 //flush log file

@@ -840,17 +840,16 @@ void R_DrawBeam( trRefEntity_t *e )
 //===================================================================
 
 
-void	R_BeginRegistration (char *map);
-image_t	*R_RegisterSkinQ2 (char *name);
+void	R_BeginRegistration (const char *map);
+image_t	*R_RegisterSkinQ2 (const char *name);
 void	R_EndRegistration (void);
 
 void	R_RenderFrame (refdef_t *fd);
 
-image_t	*Draw_FindPic (char *name);
+image_t	*Draw_FindPic (const char *name);
 
-void	Draw_Pic (int x, int y, char *name);
+void	Draw_Pic (int x, int y, const char *name);
 void	Draw_Char (int x, int y, int c);
-void	Draw_TileClear (int x, int y, int w, int h, char *name);
 void	Draw_Fill (int x, int y, int w, int h, int c);
 void	Draw_FadeScreen (void);
 

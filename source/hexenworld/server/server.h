@@ -351,7 +351,7 @@ extern int			sv_net_port;
 //
 void SV_Shutdown (void);
 void SV_Frame (float time);
-void SV_FinalMessage (char *message);
+void SV_FinalMessage (const char *message);
 void SV_DropClient (client_t *drop);
 
 int SV_CalcPing (client_t *cl);
@@ -414,9 +414,9 @@ void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int eff
 void SV_StartParticle3 (vec3_t org, vec3_t box, int color, int effect, int count);
 void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int count);
 void SV_StartRainEffect (vec3_t org, vec3_t e_size, int x_dir, int y_dir, int color, int count);
-void SV_ClientPrintf (client_t *cl, int level, char *fmt, ...);
-void SV_BroadcastPrintf (int level, char *fmt, ...);
-void SV_BroadcastCommand (char *fmt, ...);
+void SV_ClientPrintf (client_t *cl, int level, const char *fmt, ...);
+void SV_BroadcastPrintf (int level, const char *fmt, ...);
+void SV_BroadcastCommand (const char *fmt, ...);
 void SV_SendMessagesToAll (void);
 void SV_FindModelNumbers (void);
 

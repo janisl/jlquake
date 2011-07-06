@@ -420,7 +420,9 @@ void SV_Map (qboolean attractloop, char *levelstring, qboolean loadgame)
 
 	// skip the end-of-unit flag if necessary
 	if (level[0] == '*')
-		QStr::Cpy(level, level+1);
+	{
+		memmove(level, level + 1, QStr::Length(level));
+	}
 
 	l = QStr::Length(level);
 	if (l > 4 && !QStr::Cmp(level+l-4, ".cin") )

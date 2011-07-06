@@ -110,8 +110,8 @@ void	Sys_FindClose (void);
 
 
 // this is only here so the functions in q_shared.c and q_shwin.c can link
-void Sys_Error (char *error, ...);
-void Com_Printf (char *msg, ...);
+void Sys_Error (const char *error, ...);
+void Com_Printf (const char *msg, ...);
 
 
 /*

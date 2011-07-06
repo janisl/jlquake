@@ -349,7 +349,7 @@ extern int			sv_net_port;
 //
 void SV_Shutdown (void);
 void SV_Frame (float time);
-void SV_FinalMessage (char *message);
+void SV_FinalMessage (const char *message);
 void SV_DropClient (client_t *drop);
 
 int SV_CalcPing (client_t *cl);
@@ -406,9 +406,9 @@ void SV_SendClientMessages (void);
 void SV_Multicast (vec3_t origin, int to);
 void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
     float attenuation);
-void SV_ClientPrintf (client_t *cl, int level, char *fmt, ...);
-void SV_BroadcastPrintf (int level, char *fmt, ...);
-void SV_BroadcastCommand (char *fmt, ...);
+void SV_ClientPrintf (client_t *cl, int level, const char *fmt, ...);
+void SV_BroadcastPrintf (int level, const char *fmt, ...);
+void SV_BroadcastCommand (const char *fmt, ...);
 void SV_SendMessagesToAll (void);
 void SV_FindModelNumbers (void);
 

@@ -47,7 +47,7 @@ int			pr_xstatement;
 
 int		pr_argc;
 
-char *pr_opnames[] =
+const char *pr_opnames[] =
 {
 "DONE",
 
@@ -258,7 +258,7 @@ PR_RunError
 Aborts the currently executing function
 ============
 */
-void PR_RunError (char *error, ...)
+void PR_RunError (const char *error, ...)
 {
 	va_list		argptr;
 	char		string[1024];

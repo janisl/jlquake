@@ -39,7 +39,7 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-void COM_Init (char *path);
+void COM_Init (const char *path);
 void COM_InitArgv2(int argc, char **argv);
 
 //============================================================================
@@ -47,8 +47,8 @@ void COM_InitArgv2(int argc, char **argv);
 extern int com_filesize;
 struct cache_user_s;
 
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
-byte *COM_LoadHunkFile (char *path);
+byte *COM_LoadStackFile (const char *path, void *buffer, int bufsize);
+byte *COM_LoadHunkFile (const char *path);
 
 
 extern	QCvar*		registered;

@@ -273,7 +273,7 @@ All console printing must go through this in order to be logged to disk
 If no console is visible, the notify window will pop up.
 ================
 */
-void Con_Print (char *txt)
+void Con_Print (const char *txt)
 {
 	int		y;
 	int		c, l;
@@ -341,7 +341,7 @@ void Con_Print (char *txt)
 }
 
 
-static void Con_DebugLog(char *file, char *fmt, ...)
+static void Con_DebugLog(const char *file, const char *fmt, ...)
 {
 	va_list argptr; 
 	static char data[1024];
@@ -362,7 +362,7 @@ Con_Printf
 Handles cursor positioning, line wrapping, etc
 ================
 */
-void Con_Printf (char *fmt, ...)
+void Con_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
@@ -406,7 +406,7 @@ Con_DPrintf
 A Con_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Con_DPrintf (char *fmt, ...)
+void Con_DPrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
@@ -650,7 +650,7 @@ void Con_DrawConsole (int lines)
 Con_NotifyBox
 ==================
 */
-void Con_NotifyBox (char *text)
+void Con_NotifyBox (const char *text)
 {
 	double		t1, t2;
 
@@ -688,7 +688,7 @@ Con_SafePrintf
 Okay to call even when the screen can't be updated
 ==================
 */
-void Con_SafePrintf (char *fmt, ...)
+void Con_SafePrintf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];

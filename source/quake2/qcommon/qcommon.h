@@ -355,7 +355,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport);
 qboolean Netchan_NeedReliable (netchan_t *chan);
 void Netchan_Transmit (netchan_t *chan, int length, byte *data);
 void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data);
-void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...);
+void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, const char *format, ...);
 qboolean Netchan_Process (netchan_t *chan, QMsg *msg);
 
 qboolean Netchan_CanReliable (netchan_t *chan);
@@ -411,9 +411,9 @@ MISC
 
 void		Com_BeginRedirect (int target, char *buffer, int buffersize, void (*flush));
 void		Com_EndRedirect (void);
-void 		Com_Printf (char *fmt, ...);
-void 		Com_DPrintf (char *fmt, ...);
-void 		Com_Error (int code, char *fmt, ...);
+void 		Com_Printf (const char *fmt, ...);
+void 		Com_DPrintf (const char *fmt, ...);
+void 		Com_Error (int code, const char *fmt, ...);
 void 		Com_Quit (void);
 
 int			Com_ServerState (void);		// this should have just been a cvar...
@@ -465,7 +465,7 @@ void	Sys_UnloadGame (void);
 void	*Sys_GetGameAPI (void *parms);
 // loads the game dll and calls the api init function
 
-void	Sys_Error (char *error, ...);
+void	Sys_Error (const char *error, ...);
 void	Sys_Quit (void);
 char	*Sys_GetClipboardData( void );
 
@@ -481,11 +481,11 @@ void CL_Init (void);
 void CL_Drop (void);
 void CL_Shutdown (void);
 void CL_Frame (int msec);
-void Con_Print (char *text);
+void Con_Print (const char *text);
 void SCR_BeginLoadingPlaque(bool Clear = false);
 
 void SV_Init (void);
-void SV_Shutdown (char *finalmsg, qboolean reconnect);
+void SV_Shutdown (const char *finalmsg, qboolean reconnect);
 void SV_Frame (int msec);
 
 

@@ -120,7 +120,7 @@ void M_Print (int cx, int cy, const char *str)
 	}
 }
 
-void M_PrintWhite (int cx, int cy, char *str)
+void M_PrintWhite (int cx, int cy, const char *str)
 {
 	while (*str)
 	{
@@ -602,7 +602,7 @@ void M_Options_Key (int k)
 //=============================================================================
 /* KEYS MENU */
 
-char *bindnames[][2] =
+const char *bindnames[][2] =
 {
 {"+attack", 		"attack"},
 {"impulse 10", 		"change weapon"},
@@ -637,7 +637,7 @@ void M_Menu_Keys_f (void)
 }
 
 
-void M_FindKeysForCommand (char *command, int *twokeys)
+void M_FindKeysForCommand (const char *command, int *twokeys)
 {
 	int		count;
 	int		j;
@@ -663,7 +663,7 @@ void M_FindKeysForCommand (char *command, int *twokeys)
 	}
 }
 
-void M_UnbindCommand (char *command)
+void M_UnbindCommand (const char *command)
 {
 	int		j;
 	int		l;
@@ -892,7 +892,7 @@ int		msgNumber;
 menu_state_t	m_quit_prevstate;
 qboolean	wasInMenus;
 
-char *quitMessage [] = 
+const char *quitMessage [] = 
 {
 /* .........1.........2.... */
   "  Are you gonna quit    ",
@@ -1037,7 +1037,7 @@ void M_Quit_Draw (void)
 {
 #define VSTR(x) #x
 #define VSTR2(x) VSTR(x)
-	char *cmsg[] = {
+	const char *cmsg[] = {
 //    0123456789012345678901234567890123456789
 	"0            QuakeWorld",
 	"1    version " VSTR2(VERSION) " by id Software",
@@ -1062,7 +1062,7 @@ void M_Quit_Draw (void)
 	"0licensed to Nothing Interactive, Inc.",
 	"0All rights reserved. Press y to exit",
 	NULL };
-	char **p;
+	const char **p;
 	int y;
 
 	if (wasInMenus)

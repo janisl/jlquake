@@ -32,7 +32,7 @@ extern	int		edit_line;
 extern	int		key_linepos;
 		
 
-void DrawString (int x, int y, char *s)
+void DrawString (int x, int y, const char *s)
 {
 	while (*s)
 	{
@@ -42,7 +42,7 @@ void DrawString (int x, int y, char *s)
 	}
 }
 
-void DrawAltString (int x, int y, char *s)
+void DrawAltString (int x, int y, const char *s)
 {
 	while (*s)
 	{
@@ -348,7 +348,7 @@ All console printing must go through this in order to be logged to disk
 If no console is visible, the text will appear at the top of the game window
 ================
 */
-void Con_Print (char *txt)
+void Con_Print (const char *txt)
 {
 	int		y;
 	int		c, l;

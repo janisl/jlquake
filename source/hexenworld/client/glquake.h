@@ -99,6 +99,6 @@ void V_CalcBlend (void);
 void R_DrawWorld (void);
 void R_DrawParticles (void);
 void R_DrawWaterSurfaces (void);
-void Draw_RedString (int x, int y, char *str);
+void Draw_RedString (int x, int y, const char *str);
 void R_NetGraph (void);
 void R_PushDlights (void);

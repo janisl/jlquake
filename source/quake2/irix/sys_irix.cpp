@@ -41,7 +41,7 @@ void Sys_Init(void)
 #endif
 }
 
-void Sys_Error (char *error, ...)
+void Sys_Error (const char *error, ...)
 { 
     va_list     argptr;
     char        string[1024];
