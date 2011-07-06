@@ -52,9 +52,9 @@ int AAS_Initialized(void);
 //returns true if the AAS file is loaded
 int AAS_Loaded(void);
 //returns the model name from the given index
-char *AAS_ModelFromIndex(int index);
+const char *AAS_ModelFromIndex(int index);
 //returns the index from the given model name
-int AAS_IndexFromModel(char *modelname);
+int AAS_IndexFromModel(const char *modelname);
 //returns the current time
 float AAS_Time(void);
 //

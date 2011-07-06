@@ -70,7 +70,7 @@ void QDECL AAS_Error(const char *fmt, ...)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-char *AAS_StringFromIndex(char *indexname, char *stringindex[], int numindexes, int index)
+const char *AAS_StringFromIndex(const char *indexname, char *stringindex[], int numindexes, int index)
 {
 	if (!aasworld.indexessetup)
 	{
@@ -98,7 +98,7 @@ char *AAS_StringFromIndex(char *indexname, char *stringindex[], int numindexes, 
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int AAS_IndexFromString(char *indexname, char *stringindex[], int numindexes, char *string)
+int AAS_IndexFromString(const char *indexname, char *stringindex[], int numindexes, const char *string)
 {
 	int i;
 	if (!aasworld.indexessetup)
@@ -119,7 +119,7 @@ int AAS_IndexFromString(char *indexname, char *stringindex[], int numindexes, ch
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-char *AAS_ModelFromIndex(int index)
+const char *AAS_ModelFromIndex(int index)
 {
 	return AAS_StringFromIndex("ModelFromIndex", &aasworld.configstrings[CS_MODELS], MAX_MODELS, index);
 } //end of the function AAS_ModelFromIndex
@@ -129,7 +129,7 @@ char *AAS_ModelFromIndex(int index)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-int AAS_IndexFromModel(char *modelname)
+int AAS_IndexFromModel(const char *modelname)
 {
 	return AAS_IndexFromString("IndexFromModel", &aasworld.configstrings[CS_MODELS], MAX_MODELS, modelname);
 } //end of the function AAS_IndexFromModel

@@ -100,7 +100,7 @@ typedef enum {qfalse, qtrue}	qboolean;
 //directive name with parse function
 typedef struct directive_s
 {
-	char *name;
+	const char *name;
 	int (*func)(source_t *source);
 } directive_t;
 
@@ -666,7 +666,7 @@ void PC_AddBuiltinDefines(source_t *source)
 	define_t *define;
 	struct builtin_t
 	{
-		char *string;
+		const char *string;
 		int builtin;
 	} builtin[] = { // bk001204 - brackets
 		{ "__LINE__",	BUILTIN_LINE },
@@ -2783,7 +2783,7 @@ int PC_ReadToken(source_t *source, token_t *token)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_ExpectTokenString(source_t *source, char *string)
+int PC_ExpectTokenString(source_t *source, const char *string)
 {
 	token_t token;
 
@@ -2877,7 +2877,7 @@ int PC_ExpectAnyToken(source_t *source, token_t *token)
 // Returns:					-
 // Changes Globals:		-
 //============================================================================
-int PC_CheckTokenString(source_t *source, char *string)
+int PC_CheckTokenString(source_t *source, const char *string)
 {
 	token_t tok;
 
@@ -3200,7 +3200,7 @@ int PC_SourceFileAndLine(int handle, char *filename, int *line)
 // Returns:				-
 // Changes Globals:		-
 //============================================================================
-void PC_SetBaseFolder(char *path)
+void PC_SetBaseFolder(const char *path)
 {
 	PS_SetBaseFolder(path);
 } //end of the function PC_SetBaseFolder

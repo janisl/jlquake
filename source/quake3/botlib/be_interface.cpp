@@ -101,7 +101,7 @@ qboolean ValidClientNumber(int num, char *str)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-qboolean ValidEntityNumber(int num, char *str)
+qboolean ValidEntityNumber(int num, const char *str)
 {
 	if (num < 0 || num > botlibglobals.maxentities)
 	{
@@ -117,7 +117,7 @@ qboolean ValidEntityNumber(int num, char *str)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-qboolean BotLibSetup(char *str)
+qboolean BotLibSetup(const char *str)
 {
 	if (!botlibglobals.botlibsetup)
 	{
