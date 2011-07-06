@@ -133,7 +133,7 @@ void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *poin
 BotImport_Print
 ==================
 */
-void QDECL BotImport_Print(int type, char *fmt, ...)
+void QDECL BotImport_Print(int type, const char *fmt, ...)
 {
 	char str[2048];
 	va_list ap;
