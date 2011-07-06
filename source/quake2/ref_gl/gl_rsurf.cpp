@@ -27,33 +27,8 @@ mbrush38_surface_t	*r_alpha_surfaces;
 #define DYNAMIC_LIGHT_WIDTH  128
 #define DYNAMIC_LIGHT_HEIGHT 128
 
-#define LIGHTMAP_BYTES 4
-
 int		c_visible_lightmaps;
 int		c_visible_textures;
-
-typedef struct
-{
-	int	current_lightmap_texture;
-
-	mbrush38_surface_t	*lightmap_surfaces[MAX_LIGHTMAPS];
-
-	int			allocated[BLOCK_WIDTH];
-
-	// the lightmap texture data needs to be kept in
-	// main memory so texsubimage can update properly
-	byte		lightmap_buffer[4*BLOCK_WIDTH*BLOCK_HEIGHT];
-} gllightmapstate_t;
-
-static gllightmapstate_t gl_lms;
-
-
-static void		LM_InitBlock( void );
-static void		LM_UploadBlock( qboolean dynamic );
-static qboolean	LM_AllocBlock (int w, int h, int *x, int *y);
-
-extern void R_SetCacheState( mbrush38_surface_t *surf );
-extern void R_BuildLightMap (mbrush38_surface_t *surf, byte *dest, int stride);
 
 /*
 =============================================================
@@ -86,81 +61,6 @@ image_t *R_TextureAnimation (mbrush38_texinfo_t *tex)
 
 	return tex->image;
 }
-
-#if 0
-/*
-=================
-WaterWarpPolyVerts
-
-Mangles the x and y coordinates in a copy of the poly
-so that any drawing routine can be water warped
-=================
-*/
-mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p)
-{
-	int		i;
-	float	*v, *nv;
-	static byte	buffer[1024];
-	mbrush38_glpoly_t *out;
-
-	out = (mbrush38_glpoly_t *)buffer;
-
-	out->numverts = p->numverts;
-	v = p->verts[0];
-	nv = out->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE, nv+=BRUSH38_VERTEXSIZE)
-	{
-		nv[0] = v[0] + 4*sin(v[1]*0.05+tr.refdef.floatTime)*sin(v[2]*0.05+tr.refdef.floatTime);
-		nv[1] = v[1] + 4*sin(v[0]*0.05+tr.refdef.floatTime)*sin(v[2]*0.05+tr.refdef.floatTime);
-
-		nv[2] = v[2];
-		nv[3] = v[3];
-		nv[4] = v[4];
-		nv[5] = v[5];
-		nv[6] = v[6];
-	}
-
-	return out;
-}
-
-/*
-================
-DrawGLWaterPoly
-
-Warp the vertex coordinates
-================
-*/
-void DrawGLWaterPoly (mbrush38_glpoly_t *p)
-{
-	int		i;
-	float	*v;
-
-	p = WaterWarpPolyVerts (p);
-	qglBegin (GL_TRIANGLE_FAN);
-	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE)
-	{
-		qglTexCoord2f (v[3], v[4]);
-		qglVertex3fv (v);
-	}
-	qglEnd ();
-}
-void DrawGLWaterPolyLightmap (mbrush38_glpoly_t *p)
-{
-	int		i;
-	float	*v;
-
-	p = WaterWarpPolyVerts (p);
-	qglBegin (GL_TRIANGLE_FAN);
-	v = p->verts[0];
-	for (i=0 ; i<p->numverts ; i++, v+= BRUSH38_VERTEXSIZE)
-	{
-		qglTexCoord2f (v[5], v[6]);
-		qglVertex3fv (v);
-	}
-	qglEnd ();
-}
-#endif
 
 /*
 ================
@@ -385,7 +285,7 @@ void R_BlendLightmaps (void)
 				base = gl_lms.lightmap_buffer;
 				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
 
-				R_BuildLightMap (surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
+				R_BuildLightMapQ2 (surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
 			}
 			else
 			{
@@ -417,7 +317,7 @@ void R_BlendLightmaps (void)
 				base = gl_lms.lightmap_buffer;
 				base += ( surf->dlight_t * BLOCK_WIDTH + surf->dlight_s ) * LIGHTMAP_BYTES;
 
-				R_BuildLightMap (surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
+				R_BuildLightMapQ2 (surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
 			}
 		}
 
@@ -515,7 +415,7 @@ dynamic:
 			smax = (fa->extents[0]>>4)+1;
 			tmax = (fa->extents[1]>>4)+1;
 
-			R_BuildLightMap( fa, (byte*)temp, smax*4 );
+			R_BuildLightMapQ2( fa, (byte*)temp, smax*4 );
 			R_SetCacheState( fa );
 
 			GL_Bind( tr.lightmaps[fa->lightmaptexturenum]);
@@ -719,7 +619,7 @@ dynamic:
 			smax = (surf->extents[0]>>4)+1;
 			tmax = (surf->extents[1]>>4)+1;
 
-			R_BuildLightMap( surf, (byte*)temp, smax*4 );
+			R_BuildLightMapQ2( surf, (byte*)temp, smax*4 );
 			R_SetCacheState( surf );
 
 			GL_MBind( 1, tr.lightmaps[surf->lightmaptexturenum]);
@@ -738,7 +638,7 @@ dynamic:
 			smax = (surf->extents[0]>>4)+1;
 			tmax = (surf->extents[1]>>4)+1;
 
-			R_BuildLightMap( surf, (byte*)temp, smax*4 );
+			R_BuildLightMapQ2( surf, (byte*)temp, smax*4 );
 
 			GL_MBind( 1, tr.lightmaps[0]);
 
@@ -1202,187 +1102,4 @@ void R_MarkLeaves (void)
 			} while (node);
 		}
 	}
-}
-
-
-
-/*
-=============================================================================
-
-  LIGHTMAP ALLOCATION
-
-=============================================================================
-*/
-
-static void LM_InitBlock( void )
-{
-	Com_Memset( gl_lms.allocated, 0, sizeof( gl_lms.allocated ) );
-}
-
-static void LM_UploadBlock( qboolean dynamic )
-{
-	int texture;
-	int height = 0;
-
-	if ( dynamic )
-	{
-		texture = 0;
-	}
-	else
-	{
-		texture = gl_lms.current_lightmap_texture;
-	}
-
-	GL_Bind(tr.lightmaps[texture]);
-
-	if ( dynamic )
-	{
-		int i;
-
-		for ( i = 0; i < BLOCK_WIDTH; i++ )
-		{
-			if ( gl_lms.allocated[i] > height )
-				height = gl_lms.allocated[i];
-		}
-
-		qglTexSubImage2D( GL_TEXTURE_2D, 
-						  0,
-						  0, 0,
-						  BLOCK_WIDTH, height,
-						  GL_RGBA,
-						  GL_UNSIGNED_BYTE,
-						  gl_lms.lightmap_buffer );
-	}
-	else
-	{
-		R_ReUploadImage(tr.lightmaps[texture], gl_lms.lightmap_buffer);
-		if ( ++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS )
-			ri.Sys_Error( ERR_DROP, "LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n" );
-	}
-}
-
-// returns a texture number and the position inside it
-static qboolean LM_AllocBlock (int w, int h, int *x, int *y)
-{
-	int		i, j;
-	int		best, best2;
-
-	best = BLOCK_HEIGHT;
-
-	for (i=0 ; i<BLOCK_WIDTH-w ; i++)
-	{
-		best2 = 0;
-
-		for (j=0 ; j<w ; j++)
-		{
-			if (gl_lms.allocated[i+j] >= best)
-				break;
-			if (gl_lms.allocated[i+j] > best2)
-				best2 = gl_lms.allocated[i+j];
-		}
-		if (j == w)
-		{	// this is a valid spot
-			*x = i;
-			*y = best = best2;
-		}
-	}
-
-	if (best + h > BLOCK_HEIGHT)
-		return false;
-
-	for (i=0 ; i<w ; i++)
-		gl_lms.allocated[*x + i] = best + h;
-
-	return true;
-}
-
-/*
-========================
-GL_CreateSurfaceLightmap
-========================
-*/
-void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf)
-{
-	int		smax, tmax;
-	byte	*base;
-
-	if (surf->flags & (BRUSH38_SURF_DRAWSKY|BRUSH38_SURF_DRAWTURB))
-		return;
-
-	smax = (surf->extents[0]>>4)+1;
-	tmax = (surf->extents[1]>>4)+1;
-
-	if ( !LM_AllocBlock( smax, tmax, &surf->light_s, &surf->light_t ) )
-	{
-		LM_UploadBlock( false );
-		LM_InitBlock();
-		if ( !LM_AllocBlock( smax, tmax, &surf->light_s, &surf->light_t ) )
-		{
-			ri.Sys_Error( ERR_FATAL, "Consecutive calls to LM_AllocBlock(%d,%d) failed\n", smax, tmax );
-		}
-	}
-
-	surf->lightmaptexturenum = gl_lms.current_lightmap_texture;
-
-	base = gl_lms.lightmap_buffer;
-	base += (surf->light_t * BLOCK_WIDTH + surf->light_s) * LIGHTMAP_BYTES;
-
-	R_SetCacheState( surf );
-	R_BuildLightMap (surf, base, BLOCK_WIDTH*LIGHTMAP_BYTES);
-}
-
-
-/*
-==================
-GL_BeginBuildingLightmaps
-
-==================
-*/
-void GL_BeginBuildingLightmaps (model_t *m)
-{
-	static lightstyle_t	lightstyles[MAX_LIGHTSTYLES_Q2];
-	int				i;
-	unsigned		dummy[128*128];
-
-	Com_Memset( gl_lms.allocated, 0, sizeof(gl_lms.allocated) );
-
-	tr.frameCount = 1;		// no dlightcache
-
-	/*
-	** setup the base lightstyles so the lightmaps won't have to be regenerated
-	** the first time they're seen
-	*/
-	for (i=0 ; i<MAX_LIGHTSTYLES_Q2 ; i++)
-	{
-		lightstyles[i].rgb[0] = 1;
-		lightstyles[i].rgb[1] = 1;
-		lightstyles[i].rgb[2] = 1;
-		lightstyles[i].white = 3;
-	}
-	tr.refdef.lightstyles = lightstyles;
-
-	if (!tr.lightmaps[0])
-	{
-		for (int i = 0; i < MAX_LIGHTMAPS; i++)
-		{
-			tr.lightmaps[i] = R_CreateImage(va("*lightmap%d", i), (byte*)dummy, BLOCK_WIDTH, BLOCK_HEIGHT, false, false, GL_CLAMP, false);
-		}
-	}
-
-	gl_lms.current_lightmap_texture = 1;
-
-	/*
-	** initialize the dynamic lightmap texture
-	*/
-	R_ReUploadImage(tr.lightmaps[0], (byte*)dummy);
-}
-
-/*
-=======================
-GL_EndBuildingLightmaps
-=======================
-*/
-void GL_EndBuildingLightmaps (void)
-{
-	LM_UploadBlock( false );
 }

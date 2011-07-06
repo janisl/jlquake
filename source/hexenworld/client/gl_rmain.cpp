@@ -585,12 +585,3 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 void R_SyncRenderThread()
 {
 }
-void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf)
-{
-}
-void GL_EndBuildingLightmaps (void)
-{
-}
-void GL_BeginBuildingLightmaps (model_t *m)
-{
-}

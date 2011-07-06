@@ -580,7 +580,7 @@ static void Mod_LoadFaces(bsp38_lump_t* l)
 		// create lightmaps and polygons
 		if (!(out->texinfo->flags & (BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP)))
 		{
-			GL_CreateSurfaceLightmap(out);
+			GL_CreateSurfaceLightmapQ2(out);
 		}
 
 		if (!(out->texinfo->flags & BSP38SURF_WARP))

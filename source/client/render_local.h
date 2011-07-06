@@ -682,6 +682,30 @@ Surfaces
 ====================================================================
 */
 
+#define LIGHTMAP_BYTES 4
+
+struct gllightmapstate_t
+{
+	int	current_lightmap_texture;
+
+	mbrush38_surface_t	*lightmap_surfaces[MAX_LIGHTMAPS];
+
+	int			allocated[BLOCK_WIDTH];
+
+	// the lightmap texture data needs to be kept in
+	// main memory so texsubimage can update properly
+	byte		lightmap_buffer[4*BLOCK_WIDTH*BLOCK_HEIGHT];
+};
+
+void LM_InitBlock();
+bool LM_AllocBlock(int w, int h, int *x, int *y);
+void LM_UploadBlock(bool dynamic);
+void R_SetCacheState( mbrush38_surface_t *surf );
+void R_BuildLightMapQ2(mbrush38_surface_t *surf, byte *dest, int stride);
+void GL_BeginBuildingLightmaps(model_t* m);
+void GL_CreateSurfaceLightmapQ2(mbrush38_surface_t* surf);
+void GL_EndBuildingLightmaps();
+
 void RB_CheckOverflow(int verts, int indexes);
 #define RB_CHECKOVERFLOW(v,i) if (tess.numVertexes + (v) >= SHADER_MAX_VERTEXES || tess.numIndexes + (i) >= SHADER_MAX_INDEXES) {RB_CheckOverflow(v,i);}
 void RB_AddQuadStamp(vec3_t origin, vec3_t left, vec3_t up, byte* color);
@@ -693,6 +717,8 @@ void RB_SurfaceGrid(srfGridMesh_t* cv);
 void RB_SurfaceTriangles(srfTriangles_t* srf);
 void RB_SurfacePolychain(srfPoly_t* p);
 void RB_SurfaceFlare(srfFlare_t *surf);
+
+extern gllightmapstate_t gl_lms;
 
 /*
 ====================================================================
@@ -717,8 +743,5 @@ extern float	speedscale;		// for top sky and bottom sky
 
 //	Temporarily must be defined in game.
 void R_SyncRenderThread();
-void GL_CreateSurfaceLightmap (mbrush38_surface_t *surf);
-void GL_EndBuildingLightmaps (void);
-void GL_BeginBuildingLightmaps (model_t *m);
 
 #endif
