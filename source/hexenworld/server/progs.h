@@ -107,7 +107,7 @@ extern func_t SpectatorConnect;
 extern func_t SpectatorThink;
 extern func_t SpectatorDisconnect;
 
-void PR_RunError (char *error, ...);
+void PR_RunError (const char *error, ...);
 
 void ED_PrintEdicts (void);
 void ED_PrintNum (int ent);
