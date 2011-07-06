@@ -177,7 +177,7 @@ Both client and server can use this, and it will
 do the apropriate things.
 =============
 */
-void Com_Error (int code, char *fmt, ...)
+void Com_Error (int code, const char *fmt, ...)
 {
 	va_list		argptr;
 	static char		msg[MAXPRINTMSG];

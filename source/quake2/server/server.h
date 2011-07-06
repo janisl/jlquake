@@ -283,8 +283,6 @@ void SV_RecordDemoMessage (void);
 void SV_BuildClientFrame (client_t *client);
 
 
-void SV_Error (char *error, ...);
-
 //
 // sv_game.c
 //

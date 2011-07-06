@@ -1056,7 +1056,7 @@ Host_EndGame
 Call this to drop to a console without exiting the qwcl
 ================
 */
-void Host_EndGame (char *message, ...)
+void Host_EndGame (const char *message, ...)
 {
 	va_list		argptr;
 	char		string[1024];
@@ -1080,7 +1080,7 @@ Host_Error
 This shuts down the client and exits qwcl
 ================
 */
-void Host_Error (char *error, ...)
+void Host_Error (const char *error, ...)
 {
 	va_list		argptr;
 	char		string[1024];

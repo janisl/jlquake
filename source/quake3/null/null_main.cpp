@@ -34,7 +34,7 @@ int			sys_curtime;
 void Sys_mkdir ( const char *path ) {
 }
 
-void Sys_Error (char *error, ...) {
+void Sys_Error (const char *error, ...) {
 	va_list		argptr;
 
 	printf ("Sys_Error: ");	

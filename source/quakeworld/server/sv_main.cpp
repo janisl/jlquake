@@ -139,7 +139,7 @@ Sends a datagram to all the clients informing them of the server crash,
 then exits
 ================
 */
-void SV_Error (char *error, ...)
+void SV_Error (const char *error, ...)
 {
 	va_list		argptr;
 	static	char		string[1024];
