@@ -945,7 +945,7 @@ void PC_ConvertPath(char *path)
 		if ((*ptr == '\\' || *ptr == '/') &&
 				(*(ptr+1) == '\\' || *(ptr+1) == '/'))
 		{
-			QStr::Cpy(ptr, ptr+1);
+			memmove(ptr, ptr + 1, QStr::Length(ptr));
 		} //end if
 		else
 		{

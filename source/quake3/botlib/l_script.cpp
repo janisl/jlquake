@@ -1118,7 +1118,7 @@ void StripDoubleQuotes(char *string)
 {
 	if (*string == '\"')
 	{
-		QStr::Cpy(string, string+1);
+		memmove(string, string + 1, QStr::Length(string));
 	} //end if
 	if (string[QStr::Length(string)-1] == '\"')
 	{
@@ -1135,7 +1135,7 @@ void StripSingleQuotes(char *string)
 {
 	if (*string == '\'')
 	{
-		QStr::Cpy(string, string+1);
+		memmove(string, string + 1, QStr::Length(string));
 	} //end if
 	if (string[QStr::Length(string)-1] == '\'')
 	{
