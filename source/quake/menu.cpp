@@ -21,7 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern QCvar*		r_gamma;
 
-enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist} m_state, m_quit_prevstate, m_return_state;
+menu_state_t m_state, m_return_state;
+static menu_state_t m_quit_prevstate;
 
 void M_Menu_Main_f (void);
 	void M_Menu_SinglePlayer_f (void);
@@ -436,7 +437,6 @@ void M_ScanSaves (void)
 	int		i, j;
 	char	name[MAX_OSPATH];
 	fileHandle_t	f;
-	int		version;
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
@@ -1321,7 +1321,7 @@ void M_Keys_Draw (void)
 		M_Print (18, 32, "Enter to change, backspace to clear");
 
 // search for known bindings
-	for (i=0 ; i<NUMCOMMANDS ; i++)
+	for (i=0 ; i<(int)NUMCOMMANDS ; i++)
 	{
 		y = 48 + 8*i;
 
@@ -1395,7 +1395,7 @@ void M_Keys_Key (int k)
 	case K_RIGHTARROW:
 		S_StartLocalSound("misc/menu1.wav");
 		keys_cursor++;
-		if (keys_cursor >= NUMCOMMANDS)
+		if (keys_cursor >= (int)NUMCOMMANDS)
 			keys_cursor = 0;
 		break;
 
@@ -1826,10 +1826,12 @@ void M_LanConfig_Key (int key)
 	}
 
 	if (StartingGame && lanConfig_cursor == 2)
+	{
 		if (key == K_UPARROW)
 			lanConfig_cursor = 1;
 		else
 			lanConfig_cursor = 0;
+	}
 
 	l =  QStr::Atoi(lanConfig_portname);
 	if (l > 65535)

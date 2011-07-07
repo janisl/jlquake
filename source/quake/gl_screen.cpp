@@ -248,7 +248,6 @@ Internal use only
 */
 static void SCR_CalcRefdef (void)
 {
-	vrect_t		vrect;
 	float		size;
 	int		h;
 	qboolean		full = false;
@@ -310,9 +309,9 @@ static void SCR_CalcRefdef (void)
 	}
 
 	scr_vrect.height = vid.height * size;
-	if (scr_vrect.height > vid.height - sb_lines)
+	if (scr_vrect.height > (int)vid.height - sb_lines)
 		scr_vrect.height = vid.height - sb_lines;
-	if (scr_vrect.height > vid.height)
+	if (scr_vrect.height > (int)vid.height)
 			scr_vrect.height = vid.height;
 	scr_vrect.x = (vid.width - scr_vrect.width)/2;
 	if (full)
@@ -790,9 +789,6 @@ needs almost the entire 256k of stack space!
 */
 void SCR_UpdateScreen (void)
 {
-	static float	oldscr_viewsize;
-	vrect_t		vrect;
-
     vid.numpages = 2 + (gl_triplebuffer ? gl_triplebuffer->value : 0);
 
 	scr_copytop = 0;

@@ -453,7 +453,6 @@ void Host_Savegame_f (void)
 	int		i;
 	char	comment[SAVEGAME_COMMENT_LENGTH+1];
 	char	dest[MAX_OSPATH];
-	char *message;
 
 	if (cmd_source != src_command)
 		return;
@@ -571,16 +570,13 @@ void Host_Loadgame_f (void)
 {
 	char		mapname[MAX_QPATH];
 	float		time;
-	int			i, r;
+	int			i;
 	edict_t*	ent;
-	int			entnum;
 	int			version;
 	float		tempf;
 	int			tempi;
 	float		spawn_parms[NUM_SPAWN_PARMS];
 	char		dest[MAX_OSPATH];
-	int			attempts = 0;
-	char*		message;
 
 	if (cmd_source != src_command)
 	{
@@ -699,7 +695,6 @@ void SaveGamestate(qboolean ClientsOnly)
 	char	comment[SAVEGAME_COMMENT_LENGTH+1];
 	edict_t	*ent;
 	int start,end;
-	char *message;
 
 	if (ClientsOnly)
 	{
@@ -1070,7 +1065,6 @@ extern char *ClassNames[NUM_CLASSES];	//from menu.c
 void Host_Class_f (void)
 {
 	float	newClass;
-	char *Text;
 
 	if (Cmd_Argc () == 1)
 	{
@@ -1665,7 +1659,6 @@ void Host_Create_f(void)
 	dfunction_t	*Search,*func;
 	edict_t		*ent;
 	int			i,Length,NumFound,Diff,NewDiff;
-	char temp[256];
 
 	if (!sv.active)
 	{
@@ -1878,8 +1871,7 @@ Host_Give_f
 void Host_Give_f (void)
 {
 	char	*t;
-	int		v, w;
-	eval_t	*val;
+	int		v;
 
 	if (cmd_source == src_command)
 	{

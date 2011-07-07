@@ -658,7 +658,6 @@ void M_Menu_Main_f (void)
 void M_Main_Draw (void)
 {
 	int		f;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title0.lmp");
 //	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mainmenu.lmp") );
@@ -726,7 +725,7 @@ void M_Main_Key (int key)
 	}
 }
 
-char	*plaquemessage = NULL;   // Pointer to current plaque message
+const char	*plaquemessage = NULL;   // Pointer to current plaque message
 char    *errormessage = NULL;
 
 //=============================================================================
@@ -744,7 +743,6 @@ int m_enter_portals;
 void M_Difficulty_Draw (void)
 {
 	int		f, i;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title5.lmp");
 
@@ -832,7 +830,6 @@ int	m_class_cursor;
 void M_Class_Draw (void)
 {
 	int		f, i;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title2.lmp");
 
@@ -910,7 +907,6 @@ void M_Menu_SinglePlayer_f (void)
 void M_SinglePlayer_Draw (void)
 {
 	int		f;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title1.lmp");
 	
@@ -1006,7 +1002,6 @@ void M_ScanSaves (void)
 	int				i, j;
 	char			name[MAX_OSPATH];
 	fileHandle_t	f;
-	int				version;
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
@@ -1185,7 +1180,6 @@ void M_ScanMSaves (void)
 	int		i, j;
 	char	name[MAX_OSPATH];
 	fileHandle_t	f;
-	int		version;
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
@@ -1345,7 +1339,6 @@ void M_Menu_MultiPlayer_f (void)
 void M_MultiPlayer_Draw (void)
 {
 	int		f;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title4.lmp");
 //	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mp_menu.lmp") );
@@ -1660,7 +1653,6 @@ void M_Menu_Net_f (void)
 void M_Net_Draw (void)
 {
 	int		f;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title4.lmp");
 
@@ -1928,7 +1920,6 @@ void M_DrawCheckbox (int x, int y, int on)
 void M_Options_Draw (void)
 {
 	float		r;
-	image_t	*p;
 	
 	ScrollTitle("gfx/menu/title3.lmp");
 	
@@ -2164,7 +2155,6 @@ void M_Keys_Draw (void)
 	int		keys[2];
 	const char	*name;
 	int		x, y;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title6.lmp");
 
@@ -2180,7 +2170,7 @@ void M_Keys_Draw (void)
 		
 	if (keys_top) 
 		M_DrawCharacter (6, 80, 128);
-	if (keys_top + KEYS_SIZE < NUMCOMMANDS)
+	if (keys_top + KEYS_SIZE < (int)NUMCOMMANDS)
 		M_DrawCharacter (6, 80 + ((KEYS_SIZE-1)*8), 129);
 
 // search for known bindings
@@ -2258,7 +2248,7 @@ void M_Keys_Key (int k)
 	case K_RIGHTARROW:
 		S_StartLocalSound("raven/menu1.wav");
 		keys_cursor++;
-		if (keys_cursor >= NUMCOMMANDS)
+		if (keys_cursor >= (int)NUMCOMMANDS)
 			keys_cursor = 0;
 		break;
 
@@ -2893,7 +2883,6 @@ void M_Menu_LanConfig_f (void)
 
 void M_LanConfig_Draw (void)
 {
-	image_t	*p;
 	int		basex;
 	const char	*startJoin;
 	const char	*protocol;
@@ -3072,10 +3061,12 @@ void M_LanConfig_Key (int key)
 	}
 
 	if (StartingGame && lanConfig_cursor == 2)
+	{
 		if (key == K_UPARROW)
 			lanConfig_cursor = 1;
 		else
 			lanConfig_cursor = 0;
+	}
 
 	l =  QStr::Atoi(lanConfig_portname);
 	if (l > 65535)
@@ -3259,9 +3250,6 @@ void M_Menu_GameOptions_f (void)
 
 void M_GameOptions_Draw (void)
 {
-	image_t	*p;
-	int		x;
-
 	ScrollTitle("gfx/menu/title4.lmp");
 
 	M_DrawTextBox (152+8, 60, 10, 1);
@@ -3593,7 +3581,6 @@ void M_Menu_Search_f (void)
 
 void M_Search_Draw (void)
 {
-	image_t	*p;
 	int x;
 
 	ScrollTitle("gfx/menu/title4.lmp");
@@ -3655,7 +3642,6 @@ void M_ServerList_Draw (void)
 	int		n;
 	char	string [64];
 	const  char*	name;
-	image_t	*p;
 
 	if (!slist_sorted)
 	{

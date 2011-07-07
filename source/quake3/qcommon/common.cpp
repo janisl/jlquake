@@ -865,7 +865,7 @@ void Z_CheckHeap( void ) {
 Z_LogZoneHeap
 ========================
 */
-void Z_LogZoneHeap( memzone_t *zone, char *name ) {
+void Z_LogZoneHeap( memzone_t *zone, const char *name ) {
 #ifdef ZONE_DEBUG
 	char dump[32], *ptr;
 	int  i, j;
@@ -1304,7 +1304,7 @@ Com_InitZoneMemory
 void Com_InitHunkMemory( void ) {
 	QCvar	*cv;
 	int nMinAlloc;
-	char *pMsg = NULL;
+	const char *pMsg = NULL;
 
 	// make sure the file system has allocated and "not" freed any temp blocks
 	// this allows the config and product id files ( journal files too ) to be loaded
@@ -1610,7 +1610,7 @@ void Hunk_FreeTempMemory( void *buf ) {
 
 
 	hdr = ( (hunkHeader_t *)buf ) - 1;
-	if ( hdr->magic != HUNK_MAGIC ) {
+	if ( hdr->magic != (int)HUNK_MAGIC ) {
 		Com_Error( ERR_FATAL, "Hunk_FreeTempMemory: bad magic" );
 	}
 
@@ -1947,7 +1947,7 @@ int Com_EventLoop( void ) {
 			// the event buffers are only large enough to hold the
 			// exact payload, but channel messages need to be large
 			// enough to hold fragment reassembly
-			if ( (unsigned)buf.cursize > buf.maxsize ) {
+			if ( (unsigned)buf.cursize > (unsigned)buf.maxsize ) {
 				Com_Printf("Com_EventLoop: oversize packet\n");
 				continue;
 			}

@@ -117,7 +117,6 @@ SV_CheckForSavegame
 void SV_CheckForSavegame (void)
 {
 	char		name[MAX_OSPATH];
-	FILE		*f;
 	int			i;
 
 	if (sv_noreload->value)

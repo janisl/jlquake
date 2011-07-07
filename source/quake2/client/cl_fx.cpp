@@ -1653,7 +1653,7 @@ void CL_RailTrail (vec3_t start, vec3_t end)
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (0.6+frand()*0.2);
-		p->color = 0x0 + rand()&15;
+		p->color = rand() & 15;
 
 		for (j=0 ; j<3 ; j++)
 		{
@@ -2049,7 +2049,7 @@ void CL_TrapParticles (refEntity_t *ent)
 				dir[2] = k * 8;
 	
 				VectorNormalize (dir);						
-				vel = 50 + rand()&63;
+				vel = 50 + (rand() & 63);
 				VectorScale (dir, vel, p->vel);
 
 				p->accel[0] = p->accel[1] = 0;

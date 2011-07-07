@@ -499,7 +499,7 @@ void CL_Connect_f (void)
 	
 	if (Com_ServerState ())
 	{	// if running a local server, kill it and reissue
-		SV_Shutdown (va("Server quit\n", msg), false);
+		SV_Shutdown ("Server quit\n", false);
 	}
 	else
 	{

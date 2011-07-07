@@ -372,7 +372,6 @@ relinked.  Other attributes can change without relinking.
 void CL_ParseUpdate (int bits)
 {
 	int			i;
-	float		f;
 	qhandle_t	model;
 	int			modnum;
 	qboolean	forcelink;
@@ -704,7 +703,6 @@ Server information pertaining to this client only
 void CL_ParseClientdata (int bits)
 {
 	int		i, j;
-	int max_order;
 	
 
 	if (bits & SU_VIEWHEIGHT)
@@ -914,10 +912,6 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
-	int		i, j;
-	int		top, bottom;
-	byte	*dest, *source, *sourceA, *sourceB, *colorA, *colorB;
-	
 	if (slot > cl.maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
 	if (!cl.scores[slot].playerclass)
@@ -1046,7 +1040,6 @@ void CL_ParseServerMessage (void)
 	short		RemovePlace, OrigPlace, NewPlace, AddedIndex;
 	int sc1, sc2;
 	byte test;
-	float x,y,z,dx,dy,dz;
 	float		compangles[2][3];
 	vec3_t		deltaangles;
 	

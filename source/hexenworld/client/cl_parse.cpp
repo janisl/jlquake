@@ -175,7 +175,6 @@ Model_NextDownload
 void Model_NextDownload (void)
 {
 	char	*s;
-	FILE		*f;
 	int		i;
 	extern	char gamedirfile[];
 
@@ -242,7 +241,6 @@ Sound_NextDownload
 void Sound_NextDownload (void)
 {
 	char	*s;
-	FILE		*f;
 	int		i;
 
 	if (cls.downloadnumber == 0)
@@ -294,6 +292,8 @@ void CL_RequestNextDownload (void)
 	case dl_sound:
 		Sound_NextDownload ();
 		break;
+	case dl_none:
+		break;
 	}
 }
 
@@ -307,9 +307,6 @@ A download message has been received from the server
 void CL_ParseDownload (void)
 {
 	int		size, percent;
-	char	name[1024];
-	int		r;
-
 
 	// read the data
 	size = net_message.ReadShort ();
@@ -370,9 +367,6 @@ void CL_ParseDownload (void)
 	}
 	else
 	{
-		char	oldn[MAX_OSPATH];
-		char	newn[MAX_OSPATH];
-
 #if 0
 		Con_Printf ("100%%\n");
 #endif
@@ -410,9 +404,6 @@ int	cl_doc = -1;
 void CL_ParseServerData (void)
 {
 	char	*str;
-	int		i;
-	FILE	*f;
-	char	fn[MAX_OSPATH];
 	qboolean	cflag = false;
 	extern	char	gamedirfile[MAX_OSPATH];
 	int protover;
@@ -708,7 +699,6 @@ void CL_ParseStartSoundPacket(void)
     int 	channel, ent;
     int 	sound_num;
     int 	volume;
-    int 	field_mask;
     float 	attenuation;  
  	int		i;
 	           
@@ -749,12 +739,8 @@ Server information pertaining to this client only, sent every frame
 void CL_ParseClientdata (void)
 {
 	int				i;
-	player_state_t	*ms;
-	entity_state_t	*es;
-	usercmd_t		*u;
 	float		latency;
 	frame_t		*frame;
-	int			bits;
 
 // calculate simulated time of message
 	oldparsecountmod = parsecountmod;

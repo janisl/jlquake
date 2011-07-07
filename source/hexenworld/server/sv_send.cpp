@@ -98,7 +98,7 @@ void Con_Printf(const char *fmt, ...)
 	// add to redirected message
 	if (sv_redirected)
 	{
-		if (QStr::Length(msg) + QStr::Length(outputbuf) > sizeof(outputbuf) - 1)
+		if (QStr::Length(msg) + QStr::Length(outputbuf) > (int)sizeof(outputbuf) - 1)
 			SV_FlushRedirect ();
 		QStr::Cat(outputbuf, sizeof(outputbuf), msg);
 		return;

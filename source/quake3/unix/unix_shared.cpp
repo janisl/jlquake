@@ -60,7 +60,7 @@ int Sys_GetProcessorId( void )
 	return CPUID_GENERIC;
 }
 
-char *Sys_GetCurrentUser( void )
+const char *Sys_GetCurrentUser( void )
 {
 	struct passwd *p;
 

@@ -22,12 +22,11 @@ is not a staircase.
 qboolean SV_CheckBottom (edict_t *ent)
 {//By this point, ent has been moved to it's new position after the
 	//move, and adjusted for steps
-	vec3_t	mins, maxs, start, stop, check,size;
+	vec3_t	mins, maxs, start, stop;
 	q1trace_t	trace;
 	int		x, y;
 	float	mid, bottom;
 	float	save_hull;
-	int		index;
 
 	VectorAdd (ent->v.origin, ent->v.mins, mins);
 	VectorAdd (ent->v.origin, ent->v.maxs, maxs);

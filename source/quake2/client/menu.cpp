@@ -1161,15 +1161,6 @@ void Options_MenuInit( void )
 		"enabled",
 		0
 	};
-	static const char *quality_items[] =
-	{
-		"low", "high", 0
-	};
-
-	static const char *compatibility_items[] =
-	{
-		"max compatibility", "max performance", 0
-	};
 
 	static const char *yesno_names[] =
 	{
@@ -2131,14 +2122,6 @@ static void CreditsFunc( void *unused )
 
 void Game_MenuInit( void )
 {
-	static const char *difficulty_names[] =
-	{
-		"easy",
-		"medium",
-		"hard",
-		0
-	};
-
 	s_game_menu.x = viddef.width * 0.50;
 	s_game_menu.nitems = 0;
 
@@ -3605,7 +3588,7 @@ static qboolean IconOfSkinExists( char *skin, char **pcxfiles, int npcxfiles )
 }
 
 extern char **FS_ListFiles( char *, int *, unsigned, unsigned );
-static qboolean PlayerConfig_ScanDirectories( void )
+static void PlayerConfig_ScanDirectories( void )
 {
 	char findname[1024];
 	char scratch[1024];
@@ -3629,7 +3612,7 @@ static qboolean PlayerConfig_ScanDirectories( void )
 	} while ( path );
 
 	if ( !dirnames )
-		return false;
+		return;
 
 	/*
 	** go through the subdirectories
@@ -3768,7 +3751,6 @@ static int pmicmpfnc( const void *_a, const void *_b )
 qboolean PlayerConfig_MenuInit( void )
 {
 	extern QCvar *name;
-	extern QCvar *team;
 	extern QCvar *skin;
 	char currentdirectory[1024];
 	char currentskin[1024];
@@ -3885,7 +3867,7 @@ qboolean PlayerConfig_MenuInit( void )
 	s_player_handedness_box.curvalue = Cvar_VariableValue( "hand" );
 	s_player_handedness_box.itemnames = handedness;
 
-	for (i = 0; i < sizeof(rate_tbl) / sizeof(*rate_tbl) - 1; i++)
+	for (i = 0; i < (int)(sizeof(rate_tbl) / sizeof(*rate_tbl) - 1); i++)
 		if (Cvar_VariableValue("rate") == rate_tbl[i])
 			break;
 
@@ -3948,7 +3930,6 @@ void PlayerConfig_MenuDraw( void )
 	if ( s_pmi[s_player_model_box.curvalue].skindisplaynames )
 	{
 		static int yaw;
-		int maxframe = 29;
 		refEntity_t entity;
 		vec3_t angles;
 

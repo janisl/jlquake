@@ -274,7 +274,7 @@ void Sbar_DrawCharacter (int x, int y, int num)
 Sbar_DrawString
 ================
 */
-void Sbar_DrawString (int x, int y, char *str)
+void Sbar_DrawString (int x, int y, const char *str)
 {
 	Draw_String (x /*+ ((vid.width - 320)>>1) */, y+ vid.height-SBAR_HEIGHT, str);
 }
@@ -424,7 +424,7 @@ void Sbar_SortTeams (void)
 		// find his team in the list
 		t[16] = 0;
 		QStr::NCpy(t, Info_ValueForKey(s->userinfo, "team"), 16);
-		if (!t || !t[0])
+		if (!t[0])
 			continue; // not on team
 		for (j = 0; j < scoreboardteams; j++)
 			if (!QStr::Cmp(teams[j].team, t)) {
@@ -932,7 +932,7 @@ void Sbar_TeamOverlay (void)
 // draw the text
 	l = scoreboardlines;
 
-	for (i=0 ; i < scoreboardteams && y <= vid.height-10 ; i++)
+	for (i=0 ; i < scoreboardteams && y <= (int)vid.height-10 ; i++)
 	{
 		k = teamsort[i];
 		tm = teams + k;
@@ -1053,7 +1053,7 @@ void Sbar_DeathmatchOverlay (int start)
 		y += 8;
 	}
 
-	for (i=0 ; i<l && y <= vid.height-10 ; i++)
+	for (i=0 ; i<l && y <= (int)vid.height-10 ; i++)
 	{
 		k = fragsort[i];
 		s = &cl.players[k];
@@ -1140,7 +1140,7 @@ void Sbar_DeathmatchOverlay (int start)
 		y += skip;
 	}
 
-	if (y >= vid.height-10) // we ran over the screen size, squish
+	if (y >= (int)vid.height-10) // we ran over the screen size, squish
 		largegame = true;
 }
 
@@ -1205,7 +1205,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 
 	x = 324;
 
-	for (/* */ ; i < scoreboardlines && y < vid.height - 8 + 1; i++)
+	for (/* */ ; i < scoreboardlines && y < (int)vid.height - 8 + 1; i++)
 	{
 		k = fragsort[i];
 		s = &cl.players[k];
@@ -1259,13 +1259,13 @@ void Sbar_MiniDeathmatchOverlay (void)
 
 	// draw seperator
 	x += 208;
-	for (y = vid.height - sb_lines; y < vid.height - 6; y += 2)
+	for (y = vid.height - sb_lines; y < (int)vid.height - 6; y += 2)
 		Draw_Character(x, y, 14);
 
 	x += 16;
 
 	y = vid.height - sb_lines;
-	for (i=0 ; i < scoreboardteams && y <= vid.height; i++)
+	for (i=0 ; i < scoreboardteams && y <= (int)vid.height; i++)
 	{
 		k = teamsort[i];
 		tm = teams + k;

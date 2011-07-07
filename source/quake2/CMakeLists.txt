@@ -47,7 +47,6 @@ set_target_properties(jlquake2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlquake2 ${CLIENTS_LIBS})
 
 add_executable(jlquake2ded
-	qcommon/m_flash.cpp
 	qcommon/cmd.cpp
 	qcommon/common.cpp
 	qcommon/cvar.cpp

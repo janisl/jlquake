@@ -1005,7 +1005,7 @@ void PR_Profile_f(void)
 	{
 		// Create the output file
 		saveFile = FS_FOpenFileWrite(saveName);
-		if(saveFile == NULL)
+		if(saveFile == 0)
 		{
 			Con_Printf("Could not open %s\n", saveName);
 			return;

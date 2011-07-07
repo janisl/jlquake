@@ -48,9 +48,8 @@ static void Sbar_DrawTransPic(int x, int y, image_t *pic);
 static int Sbar_itoa(int num, char *buf);
 static void Sbar_DrawNum(int x, int y, int number, int digits);
 static void Sbar_SortFrags(void);
-static void Sbar_DrawCharacter(int x, int y, int num);
+//static void Sbar_DrawCharacter(int x, int y, int num);
 static void Sbar_DrawString(int x, int y, char *str);
-static void Sbar_DrawSmallCharacter(int x, int y, int num);
 static void Sbar_DrawSmallString(int x, int y, const char *str);
 static void DrawBarArtifactNumber(int x, int y, int number);
 
@@ -100,10 +99,6 @@ static image_t *sb_colon, *sb_slash;
 
 static int fragsort[MAX_SCOREBOARD];
 
-static char scoreboardtext[MAX_SCOREBOARD][20];
-static int scoreboardtop[MAX_SCOREBOARD];
-static int scoreboardbottom[MAX_SCOREBOARD];
-static int scoreboardcount[MAX_SCOREBOARD];
 static int scoreboardlines;
 
 static float ChainPosition = 0;
@@ -201,7 +196,6 @@ void SB_Draw(void)
 	char tempStr[80];
 	int mana;
 	int maxMana;
-	int y;
 
 	if (intro_playing)
 	{
@@ -476,7 +470,6 @@ static void DrawFullScreenInfo(void)
 static void DrawLowerBar(void)
 {
 	int i;
-	int minutes, seconds, tens, units;
 	char tempStr[80];
 	int playerClass;
 	int piece;
@@ -1017,7 +1010,7 @@ void Sbar_DeathmatchOverlay(void)
 	y = 62;
 	for (i=0 ; i<l ; i++)
 	{
-		if (y+10 >= vid.height)
+		if (y+10 >= (int)vid.height)
 			break;
 
 		k = fragsort[i];
@@ -1108,7 +1101,6 @@ void FindName(char *which, char *name)
 
 void Sbar_NormalOverlay(void)
 {
-	image_t			*pic;
 	int				i,y,piece;
 	char			Name[40];
 
@@ -1154,7 +1146,6 @@ void Sbar_NormalOverlay(void)
 
 void Sbar_SmallDeathmatchOverlay(void)
 {
-	image_t			*pic;
 	int				i, k, l;
 	int				top, bottom;
 	int				x, y, f;
@@ -1758,11 +1749,11 @@ static void Sbar_DrawTransPic(int x, int y, image_t *pic)
 //
 //==========================================================================
 
-static void Sbar_DrawCharacter(int x, int y, int num)
+/*static void Sbar_DrawCharacter(int x, int y, int num)
 {
 	Draw_Character(x+((vid.width-320)>>1)+4,
 		y+vid.height-(int)BarHeight, num);
-}
+}*/
 
 //==========================================================================
 //
@@ -1773,18 +1764,6 @@ static void Sbar_DrawCharacter(int x, int y, int num)
 static void Sbar_DrawString(int x, int y, char *str)
 {
 	Draw_String(x+((vid.width-320)>>1), y+vid.height-(int)BarHeight, str);
-}
-
-//==========================================================================
-//
-// Sbar_DrawSmallCharacter
-//
-//==========================================================================
-
-static void Sbar_DrawSmallCharacter(int x, int y, int num)
-{
-	Draw_SmallCharacter(x+((vid.width-320)>>1)+4,
-		y+vid.height-(int)BarHeight, num);
 }
 
 //==========================================================================

@@ -126,8 +126,8 @@ static char	*opnames[256] = {
 	#define	loadWord(addr) *((int *)addr)
 #endif
 
-char *VM_Indent( vm_t *vm ) {
-	static char	*string = "                                        ";
+const char *VM_Indent( vm_t *vm ) {
+	static const char	*string = "                                        ";
 	if ( vm->callLevel > 20 ) {
 		return string;
 	}

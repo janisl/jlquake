@@ -163,7 +163,7 @@ SV_PreSpawn_f
 */
 void SV_PreSpawn_f (void)
 {
-	unsigned	buf;
+	int		buf;
 
 	if (host_client->state != cs_connected)
 	{
@@ -180,7 +180,7 @@ void SV_PreSpawn_f (void)
 	}
 	
 	buf = QStr::Atoi(Cmd_Argv(2));
-	if (buf >= sv.num_signon_buffers)
+	if (buf < 0 || buf >= sv.num_signon_buffers)
 		buf = 0;
 
 	host_client->netchan.message.WriteData(
@@ -1124,7 +1124,6 @@ void SV_RunCmd (usercmd_t *ucmd)
 	edict_t		*ent;
 	int			i, n;
 	int			oldmsec;
-	eval_t		*val;
 
 	cmd = *ucmd;
 

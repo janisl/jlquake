@@ -280,8 +280,6 @@ CL_ClearState
 */
 void CL_ClearState (void)
 {
-	int			i;
-
 	S_StopAllSounds();
 
 	Con_DPrintf ("Clearing memory\n");
@@ -368,7 +366,6 @@ void CL_User_f (void)
 {
 	int		uid;
 	int		i;
-	char	packet[1024];
 
 	if (Cmd_Argc() != 2)
 	{
@@ -509,7 +506,6 @@ void CL_FullInfo_f (void)
 	char	value[512];
 	char	*o;
 	char	*s;
-	int		l;
 
 	if (Cmd_Argc() != 2)
 	{
@@ -562,8 +558,6 @@ Allow clients to change userinfo
 */
 void CL_SetInfo_f (void)
 {
-	char	packet[1024];
-
 	if (Cmd_Argc() == 1)
 	{
 		Info_Print (cls.userinfo);

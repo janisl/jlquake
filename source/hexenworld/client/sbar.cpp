@@ -51,10 +51,9 @@ static void Sbar_DrawTransPic(int x, int y, image_t *pic);
 static int Sbar_itoa(int num, char *buf);
 static void Sbar_DrawNum(int x, int y, int number, int digits);
 void Sbar_SortFrags (qboolean includespec);
-static void Sbar_DrawCharacter(int x, int y, int num);
+//static void Sbar_DrawCharacter(int x, int y, int num);
 static void Sbar_DrawString(int x, int y, char *str);
-static void Sbar_DrawRedString (int cx, int cy, char *str);
-static void Sbar_DrawSmallCharacter(int x, int y, int num);
+static void Sbar_DrawRedString (int cx, int cy, const char *str);
 static void Sbar_DrawSmallString(int x, int y, const char *str);
 static void DrawBarArtifactNumber(int x, int y, int number);
 
@@ -105,10 +104,6 @@ static image_t *sb_colon, *sb_slash;
 
 static int fragsort[MAX_SCOREBOARD];
 
-static char scoreboardtext[MAX_SCOREBOARD][20];
-static int scoreboardtop[MAX_SCOREBOARD];
-static int scoreboardbottom[MAX_SCOREBOARD];
-static int scoreboardcount[MAX_SCOREBOARD];
 static int scoreboardlines;
 
 static float ChainPosition = 0;
@@ -121,7 +116,7 @@ qboolean inv_flg;					// true - show inventory interface
 
 static float InventoryHideTime;
 
-static char *PlayerClassNames[MAX_PLAYER_CLASS] =
+static const char *PlayerClassNames[MAX_PLAYER_CLASS] =
 {
 	"Paladin",
 	"Crusader",
@@ -579,7 +574,6 @@ static void DrawFullScreenInfo(void)
 static void DrawLowerBar(void)
 {
 	int i;
-	int minutes, seconds, tens, units;
 	char tempStr[80];
 	int playerClass;
 	int piece;
@@ -1140,7 +1134,7 @@ void Sbar_DeathmatchOverlay(void)
 
 	for (i=0 ; i<l ; i++)
 	{
-		if (y+10 >= vid.height)
+		if (y+10 >= (int)vid.height)
 			break;
 
 		k = fragsort[i];
@@ -1336,7 +1330,6 @@ void FindName(char *which, char *name)
 
 void Sbar_NormalOverlay(void)
 {
-	image_t			*pic;
 	int				i,y,piece;
 	char			Name[40];
 
@@ -1402,12 +1395,10 @@ char num[40];
 
 void Sbar_SmallDeathmatchOverlay(void)
 {
-	image_t			*pic;
 	int				i, k, l;
 	int				top, bottom;
 	int				x, y, f;
 	int				def_frags,att_frags;
-	int				show_min,show_sec;
 	char			num[40];
 //	unsigned char	num[12];
 	player_info_t	*s;
@@ -2161,11 +2152,11 @@ static void Sbar_DrawTransPic(int x, int y, image_t *pic)
 //
 //==========================================================================
 
-static void Sbar_DrawCharacter(int x, int y, int num)
+/*static void Sbar_DrawCharacter(int x, int y, int num)
 {
 	Draw_Character(x+((vid.width-320)>>1)+4,
 		y+vid.height-(int)BarHeight, num);
-}
+}*/
 
 //==========================================================================
 //
@@ -2178,7 +2169,7 @@ static void Sbar_DrawString(int x, int y, char *str)
 	Draw_String(x+((vid.width-320)>>1), y+vid.height-(int)BarHeight, str);
 }
 
-void Sbar_DrawRedString (int cx, int cy, char *str)
+void Sbar_DrawRedString (int cx, int cy, const char *str)
 {
 	while (*str)
 	{
@@ -2186,18 +2177,6 @@ void Sbar_DrawRedString (int cx, int cy, char *str)
 		str++;
 		cx += 8;
 	}
-}
-
-//==========================================================================
-//
-// Sbar_DrawSmallCharacter
-//
-//==========================================================================
-
-static void Sbar_DrawSmallCharacter(int x, int y, int num)
-{
-	Draw_SmallCharacter(x+((vid.width-320)>>1)+4,
-		y+vid.height-(int)BarHeight, num);
 }
 
 //==========================================================================

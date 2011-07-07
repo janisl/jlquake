@@ -290,7 +290,6 @@ Internal use only
 */
 static void SCR_CalcRefdef (void)
 {
-	vrect_t		vrect;
 	float		size;
 	int		h;
 
@@ -354,7 +353,7 @@ static void SCR_CalcRefdef (void)
 	}
 
 	scr_vrect.height = vid.height * size;
-	if (scr_vrect.height > vid.height - sb_lines)
+	if (scr_vrect.height > (int)vid.height - sb_lines)
 		scr_vrect.height = vid.height - sb_lines;
 
 	scr_vrect.x = (vid.width - scr_vrect.width)/2;
@@ -1119,9 +1118,6 @@ needs almost the entire 256k of stack space!
 */
 void SCR_UpdateScreen (void)
 {
-	static float	oldscr_viewsize;
-	vrect_t		vrect;
-
 	scr_copytop = 0;
 	scr_copyeverything = 0;
 

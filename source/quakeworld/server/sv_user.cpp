@@ -222,8 +222,8 @@ SV_PreSpawn_f
 */
 void SV_PreSpawn_f (void)
 {
-	unsigned	buf;
-	unsigned	check;
+	int			buf;
+	int			check;
 
 	if (host_client->state != cs_connected)
 	{
@@ -576,11 +576,8 @@ SV_NextUpload
 */
 void SV_NextUpload (void)
 {
-	byte	buffer[1024];
-	int		r;
 	int		percent;
 	int		size;
-	client_t *client;
 
 	if (!*host_client->uploadfn) {
 		SV_ClientPrintf(host_client, PRINT_HIGH, "Upload denied\n");
@@ -917,8 +914,6 @@ SV_Pause_f
 */
 void SV_Pause_f (void)
 {
-	int i;
-	client_t *cl;
 	char st[sizeof(host_client->name) + 32];
 
 	if (!pausable->value) {

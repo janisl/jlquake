@@ -1009,7 +1009,7 @@ int PC_Directive_include(source_t *source)
 				break;
 			} //end if
 			if (token.type == TT_PUNCTUATION && *token.string == '>') break;
-			strncat(path, token.string, MAX_PATH);
+			QStr::Cat(path, MAX_PATH, token.string);
 		} //end while
 		if (*token.string != '>')
 		{

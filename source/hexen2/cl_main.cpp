@@ -52,8 +52,6 @@ CL_ClearState
 */
 void CL_ClearState (void)
 {
-	int			i;
-
 	if (!sv.active)
 		Host_ClearMemory ();
 
@@ -76,16 +74,6 @@ void CL_ClearState (void)
 	plaquemessage = "";
 
 	SB_InvReset();
-}
-
-static qboolean IsGip(const char* name)
-{
-	int l = QStr::Length(name);
-	if (l < 4)
-	{
-		return false;
-	}
-	return !QStr::Cmp(name + l - 4, ".gip");
 }
 
 void CL_RemoveGIPFiles(const char *path)
@@ -466,7 +454,6 @@ void CL_RelinkEntities (void)
 	vec3_t		oldorg;
 	cdlight_t	*dl;
 	int c;
-	static int lastc = 0;
 
 	c = 0;
 // determine partial update time	

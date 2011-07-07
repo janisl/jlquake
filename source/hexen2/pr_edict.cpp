@@ -985,10 +985,8 @@ to call ED_CallSpawnFunctions () to let the objects initialize themselves.
 void ED_LoadFromFile (const char *data)
 {	
 	edict_t		*ent;
-	int			inhibit,i,skip;
+	int			inhibit,skip;
 	dfunction_t	*func;
-	edict_t	*sv_player;
-	client_t	*host_client;
 	const char		*orig;
 	int			start_amount;
 	
@@ -1171,7 +1169,7 @@ PR_LoadProgs
 void PR_LoadProgs (void)
 {
 	int		i;
-	char	mapname[MAX_QPATH], progname[MAX_OSPATH], finalprogname[MAX_OSPATH];
+	char	finalprogname[MAX_OSPATH];
 
 // flush the non-C variable lookup cache
 	for (i=0 ; i<GEFV_CACHESIZE ; i++)
@@ -1190,7 +1188,7 @@ void PR_LoadProgs (void)
 		CRC_ProcessByte (&pr_crc, ((byte *)progs)[i]);
 
 // byte swap the header
-	for (i=0 ; i<sizeof(*progs)/4 ; i++)
+	for (i=0 ; i<(int)sizeof(*progs)/4 ; i++)
 		((int *)progs)[i] = LittleLong ( ((int *)progs)[i] );		
 
 	if (progs->version != PROG_VERSION)

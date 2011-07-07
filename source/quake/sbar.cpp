@@ -380,7 +380,6 @@ int		fragsort[MAX_SCOREBOARD];
 char	scoreboardtext[MAX_SCOREBOARD][20];
 int		scoreboardtop[MAX_SCOREBOARD];
 int		scoreboardbottom[MAX_SCOREBOARD];
-int		scoreboardcount[MAX_SCOREBOARD];
 int		scoreboardlines;
 
 /*
@@ -1166,7 +1165,6 @@ Sbar_DeathmatchOverlay
 */
 void Sbar_MiniDeathmatchOverlay (void)
 {
-	image_t			*pic;
 	int				i, k, l;
 	int				top, bottom;
 	int				x, y, f;
@@ -1206,7 +1204,7 @@ void Sbar_MiniDeathmatchOverlay (void)
             i = 0;
 
 	x = 324;
-	for (/* */; i < scoreboardlines && y < vid.height - 8 ; i++)
+	for (/* */; i < scoreboardlines && y < (int)vid.height - 8 ; i++)
 	{
 		k = fragsort[i];
 		s = &cl.scores[k];

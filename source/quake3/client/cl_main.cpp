@@ -2465,7 +2465,6 @@ CL_ServerInfoPacket
 void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	int		i, type;
 	char	info[MAX_INFO_STRING];
-	char*	str;
 	const char	*infoString;
 	int		prot;
 
@@ -2496,12 +2495,10 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 			{
 				case NA_BROADCAST:
 				case NA_IP:
-					str = "udp";
 					type = 1;
 					break;
 
 				default:
-					str = "???";
 					type = 0;
 					break;
 			}
@@ -2550,11 +2547,13 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	cls.localServers[i].punkbuster = 0;
 									 
 	QStr::NCpyZ( info, msg->ReadString(), MAX_INFO_STRING );
-	if (QStr::Length(info)) {
-		if (info[QStr::Length(info)-1] != '\n') {
-			strncat(info, "\n", sizeof(info));
+	if (QStr::Length(info))
+	{
+		if (info[QStr::Length(info) - 1] != '\n')
+		{
+			QStr::Cat(info, sizeof(info), "\n");
 		}
-		Com_Printf( "%s: %s", SOCK_AdrToString( from ), info );
+		Com_Printf("%s: %s", SOCK_AdrToString(from), info);
 	}
 }
 
@@ -2756,7 +2755,7 @@ CL_LocalServers_f
 ==================
 */
 void CL_LocalServers_f( void ) {
-	char		*message;
+	const char		*message;
 	int			i, j;
 	netadr_t	to;
 

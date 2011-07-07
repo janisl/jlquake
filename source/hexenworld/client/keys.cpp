@@ -38,7 +38,6 @@ qboolean	keydown[256];
 qboolean CheckForCommand (void)
 {
 	char	command[128];
-	char	temp[1024];
 	const char	*cmd, *s;
 	int		i;
 
@@ -92,13 +91,6 @@ Interactive line editing and console scrollback
 */
 void Key_Console (int key)
 {
-	char	*cmd, *s;
-	int		i;
-#ifdef _WIN32
-	HANDLE	th;
-#endif
-	char	*clipText, *textCopied;
-	
 	if (key == K_ENTER)
 	{	// backslash text are commands, else chat
 		if (key_lines[edit_line][1] == '\\' || key_lines[edit_line][1] == '/')
@@ -202,6 +194,8 @@ void Key_Console (int key)
 #ifdef _WINDOWS
 	if ((key=='V' || key=='v') && GetKeyState(VK_CONTROL)<0) {
 		if (OpenClipboard(NULL)) {
+			HANDLE	th;
+			char	*clipText, *textCopied;
 			th = GetClipboardData(CF_TEXT);
 			if (th) {
 				clipText = (char*)GlobalLock(th);

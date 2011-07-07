@@ -301,7 +301,7 @@ int QDECL VM_DllSyscall(int arg, ...)
 
 	va_list ap;
 	va_start(ap, arg);
-	for (int i = 1; i < sizeof (args) / sizeof (args[i]); i++)
+	for (int i = 1; i < (int)(sizeof (args) / sizeof (args[i])); i++)
 	{
 		args[i] = va_arg(ap, int);
 	}
@@ -350,7 +350,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 	}
 
 	// byte swap the header
-	for ( i = 0 ; i < sizeof( *header ) / 4 ; i++ ) {
+	for ( i = 0 ; i < (int)sizeof( *header ) / 4 ; i++ ) {
 		((int *)header)[i] = LittleLong( ((int *)header)[i] );
 	}
 
@@ -468,7 +468,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	}
 
 	// byte swap the header
-	for ( i = 0 ; i < sizeof( *header ) / 4 ; i++ ) {
+	for ( i = 0 ; i < (int)sizeof( *header ) / 4 ; i++ ) {
 		((int *)header)[i] = LittleLong( ((int *)header)[i] );
 	}
 
@@ -656,7 +656,7 @@ int QDECL VM_Call(vm_t* vm, int callnum, ...)
 	args[0] = callnum;
 	va_list ap;
 	va_start(ap, callnum);
-	for (int i = 1; i < sizeof (args) / sizeof (args[i]); i++)
+	for (int i = 1; i < (int)(sizeof (args) / sizeof (args[i])); i++)
 	{
 		args[i] = va_arg(ap, int);
 	}
@@ -799,6 +799,6 @@ void VM_LogSyscalls( int *args ) {
 		f = fopen("syscalls.log", "w" );
 	}
 	callnum++;
-	fprintf(f, "%i: %i (%i) = %i %i %i %i\n", callnum, args - (int *)currentVM->dataBase,
+	fprintf(f, "%i: %i (%i) = %i %i %i %i\n", callnum, (int)(args - (int*)currentVM->dataBase),
 		args[0], args[1], args[2], args[3], args[4] );
 }

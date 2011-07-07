@@ -146,7 +146,7 @@ libvar_t *LibVarGet(const char *var_name)
 // Returns:					-
 // Changes Globals:		-
 //===========================================================================
-char *LibVarGetString(const char *var_name)
+const char *LibVarGetString(const char *var_name)
 {
 	libvar_t *v;
 

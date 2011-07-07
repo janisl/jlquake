@@ -390,7 +390,6 @@ void CL_ParsePacketEntities (qboolean delta)
 
 	while (1)
 	{
-nextword:
 		word = (unsigned short)net_message.ReadShort ();
 		if (net_message.badread)
 		{	// something didn't parse right...
@@ -616,7 +615,7 @@ void CL_LinkPacketEntities (void)
 	qhandle_t			model;
 	vec3_t				old_origin;
 	float				autorotate;
-	int					i, j;
+	int					i;
 	int					pnum;
 	cdlight_t			*dl;
 
@@ -1187,11 +1186,10 @@ void CL_LinkPlayers (void)
 	player_info_t	*info;
 	player_state_t	*state;
 	player_state_t	exact;
-	double			enttime, playertime;
+	double			playertime;
 	int				msec;
 	frame_t			*frame;
 	int				oldphysent;
-	cdlight_t		*dl;
 
 	playertime = realtime - cls.latency + 0.02;
 	if (playertime > realtime)
@@ -1361,16 +1359,10 @@ Builds all the pmove physents for the current frame
 */
 void CL_SetSolidEntities (void)
 {
-	int		i, j;
+	int		i;
 	frame_t	*frame;
 	packet_entities_t	*pak;
 	entity_state_t		*state;
-	extern	vec3_t	player_mins;
-	extern	vec3_t	player_maxs;
-	extern	vec3_t	player_maxs_crouch;
-	player_state_t	exact;
-	int				msec;
-	double			enttime, playertime;
 
 	pmove.physents[0].model = 0;
 	VectorCopy (vec3_origin, pmove.physents[0].origin);
@@ -1409,11 +1401,10 @@ This sets up the first phase.
 void CL_SetUpPlayerPrediction(qboolean dopred)
 {
 	int				j;
-	player_info_t	*info;
 
 	player_state_t	*state;
 	player_state_t	exact;
-	double			enttime, playertime;
+	double			playertime;
 	int				msec;
 	frame_t			*frame;
 	struct predicted_player *pplayer;
@@ -1490,8 +1481,6 @@ void CL_SetSolidPlayers (int playernum)
 	extern	vec3_t	player_maxs;
 	extern	vec3_t	player_maxs_crouch;
 	struct predicted_player *pplayer;
-	extern	vec3_t	beast_mins;
-	extern	vec3_t	beast_maxs;
 	physent_t *pent;
 
 	if (!cl_solid_players->value)

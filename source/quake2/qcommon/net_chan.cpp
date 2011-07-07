@@ -297,8 +297,8 @@ modifies net_message so that it points to the packet payload
 */
 qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 {
-	unsigned	sequence, sequence_ack;
-	unsigned	reliable_ack, reliable_message;
+	int			sequence, sequence_ack;
+	int			reliable_ack, reliable_message;
 	int			qport;
 
 // get sequence numbers		
@@ -310,8 +310,8 @@ qboolean Netchan_Process (netchan_t *chan, QMsg *msg)
 	if (chan->sock == NS_SERVER)
 		qport = msg->ReadShort();
 
-	reliable_message = sequence >> 31;
-	reliable_ack = sequence_ack >> 31;
+	reliable_message = (unsigned)sequence >> 31;
+	reliable_ack = (unsigned)sequence_ack >> 31;
 
 	sequence &= ~(1<<31);
 	sequence_ack &= ~(1<<31);	

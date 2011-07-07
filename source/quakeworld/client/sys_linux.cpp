@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 int noconinput = 0;
 int nostdout = 0;
 
-char *basedir = ".";
+const char *basedir = ".";
 
 // =======================================================================
 // General routines
@@ -75,10 +75,10 @@ static void signal_handler(int sig, siginfo_t *info, void *secret)
 	void *trace[64];
 	char **messages = (char **)NULL;
 	int i, trace_size = 0;
-	ucontext_t *uc = (ucontext_t *)secret;
 
 	/* Do something useful with siginfo_t */
 #if id386
+	ucontext_t *uc = (ucontext_t *)secret;
 	if (sig == SIGSEGV)
 		printf("Received signal %d, faulty address is %p, "
 			"from %p\n", sig, info->si_addr, 

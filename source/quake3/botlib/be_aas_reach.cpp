@@ -1079,6 +1079,14 @@ int AAS_Reachability_Step_Barrier_WaterJump_WalkOffLedge(int area1num, int area2
 	aas_lreachability_t *lreach;
 	aas_trace_t trace;
 
+	//	Shut up compiler.
+	VectorClear(ground_beststart);
+	VectorClear(ground_bestend);
+	VectorClear(ground_bestnormal);
+	VectorClear(water_beststart);
+	VectorClear(water_bestend);
+	VectorClear(water_bestnormal);
+
 	//must be able to walk or swim in the first area
 	if (!AAS_AreaGrounded(area1num) && !AAS_AreaSwim(area1num)) return qfalse;
 	//
@@ -2566,6 +2574,9 @@ int AAS_Reachability_Ladder(int area1num, int area2num)
 		{
 			//find lowest edge of the ladder face
 			lowestpoint[2] = 99999;
+			//	Shut up compiler
+			lowestpoint[0] = 0;
+			lowestpoint[1] = 0;
 			for (i = 0; i < ladderface1->numedges; i++)
 			{
 				edge1num = abs(aasworld.edgeindex[ladderface1->firstedge + i]);

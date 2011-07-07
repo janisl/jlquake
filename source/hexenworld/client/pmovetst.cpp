@@ -147,7 +147,6 @@ q1trace_t PM_PlayerMove (vec3_t start, vec3_t end)
 
 		if (pe->model >= 0 && (Q_fabs(pe->angles[0]) > 1 || Q_fabs(pe->angles[1]) > 1 || Q_fabs(pe->angles[2]) > 1) )
 		{
-			vec3_t	a;
 			vec3_t	forward, right, up;
 			vec3_t	temp;
 
