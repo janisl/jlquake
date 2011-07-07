@@ -2550,11 +2550,13 @@ void CL_ServerInfoPacket( netadr_t from, QMsg *msg ) {
 	cls.localServers[i].punkbuster = 0;
 									 
 	QStr::NCpyZ( info, msg->ReadString(), MAX_INFO_STRING );
-	if (QStr::Length(info)) {
-		if (info[QStr::Length(info)-1] != '\n') {
-			strncat(info, "\n", sizeof(info));
+	if (QStr::Length(info))
+	{
+		if (info[QStr::Length(info) - 1] != '\n')
+		{
+			QStr::Cat(info, sizeof(info), "\n");
 		}
-		Com_Printf( "%s: %s", SOCK_AdrToString( from ), info );
+		Com_Printf("%s: %s", SOCK_AdrToString(from), info);
 	}
 }
 

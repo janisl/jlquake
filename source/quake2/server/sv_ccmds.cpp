@@ -311,7 +311,7 @@ void SV_WriteServerFile (qboolean autosave)
 		QStr::Sprintf (comment,sizeof(comment), "%2i:%i%i %2i/%2i  ", newtime->tm_hour
 			, newtime->tm_min/10, newtime->tm_min%10,
 			newtime->tm_mon+1, newtime->tm_mday);
-		strncat (comment, sv.configstrings[CS_NAME], sizeof(comment)-1-QStr::Length(comment) );
+		QStr::Cat(comment, sizeof(comment), sv.configstrings[CS_NAME]);
 	}
 	else
 	{	// autosaved
