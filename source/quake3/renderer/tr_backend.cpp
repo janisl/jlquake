@@ -158,7 +158,7 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	qboolean		depthRange, oldDepthRange;
 	int				i;
 	drawSurf_t		*drawSurf;
-	int				oldSort;
+	unsigned int	oldSort;
 	float			originalTime;
 #ifdef __MACOS__
 	int				macEventTime;

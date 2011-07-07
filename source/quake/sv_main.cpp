@@ -206,7 +206,7 @@ void SV_SendServerinfo (client_t *client)
 	else
 		client->message.WriteByte(GAME_COOP);
 
-	sprintf (message, PR_GetString(sv.edicts->v.message));
+	QStr::Cpy(message, PR_GetString(sv.edicts->v.message));
 
 	client->message.WriteString2(message);
 

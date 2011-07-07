@@ -114,10 +114,7 @@ void SV_Edicts(const char *Name)
 
 void Sv_Edicts_f(void)
 {
-	FILE *FH;
 	const char *Name;
-	int i;
-	edict_t *e;
 
 	if (!sv.active)
 	{
@@ -184,8 +181,6 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count)
 {
-	int		i, v;
-
 	if (sv.datagram.cursize > MAX_DATAGRAM-36)
 		return;	
 	sv.datagram.WriteByte(svc_particle2);
@@ -213,8 +208,6 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle3 (vec3_t org, vec3_t box, int color, int effect, int count)
 {
-	int		i, v;
-
 	if (sv.datagram.cursize > MAX_DATAGRAM-15)
 		return;	
 	sv.datagram.WriteByte(svc_particle3);
@@ -239,8 +232,6 @@ Make sure the event gets sent to all clients
 */
 void SV_StartParticle4 (vec3_t org, float radius, int color, int effect, int count)
 {
-	int		i, v;
-
 	if (sv.datagram.cursize > MAX_DATAGRAM-13)
 		return;	
 	sv.datagram.WriteByte(svc_particle4);
@@ -319,9 +310,6 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 	int			ent;
 	QMsg	   cm;
 	byte		datagram_buf[MAX_DATAGRAM];
-	client_t	*client;
-	vec_t		distance;
-	vec3_t		diff;
 
 	cm.InitOOB(datagram_buf, sizeof(datagram_buf));
 	
@@ -473,7 +461,6 @@ void SV_ConnectClient (int clientnum)
 	client_t		*client;
 	int				edictnum;
 	struct qsocket_s *netconnection;
-	int				i;
 	float			spawn_parms[NUM_SPAWN_PARMS];
 	int				entnum;
 	edict_t			*svent;
@@ -965,7 +952,7 @@ skipA:
 		}
 
 		if (ref_ent->scale != ((int)(ent->v.scale*100.0)&255)
-			|| ref_ent->abslight != (int)(ent->v.abslight*255.0)&255)
+			|| ref_ent->abslight != ((int)(ent->v.abslight*255.0)&255))
 		{
 			bits |= U_SCALE;
 			set_ent->scale = ((int)(ent->v.scale*100.0)&255);
@@ -1082,10 +1069,8 @@ void SV_WriteClientdataToMessage (client_t *client, edict_t *ent, QMsg *msg)
 	byte	test;
 	int		i;
 	edict_t	*other;
-	int		items;
 	static  int next_update = 0;
 	static	int next_count = 0;
-	eval_t	*val;
 
 //
 // send a damage message
@@ -1574,8 +1559,6 @@ void SV_UpdateToReliableMessages (void)
 	int			i, j;
 	client_t *client;
 	edict_t *ent;
-	int		sc1,sc2;
-	byte	test;
 
 // check for changes to be sent over the reliable streams
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
@@ -1839,7 +1822,7 @@ transition to another level
 */
 void SV_SaveSpawnparms (void)
 {
-	int		i, j;
+	int		i;
 
 	svs.serverflags = pr_global_struct->serverflags;
 

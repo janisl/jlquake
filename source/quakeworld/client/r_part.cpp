@@ -129,7 +129,7 @@ void R_ClearParticles (void)
 
 	fclose (f);
 	Con_Printf ("%i points read\n", c);
-}8?
+}*/
 	
 /*
 ===============

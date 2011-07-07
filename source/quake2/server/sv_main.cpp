@@ -128,7 +128,7 @@ char	*SV_StatusString (void)
 			QStr::Sprintf (player, sizeof(player), "%i %i \"%s\"\n", 
 				cl->edict->client->ps.stats[STAT_FRAGS], cl->ping, cl->name);
 			playerLength = QStr::Length(player);
-			if (statusLength + playerLength >= sizeof(status) )
+			if (statusLength + playerLength >= (int)sizeof(status) )
 				break;		// can't hold any more
 			QStr::Cpy(status + statusLength, player);
 			statusLength += playerLength;
@@ -740,7 +740,7 @@ void SV_RunGameFrame (void)
 		ge->RunFrame ();
 
 		// never get more than one tic behind
-		if (sv.time < svs.realtime)
+		if (sv.time < (unsigned)svs.realtime)
 		{
 			if (sv_showclamp->value)
 				Com_Printf ("sv highclamp\n");
@@ -779,7 +779,7 @@ void SV_Frame (int msec)
 	SV_ReadPackets ();
 
 	// move autonomous things around if enough time has passed
-	if (!sv_timedemo->value && svs.realtime < sv.time)
+	if (!sv_timedemo->value && (unsigned)svs.realtime < sv.time)
 	{
 		// never let the time get too far off
 		if (sv.time - svs.realtime > 100)
@@ -908,7 +908,7 @@ void SV_UserinfoChanged (client_t *cl)
 	// name for C code
 	QStr::NCpy(cl->name, Info_ValueForKey (cl->userinfo, "name"), sizeof(cl->name)-1);
 	// mask off high bit
-	for (i=0 ; i<sizeof(cl->name) ; i++)
+	for (i=0 ; i<(int)sizeof(cl->name) ; i++)
 		cl->name[i] &= 127;
 
 	// rate command

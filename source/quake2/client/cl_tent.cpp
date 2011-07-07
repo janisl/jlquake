@@ -92,8 +92,6 @@ static sfxHandle_t	cl_sfx_railg;
 static sfxHandle_t	cl_sfx_rockexp;
 static sfxHandle_t	cl_sfx_grenexp;
 static sfxHandle_t	cl_sfx_watrexp;
-// RAFAEL
-static sfxHandle_t	cl_sfx_plasexp;
 sfxHandle_t			cl_sfx_footsteps[4];
 
 static qhandle_t	cl_mod_explode;
@@ -1699,6 +1697,8 @@ void CL_AddExplosions (void)
 			ent->skinNum = 0;
 			ent->renderfx |= RF_TRANSLUCENT;
 			break;
+		default:
+			break;
 		}
 
 		if (ex->type == ex_free)
@@ -1748,6 +1748,7 @@ void CL_ProcessSustain ()
 	for (i=0, s=cl_sustains; i< MAX_SUSTAINS; i++, s++)
 	{
 		if (s->id)
+		{
 			if ((s->endtime >= cl.time) && (cl.time >= s->nextthink))
 			{
 //				Com_Printf ("think %d %d %d\n", cl.time, s->nextthink, s->thinkinterval);
@@ -1755,6 +1756,7 @@ void CL_ProcessSustain ()
 			}
 			else if (s->endtime < cl.time)
 				s->id = 0;
+		}
 	}
 }
 

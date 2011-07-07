@@ -224,7 +224,3 @@ struct EffectT
 		} Bubble;
 	};
 };
-
-void SV_SaveEffects(FILE *FH);
-void SV_LoadEffects(FILE *FH);
-

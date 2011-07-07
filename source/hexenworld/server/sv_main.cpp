@@ -207,6 +207,7 @@ void SV_DropClient (client_t *drop)
 	drop->netchan.message.WriteByte(svc_disconnect);
 
 	if (drop->state == cs_spawned)
+	{
 		if (!drop->spectator)
 		{
 			// call the prog function for removing a client
@@ -221,6 +222,7 @@ void SV_DropClient (client_t *drop)
 			pr_global_struct->self = EDICT_TO_PROG(drop->edict);
 			PR_ExecuteProgram (SpectatorDisconnect);
 		}
+	}
 	else if(dmMode->value==DM_SIEGE)
 		if(QStr::ICmp(PR_GetString(drop->edict->v.puzzle_inv1),""))
 		{
@@ -430,8 +432,7 @@ instead of the data.
 */
 void SVC_Log (void)
 {
-	int		i;
-	int		seq, send;
+	int		seq;
 	char	data[MAX_DATAGRAM+64];
 
 	if (Cmd_Argc() == 2)
@@ -1168,6 +1169,8 @@ void SV_Frame (float time)
 			Cbuf_AddText((char*)ev.evPtr);
 			Cbuf_AddText("\n");
 			break;
+		default:
+			break;
 		}
 
 		// free any block data
@@ -1471,15 +1474,17 @@ void SV_ExtractFromUserinfo (client_t *cl)
 		{ // dup name
 			char tmp[80];
 			QStr::NCpyZ(tmp, val, sizeof(tmp));
-			if (QStr::Length(val) > sizeof(cl->name) - 1)
+			if (QStr::Length(val) > (int)sizeof(cl->name) - 1)
 				tmp[sizeof(cl->name) - 4] = 0;
 			p = tmp;
 
 			if (tmp[0] == '(')
+			{
 				if (tmp[2] == ')')
 					p = tmp + 3;
 				else if (tmp[3] == ')')
 					p = tmp + 4;
+			}
 
 			sprintf(newname, "(%d)%-0.40s", dupc++, p);
 			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);

@@ -32,8 +32,6 @@ QCvar*	sv_nostep;
 QCvar*	sv_flypitch;
 QCvar*	sv_walkpitch;
 
-static	vec3_t	vec_origin = {0.0, 0.0, 0.0};
-
 #define	MOVE_EPSILON	0.01
 
 void SV_Physics_Toss (edict_t *ent);
@@ -769,20 +767,20 @@ void SV_PushRotate (edict_t *pusher, float movetime)
 {
 	int			i, e, t;
 	edict_t		*check, *block;
-	vec3_t		move, a, amove,mins,maxs,move2,move3,testmove,amove_norm;
+	vec3_t		move, a, amove,mins,maxs,move2,move3,testmove/*,amove_norm*/;
 	vec3_t		entorig, pushorig,pushorigangles;
 	int			num_moved;
 	edict_t		*moved_edict[MAX_EDICTS];
 	vec3_t		moved_from[MAX_EDICTS];
 	vec3_t		org, org2, check_center;
 	vec3_t		forward, right, up;
-	vec3_t		dir2push,push_vel;
+	//vec3_t		dir2push,push_vel;
 	edict_t		*ground;
 	edict_t		*master;
 	edict_t		*slave;
 	int			slaves_moved;
-	qboolean	moveit, null_z;
-	float		amove_mag,turn_away;
+	qboolean	moveit/*, null_z*/;
+	//float		amove_mag,turn_away;
 
 #if 0
 Con_DPrintf("SV_PushRotate entity %i (time=%f)\n", NUM_FOR_EDICT(pusher), movetime);

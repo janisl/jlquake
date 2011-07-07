@@ -116,7 +116,6 @@ int CL_CalcNet (void)
 	int		a, i;
 	frame_t	*frame;
 	int lost;
-	char st[80];
 
 	for (i=cls.netchan.outgoing_sequence-UPDATE_BACKUP+1
 		; i <= cls.netchan.outgoing_sequence
@@ -250,7 +249,7 @@ void Model_NextDownload (void)
 	}
 
 	CM_LoadMap(cl.model_name[1], true, NULL);
-	cl.clip_models[i] = 0;
+	cl.clip_models[1] = 0;
 	cl.model_precache[1] = Mod_LoadWorld(cl.model_name[1]);
 
 	for (i = 2; i < MAX_MODELS; i++)
@@ -375,8 +374,6 @@ void CL_ParseDownload (void)
 {
 	int		size, percent;
 	char	name[1024];
-	int		r;
-
 
 	// read the data
 	size = net_message.ReadShort ();
@@ -999,8 +996,6 @@ CL_ServerInfo
 */
 void CL_ServerInfo (void)
 {
-	int		slot;
-	player_info_t	*player;
 	char key[MAX_MSGLEN];
 	char value[MAX_MSGLEN];
 

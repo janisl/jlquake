@@ -893,7 +893,7 @@ static int GetInt(char*& Data)
 	int Len = 0;
 	while ((*Data >= '0' && *Data <= '9') || *Data == '-')
 	{
-		if (Len >= sizeof(Tmp) - 1)
+		if (Len >= (int)sizeof(Tmp) - 1)
 		{
 			Tmp[31] = 0;
 			Sys_Error("Number too long %s", Tmp);
@@ -914,7 +914,7 @@ static float GetFloat(char*& Data)
 	int Len = 0;
 	while ((*Data >= '0' && *Data <= '9') || *Data == '-' || *Data == '.')
 	{
-		if (Len >= sizeof(Tmp) - 1)
+		if (Len >= (int)sizeof(Tmp) - 1)
 		{
 			Tmp[31] = 0;
 			Sys_Error("Number too long %s", Tmp);
@@ -2040,8 +2040,6 @@ void CL_UpdateEffects(void)
 	int index,cur_frame;
 	vec3_t mymin,mymax;
 	float frametime;
-	edict_t test;
-	q1trace_t	trace;
 	vec3_t	org,org2,alldir;
 	int x_dir,y_dir;
 	entity_t *ent;

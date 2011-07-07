@@ -415,7 +415,6 @@ void Menu_DrawStatusBar( const char *string )
 	if ( string )
 	{
 		int l = QStr::Length( string );
-		int maxrow = VID_HEIGHT / 8;
 		int maxcol = VID_WIDTH / 8;
 		int col = maxcol / 2 - l / 2;
 
@@ -430,9 +429,7 @@ void Menu_DrawStatusBar( const char *string )
 
 void Menu_DrawString( int x, int y, const char *string )
 {
-	unsigned i;
-
-	for ( i = 0; i < QStr::Length( string ); i++ )
+	for (int i = 0; i < QStr::Length(string); i++)
 	{
 		Draw_Char( ( x + i*8 ), y, string[i] );
 	}
@@ -440,9 +437,7 @@ void Menu_DrawString( int x, int y, const char *string )
 
 void Menu_DrawStringDark( int x, int y, const char *string )
 {
-	unsigned i;
-
-	for ( i = 0; i < QStr::Length( string ); i++ )
+	for (int i = 0; i < QStr::Length( string ); i++ )
 	{
 		Draw_Char( ( x + i*8 ), y, string[i] + 128 );
 	}
@@ -450,9 +445,7 @@ void Menu_DrawStringDark( int x, int y, const char *string )
 
 void Menu_DrawStringR2L( int x, int y, const char *string )
 {
-	unsigned i;
-
-	for ( i = 0; i < QStr::Length( string ); i++ )
+	for (int i = 0; i < QStr::Length( string ); i++ )
 	{
 		Draw_Char( ( x - i*8 ), y, string[QStr::Length(string)-i-1] );
 	}
@@ -460,9 +453,7 @@ void Menu_DrawStringR2L( int x, int y, const char *string )
 
 void Menu_DrawStringR2LDark( int x, int y, const char *string )
 {
-	unsigned i;
-
-	for ( i = 0; i < QStr::Length( string ); i++ )
+	for (int i = 0; i < QStr::Length( string ); i++ )
 	{
 		Draw_Char( ( x - i*8 ), y, string[QStr::Length(string)-i-1]+128 );
 	}

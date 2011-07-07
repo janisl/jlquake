@@ -347,8 +347,6 @@ CL_ClearState
 */
 void CL_ClearState (void)
 {
-	int			i;
-
 	S_StopAllSounds();
 
 	Con_DPrintf ("Clearing memory\n");

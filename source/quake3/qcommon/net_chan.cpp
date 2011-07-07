@@ -58,7 +58,7 @@ QCvar		*showpackets;
 QCvar		*showdrop;
 QCvar		*qport;
 
-static char *netsrcString[2] = {
+static const char *netsrcString[2] = {
 	"client",
 	"server"
 };
@@ -407,7 +407,7 @@ qboolean Netchan_Process( netchan_t *chan, QMsg *msg ) {
 
 		// copy the fragment to the fragment buffer
 		if ( fragmentLength < 0 || msg->readcount + fragmentLength > msg->cursize ||
-			chan->fragmentLength + fragmentLength > sizeof( chan->fragmentBuffer ) ) {
+			chan->fragmentLength + fragmentLength > (int)sizeof( chan->fragmentBuffer ) ) {
 			if ( showdrop->integer || showpackets->integer ) {
 				Com_Printf ("%s:illegal fragment length\n"
 				, SOCK_AdrToString (chan->remoteAddress ) );

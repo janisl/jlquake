@@ -283,7 +283,7 @@ void CL_ParseServerInfo (void)
 	for (i = 2; i < nummodels; i++)
 	{
 		cl.model_precache[i] = R_RegisterModel(model_precache[i]);
-		if (cl.model_precache[i] == NULL)
+		if (cl.model_precache[i] == 0)
 		{
 			Con_Printf("Model %s not found\n", model_precache[i]);
 			return;

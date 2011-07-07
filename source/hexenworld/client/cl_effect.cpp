@@ -291,7 +291,7 @@ void CL_FreeEffect(int index)
 //==========================================================================
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
-// SV_SaveEffects(), SV_LoadEffects(), CL_ParseEffect()
+// CL_ParseEffect()
 void CL_ParseEffect(void)
 {
 	int index,i;
@@ -300,7 +300,6 @@ void CL_ParseEffect(void)
 	int dir;
 	float	angleval, sinval, cosval;
 	float skinnum;
-	int play_sound;
 	vec3_t forward, right, up, vtemp;
 	vec3_t forward2, right2, up2;
 	vec3_t origin;
@@ -1639,7 +1638,7 @@ void CL_UpdateEffects(void)
 	vec3_t		org,org2,old_origin;
 	int			x_dir,y_dir;
 	entity_t	*ent, *ent2;
-	float		distance,smoketime;
+	float		smoketime;
 	int			i;
 	entity_state_t	*es;
 
@@ -2340,7 +2339,7 @@ void CreateRavenExplosions(vec3_t pos);
 void CL_ParseMultiEffect(void)
 {
 	int type, index, count;
-	vec3_t	orig, vel, right;
+	vec3_t	orig, vel;
 	entity_t *ent;
 
 	type = net_message.ReadByte();

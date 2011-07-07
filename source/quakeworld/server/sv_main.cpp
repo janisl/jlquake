@@ -207,6 +207,7 @@ void SV_DropClient (client_t *drop)
 	drop->netchan.message.WriteByte(svc_disconnect);
 
 	if (drop->state == cs_spawned)
+	{
 		if (!drop->spectator)
 		{
 			// call the prog function for removing a client
@@ -221,6 +222,7 @@ void SV_DropClient (client_t *drop)
 			pr_global_struct->self = EDICT_TO_PROG(drop->edict);
 			PR_ExecuteProgram (SpectatorDisconnect);
 		}
+	}
 
 	if (drop->spectator)
 		Con_Printf ("Spectator %s removed\n",drop->name);
@@ -1273,6 +1275,8 @@ void SV_Frame (float time)
 			Cbuf_AddText((char*)ev.evPtr);
 			Cbuf_AddText("\n");
 			break;
+		default:
+			break;
 		}
 
 		// free any block data
@@ -1556,15 +1560,17 @@ void SV_ExtractFromUserinfo (client_t *cl)
 			// dup name
 			char tmp[80];
 			QStr::Cpy(tmp, val);
-			if (QStr::Length(tmp) > sizeof(cl->name) - 1)
+			if (QStr::Length(tmp) > (int)sizeof(cl->name) - 1)
 				tmp[sizeof(cl->name) - 4] = 0;
 			p = tmp;
 
 			if (tmp[0] == '(')
+			{
 				if (tmp[2] == ')')
 					p = tmp + 3;
 				else if (tmp[3] == ')')
 					p = tmp + 4;
+			}
 
 			sprintf(newname, "(%d)%-.40s", dupc++, p);
 			Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);

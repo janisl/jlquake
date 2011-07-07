@@ -317,9 +317,9 @@ static void SCR_CalcRefdef (void)
 
 	scr_vrect.height = vid.height * size;
 	if (cl_sbar->value || !full) {
-  		if (scr_vrect.height > vid.height - sb_lines)
+  		if (scr_vrect.height > (int)vid.height - sb_lines)
   			scr_vrect.height = vid.height - sb_lines;
-	} else if (scr_vrect.height > vid.height)
+	} else if (scr_vrect.height > (int)vid.height)
 			scr_vrect.height = vid.height;
 	scr_vrect.x = (vid.width - scr_vrect.width)/2;
 	if (full)
@@ -732,10 +732,9 @@ SCR_RSShot_f
 */  
 void SCR_RSShot_f (void) 
 { 
-	int     i, x, y;
+	int     x, y;
 	unsigned char		*src, *dest;
-	unsigned char		*newbuf, *srcbuf;
-	int srcrowbytes;
+	unsigned char		*newbuf;
 	int w, h;
 	int dx, dy, dex, dey, nx;
 	int r, b, g;

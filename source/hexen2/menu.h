@@ -18,7 +18,7 @@ extern menu_state_t		m_return_state;
 
 extern	int	m_activenet;
 
-extern char	*plaquemessage;     // Pointer to current plaque
+extern const char	*plaquemessage;     // Pointer to current plaque
 extern char	*errormessage;     // Pointer to current plaque
 
 extern char BigCharWidth[27][27];

@@ -9,7 +9,7 @@ extern	QCvar*	crosshair;
 
 enum menu_state_t {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, 
 		m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist, 
-		m_class, m_difficulty, m_mload, m_msave, m_mconnect};
+		m_class, m_mconnect};
 menu_state_t m_state;
 
 void M_Menu_Main_f (void);
@@ -628,7 +628,6 @@ void M_Menu_Main_f (void)
 void M_Main_Draw (void)
 {
 	int		f;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title0.lmp");
 //	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mainmenu.lmp") );
@@ -695,7 +694,7 @@ void M_Main_Key (int key)
 	}
 }
 
-char	*plaquemessage = NULL;   // Pointer to current plaque message
+const char	*plaquemessage = NULL;   // Pointer to current plaque message
 char    *errormessage = NULL;
 
 
@@ -724,7 +723,6 @@ int	m_class_cursor;
 void M_Class_Draw (void)
 {
 	int		f;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title2.lmp");
 
@@ -973,7 +971,6 @@ void M_DrawCheckbox (int x, int y, int on)
 void M_Options_Draw (void)
 {
 	float		r;
-	image_t	*p;
 	
 	ScrollTitle("gfx/menu/title3.lmp");
 	
@@ -1213,7 +1210,6 @@ void M_Keys_Draw (void)
 	int		keys[2];
 	const char	*name;
 	int		x, y;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title6.lmp");
 
@@ -1229,7 +1225,7 @@ void M_Keys_Draw (void)
 		
 	if (keys_top) 
 		M_DrawCharacter (6, 80, 128);
-	if (keys_top + KEYS_SIZE < NUMCOMMANDS)
+	if (keys_top + KEYS_SIZE < (int)NUMCOMMANDS)
 		M_DrawCharacter (6, 80 + ((KEYS_SIZE-1)*8), 129);
 
 // search for known bindings
@@ -1307,7 +1303,7 @@ void M_Keys_Key (int k)
 	case K_RIGHTARROW:
 		S_StartLocalSound("raven/menu1.wav");
 		keys_cursor++;
-		if (keys_cursor >= NUMCOMMANDS)
+		if (keys_cursor >= (int)NUMCOMMANDS)
 			keys_cursor = 0;
 		break;
 
@@ -2080,7 +2076,6 @@ void M_Menu_MultiPlayer_f (void)
 void M_MultiPlayer_Draw (void)
 {
 	int		f;
-	image_t	*p;
 
 	ScrollTitle("gfx/menu/title4.lmp");
 //	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mp_menu.lmp") );

@@ -54,14 +54,13 @@ static const char* net_interface;
 
 static int myDriverLevel;
 
-struct
+static struct
 {
 	unsigned int	length;
 	unsigned int	sequence;
 	byte			data[MAX_DATAGRAM];
 } packetBuffer;
 
-extern enum {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist} m_state, m_return_state;
 extern qboolean m_return_onerror;
 extern char m_return_reason[32];
 
@@ -282,7 +281,7 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, QMsg *data)
 
 int	Datagram_GetMessage (qsocket_t *sock)
 {
-	unsigned int	length;
+	int				length;
 	unsigned int	flags;
 	int				ret = 0;
 	netadr_t readaddr;
@@ -319,7 +318,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 			continue;
 		}
 
-		if (length < NET_HEADERSIZE)
+		if (length < (int)NET_HEADERSIZE)
 		{
 			shortPacketCount++;
 			continue;
@@ -501,7 +500,7 @@ static void Test_Poll(void)
 	while (1)
 	{
 		len = UDP_Read(testSocket, net_message._data, net_message.maxsize, &clientaddr);
-		if (len < sizeof(int))
+		if (len < (int)sizeof(int))
 			break;
 
 		net_message.cursize = len;
@@ -511,7 +510,7 @@ static void Test_Poll(void)
 		net_message.ReadLong();
 		if (control == -1)
 			break;
-		if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
+		if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
 			break;
 		if ((control & NETFLAG_LENGTH_MASK) != len)
 			break;
@@ -615,7 +614,7 @@ static void Test2_Poll(void)
 	name[0] = 0;
 
 	len = UDP_Read(test2Socket, net_message._data, net_message.maxsize, &clientaddr);
-	if (len < sizeof(int))
+	if (len < (int)sizeof(int))
 		goto Reschedule;
 
 	net_message.cursize = len;
@@ -625,7 +624,7 @@ static void Test2_Poll(void)
 	net_message.ReadLong();
 	if (control == -1)
 		goto Error;
-	if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
+	if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
 		goto Error;
 	if ((control & NETFLAG_LENGTH_MASK) != len)
 		goto Error;
@@ -783,7 +782,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	net_message.Clear();
 
 	len = UDP_Read(acceptsock, net_message._data, net_message.maxsize, &clientaddr);
-	if (len < sizeof(int))
+	if (len < (int)sizeof(int))
 		return NULL;
 	net_message.cursize = len;
 
@@ -792,7 +791,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	net_message.ReadLong();
 	if (control == -1)
 		return NULL;
-	if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
+	if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
 		return NULL;
 	if ((control & NETFLAG_LENGTH_MASK) != len)
 		return NULL;
@@ -1048,7 +1047,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 
 	while ((ret = UDP_Read(udp_controlSock, net_message._data, net_message.maxsize, &readaddr)) > 0)
 	{
-		if (ret < sizeof(int))
+		if (ret < (int)sizeof(int))
 			continue;
 		net_message.cursize = ret;
 
@@ -1061,7 +1060,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		net_message.ReadLong();
 		if (control == -1)
 			continue;
-		if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
+		if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
 			continue;
 		if ((control & NETFLAG_LENGTH_MASK) != ret)
 			continue;
@@ -1193,7 +1192,7 @@ static qsocket_t *_Datagram_Connect (const char *host)
 					continue;
 				}
 
-				if (ret < sizeof(int))
+				if (ret < (int)sizeof(int))
 				{
 					ret = 0;
 					continue;
@@ -1209,7 +1208,7 @@ static qsocket_t *_Datagram_Connect (const char *host)
 					ret = 0;
 					continue;
 				}
-				if ((control & (~NETFLAG_LENGTH_MASK)) !=  NETFLAG_CTL)
+				if ((control & (~NETFLAG_LENGTH_MASK)) !=  (int)NETFLAG_CTL)
 				{
 					ret = 0;
 					continue;

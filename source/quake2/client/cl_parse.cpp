@@ -351,10 +351,9 @@ CL_LoadClientinfo
 
 ================
 */
-void CL_LoadClientinfo (clientinfo_t *ci, char *s)
+void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 {
 	int i;
-	char		*t;
 	char		model_name[MAX_QPATH];
 	char		skin_name[MAX_QPATH];
 	char		model_filename[MAX_QPATH];
@@ -367,11 +366,11 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 	// isolate the player's name
 	QStr::NCpy(ci->name, s, sizeof(ci->name));
 	ci->name[sizeof(ci->name)-1] = 0;
-	t = strstr (s, "\\");
-	if (t)
+	const char* t1 = strstr (s, "\\");
+	if (t1)
 	{
-		ci->name[t-s] = 0;
-		s = t+1;
+		ci->name[t1 - s] = 0;
+		s = t1 + 1;
 	}
 
 	if (cl_noskins->value || *s == 0)
@@ -390,7 +389,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, char *s)
 	{
 		// isolate the model name
 		QStr::Cpy(model_name, s);
-		t = strstr(model_name, "/");
+		char* t = strstr(model_name, "/");
 		if (!t)
 			t = strstr(model_name, "\\");
 		if (!t)

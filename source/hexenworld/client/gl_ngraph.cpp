@@ -17,7 +17,6 @@ static	byte ngraph_texels[NET_GRAPHHEIGHT][NET_TIMINGS];
 static void R_LineGraph (int x, int h)
 {
 	int		i;
-	byte	*dest;
 	int		s;
 	int		color;
 
@@ -73,11 +72,10 @@ R_NetGraph
 */
 void R_NetGraph (void)
 {
-	int		a, x, w, i, y;
+	int		a, x, i, y;
 	frame_t	*frame;
 	int lost;
 	char st[80];
-	char *p;
 	unsigned	ngraph_pixels[NET_GRAPHHEIGHT][NET_TIMINGS];
 
 	for (i=cls.netchan.outgoing_sequence-UPDATE_BACKUP+1

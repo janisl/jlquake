@@ -402,7 +402,10 @@ char *PR_GlobalString (int ofs)
 	val = (void *)&pr_globals[ofs];
 	def = ED_GlobalAtOfs(ofs);
 	if (!def)
-		sprintf (line,"%i(???)", ofs);
+	{
+		//	"" is to shut up trigraph warnings
+		sprintf (line,"%i(??""?)", ofs);
+	}
 	else
 	{
 		s = PR_ValueString ((etype_t)def->type, (eval_t*)val);
@@ -425,7 +428,10 @@ char *PR_GlobalStringNoContents (int ofs)
 	
 	def = ED_GlobalAtOfs(ofs);
 	if (!def)
-		sprintf (line,"%i(???)", ofs);
+	{
+		//	"" is to shut up trigraph warnings
+		sprintf (line,"%i(??""?)", ofs);
+	}
 	else
 		sprintf (line,"%i(%s)", ofs, PR_GetString(def->s_name));
 	
@@ -1082,10 +1088,8 @@ void PR_LoadProgs (void)
 {
 	char	num[32];
 	dfunction_t *f;
-	int		i,j;
-	FILE	*FH;
-	char	mapname[MAX_QPATH], progname[MAX_OSPATH], finalprogname[MAX_OSPATH];
-	char	build[2048], *test;
+	int		i;
+	char	finalprogname[MAX_OSPATH];
 
 // flush the non-C variable lookup cache
 	for (i=0 ; i<GEFV_CACHESIZE ; i++)
@@ -1105,7 +1109,7 @@ void PR_LoadProgs (void)
 	Info_SetValueForKey(svs.info, "*progs", num, MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value);
 
 // byte swap the header
-	for (i=0 ; i<sizeof(*progs)/4 ; i++)
+	for (i=0 ; i<(int)sizeof(*progs)/4 ; i++)
 		((int *)progs)[i] = LittleLong ( ((int *)progs)[i] );		
 
 	if (progs->version != PROG_VERSION)

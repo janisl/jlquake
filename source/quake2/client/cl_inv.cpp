@@ -40,7 +40,7 @@ void CL_ParseInventory (void)
 Inv_DrawString
 ================
 */
-void Inv_DrawString (int x, int y, char *string)
+void Inv_DrawString (int x, int y, const char *string)
 {
 	while (*string)
 	{

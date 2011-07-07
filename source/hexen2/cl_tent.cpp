@@ -76,8 +76,6 @@ static stream_t *NewStream(int ent, int tag);
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static stream_t cl_Streams[MAX_STREAMS];
-static sfxHandle_t cl_sfx_wizhit;
-static sfxHandle_t cl_sfx_knighthit;
 static sfxHandle_t cl_sfx_tink1;
 static sfxHandle_t cl_sfx_ric1;
 static sfxHandle_t cl_sfx_ric2;
@@ -124,7 +122,6 @@ void CL_ParseTEnt(void)
 	vec3_t pos;
 	cdlight_t *dl;
 	int rnd;
-	int colorStart, colorLength;
 
 	type = net_message.ReadByte();
 	switch(type)

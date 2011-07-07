@@ -329,8 +329,8 @@ void SV_WriteServerFile (qboolean autosave)
 	{
 		if (!(var->flags & CVAR_LATCH))
 			continue;
-		if (QStr::Length(var->name) >= sizeof(name)-1
-			|| QStr::Length(var->string) >= sizeof(string)-1)
+		if (QStr::Length(var->name) >= (int)sizeof(name)-1
+			|| QStr::Length(var->string) >= (int)sizeof(string)-1)
 		{
 			Com_Printf ("Cvar too long: %s = %s\n", var->name, var->string);
 			continue;

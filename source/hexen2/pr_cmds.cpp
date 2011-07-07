@@ -2411,7 +2411,7 @@ void PF_RewindFrame(void)
 void PF_advanceweaponframe (void)
 {
 	edict_t *ent;
-	float startframe,endframe,Result;
+	float startframe,endframe;
 	float state;
 
 	ent = PROG_TO_EDICT(pr_global_struct->self);
@@ -2482,7 +2482,6 @@ void PF_starteffect (void)
 
 void PF_endeffect (void)
 {
-	float holdindex;
 	int index;
 
 	index = G_FLOAT(OFS_PARM0);
@@ -2591,7 +2590,7 @@ void PF_GetString(void)
 void PF_v_factor(void)
 // returns (v_right * factor_x) + (v_forward * factor_y) + (v_up * factor_z)
 {
-	float num,*range;
+	float *range;
 	vec3_t result;
 
 	range = G_VECTOR(OFS_PARM0);
@@ -2677,8 +2676,7 @@ void PF_matchAngleToSlope(void)
 void PF_updateInfoPlaque (void)
 {
 	unsigned int check;
-	unsigned int index, mode, i;
-	char *newmessage;
+	unsigned int index, mode;
 	unsigned int *use;
 	int	ofs = 0;
 
@@ -2695,7 +2693,7 @@ void PF_updateInfoPlaque (void)
 		use = &info_mask;
 	}
 		
-	check = (long) (1 << index - ofs);
+	check = (long) (1 << (index - ofs));
 		
 	if (((mode & 1) && ((*use) & check)) || ((mode & 2) && !((*use) & check)));
 	else

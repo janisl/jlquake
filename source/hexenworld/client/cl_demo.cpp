@@ -49,10 +49,8 @@ Writes the current user cmd
 */
 void CL_WriteDemoCmd (usercmd_t *pcmd)
 {
-	int		len;
 	int		i;
 	float	fl;
-	frame_t	*f;
 	byte	c;
 	usercmd_t cmd;
 
@@ -94,9 +92,7 @@ Dumps the current net message, prefixed by the length and view angles
 void CL_WriteDemoMessage (QMsg *msg)
 {
 	int		len;
-	int		i;
 	float	fl;
-	frame_t	*f;
 	byte	c;
 
 //Con_Printf("write: %ld bytes, %4.4f\n", msg->cursize, realtime);
@@ -131,7 +127,6 @@ qboolean CL_GetDemoMessage (void)
 	float	demotime;
 	byte	c;
 	usercmd_t *pcmd;
-	int		l;
 
 
 	// read the time from the packet
@@ -289,7 +284,6 @@ void CL_Record_f (void)
 {
 	int		c;
 	char	name[MAX_OSPATH];
-	int		track;
 
 	c = Cmd_Argc();
 	if (c != 3)
@@ -338,7 +332,6 @@ void CL_ReRecord_f (void)
 {
 	int		c;
 	char	name[MAX_OSPATH];
-	int		track;
 
 	c = Cmd_Argc();
 	if (c != 2)
