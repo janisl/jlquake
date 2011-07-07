@@ -164,7 +164,6 @@ void R_Init (void)
 	r_drawentities = Cvar_Get("r_drawentities", "1", 0);
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
 	r_speeds = Cvar_Get("r_speeds", "0", 0);
-	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
 	r_novis = Cvar_Get("r_novis", "0", 0);
 	r_netgraph = Cvar_Get("r_netgraph","0", 0);
 	r_entdistance = Cvar_Get("r_entdistance", "0", CVAR_ARCHIVE);

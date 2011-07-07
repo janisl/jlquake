@@ -140,6 +140,8 @@ QCvar*		r_ignore;
 
 QCvar*		r_keeptjunctions;
 QCvar*		r_texsort;
+QCvar*		r_dynamic;
+QCvar*		r_saturatelighting;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -350,6 +352,8 @@ void R_SharedRegister()
 	r_showsky = Cvar_Get("r_showsky", "0", CVAR_CHEAT);
 	r_ignore = Cvar_Get("r_ignore", "1", CVAR_CHEAT);
 	r_texsort = Cvar_Get("r_texsort", "1", 0);
+	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
+	r_saturatelighting = Cvar_Get("r_saturatelighting", "0", 0);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

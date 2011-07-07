@@ -46,7 +46,7 @@ void GL_EndRendering (void);
 
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
-mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base);
+mbrush29_texture_t *R_TextureAnimationQ1 (mbrush29_texture_t *base);
 
 typedef enum {
 	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
@@ -71,7 +71,6 @@ typedef struct particle_s
 
 
 extern	qboolean	r_cache_thrash;		// compatability
-extern	int		c_brush_polys;
 
 
 //
@@ -90,7 +89,6 @@ extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_speeds;
-extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 
 extern	QCvar*	gl_cull;
@@ -100,7 +98,7 @@ extern	QCvar*	gl_reporttjunctions;
 
 void GL_Set2D (void);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
-void EmitWaterPolys (mbrush29_surface_t *fa);
+void EmitWaterPolysQ1 (mbrush29_surface_t *fa);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void R_DrawBrushModel (trRefEntity_t *e);
@@ -109,5 +107,5 @@ void R_DrawWorld (void);
 void R_DrawParticles (void);
 void V_CalcBlend (void);
 void R_DrawWaterSurfaces (void);
-void R_RenderBrushPoly (mbrush29_surface_t *fa);
+void R_RenderBrushPolyQ1 (mbrush29_surface_t *fa);
 void R_PushDlights (void);

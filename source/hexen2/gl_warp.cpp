@@ -5,12 +5,12 @@
 
 /*
 =============
-EmitWaterPolys
+EmitWaterPolysQ1
 
 Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
 =============
 */
-void EmitWaterPolys (mbrush29_surface_t *fa)
+void EmitWaterPolysQ1 (mbrush29_surface_t *fa)
 {
 	mbrush29_glpoly_t	*p;
 	float		*v;

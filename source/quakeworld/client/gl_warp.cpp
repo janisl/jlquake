@@ -24,12 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*
 =============
-EmitWaterPolys
+EmitWaterPolysQ1
 
 Does a water warp on the pre-fragmented mbrush29_glpoly_t chain
 =============
 */
-void EmitWaterPolys (mbrush29_surface_t *fa)
+void EmitWaterPolysQ1 (mbrush29_surface_t *fa)
 {
 	mbrush29_glpoly_t	*p;
 	float		*v;

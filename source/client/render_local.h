@@ -639,6 +639,8 @@ extern QCvar*	r_ignore;				// used for debugging anything
 
 extern QCvar*	r_keeptjunctions;
 extern QCvar*	r_texsort;
+extern QCvar*	r_dynamic;
+extern QCvar*	r_saturatelighting;
 
 extern trGlobals_t	tr;
 
@@ -661,7 +663,10 @@ extern float		s_flipMatrix[16];
 
 extern vec3_t		lightspot;
 
+extern int			c_brush_polys;
 extern int			c_alias_polys;
+extern int			c_visible_textures;
+extern int			c_visible_lightmaps;
 
 #define TURBSCALE (256.0 / (2 * M_PI))
 extern float		r_turbsin[256];
@@ -708,14 +713,16 @@ struct gllightmapstate_t
 void R_BuildLightMapQ1(mbrush29_surface_t* surf, byte* dest, int stride);
 void GL_BuildLightmaps();
 
-void LM_InitBlock();
-bool LM_AllocBlock(int w, int h, int *x, int *y);
-void LM_UploadBlock(bool dynamic);
-void R_SetCacheState( mbrush38_surface_t *surf );
-void R_BuildLightMapQ2(mbrush38_surface_t *surf, byte *dest, int stride);
 void GL_BeginBuildingLightmaps(model_t* m);
 void GL_CreateSurfaceLightmapQ2(mbrush38_surface_t* surf);
 void GL_EndBuildingLightmaps();
+image_t* R_TextureAnimationQ2(mbrush38_texinfo_t* tex);
+void R_RenderBrushPolyQ2(mbrush38_surface_t* fa);
+void DrawTextureChainsQ2();
+void R_BlendLightmapsQ2();
+void GL_RenderLightmappedPoly(mbrush38_surface_t* surf);
+void R_DrawAlphaSurfaces();
+void R_DrawTriangleOutlines();
 
 void RB_CheckOverflow(int verts, int indexes);
 #define RB_CHECKOVERFLOW(v,i) if (tess.numVertexes + (v) >= SHADER_MAX_VERTEXES || tess.numIndexes + (i) >= SHADER_MAX_INDEXES) {RB_CheckOverflow(v,i);}
@@ -733,6 +740,7 @@ extern byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
 extern bool		lightmap_modified[MAX_LIGHTMAPS];
 extern mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 extern glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
+extern mbrush38_surface_t	*r_alpha_surfaces;
 
 extern gllightmapstate_t gl_lms;
 

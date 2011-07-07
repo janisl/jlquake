@@ -50,7 +50,6 @@ void GL_UpdateSwapInterval( void );
 
 
 extern	image_t		*r_particletexture;
-extern	int			c_brush_polys;
 
 
 //
@@ -73,7 +72,6 @@ extern QCvar	*gl_particle_att_b;
 extern QCvar	*gl_particle_att_c;
 
 extern	QCvar	*gl_nosubimage;
-extern	QCvar	*gl_dynamic;
 extern	QCvar	*gl_finish;
 extern	QCvar	*gl_cull;
 extern	QCvar	*gl_poly;
@@ -81,11 +79,7 @@ extern	QCvar	*gl_polyblend;
 extern	QCvar	*gl_lightmaptype;
 extern	QCvar	*gl_drawbuffer;
 extern  QCvar  *gl_driver;
-extern  QCvar  *gl_saturatelighting;
 extern  QCvar  *gl_lockpvs;
-
-extern	int		c_visible_lightmaps;
-extern	int		c_visible_textures;
 
 void R_TranslatePlayerSkin (int playernum);
 
@@ -104,14 +98,11 @@ void GL_ScreenShot_f (void);
 void R_DrawBrushModel (trRefEntity_t *e);
 void R_DrawBeam( trRefEntity_t *e );
 void R_DrawWorld (void);
-void R_DrawAlphaSurfaces (void);
-void R_RenderBrushPoly (mbrush38_surface_t *fa);
 void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
 void R_MarkLeaves (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
-void EmitWaterPolys (mbrush38_surface_t *fa);
 void R_MarkLights (dlight_t *light, int bit, mbrush38_node_t *node);
 
 void COM_StripExtension (char *in, char *out);

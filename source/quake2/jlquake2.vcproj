@@ -459,10 +459,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_warp.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ref_gl\qgl.h"
 				>
 			</File>

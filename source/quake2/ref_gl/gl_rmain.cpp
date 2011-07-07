@@ -31,8 +31,6 @@ glstate2_t  gl_state;
 
 image_t		*r_particletexture;	// little dot for particles
 
-int			c_brush_polys;
-
 float		v_blend[4];			// final blending color
 
 //
@@ -59,11 +57,9 @@ QCvar	*gl_particle_att_c;
 
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
-QCvar	*gl_dynamic;
 QCvar	*gl_finish;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
-QCvar  *gl_saturatelighting;
 QCvar	*gl_lockpvs;
 
 QCvar	*vid_ref;
@@ -616,7 +612,6 @@ void R_Register( void )
 	gl_particle_att_b = Cvar_Get( "gl_particle_att_b", "0.0", CVAR_ARCHIVE );
 	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
-	gl_dynamic = Cvar_Get ("gl_dynamic", "1", 0);
 	gl_finish = Cvar_Get ("gl_finish", "0", CVAR_ARCHIVE);
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
@@ -624,8 +619,6 @@ void R_Register( void )
 	gl_lockpvs = Cvar_Get( "gl_lockpvs", "0", 0 );
 
 	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
-
-	gl_saturatelighting = Cvar_Get( "gl_saturatelighting", "0", 0 );
 
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 

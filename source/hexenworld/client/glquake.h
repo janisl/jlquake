@@ -32,7 +32,7 @@ extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures fo
 
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
-mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base);
+mbrush29_texture_t *R_TextureAnimationQ1 (mbrush29_texture_t *base);
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
 typedef struct particle_s
@@ -53,7 +53,6 @@ typedef struct particle_s
 
 
 extern	qboolean	r_cache_thrash;		// compatability
-extern	int		c_brush_polys;
 
 
 //
@@ -72,7 +71,6 @@ extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_speeds;
-extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 extern	QCvar*	r_netgraph;
 extern	QCvar*	r_entdistance;
@@ -86,7 +84,7 @@ extern byte *playerTranslation;
 
 void GL_Set2D (void);
 void Draw_Crosshair(void);
-void EmitWaterPolys (mbrush29_surface_t *fa);
+void EmitWaterPolysQ1 (mbrush29_surface_t *fa);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_InitParticles (void);
 void R_ClearParticles (void);

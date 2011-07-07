@@ -1576,7 +1576,7 @@ cheatvar_t	cheatvars[] = {
 	{"paused", "0"},
 	{"fixedtime", "0"},
 	{"r_lightmap", "0"},
-	{"gl_saturatelighting", "0"},
+	{"r_saturatelighting", "0"},
 	{NULL, NULL}
 };
 

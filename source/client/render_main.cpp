@@ -38,7 +38,10 @@ glconfig_t	glConfig;
 
 trGlobals_t	tr;
 
+int			c_brush_polys;
 int			c_alias_polys;
+int			c_visible_textures;
+int			c_visible_lightmaps;
 
 float	s_flipMatrix[16] =
 {

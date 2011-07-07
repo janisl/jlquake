@@ -35,7 +35,7 @@ extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures fo
 
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
-mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t* base);
+mbrush29_texture_t *R_TextureAnimationQ1 (mbrush29_texture_t* base);
 
 // Changes to ptype_t must also be made in d_iface.h
 typedef enum {
@@ -93,7 +93,6 @@ typedef struct particle_s
 
 
 extern	qboolean	r_cache_thrash;		// compatability
-extern	int		c_brush_polys;
 
 
 //
@@ -111,7 +110,6 @@ extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_speeds;
-extern	QCvar*	r_dynamic;
 extern	QCvar*	r_novis;
 extern	QCvar*	r_wholeframe;
 
@@ -128,9 +126,9 @@ void V_CalcBlend (void);
 void R_DrawWorld (void);
 void R_DrawParticles (void);
 void R_DrawWaterSurfaces (void);
-void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override);
+void R_RenderBrushPolyQ1 (mbrush29_surface_t *fa, qboolean override);
 void R_InitParticles (void);
-void EmitWaterPolys (mbrush29_surface_t *fa);
+void EmitWaterPolysQ1 (mbrush29_surface_t *fa);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void GL_Set2D (void);
 void SCR_DrawLoading (void);

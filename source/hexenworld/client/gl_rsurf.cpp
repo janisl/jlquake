@@ -18,12 +18,12 @@ void R_RenderDynamicLightmaps (mbrush29_surface_t *fa);
 
 /*
 ===============
-R_TextureAnimation
+R_TextureAnimationQ1
 
 Returns the proper texture for a given time and base texture
 ===============
 */
-mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base)
+mbrush29_texture_t *R_TextureAnimationQ1 (mbrush29_texture_t *base)
 {
 	int		reletive;
 	int		count;
@@ -44,9 +44,9 @@ mbrush29_texture_t *R_TextureAnimation (mbrush29_texture_t *base)
 	{
 		base = base->anim_next;
 		if (!base)
-			Sys_Error ("R_TextureAnimation: broken cycle");
+			Sys_Error ("R_TextureAnimationQ1: broken cycle");
 		if (++count > 100)
-			Sys_Error ("R_TextureAnimation: infinite cycle");
+			Sys_Error ("R_TextureAnimationQ1: infinite cycle");
 	}
 
 	return base;
@@ -98,7 +98,7 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 		{
 			p = s->polys;
 
-			t = R_TextureAnimation (s->texinfo->texture);
+			t = R_TextureAnimationQ1 (s->texinfo->texture);
 			// Binds world to texture env 0
 			GL_SelectTexture(0);
 			GL_Bind (t->gl_texture);
@@ -169,7 +169,7 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 			
 			p = s->polys;
 
-			t = R_TextureAnimation (s->texinfo->texture);
+			t = R_TextureAnimationQ1 (s->texinfo->texture);
 			GL_Bind (t->gl_texture);
 			qglBegin (GL_POLYGON);
 			v = p->verts[0];
@@ -211,7 +211,7 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 	if (s->flags & BRUSH29_SURF_DRAWTURB)
 	{
 		GL_Bind (s->texinfo->texture->gl_texture);
-		EmitWaterPolys (s);
+		EmitWaterPolysQ1 (s);
 		return;
 	}
 
@@ -243,7 +243,7 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 	if (qglActiveTextureARB) {
 		p = s->polys;
 
-		t = R_TextureAnimation (s->texinfo->texture);
+		t = R_TextureAnimationQ1 (s->texinfo->texture);
 		GL_SelectTexture(0);
 		GL_Bind (t->gl_texture);
 		GL_TexEnv(GL_REPLACE);
@@ -286,7 +286,7 @@ void R_DrawSequentialPoly (mbrush29_surface_t *s)
 	{
 		p = s->polys;
 
-		t = R_TextureAnimation (s->texinfo->texture);
+		t = R_TextureAnimationQ1 (s->texinfo->texture);
 		GL_Bind (t->gl_texture);
 		DrawGLWaterPoly (p);
 
@@ -351,10 +351,10 @@ void DrawGLWaterPolyLightmap (mbrush29_glpoly_t *p)
 
 /*
 ================
-DrawGLPoly
+DrawGLPolyQ1
 ================
 */
-void DrawGLPoly (mbrush29_glpoly_t *p)
+void DrawGLPolyQ1 (mbrush29_glpoly_t *p)
 {
 	int		i;
 	float	*v;
@@ -372,10 +372,10 @@ void DrawGLPoly (mbrush29_glpoly_t *p)
 
 /*
 ================
-R_BlendLightmaps
+R_BlendLightmapsQ1
 ================
 */
-void R_BlendLightmaps (qboolean Translucent)
+void R_BlendLightmapsQ1 (qboolean Translucent)
 {
 	int			i, j;
 	mbrush29_glpoly_t	*p;
@@ -442,10 +442,10 @@ void R_BlendLightmaps (qboolean Translucent)
 
 /*
 ================
-R_RenderBrushPoly
+R_RenderBrushPolyQ1
 ================
 */
-void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override)
+void R_RenderBrushPolyQ1 (mbrush29_surface_t *fa, qboolean override)
 {
 	mbrush29_texture_t	*t;
 	byte		*base;
@@ -485,12 +485,12 @@ void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override)
 		return;
 	}
 		
-	t = R_TextureAnimation (fa->texinfo->texture);
+	t = R_TextureAnimationQ1 (fa->texinfo->texture);
 	GL_Bind (t->gl_texture);
 
 	if (fa->flags & BRUSH29_SURF_DRAWTURB)
 	{	// warp texture, no lightmaps
-		EmitWaterPolys (fa);
+		EmitWaterPolysQ1 (fa);
 		return;
 	}
 
@@ -499,7 +499,7 @@ void R_RenderBrushPoly (mbrush29_surface_t *fa, qboolean override)
 		&& !(fa->flags & BRUSH29_SURF_DONTWARP))
 		DrawGLWaterPoly (fa->polys);
 	else
-		DrawGLPoly (fa->polys);
+		DrawGLPolyQ1 (fa->polys);
 
 	// add the poly to the proper lightmap chain
 
@@ -646,7 +646,7 @@ void R_DrawWaterSurfaces (void)
 				qglColor4f (1,1,1,1);
 
 			GL_Bind (s->texinfo->texture->gl_texture);
-			EmitWaterPolys (s);
+			EmitWaterPolysQ1 (s);
 		}
 		
 		waterchain = NULL;
@@ -673,7 +673,7 @@ void R_DrawWaterSurfaces (void)
 			GL_Bind (t->gl_texture);
 
 			for ( ; s ; s=s->texturechain)
-				EmitWaterPolys (s);
+				EmitWaterPolysQ1 (s);
 			
 			t->texturechain = NULL;
 		}
@@ -691,10 +691,10 @@ void R_DrawWaterSurfaces (void)
 
 /*
 ================
-DrawTextureChains
+DrawTextureChainsQ1
 ================
 */
-void DrawTextureChains (void)
+void DrawTextureChainsQ1 (void)
 {
 	int		i;
 	mbrush29_surface_t	*s;
@@ -730,7 +730,7 @@ void DrawTextureChains (void)
 				qglColor4f (1,1,1,1);
 
 			for ( ; s ; s=s->texturechain)
-				R_RenderBrushPoly (s,true);
+				R_RenderBrushPolyQ1 (s,true);
 		}
 
 		t->texturechain = NULL;
@@ -796,14 +796,14 @@ void R_DrawBrushModel (trRefEntity_t* e, qboolean Translucent)
 			(!(psurf->flags & BRUSH29_SURF_PLANEBACK) && (dot > BACKFACE_EPSILON)))
 		{
 			if (r_texsort->value)
-				R_RenderBrushPoly (psurf, false);
+				R_RenderBrushPolyQ1 (psurf, false);
 			else
 				R_DrawSequentialPoly (psurf);
 		}
 	}
 
 	if (!Translucent &&  !(tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT))
-		R_BlendLightmaps (Translucent);
+		R_BlendLightmapsQ1 (Translucent);
 
 	qglPopMatrix ();
 }
@@ -958,9 +958,9 @@ void R_DrawWorld (void)
 
 	R_RecursiveWorldNode (tr.worldModel->brush29_nodes);
 
-		DrawTextureChains ();
+		DrawTextureChainsQ1 ();
 
-	R_BlendLightmaps (false);
+	R_BlendLightmapsQ1 (false);
 }
 
 
