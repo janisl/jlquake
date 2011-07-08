@@ -28,10 +28,6 @@ static void GfxInfo_f( void );
 QCvar	*r_flareSize;
 QCvar	*r_flareFade;
 
-QCvar	*r_railWidth;
-QCvar	*r_railCoreWidth;
-QCvar	*r_railSegmentLength;
-
 QCvar	*r_showSmp;
 QCvar	*r_skipBackEnd;
 
@@ -564,10 +560,6 @@ void R_Register( void )
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
-
-	r_railWidth = Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );
-	r_railCoreWidth = Cvar_Get( "r_railCoreWidth", "6", CVAR_ARCHIVE );
-	r_railSegmentLength = Cvar_Get( "r_railSegmentLength", "32", CVAR_ARCHIVE );
 
 	//
 	// temporary variables that can change at any time

@@ -608,6 +608,10 @@ extern QCvar*	r_lockpvs;
 extern QCvar*	r_showcluster;
 extern QCvar*	r_drawworld;			// disable/enable world rendering
 
+extern QCvar*	r_railWidth;
+extern QCvar*	r_railCoreWidth;
+extern QCvar*	r_railSegmentLength;
+
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;
@@ -763,6 +767,7 @@ void RB_SurfaceGrid(srfGridMesh_t* cv);
 void RB_SurfaceTriangles(srfTriangles_t* srf);
 void RB_SurfacePolychain(srfPoly_t* p);
 void RB_SurfaceFlare(srfFlare_t *surf);
+void RB_SurfaceEntity(surfaceType_t* surfType);
 
 extern mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 extern mbrush29_leaf_t		*r_viewleaf;

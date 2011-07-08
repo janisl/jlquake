@@ -150,6 +150,10 @@ QCvar*		r_lockpvs;
 QCvar*		r_showcluster;
 QCvar*		r_drawworld;
 
+QCvar*		r_railWidth;
+QCvar*		r_railCoreWidth;
+QCvar*		r_railSegmentLength;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -328,6 +332,9 @@ void R_SharedRegister()
 	r_lodCurveError = Cvar_Get("r_lodCurveError", "250", CVAR_ARCHIVE | CVAR_CHEAT);
 	r_keeptjunctions = Cvar_Get("r_keeptjunctions", "1", CVAR_ARCHIVE);
 	r_facePlaneCull = Cvar_Get("r_facePlaneCull", "1", CVAR_ARCHIVE);
+	r_railWidth = Cvar_Get("r_railWidth", "16", CVAR_ARCHIVE);
+	r_railCoreWidth = Cvar_Get("r_railCoreWidth", "6", CVAR_ARCHIVE);
+	r_railSegmentLength = Cvar_Get("r_railSegmentLength", "32", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time

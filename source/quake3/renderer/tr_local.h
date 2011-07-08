@@ -76,10 +76,6 @@ extern	refimport_t		ri;
 extern QCvar	*r_flareSize;
 extern QCvar	*r_flareFade;
 
-extern QCvar	*r_railWidth;
-extern QCvar	*r_railCoreWidth;
-extern QCvar	*r_railSegmentLength;
-
 extern QCvar	*r_measureOverdraw;		// enables stencil buffer overdraw measurement
 
 extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
