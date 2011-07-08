@@ -62,10 +62,10 @@ DYNAMIC LIGHTS
 
 /*
 =============
-R_MarkLights
+R_MarkLightsQ1
 =============
 */
-void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node)
+void R_MarkLightsQ1 (dlight_t *light, int bit, mbrush29_node_t *node)
 {
 	cplane_t	*splitplane;
 	float		dist;
@@ -80,12 +80,12 @@ void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node)
 	
 	if (dist > light->radius)
 	{
-		R_MarkLights (light, bit, node->children[0]);
+		R_MarkLightsQ1 (light, bit, node->children[0]);
 		return;
 	}
 	if (dist < -light->radius)
 	{
-		R_MarkLights (light, bit, node->children[1]);
+		R_MarkLightsQ1 (light, bit, node->children[1]);
 		return;
 	}
 		
@@ -101,17 +101,17 @@ void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node)
 		surf->dlightbits |= bit;
 	}
 
-	R_MarkLights (light, bit, node->children[0]);
-	R_MarkLights (light, bit, node->children[1]);
+	R_MarkLightsQ1 (light, bit, node->children[0]);
+	R_MarkLightsQ1 (light, bit, node->children[1]);
 }
 
 
 /*
 =============
-R_PushDlights
+R_PushDlightsQ1
 =============
 */
-void R_PushDlights (void)
+void R_PushDlightsQ1 (void)
 {
 	int		i;
 	dlight_t	*l;
@@ -121,6 +121,6 @@ void R_PushDlights (void)
 
 	for (i=0 ; i<tr.refdef.num_dlights; i++, l++)
 	{
-		R_MarkLights ( l, 1<<i, tr.worldModel->brush29_nodes );
+		R_MarkLightsQ1 ( l, 1<<i, tr.worldModel->brush29_nodes );
 	}
 }

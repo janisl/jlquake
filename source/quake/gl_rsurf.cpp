@@ -71,7 +71,7 @@ void R_DrawBrushModel (trRefEntity_t *e)
 	{
 		for (k=0 ; k<tr.refdef.num_dlights; k++)
 		{
-			R_MarkLights (&tr.refdef.dlights[k], 1<<k,
+			R_MarkLightsQ1 (&tr.refdef.dlights[k], 1<<k,
 				clmodel->brush29_nodes + clmodel->brush29_firstnode);
 		}
 	}

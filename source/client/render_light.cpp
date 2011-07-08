@@ -641,6 +641,72 @@ int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec
 	return true;
 }
 
+/*
+=============================================================================
+
+DYNAMIC LIGHTS
+
+=============================================================================
+*/
+
+//==========================================================================
+//
+//	R_MarkLightsQ2
+//
+//==========================================================================
+
+void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node)
+{
+	if (node->contents != -1)
+	{
+		return;
+	}
+
+	cplane_t* splitplane = node->plane;
+	float dist = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
+	
+	if (dist > light->radius - DLIGHT_CUTOFF)
+	{
+		R_MarkLightsQ2(light, bit, node->children[0]);
+		return;
+	}
+	if (dist < -light->radius + DLIGHT_CUTOFF)
+	{
+		R_MarkLightsQ2(light, bit, node->children[1]);
+		return;
+	}
+		
+	// mark the polygons
+	mbrush38_surface_t* surf = tr.worldModel->brush38_surfaces + node->firstsurface;
+	for (int i = 0; i < node->numsurfaces; i++, surf++)
+	{
+		if (surf->dlightframe != tr.frameCount)
+		{
+			surf->dlightbits = 0;
+			surf->dlightframe = tr.frameCount;
+		}
+		surf->dlightbits |= bit;
+	}
+
+	R_MarkLightsQ2(light, bit, node->children[0]);
+	R_MarkLightsQ2(light, bit, node->children[1]);
+}
+
+//==========================================================================
+//
+//	R_PushDlightsQ2
+//
+//==========================================================================
+
+void R_PushDlightsQ2()
+{
+	dlight_t* l = tr.refdef.dlights;
+	for (int i = 0; i < tr.refdef.num_dlights; i++, l++)
+	{
+		R_MarkLightsQ2(l, 1 << i, tr.worldModel->brush38_nodes);
+	}
+}
+
 //==========================================================================
 //
 //	R_TransformDlights

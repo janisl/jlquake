@@ -431,10 +431,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_light.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ref_gl\gl_local.h"
 				>
 			</File>

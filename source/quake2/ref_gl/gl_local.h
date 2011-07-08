@@ -83,8 +83,6 @@ extern  QCvar  *gl_lockpvs;
 
 void R_TranslatePlayerSkin (int playernum);
 
-void R_PushDlights (void);
-
 //====================================================================
 
 
@@ -103,7 +101,6 @@ void Draw_InitLocal (void);
 void R_MarkLeaves (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
-void R_MarkLights (dlight_t *light, int bit, mbrush38_node_t *node);
 
 void COM_StripExtension (char *in, char *out);
 

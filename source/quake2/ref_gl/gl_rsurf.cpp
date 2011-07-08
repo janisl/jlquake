@@ -47,7 +47,7 @@ void R_DrawInlineBModel (void)
 	lt = tr.refdef.dlights;
 	for (k=0 ; k<tr.refdef.num_dlights ; k++, lt++)
 	{
-		R_MarkLights (lt, 1<<k, tr.currentModel->brush38_nodes + tr.currentModel->brush38_firstnode);
+		R_MarkLightsQ2 (lt, 1<<k, tr.currentModel->brush38_nodes + tr.currentModel->brush38_firstnode);
 	}
 
 	psurf = &tr.currentModel->brush38_surfaces[tr.currentModel->brush38_firstmodelsurface];
