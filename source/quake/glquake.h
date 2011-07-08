@@ -46,7 +46,6 @@ void GL_EndRendering (void);
 
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
-mbrush29_texture_t *R_TextureAnimationQ1 (mbrush29_texture_t *base);
 
 typedef enum {
 	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
@@ -76,14 +75,12 @@ extern	qboolean	r_cache_thrash;		// compatability
 //
 // screen size info
 //
-extern	mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
+extern	mbrush29_leaf_t		*r_oldviewleaf;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
 extern	image_t*	particletexture;
 extern	image_t*	playertextures[16];
-
-extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 
 extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
@@ -98,7 +95,6 @@ extern	QCvar*	gl_reporttjunctions;
 
 void GL_Set2D (void);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
-void EmitWaterPolysQ1 (mbrush29_surface_t *fa);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void R_DrawBrushModel (trRefEntity_t *e);
@@ -106,6 +102,4 @@ void R_AnimateLight (void);
 void R_DrawWorld (void);
 void R_DrawParticles (void);
 void V_CalcBlend (void);
-void R_DrawWaterSurfaces (void);
-void R_RenderBrushPolyQ1 (mbrush29_surface_t *fa);
 void R_PushDlights (void);

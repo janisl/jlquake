@@ -92,7 +92,6 @@ void R_TeleportSplash (vec3_t org);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void R_DrawParticles (void);
-void R_DrawWaterSurfaces (void);
 
 
 //

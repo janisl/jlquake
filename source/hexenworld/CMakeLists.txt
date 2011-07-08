@@ -70,7 +70,6 @@ add_executable(jlhwcl
 	client/gl_rmisc.cpp
 	client/gl_rsurf.cpp
 	client/gl_screen.cpp
-	client/gl_warp.cpp
 )
 set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhwcl ${CLIENTS_LIBS})

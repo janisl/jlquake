@@ -17,7 +17,6 @@ add_executable(jlhexen2
 	gl_rmisc.cpp
 	gl_rsurf.cpp
 	gl_screen.cpp
-	gl_warp.cpp
 	host.cpp
 	host_cmd.cpp
 	keys.cpp

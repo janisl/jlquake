@@ -32,7 +32,6 @@ extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures fo
 
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
-mbrush29_texture_t *R_TextureAnimationQ1 (mbrush29_texture_t *base);
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
 typedef struct particle_s
@@ -58,14 +57,12 @@ extern	qboolean	r_cache_thrash;		// compatability
 //
 // screen size info
 //
-extern	mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
+extern	mbrush29_leaf_t		*r_oldviewleaf;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
 extern	image_t*	particletexture;
 extern	image_t*	playertextures[MAX_CLIENTS];
-
-extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 
 extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
@@ -84,7 +81,6 @@ extern byte *playerTranslation;
 
 void GL_Set2D (void);
 void Draw_Crosshair(void);
-void EmitWaterPolysQ1 (mbrush29_surface_t *fa);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_InitParticles (void);
 void R_ClearParticles (void);
@@ -93,7 +89,6 @@ void R_AnimateLight(void);
 void V_CalcBlend (void);
 void R_DrawWorld (void);
 void R_DrawParticles (void);
-void R_DrawWaterSurfaces (void);
 void Draw_RedString (int x, int y, const char *str);
 void R_NetGraph (void);
 void R_PushDlights (void);

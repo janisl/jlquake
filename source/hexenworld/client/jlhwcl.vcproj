@@ -287,10 +287,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_warp.cpp"
-				>
-			</File>
-			<File
 				RelativePath="keys.cpp"
 				>
 			</File>

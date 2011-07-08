@@ -34,7 +34,7 @@ image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
 //
 refdef_t	r_refdef;
 
-mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
+mbrush29_leaf_t		*r_oldviewleaf;
 
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 

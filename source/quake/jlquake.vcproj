@@ -276,10 +276,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_warp.cpp"
-				>
-			</File>
-			<File
 				RelativePath="host.cpp"
 				>
 			</File>

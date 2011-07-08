@@ -37,7 +37,6 @@ extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures fo
 
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
-mbrush29_texture_t *R_TextureAnimationQ1 (mbrush29_texture_t* base);
 
 // Changes to ptype_t must also be made in d_iface.h
 typedef enum {
@@ -100,13 +99,11 @@ extern	qboolean	r_cache_thrash;		// compatability
 //
 // screen size info
 //
-extern	mbrush29_leaf_t		*r_viewleaf, *r_oldviewleaf;
+extern	mbrush29_leaf_t		*r_oldviewleaf;
 
 extern	qboolean	envmap;
 extern	image_t*	particletexture;
 extern	image_t*	playertextures[16];
-
-extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 
 extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
@@ -127,10 +124,7 @@ void R_AnimateLight(void);
 void V_CalcBlend (void);
 void R_DrawWorld (void);
 void R_DrawParticles (void);
-void R_DrawWaterSurfaces (void);
-void R_RenderBrushPolyQ1 (mbrush29_surface_t *fa, qboolean override);
 void R_InitParticles (void);
-void EmitWaterPolysQ1 (mbrush29_surface_t *fa);
 void R_MarkLights (dlight_t *light, int bit, mbrush29_node_t *node);
 void GL_Set2D (void);
 void SCR_DrawLoading (void);

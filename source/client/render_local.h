@@ -710,8 +710,13 @@ struct gllightmapstate_t
 	byte		lightmap_buffer[4*BLOCK_WIDTH*BLOCK_HEIGHT];
 };
 
-void R_BuildLightMapQ1(mbrush29_surface_t* surf, byte* dest, int stride);
 void GL_BuildLightmaps();
+void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override);
+void R_DrawSequentialPoly(mbrush29_surface_t* s);
+void R_BlendLightmapsQ1(bool Translucent);
+void EmitWaterPolysQ1(mbrush29_surface_t* fa);
+void DrawTextureChainsQ1();
+void R_DrawWaterSurfaces();
 
 void GL_BeginBuildingLightmaps(model_t* m);
 void GL_CreateSurfaceLightmapQ2(mbrush38_surface_t* surf);
@@ -736,13 +741,14 @@ void RB_SurfaceTriangles(srfTriangles_t* srf);
 void RB_SurfacePolychain(srfPoly_t* p);
 void RB_SurfaceFlare(srfFlare_t *surf);
 
-extern byte		lightmaps[4*MAX_LIGHTMAPS*BLOCK_WIDTH*BLOCK_HEIGHT];
-extern bool		lightmap_modified[MAX_LIGHTMAPS];
 extern mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
-extern glRect_t	lightmap_rectchange[MAX_LIGHTMAPS];
-extern mbrush38_surface_t	*r_alpha_surfaces;
+extern mbrush29_leaf_t		*r_viewleaf;
+extern mbrush29_surface_t  *skychain;
+extern mbrush29_surface_t  *waterchain;
+extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 
 extern gllightmapstate_t gl_lms;
+extern mbrush38_surface_t	*r_alpha_surfaces;
 
 /*
 ====================================================================
