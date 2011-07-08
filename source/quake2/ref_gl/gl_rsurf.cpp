@@ -144,10 +144,10 @@ void R_DrawBrushModel (trRefEntity_t *e)
 
 /*
 ================
-R_RecursiveWorldNode
+R_RecursiveWorldNodeQ2
 ================
 */
-void R_RecursiveWorldNode (mbrush38_node_t *node)
+void R_RecursiveWorldNodeQ2 (mbrush38_node_t *node)
 {
 	int			c, side, sidebit;
 	cplane_t	*plane;
@@ -223,7 +223,7 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 	}
 
 // recurse down the children, front side first
-	R_RecursiveWorldNode (node->children[side]);
+	R_RecursiveWorldNodeQ2 (node->children[side]);
 
 	// draw stuff
 	for ( c = node->numsurfaces, surf = tr.worldModel->brush38_surfaces + node->firstsurface; c ; c--, surf++)
@@ -262,7 +262,7 @@ void R_RecursiveWorldNode (mbrush38_node_t *node)
 	}
 
 	// recurse down the back side
-	R_RecursiveWorldNode (node->children[!side]);
+	R_RecursiveWorldNodeQ2 (node->children[!side]);
 }
 
 
@@ -291,7 +291,7 @@ void R_DrawWorld (void)
 	Com_Memset(gl_lms.lightmap_surfaces, 0, sizeof(gl_lms.lightmap_surfaces));
 	R_ClearSkyBox ();
 
-	R_RecursiveWorldNode (tr.worldModel->brush38_nodes);
+	R_RecursiveWorldNodeQ2 (tr.worldModel->brush38_nodes);
 
 	/*
 	** theoretically nothing should happen in the next two functions
@@ -308,13 +308,13 @@ void R_DrawWorld (void)
 
 /*
 ===============
-R_MarkLeaves
+R_MarkLeavesQ2
 
 Mark the leaves and nodes that are in the PVS for the current
 cluster
 ===============
 */
-void R_MarkLeaves (void)
+void R_MarkLeavesQ2 (void)
 {
 	byte	*vis;
 	byte	fatvis[BSP38MAX_MAP_LEAFS/8];
@@ -328,7 +328,7 @@ void R_MarkLeaves (void)
 
 	// development aid to let you run around and see exactly where
 	// the pvs ends
-	if (gl_lockpvs->value)
+	if (r_lockpvs->value)
 		return;
 
 	tr.visCount++;

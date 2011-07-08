@@ -87,12 +87,7 @@ extern QCvar	*r_dlightBacks;			// dlight non-facing surfaces for continuity
 
 extern	QCvar	*r_norefresh;			// bypasses the ref rendering
 extern	QCvar	*r_drawentities;		// disable/enable entity rendering
-extern	QCvar	*r_drawworld;			// disable/enable world rendering
 extern	QCvar	*r_speeds;				// various levels of information display
-extern	QCvar	*r_novis;				// disable/enable usage of PVS
-extern	QCvar	*r_facePlaneCull;		// enables culling of planar surfaces with back side test
-extern	QCvar	*r_nocurves;
-extern	QCvar	*r_showcluster;
 
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;
@@ -100,7 +95,6 @@ extern  QCvar  *r_glDriver;
 
 extern	QCvar	*r_flares;						// light flares
 
-extern	QCvar	*r_lockpvs;
 extern	QCvar	*r_noportals;
 extern	QCvar	*r_portalOnly;
 
@@ -178,8 +172,6 @@ WORLD MAP
 ============================================================
 */
 
-void R_AddBrushModelSurfaces( trRefEntity_t *e );
-void R_AddWorldSurfaces( void );
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
 
 

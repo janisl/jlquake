@@ -42,18 +42,12 @@ QCvar	*r_dlightBacks;
 
 QCvar	*r_norefresh;
 QCvar	*r_drawentities;
-QCvar	*r_drawworld;
 QCvar	*r_speeds;
-QCvar	*r_novis;
-QCvar	*r_facePlaneCull;
-QCvar	*r_showcluster;
-QCvar	*r_nocurves;
 
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
 QCvar	*r_flares;
 QCvar	*r_finish;
-QCvar	*r_lockpvs;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
 
@@ -570,7 +564,6 @@ void R_Register( void )
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
-	r_facePlaneCull = Cvar_Get ("r_facePlaneCull", "1", CVAR_ARCHIVE );
 
 	r_railWidth = Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );
 	r_railCoreWidth = Cvar_Get( "r_railCoreWidth", "6", CVAR_ARCHIVE );
@@ -581,8 +574,6 @@ void R_Register( void )
 	//
 	r_showImages = Cvar_Get( "r_showImages", "0", CVAR_TEMP );
 
-	r_nocurves = Cvar_Get ("r_nocurves", "0", CVAR_CHEAT );
-	r_drawworld = Cvar_Get ("r_drawworld", "1", CVAR_CHEAT );
 	r_portalOnly = Cvar_Get ("r_portalOnly", "0", CVAR_CHEAT );
 
 	r_flareSize = Cvar_Get ("r_flareSize", "40", CVAR_CHEAT);
@@ -594,12 +585,9 @@ void R_Register( void )
 	r_measureOverdraw = Cvar_Get( "r_measureOverdraw", "0", CVAR_CHEAT );
 	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", CVAR_CHEAT );
-	r_novis = Cvar_Get ("r_novis", "0", CVAR_CHEAT);
-	r_showcluster = Cvar_Get ("r_showcluster", "0", CVAR_CHEAT);
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 	r_drawBuffer = Cvar_Get( "r_drawBuffer", "GL_BACK", CVAR_CHEAT );
-	r_lockpvs = Cvar_Get ("r_lockpvs", "0", CVAR_CHEAT);
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
 
 	Cmd_AddCommand( "modellist", R_Modellist_f );

@@ -42,9 +42,7 @@ int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 QCvar	*r_norefresh;
 QCvar	*r_drawentities;
-QCvar	*r_drawworld;
 QCvar	*r_speeds;
-QCvar	*r_novis;
 
 QCvar	*gl_nosubimage;
 
@@ -60,7 +58,6 @@ QCvar  *gl_driver;
 QCvar	*gl_finish;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
-QCvar	*gl_lockpvs;
 
 QCvar	*vid_ref;
 
@@ -507,7 +504,7 @@ void R_RenderView (refdef_t *fd)
 
 	R_SetupGL ();
 
-	R_MarkLeaves ();	// done here so we know if we're in water
+	R_MarkLeavesQ2 ();	// done here so we know if we're in water
 
 	R_DrawWorld ();
 
@@ -599,8 +596,6 @@ void R_Register( void )
 	R_SharedRegister();
 	r_norefresh = Cvar_Get ("r_norefresh", "0", 0);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", 0);
-	r_drawworld = Cvar_Get ("r_drawworld", "1", 0);
-	r_novis = Cvar_Get ("r_novis", "0", 0);
 	r_speeds = Cvar_Get ("r_speeds", "0", 0);
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
@@ -616,7 +611,6 @@ void R_Register( void )
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
-	gl_lockpvs = Cvar_Get( "gl_lockpvs", "0", 0 );
 
 	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
 

@@ -341,6 +341,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_world.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\sound_audiocd_windows.cpp"
 				>
 			</File>

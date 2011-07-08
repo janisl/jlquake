@@ -60,9 +60,7 @@ extern	int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 extern	QCvar	*r_norefresh;
 extern	QCvar	*r_drawentities;
-extern	QCvar	*r_drawworld;
 extern	QCvar	*r_speeds;
-extern	QCvar	*r_novis;
 
 extern QCvar	*gl_particle_min_size;
 extern QCvar	*gl_particle_max_size;
@@ -79,7 +77,6 @@ extern	QCvar	*gl_polyblend;
 extern	QCvar	*gl_lightmaptype;
 extern	QCvar	*gl_drawbuffer;
 extern  QCvar  *gl_driver;
-extern  QCvar  *gl_lockpvs;
 
 void R_TranslatePlayerSkin (int playernum);
 
@@ -98,7 +95,7 @@ void R_DrawBeam( trRefEntity_t *e );
 void R_DrawWorld (void);
 void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
-void R_MarkLeaves (void);
+void R_MarkLeavesQ2 (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
 

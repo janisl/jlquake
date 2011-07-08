@@ -496,63 +496,6 @@ long myftol(float f);
 #define	myftol(x) ((int)(x))
 #endif
 
-void R_NoiseInit();
-float R_NoiseGet4f(float x, float y, float z, float t);
-
-void R_ToggleSmpFrame();
-void R_CommonRenderScene(const refdef_t* fd);
-
-void myGlMultMatrix(const float* a, const float* b, float* out);
-void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
-void R_SetupProjection();
-void R_SetupFrustum();
-void R_RotateForViewer();
-void R_LocalNormalToWorld(vec3_t local, vec3_t world);
-void R_LocalPointToWorld(vec3_t local, vec3_t world);
-void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
-	vec4_t eye, vec4_t dst);
-void R_TransformClipToWindow(const vec4_t clip, const viewParms_t* view, vec4_t normalized, vec4_t window);
-void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
-	orientationr_t* orient);
-int R_CullLocalBox(vec3_t bounds[2]);
-int R_CullPointAndRadius(vec3_t origin, float radius);
-int R_CullLocalPointAndRadius(vec3_t origin, float radius);
-void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
-
-// font stuff
-void R_InitFreeType();
-void R_DoneFreeType();
-
-void R_InitBackEndData();
-void R_FreeBackEndData();
-const void* RB_SetColor(const void* data);
-const void* RB_DrawBuffer(const void* data);
-
-void R_InitSkins();
-skin_t* R_GetSkinByHandle(qhandle_t hSkin);
-void R_SkinList_f();
-
-/*
-============================================================
-
-LIGHTS
-
-============================================================
-*/
-
-#define DLIGHT_CUTOFF		64
-
-int R_LightPointQ1(vec3_t p);
-void R_LightPointQ2(vec3_t p, vec3_t color);
-void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent);
-int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
-void R_MarkLightsQ1(dlight_t* light, int bit, mbrush29_node_t* node);
-void R_PushDlightsQ1();
-void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node);
-void R_PushDlightsQ2();
-void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient);
-void R_DlightBmodel(mbrush46_model_t* bmodel);
-
 extern glconfig_t	glConfig;		// outside of TR since it shouldn't be cleared during ref re-init
 
 extern QCvar*	r_logFile;				// number of frames to emit GL logs
@@ -658,6 +601,13 @@ extern QCvar*	r_texsort;
 extern QCvar*	r_dynamic;
 extern QCvar*	r_saturatelighting;
 
+extern QCvar*	r_nocurves;
+extern QCvar*	r_facePlaneCull;		// enables culling of planar surfaces with back side test
+extern QCvar*	r_novis;				// disable/enable usage of PVS
+extern QCvar*	r_lockpvs;
+extern QCvar*	r_showcluster;
+extern QCvar*	r_drawworld;			// disable/enable world rendering
+
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;
@@ -686,6 +636,63 @@ extern int			c_visible_lightmaps;
 
 #define TURBSCALE (256.0 / (2 * M_PI))
 extern float		r_turbsin[256];
+
+void R_NoiseInit();
+float R_NoiseGet4f(float x, float y, float z, float t);
+
+void R_ToggleSmpFrame();
+void R_CommonRenderScene(const refdef_t* fd);
+
+void myGlMultMatrix(const float* a, const float* b, float* out);
+void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
+void R_SetupProjection();
+void R_SetupFrustum();
+void R_RotateForViewer();
+void R_LocalNormalToWorld(vec3_t local, vec3_t world);
+void R_LocalPointToWorld(vec3_t local, vec3_t world);
+void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
+	vec4_t eye, vec4_t dst);
+void R_TransformClipToWindow(const vec4_t clip, const viewParms_t* view, vec4_t normalized, vec4_t window);
+void R_RotateForEntity(const trRefEntity_t* ent, const viewParms_t* viewParms,
+	orientationr_t* orient);
+int R_CullLocalBox(vec3_t bounds[2]);
+int R_CullPointAndRadius(vec3_t origin, float radius);
+int R_CullLocalPointAndRadius(vec3_t origin, float radius);
+void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
+
+// font stuff
+void R_InitFreeType();
+void R_DoneFreeType();
+
+void R_InitBackEndData();
+void R_FreeBackEndData();
+const void* RB_SetColor(const void* data);
+const void* RB_DrawBuffer(const void* data);
+
+void R_InitSkins();
+skin_t* R_GetSkinByHandle(qhandle_t hSkin);
+void R_SkinList_f();
+
+/*
+============================================================
+
+LIGHTS
+
+============================================================
+*/
+
+#define DLIGHT_CUTOFF		64
+
+int R_LightPointQ1(vec3_t p);
+void R_LightPointQ2(vec3_t p, vec3_t color);
+void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent);
+int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
+void R_MarkLightsQ1(dlight_t* light, int bit, mbrush29_node_t* node);
+void R_PushDlightsQ1();
+void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node);
+void R_PushDlightsQ2();
+void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient);
+void R_DlightBmodel(mbrush46_model_t* bmodel);
 
 /*
 ====================================================================
@@ -786,6 +793,17 @@ void RB_StageIteratorSky();
 void RB_DrawSun();
 
 extern float	speedscale;		// for top sky and bottom sky
+
+/*
+====================================================================
+
+WORLD MAP
+
+====================================================================
+*/
+
+void R_AddBrushModelSurfaces(trRefEntity_t* e);
+void R_AddWorldSurfaces();
 
 //	Temporarily must be defined in game.
 void R_SyncRenderThread();

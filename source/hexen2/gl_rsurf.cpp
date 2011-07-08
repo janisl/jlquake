@@ -99,10 +99,10 @@ void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent)
 
 /*
 ================
-R_RecursiveWorldNode
+R_RecursiveWorldNodeQ1
 ================
 */
-void R_RecursiveWorldNode (mbrush29_node_t *node)
+void R_RecursiveWorldNodeQ1 (mbrush29_node_t *node)
 {
 	int			i, c, side, *pindex;
 	vec3_t		acceptpt, rejectpt;
@@ -168,7 +168,7 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 		side = 1;
 
 // recurse down the children, front side first
-	R_RecursiveWorldNode (node->children[side]);
+	R_RecursiveWorldNodeQ1 (node->children[side]);
 
 // draw stuff
 	c = node->numsurfaces;
@@ -216,7 +216,7 @@ void R_RecursiveWorldNode (mbrush29_node_t *node)
 	}
 
 // recurse down the back side
-	R_RecursiveWorldNode (node->children[!side]);
+	R_RecursiveWorldNodeQ1 (node->children[!side]);
 }
 
 
@@ -237,7 +237,7 @@ void R_DrawWorld (void)
 	qglColor3f (1,1,1);
 	Com_Memset(lightmap_polys, 0, sizeof(lightmap_polys));
 
-	R_RecursiveWorldNode (tr.worldModel->brush29_nodes);
+	R_RecursiveWorldNodeQ1 (tr.worldModel->brush29_nodes);
 
 	DrawTextureChainsQ1 ();
 
@@ -247,10 +247,10 @@ void R_DrawWorld (void)
 
 /*
 ===============
-R_MarkLeaves
+R_MarkLeavesQ1
 ===============
 */
-void R_MarkLeaves (void)
+void R_MarkLeavesQ1 (void)
 {
 	byte	*vis;
 	mbrush29_node_t	*node;

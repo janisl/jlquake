@@ -86,7 +86,6 @@ extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_speeds;
-extern	QCvar*	r_novis;
 
 extern	QCvar*	gl_cull;
 extern	QCvar*	gl_polyblend;

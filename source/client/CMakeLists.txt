@@ -45,6 +45,7 @@ set(CLIENT_FILES
 	render_surface2.cpp
 	render_surface3.cpp
 	render_wad.cpp
+	render_world.cpp
 	sound_audiocd_linux.cpp
 	sound_driver_alsa.cpp
 	sound_main.cpp

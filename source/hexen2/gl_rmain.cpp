@@ -32,13 +32,12 @@ mbrush29_leaf_t		*r_oldviewleaf;
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 
-void R_MarkLeaves (void);
+void R_MarkLeavesQ1 (void);
 
 QCvar*	r_norefresh;
 QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
 QCvar*	r_speeds;
-QCvar*	r_novis;
 QCvar*	r_wholeframe;
 
 QCvar*	gl_cull;
@@ -392,7 +391,7 @@ void R_RenderScene ()
 
 	R_SetupGL ();
 
-	R_MarkLeaves ();	// done here so we know if we're in water
+	R_MarkLeavesQ1 ();	// done here so we know if we're in water
 
 	R_DrawWorld ();		// adds static entities to the list
 

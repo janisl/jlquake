@@ -143,6 +143,13 @@ QCvar*		r_texsort;
 QCvar*		r_dynamic;
 QCvar*		r_saturatelighting;
 
+QCvar*		r_nocurves;
+QCvar*		r_facePlaneCull;
+QCvar*		r_novis;
+QCvar*		r_lockpvs;
+QCvar*		r_showcluster;
+QCvar*		r_drawworld;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -320,6 +327,7 @@ void R_SharedRegister()
 	r_drawSun = Cvar_Get("r_drawSun", "0", CVAR_ARCHIVE);
 	r_lodCurveError = Cvar_Get("r_lodCurveError", "250", CVAR_ARCHIVE | CVAR_CHEAT);
 	r_keeptjunctions = Cvar_Get("r_keeptjunctions", "1", CVAR_ARCHIVE);
+	r_facePlaneCull = Cvar_Get("r_facePlaneCull", "1", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time
@@ -354,6 +362,11 @@ void R_SharedRegister()
 	r_texsort = Cvar_Get("r_texsort", "1", 0);
 	r_dynamic = Cvar_Get("r_dynamic", "1", 0);
 	r_saturatelighting = Cvar_Get("r_saturatelighting", "0", 0);
+	r_nocurves = Cvar_Get("r_nocurves", "0", CVAR_CHEAT);
+	r_novis = Cvar_Get("r_novis", "0", CVAR_CHEAT);
+	r_lockpvs = Cvar_Get("r_lockpvs", "0", CVAR_CHEAT);
+	r_showcluster = Cvar_Get("r_showcluster", "0", CVAR_CHEAT);
+	r_drawworld = Cvar_Get("r_drawworld", "1", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
