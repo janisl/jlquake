@@ -38,6 +38,8 @@ gllightmapstate_t	gl_lms;
 
 mbrush38_surface_t*	r_alpha_surfaces;
 
+int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static float	s_blocklights_q2[34 * 34 * 3];

@@ -27,9 +27,6 @@ extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures fo
 #define	SKYSIZE			(1 << SKYSHIFT)
 #define SKYMASK			(SKYSIZE - 1)
 
-#define BACKFACE_EPSILON	0.01
-
-
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
 
@@ -82,10 +79,10 @@ void GL_Set2D (void);
 void Draw_Crosshair(void);
 void R_InitParticles (void);
 void R_ClearParticles (void);
-void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent);
+void R_DrawBrushModelQ1 (trRefEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);
 void V_CalcBlend (void);
-void R_DrawWorld (void);
+void R_DrawWorldQ1 (void);
 void R_DrawParticles (void);
 void Draw_RedString (int x, int y, const char *str);
 void R_NetGraph (void);

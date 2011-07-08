@@ -113,7 +113,7 @@ void R_DrawEntitiesOnList (void)
 			break;
 
 		case MOD_BRUSH29:
-			R_DrawBrushModel(tr.currentEntity);
+			R_DrawBrushModelQ1(tr.currentEntity);
 			break;
 
 		default:
@@ -297,7 +297,7 @@ void R_RenderScene (void)
 
 	R_MarkLeavesQ1 ();	// done here so we know if we're in water
 
-	R_DrawWorld ();		// adds static entities to the list
+	R_DrawWorldQ1 ();		// adds static entities to the list
 
 	S_ExtraUpdate ();	// don't let sound get messed up if going slow
 

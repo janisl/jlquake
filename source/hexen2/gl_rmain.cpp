@@ -149,7 +149,7 @@ void R_DrawEntitiesOnList (void)
 		case MOD_BRUSH29:
 			item_trans = ((tr.currentEntity->e.renderfx & RF_WATERTRANS)) != 0;
 			if (!item_trans)
-				R_DrawBrushModel (tr.currentEntity,false);
+				R_DrawBrushModelQ1 (tr.currentEntity,false);
 
 			break;
 
@@ -219,7 +219,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater) {
 			R_DrawMdlModel (tr.currentEntity);
 			break;
 		case MOD_BRUSH29:
-			R_DrawBrushModel (tr.currentEntity,true);
+			R_DrawBrushModelQ1 (tr.currentEntity,true);
 			break;
 		case MOD_SPRITE:
 			R_DrawSprModel (tr.currentEntity);
@@ -393,7 +393,7 @@ void R_RenderScene ()
 
 	R_MarkLeavesQ1 ();	// done here so we know if we're in water
 
-	R_DrawWorld ();		// adds static entities to the list
+	R_DrawWorldQ1 ();		// adds static entities to the list
 
 	S_ExtraUpdate ();	// don't let sound get messed up if going slow
 	

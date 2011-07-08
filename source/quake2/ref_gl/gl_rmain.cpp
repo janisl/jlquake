@@ -38,8 +38,6 @@ float		v_blend[4];			// final blending color
 //
 refdef_t	r_newrefdef;
 
-int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
-
 QCvar	*r_norefresh;
 QCvar	*r_drawentities;
 QCvar	*r_speeds;
@@ -136,7 +134,7 @@ void R_DrawEntitiesOnList (void)
 				R_DrawMd2Model(tr.currentEntity);
 				break;
 			case MOD_BRUSH38:
-				R_DrawBrushModel(tr.currentEntity);
+				R_DrawBrushModelQ2(tr.currentEntity);
 				break;
 			case MOD_SPRITE2:
 				R_DrawSp2Model(tr.currentEntity);
@@ -172,7 +170,7 @@ void R_DrawEntitiesOnList (void)
 				R_DrawMd2Model(tr.currentEntity);
 				break;
 			case MOD_BRUSH38:
-				R_DrawBrushModel(tr.currentEntity);
+				R_DrawBrushModelQ2(tr.currentEntity);
 				break;
 			case MOD_SPRITE2:
 				R_DrawSp2Model(tr.currentEntity);
@@ -504,9 +502,7 @@ void R_RenderView (refdef_t *fd)
 
 	R_SetupGL ();
 
-	R_MarkLeavesQ2 ();	// done here so we know if we're in water
-
-	R_DrawWorld ();
+	R_DrawWorldQ2 ();
 
 	R_DrawEntitiesOnList ();
 

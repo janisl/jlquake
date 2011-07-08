@@ -20,10 +20,10 @@ qboolean mtexenabled = false;
 
 /*
 =================
-R_DrawBrushModel
+R_DrawBrushModelQ1
 =================
 */
-void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent)
+void R_DrawBrushModelQ1 (trRefEntity_t *e, qboolean Translucent)
 {
 	int			j, k;
 	int			i, numsurfaces;
@@ -223,10 +223,10 @@ void R_RecursiveWorldNodeQ1 (mbrush29_node_t *node)
 
 /*
 =============
-R_DrawWorld
+R_DrawWorldQ1
 =============
 */
-void R_DrawWorld (void)
+void R_DrawWorldQ1 (void)
 {
 	int			i;
 

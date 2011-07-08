@@ -33,9 +33,6 @@ void GL_EndRendering (void);
 #define	SKYSIZE			(1 << SKYSHIFT)
 #define SKYMASK			(SKYSIZE - 1)
 
-#define BACKFACE_EPSILON	0.01
-
-
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
 
@@ -99,8 +96,8 @@ void R_AnimateLight (void);
 //
 // gl_rsurf.c
 //
-void R_DrawBrushModel (trRefEntity_t *e);
-void R_DrawWorld (void);
+void R_DrawBrushModelQ1 (trRefEntity_t *e);
+void R_DrawWorldQ1 (void);
 
 //
 // gl_ngraph.c

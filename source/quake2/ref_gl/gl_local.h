@@ -43,9 +43,6 @@ void GL_EndRendering (void);
 void GL_SetDefaultState( void );
 void GL_UpdateSwapInterval( void );
 
-#define BACKFACE_EPSILON	0.01
-
-
 //====================================================
 
 
@@ -56,7 +53,6 @@ extern	image_t		*r_particletexture;
 // screen size info
 //
 extern	refdef_t	r_newrefdef;
-extern	int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 extern	QCvar	*r_norefresh;
 extern	QCvar	*r_drawentities;
@@ -90,12 +86,9 @@ void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
 void GL_ScreenShot_f (void);
-void R_DrawBrushModel (trRefEntity_t *e);
 void R_DrawBeam( trRefEntity_t *e );
-void R_DrawWorld (void);
 void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
-void R_MarkLeavesQ2 (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
 

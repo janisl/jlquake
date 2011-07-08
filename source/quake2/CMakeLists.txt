@@ -40,7 +40,6 @@ add_executable(jlquake2
 	ref_gl/gl_model.cpp
 	ref_gl/gl_rmain.cpp
 	ref_gl/gl_rmisc.cpp
-	ref_gl/gl_rsurf.cpp
 )
 set_target_properties(jlquake2 PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlquake2 ${CLIENTS_LIBS})

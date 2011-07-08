@@ -772,6 +772,7 @@ extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 
 extern gllightmapstate_t gl_lms;
 extern mbrush38_surface_t	*r_alpha_surfaces;
+extern int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 
 /*
 ====================================================================
@@ -802,6 +803,10 @@ WORLD MAP
 ====================================================================
 */
 
+#define BACKFACE_EPSILON	0.01
+
+void R_DrawBrushModelQ2(trRefEntity_t* e);
+void R_DrawWorldQ2();
 void R_AddBrushModelSurfaces(trRefEntity_t* e);
 void R_AddWorldSurfaces();
 

@@ -451,15 +451,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_rsurf.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ref_gl\qgl.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ref_gl\warpsin.h"
 				>
 			</File>
 		</Filter>
