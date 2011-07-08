@@ -94,7 +94,6 @@ extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;
 
 void GL_Set2D (void);
-void R_MarkLightsQ1 (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void R_DrawBrushModel (trRefEntity_t *e);
@@ -102,4 +101,3 @@ void R_AnimateLight (void);
 void R_DrawWorld (void);
 void R_DrawParticles (void);
 void V_CalcBlend (void);
-void R_PushDlightsQ1 (void);

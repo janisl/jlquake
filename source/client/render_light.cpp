@@ -651,6 +651,65 @@ DYNAMIC LIGHTS
 
 //==========================================================================
 //
+//	R_MarkLightsQ1
+//
+//==========================================================================
+
+void R_MarkLightsQ1(dlight_t* light, int bit, mbrush29_node_t* node)
+{
+	if (node->contents < 0)
+	{
+		return;
+	}
+
+	cplane_t* splitplane = node->plane;
+	float dist = DotProduct(light->origin, splitplane->normal) - splitplane->dist;
+	
+	if (dist > light->radius)
+	{
+		R_MarkLightsQ1(light, bit, node->children[0]);
+		return;
+	}
+	if (dist < -light->radius)
+	{
+		R_MarkLightsQ1(light, bit, node->children[1]);
+		return;
+	}
+		
+	// mark the polygons
+	mbrush29_surface_t* surf = tr.worldModel->brush29_surfaces + node->firstsurface;
+	for (int i = 0; i < node->numsurfaces; i++, surf++)
+	{
+		if (surf->dlightframe != tr.frameCount)
+		{
+			surf->dlightbits = 0;
+			surf->dlightframe = tr.frameCount;
+		}
+		surf->dlightbits |= bit;
+	}
+
+	R_MarkLightsQ1(light, bit, node->children[0]);
+	R_MarkLightsQ1(light, bit, node->children[1]);
+}
+
+//==========================================================================
+//
+//	R_MarkLightsQ2
+//
+//==========================================================================
+
+void R_PushDlightsQ1()
+{
+	dlight_t* l = tr.refdef.dlights;
+
+	for (int i = 0; i < tr.refdef.num_dlights; i++, l++)
+	{
+		R_MarkLightsQ1(l, 1 << i, tr.worldModel->brush29_nodes);
+	}
+}
+
+//==========================================================================
+//
 //	R_MarkLightsQ2
 //
 //==========================================================================

@@ -81,7 +81,6 @@ extern byte *playerTranslation;
 
 void GL_Set2D (void);
 void Draw_Crosshair(void);
-void R_MarkLightsQ1 (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void R_DrawBrushModel (trRefEntity_t *e, qboolean Translucent);
@@ -91,4 +90,3 @@ void R_DrawWorld (void);
 void R_DrawParticles (void);
 void Draw_RedString (int x, int y, const char *str);
 void R_NetGraph (void);
-void R_PushDlightsQ1 (void);

@@ -546,6 +546,8 @@ int R_LightPointQ1(vec3_t p);
 void R_LightPointQ2(vec3_t p, vec3_t color);
 void R_SetupEntityLighting(const trRefdef_t* refdef, trRefEntity_t* ent);
 int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir);
+void R_MarkLightsQ1(dlight_t* light, int bit, mbrush29_node_t* node);
+void R_PushDlightsQ1();
 void R_MarkLightsQ2(dlight_t* light, int bit, mbrush38_node_t* node);
 void R_PushDlightsQ2();
 void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient);

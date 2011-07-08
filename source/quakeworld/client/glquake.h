@@ -95,9 +95,7 @@ void GL_Set2D (void);
 //
 // gl_rlight.c
 //
-void R_MarkLightsQ1 (dlight_t *light, int bit, mbrush29_node_t *node);
 void R_AnimateLight (void);
-void R_PushDlightsQ1 (void);
 
 //
 // gl_rsurf.c

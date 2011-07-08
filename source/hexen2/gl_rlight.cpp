@@ -3,9 +3,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-int	r_dlightframecount;
-
-
 //==========================================================================
 //
 // R_AnimateLight
@@ -45,78 +42,5 @@ void R_AnimateLight(void)
 		// Default anim rate (10 Hz)
 		v = defaultLocus%cl_lightstyle[i].length;
 		d_lightstylevalue[i] = (cl_lightstyle[i].map[v]-'a')*22;
-	}
-}
-
-/*
-=============================================================================
-
-DYNAMIC LIGHTS
-
-=============================================================================
-*/
-
-/*
-=============
-R_MarkLightsQ1
-=============
-*/
-void R_MarkLightsQ1 (dlight_t *light, int bit, mbrush29_node_t *node)
-{
-	cplane_t	*splitplane;
-	float		dist;
-	mbrush29_surface_t	*surf;
-	int			i;
-	
-	if (node->contents < 0)
-		return;
-
-	splitplane = node->plane;
-	dist = DotProduct (light->origin, splitplane->normal) - splitplane->dist;
-	
-	if (dist > light->radius)
-	{
-		R_MarkLightsQ1 (light, bit, node->children[0]);
-		return;
-	}
-	if (dist < -light->radius)
-	{
-		R_MarkLightsQ1 (light, bit, node->children[1]);
-		return;
-	}
-		
-// mark the polygons
-	surf = tr.worldModel->brush29_surfaces + node->firstsurface;
-	for (i=0 ; i<node->numsurfaces ; i++, surf++)
-	{
-		if (surf->dlightframe != r_dlightframecount)
-		{
-			surf->dlightbits = 0;
-			surf->dlightframe = r_dlightframecount;
-		}
-		surf->dlightbits |= bit;
-	}
-
-	R_MarkLightsQ1 (light, bit, node->children[0]);
-	R_MarkLightsQ1 (light, bit, node->children[1]);
-}
-
-
-/*
-=============
-R_PushDlightsQ1
-=============
-*/
-void R_PushDlightsQ1 (void)
-{
-	int		i;
-	dlight_t	*l;
-
-	r_dlightframecount = tr.frameCount;
-	l = tr.refdef.dlights;
-
-	for (i=0 ; i<tr.refdef.num_dlights; i++, l++)
-	{
-		R_MarkLightsQ1 ( l, 1<<i, tr.worldModel->brush29_nodes );
 	}
 }
