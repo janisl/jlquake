@@ -37,6 +37,7 @@
 mbrush29_glpoly_t*	lightmap_polys[MAX_LIGHTMAPS];
 
 mbrush29_leaf_t*			r_viewleaf;
+mbrush29_leaf_t*			r_oldviewleaf;
 
 // For r_texsort 0
 mbrush29_surface_t  *skychain = NULL;
@@ -1034,7 +1035,7 @@ void R_DrawSequentialPoly(mbrush29_surface_t* s)
 //
 //==========================================================================
 
-void R_BlendLightmapsQ1(bool Translucent)
+void R_BlendLightmapsQ1()
 {
 	if (r_fullbright->value)
 	{
@@ -1045,12 +1046,7 @@ void R_BlendLightmapsQ1(bool Translucent)
 		return;
 	}
 
-	int NewState = GLS_DEFAULT;
-	if (!Translucent)
-	{
-		NewState = 0;		// don't bother writing Z
-	}
-
+	int NewState = 0;		// don't bother writing Z
 	if (!r_lightmap->value)
 	{
 		NewState |= GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR;

@@ -279,10 +279,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_rsurf.cpp"
-				>
-			</File>
-			<File
 				RelativePath="gl_screen.cpp"
 				>
 			</File>

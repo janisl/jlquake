@@ -27,12 +27,8 @@ bool		r_third_person;
 //
 refdef_t	r_refdef;
 
-mbrush29_leaf_t		*r_oldviewleaf;
-
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-
-void R_MarkLeavesQ1 (void);
 
 QCvar*	r_norefresh;
 QCvar*	r_drawentities;
@@ -390,8 +386,6 @@ void R_RenderScene ()
 	R_SetupFrustum();
 
 	R_SetupGL ();
-
-	R_MarkLeavesQ1 ();	// done here so we know if we're in water
 
 	R_DrawWorldQ1 ();		// adds static entities to the list
 

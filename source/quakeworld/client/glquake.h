@@ -64,7 +64,6 @@ extern	qboolean	r_cache_thrash;		// compatability
 //
 // screen size info
 //
-extern	mbrush29_leaf_t		*r_oldviewleaf;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
@@ -92,12 +91,6 @@ void GL_Set2D (void);
 // gl_rlight.c
 //
 void R_AnimateLight (void);
-
-//
-// gl_rsurf.c
-//
-void R_DrawBrushModelQ1 (trRefEntity_t *e);
-void R_DrawWorldQ1 (void);
 
 //
 // gl_ngraph.c

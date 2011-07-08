@@ -736,7 +736,7 @@ struct gllightmapstate_t
 void GL_BuildLightmaps();
 void R_RenderBrushPolyQ1(mbrush29_surface_t* fa, bool override);
 void R_DrawSequentialPoly(mbrush29_surface_t* s);
-void R_BlendLightmapsQ1(bool Translucent);
+void R_BlendLightmapsQ1();
 void EmitWaterPolysQ1(mbrush29_surface_t* fa);
 void DrawTextureChainsQ1();
 void R_DrawWaterSurfaces();
@@ -766,6 +766,7 @@ void RB_SurfaceFlare(srfFlare_t *surf);
 
 extern mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 extern mbrush29_leaf_t		*r_viewleaf;
+extern mbrush29_leaf_t		*r_oldviewleaf;
 extern mbrush29_surface_t  *skychain;
 extern mbrush29_surface_t  *waterchain;
 extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
@@ -805,6 +806,8 @@ WORLD MAP
 
 #define BACKFACE_EPSILON	0.01
 
+void R_DrawBrushModelQ1(trRefEntity_t* e, bool Translucent);
+void R_DrawWorldQ1();
 void R_DrawBrushModelQ2(trRefEntity_t* e);
 void R_DrawWorldQ2();
 void R_AddBrushModelSurfaces(trRefEntity_t* e);

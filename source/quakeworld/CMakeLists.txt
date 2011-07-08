@@ -66,7 +66,6 @@ add_executable(jlqwcl
 	client/gl_rlight.cpp
 	client/gl_rmain.cpp
 	client/gl_rmisc.cpp
-	client/gl_rsurf.cpp
 	client/gl_screen.cpp
 )
 set_target_properties(jlqwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")

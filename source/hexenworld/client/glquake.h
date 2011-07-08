@@ -54,7 +54,6 @@ extern	qboolean	r_cache_thrash;		// compatability
 //
 // screen size info
 //
-extern	mbrush29_leaf_t		*r_oldviewleaf;
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	qboolean	envmap;
@@ -79,10 +78,8 @@ void GL_Set2D (void);
 void Draw_Crosshair(void);
 void R_InitParticles (void);
 void R_ClearParticles (void);
-void R_DrawBrushModelQ1 (trRefEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);
 void V_CalcBlend (void);
-void R_DrawWorldQ1 (void);
 void R_DrawParticles (void);
 void Draw_RedString (int x, int y, const char *str);
 void R_NetGraph (void);

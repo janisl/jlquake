@@ -14,7 +14,6 @@ add_executable(jlquake
 	gl_rlight.cpp
 	gl_rmain.cpp
 	gl_rmisc.cpp
-	gl_rsurf.cpp
 	gl_screen.cpp
 	host.cpp
 	host_cmd.cpp

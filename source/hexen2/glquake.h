@@ -92,12 +92,6 @@ typedef struct particle_s
 
 extern	qboolean	r_cache_thrash;		// compatability
 
-
-//
-// screen size info
-//
-extern	mbrush29_leaf_t		*r_oldviewleaf;
-
 extern	qboolean	envmap;
 extern	image_t*	particletexture;
 extern	image_t*	playertextures[16];
@@ -115,10 +109,8 @@ extern	QCvar*	gl_reporttjunctions;
 
 extern byte *playerTranslation;
 
-void R_DrawBrushModelQ1 (trRefEntity_t *e, qboolean Translucent);
 void R_AnimateLight(void);
 void V_CalcBlend (void);
-void R_DrawWorldQ1 (void);
 void R_DrawParticles (void);
 void R_InitParticles (void);
 void GL_Set2D (void);
