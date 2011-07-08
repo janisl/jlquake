@@ -200,10 +200,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_surface.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_world.cpp"
 				>
 			</File>

@@ -160,15 +160,6 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 	drawSurf_t		*drawSurf;
 	unsigned int	oldSort;
 	float			originalTime;
-#ifdef __MACOS__
-	int				macEventTime;
-
-	Sys_PumpEvents();		// crutch up the mac's limited buffer queue size
-
-	// we don't want to pump the event loop too often and waste time, so
-	// we are going to check every shader change
-	macEventTime = CL_ScaledMilliseconds() + MAC_EVENT_PUMP_MSEC;
-#endif
 
 	// save original time for entity shader offsets
 	originalTime = backEnd.refdef.floatTime;
@@ -204,15 +195,6 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 		if (shader != oldShader || fogNum != oldFogNum || dlighted != oldDlighted 
 			|| ( entityNum != oldEntityNum && !shader->entityMergable ) ) {
 			if (oldShader != NULL) {
-#ifdef __MACOS__	// crutch up the mac's limited buffer queue size
-				int		t;
-
-				t = CL_ScaledMilliseconds();
-				if ( t > macEventTime ) {
-					macEventTime = t + MAC_EVENT_PUMP_MSEC;
-					Sys_PumpEvents();
-				}
-#endif
 				RB_EndSurface();
 			}
 			RB_BeginSurface( shader, fogNum );

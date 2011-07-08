@@ -166,7 +166,7 @@ void RB_AddQuadStamp(vec3_t origin, vec3_t left, vec3_t up, byte* color)
 //
 //==========================================================================
 
-void RB_SurfaceBad(surfaceType_t* surfType)
+static void RB_SurfaceBad(surfaceType_t* surfType)
 {
 	GLog.Write("Bad surface tesselated.\n");
 }
@@ -177,7 +177,7 @@ void RB_SurfaceBad(surfaceType_t* surfType)
 //
 //==========================================================================
 
-void RB_SurfaceSkip(void*)
+static void RB_SurfaceSkip(void*)
 {
 }
 
@@ -187,7 +187,7 @@ void RB_SurfaceSkip(void*)
 //
 //==========================================================================
 
-void RB_SurfaceFace(srfSurfaceFace_t* surf)
+static void RB_SurfaceFace(srfSurfaceFace_t* surf)
 {
 	RB_CHECKOVERFLOW(surf->numPoints, surf->numIndices);
 
@@ -279,7 +279,7 @@ static float LodErrorForVolume(vec3_t local, float radius)
 //
 //==========================================================================
 
-void RB_SurfaceGrid(srfGridMesh_t* cv)
+static void RB_SurfaceGrid(srfGridMesh_t* cv)
 {
 	int dlightBits = cv->dlightBits[backEnd.smpFrame];
 	tess.dlightBits |= dlightBits;
@@ -429,7 +429,7 @@ void RB_SurfaceGrid(srfGridMesh_t* cv)
 //
 //==========================================================================
 
-void RB_SurfaceTriangles(srfTriangles_t* srf)
+static void RB_SurfaceTriangles(srfTriangles_t* srf)
 {
 	int dlightBits = srf->dlightBits[backEnd.smpFrame];
 	tess.dlightBits |= dlightBits;
@@ -487,7 +487,7 @@ void RB_SurfaceTriangles(srfTriangles_t* srf)
 //
 //==========================================================================
 
-void RB_SurfacePolychain(srfPoly_t* p)
+static void RB_SurfacePolychain(srfPoly_t* p)
 {
 	RB_CHECKOVERFLOW(p->numVerts, 3 * (p->numVerts - 2));
 
@@ -521,7 +521,7 @@ void RB_SurfacePolychain(srfPoly_t* p)
 //
 //==========================================================================
 
-void RB_SurfaceFlare(srfFlare_t* surf)
+static void RB_SurfaceFlare(srfFlare_t* surf)
 {
 #if 0
 	// calculate the xyz locations for the four corners
@@ -926,7 +926,7 @@ static void RB_SurfaceAxis()
 //
 //==========================================================================
 
-void RB_SurfaceEntity(surfaceType_t* surfType)
+static void RB_SurfaceEntity(surfaceType_t* surfType)
 {
 	switch(backEnd.currentEntity->e.reType)
 	{
@@ -955,3 +955,31 @@ void RB_SurfaceEntity(surfaceType_t* surfType)
 		break;
 	}
 }
+
+//==========================================================================
+//
+//	RB_SurfaceDisplayList
+//
+//==========================================================================
+
+static void RB_SurfaceDisplayList(srfDisplayList_t* surf)
+{
+	// all apropriate state must be set in RB_BeginSurface
+	// this isn't implemented yet...
+	qglCallList(surf->listNum);
+}
+
+void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])( void *) =
+{
+	(void(*)(void*))RB_SurfaceBad,			// SF_BAD, 
+	(void(*)(void*))RB_SurfaceSkip,			// SF_SKIP, 
+	(void(*)(void*))RB_SurfaceFace,			// SF_FACE,
+	(void(*)(void*))RB_SurfaceGrid,			// SF_GRID,
+	(void(*)(void*))RB_SurfaceTriangles,	// SF_TRIANGLES,
+	(void(*)(void*))RB_SurfacePolychain,	// SF_POLY,
+	(void(*)(void*))RB_SurfaceMesh,			// SF_MD3,
+	(void(*)(void*))RB_SurfaceAnim,			// SF_MD4,
+	(void(*)(void*))RB_SurfaceFlare,		// SF_FLARE,
+	(void(*)(void*))RB_SurfaceEntity,		// SF_ENTITY
+	(void(*)(void*))RB_SurfaceDisplayList	// SF_DISPLAY_LIST
+};

@@ -760,14 +760,6 @@ void RB_CheckOverflow(int verts, int indexes);
 #define RB_CHECKOVERFLOW(v,i) if (tess.numVertexes + (v) >= SHADER_MAX_VERTEXES || tess.numIndexes + (i) >= SHADER_MAX_INDEXES) {RB_CheckOverflow(v,i);}
 void RB_AddQuadStamp(vec3_t origin, vec3_t left, vec3_t up, byte* color);
 void RB_AddQuadStampExt(vec3_t origin, vec3_t left, vec3_t up, byte* color, float s1, float t1, float s2, float t2);
-void RB_SurfaceBad(surfaceType_t* surfType);
-void RB_SurfaceSkip(void* surf);
-void RB_SurfaceFace(srfSurfaceFace_t* surf);
-void RB_SurfaceGrid(srfGridMesh_t* cv);
-void RB_SurfaceTriangles(srfTriangles_t* srf);
-void RB_SurfacePolychain(srfPoly_t* p);
-void RB_SurfaceFlare(srfFlare_t *surf);
-void RB_SurfaceEntity(surfaceType_t* surfType);
 
 extern mbrush29_glpoly_t	*lightmap_polys[MAX_LIGHTMAPS];
 extern mbrush29_leaf_t		*r_viewleaf;
@@ -779,6 +771,8 @@ extern	int	skytexturenum;		// index in cl.loadmodel, not gl texture object
 extern gllightmapstate_t gl_lms;
 extern mbrush38_surface_t	*r_alpha_surfaces;
 extern int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
+
+extern void (*rb_surfaceTable[SF_NUM_SURFACE_TYPES])(void*);
 
 /*
 ====================================================================
