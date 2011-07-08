@@ -640,3 +640,86 @@ int R_LightForPoint(vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec
 
 	return true;
 }
+
+//==========================================================================
+//
+//	R_TransformDlights
+//
+//	Transforms the origins of an array of dlights. Used by both the front end
+// (for DlightBmodel) and the back end (before doing the lighting calculation)
+//
+//==========================================================================
+
+void R_TransformDlights(int count, dlight_t* dl, orientationr_t* orient)
+{
+	for (int i = 0; i < count; i++, dl++)
+	{
+		vec3_t temp;
+		VectorSubtract(dl->origin, orient->origin, temp);
+		dl->transformed[0] = DotProduct(temp, orient->axis[0]);
+		dl->transformed[1] = DotProduct(temp, orient->axis[1]);
+		dl->transformed[2] = DotProduct(temp, orient->axis[2]);
+	}
+}
+
+//==========================================================================
+//
+//	R_DlightBmodel
+//
+//	Determine which dynamic lights may effect this bmodel
+//
+//==========================================================================
+
+void R_DlightBmodel(mbrush46_model_t* bmodel)
+{
+	// transform all the lights
+	R_TransformDlights(tr.refdef.num_dlights, tr.refdef.dlights, &tr.orient);
+
+	int mask = 0;
+	for (int i = 0; i < tr.refdef.num_dlights; i++)
+	{
+		dlight_t* dl = &tr.refdef.dlights[i];
+
+		// see if the point is close enough to the bounds to matter
+		int j;
+		for (j = 0; j < 3; j++)
+		{
+			if (dl->transformed[j] - bmodel->bounds[1][j] > dl->radius)
+			{
+				break;
+			}
+			if (bmodel->bounds[0][j] - dl->transformed[j] > dl->radius)
+			{
+				break;
+			}
+		}
+		if (j < 3)
+		{
+			continue;
+		}
+
+		// we need to check this light
+		mask |= 1 << i;
+	}
+
+	tr.currentEntity->needDlights = (mask != 0);
+
+	// set the dlight bits in all the surfaces
+	for (int i = 0; i < bmodel->numSurfaces; i++)
+	{
+		mbrush46_surface_t* surf = bmodel->firstSurface + i;
+
+		if (*surf->data == SF_FACE)
+		{
+			((srfSurfaceFace_t*)surf->data)->dlightBits[tr.smpFrame] = mask;
+		}
+		else if (*surf->data == SF_GRID)
+		{
+			((srfGridMesh_t*)surf->data)->dlightBits[tr.smpFrame] = mask;
+		}
+		else if (*surf->data == SF_TRIANGLES)
+		{
+			((srfTriangles_t*)surf->data)->dlightBits[tr.smpFrame] = mask;
+		}
+	}
+}

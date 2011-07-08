@@ -40,7 +40,6 @@ set(QUAKE3_FILES
 	renderer/tr_cmds.cpp
 	renderer/tr_flares.cpp
 	renderer/tr_init.cpp
-	renderer/tr_light.cpp
 	renderer/tr_main.cpp
 	renderer/tr_marks.cpp
 	renderer/tr_model.cpp

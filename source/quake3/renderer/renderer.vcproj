@@ -180,10 +180,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_light.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_main.cpp"
 				>
 			</File>
