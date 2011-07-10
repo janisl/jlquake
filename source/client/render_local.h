@@ -719,6 +719,7 @@ void R_FreeBackEndData();
 const void* RB_SetColor(const void* data);
 const void* RB_DrawBuffer(const void* data);
 void RB_BeginDrawingView();
+void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs);
 
 /*
 ============================================================
