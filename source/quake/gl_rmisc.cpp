@@ -165,7 +165,6 @@ R_Init
 void R_Init (void)
 {	
 	extern byte *hunk_base;
-	extern QCvar* gl_finish;
 
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 	Cmd_AddCommand ("envmap", R_Envmap_f);	
@@ -175,8 +174,6 @@ void R_Init (void)
 	r_drawentities = Cvar_Get("r_drawentities", "1", 0);
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
 	r_speeds = Cvar_Get("r_speeds", "0", 0);
-
-	gl_finish = Cvar_Get("gl_finish","0", 0);
 
 	if (qglActiveTextureARB)
 		Cvar_SetValue ("r_texsort", 0.0);

@@ -28,8 +28,6 @@ static void GfxInfo_f( void );
 QCvar	*r_showSmp;
 QCvar	*r_skipBackEnd;
 
-QCvar	*r_measureOverdraw;
-
 QCvar	*r_inGameVideo;
 QCvar	*r_dlightBacks;
 
@@ -39,7 +37,6 @@ QCvar	*r_speeds;
 
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
-QCvar	*r_finish;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
 
@@ -554,7 +551,6 @@ void R_Register( void )
 	//
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
-	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time
@@ -566,7 +562,6 @@ void R_Register( void )
 	r_showSmp = Cvar_Get ("r_showSmp", "0", CVAR_CHEAT);
 	r_skipBackEnd = Cvar_Get ("r_skipBackEnd", "0", CVAR_CHEAT);
 
-	r_measureOverdraw = Cvar_Get( "r_measureOverdraw", "0", CVAR_CHEAT );
 	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", CVAR_CHEAT );
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);

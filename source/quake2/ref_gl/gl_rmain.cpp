@@ -20,8 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // r_main.c
 #include "gl_local.h"
 
-void R_Clear (void);
-
 extern int				r_numparticles;
 extern particle_t		r_particles[MAX_PARTICLES];
 
@@ -53,7 +51,6 @@ QCvar	*gl_particle_att_c;
 
 QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
-QCvar	*gl_finish;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
 
@@ -403,7 +400,7 @@ void R_SetupGL (void)
 	R_RotateForViewer();
 
 	backEnd.viewParms = tr.viewParms;
-	SetViewportAndScissor();
+	RB_BeginDrawingView();
 
 	// clear out the portion of the screen that the NOWORLDMODEL defines
 	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
@@ -415,14 +412,11 @@ void R_SetupGL (void)
 		qglDisable( GL_SCISSOR_TEST );
 	}
 
-	qglCullFace(GL_FRONT);
-
 	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	//
 	// set drawing parms
 	//
-	glState.faceCulling = -1;
 	if (gl_cull->value)
 	{
 		GL_Cull(CT_FRONT_SIDED);
@@ -431,8 +425,6 @@ void R_SetupGL (void)
 	{
 		GL_Cull(CT_TWO_SIDED);
 	}
-
-	GL_State(GLS_DEFAULT);
 }
 
 /*
@@ -443,12 +435,9 @@ R_Clear
 void R_Clear (void)
 {
 	if (r_clear->value)
+	{
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	else
-		qglClear (GL_DEPTH_BUFFER_BIT);
-
-	qglDepthRange(0, 1);
-
+	}
 }
 
 void R_Flash( void )
@@ -476,6 +465,8 @@ void R_RenderView (refdef_t *fd)
 	tr.refdef.particles = r_particles;
 	r_newrefdef = *fd;
 
+	glState.finishCalled = false;
+
 	if (!tr.worldModel && !(tr.refdef.rdflags & RDF_NOWORLDMODEL))
 		ri.Sys_Error (ERR_DROP, "R_RenderView: NULL worldmodel");
 
@@ -486,9 +477,6 @@ void R_RenderView (refdef_t *fd)
 	}
 
 	R_PushDlightsQ2 ();
-
-	if (gl_finish->value)
-		qglFinish ();
 
 	R_SetupFrame ();
 
@@ -603,7 +591,6 @@ void R_Register( void )
 	gl_particle_att_b = Cvar_Get( "gl_particle_att_b", "0.0", CVAR_ARCHIVE );
 	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
-	gl_finish = Cvar_Get ("gl_finish", "0", CVAR_ARCHIVE);
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );

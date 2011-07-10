@@ -66,7 +66,6 @@ extern QCvar	*gl_particle_att_b;
 extern QCvar	*gl_particle_att_c;
 
 extern	QCvar	*gl_nosubimage;
-extern	QCvar	*gl_finish;
 extern	QCvar	*gl_cull;
 extern	QCvar	*gl_poly;
 extern	QCvar	*gl_polyblend;

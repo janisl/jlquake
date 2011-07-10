@@ -1375,7 +1375,7 @@ static void ApplyChanges( void *unused )
 	Cvar_SetValueLatched( "r_gamma", gamma );
 	Cvar_SetValueLatched( "r_picmip", 3 - s_tq_slider.curvalue );
 	Cvar_SetValueLatched( "r_fullscreen", s_fs_box.curvalue );
-	Cvar_SetValueLatched( "gl_finish", s_finish_box.curvalue );
+	Cvar_SetValueLatched( "r_finish", s_finish_box.curvalue );
 	Cvar_SetValueLatched( "r_mode", s_mode_list.curvalue );
 
 	/*
@@ -1426,8 +1426,8 @@ static void VID_MenuInit( void )
 		r_picmip = Cvar_Get( "r_picmip", "0", 0 );
 	if ( !r_mode )
 		r_mode = Cvar_Get( "r_mode", "3", 0 );
-	if ( !gl_finish )
-		gl_finish = Cvar_Get( "gl_finish", "0", CVAR_ARCHIVE );
+	if ( !r_finish )
+		r_finish = Cvar_Get( "r_finish", "0", CVAR_ARCHIVE );
 
 	s_mode_list.curvalue = r_mode->value;
 
@@ -1481,7 +1481,7 @@ static void VID_MenuInit( void )
 	s_finish_box.generic.x	= 0;
 	s_finish_box.generic.y	= 50;
 	s_finish_box.generic.name	= "sync every frame";
-	s_finish_box.curvalue = gl_finish->value;
+	s_finish_box.curvalue = r_finish->value;
 	s_finish_box.itemnames = yesno_names;
 
 	s_defaults_action.generic.type = MTYPE_ACTION;

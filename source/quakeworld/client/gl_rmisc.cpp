@@ -183,8 +183,6 @@ void R_Init (void)
 
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
-	gl_finish = Cvar_Get("gl_finish", "0", 0);
-
 	R_InitParticles ();
 	R_InitParticleTexture ();
 }

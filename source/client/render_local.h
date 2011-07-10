@@ -607,6 +607,8 @@ extern QCvar*	r_novis;				// disable/enable usage of PVS
 extern QCvar*	r_lockpvs;
 extern QCvar*	r_showcluster;
 extern QCvar*	r_drawworld;			// disable/enable world rendering
+extern QCvar*	r_measureOverdraw;		// enables stencil buffer overdraw measurement
+extern QCvar*	r_finish;
 
 extern QCvar*	r_railWidth;
 extern QCvar*	r_railCoreWidth;
@@ -716,8 +718,7 @@ void R_InitBackEndData();
 void R_FreeBackEndData();
 const void* RB_SetColor(const void* data);
 const void* RB_DrawBuffer(const void* data);
-void SetViewportAndScissor();
-void RB_Hyperspace();
+void RB_BeginDrawingView();
 
 /*
 ============================================================

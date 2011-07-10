@@ -146,7 +146,7 @@ const void* RB_DrawBuffer(const void* data)
 //
 //==========================================================================
 
-void SetViewportAndScissor()
+static void SetViewportAndScissor()
 {
 	qglMatrixMode(GL_PROJECTION);
 	qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
@@ -167,7 +167,7 @@ void SetViewportAndScissor()
 //
 //==========================================================================
 
-void RB_Hyperspace()
+static void RB_Hyperspace()
 {
 	if (!backEnd.isHyperspace)
 	{
@@ -179,4 +179,95 @@ void RB_Hyperspace()
 	qglClear(GL_COLOR_BUFFER_BIT);
 
 	backEnd.isHyperspace = true;
+}
+
+//==========================================================================
+//
+//	RB_BeginDrawingView
+//
+//	Any mirrored or portaled views have already been drawn, so prepare
+// to actually render the visible surfaces for this view
+//
+//==========================================================================
+
+void RB_BeginDrawingView()
+{
+	// sync with gl if needed
+	if (r_finish->integer == 1 && !glState.finishCalled)
+	{
+		qglFinish();
+		glState.finishCalled = true;
+	}
+	if (r_finish->integer == 0)
+	{
+		glState.finishCalled = true;
+	}
+
+	// we will need to change the projection matrix before drawing
+	// 2D images again
+	backEnd.projection2D = false;
+
+	//
+	// set the modelview matrix for the viewer
+	//
+	SetViewportAndScissor();
+
+	// ensures that depth writes are enabled for the depth clear
+	GL_State(GLS_DEFAULT);
+	// clear relevant buffers
+	int clearBits = GL_DEPTH_BUFFER_BIT;
+
+	if (r_measureOverdraw->integer || ((GGameType & GAME_Quake3) && r_shadows->integer == 2))
+	{
+		clearBits |= GL_STENCIL_BUFFER_BIT;
+	}
+	if (r_fastsky->integer && !(backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
+	{
+		clearBits |= GL_COLOR_BUFFER_BIT;	// FIXME: only if sky shaders have been used
+#ifdef _DEBUG
+		qglClearColor(0.8f, 0.7f, 0.4f, 1.0f);	// FIXME: get color of sky
+#else
+		qglClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// FIXME: get color of sky
+#endif
+	}
+	qglClear(clearBits);
+
+	if (backEnd.refdef.rdflags & RDF_HYPERSPACE)
+	{
+		RB_Hyperspace();
+		return;
+	}
+	else
+	{
+		backEnd.isHyperspace = false;
+	}
+
+	glState.faceCulling = -1;		// force face culling to set next time
+
+	// we will only draw a sun if there was sky rendered in this view
+	backEnd.skyRenderedThisView = false;
+
+	// clip to the plane of the portal
+	if (backEnd.viewParms.isPortal)
+	{
+		float	plane[4];
+		plane[0] = backEnd.viewParms.portalPlane.normal[0];
+		plane[1] = backEnd.viewParms.portalPlane.normal[1];
+		plane[2] = backEnd.viewParms.portalPlane.normal[2];
+		plane[3] = backEnd.viewParms.portalPlane.dist;
+
+		double	plane2[4];
+		plane2[0] = DotProduct(backEnd.viewParms.orient.axis[0], plane);
+		plane2[1] = DotProduct(backEnd.viewParms.orient.axis[1], plane);
+		plane2[2] = DotProduct(backEnd.viewParms.orient.axis[2], plane);
+		plane2[3] = DotProduct(plane, backEnd.viewParms.orient.origin) - plane[3];
+
+		qglLoadMatrixf(s_flipMatrix);
+		qglClipPlane(GL_CLIP_PLANE0, plane2);
+		qglEnable(GL_CLIP_PLANE0);
+	}
+	else
+	{
+		qglDisable(GL_CLIP_PLANE0);
+	}
 }

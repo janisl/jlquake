@@ -43,7 +43,6 @@ QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
 QCvar*	r_speeds;
 
-QCvar*	gl_finish;
 QCvar*	gl_cull;
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
@@ -251,14 +250,13 @@ void R_SetupGL (void)
 	R_RotateForViewer();
 
 	backEnd.viewParms = tr.viewParms;
-	SetViewportAndScissor();
+	RB_BeginDrawingView();
 
 	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	//
 	// set drawing parms
 	//
-	glState.faceCulling = -1;
 	if (gl_cull->value)
 	{
 		GL_Cull(CT_FRONT_SIDED);
@@ -267,8 +265,6 @@ void R_SetupGL (void)
 	{
 		GL_Cull(CT_TWO_SIDED);
 	}
-
-	GL_State(GLS_DEFAULT);
 }
 
 /*
@@ -310,11 +306,9 @@ R_Clear
 void R_Clear (void)
 {
 	if (r_clear->value)
+	{
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	else
-		qglClear (GL_DEPTH_BUFFER_BIT);
-
-	qglDepthRange(0, 1);
+	}
 }
 
 /*
@@ -341,19 +335,17 @@ void R_RenderView (void)
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
 
+	glState.finishCalled = false;
+
 	if (!tr.worldModel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
 	if (r_speeds->value)
 	{
-		qglFinish ();
 		time1 = Sys_DoubleTime ();
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	if (gl_finish->value)
-		qglFinish ();
 
 	QGL_EnableLogging(!!r_logFile->integer);
 
@@ -375,7 +367,6 @@ void R_RenderView (void)
 
 	if (r_speeds->value)
 	{
-//		qglFinish ();
 		time2 = Sys_DoubleTime ();
 		Con_Printf ("%3i ms  %4i wpoly %4i epoly\n", (int)((time2-time1)*1000), c_brush_polys, c_alias_polys); 
 	}

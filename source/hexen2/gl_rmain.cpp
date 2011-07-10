@@ -347,14 +347,13 @@ void R_SetupGL (void)
 	R_RotateForViewer();
 
 	backEnd.viewParms = tr.viewParms;
-	SetViewportAndScissor();
+	RB_BeginDrawingView();
 
 	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	//
 	// set drawing parms
 	//
-	glState.faceCulling = -1;
 	if (gl_cull->value)
 	{
 		GL_Cull(CT_FRONT_SIDED);
@@ -363,8 +362,6 @@ void R_SetupGL (void)
 	{
 		GL_Cull(CT_TWO_SIDED);
 	}
-
-	GL_State(GLS_DEFAULT);
 }
 
 /*
@@ -404,11 +401,9 @@ R_Clear
 void R_Clear (void)
 {
 	if (r_clear->value)
+	{
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	else
-		qglClear (GL_DEPTH_BUFFER_BIT);
-
-	qglDepthRange (0, 1);
+	}
 }
 
 /*
@@ -453,12 +448,13 @@ void R_RenderView (void)
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
 
+	glState.finishCalled = false;
+
 	if (!tr.worldModel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
 	if (r_speeds->value)
 	{
-		qglFinish();
 		if (r_wholeframe->value)
 		   r_time1 = r_lasttime1;
 	   else
@@ -473,8 +469,6 @@ void R_RenderView (void)
 	R_CommonRenderScene(&r_refdef);
 
 	R_PushDlightsQ1 ();
-
-//	qglFinish ();
 
 	R_Clear ();
 

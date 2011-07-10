@@ -149,6 +149,8 @@ QCvar*		r_novis;
 QCvar*		r_lockpvs;
 QCvar*		r_showcluster;
 QCvar*		r_drawworld;
+QCvar*		r_measureOverdraw;
+QCvar*		r_finish;
 
 QCvar*		r_railWidth;
 QCvar*		r_railCoreWidth;
@@ -340,6 +342,7 @@ void R_SharedRegister()
 	r_railCoreWidth = Cvar_Get("r_railCoreWidth", "6", CVAR_ARCHIVE);
 	r_railSegmentLength = Cvar_Get("r_railSegmentLength", "32", CVAR_ARCHIVE);
 	r_flares = Cvar_Get("r_flares", "0", CVAR_ARCHIVE);
+	r_finish = Cvar_Get("r_finish", "0", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time
@@ -381,6 +384,7 @@ void R_SharedRegister()
 	r_drawworld = Cvar_Get("r_drawworld", "1", CVAR_CHEAT);
 	r_flareSize = Cvar_Get("r_flareSize", "40", CVAR_CHEAT);
 	r_flareFade = Cvar_Get("r_flareFade", "7", CVAR_CHEAT);
+	r_measureOverdraw = Cvar_Get("r_measureOverdraw", "0", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

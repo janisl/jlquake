@@ -80,7 +80,6 @@ extern	QCvar*	gl_cull;
 extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;
-extern	QCvar*	gl_finish;
 
 //
 // gl_draw.c
