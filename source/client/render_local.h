@@ -612,6 +612,10 @@ extern QCvar*	r_railWidth;
 extern QCvar*	r_railCoreWidth;
 extern QCvar*	r_railSegmentLength;
 
+extern QCvar*	r_flares;				// light flares
+extern QCvar*	r_flareSize;
+extern QCvar*	r_flareFade;
+
 extern trGlobals_t	tr;
 
 extern backEndState_t	backEnd;
@@ -811,6 +815,17 @@ void R_DrawBrushModelQ2(trRefEntity_t* e);
 void R_DrawWorldQ2();
 void R_AddBrushModelSurfaces(trRefEntity_t* e);
 void R_AddWorldSurfaces();
+
+/*
+============================================================
+
+FLARES
+
+============================================================
+*/
+
+void R_ClearFlares();
+void RB_RenderFlares();
 
 //	Temporarily must be defined in game.
 void R_SyncRenderThread();

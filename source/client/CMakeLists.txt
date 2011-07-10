@@ -10,6 +10,7 @@ set(CLIENT_FILES
 	render_backend.cpp
 	render_curve.cpp
 	render_driver_glx.cpp
+	render_flares.cpp
 	render_font.cpp
 	render_image.cpp
 	render_image_bmp.cpp

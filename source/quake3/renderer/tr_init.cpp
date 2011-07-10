@@ -25,9 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static void GfxInfo_f( void );
 
-QCvar	*r_flareSize;
-QCvar	*r_flareFade;
-
 QCvar	*r_showSmp;
 QCvar	*r_skipBackEnd;
 
@@ -42,7 +39,6 @@ QCvar	*r_speeds;
 
 QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
-QCvar	*r_flares;
 QCvar	*r_finish;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
@@ -556,7 +552,6 @@ void R_Register( void )
 	//
 	// archived variables that can change at any time
 	//
-	r_flares = Cvar_Get ("r_flares", "0", CVAR_ARCHIVE );
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
 	r_finish = Cvar_Get ("r_finish", "0", CVAR_ARCHIVE);
@@ -567,9 +562,6 @@ void R_Register( void )
 	r_showImages = Cvar_Get( "r_showImages", "0", CVAR_TEMP );
 
 	r_portalOnly = Cvar_Get ("r_portalOnly", "0", CVAR_CHEAT );
-
-	r_flareSize = Cvar_Get ("r_flareSize", "40", CVAR_CHEAT);
-	r_flareFade = Cvar_Get ("r_flareFade", "7", CVAR_CHEAT);
 
 	r_showSmp = Cvar_Get ("r_showSmp", "0", CVAR_CHEAT);
 	r_skipBackEnd = Cvar_Get ("r_skipBackEnd", "0", CVAR_CHEAT);

@@ -62,9 +62,6 @@ extern	refimport_t		ri;
 //
 // cvars
 //
-extern QCvar	*r_flareSize;
-extern QCvar	*r_flareFade;
-
 extern QCvar	*r_measureOverdraw;		// enables stencil buffer overdraw measurement
 
 extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
@@ -77,8 +74,6 @@ extern	QCvar	*r_speeds;				// various levels of information display
 extern	QCvar	*r_finish;
 extern	QCvar	*r_drawBuffer;
 extern  QCvar  *r_glDriver;
-
-extern	QCvar	*r_flares;						// light flares
 
 extern	QCvar	*r_noportals;
 extern	QCvar	*r_portalOnly;
@@ -159,20 +154,6 @@ WORLD MAP
 
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
 
-
-/*
-============================================================
-
-FLARES
-
-============================================================
-*/
-
-void R_ClearFlares( void );
-
-void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, vec3_t normal );
-void RB_AddDlightFlares( void );
-void RB_RenderFlares (void);
 
 /*
 ============================================================

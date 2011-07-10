@@ -280,10 +280,6 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 
 	// add light flares on lights that aren't obscured
 	RB_RenderFlares();
-
-#ifdef __MACOS__
-	Sys_PumpEvents();		// crutch up the mac's limited buffer queue size
-#endif
 }
 
 

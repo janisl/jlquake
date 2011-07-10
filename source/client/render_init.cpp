@@ -154,6 +154,10 @@ QCvar*		r_railWidth;
 QCvar*		r_railCoreWidth;
 QCvar*		r_railSegmentLength;
 
+QCvar*		r_flares;
+QCvar*		r_flareSize;
+QCvar*		r_flareFade;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -335,6 +339,7 @@ void R_SharedRegister()
 	r_railWidth = Cvar_Get("r_railWidth", "16", CVAR_ARCHIVE);
 	r_railCoreWidth = Cvar_Get("r_railCoreWidth", "6", CVAR_ARCHIVE);
 	r_railSegmentLength = Cvar_Get("r_railSegmentLength", "32", CVAR_ARCHIVE);
+	r_flares = Cvar_Get("r_flares", "0", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time
@@ -374,6 +379,8 @@ void R_SharedRegister()
 	r_lockpvs = Cvar_Get("r_lockpvs", "0", CVAR_CHEAT);
 	r_showcluster = Cvar_Get("r_showcluster", "0", CVAR_CHEAT);
 	r_drawworld = Cvar_Get("r_drawworld", "1", CVAR_CHEAT);
+	r_flareSize = Cvar_Get("r_flareSize", "40", CVAR_CHEAT);
+	r_flareFade = Cvar_Get("r_flareFade", "7", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

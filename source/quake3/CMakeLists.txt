@@ -38,7 +38,6 @@ set(QUAKE3_FILES
 	renderer/tr_backend.cpp
 	renderer/tr_bsp.cpp
 	renderer/tr_cmds.cpp
-	renderer/tr_flares.cpp
 	renderer/tr_init.cpp
 	renderer/tr_main.cpp
 	renderer/tr_marks.cpp

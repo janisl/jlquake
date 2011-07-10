@@ -172,10 +172,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_flares.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_init.cpp"
 				>
 			</File>
