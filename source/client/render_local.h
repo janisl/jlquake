@@ -645,11 +645,35 @@ extern int			c_visible_lightmaps;
 #define TURBSCALE (256.0 / (2 * M_PI))
 extern float		r_turbsin[256];
 
+/*
+============================================================
+
+NOISE
+
+============================================================
+*/
+
 void R_NoiseInit();
 float R_NoiseGet4f(float x, float y, float z, float t);
 
+/*
+============================================================
+
+SCENE
+
+============================================================
+*/
+
 void R_ToggleSmpFrame();
 void R_CommonRenderScene(const refdef_t* fd);
+
+/*
+============================================================
+
+MAIN
+
+============================================================
+*/
 
 void myGlMultMatrix(const float* a, const float* b, float* out);
 void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
@@ -668,14 +692,40 @@ int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 
+/*
+============================================================
+
+FONTS
+
+============================================================
+*/
+
 // font stuff
 void R_InitFreeType();
 void R_DoneFreeType();
+
+/*
+============================================================
+
+BACK END
+
+============================================================
+*/
 
 void R_InitBackEndData();
 void R_FreeBackEndData();
 const void* RB_SetColor(const void* data);
 const void* RB_DrawBuffer(const void* data);
+void SetViewportAndScissor();
+void RB_Hyperspace();
+
+/*
+============================================================
+
+SKINS
+
+============================================================
+*/
 
 void R_InitSkins();
 skin_t* R_GetSkinByHandle(qhandle_t hSkin);

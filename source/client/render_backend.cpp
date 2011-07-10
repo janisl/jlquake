@@ -139,3 +139,44 @@ const void* RB_DrawBuffer(const void* data)
 
 	return (const void*)(cmd + 1);
 }
+
+//==========================================================================
+//
+//	SetViewportAndScissor
+//
+//==========================================================================
+
+void SetViewportAndScissor()
+{
+	qglMatrixMode(GL_PROJECTION);
+	qglLoadMatrixf(backEnd.viewParms.projectionMatrix);
+	qglMatrixMode(GL_MODELVIEW);
+
+	// set the window clipping
+	qglViewport(backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
+		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight);
+	qglScissor(backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
+		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight);
+}
+
+//==========================================================================
+//
+//	RB_Hyperspace
+//
+//	A player has predicted a teleport, but hasn't arrived yet
+//
+//==========================================================================
+
+void RB_Hyperspace()
+{
+	if (!backEnd.isHyperspace)
+	{
+		// do initialization shit
+	}
+
+	float c = (backEnd.refdef.time & 255) / 255.0f;
+	qglClearColor(c, c, c, 1);
+	qglClear(GL_COLOR_BUFFER_BIT);
+
+	backEnd.isHyperspace = true;
+}

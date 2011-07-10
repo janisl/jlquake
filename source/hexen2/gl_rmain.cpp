@@ -339,15 +339,16 @@ void R_SetupGL (void)
 		w = h = 256;
 	}
 
-	qglViewport (x, y2, w, h);
-	qglMatrixMode(GL_PROJECTION);
-    qglLoadIdentity ();
+	tr.viewParms.viewportX = x;
+	tr.viewParms.viewportY = y2; 
+	tr.viewParms.viewportWidth = w;
+	tr.viewParms.viewportHeight = h;
 	R_SetupProjection();
-	qglMultMatrixf(tr.viewParms.projectionMatrix);
-
-	qglMatrixMode(GL_MODELVIEW);
-
 	R_RotateForViewer();
+
+	backEnd.viewParms = tr.viewParms;
+	SetViewportAndScissor();
+
 	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	//

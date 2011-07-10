@@ -22,40 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 
 /*
-================
-RB_Hyperspace
-
-A player has predicted a teleport, but hasn't arrived yet
-================
-*/
-static void RB_Hyperspace( void ) {
-	float		c;
-
-	if ( !backEnd.isHyperspace ) {
-		// do initialization shit
-	}
-
-	c = ( backEnd.refdef.time & 255 ) / 255.0f;
-	qglClearColor( c, c, c, 1 );
-	qglClear( GL_COLOR_BUFFER_BIT );
-
-	backEnd.isHyperspace = qtrue;
-}
-
-
-static void SetViewportAndScissor( void ) {
-	qglMatrixMode(GL_PROJECTION);
-	qglLoadMatrixf( backEnd.viewParms.projectionMatrix );
-	qglMatrixMode(GL_MODELVIEW);
-
-	// set the window clipping
-	qglViewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
-		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
-	qglScissor( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY, 
-		backEnd.viewParms.viewportWidth, backEnd.viewParms.viewportHeight );
-}
-
-/*
 =================
 RB_BeginDrawingView
 
@@ -63,7 +29,8 @@ Any mirrored or portaled views have already been drawn, so prepare
 to actually render the visible surfaces for this view
 =================
 */
-void RB_BeginDrawingView (void) {
+void RB_BeginDrawingView()
+{
 	int clearBits = 0;
 
 	// sync with gl if needed
@@ -89,22 +56,22 @@ void RB_BeginDrawingView (void) {
 	// clear relevant buffers
 	clearBits = GL_DEPTH_BUFFER_BIT;
 
-	if ( r_measureOverdraw->integer || r_shadows->integer == 2 )
+	if (r_measureOverdraw->integer || r_shadows->integer == 2)
 	{
 		clearBits |= GL_STENCIL_BUFFER_BIT;
 	}
-	if ( r_fastsky->integer && !( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) )
+	if (r_fastsky->integer && !(backEnd.refdef.rdflags & RDF_NOWORLDMODEL))
 	{
 		clearBits |= GL_COLOR_BUFFER_BIT;	// FIXME: only if sky shaders have been used
 #ifdef _DEBUG
-		qglClearColor( 0.8f, 0.7f, 0.4f, 1.0f );	// FIXME: get color of sky
+		qglClearColor(0.8f, 0.7f, 0.4f, 1.0f);	// FIXME: get color of sky
 #else
-		qglClearColor( 0.0f, 0.0f, 0.0f, 1.0f );	// FIXME: get color of sky
+		qglClearColor(0.0f, 0.0f, 0.0f, 1.0f);	// FIXME: get color of sky
 #endif
 	}
-	qglClear( clearBits );
+	qglClear(clearBits);
 
-	if ( ( backEnd.refdef.rdflags & RDF_HYPERSPACE ) )
+	if (backEnd.refdef.rdflags & RDF_HYPERSPACE)
 	{
 		RB_Hyperspace();
 		return;

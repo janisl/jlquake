@@ -369,17 +369,6 @@ void R_SetupFrame (void)
 
 	c_brush_polys = 0;
 	c_alias_polys = 0;
-
-	// clear out the portion of the screen that the NOWORLDMODEL defines
-	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
-	{
-		qglEnable( GL_SCISSOR_TEST );
-		qglClearColor( 0.3, 0.3, 0.3, 1 );
-		qglScissor( tr.refdef.x, glConfig.vidHeight - tr.refdef.height - tr.refdef.y, tr.refdef.width, tr.refdef.height );
-		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		qglClearColor( 1, 0, 0.5, 0.5 );
-		qglDisable( GL_SCISSOR_TEST );
-	}
 }
 
 /*
@@ -402,21 +391,32 @@ void R_SetupGL (void)
 	w = x2 - x;
 	h = y - y2;
 
-	qglViewport (x, y2, w, h);
+	tr.viewParms.viewportX = x;
+	tr.viewParms.viewportY = y2; 
+	tr.viewParms.viewportWidth = w;
+	tr.viewParms.viewportHeight = h;
 
 	//
 	// set up projection matrix
 	//
-	qglMatrixMode(GL_PROJECTION);
-    qglLoadIdentity ();
 	R_SetupProjection();
-	qglMultMatrixf(tr.viewParms.projectionMatrix);
+	R_RotateForViewer();
+
+	backEnd.viewParms = tr.viewParms;
+	SetViewportAndScissor();
+
+	// clear out the portion of the screen that the NOWORLDMODEL defines
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
+	{
+		qglEnable( GL_SCISSOR_TEST );
+		qglClearColor( 0.3, 0.3, 0.3, 1 );
+		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		qglClearColor( 1, 0, 0.5, 0.5 );
+		qglDisable( GL_SCISSOR_TEST );
+	}
 
 	qglCullFace(GL_FRONT);
 
-	qglMatrixMode(GL_MODELVIEW);
-
-	R_RotateForViewer();
 	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 	//
