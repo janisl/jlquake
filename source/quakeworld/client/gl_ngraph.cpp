@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
+void DoQuad(float x1, float y1, float s1, float t1,
+	float x2, float y2, float s2, float t2);
+
 extern byte		*draw_chars;				// 8*8 graphic characters
 
 image_t*	netgraphtexture;	// netgraph texture
@@ -130,15 +133,6 @@ void R_NetGraph (void)
 
 	x = 8;
 	qglColor3f (1,1,1);
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (0, 0);
-	qglVertex2f (x, y);
-	qglTexCoord2f (1, 0);
-	qglVertex2f (x+NET_TIMINGS, y);
-	qglTexCoord2f (1, 1);
-	qglVertex2f (x+NET_TIMINGS, y+NET_GRAPHHEIGHT);
-	qglTexCoord2f (0, 1);
-	qglVertex2f (x, y+NET_GRAPHHEIGHT);
-	qglEnd ();
+	DoQuad(x, y, 0, 0, x + NET_TIMINGS, y + NET_GRAPHHEIGHT, 1, 1);
 }
 

@@ -187,6 +187,27 @@ void Draw_Init (void)
 
 
 
+//==========================================================================
+//
+//	DoQuad
+//
+//==========================================================================
+
+static void DoQuad(float x1, float y1, float s1, float t1,
+	float x2, float y2, float s2, float t2)
+{
+	qglBegin(GL_QUADS);
+	qglTexCoord2f(s1, t1);
+	qglVertex2f(x1, y1);
+	qglTexCoord2f(s2, t1);
+	qglVertex2f(x2, y1);
+	qglTexCoord2f(s2, t2);
+	qglVertex2f (x2, y2);
+	qglTexCoord2f(s1, t2);
+	qglVertex2f(x1, y2);
+	qglEnd();
+}
+
 /*
 ================
 Draw_Character
@@ -225,16 +246,7 @@ void Draw_Character (int x, int y, unsigned int num)
 
 	GL_Bind (char_texture);
 
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (fcol, frow);
-	qglVertex2f (x, y);
-	qglTexCoord2f (fcol + xsize, frow);
-	qglVertex2f (x+8, y);
-	qglTexCoord2f (fcol + xsize, frow + ysize);
-	qglVertex2f (x+8, y+8);
-	qglTexCoord2f (fcol, frow + ysize);
-	qglVertex2f (x, y+8);
-	qglEnd ();
+	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + xsize, frow + ysize);
 }
 
 /*
@@ -309,16 +321,7 @@ void Draw_SmallCharacter (int x, int y, int num)
 
 	GL_Bind (char_smalltexture);
 
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (fcol, frow);
-	qglVertex2f (x, y);
-	qglTexCoord2f (fcol + xsize, frow);
-	qglVertex2f (x+8, y);
-	qglTexCoord2f (fcol + xsize, frow + ysize);
-	qglVertex2f (x+8, y+8);
-	qglTexCoord2f (fcol, frow + ysize);
-	qglVertex2f (x, y+8);
-	qglEnd ();
+	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + xsize, frow + ysize);
 }
 
 //==========================================================================
@@ -367,16 +370,7 @@ void Draw_Pic (int x, int y, image_t* pic)
 
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (pic->sl, pic->tl);
-	qglVertex2f (x, y);
-	qglTexCoord2f (pic->sh, pic->tl);
-	qglVertex2f (x+pic->width, y);
-	qglTexCoord2f (pic->sh, pic->th);
-	qglVertex2f (x+pic->width, y+pic->height);
-	qglTexCoord2f (pic->sl, pic->th);
-	qglVertex2f (x, y+pic->height);
-	qglEnd ();
+	DoQuad(x, y, pic->sl, pic->tl, x + pic->width, y + pic->height, pic->sh, pic->th);
 }
 
 void Draw_PicCropped(int x, int y, image_t* pic)
@@ -424,16 +418,7 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (pic->sl, tl);
-	qglVertex2f (x, y);
-	qglTexCoord2f (pic->sh, tl);
-	qglVertex2f (x+pic->width, y);
-	qglTexCoord2f (pic->sh, th);
-	qglVertex2f (x+pic->width, y+height);
-	qglTexCoord2f (pic->sl, th);
-	qglVertex2f (x, y+height);
-	qglEnd ();
+	DoQuad(x, y, pic->sl, tl, x + pic->width, y + height, pic->sh, th);
 }
 
 /*
@@ -518,16 +503,7 @@ void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	qglColor3f (1,1,1);
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (0, 0);
-	qglVertex2f (x, y);
-	qglTexCoord2f (( float )PLAYER_PIC_WIDTH / PLAYER_DEST_WIDTH, 0);
-	qglVertex2f (x+pic->width, y);
-	qglTexCoord2f (( float )PLAYER_PIC_WIDTH / PLAYER_DEST_WIDTH, ( float )PLAYER_PIC_HEIGHT / PLAYER_DEST_HEIGHT);
-	qglVertex2f (x+pic->width, y+pic->height);
-	qglTexCoord2f (0, ( float )PLAYER_PIC_HEIGHT / PLAYER_DEST_HEIGHT);
-	qglVertex2f (x, y+pic->height);
-	qglEnd ();
+	DoQuad(x, y, 0, 0, x + pic->width, y + pic->height, (float)PLAYER_PIC_WIDTH / PLAYER_DEST_WIDTH, (float)PLAYER_PIC_HEIGHT / PLAYER_DEST_HEIGHT);
 }
 
 
@@ -564,16 +540,7 @@ int M_DrawBigCharacter (int x, int y, int num, int numNext)
 
 	GL_Bind (char_menufonttexture);
 
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (fcol, frow);
-	qglVertex2f (x, y);
-	qglTexCoord2f (fcol + xsize, frow);
-	qglVertex2f (x+20, y);
-	qglTexCoord2f (fcol + xsize, frow + ysize);
-	qglVertex2f (x+20, y+20);
-	qglTexCoord2f (fcol, frow + ysize);
-	qglVertex2f (x, y+20);
-	qglEnd ();
+	DoQuad(x, y, fcol, frow, x + 20, y + 20, fcol + xsize, frow + ysize);
 
 	if (numNext < 0 || numNext >= 27) return 0;
 
@@ -612,16 +579,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 	GL_Bind (draw_backtile);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (x/64.0, y/64.0);
-	qglVertex2f (x, y);
-	qglTexCoord2f ( (x+w)/64.0, y/64.0);
-	qglVertex2f (x+w, y);
-	qglTexCoord2f ( (x+w)/64.0, (y+h)/64.0);
-	qglVertex2f (x+w, y+h);
-	qglTexCoord2f ( x/64.0, (y+h)/64.0 );
-	qglVertex2f (x, y+h);
-	qglEnd ();
+	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
 }
@@ -643,14 +601,7 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 		host_basepal[c*3+1]/255.0,
 		host_basepal[c*3+2]/255.0);
 
-	qglBegin (GL_QUADS);
-
-	qglVertex2f (x,y);
-	qglVertex2f (x+w, y);
-	qglVertex2f (x+w, y+h);
-	qglVertex2f (x, y+h);
-
-	qglEnd ();
+	DoQuad(x, y, 0, 0, x + w, y + h, 0, 0);
 	qglColor3f (1,1,1);
 	qglEnable (GL_TEXTURE_2D);
 }
@@ -672,12 +623,7 @@ void Draw_FadeScreen (void)
 
 //	qglColor4f (248.0/255.0, 220.0/255.0, 120.0/255.0, 0.2);
 	qglColor4f (208.0/255.0, 180.0/255.0, 80.0/255.0, 0.2);
-	qglBegin (GL_QUADS);
-	qglVertex2f (0,0);
-	qglVertex2f (vid.width, 0);
-	qglVertex2f (vid.width, vid.height);
-	qglVertex2f (0, vid.height);
-	qglEnd ();
+	DoQuad(0, 0, 0, 0, vid.width, vid.height, 0, 0);
 
 	qglColor4f (208.0/255.0, 180.0/255.0, 80.0/255.0, 0.035);
 	for(c=0;c<40;c++)
@@ -691,12 +637,7 @@ void Draw_FadeScreen (void)
 		if (ex > vid.width) ex = vid.width;
 		if (ey > vid.height) ey = vid.height;
 
-		qglBegin (GL_QUADS);
-		qglVertex2f (bx,by);
-		qglVertex2f (ex, by);
-		qglVertex2f (ex, ey);
-		qglVertex2f (bx, ey);
-		qglEnd ();
+		DoQuad(bx, by, 0, 0, ex, ey, 0, 0);
 	}
 
 	qglColor4f (1,1,1,1);

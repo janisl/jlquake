@@ -40,6 +40,27 @@ void Draw_InitLocal (void)
 
 
 
+//==========================================================================
+//
+//	DoQuad
+//
+//==========================================================================
+
+static void DoQuad(float x1, float y1, float s1, float t1,
+	float x2, float y2, float s2, float t2)
+{
+	qglBegin(GL_QUADS);
+	qglTexCoord2f(s1, t1);
+	qglVertex2f(x1, y1);
+	qglTexCoord2f(s2, t1);
+	qglVertex2f(x2, y1);
+	qglTexCoord2f(s2, t2);
+	qglVertex2f (x2, y2);
+	qglTexCoord2f(s1, t2);
+	qglVertex2f(x1, y2);
+	qglEnd();
+}
+
 /*
 ================
 Draw_Char
@@ -71,16 +92,7 @@ void Draw_Char (int x, int y, int num)
 
 	GL_Bind (draw_chars);
 
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (fcol, frow);
-	qglVertex2f (x, y);
-	qglTexCoord2f (fcol + size, frow);
-	qglVertex2f (x+8, y);
-	qglTexCoord2f (fcol + size, frow + size);
-	qglVertex2f (x+8, y+8);
-	qglTexCoord2f (fcol, frow + size);
-	qglVertex2f (x, y+8);
-	qglEnd ();
+	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + size, frow + size);
 }
 
 /*
@@ -143,16 +155,7 @@ void Draw_StretchPic (int x, int y, int w, int h, const char *pic)
 		R_ScrapUpload();
 
 	GL_Bind (gl);
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (gl->sl, gl->tl);
-	qglVertex2f (x, y);
-	qglTexCoord2f (gl->sh, gl->tl);
-	qglVertex2f (x+w, y);
-	qglTexCoord2f (gl->sh, gl->th);
-	qglVertex2f (x+w, y+h);
-	qglTexCoord2f (gl->sl, gl->th);
-	qglVertex2f (x, y+h);
-	qglEnd ();
+	DoQuad(x, y, gl->sl, gl->tl, x + w, y + h, gl->sh, gl->th);
 }
 
 
@@ -175,16 +178,7 @@ void Draw_Pic (int x, int y, const char *pic)
 		R_ScrapUpload();
 
 	GL_Bind (gl);
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (gl->sl, gl->tl);
-	qglVertex2f (x, y);
-	qglTexCoord2f (gl->sh, gl->tl);
-	qglVertex2f (x+gl->width, y);
-	qglTexCoord2f (gl->sh, gl->th);
-	qglVertex2f (x+gl->width, y+gl->height);
-	qglTexCoord2f (gl->sl, gl->th);
-	qglVertex2f (x, y+gl->height);
-	qglEnd ();
+	DoQuad(x, y, gl->sl, gl->tl, x + gl->width, y + gl->height, gl->sh, gl->th);
 }
 
 /*
@@ -209,16 +203,7 @@ void Draw_TileClear (int x, int y, int w, int h, const char *pic)
 	GL_Bind (image);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (x/64.0, y/64.0);
-	qglVertex2f (x, y);
-	qglTexCoord2f ( (x+w)/64.0, y/64.0);
-	qglVertex2f (x+w, y);
-	qglTexCoord2f ( (x+w)/64.0, (y+h)/64.0);
-	qglVertex2f (x+w, y+h);
-	qglTexCoord2f ( x/64.0, (y+h)/64.0 );
-	qglVertex2f (x, y+h);
-	qglEnd ();
+	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
 }
@@ -249,14 +234,7 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 		color.v[1]/255.0,
 		color.v[2]/255.0);
 
-	qglBegin (GL_QUADS);
-
-	qglVertex2f (x,y);
-	qglVertex2f (x+w, y);
-	qglVertex2f (x+w, y+h);
-	qglVertex2f (x, y+h);
-
-	qglEnd ();
+	DoQuad(x, y, 0, 0, x + w, y + h, 0, 0);
 	qglColor3f (1,1,1);
 	qglEnable (GL_TEXTURE_2D);
 }
@@ -274,14 +252,7 @@ void Draw_FadeScreen (void)
 	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable (GL_TEXTURE_2D);
 	qglColor4f (0, 0, 0, 0.8);
-	qglBegin (GL_QUADS);
-
-	qglVertex2f (0,0);
-	qglVertex2f (glConfig.vidWidth, 0);
-	qglVertex2f (glConfig.vidWidth, glConfig.vidHeight);
-	qglVertex2f (0, glConfig.vidHeight);
-
-	qglEnd ();
+	DoQuad(0, 0, 0, 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0);
 	qglColor4f (1,1,1,1);
 	qglEnable (GL_TEXTURE_2D);
 	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_ATEST_GE_80);
@@ -300,15 +271,6 @@ void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 {
 	R_UploadCinematic(cols, rows, data, 0, true);
 
-	qglBegin (GL_QUADS);
-	qglTexCoord2f (0, 0);
-	qglVertex2f (x, y);
-	qglTexCoord2f (1, 0);
-	qglVertex2f (x+w, y);
-	qglTexCoord2f (1, 1);
-	qglVertex2f (x+w, y+h);
-	qglTexCoord2f (0, 1);
-	qglVertex2f (x, y+h);
-	qglEnd ();
+	DoQuad(x, y, 0, 0, x + w, y + h, 1, 1);
 }
 
