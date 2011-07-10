@@ -15,6 +15,18 @@
 //**
 //**************************************************************************
 
+/*
+
+  for a projection shadow:
+
+  point[x] += light vector * ( z - shadow plane )
+  point[y] +=
+  point[z] = shadow plane
+
+  1 0 light[x] / light[z]
+
+*/
+
 // HEADER FILES ------------------------------------------------------------
 
 #include "client.h"
@@ -296,4 +308,51 @@ void RB_ShadowTessEnd()
 
 	// reenable writing to the color buffer
 	qglColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+}
+
+//==========================================================================
+//
+//	RB_ShadowFinish
+//
+//	Darken everything that is is a shadow volume. We have to delay this until
+// everything has been shadowed, because otherwise shadows from different body
+// parts would overlap and double darken.
+//
+//==========================================================================
+
+void RB_ShadowFinish()
+{
+	if (r_shadows->integer != 2)
+	{
+		return;
+	}
+	if (glConfig.stencilBits < 4)
+	{
+		return;
+	}
+	qglEnable(GL_STENCIL_TEST);
+	qglStencilFunc(GL_NOTEQUAL, 0, 255);
+
+	qglDisable(GL_CLIP_PLANE0);
+	GL_Cull(CT_TWO_SIDED);
+
+	GL_Bind(tr.whiteImage);
+
+    qglLoadIdentity();
+
+	qglColor3f(0.6f, 0.6f, 0.6f);
+	GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_DST_COLOR | GLS_DSTBLEND_ZERO);
+
+//	qglColor3f(1, 0, 0);
+//	GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO);
+
+	qglBegin(GL_QUADS);
+	qglVertex3f(-100, 100, -10);
+	qglVertex3f(100, 100, -10);
+	qglVertex3f(100, -100, -10);
+	qglVertex3f(-100, -100, -10);
+	qglEnd();
+
+	qglColor4f(1, 1, 1, 1);
+	qglDisable(GL_STENCIL_TEST);
 }
