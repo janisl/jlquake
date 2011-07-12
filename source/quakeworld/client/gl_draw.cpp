@@ -234,6 +234,7 @@ void Draw_Character (int x, int y, int num)
 
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + size, frow + size);
 }
 
@@ -555,30 +556,6 @@ Call after completing any disc IO
 */
 void Draw_EndDisc (void)
 {
-}
-
-/*
-================
-GL_Set2D
-
-Setup as if the screen was 320*200
-================
-*/
-void GL_Set2D (void)
-{
-	qglViewport(0, 0, glConfig.vidWidth, glConfig.vidHeight);
-
-	qglMatrixMode(GL_PROJECTION);
-    qglLoadIdentity ();
-	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
-
-	qglMatrixMode(GL_MODELVIEW);
-    qglLoadIdentity ();
-
-	GL_Cull(CT_TWO_SIDED);
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	qglColor4f (1,1,1,1);
 }
 
 int Draw_GetWidth(image_t* pic)

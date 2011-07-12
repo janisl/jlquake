@@ -113,7 +113,6 @@ void R_AnimateLight(void);
 void V_CalcBlend (void);
 void R_DrawParticles (void);
 void R_InitParticles (void);
-void GL_Set2D (void);
 void SCR_DrawLoading (void);
 
 extern qboolean	vid_initialized;

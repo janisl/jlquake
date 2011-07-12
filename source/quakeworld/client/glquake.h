@@ -82,11 +82,6 @@ extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;
 
 //
-// gl_draw.c
-//
-void GL_Set2D (void);
-
-//
 // gl_rlight.c
 //
 void R_AnimateLight (void);

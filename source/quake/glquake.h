@@ -88,7 +88,6 @@ extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;
 
-void GL_Set2D (void);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void R_AnimateLight (void);

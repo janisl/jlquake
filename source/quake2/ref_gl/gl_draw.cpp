@@ -92,6 +92,7 @@ void Draw_Char (int x, int y, int num)
 
 	GL_Bind (draw_chars);
 
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + size, frow + size);
 }
 
@@ -155,6 +156,7 @@ void Draw_StretchPic (int x, int y, int w, int h, const char *pic)
 		R_ScrapUpload();
 
 	GL_Bind (gl);
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, gl->sl, gl->tl, x + w, y + h, gl->sh, gl->th);
 }
 
@@ -178,6 +180,7 @@ void Draw_Pic (int x, int y, const char *pic)
 		R_ScrapUpload();
 
 	GL_Bind (gl);
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, gl->sl, gl->tl, x + gl->width, y + gl->height, gl->sh, gl->th);
 }
 
@@ -203,6 +206,7 @@ void Draw_TileClear (int x, int y, int w, int h, const char *pic)
 	GL_Bind (image);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
@@ -271,6 +275,7 @@ void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data
 {
 	R_UploadCinematic(cols, rows, data, 0, true);
 
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, 0, 0, x + w, y + h, 1, 1);
 }
 

@@ -1154,7 +1154,7 @@ void SCR_UpdateScreen (void)
 		V_RenderView ();
 	}
 
-	GL_Set2D ();
+	RB_SetGL2D();
 
 	//
 	// draw any areas not covered by the refresh

@@ -74,7 +74,6 @@ extern	QCvar*	gl_reporttjunctions;
 
 extern byte *playerTranslation;
 
-void GL_Set2D (void);
 void Draw_Crosshair(void);
 void R_InitParticles (void);
 void R_ClearParticles (void);

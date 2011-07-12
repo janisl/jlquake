@@ -510,21 +510,6 @@ void R_RenderView (refdef_t *fd)
 	}
 }
 
-
-void	R_SetGL2D (void)
-{
-	// set 2D virtual screen size
-	qglViewport (0,0, glConfig.vidWidth, glConfig.vidHeight);
-	qglMatrixMode(GL_PROJECTION);
-    qglLoadIdentity ();
-	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
-	qglMatrixMode(GL_MODELVIEW);
-    qglLoadIdentity ();
-	GL_Cull(CT_TWO_SIDED);
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-	qglColor4f (1,1,1,1);
-}
-
 /*
 ====================
 R_SetLightLevel
@@ -571,7 +556,7 @@ void R_RenderFrame (refdef_t *fd)
 {
 	R_RenderView( fd );
 	R_SetLightLevel ();
-	R_SetGL2D ();
+	RB_SetGL2D ();
 }
 
 
@@ -694,15 +679,7 @@ void R_BeginFrame( float camera_separation )
 	/*
 	** go into 2D mode
 	*/
-	qglViewport (0,0, glConfig.vidWidth, glConfig.vidHeight);
-	qglMatrixMode(GL_PROJECTION);
-    qglLoadIdentity ();
-	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
-	qglMatrixMode(GL_MODELVIEW);
-    qglLoadIdentity ();
-	GL_Cull(CT_TWO_SIDED);
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-	qglColor4f (1,1,1,1);
+	RB_SetGL2D();
 
 	/*
 	** draw buffer stuff

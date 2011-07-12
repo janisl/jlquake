@@ -100,6 +100,14 @@ void R_FreeBackEndData()
 	}
 }
 
+/*
+============================================================================
+
+RENDER BACK END THREAD FUNCTIONS
+
+============================================================================
+*/
+
 //==========================================================================
 //
 //	RB_SetColor
@@ -420,4 +428,33 @@ void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 
 	// add light flares on lights that aren't obscured
 	RB_RenderFlares();
+}
+
+//==========================================================================
+//
+//	RB_SetGL2D
+//
+//==========================================================================
+
+void RB_SetGL2D()
+{
+	backEnd.projection2D = true;
+
+	// set 2D virtual screen size
+	qglViewport(0, 0, glConfig.vidWidth, glConfig.vidHeight);
+	qglScissor(0, 0, glConfig.vidWidth, glConfig.vidHeight);
+	qglMatrixMode(GL_PROJECTION);
+    qglLoadIdentity();
+	qglOrtho(0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1);
+	qglMatrixMode(GL_MODELVIEW);
+    qglLoadIdentity();
+
+	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+
+	qglDisable(GL_CULL_FACE);
+	qglDisable(GL_CLIP_PLANE0);
+
+	// set time for 2D shaders
+	backEnd.refdef.time = CL_ScaledMilliseconds();
+	backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
 }

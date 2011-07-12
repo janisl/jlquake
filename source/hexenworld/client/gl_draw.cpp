@@ -226,6 +226,7 @@ void Draw_Character (int x, int y, unsigned int num)
 
 	GL_Bind (char_texture);
 
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + xsize, frow + ysize);
 }
 
@@ -269,6 +270,7 @@ void Draw_Crosshair(void)
 
 		GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
+		qglColor4f (1,1,1,1);
 		DoQuad(x - 4, y - 4, 0, 0, x + 12, y + 12, 1, 1);
 	} else if (crosshair->value)
 		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx->value, 
@@ -333,6 +335,7 @@ void Draw_SmallCharacter (int x, int y, int num)
 
 	GL_Bind (char_smalltexture);
 
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + xsize, frow + ysize);
 }
 
@@ -652,6 +655,7 @@ int M_DrawBigCharacter (int x, int y, int num, int numNext)
 
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
+	qglColor4f (1,1,1,1);
 	DoQuad(x, y, fcol, frow, x + 20, y + 20, fcol + xsize, frow + ysize);
 
 	if (numNext < 0 || numNext >= 27) return 0;
@@ -821,30 +825,6 @@ Call after completing any disc IO
 */
 void Draw_EndDisc (void)
 {
-}
-
-/*
-================
-GL_Set2D
-
-Setup as if the screen was 320*200
-================
-*/
-void GL_Set2D (void)
-{
-	qglViewport (0, 0, glConfig.vidWidth, glConfig.vidHeight);
-
-	qglMatrixMode(GL_PROJECTION);
-    qglLoadIdentity ();
-	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
-
-	qglMatrixMode(GL_MODELVIEW);
-    qglLoadIdentity ();
-
-	GL_Cull(CT_TWO_SIDED);
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	qglColor4f (1,1,1,1);
 }
 
 int Draw_GetWidth(image_t* pic)
