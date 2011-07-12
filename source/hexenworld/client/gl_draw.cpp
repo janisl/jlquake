@@ -171,6 +171,11 @@ void Draw_Init (void)
 void DoQuad(float x1, float y1, float s1, float t1,
 	float x2, float y2, float s2, float t2)
 {
+	x1 *= (float)glConfig.vidWidth / vid.width;
+	x2 *= (float)glConfig.vidWidth / vid.width;
+	y1 *= (float)glConfig.vidHeight / vid.height;
+	y2 *= (float)glConfig.vidHeight / vid.height;
+
 	qglBegin(GL_QUADS);
 	qglTexCoord2f(s1, t1);
 	qglVertex2f(x1, y1);
@@ -831,7 +836,7 @@ void GL_Set2D (void)
 
 	qglMatrixMode(GL_PROJECTION);
     qglLoadIdentity ();
-	qglOrtho  (0, vid.width, vid.height, 0, -99999, 99999);
+	qglOrtho  (0, glConfig.vidWidth, glConfig.vidHeight, 0, -99999, 99999);
 
 	qglMatrixMode(GL_MODELVIEW);
     qglLoadIdentity ();
