@@ -57,6 +57,7 @@ QCvar*		r_colorbits;
 QCvar*		r_stereo;
 QCvar*		r_displayRefresh;
 QCvar*		r_swapInterval;
+QCvar*		r_drawBuffer;
 
 QCvar*		r_verbose;
 
@@ -151,6 +152,7 @@ QCvar*		r_showcluster;
 QCvar*		r_drawworld;
 QCvar*		r_measureOverdraw;
 QCvar*		r_finish;
+QCvar*		r_showImages;
 
 QCvar*		r_railWidth;
 QCvar*		r_railCoreWidth;
@@ -385,6 +387,8 @@ void R_SharedRegister()
 	r_flareSize = Cvar_Get("r_flareSize", "40", CVAR_CHEAT);
 	r_flareFade = Cvar_Get("r_flareFade", "7", CVAR_CHEAT);
 	r_measureOverdraw = Cvar_Get("r_measureOverdraw", "0", CVAR_CHEAT);
+	r_showImages = Cvar_Get("r_showImages", "0", CVAR_TEMP);
+	r_drawBuffer = Cvar_Get("r_drawBuffer", "GL_BACK", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

@@ -70,7 +70,6 @@ extern	QCvar	*gl_cull;
 extern	QCvar	*gl_poly;
 extern	QCvar	*gl_polyblend;
 extern	QCvar	*gl_lightmaptype;
-extern	QCvar	*gl_drawbuffer;
 extern  QCvar  *gl_driver;
 
 void R_TranslatePlayerSkin (int playernum);

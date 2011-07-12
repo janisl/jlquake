@@ -69,7 +69,6 @@ extern	QCvar	*r_norefresh;			// bypasses the ref rendering
 extern	QCvar	*r_drawentities;		// disable/enable entity rendering
 extern	QCvar	*r_speeds;				// various levels of information display
 
-extern	QCvar	*r_drawBuffer;
 extern  QCvar  *r_glDriver;
 
 extern	QCvar	*r_noportals;
@@ -79,8 +78,6 @@ extern	QCvar	*r_showSmp;
 extern	QCvar	*r_skipBackEnd;
 
 extern	QCvar	*r_debugSurface;
-
-extern	QCvar	*r_showImages;
 
 //====================================================================
 
@@ -119,27 +116,6 @@ void	R_ScreenShot_f( void );
 // tr_shader.c
 //
 shader_t	*R_GetShaderByState( int index, long *cycleTime );
-
-/*
-====================================================================
-
-IMPLEMENTATION SPECIFIC FUNCTIONS
-
-====================================================================
-*/
-
-void		GLimp_EndFrame( void );
-
-/*
-====================================================================
-
-TESSELATOR/SHADER DECLARATIONS
-
-====================================================================
-*/
-
-void RB_ShowImages( void );
-
 
 /*
 ============================================================

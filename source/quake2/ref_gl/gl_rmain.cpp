@@ -49,7 +49,6 @@ QCvar	*gl_particle_att_a;
 QCvar	*gl_particle_att_b;
 QCvar	*gl_particle_att_c;
 
-QCvar	*gl_drawbuffer;
 QCvar  *gl_driver;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
@@ -580,8 +579,6 @@ void R_Register( void )
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 
-	gl_drawbuffer = Cvar_Get( "gl_drawbuffer", "GL_BACK", 0 );
-
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 
 	Cmd_AddCommand( "screenshot", GL_ScreenShot_f );
@@ -684,13 +681,13 @@ void R_BeginFrame( float camera_separation )
 	/*
 	** draw buffer stuff
 	*/
-	if ( gl_drawbuffer->modified )
+	if ( r_drawBuffer->modified )
 	{
-		gl_drawbuffer->modified = false;
+		r_drawBuffer->modified = false;
 
 		if ( gl_state.camera_separation == 0 || !glConfig.stereoEnabled )
 		{
-			if ( QStr::ICmp( gl_drawbuffer->string, "GL_FRONT" ) == 0 )
+			if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) == 0 )
 				qglDrawBuffer( GL_FRONT );
 			else
 				qglDrawBuffer( GL_BACK );

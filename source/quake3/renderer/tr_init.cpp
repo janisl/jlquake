@@ -35,14 +35,11 @@ QCvar	*r_norefresh;
 QCvar	*r_drawentities;
 QCvar	*r_speeds;
 
-QCvar	*r_drawBuffer;
 QCvar  *r_glDriver;
 QCvar	*r_noportals;
 QCvar	*r_portalOnly;
 
 QCvar	*r_debugSurface;
-
-QCvar	*r_showImages;
 
 /*
 ** InitOpenGL
@@ -555,8 +552,6 @@ void R_Register( void )
 	//
 	// temporary variables that can change at any time
 	//
-	r_showImages = Cvar_Get( "r_showImages", "0", CVAR_TEMP );
-
 	r_portalOnly = Cvar_Get ("r_portalOnly", "0", CVAR_CHEAT );
 
 	r_showSmp = Cvar_Get ("r_showSmp", "0", CVAR_CHEAT);
@@ -566,7 +561,6 @@ void R_Register( void )
 	r_drawentities = Cvar_Get ("r_drawentities", "1", CVAR_CHEAT );
 	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
-	r_drawBuffer = Cvar_Get( "r_drawBuffer", "GL_BACK", CVAR_CHEAT );
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
 
 	Cmd_AddCommand( "modellist", R_Modellist_f );

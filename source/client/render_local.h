@@ -510,6 +510,7 @@ extern QCvar*	r_colorbits;			// number of desired color bits, only relevant for 
 extern QCvar*	r_stereo;				// desired pixelformat stereo flag
 extern QCvar*	r_displayRefresh;		// optional display refresh option
 extern QCvar*	r_swapInterval;
+extern QCvar*	r_drawBuffer;
 
 extern QCvar*	r_ext_compressed_textures;	// these control use of specific extensions
 extern QCvar*	r_ext_multitexture;
@@ -609,6 +610,7 @@ extern QCvar*	r_showcluster;
 extern QCvar*	r_drawworld;			// disable/enable world rendering
 extern QCvar*	r_measureOverdraw;		// enables stencil buffer overdraw measurement
 extern QCvar*	r_finish;
+extern QCvar*	r_showImages;
 
 extern QCvar*	r_railWidth;
 extern QCvar*	r_railCoreWidth;
@@ -719,8 +721,11 @@ void R_FreeBackEndData();
 const void* RB_SetColor(const void* data);
 const void* RB_DrawBuffer(const void* data);
 void RB_BeginDrawingView();
-void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs);
+const void* RB_DrawSurfs(const void* data);
 void RB_SetGL2D();
+const void* RB_StretchPic(const void* data);
+void RB_ShowImages();
+const void* RB_SwapBuffers(const void* data);
 
 /*
 ============================================================

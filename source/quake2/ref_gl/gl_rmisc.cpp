@@ -310,7 +310,7 @@ void GLimp_EndFrame (void)
 	int err = qglGetError();
 	qassert(err == GL_NO_ERROR);
 
-	if (QStr::ICmp(gl_drawbuffer->string, "GL_BACK") == 0)
+	if (QStr::ICmp(r_drawBuffer->string, "GL_BACK") == 0)
 	{
 		GLimp_SwapBuffers();
 		R_ToggleSmpFrame();

@@ -286,7 +286,7 @@ void RB_BeginDrawingView()
 //
 //==========================================================================
 
-void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
+static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 {
 	// save original time for entity shader offsets
 	float originalTime = backEnd.refdef.floatTime;
@@ -432,6 +432,30 @@ void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 
 //==========================================================================
 //
+//	RB_DrawSurfs
+//
+//==========================================================================
+
+const void* RB_DrawSurfs(const void* data)
+{
+	// finish any 2D drawing if needed
+	if (tess.numIndexes)
+	{
+		RB_EndSurface();
+	}
+
+	const drawSurfsCommand_t* cmd = (const drawSurfsCommand_t*)data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+
+	RB_RenderDrawSurfList(cmd->drawSurfs, cmd->numDrawSurfs);
+
+	return (const void*)(cmd + 1);
+}
+
+//==========================================================================
+//
 //	RB_SetGL2D
 //
 //==========================================================================
@@ -457,4 +481,218 @@ void RB_SetGL2D()
 	// set time for 2D shaders
 	backEnd.refdef.time = CL_ScaledMilliseconds();
 	backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
+}
+
+//==========================================================================
+//
+//	RB_StretchPic
+//
+//==========================================================================
+
+const void* RB_StretchPic(const void* data)
+{
+	const stretchPicCommand_t* cmd = (const stretchPicCommand_t*)data;
+
+	if (!backEnd.projection2D)
+	{
+		RB_SetGL2D();
+	}
+
+	shader_t* shader = cmd->shader;
+	if (shader != tess.shader)
+	{
+		if (tess.numIndexes)
+		{
+			RB_EndSurface();
+		}
+		backEnd.currentEntity = &backEnd.entity2D;
+		RB_BeginSurface(shader, 0);
+	}
+
+	RB_CHECKOVERFLOW(4, 6);
+	int numVerts = tess.numVertexes;
+	int numIndexes = tess.numIndexes;
+
+	tess.numVertexes += 4;
+	tess.numIndexes += 6;
+
+	tess.indexes[numIndexes ] = numVerts + 3;
+	tess.indexes[numIndexes + 1] = numVerts + 0;
+	tess.indexes[numIndexes + 2] = numVerts + 2;
+	tess.indexes[numIndexes + 3] = numVerts + 2;
+	tess.indexes[numIndexes + 4] = numVerts + 0;
+	tess.indexes[numIndexes + 5] = numVerts + 1;
+
+	*(int*)tess.vertexColors[numVerts] =
+		*(int*)tess.vertexColors[numVerts + 1] =
+		*(int*)tess.vertexColors[numVerts + 2] =
+		*(int*)tess.vertexColors[numVerts + 3] = *(int*)backEnd.color2D;
+
+	tess.xyz[numVerts][0] = cmd->x;
+	tess.xyz[numVerts][1] = cmd->y;
+	tess.xyz[numVerts][2] = 0;
+
+	tess.texCoords[numVerts][0][0] = cmd->s1;
+	tess.texCoords[numVerts][0][1] = cmd->t1;
+
+	tess.xyz[numVerts + 1][0] = cmd->x + cmd->w;
+	tess.xyz[numVerts + 1][1] = cmd->y;
+	tess.xyz[numVerts + 1][2] = 0;
+
+	tess.texCoords[numVerts + 1][0][0] = cmd->s2;
+	tess.texCoords[numVerts + 1][0][1] = cmd->t1;
+
+	tess.xyz[numVerts + 2][0] = cmd->x + cmd->w;
+	tess.xyz[numVerts + 2][1] = cmd->y + cmd->h;
+	tess.xyz[numVerts + 2][2] = 0;
+
+	tess.texCoords[numVerts + 2][0][0] = cmd->s2;
+	tess.texCoords[numVerts + 2][0][1] = cmd->t2;
+
+	tess.xyz[numVerts + 3][0] = cmd->x;
+	tess.xyz[numVerts + 3][1] = cmd->y + cmd->h;
+	tess.xyz[numVerts + 3][2] = 0;
+
+	tess.texCoords[numVerts + 3][0][0] = cmd->s1;
+	tess.texCoords[numVerts + 3][0][1] = cmd->t2;
+
+	return (const void*)(cmd + 1);
+}
+
+//==========================================================================
+//
+//	RB_ShowImages
+//
+//	Draw all the images to the screen, on top of whatever was there.  This
+// is used to test for texture thrashing.
+//
+//	Also called by RE_EndRegistration
+//
+//==========================================================================
+
+void RB_ShowImages()
+{
+	if (!backEnd.projection2D)
+	{
+		RB_SetGL2D();
+	}
+
+	qglClear(GL_COLOR_BUFFER_BIT);
+
+	qglFinish();
+
+	int start = CL_ScaledMilliseconds();
+
+	for (int i = 0; i < tr.numImages; i++)
+	{
+		image_t* image = tr.images[i];
+
+		float w = glConfig.vidWidth / 20;
+		float h = glConfig.vidHeight / 15;
+		float x = i % 20 * w;
+		float y = i / 20 * h;
+
+		// show in proportional size in mode 2
+		if (r_showImages->integer == 2)
+		{
+			w *= image->uploadWidth / 512.0f;
+			h *= image->uploadHeight / 512.0f;
+		}
+
+		GL_Bind(image);
+		qglBegin(GL_QUADS);
+		qglTexCoord2f(0, 0);
+		qglVertex2f(x, y);
+		qglTexCoord2f(1, 0);
+		qglVertex2f(x + w, y);
+		qglTexCoord2f(1, 1);
+		qglVertex2f(x + w, y + h);
+		qglTexCoord2f(0, 1);
+		qglVertex2f(x, y + h);
+		qglEnd();
+	}
+
+	qglFinish();
+
+	int end = CL_ScaledMilliseconds();
+	GLog.Write("%i msec to draw all images\n", end - start);
+}
+
+//==========================================================================
+//
+//	RB_SwapBuffers
+//
+//==========================================================================
+
+const void* RB_SwapBuffers(const void* data)
+{
+	// finish any 2D drawing if needed
+	if (tess.numIndexes)
+	{
+		RB_EndSurface();
+	}
+
+	// texture swapping test
+	if (r_showImages->integer)
+	{
+		RB_ShowImages();
+	}
+
+	const swapBuffersCommand_t* cmd = (const swapBuffersCommand_t*)data;
+
+	// we measure overdraw by reading back the stencil buffer and
+	// counting up the number of increments that have happened
+	if (r_measureOverdraw->integer)
+	{
+		byte* stencilReadback = new byte[glConfig.vidWidth * glConfig.vidHeight];
+		qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_STENCIL_INDEX, GL_UNSIGNED_BYTE, stencilReadback);
+
+		long sum = 0;
+		for (int i = 0; i < glConfig.vidWidth * glConfig.vidHeight; i++)
+		{
+			sum += stencilReadback[i];
+		}
+
+		backEnd.pc.c_overDraw += sum;
+		delete[] stencilReadback;
+	}
+
+
+	if (!glState.finishCalled)
+	{
+		qglFinish();
+	}
+
+	QGL_LogComment("***************** RB_SwapBuffers *****************\n\n\n");
+
+	//
+	// swapinterval stuff
+	//
+#ifdef _WIN32
+	if (r_swapInterval->modified)
+	{
+		r_swapInterval->modified = false;
+
+		if (!glConfig.stereoEnabled)	// why?
+		{	
+			if (qwglSwapIntervalEXT)
+			{
+				qwglSwapIntervalEXT(r_swapInterval->integer);
+			}
+		}
+	}
+#endif
+
+	// don't flip if drawing to front buffer
+	if (QStr::ICmp(r_drawBuffer->string, "GL_FRONT") != 0)
+	{
+		GLimp_SwapBuffers();
+	}
+
+	// check logging
+	QGL_EnableLogging(!!r_logFile->integer);
+
+	backEnd.projection2D = false;
+
+	return (const void*)(cmd + 1);
 }
