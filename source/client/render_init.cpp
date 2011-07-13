@@ -612,12 +612,59 @@ static void R_SetMode()
 //
 //==========================================================================
 
+static void InitOpenGLSubsystem()
+{	
+	GLog.Write("Initializing OpenGL subsystem\n");
+
+	//	Ceate the window and set up the context.
+	R_SetMode();
+
+	// 	Initialise our QGL dynamic bindings
+	QGL_Init();
+
+	//	Needed for Quake 3 UI vm.
+	glConfig.driverType = GLDRV_ICD;
+	glConfig.hardwareType = GLHW_GENERIC;
+
+	//	Get our config strings.
+	QStr::NCpyZ(glConfig.vendor_string, (char*)qglGetString(GL_VENDOR), sizeof(glConfig.vendor_string));
+	QStr::NCpyZ(glConfig.renderer_string, (char*)qglGetString(GL_RENDERER), sizeof(glConfig.renderer_string));
+	QStr::NCpyZ(glConfig.version_string, (char*)qglGetString(GL_VERSION), sizeof(glConfig.version_string));
+	QStr::NCpyZ(glConfig.extensions_string, (char*)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
+
+	// OpenGL driver constants
+	GLint temp;
+	qglGetIntegerv(GL_MAX_TEXTURE_SIZE, &temp);
+	glConfig.maxTextureSize = temp;
+
+	//	Load palette used by 8-bit graphics files.
+	if (GGameType & GAME_QuakeHexen)
+	{
+		R_InitQ1Palette();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		R_InitQ2Palette();
+	}
+}
+
+//==========================================================================
+//
+//	InitOpenGL
+//
+//	This function is responsible for initializing a valid OpenGL subsystem.
+// This is done by calling InitOpenGLSubsystem (which gives us a working OGL
+// subsystem) then setting variables, checking GL constants, and reporting
+// the gfx system config to the user.
+//
+//==========================================================================
+
 void R_CommonInitOpenGL()
 {	
 	//
 	// initialize OS specific portions of the renderer
 	//
-	// GLimp_Init directly or indirectly references the following cvars:
+	// InitOpenGLSubsystem directly or indirectly references the following cvars:
 	//		- r_fullscreen
 	//		- r_glDriver
 	//		- r_mode
@@ -628,38 +675,7 @@ void R_CommonInitOpenGL()
 	
 	if (glConfig.vidWidth == 0)
 	{
-		GLog.Write("Initializing OpenGL subsystem\n");
-
-		//	Ceate the window and set up the context.
-		R_SetMode();
-
-		// 	Initialise our QGL dynamic bindings
-		QGL_Init();
-
-		//	Needed for Quake 3 UI vm.
-		glConfig.driverType = GLDRV_ICD;
-		glConfig.hardwareType = GLHW_GENERIC;
-
-		//	Get our config strings.
-		QStr::NCpyZ(glConfig.vendor_string, (char*)qglGetString(GL_VENDOR), sizeof(glConfig.vendor_string));
-		QStr::NCpyZ(glConfig.renderer_string, (char*)qglGetString(GL_RENDERER), sizeof(glConfig.renderer_string));
-		QStr::NCpyZ(glConfig.version_string, (char*)qglGetString(GL_VERSION), sizeof(glConfig.version_string));
-		QStr::NCpyZ(glConfig.extensions_string, (char*)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
-
-		// OpenGL driver constants
-		GLint temp;
-		qglGetIntegerv(GL_MAX_TEXTURE_SIZE, &temp);
-		glConfig.maxTextureSize = temp;
-
-		//	Load palette used by 8-bit graphics files.
-		if (GGameType & GAME_QuakeHexen)
-		{
-			R_InitQ1Palette();
-		}
-		else if (GGameType & GAME_Quake2)
-		{
-			R_InitQ2Palette();
-		}
+		InitOpenGLSubsystem();
 	}
 
 	// init command buffers and SMP
