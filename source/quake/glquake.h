@@ -81,7 +81,6 @@ extern	image_t*	playertextures[16];
 extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
-extern	QCvar*	r_speeds;
 
 extern	QCvar*	gl_cull;
 extern	QCvar*	gl_polyblend;

@@ -33,7 +33,6 @@ int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 QCvar*	r_norefresh;
 QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
-QCvar*	r_speeds;
 QCvar*	r_wholeframe;
 
 QCvar*	gl_cull;
@@ -489,8 +488,4 @@ void R_RenderView (void)
 
 	if (r_speeds->value)
 		R_PrintTimes ();
-}
-
-void R_SyncRenderThread()
-{
 }

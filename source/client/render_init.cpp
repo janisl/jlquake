@@ -153,6 +153,9 @@ QCvar*		r_drawworld;
 QCvar*		r_measureOverdraw;
 QCvar*		r_finish;
 QCvar*		r_showImages;
+QCvar*		r_speeds;
+QCvar*		r_showSmp;
+QCvar*		r_skipBackEnd;
 
 QCvar*		r_railWidth;
 QCvar*		r_railCoreWidth;
@@ -389,6 +392,9 @@ void R_SharedRegister()
 	r_measureOverdraw = Cvar_Get("r_measureOverdraw", "0", CVAR_CHEAT);
 	r_showImages = Cvar_Get("r_showImages", "0", CVAR_TEMP);
 	r_drawBuffer = Cvar_Get("r_drawBuffer", "GL_BACK", CVAR_CHEAT);
+	r_speeds = Cvar_Get("r_speeds", "0", CVAR_CHEAT);
+	r_showSmp = Cvar_Get("r_showSmp", "0", CVAR_CHEAT);
+	r_skipBackEnd = Cvar_Get("r_skipBackEnd", "0", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown
@@ -579,7 +585,7 @@ void CommonGfxInfo_f()
 	}
 
 	GLog.Write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
-	GLog.Write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures );
+	GLog.Write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures);
 	GLog.Write("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
 	GLog.Write("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[r_fullscreen->integer == 1]);
 	if (glConfig.displayFrequency)

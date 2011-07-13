@@ -38,7 +38,6 @@ refdef_t	r_newrefdef;
 
 QCvar	*r_norefresh;
 QCvar	*r_drawentities;
-QCvar	*r_speeds;
 
 QCvar	*gl_nosubimage;
 
@@ -564,7 +563,6 @@ void R_Register( void )
 	R_SharedRegister();
 	r_norefresh = Cvar_Get ("r_norefresh", "0", 0);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", 0);
-	r_speeds = Cvar_Get ("r_speeds", "0", 0);
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
 
@@ -839,8 +837,4 @@ void R_ClearScreen()
 	qglClearColor(0, 0, 0, 0);
 	qglClear(GL_COLOR_BUFFER_BIT);
 	qglClearColor(1,0, 0.5, 0.5);
-}
-
-void R_SyncRenderThread()
-{
 }

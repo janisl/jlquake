@@ -67,15 +67,11 @@ extern QCvar	*r_dlightBacks;			// dlight non-facing surfaces for continuity
 
 extern	QCvar	*r_norefresh;			// bypasses the ref rendering
 extern	QCvar	*r_drawentities;		// disable/enable entity rendering
-extern	QCvar	*r_speeds;				// various levels of information display
 
 extern  QCvar  *r_glDriver;
 
 extern	QCvar	*r_noportals;
 extern	QCvar	*r_portalOnly;
-
-extern	QCvar	*r_showSmp;
-extern	QCvar	*r_skipBackEnd;
 
 extern	QCvar	*r_debugSurface;
 
@@ -155,12 +151,7 @@ RENDERER BACK END COMMAND QUEUE
 =============================================================
 */
 
-extern	volatile renderCommandList_t	*renderCommandList;
-
-
 void *R_GetCommandBuffer( int bytes );
-
-void R_SyncRenderThread( void );
 
 void R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs );
 

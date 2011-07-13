@@ -63,7 +63,6 @@ extern	image_t*	playertextures[MAX_CLIENTS];
 extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawentities;
 extern	QCvar*	r_drawviewmodel;
-extern	QCvar*	r_speeds;
 extern	QCvar*	r_netgraph;
 extern	QCvar*	r_entdistance;
 

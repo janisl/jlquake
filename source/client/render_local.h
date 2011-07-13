@@ -611,6 +611,9 @@ extern QCvar*	r_drawworld;			// disable/enable world rendering
 extern QCvar*	r_measureOverdraw;		// enables stencil buffer overdraw measurement
 extern QCvar*	r_finish;
 extern QCvar*	r_showImages;
+extern QCvar*	r_speeds;				// various levels of information display
+extern QCvar*	r_showSmp;
+extern QCvar*	r_skipBackEnd;
 
 extern QCvar*	r_railWidth;
 extern QCvar*	r_railCoreWidth;
@@ -736,6 +739,8 @@ RENDERER BACK END COMMAND QUEUE
 
 void R_InitCommandBuffers();
 void R_ShutdownCommandBuffers();
+void R_IssueRenderCommands(bool runPerformanceCounters);
+void R_SyncRenderThread();
 
 /*
 ============================================================
@@ -908,8 +913,5 @@ bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, const ch
 void RB_TakeScreenshot(int x, int y, int width, int height, const char* fileName, bool IsJpeg);
 const void* RB_TakeScreenshotCmd(const void* data);
 void R_LevelShot();
-
-//	Temporarily must be defined in game.
-void R_SyncRenderThread();
 
 #endif

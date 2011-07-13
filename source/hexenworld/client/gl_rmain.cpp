@@ -27,7 +27,6 @@ int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 QCvar*	r_norefresh;
 QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
-QCvar*	r_speeds;
 QCvar*	r_netgraph;
 QCvar*	r_entdistance;
 QCvar*	gl_cull;
@@ -563,8 +562,4 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 	}
 	else
 		Draw_String (u, v, Name);
-}
-
-void R_SyncRenderThread()
-{
 }

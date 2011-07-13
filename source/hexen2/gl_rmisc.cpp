@@ -189,7 +189,6 @@ void R_Init (void)
 	r_norefresh = Cvar_Get("r_norefresh", "0", 0);
 	r_drawentities = Cvar_Get("r_drawentities", "1", 0);
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
-	r_speeds = Cvar_Get("r_speeds", "0", 0);
 	r_wholeframe = Cvar_Get("r_wholeframe", "1", CVAR_ARCHIVE);
 
 	gl_cull = Cvar_Get("gl_cull", "1", 0);

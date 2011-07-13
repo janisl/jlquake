@@ -25,15 +25,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 static void GfxInfo_f( void );
 
-QCvar	*r_showSmp;
-QCvar	*r_skipBackEnd;
-
 QCvar	*r_inGameVideo;
 QCvar	*r_dlightBacks;
 
 QCvar	*r_norefresh;
 QCvar	*r_drawentities;
-QCvar	*r_speeds;
 
 QCvar  *r_glDriver;
 QCvar	*r_noportals;
@@ -332,12 +328,8 @@ void R_Register( void )
 	//
 	r_portalOnly = Cvar_Get ("r_portalOnly", "0", CVAR_CHEAT );
 
-	r_showSmp = Cvar_Get ("r_showSmp", "0", CVAR_CHEAT);
-	r_skipBackEnd = Cvar_Get ("r_skipBackEnd", "0", CVAR_CHEAT);
-
 	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
 	r_drawentities = Cvar_Get ("r_drawentities", "1", CVAR_CHEAT );
-	r_speeds = Cvar_Get ("r_speeds", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
 

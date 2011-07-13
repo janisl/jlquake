@@ -77,3 +77,149 @@ void R_ShutdownCommandBuffers()
 		glConfig.smpActive = false;
 	}
 }
+
+//==========================================================================
+//
+//	R_PerformanceCounters
+//
+//==========================================================================
+
+static void R_PerformanceCounters()
+{
+	if (!r_speeds->integer)
+	{
+		// clear the counters even if we aren't printing
+		Com_Memset(&tr.pc, 0, sizeof(tr.pc));
+		Com_Memset(&backEnd.pc, 0, sizeof(backEnd.pc));
+		return;
+	}
+
+	if (r_speeds->integer == 1)
+	{
+		GLog.Write("%i/%i shaders/surfs %i leafs %i verts %i/%i tris %.2f mtex %.2f dc\n",
+			backEnd.pc.c_shaders, backEnd.pc.c_surfaces, tr.pc.c_leafs, backEnd.pc.c_vertexes,
+			backEnd.pc.c_indexes/3, backEnd.pc.c_totalIndexes/3,
+			R_SumOfUsedImages() / 1000000.0f, backEnd.pc.c_overDraw / (float)(glConfig.vidWidth * glConfig.vidHeight));
+	}
+	else if (r_speeds->integer == 2)
+	{
+		GLog.Write("(patch) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
+			tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip, tr.pc.c_sphere_cull_patch_out,
+			tr.pc.c_box_cull_patch_in, tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out);
+		GLog.Write("(md3) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
+			tr.pc.c_sphere_cull_md3_in, tr.pc.c_sphere_cull_md3_clip, tr.pc.c_sphere_cull_md3_out,
+			tr.pc.c_box_cull_md3_in, tr.pc.c_box_cull_md3_clip, tr.pc.c_box_cull_md3_out);
+	}
+	else if (r_speeds->integer == 3)
+	{
+		GLog.Write("viewcluster: %i\n", tr.viewCluster);
+	}
+	else if (r_speeds->integer == 4)
+	{
+		if (backEnd.pc.c_dlightVertexes)
+		{
+			GLog.Write("dlight srf:%i  culled:%i  verts:%i  tris:%i\n", 
+				tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled,
+				backEnd.pc.c_dlightVertexes, backEnd.pc.c_dlightIndexes / 3);
+		}
+	} 
+	else if (r_speeds->integer == 5)
+	{
+		GLog.Write("zFar: %.0f\n", tr.viewParms.zFar);
+	}
+	else if (r_speeds->integer == 6)
+	{
+		GLog.Write("flare adds:%i tests:%i renders:%i\n", 
+			backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders);
+	}
+
+	Com_Memset(&tr.pc, 0, sizeof(tr.pc));
+	Com_Memset(&backEnd.pc, 0, sizeof(backEnd.pc));
+}
+
+//==========================================================================
+//
+//	R_IssueRenderCommands
+//
+//==========================================================================
+
+void R_IssueRenderCommands(bool runPerformanceCounters)
+{
+	renderCommandList_t* cmdList = &backEndData[tr.smpFrame]->commands;
+	qassert(cmdList); // bk001205
+
+	// add an end-of-list command
+	*(int*)(cmdList->cmds + cmdList->used) = RC_END_OF_LIST;
+
+	// clear it out, in case this is a sync and not a buffer flip
+	cmdList->used = 0;
+
+	if (glConfig.smpActive)
+	{
+		// if the render thread is not idle, wait for it
+		if (renderThreadActive)
+		{
+			if (r_showSmp->integer)
+			{
+				GLog.Write("R");
+			}
+		}
+		else
+		{
+			if (r_showSmp->integer)
+			{
+				GLog.Write(".");
+			}
+		}
+
+		// sleep until the renderer has completed
+		GLimp_FrontEndSleep();
+	}
+
+	// at this point, the back end thread is idle, so it is ok
+	// to look at it's performance counters
+	if (runPerformanceCounters)
+	{
+		R_PerformanceCounters();
+	}
+
+	// actually start the commands going
+	if (!r_skipBackEnd->integer)
+	{
+		// let it start on the new batch
+		if (!glConfig.smpActive)
+		{
+			RB_ExecuteRenderCommands(cmdList->cmds);
+		}
+		else
+		{
+			GLimp_WakeRenderer(cmdList);
+		}
+	}
+}
+
+//==========================================================================
+//
+//	R_SyncRenderThread
+//
+//	Issue any pending commands and wait for them to complete. After exiting,
+// the render thread will have completed its work and will remain idle and
+// the main thread is free to issue OpenGL calls until R_IssueRenderCommands
+// is called.
+//
+//==========================================================================
+
+void R_SyncRenderThread()
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	R_IssueRenderCommands(false);
+
+	if (!glConfig.smpActive)
+	{
+		return;
+	}
+	GLimp_FrontEndSleep();
+}
