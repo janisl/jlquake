@@ -885,6 +885,20 @@ FLARES
 void R_ClearFlares();
 void RB_RenderFlares();
 
+/*
+============================================================
+
+Screenshots
+
+============================================================
+*/
+
+void R_ScreenshotFilename(int lastNumber, char* fileName, const char* Extension);
+bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, const char* Extension);
+void RB_TakeScreenshot(int x, int y, int width, int height, const char* fileName, bool IsJpeg);
+const void* RB_TakeScreenshotCmd(const void* data);
+void R_LevelShot();
+
 //	Temporarily must be defined in game.
 void R_SyncRenderThread();
 

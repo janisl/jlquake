@@ -109,7 +109,7 @@ qboolean	scr_disabled_for_loading;
 qboolean	scr_drawloading;
 float		scr_disabled_time;
 
-void SCR_ScreenShot_f (void);
+void R_ScreenShot_f (void);
 
 /*
 ===============================================================================
@@ -377,7 +377,7 @@ void SCR_Init (void)
 //
 // register our commands
 //
-	Cmd_AddCommand ("screenshot",SCR_ScreenShot_f);
+	Cmd_AddCommand ("screenshot",R_ScreenShot_f);
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 
@@ -571,41 +571,23 @@ void SCR_DrawConsole (void)
 
 /* 
 ================== 
-SCR_ScreenShot_f
+R_ScreenShot_f
 ================== 
 */  
-void SCR_ScreenShot_f (void) 
+void R_ScreenShot_f (void) 
 {
-	byte		*buffer;
-	char		pcxname[80]; 
-	int			i;
+	char		pcxname[MAX_OSPATH];
+	static int			i;
 // 
 // find a file name to save it to 
 // 
-	QStr::Cpy(pcxname, "quake00.tga");
-
-	for (i=0 ; i<=99 ; i++) 
-	{ 
-		pcxname[5] = i/10 + '0'; 
-		pcxname[6] = i%10 + '0'; 
-		if (!FS_FileExists(pcxname))
-		{
-			break;	// file doesn't exist
-		}
-	} 
-	if (i==100) 
+	if (!R_FindAvailableScreenshotFilename(i, pcxname, "tga"))
 	{
-		Con_Printf("SCR_ScreenShot_f: Couldn't create a PCX file\n");
 		return;
 	}
 
-	buffer = (byte*)malloc(glConfig.vidWidth * glConfig.vidHeight * 3);
+	RB_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, pcxname, false);
 
-	qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
-
-	R_SaveTGA(pcxname, buffer, glConfig.vidWidth, glConfig.vidHeight, false);
-
-	free (buffer);
 	Con_Printf ("Wrote %s\n", pcxname);
 } 
 

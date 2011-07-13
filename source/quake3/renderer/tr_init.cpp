@@ -97,69 +97,6 @@ FIXME: the statics don't get a reinit between fs_game changes
 ============================================================================== 
 */ 
 
-/* 
-================== 
-RB_TakeScreenshot
-================== 
-*/  
-void RB_TakeScreenshot( int x, int y, int width, int height, char *fileName ) {
-	byte		*buffer;
-		
-	buffer = (byte*)ri.Hunk_AllocateTempMemory(glConfig.vidWidth*glConfig.vidHeight*3);
-
-	qglReadPixels( x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
-
-	// gamma correct
-	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer, glConfig.vidWidth * glConfig.vidHeight * 3 );
-	}
-
-	R_SaveTGA(fileName, buffer, width, height, false);
-
-	ri.Hunk_FreeTempMemory( buffer );
-}
-
-/* 
-================== 
-RB_TakeScreenshotJPEG
-================== 
-*/  
-void RB_TakeScreenshotJPEG( int x, int y, int width, int height, char *fileName ) {
-	byte		*buffer;
-
-	buffer = (byte*)ri.Hunk_AllocateTempMemory(glConfig.vidWidth*glConfig.vidHeight*4);
-
-	qglReadPixels( x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer ); 
-
-	// gamma correct
-	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer, glConfig.vidWidth * glConfig.vidHeight * 4 );
-	}
-
-	FS_WriteFile( fileName, buffer, 1 );		// create path
-	R_SaveJPG( fileName, 95, glConfig.vidWidth, glConfig.vidHeight, buffer);
-
-	ri.Hunk_FreeTempMemory( buffer );
-}
-
-/*
-==================
-RB_TakeScreenshotCmd
-==================
-*/
-const void *RB_TakeScreenshotCmd( const void *data ) {
-	const screenshotCommand_t	*cmd;
-	
-	cmd = (const screenshotCommand_t *)data;
-	
-	if (cmd->jpeg)
-		RB_TakeScreenshotJPEG( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName);
-	else
-		RB_TakeScreenshot( cmd->x, cmd->y, cmd->width, cmd->height, cmd->fileName);
-	
-	return (const void *)(cmd + 1);	
-}
-
 /*
 ==================
 R_TakeScreenshot
@@ -186,116 +123,6 @@ void R_TakeScreenshot( int x, int y, int width, int height, char *name, qboolean
 
 /* 
 ================== 
-R_ScreenshotFilename
-================== 
-*/  
-void R_ScreenshotFilename( int lastNumber, char *fileName ) {
-	int		a,b,c,d;
-
-	if ( lastNumber < 0 || lastNumber > 9999 ) {
-		QStr::Sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.tga" );
-		return;
-	}
-
-	a = lastNumber / 1000;
-	lastNumber -= a*1000;
-	b = lastNumber / 100;
-	lastNumber -= b*100;
-	c = lastNumber / 10;
-	lastNumber -= c*10;
-	d = lastNumber;
-
-	QStr::Sprintf( fileName, MAX_OSPATH, "screenshots/shot%i%i%i%i.tga"
-		, a, b, c, d );
-}
-
-/* 
-================== 
-R_ScreenshotFilename
-================== 
-*/  
-void R_ScreenshotFilenameJPEG( int lastNumber, char *fileName ) {
-	int		a,b,c,d;
-
-	if ( lastNumber < 0 || lastNumber > 9999 ) {
-		QStr::Sprintf( fileName, MAX_OSPATH, "screenshots/shot9999.jpg" );
-		return;
-	}
-
-	a = lastNumber / 1000;
-	lastNumber -= a*1000;
-	b = lastNumber / 100;
-	lastNumber -= b*100;
-	c = lastNumber / 10;
-	lastNumber -= c*10;
-	d = lastNumber;
-
-	QStr::Sprintf( fileName, MAX_OSPATH, "screenshots/shot%i%i%i%i.jpg"
-		, a, b, c, d );
-}
-
-/*
-====================
-R_LevelShot
-
-levelshots are specialized 128*128 thumbnails for
-the menu system, sampled down from full screen distorted images
-====================
-*/
-void R_LevelShot( void ) {
-	char		checkname[MAX_OSPATH];
-	byte		*buffer;
-	byte		*source;
-	byte		*src, *dst;
-	int			x, y;
-	int			r, g, b;
-	float		xScale, yScale;
-	int			xx, yy;
-
-	sprintf( checkname, "levelshots/%s.tga", tr.world->baseName );
-
-	source = (byte*)ri.Hunk_AllocateTempMemory( glConfig.vidWidth * glConfig.vidHeight * 3 );
-
-	buffer = (byte*)ri.Hunk_AllocateTempMemory(128 * 128 * 3);
-
-	qglReadPixels( 0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, source ); 
-
-	// resample from source
-	xScale = glConfig.vidWidth / 512.0f;
-	yScale = glConfig.vidHeight / 384.0f;
-	for ( y = 0 ; y < 128 ; y++ ) {
-		for ( x = 0 ; x < 128 ; x++ ) {
-			r = g = b = 0;
-			for ( yy = 0 ; yy < 3 ; yy++ ) {
-				for ( xx = 0 ; xx < 4 ; xx++ ) {
-					src = source + 3 * ( glConfig.vidWidth * (int)( (y*3+yy)*yScale ) + (int)( (x*4+xx)*xScale ) );
-					r += src[0];
-					g += src[1];
-					b += src[2];
-				}
-			}
-			dst = buffer + 3 * (y * 128 + x);
-			dst[0] = r / 12;
-			dst[1] = g / 12;
-			dst[2] = b / 12;
-		}
-	}
-
-	// gamma correct
-	if ( ( tr.overbrightBits > 0 ) && glConfig.deviceSupportsGamma ) {
-		R_GammaCorrect( buffer, 128 * 128 * 3 );
-	}
-
-	R_SaveTGA(checkname, buffer, 128, 128, false);
-
-	ri.Hunk_FreeTempMemory( buffer );
-	ri.Hunk_FreeTempMemory( source );
-
-	ri.Printf( PRINT_ALL, "Wrote %s\n", checkname );
-}
-
-/* 
-================== 
 R_ScreenShot_f
 
 screenshot
@@ -308,7 +135,10 @@ Doesn't print the pacifier message if there is a second arg
 */  
 void R_ScreenShot_f (void) {
 	char	checkname[MAX_OSPATH];
-	static	int	lastNumber = -1;
+	// if we have saved a previous screenshot, don't scan
+	// again, because recording demo avis can involve
+	// thousands of shots
+	static	int	lastNumber = 0;
 	qboolean	silent;
 
 	if ( !QStr::Cmp( Cmd_Argv(1), "levelshot" ) ) {
@@ -328,28 +158,10 @@ void R_ScreenShot_f (void) {
 	} else {
 		// scan for a free filename
 
-		// if we have saved a previous screenshot, don't scan
-		// again, because recording demo avis can involve
-		// thousands of shots
-		if ( lastNumber == -1 ) {
-			lastNumber = 0;
-		}
-		// scan for a free number
-		for ( ; lastNumber <= 9999 ; lastNumber++ ) {
-			R_ScreenshotFilename( lastNumber, checkname );
-
-      if (!FS_FileExists( checkname ))
-      {
-        break; // file doesn't exist
-      }
-		}
-
-		if ( lastNumber >= 9999 ) {
-			ri.Printf (PRINT_ALL, "ScreenShot: Couldn't create a file\n"); 
+		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "tga"))
+		{
 			return;
  		}
-
-		lastNumber++;
 	}
 
 	R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, qfalse );
@@ -361,7 +173,10 @@ void R_ScreenShot_f (void) {
 
 void R_ScreenShotJPEG_f (void) {
 	char		checkname[MAX_OSPATH];
-	static	int	lastNumber = -1;
+	// if we have saved a previous screenshot, don't scan
+	// again, because recording demo avis can involve
+	// thousands of shots
+	static	int	lastNumber = 0;
 	qboolean	silent;
 
 	if ( !QStr::Cmp( Cmd_Argv(1), "levelshot" ) ) {
@@ -380,29 +195,10 @@ void R_ScreenShotJPEG_f (void) {
 		QStr::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.jpg", Cmd_Argv( 1 ) );
 	} else {
 		// scan for a free filename
-
-		// if we have saved a previous screenshot, don't scan
-		// again, because recording demo avis can involve
-		// thousands of shots
-		if ( lastNumber == -1 ) {
-			lastNumber = 0;
-		}
-		// scan for a free number
-		for ( ; lastNumber <= 9999 ; lastNumber++ ) {
-			R_ScreenshotFilenameJPEG( lastNumber, checkname );
-
-      if (!FS_FileExists( checkname ))
-      {
-        break; // file doesn't exist
-      }
-		}
-
-		if ( lastNumber == 10000 ) {
-			ri.Printf (PRINT_ALL, "ScreenShot: Couldn't create a file\n"); 
+		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "jpg"))
+		{
 			return;
  		}
-
-		lastNumber++;
 	}
 
 	R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, qtrue );

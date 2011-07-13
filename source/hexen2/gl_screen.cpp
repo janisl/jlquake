@@ -100,7 +100,7 @@ static qboolean scr_needfull = false;
 int			total_loading_size, current_loading_size, loading_stage;
 
 
-void SCR_ScreenShot_f (void);
+void R_ScreenShot_f (void);
 void Plaque_Draw (const char *message, qboolean AlwaysDraw);
 void Info_Plaque_Draw (const char *message);
 void Bottom_Plaque_Draw (const char *message);
@@ -418,7 +418,7 @@ void SCR_Init (void)
 //
 // register our commands
 //
-	Cmd_AddCommand ("screenshot",SCR_ScreenShot_f);
+	Cmd_AddCommand ("screenshot",R_ScreenShot_f);
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 
@@ -678,43 +678,25 @@ void SCR_DrawConsole (void)
 
 /* 
 ================== 
-SCR_ScreenShot_f
+R_ScreenShot_f
 ================== 
 */  
-void SCR_ScreenShot_f (void) 
+void R_ScreenShot_f (void) 
 {
-	byte		*buffer;
-	char		pcxname[80]; 
-	int			i;
+	char		pcxname[MAX_OSPATH];
+	static int			i;
 
 	// 
 	// find a file name to save it to 
 	// 
-	QStr::Cpy(pcxname,"shots/hexen00.tga");
-
-	for (i=0 ; i<=99 ; i++) 
-	{ 
-		pcxname[11] = i/10 + '0'; 
-		pcxname[12] = i%10 + '0'; 
-		if (!FS_FileExists(pcxname))
-		{
-			break;	// file doesn't exist
-		}
-	} 
-	if (i==100) 
+	if (!R_FindAvailableScreenshotFilename(i, pcxname, "tga"))
 	{
-		Con_Printf ("SCR_ScreenShot_f: Couldn't create a TGA file\n"); 
 		return;
  	}
 
 
-	buffer = (byte*)malloc(glConfig.vidWidth * glConfig.vidHeight * 3);
+	RB_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, pcxname, false);
 
-	qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
-
-	R_SaveTGA(pcxname, buffer, glConfig.vidWidth, glConfig.vidHeight, false);
-
-	free (buffer);
 	Con_Printf ("Wrote %s\n", pcxname);
 } 
 

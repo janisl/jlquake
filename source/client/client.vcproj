@@ -301,6 +301,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_screenshot.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_shade.cpp"
 				>
 			</File>

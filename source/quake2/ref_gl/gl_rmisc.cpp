@@ -67,42 +67,24 @@ void R_InitParticleTexture (void)
 
 /* 
 ================== 
-GL_ScreenShot_f
+R_ScreenShot_f
 ================== 
 */  
-void GL_ScreenShot_f (void) 
+void R_ScreenShot_f (void) 
 {
-	byte		*buffer;
-	char		picname[80]; 
-	int			i;
+	char		picname[MAX_OSPATH];
+	static int			i;
 
 	// 
 	// find a file name to save it to 
 	// 
-	QStr::Cpy(picname, "scrnshot/quake00.tga");
-
-	for (i = 0; i <= 99; i++) 
+	if (!R_FindAvailableScreenshotFilename(i, picname, "tga"))
 	{
-		picname[14] = i/10 + '0';
-		picname[15] = i%10 + '0';
-		if (!FS_FileExists(picname))
-		{
-			break;	// file doesn't exist
-		}
-	} 
-	if (i==100) 
-	{
-		ri.Con_Printf(PRINT_ALL, "SCR_ScreenShot_f: Couldn't create a file\n");
 		return;
 	}
 
-	buffer = (byte*)malloc(glConfig.vidWidth * glConfig.vidHeight * 3);
+	RB_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, picname, false);
 
-	qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, buffer);
-
-	R_SaveTGA(picname, buffer, glConfig.vidWidth, glConfig.vidHeight, false);
-
-	free(buffer);
 	ri.Con_Printf(PRINT_ALL, "Wrote %s\n", picname);
 } 
 

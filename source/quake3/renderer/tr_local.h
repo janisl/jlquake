@@ -108,8 +108,6 @@ qboolean	R_GetEntityToken( char *buffer, int size );
 
 void    	R_Init( void );
 
-// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=516
-const void *RB_TakeScreenshotCmd( const void *data );
 void	R_ScreenShot_f( void );
 
 //

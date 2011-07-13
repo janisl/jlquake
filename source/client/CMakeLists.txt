@@ -35,6 +35,7 @@ set(CLIENT_FILES
 	render_noise.cpp
 	render_qgl.cpp
 	render_scene.cpp
+	render_screenshot.cpp
 	render_shade.cpp
 	render_shade_calculate.cpp
 	render_shader.cpp

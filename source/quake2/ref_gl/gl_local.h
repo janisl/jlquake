@@ -83,7 +83,7 @@ int 	R_Init();
 void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
-void GL_ScreenShot_f (void);
+void R_ScreenShot_f (void);
 void R_DrawBeam( trRefEntity_t *e );
 void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
