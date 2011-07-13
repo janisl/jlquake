@@ -223,3 +223,116 @@ void R_SyncRenderThread()
 	}
 	GLimp_FrontEndSleep();
 }
+
+//==========================================================================
+//
+//	R_GetCommandBuffer
+//
+//	make sure there is enough command space, waiting on the render thread if needed.
+//
+//==========================================================================
+
+void* R_GetCommandBuffer(int bytes)
+{
+	renderCommandList_t* cmdList = &backEndData[tr.smpFrame]->commands;
+
+	// always leave room for the end of list command
+	if (cmdList->used + bytes + 4 > MAX_RENDER_COMMANDS)
+	{
+		if (bytes > MAX_RENDER_COMMANDS - 4)
+		{
+			throw QException(va("R_GetCommandBuffer: bad size %i", bytes));
+		}
+		// if we run out of room, just start dropping commands
+		return NULL;
+	}
+
+	cmdList->used += bytes;
+
+	return cmdList->cmds + cmdList->used - bytes;
+}
+
+//==========================================================================
+//
+//	R_AddDrawSurfCmd
+//
+//==========================================================================
+
+void R_AddDrawSurfCmd(drawSurf_t* drawSurfs, int numDrawSurfs)
+{
+	drawSurfsCommand_t* cmd = (drawSurfsCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_DRAW_SURFS;
+
+	cmd->drawSurfs = drawSurfs;
+	cmd->numDrawSurfs = numDrawSurfs;
+
+	cmd->refdef = tr.refdef;
+	cmd->viewParms = tr.viewParms;
+}
+
+//==========================================================================
+//
+//	R_SetColor
+//
+//	Passing NULL will set the color to white
+//
+//==========================================================================
+
+void R_SetColor(const float* rgba)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	setColorCommand_t* cmd = (setColorCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_SET_COLOR;
+	if (!rgba)
+	{
+		static float colorWhite[4] = { 1, 1, 1, 1 };
+
+		rgba = colorWhite;
+	}
+
+	cmd->color[0] = rgba[0];
+	cmd->color[1] = rgba[1];
+	cmd->color[2] = rgba[2];
+	cmd->color[3] = rgba[3];
+}
+
+//==========================================================================
+//
+//	R_StretchPic
+//
+//==========================================================================
+
+void R_StretchPic(float x, float y, float w, float h, 
+	float s1, float t1, float s2, float t2, qhandle_t hShader)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	stretchPicCommand_t* cmd = (stretchPicCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_STRETCH_PIC;
+	cmd->shader = R_GetShaderByHandle(hShader);
+	cmd->x = x;
+	cmd->y = y;
+	cmd->w = w;
+	cmd->h = h;
+	cmd->s1 = s1;
+	cmd->t1 = t1;
+	cmd->s2 = s2;
+	cmd->t2 = t2;
+}

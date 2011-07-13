@@ -267,3 +267,7 @@ void R_AddPolyToScene(qhandle_t hShader , int NumVerts, const polyVert_t* Verts,
 void R_AddLightStyleToScene(int style, float r, float g, float b);
 float R_CalcEntityLight(refEntity_t* e);
 void R_SetSky(const char* name, float rotate, vec3_t axis);
+
+void R_SetColor(const float* rgba);
+void R_StretchPic(float x, float y, float w, float h, 
+	float s1, float t1, float s2, float t2, qhandle_t hShader);
