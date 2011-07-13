@@ -579,7 +579,6 @@ void R_Register( void )
 
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 
-	Cmd_AddCommand( "screenshot", R_ScreenShot_f );
 	Cmd_AddCommand( "modellist", Mod_Modellist_f );
 	Cmd_AddCommand( "gfxinfo", CommonGfxInfo_f);
 }
@@ -635,7 +634,6 @@ R_Shutdown
 void R_Shutdown (void)
 {	
 	Cmd_RemoveCommand ("modellist");
-	Cmd_RemoveCommand ("screenshot");
 	Cmd_RemoveCommand ("gfxinfo");
 
 	R_CommonShutdown(true);

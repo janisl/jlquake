@@ -402,6 +402,8 @@ void R_SharedRegister()
 	Cmd_AddCommand("imagelist", R_ImageList_f);
 	Cmd_AddCommand("shaderlist", R_ShaderList_f);
 	Cmd_AddCommand("skinlist", R_SkinList_f);
+	Cmd_AddCommand("screenshot", R_ScreenShot_f);
+	Cmd_AddCommand("screenshotJPEG", R_ScreenShotJPEG_f);
 }
 
 //==========================================================================
@@ -703,6 +705,8 @@ void R_CommonShutdown(bool destroyWindow)
 	Cmd_RemoveCommand("imagelist");
 	Cmd_RemoveCommand("shaderlist");
 	Cmd_RemoveCommand("skinlist");
+	Cmd_RemoveCommand("screenshot");
+	Cmd_RemoveCommand("screenshotJPEG");
 
 	if (tr.registered)
 	{

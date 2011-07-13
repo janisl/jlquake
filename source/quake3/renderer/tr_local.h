@@ -104,8 +104,6 @@ qboolean	R_GetEntityToken( char *buffer, int size );
 
 void    	R_Init( void );
 
-void	R_ScreenShot_f( void );
-
 //
 // tr_shader.c
 //

@@ -109,8 +109,6 @@ qboolean	scr_disabled_for_loading;
 qboolean	scr_drawloading;
 float		scr_disabled_time;
 
-void R_ScreenShot_f (void);
-
 /*
 ===============================================================================
 
@@ -377,7 +375,6 @@ void SCR_Init (void)
 //
 // register our commands
 //
-	Cmd_AddCommand ("screenshot",R_ScreenShot_f);
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 
@@ -559,41 +556,6 @@ void SCR_DrawConsole (void)
 			Con_DrawNotify ();	// only draw notify in game
 	}
 }
-
-
-/* 
-============================================================================== 
- 
-						SCREEN SHOTS 
- 
-============================================================================== 
-*/ 
-
-/* 
-================== 
-R_ScreenShot_f
-================== 
-*/  
-void R_ScreenShot_f (void) 
-{
-	char		pcxname[MAX_OSPATH];
-	static int			i;
-// 
-// find a file name to save it to 
-// 
-	if (!R_FindAvailableScreenshotFilename(i, pcxname, "tga"))
-	{
-		return;
-	}
-
-	RB_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, pcxname, false);
-
-	Con_Printf ("Wrote %s\n", pcxname);
-} 
-
-
-//=============================================================================
-
 
 /*
 ===============

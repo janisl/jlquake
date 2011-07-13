@@ -65,29 +65,6 @@ void R_InitParticleTexture (void)
 	r_particletexture = R_CreateImage("***particle***", (byte *)data, 8, 8, true, true, GL_CLAMP, false);
 }
 
-/* 
-================== 
-R_ScreenShot_f
-================== 
-*/  
-void R_ScreenShot_f (void) 
-{
-	char		picname[MAX_OSPATH];
-	static int			i;
-
-	// 
-	// find a file name to save it to 
-	// 
-	if (!R_FindAvailableScreenshotFilename(i, picname, "tga"))
-	{
-		return;
-	}
-
-	RB_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, picname, false);
-
-	ri.Con_Printf(PRINT_ALL, "Wrote %s\n", picname);
-} 
-
 /*
 ** GL_SetDefaultState
 */

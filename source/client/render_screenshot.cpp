@@ -15,6 +15,25 @@
 //**
 //**************************************************************************
 
+/* 
+============================================================================== 
+ 
+						SCREEN SHOTS 
+
+NOTE TTimo
+some thoughts about the screenshots system:
+screenshots get written in fs_homepath + fs_gamedir
+vanilla q3 .. baseq3/screenshots/ *.tga
+team arena .. missionpack/screenshots/ *.tga
+
+two commands: "screenshot" and "screenshotJPEG"
+we use statics to store a count and start writing the first screenshot/screenshot????.tga (.jpg) available
+(with FS_FileExists / FS_FOpenFileWrite calls)
+FIXME: the statics don't get a reinit between fs_game changes
+
+============================================================================== 
+*/ 
+
 // HEADER FILES ------------------------------------------------------------
 
 #include "client.h"
@@ -44,7 +63,7 @@
 //
 //==========================================================================
 
-void R_ScreenshotFilename(int lastNumber, char* fileName, const char* Extension)
+static void R_ScreenshotFilename(int lastNumber, char* fileName, const char* Extension)
 {
 	if (lastNumber < 0 || lastNumber > 9999)
 	{
@@ -60,7 +79,7 @@ void R_ScreenshotFilename(int lastNumber, char* fileName, const char* Extension)
 //
 //==========================================================================
 
-bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, const char* Extension)
+static bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, const char* Extension)
 {
 	// scan for a free number
 	for (; lastNumber <= 9999; lastNumber++)
@@ -82,11 +101,37 @@ bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, const ch
 
 //==========================================================================
 //
+//	R_TakeScreenshot
+//
+//==========================================================================
+
+static void R_TakeScreenshot(int x, int y, int width, int height, const char* name, bool jpeg)
+{
+	static char fileName[MAX_OSPATH]; // bad things if two screenshots per frame?
+
+	screenshotCommand_t* cmd = (screenshotCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_SCREENSHOT;
+
+	cmd->x = x;
+	cmd->y = y;
+	cmd->width = width;
+	cmd->height = height;
+	QStr::NCpyZ(fileName, name, sizeof(fileName));
+	cmd->fileName = fileName;
+	cmd->jpeg = jpeg;
+}
+
+//==========================================================================
+//
 //	RB_TakeScreenshot
 //
 //==========================================================================
 
-void RB_TakeScreenshot(int x, int y, int width, int height, const char* fileName, bool IsJpeg)
+static void RB_TakeScreenshot(int x, int y, int width, int height, const char* fileName, bool IsJpeg)
 {
 	byte* buffer = new byte[width * height * 3];
 
@@ -135,7 +180,7 @@ const void* RB_TakeScreenshotCmd(const void* data)
 //
 //==========================================================================
 
-void R_LevelShot()
+static void R_LevelShot()
 {
 	char checkname[MAX_OSPATH];
 	QStr::Sprintf(checkname, MAX_OSPATH, "levelshots/%s.tga", tr.world->baseName);
@@ -186,3 +231,112 @@ void R_LevelShot()
 
 	GLog.Write("Wrote %s\n", checkname);
 }
+
+//==========================================================================
+//
+//	R_ScreenShot_f
+//
+//	screenshot
+//	screenshot [silent]
+//	screenshot [levelshot]
+//	screenshot [filename]
+//
+//	Doesn't print the pacifier message if specified silent
+//
+//==========================================================================
+
+void R_ScreenShot_f()
+{
+	// if we have saved a previous screenshot, don't scan
+	// again, because recording demo avis can involve
+	// thousands of shots
+	static int lastNumber = 0;
+
+	if (!QStr::Cmp(Cmd_Argv(1), "levelshot"))
+	{
+		R_LevelShot();
+		return;
+	}
+
+	bool silent = !QStr::Cmp(Cmd_Argv(1), "silent");
+
+	char checkname[MAX_OSPATH];
+	if (Cmd_Argc() == 2 && !silent)
+	{
+		// explicit filename
+		QStr::Sprintf(checkname, MAX_OSPATH, "screenshots/%s.tga", Cmd_Argv(1));
+	}
+	else
+	{
+		// scan for a free filename
+		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "tga"))
+		{
+			return;
+		}
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		R_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false);
+	}
+	else
+	{
+		RB_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, false);
+	}
+
+	if (!silent)
+	{
+		GLog.Write("Wrote %s\n", checkname);
+	}
+} 
+
+//==========================================================================
+//
+//	R_ScreenShotJPEG_f
+//
+//==========================================================================
+
+void R_ScreenShotJPEG_f()
+{
+	// if we have saved a previous screenshot, don't scan
+	// again, because recording demo avis can involve
+	// thousands of shots
+	static int lastNumber = 0;
+
+	if (!QStr::Cmp(Cmd_Argv(1), "levelshot"))
+	{
+		R_LevelShot();
+		return;
+	}
+
+	bool silent = !QStr::Cmp(Cmd_Argv(1), "silent");
+
+	char checkname[MAX_OSPATH];
+	if (Cmd_Argc() == 2 && !silent)
+	{
+		// explicit filename
+		QStr::Sprintf(checkname, MAX_OSPATH, "screenshots/%s.jpg", Cmd_Argv(1));
+	}
+	else
+	{
+		// scan for a free filename
+		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "jpg"))
+		{
+			return;
+ 		}
+	}
+
+	if (GGameType & GAME_Quake3)
+	{
+		R_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true);
+	}
+	else
+	{
+		R_TakeScreenshot(0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, true);
+	}
+
+	if (!silent)
+	{
+		GLog.Write("Wrote %s\n", checkname);
+	}
+} 

@@ -56,138 +56,6 @@ static void InitOpenGL( void )
 	GL_SetDefaultState();
 }
 
-/* 
-============================================================================== 
- 
-						SCREEN SHOTS 
-
-NOTE TTimo
-some thoughts about the screenshots system:
-screenshots get written in fs_homepath + fs_gamedir
-vanilla q3 .. baseq3/screenshots/ *.tga
-team arena .. missionpack/screenshots/ *.tga
-
-two commands: "screenshot" and "screenshotJPEG"
-we use statics to store a count and start writing the first screenshot/screenshot????.tga (.jpg) available
-(with FS_FileExists / FS_FOpenFileWrite calls)
-FIXME: the statics don't get a reinit between fs_game changes
-
-============================================================================== 
-*/ 
-
-/*
-==================
-R_TakeScreenshot
-==================
-*/
-void R_TakeScreenshot( int x, int y, int width, int height, char *name, qboolean jpeg ) {
-	static char	fileName[MAX_OSPATH]; // bad things if two screenshots per frame?
-	screenshotCommand_t	*cmd;
-
-	cmd = (screenshotCommand_t*)R_GetCommandBuffer( sizeof( *cmd ) );
-	if ( !cmd ) {
-		return;
-	}
-	cmd->commandId = RC_SCREENSHOT;
-
-	cmd->x = x;
-	cmd->y = y;
-	cmd->width = width;
-	cmd->height = height;
-	QStr::NCpyZ( fileName, name, sizeof(fileName) );
-	cmd->fileName = fileName;
-	cmd->jpeg = jpeg;
-}
-
-/* 
-================== 
-R_ScreenShot_f
-
-screenshot
-screenshot [silent]
-screenshot [levelshot]
-screenshot [filename]
-
-Doesn't print the pacifier message if there is a second arg
-================== 
-*/  
-void R_ScreenShot_f (void) {
-	char	checkname[MAX_OSPATH];
-	// if we have saved a previous screenshot, don't scan
-	// again, because recording demo avis can involve
-	// thousands of shots
-	static	int	lastNumber = 0;
-	qboolean	silent;
-
-	if ( !QStr::Cmp( Cmd_Argv(1), "levelshot" ) ) {
-		R_LevelShot();
-		return;
-	}
-
-	if ( !QStr::Cmp( Cmd_Argv(1), "silent" ) ) {
-		silent = qtrue;
-	} else {
-		silent = qfalse;
-	}
-
-	if ( Cmd_Argc() == 2 && !silent ) {
-		// explicit filename
-		QStr::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.tga", Cmd_Argv( 1 ) );
-	} else {
-		// scan for a free filename
-
-		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "tga"))
-		{
-			return;
- 		}
-	}
-
-	R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, qfalse );
-
-	if ( !silent ) {
-		ri.Printf (PRINT_ALL, "Wrote %s\n", checkname);
-	}
-} 
-
-void R_ScreenShotJPEG_f (void) {
-	char		checkname[MAX_OSPATH];
-	// if we have saved a previous screenshot, don't scan
-	// again, because recording demo avis can involve
-	// thousands of shots
-	static	int	lastNumber = 0;
-	qboolean	silent;
-
-	if ( !QStr::Cmp( Cmd_Argv(1), "levelshot" ) ) {
-		R_LevelShot();
-		return;
-	}
-
-	if ( !QStr::Cmp( Cmd_Argv(1), "silent" ) ) {
-		silent = qtrue;
-	} else {
-		silent = qfalse;
-	}
-
-	if ( Cmd_Argc() == 2 && !silent ) {
-		// explicit filename
-		QStr::Sprintf( checkname, MAX_OSPATH, "screenshots/%s.jpg", Cmd_Argv( 1 ) );
-	} else {
-		// scan for a free filename
-		if (!R_FindAvailableScreenshotFilename(lastNumber, checkname, "jpg"))
-		{
-			return;
- 		}
-	}
-
-	R_TakeScreenshot( 0, 0, glConfig.vidWidth, glConfig.vidHeight, checkname, qtrue );
-
-	if ( !silent ) {
-		ri.Printf (PRINT_ALL, "Wrote %s\n", checkname);
-	}
-} 
-
-//============================================================================
-
 /*
 ** GL_SetDefaultState
 */
@@ -334,8 +202,6 @@ void R_Register( void )
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
 
 	Cmd_AddCommand( "modellist", R_Modellist_f );
-	Cmd_AddCommand( "screenshot", R_ScreenShot_f );
-	Cmd_AddCommand( "screenshotJPEG", R_ScreenShotJPEG_f );
 	Cmd_AddCommand( "gfxinfo", GfxInfo_f );
 }
 
@@ -364,8 +230,6 @@ RE_Shutdown
 */
 void RE_Shutdown( qboolean destroyWindow ) {	
 
-	Cmd_RemoveCommand ("screenshotJPEG");
-	Cmd_RemoveCommand ("screenshot");
 	Cmd_RemoveCommand ("gfxinfo");
 	Cmd_RemoveCommand( "modelist" );
 	Cmd_RemoveCommand( "shaderstate" );
