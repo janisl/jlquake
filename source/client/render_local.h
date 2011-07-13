@@ -622,12 +622,6 @@ extern QCvar*	r_flareFade;
 
 extern trGlobals_t	tr;
 
-extern backEndState_t	backEnd;
-extern backEndData_t*	backEndData[SMP_FRAMES];	// the second one may not be allocated
-
-extern int		max_polys;
-extern int		max_polyverts;
-
 extern int			r_firstSceneDrawSurf;
 extern int			r_numentities;
 extern int			r_firstSceneEntity;
@@ -718,14 +712,19 @@ BACK END
 
 void R_InitBackEndData();
 void R_FreeBackEndData();
-const void* RB_SetColor(const void* data);
-const void* RB_DrawBuffer(const void* data);
 void RB_BeginDrawingView();
-const void* RB_DrawSurfs(const void* data);
 void RB_SetGL2D();
-const void* RB_StretchPic(const void* data);
 void RB_ShowImages();
-const void* RB_SwapBuffers(const void* data);
+void RB_ExecuteRenderCommands(const void* data);
+void RB_RenderThread();
+
+extern backEndState_t	backEnd;
+extern backEndData_t*	backEndData[SMP_FRAMES];	// the second one may not be allocated
+
+extern int		max_polys;
+extern int		max_polyverts;
+
+extern volatile bool	renderThreadActive;
 
 /*
 ============================================================

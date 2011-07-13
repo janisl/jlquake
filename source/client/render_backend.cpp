@@ -40,6 +40,8 @@ backEndState_t	backEnd;
 int				max_polys;
 int				max_polyverts;
 
+volatile bool	renderThreadActive;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -114,7 +116,7 @@ RENDER BACK END THREAD FUNCTIONS
 //
 //==========================================================================
 
-const void* RB_SetColor(const void* data)
+static const void* RB_SetColor(const void* data)
 {
 	const setColorCommand_t* cmd = (const setColorCommand_t*)data;
 
@@ -132,7 +134,7 @@ const void* RB_SetColor(const void* data)
 //
 //==========================================================================
 
-const void* RB_DrawBuffer(const void* data)
+static const void* RB_DrawBuffer(const void* data)
 {
 	const drawBufferCommand_t* cmd = (const drawBufferCommand_t*)data;
 
@@ -436,7 +438,7 @@ static void RB_RenderDrawSurfList(drawSurf_t* drawSurfs, int numDrawSurfs)
 //
 //==========================================================================
 
-const void* RB_DrawSurfs(const void* data)
+static const void* RB_DrawSurfs(const void* data)
 {
 	// finish any 2D drawing if needed
 	if (tess.numIndexes)
@@ -489,7 +491,7 @@ void RB_SetGL2D()
 //
 //==========================================================================
 
-const void* RB_StretchPic(const void* data)
+static const void* RB_StretchPic(const void* data)
 {
 	const stretchPicCommand_t* cmd = (const stretchPicCommand_t*)data;
 
@@ -624,7 +626,7 @@ void RB_ShowImages()
 //
 //==========================================================================
 
-const void* RB_SwapBuffers(const void* data)
+static const void* RB_SwapBuffers(const void* data)
 {
 	// finish any 2D drawing if needed
 	if (tess.numIndexes)
@@ -695,4 +697,91 @@ const void* RB_SwapBuffers(const void* data)
 	backEnd.projection2D = false;
 
 	return (const void*)(cmd + 1);
+}
+
+//==========================================================================
+//
+//	RB_ExecuteRenderCommands
+//
+//	This function will be called synchronously if running without smp
+// extensions, or asynchronously by another thread.
+//
+//==========================================================================
+
+void RB_ExecuteRenderCommands(const void* data)
+{
+	int t1 = CL_ScaledMilliseconds();
+
+	if (!r_smp->integer || data == backEndData[0]->commands.cmds)
+	{
+		backEnd.smpFrame = 0;
+	}
+	else
+	{
+		backEnd.smpFrame = 1;
+	}
+
+	while (1)
+	{
+		switch (*(const int*)data)
+		{
+		case RC_SET_COLOR:
+			data = RB_SetColor(data);
+			break;
+
+		case RC_STRETCH_PIC:
+			data = RB_StretchPic(data);
+			break;
+
+		case RC_DRAW_SURFS:
+			data = RB_DrawSurfs(data);
+			break;
+
+		case RC_DRAW_BUFFER:
+			data = RB_DrawBuffer(data);
+			break;
+
+		case RC_SWAP_BUFFERS:
+			data = RB_SwapBuffers(data);
+			break;
+
+		case RC_SCREENSHOT:
+			data = RB_TakeScreenshotCmd(data);
+			break;
+
+		case RC_END_OF_LIST:
+		default:
+			// stop rendering on this thread
+			int t2 = CL_ScaledMilliseconds();
+			backEnd.pc.msec = t2 - t1;
+			return;
+		}
+	}
+}
+
+//==========================================================================
+//
+//	RB_RenderThread
+//
+//==========================================================================
+
+void RB_RenderThread()
+{
+	// wait for either a rendering command or a quit command
+	while (1)
+	{
+		// sleep until we have work to do
+		const void* data = GLimp_RendererSleep();
+
+		if (!data)
+		{
+			return;	// all done, renderer is shutting down
+		}
+
+		renderThreadActive = true;
+
+		RB_ExecuteRenderCommands(data);
+
+		renderThreadActive = false;
+	}
 }
