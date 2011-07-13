@@ -51,25 +51,7 @@ QCvar	*r_debugSurface;
 */
 static void InitOpenGL( void )
 {
-	//
-	// initialize OS specific portions of the renderer
-	//
-	// GLimp_Init directly or indirectly references the following cvars:
-	//		- r_fullscreen
-	//		- r_glDriver
-	//		- r_mode
-	//		- r_(color|depth|stencil)bits
-	//		- r_ignorehwgamma
-	//		- r_gamma
-	//
-	
-	if ( glConfig.vidWidth == 0 )
-	{
-		R_CommonInitOpenGL();
-	}
-
-	// init command buffers and SMP
-	R_InitCommandBuffers();
+	R_CommonInitOpenGL();
 
 	// print info
 	GfxInfo_f();

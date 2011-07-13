@@ -391,7 +391,6 @@ void VID_Init()
 	R_SharedRegister();
 
 	R_CommonInitOpenGL();
-	R_InitCommandBuffers();
 
 	GL_Init();
 
