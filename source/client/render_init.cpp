@@ -682,6 +682,9 @@ void R_CommonShutdown(bool destroyWindow)
 
 	if (tr.registered)
 	{
+		R_SyncRenderThread();
+		R_ShutdownCommandBuffers();
+
 		R_FreeModels();
 
 		R_FreeShaders();

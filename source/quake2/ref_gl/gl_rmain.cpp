@@ -606,6 +606,7 @@ int R_Init()
 	r_mode->modified = false;
 
 	R_CommonInitOpenGL();
+	R_InitCommandBuffers();
 
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);

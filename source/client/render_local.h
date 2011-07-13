@@ -727,6 +727,17 @@ extern int		max_polyverts;
 extern volatile bool	renderThreadActive;
 
 /*
+=============================================================
+
+RENDERER BACK END COMMAND QUEUE
+
+=============================================================
+*/
+
+void R_InitCommandBuffers();
+void R_ShutdownCommandBuffers();
+
+/*
 ============================================================
 
 SKINS

@@ -8,6 +8,7 @@ set(CLIENT_FILES
 	input_main.cpp
 	input_unix.cpp
 	render_backend.cpp
+	render_commands.cpp
 	render_curve.cpp
 	render_driver_glx.cpp
 	render_flares.cpp

@@ -396,12 +396,6 @@ void RE_Shutdown( qboolean destroyWindow ) {
 	Cmd_RemoveCommand( "modelist" );
 	Cmd_RemoveCommand( "shaderstate" );
 
-
-	if ( tr.registered ) {
-		R_SyncRenderThread();
-		R_ShutdownCommandBuffers();
-	}
-
 	R_CommonShutdown(destroyWindow);
 }
 

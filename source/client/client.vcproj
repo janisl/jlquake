@@ -193,6 +193,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_commands.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_curve.cpp"
 				>
 			</File>
