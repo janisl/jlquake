@@ -365,8 +365,6 @@ GL_Init
 */
 static void GL_Init()
 {
-	CommonGfxInfo_f();
-
 	qglClearColor (1,0,0,0);
 	qglCullFace(GL_FRONT);
 	qglEnable(GL_TEXTURE_2D);

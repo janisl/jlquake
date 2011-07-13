@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-static void GfxInfo_f( void );
-
 QCvar	*r_inGameVideo;
 QCvar	*r_dlightBacks;
 
@@ -48,9 +46,6 @@ QCvar	*r_debugSurface;
 static void InitOpenGL( void )
 {
 	R_CommonInitOpenGL();
-
-	// print info
-	GfxInfo_f();
 
 	// set default state
 	GL_SetDefaultState();
@@ -104,75 +99,6 @@ void GL_SetDefaultState( void )
 
 
 /*
-================
-GfxInfo_f
-================
-*/
-void GfxInfo_f( void ) 
-{
-	QCvar *sys_cpustring = Cvar_Get( "sys_cpustring", "", 0 );
-	const char *enablestrings[] =
-	{
-		"disabled",
-		"enabled"
-	};
-
-	CommonGfxInfo_f();
-	if ( glConfig.deviceSupportsGamma )
-	{
-		ri.Printf( PRINT_ALL, "GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits );
-	}
-	else
-	{
-		ri.Printf( PRINT_ALL, "GAMMA: software w/ %d overbright bits\n", tr.overbrightBits );
-	}
-	ri.Printf( PRINT_ALL, "CPU: %s\n", sys_cpustring->string );
-
-	// rendering primitives
-	{
-		int		primitives;
-
-		// default is to use triangles if compiled vertex arrays are present
-		ri.Printf( PRINT_ALL, "rendering primitives: " );
-		primitives = r_primitives->integer;
-		if ( primitives == 0 ) {
-			if ( qglLockArraysEXT ) {
-				primitives = 2;
-			} else {
-				primitives = 1;
-			}
-		}
-		if ( primitives == -1 ) {
-			ri.Printf( PRINT_ALL, "none\n" );
-		} else if ( primitives == 2 ) {
-			ri.Printf( PRINT_ALL, "single glDrawElements\n" );
-		} else if ( primitives == 1 ) {
-			ri.Printf( PRINT_ALL, "multiple glArrayElement\n" );
-		} else if ( primitives == 3 ) {
-			ri.Printf( PRINT_ALL, "multiple glColor4ubv + glTexCoord2fv + glVertex3fv\n" );
-		}
-	}
-
-	ri.Printf( PRINT_ALL, "texturemode: %s\n", r_textureMode->string );
-	ri.Printf( PRINT_ALL, "picmip: %d\n", r_picmip->integer );
-	ri.Printf( PRINT_ALL, "texture bits: %d\n", r_texturebits->integer );
-	ri.Printf( PRINT_ALL, "multitexture: %s\n", enablestrings[qglActiveTextureARB != 0] );
-	ri.Printf( PRINT_ALL, "compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ] );
-	ri.Printf( PRINT_ALL, "texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0] );
-	ri.Printf( PRINT_ALL, "compressed textures: %s\n", enablestrings[glConfig.textureCompression!=TC_NONE] );
-	if (r_vertexLight->integer)
-	{
-		ri.Printf( PRINT_ALL, "HACK: using vertex lightmap approximation\n" );
-	}
-	if ( glConfig.smpActive ) {
-		ri.Printf( PRINT_ALL, "Using dual processor acceleration\n" );
-	}
-	if ( r_finish->integer ) {
-		ri.Printf( PRINT_ALL, "Forcing glFinish\n" );
-	}
-}
-
-/*
 ===============
 R_Register
 ===============
@@ -202,7 +128,6 @@ void R_Register( void )
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
 
 	Cmd_AddCommand( "modellist", R_Modellist_f );
-	Cmd_AddCommand( "gfxinfo", GfxInfo_f );
 }
 
 /*
@@ -230,9 +155,7 @@ RE_Shutdown
 */
 void RE_Shutdown( qboolean destroyWindow ) {	
 
-	Cmd_RemoveCommand ("gfxinfo");
 	Cmd_RemoveCommand( "modelist" );
-	Cmd_RemoveCommand( "shaderstate" );
 
 	R_CommonShutdown(destroyWindow);
 }

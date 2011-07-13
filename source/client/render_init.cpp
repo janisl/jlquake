@@ -267,6 +267,111 @@ static void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBe
 
 //==========================================================================
 //
+//	GfxInfo_f
+//
+//==========================================================================
+
+static void GfxInfo_f()
+{
+	const char* fsstrings[] =
+	{
+		"windowed",
+		"fullscreen"
+	};
+	const char* enablestrings[] =
+	{
+		"disabled",
+		"enabled"
+	};
+
+	GLog.Write("\nGL_VENDOR: %s\n", glConfig.vendor_string);
+	GLog.Write("GL_RENDERER: %s\n", glConfig.renderer_string);
+	GLog.Write("GL_VERSION: %s\n", glConfig.version_string);
+
+	GLog.WriteLine("GL_EXTENSIONS:");
+	QArray<QStr> Exts;
+	QStr(glConfig.extensions_string).Split(' ', Exts);
+	for (int i = 0; i < Exts.Num(); i++)
+	{
+		GLog.WriteLine(" %s", *Exts[i]);
+	}
+
+	GLog.Write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
+	GLog.Write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures);
+	GLog.Write("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
+	GLog.Write("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[r_fullscreen->integer == 1]);
+	if (glConfig.displayFrequency)
+	{
+		GLog.Write("%d\n", glConfig.displayFrequency);
+	}
+	else
+	{
+		GLog.Write("N/A\n");
+	}
+	if (glConfig.deviceSupportsGamma)
+	{
+		GLog.Write("GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits);
+	}
+	else
+	{
+		GLog.Write("GAMMA: software w/ %d overbright bits\n", tr.overbrightBits);
+	}
+
+	// rendering primitives
+	// default is to use triangles if compiled vertex arrays are present
+	GLog.Write("rendering primitives: ");
+	int primitives = r_primitives->integer;
+	if (primitives == 0)
+	{
+		if (qglLockArraysEXT)
+		{
+			primitives = 2;
+		}
+		else
+		{
+			primitives = 1;
+		}
+	}
+	if (primitives == -1)
+	{
+		GLog.Write("none\n");
+	}
+	else if (primitives == 2)
+	{
+		GLog.Write("single glDrawElements\n");
+	}
+	else if (primitives == 1)
+	{
+		GLog.Write("multiple glArrayElement\n");
+	}
+	else if (primitives == 3)
+	{
+		GLog.Write("multiple glColor4ubv + glTexCoord2fv + glVertex3fv\n");
+	}
+
+	GLog.Write("texturemode: %s\n", r_textureMode->string);
+	GLog.Write("picmip: %d\n", r_picmip->integer);
+	GLog.Write("texture bits: %d\n", r_texturebits->integer);
+	GLog.Write("multitexture: %s\n", enablestrings[qglActiveTextureARB != 0]);
+	GLog.Write("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ]);
+	GLog.Write("texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0]);
+	GLog.Write("compressed textures: %s\n", enablestrings[glConfig.textureCompression != TC_NONE]);
+	if (r_vertexLight->integer)
+	{
+		GLog.Write("HACK: using vertex lightmap approximation\n");
+	}
+	if (glConfig.smpActive)
+	{
+		GLog.Write("Using dual processor acceleration\n");
+	}
+	if (r_finish->integer)
+	{
+		GLog.Write("Forcing glFinish\n");
+	}
+}
+
+//==========================================================================
+//
 //	R_SharedRegister
 //
 //==========================================================================
@@ -404,6 +509,7 @@ void R_SharedRegister()
 	Cmd_AddCommand("skinlist", R_SkinList_f);
 	Cmd_AddCommand("screenshot", R_ScreenShot_f);
 	Cmd_AddCommand("screenshotJPEG", R_ScreenShotJPEG_f);
+	Cmd_AddCommand("gfxinfo", GfxInfo_f);
 }
 
 //==========================================================================
@@ -558,46 +664,9 @@ void R_CommonInitOpenGL()
 
 	// init command buffers and SMP
 	R_InitCommandBuffers();
-}
 
-//==========================================================================
-//
-//	CommonGfxInfo_f
-//
-//==========================================================================
-
-void CommonGfxInfo_f()
-{
-	const char* fsstrings[] =
-	{
-		"windowed",
-		"fullscreen"
-	};
-
-	GLog.Write("\nGL_VENDOR: %s\n", glConfig.vendor_string);
-	GLog.Write("GL_RENDERER: %s\n", glConfig.renderer_string);
-	GLog.Write("GL_VERSION: %s\n", glConfig.version_string);
-
-	GLog.WriteLine("GL_EXTENSIONS:");
-	QArray<QStr> Exts;
-	QStr(glConfig.extensions_string).Split(' ', Exts);
-	for (int i = 0; i < Exts.Num(); i++)
-	{
-		GLog.WriteLine(" %s", *Exts[i]);
-	}
-
-	GLog.Write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
-	GLog.Write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures);
-	GLog.Write("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
-	GLog.Write("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[r_fullscreen->integer == 1]);
-	if (glConfig.displayFrequency)
-	{
-		GLog.Write("%d\n", glConfig.displayFrequency);
-	}
-	else
-	{
-		GLog.Write("N/A\n");
-	}
+	// print info
+	GfxInfo_f();
 }
 
 //==========================================================================
@@ -707,6 +776,7 @@ void R_CommonShutdown(bool destroyWindow)
 	Cmd_RemoveCommand("skinlist");
 	Cmd_RemoveCommand("screenshot");
 	Cmd_RemoveCommand("screenshotJPEG");
+	Cmd_RemoveCommand("gfxinfo");
 
 	if (tr.registered)
 	{

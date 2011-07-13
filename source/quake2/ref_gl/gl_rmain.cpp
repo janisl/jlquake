@@ -580,7 +580,6 @@ void R_Register( void )
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 
 	Cmd_AddCommand( "modellist", Mod_Modellist_f );
-	Cmd_AddCommand( "gfxinfo", CommonGfxInfo_f);
 }
 
 /*
@@ -607,8 +606,6 @@ int R_Init()
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
 
-	CommonGfxInfo_f();
-
 	Cvar_SetLatched( "scr_drawall", "0" );
 
 	GL_SetDefaultState();
@@ -634,7 +631,6 @@ R_Shutdown
 void R_Shutdown (void)
 {	
 	Cmd_RemoveCommand ("modellist");
-	Cmd_RemoveCommand ("gfxinfo");
 
 	R_CommonShutdown(true);
 }
