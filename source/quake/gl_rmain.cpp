@@ -306,6 +306,7 @@ void R_Clear (void)
 {
 	if (r_clear->value)
 	{
+		qglClearColor(1, 0, 0, 0);
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }

@@ -284,7 +284,6 @@ static void GL_DrawMd2FrameLerp(dmd2_t* paliashdr, float backlerp)
 	{
 		float colorArray[MAX_MD2_VERTS * 4];
 
-		qglEnableClientState(GL_VERTEX_ARRAY);
 		qglVertexPointer(3, GL_FLOAT, 16, s_lerped);	// padded for SIMD
 
 		if (tr.currentEntity->e.renderfx & RF_COLOUR_SHELL)
@@ -733,8 +732,6 @@ void R_DrawMd2Model(trRefEntity_t* e)
 
 	// draw it
 
-	qglShadeModel(GL_SMOOTH);
-
 	GL_TexEnv(GL_MODULATE);
 	if (tr.currentEntity->e.renderfx & RF_TRANSLUCENT)
 	{
@@ -769,7 +766,6 @@ void R_DrawMd2Model(trRefEntity_t* e)
 	GL_DrawMd2FrameLerp(paliashdr, tr.currentEntity->e.backlerp);
 
 	GL_TexEnv(GL_REPLACE);
-	qglShadeModel(GL_FLAT);
 
 	qglPopMatrix();
 

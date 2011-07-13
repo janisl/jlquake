@@ -40,7 +40,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void GL_EndRendering (void);
 
-void GL_SetDefaultState( void );
 void GL_UpdateSwapInterval( void );
 
 //====================================================
@@ -57,12 +56,7 @@ extern	refdef_t	r_newrefdef;
 extern	QCvar	*r_norefresh;
 extern	QCvar	*r_drawentities;
 
-extern QCvar	*gl_particle_min_size;
-extern QCvar	*gl_particle_max_size;
 extern QCvar	*gl_particle_size;
-extern QCvar	*gl_particle_att_a;
-extern QCvar	*gl_particle_att_b;
-extern QCvar	*gl_particle_att_c;
 
 extern	QCvar	*gl_nosubimage;
 extern	QCvar	*gl_cull;

@@ -165,6 +165,12 @@ QCvar*		r_flares;
 QCvar*		r_flareSize;
 QCvar*		r_flareFade;
 
+QCvar*		r_particle_min_size;
+QCvar*		r_particle_max_size;
+QCvar*		r_particle_att_a;
+QCvar*		r_particle_att_b;
+QCvar*		r_particle_att_c;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static vidmode_t r_vidModes[] =
@@ -453,6 +459,11 @@ void R_SharedRegister()
 	r_railSegmentLength = Cvar_Get("r_railSegmentLength", "32", CVAR_ARCHIVE);
 	r_flares = Cvar_Get("r_flares", "0", CVAR_ARCHIVE);
 	r_finish = Cvar_Get("r_finish", "0", CVAR_ARCHIVE);
+	r_particle_min_size = Cvar_Get("r_particle_min_size", "2", CVAR_ARCHIVE);
+	r_particle_max_size = Cvar_Get("r_particle_max_size", "40", CVAR_ARCHIVE);
+	r_particle_att_a = Cvar_Get("r_particle_att_a", "0.01", CVAR_ARCHIVE);
+	r_particle_att_b = Cvar_Get("r_particle_att_b", "0.0", CVAR_ARCHIVE);
+	r_particle_att_c = Cvar_Get("r_particle_att_c", "0.01", CVAR_ARCHIVE);
 
 	//
 	// temporary variables that can change at any time
@@ -645,6 +656,68 @@ static void InitOpenGLSubsystem()
 	else if (GGameType & GAME_Quake2)
 	{
 		R_InitQ2Palette();
+	}
+}
+
+//==========================================================================
+//
+//	GL_SetDefaultState
+//
+//==========================================================================
+
+void GL_SetDefaultState()
+{
+	qglClearDepth(1.0f);
+
+	qglColor4f(1, 1, 1, 1);
+
+	// initialize downstream texture unit if we're running
+	// in a multitexture environment
+	if (qglActiveTextureARB)
+	{
+		GL_SelectTexture(1);
+		GL_TextureMode(r_textureMode->string);
+		GL_TexEnv(GL_MODULATE);
+		qglDisable(GL_TEXTURE_2D);
+		GL_SelectTexture(0);
+	}
+
+	qglEnable(GL_TEXTURE_2D);
+	GL_TextureMode(r_textureMode->string);
+	GL_TexEnv(GL_MODULATE);
+
+	qglShadeModel(GL_SMOOTH);
+	qglDepthFunc(GL_LEQUAL);
+
+	// the vertex array is always enabled, but the color and texture
+	// arrays are enabled and disabled around the compiled vertex array call
+	qglEnableClientState(GL_VERTEX_ARRAY);
+
+	//
+	// make sure our GL state vector is set correctly
+	//
+	glState.glStateBits = GLS_DEPTHTEST_DISABLE | GLS_DEPTHMASK_TRUE;
+	glState.faceCulling = CT_TWO_SIDED;
+
+	qglPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	qglDepthMask(GL_TRUE);
+	qglDisable(GL_DEPTH_TEST);
+	qglEnable(GL_SCISSOR_TEST);
+	qglDisable(GL_CULL_FACE);
+	qglDisable(GL_BLEND);
+
+	if (qglPointParameterfEXT)
+	{
+		float attenuations[3];
+
+		attenuations[0] = r_particle_att_a->value;
+		attenuations[1] = r_particle_att_b->value;
+		attenuations[2] = r_particle_att_c->value;
+
+		qglEnable(GL_POINT_SMOOTH);
+		qglPointParameterfEXT(GL_POINT_SIZE_MIN_EXT, r_particle_min_size->value);
+		qglPointParameterfEXT(GL_POINT_SIZE_MAX_EXT, r_particle_max_size->value);
+		qglPointParameterfvEXT(GL_DISTANCE_ATTENUATION_EXT, attenuations);
 	}
 }
 

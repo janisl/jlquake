@@ -41,12 +41,7 @@ QCvar	*r_drawentities;
 
 QCvar	*gl_nosubimage;
 
-QCvar	*gl_particle_min_size;
-QCvar	*gl_particle_max_size;
 QCvar	*gl_particle_size;
-QCvar	*gl_particle_att_a;
-QCvar	*gl_particle_att_b;
-QCvar	*gl_particle_att_c;
 
 QCvar  *gl_driver;
 QCvar	*gl_cull;
@@ -406,7 +401,6 @@ void R_SetupGL (void)
 		qglEnable( GL_SCISSOR_TEST );
 		qglClearColor( 0.3, 0.3, 0.3, 1 );
 		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		qglClearColor( 1, 0, 0.5, 0.5 );
 		qglDisable( GL_SCISSOR_TEST );
 	}
 
@@ -434,6 +428,7 @@ void R_Clear (void)
 {
 	if (r_clear->value)
 	{
+		qglClearColor(1,0, 0.5, 0.5);
 		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }
@@ -566,12 +561,7 @@ void R_Register( void )
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
 
-	gl_particle_min_size = Cvar_Get( "gl_particle_min_size", "2", CVAR_ARCHIVE );
-	gl_particle_max_size = Cvar_Get( "gl_particle_max_size", "40", CVAR_ARCHIVE );
 	gl_particle_size = Cvar_Get( "gl_particle_size", "40", CVAR_ARCHIVE );
-	gl_particle_att_a = Cvar_Get( "gl_particle_att_a", "0.01", CVAR_ARCHIVE );
-	gl_particle_att_b = Cvar_Get( "gl_particle_att_b", "0.0", CVAR_ARCHIVE );
-	gl_particle_att_c = Cvar_Get( "gl_particle_att_c", "0.01", CVAR_ARCHIVE );
 
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
@@ -830,5 +820,4 @@ void R_ClearScreen()
 {
 	qglClearColor(0, 0, 0, 0);
 	qglClear(GL_COLOR_BUFFER_BIT);
-	qglClearColor(1,0, 0.5, 0.5);
 }

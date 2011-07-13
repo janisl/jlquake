@@ -480,14 +480,6 @@ struct backEndData_t
 #define CULL_CLIP	1		// clipped by one or more planes
 #define CULL_OUT	2		// completely outside the clipping planes
 
-bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
-void R_SharedRegister();
-const char* R_GetTitleForWindow();
-void R_CommonInitOpenGL();
-void R_CommonInit1();
-void R_CommonInit2();
-void R_CommonShutdown(bool destroyWindow);
-
 // fast float to int conversion
 #if id386 && !( (defined __linux__ || defined __FreeBSD__ ) && (defined __i386__ ) ) // rb010123
 long myftol(float f);
@@ -622,6 +614,12 @@ extern QCvar*	r_flares;				// light flares
 extern QCvar*	r_flareSize;
 extern QCvar*	r_flareFade;
 
+extern QCvar*	r_particle_min_size;
+extern QCvar*	r_particle_max_size;
+extern QCvar*	r_particle_att_a;
+extern QCvar*	r_particle_att_b;
+extern QCvar*	r_particle_att_c;
+
 extern trGlobals_t	tr;
 
 extern int			r_firstSceneDrawSurf;
@@ -644,6 +642,23 @@ extern int			c_visible_lightmaps;
 
 #define TURBSCALE (256.0 / (2 * M_PI))
 extern float		r_turbsin[256];
+
+/*
+============================================================
+
+INIT
+
+============================================================
+*/
+
+bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
+void R_SharedRegister();
+const char* R_GetTitleForWindow();
+void R_CommonInitOpenGL();
+void GL_SetDefaultState();
+void R_CommonInit1();
+void R_CommonInit2();
+void R_CommonShutdown(bool destroyWindow);
 
 /*
 ============================================================

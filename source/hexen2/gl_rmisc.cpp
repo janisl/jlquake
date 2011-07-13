@@ -415,29 +415,6 @@ void VID_SetPalette()
 	}
 }
 
-/*
-===============
-GL_Init
-===============
-*/
-void GL_Init()
-{
-	qglClearColor (1,0,0,0);
-	qglCullFace(GL_FRONT);
-	qglEnable(GL_TEXTURE_2D);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
-
-	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	qglShadeModel (GL_FLAT);
-
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	GL_TexEnv(GL_REPLACE);
-	qglDepthFunc (GL_LEQUAL);
-}
-
 void D_ShowLoadingSize(void)
 {
 	if (!vid_initialized)
@@ -460,7 +437,7 @@ void VID_Init()
 
 	VID_SetPalette();
 
-	GL_Init();
+	GL_SetDefaultState();
 
 	Sys_ShowConsole(0, false);
 

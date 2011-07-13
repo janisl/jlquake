@@ -1395,7 +1395,6 @@ void R_DrawMdlModel(trRefEntity_t* e)
 		GL_Bind(paliashdr->gl_texture[e->e.skinNum][anim]);
 	}
 
-	qglShadeModel(GL_SMOOTH);
 	GL_TexEnv(GL_MODULATE);
 
 	R_SetupAliasFrame(tr.currentEntity->e.frame, paliashdr);
@@ -1408,8 +1407,6 @@ void R_DrawMdlModel(trRefEntity_t* e)
 	}
 
 	GL_TexEnv(GL_REPLACE);
-
-	qglShadeModel(GL_FLAT);
 
 	qglPopMatrix();
 

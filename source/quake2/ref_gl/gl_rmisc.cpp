@@ -65,49 +65,6 @@ void R_InitParticleTexture (void)
 	r_particletexture = R_CreateImage("***particle***", (byte *)data, 8, 8, true, true, GL_CLAMP, false);
 }
 
-/*
-** GL_SetDefaultState
-*/
-void GL_SetDefaultState( void )
-{
-	qglClearColor (1,0, 0.5 , 0.5);
-	qglEnable(GL_TEXTURE_2D);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	glState.faceCulling = -1;
-	GL_Cull(CT_TWO_SIDED);
-	qglDepthFunc (GL_LEQUAL);
-
-	qglColor4f (1,1,1,1);
-
-	qglPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
-	qglShadeModel (GL_FLAT);
-
-	GL_TextureMode( r_textureMode->string );
-
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	GL_TexEnv( GL_REPLACE );
-
-	if ( qglPointParameterfEXT )
-	{
-		float attenuations[3];
-
-		attenuations[0] = gl_particle_att_a->value;
-		attenuations[1] = gl_particle_att_b->value;
-		attenuations[2] = gl_particle_att_c->value;
-
-		qglEnable( GL_POINT_SMOOTH );
-		qglPointParameterfEXT( GL_POINT_SIZE_MIN_EXT, gl_particle_min_size->value );
-		qglPointParameterfEXT( GL_POINT_SIZE_MAX_EXT, gl_particle_max_size->value );
-		qglPointParameterfvEXT( GL_DISTANCE_ATTENUATION_EXT, attenuations );
-	}
-
-	GL_UpdateSwapInterval();
-}
-
 void GL_UpdateSwapInterval( void )
 {
 	if ( r_swapInterval->modified )
