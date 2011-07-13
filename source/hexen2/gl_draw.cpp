@@ -118,9 +118,6 @@ void Draw_Init (void)
 	char	ver[40];
 	char temp[MAX_QPATH];
 
-	R_InitBackEndData();
-	R_CommonInit2();
-
 	// load the console background and the charset
 	// by hand, because we need to write the version
 	// string into the background before turning

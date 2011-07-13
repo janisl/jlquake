@@ -433,11 +433,9 @@ void VID_Init()
 
 	R_SharedRegister();
 
-	R_CommonInitOpenGL();
+	R_CommonInit2();
 
 	VID_SetPalette();
-
-	GL_SetDefaultState();
 
 	Sys_ShowConsole(0, false);
 

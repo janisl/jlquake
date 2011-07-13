@@ -36,22 +36,6 @@ QCvar	*r_portalOnly;
 QCvar	*r_debugSurface;
 
 /*
-** InitOpenGL
-**
-** This function is responsible for initializing a valid OpenGL subsystem.  This
-** is done by calling GLimp_Init (which gives us a working OGL subsystem) then
-** setting variables, checking GL constants, and reporting the gfx system config
-** to the user.
-*/
-static void InitOpenGL( void )
-{
-	R_CommonInitOpenGL();
-
-	// set default state
-	GL_SetDefaultState();
-}
-
-/*
 ===============
 R_Register
 ===============
@@ -93,10 +77,6 @@ void R_Init()
 	R_CommonInit1();
 
 	R_Register();
-
-	R_InitBackEndData();
-
-	InitOpenGL();
 
 	R_CommonInit2();
 }

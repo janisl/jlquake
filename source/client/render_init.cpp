@@ -613,7 +613,7 @@ static void R_SetMode()
 
 //==========================================================================
 //
-//	R_CommonInitOpenGL
+//	InitOpenGLSubsystem
 //
 //	This is the OpenGL initialization function.  It is responsible for
 // initialising OpenGL, setting extensions, creating a window of the
@@ -665,7 +665,7 @@ static void InitOpenGLSubsystem()
 //
 //==========================================================================
 
-void GL_SetDefaultState()
+static void GL_SetDefaultState()
 {
 	qglClearDepth(1.0f);
 
@@ -732,7 +732,7 @@ void GL_SetDefaultState()
 //
 //==========================================================================
 
-void R_CommonInitOpenGL()
+static void InitOpenGL()
 {	
 	//
 	// initialize OS specific portions of the renderer
@@ -756,6 +756,9 @@ void R_CommonInitOpenGL()
 
 	// print info
 	GfxInfo_f();
+
+	// set default state
+	GL_SetDefaultState();
 }
 
 //==========================================================================
@@ -830,6 +833,10 @@ void R_CommonInit1()
 
 void R_CommonInit2()
 {
+	R_InitBackEndData();
+
+	InitOpenGL();
+
 	R_InitImages();
 
 	R_InitShaders();

@@ -379,9 +379,7 @@ void VID_Init()
 
 	R_SharedRegister();
 	
-	R_CommonInitOpenGL();
-
-	GL_SetDefaultState ();
+	R_CommonInit2();
 
 	Sys_ShowConsole(0, false);
 

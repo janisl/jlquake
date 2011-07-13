@@ -591,16 +591,11 @@ int R_Init()
 	r_fullscreen->modified = false;
 	r_mode->modified = false;
 
-	R_CommonInitOpenGL();
-
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
 
 	Cvar_SetLatched( "scr_drawall", "0" );
 
-	GL_SetDefaultState();
-
-	R_InitBackEndData();
 	R_CommonInit2();
 	R_InitParticleTexture ();
 	Draw_InitLocal ();
