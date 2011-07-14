@@ -567,3 +567,5 @@ void Host_WriteConfiguration (const char *fname);
 void Cam_Track(usercmd_t *cmd);
 void Cam_FinishMove(usercmd_t *cmd);
 void Cam_Reset(void);
+
+void R_UpdateParticles (void);

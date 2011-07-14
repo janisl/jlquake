@@ -438,7 +438,6 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 	}
 }
 
-
 /*
 ===============
 R_DrawParticles
@@ -446,13 +445,7 @@ R_DrawParticles
 */
 void R_DrawParticles (void)
 {
-	cparticle_t		*p, *kill;
-	float			grav;
-	int				i;
-	float			time2, time3;
-	float			time1;
-	float			dvel;
-	float			frametime;
+	cparticle_t		*p;
 	unsigned char	*at;
 	unsigned char	theAlpha;
 	vec3_t			up, right;
@@ -466,6 +459,48 @@ void R_DrawParticles (void)
 	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
 	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
 
+	for (p=active_particles ; p ; p=p->next)
+	{
+		if (p->die < cl.time)
+		{
+			continue;
+		}
+
+		at = (byte *)&d_8to24table[(int)p->color];
+		if (p->type==pt_fire)
+			theAlpha = 255*(6-p->ramp)/6;
+		else
+			theAlpha = 255;
+		particle_t rp;
+		rp.rgba[0] = at[0];
+		rp.rgba[1] = at[1];
+		rp.rgba[2] = at[2];
+		rp.rgba[3] = theAlpha;
+		VectorCopy(p->org, rp.origin);
+		rp.size = 1;
+		R_DrawRegularParticle(&rp, up, right);
+	}
+
+	qglEnd ();
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
+	GL_TexEnv(GL_REPLACE);
+}
+
+/*
+===============
+R_UpdateParticles
+===============
+*/
+void R_UpdateParticles (void)
+{
+	cparticle_t		*p, *kill;
+	float			grav;
+	int				i;
+	float			time2, time3;
+	float			time1;
+	float			dvel;
+	float			frametime;
+    
 	frametime = host_frametime;
 	time3 = frametime * 15;
 	time2 = frametime * 10; // 15;
@@ -500,20 +535,6 @@ void R_DrawParticles (void)
 			}
 			break;
 		}
-
-		at = (byte *)&d_8to24table[(int)p->color];
-		if (p->type==pt_fire)
-			theAlpha = 255*(6-p->ramp)/6;
-		else
-			theAlpha = 255;
-		particle_t rp;
-		rp.rgba[0] = at[0];
-		rp.rgba[1] = at[1];
-		rp.rgba[2] = at[2];
-		rp.rgba[3] = theAlpha;
-		VectorCopy(p->org, rp.origin);
-		rp.size = 1;
-		R_DrawRegularParticle(&rp, up, right);
 
 		p->org[0] += p->vel[0]*frametime;
 		p->org[1] += p->vel[1]*frametime;
@@ -572,9 +593,4 @@ void R_DrawParticles (void)
 			break;
 		}
 	}
-
-	qglEnd ();
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
-	GL_TexEnv(GL_REPLACE);
 }
-

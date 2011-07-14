@@ -593,23 +593,14 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 	}
 }
 
-
 /*
 ===============
 R_DrawParticles
 ===============
 */
-extern	QCvar*	sv_gravity;
-
 void R_DrawParticles (void)
 {
-	cparticle_t		*p, *kill;
-	float			grav;
-	int				i;
-	float			time2, time3;
-	float			time1;
-	float			dvel;
-	float			frametime;
+	cparticle_t		*p;
 	
 	vec3_t			up, right;
 
@@ -620,6 +611,46 @@ void R_DrawParticles (void)
 
 	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
 	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
+	
+	for (p=active_particles ; p ; p=p->next)
+	{
+		if (p->die < cl.time)
+		{
+			continue;
+		}
+
+		particle_t rp;
+		VectorCopy(p->org, rp.origin);
+		rp.rgba[0] = r_palette[(int)p->color][0];
+		rp.rgba[1] = r_palette[(int)p->color][1];
+		rp.rgba[2] = r_palette[(int)p->color][2];
+		rp.rgba[3] = 255;
+		rp.size = 1;
+		R_DrawRegularParticle(&rp, up, right);
+	}
+
+	qglEnd ();
+	GL_State(GLS_DEFAULT);
+	GL_TexEnv(GL_REPLACE);
+}
+
+/*
+===============
+R_DrawParticles
+===============
+*/
+extern	QCvar*	sv_gravity;
+
+void R_UpdateParticles (void)
+{
+	cparticle_t		*p, *kill;
+	float			grav;
+	int				i;
+	float			time2, time3;
+	float			time1;
+	float			dvel;
+	float			frametime;
+	
 	frametime = cl.time - cl.oldtime;
 	time3 = frametime * 15;
 	time2 = frametime * 10; // 15;
@@ -655,14 +686,6 @@ void R_DrawParticles (void)
 			break;
 		}
 
-		particle_t rp;
-		VectorCopy(p->org, rp.origin);
-		rp.rgba[0] = r_palette[(int)p->color][0];
-		rp.rgba[1] = r_palette[(int)p->color][1];
-		rp.rgba[2] = r_palette[(int)p->color][2];
-		rp.rgba[3] = 255;
-		rp.size = 1;
-		R_DrawRegularParticle(&rp, up, right);
 		p->org[0] += p->vel[0]*frametime;
 		p->org[1] += p->vel[1]*frametime;
 		p->org[2] += p->vel[2]*frametime;
@@ -720,9 +743,4 @@ void R_DrawParticles (void)
 			break;
 		}
 	}
-
-	qglEnd ();
-	GL_State(GLS_DEFAULT);
-	GL_TexEnv(GL_REPLACE);
 }
-

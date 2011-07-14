@@ -724,6 +724,8 @@ void _Host_Frame (float time)
 	{
 		S_Respatialize(cl.viewentity, r_refdef.vieworg, r_refdef.viewaxis, 0);
 		CL_DecayLights ();
+
+		R_UpdateParticles();
 	}
 
 	S_Update();

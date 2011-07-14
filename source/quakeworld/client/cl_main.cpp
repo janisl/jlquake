@@ -1321,6 +1321,8 @@ void Host_Frame (float time)
 	{
 		S_Respatialize(cl.playernum + 1, r_refdef.vieworg, r_refdef.viewaxis, 0);
 		CL_DecayLights ();
+
+		R_UpdateParticles();
 	}
 
 	S_Update();

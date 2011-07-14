@@ -489,3 +489,5 @@ void	Skin_NextDownload (void);
 #define RSSHOT_HEIGHT 200
 
 extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
+
+void R_UpdateParticles (void);

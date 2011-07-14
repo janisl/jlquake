@@ -1529,15 +1529,8 @@ R_DrawParticles
 */
 void R_DrawParticles (void)
 {
-	cparticle_t		*p, *kill, temp_p;
-	float			grav,grav2,percent;
-	int				i;
-	float			time2, time3, time4;
-	float			time1;
-	float			dvel;
-	float			frametime;
+	cparticle_t		*p, temp_p;
 	float			vel0, vel1, vel2;
-	vec3_t			diff;
     
 	GL_Bind(tr.particleImage);
 
@@ -1549,6 +1542,55 @@ void R_DrawParticles (void)
 	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
 	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
 
+	for (p=active_particles ; p ; p=p->next)
+	{
+		if (p->die < cl.time)
+		{
+			continue;
+		}
+
+		if (p->type == pt_rain)
+		{
+			temp_p = *p;
+
+			vel0 = temp_p.vel[0]*.001;
+			vel1 = temp_p.vel[1]*.001;
+			vel2 = temp_p.vel[2]*.001;
+			for(int i = 0; i < 4; i++)
+			{
+				R_RenderParticle(&temp_p);
+
+				temp_p.org[0] += vel0;
+				temp_p.org[1] += vel1;
+				temp_p.org[2] += vel2;
+ 			}
+		}
+
+		R_RenderParticle(p);
+	}
+
+	qglEnd ();
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
+	GL_TexEnv(GL_REPLACE);
+}
+
+/*
+===============
+R_UpdateParticles
+===============
+*/
+void R_UpdateParticles (void)
+{
+	cparticle_t		*p, *kill;
+	float			grav,grav2,percent;
+	int				i;
+	float			time2, time3, time4;
+	float			time1;
+	float			dvel;
+	float			frametime;
+	float			vel0;
+	vec3_t			diff;
+    
 	frametime = host_frametime;
 	time4 = frametime * 20;
 	time3 = frametime * 15;
@@ -1559,12 +1601,6 @@ void R_DrawParticles (void)
 	dvel = 4*frametime;
 	percent = (frametime / HX_FRAME_TIME);
 
-/*	temp_p.org[0] = -1013;
-	temp_p.org[1] = -1863;
-	temp_p.org[2] = 50;
-	temp_p.color = 31;
-	R_RenderParticle(&temp_p);
-*/
 	for ( ;; ) 
 	{
 		kill = active_particles;
@@ -1594,24 +1630,6 @@ void R_DrawParticles (void)
 		}
 
 
-		if (p->type == pt_rain)
-		{
-			temp_p = *p;
-
-			vel0 = temp_p.vel[0]*.001;
-			vel1 = temp_p.vel[1]*.001;
-			vel2 = temp_p.vel[2]*.001;
-			for(i=0;i<4;i++)
-			{
-				R_RenderParticle(&temp_p);
-
-				temp_p.org[0] += vel0;
-				temp_p.org[1] += vel1;
-				temp_p.org[2] += vel2;
- 			}
-		}
-
-		R_RenderParticle(p);
 		p->org[0] += p->vel[0]*frametime;
 		p->org[1] += p->vel[1]*frametime;
 		p->org[2] += p->vel[2]*frametime;
@@ -1898,9 +1916,4 @@ void R_DrawParticles (void)
 			break;
 		}
 	}
-
-	qglEnd ();
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
-	GL_TexEnv(GL_REPLACE);
 }
-
