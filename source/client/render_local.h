@@ -125,8 +125,7 @@ struct lightstyle_t
 struct particle_t
 {
 	vec3_t	origin;
-	int		color;
-	float	alpha;
+	byte	rgba[4];
 };
 
 struct orientationr_t

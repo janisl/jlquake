@@ -74,8 +74,10 @@ void V_AddParticle (vec3_t org, int color, float alpha)
 		return;
 	p = &r_particles[r_numparticles++];
 	VectorCopy (org, p->origin);
-	p->color = color;
-	p->alpha = alpha;
+	p->rgba[0] = r_palette[color][0];
+	p->rgba[1] = r_palette[color][1];
+	p->rgba[2] = r_palette[color][2];
+	p->rgba[3] = (int)(alpha * 255);
 }
 
 /*
@@ -103,8 +105,10 @@ void V_TestParticles (void)
 			p->origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*d -
 			cl.refdef.viewaxis[1][j]*r + cl.refdef.viewaxis[2][j]*u;
 
-		p->color = 8;
-		p->alpha = cl_testparticles->value;
+		p->rgba[0] = r_palette[8][0];
+		p->rgba[1] = r_palette[8][1];
+		p->rgba[2] = r_palette[8][2];
+		p->rgba[3] = (int)(cl_testparticles->value * 255);
 	}
 }
 

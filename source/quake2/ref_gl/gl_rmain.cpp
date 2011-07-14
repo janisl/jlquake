@@ -177,13 +177,12 @@ void R_DrawEntitiesOnList (void)
 ** GL_DrawParticles
 **
 */
-void GL_DrawParticles( int num_particles, const particle_t particles[], const unsigned colortable[768] )
+void GL_DrawParticles( int num_particles, const particle_t particles[])
 {
 	const particle_t *p;
 	int				i;
 	vec3_t			up, right;
 	float			scale;
-	byte			color[4];
 
     GL_Bind(tr.particleImage);
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);		// no z buffering
@@ -205,10 +204,7 @@ void GL_DrawParticles( int num_particles, const particle_t particles[], const un
 		else
 			scale = 1 + scale * 0.004;
 
-		*(int *)color = colortable[p->color];
-		color[3] = p->alpha*255;
-
-		qglColor4ubv( color );
+		qglColor4ubv(p->rgba);
 
 		qglTexCoord2f( 1 - 0.0625 / 2, 0.0625 / 2 );
 		qglVertex3fv( p->origin );
@@ -240,7 +236,6 @@ void R_DrawParticles (void)
 	if (qglPointParameterfEXT )
 	{
 		int i;
-		unsigned char color[4];
 		const particle_t *p;
 
 		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
@@ -251,10 +246,7 @@ void R_DrawParticles (void)
 		qglBegin( GL_POINTS );
 		for ( i = 0, p = tr.refdef.particles; i < tr.refdef.num_particles; i++, p++ )
 		{
-			*(int *)color = d_8to24table[p->color];
-			color[3] = p->alpha*255;
-
-			qglColor4ubv( color );
+			qglColor4ubv(p->rgba);
 
 			qglVertex3fv( p->origin );
 		}
@@ -267,7 +259,7 @@ void R_DrawParticles (void)
 	}
 	else
 	{
-		GL_DrawParticles(tr.refdef.num_particles, tr.refdef.particles, d_8to24table);
+		GL_DrawParticles(tr.refdef.num_particles, tr.refdef.particles);
 	}
 }
 
