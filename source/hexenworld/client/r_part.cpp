@@ -21,7 +21,6 @@ int		ramp10[16] = { 432,432+1,432+2,432+3,432+4,432+5,432+6,432+7,432+8,432+9,43
 int		ramp11[8] = { 424,424+1,424+2,424+3,424+4,424+5,424+6,424+7};
 int		ramp12[8] = { 136,137,138,139,140,141,142,143};
 int		ramp13[16] = { 144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159};
-byte				*transTable;
 
 cparticle_t			*active_particles, *free_particles;
 
@@ -47,7 +46,6 @@ R_InitParticles
 void R_InitParticles (void)
 {
 	int		i;
-	fileHandle_t	f;
 
 	i = COM_CheckParm ("-particles");
 
@@ -66,18 +64,6 @@ void R_InitParticles (void)
 			Hunk_AllocName (r_numparticles * sizeof(cparticle_t), "particles");
 
 	leak_color = Cvar_Get("leak_color","251", CVAR_ARCHIVE);
-
-	transTable = (byte *)malloc(65536);
-	if (!transTable)
-		Sys_Error ("Couldn't load gfx/tinttab.lmp");
-
-	FS_FOpenFileRead ("gfx/tinttab.lmp", &f, true);	
-
-	if (f)
-	{
-		FS_Read(transTable,65536,f);
-		FS_FCloseFile(f);
-	}
 }
 
 
@@ -117,7 +103,7 @@ void R_DarkFieldParticles (refEntity_t *ent)
 				VectorScale (dir, vel, p->vel);
 			}
 }
-\
+
 //==========================================================================
 //
 // AllocParticle

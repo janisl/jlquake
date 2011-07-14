@@ -33,7 +33,6 @@ int		ramp9[16] = { 416,416+1,416+2,416+3,416+4,416+5,416+6,416+7,416+8,416+9,416
 int		ramp10[16] = { 432,432+1,432+2,432+3,432+4,432+5,432+6,432+7,432+8,432+9,432+10,432+11,432+12,432+13,432+14,432+15};
 int		ramp11[8] = { 424,424+1,424+2,424+3,424+4,424+5,424+6,424+7};
 int		ramp12[8] = { 136,137,138,139,140,141,142,143};
-byte *transTable;
 byte MyTable[256];
 
 cparticle_t	*active_particles, *free_particles;
@@ -79,7 +78,6 @@ R_InitParticles
 void R_InitParticles (void)
 {
 	int		i;
-	fileHandle_t	f;
 
 	i = COM_CheckParm ("-particles");
 
@@ -104,19 +102,6 @@ void R_InitParticles (void)
 	//JFM: snow test
 	snow_flurry = Cvar_Get("snow_flurry", "1", CVAR_ARCHIVE);
 	snow_active = Cvar_Get("snow_active", "1", CVAR_ARCHIVE);
-
-	transTable = (byte *)malloc(65536);
-	if (!transTable)
-		Sys_Error ("Couldn't load gfx/tinttab.lmp");
-
-	FS_FOpenFileRead ("gfx/tinttab.lmp", &f, true);
-
-	if (f)
-	{
-		FS_Read(transTable,65536,f);
-		FS_FCloseFile(f);
-	}
-
 }	
 
 void R_DarkFieldParticles (entity_t *ent)
