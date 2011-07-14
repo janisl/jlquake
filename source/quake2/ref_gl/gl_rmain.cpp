@@ -182,7 +182,6 @@ void GL_DrawParticles( int num_particles, const particle_t particles[])
 	const particle_t *p;
 	int				i;
 	vec3_t			up, right;
-	float			scale;
 
     GL_Bind(tr.particleImage);
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);		// no z buffering
@@ -194,30 +193,7 @@ void GL_DrawParticles( int num_particles, const particle_t particles[])
 
 	for ( p = particles, i=0 ; i < num_particles ; i++,p++)
 	{
-		// hack a scale up to keep particles from disapearing
-		scale = ( p->origin[0] - tr.viewParms.orient.origin[0] ) * tr.viewParms.orient.axis[0][0] + 
-			    ( p->origin[1] - tr.viewParms.orient.origin[1] ) * tr.viewParms.orient.axis[0][1] +
-			    ( p->origin[2] - tr.viewParms.orient.origin[2] ) * tr.viewParms.orient.axis[0][2];
-
-		if (scale < 20)
-			scale = 1;
-		else
-			scale = 1 + scale * 0.004;
-
-		qglColor4ubv(p->rgba);
-
-		qglTexCoord2f( 1 - 0.0625 / 2, 0.0625 / 2 );
-		qglVertex3fv( p->origin );
-
-		qglTexCoord2f(1 - 1.0625 / 2, 0.0625 /2 );
-		qglVertex3f( p->origin[0] + up[0]*scale, 
-			         p->origin[1] + up[1]*scale, 
-					 p->origin[2] + up[2]*scale);
-
-		qglTexCoord2f( 1 - 0.0625 / 2, 1.0625 /2 );
-		qglVertex3f( p->origin[0] + right[0]*scale, 
-			         p->origin[1] + right[1]*scale, 
-					 p->origin[2] + right[2]*scale);
+		R_DrawRegularParticle(p, up, right);
 	}
 
 	qglEnd ();

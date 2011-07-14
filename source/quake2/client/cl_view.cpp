@@ -78,6 +78,7 @@ void V_AddParticle (vec3_t org, int color, float alpha)
 	p->rgba[1] = r_palette[color][1];
 	p->rgba[2] = r_palette[color][2];
 	p->rgba[3] = (int)(alpha * 255);
+	p->size = 1;
 }
 
 /*
@@ -109,6 +110,7 @@ void V_TestParticles (void)
 		p->rgba[1] = r_palette[8][1];
 		p->rgba[2] = r_palette[8][2];
 		p->rgba[3] = (int)(cl_testparticles->value * 255);
+		p->size = 1;
 	}
 }
 

@@ -1485,7 +1485,6 @@ static vec3_t		up, right;
 
 void R_RenderParticle(cparticle_t *p)
 {
-	float			scale;
 	unsigned char	*at;
 	unsigned char	theAlpha;
 
@@ -1495,39 +1494,32 @@ void R_RenderParticle(cparticle_t *p)
 		return;
 	}
 
-	// hack a scale up to keep particles from disapearing
-	scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
-		+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
-	if (scale < 20)
-		scale = 1;
-	else
-		scale = 1 + scale * 0.004;
 	at = (byte *)&d_8to24table[(int)p->color];
 
+	particle_t rp;
+	VectorCopy(p->org, rp.origin);
 	if (p->color <= 255)
 	{
 		if (p->type==pt_fire)
 			theAlpha = 255*(6-p->ramp)/6;
-	//			theAlpha = 192;
-	//		else if (p->type==pt_explode || p->type==pt_explode2)
-	//			theAlpha = 255*(8-p->ramp)/8;
 		else
 			theAlpha = 255;
-		qglColor4ub (*at, *(at+1), *(at+2), theAlpha);
+		rp.rgba[0] = at[0];
+		rp.rgba[1] = at[1];
+		rp.rgba[2] = at[2];
+		rp.rgba[3] = theAlpha;
 	}
 	else
 	{
-		qglColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
+		byte* c = (byte *)&d_8to24TranslucentTable[(int)p->color-256];
+		rp.rgba[0] = c[0];
+		rp.rgba[1] = c[1];
+		rp.rgba[2] = c[2];
+		rp.rgba[3] = c[3];
 	}
+	rp.size = 1;
 
-//		qglColor3ubv (at);
-//		qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
-	qglTexCoord2f (1,0);
-	qglVertex3fv (p->org);
-	qglTexCoord2f (0.5,0);
-	qglVertex3f (p->org[0] + up[0]*scale, p->org[1] + up[1]*scale, p->org[2] + up[2]*scale);
-	qglTexCoord2f (1,0.5);
-	qglVertex3f (p->org[0] + right[0]*scale, p->org[1] + right[1]*scale, p->org[2] + right[2]*scale);
+	R_DrawRegularParticle(&rp, up, right);
 }
 
 /*

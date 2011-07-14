@@ -126,6 +126,7 @@ struct particle_t
 {
 	vec3_t	origin;
 	byte	rgba[4];
+	float	size;
 };
 
 struct orientationr_t
@@ -935,7 +936,8 @@ Particles
 */
 
 void R_InitParticleTexture();
-
-extern byte	dottexture[16][16];
+void R_DrawParticle(const particle_t* p, const vec3_t up, const vec3_t right,
+	float s1, float t1, float s2, float t2);
+void R_DrawRegularParticle(const particle_t* p, const vec3_t up, const vec3_t right);
 
 #endif

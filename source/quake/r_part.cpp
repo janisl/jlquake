@@ -612,7 +612,6 @@ void R_DrawParticles (void)
 	float			frametime;
 	
 	vec3_t			up, right;
-	float			scale;
 
     GL_Bind(tr.particleImage);
 	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
@@ -656,20 +655,14 @@ void R_DrawParticles (void)
 			break;
 		}
 
-		// hack a scale up to keep particles from disapearing
-		scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
-			+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
-		if (scale < 20)
-			scale = 1;
-		else
-			scale = 1 + scale * 0.004;
-		qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
-		qglTexCoord2f (1,0);
-		qglVertex3fv (p->org);
-		qglTexCoord2f (0.5,0);
-		qglVertex3f (p->org[0] + up[0]*scale, p->org[1] + up[1]*scale, p->org[2] + up[2]*scale);
-		qglTexCoord2f (1,0.5);
-		qglVertex3f (p->org[0] + right[0]*scale, p->org[1] + right[1]*scale, p->org[2] + right[2]*scale);
+		particle_t rp;
+		VectorCopy(p->org, rp.origin);
+		rp.rgba[0] = r_palette[(int)p->color][0];
+		rp.rgba[1] = r_palette[(int)p->color][1];
+		rp.rgba[2] = r_palette[(int)p->color][2];
+		rp.rgba[3] = 255;
+		rp.size = 1;
+		R_DrawRegularParticle(&rp, up, right);
 		p->org[0] += p->vel[0]*frametime;
 		p->org[1] += p->vel[1]*frametime;
 		p->org[2] += p->vel[2]*frametime;

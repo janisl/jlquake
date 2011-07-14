@@ -1143,8 +1143,6 @@ void R_DrawParticles (void)
 {
 	cparticle_t		*p, *kill;
 
-	float			scale;
-
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
 	GL_Bind(tr.particleImage);
@@ -1182,95 +1180,43 @@ void R_DrawParticles (void)
 			break;
 		}
 		
-		if (p->type==pt_rain)
+		particle_t rp;
+		VectorCopy(p->org, rp.origin);
+		if (p->color <= 255)
 		{
-			// hack a scale up to keep particles from disapearing
-			scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
-				+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
-			if (scale < 20)
-				scale = 1;
-			else
-				scale = 1 + scale * 0.004;
-			if (p->color <= 255)
-				qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
-			else
-				qglColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
-			
-			//fixme: need rain texture
-			qglTexCoord2f (1,0);
-			qglVertex3fv (p->org);
-			qglTexCoord2f (1,0.5);
-			qglVertex3f(p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
-			qglTexCoord2f (0.5,0);
-			qglVertex3f(p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
-		}
-		else if (p->type==pt_snow)
-		{
-//IDEA: Put a snowflake texture on two-sided poly
-//texture comes from glrmisc.c: R_InitParticleTexture 
-			scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
-				+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
-			if (scale < 20)
-				scale = p->count/10;	
-			else
-				scale = p->count/10 + scale * 0.004;
-
-			if (p->color <= 255)
-				qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
-			else
-				qglColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
-	
-			if(p->count>=69)
-				qglTexCoord2f (1,1);//happy snow!- bottom right
-			else if(p->count>=40)	
-				qglTexCoord2f (0,0);	//normal snow - top left
-			else if(p->count>=30)
-				qglTexCoord2f (0,1);	//bottom left
-			else
-				qglTexCoord2f (1,0);	//top right
-
-			qglVertex3fv (p->org);
-			if(p->count>=69)
-				qglTexCoord2f (1,.18);//top right
-			else if(p->count>=40)	
-				qglTexCoord2f (.815,0);//top right
-			else if(p->count>=30)
-				qglTexCoord2f (0.5,1);//bottom middle
-			else
-				qglTexCoord2f (1,0.5);//middle right
-
-			qglVertex3f(p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
-
-			if(p->count>=69)
-				qglTexCoord2f (.18,1);//bottom left
-			else if(p->count>=40)	
-				qglTexCoord2f (0,.815);//bottom left
-			else if(p->count>=30)
-				qglTexCoord2f (0,0.5);//left middle
-			else
-				qglTexCoord2f (0.5,0);//middle top
-			
-			qglVertex3f(p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
+			rp.rgba[0] = r_palette[(int)p->color][0];
+			rp.rgba[1] = r_palette[(int)p->color][1];
+			rp.rgba[2] = r_palette[(int)p->color][2];
+			rp.rgba[3] = 255;
 		}
 		else
 		{
-			// hack a scale up to keep particles from disapearing
-			scale = (p->org[0] - tr.viewParms.orient.origin[0])*tr.viewParms.orient.axis[0][0] + (p->org[1] - tr.viewParms.orient.origin[1])*tr.viewParms.orient.axis[0][1]
-				+ (p->org[2] - tr.viewParms.orient.origin[2])*tr.viewParms.orient.axis[0][2];
-			if (scale < 20)
-				scale = 1;
-			else
-				scale = 1 + scale * 0.004;
-			if (p->color <= 255)
-				qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
-			else
-				qglColor4ubv ((byte *)&d_8to24TranslucentTable[(int)p->color-256]);
-			qglTexCoord2f (1,0);
-			qglVertex3fv (p->org);
-			qglTexCoord2f (1,0.5);
-			qglVertex3f(p->org[0] + r_pup[0]*scale, p->org[1] + r_pup[1]*scale, p->org[2] + r_pup[2]*scale);
-			qglTexCoord2f (0.5,0);
-			qglVertex3f(p->org[0] + r_pright[0]*scale, p->org[1] + r_pright[1]*scale, p->org[2] + r_pright[2]*scale);
+			byte* c = (byte *)&d_8to24TranslucentTable[(int)p->color-256];
+			rp.rgba[0] = c[0];
+			rp.rgba[1] = c[1];
+			rp.rgba[2] = c[2];
+			rp.rgba[3] = c[3];
+		}
+		rp.size = p->type == pt_snow ? p->count / 10 : 1;
+		if (p->type==pt_snow && p->count>=69)
+		{
+			R_DrawParticle(&rp, r_pup, r_pright, 1, 1, .18, .18);
+		}
+		else if (p->type==pt_snow && p->count>=40)
+		{
+			R_DrawParticle(&rp, r_pup, r_pright, 0, 0, .815, .815);
+		}
+		else if (p->type==pt_snow && p->count>=30)
+		{
+			R_DrawParticle(&rp, r_pup, r_pright, 1, 0, 0.5, 0.5);
+		}
+		else if (p->type==pt_snow)
+		{
+			R_DrawParticle(&rp, r_pup, r_pright, 0, 1, 0.5, 0.5);
+		}
+		else
+		{
+			R_DrawRegularParticle(&rp, r_pup, r_pright);
 		}
 	}
 
