@@ -39,26 +39,8 @@ QCvar		*cl_testblend;
 
 QCvar		*cl_stats;
 
-
-int			r_numparticles;
-particle_t	r_particles[MAX_PARTICLES];
-
 char cl_weaponmodels[MAX_CLIENTWEAPONMODELS][MAX_QPATH];
 int num_cl_weaponmodels;
-
-/*
-====================
-V_ClearScene
-
-Specifies the model that will be used as the world
-====================
-*/
-void V_ClearScene (void)
-{
-	R_ClearScene();
-	r_numparticles = 0;
-}
-
 
 /*
 =====================
@@ -66,14 +48,14 @@ V_AddParticle
 
 =====================
 */
-void V_AddParticle (vec3_t org, int color, float alpha)
+void V_AddParticle(vec3_t org, int color, float alpha)
 {
-	particle_t	*p;
-
-	if (r_numparticles >= MAX_PARTICLES)
+	if (r_numparticles >= MAX_REF_PARTICLES)
+	{
 		return;
-	p = &r_particles[r_numparticles++];
-	VectorCopy (org, p->origin);
+	}
+	particle_t* p = &backEndData[tr.smpFrame]->particles[r_numparticles++];
+	VectorCopy(org, p->origin);
 	p->rgba[0] = r_palette[color][0];
 	p->rgba[1] = r_palette[color][1];
 	p->rgba[2] = r_palette[color][2];
@@ -100,7 +82,7 @@ void V_TestParticles (void)
 		d = i*0.25;
 		r = 4*((i&7)-3.5);
 		u = 4*(((i>>3)&7)-3.5);
-		p = &r_particles[i];
+		p = &backEndData[tr.smpFrame]->particles[i];
 
 		for (j=0 ; j<3 ; j++)
 			p->origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*d -
@@ -405,7 +387,7 @@ void V_RenderView( float stereo_separation )
 	// we can't use the old frame if the video mode has changed, though...
 	if (cl.frame.valid)
 	{
-		V_ClearScene ();
+		R_ClearScene();
 
 		// build a refresh entity list and calc cl.sim*
 		// this also calls CL_CalcViewValues which loads

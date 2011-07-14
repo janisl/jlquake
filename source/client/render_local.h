@@ -379,6 +379,8 @@ RENDERER BACK END COMMAND QUEUE
 #define MAX_POLYS		600
 #define MAX_POLYVERTS	3000
 
+#define MAX_REF_PARTICLES		(8 * 1024)
+
 enum renderCommand_t
 {
 	RC_END_OF_LIST,
@@ -474,6 +476,7 @@ struct backEndData_t
 	srfPoly_t*			polys;//[MAX_POLYS];
 	polyVert_t*			polyVerts;//[MAX_POLYVERTS];
 	lightstyle_t		lightstyles[MAX_LIGHTSTYLES];
+	particle_t			particles[MAX_REF_PARTICLES];
 	renderCommandList_t	commands;
 };
 
@@ -631,6 +634,8 @@ extern int			r_firstSceneDlight;
 extern int			r_numpolys;
 extern int			r_firstScenePoly;
 extern int			r_numpolyverts;
+extern int			r_numparticles;
+extern int			r_firstSceneParticle;
 
 extern float		s_flipMatrix[16];
 

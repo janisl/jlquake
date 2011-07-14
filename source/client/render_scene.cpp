@@ -47,6 +47,9 @@ int			r_firstScenePoly;
 
 int			r_numpolyverts;
 
+int			r_numparticles;
+int			r_firstSceneParticle;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -84,6 +87,9 @@ void R_ToggleSmpFrame()
 	r_firstScenePoly = 0;
 
 	r_numpolyverts = 0;
+
+	r_numparticles = 0;
+	r_firstSceneParticle = 0;
 }
 
 //==========================================================================
@@ -97,6 +103,7 @@ void R_ClearScene()
 	r_firstSceneEntity = r_numentities;
 	r_firstSceneDlight = r_numdlights;
 	r_firstScenePoly = r_numpolys;
+	r_firstSceneParticle = r_numparticles;
 }
 
 //==========================================================================
@@ -347,6 +354,9 @@ void R_CommonRenderScene(const refdef_t* fd)
 	tr.refdef.polys = &backEndData[tr.smpFrame]->polys[r_firstScenePoly];
 
 	tr.refdef.lightstyles = backEndData[tr.smpFrame]->lightstyles;
+
+	tr.refdef.num_particles = r_numparticles - r_firstSceneParticle;
+	tr.refdef.particles = &backEndData[tr.smpFrame]->particles[r_firstSceneParticle];
 
 	// turn off dynamic lighting globally by clearing all the
 	// dlights if it needs to be disabled or if vertex lighting is enabled

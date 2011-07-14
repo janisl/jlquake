@@ -499,7 +499,6 @@ extern	qhandle_t	gun_model;
 
 void V_Init (void);
 void V_RenderView( float stereo_separation );
-void V_ClearScene (void);
 void V_AddParticle (vec3_t org, int color, float alpha);
 
 //

@@ -33,7 +33,7 @@ int		ramp3[8] = {0x6d, 0x6b, 6, 5, 4, 3};
 cparticle_t	*active_particles, *free_particles;
 
 cparticle_t	*particles;
-int			r_numparticles;
+int			cl_numparticles;
 
 vec3_t			r_pright, r_pup, r_ppn;
 
@@ -51,17 +51,17 @@ void R_InitParticles (void)
 
 	if (i)
 	{
-		r_numparticles = (int)(QStr::Atoi(COM_Argv(i+1)));
-		if (r_numparticles < ABSOLUTE_MIN_PARTICLES)
-			r_numparticles = ABSOLUTE_MIN_PARTICLES;
+		cl_numparticles = (int)(QStr::Atoi(COM_Argv(i+1)));
+		if (cl_numparticles < ABSOLUTE_MIN_PARTICLES)
+			cl_numparticles = ABSOLUTE_MIN_PARTICLES;
 	}
 	else
 	{
-		r_numparticles = MAX_PARTICLES;
+		cl_numparticles = MAX_PARTICLES;
 	}
 
 	particles = (cparticle_t *)
-			Hunk_AllocName (r_numparticles * sizeof(cparticle_t), "particles");
+			Hunk_AllocName (cl_numparticles * sizeof(cparticle_t), "particles");
 }
 
 /*
@@ -142,9 +142,9 @@ void R_ClearParticles (void)
 	free_particles = &particles[0];
 	active_particles = NULL;
 
-	for (i=0 ;i<r_numparticles ; i++)
+	for (i=0 ;i<cl_numparticles ; i++)
 		particles[i].next = &particles[i+1];
-	particles[r_numparticles-1].next = NULL;
+	particles[cl_numparticles-1].next = NULL;
 }
 
 

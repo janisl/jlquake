@@ -20,9 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // r_main.c
 #include "gl_local.h"
 
-extern int				r_numparticles;
-extern particle_t		r_particles[MAX_PARTICLES];
-
 refimport_t	ri;
 
 glstate2_t  gl_state;
@@ -420,8 +417,6 @@ void R_RenderView (refdef_t *fd)
 
 	R_CommonRenderScene(fd);
 
-	tr.refdef.num_particles = r_numparticles;
-	tr.refdef.particles = r_particles;
 	r_newrefdef = *fd;
 
 	glState.finishCalled = false;

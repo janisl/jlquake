@@ -38,7 +38,7 @@ byte MyTable[256];
 cparticle_t	*active_particles, *free_particles;
 
 cparticle_t	*particles;
-int			r_numparticles;
+int			cl_numparticles;
 
 vec3_t			r_pright, r_pup, r_ppn;
 static vec3_t		rider_origin;
@@ -85,17 +85,17 @@ void R_InitParticles (void)
 
 	if (i)
 	{
-		r_numparticles = (int)(QStr::Atoi(COM_Argv(i+1)));
-		if (r_numparticles < ABSOLUTE_MIN_PARTICLES)
-			r_numparticles = ABSOLUTE_MIN_PARTICLES;
+		cl_numparticles = (int)(QStr::Atoi(COM_Argv(i+1)));
+		if (cl_numparticles < ABSOLUTE_MIN_PARTICLES)
+			cl_numparticles = ABSOLUTE_MIN_PARTICLES;
 	}
 	else
 	{
-		r_numparticles = MAX_PARTICLES;
+		cl_numparticles = MAX_PARTICLES;
 	}
 
 	particles = (cparticle_t *)
-			Hunk_AllocName (r_numparticles * sizeof(cparticle_t), "particles");
+			Hunk_AllocName (cl_numparticles * sizeof(cparticle_t), "particles");
 
 	leak_color = Cvar_Get("leak_color", "251", CVAR_ARCHIVE);
 
@@ -174,11 +174,11 @@ void R_ClearParticles (void)
 	free_particles = &particles[0];
 	active_particles = NULL;
 
-	if (!r_numparticles)
+	if (!cl_numparticles)
 		return;
-	for (i=0 ;i<r_numparticles ; i++)
+	for (i=0 ;i<cl_numparticles ; i++)
 		particles[i].next = &particles[i+1];
-	particles[r_numparticles-1].next = NULL;
+	particles[cl_numparticles-1].next = NULL;
 }
 
 
@@ -1141,7 +1141,7 @@ extern	QCvar*	sv_gravity;
 
 void R_DrawParticles (void)
 {
-	cparticle_t		*p, *kill;
+	cparticle_t		*p;
 
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
@@ -1152,32 +1152,11 @@ void R_DrawParticles (void)
 	VectorScale(tr.viewParms.orient.axis[2], 1.5, r_pup);
 	VectorScale(tr.viewParms.orient.axis[1], -1.5, r_pright);
 
-	for ( ;; ) 
-	{
-		kill = active_particles;
-		if (kill && kill->die < cl.time)
-		{
-			active_particles = kill->next;
-			kill->next = free_particles;
-			free_particles = kill;
-			continue;
-		}
-		break;
-	}
-
 	for (p=active_particles ; p ; p=p->next)
 	{
-		for ( ;; )
+		if (p->die < cl.time)
 		{
-			kill = p->next;
-			if (kill && kill->die < cl.time)
-			{
-				p->next = kill->next;
-				kill->next = free_particles;
-				free_particles = kill;
-				continue;
-			}
-			break;
+			continue;
 		}
 		
 		particle_t rp;
@@ -1198,7 +1177,21 @@ void R_DrawParticles (void)
 			rp.rgba[3] = c[3];
 		}
 		rp.size = p->type == pt_snow ? p->count / 10 : 1;
-		if (p->type==pt_snow && p->count>=69)
+		if (p->type == pt_rain)
+		{
+			float vel0 = p->vel[0]*.001;
+			float vel1 = p->vel[1]*.001;
+			float vel2 = p->vel[2]*.001;
+			for(int i = 0; i < 4; i++)
+			{
+				R_DrawRegularParticle(&rp, r_pup, r_pright);
+
+				rp.origin[0] += vel0;
+				rp.origin[1] += vel1;
+				rp.origin[2] += vel2;
+ 			}
+		}
+		else if (p->type==pt_snow && p->count>=69)
 		{
 			R_DrawParticle(&rp, r_pup, r_pright, 1, 1, .18, .18);
 		}

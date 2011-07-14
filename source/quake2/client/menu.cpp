@@ -3954,7 +3954,7 @@ void PlayerConfig_MenuDraw( void )
 		AnglesToAxis(angles, entity.axis);
 		if ( ++yaw > 360 )
 			yaw -= 360;
-		V_ClearScene();
+		R_ClearScene();
 		R_AddRefEntityToScene(&entity);
 		VectorClear(v_blend);
 
