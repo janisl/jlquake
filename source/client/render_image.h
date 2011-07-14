@@ -92,7 +92,6 @@ void R_SaveTGA(const char* FileName, byte* Data, int Width, int Height, bool Hav
 void R_LoadWAL(const char* FileName, byte** Pic, int* Width, int* Height);
 
 extern byte			host_basepal[768];
-extern byte			r_palette[256][4];
 extern unsigned*	d_8to24table;
 
 extern int			ColorIndex[16];

@@ -293,6 +293,28 @@ void R_AddLightStyleToScene(int style, float r, float g, float b)
 
 //==========================================================================
 //
+//	R_AddParticleToScene
+//
+//==========================================================================
+
+void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QParticleTexture Texture)
+{
+	if (r_numparticles >= MAX_REF_PARTICLES)
+	{
+		return;
+	}
+	particle_t* p = &backEndData[tr.smpFrame]->particles[r_numparticles++];
+	VectorCopy(org, p->origin);
+	p->rgba[0] = r;
+	p->rgba[1] = g;
+	p->rgba[2] = b;
+	p->rgba[3] = a;
+	p->size = size;
+	p->Texture = Texture;
+}
+
+//==========================================================================
+//
 //	R_CommonRenderScene
 //
 //==========================================================================

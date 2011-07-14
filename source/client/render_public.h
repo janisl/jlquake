@@ -239,6 +239,16 @@ struct fontInfo_t
 //
 //==========================================================================
 
+enum QParticleTexture
+{
+	PARTTTEX_Default,
+	//	Hexen 2 snow particles
+	PARTTEX_Snow1,
+	PARTTEX_Snow2,
+	PARTTEX_Snow3,
+	PARTTEX_Snow4,
+};
+
 struct image_t;
 
 image_t* R_PicFromWad(const char* Name);
@@ -265,9 +275,13 @@ void R_AddLightToScene(const vec3_t Origin, float Intensity, float r, float g, f
 void R_AddAdditiveLightToScene(const vec3_t Origin, float Intensity, float r, float g, float b);
 void R_AddPolyToScene(qhandle_t hShader , int NumVerts, const polyVert_t* Verts, int Num);
 void R_AddLightStyleToScene(int style, float r, float g, float b);
+void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QParticleTexture Texture);
+
 float R_CalcEntityLight(refEntity_t* e);
 void R_SetSky(const char* name, float rotate, vec3_t axis);
 
 void R_SetColor(const float* rgba);
 void R_StretchPic(float x, float y, float w, float h, 
 	float s1, float t1, float s2, float t2, qhandle_t hShader);
+
+extern byte			r_palette[256][4];

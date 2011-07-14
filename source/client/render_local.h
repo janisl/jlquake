@@ -127,6 +127,7 @@ struct particle_t
 	vec3_t	origin;
 	byte	rgba[4];
 	float	size;
+	QParticleTexture	Texture;
 };
 
 struct orientationr_t

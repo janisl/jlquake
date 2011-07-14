@@ -43,27 +43,6 @@ char cl_weaponmodels[MAX_CLIENTWEAPONMODELS][MAX_QPATH];
 int num_cl_weaponmodels;
 
 /*
-=====================
-V_AddParticle
-
-=====================
-*/
-void V_AddParticle(vec3_t org, int color, float alpha)
-{
-	if (r_numparticles >= MAX_REF_PARTICLES)
-	{
-		return;
-	}
-	particle_t* p = &backEndData[tr.smpFrame]->particles[r_numparticles++];
-	VectorCopy(org, p->origin);
-	p->rgba[0] = r_palette[color][0];
-	p->rgba[1] = r_palette[color][1];
-	p->rgba[2] = r_palette[color][2];
-	p->rgba[3] = (int)(alpha * 255);
-	p->size = 1;
-}
-
-/*
 ================
 V_TestParticles
 
