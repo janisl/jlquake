@@ -55,40 +55,6 @@ void	R_InitTextures (void)
 	}	
 }
 
-byte	dottexture[8][8] =
-{
-	{0,1,1,0,0,0,0,0},
-	{1,1,1,1,0,0,0,0},
-	{1,1,1,1,0,0,0,0},
-	{0,1,1,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-};
-void R_InitParticleTexture (void)
-{
-	int		x,y;
-	byte	data[8][8][4];
-
-	//
-	// particle texture
-	//
-	for (x=0 ; x<8 ; x++)
-	{
-		for (y=0 ; y<8 ; y++)
-		{
-			data[y][x][0] = 255;
-			data[y][x][1] = 255;
-			data[y][x][2] = 255;
-			data[y][x][3] = dottexture[x][y]*255;
-		}
-	}
-	particletexture = R_CreateImage("*particle", (byte*)data, 8, 8, false, false, GL_CLAMP, false);
-
-	GL_TexEnv(GL_MODULATE);
-}
-
 /*
 ===============
 R_Envmap_f
@@ -183,7 +149,6 @@ void R_Init (void)
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
 	R_InitParticles ();
-	R_InitParticleTexture ();
 }
 
 /*

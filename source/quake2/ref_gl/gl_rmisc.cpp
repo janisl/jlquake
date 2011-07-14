@@ -27,44 +27,6 @@ refexport_t	re;
 viddef_t	viddef;				// global video state; used by other modules
 qboolean	reflib_active = 0;
 
-/*
-==================
-R_InitParticleTexture
-==================
-*/
-byte	dottexture[8][8] =
-{
-	{0,0,0,0,0,0,0,0},
-	{0,0,1,1,0,0,0,0},
-	{0,1,1,1,1,0,0,0},
-	{0,1,1,1,1,0,0,0},
-	{0,0,1,1,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-};
-
-void R_InitParticleTexture (void)
-{
-	int		x,y;
-	byte	data[8][8][4];
-
-	//
-	// particle texture
-	//
-	for (x=0 ; x<8 ; x++)
-	{
-		for (y=0 ; y<8 ; y++)
-		{
-			data[y][x][0] = 255;
-			data[y][x][1] = 255;
-			data[y][x][2] = 255;
-			data[y][x][3] = dottexture[x][y]*255;
-		}
-	}
-	r_particletexture = R_CreateImage("***particle***", (byte *)data, 8, 8, true, true, GL_CLAMP, false);
-}
-
 void GL_UpdateSwapInterval( void )
 {
 	if ( r_swapInterval->modified )

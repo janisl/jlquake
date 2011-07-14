@@ -34,6 +34,7 @@ set(CLIENT_FILES
 	render_model_sp2.cpp
 	render_model_spr.cpp
 	render_noise.cpp
+	render_particle.cpp
 	render_qgl.cpp
 	render_scene.cpp
 	render_screenshot.cpp

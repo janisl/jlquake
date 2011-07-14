@@ -614,7 +614,7 @@ void R_DrawParticles (void)
 	vec3_t			up, right;
 	float			scale;
 
-    GL_Bind(particletexture);
+    GL_Bind(tr.particleImage);
 	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
@@ -664,11 +664,11 @@ void R_DrawParticles (void)
 		else
 			scale = 1 + scale * 0.004;
 		qglColor3ubv ((byte *)&d_8to24table[(int)p->color]);
-		qglTexCoord2f (0,0);
-		qglVertex3fv (p->org);
 		qglTexCoord2f (1,0);
+		qglVertex3fv (p->org);
+		qglTexCoord2f (0.5,0);
 		qglVertex3f (p->org[0] + up[0]*scale, p->org[1] + up[1]*scale, p->org[2] + up[2]*scale);
-		qglTexCoord2f (0,1);
+		qglTexCoord2f (1,0.5);
 		qglVertex3f (p->org[0] + right[0]*scale, p->org[1] + right[1]*scale, p->org[2] + right[2]*scale);
 		p->org[0] += p->vel[0]*frametime;
 		p->org[1] += p->vel[1]*frametime;

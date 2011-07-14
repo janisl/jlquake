@@ -297,6 +297,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_particle.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_qgl.cpp"
 				>
 			</File>

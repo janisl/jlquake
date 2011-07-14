@@ -1147,7 +1147,7 @@ void R_DrawParticles (void)
 
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
-	GL_Bind(particletexture);
+	GL_Bind(tr.particleImage);
 	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
 

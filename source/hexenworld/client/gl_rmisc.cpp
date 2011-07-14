@@ -44,40 +44,6 @@ void	R_InitTextures (void)
 	}	
 }
 
-byte	dottexture[8][8] =
-{
-	{0,1,1,0,0,0,0,0},
-	{1,1,1,1,0,0,0,0},
-	{1,1,1,1,0,0,0,0},
-	{0,1,1,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-	{0,0,0,0,0,0,0,0},
-};
-void R_InitParticleTexture (void)
-{
-	int		x,y;
-	byte	data[8][8][4];
-
-	//
-	// particle texture
-	//
-	for (x=0 ; x<8 ; x++)
-	{
-		for (y=0 ; y<8 ; y++)
-		{
-			data[y][x][0] = 255;
-			data[y][x][1] = 255;
-			data[y][x][2] = 255;
-			data[y][x][3] = dottexture[x][y]*255;
-		}
-	}
-	particletexture = R_CreateImage("*particle", (byte*)data, 8, 8, false, false, GL_CLAMP, false);
-
-	GL_TexEnv(GL_MODULATE);
-}
-
 /*
 ===============
 R_Envmap_f
@@ -179,7 +145,6 @@ void R_Init (void)
 	r_teamcolor = Cvar_Get("r_teamcolor", "187", CVAR_ARCHIVE);
 
 	R_InitParticles ();
-	R_InitParticleTexture ();
 
 	playerTranslation = (byte *)COM_LoadHunkFile ("gfx/player.lmp");
 	if (!playerTranslation)

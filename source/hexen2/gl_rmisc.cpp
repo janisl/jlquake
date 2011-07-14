@@ -47,64 +47,6 @@ void	R_InitTextures (void)
 }
 
 /*
-byte	dottexture[8][8] =
-{
-	{0,1,1,0,0,0,0,0},
-	{1,1,1,1,0,0,0,0},
-	{1,1,1,1,0,0,0,0},
-	{0,1,1,0,0,0,0,0},
-	{0,0,0,0,1,0,0,0},
-	{0,0,0,0,1,0,0,1},
-	{0,0,0,0,0,0,1,0},
-	{0,0,0,1,0,0,0,1},
-};
-*/
-
-byte	dottexture[16][16] =
-{
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},//1
-	{0,0,0,1,0,1,0,0,0,0,0,0,1,1,0,0},
-	{0,0,0,0,1,0,0,0,0,0,0,1,1,1,1,0},
-	{0,1,0,1,1,1,0,1,0,0,0,1,1,1,1,0},//4
-	{0,0,1,1,1,1,1,0,0,0,0,0,1,1,0,0},
-	{0,1,0,1,1,1,0,1,0,0,0,0,0,0,0,0},
-	{0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},
-	{0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0},//8
-	{0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0},
-	{0,0,0,0,0,0,0,0,0,1,1,1,0,1,0,0},
-	{0,0,0,0,0,0,0,0,1,1,0,1,1,0,1,0},
-	{0,0,0,1,0,0,0,0,1,1,1,1,1,0,1,0},//12
-	{0,1,1,1,0,0,0,0,1,1,0,1,1,0,1,0},
-	{0,0,1,1,1,0,0,0,0,1,1,1,0,1,0,0},
-	{0,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0},
-	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},//16
-};
-
-void R_InitParticleTexture (void)
-{
-	int		x,y;
-	byte	texsize = 16;//was 8
-	byte	data[16][16][4];
-
-	//
-	// particle texture
-	//
-	for (x=0 ; x<texsize ; x++)
-	{
-		for (y=0 ; y<texsize ; y++)
-		{
-			data[y][x][0] = 255;
-			data[y][x][1] = 255;
-			data[y][x][2] = 255;
-			data[y][x][3] = dottexture[x][y]*255;
-		}
-	}
-	particletexture = R_CreateImage("*particle", (byte*)data, texsize, texsize, false, false, GL_CLAMP, false);
-
-	GL_TexEnv(GL_MODULATE);
-}
-
-/*
 ===============
 R_Envmap_f
 
@@ -198,7 +140,6 @@ void R_Init (void)
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
 	R_InitParticles ();
-	R_InitParticleTexture ();
 
 	playerTranslation = (byte *)COM_LoadHunkFile ("gfx/player.lmp");
 	if (!playerTranslation)

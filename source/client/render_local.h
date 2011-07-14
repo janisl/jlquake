@@ -288,6 +288,7 @@ struct trGlobals_t
 	image_t*				whiteImage;			// full of 0xff
 	image_t*				scratchImage[32];
 	image_t*				fogImage;
+	image_t*				particleImage;		// little dot for particles
 
 	image_t*				solidskytexture;
 	image_t*				alphaskytexture;
@@ -925,5 +926,17 @@ Screenshots
 const void* RB_TakeScreenshotCmd(const void* data);
 void R_ScreenShot_f();
 void R_ScreenShotJPEG_f();
+
+/*
+============================================================
+
+Particles
+
+============================================================
+*/
+
+void R_InitParticleTexture();
+
+extern byte	dottexture[16][16];
 
 #endif

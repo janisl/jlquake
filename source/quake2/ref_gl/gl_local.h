@@ -44,10 +44,6 @@ void GL_UpdateSwapInterval( void );
 
 //====================================================
 
-
-extern	image_t		*r_particletexture;
-
-
 //
 // screen size info
 //
@@ -77,7 +73,6 @@ void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
 void R_DrawBeam( trRefEntity_t *e );
-void R_InitParticleTexture (void);
 void Draw_InitLocal (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);

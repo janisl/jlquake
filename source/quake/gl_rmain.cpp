@@ -26,7 +26,6 @@ qboolean	r_cache_thrash;		// compatability
 
 qboolean	envmap;				// true during envmap command capture 
 
-image_t*	particletexture;	// little dot for particles
 image_t*	playertextures[16];		// up to 16 color translated skins
 
 bool		r_third_person;

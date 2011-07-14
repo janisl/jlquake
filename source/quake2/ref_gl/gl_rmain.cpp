@@ -27,8 +27,6 @@ refimport_t	ri;
 
 glstate2_t  gl_state;
 
-image_t		*r_particletexture;	// little dot for particles
-
 float		v_blend[4];			// final blending color
 
 //
@@ -187,7 +185,7 @@ void GL_DrawParticles( int num_particles, const particle_t particles[], const un
 	float			scale;
 	byte			color[4];
 
-    GL_Bind(r_particletexture);
+    GL_Bind(tr.particleImage);
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);		// no z buffering
 	GL_TexEnv( GL_MODULATE );
 	qglBegin( GL_TRIANGLES );
@@ -212,15 +210,15 @@ void GL_DrawParticles( int num_particles, const particle_t particles[], const un
 
 		qglColor4ubv( color );
 
-		qglTexCoord2f( 0.0625, 0.0625 );
+		qglTexCoord2f( 1 - 0.0625 / 2, 0.0625 / 2 );
 		qglVertex3fv( p->origin );
 
-		qglTexCoord2f( 1.0625, 0.0625 );
+		qglTexCoord2f(1 - 1.0625 / 2, 0.0625 /2 );
 		qglVertex3f( p->origin[0] + up[0]*scale, 
 			         p->origin[1] + up[1]*scale, 
 					 p->origin[2] + up[2]*scale);
 
-		qglTexCoord2f( 0.0625, 1.0625 );
+		qglTexCoord2f( 1 - 0.0625 / 2, 1.0625 /2 );
 		qglVertex3f( p->origin[0] + right[0]*scale, 
 			         p->origin[1] + right[1]*scale, 
 					 p->origin[2] + right[2]*scale);
@@ -597,7 +595,6 @@ int R_Init()
 	Cvar_SetLatched( "scr_drawall", "0" );
 
 	R_CommonInit2();
-	R_InitParticleTexture ();
 	Draw_InitLocal ();
 
 	err = qglGetError();

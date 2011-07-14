@@ -93,7 +93,6 @@ typedef struct particle_s
 extern	qboolean	r_cache_thrash;		// compatability
 
 extern	qboolean	envmap;
-extern	image_t*	particletexture;
 extern	image_t*	playertextures[16];
 
 extern	QCvar*	r_norefresh;
