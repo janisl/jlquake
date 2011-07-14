@@ -549,6 +549,8 @@ int R_Init()
 
 	R_Register();
 
+	R_CommonInit2();
+
 	r_fullscreen->modified = false;
 	r_mode->modified = false;
 
@@ -557,7 +559,6 @@ int R_Init()
 
 	Cvar_SetLatched( "scr_drawall", "0" );
 
-	R_CommonInit2();
 	Draw_InitLocal ();
 
 	err = qglGetError();
