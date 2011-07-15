@@ -2202,7 +2202,7 @@ void CL_AddParticles (void)
 		org[1] = p->org[1] + p->vel[1]*time + p->accel[1]*time2;
 		org[2] = p->org[2] + p->vel[2]*time + p->accel[2]*time2;
 
-		R_AddParticleToScene(org, r_palette[color][0], r_palette[color][1], r_palette[color][1], (int)(alpha * 255), 1, PARTTTEX_Default);
+		R_AddParticleToScene(org, r_palette[color][0], r_palette[color][1], r_palette[color][1], (int)(alpha * 255), 1, PARTTEX_Default);
 		// PMM
 		if (p->alphavel == INSTANT_PARTICLE)
 		{

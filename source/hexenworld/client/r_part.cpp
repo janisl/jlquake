@@ -27,7 +27,6 @@ cparticle_t			*active_particles, *free_particles;
 cparticle_t			*particles;
 int					cl_numparticles;
 
-vec3_t				r_pright, r_pup, r_ppn;
 static vec3_t		rider_origin;
 
 QCvar*				leak_color;
@@ -1480,46 +1479,32 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 	}
 }
 
-static vec3_t		up, right;
-
-
-void R_RenderParticle(cparticle_t *p)
+static void AddParticle(cparticle_t *p)
 {
-	unsigned char	*at;
-	unsigned char	theAlpha;
-
 	if (p->color < 0 || p->color > 511)
 	{
 		Con_Printf("Invalid color for particle type %d\n",(int)p->type);
 		return;
 	}
 
-	at = (byte *)&d_8to24table[(int)p->color];
+	byte* at;
+	byte theAlpha;
 
-	particle_t rp;
-	VectorCopy(p->org, rp.origin);
 	if (p->color <= 255)
 	{
+		at = r_palette[(int)p->color];
 		if (p->type==pt_fire)
 			theAlpha = 255*(6-p->ramp)/6;
 		else
 			theAlpha = 255;
-		rp.rgba[0] = at[0];
-		rp.rgba[1] = at[1];
-		rp.rgba[2] = at[2];
-		rp.rgba[3] = theAlpha;
 	}
 	else
 	{
-		byte* c = (byte *)&d_8to24TranslucentTable[(int)p->color-256];
-		rp.rgba[0] = c[0];
-		rp.rgba[1] = c[1];
-		rp.rgba[2] = c[2];
-		rp.rgba[3] = c[3];
+		at = (byte *)&d_8to24TranslucentTable[(int)p->color-256];
+		theAlpha = at[3];
 	}
-	rp.size = 1;
 
-	R_DrawRegularParticle(&rp, up, right);
+	R_AddParticleToScene(p->org, at[0], at[1], at[2], theAlpha, 1, PARTTEX_Default);
 }
 
 /*
@@ -1527,22 +1512,12 @@ void R_RenderParticle(cparticle_t *p)
 R_DrawParticles
 ===============
 */
-void R_DrawParticles (void)
+void CL_AddParticles()
 {
-	cparticle_t		*p, temp_p;
+	cparticle_t		temp_p;
 	float			vel0, vel1, vel2;
     
-	GL_Bind(tr.particleImage);
-
-	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-
-	GL_TexEnv(GL_MODULATE);
-	qglBegin (GL_TRIANGLES);
-
-	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
-	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
-
-	for (p=active_particles ; p ; p=p->next)
+	for (cparticle_t* p = active_particles; p; p = p->next)
 	{
 		if (p->die < cl.time)
 		{
@@ -1558,7 +1533,7 @@ void R_DrawParticles (void)
 			vel2 = temp_p.vel[2]*.001;
 			for(int i = 0; i < 4; i++)
 			{
-				R_RenderParticle(&temp_p);
+				AddParticle(&temp_p);
 
 				temp_p.org[0] += vel0;
 				temp_p.org[1] += vel1;
@@ -1567,8 +1542,36 @@ void R_DrawParticles (void)
 		}
 		else
 		{
-			R_RenderParticle(p);
+			AddParticle(p);
 		}
+	}
+
+	qglEnd ();
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
+	GL_TexEnv(GL_REPLACE);
+}
+
+/*
+===============
+R_DrawParticles
+===============
+*/
+void R_DrawParticles (void)
+{
+	GL_Bind(tr.particleImage);
+
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+
+	GL_TexEnv(GL_MODULATE);
+	qglBegin (GL_TRIANGLES);
+
+	vec3_t		up, right;
+	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
+	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
+
+	for (int i = 0; i < tr.refdef.num_particles; i++)
+	{
+		R_DrawRegularParticle(&tr.refdef.particles[i], up, right);
 	}
 
 	qglEnd ();

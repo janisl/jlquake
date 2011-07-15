@@ -35,9 +35,6 @@ cparticle_t	*active_particles, *free_particles;
 cparticle_t	*particles;
 int			cl_numparticles;
 
-vec3_t			r_pright, r_pup, r_ppn;
-
-
 /*
 ===============
 R_InitParticles
@@ -443,42 +440,49 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 R_DrawParticles
 ===============
 */
-void R_DrawParticles (void)
+void CL_AddParticles()
 {
-	cparticle_t		*p;
-	unsigned char	*at;
-	unsigned char	theAlpha;
-	vec3_t			up, right;
-    
-	GL_Bind(tr.particleImage);
-	
-	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	GL_TexEnv(GL_MODULATE);
-	qglBegin (GL_TRIANGLES);
-
-	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
-	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
-
-	for (p=active_particles ; p ; p=p->next)
+	for (cparticle_t* p = active_particles; p; p = p->next)
 	{
 		if (p->die < cl.time)
 		{
 			continue;
 		}
 
-		at = (byte *)&d_8to24table[(int)p->color];
-		if (p->type==pt_fire)
-			theAlpha = 255*(6-p->ramp)/6;
+		byte* at = r_palette[(int)p->color];
+		byte theAlpha;
+		if (p->type == pt_fire)
+		{
+			theAlpha = 255 * (6 - p->ramp) / 6;
+		}
 		else
+		{
 			theAlpha = 255;
-		particle_t rp;
-		rp.rgba[0] = at[0];
-		rp.rgba[1] = at[1];
-		rp.rgba[2] = at[2];
-		rp.rgba[3] = theAlpha;
-		VectorCopy(p->org, rp.origin);
-		rp.size = 1;
-		R_DrawRegularParticle(&rp, up, right);
+		}
+		R_AddParticleToScene(p->org, at[0], at[1], at[2], theAlpha, 1, PARTTEX_Default);
+	}
+}
+
+/*
+===============
+R_DrawParticles
+===============
+*/
+void R_DrawParticles (void)
+{
+	GL_Bind(tr.particleImage);
+	
+	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	GL_TexEnv(GL_MODULATE);
+	qglBegin (GL_TRIANGLES);
+
+	vec3_t			up, right;
+	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
+	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
+
+	for (int i = 0; i < tr.refdef.num_particles; i++)
+	{
+		R_DrawRegularParticle(&tr.refdef.particles[i], up, right);
 	}
 
 	qglEnd ();

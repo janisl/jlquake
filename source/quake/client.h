@@ -355,3 +355,4 @@ void CL_InitTEnts (void);
 void CL_SignonReply (void);
 
 void R_UpdateParticles (void);
+void CL_AddParticles();

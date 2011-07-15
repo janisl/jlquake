@@ -241,7 +241,7 @@ struct fontInfo_t
 
 enum QParticleTexture
 {
-	PARTTTEX_Default,
+	PARTTEX_Default,
 	//	Hexen 2 snow particles
 	PARTTEX_Snow1,
 	PARTTEX_Snow2,

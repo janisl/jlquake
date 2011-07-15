@@ -40,7 +40,6 @@ cparticle_t	*active_particles, *free_particles;
 cparticle_t	*particles;
 int			cl_numparticles;
 
-vec3_t			r_pright, r_pup, r_ppn;
 static vec3_t		rider_origin;
 
 QCvar*		leak_color;
@@ -1137,89 +1136,118 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 R_DrawParticles
 ===============
 */
-extern	QCvar*	sv_gravity;
+void CL_AddParticles()
+{
+	for (cparticle_t* p = active_particles; p; p = p->next)
+	{
+		if (p->die < cl.time)
+		{
+			continue;
+		}
 
+		byte* c;
+		byte alpha;
+		if (p->color <= 255)
+		{
+			c = r_palette[(int)p->color];
+			alpha = 255;
+		}
+		else
+		{
+			c = (byte *)&d_8to24TranslucentTable[(int)p->color-256];
+			alpha = c[3];
+		}
+
+		if (p->type == pt_rain)
+		{
+			vec3_t origin;
+			VectorCopy(p->org, origin);
+			float vel0 = p->vel[0] * .001;
+			float vel1 = p->vel[1] * .001;
+			float vel2 = p->vel[2] * .001;
+			for (int i = 0; i < 4; i++)
+			{
+				R_AddParticleToScene(origin, c[0], c[1], c[2], alpha, 1, PARTTEX_Default);
+
+				origin[0] += vel0;
+				origin[1] += vel1;
+				origin[2] += vel2;
+ 			}
+		}
+		else if (p->type==pt_snow && p->count>=69)
+		{
+			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, p->count / 10, PARTTEX_Snow1);
+		}
+		else if (p->type==pt_snow && p->count>=40)
+		{
+			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, p->count / 10, PARTTEX_Snow2);
+		}
+		else if (p->type==pt_snow && p->count>=30)
+		{
+			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, p->count / 10, PARTTEX_Snow3);
+		}
+		else if (p->type==pt_snow)
+		{
+			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, p->count / 10, PARTTEX_Snow4);
+		}
+		else
+		{
+			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, 1, PARTTEX_Default);
+		}
+	}
+}
+
+/*
+===============
+R_DrawParticles
+===============
+*/
 void R_DrawParticles (void)
 {
-	cparticle_t		*p;
-
 	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
 	GL_Bind(tr.particleImage);
 	GL_TexEnv(GL_MODULATE);
 	qglBegin (GL_TRIANGLES);
 
-	VectorScale(tr.viewParms.orient.axis[2], 1.5, r_pup);
-	VectorScale(tr.viewParms.orient.axis[1], -1.5, r_pright);
+	vec3_t			up;
+	vec3_t			right;
+	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
+	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
 
-	for (p=active_particles ; p ; p=p->next)
+	particle_t* p = tr.refdef.particles;
+	for (int i = 0; i < tr.refdef.num_particles; i++, p++)
 	{
-		if (p->die < cl.time)
+		switch (p->Texture)
 		{
-			continue;
-		}
-		
-		particle_t rp;
-		VectorCopy(p->org, rp.origin);
-		if (p->color <= 255)
-		{
-			rp.rgba[0] = r_palette[(int)p->color][0];
-			rp.rgba[1] = r_palette[(int)p->color][1];
-			rp.rgba[2] = r_palette[(int)p->color][2];
-			rp.rgba[3] = 255;
-		}
-		else
-		{
-			byte* c = (byte *)&d_8to24TranslucentTable[(int)p->color-256];
-			rp.rgba[0] = c[0];
-			rp.rgba[1] = c[1];
-			rp.rgba[2] = c[2];
-			rp.rgba[3] = c[3];
-		}
-		rp.size = p->type == pt_snow ? p->count / 10 : 1;
-		if (p->type == pt_rain)
-		{
-			float vel0 = p->vel[0]*.001;
-			float vel1 = p->vel[1]*.001;
-			float vel2 = p->vel[2]*.001;
-			for(int i = 0; i < 4; i++)
-			{
-				R_DrawRegularParticle(&rp, r_pup, r_pright);
+		case PARTTEX_Default:
+			R_DrawRegularParticle(p, up, right);
+			break;
 
-				rp.origin[0] += vel0;
-				rp.origin[1] += vel1;
-				rp.origin[2] += vel2;
- 			}
-		}
-		else if (p->type==pt_snow && p->count>=69)
-		{
-			R_DrawParticle(&rp, r_pup, r_pright, 1, 1, .18, .18);
-		}
-		else if (p->type==pt_snow && p->count>=40)
-		{
-			R_DrawParticle(&rp, r_pup, r_pright, 0, 0, .815, .815);
-		}
-		else if (p->type==pt_snow && p->count>=30)
-		{
-			R_DrawParticle(&rp, r_pup, r_pright, 1, 0, 0.5, 0.5);
-		}
-		else if (p->type==pt_snow)
-		{
-			R_DrawParticle(&rp, r_pup, r_pright, 0, 1, 0.5, 0.5);
-		}
-		else
-		{
-			R_DrawRegularParticle(&rp, r_pup, r_pright);
+		case PARTTEX_Snow1:
+			R_DrawParticle(p, up, right, 1, 1, .18, .18);
+			break;
+
+		case PARTTEX_Snow2:
+			R_DrawParticle(p, up, right, 0, 0, .815, .815);
+			break;
+
+		case PARTTEX_Snow3:
+			R_DrawParticle(p, up, right, 1, 0, 0.5, 0.5);
+			break;
+
+		case PARTTEX_Snow4:
+			R_DrawParticle(p, up, right, 0, 1, 0.5, 0.5);
+			break;
 		}
 	}
 
-	qglEnd ();
+	qglEnd();
 	GL_State(0);
 	GL_TexEnv(GL_REPLACE);
 }
 
-
-
+extern	QCvar*	sv_gravity;
 
 void R_UpdateParticles (void)
 {

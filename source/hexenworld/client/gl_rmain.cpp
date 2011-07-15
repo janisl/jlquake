@@ -468,6 +468,7 @@ void R_RenderView (void)
 		float Val = d_lightstylevalue[i] / 256.0;
 		R_AddLightStyleToScene(i, Val, Val, Val);
 	}
+	CL_AddParticles();
 
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
