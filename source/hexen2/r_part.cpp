@@ -1133,7 +1133,7 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 
 /*
 ===============
-R_DrawParticles
+CL_AddParticles
 ===============
 */
 void CL_AddParticles()
@@ -1195,56 +1195,6 @@ void CL_AddParticles()
 			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, 1, PARTTEX_Default);
 		}
 	}
-}
-
-/*
-===============
-R_DrawParticles
-===============
-*/
-void R_DrawParticles (void)
-{
-	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-
-	GL_Bind(tr.particleImage);
-	GL_TexEnv(GL_MODULATE);
-	qglBegin (GL_TRIANGLES);
-
-	vec3_t			up;
-	vec3_t			right;
-	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
-	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
-
-	particle_t* p = tr.refdef.particles;
-	for (int i = 0; i < tr.refdef.num_particles; i++, p++)
-	{
-		switch (p->Texture)
-		{
-		case PARTTEX_Default:
-			R_DrawRegularParticle(p, up, right);
-			break;
-
-		case PARTTEX_Snow1:
-			R_DrawParticle(p, up, right, 1, 1, .18, .18);
-			break;
-
-		case PARTTEX_Snow2:
-			R_DrawParticle(p, up, right, 0, 0, .815, .815);
-			break;
-
-		case PARTTEX_Snow3:
-			R_DrawParticle(p, up, right, 1, 0, 0.5, 0.5);
-			break;
-
-		case PARTTEX_Snow4:
-			R_DrawParticle(p, up, right, 0, 1, 0.5, 0.5);
-			break;
-		}
-	}
-
-	qglEnd();
-	GL_State(0);
-	GL_TexEnv(GL_REPLACE);
 }
 
 extern	QCvar*	sv_gravity;

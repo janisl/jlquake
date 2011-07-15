@@ -52,8 +52,6 @@ extern	refdef_t	r_newrefdef;
 extern	QCvar	*r_norefresh;
 extern	QCvar	*r_drawentities;
 
-extern QCvar	*gl_particle_size;
-
 extern	QCvar	*gl_nosubimage;
 extern	QCvar	*gl_cull;
 extern	QCvar	*gl_poly;

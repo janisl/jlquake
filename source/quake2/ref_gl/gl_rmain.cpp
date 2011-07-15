@@ -36,8 +36,6 @@ QCvar	*r_drawentities;
 
 QCvar	*gl_nosubimage;
 
-QCvar	*gl_particle_size;
-
 QCvar  *gl_driver;
 QCvar	*gl_cull;
 QCvar	*gl_polyblend;
@@ -168,72 +166,6 @@ void R_DrawEntitiesOnList (void)
 	}
 	GL_State(GLS_DEPTHMASK_TRUE);		// back to writing
 
-}
-
-/*
-** GL_DrawParticles
-**
-*/
-void GL_DrawParticles( int num_particles, const particle_t particles[])
-{
-	const particle_t *p;
-	int				i;
-	vec3_t			up, right;
-
-    GL_Bind(tr.particleImage);
-	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);		// no z buffering
-	GL_TexEnv( GL_MODULATE );
-	qglBegin( GL_TRIANGLES );
-
-	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
-	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
-
-	for ( p = particles, i=0 ; i < num_particles ; i++,p++)
-	{
-		R_DrawRegularParticle(p, up, right);
-	}
-
-	qglEnd ();
-	qglColor4f( 1,1,1,1 );
-	GL_State(GLS_DEPTHMASK_TRUE);		// back to normal Z buffering
-	GL_TexEnv( GL_REPLACE );
-}
-
-/*
-===============
-R_DrawParticles
-===============
-*/
-void R_DrawParticles (void)
-{
-	if (qglPointParameterfEXT )
-	{
-		int i;
-		const particle_t *p;
-
-		GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-		qglDisable( GL_TEXTURE_2D );
-
-		qglPointSize( gl_particle_size->value );
-
-		qglBegin( GL_POINTS );
-		for ( i = 0, p = tr.refdef.particles; i < tr.refdef.num_particles; i++, p++ )
-		{
-			qglColor4ubv(p->rgba);
-
-			qglVertex3fv( p->origin );
-		}
-		qglEnd();
-
-		qglColor4f( 1.0F, 1.0F, 1.0F, 1.0F );
-		GL_State(GLS_DEPTHMASK_TRUE);
-		qglEnable( GL_TEXTURE_2D );
-
-	}
-	else
-	{
-		GL_DrawParticles(tr.refdef.num_particles, tr.refdef.particles);
-	}
 }
 
 /*
@@ -521,8 +453,6 @@ void R_Register( void )
 	r_drawentities = Cvar_Get ("r_drawentities", "1", 0);
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
-
-	gl_particle_size = Cvar_Get( "gl_particle_size", "40", CVAR_ARCHIVE );
 
 	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);

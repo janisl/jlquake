@@ -592,7 +592,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 
 /*
 ===============
-R_DrawParticles
+CL_AddParticles
 ===============
 */
 void CL_AddParticles()
@@ -609,33 +609,7 @@ void CL_AddParticles()
 
 /*
 ===============
-R_DrawParticles
-===============
-*/
-void R_DrawParticles (void)
-{
-    GL_Bind(tr.particleImage);
-	GL_State(GLS_DEFAULT | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	GL_TexEnv(GL_MODULATE);
-	qglBegin(GL_TRIANGLES);
-
-	vec3_t up, right;
-	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
-	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
-	
-	for (int i = 0; i < tr.refdef.num_particles; i++)
-	{
-		R_DrawRegularParticle(&tr.refdef.particles[i], up, right);
-	}
-
-	qglEnd ();
-	GL_State(GLS_DEFAULT);
-	GL_TexEnv(GL_REPLACE);
-}
-
-/*
-===============
-R_DrawParticles
+R_UpdateParticles
 ===============
 */
 extern	QCvar*	sv_gravity;

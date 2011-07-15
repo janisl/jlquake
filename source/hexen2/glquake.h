@@ -109,7 +109,6 @@ extern byte *playerTranslation;
 
 void R_AnimateLight(void);
 void V_CalcBlend (void);
-void R_DrawParticles (void);
 void R_InitParticles (void);
 void SCR_DrawLoading (void);
 

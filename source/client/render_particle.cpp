@@ -89,7 +89,7 @@ void R_InitParticleTexture()
 //
 //==========================================================================
 
-void R_DrawParticle(const particle_t* p, const vec3_t up, const vec3_t right,
+static void R_DrawParticle(const particle_t* p, const vec3_t up, const vec3_t right,
 	float s1, float t1, float s2, float t2)
 {
 	// hack a scale up to keep particles from disapearing
@@ -120,11 +120,95 @@ void R_DrawParticle(const particle_t* p, const vec3_t up, const vec3_t right,
 
 //==========================================================================
 //
-//	R_DrawRegularParticle
+//	R_DrawParticleTriangles
 //
 //==========================================================================
 
-void R_DrawRegularParticle(const particle_t* p, const vec3_t up, const vec3_t right)
+static void R_DrawParticleTriangles()
 {
-	R_DrawParticle(p, up, right, 1 - 0.0625 / 2, 0.0625 / 2, 1 - 1.0625 / 2, 1.0625 / 2);
+    GL_Bind(tr.particleImage);
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);	// no z buffering
+	GL_TexEnv(GL_MODULATE);
+	qglBegin(GL_TRIANGLES);
+
+	vec3_t up, right;
+	VectorScale(tr.viewParms.orient.axis[2], 1.5, up);
+	VectorScale(tr.viewParms.orient.axis[1], -1.5, right);
+
+	const particle_t* p = tr.refdef.particles;
+	for (int i = 0; i < tr.refdef.num_particles; i++, p++)
+	{
+		switch (p->Texture)
+		{
+		case PARTTEX_Default:
+			R_DrawParticle(p, up, right, 1 - 0.0625 / 2, 0.0625 / 2, 1 - 1.0625 / 2, 1.0625 / 2);
+			break;
+
+		case PARTTEX_Snow1:
+			R_DrawParticle(p, up, right, 1, 1, .18, .18);
+			break;
+
+		case PARTTEX_Snow2:
+			R_DrawParticle(p, up, right, 0, 0, .815, .815);
+			break;
+
+		case PARTTEX_Snow3:
+			R_DrawParticle(p, up, right, 1, 0, 0.5, 0.5);
+			break;
+
+		case PARTTEX_Snow4:
+			R_DrawParticle(p, up, right, 0, 1, 0.5, 0.5);
+			break;
+		}
+	}
+
+	qglEnd();
+	GL_State(GLS_DEPTHMASK_TRUE);		// back to normal Z buffering
+	GL_TexEnv(GL_REPLACE);
+	qglColor4f(1, 1, 1, 1);
+}
+
+//==========================================================================
+//
+//	R_DrawParticlePoints
+//
+//==========================================================================
+
+static void R_DrawParticlePoints()
+{
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	qglDisable(GL_TEXTURE_2D);
+
+	qglPointSize(r_particle_size->value);
+
+	qglBegin(GL_POINTS);
+	const particle_t* p = tr.refdef.particles;
+	for (int i = 0; i < tr.refdef.num_particles; i++, p++)
+	{
+		qglColor4ubv(p->rgba);
+		qglVertex3fv(p->origin);
+	}
+	qglEnd();
+
+	qglColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+	GL_State(GLS_DEPTHMASK_TRUE);
+	qglEnable(GL_TEXTURE_2D);
+}
+
+//==========================================================================
+//
+//	R_DrawParticles
+//
+//==========================================================================
+
+void R_DrawParticles()
+{
+	if (qglPointParameterfEXT)
+	{
+		R_DrawParticlePoints();
+	}
+	else
+	{
+		R_DrawParticleTriangles();
+	}
 }

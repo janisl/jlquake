@@ -619,6 +619,7 @@ extern QCvar*	r_flares;				// light flares
 extern QCvar*	r_flareSize;
 extern QCvar*	r_flareFade;
 
+extern QCvar*	r_particle_size;
 extern QCvar*	r_particle_min_size;
 extern QCvar*	r_particle_max_size;
 extern QCvar*	r_particle_att_a;
@@ -942,8 +943,6 @@ Particles
 */
 
 void R_InitParticleTexture();
-void R_DrawParticle(const particle_t* p, const vec3_t up, const vec3_t right,
-	float s1, float t1, float s2, float t2);
-void R_DrawRegularParticle(const particle_t* p, const vec3_t up, const vec3_t right);
+void R_DrawParticles();
 
 #endif

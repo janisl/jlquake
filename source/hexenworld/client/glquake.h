@@ -77,6 +77,5 @@ void R_InitParticles (void);
 void R_ClearParticles (void);
 void R_AnimateLight(void);
 void V_CalcBlend (void);
-void R_DrawParticles (void);
 void Draw_RedString (int x, int y, const char *str);
 void R_NetGraph (void);

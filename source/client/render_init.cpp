@@ -165,6 +165,7 @@ QCvar*		r_flares;
 QCvar*		r_flareSize;
 QCvar*		r_flareFade;
 
+QCvar*		r_particle_size;
 QCvar*		r_particle_min_size;
 QCvar*		r_particle_max_size;
 QCvar*		r_particle_att_a;
@@ -459,6 +460,7 @@ void R_SharedRegister()
 	r_railSegmentLength = Cvar_Get("r_railSegmentLength", "32", CVAR_ARCHIVE);
 	r_flares = Cvar_Get("r_flares", "0", CVAR_ARCHIVE);
 	r_finish = Cvar_Get("r_finish", "0", CVAR_ARCHIVE);
+	r_particle_size = Cvar_Get("r_particle_size", "40", CVAR_ARCHIVE);
 	r_particle_min_size = Cvar_Get("r_particle_min_size", "2", CVAR_ARCHIVE);
 	r_particle_max_size = Cvar_Get("r_particle_max_size", "40", CVAR_ARCHIVE);
 	r_particle_att_a = Cvar_Get("r_particle_att_a", "0.01", CVAR_ARCHIVE);
