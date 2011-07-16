@@ -203,7 +203,7 @@ static void R_DrawParticlePoints()
 
 void R_DrawParticles()
 {
-	if (qglPointParameterfEXT)
+	if ((GGameType & GAME_Quake2) && qglPointParameterfEXT)
 	{
 		R_DrawParticlePoints();
 	}
