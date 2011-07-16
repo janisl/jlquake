@@ -19,12 +19,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "quakedef.h"
-#include "glquake.h"
 
 #define MAX_PARTICLES			2048	// default max # of particles at one
 										//  time
 #define ABSOLUTE_MIN_PARTICLES	512		// no fewer than this no matter what's
 										//  on the command line
+
+enum ptype_t
+{
+	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
+};
+
+struct cparticle_t
+{
+	vec3_t		org;
+	float		color;
+	cparticle_t*	next;
+	vec3_t		vel;
+	float		ramp;
+	float		die;
+	ptype_t		type;
+};
 
 int		ramp1[8] = {0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61};
 int		ramp2[8] = {0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66};

@@ -1,11 +1,21 @@
 
 #include "quakedef.h"
-#include "glquake.h"
 
 #define MAX_PARTICLES			2048	// default max # of particles at one
 										//  time
 #define ABSOLUTE_MIN_PARTICLES	512		// no fewer than this no matter what's
 										//  on the command line
+
+struct cparticle_t
+{
+	vec3_t		org;
+	float		color;
+	cparticle_t*	next;
+	vec3_t		vel;
+	float		ramp;
+	float		die;
+	ptype_t		type;
+};
 
 int		ramp1[8] = { 416,416+2,416+4,416+6,416+8,416+10,416+12,416+14};
 int		ramp2[8] = { 384+4,384+6,384+8,384+10,384+12,384+13,384+14,384+15};
@@ -1545,10 +1555,6 @@ void CL_AddParticles()
 			AddParticle(p);
 		}
 	}
-
-	qglEnd ();
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
-	GL_TexEnv(GL_REPLACE);
 }
 
 /*

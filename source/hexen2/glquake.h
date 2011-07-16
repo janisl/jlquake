@@ -35,58 +35,6 @@ extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures fo
 void R_TimeRefresh_f (void);
 void R_ReadPointFile_f (void);
 
-// Changes to ptype_t must also be made in d_iface.h
-typedef enum {
-	pt_static,
-	pt_grav,
-	pt_fastgrav,
-	pt_slowgrav,
-	pt_fire,
-	pt_explode,
-	pt_explode2,
-	pt_blob,
-	pt_blob2,
-	pt_rain,
-	pt_c_explode,
-	pt_c_explode2,
-	pt_spit,
-	pt_fireball,
-	pt_ice,
-	pt_spell,
-	pt_test,
-	pt_quake,
-	pt_rd,			// rider's death
-	pt_vorpal,
-	pt_setstaff,
-	pt_magicmissile,
-	pt_boneshard,
-	pt_scarab,
-	pt_acidball,
-	pt_darken,
-	pt_snow,
-	pt_gravwell,
-	pt_redfire
-} ptype_t;
-
-// !!! if this is changed, it must be changed in d_iface.h too !!!
-typedef struct particle_s
-{
-// driver-usable fields
-	vec3_t		org;
-	float		color;
-// drivers never touch the following fields
-	struct particle_s	*next;
-	vec3_t		vel;
-	vec3_t		min_org;
-	vec3_t		max_org;
-	float		ramp;
-	float		die;
-	byte		type;
-	byte		flags;
-	byte		count;
-} cparticle_t;
-
-
 //====================================================
 
 

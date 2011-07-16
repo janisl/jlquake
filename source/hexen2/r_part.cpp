@@ -3,7 +3,6 @@
  */
 
 #include "quakedef.h"
-#include "glquake.h"
 
 #define	SFL_FLUFFY			1	// All largish flakes
 #define	SFL_MIXED			2	// Mixed flakes
@@ -19,6 +18,54 @@
 										//  time
 #define ABSOLUTE_MIN_PARTICLES	512		// no fewer than this no matter what's
 										//  on the command line
+
+enum ptype_t
+{
+	pt_static,
+	pt_grav,
+	pt_fastgrav,
+	pt_slowgrav,
+	pt_fire,
+	pt_explode,
+	pt_explode2,
+	pt_blob,
+	pt_blob2,
+	pt_rain,
+	pt_c_explode,
+	pt_c_explode2,
+	pt_spit,
+	pt_fireball,
+	pt_ice,
+	pt_spell,
+	pt_test,
+	pt_quake,
+	pt_rd,			// rider's death
+	pt_vorpal,
+	pt_setstaff,
+	pt_magicmissile,
+	pt_boneshard,
+	pt_scarab,
+	pt_acidball,
+	pt_darken,
+	pt_snow,
+	pt_gravwell,
+	pt_redfire
+};
+
+struct cparticle_t
+{
+	vec3_t		org;
+	float		color;
+	cparticle_t*	next;
+	vec3_t		vel;
+	vec3_t		min_org;
+	vec3_t		max_org;
+	float		ramp;
+	float		die;
+	byte		type;
+	byte		flags;
+	byte		count;
+};
 
 int		ramp1[8] = { 416,416+2,416+4,416+6,416+8,416+10,416+12,416+14};
 int		ramp2[8] = { 384+4,384+6,384+8,384+10,384+12,384+13,384+14,384+15};
@@ -1027,7 +1074,6 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 {
 	int i,j,holdint;
 	cparticle_t	*p;
-	mbrush29_leaf_t		*l;
 	
 	count *= Cvar_VariableValue("snow_active");
 	for (i=0 ; i<count ; i++)
@@ -1071,18 +1117,17 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 		
 
 		j=50;
-		l = Mod_PointInLeafQ1 (p->org, tr.worldModel);
-//		while(SV_PointContents(p->org)!=CONTENTS_EMPTY && j<50)
-		while(l->contents!=BSP29CONTENTS_EMPTY && j)
+		int contents = CM_PointContentsQ1(p->org, 0);
+		while(contents!=BSP29CONTENTS_EMPTY && j)
 		{//Make sure it doesn't start in a solid
 			holdint=org2[0] - org1[0];
 			p->org[0] = org1[0] + (rand() % holdint);
 			holdint=org2[1] - org1[1];
 			p->org[1] = org1[1] + (rand() % holdint);
 			j--;//No infinite loops
-			l = Mod_PointInLeafQ1 (p->org, tr.worldModel);
+			contents = CM_PointContentsQ1(p->org, 0);
 		}
-		if(l->contents!=BSP29CONTENTS_EMPTY)
+		if (contents!=BSP29CONTENTS_EMPTY)
 			Sys_Error ("Snow entity top plane is not in an empty area (sorry!)");
 
 		VectorCopy(org1,p->min_org);
@@ -1290,7 +1335,6 @@ void R_UpdateParticles (void)
 			else
 			{//FIXME: If flake going fast enough, can go through, do a check in increments ot 10, max?
 				//if not in_bounds Get length of diff, add in increments of 4 & check solid
-				mbrush29_leaf_t		*l;
 
 				if (Cvar_VariableValue("snow_flurry")==1)
 				if(rand()&31)
@@ -1326,8 +1370,8 @@ void R_UpdateParticles (void)
 				else
 				{
 					//IF hit solid, go to last position, no velocity, fade out.
-					l = Mod_PointInLeafQ1 (p->org, tr.worldModel);
-					if(l->contents!=BSP29CONTENTS_EMPTY) //||in_solid==true
+					int contents = CM_PointContentsQ1(p->org, 0);
+					if (contents != BSP29CONTENTS_EMPTY) //||in_solid==true
 					{
 						if(p->flags&SFL_NO_MELT)
 						{//Don't melt, just die
@@ -1337,7 +1381,7 @@ void R_UpdateParticles (void)
 						{//still have small prob of snow melting on emitter
 							VectorScale(diff,0.2,p->vel);
 							i=6;
-							while(l->contents!=BSP29CONTENTS_EMPTY )
+							while (contents != BSP29CONTENTS_EMPTY)
 							{
 								p->org[0] -= p->vel[0];
 								p->org[1] -= p->vel[1];
@@ -1348,7 +1392,7 @@ void R_UpdateParticles (void)
 									p->die=-1;	//should never happen now!
 									break;
 								}
-								l = Mod_PointInLeafQ1 (p->org, tr.worldModel);
+								contents = CM_PointContentsQ1(p->org, 0);
 							}
 							p->vel[0]=p->vel[1]=p->vel[2]=0;
 							p->ramp=0;
