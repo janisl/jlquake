@@ -54,17 +54,17 @@ enum ptype_t
 
 struct cparticle_t
 {
-	vec3_t		org;
-	float		color;
+	vec3_t			org;
+	int				color;
 	cparticle_t*	next;
-	vec3_t		vel;
-	vec3_t		min_org;
-	vec3_t		max_org;
-	float		ramp;
-	float		die;
-	byte		type;
-	byte		flags;
-	byte		count;
+	vec3_t			vel;
+	vec3_t			min_org;
+	vec3_t			max_org;
+	float			ramp;
+	float			die;
+	byte			type;
+	byte			flags;
+	byte			count;
 };
 
 int		ramp1[8] = { 416,416+2,416+4,416+6,416+8,416+10,416+12,416+14};
@@ -1194,12 +1194,12 @@ void CL_AddParticles()
 		byte alpha;
 		if (p->color <= 255)
 		{
-			c = r_palette[(int)p->color];
+			c = r_palette[p->color];
 			alpha = 255;
 		}
 		else
 		{
-			c = (byte *)&d_8to24TranslucentTable[(int)p->color-256];
+			c = (byte *)&d_8to24TranslucentTable[p->color - 256];
 			alpha = c[3];
 		}
 

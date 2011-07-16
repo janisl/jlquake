@@ -8,13 +8,13 @@
 
 struct cparticle_t
 {
-	vec3_t		org;
-	float		color;
+	vec3_t			org;
+	int				color;
 	cparticle_t*	next;
-	vec3_t		vel;
-	float		ramp;
-	float		die;
-	ptype_t		type;
+	vec3_t			vel;
+	float			ramp;
+	float			die;
+	ptype_t			type;
 };
 
 int		ramp1[8] = { 416,416+2,416+4,416+6,416+8,416+10,416+12,416+14};
@@ -1502,7 +1502,7 @@ static void AddParticle(cparticle_t *p)
 
 	if (p->color <= 255)
 	{
-		at = r_palette[(int)p->color];
+		at = r_palette[p->color];
 		if (p->type==pt_fire)
 			theAlpha = 255*(6-p->ramp)/6;
 		else
@@ -1510,7 +1510,7 @@ static void AddParticle(cparticle_t *p)
 	}
 	else
 	{
-		at = (byte *)&d_8to24TranslucentTable[(int)p->color-256];
+		at = (byte *)&d_8to24TranslucentTable[p->color - 256];
 		theAlpha = at[3];
 	}
 

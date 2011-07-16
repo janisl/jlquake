@@ -32,13 +32,13 @@ enum ptype_t
 
 struct cparticle_t
 {
-	vec3_t		org;
-	float		color;
+	vec3_t			org;
+	int				color;
 	cparticle_t*	next;
-	vec3_t		vel;
-	float		ramp;
-	float		die;
-	ptype_t		type;
+	vec3_t			vel;
+	float			ramp;
+	float			die;
+	ptype_t			type;
 };
 
 int		ramp1[8] = {0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61};
@@ -618,7 +618,7 @@ void CL_AddParticles()
 		{
 			continue;
 		}
-		R_AddParticleToScene(p->org, r_palette[(int)p->color][0], r_palette[(int)p->color][1], r_palette[(int)p->color][2], 255, 1, PARTTEX_Default);
+		R_AddParticleToScene(p->org, r_palette[p->color][0], r_palette[p->color][1], r_palette[p->color][2], 255, 1, PARTTEX_Default);
 	}
 }
 
