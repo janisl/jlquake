@@ -63,8 +63,6 @@ void R_Register( void )
 	r_drawentities = Cvar_Get ("r_drawentities", "1", CVAR_CHEAT );
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
-
-	Cmd_AddCommand( "modellist", R_Modellist_f );
 }
 
 /*
@@ -86,10 +84,8 @@ void R_Init()
 RE_Shutdown
 ===============
 */
-void RE_Shutdown( qboolean destroyWindow ) {	
-
-	Cmd_RemoveCommand( "modelist" );
-
+void RE_Shutdown( qboolean destroyWindow )
+{
 	R_CommonShutdown(destroyWindow);
 }
 

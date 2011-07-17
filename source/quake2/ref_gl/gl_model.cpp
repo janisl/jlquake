@@ -22,23 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gl_local.h"
 
 /*
-================
-Mod_Modellist_f
-================
-*/
-void Mod_Modellist_f (void)
-{
-	int total = 0;
-	ri.Con_Printf (PRINT_ALL,"Loaded models:\n");
-	for (int i = 0; i < tr.numModels; i++)
-	{
-		ri.Con_Printf(PRINT_ALL, "%8i : %s\n", tr.models[i]->q2_extradatasize, tr.models[i]->name);
-		total += tr.models[i]->q2_extradatasize;
-	}
-	ri.Con_Printf (PRINT_ALL, "Total resident: %i\n", total);
-}
-
-/*
 @@@@@@@@@@@@@@@@@@@@@
 R_BeginRegistration
 

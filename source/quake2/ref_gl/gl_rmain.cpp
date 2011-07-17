@@ -459,8 +459,6 @@ void R_Register( void )
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
-
-	Cmd_AddCommand( "modellist", Mod_Modellist_f );
 }
 
 /*
@@ -506,8 +504,6 @@ R_Shutdown
 */
 void R_Shutdown (void)
 {	
-	Cmd_RemoveCommand ("modellist");
-
 	R_CommonShutdown(true);
 }
 

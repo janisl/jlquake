@@ -671,3 +671,50 @@ bool R_LerpTag(orientation_t* tag, qhandle_t handle, int startFrame, int endFram
 	VectorNormalize(tag->axis[2]);
 	return true;
 }
+
+//==========================================================================
+//
+//	R_Modellist_f
+//
+//==========================================================================
+
+void R_Modellist_f()
+{
+	int total = 0;
+	for (int i = 0; i < tr.numModels; i++)
+	{
+		model_t* mod = tr.models[i];
+		int lods = 1;
+		int DataSize = 0;
+		switch (mod->type)
+		{
+		case MOD_BRUSH38:
+		case MOD_SPRITE2:
+		case MOD_MESH2:
+			DataSize = tr.models[i]->q2_extradatasize;
+			break;
+
+		case MOD_BRUSH46:
+		case MOD_MD4:
+			DataSize = mod->q3_dataSize;
+			break;
+
+		case MOD_MESH3:
+			DataSize = mod->q3_dataSize;
+			for (int j = 1; j < MD3_MAX_LODS; j++)
+			{
+				if (mod->q3_md3[j] && mod->q3_md3[j] != mod->q3_md3[j - 1])
+				{
+					lods++;
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+		GLog.Write("%8i : (%i) %s\n", DataSize, lods, mod->name);
+		total += DataSize;
+	}
+	GLog.Write("%8i : Total models\n", total);
+}

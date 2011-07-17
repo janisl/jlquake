@@ -47,31 +47,3 @@ void RE_BeginRegistration( glconfig_t *glconfigOut ) {
 	// first time the level shot would not be drawn
 	R_StretchPic(0, 0, 0, 0, 0, 0, 1, 1, 0);
 }
-
-//=============================================================================
-
-/*
-================
-R_Modellist_f
-================
-*/
-void R_Modellist_f( void ) {
-	int		i, j;
-	model_t	*mod;
-	int		total;
-	int		lods;
-
-	total = 0;
-	for ( i = 1 ; i < tr.numModels; i++ ) {
-		mod = tr.models[i];
-		lods = 1;
-		for ( j = 1 ; j < MD3_MAX_LODS ; j++ ) {
-			if ( mod->q3_md3[j] && mod->q3_md3[j] != mod->q3_md3[j-1] ) {
-				lods++;
-			}
-		}
-		ri.Printf( PRINT_ALL, "%8i : (%i) %s\n",mod->q3_dataSize, lods, mod->name );
-		total += mod->q3_dataSize;
-	}
-	ri.Printf( PRINT_ALL, "%8i : Total models\n", total );
-}

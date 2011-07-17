@@ -523,6 +523,7 @@ void R_SharedRegister()
 	Cmd_AddCommand("screenshot", R_ScreenShot_f);
 	Cmd_AddCommand("screenshotJPEG", R_ScreenShotJPEG_f);
 	Cmd_AddCommand("gfxinfo", GfxInfo_f);
+	Cmd_AddCommand("modellist", R_Modellist_f);
 }
 
 //==========================================================================
@@ -875,6 +876,7 @@ void R_CommonShutdown(bool destroyWindow)
 	Cmd_RemoveCommand("screenshot");
 	Cmd_RemoveCommand("screenshotJPEG");
 	Cmd_RemoveCommand("gfxinfo");
+	Cmd_RemoveCommand("modelist");
 
 	if (tr.registered)
 	{

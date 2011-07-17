@@ -16,7 +16,6 @@ extern QCvar*	sv_walkpitch;
 int	current_skill;
 static double		old_time;
 
-void Mod_Print (void);
 void RestoreClients(void);
 
 unsigned int	info_mask, info_mask2;
@@ -2258,8 +2257,6 @@ void Host_InitCommands (void)
 	Cmd_AddCommand ("viewframe", Host_Viewframe_f);
 	Cmd_AddCommand ("viewnext", Host_Viewnext_f);
 	Cmd_AddCommand ("viewprev", Host_Viewprev_f);
-
-	Cmd_AddCommand ("mcache", Mod_Print);
 
 	Cmd_AddCommand ("create", Host_Create_f);
 }
