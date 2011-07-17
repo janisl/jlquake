@@ -713,6 +713,19 @@ int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 
+struct sortedent_t
+{
+	trRefEntity_t*	ent;
+	vec_t 			len;
+};
+
+extern sortedent_t     cl_transvisedicts[MAX_ENTITIES];
+extern sortedent_t		cl_transwateredicts[MAX_ENTITIES];
+
+extern int				cl_numtransvisedicts;
+extern int				cl_numtranswateredicts;
+
+
 /*
 ============================================================
 

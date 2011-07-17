@@ -82,17 +82,6 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 
 //==================================================================================
 
-typedef struct sortedent_s {
-	trRefEntity_t *ent;
-	vec_t len;
-} sortedent_t;
-
-sortedent_t     cl_transvisedicts[MAX_ENTITIES];
-sortedent_t		cl_transwateredicts[MAX_ENTITIES];
-
-int				cl_numtransvisedicts;
-int				cl_numtranswateredicts;
-
 /*
 =============
 R_DrawEntitiesOnList
@@ -129,12 +118,13 @@ void R_DrawEntitiesOnList (void)
 				continue;
 			}
 		}
+		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
-		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
+		switch (tr.currentModel->type)
 		{
 		case MOD_MESH1:
 			item_trans = ((tr.currentEntity->e.renderfx & RF_WATERTRANS) ||
-						  (R_GetModelByHandle(tr.currentEntity->e.hModel)->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
+				(tr.currentModel->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
 				R_DrawMdlModel (tr.currentEntity);
 
@@ -206,8 +196,9 @@ void R_DrawTransEntitiesOnList ( qboolean inwater) {
 
 	for (i=0;i<numents;i++) {
 		tr.currentEntity = theents[i].ent;
+		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
-		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
+		switch (tr.currentModel->type)
 		{
 		case MOD_MESH1:
 			R_DrawMdlModel (tr.currentEntity);

@@ -27,7 +27,6 @@ QCvar*	r_norefresh;
 QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
 QCvar*	r_netgraph;
-QCvar*	r_entdistance;
 QCvar*	gl_cull;
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
@@ -84,17 +83,6 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 
 //==================================================================================
 
-typedef struct sortedent_s {
-	trRefEntity_t *ent;
-	vec_t len;
-} sortedent_t;
-
-sortedent_t     cl_transvisedicts[MAX_ENTITIES];
-sortedent_t		cl_transwateredicts[MAX_ENTITIES];
-
-int				cl_numtransvisedicts;
-int				cl_numtranswateredicts;
-
 /*
 =============
 R_DrawEntitiesOnList
@@ -105,23 +93,12 @@ void R_DrawEntitiesOnList (void)
 	int			i;
 	qboolean	item_trans;
 	mbrush29_leaf_t		*pLeaf;
-	vec3_t		diff;
-	int			test_length, calc_length;
 
 	cl_numtransvisedicts=0;
 	cl_numtranswateredicts=0;
 
 	if (!r_drawentities->value)
 		return;
-
-	if (r_entdistance->value <= 0)
-	{
-		test_length = 9999*9999;
-	}
-	else
-	{
-		test_length = r_entdistance->value * r_entdistance->value;
-	}
 
 	// draw sprites seperately, because of alpha blending
 	for (i=0 ; i<tr.refdef.num_entities; i++)
@@ -140,18 +117,12 @@ void R_DrawEntitiesOnList (void)
 			continue;
 		}
 
-		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
+		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+		switch (tr.currentModel->type)
 		{
 		case MOD_MESH1:
-			VectorSubtract(tr.currentEntity->e.origin, tr.viewParms.orient.origin, diff);
-			calc_length = (diff[0]*diff[0]) + (diff[1]*diff[1]) + (diff[2]*diff[2]);
-			if (calc_length > test_length)
-			{
-				continue;
-			}
-
 			item_trans = ((tr.currentEntity->e.renderfx & RF_WATERTRANS) ||
-						  (R_GetModelByHandle(tr.currentEntity->e.hModel)->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
+				(tr.currentModel->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
 			if (!item_trans)
 				R_DrawMdlModel (tr.currentEntity);
 			break;
@@ -163,13 +134,6 @@ void R_DrawEntitiesOnList (void)
 			break;
 
 		case MOD_SPRITE:
-			VectorSubtract(tr.currentEntity->e.origin, tr.viewParms.orient.origin, diff);
-			calc_length = (diff[0]*diff[0]) + (diff[1]*diff[1]) + (diff[2]*diff[2]);
-			if (calc_length > test_length)
-			{
-				continue;
-			}
-
 			item_trans = true;
 			break;
 
@@ -231,8 +195,9 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 	for (i=0;i<numents;i++)
 	{
 		tr.currentEntity = theents[i].ent;
+		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
-		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
+		switch (tr.currentModel->type)
 		{
 		case MOD_MESH1:
 			R_DrawMdlModel (tr.currentEntity);

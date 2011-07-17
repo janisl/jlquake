@@ -100,8 +100,9 @@ void R_DrawEntitiesOnList (void)
 		{
 			continue;
 		}
+		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
-		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
+		switch (tr.currentModel->type)
 		{
 		case MOD_MESH1:
 			R_DrawMdlModel(tr.currentEntity);
@@ -119,8 +120,9 @@ void R_DrawEntitiesOnList (void)
 	for (i=0 ; i<tr.refdef.num_entities; i++)
 	{
 		tr.currentEntity = &tr.refdef.entities[i];
+		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
-		switch (R_GetModelByHandle(tr.currentEntity->e.hModel)->type)
+		switch (tr.currentModel->type)
 		{
 		case MOD_SPRITE:
 			R_DrawSprModel(tr.currentEntity);

@@ -43,6 +43,13 @@ int			c_alias_polys;
 int			c_visible_textures;
 int			c_visible_lightmaps;
 
+sortedent_t     cl_transvisedicts[MAX_ENTITIES];
+sortedent_t		cl_transwateredicts[MAX_ENTITIES];
+
+int				cl_numtransvisedicts;
+int				cl_numtranswateredicts;
+
+
 float	s_flipMatrix[16] =
 {
 	// convert from our coordinate system (looking down X)
