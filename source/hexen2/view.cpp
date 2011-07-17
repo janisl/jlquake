@@ -907,6 +907,9 @@ static void CL_AddViewModel()
 	if (!cl.viewent.model)
 		return;
 
+	if (chase_active->value)
+		return;
+
 	refEntity_t gun;
 
 	Com_Memset(&gun, 0, sizeof(gun));

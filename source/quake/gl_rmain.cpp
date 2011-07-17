@@ -28,8 +28,6 @@ qboolean	envmap;				// true during envmap command capture
 
 image_t*	playertextures[16];		// up to 16 color translated skins
 
-bool		r_third_person;
-
 //
 // screen size info
 //
@@ -87,17 +85,14 @@ void R_DrawEntitiesOnList (void)
 
 		if (tr.currentEntity->e.renderfx & RF_FIRST_PERSON)
 		{
-			if (r_third_person || !r_drawviewmodel->value || envmap)
+			if (!r_drawviewmodel->value || envmap)
 			{
 				continue;
 			}
 		}
 		if (tr.currentEntity->e.renderfx & RF_THIRD_PERSON)
 		{
-			if (!r_third_person)
-			{
-				continue;
-			}
+			continue;
 		}
 		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
 
@@ -360,8 +355,6 @@ void R_RenderView (void)
 	R_Clear ();
 
 	// render normal view
-
-	r_third_person = !!chase_active->value;
 
 	R_RenderScene ();
 	R_DrawWaterSurfaces ();

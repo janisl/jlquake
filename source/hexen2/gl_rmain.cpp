@@ -19,8 +19,6 @@ float		r_lasttime1 = 0;
 
 extern qhandle_t	player_models[NUM_CLASSES];
 
-bool		r_third_person;
-
 //
 // screen size info
 //
@@ -106,17 +104,14 @@ void R_DrawEntitiesOnList (void)
 
 		if (tr.currentEntity->e.renderfx & RF_FIRST_PERSON)
 		{
-			if (r_third_person || !r_drawviewmodel->value || envmap)
+			if (!r_drawviewmodel->value || envmap)
 			{
 				continue;
 			}
 		}
 		if (tr.currentEntity->e.renderfx & RF_THIRD_PERSON)
 		{
-			if (!r_third_person)
-			{
-				continue;
-			}
+			continue;
 		}
 		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
@@ -464,8 +459,6 @@ void R_RenderView (void)
 	R_PushDlightsQ1 ();
 
 	R_Clear ();
-
-	r_third_person = !!chase_active->value;
 
 	// render normal view
 	R_RenderScene ();

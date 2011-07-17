@@ -701,7 +701,7 @@ void CL_RelinkEntities (void)
 		rent.skinNum = ent->skinnum;
 		CL_SetRefEntAxis(&rent, ent->angles, ent->scale, ent->colorshade, ent->abslight, ent->drawflags);
 		R_HandleCustomSkin(&rent, i <= cl.maxclients ? i - 1 : -1);
-		if (i == cl.viewentity)
+		if (i == cl.viewentity && !chase_active->value)
 		{
 			rent.renderfx |= RF_THIRD_PERSON;
 		}

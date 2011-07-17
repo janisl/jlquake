@@ -531,7 +531,7 @@ void CL_RelinkEntities (void)
 		rent.shaderTime = ent->syncbase;
 		R_HandleRefEntColormap(&rent, ent->colormap);
 		rent.skinNum = ent->skinnum;
-		if (i == cl.viewentity)
+		if (i == cl.viewentity && !chase_active->value)
 		{
 			rent.renderfx |= RF_THIRD_PERSON;
 		}
