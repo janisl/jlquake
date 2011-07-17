@@ -40,7 +40,6 @@ extern	qboolean	r_cache_thrash;		// compatability
 //
 extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
-extern	qboolean	envmap;
 extern	image_t*	playertextures[MAX_CLIENTS];
 
 extern	QCvar*	r_norefresh;

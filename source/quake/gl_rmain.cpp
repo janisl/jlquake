@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 qboolean	r_cache_thrash;		// compatability
 
-qboolean	envmap;				// true during envmap command capture 
-
 image_t*	playertextures[16];		// up to 16 color translated skins
 
 //
@@ -85,7 +83,7 @@ void R_DrawEntitiesOnList (void)
 
 		if (tr.currentEntity->e.renderfx & RF_FIRST_PERSON)
 		{
-			if (!r_drawviewmodel->value || envmap)
+			if (!r_drawviewmodel->value)
 			{
 				continue;
 			}
@@ -231,12 +229,6 @@ void R_SetupGL (void)
 
 	w = x2 - x;
 	h = y - y2;
-
-	if (envmap)
-	{
-		x = y2 = 0;
-		w = h = 256;
-	}
 
 	tr.viewParms.viewportX = x;
 	tr.viewParms.viewportY = y2; 

@@ -39,7 +39,6 @@ void R_ReadPointFile_f (void);
 
 extern	qboolean	r_cache_thrash;		// compatability
 
-extern	qboolean	envmap;
 extern	image_t*	playertextures[16];
 
 extern	QCvar*	r_norefresh;

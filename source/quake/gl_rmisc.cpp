@@ -57,74 +57,6 @@ void	R_InitTextures (void)
 
 /*
 ===============
-R_Envmap_f
-
-Grab six views for environment mapping tests
-===============
-*/
-void R_Envmap_f (void)
-{
-	byte	buffer[256*256*4];
-	char	name[1024];
-
-	qglDrawBuffer  (GL_FRONT);
-	qglReadBuffer  (GL_FRONT);
-	envmap = true;
-
-	r_refdef.x = 0;
-	r_refdef.y = 0;
-	r_refdef.width = 256;
-	r_refdef.height = 256;
-
-	vec3_t viewangles;
-	viewangles[0] = 0;
-	viewangles[1] = 0;
-	viewangles[2] = 0;
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	R_RenderView ();
-	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	FS_WriteFile("env0.rgb", buffer, sizeof(buffer));		
-
-	viewangles[1] = 90;
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	R_RenderView ();
-	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	FS_WriteFile("env1.rgb", buffer, sizeof(buffer));		
-
-	viewangles[1] = 180;
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	R_RenderView ();
-	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	FS_WriteFile("env2.rgb", buffer, sizeof(buffer));		
-
-	viewangles[1] = 270;
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	R_RenderView ();
-	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	FS_WriteFile("env3.rgb", buffer, sizeof(buffer));		
-
-	viewangles[0] = -90;
-	viewangles[1] = 0;
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	R_RenderView ();
-	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	FS_WriteFile("env4.rgb", buffer, sizeof(buffer));		
-
-	viewangles[0] = 90;
-	viewangles[1] = 0;
-	AnglesToAxis(viewangles, r_refdef.viewaxis);
-	R_RenderView ();
-	qglReadPixels (0, 0, 256, 256, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-	FS_WriteFile("env5.rgb", buffer, sizeof(buffer));		
-
-	envmap = false;
-	qglDrawBuffer  (GL_BACK);
-	qglReadBuffer  (GL_BACK);
-	GL_EndRendering ();
-}
-
-/*
-===============
 R_Init
 ===============
 */
@@ -133,7 +65,6 @@ void R_Init (void)
 	extern byte *hunk_base;
 
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
-	Cmd_AddCommand ("envmap", R_Envmap_f);	
 	//Cmd_AddCommand ("pointfile", R_ReadPointFile_f);	
 
 	r_norefresh = Cvar_Get("r_norefresh", "0", 0);
