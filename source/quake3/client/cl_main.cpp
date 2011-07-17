@@ -2146,15 +2146,6 @@ void CL_StartHunkUsers( void ) {
 
 /*
 ============
-CL_RefMalloc
-============
-*/
-void *CL_RefMalloc( int size ) {
-	return Z_TagMalloc( size, TAG_RENDERER );
-}
-
-/*
-============
 CL_InitRef
 ============
 */
@@ -2166,15 +2157,6 @@ void CL_InitRef( void ) {
 
 	ri.Printf = CL_RefPrintf;
 	ri.Error = Com_Error;
-	ri.Malloc = CL_RefMalloc;
-	ri.Free = Z_Free;
-#ifdef HUNK_DEBUG
-	ri.Hunk_AllocDebug = Hunk_AllocDebug;
-#else
-	ri.Hunk_Alloc = Hunk_Alloc;
-#endif
-	ri.Hunk_AllocateTempMemory = Hunk_AllocateTempMemory;
-	ri.Hunk_FreeTempMemory = Hunk_FreeTempMemory;
 	ri.CM_DrawDebugSurface = CM_DrawDebugSurface;
 
 	ret = GetRefAPI( REF_API_VERSION, &ri );

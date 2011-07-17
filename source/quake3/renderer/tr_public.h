@@ -79,20 +79,6 @@ typedef struct {
 	// abort the game
 	void	(QDECL *Error)( int errorLevel, const char *fmt, ...);
 
-	// stack based memory allocation for per-level things that
-	// won't be freed
-#ifdef HUNK_DEBUG
-	void	*(*Hunk_AllocDebug)( int size, ha_pref pref, char *label, char *file, int line );
-#else
-	void	*(*Hunk_Alloc)( int size, ha_pref pref );
-#endif
-	void	*(*Hunk_AllocateTempMemory)( int size );
-	void	(*Hunk_FreeTempMemory)( void *block );
-
-	// dynamic memory allocator for things that need to be freed
-	void	*(*Malloc)( int bytes );
-	void	(*Free)( void *buf );
-
 	// visualization for debugging collision detection
 	void	(*CM_DrawDebugSurface)( void (*drawPoly)(int color, int numPoints, float *points) );
 
