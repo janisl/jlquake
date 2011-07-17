@@ -164,10 +164,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_bsp.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_cmds.cpp"
 				>
 			</File>

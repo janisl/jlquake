@@ -107,7 +107,7 @@ void R_ModelInit()
 //
 //==========================================================================
 
-void R_FreeModel(model_t* mod)
+static void R_FreeModel(model_t* mod)
 {
 	if (mod->type == MOD_SPRITE)
 	{
@@ -166,6 +166,106 @@ void R_FreeModels()
 	if (tr.world)
 	{
 		R_FreeBsp46(tr.world);
+	}
+	tr.worldMapLoaded = false;
+}
+
+//==========================================================================
+//
+//	R_LoadWorld
+//
+//==========================================================================
+
+void R_LoadWorld(const char* name)
+{
+	if (tr.worldMapLoaded)
+	{
+		throw QDropException("ERROR: attempted to redundantly load world map\n");
+	}
+
+	// set default sun direction to be used if it isn't
+	// overridden by a shader
+	tr.sunDirection[0] = 0.45f;
+	tr.sunDirection[1] = 0.3f;
+	tr.sunDirection[2] = 0.9f;
+
+	VectorNormalize(tr.sunDirection);
+
+	tr.worldMapLoaded = true;
+
+	// load it
+	void* buffer;
+	FS_ReadFile(name, &buffer);
+	if (!buffer)
+	{
+		throw QDropException(va("R_LoadWorld: %s not found", name));
+	}
+
+	model_t* mod = NULL;
+	if (!(GGameType & GAME_Quake3))
+	{
+		mod = R_AllocModel();
+		QStr::NCpyZ(mod->name, name, sizeof(mod->name));
+		loadmodel = mod;
+	}
+
+	// clear tr.world so if the level fails to load, the next
+	// try will not look at the partially loaded version
+	tr.world = NULL;
+
+	Com_Memset(&s_worldData, 0, sizeof(s_worldData));
+	QStr::NCpyZ(s_worldData.name, name, sizeof(s_worldData.name));
+
+	QStr::NCpyZ(s_worldData.baseName, QStr::SkipPath(s_worldData.name), sizeof(s_worldData.name));
+	QStr::StripExtension(s_worldData.baseName, s_worldData.baseName);
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		Mod_LoadBrush29Model(mod, buffer);
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		switch (LittleLong(*(unsigned *)buffer))
+		{
+		case BSP38_HEADER:
+			Mod_LoadBrush38Model(mod, buffer);
+			break;
+
+		default:
+			throw QDropException(va("Mod_NumForName: unknown fileid for %s", name));
+			break;
+		}
+	}
+	else
+	{
+		R_LoadBrush46Model(buffer);
+	}
+
+	// only set tr.world now that we know the entire level has loaded properly
+	tr.world = &s_worldData;
+	tr.worldModel = mod;
+
+	FS_FreeFile(buffer);
+}
+
+//==========================================================================
+//
+//	R_GetEntityToken
+//
+//==========================================================================
+
+bool R_GetEntityToken(char* buffer, int size)
+{
+	const char* s = QStr::Parse3(const_cast<const char**>(&s_worldData.entityParsePoint));
+	QStr::NCpyZ(buffer, s, size);
+	if (!s_worldData.entityParsePoint || !s[0])
+	{
+		s_worldData.entityParsePoint = s_worldData.entityString;
+		return false;
+	}
+	else
+	{
+		return true;
 	}
 }
 

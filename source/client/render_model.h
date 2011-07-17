@@ -489,8 +489,6 @@ struct world_t
 	char		name[MAX_QPATH];		// ie: maps/tim_dm2.bsp
 	char		baseName[MAX_QPATH];	// ie: tim_dm2
 
-	int			dataSize;
-
 	int			numShaders;
 	bsp46_dshader_t	*shaders;
 
@@ -789,7 +787,6 @@ struct trRefEntity_t;
 
 model_t* R_AllocModel();
 void R_ModelInit();
-void R_FreeModel(model_t* Mod);
 void R_FreeModels();
 model_t* R_GetModelByHandle(qhandle_t Index);
 

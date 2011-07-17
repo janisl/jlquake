@@ -198,7 +198,7 @@ void Model_NextDownload (void)
 
 	CM_LoadMap(cl.model_name[1], true, NULL);
 	cl.clip_models[1] = 0;
-	cl.model_precache[1] = Mod_LoadWorld(cl.model_name[1]);
+	R_LoadWorld(cl.model_name[1]);
 
 	for (i = 2; i < MAX_MODELS; i++)
 	{

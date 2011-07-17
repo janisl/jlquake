@@ -95,10 +95,7 @@ void	RE_StretchRaw (int x, int y, int w, int h, int cols, int rows, const byte *
 
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
 void		RE_BeginRegistration( glconfig_t *glconfig );
-void		RE_LoadWorldMap( const char *mapname );
 void		RE_Shutdown( qboolean destroyWindow );
-
-qboolean	R_GetEntityToken( char *buffer, int size );
 
 void    	R_Init( void );
 

@@ -133,7 +133,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.Shutdown = RE_Shutdown;
 
 	re.BeginRegistration = RE_BeginRegistration;
-	re.LoadWorld = RE_LoadWorldMap;
 	re.EndRegistration = RE_EndRegistration;
 
 	re.BeginFrame = RE_BeginFrame;
@@ -148,7 +147,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 
 	re.DrawStretchRaw = RE_StretchRaw;
 
-	re.GetEntityToken = R_GetEntityToken;
 	re.inPVS = R_inPVS;
 
 	return &re;

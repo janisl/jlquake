@@ -309,7 +309,7 @@ void CL_ParseServerInfo (void)
 
 	//always precache the world!!!
 	CM_LoadMap(model_precache[1], true, NULL);
-	cl.model_precache[1] = Mod_LoadWorld(model_precache[1]);
+	R_LoadWorld(model_precache[1]);
 
 	for (i=2 ; i<nummodels ; i++)
 	{
@@ -347,8 +347,6 @@ void CL_ParseServerInfo (void)
 
 
 // local state
-	cl_entities[0].model = cl.model_precache[1];
-	
 	R_NewMap ();
 
 	puzzle_strings = (char *)COM_LoadHunkFile ("puzzles.txt");

@@ -151,7 +151,6 @@ void D_ShowLoadingSize(void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
 void	Mod_ClearAll (void);
-qhandle_t Mod_LoadWorld(const char *name);
 int Mod_GetNumFrames(qhandle_t Handle);
 int Mod_GetFlags(qhandle_t Handle);
 void Mod_PrintFrameName(qhandle_t m, int frame);

@@ -257,6 +257,9 @@ const char* R_GetImageName(qhandle_t Handle);
 
 void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool Dirty);
 
+void R_LoadWorld(const char* Name);
+bool R_GetEntityToken(char* Buffer, int Size);
+
 qhandle_t R_RegisterModel(const char* Name);
 
 qhandle_t R_RegisterShader(const char* Name);

@@ -39,55 +39,6 @@ void Mod_Modellist_f (void)
 }
 
 /*
-==================
-Mod_ForName
-
-Loads in a model for the given name
-==================
-*/
-static void Mod_LoadWorld(const char* name)
-{
-	unsigned *buf;
-	
-	model_t* mod = R_AllocModel();
-
-	QStr::Cpy(mod->name, name);
-	
-	//
-	// load the file
-	//
-	int modfilelen = FS_ReadFile(mod->name, (void**)&buf);
-	if (!buf)
-	{
-		ri.Sys_Error (ERR_DROP, "Mod_NumForName: %s not found", mod->name);
-	}
-	
-	loadmodel = mod;
-
-	//
-	// fill it in
-	//
-
-
-	// call the apropriate loader
-	
-	switch (LittleLong(*(unsigned *)buf))
-	{
-	case BSP38_HEADER:
-		Mod_LoadBrush38Model(mod, buf);
-		break;
-
-	default:
-		ri.Sys_Error (ERR_DROP,"Mod_NumForName: unknown fileid for %s", mod->name);
-		break;
-	}
-
-	FS_FreeFile (buf);
-
-	tr.worldModel = mod;
-}
-
-/*
 @@@@@@@@@@@@@@@@@@@@@
 R_BeginRegistration
 
@@ -105,7 +56,7 @@ void R_BeginRegistration (const char *model)
 	R_FreeModels();
 	R_ModelInit();
 
-	Mod_LoadWorld(fullname);
+	R_LoadWorld(fullname);
 
 	r_viewcluster = -1;
 }

@@ -536,7 +536,7 @@ int CL_CgameSystemCalls( int *args ) {
 		S_StartBackgroundTrack( (char*)VMA(1), (char*)VMA(2) );
 		return 0;
 	case CG_R_LOADWORLDMAP:
-		re.LoadWorld( (char*)VMA(1) );
+		R_LoadWorld( (char*)VMA(1) );
 		return 0; 
 	case CG_R_REGISTERMODEL:
 		return R_RegisterModel( (char*)VMA(1) );
@@ -694,7 +694,7 @@ int CL_CgameSystemCalls( int *args ) {
 		return getCameraInfo(args[1], VMA(2), VMA(3));
 */
 	case CG_GET_ENTITY_TOKEN:
-		return re.GetEntityToken( (char*)VMA(1), args[2] );
+		return R_GetEntityToken( (char*)VMA(1), args[2] );
 	case CG_R_INPVS:
 		return re.inPVS( (float*)VMA(1), (float*)VMA(2) );
 

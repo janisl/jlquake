@@ -102,7 +102,6 @@ void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap);
 void R_TranslatePlayerSkin (int playernum);
 
 void	Mod_ClearAll (void);
-qhandle_t Mod_LoadWorld(const char *name);
 int Mod_GetNumFrames(qhandle_t Handle);
 int Mod_GetFlags(qhandle_t Handle);
 void Mod_PrintFrameName(qhandle_t m, int frame);
