@@ -886,7 +886,7 @@ int CL_UISystemCalls( int *args ) {
 		return 0;
 
   case UI_R_MODELBOUNDS:
-		re.ModelBounds( args[1], (float*)VMA(2), (float*)VMA(3) );
+		R_ModelBounds( args[1], (float*)VMA(2), (float*)VMA(3) );
 		return 0;
 
 	case UI_UPDATESCREEN:
@@ -894,7 +894,7 @@ int CL_UISystemCalls( int *args ) {
 		return 0;
 
 	case UI_CM_LERPTAG:
-		re.LerpTag( (orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6) );
+		R_LerpTag( (orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6) );
 		return 0;
 
 	case UI_S_REGISTERSOUND:

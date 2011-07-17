@@ -722,7 +722,7 @@ void CL_LinkPacketEntities (void)
 		R_AddRefEntityToScene(&ent);
 
 		// add automatic particle trails
-		int ModelFlags = Mod_GetFlags(ent.hModel);
+		int ModelFlags = R_ModelFlags(ent.hModel);
 		if (!ModelFlags)
 			continue;
 

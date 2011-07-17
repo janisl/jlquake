@@ -1481,8 +1481,8 @@ void Host_Viewframe_f (void)
 	m = cl.model_precache[(int)e->v.modelindex];
 
 	f = QStr::Atoi(Cmd_Argv(1));
-	if (f >= Mod_GetNumFrames(m))
-		f = Mod_GetNumFrames(m) - 1;
+	if (f >= R_ModelNumFrames(m))
+		f = R_ModelNumFrames(m) - 1;
 
 	e->v.frame = f;		
 }
@@ -1503,10 +1503,10 @@ void Host_Viewnext_f (void)
 	m = cl.model_precache[(int)e->v.modelindex];
 
 	e->v.frame = e->v.frame + 1;
-	if (e->v.frame >= Mod_GetNumFrames(m))
-		e->v.frame = Mod_GetNumFrames(m) - 1;
+	if (e->v.frame >= R_ModelNumFrames(m))
+		e->v.frame = R_ModelNumFrames(m) - 1;
 
-	Mod_PrintFrameName (m, e->v.frame);		
+	R_PrintModelFrameName (m, e->v.frame);		
 }
 
 /*
@@ -1529,7 +1529,7 @@ void Host_Viewprev_f (void)
 	if (e->v.frame < 0)
 		e->v.frame = 0;
 
-	Mod_PrintFrameName (m, e->v.frame);		
+	R_PrintModelFrameName (m, e->v.frame);		
 }
 
 /*

@@ -377,7 +377,7 @@ if (bits&(1<<i))
 	// or randomized
 		if (model)
 		{
-			if (Mod_GetSyncType(model) == ST_RAND)
+			if (R_ModelSyncType(model) == ST_RAND)
 				ent->syncbase = (float)(rand()&0x7fff) / 0x7fff;
 			else
 				ent->syncbase = 0.0;

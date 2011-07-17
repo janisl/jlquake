@@ -138,9 +138,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.BeginFrame = RE_BeginFrame;
 	re.EndFrame = RE_EndFrame;
 
-	re.LerpTag = R_LerpTag;
-	re.ModelBounds = R_ModelBounds;
-
 	re.LightForPoint = R_LightForPoint;
 	re.RenderScene = RE_RenderScene;
 

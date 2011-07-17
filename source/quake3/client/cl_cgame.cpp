@@ -578,10 +578,10 @@ int CL_CgameSystemCalls( int *args ) {
 		R_StretchPic( VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), args[9] );
 		return 0;
 	case CG_R_MODELBOUNDS:
-		re.ModelBounds( args[1], (float*)VMA(2), (float*)VMA(3) );
+		R_ModelBounds( args[1], (float*)VMA(2), (float*)VMA(3) );
 		return 0;
 	case CG_R_LERPTAG:
-		return re.LerpTag( (orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6) );
+		return R_LerpTag( (orientation_t*)VMA(1), args[2], args[3], args[4], VMF(5), (char*)VMA(6) );
 	case CG_GETGLCONFIG:
 		CL_GetGlconfig( (glconfig_t*)VMA(1) );
 		return 0;

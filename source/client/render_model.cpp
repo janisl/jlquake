@@ -414,3 +414,260 @@ int R_RegisterModel(const char* name)
 
 	return mod->index;
 }
+
+//==========================================================================
+//
+//	R_ModelBounds
+//
+//==========================================================================
+
+void R_ModelBounds(qhandle_t handle, vec3_t mins, vec3_t maxs)
+{
+	model_t* model = R_GetModelByHandle(handle);
+
+	switch (model->type)
+	{
+	case MOD_BRUSH29:
+	case MOD_SPRITE:
+	case MOD_MESH1:
+		VectorCopy(model->q1_mins, mins);
+		VectorCopy(model->q1_maxs, maxs);
+		break;
+
+	case MOD_BRUSH38:
+	case MOD_MESH2:
+		VectorCopy(model->q2_mins, mins);
+		VectorCopy(model->q2_maxs, maxs);
+		break;
+
+	case MOD_BRUSH46:
+		VectorCopy(model->q3_bmodel->bounds[0], mins);
+		VectorCopy(model->q3_bmodel->bounds[1], maxs);
+		break;
+
+	case MOD_MESH3:
+	{
+		md3Header_t* header = model->q3_md3[0];
+
+		md3Frame_t* frame = (md3Frame_t*)((byte*)header + header->ofsFrames);
+
+		VectorCopy(frame->bounds[0], mins);
+		VectorCopy(frame->bounds[1], maxs);
+	}
+		break;
+
+	default:
+		VectorClear(mins);
+		VectorClear(maxs);
+		break;
+	}
+}
+
+//==========================================================================
+//
+//	R_ModelNumFrames
+//
+//==========================================================================
+
+int R_ModelNumFrames(qhandle_t Handle)
+{
+	model_t* Model = R_GetModelByHandle(Handle);
+	switch (Model->type)
+	{
+	case MOD_BRUSH29:
+	case MOD_SPRITE:
+	case MOD_MESH1:
+		return Model->q1_numframes;
+
+	case MOD_BRUSH38:
+	case MOD_SPRITE2:
+	case MOD_MESH2:
+		return Model->q2_numframes;
+
+	case MOD_BRUSH46:
+		return 1;
+
+	case MOD_MESH3:
+		return Model->q3_md3[0]->numFrames;
+
+	case MOD_MD4:
+		return Model->q3_md4->numFrames;
+
+	default:
+		return 0;
+	}
+}
+
+//==========================================================================
+//
+//	R_ModelFlags
+//
+//	Use only by Quake and Hexen 2, only .MDL files will have meaningfull flags.
+//
+//==========================================================================
+
+int R_ModelFlags(qhandle_t Handle)
+{
+	model_t* Model = R_GetModelByHandle(Handle);
+	if (Model->type == MOD_MESH1)
+	{
+		return Model->q1_flags;
+	}
+	return 0;
+}
+
+//==========================================================================
+//
+//	R_IsMeshModel
+//
+//==========================================================================
+
+bool R_IsMeshModel(qhandle_t Handle)
+{
+	model_t* Model = R_GetModelByHandle(Handle);
+	return Model->type == MOD_MESH1 || Model->type == MOD_MESH2 ||
+		Model->type == MOD_MESH3 || Model->type == MOD_MD4;
+}
+
+//==========================================================================
+//
+//	R_ModelName
+//
+//==========================================================================
+
+const char* R_ModelName(qhandle_t Handle)
+{
+	return R_GetModelByHandle(Handle)->name;
+}
+
+//==========================================================================
+//
+//	R_ModelSyncType
+//
+//==========================================================================
+
+int R_ModelSyncType(qhandle_t Handle)
+{
+	model_t* Model = R_GetModelByHandle(Handle);
+	switch (Model->type)
+	{
+	case MOD_SPRITE:
+	case MOD_MESH1:
+		return Model->q1_synctype;
+	
+	default:
+		return 0;
+	}
+}
+
+//==========================================================================
+//
+//	R_PrintModelFrameName
+//
+//==========================================================================
+
+void R_PrintModelFrameName(qhandle_t Handle, int Frame)
+{
+	model_t* Model = R_GetModelByHandle(Handle);
+	if (Model->type != MOD_MESH1)
+	{
+		return;
+	}
+
+	mesh1hdr_t* hdr = (mesh1hdr_t*)Model->q1_cache;
+	mmesh1framedesc_t* pframedesc = &hdr->frames[Frame];
+	GLog.Write("frame %i: %s\n", Frame, pframedesc->name);
+}
+
+//==========================================================================
+//
+//	R_CalculateModelScaleOffset
+//
+//==========================================================================
+
+void R_CalculateModelScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out)
+{
+	model_t* Model = R_GetModelByHandle(Handle);
+	if (Model->type != MOD_MESH1)
+	{
+		VectorClear(Out);
+		return;
+	}
+
+	mesh1hdr_t* AliasHdr = (mesh1hdr_t*)Model->q1_cache;
+
+	Out[0] = -(ScaleX - 1.0) * (AliasHdr->scale[0] * 127.95 + AliasHdr->scale_origin[0]);
+	Out[1] = -(ScaleY - 1.0) * (AliasHdr->scale[1] * 127.95 + AliasHdr->scale_origin[1]);
+	Out[2] = -(ScaleZ - 1.0) * (ScaleZOrigin * 2.0 * AliasHdr->scale[2] * 127.95 + AliasHdr->scale_origin[2]);
+}
+
+//==========================================================================
+//
+//	R_GetTag
+//
+//==========================================================================
+
+static md3Tag_t* R_GetTag(md3Header_t* mod, int frame, const char* tagName)
+{
+	md3Tag_t		*tag;
+	int				i;
+
+	if ( frame >= mod->numFrames ) {
+		// it is possible to have a bad frame while changing models, so don't error
+		frame = mod->numFrames - 1;
+	}
+
+	tag = (md3Tag_t *)((byte *)mod + mod->ofsTags) + frame * mod->numTags;
+	for ( i = 0 ; i < mod->numTags ; i++, tag++ ) {
+		if ( !QStr::Cmp( tag->name, tagName ) ) {
+			return tag;	// found it
+		}
+	}
+
+	return NULL;
+}
+
+//==========================================================================
+//
+//	R_LerpTag
+//
+//==========================================================================
+
+bool R_LerpTag(orientation_t* tag, qhandle_t handle, int startFrame, int endFrame, 
+	float frac, const char* tagName)
+{
+	int		i;
+	float		frontLerp, backLerp;
+
+	model_t* model = R_GetModelByHandle(handle);
+	if (!model->q3_md3[0])
+	{
+		AxisClear(tag->axis);
+		VectorClear(tag->origin);
+		return false;
+	}
+
+	md3Tag_t* start = R_GetTag(model->q3_md3[0], startFrame, tagName);
+	md3Tag_t* end = R_GetTag(model->q3_md3[0], endFrame, tagName);
+	if (!start || !end)
+	{
+		AxisClear(tag->axis);
+		VectorClear(tag->origin);
+		return false;
+	}
+
+	frontLerp = frac;
+	backLerp = 1.0f - frac;
+
+	for (i = 0; i < 3; i++)
+	{
+		tag->origin[i] = start->origin[i] * backLerp +  end->origin[i] * frontLerp;
+		tag->axis[0][i] = start->axis[0][i] * backLerp +  end->axis[0][i] * frontLerp;
+		tag->axis[1][i] = start->axis[1][i] * backLerp +  end->axis[1][i] * frontLerp;
+		tag->axis[2][i] = start->axis[2][i] * backLerp +  end->axis[2][i] * frontLerp;
+	}
+	VectorNormalize(tag->axis[0]);
+	VectorNormalize(tag->axis[1]);
+	VectorNormalize(tag->axis[2]);
+	return true;
+}

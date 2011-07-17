@@ -220,7 +220,7 @@ void R_TranslatePlayerSkin (int playernum)
 	if (!model)
 		return;
 	// player doesn't have a model yet
-	paliashdr = (mesh1hdr_t *)Mod_Extradata (model);
+	paliashdr = (mesh1hdr_t *)model->q1_cache;
 	s = paliashdr->skinwidth * paliashdr->skinheight;
 
 	if (cl.players[playernum].playerclass >= 1 && 

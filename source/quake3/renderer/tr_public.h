@@ -61,11 +61,6 @@ typedef struct {
 	// if the pointers are not NULL, timing info will be returned
 	void	(*EndFrame)( int *frontEndMsec, int *backEndMsec );
 
-
-	int		(*LerpTag)( orientation_t *tag,  qhandle_t model, int startFrame, int endFrame, 
-					 float frac, const char *tagName );
-	void	(*ModelBounds)( qhandle_t model, vec3_t mins, vec3_t maxs );
-
 	qboolean (*inPVS)( const vec3_t p1, const vec3_t p2 );
 } refexport_t;
 

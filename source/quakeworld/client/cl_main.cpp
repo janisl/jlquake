@@ -1484,7 +1484,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	vec3_t angles;
 	angles[YAW] = ent_angles[YAW];
 	angles[ROLL] = ent_angles[ROLL];
-	if (Mod_IsAliasModel(ent->hModel))
+	if (R_IsMeshModel(ent->hModel))
 	{
 		// stupid quake bug
 		angles[PITCH] = -ent_angles[PITCH];
@@ -1496,7 +1496,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 
 	AnglesToAxis(angles, ent->axis);
 
-	if (!QStr::Cmp(Mod_GetName(ent->hModel), "progs/eyes.mdl"))
+	if (!QStr::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl"))
 	{
 		// double size of eyes, since they are really hard to see in gl
 		ent->renderfx |= RF_LIGHTING_ORIGIN;
@@ -1510,8 +1510,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	}
 
 	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!QStr::Cmp(Mod_GetName(ent->hModel), "progs/flame2.mdl") ||
-		!QStr::Cmp(Mod_GetName(ent->hModel), "progs/flame.mdl"))
+	if (!QStr::Cmp(R_ModelName(ent->hModel), "progs/flame2.mdl") ||
+		!QStr::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
 	{
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
 		ent->radius = 1;

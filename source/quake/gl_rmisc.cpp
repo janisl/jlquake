@@ -205,7 +205,7 @@ void R_TranslatePlayerSkin (int playernum)
 	if (model->type != MOD_MESH1)
 		return; // only translate skins on alias models
 
-	paliashdr = (mesh1hdr_t *)Mod_Extradata (model);
+	paliashdr = (mesh1hdr_t *)model->q1_cache;
 	s = paliashdr->skinwidth * paliashdr->skinheight;
 	original = q1_player_8bit_texels;
 	if (s & 3)

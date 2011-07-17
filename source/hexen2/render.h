@@ -144,16 +144,9 @@ void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
 void R_ClearParticles (void);
 
-void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 void R_TranslatePlayerSkin (int playernum);
 void D_ShowLoadingSize(void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
 void	Mod_ClearAll (void);
-int Mod_GetNumFrames(qhandle_t Handle);
-int Mod_GetFlags(qhandle_t Handle);
-void Mod_PrintFrameName(qhandle_t m, int frame);
-bool Mod_IsAliasModel(qhandle_t Handle);
-const char* Mod_GetName(qhandle_t Handle);
-int Mod_GetSyncType(qhandle_t Handle);

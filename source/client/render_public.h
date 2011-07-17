@@ -209,6 +209,12 @@ struct markFragment_t
 	int		numPoints;
 };
 
+struct orientation_t
+{
+	vec3_t		origin;
+	vec3_t		axis[3];
+};
+
 // font support 
 
 #define GLYPH_START 0
@@ -270,6 +276,15 @@ int R_MarkFragments(int NumberOfPoints, const vec3_t* Points, const vec3_t Proje
 	int MaxPoints, vec3_t PointBuffer, int MaxFragments, markFragment_t* FragmentBuffer);
 
 qhandle_t R_RegisterModel(const char* Name);
+void R_ModelBounds(qhandle_t Handle, vec3_t Mins, vec3_t Maxs);
+int R_ModelNumFrames(qhandle_t Handle);
+int R_ModelFlags(qhandle_t Handle);
+bool R_IsMeshModel(qhandle_t Handle);
+const char* R_ModelName(qhandle_t Handle);
+int R_ModelSyncType(qhandle_t Handle);
+void R_PrintModelFrameName(qhandle_t Handle, int Frame);
+void R_CalculateModelScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
+bool R_LerpTag(orientation_t* Tag, qhandle_t Handle, int StartFrame, int EndFrame, float Frac, const char* TagName);
 
 qhandle_t R_RegisterShader(const char* Name);
 qhandle_t R_RegisterShaderNoMip(const char* Name);

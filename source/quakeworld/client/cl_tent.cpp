@@ -411,7 +411,7 @@ void CL_UpdateExplosions (void)
 		if (!ex->model)
 			continue;
 		f = 10*(cl.time - ex->start);
-		if (f >= Mod_GetNumFrames(ex->model))
+		if (f >= R_ModelNumFrames(ex->model))
 		{
 			ex->model = 0;
 			continue;

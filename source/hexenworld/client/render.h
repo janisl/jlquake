@@ -176,7 +176,6 @@ void D_DeleteSurfaceCache (void);
 void D_InitCaches (void *buffer, int size);
 void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
-void Mod_CalcScaleOffset(qhandle_t Handle, float ScaleX, float ScaleY, float ScaleZ, float ScaleZOrigin, vec3_t Out);
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 void R_TranslatePlayerSkin (int playernum);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
@@ -189,7 +188,3 @@ void R_DrawName(vec3_t origin, char *Name, int Red);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);
 
 void	Mod_ClearAll (void);
-int Mod_GetNumFrames(qhandle_t Handle);
-int Mod_GetFlags(qhandle_t Handle);
-bool Mod_IsAliasModel(qhandle_t Handle);
-const char* Mod_GetName(qhandle_t Handle);

@@ -873,7 +873,7 @@ void CL_ParseTEnt (void)
 			ex->model = R_RegisterModel("models/gen_expl.spr");
 
 			ex->startTime = cl.time;
-			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 		
 		// sound
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_explode, 1, 1);
@@ -985,7 +985,7 @@ void CL_ParseTEnt (void)
 			ex->model = R_RegisterModel("models/sm_expld.spr");
 
 			ex->startTime = cl.time;
-			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 			break;
 
 		case TE_CHUNK:		//directed chunks
@@ -1484,7 +1484,7 @@ void CL_ParseTEnt (void)
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
 				ex->startTime = cl.time + (rand()%50 / 200.0);
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.04;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
 			}
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
 			break;
@@ -1506,7 +1506,7 @@ void CL_ParseTEnt (void)
 			ex->data=250;
 			ex->model = R_RegisterModel("models/sm_expld.spr");
 			ex->startTime = cl.time;
-			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 			for(cnt2=0; cnt2<cnt; cnt2++)
 			{
 				offset[0] = rand() % 40 - 20;
@@ -1522,7 +1522,7 @@ void CL_ParseTEnt (void)
 				ex->abslight = 128;
 				ex->flags = DRF_TRANSLUCENT | MLS_ABSLIGHT;
 				ex->startTime = cl.time;
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 			}			
 			for(cnt2=0; cnt2<20; cnt2++)
 			{
@@ -1568,7 +1568,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/whtsmk1.spr");
 			ex->startTime = cl.time;
-			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 	
 			//sound
 			if(cnt2)
@@ -1710,7 +1710,7 @@ void CL_ParseTEnt (void)
 			VectorCopy(pos, ex->origin);
 			ex->model = R_RegisterModel("models/icehit.spr");
 			ex->startTime = cl.time;
-			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1;
 
 			// Add in the sound
 			if(cnt2 == 1)
@@ -2072,7 +2072,7 @@ void CL_ParseTEnt (void)
 			ex->abslight = 128;
 			ex->skin = 0;
 			ex->scale = 100;
-			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeBounce, 1, 1);
 			break;
@@ -2118,7 +2118,7 @@ void CL_ParseTEnt (void)
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
 				ex->startTime = cl.time + (rand()%50 / 200.0);
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
 
@@ -2161,7 +2161,7 @@ void CL_ParseTEnt (void)
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
 				ex->startTime = cl.time + (rand()%50 / 200.0);
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_axeExplode, 1, 1);
@@ -2296,7 +2296,7 @@ void CL_ParseTEnt (void)
 			ex->abslight = 128;
 			ex->skin = 0;
 			ex->scale = 100;
-			ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+			ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 
 			i = (host_frametime < .07) ? 0 : 8;	// based on framerate
 			for(i = 0; i < 12; i++)
@@ -2332,7 +2332,7 @@ void CL_ParseTEnt (void)
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
 				ex->startTime = cl.time + (rand()%50 / 200.0);
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.04;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.04;
 			}
 
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_purify2, 1, 1);
@@ -2462,7 +2462,7 @@ void CL_ParseTEnt (void)
 				ex->abslight = 128;
 				ex->skin = 0;
 				ex->scale = 100;
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
 			break;
@@ -2536,7 +2536,7 @@ void CL_ParseTEnt (void)
 						ratio = (float)i/(float)distance;
 						ex->scale = 200-(int)(150.0*ratio);
 						ex->startTime = cl.time+ratio*0.75;
-						ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * (0.025+FRANDOM()*0.01);
+						ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * (0.025+FRANDOM()*0.01);
 
 						VectorAdd(curPos,distVec,curPos);
 					}
@@ -2566,7 +2566,7 @@ void CL_ParseTEnt (void)
 						ratio = (float)i/(float)distance;
 						ex->scale = 200-(int)(150.0*ratio);
 						ex->startTime = cl.time+ratio*0.75;
-						ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * (0.025+FRANDOM()*0.01);
+						ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * (0.025+FRANDOM()*0.01);
 
 						VectorAdd(curPos,distVec,curPos);
 					}
@@ -2623,7 +2623,7 @@ void CL_ParseTEnt (void)
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
 				ex->startTime = cl.time + (rand()%50 / 200.0);
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_acidhit, 1, 1);
@@ -2669,7 +2669,7 @@ void CL_ParseTEnt (void)
 				ex->skin = 0;
 				ex->scale = 80 + rand()%40;
 				ex->startTime = cl.time + (rand()%50 / 200.0);
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
 			// always make 8 meteors
@@ -2754,7 +2754,7 @@ void CL_ParseTEnt (void)
 						break;
 					}
 					ex->startTime = cl.time + .3/8.0 * i;
-					ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 
 					int PtContents;
 					do
@@ -2783,7 +2783,7 @@ void CL_ParseTEnt (void)
 					ex->origin[2] += (rand()%6)-3;
 					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.time + .3/8.0 * i;
-					ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
 
 					VectorAdd(curPos, posAdd, curPos);
@@ -2807,7 +2807,7 @@ void CL_ParseTEnt (void)
 				ex->origin[2] += (rand()%32)-16;
 				ex->model = R_RegisterModel("models/fboom.spr");
 				ex->startTime = cl.time + ((rand()%150)/200);
-				ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+				ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 			}
 
 			S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_flameend, 1, 1);
@@ -2885,7 +2885,7 @@ void CL_ParseTEnt (void)
 					ex->origin[2] += (rand()%6)-3;
 					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.time + .3/8.0 * i;
-					ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
 
 					ex->velocity[0] = 0;
@@ -2903,7 +2903,7 @@ void CL_ParseTEnt (void)
 					ex->origin[2] += (rand()%6)-3;
 					ex->model = R_RegisterModel("models/flamestr.spr");
 					ex->startTime = cl.time + .3/8.0 * i;
-					ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+					ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 					ex->flags |= DRF_TRANSLUCENT;
 
 					ex->velocity[0] = 0;
@@ -3676,7 +3676,7 @@ void CL_UpdateExplosions (void)
 		}
 		else
 		{
-			f = (Mod_GetNumFrames(ex->model) - 1) * (cl.time - ex->startTime) / (ex->endTime - ex->startTime);
+			f = (R_ModelNumFrames(ex->model) - 1) * (cl.time - ex->startTime) / (ex->endTime - ex->startTime);
 		}
 
 		// apply velocity
@@ -4057,7 +4057,7 @@ void MultiGrenadeThink (explosion_t *ex)
 			ftemp = ( rand() / RAND_MAX * (0.5) );
 			missile->startTime = cl.time;// + 0.1 + ftemp - (ex->startTime - cl.time);
 			ftemp = ( rand() / RAND_MAX * (0.3) )-0.15;
-			missile->endTime = missile->startTime + Mod_GetNumFrames(missile->model) * 0.1 + ftemp;
+			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
 			break;
 		case 1:
 		    missile->frameFunc = MultiGrenadePiece2Think;
@@ -4068,7 +4068,7 @@ void MultiGrenadeThink (explosion_t *ex)
 			ftemp = ( rand() / RAND_MAX  * (0.5) );
 			missile->startTime = cl.time;// + 0.1 + ftemp - (ex->startTime - cl.time);
 			ftemp = ( rand() / RAND_MAX  * (0.3) )-0.15;
-			missile->endTime = missile->startTime + Mod_GetNumFrames(missile->model) * 0.1 + ftemp;
+			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
 			break;
 		default://some extra explosions for at first
 		    missile->frameFunc = NULL;
@@ -4079,7 +4079,7 @@ void MultiGrenadeThink (explosion_t *ex)
 			ftemp = ( rand() / RAND_MAX * (0.2) );
 			missile->startTime = cl.time + ftemp;
 			ftemp = ( rand() / RAND_MAX * (0.2) )-0.1;
-			missile->endTime = missile->startTime + Mod_GetNumFrames(missile->model) * 0.1 + ftemp;
+			missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1 + ftemp;
 			break;
 		}
 
@@ -4113,9 +4113,9 @@ void MultiGrenadePieceThink (explosion_t *ex)
 		ex->startTime = cl.time;
 	}
 	ftemp = ( rand() / RAND_MAX * (0.4) )-0.4;
-	ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1 + ftemp;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1 + ftemp;
 
-	if (Mod_GetNumFrames(ex->model) > 14)
+	if (R_ModelNumFrames(ex->model) > 14)
 	{
 		ex->startTime -= 0.4;
 		ex->endTime -= 0.4;
@@ -4152,7 +4152,7 @@ void MultiGrenadePieceThink (explosion_t *ex)
 		ftemp = ( rand() / RAND_MAX * (0.5) );
 
 		missile->startTime = cl.time+0.01;
-		missile->endTime = missile->startTime + Mod_GetNumFrames(missile->model) * 0.1;
+		missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1;
     }
 }
 
@@ -4177,7 +4177,7 @@ void MultiGrenadePiece2Think (explosion_t *ex)
 	ftemp = 0;//( rand() / RAND_MAX * (0.2) )-0.1;
 	ex->startTime = cl.time + (((1 - (ex->data-69)/200.0)+ftemp)*1.5) - 0.2;
 	ftemp = ( rand() / RAND_MAX * (0.4) )-0.2;
-	ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.1 + ftemp;
+	ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.1 + ftemp;
 
 	if (ex->data <= 71)
 		return;
@@ -4210,7 +4210,7 @@ void MultiGrenadePiece2Think (explosion_t *ex)
 		ftemp = ( rand() / RAND_MAX * (0.5) );
 
 		missile->startTime = cl.time+0.01;
-		missile->endTime = missile->startTime + Mod_GetNumFrames(missile->model) * 0.1;
+		missile->endTime = missile->startTime + R_ModelNumFrames(missile->model) * 0.1;
     }
 }
 
@@ -4605,7 +4605,7 @@ void MeteorBlastThink(explosion_t *ex)
 			ex2->skin = 0;
 			ex2->scale = 80 + rand()%40;
 			ex2->startTime = cl.time + (rand()%30 / 200.0);
-			ex2->endTime = ex2->startTime + Mod_GetNumFrames(ex2->model) * 0.03;
+			ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.03;
 		}
 		if(rand()&1)
 		{
@@ -4915,7 +4915,7 @@ void CL_UpdateOnFire(refEntity_t *ent, vec3_t angles, int edict_num)
 		}
 		
 		ex->startTime = cl.time;
-		ex->endTime = ex->startTime + Mod_GetNumFrames(ex->model) * 0.05;
+		ex->endTime = ex->startTime + R_ModelNumFrames(ex->model) * 0.05;
 
 		ex->scale = 100;
 
@@ -4950,7 +4950,7 @@ void PowerFlameBurnRemove(explosion_t *ex)
 		break;
 	}
 	ex2->startTime = cl.time;
-	ex2->endTime = ex2->startTime + Mod_GetNumFrames(ex2->model) * 0.05;
+	ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
 
 	ex2->scale = 100;
 
@@ -4996,7 +4996,7 @@ void CL_UpdatePowerFlameBurn(refEntity_t *ent, int edict_num)
 		VectorCopy(ex->origin, ex2->origin);
 		ex2->model = R_RegisterModel("models/flamestr.spr");
 		ex2->startTime = cl.time;
-		ex2->endTime = ex2->startTime + Mod_GetNumFrames(ex2->model) * 0.05;
+		ex2->endTime = ex2->startTime + R_ModelNumFrames(ex2->model) * 0.05;
 		ex2->flags |= DRF_TRANSLUCENT;
 	}
 }

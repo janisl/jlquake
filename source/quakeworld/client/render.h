@@ -108,7 +108,3 @@ void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum);
 void R_TranslatePlayerSkin (int playernum);
 
 void	Mod_ClearAll (void);
-int Mod_GetNumFrames(qhandle_t Handle);
-int Mod_GetFlags(qhandle_t Handle);
-bool Mod_IsAliasModel(qhandle_t Handle);
-const char* Mod_GetName(qhandle_t Handle);

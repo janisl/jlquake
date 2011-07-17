@@ -26,18 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "glquake.h"
 
 /*
-===============
-Mod_Init
-
-Caches the data if needed
-===============
-*/
-void *Mod_Extradata (model_t *mod)
-{
-	return mod->q1_cache;
-}
-
-/*
 ===================
 Mod_ClearAll
 ===================
@@ -60,24 +48,4 @@ void Mod_Print (void)
 	{
 		Con_Printf ("%8p : %s\n",tr.models[i]->q1_cache, tr.models[i]->name);
 	}
-}
-
-int Mod_GetNumFrames(qhandle_t Handle)
-{
-	return R_GetModelByHandle(Handle)->q1_numframes;
-}
-
-int Mod_GetFlags(qhandle_t Handle)
-{
-	return R_GetModelByHandle(Handle)->q1_flags;
-}
-
-bool Mod_IsAliasModel(qhandle_t Handle)
-{
-	return R_GetModelByHandle(Handle)->type == MOD_MESH1;
-}
-
-const char* Mod_GetName(qhandle_t Handle)
-{
-	return R_GetModelByHandle(Handle)->name;
 }
