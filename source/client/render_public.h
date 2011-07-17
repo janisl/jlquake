@@ -202,6 +202,13 @@ struct refdef_t
 	char		text[MAX_RENDER_STRINGS][MAX_RENDER_STRING_LENGTH];
 };
 
+// markfragments are returned by R_MarkFragments()
+struct markFragment_t
+{
+	int		firstPoint;
+	int		numPoints;
+};
+
 // font support 
 
 #define GLYPH_START 0
@@ -259,6 +266,8 @@ void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool
 
 void R_LoadWorld(const char* Name);
 bool R_GetEntityToken(char* Buffer, int Size);
+int R_MarkFragments(int NumberOfPoints, const vec3_t* Points, const vec3_t Projection,
+	int MaxPoints, vec3_t PointBuffer, int MaxFragments, markFragment_t* FragmentBuffer);
 
 qhandle_t R_RegisterModel(const char* Name);
 

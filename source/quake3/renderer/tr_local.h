@@ -117,18 +117,6 @@ qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
 /*
 ============================================================
 
-MARKERS, POLYGON PROJECTION ON WORLD POLYGONS
-
-============================================================
-*/
-
-int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection,
-				   int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );
-
-
-/*
-============================================================
-
 SCENE GENERATION
 
 ============================================================

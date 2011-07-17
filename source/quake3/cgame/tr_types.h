@@ -44,10 +44,4 @@ typedef enum {
 
 #endif	// !defined _WIN32
 
-// markfragments are returned by R_MarkFragments()
-typedef struct {
-	int		firstPoint;
-	int		numPoints;
-} markFragment_t;
-
 #endif	// __TR_TYPES_H

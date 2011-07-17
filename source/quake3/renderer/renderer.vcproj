@@ -176,10 +176,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_marks.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_model.cpp"
 				>
 			</File>

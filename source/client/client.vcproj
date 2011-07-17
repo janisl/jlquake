@@ -253,6 +253,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\render_marks.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\render_model.cpp"
 				>
 			</File>

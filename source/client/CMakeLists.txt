@@ -23,6 +23,7 @@ set(CLIENT_FILES
 	render_init.cpp
 	render_light.cpp
 	render_main.cpp
+	render_marks.cpp
 	render_model.cpp
 	render_model_bsp29.cpp
 	render_model_bsp38.cpp
