@@ -561,7 +561,7 @@ int CL_CgameSystemCalls( int *args ) {
 		R_AddPolyToScene( args[1], args[2], (polyVert_t*)VMA(3), args[4] );
 		return 0;
 	case CG_R_LIGHTFORPOINT:
-		return re.LightForPoint( (float*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4) );
+		return R_LightForPoint( (float*)VMA(1), (float*)VMA(2), (float*)VMA(3), (float*)VMA(4) );
 	case CG_R_ADDLIGHTTOSCENE:
 		R_AddLightToScene( (float*)VMA(1), VMF(2), VMF(3), VMF(4), VMF(5) );
 		return 0;

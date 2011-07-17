@@ -50,7 +50,6 @@ typedef struct {
 	// them to be loaded into card memory
 	void	(*EndRegistration)( void );
 
-	int		(*LightForPoint)( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 	void	(*RenderScene)( const refdef_t *fd );
 
 	// Draw images for cinematic rendering, pass as 32 bit rgba
