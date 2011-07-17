@@ -1276,8 +1276,6 @@ float R_CalcEntityLight(refEntity_t* e)
 
 void R_DrawMdlModel(trRefEntity_t* e)
 {
-	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
-
 	model_t* clmodel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
 	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)

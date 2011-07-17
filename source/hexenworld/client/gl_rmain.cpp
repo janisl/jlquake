@@ -118,6 +118,7 @@ void R_DrawEntitiesOnList (void)
 		}
 
 		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
 		switch (tr.currentModel->type)
 		{
 		case MOD_MESH1:
@@ -196,6 +197,7 @@ void R_DrawTransEntitiesOnList ( qboolean inwater)
 	{
 		tr.currentEntity = theents[i].ent;
 		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
 
 		switch (tr.currentModel->type)
 		{

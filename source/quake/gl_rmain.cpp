@@ -99,6 +99,7 @@ void R_DrawEntitiesOnList (void)
 				continue;
 			}
 		}
+		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
 
 		switch (tr.currentModel->type)
 		{

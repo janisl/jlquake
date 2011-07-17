@@ -558,8 +558,6 @@ static bool R_CullMd2Model(trRefEntity_t* e)
 
 void R_DrawMd2Model(trRefEntity_t* e)
 {
-	R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
-
 	if (!(e->e.renderfx & RF_FIRST_PERSON))
 	{
 		if (R_CullMd2Model(e))

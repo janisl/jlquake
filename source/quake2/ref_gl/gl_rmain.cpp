@@ -58,8 +58,6 @@ void R_DrawNullModel (void)
 		R_LightPointQ2 (tr.currentEntity->e.origin, shadelight);
 
     qglPushMatrix ();
-	R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
-
 	qglLoadMatrixf(tr.orient.modelMatrix);
 
 	qglDisable (GL_TEXTURE_2D);
@@ -108,6 +106,7 @@ void R_DrawEntitiesOnList (void)
 		else
 		{
 			tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+			R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
 			switch (tr.currentModel->type)
 			{
 			case MOD_BAD:
@@ -144,6 +143,7 @@ void R_DrawEntitiesOnList (void)
 		else
 		{
 			tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+			R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
 			switch (tr.currentModel->type)
 			{
 			case MOD_BAD:

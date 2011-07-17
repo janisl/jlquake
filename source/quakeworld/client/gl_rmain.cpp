@@ -101,6 +101,7 @@ void R_DrawEntitiesOnList (void)
 			continue;
 		}
 		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
 
 		switch (tr.currentModel->type)
 		{

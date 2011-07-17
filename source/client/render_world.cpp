@@ -345,8 +345,6 @@ static void R_AddWorldSurface(mbrush46_surface_t* surf, int dlightBits)
 
 void R_DrawBrushModelQ1(trRefEntity_t* e, bool Translucent)
 {
-	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
-
 	model_t* clmodel = R_GetModelByHandle(e->e.hModel);
 
 	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)
@@ -492,8 +490,6 @@ void R_DrawBrushModelQ2(trRefEntity_t* e)
 	{
 		return;
 	}
-
-	R_RotateForEntity(e, &tr.viewParms, &tr.orient);
 
 	if (R_CullLocalBox(&tr.currentModel->q2_mins) == CULL_OUT)
 	{
