@@ -33,7 +33,6 @@ void GL_EndRendering (void);
 #define SKYMASK			(SKYSIZE - 1)
 
 void R_TimeRefresh_f (void);
-void R_ReadPointFile_f (void);
 
 //====================================================
 

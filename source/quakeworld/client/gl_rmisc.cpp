@@ -63,7 +63,6 @@ R_Init
 void R_Init (void)
 {
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
-	//Cmd_AddCommand ("pointfile", R_ReadPointFile_f);	
 
 	r_norefresh = Cvar_Get("r_norefresh", "0", 0);
 	r_drawentities = Cvar_Get("r_drawentities", "1", 0);

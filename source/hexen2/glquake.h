@@ -32,7 +32,6 @@ extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures fo
 #define SKYMASK			(SKYSIZE - 1)
 
 void R_TimeRefresh_f (void);
-void R_ReadPointFile_f (void);
 
 //====================================================
 

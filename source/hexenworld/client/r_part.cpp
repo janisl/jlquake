@@ -275,55 +275,6 @@ void R_ClearParticles (void)
 	particles[cl_numparticles-1].next = NULL;
 }
 
-
-
-/*void R_ReadPointFile_f (void)
-{
-	FILE	*f;
-	vec3_t	org;
-	int		r;
-	int		c;
-	cparticle_t	*p;
-	char	name[MAX_OSPATH];
-	byte	color;
-	
-	color = (byte)Cvar_VariableValue("leak_color");
-	sprintf (name,"maps/%s.pts", "demo1"); // rjr - need map name
-
-	COM_FOpenFile (name, &f, false);
-	if (!f)
-	{
-		Con_Printf ("couldn't open %s\n", name);
-		return;
-	}
-	
-	Con_Printf ("Reading %s...\n", name);
-	c = 0;
-	for ( ;; )
-	{
-		r = fscanf (f,"%f %f %f\n", &org[0], &org[1], &org[2]);
-		if (r != 3)
-			break;
-		c++;
-		
-		p = AllocParticle();
-		if (!p)
-		{
-			Con_Printf ("Not enough free particles\n");
-			break;
-		}
-		
-		p->die = 99999;
-		p->color = color; // (-c)&15;
-		p->type = pt_static;
-		VectorCopy (vec3_origin, p->vel);
-		VectorCopy (org, p->org);
-	}
-
-	fclose (f);
-	Con_Printf ("%i points read\n", c);
-}*/
-
 /*
 ===============
 R_ParseParticleEffect
