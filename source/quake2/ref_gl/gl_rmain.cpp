@@ -32,7 +32,6 @@ float		v_blend[4];			// final blending color
 refdef_t	r_newrefdef;
 
 QCvar	*r_norefresh;
-QCvar	*r_drawentities;
 
 QCvar	*gl_nosubimage;
 
@@ -42,131 +41,6 @@ QCvar	*gl_polyblend;
 
 QCvar	*vid_ref;
 
-/*
-=============
-R_DrawNullModel
-=============
-*/
-void R_DrawNullModel (void)
-{
-	vec3_t	shadelight;
-	int		i;
-
-	if ( tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT)
-		shadelight[0] = shadelight[1] = shadelight[2] = tr.currentEntity->e.radius;
-	else
-		R_LightPointQ2 (tr.currentEntity->e.origin, shadelight);
-
-    qglPushMatrix ();
-	qglLoadMatrixf(tr.orient.modelMatrix);
-
-	qglDisable (GL_TEXTURE_2D);
-	qglColor3fv (shadelight);
-
-	qglBegin (GL_TRIANGLE_FAN);
-	qglVertex3f (0, 0, -16);
-	for (i=0 ; i<=4 ; i++)
-		qglVertex3f (16*cos(i*M_PI/2), 16*sin(i*M_PI/2), 0);
-	qglEnd ();
-
-	qglBegin (GL_TRIANGLE_FAN);
-	qglVertex3f (0, 0, 16);
-	for (i=4 ; i>=0 ; i--)
-		qglVertex3f (16*cos(i*M_PI/2), 16*sin(i*M_PI/2), 0);
-	qglEnd ();
-
-	qglColor3f (1,1,1);
-	qglPopMatrix ();
-	qglEnable (GL_TEXTURE_2D);
-}
-
-/*
-=============
-R_DrawEntitiesOnList
-=============
-*/
-void R_DrawEntitiesOnList (void)
-{
-	int		i;
-
-	if (!r_drawentities->value)
-		return;
-
-	// draw non-transparent first
-	for (i=0 ; i<tr.refdef.num_entities ; i++)
-	{
-		tr.currentEntity = &tr.refdef.entities[i];
-		if (tr.currentEntity->e.renderfx & RF_TRANSLUCENT)
-			continue;	// solid
-
-		if (tr.currentEntity->e.reType == RT_BEAM)
-		{
-			R_DrawBeam( tr.currentEntity );
-		}
-		else
-		{
-			tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
-			R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
-			switch (tr.currentModel->type)
-			{
-			case MOD_BAD:
-				R_DrawNullModel();
-				break;
-			case MOD_MESH2:
-				R_DrawMd2Model(tr.currentEntity);
-				break;
-			case MOD_BRUSH38:
-				R_DrawBrushModelQ2(tr.currentEntity);
-				break;
-			case MOD_SPRITE2:
-				R_DrawSp2Model(tr.currentEntity);
-				break;
-			default:
-				ri.Sys_Error (ERR_DROP, "Bad modeltype");
-				break;
-			}
-		}
-	}
-
-	// draw transparent entities
-	// we could sort these if it ever becomes a problem...
-	for (i=0 ; i<tr.refdef.num_entities ; i++)
-	{
-		tr.currentEntity = &tr.refdef.entities[i];
-		if (!(tr.currentEntity->e.renderfx & RF_TRANSLUCENT))
-			continue;	// solid
-
-		if (tr.currentEntity->e.reType == RT_BEAM)
-		{
-			R_DrawBeam( tr.currentEntity );
-		}
-		else
-		{
-			tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
-			R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
-			switch (tr.currentModel->type)
-			{
-			case MOD_BAD:
-				R_DrawNullModel();
-				break;
-			case MOD_MESH2:
-				R_DrawMd2Model(tr.currentEntity);
-				break;
-			case MOD_BRUSH38:
-				R_DrawBrushModelQ2(tr.currentEntity);
-				break;
-			case MOD_SPRITE2:
-				R_DrawSp2Model(tr.currentEntity);
-				break;
-			default:
-				ri.Sys_Error (ERR_DROP, "Bad modeltype");
-				break;
-			}
-		}
-	}
-	GL_State(GLS_DEPTHMASK_TRUE);		// back to writing
-
-}
 
 /*
 ============
@@ -378,7 +252,9 @@ void R_RenderView (refdef_t *fd)
 
 	R_DrawWorldQ2 ();
 
-	R_DrawEntitiesOnList ();
+	R_AddEntitySurfaces(false);
+
+	R_AddEntitySurfaces(true);
 
 	R_DrawParticles ();
 
@@ -450,7 +326,6 @@ void R_Register( void )
 {
 	R_SharedRegister();
 	r_norefresh = Cvar_Get ("r_norefresh", "0", 0);
-	r_drawentities = Cvar_Get ("r_drawentities", "1", 0);
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
 
@@ -576,73 +451,6 @@ void R_BeginFrame( float camera_separation )
 	// clear screen if desired
 	//
 	R_Clear ();
-}
-
-/*
-** R_DrawBeam
-*/
-void R_DrawBeam( trRefEntity_t *e )
-{
-#define NUM_BEAM_SEGS 6
-
-	int	i;
-	float r, g, b;
-
-	vec3_t perpvec;
-	vec3_t direction, normalized_direction;
-	vec3_t	start_points[NUM_BEAM_SEGS], end_points[NUM_BEAM_SEGS];
-	vec3_t oldorigin, origin;
-
-	oldorigin[0] = e->e.oldorigin[0];
-	oldorigin[1] = e->e.oldorigin[1];
-	oldorigin[2] = e->e.oldorigin[2];
-
-	origin[0] = e->e.origin[0];
-	origin[1] = e->e.origin[1];
-	origin[2] = e->e.origin[2];
-
-	normalized_direction[0] = direction[0] = oldorigin[0] - origin[0];
-	normalized_direction[1] = direction[1] = oldorigin[1] - origin[1];
-	normalized_direction[2] = direction[2] = oldorigin[2] - origin[2];
-
-	if ( VectorNormalize( normalized_direction ) == 0 )
-		return;
-
-	PerpendicularVector( perpvec, normalized_direction );
-	VectorScale( perpvec, e->e.frame / 2, perpvec );
-
-	for ( i = 0; i < 6; i++ )
-	{
-		RotatePointAroundVector( start_points[i], normalized_direction, perpvec, (360.0/NUM_BEAM_SEGS)*i );
-		VectorAdd( start_points[i], origin, start_points[i] );
-		VectorAdd( start_points[i], direction, end_points[i] );
-	}
-
-	qglDisable( GL_TEXTURE_2D );
-	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-
-	r = ( d_8to24table[e->e.skinNum & 0xFF] ) & 0xFF;
-	g = ( d_8to24table[e->e.skinNum & 0xFF] >> 8 ) & 0xFF;
-	b = ( d_8to24table[e->e.skinNum & 0xFF] >> 16 ) & 0xFF;
-
-	r *= 1/255.0F;
-	g *= 1/255.0F;
-	b *= 1/255.0F;
-
-	qglColor4f( r, g, b, e->e.shaderRGBA[3] / 255.0 );
-
-	qglBegin( GL_TRIANGLE_STRIP );
-	for ( i = 0; i < NUM_BEAM_SEGS; i++ )
-	{
-		qglVertex3fv( start_points[i] );
-		qglVertex3fv( end_points[i] );
-		qglVertex3fv( start_points[(i+1)%NUM_BEAM_SEGS] );
-		qglVertex3fv( end_points[(i+1)%NUM_BEAM_SEGS] );
-	}
-	qglEnd();
-
-	qglEnable( GL_TEXTURE_2D );
-	GL_State(GLS_DEPTHMASK_TRUE);
 }
 
 //===================================================================

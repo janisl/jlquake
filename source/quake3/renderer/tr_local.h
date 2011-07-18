@@ -45,7 +45,6 @@ extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
 extern QCvar	*r_dlightBacks;			// dlight non-facing surfaces for continuity
 
 extern	QCvar	*r_norefresh;			// bypasses the ref rendering
-extern	QCvar	*r_drawentities;		// disable/enable entity rendering
 
 extern  QCvar  *r_glDriver;
 

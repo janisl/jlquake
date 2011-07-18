@@ -813,6 +813,11 @@ R_DrawViewModel
 */
 static void CL_AddViewModel()
 {
+	if (!r_drawviewmodel->value)
+	{
+		return;
+	}
+
 	if (cl.items & IT_INVISIBILITY)
 		return;
 

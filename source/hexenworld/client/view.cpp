@@ -915,6 +915,11 @@ CL_AddViewModel
 */
 static void CL_AddViewModel()
 {
+	if (!r_drawviewmodel->value)
+	{
+		return;
+	}
+
 	if (cl.spectator)
 		return;
 

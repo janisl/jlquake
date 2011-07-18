@@ -1276,6 +1276,11 @@ float R_CalcEntityLight(refEntity_t* e)
 
 void R_DrawMdlModel(trRefEntity_t* e)
 {
+	if ((tr.currentEntity->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal)
+	{
+		return;
+	}
+
 	model_t* clmodel = R_GetModelByHandle(tr.currentEntity->e.hModel);
 
 	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)
@@ -1426,4 +1431,15 @@ void R_DrawMdlModel(trRefEntity_t* e)
 		qglColor4f(1,1,1,1);
 		qglPopMatrix();
 	}
+}
+
+//==========================================================================
+//
+//	R_MdlHasHexen2Transparency
+//
+//==========================================================================
+
+bool R_MdlHasHexen2Transparency(model_t* Model)
+{
+	return !!(Model->q1_flags & (EF_TRANSPARENT | EF_HOLEY | EF_SPECIAL_TRANS));
 }

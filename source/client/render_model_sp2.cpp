@@ -100,6 +100,11 @@ void Mod_FreeSprite2Model(model_t* mod)
 
 void R_DrawSp2Model(trRefEntity_t* e)
 {
+	if ((tr.currentEntity->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal)
+	{
+		return;
+	}
+
 	vec3_t	point;
 
 	// don't even bother culling, because it's just a single

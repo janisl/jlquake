@@ -345,6 +345,11 @@ static void R_AddWorldSurface(mbrush46_surface_t* surf, int dlightBits)
 
 void R_DrawBrushModelQ1(trRefEntity_t* e, bool Translucent)
 {
+	if ((e->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal)
+	{
+		return;
+	}
+
 	model_t* clmodel = R_GetModelByHandle(e->e.hModel);
 
 	if (R_CullLocalBox(&clmodel->q1_mins) == CULL_OUT)

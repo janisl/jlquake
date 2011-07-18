@@ -25,10 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 refimport_t	ri;
 
-// entities that will have procedurally generated surfaces will just
-// point at this for their sorting surface
-surfaceType_t	entitySurface = SF_ENTITY;
-
 /*
 =================
 R_MirrorPoint
@@ -455,39 +451,6 @@ qboolean R_MirrorViewBySurface (drawSurf_t *drawSurf, int entityNum) {
 }
 
 /*
-=================
-R_SpriteFogNum
-
-See if a sprite is inside a fog volume
-=================
-*/
-int R_SpriteFogNum( trRefEntity_t *ent ) {
-	int				i, j;
-	mbrush46_fog_t			*fog;
-
-	if ( tr.refdef.rdflags & RDF_NOWORLDMODEL ) {
-		return 0;
-	}
-
-	for ( i = 1 ; i < tr.world->numfogs ; i++ ) {
-		fog = &tr.world->fogs[i];
-		for ( j = 0 ; j < 3 ; j++ ) {
-			if ( ent->e.origin[j] - ent->e.radius >= fog->bounds[1][j] ) {
-				break;
-			}
-			if ( ent->e.origin[j] + ent->e.radius <= fog->bounds[0][j] ) {
-				break;
-			}
-		}
-		if ( j == 3 ) {
-			return i;
-		}
-	}
-
-	return 0;
-}
-
-/*
 ==========================================================================================
 
 DRAWSURF SORTING
@@ -743,95 +706,6 @@ void R_SortDrawSurfs( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 }
 
 /*
-=============
-R_AddEntitySurfaces
-=============
-*/
-void R_AddEntitySurfaces (void) {
-	trRefEntity_t	*ent;
-	shader_t		*shader;
-
-	if ( !r_drawentities->integer ) {
-		return;
-	}
-
-	for ( tr.currentEntityNum = 0; 
-	      tr.currentEntityNum < tr.refdef.num_entities; 
-		  tr.currentEntityNum++ ) {
-		ent = tr.currentEntity = &tr.refdef.entities[tr.currentEntityNum];
-
-		ent->needDlights = qfalse;
-
-		// preshift the value we are going to OR into the drawsurf sort
-		tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
-
-		//
-		// the weapon model must be handled special --
-		// we don't want the hacked weapon position showing in 
-		// mirrors, because the true body position will already be drawn
-		//
-		if ( (ent->e.renderfx & RF_FIRST_PERSON) && tr.viewParms.isPortal) {
-			continue;
-		}
-
-		// simple generated models, like sprites and beams, are not culled
-		switch ( ent->e.reType ) {
-		case RT_PORTALSURFACE:
-			break;		// don't draw anything
-		case RT_SPRITE:
-		case RT_BEAM:
-		case RT_LIGHTNING:
-		case RT_RAIL_CORE:
-		case RT_RAIL_RINGS:
-			// self blood sprites, talk balloons, etc should not be drawn in the primary
-			// view.  We can't just do this check for all entities, because md3
-			// entities may still want to cast shadows from them
-			if ( (ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal) {
-				continue;
-			}
-			shader = R_GetShaderByHandle( ent->e.customShader );
-			R_AddDrawSurf( &entitySurface, shader, R_SpriteFogNum( ent ), 0 );
-			break;
-
-		case RT_MODEL:
-			// we must set up parts of tr.or for model culling
-			R_RotateForEntity( ent, &tr.viewParms, &tr.orient );
-
-			tr.currentModel = R_GetModelByHandle( ent->e.hModel );
-			if (!tr.currentModel) {
-				R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0 );
-			} else {
-				switch ( tr.currentModel->type ) {
-				case MOD_MESH3:
-					R_AddMD3Surfaces( ent );
-					break;
-				case MOD_MD4:
-					R_AddAnimSurfaces( ent );
-					break;
-				case MOD_BRUSH46:
-					R_AddBrushModelSurfaces( ent );
-					break;
-				case MOD_BAD:		// null model axis
-					if ( (ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal) {
-						break;
-					}
-					R_AddDrawSurf( &entitySurface, tr.defaultShader, 0, 0 );
-					break;
-				default:
-					ri.Error( ERR_DROP, "R_AddEntitySurfaces: Bad modeltype" );
-					break;
-				}
-			}
-			break;
-		default:
-			ri.Error( ERR_DROP, "R_AddEntitySurfaces: Bad reType" );
-		}
-	}
-
-}
-
-
-/*
 ====================
 R_GenerateDrawSurfs
 ====================
@@ -848,7 +722,7 @@ void R_GenerateDrawSurfs( void ) {
 	// matrix for lod calculation
 	R_SetupProjection ();
 
-	R_AddEntitySurfaces ();
+	R_AddEntitySurfaces(false);
 }
 
 /*

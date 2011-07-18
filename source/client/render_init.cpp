@@ -156,6 +156,7 @@ QCvar*		r_showImages;
 QCvar*		r_speeds;
 QCvar*		r_showSmp;
 QCvar*		r_skipBackEnd;
+QCvar*		r_drawentities;
 
 QCvar*		r_railWidth;
 QCvar*		r_railCoreWidth;
@@ -513,6 +514,7 @@ void R_SharedRegister()
 	r_speeds = Cvar_Get("r_speeds", "0", CVAR_CHEAT);
 	r_showSmp = Cvar_Get("r_showSmp", "0", CVAR_CHEAT);
 	r_skipBackEnd = Cvar_Get("r_skipBackEnd", "0", CVAR_CHEAT);
+	r_drawentities = Cvar_Get("r_drawentities", "1", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

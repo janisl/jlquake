@@ -803,6 +803,7 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer);
 void Mod_LoadMdlModelNew(model_t* mod, const void* buffer);
 void Mod_FreeMdlModel(model_t* mod);
 void R_DrawMdlModel(trRefEntity_t* e);
+bool R_MdlHasHexen2Transparency(model_t* Model);
 
 void Mod_LoadMd2Model(model_t* mod, const void* buffer);
 void Mod_FreeMd2Model(model_t* mod);

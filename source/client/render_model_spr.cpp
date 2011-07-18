@@ -277,6 +277,11 @@ static msprite1frame_t* R_GetSpriteFrame(msprite1_t* psprite, trRefEntity_t* cur
 
 void R_DrawSprModel(trRefEntity_t* e)
 {
+	if ((tr.currentEntity->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal)
+	{
+		return;
+	}
+
 	vec3_t	point;
 
 	// don't even bother culling, because it's just a single

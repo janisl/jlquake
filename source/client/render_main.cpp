@@ -49,6 +49,9 @@ sortedent_t		cl_transwateredicts[MAX_ENTITIES];
 int				cl_numtransvisedicts;
 int				cl_numtranswateredicts;
 
+// entities that will have procedurally generated surfaces will just
+// point at this for their sorting surface
+surfaceType_t	entitySurface = SF_ENTITY;
 
 float	s_flipMatrix[16] =
 {
@@ -692,4 +695,355 @@ void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int d
 		tr.shiftedEntityNum | (fogIndex << QSORT_FOGNUM_SHIFT) | (int)dlightMap;
 	tr.refdef.drawSurfs[index].surface = surface;
 	tr.refdef.numDrawSurfs++;
+}
+
+//==========================================================================
+//
+//	R_SpriteFogNum
+//
+//	See if a sprite is inside a fog volume
+//
+//==========================================================================
+
+static int R_SpriteFogNum(trRefEntity_t* ent)
+{
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
+	{
+		return 0;
+	}
+
+	for (int i = 1; i < tr.world->numfogs; i++)
+	{
+		mbrush46_fog_t* fog = &tr.world->fogs[i];
+		int j;
+		for (j = 0; j < 3; j++)
+		{
+			if (ent->e.origin[j] - ent->e.radius >= fog->bounds[1][j])
+			{
+				break;
+			}
+			if (ent->e.origin[j] + ent->e.radius <= fog->bounds[0][j])
+			{
+				break;
+			}
+		}
+		if (j == 3)
+		{
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+//==========================================================================
+//
+//	R_DrawBeam
+//
+//==========================================================================
+
+static void R_DrawBeam(trRefEntity_t* e)
+{
+	enum { NUM_BEAM_SEGS = 6 };
+
+	vec3_t oldorigin;
+	oldorigin[0] = e->e.oldorigin[0];
+	oldorigin[1] = e->e.oldorigin[1];
+	oldorigin[2] = e->e.oldorigin[2];
+
+	vec3_t origin;
+	origin[0] = e->e.origin[0];
+	origin[1] = e->e.origin[1];
+	origin[2] = e->e.origin[2];
+
+	vec3_t direction, normalized_direction;
+	normalized_direction[0] = direction[0] = oldorigin[0] - origin[0];
+	normalized_direction[1] = direction[1] = oldorigin[1] - origin[1];
+	normalized_direction[2] = direction[2] = oldorigin[2] - origin[2];
+
+	if (VectorNormalize(normalized_direction) == 0)
+	{
+		return;
+	}
+
+	vec3_t perpvec;
+	PerpendicularVector(perpvec, normalized_direction);
+	VectorScale(perpvec, e->e.frame / 2, perpvec);
+
+	vec3_t start_points[NUM_BEAM_SEGS], end_points[NUM_BEAM_SEGS];
+	for (int i = 0; i < 6; i++)
+	{
+		RotatePointAroundVector(start_points[i], normalized_direction, perpvec, (360.0 / NUM_BEAM_SEGS) * i);
+		VectorAdd(start_points[i], origin, start_points[i]);
+		VectorAdd(start_points[i], direction, end_points[i]);
+	}
+
+	qglDisable(GL_TEXTURE_2D);
+	GL_State(GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+
+	float r = (d_8to24table[e->e.skinNum & 0xFF]) & 0xFF;
+	float g = (d_8to24table[e->e.skinNum & 0xFF] >> 8) & 0xFF;
+	float b = (d_8to24table[e->e.skinNum & 0xFF] >> 16) & 0xFF;
+
+	r *= 1 / 255.0F;
+	g *= 1 / 255.0F;
+	b *= 1 / 255.0F;
+
+	qglColor4f(r, g, b, e->e.shaderRGBA[3] / 255.0);
+
+	qglBegin(GL_TRIANGLE_STRIP);
+	for (int i = 0; i < NUM_BEAM_SEGS; i++)
+	{
+		qglVertex3fv(start_points[i]);
+		qglVertex3fv(end_points[i]);
+		qglVertex3fv(start_points[(i + 1) % NUM_BEAM_SEGS]);
+		qglVertex3fv(end_points[(i + 1) % NUM_BEAM_SEGS]);
+	}
+	qglEnd();
+
+	qglEnable(GL_TEXTURE_2D);
+	GL_State(GLS_DEPTHMASK_TRUE);
+}
+
+//==========================================================================
+//
+//	R_DrawNullModel
+//
+//==========================================================================
+
+static void R_DrawNullModel()
+{
+	vec3_t shadelight;
+	if (tr.currentEntity->e.renderfx & RF_ABSOLUTE_LIGHT)
+	{
+		shadelight[0] = shadelight[1] = shadelight[2] = tr.currentEntity->e.radius;
+	}
+	else
+	{
+		R_LightPointQ2(tr.currentEntity->e.origin, shadelight);
+	}
+
+    qglPushMatrix();
+	qglLoadMatrixf(tr.orient.modelMatrix);
+
+	qglDisable(GL_TEXTURE_2D);
+	qglColor3fv(shadelight);
+
+	qglBegin(GL_TRIANGLE_FAN);
+	qglVertex3f(0, 0, -16);
+	for (int i = 0; i <= 4; i++)
+	{
+		qglVertex3f(16 * cos(i * M_PI / 2), 16 * sin(i * M_PI / 2), 0);
+	}
+	qglEnd();
+
+	qglBegin(GL_TRIANGLE_FAN);
+	qglVertex3f(0, 0, 16);
+	for (int i = 4; i >= 0; i--)
+	{
+		qglVertex3f(16 * cos(i * M_PI / 2), 16 * sin(i * M_PI / 2), 0);
+	}
+	qglEnd ();
+
+	qglColor3f(1, 1, 1);
+	qglPopMatrix();
+	qglEnable(GL_TEXTURE_2D);
+}
+
+//==========================================================================
+//
+//	R_AddEntitySurfaces
+//
+//==========================================================================
+
+void R_AddEntitySurfaces(bool TranslucentPass)
+{
+	cl_numtransvisedicts = 0;
+	cl_numtranswateredicts = 0;
+
+	if (!r_drawentities->integer)
+	{
+		return;
+	}
+
+	for (tr.currentEntityNum = 0; tr.currentEntityNum < tr.refdef.num_entities; tr.currentEntityNum++)
+	{
+		tr.currentEntity = &tr.refdef.entities[tr.currentEntityNum];
+
+		trRefEntity_t* ent = tr.currentEntity;
+		ent->needDlights = false;
+
+		// preshift the value we are going to OR into the drawsurf sort
+		tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
+
+		if ((GGameType & GAME_Quake2) && !(tr.currentEntity->e.renderfx & RF_TRANSLUCENT) != TranslucentPass)
+		{
+			continue;
+		}
+
+		//
+		// the weapon model must be handled special --
+		// we don't want the hacked weapon position showing in 
+		// mirrors, because the true body position will already be drawn
+		//
+		if ((ent->e.renderfx & RF_FIRST_PERSON) && tr.viewParms.isPortal)
+		{
+			continue;
+		}
+
+		bool item_trans = false;
+
+		// simple generated models, like sprites and beams, are not culled
+		switch (ent->e.reType)
+		{
+		case RT_PORTALSURFACE:
+			break;		// don't draw anything
+
+		case RT_SPRITE:
+		case RT_BEAM:
+		case RT_LIGHTNING:
+		case RT_RAIL_CORE:
+		case RT_RAIL_RINGS:
+			if (GGameType & GAME_Quake3)
+			{
+				// self blood sprites, talk balloons, etc should not be drawn in the primary
+				// view.  We can't just do this check for all entities, because md3
+				// entities may still want to cast shadows from them
+				if ((ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal)
+				{
+					continue;
+				}
+				shader_t* shader = R_GetShaderByHandle(ent->e.customShader);
+				R_AddDrawSurf(&entitySurface, shader, R_SpriteFogNum(ent), 0);
+			}
+			else
+			{
+				R_DrawBeam(tr.currentEntity);
+			}
+			break;
+
+		case RT_MODEL:
+			// we must set up parts of tr.or for model culling
+			R_RotateForEntity(ent, &tr.viewParms, &tr.orient);
+
+			tr.currentModel = R_GetModelByHandle(ent->e.hModel);
+			if (!tr.currentModel)
+			{
+				if (GGameType & GAME_Quake3)
+				{
+					R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0);
+				}
+				else
+				{
+					R_DrawNullModel();
+				}
+			}
+			else
+			{
+				switch (tr.currentModel->type)
+				{
+				case MOD_BAD:
+					if (GGameType & GAME_Quake3)
+					{
+						if ((ent->e.renderfx & RF_THIRD_PERSON) && !tr.viewParms.isPortal)
+						{
+							break;
+						}
+						R_AddDrawSurf(&entitySurface, tr.defaultShader, 0, 0);
+					}
+					else
+					{
+						R_DrawNullModel();
+					}
+
+				case MOD_MESH1:
+					if (GGameType & GAME_Hexen2)
+					{
+						item_trans = (ent->e.renderfx & RF_WATERTRANS) ||
+							R_MdlHasHexen2Transparency(tr.currentModel);
+					}
+					if (!item_trans)
+					{
+						R_DrawMdlModel(ent);
+					}
+					break;
+
+				case MOD_BRUSH29:
+					if (GGameType & GAME_Hexen2)
+					{
+						item_trans = ((ent->e.renderfx & RF_WATERTRANS)) != 0;
+					}
+					if (!item_trans)
+					{
+						R_DrawBrushModelQ1(ent, false);
+					}
+					break;
+
+				case MOD_SPRITE:
+					if (GGameType & GAME_Hexen2)
+					{
+						item_trans = true;
+					}
+					break;
+
+				case MOD_MESH2:
+					R_DrawMd2Model(ent);
+					break;
+
+				case MOD_BRUSH38:
+					R_DrawBrushModelQ2(ent);
+					break;
+
+				case MOD_SPRITE2:
+					R_DrawSp2Model(ent);
+					break;
+
+				case MOD_MESH3:
+					R_AddMD3Surfaces(ent);
+					break;
+
+				case MOD_MD4:
+					R_AddAnimSurfaces(ent);
+					break;
+
+				case MOD_BRUSH46:
+					R_AddBrushModelSurfaces(ent);
+					break;
+
+				default:
+					throw QDropException("R_AddEntitySurfaces: Bad modeltype");
+				}
+			}
+			break;
+
+		default:
+			throw QDropException("R_AddEntitySurfaces: Bad reType");
+		}
+
+		if ((GGameType & GAME_Hexen2) && item_trans)
+		{
+			mbrush29_leaf_t* pLeaf = Mod_PointInLeafQ1 (tr.currentEntity->e.origin, tr.worldModel);
+			if (pLeaf->contents != BSP29CONTENTS_WATER)
+			{
+				cl_transvisedicts[cl_numtransvisedicts++].ent = tr.currentEntity;
+			}
+			else
+			{
+				cl_transwateredicts[cl_numtranswateredicts++].ent = tr.currentEntity;
+			}
+		}
+	}
+
+	if (GGameType & GAME_Quake)
+	{
+		for (tr.currentEntityNum = 0; tr.currentEntityNum < tr.refdef.num_entities; tr.currentEntityNum++)
+		{
+			tr.currentEntity = &tr.refdef.entities[tr.currentEntityNum];
+			tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+			if (tr.currentModel->type == MOD_SPRITE)
+			{
+				R_DrawSprModel(tr.currentEntity);
+			}
+		}
+	}
 }

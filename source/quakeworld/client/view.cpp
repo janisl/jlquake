@@ -788,6 +788,11 @@ CL_AddViewModel
 */
 static void CL_AddViewModel()
 {
+	if (!r_drawviewmodel->value)
+	{
+		return;
+	}
+
 	if (!Cam_DrawViewModel())
 		return;
 

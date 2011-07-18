@@ -34,7 +34,6 @@ refdef_t	r_refdef;
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 QCvar*	r_norefresh;
-QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
 
 QCvar*	gl_cull;
@@ -62,66 +61,6 @@ void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
 }
 
 //==================================================================================
-
-/*
-=============
-R_DrawEntitiesOnList
-=============
-*/
-void R_DrawEntitiesOnList (void)
-{
-	int		i;
-
-	if (!r_drawentities->value)
-		return;
-
-	// draw sprites seperately, because of alpha blending
-	for (i=0 ; i<tr.refdef.num_entities; i++)
-	{
-		tr.currentEntity = &tr.refdef.entities[i];
-		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
-
-		if (tr.currentEntity->e.renderfx & RF_FIRST_PERSON)
-		{
-			if (!r_drawviewmodel->value)
-			{
-				continue;
-			}
-		}
-		if (tr.currentEntity->e.renderfx & RF_THIRD_PERSON)
-		{
-			continue;
-		}
-		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
-
-		switch (tr.currentModel->type)
-		{
-		case MOD_MESH1:
-			R_DrawMdlModel(tr.currentEntity);
-			break;
-
-		case MOD_BRUSH29:
-			R_DrawBrushModelQ1(tr.currentEntity, false);
-			break;
-
-		default:
-			break;
-		}
-	}
-
-	for (i=0 ; i<tr.refdef.num_entities; i++)
-	{
-		tr.currentEntity = &tr.refdef.entities[i];
-		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
-
-		switch (tr.currentModel->type)
-		{
-		case MOD_SPRITE:
-			R_DrawSprModel(tr.currentEntity);
-			break;
-		}
-	}
-}
 
 /*
 ============
@@ -280,7 +219,7 @@ void R_RenderScene (void)
 
 	S_ExtraUpdate ();	// don't let sound get messed up if going slow
 
-	R_DrawEntitiesOnList ();
+	R_AddEntitySurfaces(false);
 
 	R_DrawParticles ();
 }

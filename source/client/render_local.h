@@ -610,6 +610,7 @@ extern QCvar*	r_showImages;
 extern QCvar*	r_speeds;				// various levels of information display
 extern QCvar*	r_showSmp;
 extern QCvar*	r_skipBackEnd;
+extern QCvar*	r_drawentities;			// disable/enable entity rendering
 
 extern QCvar*	r_railWidth;
 extern QCvar*	r_railCoreWidth;
@@ -712,6 +713,7 @@ int R_CullLocalBox(vec3_t bounds[2]);
 int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
+void R_AddEntitySurfaces(bool TranslucentPass);
 
 struct sortedent_t
 {
@@ -725,6 +727,7 @@ extern sortedent_t		cl_transwateredicts[MAX_ENTITIES];
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;
 
+extern surfaceType_t	entitySurface;
 
 /*
 ============================================================

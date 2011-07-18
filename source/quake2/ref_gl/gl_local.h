@@ -50,7 +50,6 @@ void GL_UpdateSwapInterval( void );
 extern	refdef_t	r_newrefdef;
 
 extern	QCvar	*r_norefresh;
-extern	QCvar	*r_drawentities;
 
 extern	QCvar	*gl_nosubimage;
 extern	QCvar	*gl_cull;
@@ -70,7 +69,6 @@ int 	R_Init();
 void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
-void R_DrawBeam( trRefEntity_t *e );
 void Draw_InitLocal (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);

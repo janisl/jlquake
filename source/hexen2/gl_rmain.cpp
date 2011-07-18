@@ -26,7 +26,6 @@ int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 
 QCvar*	r_norefresh;
-QCvar*	r_drawentities;
 QCvar*	r_drawviewmodel;
 QCvar*	r_wholeframe;
 
@@ -77,81 +76,6 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 }
 
 //==================================================================================
-
-/*
-=============
-R_DrawEntitiesOnList
-=============
-*/
-void R_DrawEntitiesOnList (void)
-{
-	int		i;
-	qboolean item_trans;
-	mbrush29_leaf_t *pLeaf;
-
-	cl_numtransvisedicts=0;
-	cl_numtranswateredicts=0;
-
-	if (!r_drawentities->value)
-		return;
-
-	// draw sprites seperately, because of alpha blending
-	for (i=0 ; i<tr.refdef.num_entities; i++)
-	{
-		tr.currentEntity = &tr.refdef.entities[i];
-
-		if (tr.currentEntity->e.renderfx & RF_FIRST_PERSON)
-		{
-			if (!r_drawviewmodel->value)
-			{
-				continue;
-			}
-		}
-		if (tr.currentEntity->e.renderfx & RF_THIRD_PERSON)
-		{
-			continue;
-		}
-		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
-		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
-
-		switch (tr.currentModel->type)
-		{
-		case MOD_MESH1:
-			item_trans = ((tr.currentEntity->e.renderfx & RF_WATERTRANS) ||
-				(tr.currentModel->q1_flags & (EF_TRANSPARENT|EF_HOLEY|EF_SPECIAL_TRANS))) != 0;
-			if (!item_trans)
-				R_DrawMdlModel (tr.currentEntity);
-
-			break;
-
-		case MOD_BRUSH29:
-			item_trans = ((tr.currentEntity->e.renderfx & RF_WATERTRANS)) != 0;
-			if (!item_trans)
-				R_DrawBrushModelQ1 (tr.currentEntity,false);
-
-			break;
-
-
-		case MOD_SPRITE:
-			item_trans = true;
-
-			break;
-
-		default:
-			item_trans = false;
-			break;
-		}
-		
-		if (item_trans) {
-			pLeaf = Mod_PointInLeafQ1 (tr.currentEntity->e.origin, tr.worldModel);
-//			if (pLeaf->contents == CONTENTS_EMPTY)
-			if (pLeaf->contents != BSP29CONTENTS_WATER)
-				cl_transvisedicts[cl_numtransvisedicts++].ent = tr.currentEntity;
-			else
-				cl_transwateredicts[cl_numtranswateredicts++].ent = tr.currentEntity;
-		}
-	}
-}
 
 /*
 ================
@@ -367,7 +291,7 @@ void R_RenderScene ()
 
 	S_ExtraUpdate ();	// don't let sound get messed up if going slow
 	
-	R_DrawEntitiesOnList ();
+	R_AddEntitySurfaces(false);
 }
 
 
