@@ -174,6 +174,7 @@ QCvar*		r_particle_att_b;
 QCvar*		r_particle_att_c;
 
 QCvar*		r_noportals;
+QCvar*		r_portalOnly;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -518,6 +519,7 @@ void R_SharedRegister()
 	r_skipBackEnd = Cvar_Get("r_skipBackEnd", "0", CVAR_CHEAT);
 	r_drawentities = Cvar_Get("r_drawentities", "1", CVAR_CHEAT);
 	r_noportals = Cvar_Get("r_noportals", "0", CVAR_CHEAT);
+	r_portalOnly = Cvar_Get("r_portalOnly", "0", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

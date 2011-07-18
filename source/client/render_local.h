@@ -628,6 +628,7 @@ extern QCvar*	r_particle_att_b;
 extern QCvar*	r_particle_att_c;
 
 extern QCvar*	r_noportals;
+extern QCvar*	r_portalOnly;
 
 extern trGlobals_t	tr;
 
@@ -716,7 +717,7 @@ int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 void R_GenerateDrawSurfs();
-bool R_MirrorViewBySurface(drawSurf_t* drawSurf, int entityNum);
+void R_SortDrawSurfs(drawSurf_t* drawSurfs, int numDrawSurfs);
 
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;
