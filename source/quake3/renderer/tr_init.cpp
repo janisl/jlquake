@@ -100,6 +100,8 @@ void RE_EndRegistration( void ) {
 	}
 }
 
+void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
+
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
@@ -135,6 +137,8 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.DrawStretchRaw = RE_StretchRaw;
 
 	re.inPVS = R_inPVS;
+
+	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
 	return &re;
 }

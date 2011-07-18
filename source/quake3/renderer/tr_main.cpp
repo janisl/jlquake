@@ -318,8 +318,6 @@ R_DebugGraphics
 Visualization aid for movement clipping debugging
 ====================
 */
-void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
-
 void R_DebugGraphics()
 {
 	if (!r_debugSurface->integer)
@@ -335,11 +333,11 @@ void R_DebugGraphics()
 
 	if (r_debugSurface->integer == 1)
 	{
-		ri.CM_DrawDebugSurface(R_DebugPolygon);
+		CM_DrawDebugSurface(R_DebugPolygon);
 	}
-	else
+	else if (BotDrawDebugPolygonsFunc)
 	{
-		BotDrawDebugPolygons(R_DebugPolygon, r_debugSurface->integer);
+		BotDrawDebugPolygonsFunc(R_DebugPolygon, r_debugSurface->integer);
 	}
 }
 

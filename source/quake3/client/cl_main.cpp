@@ -2155,7 +2155,6 @@ void CL_InitRef( void ) {
 
 	ri.Printf = CL_RefPrintf;
 	ri.Error = Com_Error;
-	ri.CM_DrawDebugSurface = CM_DrawDebugSurface;
 
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 

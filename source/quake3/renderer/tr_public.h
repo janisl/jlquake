@@ -73,9 +73,6 @@ typedef struct {
 	// abort the game
 	void	(QDECL *Error)( int errorLevel, const char *fmt, ...);
 
-	// visualization for debugging collision detection
-	void	(*CM_DrawDebugSurface)( void (*drawPoly)(int color, int numPoints, float *points) );
-
 } refimport_t;
 
 

@@ -313,3 +313,5 @@ void R_StretchPic(float x, float y, float w, float h,
 	float s1, float t1, float s2, float t2, qhandle_t hShader);
 
 extern byte			r_palette[256][4];
+
+extern void (*BotDrawDebugPolygonsFunc)(void (*drawPoly)(int color, int numPoints, float *points), int value);

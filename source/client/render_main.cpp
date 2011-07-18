@@ -52,6 +52,8 @@ int			c_visible_lightmaps;
 int				cl_numtransvisedicts;
 int				cl_numtranswateredicts;
 
+void (*BotDrawDebugPolygonsFunc)(void (*drawPoly)(int color, int numPoints, float *points), int value);
+
 float	s_flipMatrix[16] =
 {
 	// convert from our coordinate system (looking down X)
