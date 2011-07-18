@@ -611,6 +611,7 @@ extern QCvar*	r_speeds;				// various levels of information display
 extern QCvar*	r_showSmp;
 extern QCvar*	r_skipBackEnd;
 extern QCvar*	r_drawentities;			// disable/enable entity rendering
+extern QCvar*	r_debugSurface;
 
 extern QCvar*	r_railWidth;
 extern QCvar*	r_railCoreWidth;
@@ -718,6 +719,7 @@ int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 void R_GenerateDrawSurfs();
 void R_SortDrawSurfs(drawSurf_t* drawSurfs, int numDrawSurfs);
+void R_DebugGraphics();
 
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;

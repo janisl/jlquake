@@ -30,8 +30,6 @@ QCvar	*r_norefresh;
 
 QCvar  *r_glDriver;
 
-QCvar	*r_debugSurface;
-
 /*
 ===============
 R_Register
@@ -55,7 +53,6 @@ void R_Register( void )
 	// temporary variables that can change at any time
 	//
 	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
-	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
 }
 
 /*
