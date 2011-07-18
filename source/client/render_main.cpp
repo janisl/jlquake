@@ -1111,3 +1111,24 @@ void R_DrawTransEntitiesOnList(bool inwater)
 	}
 	GL_State(GLS_DEPTHMASK_TRUE);
 }
+
+//==========================================================================
+//
+//	R_AddPolygonSurfaces
+//
+//	Adds all the scene's polys into this view's drawsurf list
+//
+//==========================================================================
+
+void R_AddPolygonSurfaces()
+{
+	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
+	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
+
+	srfPoly_t* poly = tr.refdef.polys;
+	for (int i = 0; i < tr.refdef.numPolys; i++, poly++)
+	{
+		shader_t* sh = R_GetShaderByHandle(poly->hShader);
+		R_AddDrawSurf((surfaceType_t*)poly, sh, poly->fogIndex, false);
+	}
+}
