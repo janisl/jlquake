@@ -2069,8 +2069,6 @@ void QDECL CL_RefPrintf( int print_level, const char *fmt, ...) {
 
 	if ( print_level == PRINT_ALL ) {
 		Com_Printf ("%s", msg);
-	} else if ( print_level == PRINT_DEVELOPER ) {
-		Com_DPrintf (S_COLOR_RED "%s", msg);		// red
 	}
 }
 

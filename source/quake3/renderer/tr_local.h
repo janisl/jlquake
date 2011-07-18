@@ -48,7 +48,6 @@ extern	QCvar	*r_norefresh;			// bypasses the ref rendering
 
 extern  QCvar  *r_glDriver;
 
-extern	QCvar	*r_noportals;
 extern	QCvar	*r_portalOnly;
 
 extern	QCvar	*r_debugSurface;

@@ -194,9 +194,7 @@ enum {qfalse, qtrue};
 
 // print levels from renderer (FIXME: set up for game / cgame?)
 typedef enum {
-	PRINT_ALL,
-	PRINT_DEVELOPER,		// only print when "developer 1"
-	PRINT_ERROR
+	PRINT_ALL
 } printParm_t;
 
 

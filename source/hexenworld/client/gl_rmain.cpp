@@ -376,3 +376,7 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 	else
 		Draw_String (u, v, Name);
 }
+
+void R_RenderView(viewParms_t *parms)
+{
+}

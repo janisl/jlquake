@@ -29,7 +29,6 @@ QCvar	*r_dlightBacks;
 QCvar	*r_norefresh;
 
 QCvar  *r_glDriver;
-QCvar	*r_noportals;
 QCvar	*r_portalOnly;
 
 QCvar	*r_debugSurface;
@@ -60,7 +59,6 @@ void R_Register( void )
 
 	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get ("r_debugSurface", "0", CVAR_CHEAT);
-	r_noportals = Cvar_Get ("r_noportals", "0", CVAR_CHEAT);
 }
 
 /*

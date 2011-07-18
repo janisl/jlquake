@@ -143,8 +143,8 @@ struct viewParms_t
 	orientationr_t	orient;
 	orientationr_t	world;
 	vec3_t		pvsOrigin;			// may be different than or.origin for portals
-	qboolean	isPortal;			// true if this view is through a portal
-	qboolean	isMirror;			// the portal is a mirror, invert the face culling
+	bool		isPortal;			// true if this view is through a portal
+	bool		isMirror;			// the portal is a mirror, invert the face culling
 	int			frameSceneNum;		// copied from tr.frameSceneNum
 	int			frameCount;			// copied from tr.frameCount
 	cplane_t	portalPlane;		// clip anything behind this if mirroring
@@ -627,6 +627,8 @@ extern QCvar*	r_particle_att_a;
 extern QCvar*	r_particle_att_b;
 extern QCvar*	r_particle_att_c;
 
+extern QCvar*	r_noportals;
+
 extern trGlobals_t	tr;
 
 extern int			r_firstSceneDrawSurf;
@@ -714,6 +716,7 @@ int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
 void R_GenerateDrawSurfs();
+bool R_MirrorViewBySurface(drawSurf_t* drawSurf, int entityNum);
 
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;
@@ -948,5 +951,7 @@ Particles
 
 void R_InitParticleTexture();
 void R_DrawParticles();
+
+void R_RenderView( viewParms_t *parms );
 
 #endif

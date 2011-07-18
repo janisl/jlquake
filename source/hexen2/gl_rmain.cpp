@@ -322,3 +322,7 @@ void R_RenderView (void)
 	if (r_speeds->value)
 		R_PrintTimes ();
 }
+
+void R_RenderView(viewParms_t *parms)
+{
+}

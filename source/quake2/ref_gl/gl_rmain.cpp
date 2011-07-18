@@ -503,3 +503,7 @@ void R_ClearScreen()
 	qglClearColor(0, 0, 0, 0);
 	qglClear(GL_COLOR_BUFFER_BIT);
 }
+
+void R_RenderView(viewParms_t *parms)
+{
+}

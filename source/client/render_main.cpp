@@ -1192,3 +1192,459 @@ void R_GenerateDrawSurfs()
 		R_DrawAlphaSurfaces();
 	}
 }
+
+//==========================================================================
+//
+//	R_PlaneForSurface
+//
+//==========================================================================
+
+static void R_PlaneForSurface(surfaceType_t* surfType, cplane_t* plane)
+{
+	if (!surfType)
+	{
+		Com_Memset (plane, 0, sizeof(*plane));
+		plane->normal[0] = 1;
+		return;
+	}
+	switch (*surfType)
+	{
+	case SF_FACE:
+		*plane = ((srfSurfaceFace_t*)surfType)->plane;
+		return;
+
+	case SF_TRIANGLES:
+	{
+		srfTriangles_t* tri = (srfTriangles_t*)surfType;
+		bsp46_drawVert_t* v1 = tri->verts + tri->indexes[0];
+		bsp46_drawVert_t* v2 = tri->verts + tri->indexes[1];
+		bsp46_drawVert_t* v3 = tri->verts + tri->indexes[2];
+		vec4_t plane4;
+		PlaneFromPoints(plane4, v1->xyz, v2->xyz, v3->xyz);
+		VectorCopy(plane4, plane->normal);
+		plane->dist = plane4[3];
+	}
+		return;
+
+	case SF_POLY:
+	{
+		srfPoly_t* poly = (srfPoly_t*)surfType;
+		vec4_t plane4;
+		PlaneFromPoints(plane4, poly->verts[0].xyz, poly->verts[1].xyz, poly->verts[2].xyz);
+		VectorCopy(plane4, plane->normal);
+		plane->dist = plane4[3];
+	}
+		return;
+
+	default:
+		Com_Memset(plane, 0, sizeof(*plane));
+		plane->normal[0] = 1;		
+		return;
+	}
+}
+
+//==========================================================================
+//
+//	IsMirror
+//
+//==========================================================================
+
+static bool IsMirror(const drawSurf_t* drawSurf, int entityNum)
+{
+	// create plane axis for the portal we are seeing
+	cplane_t originalPlane;
+	R_PlaneForSurface(drawSurf->surface, &originalPlane);
+
+	// rotate the plane if necessary
+	cplane_t plane;
+	if (entityNum != REF_ENTITYNUM_WORLD) 
+	{
+		tr.currentEntityNum = entityNum;
+		tr.currentEntity = &tr.refdef.entities[entityNum];
+
+		// get the orientation of the entity
+		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
+
+		// rotate the plane, but keep the non-rotated version for matching
+		// against the portalSurface entities
+		R_LocalNormalToWorld(originalPlane.normal, plane.normal);
+		plane.dist = originalPlane.dist + DotProduct(plane.normal, tr.orient.origin);
+
+		// translate the original plane
+		originalPlane.dist = originalPlane.dist + DotProduct(originalPlane.normal, tr.orient.origin);
+	} 
+	else 
+	{
+		plane = originalPlane;
+	}
+
+	// locate the portal entity closest to this plane.
+	// origin will be the origin of the portal, origin2 will be
+	// the origin of the camera
+	for (int i = 0; i < tr.refdef.num_entities; i++)
+	{
+		trRefEntity_t* e = &tr.refdef.entities[i];
+		if (e->e.reType != RT_PORTALSURFACE)
+		{
+			continue;
+		}
+
+		float d = DotProduct(e->e.origin, originalPlane.normal) - originalPlane.dist;
+		if (d > 64 || d < -64)
+		{
+			continue;
+		}
+
+		// if the entity is just a mirror, don't use as a camera point
+		if (e->e.oldorigin[0] == e->e.origin[0] && 
+			e->e.oldorigin[1] == e->e.origin[1] && 
+			e->e.oldorigin[2] == e->e.origin[2])
+		{
+			return true;
+		}
+
+		return false;
+	}
+	return false;
+}
+
+//==========================================================================
+//
+//	SurfIsOffscreen
+//
+//	Determines if a surface is completely offscreen.
+//
+//==========================================================================
+
+static bool SurfIsOffscreen(const drawSurf_t* drawSurf, vec4_t clipDest[128])
+{
+	if (glConfig.smpActive)
+	{
+		// FIXME!  we can't do RB_BeginSurface/RB_EndSurface stuff with smp!
+		return false;
+	}
+
+	R_RotateForViewer();
+
+	int entityNum;
+	shader_t* shader;
+	int fogNum;
+	int dlighted;
+	R_DecomposeSort(drawSurf->sort, &entityNum, &shader, &fogNum, &dlighted);
+	RB_BeginSurface(shader, fogNum);
+	rb_surfaceTable[*drawSurf->surface](drawSurf->surface);
+
+	qassert(tess.numVertexes < 128);
+
+	unsigned int pointOr = 0;
+	unsigned int pointAnd = (unsigned int)~0;
+	for (int i = 0; i < tess.numVertexes; i++)
+	{
+		vec4_t clip, eye;
+		R_TransformModelToClip(tess.xyz[i], tr.orient.modelMatrix, tr.viewParms.projectionMatrix, eye, clip);
+
+		unsigned int pointFlags = 0;
+		for (int j = 0; j < 3; j++)
+		{
+			if (clip[j] >= clip[3])
+			{
+				pointFlags |= (1 << (j * 2));
+			}
+			else if (clip[j] <= -clip[3])
+			{
+				pointFlags |= (1 << (j * 2 + 1));
+			}
+		}
+		pointAnd &= pointFlags;
+		pointOr |= pointFlags;
+	}
+
+	// trivially reject
+	if (pointAnd)
+	{
+		return true;
+	}
+
+	// determine if this surface is backfaced and also determine the distance
+	// to the nearest vertex so we can cull based on portal range.  Culling
+	// based on vertex distance isn't 100% correct (we should be checking for
+	// range to the surface), but it's good enough for the types of portals
+	// we have in the game right now.
+	int numTriangles = tess.numIndexes / 3;
+
+	float shortest = 100000000;
+	for (int i = 0; i < tess.numIndexes; i += 3 )
+	{
+		vec3_t normal;
+		VectorSubtract(tess.xyz[tess.indexes[i]], tr.viewParms.orient.origin, normal);
+
+		float len = VectorLengthSquared(normal);			// lose the sqrt
+		if (len < shortest)
+		{
+			shortest = len;
+		}
+
+		if (DotProduct(normal, tess.normal[tess.indexes[i]]) >= 0)
+		{
+			numTriangles--;
+		}
+	}
+	if (!numTriangles)
+	{
+		return true;
+	}
+
+	// mirrors can early out at this point, since we don't do a fade over distance
+	// with them (although we could)
+	if (IsMirror(drawSurf, entityNum))
+	{
+		return false;
+	}
+
+	if (shortest > (tess.shader->portalRange * tess.shader->portalRange))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//==========================================================================
+//
+//	R_GetPortalOrientation
+//
+//	entityNum is the entity that the portal surface is a part of, which may
+// be moving and rotating.
+//
+//	Returns true if it should be mirrored
+//
+//==========================================================================
+
+static bool R_GetPortalOrientations(drawSurf_t* drawSurf, int entityNum, 
+	orientation_t* surface, orientation_t* camera,
+	vec3_t pvsOrigin, bool* mirror)
+{
+	// create plane axis for the portal we are seeing
+	cplane_t originalPlane;
+	R_PlaneForSurface(drawSurf->surface, &originalPlane);
+
+	// rotate the plane if necessary
+	cplane_t plane;
+	if (entityNum != REF_ENTITYNUM_WORLD)
+	{
+		tr.currentEntityNum = entityNum;
+		tr.currentEntity = &tr.refdef.entities[entityNum];
+
+		// get the orientation of the entity
+		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
+
+		// rotate the plane, but keep the non-rotated version for matching
+		// against the portalSurface entities
+		R_LocalNormalToWorld(originalPlane.normal, plane.normal);
+		plane.dist = originalPlane.dist + DotProduct(plane.normal, tr.orient.origin);
+
+		// translate the original plane
+		originalPlane.dist = originalPlane.dist + DotProduct(originalPlane.normal, tr.orient.origin);
+	}
+	else
+	{
+		plane = originalPlane;
+	}
+
+	VectorCopy(plane.normal, surface->axis[0]);
+	PerpendicularVector(surface->axis[1], surface->axis[0]);
+	CrossProduct(surface->axis[0], surface->axis[1], surface->axis[2]);
+
+	// locate the portal entity closest to this plane.
+	// origin will be the origin of the portal, origin2 will be
+	// the origin of the camera
+	for (int i = 0; i < tr.refdef.num_entities; i++)
+	{
+		trRefEntity_t* e = &tr.refdef.entities[i];
+		if (e->e.reType != RT_PORTALSURFACE)
+		{
+			continue;
+		}
+
+		float d = DotProduct(e->e.origin, originalPlane.normal) - originalPlane.dist;
+		if (d > 64 || d < -64)
+		{
+			continue;
+		}
+
+		// get the pvsOrigin from the entity
+		VectorCopy(e->e.oldorigin, pvsOrigin);
+
+		// if the entity is just a mirror, don't use as a camera point
+		if (e->e.oldorigin[0] == e->e.origin[0] && 
+			e->e.oldorigin[1] == e->e.origin[1] && 
+			e->e.oldorigin[2] == e->e.origin[2])
+		{
+			VectorScale(plane.normal, plane.dist, surface->origin);
+			VectorCopy(surface->origin, camera->origin);
+			VectorSubtract(vec3_origin, surface->axis[0], camera->axis[0]);
+			VectorCopy(surface->axis[1], camera->axis[1]);
+			VectorCopy(surface->axis[2], camera->axis[2]);
+
+			*mirror = true;
+			return true;
+		}
+
+		// project the origin onto the surface plane to get
+		// an origin point we can rotate around
+		d = DotProduct(e->e.origin, plane.normal) - plane.dist;
+		VectorMA(e->e.origin, -d, surface->axis[0], surface->origin);
+			
+		// now get the camera origin and orientation
+		VectorCopy(e->e.oldorigin, camera->origin);
+		AxisCopy(e->e.axis, camera->axis);
+		VectorSubtract(vec3_origin, camera->axis[0], camera->axis[0]);
+		VectorSubtract(vec3_origin, camera->axis[1], camera->axis[1]);
+
+		// optionally rotate
+		if (e->e.oldframe)
+		{
+			// if a speed is specified
+			if (e->e.frame)
+			{
+				// continuous rotate
+				d = (tr.refdef.time / 1000.0f) * e->e.frame;
+				vec3_t transformed;
+				VectorCopy(camera->axis[1], transformed);
+				RotatePointAroundVector(camera->axis[1], camera->axis[0], transformed, d);
+				CrossProduct(camera->axis[0], camera->axis[1], camera->axis[2]);
+			}
+			else
+			{
+				// bobbing rotate, with skinNum being the rotation offset
+				d = sin(tr.refdef.time * 0.003f);
+				d = e->e.skinNum + d * 4;
+				vec3_t transformed;
+				VectorCopy(camera->axis[1], transformed);
+				RotatePointAroundVector(camera->axis[1], camera->axis[0], transformed, d);
+				CrossProduct(camera->axis[0], camera->axis[1], camera->axis[2]);
+			}
+		}
+		else if (e->e.skinNum)
+		{
+			d = e->e.skinNum;
+			vec3_t transformed;
+			VectorCopy(camera->axis[1], transformed);
+			RotatePointAroundVector(camera->axis[1], camera->axis[0], transformed, d);
+			CrossProduct(camera->axis[0], camera->axis[1], camera->axis[2]);
+		}
+		*mirror = false;
+		return true;
+	}
+
+	// if we didn't locate a portal entity, don't render anything.
+	// We don't want to just treat it as a mirror, because without a
+	// portal entity the server won't have communicated a proper entity set
+	// in the snapshot
+
+	// unfortunately, with local movement prediction it is easily possible
+	// to see a surface before the server has communicated the matching
+	// portal surface entity, so we don't want to print anything here...
+
+	//ri.Printf( PRINT_ALL, "Portal surface without a portal entity\n" );
+
+	return false;
+}
+
+//==========================================================================
+//
+//	R_MirrorPoint
+//
+//==========================================================================
+
+static void R_MirrorPoint(vec3_t in, orientation_t* surface, orientation_t* camera, vec3_t out)
+{
+	vec3_t local;
+	VectorSubtract(in, surface->origin, local);
+
+	vec3_t transformed;
+	VectorClear(transformed);
+	for (int i = 0; i < 3; i++)
+	{
+		float d = DotProduct(local, surface->axis[i]);
+		VectorMA(transformed, d, camera->axis[i], transformed);
+	}
+
+	VectorAdd(transformed, camera->origin, out);
+}
+
+//==========================================================================
+//
+//	R_MirrorVector
+//
+//==========================================================================
+
+static void R_MirrorVector(vec3_t in, orientation_t* surface, orientation_t* camera, vec3_t out)
+{
+	VectorClear(out);
+	for (int i = 0; i < 3; i++)
+	{
+		float d = DotProduct(in, surface->axis[i]);
+		VectorMA(out, d, camera->axis[i], out);
+	}
+}
+
+//==========================================================================
+//
+//	R_MirrorViewBySurface
+//
+//	Returns qtrue if another view has been rendered
+//
+//==========================================================================
+
+bool R_MirrorViewBySurface(drawSurf_t* drawSurf, int entityNum)
+{
+	// don't recursively mirror
+	if (tr.viewParms.isPortal)
+	{
+		GLog.DWrite(S_COLOR_RED "WARNING: recursive mirror/portal found\n");
+		return false;
+	}
+
+	if (r_noportals->integer || r_fastsky->integer == 1)
+	{
+		return false;
+	}
+
+	// trivially reject portal/mirror
+	vec4_t clipDest[128];
+	if (SurfIsOffscreen(drawSurf, clipDest))
+	{
+		return false;
+	}
+
+	// save old viewParms so we can return to it after the mirror view
+	viewParms_t oldParms = tr.viewParms;
+
+	viewParms_t newParms = tr.viewParms;
+	newParms.isPortal = true;
+	orientation_t surface, camera;
+	if (!R_GetPortalOrientations(drawSurf, entityNum, &surface, &camera, 
+		newParms.pvsOrigin, &newParms.isMirror))
+	{
+		return false;		// bad portal, no portalentity
+	}
+
+	R_MirrorPoint(oldParms.orient.origin, &surface, &camera, newParms.orient.origin);
+
+	VectorSubtract(vec3_origin, camera.axis[0], newParms.portalPlane.normal);
+	newParms.portalPlane.dist = DotProduct(camera.origin, newParms.portalPlane.normal);
+	
+	R_MirrorVector(oldParms.orient.axis[0], &surface, &camera, newParms.orient.axis[0]);
+	R_MirrorVector(oldParms.orient.axis[1], &surface, &camera, newParms.orient.axis[1]);
+	R_MirrorVector(oldParms.orient.axis[2], &surface, &camera, newParms.orient.axis[2]);
+
+	// OPTIMIZE: restrict the viewport on the mirrored view
+
+	// render the mirror view
+	R_RenderView(&newParms);
+
+	tr.viewParms = oldParms;
+
+	return true;
+}
