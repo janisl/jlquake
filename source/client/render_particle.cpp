@@ -203,6 +203,10 @@ static void R_DrawParticlePoints()
 
 void R_DrawParticles()
 {
+	if (!tr.refdef.num_particles)
+	{
+		return;
+	}
 	if ((GGameType & GAME_Quake2) && qglPointParameterfEXT)
 	{
 		R_DrawParticlePoints();

@@ -231,11 +231,7 @@ void R_RenderScene (void)
 
 	R_SetupGL ();
 
-	R_DrawWorldQ1 ();		// adds static entities to the list
-
-	S_ExtraUpdate ();	// don't let sound get messed up if going slow
-
-	R_AddEntitySurfaces(false);
+	R_GenerateDrawSurfs();
 }
 
 
@@ -320,14 +316,6 @@ void R_RenderView (void)
 
 	// render normal view
 	R_RenderScene ();
-
-	R_DrawParticles ();
-
-	R_DrawTransEntitiesOnList( r_viewleaf->contents == BSP29CONTENTS_EMPTY ); // This restores the depth mask
-
-	R_DrawWaterSurfaces ();
-
-	R_DrawTransEntitiesOnList( r_viewleaf->contents != BSP29CONTENTS_EMPTY );
 
 	R_PolyBlend ();
 

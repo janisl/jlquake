@@ -713,9 +713,7 @@ int R_CullLocalBox(vec3_t bounds[2]);
 int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
-void R_AddEntitySurfaces(bool TranslucentPass);
-void R_DrawTransEntitiesOnList(bool inwater);
-void R_AddPolygonSurfaces();
+void R_GenerateDrawSurfs();
 
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;

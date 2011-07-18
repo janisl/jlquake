@@ -221,13 +221,7 @@ void R_RenderScene (void)
 
 	R_SetupGL ();
 
-	R_DrawWorldQ1 ();		// adds static entities to the list
-
-	S_ExtraUpdate ();	// don't let sound get messed up if going slow
-
-	R_AddEntitySurfaces(false);
-
-	R_DrawParticles ();
+	R_GenerateDrawSurfs();
 }
 
 
@@ -292,7 +286,6 @@ void R_RenderView (void)
 
 	// render normal view
 	R_RenderScene ();
-	R_DrawWaterSurfaces ();
 
 	R_PolyBlend ();
 

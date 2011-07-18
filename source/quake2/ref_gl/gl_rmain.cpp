@@ -250,15 +250,7 @@ void R_RenderView (refdef_t *fd)
 
 	R_SetupGL ();
 
-	R_DrawWorldQ2 ();
-
-	R_AddEntitySurfaces(false);
-
-	R_AddEntitySurfaces(true);
-
-	R_DrawParticles ();
-
-	R_DrawAlphaSurfaces ();
+	R_GenerateDrawSurfs();
 
 	R_Flash();
 

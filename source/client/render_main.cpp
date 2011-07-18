@@ -862,7 +862,7 @@ static void R_DrawNullModel()
 //
 //==========================================================================
 
-void R_AddEntitySurfaces(bool TranslucentPass)
+static void R_AddEntitySurfaces(bool TranslucentPass)
 {
 	cl_numtransvisedicts = 0;
 	cl_numtranswateredicts = 0;
@@ -1073,7 +1073,7 @@ static int transCompare(const void* arg1, const void* arg2)
 //
 //==========================================================================
 
-void R_DrawTransEntitiesOnList(bool inwater)
+static void R_DrawTransEntitiesOnList(bool inwater)
 {
 	sortedent_t* theents = inwater ? cl_transwateredicts : cl_transvisedicts;
 	int numents = inwater ? cl_numtranswateredicts : cl_numtransvisedicts;
@@ -1120,7 +1120,7 @@ void R_DrawTransEntitiesOnList(bool inwater)
 //
 //==========================================================================
 
-void R_AddPolygonSurfaces()
+static void R_AddPolygonSurfaces()
 {
 	tr.currentEntityNum = REF_ENTITYNUM_WORLD;
 	tr.shiftedEntityNum = tr.currentEntityNum << QSORT_ENTITYNUM_SHIFT;
@@ -1130,5 +1130,65 @@ void R_AddPolygonSurfaces()
 	{
 		shader_t* sh = R_GetShaderByHandle(poly->hShader);
 		R_AddDrawSurf((surfaceType_t*)poly, sh, poly->fogIndex, false);
+	}
+}
+
+//==========================================================================
+//
+//	R_GenerateDrawSurfs
+//
+//==========================================================================
+
+void R_GenerateDrawSurfs()
+{
+	if (GGameType & GAME_QuakeHexen)
+	{
+		R_DrawWorldQ1();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		R_DrawWorldQ2();
+	}
+	else if (GGameType & GAME_Quake3)
+	{
+		R_AddWorldSurfaces();
+	}
+
+	R_AddPolygonSurfaces();
+
+	// set the projection matrix with the minimum zfar
+	// now that we have the world bounded
+	// this needs to be done before entities are
+	// added, because they use the projection
+	// matrix for lod calculation
+	if (GGameType & GAME_Quake3)
+	{
+		R_SetupProjection();
+	}
+
+	R_AddEntitySurfaces(false);
+
+	if (GGameType & GAME_Quake2)
+	{
+		R_AddEntitySurfaces(true);
+	}
+
+	R_DrawParticles();
+
+	if (GGameType & GAME_Quake)
+	{
+		R_DrawWaterSurfaces();
+	}
+	else if (GGameType & GAME_Hexen2)
+	{
+		R_DrawTransEntitiesOnList(r_viewleaf->contents == BSP29CONTENTS_EMPTY); // This restores the depth mask
+
+		R_DrawWaterSurfaces();
+
+		R_DrawTransEntitiesOnList(r_viewleaf->contents != BSP29CONTENTS_EMPTY);
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		R_DrawAlphaSurfaces();
 	}
 }

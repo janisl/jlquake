@@ -706,26 +706,6 @@ void R_SortDrawSurfs( drawSurf_t *drawSurfs, int numDrawSurfs ) {
 }
 
 /*
-====================
-R_GenerateDrawSurfs
-====================
-*/
-void R_GenerateDrawSurfs( void ) {
-	R_AddWorldSurfaces ();
-
-	R_AddPolygonSurfaces();
-
-	// set the projection matrix with the minimum zfar
-	// now that we have the world bounded
-	// this needs to be done before entities are
-	// added, because they use the projection
-	// matrix for lod calculation
-	R_SetupProjection ();
-
-	R_AddEntitySurfaces(false);
-}
-
-/*
 ================
 R_DebugPolygon
 ================
