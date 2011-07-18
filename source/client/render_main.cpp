@@ -24,6 +24,12 @@
 
 // TYPES -------------------------------------------------------------------
 
+struct sortedent_t
+{
+	trRefEntity_t*	ent;
+	vec_t 			len;
+};
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -43,15 +49,8 @@ int			c_alias_polys;
 int			c_visible_textures;
 int			c_visible_lightmaps;
 
-sortedent_t     cl_transvisedicts[MAX_ENTITIES];
-sortedent_t		cl_transwateredicts[MAX_ENTITIES];
-
 int				cl_numtransvisedicts;
 int				cl_numtranswateredicts;
-
-// entities that will have procedurally generated surfaces will just
-// point at this for their sorting surface
-surfaceType_t	entitySurface = SF_ENTITY;
 
 float	s_flipMatrix[16] =
 {
@@ -101,6 +100,13 @@ float	r_turbsin[] =
 };
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
+
+static sortedent_t		cl_transvisedicts[MAX_ENTITIES];
+static sortedent_t		cl_transwateredicts[MAX_ENTITIES];
+
+// entities that will have procedurally generated surfaces will just
+// point at this for their sorting surface
+static surfaceType_t	entitySurface = SF_ENTITY;
 
 // CODE --------------------------------------------------------------------
 
@@ -1046,4 +1052,62 @@ void R_AddEntitySurfaces(bool TranslucentPass)
 			}
 		}
 	}
+}
+
+//==========================================================================
+//
+//	transCompare
+//
+//==========================================================================
+
+static int transCompare(const void* arg1, const void* arg2)
+{
+	const sortedent_t* a1 = (const sortedent_t*)arg1;
+	const sortedent_t* a2 = (const sortedent_t*)arg2;
+	return (a2->len - a1->len); // Sorted in reverse order.  Neat, huh?
+}
+
+//==========================================================================
+//
+//	R_DrawTransEntitiesOnList
+//
+//==========================================================================
+
+void R_DrawTransEntitiesOnList(bool inwater)
+{
+	sortedent_t* theents = inwater ? cl_transwateredicts : cl_transvisedicts;
+	int numents = inwater ? cl_numtranswateredicts : cl_numtransvisedicts;
+
+	for (int i = 0; i < numents; i++)
+	{
+		vec3_t result;
+		VectorSubtract(theents[i].ent->e.origin, tr.viewParms.orient.origin, result);
+		theents[i].len = result[0] * result[0] + result[1] * result[1] + result[2] * result[2];
+	}
+
+	qsort((void*)theents, numents, sizeof(sortedent_t), transCompare);
+	// Add in BETTER sorting here
+
+	for (int i = 0; i < numents; i++)
+	{
+		tr.currentEntity = theents[i].ent;
+		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
+		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
+
+		switch (tr.currentModel->type)
+		{
+		case MOD_MESH1:
+			R_DrawMdlModel(tr.currentEntity);
+			break;
+		case MOD_BRUSH29:
+			R_DrawBrushModelQ1(tr.currentEntity,true);
+			break;
+		case MOD_SPRITE:
+			R_DrawSprModel(tr.currentEntity);
+			break;
+		default:
+			break;
+		}
+	}
+	GL_State(GLS_DEPTHMASK_TRUE);
 }

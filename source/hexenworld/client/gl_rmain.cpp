@@ -78,68 +78,6 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 	}
 }
 
-//==================================================================================
-
-/*
-================
-R_DrawTransEntitiesOnList
-Implemented by: jack
-================
-*/
-
-int transCompare(const void *arg1, const void *arg2 )
-{
-	const sortedent_t *a1, *a2;
-	a1 = (sortedent_t *) arg1;
-	a2 = (sortedent_t *) arg2;
-	return (a2->len - a1->len); // Sorted in reverse order.  Neat, huh?
-}
-
-void R_DrawTransEntitiesOnList ( qboolean inwater)
-{
-	int i;
-	int numents;
-	sortedent_t *theents;
-	vec3_t result;
-
-	theents = (inwater) ? cl_transwateredicts : cl_transvisedicts;
-	numents = (inwater) ? cl_numtranswateredicts : cl_numtransvisedicts;
-
-	for (i=0; i<numents; i++)
-	{
-		VectorSubtract(
-			theents[i].ent->e.origin, 
-			tr.viewParms.orient.origin, 
-			result);
-//		theents[i].len = Length(result);
-		theents[i].len = (result[0] * result[0]) + (result[1] * result[1]) + (result[2] * result[2]);
-	}
-
-	qsort((void *) theents, numents, sizeof(sortedent_t), transCompare);
-	// Add in BETTER sorting here
-
-	for (i=0;i<numents;i++)
-	{
-		tr.currentEntity = theents[i].ent;
-		tr.currentModel = R_GetModelByHandle(tr.currentEntity->e.hModel);
-		R_RotateForEntity(tr.currentEntity, &tr.viewParms, &tr.orient);
-
-		switch (tr.currentModel->type)
-		{
-		case MOD_MESH1:
-			R_DrawMdlModel (tr.currentEntity);
-			break;
-		case MOD_BRUSH29:
-			R_DrawBrushModelQ1 (tr.currentEntity,true);
-			break;
-		case MOD_SPRITE:
-			R_DrawSprModel (tr.currentEntity);
-			break;
-		}
-	}
-	GL_State(GLS_DEPTHMASK_TRUE);
-}
-
 /*
 ============
 R_PolyBlend
