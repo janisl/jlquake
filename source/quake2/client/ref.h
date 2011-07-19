@@ -88,6 +88,7 @@ typedef struct
 typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
 
 void R_ClearScreen();
+void Draw_FillRgb(int x, int y, int w, int h, int r, int g, int b);
 
 extern float		v_blend[4];
 

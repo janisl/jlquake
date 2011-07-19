@@ -162,13 +162,6 @@ void R_SetupGL (void)
 
 	backEnd.viewParms = tr.viewParms;
 	RB_BeginDrawingView();
-
-	// clear out the portion of the screen that the NOWORLDMODEL defines
-	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
-	{
-		qglClearColor( 0.3, 0.3, 0.3, 1 );
-		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	}
 }
 
 /*

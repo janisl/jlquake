@@ -3965,6 +3965,7 @@ void PlayerConfig_MenuDraw( void )
 
 		M_DrawTextBox( ( refdef.x ) * ( 320.0F / viddef.width ) - 8, ( viddef.height / 2 ) * ( 240.0F / viddef.height) - 77, refdef.width / 8, refdef.height / 8 );
 		refdef.height += 4;
+		Draw_FillRgb(refdef.x, refdef.y, refdef.width, refdef.height, 76, 76, 76);
 
 		re.RenderFrame( &refdef );
 

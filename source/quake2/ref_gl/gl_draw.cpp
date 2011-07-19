@@ -212,6 +212,23 @@ void Draw_TileClear (int x, int y, int w, int h, const char *pic)
 	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
 }
 
+/*
+=============
+Draw_Fill
+
+Fills a box of pixels with a single color
+=============
+*/
+void Draw_FillRgb(int x, int y, int w, int h, int r, int g, int b)
+{
+	qglDisable(GL_TEXTURE_2D);
+
+	qglColor3f(r / 255.0, g / 255.0, b / 255.0);
+
+	DoQuad(x, y, 0, 0, x + w, y + h, 0, 0);
+	qglColor3f(1, 1, 1);
+	qglEnable(GL_TEXTURE_2D);
+}
 
 /*
 =============
@@ -231,16 +248,8 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 	if ( (unsigned)c > 255)
 		ri.Sys_Error (ERR_FATAL, "Draw_Fill: bad color");
 
-	qglDisable (GL_TEXTURE_2D);
-
 	color.c = d_8to24table[c];
-	qglColor3f (color.v[0]/255.0,
-		color.v[1]/255.0,
-		color.v[2]/255.0);
-
-	DoQuad(x, y, 0, 0, x + w, y + h, 0, 0);
-	qglColor3f (1,1,1);
-	qglEnable (GL_TEXTURE_2D);
+	Draw_FillRgb(x, y, w, h, color.v[0], color.v[1], color.v[2]);
 }
 
 //=============================================================================
