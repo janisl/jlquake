@@ -87,42 +87,6 @@ R_SetupFrame
 */
 void R_SetupFrame (void)
 {
-	int i;
-	mbrush38_leaf_t	*leaf;
-
-// current viewcluster
-	if (!(tr.refdef.rdflags & RDF_NOWORLDMODEL))
-	{
-		r_oldviewcluster = r_viewcluster;
-		r_oldviewcluster2 = r_viewcluster2;
-		leaf = Mod_PointInLeafQ2 (tr.viewParms.orient.origin, tr.worldModel);
-		r_viewcluster = r_viewcluster2 = leaf->cluster;
-
-		// check above and below so crossing solid water doesn't draw wrong
-		if (!leaf->contents)
-		{	// look down a bit
-			vec3_t	temp;
-
-			VectorCopy (tr.viewParms.orient.origin, temp);
-			temp[2] -= 16;
-			leaf = Mod_PointInLeafQ2 (temp, tr.worldModel);
-			if ( !(leaf->contents & BSP38CONTENTS_SOLID) &&
-				(leaf->cluster != r_viewcluster2) )
-				r_viewcluster2 = leaf->cluster;
-		}
-		else
-		{	// look up a bit
-			vec3_t	temp;
-
-			VectorCopy (tr.viewParms.orient.origin, temp);
-			temp[2] += 16;
-			leaf = Mod_PointInLeafQ2 (temp, tr.worldModel);
-			if ( !(leaf->contents & BSP38CONTENTS_SOLID) &&
-				(leaf->cluster != r_viewcluster2) )
-				r_viewcluster2 = leaf->cluster;
-		}
-	}
-
 	c_brush_polys = 0;
 	c_alias_polys = 0;
 }

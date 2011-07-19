@@ -128,10 +128,6 @@ void R_SetupFrame (void)
 		r_textureMode->modified = false;
 	}
 
-// current viewleaf
-	r_oldviewleaf = r_viewleaf;
-	r_viewleaf = Mod_PointInLeafQ1 (tr.viewParms.orient.origin, tr.worldModel);
-
 	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
 	V_CalcBlend ();
 

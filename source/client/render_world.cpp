@@ -689,6 +689,10 @@ static void R_RecursiveWorldNodeQ1(mbrush29_node_t* node)
 
 static void R_MarkLeavesQ1()
 {
+	// current viewleaf
+	r_oldviewleaf = r_viewleaf;
+	r_viewleaf = Mod_PointInLeafQ1(tr.viewParms.orient.origin, tr.worldModel);
+
 	if (r_oldviewleaf == r_viewleaf && !r_novis->value)
 	{
 		return;
@@ -886,6 +890,46 @@ static void R_RecursiveWorldNodeQ2(mbrush38_node_t* node)
 
 //==========================================================================
 //
+//	R_FindViewCluster
+//
+//==========================================================================
+
+static void R_FindViewCluster()
+{
+	r_oldviewcluster = r_viewcluster;
+	r_oldviewcluster2 = r_viewcluster2;
+	mbrush38_leaf_t* leaf = Mod_PointInLeafQ2(tr.viewParms.orient.origin, tr.worldModel);
+	r_viewcluster = r_viewcluster2 = leaf->cluster;
+
+	// check above and below so crossing solid water doesn't draw wrong
+	if (!leaf->contents)
+	{
+		// look down a bit
+		vec3_t temp;
+		VectorCopy(tr.viewParms.orient.origin, temp);
+		temp[2] -= 16;
+		leaf = Mod_PointInLeafQ2(temp, tr.worldModel);
+		if (!(leaf->contents & BSP38CONTENTS_SOLID) && (leaf->cluster != r_viewcluster2))
+		{
+			r_viewcluster2 = leaf->cluster;
+		}
+	}
+	else
+	{
+		// look up a bit
+		vec3_t	temp;
+		VectorCopy(tr.viewParms.orient.origin, temp);
+		temp[2] += 16;
+		leaf = Mod_PointInLeafQ2(temp, tr.worldModel);
+		if (!(leaf->contents & BSP38CONTENTS_SOLID) && (leaf->cluster != r_viewcluster2))
+		{
+			r_viewcluster2 = leaf->cluster;
+		}
+	}
+}
+
+//==========================================================================
+//
 //	R_MarkLeavesQ2
 //
 //	Mark the leaves and nodes that are in the PVS for the current cluster
@@ -894,6 +938,9 @@ static void R_RecursiveWorldNodeQ2(mbrush38_node_t* node)
 
 static void R_MarkLeavesQ2()
 {
+	// current viewcluster
+	R_FindViewCluster();
+
 	if (r_oldviewcluster == r_viewcluster && r_oldviewcluster2 == r_viewcluster2 && !r_novis->value && r_viewcluster != -1)
 	{
 		return;
@@ -972,14 +1019,14 @@ static void R_MarkLeavesQ2()
 
 void R_DrawWorldQ2()
 {
-	R_MarkLeavesQ2();
-
-	if (!r_drawworld->value)
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 	{
 		return;
 	}
 
-	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
+	R_MarkLeavesQ2();
+
+	if (!r_drawworld->value)
 	{
 		return;
 	}
