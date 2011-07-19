@@ -218,15 +218,15 @@ void R_RenderView (void)
 
 	QGL_EnableLogging(!!r_logFile->integer);
 
+	R_Clear ();
+
+	R_SetupFrame ();
+
 	r_refdef.time = (int)(cl.time * 1000);
 	viewParms_t parms;
 	R_CommonRenderScene(&r_refdef, parms);
 
 	R_PushDlightsQ1 ();
-
-	R_Clear ();
-
-	R_SetupFrame ();
 
 	R_RenderView(&parms);
 

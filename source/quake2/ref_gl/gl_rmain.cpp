@@ -26,11 +26,6 @@ glstate2_t  gl_state;
 
 float		v_blend[4];			// final blending color
 
-//
-// screen size info
-//
-refdef_t	r_newrefdef;
-
 QCvar	*r_norefresh;
 
 QCvar	*gl_nosubimage;
@@ -81,17 +76,6 @@ void R_PolyBlend (void)
 //=======================================================================
 
 /*
-===============
-R_SetupFrame
-===============
-*/
-void R_SetupFrame (void)
-{
-	c_brush_polys = 0;
-	c_alias_polys = 0;
-}
-
-/*
 =============
 R_Clear
 =============
@@ -113,8 +97,6 @@ void R_Flash( void )
 /*
 ================
 R_RenderView
-
-r_newrefdef must be set before the first call
 ================
 */
 void R_RenderView (refdef_t *fd)
@@ -124,25 +106,18 @@ void R_RenderView (refdef_t *fd)
 
 	tr.frameSceneNum = 0;
 
-	viewParms_t parms;
-	R_CommonRenderScene(fd, parms);
-
-	r_newrefdef = *fd;
+	c_brush_polys = 0;
+	c_alias_polys = 0;
 
 	glState.finishCalled = false;
 
 	if (!tr.worldModel && !(tr.refdef.rdflags & RDF_NOWORLDMODEL))
 		ri.Sys_Error (ERR_DROP, "R_RenderView: NULL worldmodel");
 
-	if (r_speeds->value)
-	{
-		c_brush_polys = 0;
-		c_alias_polys = 0;
-	}
+	viewParms_t parms;
+	R_CommonRenderScene(fd, parms);
 
 	R_PushDlightsQ2 ();
-
-	R_SetupFrame ();
 
 	R_RenderView(&parms);
 

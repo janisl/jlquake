@@ -44,11 +44,6 @@ void GL_UpdateSwapInterval( void );
 
 //====================================================
 
-//
-// screen size info
-//
-extern	refdef_t	r_newrefdef;
-
 extern	QCvar	*r_norefresh;
 
 extern	QCvar	*gl_nosubimage;
