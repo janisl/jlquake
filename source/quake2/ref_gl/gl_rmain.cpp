@@ -124,7 +124,8 @@ void R_RenderView (refdef_t *fd)
 
 	tr.frameSceneNum = 0;
 
-	R_CommonRenderScene(fd);
+	viewParms_t parms;
+	R_CommonRenderScene(fd, parms);
 
 	r_newrefdef = *fd;
 
@@ -142,20 +143,6 @@ void R_RenderView (refdef_t *fd)
 	R_PushDlightsQ2 ();
 
 	R_SetupFrame ();
-
-	viewParms_t parms;
-	Com_Memset(&parms, 0, sizeof(parms));
-	VectorCopy(tr.refdef.vieworg, parms.orient.origin);
-	VectorCopy(tr.refdef.viewaxis[0], parms.orient.axis[0]);
-	VectorCopy(tr.refdef.viewaxis[1], parms.orient.axis[1]);
-	VectorCopy(tr.refdef.viewaxis[2], parms.orient.axis[2]);
-	parms.fovX = tr.refdef.fov_x;
-	parms.fovY = tr.refdef.fov_y;
-
-	parms.viewportX = tr.refdef.x;
-	parms.viewportY = glConfig.vidHeight - (tr.refdef.y + tr.refdef.height);
-	parms.viewportWidth = tr.refdef.width;
-	parms.viewportHeight = tr.refdef.height;
 
 	R_RenderView(&parms);
 

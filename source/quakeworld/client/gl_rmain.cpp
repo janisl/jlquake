@@ -191,27 +191,14 @@ void R_RenderView (void)
 	QGL_EnableLogging(!!r_logFile->integer);
 
 	r_refdef.time = (int)(cl.time * 1000);
-	R_CommonRenderScene(&r_refdef);
+	viewParms_t parms;
+	R_CommonRenderScene(&r_refdef, parms);
 
 	R_PushDlightsQ1 ();
 
 	R_Clear ();
 
 	R_SetupFrame ();
-
-	viewParms_t parms;
-	Com_Memset(&parms, 0, sizeof(parms));
-	VectorCopy(tr.refdef.vieworg, parms.orient.origin);
-	VectorCopy(tr.refdef.viewaxis[0], parms.orient.axis[0]);
-	VectorCopy(tr.refdef.viewaxis[1], parms.orient.axis[1]);
-	VectorCopy(tr.refdef.viewaxis[2], parms.orient.axis[2]);
-	parms.fovX = tr.refdef.fov_x;
-	parms.fovY = tr.refdef.fov_y;
-
-	parms.viewportX = tr.refdef.x;
-	parms.viewportY = glConfig.vidHeight - (tr.refdef.y + tr.refdef.height);
-	parms.viewportWidth = tr.refdef.width;
-	parms.viewportHeight = tr.refdef.height;
 
 	R_RenderView(&parms);
 

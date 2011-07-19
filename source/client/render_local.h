@@ -691,7 +691,7 @@ SCENE
 */
 
 void R_ToggleSmpFrame();
-void R_CommonRenderScene(const refdef_t* fd);
+void R_CommonRenderScene(const refdef_t* fd, viewParms_t& parms);
 
 /*
 ============================================================

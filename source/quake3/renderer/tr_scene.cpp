@@ -53,30 +53,7 @@ void RE_RenderScene( const refdef_t *fd ) {
 		ri.Error (ERR_DROP, "R_RenderScene: NULL worldmodel");
 	}
 
-	R_CommonRenderScene(fd);
-
-	// setup view parms for the initial view
-	//
-	// set up viewport
-	// The refdef takes 0-at-the-top y coordinates, so
-	// convert to GL's 0-at-the-bottom space
-	//
-	Com_Memset( &parms, 0, sizeof( parms ) );
-	parms.viewportX = tr.refdef.x;
-	parms.viewportY = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );
-	parms.viewportWidth = tr.refdef.width;
-	parms.viewportHeight = tr.refdef.height;
-	parms.isPortal = qfalse;
-
-	parms.fovX = tr.refdef.fov_x;
-	parms.fovY = tr.refdef.fov_y;
-
-	VectorCopy( fd->vieworg, parms.orient.origin );
-	VectorCopy( fd->viewaxis[0], parms.orient.axis[0] );
-	VectorCopy( fd->viewaxis[1], parms.orient.axis[1] );
-	VectorCopy( fd->viewaxis[2], parms.orient.axis[2] );
-
-	VectorCopy( fd->vieworg, parms.pvsOrigin );
+	R_CommonRenderScene(fd, parms);
 
 	R_RenderView( &parms );
 

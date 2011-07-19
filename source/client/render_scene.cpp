@@ -319,7 +319,7 @@ void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QP
 //
 //==========================================================================
 
-void R_CommonRenderScene(const refdef_t* fd)
+void R_CommonRenderScene(const refdef_t* fd, viewParms_t& parms)
 {
 	Com_Memcpy(tr.refdef.text, fd->text, sizeof(tr.refdef.text));
 
@@ -394,4 +394,27 @@ void R_CommonRenderScene(const refdef_t* fd)
 	// each scene / view.
 	tr.frameSceneNum++;
 	tr.sceneCount++;
+
+	// setup view parms for the initial view
+	//
+	// set up viewport
+	// The refdef takes 0-at-the-top y coordinates, so
+	// convert to GL's 0-at-the-bottom space
+	//
+	Com_Memset(&parms, 0, sizeof(parms));
+	parms.viewportX = tr.refdef.x;
+	parms.viewportY = glConfig.vidHeight - (tr.refdef.y + tr.refdef.height);
+	parms.viewportWidth = tr.refdef.width;
+	parms.viewportHeight = tr.refdef.height;
+	parms.isPortal = false;
+
+	parms.fovX = tr.refdef.fov_x;
+	parms.fovY = tr.refdef.fov_y;
+
+	VectorCopy(fd->vieworg, parms.orient.origin);
+	VectorCopy(fd->viewaxis[0], parms.orient.axis[0]);
+	VectorCopy(fd->viewaxis[1], parms.orient.axis[1]);
+	VectorCopy(fd->viewaxis[2], parms.orient.axis[2]);
+
+	VectorCopy(fd->vieworg, parms.pvsOrigin);
 }
