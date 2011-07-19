@@ -121,42 +121,6 @@ void R_RenderView (refdef_t *fd)
 }
 
 /*
-====================
-R_SetLightLevel
-
-====================
-*/
-void R_SetLightLevel (void)
-{
-	vec3_t		shadelight;
-
-	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
-		return;
-
-	// save off light value for server to look at (BIG HACK!)
-
-	R_LightPointQ2 (tr.refdef.vieworg, shadelight);
-
-	// pick the greatest component, which should be the same
-	// as the mono value returned by software
-	if (shadelight[0] > shadelight[1])
-	{
-		if (shadelight[0] > shadelight[2])
-			r_lightlevel->value = 150*shadelight[0];
-		else
-			r_lightlevel->value = 150*shadelight[2];
-	}
-	else
-	{
-		if (shadelight[1] > shadelight[2])
-			r_lightlevel->value = 150*shadelight[1];
-		else
-			r_lightlevel->value = 150*shadelight[2];
-	}
-
-}
-
-/*
 @@@@@@@@@@@@@@@@@@@@@
 R_RenderFrame
 
@@ -165,7 +129,6 @@ R_RenderFrame
 void R_RenderFrame (refdef_t *fd)
 {
 	R_RenderView( fd );
-	R_SetLightLevel ();
 	RB_SetGL2D ();
 }
 
@@ -190,7 +153,6 @@ R_Init
 int R_Init()
 {	
 	int		err;
-	int		j;
 
 	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
 

@@ -315,6 +315,50 @@ void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QP
 
 //==========================================================================
 //
+//	R_SetLightLevel
+//
+//==========================================================================
+
+static void R_SetLightLevel()
+{
+	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
+	{
+		return;
+	}
+
+	// save off light value for server to look at (BIG HACK!)
+
+	vec3_t shadelight;
+	R_LightPointQ2 (tr.refdef.vieworg, shadelight);
+
+	// pick the greatest component, which should be the same
+	// as the mono value returned by software
+	if (shadelight[0] > shadelight[1])
+	{
+		if (shadelight[0] > shadelight[2])
+		{
+			r_lightlevel->value = 150 * shadelight[0];
+		}
+		else
+		{
+			r_lightlevel->value = 150 * shadelight[2];
+		}
+	}
+	else
+	{
+		if (shadelight[1] > shadelight[2])
+		{
+			r_lightlevel->value = 150 * shadelight[1];
+		}
+		else
+		{
+			r_lightlevel->value = 150 * shadelight[2];
+		}
+	}
+}
+
+//==========================================================================
+//
 //	R_RenderScene
 //
 //	Draw a 3D view into a part of the window, then return to 2D drawing.
@@ -455,6 +499,11 @@ void R_RenderScene(const refdef_t* fd)
 	// the next scene rendered in this frame will tack on after this one
 	r_firstSceneDrawSurf = tr.refdef.numDrawSurfs;
 	R_ClearScene();
+
+	if (GGameType & GAME_Quake2)
+	{
+		R_SetLightLevel();
+	}
 
 	tr.frontEndMsec += CL_ScaledMilliseconds() - startTime;
 }
