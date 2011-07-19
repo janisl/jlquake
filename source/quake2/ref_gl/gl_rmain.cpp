@@ -26,8 +26,6 @@ glstate2_t  gl_state;
 
 float		v_blend[4];			// final blending color
 
-QCvar	*r_norefresh;
-
 QCvar	*gl_nosubimage;
 
 QCvar  *gl_driver;
@@ -101,9 +99,6 @@ R_RenderView
 */
 void R_RenderView (refdef_t *fd)
 {
-	if (r_norefresh->value)
-		return;
-
 	tr.frameSceneNum = 0;
 
 	c_brush_polys = 0;
@@ -111,15 +106,7 @@ void R_RenderView (refdef_t *fd)
 
 	glState.finishCalled = false;
 
-	if (!tr.worldModel && !(tr.refdef.rdflags & RDF_NOWORLDMODEL))
-		ri.Sys_Error (ERR_DROP, "R_RenderView: NULL worldmodel");
-
-	viewParms_t parms;
-	R_CommonRenderScene(fd, parms);
-
-	R_PushDlightsQ2 ();
-
-	R_RenderView(&parms);
+	R_RenderScene(fd);
 
 	R_Flash();
 
@@ -186,7 +173,6 @@ void R_RenderFrame (refdef_t *fd)
 void R_Register( void )
 {
 	R_SharedRegister();
-	r_norefresh = Cvar_Get ("r_norefresh", "0", 0);
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
 

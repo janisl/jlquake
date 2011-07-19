@@ -158,6 +158,7 @@ QCvar*		r_showSmp;
 QCvar*		r_skipBackEnd;
 QCvar*		r_drawentities;
 QCvar*		r_debugSurface;
+QCvar*		r_norefresh;
 
 QCvar*		r_railWidth;
 QCvar*		r_railCoreWidth;
@@ -522,6 +523,7 @@ void R_SharedRegister()
 	r_noportals = Cvar_Get("r_noportals", "0", CVAR_CHEAT);
 	r_portalOnly = Cvar_Get("r_portalOnly", "0", CVAR_CHEAT);
 	r_debugSurface = Cvar_Get("r_debugSurface", "0", CVAR_CHEAT);
+	r_norefresh = Cvar_Get("r_norefresh", "0", CVAR_CHEAT);
 
 	// make sure all the commands added here are also
 	// removed in R_Shutdown

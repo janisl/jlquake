@@ -55,7 +55,6 @@ extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	image_t*	playertextures[16];
 
-extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawviewmodel;
 
 extern	QCvar*	gl_polyblend;

@@ -40,7 +40,6 @@ extern	qboolean	r_cache_thrash;		// compatability
 
 extern	image_t*	playertextures[16];
 
-extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_wholeframe;
 

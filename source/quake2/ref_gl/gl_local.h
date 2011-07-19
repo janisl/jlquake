@@ -44,8 +44,6 @@ void GL_UpdateSwapInterval( void );
 
 //====================================================
 
-extern	QCvar	*r_norefresh;
-
 extern	QCvar	*gl_nosubimage;
 extern	QCvar	*gl_poly;
 extern	QCvar	*gl_polyblend;

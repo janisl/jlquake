@@ -25,7 +25,6 @@ refdef_t	r_refdef;
 int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 
-QCvar*	r_norefresh;
 QCvar*	r_drawviewmodel;
 QCvar*	r_wholeframe;
 
@@ -188,9 +187,6 @@ void R_RenderView (void)
 {
 	double	time1, time2;
 
-	if (r_norefresh->value)
-		return;
-
 	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
 		float Val = d_lightstylevalue[i] / 256.0;
@@ -202,9 +198,6 @@ void R_RenderView (void)
 	tr.frameSceneNum = 0;
 
 	glState.finishCalled = false;
-
-	if (!tr.worldModel)
-		Sys_Error ("R_RenderView: NULL worldmodel");
 
 	if (r_speeds->value)
 	{
@@ -223,12 +216,8 @@ void R_RenderView (void)
 	R_SetupFrame ();
 
 	r_refdef.time = (int)(cl.time * 1000);
-	viewParms_t parms;
-	R_CommonRenderScene(&r_refdef, parms);
 
-	R_PushDlightsQ1 ();
-
-	R_RenderView(&parms);
+	R_RenderScene(&r_refdef);
 
 	R_PolyBlend ();
 

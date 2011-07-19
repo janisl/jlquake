@@ -304,6 +304,7 @@ void R_AddAdditiveLightToScene(const vec3_t Origin, float Intensity, float r, fl
 void R_AddPolyToScene(qhandle_t hShader , int NumVerts, const polyVert_t* Verts, int Num);
 void R_AddLightStyleToScene(int style, float r, float g, float b);
 void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QParticleTexture Texture);
+void R_RenderScene(const refdef_t* fd);
 
 float R_CalcEntityLight(refEntity_t* e);
 void R_SetSky(const char* name, float rotate, vec3_t axis);

@@ -176,10 +176,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_scene.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_world.cpp"
 				>
 			</File>

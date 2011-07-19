@@ -612,6 +612,7 @@ extern QCvar*	r_showSmp;
 extern QCvar*	r_skipBackEnd;
 extern QCvar*	r_drawentities;			// disable/enable entity rendering
 extern QCvar*	r_debugSurface;
+extern QCvar*	r_norefresh;			// bypasses the ref rendering
 
 extern QCvar*	r_railWidth;
 extern QCvar*	r_railCoreWidth;
@@ -691,7 +692,6 @@ SCENE
 */
 
 void R_ToggleSmpFrame();
-void R_CommonRenderScene(const refdef_t* fd, viewParms_t& parms);
 
 /*
 ============================================================

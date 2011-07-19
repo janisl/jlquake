@@ -26,8 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 QCvar	*r_inGameVideo;
 QCvar	*r_dlightBacks;
 
-QCvar	*r_norefresh;
-
 QCvar  *r_glDriver;
 
 refimport_t	ri;
@@ -50,11 +48,6 @@ void R_Register( void )
 	//
 	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
-
-	//
-	// temporary variables that can change at any time
-	//
-	r_norefresh = Cvar_Get ("r_norefresh", "0", CVAR_CHEAT);
 }
 
 /*
@@ -127,8 +120,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 
 	re.BeginFrame = RE_BeginFrame;
 	re.EndFrame = RE_EndFrame;
-
-	re.RenderScene = RE_RenderScene;
 
 	re.DrawStretchRaw = RE_StretchRaw;
 

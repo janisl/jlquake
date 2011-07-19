@@ -315,12 +315,34 @@ void R_AddParticleToScene(vec3_t org, int r, int g, int b, int a, float size, QP
 
 //==========================================================================
 //
-//	R_CommonRenderScene
+//	R_RenderScene
+//
+//	Draw a 3D view into a part of the window, then return to 2D drawing.
+//
+//	Rendering a scene may require multiple views to be rendered to handle mirrors
 //
 //==========================================================================
 
-void R_CommonRenderScene(const refdef_t* fd, viewParms_t& parms)
+void R_RenderScene(const refdef_t* fd)
 {
+	if (!tr.registered)
+	{
+		return;
+	}
+	QGL_LogComment("====== RE_RenderScene =====\n");
+
+	if (r_norefresh->integer)
+	{
+		return;
+	}
+
+	int startTime = CL_ScaledMilliseconds();
+
+	if (!tr.world && !(fd->rdflags & RDF_NOWORLDMODEL))
+	{
+		throw QDropException("R_RenderScene: NULL worldmodel");
+	}
+
 	Com_Memcpy(tr.refdef.text, fd->text, sizeof(tr.refdef.text));
 
 	tr.refdef.x = fd->x;
@@ -401,6 +423,7 @@ void R_CommonRenderScene(const refdef_t* fd, viewParms_t& parms)
 	// The refdef takes 0-at-the-top y coordinates, so
 	// convert to GL's 0-at-the-bottom space
 	//
+	viewParms_t parms;
 	Com_Memset(&parms, 0, sizeof(parms));
 	parms.viewportX = tr.refdef.x;
 	parms.viewportY = glConfig.vidHeight - (tr.refdef.y + tr.refdef.height);
@@ -417,4 +440,21 @@ void R_CommonRenderScene(const refdef_t* fd, viewParms_t& parms)
 	VectorCopy(fd->viewaxis[2], parms.orient.axis[2]);
 
 	VectorCopy(fd->vieworg, parms.pvsOrigin);
+
+	if (GGameType & GAME_QuakeHexen)
+	{
+		R_PushDlightsQ1();
+	}
+	else if (GGameType & GAME_Quake2)
+	{
+		R_PushDlightsQ2();
+	}
+
+	R_RenderView(&parms);
+
+	// the next scene rendered in this frame will tack on after this one
+	r_firstSceneDrawSurf = tr.refdef.numDrawSurfs;
+	R_ClearScene();
+
+	tr.frontEndMsec += CL_ScaledMilliseconds() - startTime;
 }

@@ -44,8 +44,6 @@ extern	refimport_t		ri;
 extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
 extern QCvar	*r_dlightBacks;			// dlight non-facing surfaces for continuity
 
-extern	QCvar	*r_norefresh;			// bypasses the ref rendering
-
 extern  QCvar  *r_glDriver;
 
 //====================================================================
@@ -84,16 +82,6 @@ WORLD MAP
 */
 
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
-
-/*
-============================================================
-
-SCENE GENERATION
-
-============================================================
-*/
-
-void RE_RenderScene( const refdef_t *fd );
 
 /*
 =============================================================

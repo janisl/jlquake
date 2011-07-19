@@ -874,7 +874,7 @@ int CL_UISystemCalls( int *args ) {
 		return 0;
 
 	case UI_R_RENDERSCENE:
-		re.RenderScene( (refdef_t*)VMA(1) );
+		R_RenderScene( (refdef_t*)VMA(1) );
 		return 0;
 
 	case UI_R_SETCOLOR:

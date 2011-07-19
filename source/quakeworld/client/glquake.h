@@ -47,7 +47,6 @@ extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 extern	image_t*	playertextures[MAX_CLIENTS];
 
-extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_netgraph;
 
