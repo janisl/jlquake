@@ -1143,6 +1143,13 @@ static void R_AddPolygonSurfaces()
 
 void R_GenerateDrawSurfs()
 {
+	if (!(GGameType & GAME_Quake3))
+	{
+		qglLoadMatrixf(tr.viewParms.world.modelMatrix);
+
+		GL_Cull(CT_FRONT_SIDED);
+	}
+
 	if (GGameType & GAME_QuakeHexen)
 	{
 		R_DrawWorldQ1();

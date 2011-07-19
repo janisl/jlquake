@@ -193,13 +193,6 @@ void R_SetupGL (void)
 
 	backEnd.viewParms = tr.viewParms;
 	RB_BeginDrawingView();
-
-	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
-
-	//
-	// set drawing parms
-	//
-	GL_Cull(CT_FRONT_SIDED);
 }
 
 /*

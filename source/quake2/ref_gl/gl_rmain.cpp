@@ -166,18 +166,9 @@ void R_SetupGL (void)
 	// clear out the portion of the screen that the NOWORLDMODEL defines
 	if (tr.refdef.rdflags & RDF_NOWORLDMODEL)
 	{
-		qglEnable( GL_SCISSOR_TEST );
 		qglClearColor( 0.3, 0.3, 0.3, 1 );
 		qglClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-		qglDisable( GL_SCISSOR_TEST );
 	}
-
-	qglLoadMatrixf(tr.viewParms.world.modelMatrix);
-
-	//
-	// set drawing parms
-	//
-	GL_Cull(CT_FRONT_SIDED);
 }
 
 /*
