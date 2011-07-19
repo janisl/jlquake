@@ -64,7 +64,6 @@ void R_Init (void)
 	if (qglActiveTextureARB)
 		Cvar_SetValue ("r_texsort", 0.0);
 
-	gl_cull = Cvar_Get("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
 

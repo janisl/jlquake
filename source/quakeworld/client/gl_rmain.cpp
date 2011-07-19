@@ -37,7 +37,6 @@ QCvar*	r_norefresh;
 QCvar*	r_drawviewmodel;
 QCvar*	r_netgraph;
 
-QCvar*	gl_cull;
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
 QCvar*	gl_reporttjunctions;
@@ -190,14 +189,7 @@ void R_SetupGL (void)
 	//
 	// set drawing parms
 	//
-	if (gl_cull->value)
-	{
-		GL_Cull(CT_FRONT_SIDED);
-	}
-	else
-	{
-		GL_Cull(CT_TWO_SIDED);
-	}
+	GL_Cull(CT_FRONT_SIDED);
 }
 
 /*

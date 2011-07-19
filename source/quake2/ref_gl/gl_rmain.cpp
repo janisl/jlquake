@@ -36,7 +36,6 @@ QCvar	*r_norefresh;
 QCvar	*gl_nosubimage;
 
 QCvar  *gl_driver;
-QCvar	*gl_cull;
 QCvar	*gl_polyblend;
 
 QCvar	*vid_ref;
@@ -178,14 +177,7 @@ void R_SetupGL (void)
 	//
 	// set drawing parms
 	//
-	if (gl_cull->value)
-	{
-		GL_Cull(CT_FRONT_SIDED);
-	}
-	else
-	{
-		GL_Cull(CT_TWO_SIDED);
-	}
+	GL_Cull(CT_FRONT_SIDED);
 }
 
 /*
@@ -321,7 +313,6 @@ void R_Register( void )
 
 	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
 
-	gl_cull = Cvar_Get ("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 

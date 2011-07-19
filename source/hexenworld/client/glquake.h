@@ -45,7 +45,6 @@ extern	QCvar*	r_norefresh;
 extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_netgraph;
 
-extern	QCvar*	gl_cull;
 extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;

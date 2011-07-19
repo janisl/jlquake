@@ -62,7 +62,6 @@ void R_Init (void)
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
 	r_wholeframe = Cvar_Get("r_wholeframe", "1", CVAR_ARCHIVE);
 
-	gl_cull = Cvar_Get("gl_cull", "1", 0);
 	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
 

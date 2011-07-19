@@ -52,7 +52,6 @@ extern	refdef_t	r_newrefdef;
 extern	QCvar	*r_norefresh;
 
 extern	QCvar	*gl_nosubimage;
-extern	QCvar	*gl_cull;
 extern	QCvar	*gl_poly;
 extern	QCvar	*gl_polyblend;
 extern	QCvar	*gl_lightmaptype;
