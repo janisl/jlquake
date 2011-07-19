@@ -291,7 +291,7 @@ void R_SetupProjection()
 //
 //==========================================================================
 
-void R_SetupFrustum()
+static void R_SetupFrustum()
 {
 	float ang = tr.viewParms.fovX / 180 * M_PI * 0.5f;
 	float xs = sin(ang);
@@ -329,7 +329,7 @@ void R_SetupFrustum()
 //
 //==========================================================================
 
-void R_RotateForViewer()
+static void R_RotateForViewer()
 {
 	Com_Memset(&tr.orient, 0, sizeof(tr.orient));
 	tr.orient.axis[0][0] = 1;
@@ -1141,7 +1141,7 @@ static void R_AddPolygonSurfaces()
 //
 //==========================================================================
 
-void R_GenerateDrawSurfs()
+static void R_GenerateDrawSurfs()
 {
 	if (!(GGameType & GAME_Quake3))
 	{
@@ -1888,7 +1888,7 @@ recurse:
 //
 //==========================================================================
 
-void R_SortDrawSurfs(drawSurf_t* drawSurfs, int numDrawSurfs)
+static void R_SortDrawSurfs(drawSurf_t* drawSurfs, int numDrawSurfs)
 {
 	// it is possible for some views to not have any surfaces
 	if (numDrawSurfs < 1)
@@ -1986,7 +1986,7 @@ static void R_DebugPolygon(int color, int numPoints, float* points)
 //
 //==========================================================================
 
-void R_DebugGraphics()
+static void R_DebugGraphics()
 {
 	if (!r_debugSurface->integer)
 	{
@@ -2007,4 +2007,43 @@ void R_DebugGraphics()
 	{
 		BotDrawDebugPolygonsFunc(R_DebugPolygon, r_debugSurface->integer);
 	}
+}
+
+//==========================================================================
+//
+//	R_RenderView
+//
+//	A view may be either the actual camera view, or a mirror / remote location
+//
+//==========================================================================
+
+void R_RenderView(viewParms_t* parms)
+{
+	if (parms->viewportWidth <= 0 || parms->viewportHeight <= 0)
+	{
+		return;
+	}
+
+	tr.viewParms = *parms;
+	tr.viewParms.frameSceneNum = tr.frameSceneNum;
+	tr.viewParms.frameCount = tr.frameCount;
+
+	tr.viewCount++;
+
+	int firstDrawSurf = tr.refdef.numDrawSurfs;
+
+	// set viewParms.world
+	R_RotateForViewer();
+
+	R_SetupFrustum();
+
+	R_GenerateDrawSurfs();
+
+	if (GGameType & GAME_Quake3)
+	{
+		R_SortDrawSurfs(tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf);
+	}
+
+	// draw main system development information (surface outlines, etc)
+	R_DebugGraphics();
 }

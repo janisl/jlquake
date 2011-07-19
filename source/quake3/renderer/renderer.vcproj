@@ -172,10 +172,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tr_main.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\tr_model.cpp"
 				>
 			</File>

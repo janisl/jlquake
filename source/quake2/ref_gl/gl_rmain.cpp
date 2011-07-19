@@ -90,8 +90,6 @@ void R_SetupFrame (void)
 	int i;
 	mbrush38_leaf_t	*leaf;
 
-	tr.viewCount++;
-
 // current viewcluster
 	if (!(tr.refdef.rdflags & RDF_NOWORLDMODEL))
 	{
@@ -127,37 +125,6 @@ void R_SetupFrame (void)
 
 	c_brush_polys = 0;
 	c_alias_polys = 0;
-}
-
-/*
-=============
-R_SetupGL
-=============
-*/
-void R_SetupGL (void)
-{
-	int		x, x2, y2, y, w, h;
-
-	//
-	// set up viewport
-	//
-	x = floor((double)tr.refdef.x);
-	x2 = ceil((double)(tr.refdef.x + tr.refdef.width));
-	y = floor((double)glConfig.vidHeight - tr.refdef.y);
-	y2 = ceil((double)glConfig.vidHeight - (tr.refdef.y + tr.refdef.height));
-
-	w = x2 - x;
-	h = y - y2;
-
-	tr.viewParms.viewportX = x;
-	tr.viewParms.viewportY = y2; 
-	tr.viewParms.viewportWidth = w;
-	tr.viewParms.viewportHeight = h;
-
-	//
-	// set up projection matrix
-	//
-	R_RotateForViewer();
 }
 
 /*
@@ -212,17 +179,34 @@ void R_RenderView (refdef_t *fd)
 
 	R_SetupFrame ();
 
-	VectorCopy(tr.refdef.vieworg, tr.viewParms.orient.origin);
-	VectorCopy(tr.refdef.viewaxis[0], tr.viewParms.orient.axis[0]);
-	VectorCopy(tr.refdef.viewaxis[1], tr.viewParms.orient.axis[1]);
-	VectorCopy(tr.refdef.viewaxis[2], tr.viewParms.orient.axis[2]);
-	tr.viewParms.fovX = tr.refdef.fov_x;
-	tr.viewParms.fovY = tr.refdef.fov_y;
-	R_SetupFrustum();
+	viewParms_t parms;
+	Com_Memset(&parms, 0, sizeof(parms));
+	VectorCopy(tr.refdef.vieworg, parms.orient.origin);
+	VectorCopy(tr.refdef.viewaxis[0], parms.orient.axis[0]);
+	VectorCopy(tr.refdef.viewaxis[1], parms.orient.axis[1]);
+	VectorCopy(tr.refdef.viewaxis[2], parms.orient.axis[2]);
+	parms.fovX = tr.refdef.fov_x;
+	parms.fovY = tr.refdef.fov_y;
 
-	R_SetupGL ();
+	int		x, x2, y2, y, w, h;
 
-	R_GenerateDrawSurfs();
+	//
+	// set up viewport
+	//
+	x = floor((double)tr.refdef.x);
+	x2 = ceil((double)(tr.refdef.x + tr.refdef.width));
+	y = floor((double)glConfig.vidHeight - tr.refdef.y);
+	y2 = ceil((double)glConfig.vidHeight - (tr.refdef.y + tr.refdef.height));
+
+	w = x2 - x;
+	h = y - y2;
+
+	parms.viewportX = x;
+	parms.viewportY = y2; 
+	parms.viewportWidth = w;
+	parms.viewportHeight = h;
+
+	R_RenderView(&parms);
 
 	R_Flash();
 
@@ -473,8 +457,4 @@ void R_ClearScreen()
 {
 	qglClearColor(0, 0, 0, 0);
 	qglClear(GL_COLOR_BUFFER_BIT);
-}
-
-void R_RenderView(viewParms_t *parms)
-{
 }

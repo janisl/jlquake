@@ -30,6 +30,8 @@ QCvar	*r_norefresh;
 
 QCvar  *r_glDriver;
 
+refimport_t	ri;
+
 /*
 ===============
 R_Register

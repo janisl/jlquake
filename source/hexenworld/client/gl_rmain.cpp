@@ -129,8 +129,6 @@ void R_SetupFrame (void)
 
 	R_AnimateLight ();
 
-	tr.viewCount++;
-
 	//
 	// texturemode stuff
 	//
@@ -155,12 +153,25 @@ void R_SetupFrame (void)
 }
 
 /*
-=============
-R_SetupGL
-=============
+================
+R_RenderScene
+
+r_refdef must be set before the first call
+================
 */
-void R_SetupGL (void)
+void R_RenderScene (void)
 {
+	R_SetupFrame ();
+
+	viewParms_t parms;
+	Com_Memset(&parms, 0, sizeof(parms));
+	VectorCopy(tr.refdef.vieworg, parms.orient.origin);
+	VectorCopy(tr.refdef.viewaxis[0], parms.orient.axis[0]);
+	VectorCopy(tr.refdef.viewaxis[1], parms.orient.axis[1]);
+	VectorCopy(tr.refdef.viewaxis[2], parms.orient.axis[2]);
+	parms.fovX = tr.refdef.fov_x;
+	parms.fovY = tr.refdef.fov_y;
+
 	int		x, x2, y2, y, w, h;
 
 	//
@@ -184,35 +195,12 @@ void R_SetupGL (void)
 	w = x2 - x;
 	h = y - y2;
 
-	tr.viewParms.viewportX = x;
-	tr.viewParms.viewportY = y2; 
-	tr.viewParms.viewportWidth = w;
-	tr.viewParms.viewportHeight = h;
-	R_RotateForViewer();
-}
+	parms.viewportX = x;
+	parms.viewportY = y2; 
+	parms.viewportWidth = w;
+	parms.viewportHeight = h;
 
-/*
-================
-R_RenderScene
-
-r_refdef must be set before the first call
-================
-*/
-void R_RenderScene (void)
-{
-	R_SetupFrame ();
-
-	VectorCopy(tr.refdef.vieworg, tr.viewParms.orient.origin);
-	VectorCopy(tr.refdef.viewaxis[0], tr.viewParms.orient.axis[0]);
-	VectorCopy(tr.refdef.viewaxis[1], tr.viewParms.orient.axis[1]);
-	VectorCopy(tr.refdef.viewaxis[2], tr.viewParms.orient.axis[2]);
-	tr.viewParms.fovX = tr.refdef.fov_x;
-	tr.viewParms.fovY = tr.refdef.fov_y;
-	R_SetupFrustum();
-
-	R_SetupGL ();
-
-	R_GenerateDrawSurfs();
+	R_RenderView(&parms);
 }
 
 
@@ -356,8 +344,4 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 	}
 	else
 		Draw_String (u, v, Name);
-}
-
-void R_RenderView(viewParms_t *parms)
-{
 }

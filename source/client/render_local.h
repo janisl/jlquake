@@ -704,8 +704,6 @@ MAIN
 void myGlMultMatrix(const float* a, const float* b, float* out);
 void R_DecomposeSort(unsigned Sort, int* EntityNum, shader_t** Shader, int* FogNum, int* DLightMap);
 void R_SetupProjection();
-void R_SetupFrustum();
-void R_RotateForViewer();
 void R_LocalNormalToWorld(vec3_t local, vec3_t world);
 void R_LocalPointToWorld(vec3_t local, vec3_t world);
 void R_TransformModelToClip(const vec3_t src, const float *modelMatrix, const float *projectionMatrix,
@@ -717,9 +715,7 @@ int R_CullLocalBox(vec3_t bounds[2]);
 int R_CullPointAndRadius(vec3_t origin, float radius);
 int R_CullLocalPointAndRadius(vec3_t origin, float radius);
 void R_AddDrawSurf(surfaceType_t* surface, shader_t* shader, int fogIndex, int dlightMap);
-void R_GenerateDrawSurfs();
-void R_SortDrawSurfs(drawSurf_t* drawSurfs, int numDrawSurfs);
-void R_DebugGraphics();
+void R_RenderView(viewParms_t* parms);
 
 extern int				cl_numtransvisedicts;
 extern int				cl_numtranswateredicts;
