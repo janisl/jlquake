@@ -157,11 +157,7 @@ void R_SetupGL (void)
 	//
 	// set up projection matrix
 	//
-	R_SetupProjection();
 	R_RotateForViewer();
-
-	backEnd.viewParms = tr.viewParms;
-	RB_BeginDrawingView();
 }
 
 /*

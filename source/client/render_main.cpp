@@ -1145,6 +1145,11 @@ void R_GenerateDrawSurfs()
 {
 	if (!(GGameType & GAME_Quake3))
 	{
+		R_SetupProjection();
+
+		backEnd.viewParms = tr.viewParms;
+		RB_BeginDrawingView();
+
 		qglLoadMatrixf(tr.viewParms.world.modelMatrix);
 
 		GL_Cull(CT_FRONT_SIDED);

@@ -186,11 +186,7 @@ void R_SetupGL (void)
 	tr.viewParms.viewportY = y2; 
 	tr.viewParms.viewportWidth = w;
 	tr.viewParms.viewportHeight = h;
-	R_SetupProjection();
 	R_RotateForViewer();
-
-	backEnd.viewParms = tr.viewParms;
-	RB_BeginDrawingView();
 }
 
 /*
