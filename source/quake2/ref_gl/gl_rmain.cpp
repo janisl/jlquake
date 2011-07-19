@@ -152,23 +152,10 @@ void R_RenderView (refdef_t *fd)
 	parms.fovX = tr.refdef.fov_x;
 	parms.fovY = tr.refdef.fov_y;
 
-	int		x, x2, y2, y, w, h;
-
-	//
-	// set up viewport
-	//
-	x = floor((double)tr.refdef.x);
-	x2 = ceil((double)(tr.refdef.x + tr.refdef.width));
-	y = floor((double)glConfig.vidHeight - tr.refdef.y);
-	y2 = ceil((double)glConfig.vidHeight - (tr.refdef.y + tr.refdef.height));
-
-	w = x2 - x;
-	h = y - y2;
-
-	parms.viewportX = x;
-	parms.viewportY = y2; 
-	parms.viewportWidth = w;
-	parms.viewportHeight = h;
+	parms.viewportX = tr.refdef.x;
+	parms.viewportY = glConfig.vidHeight - (tr.refdef.y + tr.refdef.height);
+	parms.viewportWidth = tr.refdef.width;
+	parms.viewportHeight = tr.refdef.height;
 
 	R_RenderView(&parms);
 

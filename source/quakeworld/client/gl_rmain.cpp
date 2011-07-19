@@ -139,58 +139,6 @@ void R_SetupFrame (void)
 }
 
 /*
-================
-R_RenderScene
-
-r_refdef must be set before the first call
-================
-*/
-void R_RenderScene (void)
-{
-	R_SetupFrame ();
-
-	viewParms_t parms;
-	Com_Memset(&parms, 0, sizeof(parms));
-	VectorCopy(tr.refdef.vieworg, parms.orient.origin);
-	VectorCopy(tr.refdef.viewaxis[0], parms.orient.axis[0]);
-	VectorCopy(tr.refdef.viewaxis[1], parms.orient.axis[1]);
-	VectorCopy(tr.refdef.viewaxis[2], parms.orient.axis[2]);
-	tr.viewParms.fovX = tr.refdef.fov_x;
-	tr.viewParms.fovY = tr.refdef.fov_y;
-
-	int		x, x2, y2, y, w, h;
-
-	//
-	// set up viewpoint
-	//
-	x = tr.refdef.x;
-	x2 = tr.refdef.x + tr.refdef.width;
-	y = glConfig.vidHeight - tr.refdef.y;
-	y2 = glConfig.vidHeight - (tr.refdef.y + tr.refdef.height);
-
-	// fudge around because of frac screen scale
-	if (x > 0)
-		x--;
-	if (x2 < glConfig.vidWidth)
-		x2++;
-	if (y2 < 0)
-		y2--;
-	if (y < glConfig.vidHeight)
-		y++;
-
-	w = x2 - x;
-	h = y - y2;
-
-	parms.viewportX = x;
-	parms.viewportY = y2; 
-	parms.viewportWidth = w;
-	parms.viewportHeight = h;
-
-	R_RenderView(&parms);
-}
-
-
-/*
 =============
 R_Clear
 =============
@@ -249,8 +197,23 @@ void R_RenderView (void)
 
 	R_Clear ();
 
-	// render normal view
-	R_RenderScene ();
+	R_SetupFrame ();
+
+	viewParms_t parms;
+	Com_Memset(&parms, 0, sizeof(parms));
+	VectorCopy(tr.refdef.vieworg, parms.orient.origin);
+	VectorCopy(tr.refdef.viewaxis[0], parms.orient.axis[0]);
+	VectorCopy(tr.refdef.viewaxis[1], parms.orient.axis[1]);
+	VectorCopy(tr.refdef.viewaxis[2], parms.orient.axis[2]);
+	parms.fovX = tr.refdef.fov_x;
+	parms.fovY = tr.refdef.fov_y;
+
+	parms.viewportX = tr.refdef.x;
+	parms.viewportY = glConfig.vidHeight - (tr.refdef.y + tr.refdef.height);
+	parms.viewportWidth = tr.refdef.width;
+	parms.viewportHeight = tr.refdef.height;
+
+	R_RenderView(&parms);
 
 	R_PolyBlend ();
 
