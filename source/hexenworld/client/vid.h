@@ -9,6 +9,3 @@ void	VID_Init ();
 
 void	VID_Shutdown (void);
 // Called at shutdown
-
-void	VID_Update (vrect_t *rects);
-// flushes the given rectangles from the view buffer to the screen
