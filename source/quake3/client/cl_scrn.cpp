@@ -422,6 +422,9 @@ void SCR_Init( void ) {
 	cl_graphscale = Cvar_Get ("graphscale", "1", CVAR_CHEAT);
 	cl_graphshift = Cvar_Get ("graphshift", "0", CVAR_CHEAT);
 
+	viddef.width = 640;
+	viddef.height = 480;
+
 	scr_initialized = qtrue;
 }
 
