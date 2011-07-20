@@ -304,8 +304,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.DrawFill = Draw_Fill;
 	re.DrawFadeScreen= Draw_FadeScreen;
 
-	re.DrawStretchRaw = Draw_StretchRaw;
-
 	re.Shutdown = R_Shutdown;
 
 	re.BeginFrame = R_BeginFrame;

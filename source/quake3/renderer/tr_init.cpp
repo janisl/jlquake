@@ -121,8 +121,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	re.BeginFrame = RE_BeginFrame;
 	re.EndFrame = RE_EndFrame;
 
-	re.DrawStretchRaw = RE_StretchRaw;
-
 	re.inPVS = R_inPVS;
 
 	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;

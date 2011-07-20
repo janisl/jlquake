@@ -107,8 +107,8 @@ qboolean SCR_DrawCinematic (void)
 	if (!cinTable[CL_handle]->Cin->OutputFrame)
 		return true;
 
-	re.DrawStretchRaw (0, 0, viddef.width, viddef.height,
-		cinTable[CL_handle]->Cin->Width, cinTable[CL_handle]->Cin->Height, cinTable[CL_handle]->Cin->OutputFrame);
+	R_StretchRaw(0, 0, viddef.width, viddef.height,
+		cinTable[CL_handle]->Cin->Width, cinTable[CL_handle]->Cin->Height, cinTable[CL_handle]->Cin->OutputFrame, 0, true);
 
 	return true;
 }

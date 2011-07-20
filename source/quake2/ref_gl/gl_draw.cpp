@@ -270,21 +270,3 @@ void Draw_FadeScreen (void)
 	qglEnable (GL_TEXTURE_2D);
 	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_ATEST_GE_80);
 }
-
-
-//====================================================================
-
-
-/*
-=============
-Draw_StretchRaw
-=============
-*/
-void Draw_StretchRaw (int x, int y, int w, int h, int cols, int rows, byte *data)
-{
-	R_UploadCinematic(cols, rows, data, 0, true);
-
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, 0, 0, x + w, y + h, 1, 1);
-}
-

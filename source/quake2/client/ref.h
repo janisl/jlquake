@@ -62,9 +62,6 @@ typedef struct
 	void	(*DrawFill) (int x, int y, int w, int h, int c);
 	void	(*DrawFadeScreen) (void);
 
-	// Draw images for cinematic rendering (which can have a different palette). Note that calls
-	void	(*DrawStretchRaw) (int x, int y, int w, int h, int cols, int rows, byte *data);
-
 	/*
 	** video mode and refresh state management entry points
 	*/

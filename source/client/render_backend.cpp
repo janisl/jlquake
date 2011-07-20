@@ -785,3 +785,60 @@ void RB_RenderThread()
 		renderThreadActive = false;
 	}
 }
+
+//==========================================================================
+//
+//	R_StretchRaw
+//
+//	FIXME: not exactly backend
+//	Stretches a raw 32 bit power of 2 bitmap image over the given screen rectangle.
+//	Used for cinematics.
+//
+//==========================================================================
+
+void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	R_SyncRenderThread();
+
+	// finish any 2D drawing if needed
+	if (tess.numIndexes)
+	{
+		RB_EndSurface();
+	}
+
+	// we definately want to sync every frame for the cinematics
+	qglFinish();
+
+	int start = 0;
+	if (r_speeds->integer)
+	{
+		start = CL_ScaledMilliseconds();
+	}
+
+	R_UploadCinematic(cols, rows, data, client, dirty);
+
+	if (r_speeds->integer)
+	{
+		int end = CL_ScaledMilliseconds();
+		GLog.Write("qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start);
+	}
+
+	RB_SetGL2D();
+
+	qglColor3f(tr.identityLight, tr.identityLight, tr.identityLight);
+
+	qglBegin(GL_QUADS);
+	qglTexCoord2f(0, 0);
+	qglVertex2f(x, y);
+	qglTexCoord2f(1, 0);
+	qglVertex2f(x + w, y);
+	qglTexCoord2f(1, 1);
+	qglVertex2f(x + w, y + h);
+	qglTexCoord2f(0, 1);
+	qglVertex2f(x, y + h);
+	qglEnd();
+}
