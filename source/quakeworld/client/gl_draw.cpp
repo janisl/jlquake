@@ -157,8 +157,8 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = vid.width;
-	conback->height = vid.height;
+	conback->width = viddef.width;
+	conback->height = viddef.height;
 
 	// free loaded console
 	Hunk_FreeToLowMark (start);
@@ -181,10 +181,10 @@ void Draw_Init (void)
 void DoQuad(float x1, float y1, float s1, float t1,
 	float x2, float y2, float s2, float t2)
 {
-	x1 *= (float)glConfig.vidWidth / vid.width;
-	x2 *= (float)glConfig.vidWidth / vid.width;
-	y1 *= (float)glConfig.vidHeight / vid.height;
-	y2 *= (float)glConfig.vidHeight / vid.height;
+	x1 *= (float)glConfig.vidWidth / viddef.width;
+	x2 *= (float)glConfig.vidWidth / viddef.width;
+	y1 *= (float)glConfig.vidHeight / viddef.height;
+	y2 *= (float)glConfig.vidHeight / viddef.height;
 
 	qglBegin(GL_QUADS);
 	qglTexCoord2f(s1, t1);
@@ -370,8 +370,8 @@ Draw_TransPic
 void Draw_TransPic (int x, int y, image_t* pic)
 {
 
-	if (x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
-		 (unsigned)(y + pic->height) > vid.height)
+	if (x < 0 || (unsigned)(x + pic->width) > viddef.width || y < 0 ||
+		 (unsigned)(y + pic->height) > viddef.height)
 	{
 		Sys_Error ("Draw_TransPic: bad coordinates");
 	}
@@ -441,11 +441,11 @@ void Draw_ConsoleBackground (int lines)
 	int x, i;
 	int y;
 
-	y = (vid.height * 3) >> 2;
+	y = (viddef.height * 3) >> 2;
 	if (lines > y)
-		Draw_Pic(0, lines-vid.height, conback);
+		Draw_Pic(0, lines-viddef.height, conback);
 	else
-		Draw_AlphaPic (0, lines - vid.height, conback, (float)(1.2 * lines)/y);
+		Draw_AlphaPic (0, lines - viddef.height, conback, (float)(1.2 * lines)/y);
 
 	// hack the version number directly into the pic
 //	y = lines-186;
@@ -456,7 +456,7 @@ void Draw_ConsoleBackground (int lines)
 #else
 		sprintf (ver, "GL (%4.2f) QuakeWorld", GLQUAKE_VERSION);
 #endif
-		x = vid.width - (QStr::Length(ver)*8 + 11) - (vid.width*8/320)*7;
+		x = viddef.width - (QStr::Length(ver)*8 + 11) - (viddef.width*8/320)*7;
 		for (i=0 ; i<QStr::Length(ver) ; i++)
 			Draw_Character (x + i * 8, y, ver[i] | 0x80);
 	}
@@ -516,7 +516,7 @@ void Draw_FadeScreen (void)
 	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable (GL_TEXTURE_2D);
 	qglColor4f (0, 0, 0, 0.8);
-	DoQuad(0 ,0, 0, 0, vid.width, vid.height, 0, 0);
+	DoQuad(0 ,0, 0, 0, viddef.width, viddef.height, 0, 0);
 	qglColor4f (1,1,1,1);
 	qglEnable (GL_TEXTURE_2D);
 }
@@ -536,7 +536,7 @@ void Draw_BeginDisc (void)
 	if (!draw_disc)
 		return;
 	qglDrawBuffer  (GL_FRONT);
-	Draw_Pic (vid.width - 24, 0, draw_disc);
+	Draw_Pic (viddef.width - 24, 0, draw_disc);
 	qglDrawBuffer  (GL_BACK);
 }
 

@@ -139,7 +139,7 @@ void Con_Resize (console_t *con)
 	int		i, j, width, oldwidth, oldtotallines, numlines, numchars;
 	char	tbuf[CON_TEXTSIZE], tbuf_attr[CON_TEXTSIZE];
 
-	width = (vid.width >> 3) - 2;
+	width = (viddef.width >> 3) - 2;
 
 	if (width == con_linewidth)
 		return;
@@ -511,8 +511,8 @@ void Con_DrawNotify (void)
 		}
 
 		s = chat_buffer;
-		if (chat_bufferlen > ((int)vid.width>>3)-(skip+1))
-			s += chat_bufferlen - ((vid.width>>3)-(skip+1));
+		if (chat_bufferlen > ((int)viddef.width>>3)-(skip+1))
+			s += chat_bufferlen - ((viddef.width>>3)-(skip+1));
 		x = 0;
 		while(s[x])
 		{

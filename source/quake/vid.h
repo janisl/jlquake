@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // vid.h -- video driver defs
 
-extern	viddef_t	vid;				// global video state
-
 void	VID_Init ();
 // Called at startup to set up translation tables, takes 256 8 bit RGB values
 // the palette data will go away after the call, so it must be copied off if

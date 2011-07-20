@@ -258,27 +258,27 @@ void VID_Init()
 
 	int i;
 	if ((i = COM_CheckParm("-conwidth")) != 0)
-		vid.width = QStr::Atoi(COM_Argv(i+1));
+		viddef.width = QStr::Atoi(COM_Argv(i+1));
 	else
-		vid.width = 640;
+		viddef.width = 640;
 
-	vid.width &= 0xfff8; // make it a multiple of eight
+	viddef.width &= 0xfff8; // make it a multiple of eight
 
-	if (vid.width < 320)
-		vid.width = 320;
+	if (viddef.width < 320)
+		viddef.width = 320;
 
 	// pick a conheight that matches with correct aspect
-	vid.height = vid.width / glConfig.windowAspect;
+	viddef.height = viddef.width / glConfig.windowAspect;
 
 	if ((i = COM_CheckParm("-conheight")) != 0)
-		vid.height = QStr::Atoi(COM_Argv(i+1));
-	if (vid.height < 200)
-		vid.height = 200;
+		viddef.height = QStr::Atoi(COM_Argv(i+1));
+	if (viddef.height < 200)
+		viddef.height = 200;
 
-	if (vid.height > glConfig.vidHeight)
-		vid.height = glConfig.vidHeight;
-	if (vid.width > glConfig.vidWidth)
-		vid.width = glConfig.vidWidth;
+	if (viddef.height > glConfig.vidHeight)
+		viddef.height = glConfig.vidHeight;
+	if (viddef.width > glConfig.vidWidth)
+		viddef.width = glConfig.vidWidth;
 
 	tr.registered = true;
 }

@@ -1,6 +1,5 @@
 // vid.h -- video driver defs
 
-extern	viddef_t	vid;				// global video state
 extern	unsigned	d_8to24TranslucentTable[256];
 
 void	VID_Init ();

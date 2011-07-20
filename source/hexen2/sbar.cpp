@@ -200,7 +200,7 @@ void SB_Draw(void)
 		return;
 	}
 
-	if (scr_con_current == vid.height)
+	if (scr_con_current == viddef.height)
 	{ // console is full screen
 		return;
 	}
@@ -832,8 +832,8 @@ void Sbar_DrawFrags (void)
 	l = scoreboardlines <= 4 ? scoreboardlines : 4;
 	
 	x = 23;
-	xofs = (vid.width - 320)>>1;
-	y = vid.height - BAR_TOP_HEIGHT - 23;
+	xofs = (viddef.width - 320)>>1;
+	y = viddef.height - BAR_TOP_HEIGHT - 23;
 
 	for (i=0 ; i<l ; i++)
 	{
@@ -978,11 +978,11 @@ void Sbar_DeathmatchOverlay(void)
 // draw the text
 	l = scoreboardlines;
 	
-	x = 80 + ((vid.width - 320)>>1);
+	x = 80 + ((viddef.width - 320)>>1);
 	y = 62;
 	for (i=0 ; i<l ; i++)
 	{
-		if (y+10 >= (int)vid.height)
+		if (y+10 >= (int)viddef.height)
 			break;
 
 		k = fragsort[i];
@@ -1140,7 +1140,7 @@ void Sbar_SmallDeathmatchOverlay(void)
 	{
 		if (l > 4) 
 			l = 4;
-		y = vid.height - BAR_TOP_HEIGHT;
+		y = viddef.height - BAR_TOP_HEIGHT;
 	}
 	
 	x = 10;
@@ -1200,7 +1200,7 @@ static void DrawActiveRings(void)
 	int frame;
 	char tempStr[24];
 
-	if (scr_con_current == vid.height)
+	if (scr_con_current == viddef.height)
 		return;		// console is full screen
 
 	ring_row = 1;
@@ -1211,7 +1211,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/rngtrn%d.lmp", frame);
-		Draw_TransPic(vid.width - 50, ring_row, Draw_CachePic(tempStr));
+		Draw_TransPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
 		ring_row += 33;
 	}
 
@@ -1219,7 +1219,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/rngreg%d.lmp", frame);
-		Draw_TransPic(vid.width - 50, ring_row, Draw_CachePic(tempStr));
+		Draw_TransPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
 		ring_row += 33;
 	}
 */
@@ -1228,7 +1228,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/rngwtr%d.lmp", frame);
-		Draw_TransPic(vid.width - 50, ring_row, Draw_CachePic(tempStr));
+		Draw_TransPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
 		ring_row += 33;
 	}
 
@@ -1236,7 +1236,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/rngfly%d.lmp", frame);
-		Draw_TransPic(vid.width - 50, ring_row, Draw_CachePic(tempStr));
+		Draw_TransPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
 		ring_row += 33;
 	}
 }
@@ -1253,7 +1253,7 @@ static void DrawActiveArtifacts(void)
 	int frame;
 	char tempStr[24];
 
-	if (scr_con_current == vid.height)
+	if (scr_con_current == viddef.height)
 		return;
 
 	art_col = 50;
@@ -1266,7 +1266,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/pwrbook%d.lmp", frame);
-		Draw_TransPic(vid.width-art_col, 1, Draw_CachePic(tempStr));
+		Draw_TransPic(viddef.width-art_col, 1, Draw_CachePic(tempStr));
 		art_col += 50;
 	}
 
@@ -1274,7 +1274,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/durhst%d.lmp", frame);
-		Draw_TransPic(vid.width-art_col,1, Draw_CachePic(tempStr));
+		Draw_TransPic(viddef.width-art_col,1, Draw_CachePic(tempStr));
 		art_col += 50;
 	}
 
@@ -1282,7 +1282,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/durshd%d.lmp", frame);
-		Draw_TransPic(vid.width-art_col, 1, Draw_CachePic(tempStr));
+		Draw_TransPic(viddef.width-art_col, 1, Draw_CachePic(tempStr));
 		art_col += 50;
 	}
 
@@ -1674,8 +1674,8 @@ void SB_ViewSizeChanged(void)
 
 static void Sbar_DrawPic(int x, int y, image_t *pic)
 {
-	Draw_PicCropped(x+((vid.width-320)>>1),
-		y+(vid.height-(int)BarHeight), pic);
+	Draw_PicCropped(x+((viddef.width-320)>>1),
+		y+(viddef.height-(int)BarHeight), pic);
 }
 
 //==========================================================================
@@ -1688,8 +1688,8 @@ static void Sbar_DrawPic(int x, int y, image_t *pic)
 
 static void Sbar_DrawTransPic(int x, int y, image_t *pic)
 {
-	Draw_TransPicCropped(x+((vid.width-320)>>1),
-		y+(vid.height-(int)BarHeight), pic);
+	Draw_TransPicCropped(x+((viddef.width-320)>>1),
+		y+(viddef.height-(int)BarHeight), pic);
 }
 
 //==========================================================================
@@ -1700,8 +1700,8 @@ static void Sbar_DrawTransPic(int x, int y, image_t *pic)
 
 /*static void Sbar_DrawCharacter(int x, int y, int num)
 {
-	Draw_Character(x+((vid.width-320)>>1)+4,
-		y+vid.height-(int)BarHeight, num);
+	Draw_Character(x+((viddef.width-320)>>1)+4,
+		y+viddef.height-(int)BarHeight, num);
 }*/
 
 //==========================================================================
@@ -1712,7 +1712,7 @@ static void Sbar_DrawTransPic(int x, int y, image_t *pic)
 
 static void Sbar_DrawString(int x, int y, char *str)
 {
-	Draw_String(x+((vid.width-320)>>1), y+vid.height-(int)BarHeight, str);
+	Draw_String(x+((viddef.width-320)>>1), y+viddef.height-(int)BarHeight, str);
 }
 
 //==========================================================================
@@ -1723,8 +1723,8 @@ static void Sbar_DrawString(int x, int y, char *str)
 
 static void Sbar_DrawSmallString(int x, int y, const char *str)
 {
-	Draw_SmallString(x+((vid.width-320)>>1),
-		y+vid.height-(int)BarHeight, str);
+	Draw_SmallString(x+((viddef.width-320)>>1),
+		y+viddef.height-(int)BarHeight, str);
 }
 
 //==========================================================================

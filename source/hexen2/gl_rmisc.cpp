@@ -302,13 +302,13 @@ void VID_Init()
 
 	if (COM_CheckParm("-scale2d"))
 	{
-		vid.height = 200;
-		vid.width = 320;
+		viddef.height = 200;
+		viddef.width = 320;
 	}
 	else
 	{
-		vid.height = glConfig.vidHeight;
-		vid.width = glConfig.vidWidth;
+		viddef.height = glConfig.vidHeight;
+		viddef.width = glConfig.vidWidth;
 	}
 
 	vid_initialized = true;

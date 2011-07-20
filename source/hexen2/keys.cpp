@@ -122,8 +122,8 @@ void Key_Console (int key)
 	if (key == K_PGUP)
 	{
 		con_backscroll += 2;
-		if (con_backscroll > con_totallines - ((int)vid.height>>3) - 1)
-			con_backscroll = con_totallines - (vid.height>>3) - 1;
+		if (con_backscroll > con_totallines - ((int)viddef.height>>3) - 1)
+			con_backscroll = con_totallines - (viddef.height>>3) - 1;
 		return;
 	}
 
@@ -137,7 +137,7 @@ void Key_Console (int key)
 
 	if (key == K_HOME)
 	{
-		con_backscroll = con_totallines - (vid.height>>3) - 1;
+		con_backscroll = con_totallines - (viddef.height>>3) - 1;
 		return;
 	}
 

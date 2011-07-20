@@ -140,8 +140,8 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = vid.width;
-	conback->height = vid.height;
+	conback->width = viddef.width;
+	conback->height = viddef.height;
 
 	// free loaded console
 	Hunk_FreeToLowMark (start);
@@ -168,10 +168,10 @@ void Draw_Init (void)
 void DoQuad(float x1, float y1, float s1, float t1,
 	float x2, float y2, float s2, float t2)
 {
-	x1 *= (float)glConfig.vidWidth / vid.width;
-	x2 *= (float)glConfig.vidWidth / vid.width;
-	y1 *= (float)glConfig.vidHeight / vid.height;
-	y2 *= (float)glConfig.vidHeight / vid.height;
+	x1 *= (float)glConfig.vidWidth / viddef.width;
+	x2 *= (float)glConfig.vidWidth / viddef.width;
+	y1 *= (float)glConfig.vidHeight / viddef.height;
+	y2 *= (float)glConfig.vidHeight / viddef.height;
 
 	qglBegin(GL_QUADS);
 	qglTexCoord2f(s1, t1);
@@ -315,7 +315,7 @@ void Draw_SmallCharacter (int x, int y, int num)
 	if (y <= -8)
 		return; 		// totally off screen
 
-	if(y >= vid.height)
+	if(y >= viddef.height)
 	{ // Totally off screen
 		return;
 	}
@@ -439,12 +439,12 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 	int height;
 	float th,tl;
 
-	if((x < 0) || (x+pic->width > vid.width))
+	if((x < 0) || (x+pic->width > viddef.width))
 	{
 		Sys_Error("Draw_PicCropped: bad coordinates");
 	}
 
-	if (y >= (int)vid.height || y+pic->height < 0)
+	if (y >= (int)viddef.height || y+pic->height < 0)
 	{ // Totally off screen
 		return;
 	}
@@ -454,9 +454,9 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 
 	// rjr tl/th need to be computed based upon pic->tl and pic->th
 	//     cuz the piece may come from the scrap
-	if(y+pic->height > vid.height)
+	if(y+pic->height > viddef.height)
 	{
-		height = vid.height-y;
+		height = viddef.height-y;
 		tl = 0;
 		th = (height-0.01)/pic->height;
 	}
@@ -487,12 +487,12 @@ void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 	int height;
 	float th,tl;
 
-	if((x < 0) || (x+pic->width > vid.width))
+	if((x < 0) || (x+pic->width > viddef.width))
 	{
 		Sys_Error("Draw_PicCropped: bad coordinates");
 	}
 
-	if (y >= (int)vid.height || y+h < 0)
+	if (y >= (int)viddef.height || y+h < 0)
 	{ // Totally off screen
 		return;
 	}
@@ -502,9 +502,9 @@ void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 
 	// rjr tl/th need to be computed based upon pic->tl and pic->th
 	//     cuz the piece may come from the scrap
-	if(y+pic->height > vid.height)
+	if(y+pic->height > viddef.height)
 	{
-		height = vid.height-y;
+		height = viddef.height-y;
 		tl = 0;
 		th = (height-0.01)/pic->height;
 	}
@@ -546,8 +546,8 @@ void Draw_TransPic (int x, int y, image_t* pic)
 //	unsigned short	*pusdest;
 //	int				v, u;
 
-	if (x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
-		 (unsigned)(y + pic->height) > vid.height)
+	if (x < 0 || (unsigned)(x + pic->width) > viddef.width || y < 0 ||
+		 (unsigned)(y + pic->height) > viddef.height)
 	{
 		Sys_Error ("Draw_TransPic: bad coordinates");
 	}
@@ -678,11 +678,11 @@ void Draw_ConsoleBackground (int lines)
 	int y;
 	int full;
 
-	y = (vid.height * 3) >> 2;
+	y = (viddef.height * 3) >> 2;
 	if (lines > y)
-		Draw_Pic(0, lines-vid.height, conback);
+		Draw_Pic(0, lines-viddef.height, conback);
 	else
-		Draw_AlphaPic (0, lines - vid.height, conback, (float)(1.2 * lines)/y);
+		Draw_AlphaPic (0, lines - viddef.height, conback, (float)(1.2 * lines)/y);
 
 	// hack the version number directly into the pic
 //	y = lines-186;
@@ -691,8 +691,8 @@ void Draw_ConsoleBackground (int lines)
 	{
 		sprintf (ver, "GL HexenWorld %4.2f", VERSION); // JACK: ZOID! Passing
 													   // parms?!
-		x = vid.width - (QStr::Length(ver)*8 + 11) - (vid.width*8/320)*7;
-		x = vid.width - (QStr::Length(ver)*8 + 11);
+		x = viddef.width - (QStr::Length(ver)*8 + 11) - (viddef.width*8/320)*7;
+		x = viddef.width - (QStr::Length(ver)*8 + 11);
 		for (i=0 ; i<QStr::Length(ver) ; i++)
 			Draw_Character (x + i * 8, y, ver[i] | 0x100);
 	}
@@ -757,19 +757,19 @@ void Draw_FadeScreen (void)
 
 //	qglColor4f (248.0/255.0, 220.0/255.0, 120.0/255.0, 0.2);
 	qglColor4f (208.0/255.0, 180.0/255.0, 80.0/255.0, 0.2);
-	DoQuad(0, 0, 0, 0, vid.width, vid.height, 0, 0);
+	DoQuad(0, 0, 0, 0, viddef.width, viddef.height, 0, 0);
 
 	qglColor4f (208.0/255.0, 180.0/255.0, 80.0/255.0, 0.035);
 	for(c=0;c<40;c++)
 	{
-		bx = rand() % vid.width-20;
-		by = rand() % vid.height-20;
+		bx = rand() % viddef.width-20;
+		by = rand() % viddef.height-20;
 		ex = bx + (rand() % 40) + 20;
 		ey = by + (rand() % 40) + 20;
 		if (bx < 0) bx = 0;
 		if (by < 0) by = 0;
-		if (ex > vid.width) ex = vid.width;
-		if (ey > vid.height) ey = vid.height;
+		if (ex > viddef.width) ex = viddef.width;
+		if (ey > viddef.height) ey = viddef.height;
 
 		DoQuad(bx, by, 0, 0, ex, ey, 0, 0);
 	}
@@ -804,7 +804,7 @@ void Draw_BeginDisc (void)
 
 	qglDrawBuffer  (GL_FRONT);
 
-	Draw_Pic (vid.width - 28, 4, draw_disc[index]);
+	Draw_Pic (viddef.width - 28, 4, draw_disc[index]);
 
 	qglDrawBuffer  (GL_BACK);
 }

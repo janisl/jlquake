@@ -90,8 +90,6 @@ image_t*	scr_ram;
 image_t*	scr_net;
 image_t*	scr_turtle;
 
-viddef_t	vid;				// global video state
-
 vrect_t		scr_vrect;
 
 qboolean	scr_disabled_for_loading;
@@ -156,7 +154,7 @@ void SCR_DrawCenterString (void)
 	start = scr_centerstring;
 
 	if (scr_center_lines <= 4)
-		y = vid.height*0.35;
+		y = viddef.height*0.35;
 	else
 		y = 48;
 
@@ -166,7 +164,7 @@ void SCR_DrawCenterString (void)
 		for (l=0 ; l<40 ; l++)
 			if (start[l] == '\n' || !start[l])
 				break;
-		x = (vid.width - l*8)/2;
+		x = (viddef.width - l*8)/2;
 		for (j=0 ; j<l ; j++, x+=8)
 		{
 			Draw_Character (x, y, start[j]);	
@@ -276,30 +274,30 @@ static void SCR_CalcRefdef (void)
 	}
 	size /= 100.0;
 
-	h = vid.height - sb_lines;
+	h = viddef.height - sb_lines;
 
-	scr_vrect.width = vid.width * size;
+	scr_vrect.width = viddef.width * size;
 	if (scr_vrect.width < 96)
 	{
 		size = 96.0 / scr_vrect.width;
 		scr_vrect.width = 96;	// min for icons
 	}
 
-	scr_vrect.height = vid.height * size;
-	if (scr_vrect.height > (int)vid.height - sb_lines)
-		scr_vrect.height = vid.height - sb_lines;
-	if (scr_vrect.height > (int)vid.height)
-			scr_vrect.height = vid.height;
-	scr_vrect.x = (vid.width - scr_vrect.width)/2;
+	scr_vrect.height = viddef.height * size;
+	if (scr_vrect.height > (int)viddef.height - sb_lines)
+		scr_vrect.height = viddef.height - sb_lines;
+	if (scr_vrect.height > (int)viddef.height)
+			scr_vrect.height = viddef.height;
+	scr_vrect.x = (viddef.width - scr_vrect.width)/2;
 	if (full)
 		scr_vrect.y = 0;
 	else 
 		scr_vrect.y = (h - scr_vrect.height)/2;
 
-	r_refdef.x = scr_vrect.x * glConfig.vidWidth / vid.width;
-	r_refdef.y = scr_vrect.y * glConfig.vidHeight / vid.height;
-	r_refdef.width = scr_vrect.width * glConfig.vidWidth / vid.width;
-	r_refdef.height = scr_vrect.height * glConfig.vidHeight / vid.height;
+	r_refdef.x = scr_vrect.x * glConfig.vidWidth / viddef.width;
+	r_refdef.y = scr_vrect.y * glConfig.vidHeight / viddef.height;
+	r_refdef.width = scr_vrect.width * glConfig.vidWidth / viddef.width;
+	r_refdef.height = scr_vrect.height * glConfig.vidHeight / viddef.height;
 	r_refdef.fov_x = scr_fov->value;
 	r_refdef.fov_y = CalcFov (r_refdef.fov_x, r_refdef.width, r_refdef.height);
 }
@@ -435,8 +433,8 @@ void SCR_DrawPause (void)
 		return;
 
 	pic = Draw_CachePic ("gfx/pause.lmp");
-	Draw_Pic ( (vid.width - Draw_GetWidth(pic))/2, 
-		(vid.height - 48 - Draw_GetHeight(pic))/2, pic);
+	Draw_Pic ( (viddef.width - Draw_GetWidth(pic))/2, 
+		(viddef.height - 48 - Draw_GetHeight(pic))/2, pic);
 }
 
 
@@ -454,8 +452,8 @@ void SCR_DrawLoading (void)
 		return;
 		
 	pic = Draw_CachePic ("gfx/loading.lmp");
-	Draw_Pic ( (vid.width - Draw_GetWidth(pic))/2, 
-		(vid.height - 48 - Draw_GetHeight(pic))/2, pic);
+	Draw_Pic ( (viddef.width - Draw_GetWidth(pic))/2, 
+		(viddef.height - 48 - Draw_GetHeight(pic))/2, pic);
 }
 
 
@@ -480,11 +478,11 @@ void SCR_SetUpToDrawConsole (void)
 
 	if (con_forcedup)
 	{
-		scr_conlines = vid.height;		// full screen
+		scr_conlines = viddef.height;		// full screen
 		scr_con_current = scr_conlines;
 	}
 	else if (in_keyCatchers & KEYCATCH_CONSOLE)
-		scr_conlines = vid.height/2;	// half screen
+		scr_conlines = viddef.height/2;	// half screen
 	else
 		scr_conlines = 0;				// none visible
 	
@@ -575,7 +573,7 @@ void SCR_DrawNotifyString (void)
 
 	start = scr_notifystring;
 
-	y = vid.height*0.35;
+	y = viddef.height*0.35;
 
 	do	
 	{
@@ -583,7 +581,7 @@ void SCR_DrawNotifyString (void)
 		for (l=0 ; l<40 ; l++)
 			if (start[l] == '\n' || !start[l])
 				break;
-		x = (vid.width - l*8)/2;
+		x = (viddef.width - l*8)/2;
 		for (j=0 ; j<l ; j++, x+=8)
 			Draw_Character (x, y, start[j]);	
 			
@@ -658,11 +656,11 @@ void SCR_TileClear (void)
 {
 	if (scr_vrect.x > 0) {
 		// left
-		Draw_TileClear (0, 0, scr_vrect.x, vid.height - sb_lines);
+		Draw_TileClear (0, 0, scr_vrect.x, viddef.height - sb_lines);
 		// right
 		Draw_TileClear (scr_vrect.x + scr_vrect.width, 0, 
-			vid.width - scr_vrect.x + scr_vrect.width, 
-			vid.height - sb_lines);
+			viddef.width - scr_vrect.x + scr_vrect.width, 
+			viddef.height - sb_lines);
 	}
 	if (scr_vrect.y > 0) {
 		// top
@@ -673,7 +671,7 @@ void SCR_TileClear (void)
 		Draw_TileClear (scr_vrect.x,
 			scr_vrect.y + scr_vrect.height, 
 			scr_vrect.width, 
-			vid.height - sb_lines - 
+			viddef.height - sb_lines - 
 			(scr_vrect.height + scr_vrect.y));
 	}
 }
