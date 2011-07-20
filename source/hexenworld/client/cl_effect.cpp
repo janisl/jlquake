@@ -2403,7 +2403,6 @@ static int NewEffectEntity(void)
 	EffectEntityCount++;
 	ent = &EffectEntities[counter];
 	Com_Memset(ent, 0, sizeof(*ent));
-	ent->colormap = vid.colormap;
 
 	return counter;
 }

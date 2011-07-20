@@ -52,7 +52,6 @@ struct entity_t
 	vec3_t					angles;	
 	qhandle_t				model;			// 0 = no model
 	int						frame;
-	byte					*colormap;
 	int						skinnum;		// for Alias models
 
 	struct player_info_s	*scoreboard;	// identify player

@@ -50,8 +50,6 @@ client_t	*host_client;			// current client
 
 jmp_buf 	host_abortserver;
 
-byte		*host_colormap;
-
 QCvar*	host_framerate;	// set for slow motion
 QCvar*	host_speeds;			// set for running times
 
@@ -847,10 +845,6 @@ void Host_Init (quakeparms_t *parms)
 	{
 		R_InitTextures();
  
-		host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
-		if (!host_colormap)
-			Sys_Error ("Couldn't load gfx/colormap.lmp");
-
 		IN_Init();
 		VID_Init();
 		Draw_Init();

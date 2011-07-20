@@ -78,7 +78,6 @@ struct entity_t
 	qhandle_t				model;			// 0 = no model
 	int						frame;
 	float					syncbase;		// for client-side animations
-	byte					*colormap, *sourcecolormap;
 	byte					colorshade;
 	int						effects;		// light, particals, etc
 	int						skinnum;		// for Alias models

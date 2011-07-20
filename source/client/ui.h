@@ -15,24 +15,18 @@
 //**
 //**************************************************************************
 
-#ifndef _CLIENT_H
-#define _CLIENT_H
+struct vrect_t
+{
+	int		x;
+	int		y;
+	int		width;
+	int		height;
+};
 
-#include "../core/core.h"
+struct viddef_t
+{
+	int		width;		
+	int		height;
+};
 
-#include "sound_public.h"
-#include "render_public.h"
-#include "input_keycodes.h"
-#include "input_public.h"
-#include "cinematic_public.h"
-#include "ui.h"
-
-extern QCvar*		cl_inGameVideo;
-
-void CL_SharedInit();
-int CL_ScaledMilliseconds();
-
-//	Called by Windows driver.
-void Key_ClearStates();
-
-#endif
+extern viddef_t		viddef;				// global video state

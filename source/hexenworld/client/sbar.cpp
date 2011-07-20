@@ -90,8 +90,6 @@ int sb_lines; // scan lines to draw
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static int sb_updates; // if >= vid.numpages, no update needed
-
 static float BarHeight;
 static float BarTargetHeight;
 static QCvar* BarSpeed;
@@ -306,10 +304,6 @@ void Sbar_Draw(void)
 		trans_level = 0;
 	}
 
-	// Draw always until we fix things
-	//if (sb_updates >= vid.numpages)
-	//	return;
-
 /*	if(BarHeight == BarTargetHeight)
 	{
 		return;
@@ -329,7 +323,6 @@ void Sbar_Draw(void)
 		{
 			BarHeight = BarTargetHeight;
 		}
-		scr_fullupdate = 0;
 	}
 	else if(BarHeight > BarTargetHeight)
 	{
@@ -344,13 +337,7 @@ void Sbar_Draw(void)
 		{
 			BarHeight = BarTargetHeight;
 		}
-		scr_fullupdate = 0;
 	}
-
-
-	scr_copyeverything = 1;
-	sb_updates++;
-
 
 	if(BarHeight < 0)
 	{
@@ -774,17 +761,6 @@ static int CalcAC(void)
 
 //==========================================================================
 //
-// SB_Changed
-//
-//==========================================================================
-
-void SB_Changed(void)
-{
-	sb_updates = 0;	// Update next frame
-}
-
-//==========================================================================
-//
 // Sbar_itoa
 //
 //==========================================================================
@@ -1111,9 +1087,6 @@ void Sbar_DeathmatchOverlay(void)
 		cls.netchan.message.WriteString2("pings");
 	}
 
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
-
 	pic = Draw_CachePic ("gfx/menu/title8.lmp");
 	M_DrawTransPic ((320-Draw_GetWidth(pic))/2, 0, pic);
 
@@ -1333,9 +1306,6 @@ void Sbar_NormalOverlay(void)
 	int				i,y,piece;
 	char			Name[40];
 
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
-
 	piece = 0;
 	y = 40;
 	for(i = 0; i < 8; i++)
@@ -1411,9 +1381,6 @@ void Sbar_SmallDeathmatchOverlay(void)
 	{
 		trans_level = 0;
 	}
-
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
 
 // scores	
 	Sbar_SortFrags (false);
@@ -1638,11 +1605,6 @@ static void DrawActiveArtifacts(void)
 		sprintf(tempStr, "gfx/pwrbook%d.lmp", frame);
 		Draw_TransPic(vid.width-art_col, 1, Draw_CachePic(tempStr));
 		art_col += 50;
-		scr_topupdate = 0;
-	}
-	else if (oldflags & ART_TOMEOFPOWER)
-	{
-		scr_topupdate = 0;
 	}
 
 	if (flag & ART_HASTE)
@@ -1651,11 +1613,6 @@ static void DrawActiveArtifacts(void)
 		sprintf(tempStr, "gfx/durhst%d.lmp", frame);
 		Draw_TransPic(vid.width-art_col,1, Draw_CachePic(tempStr));
 		art_col += 50;
-		scr_topupdate = 0;
-	}
-	else if (oldflags & ART_HASTE)
-	{
-		scr_topupdate = 0;
 	}
 
 	if (flag & ART_INVINCIBILITY)
@@ -1664,11 +1621,6 @@ static void DrawActiveArtifacts(void)
 		sprintf(tempStr, "gfx/durshd%d.lmp", frame);
 		Draw_TransPic(vid.width-art_col, 1, Draw_CachePic(tempStr));
 		art_col += 50;
-		scr_topupdate = 0;
-	}
-	else if (oldflags & ART_INVINCIBILITY)
-	{
-		scr_topupdate = 0;
 	}
 
 	oldflags = flag;
@@ -1689,7 +1641,6 @@ void Inv_Update(qboolean force)
 
 		if (!force) 
 		{
-			scr_fullupdate = 0;
 			inv_flg = false;  // Toggle menu off
 		}
 
@@ -1848,7 +1799,6 @@ static void ShowInfoDown_f(void)
 	S_StartLocalSound("misc/barmovup.wav");
 	BarTargetHeight = BAR_TOTAL_HEIGHT;
 	sb_ShowInfo = true;
-	sb_updates = 0;
 }
 
 //==========================================================================
@@ -1869,7 +1819,6 @@ static void ShowInfoUp_f(void)
 	}
 	S_StartLocalSound("misc/barmovdn.wav");
 	sb_ShowInfo = false;
-	sb_updates = 0;
 }
 
 //==========================================================================
@@ -1894,7 +1843,6 @@ static void InvLeft_f(void)
 			{
 				cl.inv_startpos = cl.inv_selected;
 			}
-			scr_fullupdate = 0;
 		}
 	}
 	else
@@ -1928,7 +1876,6 @@ static void InvRight_f(void)
 				// could probably be just a cl.inv_startpos++, but just in case
 				cl.inv_startpos = cl.inv_selected - INV_MAX_ICON + 1;
 			}
-			scr_fullupdate = 0;
 		}
 	}
 	else
@@ -1955,7 +1902,6 @@ static void InvUse_f(void)
 	//Inv_Update(false);
 	Inv_Update(true);
 	inv_flg = false;
-	scr_fullupdate = 0;
 	in_impulse = 23;
 }
 
@@ -1975,7 +1921,6 @@ static void InvDrop_f(void)
 	//Inv_Update(false);
 	Inv_Update(true);
 	inv_flg = false;
-	scr_fullupdate = 0;
 	in_impulse = 44;
 }
 
@@ -1988,7 +1933,6 @@ static void InvDrop_f(void)
 static void InvOff_f(void)
 {
 	inv_flg = false;
-	scr_fullupdate = 0;
 }
 
 //==========================================================================
@@ -2081,7 +2025,6 @@ void SB_InvReset(void)
 	cl.inv_count = cl.inv_startpos = 0;
 	cl.inv_selected = -1;
 	inv_flg = false;
-	scr_fullupdate = 0;
 }
 
 //==========================================================================

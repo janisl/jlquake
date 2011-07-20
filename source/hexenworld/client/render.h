@@ -101,7 +101,6 @@ struct entity_t
 	vec3_t					angleAdd;		// For clientside rotation stuff
 	qhandle_t				model;			// 0 = no model
 	int						frame;
-	byte					*colormap;
 	byte					colorshade;
 	int						skinnum;		// for Alias models
 	int						scale;			// for Alias models

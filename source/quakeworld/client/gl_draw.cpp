@@ -157,8 +157,8 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = vid.conwidth;
-	conback->height = vid.conheight;
+	conback->width = vid.width;
+	conback->height = vid.height;
 
 	// free loaded console
 	Hunk_FreeToLowMark (start);
@@ -456,7 +456,7 @@ void Draw_ConsoleBackground (int lines)
 #else
 		sprintf (ver, "GL (%4.2f) QuakeWorld", GLQUAKE_VERSION);
 #endif
-		x = vid.conwidth - (QStr::Length(ver)*8 + 11) - (vid.conwidth*8/320)*7;
+		x = vid.width - (QStr::Length(ver)*8 + 11) - (vid.width*8/320)*7;
 		for (i=0 ; i<QStr::Length(ver) ; i++)
 			Draw_Character (x + i * 8, y, ver[i] | 0x80);
 	}
@@ -519,8 +519,6 @@ void Draw_FadeScreen (void)
 	DoQuad(0 ,0, 0, 0, vid.width, vid.height, 0, 0);
 	qglColor4f (1,1,1,1);
 	qglEnable (GL_TEXTURE_2D);
-
-	Sbar_Changed();
 }
 
 //=============================================================================

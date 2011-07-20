@@ -337,7 +337,6 @@ qboolean V_CheckGamma (void)
 	oldgammavalue = r_gamma->value;
 	
 	R_SetColorMappings();
-	vid.recalc_refdef = 1;				// force a surface cache flush
 	
 	return true;
 }
@@ -858,14 +857,6 @@ void V_CalcRefdef (void)
  	else
 		view->model = cl.model_precache[cl.stats[STAT_WEAPON]];
 	view->frame = view_message->weaponframe;
-	if (!view->colorshade)
-	{
-		view->colormap = vid.colormap;
-	}
-	else
-	{
-		view->colormap = vid.colormap;
-	}
 
 	// Place weapon in powered up mode
 	if ((cl.frames[cls.netchan.incoming_sequence&UPDATE_MASK].playerstate[cl.playernum].drawflags & MLS_MASKIN) == MLS_POWERMODE)
@@ -956,8 +947,6 @@ The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
 the entity origin, so any view position inside that will be valid
 ==================
 */
-extern vrect_t scr_vrect;
-
 void V_RenderView (void)
 {
 //	if (cl.simangles[ROLL])

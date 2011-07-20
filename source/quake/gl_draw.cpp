@@ -145,8 +145,8 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("***conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = vid.conwidth;
-	conback->height = vid.conheight;
+	conback->width = vid.width;
+	conback->height = vid.height;
 
 	// free loaded console
 	Hunk_FreeToLowMark(start);
@@ -438,8 +438,6 @@ void Draw_FadeScreen (void)
 	DoQuad(0, 0, 0, 0, vid.width, vid.height, 0, 0);
 	qglColor4f (1,1,1,1);
 	qglEnable (GL_TEXTURE_2D);
-
-	Sbar_Changed();
 }
 
 //=============================================================================

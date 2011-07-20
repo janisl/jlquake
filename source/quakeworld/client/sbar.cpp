@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 
-int			sb_updates;		// if >= vid.numpages, no update needed
-
 #define STAT_MINUS		10	// num frame for '-' stats digit
 image_t		*sb_nums[2][11];
 image_t		*sb_colon, *sb_slash;
@@ -68,7 +66,6 @@ void Sbar_ShowTeamScores (void)
 		return;
 
 	sb_showteamscores = true;
-	sb_updates = 0;
 }
 
 /*
@@ -81,7 +78,6 @@ Tab key up
 void Sbar_DontShowTeamScores (void)
 {
 	sb_showteamscores = false;
-	sb_updates = 0;
 }
 
 /*
@@ -97,7 +93,6 @@ void Sbar_ShowScores (void)
 		return;
 
 	sb_showscores = true;
-	sb_updates = 0;
 }
 
 /*
@@ -110,17 +105,6 @@ Tab key up
 void Sbar_DontShowScores (void)
 {
 	sb_showscores = false;
-	sb_updates = 0;
-}
-
-/*
-===============
-Sbar_Changed
-===============
-*/
-void Sbar_Changed (void)
-{
-	sb_updates = 0;	// update next frame
 }
 
 /*
@@ -536,10 +520,6 @@ void Sbar_DrawInventory (void)
 			
 			} else 
 			Sbar_DrawPic (i*24, -16, sb_weapons[flashon][i]);
-//			Sbar_DrawSubPic (0,0,20,20,i*24, -16, sb_weapons[flashon][i]);
-
-			if (flashon > 1)
-				sb_updates = 0;		// force update to remove flash
 		}
 	}
 
@@ -572,14 +552,8 @@ void Sbar_DrawInventory (void)
 		if (cl.stats[STAT_ITEMS] & (1<<(17+i)))
 		{
 			time = cl.item_gettime[17+i];
-			if (time &&	time > cl.time - 2 && flashon )
-			{	// flash frame
-				sb_updates = 0;
-			}
-			else
+			if (!(time &&	time > cl.time - 2 && flashon ))
 				Sbar_DrawPic (192 + i*16, -16, sb_items[i]);		
-			if (time &&	time > cl.time - 2)
-				sb_updates = 0;
 		}
 
 // sigils
@@ -587,14 +561,8 @@ void Sbar_DrawInventory (void)
 		if (cl.stats[STAT_ITEMS] & (1<<(28+i)))
 		{
 			time = cl.item_gettime[28+i];
-			if (time &&	time > cl.time - 2 && flashon )
-			{	// flash frame
-				sb_updates = 0;
-			}
-			else
+			if (!(time &&	time > cl.time - 2 && flashon ))
 				Sbar_DrawPic (320-32 + i*8, -16, sb_sigil[i]);		
-			if (time &&	time > cl.time - 2)
-				sb_updates = 0;
 		}
 }
 
@@ -704,7 +672,6 @@ void Sbar_DrawFace (void)
 	if (cl.time <= cl.faceanimtime)
 	{
 		anim = 1;
-		sb_updates = 0;		// make sure the anim gets drawn over
 	}
 	else
 		anim = 0;
@@ -771,17 +738,10 @@ void Sbar_Draw (void)
 	char st[512];
 
 	headsup = !(cl_sbar->value || scr_viewsize->value<100);
-	if ((sb_updates >= vid.numpages) && !headsup)
-		return;
 
 	if (scr_con_current == vid.height)
 		return;		// console is full screen
 
-	scr_copyeverything = 1;
-//	scr_fullupdate = 0;
-
-	sb_updates++;
-		
 // top line
 	if (sb_lines > 24)
 	{
@@ -829,9 +789,6 @@ void Sbar_Draw (void)
 	else if (sb_showteamscores)
 		Sbar_TeamOverlay();
 
-	if (sb_showscores || sb_showteamscores || 
-		cl.stats[STAT_HEALTH] <= 0)
-		sb_updates = 0;
 	// clear unused areas in gl
 #if 0
 	{
@@ -911,9 +868,6 @@ void Sbar_TeamOverlay (void)
 		Sbar_DeathmatchOverlay(0);
 		return;
 	}
-
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
 
 	pic = Draw_CachePic ("gfx/ranking.lmp");
 	Draw_Pic (160-Draw_GetWidth(pic)/2, 0, pic);
@@ -1013,9 +967,6 @@ void Sbar_DeathmatchOverlay (int start)
 	}
 
 	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
-
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
 
 	if (!start) {
 		pic = Draw_CachePic ("gfx/ranking.lmp");
@@ -1171,9 +1122,6 @@ void Sbar_MiniDeathmatchOverlay (void)
 
 	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
-
 // scores	
 	Sbar_SortFrags (false);
 	if (vid.width >= 640)
@@ -1299,9 +1247,6 @@ Sbar_IntermissionOverlay
 */
 void Sbar_IntermissionOverlay (void)
 {
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
-
 	if (QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 && !sb_showscores)
 		Sbar_TeamOverlay ();
 	else
@@ -1318,8 +1263,6 @@ Sbar_FinaleOverlay
 void Sbar_FinaleOverlay (void)
 {
 	image_t	*pic;
-
-	scr_copyeverything = 1;
 
 	pic = Draw_CachePic ("gfx/finale.lmp");
 	Draw_TransPic ( (vid.width-Draw_GetWidth(pic))/2, 16, pic);

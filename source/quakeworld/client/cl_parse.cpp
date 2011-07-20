@@ -779,7 +779,6 @@ void CL_ParseStatic (void)
 // copy it to the current state
 	ent->model = cl.model_precache[es.modelindex];
 	ent->frame = es.frame;
-	ent->colormap = vid.colormap;
 	ent->skinnum = es.skinnum;
 
 	VectorCopy (es.origin, ent->origin);
@@ -930,7 +929,6 @@ void CL_ProcessUserInfo (int slot, player_info_t *player)
 	if (cls.state == ca_active)
 		Skin_Find (player);
 
-	Sbar_Changed ();
 	CL_NewTranslation (slot);
 }
 
@@ -1024,11 +1022,8 @@ void CL_SetStat (int stat, int value)
 	if (stat < 0 || stat >= MAX_CL_STATS)
 		Sys_Error ("CL_SetStat: %i is invalid", stat);
 
-	Sbar_Changed ();
-	
 	if (stat == STAT_ITEMS)
 	{	// set flash times
-		Sbar_Changed ();
 		for (j=0 ; j<32 ; j++)
 			if ( (value & (1<<j)) && !(cl.stats[stat] & (1<<j)))
 				cl.item_gettime[j] = cl.time;
@@ -1168,7 +1163,6 @@ void CL_ParseServerMessage (void)
 		case svc_serverdata:
 			Cbuf_Execute ();		// make sure any stuffed commands are done
 			CL_ParseServerData ();
-			vid.recalc_refdef = true;	// leave full screen intermission
 			break;
 			
 		case svc_setangle:
@@ -1195,7 +1189,6 @@ void CL_ParseServerMessage (void)
 			break;
 		
 		case svc_updatefrags:
-			Sbar_Changed ();
 			i = net_message.ReadByte ();
 			if (i >= MAX_CLIENTS)
 				Host_EndGame ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
@@ -1266,7 +1259,6 @@ void CL_ParseServerMessage (void)
 		case svc_intermission:
 			cl.intermission = 1;
 			cl.completed_time = realtime;
-			vid.recalc_refdef = true;	// go to full screen
 			for (i=0 ; i<3 ; i++)
 				cl.simorg[i] = net_message.ReadCoord ();			
 			for (i=0 ; i<3 ; i++)
@@ -1277,7 +1269,6 @@ void CL_ParseServerMessage (void)
 		case svc_finale:
 			cl.intermission = 2;
 			cl.completed_time = realtime;
-			vid.recalc_refdef = true;	// go to full screen
 			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			

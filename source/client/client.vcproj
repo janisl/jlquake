@@ -396,6 +396,10 @@
 				RelativePath=".\system_windows.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\ui_draw.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

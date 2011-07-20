@@ -100,7 +100,6 @@ entity_t	*CL_EntityNum (int num)
 			Host_Error ("CL_EntityNum: %i is an invalid number",num);
 		while (cl.num_entities<=num)
 		{
-			cl_entities[cl.num_entities].colormap = vid.colormap;
 			cl.num_entities++;
 		}
 	}
@@ -498,23 +497,13 @@ void CL_ParseUpdate (int bits)
 	else
 		i = ref_ent->colormap;
 
-	if (num && num <= cl.maxclients)
-		ent->colormap = ent->sourcecolormap = cl.scores[num-1].translations;
-	else
-		ent->sourcecolormap = vid.colormap;
-
-//	ent->colormap = vid.colormap;
-
 	if (!i)
 	{
 		ent->colorshade = i;
-		ent->colormap = ent->sourcecolormap;
 	}
 	else
 	{
 		ent->colorshade = i;
-//		ent->colormap = vid.colormap;
-		ent->colormap = globalcolormap;
 	}
 
 	if(bits & U_SKIN)
@@ -743,7 +732,6 @@ void CL_ParseClientdata (int bits)
 
 	if (cl.items != i)
 	{	// set flash times
-		SB_Changed();
 		for (j=0 ; j<32 ; j++)
 			if ( (i & (1<<j)) && !(cl.items & (1<<j)))
 				cl.item_gettime[j] = cl.time;
@@ -761,13 +749,11 @@ void CL_ParseClientdata (int bits)
 	if (bits & SU_ARMOR)
 	{
 		cl.stats[STAT_ARMOR] = net_message.ReadByte ();
-		SB_Changed();
 	}
 
 	if (bits & SU_WEAPON)
 	{
 		cl.stats[STAT_WEAPON] = net_message.ReadShort ();
-		SB_Changed();
 	}
 
 /*	sc1 = sc2 = 0;
@@ -938,7 +924,6 @@ void CL_ParseStatic (void)
 // copy it to the current state
 	ent->model = cl.model_precache[ent->baseline.modelindex];
 	ent->frame = ent->baseline.frame;
-	ent->colormap = vid.colormap;
 	ent->skinnum = ent->baseline.skin;
 	ent->scale = ent->baseline.scale;
 	ent->effects = ent->baseline.effects;
@@ -1147,7 +1132,6 @@ void CL_ParseServerMessage (void)
 			
 		case svc_serverinfo:
 			CL_ParseServerInfo ();
-			vid.recalc_refdef = true;	// leave intermission full screen
 			break;
 			
 		case svc_setangle:
@@ -1243,7 +1227,6 @@ void CL_ParseServerMessage (void)
 			break;
 		
 		case svc_updatename:
-			SB_Changed();
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
@@ -1251,7 +1234,6 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_updateclass:
-			SB_Changed();
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updateclass > MAX_SCOREBOARD");
@@ -1260,7 +1242,6 @@ void CL_ParseServerMessage (void)
 			break;
 		
 		case svc_updatefrags:
-			SB_Changed();
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
@@ -1272,7 +1253,6 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_updatecolors:
-			SB_Changed();
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD");
@@ -1381,26 +1361,7 @@ void CL_ParseServerMessage (void)
 		case svc_intermission:
 			cl.intermission = net_message.ReadByte();
 			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
 			break;
-
-/*		case svc_finale:
-			cl.intermission = 2;
-			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
-			SCR_CenterPrint (net_message.ReadString2 ());			
-			break;
-
-		case svc_cutscene:
-			cl.intermission = 3;
-			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
-			SCR_CenterPrint (net_message.ReadString2 ());			
-			break;
-
-		case svc_sellscreen:
-			Cmd_ExecuteString ("help", src_command);
-			break;*/
 
 			case svc_set_view_flags:
 				cl.viewent.drawflags |= net_message.ReadByte();
@@ -1651,9 +1612,6 @@ void CL_ParseServerMessage (void)
 					cl.info_mask = net_message.ReadLong();
 				if (sc2 & SC2_OBJ2)
 					cl.info_mask2 = net_message.ReadLong();
-
-				if ((sc1 & SC1_STAT_BAR) || (sc2 & SC2_STAT_BAR))
-					SB_Changed();
 
 				if ((sc1 & SC1_INV) || (sc2 & SC2_INV))
 					SB_InvChanged();

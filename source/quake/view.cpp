@@ -271,7 +271,6 @@ qboolean V_CheckGamma (void)
 	oldgammavalue = r_gamma->value;
 	
 	R_SetColorMappings();
-	vid.recalc_refdef = 1;				// force a surface cache flush
 	
 	return true;
 }
@@ -795,16 +794,6 @@ else
 	if (chase_active->value)
 		Chase_Update ();
 }
-
-/*
-==================
-V_RenderView
-
-The player's clipping box goes from (-16 -16 -24) to (16 16 32) from
-the entity origin, so any view position inside that will be valid
-==================
-*/
-extern vrect_t	scr_vrect;
 
 /*
 =============

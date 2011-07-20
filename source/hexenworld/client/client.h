@@ -49,7 +49,6 @@ typedef struct player_info_s
 	int			playerclass;
 	int			level;
 	int			spectator;
-	byte		translations[VID_GRADES*256];
 	int			modelindex;
 	qboolean	Translated;
 	int			siege_team;

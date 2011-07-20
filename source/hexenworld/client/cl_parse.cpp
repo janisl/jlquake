@@ -648,7 +648,6 @@ void CL_ParseStatic (void)
 // copy it to the current state
 	ent->model = cl.model_precache[es.modelindex];
 	ent->frame = es.frame;
-	ent->colormap = vid.colormap;
 	ent->skinnum = es.skinnum;
 	ent->scale = es.scale;
 	ent->drawflags = es.drawflags;
@@ -1088,7 +1087,6 @@ void CL_ParseServerMessage (void)
 		case svc_serverdata:
 			Cbuf_Execute ();		// make sure any stuffed commands are done
 			CL_ParseServerData ();
-			vid.recalc_refdef = true;	// leave full screen intermission
 			break;
 			
 		case svc_setangle:
@@ -1267,7 +1265,6 @@ void CL_ParseServerMessage (void)
 //			{//MG
 				cl.intermission = net_message.ReadByte();
 				cl.completed_time = realtime;
-				vid.recalc_refdef = true;	// go to full screen
 				break;
 /*			}
 			else
@@ -1286,7 +1283,6 @@ void CL_ParseServerMessage (void)
 		case svc_finale:
 			cl.intermission = 2;
 			cl.completed_time = realtime;
-			vid.recalc_refdef = true;	// go to full screen
 			SCR_CenterPrint (const_cast<char*>(net_message.ReadString2()));
 			break;
 			
@@ -1532,9 +1528,6 @@ void CL_ParseServerMessage (void)
 				cl.v.max_mana = net_message.ReadByte();
 			if (sc2 & SC2_FLAGS)
 				cl.v.flags = net_message.ReadFloat();
-
-			if ((sc1 & SC1_STAT_BAR) || (sc2 & SC2_STAT_BAR))
-				SB_Changed();
 
 			if ((sc1 & SC1_INV) || (sc2 & SC2_INV))
 				SB_InvChanged();

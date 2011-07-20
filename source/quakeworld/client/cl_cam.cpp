@@ -115,7 +115,6 @@ void Cam_Unlock(void)
 		cls.netchan.message.WriteString2("ptrack");
 		autocam = CAM_NONE;
 		locked = false;
-		Sbar_Changed();
 	}
 }
 
@@ -129,7 +128,6 @@ void Cam_Lock(int playernum)
 	spec_track = playernum;
 	cam_forceview = true;
 	locked = false;
-	Sbar_Changed();
 }
 
 q1trace_t Cam_DoTrace(vec3_t vec1, vec3_t vec2)

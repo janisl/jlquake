@@ -55,14 +55,9 @@ console is:
 */
 
 
-// only the refresh window will be updated unless these variables are flagged 
-int			scr_copytop;
-int			scr_copyeverything;
-
 float		scr_con_current;
 float		scr_conlines;		// lines of console to display
 
-float		oldscreensize, oldfov;
 QCvar*		scr_viewsize;
 QCvar*		scr_fov;
 QCvar*		scr_conspeed;
@@ -80,12 +75,6 @@ image_t		*scr_net;
 image_t		*scr_turtle;
 
 float		introTime = 0.0;
-
-int			scr_fullupdate;
-int			scr_topupdate;
-
-int			clearconsole;
-int			clearnotify;
 
 viddef_t	vid;				// global video state
 
@@ -260,7 +249,6 @@ void SCR_DrawCenterString (void)
 
 void SCR_CheckDrawCenterString (void)
 {
-	scr_copytop = 1;
 	if (scr_center_lines > scr_erase_lines)
 		scr_erase_lines = scr_center_lines;
 
@@ -293,14 +281,6 @@ static void SCR_CalcRefdef (void)
 	int		h;
 
 
-	scr_fullupdate = 0;		// force a background redraw
-	vid.recalc_refdef = 0;
-
-// force the status bar to redraw
-	SB_Changed();
-
-//========================================
-	
 // bound viewsize
 	if (scr_viewsize->value < 30)
 		Cvar_Set ("viewsize","30");
@@ -378,7 +358,6 @@ void SCR_SizeUp_f (void)
 {
 	Cvar_SetValue ("viewsize",scr_viewsize->value+10);
 	SB_ViewSizeChanged();
-	vid.recalc_refdef = 1;
 }
 
 
@@ -393,7 +372,6 @@ void SCR_SizeDown_f (void)
 {
 	Cvar_SetValue ("viewsize",scr_viewsize->value-10);
 	SB_ViewSizeChanged();
-	vid.recalc_refdef = 1;
 }
 
 //============================================================================
@@ -633,16 +611,6 @@ void SCR_SetUpToDrawConsole (void)
 		if (scr_conlines < scr_con_current)
 			scr_con_current = scr_conlines;
 	}
-
-	if (clearconsole++ < vid.numpages)
-	{
-		SB_Changed();
-	}
-	else if (clearnotify++ < vid.numpages)
-	{
-	}
-	else
-		con_notifylines = 0;
 }
 	
 /*
@@ -654,9 +622,7 @@ void SCR_DrawConsole (void)
 {
 	if (scr_con_current)
 	{
-		scr_copyeverything = 1;
 		Con_DrawConsole (scr_con_current, true);
-		clearconsole = 0;
 	}
 	else
 	{
@@ -686,14 +652,11 @@ void SCR_BeginLoadingPlaque (void)
 	scr_con_current = 0;
 
 	scr_drawloading = true;
-	scr_fullupdate = 0;
-	SB_Changed();
 	SCR_UpdateScreen ();
 	scr_drawloading = false;
 
 	scr_disabled_for_loading = true;
 	scr_disabled_time = realtime;
-	scr_fullupdate = 0;
 }
 
 /*
@@ -705,7 +668,6 @@ SCR_EndLoadingPlaque
 void SCR_EndLoadingPlaque (void)
 {
 	scr_disabled_for_loading = false;
-	scr_fullupdate = 0;
 	Con_ClearNotify ();
 }
 
@@ -734,8 +696,6 @@ int SCR_ModalMessage (const char *text)
 
 	scr_notifystring = text;
  
-// draw a fresh screen
-	scr_fullupdate = 0;
 	scr_drawdialog = true;
 	SCR_UpdateScreen ();
 	scr_drawdialog = false;
@@ -749,7 +709,6 @@ int SCR_ModalMessage (const char *text)
 		IN_ProcessEvents();
 	} while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE);
 
-	scr_fullupdate = 0;
 	SCR_UpdateScreen ();
 
 	return key_lastpress == 'y';
@@ -909,9 +868,6 @@ void SB_IntermissionOverlay(void)
 	const char	*message;
 	char		temp[80];
 
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
-
 	if (cl.gametype == GAME_DEATHMATCH)
 	{
 		Sbar_DeathmatchOverlay ();
@@ -1042,8 +998,6 @@ void SB_FinaleOverlay(void)
 {
 	image_t	*pic;
 
-	scr_copyeverything = 1;
-
 	pic = Draw_CachePic("gfx/finale.lmp");
 	Draw_TransPic((vid.width-pic->width)/2, 16, pic);
 }
@@ -1061,9 +1015,6 @@ needs almost the entire 256k of stack space!
 */
 void SCR_UpdateScreen (void)
 {
-	scr_copytop = 0;
-	scr_copyeverything = 0;
-
 	if (scr_disabled_for_loading)
 	{
 		if (realtime - scr_disabled_time > 60)
@@ -1084,8 +1035,7 @@ void SCR_UpdateScreen (void)
 	//
 	// determine size of refresh window
 	//
-	if (vid.recalc_refdef)
-		SCR_CalcRefdef ();
+	SCR_CalcRefdef ();
 
 //
 // do 3D refresh drawing, and then update the screen
@@ -1109,7 +1059,6 @@ void SCR_UpdateScreen (void)
 		SB_Draw();
 		Draw_FadeScreen ();
 		SCR_DrawNotifyString ();
-		scr_copyeverything = true;
 	}
 	else if (scr_drawloading)
 	{

@@ -51,14 +51,9 @@ console is:
 
 */
 
-// only the refresh window will be updated unless these variables are flagged 
-int                     scr_copytop;
-int                     scr_copyeverything;
-
 float           scr_con_current;
 float           scr_conlines;           // lines of console to display
 
-float           oldscreensize, oldfov;
 QCvar*          scr_viewsize;
 QCvar*          scr_fov;
 QCvar*          scr_conspeed;
@@ -67,7 +62,6 @@ QCvar*          scr_showram;
 QCvar*          scr_showturtle;
 QCvar*          scr_showpause;
 QCvar*          scr_printspeed;
-QCvar*		gl_triplebuffer;
 QCvar*	show_fps;
 extern  QCvar*	crosshair;
 
@@ -76,12 +70,6 @@ qboolean        scr_initialized;                // ready to draw
 image_t          *scr_ram;
 image_t          *scr_net;
 image_t          *scr_turtle;
-
-int                     scr_fullupdate;
-int						scr_topupdate;
-
-int                     clearconsole;
-int                     clearnotify;
 
 viddef_t        vid;                            // global video state
 
@@ -199,7 +187,6 @@ void SCR_DrawCenterString (void)
 
 void SCR_CheckDrawCenterString (void)
 {
-	scr_copytop = 1;
 	if (scr_center_lines > scr_erase_lines)
 		scr_erase_lines = scr_center_lines;
 
@@ -228,9 +215,6 @@ static void SCR_CalcRefdef (void)
 	float           size;
 	int             h;
 
-
-	scr_fullupdate = 0;             // force a background redraw
-	vid.recalc_refdef = 0;
 
 // force the status bar to redraw
 	Sbar_Changed ();
@@ -315,7 +299,6 @@ void SCR_SizeUp_f (void)
 	if (scr_viewsize->value < 110)
 	{
 		Cvar_SetValue ("viewsize",scr_viewsize->value+10);
-		vid.recalc_refdef = 1;
 		SB_ViewSizeChanged();
 	}
 }
@@ -331,7 +314,6 @@ Keybinding command
 void SCR_SizeDown_f (void)
 {
 	Cvar_SetValue ("viewsize",scr_viewsize->value-10);
-	vid.recalc_refdef = 1;
 	SB_ViewSizeChanged();
 }
 
@@ -352,7 +334,6 @@ void SCR_Init (void)
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
 	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
-	gl_triplebuffer = Cvar_Get("gl_triplebuffer", "0", CVAR_ARCHIVE);
 
 //
 // register our commands
@@ -565,16 +546,6 @@ void SCR_SetUpToDrawConsole (void)
 		if (scr_conlines < scr_con_current)
 			scr_con_current = scr_conlines;
 	}
-
-	if (clearconsole++ < vid.numpages)
-	{
-		Sbar_Changed ();
-	}
-	else if (clearnotify++ < vid.numpages)
-	{
-	}
-	else
-		con_notifylines = 0;
 }
 	
 /*
@@ -586,9 +557,7 @@ void SCR_DrawConsole (void)
 {
 	if (scr_con_current)
 	{
-		scr_copyeverything = 1;
 		Con_DrawConsole (scr_con_current);
-		clearconsole = 0;
 	}
 	else
 	{
@@ -621,7 +590,6 @@ int SCR_ModalMessage (const char *text)
 	scr_notifystring = text;
  
 // draw a fresh screen
-	scr_fullupdate = 0;
 	scr_drawdialog = true;
 	SCR_UpdateScreen ();
 	scr_drawdialog = false;
@@ -635,7 +603,6 @@ int SCR_ModalMessage (const char *text)
 		IN_ProcessEvents();
 	} while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE);
 
-	scr_fullupdate = 0;
 	SCR_UpdateScreen ();
 
 	return key_lastpress == 'y';
@@ -665,7 +632,7 @@ void SCR_BringDownConsole (void)
 
 void SCR_TileClear (void)
 {
-	if (vid.conwidth > 320)
+	if (vid.width > 320)
 	{
 		if (scr_vrect.x > 0)
 		{
@@ -714,8 +681,6 @@ void SCR_TileClear (void)
 		}
 	}
 }
-
-float oldsbar = 0;
 
 // This is also located in screen.c
 #define PLAQUE_WIDTH 26
@@ -774,9 +739,6 @@ void SB_IntermissionOverlay(void)
 	int		elapsed, size, bx, by, i;
 	const char	*message;
 	char	temp[80];
-
-	scr_copyeverything = 1;
-	scr_fullupdate = 0;
 
 //rjr	if (cl.gametype == GAME_DEATHMATCH)
 	{
@@ -893,8 +855,6 @@ void SB_FinaleOverlay(void)
 {
 	image_t	*pic;
 
-	scr_copyeverything = 1;
-
 	pic = Draw_CachePic("gfx/finale.lmp");
 	Draw_TransPic((vid.width-pic->width)/2, 16, pic);
 }
@@ -912,11 +872,6 @@ needs almost the entire 256k of stack space!
 */
 void SCR_UpdateScreen (void)
 {
-    vid.numpages = 2 + (gl_triplebuffer ? gl_triplebuffer->value : 0);
-
-	scr_copytop = 0;
-	scr_copyeverything = 0;
-
 	if (scr_disabled_for_loading)
 	{
 		if (realtime - scr_disabled_time > 60)
@@ -932,16 +887,10 @@ void SCR_UpdateScreen (void)
 		return;                         // not initialized yet
 
 
-	if (oldsbar != cl_sbar->value) {
-		oldsbar = cl_sbar->value;
-		vid.recalc_refdef = true;
-	}
-
 	//
 	// determine size of refresh window
 	//
-	if (vid.recalc_refdef)
-		SCR_CalcRefdef ();
+	SCR_CalcRefdef ();
 
 //
 // do 3D refresh drawing, and then update the screen
@@ -968,7 +917,6 @@ void SCR_UpdateScreen (void)
 		Sbar_Draw ();
 		Draw_FadeScreen ();
 		SCR_DrawNotifyString ();
-		scr_copyeverything = true;
 	}
 	else if (scr_drawloading)
 	{

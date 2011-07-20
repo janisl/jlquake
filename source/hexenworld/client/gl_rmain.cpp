@@ -119,10 +119,6 @@ R_SetupFrame
 */
 void R_SetupFrame (void)
 {
-	int				edgecount;
-	vrect_t			vrect;
-	float			w, h;
-
 // don't allow cheats in multiplayer
 	r_fullbright->value = 0;
 
@@ -190,8 +186,6 @@ r_refdef must be set before the first call
 */
 void R_RenderView (void)
 {
-	vec3_t t;
-
 	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
 		float Val = d_lightstylevalue[i] / 256.0;

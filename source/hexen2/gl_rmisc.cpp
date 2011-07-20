@@ -9,8 +9,6 @@ unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
 
-byte globalcolormap[VID_GRADES*256];
-
 qboolean	vid_initialized = false;
 
 /*
@@ -53,9 +51,6 @@ R_Init
 */
 void R_Init (void)
 {	
-	extern byte *hunk_base;
-	int counter;
-
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
@@ -225,8 +220,6 @@ void R_TimeRefresh_f (void)
 {
 	int			i;
 	float		start, stop, time;
-	int			startangle;
-	vrect_t		vr;
 
 	qglDrawBuffer  (GL_FRONT);
 	qglFinish ();
@@ -309,19 +302,14 @@ void VID_Init()
 
 	if (COM_CheckParm("-scale2d"))
 	{
-		vid.height = vid.conheight = 200;
-		vid.width = vid.conwidth = 320;
+		vid.height = 200;
+		vid.width = 320;
 	}
 	else
 	{
-		vid.height = vid.conheight = glConfig.vidHeight;
-		vid.width = vid.conwidth = glConfig.vidWidth;
+		vid.height = glConfig.vidHeight;
+		vid.width = glConfig.vidWidth;
 	}
-	vid.numpages = 2;
-
-	vid.recalc_refdef = 1;
-
-	vid.colormap = host_colormap;
 
 	vid_initialized = true;
 

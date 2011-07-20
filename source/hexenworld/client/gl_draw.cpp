@@ -140,8 +140,8 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = vid.conwidth;
-	conback->height = vid.conheight;
+	conback->width = vid.width;
+	conback->height = vid.height;
 
 	// free loaded console
 	Hunk_FreeToLowMark (start);
@@ -691,8 +691,8 @@ void Draw_ConsoleBackground (int lines)
 	{
 		sprintf (ver, "GL HexenWorld %4.2f", VERSION); // JACK: ZOID! Passing
 													   // parms?!
-		x = vid.conwidth - (QStr::Length(ver)*8 + 11) - (vid.conwidth*8/320)*7;
-		x = vid.conwidth - (QStr::Length(ver)*8 + 11);
+		x = vid.width - (QStr::Length(ver)*8 + 11) - (vid.width*8/320)*7;
+		x = vid.width - (QStr::Length(ver)*8 + 11);
 		for (i=0 ; i<QStr::Length(ver) ; i++)
 			Draw_Character (x + i * 8, y, ver[i] | 0x100);
 	}
@@ -778,8 +778,6 @@ void Draw_FadeScreen (void)
 	glEnable (GL_TEXTURE_2D);
 
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	SB_Changed();
 }
 
 //=============================================================================

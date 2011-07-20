@@ -520,7 +520,6 @@ void CL_ParseClientdata (int bits)
 
 	if (cl.items != i)
 	{	// set flash times
-		Sbar_Changed ();
 		for (j=0 ; j<32 ; j++)
 			if ( (i & (1<<j)) && !(cl.items & (1<<j)))
 				cl.item_gettime[j] = cl.time;
@@ -542,7 +541,6 @@ void CL_ParseClientdata (int bits)
 	if (cl.stats[STAT_ARMOR] != i)
 	{
 		cl.stats[STAT_ARMOR] = i;
-		Sbar_Changed ();
 	}
 
 	if (bits & SU_WEAPON)
@@ -552,21 +550,18 @@ void CL_ParseClientdata (int bits)
 	if (cl.stats[STAT_WEAPON] != i)
 	{
 		cl.stats[STAT_WEAPON] = i;
-		Sbar_Changed ();
 	}
 	
 	i = net_message.ReadShort ();
 	if (cl.stats[STAT_HEALTH] != i)
 	{
 		cl.stats[STAT_HEALTH] = i;
-		Sbar_Changed ();
 	}
 
 	i = net_message.ReadByte ();
 	if (cl.stats[STAT_AMMO] != i)
 	{
 		cl.stats[STAT_AMMO] = i;
-		Sbar_Changed ();
 	}
 
 	for (i=0 ; i<4 ; i++)
@@ -575,7 +570,6 @@ void CL_ParseClientdata (int bits)
 		if (cl.stats[STAT_SHELLS+i] != j)
 		{
 			cl.stats[STAT_SHELLS+i] = j;
-			Sbar_Changed ();
 		}
 	}
 
@@ -586,7 +580,6 @@ void CL_ParseClientdata (int bits)
 		if (cl.stats[STAT_ACTIVEWEAPON] != i)
 		{
 			cl.stats[STAT_ACTIVEWEAPON] = i;
-			Sbar_Changed ();
 		}
 	}
 	else
@@ -594,7 +587,6 @@ void CL_ParseClientdata (int bits)
 		if (cl.stats[STAT_ACTIVEWEAPON] != (1<<i))
 		{
 			cl.stats[STAT_ACTIVEWEAPON] = (1<<i);
-			Sbar_Changed ();
 		}
 	}
 }
@@ -606,33 +598,9 @@ CL_NewTranslation
 */
 void CL_NewTranslation (int slot)
 {
-	int		i, j;
-	int		top, bottom;
-	byte	*dest, *source;
-	
 	if (slot > cl.maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
-	dest = cl.scores[slot].translations;
-	source = vid.colormap;
-	Com_Memcpy(dest, vid.colormap, sizeof(cl.scores[slot].translations));
-	top = cl.scores[slot].colors & 0xf0;
-	bottom = (cl.scores[slot].colors &15)<<4;
 	R_TranslatePlayerSkin (slot);
-
-	for (i=0 ; i<VID_GRADES ; i++, dest += 256, source+=256)
-	{
-		if (top < 128)	// the artists made some backwards ranges.  sigh.
-			Com_Memcpy(dest + TOP_RANGE, source + top, 16);
-		else
-			for (j=0 ; j<16 ; j++)
-				dest[TOP_RANGE+j] = source[top+15-j];
-				
-		if (bottom < 128)
-			Com_Memcpy(dest + BOTTOM_RANGE, source + bottom, 16);
-		else
-			for (j=0 ; j<16 ; j++)
-				dest[BOTTOM_RANGE+j] = source[bottom+15-j];		
-	}
 }
 
 /*
@@ -781,7 +749,6 @@ void CL_ParseServerMessage (void)
 			
 		case svc_serverinfo:
 			CL_ParseServerInfo ();
-			vid.recalc_refdef = true;	// leave intermission full screen
 			break;
 			
 		case svc_setangle:
@@ -811,7 +778,6 @@ void CL_ParseServerMessage (void)
 			break;
 		
 		case svc_updatename:
-			Sbar_Changed ();
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
@@ -819,7 +785,6 @@ void CL_ParseServerMessage (void)
 			break;
 			
 		case svc_updatefrags:
-			Sbar_Changed ();
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatefrags > MAX_SCOREBOARD");
@@ -827,7 +792,6 @@ void CL_ParseServerMessage (void)
 			break;			
 
 		case svc_updatecolors:
-			Sbar_Changed ();
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatecolors > MAX_SCOREBOARD");
@@ -905,20 +869,17 @@ void CL_ParseServerMessage (void)
 		case svc_intermission:
 			cl.intermission = 1;
 			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
 			break;
 
 		case svc_finale:
 			cl.intermission = 2;
 			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
 			SCR_CenterPrint (net_message.ReadString2 ());			
 			break;
 
 		case svc_cutscene:
 			cl.intermission = 3;
 			cl.completed_time = cl.time;
-			vid.recalc_refdef = true;	// go to full screen
 			SCR_CenterPrint (net_message.ReadString2 ());			
 			break;
 

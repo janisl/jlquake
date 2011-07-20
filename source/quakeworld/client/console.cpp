@@ -39,7 +39,6 @@ float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 								// for transparent notify lines
 
 int			con_vislines;
-int			con_notifylines;		// scan lines to clear for notify lines
 
 qboolean	con_debuglog;
 
@@ -498,9 +497,6 @@ void Con_DrawNotify (void)
 		if (time > con_notifytime->value)
 			continue;
 		text = con->text + (i % con_totallines)*con_linewidth;
-		
-		clearnotify = 0;
-		scr_copytop = 1;
 
 		for (x = 0 ; x < con_linewidth ; x++)
 			Draw_Character ( (x+1)<<3, v, text[x]);
@@ -511,9 +507,6 @@ void Con_DrawNotify (void)
 
 	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		clearnotify = 0;
-		scr_copytop = 1;
-	
 		if (chat_team)
 		{
 			Draw_String (8, v, "say_team:");
@@ -537,9 +530,6 @@ void Con_DrawNotify (void)
 		Draw_Character ( (x+skip)<<3, v, 10+((int)(realtime*con_cursorspeed)&1));
 		v += 8;
 	}
-	
-	if (v > con_notifylines)
-		con_notifylines = v;
 }
 
 /*

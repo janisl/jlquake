@@ -115,10 +115,6 @@ R_SetupFrame
 */
 void R_SetupFrame (void)
 {
-	int				edgecount;
-	vrect_t			vrect;
-	float			w, h;
-
 // don't allow cheats in multiplayer
 	if (cl.maxclients > 1)
 		Cvar_Set ("r_fullbright", "0");
@@ -185,8 +181,6 @@ r_refdef must be set before the first call
 */
 void R_RenderView (void)
 {
-	double	time1, time2;
-
 	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
 		float Val = d_lightstylevalue[i] / 256.0;

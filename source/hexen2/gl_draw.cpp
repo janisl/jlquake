@@ -167,8 +167,8 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = vid.conwidth;
-	conback->height = vid.conheight;
+	conback->width = vid.width;
+	conback->height = vid.height;
 
 	//
 	// get the other pics we need
@@ -649,8 +649,6 @@ void Draw_FadeScreen (void)
 	qglEnable (GL_TEXTURE_2D);
 
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
-
-	SB_Changed();
 }
 
 //=============================================================================

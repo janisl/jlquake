@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 refexport_t	re;
 
-viddef_t	viddef;				// global video state; used by other modules
 qboolean	reflib_active = 0;
 
 void GL_UpdateSwapInterval( void )

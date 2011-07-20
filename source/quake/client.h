@@ -41,7 +41,6 @@ typedef struct
 	float	entertime;
 	int		frags;
 	int		colors;			// two 4 bit fields
-	byte	translations[VID_GRADES*256];
 } scoreboard_t;
 
 typedef struct

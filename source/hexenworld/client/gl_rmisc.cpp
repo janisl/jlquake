@@ -5,8 +5,6 @@
 
 byte *playerTranslation;
 
-byte globalcolormap[VID_GRADES*256];
-
 unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
@@ -51,9 +49,6 @@ R_Init
 */
 void R_Init (void)
 {
-	extern byte *hunk_base;
-	int			counter;
-
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
@@ -243,8 +238,6 @@ void R_TimeRefresh_f (void)
 {
 	int			i;
 	float		start, stop, time;
-	int			startangle;
-	vrect_t		vr;
 
 	if (cls.state != ca_active)
 	{
@@ -326,35 +319,27 @@ void VID_Init()
 
 	int i;
 	if ((i = COM_CheckParm("-conwidth")) != 0)
-		vid.conwidth = QStr::Atoi(COM_Argv(i+1));
+		vid.width = QStr::Atoi(COM_Argv(i+1));
 	else
-		vid.conwidth = 640;
+		vid.width = 640;
 
-	vid.conwidth &= 0xfff8; // make it a multiple of eight
+	vid.width &= 0xfff8; // make it a multiple of eight
 
-	if (vid.conwidth < 320)
-		vid.conwidth = 320;
+	if (vid.width < 320)
+		vid.width = 320;
 
 	// pick a conheight that matches with correct aspect
-	vid.conheight = vid.conwidth*3 / 4;
+	vid.height = vid.width*3 / 4;
 
 	if ((i = COM_CheckParm("-conheight")) != 0)
-		vid.conheight = QStr::Atoi(COM_Argv(i+1));
-	if (vid.conheight < 200)
-		vid.conheight = 200;
+		vid.height = QStr::Atoi(COM_Argv(i+1));
+	if (vid.height < 200)
+		vid.height = 200;
 
-	if (vid.conheight > glConfig.vidHeight)
-		vid.conheight = glConfig.vidHeight;
-	if (vid.conwidth > glConfig.vidWidth)
-		vid.conwidth = glConfig.vidWidth;
-	vid.width = vid.conwidth;
-	vid.height = vid.conheight;
-
-	vid.numpages = 2;
-
-	vid.recalc_refdef = 1;
-
-	vid.colormap = host_colormap;
+	if (vid.height > glConfig.vidHeight)
+		vid.height = glConfig.vidHeight;
+	if (vid.width > glConfig.vidWidth)
+		vid.width = glConfig.vidWidth;
 
 	tr.registered = true;
 }

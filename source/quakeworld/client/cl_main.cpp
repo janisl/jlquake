@@ -98,8 +98,6 @@ int			host_framecount;
 
 int			host_hunklevel;
 
-byte		*host_colormap;
-
 netadr_t	master_adr;				// address of the master server
 
 QCvar*	host_speeds;
@@ -1420,10 +1418,6 @@ void Host_Init (quakeparms_t *parms)
 
 	R_InitTextures();
  
-	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
-	if (!host_colormap)
-		Sys_Error ("Couldn't load gfx/colormap.lmp");
-
 	IN_Init();
 	VID_Init();
 	Draw_Init();

@@ -1787,7 +1787,6 @@ void M_AdjustSliders (int dir)
 			scr_viewsize->value = 120;
 		Cvar_SetValue ("viewsize", scr_viewsize->value);
 		SB_ViewSizeChanged();
-		vid.recalc_refdef = 1;
 		break;
 	case OPT_GAMMA:	// gamma
 		r_gamma->value += dir * 0.1;
@@ -3759,8 +3758,6 @@ void M_Draw (void)
 
 	if (!m_recursiveDraw)
 	{
-		scr_copyeverything = 1;
-
 		if (scr_con_current)
 		{
 			Draw_ConsoleBackground (vid.height);
@@ -3768,8 +3765,6 @@ void M_Draw (void)
 		}
 		else
 			Draw_FadeScreen ();
-
-		scr_fullupdate = 0;
 	}
 	else
 	{

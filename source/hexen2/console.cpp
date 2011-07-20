@@ -34,8 +34,6 @@ extern	int		key_linepos;
 
 qboolean	con_initialized;
 
-int			con_notifylines;		// scan lines to clear for notify lines
-
 extern void M_Menu_Main_f (void);
 
 /*
@@ -514,9 +512,6 @@ void Con_DrawNotify (void)
 		if (time > con_notifytime->value)
 			continue;
 		text = con_text + (i % con_totallines)*con_linewidth;
-		
-		clearnotify = 0;
-		scr_copytop = 1;
 
 		for (x = 0 ; x < con_linewidth ; x++)
 			Draw_Character ( (x+1)<<3, v, text[x]);
@@ -527,9 +522,6 @@ void Con_DrawNotify (void)
 
 	if (in_keyCatchers & KEYCATCH_MESSAGE)
 	{
-		clearnotify = 0;
-		scr_copytop = 1;
-	
 		x = 0;
 		
 		Draw_String (8, v, "say:");
@@ -541,9 +533,6 @@ void Con_DrawNotify (void)
 		Draw_Character ( (x+5)<<3, v, 10+((int)(realtime*con_cursorspeed)&1));
 		v += 8;
 	}
-	
-	if (v > con_notifylines)
-		con_notifylines = v;
 }
 
 /*
