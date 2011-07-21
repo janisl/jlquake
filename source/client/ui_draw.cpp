@@ -42,6 +42,58 @@ viddef_t	viddef;
 
 //==========================================================================
 //
+//	Draw_CachePic
+//
+//==========================================================================
+
+image_t* Draw_CachePic(const char* path)
+{
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
+	if (!pic)
+	{
+		throw QException(va("Draw_CachePic: failed to load %s", path));
+	}
+	return pic;
+}
+
+//==========================================================================
+//
+//	Draw_CachePicWithTransPixels
+//
+//==========================================================================
+
+image_t* Draw_CachePicWithTransPixels(const char *path, byte* TransPixels)
+{
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
+	if (!pic)
+	{
+		throw QException(va("Draw_CachePic: failed to load %s", path));
+	}
+	return pic;
+}
+
+//==========================================================================
+//
+//	UI_RegisterPic
+//
+//==========================================================================
+
+image_t* UI_RegisterPic(const char* name)
+{
+	if (name[0] != '/' && name[0] != '\\')
+	{
+		char fullname[MAX_QPATH];
+		QStr::Sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
+		return R_FindImageFile(fullname, false, false, GL_CLAMP, true);
+	}
+	else
+	{
+		return R_FindImageFile(name + 1, false, false, GL_CLAMP, true);
+	}
+}
+
+//==========================================================================
+//
 //	UI_AdjustFromVirtualScreen
 //
 //	Adjusted for resolution and screen aspect ratio

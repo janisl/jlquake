@@ -31,6 +31,10 @@ struct viddef_t
 
 extern viddef_t		viddef;				// global video state
 
+image_t* Draw_CachePic(const char* path);
+image_t* Draw_CachePicWithTransPixels(const char* path, byte* TransPixels);
+image_t* UI_RegisterPic(const char* name);
+
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void DoQuad(float x1, float y1, float s1, float t1,
 	float x2, float y2, float s2, float t2);

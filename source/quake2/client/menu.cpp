@@ -319,7 +319,7 @@ void M_DrawCursor( int x, int y, int f )
 		{
 			QStr::Sprintf( cursorname, sizeof( cursorname ), "m_cursor%d", i );
 
-			re.RegisterPic( cursorname );
+			UI_RegisterPic( cursorname );
 		}
 		cached = true;
 	}

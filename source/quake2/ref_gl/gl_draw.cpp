@@ -75,27 +75,6 @@ void Draw_Char (int x, int y, int num)
 
 /*
 =============
-Draw_FindPic
-=============
-*/
-image_t	*Draw_FindPic (const char *name)
-{
-	image_t *gl;
-	char	fullname[MAX_QPATH];
-
-	if (name[0] != '/' && name[0] != '\\')
-	{
-		QStr::Sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
-		gl = R_FindImageFile(fullname, false, false, GL_CLAMP, true);
-	}
-	else
-		gl = R_FindImageFile(name + 1, false, false, GL_CLAMP, true);
-
-	return gl;
-}
-
-/*
-=============
 Draw_GetPicSize
 =============
 */
@@ -103,7 +82,7 @@ void Draw_GetPicSize (int *w, int *h, const char *pic)
 {
 	image_t *gl;
 
-	gl = Draw_FindPic (pic);
+	gl = UI_RegisterPic (pic);
 	if (!gl)
 	{
 		*w = *h = -1;
@@ -122,7 +101,7 @@ void Draw_StretchPic (int x, int y, int w, int h, const char *pic)
 {
 	image_t *gl;
 
-	gl = Draw_FindPic (pic);
+	gl = UI_RegisterPic (pic);
 	if (!gl)
 	{
 		ri.Con_Printf (PRINT_ALL, "Can't find pic: %s\n", pic);
@@ -146,7 +125,7 @@ void Draw_NamedPic (int x, int y, const char *pic)
 {
 	image_t *gl;
 
-	gl = Draw_FindPic (pic);
+	gl = UI_RegisterPic (pic);
 	if (!gl)
 	{
 		ri.Con_Printf (PRINT_ALL, "Can't find pic: %s\n", pic);
@@ -167,7 +146,7 @@ void Draw_TileClear (int x, int y, int w, int h, const char *pic)
 {
 	image_t	*image;
 
-	image = Draw_FindPic (pic);
+	image = UI_RegisterPic (pic);
 	if (!image)
 	{
 		ri.Con_Printf (PRINT_ALL, "Can't find pic: %s\n", pic);

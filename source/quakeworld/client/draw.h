@@ -36,7 +36,6 @@ void Draw_Fill (int x, int y, int w, int h, int c);
 void Draw_FadeScreen (void);
 void Draw_String (int x, int y, const char *str);
 void Draw_Alt_String (int x, int y, char *str);
-image_t *Draw_CachePic (const char *path);
 void Draw_Crosshair(void);
 int Draw_GetWidth(image_t* pic);
 int Draw_GetHeight(image_t* pic);

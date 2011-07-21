@@ -383,7 +383,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 		Com_Memset(ci->weaponmodel, 0, sizeof(ci->weaponmodel));
 		ci->weaponmodel[0] = R_RegisterModel(weapon_filename);
 		ci->skin = re.RegisterSkin (skin_filename);
-		ci->icon = re.RegisterPic (ci->iconname);
+		ci->icon = UI_RegisterPic (ci->iconname);
 	}
 	else
 	{
@@ -450,7 +450,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 
 		// icon file
 		QStr::Sprintf (ci->iconname, sizeof(ci->iconname), "/players/%s/%s_i.pcx", model_name, skin_name);
-		ci->icon = re.RegisterPic (ci->iconname);
+		ci->icon = UI_RegisterPic (ci->iconname);
 	}
 
 	// must have loaded all data types to be valud
@@ -528,7 +528,7 @@ void CL_ParseConfigString (void)
 	else if (i >= CS_IMAGES && i < CS_IMAGES+MAX_MODELS)
 	{
 		if (cl.refresh_prepped)
-			cl.image_precache[i-CS_IMAGES] = re.RegisterPic (cl.configstrings[i]);
+			cl.image_precache[i-CS_IMAGES] = UI_RegisterPic (cl.configstrings[i]);
 	}
 	else if (i >= CS_PLAYERSKINS && i < CS_PLAYERSKINS+MAX_CLIENTS)
 	{

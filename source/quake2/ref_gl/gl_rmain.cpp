@@ -270,8 +270,6 @@ void	R_EndRegistration (void);
 
 void	R_RenderFrame (refdef_t *fd);
 
-image_t	*Draw_FindPic (const char *name);
-
 void	Draw_NamedPic (int x, int y, const char *name);
 void	Draw_Char (int x, int y, int c);
 void	Draw_Fill (int x, int y, int w, int h, int c);
@@ -291,7 +289,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	re.BeginRegistration = R_BeginRegistration;
 	re.RegisterSkin = R_RegisterSkinQ2;
-	re.RegisterPic = Draw_FindPic;
 	re.EndRegistration = R_EndRegistration;
 
 	re.RenderFrame = R_RenderFrame;

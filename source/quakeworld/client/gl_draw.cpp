@@ -54,20 +54,6 @@ image_t		*conback;
 //=============================================================================
 /* Support Routines */
 
-/*
-================
-Draw_CachePic
-================
-*/
-image_t* Draw_CachePic (const char *path)
-{
-	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, NULL);
-	if (!pic)
-		Sys_Error("Draw_CachePic: failed to load %s", path);
-	return pic;
-}
-
-
 void Draw_CharToConback (int num, byte *dest)
 {
 	int		row, col;

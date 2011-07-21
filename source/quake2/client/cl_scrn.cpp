@@ -900,7 +900,7 @@ void SCR_TouchPics (void)
 
 	for (i=0 ; i<2 ; i++)
 		for (j=0 ; j<11 ; j++)
-			re.RegisterPic (sb_nums[i][j]);
+			UI_RegisterPic (sb_nums[i][j]);
 
 	if (crosshair->value)
 	{

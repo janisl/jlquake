@@ -36,38 +36,6 @@ image_t		*conback;
 
 byte		menuplyr_pixels[NUM_CLASSES][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
-image_t *Draw_PicFromFile (char *name)
-{
-	return R_FindImageFile(name, false, false, GL_CLAMP);
-}
-
-/*
-================
-Draw_CachePic
-================
-*/
-image_t* Draw_CachePic (const char *path)
-{
-	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
-	if (!pic)
-		Sys_Error ("Draw_CachePic: failed to load %s", path);
-	return pic;
-}
-
-/*
-================
-Draw_CachePic
-================
-*/
-image_t* Draw_CachePicWithTransPixels(const char *path, byte* TransPixels)
-{
-	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
-	if (!pic)
-		Sys_Error ("Draw_CachePic: failed to load %s", path);
-	return pic;
-}
-
-
 void Draw_CharToConback (int num, byte *dest)
 {
 	int		row, col;
@@ -169,10 +137,10 @@ void Draw_Init (void)
 	for(i=MAX_DISC-1;i>=0;i--)
 	{
 		sprintf(temp,"gfx/menu/skull%d.lmp",i);
-		draw_disc[i] = Draw_PicFromFile (temp);
+		draw_disc[i] = Draw_CachePic(temp);
 	}
 
-	draw_backtile = Draw_PicFromFile ("gfx/menu/backtile.lmp");
+	draw_backtile = Draw_CachePic("gfx/menu/backtile.lmp");
 }
 
 /*

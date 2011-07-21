@@ -188,10 +188,10 @@ R_RegisterModel("models/objects/gibs/bone2/tris.md2");
 // RAFAEL
 // R_RegisterModel("models/objects/blaser/tris.md2");
 
-re.RegisterPic ("w_machinegun");
-re.RegisterPic ("a_bullets");
-re.RegisterPic ("i_health");
-re.RegisterPic ("a_grenades");
+UI_RegisterPic ("w_machinegun");
+UI_RegisterPic ("a_bullets");
+UI_RegisterPic ("i_health");
+UI_RegisterPic ("a_grenades");
 
 //ROGUE
 	cl_mod_explo4_big = R_RegisterModel("models/objects/r_explode2/tris.md2");

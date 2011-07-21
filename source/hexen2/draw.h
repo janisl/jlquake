@@ -32,7 +32,5 @@ void Draw_FadeScreen (void);
 void Draw_String (int x, int y, const char *str);
 void Draw_SmallCharacter(int x, int y, int num);
 void Draw_SmallString(int x, int y, const char *str);
-image_t *Draw_CachePic (const char *path);
-image_t* Draw_CachePicWithTransPixels(const char *path, byte* TransPixels);
 int Draw_GetWidth(image_t* pic);
 int Draw_GetHeight(image_t* pic);
