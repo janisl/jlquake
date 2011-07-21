@@ -125,7 +125,7 @@ void M_PrintWhite (int cx, int cy, const char *str)
 
 void M_DrawTransPic (int x, int y, image_t *pic)
 {
-	Draw_TransPic (x + ((viddef.width - 320)>>1), y, pic);
+	UI_DrawPic (x + ((viddef.width - 320)>>1), y, pic);
 }
 
 void M_DrawPic (int x, int y, image_t *pic)

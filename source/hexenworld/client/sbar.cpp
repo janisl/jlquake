@@ -1004,7 +1004,7 @@ void Sbar_IntermissionNumber (int x, int y, int num, int digits, int color)
 		else
 			frame = *ptr -'0';
 
-		Draw_TransPic (x,y,sb_nums[frame]);
+		UI_DrawPic (x,y,sb_nums[frame]);
 		x += 24;
 		ptr++;
 	}
@@ -1548,7 +1548,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+(int)(cl.time*16)%16;
 		sprintf(tempStr, "gfx/rngtrn%d.lmp", frame);
-		Draw_TransPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
 		ring_row += 33;
 	}
 
@@ -1556,7 +1556,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+(int)(cl.time*16)%16;
 		sprintf(tempStr, "gfx/rngreg%d.lmp", frame);
-		Draw_TransPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
 		ring_row += 33;
 	}
 */
@@ -1565,7 +1565,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+(int)(cl.time*16)%16;
 		sprintf(tempStr, "gfx/rngwtr%d.lmp", frame);
-		Draw_TransPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
 		ring_row += 33;
 	}
 
@@ -1573,7 +1573,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+(int)(cl.time*16)%16;
 		sprintf(tempStr, "gfx/rngfly%d.lmp", frame);
-		Draw_TransPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
 		ring_row += 33;
 	}
 }
@@ -1603,7 +1603,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+(int)(cl.time*16)%16;
 		sprintf(tempStr, "gfx/pwrbook%d.lmp", frame);
-		Draw_TransPic(viddef.width-art_col, 1, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width-art_col, 1, Draw_CachePic(tempStr));
 		art_col += 50;
 	}
 
@@ -1611,7 +1611,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+(int)(cl.time*16)%16;
 		sprintf(tempStr, "gfx/durhst%d.lmp", frame);
-		Draw_TransPic(viddef.width-art_col,1, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width-art_col,1, Draw_CachePic(tempStr));
 		art_col += 50;
 	}
 
@@ -1619,7 +1619,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+(int)(cl.time*16)%16;
 		sprintf(tempStr, "gfx/durshd%d.lmp", frame);
-		Draw_TransPic(viddef.width-art_col, 1, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width-art_col, 1, Draw_CachePic(tempStr));
 		art_col += 50;
 	}
 

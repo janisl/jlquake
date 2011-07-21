@@ -537,7 +537,7 @@ void SCR_DrawLoading (void)
 		
 	pic = Draw_CachePic ("gfx/menu/loading.lmp");
 	offset = (viddef.width - pic->width)/2;
-	Draw_TransPic (offset , 0, pic);
+	UI_DrawPic (offset , 0, pic);
 
 	if (loading_stage == 0)
 		return;
@@ -997,7 +997,7 @@ void SB_FinaleOverlay(void)
 	image_t	*pic;
 
 	pic = Draw_CachePic("gfx/finale.lmp");
-	Draw_TransPic((viddef.width-pic->width)/2, 16, pic);
+	UI_DrawPic((viddef.width-pic->width)/2, 16, pic);
 }
 
 /*

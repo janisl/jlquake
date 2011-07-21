@@ -132,7 +132,7 @@ void M_PrintWhite (int cx, int cy, const char *str)
 
 void M_DrawTransPic (int x, int y, image_t *pic)
 {
-	Draw_TransPic (x + ((viddef.width - 320)>>1), y, pic);
+	UI_DrawPic (x + ((viddef.width - 320)>>1), y, pic);
 }
 
 void M_DrawPic (int x, int y, image_t *pic)
@@ -166,13 +166,6 @@ void M_BuildTranslationTable(int top, int bottom)
 		for (j=0 ; j<16 ; j++)
 			dest[BOTTOM_RANGE+j] = source[bottom+15-j];		
 }
-
-
-void M_DrawTransPicTranslate (int x, int y, image_t *pic)
-{
-	Draw_TransPicTranslate (x + ((viddef.width - 320)>>1), y, pic, translationTable);
-}
-
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {

@@ -259,9 +259,9 @@ Sbar_DrawTransPic
 void Sbar_DrawTransPic (int x, int y, image_t *pic)
 {
 	if (cl.gametype == GAME_DEATHMATCH)
-		Draw_TransPic (x /*+ ((viddef.width - 320)>>1)*/, y + (viddef.height-SBAR_HEIGHT), pic);
+		UI_DrawPic (x /*+ ((viddef.width - 320)>>1)*/, y + (viddef.height-SBAR_HEIGHT), pic);
 	else
-		Draw_TransPic (x + ((viddef.width - 320)>>1), y + (viddef.height-SBAR_HEIGHT), pic);
+		UI_DrawPic (x + ((viddef.width - 320)>>1), y + (viddef.height-SBAR_HEIGHT), pic);
 }
 
 /*
@@ -1017,7 +1017,7 @@ void Sbar_IntermissionNumber (int x, int y, int num, int digits, int color)
 		else
 			frame = *ptr -'0';
 
-		Draw_TransPic (x,y,sb_nums[color][frame]);
+		UI_DrawPic (x,y,sb_nums[color][frame]);
 		x += 24;
 		ptr++;
 	}
@@ -1221,22 +1221,22 @@ void Sbar_IntermissionOverlay (void)
 	UI_DrawPic (64, 24, pic);
 
 	pic = Draw_CachePic ("gfx/inter.lmp");
-	Draw_TransPic (0, 56, pic);
+	UI_DrawPic (0, 56, pic);
 
 // time
 	dig = cl.completed_time/60;
 	Sbar_IntermissionNumber (160, 64, dig, 3, 0);
 	num = cl.completed_time - dig*60;
-	Draw_TransPic (234,64,sb_colon);
-	Draw_TransPic (246,64,sb_nums[0][num/10]);
-	Draw_TransPic (266,64,sb_nums[0][num%10]);
+	UI_DrawPic (234,64,sb_colon);
+	UI_DrawPic (246,64,sb_nums[0][num/10]);
+	UI_DrawPic (266,64,sb_nums[0][num%10]);
 
 	Sbar_IntermissionNumber (160, 104, cl.stats[STAT_SECRETS], 3, 0);
-	Draw_TransPic (232,104,sb_slash);
+	UI_DrawPic (232,104,sb_slash);
 	Sbar_IntermissionNumber (240, 104, cl.stats[STAT_TOTALSECRETS], 3, 0);
 
 	Sbar_IntermissionNumber (160, 144, cl.stats[STAT_MONSTERS], 3, 0);
-	Draw_TransPic (232,144,sb_slash);
+	UI_DrawPic (232,144,sb_slash);
 	Sbar_IntermissionNumber (240, 144, cl.stats[STAT_TOTALMONSTERS], 3, 0);
 
 }
@@ -1253,5 +1253,5 @@ void Sbar_FinaleOverlay (void)
 	image_t	*pic;
 
 	pic = Draw_CachePic ("gfx/finale.lmp");
-	Draw_TransPic ( (viddef.width-Draw_GetWidth(pic))/2, 16, pic);
+	UI_DrawPic ( (viddef.width-Draw_GetWidth(pic))/2, 16, pic);
 }

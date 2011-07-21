@@ -854,7 +854,7 @@ void SB_FinaleOverlay(void)
 	image_t	*pic;
 
 	pic = Draw_CachePic("gfx/finale.lmp");
-	Draw_TransPic((viddef.width-pic->width)/2, 16, pic);
+	UI_DrawPic((viddef.width-pic->width)/2, 16, pic);
 }
 
 /*

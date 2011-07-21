@@ -14,7 +14,6 @@ void Draw_Init (void);
 void Draw_Character (int x, int y, unsigned int num);
 void Draw_DebugChar (char num);
 void Draw_PicCropped(int x, int y, image_t *pic);
-void Draw_TransPic (int x, int y, image_t *pic);
 void Draw_TransPicCropped(int x, int y, image_t *pic);
 void Draw_TransPicTranslate (int x, int y, image_t *pic, byte *translation);
 void Draw_ConsoleBackground (int lines);

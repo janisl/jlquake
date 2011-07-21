@@ -484,26 +484,6 @@ void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 	DoQuad(x, y, pic->sl, tl, x + pic->width, y + height, pic->sh, th);
 }
 
-/*
-=============
-Draw_TransPic
-=============
-*/
-void Draw_TransPic (int x, int y, image_t* pic)
-{
-//	byte	*dest, *source, tbyte;
-//	unsigned short	*pusdest;
-//	int				v, u;
-
-	if (x < 0 || (unsigned)(x + pic->width) > viddef.width || y < 0 ||
-		 (unsigned)(y + pic->height) > viddef.height)
-	{
-		Sys_Error ("Draw_TransPic: bad coordinates");
-	}
-		
-	UI_DrawPic (x, y, pic);
-}
-
 void Draw_TransPicCropped(int x, int y, image_t*pic)
 {
 	Draw_PicCropped (x, y, pic);

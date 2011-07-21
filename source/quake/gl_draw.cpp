@@ -246,27 +246,6 @@ void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
 
 /*
 =============
-Draw_TransPic
-=============
-*/
-void Draw_TransPic (int x, int y, image_t* pic)
-{
-	byte	*dest, *source, tbyte;
-	unsigned short	*pusdest;
-	int				v, u;
-
-	if (x < 0 || (unsigned)(x + pic->width) > viddef.width || y < 0 ||
-		 (unsigned)(y + pic->height) > viddef.height)
-	{
-		Sys_Error ("Draw_TransPic: bad coordinates");
-	}
-		
-	UI_DrawPic (x, y, pic);
-}
-
-
-/*
-=============
 Draw_TransPicTranslate
 
 Only used for the player color selection menu

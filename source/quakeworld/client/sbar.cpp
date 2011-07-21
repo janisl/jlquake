@@ -238,7 +238,7 @@ Sbar_DrawTransPic
 */
 void Sbar_DrawTransPic (int x, int y, image_t *pic)
 {
-	Draw_TransPic (x /*+ ((viddef.width - 320)>>1) */, y + (viddef.height-SBAR_HEIGHT), pic);
+	UI_DrawPic (x /*+ ((viddef.width - 320)>>1) */, y + (viddef.height-SBAR_HEIGHT), pic);
 }
 
 /*
@@ -836,7 +836,7 @@ void Sbar_IntermissionNumber (int x, int y, int num, int digits, int color)
 		else
 			frame = *ptr -'0';
 
-		Draw_TransPic (x,y,sb_nums[color][frame]);
+		UI_DrawPic (x,y,sb_nums[color][frame]);
 		x += 24;
 		ptr++;
 	}
@@ -1265,7 +1265,7 @@ void Sbar_FinaleOverlay (void)
 	image_t	*pic;
 
 	pic = Draw_CachePic ("gfx/finale.lmp");
-	Draw_TransPic ( (viddef.width-Draw_GetWidth(pic))/2, 16, pic);
+	UI_DrawPic ( (viddef.width-Draw_GetWidth(pic))/2, 16, pic);
 }
 
 
