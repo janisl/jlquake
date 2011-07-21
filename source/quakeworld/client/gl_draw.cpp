@@ -170,31 +170,6 @@ void Draw_Init (void)
 	draw_backtile = R_PicFromWad ("backtile");
 }
 
-
-
-//==========================================================================
-//
-//	DoQuad
-//
-//==========================================================================
-
-void DoQuad(float x1, float y1, float s1, float t1,
-	float x2, float y2, float s2, float t2)
-{
-	UI_AdjustFromVirtualScreen(&x1, &y1, &x2, &y2);
-
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(s1, t1);
-	qglVertex2f(x1, y1);
-	qglTexCoord2f(s2, t1);
-	qglVertex2f(x2, y1);
-	qglTexCoord2f(s2, t2);
-	qglVertex2f (x2, y2);
-	qglTexCoord2f(s1, t2);
-	qglVertex2f(x1, y2);
-	qglEnd();
-}
-
 /*
 ================
 Draw_Character
@@ -209,11 +184,11 @@ void Draw_Character (int x, int y, int num)
 	int				row, col;
 	float			frow, fcol, size;
 
+	num &= 255;
+
 	if (num == 32)
 		return;		// space
 
-	num &= 255;
-	
 	if (y <= -8)
 		return;			// totally off screen
 
@@ -304,21 +279,6 @@ void Draw_DebugChar (char num)
 
 /*
 =============
-Draw_Pic
-=============
-*/
-void Draw_Pic (int x, int y, image_t* pic)
-{
-	if (scrap_dirty)
-		R_ScrapUpload();
-	qglColor4f (1,1,1,1);
-	GL_Bind (pic);
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-	DoQuad(x, y, pic->sl, pic->tl, x + pic->width, y + pic->height, pic->sh, pic->th);
-}
-
-/*
-=============
 Draw_AlphaPic
 =============
 */
@@ -373,7 +333,7 @@ void Draw_TransPic (int x, int y, image_t* pic)
 		Sys_Error ("Draw_TransPic: bad coordinates");
 	}
 		
-	Draw_Pic (x, y, pic);
+	UI_DrawPic (x, y, pic);
 }
 
 
@@ -440,7 +400,7 @@ void Draw_ConsoleBackground (int lines)
 
 	y = (viddef.height * 3) >> 2;
 	if (lines > y)
-		Draw_Pic(0, lines-viddef.height, conback);
+		UI_DrawPic(0, lines-viddef.height, conback);
 	else
 		Draw_AlphaPic (0, lines - viddef.height, conback, (float)(1.2 * lines)/y);
 
@@ -533,7 +493,7 @@ void Draw_BeginDisc (void)
 	if (!draw_disc)
 		return;
 	qglDrawBuffer  (GL_FRONT);
-	Draw_Pic (viddef.width - 24, 0, draw_disc);
+	UI_DrawPic (viddef.width - 24, 0, draw_disc);
 	qglDrawBuffer  (GL_BACK);
 }
 

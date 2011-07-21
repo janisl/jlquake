@@ -38,31 +38,6 @@ void Draw_InitLocal (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
-
-
-//==========================================================================
-//
-//	DoQuad
-//
-//==========================================================================
-
-void DoQuad(float x1, float y1, float s1, float t1,
-	float x2, float y2, float s2, float t2)
-{
-	UI_AdjustFromVirtualScreen(&x1, &y1, &x2, &y2);
-
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(s1, t1);
-	qglVertex2f(x1, y1);
-	qglTexCoord2f(s2, t1);
-	qglVertex2f(x2, y1);
-	qglTexCoord2f(s2, t2);
-	qglVertex2f (x2, y2);
-	qglTexCoord2f(s1, t2);
-	qglVertex2f(x1, y2);
-	qglEnd();
-}
-
 /*
 ================
 Draw_Char
@@ -162,13 +137,12 @@ void Draw_StretchPic (int x, int y, int w, int h, const char *pic)
 	DoQuad(x, y, gl->sl, gl->tl, x + w, y + h, gl->sh, gl->th);
 }
 
-
 /*
 =============
-Draw_Pic
+Draw_NamedPic
 =============
 */
-void Draw_Pic (int x, int y, const char *pic)
+void Draw_NamedPic (int x, int y, const char *pic)
 {
 	image_t *gl;
 
@@ -178,12 +152,7 @@ void Draw_Pic (int x, int y, const char *pic)
 		ri.Con_Printf (PRINT_ALL, "Can't find pic: %s\n", pic);
 		return;
 	}
-	if (scrap_dirty)
-		R_ScrapUpload();
-
-	GL_Bind (gl);
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, gl->sl, gl->tl, x + gl->width, y + gl->height, gl->sh, gl->th);
+	UI_DrawPic(x, y, gl);
 }
 
 /*

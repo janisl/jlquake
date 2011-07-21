@@ -218,7 +218,7 @@ void M_DrawTransPic2 (int x, int y, image_t *pic)
 
 void M_DrawPic (int x, int y, image_t *pic)
 {
-	Draw_Pic (x + ((viddef.width - 320)>>1), y, pic);
+	UI_DrawPic (x + ((viddef.width - 320)>>1), y, pic);
 }
 
 void M_DrawTransPicCropped (int x, int y, image_t *pic)

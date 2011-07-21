@@ -130,7 +130,7 @@ void M_DrawTransPic (int x, int y, image_t *pic)
 
 void M_DrawPic (int x, int y, image_t *pic)
 {
-	Draw_Pic (x + ((viddef.width - 320)>>1), y, pic);
+	UI_DrawPic (x + ((viddef.width - 320)>>1), y, pic);
 }
 
 byte identityTable[256];

@@ -70,3 +70,44 @@ void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 		*h *= yscale;
 	}
 }
+
+//==========================================================================
+//
+//	DoQuad
+//
+//==========================================================================
+
+void DoQuad(float x1, float y1, float s1, float t1,
+	float x2, float y2, float s2, float t2)
+{
+	UI_AdjustFromVirtualScreen(&x1, &y1, &x2, &y2);
+
+	qglBegin(GL_QUADS);
+	qglTexCoord2f(s1, t1);
+	qglVertex2f(x1, y1);
+	qglTexCoord2f(s2, t1);
+	qglVertex2f(x2, y1);
+	qglTexCoord2f(s2, t2);
+	qglVertex2f (x2, y2);
+	qglTexCoord2f(s1, t2);
+	qglVertex2f(x1, y2);
+	qglEnd();
+}
+
+//==========================================================================
+//
+//	UI_DrawPic
+//
+//==========================================================================
+
+void UI_DrawPic(int x, int y, image_t* pic)
+{
+	if (scrap_dirty)
+	{
+		R_ScrapUpload();
+	}
+	qglColor4f(1, 1, 1, 1);
+	GL_Bind(pic);
+	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	DoQuad(x, y, pic->sl, pic->tl, x + pic->width, y + pic->height, pic->sh, pic->th);
+}

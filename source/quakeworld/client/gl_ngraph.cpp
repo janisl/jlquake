@@ -22,9 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-void DoQuad(float x1, float y1, float s1, float t1,
-	float x2, float y2, float s2, float t2);
-
 extern byte		*draw_chars;				// 8*8 graphic characters
 
 image_t*	netgraphtexture;	// netgraph texture

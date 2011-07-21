@@ -159,29 +159,6 @@ void Draw_Init (void)
 
 
 
-//==========================================================================
-//
-//	DoQuad
-//
-//==========================================================================
-
-void DoQuad(float x1, float y1, float s1, float t1,
-	float x2, float y2, float s2, float t2)
-{
-	UI_AdjustFromVirtualScreen(&x1, &y1, &x2, &y2);
-
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(s1, t1);
-	qglVertex2f(x1, y1);
-	qglTexCoord2f(s2, t1);
-	qglVertex2f(x2, y1);
-	qglTexCoord2f(s2, t2);
-	qglVertex2f (x2, y2);
-	qglTexCoord2f(s1, t2);
-	qglVertex2f(x1, y2);
-	qglEnd();
-}
-
 /*
 ================
 Draw_Character
@@ -193,18 +170,14 @@ smoothly scrolled off.
 */
 void Draw_Character (int x, int y, unsigned int num)
 {
-	byte			*dest;
-	byte			*source;
-	unsigned short	*pusdest;
-	int				drawline;	
 	int				row, col;
 	float			frow, fcol, xsize,ysize;
+
+	num &= 511;
 
 	if (num == 32)
 		return;		// space
 
-	num &= 511;
-	
 	if (y <= -8)
 		return;			// totally off screen
 
@@ -359,27 +332,6 @@ of the code.
 */
 void Draw_DebugChar (char num)
 {
-}
-
-/*
-=============
-Draw_Pic
-=============
-*/
-void Draw_Pic (int x, int y, image_t* pic)
-{
-	byte			*dest, *source;
-	unsigned short	*pusdest;
-	int				v, u;
-
-	if (scrap_dirty)
-		R_ScrapUpload();
-	qglColor4f (1,1,1,1);
-	GL_Bind (pic);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	DoQuad(x, y, pic->sl, pic->tl, x + pic->width, y + pic->height, pic->sh, pic->th);
 }
 
 /*
@@ -549,7 +501,7 @@ void Draw_TransPic (int x, int y, image_t* pic)
 		Sys_Error ("Draw_TransPic: bad coordinates");
 	}
 		
-	Draw_Pic (x, y, pic);
+	UI_DrawPic (x, y, pic);
 }
 
 void Draw_TransPicCropped(int x, int y, image_t*pic)
@@ -677,7 +629,7 @@ void Draw_ConsoleBackground (int lines)
 
 	y = (viddef.height * 3) >> 2;
 	if (lines > y)
-		Draw_Pic(0, lines-viddef.height, conback);
+		UI_DrawPic(0, lines-viddef.height, conback);
 	else
 		Draw_AlphaPic (0, lines - viddef.height, conback, (float)(1.2 * lines)/y);
 
@@ -801,7 +753,7 @@ void Draw_BeginDisc (void)
 
 	qglDrawBuffer  (GL_FRONT);
 
-	Draw_Pic (viddef.width - 28, 4, draw_disc[index]);
+	UI_DrawPic (viddef.width - 28, 4, draw_disc[index]);
 
 	qglDrawBuffer  (GL_BACK);
 }

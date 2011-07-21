@@ -246,9 +246,9 @@ Sbar_DrawPic
 void Sbar_DrawPic (int x, int y, image_t *pic)
 {
 	if (cl.gametype == GAME_DEATHMATCH)
-		Draw_Pic (x /* + ((viddef.width - 320)>>1)*/, y + (viddef.height-SBAR_HEIGHT), pic);
+		UI_DrawPic (x /* + ((viddef.width - 320)>>1)*/, y + (viddef.height-SBAR_HEIGHT), pic);
 	else
-		Draw_Pic (x + ((viddef.width - 320)>>1), y + (viddef.height-SBAR_HEIGHT), pic);
+		UI_DrawPic (x + ((viddef.width - 320)>>1), y + (viddef.height-SBAR_HEIGHT), pic);
 }
 
 /*
@@ -1218,7 +1218,7 @@ void Sbar_IntermissionOverlay (void)
 	}
 
 	pic = Draw_CachePic ("gfx/complete.lmp");
-	Draw_Pic (64, 24, pic);
+	UI_DrawPic (64, 24, pic);
 
 	pic = Draw_CachePic ("gfx/inter.lmp");
 	Draw_TransPic (0, 56, pic);

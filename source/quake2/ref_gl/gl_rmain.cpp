@@ -272,7 +272,7 @@ void	R_RenderFrame (refdef_t *fd);
 
 image_t	*Draw_FindPic (const char *name);
 
-void	Draw_Pic (int x, int y, const char *name);
+void	Draw_NamedPic (int x, int y, const char *name);
 void	Draw_Char (int x, int y, int c);
 void	Draw_Fill (int x, int y, int w, int h, int c);
 void	Draw_FadeScreen (void);
@@ -297,7 +297,7 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.RenderFrame = R_RenderFrame;
 
 	re.DrawGetPicSize = Draw_GetPicSize;
-	re.DrawPic = Draw_Pic;
+	re.DrawPic = Draw_NamedPic;
 	re.DrawStretchPic = Draw_StretchPic;
 	re.DrawChar = Draw_Char;
 	re.DrawTileClear = Draw_TileClear;

@@ -215,7 +215,7 @@ Sbar_DrawPic
 */
 void Sbar_DrawPic (int x, int y, image_t *pic)
 {
-	Draw_Pic (x /* + ((viddef.width - 320)>>1) */, y + (viddef.height-SBAR_HEIGHT), pic);
+	UI_DrawPic (x /* + ((viddef.width - 320)>>1) */, y + (viddef.height-SBAR_HEIGHT), pic);
 }
 
 /*
@@ -870,7 +870,7 @@ void Sbar_TeamOverlay (void)
 	}
 
 	pic = Draw_CachePic ("gfx/ranking.lmp");
-	Draw_Pic (160-Draw_GetWidth(pic)/2, 0, pic);
+	UI_DrawPic (160-Draw_GetWidth(pic)/2, 0, pic);
 
 	y = 24;
 	x = 36;
@@ -970,7 +970,7 @@ void Sbar_DeathmatchOverlay (int start)
 
 	if (!start) {
 		pic = Draw_CachePic ("gfx/ranking.lmp");
-		Draw_Pic (160-Draw_GetWidth(pic)/2, 0, pic);
+		UI_DrawPic (160-Draw_GetWidth(pic)/2, 0, pic);
 	}
 
 // scores	
