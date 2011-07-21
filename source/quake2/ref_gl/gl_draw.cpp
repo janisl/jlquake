@@ -118,24 +118,6 @@ void Draw_StretchPic (int x, int y, int w, int h, const char *pic)
 
 /*
 =============
-Draw_NamedPic
-=============
-*/
-void Draw_NamedPic (int x, int y, const char *pic)
-{
-	image_t *gl;
-
-	gl = UI_RegisterPic (pic);
-	if (!gl)
-	{
-		ri.Con_Printf (PRINT_ALL, "Can't find pic: %s\n", pic);
-		return;
-	}
-	UI_DrawPic(x, y, gl);
-}
-
-/*
-=============
 Draw_TileClear
 
 This repeats a 64*64 tile graphic to fill the screen around a sized down

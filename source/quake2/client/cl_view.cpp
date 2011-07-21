@@ -337,7 +337,7 @@ void SCR_DrawCrosshair (void)
 	if (!crosshair_pic[0])
 		return;
 
-	re.DrawPic (scr_vrect.x + ((scr_vrect.width - crosshair_width)>>1)
+	UI_DrawNamedPic (scr_vrect.x + ((scr_vrect.width - crosshair_width)>>1)
 	, scr_vrect.y + ((scr_vrect.height - crosshair_height)>>1), crosshair_pic);
 }
 

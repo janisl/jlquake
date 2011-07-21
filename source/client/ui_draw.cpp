@@ -163,3 +163,20 @@ void UI_DrawPic(int x, int y, image_t* pic)
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	DoQuad(x, y, pic->sl, pic->tl, x + pic->width, y + pic->height, pic->sh, pic->th);
 }
+
+//==========================================================================
+//
+//	UI_DrawNamedPic
+//
+//==========================================================================
+
+void UI_DrawNamedPic(int x, int y, const char* pic)
+{
+	image_t* gl = UI_RegisterPic(pic);
+	if (!gl)
+	{
+		GLog.Write("Can't find pic: %s\n", pic);
+		return;
+	}
+	UI_DrawPic(x, y, gl);
+}

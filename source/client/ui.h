@@ -39,3 +39,4 @@ void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void DoQuad(float x1, float y1, float s1, float t1,
 	float x2, float y2, float s2, float t2);
 void UI_DrawPic(int x, int y, image_t* pic);
+void UI_DrawNamedPic(int x, int y, const char* name);

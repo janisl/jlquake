@@ -446,7 +446,7 @@ void SCR_DrawNet (void)
 		< CMD_BACKUP-1)
 		return;
 
-	re.DrawPic (scr_vrect.x+64, scr_vrect.y, "net");
+	UI_DrawNamedPic (scr_vrect.x+64, scr_vrect.y, "net");
 }
 
 /*
@@ -465,7 +465,7 @@ void SCR_DrawPause (void)
 		return;
 
 	re.DrawGetPicSize (&w, &h, "pause");
-	re.DrawPic ((viddef.width-w)/2, viddef.height/2 + 8, "pause");
+	UI_DrawNamedPic ((viddef.width-w)/2, viddef.height/2 + 8, "pause");
 }
 
 /*
@@ -482,7 +482,7 @@ void SCR_DrawLoading (void)
 
 	scr_draw_loading = false;
 	re.DrawGetPicSize (&w, &h, "loading");
-	re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
+	UI_DrawNamedPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
 }
 
 //=============================================================================
@@ -879,7 +879,7 @@ void SCR_DrawField (int x, int y, int color, int width, int value)
 		else
 			frame = *ptr -'0';
 
-		re.DrawPic (x,y,sb_nums[color][frame]);
+		UI_DrawNamedPic (x,y,sb_nums[color][frame]);
 		x += CHAR_WIDTH;
 		ptr++;
 		l--;
@@ -990,7 +990,7 @@ void SCR_ExecuteLayoutString (const char *s)
 			{
 				SCR_AddDirtyPoint (x, y);
 				SCR_AddDirtyPoint (x+23, y+23);
-				re.DrawPic (x, y, cl.configstrings[CS_IMAGES+value]);
+				UI_DrawNamedPic (x, y, cl.configstrings[CS_IMAGES+value]);
 			}
 			continue;
 		}
@@ -1029,7 +1029,7 @@ void SCR_ExecuteLayoutString (const char *s)
 
 			if (!ci->icon)
 				ci = &cl.baseclientinfo;
-			re.DrawPic (x, y, ci->iconname);
+			UI_DrawNamedPic (x, y, ci->iconname);
 			continue;
 		}
 
@@ -1073,7 +1073,7 @@ void SCR_ExecuteLayoutString (const char *s)
 			token = QStr::Parse2 (&s);
 			SCR_AddDirtyPoint (x, y);
 			SCR_AddDirtyPoint (x+23, y+23);
-			re.DrawPic (x, y, token);
+			UI_DrawNamedPic (x, y, token);
 			continue;
 		}
 
@@ -1101,7 +1101,7 @@ void SCR_ExecuteLayoutString (const char *s)
 				color = 1;
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 1)
-				re.DrawPic (x, y, "field_3");
+				UI_DrawNamedPic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
 			continue;
@@ -1121,7 +1121,7 @@ void SCR_ExecuteLayoutString (const char *s)
 				continue;	// negative number = don't show
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 4)
-				re.DrawPic (x, y, "field_3");
+				UI_DrawNamedPic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
 			continue;
@@ -1139,7 +1139,7 @@ void SCR_ExecuteLayoutString (const char *s)
 			color = 0;	// green
 
 			if (cl.frame.playerstate.stats[STAT_FLASHES] & 2)
-				re.DrawPic (x, y, "field_3");
+				UI_DrawNamedPic (x, y, "field_3");
 
 			SCR_DrawField (x, y, color, width, value);
 			continue;
@@ -1300,7 +1300,7 @@ void SCR_UpdateScreen (void)
 			R_ClearScreen();
 			scr_draw_loading = false;
 			re.DrawGetPicSize (&w, &h, "loading");
-			re.DrawPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
+			UI_DrawNamedPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
 //			re.EndFrame();
 //			return;
 		} 
