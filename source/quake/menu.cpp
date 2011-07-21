@@ -735,7 +735,7 @@ void M_Setup_Draw (void)
 
 	p = Draw_CachePic ("gfx/bigbox.lmp");
 	M_DrawTransPic (160, 64, p);
-	p = Draw_CachePic ("gfx/menuplyr.lmp");
+	p = Draw_CachePicWithTransPixels("gfx/menuplyr.lmp", menuplyr_pixels);
 	M_BuildTranslationTable(setup_top*16, setup_bottom*16);
 	M_DrawTransPicTranslate (172, 72, p);
 

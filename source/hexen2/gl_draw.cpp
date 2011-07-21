@@ -33,10 +33,6 @@ image_t		*conback;
 /*
  * Geometry for the player/skin selection screen image.
  */
-#define PLAYER_PIC_WIDTH 68
-#define PLAYER_PIC_HEIGHT 114
-#define PLAYER_DEST_WIDTH 128
-#define PLAYER_DEST_HEIGHT 128
 
 byte		menuplyr_pixels[NUM_CLASSES][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
@@ -52,22 +48,19 @@ Draw_CachePic
 */
 image_t* Draw_CachePic (const char *path)
 {
-	// HACK HACK HACK --- we need to keep the bytes for
-	// the translatable player picture just for the menu
-	// configuration dialog
-	/* garymct */
-	byte* TransPixels = NULL;
-	if (!QStr::Cmp(path, "gfx/menu/netp1.lmp"))
-		TransPixels = menuplyr_pixels[0];
-	else if (!QStr::Cmp(path, "gfx/menu/netp2.lmp"))
-		TransPixels = menuplyr_pixels[1];
-	else if (!QStr::Cmp(path, "gfx/menu/netp3.lmp"))
-		TransPixels = menuplyr_pixels[2];
-	else if (!QStr::Cmp(path, "gfx/menu/netp4.lmp"))
-		TransPixels = menuplyr_pixels[3];
-	else if (!QStr::Cmp(path, "gfx/menu/netp5.lmp"))
-		TransPixels = menuplyr_pixels[4];
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
+	if (!pic)
+		Sys_Error ("Draw_CachePic: failed to load %s", path);
+	return pic;
+}
 
+/*
+================
+Draw_CachePic
+================
+*/
+image_t* Draw_CachePicWithTransPixels(const char *path, byte* TransPixels)
+{
 	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
 	if (!pic)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);

@@ -47,17 +47,23 @@ Draw_CachePic
 */
 image_t* Draw_CachePic (const char *path)
 {
-	// HACK HACK HACK --- we need to keep the bytes for
-	// the translatable player picture just for the menu
-	// configuration dialog
-	byte* TransPixels = NULL;
-	if (!QStr::Cmp(path, "gfx/menuplyr.lmp"))
-		TransPixels = menuplyr_pixels;
-
-	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
 	if (!pic)
 		Sys_Error ("Draw_CachePic: failed to load %s", path);
 
+	return pic;
+}
+
+/*
+================
+Draw_CachePic
+================
+*/
+image_t* Draw_CachePicWithTransPixels(const char *path, byte* TransPixels)
+{
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
+	if (!pic)
+		Sys_Error ("Draw_CachePic: failed to load %s", path);
 	return pic;
 }
 

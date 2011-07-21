@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct image_t;
 extern image_t*		draw_disc;	// also used on sbar
 
+extern byte		menuplyr_pixels[4096];
+
 void Draw_Init (void);
 void Draw_Character (int x, int y, int num);
 void Draw_DebugChar (char num);
@@ -36,5 +38,6 @@ void Draw_Fill (int x, int y, int w, int h, int c);
 void Draw_FadeScreen (void);
 void Draw_String (int x, int y, const char *str);
 image_t* Draw_CachePic(const char *path);
+image_t* Draw_CachePicWithTransPixels(const char *path, byte* TransPixels);
 int Draw_GetWidth(image_t* pic);
 int Draw_GetHeight(image_t* pic);

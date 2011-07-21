@@ -4,8 +4,15 @@
 
 #define MAX_DISC 18
 
+#define PLAYER_PIC_WIDTH 68
+#define PLAYER_PIC_HEIGHT 114
+#define PLAYER_DEST_WIDTH 128
+#define PLAYER_DEST_HEIGHT 128
+
 struct image_t;
 extern	image_t		*draw_disc[MAX_DISC]; // also used on sbar
+
+extern byte		menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
 void Draw_Init (void);
 void Draw_Character (int x, int y, unsigned int num);
@@ -25,6 +32,7 @@ void Draw_Fill (int x, int y, int w, int h, int c);
 void Draw_FadeScreen (void);
 void Draw_String (int x, int y, const char *str);
 image_t *Draw_CachePic (const char *path);
+image_t* Draw_CachePicWithTransPixels(const char *path, byte* TransPixels);
 int Draw_GetWidth(image_t* pic);
 int Draw_GetHeight(image_t* pic);
 

@@ -1468,7 +1468,7 @@ void M_Setup_Draw (void)
 	M_DrawTextBox (64, 156-8, 14, 1);
 	M_Print (72, 156, "Accept Changes");
 
-	p = Draw_CachePic (va("gfx/menu/netp%i.lmp",setup_class));
+	p = Draw_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", setup_class), menuplyr_pixels[setup_class - 1]);
 	M_BuildTranslationTable(setup_top, setup_bottom);
 
 	/* garymct */

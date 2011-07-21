@@ -2457,7 +2457,7 @@ void M_Setup_Draw (void)
 	{
 		which_class = setup_class;
 	}
-	p = Draw_CachePic (va("gfx/menu/netp%i.lmp",which_class));
+	p = Draw_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", which_class), menuplyr_pixels[which_class - 1]);
 	M_BuildTranslationTable(setup_top, setup_bottom);
 #if 0
 	M_DrawPic (220, 72, p);
