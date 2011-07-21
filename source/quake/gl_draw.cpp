@@ -164,7 +164,7 @@ void Draw_Init (void)
 //
 //==========================================================================
 
-static void DoQuad(float x1, float y1, float s1, float t1,
+void DoQuad(float x1, float y1, float s1, float t1,
 	float x2, float y2, float s2, float t2)
 {
 	UI_AdjustFromVirtualScreen(&x1, &y1, &x2, &y2);
