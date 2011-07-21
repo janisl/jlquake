@@ -279,31 +279,31 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 	// draw left side
 	cx = x;
 	cy = y;
-	p = Draw_CachePic ("gfx/box_tl.lmp");
+	p = UI_CachePic ("gfx/box_tl.lmp");
 	M_DrawTransPic (cx, cy, p);
-	p = Draw_CachePic ("gfx/box_ml.lmp");
+	p = UI_CachePic ("gfx/box_ml.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
 		M_DrawTransPic (cx, cy, p);
 	}
-	p = Draw_CachePic ("gfx/box_bl.lmp");
+	p = UI_CachePic ("gfx/box_bl.lmp");
 	M_DrawTransPic (cx, cy+8, p);
 
 	// draw middle
 	cx += 8;
-	tm = Draw_CachePic ("gfx/box_tm.lmp");
-	bm = Draw_CachePic ("gfx/box_bm.lmp");
+	tm = UI_CachePic ("gfx/box_tm.lmp");
+	bm = UI_CachePic ("gfx/box_bm.lmp");
 	while (width > 0)
 	{
 		cy = y;
 		M_DrawTransPic (cx, cy, tm);
-		p = Draw_CachePic ("gfx/box_mm.lmp");
+		p = UI_CachePic ("gfx/box_mm.lmp");
 		for (n = 0; n < lines; n++)
 		{
 			cy += 8;
 			if (n == 1)
-				p = Draw_CachePic ("gfx/box_mm2.lmp");
+				p = UI_CachePic ("gfx/box_mm2.lmp");
 			M_DrawTransPic (cx, cy, p);
 		}
 		M_DrawTransPic (cx, cy+8, bm);
@@ -313,15 +313,15 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 
 	// draw right side
 	cy = y;
-	p = Draw_CachePic ("gfx/box_tr.lmp");
+	p = UI_CachePic ("gfx/box_tr.lmp");
 	M_DrawTransPic (cx, cy, p);
-	p = Draw_CachePic ("gfx/box_mr.lmp");
+	p = UI_CachePic ("gfx/box_mr.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
 		M_DrawTransPic (cx, cy, p);
 	}
-	p = Draw_CachePic ("gfx/box_br.lmp");
+	p = UI_CachePic ("gfx/box_br.lmp");
 	M_DrawTransPic (cx, cy+8, p);
 }
 
@@ -335,12 +335,12 @@ void M_DrawTextBox2 (int x, int y, int width, int lines, qboolean bottom)
 	// draw left side
 	cx = x;
 	cy = y;
-	p = Draw_CachePic ("gfx/box_tl.lmp");
+	p = UI_CachePic ("gfx/box_tl.lmp");
 	if(bottom)
 		M_DrawTransPic (cx, cy, p);
 	else
 		M_DrawTransPic2 (cx, cy, p);
-	p = Draw_CachePic ("gfx/box_ml.lmp");
+	p = UI_CachePic ("gfx/box_ml.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
@@ -349,7 +349,7 @@ void M_DrawTextBox2 (int x, int y, int width, int lines, qboolean bottom)
 		else
 			M_DrawTransPic2 (cx, cy, p);
 	}
-	p = Draw_CachePic ("gfx/box_bl.lmp");
+	p = UI_CachePic ("gfx/box_bl.lmp");
 	if(bottom)
 		M_DrawTransPic (cx, cy+8, p);
 	else
@@ -357,8 +357,8 @@ void M_DrawTextBox2 (int x, int y, int width, int lines, qboolean bottom)
 
 	// draw middle
 	cx += 8;
-	tm = Draw_CachePic ("gfx/box_tm.lmp");
-	bm = Draw_CachePic ("gfx/box_bm.lmp");
+	tm = UI_CachePic ("gfx/box_tm.lmp");
+	bm = UI_CachePic ("gfx/box_bm.lmp");
 	while (width > 0)
 	{
 		cy = y;
@@ -367,12 +367,12 @@ void M_DrawTextBox2 (int x, int y, int width, int lines, qboolean bottom)
 			M_DrawTransPic (cx, cy, tm);
 		else
 			M_DrawTransPic2 (cx, cy, tm);
-		p = Draw_CachePic ("gfx/box_mm.lmp");
+		p = UI_CachePic ("gfx/box_mm.lmp");
 		for (n = 0; n < lines; n++)
 		{
 			cy += 8;
 			if (n == 1)
-				p = Draw_CachePic ("gfx/box_mm2.lmp");
+				p = UI_CachePic ("gfx/box_mm2.lmp");
 			if(bottom)
 				M_DrawTransPic (cx, cy, p);
 			else
@@ -388,12 +388,12 @@ void M_DrawTextBox2 (int x, int y, int width, int lines, qboolean bottom)
 
 	// draw right side
 	cy = y;
-	p = Draw_CachePic ("gfx/box_tr.lmp");
+	p = UI_CachePic ("gfx/box_tr.lmp");
 	if(bottom)
 		M_DrawTransPic (cx, cy, p);
 	else
 		M_DrawTransPic2 (cx, cy, p);
-	p = Draw_CachePic ("gfx/box_mr.lmp");
+	p = UI_CachePic ("gfx/box_mr.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
@@ -402,7 +402,7 @@ void M_DrawTextBox2 (int x, int y, int width, int lines, qboolean bottom)
 		else
 			M_DrawTransPic2 (cx, cy, p);
 	}
-	p = Draw_CachePic ("gfx/box_br.lmp");
+	p = UI_CachePic ("gfx/box_br.lmp");
 	if(bottom)
 		M_DrawTransPic (cx, cy+8, p);
 	else
@@ -464,7 +464,7 @@ void M_BuildBigCharWidth (void)
 	FILE *FH;
 	char temp[MAX_OSPATH];
 
-	p = Draw_CachePic ("gfx/menu/bigfont.lmp");
+	p = UI_CachePic ("gfx/menu/bigfont.lmp");
 
 	for(numA = 0; numA < 27; numA++)
 	{
@@ -623,14 +623,14 @@ void ScrollTitle (const char *name)
 		TitleTargetPercent = 1;
 	}
 
-	p = Draw_CachePic(LastName);
-	finaly = ((float)Draw_GetHeight(p) * TitlePercent) - Draw_GetHeight(p);
-	M_DrawTransPicCropped( (320-Draw_GetWidth(p))/2, finaly , p);
+	p = UI_CachePic(LastName);
+	finaly = ((float)UI_GetImageHeight(p) * TitlePercent) - UI_GetImageHeight(p);
+	M_DrawTransPicCropped( (320-UI_GetImageWidth(p))/2, finaly , p);
 
 	if (m_state != m_keys)
 	{
-		p = Draw_CachePic("gfx/menu/hplaque.lmp");
-		finaly = ((float)Draw_GetHeight(p) * LogoPercent) - Draw_GetHeight(p);
+		p = UI_CachePic("gfx/menu/hplaque.lmp");
+		finaly = ((float)UI_GetImageHeight(p) * LogoPercent) - UI_GetImageHeight(p);
 		M_DrawTransPicCropped(10, finaly, p);
 	}		
 }
@@ -660,7 +660,7 @@ void M_Main_Draw (void)
 	int		f;
 
 	ScrollTitle("gfx/menu/title0.lmp");
-//	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mainmenu.lmp") );
+//	M_DrawTransPic (72, 32, UI_CachePic ("gfx/mainmenu.lmp") );
 	M_DrawBigString (72,60+(0*20),"SINGLE PLAYER");
 	M_DrawBigString (72,60+(1*20),"MULTIPLAYER");
 	M_DrawBigString (72,60+(2*20),"OPTIONS");
@@ -669,7 +669,7 @@ void M_Main_Draw (void)
 
 
 	f = (int)(host_time * 10)%8;
-	M_DrawTransPic (43, 54 + m_main_cursor * 20,Draw_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 54 + m_main_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 }
 
 
@@ -756,7 +756,7 @@ void M_Difficulty_Draw (void)
 		M_DrawBigString (72,60+(i*20),DiffNames[setup_class][i]);
 
 	f = (int)(host_time * 10)%8;
-	M_DrawTransPic (43, 54 + m_diff_cursor * 20,Draw_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 54 + m_diff_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 }
 
 void M_Difficulty_Key (int key)
@@ -837,10 +837,10 @@ void M_Class_Draw (void)
 		M_DrawBigString (72,60+(i*20),ClassNamesU[i]);
 
 	f = (int)(host_time * 10)%8;
-	M_DrawTransPic (43, 54 + m_class_cursor * 20,Draw_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 54 + m_class_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 
-	M_DrawPic (251,54 + 21, Draw_CachePic (va("gfx/cport%d.lmp", m_class_cursor + 1)));
-	M_DrawTransPic (242,54, Draw_CachePic ("gfx/menu/frame.lmp"));
+	M_DrawPic (251,54 + 21, UI_CachePic (va("gfx/cport%d.lmp", m_class_cursor + 1)));
+	M_DrawTransPic (242,54, UI_CachePic ("gfx/menu/frame.lmp"));
 }
 
 void M_Class_Key (int key)
@@ -918,7 +918,7 @@ void M_SinglePlayer_Draw (void)
 	M_DrawBigString (72,60+(4*20),"VIEW INTRO");
 	
 	f = (int)(host_time * 10)%8;
-	M_DrawTransPic (43, 54 + m_singleplayer_cursor * 20,Draw_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 54 + m_singleplayer_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 }
 
 
@@ -1341,7 +1341,7 @@ void M_MultiPlayer_Draw (void)
 	int		f;
 
 	ScrollTitle("gfx/menu/title4.lmp");
-//	M_DrawTransPic (72, 32, Draw_CachePic ("gfx/mp_menu.lmp") );
+//	M_DrawTransPic (72, 32, UI_CachePic ("gfx/mp_menu.lmp") );
 
 	M_DrawBigString (72,60+(0*20),"JOIN A GAME");
 	M_DrawBigString (72,60+(1*20),"NEW GAME");
@@ -1350,7 +1350,7 @@ void M_MultiPlayer_Draw (void)
 	M_DrawBigString (72,60+(4*20),"SAVE");
 
 	f = (int)(host_time * 10)%8;
-	M_DrawTransPic (43, 54 + m_multiplayer_cursor * 20,Draw_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 54 + m_multiplayer_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 
 	if (message)
 	{
@@ -1468,7 +1468,7 @@ void M_Setup_Draw (void)
 	M_DrawTextBox (64, 156-8, 14, 1);
 	M_Print (72, 156, "Accept Changes");
 
-	p = Draw_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", setup_class), menuplyr_pixels[setup_class - 1]);
+	p = UI_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", setup_class), menuplyr_pixels[setup_class - 1]);
 	M_BuildTranslationTable(setup_top, setup_bottom);
 
 	/* garymct */
@@ -1659,9 +1659,9 @@ void M_Net_Draw (void)
 	f = 89;
 /* rjr
 	if (tcpipAvailable)
-		p = Draw_CachePic ("gfx/netmen4.lmp");
+		p = UI_CachePic ("gfx/netmen4.lmp");
 	else
-		p = Draw_CachePic ("gfx/dim_tcp.lmp");
+		p = UI_CachePic ("gfx/dim_tcp.lmp");
 */
 //	M_DrawTransPic (72, f, p);
 	M_DrawBigString (72,f,"TCP/IP");
@@ -1675,7 +1675,7 @@ void M_Net_Draw (void)
 	M_Print (f, 166, net_helpMessage[m_net_cursor*4+3]);
 
 	f = (int)(host_time * 10)%8;
-	M_DrawTransPic (43, 24 + m_net_cursor * 20,Draw_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 24 + m_net_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 }
 
 void M_Net_Key (int k)
@@ -2159,7 +2159,7 @@ void M_Keys_Draw (void)
 
 //	M_DrawTextBox (6,56, 35,16);
 
-//	p = Draw_CachePic("gfx/menu/hback.lmp");
+//	p = UI_CachePic("gfx/menu/hback.lmp");
 //	M_DrawTransPicCropped(8, 62, p);
 
 	if (bind_grab)
@@ -2334,7 +2334,7 @@ void M_Menu_Help_f (void)
 
 void M_Help_Draw (void)
 {
-	M_DrawPic (0, 0, Draw_CachePic ( va("gfx/menu/help%02i.lmp", help_page+1)) );
+	M_DrawPic (0, 0, UI_CachePic ( va("gfx/menu/help%02i.lmp", help_page+1)) );
 }
 
 
@@ -2829,7 +2829,7 @@ void M_Quit_Draw (void)
 			M_Print(24,y,LineText[i+place-QUIT_SIZE]);
 	}
 
-	p = Draw_CachePic ("gfx/box_mm2.lmp");
+	p = UI_CachePic ("gfx/box_mm2.lmp");
 	x = 24;
 	y = topy-8;
 	for(i=4;i<38;i++,x+=8)

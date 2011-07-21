@@ -42,32 +42,32 @@ viddef_t	viddef;
 
 //==========================================================================
 //
-//	Draw_CachePic
+//	UI_CachePic
 //
 //==========================================================================
 
-image_t* Draw_CachePic(const char* path)
+image_t* UI_CachePic(const char* path)
 {
 	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
 	if (!pic)
 	{
-		throw QException(va("Draw_CachePic: failed to load %s", path));
+		throw QException(va("UI_CachePic: failed to load %s", path));
 	}
 	return pic;
 }
 
 //==========================================================================
 //
-//	Draw_CachePicWithTransPixels
+//	UI_CachePicWithTransPixels
 //
 //==========================================================================
 
-image_t* Draw_CachePicWithTransPixels(const char *path, byte* TransPixels)
+image_t* UI_CachePicWithTransPixels(const char *path, byte* TransPixels)
 {
 	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
 	if (!pic)
 	{
-		throw QException(va("Draw_CachePic: failed to load %s", path));
+		throw QException(va("UI_CachePic: failed to load %s", path));
 	}
 	return pic;
 }
@@ -90,6 +90,46 @@ image_t* UI_RegisterPic(const char* name)
 	{
 		return R_FindImageFile(name + 1, false, false, GL_CLAMP, true);
 	}
+}
+
+//==========================================================================
+//
+//	UI_GetImageWidth
+//
+//==========================================================================
+
+int UI_GetImageWidth(image_t* pic)
+{
+	return pic->width;
+}
+
+//==========================================================================
+//
+//	UI_GetImageHeight
+//
+//==========================================================================
+
+int UI_GetImageHeight(image_t* pic)
+{
+	return pic->height;
+}
+
+//==========================================================================
+//
+//	UI_GetPicSize
+//
+//==========================================================================
+
+void UI_GetPicSize(int* w, int* h, const char* pic)
+{
+	image_t* gl = UI_RegisterPic(pic);
+	if (!gl)
+	{
+		*w = *h = -1;
+		return;
+	}
+	*w = gl->width;
+	*h = gl->height;
 }
 
 //==========================================================================

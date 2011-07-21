@@ -480,7 +480,7 @@ void SCR_DrawPause (void)
 //	if (!cl.paused)
 //		return;
 
-//	pic = Draw_CachePic ("gfx/pause.lmp");
+//	pic = UI_CachePic ("gfx/pause.lmp");
 //	UI_DrawPic ( (viddef.width - pic->width)/2, 
 //		(viddef.height - 48 - pic->height)/2, pic);
 
@@ -498,7 +498,7 @@ void SCR_DrawPause (void)
 		LogoPercent = 0;
 	}
 
-	pic = Draw_CachePic ("gfx/menu/paused.lmp");
+	pic = UI_CachePic ("gfx/menu/paused.lmp");
 //	UI_DrawPic ( (viddef.width - pic->width)/2, 
 //		(viddef.height - 48 - pic->height)/2, pic);
 
@@ -535,7 +535,7 @@ void SCR_DrawLoading (void)
 	if (!scr_drawloading && loading_stage == 0)
 		return;
 		
-	pic = Draw_CachePic ("gfx/menu/loading.lmp");
+	pic = UI_CachePic ("gfx/menu/loading.lmp");
 	offset = (viddef.width - pic->width)/2;
 	UI_DrawPic (offset , 0, pic);
 
@@ -875,40 +875,40 @@ void SB_IntermissionOverlay(void)
 	switch(cl.intermission)
 	{
 	case 1:
-			pic = Draw_CachePic ("gfx/meso.lmp");
+			pic = UI_CachePic ("gfx/meso.lmp");
 			break;
 		case 2:
-			pic = Draw_CachePic ("gfx/egypt.lmp");
+			pic = UI_CachePic ("gfx/egypt.lmp");
 			break;
 		case 3:
-			pic = Draw_CachePic ("gfx/roman.lmp");
+			pic = UI_CachePic ("gfx/roman.lmp");
 			break;
 		case 4:
-			pic = Draw_CachePic ("gfx/castle.lmp");
+			pic = UI_CachePic ("gfx/castle.lmp");
 			break;
 		case 5:
-			pic = Draw_CachePic ("gfx/castle.lmp");
+			pic = UI_CachePic ("gfx/castle.lmp");
 			break;
 		case 6:
-			pic = Draw_CachePic ("gfx/end-1.lmp");
+			pic = UI_CachePic ("gfx/end-1.lmp");
 			break;
 		case 7:
-			pic = Draw_CachePic ("gfx/end-2.lmp");
+			pic = UI_CachePic ("gfx/end-2.lmp");
 			break;
 		case 8:
-			pic = Draw_CachePic ("gfx/end-3.lmp");
+			pic = UI_CachePic ("gfx/end-3.lmp");
 			break;
 		case 9:
-			pic = Draw_CachePic ("gfx/castle.lmp");
+			pic = UI_CachePic ("gfx/castle.lmp");
 			break;
 		case 10:
-			pic = Draw_CachePic ("gfx/mpend.lmp");
+			pic = UI_CachePic ("gfx/mpend.lmp");
 			break;
 		case 11:
-			pic = Draw_CachePic ("gfx/mpmid.lmp");
+			pic = UI_CachePic ("gfx/mpmid.lmp");
 			break;
 		case 12:
-			pic = Draw_CachePic ("gfx/end-3.lmp");
+			pic = UI_CachePic ("gfx/end-3.lmp");
 			break;
 
 		default:
@@ -996,7 +996,7 @@ void SB_FinaleOverlay(void)
 {
 	image_t	*pic;
 
-	pic = Draw_CachePic("gfx/finale.lmp");
+	pic = UI_CachePic("gfx/finale.lmp");
 	UI_DrawPic((viddef.width-pic->width)/2, 16, pic);
 }
 

@@ -419,13 +419,3 @@ Call after completing any disc IO
 void Draw_EndDisc (void)
 {
 }
-
-int Draw_GetWidth(image_t* pic)
-{
-	return pic->width;
-}
-
-int Draw_GetHeight(image_t* pic)
-{
-	return pic->height;
-}

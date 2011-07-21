@@ -244,12 +244,12 @@ void SB_Draw(void)
 	if(BarHeight < 0)
 		DrawFullScreenInfo();
 
-	//Sbar_DrawPic(0, 0, Draw_CachePic("gfx/topbar.lmp"));
-	Sbar_DrawPic(0, 0, Draw_CachePic("gfx/topbar1.lmp"));
-	Sbar_DrawPic(160, 0, Draw_CachePic("gfx/topbar2.lmp"));
-	Sbar_DrawTransPic(0, -23, Draw_CachePic("gfx/topbumpl.lmp"));
-	Sbar_DrawTransPic(138, -8, Draw_CachePic("gfx/topbumpm.lmp"));
-	Sbar_DrawTransPic(269, -23, Draw_CachePic("gfx/topbumpr.lmp"));
+	//Sbar_DrawPic(0, 0, UI_CachePic("gfx/topbar.lmp"));
+	Sbar_DrawPic(0, 0, UI_CachePic("gfx/topbar1.lmp"));
+	Sbar_DrawPic(160, 0, UI_CachePic("gfx/topbar2.lmp"));
+	Sbar_DrawTransPic(0, -23, UI_CachePic("gfx/topbumpl.lmp"));
+	Sbar_DrawTransPic(138, -8, UI_CachePic("gfx/topbumpm.lmp"));
+	Sbar_DrawTransPic(269, -23, UI_CachePic("gfx/topbumpr.lmp"));
 
 	maxMana = (int)cl.v.max_mana;
 	// Blue mana
@@ -267,8 +267,8 @@ void SB_Draw(void)
 	if(mana)
 	{
 		Sbar_DrawPic(190, 26-(int)((mana*18.0)/(float)maxMana+0.5),
-			Draw_CachePic("gfx/bmana.lmp"));
-		Sbar_DrawPic(190, 27, Draw_CachePic("gfx/bmanacov.lmp"));
+			UI_CachePic("gfx/bmana.lmp"));
+		Sbar_DrawPic(190, 27, UI_CachePic("gfx/bmanacov.lmp"));
 	}
 
 	// Green mana
@@ -286,8 +286,8 @@ void SB_Draw(void)
 	if(mana)
 	{
 		Sbar_DrawPic(232, 26-(int)((mana*18.0)/(float)maxMana+0.5),
-			Draw_CachePic("gfx/gmana.lmp"));
-		Sbar_DrawPic(232, 27, Draw_CachePic("gfx/gmanacov.lmp"));
+			UI_CachePic("gfx/gmana.lmp"));
+		Sbar_DrawPic(232, 27, UI_CachePic("gfx/gmanacov.lmp"));
 	}
 
 	// HP
@@ -297,11 +297,11 @@ void SB_Draw(void)
 		Sbar_DrawNum(58, 14, cl.v.health, 3);
 	SetChainPosition(cl.v.health, cl.v.max_health);
 	Sbar_DrawTransPic(45+((int)ChainPosition&7), 38,
-		Draw_CachePic("gfx/hpchain.lmp"));
+		UI_CachePic("gfx/hpchain.lmp"));
 	Sbar_DrawTransPic(45+(int)ChainPosition, 36,
-		Draw_CachePic("gfx/hpgem.lmp"));
-	Sbar_DrawPic(43, 36, Draw_CachePic("gfx/chnlcov.lmp"));
-	Sbar_DrawPic(267, 36, Draw_CachePic("gfx/chnrcov.lmp"));
+		UI_CachePic("gfx/hpgem.lmp"));
+	Sbar_DrawPic(43, 36, UI_CachePic("gfx/chnlcov.lmp"));
+	Sbar_DrawPic(267, 36, UI_CachePic("gfx/chnrcov.lmp"));
 
 	// AC
 	Sbar_DrawNum(105, 14, CalcAC(), 2);
@@ -316,7 +316,7 @@ void SB_Draw(void)
 	{
 		DrawBarArtifactIcon(144, 3, cl.inv_order[cl.inv_selected]);
 
-		//Sbar_DrawTransPic(144, 3, Draw_CachePic(va("gfx/arti%02d.lmp",
+		//Sbar_DrawTransPic(144, 3, UI_CachePic(va("gfx/arti%02d.lmp",
 		//	cl.inv_order[cl.inv_selected])));
 	}
 
@@ -407,8 +407,8 @@ static void DrawFullScreenInfo(void)
 	char tempStr[80];
 
 	y = BarHeight-37;
-	Sbar_DrawPic(3, y, Draw_CachePic("gfx/bmmana.lmp"));
-	Sbar_DrawPic(3, y+18, Draw_CachePic("gfx/gmmana.lmp"));
+	Sbar_DrawPic(3, y, UI_CachePic("gfx/bmmana.lmp"));
+	Sbar_DrawPic(3, y+18, UI_CachePic("gfx/gmmana.lmp"));
 
 	maxMana = (int)cl.v.max_mana;
 	// Blue mana
@@ -469,9 +469,9 @@ static void DrawLowerBar(void)
 	}
 
 	// Backdrop
-	//Sbar_DrawPic(0, 46, Draw_CachePic("gfx/btmbar.lmp"));
-	Sbar_DrawPic(0, 46, Draw_CachePic("gfx/btmbar1.lmp"));
-	Sbar_DrawPic(160, 46, Draw_CachePic("gfx/btmbar2.lmp"));
+	//Sbar_DrawPic(0, 46, UI_CachePic("gfx/btmbar.lmp"));
+	Sbar_DrawPic(0, 46, UI_CachePic("gfx/btmbar1.lmp"));
+	Sbar_DrawPic(160, 46, UI_CachePic("gfx/btmbar2.lmp"));
 
 	// Game time
 	//minutes = cl.time / 60;
@@ -530,30 +530,30 @@ static void DrawLowerBar(void)
 
 	// Portrait
 	sprintf(tempStr, "gfx/cport%d.lmp", playerClass);
-	Sbar_DrawPic(134, 50, Draw_CachePic(tempStr));
+	Sbar_DrawPic(134, 50, UI_CachePic(tempStr));
 
 	// Armor
 	if(cl.v.armor_helmet > 0)
 	{
-		Sbar_DrawPic(164, 115, Draw_CachePic("gfx/armor1.lmp"));
+		Sbar_DrawPic(164, 115, UI_CachePic("gfx/armor1.lmp"));
 		sprintf(tempStr, "+%d", (int)cl.v.armor_helmet);
 		Sbar_DrawSmallString(168, 136, tempStr);
 	}
 	if(cl.v.armor_amulet > 0)
 	{
-		Sbar_DrawPic(205, 115, Draw_CachePic("gfx/armor2.lmp"));
+		Sbar_DrawPic(205, 115, UI_CachePic("gfx/armor2.lmp"));
 		sprintf(tempStr, "+%d", (int)cl.v.armor_amulet);
 		Sbar_DrawSmallString(208, 136, tempStr);
 	}
 	if(cl.v.armor_breastplate > 0)
 	{
-		Sbar_DrawPic(246, 115, Draw_CachePic("gfx/armor3.lmp"));
+		Sbar_DrawPic(246, 115, UI_CachePic("gfx/armor3.lmp"));
 		sprintf(tempStr, "+%d", (int)cl.v.armor_breastplate);
 		Sbar_DrawSmallString(249, 136, tempStr);
 	}
 	if(cl.v.armor_bracer > 0)
 	{
-		Sbar_DrawPic(285, 115, Draw_CachePic("gfx/armor4.lmp"));
+		Sbar_DrawPic(285, 115, UI_CachePic("gfx/armor4.lmp"));
 		sprintf(tempStr, "+%d", (int)cl.v.armor_bracer);
 		Sbar_DrawSmallString(288, 136, tempStr);
 	}
@@ -561,43 +561,43 @@ static void DrawLowerBar(void)
 	// Rings 
 	if(cl.v.ring_flight > 0)
 	{
-		Sbar_DrawTransPic(6, 119, Draw_CachePic("gfx/ring_f.lmp"));
+		Sbar_DrawTransPic(6, 119, UI_CachePic("gfx/ring_f.lmp"));
 
 		ringhealth = (int)cl.v.ring_flight;
 		if(ringhealth > 100)
 			ringhealth = 100;
-		Sbar_DrawPic(  35 - (int)(26 * (ringhealth/(float)100)),142,Draw_CachePic("gfx/ringhlth.lmp"));
-		Sbar_DrawPic( 35, 142, Draw_CachePic("gfx/rhlthcvr.lmp"));
+		Sbar_DrawPic(  35 - (int)(26 * (ringhealth/(float)100)),142,UI_CachePic("gfx/ringhlth.lmp"));
+		Sbar_DrawPic( 35, 142, UI_CachePic("gfx/rhlthcvr.lmp"));
 	}
 
 	if(cl.v.ring_water > 0)
 	{
-		Sbar_DrawTransPic(44, 119, Draw_CachePic("gfx/ring_w.lmp"));
+		Sbar_DrawTransPic(44, 119, UI_CachePic("gfx/ring_w.lmp"));
 		ringhealth = (int)cl.v.ring_water;
 		if(ringhealth > 100)
 			ringhealth = 100;
-		Sbar_DrawPic(  73 - (int)(26 * (ringhealth/(float)100)),142,Draw_CachePic("gfx/ringhlth.lmp"));
-		Sbar_DrawPic( 73, 142, Draw_CachePic("gfx/rhlthcvr.lmp"));
+		Sbar_DrawPic(  73 - (int)(26 * (ringhealth/(float)100)),142,UI_CachePic("gfx/ringhlth.lmp"));
+		Sbar_DrawPic( 73, 142, UI_CachePic("gfx/rhlthcvr.lmp"));
 	}
 
 	if(cl.v.ring_turning > 0)
 	{
-		Sbar_DrawTransPic(81, 119, Draw_CachePic("gfx/ring_t.lmp"));
+		Sbar_DrawTransPic(81, 119, UI_CachePic("gfx/ring_t.lmp"));
 		ringhealth = (int)cl.v.ring_turning;
 		if(ringhealth > 100)
 			ringhealth = 100;
-		Sbar_DrawPic(  110 - (int)(26 * (ringhealth/(float)100)),142,Draw_CachePic("gfx/ringhlth.lmp"));
-		Sbar_DrawPic( 110, 142, Draw_CachePic("gfx/rhlthcvr.lmp"));
+		Sbar_DrawPic(  110 - (int)(26 * (ringhealth/(float)100)),142,UI_CachePic("gfx/ringhlth.lmp"));
+		Sbar_DrawPic( 110, 142, UI_CachePic("gfx/rhlthcvr.lmp"));
 	}
 
 	if(cl.v.ring_regeneration > 0)
 	{
-		Sbar_DrawTransPic(119, 119, Draw_CachePic("gfx/ring_r.lmp"));
+		Sbar_DrawTransPic(119, 119, UI_CachePic("gfx/ring_r.lmp"));
 		ringhealth = (int)cl.v.ring_regeneration;
 		if(ringhealth > 100)
 			ringhealth = 100;
-		Sbar_DrawPic( 148 -(int)(26 * (ringhealth/(float)100)),142,Draw_CachePic("gfx/ringhlth.lmp"));
-		Sbar_DrawPic( 148, 142, Draw_CachePic("gfx/rhlthcv2.lmp"));
+		Sbar_DrawPic( 148 -(int)(26 * (ringhealth/(float)100)),142,UI_CachePic("gfx/ringhlth.lmp"));
+		Sbar_DrawPic( 148, 142, UI_CachePic("gfx/rhlthcv2.lmp"));
 	}
 
 	// Puzzle pieces
@@ -609,7 +609,7 @@ static void DrawLowerBar(void)
 			continue;
 		}
 		Sbar_DrawPic(194+(piece%4)*31, piece < 4 ? 51 : 82,
-			Draw_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
+			UI_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
 		piece++;
 	}
 }
@@ -969,8 +969,8 @@ void Sbar_DeathmatchOverlay(void)
 	char			num[12];
 	scoreboard_t	*s;
 
-	pic = Draw_CachePic ("gfx/menu/title8.lmp");
-	M_DrawTransPic ((320-Draw_GetWidth(pic))/2, 0, pic);
+	pic = UI_CachePic ("gfx/menu/title8.lmp");
+	M_DrawTransPic ((320-UI_GetImageWidth(pic))/2, 0, pic);
 
 // scores	
 	Sbar_SortFrags ();
@@ -1092,13 +1092,13 @@ void Sbar_NormalOverlay(void)
 		if (piece < 4)
 		{
 			M_DrawPic(10, y,
-				Draw_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
+				UI_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
 			M_PrintWhite (45, y, Name);
 		}
 		else
 		{
 			M_DrawPic(310-32, y,
-				Draw_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
+				UI_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
 			M_PrintWhite (310-32-3-(QStr::Length(Name)*8), 18+y, Name);
 		}
 
@@ -1211,7 +1211,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/rngtrn%d.lmp", frame);
-		UI_DrawPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width - 50, ring_row, UI_CachePic(tempStr));
 		ring_row += 33;
 	}
 
@@ -1219,7 +1219,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/rngreg%d.lmp", frame);
-		UI_DrawPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width - 50, ring_row, UI_CachePic(tempStr));
 		ring_row += 33;
 	}
 */
@@ -1228,7 +1228,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/rngwtr%d.lmp", frame);
-		UI_DrawPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width - 50, ring_row, UI_CachePic(tempStr));
 		ring_row += 33;
 	}
 
@@ -1236,7 +1236,7 @@ static void DrawActiveRings(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/rngfly%d.lmp", frame);
-		UI_DrawPic(viddef.width - 50, ring_row, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width - 50, ring_row, UI_CachePic(tempStr));
 		ring_row += 33;
 	}
 }
@@ -1266,7 +1266,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/pwrbook%d.lmp", frame);
-		UI_DrawPic(viddef.width-art_col, 1, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width-art_col, 1, UI_CachePic(tempStr));
 		art_col += 50;
 	}
 
@@ -1274,7 +1274,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/durhst%d.lmp", frame);
-		UI_DrawPic(viddef.width-art_col,1, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width-art_col,1, UI_CachePic(tempStr));
 		art_col += 50;
 	}
 
@@ -1282,7 +1282,7 @@ static void DrawActiveArtifacts(void)
 	{
 		frame = 1+((int)(cl.time*16)&15);
 		sprintf(tempStr, "gfx/durshd%d.lmp", frame);
-		UI_DrawPic(viddef.width-art_col, 1, Draw_CachePic(tempStr));
+		UI_DrawPic(viddef.width-art_col, 1, UI_CachePic(tempStr));
 		art_col += 50;
 	}
 
@@ -1325,7 +1325,7 @@ static void DrawBarArtifactIcon(int x, int y, int artifact)
 
 	if ((artifact<0) || (artifact>14))
 		return;
-	Sbar_DrawTransPic(x, y, Draw_CachePic(va("gfx/arti%02d.lmp",
+	Sbar_DrawTransPic(x, y, UI_CachePic(va("gfx/arti%02d.lmp",
 		artifact)));
 //	if((count = (int)(&cl.v.cnt_torch)[artifact]) > 1)
 	if((count = (int)(&cl.v.cnt_torch)[artifact]) > 0)
@@ -1378,7 +1378,7 @@ static void DrawArtifactInventory(void)
 		}
 		if(cl.inv_startpos+i == cl.inv_selected)
 		{ // Highlight icon
-			Sbar_DrawTransPic(x+9, y-12, Draw_CachePic("gfx/artisel.lmp"));
+			Sbar_DrawTransPic(x+9, y-12, UI_CachePic("gfx/artisel.lmp"));
 		}
 		DrawBarArtifactIcon(x, y, cl.inv_order[cl.inv_startpos+i]);
 	}
@@ -1740,8 +1740,8 @@ static void DrawBarArtifactNumber(int x, int y, int number)
 	if(number >= 10)
 	{
 		artiNumName[11] = '0'+(number%100)/10;
-		Sbar_DrawTransPic(x, y, Draw_CachePic(artiNumName));
+		Sbar_DrawTransPic(x, y, UI_CachePic(artiNumName));
 	}
 	artiNumName[11] = '0'+number%10;
-	Sbar_DrawTransPic(x+4, y, Draw_CachePic(artiNumName));
+	Sbar_DrawTransPic(x+4, y, UI_CachePic(artiNumName));
 }

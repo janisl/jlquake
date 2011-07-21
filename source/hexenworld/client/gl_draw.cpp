@@ -111,9 +111,9 @@ void Draw_Init (void)
 	for(i=MAX_DISC-1;i>=0;i--)
 	{
 		sprintf(temp,"gfx/menu/skull%d.lmp",i);
-		draw_disc[i] = Draw_CachePic(temp);
+		draw_disc[i] = UI_CachePic(temp);
 	}
-	draw_backtile = Draw_CachePic("gfx/menu/backtile.lmp");
+	draw_backtile = UI_CachePic("gfx/menu/backtile.lmp");
 }
 
 
@@ -708,14 +708,4 @@ Call after completing any disc IO
 */
 void Draw_EndDisc (void)
 {
-}
-
-int Draw_GetWidth(image_t* pic)
-{
-	return pic->width;
-}
-
-int Draw_GetHeight(image_t* pic)
-{
-	return pic->height;
 }

@@ -75,25 +75,6 @@ void Draw_Char (int x, int y, int num)
 
 /*
 =============
-Draw_GetPicSize
-=============
-*/
-void Draw_GetPicSize (int *w, int *h, const char *pic)
-{
-	image_t *gl;
-
-	gl = UI_RegisterPic (pic);
-	if (!gl)
-	{
-		*w = *h = -1;
-		return;
-	}
-	*w = gl->width;
-	*h = gl->height;
-}
-
-/*
-=============
 Draw_StretchPic
 =============
 */
