@@ -44,44 +44,8 @@ void SCR_DrawNamedPic( float x, float y, float width, float height, const char *
 	assert( width != 0 );
 
 	hShader = R_RegisterShader( picname );
-	SCR_AdjustFrom640( &x, &y, &width, &height );
+	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
 	R_StretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
-}
-
-
-/*
-================
-SCR_AdjustFrom640
-
-Adjusted for resolution and screen aspect ratio
-================
-*/
-void SCR_AdjustFrom640( float *x, float *y, float *w, float *h ) {
-	float	xscale;
-	float	yscale;
-
-#if 0
-		// adjust for wide screens
-		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 ) {
-			*x += 0.5 * ( cls.glconfig.vidWidth - ( cls.glconfig.vidHeight * 640 / 480 ) );
-		}
-#endif
-
-	// scale for screen sizes
-	xscale = cls.glconfig.vidWidth / 640.0;
-	yscale = cls.glconfig.vidHeight / 480.0;
-	if ( x ) {
-		*x *= xscale;
-	}
-	if ( y ) {
-		*y *= yscale;
-	}
-	if ( w ) {
-		*w *= xscale;
-	}
-	if ( h ) {
-		*h *= yscale;
-	}
 }
 
 /*
@@ -94,7 +58,7 @@ Coordinates are 640*480 virtual values
 void SCR_FillRect( float x, float y, float width, float height, const float *color ) {
 	R_SetColor( color );
 
-	SCR_AdjustFrom640( &x, &y, &width, &height );
+	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
 	R_StretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
 
 	R_SetColor( NULL );
@@ -109,7 +73,7 @@ Coordinates are 640*480 virtual values
 =================
 */
 void SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader ) {
-	SCR_AdjustFrom640( &x, &y, &width, &height );
+	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
 	R_StretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
@@ -138,7 +102,7 @@ static void SCR_DrawChar( int x, int y, float size, int ch ) {
 	ay = y;
 	aw = size;
 	ah = size;
-	SCR_AdjustFrom640( &ax, &ay, &aw, &ah );
+	UI_AdjustFromVirtualScreen( &ax, &ay, &aw, &ah );
 
 	row = ch>>4;
 	col = ch&15;
@@ -421,9 +385,6 @@ void SCR_Init( void ) {
 	cl_graphheight = Cvar_Get ("graphheight", "32", CVAR_CHEAT);
 	cl_graphscale = Cvar_Get ("graphscale", "1", CVAR_CHEAT);
 	cl_graphshift = Cvar_Get ("graphshift", "0", CVAR_CHEAT);
-
-	viddef.width = 640;
-	viddef.height = 480;
 
 	scr_initialized = qtrue;
 }

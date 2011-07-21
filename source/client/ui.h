@@ -30,3 +30,5 @@ struct viddef_t
 };
 
 extern viddef_t		viddef;				// global video state
+
+void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);

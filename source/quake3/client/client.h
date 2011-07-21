@@ -458,7 +458,6 @@ void	SCR_DebugGraph (float value, int color);
 
 int		SCR_GetBigStringWidth( const char *str );	// returns in virtual 640x480 coordinates
 
-void	SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
 void	SCR_FillRect( float x, float y, float width, float height, 
 					 const float *color );
 void	SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );

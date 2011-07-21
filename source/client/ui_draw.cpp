@@ -42,6 +42,31 @@ viddef_t	viddef;
 
 //==========================================================================
 //
+//	UI_AdjustFromVirtualScreen
 //
+//	Adjusted for resolution and screen aspect ratio
 //
 //==========================================================================
+
+void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
+{
+	// scale for screen sizes
+	float xscale = (float)glConfig.vidWidth / viddef.width;
+	float yscale = (float)glConfig.vidHeight / viddef.height;
+	if (x)
+	{
+		*x *= xscale;
+	}
+	if (y)
+	{
+		*y *= yscale;
+	}
+	if (w)
+	{
+		*w *= xscale;
+	}
+	if (h)
+	{
+		*h *= yscale;
+	}
+}

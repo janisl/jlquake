@@ -168,10 +168,12 @@ void Draw_Init (void)
 void DoQuad(float x1, float y1, float s1, float t1,
 	float x2, float y2, float s2, float t2)
 {
-	x1 *= (float)glConfig.vidWidth / viddef.width;
-	x2 *= (float)glConfig.vidWidth / viddef.width;
-	y1 *= (float)glConfig.vidHeight / viddef.height;
-	y2 *= (float)glConfig.vidHeight / viddef.height;
+	float xscale = (float)glConfig.vidWidth / viddef.width;
+	float yscale = (float)glConfig.vidHeight / viddef.height;
+	x1 *= xscale;
+	x2 *= xscale;
+	y1 *= yscale;
+	y2 *= yscale;
 
 	qglBegin(GL_QUADS);
 	qglTexCoord2f(s1, t1);

@@ -2096,6 +2096,15 @@ void CL_InitRenderer( void ) {
 	// this sets up the renderer and calls R_Init
 	re.BeginRegistration( &cls.glconfig );
 
+	viddef.width = SCREEN_WIDTH;
+	viddef.height = SCREEN_HEIGHT;
+#if 0
+		// adjust for wide screens
+		if ( cls.glconfig.vidWidth * 480 > cls.glconfig.vidHeight * 640 ) {
+			*x += 0.5 * ( cls.glconfig.vidWidth - ( cls.glconfig.vidHeight * 640 / 480 ) );
+		}
+#endif
+
 	// load character sets
 	cls.charSetShader = R_RegisterShader( "gfx/2d/bigchars" );
 	cls.whiteShader = R_RegisterShader( "white" );

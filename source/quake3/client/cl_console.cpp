@@ -596,7 +596,7 @@ void Con_DrawSolidConsole( float frac ) {
 
 	// on wide screens, we will center the text
 	con.xadjust = 0;
-	SCR_AdjustFrom640( &con.xadjust, NULL, NULL, NULL );
+	UI_AdjustFromVirtualScreen( &con.xadjust, NULL, NULL, NULL );
 
 	// draw the background
 	y = frac * SCREEN_HEIGHT - 2;
