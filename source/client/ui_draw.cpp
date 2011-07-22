@@ -248,3 +248,33 @@ void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 	}
 	UI_DrawStretchPic(x, y, w, h, gl);
 }
+
+//==========================================================================
+//
+//	UI_DrawSubPic
+//
+//==========================================================================
+
+void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
+{
+	float newsl, newtl, newsh, newth;
+	float oldglwidth, oldglheight;
+
+	if (scrap_dirty)
+		R_ScrapUpload();
+	
+	oldglwidth = pic->sh - pic->sl;
+	oldglheight = pic->th - pic->tl;
+
+	newsl = pic->sl + (srcx*oldglwidth)/pic->width;
+	newsh = newsl + (width*oldglwidth)/pic->width;
+
+	newtl = pic->tl + (srcy*oldglheight)/pic->height;
+	newth = newtl + (height*oldglheight)/pic->height;
+	
+	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
+	
+	qglColor4f (1,1,1,1);
+	GL_Bind (pic);
+	DoQuad(x, y, newsl, newtl, x + width, y + height, newsh, newth);
+}

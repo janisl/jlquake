@@ -227,7 +227,7 @@ JACK: Draws a portion of the picture in the status bar.
 
 void Sbar_DrawSubPic(int x, int y, image_t *pic, int srcx, int srcy, int width, int height) 
 {
-	Draw_SubPic (x, y+(viddef.height-SBAR_HEIGHT), pic, srcx, srcy, width, height);
+	UI_DrawSubPic (x, y+(viddef.height-SBAR_HEIGHT), pic, srcx, srcy, width, height);
 }
 
 
