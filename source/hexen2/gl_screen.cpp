@@ -552,18 +552,18 @@ void SCR_DrawLoading (void)
 	else
 		count = 106;
 
-	Draw_Fill (offset+42, 87, count, 1, 136);
-	Draw_Fill (offset+42, 87+1, count, 4, 138);
-	Draw_Fill (offset+42, 87+5, count, 1, 136);
+	UI_FillPal (offset+42, 87, count, 1, 136);
+	UI_FillPal (offset+42, 87+1, count, 4, 138);
+	UI_FillPal (offset+42, 87+5, count, 1, 136);
 
 	if (loading_stage == 2)
 		count = size;
 	else
 		count = 0;
 
-	Draw_Fill (offset+42, 97, count, 1, 168);
-	Draw_Fill (offset+42, 97+1, count, 4, 170);
-	Draw_Fill (offset+42, 97+5, count, 1, 168);
+	UI_FillPal (offset+42, 97, count, 1, 168);
+	UI_FillPal (offset+42, 97+1, count, 4, 170);
+	UI_FillPal (offset+42, 97+5, count, 1, 168);
 }
 
 

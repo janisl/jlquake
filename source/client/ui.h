@@ -51,3 +51,5 @@ void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char *name);
 void UI_DrawSubPic(int x, int y, image_t *pic, int srcx, int srcy, int width, int height);
 void UI_TileClear(int x, int y, int w, int h, image_t* pic);
 void UI_NamedTileClear(int x, int y, int w, int h, const char *name);
+void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a);
+void UI_FillPal(int x, int y, int w, int h, int c);

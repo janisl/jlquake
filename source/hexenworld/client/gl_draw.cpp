@@ -354,25 +354,6 @@ void Draw_ConsoleBackground(int lines)
 	}
 }
 
-/*
-=============
-Draw_Fill
-
-Fills a box of pixels with a single color
-=============
-*/
-void Draw_Fill (int x, int y, int w, int h, int c)
-{
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-	qglDisable (GL_TEXTURE_2D);
-	qglColor3f (host_basepal[c*3]/255.0,
-		host_basepal[c*3+1]/255.0,
-		host_basepal[c*3+2]/255.0);
-
-	DoQuad(x, y, 0, 0, x + w, y + h, 0, 0);
-	qglColor3f (1,1,1);
-	glEnable (GL_TEXTURE_2D);
-}
 //=============================================================================
 
 /*
@@ -383,35 +364,15 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen (void)
 {
-	int bx,by,ex,ey;
-	int c;
-
-	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	qglDisable (GL_TEXTURE_2D);
-
-//	qglColor4f (248.0/255.0, 220.0/255.0, 120.0/255.0, 0.2);
-	qglColor4f (208.0/255.0, 180.0/255.0, 80.0/255.0, 0.2);
-	DoQuad(0, 0, 0, 0, viddef.width, viddef.height, 0, 0);
-
-	qglColor4f (208.0/255.0, 180.0/255.0, 80.0/255.0, 0.035);
-	for(c=0;c<40;c++)
+	UI_Fill(0, 0, viddef.width, viddef.height, 208.0/255.0, 180.0/255.0, 80.0/255.0, 0.2);
+	for (int c = 0; c < 40; c++)
 	{
-		bx = rand() % viddef.width-20;
-		by = rand() % viddef.height-20;
-		ex = bx + (rand() % 40) + 20;
-		ey = by + (rand() % 40) + 20;
-		if (bx < 0) bx = 0;
-		if (by < 0) by = 0;
-		if (ex > viddef.width) ex = viddef.width;
-		if (ey > viddef.height) ey = viddef.height;
-
-		DoQuad(bx, by, 0, 0, ex, ey, 0, 0);
+		int x = rand() % viddef.width - 20;
+		int y = rand() % viddef.height - 20;
+		int w = (rand() % 40) + 20;
+		int h = (rand() % 40) + 20;
+		UI_Fill(x, y, w, h, 208.0 / 255.0, 180.0 / 255.0, 80.0 / 255.0, 0.035);
 	}
-
-	qglColor4f (1,1,1,1);
-	glEnable (GL_TEXTURE_2D);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 }
 
 //=============================================================================

@@ -506,8 +506,8 @@ void Sbar_DrawScoreboard (void)
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 
-		Draw_Fill ( x*8+10 + ((viddef.width - 320)>>1), y + viddef.height - SBAR_HEIGHT, 28, 4, top);
-		Draw_Fill ( x*8+10 + ((viddef.width - 320)>>1), y+4 + viddef.height - SBAR_HEIGHT, 28, 4, bottom);
+		UI_FillPal ( x*8+10 + ((viddef.width - 320)>>1), y + viddef.height - SBAR_HEIGHT, 28, 4, top);
+		UI_FillPal ( x*8+10 + ((viddef.width - 320)>>1), y+4 + viddef.height - SBAR_HEIGHT, 28, 4, bottom);
 
 	// draw text
 		for (j=0 ; j<20 ; j++)
@@ -752,8 +752,8 @@ void Sbar_DrawFrags (void)
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 
-		Draw_Fill (xofs + x*8 + 10, y, 28, 4, top);
-		Draw_Fill (xofs + x*8 + 10, y+4, 28, 3, bottom);
+		UI_FillPal (xofs + x*8 + 10, y, 28, 4, top);
+		UI_FillPal (xofs + x*8 + 10, y+4, 28, 3, bottom);
 
 	// draw number
 		f = s->frags;
@@ -809,8 +809,8 @@ void Sbar_DrawFace (void)
 			xofs = ((viddef.width - 320)>>1) + 113;
 
 		Sbar_DrawPic (112, 0, rsb_teambord);
-		Draw_Fill (xofs, viddef.height-SBAR_HEIGHT+3, 22, 9, top);
-		Draw_Fill (xofs, viddef.height-SBAR_HEIGHT+12, 22, 9, bottom);
+		UI_FillPal (xofs, viddef.height-SBAR_HEIGHT+3, 22, 9, top);
+		UI_FillPal (xofs, viddef.height-SBAR_HEIGHT+12, 22, 9, bottom);
 
 		// draw number
 		f = s->frags;
@@ -1062,8 +1062,8 @@ void Sbar_DeathmatchOverlay (void)
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 
-		Draw_Fill ( x, y, 40, 4, top);
-		Draw_Fill ( x, y+4, 40, 4, bottom);
+		UI_FillPal ( x, y, 40, 4, top);
+		UI_FillPal ( x, y+4, 40, 4, bottom);
 
 	// draw number
 		f = s->frags;
@@ -1158,8 +1158,8 @@ void Sbar_MiniDeathmatchOverlay (void)
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 
-		Draw_Fill ( x, y+1, 40, 3, top);
-		Draw_Fill ( x, y+4, 40, 4, bottom);
+		UI_FillPal ( x, y+1, 40, 3, top);
+		UI_FillPal ( x, y+4, 40, 4, bottom);
 
 	// draw number
 		f = s->frags;

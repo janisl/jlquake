@@ -350,3 +350,33 @@ void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 	}
 	UI_TileClear(x, y, w, h, image);
 }
+
+//==========================================================================
+//
+//	UI_Fill
+//
+//==========================================================================
+
+void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a)
+{
+	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	qglDisable(GL_TEXTURE_2D);
+	qglColor4f(r, g, b, a);
+	DoQuad(x, y, 0, 0, x + w, y + h, 0, 0);
+	qglEnable(GL_TEXTURE_2D);
+}
+
+//==========================================================================
+//
+//	UI_FillPal
+//
+//==========================================================================
+
+void UI_FillPal(int x, int y, int w, int h, int c)
+{
+	if ((unsigned)c > 255)
+	{
+		throw QException("UI_FillPal: bad color");
+	}
+	UI_Fill(x, y, w, h, r_palette[c][0] / 255.0, r_palette[c][1] / 255.0, r_palette[c][2] / 255.0, 1);
+}

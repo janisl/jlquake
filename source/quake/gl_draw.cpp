@@ -202,25 +202,6 @@ void Draw_ConsoleBackground(int lines)
 	}
 }
 
-/*
-=============
-Draw_Fill
-
-Fills a box of pixels with a single color
-=============
-*/
-void Draw_Fill (int x, int y, int w, int h, int c)
-{
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-	qglDisable (GL_TEXTURE_2D);
-	qglColor3f (host_basepal[c*3]/255.0,
-		host_basepal[c*3+1]/255.0,
-		host_basepal[c*3+2]/255.0);
-
-	DoQuad(x, y, 0, 0, x + w, y + h, 0, 0);
-	qglColor3f (1,1,1);
-	qglEnable (GL_TEXTURE_2D);
-}
 //=============================================================================
 
 /*
@@ -231,12 +212,7 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen (void)
 {
-	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	qglDisable (GL_TEXTURE_2D);
-	qglColor4f (0, 0, 0, 0.8);
-	DoQuad(0, 0, 0, 0, viddef.width, viddef.height, 0, 0);
-	qglColor4f (1,1,1,1);
-	qglEnable (GL_TEXTURE_2D);
+	UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8);
 }
 
 //=============================================================================

@@ -41,7 +41,6 @@ extern refexport_t re;
 #define VID_HEIGHT viddef.height
 
 #define Draw_Char re.DrawChar
-#define Draw_Fill re.DrawFill
 
 void Action_DoEnter( menuaction_s *a )
 {
@@ -417,12 +416,12 @@ void Menu_DrawStatusBar( const char *string )
 		int maxcol = VID_WIDTH / 8;
 		int col = maxcol / 2 - l / 2;
 
-		Draw_Fill( 0, VID_HEIGHT-8, VID_WIDTH, 8, 4 );
+		UI_FillPal( 0, VID_HEIGHT-8, VID_WIDTH, 8, 4 );
 		Menu_DrawString( col*8, VID_HEIGHT - 8, string );
 	}
 	else
 	{
-		Draw_Fill( 0, VID_HEIGHT-8, VID_WIDTH, 8, 0 );
+		UI_FillPal( 0, VID_HEIGHT-8, VID_WIDTH, 8, 0 );
 	}
 }
 
@@ -560,7 +559,7 @@ void MenuList_Draw( menulist_s *l )
 
 	n = l->itemnames;
 
-  	Draw_Fill( l->generic.x - 112 + l->generic.parent->x, l->generic.parent->y + l->generic.y + l->curvalue*10 + 10, 128, 10, 16 );
+  	UI_FillPal( l->generic.x - 112 + l->generic.parent->x, l->generic.parent->y + l->generic.y + l->curvalue*10 + 10, 128, 10, 16 );
 	while ( *n )
 	{
 		Menu_DrawStringR2LDark( l->generic.x + l->generic.parent->x + LCOLUMN_OFFSET, l->generic.y + l->generic.parent->y + y + 10, *n );

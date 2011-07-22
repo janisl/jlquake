@@ -3965,7 +3965,7 @@ void PlayerConfig_MenuDraw( void )
 
 		M_DrawTextBox( ( refdef.x ) * ( 320.0F / viddef.width ) - 8, ( viddef.height / 2 ) * ( 240.0F / viddef.height) - 77, refdef.width / 8, refdef.height / 8 );
 		refdef.height += 4;
-		Draw_FillRgb(refdef.x, refdef.y, refdef.width, refdef.height, 76, 76, 76);
+		UI_Fill(refdef.x, refdef.y, refdef.width, refdef.height, 0.3, 0.3, 0.3, 1);
 
 		re.RenderFrame( &refdef );
 
@@ -4133,7 +4133,7 @@ void M_Draw (void)
 	SCR_DirtyScreen ();
 
 	// dim everything behind it down
-	re.DrawFadeScreen ();
+	UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8);
 
 	m_drawfunc ();
 

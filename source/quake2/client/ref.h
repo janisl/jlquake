@@ -55,8 +55,6 @@ typedef struct
 	void	(*RenderFrame) (refdef_t *fd);
 
 	void	(*DrawChar) (int x, int y, int c);
-	void	(*DrawFill) (int x, int y, int w, int h, int c);
-	void	(*DrawFadeScreen) (void);
 
 	/*
 	** video mode and refresh state management entry points
@@ -81,7 +79,6 @@ typedef struct
 typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
 
 void R_ClearScreen();
-void Draw_FillRgb(int x, int y, int w, int h, int r, int g, int b);
 
 extern float		v_blend[4];
 

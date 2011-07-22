@@ -30,7 +30,6 @@ void Draw_Character (int x, int y, int num);
 void Draw_ConsoleBackground (int lines);
 void Draw_BeginDisc (void);
 void Draw_EndDisc (void);
-void Draw_Fill (int x, int y, int w, int h, int c);
 void Draw_FadeScreen (void);
 void Draw_String (int x, int y, const char *str);
 void Draw_Alt_String (int x, int y, char *str);

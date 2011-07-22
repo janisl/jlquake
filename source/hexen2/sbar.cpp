@@ -848,8 +848,8 @@ void Sbar_DrawFrags (void)
 		top = Sbar_ColorForMap (top);
 		bottom = Sbar_ColorForMap (bottom);
 	
-		Draw_Fill (xofs + x*8 + 10, y, 28, 4, top);
-		Draw_Fill (xofs + x*8 + 10, y+4, 28, 3, bottom);
+		UI_FillPal (xofs + x*8 + 10, y, 28, 4, top);
+		UI_FillPal (xofs + x*8 + 10, y+4, 28, 3, bottom);
 
 	// draw number
 		f = s->frags;
@@ -993,8 +993,8 @@ void Sbar_DeathmatchOverlay(void)
 		// draw background
 		FindColor (k, &top, &bottom);
 	
-		Draw_Fill ( x, y, 40, 4, top);
-		Draw_Fill ( x, y+4, 40, 4, bottom);
+		UI_FillPal ( x, y, 40, 4, top);
+		UI_FillPal ( x, y+4, 40, 4, bottom);
 
 		// draw number
 		f = s->frags;
@@ -1157,8 +1157,8 @@ void Sbar_SmallDeathmatchOverlay(void)
 		// draw background
 		FindColor (k, &top, &bottom);
 	
-		Draw_Fill ( x, y, 28, 4, top);
-		Draw_Fill ( x, y+4, 28, 4, bottom);
+		UI_FillPal ( x, y, 28, 4, top);
+		UI_FillPal ( x, y+4, 28, 4, bottom);
 
 		// draw number
 		f = s->frags;
@@ -1386,10 +1386,10 @@ static void DrawArtifactInventory(void)
 	//Inv_DrawArrows (x, y);
 
 /*	if (cl.inv_startpos)  // Left arrow showing there are icons to the left 
-		Draw_Fill ( x , y - 5, 3, 1, 30);
+		UI_FillPal ( x , y - 5, 3, 1, 30);
 
 	if (cl.inv_startpos + INV_MAX_ICON < cl.inv_count) // Right arrow showing there are icons to the right
-		Draw_Fill ( x + 200, y - 5 , 3, 1, 30);
+		UI_FillPal ( x + 200, y - 5 , 3, 1, 30);
 */
 }
 

@@ -271,8 +271,6 @@ void	R_EndRegistration (void);
 void	R_RenderFrame (refdef_t *fd);
 
 void	Draw_Char (int x, int y, int c);
-void	Draw_Fill (int x, int y, int w, int h, int c);
-void	Draw_FadeScreen (void);
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
@@ -293,8 +291,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.RenderFrame = R_RenderFrame;
 
 	re.DrawChar = Draw_Char;
-	re.DrawFill = Draw_Fill;
-	re.DrawFadeScreen= Draw_FadeScreen;
 
 	re.Shutdown = R_Shutdown;
 
