@@ -33,7 +33,6 @@ byte		*draw_chars;				// 8*8 graphic characters
 image_t		*draw_disc;
 image_t		*draw_backtile;
 
-image_t*	translate_texture;
 image_t*	char_texture;
 image_t*	cs_texture; // crosshair texture
 

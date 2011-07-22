@@ -14,7 +14,6 @@ image_t		*draw_disc[MAX_DISC] =
 };
 image_t*	draw_backtile;
 
-image_t*	translate_texture[MAX_PLAYER_CLASS];
 image_t*	char_texture;
 image_t*	cs_texture; // crosshair texture
 image_t*	char_smalltexture;
@@ -37,8 +36,6 @@ image_t		*conback;
 
 //=============================================================================
 /* Support Routines */
-
-byte		menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
 /*
 ===============
@@ -409,27 +406,6 @@ void Draw_SubPicCropped(int x, int y, int h, image_t* pic)
 void Draw_TransPicCropped(int x, int y, image_t*pic)
 {
 	Draw_PicCropped (x, y, pic);
-}
-
-/*
-=============
-Draw_TransPicTranslate
-
-Only used for the player color selection menu
-=============
-*/
-void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
-{
-	extern int which_class;
-
-	R_CreateOrUpdateTranslatedImage(translate_texture[which_class-1], va("translate_pic%d", which_class), menuplyr_pixels[which_class-1], translation, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	GL_Bind (translate_texture[which_class-1]);
-
-	qglColor3f (1,1,1);
-	DoQuad(x, y, 0, 0, x + pic->width, y + pic->height, 1, 1);
 }
 
 int M_DrawBigCharacter (int x, int y, int num, int numNext)

@@ -30,16 +30,12 @@ byte		*draw_chars;				// 8*8 graphic characters
 image_t*	draw_disc;
 image_t*	draw_backtile;
 
-image_t*	translate_texture;
 image_t*	char_texture;
 
 image_t*	conback;
 
 //=============================================================================
 /* Support Routines */
-
-byte		menuplyr_pixels[4096];
-
 
 void Draw_CharToConback (int num, byte *dest)
 {
@@ -186,26 +182,6 @@ void Draw_String (int x, int y, const char *str)
 		x += 8;
 	}
 }
-
-/*
-=============
-Draw_TransPicTranslate
-
-Only used for the player color selection menu
-=============
-*/
-void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
-{
-	R_CreateOrUpdateTranslatedImage(translate_texture, "*translate_pic", menuplyr_pixels, translation, pic->width, pic->height);
-
-	GL_Bind (translate_texture);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	qglColor3f (1,1,1);
-	DoQuad(x, y, 0, 0, x+pic->width, y+pic->height, 1, 1);
-}
-
 
 /*
 ================

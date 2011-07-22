@@ -20,7 +20,6 @@ image_t		*draw_disc[MAX_DISC] =
 };
 image_t		*draw_backtile;
 
-image_t*	translate_texture[NUM_CLASSES];
 image_t*	char_texture;
 image_t*	char_smalltexture;
 image_t*	char_menufonttexture;
@@ -33,8 +32,6 @@ image_t		*conback;
 /*
  * Geometry for the player/skin selection screen image.
  */
-
-byte		menuplyr_pixels[NUM_CLASSES][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
 void Draw_CharToConback (int num, byte *dest)
 {
@@ -321,27 +318,6 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 void Draw_TransPicCropped(int x, int y, image_t* pic)
 {
 	Draw_PicCropped (x, y, pic);
-}
-
-/*
-=============
-Draw_TransPicTranslate
-
-Only used for the player color selection menu
-=============
-*/
-void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
-{
-	extern int setup_class;
-
-	R_CreateOrUpdateTranslatedImage(translate_texture[setup_class-1], "*translate_pic", menuplyr_pixels[setup_class-1], translation, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
-
-	GL_Bind(translate_texture[setup_class-1]);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	qglColor3f (1,1,1);
-	DoQuad(x, y, 0, 0, x + pic->width, y + pic->height, 1, 1);
 }
 
 

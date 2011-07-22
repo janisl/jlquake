@@ -226,10 +226,15 @@ void M_DrawTransPicCropped (int x, int y, image_t *pic)
 	Draw_TransPicCropped (x + ((viddef.width - 320)>>1), y, pic);
 }
 
+#define PLAYER_PIC_WIDTH 68
+#define PLAYER_PIC_HEIGHT 114
+
 byte identityTable[256];
 byte translationTable[256];
 extern int color_offsets[MAX_PLAYER_CLASS];
 extern byte *playerTranslation;
+static byte		menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
+static image_t*	translate_texture[MAX_PLAYER_CLASS];
 
 void M_BuildTranslationTable(int top, int bottom)
 {
@@ -260,13 +265,6 @@ void M_BuildTranslationTable(int top, int bottom)
 			dest[j] = source[*sourceB];
 	}
 }
-
-
-void M_DrawTransPicTranslate (int x, int y, image_t *pic)
-{
-	Draw_TransPicTranslate (x + ((viddef.width - 320)>>1), y, pic, translationTable);
-}
-
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
@@ -2459,12 +2457,8 @@ void M_Setup_Draw (void)
 	}
 	p = UI_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", which_class), menuplyr_pixels[which_class - 1]);
 	M_BuildTranslationTable(setup_top, setup_bottom);
-#if 0
-	M_DrawPic (220, 72, p);
-#endif
-
-	/* garymct */
-	M_DrawTransPicTranslate (220, 72, p);
+	R_CreateOrUpdateTranslatedImage(translate_texture[which_class-1], va("translate_pic%d", which_class), menuplyr_pixels[which_class-1], translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
+	M_DrawPic(220, 72, translate_texture[which_class - 1]);
 
 	M_DrawCharacter (56, setup_cursor_table [setup_cursor], 12+((int)(realtime*4)&1));
 

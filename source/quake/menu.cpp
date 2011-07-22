@@ -136,6 +136,9 @@ void M_DrawPic (int x, int y, image_t *pic)
 byte identityTable[256];
 byte translationTable[256];
 
+static byte		menuplyr_pixels[4096];
+static image_t*	translate_texture;
+
 void M_BuildTranslationTable(int top, int bottom)
 {
 	int		j;
@@ -159,13 +162,6 @@ void M_BuildTranslationTable(int top, int bottom)
 		for (j=0 ; j<16 ; j++)
 			dest[BOTTOM_RANGE+j] = source[bottom+15-j];
 }
-
-
-void M_DrawTransPicTranslate (int x, int y, image_t *pic)
-{
-	Draw_TransPicTranslate (x + ((viddef.width - 320)>>1), y, pic, translationTable);
-}
-
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
@@ -737,7 +733,8 @@ void M_Setup_Draw (void)
 	M_DrawTransPic (160, 64, p);
 	p = UI_CachePicWithTransPixels("gfx/menuplyr.lmp", menuplyr_pixels);
 	M_BuildTranslationTable(setup_top*16, setup_bottom*16);
-	M_DrawTransPicTranslate (172, 72, p);
+	R_CreateOrUpdateTranslatedImage(translate_texture, "*translate_pic", menuplyr_pixels, translationTable, UI_GetImageWidth(p), UI_GetImageHeight(p));
+	M_DrawPic(172, 72, translate_texture);
 
 	M_DrawCharacter (56, setup_cursor_table [setup_cursor], 12+((int)(realtime*4)&1));
 

@@ -24,11 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct image_t;
 extern image_t*		draw_disc;	// also used on sbar
 
-extern byte		menuplyr_pixels[4096];
-
 void Draw_Init (void);
 void Draw_Character (int x, int y, int num);
-void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation);
 void Draw_ConsoleBackground (int lines);
 void Draw_BeginDisc (void);
 void Draw_EndDisc (void);

@@ -7,19 +7,13 @@
 
 #define MAX_DISC 18
 
-#define PLAYER_PIC_WIDTH 68
-#define PLAYER_PIC_HEIGHT 114
-
 struct image_t;
 extern image_t		*draw_disc[MAX_DISC]; // also used on sbar
-
-extern byte		menuplyr_pixels[NUM_CLASSES][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 
 void Draw_Init (void);
 void Draw_Character (int x, int y, unsigned int num);
 void Draw_PicCropped(int x, int y, image_t *pic);
 void Draw_TransPicCropped(int x, int y, image_t *pic);
-void Draw_TransPicTranslate (int x, int y, image_t *pic, byte *translation);
 void Draw_ConsoleBackground (int lines);
 void Draw_BeginDisc (void);
 void Draw_EndDisc (void);
