@@ -192,13 +192,13 @@ void DoQuad(float x1, float y1, float s1, float t1,
 //
 //==========================================================================
 
-void UI_DrawPic(int x, int y, image_t* pic)
+void UI_DrawPic(int x, int y, image_t* pic, float alpha)
 {
 	if (scrap_dirty)
 	{
 		R_ScrapUpload();
 	}
-	qglColor4f(1, 1, 1, 1);
+	qglColor4f(1, 1, 1, alpha);
 	GL_Bind(pic);
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	DoQuad(x, y, pic->sl, pic->tl, x + pic->width, y + pic->height, pic->sh, pic->th);

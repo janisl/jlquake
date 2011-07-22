@@ -280,41 +280,6 @@ void Draw_SmallString(int x, int y, const char *str)
 	}
 }
 
-/*
-================
-Draw_DebugChar
-
-Draws a single character directly to the upper right corner of the screen.
-This is for debugging lockups by drawing different chars in different parts
-of the code.
-================
-*/
-void Draw_DebugChar (char num)
-{
-}
-
-/*
-=============
-Draw_AlphaPic
-=============
-*/
-void Draw_AlphaPic (int x, int y, image_t* pic, float alpha)
-{
-	byte			*dest, *source;
-	unsigned short	*pusdest;
-	int				v, u;
-
-	if (scrap_dirty)
-		R_ScrapUpload();
-	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	qglCullFace(GL_FRONT);
-	qglColor4f (1,1,1,alpha);
-	GL_Bind (pic);
-	DoQuad(x, y, pic->sl, pic->tl, x + pic->width, y + pic->height, pic->sh, pic->th);
-	qglColor4f (1,1,1,1);
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-}
-
 void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
 {
 	byte			*dest, *source;
@@ -570,7 +535,7 @@ void Draw_ConsoleBackground (int lines)
 	if (lines > y)
 		UI_DrawPic(0, lines-viddef.height, conback);
 	else
-		Draw_AlphaPic (0, lines - viddef.height, conback, (float)(1.2 * lines)/y);
+		UI_DrawPic(0, lines - viddef.height, conback, (float)(1.2 * lines)/y);
 
 	// hack the version number directly into the pic
 //	y = lines-186;

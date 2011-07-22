@@ -272,19 +272,6 @@ void Draw_SmallString(int x, int y, const char *str)
 	}
 }
 
-/*
-================
-Draw_DebugChar
-
-Draws a single character directly to the upper right corner of the screen.
-This is for debugging lockups by drawing different chars in different parts
-of the code.
-================
-*/
-void Draw_DebugChar (char num)
-{
-}
-
 void Draw_PicCropped(int x, int y, image_t* pic)
 {
 	int height;
