@@ -124,8 +124,6 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("***conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = viddef.width;
-	conback->height = viddef.height;
 
 	// free loaded console
 	Hunk_FreeToLowMark(start);
@@ -244,14 +242,17 @@ Draw_ConsoleBackground
 
 ================
 */
-void Draw_ConsoleBackground (int lines)
+void Draw_ConsoleBackground(int lines)
 {
 	int y = (viddef.height * 3) >> 2;
-
 	if (lines > y)
-		UI_DrawPic(0, lines - viddef.height, conback);
+	{
+		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
+	}
 	else
-		UI_DrawPic(0, lines - viddef.height, conback, (float)(1.2 * lines)/y);
+	{
+		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback, (float)(1.2 * lines) / y);
+	}
 }
 
 

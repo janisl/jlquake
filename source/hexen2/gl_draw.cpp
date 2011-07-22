@@ -128,8 +128,6 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = viddef.width;
-	conback->height = viddef.height;
 
 	//
 	// get the other pics we need
@@ -437,9 +435,9 @@ Draw_ConsoleBackground
 
 ================
 */
-void Draw_ConsoleBackground (int lines)
+void Draw_ConsoleBackground(int lines)
 {
-	UI_DrawPic (0, lines-viddef.height, conback);
+	UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
 }
 
 

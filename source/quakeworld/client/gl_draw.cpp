@@ -134,8 +134,6 @@ void Draw_Init (void)
 
 	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
 	delete[] pic32;
-	conback->width = viddef.width;
-	conback->height = viddef.height;
 
 	// free loaded console
 	Hunk_FreeToLowMark (start);
@@ -271,30 +269,33 @@ Draw_ConsoleBackground
 
 ================
 */
-void Draw_ConsoleBackground (int lines)
+void Draw_ConsoleBackground(int lines)
 {
-	char ver[80];
-	int x, i;
-	int y;
-
-	y = (viddef.height * 3) >> 2;
+	int y = (viddef.height * 3) >> 2;
 	if (lines > y)
-		UI_DrawPic(0, lines-viddef.height, conback);
+	{
+		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
+	}
 	else
-		UI_DrawPic(0, lines - viddef.height, conback, (float)(1.2 * lines)/y);
+	{
+		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback, (float)(1.2 * lines) / y);
+	}
 
 	// hack the version number directly into the pic
-//	y = lines-186;
-	y = lines-14;
-	if (!cls.download) {
+	y = lines - 14;
+	if (!cls.download)
+	{
+		char ver[80];
 #ifdef __linux__
 		sprintf (ver, "LinuxGL (%4.2f) QuakeWorld", LINUX_VERSION);
 #else
 		sprintf (ver, "GL (%4.2f) QuakeWorld", GLQUAKE_VERSION);
 #endif
-		x = viddef.width - (QStr::Length(ver)*8 + 11) - (viddef.width*8/320)*7;
-		for (i=0 ; i<QStr::Length(ver) ; i++)
-			Draw_Character (x + i * 8, y, ver[i] | 0x80);
+		int x = viddef.width - (QStr::Length(ver) * 8 + 11) - (viddef.width * 8 / 320) * 7;
+		for (int i = 0; i < QStr::Length(ver); i++)
+		{
+			Draw_Character(x + i * 8, y, ver[i] | 0x80);
+		}
 	}
 }
 
