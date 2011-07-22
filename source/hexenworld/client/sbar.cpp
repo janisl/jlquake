@@ -2057,7 +2057,7 @@ void SB_ViewSizeChanged(void)
 
 static void Sbar_DrawPic(int x, int y, image_t *pic)
 {
-	Draw_PicCropped(x+((viddef.width-320)>>1),
+	UI_DrawPic(x+((viddef.width-320)>>1),
 		y+(viddef.height-(int)BarHeight), pic);
 }
 
@@ -2071,8 +2071,8 @@ static void Sbar_DrawPic(int x, int y, image_t *pic)
 
 static void Sbar_DrawSubPic(int x, int y, int h, image_t *pic)
 {
-	Draw_SubPicCropped(x+((viddef.width-320)>>1),
-		y+(viddef.height-(int)BarHeight), h, pic);
+	UI_DrawStretchPic(x+((viddef.width-320)>>1),
+		y+(viddef.height-(int)BarHeight), UI_GetImageWidth(pic), h, pic);
 }
 
 //==========================================================================
@@ -2085,7 +2085,7 @@ static void Sbar_DrawSubPic(int x, int y, int h, image_t *pic)
 
 static void Sbar_DrawTransPic(int x, int y, image_t *pic)
 {
-	Draw_PicCropped(x+((viddef.width-320)>>1),
+	UI_DrawPic(x+((viddef.width-320)>>1),
 		y+(viddef.height-(int)BarHeight), pic);
 }
 
