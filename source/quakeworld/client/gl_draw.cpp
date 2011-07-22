@@ -141,7 +141,7 @@ void Draw_Init (void)
 	// get the other pics we need
 	//
 	draw_disc = R_PicFromWad ("disc");
-	draw_backtile = R_PicFromWad ("backtile");
+	draw_backtile = R_PicFromWadRepeat("backtile");
 }
 
 /*
@@ -287,11 +287,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 	qglColor3f (1,1,1);
 	GL_Bind (draw_backtile);
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
 }
 
 

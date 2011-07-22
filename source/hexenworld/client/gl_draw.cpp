@@ -108,7 +108,7 @@ void Draw_Init (void)
 		sprintf(temp,"gfx/menu/skull%d.lmp",i);
 		draw_disc[i] = UI_CachePic(temp);
 	}
-	draw_backtile = UI_CachePic("gfx/menu/backtile.lmp");
+	draw_backtile = UI_CachePicRepeat("gfx/menu/backtile.lmp");
 }
 
 
@@ -368,11 +368,7 @@ void Draw_TileClear (int x, int y, int w, int h)
 	qglColor3f (1,1,1);
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 	GL_Bind (draw_backtile);
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);	
 	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
-	qglTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP );	
 }
 
 

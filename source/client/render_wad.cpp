@@ -159,7 +159,7 @@ void* R_GetWadLumpByName(const char* name)
 //
 //==========================================================================
 
-image_t* R_PicFromWad(const char* name)
+static image_t* R_PicFromWad(const char* name, GLenum WrapClampMode)
 {
 	byte* qpic = (byte*)R_GetWadLumpByName(name);
 
@@ -168,9 +168,31 @@ image_t* R_PicFromWad(const char* name)
 	byte* pic;
 	R_LoadPICMem(qpic, &pic, &width, &height);
 	
-	image_t* image = R_CreateImage(va("gfx.wad:%s", name), pic, width, height, false, false, GL_CLAMP, true);
+	image_t* image = R_CreateImage(va("gfx.wad:%s", name), pic, width, height, false, false, WrapClampMode, true);
 	
 	delete[] pic;
 
 	return image;
+}
+
+//==========================================================================
+//
+//	R_PicFromWad
+//
+//==========================================================================
+
+image_t* R_PicFromWad(const char* name)
+{
+	return R_PicFromWad(name, GL_CLAMP);
+}
+
+//==========================================================================
+//
+//	R_PicFromWadRepeat
+//
+//==========================================================================
+
+image_t* R_PicFromWadRepeat(const char* name)
+{
+	return R_PicFromWad(name, GL_REPEAT);
 }

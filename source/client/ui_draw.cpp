@@ -58,6 +58,22 @@ image_t* UI_CachePic(const char* path)
 
 //==========================================================================
 //
+//	UI_CachePicRepeat
+//
+//==========================================================================
+
+image_t* UI_CachePicRepeat(const char* path)
+{
+	image_t* pic = R_FindImageFile(path, false, false, GL_REPEAT);
+	if (!pic)
+	{
+		throw QException(va("UI_CachePic: failed to load %s", path));
+	}
+	return pic;
+}
+
+//==========================================================================
+//
 //	UI_CachePicWithTransPixels
 //
 //==========================================================================
@@ -78,18 +94,40 @@ image_t* UI_CachePicWithTransPixels(const char *path, byte* TransPixels)
 //
 //==========================================================================
 
-image_t* UI_RegisterPic(const char* name)
+static image_t* UI_RegisterPic(const char* name, GLenum wrapClampMode)
 {
 	if (name[0] != '/' && name[0] != '\\')
 	{
 		char fullname[MAX_QPATH];
 		QStr::Sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
-		return R_FindImageFile(fullname, false, false, GL_CLAMP, true);
+		return R_FindImageFile(fullname, false, false, wrapClampMode, true);
 	}
 	else
 	{
-		return R_FindImageFile(name + 1, false, false, GL_CLAMP, true);
+		return R_FindImageFile(name + 1, false, false, wrapClampMode, true);
 	}
+}
+
+//==========================================================================
+//
+//	UI_RegisterPic
+//
+//==========================================================================
+
+image_t* UI_RegisterPic(const char* name)
+{
+	return UI_RegisterPic(name, GL_CLAMP);
+}
+
+//==========================================================================
+//
+//	UI_RegisterPicRepeat
+//
+//==========================================================================
+
+image_t* UI_RegisterPicRepeat(const char* name)
+{
+	return UI_RegisterPic(name, GL_REPEAT);
 }
 
 //==========================================================================
