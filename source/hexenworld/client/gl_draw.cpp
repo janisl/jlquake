@@ -275,33 +275,6 @@ void Draw_SmallString(int x, int y, const char *str)
 	}
 }
 
-void Draw_SubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
-{
-	byte			*dest, *source;
-	unsigned short	*pusdest;
-	int				v, u;
-	float newsl, newtl, newsh, newth;
-	float oldglwidth, oldglheight;
-
-	if (scrap_dirty)
-		R_ScrapUpload();
-	
-	oldglwidth = pic->sh - pic->sl;
-	oldglheight = pic->th - pic->tl;
-
-	newsl = pic->sl + (srcx*oldglwidth)/pic->width;
-	newsh = newsl + (width*oldglwidth)/pic->width;
-
-	newtl = pic->tl + (srcy*oldglheight)/pic->height;
-	newth = newtl + (height*oldglheight)/pic->height;
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	qglColor4f (1,1,1,1);
-	GL_Bind (pic);
-	DoQuad(x, y, newsl, newtl, x + width, y + height, newsh, newth);
-}
-
 void Draw_PicCropped(int x, int y, image_t* pic)
 {
 	int height;
