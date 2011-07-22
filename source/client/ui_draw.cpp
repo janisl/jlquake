@@ -194,14 +194,7 @@ void DoQuad(float x1, float y1, float s1, float t1,
 
 void UI_DrawPic(int x, int y, image_t* pic, float alpha)
 {
-	if (scrap_dirty)
-	{
-		R_ScrapUpload();
-	}
-	qglColor4f(1, 1, 1, alpha);
-	GL_Bind(pic);
-	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	DoQuad(x, y, pic->sl, pic->tl, x + pic->width, y + pic->height, pic->sh, pic->th);
+	UI_DrawStretchPic(x, y, pic->width, pic->height, pic, alpha);
 }
 
 //==========================================================================
@@ -219,4 +212,39 @@ void UI_DrawNamedPic(int x, int y, const char* pic)
 		return;
 	}
 	UI_DrawPic(x, y, gl);
+}
+
+//==========================================================================
+//
+//	UI_DrawStretchPic
+//
+//==========================================================================
+
+void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
+{
+	if (scrap_dirty)
+	{
+		R_ScrapUpload();
+	}
+	qglColor4f(1, 1, 1, alpha);
+	GL_Bind(pic);
+	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	DoQuad(x, y, pic->sl, pic->tl, x + w, y + h, pic->sh, pic->th);
+}
+
+//==========================================================================
+//
+//	UI_DrawStretchNamedPic
+//
+//==========================================================================
+
+void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
+{
+	image_t* gl = UI_RegisterPic(pic);
+	if (!gl)
+	{
+		GLog.Write("Can't find pic: %s\n", pic);
+		return;
+	}
+	UI_DrawStretchPic(x, y, w, h, gl);
 }

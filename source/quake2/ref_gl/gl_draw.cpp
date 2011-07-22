@@ -75,30 +75,6 @@ void Draw_Char (int x, int y, int num)
 
 /*
 =============
-Draw_StretchPic
-=============
-*/
-void Draw_StretchPic (int x, int y, int w, int h, const char *pic)
-{
-	image_t *gl;
-
-	gl = UI_RegisterPic (pic);
-	if (!gl)
-	{
-		ri.Con_Printf (PRINT_ALL, "Can't find pic: %s\n", pic);
-		return;
-	}
-
-	if (scrap_dirty)
-		R_ScrapUpload();
-
-	GL_Bind (gl);
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, gl->sl, gl->tl, x + w, y + h, gl->sh, gl->th);
-}
-
-/*
-=============
 Draw_TileClear
 
 This repeats a 64*64 tile graphic to fill the screen around a sized down
