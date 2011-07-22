@@ -1688,7 +1688,7 @@ static void Sbar_DrawPic(int x, int y, image_t *pic)
 
 static void Sbar_DrawTransPic(int x, int y, image_t *pic)
 {
-	Draw_TransPicCropped(x+((viddef.width-320)>>1),
+	Draw_PicCropped(x+((viddef.width-320)>>1),
 		y+(viddef.height-(int)BarHeight), pic);
 }
 

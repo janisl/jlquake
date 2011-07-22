@@ -315,12 +315,6 @@ void Draw_PicCropped(int x, int y, image_t* pic)
 	DoQuad(x, y, pic->sl, tl, x + pic->width, y + height, pic->sh, th);
 }
 
-void Draw_TransPicCropped(int x, int y, image_t* pic)
-{
-	Draw_PicCropped (x, y, pic);
-}
-
-
 int M_DrawBigCharacter (int x, int y, int num, int numNext)
 {
 	byte			*dest;

@@ -483,7 +483,7 @@ void SCR_DrawPause (void)
 	}
 
 	finaly = ((float)pic->height * LogoPercent) - pic->height;
-	Draw_TransPicCropped ( (viddef.width - pic->width)/2, finaly, pic);
+	Draw_PicCropped ( (viddef.width - pic->width)/2, finaly, pic);
 }
 
 /*

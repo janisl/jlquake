@@ -223,7 +223,7 @@ void M_DrawPic (int x, int y, image_t *pic)
 
 void M_DrawTransPicCropped (int x, int y, image_t *pic)
 {
-	Draw_TransPicCropped (x + ((viddef.width - 320)>>1), y, pic);
+	Draw_PicCropped (x + ((viddef.width - 320)>>1), y, pic);
 }
 
 #define PLAYER_PIC_WIDTH 68

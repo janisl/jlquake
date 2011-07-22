@@ -13,7 +13,6 @@ extern image_t		*draw_disc[MAX_DISC]; // also used on sbar
 void Draw_Init (void);
 void Draw_Character (int x, int y, unsigned int num);
 void Draw_PicCropped(int x, int y, image_t *pic);
-void Draw_TransPicCropped(int x, int y, image_t *pic);
 void Draw_ConsoleBackground (int lines);
 void Draw_BeginDisc (void);
 void Draw_EndDisc (void);
