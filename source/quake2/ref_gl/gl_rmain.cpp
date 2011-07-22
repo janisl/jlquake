@@ -293,7 +293,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.RenderFrame = R_RenderFrame;
 
 	re.DrawChar = Draw_Char;
-	re.DrawTileClear = Draw_TileClear;
 	re.DrawFill = Draw_Fill;
 	re.DrawFadeScreen= Draw_FadeScreen;
 

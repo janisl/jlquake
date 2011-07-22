@@ -738,16 +738,16 @@ void SCR_TileClear (void)
 {
 	if (scr_vrect.x > 0)
 	{
-		Draw_TileClear (0,0,scr_vrect.x,viddef.height);
-		Draw_TileClear (scr_vrect.x + scr_vrect.width, 0
-			, viddef.width - scr_vrect.x + scr_vrect.width,viddef.height);
+		UI_TileClear(0,0,scr_vrect.x,viddef.height, draw_backtile);
+		UI_TileClear(scr_vrect.x + scr_vrect.width, 0
+			, viddef.width - scr_vrect.x + scr_vrect.width,viddef.height, draw_backtile);
 	}
 //	if (scr_vrect.height < viddef.height-44)
 	{
-		Draw_TileClear (scr_vrect.x, 0, scr_vrect.width, scr_vrect.y);
-		Draw_TileClear (scr_vrect.x, scr_vrect.y + scr_vrect.height,
+		UI_TileClear(scr_vrect.x, 0, scr_vrect.width, scr_vrect.y, draw_backtile);
+		UI_TileClear(scr_vrect.x, scr_vrect.y + scr_vrect.height,
 			scr_vrect.width,
-			viddef.height - (scr_vrect.y + scr_vrect.height) );
+			viddef.height - (scr_vrect.y + scr_vrect.height), draw_backtile);
 	}
 }
 

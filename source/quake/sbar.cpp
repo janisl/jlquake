@@ -883,7 +883,7 @@ void Sbar_Draw (void)
 		return;		// console is full screen
 
 	if (sb_lines && viddef.width > 320) 
-		Draw_TileClear (0, viddef.height - sb_lines, viddef.width, sb_lines);
+		UI_TileClear(0, viddef.height - sb_lines, viddef.width, sb_lines, draw_backtile);
 
 	if (sb_lines > 24)
 	{

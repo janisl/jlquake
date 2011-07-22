@@ -68,7 +68,6 @@ mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
 void COM_StripExtension (char *in, char *out);
 
 void	Draw_Char (int x, int y, int c);
-void	Draw_TileClear (int x, int y, int w, int h, const char *name);
 void	Draw_Fill (int x, int y, int w, int h, int c);
 void	Draw_FadeScreen (void);
 

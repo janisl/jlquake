@@ -55,7 +55,6 @@ typedef struct
 	void	(*RenderFrame) (refdef_t *fd);
 
 	void	(*DrawChar) (int x, int y, int c);
-	void	(*DrawTileClear) (int x, int y, int w, int h, const char *name);
 	void	(*DrawFill) (int x, int y, int w, int h, int c);
 	void	(*DrawFadeScreen) (void);
 

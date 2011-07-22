@@ -456,7 +456,6 @@ void SCR_DrawFPS (void)
 	sprintf(st, "%3d FPS", lastfps);
 	x = viddef.width - QStr::Length(st) * 8 - 8;
 	y = viddef.height - sb_lines - 8;
-//	Draw_TileClear(x, y, QStr::Length(st) * 8, 8);
 	Draw_String(x, y, st);
 }
 
@@ -840,23 +839,23 @@ void SCR_TileClear (void)
 {
 	if (scr_vrect.x > 0) {
 		// left
-		Draw_TileClear (0, 0, scr_vrect.x, viddef.height - sb_lines);
+		UI_TileClear(0, 0, scr_vrect.x, viddef.height - sb_lines, draw_backtile);
 		// right
-		Draw_TileClear (scr_vrect.x + scr_vrect.width, 0, 
+		UI_TileClear(scr_vrect.x + scr_vrect.width, 0, 
 			viddef.width - scr_vrect.x + scr_vrect.width, 
-			viddef.height - sb_lines);
+			viddef.height - sb_lines, draw_backtile);
 	}
 	if (scr_vrect.y > 0) {
 		// top
-		Draw_TileClear (scr_vrect.x, 0, 
+		UI_TileClear(scr_vrect.x, 0, 
 			scr_vrect.x + scr_vrect.width, 
-			scr_vrect.y);
+			scr_vrect.y, draw_backtile);
 		// bottom
-		Draw_TileClear (scr_vrect.x,
+		UI_TileClear(scr_vrect.x,
 			scr_vrect.y + scr_vrect.height, 
 			scr_vrect.width, 
 			viddef.height - sb_lines - 
-			(scr_vrect.height + scr_vrect.y));
+			(scr_vrect.height + scr_vrect.y), draw_backtile);
 	}
 }
 

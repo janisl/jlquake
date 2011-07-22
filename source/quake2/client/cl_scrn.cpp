@@ -725,28 +725,28 @@ void SCR_TileClear (void)
 	if (clear.y1 < top)
 	{	// clear above view screen
 		i = clear.y2 < top-1 ? clear.y2 : top-1;
-		re.DrawTileClear (clear.x1 , clear.y1,
+		UI_NamedTileClear (clear.x1 , clear.y1,
 			clear.x2 - clear.x1 + 1, i - clear.y1+1, "backtile");
 		clear.y1 = top;
 	}
 	if (clear.y2 > bottom)
 	{	// clear below view screen
 		i = clear.y1 > bottom+1 ? clear.y1 : bottom+1;
-		re.DrawTileClear (clear.x1, i,
+		UI_NamedTileClear (clear.x1, i,
 			clear.x2-clear.x1+1, clear.y2-i+1, "backtile");
 		clear.y2 = bottom;
 	}
 	if (clear.x1 < left)
 	{	// clear left of view screen
 		i = clear.x2 < left-1 ? clear.x2 : left-1;
-		re.DrawTileClear (clear.x1, clear.y1,
+		UI_NamedTileClear (clear.x1, clear.y1,
 			i-clear.x1+1, clear.y2 - clear.y1 + 1, "backtile");
 		clear.x1 = left;
 	}
 	if (clear.x2 > right)
 	{	// clear left of view screen
 		i = clear.x1 > right+1 ? clear.x1 : right+1;
-		re.DrawTileClear (i, clear.y1,
+		UI_NamedTileClear (i, clear.y1,
 			clear.x2-i+1, clear.y2 - clear.y1 + 1, "backtile");
 		clear.x2 = right;
 	}

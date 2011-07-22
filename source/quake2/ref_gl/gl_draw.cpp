@@ -75,28 +75,6 @@ void Draw_Char (int x, int y, int num)
 
 /*
 =============
-Draw_TileClear
-
-This repeats a 64*64 tile graphic to fill the screen around a sized down
-refresh window.
-=============
-*/
-void Draw_TileClear(int x, int y, int w, int h, const char *pic)
-{
-	image_t* image = UI_RegisterPicRepeat(pic);
-	if (!image)
-	{
-		ri.Con_Printf (PRINT_ALL, "Can't find pic: %s\n", pic);
-		return;
-	}
-
-	GL_Bind(image);
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
-}
-
-/*
-=============
 Draw_Fill
 
 Fills a box of pixels with a single color

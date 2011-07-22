@@ -326,24 +326,6 @@ void Draw_ConsoleBackground(int lines)
 
 /*
 =============
-Draw_TileClear
-
-This repeats a 64*64 tile graphic to fill the screen around a sized down
-refresh window.
-=============
-*/
-void Draw_TileClear (int x, int y, int w, int h)
-{
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	qglColor3f (1,1,1);
-	GL_Bind (draw_backtile);
-	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
-}
-
-
-/*
-=============
 Draw_Fill
 
 Fills a box of pixels with a single color

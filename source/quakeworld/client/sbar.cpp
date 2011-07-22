@@ -790,19 +790,8 @@ void Sbar_Draw (void)
 		Sbar_TeamOverlay();
 
 	// clear unused areas in gl
-#if 0
-	{
-		int x = (viddef.width - 320)>>1;
-
-		// left
-		if (x > 0) {
-			Draw_TileClear (0, viddef.height - sb_lines, x, sb_lines);
-			Draw_TileClear (x+320, viddef.height - sb_lines, viddef.width - x+320, sb_lines);
-		}
-	}
-#endif
 	if (viddef.width > 320 && !headsup)
-		Draw_TileClear (320, viddef.height - sb_lines, viddef.width - 320, sb_lines);
+		UI_TileClear(320, viddef.height - sb_lines, viddef.width - 320, sb_lines, draw_backtile);
 
 	if (sb_lines > 0)
 		Sbar_MiniDeathmatchOverlay ();

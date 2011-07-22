@@ -316,3 +316,37 @@ void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, in
 	GL_Bind (pic);
 	DoQuad(x, y, newsl, newtl, x + width, y + height, newsh, newth);
 }
+
+//==========================================================================
+//
+//	UI_TileClear
+//
+//	This repeats a 64*64 tile graphic to fill the screen around a sized down
+// refresh window.
+//
+//==========================================================================
+
+void UI_TileClear(int x, int y, int w, int h, image_t* pic)
+{
+	qglColor4f(1, 1, 1, 1);
+	GL_Bind(pic);
+	GL_State(GLS_DEPTHTEST_DISABLE);
+	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
+}
+
+//==========================================================================
+//
+//	UI_NamedTileClear
+//
+//==========================================================================
+
+void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
+{
+	image_t* image = UI_RegisterPicRepeat(pic);
+	if (!image)
+	{
+		GLog.Write("Can't find pic: %s\n", pic);
+		return;
+	}
+	UI_TileClear(x, y, w, h, image);
+}
