@@ -9,8 +9,6 @@
 
 #define PLAYER_PIC_WIDTH 68
 #define PLAYER_PIC_HEIGHT 114
-#define PLAYER_DEST_WIDTH 128
-#define PLAYER_DEST_HEIGHT 128
 
 struct image_t;
 extern image_t		*draw_disc[MAX_DISC]; // also used on sbar

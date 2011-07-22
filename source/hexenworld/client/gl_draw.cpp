@@ -420,54 +420,16 @@ Only used for the player color selection menu
 */
 void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 {
-	int				v, u, c;
-	unsigned		trans[PLAYER_DEST_WIDTH * PLAYER_DEST_HEIGHT], *dest;
-	byte			*src;
-	int				p;
-
 	extern int which_class;
 
-	c = pic->width * pic->height;
-
-	dest = trans;
-	for (v=0 ; v<64 ; v++, dest += 64)
-	{
-		src = &menuplyr_pixels[which_class-1][ ((v*pic->height)>>6) *pic->width];
-		for (u=0 ; u<64 ; u++)
-		{
-			p = src[(u*pic->width)>>6];
-			if (p == 255)
-				dest[u] = p;
-			else
-				dest[u] =  d_8to24table[translation[p]];
-		}
-	}
-
-	{
-	  int x, y;
-
-	  for( x = 0; x < PLAYER_PIC_WIDTH; x++ )
-	    for( y = 0; y < PLAYER_PIC_HEIGHT; y++ )
-	      {
-		trans[y * PLAYER_DEST_WIDTH + x] = d_8to24table[translation[menuplyr_pixels[which_class-1][y * PLAYER_PIC_WIDTH + x]]];
-	      }
-	}
-
-	if (!translate_texture[which_class-1])
-	{
-		translate_texture[which_class-1] = R_CreateImage(va("translate_pic%d", which_class), (byte*)trans, PLAYER_DEST_WIDTH, PLAYER_DEST_HEIGHT, false, false, GL_CLAMP, false);
-	}
-	else
-	{
-		R_ReUploadImage(translate_texture[which_class-1], (byte*)trans);
-	}
+	R_CreateOrUpdateTranslatedImage(translate_texture[which_class-1], va("translate_pic%d", which_class), menuplyr_pixels[which_class-1], translation, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
 
 	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
 
 	GL_Bind (translate_texture[which_class-1]);
 
 	qglColor3f (1,1,1);
-	DoQuad(x, y, 0, 0, x + pic->width, y + pic->height, (float)PLAYER_PIC_WIDTH / PLAYER_DEST_WIDTH, (float)PLAYER_PIC_HEIGHT / PLAYER_DEST_HEIGHT);
+	DoQuad(x, y, 0, 0, x + pic->width, y + pic->height, 1, 1);
 }
 
 int M_DrawBigCharacter (int x, int y, int num, int numNext)

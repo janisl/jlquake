@@ -1858,3 +1858,32 @@ void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool di
 		delete[] resampled;
 	}
 }
+
+//==========================================================================
+//
+//	R_CreateOrUpdateTranslatedImage
+//
+//==========================================================================
+
+void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height)
+{
+	byte* translated = new byte[width * height];
+	int c = width * height;
+	for (int i = 0; i < c; i++)
+	{
+		translated[i] = translation[pixels[i]];
+	}
+
+	byte* translated32 = R_ConvertImage8To32(translated, width, height, IMG8MODE_Normal);
+	delete[] translated;
+
+	if (!image)
+	{
+		image = R_CreateImage(name, translated32, width, height, false, false, GL_CLAMP, false);
+	}
+	else
+	{
+		R_ReUploadImage(image, translated32);
+	}
+	delete[] translated32;
+}

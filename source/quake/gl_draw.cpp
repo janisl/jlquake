@@ -196,36 +196,7 @@ Only used for the player color selection menu
 */
 void Draw_TransPicTranslate (int x, int y, image_t* pic, byte *translation)
 {
-	int				v, u, c;
-	unsigned		trans[64*64], *dest;
-	byte			*src;
-	int				p;
-
-	c = pic->width * pic->height;
-
-	dest = trans;
-	for (v=0 ; v<64 ; v++, dest += 64)
-	{
-		src = &menuplyr_pixels[ ((v*pic->height)>>6) *pic->width];
-		for (u=0 ; u<64 ; u++)
-		{
-			p = src[(u*pic->width)>>6];
-			if (p == 255)
-				dest[u] = p;
-			else
-				dest[u] =  d_8to24table[translation[p]];
-		}
-	}
-
-	if (!translate_texture)
-	{
-		// save a texture slot for translated picture
-		translate_texture = R_CreateImage("*translate_pic", (byte*)trans, 64, 64, false, false, GL_CLAMP, false);
-	}
-	else
-	{
-		R_ReUploadImage(translate_texture, (byte*)trans);
-	}
+	R_CreateOrUpdateTranslatedImage(translate_texture, "*translate_pic", menuplyr_pixels, translation, pic->width, pic->height);
 
 	GL_Bind (translate_texture);
 
