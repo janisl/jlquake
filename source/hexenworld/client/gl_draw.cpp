@@ -124,31 +124,12 @@ smoothly scrolled off.
 */
 void Draw_Character (int x, int y, unsigned int num)
 {
-	int				row, col;
-	float			frow, fcol, xsize,ysize;
-
 	num &= 511;
 
 	if (num == 32)
 		return;		// space
 
-	if (y <= -8)
-		return;			// totally off screen
-
-	row = num>>5;
-	col = num&31;
-
-	xsize = 0.03125;
-	ysize = 0.0625;
-	fcol = col*xsize;
-	frow = row*ysize;
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	GL_Bind (char_texture);
-
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + xsize, frow + ysize);
+	UI_DrawChar(x, y, num, 8, 8, char_texture, 32, 16);
 }
 
 /*
@@ -187,12 +168,8 @@ void Draw_Crosshair(void)
 	if (crosshair->value == 2) {
 		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx->value; 
 		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy->value;
-		GL_Bind (cs_texture);
 
-		GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-		qglColor4f (1,1,1,1);
-		DoQuad(x - 4, y - 4, 0, 0, x + 12, y + 12, 1, 1);
+		UI_DrawStretchPic(x - 4, y - 4, 16, 16, cs_texture);
 	} else if (crosshair->value)
 		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx->value, 
 			scr_vrect.y + scr_vrect.height/2-4 + cl_crossy->value, 
@@ -214,8 +191,6 @@ void Draw_SmallCharacter (int x, int y, int num)
 	byte			*source;
 	unsigned short	*pusdest;
 	int				drawline;
-	int				row, col;
-	float			frow, fcol, xsize,ysize;
 
 	if(num < 32)
 	{
@@ -236,28 +211,7 @@ void Draw_SmallCharacter (int x, int y, int num)
 
 	if (num == 0) return;
 
-	if (y <= -8)
-		return; 		// totally off screen
-
-	if(y >= viddef.height)
-	{ // Totally off screen
-		return;
-	}
-
-	row = num>>4;
-	col = num&15;
-
-	xsize = 0.0625;
-	ysize = 0.25;
-	fcol = col*xsize;
-	frow = row*ysize;
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	GL_Bind (char_smalltexture);
-
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + xsize, frow + ysize);
+	UI_DrawChar(x, y, num, 8, 8, char_smalltexture, 16, 4);
 }
 
 //==========================================================================
@@ -281,8 +235,6 @@ int M_DrawBigCharacter (int x, int y, int num, int numNext)
 	byte			*source;
 	unsigned short	*pusdest;
 	int				drawline;
-	int				row, col;
-	float			frow, fcol, xsize,ysize;
 	int				add;
 
 	if (num == ' ') return 32;
@@ -296,20 +248,7 @@ int M_DrawBigCharacter (int x, int y, int num, int numNext)
 	if (numNext == '/') numNext = 26;
 	else numNext -= 65;
 
-	row = num/8;
-	col = num%8;
-
-	xsize = 0.125;
-	ysize = 0.25;
-	fcol = col*xsize;
-	frow = row*ysize;
-
-	GL_Bind (char_menufonttexture);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, fcol, frow, x + 20, y + 20, fcol + xsize, frow + ysize);
+	UI_DrawChar(x, y, num, 20, 20, char_menufonttexture, 8, 4);
 
 	if (numNext < 0 || numNext >= 27) return 0;
 

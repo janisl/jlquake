@@ -155,30 +155,12 @@ smoothly scrolled off.
 */
 void Draw_Character (int x, int y, int num)
 {
-	int				row, col;
-	float			frow, fcol, size;
-
 	num &= 255;
 
 	if (num == 32)
 		return;		// space
 
-	if (y <= -8)
-		return;			// totally off screen
-
-	row = num>>4;
-	col = num&15;
-
-	frow = row*0.0625;
-	fcol = col*0.0625;
-	size = 0.0625;
-
-	GL_Bind (char_texture);
-
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + size, frow + size);
+	UI_DrawChar(x, y, num, 8, 8, char_texture, 16, 16);
 }
 
 /*
@@ -217,24 +199,18 @@ void Draw_Crosshair(void)
 	extern vrect_t		scr_vrect;
 	unsigned char *pColor;
 
-	if (crosshair->value == 2) {
-		x = scr_vrect.x + scr_vrect.width/2 - 3 + cl_crossx->value; 
-		y = scr_vrect.y + scr_vrect.height/2 - 3 + cl_crossy->value;
-
-		GL_TexEnv(GL_MODULATE);
-		pColor = (unsigned char *) &d_8to24table[(byte) crosshaircolor->value];
-		qglColor4ubv ( pColor );
-		GL_Bind (cs_texture);
-
-		GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-
-		DoQuad(x - 4, y - 4, 0, 0, x + 12, y + 12, 1, 1);
-		
-		GL_TexEnv(GL_REPLACE);
-	} else if (crosshair->value)
-		Draw_Character (scr_vrect.x + scr_vrect.width/2-4 + cl_crossx->value, 
-			scr_vrect.y + scr_vrect.height/2-4 + cl_crossy->value, 
-			'+');
+	if (crosshair->value == 2)
+	{
+		x = scr_vrect.x + scr_vrect.width / 2 - 3 + cl_crossx->value; 
+		y = scr_vrect.y + scr_vrect.height / 2 - 3 + cl_crossy->value;
+		pColor = r_palette[crosshaircolor->integer];
+		UI_DrawStretchPicWithColour(x - 4, y - 4, 16, 16, cs_texture, pColor);
+	}
+	else if (crosshair->value)
+	{
+		Draw_Character(scr_vrect.x + scr_vrect.width / 2 - 4 + cl_crossx->value, 
+			scr_vrect.y + scr_vrect.height / 2 - 4 + cl_crossy->value, '+');
+	}
 }
 
 /*

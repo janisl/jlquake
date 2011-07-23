@@ -289,6 +289,26 @@ void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 
 //==========================================================================
 //
+//	UI_DrawStretchPicWithColour
+//
+//==========================================================================
+
+void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte* colour)
+{
+	if (scrap_dirty)
+	{
+		R_ScrapUpload();
+	}
+	GL_TexEnv(GL_MODULATE);
+	qglColor4ubv(colour);
+	GL_Bind(pic);
+	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	DoQuad(x, y, pic->sl, pic->tl, x + w, y + h, pic->sh, pic->th);
+	GL_TexEnv(GL_REPLACE);
+}
+
+//==========================================================================
+//
 //	UI_DrawSubPic
 //
 //==========================================================================
@@ -379,4 +399,32 @@ void UI_FillPal(int x, int y, int w, int h, int c)
 		throw QException("UI_FillPal: bad color");
 	}
 	UI_Fill(x, y, w, h, r_palette[c][0] / 255.0, r_palette[c][1] / 255.0, r_palette[c][2] / 255.0, 1);
+}
+
+//==========================================================================
+//
+//	UI_DrawChar
+//
+//==========================================================================
+
+void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns, int numberOfRows)
+{
+	if (y <= -h || y >= viddef.height)
+	{
+		// Totally off screen
+		return;
+	}
+
+	int row = num / numberOfColumns;
+	int col = num % numberOfColumns;
+
+	float xsize = 1.0 / (float)numberOfColumns;
+	float ysize = 1.0 / (float)numberOfRows;
+	float fcol = col * xsize;
+	float frow = row * ysize;
+
+	GL_Bind(image);
+	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+	qglColor4f(1, 1, 1, 1);
+	DoQuad(x, y, fcol, frow, x + w, y + h, fcol + xsize, frow + ysize);
 }

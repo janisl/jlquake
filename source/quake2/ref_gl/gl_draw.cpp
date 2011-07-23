@@ -49,26 +49,10 @@ smoothly scrolled off.
 */
 void Draw_Char (int x, int y, int num)
 {
-	int				row, col;
-	float			frow, fcol, size;
-
 	num &= 255;
 	
 	if ( (num&127) == 32 )
 		return;		// space
 
-	if (y <= -8)
-		return;			// totally off screen
-
-	row = num>>4;
-	col = num&15;
-
-	frow = row*0.0625;
-	fcol = col*0.0625;
-	size = 0.0625;
-
-	GL_Bind (draw_chars);
-
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, fcol, frow, x + 8, y + 8, fcol + size, frow + size);
+	UI_DrawChar(x, y, num, 8, 8, draw_chars, 16, 16);
 }
