@@ -29,7 +29,6 @@ extern QCvar*	cl_crossx;
 extern QCvar*	cl_crossy;
 extern QCvar*	crosshaircolor;
 
-byte		*draw_chars;				// 8*8 graphic characters
 image_t		*draw_backtile;
 
 image_t*	char_texture;
@@ -62,7 +61,7 @@ void Draw_Init (void)
 	// by hand, because we need to write the version
 	// string into the background before turning
 	// it into a texture
-	draw_chars = (byte*)R_GetWadLumpByName ("conchars");
+	byte* draw_chars = (byte*)R_GetWadLumpByName ("conchars");
 	for (i=0 ; i<256*64 ; i++)
 		if (draw_chars[i] == 0)
 			draw_chars[i] = 255;	// proper transparent color

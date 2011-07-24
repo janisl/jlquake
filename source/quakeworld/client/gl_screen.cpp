@@ -593,9 +593,6 @@ int MipColor(int r, int g, int b)
 	return best;
 }
 
-// from gl_draw.c
-extern byte		*draw_chars;				// 8*8 graphic characters
-
 void SCR_DrawCharToSnap (int num, byte *dest, int width)
 {
 	int		row, col;
@@ -605,6 +602,7 @@ void SCR_DrawCharToSnap (int num, byte *dest, int width)
 
 	row = num>>4;
 	col = num&15;
+	byte* draw_chars = (byte*)R_GetWadLumpByName("conchars");
 	source = draw_chars + (row<<10) + (col<<3);
 
 	drawline = 8;
