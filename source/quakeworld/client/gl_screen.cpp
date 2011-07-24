@@ -661,6 +661,14 @@ void SCR_RSShot_f (void)
 	if (cls.state < ca_onserver)
 		return; // gotta be connected
 
+	if (!scr_allowsnap->integer)
+	{
+		cls.netchan.message.WriteByte(clc_stringcmd);
+		cls.netchan.message.Print("snap\n");
+		Con_Printf("Refusing remote screen shot request.\n");
+		return;
+	}
+
 	Con_Printf("Remote screen shot requested.\n");
 
 // 
