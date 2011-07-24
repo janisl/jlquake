@@ -1887,3 +1887,58 @@ void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pi
 	}
 	delete[] translated32;
 }
+
+//==========================================================================
+//
+//	R_LoadRawFontImage
+//
+//==========================================================================
+
+static image_t* R_LoadRawFontImage(const char* name, byte* data8, int width, int height)
+{
+	byte* data32 = R_ConvertImage8To32(data8, width, height, IMG8MODE_Holey);
+	image_t* image = R_CreateImage(name, data32, width, height, false, false, GL_CLAMP, false);
+	delete[] data32;
+
+	//	Set nearest filtering mode to make text easier to read.
+	GL_Bind(image);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	return image;
+}
+
+//==========================================================================
+//
+//	R_LoadRawFontImageFromFile
+//
+//==========================================================================
+
+image_t* R_LoadRawFontImageFromFile(const char* name, int width, int height)
+{
+	QArray<byte> data;
+	FS_ReadFile(name, data);
+	return R_LoadRawFontImage(name, data.Ptr(), width, height);
+}
+
+//==========================================================================
+//
+//	R_LoadRawFontImageFromWad
+//
+//==========================================================================
+
+image_t* R_LoadRawFontImageFromWad(const char* name, int width, int height)
+{
+	byte* data = (byte*)R_GetWadLumpByName(name);
+	return R_LoadRawFontImage(name, data, width, height);
+}
+
+//==========================================================================
+//
+//	R_LoadBigFontImage
+//
+//==========================================================================
+
+image_t* R_LoadBigFontImage(const char* name)
+{
+	return R_FindImageFile(name, false, false, GL_CLAMP, false, IMG8MODE_Holey);
+}

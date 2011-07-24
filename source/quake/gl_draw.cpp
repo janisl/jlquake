@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // vid buffer
 
 #include "quakedef.h"
-#include "glquake.h"
 
 #define GL_COLOR_INDEX8_EXT     0x80E5
 
@@ -39,24 +38,7 @@ Draw_Init
 */
 void Draw_Init (void)
 {
-	int		i;
-
-	// load the console background and the charset
-	// by hand, because we need to write the version
-	// string into the background before turning
-	// it into a texture
-	byte* draw_chars = (byte*)R_GetWadLumpByName ("conchars");
-	for (i=0 ; i<256*64 ; i++)
-		if (draw_chars[i] == 0)
-			draw_chars[i] = 255;	// proper transparent color
-
-	// now turn them into textures
-	byte* draw_chars32 = R_ConvertImage8To32(draw_chars, 128, 128, IMG8MODE_Normal);
-	char_texture = R_CreateImage("charset", draw_chars32, 128, 128, false, false, GL_CLAMP, false);
-	GL_Bind(char_texture);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	delete[] draw_chars32;
+	char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
 
 	conback = UI_CachePic("gfx/conback.lmp");
 

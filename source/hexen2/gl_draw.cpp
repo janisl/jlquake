@@ -7,9 +7,6 @@
  */
 
 #include "quakedef.h"
-#include "glquake.h"
-
-#define MAX_DISC 18
 
 image_t		*draw_backtile;
 
@@ -26,39 +23,9 @@ Draw_Init
 */
 void Draw_Init (void)
 {
-	int		i;
-
-	// load the console background and the charset
-	// by hand, because we need to write the version
-	// string into the background before turning
-	// it into a texture
-	byte* draw_chars = COM_LoadHunkFile ("gfx/menu/conchars.lmp");
-	for (i=0 ; i<256*128 ; i++)
-		if (draw_chars[i] == 0)
-			draw_chars[i] = 255;	// proper transparent color
-
-	byte* draw_chars32 = R_ConvertImage8To32(draw_chars, 256, 128, IMG8MODE_Normal);
-	char_texture = R_CreateImage("charset", draw_chars32, 256, 128, false, false, GL_CLAMP, false);
-	delete[] draw_chars32;
-	GL_Bind(char_texture);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-
-	byte* draw_smallchars = (byte*)R_GetWadLumpByName("tinyfont");
-	for (i=0 ; i<128*32 ; i++)
-		if (draw_smallchars[i] == 0)
-			draw_smallchars[i] = 255;	// proper transparent color
-
-	// now turn them into textures
-	byte* draw_smallchars32 = R_ConvertImage8To32(draw_smallchars, 128, 32, IMG8MODE_Normal);
-	char_smalltexture = R_CreateImage("smallcharset", draw_smallchars32, 128, 32, false, false, GL_CLAMP, false);
-	delete[] draw_smallchars32;
-	GL_Bind(char_smalltexture);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-	char_menufonttexture = R_FindImageFile("gfx/menu/bigfont2.lmp", false, false, GL_CLAMP, false, IMG8MODE_Holey);
+	char_texture = R_LoadRawFontImageFromFile("gfx/menu/conchars.lmp", 256, 128);
+	char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
+	char_menufonttexture = R_LoadBigFontImage("gfx/menu/bigfont2.lmp");
 
 	conback = UI_CachePic("gfx/menu/conback.lmp");
 
