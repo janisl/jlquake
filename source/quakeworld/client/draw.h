@@ -28,8 +28,6 @@ extern image_t		*draw_backtile;
 void Draw_Init (void);
 void Draw_Character (int x, int y, int num);
 void Draw_ConsoleBackground (int lines);
-void Draw_BeginDisc (void);
-void Draw_EndDisc (void);
 void Draw_FadeScreen (void);
 void Draw_String (int x, int y, const char *str);
 void Draw_Alt_String (int x, int y, char *str);

@@ -261,35 +261,3 @@ void Draw_FadeScreen (void)
 {
 	UI_Fill(0 ,0, viddef.width, viddef.height, 0, 0, 0, 0.8);
 }
-
-//=============================================================================
-
-/*
-================
-Draw_BeginDisc
-
-Draws the little blue disc in the corner of the screen.
-Call before beginning any disc IO.
-================
-*/
-void Draw_BeginDisc (void)
-{
-	if (!draw_disc)
-		return;
-	qglDrawBuffer  (GL_FRONT);
-	UI_DrawPic (viddef.width - 24, 0, draw_disc);
-	qglDrawBuffer  (GL_BACK);
-}
-
-
-/*
-================
-Draw_EndDisc
-
-Erases the disc icon.
-Call after completing any disc IO
-================
-*/
-void Draw_EndDisc (void)
-{
-}

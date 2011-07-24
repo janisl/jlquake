@@ -300,10 +300,8 @@ byte *COM_LoadFile (const char *path, int usehunk)
 		
 	((byte *)buf)[len] = 0;
 
-	Draw_BeginDisc ();
 	FS_Read(buf, len, h);
 	FS_FCloseFile(h);
-	Draw_EndDisc ();
 
 	return buf;
 }
