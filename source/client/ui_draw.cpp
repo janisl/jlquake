@@ -36,6 +36,18 @@
 
 viddef_t	viddef;
 
+vec4_t g_color_table[8] =
+{
+	{0.0, 0.0, 0.0, 1.0},
+	{1.0, 0.0, 0.0, 1.0},
+	{0.0, 1.0, 0.0, 1.0},
+	{1.0, 1.0, 0.0, 1.0},
+	{0.0, 0.0, 1.0, 1.0},
+	{0.0, 1.0, 1.0, 1.0},
+	{1.0, 0.0, 1.0, 1.0},
+	{1.0, 1.0, 1.0, 1.0},
+};
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -207,7 +219,7 @@ void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 //
 //==========================================================================
 
-void DoQuad(float x1, float y1, float s1, float t1,
+static void DoQuad(float x1, float y1, float s1, float t1,
 	float x2, float y2, float s2, float t2)
 {
 	UI_AdjustFromVirtualScreen(&x1, &y1, &x2, &y2);
@@ -427,4 +439,226 @@ void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int number
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglColor4f(1, 1, 1, 1);
 	DoQuad(x, y, fcol, frow, x + w, y + h, fcol + xsize, frow + ysize);
+}
+
+//==========================================================================
+//
+//	SCR_FillRect
+//
+//==========================================================================
+
+void SCR_FillRect(float x, float y, float width, float height, const float* color)
+{
+	R_SetColor(color);
+
+	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
+	R_StretchPic(x, y, width, height, 0, 0, 0, 0, cls_common->whiteShader);
+
+	R_SetColor(NULL);
+}
+
+//==========================================================================
+//
+//	SCR_DrawPic
+//
+//==========================================================================
+
+void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader)
+{
+	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
+	R_StretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
+}
+
+//==========================================================================
+//
+//	SCR_DrawNamedPic
+//
+//==========================================================================
+
+void SCR_DrawNamedPic(float x, float y, float width, float height, const char* picname)
+{
+	qassert(width != 0);
+	qhandle_t hShader = R_RegisterShader(picname);
+	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
+	R_StretchPic(x, y, width, height, 0, 0, 1, 1, hShader);
+}
+
+//==========================================================================
+//
+//	SCR_DrawChar
+//
+//==========================================================================
+
+static void SCR_DrawChar(int x, int y, float size, int ch)
+{
+	ch &= 255;
+
+	if (ch == ' ')
+	{
+		return;
+	}
+
+	if (y < -size)
+	{
+		return;
+	}
+
+	float ax = x;
+	float ay = y;
+	float aw = size;
+	float ah = size;
+	UI_AdjustFromVirtualScreen(&ax, &ay, &aw, &ah);
+
+	int row = ch >> 4;
+	int col = ch & 15;
+
+	float frow = row * 0.0625;
+	float fcol = col * 0.0625;
+	size = 0.0625;
+
+	R_StretchPic(ax, ay, aw, ah, fcol, frow, fcol + size, frow + size, cls_common->charSetShader);
+}
+
+//==========================================================================
+//
+//	SCR_DrawSmallChar
+//
+//	small chars are drawn at native screen resolution
+//
+//==========================================================================
+
+void SCR_DrawSmallChar(int x, int y, int ch)
+{
+	ch &= 255;
+
+	if (ch == ' ')
+	{
+		return;
+	}
+
+	if (y < -SMALLCHAR_HEIGHT)
+	{
+		return;
+	}
+
+	int row = ch >> 4;
+	int col = ch & 15;
+
+	float frow = row * 0.0625;
+	float fcol = col * 0.0625;
+	float size = 0.0625;
+
+	R_StretchPic(x, y, SMALLCHAR_WIDTH, SMALLCHAR_HEIGHT, fcol, frow, fcol + size, frow + size, cls_common->charSetShader);
+}
+
+//==========================================================================
+//
+//	SCR_DrawBigString[Color]
+//
+//	Draws a multi-colored string with a drop shadow, optionally forcing
+// to a fixed color.
+//
+//==========================================================================
+
+void SCR_DrawStringExt(int x, int y, float size, const char* string, float* setColor, bool forceColor)
+{
+	// draw the drop shadow
+	vec4_t color;
+	color[0] = color[1] = color[2] = 0;
+	color[3] = setColor[3];
+	R_SetColor(color);
+	const char* s = string;
+	int xx = x;
+	while (*s)
+	{
+		if (Q_IsColorString(s))
+		{
+			s += 2;
+			continue;
+		}
+		SCR_DrawChar(xx + 2, y + 2, size, *s);
+		xx += size;
+		s++;
+	}
+
+	// draw the colored text
+	s = string;
+	xx = x;
+	R_SetColor(setColor);
+	while (*s)
+	{
+		if (Q_IsColorString(s))
+		{
+			if (!forceColor)
+			{
+				Com_Memcpy(color, g_color_table[ColorIndex(*(s + 1))], sizeof(color));
+				color[3] = setColor[3];
+				R_SetColor(color);
+			}
+			s += 2;
+			continue;
+		}
+		SCR_DrawChar(xx, y, size, *s);
+		xx += size;
+		s++;
+	}
+	R_SetColor(NULL);
+}
+
+//==========================================================================
+//
+//	SCR_DrawBigString
+//
+//==========================================================================
+
+void SCR_DrawBigString(int x, int y, const char* s, float alpha)
+{
+	float color[4];
+	color[0] = color[1] = color[2] = 1.0;
+	color[3] = alpha;
+	SCR_DrawStringExt(x, y, BIGCHAR_WIDTH, s, color, false);
+}
+
+//==========================================================================
+//
+//	SCR_DrawBigStringColor
+//
+//==========================================================================
+
+void SCR_DrawBigStringColor(int x, int y, const char *s, vec4_t color)
+{
+	SCR_DrawStringExt(x, y, BIGCHAR_WIDTH, s, color, true);
+}
+
+//==========================================================================
+//
+//	SCR_DrawSmallStringExt
+//
+//==========================================================================
+
+void SCR_DrawSmallStringExt(int x, int y, const char* string, float* setColor, bool forceColor)
+{
+	// draw the colored text
+	const char* s = string;
+	int xx = x;
+	R_SetColor(setColor);
+	while (*s)
+	{
+		if (Q_IsColorString(s))
+		{
+			if (!forceColor)
+			{
+				vec4_t color;
+				Com_Memcpy(color, g_color_table[ColorIndex(*(s + 1))], sizeof(color));
+				color[3] = setColor[3];
+				R_SetColor(color);
+			}
+			s += 2;
+			continue;
+		}
+		SCR_DrawSmallChar(xx, y, *s);
+		xx += SMALLCHAR_WIDTH;
+		s++;
+	}
+	R_SetColor(NULL);
 }

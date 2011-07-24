@@ -15,6 +15,12 @@
 //**
 //**************************************************************************
 
+#define SMALLCHAR_WIDTH		8
+#define SMALLCHAR_HEIGHT	16
+
+#define BIGCHAR_WIDTH		16
+#define BIGCHAR_HEIGHT		16
+
 struct vrect_t
 {
 	int		x;
@@ -31,6 +37,8 @@ struct viddef_t
 
 extern viddef_t		viddef;				// global video state
 
+extern vec4_t g_color_table[8];
+
 image_t* UI_CachePic(const char* path);
 image_t* UI_CachePicRepeat(const char* path);
 image_t* UI_CachePicWithTransPixels(const char* path, byte* TransPixels);
@@ -42,8 +50,6 @@ int UI_GetImageHeight(image_t* pic);
 void UI_GetPicSize(int* w, int* h, const char* name);
 
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
-void DoQuad(float x1, float y1, float s1, float t1,
-	float x2, float y2, float s2, float t2);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
 void UI_DrawNamedPic(int x, int y, const char* name);
 void UI_DrawStretchPic(int x, int y, int w, int h, image_t* gl, float alpha = 1);
@@ -55,3 +61,12 @@ void UI_NamedTileClear(int x, int y, int w, int h, const char *name);
 void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a);
 void UI_FillPal(int x, int y, int w, int h, int c);
 void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int numberOfColumns, int numberOfRows);
+
+void SCR_FillRect(float x, float y, float width, float height, const float* color);
+void SCR_DrawPic(float x, float y, float width, float height, qhandle_t hShader);
+void SCR_DrawNamedPic(float x, float y, float width, float height, const char* picname);
+void SCR_DrawSmallChar(int x, int y, int ch);
+void SCR_DrawStringExt(int x, int y, float size, const char* string, float* setColor, bool forceColor);
+void SCR_DrawBigString(int x, int y, const char* s, float alpha);		// draws a string with embedded color control characters with fade
+void SCR_DrawBigStringColor(int x, int y, const char *s, vec4_t color);	// ignores embedded color control characters
+void SCR_DrawSmallStringExt(int x, int y, const char *string, float *setColor, bool forceColor);
