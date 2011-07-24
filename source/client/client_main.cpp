@@ -35,6 +35,8 @@
 
 QCvar*		cl_inGameVideo;
 
+clientStaticCommon_t* cls_common;
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------

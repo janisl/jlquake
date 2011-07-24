@@ -1008,6 +1008,7 @@ void CL_Init (void)
 	extern	QCvar*		noskins;
 	char st[80];
 
+	cls_common = &cls;
 	CL_SharedInit();
 
 	cls.state = ca_disconnected;

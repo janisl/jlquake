@@ -79,7 +79,7 @@ ca_connected		// valid netcon, talking to a server
 // the client_static_t structure is persistant through an arbitrary number
 // of server connections
 //
-typedef struct
+struct client_static_t : clientStaticCommon_t
 {
 	cactive_t	state;
 
@@ -109,7 +109,7 @@ typedef struct
 	QMsg		message;		// writing buffer to send to server
 	byte		message_buf[1024];
 	
-} client_static_t;
+};
 
 extern client_static_t	cls;
 

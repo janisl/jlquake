@@ -178,7 +178,7 @@ typedef enum {
 	dl_single
 } dltype_t;		// download type
 
-typedef struct
+struct client_static_t : clientStaticCommon_t
 {
 	connstate_t	state;
 
@@ -215,7 +215,7 @@ typedef struct
 	qboolean	demorecording;
 	qboolean	demowaiting;	// don't record until a non-delta message is received
 	fileHandle_t	demofile;
-} client_static_t;
+};
 
 extern client_static_t	cls;
 

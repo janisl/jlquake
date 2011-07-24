@@ -1785,6 +1785,7 @@ CL_Init
 */
 void CL_Init (void)
 {
+	cls_common = &cls;
 	if (com_dedicated->value)
 		return;		// nothing running on the client
 

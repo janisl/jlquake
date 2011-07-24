@@ -135,7 +135,7 @@ typedef enum {
 // the client_static_t structure is persistant through an arbitrary number
 // of server connections
 //
-typedef struct
+struct client_static_t : clientStaticCommon_t
 {
 // connection information
 	cactive_t	state;
@@ -170,7 +170,7 @@ typedef struct
 	float		td_starttime;		// realtime at second frame of timedemo
 
 	float		latency;		// rolling average
-} client_static_t;
+};
 
 extern client_static_t	cls;
 

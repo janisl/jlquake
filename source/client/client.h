@@ -35,4 +35,15 @@ int CL_ScaledMilliseconds();
 //	Called by Windows driver.
 void Key_ClearStates();
 
+struct clientStaticCommon_t
+{
+	// rendering info
+	glconfig_t	glconfig;
+	qhandle_t	charSetShader;
+	qhandle_t	whiteShader;
+	qhandle_t	consoleShader;
+};
+
+extern clientStaticCommon_t* cls_common;
+
 #endif

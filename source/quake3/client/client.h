@@ -246,7 +246,8 @@ typedef struct {
 	unsigned short	port;
 } serverAddress_t;
 
-typedef struct {
+struct clientStatic_t : clientStaticCommon_t
+{
 	connstate_t	state;				// connection status
 
 	qboolean	cddialog;			// bring up the cd needed dialog next frame
@@ -291,13 +292,7 @@ typedef struct {
 	char		updateInfoString[MAX_INFO_STRING];
 
 	netadr_t	authorizeServer;
-
-	// rendering info
-	glconfig_t	glconfig;
-	qhandle_t	charSetShader;
-	qhandle_t	whiteShader;
-	qhandle_t	consoleShader;
-} clientStatic_t;
+};
 
 extern	clientStatic_t		cls;
 

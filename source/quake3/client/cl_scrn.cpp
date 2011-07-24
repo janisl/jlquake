@@ -48,22 +48,23 @@ void SCR_DrawNamedPic( float x, float y, float width, float height, const char *
 	R_StretchPic( x, y, width, height, 0, 0, 1, 1, hShader );
 }
 
-/*
-================
-SCR_FillRect
+//==========================================================================
+//
+//	SCR_FillRect
+//
+//	Coordinates are 640*480 virtual values
+//
+//==========================================================================
 
-Coordinates are 640*480 virtual values
-=================
-*/
-void SCR_FillRect( float x, float y, float width, float height, const float *color ) {
-	R_SetColor( color );
+void SCR_FillRect(float x, float y, float width, float height, const float* color)
+{
+	R_SetColor(color);
 
-	UI_AdjustFromVirtualScreen( &x, &y, &width, &height );
-	R_StretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
+	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
+	R_StretchPic(x, y, width, height, 0, 0, 0, 0, cls.whiteShader);
 
-	R_SetColor( NULL );
+	R_SetColor(NULL);
 }
-
 
 /*
 ================

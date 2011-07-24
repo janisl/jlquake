@@ -650,6 +650,7 @@ CL_Init
 */
 void CL_Init (void)
 {	
+	cls_common = &cls;
 	cls.message.InitOOB(cls.message_buf, sizeof(cls.message_buf));
 
 	CL_SharedInit();
