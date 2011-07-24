@@ -3938,7 +3938,7 @@ void PlayerConfig_MenuDraw( void )
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/tris.md2", s_pmi[s_player_model_box.curvalue].directory );
 		entity.hModel = R_RegisterModel( scratch );
 		QStr::Sprintf( scratch, sizeof( scratch ), "players/%s/%s.pcx", s_pmi[s_player_model_box.curvalue].directory, s_pmi[s_player_model_box.curvalue].skindisplaynames[s_player_skin_box.curvalue] );
-		entity.customSkin = R_GetImageHandle(re.RegisterSkin(scratch));
+		entity.customSkin = R_GetImageHandle(R_RegisterSkinQ2(scratch));
 		entity.renderfx = RF_ABSOLUTE_LIGHT;
 		entity.radius = 1;
 		entity.origin[0] = 80;

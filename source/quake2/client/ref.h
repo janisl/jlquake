@@ -38,17 +38,7 @@ typedef struct
 	// registered before rendering any frames to prevent disk hits,
 	// but they can still be registered at a later time
 	// if necessary.
-	//
-	// EndRegistration will free any remaining data that wasn't registered.
-	// Any qhandle_t or skin_s pointers from before the BeginRegistration
-	// are no longer valid after EndRegistration.
-	//
-	// Skins and images need to be differentiated, because skins
-	// are flood filled to eliminate mip map edge errors, and pics have
-	// an implicit "pics/" prepended to the name. (a pic name that starts with a
-	// slash will not use the "pics/" prefix or the ".pcx" postfix)
 	void	(*BeginRegistration) (const char *map);
-	struct image_t *(*RegisterSkin) (const char *name);
 	void	(*EndRegistration) (void);
 
 	void	(*RenderFrame) (refdef_t *fd);

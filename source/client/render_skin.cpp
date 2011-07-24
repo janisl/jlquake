@@ -326,3 +326,14 @@ void R_SkinList_f()
 	}
 	GLog.Write("------------------\n");
 }
+
+//==========================================================================
+//
+//	R_RegisterSkinQ2
+//
+//==========================================================================
+
+image_t* R_RegisterSkinQ2(const char* name)
+{
+	return R_FindImageFile(name, true, true, GL_CLAMP, false, IMG8MODE_Skin);
+}

@@ -108,6 +108,18 @@ static textureMode_t modes[] =
 	{"GL_LINEAR_MIPMAP_LINEAR", GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR}
 };
 
+static byte cs_data[64] =
+{
+	0, 0, 0, 255, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 255, 0, 0, 0, 0,
+	255, 0, 255, 0, 255, 0, 255, 0,
+	0, 0, 0, 255, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 255, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0
+};
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
@@ -1956,4 +1968,21 @@ image_t* R_LoadQuake2FontImage(const char* name)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	return image;
+}
+
+//==========================================================================
+//
+//	R_CreateCrosshairImage
+//
+//==========================================================================
+
+image_t* R_CreateCrosshairImage()
+{
+	byte data[64 * 4];
+	Com_Memset(data, 255, 64 * 4);
+	for (int i = 0; i < 64; i++)
+	{
+		data[i * 4 + 3] = cs_data[i];
+	}
+	return R_CreateImage("crosshair", data, 8, 8, false, false, GL_CLAMP, false);
 }

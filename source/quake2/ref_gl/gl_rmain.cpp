@@ -263,7 +263,6 @@ void R_BeginFrame( float camera_separation )
 
 
 void	R_BeginRegistration (const char *map);
-image_t	*R_RegisterSkinQ2 (const char *name);
 void	R_EndRegistration (void);
 
 void	R_RenderFrame (refdef_t *fd);
@@ -281,7 +280,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	ri = rimp;
 
 	re.BeginRegistration = R_BeginRegistration;
-	re.RegisterSkin = R_RegisterSkinQ2;
 	re.EndRegistration = R_EndRegistration;
 
 	re.RenderFrame = R_RenderFrame;

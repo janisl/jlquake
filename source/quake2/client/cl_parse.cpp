@@ -382,7 +382,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 		ci->model = R_RegisterModel(model_filename);
 		Com_Memset(ci->weaponmodel, 0, sizeof(ci->weaponmodel));
 		ci->weaponmodel[0] = R_RegisterModel(weapon_filename);
-		ci->skin = re.RegisterSkin (skin_filename);
+		ci->skin = R_RegisterSkinQ2 (skin_filename);
 		ci->icon = UI_RegisterPic (ci->iconname);
 	}
 	else
@@ -411,7 +411,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 
 		// skin file
 		QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
-		ci->skin = re.RegisterSkin (skin_filename);
+		ci->skin = R_RegisterSkinQ2 (skin_filename);
 
 		// if we don't have the skin and the model wasn't male,
 		// see if the male has it (this is for CTF's skins)
@@ -424,7 +424,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 
 			// see if the skin exists for the male model
 			QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
-			ci->skin = re.RegisterSkin (skin_filename);
+			ci->skin = R_RegisterSkinQ2 (skin_filename);
 		}
 
 		// if we still don't have a skin, it means that the male model didn't have
@@ -432,7 +432,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 		if (!ci->skin) {
 			// see if the skin exists for the male model
 			QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/grunt.pcx", model_name, skin_name);
-			ci->skin = re.RegisterSkin (skin_filename);
+			ci->skin = R_RegisterSkinQ2 (skin_filename);
 		}
 
 		// weapon file

@@ -423,10 +423,6 @@
 			Name="Renderer"
 			>
 			<File
-				RelativePath=".\ref_gl\gl_image.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ref_gl\gl_local.h"
 				>
 			</File>

@@ -273,6 +273,7 @@ image_t* R_LoadRawFontImageFromFile(const char* name, int width, int height);
 image_t* R_LoadRawFontImageFromWad(const char* name, int width, int height);
 image_t* R_LoadBigFontImage(const char* name);
 image_t* R_LoadQuake2FontImage(const char* name);
+image_t* R_CreateCrosshairImage();
 
 void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool Dirty);
 
@@ -298,6 +299,7 @@ qhandle_t R_RegisterShaderNoMip(const char* Name);
 void R_RemapShader(const char* OldShader, const char* NewShader, const char* TimeOffset);
 
 qhandle_t R_RegisterSkin(const char* Name);
+image_t* R_RegisterSkinQ2(const char* name);
 
 void R_RegisterFont(const char* FontName, int PointSize, fontInfo_t* Font);
 

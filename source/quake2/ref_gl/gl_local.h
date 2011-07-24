@@ -69,8 +69,6 @@ void COM_StripExtension (char *in, char *out);
 void	R_BeginFrame( float camera_separation );
 void	R_SwapBuffers( int );
 
-image_t *R_RegisterSkinQ2 (const char *name);
-
 /*
 ** GL extension emulation functions
 */
