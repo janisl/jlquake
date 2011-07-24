@@ -30,7 +30,6 @@ extern QCvar*	cl_crossy;
 extern QCvar*	crosshaircolor;
 
 byte		*draw_chars;				// 8*8 graphic characters
-image_t		*draw_disc;
 image_t		*draw_backtile;
 
 image_t*	char_texture;
@@ -50,39 +49,6 @@ static byte cs_data[64] = {
 
 image_t		*conback;
 
-//=============================================================================
-/* Support Routines */
-
-void Draw_CharToConback (int num, byte *dest)
-{
-	int		row, col;
-	byte	*source;
-	int		drawline;
-	int		x;
-
-	row = num>>4;
-	col = num&15;
-	source = draw_chars + (row<<10) + (col<<3);
-
-	drawline = 8;
-
-	while (drawline--)
-	{
-		for (x=0 ; x<8 ; x++)
-			if (source[x] != 255)
-			{
-				int p = (0x60 + source[x]) & 0xff;
-				dest[x * 4 + 0] = r_palette[p][0];
-				dest[x * 4 + 1] = r_palette[p][1];
-				dest[x * 4 + 2] = r_palette[p][2];
-				dest[x * 4 + 3] = r_palette[p][3];
-			}
-		source += 128;
-		dest += 320 * 4;
-	}
-
-}
-
 /*
 ===============
 Draw_Init
@@ -91,10 +57,6 @@ Draw_Init
 void Draw_Init (void)
 {
 	int		i;
-	byte	*dest;
-	int		x;
-	char	ver[40];
-	int start;
 
 	// load the console background and the charset
 	// by hand, because we need to write the version
@@ -112,35 +74,15 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	delete[] draw_chars32;
-//	Draw_CrosshairAdjust();
 	byte* cs_data32 = R_ConvertImage8To32(cs_data, 8, 8, IMG8MODE_Normal);
 	cs_texture = R_CreateImage("crosshair", cs_data32, 8, 8, false, false, GL_CLAMP, false);
 	delete[] cs_data32;
 
-	start = Hunk_LowMark ();
-
-	int cbwidth;
-	int cbheight;
-	byte* pic32;
-	R_LoadImage("gfx/conback.lmp", &pic32, &cbwidth, &cbheight);
-	if (!pic32)
-		Sys_Error ("Couldn't load gfx/conback.lmp");
-
-	sprintf (ver, "%4.2f", VERSION);
-	dest = pic32 + (320 + 320*186 - 11 - 8*QStr::Length(ver)) * 4;
-	for (x=0 ; x<QStr::Length(ver) ; x++)
-		Draw_CharToConback (ver[x], dest+(x<<5));
-
-	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
-	delete[] pic32;
-
-	// free loaded console
-	Hunk_FreeToLowMark (start);
+	conback = UI_CachePic("gfx/conback.lmp");
 
 	//
 	// get the other pics we need
 	//
-	draw_disc = R_PicFromWad ("disc");
 	draw_backtile = R_PicFromWadRepeat("backtile");
 }
 
@@ -231,21 +173,13 @@ void Draw_ConsoleBackground(int lines)
 		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback, (float)(1.2 * lines) / y);
 	}
 
-	// hack the version number directly into the pic
 	y = lines - 14;
 	if (!cls.download)
 	{
 		char ver[80];
-#ifdef __linux__
-		sprintf (ver, "LinuxGL (%4.2f) QuakeWorld", LINUX_VERSION);
-#else
-		sprintf (ver, "GL (%4.2f) QuakeWorld", GLQUAKE_VERSION);
-#endif
-		int x = viddef.width - (QStr::Length(ver) * 8 + 11) - (viddef.width * 8 / 320) * 7;
-		for (int i = 0; i < QStr::Length(ver); i++)
-		{
-			Draw_Character(x + i * 8, y, ver[i] | 0x80);
-		}
+		sprintf(ver, "JLQuakeWorld %s", JLQUAKE_VERSION_STRING);
+		int x = viddef.width - (QStr::Length(ver) * 8 + 11);
+		Draw_Alt_String(x, y, ver);
 	}
 }
 

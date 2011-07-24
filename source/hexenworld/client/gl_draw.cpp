@@ -5,13 +5,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-byte		*draw_chars;				// 8*8 graphic characters
-byte		*draw_smallchars;			// Small characters for status bar
-byte		*draw_menufont; 			// Big Menu Font
-image_t		*draw_disc[MAX_DISC] = 
-{
-	NULL  // make the first one null for sure
-};
 image_t*	draw_backtile;
 
 image_t*	char_texture;
@@ -45,19 +38,13 @@ Draw_Init
 void Draw_Init (void)
 {
 	int		i;
-	byte	*dest, *src;
-	int		x, y;
-	char	ver[40];
-	int		start;
-	int		f, fstep;
-	char	temp[MAX_QPATH];
 
 	// load the console background and the charset
 	// by hand, because we need to write the version
 	// string into the background before turning
 	// it into a texture
 
-	draw_chars = COM_LoadHunkFile ("gfx/menu/conchars.lmp");
+	byte* draw_chars = COM_LoadHunkFile ("gfx/menu/conchars.lmp");
 	for (i=0 ; i<256*128 ; i++)
 		if (draw_chars[i] == 0)
 			draw_chars[i] = 255;	// proper transparent color
@@ -73,7 +60,7 @@ void Draw_Init (void)
 	cs_texture = R_CreateImage("crosshair", cs_data32, 8, 8, false, false, GL_CLAMP, false);
 	delete[] cs_data32;
 
-	draw_smallchars = (byte*)R_GetWadLumpByName("tinyfont");
+	byte* draw_smallchars = (byte*)R_GetWadLumpByName("tinyfont");
 	for (i=0 ; i<128*32 ; i++)
 		if (draw_smallchars[i] == 0)
 			draw_smallchars[i] = 255;	// proper transparent color
@@ -85,29 +72,8 @@ void Draw_Init (void)
 
 	char_menufonttexture = R_FindImageFile("gfx/menu/bigfont2.lmp", false, false, GL_CLAMP, false, IMG8MODE_Holey);
 
-	start = Hunk_LowMark ();
+	conback = UI_CachePic("gfx/menu/conback.lmp");
 
-	int cbwidth;
-	int cbheight;
-	byte* pic32;
-	R_LoadImage("gfx/menu/conback.lmp", &pic32, &cbwidth, &cbheight);
-	if (!pic32)
-		Sys_Error ("Couldn't load gfx/menu/conback.lmp");
-
-	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
-	delete[] pic32;
-
-	// free loaded console
-	Hunk_FreeToLowMark (start);
-
-	//
-	// get the other pics we need
-	//
-	for(i=MAX_DISC-1;i>=0;i--)
-	{
-		sprintf(temp,"gfx/menu/skull%d.lmp",i);
-		draw_disc[i] = UI_CachePic(temp);
-	}
 	draw_backtile = UI_CachePicRepeat("gfx/menu/backtile.lmp");
 }
 
@@ -187,11 +153,6 @@ void Draw_Crosshair(void)
 //==========================================================================
 void Draw_SmallCharacter (int x, int y, int num)
 {
-	byte			*dest;
-	byte			*source;
-	unsigned short	*pusdest;
-	int				drawline;
-
 	if(num < 32)
 	{
 		num = 0;
@@ -231,10 +192,6 @@ void Draw_SmallString(int x, int y, const char *str)
 
 int M_DrawBigCharacter (int x, int y, int num, int numNext)
 {
-	byte			*dest;
-	byte			*source;
-	unsigned short	*pusdest;
-	int				drawline;
 	int				add;
 
 	if (num == ' ') return 32;
@@ -278,18 +235,13 @@ void Draw_ConsoleBackground(int lines)
 		UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback, (float)(1.2 * lines) / y);
 	}
 
-	// hack the version number directly into the pic
 	y = lines - 14;
 	if (!cls.download)
 	{
 		char ver[80];
-		sprintf(ver, "GL HexenWorld %4.2f", VERSION); // JACK: ZOID! Passing
-													   // parms?!
+		sprintf(ver, "JLHexenWorld %s", JLQUAKE_VERSION_STRING);
 		int x = viddef.width - (QStr::Length(ver) * 8 + 11);
-		for (int i = 0; i < QStr::Length(ver); i++)
-		{
-			Draw_Character(x + i * 8, y, ver[i] | 0x100);
-		}
+		Draw_RedString(x, y, ver);
 	}
 }
 

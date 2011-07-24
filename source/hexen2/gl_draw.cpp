@@ -11,13 +11,6 @@
 
 #define MAX_DISC 18
 
-byte		*draw_chars;				// 8*8 graphic characters
-byte		*draw_smallchars;			// Small characters for status bar
-byte		*draw_menufont; 			// Big Menu Font
-image_t		*draw_disc[MAX_DISC] =
-{
-	NULL  // make the first one null for sure
-};
 image_t		*draw_backtile;
 
 image_t*	char_texture;
@@ -25,43 +18,6 @@ image_t*	char_smalltexture;
 image_t*	char_menufonttexture;
 
 image_t		*conback;
-
-//=============================================================================
-/* Support Routines */
-
-/*
- * Geometry for the player/skin selection screen image.
- */
-
-void Draw_CharToConback (int num, byte *dest)
-{
-	int		row, col;
-	byte	*source;
-	int		drawline;
-	int		x;
-
-	row = num>>5;
-	col = num&31;
-	source = draw_chars + (row<<11) + (col<<3);
-
-	drawline = 8;
-
-	while (drawline--)
-	{
-		for (x=0 ; x<8 ; x++)
-			if (source[x] != 255)
-			{
-				int p = (0x60 + source[x]) & 0xff;
-				dest[x * 4 + 0] = r_palette[p][0];
-				dest[x * 4 + 1] = r_palette[p][1];
-				dest[x * 4 + 2] = r_palette[p][2];
-				dest[x * 4 + 3] = r_palette[p][3];
-			}
-		source += 256;
-		dest += 320 * 4;
-	}
-
-}
 
 /*
 ===============
@@ -71,16 +27,12 @@ Draw_Init
 void Draw_Init (void)
 {
 	int		i;
-	byte	*dest;
-	int		x, y;
-	char	ver[40];
-	char temp[MAX_QPATH];
 
 	// load the console background and the charset
 	// by hand, because we need to write the version
 	// string into the background before turning
 	// it into a texture
-	draw_chars = COM_LoadHunkFile ("gfx/menu/conchars.lmp");
+	byte* draw_chars = COM_LoadHunkFile ("gfx/menu/conchars.lmp");
 	for (i=0 ; i<256*128 ; i++)
 		if (draw_chars[i] == 0)
 			draw_chars[i] = 255;	// proper transparent color
@@ -93,7 +45,7 @@ void Draw_Init (void)
 	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 
-	draw_smallchars = (byte*)R_GetWadLumpByName("tinyfont");
+	byte* draw_smallchars = (byte*)R_GetWadLumpByName("tinyfont");
 	for (i=0 ; i<128*32 ; i++)
 		if (draw_smallchars[i] == 0)
 			draw_smallchars[i] = 255;	// proper transparent color
@@ -105,35 +57,7 @@ void Draw_Init (void)
 
 	char_menufonttexture = R_FindImageFile("gfx/menu/bigfont2.lmp", false, false, GL_CLAMP, false, IMG8MODE_Holey);
 
-	int cbwidth;
-	int cbheight;
-	byte* pic32;
-	R_LoadImage("gfx/menu/conback.lmp", &pic32, &cbwidth, &cbheight);
-	if (!pic32)
-		Sys_Error ("Couldn't load gfx/menu/conback.lmp");
-
-	// hack the version number directly into the pic
-
-	dest = pic32 + (320 - 43 + 320*186) * 4;
-	sprintf (ver, "%4.2f", HEXEN2_VERSION);
-
-//	sprintf (ver, "(gl %4.2f) %4.2f", (float)GLQUAKE_VERSION, (float)VERSION);
-//	dest = cb->data + 320*186 + 320 - 11 - 8*QStr::Length(ver);
-	y = QStr::Length(ver);
-	for (x=0 ; x<y ; x++)
-		Draw_CharToConback (ver[x], dest+(x<<5));
-
-	conback = R_CreateImage("conback", pic32, cbwidth, cbheight, false, false, GL_CLAMP, false);
-	delete[] pic32;
-
-	//
-	// get the other pics we need
-	//
-	for(i=MAX_DISC-1;i>=0;i--)
-	{
-		sprintf(temp,"gfx/menu/skull%d.lmp",i);
-		draw_disc[i] = UI_CachePic(temp);
-	}
+	conback = UI_CachePic("gfx/menu/conback.lmp");
 
 	draw_backtile = UI_CachePicRepeat("gfx/menu/backtile.lmp");
 }
@@ -172,6 +96,15 @@ void Draw_String (int x, int y, const char *str)
 	}
 }
 
+void Draw_RedString (int x, int y, const char *str)
+{
+	while (*str)
+	{
+		Draw_Character (x, y, ((unsigned char)(*str))+256);
+		str++;
+		x += 8;
+	}
+}
 
 //==========================================================================
 //
@@ -183,11 +116,6 @@ void Draw_String (int x, int y, const char *str)
 //==========================================================================
 void Draw_SmallCharacter (int x, int y, int num)
 {
-	byte			*dest;
-	byte			*source;
-	unsigned short	*pusdest;
-	int				drawline;
-
 	if(num < 32)
 	{
 		num = 0;
@@ -227,10 +155,6 @@ void Draw_SmallString(int x, int y, const char *str)
 
 int M_DrawBigCharacter (int x, int y, int num, int numNext)
 {
-	byte			*dest;
-	byte			*source;
-	unsigned short	*pusdest;
-	int				drawline;
 	int				add;
 
 	if (num == ' ') return 32;
@@ -264,6 +188,12 @@ Draw_ConsoleBackground
 void Draw_ConsoleBackground(int lines)
 {
 	UI_DrawStretchPic(0, lines - viddef.height, viddef.width, viddef.height, conback);
+
+	int y = lines - 14;
+	char ver[80];
+	sprintf(ver, "JLHexen II %s", JLQUAKE_VERSION_STRING);
+	int x = viddef.width - (QStr::Length(ver) * 8 + 11);
+	Draw_RedString(x, y, ver);
 }
 
 //=============================================================================

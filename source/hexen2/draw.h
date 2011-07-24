@@ -8,7 +8,6 @@
 #define MAX_DISC 18
 
 struct image_t;
-extern image_t		*draw_disc[MAX_DISC]; // also used on sbar
 extern image_t		*draw_backtile;
 
 void Draw_Init (void);

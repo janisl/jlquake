@@ -34,6 +34,7 @@ image_t      *sb_ammo[4];
 image_t		*sb_sigil[4];
 image_t		*sb_armor[3];
 image_t		*sb_items[32];
+image_t*	draw_disc;
 
 image_t	*sb_faces[7][2];		// 0 is gibbed, 1 is dead, 2-6 are alive
 							// 0 is static, 1 is temporary animation
@@ -152,6 +153,8 @@ void Sbar_Init (void)
 	sb_items[3] = R_PicFromWad ("sb_invuln");
 	sb_items[4] = R_PicFromWad ("sb_suit");
 	sb_items[5] = R_PicFromWad ("sb_quad");
+
+	draw_disc = R_PicFromWad ("disc");
 
 	sb_sigil[0] = R_PicFromWad ("sb_sigil1");
 	sb_sigil[1] = R_PicFromWad ("sb_sigil2");
