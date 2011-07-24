@@ -94,6 +94,8 @@ static void DoQuad(float x, float y, float width, float height,
 {
 	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
 
+	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+
 	qglBegin(GL_QUADS);
 	qglTexCoord2f(s1, t1);
 	qglVertex2f(x, y);
@@ -148,7 +150,6 @@ void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
 	}
 	qglColor4f(1, 1, 1, alpha);
 	GL_Bind(pic);
-	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	DoQuad(x, y, w, h, pic->sl, pic->tl, pic->sh, pic->th);
 }
 
@@ -184,7 +185,6 @@ void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte*
 	GL_TexEnv(GL_MODULATE);
 	qglColor4ubv(colour);
 	GL_Bind(pic);
-	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	DoQuad(x, y, w, h, pic->sl, pic->tl, pic->sh, pic->th);
 	GL_TexEnv(GL_REPLACE);
 }
@@ -212,8 +212,6 @@ void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, in
 	newtl = pic->tl + (srcy*oldglheight)/pic->height;
 	newth = newtl + (height*oldglheight)/pic->height;
 	
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80 | GLS_DEPTHTEST_DISABLE);
-	
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
 	DoQuad(x, y, width, height, newsl, newtl, newsh, newth);
@@ -232,7 +230,6 @@ void UI_TileClear(int x, int y, int w, int h, image_t* pic)
 {
 	qglColor4f(1, 1, 1, 1);
 	GL_Bind(pic);
-	GL_State(GLS_DEPTHTEST_DISABLE);
 	DoQuad(x, y, w, h, x / 64.0, y / 64.0, (x + w) / 64.0, (y + h) / 64.0);
 }
 
@@ -261,7 +258,6 @@ void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 
 void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a)
 {
-	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable(GL_TEXTURE_2D);
 	qglColor4f(r, g, b, a);
 	DoQuad(x, y, w, h, 0, 0, 0, 0);
@@ -306,7 +302,6 @@ void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int number
 	float frow = row * ysize;
 
 	GL_Bind(image);
-	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglColor4f(1, 1, 1, 1);
 	DoQuad(x, y, w, h, fcol, frow, fcol + xsize, frow + ysize);
 }
