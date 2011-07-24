@@ -563,3 +563,6 @@ void x86_TimerStop( void );
 void x86_TimerInit( unsigned long smallest, unsigned longest );
 unsigned long *x86_TimerGetHistogram( void );
 #endif
+
+void Draw_InitLocal();
+void Draw_Char(int x, int y, int c);

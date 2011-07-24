@@ -44,7 +44,7 @@ void Inv_DrawString (int x, int y, const char *string)
 {
 	while (*string)
 	{
-		re.DrawChar (x, y, *string);
+		Draw_Char (x, y, *string);
 		x+=8;
 		string++;
 	}
@@ -130,7 +130,7 @@ void CL_DrawInventory (void)
 		else	// draw a blinky cursor by the selected item
 		{
 			if ( (int)(cls.realtime*10) & 1)
-				re.DrawChar (x-8, y, 15);
+				Draw_Char (x-8, y, 15);
 		}
 		Inv_DrawString (x, y, string);
 		y += 8;

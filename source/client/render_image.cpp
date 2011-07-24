@@ -1942,3 +1942,18 @@ image_t* R_LoadBigFontImage(const char* name)
 {
 	return R_FindImageFile(name, false, false, GL_CLAMP, false, IMG8MODE_Holey);
 }
+
+//==========================================================================
+//
+//	R_LoadQuake2FontImage
+//
+//==========================================================================
+
+image_t* R_LoadQuake2FontImage(const char* name)
+{
+	image_t* image = R_FindImageFile(name, false, false, GL_CLAMP);
+	GL_Bind(image);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	qglTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	return image;
+}

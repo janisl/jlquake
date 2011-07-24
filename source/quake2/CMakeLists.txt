@@ -35,7 +35,6 @@ add_executable(jlquake2
 	linux/q_shlinux.cpp
 	linux/sys_linux.cpp
 	linux/glob.cpp
-	ref_gl/gl_draw.cpp
 	ref_gl/gl_image.cpp
 	ref_gl/gl_model.cpp
 	ref_gl/gl_rmain.cpp

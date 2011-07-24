@@ -70,6 +70,8 @@ dirty_t		scr_dirty, scr_old_dirty[2];
 char		crosshair_pic[MAX_QPATH];
 int			crosshair_width, crosshair_height;
 
+static image_t		*draw_chars;
+
 void SCR_TimeRefresh_f (void);
 void SCR_Loading_f (void);
 
@@ -278,7 +280,7 @@ void SCR_DrawCenterString (void)
 		SCR_AddDirtyPoint (x, y);
 		for (j=0 ; j<l ; j++, x+=8)
 		{
-			re.DrawChar (x, y, start[j]);	
+			Draw_Char (x, y, start[j]);	
 			if (!remaining--)
 				return;
 		}
@@ -430,6 +432,8 @@ void SCR_Init (void)
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 	Cmd_AddCommand ("sky",SCR_Sky_f);
+
+	Draw_InitLocal();
 
 	scr_initialized = true;
 }
@@ -831,7 +835,7 @@ void DrawHUDString (char *string, int x, int y, int centerwidth, int _xor)
 			x = margin;
 		for (i=0 ; i<width ; i++)
 		{
-			re.DrawChar (x, y, line[i]^_xor);
+			Draw_Char (x, y, line[i]^_xor);
 			x += 8;
 		}
 		if (*string)
@@ -1356,4 +1360,33 @@ void SCR_UpdateScreen (void)
 		}
 	}
 	re.EndFrame();
+}
+
+/*
+===============
+Draw_InitLocal
+===============
+*/
+void Draw_InitLocal (void)
+{
+	draw_chars = R_LoadQuake2FontImage("pics/conchars.pcx");
+}
+
+/*
+================
+Draw_Char
+
+Draws one 8*8 graphics character with 0 being transparent.
+It can be clipped to the top of the screen to allow the console to be
+smoothly scrolled off.
+================
+*/
+void Draw_Char (int x, int y, int num)
+{
+	num &= 255;
+	
+	if ( (num&127) == 32 )
+		return;		// space
+
+	UI_DrawChar(x, y, num, 8, 8, draw_chars, 16, 16);
 }

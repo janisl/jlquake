@@ -36,7 +36,7 @@ void DrawString (int x, int y, const char *s)
 {
 	while (*s)
 	{
-		re.DrawChar (x, y, *s);
+		Draw_Char (x, y, *s);
 		x+=8;
 		s++;
 	}
@@ -46,7 +46,7 @@ void DrawAltString (int x, int y, const char *s)
 {
 	while (*s)
 	{
-		re.DrawChar (x, y, *s ^ 0x80);
+		Draw_Char (x, y, *s ^ 0x80);
 		x+=8;
 		s++;
 	}
@@ -483,7 +483,7 @@ void Con_DrawInput (void)
 	y = con.vislines-16;
 
 	for (i=0 ; i<con.linewidth ; i++)
-		re.DrawChar ( (i+1)<<3, con.vislines - 22, text[i]);
+		Draw_Char ( (i+1)<<3, con.vislines - 22, text[i]);
 
 // remove cursor
 	key_lines[edit_line][key_linepos] = 0;
@@ -520,7 +520,7 @@ void Con_DrawNotify (void)
 		text = con.text + (i % con.totallines)*con.linewidth;
 		
 		for (x = 0 ; x < con.linewidth ; x++)
-			re.DrawChar ( (x+1)<<3, v, text[x]);
+			Draw_Char ( (x+1)<<3, v, text[x]);
 
 		v += 8;
 	}
@@ -545,10 +545,10 @@ void Con_DrawNotify (void)
 		x = 0;
 		while(s[x])
 		{
-			re.DrawChar ( (x+skip)<<3, v, s[x]);
+			Draw_Char ( (x+skip)<<3, v, s[x]);
 			x++;
 		}
-		re.DrawChar ( (x+skip)<<3, v, 10+((cls.realtime>>8)&1));
+		Draw_Char ( (x+skip)<<3, v, 10+((cls.realtime>>8)&1));
 		v += 8;
 	}
 	
@@ -590,7 +590,7 @@ void Con_DrawConsole (float frac)
 
 	QStr::Sprintf (version, sizeof(version), "v%4.2f", VERSION);
 	for (x=0 ; x<5 ; x++)
-		re.DrawChar (viddef.width-44+x*8, lines-12, 128 + version[x] );
+		Draw_Char (viddef.width-44+x*8, lines-12, 128 + version[x] );
 
 // draw the text
 	con.vislines = lines;
@@ -610,7 +610,7 @@ void Con_DrawConsole (float frac)
 	{
 	// draw arrows to show the buffer is backscrolled
 		for (x=0 ; x<con.linewidth ; x+=4)
-			re.DrawChar ( (x+1)<<3, y, '^');
+			Draw_Char ( (x+1)<<3, y, '^');
 	
 		y -= 8;
 		rows--;
@@ -627,7 +627,7 @@ void Con_DrawConsole (float frac)
 		text = con.text + (row % con.totallines)*con.linewidth;
 
 		for (x=0 ; x<con.linewidth ; x++)
-			re.DrawChar ( (x+1)<<3, y, text[x]);
+			Draw_Char ( (x+1)<<3, y, text[x]);
 	}
 
 //ZOID
@@ -671,7 +671,7 @@ void Con_DrawConsole (float frac)
 		// draw it
 		y = con.vislines-12;
 		for (i = 0; i < QStr::Length(dlbar); i++)
-			re.DrawChar ( (i+1)<<3, y, dlbar[i]);
+			Draw_Char ( (i+1)<<3, y, dlbar[i]);
 	}
 //ZOID
 

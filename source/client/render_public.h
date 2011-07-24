@@ -272,6 +272,7 @@ void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pi
 image_t* R_LoadRawFontImageFromFile(const char* name, int width, int height);
 image_t* R_LoadRawFontImageFromWad(const char* name, int width, int height);
 image_t* R_LoadBigFontImage(const char* name);
+image_t* R_LoadQuake2FontImage(const char* name);
 
 void R_UploadCinematic(int Width, int Height, const byte* Data, int Client, bool Dirty);
 

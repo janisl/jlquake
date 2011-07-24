@@ -40,8 +40,6 @@ extern refexport_t re;
 #define VID_WIDTH viddef.width
 #define VID_HEIGHT viddef.height
 
-#define Draw_Char re.DrawChar
-
 void Action_DoEnter( menuaction_s *a )
 {
 	if ( a->generic.callback )

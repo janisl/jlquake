@@ -61,13 +61,10 @@ int 	R_Init();
 void	R_Shutdown( void );
 
 void R_RenderView (refdef_t *fd);
-void Draw_InitLocal (void);
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
 
 void COM_StripExtension (char *in, char *out);
-
-void	Draw_Char (int x, int y, int c);
 
 void	R_BeginFrame( float camera_separation );
 void	R_SwapBuffers( int );

@@ -49,12 +49,9 @@ typedef struct
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
 	void	(*BeginRegistration) (const char *map);
 	struct image_t *(*RegisterSkin) (const char *name);
-	struct image_t *(*RegisterPic) (const char *name);
 	void	(*EndRegistration) (void);
 
 	void	(*RenderFrame) (refdef_t *fd);
-
-	void	(*DrawChar) (int x, int y, int c);
 
 	/*
 	** video mode and refresh state management entry points

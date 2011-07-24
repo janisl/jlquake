@@ -170,8 +170,6 @@ int R_Init()
 
 	Cvar_SetLatched( "scr_drawall", "0" );
 
-	Draw_InitLocal ();
-
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
 		ri.Con_Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
@@ -270,8 +268,6 @@ void	R_EndRegistration (void);
 
 void	R_RenderFrame (refdef_t *fd);
 
-void	Draw_Char (int x, int y, int c);
-
 /*
 @@@@@@@@@@@@@@@@@@@@@
 GetRefAPI
@@ -289,8 +285,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.EndRegistration = R_EndRegistration;
 
 	re.RenderFrame = R_RenderFrame;
-
-	re.DrawChar = Draw_Char;
 
 	re.Shutdown = R_Shutdown;
 
