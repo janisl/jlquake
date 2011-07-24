@@ -89,20 +89,20 @@ void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 //
 //==========================================================================
 
-static void DoQuad(float x1, float y1, float s1, float t1,
-	float x2, float y2, float s2, float t2)
+static void DoQuad(float x, float y, float width, float height,
+	float s1, float t1, float s2, float t2)
 {
-	UI_AdjustFromVirtualScreen(&x1, &y1, &x2, &y2);
+	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
 
 	qglBegin(GL_QUADS);
 	qglTexCoord2f(s1, t1);
-	qglVertex2f(x1, y1);
+	qglVertex2f(x, y);
 	qglTexCoord2f(s2, t1);
-	qglVertex2f(x2, y1);
+	qglVertex2f(x + width, y);
 	qglTexCoord2f(s2, t2);
-	qglVertex2f (x2, y2);
+	qglVertex2f (x + width, y + height);
 	qglTexCoord2f(s1, t2);
-	qglVertex2f(x1, y2);
+	qglVertex2f(x, y + height);
 	qglEnd();
 }
 
@@ -149,7 +149,7 @@ void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
 	qglColor4f(1, 1, 1, alpha);
 	GL_Bind(pic);
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	DoQuad(x, y, pic->sl, pic->tl, x + w, y + h, pic->sh, pic->th);
+	DoQuad(x, y, w, h, pic->sl, pic->tl, pic->sh, pic->th);
 }
 
 //==========================================================================
@@ -185,7 +185,7 @@ void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte*
 	qglColor4ubv(colour);
 	GL_Bind(pic);
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	DoQuad(x, y, pic->sl, pic->tl, x + w, y + h, pic->sh, pic->th);
+	DoQuad(x, y, w, h, pic->sl, pic->tl, pic->sh, pic->th);
 	GL_TexEnv(GL_REPLACE);
 }
 
@@ -216,7 +216,7 @@ void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, in
 	
 	qglColor4f (1,1,1,1);
 	GL_Bind (pic);
-	DoQuad(x, y, newsl, newtl, x + width, y + height, newsh, newth);
+	DoQuad(x, y, width, height, newsl, newtl, newsh, newth);
 }
 
 //==========================================================================
@@ -233,7 +233,7 @@ void UI_TileClear(int x, int y, int w, int h, image_t* pic)
 	qglColor4f(1, 1, 1, 1);
 	GL_Bind(pic);
 	GL_State(GLS_DEPTHTEST_DISABLE);
-	DoQuad(x, y, x / 64.0, y / 64.0, x + w, y + h, (x + w) / 64.0, (y + h) / 64.0);
+	DoQuad(x, y, w, h, x / 64.0, y / 64.0, (x + w) / 64.0, (y + h) / 64.0);
 }
 
 //==========================================================================
@@ -264,7 +264,7 @@ void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a)
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglDisable(GL_TEXTURE_2D);
 	qglColor4f(r, g, b, a);
-	DoQuad(x, y, 0, 0, x + w, y + h, 0, 0);
+	DoQuad(x, y, w, h, 0, 0, 0, 0);
 	qglEnable(GL_TEXTURE_2D);
 }
 
@@ -308,7 +308,7 @@ void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int number
 	GL_Bind(image);
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 	qglColor4f(1, 1, 1, 1);
-	DoQuad(x, y, fcol, frow, x + w, y + h, fcol + xsize, frow + ysize);
+	DoQuad(x, y, w, h, fcol, frow, fcol + xsize, frow + ysize);
 }
 
 //==========================================================================
