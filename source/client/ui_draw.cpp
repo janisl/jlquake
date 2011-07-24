@@ -258,10 +258,9 @@ void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 
 void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a)
 {
-	qglDisable(GL_TEXTURE_2D);
 	qglColor4f(r, g, b, a);
+	GL_Bind(tr.whiteImage);
 	DoQuad(x, y, w, h, 0, 0, 0, 0);
-	qglEnable(GL_TEXTURE_2D);
 }
 
 //==========================================================================
