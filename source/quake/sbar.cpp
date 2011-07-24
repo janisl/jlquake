@@ -1041,8 +1041,8 @@ void Sbar_DeathmatchOverlay (void)
 	char			num[12];
 	scoreboard_t	*s;
 
-	pic = UI_CachePic ("gfx/ranking.lmp");
-	M_DrawPic ((320-UI_GetImageWidth(pic))/2, 8, pic);
+	pic = R_CachePic ("gfx/ranking.lmp");
+	M_DrawPic ((320-R_GetImageWidth(pic))/2, 8, pic);
 
 // scores
 	Sbar_SortFrags ();
@@ -1220,10 +1220,10 @@ void Sbar_IntermissionOverlay (void)
 		return;
 	}
 
-	pic = UI_CachePic ("gfx/complete.lmp");
+	pic = R_CachePic ("gfx/complete.lmp");
 	UI_DrawPic (64, 24, pic);
 
-	pic = UI_CachePic ("gfx/inter.lmp");
+	pic = R_CachePic ("gfx/inter.lmp");
 	UI_DrawPic (0, 56, pic);
 
 // time
@@ -1255,6 +1255,6 @@ void Sbar_FinaleOverlay (void)
 {
 	image_t	*pic;
 
-	pic = UI_CachePic ("gfx/finale.lmp");
-	UI_DrawPic ( (viddef.width-UI_GetImageWidth(pic))/2, 16, pic);
+	pic = R_CachePic ("gfx/finale.lmp");
+	UI_DrawPic ( (viddef.width-R_GetImageWidth(pic))/2, 16, pic);
 }

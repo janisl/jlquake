@@ -463,7 +463,7 @@ void SCR_DrawPause (void)
 		LogoPercent = 0;
 	}
 
-	pic = UI_CachePic ("gfx/menu/paused.lmp");
+	pic = R_CachePic ("gfx/menu/paused.lmp");
 //	UI_DrawPic ( (viddef.width - pic->width)/2, 
 //		(viddef.height - 48 - pic->height)/2, pic);
 
@@ -497,7 +497,7 @@ void SCR_DrawLoading (void)
 	if (!scr_drawloading)
 		return;
 		
-	pic = UI_CachePic ("gfx/loading.lmp");
+	pic = R_CachePic ("gfx/loading.lmp");
 	UI_DrawPic ( (viddef.width - pic->width)/2, 
 		(viddef.height - 48 - pic->height)/2, pic);
 }
@@ -746,40 +746,40 @@ void SB_IntermissionOverlay(void)
 	switch(cl.intermission)
 	{
 		case 1:
-			pic = UI_CachePic ("gfx/meso.lmp");
+			pic = R_CachePic ("gfx/meso.lmp");
 			break;
 		case 2:
-			pic = UI_CachePic ("gfx/egypt.lmp");
+			pic = R_CachePic ("gfx/egypt.lmp");
 			break;
 		case 3:
-			pic = UI_CachePic ("gfx/roman.lmp");
+			pic = R_CachePic ("gfx/roman.lmp");
 			break;
 		case 4:
-			pic = UI_CachePic ("gfx/castle.lmp");
+			pic = R_CachePic ("gfx/castle.lmp");
 			break;
 		case 5:
-			pic = UI_CachePic ("gfx/castle.lmp");
+			pic = R_CachePic ("gfx/castle.lmp");
 			break;
 		case 6:
-			pic = UI_CachePic ("gfx/end-1.lmp");
+			pic = R_CachePic ("gfx/end-1.lmp");
 			break;
 		case 7:
-			pic = UI_CachePic ("gfx/end-2.lmp");
+			pic = R_CachePic ("gfx/end-2.lmp");
 			break;
 		case 8:
-			pic = UI_CachePic ("gfx/end-3.lmp");
+			pic = R_CachePic ("gfx/end-3.lmp");
 			break;
 		case 9:
-			pic = UI_CachePic ("gfx/castle.lmp");
+			pic = R_CachePic ("gfx/castle.lmp");
 			break;
 		case 10://Defender win - wipe out or time limit
-			pic = UI_CachePic ("gfx/defwin.lmp");
+			pic = R_CachePic ("gfx/defwin.lmp");
 			break;
 		case 11://Attacker win - caught crown
-			pic = UI_CachePic ("gfx/attwin.lmp");
+			pic = R_CachePic ("gfx/attwin.lmp");
 			break;
 		case 12://Attacker win 2 - wiped out
-			pic = UI_CachePic ("gfx/attwin2.lmp");
+			pic = R_CachePic ("gfx/attwin2.lmp");
 			break;
 		default:
 			Sys_Error ("SB_IntermissionOverlay: Bad episode");
@@ -852,7 +852,7 @@ void SB_FinaleOverlay(void)
 {
 	image_t	*pic;
 
-	pic = UI_CachePic("gfx/finale.lmp");
+	pic = R_CachePic("gfx/finale.lmp");
 	UI_DrawPic((viddef.width-pic->width)/2, 16, pic);
 }
 

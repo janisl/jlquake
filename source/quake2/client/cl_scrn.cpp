@@ -468,7 +468,7 @@ void SCR_DrawPause (void)
 	if (!cl_paused->value)
 		return;
 
-	UI_GetPicSize (&w, &h, "pause");
+	R_GetPicSize (&w, &h, "pause");
 	UI_DrawNamedPic ((viddef.width-w)/2, viddef.height/2 + 8, "pause");
 }
 
@@ -485,7 +485,7 @@ void SCR_DrawLoading (void)
 		return;
 
 	scr_draw_loading = false;
-	UI_GetPicSize (&w, &h, "loading");
+	R_GetPicSize (&w, &h, "loading");
 	UI_DrawNamedPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
 }
 
@@ -904,7 +904,7 @@ void SCR_TouchPics (void)
 
 	for (i=0 ; i<2 ; i++)
 		for (j=0 ; j<11 ; j++)
-			UI_RegisterPic (sb_nums[i][j]);
+			R_RegisterPic (sb_nums[i][j]);
 
 	if (crosshair->value)
 	{
@@ -912,7 +912,7 @@ void SCR_TouchPics (void)
 			crosshair->value = 3;
 
 		QStr::Sprintf (crosshair_pic, sizeof(crosshair_pic), "ch%i", (int)(crosshair->value));
-		UI_GetPicSize (&crosshair_width, &crosshair_height, crosshair_pic);
+		R_GetPicSize (&crosshair_width, &crosshair_height, crosshair_pic);
 		if (!crosshair_width)
 			crosshair_pic[0] = 0;
 	}
@@ -1303,7 +1303,7 @@ void SCR_UpdateScreen (void)
 
 			R_ClearScreen();
 			scr_draw_loading = false;
-			UI_GetPicSize (&w, &h, "loading");
+			R_GetPicSize (&w, &h, "loading");
 			UI_DrawNamedPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
 //			re.EndFrame();
 //			return;

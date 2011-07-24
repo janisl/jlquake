@@ -29,9 +29,9 @@ void Draw_Init (void)
 
 	cs_texture = R_CreateCrosshairImage();
 
-	conback = UI_CachePic("gfx/menu/conback.lmp");
+	conback = R_CachePic("gfx/menu/conback.lmp");
 
-	draw_backtile = UI_CachePicRepeat("gfx/menu/backtile.lmp");
+	draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
 }
 
 

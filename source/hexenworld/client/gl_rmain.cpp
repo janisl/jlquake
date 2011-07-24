@@ -51,7 +51,7 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 		{
 			char temp[80];
 			QStr::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
-			gl_extra_textures[Ent->skinNum - 100] = UI_CachePic(temp);
+			gl_extra_textures[Ent->skinNum - 100] = R_CachePic(temp);
 		}
 
 		Ent->customSkin = R_GetImageHandle(gl_extra_textures[Ent->skinNum - 100]);

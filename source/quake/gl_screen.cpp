@@ -432,9 +432,9 @@ void SCR_DrawPause (void)
 	if (!cl.paused)
 		return;
 
-	pic = UI_CachePic ("gfx/pause.lmp");
-	UI_DrawPic ( (viddef.width - UI_GetImageWidth(pic))/2, 
-		(viddef.height - 48 - UI_GetImageHeight(pic))/2, pic);
+	pic = R_CachePic ("gfx/pause.lmp");
+	UI_DrawPic ( (viddef.width - R_GetImageWidth(pic))/2, 
+		(viddef.height - 48 - R_GetImageHeight(pic))/2, pic);
 }
 
 
@@ -451,9 +451,9 @@ void SCR_DrawLoading (void)
 	if (!scr_drawloading)
 		return;
 		
-	pic = UI_CachePic ("gfx/loading.lmp");
-	UI_DrawPic ( (viddef.width - UI_GetImageWidth(pic))/2, 
-		(viddef.height - 48 - UI_GetImageHeight(pic))/2, pic);
+	pic = R_CachePic ("gfx/loading.lmp");
+	UI_DrawPic ( (viddef.width - R_GetImageWidth(pic))/2, 
+		(viddef.height - 48 - R_GetImageHeight(pic))/2, pic);
 }
 
 

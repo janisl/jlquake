@@ -1986,3 +1986,133 @@ image_t* R_CreateCrosshairImage()
 	}
 	return R_CreateImage("crosshair", data, 8, 8, false, false, GL_CLAMP, false);
 }
+
+//==========================================================================
+//
+//	R_CachePic
+//
+//==========================================================================
+
+image_t* R_CachePic(const char* path)
+{
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
+	if (!pic)
+	{
+		throw QException(va("R_CachePic: failed to load %s", path));
+	}
+	return pic;
+}
+
+//==========================================================================
+//
+//	R_CachePicRepeat
+//
+//==========================================================================
+
+image_t* R_CachePicRepeat(const char* path)
+{
+	image_t* pic = R_FindImageFile(path, false, false, GL_REPEAT);
+	if (!pic)
+	{
+		throw QException(va("R_CachePic: failed to load %s", path));
+	}
+	return pic;
+}
+
+//==========================================================================
+//
+//	R_CachePicWithTransPixels
+//
+//==========================================================================
+
+image_t* R_CachePicWithTransPixels(const char *path, byte* TransPixels)
+{
+	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
+	if (!pic)
+	{
+		throw QException(va("R_CachePic: failed to load %s", path));
+	}
+	return pic;
+}
+
+//==========================================================================
+//
+//	R_RegisterPic
+//
+//==========================================================================
+
+static image_t* R_RegisterPic(const char* name, GLenum wrapClampMode)
+{
+	if (name[0] != '/' && name[0] != '\\')
+	{
+		char fullname[MAX_QPATH];
+		QStr::Sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
+		return R_FindImageFile(fullname, false, false, wrapClampMode, true);
+	}
+	else
+	{
+		return R_FindImageFile(name + 1, false, false, wrapClampMode, true);
+	}
+}
+
+//==========================================================================
+//
+//	R_RegisterPic
+//
+//==========================================================================
+
+image_t* R_RegisterPic(const char* name)
+{
+	return R_RegisterPic(name, GL_CLAMP);
+}
+
+//==========================================================================
+//
+//	R_RegisterPicRepeat
+//
+//==========================================================================
+
+image_t* R_RegisterPicRepeat(const char* name)
+{
+	return R_RegisterPic(name, GL_REPEAT);
+}
+
+//==========================================================================
+//
+//	R_GetImageWidth
+//
+//==========================================================================
+
+int R_GetImageWidth(image_t* pic)
+{
+	return pic->width;
+}
+
+//==========================================================================
+//
+//	R_GetImageHeight
+//
+//==========================================================================
+
+int R_GetImageHeight(image_t* pic)
+{
+	return pic->height;
+}
+
+//==========================================================================
+//
+//	R_GetPicSize
+//
+//==========================================================================
+
+void R_GetPicSize(int* w, int* h, const char* pic)
+{
+	image_t* gl = R_RegisterPic(pic);
+	if (!gl)
+	{
+		*w = *h = -1;
+		return;
+	}
+	*w = gl->width;
+	*h = gl->height;
+}

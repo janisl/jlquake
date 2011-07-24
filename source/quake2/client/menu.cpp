@@ -76,7 +76,7 @@ static void M_Banner(const char *name)
 {
 	int w, h;
 
-	UI_GetPicSize (&w, &h, name );
+	R_GetPicSize (&w, &h, name );
 	UI_DrawNamedPic( viddef.width / 2 - w / 2, viddef.height / 2 - 110, name );
 }
 
@@ -319,7 +319,7 @@ void M_DrawCursor( int x, int y, int f )
 		{
 			QStr::Sprintf( cursorname, sizeof( cursorname ), "m_cursor%d", i );
 
-			UI_RegisterPic( cursorname );
+			R_RegisterPic( cursorname );
 		}
 		cached = true;
 	}
@@ -403,7 +403,7 @@ void M_Main_Draw (void)
 
 	for ( i = 0; names[i] != 0; i++ )
 	{
-		UI_GetPicSize( &w, &h, names[i] );
+		R_GetPicSize( &w, &h, names[i] );
 
 		if ( w > widest )
 			widest = w;
@@ -424,7 +424,7 @@ void M_Main_Draw (void)
 
 	M_DrawCursor( xoffset - 25, ystart + m_main_cursor * 40 + 11, (int)(cls.realtime / 100)%NUM_CURSOR_FRAMES );
 
-	UI_GetPicSize( &w, &h, "m_main_plaque" );
+	R_GetPicSize( &w, &h, "m_main_plaque" );
 	UI_DrawNamedPic( xoffset - 30 - w, ystart, "m_main_plaque" );
 
 	UI_DrawNamedPic( xoffset - 30 - w, ystart + h + 5, "m_main_logo" );
@@ -1522,7 +1522,7 @@ static void VID_MenuDraw (void)
 	/*
 	** draw the banner
 	*/
-	UI_GetPicSize( &w, &h, "m_banner_video" );
+	R_GetPicSize( &w, &h, "m_banner_video" );
 	UI_DrawNamedPic( viddef.width / 2 - w / 2, viddef.height /2 - 110, "m_banner_video" );
 
 	/*
@@ -4077,7 +4077,7 @@ void M_Quit_Draw (void)
 {
 	int		w, h;
 
-	UI_GetPicSize (&w, &h, "quit");
+	R_GetPicSize (&w, &h, "quit");
 	UI_DrawNamedPic ( (viddef.width-w)/2, (viddef.height-h)/2, "quit");
 }
 

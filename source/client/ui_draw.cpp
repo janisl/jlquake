@@ -54,136 +54,6 @@ vec4_t g_color_table[8] =
 
 //==========================================================================
 //
-//	UI_CachePic
-//
-//==========================================================================
-
-image_t* UI_CachePic(const char* path)
-{
-	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
-	if (!pic)
-	{
-		throw QException(va("UI_CachePic: failed to load %s", path));
-	}
-	return pic;
-}
-
-//==========================================================================
-//
-//	UI_CachePicRepeat
-//
-//==========================================================================
-
-image_t* UI_CachePicRepeat(const char* path)
-{
-	image_t* pic = R_FindImageFile(path, false, false, GL_REPEAT);
-	if (!pic)
-	{
-		throw QException(va("UI_CachePic: failed to load %s", path));
-	}
-	return pic;
-}
-
-//==========================================================================
-//
-//	UI_CachePicWithTransPixels
-//
-//==========================================================================
-
-image_t* UI_CachePicWithTransPixels(const char *path, byte* TransPixels)
-{
-	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
-	if (!pic)
-	{
-		throw QException(va("UI_CachePic: failed to load %s", path));
-	}
-	return pic;
-}
-
-//==========================================================================
-//
-//	UI_RegisterPic
-//
-//==========================================================================
-
-static image_t* UI_RegisterPic(const char* name, GLenum wrapClampMode)
-{
-	if (name[0] != '/' && name[0] != '\\')
-	{
-		char fullname[MAX_QPATH];
-		QStr::Sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
-		return R_FindImageFile(fullname, false, false, wrapClampMode, true);
-	}
-	else
-	{
-		return R_FindImageFile(name + 1, false, false, wrapClampMode, true);
-	}
-}
-
-//==========================================================================
-//
-//	UI_RegisterPic
-//
-//==========================================================================
-
-image_t* UI_RegisterPic(const char* name)
-{
-	return UI_RegisterPic(name, GL_CLAMP);
-}
-
-//==========================================================================
-//
-//	UI_RegisterPicRepeat
-//
-//==========================================================================
-
-image_t* UI_RegisterPicRepeat(const char* name)
-{
-	return UI_RegisterPic(name, GL_REPEAT);
-}
-
-//==========================================================================
-//
-//	UI_GetImageWidth
-//
-//==========================================================================
-
-int UI_GetImageWidth(image_t* pic)
-{
-	return pic->width;
-}
-
-//==========================================================================
-//
-//	UI_GetImageHeight
-//
-//==========================================================================
-
-int UI_GetImageHeight(image_t* pic)
-{
-	return pic->height;
-}
-
-//==========================================================================
-//
-//	UI_GetPicSize
-//
-//==========================================================================
-
-void UI_GetPicSize(int* w, int* h, const char* pic)
-{
-	image_t* gl = UI_RegisterPic(pic);
-	if (!gl)
-	{
-		*w = *h = -1;
-		return;
-	}
-	*w = gl->width;
-	*h = gl->height;
-}
-
-//==========================================================================
-//
 //	UI_AdjustFromVirtualScreen
 //
 //	Adjusted for resolution and screen aspect ratio
@@ -255,7 +125,7 @@ void UI_DrawPic(int x, int y, image_t* pic, float alpha)
 
 void UI_DrawNamedPic(int x, int y, const char* pic)
 {
-	image_t* gl = UI_RegisterPic(pic);
+	image_t* gl = R_RegisterPic(pic);
 	if (!gl)
 	{
 		GLog.Write("Can't find pic: %s\n", pic);
@@ -290,7 +160,7 @@ void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
 
 void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 {
-	image_t* gl = UI_RegisterPic(pic);
+	image_t* gl = R_RegisterPic(pic);
 	if (!gl)
 	{
 		GLog.Write("Can't find pic: %s\n", pic);
@@ -374,7 +244,7 @@ void UI_TileClear(int x, int y, int w, int h, image_t* pic)
 
 void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 {
-	image_t* image = UI_RegisterPicRepeat(pic);
+	image_t* image = R_RegisterPicRepeat(pic);
 	if (!image)
 	{
 		GLog.Write("Can't find pic: %s\n", pic);

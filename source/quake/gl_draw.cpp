@@ -40,7 +40,7 @@ void Draw_Init (void)
 {
 	char_texture = R_LoadRawFontImageFromWad("conchars", 128, 128);
 
-	conback = UI_CachePic("gfx/conback.lmp");
+	conback = R_CachePic("gfx/conback.lmp");
 
 	//
 	// get the other pics we need

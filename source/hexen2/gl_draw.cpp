@@ -27,9 +27,9 @@ void Draw_Init (void)
 	char_smalltexture = R_LoadRawFontImageFromWad("tinyfont", 128, 32);
 	char_menufonttexture = R_LoadBigFontImage("gfx/menu/bigfont2.lmp");
 
-	conback = UI_CachePic("gfx/menu/conback.lmp");
+	conback = R_CachePic("gfx/menu/conback.lmp");
 
-	draw_backtile = UI_CachePicRepeat("gfx/menu/backtile.lmp");
+	draw_backtile = R_CachePicRepeat("gfx/menu/backtile.lmp");
 }
 
 /*

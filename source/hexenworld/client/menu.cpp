@@ -275,15 +275,15 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 	// draw left side
 	cx = x;
 	cy = y;
-	p = UI_CachePic ("gfx/box_tl.lmp");
+	p = R_CachePic ("gfx/box_tl.lmp");
 	M_DrawTransPic (cx, cy, p);
-	p = UI_CachePic ("gfx/box_ml.lmp");
+	p = R_CachePic ("gfx/box_ml.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
 		M_DrawTransPic (cx, cy, p);
 	}
-	p = UI_CachePic ("gfx/box_bl.lmp");
+	p = R_CachePic ("gfx/box_bl.lmp");
 	M_DrawTransPic (cx, cy+8, p);
 
 	// draw middle
@@ -291,17 +291,17 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 	while (width > 0)
 	{
 		cy = y;
-		p = UI_CachePic ("gfx/box_tm.lmp");
+		p = R_CachePic ("gfx/box_tm.lmp");
 		M_DrawTransPic (cx, cy, p);
-		p = UI_CachePic ("gfx/box_mm.lmp");
+		p = R_CachePic ("gfx/box_mm.lmp");
 		for (n = 0; n < lines; n++)
 		{
 			cy += 8;
 			if (n == 1)
-				p = UI_CachePic ("gfx/box_mm2.lmp");
+				p = R_CachePic ("gfx/box_mm2.lmp");
 			M_DrawTransPic (cx, cy, p);
 		}
-		p = UI_CachePic ("gfx/box_bm.lmp");
+		p = R_CachePic ("gfx/box_bm.lmp");
 		M_DrawTransPic (cx, cy+8, p);
 		width -= 2;
 		cx += 16;
@@ -309,15 +309,15 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 
 	// draw right side
 	cy = y;
-	p = UI_CachePic ("gfx/box_tr.lmp");
+	p = R_CachePic ("gfx/box_tr.lmp");
 	M_DrawTransPic (cx, cy, p);
-	p = UI_CachePic ("gfx/box_mr.lmp");
+	p = R_CachePic ("gfx/box_mr.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
 		M_DrawTransPic (cx, cy, p);
 	}
-	p = UI_CachePic ("gfx/box_br.lmp");
+	p = R_CachePic ("gfx/box_br.lmp");
 	M_DrawTransPic (cx, cy+8, p);
 }
 
@@ -330,15 +330,15 @@ void M_DrawTextBox2 (int x, int y, int width, int lines)
 	// draw left side
 	cx = x;
 	cy = y;
-	p = UI_CachePic ("gfx/box_tl.lmp");
+	p = R_CachePic ("gfx/box_tl.lmp");
 	M_DrawTransPic2 (cx, cy, p);
-	p = UI_CachePic ("gfx/box_ml.lmp");
+	p = R_CachePic ("gfx/box_ml.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
 		M_DrawTransPic2 (cx, cy, p);
 	}
-	p = UI_CachePic ("gfx/box_bl.lmp");
+	p = R_CachePic ("gfx/box_bl.lmp");
 	M_DrawTransPic2 (cx, cy+8, p);
 
 	// draw middle
@@ -346,17 +346,17 @@ void M_DrawTextBox2 (int x, int y, int width, int lines)
 	while (width > 0)
 	{
 		cy = y;
-		p = UI_CachePic ("gfx/box_tm.lmp");
+		p = R_CachePic ("gfx/box_tm.lmp");
 		M_DrawTransPic2 (cx, cy, p);
-		p = UI_CachePic ("gfx/box_mm.lmp");
+		p = R_CachePic ("gfx/box_mm.lmp");
 		for (n = 0; n < lines; n++)
 		{
 			cy += 8;
 			if (n == 1)
-				p = UI_CachePic ("gfx/box_mm2.lmp");
+				p = R_CachePic ("gfx/box_mm2.lmp");
 			M_DrawTransPic2 (cx, cy, p);
 		}
-		p = UI_CachePic ("gfx/box_bm.lmp");
+		p = R_CachePic ("gfx/box_bm.lmp");
 		M_DrawTransPic2 (cx, cy+8, p);
 		width -= 2;
 		cx += 16;
@@ -364,15 +364,15 @@ void M_DrawTextBox2 (int x, int y, int width, int lines)
 
 	// draw right side
 	cy = y;
-	p = UI_CachePic ("gfx/box_tr.lmp");
+	p = R_CachePic ("gfx/box_tr.lmp");
 	M_DrawTransPic2 (cx, cy, p);
-	p = UI_CachePic ("gfx/box_mr.lmp");
+	p = R_CachePic ("gfx/box_mr.lmp");
 	for (n = 0; n < lines; n++)
 	{
 		cy += 8;
 		M_DrawTransPic2 (cx, cy, p);
 	}
-	p = UI_CachePic ("gfx/box_br.lmp");
+	p = R_CachePic ("gfx/box_br.lmp");
 	M_DrawTransPic2 (cx, cy+8, p);
 }
 
@@ -431,7 +431,7 @@ void M_BuildBigCharWidth (void)
 	FILE *FH;
 	char temp[MAX_OSPATH];
 
-	p = UI_CachePic ("gfx/menu/bigfont.lmp");
+	p = R_CachePic ("gfx/menu/bigfont.lmp");
 
 	for(numA = 0; numA < 27; numA++)
 	{
@@ -590,14 +590,14 @@ void ScrollTitle (const char *name)
 		TitleTargetPercent = 1;
 	}
 
-	p = UI_CachePic(LastName);
-	finaly = ((float)UI_GetImageHeight(p) * TitlePercent) - UI_GetImageHeight(p);
-	M_DrawTransPicCropped( (320-UI_GetImageWidth(p))/2, finaly , p);
+	p = R_CachePic(LastName);
+	finaly = ((float)R_GetImageHeight(p) * TitlePercent) - R_GetImageHeight(p);
+	M_DrawTransPicCropped( (320-R_GetImageWidth(p))/2, finaly , p);
 
 	if (m_state != m_keys)
 	{
-		p = UI_CachePic("gfx/menu/hplaque.lmp");
-		finaly = ((float)UI_GetImageHeight(p) * LogoPercent) - UI_GetImageHeight(p);
+		p = R_CachePic("gfx/menu/hplaque.lmp");
+		finaly = ((float)R_GetImageHeight(p) * LogoPercent) - R_GetImageHeight(p);
 		M_DrawTransPicCropped(10, finaly, p);
 	}		
 }
@@ -628,7 +628,7 @@ void M_Main_Draw (void)
 	int		f;
 
 	ScrollTitle("gfx/menu/title0.lmp");
-//	M_DrawTransPic (72, 32, UI_CachePic ("gfx/mainmenu.lmp") );
+//	M_DrawTransPic (72, 32, R_CachePic ("gfx/mainmenu.lmp") );
 //	M_DrawBigString (72,60+(0*20),"SINGLE PLAYER");
 	M_DrawBigString (72,60+(0*20),"MULTIPLAYER");
 	M_DrawBigString (72,60+(1*20),"OPTIONS");
@@ -636,7 +636,7 @@ void M_Main_Draw (void)
 	M_DrawBigString (72,60+(3*20),"QUIT");
 
 	f = (int)(realtime * 10)%8;
-	M_DrawTransPic (43, 54 + m_main_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 54 + m_main_cursor * 20,R_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 }
 
 
@@ -732,10 +732,10 @@ void M_Class_Draw (void)
 	M_DrawBigString (72,60+(5*20),ClassNamesU[5]);
 
 	f = (int)(realtime * 10)%8;
-	M_DrawTransPic (43, 54 + m_class_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 54 + m_class_cursor * 20,R_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 
-	M_DrawTransPic (251,54 + 21, UI_CachePic (va("gfx/cport%d.lmp", m_class_cursor + 1)));
-	M_DrawTransPic (242,54, UI_CachePic ("gfx/menu/frame.lmp"));
+	M_DrawTransPic (251,54 + 21, R_CachePic (va("gfx/cport%d.lmp", m_class_cursor + 1)));
+	M_DrawTransPic (242,54, R_CachePic ("gfx/menu/frame.lmp"));
 
 }
 
@@ -1212,7 +1212,7 @@ void M_Keys_Draw (void)
 
 //	M_DrawTextBox (6,56, 35,16);
 
-//	p = UI_CachePic("gfx/menu/hback.lmp");
+//	p = R_CachePic("gfx/menu/hback.lmp");
 //	M_DrawTransPicCropped(8, 62, p);
 
 	if (bind_grab)
@@ -1391,9 +1391,9 @@ void M_Menu_Help_f (void)
 void M_Help_Draw (void)
 {
 	if(cl_siege)
-		M_DrawPic (0, 0, UI_CachePic ( va("gfx/menu/sghelp%02i.lmp", help_page+1)) );
+		M_DrawPic (0, 0, R_CachePic ( va("gfx/menu/sghelp%02i.lmp", help_page+1)) );
 	else
-		M_DrawPic (0, 0, UI_CachePic ( va("gfx/menu/help%02i.lmp", help_page+1)) );
+		M_DrawPic (0, 0, R_CachePic ( va("gfx/menu/help%02i.lmp", help_page+1)) );
 }
 
 
@@ -1971,7 +1971,7 @@ void M_Quit_Draw (void)
 			M_Print(24,y,LineText[i+place-QUIT_SIZE]);
 	}
 
-	p = UI_CachePic ("gfx/box_mm2.lmp");
+	p = R_CachePic ("gfx/box_mm2.lmp");
 	x = 24;
 	y = topy-8;
 	for(i=4;i<36;i++,x+=8)
@@ -1979,7 +1979,7 @@ void M_Quit_Draw (void)
 		M_DrawTransPic (x, y, p);
 	}
 
-	p = UI_CachePic ("gfx/box_mm2.lmp");
+	p = R_CachePic ("gfx/box_mm2.lmp");
 	x = 24;
 	y = topy+(QUIT_SIZE*8)-8;
 	for(i=4;i<36;i++,x+=8)
@@ -2075,13 +2075,13 @@ void M_MultiPlayer_Draw (void)
 	int		f;
 
 	ScrollTitle("gfx/menu/title4.lmp");
-//	M_DrawTransPic (72, 32, UI_CachePic ("gfx/mp_menu.lmp") );
+//	M_DrawTransPic (72, 32, R_CachePic ("gfx/mp_menu.lmp") );
 
 	M_DrawBigString (72,60+(0*20),"JOIN A GAME");
 	M_DrawBigString (72,60+(1*20),"SETUP");
 
 	f = (int)(realtime * 10)%8;
-	M_DrawTransPic (43, 54 + m_multiplayer_cursor * 20,UI_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
+	M_DrawTransPic (43, 54 + m_multiplayer_cursor * 20,R_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
 
 	if (message)
 	{
@@ -2455,7 +2455,7 @@ void M_Setup_Draw (void)
 	{
 		which_class = setup_class;
 	}
-	p = UI_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", which_class), menuplyr_pixels[which_class - 1]);
+	p = R_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", which_class), menuplyr_pixels[which_class - 1]);
 	M_BuildTranslationTable(setup_top, setup_bottom);
 	R_CreateOrUpdateTranslatedImage(translate_texture[which_class-1], va("translate_pic%d", which_class), menuplyr_pixels[which_class-1], translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
 	M_DrawPic(220, 72, translate_texture[which_class - 1]);

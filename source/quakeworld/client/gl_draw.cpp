@@ -46,7 +46,7 @@ void Draw_Init (void)
 
 	cs_texture = R_CreateCrosshairImage();
 
-	conback = UI_CachePic("gfx/conback.lmp");
+	conback = R_CachePic("gfx/conback.lmp");
 
 	//
 	// get the other pics we need

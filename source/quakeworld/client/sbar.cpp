@@ -861,8 +861,8 @@ void Sbar_TeamOverlay (void)
 		return;
 	}
 
-	pic = UI_CachePic ("gfx/ranking.lmp");
-	UI_DrawPic (160-UI_GetImageWidth(pic)/2, 0, pic);
+	pic = R_CachePic ("gfx/ranking.lmp");
+	UI_DrawPic (160-R_GetImageWidth(pic)/2, 0, pic);
 
 	y = 24;
 	x = 36;
@@ -961,8 +961,8 @@ void Sbar_DeathmatchOverlay (int start)
 	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 
 	if (!start) {
-		pic = UI_CachePic ("gfx/ranking.lmp");
-		UI_DrawPic (160-UI_GetImageWidth(pic)/2, 0, pic);
+		pic = R_CachePic ("gfx/ranking.lmp");
+		UI_DrawPic (160-R_GetImageWidth(pic)/2, 0, pic);
 	}
 
 // scores	
@@ -1256,8 +1256,8 @@ void Sbar_FinaleOverlay (void)
 {
 	image_t	*pic;
 
-	pic = UI_CachePic ("gfx/finale.lmp");
-	UI_DrawPic ( (viddef.width-UI_GetImageWidth(pic))/2, 16, pic);
+	pic = R_CachePic ("gfx/finale.lmp");
+	UI_DrawPic ( (viddef.width-R_GetImageWidth(pic))/2, 16, pic);
 }
 
 

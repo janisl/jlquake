@@ -39,16 +39,6 @@ extern viddef_t		viddef;				// global video state
 
 extern vec4_t g_color_table[8];
 
-image_t* UI_CachePic(const char* path);
-image_t* UI_CachePicRepeat(const char* path);
-image_t* UI_CachePicWithTransPixels(const char* path, byte* TransPixels);
-image_t* UI_RegisterPic(const char* name);
-image_t* UI_RegisterPicRepeat(const char* name);
-
-int UI_GetImageWidth(image_t* pic);
-int UI_GetImageHeight(image_t* pic);
-void UI_GetPicSize(int* w, int* h, const char* name);
-
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h);
 void UI_DrawPic(int x, int y, image_t* pic, float alpha = 1);
 void UI_DrawNamedPic(int x, int y, const char* name);
