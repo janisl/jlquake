@@ -174,9 +174,6 @@ void R_TranslatePlayerSkin (int playernum)
 	{
 		R_ReUploadImage(playertextures[playernum], (byte*)pixels);
 	}
-
-	GL_Bind(playertextures[playernum]);
-	GL_TexEnv(GL_MODULATE);
 }
 
 

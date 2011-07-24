@@ -94,6 +94,20 @@ static void DoQuad(float x, float y, float width, float height,
 {
 	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
 
+	if (image->sl != 0 || image->sh != 1)
+	{
+		float glwidth = image->sh - image->sl;
+		s1 = image->sl + s1 * glwidth;
+		s2 = image->sl + s2 * glwidth;
+	}
+
+	if (image->tl != 0 || image->th != 1)
+	{
+		float glheight = image->th - image->tl;
+		t1 = image->tl + t1 * glheight;
+		t2 = image->tl + t2 * glheight;
+	}
+	
 	if (scrap_dirty)
 	{
 		R_ScrapUpload();
@@ -151,7 +165,7 @@ void UI_DrawNamedPic(int x, int y, const char* pic)
 void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
 {
 	qglColor4f(1, 1, 1, alpha);
-	DoQuad(x, y, w, h, pic, pic->sl, pic->tl, pic->sh, pic->th);
+	DoQuad(x, y, w, h, pic, 0, 0, 1, 1);
 }
 
 //==========================================================================
@@ -180,7 +194,7 @@ void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte* colour)
 {
 	qglColor4ubv(colour);
-	DoQuad(x, y, w, h, pic, pic->sl, pic->tl, pic->sh, pic->th);
+	DoQuad(x, y, w, h, pic, 0, 0, 1, 1);
 }
 
 //==========================================================================
@@ -191,17 +205,11 @@ void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte*
 
 void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
 {
-	float newsl, newtl, newsh, newth;
-	float oldglwidth, oldglheight;
+	float newsl = (float)srcx / (float)pic->width;
+	float newsh = newsl + (float)width / (float)pic->width;
 
-	oldglwidth = pic->sh - pic->sl;
-	oldglheight = pic->th - pic->tl;
-
-	newsl = pic->sl + (srcx*oldglwidth)/pic->width;
-	newsh = newsl + (width*oldglwidth)/pic->width;
-
-	newtl = pic->tl + (srcy*oldglheight)/pic->height;
-	newth = newtl + (height*oldglheight)/pic->height;
+	float newtl = (float)srcy / (float)pic->height;
+	float newth = newtl + (float)height / (float)pic->height;
 	
 	qglColor4f (1,1,1,1);
 	DoQuad(x, y, width, height, pic, newsl, newtl, newsh, newth);
