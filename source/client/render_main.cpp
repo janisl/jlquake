@@ -2077,7 +2077,12 @@ void R_Draw2DQuad(float x, float y, float width, float height,
 		t1 = image->tl + t1 * glheight;
 		t2 = image->tl + t2 * glheight;
 	}
-	
+
+	if (!backEnd.projection2D)
+	{
+		RB_SetGL2D();
+	}
+
 	if (scrap_dirty)
 	{
 		R_ScrapUpload();

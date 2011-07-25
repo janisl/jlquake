@@ -93,11 +93,12 @@ void R_Flash( void )
 }
 
 /*
-================
-R_RenderView
-================
+@@@@@@@@@@@@@@@@@@@@@
+R_RenderFrame
+
+@@@@@@@@@@@@@@@@@@@@@
 */
-void R_RenderView (refdef_t *fd)
+void R_RenderFrame (refdef_t *fd)
 {
 	tr.frameSceneNum = 0;
 
@@ -118,18 +119,6 @@ void R_RenderView (refdef_t *fd)
 			c_visible_textures, 
 			c_visible_lightmaps); 
 	}
-}
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-R_RenderFrame
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-void R_RenderFrame (refdef_t *fd)
-{
-	R_RenderView( fd );
-	RB_SetGL2D ();
 }
 
 
@@ -219,11 +208,6 @@ void R_BeginFrame( float camera_separation )
 	QGL_LogComment("*** R_BeginFrame ***\n");
 
 	GLimp_BeginFrame( camera_separation );
-
-	/*
-	** go into 2D mode
-	*/
-	RB_SetGL2D();
 
 	/*
 	** draw buffer stuff

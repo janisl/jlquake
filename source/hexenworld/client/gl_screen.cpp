@@ -899,8 +899,6 @@ void SCR_UpdateScreen (void)
 		V_RenderView ();
 	}
 
-	RB_SetGL2D();
-
 	//
 	// draw any areas not covered by the refresh
 	//
