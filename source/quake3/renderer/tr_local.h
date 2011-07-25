@@ -50,8 +50,6 @@ void R_AddLightningBoltSurfaces( trRefEntity_t *e );
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
 void		RE_BeginRegistration( glconfig_t *glconfig );
 
-void    	R_Init( void );
-
 //
 // tr_shader.c
 //

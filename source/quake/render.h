@@ -65,7 +65,7 @@ extern	int		reinit_surfcache;
 
 extern	refdef_t	r_refdef;
 
-void R_Init (void);
+void CL_InitRenderStuff (void);
 void R_InitTextures (void);
 void R_InitEfrags (void);
 void R_RenderView (void);		// must set r_refdef first

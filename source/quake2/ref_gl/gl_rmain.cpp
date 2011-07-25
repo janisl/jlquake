@@ -90,29 +90,20 @@ void R_RenderFrame(refdef_t *fd)
 }
 
 
-void R_Register( void )
-{
-	R_SharedRegister();
-
-	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
-}
-
 /*
 ===============
-R_Init
+CL_InitRenderStuff
 ===============
 */
-void R_Init()
+void CL_InitRenderStuff()
 {	
 	int		err;
 
 	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
 
-	R_CommonInit1();
+	R_Init();
 
-	R_Register();
-
-	R_CommonInit2();
+	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 
 	cls_common->glconfig = glConfig;
 

@@ -666,10 +666,8 @@ INIT
 */
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
-void R_SharedRegister();
 const char* R_GetTitleForWindow();
-void R_CommonInit1();
-void R_CommonInit2();
+void R_Init();
 
 /*
 ============================================================

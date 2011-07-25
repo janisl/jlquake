@@ -53,7 +53,7 @@ void R_TranslatePlayerSkin (int playernum);
 
 void V_AddBlend (float r, float g, float b, float a, float *v_blend);
 
-void R_Init();
+void CL_InitRenderStuff();
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
 

@@ -385,11 +385,11 @@ static void GfxInfo_f()
 
 //==========================================================================
 //
-//	R_SharedRegister
+//	R_Register
 //
 //==========================================================================
 
-void R_SharedRegister() 
+static void R_Register() 
 {
 	//
 	// latched and archived variables
@@ -812,11 +812,11 @@ static void R_InitFunctionTables()
 
 //==========================================================================
 //
-//	R_CommonInit1
+//	R_Init
 //
 //==========================================================================
 
-void R_CommonInit1()
+void R_Init()
 {
 	GLog.Write("----- R_Init -----\n");
 
@@ -836,16 +836,9 @@ void R_CommonInit1()
 	R_InitFogTable();
 
 	R_NoiseInit();
-}
 
-//==========================================================================
-//
-//	R_CommonInit2
-//
-//==========================================================================
+	R_Register();
 
-void R_CommonInit2()
-{
 	R_InitBackEndData();
 
 	InitOpenGL();

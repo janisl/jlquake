@@ -148,7 +148,7 @@ static void VID_LoadRefresh()
 
 	re = GetRefAPI( ri );
 
-	R_Init();
+	CL_InitRenderStuff();
 
 	Com_Printf( "------------------------------------\n");
 	reflib_active = true;

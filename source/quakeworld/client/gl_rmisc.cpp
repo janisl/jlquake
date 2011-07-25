@@ -57,10 +57,10 @@ void	R_InitTextures (void)
 
 /*
 ===============
-R_Init
+CL_InitRenderStuff
 ===============
 */
-void R_Init (void)
+void CL_InitRenderStuff (void)
 {
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 
@@ -268,11 +268,7 @@ void R_TimeRefresh_f (void)
 
 void VID_Init()
 {
-	R_CommonInit1();
-
-	R_SharedRegister();
-	
-	R_CommonInit2();
+	R_Init();
 
 	Sys_ShowConsole(0, false);
 
