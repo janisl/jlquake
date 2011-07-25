@@ -39,36 +39,14 @@ QCvar	*vid_ref;
 R_PolyBlend
 ============
 */
-void R_PolyBlend (void)
+void R_PolyBlend(refdef_t *fd)
 {
 	if (!gl_polyblend->value)
 		return;
 	if (!v_blend[3])
 		return;
 
-	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	qglDisable (GL_TEXTURE_2D);
-
-    qglLoadIdentity ();
-
-	// FIXME: get rid of these
-    qglRotatef (-90,  1, 0, 0);	    // put Z going up
-    qglRotatef (90,  0, 0, 1);	    // put Z going up
-
-	qglColor4fv (v_blend);
-
-	qglBegin (GL_QUADS);
-
-	qglVertex3f (10, 100, 100);
-	qglVertex3f (10, -100, 100);
-	qglVertex3f (10, -100, -100);
-	qglVertex3f (10, 100, -100);
-	qglEnd ();
-
-	qglEnable (GL_TEXTURE_2D);
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
-
-	qglColor4f(1,1,1,1);
+	R_Draw2DQuad(fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 }
 
 //=======================================================================
@@ -87,18 +65,13 @@ void R_Clear (void)
 	}
 }
 
-void R_Flash( void )
-{
-	R_PolyBlend ();
-}
-
 /*
 @@@@@@@@@@@@@@@@@@@@@
 R_RenderFrame
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-void R_RenderFrame (refdef_t *fd)
+void R_RenderFrame(refdef_t *fd)
 {
 	tr.frameSceneNum = 0;
 
@@ -109,7 +82,7 @@ void R_RenderFrame (refdef_t *fd)
 
 	R_RenderScene(fd);
 
-	R_Flash();
+	R_PolyBlend(fd);
 
 	if (r_speeds->value)
 	{

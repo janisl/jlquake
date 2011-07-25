@@ -85,26 +85,7 @@ void R_PolyBlend (void)
 	if (!v_blend[3])
 		return;
 
-	GL_State(GLS_DEFAULT | GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-	qglDisable (GL_TEXTURE_2D);
-
-    qglLoadIdentity ();
-
-    qglRotatef (-90,  1, 0, 0);	    // put Z going up
-    qglRotatef (90,  0, 0, 1);	    // put Z going up
-
-	qglColor4fv (v_blend);
-
-	qglBegin (GL_QUADS);
-
-	qglVertex3f (10, 10, 10);
-	qglVertex3f (10, -10, 10);
-	qglVertex3f (10, -10, -10);
-	qglVertex3f (10, 10, -10);
-	qglEnd ();
-
-	qglEnable (GL_TEXTURE_2D);
-	GL_State(GLS_DEFAULT | GLS_ATEST_GE_80);
+	R_Draw2DQuad(r_refdef.x, r_refdef.y, r_refdef.width, r_refdef.height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 }
 
 
