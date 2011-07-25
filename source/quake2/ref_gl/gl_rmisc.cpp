@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 refexport_t	re;
 
 qboolean	reflib_active = 0;
+static bool vid_restart_requested;
 
 void GL_UpdateSwapInterval( void )
 {
@@ -104,14 +105,12 @@ static void VID_Error (int err_level, char *fmt, ...)
 ============
 VID_Restart_f
 
-Console command to re-start the video mode and refresh DLL. We do this
-simply by setting the modified flag for the vid_ref variable, which will
-cause the entire video mode and refresh DLL to be reset on the next frame.
+Console command to re-start the video mode and refresh.
 ============
 */
 void VID_Restart_f (void)
 {
-	vid_ref->modified = true;
+	vid_restart_requested = true;
 }
 
 /*
@@ -134,7 +133,7 @@ void VID_FreeReflib (void)
 VID_LoadRefresh
 ==============
 */
-qboolean VID_LoadRefresh()
+static void VID_LoadRefresh()
 {
 	refimport_t	ri;
 	
@@ -149,16 +148,10 @@ qboolean VID_LoadRefresh()
 
 	re = GetRefAPI( ri );
 
-	if (R_Init() == -1 )
-	{
-		R_Shutdown(true);
-		VID_FreeReflib ();
-		return false;
-	}
+	R_Init();
 
 	Com_Printf( "------------------------------------\n");
 	reflib_active = true;
-	return true;
 }
 
 /*
@@ -205,25 +198,17 @@ update the rendering DLL and/or video mode to match.
 */
 void VID_CheckChanges (void)
 {
-	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
-
-	if ( vid_ref->modified )
+	if (vid_restart_requested)
 	{
 		S_StopAllSounds();
 		/*
 		** refresh has changed
 		*/
-		vid_ref->modified = false;
-		//FIXME
-		if (r_fullscreen)
-			r_fullscreen->modified = true;
+		vid_restart_requested = false;
 		cl.refresh_prepped = false;
 		cls.disable_screen = true;
 
-		if (!VID_LoadRefresh())
-		{
-			Com_Error(ERR_FATAL, "Couldn't init refresh!");
-		}
+		VID_LoadRefresh();
 		cls.disable_screen = false;
 	}
 }
@@ -238,6 +223,5 @@ void VID_Init (void)
 	/* Add some console commands that we want to handle */
 	Cmd_AddCommand ("vid_restart", VID_Restart_f);
 
-	/* Start the graphics mode and load refresh DLL */
-	VID_CheckChanges();
+	VID_LoadRefresh();
 }

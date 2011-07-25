@@ -1350,12 +1350,9 @@ static void BrightnessCallback( void *s )
 {
 	menuslider_s *slider = ( menuslider_s * ) s;
 
-	if ( QStr::ICmp( vid_ref->string, "soft" ) == 0 )
-	{
-		float gamma = ( 0.8 - ( slider->curvalue/10.0 - 0.5 ) ) + 0.5;
+	float gamma = ( 0.8 - ( slider->curvalue/10.0 - 0.5 ) ) + 0.5;
 
-		Cvar_SetValue("r_gamma", gamma );
-	}
+	Cvar_SetValue("r_gamma", gamma );
 }
 
 static void ResetDefaults( void *unused )
@@ -1377,14 +1374,6 @@ static void ApplyChanges( void *unused )
 	Cvar_SetValueLatched( "r_fullscreen", s_fs_box.curvalue );
 	Cvar_SetValueLatched( "r_finish", s_finish_box.curvalue );
 	Cvar_SetValueLatched( "r_mode", s_mode_list.curvalue );
-
-	/*
-	** update appropriate stuff if gamma has been modified
-	*/
-	if ( r_gamma->modified )
-	{
-		vid_ref->modified = true;
-	}
 
 	M_ForceMenuOff();
 }

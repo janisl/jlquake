@@ -53,7 +53,7 @@ void R_TranslatePlayerSkin (int playernum);
 
 void V_AddBlend (float r, float g, float b, float a, float *v_blend);
 
-int 	R_Init();
+void R_Init();
 
 mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
 
@@ -84,7 +84,6 @@ IMPORTED FUNCTIONS
 
 extern	refimport_t	ri;
 
-extern QCvar		*vid_ref;
 extern qboolean		reflib_active;
 
 refexport_t GetRefAPI (refimport_t rimp);
@@ -92,7 +91,6 @@ refexport_t GetRefAPI (refimport_t rimp);
 void VID_Restart_f (void);
 void VID_NewWindow ( int width, int height);
 void VID_FreeReflib (void);
-qboolean VID_LoadRefresh();
 
 
 /*

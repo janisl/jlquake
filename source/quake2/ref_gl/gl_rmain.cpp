@@ -28,8 +28,6 @@ float		v_blend[4];			// final blending color
 
 QCvar	*gl_polyblend;
 
-QCvar	*vid_ref;
-
 
 /*
 ============
@@ -97,8 +95,6 @@ void R_Register( void )
 	R_SharedRegister();
 
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
-
-	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 }
 
 /*
@@ -106,7 +102,7 @@ void R_Register( void )
 R_Init
 ===============
 */
-int R_Init()
+void R_Init()
 {	
 	int		err;
 
@@ -117,9 +113,6 @@ int R_Init()
 	R_Register();
 
 	R_CommonInit2();
-
-	r_fullscreen->modified = false;
-	r_mode->modified = false;
 
 	cls_common->glconfig = glConfig;
 
@@ -133,7 +126,6 @@ int R_Init()
 		ri.Con_Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
 
 	tr.registered = true;
-	return 0;
 }
 
 /*
@@ -146,17 +138,6 @@ void R_BeginFrame( float camera_separation )
 	tr.frameCount++;
 
 	gl_state.camera_separation = camera_separation;
-
-	/*
-	** change modes if necessary
-	*/
-	if ( r_mode->modified || r_fullscreen->modified )
-	{	// FIXME: only restart if CDS is required
-		QCvar	*ref;
-
-		ref = Cvar_Get ("vid_ref", "gl", 0);
-		ref->modified = true;
-	}
 
 	QGL_EnableLogging(!!r_logFile->integer);
 
