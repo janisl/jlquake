@@ -1420,8 +1420,6 @@ static void VID_MenuInit( void )
 		0
 	};
 
-	if ( !gl_driver )
-		gl_driver = Cvar_Get( "gl_driver", "opengl32", 0 );
 	if ( !r_picmip )
 		r_picmip = Cvar_Get( "r_picmip", "0", 0 );
 	if ( !r_mode )

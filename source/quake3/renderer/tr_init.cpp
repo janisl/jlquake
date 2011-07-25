@@ -23,32 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-QCvar	*r_inGameVideo;
-QCvar	*r_dlightBacks;
-
-QCvar  *r_glDriver;
-
 refimport_t	ri;
-
-/*
-===============
-R_Register
-===============
-*/
-void R_Register( void ) 
-{
-	R_SharedRegister();
-	//
-	// latched and archived variables
-	//
-	r_glDriver = Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH2 );
-
-	//
-	// archived variables that can change at any time
-	//
-	r_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
-	r_dlightBacks = Cvar_Get( "r_dlightBacks", "1", CVAR_ARCHIVE );
-}
 
 /*
 ===============
@@ -59,7 +34,7 @@ void R_Init()
 {	
 	R_CommonInit1();
 
-	R_Register();
+	R_SharedRegister();
 
 	R_CommonInit2();
 }

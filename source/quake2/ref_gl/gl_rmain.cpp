@@ -26,9 +26,6 @@ glstate2_t  gl_state;
 
 float		v_blend[4];			// final blending color
 
-QCvar	*gl_nosubimage;
-
-QCvar  *gl_driver;
 QCvar	*gl_polyblend;
 
 QCvar	*vid_ref;
@@ -99,10 +96,7 @@ void R_Register( void )
 {
 	R_SharedRegister();
 
-	gl_nosubimage = Cvar_Get( "gl_nosubimage", "0", 0 );
-
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
-	gl_driver = Cvar_Get( "gl_driver", "opengl32", CVAR_ARCHIVE );
 
 	vid_ref = Cvar_Get( "vid_ref", "soft", CVAR_ARCHIVE );
 }

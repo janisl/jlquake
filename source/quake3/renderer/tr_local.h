@@ -38,14 +38,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //====================================================
 extern	refimport_t		ri;
 
-//
-// cvars
-//
-extern QCvar	*r_inGameVideo;				// controls whether in game video should be draw
-extern QCvar	*r_dlightBacks;			// dlight non-facing surfaces for continuity
-
-extern  QCvar  *r_glDriver;
-
 //====================================================================
 
 void R_SwapBuffers( int );

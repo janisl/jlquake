@@ -44,11 +44,7 @@ void GL_UpdateSwapInterval( void );
 
 //====================================================
 
-extern	QCvar	*gl_nosubimage;
-extern	QCvar	*gl_poly;
 extern	QCvar	*gl_polyblend;
-extern	QCvar	*gl_lightmaptype;
-extern  QCvar  *gl_driver;
 
 void R_TranslatePlayerSkin (int playernum);
 
