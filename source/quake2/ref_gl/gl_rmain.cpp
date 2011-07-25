@@ -102,11 +102,9 @@ void CL_InitRenderStuff()
 
 	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
 
-	R_Init();
+	R_BeginRegistration(&cls.glconfig);
 
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
-
-	cls_common->glconfig = glConfig;
 
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
@@ -116,8 +114,6 @@ void CL_InitRenderStuff()
 	err = qglGetError();
 	if ( err != GL_NO_ERROR )
 		ri.Con_Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
-
-	tr.registered = true;
 
 	Draw_InitLocal();
 }
@@ -178,7 +174,6 @@ void R_BeginFrame( float camera_separation )
 //===================================================================
 
 
-void	R_BeginRegistration (const char *map);
 void	R_EndRegistration (void);
 
 void	R_RenderFrame (refdef_t *fd);
@@ -195,7 +190,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 
 	ri = rimp;
 
-	re.BeginRegistration = R_BeginRegistration;
 	re.EndRegistration = R_EndRegistration;
 
 	re.RenderFrame = R_RenderFrame;

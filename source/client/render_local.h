@@ -667,7 +667,6 @@ INIT
 
 bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode);
 const char* R_GetTitleForWindow();
-void R_Init();
 
 /*
 ============================================================
@@ -947,5 +946,7 @@ Particles
 
 void R_InitParticleTexture();
 void R_DrawParticles();
+
+void R_BeginRegistration(glconfig_t *glconfigOut);
 
 #endif

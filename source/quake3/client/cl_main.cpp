@@ -2089,7 +2089,7 @@ CL_InitRenderer
 */
 void CL_InitRenderer( void ) {
 	// this sets up the renderer and calls R_Init
-	re.BeginRegistration( &cls.glconfig );
+	R_BeginRegistration( &cls.glconfig );
 
 	viddef.width = SCREEN_WIDTH;
 	viddef.height = SCREEN_HEIGHT;

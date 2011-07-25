@@ -23,16 +23,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 /*
 @@@@@@@@@@@@@@@@@@@@@
-R_BeginRegistration
+R_BeginRegistrationAndLoadWorld
 
 Specifies the model that will be used as the world
 @@@@@@@@@@@@@@@@@@@@@
 */
-void R_BeginRegistration (const char *model)
+void R_BeginRegistrationAndLoadWorld (const char *model)
 {
 	char	fullname[MAX_QPATH];
-
-	r_oldviewcluster = -1;		// force markleafs
 
 	QStr::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
 
@@ -41,7 +39,6 @@ void R_BeginRegistration (const char *model)
 
 	R_LoadWorld(fullname);
 
-	r_viewcluster = -1;
 }
 
 /*

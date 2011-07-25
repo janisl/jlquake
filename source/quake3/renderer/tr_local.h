@@ -48,7 +48,6 @@ void R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
 void R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
-void		RE_BeginRegistration( glconfig_t *glconfig );
 
 //
 // tr_shader.c

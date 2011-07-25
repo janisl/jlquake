@@ -33,8 +33,7 @@ Mod_ClearAll
 void Mod_ClearAll (void)
 {
 	R_Shutdown(false);
-	R_Init();
-	tr.registered = true;
+	R_BeginRegistration(&cls.glconfig);
 	Draw_Init();
 	Sbar_Init();
 }

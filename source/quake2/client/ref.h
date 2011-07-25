@@ -35,7 +35,6 @@ typedef struct
 	// registered before rendering any frames to prevent disk hits,
 	// but they can still be registered at a later time
 	// if necessary.
-	void	(*BeginRegistration) (const char *map);
 	void	(*EndRegistration) (void);
 
 	void	(*RenderFrame) (refdef_t *fd);
@@ -63,6 +62,7 @@ typedef struct
 typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
 
 void R_ClearScreen();
+void R_BeginRegistrationAndLoadWorld (const char *map);
 
 extern float		v_blend[4];
 

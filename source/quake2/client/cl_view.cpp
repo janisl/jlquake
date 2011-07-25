@@ -172,7 +172,7 @@ void CL_PrepRefresh (void)
 	// register models, pics, and skins
 	Com_Printf ("Map: %s\r", mapname); 
 	SCR_UpdateScreen ();
-	re.BeginRegistration (mapname);
+	R_BeginRegistrationAndLoadWorld (mapname);
 	Com_Printf ("                                     \r");
 
 	// precache status bar pics

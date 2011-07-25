@@ -192,7 +192,6 @@ void R_NewMap (void)
 	for (i=0 ; i<256 ; i++)
 		d_lightstylevalue[i] = 264;		// normal light value
 
-	r_viewleaf = NULL;
 	R_ClearParticles ();
 
 	GL_BuildLightmaps ();
@@ -290,13 +289,11 @@ void D_ShowLoadingSize(void)
 
 void VID_Init()
 {
-	R_Init();
+	R_BeginRegistration(&cls.glconfig);
 
 	VID_SetPalette();
 
 	Sys_ShowConsole(0, false);
-
-	cls_common->glconfig = glConfig;
 
 	if (COM_CheckParm("-scale2d"))
 	{
@@ -310,8 +307,6 @@ void VID_Init()
 	}
 
 	vid_initialized = true;
-
-	tr.registered = true;
 }
 
 void GL_EndRendering (void)

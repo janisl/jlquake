@@ -63,7 +63,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 
 	// the RE_ functions are Renderer Entry points
 
-	re.BeginRegistration = RE_BeginRegistration;
 	re.EndRegistration = RE_EndRegistration;
 
 	re.BeginFrame = RE_BeginFrame;

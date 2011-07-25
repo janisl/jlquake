@@ -816,7 +816,7 @@ static void R_InitFunctionTables()
 //
 //==========================================================================
 
-void R_Init()
+static void R_Init()
 {
 	GLog.Write("----- R_Init -----\n");
 
@@ -860,6 +860,39 @@ void R_Init()
 	}
 
 	GLog.Write("----- finished R_Init -----\n");
+}
+
+//==========================================================================
+//
+//	R_BeginRegistration
+//
+//==========================================================================
+
+void R_BeginRegistration(glconfig_t *glconfigOut)
+{
+	R_Init();
+
+	*glconfigOut = glConfig;
+
+	R_SyncRenderThread();
+
+	r_oldviewleaf = NULL;
+	r_viewleaf = NULL;
+	r_oldviewcluster = -1;
+	r_viewcluster = -1;
+	tr.viewCluster = -1;		// force markleafs to regenerate
+	R_ClearFlares();
+	R_ClearScene();
+
+	tr.registered = true;
+
+	if (GGameType & GAME_Quake3)
+	{
+		// NOTE: this sucks, for some reason the first stretch pic is never drawn
+		// without this we'd see a white flash on a level load because the very
+		// first time the level shot would not be drawn
+		R_StretchPic(0, 0, 0, 0, 0, 0, 1, 1, 0);
+	}
 }
 
 //==========================================================================

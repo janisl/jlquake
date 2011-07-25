@@ -189,7 +189,6 @@ void R_NewMap (void)
 	for (i=0 ; i<256 ; i++)
 		d_lightstylevalue[i] = 264;		// normal light value
 
-	r_viewleaf = NULL;
 	R_ClearParticles ();
 
 	GL_BuildLightmaps ();
@@ -245,11 +244,9 @@ void R_TimeRefresh_f (void)
 
 void VID_Init()
 {
-	R_Init();
+	R_BeginRegistration(&cls.glconfig);
 
 	Sys_ShowConsole(0, false);
-
-	cls_common->glconfig = glConfig;
 
 	int i;
 	if ((i = COM_CheckParm("-conwidth")) != 0)
@@ -274,8 +271,6 @@ void VID_Init()
 		viddef.height = glConfig.vidHeight;
 	if (viddef.width > glConfig.vidWidth)
 		viddef.width = glConfig.vidWidth;
-
-	tr.registered = true;
 }
 
 void GL_EndRendering()
