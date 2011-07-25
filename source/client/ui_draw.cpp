@@ -90,7 +90,8 @@ void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 //==========================================================================
 
 static void DoQuad(float x, float y, float width, float height,
-	image_t* image, float s1, float t1, float s2, float t2)
+	image_t* image, float s1, float t1, float s2, float t2,
+	float r, float g, float b, float a)
 {
 	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
 
@@ -116,6 +117,7 @@ static void DoQuad(float x, float y, float width, float height,
 	GL_TexEnv(GL_MODULATE);
 	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 
+	qglColor4f(r, g, b, a);
 	qglBegin(GL_QUADS);
 	qglTexCoord2f(s1, t1);
 	qglVertex2f(x, y);
@@ -164,8 +166,7 @@ void UI_DrawNamedPic(int x, int y, const char* pic)
 
 void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
 {
-	qglColor4f(1, 1, 1, alpha);
-	DoQuad(x, y, w, h, pic, 0, 0, 1, 1);
+	DoQuad(x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha);
 }
 
 //==========================================================================
@@ -194,7 +195,7 @@ void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte* colour)
 {
 	qglColor4ubv(colour);
-	DoQuad(x, y, w, h, pic, 0, 0, 1, 1);
+	DoQuad(x, y, w, h, pic, 0, 0, 1, 1, colour[0] / 255.0, colour[1] / 255.0, colour[2] / 255.0, colour[3] / 255.0);
 }
 
 //==========================================================================
@@ -211,8 +212,7 @@ void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, in
 	float newtl = (float)srcy / (float)pic->height;
 	float newth = newtl + (float)height / (float)pic->height;
 	
-	qglColor4f (1,1,1,1);
-	DoQuad(x, y, width, height, pic, newsl, newtl, newsh, newth);
+	DoQuad(x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1);
 }
 
 //==========================================================================
@@ -226,8 +226,7 @@ void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, in
 
 void UI_TileClear(int x, int y, int w, int h, image_t* pic)
 {
-	qglColor4f(1, 1, 1, 1);
-	DoQuad(x, y, w, h, pic, x / 64.0, y / 64.0, (x + w) / 64.0, (y + h) / 64.0);
+	DoQuad(x, y, w, h, pic, x / 64.0, y / 64.0, (x + w) / 64.0, (y + h) / 64.0, 1, 1, 1, 1);
 }
 
 //==========================================================================
@@ -255,8 +254,7 @@ void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 
 void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a)
 {
-	qglColor4f(r, g, b, a);
-	DoQuad(x, y, w, h, tr.whiteImage, 0, 0, 0, 0);
+	DoQuad(x, y, w, h, tr.whiteImage, 0, 0, 0, 0, r, g, b, a);
 }
 
 //==========================================================================
@@ -296,8 +294,7 @@ void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int number
 	float fcol = col * xsize;
 	float frow = row * ysize;
 
-	qglColor4f(1, 1, 1, 1);
-	DoQuad(x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize);
+	DoQuad(x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, 1, 1, 1, 1);
 }
 
 //==========================================================================
