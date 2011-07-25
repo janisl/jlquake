@@ -2058,8 +2058,6 @@ void R_Draw2DQuad(float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2,
 	float r, float g, float b, float a)
 {
-	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
-
 	if (!image)
 	{
 		image = tr.whiteImage;
