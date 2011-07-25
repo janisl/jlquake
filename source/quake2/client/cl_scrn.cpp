@@ -433,8 +433,6 @@ void SCR_Init (void)
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 	Cmd_AddCommand ("sky",SCR_Sky_f);
 
-	Draw_InitLocal();
-
 	scr_initialized = true;
 }
 

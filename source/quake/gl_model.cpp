@@ -32,6 +32,9 @@ Mod_ClearAll
 */
 void Mod_ClearAll (void)
 {
-	R_FreeModels();
-	R_ModelInit();
+	R_Shutdown(false);
+	R_Init();
+	tr.registered = true;
+	Draw_Init();
+	Sbar_Init();
 }

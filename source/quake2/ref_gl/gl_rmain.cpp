@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // r_main.c
 #include "gl_local.h"
+#include "../client/client.h"
 
 refimport_t	ri;
 
@@ -117,6 +118,8 @@ void CL_InitRenderStuff()
 		ri.Con_Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
 
 	tr.registered = true;
+
+	Draw_InitLocal();
 }
 
 /*

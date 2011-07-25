@@ -36,8 +36,8 @@ void R_BeginRegistration (const char *model)
 
 	QStr::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
 
-	R_FreeModels();
-	R_ModelInit();
+	R_Shutdown(false);
+	CL_InitRenderStuff();
 
 	R_LoadWorld(fullname);
 

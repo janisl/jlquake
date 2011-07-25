@@ -177,6 +177,10 @@ void VID_Shutdown (void)
 */
 void GLimp_EndFrame (void)
 {
+	if (!tr.registered)
+	{
+		return;
+	}
 	int err = qglGetError();
 	qassert(err == GL_NO_ERROR);
 

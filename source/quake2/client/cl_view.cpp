@@ -159,8 +159,6 @@ void CL_PrepRefresh (void)
 	float		rotate;
 	vec3_t		axis;
 
-	Draw_InitLocal();
-
 	if (!cl.configstrings[CS_MODELS+1][0])
 		return;		// no map loaded
 

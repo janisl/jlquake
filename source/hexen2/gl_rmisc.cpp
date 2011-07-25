@@ -316,6 +316,10 @@ void VID_Init()
 
 void GL_EndRendering (void)
 {
+	if (!tr.registered)
+	{
+		return;
+	}
 	GLimp_SwapBuffers();
 	R_ToggleSmpFrame();
 }

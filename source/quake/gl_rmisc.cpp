@@ -280,6 +280,10 @@ void VID_Init()
 
 void GL_EndRendering()
 {
+	if (!tr.registered)
+	{
+		return;
+	}
 	//qglFlush();
 	GLimp_SwapBuffers();
 	R_ToggleSmpFrame();
