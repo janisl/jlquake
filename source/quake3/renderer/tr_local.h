@@ -49,7 +49,6 @@ void R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
 void		RE_BeginFrame( stereoFrame_t stereoFrame );
 void		RE_BeginRegistration( glconfig_t *glconfig );
-void		RE_Shutdown( qboolean destroyWindow );
 
 void    	R_Init( void );
 

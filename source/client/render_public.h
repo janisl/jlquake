@@ -264,6 +264,8 @@ enum QParticleTexture
 
 struct image_t;
 
+void R_Shutdown(bool destroyWindow);
+
 image_t* R_PicFromWad(const char* Name);
 image_t* R_PicFromWadRepeat(const char* name);
 qhandle_t R_GetImageHandle(image_t* Image);

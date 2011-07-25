@@ -137,18 +137,6 @@ int R_Init()
 }
 
 /*
-===============
-R_Shutdown
-===============
-*/
-void R_Shutdown (void)
-{	
-	R_CommonShutdown(true);
-}
-
-
-
-/*
 @@@@@@@@@@@@@@@@@@@@@
 R_BeginFrame
 @@@@@@@@@@@@@@@@@@@@@
@@ -236,8 +224,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.EndRegistration = R_EndRegistration;
 
 	re.RenderFrame = R_RenderFrame;
-
-	re.Shutdown = R_Shutdown;
 
 	re.BeginFrame = R_BeginFrame;
 	re.EndFrame = GLimp_EndFrame;

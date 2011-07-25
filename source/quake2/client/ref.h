@@ -31,9 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 typedef struct
 {
-	// called before the library is unloaded
-	void	(*Shutdown) (void);
-
 	// All data that will be used in a level should be
 	// registered before rendering any frames to prevent disk hits,
 	// but they can still be registered at a later time

@@ -1014,6 +1014,6 @@ void Host_Shutdown(void)
 
 	if (cls.state != ca_dedicated)
 	{
-		VID_Shutdown();
+		R_Shutdown(true);
 	}
 }

@@ -871,11 +871,11 @@ void R_CommonInit2()
 
 //==========================================================================
 //
-//	R_CommonShutdown
+//	R_Shutdown
 //
 //==========================================================================
 
-void R_CommonShutdown(bool destroyWindow)
+void R_Shutdown(bool destroyWindow)
 {
 	GLog.Write("RE_Shutdown( %i )\n", destroyWindow);
 

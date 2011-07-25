@@ -40,17 +40,6 @@ void R_Init()
 }
 
 /*
-===============
-RE_Shutdown
-===============
-*/
-void RE_Shutdown( qboolean destroyWindow )
-{
-	R_CommonShutdown(destroyWindow);
-}
-
-
-/*
 =============
 RE_EndRegistration
 
@@ -87,8 +76,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	}
 
 	// the RE_ functions are Renderer Entry points
-
-	re.Shutdown = RE_Shutdown;
 
 	re.BeginRegistration = RE_BeginRegistration;
 	re.EndRegistration = RE_EndRegistration;

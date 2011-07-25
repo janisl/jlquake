@@ -140,7 +140,7 @@ qboolean VID_LoadRefresh()
 	
 	if ( reflib_active )
 	{
-		re.Shutdown();
+		R_Shutdown(true);
 		VID_FreeReflib ();
 	}
 
@@ -151,7 +151,7 @@ qboolean VID_LoadRefresh()
 
 	if (R_Init() == -1 )
 	{
-		re.Shutdown();
+		R_Shutdown(true);
 		VID_FreeReflib ();
 		return false;
 	}
@@ -170,7 +170,7 @@ void VID_Shutdown (void)
 {
 	if ( reflib_active )
 	{
-		re.Shutdown ();
+		R_Shutdown(true);
 		VID_FreeReflib ();
 	}
 }

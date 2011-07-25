@@ -282,11 +282,6 @@ void VID_Init()
 	tr.registered = true;
 }
 
-void VID_Shutdown(void)
-{
-	R_CommonShutdown(true);
-}
-
 void GL_EndRendering()
 {
 	//qglFlush();

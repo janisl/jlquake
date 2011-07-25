@@ -614,9 +614,7 @@ void CL_ShutdownAll(void) {
 	CL_ShutdownUI();
 
 	// shutdown the renderer
-	if ( re.Shutdown ) {
-		re.Shutdown( qfalse );		// don't destroy window or context
-	}
+	R_Shutdown(false);		// don't destroy window or context
 
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
@@ -2080,10 +2078,7 @@ CL_ShutdownRef
 ============
 */
 void CL_ShutdownRef( void ) {
-	if ( !re.Shutdown ) {
-		return;
-	}
-	re.Shutdown( qtrue );
+	R_Shutdown(true);
 	Com_Memset( &re, 0, sizeof( re ) );
 }
 
