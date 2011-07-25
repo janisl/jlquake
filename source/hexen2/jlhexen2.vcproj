@@ -271,10 +271,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_model.cpp"
-				>
-			</File>
-			<File
 				RelativePath="gl_refrag.cpp"
 				>
 			</File>

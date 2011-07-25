@@ -63,7 +63,6 @@ add_executable(jlhwcl
 	client/view.cpp
 	client/zone.cpp
 	client/gl_draw.cpp
-	client/gl_model.cpp
 	client/gl_ngraph.cpp
 	client/gl_rlight.cpp
 	client/gl_rmain.cpp

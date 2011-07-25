@@ -338,6 +338,19 @@ void CL_Rcon_f (void)
 
 
 /*
+===================
+Mod_ClearAll
+===================
+*/
+static void Mod_ClearAll (void)
+{
+	R_Shutdown(false);
+	R_BeginRegistration(&cls.glconfig);
+	Draw_Init();
+	Sbar_Init();
+}
+
+/*
 =====================
 CL_ClearState
 

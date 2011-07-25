@@ -105,5 +105,3 @@ void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum);
 void R_TranslatePlayerSkin (int playernum);
-
-void	Mod_ClearAll (void);

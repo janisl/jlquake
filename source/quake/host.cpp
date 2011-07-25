@@ -481,6 +481,19 @@ void Host_ShutdownServer(qboolean crash)
 
 
 /*
+===================
+Mod_ClearAll
+===================
+*/
+static void Mod_ClearAll (void)
+{
+	R_Shutdown(false);
+	R_BeginRegistration(&cls.glconfig);
+	Draw_Init();
+	Sbar_Init();
+}
+
+/*
 ================
 Host_ClearMemory
 

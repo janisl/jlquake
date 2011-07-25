@@ -101,6 +101,4 @@ void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap);
 void R_TranslatePlayerSkin (int playernum);
 
-void	Mod_ClearAll (void);
-
 extern	QCvar*	gl_doubleeyes;
