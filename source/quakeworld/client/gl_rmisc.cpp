@@ -276,6 +276,8 @@ void VID_Init()
 
 	Sys_ShowConsole(0, false);
 
+	cls_common->glconfig = glConfig;
+
 	int i;
 	if ((i = COM_CheckParm("-conwidth")) != 0)
 		viddef.width = QStr::Atoi(COM_Argv(i+1));

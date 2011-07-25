@@ -165,6 +165,8 @@ int R_Init()
 	r_fullscreen->modified = false;
 	r_mode->modified = false;
 
+	cls_common->glconfig = glConfig;
+
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
 

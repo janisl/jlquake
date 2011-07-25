@@ -300,6 +300,8 @@ void VID_Init()
 
 	Sys_ShowConsole(0, false);
 
+	cls_common->glconfig = glConfig;
+
 	if (COM_CheckParm("-scale2d"))
 	{
 		viddef.height = 200;

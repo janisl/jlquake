@@ -329,6 +329,9 @@ void R_SetSky(const char* name, float rotate, vec3_t axis);
 void R_SetColor(const float* rgba);
 void R_StretchPic(float x, float y, float w, float h, 
 	float s1, float t1, float s2, float t2, qhandle_t hShader);
+void R_Draw2DQuad(float x, float y, float width, float height,
+	image_t* image, float s1, float t1, float s2, float t2,
+	float r, float g, float b, float a);
 
 void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty);
 

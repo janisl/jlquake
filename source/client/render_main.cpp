@@ -2047,3 +2047,54 @@ void R_RenderView(viewParms_t* parms)
 	// draw main system development information (surface outlines, etc)
 	R_DebugGraphics();
 }
+
+//==========================================================================
+//
+//	R_Draw2DQuad
+//
+//==========================================================================
+
+void R_Draw2DQuad(float x, float y, float width, float height,
+	image_t* image, float s1, float t1, float s2, float t2,
+	float r, float g, float b, float a)
+{
+	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
+
+	if (!image)
+	{
+		image = tr.whiteImage;
+	}
+	if (image->sl != 0 || image->sh != 1)
+	{
+		float glwidth = image->sh - image->sl;
+		s1 = image->sl + s1 * glwidth;
+		s2 = image->sl + s2 * glwidth;
+	}
+
+	if (image->tl != 0 || image->th != 1)
+	{
+		float glheight = image->th - image->tl;
+		t1 = image->tl + t1 * glheight;
+		t2 = image->tl + t2 * glheight;
+	}
+	
+	if (scrap_dirty)
+	{
+		R_ScrapUpload();
+	}
+	GL_Bind(image);
+	GL_TexEnv(GL_MODULATE);
+	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
+
+	qglColor4f(r, g, b, a);
+	qglBegin(GL_QUADS);
+	qglTexCoord2f(s1, t1);
+	qglVertex2f(x, y);
+	qglTexCoord2f(s2, t1);
+	qglVertex2f(x + width, y);
+	qglTexCoord2f(s2, t2);
+	qglVertex2f (x + width, y + height);
+	qglTexCoord2f(s1, t2);
+	qglVertex2f(x, y + height);
+	qglEnd();
+}

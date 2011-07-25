@@ -18,7 +18,6 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "client.h"
-#include "render_local.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -63,8 +62,8 @@ vec4_t g_color_table[8] =
 void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 {
 	// scale for screen sizes
-	float xscale = (float)glConfig.vidWidth / viddef.width;
-	float yscale = (float)glConfig.vidHeight / viddef.height;
+	float xscale = (float)cls_common->glconfig.vidWidth / viddef.width;
+	float yscale = (float)cls_common->glconfig.vidHeight / viddef.height;
 	if (x)
 	{
 		*x *= xscale;
@@ -85,60 +84,13 @@ void UI_AdjustFromVirtualScreen(float* x, float* y, float* w, float* h)
 
 //==========================================================================
 //
-//	DoQuad
-//
-//==========================================================================
-
-static void DoQuad(float x, float y, float width, float height,
-	image_t* image, float s1, float t1, float s2, float t2,
-	float r, float g, float b, float a)
-{
-	UI_AdjustFromVirtualScreen(&x, &y, &width, &height);
-
-	if (image->sl != 0 || image->sh != 1)
-	{
-		float glwidth = image->sh - image->sl;
-		s1 = image->sl + s1 * glwidth;
-		s2 = image->sl + s2 * glwidth;
-	}
-
-	if (image->tl != 0 || image->th != 1)
-	{
-		float glheight = image->th - image->tl;
-		t1 = image->tl + t1 * glheight;
-		t2 = image->tl + t2 * glheight;
-	}
-	
-	if (scrap_dirty)
-	{
-		R_ScrapUpload();
-	}
-	GL_Bind(image);
-	GL_TexEnv(GL_MODULATE);
-	GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
-
-	qglColor4f(r, g, b, a);
-	qglBegin(GL_QUADS);
-	qglTexCoord2f(s1, t1);
-	qglVertex2f(x, y);
-	qglTexCoord2f(s2, t1);
-	qglVertex2f(x + width, y);
-	qglTexCoord2f(s2, t2);
-	qglVertex2f (x + width, y + height);
-	qglTexCoord2f(s1, t2);
-	qglVertex2f(x, y + height);
-	qglEnd();
-}
-
-//==========================================================================
-//
 //	UI_DrawPic
 //
 //==========================================================================
 
 void UI_DrawPic(int x, int y, image_t* pic, float alpha)
 {
-	UI_DrawStretchPic(x, y, pic->width, pic->height, pic, alpha);
+	UI_DrawStretchPic(x, y, R_GetImageWidth(pic), R_GetImageHeight(pic), pic, alpha);
 }
 
 //==========================================================================
@@ -166,7 +118,7 @@ void UI_DrawNamedPic(int x, int y, const char* pic)
 
 void UI_DrawStretchPic(int x, int y, int w, int h, image_t* pic, float alpha)
 {
-	DoQuad(x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha);
+	R_Draw2DQuad(x, y, w, h, pic, 0, 0, 1, 1, 1, 1, 1, alpha);
 }
 
 //==========================================================================
@@ -194,8 +146,7 @@ void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 
 void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte* colour)
 {
-	qglColor4ubv(colour);
-	DoQuad(x, y, w, h, pic, 0, 0, 1, 1, colour[0] / 255.0, colour[1] / 255.0, colour[2] / 255.0, colour[3] / 255.0);
+	R_Draw2DQuad(x, y, w, h, pic, 0, 0, 1, 1, colour[0] / 255.0, colour[1] / 255.0, colour[2] / 255.0, colour[3] / 255.0);
 }
 
 //==========================================================================
@@ -206,13 +157,13 @@ void UI_DrawStretchPicWithColour(int x, int y, int w, int h, image_t* pic, byte*
 
 void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, int height)
 {
-	float newsl = (float)srcx / (float)pic->width;
-	float newsh = newsl + (float)width / (float)pic->width;
+	float newsl = (float)srcx / (float)R_GetImageWidth(pic);
+	float newsh = newsl + (float)width / (float)R_GetImageWidth(pic);
 
-	float newtl = (float)srcy / (float)pic->height;
-	float newth = newtl + (float)height / (float)pic->height;
+	float newtl = (float)srcy / (float)R_GetImageHeight(pic);
+	float newth = newtl + (float)height / (float)R_GetImageHeight(pic);
 	
-	DoQuad(x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1);
+	R_Draw2DQuad(x, y, width, height, pic, newsl, newtl, newsh, newth, 1, 1, 1, 1);
 }
 
 //==========================================================================
@@ -226,7 +177,7 @@ void UI_DrawSubPic(int x, int y, image_t* pic, int srcx, int srcy, int width, in
 
 void UI_TileClear(int x, int y, int w, int h, image_t* pic)
 {
-	DoQuad(x, y, w, h, pic, x / 64.0, y / 64.0, (x + w) / 64.0, (y + h) / 64.0, 1, 1, 1, 1);
+	R_Draw2DQuad(x, y, w, h, pic, x / 64.0, y / 64.0, (x + w) / 64.0, (y + h) / 64.0, 1, 1, 1, 1);
 }
 
 //==========================================================================
@@ -254,7 +205,7 @@ void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 
 void UI_Fill(int x, int y, int w, int h, float r, float g, float b, float a)
 {
-	DoQuad(x, y, w, h, tr.whiteImage, 0, 0, 0, 0, r, g, b, a);
+	R_Draw2DQuad(x, y, w, h, NULL, 0, 0, 0, 0, r, g, b, a);
 }
 
 //==========================================================================
@@ -294,7 +245,7 @@ void UI_DrawChar(int x, int y, int num, int w, int h, image_t* image, int number
 	float fcol = col * xsize;
 	float frow = row * ysize;
 
-	DoQuad(x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, 1, 1, 1, 1);
+	R_Draw2DQuad(x, y, w, h, image, fcol, frow, fcol + xsize, frow + ysize, 1, 1, 1, 1);
 }
 
 //==========================================================================
