@@ -233,9 +233,6 @@ void R_TimeRefresh_f (void)
 		return;
 	}
 
-	qglDrawBuffer  (GL_FRONT);
-	qglFinish ();
-
 	start = Sys_DoubleTime ();
 	vec3_t viewangles;
 	viewangles[0] = 0;
@@ -247,15 +244,12 @@ void R_TimeRefresh_f (void)
 		AnglesToAxis(viewangles, r_refdef.viewaxis);
 		R_BeginFrame(STEREO_CENTER);
 		R_RenderView ();
+		R_EndFrame(NULL, NULL);
 	}
 
-	qglFinish ();
 	stop = Sys_DoubleTime ();
 	time = stop-start;
 	Con_Printf ("%f seconds (%f fps)\n", time, 128/time);
-
-	qglDrawBuffer  (GL_BACK);
-	R_EndFrame(NULL, NULL);
 }
 
 void VID_SetPalette()
