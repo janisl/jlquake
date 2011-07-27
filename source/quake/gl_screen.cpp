@@ -708,6 +708,7 @@ void SCR_UpdateScreen (void)
 	if (!scr_initialized || !con_initialized)
 		return;				// not initialized yet
 
+	R_BeginFrame(STEREO_CENTER);
 
 	//
 	// determine size of refresh window

@@ -106,8 +106,6 @@ void R_RenderView (void)
 	}
 	CL_AddParticles();
 
-	R_BeginFrame(STEREO_CENTER);
-
 	R_SetupFrame ();
 
 	r_refdef.time = (int)(cl.time * 1000);
