@@ -23,8 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 refimport_t	ri;
 
-glstate2_t  gl_state;
-
 float		v_blend[4];			// final blending color
 
 QCvar	*gl_polyblend;
@@ -105,8 +103,6 @@ void R_BeginFrame( float camera_separation )
 {
 	tr.frameCount++;
 
-	gl_state.camera_separation = camera_separation;
-
 	QGL_LogComment("*** R_BeginFrame ***\n");
 
 	GLimp_BeginFrame( camera_separation );
@@ -118,7 +114,7 @@ void R_BeginFrame( float camera_separation )
 	{
 		r_drawBuffer->modified = false;
 
-		if ( gl_state.camera_separation == 0 || !glConfig.stereoEnabled )
+		if ( camera_separation == 0 || !glConfig.stereoEnabled )
 		{
 			if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) == 0 )
 				qglDrawBuffer( GL_FRONT );

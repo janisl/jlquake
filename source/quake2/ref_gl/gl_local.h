@@ -59,13 +59,6 @@ void	R_SwapBuffers( int );
 */
 void GL_DrawParticles( int n, const particle_t particles[], const unsigned colortable[768] );
 
-typedef struct
-{
-	float camera_separation;
-} glstate2_t;
-
-extern glstate2_t   gl_state;
-
 /*
 ====================================================================
 
