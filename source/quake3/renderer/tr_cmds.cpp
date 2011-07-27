@@ -85,15 +85,5 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		r_textureMode->modified = qfalse;
 	}
 
-	//
-	// gamma stuff
-	//
-	if ( r_gamma->modified ) {
-		r_gamma->modified = qfalse;
-
-		R_SyncRenderThread();
-		R_SetColorMappings();
-	}
-
 	R_BeginFrameCommon(stereoFrame);
 }

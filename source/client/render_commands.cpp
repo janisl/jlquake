@@ -374,6 +374,17 @@ void R_StretchPic(float x, float y, float w, float h,
 
 void R_BeginFrameCommon(stereoFrame_t stereoFrame)
 {
+	//
+	// gamma stuff
+	//
+	if (r_gamma->modified)
+	{
+		r_gamma->modified = false;
+
+		R_SyncRenderThread();
+		R_SetColorMappings();
+	}
+
 	// check for errors
 	if (!r_ignoreGLErrors->integer)
 	{

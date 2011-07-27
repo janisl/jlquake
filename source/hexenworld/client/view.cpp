@@ -324,25 +324,6 @@ cshift_t	cshift_lava = { {255,80,0}, 150 };
 float		v_blend[4];		// rgba 0.0 - 1.0
 
 /*
-=================
-V_CheckGamma
-=================
-*/
-qboolean V_CheckGamma (void)
-{
-	static float oldgammavalue;
-	
-	if (r_gamma->value == oldgammavalue)
-		return false;
-	oldgammavalue = r_gamma->value;
-	
-	R_SetColorMappings();
-	
-	return true;
-}
-
-
-/*
 ===============
 V_ParseDamage
 ===============
@@ -591,7 +572,6 @@ void V_UpdatePalette (void)
 {
 	int		i, j;
 	qboolean	is_new;
-	qboolean force;
 
 	V_CalcPowerupCshift ();
 	
@@ -622,8 +602,7 @@ void V_UpdatePalette (void)
 	if (cl.cshifts[CSHIFT_BONUS].percent <= 0)
 		cl.cshifts[CSHIFT_BONUS].percent = 0;
 
-	force = V_CheckGamma ();
-	if (!is_new && !force)
+	if (!is_new)
 		return;
 
 	V_CalcBlend ();
