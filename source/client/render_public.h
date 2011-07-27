@@ -275,6 +275,7 @@ void R_BeginRegistration(glconfig_t* glconfig);
 void R_EndRegistration();
 void R_Shutdown(bool destroyWindow);
 
+void R_BeginFrame(stereoFrame_t stereoFrame);
 void R_EndFrame(int* frontEndMsec, int* backEndMsec);
 
 image_t* R_PicFromWad(const char* Name);

@@ -47,8 +47,6 @@ void R_AddBeamSurfaces( trRefEntity_t *e );
 void R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
 void R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
-void		RE_BeginFrame( stereoFrame_t stereoFrame );
-
 //
 // tr_shader.c
 //
@@ -63,15 +61,5 @@ WORLD MAP
 */
 
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
-
-/*
-=============================================================
-
-RENDERER BACK END COMMAND QUEUE
-
-=============================================================
-*/
-
-void RE_BeginFrame( stereoFrame_t stereoFrame );
 
 #endif //TR_LOCAL_H

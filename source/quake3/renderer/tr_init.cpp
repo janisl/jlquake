@@ -49,8 +49,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 
 	// the RE_ functions are Renderer Entry points
 
-	re.BeginFrame = RE_BeginFrame;
-
 	re.inPVS = R_inPVS;
 
 	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;

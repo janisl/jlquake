@@ -30,8 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // these are the functions exported by the refresh module
 //
 typedef struct {
-	void	(*BeginFrame)( stereoFrame_t stereoFrame );
-
 	qboolean (*inPVS)( const vec3_t p1, const vec3_t p2 );
 } refexport_t;
 

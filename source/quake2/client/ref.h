@@ -51,7 +51,6 @@ typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
 
 void R_ClearScreen();
 void R_BeginRegistrationAndLoadWorld (const char *map);
-void R_BeginFrame(stereoFrame_t stereoFrame);
 
 extern float		v_blend[4];
 

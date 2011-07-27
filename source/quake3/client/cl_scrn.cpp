@@ -147,7 +147,7 @@ This will be called twice if rendering in stereo mode
 ==================
 */
 void SCR_DrawScreenField( stereoFrame_t stereoFrame ) {
-	re.BeginFrame( stereoFrame );
+	R_BeginFrame( stereoFrame );
 
 	// wide aspect ratio screens need to have the sides cleared
 	// unless they are displaying game renderings

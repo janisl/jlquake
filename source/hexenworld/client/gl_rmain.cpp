@@ -98,15 +98,6 @@ void R_SetupFrame (void)
 
 	R_AnimateLight ();
 
-	//
-	// texturemode stuff
-	//
-	if (r_textureMode->modified)
-	{
-		GL_TextureMode(r_textureMode->string);
-		r_textureMode->modified = false;
-	}
-
 	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
 	V_CalcBlend ();
 }
@@ -127,12 +118,7 @@ void R_RenderView (void)
 	}
 	CL_AddParticles();
 
-	tr.frameCount++;
-	tr.frameSceneNum = 0;
-
-	glState.finishCalled = false;
-
-	R_BeginFrameCommon(STEREO_CENTER);
+	R_BeginFrame(STEREO_CENTER);
 
 	R_SetupFrame ();
 

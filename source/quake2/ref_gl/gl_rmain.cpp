@@ -53,10 +53,6 @@ R_RenderFrame
 */
 void R_RenderFrame(refdef_t *fd)
 {
-	tr.frameSceneNum = 0;
-
-	glState.finishCalled = false;
-
 	R_RenderScene(fd);
 
 	R_PolyBlend(fd);
@@ -79,38 +75,6 @@ void CL_InitRenderStuff()
 
 	Draw_InitLocal();
 }
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-R_BeginFrame
-@@@@@@@@@@@@@@@@@@@@@
-*/
-void R_BeginFrame(stereoFrame_t stereoFrame)
-{
-	tr.frameCount++;
-
-	QGL_LogComment("*** R_BeginFrame ***\n");
-
-	/*
-	** draw buffer stuff
-	*/
-
-	/*
-	** texturemode stuff
-	*/
-	if ( r_textureMode->modified )
-	{
-		GL_TextureMode( r_textureMode->string );
-		r_textureMode->modified = false;
-	}
-
-	R_BeginFrameCommon(stereoFrame);
-}
-
-//===================================================================
-
-
-void	R_RenderFrame (refdef_t *fd);
 
 /*
 @@@@@@@@@@@@@@@@@@@@@

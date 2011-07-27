@@ -365,15 +365,73 @@ void R_StretchPic(float x, float y, float w, float h,
 
 //==========================================================================
 //
-//	R_BeginFrameCommon
+//	R_BeginFrame
 //
 //	If running in stereo, RE_BeginFrame will be called twice
 // for each R_EndFrame
 //
 //==========================================================================
 
-void R_BeginFrameCommon(stereoFrame_t stereoFrame)
+void R_BeginFrame(stereoFrame_t stereoFrame)
 {
+	if (!tr.registered)
+	{
+		return;
+	}
+	glState.finishCalled = false;
+
+	tr.frameCount++;
+	tr.frameSceneNum = 0;
+
+	//
+	// do overdraw measurement
+	//
+	if (r_measureOverdraw->integer)
+	{
+		if (glConfig.stencilBits < 4)
+		{
+			GLog.Write("Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits);
+			Cvar_Set("r_measureOverdraw", "0");
+			r_measureOverdraw->modified = false;
+		}
+		else if (r_shadows->integer == 2)
+		{
+			GLog.Write("Warning: stencil shadows and overdraw measurement are mutually exclusive\n");
+			Cvar_Set("r_measureOverdraw", "0");
+			r_measureOverdraw->modified = false;
+		}
+		else
+		{
+			R_SyncRenderThread();
+			qglEnable(GL_STENCIL_TEST);
+			qglStencilMask(~0U);
+			qglClearStencil(0U);
+			qglStencilFunc(GL_ALWAYS, 0U, ~0U);
+			qglStencilOp(GL_KEEP, GL_INCR, GL_INCR);
+		}
+		r_measureOverdraw->modified = false;
+	}
+	else
+	{
+		// this is only reached if it was on and is now off
+		if (r_measureOverdraw->modified)
+		{
+			R_SyncRenderThread();
+			qglDisable(GL_STENCIL_TEST);
+		}
+		r_measureOverdraw->modified = false;
+	}
+
+	//
+	// texturemode stuff
+	//
+	if (r_textureMode->modified)
+	{
+		R_SyncRenderThread();
+		GL_TextureMode(r_textureMode->string);
+		r_textureMode->modified = false;
+	}
+
 	//
 	// gamma stuff
 	//
