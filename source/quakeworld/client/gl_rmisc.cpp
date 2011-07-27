@@ -214,9 +214,7 @@ void R_NewMap (void)
 
 	R_ClearParticles ();
 
-	GL_BuildLightmaps ();
-
-	R_EndRegistrationCommon();
+	R_EndRegistration();
 }
 
 

@@ -30,10 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // these are the functions exported by the refresh module
 //
 typedef struct {
-	// EndRegistration will draw a tiny polygon with each texture, forcing
-	// them to be loaded into card memory
-	void	(*EndRegistration)( void );
-
 	void	(*BeginFrame)( stereoFrame_t stereoFrame );
 
 	// if the pointers are not NULL, timing info will be returned

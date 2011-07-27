@@ -947,6 +947,4 @@ Particles
 void R_InitParticleTexture();
 void R_DrawParticles();
 
-void R_EndRegistrationCommon();
-
 #endif

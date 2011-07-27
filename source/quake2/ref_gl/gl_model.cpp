@@ -40,14 +40,3 @@ void R_BeginRegistrationAndLoadWorld (const char *model)
 	R_LoadWorld(fullname);
 
 }
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-R_EndRegistration
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-void R_EndRegistration (void)
-{
-	R_EndRegistrationCommon();
-}

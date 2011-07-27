@@ -25,19 +25,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 refimport_t	ri;
 
-/*
-=============
-RE_EndRegistration
-
-Touch all images to make sure they are resident
-=============
-*/
-void RE_EndRegistration( void ) {
-	R_EndRegistrationCommon();
-	R_SyncRenderThread();
-	RB_ShowImages();
-}
-
 void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
 
 
@@ -61,8 +48,6 @@ refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
 	}
 
 	// the RE_ functions are Renderer Entry points
-
-	re.EndRegistration = RE_EndRegistration;
 
 	re.BeginFrame = RE_BeginFrame;
 	re.EndFrame = RE_EndFrame;

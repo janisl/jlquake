@@ -897,14 +897,20 @@ void R_BeginRegistration(glconfig_t *glconfigOut)
 
 //==========================================================================
 //
-//	R_EndRegistrationCommon
+//	R_EndRegistration
 //
 //	Touch all images to make sure they are resident
 //
 //==========================================================================
 
-void R_EndRegistrationCommon()
+void R_EndRegistration()
 {
+	if (GGameType & GAME_QuakeHexen)
+	{
+		GL_BuildLightmaps();
+	}
+	R_SyncRenderThread();
+	RB_ShowImages();
 }
 
 //==========================================================================
