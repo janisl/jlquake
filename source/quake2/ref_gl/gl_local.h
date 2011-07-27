@@ -28,13 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <GL/glu.h>
 
-#ifndef GL_COLOR_INDEX8_EXT
-#define GL_COLOR_INDEX8_EXT GL_COLOR_INDEX
-#endif
-
 //===================================================================
-
-#include "gl_model.h"
 
 extern	QCvar	*gl_polyblend;
 
