@@ -100,20 +100,6 @@ void R_SetupFrame (void)
 }
 
 /*
-=============
-R_Clear
-=============
-*/
-void R_Clear (void)
-{
-	if (r_clear->value)
-	{
-		qglClearColor(1, 0, 0, 0);
-		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-}
-
-/*
 ================
 R_RenderView
 
@@ -134,7 +120,7 @@ void R_RenderView (void)
 
 	glState.finishCalled = false;
 
-	R_Clear ();
+	R_BeginFrameCommon(STEREO_CENTER);
 
 	R_SetupFrame ();
 

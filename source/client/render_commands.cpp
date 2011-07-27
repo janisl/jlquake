@@ -365,6 +365,76 @@ void R_StretchPic(float x, float y, float w, float h,
 
 //==========================================================================
 //
+//	R_BeginFrameCommon
+//
+//	If running in stereo, RE_BeginFrame will be called twice
+// for each R_EndFrame
+//
+//==========================================================================
+
+void R_BeginFrameCommon(stereoFrame_t stereoFrame)
+{
+	// check for errors
+	if (!r_ignoreGLErrors->integer)
+	{
+		R_SyncRenderThread();
+		int err = qglGetError();
+		if (err != GL_NO_ERROR)
+		{
+			throw QException(va("RE_BeginFrame() - glGetError() failed (0x%x)!\n", err));
+		}
+	}
+
+	//
+	// draw buffer stuff
+	//
+	drawBufferCommand_t* cmd = (drawBufferCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_DRAW_BUFFER;
+
+	if (glConfig.stereoEnabled)
+	{
+		if (stereoFrame == STEREO_LEFT)
+		{
+			cmd->buffer = (int)GL_BACK_LEFT;
+		}
+		else if (stereoFrame == STEREO_RIGHT)
+		{
+			cmd->buffer = (int)GL_BACK_RIGHT;
+		}
+		else
+		{
+			throw QException(va("RE_BeginFrame: Stereo is enabled, but stereoFrame was %i", stereoFrame));
+		}
+	}
+	else
+	{
+		if (stereoFrame != STEREO_CENTER)
+		{
+			throw QException(va("R_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame));
+		}
+		if (!QStr::ICmp(r_drawBuffer->string, "GL_FRONT"))
+		{
+			cmd->buffer = (int)GL_FRONT;
+		}
+		else
+		{
+			cmd->buffer = (int)GL_BACK;
+		}
+	}
+
+	//FIXME Temporary hack
+	if (!(GGameType & GAME_Quake3))
+	{
+		R_IssueRenderCommands(false);
+	}
+}
+
+//==========================================================================
+//
 //	R_EndFrame
 //
 //	Returns the number of msec spent in the back end

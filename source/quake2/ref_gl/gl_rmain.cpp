@@ -46,20 +46,6 @@ void R_PolyBlend(refdef_t *fd)
 //=======================================================================
 
 /*
-=============
-R_Clear
-=============
-*/
-void R_Clear (void)
-{
-	if (r_clear->value)
-	{
-		qglClearColor(1,0, 0.5, 0.5);
-		qglClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
-}
-
-/*
 @@@@@@@@@@@@@@@@@@@@@
 R_RenderFrame
 
@@ -105,36 +91,9 @@ void R_BeginFrame(stereoFrame_t stereoFrame)
 
 	QGL_LogComment("*** R_BeginFrame ***\n");
 
-	if (stereoFrame == STEREO_LEFT && glConfig.stereoEnabled )
-	{
-		qglDrawBuffer( GL_BACK_LEFT );
-	}
-	else if (stereoFrame == STEREO_RIGHT && glConfig.stereoEnabled )
-	{
-		qglDrawBuffer( GL_BACK_RIGHT );
-	}
-	else
-	{
-		qglDrawBuffer( GL_BACK );
-	}
-	int err = qglGetError();
-	qassert(err == GL_NO_ERROR);
-
 	/*
 	** draw buffer stuff
 	*/
-	if ( r_drawBuffer->modified )
-	{
-		r_drawBuffer->modified = false;
-
-		if (stereoFrame == STEREO_CENTER || !glConfig.stereoEnabled )
-		{
-			if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) == 0 )
-				qglDrawBuffer( GL_FRONT );
-			else
-				qglDrawBuffer( GL_BACK );
-		}
-	}
 
 	/*
 	** texturemode stuff
@@ -145,10 +104,7 @@ void R_BeginFrame(stereoFrame_t stereoFrame)
 		r_textureMode->modified = false;
 	}
 
-	//
-	// clear screen if desired
-	//
-	R_Clear ();
+	R_BeginFrameCommon(stereoFrame);
 }
 
 //===================================================================

@@ -767,6 +767,7 @@ void R_IssueRenderCommands(bool runPerformanceCounters);
 void R_SyncRenderThread();
 void* R_GetCommandBuffer(int bytes);
 void R_AddDrawSurfCmd(drawSurf_t* drawSurfs, int numDrawSurfs);
+void R_BeginFrameCommon(stereoFrame_t stereoFrame);
 
 /*
 ============================================================
