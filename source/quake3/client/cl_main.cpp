@@ -2051,28 +2051,6 @@ void CL_Frame ( int msec ) {
 //============================================================================
 
 /*
-================
-CL_RefPrintf
-
-DLL glue
-================
-*/
-void QDECL CL_RefPrintf( int print_level, const char *fmt, ...) {
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-	
-	va_start (argptr,fmt);
-	Q_vsnprintf (msg, sizeof(msg), fmt, argptr);
-	va_end (argptr);
-
-	if ( print_level == PRINT_ALL ) {
-		Com_Printf ("%s", msg);
-	}
-}
-
-
-
-/*
 ============
 CL_ShutdownRef
 ============
@@ -2152,15 +2130,11 @@ CL_InitRef
 ============
 */
 void CL_InitRef( void ) {
-	refimport_t	ri;
 	refexport_t	*ret;
 
 	Com_Printf( "----- Initializing Renderer ----\n" );
 
-	ri.Printf = CL_RefPrintf;
-	ri.Error = Com_Error;
-
-	ret = GetRefAPI( REF_API_VERSION, &ri );
+	ret = GetRefAPI();
 
 #if defined __USEA3D && defined __A3D_GEOM
 	hA3Dg_ExportRenderGeom (ret);

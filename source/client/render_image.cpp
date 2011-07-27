@@ -1836,7 +1836,6 @@ void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool di
 	byte* resampled = NULL;
 	if (i != cols || j != rows)
 	{
-		//ri.Error (ERR_DROP, "Draw_StretchRaw: size not a power of 2: %i by %i", cols, rows);
 		resampled = new byte[i * j * 4];
 		R_ResampleTexture(data, cols, rows, resampled, i, j);
 		cols = i;

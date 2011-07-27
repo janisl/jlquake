@@ -192,12 +192,6 @@ enum {qfalse, qtrue};
 
 #define	MAX_SAY_TEXT	150
 
-// print levels from renderer (FIXME: set up for game / cgame?)
-typedef enum {
-	PRINT_ALL
-} printParm_t;
-
-
 #ifdef ERR_FATAL
 #undef ERR_FATAL			// this is be defined in malloc.h
 #endif

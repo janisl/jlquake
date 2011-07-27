@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
-refimport_t	ri;
-
 void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
 
 
@@ -34,18 +32,10 @@ GetRefAPI
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-refexport_t *GetRefAPI ( int apiVersion, refimport_t *rimp ) {
+refexport_t *GetRefAPI () {
 	static refexport_t	re;
 
-	ri = *rimp;
-
 	Com_Memset( &re, 0, sizeof( re ) );
-
-	if ( apiVersion != REF_API_VERSION ) {
-		ri.Printf(PRINT_ALL, "Mismatched REF_API_VERSION: expected %i, got %i\n", 
-			REF_API_VERSION, apiVersion );
-		return NULL;
-	}
 
 	// the RE_ functions are Renderer Entry points
 
