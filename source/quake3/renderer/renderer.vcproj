@@ -173,34 +173,6 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
-				RelativePath="..\qcommon\cm_public.h"
-				>
-			</File>
-			<File
-				RelativePath="..\win32\glw_win.h"
-				>
-			</File>
-			<File
-				RelativePath="..\game\q_shared.h"
-				>
-			</File>
-			<File
-				RelativePath="..\qcommon\qcommon.h"
-				>
-			</File>
-			<File
-				RelativePath="..\qcommon\qfiles.h"
-				>
-			</File>
-			<File
-				RelativePath="qgl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\game\surfaceflags.h"
-				>
-			</File>
-			<File
 				RelativePath="tr_local.h"
 				>
 			</File>
@@ -210,10 +182,6 @@
 			</File>
 			<File
 				RelativePath="..\cgame\tr_types.h"
-				>
-			</File>
-			<File
-				RelativePath="..\win32\win_local.h"
 				>
 			</File>
 		</Filter>
