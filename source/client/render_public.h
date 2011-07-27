@@ -262,6 +262,13 @@ enum QParticleTexture
 	PARTTEX_Snow4,
 };
 
+enum stereoFrame_t
+{
+	STEREO_CENTER,
+	STEREO_LEFT,
+	STEREO_RIGHT
+};
+
 struct image_t;
 
 void R_BeginRegistration(glconfig_t* glconfig);

@@ -99,13 +99,26 @@ void CL_InitRenderStuff()
 R_BeginFrame
 @@@@@@@@@@@@@@@@@@@@@
 */
-void R_BeginFrame( float camera_separation )
+void R_BeginFrame(stereoFrame_t stereoFrame)
 {
 	tr.frameCount++;
 
 	QGL_LogComment("*** R_BeginFrame ***\n");
 
-	GLimp_BeginFrame( camera_separation );
+	if (stereoFrame == STEREO_LEFT && glConfig.stereoEnabled )
+	{
+		qglDrawBuffer( GL_BACK_LEFT );
+	}
+	else if (stereoFrame == STEREO_RIGHT && glConfig.stereoEnabled )
+	{
+		qglDrawBuffer( GL_BACK_RIGHT );
+	}
+	else
+	{
+		qglDrawBuffer( GL_BACK );
+	}
+	int err = qglGetError();
+	qassert(err == GL_NO_ERROR);
 
 	/*
 	** draw buffer stuff
@@ -114,7 +127,7 @@ void R_BeginFrame( float camera_separation )
 	{
 		r_drawBuffer->modified = false;
 
-		if ( camera_separation == 0 || !glConfig.stereoEnabled )
+		if (stereoFrame == STEREO_CENTER || !glConfig.stereoEnabled )
 		{
 			if ( QStr::ICmp( r_drawBuffer->string, "GL_FRONT" ) == 0 )
 				qglDrawBuffer( GL_FRONT );
@@ -156,8 +169,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	ri = rimp;
 
 	re.RenderFrame = R_RenderFrame;
-
-	re.BeginFrame = R_BeginFrame;
 
 	return re;
 }

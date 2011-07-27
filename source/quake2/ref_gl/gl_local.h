@@ -45,7 +45,6 @@ mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
 
 void COM_StripExtension (char *in, char *out);
 
-void	R_BeginFrame( float camera_separation );
 void	R_SwapBuffers( int );
 
 /*
@@ -70,14 +69,3 @@ refexport_t GetRefAPI (refimport_t rimp);
 void VID_Restart_f (void);
 void VID_NewWindow ( int width, int height);
 void VID_FreeReflib (void);
-
-
-/*
-====================================================================
-
-IMPLEMENTATION SPECIFIC FUNCTIONS
-
-====================================================================
-*/
-
-void		GLimp_BeginFrame( float camera_separation );

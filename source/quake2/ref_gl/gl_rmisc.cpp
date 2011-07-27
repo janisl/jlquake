@@ -28,27 +28,6 @@ qboolean	reflib_active = 0;
 static bool vid_restart_requested;
 
 /*
-** GLimp_BeginFrame
-*/
-void GLimp_BeginFrame( float camera_separation )
-{
-	if ( camera_separation < 0 && glConfig.stereoEnabled )
-	{
-		qglDrawBuffer( GL_BACK_LEFT );
-	}
-	else if ( camera_separation > 0 && glConfig.stereoEnabled )
-	{
-		qglDrawBuffer( GL_BACK_RIGHT );
-	}
-	else
-	{
-		qglDrawBuffer( GL_BACK );
-	}
-	int err = qglGetError();
-	qassert(err == GL_NO_ERROR);
-}
-
-/*
 ==========================================================================
 
 DLL GLUE

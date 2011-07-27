@@ -606,7 +606,7 @@ void SCR_TimeRefresh_f (void)
 	viewangles[2] = 0;
 	if (Cmd_Argc() == 2)
 	{	// run without page flipping
-		re.BeginFrame( 0 );
+		R_BeginFrame(STEREO_CENTER);
 		for (i=0 ; i<128 ; i++)
 		{
 			viewangles[1] = i/128.0*360.0;
@@ -622,7 +622,7 @@ void SCR_TimeRefresh_f (void)
 			viewangles[1] = i/128.0*360.0;
 			AnglesToAxis(viewangles, cl.refdef.viewaxis);
 
-			re.BeginFrame( 0 );
+			R_BeginFrame(STEREO_CENTER);
 			re.RenderFrame (&cl.refdef);
 			R_EndFrame(NULL, NULL);
 		}
@@ -1148,6 +1148,67 @@ void SCR_DrawLayout (void)
 
 //=======================================================
 
+static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
+{
+	R_BeginFrame(stereoFrame);
+
+	if (scr_draw_loading == 2)
+	{	//  loading plaque over black screen
+		int		w, h;
+
+		R_ClearScreen();
+		scr_draw_loading = false;
+		R_GetPicSize (&w, &h, "loading");
+		UI_DrawNamedPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
+	} 
+	// if a cinematic is supposed to be running, handle menus
+	// and console specially
+	else if (SCR_DrawCinematic())
+	{
+		if (in_keyCatchers & KEYCATCH_UI)
+		{
+			M_Draw ();
+		}
+		else if (in_keyCatchers & KEYCATCH_CONSOLE)
+		{
+			SCR_DrawConsole ();
+		}
+	}
+	else 
+	{
+		// do 3D refresh drawing, and then update the screen
+		SCR_CalcVrect ();
+
+		// clear any dirty part of the background
+		SCR_TileClear ();
+
+		V_RenderView (separation);
+
+		SCR_DrawStats ();
+		if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 1)
+			SCR_DrawLayout ();
+		if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 2)
+			CL_DrawInventory ();
+
+		SCR_DrawNet ();
+		SCR_CheckDrawCenterString ();
+
+		if (scr_timegraph->value)
+			SCR_DebugGraph (cls.frametime*300, 0);
+
+		if (scr_debuggraph->value || scr_timegraph->value || scr_netgraph->value)
+			SCR_DrawDebugGraph ();
+
+		SCR_DrawPause ();
+
+		SCR_DrawConsole ();
+
+		M_Draw ();
+
+		SCR_DrawLoading ();
+	}
+}
+
 /*
 ==================
 SCR_UpdateScreen
@@ -1158,10 +1219,6 @@ text to the screen.
 */
 void SCR_UpdateScreen (void)
 {
-	int numframes;
-	int i;
-	float separation[2] = { 0, 0 };
-
 	// if the screen is disabled (loading plaque is up, or vid mode changing)
 	// do nothing at all
 	if (cls.disable_screen)
@@ -1188,83 +1245,14 @@ void SCR_UpdateScreen (void)
 
 	if (glConfig.stereoEnabled)
 	{
-		numframes = 2;
-		separation[0] = -cl_stereo_separation->value / 2;
-		separation[1] =  cl_stereo_separation->value / 2;
+		SCR_DrawScreen(STEREO_LEFT, -cl_stereo_separation->value / 2);
+		SCR_DrawScreen(STEREO_RIGHT, cl_stereo_separation->value / 2);
 	}		
 	else
 	{
-		separation[0] = 0;
-		separation[1] = 0;
-		numframes = 1;
+		SCR_DrawScreen(STEREO_CENTER, 0);
 	}
 
-	for ( i = 0; i < numframes; i++ )
-	{
-		re.BeginFrame( separation[i] );
-
-		if (scr_draw_loading == 2)
-		{	//  loading plaque over black screen
-			int		w, h;
-
-			R_ClearScreen();
-			scr_draw_loading = false;
-			R_GetPicSize (&w, &h, "loading");
-			UI_DrawNamedPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
-//			re.EndFrame();
-//			return;
-		} 
-		// if a cinematic is supposed to be running, handle menus
-		// and console specially
-		else if (SCR_DrawCinematic())
-		{
-			if (in_keyCatchers & KEYCATCH_UI)
-			{
-				M_Draw ();
-//				re.EndFrame();
-//				return;
-			}
-			else if (in_keyCatchers & KEYCATCH_CONSOLE)
-			{
-				SCR_DrawConsole ();
-//				re.EndFrame();
-//				return;
-			}
-		}
-		else 
-		{
-			// do 3D refresh drawing, and then update the screen
-			SCR_CalcVrect ();
-
-			// clear any dirty part of the background
-			SCR_TileClear ();
-
-			V_RenderView ( separation[i] );
-
-			SCR_DrawStats ();
-			if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 1)
-				SCR_DrawLayout ();
-			if (cl.frame.playerstate.stats[STAT_LAYOUTS] & 2)
-				CL_DrawInventory ();
-
-			SCR_DrawNet ();
-			SCR_CheckDrawCenterString ();
-
-			if (scr_timegraph->value)
-				SCR_DebugGraph (cls.frametime*300, 0);
-
-			if (scr_debuggraph->value || scr_timegraph->value || scr_netgraph->value)
-				SCR_DrawDebugGraph ();
-
-			SCR_DrawPause ();
-
-			SCR_DrawConsole ();
-
-			M_Draw ();
-
-			SCR_DrawLoading ();
-		}
-	}
 	R_EndFrame(NULL, NULL);
 }
 

@@ -33,11 +33,6 @@ typedef struct
 {
 	void	(*RenderFrame) (refdef_t *fd);
 
-	/*
-	** video mode and refresh state management entry points
-	*/
-	void	(*BeginFrame)( float camera_separation );
-
 } refexport_t;
 
 //
@@ -56,6 +51,7 @@ typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
 
 void R_ClearScreen();
 void R_BeginRegistrationAndLoadWorld (const char *map);
+void R_BeginFrame(stereoFrame_t stereoFrame);
 
 extern float		v_blend[4];
 
