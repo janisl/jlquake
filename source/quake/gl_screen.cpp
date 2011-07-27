@@ -80,6 +80,7 @@ QCvar*		scr_centertime;
 QCvar*		scr_showturtle;
 QCvar*		scr_showpause;
 QCvar*		scr_printspeed;
+QCvar*		show_fps;
 
 extern	QCvar*	crosshair;
 
@@ -342,6 +343,7 @@ void SCR_Init (void)
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
 	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
+	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 
 //
 // register our commands
@@ -393,6 +395,31 @@ void SCR_DrawNet (void)
 		return;
 
 	UI_DrawPic (scr_vrect.x+64, scr_vrect.y, (image_t*)scr_net);
+}
+
+void SCR_DrawFPS (void)
+{
+	static double lastframetime;
+	double t;
+	extern int fps_count;
+	static int lastfps;
+	int x, y;
+	char st[80];
+
+	if (!show_fps->value)
+		return;
+
+	t = Sys_DoubleTime();
+	if ((t - lastframetime) >= 1.0) {
+		lastfps = fps_count;
+		fps_count = 0;
+		lastframetime = t;
+	}
+
+	sprintf(st, "%3d FPS", lastfps);
+	x = viddef.width - QStr::Length(st) * 8 - 8;
+	y = viddef.height - sb_lines - 8;
+	Draw_String(x, y, st);
 }
 
 /*
@@ -725,6 +752,7 @@ void SCR_UpdateScreen (void)
 			Draw_Character (scr_vrect.x + scr_vrect.width/2, scr_vrect.y + scr_vrect.height/2, '+');
 		
 		SCR_DrawNet ();
+		SCR_DrawFPS ();
 		SCR_DrawTurtle ();
 		SCR_DrawPause ();
 		SCR_CheckDrawCenterString ();

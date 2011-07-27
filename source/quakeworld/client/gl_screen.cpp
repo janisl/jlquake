@@ -366,7 +366,7 @@ void SCR_Init (void)
 	scr_net = R_PicFromWad ("net");
 	scr_turtle = R_PicFromWad ("turtle");
 
-	show_fps = Cvar_Get("show_fps", "0", 0);			// set for running times
+	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 	cl_sbar		= Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
 
 	scr_initialized = true;

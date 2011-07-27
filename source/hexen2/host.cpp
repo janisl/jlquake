@@ -28,6 +28,7 @@ double		host_time;
 double		realtime;				// without any filtering or bounding
 double		oldrealtime;			// last frame run
 int			host_framecount;
+int			fps_count;
 
 int			host_hunklevel;
 
@@ -865,6 +866,7 @@ void _Host_Frame (float time)
 	}
 	
 	host_framecount++;
+	fps_count++;
 }
 
 void Host_Frame (float time)
