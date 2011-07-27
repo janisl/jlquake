@@ -32,8 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GL_COLOR_INDEX8_EXT GL_COLOR_INDEX
 #endif
 
-#define	REF_VERSION	"GL 0.01"
-
 //===================================================================
 
 #include "gl_model.h"

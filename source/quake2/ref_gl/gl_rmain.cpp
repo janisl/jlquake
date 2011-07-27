@@ -98,22 +98,12 @@ CL_InitRenderStuff
 */
 void CL_InitRenderStuff()
 {	
-	int		err;
-
-	ri.Con_Printf (PRINT_ALL, "ref_gl version: "REF_VERSION"\n");
-
 	R_BeginRegistration(&cls.glconfig);
 
 	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
-
-	Cvar_SetLatched( "scr_drawall", "0" );
-
-	err = qglGetError();
-	if ( err != GL_NO_ERROR )
-		ri.Con_Printf (PRINT_ALL, "glGetError() = 0x%x\n", err);
 
 	Draw_InitLocal();
 }

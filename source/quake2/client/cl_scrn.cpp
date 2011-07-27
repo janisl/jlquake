@@ -58,14 +58,6 @@ QCvar		*scr_debuggraph;
 QCvar		*scr_graphheight;
 QCvar		*scr_graphscale;
 QCvar		*scr_graphshift;
-QCvar		*scr_drawall;
-
-typedef struct
-{
-	int		x1, y1, x2, y2;
-} dirty_t;
-
-dirty_t		scr_dirty, scr_old_dirty[2];
 
 char		crosshair_pic[MAX_QPATH];
 int			crosshair_width, crosshair_height;
@@ -277,14 +269,12 @@ void SCR_DrawCenterString (void)
 			if (start[l] == '\n' || !start[l])
 				break;
 		x = (viddef.width - l*8)/2;
-		SCR_AddDirtyPoint (x, y);
 		for (j=0 ; j<l ; j++, x+=8)
 		{
 			Draw_Char (x, y, start[j]);	
 			if (!remaining--)
 				return;
 		}
-		SCR_AddDirtyPoint (x, y+8);
 			
 		y += 8;
 
@@ -422,7 +412,6 @@ void SCR_Init (void)
 	scr_graphheight = Cvar_Get ("graphheight", "32", 0);
 	scr_graphscale = Cvar_Get ("graphscale", "1", 0);
 	scr_graphshift = Cvar_Get ("graphshift", "0", 0);
-	scr_drawall = Cvar_Get ("scr_drawall", "0", 0);
 
 //
 // register our commands
@@ -645,29 +634,6 @@ void SCR_TimeRefresh_f (void)
 }
 
 /*
-=================
-SCR_AddDirtyPoint
-=================
-*/
-void SCR_AddDirtyPoint (int x, int y)
-{
-	if (x < scr_dirty.x1)
-		scr_dirty.x1 = x;
-	if (x > scr_dirty.x2)
-		scr_dirty.x2 = x;
-	if (y < scr_dirty.y1)
-		scr_dirty.y1 = y;
-	if (y > scr_dirty.y2)
-		scr_dirty.y2 = y;
-}
-
-void SCR_DirtyScreen (void)
-{
-	SCR_AddDirtyPoint (0, 0);
-	SCR_AddDirtyPoint (viddef.width-1, viddef.height-1);
-}
-
-/*
 ==============
 SCR_TileClear
 
@@ -676,83 +642,36 @@ Clear any parts of the tiled background that were drawn on last frame
 */
 void SCR_TileClear (void)
 {
-	int		i;
-	int		top, bottom, left, right;
-	dirty_t	clear;
-
-	if (scr_drawall->value)
-		SCR_DirtyScreen ();	// for power vr or broken page flippers...
-
 	if (scr_con_current == 1.0)
 		return;		// full screen console
 	if (scr_viewsize->value == 100)
 		return;		// full screen rendering
 
-	// erase rect will be the union of the past three frames
-	// so tripple buffering works properly
-	clear = scr_dirty;
-	for (i=0 ; i<2 ; i++)
+	int top = scr_vrect.y;
+	int bottom = top + scr_vrect.height;
+	int left = scr_vrect.x;
+	int right = left + scr_vrect.width;
+
+	if (top > 0)
 	{
-		if (scr_old_dirty[i].x1 < clear.x1)
-			clear.x1 = scr_old_dirty[i].x1;
-		if (scr_old_dirty[i].x2 > clear.x2)
-			clear.x2 = scr_old_dirty[i].x2;
-		if (scr_old_dirty[i].y1 < clear.y1)
-			clear.y1 = scr_old_dirty[i].y1;
-		if (scr_old_dirty[i].y2 > clear.y2)
-			clear.y2 = scr_old_dirty[i].y2;
+		// clear above view screen
+		UI_NamedTileClear(0, 0, cls.glconfig.vidWidth, top, "backtile");
 	}
-
-	scr_old_dirty[1] = scr_old_dirty[0];
-	scr_old_dirty[0] = scr_dirty;
-
-	scr_dirty.x1 = 9999;
-	scr_dirty.x2 = -9999;
-	scr_dirty.y1 = 9999;
-	scr_dirty.y2 = -9999;
-
-	// don't bother with anything convered by the console)
-	top = scr_con_current*viddef.height;
-	if (top >= clear.y1)
-		clear.y1 = top;
-
-	if (clear.y2 <= clear.y1)
-		return;		// nothing disturbed
-
-	top = scr_vrect.y;
-	bottom = top + scr_vrect.height-1;
-	left = scr_vrect.x;
-	right = left + scr_vrect.width-1;
-
-	if (clear.y1 < top)
-	{	// clear above view screen
-		i = clear.y2 < top-1 ? clear.y2 : top-1;
-		UI_NamedTileClear (clear.x1 , clear.y1,
-			clear.x2 - clear.x1 + 1, i - clear.y1+1, "backtile");
-		clear.y1 = top;
+	if (cls.glconfig.vidHeight > bottom)
+	{
+		// clear below view screen
+		UI_NamedTileClear(0, bottom, cls.glconfig.vidWidth, cls.glconfig.vidHeight - bottom, "backtile");
 	}
-	if (clear.y2 > bottom)
-	{	// clear below view screen
-		i = clear.y1 > bottom+1 ? clear.y1 : bottom+1;
-		UI_NamedTileClear (clear.x1, i,
-			clear.x2-clear.x1+1, clear.y2-i+1, "backtile");
-		clear.y2 = bottom;
+	if (0 < left)
+	{
+		// clear left of view screen
+		UI_NamedTileClear(0, top, left, bottom - top, "backtile");
 	}
-	if (clear.x1 < left)
-	{	// clear left of view screen
-		i = clear.x2 < left-1 ? clear.x2 : left-1;
-		UI_NamedTileClear (clear.x1, clear.y1,
-			i-clear.x1+1, clear.y2 - clear.y1 + 1, "backtile");
-		clear.x1 = left;
+	if (cls.glconfig.vidWidth > right)
+	{
+		// clear left of view screen
+		UI_NamedTileClear(right, top, cls.glconfig.vidWidth - right, bottom - top, "backtile");
 	}
-	if (clear.x2 > right)
-	{	// clear left of view screen
-		i = clear.x1 > right+1 ? clear.x1 : right+1;
-		UI_NamedTileClear (i, clear.y1,
-			clear.x2-i+1, clear.y2 - clear.y1 + 1, "backtile");
-		clear.x2 = right;
-	}
-
 }
 
 
@@ -863,9 +782,6 @@ void SCR_DrawField (int x, int y, int color, int width, int value)
 	// draw number string
 	if (width > 5)
 		width = 5;
-
-	SCR_AddDirtyPoint (x, y);
-	SCR_AddDirtyPoint (x+width*CHAR_WIDTH+2, y+23);
 
 	QStr::Sprintf (num, sizeof(num), "%i", value);
 	l = QStr::Length(num);
@@ -990,8 +906,6 @@ void SCR_ExecuteLayoutString (const char *s)
 				Com_Error (ERR_DROP, "Pic >= MAX_IMAGES");
 			if (cl.configstrings[CS_IMAGES+value])
 			{
-				SCR_AddDirtyPoint (x, y);
-				SCR_AddDirtyPoint (x+23, y+23);
 				UI_DrawNamedPic (x, y, cl.configstrings[CS_IMAGES+value]);
 			}
 			continue;
@@ -1005,8 +919,6 @@ void SCR_ExecuteLayoutString (const char *s)
 			x = viddef.width/2 - 160 + QStr::Atoi(token);
 			token = QStr::Parse2 (&s);
 			y = viddef.height/2 - 120 + QStr::Atoi(token);
-			SCR_AddDirtyPoint (x, y);
-			SCR_AddDirtyPoint (x+159, y+31);
 
 			token = QStr::Parse2 (&s);
 			value = QStr::Atoi(token);
@@ -1044,8 +956,6 @@ void SCR_ExecuteLayoutString (const char *s)
 			x = viddef.width/2 - 160 + QStr::Atoi(token);
 			token = QStr::Parse2 (&s);
 			y = viddef.height/2 - 120 + QStr::Atoi(token);
-			SCR_AddDirtyPoint (x, y);
-			SCR_AddDirtyPoint (x+159, y+31);
 
 			token = QStr::Parse2 (&s);
 			value = QStr::Atoi(token);
@@ -1073,8 +983,6 @@ void SCR_ExecuteLayoutString (const char *s)
 		if (!QStr::Cmp(token, "picn"))
 		{	// draw a pic from a name
 			token = QStr::Parse2 (&s);
-			SCR_AddDirtyPoint (x, y);
-			SCR_AddDirtyPoint (x+23, y+23);
 			UI_DrawNamedPic (x, y, token);
 			continue;
 		}

@@ -162,9 +162,6 @@ void CL_PrepRefresh (void)
 	if (!cl.configstrings[CS_MODELS+1][0])
 		return;		// no map loaded
 
-	SCR_AddDirtyPoint (0, 0);
-	SCR_AddDirtyPoint (viddef.width-1, viddef.height-1);
-
 	// let the render dll load the map
 	QStr::Cpy(mapname, cl.configstrings[CS_MODELS+1] + 5);	// skip "maps/"
 	mapname[QStr::Length(mapname)-4] = 0;		// cut off ".bsp"
@@ -439,11 +436,6 @@ void V_RenderView( float stereo_separation )
 		Com_Printf ("ent:%i  lt:%i  part:%i\n", r_numentities, r_numdlights, r_numparticles);
 	if ( log_stats->value && ( log_stats_file != 0 ) )
 		FS_Printf(log_stats_file, "%i,%i,%i,",r_numentities, r_numdlights, r_numparticles);
-
-
-	SCR_AddDirtyPoint (scr_vrect.x, scr_vrect.y);
-	SCR_AddDirtyPoint (scr_vrect.x+scr_vrect.width-1,
-		scr_vrect.y+scr_vrect.height-1);
 
 	SCR_DrawCrosshair ();
 }

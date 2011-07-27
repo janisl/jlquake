@@ -4116,9 +4116,6 @@ void M_Draw (void)
 	if (!(in_keyCatchers & KEYCATCH_UI))
 		return;
 
-	// repaint everything next frame
-	SCR_DirtyScreen ();
-
 	// dim everything behind it down
 	UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 0.8);
 
