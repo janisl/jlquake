@@ -741,6 +741,7 @@ void R_FreeBackEndData();
 void RB_BeginDrawingView();
 void RB_SetGL2D();
 void RB_ShowImages();
+void RB_SwapBuffersCommon();
 void RB_ExecuteRenderCommands(const void* data);
 void RB_RenderThread();
 

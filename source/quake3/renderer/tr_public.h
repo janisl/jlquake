@@ -32,9 +32,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 typedef struct {
 	void	(*BeginFrame)( stereoFrame_t stereoFrame );
 
-	// if the pointers are not NULL, timing info will be returned
-	void	(*EndFrame)( int *frontEndMsec, int *backEndMsec );
-
 	qboolean (*inPVS)( const vec3_t p1, const vec3_t p2 );
 } refexport_t;
 

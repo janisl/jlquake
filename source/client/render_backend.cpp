@@ -640,8 +640,6 @@ static const void* RB_SwapBuffers(const void* data)
 		RB_ShowImages();
 	}
 
-	const swapBuffersCommand_t* cmd = (const swapBuffersCommand_t*)data;
-
 	// we measure overdraw by reading back the stencil buffer and
 	// counting up the number of increments that have happened
 	if (r_measureOverdraw->integer)
@@ -658,7 +656,6 @@ static const void* RB_SwapBuffers(const void* data)
 		backEnd.pc.c_overDraw += sum;
 		delete[] stencilReadback;
 	}
-
 
 	if (!glState.finishCalled)
 	{
@@ -696,6 +693,7 @@ static const void* RB_SwapBuffers(const void* data)
 
 	backEnd.projection2D = false;
 
+	const swapBuffersCommand_t* cmd = (const swapBuffersCommand_t*)data;
 	return (const void*)(cmd + 1);
 }
 

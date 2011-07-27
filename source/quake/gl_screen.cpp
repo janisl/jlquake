@@ -758,6 +758,6 @@ void SCR_UpdateScreen (void)
 
 	V_UpdatePalette ();
 
-	GL_EndRendering ();
+	R_EndFrame(NULL, NULL);
 }
 

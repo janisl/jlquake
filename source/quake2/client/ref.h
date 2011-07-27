@@ -37,7 +37,6 @@ typedef struct
 	** video mode and refresh state management entry points
 	*/
 	void	(*BeginFrame)( float camera_separation );
-	void	(*EndFrame) (void);
 
 } refexport_t;
 

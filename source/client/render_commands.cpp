@@ -94,6 +94,24 @@ static void R_PerformanceCounters()
 		return;
 	}
 
+	if (GGameType & GAME_Quake)
+	{
+		GLog.Write("%4i wpoly %4i epoly\n", c_brush_polys, c_alias_polys); 
+		return;
+	}
+	if (GGameType & GAME_Hexen2)
+	{
+		GLog.Write("%4i wpoly  %4i epoly  %4i(%i) edicts\n",
+			c_brush_polys, c_alias_polys, r_numentities, cl_numtransvisedicts + cl_numtranswateredicts);
+		return;
+	}
+	if (GGameType & GAME_Quake2)
+	{
+		GLog.Write("%4i wpoly %4i epoly %i tex %i lmaps\n",
+			c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps); 
+		return;
+	}
+
 	if (r_speeds->integer == 1)
 	{
 		GLog.Write("%i/%i shaders/surfs %i leafs %i verts %i/%i tris %.2f mtex %.2f dc\n",
@@ -335,4 +353,43 @@ void R_StretchPic(float x, float y, float w, float h,
 	cmd->t1 = t1;
 	cmd->s2 = s2;
 	cmd->t2 = t2;
+}
+
+//==========================================================================
+//
+//	R_EndFrame
+//
+//	Returns the number of msec spent in the back end
+//
+//==========================================================================
+
+void R_EndFrame(int* frontEndMsec, int* backEndMsec)
+{
+	if (!tr.registered)
+	{
+		return;
+	}
+	swapBuffersCommand_t* cmd = (swapBuffersCommand_t*)R_GetCommandBuffer(sizeof(*cmd));
+	if (!cmd)
+	{
+		return;
+	}
+	cmd->commandId = RC_SWAP_BUFFERS;
+
+	R_IssueRenderCommands(true);
+
+	// use the other buffers next frame, because another CPU
+	// may still be rendering into the current ones
+	R_ToggleSmpFrame();
+
+	if (frontEndMsec)
+	{
+		*frontEndMsec = tr.frontEndMsec;
+	}
+	tr.frontEndMsec = 0;
+	if (backEndMsec)
+	{
+		*backEndMsec = backEnd.pc.msec;
+	}
+	backEnd.pc.msec = 0;
 }

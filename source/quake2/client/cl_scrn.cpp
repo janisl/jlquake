@@ -613,7 +613,7 @@ void SCR_TimeRefresh_f (void)
 			AnglesToAxis(viewangles, cl.refdef.viewaxis);
 			re.RenderFrame (&cl.refdef);
 		}
-		re.EndFrame();
+		R_EndFrame(NULL, NULL);
 	}
 	else
 	{
@@ -624,7 +624,7 @@ void SCR_TimeRefresh_f (void)
 
 			re.BeginFrame( 0 );
 			re.RenderFrame (&cl.refdef);
-			re.EndFrame();
+			R_EndFrame(NULL, NULL);
 		}
 	}
 
@@ -1265,7 +1265,7 @@ void SCR_UpdateScreen (void)
 			SCR_DrawLoading ();
 		}
 	}
-	re.EndFrame();
+	R_EndFrame(NULL, NULL);
 }
 
 /*

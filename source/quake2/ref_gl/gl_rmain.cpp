@@ -79,15 +79,6 @@ void R_RenderFrame(refdef_t *fd)
 	R_RenderScene(fd);
 
 	R_PolyBlend(fd);
-
-	if (r_speeds->value)
-	{
-		ri.Con_Printf (PRINT_ALL, "%4i wpoly %4i epoly %i tex %i lmaps\n",
-			c_brush_polys, 
-			c_alias_polys, 
-			c_visible_textures, 
-			c_visible_lightmaps); 
-	}
 }
 
 
@@ -119,8 +110,6 @@ void R_BeginFrame( float camera_separation )
 
 	gl_state.camera_separation = camera_separation;
 
-	QGL_EnableLogging(!!r_logFile->integer);
-
 	QGL_LogComment("*** R_BeginFrame ***\n");
 
 	GLimp_BeginFrame( camera_separation );
@@ -150,11 +139,6 @@ void R_BeginFrame( float camera_separation )
 		r_textureMode->modified = false;
 	}
 
-	/*
-	** swapinterval stuff
-	*/
-	GL_UpdateSwapInterval();
-
 	//
 	// clear screen if desired
 	//
@@ -181,7 +165,6 @@ refexport_t GetRefAPI (refimport_t rimp )
 	re.RenderFrame = R_RenderFrame;
 
 	re.BeginFrame = R_BeginFrame;
-	re.EndFrame = GLimp_EndFrame;
 
 	return re;
 }

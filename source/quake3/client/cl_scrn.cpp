@@ -248,9 +248,9 @@ void SCR_UpdateScreen( void ) {
 	}
 
 	if ( com_speeds->integer ) {
-		re.EndFrame( &time_frontend, &time_backend );
+		R_EndFrame( &time_frontend, &time_backend );
 	} else {
-		re.EndFrame( NULL, NULL );
+		R_EndFrame( NULL, NULL );
 	}
 
 	recursive = 0;

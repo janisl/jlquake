@@ -130,8 +130,6 @@ r_refdef must be set before the first call
 */
 void R_RenderView (void)
 {
-	double	time1, time2;
-
 	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
 		float Val = d_lightstylevalue[i] / 256.0;
@@ -146,12 +144,9 @@ void R_RenderView (void)
 
 	if (r_speeds->value)
 	{
-		time1 = Sys_DoubleTime ();
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	QGL_EnableLogging(!!r_logFile->integer);
 
 	R_Clear ();
 
@@ -162,10 +157,4 @@ void R_RenderView (void)
 	R_RenderScene(&r_refdef);
 
 	R_PolyBlend ();
-
-	if (r_speeds->value)
-	{
-		time2 = Sys_DoubleTime ();
-		Con_Printf ("%3i ms  %4i wpoly %4i epoly\n", (int)((time2-time1)*1000), c_brush_polys, c_alias_polys); 
-	}
 }

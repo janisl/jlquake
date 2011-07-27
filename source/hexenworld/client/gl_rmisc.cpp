@@ -254,7 +254,7 @@ void R_TimeRefresh_f (void)
 	Con_Printf ("%f seconds (%f fps)\n", time, 128/time);
 
 	qglDrawBuffer  (GL_BACK);
-	GL_EndRendering ();
+	R_EndFrame(NULL, NULL);
 }
 
 void VID_SetPalette()
@@ -324,14 +324,4 @@ void VID_Init()
 		viddef.height = glConfig.vidHeight;
 	if (viddef.width > glConfig.vidWidth)
 		viddef.width = glConfig.vidWidth;
-}
-
-void GL_EndRendering (void)
-{
-	if (!tr.registered)
-	{
-		return;
-	}
-	GLimp_SwapBuffers();
-	R_ToggleSmpFrame();
 }

@@ -2449,7 +2449,7 @@ void SearchLocalGames( void )
 	M_Print( 16 + 16, 120 - 48 + 24, "please be patient." );
 
 	// the text box won't show up unless we do a buffer swap
-	re.EndFrame();
+	R_EndFrame(NULL, NULL);
 
 	// send out info packets
 	CL_PingServers_f();

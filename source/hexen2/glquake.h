@@ -18,8 +18,6 @@
 
 #include <GL/glu.h>
 
-void GL_EndRendering (void);
-
 #define MAX_EXTRA_TEXTURES 156   // 255-100+1
 extern image_t*		gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
@@ -41,7 +39,6 @@ extern	qboolean	r_cache_thrash;		// compatability
 extern	image_t*	playertextures[16];
 
 extern	QCvar*	r_drawviewmodel;
-extern	QCvar*	r_wholeframe;
 
 extern	QCvar*	gl_polyblend;
 extern	QCvar*	gl_nocolors;

@@ -73,6 +73,5 @@ RENDERER BACK END COMMAND QUEUE
 */
 
 void RE_BeginFrame( stereoFrame_t stereoFrame );
-void RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 
 #endif //TR_LOCAL_H

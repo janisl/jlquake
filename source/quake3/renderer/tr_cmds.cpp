@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 RE_BeginFrame
 
 If running in stereo, RE_BeginFrame will be called twice
-for each RE_EndFrame
+for each R_EndFrame
 ====================
 */
 void RE_BeginFrame( stereoFrame_t stereoFrame ) {
@@ -135,40 +135,3 @@ void RE_BeginFrame( stereoFrame_t stereoFrame ) {
 		}
 	}
 }
-
-
-/*
-=============
-RE_EndFrame
-
-Returns the number of msec spent in the back end
-=============
-*/
-void RE_EndFrame( int *frontEndMsec, int *backEndMsec ) {
-	swapBuffersCommand_t	*cmd;
-
-	if ( !tr.registered ) {
-		return;
-	}
-	cmd = (swapBuffersCommand_t*)R_GetCommandBuffer( sizeof( *cmd ) );
-	if ( !cmd ) {
-		return;
-	}
-	cmd->commandId = RC_SWAP_BUFFERS;
-
-	R_IssueRenderCommands( qtrue );
-
-	// use the other buffers next frame, because another CPU
-	// may still be rendering into the current ones
-	R_ToggleSmpFrame();
-
-	if ( frontEndMsec ) {
-		*frontEndMsec = tr.frontEndMsec;
-	}
-	tr.frontEndMsec = 0;
-	if ( backEndMsec ) {
-		*backEndMsec = backEnd.pc.msec;
-	}
-	backEnd.pc.msec = 0;
-}
-

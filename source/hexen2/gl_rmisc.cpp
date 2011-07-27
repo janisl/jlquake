@@ -54,7 +54,6 @@ void CL_InitRenderStuff (void)
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
-	r_wholeframe = Cvar_Get("r_wholeframe", "1", CVAR_ARCHIVE);
 
 	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
@@ -231,7 +230,7 @@ void R_TimeRefresh_f (void)
 	Con_Printf ("%f seconds (%f fps)\n", time, 128/time);
 
 	qglDrawBuffer  (GL_BACK);
-	GL_EndRendering ();
+	R_EndFrame(NULL, NULL);
 }
 
 void VID_SetPalette()
@@ -297,14 +296,4 @@ void VID_Init()
 	}
 
 	vid_initialized = true;
-}
-
-void GL_EndRendering (void)
-{
-	if (!tr.registered)
-	{
-		return;
-	}
-	GLimp_SwapBuffers();
-	R_ToggleSmpFrame();
 }

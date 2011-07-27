@@ -12,9 +12,6 @@ qboolean	r_cache_thrash;		// compatability
 image_t*	playertextures[16];		// up to 16 color translated skins
 image_t*	gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
-float		r_time1;
-float		r_lasttime1 = 0;
-
 extern qhandle_t	player_models[NUM_CLASSES];
 
 //
@@ -26,7 +23,6 @@ int		d_lightstylevalue[256];	// 8.8 fraction of base light value
 
 
 QCvar*	r_drawviewmodel;
-QCvar*	r_wholeframe;
 
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
@@ -135,25 +131,6 @@ void R_Clear (void)
 }
 
 /*
-=============
-R_PrintTimes
-=============
-*/
-void R_PrintTimes(void)
-{
-	float r_time2;
-	float ms, fps;
-
-	r_lasttime1 = r_time2 = Sys_DoubleTime();
-
-	ms = 1000*(r_time2-r_time1);
-	fps = 1000/ms;
-
-	Con_Printf("%3.1f fps %5.0f ms\n%4i wpoly  %4i epoly\n",
-		fps, ms, c_brush_polys, c_alias_polys);
-}
-
-/*
 ================
 R_RenderView
 
@@ -176,15 +153,9 @@ void R_RenderView (void)
 
 	if (r_speeds->value)
 	{
-		if (r_wholeframe->value)
-		   r_time1 = r_lasttime1;
-	   else
-		   r_time1 = Sys_DoubleTime ();
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
-
-	QGL_EnableLogging(!!r_logFile->integer);
 
 	R_Clear ();
 
@@ -195,7 +166,4 @@ void R_RenderView (void)
 	R_RenderScene(&r_refdef);
 
 	R_PolyBlend ();
-
-	if (r_speeds->value)
-		R_PrintTimes ();
 }

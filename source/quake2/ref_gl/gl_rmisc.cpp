@@ -27,22 +27,6 @@ refexport_t	re;
 qboolean	reflib_active = 0;
 static bool vid_restart_requested;
 
-void GL_UpdateSwapInterval( void )
-{
-	if ( r_swapInterval->modified )
-	{
-		r_swapInterval->modified = false;
-
-		if ( !glConfig.stereoEnabled ) 
-		{
-#ifdef _WIN32
-			if ( qwglSwapIntervalEXT )
-				qwglSwapIntervalEXT( r_swapInterval->value );
-#endif
-		}
-	}
-}
-
 /*
 ** GLimp_BeginFrame
 */
@@ -60,6 +44,8 @@ void GLimp_BeginFrame( float camera_separation )
 	{
 		qglDrawBuffer( GL_BACK );
 	}
+	int err = qglGetError();
+	qassert(err == GL_NO_ERROR);
 }
 
 /*
@@ -165,29 +151,6 @@ void VID_Shutdown (void)
 	{
 		R_Shutdown(true);
 		VID_FreeReflib ();
-	}
-}
-
-/*
-** GLimp_EndFrame
-** 
-** Responsible for doing a swapbuffers and possibly for other stuff
-** as yet to be determined.  Probably better not to make this a GLimp
-** function and instead do a call to GLimp_SwapBuffers.
-*/
-void GLimp_EndFrame (void)
-{
-	if (!tr.registered)
-	{
-		return;
-	}
-	int err = qglGetError();
-	qassert(err == GL_NO_ERROR);
-
-	if (QStr::ICmp(r_drawBuffer->string, "GL_BACK") == 0)
-	{
-		GLimp_SwapBuffers();
-		R_ToggleSmpFrame();
 	}
 }
 

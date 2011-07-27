@@ -36,12 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "gl_model.h"
 
-void GL_EndRendering (void);
-
-void GL_UpdateSwapInterval( void );
-
-//====================================================
-
 extern	QCvar	*gl_polyblend;
 
 void R_TranslatePlayerSkin (int playernum);
@@ -100,4 +94,3 @@ IMPLEMENTATION SPECIFIC FUNCTIONS
 */
 
 void		GLimp_BeginFrame( float camera_separation );
-void		GLimp_EndFrame( void );
