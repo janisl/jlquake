@@ -49,4 +49,5 @@ R_EndRegistration
 */
 void R_EndRegistration (void)
 {
+	R_EndRegistrationCommon();
 }

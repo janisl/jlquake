@@ -196,15 +196,7 @@ void R_NewMap (void)
 
 	GL_BuildLightmaps ();
 
-	// identify sky texture
-	skytexturenum = -1;
-	for (i=0 ; i<tr.worldModel->brush29_numtextures ; i++)
-	{
-		if (!tr.worldModel->brush29_textures[i])
-			continue;
-		if (!QStr::NCmp(tr.worldModel->brush29_textures[i]->name,"sky",3) )
-			skytexturenum = i;
-	}
+	R_EndRegistrationCommon();
 }
 
 

@@ -33,6 +33,7 @@ Touch all images to make sure they are resident
 =============
 */
 void RE_EndRegistration( void ) {
+	R_EndRegistrationCommon();
 	R_SyncRenderThread();
 	RB_ShowImages();
 }

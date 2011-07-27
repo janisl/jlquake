@@ -222,6 +222,20 @@ void R_LoadWorld(const char* name)
 	if (GGameType & GAME_QuakeHexen)
 	{
 		Mod_LoadBrush29Model(mod, buffer);
+
+		// identify sky texture
+		skytexturenum = -1;
+		for (int i = 0; i < mod->brush29_numtextures; i++)
+		{
+			if (!mod->brush29_textures[i])
+			{
+				continue;
+			}
+			if (!QStr::NCmp(mod->brush29_textures[i]->name, "sky", 3))
+			{
+				skytexturenum = i;
+			}
+		}
 	}
 	else if (GGameType & GAME_Quake2)
 	{

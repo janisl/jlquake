@@ -947,6 +947,6 @@ Particles
 void R_InitParticleTexture();
 void R_DrawParticles();
 
-void R_BeginRegistration(glconfig_t *glconfigOut);
+void R_EndRegistrationCommon();
 
 #endif
