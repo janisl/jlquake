@@ -24,38 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef TR_LOCAL_H
 #define TR_LOCAL_H
 
-#define FULL_REFDEF
-
 #include "../../client/client.h"
 #include "../game/q_shared.h"
-#include "../qcommon/qfiles.h"
-#include "../qcommon/qcommon.h"
 #include "tr_public.h"
 #include "../../client/render_local.h"
-
-#define MAX_STATE_NAME 32
-
-//====================================================================
-
-void R_SwapBuffers( int );
-
-void R_AddNullModelSurfaces( trRefEntity_t *e );
-void R_AddBeamSurfaces( trRefEntity_t *e );
-void R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
-void R_AddLightningBoltSurfaces( trRefEntity_t *e );
-
-//
-// tr_shader.c
-//
-shader_t	*R_GetShaderByState( int index, long *cycleTime );
-
-/*
-============================================================
-
-WORLD MAP
-
-============================================================
-*/
 
 qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
 
