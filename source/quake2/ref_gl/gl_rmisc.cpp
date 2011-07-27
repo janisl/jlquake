@@ -28,45 +28,6 @@ qboolean	reflib_active = 0;
 static bool vid_restart_requested;
 
 /*
-==========================================================================
-
-DLL GLUE
-
-==========================================================================
-*/
-
-static void VID_Printf (int print_level, char *fmt, ...)
-{
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-	
-	va_start (argptr,fmt);
-	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
-	va_end (argptr);
-
-	if (print_level == PRINT_ALL)
-	{
-		Com_Printf ("%s", msg);
-	}
-	else
-	{
-		Com_DPrintf ("%s", msg);
-	}
-}
-
-static void VID_Error (int err_level, char *fmt, ...)
-{
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-	
-	va_start (argptr,fmt);
-	Q_vsnprintf(msg, MAXPRINTMSG, fmt, argptr);
-	va_end (argptr);
-
-	Com_Error (err_level,"%s", msg);
-}
-
-/*
 ============
 VID_Restart_f
 
@@ -100,18 +61,13 @@ VID_LoadRefresh
 */
 static void VID_LoadRefresh()
 {
-	refimport_t	ri;
-	
 	if ( reflib_active )
 	{
 		R_Shutdown(true);
 		VID_FreeReflib ();
 	}
 
-	ri.Con_Printf = VID_Printf;
-	ri.Sys_Error = VID_Error;
-
-	re = GetRefAPI( ri );
+	re = GetRefAPI();
 
 	CL_InitRenderStuff();
 

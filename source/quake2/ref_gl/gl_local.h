@@ -60,11 +60,9 @@ IMPORTED FUNCTIONS
 ====================================================================
 */
 
-extern	refimport_t	ri;
-
 extern qboolean		reflib_active;
 
-refexport_t GetRefAPI (refimport_t rimp);
+refexport_t GetRefAPI ();
 
 void VID_Restart_f (void);
 void VID_NewWindow ( int width, int height);

@@ -21,8 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gl_local.h"
 #include "../client/client.h"
 
-refimport_t	ri;
-
 float		v_blend[4];			// final blending color
 
 QCvar	*gl_polyblend;
@@ -82,11 +80,9 @@ GetRefAPI
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-refexport_t GetRefAPI (refimport_t rimp )
+refexport_t GetRefAPI ()
 {
 	refexport_t	re;
-
-	ri = rimp;
 
 	re.RenderFrame = R_RenderFrame;
 

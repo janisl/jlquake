@@ -50,10 +50,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	ERR_DROP			1		// print to console and disconnect from game
 #define	ERR_DISCONNECT		2		// don't kill server
 
-#define	PRINT_ALL			0
-#define PRINT_DEVELOPER		1		// only print when "developer 1"
-
-
 // destination class for gi.multicast()
 typedef enum
 {

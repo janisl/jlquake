@@ -35,20 +35,6 @@ typedef struct
 
 } refexport_t;
 
-//
-// these are the functions imported by the refresh module
-//
-typedef struct
-{
-	void	(*Sys_Error) (int err_level, char *str, ...);
-
-	void	(*Con_Printf) (int print_level, char *str, ...);
-} refimport_t;
-
-
-// this is the only function actually exported at the linker level
-typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
-
 void R_ClearScreen();
 void R_BeginRegistrationAndLoadWorld (const char *map);
 
