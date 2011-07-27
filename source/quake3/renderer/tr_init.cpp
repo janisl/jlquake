@@ -34,9 +34,7 @@ Touch all images to make sure they are resident
 */
 void RE_EndRegistration( void ) {
 	R_SyncRenderThread();
-	if (!Sys_LowPhysicalMemory()) {
-		RB_ShowImages();
-	}
+	RB_ShowImages();
 }
 
 void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);

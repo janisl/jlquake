@@ -26,21 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../client/windows_shared.h"
 #include <direct.h>
 
-#define MEM_THRESHOLD 96*1024*1024
-
 static char		sys_cmdline[MAX_STRING_CHARS];
-
-/*
-==================
-Sys_LowPhysicalMemory()
-==================
-*/
-
-qboolean Sys_LowPhysicalMemory() {
-	MEMORYSTATUS stat;
-  GlobalMemoryStatus (&stat);
-	return (stat.dwTotalPhys <= MEM_THRESHOLD) ? qtrue : qfalse;
-}
 
 /*
 ==================

@@ -62,21 +62,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // General routines
 // =======================================================================
 
-// bk001207 
-#define MEM_THRESHOLD 96*1024*1024
-
-/*
-==================
-Sys_LowPhysicalMemory()
-==================
-*/
-qboolean Sys_LowPhysicalMemory() {
-  //MEMORYSTATUS stat;
-  //GlobalMemoryStatus (&stat);
-  //return (stat.dwTotalPhys <= MEM_THRESHOLD) ? qtrue : qfalse;
-  return qfalse; // bk001207 - FIXME
-}
-
 void Sys_BeginProfiling( void ) {
 }
 
