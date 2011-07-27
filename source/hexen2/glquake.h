@@ -34,8 +34,6 @@ void R_TimeRefresh_f (void);
 //====================================================
 
 
-extern	qboolean	r_cache_thrash;		// compatability
-
 extern	image_t*	playertextures[16];
 
 extern	QCvar*	r_drawviewmodel;

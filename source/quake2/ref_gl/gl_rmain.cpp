@@ -71,9 +71,6 @@ void R_RenderFrame(refdef_t *fd)
 {
 	tr.frameSceneNum = 0;
 
-	c_brush_polys = 0;
-	c_alias_polys = 0;
-
 	glState.finishCalled = false;
 
 	R_RenderScene(fd);

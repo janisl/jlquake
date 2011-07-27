@@ -91,24 +91,32 @@ static void R_PerformanceCounters()
 		// clear the counters even if we aren't printing
 		Com_Memset(&tr.pc, 0, sizeof(tr.pc));
 		Com_Memset(&backEnd.pc, 0, sizeof(backEnd.pc));
+		c_brush_polys = 0;
+		c_alias_polys = 0;
 		return;
 	}
 
 	if (GGameType & GAME_Quake)
 	{
 		GLog.Write("%4i wpoly %4i epoly\n", c_brush_polys, c_alias_polys); 
+		c_brush_polys = 0;
+		c_alias_polys = 0;
 		return;
 	}
 	if (GGameType & GAME_Hexen2)
 	{
 		GLog.Write("%4i wpoly  %4i epoly  %4i(%i) edicts\n",
 			c_brush_polys, c_alias_polys, r_numentities, cl_numtransvisedicts + cl_numtranswateredicts);
+		c_brush_polys = 0;
+		c_alias_polys = 0;
 		return;
 	}
 	if (GGameType & GAME_Quake2)
 	{
 		GLog.Write("%4i wpoly %4i epoly %i tex %i lmaps\n",
-			c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps); 
+			c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps);
+		c_brush_polys = 0;
+		c_alias_polys = 0;
 		return;
 	}
 

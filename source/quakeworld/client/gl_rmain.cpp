@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-qboolean	r_cache_thrash;		// compatability
-
 image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
 
 //
@@ -108,12 +106,6 @@ void R_SetupFrame (void)
 
 	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
 	V_CalcBlend ();
-
-	r_cache_thrash = false;
-
-	c_brush_polys = 0;
-	c_alias_polys = 0;
-
 }
 
 /*
@@ -150,12 +142,6 @@ void R_RenderView (void)
 	tr.frameSceneNum = 0;
 
 	glState.finishCalled = false;
-
-	if (r_speeds->value)
-	{
-		c_brush_polys = 0;
-		c_alias_polys = 0;
-	}
 
 	R_Clear ();
 

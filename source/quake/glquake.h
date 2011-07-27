@@ -41,10 +41,6 @@ void R_TimeRefresh_f (void);
 
 //====================================================
 
-
-extern	qboolean	r_cache_thrash;		// compatability
-
-
 //
 // screen size info
 //

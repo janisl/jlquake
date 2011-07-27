@@ -62,7 +62,6 @@ QCvar*		scr_viewsize;
 QCvar*		scr_fov;
 QCvar*		scr_conspeed;
 QCvar*		scr_centertime;
-QCvar*		scr_showram;
 QCvar*		scr_showturtle;
 QCvar*		scr_showpause;
 QCvar*		scr_printspeed;
@@ -70,7 +69,6 @@ extern	QCvar*	crosshair;
 
 qboolean	scr_initialized;		// ready to draw
 
-image_t		*scr_ram;
 image_t		*scr_net;
 image_t		*scr_turtle;
 
@@ -385,7 +383,6 @@ void SCR_Init (void)
 	scr_fov = Cvar_Get("fov", "90", 0);	// 10 - 170
 	scr_conspeed = Cvar_Get("scr_conspeed", "300", 0);
 	scr_centertime = Cvar_Get("scr_centertime", "4", 0);
-	scr_showram = Cvar_Get("showram", "1", 0);
 	scr_showturtle = Cvar_Get("showturtle", "0", 0);
 	scr_showpause = Cvar_Get("showpause", "1", 0);
 	scr_printspeed = Cvar_Get("scr_printspeed", "8", 0);
@@ -396,29 +393,10 @@ void SCR_Init (void)
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 
-	scr_ram = R_PicFromWad ("ram");
 	scr_net = R_PicFromWad ("net");
 	scr_turtle = R_PicFromWad ("turtle");
 
 	scr_initialized = true;
-}
-
-
-
-/*
-==============
-SCR_DrawRam
-==============
-*/
-void SCR_DrawRam (void)
-{
-	if (!scr_showram->value)
-		return;
-
-	if (!r_cache_thrash)
-		return;
-
-	UI_DrawPic (scr_vrect.x+32, scr_vrect.y, scr_ram);
 }
 
 /*
@@ -1081,7 +1059,6 @@ void SCR_UpdateScreen (void)
 		if (crosshair->value)
 			Draw_Character (scr_vrect.x + scr_vrect.width/2, scr_vrect.y + scr_vrect.height/2, '+');
 		
-		SCR_DrawRam();
 		SCR_DrawNet();
 		SCR_DrawTurtle();
 		SCR_DrawPause();

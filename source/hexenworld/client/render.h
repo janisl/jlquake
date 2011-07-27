@@ -116,9 +116,6 @@ struct entity_t
 //
 // refresh
 //
-extern	int		reinit_surfcache;
-
-
 extern	refdef_t	r_refdef;
 
 
@@ -128,7 +125,6 @@ extern float RTint[256],GTint[256],BTint[256];
 
 void CL_InitRenderStuff (void);
 void R_InitTextures (void);
-void R_InitEfrags (void);
 void R_RenderView (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change
@@ -162,18 +158,6 @@ void R_LavaSplash (vec3_t org);
 void R_TeleportSplash (vec3_t org);
 void R_TargetBallEffect (vec3_t org);
 void R_BrightFieldSource (vec3_t org);
-
-
-//
-// surface cache related
-//
-extern	int		reinit_surfcache;	// if 1, surface cache is currently empty and
-extern qboolean	r_cache_thrash;	// set if thrashing the surface cache
-
-int	D_SurfaceCacheForRes (int width, int height);
-void D_DeleteSurfaceCache (void);
-void D_InitCaches (void *buffer, int size);
-void R_SetVrect (vrect_t *pvrect, vrect_t *pvrectin, int lineadj);
 
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 void R_TranslatePlayerSkin (int playernum);
