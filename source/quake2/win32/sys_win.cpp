@@ -114,37 +114,6 @@ void Sys_SendKeyEvents (void)
 	}
 }
 
-
-
-/*
-================
-Sys_GetClipboardData
-
-================
-*/
-char *Sys_GetClipboardData( void )
-{
-	char *data = NULL;
-	char *cliptext;
-
-	if ( OpenClipboard( NULL ) != 0 )
-	{
-		HANDLE hClipboardData;
-
-		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 )
-		{
-			if ( ( cliptext = (char*)GlobalLock( hClipboardData ) ) != 0 ) 
-			{
-				data = new char[GlobalSize( hClipboardData ) + 1];
-				QStr::Cpy( data, cliptext );
-				GlobalUnlock( hClipboardData );
-			}
-		}
-		CloseClipboard();
-	}
-	return data;
-}
-
 /*
 ==============================================================================
 

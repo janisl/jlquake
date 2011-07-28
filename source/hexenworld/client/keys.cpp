@@ -82,28 +82,7 @@ void CompleteCommand (void)
 	}
 }
 
-#ifdef _WIN32
-char* Sys_GetClipboardData()
-{
-	char* textCopied = NULL;
-	if (OpenClipboard(NULL)) {
-		HANDLE	th;
-		char	*clipText;
-		th = GetClipboardData(CF_TEXT);
-		if (th) {
-			clipText = (char*)GlobalLock(th);
-			if (clipText) {
-				textCopied = new char[GlobalSize(th)+1];
-				QStr::Cpy(textCopied, clipText);
-/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
-			}
-			GlobalUnlock(th);
-		}
-		CloseClipboard();
-	}
-	return textCopied;
-}
-#else
+#ifndef _WIN32
 char* Sys_GetClipboardData()
 {
 	return NULL;

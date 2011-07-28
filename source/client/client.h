@@ -32,9 +32,6 @@ extern QCvar*		cl_inGameVideo;
 void CL_SharedInit();
 int CL_ScaledMilliseconds();
 
-//	Called by Windows driver.
-void Key_ClearStates();
-
 struct clientStaticCommon_t
 {
 	// rendering info
@@ -45,5 +42,10 @@ struct clientStaticCommon_t
 };
 
 extern clientStaticCommon_t* cls_common;
+
+char* Sys_GetClipboardData();	// note that this isn't journaled...
+
+//	Called by Windows driver.
+void Key_ClearStates();
 
 #endif

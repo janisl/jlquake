@@ -94,36 +94,6 @@ void Sys_Quit( void ) {
 	exit (0);
 }
 
-//========================================================
-
-/*
-================
-Sys_GetClipboardData
-
-================
-*/
-char *Sys_GetClipboardData( void ) {
-	char *data = NULL;
-	char *cliptext;
-
-	if ( OpenClipboard( NULL ) != 0 ) {
-		HANDLE hClipboardData;
-
-		if ( ( hClipboardData = GetClipboardData( CF_TEXT ) ) != 0 ) {
-			if ( ( cliptext = (char*)GlobalLock( hClipboardData ) ) != 0 ) {
-				data = new char[GlobalSize( hClipboardData ) + 1];
-				QStr::NCpyZ( data, cliptext, GlobalSize( hClipboardData ) );
-				GlobalUnlock( hClipboardData );
-				
-				strtok( data, "\n\r\b" );
-			}
-		}
-		CloseClipboard();
-	}
-	return data;
-}
-
-
 /*
 ========================================================================
 

@@ -44,6 +44,30 @@ bool			ActiveApp;
 
 //==========================================================================
 //
-//	
+//	Sys_GetClipboardData
 //
 //==========================================================================
+
+char* Sys_GetClipboardData()
+{
+	char* data = NULL;
+
+	if (OpenClipboard(NULL))
+	{
+		HANDLE hClipboardData = GetClipboardData(CF_TEXT);
+		if (hClipboardData)
+		{
+			char* clipText = (char*)GlobalLock(hClipboardData);
+			if (clipText)
+			{
+				data = new char[GlobalSize(hClipboardData) + 1];
+				QStr::NCpyZ(data, clipText, GlobalSize(hClipboardData));
+				GlobalUnlock(hClipboardData);
+				
+				strtok(data, "\n\r\b");
+			}
+		}
+		CloseClipboard();
+	}
+	return data;
+}
