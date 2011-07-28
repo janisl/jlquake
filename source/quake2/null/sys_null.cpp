@@ -36,11 +36,6 @@ void Sys_AppActivate (void)
 {
 }
 
-char *Sys_GetClipboardData( void )
-{
-	return NULL;
-}
-
 char	*Sys_FindFirst (char *path, unsigned musthave, unsigned canthave)
 {
 	return NULL;

@@ -155,11 +155,6 @@ void Sys_AppActivate (void)
 
 /*****************************************************************************/
 
-char *Sys_GetClipboardData(void)
-{
-	return NULL;
-}
-
 static void signal_handler(int sig, siginfo_t *info, void *secret)
 {
 	void *trace[64];

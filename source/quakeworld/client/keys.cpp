@@ -101,13 +101,6 @@ void CompleteCommand (void)
 	}
 }
 
-#ifndef _WIN32
-char* Sys_GetClipboardData()
-{
-	return NULL;
-}
-#endif
-
 /*
 ====================
 Key_Console

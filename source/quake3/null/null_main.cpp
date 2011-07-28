@@ -57,10 +57,6 @@ void	*Sys_GetGameAPI (void *parms) {
 	return NULL;
 }
 
-char *Sys_GetClipboardData( void ) {
-	return NULL;
-}
-
 int		Sys_Milliseconds (void) {
 	return 0;
 }

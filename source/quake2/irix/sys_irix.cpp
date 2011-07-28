@@ -151,11 +151,6 @@ void Sys_AppActivate (void)
 
 /*****************************************************************************/
 
-char *Sys_GetClipboardData(void)
-{
-	return NULL;
-}
-
 static void signal_handler(int sig)
 {
 	fprintf(stderr, "Received signal %d, exiting...\n", sig);

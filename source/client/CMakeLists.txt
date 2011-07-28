@@ -58,6 +58,7 @@ set(CLIENT_FILES
 	sound_midi_null.cpp
 	sound_mix.cpp
 	#sound_driver_oss.cpp
+	system_unix.cpp
 	ui_draw.cpp
 )
 
