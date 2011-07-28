@@ -236,8 +236,7 @@ void Key_Console (int key)
 		return;
 	}
 	
-#ifdef _WIN32
-	if ((key=='V' || key=='v') && GetKeyState(VK_CONTROL)<0)
+	if ((key=='V' || key=='v') && keydown[K_CTRL])
 	{
 		char* textCopied = Sys_GetClipboardData();
 		if (textCopied)
@@ -254,7 +253,6 @@ void Key_Console (int key)
 		}
 		return;
 	}
-#endif
 
 	if (key < 32 || key > 127)
 		return;	// non printable
