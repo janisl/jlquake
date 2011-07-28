@@ -251,10 +251,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_refrag.cpp"
-				>
-			</File>
-			<File
 				RelativePath="gl_rlight.cpp"
 				>
 			</File>
@@ -324,18 +320,6 @@
 			Filter="h;hpp;hxx;hm;inl;fi;fd"
 			>
 			<File
-				RelativePath="adivtab.h"
-				>
-			</File>
-			<File
-				RelativePath="anorm_dots.h"
-				>
-			</File>
-			<File
-				RelativePath="anorms.h"
-				>
-			</File>
-			<File
 				RelativePath="bothdefs.h"
 				>
 			</File>
@@ -357,14 +341,6 @@
 			</File>
 			<File
 				RelativePath="draw.h"
-				>
-			</File>
-			<File
-				RelativePath="gl_model.h"
-				>
-			</File>
-			<File
-				RelativePath="gl_warp_sin.h"
 				>
 			</File>
 			<File
@@ -397,10 +373,6 @@
 			</File>
 			<File
 				RelativePath="r_local.h"
-				>
-			</File>
-			<File
-				RelativePath="r_shared.h"
 				>
 			</File>
 			<File
