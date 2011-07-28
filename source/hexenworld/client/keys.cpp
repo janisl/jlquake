@@ -82,6 +82,34 @@ void CompleteCommand (void)
 	}
 }
 
+#ifdef _WIN32
+char* Sys_GetClipboardData()
+{
+	char* textCopied = NULL;
+	if (OpenClipboard(NULL)) {
+		HANDLE	th;
+		char	*clipText;
+		th = GetClipboardData(CF_TEXT);
+		if (th) {
+			clipText = (char*)GlobalLock(th);
+			if (clipText) {
+				textCopied = (char*)malloc(GlobalSize(th)+1);
+				QStr::Cpy(textCopied, clipText);
+/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
+			}
+			GlobalUnlock(th);
+		}
+		CloseClipboard();
+	}
+	return textCopied;
+}
+#else
+char* Sys_GetClipboardData()
+{
+	return NULL;
+}
+#endif
+
 /*
 ====================
 Key_Console
@@ -192,32 +220,22 @@ void Key_Console (int key)
 	}
 	
 #ifdef _WINDOWS
-	if ((key=='V' || key=='v') && GetKeyState(VK_CONTROL)<0) {
-		if (OpenClipboard(NULL)) {
-			HANDLE	th;
-			char	*clipText, *textCopied;
-			th = GetClipboardData(CF_TEXT);
-			if (th) {
-				clipText = (char*)GlobalLock(th);
-				if (clipText) {
-					textCopied = (char*)malloc(GlobalSize(th)+1);
-					QStr::Cpy(textCopied, clipText);
-	/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
-					int i = QStr::Length(textCopied);
-					if (i+key_linepos>=MAXCMDLINE)
-						i=MAXCMDLINE-key_linepos;
-					if (i>0) {
-						textCopied[i]=0;
-						QStr::Cat(key_lines[edit_line], sizeof(key_lines[edit_line]), textCopied);
-						key_linepos+=i;;
-					}
-					free(textCopied);
-				}
-				GlobalUnlock(th);
+	if ((key=='V' || key=='v') && GetKeyState(VK_CONTROL)<0)
+	{
+		char* textCopied = Sys_GetClipboardData();
+		if (textCopied)
+		{
+			int i = QStr::Length(textCopied);
+			if (i+key_linepos>=MAXCMDLINE)
+				i=MAXCMDLINE-key_linepos;
+			if (i>0) {
+				textCopied[i]=0;
+				QStr::Cat(key_lines[edit_line], sizeof(key_lines[edit_line]), textCopied);
+				key_linepos+=i;;
 			}
-			CloseClipboard();
-		return;
+			free(textCopied);
 		}
+		return;
 	}
 #endif
 
