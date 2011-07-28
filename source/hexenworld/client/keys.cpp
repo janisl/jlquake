@@ -203,7 +203,7 @@ void Key_Console (int key)
 					textCopied = (char*)malloc(GlobalSize(th)+1);
 					QStr::Cpy(textCopied, clipText);
 	/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
-					i = QStr::Length(textCopied);
+					int i = QStr::Length(textCopied);
 					if (i+key_linepos>=MAXCMDLINE)
 						i=MAXCMDLINE-key_linepos;
 					if (i>0) {
