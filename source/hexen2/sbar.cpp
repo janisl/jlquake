@@ -108,7 +108,7 @@ qboolean inv_flg;					// true - show inventory interface
 
 static float InventoryHideTime;
 
-extern char *ClassNames[NUM_CLASSES];	//from menu.c
+extern const char *ClassNames[NUM_CLASSES];	//from menu.c
 
 static int AmuletAC[NUM_CLASSES] =
 {

@@ -1060,7 +1060,7 @@ void Host_Name_f (void)
 	sv.reliable_datagram.WriteString2(host_client->name);
 }
 
-extern char *ClassNames[NUM_CLASSES];	//from menu.c
+extern const char *ClassNames[NUM_CLASSES];	//from menu.c
 void Host_Class_f (void)
 {
 	float	newClass;
