@@ -538,81 +538,6 @@ void SCR_DrawConsole (void)
 	}
 }
 
-/*
-Find closest color in the palette for named color
-*/
-int MipColor(int r, int g, int b)
-{
-	int i;
-	float dist;
-	int best;
-	float bestdist;
-	int r1, g1, b1;
-	static int lr = -1, lg = -1, lb = -1;
-	static int lastbest;
-
-	if (r == lr && g == lg && b == lb)
-		return lastbest;
-
-	bestdist = 256*256*3;
-
-	for (i = 0; i < 256; i++) {
-		r1 = host_basepal[i*3] - r;
-		g1 = host_basepal[i*3+1] - g;
-		b1 = host_basepal[i*3+2] - b;
-		dist = r1*r1 + g1*g1 + b1*b1;
-		if (dist < bestdist) {
-			bestdist = dist;
-			best = i;
-		}
-	}
-	lr = r; lg = g; lb = b;
-	lastbest = best;
-	return best;
-}
-
-void SCR_DrawCharToSnap (int num, byte *dest, int width)
-{
-	int		row, col;
-	byte	*source;
-	int		drawline;
-	int		x;
-
-	row = num>>4;
-	col = num&15;
-	byte* draw_chars = (byte*)R_GetWadLumpByName("conchars");
-	source = draw_chars + (row<<10) + (col<<3);
-
-	drawline = 8;
-
-	while (drawline--)
-	{
-		for (x=0 ; x<8 ; x++)
-			if (source[x])
-				dest[x] = source[x];
-			else
-				dest[x] = 98;
-		source += 128;
-		dest -= width;
-	}
-
-}
-
-void SCR_DrawStringToSnap (const char *s, byte *buf, int x, int y, int width)
-{
-	byte *dest;
-	const unsigned char *p;
-
-	dest = buf + ((y * width) + x);
-
-	p = (const unsigned char *)s;
-	while (*p) {
-		SCR_DrawCharToSnap(*p++, dest, width);
-		dest += 8;
-	}
-}
-
-
 /* 
 ================== 
 SCR_RSShot_f
@@ -620,22 +545,15 @@ SCR_RSShot_f
 */  
 void SCR_RSShot_f (void) 
 { 
-	int     x, y;
-	unsigned char		*src, *dest;
-	unsigned char		*newbuf;
-	int w, h;
-	int dx, dy, dex, dey, nx;
-	int r, b, g;
-	int count;
-	float fracw, frach;
-	char st[80];
-	time_t now;
-
 	if (CL_IsUploading())
+	{
 		return; // already one pending
+	}
 
 	if (cls.state < ca_onserver)
+	{
 		return; // gotta be connected
+	}
 
 	if (!scr_allowsnap->integer)
 	{
@@ -647,80 +565,12 @@ void SCR_RSShot_f (void)
 
 	Con_Printf("Remote screen shot requested.\n");
 
-// 
-// save the pcx file 
-// 
-	newbuf = (byte*)malloc(glConfig.vidHeight * glConfig.vidWidth * 3);
-
-	qglReadPixels (0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, newbuf ); 
-
-	w = (viddef.width < RSSHOT_WIDTH) ? glConfig.vidWidth : RSSHOT_WIDTH;
-	h = (viddef.height < RSSHOT_HEIGHT) ? glConfig.vidHeight : RSSHOT_HEIGHT;
-
-	fracw = (float)glConfig.vidWidth / (float)w;
-	frach = (float)glConfig.vidHeight / (float)h;
-
-	for (y = 0; y < h; y++) {
-		dest = newbuf + (w*3 * y);
-
-		for (x = 0; x < w; x++) {
-			r = g = b = 0;
-
-			dx = x * fracw;
-			dex = (x + 1) * fracw;
-			if (dex == dx) dex++; // at least one
-			dy = y * frach;
-			dey = (y + 1) * frach;
-			if (dey == dy) dey++; // at least one
-
-			count = 0;
-			for (/* */; dy < dey; dy++) {
-				src = newbuf + (glConfig.vidWidth * 3 * dy) + dx * 3;
-				for (nx = dx; nx < dex; nx++) {
-					r += *src++;
-					g += *src++;
-					b += *src++;
-					count++;
-				}
-			}
-			r /= count;
-			g /= count;
-			b /= count;
-			*dest++ = r;
-			*dest++ = b;
-			*dest++ = g;
-		}
-	}
-
-	// convert to eight bit
-	for (y = 0; y < h; y++) {
-		src = newbuf + (w * 3 * y);
-		dest = newbuf + (w * y);
-
-		for (x = 0; x < w; x++) {
-			*dest++ = MipColor(src[0], src[1], src[2]);
-			src += 3;
-		}
-	}
-
+	time_t now;
 	time(&now);
-	QStr::Cpy(st, ctime(&now));
-	st[QStr::Length(st) - 1] = 0;
-	SCR_DrawStringToSnap (st, newbuf, w - QStr::Length(st)*8, h - 1, w);
-
-	QStr::NCpy(st, cls.servername, sizeof(st));
-	st[sizeof(st) - 1] = 0;
-	SCR_DrawStringToSnap (st, newbuf, w - QStr::Length(st)*8, h - 11, w);
-
-	QStr::NCpy(st, name->string, sizeof(st));
-	st[sizeof(st) - 1] = 0;
-	SCR_DrawStringToSnap (st, newbuf, w - QStr::Length(st)*8, h - 21, w);
 
 	QArray<byte> buffer;
-	R_SavePCXMem(buffer, newbuf, w, h, host_basepal);
+	R_CaptureRemoteScreenShot(ctime(&now), cls.servername, name->string, buffer);
 	CL_StartUpload(buffer.Ptr(), buffer.Num());
-
-	free(newbuf);
 } 
 
 

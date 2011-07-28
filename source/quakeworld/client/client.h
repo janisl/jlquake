@@ -484,9 +484,6 @@ void	Skin_Skins_f (void);
 void	Skin_AllSkins_f (void);
 void	Skin_NextDownload (void);
 
-#define RSSHOT_WIDTH 320
-#define RSSHOT_HEIGHT 200
-
 extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
 void R_UpdateParticles (void);

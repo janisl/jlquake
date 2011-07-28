@@ -41,6 +41,9 @@ FIXME: the statics don't get a reinit between fs_game changes
 
 // MACROS ------------------------------------------------------------------
 
+#define RSSHOT_WIDTH	320
+#define RSSHOT_HEIGHT	200
+
 // TYPES -------------------------------------------------------------------
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
@@ -340,3 +343,171 @@ void R_ScreenShotJPEG_f()
 		GLog.Write("Wrote %s\n", checkname);
 	}
 } 
+
+//==========================================================================
+//
+//	MipColor
+//
+//	Find closest color in the palette for named color
+//
+//==========================================================================
+
+static int MipColor(int r, int g, int b)
+{
+	int best = 0;
+	int bestdist = 256 * 256 * 3;
+
+	for (int i = 0; i < 256; i++)
+	{
+		int r1 = host_basepal[i * 3] - r;
+		int g1 = host_basepal[i * 3 + 1] - g;
+		int b1 = host_basepal[i * 3 + 2] - b;
+		int dist = r1 * r1 + g1 * g1 + b1 * b1;
+		if (dist < bestdist)
+		{
+			bestdist = dist;
+			best = i;
+		}
+	}
+	return best;
+}
+
+//==========================================================================
+//
+//	SCR_DrawCharToSnap
+//
+//==========================================================================
+
+static void SCR_DrawCharToSnap(int num, byte* dest, int width)
+{
+	int row = num >> 4;
+	int col = num & 15;
+	byte* draw_chars = (byte*)R_GetWadLumpByName("conchars");
+	byte* source = draw_chars + (row << 10) + (col << 3);
+
+	int drawline = 8;
+	while (drawline--)
+	{
+		for (int x = 0; x < 8; x++)
+		{
+			if (source[x])
+			{
+				dest[x] = source[x];
+			}
+			else
+			{
+				dest[x] = 98;
+			}
+		}
+		source += 128;
+		dest -= width;
+	}
+}
+
+//==========================================================================
+//
+//	SCR_DrawStringToSnap
+//
+//==========================================================================
+
+static void SCR_DrawStringToSnap(const char* s, byte* buf, int x, int y, int width)
+{
+	byte* dest = buf + (y * width) + x;
+	const unsigned char* p = (const unsigned char*)s;
+	while (*p)
+	{
+		SCR_DrawCharToSnap(*p++, dest, width);
+		dest += 8;
+	}
+}
+
+//==========================================================================
+//
+//	R_CaptureRemoteScreenShot
+//
+//==========================================================================
+
+void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const char* string3, QArray<byte>& buffer)
+{
+	byte* newbuf = new byte[glConfig.vidHeight * glConfig.vidWidth * 3];
+
+	qglReadPixels(0, 0, glConfig.vidWidth, glConfig.vidHeight, GL_RGB, GL_UNSIGNED_BYTE, newbuf);
+
+	int w = glConfig.vidWidth < RSSHOT_WIDTH ? glConfig.vidWidth : RSSHOT_WIDTH;
+	int h = glConfig.vidHeight < RSSHOT_HEIGHT ? glConfig.vidHeight : RSSHOT_HEIGHT;
+
+	float fracw = (float)glConfig.vidWidth / (float)w;
+	float frach = (float)glConfig.vidHeight / (float)h;
+
+	for (int y = 0; y < h; y++)
+	{
+		byte* dest = newbuf + (w * 3 * y);
+
+		for (int x = 0; x < w; x++)
+		{
+			int r = 0;
+			int g = 0;
+			int b = 0;
+
+			int dx = x * fracw;
+			int dex = (x + 1) * fracw;
+			if (dex == dx)
+			{
+				dex++; // at least one
+			}
+			int dy = y * frach;
+			int dey = (y + 1) * frach;
+			if (dey == dy)
+			{
+				dey++; // at least one
+			}
+
+			int count = 0;
+			for (; dy < dey; dy++)
+			{
+				byte* src = newbuf + (glConfig.vidWidth * 3 * dy) + dx * 3;
+				for (int nx = dx; nx < dex; nx++)
+				{
+					r += *src++;
+					g += *src++;
+					b += *src++;
+					count++;
+				}
+			}
+			r /= count;
+			g /= count;
+			b /= count;
+			*dest++ = r;
+			*dest++ = b;
+			*dest++ = g;
+		}
+	}
+
+	// convert to eight bit
+	for (int y = 0; y < h; y++)
+	{
+		byte* src = newbuf + (w * 3 * y);
+		byte* dest = newbuf + (w * y);
+
+		for (int x = 0; x < w; x++)
+		{
+			*dest++ = MipColor(src[0], src[1], src[2]);
+			src += 3;
+		}
+	}
+
+	char st[80];
+
+	QStr::NCpyZ(st, string1, sizeof(st));
+	st[QStr::Length(st) - 1] = 0;
+	SCR_DrawStringToSnap(st, newbuf, w - QStr::Length(st) * 8, h - 1, w);
+
+	QStr::NCpyZ(st, string2, sizeof(st));
+	SCR_DrawStringToSnap(st, newbuf, w - QStr::Length(st) * 8, h - 11, w);
+
+	QStr::NCpyZ(st, string3, sizeof(st));
+	SCR_DrawStringToSnap(st, newbuf, w - QStr::Length(st) * 8, h - 21, w);
+
+	R_SavePCXMem(buffer, newbuf, w, h, host_basepal);
+	delete[] newbuf;
+}

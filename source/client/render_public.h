@@ -349,6 +349,8 @@ void R_Draw2DQuad(float x, float y, float width, float height,
 
 void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty);
 
+void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const char* string3, QArray<byte>& buffer);
+
 extern byte			r_palette[256][4];
 
 extern void (*BotDrawDebugPolygonsFunc)(void (*drawPoly)(int color, int numPoints, float *points), int value);
