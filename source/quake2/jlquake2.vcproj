@@ -431,19 +431,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_model.h"
-				>
-			</File>
-			<File
 				RelativePath=".\ref_gl\gl_rmain.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\ref_gl\gl_rmisc.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ref_gl\qgl.h"
 				>
 			</File>
 		</Filter>

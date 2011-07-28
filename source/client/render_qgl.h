@@ -70,7 +70,7 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 #define GL_RGB4_S3TC						0x83A1
 #endif
 
-//	multitexture extension definitions
+//	multitexture extension constants
 #ifndef GL_ACTIVE_TEXTURE_ARB
 #define GL_ACTIVE_TEXTURE_ARB				0x84E0
 #define GL_CLIENT_ACTIVE_TEXTURE_ARB		0x84E1
@@ -80,4 +80,12 @@ extern BOOL ( WINAPI * qwglSwapIntervalEXT)( int interval );
 #define GL_TEXTURE1_ARB						0x84C1
 #define GL_TEXTURE2_ARB						0x84C2
 #define GL_TEXTURE3_ARB						0x84C3
+#endif
+
+//	point parameter extension constants
+#ifndef GL_POINT_SIZE_MIN_EXT
+#define GL_POINT_SIZE_MIN_EXT				0x8126
+#define GL_POINT_SIZE_MAX_EXT				0x8127
+#define GL_POINT_FADE_THRESHOLD_SIZE_EXT	0x8128
+#define GL_DISTANCE_ATTENUATION_EXT			0x8129
 #endif
