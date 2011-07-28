@@ -152,7 +152,7 @@ void Key_Console (int key)
 				QStr::Cat( key_lines[edit_line], sizeof(key_lines[edit_line]), cbd );
 				key_linepos += i;
 			}
-			free( cbd );
+			delete[] cbd;
 		}
 
 		return;

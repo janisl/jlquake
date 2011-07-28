@@ -135,7 +135,7 @@ char *Sys_GetClipboardData( void )
 		{
 			if ( ( cliptext = (char*)GlobalLock( hClipboardData ) ) != 0 ) 
 			{
-				data = (char*)malloc( GlobalSize( hClipboardData ) + 1 );
+				data = new char[GlobalSize( hClipboardData ) + 1];
 				QStr::Cpy( data, cliptext );
 				GlobalUnlock( hClipboardData );
 			}

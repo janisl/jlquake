@@ -93,7 +93,7 @@ char* Sys_GetClipboardData()
 		if (th) {
 			clipText = (char*)GlobalLock(th);
 			if (clipText) {
-				textCopied = (char*)malloc(GlobalSize(th)+1);
+				textCopied = new char[GlobalSize(th)+1];
 				QStr::Cpy(textCopied, clipText);
 /* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
 			}
@@ -232,7 +232,7 @@ void Key_Console (int key)
 				QStr::Cat(key_lines[edit_line], sizeof(key_lines[edit_line]), textCopied);
 				key_linepos+=i;;
 			}
-			free(textCopied);
+			delete[] textCopied;
 		}
 		return;
 	}

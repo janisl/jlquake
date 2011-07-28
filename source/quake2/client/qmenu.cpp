@@ -202,7 +202,7 @@ qboolean Field_Key( menufield_s *f, int key )
 			if ( f->visible_offset < 0 )
 				f->visible_offset = 0;
 
-			free( cbd );
+			delete[] cbd;
 		}
 		return true;
 	}
