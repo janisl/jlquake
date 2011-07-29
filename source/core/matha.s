@@ -1,7 +1,6 @@
 //**************************************************************************
 //**
-//**	Copyright (C) 1996-2005 Id Software, Inc.
-//**	Copyright (C) 2010 Jānis Legzdiņš
+//**	See jlquake.txt for copyright info.
 //**
 //**	This program is free software; you can redistribute it and/or
 //**  modify it under the terms of the GNU General Public License
@@ -10,8 +9,8 @@
 //**
 //**	This program is distributed in the hope that it will be useful,
 //**  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//**  GNU General Public License for more details.
+//**  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//**  included (gnu.txt) GNU General Public License for more details.
 //**
 //**************************************************************************
 //**

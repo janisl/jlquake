@@ -1,0 +1,13 @@
+1. Copyright info
+
+JLQuake copyright (C) 2010-2011 Jānis Legzdiņš
+
+Based on Quake source code, copyright (C) 1996-1997 Id Software, Inc.
+
+Based on Hexen 2 source code, copyright Raven Software, Inc.
+
+Based on Quake 2 source code, copyright (C) 1997-2001 Id Software, Inc.
+
+Based on Quake 3 Arena source code, copyright (C) 1999-2005 Id Software, Inc.
+
+Includes source of unzip, copyright (C) 1998 Gilles Vollant
