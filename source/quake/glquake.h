@@ -44,8 +44,6 @@ void R_TimeRefresh_f (void);
 //
 // screen size info
 //
-extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
-
 extern	image_t*	playertextures[16];
 
 extern	QCvar*	r_drawviewmodel;
@@ -56,5 +54,4 @@ extern	QCvar*	gl_reporttjunctions;
 
 void R_InitParticles (void);
 void R_ClearParticles (void);
-void R_AnimateLight (void);
 void V_CalcBlend (void);

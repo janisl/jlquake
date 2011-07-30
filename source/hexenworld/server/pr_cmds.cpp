@@ -1721,7 +1721,7 @@ void PF_lightstyle (void)
 
 
 //extern 
-int d_lightstylevalue[256];
+int cl_lightstylevalue[256];
 
 // rjr
 //I need this!  MG
@@ -1737,7 +1737,7 @@ void PF_lightstylevalue(void)
 	}
 
 	//G_FLOAT(OFS_RETURN) = 0;//
-	G_FLOAT(OFS_RETURN) = (int)d_lightstylevalue[style];
+	G_FLOAT(OFS_RETURN) = (int)cl_lightstylevalue[style];
 }
 
 
@@ -1778,7 +1778,7 @@ void PF_lightstylestatic(void)
 
 	// Change the string in sv
 	sv.lightstyles[styleNumber] = styleString;
-	d_lightstylevalue[styleNumber] = value;
+	cl_lightstylevalue[styleNumber] = value;
 
 	if(sv.state != ss_active)
 	{

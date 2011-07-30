@@ -42,6 +42,7 @@ client_state_t	cl;
 entity_t		cl_entities[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
+int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 /*
@@ -1011,7 +1012,49 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 	{
 		// Use a model light style (25-30)
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
-		ent->radius = d_lightstylevalue[24 + mls] / 2 / 256.0;
+		ent->radius = cl_lightstylevalue[24 + mls] / 2 / 256.0;
+	}
+}
+
+//==========================================================================
+//
+// CL_AnimateLight
+//
+//==========================================================================
+
+void CL_AnimateLight(void)
+{
+	int i;
+	int v;
+	int c;
+	int defaultLocus;
+	int locusHz[3];
+
+	defaultLocus = locusHz[0] = (int)(cl.time*10);
+	locusHz[1] = (int)(cl.time*20);
+	locusHz[2] = (int)(cl.time*30);
+	for(i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+	{
+		if(!cl_lightstyle[i].length)
+		{ // No style def
+			cl_lightstylevalue[i] = 256;
+			continue;
+		}
+		c = cl_lightstyle[i].map[0];
+		if(c == '1' || c == '2' || c == '3')
+		{ // Explicit anim rate
+			if(cl_lightstyle[i].length == 1)
+			{ // Bad style def
+				cl_lightstylevalue[i] = 256;
+				continue;
+			}
+			v = locusHz[c-'1']%(cl_lightstyle[i].length-1);
+			cl_lightstylevalue[i] = (cl_lightstyle[i].map[v+1]-'a')*22;
+			continue;
+		}
+		// Default anim rate (10 Hz)
+		v = defaultLocus%cl_lightstyle[i].length;
+		cl_lightstylevalue[i] = (cl_lightstyle[i].map[v]-'a')*22;
 	}
 }
 

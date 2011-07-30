@@ -62,7 +62,6 @@ add_executable(jlqwcl
 	client/sys_linux.cpp
 	client/gl_draw.cpp
 	client/gl_ngraph.cpp
-	client/gl_rlight.cpp
 	client/gl_rmain.cpp
 	client/gl_rmisc.cpp
 	client/gl_screen.cpp

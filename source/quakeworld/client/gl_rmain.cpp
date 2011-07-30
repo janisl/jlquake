@@ -29,8 +29,6 @@ image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
 //
 refdef_t	r_refdef;
 
-int		d_lightstylevalue[256];	// 8.8 fraction of base light value
-
 QCvar*	r_drawviewmodel;
 QCvar*	r_netgraph;
 
@@ -93,7 +91,7 @@ void R_SetupFrame (void)
 	if (!QStr::Atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
 		r_wateralpha->value = 1;
 
-	R_AnimateLight ();
+	CL_AnimateLight ();
 
 	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
 	V_CalcBlend ();
@@ -110,7 +108,7 @@ void R_RenderView (void)
 {
 	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
 	{
-		float Val = d_lightstylevalue[i] / 256.0;
+		float Val = cl_lightstylevalue[i] / 256.0;
 		R_AddLightStyleToScene(i, Val, Val, Val);
 	}
 	CL_AddParticles();

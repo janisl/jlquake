@@ -329,6 +329,7 @@ extern	client_state_t	cl;
 extern	entity_state_t	cl_baselines[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
+extern	int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 extern	cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 extern	qboolean	nomaster;
@@ -390,6 +391,7 @@ float CL_KeyState (kbutton_t *key);
 const char *Key_KeynumToString (int keynum);
 
 void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles);
+void CL_AnimateLight (void);
 
 //
 // cl_demo.c

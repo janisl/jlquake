@@ -47,6 +47,7 @@ client_state_t	cl;
 entity_t		cl_entities[MAX_EDICTS];
 entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
+int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 /*
@@ -727,6 +728,33 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
 		ent->radius = 1.0;
 	}
+}
+
+/*
+==================
+CL_AnimateLight
+==================
+*/
+void CL_AnimateLight (void)
+{
+	int			i,j,k;
+	
+//
+// light animations
+// 'm' is normal light, 'a' is no light, 'z' is double bright
+	i = (int)(cl.time*10);
+	for (j=0 ; j<MAX_LIGHTSTYLES_Q1 ; j++)
+	{
+		if (!cl_lightstyle[j].length)
+		{
+			cl_lightstylevalue[j] = 256;
+			continue;
+		}
+		k = i % cl_lightstyle[j].length;
+		k = cl_lightstyle[j].map[k] - 'a';
+		k = k*22;
+		cl_lightstylevalue[j] = k;
+	}	
 }
 
 void CIN_StartedPlayback()

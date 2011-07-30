@@ -94,8 +94,6 @@ extern	refdef_t	r_refdef;
 
 extern float RTint[256],GTint[256],BTint[256];
 
-extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
-
 void CL_InitRenderStuff (void);
 void R_InitTextures (void);
 void R_RenderView (void);		// must set r_refdef first

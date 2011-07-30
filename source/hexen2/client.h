@@ -262,6 +262,7 @@ extern	client_state_t	cl;
 extern	entity_t		cl_entities[MAX_EDICTS];
 extern	entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 extern	clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
+extern	int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 extern	cdlight_t		cl_dlights[MAX_DLIGHTS];
 
 //=============================================================================
@@ -286,6 +287,7 @@ void CL_Disconnect_f (void);
 void CL_NextDemo (void);
 
 void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colorshade, int abslight, int drawflags);
+void CL_AnimateLight(void);
 
 //
 // cl_input

@@ -30,8 +30,6 @@ void R_TimeRefresh_f (void);
 //
 // screen size info
 //
-extern	int		d_lightstylevalue[256];	// 8.8 fraction of base light value
-
 extern	image_t*	playertextures[MAX_CLIENTS];
 
 extern	QCvar*	r_drawviewmodel;
@@ -46,7 +44,6 @@ extern byte *playerTranslation;
 void Draw_Crosshair(void);
 void R_InitParticles (void);
 void R_ClearParticles (void);
-void R_AnimateLight(void);
 void V_CalcBlend (void);
 void Draw_RedString (int x, int y, const char *str);
 void R_NetGraph (void);

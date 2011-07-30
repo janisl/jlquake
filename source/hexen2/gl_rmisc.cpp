@@ -189,7 +189,7 @@ void R_NewMap (void)
 	int		i;
 	
 	for (i=0 ; i<256 ; i++)
-		d_lightstylevalue[i] = 264;		// normal light value
+		cl_lightstylevalue[i] = 264;		// normal light value
 
 	R_ClearParticles ();
 
