@@ -539,7 +539,6 @@ SV_Serverinfo_f
   Examine or change the serverinfo string
 ===========
 */
-char *CopyString(char *s);
 void SV_Serverinfo_f (void)
 {
 	QCvar*	var;
@@ -565,13 +564,7 @@ void SV_Serverinfo_f (void)
 	Info_SetValueForKey(svs.info, Cmd_Argv(1), Cmd_Argv(2), MAX_SERVERINFO_STRING, 64, 64, !sv_highchars->value, false);
 
 	// if this is a cvar, change it too	
-	var = Cvar_FindVar (Cmd_Argv(1));
-	if (var)
-	{
-		Z_Free (var->string);	// free the old value string	
-		var->string = CopyString (Cmd_Argv(2));
-		var->value = QStr::Atof(var->string);
-	}
+	Cvar_UpdateIfExists(Cmd_Argv(1), Cmd_Argv(2));
 
 	SV_SendServerInfoChange(Cmd_Argv(1), Cmd_Argv(2));
 }
@@ -584,7 +577,6 @@ SV_Serverinfo_f
   Examine or change the serverinfo string
 ===========
 */
-char *CopyString(char *s);
 void SV_Localinfo_f (void)
 {
 	if (Cmd_Argc() == 1)

@@ -4,15 +4,6 @@
 
 QCvar* cl_warncmd;
 
-char *CopyString (char *in)
-{
-	char	*out;
-	
-	out = (char*)Z_Malloc (QStr::Length(in)+1);
-	QStr::Cpy(out, in);
-	return out;
-}
-
 /*
 =============================================================================
 

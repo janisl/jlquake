@@ -151,6 +151,9 @@ void Cvar_WriteVariables(fileHandle_t F);
 // writes lines containing "set variable value" for all variables
 // with the archive flag set to true.
 
+void Cvar_UpdateIfExists(const char* name, const char* value);
+// For QuakeWorld's and HexenWorld's server info changes.
+
 extern QCvar*		cvar_vars;
 
 extern int			cvar_modifiedFlags;

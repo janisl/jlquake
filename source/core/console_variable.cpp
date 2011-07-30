@@ -503,7 +503,6 @@ const char* Cvar_VariableString(const char* var_name)
 	return var->string;
 }
 
-
 //==========================================================================
 //
 //	Cvar_VariableStringBuffer
@@ -1124,5 +1123,28 @@ void Cvar_WriteVariables(fileHandle_t f)
 			}
 			FS_Printf(f, "%s", buffer);
 		}
+	}
+}
+
+//==========================================================================
+//
+//	Cvar_UpdateIfExists
+//
+//==========================================================================
+
+void Cvar_UpdateIfExists(const char* name, const char* value)
+{
+	// if this is a cvar, change it too	
+	QCvar* var = Cvar_FindVar(name);
+	if (var)
+	{
+		var->modified = true;
+		var->modificationCount++;
+
+		Mem_Free(var->string);	// free the old value string
+
+		var->string = __CopyString(value);
+		var->value = QStr::Atof(var->string);
+		var->integer = QStr::Atoi(var->string);
 	}
 }

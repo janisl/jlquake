@@ -23,15 +23,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 QCvar* cl_warncmd;
 
-char *CopyString (char *in)
-{
-	char	*out;
-	
-	out = (char*)Z_Malloc (QStr::Length(in)+1);
-	QStr::Cpy(out, in);
-	return out;
-}
-
 /*
 =============================================================================
 
