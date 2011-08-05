@@ -343,7 +343,7 @@ V_RenderView
 
 ==================
 */
-void V_RenderView( float stereo_separation )
+void V_RenderView(float stereo_separation)
 {
 	if (cls.state != ca_active)
 		return;
@@ -360,75 +360,77 @@ void V_RenderView( float stereo_separation )
 
 	// an invalid frame will just use the exact previous refdef
 	// we can't use the old frame if the video mode has changed, though...
-	if (cl.frame.valid)
+	if (!cl.frame.valid)
 	{
-		R_ClearScene();
+		return;
+	}
 
-		// build a refresh entity list and calc cl.sim*
-		// this also calls CL_CalcViewValues which loads
-		// v_forward, etc.
-		CL_AddEntities ();
+	R_ClearScene();
 
-		if (cl_testparticles->value)
-			V_TestParticles ();
-		if (cl_testentities->value)
-			V_TestEntities ();
-		if (cl_testlights->value)
-			V_TestLights ();
-		if (cl_testblend->value)
-		{
-			v_blend[0] = 1;
-			v_blend[1] = 0.5;
-			v_blend[2] = 0.25;
-			v_blend[3] = 0.5;
-		}
+	// build a refresh entity list and calc cl.sim*
+	// this also calls CL_CalcViewValues which loads
+	// v_forward, etc.
+	CL_AddEntities ();
 
-		// offset vieworg appropriately if we're doing stereo separation
-		if ( stereo_separation != 0 )
-		{
-			vec3_t tmp;
+	if (cl_testparticles->value)
+		V_TestParticles ();
+	if (cl_testentities->value)
+		V_TestEntities ();
+	if (cl_testlights->value)
+		V_TestLights ();
+	if (cl_testblend->value)
+	{
+		v_blend[0] = 1;
+		v_blend[1] = 0.5;
+		v_blend[2] = 0.25;
+		v_blend[3] = 0.5;
+	}
 
-			VectorScale( cl.refdef.viewaxis[1], -stereo_separation, tmp );
-			VectorAdd(cl.refdef.vieworg, tmp, cl.refdef.vieworg);
-		}
+	// offset vieworg appropriately if we're doing stereo separation
+	if ( stereo_separation != 0 )
+	{
+		vec3_t tmp;
 
-		// never let it sit exactly on a node line, because a water plane can
-		// dissapear when viewed with the eye exactly on it.
-		// the server protocol only specifies to 1/8 pixel, so add 1/16 in each axis
-		cl.refdef.vieworg[0] += 1.0/16;
-		cl.refdef.vieworg[1] += 1.0/16;
-		cl.refdef.vieworg[2] += 1.0/16;
+		VectorScale( cl.refdef.viewaxis[1], -stereo_separation, tmp );
+		VectorAdd(cl.refdef.vieworg, tmp, cl.refdef.vieworg);
+	}
 
-		cl.refdef.x = scr_vrect.x;
-		cl.refdef.y = scr_vrect.y;
-		cl.refdef.width = scr_vrect.width;
-		cl.refdef.height = scr_vrect.height;
-		cl.refdef.fov_y = CalcFov (cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
-		cl.refdef.time = cl.time;
+	// never let it sit exactly on a node line, because a water plane can
+	// dissapear when viewed with the eye exactly on it.
+	// the server protocol only specifies to 1/8 pixel, so add 1/16 in each axis
+	cl.refdef.vieworg[0] += 1.0/16;
+	cl.refdef.vieworg[1] += 1.0/16;
+	cl.refdef.vieworg[2] += 1.0/16;
 
-		for (int i = 0; i < MAX_MAP_AREA_BYTES; i++)
-		{
-			cl.refdef.areamask[i] = ~cl.frame.areabits[i];
-		}
+	cl.refdef.x = scr_vrect.x;
+	cl.refdef.y = scr_vrect.y;
+	cl.refdef.width = scr_vrect.width;
+	cl.refdef.height = scr_vrect.height;
+	cl.refdef.fov_y = CalcFov (cl.refdef.fov_x, cl.refdef.width, cl.refdef.height);
+	cl.refdef.time = cl.time;
 
-		if (!cl_add_entities->value)
-			r_numentities = r_firstSceneEntity;
-		if (!cl_add_particles->value)
-			r_numparticles = 0;
-		if (!cl_add_blend->value)
-		{
-			VectorClear(v_blend);
-		}
+	for (int i = 0; i < MAX_MAP_AREA_BYTES; i++)
+	{
+		cl.refdef.areamask[i] = ~cl.frame.areabits[i];
+	}
 
-		cl.refdef.rdflags = 0;
-		if (cl.frame.playerstate.rdflags & Q2RDF_NOWORLDMODEL)
-		{
-			cl.refdef.rdflags |= RDF_NOWORLDMODEL;
-		}
-		if (cl.frame.playerstate.rdflags & Q2RDF_IRGOGGLES)
-		{
-			cl.refdef.rdflags |= RDF_IRGOGGLES;
-		}
+	if (!cl_add_entities->value)
+		r_numentities = r_firstSceneEntity;
+	if (!cl_add_particles->value)
+		r_numparticles = 0;
+	if (!cl_add_blend->value)
+	{
+		VectorClear(v_blend);
+	}
+
+	cl.refdef.rdflags = 0;
+	if (cl.frame.playerstate.rdflags & Q2RDF_NOWORLDMODEL)
+	{
+		cl.refdef.rdflags |= RDF_NOWORLDMODEL;
+	}
+	if (cl.frame.playerstate.rdflags & Q2RDF_IRGOGGLES)
+	{
+		cl.refdef.rdflags |= RDF_IRGOGGLES;
 	}
 
 	re.RenderFrame (&cl.refdef);
@@ -437,7 +439,7 @@ void V_RenderView( float stereo_separation )
 	if ( log_stats->value && ( log_stats_file != 0 ) )
 		FS_Printf(log_stats_file, "%i,%i,%i,",r_numentities, r_numdlights, r_numparticles);
 
-	SCR_DrawCrosshair ();
+	SCR_DrawCrosshair();
 }
 
 
