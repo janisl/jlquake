@@ -391,10 +391,6 @@
 				>
 			</File>
 			<File
-				RelativePath="renderer\tr_local.h"
-				>
-			</File>
-			<File
 				RelativePath="renderer\tr_public.h"
 				>
 			</File>

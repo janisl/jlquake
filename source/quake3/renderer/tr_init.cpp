@@ -35,14 +35,7 @@ GetRefAPI
 
 @@@@@@@@@@@@@@@@@@@@@
 */
-refexport_t *GetRefAPI () {
-	static refexport_t	re;
-
-	Com_Memset( &re, 0, sizeof( re ) );
-
-	// the RE_ functions are Renderer Entry points
-
+void GetRefAPI ()
+{
 	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
-
-	return &re;
 }

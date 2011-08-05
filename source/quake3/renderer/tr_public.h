@@ -24,12 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../cgame/tr_types.h"
 
-//
-// these are the functions exported by the refresh module
-//
-typedef struct {
-} refexport_t;
-
-refexport_t*GetRefAPI();
+void GetRefAPI();
 
 #endif	// __TR_PUBLIC_H

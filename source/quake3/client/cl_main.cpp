@@ -73,9 +73,6 @@ clientConnection_t	clc;
 clientStatic_t		cls;
 vm_t				*cgvm;
 
-// Structure containing functions exported from refresh DLL
-refexport_t	re;
-
 ping_t	cl_pinglist[MAX_PINGREQUESTS];
 
 typedef struct serverStatus_s
@@ -2055,9 +2052,9 @@ void CL_Frame ( int msec ) {
 CL_ShutdownRef
 ============
 */
-void CL_ShutdownRef( void ) {
+void CL_ShutdownRef()
+{
 	R_Shutdown(true);
-	Com_Memset( &re, 0, sizeof( re ) );
 }
 
 /*
@@ -2130,23 +2127,11 @@ CL_InitRef
 ============
 */
 void CL_InitRef( void ) {
-	refexport_t	*ret;
-
 	Com_Printf( "----- Initializing Renderer ----\n" );
 
-	ret = GetRefAPI();
-
-#if defined __USEA3D && defined __A3D_GEOM
-	hA3Dg_ExportRenderGeom (ret);
-#endif
+	GetRefAPI();
 
 	Com_Printf( "-------------------------------\n");
-
-	if ( !ret ) {
-		Com_Error (ERR_FATAL, "Couldn't initialize refresh" );
-	}
-
-	re = *ret;
 
 	// unpause so the cgame definately gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
