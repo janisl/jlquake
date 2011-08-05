@@ -6,8 +6,6 @@ set(ALL_CFLAGS ${DEBUG_CFLAGS})
 set(CLIENTS_LIBS core client zlib jpeg asound X11 Xext Xxf86vm Xxf86dga GL freetype)
 set(SERVERS_LIBS core zlib dl)
 
-add_definitions(-DBUILD_FREETYPE)
-
 include_directories(/usr/include/freetype2)
 
 add_subdirectory(core)

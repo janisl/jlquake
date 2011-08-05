@@ -65,16 +65,12 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#define BUILD_FREETYPE
 #include "client.h"
 #include "render_local.h"
-#ifdef BUILD_FREETYPE
-//#include <freetype/fterrors.h>
 #include <freetype/ftsystem.h>
 #include <freetype/ftimage.h>
 #include <freetype/freetype.h>
 #include <freetype/ftoutln.h>
-#endif
 
 // MACROS ------------------------------------------------------------------
 
@@ -98,9 +94,7 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-#ifdef BUILD_FREETYPE
 static FT_Library	ftLibrary = NULL;
-#endif
 
 static int			registeredFontCount = 0;
 static fontInfo_t	registeredFont[MAX_FONTS];
@@ -109,8 +103,6 @@ static int			fdOffset;
 static byte*		fdFile;
 
 // CODE --------------------------------------------------------------------
-
-#ifdef BUILD_FREETYPE
 
 //==========================================================================
 //
@@ -307,8 +299,6 @@ static glyphInfo_t* RE_ConstructGlyphInfo(unsigned char* imageOut, int* xOut, in
 	return &glyph;
 }
 
-#endif
-
 //==========================================================================
 //
 //	readInt
@@ -409,9 +399,6 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 		return;
 	}
 
-#ifndef BUILD_FREETYPE
-	GLog.Write("R_RegisterFont: FreeType code not available\n");
-#else
 	if (ftLibrary == NULL)
 	{
 		GLog.Write("R_RegisterFont: FreeType not initialized.\n");
@@ -537,7 +524,6 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 	delete[] out;
 	
 	FS_FreeFile(faceData);
-#endif
 }
 
 //==========================================================================
@@ -548,12 +534,10 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 
 void R_InitFreeType()
 {
-#ifdef BUILD_FREETYPE
 	if (FT_Init_FreeType(&ftLibrary))
 	{
 		GLog.Write("R_InitFreeType: Unable to initialize FreeType.\n");
 	}
-#endif
 	registeredFontCount = 0;
 }
 
@@ -565,12 +549,10 @@ void R_InitFreeType()
 
 void R_DoneFreeType()
 {
-#ifdef BUILD_FREETYPE
 	if (ftLibrary)
 	{
 		FT_Done_FreeType(ftLibrary);
 		ftLibrary = NULL;
 	}
-#endif
 	registeredFontCount = 0;
 }
