@@ -39,8 +39,6 @@ refexport_t *GetRefAPI () {
 
 	// the RE_ functions are Renderer Entry points
 
-	re.inPVS = R_inPVS;
-
 	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
 	return &re;

@@ -406,6 +406,24 @@ static int	FloatAsInt( float f ) {
 }
 
 /*
+=================
+R_inPVS
+=================
+*/
+static bool R_inPVS(const vec3_t p1, const vec3_t p2)
+{
+	int leaf = CM_PointLeafnum(p1);
+	byte* vis = CM_ClusterPVS(CM_LeafCluster(leaf));
+	leaf = CM_PointLeafnum(p2);
+
+	if (!(vis[CM_LeafCluster(leaf) >> 3] & (1 << (CM_LeafCluster(leaf) & 7))))
+	{
+		return false;
+	}
+	return true;
+}
+
+/*
 ====================
 CL_CgameSystemCalls
 
@@ -696,7 +714,7 @@ int CL_CgameSystemCalls( int *args ) {
 	case CG_GET_ENTITY_TOKEN:
 		return R_GetEntityToken( (char*)VMA(1), args[2] );
 	case CG_R_INPVS:
-		return re.inPVS( (float*)VMA(1), (float*)VMA(2) );
+		return R_inPVS( (float*)VMA(1), (float*)VMA(2) );
 
 	default:
 	        assert(0); // bk010102

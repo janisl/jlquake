@@ -163,10 +163,6 @@
 				RelativePath=".\tr_init.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\tr_world.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
