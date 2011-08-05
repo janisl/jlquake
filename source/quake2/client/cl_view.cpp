@@ -107,27 +107,18 @@ If cl_testlights is set, create 32 lights models
 */
 void V_TestLights (void)
 {
-	int			i, j;
-	float		f, r;
-	dlight_t	*dl;
-
-	r_numdlights = 32;
-	Com_Memset(backEndData[tr.smpFrame]->dlights, 0, sizeof(backEndData[tr.smpFrame]->dlights));
-
-	for (i=0 ; i<r_numdlights ; i++)
+	for (int i = 0; i < 32; i++)
 	{
-		dl = &backEndData[tr.smpFrame]->dlights[i];
+		float r = 64 * ( (i%4) - 1.5 );
+		float f = 64 * (i/4) + 128;
 
-		r = 64 * ( (i%4) - 1.5 );
-		f = 64 * (i/4) + 128;
-
-		for (j=0 ; j<3 ; j++)
-			dl->origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*f -
-			cl.refdef.viewaxis[1][j]*r;
-		dl->color[0] = ((i%6)+1) & 1;
-		dl->color[1] = (((i%6)+1) & 2)>>1;
-		dl->color[2] = (((i%6)+1) & 4)>>2;
-		dl->radius = 200;
+		vec3_t origin;
+		for (int j = 0; j < 3; j++)
+		{
+			origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j] * f -
+				cl.refdef.viewaxis[1][j] * r;
+		}
+		R_AddLightToScene(origin, 200, ((i % 6) + 1) & 1, (((i % 6) + 1) & 2) >> 1, (((i % 6) + 1) & 4) >> 2);
 	}
 }
 
@@ -383,11 +374,17 @@ void V_RenderView(float stereo_separation)
 		}
 	}
 
-	CL_AddDLights();
+	if (cl_testlights->integer)
+	{
+		V_TestLights();
+	}
+	else
+	{
+		CL_AddDLights();
+	}
+
 	CL_AddLightStyles();
 
-	if (cl_testlights->value)
-		V_TestLights ();
 	if (cl_testblend->value)
 	{
 		v_blend[0] = 1;
