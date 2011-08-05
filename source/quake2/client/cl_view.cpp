@@ -51,27 +51,20 @@ If cl_testparticles is set, create 4096 particles in the view
 */
 void V_TestParticles (void)
 {
-	particle_t	*p;
-	int			i, j;
-	float		d, r, u;
-
-	r_numparticles = MAX_PARTICLES;
-	for (i=0 ; i<r_numparticles ; i++)
+	for (int i = 0; i < MAX_PARTICLES; i++)
 	{
-		d = i*0.25;
-		r = 4*((i&7)-3.5);
-		u = 4*(((i>>3)&7)-3.5);
-		p = &backEndData[tr.smpFrame]->particles[i];
+		float d = i * 0.25;
+		float r = 4 * ((i & 7) - 3.5);
+		float u = 4 * (((i >> 3) & 7) - 3.5);
 
-		for (j=0 ; j<3 ; j++)
-			p->origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*d -
-			cl.refdef.viewaxis[1][j]*r + cl.refdef.viewaxis[2][j]*u;
+		vec3_t origin;
+		for (int j = 0; j < 3; j++)
+		{
+			origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j] * d -
+				cl.refdef.viewaxis[1][j] * r + cl.refdef.viewaxis[2][j] * u;
+		}
 
-		p->rgba[0] = r_palette[8][0];
-		p->rgba[1] = r_palette[8][1];
-		p->rgba[2] = r_palette[8][2];
-		p->rgba[3] = (int)(cl_testparticles->value * 255);
-		p->size = 1;
+		R_AddParticleToScene(origin, r_palette[8][0], r_palette[8][1], r_palette[8][2], (int)(cl_testparticles->value * 255), 1, PARTTEX_Default);
 	}
 }
 
@@ -378,12 +371,21 @@ void V_RenderView(float stereo_separation)
 		}
 	}
 
-	CL_AddParticles();
+	if (cl_add_particles->integer)
+	{
+		if (cl_testparticles->integer)
+		{
+			V_TestParticles();
+		}
+		else
+		{
+			CL_AddParticles();
+		}
+	}
+
 	CL_AddDLights();
 	CL_AddLightStyles();
 
-	if (cl_testparticles->value)
-		V_TestParticles ();
 	if (cl_testlights->value)
 		V_TestLights ();
 	if (cl_testblend->value)
@@ -422,8 +424,6 @@ void V_RenderView(float stereo_separation)
 		cl.refdef.areamask[i] = ~cl.frame.areabits[i];
 	}
 
-	if (!cl_add_particles->value)
-		r_numparticles = 0;
 	if (!cl_add_blend->value)
 	{
 		VectorClear(v_blend);
