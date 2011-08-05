@@ -25,7 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "../qcommon/qcommon.h"
 #ifndef DEDICATED
-#include "../renderer/tr_local.h"
+#include "../../client/client.h"
+#include "../../client/render_local.h"
 #endif
 
 static qboolean signalcaught = qfalse;;

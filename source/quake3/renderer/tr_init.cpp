@@ -21,7 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_init.c -- functions that are not called every frame
 
-#include "tr_local.h"
+#include "../../client/client.h"
+#include "../game/q_shared.h"
+#include "tr_public.h"
+#include "../../client/render_local.h"
 
 void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
 
