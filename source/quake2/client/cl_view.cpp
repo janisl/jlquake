@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // cl_view.c -- player rendering positioning
 
 #include "client.h"
-#include "../ref_gl/gl_local.h"
 
 //=============
 //
@@ -36,8 +35,6 @@ QCvar		*cl_testparticles;
 QCvar		*cl_testentities;
 QCvar		*cl_testlights;
 QCvar		*cl_testblend;
-
-QCvar		*cl_stats;
 
 char cl_weaponmodels[MAX_CLIENTWEAPONMODELS][MAX_QPATH];
 int num_cl_weaponmodels;
@@ -437,10 +434,6 @@ void V_RenderView(float stereo_separation)
 	}
 
 	re.RenderFrame (&cl.refdef);
-	if (cl_stats->value)
-		Com_Printf ("ent:%i  lt:%i  part:%i\n", r_numentities, r_numdlights, r_numparticles);
-	if ( log_stats->value && ( log_stats_file != 0 ) )
-		FS_Printf(log_stats_file, "%i,%i,%i,",r_numentities, r_numdlights, r_numparticles);
 
 	SCR_DrawCrosshair();
 }
@@ -477,6 +470,4 @@ void V_Init (void)
 	cl_testparticles = Cvar_Get ("cl_testparticles", "0", 0);
 	cl_testentities = Cvar_Get ("cl_testentities", "0", 0);
 	cl_testlights = Cvar_Get ("cl_testlights", "0", 0);
-
-	cl_stats = Cvar_Get ("cl_stats", "0", 0);
 }
