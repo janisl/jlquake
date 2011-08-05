@@ -52,7 +52,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #ifndef DEDICATED
 #include "../../client/client.h"
-#include "../renderer/tr_public.h"
 #endif
 
 #include "linux_local.h" // bk001204

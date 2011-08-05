@@ -314,10 +314,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\renderer\tr_init.cpp"
-				>
-			</File>
-			<File
 				RelativePath="qcommon\vm.cpp"
 				>
 			</File>
@@ -388,10 +384,6 @@
 			</File>
 			<File
 				RelativePath="server\server.h"
-				>
-			</File>
-			<File
-				RelativePath="renderer\tr_public.h"
 				>
 			</File>
 			<File

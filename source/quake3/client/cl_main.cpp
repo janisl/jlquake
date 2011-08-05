@@ -24,6 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "client.h"
 #include <limits.h>
 
+void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
+
 QCvar	*cl_nodelta;
 QCvar	*cl_debugMove;
 
@@ -2129,7 +2131,7 @@ CL_InitRef
 void CL_InitRef( void ) {
 	Com_Printf( "----- Initializing Renderer ----\n" );
 
-	GetRefAPI();
+	BotDrawDebugPolygonsFunc = BotDrawDebugPolygons;
 
 	Com_Printf( "-------------------------------\n");
 
