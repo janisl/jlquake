@@ -17,37 +17,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-#include <stdio.h>
-
-#include <math.h>
-
 #include "../../client/client.h"
 #include "../../client/render_local.h"
 #include "../client/ref.h"
 
-#include <GL/glu.h>
-
-//===================================================================
-
-void R_TranslatePlayerSkin (int playernum);
-
-//====================================================================
-
-
-void V_AddBlend (float r, float g, float b, float a, float *v_blend);
-
 void CL_InitRenderStuff();
-
-mbrush38_glpoly_t *WaterWarpPolyVerts (mbrush38_glpoly_t *p);
-
-void COM_StripExtension (char *in, char *out);
-
-void	R_SwapBuffers( int );
-
-/*
-** GL extension emulation functions
-*/
-void GL_DrawParticles( int n, const particle_t particles[], const unsigned colortable[768] );
 
 /*
 ====================================================================
