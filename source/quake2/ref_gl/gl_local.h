@@ -20,21 +20,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../../client/client.h"
 #include "../../client/render_local.h"
 #include "../client/ref.h"
-
-void CL_InitRenderStuff();
-
-/*
-====================================================================
-
-IMPORTED FUNCTIONS
-
-====================================================================
-*/
-
-extern qboolean		reflib_active;
-
-refexport_t GetRefAPI ();
-
-void VID_Restart_f (void);
-void VID_NewWindow ( int width, int height);
-void VID_FreeReflib (void);

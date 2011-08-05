@@ -24,34 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //=======================================================================
 
-/*
-===============
-CL_InitRenderStuff
-===============
-*/
-void CL_InitRenderStuff()
-{	
-	R_BeginRegistration(&cls.glconfig);
-
-	// let the sound and input subsystems know about the new window
-	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
-
-	Draw_InitLocal();
-}
-
-/*
-@@@@@@@@@@@@@@@@@@@@@
-GetRefAPI
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-refexport_t GetRefAPI ()
-{
-	refexport_t	re;
-
-	return re;
-}
-
 void R_ClearScreen()
 {
 	qglClearColor(0, 0, 0, 0);

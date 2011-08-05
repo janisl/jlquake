@@ -99,6 +99,8 @@ extern	QCvar *allow_download_models;
 extern	QCvar *allow_download_sounds;
 extern	QCvar *allow_download_maps;
 
+static bool vid_restart_requested;
+
 //======================================================================
 
 
@@ -1377,6 +1379,17 @@ void CL_Precache_f (void)
 	CL_RequestNextDownload();
 }
 
+/*
+============
+VID_Restart_f
+
+Console command to re-start the video mode and refresh.
+============
+*/
+static void VID_Restart_f (void)
+{
+	vid_restart_requested = true;
+}
 
 /*
 =================
@@ -1495,6 +1508,8 @@ void CL_InitLocal (void)
 
 	Cmd_AddCommand ("download", CL_Download_f);
 
+	Cmd_AddCommand ("vid_restart", VID_Restart_f);
+
 	//
 	// forward to server commands
 	//
@@ -1609,6 +1624,57 @@ void CL_FixCvarCheats (void)
 		{
 			Cvar_SetLatched(var->name, var->value);
 		}
+	}
+}
+
+/*
+** VID_NewWindow
+*/
+static void VID_NewWindow ( int width, int height)
+{
+	viddef.width  = width;
+	viddef.height = height;
+}
+
+/*
+===============
+CL_InitRenderStuff
+===============
+*/
+void CL_InitRenderStuff()
+{	
+	R_BeginRegistration(&cls.glconfig);
+
+	// let the sound and input subsystems know about the new window
+	VID_NewWindow(cls.glconfig.vidWidth, cls.glconfig.vidHeight);
+
+	Draw_InitLocal();
+}
+
+/*
+============
+VID_CheckChanges
+
+This function gets called once just before drawing each frame, and it's sole purpose in life
+is to check to see if any of the video mode parameters have changed, and if they have to 
+update the rendering DLL and/or video mode to match.
+============
+*/
+static void VID_CheckChanges (void)
+{
+	if (vid_restart_requested)
+	{
+		S_StopAllSounds();
+		/*
+		** refresh has changed
+		*/
+		vid_restart_requested = false;
+		cl.refresh_prepped = false;
+		cls.disable_screen = true;
+
+		R_Shutdown(true);
+		CL_InitRenderStuff();
+		cls.disable_screen = false;
 	}
 }
 
@@ -1797,9 +1863,9 @@ void CL_Init (void)
 	IN_Init ();
 #if defined __linux__ || defined __sgi
 	S_Init ();	
-	VID_Init ();
+	CL_InitRenderStuff();
 #else
-	VID_Init ();
+	CL_InitRenderStuff();
 	S_Init ();	// sound must be initialized after window is created
 #endif
 	
@@ -1846,5 +1912,5 @@ void CL_Shutdown(void)
 	CDAudio_Shutdown ();
 	S_Shutdown();
 	IN_Shutdown ();
-	VID_Shutdown();
+	R_Shutdown(true);
 }

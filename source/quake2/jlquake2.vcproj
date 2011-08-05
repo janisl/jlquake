@@ -398,10 +398,6 @@
 				>
 			</File>
 			<File
-				RelativePath="client\vid.h"
-				>
-			</File>
-			<File
 				RelativePath="win32\winquake.h"
 				>
 			</File>
@@ -432,10 +428,6 @@
 			</File>
 			<File
 				RelativePath=".\ref_gl\gl_rmain.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ref_gl\gl_rmisc.cpp"
 				>
 			</File>
 		</Filter>

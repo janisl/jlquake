@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ref.h"
 
-#include "vid.h"
 #include "screen.h"
 #include "keys.h"
 #include "console.h"
@@ -424,12 +423,11 @@ void IN_Accumulate (void);
 
 void CL_ParseLayout (void);
 
+void CL_InitRenderStuff();
 
 //
 // cl_main
 //
-extern	refexport_t	re;		// interface to refresh .dll
-
 void CL_Init (void);
 
 void CL_FixUpGender(void);

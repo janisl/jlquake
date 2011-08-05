@@ -35,8 +35,6 @@ static void	 SpinControl_DoSlide( menulist_s *s, int dir );
 #define RCOLUMN_OFFSET  16
 #define LCOLUMN_OFFSET -16
 
-extern refexport_t re;
-
 #define VID_WIDTH viddef.width
 #define VID_HEIGHT viddef.height
 
