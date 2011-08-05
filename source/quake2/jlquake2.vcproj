@@ -423,10 +423,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ref_gl\gl_model.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ref_gl\gl_rmain.cpp"
 				>
 			</File>

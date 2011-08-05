@@ -126,6 +126,26 @@ void V_TestLights (void)
 //===================================================================
 
 /*
+@@@@@@@@@@@@@@@@@@@@@
+R_BeginRegistrationAndLoadWorld
+
+Specifies the model that will be used as the world
+@@@@@@@@@@@@@@@@@@@@@
+*/
+static void R_BeginRegistrationAndLoadWorld (const char *model)
+{
+	char	fullname[MAX_QPATH];
+
+	QStr::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
+
+	R_Shutdown(false);
+	CL_InitRenderStuff();
+
+	R_LoadWorld(fullname);
+
+}
+
+/*
 =================
 CL_PrepRefresh
 

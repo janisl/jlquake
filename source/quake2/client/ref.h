@@ -23,10 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "../qcommon/qcommon.h"
 
-#define	MAX_PARTICLES	4096
-#define	MAX_LIGHTSTYLES_Q2	256
+#define MAX_PARTICLES	4096
+#define MAX_LIGHTSTYLES_Q2	256
 
 void R_ClearScreen();
-void R_BeginRegistrationAndLoadWorld (const char *map);
 
 #endif
