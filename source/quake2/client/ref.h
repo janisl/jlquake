@@ -38,6 +38,4 @@ typedef struct
 void R_ClearScreen();
 void R_BeginRegistrationAndLoadWorld (const char *map);
 
-extern float		v_blend[4];
-
 #endif

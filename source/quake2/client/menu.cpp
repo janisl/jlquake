@@ -3943,7 +3943,6 @@ void PlayerConfig_MenuDraw( void )
 			yaw -= 360;
 		R_ClearScene();
 		R_AddRefEntityToScene(&entity);
-		VectorClear(v_blend);
 
 		Com_Memset(refdef.areamask, 0, sizeof(refdef.areamask));
 		refdef.rdflags = RDF_NOWORLDMODEL;

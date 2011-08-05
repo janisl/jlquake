@@ -30,14 +30,18 @@ qhandle_t	gun_model;
 
 //=============
 
-QCvar		*crosshair;
-QCvar		*cl_testparticles;
-QCvar		*cl_testentities;
-QCvar		*cl_testlights;
-QCvar		*cl_testblend;
+QCvar*		crosshair;
+QCvar*		cl_testparticles;
+QCvar*		cl_testentities;
+QCvar*		cl_testlights;
+QCvar*		cl_testblend;
+
+QCvar*		cl_polyblend;
 
 char cl_weaponmodels[MAX_CLIENTWEAPONMODELS][MAX_QPATH];
 int num_cl_weaponmodels;
+
+float		v_blend[4];			// final blending color
 
 /*
 ================
@@ -290,6 +294,20 @@ void V_Gun_Model_f (void)
 
 //============================================================================
 
+/*
+============
+R_PolyBlend
+============
+*/
+static void R_PolyBlend(refdef_t* fd)
+{
+	if (!cl_polyblend->value)
+		return;
+	if (!v_blend[3])
+		return;
+
+	R_Draw2DQuad(fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
+}
 
 /*
 =================
@@ -435,6 +453,8 @@ void V_RenderView(float stereo_separation)
 
 	re.RenderFrame (&cl.refdef);
 
+	R_PolyBlend(&cl.refdef);
+
 	SCR_DrawCrosshair();
 }
 
@@ -470,4 +490,6 @@ void V_Init (void)
 	cl_testparticles = Cvar_Get ("cl_testparticles", "0", 0);
 	cl_testentities = Cvar_Get ("cl_testentities", "0", 0);
 	cl_testlights = Cvar_Get ("cl_testlights", "0", 0);
+
+	cl_polyblend = Cvar_Get("cl_polyblend", "1", 0);
 }

@@ -21,25 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gl_local.h"
 #include "../client/client.h"
 
-float		v_blend[4];			// final blending color
-
-QCvar	*gl_polyblend;
-
-
-/*
-============
-R_PolyBlend
-============
-*/
-void R_PolyBlend(refdef_t *fd)
-{
-	if (!gl_polyblend->value)
-		return;
-	if (!v_blend[3])
-		return;
-
-	R_Draw2DQuad(fd->x, fd->y, fd->width, fd->height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
-}
 
 //=======================================================================
 
@@ -52,8 +33,6 @@ R_RenderFrame
 void R_RenderFrame(refdef_t *fd)
 {
 	R_RenderScene(fd);
-
-	R_PolyBlend(fd);
 }
 
 
@@ -65,8 +44,6 @@ CL_InitRenderStuff
 void CL_InitRenderStuff()
 {	
 	R_BeginRegistration(&cls.glconfig);
-
-	gl_polyblend = Cvar_Get ("gl_polyblend", "1", 0);
 
 	// let the sound and input subsystems know about the new window
 	VID_NewWindow(glConfig.vidWidth, glConfig.vidHeight);
