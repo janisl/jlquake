@@ -82,30 +82,26 @@ V_TestEntities
 If cl_testentities is set, create 32 player models
 ================
 */
-void V_TestEntities (void)
+void V_TestEntities()
 {
-	int			i, j;
-	float		f, r;
-	trRefEntity_t	*ent;
-
-	r_numentities = 32;
-	r_firstSceneEntity = 0;
-	Com_Memset(backEndData[tr.smpFrame]->entities, 0, sizeof(backEndData[tr.smpFrame]->entities));
-
-	for (i=0 ; i<r_numentities ; i++)
+	for (int i = 0; i < 32; i++)
 	{
-		ent = &backEndData[tr.smpFrame]->entities[i];
+		refEntity_t	ent;
+		Com_Memset(&ent, 0, sizeof(ent));
 
-		r = 64 * ( (i%4) - 1.5 );
-		f = 64 * (i/4) + 128;
+		float r = 64 * ((i % 4) - 1.5);
+		float f = 64 * (i / 4) + 128;
 
-		for (j=0 ; j<3 ; j++)
-			ent->e.origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j]*f -
-			cl.refdef.viewaxis[1][j]*r;
-		AxisClear(ent->e.axis);
+		for (int j = 0; j < 3; j++)
+		{
+			ent.origin[j] = cl.refdef.vieworg[j] + cl.refdef.viewaxis[0][j] * f -
+				cl.refdef.viewaxis[1][j] * r;
+		}
+		AxisClear(ent.axis);
 
-		ent->e.hModel = cl.baseclientinfo.model;
-		ent->e.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
+		ent.hModel = cl.baseclientinfo.model;
+		ent.customSkin = R_GetImageHandle(cl.baseclientinfo.skin);
+		R_AddRefEntityToScene(&ent);
 	}
 }
 
@@ -367,18 +363,27 @@ void V_RenderView(float stereo_separation)
 
 	R_ClearScene();
 
-	// build a refresh entity list and calc cl.sim*
 	CL_CalcViewValues();
-	CL_AddPacketEntities(&cl.frame);
-	CL_AddTEnts();
+
+	if (cl_add_entities->integer)
+	{
+		if (cl_testentities->integer)
+		{
+			V_TestEntities();
+		}
+		else
+		{
+			CL_AddPacketEntities(&cl.frame);
+			CL_AddTEnts();
+		}
+	}
+
 	CL_AddParticles();
 	CL_AddDLights();
 	CL_AddLightStyles();
 
 	if (cl_testparticles->value)
 		V_TestParticles ();
-	if (cl_testentities->value)
-		V_TestEntities ();
 	if (cl_testlights->value)
 		V_TestLights ();
 	if (cl_testblend->value)
@@ -417,8 +422,6 @@ void V_RenderView(float stereo_separation)
 		cl.refdef.areamask[i] = ~cl.frame.areabits[i];
 	}
 
-	if (!cl_add_entities->value)
-		r_numentities = r_firstSceneEntity;
 	if (!cl_add_particles->value)
 		r_numparticles = 0;
 	if (!cl_add_blend->value)

@@ -1345,8 +1345,11 @@ void CL_CalcViewValues (void)
 	for (i=0 ; i<4 ; i++)
 		v_blend[i] = ps->blend[i];
 
-	// add the weapon
-	CL_AddViewWeapon(ps, ops, viewangles);
+	if (cl_add_entities->integer)
+	{
+		// add the weapon
+		CL_AddViewWeapon(ps, ops, viewangles);
+	}
 }
 
 /*
