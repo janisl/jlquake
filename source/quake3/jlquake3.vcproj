@@ -314,6 +314,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\renderer\tr_init.cpp"
+				>
+			</File>
+			<File
 				RelativePath="qcommon\vm.cpp"
 				>
 			</File>
