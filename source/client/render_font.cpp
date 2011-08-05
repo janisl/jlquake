@@ -65,6 +65,7 @@
 
 // HEADER FILES ------------------------------------------------------------
 
+#define BUILD_FREETYPE
 #include "client.h"
 #include "render_local.h"
 #ifdef BUILD_FREETYPE

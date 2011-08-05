@@ -82,6 +82,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "client", "source\client\client.vcproj", "{E1056FE2-3D8C-4778-B075-F4DA1C35858D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0E31D872-F284-45B8-B4FD-11009667B854} = {0E31D872-F284-45B8-B4FD-11009667B854}
+		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F} = {6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "game", "q2game\game\game.vcproj", "{17A995DA-A2BD-4EA5-9A01-8B66B134F4C0}"
@@ -95,6 +96,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlquake3ded", "source\quake3\jlquake3ded.vcproj", "{3A6BD840-13BD-4F51-83B0-5E582395B134}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jlquake2ded", "source\quake2\jlquake2ded.vcproj", "{C67901ED-51CC-43AD-BA22-E70AF77EF66C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "libs\freetype\freetype.vcproj", "{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CA073475-D427-41CE-838D-0BCA2FBD443A} = {CA073475-D427-41CE-838D-0BCA2FBD443A}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -182,6 +188,10 @@ Global
 		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Debug|Win32.Build.0 = Debug|Win32
 		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release|Win32.ActiveCfg = Release|Win32
 		{C67901ED-51CC-43AD-BA22-E70AF77EF66C}.Release|Win32.Build.0 = Release|Win32
+		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Debug|Win32.Build.0 = Debug|Win32
+		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Release|Win32.ActiveCfg = Release|Win32
+		{6EE5F6D1-8AE5-4489-884E-54F6F0D9572F}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
