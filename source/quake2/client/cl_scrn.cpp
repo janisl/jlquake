@@ -610,7 +610,7 @@ void SCR_TimeRefresh_f (void)
 		{
 			viewangles[1] = i/128.0*360.0;
 			AnglesToAxis(viewangles, cl.refdef.viewaxis);
-			re.RenderFrame (&cl.refdef);
+			R_RenderScene(&cl.refdef);
 		}
 		R_EndFrame(NULL, NULL);
 	}
@@ -622,7 +622,7 @@ void SCR_TimeRefresh_f (void)
 			AnglesToAxis(viewangles, cl.refdef.viewaxis);
 
 			R_BeginFrame(STEREO_CENTER);
-			re.RenderFrame (&cl.refdef);
+			R_RenderScene(&cl.refdef);
 			R_EndFrame(NULL, NULL);
 		}
 	}

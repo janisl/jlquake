@@ -451,7 +451,7 @@ void V_RenderView(float stereo_separation)
 		cl.refdef.rdflags |= RDF_IRGOGGLES;
 	}
 
-	re.RenderFrame (&cl.refdef);
+	R_RenderScene(&cl.refdef);
 
 	R_PolyBlend(&cl.refdef);
 

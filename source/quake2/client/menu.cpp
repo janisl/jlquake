@@ -3953,7 +3953,7 @@ void PlayerConfig_MenuDraw( void )
 		refdef.height += 4;
 		UI_Fill(refdef.x, refdef.y, refdef.width, refdef.height, 0.3, 0.3, 0.3, 1);
 
-		re.RenderFrame( &refdef );
+		R_RenderScene( &refdef );
 
 		QStr::Sprintf( scratch, sizeof( scratch ), "/players/%s/%s_i.pcx", 
 			s_pmi[s_player_model_box.curvalue].directory,

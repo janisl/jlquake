@@ -25,18 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //=======================================================================
 
 /*
-@@@@@@@@@@@@@@@@@@@@@
-R_RenderFrame
-
-@@@@@@@@@@@@@@@@@@@@@
-*/
-void R_RenderFrame(refdef_t *fd)
-{
-	R_RenderScene(fd);
-}
-
-
-/*
 ===============
 CL_InitRenderStuff
 ===============
@@ -60,8 +48,6 @@ GetRefAPI
 refexport_t GetRefAPI ()
 {
 	refexport_t	re;
-
-	re.RenderFrame = R_RenderFrame;
 
 	return re;
 }
