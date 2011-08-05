@@ -617,7 +617,7 @@ CL_AddPacketEntities
 
 ===============
 */
-void CL_AddPacketEntities (frame_t *frame)
+void CL_AddPacketEntities(frame_t *frame)
 {
 	refEntity_t			ent;
 	entity_state_t		*s1;
@@ -1237,6 +1237,28 @@ static void CL_AddViewWeapon(player_state_t *ps, player_state_t *ops, vec3_t vie
 	R_AddRefEntityToScene (&gun);
 }
 
+static void CL_CalcLerpFrac()
+{
+	if (cl.time > cl.frame.servertime)
+	{
+		if (cl_showclamp->value)
+			Com_Printf ("high clamp %i\n", cl.time - cl.frame.servertime);
+		cl.time = cl.frame.servertime;
+		cl.lerpfrac = 1.0;
+	}
+	else if (cl.time < cl.frame.servertime - 100)
+	{
+		if (cl_showclamp->value)
+			Com_Printf ("low clamp %i\n", cl.frame.servertime-100 - cl.time);
+		cl.time = cl.frame.servertime - 100;
+		cl.lerpfrac = 0;
+	}
+	else
+		cl.lerpfrac = 1.0 - (cl.frame.servertime - cl.time) * 0.01;
+
+	if (cl_timedemo->value)
+		cl.lerpfrac = 1.0;
+}
 
 /*
 ===============
@@ -1252,6 +1274,8 @@ void CL_CalcViewValues (void)
 	centity_t	*ent;
 	frame_t		*oldframe;
 	player_state_t	*ps, *ops;
+
+	CL_CalcLerpFrac();
 
 	// find the previous frame to interpolate from
 	ps = &cl.frame.playerstate;
@@ -1324,58 +1348,6 @@ void CL_CalcViewValues (void)
 	// add the weapon
 	CL_AddViewWeapon(ps, ops, viewangles);
 }
-
-/*
-===============
-CL_AddEntities
-
-Emits all entities, particles, and lights to the refresh
-===============
-*/
-void CL_AddEntities (void)
-{
-	if (cls.state != ca_active)
-		return;
-
-	if (cl.time > cl.frame.servertime)
-	{
-		if (cl_showclamp->value)
-			Com_Printf ("high clamp %i\n", cl.time - cl.frame.servertime);
-		cl.time = cl.frame.servertime;
-		cl.lerpfrac = 1.0;
-	}
-	else if (cl.time < cl.frame.servertime - 100)
-	{
-		if (cl_showclamp->value)
-			Com_Printf ("low clamp %i\n", cl.frame.servertime-100 - cl.time);
-		cl.time = cl.frame.servertime - 100;
-		cl.lerpfrac = 0;
-	}
-	else
-		cl.lerpfrac = 1.0 - (cl.frame.servertime - cl.time) * 0.01;
-
-	if (cl_timedemo->value)
-		cl.lerpfrac = 1.0;
-
-//	CL_AddPacketEntities (&cl.frame);
-//	CL_AddTEnts ();
-//	CL_AddParticles ();
-//	CL_AddDLights ();
-//	CL_AddLightStyles ();
-
-	CL_CalcViewValues ();
-	// PMM - moved this here so the heat beam has the right values for the vieworg, and can lock the beam to the gun
-	CL_AddPacketEntities (&cl.frame);
-#if 0
-	CL_AddProjectiles ();
-#endif
-	CL_AddTEnts ();
-	CL_AddParticles ();
-	CL_AddDLights ();
-	CL_AddLightStyles ();
-}
-
-
 
 /*
 ===============

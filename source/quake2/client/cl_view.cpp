@@ -368,9 +368,12 @@ void V_RenderView(float stereo_separation)
 	R_ClearScene();
 
 	// build a refresh entity list and calc cl.sim*
-	// this also calls CL_CalcViewValues which loads
-	// v_forward, etc.
-	CL_AddEntities ();
+	CL_CalcViewValues();
+	CL_AddPacketEntities(&cl.frame);
+	CL_AddTEnts();
+	CL_AddParticles();
+	CL_AddDLights();
+	CL_AddLightStyles();
 
 	if (cl_testparticles->value)
 		V_TestParticles ();
