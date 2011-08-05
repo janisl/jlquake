@@ -422,10 +422,6 @@
 				RelativePath=".\ref_gl\gl_local.h"
 				>
 			</File>
-			<File
-				RelativePath=".\ref_gl\gl_rmain.cpp"
-				>
-			</File>
 		</Filter>
 	</Files>
 	<Globals>

@@ -1155,7 +1155,7 @@ static void SCR_DrawScreen(stereoFrame_t stereoFrame, float separation)
 	{	//  loading plaque over black screen
 		int		w, h;
 
-		R_ClearScreen();
+		UI_Fill(0, 0, viddef.width, viddef.height, 0, 0, 0, 1);
 		scr_draw_loading = false;
 		R_GetPicSize (&w, &h, "loading");
 		UI_DrawNamedPic ((viddef.width-w)/2, (viddef.height-h)/2, "loading");
