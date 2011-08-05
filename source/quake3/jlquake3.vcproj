@@ -395,10 +395,6 @@
 				>
 			</File>
 			<File
-				RelativePath="cgame\tr_types.h"
-				>
-			</File>
-			<File
 				RelativePath="ui\ui_public.h"
 				>
 			</File>
