@@ -530,6 +530,10 @@ static void Mod_ClearAll (void)
 {
 	R_Shutdown(false);
 	R_BeginRegistration(&cls.glconfig);
+
+	Com_Memset(playertextures, 0, sizeof(playertextures));
+	Com_Memset(translate_texture, 0, sizeof(translate_texture));
+
 	Draw_Init();
 	SB_Init();
 }

@@ -356,3 +356,5 @@ void CL_SignonReply (void);
 
 void R_UpdateParticles (void);
 void CL_AddParticles();
+
+extern	image_t*	playertextures[16];

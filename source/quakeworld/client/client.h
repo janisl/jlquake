@@ -488,3 +488,5 @@ extern	int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
 void R_UpdateParticles (void);
 void CL_AddParticles();
+
+extern	image_t*	playertextures[MAX_CLIENTS];

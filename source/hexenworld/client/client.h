@@ -570,3 +570,5 @@ void Cam_Reset(void);
 
 void R_UpdateParticles (void);
 void CL_AddParticles();
+
+extern	image_t*	playertextures[MAX_CLIENTS];

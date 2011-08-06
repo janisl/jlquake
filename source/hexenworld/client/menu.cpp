@@ -234,7 +234,7 @@ byte translationTable[256];
 extern int color_offsets[MAX_PLAYER_CLASS];
 extern byte *playerTranslation;
 static byte		menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
-static image_t*	translate_texture[MAX_PLAYER_CLASS];
+image_t*	translate_texture[MAX_PLAYER_CLASS];
 
 void M_BuildTranslationTable(int top, int bottom)
 {

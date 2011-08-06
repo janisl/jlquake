@@ -137,7 +137,7 @@ byte identityTable[256];
 byte translationTable[256];
 
 static byte		menuplyr_pixels[4096];
-static image_t*	translate_texture;
+image_t*	translate_texture;
 
 void M_BuildTranslationTable(int top, int bottom)
 {

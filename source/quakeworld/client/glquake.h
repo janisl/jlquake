@@ -36,7 +36,5 @@ void R_TimeRefresh_f (void);
 //
 // screen size info
 //
-extern	image_t*	playertextures[MAX_CLIENTS];
-
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;

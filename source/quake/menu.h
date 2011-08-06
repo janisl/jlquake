@@ -41,4 +41,4 @@ void M_Keydown (int key);
 void M_Draw (void);
 void M_ToggleMenu_f (void);
 
-
+extern image_t*	translate_texture;
