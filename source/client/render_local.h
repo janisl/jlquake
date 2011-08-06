@@ -947,4 +947,6 @@ Particles
 void R_InitParticleTexture();
 void R_DrawParticles();
 
+void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height);
+
 #endif

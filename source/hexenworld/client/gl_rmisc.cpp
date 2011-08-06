@@ -81,16 +81,11 @@ void R_TranslatePlayerSkin (int playernum)
 {
 	int				top, bottom;
 	byte			translate[256];
-	unsigned		translate32[256];
-	int				i, j, s;
+	int				i, s;
 	model_t			*model;
 	mesh1hdr_t		*paliashdr;
 	byte			*original;
-	unsigned		pixels[512*256], *out;
-	unsigned		scaled_width, scaled_height;
 	int				inwidth, inheight;
-	byte			*inrow;
-	unsigned		frac, fracstep;
 	byte			*sourceA, *sourceB, *colorA, *colorB;
 	player_info_t	*player;
 
@@ -148,48 +143,10 @@ void R_TranslatePlayerSkin (int playernum)
 	else
 		original = h2_player_8bit_texels[0];
 
-//	if (s & 3)
-//		Sys_Error ("R_TranslateSkin: s&3");
-
-	for (i=0 ; i<256 ; i++)
-		translate32[i] = d_8to24table[translate[i]];
-	scaled_width = 512;
-	scaled_height = 256;
-
 	inwidth = paliashdr->skinwidth;
 	inheight = paliashdr->skinheight;
-	out = pixels;
-	fracstep = inwidth*0x10000/scaled_width;
-	for (i=0 ; i<scaled_height ; i++, out += scaled_width)
-	{
-		inrow = original + inwidth*(i*inheight/scaled_height);
-		frac = fracstep >> 1;
-		for (j=0 ; j<scaled_width ; j+=4)
-		{
-			out[j] = translate32[inrow[frac>>16]];
-			frac += fracstep;
-			out[j+1] = translate32[inrow[frac>>16]];
-			frac += fracstep;
-			out[j+2] = translate32[inrow[frac>>16]];
-			frac += fracstep;
-			out[j+3] = translate32[inrow[frac>>16]];
-			frac += fracstep;
-		}
-	}
 
-	// because this happens during gameplay, do it fast
-	// instead of sending it through gl_upload 8
-	if (!playertextures[playernum])
-	{
-		playertextures[playernum] = R_CreateImage(va("*player%d", playernum), (byte*)pixels, scaled_width, scaled_height, false, true, GL_CLAMP, false);
-	}
-	else
-	{
-		R_ReUploadImage(playertextures[playernum], (byte*)pixels);
-	}
-
-	GL_Bind(playertextures[playernum]);
-	GL_TexEnv(GL_MODULATE);
+	R_CreateOrUpdateTranslatedSkin(playertextures[playernum], va("*player%d", playernum), original, translate, inwidth, inheight);
 }
 
 /*

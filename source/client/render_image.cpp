@@ -1871,11 +1871,11 @@ void R_UploadCinematic(int cols, int rows, const byte *data, int client, bool di
 
 //==========================================================================
 //
-//	R_CreateOrUpdateTranslatedImage
+//	R_CreateOrUpdateTranslatedImageEx
 //
 //==========================================================================
 
-void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height)
+static void R_CreateOrUpdateTranslatedImageEx(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height, bool allowPicMip, int mode)
 {
 	byte* translated = new byte[width * height];
 	int c = width * height;
@@ -1884,18 +1884,40 @@ void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pi
 		translated[i] = translation[pixels[i]];
 	}
 
-	byte* translated32 = R_ConvertImage8To32(translated, width, height, IMG8MODE_Normal);
+	byte* translated32 = R_ConvertImage8To32(translated, width, height, mode);
 	delete[] translated;
 
 	if (!image)
 	{
-		image = R_CreateImage(name, translated32, width, height, false, false, GL_CLAMP, false);
+		image = R_CreateImage(name, translated32, width, height, false, allowPicMip, GL_CLAMP, false);
 	}
 	else
 	{
 		R_ReUploadImage(image, translated32);
 	}
 	delete[] translated32;
+}
+
+//==========================================================================
+//
+//	R_CreateOrUpdateTranslatedImage
+//
+//==========================================================================
+
+void R_CreateOrUpdateTranslatedImage(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height)
+{
+	R_CreateOrUpdateTranslatedImageEx(image, name, pixels, translation, width, height, false, IMG8MODE_Normal);
+}
+
+//==========================================================================
+//
+//	R_CreateOrUpdateTranslatedSkin
+//
+//==========================================================================
+
+void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height)
+{
+	R_CreateOrUpdateTranslatedImageEx(image, name, pixels, translation, width, height, true, IMG8MODE_Skin);
 }
 
 //==========================================================================
