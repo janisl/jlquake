@@ -106,66 +106,25 @@ int CL_GetMessage (void)
 		}
 		
 	// get the next message
-//		if(intro_playing&&num_intro_msg>0&&num_intro_msg<21)
-//			V_DarkFlash_f();//Fade into demo
-
-/*		if(skip_start&&num_intro_msg>3)
+		FS_Read (&net_message.cursize, 4, cls.demofile);
+		VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
+		for (i=0 ; i<3 ; i++)
 		{
-			while(num_intro_msg<1110)
-			{
-				fread (&net_message.cursize, 4, 1, cls.demofile);
-				VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
-				for (i=0 ; i<3 ; i++)
-				{
-					r = fread (&f, 4, 1, cls.demofile);
-					cl.mviewangles[0][i] = LittleFloat (f);
-				}
-				
-				net_message.cursize = LittleLong (net_message.cursize);
-				num_intro_msg++;
-				if (net_message.cursize > MAX_MSGLEN)
-					Sys_Error ("Demo message > MAX_MSGLEN");
-				r = fread (net_message.data, net_message.cursize, 1, cls.demofile);
-				if (r != 1)
-				{
-					CL_StopPlayback ();
-					return 0;
-				}
-				if(num_intro_msg==174||
-					num_intro_msg==178||
-					num_intro_msg==428||
-					num_intro_msg==553||
-					num_intro_msg==1012)
-					break;
-			}
-			if(num_intro_msg==1110)
-				skip_start=false;
+			r = FS_Read (&f, 4, cls.demofile);
+			cl.mviewangles[0][i] = LittleFloat (f);
 		}
-		else
-		{*/
-			FS_Read (&net_message.cursize, 4, cls.demofile);
-			VectorCopy (cl.mviewangles[0], cl.mviewangles[1]);
-			for (i=0 ; i<3 ; i++)
-			{
-				r = FS_Read (&f, 4, cls.demofile);
-				cl.mviewangles[0][i] = LittleFloat (f);
-			}
-			
-			net_message.cursize = LittleLong (net_message.cursize);
-			num_intro_msg++;
-			if (net_message.cursize > MAX_MSGLEN)
-				Sys_Error ("Demo message > MAX_MSGLEN");
-			r = FS_Read (net_message._data, net_message.cursize, cls.demofile);
-			if (r != net_message.cursize)
-			{
-				CL_StopPlayback ();
-				return 0;
-			}
-//		}
+		
+		net_message.cursize = LittleLong (net_message.cursize);
+		num_intro_msg++;
+		if (net_message.cursize > MAX_MSGLEN)
+			Sys_Error ("Demo message > MAX_MSGLEN");
+		r = FS_Read (net_message._data, net_message.cursize, cls.demofile);
+		if (r != net_message.cursize)
+		{
+			CL_StopPlayback ();
+			return 0;
+		}
 
-//		if (cls.demorecording)
-//			CL_WriteDemoMessage ();
-	
 		return 1;
 	}
 

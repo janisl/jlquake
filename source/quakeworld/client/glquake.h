@@ -38,7 +38,6 @@ void R_TimeRefresh_f (void);
 //
 extern	image_t*	playertextures[MAX_CLIENTS];
 
-extern	QCvar*	r_drawviewmodel;
 extern	QCvar*	r_netgraph;
 
 extern	QCvar*	gl_polyblend;

@@ -1,7 +1,6 @@
 // view.c -- player eye positioning
 
 #include "quakedef.h"
-#include "glquake.h"
 
 /*
 
@@ -12,32 +11,39 @@ when crossing a water boudnary.
 
 */
 
-QCvar*	cl_rollspeed;
-QCvar*	cl_rollangle;
+static QCvar*	cl_rollspeed;
+static QCvar*	cl_rollangle;
 
-QCvar*	cl_bob;
-QCvar*	cl_bobcycle;
-QCvar*	cl_bobup;
+static QCvar*	cl_bob;
+static QCvar*	cl_bobcycle;
+static QCvar*	cl_bobup;
 
-QCvar*	v_kicktime;
-QCvar*	v_kickroll;
-QCvar*	v_kickpitch;
+static QCvar*	v_kicktime;
+static QCvar*	v_kickroll;
+static QCvar*	v_kickpitch;
 
-QCvar*	v_iyaw_cycle;
-QCvar*	v_iroll_cycle;
-QCvar*	v_ipitch_cycle;
-QCvar*	v_iyaw_level;
-QCvar*	v_iroll_level;
-QCvar*	v_ipitch_level;
+static QCvar*	v_iyaw_cycle;
+static QCvar*	v_iroll_cycle;
+static QCvar*	v_ipitch_cycle;
+static QCvar*	v_iyaw_level;
+static QCvar*	v_iroll_level;
+static QCvar*	v_ipitch_level;
 
-QCvar*	v_idlescale;
+static QCvar*	v_idlescale;
+
+static QCvar*	r_drawviewmodel;
 
 QCvar*	crosshair;
 
 QCvar*  cl_crossx;
 QCvar*  cl_crossy;
 
-float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
+static QCvar*	v_centermove;
+static QCvar*	v_centerspeed;
+
+static QCvar*	v_centerrollspeed;
+
+static float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 float	v_targAngle;
 float	v_targPitch;
@@ -46,7 +52,14 @@ float	v_targDist = 0.0;
 extern	int			in_forward, in_forward2, in_back;
 
 frame_t		*view_frame;
-player_state_t		*view_message;
+static player_state_t		*view_message;
+
+static cshift_t	cshift_empty = { {130,80,50}, 0 };
+static cshift_t	cshift_water = { {130,80,50}, 128 };
+static cshift_t	cshift_slime = { {0,25,5}, 150 };
+static cshift_t	cshift_lava = { {255,80,0}, 150 };
+
+float		v_blend[4];		// rgba 0.0 - 1.0
 
 /*
 ===============
@@ -84,7 +97,7 @@ V_CalcBob
 
 ===============
 */
-float V_CalcBob (void)
+static float V_CalcBob (void)
 {
 //	static	double	bobtime;
 	static float	bob;
@@ -120,12 +133,6 @@ float V_CalcBob (void)
 
 
 //=============================================================================
-
-
-QCvar*	v_centermove;
-QCvar*	v_centerspeed;
-
-QCvar*	v_centerrollspeed;
 
 void V_StartPitchDrift (void)
 {
@@ -163,7 +170,7 @@ Drifting is enabled when the center view key is hit, mlook is released and
 lookspring is non 0, or when 
 ===============
 */
-void V_DriftPitch (void)
+static void V_DriftPitch (void)
 {
 	float		delta, move;
 
@@ -240,7 +247,7 @@ mlook and mouse, or klook and keyboard, pitch drifting is constantly stopped.
 
 ===============
 */
-void V_DriftRoll (void)
+static void V_DriftRoll (void)
 {
 	float		delta, move;
 	float		rollspeed;
@@ -315,14 +322,6 @@ void V_ParseTarget(void)
 ============================================================================== 
 */ 
  
- 
-cshift_t	cshift_empty = { {130,80,50}, 0 };
-cshift_t	cshift_water = { {130,80,50}, 128 };
-cshift_t	cshift_slime = { {0,25,5}, 150 };
-cshift_t	cshift_lava = { {255,80,0}, 150 };
-
-float		v_blend[4];		// rgba 0.0 - 1.0
-
 /*
 ===============
 V_ParseDamage
@@ -396,7 +395,7 @@ void V_ParseDamage (void)
 V_cshift_f
 ==================
 */
-void V_cshift_f (void)
+static void V_cshift_f (void)
 {
 	cshift_empty.destcolor[0] = QStr::Atoi(Cmd_Argv(1));
 	cshift_empty.destcolor[1] = QStr::Atoi(Cmd_Argv(2));
@@ -412,7 +411,7 @@ V_BonusFlash_f
 When you run over an item, the server sends this command
 ==================
 */
-void V_BonusFlash_f (void)
+static void V_BonusFlash_f (void)
 {
 	cl.cshifts[CSHIFT_BONUS].destcolor[0] = 215;
 	cl.cshifts[CSHIFT_BONUS].destcolor[1] = 186;
@@ -420,7 +419,7 @@ void V_BonusFlash_f (void)
 	cl.cshifts[CSHIFT_BONUS].percent = 50;
 }
 
-void V_DarkFlash_f (void)
+static void V_DarkFlash_f (void)
 {
 	cl.cshifts[CSHIFT_BONUS].destcolor[0] = 0;
 	cl.cshifts[CSHIFT_BONUS].destcolor[1] = 0;
@@ -459,7 +458,7 @@ void V_SetContentsColor (int contents)
 V_CalcPowerupCshift
 =============
 */
-void V_CalcPowerupCshift(void)
+static void V_CalcPowerupCshift(void)
 {
 /*	if (cl.items & IT_QUAD)
 	{
@@ -616,20 +615,12 @@ void V_UpdatePalette (void)
 ============================================================================== 
 */ 
 
-float angledelta (float a)
-{
-	a = AngleMod(a);
-	if (a > 180)
-		a -= 360;
-	return a;
-}
-
 /*
 ==================
 CalcGunAngle
 ==================
 */
-void CalcGunAngle(vec3_t viewangles)
+static void CalcGunAngle(vec3_t viewangles)
 {	
 	cl.viewent.angles[YAW] = viewangles[YAW];
 	cl.viewent.angles[PITCH] = -viewangles[PITCH];
@@ -641,36 +632,12 @@ void CalcGunAngle(vec3_t viewangles)
 
 /*
 ==============
-V_BoundOffsets
-==============
-*/
-void V_BoundOffsets (void)
-{
-// absolutely bound refresh reletive to entity clipping hull
-// so the view can never be inside a solid wall
-
-	if (r_refdef.vieworg[0] < cl.simorg[0] - 14)
-		r_refdef.vieworg[0] = cl.simorg[0] - 14;
-	else if (r_refdef.vieworg[0] > cl.simorg[0] + 14)
-		r_refdef.vieworg[0] = cl.simorg[0] + 14;
-	if (r_refdef.vieworg[1] < cl.simorg[1] - 14)
-		r_refdef.vieworg[1] = cl.simorg[1] - 14;
-	else if (r_refdef.vieworg[1] > cl.simorg[1] + 14)
-		r_refdef.vieworg[1] = cl.simorg[1] + 14;
-	if (r_refdef.vieworg[2] < cl.simorg[2] - 0)
-		r_refdef.vieworg[2] = cl.simorg[2] - 0;
-	else if (r_refdef.vieworg[2] > cl.simorg[2] + 86)
-		r_refdef.vieworg[2] = cl.simorg[2] + 86;
-}
-
-/*
-==============
 V_AddIdle
 
 Idle swaying
 ==============
 */
-void V_AddIdle(vec3_t viewangles)
+static void V_AddIdle(vec3_t viewangles)
 {
 	viewangles[ROLL] += v_idlescale->value * sin(cl.time*v_iroll_cycle->value) * v_iroll_level->value;
 	viewangles[PITCH] += v_idlescale->value * sin(cl.time*v_ipitch_cycle->value) * v_ipitch_level->value;
@@ -689,7 +656,7 @@ V_CalcViewRoll
 Roll is induced by movement and damage
 ==============
 */
-void V_CalcViewRoll(vec3_t viewangles)
+static void V_CalcViewRoll(vec3_t viewangles)
 {
 	float		side;
 		
@@ -717,7 +684,7 @@ V_CalcIntermissionRefdef
 
 ==================
 */
-void V_CalcIntermissionRefdef (void)
+static void V_CalcIntermissionRefdef (void)
 {
 	entity_t	*view;
 	float		old;
@@ -744,7 +711,7 @@ V_CalcRefdef
 
 ==================
 */
-void V_CalcRefdef (void)
+static void V_CalcRefdef (void)
 {
 	entity_t	*view;
 	int			i;
@@ -1003,4 +970,6 @@ void V_Init (void)
 	v_kicktime = Cvar_Get("v_kicktime", "0.5", 0);
 	v_kickroll = Cvar_Get("v_kickroll", "0.6", 0);
 	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);
+
+	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
 }

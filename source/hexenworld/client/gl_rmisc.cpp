@@ -51,7 +51,6 @@ void CL_InitRenderStuff (void)
 {
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 
-	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
 	r_netgraph = Cvar_Get("r_netgraph","0", 0);
 
 

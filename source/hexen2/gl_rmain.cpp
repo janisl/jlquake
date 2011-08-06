@@ -17,8 +17,6 @@ extern qhandle_t	player_models[NUM_CLASSES];
 //
 refdef_t	r_refdef;
 
-QCvar*	r_drawviewmodel;
-
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
 QCvar*	gl_reporttjunctions;

@@ -13,7 +13,6 @@ extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 //
 refdef_t	r_refdef;
 
-QCvar*	r_drawviewmodel;
 QCvar*	r_netgraph;
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;

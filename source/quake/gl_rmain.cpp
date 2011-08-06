@@ -29,8 +29,6 @@ image_t*	playertextures[16];		// up to 16 color translated skins
 //
 refdef_t	r_refdef;
 
-QCvar*	r_drawviewmodel;
-
 QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
 QCvar*	gl_reporttjunctions;

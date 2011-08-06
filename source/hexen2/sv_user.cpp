@@ -256,7 +256,6 @@ void SV_FlightMove (void)
 	vec3_t	wishvel;
 	float	speed, newspeed, wishspeed, addspeed, accelspeed;
 
-//	cl.pitchvel = v_centerspeed.value;
 	cl.nodrift = false;
 	cl.driftmove = 0;
 
