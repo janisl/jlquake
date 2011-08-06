@@ -107,7 +107,7 @@ byte	*Skin_Cache (qw_skin_t *skin)
 	if (skin->failedload)
 		return NULL;
 
-	out = (byte*)Cache_Check (&skin->cache);
+	out = skin->data;
 	if (out)
 		return out;
 
@@ -137,7 +137,8 @@ byte	*Skin_Cache (qw_skin_t *skin)
 		return NULL;
 	}
 
-	out = (byte*)Cache_Alloc (&skin->cache, 320*200, skin->name);
+	out = new byte[320 * 200];
+	skin->data = out;
 	if (!out)
 		Sys_Error ("Skin_Cache: couldn't allocate");
 
@@ -200,7 +201,6 @@ void Skin_NextDownload (void)
 	{	// get next signon phase
 		cls.netchan.message.WriteByte(clc_stringcmd);
 		cls.netchan.message.WriteString2(va("begin %i", cl.servercount));
-		Cache_Report ();		// print remaining memory
 	}
 }
 
@@ -218,8 +218,11 @@ void	Skin_Skins_f (void)
 
 	for (i=0 ; i<numskins ; i++)
 	{
-		if (skins[i].cache.data)
-			Cache_Free (&skins[i].cache);
+		if (skins[i].data)
+		{
+			delete[] skins[i].data;
+			skins[i].data = NULL;
+		}
 	}
 	numskins = 0;
 

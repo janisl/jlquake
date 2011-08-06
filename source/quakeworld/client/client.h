@@ -23,8 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 	char		name[16];
-	qboolean	failedload;		// the name isn't a valid skin
-	cache_user_t	cache;
+	bool		failedload;		// the name isn't a valid skin
+	byte*		data;
 } qw_skin_t;
 
 // player_state_t is the information needed by a player entity

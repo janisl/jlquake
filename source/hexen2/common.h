@@ -27,7 +27,6 @@ void COM_InitArgv2(int argc, char **argv);
 //============================================================================
 
 extern int com_filesize;
-struct cache_user_s;
 
 byte *COM_LoadStackFile (const char *path, void *buffer, int bufsize);
 byte *COM_LoadHunkFile (const char *path);

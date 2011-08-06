@@ -412,11 +412,6 @@ void COM_Gamedir (char *dir)
 	//
 	FS_ResetSearchPathToBase();
 
-	//
-	// flush all data, so it will be forced to reload
-	//
-	Cache_Flush ();
-
 	if (!QStr::Cmp(dir,"id1") || !QStr::Cmp(dir, "qw"))
 		return;
 
