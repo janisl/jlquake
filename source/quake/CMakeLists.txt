@@ -1,5 +1,6 @@
 add_executable(jlquake
 	cl_demo.cpp
+	cl_draw.cpp
 	cl_input.cpp
 	cl_main.cpp
 	cl_parse.cpp
@@ -10,7 +11,6 @@ add_executable(jlquake
 	common.cpp
 	console.cpp
 	cvar.cpp
-	gl_draw.cpp
 	gl_rmain.cpp
 	gl_rmisc.cpp
 	host.cpp

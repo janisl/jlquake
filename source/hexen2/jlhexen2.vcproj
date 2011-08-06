@@ -209,6 +209,10 @@
 				>
 			</File>
 			<File
+				RelativePath="cl_draw.cpp"
+				>
+			</File>
+			<File
 				RelativePath="cl_effect.cpp"
 				>
 			</File>
@@ -269,10 +273,6 @@
 						Outputs="$(IntDir)/$(InputName).obj"
 					/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="gl_draw.cpp"
-				>
 			</File>
 			<File
 				RelativePath="gl_rmain.cpp"

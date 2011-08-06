@@ -39,6 +39,7 @@ target_link_libraries(jlhwsv progsvm ${SERVERS_LIBS})
 add_executable(jlhwcl
 	client/cl_cam.cpp
 	client/cl_demo.cpp
+	client/cl_draw.cpp
 	client/cl_effect.cpp
 	client/cl_ents.cpp
 	client/cl_input.cpp
@@ -51,7 +52,6 @@ add_executable(jlhwcl
 	client/common.cpp
 	client/console.cpp
 	client/cvar.cpp
-	client/gl_draw.cpp
 	client/gl_rmain.cpp
 	client/gl_rmisc.cpp
 	client/keys.cpp

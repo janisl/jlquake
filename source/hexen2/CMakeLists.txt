@@ -1,5 +1,6 @@
 add_executable(jlhexen2
 	cl_demo.cpp
+	cl_draw.cpp
 	cl_effect.cpp
 	cl_input.cpp
 	cl_main.cpp
@@ -11,7 +12,6 @@ add_executable(jlhexen2
 	common.cpp
 	console.cpp
 	cvar.cpp
-	gl_draw.cpp
 	gl_rmain.cpp
 	gl_rmisc.cpp
 	host.cpp

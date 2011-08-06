@@ -212,6 +212,10 @@
 				>
 			</File>
 			<File
+				RelativePath="cl_draw.cpp"
+				>
+			</File>
+			<File
 				RelativePath="cl_input.cpp"
 				>
 			</File>
@@ -245,10 +249,6 @@
 			</File>
 			<File
 				RelativePath="cvar.cpp"
-				>
-			</File>
-			<File
-				RelativePath="gl_draw.cpp"
 				>
 			</File>
 			<File
