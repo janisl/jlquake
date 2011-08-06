@@ -304,10 +304,10 @@ static void SCR_CalcRefdef (void)
 	else 
 		scr_vrect.y = (h - scr_vrect.height)/2;
 
-	r_refdef.x = scr_vrect.x * glConfig.vidWidth / viddef.width;
-	r_refdef.y = scr_vrect.y * glConfig.vidHeight / viddef.height;
-	r_refdef.width = scr_vrect.width * glConfig.vidWidth / viddef.width;
-	r_refdef.height = scr_vrect.height * glConfig.vidHeight / viddef.height;
+	r_refdef.x = scr_vrect.x * cls.glconfig.vidWidth / viddef.width;
+	r_refdef.y = scr_vrect.y * cls.glconfig.vidHeight / viddef.height;
+	r_refdef.width = scr_vrect.width * cls.glconfig.vidWidth / viddef.width;
+	r_refdef.height = scr_vrect.height * cls.glconfig.vidHeight / viddef.height;
 	r_refdef.fov_x = scr_fov->value;
 	r_refdef.fov_y = CalcFov (r_refdef.fov_x, r_refdef.width, r_refdef.height);
 }
@@ -717,7 +717,7 @@ void SCR_UpdateScreen (void)
 			return;
 	}
 
-	if (!scr_initialized || !con_initialized || !glConfig.vidWidth)
+	if (!scr_initialized || !con_initialized || !cls.glconfig.vidWidth)
 		return;                         // not initialized yet
 
 	R_BeginFrame(STEREO_CENTER);

@@ -335,10 +335,10 @@ static void SCR_CalcRefdef (void)
 	scr_vrect.x = (viddef.width - scr_vrect.width)/2;
 	scr_vrect.y = (h - scr_vrect.height)/2;
 
-	r_refdef.x = scr_vrect.x * glConfig.vidWidth / viddef.width;
-	r_refdef.y = scr_vrect.y * glConfig.vidHeight / viddef.height;
-	r_refdef.width = scr_vrect.width * glConfig.vidWidth / viddef.width;
-	r_refdef.height = scr_vrect.height * glConfig.vidHeight / viddef.height;
+	r_refdef.x = scr_vrect.x * cls.glconfig.vidWidth / viddef.width;
+	r_refdef.y = scr_vrect.y * cls.glconfig.vidHeight / viddef.height;
+	r_refdef.width = scr_vrect.width * cls.glconfig.vidWidth / viddef.width;
+	r_refdef.height = scr_vrect.height * cls.glconfig.vidHeight / viddef.height;
 	r_refdef.fov_x = 90;
 	r_refdef.fov_y = 2 * atan((float)r_refdef.height / r_refdef.width) * 180 / M_PI;
 }
