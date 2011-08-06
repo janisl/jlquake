@@ -83,12 +83,8 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin (int playernum)
 {
-	int		top, bottom;
 	byte	translate[256];
-	int		i;
 	byte	*original;
-	int			inwidth, inheight;
-	int			tinwidth, tinheight;
 	player_info_t *player;
 	char s[512];
 
@@ -102,53 +98,63 @@ void R_TranslatePlayerSkin (int playernum)
 		player->skin = NULL;
 
 	if (player->_topcolor != player->topcolor ||
-		player->_bottomcolor != player->bottomcolor || !player->skin) {
+		player->_bottomcolor != player->bottomcolor || !player->skin)
+	{
 		player->_topcolor = player->topcolor;
 		player->_bottomcolor = player->bottomcolor;
 
-		top = player->topcolor;
-		bottom = player->bottomcolor;
+		int top = player->topcolor;
+		int bottom = player->bottomcolor;
 		top = (top < 0) ? 0 : ((top > 13) ? 13 : top);
 		bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
 		top *= 16;
 		bottom *= 16;
 
-		for (i=0 ; i<256 ; i++)
+		for (int i = 0; i < 256; i++)
+		{
 			translate[i] = i;
+		}
 
-		for (i=0 ; i<16 ; i++)
+		for (int i = 0; i < 16; i++)
 		{
 			if (top < 128)	// the artists made some backwards ranges.  sigh.
-				translate[TOP_RANGE+i] = top+i;
+			{
+				translate[TOP_RANGE + i] = top + i;
+			}
 			else
-				translate[TOP_RANGE+i] = top+15-i;
-					
+			{
+				translate[TOP_RANGE + i] = top + 15 - i;
+			}
+
 			if (bottom < 128)
-				translate[BOTTOM_RANGE+i] = bottom+i;
+			{
+				translate[BOTTOM_RANGE + i] = bottom + i;
+			}
 			else
-				translate[BOTTOM_RANGE+i] = bottom+15-i;
+			{
+				translate[BOTTOM_RANGE + i] = bottom + 15 - i;
+			}
 		}
 
 		//
 		// locate the original skin pixels
 		//
-		// real model width
-		tinwidth = 296;
-		tinheight = 194;
 
 		if (!player->skin)
+		{
 			Skin_Find(player);
-		if ((original = Skin_Cache(player->skin)) != NULL) {
-			//skin data width
-			inwidth = 320;
-			inheight = 200;
-		} else {
-			original = q1_player_8bit_texels;
-			inwidth = 296;
-			inheight = 194;
 		}
-
-		R_CreateOrUpdateTranslatedSkin(playertextures[playernum], va("*player%d", playernum), original, translate, inwidth, inheight);
+		original = Skin_Cache(player->skin);
+		if (original != NULL)
+		{
+			//skin data width
+			R_CreateOrUpdateTranslatedSkin(playertextures[playernum], va("*player%d", playernum), original, translate, 320, 200);
+		}
+		else
+		{
+			R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum),
+				cl.model_precache[cl_playerindex], translate);
+		}
 	}
 }
 

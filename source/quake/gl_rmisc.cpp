@@ -83,53 +83,44 @@ R_TranslatePlayerSkin
 Translates a skin texture by the per-player color lookup
 ===============
 */
-void R_TranslatePlayerSkin (int playernum)
+void R_TranslatePlayerSkin(int playernum)
 {
-	int		top, bottom;
-	byte	translate[256];
-	int		i, s;
-	model_t	*model;
-	mesh1hdr_t *paliashdr;
-	byte	*original;
-	int			inwidth, inheight;
+	int top = cl.scores[playernum].colors & 0xf0;
+	int bottom = (cl.scores[playernum].colors &15) << 4;
 
-	top = cl.scores[playernum].colors & 0xf0;
-	bottom = (cl.scores[playernum].colors &15)<<4;
-
-	for (i=0 ; i<256 ; i++)
+	byte translate[256];
+	for (int i = 0; i < 256; i++)
+	{
 		translate[i] = i;
+	}
 
-	for (i=0 ; i<16 ; i++)
+	for (int i = 0; i < 16; i++)
 	{
 		if (top < 128)	// the artists made some backwards ranges.  sigh.
-			translate[TOP_RANGE+i] = top+i;
+		{
+			translate[TOP_RANGE + i] = top + i;
+		}
 		else
-			translate[TOP_RANGE+i] = top+15-i;
+		{
+			translate[TOP_RANGE + i] = top + 15 - i;
+		}
 				
 		if (bottom < 128)
-			translate[BOTTOM_RANGE+i] = bottom+i;
+		{
+			translate[BOTTOM_RANGE + i] = bottom + i;
+		}
 		else
-			translate[BOTTOM_RANGE+i] = bottom+15-i;
+		{
+			translate[BOTTOM_RANGE + i] = bottom + 15 - i;
+		}
 	}
 
 	//
 	// locate the original skin pixels
 	//
-	entity_t* ent = &cl_entities[1+playernum];
-	model = R_GetModelByHandle(ent->model);
-	if (!model)
-		return;		// player doesn't have a model yet
-	if (model->type != MOD_MESH1)
-		return; // only translate skins on alias models
+	entity_t* ent = &cl_entities[1 + playernum];
 
-	paliashdr = (mesh1hdr_t *)model->q1_cache;
-	s = paliashdr->skinwidth * paliashdr->skinheight;
-	original = q1_player_8bit_texels;
-
-	inwidth = paliashdr->skinwidth;
-	inheight = paliashdr->skinheight;
-
-	R_CreateOrUpdateTranslatedSkin(playertextures[playernum], va("*player%d", playernum), original, translate, inwidth, inheight);
+	R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum), ent->model, translate);
 }
 
 

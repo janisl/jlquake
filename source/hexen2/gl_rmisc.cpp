@@ -77,11 +77,7 @@ void R_TranslatePlayerSkin (int playernum)
 {
 	int		top, bottom;
 	byte	translate[256];
-	int		i, s;
-	model_t	*model;
-	mesh1hdr_t *paliashdr;
-	byte	*original;
-	int			inwidth, inheight;
+	int		i;
 	byte	*sourceA, *sourceB, *colorA, *colorB;
 	int		playerclass = (int)cl.scores[playernum].playerclass;
 
@@ -114,22 +110,14 @@ void R_TranslatePlayerSkin (int playernum)
 	// locate the original skin pixels
 	//
 	entity_t* ent = &cl_entities[1+playernum];
-	model = R_GetModelByHandle(ent->model);
-	if (model->type != MOD_MESH1)
-		return;		// player doesn't have a model yet
-	paliashdr = (mesh1hdr_t *)model->q1_cache;
-	s = paliashdr->skinwidth * paliashdr->skinheight;
 
-	if (playerclass >= 1 && 
-		playerclass <= NUM_CLASSES)
-		original = h2_player_8bit_texels[playerclass-1];
+	int classIndex;
+	if (playerclass >= 1 && playerclass <= NUM_CLASSES)
+		classIndex = playerclass - 1;
 	else
-		original = h2_player_8bit_texels[0];
+		classIndex = 0;
 
-	inwidth = paliashdr->skinwidth;
-	inheight = paliashdr->skinheight;
-
-	R_CreateOrUpdateTranslatedSkin(playertextures[playernum], va("*player%d", playernum), original, translate, inwidth, inheight);
+	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), ent->model, translate, classIndex);
 }
 
 

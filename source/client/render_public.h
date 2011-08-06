@@ -291,6 +291,8 @@ image_t* R_CachePicRepeat(const char* path);
 image_t* R_CachePicWithTransPixels(const char* path, byte* TransPixels);
 image_t* R_RegisterPic(const char* name);
 image_t* R_RegisterPicRepeat(const char* name);
+void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation);
+void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation, int classIndex);
 
 const char* R_GetImageName(qhandle_t Handle);
 int R_GetImageWidth(image_t* pic);

@@ -336,3 +336,51 @@ image_t* R_RegisterSkinQ2(const char* name)
 {
 	return R_FindImageFile(name, true, true, GL_CLAMP, false, IMG8MODE_Skin);
 }
+
+//==========================================================================
+//
+//	R_CreateOrUpdateTranslatedModelSkin
+//
+//==========================================================================
+
+static void R_CreateOrUpdateTranslatedModelSkin(image_t*& image, const char* name, qhandle_t modelHandle, byte* pixels, byte *translation)
+{
+	if (!modelHandle)
+	{
+		return;
+	}
+	model_t* model = R_GetModelByHandle(modelHandle);
+	if (model->type != MOD_MESH1)
+	{
+		// only translate skins on alias models
+		return;
+	}
+
+	mesh1hdr_t* mesh1Header = (mesh1hdr_t*)model->q1_cache;
+	int width = mesh1Header->skinwidth;
+	int height = mesh1Header->skinheight;
+
+	R_CreateOrUpdateTranslatedSkin(image, name, pixels, translation, width, height);
+}
+
+//==========================================================================
+//
+//	R_CreateOrUpdateTranslatedModelSkinQ1
+//
+//==========================================================================
+
+void R_CreateOrUpdateTranslatedModelSkinQ1(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation)
+{
+	R_CreateOrUpdateTranslatedModelSkin(image, name, modelHandle, q1_player_8bit_texels, translation);
+}
+
+//==========================================================================
+//
+//	R_CreateOrUpdateTranslatedModelSkinH2
+//
+//==========================================================================
+
+void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qhandle_t modelHandle, byte *translation, int classIndex)
+{
+	R_CreateOrUpdateTranslatedModelSkin(image, name, modelHandle, h2_player_8bit_texels[classIndex], translation);
+}

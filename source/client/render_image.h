@@ -72,6 +72,7 @@ void GL_TextureMode(const char* string);
 void R_ScrapUpload();
 void R_ImageList_f();
 int R_SumOfUsedImages();
+void R_CreateOrUpdateTranslatedSkin(image_t*& image, const char* name, byte* pixels, byte *translation, int width, int height);
 
 void R_LoadBMP(const char* FileName, byte** Pic, int* Width, int* Height);
 

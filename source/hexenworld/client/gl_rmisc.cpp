@@ -81,11 +81,7 @@ void R_TranslatePlayerSkin (int playernum)
 {
 	int				top, bottom;
 	byte			translate[256];
-	int				i, s;
-	model_t			*model;
-	mesh1hdr_t		*paliashdr;
-	byte			*original;
-	int				inwidth, inheight;
+	int				i;
 	byte			*sourceA, *sourceB, *colorA, *colorB;
 	player_info_t	*player;
 
@@ -126,27 +122,17 @@ void R_TranslatePlayerSkin (int playernum)
 	if (cl.players[playernum].modelindex <= 0)
 		return;
 
-
-	model = R_GetModelByHandle(player_models[cl.players[playernum].playerclass-1]);
-	if (!model)
-		return;
-	// player doesn't have a model yet
-	paliashdr = (mesh1hdr_t *)model->q1_cache;
-	s = paliashdr->skinwidth * paliashdr->skinheight;
-
+	int classIndex;
 	if (cl.players[playernum].playerclass >= 1 && 
 		cl.players[playernum].playerclass <= MAX_PLAYER_CLASS)
 	{
-		original = h2_player_8bit_texels[(int)cl.players[playernum].playerclass-1];
+		classIndex = (int)cl.players[playernum].playerclass - 1;
 		cl.players[playernum].Translated = true;
 	}
 	else
-		original = h2_player_8bit_texels[0];
+		classIndex = 0;
 
-	inwidth = paliashdr->skinwidth;
-	inheight = paliashdr->skinheight;
-
-	R_CreateOrUpdateTranslatedSkin(playertextures[playernum], va("*player%d", playernum), original, translate, inwidth, inheight);
+	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), player_models[cl.players[playernum].playerclass - 1], translate, classIndex);
 }
 
 /*
