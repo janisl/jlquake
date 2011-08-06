@@ -48,6 +48,8 @@ static QCvar*	v_centerspeed;
 
 static QCvar*	v_centerrollspeed;
 
+static QCvar*	cl_polyblend;
+
 static float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
 extern	int			in_forward, in_forward2, in_back;
@@ -57,7 +59,7 @@ static cshift_t	cshift_water = { {130,80,50}, 128 };
 static cshift_t	cshift_slime = { {0,25,5}, 150 };
 static cshift_t	cshift_lava = { {255,80,0}, 150 };
 
-float		v_blend[4];		// rgba 0.0 - 1.0
+static float		v_blend[4];		// rgba 0.0 - 1.0
 
 /*
 ===============
@@ -889,7 +891,20 @@ static void CL_AddViewModel()
 	R_AddRefEntityToScene(&gun);
 }
 
-void R_PolyBlend (void);
+/*
+============
+R_PolyBlend
+============
+*/
+static void R_PolyBlend (void)
+{
+	if (!cl_polyblend->value)
+		return;
+	if (!v_blend[3])
+		return;
+
+	R_Draw2DQuad(r_refdef.x, r_refdef.y, r_refdef.width, r_refdef.height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
+}
 
 /*
 ================
@@ -1014,4 +1029,6 @@ void V_Init (void)
 	v_kickpitch = Cvar_Get("v_kickpitch", "0.6", 0);
 
 	r_drawviewmodel = Cvar_Get("r_drawviewmodel", "1", 0);
+
+	cl_polyblend = Cvar_Get("cl_polyblend", "1", 0);
 }

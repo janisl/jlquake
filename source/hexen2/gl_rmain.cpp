@@ -17,7 +17,6 @@ extern qhandle_t	player_models[NUM_CLASSES];
 //
 refdef_t	r_refdef;
 
-QCvar*	gl_polyblend;
 QCvar*	gl_nocolors;
 QCvar*	gl_reporttjunctions;
 
@@ -60,19 +59,4 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 			Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
 		}
 	}
-}
-
-/*
-============
-R_PolyBlend
-============
-*/
-void R_PolyBlend (void)
-{
-	if (!gl_polyblend->value)
-		return;
-	if (!v_blend[3])
-		return;
-
-	R_Draw2DQuad(r_refdef.x, r_refdef.y, r_refdef.width, r_refdef.height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 }

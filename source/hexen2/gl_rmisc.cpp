@@ -53,7 +53,6 @@ void CL_InitRenderStuff (void)
 {	
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 
-	gl_polyblend = Cvar_Get("gl_polyblend", "1", 0);
 	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
 
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
