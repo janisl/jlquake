@@ -39,7 +39,6 @@
 
 #define  EF_MIP_MAP_FAR	  0x1000000	// Set per frame, this model will use the far mip map
 
-// Changes to rtype_t must also be made in glquake.h
 typedef enum
 {
    rt_rocket_trail = 0,

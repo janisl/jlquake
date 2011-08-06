@@ -37,6 +37,7 @@ target_link_libraries(jlhwsv progsvm ${SERVERS_LIBS})
 #############################################################################
 
 add_executable(jlhwcl
+	client/cl_cam.cpp
 	client/cl_demo.cpp
 	client/cl_effect.cpp
 	client/cl_ents.cpp
@@ -44,12 +45,16 @@ add_executable(jlhwcl
 	client/cl_main.cpp
 	client/cl_parse.cpp
 	client/cl_pred.cpp
+	client/cl_screen.cpp
 	client/cl_tent.cpp
-	client/cl_cam.cpp
 	client/cmd.cpp
 	client/common.cpp
 	client/console.cpp
 	client/cvar.cpp
+	client/gl_draw.cpp
+	client/gl_ngraph.cpp
+	client/gl_rmain.cpp
+	client/gl_rmisc.cpp
 	client/keys.cpp
 	client/menu.cpp
 	client/net_chan.cpp
@@ -62,11 +67,6 @@ add_executable(jlhwcl
 	client/sys_linux.cpp
 	client/view.cpp
 	client/zone.cpp
-	client/gl_draw.cpp
-	client/gl_ngraph.cpp
-	client/gl_rmain.cpp
-	client/gl_rmisc.cpp
-	client/gl_screen.cpp
 )
 set_target_properties(jlhwcl PROPERTIES COMPILE_FLAGS "${ALL_CFLAGS}")
 target_link_libraries(jlhwcl ${CLIENTS_LIBS})

@@ -66,7 +66,6 @@ typedef enum {
 	pt_bluestep
 } ptype_t;
 
-// Changes to rtype_t must also be made in glquake.h
 typedef enum
 {
    rt_rocket_trail = 0,

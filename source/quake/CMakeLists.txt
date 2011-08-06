@@ -3,6 +3,7 @@ add_executable(jlquake
 	cl_input.cpp
 	cl_main.cpp
 	cl_parse.cpp
+	cl_screen.cpp
 	cl_tent.cpp
 	chase.cpp
 	cmd.cpp
@@ -12,7 +13,6 @@ add_executable(jlquake
 	gl_draw.cpp
 	gl_rmain.cpp
 	gl_rmisc.cpp
-	gl_screen.cpp
 	host.cpp
 	host_cmd.cpp
 	keys.cpp
