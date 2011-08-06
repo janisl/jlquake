@@ -5,7 +5,6 @@
  */
 
 #include "quakedef.h"
-#include "glquake.h"
 
 /*
 
@@ -521,8 +520,8 @@ void SCR_DrawPause (void)
 		}
 	}
 
-	finaly = ((float)pic->height * LogoPercent) - pic->height;
-	UI_DrawPic( (viddef.width - pic->width)/2, finaly, pic);
+	finaly = ((float)R_GetImageHeight(pic) * LogoPercent) - R_GetImageHeight(pic);
+	UI_DrawPic( (viddef.width - R_GetImageWidth(pic)) / 2, finaly, pic);
 }
 
 
@@ -541,7 +540,7 @@ void SCR_DrawLoading (void)
 		return;
 		
 	pic = R_CachePic ("gfx/menu/loading.lmp");
-	offset = (viddef.width - pic->width)/2;
+	offset = (viddef.width - R_GetImageWidth(pic)) / 2;
 	UI_DrawPic (offset , 0, pic);
 
 	if (loading_stage == 0)
@@ -589,7 +588,7 @@ void SCR_SetUpToDrawConsole (void)
 		return;		// never a console with loading plaque
 		
 // decide on the height of the console
-	con_forcedup = !tr.worldModel || cls.signon != SIGNONS;
+	con_forcedup = cls.state != ca_connected || cls.signon != SIGNONS;
 
 	if (con_forcedup)
 	{
@@ -1002,7 +1001,7 @@ void SB_FinaleOverlay(void)
 	image_t	*pic;
 
 	pic = R_CachePic("gfx/finale.lmp");
-	UI_DrawPic((viddef.width-pic->width)/2, 16, pic);
+	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2, 16, pic);
 }
 
 /*

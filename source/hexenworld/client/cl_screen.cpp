@@ -2,7 +2,6 @@
 // screen.c -- master for refresh, status bar, console, chat, notify, etc
 
 #include "quakedef.h"
-#include "glquake.h"
 
 /*
 
@@ -462,8 +461,8 @@ void SCR_DrawPause (void)
 		}
 	}
 
-	finaly = ((float)pic->height * LogoPercent) - pic->height;
-	UI_DrawPic( (viddef.width - pic->width)/2, finaly, pic);
+	finaly = ((float)R_GetImageHeight(pic) * LogoPercent) - R_GetImageHeight(pic);
+	UI_DrawPic( (viddef.width - R_GetImageWidth(pic)) / 2, finaly, pic);
 }
 
 /*
@@ -479,8 +478,8 @@ void SCR_DrawLoading (void)
 		return;
 		
 	pic = R_CachePic ("gfx/loading.lmp");
-	UI_DrawPic ( (viddef.width - pic->width)/2, 
-		(viddef.height - 48 - pic->height)/2, pic);
+	UI_DrawPic ( (viddef.width - R_GetImageWidth(pic)) / 2, 
+		(viddef.height - 48 - R_GetImageHeight(pic)) / 2, pic);
 }
 
 
@@ -834,7 +833,7 @@ void SB_FinaleOverlay(void)
 	image_t	*pic;
 
 	pic = R_CachePic("gfx/finale.lmp");
-	UI_DrawPic((viddef.width-pic->width)/2, 16, pic);
+	UI_DrawPic((viddef.width - R_GetImageWidth(pic)) / 2, 16, pic);
 }
 
 /*

@@ -37,7 +37,6 @@ extern	QCvar*	gl_reporttjunctions;
 
 extern byte *playerTranslation;
 
-void Draw_Crosshair(void);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void Draw_RedString (int x, int y, const char *str);

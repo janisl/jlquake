@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // screen.c -- master for refresh, status bar, console, chat, notify, etc
 
 #include "quakedef.h"
-#include "glquake.h"
 
 /*
 
@@ -479,7 +478,7 @@ void SCR_SetUpToDrawConsole (void)
 		return;		// never a console with loading plaque
 		
 // decide on the height of the console
-	con_forcedup = !tr.worldModel || cls.signon != SIGNONS;
+	con_forcedup = cls.state != ca_connected || cls.signon != SIGNONS;
 
 	if (con_forcedup)
 	{
