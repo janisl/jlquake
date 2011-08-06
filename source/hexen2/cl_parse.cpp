@@ -880,15 +880,6 @@ void CL_ParseClientdata (int bits)
 		SB_InvChanged();*/
 }
 
-int color_offsets[NUM_CLASSES] =
-{
-	2*14*256,
-	0,
-	1*14*256,
-	2*14*256,
-	2*14*256
-};
-
 /*
 =====================
 CL_NewTranslation

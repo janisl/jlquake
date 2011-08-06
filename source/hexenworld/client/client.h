@@ -417,8 +417,6 @@ extern	clightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES_Q1];
 extern	int				cl_lightstylevalue[256];	// 8.8 fraction of base light value
 extern	cdlight_t		cl_dlights[MAX_DLIGHTS];
 
-extern	int				color_offsets[MAX_PLAYER_CLASS];
-
 //=============================================================================
 
 extern	qboolean	nomaster;

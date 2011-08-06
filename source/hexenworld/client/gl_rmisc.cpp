@@ -3,8 +3,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-byte *playerTranslation;
-
 unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
@@ -67,7 +65,6 @@ void CL_InitRenderStuff (void)
 		Sys_Error ("Couldn't load gfx/player.lmp");
 }
 
-extern int color_offsets[MAX_PLAYER_CLASS];
 extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 
 /*
@@ -77,62 +74,41 @@ R_TranslatePlayerSkin
 Translates a skin texture by the per-player color lookup
 ===============
 */
-void R_TranslatePlayerSkin (int playernum)
+void R_TranslatePlayerSkin(int playernum)
 {
-	int				top, bottom;
-	byte			translate[256];
-	int				i;
-	byte			*sourceA, *sourceB, *colorA, *colorB;
-	player_info_t	*player;
-
-
- 	for (i=0 ; i<256 ; i++)
-		translate[i] = i;
-
-	player = &cl.players[playernum];
+	player_info_t* player = &cl.players[playernum];
 	if (!player->name[0])
-		return;
-	if (!player->playerclass)
-		return;
-
-	top = player->topcolor;
-	bottom = player->bottomcolor;
-
-	if (top > 10) top = 0;
-	if (bottom > 10) bottom = 0;
-
-	top -= 1;
-	bottom -= 1;
-
-	colorA = playerTranslation + 256 + color_offsets[(int)player->playerclass-1];
-	colorB = colorA + 256;
-	sourceA = colorB + 256 + (top * 256);
-	sourceB = colorB + 256 + (bottom * 256);
-	for(i=0;i<256;i++,colorA++,colorB++,sourceA++,sourceB++)
 	{
-		if (top >= 0 && (*colorA != 255)) 
-			translate[i] = *sourceA;
-		if (bottom >= 0 && (*colorB != 255)) 
-			translate[i] = *sourceB;
+		return;
 	}
+	if (!player->playerclass)
+	{
+		return;
+	}
+
+	byte translate[256];
+	CL_CalcHexen2SkinTranslation(player->topcolor, player->bottomcolor, player->playerclass, translate);
 
 	//
 	// locate the original skin pixels
 	//
-	if (cl.players[playernum].modelindex <= 0)
+	if (player->modelindex <= 0)
+	{
 		return;
+	}
 
 	int classIndex;
-	if (cl.players[playernum].playerclass >= 1 && 
-		cl.players[playernum].playerclass <= MAX_PLAYER_CLASS)
+	if (player->playerclass >= 1 && player->playerclass <= MAX_PLAYER_CLASS)
 	{
-		classIndex = (int)cl.players[playernum].playerclass - 1;
-		cl.players[playernum].Translated = true;
+		classIndex = (int)player->playerclass - 1;
+		player->Translated = true;
 	}
 	else
+	{
 		classIndex = 0;
+	}
 
-	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), player_models[cl.players[playernum].playerclass - 1], translate, classIndex);
+	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), player_models[classIndex], translate, classIndex);
 }
 
 /*

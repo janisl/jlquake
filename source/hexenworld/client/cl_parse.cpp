@@ -770,16 +770,6 @@ void CL_ParseClientdata (void)
 	}	
 }
 
-int color_offsets[MAX_PLAYER_CLASS] =
-{
-	2*14*256,
-	0,
-	1*14*256,
-	2*14*256,
-	2*14*256,
-	2*14*256
-};
-
 /*
 =====================
 CL_NewTranslation

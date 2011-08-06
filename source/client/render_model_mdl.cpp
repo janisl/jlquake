@@ -48,7 +48,7 @@
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
 byte					q1_player_8bit_texels[320 * 200];
-byte					h2_player_8bit_texels[6][620 * 245];
+byte					h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

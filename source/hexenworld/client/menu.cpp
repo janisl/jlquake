@@ -229,42 +229,9 @@ void M_DrawTransPicCropped (int x, int y, image_t *pic)
 #define PLAYER_PIC_WIDTH 68
 #define PLAYER_PIC_HEIGHT 114
 
-byte identityTable[256];
 byte translationTable[256];
-extern int color_offsets[MAX_PLAYER_CLASS];
-extern byte *playerTranslation;
 static byte		menuplyr_pixels[MAX_PLAYER_CLASS][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 image_t*	translate_texture[MAX_PLAYER_CLASS];
-
-void M_BuildTranslationTable(int top, int bottom)
-{
-	int		j;
-	byte	*dest, *source, *sourceA, *sourceB, *colorA, *colorB;
-
-	for (j = 0; j < 256; j++)
-		identityTable[j] = j;
-	dest = translationTable;
-	source = identityTable;
-	Com_Memcpy(dest, source, 256);
-
-	if (top > 10) top = 0;
-	if (bottom > 10) bottom = 0;
-
-	top -= 1;
-	bottom -= 1;
-
-	colorA = playerTranslation + 256 + color_offsets[(int)which_class-1];
-	colorB = colorA + 256;
-	sourceA = colorB + 256 + (top * 256);
-	sourceB = colorB + 256 + (bottom * 256);
-	for(j=0;j<256;j++,colorA++,colorB++,sourceA++,sourceB++)
-	{
-		if (top >= 0 && (*colorA != 255)) 
-			dest[j] = source[*sourceA];
-		if (bottom >= 0 && (*colorB != 255)) 
-			dest[j] = source[*sourceB];
-	}
-}
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
@@ -2456,7 +2423,7 @@ void M_Setup_Draw (void)
 		which_class = setup_class;
 	}
 	p = R_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", which_class), menuplyr_pixels[which_class - 1]);
-	M_BuildTranslationTable(setup_top, setup_bottom);
+	CL_CalcHexen2SkinTranslation(setup_top, setup_bottom, which_class, translationTable);
 	R_CreateOrUpdateTranslatedImage(translate_texture[which_class-1], va("translate_pic%d", which_class), menuplyr_pixels[which_class-1], translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
 	M_DrawPic(220, 72, translate_texture[which_class - 1]);
 

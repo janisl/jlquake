@@ -126,7 +126,11 @@
 
 //===========================================
 
-#define NUM_CLASSES					5
+#ifdef MISSIONPACK
+#define NUM_CLASSES					NUM_CLASSES_H2MP
+#else
+#define NUM_CLASSES					NUM_CLASSES_H2
+#endif
 #define ABILITIES_STR_INDEX			400
 
 #ifdef DEMOBUILD

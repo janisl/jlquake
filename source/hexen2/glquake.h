@@ -36,8 +36,6 @@ void R_TimeRefresh_f (void);
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;
 
-extern byte *playerTranslation;
-
 void R_InitParticles (void);
 void SCR_DrawLoading (void);
 

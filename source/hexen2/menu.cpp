@@ -102,7 +102,9 @@ const char *ClassNames[NUM_CLASSES] =
 	"Crusader",
 	"Necromancer",
 	"Assassin",
+#ifdef MISSIONPACK
 	"Demoness"
+#endif
 };
 
 const char *ClassNamesU[NUM_CLASSES] = 
@@ -111,7 +113,9 @@ const char *ClassNamesU[NUM_CLASSES] =
 	"CRUSADER",
 	"NECROMANCER",
 	"ASSASSIN",
+#ifdef MISSIONPACK
 	"DEMONESS"
+#endif
 };
 
 const char *DiffNames[NUM_CLASSES][4] =
@@ -140,12 +144,14 @@ const char *DiffNames[NUM_CLASSES][4] =
 		"EXECUTIONER",
 		"WIDOW MAKER"
 	},
+#ifdef MISSIONPACK
 	{	// Demoness
 		"LARVA",
 		"SPAWN",
 		"FIEND",
 		"SHE BITCH"
 	}
+#endif
 };
 
 
@@ -229,44 +235,10 @@ void M_DrawTransPicCropped (int x, int y, image_t *pic)
 #define PLAYER_PIC_WIDTH 68
 #define PLAYER_PIC_HEIGHT 114
 
-byte identityTable[256];
 byte translationTable[256];
-extern int color_offsets[NUM_CLASSES];
-extern byte *playerTranslation;
 extern int setup_class;
 static byte		menuplyr_pixels[NUM_CLASSES][PLAYER_PIC_WIDTH*PLAYER_PIC_HEIGHT];
 image_t*	translate_texture[NUM_CLASSES];
-
-void M_BuildTranslationTable(int top, int bottom)
-{
-	int		j;
-	byte	*dest, *source, *sourceA, *sourceB, *colorA, *colorB;
-
-	for (j = 0; j < 256; j++)
-		identityTable[j] = j;
-	dest = translationTable;
-	source = identityTable;
-	Com_Memcpy(dest, source, 256);
-
-	if (top > 10) top = 0;
-	if (bottom > 10) bottom = 0;
-
-	top -= 1;
-	bottom -= 1;
-
-	colorA = playerTranslation + 256 + color_offsets[(int)setup_class-1];
-	colorB = colorA + 256;
-	sourceA = colorB + 256 + (top * 256);
-	sourceB = colorB + 256 + (bottom * 256);
-	for(j=0;j<256;j++,colorA++,colorB++,sourceA++,sourceB++)
-	{
-		if (top >= 0 && (*colorA != 255)) 
-			dest[j] = source[*sourceA];
-		if (bottom >= 0 && (*colorB != 255)) 
-			dest[j] = source[*sourceB];
-	}
-
-}
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
@@ -1467,7 +1439,7 @@ void M_Setup_Draw (void)
 	M_Print (72, 156, "Accept Changes");
 
 	p = R_CachePicWithTransPixels(va("gfx/menu/netp%i.lmp", setup_class), menuplyr_pixels[setup_class - 1]);
-	M_BuildTranslationTable(setup_top, setup_bottom);
+	CL_CalcHexen2SkinTranslation(setup_top, setup_bottom, setup_class, translationTable);
 	R_CreateOrUpdateTranslatedImage(translate_texture[setup_class - 1], "*translate_pic", menuplyr_pixels[setup_class - 1], translationTable, PLAYER_PIC_WIDTH, PLAYER_PIC_HEIGHT);
 	M_DrawPic(220, 72, translate_texture[setup_class - 1]);
 

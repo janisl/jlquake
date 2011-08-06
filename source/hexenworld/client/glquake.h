@@ -33,8 +33,6 @@ void R_TimeRefresh_f (void);
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;
 
-extern byte *playerTranslation;
-
 void R_InitParticles (void);
 void R_ClearParticles (void);
 void Draw_RedString (int x, int y, const char *str);

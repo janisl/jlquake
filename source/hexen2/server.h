@@ -207,13 +207,6 @@ typedef struct client_s
 #define EF_LIGHT				64
 #define EF_NODRAW				128
 
-// Player Classes
-#define CLASS_PALADIN				1
-#define CLASS_CLERIC 				2
-#define CLASS_NECROMANCER			3
-#define CLASS_THEIF   				4
-#define CLASS_DEMON					5
-
 // Built-in Spawn Flags
 #define SPAWNFLAG_NOT_PALADIN       0x00000100
 #define SPAWNFLAG_NOT_CLERIC		0x00000200

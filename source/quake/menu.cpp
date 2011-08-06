@@ -133,35 +133,10 @@ void M_DrawPic (int x, int y, image_t *pic)
 	UI_DrawPic (x + ((viddef.width - 320)>>1), y, pic);
 }
 
-byte identityTable[256];
 byte translationTable[256];
 
 static byte		menuplyr_pixels[4096];
 image_t*	translate_texture;
-
-void M_BuildTranslationTable(int top, int bottom)
-{
-	int		j;
-	byte	*dest, *source;
-
-	for (j = 0; j < 256; j++)
-		identityTable[j] = j;
-	dest = translationTable;
-	source = identityTable;
-	Com_Memcpy(dest, source, 256);
-
-	if (top < 128)	// the artists made some backwards ranges.  sigh.
-		Com_Memcpy(dest + TOP_RANGE, source + top, 16);
-	else
-		for (j=0 ; j<16 ; j++)
-			dest[TOP_RANGE+j] = source[top+15-j];
-
-	if (bottom < 128)
-		Com_Memcpy(dest + BOTTOM_RANGE, source + bottom, 16);
-	else
-		for (j=0 ; j<16 ; j++)
-			dest[BOTTOM_RANGE+j] = source[bottom+15-j];
-}
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
@@ -732,7 +707,7 @@ void M_Setup_Draw (void)
 	p = R_CachePic ("gfx/bigbox.lmp");
 	M_DrawTransPic (160, 64, p);
 	p = R_CachePicWithTransPixels("gfx/menuplyr.lmp", menuplyr_pixels);
-	M_BuildTranslationTable(setup_top*16, setup_bottom*16);
+	CL_CalcQuakeSkinTranslation(setup_top, setup_bottom, translationTable);
 	R_CreateOrUpdateTranslatedImage(translate_texture, "*translate_pic", menuplyr_pixels, translationTable, R_GetImageWidth(p), R_GetImageHeight(p));
 	M_DrawPic(172, 72, translate_texture);
 

@@ -157,16 +157,6 @@
 #define SCALE_ORIGIN_TOP		64	// Scaling origin at object top
 #define DRF_TRANSLUCENT			128
 
-// Player Classes
-#define MAX_PLAYER_CLASS			6
-
-#define CLASS_PALADIN				1
-#define CLASS_CLERIC 				2
-#define CLASS_NECROMANCER			3
-#define CLASS_THEIF   				4
-#define CLASS_DEMON					5
-#define CLASS_DWARF					6
-
 //Siege teams
 #define ST_DEFENDER					1
 #define ST_ATTACKER   				2

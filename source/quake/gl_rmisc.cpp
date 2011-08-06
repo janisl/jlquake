@@ -85,35 +85,10 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin(int playernum)
 {
-	int top = cl.scores[playernum].colors & 0xf0;
-	int bottom = (cl.scores[playernum].colors &15) << 4;
-
+	int top = (cl.scores[playernum].colors & 0xf0) >> 4;
+	int bottom = cl.scores[playernum].colors & 15;
 	byte translate[256];
-	for (int i = 0; i < 256; i++)
-	{
-		translate[i] = i;
-	}
-
-	for (int i = 0; i < 16; i++)
-	{
-		if (top < 128)	// the artists made some backwards ranges.  sigh.
-		{
-			translate[TOP_RANGE + i] = top + i;
-		}
-		else
-		{
-			translate[TOP_RANGE + i] = top + 15 - i;
-		}
-				
-		if (bottom < 128)
-		{
-			translate[BOTTOM_RANGE + i] = bottom + i;
-		}
-		else
-		{
-			translate[BOTTOM_RANGE + i] = bottom + 15 - i;
-		}
-	}
+	CL_CalcQuakeSkinTranslation(top, bottom, translate);
 
 	//
 	// locate the original skin pixels

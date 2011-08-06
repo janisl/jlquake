@@ -845,7 +845,7 @@ void R_FreeSurfaceGridMesh(srfGridMesh_t* Grid);
 
 extern model_t*	loadmodel;
 extern byte		q1_player_8bit_texels[320 * 200];
-extern byte		h2_player_8bit_texels[6][620 * 245];
+extern byte		h2_player_8bit_texels[MAX_PLAYER_CLASS][620 * 245];
 extern mbrush29_texture_t	*r_notexture_mip;
 extern world_t		s_worldData;
 extern float			r_avertexnormal_dots[SHADEDOT_QUANT][256];

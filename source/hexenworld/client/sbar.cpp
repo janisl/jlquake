@@ -1013,9 +1013,6 @@ void Sbar_IntermissionNumber (int x, int y, int num, int digits, int color)
 	}
 }
 
-extern int color_offsets[MAX_PLAYER_CLASS];
-extern byte *playerTranslation;
-
 void FindColor (int slot, int *color1, int *color2)
 {
 	int		j;

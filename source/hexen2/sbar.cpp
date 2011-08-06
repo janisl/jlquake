@@ -116,7 +116,9 @@ static int AmuletAC[NUM_CLASSES] =
 	4,		// Crusader
 	2,		// Necromancer
 	6,		// Assassin
+#ifdef MISSIONPACK
 	6		// Demoness
+#endif
 };
 
 static int BracerAC[NUM_CLASSES] =
@@ -125,7 +127,9 @@ static int BracerAC[NUM_CLASSES] =
 	8,		// Crusader
 	4,		// Necromancer
 	2,		// Assassin
+#ifdef MISSIONPACK
 	2		// Demoness
+#endif
 };
 
 static int BreastplateAC[NUM_CLASSES] =
@@ -134,7 +138,9 @@ static int BreastplateAC[NUM_CLASSES] =
 	6,		// Crusader
 	8,		// Necromancer
 	4,		// Assassin
+#ifdef MISSIONPACK
 	4		// Demoness
+#endif
 };
 
 static int HelmetAC[NUM_CLASSES] =
@@ -143,7 +149,9 @@ static int HelmetAC[NUM_CLASSES] =
 	2,		// Crusader
 	6,		// Necromancer
 	8,		// Assassin
+#ifdef MISSIONPACK
 	8		// Demoness
+#endif
 };
 
 // CODE --------------------------------------------------------------------
@@ -900,9 +908,6 @@ void Sbar_IntermissionNumber (int x, int y, int num, int digits, int color)
 		ptr++;
 	}
 }
-
-extern int color_offsets[NUM_CLASSES];
-extern byte *playerTranslation;
 
 void FindColor (int slot, int *color1, int *color2)
 {

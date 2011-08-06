@@ -3,8 +3,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-byte *playerTranslation;
-
 unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
@@ -64,8 +62,6 @@ void CL_InitRenderStuff (void)
 		Sys_Error ("Couldn't load gfx/player.lmp");
 }
 
-extern int color_offsets[NUM_CLASSES];
-
 /*
 ===============
 R_TranslatePlayerSkin
@@ -75,47 +71,28 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin (int playernum)
 {
-	int		top, bottom;
-	byte	translate[256];
-	int		i;
-	byte	*sourceA, *sourceB, *colorA, *colorB;
-	int		playerclass = (int)cl.scores[playernum].playerclass;
+	int playerclass = (int)cl.scores[playernum].playerclass;
 
-	for (i=0 ; i<256 ; i++)
-		translate[i] = i;
+	int top = (cl.scores[playernum].colors & 0xf0) >> 4;
+	int bottom = (cl.scores[playernum].colors & 15);
 
-	top = (cl.scores[playernum].colors & 0xf0) >> 4;
-	bottom = (cl.scores[playernum].colors & 15);
-
-	if (top > 10) top = 0;
-	if (bottom > 10) bottom = 0;
-
-	top -= 1;
-	bottom -= 1;
-
-	colorA = playerTranslation + 256 + color_offsets[playerclass-1];
-	colorB = colorA + 256;
-	sourceA = colorB + 256 + (top * 256);
-	sourceB = colorB + 256 + (bottom * 256);
-	for(i=0;i<256;i++,colorA++,colorB++,sourceA++,sourceB++)
-	{
-		if (top >= 0 && (*colorA != 255)) 
-			translate[i] = *sourceA;
-		if (bottom >= 0 && (*colorB != 255)) 
-			translate[i] = *sourceB;
-	}
-
+	byte translate[256];
+	CL_CalcHexen2SkinTranslation(top, bottom, playerclass, translate);
 
 	//
 	// locate the original skin pixels
 	//
-	entity_t* ent = &cl_entities[1+playernum];
+	entity_t* ent = &cl_entities[1 + playernum];
 
 	int classIndex;
 	if (playerclass >= 1 && playerclass <= NUM_CLASSES)
+	{
 		classIndex = playerclass - 1;
+	}
 	else
+	{
 		classIndex = 0;
+	}
 
 	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), ent->model, translate, classIndex);
 }

@@ -30,6 +30,11 @@ extern QCvar*		cl_inGameVideo;
 
 void CL_SharedInit();
 int CL_ScaledMilliseconds();
+void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate);
+void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate);
+
+extern byte* playerTranslation;
+extern int color_offsets[MAX_PLAYER_CLASS];
 
 struct clientStaticCommon_t
 {

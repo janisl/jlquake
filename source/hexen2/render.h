@@ -7,9 +7,6 @@
 
 #define	MAXCLIPPLANES	11
 
-#define	TOP_RANGE		16			// soldier uniform colors
-#define	BOTTOM_RANGE	96
-
 // EF_ changes must also be made in model.h
 
 #define	EF_ROCKET		       1			// leave a trail

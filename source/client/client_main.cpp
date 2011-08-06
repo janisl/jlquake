@@ -36,6 +36,18 @@ QCvar*		cl_inGameVideo;
 
 clientStaticCommon_t* cls_common;
 
+byte* playerTranslation;
+
+int color_offsets[MAX_PLAYER_CLASS] =
+{
+	2 * 14 * 256,
+	0,
+	1 * 14 * 256,
+	2 * 14 * 256,
+	2 * 14 * 256,
+	2 * 14 * 256
+};
+
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 // CODE --------------------------------------------------------------------
@@ -60,4 +72,94 @@ void CL_SharedInit()
 int CL_ScaledMilliseconds()
 {
 	return Sys_Milliseconds() * com_timescale->value;
+}
+
+//==========================================================================
+//
+//	CL_CalcQuakeSkinTranslation
+//
+//==========================================================================
+
+void CL_CalcQuakeSkinTranslation(int top, int bottom, byte* translate)
+{
+	enum
+	{
+		// soldier uniform colors
+		TOP_RANGE = 16,
+		BOTTOM_RANGE = 96
+	};
+
+	top = (top < 0) ? 0 : ((top > 13) ? 13 : top);
+	bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
+	top *= 16;
+	bottom *= 16;
+
+	for (int i = 0; i < 256; i++)
+	{
+		translate[i] = i;
+	}
+
+	for (int i = 0; i < 16; i++)
+	{
+		//	The artists made some backwards ranges. sigh.
+		if (top < 128)
+		{
+			translate[TOP_RANGE + i] = top + i;
+		}
+		else
+		{
+			translate[TOP_RANGE + i] = top + 15 - i;
+		}
+
+		if (bottom < 128)
+		{
+			translate[BOTTOM_RANGE + i] = bottom + i;
+		}
+		else
+		{
+			translate[BOTTOM_RANGE + i] = bottom + 15 - i;
+		}
+	}
+}
+
+//==========================================================================
+//
+//	CL_CalcHexen2SkinTranslation
+//
+//==========================================================================
+
+void CL_CalcHexen2SkinTranslation(int top, int bottom, int playerClass, byte* translate)
+{
+	for (int i = 0; i < 256; i++)
+	{
+		translate[i] = i;
+	}
+
+	if (top > 10)
+	{
+		top = 0;
+	}
+	if (bottom > 10)
+	{
+		bottom = 0;
+	}
+
+	top -= 1;
+	bottom -= 1;
+
+	byte* colorA = playerTranslation + 256 + color_offsets[playerClass - 1];
+	byte* colorB = colorA + 256;
+	byte* sourceA = colorB + 256 + top * 256;
+	byte* sourceB = colorB + 256 + bottom * 256;
+	for (int i = 0; i < 256; i++, colorA++, colorB++, sourceA++, sourceB++)
+	{
+		if (top >= 0 && *colorA != 255)
+		{
+			translate[i] = *sourceA;
+		}
+		if (bottom >= 0 && *colorB != 255)
+		{
+			translate[i] = *sourceB;
+		}
+	}
 }

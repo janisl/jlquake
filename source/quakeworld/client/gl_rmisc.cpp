@@ -83,19 +83,17 @@ Translates a skin texture by the per-player color lookup
 */
 void R_TranslatePlayerSkin (int playernum)
 {
-	byte	translate[256];
-	byte	*original;
-	player_info_t *player;
-	char s[512];
-
-	player = &cl.players[playernum];
+	player_info_t* player = &cl.players[playernum];
 	if (!player->name[0])
 		return;
 
+	char s[512];
 	QStr::Cpy(s, Info_ValueForKey(player->userinfo, "skin"));
 	QStr::StripExtension(s, s);
 	if (player->skin && !QStr::ICmp(s, player->skin->name))
+	{
 		player->skin = NULL;
+	}
 
 	if (player->_topcolor != player->topcolor ||
 		player->_bottomcolor != player->bottomcolor || !player->skin)
@@ -103,38 +101,8 @@ void R_TranslatePlayerSkin (int playernum)
 		player->_topcolor = player->topcolor;
 		player->_bottomcolor = player->bottomcolor;
 
-		int top = player->topcolor;
-		int bottom = player->bottomcolor;
-		top = (top < 0) ? 0 : ((top > 13) ? 13 : top);
-		bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
-		top *= 16;
-		bottom *= 16;
-
-		for (int i = 0; i < 256; i++)
-		{
-			translate[i] = i;
-		}
-
-		for (int i = 0; i < 16; i++)
-		{
-			if (top < 128)	// the artists made some backwards ranges.  sigh.
-			{
-				translate[TOP_RANGE + i] = top + i;
-			}
-			else
-			{
-				translate[TOP_RANGE + i] = top + 15 - i;
-			}
-
-			if (bottom < 128)
-			{
-				translate[BOTTOM_RANGE + i] = bottom + i;
-			}
-			else
-			{
-				translate[BOTTOM_RANGE + i] = bottom + 15 - i;
-			}
-		}
+		byte translate[256];
+		CL_CalcQuakeSkinTranslation(player->topcolor, player->bottomcolor, translate);
 
 		//
 		// locate the original skin pixels
@@ -144,7 +112,7 @@ void R_TranslatePlayerSkin (int playernum)
 		{
 			Skin_Find(player);
 		}
-		original = Skin_Cache(player->skin);
+		byte* original = Skin_Cache(player->skin);
 		if (original != NULL)
 		{
 			//skin data width
