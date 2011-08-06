@@ -384,3 +384,34 @@ void R_CreateOrUpdateTranslatedModelSkinH2(image_t*& image, const char* name, qh
 {
 	R_CreateOrUpdateTranslatedModelSkin(image, name, modelHandle, h2_player_8bit_texels[classIndex], translation);
 }
+
+//==========================================================================
+//
+//	R_LoadQuakeWorldSkinData
+//
+//==========================================================================
+
+byte* R_LoadQuakeWorldSkinData(const char* name)
+{
+	int width;
+	int height;
+	byte* pixels;
+	R_LoadPCX(name, &pixels, NULL, &width, &height);
+	if (!pixels)
+	{
+		return NULL;
+	}
+
+	byte* out = new byte[320 * 200];
+	Com_Memset(out, 0, 320 * 200);
+
+	byte* outp = out;
+	byte* pixp = pixels;
+	for (int y = 0; y < height; y++, outp += 320, pixp += width)
+	{
+		Com_Memcpy(outp, pixp, width);
+	}
+	delete[] pixels;
+
+	return out;
+}

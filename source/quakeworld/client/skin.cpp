@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "quakedef.h"
-#include "../../client/render_local.h"
 
 QCvar*		baseskin;
 QCvar*		noskins;
@@ -93,11 +92,8 @@ Skin_Cache
 Returns a pointer to the skin bitmap, or NULL to use the default
 ==========
 */
-byte	*Skin_Cache (qw_skin_t *skin)
+byte* Skin_Cache(qw_skin_t* skin)
 {
-	char	name[1024];
-	byte	*out, *pix;
-
 	if (cls.downloadtype == dl_skin)
 		return NULL;		// use base until downloaded
 
@@ -107,13 +103,14 @@ byte	*Skin_Cache (qw_skin_t *skin)
 	if (skin->failedload)
 		return NULL;
 
-	out = skin->data;
+	byte* out = skin->data;
 	if (out)
 		return out;
 
-//
-// load the pic from disk
-//
+	//
+	// load the pic from disk
+	//
+	char	name[1024];
 	sprintf (name, "skins/%s.pcx", skin->name);
 	if (!FS_FOpenFileRead(name, NULL, false))
 	{
@@ -126,31 +123,16 @@ byte	*Skin_Cache (qw_skin_t *skin)
 		}
 	}
 
-	int width;
-	int height;
-	R_LoadPCX(name, &pix, NULL, &width, &height);
+	out = R_LoadQuakeWorldSkinData(name);
 
-	if (!pix)
+	if (!out)
 	{
 		skin->failedload = true;
 		Con_Printf ("Skin %s was malformed.  You should delete it.\n", name);
 		return NULL;
 	}
 
-	out = new byte[320 * 200];
 	skin->data = out;
-	if (!out)
-		Sys_Error ("Skin_Cache: couldn't allocate");
-
-	Com_Memset(out, 0, 320*200);
-
-	byte* outp = out;
-	byte* pixp = pix;
-	for (int y = 0; y < height; y++, outp += 320, pixp += width)
-	{
-		Com_Memcpy(outp, pixp, width);
-	}
-
 	skin->failedload = false;
 
 	return out;
