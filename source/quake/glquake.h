@@ -52,4 +52,3 @@ extern	QCvar*	gl_reporttjunctions;
 
 void R_InitParticles (void);
 void R_ClearParticles (void);
-void V_CalcBlend (void);

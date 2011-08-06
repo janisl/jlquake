@@ -239,7 +239,7 @@ void R_TimeRefresh_f (void)
 		viewangles[1] = i/128.0*360.0;
 		AnglesToAxis(viewangles, r_refdef.viewaxis);
 		R_BeginFrame(STEREO_CENTER);
-		R_RenderView ();
+		V_RenderScene ();
 		R_EndFrame(NULL, NULL);
 	}
 

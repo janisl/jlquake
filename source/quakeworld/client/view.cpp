@@ -363,7 +363,7 @@ V_SetContentsColor
 Underwater, lava, etc each has a color shift
 =============
 */
-void V_SetContentsColor (int contents)
+static void V_SetContentsColor (int contents)
 {
 	if (!v_contentblend->value) {
 		cl.cshifts[CSHIFT_CONTENTS] = cshift_empty;
@@ -432,7 +432,7 @@ static void V_CalcPowerupCshift (void)
 V_CalcBlend
 =============
 */
-void V_CalcBlend (void)
+static void V_CalcBlend (void)
 {
 	float	r, g, b, a, a2;
 	int		j;
@@ -763,6 +763,44 @@ static void CL_AddViewModel()
 	R_AddRefEntityToScene(&gun);
 }
 
+void R_PolyBlend (void);
+
+/*
+================
+V_RenderScene
+
+r_refdef must be set before the first call
+================
+*/
+void V_RenderScene()
+{
+	// don't allow cheats in multiplayer
+	Cvar_Set("r_fullbright", "0");
+	Cvar_Set("r_lightmap", "0");
+	if (!QStr::Atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
+	{
+		Cvar_Set("r_wateralpha", "1");
+	}
+
+	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
+	{
+		float Val = cl_lightstylevalue[i] / 256.0;
+		R_AddLightStyleToScene(i, Val, Val, Val);
+	}
+	CL_AddParticles();
+
+	CL_AnimateLight();
+
+	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
+	V_CalcBlend();
+
+	r_refdef.time = (int)(cl.time * 1000);
+
+	R_RenderScene(&r_refdef);
+
+	R_PolyBlend();
+}
+
 /*
 ==================
 V_RenderView
@@ -804,7 +842,7 @@ cl.simangles[ROLL] = 0;	// FIXME @@@
 		R_AddLightToScene(l->origin, l->radius, 1, 1, 1);
 	}
 
-	R_RenderView ();
+	V_RenderScene ();
 }
 
 //============================================================================

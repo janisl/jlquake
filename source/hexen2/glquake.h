@@ -42,7 +42,6 @@ extern	QCvar*	gl_reporttjunctions;
 
 extern byte *playerTranslation;
 
-void V_CalcBlend (void);
 void R_InitParticles (void);
 void SCR_DrawLoading (void);
 

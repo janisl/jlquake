@@ -82,47 +82,6 @@ void R_PolyBlend (void)
 	R_Draw2DQuad(r_refdef.x, r_refdef.y, r_refdef.width, r_refdef.height, NULL, 0, 0, 0, 0, v_blend[0], v_blend[1], v_blend[2], v_blend[3]);
 }
 
-/*
-===============
-R_SetupFrame
-===============
-*/
-void R_SetupFrame (void)
-{
-// don't allow cheats in multiplayer
-	r_fullbright->value = 0;
-
-	CL_AnimateLight ();
-
-	V_SetContentsColor(CM_PointContentsQ1(r_refdef.vieworg, 0));
-	V_CalcBlend ();
-}
-
-/*
-================
-R_RenderView
-
-r_refdef must be set before the first call
-================
-*/
-void R_RenderView (void)
-{
-	for (int i = 0; i < MAX_LIGHTSTYLES_Q1; i++)
-	{
-		float Val = cl_lightstylevalue[i] / 256.0;
-		R_AddLightStyleToScene(i, Val, Val, Val);
-	}
-	CL_AddParticles();
-
-	R_SetupFrame ();
-
-	r_refdef.time = (int)(cl.time * 1000);
-
-	R_RenderScene(&r_refdef);
-
-	R_PolyBlend ();
-}
-
 void R_DrawName(vec3_t origin, char *Name, int Red)
 {
 	if (!Name)
