@@ -52,7 +52,6 @@ add_executable(jlhwcl
 	client/console.cpp
 	client/cvar.cpp
 	client/gl_draw.cpp
-	client/gl_ngraph.cpp
 	client/gl_rmain.cpp
 	client/gl_rmisc.cpp
 	client/keys.cpp

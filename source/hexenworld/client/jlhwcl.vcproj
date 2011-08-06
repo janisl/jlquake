@@ -259,10 +259,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_ngraph.cpp"
-				>
-			</File>
-			<File
 				RelativePath="gl_rmain.cpp"
 				>
 			</File>
