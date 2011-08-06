@@ -688,7 +688,7 @@ void SV_WriteClientdataToMessage (client_t *client, QMsg *msg)
 
 	ent = client->edict;
 
-	// send the chokecount for r_netgraph
+	// send the chokecount for cl_netgraph
 	if (client->chokecount)
 	{
 		msg->WriteByte(svc_chokecount);

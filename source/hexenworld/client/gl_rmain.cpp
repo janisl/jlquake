@@ -13,7 +13,6 @@ extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 //
 refdef_t	r_refdef;
 
-QCvar*	r_netgraph;
 QCvar*	gl_nocolors;
 QCvar*	gl_reporttjunctions;
 QCvar*	r_teamcolor;

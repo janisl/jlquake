@@ -38,12 +38,5 @@ void R_TimeRefresh_f (void);
 //
 extern	image_t*	playertextures[MAX_CLIENTS];
 
-extern	QCvar*	r_netgraph;
-
 extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;
-
-//
-// gl_ngraph.c
-//
-void R_NetGraph (void);

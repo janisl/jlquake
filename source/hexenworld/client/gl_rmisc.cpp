@@ -51,9 +51,6 @@ void CL_InitRenderStuff (void)
 {
 	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
 
-	r_netgraph = Cvar_Get("r_netgraph","0", 0);
-
-
 	if (qglActiveTextureARB)
 		Cvar_SetValue ("r_texsort", 0.0);
 

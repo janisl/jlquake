@@ -31,3 +31,5 @@ void Draw_FadeScreen (void);
 void Draw_String (int x, int y, const char *str);
 void Draw_Alt_String (int x, int y, char *str);
 void Draw_Crosshair(void);
+
+void R_NetGraph (void);

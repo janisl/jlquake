@@ -64,6 +64,8 @@ QCvar*          scr_printspeed;
 QCvar*	show_fps;
 extern  QCvar*	crosshair;
 
+static QCvar*	cl_netgraph;
+
 qboolean        scr_initialized;                // ready to draw
 
 image_t          *scr_net;
@@ -341,6 +343,8 @@ void SCR_Init (void)
 
 	show_fps = Cvar_Get("show_fps", "0", CVAR_ARCHIVE);			// set for running times
 	cl_sbar		= Cvar_Get("cl_sbar", "0", CVAR_ARCHIVE);
+
+	cl_netgraph = Cvar_Get("cl_netgraph","0", 0);
 
 	scr_initialized = true;
 }
@@ -882,7 +886,7 @@ void SCR_UpdateScreen (void)
 	//
 	SCR_TileClear ();
 
-	if (r_netgraph->value)
+	if (cl_netgraph->value)
 		R_NetGraph ();
 
 	if (scr_drawdialog)
