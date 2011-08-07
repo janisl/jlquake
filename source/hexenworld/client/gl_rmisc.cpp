@@ -1,7 +1,7 @@
 // r_misc.c
 
 #include "quakedef.h"
-#include "glquake.h"
+#include "../../client/render_local.h"
 
 unsigned	d_8to24TranslucentTable[256];
 
@@ -12,7 +12,6 @@ float RTint[256],GTint[256],BTint[256];
 //
 refdef_t	r_refdef;
 
-QCvar*	gl_reporttjunctions;
 QCvar*	r_teamcolor;
 
 /*
@@ -117,8 +116,6 @@ void CL_InitRenderStuff (void)
 {
 	if (qglActiveTextureARB)
 		Cvar_SetValue ("r_texsort", 0.0);
-
-	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
 	r_teamcolor = Cvar_Get("r_teamcolor", "187", CVAR_ARCHIVE);
 

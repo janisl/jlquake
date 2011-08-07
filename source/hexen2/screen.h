@@ -12,6 +12,7 @@ void SCR_CenterPrint (char *str);
 
 void SCR_BeginLoadingPlaque (void);
 void SCR_EndLoadingPlaque (void);
+void SCR_DrawLoading (void);
 
 int SCR_ModalMessage (const char *text);
 

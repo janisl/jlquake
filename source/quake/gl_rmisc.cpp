@@ -20,14 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // r_misc.c
 
 #include "quakedef.h"
-#include "glquake.h"
+#include "../client/render_local.h"
 
 //
 // screen size info
 //
 refdef_t	r_refdef;
 
-QCvar*	gl_reporttjunctions;
 QCvar*	gl_doubleeyes;
 
 /*
@@ -72,8 +71,6 @@ void CL_InitRenderStuff (void)
 {	
 	if (qglActiveTextureARB)
 		Cvar_SetValue ("r_texsort", 0.0);
-
-	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
 	gl_doubleeyes = Cvar_Get("gl_doubleeys", "1", 0);
 

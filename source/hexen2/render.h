@@ -120,6 +120,7 @@ void R_LavaSplash (vec3_t org);
 void R_TeleportSplash (vec3_t org);
 
 void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
+void R_InitParticles (void);
 void R_ClearParticles (void);
 
 void D_ShowLoadingSize(void);

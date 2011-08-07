@@ -1,20 +1,18 @@
 // r_misc.c
 
 #include "quakedef.h"
-#include "glquake.h"
+#include "../client/render_local.h"
 
 unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
 
-qboolean	vid_initialized = false;
+static bool	vid_initialized = false;
 
 //
 // screen size info
 //
 refdef_t	r_refdef;
-
-QCvar*	gl_reporttjunctions;
 
 /*
 ==================
@@ -55,9 +53,7 @@ CL_InitRenderStuff
 ===============
 */
 void CL_InitRenderStuff (void)
-{	
-	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
-
+{
 	R_InitParticles ();
 
 	playerTranslation = (byte *)COM_LoadHunkFile ("gfx/player.lmp");
