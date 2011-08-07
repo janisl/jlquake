@@ -798,3 +798,33 @@ void SCR_UpdateScreen (void)
 	R_EndFrame(NULL, NULL);
 }
 
+void VID_Init()
+{
+	R_BeginRegistration(&cls.glconfig);
+
+	Sys_ShowConsole(0, false);
+
+	int i;
+	if ((i = COM_CheckParm("-conwidth")) != 0)
+		viddef.width = QStr::Atoi(COM_Argv(i+1));
+	else
+		viddef.width = 640;
+
+	viddef.width &= 0xfff8; // make it a multiple of eight
+
+	if (viddef.width < 320)
+		viddef.width = 320;
+
+	// pick a conheight that matches with correct aspect
+	viddef.height = viddef.width / cls.glconfig.windowAspect;
+
+	if ((i = COM_CheckParm("-conheight")) != 0)
+		viddef.height = QStr::Atoi(COM_Argv(i+1));
+	if (viddef.height < 200)
+		viddef.height = 200;
+
+	if (viddef.height > cls.glconfig.vidHeight)
+		viddef.height = cls.glconfig.vidHeight;
+	if (viddef.width > cls.glconfig.vidWidth)
+		viddef.width = cls.glconfig.vidWidth;
+}

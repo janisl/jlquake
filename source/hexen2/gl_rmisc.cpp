@@ -7,8 +7,6 @@ unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
 
-static bool	vid_initialized = false;
-
 //
 // screen size info
 //
@@ -45,40 +43,9 @@ void R_NewMap (void)
 	R_EndRegistration();
 }
 
-void VID_SetPalette()
-{
-	byte	*pal;
-	int		r,g,b,v;
-	int		i,c,p;
-	unsigned	*table;
-
-	pal = host_basepal;
-	table = d_8to24TranslucentTable;
-
-	for (i=0; i<16;i++)
-	{
-		c = ColorIndex[i]*3;
-
-		r = pal[c];
-		g = pal[c+1];
-		b = pal[c+2];
-
-		for(p=0;p<16;p++)
-		{
-			v = (ColorPercent[15-p]<<24) + (r<<0) + (g<<8) + (b<<16);
-			//v = (255<<24) + (r<<0) + (g<<8) + (b<<16);
-			*table++ = v;
-
-			RTint[i*16+p] = ((float)r) / ((float)ColorPercent[15-p]) ;
-			GTint[i*16+p] = ((float)g) / ((float)ColorPercent[15-p]);
-			BTint[i*16+p] = ((float)b) / ((float)ColorPercent[15-p]);
-		}
-	}
-}
-
 void D_ShowLoadingSize(void)
 {
-	if (!vid_initialized)
+	if (!tr.registered)
 		return;
 
 	qglDrawBuffer  (GL_FRONT);
@@ -86,26 +53,4 @@ void D_ShowLoadingSize(void)
 	SCR_DrawLoading();
 
 	qglDrawBuffer  (GL_BACK);
-}
-
-void VID_Init()
-{
-	R_BeginRegistration(&cls.glconfig);
-
-	VID_SetPalette();
-
-	Sys_ShowConsole(0, false);
-
-	if (COM_CheckParm("-scale2d"))
-	{
-		viddef.height = 200;
-		viddef.width = 320;
-	}
-	else
-	{
-		viddef.height = glConfig.vidHeight;
-		viddef.width = glConfig.vidWidth;
-	}
-
-	vid_initialized = true;
 }

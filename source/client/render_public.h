@@ -356,4 +356,7 @@ void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const c
 
 extern byte			r_palette[256][4];
 
+extern int			ColorIndex[16];
+extern unsigned		ColorPercent[16];
+
 extern void (*BotDrawDebugPolygonsFunc)(void (*drawPoly)(int color, int numPoints, float *points), int value);

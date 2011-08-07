@@ -1146,3 +1146,47 @@ void SCR_UpdateScreen (void)
 
 	R_EndFrame(NULL, NULL);
 }
+
+void VID_SetPalette()
+{
+	unsigned* table = d_8to24TranslucentTable;
+
+	for (int i = 0; i < 16; i++)
+	{
+		int c = ColorIndex[i];
+
+		int r = r_palette[c][0];
+		int g = r_palette[c][1];
+		int b = r_palette[c][2];
+
+		for (int p = 0; p < 16; p++)
+		{
+			int v = (ColorPercent[15 - p] << 24) + (r << 0) + (g << 8) + (b << 16);
+			*table++ = v;
+
+			RTint[i * 16 + p] = ((float)r) / ((float)ColorPercent[15 - p]) ;
+			GTint[i * 16 + p] = ((float)g) / ((float)ColorPercent[15 - p]);
+			BTint[i * 16 + p] = ((float)b) / ((float)ColorPercent[15 - p]);
+		}
+	}
+}
+
+void VID_Init()
+{
+	R_BeginRegistration(&cls.glconfig);
+
+	VID_SetPalette();
+
+	Sys_ShowConsole(0, false);
+
+	if (COM_CheckParm("-scale2d"))
+	{
+		viddef.height = 200;
+		viddef.width = 320;
+	}
+	else
+	{
+		viddef.height = cls.glconfig.vidHeight;
+		viddef.width = cls.glconfig.vidWidth;
+	}
+}

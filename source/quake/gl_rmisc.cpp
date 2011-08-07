@@ -60,35 +60,3 @@ void R_NewMap (void)
 
 	R_EndRegistration();
 }
-
-
-void VID_Init()
-{
-	R_BeginRegistration(&cls.glconfig);
-
-	Sys_ShowConsole(0, false);
-
-	int i;
-	if ((i = COM_CheckParm("-conwidth")) != 0)
-		viddef.width = QStr::Atoi(COM_Argv(i+1));
-	else
-		viddef.width = 640;
-
-	viddef.width &= 0xfff8; // make it a multiple of eight
-
-	if (viddef.width < 320)
-		viddef.width = 320;
-
-	// pick a conheight that matches with correct aspect
-	viddef.height = viddef.width / glConfig.windowAspect;
-
-	if ((i = COM_CheckParm("-conheight")) != 0)
-		viddef.height = QStr::Atoi(COM_Argv(i+1));
-	if (viddef.height < 200)
-		viddef.height = 200;
-
-	if (viddef.height > glConfig.vidHeight)
-		viddef.height = glConfig.vidHeight;
-	if (viddef.width > glConfig.vidWidth)
-		viddef.width = glConfig.vidWidth;
-}

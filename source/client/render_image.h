@@ -93,7 +93,4 @@ void R_LoadWAL(const char* FileName, byte** Pic, int* Width, int* Height);
 extern byte			host_basepal[768];
 extern unsigned*	d_8to24table;
 
-extern int			ColorIndex[16];
-extern unsigned		ColorPercent[16];
-
 extern bool			scrap_dirty;
