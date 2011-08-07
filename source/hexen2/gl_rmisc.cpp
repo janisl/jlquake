@@ -64,42 +64,6 @@ void CL_InitRenderStuff (void)
 
 /*
 ===============
-R_TranslatePlayerSkin
-
-Translates a skin texture by the per-player color lookup
-===============
-*/
-void R_TranslatePlayerSkin (int playernum)
-{
-	int playerclass = (int)cl.scores[playernum].playerclass;
-
-	int top = (cl.scores[playernum].colors & 0xf0) >> 4;
-	int bottom = (cl.scores[playernum].colors & 15);
-
-	byte translate[256];
-	CL_CalcHexen2SkinTranslation(top, bottom, playerclass, translate);
-
-	//
-	// locate the original skin pixels
-	//
-	entity_t* ent = &cl_entities[1 + playernum];
-
-	int classIndex;
-	if (playerclass >= 1 && playerclass <= NUM_CLASSES)
-	{
-		classIndex = playerclass - 1;
-	}
-	else
-	{
-		classIndex = 0;
-	}
-
-	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), ent->model, translate, classIndex);
-}
-
-
-/*
-===============
 R_NewMap
 ===============
 */

@@ -76,58 +76,6 @@ void CL_InitRenderStuff (void)
 
 /*
 ===============
-R_TranslatePlayerSkin
-
-Translates a skin texture by the per-player color lookup
-===============
-*/
-void R_TranslatePlayerSkin (int playernum)
-{
-	player_info_t* player = &cl.players[playernum];
-	if (!player->name[0])
-		return;
-
-	char s[512];
-	QStr::Cpy(s, Info_ValueForKey(player->userinfo, "skin"));
-	QStr::StripExtension(s, s);
-	if (player->skin && !QStr::ICmp(s, player->skin->name))
-	{
-		player->skin = NULL;
-	}
-
-	if (player->_topcolor != player->topcolor ||
-		player->_bottomcolor != player->bottomcolor || !player->skin)
-	{
-		player->_topcolor = player->topcolor;
-		player->_bottomcolor = player->bottomcolor;
-
-		byte translate[256];
-		CL_CalcQuakeSkinTranslation(player->topcolor, player->bottomcolor, translate);
-
-		//
-		// locate the original skin pixels
-		//
-
-		if (!player->skin)
-		{
-			Skin_Find(player);
-		}
-		byte* original = Skin_Cache(player->skin);
-		if (original != NULL)
-		{
-			//skin data width
-			R_CreateOrUpdateTranslatedSkin(playertextures[playernum], va("*player%d", playernum), original, translate, 320, 200);
-		}
-		else
-		{
-			R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum),
-				cl.model_precache[cl_playerindex], translate);
-		}
-	}
-}
-
-/*
-===============
 R_NewMap
 ===============
 */

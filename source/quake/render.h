@@ -80,6 +80,5 @@ void R_LavaSplash (vec3_t org);
 void R_TeleportSplash (vec3_t org);
 
 void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap);
-void R_TranslatePlayerSkin (int playernum);
 
 extern	QCvar*	gl_doubleeyes;

@@ -568,5 +568,6 @@ void Cam_Reset(void);
 
 void R_UpdateParticles (void);
 void CL_AddParticles();
+void R_TranslatePlayerSkin (int playernum);
 
 extern	image_t*	playertextures[MAX_CLIENTS];

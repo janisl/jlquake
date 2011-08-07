@@ -308,6 +308,27 @@ void CL_ParseServerInfo (void)
 	noclip_anglehack = false;		// noclip is turned off at start	
 }
 
+/*
+===============
+R_TranslatePlayerSkin
+
+Translates a skin texture by the per-player color lookup
+===============
+*/
+static void R_TranslatePlayerSkin(int playernum)
+{
+	int top = (cl.scores[playernum].colors & 0xf0) >> 4;
+	int bottom = cl.scores[playernum].colors & 15;
+	byte translate[256];
+	CL_CalcQuakeSkinTranslation(top, bottom, translate);
+
+	//
+	// locate the original skin pixels
+	//
+	entity_t* ent = &cl_entities[1 + playernum];
+
+	R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum), ent->model, translate);
+}
 
 /*
 ==================

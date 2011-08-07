@@ -78,29 +78,6 @@ void CL_InitRenderStuff (void)
 
 /*
 ===============
-R_TranslatePlayerSkin
-
-Translates a skin texture by the per-player color lookup
-===============
-*/
-void R_TranslatePlayerSkin(int playernum)
-{
-	int top = (cl.scores[playernum].colors & 0xf0) >> 4;
-	int bottom = cl.scores[playernum].colors & 15;
-	byte translate[256];
-	CL_CalcQuakeSkinTranslation(top, bottom, translate);
-
-	//
-	// locate the original skin pixels
-	//
-	entity_t* ent = &cl_entities[1 + playernum];
-
-	R_CreateOrUpdateTranslatedModelSkinQ1(playertextures[playernum], va("*player%d", playernum), ent->model, translate);
-}
-
-
-/*
-===============
 R_NewMap
 ===============
 */

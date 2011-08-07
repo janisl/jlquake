@@ -85,4 +85,3 @@ void R_InitParticles (void);
 void R_ClearParticles (void);
 
 void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum);
-void R_TranslatePlayerSkin (int playernum);

@@ -123,6 +123,5 @@ void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int 
 void R_ClearParticles (void);
 
 void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
-void R_TranslatePlayerSkin (int playernum);
 void D_ShowLoadingSize(void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);

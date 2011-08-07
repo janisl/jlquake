@@ -69,50 +69,6 @@ extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 
 /*
 ===============
-R_TranslatePlayerSkin
-
-Translates a skin texture by the per-player color lookup
-===============
-*/
-void R_TranslatePlayerSkin(int playernum)
-{
-	player_info_t* player = &cl.players[playernum];
-	if (!player->name[0])
-	{
-		return;
-	}
-	if (!player->playerclass)
-	{
-		return;
-	}
-
-	byte translate[256];
-	CL_CalcHexen2SkinTranslation(player->topcolor, player->bottomcolor, player->playerclass, translate);
-
-	//
-	// locate the original skin pixels
-	//
-	if (player->modelindex <= 0)
-	{
-		return;
-	}
-
-	int classIndex;
-	if (player->playerclass >= 1 && player->playerclass <= MAX_PLAYER_CLASS)
-	{
-		classIndex = (int)player->playerclass - 1;
-		player->Translated = true;
-	}
-	else
-	{
-		classIndex = 0;
-	}
-
-	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), player_models[classIndex], translate, classIndex);
-}
-
-/*
-===============
 R_NewMap
 ===============
 */
