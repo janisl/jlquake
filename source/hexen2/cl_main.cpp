@@ -571,7 +571,7 @@ void CL_RelinkEntities (void)
 
 // rotate binary objects locally
 // BG: Moved to r_alias.c / gl_rmain.c
-		//if(ent->model->flags&EF_ROTATE)
+		//if(ent->model->flags&H2MDLEF_ROTATE)
 		//{
 		//	ent->angles[1] = AngleMod(ent->origin[0]+ent->origin[1]
 		//		+(100*cl.time));
@@ -644,21 +644,21 @@ void CL_RelinkEntities (void)
 		}
 
 		int ModelFlags = R_ModelFlags(ent->model);
-		if (ModelFlags & EF_GIB)
+		if (ModelFlags & H2MDLEF_GIB)
 			R_RocketTrail (oldorg, ent->origin, 2);
-		else if (ModelFlags & EF_ZOMGIB)
+		else if (ModelFlags & H2MDLEF_ZOMGIB)
 			R_RocketTrail (oldorg, ent->origin, 4);
-		else if (ModelFlags & EF_BLOODSHOT)
+		else if (ModelFlags & H2MDLEF_BLOODSHOT)
 			R_RocketTrail (oldorg, ent->origin, 17);
-		else if (ModelFlags & EF_TRACER)
+		else if (ModelFlags & H2MDLEF_TRACER)
 			R_RocketTrail (oldorg, ent->origin, 3);
-		else if (ModelFlags & EF_TRACER2)
+		else if (ModelFlags & H2MDLEF_TRACER2)
 			R_RocketTrail (oldorg, ent->origin, 5);
-		else if (ModelFlags & EF_ROCKET)
+		else if (ModelFlags & H2MDLEF_ROCKET)
 		{
 			R_RocketTrail (oldorg, ent->origin, 0);
 		}
-		else if (ModelFlags & EF_FIREBALL)
+		else if (ModelFlags & H2MDLEF_FIREBALL)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_fireball);
 			if (cl_prettylights->value)
@@ -669,7 +669,7 @@ void CL_RelinkEntities (void)
 				dl->die = cl.time + 0.01;
 			}
 		}
-		else if (ModelFlags & EF_ACIDBALL)
+		else if (ModelFlags & H2MDLEF_ACIDBALL)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_acidball);
 			if (cl_prettylights->value)
@@ -680,11 +680,11 @@ void CL_RelinkEntities (void)
 				dl->die = cl.time + 0.01;
 			}
 		}
-		else if (ModelFlags & EF_ICE)
+		else if (ModelFlags & H2MDLEF_ICE)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_ice);
 		}
-		else if (ModelFlags & EF_SPIT)
+		else if (ModelFlags & H2MDLEF_SPIT)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_spit);
 			if (cl_prettylights->value)
@@ -695,30 +695,30 @@ void CL_RelinkEntities (void)
 				dl->die = cl.time + 0.05;
 			}
 		}
-		else if (ModelFlags & EF_SPELL)
+		else if (ModelFlags & H2MDLEF_SPELL)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_spell);
 		}
-		else if (ModelFlags & EF_GRENADE)
+		else if (ModelFlags & H2MDLEF_GRENADE)
 			R_RocketTrail (oldorg, ent->origin, 1);
-		else if (ModelFlags & EF_TRACER3)
+		else if (ModelFlags & H2MDLEF_TRACER3)
 			R_RocketTrail (oldorg, ent->origin, 6);
-		else if (ModelFlags & EF_VORP_MISSILE)
+		else if (ModelFlags & H2MDLEF_VORP_MISSILE)
 		{
 			R_RocketTrail (oldorg, ent->origin, rt_vorpal);
 		}
-		else if (ModelFlags & EF_SET_STAFF)
+		else if (ModelFlags & H2MDLEF_SET_STAFF)
 		{
 			R_RocketTrail (oldorg, ent->origin,rt_setstaff);
 		}
-		else if (ModelFlags & EF_MAGICMISSILE)
+		else if (ModelFlags & H2MDLEF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
 				R_RocketTrail (oldorg, ent->origin, rt_magicmissile);
 		}
-		else if (ModelFlags & EF_BONESHARD)
+		else if (ModelFlags & H2MDLEF_BONESHARD)
 			R_RocketTrail (oldorg, ent->origin, rt_boneshard);
-		else if (ModelFlags & EF_SCARAB)
+		else if (ModelFlags & H2MDLEF_SCARAB)
 			R_RocketTrail (oldorg, ent->origin, rt_scarab);
 
 		ent->forcelink = false;
@@ -931,7 +931,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 	vec3_t angles;
 	if (R_IsMeshModel(ent->hModel))
 	{
-		if (R_ModelFlags(ent->hModel) & EF_FACE_VIEW)
+		if (R_ModelFlags(ent->hModel) & H2MDLEF_FACE_VIEW)
 		{
 			//	yaw and pitch must be 0 so that renderer can safely multply matrices.
 			angles[PITCH] = 0;
@@ -940,7 +940,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 		}
 		else 
 		{
-			if (R_ModelFlags(ent->hModel) & EF_ROTATE)
+			if (R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE)
 			{
 				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.time));
 			}
@@ -955,13 +955,13 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, int scale, int colors
 
 		AnglesToAxis(angles, ent->axis);
 
-		if ((R_ModelFlags(ent->hModel) & EF_ROTATE) || (scale != 0 && scale != 100))
+		if ((R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE) || (scale != 0 && scale != 100))
 		{
 			ent->renderfx |= RF_LIGHTING_ORIGIN;
 			VectorCopy(ent->origin, ent->lightingOrigin);
 		}
 
-		if (R_ModelFlags(ent->hModel) & EF_ROTATE)
+		if (R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE)
 		{
 			// Floating motion
 			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;

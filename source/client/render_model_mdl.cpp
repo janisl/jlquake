@@ -21,11 +21,7 @@
 
 // MACROS ------------------------------------------------------------------
 
-#define EF_TRANSPARENT		4096	// Transparent sprite
-#define EF_HOLEY			16384	// Solid model with color 0
-#define EF_SPECIAL_TRANS	32768	// Translucency through the particle table
-
-#define	MAX_LBM_HEIGHT		480
+#define MAX_LBM_HEIGHT		480
 
 #define ALIAS_BASE_SIZE_RATIO		(1.0 / 11.0)
 					// normalizing factor so player model works out to about
@@ -253,15 +249,15 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 	int texture_mode = IMG8MODE_Skin;
 	if (GGameType & GAME_Hexen2)
 	{
-		if (mdl_flags & EF_HOLEY)
+		if (mdl_flags & H2MDLEF_HOLEY)
 		{
 			texture_mode = IMG8MODE_SkinHoley;
 		}
-		else if (mdl_flags & EF_TRANSPARENT)
+		else if (mdl_flags & H2MDLEF_TRANSPARENT)
 		{
 			texture_mode = IMG8MODE_SkinTransparent;
 		}
-		else if (mdl_flags & EF_SPECIAL_TRANS)
+		else if (mdl_flags & H2MDLEF_SPECIAL_TRANS)
 		{
 			texture_mode = IMG8MODE_SkinSpecialTrans;
 		}
@@ -1355,7 +1351,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 
 	if (GGameType & GAME_Hexen2)
 	{
-		if (clmodel->q1_flags & EF_SPECIAL_TRANS)
+		if (clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS)
 		{
 			model_constant_alpha = 1.0f;
 			GL_Cull(CT_TWO_SIDED);
@@ -1366,12 +1362,12 @@ void R_DrawMdlModel(trRefEntity_t* e)
 			model_constant_alpha = r_wateralpha->value;
 			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		}
-		else if (clmodel->q1_flags & EF_TRANSPARENT)
+		else if (clmodel->q1_flags & H2MDLEF_TRANSPARENT)
 		{
 			model_constant_alpha = 1.0f;
 			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
 		}
-		else if (clmodel->q1_flags & EF_HOLEY)
+		else if (clmodel->q1_flags & H2MDLEF_HOLEY)
 		{
 			model_constant_alpha = 1.0f;
 			GL_State(GLS_DEPTHMASK_TRUE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA);
@@ -1403,7 +1399,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 
 	GL_State(GLS_DEFAULT);
 
-	if ((GGameType & GAME_Hexen2) && (clmodel->q1_flags & EF_SPECIAL_TRANS))
+	if ((GGameType & GAME_Hexen2) && (clmodel->q1_flags & H2MDLEF_SPECIAL_TRANS))
 	{
 		GL_Cull(CT_FRONT_SIDED);
 	}
@@ -1440,5 +1436,5 @@ void R_DrawMdlModel(trRefEntity_t* e)
 
 bool R_MdlHasHexen2Transparency(model_t* Model)
 {
-	return !!(Model->q1_flags & (EF_TRANSPARENT | EF_HOLEY | EF_SPECIAL_TRANS));
+	return !!(Model->q1_flags & (H2MDLEF_TRANSPARENT | H2MDLEF_HOLEY | H2MDLEF_SPECIAL_TRANS));
 }

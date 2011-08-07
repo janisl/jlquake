@@ -25,6 +25,7 @@
 #include "input_public.h"
 #include "cinematic_public.h"
 #include "ui.h"
+#include "hexen2clientdefs.h"
 
 extern QCvar*		cl_inGameVideo;
 

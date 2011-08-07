@@ -653,7 +653,7 @@ void CL_LinkPacketEntities (void)
 
 		vec3_t angles;
 		// rotate binary objects locally
-/*	rjr rotate them in renderer	if (model->flags & EF_ROTATE)
+/*	rjr rotate them in renderer	if (model->flags & H2MDLEF_ROTATE)
 		{
 			ent->angles[0] = 0;
 			ent->angles[1] = autorotate;
@@ -727,15 +727,15 @@ void CL_LinkPacketEntities (void)
 			continue;
 
 		// Model Flags
-		if (ModelFlags & EF_GIB)
+		if (ModelFlags & H2MDLEF_GIB)
 			R_RocketTrail (old_origin, ent.origin, 2);
-		else if (ModelFlags & EF_ZOMGIB)
+		else if (ModelFlags & H2MDLEF_ZOMGIB)
 			R_RocketTrail (old_origin, ent.origin, 4);
-		else if (ModelFlags & EF_TRACER)
+		else if (ModelFlags & H2MDLEF_TRACER)
 			R_RocketTrail (old_origin, ent.origin, 3);
-		else if (ModelFlags & EF_TRACER2)
+		else if (ModelFlags & H2MDLEF_TRACER2)
 			R_RocketTrail (old_origin, ent.origin, 5);
-		else if (ModelFlags & EF_ROCKET)
+		else if (ModelFlags & H2MDLEF_ROCKET)
 		{
 			R_RocketTrail (old_origin, ent.origin, 0);
 /*			dl = CL_AllocDlight (i);
@@ -743,7 +743,7 @@ void CL_LinkPacketEntities (void)
 			dl->radius = 200;
 			dl->die = cl.time + 0.01;*/
 		}
-		else if (ModelFlags & EF_FIREBALL)
+		else if (ModelFlags & H2MDLEF_FIREBALL)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_fireball);
 			dl = CL_AllocDlight (i);
@@ -751,11 +751,11 @@ void CL_LinkPacketEntities (void)
 			dl->radius = 120 - (rand() % 20);
 			dl->die = cl.time + 0.01;
 		}
-		else if (ModelFlags & EF_ICE)
+		else if (ModelFlags & H2MDLEF_ICE)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_ice);
 		}
-		else if (ModelFlags & EF_SPIT)
+		else if (ModelFlags & H2MDLEF_SPIT)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_spit);
 			dl = CL_AllocDlight (i);
@@ -763,37 +763,37 @@ void CL_LinkPacketEntities (void)
 			dl->radius = -120 - (rand() % 20);
 			dl->die = cl.time + 0.05;
 		}
-		else if (ModelFlags & EF_SPELL)
+		else if (ModelFlags & H2MDLEF_SPELL)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_spell);
 		}
-		else if (ModelFlags & EF_GRENADE)
+		else if (ModelFlags & H2MDLEF_GRENADE)
 		{
 //			R_RunParticleEffect4(old_origin,3,284,pt_slowgrav,3);
 			R_RocketTrail (old_origin, ent.origin, rt_grensmoke);
 		}
-		else if (ModelFlags & EF_TRACER3)
+		else if (ModelFlags & H2MDLEF_TRACER3)
 			R_RocketTrail (old_origin, ent.origin, 6);
-		else if (ModelFlags & EF_VORP_MISSILE)
+		else if (ModelFlags & H2MDLEF_VORP_MISSILE)
 		{
 			R_RocketTrail (old_origin, ent.origin, rt_vorpal);
 		}
-		else if (ModelFlags & EF_SET_STAFF)
+		else if (ModelFlags & H2MDLEF_SET_STAFF)
 		{
 			R_RocketTrail (old_origin, ent.origin,rt_setstaff);
 		}
-		else if (ModelFlags & EF_MAGICMISSILE)
+		else if (ModelFlags & H2MDLEF_MAGICMISSILE)
 		{
 			if ((rand() & 3) < 1)
 				R_RocketTrail (old_origin, ent.origin, rt_magicmissile);
 		}
-		else if (ModelFlags & EF_BONESHARD)
+		else if (ModelFlags & H2MDLEF_BONESHARD)
 			R_RocketTrail (old_origin, ent.origin, rt_boneshard);
-		else if (ModelFlags & EF_SCARAB)
+		else if (ModelFlags & H2MDLEF_SCARAB)
 			R_RocketTrail (old_origin, ent.origin, rt_scarab);
-		else if (ModelFlags & EF_ACIDBALL)
+		else if (ModelFlags & H2MDLEF_ACIDBALL)
 			R_RocketTrail (old_origin, ent.origin, rt_acidball);
-		else if (ModelFlags & EF_BLOODSHOT)
+		else if (ModelFlags & H2MDLEF_BLOODSHOT)
 			R_RocketTrail (old_origin, ent.origin, rt_bloodshot);
 	}
 }

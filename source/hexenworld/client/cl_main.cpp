@@ -1415,7 +1415,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 	vec3_t angles;
 	if (R_IsMeshModel(ent->hModel))
 	{
-		if (R_ModelFlags(ent->hModel) & EF_FACE_VIEW)
+		if (R_ModelFlags(ent->hModel) & H2MDLEF_FACE_VIEW)
 		{
 			//	yaw and pitch must be 0 so that renderer can safely multply matrices.
 			angles[PITCH] = 0;
@@ -1426,7 +1426,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 		}
 		else 
 		{
-			if (R_ModelFlags(ent->hModel) & EF_ROTATE)
+			if (R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE)
 			{
 				angles[YAW] = AngleMod((ent->origin[0] + ent->origin[1]) * 0.8 + (108 * cl.time));
 			}
@@ -1448,13 +1448,13 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles, vec3_t angleAdd, int 
 			MatrixMultiply(AddAxis, BaseAxis, ent->axis);
 		}
 
-		if ((R_ModelFlags(ent->hModel) & EF_ROTATE) || (scale != 0 && scale != 100))
+		if ((R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE) || (scale != 0 && scale != 100))
 		{
 			ent->renderfx |= RF_LIGHTING_ORIGIN;
 			VectorCopy(ent->origin, ent->lightingOrigin);
 		}
 
-		if (R_ModelFlags(ent->hModel) & EF_ROTATE)
+		if (R_ModelFlags(ent->hModel) & H2MDLEF_ROTATE)
 		{
 			// Floating motion
 			float delta = sin(ent->origin[0] + ent->origin[1] + (cl.time * 3)) * 5.5;
