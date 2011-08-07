@@ -29,8 +29,5 @@ CL_InitRenderStuff
 */
 void CL_InitRenderStuff (void)
 {	
-	if (qglActiveTextureARB)
-		Cvar_SetValue ("r_texsort", 0.0);
-
 	R_InitParticles ();
 }

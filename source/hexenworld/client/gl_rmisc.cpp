@@ -72,9 +72,6 @@ CL_InitRenderStuff
 */
 void CL_InitRenderStuff (void)
 {
-	if (qglActiveTextureARB)
-		Cvar_SetValue ("r_texsort", 0.0);
-
 	r_teamcolor = Cvar_Get("r_teamcolor", "187", CVAR_ARCHIVE);
 
 	R_InitParticles ();

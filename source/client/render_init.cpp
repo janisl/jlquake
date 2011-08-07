@@ -670,6 +670,11 @@ static void InitOpenGLSubsystem()
 	{
 		R_InitQ2Palette();
 	}
+
+	if (qglActiveTextureARB)
+	{
+		Cvar_SetValue("r_texsort", 0.0);
+	}
 }
 
 //==========================================================================
