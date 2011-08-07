@@ -349,6 +349,7 @@ void R_StretchPic(float x, float y, float w, float h,
 void R_Draw2DQuad(float x, float y, float width, float height,
 	image_t* image, float s1, float t1, float s2, float t2,
 	float r, float g, float b, float a);
+bool R_GetScreenPosFromWorldPos(vec3_t origin, int& u, int& v);
 
 void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* data, int client, bool dirty);
 

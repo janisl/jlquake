@@ -319,3 +319,47 @@ void R_NetGraph (void)
 		R_LineGraph(NET_TIMINGS - 1 - a, y, packet_latency[i]);
 	}
 }
+
+void R_DrawName(vec3_t origin, char *Name, int Red)
+{
+	if (!Name)
+	{
+		return;
+	}
+
+	int u;
+	int v;
+	if (!R_GetScreenPosFromWorldPos(origin, u, v))
+	{
+		return;
+	}
+
+	u -= QStr::Length(Name) * 4;
+
+	if(cl_siege)
+	{
+		if(Red>10)
+		{
+			Red-=10;
+			Draw_Character (u, v, 145);//key
+			u+=8;
+		}
+		if(Red>0&&Red<3)//def
+		{
+			if(Red==true)
+				Draw_Character (u, v, 143);//shield
+			else
+				Draw_Character (u, v, 130);//crown
+			Draw_RedString(u+8, v, Name);
+		}
+		else if(!Red)
+		{
+			Draw_Character (u, v, 144);//sword
+			Draw_String (u+8, v, Name);
+		}
+		else
+			Draw_String (u+8, v, Name);
+	}
+	else
+		Draw_String (u, v, Name);
+}

@@ -2100,3 +2100,28 @@ void R_Draw2DQuad(float x, float y, float width, float height,
 	qglVertex2f(x, y + height);
 	qglEnd();
 }
+
+//==========================================================================
+//
+//	R_GetScreenPosFromWorldPos
+//
+//==========================================================================
+
+bool R_GetScreenPosFromWorldPos(vec3_t origin, int& u, int& v)
+{
+	vec4_t eye;
+	vec4_t Out;
+	R_TransformModelToClip(origin, tr.viewParms.world.modelMatrix, tr.viewParms.projectionMatrix, eye, Out);
+
+	if (eye[2] > -r_znear->value)
+	{
+		return false;
+	}
+
+	vec4_t normalized;
+	vec4_t window;
+	R_TransformClipToWindow(Out, &tr.viewParms, normalized, window);
+	u = tr.refdef.x + (int)window[0];
+	v = tr.refdef.y + tr.refdef.height - (int)window[1];
+	return true;
+}
