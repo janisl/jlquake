@@ -98,6 +98,11 @@ qboolean        scr_disabled_for_loading;
 qboolean        scr_drawloading;
 float           scr_disabled_time;
 
+//
+// screen size info
+//
+refdef_t		r_refdef;
+
 void SCR_RSShot_f (void);
 
 /*

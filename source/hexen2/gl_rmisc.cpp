@@ -7,11 +7,6 @@ unsigned	d_8to24TranslucentTable[256];
 
 float RTint[256],GTint[256],BTint[256];
 
-//
-// screen size info
-//
-refdef_t	r_refdef;
-
 /*
 ===============
 CL_InitRenderStuff

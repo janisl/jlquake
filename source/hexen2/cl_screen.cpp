@@ -84,6 +84,11 @@ static qboolean scr_needfull = false;
 
 int			total_loading_size, current_loading_size, loading_stage;
 
+//
+// screen size info
+//
+refdef_t	r_refdef;
+
 
 void Plaque_Draw (const char *message, qboolean AlwaysDraw);
 void Info_Plaque_Draw (const char *message);
