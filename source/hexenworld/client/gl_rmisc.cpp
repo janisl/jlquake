@@ -62,17 +62,3 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 	else
 		Draw_String (u, v, Name);
 }
-
-/*
-===============
-CL_InitRenderStuff
-===============
-*/
-void CL_InitRenderStuff (void)
-{
-	R_InitParticles ();
-
-	playerTranslation = (byte *)COM_LoadHunkFile ("gfx/player.lmp");
-	if (!playerTranslation)
-		Sys_Error ("Couldn't load gfx/player.lmp");
-}

@@ -251,10 +251,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_rmisc.cpp"
-				>
-			</File>
-			<File
 				RelativePath="keys.cpp"
 				>
 			</File>

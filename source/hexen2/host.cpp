@@ -919,6 +919,20 @@ void Host_Frame (float time)
 
 //============================================================================
 
+/*
+===============
+CL_InitRenderStuff
+===============
+*/
+static void CL_InitRenderStuff (void)
+{
+	R_InitParticles ();
+
+	playerTranslation = (byte *)COM_LoadHunkFile ("gfx/player.lmp");
+	if (!playerTranslation)
+		Sys_Error ("Couldn't load gfx/player.lmp");
+}
+
 
 /*
 ====================

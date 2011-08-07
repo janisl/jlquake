@@ -252,10 +252,6 @@
 				>
 			</File>
 			<File
-				RelativePath="gl_rmisc.cpp"
-				>
-			</File>
-			<File
 				RelativePath="host.cpp"
 				>
 			</File>

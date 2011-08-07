@@ -50,7 +50,6 @@ add_executable(jlqwcl
 	client/common.cpp
 	client/console.cpp
 	client/cvar.cpp
-	client/gl_rmisc.cpp
 	client/keys.cpp
 	client/menu.cpp
 	client/net_chan.cpp

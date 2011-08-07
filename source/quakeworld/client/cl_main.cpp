@@ -1437,7 +1437,7 @@ void Host_Init (quakeparms_t *parms)
 	IN_Init();
 	VID_Init();
 	Draw_Init();
-	CL_InitRenderStuff();
+	R_InitParticles();
 	SCR_Init();
 	S_Init();
 	CDAudio_Init();
