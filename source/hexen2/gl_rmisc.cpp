@@ -3,10 +3,6 @@
 #include "quakedef.h"
 #include "../client/render_local.h"
 
-unsigned	d_8to24TranslucentTable[256];
-
-float RTint[256],GTint[256],BTint[256];
-
 /*
 ===============
 CL_InitRenderStuff

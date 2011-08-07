@@ -89,6 +89,9 @@ int			total_loading_size, current_loading_size, loading_stage;
 //
 refdef_t	r_refdef;
 
+unsigned	d_8to24TranslucentTable[256];
+
+float RTint[256],GTint[256],BTint[256];
 
 void Plaque_Draw (const char *message, qboolean AlwaysDraw);
 void Info_Plaque_Draw (const char *message);
