@@ -813,7 +813,6 @@ void R_TranslatePlayerSkin(int playernum)
 		classIndex = 0;
 	}
 
-GLog.WriteLine("Uploading skin");
 	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), player_models[classIndex], translate, classIndex);
 }
 

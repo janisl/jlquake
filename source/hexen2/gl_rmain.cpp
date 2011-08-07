@@ -16,7 +16,6 @@ extern qhandle_t	player_models[NUM_CLASSES];
 //
 refdef_t	r_refdef;
 
-QCvar*	gl_nocolors;
 QCvar*	gl_reporttjunctions;
 
 /*
@@ -45,7 +44,7 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 
 		Ent->customSkin = R_GetImageHandle(gl_extra_textures[Ent->skinNum - 100]);
 	}
-	else if (PlayerNum >= 0 && !gl_nocolors->value && Ent->hModel)
+	else if (PlayerNum >= 0 && Ent->hModel)
 	{
 		// we can't dynamically colormap textures, so they are cached
 		// seperately for the players.  Heads are just uncolored.

@@ -33,7 +33,6 @@ void R_TimeRefresh_f (void);
 
 //====================================================
 
-extern	QCvar*	gl_nocolors;
 extern	QCvar*	gl_reporttjunctions;
 
 void R_InitParticles (void);

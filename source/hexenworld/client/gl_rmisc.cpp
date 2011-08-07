@@ -52,8 +52,6 @@ void CL_InitRenderStuff (void)
 	if (qglActiveTextureARB)
 		Cvar_SetValue ("r_texsort", 0.0);
 
-	gl_nocolors = Cvar_Get("gl_nocolors", "0", 0);
-
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
 	r_teamcolor = Cvar_Get("r_teamcolor", "187", CVAR_ARCHIVE);

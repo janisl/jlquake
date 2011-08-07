@@ -44,13 +44,10 @@ void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
 {
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (!gl_nocolors->value)
+	if (!cl.players[PlayerNum].skin)
 	{
-		if (!cl.players[PlayerNum].skin)
-		{
-			Skin_Find(&cl.players[PlayerNum]);
-			R_TranslatePlayerSkin(PlayerNum);
-		}
-		Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
+		Skin_Find(&cl.players[PlayerNum]);
+		R_TranslatePlayerSkin(PlayerNum);
 	}
+	Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
 }

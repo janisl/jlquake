@@ -27,7 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 refdef_t	r_refdef;
 
-QCvar*	gl_nocolors;
 QCvar*	gl_reporttjunctions;
 QCvar*	gl_doubleeyes;
 
@@ -43,7 +42,7 @@ void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
 {
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (ColorMap && !gl_nocolors->value && !QStr::Cmp(R_GetModelByHandle(Ent->hModel)->name, "progs/player.mdl"))
+	if (ColorMap && !QStr::Cmp(R_GetModelByHandle(Ent->hModel)->name, "progs/player.mdl"))
 	{
 	    Ent->customSkin = R_GetImageHandle(playertextures[ColorMap - 1]);
 	}
