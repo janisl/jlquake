@@ -91,6 +91,8 @@ void Master_Connect_f (void);
 
 float	server_version = 0;	// version of server we connected to
 
+image_t*	gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
+
 
 class QMainLog : public QLogListener
 {
@@ -282,6 +284,7 @@ static void Mod_ClearAll (void)
 	R_BeginRegistration(&cls.glconfig);
 
 	Com_Memset(playertextures, 0, sizeof(playertextures));
+	Com_Memset(gl_extra_textures, 0, sizeof(gl_extra_textures));
 	Com_Memset(translate_texture, 0, sizeof(translate_texture));
 
 	Draw_Init();

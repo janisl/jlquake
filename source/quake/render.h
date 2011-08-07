@@ -79,6 +79,4 @@ void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength);
 void R_LavaSplash (vec3_t org);
 void R_TeleportSplash (vec3_t org);
 
-void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap);
-
 extern	QCvar*	gl_doubleeyes;

@@ -369,6 +369,15 @@ float	CL_LerpPoint (void)
 	return frac;
 }
 
+static void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
+{
+	// we can't dynamically colormap textures, so they are cached
+	// seperately for the players.  Heads are just uncolored.
+	if (ColorMap && !QStr::Cmp(R_ModelName(Ent->hModel), "progs/player.mdl"))
+	{
+	    Ent->customSkin = R_GetImageHandle(playertextures[ColorMap - 1]);
+	}
+}
 
 /*
 ===============

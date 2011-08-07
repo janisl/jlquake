@@ -398,6 +398,17 @@ void CL_ParsePacketEntities (qboolean delta)
 	newp->num_entities = newindex;
 }
 
+static void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum)
+{
+	// we can't dynamically colormap textures, so they are cached
+	// seperately for the players.  Heads are just uncolored.
+	if (!cl.players[PlayerNum].skin)
+	{
+		Skin_Find(&cl.players[PlayerNum]);
+		R_TranslatePlayerSkin(PlayerNum);
+	}
+	Ent->customSkin = R_GetImageHandle(playertextures[PlayerNum]);
+}
 
 /*
 ===============

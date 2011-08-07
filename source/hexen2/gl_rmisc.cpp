@@ -9,6 +9,13 @@ float RTint[256],GTint[256],BTint[256];
 
 qboolean	vid_initialized = false;
 
+//
+// screen size info
+//
+refdef_t	r_refdef;
+
+QCvar*	gl_reporttjunctions;
+
 /*
 ==================
 R_InitTextures

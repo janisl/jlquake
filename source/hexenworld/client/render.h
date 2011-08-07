@@ -155,7 +155,6 @@ void R_TeleportSplash (vec3_t org);
 void R_TargetBallEffect (vec3_t org);
 void R_BrightFieldSource (vec3_t org);
 
-void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 void R_SplashParticleEffect (vec3_t org, float radius, int color, int effect, int count);
 void R_DarkFieldParticles (refEntity_t *ent);
 void R_ParseParticleEffect2 (void);

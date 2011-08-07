@@ -83,5 +83,3 @@ void R_TeleportSplash (vec3_t org);
 
 void R_InitParticles (void);
 void R_ClearParticles (void);
-
-void R_HandlePlayerSkin(refEntity_t* Ent, int PlayerNum);

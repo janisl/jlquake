@@ -122,6 +122,5 @@ void R_TeleportSplash (vec3_t org);
 void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
 void R_ClearParticles (void);
 
-void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum);
 void D_ShowLoadingSize(void);
 int M_DrawBigCharacter (int x, int y, int num, int numNext);

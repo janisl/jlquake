@@ -12,7 +12,6 @@ add_executable(jlhexen2
 	common.cpp
 	console.cpp
 	cvar.cpp
-	gl_rmain.cpp
 	gl_rmisc.cpp
 	host.cpp
 	host_cmd.cpp

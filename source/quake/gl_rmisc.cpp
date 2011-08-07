@@ -22,6 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
+//
+// screen size info
+//
+refdef_t	r_refdef;
+
+QCvar*	gl_reporttjunctions;
+QCvar*	gl_doubleeyes;
+
 /*
 ==================
 R_InitTextures
