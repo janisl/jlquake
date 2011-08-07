@@ -98,6 +98,8 @@ void R_ModelInit()
 
 	model_t* mod = R_AllocModel();
 	mod->type = MOD_BAD;
+
+	R_InitBsp29NoTextureMip();
 }
 
 //==========================================================================
@@ -167,6 +169,9 @@ void R_FreeModels()
 		R_FreeBsp46(tr.world);
 	}
 	tr.worldMapLoaded = false;
+
+	Mem_Free(r_notexture_mip);
+	r_notexture_mip = NULL;
 }
 
 //==========================================================================

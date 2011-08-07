@@ -63,7 +63,6 @@ struct entity_t
 extern	refdef_t	r_refdef;
 
 void CL_InitRenderStuff (void);
-void R_InitTextures (void);
 void V_RenderScene (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change

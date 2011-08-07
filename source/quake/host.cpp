@@ -862,8 +862,6 @@ void Host_Init (quakeparms_t *parms)
 
 	if (cls.state != ca_dedicated)
 	{
-		R_InitTextures();
- 
 		IN_Init();
 		VID_Init();
 		Draw_Init();

@@ -818,6 +818,7 @@ void R_FreeMd4(model_t* mod);
 void R_AddAnimSurfaces(trRefEntity_t* ent);
 void RB_SurfaceAnim(md4Surface_t* surfType);
 
+void R_InitBsp29NoTextureMip();
 void Mod_LoadBrush29Model(model_t* mod, void* buffer);
 void Mod_FreeBsp29(model_t* mod);
 byte* Mod_LeafPVS(mbrush29_leaf_t* Leaf, model_t* Model);

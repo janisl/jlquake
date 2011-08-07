@@ -51,6 +51,43 @@ static byte					mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
 //==========================================================================
 //
+//	R_InitBsp29NoTextureMip
+//
+//==========================================================================
+
+void R_InitBsp29NoTextureMip()
+{
+	// create a simple checkerboard texture for the default
+	r_notexture_mip = (mbrush29_texture_t*)Mem_Alloc(sizeof(mbrush29_texture_t) + 16 * 16 + 8 * 8 + 4 * 4 + 2 * 2);
+	
+	r_notexture_mip->width = r_notexture_mip->height = 16;
+	r_notexture_mip->offsets[0] = sizeof(mbrush29_texture_t);
+	r_notexture_mip->offsets[1] = r_notexture_mip->offsets[0] + 16 * 16;
+	r_notexture_mip->offsets[2] = r_notexture_mip->offsets[1] + 8 * 8;
+	r_notexture_mip->offsets[3] = r_notexture_mip->offsets[2] + 4 * 4;
+	
+	for (int m = 0; m < 4; m++)
+	{
+		byte* dest = (byte*)r_notexture_mip + r_notexture_mip->offsets[m];
+		for (int y = 0; y < (16 >> m); y++)
+		{
+			for (int x = 0; x < (16 >> m); x++)
+			{
+				if ((y < (8 >> m)) ^ (x < (8 >> m)))
+				{
+					*dest++ = 0;
+				}
+				else
+				{
+					*dest++ = 0xff;
+				}
+			}
+		}
+	}
+}
+
+//==========================================================================
+//
 //	Mod_LoadTextures
 //
 //==========================================================================

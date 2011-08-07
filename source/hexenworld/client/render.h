@@ -120,7 +120,6 @@ extern	QCvar*	r_teamcolor;
 extern float RTint[256],GTint[256],BTint[256];
 
 void CL_InitRenderStuff (void);
-void R_InitTextures (void);
 void V_RenderScene (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change

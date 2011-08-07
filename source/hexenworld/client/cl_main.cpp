@@ -1335,8 +1335,6 @@ void Host_Init (quakeparms_t *parms)
 	Cbuf_AddText("cl_warncmd 1\n");
 	Cbuf_Execute();
 
-	R_InitTextures();
- 
 	IN_Init();
 	VID_Init();
 	Draw_Init();
