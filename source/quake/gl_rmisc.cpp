@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "../client/render_local.h"
 
-QCvar*	gl_doubleeyes;
-
 /*
 ===============
 CL_InitRenderStuff
@@ -33,8 +31,6 @@ void CL_InitRenderStuff (void)
 {	
 	if (qglActiveTextureARB)
 		Cvar_SetValue ("r_texsort", 0.0);
-
-	gl_doubleeyes = Cvar_Get("gl_doubleeys", "1", 0);
 
 	R_InitParticles ();
 }

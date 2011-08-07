@@ -40,6 +40,7 @@ QCvar*	m_yaw;
 QCvar*	m_forward;
 QCvar*	m_side;
 
+QCvar*	cl_doubleeyes;
 
 client_static_t	cls;
 client_state_t	cl;
@@ -692,6 +693,8 @@ void CL_Init (void)
 	m_forward = Cvar_Get("m_forward", "1", CVAR_ARCHIVE);
 	m_side = Cvar_Get("m_side", "0.8", CVAR_ARCHIVE);
 
+	cl_doubleeyes = Cvar_Get("cl_doubleeyes", "1", 0);
+
 	Cmd_AddCommand ("entities", CL_PrintEntities_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
 	Cmd_AddCommand ("record", CL_Record_f);
@@ -717,7 +720,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 
 	AnglesToAxis(angles, ent->axis);
 
-	if (!QStr::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl") && gl_doubleeyes->value)
+	if (!QStr::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl") && cl_doubleeyes->value)
 	{
 		// double size of eyes, since they are really hard to see in gl
 		ent->renderfx |= RF_LIGHTING_ORIGIN;
