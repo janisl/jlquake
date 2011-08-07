@@ -64,9 +64,6 @@ void V_RenderScene (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change
 
-void R_NewMap (void);
-
-
 void R_ParseParticleEffect (void);
 void R_RunParticleEffect (const vec3_t org, const vec3_t dir, int color, int count);
 void R_RocketTrail (vec3_t start, vec3_t end, int type);

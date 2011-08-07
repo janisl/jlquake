@@ -92,22 +92,3 @@ void CL_InitRenderStuff (void)
 	if (!playerTranslation)
 		Sys_Error ("Couldn't load gfx/player.lmp");
 }
-
-extern qhandle_t	player_models[MAX_PLAYER_CLASS];
-
-/*
-===============
-R_NewMap
-===============
-*/
-void R_NewMap (void)
-{
-	int		i;
-	
-	for (i=0 ; i<256 ; i++)
-		cl_lightstylevalue[i] = 264;		// normal light value
-
-	R_ClearParticles ();
-
-	R_EndRegistration();
-}

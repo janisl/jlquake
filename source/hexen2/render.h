@@ -95,9 +95,6 @@ void V_RenderScene (void);		// must set r_refdef first
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect);
 								// called whenever r_refdef or vid change
 
-void R_NewMap (void);
-
-
 void R_ParseParticleEffect (void);
 void R_ParseParticleEffect2 (void);
 void R_ParseParticleEffect3 (void);

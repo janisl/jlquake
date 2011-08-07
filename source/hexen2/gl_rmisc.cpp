@@ -26,23 +26,6 @@ void CL_InitRenderStuff (void)
 		Sys_Error ("Couldn't load gfx/player.lmp");
 }
 
-/*
-===============
-R_NewMap
-===============
-*/
-void R_NewMap (void)
-{
-	int		i;
-	
-	for (i=0 ; i<256 ; i++)
-		cl_lightstylevalue[i] = 264;		// normal light value
-
-	R_ClearParticles ();
-
-	R_EndRegistration();
-}
-
 void D_ShowLoadingSize(void)
 {
 	if (!tr.registered)

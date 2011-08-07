@@ -43,20 +43,3 @@ void CL_InitRenderStuff (void)
 
 	R_InitParticles ();
 }
-
-/*
-===============
-R_NewMap
-===============
-*/
-void R_NewMap (void)
-{
-	int		i;
-	
-	for (i=0 ; i<256 ; i++)
-		cl_lightstylevalue[i] = 264;		// normal light value
-
-	R_ClearParticles ();
-
-	R_EndRegistration();
-}
