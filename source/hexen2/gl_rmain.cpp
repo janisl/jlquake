@@ -7,7 +7,6 @@
 #include "quakedef.h"
 #include "glquake.h"
 
-image_t*	playertextures[16];		// up to 16 color translated skins
 image_t*	gl_extra_textures[MAX_EXTRA_TEXTURES];   // generic textures for models
 
 extern qhandle_t	player_models[NUM_CLASSES];

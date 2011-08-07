@@ -107,6 +107,8 @@ double	parsecounttime;
 
 int		cl_spikeindex, cl_playerindex, cl_flagindex;
 
+image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
+
 //=============================================================================
 
 int packet_latency[NET_TIMINGS];

@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "glquake.h"
 
-image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
-
 //
 // screen size info
 //

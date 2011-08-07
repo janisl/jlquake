@@ -110,6 +110,8 @@ double	parsecounttime;
 
 qhandle_t	player_models[MAX_PLAYER_CLASS];
 
+image_t*	playertextures[MAX_CLIENTS];		// up to 16 color translated skins
+
 int		cl_spikeindex, cl_playerindex[MAX_PLAYER_CLASS], cl_flagindex;
 int		cl_ballindex, cl_missilestarindex, cl_ravenindex, cl_raven2index;
 
@@ -811,6 +813,7 @@ void R_TranslatePlayerSkin(int playernum)
 		classIndex = 0;
 	}
 
+GLog.WriteLine("Uploading skin");
 	R_CreateOrUpdateTranslatedModelSkinH2(playertextures[playernum], va("*player%d", playernum), player_models[classIndex], translate, classIndex);
 }
 

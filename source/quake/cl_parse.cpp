@@ -68,6 +68,8 @@ const char *svc_strings[] =
 	"svc_cutscene"
 };
 
+image_t*	playertextures[16];		// up to 16 color translated skins
+
 //=============================================================================
 
 /*
