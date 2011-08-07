@@ -26,10 +26,6 @@
 #define	SKYSIZE			(1 << SKYSHIFT)
 #define SKYMASK			(SKYSIZE - 1)
 
-void R_TimeRefresh_f (void);
-
-//====================================================
-
 extern	QCvar*	gl_reporttjunctions;
 
 void R_InitParticles (void);

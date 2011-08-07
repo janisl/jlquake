@@ -56,8 +56,6 @@ CL_InitRenderStuff
 */
 void CL_InitRenderStuff (void)
 {	
-	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
-
 	gl_reporttjunctions = Cvar_Get("gl_reporttjunctions", "0", 0);
 
 	R_InitParticles ();
@@ -82,38 +80,6 @@ void R_NewMap (void)
 	R_ClearParticles ();
 
 	R_EndRegistration();
-}
-
-
-/*
-====================
-R_TimeRefresh_f
-
-For program optimization
-====================
-*/
-void R_TimeRefresh_f (void)
-{
-	int			i;
-	float		start, stop, time;
-
-	start = Sys_DoubleTime();
-	vec3_t viewangles;
-	viewangles[0] = 0;
-	viewangles[1] = 0;
-	viewangles[2] = 0;
-	for (i=0 ; i<128 ; i++)
-	{
-		viewangles[1] = i/128.0*360.0;
-		AnglesToAxis(viewangles, r_refdef.viewaxis);
-		R_BeginFrame(STEREO_CENTER);
-		V_RenderScene ();
-		R_EndFrame(NULL, NULL);
-	}
-
-	stop = Sys_DoubleTime ();
-	time = stop-start;
-	Con_Printf ("%f seconds (%f fps)\n", time, 128/time);
 }
 
 void VID_SetPalette()

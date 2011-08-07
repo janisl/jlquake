@@ -37,10 +37,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define	SKYSIZE			(1 << SKYSHIFT)
 #define SKYMASK			(SKYSIZE - 1)
 
-void R_TimeRefresh_f (void);
-
-//====================================================
-
 //
 // screen size info
 //
