@@ -1008,7 +1008,7 @@ void ED_LoadFromFile (const char *data)
 		if (entity_file_size)
 		{
 			current_loading_size = start_amount + ((data-orig)*80/entity_file_size);
-			D_ShowLoadingSize();
+			SCR_UpdateScreen();
 		}
 
 		if (token[0] != '{')

@@ -1909,11 +1909,11 @@ void SV_SpawnServer (char *server, char *startspot)
 	loading_stage = 1;
 	PR_LoadProgs ();
 	current_loading_size += 10;
-	D_ShowLoadingSize();
+	SCR_UpdateScreen();
 //	PR_LoadStrings();
 //	PR_LoadInfoStrings();
 	current_loading_size += 5;
-	D_ShowLoadingSize();
+	SCR_UpdateScreen();
 
 // allocate server memory
 	Com_Memset(sv.Effects,0,sizeof(sv.Effects));
@@ -2000,7 +2000,7 @@ void SV_SpawnServer (char *server, char *startspot)
 	pr_global_struct->serverflags = svs.serverflags;
 	
 	current_loading_size += 5;
-	D_ShowLoadingSize();
+	SCR_UpdateScreen();
 	ED_LoadFromFile(CM_EntityString());
 
 	sv.active = true;

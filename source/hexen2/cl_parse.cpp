@@ -333,7 +333,7 @@ void CL_ParseServerInfo (void)
 	{
 		cl.model_precache[i] = R_RegisterModel (model_precache[i]);
 		current_loading_size++;
-		D_ShowLoadingSize();
+		SCR_UpdateScreen();
 
 		if (cl.model_precache[i] == 0)
 		{
@@ -354,7 +354,7 @@ void CL_ParseServerInfo (void)
 	{
 		cl.sound_precache[i] = S_RegisterSound(sound_precache[i]);
 		current_loading_size++;
-		D_ShowLoadingSize();
+		SCR_UpdateScreen();
 
 		CL_KeepaliveMessage ();
 	}
