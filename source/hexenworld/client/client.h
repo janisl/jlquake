@@ -405,6 +405,7 @@ extern	QCvar*	spectator;
 
 extern	QCvar	*cl_lightlevel;	// FIXME HACK
 
+extern	QCvar*	cl_teamcolor;
 
 #define	MAX_STATIC_ENTITIES	256			// torches, etc
 

@@ -54,6 +54,7 @@ QCvar*	msg;
 
 QCvar	*cl_lightlevel;
 
+QCvar*	cl_teamcolor;
 
 client_static_t	cls;
 client_state_t	cl;
@@ -1021,6 +1022,8 @@ void CL_Init (void)
 	msg = Cvar_Get("msg","1", CVAR_ARCHIVE | CVAR_USERINFO);
 	noaim = Cvar_Get("noaim","0", CVAR_ARCHIVE | CVAR_USERINFO);
 	talksounds = Cvar_Get("talksounds", "1", CVAR_ARCHIVE);
+
+	cl_teamcolor = Cvar_Get("cl_teamcolor", "187", CVAR_ARCHIVE);
 
 	Cmd_AddCommand ("version", CL_Version_f);
 

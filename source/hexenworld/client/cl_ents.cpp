@@ -1374,7 +1374,7 @@ void CL_LinkPlayers (void)
 					this_team[15] = 0;
 					if (QStr::ICmp(client_team, this_team) == 0)
 					{
-						colorshade = r_teamcolor->value;
+						colorshade = cl_teamcolor->value;
 					}
 				}
 			}

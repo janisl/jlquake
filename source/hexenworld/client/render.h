@@ -115,8 +115,6 @@ struct entity_t
 extern	refdef_t	r_refdef;
 
 
-extern	QCvar*	r_teamcolor;
-
 extern float RTint[256],GTint[256],BTint[256];
 
 void CL_InitRenderStuff (void);

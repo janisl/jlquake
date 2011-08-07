@@ -3,8 +3,6 @@
 #include "quakedef.h"
 #include "../../client/render_local.h"
 
-QCvar*	r_teamcolor;
-
 /*
 =============================================================
 
@@ -72,8 +70,6 @@ CL_InitRenderStuff
 */
 void CL_InitRenderStuff (void)
 {
-	r_teamcolor = Cvar_Get("r_teamcolor", "187", CVAR_ARCHIVE);
-
 	R_InitParticles ();
 
 	playerTranslation = (byte *)COM_LoadHunkFile ("gfx/player.lmp");
