@@ -18,7 +18,6 @@
 
 #include "client.h"
 #include "cinematic_local.h"
-#include "render_local.h"
 
 // MACROS ------------------------------------------------------------------
 
