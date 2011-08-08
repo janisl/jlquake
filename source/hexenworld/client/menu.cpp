@@ -365,7 +365,7 @@ void M_ToggleMenu_f (void)
 			M_Menu_Main_f ();
 			return;
 		}
-		in_keyCatchers &= KEYCATCH_UI;
+		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		return;
 	}
@@ -612,7 +612,7 @@ void M_Main_Key (int key)
 	switch (key)
 	{
 	case K_ESCAPE:
-		in_keyCatchers &= KEYCATCH_UI;
+		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		cls.demonum = m_save_demonum;
 		if (cls.demonum != -1 && !cls.demoplayback && cls.state == ca_disconnected)
@@ -737,12 +737,12 @@ void M_Class_Key (int key)
 //		}
 //		else
 		{
-			in_keyCatchers &= KEYCATCH_UI;
+			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
 		}
 		break;
 	default:
-		in_keyCatchers &= KEYCATCH_UI;
+		in_keyCatchers &= ~KEYCATCH_UI;
 		m_state = m_none;
 		break;
 	}
@@ -1013,7 +1013,7 @@ void M_Options_Key (int k)
 		case OPT_CONSOLE:
 			//m_state = m_none;
 			//Con_ToggleConsole_f ();
-			in_keyCatchers &= KEYCATCH_UI;
+			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
 			break;
 		case OPT_DEFAULTS:
@@ -1865,7 +1865,7 @@ void M_Quit_Key (int key)
 		}
 		else
 		{
-			in_keyCatchers &= KEYCATCH_UI;
+			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
 		}
 		break;
@@ -2247,7 +2247,7 @@ void M_Connect_Key (int k)
 
 		if (connect_cursor < MAX_HOST_NAMES)
 		{
-			in_keyCatchers &= KEYCATCH_UI;
+			in_keyCatchers &= ~KEYCATCH_UI;
 			m_state = m_none;
 			Cbuf_AddText ( va ("connect %s\n", save_names[connect_cursor]) );
 		}
