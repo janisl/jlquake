@@ -121,17 +121,17 @@ template<class T> T Clamp(T val, T low, T high)
 
 //==========================================================================
 //
-//	QInterface
+//	Interface
 //
 //==========================================================================
 
 //
 //  Base class for abstract classes that need virtual destructor.
 //
-class QInterface
+class Interface
 {
 public:
-	virtual ~QInterface();
+	virtual ~Interface();
 };
 
 #define JLQUAKE_VERSION			1.0

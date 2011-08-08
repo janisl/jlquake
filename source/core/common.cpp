@@ -54,11 +54,11 @@ static const char*	com_argv[MAX_NUM_ARGVS+1];
 
 //==========================================================================
 //
-//	QInterface::~QInterface
+//	Interface::~Interface
 //
 //==========================================================================
 
-QInterface::~QInterface()
+Interface::~Interface()
 {
 }
 

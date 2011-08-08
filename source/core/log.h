@@ -20,7 +20,7 @@
 //
 //==========================================================================
 
-class QLogListener : QInterface
+class QLogListener : Interface
 {
 public:
 	virtual void Serialise(const char* Text, bool Devel) = 0;

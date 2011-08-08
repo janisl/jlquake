@@ -20,7 +20,7 @@
 //
 //==========================================================================
 
-class QException : public QInterface
+class QException : public Interface
 {
 private:
 	enum { MAX_ERROR_TEXT_SIZE		= 1024 };

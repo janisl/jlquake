@@ -17,7 +17,7 @@
 //
 //	Base class for cinematics.
 //
-class QCinematic : public QInterface
+class QCinematic : public Interface
 {
 public:
 	char		Name[MAX_OSPATH];
