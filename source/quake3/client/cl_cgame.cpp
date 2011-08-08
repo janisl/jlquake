@@ -204,7 +204,7 @@ void CL_ConfigstringModified( void ) {
 	gameState_t	oldGs;
 	int			len;
 
-	index = QStr::Atoi( Cmd_Argv(1) );
+	index = String::Atoi( Cmd_Argv(1) );
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
 		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
 	}
@@ -212,7 +212,7 @@ void CL_ConfigstringModified( void ) {
 	s = Cmd_ArgsFrom(2);
 
 	old = cl.gameState.stringData + cl.gameState.stringOffsets[ index ];
-	if ( !QStr::Cmp( old, s ) ) {
+	if ( !String::Cmp( old, s ) ) {
 		return;		// unchanged
 	}
 
@@ -234,7 +234,7 @@ void CL_ConfigstringModified( void ) {
 			continue;		// leave with the default empty string
 		}
 
-		len = QStr::Length( dup );
+		len = String::Length( dup );
 
 		if ( len + 1 + cl.gameState.dataCount > MAX_GAMESTATE_CHARS ) {
 			Com_Error( ERR_DROP, "MAX_GAMESTATE_CHARS exceeded" );
@@ -292,7 +292,7 @@ rescan:
 	cmd = Cmd_Argv(0);
 	argc = Cmd_Argc();
 
-	if ( !QStr::Cmp( cmd, "disconnect" ) ) {
+	if ( !String::Cmp( cmd, "disconnect" ) ) {
 		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=552
 		// allow server to indicate why they were disconnected
 		if ( argc >= 2 )
@@ -301,39 +301,39 @@ rescan:
 			Com_Error (ERR_SERVERDISCONNECT,"Server disconnected\n");
 	}
 
-	if ( !QStr::Cmp( cmd, "bcs0" ) ) {
-		QStr::Sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv(1), Cmd_Argv(2) );
+	if ( !String::Cmp( cmd, "bcs0" ) ) {
+		String::Sprintf( bigConfigString, BIG_INFO_STRING, "cs %s \"%s", Cmd_Argv(1), Cmd_Argv(2) );
 		return qfalse;
 	}
 
-	if ( !QStr::Cmp( cmd, "bcs1" ) ) {
+	if ( !String::Cmp( cmd, "bcs1" ) ) {
 		s = Cmd_Argv(2);
-		if( QStr::Length(bigConfigString) + QStr::Length(s) >= BIG_INFO_STRING ) {
+		if( String::Length(bigConfigString) + String::Length(s) >= BIG_INFO_STRING ) {
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
-		QStr::Cat( bigConfigString, sizeof(bigConfigString), s );
+		String::Cat( bigConfigString, sizeof(bigConfigString), s );
 		return qfalse;
 	}
 
-	if ( !QStr::Cmp( cmd, "bcs2" ) ) {
+	if ( !String::Cmp( cmd, "bcs2" ) ) {
 		s = Cmd_Argv(2);
-		if( QStr::Length(bigConfigString) + QStr::Length(s) + 1 >= BIG_INFO_STRING ) {
+		if( String::Length(bigConfigString) + String::Length(s) + 1 >= BIG_INFO_STRING ) {
 			Com_Error( ERR_DROP, "bcs exceeded BIG_INFO_STRING" );
 		}
-		QStr::Cat( bigConfigString, sizeof(bigConfigString), s );
-		QStr::Cat( bigConfigString, sizeof(bigConfigString), "\"" );
+		String::Cat( bigConfigString, sizeof(bigConfigString), s );
+		String::Cat( bigConfigString, sizeof(bigConfigString), "\"" );
 		s = bigConfigString;
 		goto rescan;
 	}
 
-	if ( !QStr::Cmp( cmd, "cs" ) ) {
+	if ( !String::Cmp( cmd, "cs" ) ) {
 		CL_ConfigstringModified();
 		// reparse the string, because CL_ConfigstringModified may have done another Cmd_TokenizeString()
 		Cmd_TokenizeString( s );
 		return qtrue;
 	}
 
-	if ( !QStr::Cmp( cmd, "map_restart" ) ) {
+	if ( !String::Cmp( cmd, "map_restart" ) ) {
 		// clear notify lines and outgoing commands before passing
 		// the restart to the cgame
 		Con_ClearNotify();
@@ -346,7 +346,7 @@ rescan:
 	// point of levels for the menu system to use
 	// we pass it along to the cgame to make apropriate adjustments,
 	// but we also clear the console and notify lines here
-	if ( !QStr::Cmp( cmd, "clientLevelShot" ) ) {
+	if ( !String::Cmp( cmd, "clientLevelShot" ) ) {
 		// don't do it if we aren't running the server locally,
 		// otherwise malicious remote servers could overwrite
 		// the existing thumbnails
@@ -641,7 +641,7 @@ int CL_CgameSystemCalls( int *args ) {
 		Com_Memcpy( VMA(1), VMA(2), args[3] );
 		return 0;
 	case CG_STRNCPY:
-		QStr::NCpy( (char*)VMA(1), (char*)VMA(2), args[3] );
+		String::NCpy( (char*)VMA(1), (char*)VMA(2), args[3] );
 		return (qintptr)(char*)VMA(1);
 	case CG_SIN:
 		return FloatAsInt( sin( VMF(1) ) );
@@ -745,7 +745,7 @@ void CL_InitCGame( void ) {
 	// find the current mapname
 	info = cl.gameState.stringData + cl.gameState.stringOffsets[ CS_SERVERINFO ];
 	mapname = Info_ValueForKey( info, "mapname" );
-	QStr::Sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
+	String::Sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
 	// load the dll or bytecode
 	if ( cl_connectedToPureServer != 0 ) {

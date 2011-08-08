@@ -30,7 +30,7 @@ extern dstatement_t*	pr_statements;
 extern float*			pr_globals;			// same as pr_global_struct
 
 void PR_ClearStringMap();
-int PR_SetString(const char* String);
+int PR_SetString(const char* string);
 const char* PR_GetString(int Num);
 
 #endif

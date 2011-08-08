@@ -209,7 +209,7 @@ void CL_SendConnectPacket (void)
 //	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
 		255, 255, 255, 255,	PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
-	NET_SendPacket (QStr::Length(data), data, adr);
+	NET_SendPacket (String::Length(data), data, adr);
 }
 
 /*
@@ -247,7 +247,7 @@ void CL_CheckForResend (void)
 
 	Con_Printf ("Connecting to %s...\n", cls.servername);
 	sprintf (data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
-	NET_SendPacket (QStr::Length(data), data, adr);
+	NET_SendPacket (String::Length(data), data, adr);
 }
 
 void CL_BeginServerConnect(void)
@@ -276,7 +276,7 @@ void CL_Connect_f (void)
 
 	CL_Disconnect ();
 
-	QStr::NCpy(cls.servername, server, sizeof(cls.servername)-1);
+	String::NCpy(cls.servername, server, sizeof(cls.servername)-1);
 	CL_BeginServerConnect();
 }
 
@@ -308,22 +308,22 @@ void CL_Rcon_f (void)
 	message[3] = 255;
 	message[4] = 0;
 
-	QStr::Cat(message, sizeof(message), "rcon ");
+	String::Cat(message, sizeof(message), "rcon ");
 
-	QStr::Cat(message, sizeof(message), rcon_password->string);
-	QStr::Cat(message, sizeof(message), " ");
+	String::Cat(message, sizeof(message), rcon_password->string);
+	String::Cat(message, sizeof(message), " ");
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		QStr::Cat(message, sizeof(message), Cmd_Argv(i));
-		QStr::Cat(message, sizeof(message), " ");
+		String::Cat(message, sizeof(message), Cmd_Argv(i));
+		String::Cat(message, sizeof(message), " ");
 	}
 
 	if (cls.state >= ca_connected)
 		to = cls.netchan.remote_address;
 	else
 	{
-		if (!QStr::Length(rcon_address->string))
+		if (!String::Length(rcon_address->string))
 		{
 			Con_Printf ("You must either be connected,\n"
 						"or set the 'rcon_address' cvar\n"
@@ -334,7 +334,7 @@ void CL_Rcon_f (void)
 		SOCK_StringToAdr(rcon_address->string, &to, 27500);
 	}
 	
-	NET_SendPacket (QStr::Length(message)+1, message, to);
+	NET_SendPacket (String::Length(message)+1, message, to);
 }
 
 
@@ -411,7 +411,7 @@ void CL_Disconnect (void)
 			CL_Stop_f ();
 
 		final[0] = clc_stringcmd;
-		QStr::Cpy((char*)final+1, "drop");
+		String::Cpy((char*)final+1, "drop");
 		Netchan_Transmit (&cls.netchan, 6, final);
 		Netchan_Transmit (&cls.netchan, 6, final);
 		Netchan_Transmit (&cls.netchan, 6, final);
@@ -457,14 +457,14 @@ void CL_User_f (void)
 		return;
 	}
 
-	uid = QStr::Atoi(Cmd_Argv(1));
+	uid = String::Atoi(Cmd_Argv(1));
 
 	for (i=0 ; i<MAX_CLIENTS ; i++)
 	{
 		if (!cl.players[i].name[0])
 			continue;
 		if (cl.players[i].userid == uid
-		|| !QStr::Cmp(cl.players[i].name, Cmd_Argv(1)) )
+		|| !String::Cmp(cl.players[i].name, Cmd_Argv(1)) )
 		{
 			Info_Print (cl.players[i].userinfo);
 			return;
@@ -516,11 +516,11 @@ void CL_Color_f (void)
 	}
 
 	if (Cmd_Argc() == 2)
-		top = bottom = QStr::Atoi(Cmd_Argv(1));
+		top = bottom = String::Atoi(Cmd_Argv(1));
 	else
 	{
-		top = QStr::Atoi(Cmd_Argv(1));
-		bottom = QStr::Atoi(Cmd_Argv(2));
+		top = String::Atoi(Cmd_Argv(1));
+		bottom = String::Atoi(Cmd_Argv(2));
 	}
 	
 	top &= 15;
@@ -554,10 +554,10 @@ void CL_FullServerinfo_f (void)
 		return;
 	}
 
-	QStr::Cpy(cl.serverinfo, Cmd_Argv(1));
+	String::Cpy(cl.serverinfo, Cmd_Argv(1));
 
 	if ((p = Info_ValueForKey(cl.serverinfo, "*vesion")) && *p) {
-		v = QStr::Atof(p);
+		v = String::Atof(p);
 		if (v) {
 			if (!server_version)
 				Con_Printf("Version %1.2f Server\n", v);
@@ -612,7 +612,7 @@ void CL_FullInfo_f (void)
 		if (*s)
 			s++;
 
-		if (!QStr::ICmp(key, pmodel_name) || !QStr::ICmp(key, emodel_name))
+		if (!String::ICmp(key, pmodel_name) || !String::ICmp(key, emodel_name))
 			continue;
 
 		if (key[0] == '*')
@@ -622,7 +622,7 @@ void CL_FullInfo_f (void)
 		}
 
 		Info_SetValueForKey(cls.userinfo, key, value, MAX_INFO_STRING, 64, 64,
-			QStr::ICmp(key, "name") != 0, QStr::ICmp(key, "team") == 0);
+			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
 	}
 }
 
@@ -645,7 +645,7 @@ void CL_SetInfo_f (void)
 		Con_Printf ("usage: setinfo [ <key> <value> ]\n");
 		return;
 	}
-	if (!QStr::ICmp(Cmd_Argv(1), pmodel_name) || !QStr::Cmp(Cmd_Argv(1), emodel_name))
+	if (!String::ICmp(Cmd_Argv(1), pmodel_name) || !String::Cmp(Cmd_Argv(1), emodel_name))
 		return;
 
 	if (Cmd_Argv(1)[0] == '*')
@@ -655,7 +655,7 @@ void CL_SetInfo_f (void)
 	}
 
 	Info_SetValueForKey(cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING, 64, 64,
-		QStr::ICmp(Cmd_Argv(1), "name") != 0, QStr::ICmp(Cmd_Argv(1), "team") == 0);
+		String::ICmp(Cmd_Argv(1), "name") != 0, String::ICmp(Cmd_Argv(1), "team") == 0);
 	if (cls.state >= ca_connected)
 		Cmd_ForwardToServer ();
 }
@@ -692,7 +692,7 @@ void CL_Packet_f (void)
 	out = send+4;
 	send[0] = send[1] = send[2] = send[3] = 0xff;
 
-	l = QStr::Length(in);
+	l = String::Length(in);
 	for (i=0 ; i<l ; i++)
 	{
 		if (in[i] == '\\' && in[i+1] == 'n')
@@ -844,17 +844,17 @@ void CL_ConnectionlessPacket (void)
 #endif
 		s = const_cast<char*>(net_message.ReadString2());
 
-		QStr::NCpy(cmdtext, s, sizeof(cmdtext) - 1);
+		String::NCpy(cmdtext, s, sizeof(cmdtext) - 1);
 		cmdtext[sizeof(cmdtext) - 1] = 0;
 
 		s = const_cast<char*>(net_message.ReadString2());
 
-		while (*s && QStr::IsSpace(*s))
+		while (*s && String::IsSpace(*s))
 			s++;
-		while (*s && QStr::IsSpace(s[QStr::Length(s) - 1]))
-			s[QStr::Length(s) - 1] = 0;
+		while (*s && String::IsSpace(s[String::Length(s) - 1]))
+			s[String::Length(s) - 1] = 0;
 
-		if (!allowremotecmd && (!*localid->string || QStr::Cmp(localid->string, s))) {
+		if (!allowremotecmd && (!*localid->string || String::Cmp(localid->string, s))) {
 			if (!*localid->string) {
 				Con_Printf("===========================\n");
 				Con_Printf("Command packet received from local host, but no "
@@ -909,7 +909,7 @@ void CL_ConnectionlessPacket (void)
 		Con_Printf ("challenge\n");
 
 		s = const_cast<char*>(net_message.ReadString2());
-		cls.challenge = QStr::Atoi(s);
+		cls.challenge = String::Atoi(s);
 		CL_SendConnectPacket ();
 		return;
 	}
@@ -1004,8 +1004,8 @@ void CL_Download_f (void)
 		return;
 	}
 
-	QStr::NCpyZ(cls.downloadname, Cmd_Argv(1), sizeof(cls.downloadname));
-	QStr::Cpy(cls.downloadtempname, cls.downloadname);
+	String::NCpyZ(cls.downloadname, Cmd_Argv(1), sizeof(cls.downloadname));
+	String::Cpy(cls.downloadtempname, cls.downloadname);
 
 	cls.download = FS_FOpenFileWrite(cls.downloadname);
 	cls.downloadtype = dl_single;
@@ -1506,7 +1506,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 
 	AnglesToAxis(angles, ent->axis);
 
-	if (!QStr::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl"))
+	if (!String::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl"))
 	{
 		// double size of eyes, since they are really hard to see in gl
 		ent->renderfx |= RF_LIGHTING_ORIGIN;
@@ -1520,8 +1520,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	}
 
 	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!QStr::Cmp(R_ModelName(ent->hModel), "progs/flame2.mdl") ||
-		!QStr::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
+	if (!String::Cmp(R_ModelName(ent->hModel), "progs/flame2.mdl") ||
+		!String::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
 	{
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
 		ent->radius = 1;

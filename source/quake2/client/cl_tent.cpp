@@ -146,7 +146,7 @@ void CL_RegisterTEntSounds (void)
 
 	for (i=0 ; i<4 ; i++)
 	{
-		QStr::Sprintf (name, sizeof(name), "player/step%i.wav", i+1);
+		String::Sprintf (name, sizeof(name), "player/step%i.wav", i+1);
 		cl_sfx_footsteps[i] = S_RegisterSound (name);
 	}
 

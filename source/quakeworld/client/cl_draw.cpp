@@ -146,7 +146,7 @@ void Draw_ConsoleBackground(int lines)
 	{
 		char ver[80];
 		sprintf(ver, "JLQuakeWorld %s", JLQUAKE_VERSION_STRING);
-		int x = viddef.width - (QStr::Length(ver) * 8 + 11);
+		int x = viddef.width - (String::Length(ver) * 8 + 11);
 		Draw_Alt_String(x, y, ver);
 	}
 }

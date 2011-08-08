@@ -184,7 +184,7 @@ ddef_t *ED_FindField (const char *name)
 	for (i=0 ; i<progs->numfielddefs ; i++)
 	{
 		def = &pr_fielddefs[i];
-		if (!QStr::Cmp(PR_GetString(def->s_name),name))
+		if (!String::Cmp(PR_GetString(def->s_name),name))
 			return def;
 	}
 	return NULL;
@@ -204,7 +204,7 @@ ddef_t *ED_FindGlobal (const char *name)
 	for (i=0 ; i<progs->numglobaldefs ; i++)
 	{
 		def = &pr_globaldefs[i];
-		if (!QStr::Cmp(PR_GetString(def->s_name),name) )
+		if (!String::Cmp(PR_GetString(def->s_name),name) )
 			return def;
 	}
 	return NULL;
@@ -224,7 +224,7 @@ dfunction_t *ED_FindFunction (const char *name)
 	for (i=0 ; i<progs->numfunctions ; i++)
 	{
 		func = &pr_functions[i];
-		if (!QStr::Cmp(PR_GetString(func->s_name),name) )
+		if (!String::Cmp(PR_GetString(func->s_name),name) )
 			return func;
 	}
 	return NULL;
@@ -239,7 +239,7 @@ eval_t *GetEdictFieldValue(edict_t *ed, const char *field)
 
 	for (i=0 ; i<GEFV_CACHESIZE ; i++)
 	{
-		if (!QStr::Cmp(field, gefvCache[i].field))
+		if (!String::Cmp(field, gefvCache[i].field))
 		{
 			def = gefvCache[i].pcache;
 			goto Done;
@@ -248,10 +248,10 @@ eval_t *GetEdictFieldValue(edict_t *ed, const char *field)
 
 	def = ED_FindField (field);
 
-	if (QStr::Length(field) < MAX_FIELD_LEN)
+	if (String::Length(field) < MAX_FIELD_LEN)
 	{
 		gefvCache[rep].pcache = def;
-		QStr::Cpy(gefvCache[rep].field, field);
+		String::Cpy(gefvCache[rep].field, field);
 		rep ^= 1;
 	}
 
@@ -392,10 +392,10 @@ char *PR_GlobalString (int ofs)
 		sprintf (line,"%i(%s)%s", ofs, PR_GetString(def->s_name), s);
 	}
 	
-	i = QStr::Length(line);
+	i = String::Length(line);
 	for ( ; i<20 ; i++)
-		QStr::Cat(line, sizeof(line), " ");
-	QStr::Cat(line, sizeof(line), " ");
+		String::Cat(line, sizeof(line), " ");
+	String::Cat(line, sizeof(line), " ");
 		
 	return line;
 }
@@ -415,10 +415,10 @@ char *PR_GlobalStringNoContents (int ofs)
 	else
 		sprintf (line,"%i(%s)", ofs, PR_GetString(def->s_name));
 	
-	i = QStr::Length(line);
+	i = String::Length(line);
 	for ( ; i<20 ; i++)
-		QStr::Cat(line, sizeof(line), " ");
-	QStr::Cat(line, sizeof(line), " ");
+		String::Cat(line, sizeof(line), " ");
+	String::Cat(line, sizeof(line), " ");
 		
 	return line;
 }
@@ -451,7 +451,7 @@ void ED_Print (edict_t *ed)
 	{
 		d = &pr_fielddefs[i];
 		name = PR_GetString(d->s_name);
-		if (name[QStr::Length(name)-2] == '_')
+		if (name[String::Length(name)-2] == '_')
 			continue;	// skip _x, _y, _z vars
 			
 		v = (int *)((char *)&ed->v + d->ofs*4);
@@ -466,7 +466,7 @@ void ED_Print (edict_t *ed)
 			continue;
 	
 		Con_Printf ("%s",name);
-		l = QStr::Length(name);
+		l = String::Length(name);
 		while (l++ < 15)
 			Con_Printf (" ");
 
@@ -501,7 +501,7 @@ void ED_Write (fileHandle_t f, edict_t *ed)
 	{
 		d = &pr_fielddefs[i];
 		name = PR_GetString(d->s_name);
-		if (name[QStr::Length(name)-2] == '_')
+		if (name[String::Length(name)-2] == '_')
 			continue;	// skip _x, _y, _z vars
 			
 		v = (int *)((char *)&ed->v + d->ofs*4);
@@ -553,7 +553,7 @@ void ED_PrintEdict_f (void)
 {
 	int		i;
 	
-	i = QStr::Atoi(Cmd_Argv(1));
+	i = String::Atoi(Cmd_Argv(1));
 	if (i >= sv.num_edicts)
 	{
 		Con_Printf("Bad edict number\n");
@@ -653,16 +653,16 @@ const char* ED_ParseGlobals(const char* data)
 	while (1)
 	{	
 	// parse key
-		char* token = QStr::Parse1(&data);
+		char* token = String::Parse1(&data);
 		if (token[0] == '}')
 			break;
 		if (!data)
 			Sys_Error ("ED_ParseEntity: EOF without closing brace");
 
-		QStr::Cpy(keyname, token);
+		String::Cpy(keyname, token);
 
 	// parse value	
-		token = QStr::Parse1(&data);
+		token = String::Parse1(&data);
 		if (!data)
 			Sys_Error ("ED_ParseEntity: EOF without closing brace");
 
@@ -695,7 +695,7 @@ char *ED_NewString (const char *string)
 	char	*new_str, *new_p;
 	int		i,l;
 	
-	l = QStr::Length(string) + 1;
+	l = String::Length(string) + 1;
 	new_str = (char*)Hunk_Alloc (l);
 	new_p = new_str;
 
@@ -743,11 +743,11 @@ qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
 		break;
 		
 	case ev_float:
-		*(float *)d = QStr::Atof(s);
+		*(float *)d = String::Atof(s);
 		break;
 		
 	case ev_vector:
-		QStr::Cpy(string, s);
+		String::Cpy(string, s);
 		v = string;
 		w = string;
 		for (i=0 ; i<3 ; i++)
@@ -755,13 +755,13 @@ qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
 			while (*v && *v != ' ')
 				v++;
 			*v = 0;
-			((float *)d)[i] = QStr::Atof(w);
+			((float *)d)[i] = String::Atof(w);
 			w = v = v+1;
 		}
 		break;
 		
 	case ev_entity:
-		*(int *)d = EDICT_TO_PROG(EDICT_NUM(QStr::Atoi(s)));
+		*(int *)d = EDICT_TO_PROG(EDICT_NUM(String::Atoi(s)));
 		break;
 		
 	case ev_field:
@@ -817,7 +817,7 @@ const char *ED_ParseEdict (const char *data, edict_t *ent)
 	while (1)
 	{	
 	// parse key
-		char* token = QStr::Parse1(&data);
+		char* token = String::Parse1(&data);
 		if (token[0] == '}')
 			break;
 		if (!data)
@@ -825,22 +825,22 @@ const char *ED_ParseEdict (const char *data, edict_t *ent)
 		
 // anglehack is to allow QuakeEd to write single scalar angles
 // and allow them to be turned into vectors. (FIXME...)
-if (!QStr::Cmp(token, "angle"))
+if (!String::Cmp(token, "angle"))
 {
-	QStr::Cpy(token, "angles");
+	String::Cpy(token, "angles");
 	anglehack = true;
 }
 else
 	anglehack = false;
 
 // FIXME: change light to _light to get rid of this hack
-if (!QStr::Cmp(token, "light"))
-	QStr::Cpy(token, "light_lev");	// hack for single light def
+if (!String::Cmp(token, "light"))
+	String::Cpy(token, "light_lev");	// hack for single light def
 
-		QStr::Cpy(keyname, token);
+		String::Cpy(keyname, token);
 
 		// another hack to fix heynames with trailing spaces
-		n = QStr::Length(keyname);
+		n = String::Length(keyname);
 		while (n && keyname[n-1] == ' ')
 		{
 			keyname[n-1] = 0;
@@ -848,7 +848,7 @@ if (!QStr::Cmp(token, "light"))
 		}
 
 	// parse value	
-		token = QStr::Parse1(&data);
+		token = String::Parse1(&data);
 		if (!data)
 			Sys_Error ("ED_ParseEntity: EOF without closing brace");
 
@@ -872,7 +872,7 @@ if (!QStr::Cmp(token, "light"))
 if (anglehack)
 {
 char	temp[32];
-QStr::Cpy(temp, token);
+String::Cpy(temp, token);
 sprintf (token, "0 %s 0", temp);
 }
 
@@ -916,7 +916,7 @@ void ED_LoadFromFile (const char *data)
 	while (1)
 	{
 // parse the opening brace	
-		char* token = QStr::Parse1(&data);
+		char* token = String::Parse1(&data);
 		if (!data)
 			break;
 		if (token[0] != '{')

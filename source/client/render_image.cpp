@@ -438,43 +438,43 @@ void R_LoadImage(const char* name, byte** pic, int* width, int* height, int Mode
 	*width = 0;
 	*height = 0;
 
-	int len = QStr::Length(name);
+	int len = String::Length(name);
 	if (len < 5)
 	{
 		return;
 	}
 
-	if (!QStr::ICmp(name + len - 4, ".tga"))
+	if (!String::ICmp(name + len - 4, ".tga"))
 	{
 		R_LoadTGA(name, pic, width, height);            // try tga first
 		if (!*pic)
 		{                                    //
 			char altname[MAX_QPATH];                      // try jpg in place of tga 
-			QStr::Cpy(altname, name);                      
-			len = QStr::Length(altname);                  
+			String::Cpy(altname, name);                      
+			len = String::Length(altname);                  
 			altname[len - 3] = 'j';
 			altname[len - 2] = 'p';
 			altname[len - 1] = 'g';
 			R_LoadJPG(altname, pic, width, height);
 		}
 	}
-	else if (!QStr::ICmp(name + len - 4, ".pcx"))
+	else if (!String::ICmp(name + len - 4, ".pcx"))
 	{
 		R_LoadPCX32(name, pic, width, height, Mode);
 	}
-	else if (!QStr::ICmp(name + len - 4, ".bmp"))
+	else if (!String::ICmp(name + len - 4, ".bmp"))
 	{
 		R_LoadBMP(name, pic, width, height);
 	}
-	else if (!QStr::ICmp(name + len - 4, ".jpg"))
+	else if (!String::ICmp(name + len - 4, ".jpg"))
 	{
 		R_LoadJPG(name, pic, width, height);
 	}
-	else if (!QStr::ICmp(name + len - 4, ".wal"))
+	else if (!String::ICmp(name + len - 4, ".wal"))
 	{
 		R_LoadWAL(name, pic, width, height);
 	}
-	else if (!QStr::ICmp(name + len - 4, ".lmp"))
+	else if (!String::ICmp(name + len - 4, ".lmp"))
 	{
 		R_LoadPIC(name, pic, width, height, TransPixels, Mode);
 	}
@@ -740,25 +740,25 @@ static void GL_CheckErrors()
 	switch (err)
 	{
 		case GL_INVALID_ENUM:
-			QStr::Cpy(s, "GL_INVALID_ENUM");
+			String::Cpy(s, "GL_INVALID_ENUM");
 			break;
 		case GL_INVALID_VALUE:
-			QStr::Cpy(s, "GL_INVALID_VALUE");
+			String::Cpy(s, "GL_INVALID_VALUE");
 			break;
 		case GL_INVALID_OPERATION:
-			QStr::Cpy(s, "GL_INVALID_OPERATION");
+			String::Cpy(s, "GL_INVALID_OPERATION");
 			break;
 		case GL_STACK_OVERFLOW:
-			QStr::Cpy(s, "GL_STACK_OVERFLOW");
+			String::Cpy(s, "GL_STACK_OVERFLOW");
 			break;
 		case GL_STACK_UNDERFLOW:
-			QStr::Cpy(s, "GL_STACK_UNDERFLOW");
+			String::Cpy(s, "GL_STACK_UNDERFLOW");
 			break;
 		case GL_OUT_OF_MEMORY:
-			QStr::Cpy(s, "GL_OUT_OF_MEMORY");
+			String::Cpy(s, "GL_OUT_OF_MEMORY");
 			break;
 		default:
-			QStr::Sprintf(s, sizeof(s), "%i", err);
+			String::Sprintf(s, sizeof(s), "%i", err);
 			break;
 	}
 
@@ -1071,7 +1071,7 @@ static long generateHashValue(const char* fname)
 	i = 0;
 	while (fname[i] != '\0')
 	{
-		letter = QStr::ToLower(fname[i]);
+		letter = String::ToLower(fname[i]);
 		if (letter == '.')
 		{
 			break;				// don't include extension
@@ -1097,7 +1097,7 @@ static long generateHashValue(const char* fname)
 
 image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool mipmap, bool allowPicmip, GLenum glWrapClampMode, bool AllowScrap)
 {
-	if (QStr::Length(name) >= MAX_QPATH)
+	if (String::Length(name) >= MAX_QPATH)
 	{
 		throw QDropException(va("R_CreateImage: \"%s\" is too long\n", name));
 	}
@@ -1106,7 +1106,7 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 		throw QDropException("R_CreateImage: MAX_DRAWIMAGES hit\n");
 	}
 
-	bool isLightmap = !QStr::NCmp(name, "*lightmap", 9);
+	bool isLightmap = !String::NCmp(name, "*lightmap", 9);
 
 	image_t* image = new image_t;
 	Com_Memset(image, 0, sizeof(image_t));
@@ -1116,7 +1116,7 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 	image->mipmap = mipmap;
 	image->allowPicmip = allowPicmip;
 
-	QStr::Cpy(image->imgName, name);
+	String::Cpy(image->imgName, name);
 
 	image->width = width;
 	image->height = height;
@@ -1192,7 +1192,7 @@ nonscrap:
 void R_ReUploadImage(image_t* image, byte* data)
 {
 	GL_Bind(image);
-	bool isLightmap = !QStr::NCmp(image->imgName, "*lightmap", 9);
+	bool isLightmap = !String::NCmp(image->imgName, "*lightmap", 9);
 	R_UploadImage(data, image->width, image->height, image->mipmap, image->allowPicmip,
 		isLightmap, &image->internalFormat, &image->uploadWidth, &image->uploadHeight);
 }
@@ -1208,7 +1208,7 @@ image_t* R_FindImage(const char* name)
 	long hash = generateHashValue(name);
 	for (image_t* image = ImageHashTable[hash]; image; image=image->next)
 	{
-		if (!QStr::Cmp(name, image->imgName))
+		if (!String::Cmp(name, image->imgName))
 		{
 			return image;
 		}
@@ -1239,7 +1239,7 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 	if (image)
 	{
 		// the white image can be used with any set of parms, but other mismatches are errors
-		if (QStr::Cmp(name, "*white"))
+		if (String::Cmp(name, "*white"))
 		{
 			if (image->mipmap != mipmap)
 			{
@@ -1269,11 +1269,11 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 		//	If we dont get a successful load copy the name and try upper case
 		// extension for unix systems, if that fails bail.
 		char altname[MAX_QPATH];
-		QStr::Cpy(altname, name);
-		int len = QStr::Length(altname);
-		altname[len - 3] = QStr::ToUpper(altname[len - 3]);
-		altname[len - 2] = QStr::ToUpper(altname[len - 2]);
-		altname[len - 1] = QStr::ToUpper(altname[len - 1]);
+		String::Cpy(altname, name);
+		int len = String::Length(altname);
+		altname[len - 3] = String::ToUpper(altname[len - 3]);
+		altname[len - 2] = String::ToUpper(altname[len - 2]);
+		altname[len - 1] = String::ToUpper(altname[len - 1]);
 		GLog.Write("trying %s...\n", altname);
 		R_LoadImage(altname, &pic, &width, &height);
 		if (pic == NULL)
@@ -1666,7 +1666,7 @@ void GL_TextureMode(const char* string)
 
 	for (i = 0; i < 6; i++)
 	{
-		if (!QStr::ICmp(modes[i].name, string))
+		if (!String::ICmp(modes[i].name, string))
 		{
 			break;
 		}
@@ -2066,7 +2066,7 @@ static image_t* R_RegisterPic(const char* name, GLenum wrapClampMode)
 	if (name[0] != '/' && name[0] != '\\')
 	{
 		char fullname[MAX_QPATH];
-		QStr::Sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
+		String::Sprintf(fullname, sizeof(fullname), "pics/%s.pcx", name);
 		return R_FindImageFile(fullname, false, false, wrapClampMode, true);
 	}
 	else

@@ -215,8 +215,8 @@ void Con_Dump_f (void)
 			else
 				break;
 		}
-		QStr::Cat( buffer, sizeof(buffer), "\n" );
-		FS_Write(buffer, QStr::Length(buffer), f);
+		String::Cat( buffer, sizeof(buffer), "\n" );
+		FS_Write(buffer, String::Length(buffer), f);
 	}
 
 	FS_FCloseFile( f );
@@ -376,7 +376,7 @@ void CL_ConsolePrint( char *txt ) {
 
 	// TTimo - prefix for text that shows up in console but not in notify
 	// backported from RTCW
-	if ( !QStr::NCmp( txt, "[skipnotify]", 12 ) ) {
+	if ( !String::NCmp( txt, "[skipnotify]", 12 ) ) {
 		skipnotify = qtrue;
 		txt += 12;
 	}
@@ -618,7 +618,7 @@ void Con_DrawSolidConsole( float frac ) {
 
 	R_SetColor( g_color_table[ColorIndex(COLOR_RED)] );
 
-	i = QStr::Length( Q3_VERSION );
+	i = String::Length( Q3_VERSION );
 
 	for (x=0 ; x<i ; x++) {
 

@@ -359,7 +359,7 @@ byte *COM_LoadFile (const char *path, int usehunk)
 		return NULL;
 	
 // extract the filename base name for hunk tag
-	QStr::FileBase (path, base);
+	String::FileBase (path, base);
 	
 	if (usehunk == 1)
 		buf = (byte*)Hunk_AllocName (len+1, base);
@@ -417,16 +417,16 @@ void COM_Gamedir (char *dir)
 		return;
 	}
 
-	if (!QStr::Cmp(gamedirfile, dir))
+	if (!String::Cmp(gamedirfile, dir))
 		return;		// still the same
-	QStr::Cpy(gamedirfile, dir);
+	String::Cpy(gamedirfile, dir);
 
 	//
 	// free up any current game dir info
 	//
 	FS_ResetSearchPathToBase();
 
-	if (!QStr::Cmp(dir,"id1") || !QStr::Cmp(dir, "hw"))
+	if (!String::Cmp(dir,"id1") || !String::Cmp(dir, "hw"))
 		return;
 
 	FS_AddGameDirectory(fs_basepath->string, dir, ADDPACKS_First10);
@@ -454,9 +454,9 @@ void COM_InitFilesystem (void)
 //
 	i = COM_CheckParm ("-basedir");
 	if (i && i < COM_Argc()-1)
-		QStr::Cpy(com_basedir, COM_Argv(i+1));
+		String::Cpy(com_basedir, COM_Argv(i+1));
 	else
-		QStr::Cpy(com_basedir, host_parms.basedir);
+		String::Cpy(com_basedir, host_parms.basedir);
 	Cvar_Set("fs_basepath", com_basedir);
 
 //

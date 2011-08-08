@@ -352,7 +352,7 @@ void Hunk_Print (qboolean all)
 	// print the total
 	//
 		if (next == endlow || next == endhigh || 
-		QStr::NCmp(h->name, next->name, 8) )
+		String::NCmp(h->name, next->name, 8) )
 		{
 			if (!all)
 				Con_Printf ("          :%8i %8s (TOTAL)\n",sum, name);
@@ -401,7 +401,7 @@ void *Hunk_AllocName (int size, const char *name)
 	
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	QStr::NCpy(h->name, name, 8);
+	String::NCpy(h->name, name, 8);
 	
 	return (void *)(h+1);
 }
@@ -491,7 +491,7 @@ void *Hunk_HighAllocName (int size, const char *name)
 	Com_Memset(h, 0, size);
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	QStr::NCpy(h->name, name, 8);
+	String::NCpy(h->name, name, 8);
 
 	return (void *)(h+1);
 }
@@ -547,7 +547,7 @@ void Memory_Init (void *buf, int size)
 	if (p)
 	{
 		if (p < COM_Argc()-1)
-			zonesize = QStr::Atoi(COM_Argv(p+1)) * 1024;
+			zonesize = String::Atoi(COM_Argv(p+1)) * 1024;
 		else
 			Sys_Error ("Memory_Init: you must specify a size in KB after -zone");
 	}

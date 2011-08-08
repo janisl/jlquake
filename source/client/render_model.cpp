@@ -209,7 +209,7 @@ void R_LoadWorld(const char* name)
 	if (!(GGameType & GAME_Quake3))
 	{
 		mod = R_AllocModel();
-		QStr::NCpyZ(mod->name, name, sizeof(mod->name));
+		String::NCpyZ(mod->name, name, sizeof(mod->name));
 		loadmodel = mod;
 	}
 
@@ -218,10 +218,10 @@ void R_LoadWorld(const char* name)
 	tr.world = NULL;
 
 	Com_Memset(&s_worldData, 0, sizeof(s_worldData));
-	QStr::NCpyZ(s_worldData.name, name, sizeof(s_worldData.name));
+	String::NCpyZ(s_worldData.name, name, sizeof(s_worldData.name));
 
-	QStr::NCpyZ(s_worldData.baseName, QStr::SkipPath(s_worldData.name), sizeof(s_worldData.name));
-	QStr::StripExtension(s_worldData.baseName, s_worldData.baseName);
+	String::NCpyZ(s_worldData.baseName, String::SkipPath(s_worldData.name), sizeof(s_worldData.name));
+	String::StripExtension(s_worldData.baseName, s_worldData.baseName);
 
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -235,7 +235,7 @@ void R_LoadWorld(const char* name)
 			{
 				continue;
 			}
-			if (!QStr::NCmp(mod->brush29_textures[i]->name, "sky", 3))
+			if (!String::NCmp(mod->brush29_textures[i]->name, "sky", 3))
 			{
 				skytexturenum = i;
 			}
@@ -274,8 +274,8 @@ void R_LoadWorld(const char* name)
 
 bool R_GetEntityToken(char* buffer, int size)
 {
-	const char* s = QStr::Parse3(const_cast<const char**>(&s_worldData.entityParsePoint));
-	QStr::NCpyZ(buffer, s, size);
+	const char* s = String::Parse3(const_cast<const char**>(&s_worldData.entityParsePoint));
+	String::NCpyZ(buffer, s, size);
 	if (!s_worldData.entityParsePoint || !s[0])
 	{
 		s_worldData.entityParsePoint = s_worldData.entityString;
@@ -323,7 +323,7 @@ int R_RegisterModel(const char* name)
 		return 0;
 	}
 
-	if (QStr::Length(name) >= MAX_QPATH)
+	if (String::Length(name) >= MAX_QPATH)
 	{
 		GLog.Write("Model name exceeds MAX_QPATH\n");
 		return 0;
@@ -335,7 +335,7 @@ int R_RegisterModel(const char* name)
 	for (int hModel = 1; hModel < tr.numModels; hModel++)
 	{
 		model_t* mod = tr.models[hModel];
-		if (!QStr::Cmp(mod->name, name))
+		if (!String::Cmp(mod->name, name))
 		{
 			if (mod->type == MOD_BAD)
 			{
@@ -354,7 +354,7 @@ int R_RegisterModel(const char* name)
 	}
 
 	// only set the name after the model has been successfully loaded
-	QStr::NCpyZ(mod->name, name, sizeof(mod->name));
+	String::NCpyZ(mod->name, name, sizeof(mod->name));
 
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
@@ -637,7 +637,7 @@ static md3Tag_t* R_GetTag(md3Header_t* mod, int frame, const char* tagName)
 
 	tag = (md3Tag_t *)((byte *)mod + mod->ofsTags) + frame * mod->numTags;
 	for ( i = 0 ; i < mod->numTags ; i++, tag++ ) {
-		if ( !QStr::Cmp( tag->name, tagName ) ) {
+		if ( !String::Cmp( tag->name, tagName ) ) {
 			return tag;	// found it
 		}
 	}

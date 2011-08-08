@@ -769,17 +769,17 @@ void CL_AddPacketEntities(frame_t *frame)
 //PGM
 				if (renderfx_old & Q2RF_USE_DISGUISE)
 				{
-					if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/male", 12))
+					if (!String::NCmp(R_GetImageName(ent.customSkin), "players/male", 12))
 					{
 						ent.customSkin = R_GetImageHandle(R_RegisterSkinQ2 ("players/male/disguise.pcx"));
 						ent.hModel = R_RegisterModel("players/male/tris.md2");
 					}
-					else if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/female", 14))
+					else if (!String::NCmp(R_GetImageName(ent.customSkin), "players/female", 14))
 					{
 						ent.customSkin = R_GetImageHandle(R_RegisterSkinQ2 ("players/female/disguise.pcx"));
 						ent.hModel = R_RegisterModel("players/female/tris.md2");
 					}
-					else if (!QStr::NCmp(R_GetImageName(ent.customSkin), "players/cyborg", 14))
+					else if (!String::NCmp(R_GetImageName(ent.customSkin), "players/cyborg", 14))
 					{
 						ent.customSkin = R_GetImageHandle(R_RegisterSkinQ2 ("players/cyborg/disguise.pcx"));
 						ent.hModel = R_RegisterModel("players/cyborg/tris.md2");

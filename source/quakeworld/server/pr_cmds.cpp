@@ -40,7 +40,7 @@ char *PF_VarString (int	first)
 	out[0] = 0;
 	for (i=first ; i<pr_argc ; i++)
 	{
-		QStr::Cat(out, sizeof(out), G_STRING((OFS_PARM0+i*3)));
+		String::Cat(out, sizeof(out), G_STRING((OFS_PARM0+i*3)));
 	}
 	return out;
 }
@@ -174,7 +174,7 @@ void PF_setmodel (void)
 
 // check to see if model was properly precached
 	for (i=0, check = sv.model_precache ; *check ; i++, check++)
-		if (!QStr::Cmp(*check, m))
+		if (!String::Cmp(*check, m))
 			break;
 
 	if (!*check)
@@ -186,7 +186,7 @@ void PF_setmodel (void)
 // if it is an inline model, get the size information for it
 	if (m[0] == '*')
 	{
-		mod = CM_InlineModel(QStr::Atoi(m + 1));
+		mod = CM_InlineModel(String::Atoi(m + 1));
 		CM_ModelBounds(mod, e->v.mins, e->v.maxs);
 		VectorSubtract(e->v.maxs, e->v.mins, e->v.size);
 		SV_LinkEdict(e, false);
@@ -273,7 +273,7 @@ void PF_centerprint (void)
 		
 	cl = &svs.clients[entnum-1];
 
-	ClientReliableWrite_Begin (cl, svc_centerprint, 2 + QStr::Length(s));
+	ClientReliableWrite_Begin (cl, svc_centerprint, 2 + String::Length(s));
 	ClientReliableWrite_String (cl, s);
 }
 
@@ -436,7 +436,7 @@ void PF_ambientsound (void)
 	
 // check to see if samp was properly precached
 	for (soundnum=0, check = sv.sound_precache ; *check ; check++, soundnum++)
-		if (!QStr::Cmp(*check,samp))
+		if (!String::Cmp(*check,samp))
 			break;
 			
 	if (!*check)
@@ -689,13 +689,13 @@ void PF_stuffcmd (void)
 	
 	cl = &svs.clients[entnum-1];
 
-	if (QStr::Cmp(str, "disconnect\n") == 0) {
+	if (String::Cmp(str, "disconnect\n") == 0) {
 		// so long and thanks for all the fish
 		cl->drop = true;
 		return;
 	}
 
-	ClientReliableWrite_Begin (cl, svc_stufftext, 2+QStr::Length(str));
+	ClientReliableWrite_Begin (cl, svc_stufftext, 2+String::Length(str));
 	ClientReliableWrite_String (cl, str);
 }
 
@@ -865,7 +865,7 @@ void PF_Find (void)
 		t = E_STRING(ed,f);
 		if (!t)
 			continue;
-		if (!QStr::Cmp(t,s))
+		if (!String::Cmp(t,s))
 		{
 			RETURN_EDICT(ed);
 			return;
@@ -905,7 +905,7 @@ void PF_precache_sound (void)
 			sv.sound_precache[i] = s;
 			return;
 		}
-		if (!QStr::Cmp(sv.sound_precache[i], s))
+		if (!String::Cmp(sv.sound_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_sound: overflow");
@@ -930,7 +930,7 @@ void PF_precache_model (void)
 			sv.model_precache[i] = s;
 			return;
 		}
-		if (!QStr::Cmp(sv.model_precache[i], s))
+		if (!String::Cmp(sv.model_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_model: overflow");
@@ -1059,7 +1059,7 @@ void PF_lightstyle (void)
 	for (j=0, client = svs.clients ; j<MAX_CLIENTS ; j++, client++)
 		if ( client->state == cs_spawned )
 		{
-			ClientReliableWrite_Begin (client, svc_lightstyle, QStr::Length(val)+3);
+			ClientReliableWrite_Begin (client, svc_lightstyle, String::Length(val)+3);
 			ClientReliableWrite_Char (client, style);
 			ClientReliableWrite_String (client, val);
 		}
@@ -1172,7 +1172,7 @@ void PF_aim (void)
 	if (i>0 && i<MAX_CLIENTS)
 	{
 		noaim = Info_ValueForKey (svs.clients[i-1].userinfo, "noaim");
-		if (QStr::Atoi(noaim) > 0)
+		if (String::Atoi(noaim) > 0)
 		{
 			VectorCopy (pr_global_struct->v_forward, G_VECTOR(OFS_RETURN));
 			return;
@@ -1414,7 +1414,7 @@ void PF_WriteString (void)
 {
 	if (G_FLOAT(OFS_PARM0) == MSG_ONE) {
 		client_t *cl = Write_GetClient();
-		ClientReliableCheckBlock(cl, 1+QStr::Length(G_STRING(OFS_PARM1)));
+		ClientReliableCheckBlock(cl, 1+String::Length(G_STRING(OFS_PARM1)));
 		ClientReliableWrite_String(cl, G_STRING(OFS_PARM1));
 	} else
 		WriteDest()->WriteString2(G_STRING(OFS_PARM1));
@@ -1560,12 +1560,12 @@ void PF_infokey (void)
 			!*value)
 			value = Info_ValueForKey(localinfo, key);
 	} else if (e1 <= MAX_CLIENTS) {
-		if (!QStr::Cmp(key, "ip"))
+		if (!String::Cmp(key, "ip"))
 		{
-			QStr::Cpy(ov, SOCK_BaseAdrToString(svs.clients[e1-1].netchan.remote_address));
+			String::Cpy(ov, SOCK_BaseAdrToString(svs.clients[e1-1].netchan.remote_address));
 			value = ov;
 		}
-		else if (!QStr::Cmp(key, "ping"))
+		else if (!String::Cmp(key, "ping"))
 		{
 			int ping = SV_CalcPing (&svs.clients[e1-1]);
 			sprintf(ov, "%d", ping);
@@ -1592,7 +1592,7 @@ void PF_stof (void)
 
 	s = G_STRING(OFS_PARM0);
 
-	G_FLOAT(OFS_RETURN) = QStr::Atof(s);
+	G_FLOAT(OFS_RETURN) = String::Atof(s);
 }
 
 

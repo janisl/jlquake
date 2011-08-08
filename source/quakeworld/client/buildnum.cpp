@@ -46,14 +46,14 @@ int build_number( void )
 
 	for (m = 0; m < 11; m++)
 	{
-		if (QStr::NICmp( &date[0], mon[m], 3 ) == 0)
+		if (String::NICmp( &date[0], mon[m], 3 ) == 0)
 			break;
 		d += mond[m];
 	}
 
-	d += QStr::Atoi( &date[4] ) - 1;
+	d += String::Atoi( &date[4] ) - 1;
 
-	y = QStr::Atoi( &date[7] ) - 1900;
+	y = String::Atoi( &date[7] ) - 1900;
 
 	b = d + (int)((y - 1) * 365.25);
 

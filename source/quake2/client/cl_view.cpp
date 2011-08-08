@@ -136,7 +136,7 @@ static void R_BeginRegistrationAndLoadWorld (const char *model)
 {
 	char	fullname[MAX_QPATH];
 
-	QStr::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
+	String::Sprintf (fullname, sizeof(fullname), "maps/%s.bsp", model);
 
 	R_Shutdown(false);
 	CL_InitRenderStuff();
@@ -164,8 +164,8 @@ void CL_PrepRefresh (void)
 		return;		// no map loaded
 
 	// let the render dll load the map
-	QStr::Cpy(mapname, cl.configstrings[CS_MODELS+1] + 5);	// skip "maps/"
-	mapname[QStr::Length(mapname)-4] = 0;		// cut off ".bsp"
+	String::Cpy(mapname, cl.configstrings[CS_MODELS+1] + 5);	// skip "maps/"
+	mapname[String::Length(mapname)-4] = 0;		// cut off ".bsp"
 
 	// register models, pics, and skins
 	Com_Printf ("Map: %s\r", mapname); 
@@ -182,11 +182,11 @@ void CL_PrepRefresh (void)
 	CL_RegisterTEntModels ();
 
 	num_cl_weaponmodels = 1;
-	QStr::Cpy(cl_weaponmodels[0], "weapon.md2");
+	String::Cpy(cl_weaponmodels[0], "weapon.md2");
 
 	for (i=1 ; i<MAX_MODELS && cl.configstrings[CS_MODELS+i][0] ; i++)
 	{
-		QStr::Cpy(name, cl.configstrings[CS_MODELS+i]);
+		String::Cpy(name, cl.configstrings[CS_MODELS+i]);
 		name[37] = 0;	// never go beyond one line
 		if (name[0] != '*')
 			Com_Printf ("%s\r", name); 
@@ -198,7 +198,7 @@ void CL_PrepRefresh (void)
 			// special player weapon model
 			if (num_cl_weaponmodels < MAX_CLIENTWEAPONMODELS)
 			{
-				QStr::NCpy(cl_weaponmodels[num_cl_weaponmodels], cl.configstrings[CS_MODELS+i]+1,
+				String::NCpy(cl_weaponmodels[num_cl_weaponmodels], cl.configstrings[CS_MODELS+i]+1,
 					sizeof(cl_weaponmodels[num_cl_weaponmodels]) - 1);
 				num_cl_weaponmodels++;
 			}
@@ -207,7 +207,7 @@ void CL_PrepRefresh (void)
 		{
 			cl.model_draw[i] = R_RegisterModel(cl.configstrings[CS_MODELS+i]);
 			if (name[0] == '*')
-				cl.model_clip[i] = CM_InlineModel(QStr::Atoi(cl.configstrings[CS_MODELS + i] + 1));
+				cl.model_clip[i] = CM_InlineModel(String::Atoi(cl.configstrings[CS_MODELS + i] + 1));
 			else
 				cl.model_clip[i] = 0;
 		}
@@ -242,7 +242,7 @@ void CL_PrepRefresh (void)
 	// set sky textures and speed
 	Com_Printf ("sky\r", i); 
 	SCR_UpdateScreen ();
-	rotate = QStr::Atof(cl.configstrings[CS_SKYROTATE]);
+	rotate = String::Atof(cl.configstrings[CS_SKYROTATE]);
 	sscanf (cl.configstrings[CS_SKYAXIS], "%f %f %f", 
 		&axis[0], &axis[1], &axis[2]);
 	R_SetSky (cl.configstrings[CS_SKY], rotate, axis);
@@ -257,7 +257,7 @@ void CL_PrepRefresh (void)
 	cl.refresh_prepped = true;
 
 	// start the cd track
-	CDAudio_Play (QStr::Atoi(cl.configstrings[CS_CDTRACK]), true);
+	CDAudio_Play (String::Atoi(cl.configstrings[CS_CDTRACK]), true);
 }
 
 /*
@@ -308,7 +308,7 @@ void V_Gun_Model_f (void)
 		gun_model = 0;
 		return;
 	}
-	QStr::Sprintf (name, sizeof(name), "models/%s/tris.md2", Cmd_Argv(1));
+	String::Sprintf (name, sizeof(name), "models/%s/tris.md2", Cmd_Argv(1));
 	gun_model = R_RegisterModel(name);
 }
 

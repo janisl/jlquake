@@ -353,10 +353,10 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 	}
 
 	char name[1024];
-	QStr::Sprintf(name, sizeof(name), "fonts/fontImage_%i.dat", pointSize);
+	String::Sprintf(name, sizeof(name), "fonts/fontImage_%i.dat", pointSize);
 	for (int i = 0; i < registeredFontCount; i++)
 	{
-		if (QStr::ICmp(name, registeredFont[i].name) == 0)
+		if (String::ICmp(name, registeredFont[i].name) == 0)
 		{
 			Com_Memcpy(font, &registeredFont[i], sizeof(fontInfo_t));
 			return;
@@ -390,7 +390,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 		font->glyphScale = readFloat();
 		Com_Memcpy(font->name, &fdFile[fdOffset], MAX_QPATH);
 
-		QStr::NCpyZ(font->name, name, sizeof(font->name));
+		String::NCpyZ(font->name, name, sizeof(font->name));
 		for (int i = GLYPH_START; i < GLYPH_END; i++)
 		{
 			font->glyphs[i].glyph = R_RegisterShaderNoMip(font->glyphs[i].shaderName);
@@ -485,7 +485,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 				imageBuff[left++] = ((float)out[k] * max);
 			}
 
-			QStr::Sprintf (name, sizeof(name), "fonts/fontImage_%i_%i.tga", imageNumber++, pointSize);
+			String::Sprintf (name, sizeof(name), "fonts/fontImage_%i_%i.tga", imageNumber++, pointSize);
 			if (r_saveFontData->integer)
 			{
 				R_SaveTGA(name, imageBuff, 256, 256, true);
@@ -496,7 +496,7 @@ void R_RegisterFont(const char* fontName, int pointSize, fontInfo_t* font)
 			for (int j = lastStart; j < i; j++)
 			{
 				font->glyphs[j].glyph = h;
-				QStr::NCpyZ(font->glyphs[j].shaderName, name, sizeof(font->glyphs[j].shaderName));
+				String::NCpyZ(font->glyphs[j].shaderName, name, sizeof(font->glyphs[j].shaderName));
 			}
 			lastStart = i;
 			Com_Memset(out, 0, 1024 * 1024);

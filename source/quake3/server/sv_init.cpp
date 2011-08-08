@@ -42,7 +42,7 @@ void SV_SetConfigstring (int index, const char *val) {
 	}
 
 	// don't bother broadcasting an update if no change
-	if ( !QStr::Cmp( val, sv.configstrings[ index ] ) ) {
+	if ( !String::Cmp( val, sv.configstrings[ index ] ) ) {
 		return;
 	}
 
@@ -64,7 +64,7 @@ void SV_SetConfigstring (int index, const char *val) {
 				continue;
 			}
 
-			len = QStr::Length( val );
+			len = String::Length( val );
 			if( len >= maxChunkSize ) {
 				int		sent = 0;
 				int		remaining = len;
@@ -81,7 +81,7 @@ void SV_SetConfigstring (int index, const char *val) {
 					else {
 						cmd = "bcs1";
 					}
-					QStr::NCpyZ( buf, &val[sent], maxChunkSize );
+					String::NCpyZ( buf, &val[sent], maxChunkSize );
 
 					SV_SendServerCommand( client, "%s %i \"%s\"\n", cmd, index, buf );
 
@@ -116,7 +116,7 @@ void SV_GetConfigstring( int index, char *buffer, int bufferSize ) {
 		return;
 	}
 
-	QStr::NCpyZ( buffer, sv.configstrings[index], bufferSize );
+	String::NCpyZ( buffer, sv.configstrings[index], bufferSize );
 }
 
 
@@ -135,8 +135,8 @@ void SV_SetUserinfo( int index, const char *val ) {
 		val = "";
 	}
 
-	QStr::NCpyZ( svs.clients[index].userinfo, val, sizeof( svs.clients[ index ].userinfo ) );
-	QStr::NCpyZ( svs.clients[index].name, Info_ValueForKey( val, "name" ), sizeof(svs.clients[index].name) );
+	String::NCpyZ( svs.clients[index].userinfo, val, sizeof( svs.clients[ index ].userinfo ) );
+	String::NCpyZ( svs.clients[index].name, Info_ValueForKey( val, "name" ), sizeof(svs.clients[index].name) );
 }
 
 
@@ -154,7 +154,7 @@ void SV_GetUserinfo( int index, char *buffer, int bufferSize ) {
 	if ( index < 0 || index >= sv_maxclients->integer ) {
 		Com_Error (ERR_DROP, "SV_GetUserinfo: bad index %i\n", index);
 	}
-	QStr::NCpyZ( buffer, svs.clients[ index ].userinfo, bufferSize );
+	String::NCpyZ( buffer, svs.clients[ index ].userinfo, bufferSize );
 }
 
 
@@ -328,7 +328,7 @@ void SV_TouchCGame(void) {
 	fileHandle_t	f;
 	char filename[MAX_QPATH];
 
-	QStr::Sprintf( filename, sizeof(filename), "vm/%s.qvm", "cgame" );
+	String::Sprintf( filename, sizeof(filename), "vm/%s.qvm", "cgame" );
 	FS_FOpenFileRead( filename, &f, qfalse );
 	if ( f ) {
 		FS_FCloseFile( f );
@@ -501,7 +501,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 		// load pk3s also loaded at the server
 		p = FS_LoadedPakChecksums();
 		Cvar_Set( "sv_paks", p );
-		if (QStr::Length(p) == 0) {
+		if (String::Length(p) == 0) {
 			Com_Printf( "WARNING: sv_pure set but no PK3 files loaded\n" );
 		}
 		p = FS_LoadedPakNames();
@@ -525,7 +525,7 @@ void SV_SpawnServer( char *server, qboolean killBots ) {
 	Cvar_Set( "sv_referencedPakNames", p );
 
 	// save systeminfo and serverinfo strings
-	QStr::NCpyZ( systemInfo, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING), sizeof( systemInfo ) );
+	String::NCpyZ( systemInfo, Cvar_InfoString(CVAR_SYSTEMINFO, BIG_INFO_STRING), sizeof( systemInfo ) );
 	cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	SV_SetConfigstring( CS_SYSTEMINFO, systemInfo );
 

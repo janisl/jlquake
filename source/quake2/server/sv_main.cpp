@@ -115,22 +115,22 @@ char	*SV_StatusString (void)
 	int		statusLength;
 	int		playerLength;
 
-	QStr::Cpy(status, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
+	String::Cpy(status, Cvar_InfoString(CVAR_SERVERINFO, MAX_INFO_STRING, MAX_INFO_KEY,
 		MAX_INFO_VALUE, true, false));
-	QStr::Cat(status, sizeof(status), "\n");
-	statusLength = QStr::Length(status);
+	String::Cat(status, sizeof(status), "\n");
+	statusLength = String::Length(status);
 
 	for (i=0 ; i<maxclients->value ; i++)
 	{
 		cl = &svs.clients[i];
 		if (cl->state == cs_connected || cl->state == cs_spawned )
 		{
-			QStr::Sprintf (player, sizeof(player), "%i %i \"%s\"\n", 
+			String::Sprintf (player, sizeof(player), "%i %i \"%s\"\n", 
 				cl->edict->client->ps.stats[STAT_FRAGS], cl->ping, cl->name);
-			playerLength = QStr::Length(player);
+			playerLength = String::Length(player);
 			if (statusLength + playerLength >= (int)sizeof(status) )
 				break;		// can't hold any more
-			QStr::Cpy(status + statusLength, player);
+			String::Cpy(status + statusLength, player);
 			statusLength += playerLength;
 		}
 	}
@@ -183,10 +183,10 @@ void SVC_Info (void)
 	if (maxclients->value == 1)
 		return;		// ignore in single player
 
-	version = QStr::Atoi (Cmd_Argv(1));
+	version = String::Atoi (Cmd_Argv(1));
 
 	if (version != PROTOCOL_VERSION)
-		QStr::Sprintf (string, sizeof(string), "%s: wrong version\n", hostname->string, sizeof(string));
+		String::Sprintf (string, sizeof(string), "%s: wrong version\n", hostname->string, sizeof(string));
 	else
 	{
 		count = 0;
@@ -194,7 +194,7 @@ void SVC_Info (void)
 			if (svs.clients[i].state >= cs_connected)
 				count++;
 
-		QStr::Sprintf (string, sizeof(string), "%16s %8s %2i/%2i\n", hostname->string, sv.name, count, (int)maxclients->value);
+		String::Sprintf (string, sizeof(string), "%16s %8s %2i/%2i\n", hostname->string, sv.name, count, (int)maxclients->value);
 	}
 
 	Netchan_OutOfBandPrint (NS_SERVER, net_from, "info\n%s", string);
@@ -282,7 +282,7 @@ void SVC_DirectConnect (void)
 
 	Com_DPrintf ("SVC_DirectConnect ()\n");
 
-	version = QStr::Atoi(Cmd_Argv(1));
+	version = String::Atoi(Cmd_Argv(1));
 	if (version != PROTOCOL_VERSION)
 	{
 		Netchan_OutOfBandPrint (NS_SERVER, adr, "print\nServer is version %4.2f.\n", VERSION);
@@ -290,11 +290,11 @@ void SVC_DirectConnect (void)
 		return;
 	}
 
-	qport = QStr::Atoi(Cmd_Argv(2));
+	qport = String::Atoi(Cmd_Argv(2));
 
-	challenge = QStr::Atoi(Cmd_Argv(3));
+	challenge = String::Atoi(Cmd_Argv(3));
 
-	QStr::NCpy(userinfo, Cmd_Argv(4), sizeof(userinfo)-1);
+	String::NCpy(userinfo, Cmd_Argv(4), sizeof(userinfo)-1);
 	userinfo[sizeof(userinfo) - 1] = 0;
 
 	// force the IP key/value pair so the game can filter based on ip
@@ -396,7 +396,7 @@ gotnewcl:
 	}
 
 	// parse some info from the info strings
-	QStr::NCpy(newcl->userinfo, userinfo, sizeof(newcl->userinfo)-1);
+	String::NCpy(newcl->userinfo, userinfo, sizeof(newcl->userinfo)-1);
 	SV_UserinfoChanged (newcl);
 
 	// send the connect packet to the client
@@ -414,10 +414,10 @@ gotnewcl:
 
 int Rcon_Validate (void)
 {
-	if (!QStr::Length(rcon_password->string))
+	if (!String::Length(rcon_password->string))
 		return 0;
 
-	if (QStr::Cmp(Cmd_Argv(1), rcon_password->string) )
+	if (String::Cmp(Cmd_Argv(1), rcon_password->string) )
 		return 0;
 
 	return 1;
@@ -456,8 +456,8 @@ void SVC_RemoteCommand (void)
 
 		for (i=2 ; i<Cmd_Argc() ; i++)
 		{
-			QStr::Cat(remaining, sizeof(remaining), Cmd_Argv(i) );
-			QStr::Cat(remaining, sizeof(remaining), " ");
+			String::Cat(remaining, sizeof(remaining), Cmd_Argv(i) );
+			String::Cat(remaining, sizeof(remaining), " ");
 		}
 
 		Cmd_ExecuteString (remaining);
@@ -491,19 +491,19 @@ void SV_ConnectionlessPacket (void)
 	c = Cmd_Argv(0);
 	Com_DPrintf ("Packet %s : %s\n", SOCK_AdrToString(net_from), c);
 
-	if (!QStr::Cmp(c, "ping"))
+	if (!String::Cmp(c, "ping"))
 		SVC_Ping ();
-	else if (!QStr::Cmp(c, "ack"))
+	else if (!String::Cmp(c, "ack"))
 		SVC_Ack ();
-	else if (!QStr::Cmp(c,"status"))
+	else if (!String::Cmp(c,"status"))
 		SVC_Status ();
-	else if (!QStr::Cmp(c,"info"))
+	else if (!String::Cmp(c,"info"))
 		SVC_Info ();
-	else if (!QStr::Cmp(c,"getchallenge"))
+	else if (!String::Cmp(c,"getchallenge"))
 		SVC_GetChallenge ();
-	else if (!QStr::Cmp(c,"connect"))
+	else if (!String::Cmp(c,"connect"))
 		SVC_DirectConnect ();
-	else if (!QStr::Cmp(c, "rcon"))
+	else if (!String::Cmp(c, "rcon"))
 		SVC_RemoteCommand ();
 	else
 		Com_Printf ("bad connectionless packet from %s:\n%s\n"
@@ -906,16 +906,16 @@ void SV_UserinfoChanged (client_t *cl)
 	ge->ClientUserinfoChanged (cl->edict, cl->userinfo);
 	
 	// name for C code
-	QStr::NCpy(cl->name, Info_ValueForKey (cl->userinfo, "name"), sizeof(cl->name)-1);
+	String::NCpy(cl->name, Info_ValueForKey (cl->userinfo, "name"), sizeof(cl->name)-1);
 	// mask off high bit
 	for (i=0 ; i<(int)sizeof(cl->name) ; i++)
 		cl->name[i] &= 127;
 
 	// rate command
 	val = Info_ValueForKey (cl->userinfo, "rate");
-	if (QStr::Length(val))
+	if (String::Length(val))
 	{
-		i = QStr::Atoi(val);
+		i = String::Atoi(val);
 		cl->rate = i;
 		if (cl->rate < 100)
 			cl->rate = 100;
@@ -927,9 +927,9 @@ void SV_UserinfoChanged (client_t *cl)
 
 	// msg command
 	val = Info_ValueForKey (cl->userinfo, "msg");
-	if (QStr::Length(val))
+	if (String::Length(val))
 	{
-		cl->messagelevel = QStr::Atoi(val);
+		cl->messagelevel = String::Atoi(val);
 	}
 
 }

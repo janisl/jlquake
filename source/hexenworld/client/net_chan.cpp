@@ -105,7 +105,7 @@ void Netchan_OutOfBandPrint (netadr_t adr, const char *format, ...)
 	va_end (argptr);
 
 
-	Netchan_OutOfBand (adr, QStr::Length(string), (byte*)string);
+	Netchan_OutOfBand (adr, String::Length(string), (byte*)string);
 }
 
 

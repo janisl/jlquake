@@ -66,8 +66,8 @@ void CompleteCommand (void)
 	if (cmd)
 	{
 		key_lines[edit_line][1] = '/';
-		QStr::Cpy(key_lines[edit_line]+2, cmd);
-		key_linepos = QStr::Length(cmd)+2;
+		String::Cpy(key_lines[edit_line]+2, cmd);
+		key_linepos = String::Length(cmd)+2;
 		key_lines[edit_line][key_linepos] = ' ';
 		key_linepos++;
 		key_lines[edit_line][key_linepos] = 0;
@@ -131,7 +131,7 @@ void Key_Console (int key)
 		break;
 	}
 
-	if ( ( QStr::ToUpper( key ) == 'V' && keydown[K_CTRL] ) ||
+	if ( ( String::ToUpper( key ) == 'V' && keydown[K_CTRL] ) ||
 		 ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && keydown[K_SHIFT] ) )
 	{
 		char *cbd;
@@ -142,14 +142,14 @@ void Key_Console (int key)
 
 			strtok( cbd, "\n\r\b" );
 
-			i = QStr::Length( cbd );
+			i = String::Length( cbd );
 			if ( i + key_linepos >= MAXCMDLINE)
 				i= MAXCMDLINE - key_linepos;
 
 			if ( i > 0 )
 			{
 				cbd[i]=0;
-				QStr::Cat( key_lines[edit_line], sizeof(key_lines[edit_line]), cbd );
+				String::Cat( key_lines[edit_line], sizeof(key_lines[edit_line]), cbd );
 				key_linepos += i;
 			}
 			delete[] cbd;
@@ -209,8 +209,8 @@ void Key_Console (int key)
 				&& !key_lines[history_line][1]);
 		if (history_line == edit_line)
 			history_line = (edit_line+1)&31;
-		QStr::Cpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = QStr::Length(key_lines[edit_line]);
+		String::Cpy(key_lines[edit_line], key_lines[history_line]);
+		key_linepos = String::Length(key_lines[edit_line]);
 		return;
 	}
 
@@ -231,8 +231,8 @@ void Key_Console (int key)
 		}
 		else
 		{
-			QStr::Cpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = QStr::Length(key_lines[edit_line]);
+			String::Cpy(key_lines[edit_line], key_lines[history_line]);
+			key_linepos = String::Length(key_lines[edit_line]);
 		}
 		return;
 	}
@@ -350,7 +350,7 @@ int Key_StringToKeynum (char *str)
 
 	for (kn=keynames ; kn->name ; kn++)
 	{
-		if (!QStr::ICmp(str,kn->name))
+		if (!String::ICmp(str,kn->name))
 			return kn->keynum;
 	}
 	return -1;
@@ -408,9 +408,9 @@ void Key_SetBinding (int keynum, const char *binding)
 	}
 			
 // allocate memory for new binding
-	l = QStr::Length(binding);	
+	l = String::Length(binding);	
 	newb = (char*)Z_Malloc (l+1);
-	QStr::Cpy(newb, binding);
+	String::Cpy(newb, binding);
 	newb[l] = 0;
 	keybindings[keynum] = newb;
 }
@@ -487,9 +487,9 @@ void Key_Bind_f (void)
 	cmd[0] = 0;		// start out with a null string
 	for (i=2 ; i< c ; i++)
 	{
-		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
+		String::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 		if (i != (c-1))
-			QStr::Cat(cmd, sizeof(cmd), " ");
+			String::Cat(cmd, sizeof(cmd), " ");
 	}
 
 	Key_SetBinding (b, cmd);
@@ -732,7 +732,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 		kb = keybindings[key];
 		if (kb && kb[0] == '+')
 		{
-			QStr::Sprintf (cmd, sizeof(cmd), "-%s %i %i\n", kb+1, key, time);
+			String::Sprintf (cmd, sizeof(cmd), "-%s %i %i\n", kb+1, key, time);
 			Cbuf_AddText (cmd);
 		}
 		if (keyshift[key] != key)
@@ -740,7 +740,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 			kb = keybindings[keyshift[key]];
 			if (kb && kb[0] == '+')
 			{
-				QStr::Sprintf (cmd, sizeof(cmd), "-%s %i %i\n", kb+1, key, time);
+				String::Sprintf (cmd, sizeof(cmd), "-%s %i %i\n", kb+1, key, time);
 				Cbuf_AddText (cmd);
 			}
 		}
@@ -759,7 +759,7 @@ void Key_Event (int key, qboolean down, unsigned time)
 		{
 			if (kb[0] == '+')
 			{	// button commands add keynum and time as a parm
-				QStr::Sprintf (cmd, sizeof(cmd), "%s %i %i\n", kb, key, time);
+				String::Sprintf (cmd, sizeof(cmd), "%s %i %i\n", kb, key, time);
 				Cbuf_AddText (cmd);
 			}
 			else

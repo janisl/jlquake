@@ -49,11 +49,11 @@ static char		com_token[1024];
 
 //==========================================================================
 //
-//	QStr::QStr
+//	String::String
 //
 //==========================================================================
 
-QStr::QStr(const QStr& InStr, int Start, int Len)
+String::String(const String& InStr, int Start, int Len)
 : Str(NULL)
 {
 	qassert(Start >= 0);
@@ -69,11 +69,11 @@ QStr::QStr(const QStr& InStr, int Start, int Len)
 
 //==========================================================================
 //
-//	QStr::Resize
+//	String::Resize
 //
 //==========================================================================
 
-void QStr::Resize(int NewLen)
+void String::Resize(int NewLen)
 {
 	qassert(NewLen >= 0);
 	if (NewLen == Length())
@@ -111,11 +111,11 @@ void QStr::Resize(int NewLen)
 
 //==========================================================================
 //
-//	QStr::StartsWith
+//	String::StartsWith
 //
 //==========================================================================
 
-bool QStr::StartsWith(const char* S) const
+bool String::StartsWith(const char* S) const
 {
 	int l = Length(S);
 	if (l > Length())
@@ -127,11 +127,11 @@ bool QStr::StartsWith(const char* S) const
 
 //==========================================================================
 //
-//	QStr::StartsWith
+//	String::StartsWith
 //
 //==========================================================================
 
-bool QStr::StartsWith(const QStr& S) const
+bool String::StartsWith(const String& S) const
 {
 	int l = S.Length();
 	if (l > Length())
@@ -143,11 +143,11 @@ bool QStr::StartsWith(const QStr& S) const
 
 //==========================================================================
 //
-//	QStr::EndsWith
+//	String::EndsWith
 //
 //==========================================================================
 
-bool QStr::EndsWith(const char* S) const
+bool String::EndsWith(const char* S) const
 {
 	int l = Length(S);
 	if (l > Length())
@@ -159,11 +159,11 @@ bool QStr::EndsWith(const char* S) const
 
 //==========================================================================
 //
-//	QStr::EndsWith
+//	String::EndsWith
 //
 //==========================================================================
 
-bool QStr::EndsWith(const QStr& S) const
+bool String::EndsWith(const String& S) const
 {
 	int l = S.Length();
 	if (l > Length())
@@ -175,17 +175,17 @@ bool QStr::EndsWith(const QStr& S) const
 
 //==========================================================================
 //
-//	QStr::ToLower
+//	String::ToLower
 //
 //==========================================================================
 
-QStr QStr::ToLower() const
+String String::ToLower() const
 {
 	if (!Str)
 	{
-		return QStr();
+		return String();
 	}
-	QStr Ret;
+	String Ret;
 	int l = Length();
 	Ret.Resize(l);
 	for (int i = 0; i < l; i++)
@@ -197,17 +197,17 @@ QStr QStr::ToLower() const
 
 //==========================================================================
 //
-//	QStr::ToUpper
+//	String::ToUpper
 //
 //==========================================================================
 
-QStr QStr::ToUpper() const
+String String::ToUpper() const
 {
 	if (!Str)
 	{
-		return QStr();
+		return String();
 	}
-	QStr Ret;
+	String Ret;
 	int l = Length();
 	Ret.Resize(l);
 	for (int i = 0; i < l; i++)
@@ -219,11 +219,11 @@ QStr QStr::ToUpper() const
 
 //==========================================================================
 //
-//	QStr::IndexOf
+//	String::IndexOf
 //
 //==========================================================================
 
-int QStr::IndexOf(char C) const
+int String::IndexOf(char C) const
 {
 	int l = Length();
 	for (int i = 0; i < l; i++)
@@ -238,11 +238,11 @@ int QStr::IndexOf(char C) const
 
 //==========================================================================
 //
-//	QStr::IndexOf
+//	String::IndexOf
 //
 //==========================================================================
 
-int QStr::IndexOf(const char* S) const
+int String::IndexOf(const char* S) const
 {
 	int sl = Length(S);
 	if (!sl)
@@ -262,11 +262,11 @@ int QStr::IndexOf(const char* S) const
 
 //==========================================================================
 //
-//	QStr::IndexOf
+//	String::IndexOf
 //
 //==========================================================================
 
-int QStr::IndexOf(const QStr& S) const
+int String::IndexOf(const String& S) const
 {
 	int sl = S.Length();
 	if (!sl)
@@ -286,11 +286,11 @@ int QStr::IndexOf(const QStr& S) const
 
 //==========================================================================
 //
-//	QStr::LastIndexOf
+//	String::LastIndexOf
 //
 //==========================================================================
 
-int QStr::LastIndexOf(char C) const
+int String::LastIndexOf(char C) const
 {
 	for (int i = Length() - 1; i >= 0; i--)
 	{
@@ -304,11 +304,11 @@ int QStr::LastIndexOf(char C) const
 
 //==========================================================================
 //
-//	QStr::LastIndexOf
+//	String::LastIndexOf
 //
 //==========================================================================
 
-int QStr::LastIndexOf(const char* S) const
+int String::LastIndexOf(const char* S) const
 {
 	int sl = Length(S);
 	if (!sl)
@@ -328,11 +328,11 @@ int QStr::LastIndexOf(const char* S) const
 
 //==========================================================================
 //
-//	QStr::LastIndexOf
+//	String::LastIndexOf
 //
 //==========================================================================
 
-int QStr::LastIndexOf(const QStr& S) const
+int String::LastIndexOf(const String& S) const
 {
 	int sl = S.Length();
 	if (!sl)
@@ -352,11 +352,11 @@ int QStr::LastIndexOf(const QStr& S) const
 
 //==========================================================================
 //
-//	QStr::Replace
+//	String::Replace
 //
 //==========================================================================
 
-QStr QStr::Replace(const char* Search, const char* Replacement) const
+String String::Replace(const char* Search, const char* Replacement) const
 {
 	if (!Length())
 	{
@@ -372,7 +372,7 @@ QStr QStr::Replace(const char* Search, const char* Replacement) const
 		return *this;
 	}
 
-	QStr Ret = *this;
+	String Ret = *this;
 	int i = 0;
 	while (i <= Ret.Length() - SLen)
 	{
@@ -386,8 +386,8 @@ QStr QStr::Replace(const char* Search, const char* Replacement) const
 			}
 			else
 			{
-				Ret = QStr(Ret, 0, i) + Replacement +
-					QStr(Ret, i + SLen, Ret.Length() - i - SLen);
+				Ret = String(Ret, 0, i) + Replacement +
+					String(Ret, i + SLen, Ret.Length() - i - SLen);
 			}
 			i += RLen;
 		}
@@ -401,11 +401,11 @@ QStr QStr::Replace(const char* Search, const char* Replacement) const
 
 //==========================================================================
 //
-//	QStr::Replace
+//	String::Replace
 //
 //==========================================================================
 
-QStr QStr::Replace(const QStr& Search, const QStr& Replacement) const
+String String::Replace(const String& Search, const String& Replacement) const
 {
 	if (!Length())
 	{
@@ -421,7 +421,7 @@ QStr QStr::Replace(const QStr& Search, const QStr& Replacement) const
 		return *this;
 	}
 
-	QStr Ret = *this;
+	String Ret = *this;
 	int i = 0;
 	while (i <= Ret.Length() - SLen)
 	{
@@ -435,8 +435,8 @@ QStr QStr::Replace(const QStr& Search, const QStr& Replacement) const
 			}
 			else
 			{
-				Ret = QStr(Ret, 0, i) + Replacement +
-					QStr(Ret, i + SLen, Ret.Length() - i - SLen);
+				Ret = String(Ret, 0, i) + Replacement +
+					String(Ret, i + SLen, Ret.Length() - i - SLen);
 			}
 			i += RLen;
 		}
@@ -450,11 +450,11 @@ QStr QStr::Replace(const QStr& Search, const QStr& Replacement) const
 
 //==========================================================================
 //
-//	QStr::Utf8Substring
+//	String::Utf8Substring
 //
 //==========================================================================
 
-QStr QStr::Utf8Substring(int Start, int Len) const
+String String::Utf8Substring(int Start, int Len) const
 {
 	qassert(Start >= 0);
 	qassert(Start <= (int)Utf8Length());
@@ -462,20 +462,20 @@ QStr QStr::Utf8Substring(int Start, int Len) const
 	qassert(Start + Len <= (int)Utf8Length());
 	if (!Len)
 	{
-		return QStr();
+		return String();
 	}
 	int RealStart = ByteLengthForUtf8(Str, Start);
 	int RealLen = ByteLengthForUtf8(Str, Start + Len) - RealStart;
-	return QStr(*this, RealStart, RealLen);
+	return String(*this, RealStart, RealLen);
 }
 
 //==========================================================================
 //
-//	QStr::Split
+//	String::Split
 //
 //==========================================================================
 
-void QStr::Split(char C, Array<QStr>& A) const
+void String::Split(char C, Array<String>& A) const
 {
 	A.Clear();
 	if (!Str)
@@ -490,7 +490,7 @@ void QStr::Split(char C, Array<QStr>& A) const
 		{
 			if (Start != i)
 			{
-				A.Append(QStr(*this, Start, i - Start));
+				A.Append(String(*this, Start, i - Start));
 			}
 			Start = i + 1;
 		}
@@ -499,11 +499,11 @@ void QStr::Split(char C, Array<QStr>& A) const
 
 //==========================================================================
 //
-//	QStr::Split
+//	String::Split
 //
 //==========================================================================
 
-void QStr::Split(const char* Chars, Array<QStr>& A) const
+void String::Split(const char* Chars, Array<String>& A) const
 {
 	A.Clear();
 	if (!Str)
@@ -523,7 +523,7 @@ void QStr::Split(const char* Chars, Array<QStr>& A) const
 		{
 			if (Start != i)
 			{
-				A.Append(QStr(*this, Start, i - Start));
+				A.Append(String(*this, Start, i - Start));
 			}
 			Start = i + 1;
 		}
@@ -532,11 +532,11 @@ void QStr::Split(const char* Chars, Array<QStr>& A) const
 
 //==========================================================================
 //
-//	QStr::IsValidUtf8
+//	String::IsValidUtf8
 //
 //==========================================================================
 
-bool QStr::IsValidUtf8() const
+bool String::IsValidUtf8() const
 {
 	if (!Str)
 	{
@@ -583,13 +583,13 @@ bool QStr::IsValidUtf8() const
 
 //==========================================================================
 //
-//	QStr::Latin1ToUtf8
+//	String::Latin1ToUtf8
 //
 //==========================================================================
 
-QStr QStr::Latin1ToUtf8() const
+String String::Latin1ToUtf8() const
 {
-	QStr Ret;
+	String Ret;
 	for (int i = 0; i < Length(); i++)
 	{
 		Ret += FromChar((quint8)Str[i]);
@@ -599,11 +599,11 @@ QStr QStr::Latin1ToUtf8() const
 
 //==========================================================================
 //
-//	QStr::Utf8Length
+//	String::Utf8Length
 //
 //==========================================================================
 
-int QStr::Utf8Length(const char* S)
+int String::Utf8Length(const char* S)
 {
 	int Count = 0;
 	for (const char* c = S; *c; c++)
@@ -614,11 +614,11 @@ int QStr::Utf8Length(const char* S)
 
 //==========================================================================
 //
-//	QStr::ByteLengthForUtf8
+//	String::ByteLengthForUtf8
 //
 //==========================================================================
 
-int QStr::ByteLengthForUtf8(const char* S, int N)
+int String::ByteLengthForUtf8(const char* S, int N)
 {
 	int Count = 0;
 	const char* c;
@@ -639,11 +639,11 @@ int QStr::ByteLengthForUtf8(const char* S, int N)
 
 //==========================================================================
 //
-//	QStr::GetChar
+//	String::GetChar
 //
 //==========================================================================
 
-int QStr::GetChar(const char*& S)
+int String::GetChar(const char*& S)
 {
 	if ((quint8)*S < 128)
 	{
@@ -687,11 +687,11 @@ int QStr::GetChar(const char*& S)
 
 //==========================================================================
 //
-//	QStr::FromChar
+//	String::FromChar
 //
 //==========================================================================
 
-QStr QStr::FromChar(int C)
+String String::FromChar(int C)
 {
 	char Ret[8];
 	if (C < 0x80)
@@ -725,11 +725,11 @@ QStr QStr::FromChar(int C)
 
 //==========================================================================
 //
-//	QStr::Length
+//	String::Length
 //
 //==========================================================================
 
-int QStr::Length(const char* S)
+int String::Length(const char* S)
 {
 #if 1
 	return (int)strlen(S);
@@ -747,11 +747,11 @@ int QStr::Length(const char* S)
 
 //==========================================================================
 //
-//	QStr::Cmp
+//	String::Cmp
 //
 //==========================================================================
 
-int QStr::Cmp(const char* S1, const char* S2)
+int String::Cmp(const char* S1, const char* S2)
 {
 #if 1
 	return strcmp(S1, S2);
@@ -773,11 +773,11 @@ int QStr::Cmp(const char* S1, const char* S2)
 
 //==========================================================================
 //
-//	QStr::NCmp
+//	String::NCmp
 //
 //==========================================================================
 
-int QStr::NCmp(const char* S1, const char* S2, size_t N)
+int String::NCmp(const char* S1, const char* S2, size_t N)
 {
 #if 1
 	return strncmp(S1, S2, N);
@@ -818,11 +818,11 @@ int QStr::NCmp(const char* S1, const char* S2, size_t N)
 
 //==========================================================================
 //
-//	QStr::ICmp
+//	String::ICmp
 //
 //==========================================================================
 
-int QStr::ICmp(const char* S1, const char* S2)
+int String::ICmp(const char* S1, const char* S2)
 {
 #if 1
 	return stricmp(S1, S2);
@@ -834,11 +834,11 @@ int QStr::ICmp(const char* S1, const char* S2)
 
 //==========================================================================
 //
-//	QStr::NICmp
+//	String::NICmp
 //
 //==========================================================================
 
-int QStr::NICmp(const char* S1, const char* S2, size_t N)
+int String::NICmp(const char* S1, const char* S2, size_t N)
 {
 #if 1
 	return strnicmp(S1, S2, N);
@@ -937,11 +937,11 @@ int QStr::NICmp(const char* S1, const char* S2, size_t N)
 
 //==========================================================================
 //
-//	QStr::Cpy
+//	String::Cpy
 //
 //==========================================================================
 
-void QStr::Cpy(char* Dst, const char* Src)
+void String::Cpy(char* Dst, const char* Src)
 {
 #if 1
 	strcpy(Dst, Src);
@@ -957,11 +957,11 @@ void QStr::Cpy(char* Dst, const char* Src)
 
 //==========================================================================
 //
-//	QStr::NCpy
+//	String::NCpy
 //
 //==========================================================================
 
-void QStr::NCpy(char* Dst, const char* Src, size_t N)
+void String::NCpy(char* Dst, const char* Src, size_t N)
 {
 #if 1
 	strncpy(Dst, Src, N);
@@ -977,13 +977,13 @@ void QStr::NCpy(char* Dst, const char* Src, size_t N)
 
 //==========================================================================
 //
-//	QStr::NCpy
+//	String::NCpy
 //
 //	Safe strncpy that ensures a trailing zero
 //
 //==========================================================================
 
-void QStr::NCpyZ(char* Dest, const char* Src, int DestSize)
+void String::NCpyZ(char* Dest, const char* Src, int DestSize)
 {
 	// bk001129 - also NULL dest
 	if (!Dest)
@@ -1005,13 +1005,13 @@ void QStr::NCpyZ(char* Dest, const char* Src, int DestSize)
 
 //==========================================================================
 //
-//	QStr::ToLower
+//	String::ToLower
 //
 //	Never goes past bounds or leaves without a terminating 0
 //
 //==========================================================================
 
-void QStr::Cat(char* Dest, int Size, const char* Src)
+void String::Cat(char* Dest, int Size, const char* Src)
 {
 	int L1 = Length(Dest);
 	if (L1 >= Size)
@@ -1023,11 +1023,11 @@ void QStr::Cat(char* Dest, int Size, const char* Src)
 
 //==========================================================================
 //
-//	QStr::ToLower
+//	String::ToLower
 //
 //==========================================================================
 
-char* QStr::ToLower(char* S1)
+char* String::ToLower(char* S1)
 {
 	char* S = S1;
 	while (*S)
@@ -1040,11 +1040,11 @@ char* QStr::ToLower(char* S1)
 
 //==========================================================================
 //
-//	QStr::ToUpper
+//	String::ToUpper
 //
 //==========================================================================
 
-char* QStr::ToUpper(char* S1)
+char* String::ToUpper(char* S1)
 {
 	char* S = S1;
 	while (*S)
@@ -1057,17 +1057,17 @@ char* QStr::ToUpper(char* S1)
 
 //==========================================================================
 //
-//	QStr::RChr
+//	String::RChr
 //
 //==========================================================================
 
-char* QStr::RChr(const char* String, int C)
+char* String::RChr(const char* string, int C)
 {
 	char cc = C;
 	char *s;
 	char *sp = NULL;
 
-	s = (char*)String;
+	s = (char*)string;
 
 	while (*s)
 	{
@@ -1087,11 +1087,11 @@ char* QStr::RChr(const char* String, int C)
 
 //==========================================================================
 //
-//	QStr::Atoi
+//	String::Atoi
 //
 //==========================================================================
 
-int QStr::Atoi(const char* Str)
+int String::Atoi(const char* Str)
 {
 	int			Sign;
 	if (*Str == '-')
@@ -1160,11 +1160,11 @@ int QStr::Atoi(const char* Str)
 
 //==========================================================================
 //
-//	QStr::Atof
+//	String::Atof
 //
 //==========================================================================
 
-float QStr::Atof(const char* Str)
+float String::Atof(const char* Str)
 {
 	int				Sign;
 	if (*Str == '-')
@@ -1251,11 +1251,11 @@ float QStr::Atof(const char* Str)
 
 //==========================================================================
 //
-//	QStr::Sprintf
+//	String::Sprintf
 //
 //==========================================================================
 
-void QStr::Sprintf(char* Dest, int Size, const char* Fmt, ...)
+void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 {
 	va_list		ArgPtr;
 	char		BigBuffer[32000];	// big, but small enough to fit in PPC stack
@@ -1265,11 +1265,11 @@ void QStr::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	va_end(ArgPtr);
 	if (Len >= (int)sizeof(BigBuffer))
 	{
-		throw QException("QStr::Sprintf: overflowed bigbuffer");
+		throw QException("String::Sprintf: overflowed bigbuffer");
 	}
 	if (Len >= Size)
 	{
-		GLog.WriteLine("QStr::Sprintf: overflow of %i in %i", Len, Size);
+		GLog.WriteLine("String::Sprintf: overflow of %i in %i", Len, Size);
 #if defined _DEBUG && defined _MSC_VER
 		__asm
 		{
@@ -1282,11 +1282,11 @@ void QStr::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 
 //==========================================================================
 //
-//	QStr::IsPrint
+//	String::IsPrint
 //
 //==========================================================================
 
-int QStr::IsPrint(int C)
+int String::IsPrint(int C)
 {
 	if (C >= 0x20 && C <= 0x7E)
 	{
@@ -1297,11 +1297,11 @@ int QStr::IsPrint(int C)
 
 //==========================================================================
 //
-//	QStr::IsLower
+//	String::IsLower
 //
 //==========================================================================
 
-int QStr::IsLower(int C)
+int String::IsLower(int C)
 {
 	if (C >= 'a' && C <= 'z')
 	{
@@ -1312,11 +1312,11 @@ int QStr::IsLower(int C)
 
 //==========================================================================
 //
-//	QStr::IsUpper
+//	String::IsUpper
 //
 //==========================================================================
 
-int QStr::IsUpper(int C)
+int String::IsUpper(int C)
 {
 	if (C >= 'A' && C <= 'Z')
 	{
@@ -1327,11 +1327,11 @@ int QStr::IsUpper(int C)
 
 //==========================================================================
 //
-//	QStr::IsAlpha
+//	String::IsAlpha
 //
 //==========================================================================
 
-int QStr::IsAlpha(int C)
+int String::IsAlpha(int C)
 {
 	if ((C >= 'a' && C <= 'z') || (C >= 'A' && C <= 'Z'))
 	{
@@ -1342,11 +1342,11 @@ int QStr::IsAlpha(int C)
 
 //==========================================================================
 //
-//	QStr::ToUpper
+//	String::ToUpper
 //
 //==========================================================================
 
-int QStr::IsSpace(int C)
+int String::IsSpace(int C)
 {
 	if (C == ' ' || C == '\t' || C == '\n' || C =='\r' || C == '\f')
 	{
@@ -1357,11 +1357,11 @@ int QStr::IsSpace(int C)
 
 //==========================================================================
 //
-//	QStr::IsDigit
+//	String::IsDigit
 //
 //==========================================================================
 
-int QStr::IsDigit(int C)
+int String::IsDigit(int C)
 {
 	if (C >= '0' && C <= '9')
 	{
@@ -1372,11 +1372,11 @@ int QStr::IsDigit(int C)
 
 //==========================================================================
 //
-//	QStr::ToUpper
+//	String::ToUpper
 //
 //==========================================================================
 
-char QStr::ToUpper(char C)
+char String::ToUpper(char C)
 {
 	if (C >= 'a' && C <= 'z')
 	{
@@ -1387,11 +1387,11 @@ char QStr::ToUpper(char C)
 
 //==========================================================================
 //
-//	QStr::ToLower
+//	String::ToLower
 //
 //==========================================================================
 
-char QStr::ToLower(char C)
+char String::ToLower(char C)
 {
 	if (C >= 'A' && C <= 'Z')
 	{
@@ -1402,11 +1402,11 @@ char QStr::ToLower(char C)
 
 //==========================================================================
 //
-//	QStr::SkipPath
+//	String::SkipPath
 //
 //==========================================================================
 
-char* QStr::SkipPath(char* PathName)
+char* String::SkipPath(char* PathName)
 {
 	char* Last = PathName;
 	while (*PathName)
@@ -1422,11 +1422,11 @@ char* QStr::SkipPath(char* PathName)
 
 //==========================================================================
 //
-//	QStr::SkipPath
+//	String::SkipPath
 //
 //==========================================================================
 
-const char* QStr::SkipPath(const char* PathName)
+const char* String::SkipPath(const char* PathName)
 {
 	const char* Last = PathName;
 	while (*PathName)
@@ -1442,11 +1442,11 @@ const char* QStr::SkipPath(const char* PathName)
 
 //==========================================================================
 //
-//	QStr::StripExtension
+//	String::StripExtension
 //
 //==========================================================================
 
-void QStr::StripExtension(const char* In, char* Out)
+void String::StripExtension(const char* In, char* Out)
 {
 	while (*In && *In != '.')
 	{
@@ -1457,11 +1457,11 @@ void QStr::StripExtension(const char* In, char* Out)
 
 //==========================================================================
 //
-//	QStr::DefaultExtension
+//	String::DefaultExtension
 //
 //==========================================================================
 
-void QStr::DefaultExtension(char* Path, int MaxSize, const char* Extension)
+void String::DefaultExtension(char* Path, int MaxSize, const char* Extension)
 {
 	char	OldPath[MAX_QPATH];
 	char*	Src;
@@ -1488,13 +1488,13 @@ void QStr::DefaultExtension(char* Path, int MaxSize, const char* Extension)
 
 //==========================================================================
 //
-//	QStr::FilePath
+//	String::FilePath
 //
 //	Returns the path up to, but not including the last /
 //
 //==========================================================================
 
-void QStr::FilePath(const char* In, char* Out)
+void String::FilePath(const char* In, char* Out)
 {
 	const char* S = In + Length(In) - 1;
 	
@@ -1507,11 +1507,11 @@ void QStr::FilePath(const char* In, char* Out)
 
 //==========================================================================
 //
-//	QStr::FileBase
+//	String::FileBase
 //
 //==========================================================================
 
-void QStr::FileBase(const char* In, char* Out)
+void String::FileBase(const char* In, char* Out)
 {
 	const char* S2;
 
@@ -1537,11 +1537,11 @@ void QStr::FileBase(const char* In, char* Out)
 
 //==========================================================================
 //
-//	QStr::FileExtension
+//	String::FileExtension
 //
 //==========================================================================
 
-const char* QStr::FileExtension(const char* In)
+const char* String::FileExtension(const char* In)
 {
 	static char		Exten[8];
 
@@ -1565,14 +1565,14 @@ const char* QStr::FileExtension(const char* In)
 
 //==========================================================================
 //
-//	QStr::Parse1
+//	String::Parse1
 //
 //	Parse a token out of a string
 //	data is an in/out parm, returns a parsed out token
 //
 //==========================================================================
 
-char* QStr::Parse1(const char **data_p)
+char* String::Parse1(const char **data_p)
 {
 	int             c;
 	int             len;
@@ -1668,13 +1668,13 @@ skipwhite:
 
 //==========================================================================
 //
-//	QStr::Parse2
+//	String::Parse2
 //
 //	Parse a token out of a string
 //
 //==========================================================================
 
-char* QStr::Parse2(const char** data_p)
+char* String::Parse2(const char** data_p)
 {
 	int				c;
 	int				len;
@@ -1756,7 +1756,7 @@ skipwhite:
 
 //==========================================================================
 //
-//	QStr::Parse3
+//	String::Parse3
 //
 //	Parse a token out of a string
 //	Will never return NULL, just empty strings
@@ -1766,7 +1766,7 @@ skipwhite:
 //
 //==========================================================================
 
-char* QStr::Parse3(const char** data_p)
+char* String::Parse3(const char** data_p)
 {
 	return ParseExt(data_p, true);
 }
@@ -1799,11 +1799,11 @@ static const char* SkipWhitespace(const char *data, bool* hasNewLines)
 
 //==========================================================================
 //
-//	QStr::ParseExt
+//	String::ParseExt
 //
 //==========================================================================
 
-char* QStr::ParseExt(const char** data_p, bool allowLineBreaks)
+char* String::ParseExt(const char** data_p, bool allowLineBreaks)
 {
 	int c = 0, len;
 	bool hasNewLines = false;
@@ -1910,11 +1910,11 @@ char* QStr::ParseExt(const char** data_p, bool allowLineBreaks)
 
 //==========================================================================
 //
-//	QStr::Compress
+//	String::Compress
 //
 //==========================================================================
 
-int QStr::Compress(char *data_p)
+int String::Compress(char *data_p)
 {
 	char *in, *out;
 	int c;
@@ -2008,14 +2008,14 @@ int QStr::Compress(char *data_p)
 
 //==========================================================================
 //
-//	QStr::SkipBracedSection
+//	String::SkipBracedSection
 //
 //	The next token should be an open brace. Skips until a matching close
 // brace is found. Internal brace depths are properly skipped.
 //
 //==========================================================================
 
-void QStr::SkipBracedSection(const char** program)
+void String::SkipBracedSection(const char** program)
 {
 	const char*		token;
 	int				depth;
@@ -2040,11 +2040,11 @@ void QStr::SkipBracedSection(const char** program)
 
 //==========================================================================
 //
-//	QStr::SkipRestOfLine
+//	String::SkipRestOfLine
 //
 //==========================================================================
 
-void QStr::SkipRestOfLine(const char **data)
+void String::SkipRestOfLine(const char **data)
 {
 	const char	*p;
 	int			c;
@@ -2069,7 +2069,7 @@ Com_StringContains
 static const char *Com_StringContains(const char *str1, const char *str2, bool casesensitive) {
 	int len, i, j;
 
-	len = QStr::Length(str1) - QStr::Length(str2);
+	len = String::Length(str1) - String::Length(str2);
 	for (i = 0; i <= len; i++, str1++) {
 		for (j = 0; str2[j]; j++) {
 			if (casesensitive) {
@@ -2078,7 +2078,7 @@ static const char *Com_StringContains(const char *str1, const char *str2, bool c
 				}
 			}
 			else {
-				if (QStr::ToUpper(str1[j]) != QStr::ToUpper(str2[j])) {
+				if (String::ToUpper(str1[j]) != String::ToUpper(str2[j])) {
 					break;
 				}
 			}
@@ -2095,7 +2095,7 @@ static const char *Com_StringContains(const char *str1, const char *str2, bool c
 Com_Filter
 ============
 */
-bool QStr::Filter(const char *filter, const char *name, bool casesensitive)
+bool String::Filter(const char *filter, const char *name, bool casesensitive)
 {
 	char buf[1024];
 	const char *ptr;
@@ -2110,10 +2110,10 @@ bool QStr::Filter(const char *filter, const char *name, bool casesensitive)
 				filter++;
 			}
 			buf[i] = '\0';
-			if (QStr::Length(buf)) {
+			if (String::Length(buf)) {
 				ptr = Com_StringContains(name, buf, casesensitive);
 				if (!ptr) return false;
-				name = ptr + QStr::Length(buf);
+				name = ptr + String::Length(buf);
 			}
 		}
 		else if (*filter == '?') {
@@ -2133,8 +2133,8 @@ bool QStr::Filter(const char *filter, const char *name, bool casesensitive)
 						if (*name >= *filter && *name <= *(filter+2)) found = true;
 					}
 					else {
-						if (QStr::ToUpper(*name) >= QStr::ToUpper(*filter) &&
-							QStr::ToUpper(*name) <= QStr::ToUpper(*(filter+2))) found = true;
+						if (String::ToUpper(*name) >= String::ToUpper(*filter) &&
+							String::ToUpper(*name) <= String::ToUpper(*(filter+2))) found = true;
 					}
 					filter += 3;
 				}
@@ -2143,7 +2143,7 @@ bool QStr::Filter(const char *filter, const char *name, bool casesensitive)
 						if (*filter == *name) found = true;
 					}
 					else {
-						if (QStr::ToUpper(*filter) == QStr::ToUpper(*name)) found = true;
+						if (String::ToUpper(*filter) == String::ToUpper(*name)) found = true;
 					}
 					filter++;
 				}
@@ -2161,7 +2161,7 @@ bool QStr::Filter(const char *filter, const char *name, bool casesensitive)
 				if (*filter != *name) return false;
 			}
 			else {
-				if (QStr::ToUpper(*filter) != QStr::ToUpper(*name)) return false;
+				if (String::ToUpper(*filter) != String::ToUpper(*name)) return false;
 			}
 			filter++;
 			name++;
@@ -2175,7 +2175,7 @@ bool QStr::Filter(const char *filter, const char *name, bool casesensitive)
 Com_FilterPath
 ============
 */
-bool QStr::FilterPath(const char *filter, const char *name, bool casesensitive)
+bool String::FilterPath(const char *filter, const char *name, bool casesensitive)
 {
 	int i;
 	char new_filter[MAX_QPATH];
@@ -2215,10 +2215,10 @@ bool QStr::FilterPath(const char *filter, const char *name, bool casesensitive)
 char* va(const char* Format, ...)
 {
 	va_list			ArgPtr;
-	static char		String[2][32000];	// in case va is called by nested functions
+	static char		string[2][32000];	// in case va is called by nested functions
 	static int		Index = 0;
 
-	char* Buf = String[Index & 1];
+	char* Buf = string[Index & 1];
 	Index++;
 
 	va_start(ArgPtr, Format);

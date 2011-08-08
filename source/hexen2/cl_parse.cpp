@@ -275,7 +275,7 @@ void CL_ParseServerInfo (void)
 
 // parse signon message
 	str = const_cast<char*>(net_message.ReadString2());
-	QStr::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
+	String::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
 
 // seperate the printfs so the server message can have a color
 	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n\n");
@@ -299,7 +299,7 @@ void CL_ParseServerInfo (void)
 			Con_Printf ("Server sent too many model precaches\n");
 			return;
 		}
-		QStr::Cpy(model_precache[nummodels], str);
+		String::Cpy(model_precache[nummodels], str);
 	}
 
 // precache sounds
@@ -314,7 +314,7 @@ void CL_ParseServerInfo (void)
 			Con_Printf ("Server sent too many sound precaches\n");
 			return;
 		}
-		QStr::Cpy(sound_precache[numsounds], str);
+		String::Cpy(sound_precache[numsounds], str);
 	}
 
 //
@@ -1233,8 +1233,8 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= MAX_LIGHTSTYLES_Q1)
 				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES_Q1");
-			QStr::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
-			cl_lightstyle[i].length = QStr::Length(cl_lightstyle[i].map);
+			String::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
+			cl_lightstyle[i].length = String::Length(cl_lightstyle[i].map);
 			break;
 			
 		case svc_sound:
@@ -1274,7 +1274,7 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= cl.maxclients)
 				Host_Error ("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
-			QStr::Cpy(cl.scores[i].name, net_message.ReadString2 ());
+			String::Cpy(cl.scores[i].name, net_message.ReadString2 ());
 			break;
 
 		case svc_updateclass:
@@ -1380,7 +1380,7 @@ void CL_ParseServerMessage (void)
 		case svc_cdtrack:
 			cl.cdtrack = net_message.ReadByte ();
 			cl.looptrack = net_message.ReadByte ();
-			if (QStr::ICmp(bgmtype->string,"cd") == 0)
+			if (String::ICmp(bgmtype->string,"cd") == 0)
 			{
 				if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
 					CDAudio_Play ((byte)cls.forcetrack, true);
@@ -1392,8 +1392,8 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_midi_name:
-			QStr::Cpy(cl.midi_name,net_message.ReadString2 ());
-			if (QStr::ICmp(bgmtype->string,"midi") == 0)
+			String::Cpy(cl.midi_name,net_message.ReadString2 ());
+			if (String::ICmp(bgmtype->string,"midi") == 0)
 				MIDI_Play(cl.midi_name);
 			else 
 				MIDI_Stop();

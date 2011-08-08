@@ -358,7 +358,7 @@ char* Sys_ConsoleInput()
 			{
 				// push it in history
 				Hist_Add(&tty_con);
-				QStr::Cpy(returnedText, tty_con.buffer);
+				String::Cpy(returnedText, tty_con.buffer);
 				Field_Clear(&tty_con);
 				key = '\n';
 				write(1, &key, 1);
@@ -371,7 +371,7 @@ char* Sys_ConsoleInput()
 				// Field_CompleteCommand does weird things to the string, do a cleanup
 				//   it adds a '\' at the beginning of the string
 				//   cursor doesn't reflect actual length of the string that's sent back
-				tty_con.cursor = QStr::Length(tty_con.buffer);
+				tty_con.cursor = String::Length(tty_con.buffer);
 				if (tty_con.cursor > 0)
 				{
 					if (tty_con.buffer[0] == '\\')

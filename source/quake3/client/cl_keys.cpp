@@ -71,7 +71,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int width, int size, q
 	int		i;
 
 	drawLen = edit->widthInChars;
-	len = QStr::Length( edit->buffer ) + 1;
+	len = String::Length( edit->buffer ) + 1;
 
 	// guarantee that cursor will be visible
 	if ( len <= drawLen ) {
@@ -170,7 +170,7 @@ void Field_Paste( field_t *edit ) {
 	}
 
 	// send as if typed, so insert / overstrike works properly
-	pasteLen = QStr::Length( cbd );
+	pasteLen = String::Length( cbd );
 	for ( i = 0 ; i < pasteLen ; i++ ) {
 		Field_CharEvent( edit, cbd[i] );
 	}
@@ -197,7 +197,7 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 		return;
 	}
 
-	len = QStr::Length( edit->buffer );
+	len = String::Length( edit->buffer );
 
 	if ( key == K_DEL ) {
 		if ( edit->cursor < len ) {
@@ -232,12 +232,12 @@ void Field_KeyDownEvent( field_t *edit, int key ) {
 		return;
 	}
 
-	if ( key == K_HOME || ( QStr::ToLower(key) == 'a' && keys[K_CTRL].down ) ) {
+	if ( key == K_HOME || ( String::ToLower(key) == 'a' && keys[K_CTRL].down ) ) {
 		edit->cursor = 0;
 		return;
 	}
 
-	if ( key == K_END || ( QStr::ToLower(key) == 'e' && keys[K_CTRL].down ) ) {
+	if ( key == K_END || ( String::ToLower(key) == 'e' && keys[K_CTRL].down ) ) {
 		edit->cursor = len;
 		return;
 	}
@@ -266,7 +266,7 @@ void Field_CharEvent( field_t *edit, int ch ) {
 		return;
 	}
 
-	len = QStr::Length( edit->buffer );
+	len = String::Length( edit->buffer );
 
 	if ( ch == 'h' - 'a' + 1 )	{	// ctrl-h is backspace
 		if ( edit->cursor > 0 ) {
@@ -354,8 +354,8 @@ void Console_Key (int key) {
 			&& g_consoleField.buffer[0] != '/' ) {
 			char	temp[MAX_STRING_CHARS];
 
-			QStr::NCpyZ( temp, g_consoleField.buffer, sizeof( temp ) );
-			QStr::Sprintf( g_consoleField.buffer, sizeof( g_consoleField.buffer ), "\\%s", temp );
+			String::NCpyZ( temp, g_consoleField.buffer, sizeof( temp ) );
+			String::Sprintf( g_consoleField.buffer, sizeof( g_consoleField.buffer ), "\\%s", temp );
 			g_consoleField.cursor++;
 		}
 
@@ -401,7 +401,7 @@ void Console_Key (int key) {
 	// command history (ctrl-p ctrl-n for unix style)
 
 	if ( (key == K_MWHEELUP && keys[K_SHIFT].down) || ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ||
-		 ( ( QStr::ToLower(key) == 'p' ) && keys[K_CTRL].down ) ) {
+		 ( ( String::ToLower(key) == 'p' ) && keys[K_CTRL].down ) ) {
 		if ( nextHistoryLine - historyLine < COMMAND_HISTORY 
 			&& historyLine > 0 ) {
 			historyLine--;
@@ -411,7 +411,7 @@ void Console_Key (int key) {
 	}
 
 	if ( (key == K_MWHEELDOWN && keys[K_SHIFT].down) || ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ||
-		 ( ( QStr::ToLower(key) == 'n' ) && keys[K_CTRL].down ) ) {
+		 ( ( String::ToLower(key) == 'n' ) && keys[K_CTRL].down ) ) {
 		if (historyLine == nextHistoryLine)
 			return;
 		historyLine++;
@@ -490,13 +490,13 @@ void Message_Key( int key ) {
 		if ( chatField.buffer[0] && cls.state == CA_ACTIVE ) {
 			if (chat_playerNum != -1 )
 
-				QStr::Sprintf( buffer, sizeof( buffer ), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer );
+				String::Sprintf( buffer, sizeof( buffer ), "tell %i \"%s\"\n", chat_playerNum, chatField.buffer );
 
 			else if (chat_team)
 
-				QStr::Sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
+				String::Sprintf( buffer, sizeof( buffer ), "say_team \"%s\"\n", chatField.buffer );
 			else
-				QStr::Sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
+				String::Sprintf( buffer, sizeof( buffer ), "say \"%s\"\n", chatField.buffer );
 
 
 
@@ -561,7 +561,7 @@ int Key_StringToKeynum( char *str ) {
 	}
 
 	// check for hex code
-	if ( str[0] == '0' && str[1] == 'x' && QStr::Length( str ) == 4) {
+	if ( str[0] == '0' && str[1] == 'x' && String::Length( str ) == 4) {
 		int		n1, n2;
 		
 		n1 = str[2];
@@ -587,7 +587,7 @@ int Key_StringToKeynum( char *str ) {
 
 	// scan for a text match
 	for ( kn=keynames ; kn->name ; kn++ ) {
-		if ( !QStr::ICmp( str,kn->name ) )
+		if ( !String::ICmp( str,kn->name ) )
 			return kn->keynum;
 	}
 
@@ -691,7 +691,7 @@ int Key_GetKey(const char *binding) {
 
   if (binding) {
   	for (i=0 ; i<256 ; i++) {
-      if (keys[i].binding && QStr::ICmp(binding, keys[i].binding) == 0) {
+      if (keys[i].binding && String::ICmp(binding, keys[i].binding) == 0) {
         return i;
       }
     }
@@ -776,9 +776,9 @@ void Key_Bind_f (void)
 	cmd[0] = 0;		// start out with a null string
 	for (i=2 ; i< c ; i++)
 	{
-		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
+		String::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 		if (i != (c-1))
-			QStr::Cat(cmd, sizeof(cmd), " ");
+			String::Cat(cmd, sizeof(cmd), " ");
 	}
 
 	Key_SetBinding (b, cmd);
@@ -857,7 +857,7 @@ void CL_AddKeyUpCommands( int key, char *kb ) {
 			if ( button[0] == '+') {
 				// button commands add keynum and time as parms so that multiple
 				// sources can be discriminated and subframe corrected
-				QStr::Sprintf (cmd, sizeof(cmd), "-%s %i %i\n", button+1, key, time);
+				String::Sprintf (cmd, sizeof(cmd), "-%s %i %i\n", button+1, key, time);
 				Cbuf_AddText (cmd);
 				keyevent = qtrue;
 			} else {
@@ -1036,7 +1036,7 @@ void CL_KeyEvent (int key, qboolean down, unsigned time) {
 					if ( button[0] == '+') {
 						// button commands add keynum and time as parms so that multiple
 						// sources can be discriminated and subframe corrected
-						QStr::Sprintf (cmd, sizeof(cmd), "%s %i %i\n", button, key, time);
+						String::Sprintf (cmd, sizeof(cmd), "%s %i %i\n", button, key, time);
 						Cbuf_AddText (cmd);
 					} else {
 						// down-only command

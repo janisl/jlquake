@@ -367,10 +367,10 @@ V_cshift_f
 */
 static void V_cshift_f (void)
 {
-	cshift_empty.destcolor[0] = QStr::Atoi(Cmd_Argv(1));
-	cshift_empty.destcolor[1] = QStr::Atoi(Cmd_Argv(2));
-	cshift_empty.destcolor[2] = QStr::Atoi(Cmd_Argv(3));
-	cshift_empty.percent = QStr::Atoi(Cmd_Argv(4));
+	cshift_empty.destcolor[0] = String::Atoi(Cmd_Argv(1));
+	cshift_empty.destcolor[1] = String::Atoi(Cmd_Argv(2));
+	cshift_empty.destcolor[2] = String::Atoi(Cmd_Argv(3));
+	cshift_empty.percent = String::Atoi(Cmd_Argv(4));
 }
 
 

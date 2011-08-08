@@ -105,11 +105,11 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	if ((t = COM_CheckParm ("-heapsize")) != 0 &&
 		t + 1 < COM_Argc())
-		parms.memsize = QStr::Atoi(COM_Argv(t + 1)) * 1024;
+		parms.memsize = String::Atoi(COM_Argv(t + 1)) * 1024;
 
 	if ((t = COM_CheckParm ("-mem")) != 0 &&
 		t + 1 < COM_Argc())
-		parms.memsize = QStr::Atoi(COM_Argv(t + 1)) * 1024 * 1024;
+		parms.memsize = String::Atoi(COM_Argv(t + 1)) * 1024 * 1024;
 
 	parms.membase = malloc (parms.memsize);
 

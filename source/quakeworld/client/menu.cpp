@@ -611,7 +611,7 @@ void M_FindKeysForCommand (const char *command, int *twokeys)
 	char	*b;
 
 	twokeys[0] = twokeys[1] = -1;
-	l = QStr::Length(command);
+	l = String::Length(command);
 	count = 0;
 
 	for (j=0 ; j<256 ; j++)
@@ -619,7 +619,7 @@ void M_FindKeysForCommand (const char *command, int *twokeys)
 		b = keybindings[j];
 		if (!b)
 			continue;
-		if (!QStr::NCmp(b, command, l) )
+		if (!String::NCmp(b, command, l) )
 		{
 			twokeys[count] = j;
 			count++;
@@ -635,14 +635,14 @@ void M_UnbindCommand (const char *command)
 	int		l;
 	char	*b;
 
-	l = QStr::Length(command);
+	l = String::Length(command);
 
 	for (j=0 ; j<256 ; j++)
 	{
 		b = keybindings[j];
 		if (!b)
 			continue;
-		if (!QStr::NCmp(b, command, l) )
+		if (!String::NCmp(b, command, l) )
 			Key_SetBinding (j, "");
 	}
 }
@@ -671,7 +671,7 @@ void M_Keys_Draw (void)
 
 		M_Print (16, y, bindnames[i][1]);
 
-		l = QStr::Length(bindnames[i][0]);
+		l = String::Length(bindnames[i][0]);
 		
 		M_FindKeysForCommand (bindnames[i][0], keys);
 		
@@ -683,7 +683,7 @@ void M_Keys_Draw (void)
 		{
 			name = Key_KeynumToString (keys[0]);
 			M_Print (140, y, name);
-			x = QStr::Length(name) * 8;
+			x = String::Length(name) * 8;
 			if (keys[1] != -1)
 			{
 				M_Print (140 + x + 8, y, "or");

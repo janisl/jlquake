@@ -97,13 +97,13 @@ static fileHandle_t		log_fp;
 static void QGL_Log(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[1024];
+	char		string[1024];
 	
 	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(String, 1024, Fmt, ArgPtr);
+	Q_vsnprintf(string, 1024, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
-	FS_Printf(log_fp, "%s", String);
+	FS_Printf(log_fp, "%s", string);
 }
 
 //==========================================================================
@@ -383,25 +383,25 @@ static void BlendToName(char* n, GLenum f)
 	switch (f)
 	{
 	case GL_ONE:
-		QStr::Cpy(n, "GL_ONE");
+		String::Cpy(n, "GL_ONE");
 		break;
 	case GL_ZERO:
-		QStr::Cpy(n, "GL_ZERO");
+		String::Cpy(n, "GL_ZERO");
 		break;
 	case GL_SRC_ALPHA:
-		QStr::Cpy(n, "GL_SRC_ALPHA");
+		String::Cpy(n, "GL_SRC_ALPHA");
 		break;
 	case GL_ONE_MINUS_SRC_ALPHA:
-		QStr::Cpy(n, "GL_ONE_MINUS_SRC_ALPHA");
+		String::Cpy(n, "GL_ONE_MINUS_SRC_ALPHA");
 		break;
 	case GL_DST_COLOR:
-		QStr::Cpy(n, "GL_DST_COLOR");
+		String::Cpy(n, "GL_DST_COLOR");
 		break;
 	case GL_ONE_MINUS_DST_COLOR:
-		QStr::Cpy(n, "GL_ONE_MINUS_DST_COLOR");
+		String::Cpy(n, "GL_ONE_MINUS_DST_COLOR");
 		break;
 	case GL_DST_ALPHA:
-		QStr::Cpy(n, "GL_DST_ALPHA");
+		String::Cpy(n, "GL_DST_ALPHA");
 		break;
 	default:
 		sprintf(n, "0x%x", f);
@@ -612,8 +612,8 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 
 static bool CheckExtension(const char* Extension)
 {
-	Array<QStr> Extensions;
-	QStr((char*)qglGetString(GL_EXTENSIONS)).Split(' ', Extensions);
+	Array<String> Extensions;
+	String((char*)qglGetString(GL_EXTENSIONS)).Split(' ', Extensions);
 	for (int i = 0; i < Extensions.Num(); i++)
 	{
 		if (Extensions[i] == Extension)

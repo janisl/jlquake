@@ -34,7 +34,7 @@ struct leafList_t
 class QClipMap
 {
 public:
-	QStr			Name;
+	String			Name;
 
 	quint32			CheckSum;
 	quint32			CheckSum2;

@@ -313,7 +313,7 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 
 	cm.InitOOB(datagram_buf, sizeof(datagram_buf));
 	
-	if (QStr::ICmp(sample,"misc/null.wav") == 0)
+	if (String::ICmp(sample,"misc/null.wav") == 0)
 	{
 		SV_StopSound(entity,channel);
 		return;
@@ -334,7 +334,7 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 // find precache number for sound
     for (sound_num=1 ; sound_num<MAX_SOUNDS
         && sv.sound_precache[sound_num] ; sound_num++)
-        if (!QStr::Cmp(sample, sv.sound_precache[sound_num]))
+        if (!String::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
     if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
@@ -482,7 +482,7 @@ void SV_ConnectClient (int clientnum)
 	client->send_all_v = true;
 	client->netconnection = netconnection;
 
-	QStr::Cpy(client->name, "unconnected");
+	String::Cpy(client->name, "unconnected");
 	client->active = true;
 	client->spawned = false;
 	client->edict = ent;
@@ -940,8 +940,8 @@ skipA:
 		temp_index = ent->v.modelindex;
 		if (((int)ent->v.flags & FL_CLASS_DEPENDENT) && ent->v.model)
 		{
-			QStr::Cpy(NewName, PR_GetString(ent->v.model));
-			NewName[QStr::Length(NewName)-5] = client->playerclass + 48;
+			String::Cpy(NewName, PR_GetString(ent->v.model));
+			NewName[String::Length(NewName)-5] = client->playerclass + 48;
 			temp_index = SV_ModelIndex (NewName);
 		}
 
@@ -1711,7 +1711,7 @@ int SV_ModelIndex (const char *name)
 		return 0;
 
 	for (i=0 ; i<MAX_MODELS && sv.model_precache[i] ; i++)
-		if (!QStr::Cmp(sv.model_precache[i], name))
+		if (!String::Cmp(sv.model_precache[i], name))
 			return i;
 	if (i==MAX_MODELS || !sv.model_precache[i])
 	{
@@ -1898,9 +1898,9 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	//Com_Memset(&sv, 0, sizeof(sv));
 
-	QStr::Cpy(sv.name, server);
+	String::Cpy(sv.name, server);
 	if (startspot)
-		QStr::Cpy(sv.startspot, startspot);
+		String::Cpy(sv.startspot, startspot);
 
 // load progs to get entity field count
 
@@ -1954,7 +1954,7 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	sv.time = 1.0;
 	
-	QStr::Cpy(sv.name, server);
+	String::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 
 	CM_LoadMap(sv.modelname, false, NULL);

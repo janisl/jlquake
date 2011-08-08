@@ -135,7 +135,7 @@ static void initRoQ()
 
 bool QCinematicRoq::Open(const char* FileName)
 {
-	QStr::Cpy(Name, FileName);
+	String::Cpy(Name, FileName);
 	ROQSize = FS_FOpenFileRead(Name, &iFile, true);
 
 	if (ROQSize <= 0)

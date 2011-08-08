@@ -79,32 +79,32 @@ static void FS_Startup( const char *gameName )
 	}
   // fs_homepath is somewhat particular to *nix systems, only add if relevant
   // NOTE: same filtering below for mods and basegame
-	if (fs_basepath->string[0] && QStr::ICmp(fs_homepath->string,fs_basepath->string)) {
+	if (fs_basepath->string[0] && String::ICmp(fs_homepath->string,fs_basepath->string)) {
 		FS_AddGameDirectory ( fs_homepath->string, gameName, ADDPACKS_None);
 	}
         
 	// check for additional base game so mods can be based upon other mods
-	if ( fs_basegame->string[0] && !QStr::ICmp( gameName, BASEGAME ) && QStr::ICmp( fs_basegame->string, gameName ) ) {
+	if ( fs_basegame->string[0] && !String::ICmp( gameName, BASEGAME ) && String::ICmp( fs_basegame->string, gameName ) ) {
 		if (fs_cdpath->string[0]) {
 			FS_AddGameDirectory(fs_cdpath->string, fs_basegame->string, ADDPACKS_None);
 		}
 		if (fs_basepath->string[0]) {
 			FS_AddGameDirectory(fs_basepath->string, fs_basegame->string, ADDPACKS_None);
 		}
-		if (fs_homepath->string[0] && QStr::ICmp(fs_homepath->string,fs_basepath->string)) {
+		if (fs_homepath->string[0] && String::ICmp(fs_homepath->string,fs_basepath->string)) {
 			FS_AddGameDirectory(fs_homepath->string, fs_basegame->string, ADDPACKS_None);
 		}
 	}
 
 	// check for additional game folder for mods
-	if ( fs_gamedirvar->string[0] && !QStr::ICmp( gameName, BASEGAME ) && QStr::ICmp( fs_gamedirvar->string, gameName ) ) {
+	if ( fs_gamedirvar->string[0] && !String::ICmp( gameName, BASEGAME ) && String::ICmp( fs_gamedirvar->string, gameName ) ) {
 		if (fs_cdpath->string[0]) {
 			FS_AddGameDirectory(fs_cdpath->string, fs_gamedirvar->string, ADDPACKS_None);
 		}
 		if (fs_basepath->string[0]) {
 			FS_AddGameDirectory(fs_basepath->string, fs_gamedirvar->string, ADDPACKS_None);
 		}
-		if (fs_homepath->string[0] && QStr::ICmp(fs_homepath->string,fs_basepath->string)) {
+		if (fs_homepath->string[0] && String::ICmp(fs_homepath->string,fs_basepath->string)) {
 			FS_AddGameDirectory(fs_homepath->string, fs_gamedirvar->string, ADDPACKS_None);
 		}
 	}
@@ -161,8 +161,8 @@ void FS_InitFilesystem( void ) {
 		// bk001208 - SafeMode see below, FIXME?
 	}
 
-	QStr::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
-	QStr::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
+	String::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
+	String::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
 
   // bk001208 - SafeMode see below, FIXME?
 }
@@ -208,15 +208,15 @@ void FS_Restart( int checksumFeed ) {
 	}
 
 	// bk010116 - new check before safeMode
-	if ( QStr::ICmp(fs_gamedirvar->string, lastValidGame) ) {
+	if ( String::ICmp(fs_gamedirvar->string, lastValidGame) ) {
 		// skip the q3config.cfg if "safe" is on the command line
 		if ( !Com_SafeMode() ) {
 			Cbuf_AddText ("exec q3config.cfg\n");
 		}
 	}
 
-	QStr::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
-	QStr::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
+	String::NCpyZ(lastValidBase, fs_basepath->string, sizeof(lastValidBase));
+	String::NCpyZ(lastValidGame, fs_gamedirvar->string, sizeof(lastValidGame));
 
 }
 

@@ -317,7 +317,7 @@ void *Sys_LoadDll( const char *name, char *fqpath ,
   Com_Printf ( "Sys_LoadDll(%s) found **vmMain** at  %p  \n", name, *entryPoint ); // bk001212
   dllEntry( systemcalls );
   Com_Printf ( "Sys_LoadDll(%s) succeeded!\n", name );
-  if ( libHandle ) QStr::NCpyZ( fqpath , fn , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
+  if ( libHandle ) String::NCpyZ( fqpath , fn , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
   return libHandle;
 }
 
@@ -361,9 +361,9 @@ sysEvent_t Sys_GetEvent( void ) {
     char  *b;
     int   len;
 
-    len = QStr::Length( s ) + 1;
+    len = String::Length( s ) + 1;
     b = (char*)Mem_Alloc( len );
-    QStr::Cpy( b, s );
+    String::Cpy( b, s );
     Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
   }
 
@@ -440,8 +440,8 @@ void Sys_ParseArgs( int argc, char* argv[] ) {
 
   if ( argc==2 )
   {
-    if ( (!QStr::Cmp( argv[1], "--version" ))
-         || ( !QStr::Cmp( argv[1], "-v" )) )
+    if ( (!String::Cmp( argv[1], "--version" ))
+         || ( !String::Cmp( argv[1], "-v" )) )
     {
       Sys_PrintBinVersion( argv[0] );
       Sys_Exit(0);
@@ -464,14 +464,14 @@ int main ( int argc, char* argv[] )
 
   // merge the command line, this is kinda silly
   for (len = 1, i = 1; i < argc; i++)
-    len += QStr::Length(argv[i]) + 1;
+    len += String::Length(argv[i]) + 1;
   cmdline = (char*)malloc(len);
   *cmdline = 0;
   for (i = 1; i < argc; i++)
   {
     if (i > 1)
-      QStr::Cat(cmdline, len, " ");
-    QStr::Cat(cmdline, len, argv[i]);
+      String::Cat(cmdline, len, " ");
+    String::Cat(cmdline, len, argv[i]);
   }
 
   // bk000306 - clear queues

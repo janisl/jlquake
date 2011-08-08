@@ -336,10 +336,10 @@ V_cshift_f
 */
 static void V_cshift_f (void)
 {
-	cshift_empty.destcolor[0] = QStr::Atoi(Cmd_Argv(1));
-	cshift_empty.destcolor[1] = QStr::Atoi(Cmd_Argv(2));
-	cshift_empty.destcolor[2] = QStr::Atoi(Cmd_Argv(3));
-	cshift_empty.percent = QStr::Atoi(Cmd_Argv(4));
+	cshift_empty.destcolor[0] = String::Atoi(Cmd_Argv(1));
+	cshift_empty.destcolor[1] = String::Atoi(Cmd_Argv(2));
+	cshift_empty.destcolor[2] = String::Atoi(Cmd_Argv(3));
+	cshift_empty.percent = String::Atoi(Cmd_Argv(4));
 }
 
 
@@ -792,7 +792,7 @@ void V_RenderScene()
 	// don't allow cheats in multiplayer
 	Cvar_Set("r_fullbright", "0");
 	Cvar_Set("r_lightmap", "0");
-	if (!QStr::Atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
+	if (!String::Atoi(Info_ValueForKey(cl.serverinfo, "watervis")))
 	{
 		Cvar_Set("r_wateralpha", "1");
 	}

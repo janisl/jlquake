@@ -63,7 +63,7 @@ fielddef_t *FindField(fielddef_t *defs, char *name)
 
 	for (i = 0; defs[i].name; i++)
 	{
-		if (!QStr::Cmp(defs[i].name, name)) return &defs[i];
+		if (!String::Cmp(defs[i].name, name)) return &defs[i];
 	} //end for
 	return NULL;
 } //end of the function FindField
@@ -91,7 +91,7 @@ qboolean ReadNumber(source_t *source, fielddef_t *fd, void *p)
 			return 0;
 		} //end if
 		//if not a minus sign
-		if (QStr::Cmp(token.string, "-"))
+		if (String::Cmp(token.string, "-"))
 		{
 			SourceError(source, "unexpected punctuation %s", token.string);
 			return 0;
@@ -221,7 +221,7 @@ int ReadString(source_t *source, fielddef_t *fd, void *p)
 	//remove the double quotes
 	StripDoubleQuotes(token.string);
 	//copy the string
-	QStr::NCpy((char *) p, token.string, MAX_STRINGFIELD);
+	String::NCpy((char *) p, token.string, MAX_STRINGFIELD);
 	//make sure the string is closed with a zero
 	((char *)p)[MAX_STRINGFIELD-1] = '\0';
 	//
@@ -245,7 +245,7 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure)
 	{
 		if (!PC_ExpectAnyToken(source, &token)) return qfalse;
 		//if end of structure
-		if (!QStr::Cmp(token.string, "}")) break;
+		if (!String::Cmp(token.string, "}")) break;
 		//find the field with the name
 		fd = FindField(def->fields, token.string);
 		if (!fd)
@@ -310,8 +310,8 @@ int ReadStructure(source_t *source, structdef_t *def, char *structure)
 			if (fd->type & FT_ARRAY)
 			{
 				if (!PC_ExpectAnyToken(source, &token)) return qfalse;
-				if (!QStr::Cmp(token.string, "}")) break;
-				if (QStr::Cmp(token.string, ","))
+				if (!String::Cmp(token.string, "}")) break;
+				if (String::Cmp(token.string, ","))
 				{
 					SourceError(source, "expected a comma, found %s", token.string);
 					return qfalse;
@@ -347,7 +347,7 @@ int WriteFloat(FILE *fp, float value)
 	int l;
 
 	sprintf(buf, "%f", value);
-	l = QStr::Length(buf);
+	l = String::Length(buf);
 	//strip any trailing zeros
 	while(l-- > 1)
 	{

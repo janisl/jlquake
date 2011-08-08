@@ -91,7 +91,7 @@ const char* Sys_Cwd()
 
 void Sys_SetHomePathSuffix(const char* Name)
 {
-	QStr::NCpyZ(HomePathSuffix, Name, sizeof(HomePathSuffix));
+	String::NCpyZ(HomePathSuffix, Name, sizeof(HomePathSuffix));
 }
 
 //==========================================================================
@@ -106,13 +106,13 @@ const char* Sys_DefaultHomePath()
 	const char* p = getenv("HOME");
 	if (p)
 	{
-		QStr::NCpyZ(homePath, p, sizeof(homePath));
+		String::NCpyZ(homePath, p, sizeof(homePath));
 #ifdef MACOS_X
-		QStr::Cat(homePath, sizeof(homePath), "/Library/Application Support/");
+		String::Cat(homePath, sizeof(homePath), "/Library/Application Support/");
 #else
-		QStr::Cat(homePath, sizeof(homePath), "/.");
+		String::Cat(homePath, sizeof(homePath), "/.");
 #endif
-		QStr::Cat(homePath, sizeof(homePath), HomePathSuffix);
+		String::Cat(homePath, sizeof(homePath), HomePathSuffix);
 		if (mkdir(homePath, 0777))
 		{
 			if (errno != EEXIST) 
@@ -146,13 +146,13 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 		return;
 	}
 
-	if (QStr::Length(subdirs))
+	if (String::Length(subdirs))
 	{
-		QStr::Sprintf(search, sizeof(search), "%s/%s", basedir, subdirs);
+		String::Sprintf(search, sizeof(search), "%s/%s", basedir, subdirs);
 	}
 	else
 	{
-		QStr::Sprintf(search, sizeof(search), "%s", basedir);
+		String::Sprintf(search, sizeof(search), "%s", basedir);
 	}
 
 	if ((fdir = opendir(search)) == NULL)
@@ -162,7 +162,7 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 
 	while ((d = readdir(fdir)) != NULL)
 	{
-		QStr::Sprintf(filename, sizeof(filename), "%s/%s", search, d->d_name);
+		String::Sprintf(filename, sizeof(filename), "%s/%s", search, d->d_name);
 		if (stat(filename, &st) == -1)
 		{
 			continue;
@@ -170,15 +170,15 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 
 		if (st.st_mode & S_IFDIR)
 		{
-			if (QStr::ICmp(d->d_name, ".") && QStr::ICmp(d->d_name, ".."))
+			if (String::ICmp(d->d_name, ".") && String::ICmp(d->d_name, ".."))
 			{
-				if (QStr::Length(subdirs))
+				if (String::Length(subdirs))
 				{
-					QStr::Sprintf(newsubdirs, sizeof(newsubdirs), "%s/%s", subdirs, d->d_name);
+					String::Sprintf(newsubdirs, sizeof(newsubdirs), "%s/%s", subdirs, d->d_name);
 				}
 				else
 				{
-					QStr::Sprintf(newsubdirs, sizeof(newsubdirs), "%s", d->d_name);
+					String::Sprintf(newsubdirs, sizeof(newsubdirs), "%s", d->d_name);
 				}
 				Sys_ListFilteredFiles(basedir, newsubdirs, filter, list, numfiles);
 			}
@@ -187,8 +187,8 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 		{
 			break;
 		}
-		QStr::Sprintf(filename, sizeof(filename), "%s/%s", subdirs, d->d_name);
-		if (!QStr::FilterPath(filter, filename, false))
+		String::Sprintf(filename, sizeof(filename), "%s/%s", subdirs, d->d_name);
+		if (!String::FilterPath(filter, filename, false))
 		{
 			continue;
 		}
@@ -255,7 +255,7 @@ char** Sys_ListFiles(const char *directory, const char *extension, const char *f
 		dironly = true;
 	}
 
-	extLen = QStr::Length(extension);
+	extLen = String::Length(extension);
 
 	// search
 	nfiles = 0;
@@ -268,7 +268,7 @@ char** Sys_ListFiles(const char *directory, const char *extension, const char *f
 
 	while ((d = readdir(fdir)) != NULL)
 	{
-		QStr::Sprintf(search, sizeof(search), "%s/%s", directory, d->d_name);
+		String::Sprintf(search, sizeof(search), "%s/%s", directory, d->d_name);
 		if (stat(search, &st) == -1)
 		{
 			continue;
@@ -281,9 +281,9 @@ char** Sys_ListFiles(const char *directory, const char *extension, const char *f
 
 		if (*extension)
 		{
-			if (QStr::Length(d->d_name) < QStr::Length(extension) ||
-				QStr::ICmp( 
-					d->d_name + QStr::Length(d->d_name) - QStr::Length(extension),
+			if (String::Length(d->d_name) < String::Length(extension) ||
+				String::ICmp( 
+					d->d_name + String::Length(d->d_name) - String::Length(extension),
 					extension))
 			{
 				continue; // didn't match

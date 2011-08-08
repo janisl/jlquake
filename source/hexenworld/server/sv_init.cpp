@@ -22,7 +22,7 @@ int SV_ModelIndex (const char *name)
 		return 0;
 
 	for (i=0 ; i<MAX_MODELS && sv.model_precache[i] ; i++)
-		if (!QStr::Cmp(sv.model_precache[i], name))
+		if (!String::Cmp(sv.model_precache[i], name))
 			return i;
 	if (i==MAX_MODELS || !sv.model_precache[i])
 		SV_Error ("SV_ModelIndex: model %s not precached", name);
@@ -202,10 +202,10 @@ void SV_SpawnServer (char *server, char *startspot)
 	sv.signon.InitOOB(sv.signon_buffers[0], sizeof(sv.signon_buffers[0]));
 	sv.num_signon_buffers = 1;
 
-	QStr::Cpy(sv.name, server);
+	String::Cpy(sv.name, server);
 	if (startspot)
 	{
-		QStr::Cpy(sv.startspot, startspot);
+		String::Cpy(sv.startspot, startspot);
 	}
 
 	// load progs to get entity field count
@@ -228,7 +228,7 @@ void SV_SpawnServer (char *server, char *startspot)
 
 	sv.time = 1.0;
 	
-	QStr::Cpy(sv.name, server);
+	String::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 	CM_LoadMap(sv.modelname, false, NULL);
 

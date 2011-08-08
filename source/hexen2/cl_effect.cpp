@@ -902,7 +902,7 @@ static int GetInt(char*& Data)
 		Len++;
 	}
 	Tmp[Len] = 0;
-	return QStr::Atoi(Tmp);
+	return String::Atoi(Tmp);
 }
 
 static float GetFloat(char*& Data)
@@ -923,7 +923,7 @@ static float GetFloat(char*& Data)
 		Len++;
 	}
 	Tmp[Len] = 0;
-	return QStr::Atof(Tmp);
+	return String::Atof(Tmp);
 }
 
 // All changes need to be in SV_SendEffect(), SV_ParseEffect(),
@@ -936,7 +936,7 @@ char* SV_LoadEffects(char* Data)
 	// the loading
 	SV_ClearEffects();
 
-	if (QStr::NCmp(Data, "Effects: ", 9))
+	if (String::NCmp(Data, "Effects: ", 9))
 		throw QDropException("Effects expected");
 	Data += 9;
 	Total = GetInt(Data);
@@ -946,7 +946,7 @@ char* SV_LoadEffects(char* Data)
 		//	Skip whitespace.
 		while (*Data && *Data <= ' ')
 			Data++;
-		if (QStr::NCmp(Data, "Effect: ", 8))
+		if (String::NCmp(Data, "Effect: ", 8))
 			Sys_Error("Effect expected");
 		Data += 8;
 		index = GetInt(Data);

@@ -356,8 +356,8 @@ void SOCK_OpenSocks(int port)
 	if (buf[1] == 2)
 	{
 		// build the request
-		int ulen = QStr::Length(net_socksUsername->string);
-		int plen = QStr::Length(net_socksPassword->string);
+		int ulen = String::Length(net_socksUsername->string);
+		int plen = String::Length(net_socksPassword->string);
 
 		buf[0] = 1;		// username/password authentication version
 		buf[1] = ulen;
@@ -504,7 +504,7 @@ int SOCK_Open(const char* net_interface, int port)
 	}
 
 	sockaddr_in	address;
-	if (!net_interface || !net_interface[0] || !QStr::ICmp(net_interface, "localhost"))
+	if (!net_interface || !net_interface[0] || !String::ICmp(net_interface, "localhost"))
 	{
 		address.sin_addr.s_addr = INADDR_ANY;
 	}

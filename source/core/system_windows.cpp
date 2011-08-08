@@ -90,7 +90,7 @@ const char* Sys_Cwd()
 
 void Sys_SetHomePathSuffix(const char* Name)
 {
-	QStr::NCpyZ(HomePathSuffix, Name, sizeof(HomePathSuffix));
+	String::NCpyZ(HomePathSuffix, Name, sizeof(HomePathSuffix));
 }
 
 //==========================================================================
@@ -123,13 +123,13 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 		return;
 	}
 
-	if (QStr::Length(subdirs))
+	if (String::Length(subdirs))
 	{
-		QStr::Sprintf(search, sizeof(search), "%s\\%s\\*", basedir, subdirs);
+		String::Sprintf(search, sizeof(search), "%s\\%s\\*", basedir, subdirs);
 	}
 	else
 	{
-		QStr::Sprintf(search, sizeof(search), "%s\\*", basedir);
+		String::Sprintf(search, sizeof(search), "%s\\*", basedir);
 	}
 
 	findhandle = _findfirst(search, &findinfo);
@@ -142,15 +142,15 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 	{
 		if (findinfo.attrib & _A_SUBDIR)
 		{
-			if (QStr::ICmp(findinfo.name, ".") && QStr::ICmp(findinfo.name, ".."))
+			if (String::ICmp(findinfo.name, ".") && String::ICmp(findinfo.name, ".."))
 			{
-				if (QStr::Length(subdirs))
+				if (String::Length(subdirs))
 				{
-					QStr::Sprintf(newsubdirs, sizeof(newsubdirs), "%s\\%s", subdirs, findinfo.name);
+					String::Sprintf(newsubdirs, sizeof(newsubdirs), "%s\\%s", subdirs, findinfo.name);
 				}
 				else
 				{
-					QStr::Sprintf(newsubdirs, sizeof(newsubdirs), "%s", findinfo.name);
+					String::Sprintf(newsubdirs, sizeof(newsubdirs), "%s", findinfo.name);
 				}
 				Sys_ListFilteredFiles(basedir, newsubdirs, filter, list, numfiles);
 			}
@@ -159,8 +159,8 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 		{
 			break;
 		}
-		QStr::Sprintf(filename, sizeof(filename), "%s\\%s", subdirs, findinfo.name);
-		if (!QStr::FilterPath(filter, filename, false))
+		String::Sprintf(filename, sizeof(filename), "%s\\%s", subdirs, findinfo.name);
+		if (!String::FilterPath(filter, filename, false))
 		{
 			continue;
 		}
@@ -179,8 +179,8 @@ static void Sys_ListFilteredFiles(const char* basedir, const char* subdirs, cons
 
 static bool strgtr(const char *s0, const char *s1)
 {
-	int l0 = QStr::Length(s0);
-	int l1 = QStr::Length(s1);
+	int l0 = String::Length(s0);
+	int l1 = String::Length(s1);
 
 	if (l1 < l0)
 	{
@@ -256,7 +256,7 @@ char** Sys_ListFiles(const char* directory, const char* extension, const char* f
 		flag = _A_SUBDIR;
 	}
 
-	QStr::Sprintf(search, sizeof(search), "%s\\*%s", directory, extension);
+	String::Sprintf(search, sizeof(search), "%s\\*%s", directory, extension);
 
 	// search
 	nfiles = 0;

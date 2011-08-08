@@ -29,7 +29,7 @@ char *PF_VarString (int	first)
 	out[0] = 0;
 	for (i=first ; i<pr_argc ; i++)
 	{
-		QStr::Cat(out, sizeof(out), G_STRING((OFS_PARM0+i*3)));
+		String::Cat(out, sizeof(out), G_STRING((OFS_PARM0+i*3)));
 	}
 	return out;
 }
@@ -234,7 +234,7 @@ void PF_setmodel (void)
 
 // check to see if model was properly precached
 	for (i=0, check = sv.model_precache ; *check ; i++, check++)
-		if (!QStr::Cmp(*check, m))
+		if (!String::Cmp(*check, m))
 			break;
 			
 	if (!*check)
@@ -273,7 +273,7 @@ void PF_setpuzzlemodel (void)
 	sprintf(NewName,"models/puzzle/%s.mdl",m);
 // check to see if model was properly precached
 	for (i=0, check = sv.model_precache ; *check ; i++, check++)
-		if (!QStr::Cmp(*check, NewName))
+		if (!String::Cmp(*check, NewName))
 			break;
 			
 	e->v.model = PR_SetString(ED_NewString(NewName));
@@ -652,7 +652,7 @@ void PF_ambientsound (void)
 	
 // check to see if samp was properly precached
 	for (soundnum=0, check = sv.sound_precache ; *check ; check++, soundnum++)
-		if (!QStr::Cmp(*check,samp))
+		if (!String::Cmp(*check,samp))
 			break;
 			
 	if (!*check)
@@ -1259,7 +1259,7 @@ void PF_Find (void)
 		t = E_STRING(ed,f);
 		if (!t)
 			continue;
-		if (!QStr::Cmp(t,s))
+		if (!String::Cmp(t,s))
 		{
 			RETURN_EDICT(ed);
 			return;
@@ -1328,7 +1328,7 @@ void PF_precache_sound (void)
 			sv.sound_precache[i] = s;
 			return;
 		}
-		if (!QStr::Cmp(sv.sound_precache[i], s))
+		if (!String::Cmp(sv.sound_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_sound: overflow");
@@ -1378,7 +1378,7 @@ void PF_precache_model (void)
 			sv.models[i] = CM_PrecacheModel(s);
 			return;
 		}
-		if (!QStr::Cmp(sv.model_precache[i], s))
+		if (!String::Cmp(sv.model_precache[i], s))
 		{
 //			Con_DPrintf("duplicate precache: %s!\n",s);
 			return;
@@ -1436,7 +1436,7 @@ void PF_precache_puzzle_model (void)
 			sv.models[i] = CM_PrecacheModel(s);
 			return;
 		}
-		if (!QStr::Cmp(sv.model_precache[i], s))
+		if (!String::Cmp(sv.model_precache[i], s))
 			return;
 	}
 	PR_RunError ("PF_precache_puzzle_model: overflow");
@@ -2279,7 +2279,7 @@ void PF_AwardExperience(void)
 
 	if (!Amount) return;
 
-	IsPlayer = (QStr::ICmp(PR_GetString(ToEnt->v.classname), "player") == 0);
+	IsPlayer = (String::ICmp(PR_GetString(ToEnt->v.classname), "player") == 0);
 
 	if (FromEnt && Amount == 0.0)
 	{

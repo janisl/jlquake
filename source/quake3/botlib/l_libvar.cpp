@@ -84,10 +84,10 @@ libvar_t *LibVarAlloc(const char *var_name)
 {
 	libvar_t *v;
 
-	v = (libvar_t *) GetMemory(sizeof(libvar_t) + QStr::Length(var_name) + 1);
+	v = (libvar_t *) GetMemory(sizeof(libvar_t) + String::Length(var_name) + 1);
 	Com_Memset(v, 0, sizeof(libvar_t));
 	v->name = (char *) v + sizeof(libvar_t);
-	QStr::Cpy(v->name, var_name);
+	String::Cpy(v->name, var_name);
 	//add the variable in the list
 	v->next = libvarlist;
 	libvarlist = v;
@@ -133,7 +133,7 @@ libvar_t *LibVarGet(const char *var_name)
 
 	for (v = libvarlist; v; v = v->next)
 	{
-		if (!QStr::ICmp(v->name, var_name))
+		if (!String::ICmp(v->name, var_name))
 		{
 			return v;
 		} //end if
@@ -194,8 +194,8 @@ libvar_t *LibVar(const char *var_name, const char *value)
 	//create new variable
 	v = LibVarAlloc(var_name);
 	//variable string
-	v->string = (char *) GetMemory(QStr::Length(value) + 1);
-	QStr::Cpy(v->string, value);
+	v->string = (char *) GetMemory(String::Length(value) + 1);
+	String::Cpy(v->string, value);
 	//the value
 	v->value = LibVarStringValue(v->string);
 	//variable is modified
@@ -249,8 +249,8 @@ void LibVarSet(const char *var_name, const char *value)
 		v = LibVarAlloc(var_name);
 	} //end else
 	//variable string
-	v->string = (char *) GetMemory(QStr::Length(value) + 1);
-	QStr::Cpy(v->string, value);
+	v->string = (char *) GetMemory(String::Length(value) + 1);
+	String::Cpy(v->string, value);
 	//the value
 	v->value = LibVarStringValue(v->string);
 	//variable is modified

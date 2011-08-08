@@ -112,7 +112,7 @@ static const void* Mod_LoadAliasFrame(const void* pin, mmesh1framedesc_t* frame)
 {
 	const dmdl_frame_t* pdaliasframe = (const dmdl_frame_t*)pin;
 
-	QStr::Cpy(frame->name, pdaliasframe->name);
+	String::Cpy(frame->name, pdaliasframe->name);
 	frame->firstpose = posenum;
 	frame->numposes = 1;
 
@@ -270,7 +270,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 			byte* pic32 = R_ConvertImage8To32((byte *)(pskintype + 1), pheader->skinwidth, pheader->skinheight, texture_mode);
 
 			// save 8 bit texels for the player model to remap
-			if ((GGameType & GAME_Quake) && !QStr::Cmp(loadmodel->name,"progs/player.mdl"))
+			if ((GGameType & GAME_Quake) && !String::Cmp(loadmodel->name,"progs/player.mdl"))
 			{
 				if (s > (int)sizeof(q1_player_8bit_texels))
 					throw QException("Player skin too large");
@@ -278,37 +278,37 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 			}
 			else if (GGameType & GAME_Hexen2)
 			{
-				if (!QStr::Cmp(loadmodel->name,"models/paladin.mdl"))
+				if (!String::Cmp(loadmodel->name,"models/paladin.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[0]))
 						throw QException("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[0], (byte *)(pskintype + 1), s);
 				}
-				else if (!QStr::Cmp(loadmodel->name,"models/crusader.mdl"))
+				else if (!String::Cmp(loadmodel->name,"models/crusader.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[1]))
 						throw QException("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[1], (byte *)(pskintype + 1), s);
 				}
-				else if (!QStr::Cmp(loadmodel->name,"models/necro.mdl"))
+				else if (!String::Cmp(loadmodel->name,"models/necro.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[2]))
 						throw QException("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[2], (byte *)(pskintype + 1), s);
 				}
-				else if (!QStr::Cmp(loadmodel->name,"models/assassin.mdl"))
+				else if (!String::Cmp(loadmodel->name,"models/assassin.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[3]))
 						throw QException("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[3], (byte *)(pskintype + 1), s);
 				}
-				else if (!QStr::Cmp(loadmodel->name,"models/succubus.mdl"))
+				else if (!String::Cmp(loadmodel->name,"models/succubus.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[4]))
 						throw QException("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[4], (byte *)(pskintype + 1), s);
 				}
-				else if (!QStr::Cmp(loadmodel->name,"models/hank.mdl"))
+				else if (!String::Cmp(loadmodel->name,"models/hank.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[5]))
 						throw QException("Player skin too large");
@@ -673,15 +673,15 @@ static void GL_MakeAliasModelDisplayLists(model_t* m, mesh1hdr_t* hdr)
 	char cache[MAX_QPATH];
 	if (GGameType & GAME_Hexen2)
 	{
-		QStr::Cpy(cache, "glhexen/");
-		QStr::StripExtension(m->name + QStr::Length("models/"), cache + QStr::Length("glhexen/"));
+		String::Cpy(cache, "glhexen/");
+		String::StripExtension(m->name + String::Length("models/"), cache + String::Length("glhexen/"));
 	}
 	else
 	{
-		QStr::Cpy(cache, "glquake/");
-		QStr::StripExtension(m->name + QStr::Length("progs/"), cache + QStr::Length("glquake/"));
+		String::Cpy(cache, "glquake/");
+		String::StripExtension(m->name + String::Length("progs/"), cache + String::Length("glquake/"));
 	}
-	QStr::Cat(cache, sizeof(cache), ".ms2");
+	String::Cat(cache, sizeof(cache), ".ms2");
 
 	fileHandle_t f;
 	FS_FOpenFileRead(cache, &f, true);
@@ -1310,7 +1310,7 @@ void R_DrawMdlModel(trRefEntity_t* e)
 	}
 
 	// ZOID: never allow players to go totally black
-	if ((GGameType & GAME_Quake) && !QStr::Cmp(clmodel->name, "progs/player.mdl"))
+	if ((GGameType & GAME_Quake) && !String::Cmp(clmodel->name, "progs/player.mdl"))
 	{
 		if (ambientlight < 8)
 		{

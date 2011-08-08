@@ -57,13 +57,13 @@ void SV_FlushRedirect (void)
 		send[2] = 0xff;
 		send[3] = 0xff;
 		send[4] = A2C_PRINT;
-		Com_Memcpy(send+5, outputbuf, QStr::Length(outputbuf)+1);
+		Com_Memcpy(send+5, outputbuf, String::Length(outputbuf)+1);
 
-		NET_SendPacket (QStr::Length(send)+1, send, net_from);
+		NET_SendPacket (String::Length(send)+1, send, net_from);
 	}
 	else if (sv_redirected == RD_CLIENT)
 	{
-		ClientReliableWrite_Begin (host_client, svc_print, QStr::Length(outputbuf)+3);
+		ClientReliableWrite_Begin (host_client, svc_print, String::Length(outputbuf)+3);
 		ClientReliableWrite_Byte (host_client, PRINT_HIGH);
 		ClientReliableWrite_String (host_client, outputbuf);
 	}
@@ -113,9 +113,9 @@ void Con_Printf (const char *fmt, ...)
 	// add to redirected message
 	if (sv_redirected)
 	{
-		if (QStr::Length(msg) + QStr::Length(outputbuf) > (int)sizeof(outputbuf) - 1)
+		if (String::Length(msg) + String::Length(outputbuf) > (int)sizeof(outputbuf) - 1)
 			SV_FlushRedirect ();
-		QStr::Cat(outputbuf, sizeof(outputbuf), msg);
+		String::Cat(outputbuf, sizeof(outputbuf), msg);
 		return;
 	}
 
@@ -156,7 +156,7 @@ EVENT MESSAGES
 
 static void SV_PrintToClient(client_t *cl, int level, char *string)
 {
-	ClientReliableWrite_Begin (cl, svc_print, QStr::Length(string)+3);
+	ClientReliableWrite_Begin (cl, svc_print, String::Length(string)+3);
 	ClientReliableWrite_Byte (cl, level);
 	ClientReliableWrite_String (cl, string);
 }
@@ -361,7 +361,7 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 // find precache number for sound
     for (sound_num=1 ; sound_num<MAX_SOUNDS
         && sv.sound_precache[sound_num] ; sound_num++)
-        if (!QStr::Cmp(sample, sv.sound_precache[sound_num]))
+        if (!String::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
     if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
@@ -443,11 +443,11 @@ void SV_FindModelNumbers (void)
 	{
 		if (!sv.model_precache[i])
 			break;
-		if (!QStr::Cmp(sv.model_precache[i],"progs/spike.mdl"))
+		if (!String::Cmp(sv.model_precache[i],"progs/spike.mdl"))
 			sv_nailmodel = i;
-		if (!QStr::Cmp(sv.model_precache[i],"progs/s_spike.mdl"))
+		if (!String::Cmp(sv.model_precache[i],"progs/s_spike.mdl"))
 			sv_supernailmodel = i;
-		if (!QStr::Cmp(sv.model_precache[i],"progs/player.mdl"))
+		if (!String::Cmp(sv.model_precache[i],"progs/player.mdl"))
 			sv_playermodel = i;
 	}
 }

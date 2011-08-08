@@ -94,7 +94,7 @@ const char *VM_ValueToSymbol( vm_t *vm, int value ) {
 		return sym->symName;
 	}
 
-	QStr::Sprintf( text, sizeof( text ), "%s+%i", sym->symName, value - sym->symValue );
+	String::Sprintf( text, sizeof( text ), "%s+%i", sym->symName, value - sym->symValue );
 
 	return text;
 }
@@ -132,7 +132,7 @@ int VM_SymbolToValue( vm_t *vm, const char *symbol ) {
 	vmSymbol_t	*sym;
 
 	for ( sym = vm->symbols ; sym ; sym = sym->next ) {
-		if ( !QStr::Cmp( symbol, sym->symName ) ) {
+		if ( !String::Cmp( symbol, sym->symName ) ) {
 			return sym->symValue;
 		}
 	}
@@ -190,8 +190,8 @@ void VM_LoadSymbols( vm_t *vm ) {
 		return;
 	}
 
-	QStr::StripExtension( vm->name, name );
-	QStr::Sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
+	String::StripExtension( vm->name, name );
+	String::Sprintf( symbols, sizeof( symbols ), "vm/%s.map", name );
 	len = FS_ReadFile( symbols, (void **)&mapfile );
 	if ( !mapfile ) {
 		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
@@ -206,30 +206,30 @@ void VM_LoadSymbols( vm_t *vm ) {
 	count = 0;
 
 	while ( 1 ) {
-		token = QStr::Parse3( &text_p );
+		token = String::Parse3( &text_p );
 		if ( !token[0] ) {
 			break;
 		}
 		segment = ParseHex( token );
 		if ( segment ) {
-			QStr::Parse3( &text_p );
-			QStr::Parse3( &text_p );
+			String::Parse3( &text_p );
+			String::Parse3( &text_p );
 			continue;		// only load code segment values
 		}
 
-		token = QStr::Parse3( &text_p );
+		token = String::Parse3( &text_p );
 		if ( !token[0] ) {
 			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 		value = ParseHex( token );
 
-		token = QStr::Parse3( &text_p );
+		token = String::Parse3( &text_p );
 		if ( !token[0] ) {
 			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
-		chars = QStr::Length( token );
+		chars = String::Length( token );
 		sym = (vmSymbol_t*)Hunk_Alloc( sizeof( *sym ) + chars, h_high );
 		*prev = sym;
 		prev = &sym->next;
@@ -241,7 +241,7 @@ void VM_LoadSymbols( vm_t *vm ) {
 		}
 
 		sym->symValue = value;
-		QStr::NCpyZ( sym->symName, token, chars + 1 );
+		String::NCpyZ( sym->symName, token, chars + 1 );
 
 		count++;
 	}
@@ -332,7 +332,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 	    int			(*systemCall)( int *parms );
 		
 		systemCall = vm->systemCall;	
-		QStr::NCpyZ( name, vm->name, sizeof( name ) );
+		String::NCpyZ( name, vm->name, sizeof( name ) );
 
 		VM_Free( vm );
 
@@ -342,7 +342,7 @@ vm_t *VM_Restart( vm_t *vm ) {
 
 	// load the image
 	Com_Printf( "VM_Restart()\n", filename );
-	QStr::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
+	String::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
 	Com_Printf( "Loading vm file %s.\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
 	if ( !header ) {
@@ -416,7 +416,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 
 	// see if we already have the VM
 	for ( i = 0 ; i < MAX_VM ; i++ ) {
-		if (!QStr::ICmp(vmTable[i].name, module)) {
+		if (!String::ICmp(vmTable[i].name, module)) {
 			vm = &vmTable[i];
 			return vm;
 		}
@@ -435,7 +435,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 
 	vm = &vmTable[i];
 
-	QStr::NCpyZ( vm->name, module, sizeof( vm->name ) );
+	String::NCpyZ( vm->name, module, sizeof( vm->name ) );
 	vm->systemCall = systemCalls;
 
 	// never allow dll loading with a demo
@@ -458,7 +458,7 @@ vm_t *VM_Create( const char *module, int (*systemCalls)(int *),
 	}
 
 	// load the image
-	QStr::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
+	String::Sprintf( filename, sizeof(filename), "vm/%s.qvm", vm->name );
 	Com_Printf( "Loading vm file %s.\n", filename );
 	length = FS_ReadFile( filename, (void **)&header );
 	if ( !header ) {

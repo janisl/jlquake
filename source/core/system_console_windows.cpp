@@ -126,8 +126,8 @@ static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 		if ((com_dedicated && com_dedicated->integer))
 		{
 			char* cmdString = new char[5];
-			QStr::Cpy(cmdString, "quit");
-			Sys_QueEvent(0, SE_CONSOLE, 0, 0, QStr::Length(cmdString) + 1, cmdString);
+			String::Cpy(cmdString, "quit");
+			Sys_QueEvent(0, SE_CONSOLE, 0, 0, String::Length(cmdString) + 1, cmdString);
 		}
 		else if (s_wcd.quitOnClose)
 		{
@@ -191,8 +191,8 @@ static LONG WINAPI ConWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam
 			else
 			{
 				char* cmdString = new char[5];
-				QStr::Cpy(cmdString, "quit");
-				Sys_QueEvent(0, SE_CONSOLE, 0, 0, QStr::Length(cmdString) + 1, cmdString);
+				String::Cpy(cmdString, "quit");
+				Sys_QueEvent(0, SE_CONSOLE, 0, 0, String::Length(cmdString) + 1, cmdString);
 			}
 		}
 		else if (wParam == CLEAR_ID)
@@ -300,8 +300,8 @@ static LONG WINAPI InputLineWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 		if (wParam == 13)
 		{
 			GetWindowText(s_wcd.hwndInputLine, inputBuffer, sizeof(inputBuffer));
-			QStr::Cat(s_wcd.consoleText, sizeof(s_wcd.consoleText) - 5, inputBuffer);
-			QStr::Cat(s_wcd.consoleText, sizeof(s_wcd.consoleText), "\n");
+			String::Cat(s_wcd.consoleText, sizeof(s_wcd.consoleText) - 5, inputBuffer);
+			String::Cat(s_wcd.consoleText, sizeof(s_wcd.consoleText), "\n");
 			SetWindowText(s_wcd.hwndInputLine, "");
 
 			Sys_Print(va("]%s\n", inputBuffer));
@@ -488,7 +488,7 @@ char* Sys_ConsoleInput()
 		return NULL;
 	}
 		
-	QStr::Cpy(s_wcd.returnedText, s_wcd.consoleText);
+	String::Cpy(s_wcd.returnedText, s_wcd.consoleText);
 	s_wcd.consoleText[0] = 0;
 	
 	return s_wcd.returnedText;
@@ -512,9 +512,9 @@ void Sys_Print(const char* pMsg)
 	// if the message is REALLY long, use just the last portion of it
 	//
 	const char* msg;
-	if (QStr::Length(pMsg) > CONSOLE_BUFFER_SIZE - 1)
+	if (String::Length(pMsg) > CONSOLE_BUFFER_SIZE - 1)
 	{
-		msg = pMsg + QStr::Length(pMsg) - CONSOLE_BUFFER_SIZE + 1;
+		msg = pMsg + String::Length(pMsg) - CONSOLE_BUFFER_SIZE + 1;
 	}
 	else
 	{
@@ -589,7 +589,7 @@ void Sys_Print(const char* pMsg)
 
 void Sys_SetErrorText(const char* buf)
 {
-	QStr::NCpyZ(s_wcd.errorString, buf, sizeof(s_wcd.errorString));
+	String::NCpyZ(s_wcd.errorString, buf, sizeof(s_wcd.errorString));
 
 	if (!s_wcd.hwndErrorBox)
 	{

@@ -50,21 +50,21 @@ void Loop_SearchForHosts (qboolean xmit)
 		return;
 
 	hostCacheCount = 1;
-	if (QStr::Cmp(hostname->string, "UNNAMED") == 0)
-		QStr::Cpy(hostcache[0].name, "local");
+	if (String::Cmp(hostname->string, "UNNAMED") == 0)
+		String::Cpy(hostcache[0].name, "local");
 	else
-		QStr::Cpy(hostcache[0].name, hostname->string);
-	QStr::Cpy(hostcache[0].map, sv.name);
+		String::Cpy(hostcache[0].name, hostname->string);
+	String::Cpy(hostcache[0].map, sv.name);
 	hostcache[0].users = net_activeconnections;
 	hostcache[0].maxusers = svs.maxclients;
 	hostcache[0].driver = net_driverlevel;
-	QStr::Cpy(hostcache[0].cname, "local");
+	String::Cpy(hostcache[0].cname, "local");
 }
 
 
 qsocket_t *Loop_Connect (const char *host)
 {
-	if (QStr::Cmp(host,"local") != 0)
+	if (String::Cmp(host,"local") != 0)
 		return NULL;
 	
 	localconnectpending = true;
@@ -76,7 +76,7 @@ qsocket_t *Loop_Connect (const char *host)
 			Con_Printf("Loop_Connect: no qsocket available\n");
 			return NULL;
 		}
-		QStr::Cpy(loop_client->address, "localhost");
+		String::Cpy(loop_client->address, "localhost");
 	}
 	loop_client->receiveMessageLength = 0;
 	loop_client->sendMessageLength = 0;
@@ -89,7 +89,7 @@ qsocket_t *Loop_Connect (const char *host)
 			Con_Printf("Loop_Connect: no qsocket available\n");
 			return NULL;
 		}
-		QStr::Cpy(loop_server->address, "LOCAL");
+		String::Cpy(loop_server->address, "LOCAL");
 	}
 	loop_server->receiveMessageLength = 0;
 	loop_server->sendMessageLength = 0;

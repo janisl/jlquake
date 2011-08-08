@@ -301,8 +301,8 @@ static void GfxInfo_f()
 	GLog.Write("GL_VERSION: %s\n", glConfig.version_string);
 
 	GLog.WriteLine("GL_EXTENSIONS:");
-	Array<QStr> Exts;
-	QStr(glConfig.extensions_string).Split(' ', Exts);
+	Array<String> Exts;
+	String(glConfig.extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{
 		GLog.WriteLine(" %s", *Exts[i]);
@@ -651,10 +651,10 @@ static void InitOpenGLSubsystem()
 	glConfig.hardwareType = GLHW_GENERIC;
 
 	//	Get our config strings.
-	QStr::NCpyZ(glConfig.vendor_string, (char*)qglGetString(GL_VENDOR), sizeof(glConfig.vendor_string));
-	QStr::NCpyZ(glConfig.renderer_string, (char*)qglGetString(GL_RENDERER), sizeof(glConfig.renderer_string));
-	QStr::NCpyZ(glConfig.version_string, (char*)qglGetString(GL_VERSION), sizeof(glConfig.version_string));
-	QStr::NCpyZ(glConfig.extensions_string, (char*)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
+	String::NCpyZ(glConfig.vendor_string, (char*)qglGetString(GL_VENDOR), sizeof(glConfig.vendor_string));
+	String::NCpyZ(glConfig.renderer_string, (char*)qglGetString(GL_RENDERER), sizeof(glConfig.renderer_string));
+	String::NCpyZ(glConfig.version_string, (char*)qglGetString(GL_VERSION), sizeof(glConfig.version_string));
+	String::NCpyZ(glConfig.extensions_string, (char*)qglGetString(GL_EXTENSIONS), sizeof(glConfig.extensions_string));
 
 	// OpenGL driver constants
 	GLint temp;

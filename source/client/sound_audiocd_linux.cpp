@@ -334,13 +334,13 @@ void CD_f()
 
 	command = Cmd_Argv(1);
 
-	if (QStr::ICmp(command, "on") == 0)
+	if (String::ICmp(command, "on") == 0)
 	{
 		enabled = true;
 		return;
 	}
 
-	if (QStr::ICmp(command, "off") == 0)
+	if (String::ICmp(command, "off") == 0)
 	{
 		if (playing)
 		{
@@ -350,7 +350,7 @@ void CD_f()
 		return;
 	}
 
-	if (QStr::ICmp(command, "reset") == 0)
+	if (String::ICmp(command, "reset") == 0)
 	{
 		enabled = true;
 		if (playing)
@@ -365,7 +365,7 @@ void CD_f()
 		return;
 	}
 
-	if (QStr::ICmp(command, "remap") == 0)
+	if (String::ICmp(command, "remap") == 0)
 	{
 		ret = Cmd_Argc() - 2;
 		if (ret <= 0)
@@ -381,12 +381,12 @@ void CD_f()
 		}
 		for (n = 1; n <= ret; n++)
 		{
-			remap[n] = QStr::Atoi(Cmd_Argv (n+1));
+			remap[n] = String::Atoi(Cmd_Argv (n+1));
 		}
 		return;
 	}
 
-	if (QStr::ICmp(command, "close") == 0)
+	if (String::ICmp(command, "close") == 0)
 	{
 		CDAudio_CloseDoor();
 		return;
@@ -402,37 +402,37 @@ void CD_f()
 		}
 	}
 
-	if (QStr::ICmp(command, "play") == 0)
+	if (String::ICmp(command, "play") == 0)
 	{
-		CDAudio_Play(QStr::Atoi(Cmd_Argv (2)), false);
+		CDAudio_Play(String::Atoi(Cmd_Argv (2)), false);
 		return;
 	}
 
-	if (QStr::ICmp(command, "loop") == 0)
+	if (String::ICmp(command, "loop") == 0)
 	{
-		CDAudio_Play(QStr::Atoi(Cmd_Argv (2)), true);
+		CDAudio_Play(String::Atoi(Cmd_Argv (2)), true);
 		return;
 	}
 
-	if (QStr::ICmp(command, "stop") == 0)
+	if (String::ICmp(command, "stop") == 0)
 	{
 		CDAudio_Stop();
 		return;
 	}
 
-	if (QStr::ICmp(command, "pause") == 0)
+	if (String::ICmp(command, "pause") == 0)
 	{
 		CDAudio_Pause();
 		return;
 	}
 
-	if (QStr::ICmp(command, "resume") == 0)
+	if (String::ICmp(command, "resume") == 0)
 	{
 		CDAudio_Resume();
 		return;
 	}
 
-	if (QStr::ICmp(command, "eject") == 0)
+	if (String::ICmp(command, "eject") == 0)
 	{
 		if (playing)
 		{
@@ -443,7 +443,7 @@ void CD_f()
 		return;
 	}
 
-	if (QStr::ICmp(command, "info") == 0)
+	if (String::ICmp(command, "info") == 0)
 	{
 		GLog.Write("%u tracks\n", maxTrack);
 		if (playing)
@@ -553,7 +553,7 @@ int CDAudio_Init()
 
 		if ((i = COM_CheckParm("-cddev")) != 0 && i < COM_Argc() - 1)
 		{
-			QStr::NCpy(cd_dev_old, COM_Argv(i + 1), sizeof(cd_dev_old));
+			String::NCpy(cd_dev_old, COM_Argv(i + 1), sizeof(cd_dev_old));
 			cd_dev_old[sizeof(cd_dev_old) - 1] = 0;
 		}
 

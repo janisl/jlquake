@@ -684,7 +684,7 @@ void COM_InitArgv(int argc, const char** argv)
 	com_argc = argc;
 	for (int i = 0; i < argc; i++)
 	{
-		if (!argv[i])// || QStr::Length(argv[i]) >= MAX_TOKEN_CHARS)
+		if (!argv[i])// || String::Length(argv[i]) >= MAX_TOKEN_CHARS)
 			com_argv[i] = "";
 		else
 			com_argv[i] = argv[i];
@@ -736,7 +736,7 @@ int COM_CheckParm(const char *parm)
 {
 	for (int i = 1; i < com_argc; i++)
 	{
-		if (!QStr::Cmp(parm, com_argv[i]))
+		if (!String::Cmp(parm, com_argv[i]))
 		{
 			return i;
 		}

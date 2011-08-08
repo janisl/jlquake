@@ -237,7 +237,7 @@ extern  int unzStringFileNameCompare (const char* fileName1,const char* fileName
 		iCaseSensitivity=CASESENSITIVITYDEFAULTVALUE;
 
 	if (iCaseSensitivity==1)
-		return QStr::Cmp(fileName1,fileName2);
+		return String::Cmp(fileName1,fileName2);
 
 	return STRCMPCASENOSENTIVEFUNCTION(fileName1,fileName2);
 } 
@@ -755,7 +755,7 @@ extern int unzLocateFile (unzFile file, const char *szFileName, int iCaseSensiti
 	if (file==NULL)
 		return UNZ_PARAMERROR;
 
-    if (QStr::Length(szFileName)>=UNZ_MAXFILENAMEINZIP)
+    if (String::Length(szFileName)>=UNZ_MAXFILENAMEINZIP)
         return UNZ_PARAMERROR;
 
 	s=(unz_s*)file;

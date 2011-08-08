@@ -61,7 +61,7 @@ QCinematicPcx::~QCinematicPcx()
 
 bool QCinematicPcx::Open(const char* FileName)
 {
-	QStr::Cpy(Name, FileName);
+	String::Cpy(Name, FileName);
 	byte* pic;
 	byte* palette;
 	R_LoadPCX(FileName, &pic, &palette, &Width, &Height);

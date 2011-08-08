@@ -62,7 +62,7 @@ const char* Info_ValueForKey(const char* s, const char* key)
 		return "";
 	}
 
-	if (QStr::Length( s ) >= BIG_INFO_STRING)
+	if (String::Length( s ) >= BIG_INFO_STRING)
 	{
 		throw QDropException("Info_ValueForKey: oversize infostring");
 	}
@@ -90,7 +90,7 @@ const char* Info_ValueForKey(const char* s, const char* key)
 		}
 		*o = 0;
 
-		if (!QStr::ICmp(key, pkey) )
+		if (!String::ICmp(key, pkey) )
 			return value[valueindex];
 
 		if (!*s)
@@ -114,7 +114,7 @@ void Info_RemoveKey(char* s, const char* key, int MaxSize)
 	char	value[BIG_INFO_VALUE];
 	char	*o;
 
-	if (QStr::Length(s) >= MaxSize)
+	if (String::Length(s) >= MaxSize)
 	{
 		throw QDropException("Info_RemoveKey: oversize infostring");
 	}
@@ -148,9 +148,9 @@ void Info_RemoveKey(char* s, const char* key, int MaxSize)
 		}
 		*o = 0;
 
-		if (!QStr::Cmp (key, pkey) )
+		if (!String::Cmp (key, pkey) )
 		{
-			QStr::Cpy(start, s);	// remove this part
+			String::Cpy(start, s);	// remove this part
 			return;
 		}
 
@@ -221,7 +221,7 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 {
 	char	newi[BIG_INFO_STRING];
 
-	if (QStr::Length(s) >= MaxSize)
+	if (String::Length(s) >= MaxSize)
 	{
 		throw QDropException("Info_SetValueForKey: oversize infostring");
 	}
@@ -244,19 +244,19 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 		return;
 	}
 
-	if (QStr::Length(key) > MaxKeySize - 1 || QStr::Length(value) > MaxValSize - 1)
+	if (String::Length(key) > MaxKeySize - 1 || String::Length(value) > MaxValSize - 1)
 	{
 		GLog.Write("Keys and values must be < %d characters.\n", MaxKeySize);
 		return;
 	}
 
 	Info_RemoveKey(s, key, MaxSize);
-	if (!value || !QStr::Length(value))
+	if (!value || !String::Length(value))
 		return;
 
-	QStr::Sprintf(newi, sizeof(newi), "\\%s\\%s", key, value);
+	String::Sprintf(newi, sizeof(newi), "\\%s\\%s", key, value);
 
-	if (QStr::Length(newi) + QStr::Length(s) > MaxSize)
+	if (String::Length(newi) + String::Length(s) > MaxSize)
 	{
 		GLog.Write("Info string length exceeded\n");
 		return;
@@ -265,7 +265,7 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 	if (NoHighChars || LowerCaseVal)
 	{
 		// only copy ascii values
-		s += QStr::Length(s);
+		s += String::Length(s);
 		char* v = newi;
 		while (*v)
 		{
@@ -276,7 +276,7 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 				if (c < 32 || c >= 127)
 					continue;
 				if (LowerCaseVal)
-					c = QStr::ToLower(c);
+					c = String::ToLower(c);
 			}
 			if (c > 13)
 				*s++ = c;
@@ -285,8 +285,8 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 	}
 	else
 	{
-		QStr::Cat(newi, sizeof(newi), s);
-		QStr::Cpy(s, newi);
+		String::Cat(newi, sizeof(newi), s);
+		String::Cpy(s, newi);
 	}
 }
 

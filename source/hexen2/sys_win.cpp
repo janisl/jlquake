@@ -185,8 +185,8 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	if (!GetCurrentDirectory (sizeof(cwd), cwd))
 		Sys_Error ("Couldn't determine current directory");
 
-	if (cwd[QStr::Length(cwd)-1] == '/')
-		cwd[QStr::Length(cwd)-1] = 0;
+	if (cwd[String::Length(cwd)-1] == '/')
+		cwd[String::Length(cwd)-1] = 0;
 
 	parms.basedir = cwd;
 
@@ -245,7 +245,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		t = COM_CheckParm("-heapsize") + 1;
 
 		if (t < COM_Argc())
-			parms.memsize = QStr::Atoi (COM_Argv(t)) * 1024;
+			parms.memsize = String::Atoi (COM_Argv(t)) * 1024;
 	}
 
 	parms.membase = malloc (parms.memsize);

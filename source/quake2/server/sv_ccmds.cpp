@@ -101,7 +101,7 @@ qboolean SV_SetPlayer (void)
 	// numeric values are just slot numbers
 	if (s[0] >= '0' && s[0] <= '9')
 	{
-		idnum = QStr::Atoi(Cmd_Argv(1));
+		idnum = String::Atoi(Cmd_Argv(1));
 		if (idnum < 0 || idnum >= maxclients->value)
 		{
 			Com_Printf ("Bad client slot: %i\n", idnum);
@@ -123,7 +123,7 @@ qboolean SV_SetPlayer (void)
 	{
 		if (!cl->state)
 			continue;
-		if (!QStr::Cmp(cl->name, s))
+		if (!String::Cmp(cl->name, s))
 		{
 			sv_client = cl;
 			sv_player = sv_client->edict;
@@ -211,10 +211,10 @@ void SV_CopySaveGame (const char *src, const char *dst)
 		FS_CopyFile(name, name2);
 
 		// change sav to sv2
-		int l = QStr::Length(name);
-		QStr::Cpy(name + l - 3, "sv2");
-		l = QStr::Length(name2);
-		QStr::Cpy(name2 + l - 3, "sv2");
+		int l = String::Length(name);
+		String::Cpy(name + l - 3, "sv2");
+		l = String::Length(name2);
+		String::Cpy(name2 + l - 3, "sv2");
 		FS_CopyFile(name, name2);
 	}
 	Sys_FreeFileList(SysFiles);
@@ -234,7 +234,7 @@ void SV_WriteLevelFile (void)
 
 	Com_DPrintf("SV_WriteLevelFile()\n");
 
-	QStr::Sprintf(name, sizeof(name), "save/current/%s.sv2", sv.name);
+	String::Sprintf(name, sizeof(name), "save/current/%s.sv2", sv.name);
 	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
@@ -245,7 +245,7 @@ void SV_WriteLevelFile (void)
 	CM_WritePortalState(f);
 	FS_FCloseFile(f);
 
-	QStr::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/current/%s.sav", sv.name)));
+	String::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/current/%s.sav", sv.name)));
 	ge->WriteLevel(name);
 }
 
@@ -262,7 +262,7 @@ void SV_ReadLevelFile (void)
 
 	Com_DPrintf("SV_ReadLevelFile()\n");
 
-	QStr::Sprintf (name, sizeof(name), "save/current/%s.sv2", sv.name);
+	String::Sprintf (name, sizeof(name), "save/current/%s.sv2", sv.name);
 	FS_FOpenFileRead(name, &f, true);
 	if (!f)
 	{
@@ -273,7 +273,7 @@ void SV_ReadLevelFile (void)
 	CM_ReadPortalState (f);
 	FS_FCloseFile(f);
 
-	QStr::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/current/%s.sav", sv.name)));
+	String::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), va("save/current/%s.sav", sv.name)));
 	ge->ReadLevel(name);
 }
 
@@ -294,7 +294,7 @@ void SV_WriteServerFile (qboolean autosave)
 
 	Com_DPrintf("SV_WriteServerFile(%s)\n", autosave ? "true" : "false");
 
-	QStr::Sprintf (name, sizeof(name), "save/current/server.ssv");
+	String::Sprintf (name, sizeof(name), "save/current/server.ssv");
 	f = FS_FOpenFileWrite(name);
 	if (!f)
 	{
@@ -308,14 +308,14 @@ void SV_WriteServerFile (qboolean autosave)
 	{
 		time (&aclock);
 		newtime = localtime (&aclock);
-		QStr::Sprintf (comment,sizeof(comment), "%2i:%i%i %2i/%2i  ", newtime->tm_hour
+		String::Sprintf (comment,sizeof(comment), "%2i:%i%i %2i/%2i  ", newtime->tm_hour
 			, newtime->tm_min/10, newtime->tm_min%10,
 			newtime->tm_mon+1, newtime->tm_mday);
-		QStr::Cat(comment, sizeof(comment), sv.configstrings[CS_NAME]);
+		String::Cat(comment, sizeof(comment), sv.configstrings[CS_NAME]);
 	}
 	else
 	{	// autosaved
-		QStr::Sprintf (comment, sizeof(comment), "ENTERING %s", sv.configstrings[CS_NAME]);
+		String::Sprintf (comment, sizeof(comment), "ENTERING %s", sv.configstrings[CS_NAME]);
 	}
 
 	FS_Write(comment, sizeof(comment), f);
@@ -329,16 +329,16 @@ void SV_WriteServerFile (qboolean autosave)
 	{
 		if (!(var->flags & CVAR_LATCH))
 			continue;
-		if (QStr::Length(var->name) >= (int)sizeof(name)-1
-			|| QStr::Length(var->string) >= (int)sizeof(string)-1)
+		if (String::Length(var->name) >= (int)sizeof(name)-1
+			|| String::Length(var->string) >= (int)sizeof(string)-1)
 		{
 			Com_Printf ("Cvar too long: %s = %s\n", var->name, var->string);
 			continue;
 		}
 		Com_Memset(name, 0, sizeof(name));
 		Com_Memset(string, 0, sizeof(string));
-		QStr::Cpy(name, var->name);
-		QStr::Cpy(string, var->string);
+		String::Cpy(name, var->name);
+		String::Cpy(string, var->string);
 		FS_Write(name, sizeof(name), f);
 		FS_Write(string, sizeof(string), f);
 	}
@@ -346,7 +346,7 @@ void SV_WriteServerFile (qboolean autosave)
 	FS_FCloseFile(f);
 
 	// write game state
-	QStr::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), "save/current/game.ssv"));
+	String::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), "save/current/game.ssv"));
 	ge->WriteGame (name, autosave);
 }
 
@@ -393,10 +393,10 @@ void SV_ReadServerFile (void)
 	// start a new game fresh with new cvars
 	SV_InitGame ();
 
-	QStr::Cpy(svs.mapcmd, mapcmd);
+	String::Cpy(svs.mapcmd, mapcmd);
 
 	// read game state
-	QStr::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), "save/current/game.ssv"));
+	String::Cpy(name, FS_BuildOSPath(fs_homepath->string, FS_Gamedir(), "save/current/game.ssv"));
 	ge->ReadGame(name);
 }
 
@@ -485,7 +485,7 @@ void SV_GameMap_f (void)
 	SV_Map (false, Cmd_Argv(1), false );
 
 	// archive server state
-	QStr::NCpy(svs.mapcmd, Cmd_Argv(1), sizeof(svs.mapcmd)-1);
+	String::NCpy(svs.mapcmd, Cmd_Argv(1), sizeof(svs.mapcmd)-1);
 
 	// copy off the level to the autosave slot
 	if (!com_dedicated->value)
@@ -512,7 +512,7 @@ void SV_Map_f (void)
 	map = Cmd_Argv(1);
 	if (!strstr (map, "."))
 	{
-		QStr::Sprintf (expanded, sizeof(expanded), "maps/%s.bsp", map);
+		String::Sprintf (expanded, sizeof(expanded), "maps/%s.bsp", map);
 		if (FS_ReadFile(expanded, NULL) == -1)
 		{
 			Com_Printf ("Can't find %s\n", expanded);
@@ -561,7 +561,7 @@ void SV_Loadgame_f (void)
 	}
 
 	// make sure the server.ssv file exists
-	QStr::Sprintf (name, sizeof(name), "save/%s/server.ssv", Cmd_Argv(1));
+	String::Sprintf (name, sizeof(name), "save/%s/server.ssv", Cmd_Argv(1));
 	FS_FOpenFileRead(name, &f, true);
 	if (!f)
 	{
@@ -609,7 +609,7 @@ void SV_Savegame_f (void)
 		return;
 	}
 
-	if (!QStr::Cmp(Cmd_Argv(1), "current"))
+	if (!String::Cmp(Cmd_Argv(1), "current"))
 	{
 		Com_Printf ("Can't save to 'current'\n");
 		return;
@@ -716,7 +716,7 @@ void SV_Status_f (void)
 		}
 
 		Com_Printf ("%s", cl->name);
-		l = 16 - QStr::Length(cl->name);
+		l = 16 - String::Length(cl->name);
 		for (j=0 ; j<l ; j++)
 			Com_Printf (" ");
 
@@ -724,7 +724,7 @@ void SV_Status_f (void)
 
 		s = SOCK_AdrToString( cl->netchan.remote_address);
 		Com_Printf ("%s", s);
-		l = 22 - QStr::Length(s);
+		l = 22 - String::Length(s);
 		for (j=0 ; j<l ; j++)
 			Com_Printf (" ");
 		
@@ -750,16 +750,16 @@ void SV_ConSay_f(void)
 	if (Cmd_Argc () < 2)
 		return;
 
-	QStr::Cpy(text, "console: ");
+	String::Cpy(text, "console: ");
 	p = Cmd_ArgsUnmodified();
 
 	if (*p == '"')
 	{
 		p++;
-		p[QStr::Length(p)-1] = 0;
+		p[String::Length(p)-1] = 0;
 	}
 
-	QStr::Cat(text, sizeof(text), p);
+	String::Cat(text, sizeof(text), p);
 
 	for (j = 0, client = svs.clients; j < maxclients->value; j++, client++)
 	{
@@ -858,7 +858,7 @@ void SV_ServerRecord_f (void)
 	//
 	// open the demo file
 	//
-	QStr::Sprintf (name, sizeof(name), "demos/%s.dm2", Cmd_Argv(1));
+	String::Sprintf (name, sizeof(name), "demos/%s.dm2", Cmd_Argv(1));
 
 	Com_Printf ("recording to %s.\n", name);
 	svs.demofile = FS_FOpenFileWrite(name);

@@ -109,7 +109,7 @@ int AAS_IndexFromString(const char *indexname, char *stringindex[], int numindex
 	for (i = 0; i < numindexes; i++)
 	{
 		if (!stringindex[i]) continue;
-		if (!QStr::ICmp(stringindex[i], string)) return i;
+		if (!String::ICmp(stringindex[i], string)) return i;
 	} //end for
 	return 0;
 } //end of the function AAS_IndexFromString
@@ -148,8 +148,8 @@ void AAS_UpdateStringIndexes(int numconfigstrings, char *configstrings[])
 		if (configstrings[i])
 		{
 			//if (aasworld.configstrings[i]) FreeMemory(aasworld.configstrings[i]);
-			aasworld.configstrings[i] = (char *) GetMemory(QStr::Length(configstrings[i]) + 1);
-			QStr::Cpy(aasworld.configstrings[i], configstrings[i]);
+			aasworld.configstrings[i] = (char *) GetMemory(String::Length(configstrings[i]) + 1);
+			String::Cpy(aasworld.configstrings[i], configstrings[i]);
 		} //end if
 	} //end for
 	aasworld.indexessetup = qtrue;
@@ -313,7 +313,7 @@ int AAS_LoadFiles(const char *mapname)
 	char aasfile[MAX_PATH];
 //	char bspfile[MAX_PATH];
 
-	QStr::Cpy(aasworld.mapname, mapname);
+	String::Cpy(aasworld.mapname, mapname);
 	//NOTE: first reset the entity links into the AAS areas and BSP leaves
 	// the AAS link heap and BSP link heap are reset after respectively the
 	// AAS file and BSP file are loaded
@@ -322,13 +322,13 @@ int AAS_LoadFiles(const char *mapname)
 	AAS_LoadBSPFile();
 
 	//load the aas file
-	QStr::Sprintf(aasfile, MAX_PATH, "maps/%s.aas", mapname);
+	String::Sprintf(aasfile, MAX_PATH, "maps/%s.aas", mapname);
 	errnum = AAS_LoadAASFile(aasfile);
 	if (errnum != BLERR_NOERROR)
 		return errnum;
 
 	botimport.Print(PRT_MESSAGE, "loaded %s\n", aasfile);
-	QStr::NCpy(aasworld.filename, aasfile, MAX_PATH);
+	String::NCpy(aasworld.filename, aasfile, MAX_PATH);
 	return BLERR_NOERROR;
 } //end of the function AAS_LoadFiles
 //===========================================================================

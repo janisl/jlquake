@@ -70,7 +70,7 @@ void Cmd_ForwardToServer_f (void)
 		return;
 	}
 
-	if (QStr::ICmp(Cmd_Argv(1), "snap") == 0) {
+	if (String::ICmp(Cmd_Argv(1), "snap") == 0) {
 		Cbuf_InsertText ("snap\n");
 		return;
 	}

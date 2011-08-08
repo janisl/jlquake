@@ -526,43 +526,43 @@ nextmsg:
 					ret = 2;
 				else
 					ret = 0;
-				if (QStr::NICmp(s, "status", 6) == 0)
+				if (String::NICmp(s, "status", 6) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "god", 3) == 0)
+				else if (String::NICmp(s, "god", 3) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "notarget", 8) == 0)
+				else if (String::NICmp(s, "notarget", 8) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "fly", 3) == 0)
+				else if (String::NICmp(s, "fly", 3) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "name", 4) == 0)
+				else if (String::NICmp(s, "name", 4) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "noclip", 6) == 0)
+				else if (String::NICmp(s, "noclip", 6) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "say", 3) == 0)
+				else if (String::NICmp(s, "say", 3) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "say_team", 8) == 0)
+				else if (String::NICmp(s, "say_team", 8) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "tell", 4) == 0)
+				else if (String::NICmp(s, "tell", 4) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "color", 5) == 0)
+				else if (String::NICmp(s, "color", 5) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "kill", 4) == 0)
+				else if (String::NICmp(s, "kill", 4) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "pause", 5) == 0)
+				else if (String::NICmp(s, "pause", 5) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "spawn", 5) == 0)
+				else if (String::NICmp(s, "spawn", 5) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "begin", 5) == 0)
+				else if (String::NICmp(s, "begin", 5) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "prespawn", 8) == 0)
+				else if (String::NICmp(s, "prespawn", 8) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "kick", 4) == 0)
+				else if (String::NICmp(s, "kick", 4) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "ping", 4) == 0)
+				else if (String::NICmp(s, "ping", 4) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "give", 4) == 0)
+				else if (String::NICmp(s, "give", 4) == 0)
 					ret = 1;
-				else if (QStr::NICmp(s, "ban", 3) == 0)
+				else if (String::NICmp(s, "ban", 3) == 0)
 					ret = 1;
 				if (ret == 2)
 					Cbuf_InsertText (s);

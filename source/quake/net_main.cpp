@@ -146,7 +146,7 @@ qsocket_t *NET_NewQSocket (void)
 
 	sock->disconnected = false;
 	sock->connecttime = net_time;
-	QStr::Cpy(sock->address,"UNSET ADDRESS");
+	String::Cpy(sock->address,"UNSET ADDRESS");
 	sock->driver = net_driverlevel;
 	sock->socket = 0;
 	sock->driverdata = NULL;
@@ -199,7 +199,7 @@ static void NET_Listen_f (void)
 		return;
 	}
 
-	listening = QStr::Atoi(Cmd_Argv(1)) ? true : false;
+	listening = String::Atoi(Cmd_Argv(1)) ? true : false;
 
 	for (net_driverlevel=0 ; net_driverlevel<net_numdrivers; net_driverlevel++)
 	{
@@ -226,7 +226,7 @@ static void MaxPlayers_f (void)
 		return;
 	}
 
-	n = QStr::Atoi(Cmd_Argv(1));
+	n = String::Atoi(Cmd_Argv(1));
 	if (n < 1)
 		n = 1;
 	if (n > svs.maxclientslimit)
@@ -259,7 +259,7 @@ static void NET_Port_f (void)
 		return;
 	}
 
-	n = QStr::Atoi(Cmd_Argv(1));
+	n = String::Atoi(Cmd_Argv(1));
 	if (n < 1 || n > 65534)
 	{
 		Con_Printf ("Bad value, must be between 1 and 65534\n");
@@ -397,7 +397,7 @@ qsocket_t *NET_Connect (const char *host)
 
 	if (host)
 	{
-		if (QStr::ICmp(host, "local") == 0)
+		if (String::ICmp(host, "local") == 0)
 		{
 			numdrivers = 1;
 			goto JustDoIt;
@@ -406,7 +406,7 @@ qsocket_t *NET_Connect (const char *host)
 		if (hostCacheCount)
 		{
 			for (n = 0; n < hostCacheCount; n++)
-				if (QStr::ICmp(host, hostcache[n].name) == 0)
+				if (String::ICmp(host, hostcache[n].name) == 0)
 				{
 					host = hostcache[n].cname;
 					break;
@@ -432,7 +432,7 @@ qsocket_t *NET_Connect (const char *host)
 
 	if (hostCacheCount)
 		for (n = 0; n < hostCacheCount; n++)
-			if (QStr::ICmp(host, hostcache[n].name) == 0)
+			if (String::ICmp(host, hostcache[n].name) == 0)
 			{
 				host = hostcache[n].cname;
 				break;
@@ -744,7 +744,7 @@ void NET_Init (void)
 	if (i)
 	{
 		if (i < COM_Argc()-1)
-			DEFAULTnet_hostport = QStr::Atoi(COM_Argv(i+1));
+			DEFAULTnet_hostport = String::Atoi(COM_Argv(i+1));
 		else
 			Sys_Error ("NET_Init: you must specify a number after -port");
 	}

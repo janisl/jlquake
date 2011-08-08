@@ -48,18 +48,18 @@ QCinematicPlayer*	cinTable[MAX_VIDEO_HANDLES];
 void CIN_MakeFullName(const char* Name, char* FullName)
 {
 	const char* Dot = strstr(Name, ".");
-	if (Dot && !QStr::ICmp(Dot, ".pcx"))
+	if (Dot && !String::ICmp(Dot, ".pcx"))
 	{
 		// static pcx image
-		QStr::Sprintf(FullName, MAX_QPATH, "pics/%s", Name);
+		String::Sprintf(FullName, MAX_QPATH, "pics/%s", Name);
 	}
 	if (strstr(Name, "/") == NULL && strstr(Name, "\\") == NULL)
 	{
-		QStr::Sprintf(FullName, MAX_QPATH, "video/%s", Name);
+		String::Sprintf(FullName, MAX_QPATH, "video/%s", Name);
 	}
 	else
 	{
-		QStr::Sprintf(FullName, MAX_QPATH, "%s", Name);
+		String::Sprintf(FullName, MAX_QPATH, "%s", Name);
 	}
 }
 
@@ -72,7 +72,7 @@ void CIN_MakeFullName(const char* Name, char* FullName)
 QCinematic* CIN_Open(const char* Name)
 {
 	const char* dot = strstr(Name, ".");
-	if (dot && !QStr::ICmp(dot, ".pcx"))
+	if (dot && !String::ICmp(dot, ".pcx"))
 	{
 		// static pcx image
 		QCinematicPcx* Cin = new QCinematicPcx();
@@ -84,7 +84,7 @@ QCinematic* CIN_Open(const char* Name)
 		return Cin;
 	}
 
-	if (dot && !QStr::ICmp(dot, ".cin"))
+	if (dot && !String::ICmp(dot, ".cin"))
 	{
 		QCinematicCin* Cin = new QCinematicCin();
 		if (!Cin->Open(Name))
@@ -137,7 +137,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 	{
 		for (int i = 0; i < MAX_VIDEO_HANDLES; i++ )
 		{
-			if (cinTable[i] && !QStr::Cmp(cinTable[i]->Cin->Name, name))
+			if (cinTable[i] && !String::Cmp(cinTable[i]->Cin->Name, name))
 			{
 				return i;
 			}

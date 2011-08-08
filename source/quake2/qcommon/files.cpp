@@ -55,9 +55,9 @@ void FS_ExecAutoexec (void)
 
 	dir = Cvar_VariableString("gamedir");
 	if (*dir)
-		QStr::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, dir); 
+		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, dir); 
 	else
-		QStr::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, BASEDIRNAME); 
+		String::Sprintf(name, sizeof(name), "%s/%s/autoexec.cfg", fs_basepath->string, BASEDIRNAME); 
 	if (Sys_FindFirst(name, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM))
 		Cbuf_AddText ("exec autoexec.cfg\n");
 	Sys_FindClose();
@@ -91,9 +91,9 @@ void FS_SetGamedir (char *dir)
 	if (com_dedicated && !com_dedicated->value)
 		Cbuf_AddText ("vid_restart\nsnd_restart\n");
 
-	QStr::Sprintf (fs_gamedir, sizeof(fs_gamedir), "%s", dir);
+	String::Sprintf (fs_gamedir, sizeof(fs_gamedir), "%s", dir);
 
-	if (!QStr::Cmp(dir,BASEDIRNAME) || (*dir == 0))
+	if (!String::Cmp(dir,BASEDIRNAME) || (*dir == 0))
 	{
 		Cvar_Set("gamedir", "");
 		Cvar_Set("game", "");
@@ -121,7 +121,7 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 	s = Sys_FindFirst( findname, musthave, canthave );
 	while ( s )
 	{
-		if ( s[QStr::Length(s)-1] != '.' )
+		if ( s[String::Length(s)-1] != '.' )
 			nfiles++;
 		s = Sys_FindNext( musthave, canthave );
 	}
@@ -140,11 +140,11 @@ char **FS_ListFiles( char *findname, int *numfiles, unsigned musthave, unsigned 
 	nfiles = 0;
 	while ( s )
 	{
-		if ( s[QStr::Length(s)-1] != '.' )
+		if ( s[String::Length(s)-1] != '.' )
 		{
 			list[nfiles] = strdup( s );
 #ifdef _WIN32
-			QStr::ToLower( list[nfiles] );
+			String::ToLower( list[nfiles] );
 #endif
 			nfiles++;
 		}

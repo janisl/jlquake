@@ -140,7 +140,7 @@ bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name)
 			surf->ident = SF_MD4;
 
 			// lowercase the surface name so skin compares are faster
-			QStr::ToLower(surf->name);
+			String::ToLower(surf->name);
 
 			// register the shaders
 			shader_t* sh = R_FindShader(surf->shader, LIGHTMAP_NONE, true);

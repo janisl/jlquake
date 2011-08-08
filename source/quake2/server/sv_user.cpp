@@ -41,7 +41,7 @@ void SV_BeginDemoserver (void)
 {
 	char		name[MAX_OSPATH];
 
-	QStr::Sprintf (name, sizeof(name), "demos/%s", sv.name);
+	String::Sprintf (name, sizeof(name), "demos/%s", sv.name);
 	FS_FOpenFileRead(name, &sv.demofile, true);
 	if (!sv.demofile)
 		Com_Error (ERR_DROP, "Couldn't open %s\n", name);
@@ -134,14 +134,14 @@ void SV_Configstrings_f (void)
 	}
 
 	// handle the case of a level changing while a client was connecting
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount )
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount )
 	{
 		Com_Printf ("SV_Configstrings_f from different level\n");
 		SV_New_f ();
 		return;
 	}
 	
-	start = QStr::Atoi(Cmd_Argv(2));
+	start = String::Atoi(Cmd_Argv(2));
 
 	// write a packet full of data
 
@@ -191,14 +191,14 @@ void SV_Baselines_f (void)
 	}
 	
 	// handle the case of a level changing while a client was connecting
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount )
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount )
 	{
 		Com_Printf ("SV_Baselines_f from different level\n");
 		SV_New_f ();
 		return;
 	}
 	
-	start = QStr::Atoi(Cmd_Argv(2));
+	start = String::Atoi(Cmd_Argv(2));
 
 	Com_Memset(&nullstate, 0, sizeof(nullstate));
 
@@ -240,7 +240,7 @@ void SV_Begin_f (void)
 	Com_DPrintf ("Begin() from %s\n", sv_client->name);
 
 	// handle the case of a level changing while a client was connecting
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount )
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount )
 	{
 		Com_Printf ("SV_Begin_f from different level\n");
 		SV_New_f ();
@@ -312,7 +312,7 @@ void SV_BeginDownload_f(void)
 	name = Cmd_Argv(1);
 
 	if (Cmd_Argc() > 2)
-		offset = QStr::Atoi(Cmd_Argv(2)); // downloaded offset
+		offset = String::Atoi(Cmd_Argv(2)); // downloaded offset
 
 	// hacked by zoid to allow more conrol over download
 	// first off, no .. or global allow check
@@ -322,13 +322,13 @@ void SV_BeginDownload_f(void)
 		// leading slash bad as well, must be in subdir
 		|| *name == '/'
 		// next up, skin check
-		|| (QStr::NCmp(name, "players/", 6) == 0 && !allow_download_players->value)
+		|| (String::NCmp(name, "players/", 6) == 0 && !allow_download_players->value)
 		// now models
-		|| (QStr::NCmp(name, "models/", 6) == 0 && !allow_download_models->value)
+		|| (String::NCmp(name, "models/", 6) == 0 && !allow_download_models->value)
 		// now sounds
-		|| (QStr::NCmp(name, "sound/", 6) == 0 && !allow_download_sounds->value)
+		|| (String::NCmp(name, "sound/", 6) == 0 && !allow_download_sounds->value)
 		// now maps (note special case for maps, must not be in pak)
-		|| (QStr::NCmp(name, "maps/", 6) == 0 && !allow_download_maps->value)
+		|| (String::NCmp(name, "maps/", 6) == 0 && !allow_download_maps->value)
 		// MUST be in a subdirectory	
 		|| !strstr (name, "/") )	
 	{	// don't allow anything with .. path
@@ -351,7 +351,7 @@ void SV_BeginDownload_f(void)
 	if (!sv_client->download
 		// special check for maps, if it came from a pak file, don't allow
 		// download  ZOID
-		|| (QStr::NCmp(name, "maps/", 5) == 0 && FS_FileIsInPAK(name, NULL) == 1))
+		|| (String::NCmp(name, "maps/", 5) == 0 && FS_FileIsInPAK(name, NULL) == 1))
 	{
 		Com_DPrintf ("Couldn't download %s to %s\n", name, sv_client->name);
 		if (sv_client->download) {
@@ -432,7 +432,7 @@ to the next server,
 */
 void SV_Nextserver_f (void)
 {
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount ) {
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount ) {
 		Com_DPrintf ("Nextserver() from wrong level, from %s\n", sv_client->name);
 		return;		// leftover from last server
 	}
@@ -484,7 +484,7 @@ void SV_ExecuteUserCommand (char *s)
 //	SV_BeginRedirect (RD_CLIENT);
 
 	for (u=ucmds ; u->name ; u++)
-		if (!QStr::Cmp(Cmd_Argv(0), u->name) )
+		if (!String::Cmp(Cmd_Argv(0), u->name) )
 		{
 			u->func ();
 			break;
@@ -575,7 +575,7 @@ void SV_ExecuteClientMessage (client_t *cl)
 			break;
 
 		case clc_userinfo:
-			QStr::NCpy(cl->userinfo, net_message.ReadString2(), sizeof(cl->userinfo)-1);
+			String::NCpy(cl->userinfo, net_message.ReadString2(), sizeof(cl->userinfo)-1);
 			SV_UserinfoChanged (cl);
 			break;
 

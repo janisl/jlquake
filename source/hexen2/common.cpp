@@ -275,7 +275,7 @@ byte *COM_LoadFile (const char *path, int usehunk, int *size)
 		return NULL;
 	
 // extract the filename base name for hunk tag
-	QStr::FileBase (path, base);
+	String::FileBase (path, base);
 	
 	if (usehunk == 1)
 		buf = (byte*)Hunk_AllocName (len+1, path);
@@ -335,13 +335,13 @@ void COM_InitFilesystem (void)
 	int i = COM_CheckParm("-basedir");
 	if (i && i < COM_Argc() - 1)
 	{
-		QStr::Cpy(basedir, COM_Argv(i + 1));
+		String::Cpy(basedir, COM_Argv(i + 1));
 	}
 	else
 	{
-		QStr::Cpy(basedir, host_parms.basedir);
+		String::Cpy(basedir, host_parms.basedir);
 	}
-	int j = QStr::Length(basedir);
+	int j = String::Length(basedir);
 	if (j > 0)
 	{
 		if ((basedir[j - 1] == '\\') || (basedir[j - 1] == '/'))

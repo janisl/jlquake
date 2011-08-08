@@ -124,7 +124,7 @@ for a few moments
 */
 void SCR_CenterPrint (const char *str)
 {
-	QStr::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
+	String::NCpy(scr_centerstring, str, sizeof(scr_centerstring)-1);
 	scr_centertime_off = scr_centertime->value;
 	scr_centertime_start = cl.time;
 
@@ -453,7 +453,7 @@ void SCR_DrawFPS (void)
 	}
 
 	sprintf(st, "%3d FPS", lastfps);
-	x = viddef.width - QStr::Length(st) * 8 - 8;
+	x = viddef.width - String::Length(st) * 8 - 8;
 	y = viddef.height - sb_lines - 8;
 	Draw_String(x, y, st);
 }
@@ -811,7 +811,7 @@ void VID_Init()
 
 	int i;
 	if ((i = COM_CheckParm("-conwidth")) != 0)
-		viddef.width = QStr::Atoi(COM_Argv(i+1));
+		viddef.width = String::Atoi(COM_Argv(i+1));
 	else
 		viddef.width = 640;
 
@@ -824,7 +824,7 @@ void VID_Init()
 	viddef.height = viddef.width / cls.glconfig.windowAspect;
 
 	if ((i = COM_CheckParm("-conheight")) != 0)
-		viddef.height = QStr::Atoi(COM_Argv(i+1));
+		viddef.height = String::Atoi(COM_Argv(i+1));
 	if (viddef.height < 200)
 		viddef.height = 200;
 

@@ -147,9 +147,9 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath , int (QDECL **entryPoi
 	*fqpath = 0 ;		// added 7/20/02 by T.Ray
 
 #if defined _M_IX86
-	QStr::Sprintf( filename, sizeof( filename ), "%sx86.dll", name );
+	String::Sprintf( filename, sizeof( filename ), "%sx86.dll", name );
 #elif defined _M_X86_64
-	QStr::Sprintf( filename, sizeof( filename ), "%sx86_64.dll", name );
+	String::Sprintf( filename, sizeof( filename ), "%sx86_64.dll", name );
 #else
 #error "Unknown arch"
 #endif
@@ -223,7 +223,7 @@ void * QDECL Sys_LoadDll( const char *name, char *fqpath , int (QDECL **entryPoi
 	}
 	dllEntry( systemcalls );
 
-	if ( libHandle ) QStr::NCpyZ( fqpath , filename , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
+	if ( libHandle ) String::NCpyZ( fqpath , filename , MAX_QPATH ) ;		// added 7/20/02 by T.Ray
 	return libHandle;
 }
 
@@ -275,9 +275,9 @@ sysEvent_t Sys_GetEvent( void ) {
 		char	*b;
 		int		len;
 
-		len = QStr::Length( s ) + 1;
+		len = String::Length( s ) + 1;
 		b = (char*)Mem_Alloc( len );
-		QStr::NCpyZ( b, s, len-1 );
+		String::NCpyZ( b, s, len-1 );
 		Sys_QueEvent( 0, SE_CONSOLE, 0, 0, len, b );
 	}
 
@@ -363,7 +363,7 @@ void Sys_Init( void ) {
 	// figure out our CPU
 	//
 	Cvar_Get( "sys_cpustring", "detect", 0 );
-	if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring"), "detect" ) )
+	if ( !String::ICmp( Cvar_VariableString( "sys_cpustring"), "detect" ) )
 	{
 		Com_Printf( "...detecting CPU, found " );
 
@@ -400,27 +400,27 @@ void Sys_Init( void ) {
 	else
 	{
 		Com_Printf( "...forcing CPU type to " );
-		if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "generic" ) )
+		if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "generic" ) )
 		{
 			cpuid = CPUID_GENERIC;
 		}
-		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "x87" ) )
+		else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "x87" ) )
 		{
 			cpuid = CPUID_INTEL_PENTIUM;
 		}
-		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "mmx" ) )
+		else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "mmx" ) )
 		{
 			cpuid = CPUID_INTEL_MMX;
 		}
-		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "3dnow" ) )
+		else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "3dnow" ) )
 		{
 			cpuid = CPUID_AMD_3DNOW;
 		}
-		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "PentiumIII" ) )
+		else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "PentiumIII" ) )
 		{
 			cpuid = CPUID_INTEL_KATMAI;
 		}
-		else if ( !QStr::ICmp( Cvar_VariableString( "sys_cpustring" ), "axp" ) )
+		else if ( !String::ICmp( Cvar_VariableString( "sys_cpustring" ), "axp" ) )
 		{
 			cpuid = CPUID_AXP;
 		}
@@ -461,7 +461,7 @@ int WINAPI WinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	}
 
 	global_hInstance = hInstance;
-	QStr::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
+	String::NCpyZ( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
 
 	// done before Com/Sys_Init since we need this for error output
 	Sys_CreateConsole("Quake 3 Console");

@@ -27,7 +27,7 @@ static qboolean CompareAttributes(char *path, char *name,
 	char fn[MAX_OSPATH];
 
 // . and .. never match
-	if (QStr::Cmp(name, ".") == 0 || QStr::Cmp(name, "..") == 0)
+	if (String::Cmp(name, ".") == 0 || String::Cmp(name, "..") == 0)
 		return false;
 
 	sprintf(fn, "%s/%s", path, name);
@@ -52,16 +52,16 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canhave)
 		Sys_Error ("Sys_BeginFind without close");
 
 //	COM_FilePath (path, findbase);
-	QStr::Cpy(findbase, path);
+	String::Cpy(findbase, path);
 	
-	if ((p = QStr::RChr(findbase, '/')) != NULL) {
+	if ((p = String::RChr(findbase, '/')) != NULL) {
 		*p = 0;
-		QStr::Cpy(findpattern, p + 1);
+		String::Cpy(findpattern, p + 1);
 	} else
-		QStr::Cpy(findpattern, "*");
+		String::Cpy(findpattern, "*");
 
-	if (QStr::Cmp(findpattern, "*.*") == 0)
-		QStr::Cpy(findpattern, "*");
+	if (String::Cmp(findpattern, "*.*") == 0)
+		String::Cpy(findpattern, "*");
 	
 	if ((fdir = opendir(path)) == NULL)
 		return NULL;

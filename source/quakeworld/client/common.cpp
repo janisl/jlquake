@@ -344,7 +344,7 @@ byte *COM_LoadFile (const char *path, int usehunk)
 		return NULL;
 	
 // extract the filename base name for hunk tag
-	QStr::FileBase (path, base);
+	String::FileBase (path, base);
 	
 	if (usehunk == 1)
 		buf = (byte*)Hunk_AllocName (len+1, base);
@@ -403,16 +403,16 @@ void COM_Gamedir (char *dir)
 		return;
 	}
 
-	if (!QStr::Cmp(gamedirfile, dir))
+	if (!String::Cmp(gamedirfile, dir))
 		return;		// still the same
-	QStr::Cpy(gamedirfile, dir);
+	String::Cpy(gamedirfile, dir);
 
 	//
 	// free up any current game dir info
 	//
 	FS_ResetSearchPathToBase();
 
-	if (!QStr::Cmp(dir,"id1") || !QStr::Cmp(dir, "qw"))
+	if (!String::Cmp(dir,"id1") || !String::Cmp(dir, "qw"))
 		return;
 
 	FS_AddGameDirectory(fs_basepath->string, dir, ADDPACKS_UntilMissing);
@@ -438,9 +438,9 @@ void COM_InitFilesystem (void)
 	//
 	i = COM_CheckParm ("-basedir");
 	if (i && i < COM_Argc()-1)
-		QStr::Cpy(com_basedir, COM_Argv(i+1));
+		String::Cpy(com_basedir, COM_Argv(i+1));
 	else
-		QStr::Cpy(com_basedir, host_parms.basedir);
+		String::Cpy(com_basedir, host_parms.basedir);
 	Cvar_Set("fs_basepath", com_basedir);
 
 	FS_SharedStartup();
@@ -552,14 +552,14 @@ int build_number( void )
 
 	for (m = 0; m < 11; m++)
 	{
-		if (QStr::NICmp( &date[0], mon[m], 3 ) == 0)
+		if (String::NICmp( &date[0], mon[m], 3 ) == 0)
 			break;
 		d += mond[m];
 	}
 
-	d += QStr::Atoi( &date[4] ) - 1;
+	d += String::Atoi( &date[4] ) - 1;
 
-	y = QStr::Atoi( &date[7] ) - 1900;
+	y = String::Atoi( &date[7] ) - 1900;
 
 	b = d + (int)((y - 1) * 365.25);
 

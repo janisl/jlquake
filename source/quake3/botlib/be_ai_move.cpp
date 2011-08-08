@@ -521,7 +521,7 @@ void BotSetBrushModelTypes(void)
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
 		if (!AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY)) continue;
-		if (model[0]) modelnum = QStr::Atoi(model+1);
+		if (model[0]) modelnum = String::Atoi(model+1);
 		else modelnum = 0;
 
 		if (modelnum < 0 || modelnum > MAX_MODELS)
@@ -530,13 +530,13 @@ void BotSetBrushModelTypes(void)
 			continue;
 		} //end if
 
-		if (!QStr::ICmp(classname, "func_bobbing"))
+		if (!String::ICmp(classname, "func_bobbing"))
 			modeltypes[modelnum] = MODELTYPE_FUNC_BOB;
-		else if (!QStr::ICmp(classname, "func_plat"))
+		else if (!String::ICmp(classname, "func_plat"))
 			modeltypes[modelnum] = MODELTYPE_FUNC_PLAT;
-		else if (!QStr::ICmp(classname, "func_door"))
+		else if (!String::ICmp(classname, "func_door"))
 			modeltypes[modelnum] = MODELTYPE_FUNC_DOOR;
-		else if (!QStr::ICmp(classname, "func_static"))
+		else if (!String::ICmp(classname, "func_static"))
 			modeltypes[modelnum] = MODELTYPE_FUNC_STATIC;
 	} //end for
 } //end of the function BotSetBrushModelTypes

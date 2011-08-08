@@ -80,7 +80,7 @@ QCinematicCin::~QCinematicCin()
 
 bool QCinematicCin::Open(const char* FileName)
 {
-	QStr::Cpy(Name, FileName);
+	String::Cpy(Name, FileName);
 	FS_FOpenFileRead(FileName, &cinematic_file, true);
 	if (!cinematic_file)
 	{

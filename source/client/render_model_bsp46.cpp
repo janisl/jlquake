@@ -2060,11 +2060,11 @@ static void R_LoadEntities(bsp46_lump_t* l)
 
 	// store for reference by the cgame
 	w->entityString = new char[l->filelen + 1];
-	QStr::Cpy(w->entityString, p);
+	String::Cpy(w->entityString, p);
 	w->entityString[l->filelen] = 0;
 	w->entityParsePoint = w->entityString;
 
-	char* token = QStr::ParseExt(&p, true);
+	char* token = String::ParseExt(&p, true);
 	if (!*token || *token != '{')
 	{
 		return;
@@ -2074,28 +2074,28 @@ static void R_LoadEntities(bsp46_lump_t* l)
 	while (1)
 	{	
 		// parse key
-		token = QStr::ParseExt(&p, true);
+		token = String::ParseExt(&p, true);
 
 		if (!*token || *token == '}')
 		{
 			break;
 		}
 		char keyname[MAX_TOKEN_CHARS_Q3];
-		QStr::NCpyZ(keyname, token, sizeof(keyname));
+		String::NCpyZ(keyname, token, sizeof(keyname));
 
 		// parse value
-		token = QStr::ParseExt(&p, true);
+		token = String::ParseExt(&p, true);
 
 		if (!*token || *token == '}')
 		{
 			break;
 		}
 		char value[MAX_TOKEN_CHARS_Q3];
-		QStr::NCpyZ(value, token, sizeof(value));
+		String::NCpyZ(value, token, sizeof(value));
 
 		// check for remapping of shaders for vertex lighting
 		const char* keybase = "vertexremapshader";
-		if (!QStr::NCmp(keyname, keybase, QStr::Length(keybase)))
+		if (!String::NCmp(keyname, keybase, String::Length(keybase)))
 		{
 			char* s = strchr(value, ';');
 			if (!s)
@@ -2113,7 +2113,7 @@ static void R_LoadEntities(bsp46_lump_t* l)
 
 		// check for remapping of shaders
 		keybase = "remapshader";
-		if (!QStr::NCmp(keyname, keybase, QStr::Length(keybase)))
+		if (!String::NCmp(keyname, keybase, String::Length(keybase)))
 		{
 			char* s = strchr(value, ';');
 			if (!s)
@@ -2127,7 +2127,7 @@ static void R_LoadEntities(bsp46_lump_t* l)
 		}
 
 		// check for a different grid size
-		if (!QStr::ICmp(keyname, "gridsize"))
+		if (!String::ICmp(keyname, "gridsize"))
 		{
 			sscanf(value, "%f %f %f", &w->lightGridSize[0], &w->lightGridSize[1], &w->lightGridSize[2]);
 			continue;
@@ -2161,7 +2161,7 @@ static void R_LoadSubmodels(bsp46_lump_t* l)
 
 		model->type = MOD_BRUSH46;
 		model->q3_bmodel = out;
-		QStr::Sprintf(model->name, sizeof(model->name), "*%d", i);
+		String::Sprintf(model->name, sizeof(model->name), "*%d", i);
 
 		for (int j = 0; j < 3; j++)
 		{

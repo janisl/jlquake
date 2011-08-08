@@ -245,7 +245,7 @@ static int S_HashSFXName(const char* Name)
 	int i = 0;
 	while (Name[i] != '\0')
 	{
-		char Letter = QStr::ToLower(Name[i]);
+		char Letter = String::ToLower(Name[i]);
 		if (Letter =='.')
 		{
 			break;				// don't include extension
@@ -280,7 +280,7 @@ sfx_t* S_FindName(const char* Name, bool Create)
 		throw QException("S_FindName: empty name\n");
 	}
 
-	if (QStr::Length(Name) >= MAX_QPATH)
+	if (String::Length(Name) >= MAX_QPATH)
 	{
 		throw QException(va("Sound name too long: %s", Name));
 	}
@@ -291,7 +291,7 @@ sfx_t* S_FindName(const char* Name, bool Create)
 	// see if already loaded
 	while (Sfx)
 	{
-		if (!QStr::ICmp(Sfx->Name, Name))
+		if (!String::ICmp(Sfx->Name, Name))
 		{
 			return Sfx;
 		}
@@ -324,7 +324,7 @@ sfx_t* S_FindName(const char* Name, bool Create)
 
 	Sfx = &s_knownSfx[i];
 	Com_Memset(Sfx, 0, sizeof(*Sfx));
-	QStr::Cpy(Sfx->Name, Name);
+	String::Cpy(Sfx->Name, Name);
 	Sfx->RegistrationSequence = s_registration_sequence;
 
 	Sfx->HashNext = sfxHash[Hash];
@@ -343,7 +343,7 @@ sfx_t* S_AliasName(const char* AliasName, const char* TrueName)
 {
 
 	char* S = new char[MAX_QPATH];
-	QStr::Cpy(S, TrueName);
+	String::Cpy(S, TrueName);
 
 	// find a free sfx
 	int i;
@@ -366,7 +366,7 @@ sfx_t* S_AliasName(const char* AliasName, const char* TrueName)
 
 	sfx_t* Sfx = &s_knownSfx[i];
 	Com_Memset(Sfx, 0, sizeof(*Sfx));
-	QStr::Cpy(Sfx->Name, AliasName);
+	String::Cpy(Sfx->Name, AliasName);
 	Sfx->RegistrationSequence = s_registration_sequence;
 	Sfx->TrueName = S;
 
@@ -421,7 +421,7 @@ sfxHandle_t S_RegisterSound(const char* Name)
 		return 0;
 	}
 
-	if (QStr::Length(Name) >= MAX_QPATH)
+	if (String::Length(Name) >= MAX_QPATH)
 	{
 		GLog.Write("Sound name exceeds MAX_QPATH\n");
 		return 0;
@@ -708,7 +708,7 @@ static int S_FindWavChunk(fileHandle_t f, const char* Chunk)
 	}
 	Len = (Len + 1 ) & ~1;		// pad to word boundary
 
-	if (QStr::Cmp(Name, Chunk))
+	if (String::Cmp(Name, Chunk))
 	{
 		return 0;
 	}
@@ -738,15 +738,15 @@ void S_StartBackgroundTrack(const char* intro, const char* loop)
 	}
 	GLog.DWrite("S_StartBackgroundTrack( %s, %s )\n", intro, loop);
 
-	QStr::NCpyZ(name, intro, sizeof(name) - 4);
-	QStr::DefaultExtension(name, sizeof(name), ".wav");
+	String::NCpyZ(name, intro, sizeof(name) - 4);
+	String::DefaultExtension(name, sizeof(name), ".wav");
 
 	if (!intro[0])
 	{
 		return;
 	}
 
-	QStr::NCpyZ(s_backgroundLoop, loop, sizeof(s_backgroundLoop));
+	String::NCpyZ(s_backgroundLoop, loop, sizeof(s_backgroundLoop));
 
 	// close the background track, but DON'T reset s_rawend
 	// if restarting the same back ground track
@@ -2477,13 +2477,13 @@ static void S_Play_f()
 	int i = 1;
 	while (i < Cmd_Argc())
 	{
-		if (!QStr::RChr(Cmd_Argv(i), '.'))
+		if (!String::RChr(Cmd_Argv(i), '.'))
 		{
-			QStr::Sprintf(name, sizeof(name), "%s.wav", Cmd_Argv(1));
+			String::Sprintf(name, sizeof(name), "%s.wav", Cmd_Argv(1));
 		}
 		else
 		{
-			QStr::NCpyZ(name, Cmd_Argv(i), sizeof(name));
+			String::NCpyZ(name, Cmd_Argv(i), sizeof(name));
 		}
 		sfxHandle_t h = S_RegisterSound(name);
 		if (h)
@@ -2518,16 +2518,16 @@ static void S_PlayVol_f()
 	int i = 1;
 	while (i < Cmd_Argc())
 	{
-		if (!QStr::RChr(Cmd_Argv(i), '.'))
+		if (!String::RChr(Cmd_Argv(i), '.'))
 		{
-			QStr::Sprintf(name, sizeof(name), "%s.wav", Cmd_Argv(1));
+			String::Sprintf(name, sizeof(name), "%s.wav", Cmd_Argv(1));
 		}
 		else
 		{
-			QStr::NCpyZ(name, Cmd_Argv(i), sizeof(name));
+			String::NCpyZ(name, Cmd_Argv(i), sizeof(name));
 		}
 		sfxHandle_t h = S_RegisterSound(name);
-		float vol = QStr::Atof(Cmd_Argv(i + 1));
+		float vol = String::Atof(Cmd_Argv(i + 1));
 		if (h)
 		{
 			if (GGameType & GAME_QuakeHexen)
@@ -2560,8 +2560,8 @@ static void S_SoundList_f()
 	int		size, total;
 	char	mem[2][16];
 
-	QStr::Cpy(mem[0], "paged out");
-	QStr::Cpy(mem[1], "resident ");
+	String::Cpy(mem[0], "paged out");
+	String::Cpy(mem[1], "resident ");
 	total = 0;
 	for (sfx=s_knownSfx, i=0 ; i<s_numSfx; i++, sfx++)
 	{

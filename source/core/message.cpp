@@ -427,27 +427,27 @@ void QMsg::WriteString(const char* S)
 	}
 	else
 	{
-		char	String[MAX_STRING_CHARS];
+		char	string[MAX_STRING_CHARS];
 
-		int L = QStr::Length(S);
+		int L = String::Length(S);
 		if (L >= MAX_STRING_CHARS)
 		{
 			GLog.Write("QMsg::WriteString: MAX_STRING_CHARS");
 			WriteData("", 1);
 			return;
 		}
-		QStr::NCpyZ(String, S, sizeof(String));
+		String::NCpyZ(string, S, sizeof(string));
 
 		// get rid of 0xff chars, because old clients don't like them
 		for (int i = 0; i < L; i++)
 		{
-			if (((byte*)String)[i] > 127)
+			if (((byte*)string)[i] > 127)
 			{
-				String[i] = '.';
+				string[i] = '.';
 			}
 		}
 
-		WriteData(String, L + 1);
+		WriteData(string, L + 1);
 	}
 }
 
@@ -465,7 +465,7 @@ void QMsg::WriteString2(const char* S)
 	}
 	else
 	{
-		WriteData(S, QStr::Length(S) + 1);
+		WriteData(S, String::Length(S) + 1);
 	}
 }
 
@@ -483,27 +483,27 @@ void QMsg::WriteBigString(const char *S)
 	}
 	else
 	{
-		char	String[BIG_INFO_STRING];
+		char	string[BIG_INFO_STRING];
 
-		int L = QStr::Length(S);
+		int L = String::Length(S);
 		if (L >= BIG_INFO_STRING)
 		{
 			GLog.Write("MSG_WriteString: BIG_INFO_STRING");
 			WriteData("", 1);
 			return;
 		}
-		QStr::NCpyZ(String, S, sizeof(String));
+		String::NCpyZ(string, S, sizeof(string));
 
 		// get rid of 0xff chars, because old clients don't like them
 		for (int i = 0; i < L; i++)
 		{
-			if (((byte*)String)[i] > 127)
+			if (((byte*)string)[i] > 127)
 			{
-				String[i] = '.';
+				string[i] = '.';
 			}
 		}
 
-		WriteData(String, L + 1);
+		WriteData(string, L + 1);
 	}
 }
 
@@ -673,7 +673,7 @@ float QMsg::ReadFloat()
 
 const char* QMsg::ReadString()
 {
-	static char		String[MAX_STRING_CHARS];
+	static char		string[MAX_STRING_CHARS];
 
 	int L = 0;
 	do
@@ -694,13 +694,13 @@ const char* QMsg::ReadString()
 			C = '.';
 		}
 
-		String[L] = C;
+		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(String) - 1);
+	} while (L < (int)sizeof(string) - 1);
 
-	String[L] = 0;
+	string[L] = 0;
 
-	return String;
+	return string;
 }
 
 //==========================================================================
@@ -711,7 +711,7 @@ const char* QMsg::ReadString()
 
 const char* QMsg::ReadString2()
 {
-	static char		String[2048];
+	static char		string[2048];
 
 	int L = 0;
 	do
@@ -721,13 +721,13 @@ const char* QMsg::ReadString2()
 		{
 			break;
 		}
-		String[L] = C;
+		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(String) - 1);
+	} while (L < (int)sizeof(string) - 1);
 
-	String[L] = 0;
+	string[L] = 0;
 
-	return String;
+	return string;
 }
 
 //==========================================================================
@@ -738,7 +738,7 @@ const char* QMsg::ReadString2()
 
 const char* QMsg::ReadBigString()
 {
-	static char		String[BIG_INFO_STRING];
+	static char		string[BIG_INFO_STRING];
 
 	int L = 0;
 	do
@@ -754,13 +754,13 @@ const char* QMsg::ReadBigString()
 			C = '.';
 		}
 
-		String[L] = C;
+		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(String) - 1);
+	} while (L < (int)sizeof(string) - 1);
 
-	String[L] = 0;
+	string[L] = 0;
 
-	return String;
+	return string;
 }
 
 //==========================================================================
@@ -771,7 +771,7 @@ const char* QMsg::ReadBigString()
 
 const char* QMsg::ReadStringLine()
 {
-	static char		String[MAX_STRING_CHARS];
+	static char		string[MAX_STRING_CHARS];
 
 	int L = 0;
 	do
@@ -786,13 +786,13 @@ const char* QMsg::ReadStringLine()
 		{
 			C = '.';
 		}
-		String[L] = C;
+		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(String) - 1);
+	} while (L < (int)sizeof(string) - 1);
 
-	String[L] = 0;
+	string[L] = 0;
 
-	return String;
+	return string;
 }
 
 //==========================================================================
@@ -803,7 +803,7 @@ const char* QMsg::ReadStringLine()
 
 const char* QMsg::ReadStringLine2()
 {
-	static char		String[2048];
+	static char		string[2048];
 
 	int L = 0;
 	do
@@ -813,13 +813,13 @@ const char* QMsg::ReadStringLine2()
 		{
 			break;
 		}
-		String[L] = C;
+		string[L] = C;
 		L++;
-	} while (L < (int)sizeof(String) - 1);
+	} while (L < (int)sizeof(string) - 1);
 
-	String[L] = 0;
+	string[L] = 0;
 
-	return String;
+	return string;
 }
 
 //==========================================================================

@@ -291,7 +291,7 @@ void R_DrawSkyChain(mbrush29_surface_t* s)
 
 void R_SetSky(const char *name, float rotate, vec3_t axis)
 {
-	QStr::NCpy(skyname, name, sizeof(skyname) - 1);
+	String::NCpy(skyname, name, sizeof(skyname) - 1);
 	skyrotate = rotate;
 	VectorCopy(axis, skyaxis);
 
@@ -304,7 +304,7 @@ void R_SetSky(const char *name, float rotate, vec3_t axis)
 		}
 
 		char pathname[MAX_QPATH];
-		QStr::Sprintf(pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
+		String::Sprintf(pathname, sizeof(pathname), "env/%s%s.tga", skyname, suf[i]);
 
 		sky_images[i] = R_FindImageFile(pathname, false, false, GL_CLAMP);
 		if (!sky_images[i])

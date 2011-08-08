@@ -204,7 +204,7 @@ void *Sys_GetGameAPI (void *parms)
 
 	// check the current debug directory first for development purposes
 	_getcwd (cwd, sizeof(cwd));
-	QStr::Sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
+	String::Sprintf (name, sizeof(name), "%s/%s/%s", cwd, debugdir, gamename);
 	game_library = LoadLibrary ( name );
 	if (game_library)
 	{
@@ -213,7 +213,7 @@ void *Sys_GetGameAPI (void *parms)
 	else
 	{
 		// check the current directory for other development purposes
-		QStr::Sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
+		String::Sprintf (name, sizeof(name), "%s/%s", cwd, gamename);
 		game_library = LoadLibrary ( name );
 		if (game_library)
 		{
@@ -228,7 +228,7 @@ void *Sys_GetGameAPI (void *parms)
 				path = FS_NextPath (path);
 				if (!path)
 					return NULL;		// couldn't find one anywhere
-				QStr::Sprintf (name, sizeof(name), "%s/%s", path, gamename);
+				String::Sprintf (name, sizeof(name), "%s/%s", path, gamename);
 				game_library = LoadLibrary (name);
 				if (game_library)
 				{

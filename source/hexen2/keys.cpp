@@ -67,8 +67,8 @@ void Key_Console (int key)
 			cmd = Cvar_CompleteVariable (key_lines[edit_line]+1);
 		if (cmd)
 		{
-			QStr::Cpy(key_lines[edit_line]+1, cmd);
-			key_linepos = QStr::Length(cmd)+1;
+			String::Cpy(key_lines[edit_line]+1, cmd);
+			key_linepos = String::Length(cmd)+1;
 			key_lines[edit_line][key_linepos] = ' ';
 			key_linepos++;
 			key_lines[edit_line][key_linepos] = 0;
@@ -92,8 +92,8 @@ void Key_Console (int key)
 				&& !key_lines[history_line][1]);
 		if (history_line == edit_line)
 			history_line = (edit_line+1)&31;
-		QStr::Cpy(key_lines[edit_line], key_lines[history_line]);
-		key_linepos = QStr::Length(key_lines[edit_line]);
+		String::Cpy(key_lines[edit_line], key_lines[history_line]);
+		key_linepos = String::Length(key_lines[edit_line]);
 		return;
 	}
 
@@ -113,8 +113,8 @@ void Key_Console (int key)
 		}
 		else
 		{
-			QStr::Cpy(key_lines[edit_line], key_lines[history_line]);
-			key_linepos = QStr::Length(key_lines[edit_line]);
+			String::Cpy(key_lines[edit_line], key_lines[history_line]);
+			key_linepos = String::Length(key_lines[edit_line]);
 		}
 		return;
 	}
@@ -234,7 +234,7 @@ int Key_StringToKeynum (char *str)
 
 	for (kn=keynames ; kn->name ; kn++)
 	{
-		if (!QStr::ICmp(str,kn->name))
+		if (!String::ICmp(str,kn->name))
 			return kn->keynum;
 	}
 	return -1;
@@ -292,9 +292,9 @@ void Key_SetBinding (int keynum, const char *binding)
 	}
 			
 // allocate memory for new binding
-	l = QStr::Length(binding);	
+	l = String::Length(binding);	
 	newb = (char*)Z_Malloc (l+1);
-	QStr::Cpy(newb, binding);
+	String::Cpy(newb, binding);
 	newb[l] = 0;
 	keybindings[keynum] = newb;
 }
@@ -372,8 +372,8 @@ void Key_Bind_f (void)
 	for (i=2 ; i< c ; i++)
 	{
 		if (i > 2)
-			QStr::Cat(cmd, sizeof(cmd), " ");
-		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
+			String::Cat(cmd, sizeof(cmd), " ");
+		String::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 	}
 
 	Key_SetBinding (b, cmd);

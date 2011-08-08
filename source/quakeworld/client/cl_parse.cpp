@@ -180,14 +180,14 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	if (cls.demoplayback)
 		return true;
 
-	QStr::Cpy(cls.downloadname, filename);
+	String::Cpy(cls.downloadname, filename);
 	Con_Printf ("Downloading %s...\n", cls.downloadname);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	QStr::StripExtension (cls.downloadname, cls.downloadtempname);
-	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
+	String::StripExtension (cls.downloadname, cls.downloadtempname);
+	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 	cls.netchan.message.WriteByte(clc_stringcmd);
 	cls.netchan.message.WriteString2(va("download %s", cls.downloadname));
@@ -279,7 +279,7 @@ void Model_NextDownload (void)
 		cl.model_precache[i] = R_RegisterModel(cl.model_name[i]);
 		if (cl.model_name[i][0] == '*')
 		{
-			cl.clip_models[i] = CM_InlineModel(QStr::Atoi(cl.model_name[i] + 1));
+			cl.clip_models[i] = CM_InlineModel(String::Atoi(cl.model_name[i] + 1));
 		}
 
 		if (!cl.model_precache[i])
@@ -420,7 +420,7 @@ void CL_ParseDownload (void)
 	// open the file if not opened yet
 	if (!cls.download)
 	{
-		if (QStr::NCmp(cls.downloadtempname, "skins/", 6))
+		if (String::NCmp(cls.downloadtempname, "skins/", 6))
 		{
 			cls.download = FS_FOpenFileWrite(cls.downloadtempname);
 		}
@@ -471,9 +471,9 @@ void CL_ParseDownload (void)
 		FS_FCloseFile(cls.download);
 
 		// rename the temp file to it's final name
-		if (QStr::Cmp(cls.downloadtempname, cls.downloadname))
+		if (String::Cmp(cls.downloadtempname, cls.downloadname))
 		{
-			if (QStr::NCmp(cls.downloadtempname,"skins/",6))
+			if (String::NCmp(cls.downloadtempname,"skins/",6))
 			{
 				FS_Rename(cls.downloadtempname, cls.downloadname);
 			}
@@ -606,7 +606,7 @@ void CL_ParseServerData (void)
 	// game directory
 	str = const_cast<char*>(net_message.ReadString2());
 
-	if (QStr::ICmp(gamedirfile, str)) {
+	if (String::ICmp(gamedirfile, str)) {
 		// save current config
 		Host_WriteConfiguration (); 
 		cflag = true;
@@ -637,7 +637,7 @@ void CL_ParseServerData (void)
 
 	// get the full level name
 	str = const_cast<char*>(net_message.ReadString2());
-	QStr::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
+	String::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
 
 	// get the movevars
 	movevars.gravity			= net_message.ReadFloat();
@@ -688,7 +688,7 @@ void CL_ParseSoundlist (void)
 		numsounds++;
 		if (numsounds == MAX_SOUNDS)
 			Host_EndGame ("Server sent too many sound_precache");
-		QStr::Cpy(cl.sound_name[numsounds], str);
+		String::Cpy(cl.sound_name[numsounds], str);
 	}
 
 	n = net_message.ReadByte();
@@ -727,13 +727,13 @@ void CL_ParseModellist (void)
 		nummodels++;
 		if (nummodels==MAX_MODELS)
 			Host_EndGame ("Server sent too many model_precache");
-		QStr::Cpy(cl.model_name[nummodels], str);
+		String::Cpy(cl.model_name[nummodels], str);
 
-		if (!QStr::Cmp(cl.model_name[nummodels],"progs/spike.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"progs/spike.mdl"))
 			cl_spikeindex = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"progs/player.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"progs/player.mdl"))
 			cl_playerindex = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
 			cl_flagindex = nummodels;
 	}
 
@@ -931,9 +931,9 @@ void R_TranslatePlayerSkin(int playernum)
 		return;
 
 	char s[512];
-	QStr::Cpy(s, Info_ValueForKey(player->userinfo, "skin"));
-	QStr::StripExtension(s, s);
-	if (player->skin && !QStr::ICmp(s, player->skin->name))
+	String::Cpy(s, Info_ValueForKey(player->userinfo, "skin"));
+	String::StripExtension(s, s);
+	if (player->skin && !String::ICmp(s, player->skin->name))
 	{
 		player->skin = NULL;
 	}
@@ -991,9 +991,9 @@ CL_UpdateUserinfo
 */
 void CL_ProcessUserInfo (int slot, player_info_t *player)
 {
-	QStr::NCpy(player->name, Info_ValueForKey (player->userinfo, "name"), sizeof(player->name)-1);
-	player->topcolor = QStr::Atoi(Info_ValueForKey (player->userinfo, "topcolor"));
-	player->bottomcolor = QStr::Atoi(Info_ValueForKey (player->userinfo, "bottomcolor"));
+	String::NCpy(player->name, Info_ValueForKey (player->userinfo, "name"), sizeof(player->name)-1);
+	player->topcolor = String::Atoi(Info_ValueForKey (player->userinfo, "topcolor"));
+	player->bottomcolor = String::Atoi(Info_ValueForKey (player->userinfo, "bottomcolor"));
 	if (Info_ValueForKey (player->userinfo, "*spectator")[0])
 		player->spectator = true;
 	else
@@ -1021,7 +1021,7 @@ void CL_UpdateUserinfo (void)
 
 	player = &cl.players[slot];
 	player->userid = net_message.ReadLong ();
-	QStr::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo)-1);
+	String::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo)-1);
 
 	CL_ProcessUserInfo (slot, player);
 }
@@ -1044,9 +1044,9 @@ void CL_SetInfo (void)
 
 	player = &cl.players[slot];
 
-	QStr::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
+	String::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
 	key[sizeof(key) - 1] = 0;
-	QStr::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
+	String::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
 	key[sizeof(value) - 1] = 0;
 
 	Con_DPrintf("SETINFO %s: %s=%s\n", player->name, key, value);
@@ -1054,7 +1054,7 @@ void CL_SetInfo (void)
 	if (key[0] != '*')
 	{
 		Info_SetValueForKey(player->userinfo, key, value, MAX_INFO_STRING, 64, 64,
-			QStr::ICmp(key, "name") != 0, QStr::ICmp(key, "team") == 0);
+			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
 	}
 
 	CL_ProcessUserInfo (slot, player);
@@ -1070,9 +1070,9 @@ void CL_ServerInfo (void)
 	char key[MAX_MSGLEN];
 	char value[MAX_MSGLEN];
 
-	QStr::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
+	String::NCpy(key, net_message.ReadString2(), sizeof(key) - 1);
 	key[sizeof(key) - 1] = 0;
-	QStr::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
+	String::NCpy(value, net_message.ReadString2(), sizeof(value) - 1);
 	key[sizeof(value) - 1] = 0;
 
 	Con_DPrintf("SERVERINFO: %s=%s\n", key, value);
@@ -1080,7 +1080,7 @@ void CL_ServerInfo (void)
 	if (key[0] != '*')
 	{
 		Info_SetValueForKey(cl.serverinfo, key, value, MAX_SERVERINFO_STRING, 64, 64,
-			QStr::ICmp(key, "name") != 0, QStr::ICmp(key, "team") == 0);
+			String::ICmp(key, "name") != 0, String::ICmp(key, "team") == 0);
 	}
 }
 
@@ -1248,8 +1248,8 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= MAX_LIGHTSTYLES_Q1)
 				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES_Q1");
-			QStr::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
-			cl_lightstyle[i].length = QStr::Length(cl_lightstyle[i].map);
+			String::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
+			cl_lightstyle[i].length = String::Length(cl_lightstyle[i].map);
 			break;
 			
 		case svc_sound:

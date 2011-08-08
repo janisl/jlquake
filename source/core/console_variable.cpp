@@ -66,7 +66,7 @@ static long Cvar_GenerateHashValue(const char *fname)
 	long hash = 0;
 	for (int i = 0; fname[i] != '\0'; i++)
 	{
-		char letter = QStr::ToLower(fname[i]);
+		char letter = String::ToLower(fname[i]);
 		hash += (long)(letter) * (i + 119);
 	}
 	hash &= (FILE_HASH_SIZE - 1);
@@ -81,8 +81,8 @@ static long Cvar_GenerateHashValue(const char *fname)
 
 char* __CopyString(const char* in)
 {
-	char* out = (char*)Mem_Alloc(QStr::Length(in) + 1);
-	QStr::Cpy(out, in);
+	char* out = (char*)Mem_Alloc(String::Length(in) + 1);
+	String::Cpy(out, in);
 	return out;
 }
 
@@ -98,7 +98,7 @@ QCvar* Cvar_FindVar(const char* VarName)
 
 	for (QCvar* var = cvar_hashTable[hash]; var; var = var->hashNext)
 	{
-		if (!QStr::ICmp(VarName, var->name))
+		if (!String::ICmp(VarName, var->name))
 		{
 			return var;
 		}
@@ -182,7 +182,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 		value = var->resetString;
 	}
 
-	if (!QStr::Cmp(value, var->string) && !var->latchedString)
+	if (!String::Cmp(value, var->string) && !var->latchedString)
 	{
 		return var;
 	}
@@ -207,7 +207,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 		{
 			if (var->latchedString)
 			{
-				if (QStr::Cmp(value, var->latchedString) == 0)
+				if (String::Cmp(value, var->latchedString) == 0)
 				{
 					return var;
 				}
@@ -215,7 +215,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 			}
 			else
 			{
-				if (QStr::Cmp(value, var->string) == 0)
+				if (String::Cmp(value, var->string) == 0)
 				{
 					return var;
 				}
@@ -243,7 +243,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 		}
 	}
 
-	if (!QStr::Cmp(value, var->string))
+	if (!String::Cmp(value, var->string))
 	{
 		return var;		// not changed
 	}
@@ -254,8 +254,8 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 	Mem_Free(var->string);	// free the old value string
 
 	var->string = __CopyString(value);
-	var->value = QStr::Atof(var->string);
-	var->integer = QStr::Atoi(var->string);
+	var->value = String::Atof(var->string);
+	var->integer = String::Atoi(var->string);
 
 	Cvar_Changed(var);
 	return var;
@@ -295,11 +295,11 @@ void Cvar_SetValue(const char* var_name, float value)
 
 	if (value == (int)value)
 	{
-		QStr::Sprintf(val, sizeof(val), "%i", (int)value);
+		String::Sprintf(val, sizeof(val), "%i", (int)value);
 	}
 	else
 	{
-		QStr::Sprintf(val, sizeof(val), "%f", value);
+		String::Sprintf(val, sizeof(val), "%f", value);
 	}
 	Cvar_Set(var_name, val);
 }
@@ -316,11 +316,11 @@ void Cvar_SetValueLatched(const char* var_name, float value)
 
 	if (value == (int)value)
 	{
-		QStr::Sprintf(val, sizeof(val), "%i", (int)value);
+		String::Sprintf(val, sizeof(val), "%i", (int)value);
 	}
 	else
 	{
-		QStr::Sprintf(val, sizeof(val), "%f", value);
+		String::Sprintf(val, sizeof(val), "%f", value);
 	}
 	Cvar_SetLatched(var_name, val);
 }
@@ -380,7 +380,7 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 			Mem_Free(var->resetString);
 			var->resetString = __CopyString(VarValue);
 		}
-		else if (VarValue[0] && QStr::Cmp(var->resetString, VarValue))
+		else if (VarValue[0] && String::Cmp(var->resetString, VarValue))
 		{
 			GLog.DWrite("Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
 				VarName, var->resetString, VarValue);
@@ -433,8 +433,8 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	var->string = __CopyString(VarValue);
 	var->modified = true;
 	var->modificationCount = 1;
-	var->value = QStr::Atof(var->string);
-	var->integer = QStr::Atoi(var->string);
+	var->value = String::Atof(var->string);
+	var->integer = String::Atoi(var->string);
 	var->resetString = __CopyString(VarValue);
 
 	// link the variable in
@@ -518,7 +518,7 @@ void Cvar_VariableStringBuffer(const char* var_name, char* buffer, int bufsize)
 	}
 	else
 	{
-		QStr::NCpyZ(buffer, var->string, bufsize);
+		String::NCpyZ(buffer, var->string, bufsize);
 	}
 }
 
@@ -598,7 +598,7 @@ char* Cvar_InfoString(int bit, int MaxSize, int MaxKeySize, int MaxValSize,
 
 void Cvar_InfoStringBuffer(int bit, int MaxSize, char* buff, int buffsize)
 {
-	QStr::NCpyZ(buff, Cvar_InfoString(bit, MaxSize), buffsize);
+	String::NCpyZ(buff, Cvar_InfoString(bit, MaxSize), buffsize);
 }
 
 //==========================================================================
@@ -672,17 +672,17 @@ void Cvar_Update(vmCvar_t* vmCvar)
 	}
 	vmCvar->modificationCount = cv->modificationCount;
 	// bk001129 - mismatches.
-	if (QStr::Length(cv->string) + 1 > MAX_CVAR_VALUE_STRING)
+	if (String::Length(cv->string) + 1 > MAX_CVAR_VALUE_STRING)
 	{
 		throw QDropException(va("Cvar_Update: src %s length %d exceeds MAX_CVAR_VALUE_STRING",
-			cv->string, QStr::Length(cv->string)));
+			cv->string, String::Length(cv->string)));
 	}
 	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0 
 	// bk001129 - paranoia. Never trust the destination string.
 	// bk001129 - beware, sizeof(char*) is always 4 (for cv->string). 
 	//            sizeof(vmCvar->string) always MAX_CVAR_VALUE_STRING
 	//Q_strncpyz( vmCvar->string, cv->string, sizeof( vmCvar->string ) ); // id
-	QStr::NCpyZ(vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING); 
+	String::NCpyZ(vmCvar->string, cv->string,  MAX_CVAR_VALUE_STRING); 
 
 	vmCvar->value = cv->value;
 	vmCvar->integer = cv->integer;
@@ -696,7 +696,7 @@ void Cvar_Update(vmCvar_t* vmCvar)
 
 const char* Cvar_CompleteVariable(const char* partial)
 {
-	int len = QStr::Length(partial);
+	int len = String::Length(partial);
 
 	if (!len)
 	{
@@ -706,7 +706,7 @@ const char* Cvar_CompleteVariable(const char* partial)
 	// check exact match
 	for (QCvar* cvar = cvar_vars; cvar; cvar = cvar->next)
 	{
-		if (!QStr::Cmp(partial, cvar->name))
+		if (!String::Cmp(partial, cvar->name))
 		{
 			return cvar->name;
 		}
@@ -715,7 +715,7 @@ const char* Cvar_CompleteVariable(const char* partial)
 	// check partial match
 	for (QCvar* cvar = cvar_vars; cvar; cvar = cvar->next)
 	{
-		if (!QStr::NCmp(partial,cvar->name, len))
+		if (!String::NCmp(partial,cvar->name, len))
 		{
 			return cvar->name;
 		}
@@ -760,7 +760,7 @@ void Cvar_SetCheatState()
 				Mem_Free(var->latchedString);
 				var->latchedString = NULL;
 			}
-			if (QStr::Cmp(var->resetString,var->string))
+			if (String::Cmp(var->resetString,var->string))
 			{
 				Cvar_Set(var->name, var->resetString);
 			}
@@ -819,7 +819,7 @@ static void Cvar_Set_f()
 		return;
 	}
 
-	QStr combined;
+	String combined;
 	for (int i = 2; i < c ; i++)
 	{
 		combined += Cmd_Argv(i);
@@ -941,7 +941,7 @@ static void Cvar_List_f()
 	int i = 0;
 	for (QCvar* var = cvar_vars; var; var = var->next, i++)
 	{
-		if (match && !QStr::Filter(match, var->name, false))
+		if (match && !String::Filter(match, var->name, false))
 		{
 			continue;
 		}
@@ -1106,7 +1106,7 @@ void Cvar_WriteVariables(fileHandle_t f)
 
 	for (QCvar* var = cvar_vars; var; var = var->next)
 	{
-		if (QStr::ICmp(var->name, "cl_cdkey") == 0)
+		if (String::ICmp(var->name, "cl_cdkey") == 0)
 		{
 			continue;
 		}
@@ -1115,11 +1115,11 @@ void Cvar_WriteVariables(fileHandle_t f)
 			// write the latched value, even if it hasn't taken effect yet
 			if (var->latchedString)
 			{
-				QStr::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->latchedString);
+				String::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->latchedString);
 			}
 			else
 			{
-				QStr::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->string);
+				String::Sprintf(buffer, sizeof(buffer), "seta %s \"%s\"\n", var->name, var->string);
 			}
 			FS_Printf(f, "%s", buffer);
 		}
@@ -1144,7 +1144,7 @@ void Cvar_UpdateIfExists(const char* name, const char* value)
 		Mem_Free(var->string);	// free the old value string
 
 		var->string = __CopyString(value);
-		var->value = QStr::Atof(var->string);
-		var->integer = QStr::Atoi(var->string);
+		var->value = String::Atof(var->string);
+		var->integer = String::Atoi(var->string);
 	}
 }

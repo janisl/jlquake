@@ -189,7 +189,7 @@ void CL_Record_f (void)
 	//
 	// open the demo file
 	//
-	QStr::Sprintf (name, sizeof(name), "demos/%s.dm2", Cmd_Argv(1));
+	String::Sprintf (name, sizeof(name), "demos/%s.dm2", Cmd_Argv(1));
 
 	Com_Printf ("recording to %s.\n", name);
 	cls.demofile = FS_FOpenFileWrite(name);
@@ -223,7 +223,7 @@ void CL_Record_f (void)
 	{
 		if (cl.configstrings[i][0])
 		{
-			if (buf.cursize + QStr::Length(cl.configstrings[i]) + 32 > buf.maxsize)
+			if (buf.cursize + String::Length(cl.configstrings[i]) + 32 > buf.maxsize)
 			{	// write it out
 				len = LittleLong (buf.cursize);
 				FS_Write(&len, 4, cls.demofile);
@@ -310,13 +310,13 @@ void CL_Setenv_f( void )
 		char buffer[1000];
 		int i;
 
-		QStr::Cpy( buffer, Cmd_Argv(1) );
-		QStr::Cat(buffer, sizeof(buffer), "=" );
+		String::Cpy( buffer, Cmd_Argv(1) );
+		String::Cat(buffer, sizeof(buffer), "=" );
 
 		for ( i = 2; i < argc; i++ )
 		{
-			QStr::Cat(buffer, sizeof(buffer), Cmd_Argv( i ) );
-			QStr::Cat(buffer, sizeof(buffer), " " );
+			String::Cat(buffer, sizeof(buffer), Cmd_Argv( i ) );
+			String::Cat(buffer, sizeof(buffer), " " );
 		}
 
 		putenv( buffer );
@@ -454,7 +454,7 @@ void CL_CheckForResend (void)
 	if (cls.state == ca_disconnected && Com_ServerState() )
 	{
 		cls.state = ca_connecting;
-		QStr::NCpy(cls.servername, "localhost", sizeof(cls.servername)-1);
+		String::NCpy(cls.servername, "localhost", sizeof(cls.servername)-1);
 		// we don't need a challenge on the localhost
 		CL_SendConnectPacket ();
 		return;
@@ -515,7 +515,7 @@ void CL_Connect_f (void)
 	CL_Disconnect ();
 
 	cls.state = ca_connecting;
-	QStr::NCpy(cls.servername, server, sizeof(cls.servername)-1);
+	String::NCpy(cls.servername, server, sizeof(cls.servername)-1);
 	cls.connect_time = -99999;	// CL_CheckForResend() will fire immediately
 }
 
@@ -549,22 +549,22 @@ void CL_Rcon_f (void)
 
 	NET_Config (true);		// allow remote
 
-	QStr::Cat(message, sizeof(message), "rcon ");
+	String::Cat(message, sizeof(message), "rcon ");
 
-	QStr::Cat(message, sizeof(message), rcon_client_password->string);
-	QStr::Cat(message, sizeof(message), " ");
+	String::Cat(message, sizeof(message), rcon_client_password->string);
+	String::Cat(message, sizeof(message), " ");
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		QStr::Cat(message, sizeof(message), Cmd_Argv(i));
-		QStr::Cat(message, sizeof(message), " ");
+		String::Cat(message, sizeof(message), Cmd_Argv(i));
+		String::Cat(message, sizeof(message), " ");
 	}
 
 	if (cls.state >= ca_connected)
 		to = cls.netchan.remote_address;
 	else
 	{
-		if (!QStr::Length(rcon_address->string))
+		if (!String::Length(rcon_address->string))
 		{
 			Com_Printf ("You must either be connected,\n"
 						"or set the 'rcon_address' cvar\n"
@@ -575,7 +575,7 @@ void CL_Rcon_f (void)
 		SOCK_StringToAdr(rcon_address->string, &to, PORT_SERVER);
 	}
 	
-	NET_SendPacket (NS_CLIENT, QStr::Length(message)+1, message, to);
+	NET_SendPacket (NS_CLIENT, String::Length(message)+1, message, to);
 }
 
 
@@ -638,10 +638,10 @@ void CL_Disconnect (void)
 
 	// send a disconnect message to the server
 	final[0] = clc_stringcmd;
-	QStr::Cpy((char *)final+1, "disconnect");
-	Netchan_Transmit (&cls.netchan, QStr::Length((char *)final), final);
-	Netchan_Transmit (&cls.netchan, QStr::Length((char *)final), final);
-	Netchan_Transmit (&cls.netchan, QStr::Length((char *)final), final);
+	String::Cpy((char *)final+1, "disconnect");
+	Netchan_Transmit (&cls.netchan, String::Length((char *)final), final);
+	Netchan_Transmit (&cls.netchan, String::Length((char *)final), final);
+	Netchan_Transmit (&cls.netchan, String::Length((char *)final), final);
 
 	CL_ClearState ();
 
@@ -695,7 +695,7 @@ void CL_Packet_f (void)
 	out = send+4;
 	send[0] = send[1] = send[2] = send[3] = (char)0xff;
 
-	l = QStr::Length(in);
+	l = String::Length(in);
 	for (i=0 ; i<l ; i++)
 	{
 		if (in[i] == '\\' && in[i+1] == 'n')
@@ -814,7 +814,7 @@ void CL_PingServers_f (void)
 	// send a packet to each address book entry
 	for (i=0 ; i<16 ; i++)
 	{
-		QStr::Sprintf (name, sizeof(name), "adr%i", i);
+		String::Sprintf (name, sizeof(name), "adr%i", i);
 		adrstring = Cvar_VariableString (name);
 		if (!adrstring || !adrstring[0])
 			continue;
@@ -878,7 +878,7 @@ void CL_ConnectionlessPacket (void)
 	Com_Printf ("%s: %s\n", SOCK_AdrToString (net_from), c);
 
 	// server connection
-	if (!QStr::Cmp(c, "client_connect"))
+	if (!String::Cmp(c, "client_connect"))
 	{
 		if (cls.state == ca_connected)
 		{
@@ -893,14 +893,14 @@ void CL_ConnectionlessPacket (void)
 	}
 
 	// server responding to a status broadcast
-	if (!QStr::Cmp(c, "info"))
+	if (!String::Cmp(c, "info"))
 	{
 		CL_ParseStatusMessage ();
 		return;
 	}
 
 	// remote command from gui front end
-	if (!QStr::Cmp(c, "cmd"))
+	if (!String::Cmp(c, "cmd"))
 	{
 		if (!SOCK_IsLocalAddress(net_from))
 		{
@@ -914,7 +914,7 @@ void CL_ConnectionlessPacket (void)
 		return;
 	}
 	// print command from somewhere
-	if (!QStr::Cmp(c, "print"))
+	if (!String::Cmp(c, "print"))
 	{
 		s = const_cast<char*>(net_message.ReadString2());
 		Com_Printf ("%s", s);
@@ -922,22 +922,22 @@ void CL_ConnectionlessPacket (void)
 	}
 
 	// ping from somewhere
-	if (!QStr::Cmp(c, "ping"))
+	if (!String::Cmp(c, "ping"))
 	{
 		Netchan_OutOfBandPrint (NS_CLIENT, net_from, "ack");
 		return;
 	}
 
 	// challenge from the server we are connecting to
-	if (!QStr::Cmp(c, "challenge"))
+	if (!String::Cmp(c, "challenge"))
 	{
-		cls.challenge = QStr::Atoi(Cmd_Argv(1));
+		cls.challenge = String::Atoi(Cmd_Argv(1));
 		CL_SendConnectPacket ();
 		return;
 	}
 
 	// echo request from server
-	if (!QStr::Cmp(c, "echo"))
+	if (!String::Cmp(c, "echo"))
 	{
 		Netchan_OutOfBandPrint (NS_CLIENT, net_from, "%s", Cmd_Argv(1) );
 		return;
@@ -1044,12 +1044,12 @@ void CL_FixUpGender(void)
 			return;
 		}
 
-		QStr::NCpy(sk, skin->string, sizeof(sk) - 1);
+		String::NCpy(sk, skin->string, sizeof(sk) - 1);
 		if ((p = strchr(sk, '/')) != NULL)
 			*p = 0;
-		if (QStr::ICmp(sk, "male") == 0 || QStr::ICmp(sk, "cyborg") == 0)
+		if (String::ICmp(sk, "male") == 0 || String::ICmp(sk, "cyborg") == 0)
 			Cvar_SetLatched("gender", "male");
-		else if (QStr::ICmp(sk, "female") == 0 || QStr::ICmp(sk, "crackhor") == 0)
+		else if (String::ICmp(sk, "female") == 0 || String::ICmp(sk, "crackhor") == 0)
 			Cvar_SetLatched("gender", "female");
 		else
 			Cvar_SetLatched("gender", "none");
@@ -1191,7 +1191,7 @@ void CL_RequestNextDownload (void)
 					precache_check++;
 					continue;
 				}
-				QStr::Sprintf(fn, sizeof(fn), "sound/%s", cl.configstrings[precache_check++]);
+				String::Sprintf(fn, sizeof(fn), "sound/%s", cl.configstrings[precache_check++]);
 				if (!CL_CheckOrDownloadFile(fn))
 					return; // started a download
 			}
@@ -1203,7 +1203,7 @@ void CL_RequestNextDownload (void)
 			precache_check++; // zero is blank
 		while (precache_check < CS_IMAGES+MAX_IMAGES &&
 			cl.configstrings[precache_check][0]) {
-			QStr::Sprintf(fn, sizeof(fn), "pics/%s.pcx", cl.configstrings[precache_check++]);
+			String::Sprintf(fn, sizeof(fn), "pics/%s.pcx", cl.configstrings[precache_check++]);
 			if (!CL_CheckOrDownloadFile(fn))
 				return; // started a download
 		}
@@ -1230,19 +1230,19 @@ void CL_RequestNextDownload (void)
 					p++;
 				else
 					p = cl.configstrings[CS_PLAYERSKINS+i];
-				QStr::Cpy(model, p);
+				String::Cpy(model, p);
 				p = strchr(model, '/');
 				if (!p)
 					p = strchr(model, '\\');
 				if (p) {
 					*p++ = 0;
-					QStr::Cpy(skin, p);
+					String::Cpy(skin, p);
 				} else
 					*skin = 0;
 
 				switch (n) {
 				case 0: // model
-					QStr::Sprintf(fn, sizeof(fn), "players/%s/tris.md2", model);
+					String::Sprintf(fn, sizeof(fn), "players/%s/tris.md2", model);
 					if (!CL_CheckOrDownloadFile(fn)) {
 						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 1;
 						return; // started a download
@@ -1251,7 +1251,7 @@ void CL_RequestNextDownload (void)
 					/*FALL THROUGH*/
 
 				case 1: // weapon model
-					QStr::Sprintf(fn, sizeof(fn), "players/%s/weapon.md2", model);
+					String::Sprintf(fn, sizeof(fn), "players/%s/weapon.md2", model);
 					if (!CL_CheckOrDownloadFile(fn)) {
 						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 2;
 						return; // started a download
@@ -1260,7 +1260,7 @@ void CL_RequestNextDownload (void)
 					/*FALL THROUGH*/
 
 				case 2: // weapon skin
-					QStr::Sprintf(fn, sizeof(fn), "players/%s/weapon.pcx", model);
+					String::Sprintf(fn, sizeof(fn), "players/%s/weapon.pcx", model);
 					if (!CL_CheckOrDownloadFile(fn)) {
 						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 3;
 						return; // started a download
@@ -1269,7 +1269,7 @@ void CL_RequestNextDownload (void)
 					/*FALL THROUGH*/
 
 				case 3: // skin
-					QStr::Sprintf(fn, sizeof(fn), "players/%s/%s.pcx", model, skin);
+					String::Sprintf(fn, sizeof(fn), "players/%s/%s.pcx", model, skin);
 					if (!CL_CheckOrDownloadFile(fn)) {
 						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 4;
 						return; // started a download
@@ -1278,7 +1278,7 @@ void CL_RequestNextDownload (void)
 					/*FALL THROUGH*/
 
 				case 4: // skin_i
-					QStr::Sprintf(fn, sizeof(fn), "players/%s/%s_i.pcx", model, skin);
+					String::Sprintf(fn, sizeof(fn), "players/%s/%s_i.pcx", model, skin);
 					if (!CL_CheckOrDownloadFile(fn)) {
 						precache_check = CS_PLAYERSKINS + i * PLAYER_MULT + 5;
 						return; // started a download
@@ -1297,7 +1297,7 @@ void CL_RequestNextDownload (void)
 
 		CM_LoadMap (cl.configstrings[CS_MODELS+1], true, &map_checksum);
 
-		if (map_checksum != QStr::Atoi(cl.configstrings[CS_MAPCHECKSUM])) {
+		if (map_checksum != String::Atoi(cl.configstrings[CS_MAPCHECKSUM])) {
 			Com_Error (ERR_DROP, "Local map version differs from server: %i != '%s'\n",
 				map_checksum, cl.configstrings[CS_MAPCHECKSUM]);
 			return;
@@ -1310,10 +1310,10 @@ void CL_RequestNextDownload (void)
 				int n = precache_check++ - ENV_CNT - 1;
 
 				if (n & 1)
-					QStr::Sprintf(fn, sizeof(fn), "env/%s%s.pcx", 
+					String::Sprintf(fn, sizeof(fn), "env/%s%s.pcx", 
 						cl.configstrings[CS_SKY], env_suf[n/2]);
 				else
-					QStr::Sprintf(fn, sizeof(fn), "env/%s%s.tga", 
+					String::Sprintf(fn, sizeof(fn), "env/%s%s.tga", 
 						cl.configstrings[CS_SKY], env_suf[n/2]);
 				if (!CL_CheckOrDownloadFile(fn))
 					return; // started a download
@@ -1371,7 +1371,7 @@ void CL_Precache_f (void)
 	}
 
 	precache_check = CS_MODELS;
-	precache_spawncount = QStr::Atoi(Cmd_Argv(1));
+	precache_spawncount = String::Atoi(Cmd_Argv(1));
 	precache_model = 0;
 	precache_model_skin = 0;
 
@@ -1601,7 +1601,7 @@ void CL_FixCvarCheats (void)
 	int			i;
 	cheatvar_t	*var;
 
-	if ( !QStr::Cmp(cl.configstrings[CS_MAXCLIENTS], "1") 
+	if ( !String::Cmp(cl.configstrings[CS_MAXCLIENTS], "1") 
 		|| !cl.configstrings[CS_MAXCLIENTS][0] )
 		return;		// single player can cheat
 
@@ -1619,7 +1619,7 @@ void CL_FixCvarCheats (void)
 	// make sure they are all set to the proper values
 	for (i=0, var = cheatvars ; i<numcheatvars ; i++, var++)
 	{
-		if ( QStr::Cmp(var->var->string, var->value) )
+		if ( String::Cmp(var->var->string, var->value) )
 		{
 			Cvar_SetLatched(var->name, var->value);
 		}

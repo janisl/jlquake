@@ -167,7 +167,7 @@ qhandle_t R_RegisterSkin(const char* name)
 		return 0;
 	}
 
-	if (QStr::Length(name) >= MAX_QPATH)
+	if (String::Length(name) >= MAX_QPATH)
 	{
 		GLog.Write("Skin name exceeds MAX_QPATH\n");
 		return 0;
@@ -178,7 +178,7 @@ qhandle_t R_RegisterSkin(const char* name)
 	for (hSkin = 1; hSkin < tr.numSkins; hSkin++)
 	{
 		skin_t* skin = tr.skins[hSkin];
-		if (!QStr::ICmp(skin->name, name))
+		if (!String::ICmp(skin->name, name))
 		{
 			if (skin->numSurfaces == 0)
 			{
@@ -198,14 +198,14 @@ qhandle_t R_RegisterSkin(const char* name)
 	skin_t* skin = new skin_t;
 	Com_Memset(skin, 0, sizeof(skin_t));
 	tr.skins[hSkin] = skin;
-	QStr::NCpyZ(skin->name, name, sizeof(skin->name));
+	String::NCpyZ(skin->name, name, sizeof(skin->name));
 	skin->numSurfaces = 0;
 
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
 	// If not a .skin file, load as a single shader
-	if (QStr::Cmp(name + QStr::Length(name) - 5, ".skin"))
+	if (String::Cmp(name + String::Length(name) - 5, ".skin"))
 	{
 		skin->numSurfaces = 1;
 		skin->surfaces[0] = new skinSurface_t;
@@ -228,14 +228,14 @@ qhandle_t R_RegisterSkin(const char* name)
 		// get surface name
 		char* token = CommaParse(&text_p);
 		char surfName[MAX_QPATH];
-		QStr::NCpyZ(surfName, token, sizeof(surfName));
+		String::NCpyZ(surfName, token, sizeof(surfName));
 
 		if (!token[0])
 		{
 			break;
 		}
 		// lowercase the surface name so skin compares are faster
-		QStr::ToLower(surfName);
+		String::ToLower(surfName);
 
 		if (*text_p == ',')
 		{
@@ -252,7 +252,7 @@ qhandle_t R_RegisterSkin(const char* name)
 
 		skinSurface_t* surf = new skinSurface_t;
 		skin->surfaces[skin->numSurfaces] = surf;
-		QStr::NCpyZ(surf->name, surfName, sizeof(surf->name));
+		String::NCpyZ(surf->name, surfName, sizeof(surf->name));
 		surf->shader = R_FindShader(token, LIGHTMAP_NONE, true);
 		skin->numSurfaces++;
 	}
@@ -281,7 +281,7 @@ void R_InitSkins()
 	// make the default skin have all default shaders
 	skin_t* skin = tr.skins[0] = new skin_t;
 	Com_Memset(skin, 0, sizeof(skin_t));
-	QStr::NCpyZ(skin->name, "<default skin>", sizeof(skin->name));
+	String::NCpyZ(skin->name, "<default skin>", sizeof(skin->name));
 	skin->numSurfaces = 1;
 	skin->surfaces[0] = new skinSurface_t;
 	skin->surfaces[0]->name[0] = 0;

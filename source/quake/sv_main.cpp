@@ -140,7 +140,7 @@ void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume
 // find precache number for sound
     for (sound_num=1 ; sound_num<MAX_SOUNDS
         && sv.sound_precache[sound_num] ; sound_num++)
-        if (!QStr::Cmp(sample, sv.sound_precache[sound_num]))
+        if (!String::Cmp(sample, sv.sound_precache[sound_num]))
             break;
     
     if ( sound_num == MAX_SOUNDS || !sv.sound_precache[sound_num] )
@@ -206,7 +206,7 @@ void SV_SendServerinfo (client_t *client)
 	else
 		client->message.WriteByte(GAME_COOP);
 
-	QStr::Cpy(message, PR_GetString(sv.edicts->v.message));
+	String::Cpy(message, PR_GetString(sv.edicts->v.message));
 
 	client->message.WriteString2(message);
 
@@ -267,7 +267,7 @@ void SV_ConnectClient (int clientnum)
 	Com_Memset(client, 0, sizeof(*client));
 	client->netconnection = netconnection;
 
-	QStr::Cpy(client->name, "unconnected");
+	String::Cpy(client->name, "unconnected");
 	client->active = true;
 	client->spawned = false;
 	client->edict = ent;
@@ -891,7 +891,7 @@ int SV_ModelIndex (const char *name)
 		return 0;
 
 	for (i=0 ; i<MAX_MODELS && sv.model_precache[i] ; i++)
-		if (!QStr::Cmp(sv.model_precache[i], name))
+		if (!String::Cmp(sv.model_precache[i], name))
 			return i;
 	if (i==MAX_MODELS || !sv.model_precache[i])
 		Sys_Error ("SV_ModelIndex: model %s not precached", name);
@@ -1058,7 +1058,7 @@ void SV_SpawnServer (char *server)
 
 	Com_Memset(&sv, 0, sizeof(sv));
 
-	QStr::Cpy(sv.name, server);
+	String::Cpy(sv.name, server);
 
 // load progs to get entity field count
 	PR_LoadProgs ();
@@ -1087,7 +1087,7 @@ void SV_SpawnServer (char *server)
 
 	sv.time = 1.0;
 	
-	QStr::Cpy(sv.name, server);
+	String::Cpy(sv.name, server);
 	sprintf (sv.modelname,"maps/%s.bsp", server);
 	CM_LoadMap(sv.modelname, false, NULL);
 	sv.models[1] = 0;

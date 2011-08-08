@@ -18,7 +18,7 @@
 //**
 //**************************************************************************
 
-class QStr
+class String
 {
 private:
 	char*		Str;
@@ -27,10 +27,10 @@ private:
 
 public:
 	//	Constructors.
-	QStr()
+	String()
 	: Str(NULL)
 	{}
-	QStr(const char* InStr)
+	String(const char* InStr)
 	: Str(NULL)
 	{
 		if (*InStr)
@@ -39,7 +39,7 @@ public:
 			Cpy(Str, InStr);
 		}
 	}
-	QStr(const QStr& InStr)
+	String(const String& InStr)
 	: Str(NULL)
 	{
 		if (InStr.Str)
@@ -48,14 +48,14 @@ public:
 			Cpy(Str, InStr.Str);
 		}
 	}
-	QStr(const QStr& InStr, int Start, int Len);
-	explicit QStr(char InChr)
+	String(const String& InStr, int Start, int Len);
+	explicit String(char InChr)
 	: Str(NULL)
 	{
 		Resize(1);
 		Str[0] = InChr;
 	}
-	explicit QStr(bool InBool)
+	explicit String(bool InBool)
 	: Str(NULL)
 	{
 		if (InBool)
@@ -69,7 +69,7 @@ public:
 			Cpy(Str, "false");
 		}
 	}
-	explicit QStr(int InInt)
+	explicit String(int InInt)
 	: Str(NULL)
 	{
 		char Buf[64];
@@ -78,7 +78,7 @@ public:
 		Resize(Length(Buf));
 		Cpy(Str, Buf);
 	}
-	explicit QStr(unsigned InInt)
+	explicit String(unsigned InInt)
 	: Str(NULL)
 	{
 		char Buf[64];
@@ -87,7 +87,7 @@ public:
 		Resize(Length(Buf));
 		Cpy(Str, Buf);
 	}
-	explicit QStr(float InFloat)
+	explicit String(float InFloat)
 	: Str(NULL)
 	{
 		char Buf[64];
@@ -98,7 +98,7 @@ public:
 	}
 
 	//	Destructor.
-	~QStr()
+	~String()
 	{
 		Clean();
 	}
@@ -144,14 +144,14 @@ public:
 	}
 
 	//	Assignement operators.
-	QStr& operator=(const char* InStr)
+	String& operator=(const char* InStr)
 	{
 		Resize(Length(InStr));
 		if (*InStr)
 			Cpy(Str, InStr);
 		return *this;
 	}
-	QStr& operator=(const QStr& InStr)
+	String& operator=(const String& InStr)
 	{
 		Resize(InStr.Length());
 		if (InStr.Str)
@@ -160,7 +160,7 @@ public:
 	}
 
 	//	Concatenation operators.
-	QStr& operator+=(const char* InStr)
+	String& operator+=(const char* InStr)
 	{
 		if (*InStr)
 		{
@@ -170,7 +170,7 @@ public:
 		}
 		return *this;
 	}
-	QStr& operator+=(const QStr& InStr)
+	String& operator+=(const String& InStr)
 	{
 		if (InStr.Length())
 		{
@@ -180,95 +180,95 @@ public:
 		}
 		return *this;
 	}
-	QStr& operator+=(char InChr)
+	String& operator+=(char InChr)
 	{
 		int l = Length();
 		Resize(l + 1);
 		Str[l] = InChr;
 		return *this;
 	}
-	QStr& operator+=(bool InBool)
+	String& operator+=(bool InBool)
 	{
 		return operator+=(InBool ? "true" : "false");
 	}
-	QStr& operator+=(int InInt)
+	String& operator+=(int InInt)
 	{
 		char Buf[64];
 
 		sprintf(Buf, "%d", InInt);
 		return operator+=(Buf);
 	}
-	QStr& operator+=(unsigned InInt)
+	String& operator+=(unsigned InInt)
 	{
 		char Buf[64];
 
 		sprintf(Buf, "%u", InInt);
 		return operator+=(Buf);
 	}
-	QStr& operator+=(float InFloat)
+	String& operator+=(float InFloat)
 	{
 		char Buf[64];
 
 		sprintf(Buf, "%f", InFloat);
 		return operator+=(Buf);
 	}
-	friend QStr operator+(const QStr& S1, const char* S2)
+	friend String operator+(const String& S1, const char* S2)
 	{
-		QStr Ret(S1);
+		String Ret(S1);
 		Ret += S2;
 		return Ret;
 	}
-	friend QStr operator+(const QStr& S1, const QStr& S2)
+	friend String operator+(const String& S1, const String& S2)
 	{
-		QStr Ret(S1);
+		String Ret(S1);
 		Ret += S2;
 		return Ret;
 	}
-	friend QStr operator+(const QStr& S1, char S2)
+	friend String operator+(const String& S1, char S2)
 	{
-		QStr Ret(S1);
+		String Ret(S1);
 		Ret += S2;
 		return Ret;
 	}
-	friend QStr operator+(const QStr& S1, bool InBool)
+	friend String operator+(const String& S1, bool InBool)
 	{
-		QStr Ret(S1);
+		String Ret(S1);
 		Ret += InBool;
 		return Ret;
 	}
-	friend QStr operator+(const QStr& S1, int InInt)
+	friend String operator+(const String& S1, int InInt)
 	{
-		QStr Ret(S1);
+		String Ret(S1);
 		Ret += InInt;
 		return Ret;
 	}
-	friend QStr operator+(const QStr& S1, unsigned InInt)
+	friend String operator+(const String& S1, unsigned InInt)
 	{
-		QStr Ret(S1);
+		String Ret(S1);
 		Ret += InInt;
 		return Ret;
 	}
-	friend QStr operator+(const QStr& S1, float InFloat)
+	friend String operator+(const String& S1, float InFloat)
 	{
-		QStr Ret(S1);
+		String Ret(S1);
 		Ret += InFloat;
 		return Ret;
 	}
 
 	//	Comparison operators.
-	friend bool operator==(const QStr& S1, const char* S2)
+	friend bool operator==(const String& S1, const char* S2)
 	{
 		return !Cmp(*S1, S2);
 	}
-	friend bool operator==(const QStr& S1, const QStr& S2)
+	friend bool operator==(const String& S1, const String& S2)
 	{
 		return !Cmp(*S1, *S2);
 	}
-	friend bool operator!=(const QStr& S1, const char* S2)
+	friend bool operator!=(const String& S1, const char* S2)
 	{
 		return !!Cmp(*S1, S2);
 	}
-	friend bool operator!=(const QStr& S1, const QStr& S2)
+	friend bool operator!=(const String& S1, const String& S2)
 	{
 		return !!Cmp(*S1, *S2);
 	}
@@ -278,7 +278,7 @@ public:
 	{
 		return Cmp(**this, S2);
 	}
-	int Cmp(const QStr& S2) const
+	int Cmp(const String& S2) const
 	{
 		return Cmp(**this, *S2);
 	}
@@ -286,42 +286,42 @@ public:
 	{
 		return ICmp(**this, S2);
 	}
-	int ICmp(const QStr& S2) const
+	int ICmp(const String& S2) const
 	{
 		return ICmp(**this, *S2);
 	}
 
 	bool StartsWith(const char*) const;
-	bool StartsWith(const QStr&) const;
+	bool StartsWith(const String&) const;
 	bool EndsWith(const char*) const;
-	bool EndsWith(const QStr&) const;
+	bool EndsWith(const String&) const;
 
-	QStr ToLower() const;
-	QStr ToUpper() const;
+	String ToLower() const;
+	String ToUpper() const;
 
 	int IndexOf(char) const;
 	int IndexOf(const char*) const;
-	int IndexOf(const QStr&) const;
+	int IndexOf(const String&) const;
 	int LastIndexOf(char) const;
 	int LastIndexOf(const char*) const;
-	int LastIndexOf(const QStr&) const;
+	int LastIndexOf(const String&) const;
 
-	QStr Replace(const char*, const char*) const;
-	QStr Replace(const QStr&, const QStr&) const;
+	String Replace(const char*, const char*) const;
+	String Replace(const String&, const String&) const;
 
-	QStr Utf8Substring(int, int) const;
+	String Utf8Substring(int, int) const;
 
-	void Split(char, Array<QStr>&) const;
-	void Split(const char*, Array<QStr>&) const;
+	void Split(char, Array<String>&) const;
+	void Split(const char*, Array<String>&) const;
 
 	bool IsValidUtf8() const;
-	QStr Latin1ToUtf8() const;
+	String Latin1ToUtf8() const;
 
 	//	Static UTF-8 related methods.
 	static int Utf8Length(const char*);
 	static int ByteLengthForUtf8(const char*, int);
 	static int GetChar(const char*&);
-	static QStr FromChar(int);
+	static String FromChar(int);
 
 	//	Replacements for standard string functions.
 	static int Length(const char* Str);
@@ -335,7 +335,7 @@ public:
 	static void Cat(char* Dest, int Size, const char* Src);
 	static char* ToLower(char* S1);
 	static char* ToUpper(char* S1);
-	static char* RChr(const char* String, int C);
+	static char* RChr(const char* string, int C);
 	static int Atoi(const char* Str);
 	static float Atof(const char* Str);
 	static void Sprintf(char* Dest, int Size, const char* Fmt, ...);

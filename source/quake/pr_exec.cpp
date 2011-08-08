@@ -154,7 +154,7 @@ void PR_PrintStatement (dstatement_t *s)
 	if ( (unsigned)s->op < sizeof(pr_opnames)/sizeof(pr_opnames[0]))
 	{
 		Con_Printf ("%s ",  pr_opnames[s->op]);
-		i = QStr::Length(pr_opnames[s->op]);
+		i = String::Length(pr_opnames[s->op]);
 		for ( ; i<10 ; i++)
 			Con_Printf (" ");
 	}
@@ -501,7 +501,7 @@ while (1)
 					(a->vector[2] == b->vector[2]);
 		break;
 	case OP_EQ_S:
-		c->_float = !QStr::Cmp(PR_GetString(a->string), PR_GetString(b->string));
+		c->_float = !String::Cmp(PR_GetString(a->string), PR_GetString(b->string));
 		break;
 	case OP_EQ_E:
 		c->_float = a->_int == b->_int;
@@ -520,7 +520,7 @@ while (1)
 					(a->vector[2] != b->vector[2]);
 		break;
 	case OP_NE_S:
-		c->_float = QStr::Cmp(PR_GetString(a->string), PR_GetString(b->string));
+		c->_float = String::Cmp(PR_GetString(a->string), PR_GetString(b->string));
 		break;
 	case OP_NE_E:
 		c->_float = a->_int != b->_int;

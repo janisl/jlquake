@@ -340,7 +340,7 @@ static void Con_DebugLog(const char *file, const char *fmt, ...)
 	Q_vsnprintf(data, sizeof(data), fmt, argptr);
 	va_end(argptr);
 	FS_FOpenFileByMode(file, &fd, FS_APPEND);
-	FS_Write(data, QStr::Length(data), fd);
+	FS_Write(data, String::Length(data), fd);
 	FS_FCloseFile(fd);
 }
 
@@ -583,23 +583,23 @@ void Con_DrawConsole (int lines)
 	// draw the download bar
 	// figure out width
 	if (cls.download) {
-		if ((text = QStr::RChr(cls.downloadname, '/')) != NULL)
+		if ((text = String::RChr(cls.downloadname, '/')) != NULL)
 			text++;
 		else
 			text = cls.downloadname;
 
 		x = con_linewidth - ((con_linewidth * 7) / 40);
-		y = x - QStr::Length(text) - 8;
+		y = x - String::Length(text) - 8;
 		i = con_linewidth/3;
-		if (QStr::Length(text) > i) {
+		if (String::Length(text) > i) {
 			y = x - i - 11;
-			QStr::NCpy(dlbar, text, i);
+			String::NCpy(dlbar, text, i);
 			dlbar[i] = 0;
-			QStr::Cat(dlbar, sizeof(dlbar), "...");
+			String::Cat(dlbar, sizeof(dlbar), "...");
 		} else
-			QStr::Cpy(dlbar, text);
-		QStr::Cat(dlbar, sizeof(dlbar), ": ");
-		i = QStr::Length(dlbar);
+			String::Cpy(dlbar, text);
+		String::Cat(dlbar, sizeof(dlbar), ": ");
+		i = String::Length(dlbar);
 		dlbar[i++] = '\x80';
 		// where's the dot go?
 		if (cls.downloadpercent == 0)
@@ -615,11 +615,11 @@ void Con_DrawConsole (int lines)
 		dlbar[i++] = '\x82';
 		dlbar[i] = 0;
 
-		sprintf(dlbar + QStr::Length(dlbar), " %02d%%", cls.downloadpercent);
+		sprintf(dlbar + String::Length(dlbar), " %02d%%", cls.downloadpercent);
 
 		// draw it
 		y = con_vislines-22 + 8;
-		for (i = 0; i < QStr::Length(dlbar); i++)
+		for (i = 0; i < String::Length(dlbar); i++)
 			Draw_Character ( (i+1)<<3, y, dlbar[i]);
 	}
 

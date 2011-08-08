@@ -93,10 +93,10 @@ void QLog::RemoveListener(QLogListener* Listener)
 void QLog::Write(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[MAXPRINTMSG];
+	char		string[MAXPRINTMSG];
 	
 	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(String, MAXPRINTMSG, Fmt, ArgPtr);
+	Q_vsnprintf(string, MAXPRINTMSG, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
@@ -105,7 +105,7 @@ void QLog::Write(const char* Fmt, ...)
 		{
 			try
 			{
-				Listeners[i]->Serialise(String, false);
+				Listeners[i]->Serialise(string, false);
 			}
 			catch (...)
 			{
@@ -123,12 +123,12 @@ void QLog::Write(const char* Fmt, ...)
 void QLog::WriteLine(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[MAXPRINTMSG];
+	char		string[MAXPRINTMSG];
 	
 	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(String, MAXPRINTMSG, Fmt, ArgPtr);
+	Q_vsnprintf(string, MAXPRINTMSG, Fmt, ArgPtr);
 	va_end(ArgPtr);
-	strcat(String, "\n");
+	strcat(string, "\n");
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
@@ -136,7 +136,7 @@ void QLog::WriteLine(const char* Fmt, ...)
 		{
 			try
 			{
-				Listeners[i]->Serialise(String, false);
+				Listeners[i]->Serialise(string, false);
 			}
 			catch (...)
 			{
@@ -154,10 +154,10 @@ void QLog::WriteLine(const char* Fmt, ...)
 void QLog::DWrite(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[MAXPRINTMSG];
+	char		string[MAXPRINTMSG];
 	
 	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(String, MAXPRINTMSG, Fmt, ArgPtr);
+	Q_vsnprintf(string, MAXPRINTMSG, Fmt, ArgPtr);
 	va_end(ArgPtr);
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
@@ -166,7 +166,7 @@ void QLog::DWrite(const char* Fmt, ...)
 		{
 			try
 			{
-				Listeners[i]->Serialise(String, true);
+				Listeners[i]->Serialise(string, true);
 			}
 			catch (...)
 			{
@@ -184,12 +184,12 @@ void QLog::DWrite(const char* Fmt, ...)
 void QLog::DWriteLine(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
-	char		String[MAXPRINTMSG];
+	char		string[MAXPRINTMSG];
 	
 	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(String, MAXPRINTMSG, Fmt, ArgPtr);
+	Q_vsnprintf(string, MAXPRINTMSG, Fmt, ArgPtr);
 	va_end(ArgPtr);
-	strcat(String, "\n");
+	strcat(string, "\n");
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
@@ -197,7 +197,7 @@ void QLog::DWriteLine(const char* Fmt, ...)
 		{
 			try
 			{
-				Listeners[i]->Serialise(String, true);
+				Listeners[i]->Serialise(string, true);
 			}
 			catch (...)
 			{

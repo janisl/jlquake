@@ -114,7 +114,7 @@ void SV_Soundlist_f (void)
 	}
 
 	// handle the case of a level changing while a client was connecting
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount )
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount )
 	{
 		Con_Printf ("SV_Soundlist_f from different level\n");
 		SV_New_f ();
@@ -143,7 +143,7 @@ void SV_Modellist_f (void)
 	}
 	
 	// handle the case of a level changing while a client was connecting
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount )
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount )
 	{
 		Con_Printf ("SV_Modellist_f from different level\n");
 		SV_New_f ();
@@ -172,14 +172,14 @@ void SV_PreSpawn_f (void)
 	}
 	
 	// handle the case of a level changing while a client was connecting
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount )
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount )
 	{
 		Con_Printf ("SV_PreSpawn_f from different level\n");
 		SV_New_f ();
 		return;
 	}
 	
-	buf = QStr::Atoi(Cmd_Argv(2));
+	buf = String::Atoi(Cmd_Argv(2));
 	if (buf < 0 || buf >= sv.num_signon_buffers)
 		buf = 0;
 
@@ -220,7 +220,7 @@ void SV_Spawn_f (void)
 	}
 
 // handle the case of a level changing while a client was connecting
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount )
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount )
 	{
 		Con_Printf ("SV_Spawn_f from different level\n");
 		SV_New_f ();
@@ -315,7 +315,7 @@ void SV_SpawnSpectator (void)
 	for (i=MAX_CLIENTS-1 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if (!QStr::Cmp(PR_GetString(e->v.classname), "info_player_start"))
+		if (!String::Cmp(PR_GetString(e->v.classname), "info_player_start"))
 		{
 			VectorCopy (e->v.origin, sv_player->v.origin);
 			return;
@@ -336,7 +336,7 @@ void SV_Begin_f (void)
 	host_client->state = cs_spawned;
 	
 	// handle the case of a level changing while a client was connecting
-	if ( QStr::Atoi(Cmd_Argv(1)) != svs.spawncount )
+	if ( String::Atoi(Cmd_Argv(1)) != svs.spawncount )
 	{
 		Con_Printf ("SV_Begin_f from different level\n");
 		SV_New_f ();
@@ -460,13 +460,13 @@ void SV_BeginDownload_f(void)
 		// leading slash bad as well, must be in subdir
 		|| *name == '/'
 		// next up, skin check
-		|| (QStr::NCmp(name, "skins/", 6) == 0 && !allow_download_skins->value)
+		|| (String::NCmp(name, "skins/", 6) == 0 && !allow_download_skins->value)
 		// now models
-		|| (QStr::NCmp(name, "progs/", 6) == 0 && !allow_download_models->value)
+		|| (String::NCmp(name, "progs/", 6) == 0 && !allow_download_models->value)
 		// now sounds
-		|| (QStr::NCmp(name, "sound/", 6) == 0 && !allow_download_sounds->value)
+		|| (String::NCmp(name, "sound/", 6) == 0 && !allow_download_sounds->value)
 		// now maps (note special case for maps, must not be in pak)
-		|| (QStr::NCmp(name, "maps/", 6) == 0 && !allow_download_maps->value)
+		|| (String::NCmp(name, "maps/", 6) == 0 && !allow_download_maps->value)
 		// MUST be in a subdirectory	
 		|| !strstr (name, "/") )	
 	{	// don't allow anything with .. path
@@ -486,7 +486,7 @@ void SV_BeginDownload_f(void)
 		char *p;
 
 		for (p = name; *p; p++)
-			*p = (char)QStr::ToLower(*p);
+			*p = (char)String::ToLower(*p);
 	}
 
 
@@ -496,7 +496,7 @@ void SV_BeginDownload_f(void)
 	if (!host_client->download
 		// special check for maps, if it came from a pak file, don't allow
 		// download  ZOID
-		|| (QStr::NCmp(name, "maps/", 5) == 0 && FS_FileIsInPAK(name, NULL) == 1))
+		|| (String::NCmp(name, "maps/", 5) == 0 && FS_FileIsInPAK(name, NULL) == 1))
 	{
 		if (host_client->download) {
 			FS_FCloseFile(host_client->download);
@@ -537,7 +537,7 @@ void SV_Say (qboolean team)
 
 	if (team)
 	{
-		QStr::NCpy(t1, Info_ValueForKey (host_client->userinfo, "team"), 31);
+		String::NCpy(t1, Info_ValueForKey (host_client->userinfo, "team"), 31);
 		t1[31] = 0;
 	}
 
@@ -582,7 +582,7 @@ void SV_Say (qboolean team)
 	if (*p == '"')
 	{
 		p++;
-		p[QStr::Length(p)-1] = 0;
+		p[String::Length(p)-1] = 0;
 	}
 
 	if (host_client->netchan.remote_address.ip[0] == 208 &&
@@ -601,15 +601,15 @@ void SV_Say (qboolean team)
 		}
 		else
 		{
-			text[QStr::Length(text)-2] = 0;
-			QStr::Cat(text, sizeof(text)," speaks!\n");
+			text[String::Length(text)-2] = 0;
+			String::Cat(text, sizeof(text)," speaks!\n");
 		}
 	}
 	
 	if (speaknum == -1)
 	{
-		QStr::Cat(text, sizeof(text), p);
-		QStr::Cat(text, sizeof(text), "\n");
+		String::Cat(text, sizeof(text), p);
+		String::Cat(text, sizeof(text), "\n");
 	}
 
 	Con_Printf ("%s", text);
@@ -641,7 +641,7 @@ void SV_Say (qboolean team)
 					if(client->siege_team!=host_client->siege_team)
 						continue;// on different teams
 				}
-				else if (QStr::Cmp(t1, t2) || client->spectator)
+				else if (String::Cmp(t1, t2) || client->spectator)
 					continue;	// on different teams
 			}
 		}
@@ -760,7 +760,7 @@ void SV_PTrack_f (void)
 		return;
 	}
 	
-	i = QStr::Atoi(Cmd_Argv(1));
+	i = String::Atoi(Cmd_Argv(1));
 	if (i < 0 || i >= MAX_CLIENTS || svs.clients[i].state != cs_spawned ||
 		svs.clients[i].spectator) {
 		SV_ClientPrintf (host_client, PRINT_HIGH, "Invalid client to track\n");
@@ -789,7 +789,7 @@ void SV_Rate_f (void)
 		return;
 	}
 	
-	rate = QStr::Atoi(Cmd_Argv(1));
+	rate = String::Atoi(Cmd_Argv(1));
 	if (rate < 500)
 		rate = 500;
 	if (rate > 10000)
@@ -816,7 +816,7 @@ void SV_Msg_f (void)
 		return;
 	}
 	
-	host_client->messagelevel = QStr::Atoi(Cmd_Argv(1));
+	host_client->messagelevel = String::Atoi(Cmd_Argv(1));
 
 	SV_ClientPrintf (host_client, PRINT_HIGH, "Msg level set to %i\n", host_client->messagelevel);
 }
@@ -847,7 +847,7 @@ void SV_SetInfo_f (void)
 		return;		// don't set priveledged values
 
 	Info_SetValueForKey(host_client->userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING, 64, 64, !sv_highchars->value, false);
-	QStr::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
+	String::NCpy(host_client->name, Info_ValueForKey (host_client->userinfo, "name")
 		, sizeof(host_client->name)-1);	
 //	SV_FullClientUpdate (host_client, &sv.reliable_datagram);
 	host_client->sendinfo = true;
@@ -921,7 +921,7 @@ void SV_ExecuteUserCommand (char *s)
 	SV_BeginRedirect (RD_CLIENT);
 
 	for (u=ucmds ; u->name ; u++)
-		if (!QStr::Cmp(Cmd_Argv(0), u->name) )
+		if (!String::Cmp(Cmd_Argv(0), u->name) )
 		{
 			u->func ();
 			break;

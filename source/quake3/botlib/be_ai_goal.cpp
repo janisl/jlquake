@@ -281,7 +281,7 @@ itemconfig_t *LoadItemConfig(char *filename)
 		LibVarSet( "max_iteminfo", "256" );
 	}
 
-	QStr::NCpy( path, filename, MAX_PATH );
+	String::NCpy( path, filename, MAX_PATH );
 	PC_SetBaseFolder(BOTFILESBASEFOLDER);
 	source = LoadSourceFile( path );
 	if( !source ) {
@@ -296,7 +296,7 @@ itemconfig_t *LoadItemConfig(char *filename)
 	//parse the item config file
 	while(PC_ReadToken(source, &token))
 	{
-		if (!QStr::Cmp(token.string, "iteminfo"))
+		if (!String::Cmp(token.string, "iteminfo"))
 		{
 			if (ic->numiteminfo >= max_iteminfo)
 			{
@@ -314,7 +314,7 @@ itemconfig_t *LoadItemConfig(char *filename)
 				return NULL;
 			} //end if
 			StripDoubleQuotes(token.string);
-			QStr::NCpy(ii->classname, token.string, sizeof(ii->classname)-1);
+			String::NCpy(ii->classname, token.string, sizeof(ii->classname)-1);
 			if (!ReadStructure(source, &iteminfo_struct, (char *) ii))
 			{
 				FreeMemory(ic);
@@ -488,7 +488,7 @@ void BotInitInfoEntities(void)
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
 
 		//map locations
-		if (!QStr::Cmp(classname, "target_location"))
+		if (!String::Cmp(classname, "target_location"))
 		{
 			ml = (maplocation_t *) GetClearedMemory(sizeof(maplocation_t));
 			AAS_VectorForBSPEpairKey(ent, "origin", ml->origin);
@@ -499,7 +499,7 @@ void BotInitInfoEntities(void)
 			numlocations++;
 		} //end if
 		//camp spots
-		else if (!QStr::Cmp(classname, "info_camp"))
+		else if (!String::Cmp(classname, "info_camp"))
 		{
 			cs = (campspot_t *) GetClearedMemory(sizeof(campspot_t));
 			AAS_VectorForBSPEpairKey(ent, "origin", cs->origin);
@@ -577,7 +577,7 @@ void BotInitLevelItems(void)
 		//
 		for (i = 0; i < ic->numiteminfo; i++)
 		{
-			if (!QStr::Cmp(classname, ic->iteminfo[i].classname)) break;
+			if (!String::Cmp(classname, ic->iteminfo[i].classname)) break;
 		} //end for
 		if (i >= ic->numiteminfo)
 		{
@@ -629,7 +629,7 @@ void BotInitLevelItems(void)
 		if (value) li->flags |= IFL_NOTSINGLE;
 		AAS_IntForBSPEpairKey(ent, "notbot", &value);
 		if (value) li->flags |= IFL_NOTBOT;
-		if (!QStr::Cmp(classname, "item_botroam"))
+		if (!String::Cmp(classname, "item_botroam"))
 		{
 			li->flags |= IFL_ROAM;
 			AAS_FloatForBSPEpairKey(ent, "weight", &li->weight);
@@ -686,12 +686,12 @@ void BotGoalName(int number, char *name, int size)
 	{
 		if (li->number == number)
 		{
-			QStr::NCpy(name, itemconfig->iteminfo[li->iteminfo].name, size-1);
+			String::NCpy(name, itemconfig->iteminfo[li->iteminfo].name, size-1);
 			name[size-1] = '\0';
 			return;
 		} //end for
 	} //end for
-	QStr::Cpy(name, "");
+	String::Cpy(name, "");
 	return;
 } //end of the function BotGoalName
 //===========================================================================
@@ -887,7 +887,7 @@ int BotGetLevelItemGoal(int index, char *name, bot_goal_t *goal)
 		}
 		if (li->flags & IFL_NOTBOT) continue;
 		//
-		if (!QStr::ICmp(name, itemconfig->iteminfo[li->iteminfo].name))
+		if (!String::ICmp(name, itemconfig->iteminfo[li->iteminfo].name))
 		{
 			goal->areanum = li->goalareanum;
 			VectorCopy(li->goalorigin, goal->origin);
@@ -916,7 +916,7 @@ int BotGetMapLocationGoal(char *name, bot_goal_t *goal)
 
 	for (ml = maplocations; ml; ml = ml->next)
 	{
-		if (!QStr::ICmp(ml->name, name))
+		if (!String::ICmp(ml->name, name))
 		{
 			goal->areanum = ml->areanum;
 			VectorCopy(ml->origin, goal->origin);

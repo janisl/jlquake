@@ -117,12 +117,12 @@ void Com_Printf (const char *fmt, ...)
 
 	if (rd_target)
 	{
-		if ((QStr::Length(msg) + QStr::Length(rd_buffer)) > (rd_buffersize - 1))
+		if ((String::Length(msg) + String::Length(rd_buffer)) > (rd_buffersize - 1))
 		{
 			rd_flush(rd_target, rd_buffer);
 			*rd_buffer = 0;
 		}
-		QStr::Cat(rd_buffer, rd_buffersize, msg);
+		String::Cat(rd_buffer, rd_buffersize, msg);
 		return;
 	}
 
@@ -623,8 +623,8 @@ char *CopyString (char *in)
 {
 	char	*out;
 	
-	out = (char*)Z_Malloc (QStr::Length(in)+1);
-	QStr::Cpy(out, in);
+	out = (char*)Z_Malloc (String::Length(in)+1);
+	String::Cpy(out, in);
 	return out;
 }
 

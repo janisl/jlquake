@@ -279,7 +279,7 @@ while (1)
 			&& (a->vector[2] == b->vector[2]);
 		break;
 	case OP_EQ_S:
-		c->_float = !QStr::Cmp(PR_GetString(a->string), PR_GetString(b->string));
+		c->_float = !String::Cmp(PR_GetString(a->string), PR_GetString(b->string));
 		break;
 	case OP_EQ_E:
 		c->_float = a->_int == b->_int;
@@ -297,7 +297,7 @@ while (1)
 			|| (a->vector[2] != b->vector[2]);
 		break;
 	case OP_NE_S:
-		c->_float = QStr::Cmp(PR_GetString(a->string), PR_GetString(b->string));
+		c->_float = String::Cmp(PR_GetString(a->string), PR_GetString(b->string));
 		break;
 	case OP_NE_E:
 		c->_float = a->_int != b->_int;
@@ -904,7 +904,7 @@ static void PrintStatement(dstatement_t *s)
 	if((unsigned)s->op < sizeof(pr_opnames)/sizeof(pr_opnames[0]))
 	{
 		Con_Printf("%s ", pr_opnames[s->op]);
-		i = QStr::Length(pr_opnames[s->op]);
+		i = String::Length(pr_opnames[s->op]);
 		for(; i < 10; i++)
 		{
 			Con_Printf(" ");
@@ -969,25 +969,25 @@ void PR_Profile_f(void)
 	for(i = 1; i < Cmd_Argc(); i++)
 	{
 		s = Cmd_Argv(i);
-		if(QStr::ToLower(*s) == 'h')
+		if(String::ToLower(*s) == 'h')
 		{ // Sort by HC source file
 			byHC = true;
 		}
-		else if(QStr::ToLower(*s) == 's')
+		else if(String::ToLower(*s) == 's')
 		{ // Save to file
-			if(i+1 < Cmd_Argc() && !QStr::IsDigit(*Cmd_Argv(i+1)))
+			if(i+1 < Cmd_Argc() && !String::IsDigit(*Cmd_Argv(i+1)))
 			{
 				i++;
-				QStr::Cpy(saveName, Cmd_Argv(i));
+				String::Cpy(saveName, Cmd_Argv(i));
 			}
 			else
 			{
-				QStr::Cpy(saveName, "profile.txt");
+				String::Cpy(saveName, "profile.txt");
 			}
 		}
-		else if(QStr::IsDigit(*s))
+		else if(String::IsDigit(*s))
 		{ // Specify function count
-			funcCount = QStr::Atoi(Cmd_Argv(i));
+			funcCount = String::Atoi(Cmd_Argv(i));
 			if(funcCount < 1)
 			{
 				funcCount = 1;

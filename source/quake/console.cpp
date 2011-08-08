@@ -345,7 +345,7 @@ void Con_DebugLog(const char *file, const char *fmt, ...)
 	Q_vsnprintf(data, sizeof(data), fmt, argptr);
 	va_end(argptr);
 	FS_FOpenFileByMode(file, &fd, FS_APPEND);
-	FS_Write(data, QStr::Length(data), fd);
+	FS_Write(data, String::Length(data), fd);
 	FS_FCloseFile(fd);
 }
 

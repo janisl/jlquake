@@ -146,11 +146,11 @@ void QDECL Com_Printf( const char *fmt, ... ) {
 	va_end (argptr);
 
 	if ( rd_buffer ) {
-		if ((QStr::Length(msg) + QStr::Length(rd_buffer)) > (rd_buffersize - 1)) {
+		if ((String::Length(msg) + String::Length(rd_buffer)) > (rd_buffersize - 1)) {
 			rd_flush(rd_buffer);
 			*rd_buffer = 0;
 		}
-		QStr::Cat(rd_buffer, rd_buffersize, msg);
+		String::Cat(rd_buffer, rd_buffersize, msg);
     // TTimo nooo .. that would defeat the purpose
 		//rd_flush(rd_buffer);			
 		//*rd_buffer = 0;
@@ -189,7 +189,7 @@ void QDECL Com_Printf( const char *fmt, ... ) {
       opening_qconsole = qfalse;
 		}
 		if ( logfile && FS_Initialized()) {
-			FS_Write(msg, QStr::Length(msg), logfile);
+			FS_Write(msg, String::Length(msg), logfile);
 		}
 	}
 }
@@ -395,8 +395,8 @@ qboolean Com_SafeMode( void ) {
 
 	for ( i = 0 ; i < com_numConsoleLines ; i++ ) {
 		Cmd_TokenizeString( com_consoleLines[i] );
-		if ( !QStr::ICmp( Cmd_Argv(0), "safe" )
-			|| !QStr::ICmp( Cmd_Argv(0), "cvar_restart" ) ) {
+		if ( !String::ICmp( Cmd_Argv(0), "safe" )
+			|| !String::ICmp( Cmd_Argv(0), "cvar_restart" ) ) {
 			com_consoleLines[i][0] = 0;
 			return qtrue;
 		}
@@ -423,12 +423,12 @@ void Com_StartupVariable( const char *match ) {
 
 	for (i=0 ; i < com_numConsoleLines ; i++) {
 		Cmd_TokenizeString( com_consoleLines[i] );
-		if ( QStr::Cmp( Cmd_Argv(0), "set" ) ) {
+		if ( String::Cmp( Cmd_Argv(0), "set" ) ) {
 			continue;
 		}
 
 		s = Cmd_Argv(1);
-		if ( !match || !QStr::Cmp( s, match ) ) {
+		if ( !match || !String::Cmp( s, match ) ) {
 			Cvar_Set( s, Cmd_Argv(2) );
 			cv = Cvar_Get( s, "", 0 );
 			cv->flags |= CVAR_USER_CREATED;
@@ -461,7 +461,7 @@ qboolean Com_AddStartupCommands( void ) {
 		}
 
 		// set commands won't override menu startup
-		if ( QStr::NICmp( com_consoleLines[i], "set", 3 ) ) {
+		if ( String::NICmp( com_consoleLines[i], "set", 3 ) ) {
 			added = qtrue;
 		}
 		Cbuf_AddText( com_consoleLines[i] );
@@ -877,8 +877,8 @@ void Z_LogZoneHeap( memzone_t *zone, const char *name ) {
 	if (!logfile || !FS_Initialized())
 		return;
 	size = allocSize = numBlocks = 0;
-	QStr::Sprintf(buf, sizeof(buf), "\r\n================\r\n%s log\r\n================\r\n", name);
-	FS_Write(buf, QStr::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "\r\n================\r\n%s log\r\n================\r\n", name);
+	FS_Write(buf, String::Length(buf), logfile);
 	for (block = zone->blocklist.next ; block->next != &zone->blocklist; block = block->next) {
 		if (block->tag) {
 #ifdef ZONE_DEBUG
@@ -893,8 +893,8 @@ void Z_LogZoneHeap( memzone_t *zone, const char *name ) {
 				}
 			}
 			dump[j] = '\0';
-			QStr::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s) [%s]\r\n", block->d.allocSize, block->d.file, block->d.line, block->d.label, dump);
-			FS_Write(buf, QStr::Length(buf), logfile);
+			String::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s) [%s]\r\n", block->d.allocSize, block->d.file, block->d.line, block->d.label, dump);
+			FS_Write(buf, String::Length(buf), logfile);
 			allocSize += block->d.allocSize;
 #endif
 			size += block->size;
@@ -907,10 +907,10 @@ void Z_LogZoneHeap( memzone_t *zone, const char *name ) {
 #else
 	allocSize = numBlocks * sizeof(memblock_t); // + 32 bit alignment
 #endif
-	QStr::Sprintf(buf, sizeof(buf), "%d %s memory in %d blocks\r\n", size, name, numBlocks);
-	FS_Write(buf, QStr::Length(buf), logfile);
-	QStr::Sprintf(buf, sizeof(buf), "%d %s memory overhead\r\n", size - allocSize, name);
-	FS_Write(buf, QStr::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "%d %s memory in %d blocks\r\n", size, name, numBlocks);
+	FS_Write(buf, String::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "%d %s memory overhead\r\n", size - allocSize, name);
+	FS_Write(buf, String::Length(buf), logfile);
 }
 
 /*
@@ -964,8 +964,8 @@ char *CopyString( const char *in ) {
 			return ((char *)&numberstring[in[0]-'0']) + sizeof(memblock_t);
 		}
 	}
-	out = (char*)S_Malloc (QStr::Length(in)+1);
-	QStr::Cpy(out, in);
+	out = (char*)S_Malloc (String::Length(in)+1);
+	String::Cpy(out, in);
 	return out;
 }
 
@@ -1232,20 +1232,20 @@ void Hunk_Log( void) {
 		return;
 	size = 0;
 	numBlocks = 0;
-	QStr::Sprintf(buf, sizeof(buf), "\r\n================\r\nHunk log\r\n================\r\n");
-	FS_Write(buf, QStr::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "\r\n================\r\nHunk log\r\n================\r\n");
+	FS_Write(buf, String::Length(buf), logfile);
 	for (block = hunkblocks ; block; block = block->next) {
 #ifdef HUNK_DEBUG
-		QStr::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", block->size, block->file, block->line, block->label);
-		FS_Write(buf, QStr::Length(buf), logfile);
+		String::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", block->size, block->file, block->line, block->label);
+		FS_Write(buf, String::Length(buf), logfile);
 #endif
 		size += block->size;
 		numBlocks++;
 	}
-	QStr::Sprintf(buf, sizeof(buf), "%d Hunk memory\r\n", size);
-	FS_Write(buf, QStr::Length(buf), logfile);
-	QStr::Sprintf(buf, sizeof(buf), "%d hunk blocks\r\n", numBlocks);
-	FS_Write(buf, QStr::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "%d Hunk memory\r\n", size);
+	FS_Write(buf, String::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "%d hunk blocks\r\n", numBlocks);
+	FS_Write(buf, String::Length(buf), logfile);
 }
 
 /*
@@ -1265,8 +1265,8 @@ void Hunk_SmallLog( void) {
 	}
 	size = 0;
 	numBlocks = 0;
-	QStr::Sprintf(buf, sizeof(buf), "\r\n================\r\nHunk Small log\r\n================\r\n");
-	FS_Write(buf, QStr::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "\r\n================\r\nHunk Small log\r\n================\r\n");
+	FS_Write(buf, String::Length(buf), logfile);
 	for (block = hunkblocks; block; block = block->next) {
 		if (block->printed) {
 			continue;
@@ -1276,7 +1276,7 @@ void Hunk_SmallLog( void) {
 			if (block->line != block2->line) {
 				continue;
 			}
-			if (QStr::ICmp(block->file, block2->file)) {
+			if (String::ICmp(block->file, block2->file)) {
 				continue;
 			}
 			size += block2->size;
@@ -1284,16 +1284,16 @@ void Hunk_SmallLog( void) {
 			block2->printed = qtrue;
 		}
 #ifdef HUNK_DEBUG
-		QStr::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", locsize, block->file, block->line, block->label);
-		FS_Write(buf, QStr::Length(buf), logfile);
+		String::Sprintf(buf, sizeof(buf), "size = %8d: %s, line: %d (%s)\r\n", locsize, block->file, block->line, block->label);
+		FS_Write(buf, String::Length(buf), logfile);
 #endif
 		size += block->size;
 		numBlocks++;
 	}
-	QStr::Sprintf(buf, sizeof(buf), "%d Hunk memory\r\n", size);
-	FS_Write(buf, QStr::Length(buf), logfile);
-	QStr::Sprintf(buf, sizeof(buf), "%d hunk blocks\r\n", numBlocks);
-	FS_Write(buf, QStr::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "%d Hunk memory\r\n", size);
+	FS_Write(buf, String::Length(buf), logfile);
+	String::Sprintf(buf, sizeof(buf), "%d hunk blocks\r\n", numBlocks);
+	FS_Write(buf, String::Length(buf), logfile);
 }
 
 /*
@@ -2026,7 +2026,7 @@ static void Com_Freeze_f (void) {
 		Com_Printf( "freeze <seconds>\n" );
 		return;
 	}
-	s = QStr::Atof( Cmd_Argv(1) );
+	s = String::Atof( Cmd_Argv(1) );
 
 	start = Com_Milliseconds();
 
@@ -2073,7 +2073,7 @@ void Com_ReadCDKey( const char *filename ) {
 
 	FS_SV_FOpenFileRead( fbuffer, &f );
 	if ( !f ) {
-		QStr::NCpyZ( cl_cdkey, "                ", 17 );
+		String::NCpyZ( cl_cdkey, "                ", 17 );
 		return;
 	}
 
@@ -2083,9 +2083,9 @@ void Com_ReadCDKey( const char *filename ) {
 	FS_FCloseFile( f );
 
 	if (CL_CDKeyValidate(buffer, NULL)) {
-		QStr::NCpyZ( cl_cdkey, buffer, 17 );
+		String::NCpyZ( cl_cdkey, buffer, 17 );
 	} else {
-		QStr::NCpyZ( cl_cdkey, "                ", 17 );
+		String::NCpyZ( cl_cdkey, "                ", 17 );
 	}
 }
 
@@ -2103,7 +2103,7 @@ void Com_AppendCDKey( const char *filename ) {
 
 	FS_SV_FOpenFileRead( fbuffer, &f );
 	if (!f) {
-		QStr::NCpyZ( &cl_cdkey[16], "                ", 17 );
+		String::NCpyZ( &cl_cdkey[16], "                ", 17 );
 		return;
 	}
 
@@ -2113,9 +2113,9 @@ void Com_AppendCDKey( const char *filename ) {
 	FS_FCloseFile( f );
 
 	if (CL_CDKeyValidate(buffer, NULL)) {
-		QStr::Cat( &cl_cdkey[16], sizeof(cl_cdkey) - 16, buffer );
+		String::Cat( &cl_cdkey[16], sizeof(cl_cdkey) - 16, buffer );
 	} else {
-		QStr::NCpyZ( &cl_cdkey[16], "                ", 17 );
+		String::NCpyZ( &cl_cdkey[16], "                ", 17 );
 	}
 }
 
@@ -2134,7 +2134,7 @@ static void Com_WriteCDKey( const char *filename, const char *ikey ) {
 	sprintf(fbuffer, "%s/q3key", filename);
 
 
-	QStr::NCpyZ( key, ikey, 17 );
+	String::NCpyZ( key, ikey, 17 );
 
 	if(!CL_CDKeyValidate(key, NULL) ) {
 		return;
@@ -2399,8 +2399,8 @@ void Com_WriteConfig_f( void ) {
 		return;
 	}
 
-	QStr::NCpyZ( filename, Cmd_Argv(1), sizeof( filename ) );
-	QStr::DefaultExtension( filename, sizeof( filename ), ".cfg" );
+	String::NCpyZ( filename, Cmd_Argv(1), sizeof( filename ) );
+	String::DefaultExtension( filename, sizeof( filename ), ".cfg" );
 	Com_Printf( "Writing %s.\n", filename );
 	Com_WriteConfigToFile( filename );
 }

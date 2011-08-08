@@ -682,7 +682,7 @@ static const void* RB_SwapBuffers(const void* data)
 #endif
 
 	// don't flip if drawing to front buffer
-	if (QStr::ICmp(r_drawBuffer->string, "GL_FRONT") != 0)
+	if (String::ICmp(r_drawBuffer->string, "GL_FRONT") != 0)
 	{
 		GLimp_SwapBuffers();
 	}

@@ -140,8 +140,8 @@ void QClipMap38::LoadSurfaces(const quint8* base, const bsp38_lump_t* l)
 	mapsurface_t* out = surfaces;
 	for (int i = 0; i < count; i++, in++, out++)
 	{
-		QStr::NCpy(out->c.name, in->texture, sizeof(out->c.name) - 1);
-		QStr::NCpy(out->rname, in->texture, sizeof(out->rname) - 1);
+		String::NCpy(out->c.name, in->texture, sizeof(out->c.name) - 1);
+		String::NCpy(out->rname, in->texture, sizeof(out->rname) - 1);
 		out->c.flags = LittleLong(in->flags);
 		out->c.value = LittleLong(in->value);
 	}

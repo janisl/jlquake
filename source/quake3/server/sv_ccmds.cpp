@@ -62,13 +62,13 @@ static client_t *SV_GetPlayerByName( void ) {
 		if ( !cl->state ) {
 			continue;
 		}
-		if ( !QStr::ICmp( cl->name, s ) ) {
+		if ( !String::ICmp( cl->name, s ) ) {
 			return cl;
 		}
 
-		QStr::NCpyZ( cleanName, cl->name, sizeof(cleanName) );
+		String::NCpyZ( cleanName, cl->name, sizeof(cleanName) );
 		Q_CleanStr( cleanName );
-		if ( !QStr::ICmp( cleanName, s ) ) {
+		if ( !String::ICmp( cleanName, s ) ) {
 			return cl;
 		}
 	}
@@ -109,7 +109,7 @@ static client_t *SV_GetPlayerByNum( void ) {
 			return NULL;
 		}
 	}
-	idnum = QStr::Atoi( s );
+	idnum = String::Atoi( s );
 	if ( idnum < 0 || idnum >= sv_maxclients->integer ) {
 		Com_Printf( "Bad client slot: %i\n", idnum );
 		return NULL;
@@ -149,7 +149,7 @@ static void SV_Map_f( void ) {
 
 	// make sure the level exists before trying to change, so that
 	// a typo at the server console won't end the game
-	QStr::Sprintf(expanded, sizeof(expanded), "maps/%s.bsp", map);
+	String::Sprintf(expanded, sizeof(expanded), "maps/%s.bsp", map);
 	if ( FS_ReadFile (expanded, NULL) == -1 ) {
 		Com_Printf ("Can't find map %s\n", expanded);
 		return;
@@ -159,7 +159,7 @@ static void SV_Map_f( void ) {
 	Cvar_Get ("g_gametype", "0", CVAR_SERVERINFO | CVAR_USERINFO | CVAR_LATCH2 );
 
 	cmd = Cmd_Argv(0);
-	if( QStr::NICmp( cmd, "sp", 2 ) == 0 ) {
+	if( String::NICmp( cmd, "sp", 2 ) == 0 ) {
 		Cvar_SetValue( "g_gametype", GT_SINGLE_PLAYER );
 		Cvar_SetValue( "g_doWarmup", 0 );
 		// may not set sv_maxclients directly, always set latched
@@ -169,7 +169,7 @@ static void SV_Map_f( void ) {
 		killBots = qtrue;
 	}
 	else {
-		if ( !QStr::ICmp( cmd, "devmap" ) || !QStr::ICmp( cmd, "spdevmap" ) ) {
+		if ( !String::ICmp( cmd, "devmap" ) || !String::ICmp( cmd, "spdevmap" ) ) {
 			cheat = qtrue;
 			killBots = qtrue;
 		} else {
@@ -183,7 +183,7 @@ static void SV_Map_f( void ) {
 
 	// save the map name here cause on a map restart we reload the q3config.cfg
 	// and thus nuke the arguments of the map command
-	QStr::NCpyZ(mapname, map, sizeof(mapname));
+	String::NCpyZ(mapname, map, sizeof(mapname));
 
 	// start up the map
 	SV_SpawnServer( mapname, killBots );
@@ -230,7 +230,7 @@ static void SV_MapRestart_f( void ) {
 	}
 
 	if (Cmd_Argc() > 1 ) {
-		delay = QStr::Atoi( Cmd_Argv(1) );
+		delay = String::Atoi( Cmd_Argv(1) );
 	}
 	else {
 		delay = 5;
@@ -248,7 +248,7 @@ static void SV_MapRestart_f( void ) {
 
 		Com_Printf( "variable change -- restarting.\n" );
 		// restart the map the slow way
-		QStr::NCpyZ( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
+		String::NCpyZ( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
 		SV_SpawnServer( mapname, qfalse );
 		return;
@@ -344,7 +344,7 @@ static void SV_Kick_f( void ) {
 
 	cl = SV_GetPlayerByName();
 	if ( !cl ) {
-		if ( !QStr::ICmp(Cmd_Argv(1), "all") ) {
+		if ( !String::ICmp(Cmd_Argv(1), "all") ) {
 			for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
 				if ( !cl->state ) {
 					continue;
@@ -356,7 +356,7 @@ static void SV_Kick_f( void ) {
 				cl->lastPacketTime = svs.time;	// in case there is a funny zombie
 			}
 		}
-		else if ( !QStr::ICmp(Cmd_Argv(1), "allbots") ) {
+		else if ( !String::ICmp(Cmd_Argv(1), "allbots") ) {
 			for ( i=0, cl=svs.clients ; i < sv_maxclients->integer ; i++,cl++ ) {
 				if ( !cl->state ) {
 					continue;
@@ -559,7 +559,7 @@ static void SV_Status_f( void ) {
     // TTimo adding a ^7 to reset the color
     // NOTE: colored names in status breaks the padding (WONTFIX)
     Com_Printf ("^7");
-		l = 16 - QStr::Length(cl->name);
+		l = 16 - String::Length(cl->name);
 		for (j=0 ; j<l ; j++)
 			Com_Printf (" ");
 
@@ -567,7 +567,7 @@ static void SV_Status_f( void ) {
 
 		s = SOCK_AdrToString( cl->netchan.remoteAddress );
 		Com_Printf ("%s", s);
-		l = 22 - QStr::Length(s);
+		l = 22 - String::Length(s);
 		for (j=0 ; j<l ; j++)
 			Com_Printf (" ");
 		
@@ -599,15 +599,15 @@ static void SV_ConSay_f(void) {
 		return;
 	}
 
-	QStr::Cpy(text, "console: ");
+	String::Cpy(text, "console: ");
 	p = Cmd_Args();
 
 	if ( *p == '"' ) {
 		p++;
-		p[QStr::Length(p)-1] = 0;
+		p[String::Length(p)-1] = 0;
 	}
 
-	QStr::Cat(text, sizeof(text), p);
+	String::Cat(text, sizeof(text), p);
 
 	SV_SendServerCommand(NULL, "chat \"%s\n\"", text);
 }

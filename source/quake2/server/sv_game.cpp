@@ -175,7 +175,7 @@ void PF_setmodel (edict_t *ent, char *name)
 // if it is an inline model, get the size information for it
 	if (name[0] == '*')
 	{
-		mod = CM_InlineModel(QStr::Atoi(name + 1));
+		mod = CM_InlineModel(String::Atoi(name + 1));
 		CM_ModelBounds(mod, ent->mins, ent->maxs);
 		SV_LinkEdict (ent);
 	}
@@ -197,7 +197,7 @@ void PF_Configstring (int index, const char *val)
 		val = "";
 
 	// change the string in sv
-	QStr::Cpy(sv.configstrings[index], val);
+	String::Cpy(sv.configstrings[index], val);
 	
 	if (sv.state != ss_loading)
 	{	// send the update to everyone

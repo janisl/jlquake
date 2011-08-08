@@ -76,8 +76,8 @@ void NET_Ban_f (void)
 		case 1:
 			if (banAddr.type == NA_IP)
 			{
-				QStr::Cpy(addrStr, SOCK_BaseAdrToString(banAddr));
-				QStr::Cpy(maskStr, SOCK_BaseAdrToString(banMask));
+				String::Cpy(addrStr, SOCK_BaseAdrToString(banAddr));
+				String::Cpy(maskStr, SOCK_BaseAdrToString(banMask));
 				print("Banning %s [%s]\n", addrStr, maskStr);
 			}
 			else
@@ -85,7 +85,7 @@ void NET_Ban_f (void)
 			break;
 
 		case 2:
-			if (QStr::ICmp(Cmd_Argv(1), "off") == 0)
+			if (String::ICmp(Cmd_Argv(1), "off") == 0)
 				Com_Memset(&banAddr, 0, sizeof(banAddr));
 			else
 				UDP_GetAddrFromName(Cmd_Argv(1), &banAddr);
@@ -435,7 +435,7 @@ void NET_Stats_f (void)
 		Con_Printf("shortPacketCount           = %i\n", shortPacketCount);
 		Con_Printf("droppedDatagrams           = %i\n", droppedDatagrams);
 	}
-	else if (QStr::Cmp(Cmd_Argv(1), "*") == 0)
+	else if (String::Cmp(Cmd_Argv(1), "*") == 0)
 	{
 		for (s = net_activeSockets; s; s = s->next)
 			PrintStats(s);
@@ -445,11 +445,11 @@ void NET_Stats_f (void)
 	else
 	{
 		for (s = net_activeSockets; s; s = s->next)
-			if (QStr::ICmp(Cmd_Argv(1), s->address) == 0)
+			if (String::ICmp(Cmd_Argv(1), s->address) == 0)
 				break;
 		if (s == NULL)
 			for (s = net_freeSockets; s; s = s->next)
-				if (QStr::ICmp(Cmd_Argv(1), s->address) == 0)
+				if (String::ICmp(Cmd_Argv(1), s->address) == 0)
 					break;
 		if (s == NULL)
 			return;
@@ -499,11 +499,11 @@ static void Test_Poll(void)
 			Sys_Error("Unexpected repsonse to Player Info request\n");
 
 		playerNumber = net_message.ReadByte();
-		QStr::Cpy(name, net_message.ReadString2());
+		String::Cpy(name, net_message.ReadString2());
 		colors = net_message.ReadLong();
 		frags = net_message.ReadLong();
 		connectTime = net_message.ReadLong();
-		QStr::Cpy(address, net_message.ReadString2());
+		String::Cpy(address, net_message.ReadString2());
 
 		Con_Printf("%s\n  frags:%3i  colors:%u %u  time:%u\n  %s\n", name, frags, colors >> 4, colors & 0x0f, connectTime / 60, address);
 	}
@@ -535,7 +535,7 @@ static void Test_f (void)
 	if (host && hostCacheCount)
 	{
 		for (n = 0; n < hostCacheCount; n++)
-			if (QStr::ICmp(host, hostcache[n].name) == 0)
+			if (String::ICmp(host, hostcache[n].name) == 0)
 			{
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
@@ -612,10 +612,10 @@ static void Test2_Poll(void)
 	if (net_message.ReadByte() != CCREP_RULE_INFO)
 		goto Error;
 
-	QStr::Cpy(name, net_message.ReadString2());
+	String::Cpy(name, net_message.ReadString2());
 	if (name[0] == 0)
 		goto Done;
-	QStr::Cpy(value, net_message.ReadString2());
+	String::Cpy(value, net_message.ReadString2());
 
 	Con_Printf("%-16.16s  %-16.16s\n", name, value);
 
@@ -654,7 +654,7 @@ static void Test2_f (void)
 	if (host && hostCacheCount)
 	{
 		for (n = 0; n < hostCacheCount; n++)
-			if (QStr::ICmp(host, hostcache[n].name) == 0)
+			if (String::ICmp(host, hostcache[n].name) == 0)
 			{
 				if (hostcache[n].driver != myDriverLevel)
 					continue;
@@ -779,7 +779,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	command = net_message.ReadByte();
 	if (command == CCREQ_SERVER_INFO)
 	{
-		if (QStr::Cmp(net_message.ReadString2(), NET_NAME_ID) != 0)
+		if (String::Cmp(net_message.ReadString2(), NET_NAME_ID) != 0)
 			return NULL;
 
 		net_message.Clear();
@@ -884,7 +884,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	if (command != CCREQ_CONNECT)
 		return NULL;
 
-	if (QStr::Cmp(net_message.ReadString2(), NET_NAME_ID) != 0)
+	if (String::Cmp(net_message.ReadString2(), NET_NAME_ID) != 0)
 		return NULL;
 
 	if (net_message.ReadByte() != NET_PROTOCOL_VERSION)
@@ -977,7 +977,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	// everything is allocated, just fill in the details	
 	sock->socket = newsock;
 	sock->addr = clientaddr;
-	QStr::Cpy(sock->address, SOCK_AdrToString(clientaddr));
+	String::Cpy(sock->address, SOCK_AdrToString(clientaddr));
 
 	// send him back the info about the server connection he has been allocated
 	net_message.Clear();
@@ -1070,29 +1070,29 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 
 		// add it
 		hostCacheCount++;
-		QStr::Cpy(hostcache[n].name, net_message.ReadString2());
-		QStr::Cpy(hostcache[n].map, net_message.ReadString2());
+		String::Cpy(hostcache[n].name, net_message.ReadString2());
+		String::Cpy(hostcache[n].map, net_message.ReadString2());
 		hostcache[n].users = net_message.ReadByte();
 		hostcache[n].maxusers = net_message.ReadByte();
 		if (net_message.ReadByte() != NET_PROTOCOL_VERSION)
 		{
-			QStr::Cpy(hostcache[n].cname, hostcache[n].name);
+			String::Cpy(hostcache[n].cname, hostcache[n].name);
 			hostcache[n].cname[14] = 0;
-			QStr::Cpy(hostcache[n].name, "*");
-			QStr::Cat(hostcache[n].name, sizeof(hostcache[n].name), hostcache[n].cname);
+			String::Cpy(hostcache[n].name, "*");
+			String::Cat(hostcache[n].name, sizeof(hostcache[n].name), hostcache[n].cname);
 		}
 		hostcache[n].addr = readaddr;
 		hostcache[n].driver = net_driverlevel;
-		QStr::Cpy(hostcache[n].cname, SOCK_AdrToString(readaddr));
+		String::Cpy(hostcache[n].cname, SOCK_AdrToString(readaddr));
 
 		// check for a name conflict
 		for (i = 0; i < hostCacheCount; i++)
 		{
 			if (i == n)
 				continue;
-			if (QStr::ICmp(hostcache[n].name, hostcache[i].name) == 0)
+			if (String::ICmp(hostcache[n].name, hostcache[i].name) == 0)
 			{
-				i = QStr::Length(hostcache[n].name);
+				i = String::Length(hostcache[n].name);
 				if (i < 15 && hostcache[n].name[i-1] > '8')
 				{
 					hostcache[n].name[i] = '0';
@@ -1211,7 +1211,7 @@ static qsocket_t *_Datagram_Connect (const char *host)
 	{
 		reason = "No Response";
 		Con_Printf("%s\n", reason);
-		QStr::Cpy(m_return_reason, reason);
+		String::Cpy(m_return_reason, reason);
 		goto ErrorReturn;
 	}
 
@@ -1219,7 +1219,7 @@ static qsocket_t *_Datagram_Connect (const char *host)
 	{
 		reason = "Network Error";
 		Con_Printf("%s\n", reason);
-		QStr::Cpy(m_return_reason, reason);
+		String::Cpy(m_return_reason, reason);
 		goto ErrorReturn;
 	}
 
@@ -1228,7 +1228,7 @@ static qsocket_t *_Datagram_Connect (const char *host)
 	{
 		reason = const_cast<char*>(net_message.ReadString2());
 		Con_Printf(reason);
-		QStr::NCpy(m_return_reason, reason, 31);
+		String::NCpy(m_return_reason, reason, 31);
 		goto ErrorReturn;
 	}
 
@@ -1241,7 +1241,7 @@ static qsocket_t *_Datagram_Connect (const char *host)
 	{
 		reason = "Bad Response";
 		Con_Printf("%s\n", reason);
-		QStr::Cpy(m_return_reason, reason);
+		String::Cpy(m_return_reason, reason);
 		goto ErrorReturn;
 	}
 
@@ -1424,11 +1424,11 @@ int UDP_GetNameFromAddr(netadr_t* addr, char* name)
 	const char* host = SOCK_GetHostByAddr(addr);
 	if (host)
 	{
-		QStr::NCpy(name, host, NET_NAMELEN - 1);
+		String::NCpy(name, host, NET_NAMELEN - 1);
 		return 0;
 	}
 
-	QStr::Cpy(name, SOCK_AdrToString(*addr));
+	String::Cpy(name, SOCK_AdrToString(*addr));
 	return 0;
 }
 

@@ -402,12 +402,12 @@ void CL_Record_f (void)
 	if (cls.demorecording)
 		CL_Stop_f();
   
-	QStr::Cpy(name, Cmd_Argv(1));
+	String::Cpy(name, Cmd_Argv(1));
 
 //
 // open the demo file
 //
-	QStr::DefaultExtension (name, sizeof(name), ".qwd");
+	String::DefaultExtension (name, sizeof(name), ".qwd");
 
 	cls.demofile = FS_FOpenFileWrite (name);
 	if (!cls.demofile)
@@ -686,12 +686,12 @@ void CL_ReRecord_f (void)
 	if (cls.demorecording)
 		CL_Stop_f();
   
-	QStr::Cpy(name, Cmd_Argv(1));
+	String::Cpy(name, Cmd_Argv(1));
 
 //
 // open the demo file
 //
-	QStr::DefaultExtension (name, sizeof(name), ".qwd");
+	String::DefaultExtension (name, sizeof(name), ".qwd");
 
 	cls.demofile = FS_FOpenFileWrite (name);
 	if (!cls.demofile)
@@ -733,8 +733,8 @@ void CL_PlayDemo_f (void)
 //
 // open the demo file
 //
-	QStr::Cpy(name, Cmd_Argv(1));
-	QStr::DefaultExtension (name, sizeof(name), ".qwd");
+	String::Cpy(name, Cmd_Argv(1));
+	String::DefaultExtension (name, sizeof(name), ".qwd");
 
 	Con_Printf ("Playing demo from %s.\n", name);
 	FS_FOpenFileRead (name, &cls.demofile, true);

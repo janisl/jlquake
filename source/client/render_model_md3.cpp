@@ -137,11 +137,11 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 		surf->ident = SF_MD3;
 
 		// lowercase the surface name so skin compares are faster
-		QStr::ToLower(surf->name);
+		String::ToLower(surf->name);
 
 		// strip off a trailing _1 or _2
 		// this is a crutch for q3data being a mess
-		int Len = QStr::Length(surf->name);
+		int Len = String::Length(surf->name);
 		if (Len > 2 && surf->name[Len - 2] == '_')
 		{
 			surf->name[Len - 2] = 0;
@@ -217,7 +217,7 @@ bool R_LoadMd3(model_t* mod, void* buffer)
 	{
 		char filename[1024];
 
-		QStr::Cpy(filename, mod->name);
+		String::Cpy(filename, mod->name);
 
 		void* buf;
 		if (lod == 0)
@@ -228,12 +228,12 @@ bool R_LoadMd3(model_t* mod, void* buffer)
 		{
 			char namebuf[80];
 
-			if (QStr::RChr(filename, '.'))
+			if (String::RChr(filename, '.'))
 			{
-				*QStr::RChr(filename, '.') = 0;
+				*String::RChr(filename, '.') = 0;
 			}
 			sprintf(namebuf, "_%d.md3", lod);
-			QStr::Cat(filename, sizeof(filename), namebuf);
+			String::Cat(filename, sizeof(filename), namebuf);
 
 			FS_ReadFile(filename, (void**)&buf);
 			if (!buf)
@@ -651,7 +651,7 @@ void R_AddMD3Surfaces(trRefEntity_t* ent)
 			for (int j = 0; j < skin->numSurfaces; j++)
 			{
 				// the names have both been lowercased
-				if (!QStr::Cmp(skin->surfaces[j]->name, surface->name))
+				if (!String::Cmp(skin->surfaces[j]->name, surface->name))
 				{
 					shader = skin->surfaces[j]->shader;
 					break;

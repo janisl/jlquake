@@ -484,7 +484,7 @@ void R_BeginFrame(stereoFrame_t stereoFrame)
 		{
 			throw QException(va("R_BeginFrame: Stereo is disabled, but stereoFrame was %i", stereoFrame));
 		}
-		if (!QStr::ICmp(r_drawBuffer->string, "GL_FRONT"))
+		if (!String::ICmp(r_drawBuffer->string, "GL_FRONT"))
 		{
 			cmd->buffer = (int)GL_FRONT;
 		}

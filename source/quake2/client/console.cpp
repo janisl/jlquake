@@ -155,7 +155,7 @@ void Con_Dump_f (void)
 		return;
 	}
 
-	QStr::Sprintf (name, sizeof(name), "%s.txt", Cmd_Argv(1));
+	String::Sprintf (name, sizeof(name), "%s.txt", Cmd_Argv(1));
 
 	Com_Printf ("Dumped console text to %s.\n", name);
 	f = FS_FOpenFileWrite(name);
@@ -181,7 +181,7 @@ void Con_Dump_f (void)
 	for ( ; l <= con.current ; l++)
 	{
 		line = con.text + (l%con.totallines)*con.linewidth;
-		QStr::NCpy(buffer, line, con.linewidth);
+		String::NCpy(buffer, line, con.linewidth);
 		for (x=con.linewidth-1 ; x>=0 ; x--)
 		{
 			if (buffer[x] == ' ')
@@ -429,13 +429,13 @@ void Con_CenteredPrint (char *text)
 	int		l;
 	char	buffer[1024];
 
-	l = QStr::Length(text);
+	l = String::Length(text);
 	l = (con.linewidth-l)/2;
 	if (l < 0)
 		l = 0;
 	Com_Memset(buffer, ' ', l);
-	QStr::Cpy(buffer+l, text);
-	QStr::Cat(buffer, sizeof(buffer), "\n");
+	String::Cpy(buffer+l, text);
+	String::Cat(buffer, sizeof(buffer), "\n");
 	Con_Print (buffer);
 }
 
@@ -580,7 +580,7 @@ void Con_DrawConsole (float frac)
 // draw the background
 	UI_DrawStretchNamedPic (0, -viddef.height+lines, viddef.width, viddef.height, "conback");
 
-	QStr::Sprintf (version, sizeof(version), "v%4.2f", VERSION);
+	String::Sprintf (version, sizeof(version), "v%4.2f", VERSION);
 	for (x=0 ; x<5 ; x++)
 		Draw_Char (viddef.width-44+x*8, lines-12, 128 + version[x] );
 
@@ -626,23 +626,23 @@ void Con_DrawConsole (float frac)
 	// draw the download bar
 	// figure out width
 	if (cls.download) {
-		if ((text = QStr::RChr(cls.downloadname, '/')) != NULL)
+		if ((text = String::RChr(cls.downloadname, '/')) != NULL)
 			text++;
 		else
 			text = cls.downloadname;
 
 		x = con.linewidth - ((con.linewidth * 7) / 40);
-		y = x - QStr::Length(text) - 8;
+		y = x - String::Length(text) - 8;
 		i = con.linewidth/3;
-		if (QStr::Length(text) > i) {
+		if (String::Length(text) > i) {
 			y = x - i - 11;
-			QStr::NCpy(dlbar, text, i);
+			String::NCpy(dlbar, text, i);
 			dlbar[i] = 0;
-			QStr::Cat(dlbar, sizeof(dlbar), "...");
+			String::Cat(dlbar, sizeof(dlbar), "...");
 		} else
-			QStr::Cpy(dlbar, text);
-		QStr::Cat(dlbar, sizeof(dlbar), ": ");
-		i = QStr::Length(dlbar);
+			String::Cpy(dlbar, text);
+		String::Cat(dlbar, sizeof(dlbar), ": ");
+		i = String::Length(dlbar);
 		dlbar[i++] = '\x80';
 		// where's the dot go?
 		if (cls.downloadpercent == 0)
@@ -658,11 +658,11 @@ void Con_DrawConsole (float frac)
 		dlbar[i++] = '\x82';
 		dlbar[i] = 0;
 
-		sprintf(dlbar + QStr::Length(dlbar), " %02d%%", cls.downloadpercent);
+		sprintf(dlbar + String::Length(dlbar), " %02d%%", cls.downloadpercent);
 
 		// draw it
 		y = con.vislines-12;
-		for (i = 0; i < QStr::Length(dlbar); i++)
+		for (i = 0; i < String::Length(dlbar); i++)
 			Draw_Char ( (i+1)<<3, y, dlbar[i]);
 	}
 //ZOID

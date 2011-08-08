@@ -101,7 +101,7 @@ bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort)
 {
 	if ((GGameType & GAME_Quake2) || (GGameType & GAME_Quake3))
 	{
-		if (!QStr::Cmp(s, "localhost"))
+		if (!String::Cmp(s, "localhost"))
 		{
 			Com_Memset(a, 0, sizeof(*a));
 			a->type = NA_LOOPBACK;
@@ -111,7 +111,7 @@ bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort)
 
 	// look for a port number
 	char base[MAX_STRING_CHARS];
-	QStr::NCpyZ(base, s, sizeof(base));
+	String::NCpyZ(base, s, sizeof(base));
 	char* port = strstr(base, ":");
 	if (port)
 	{
@@ -134,7 +134,7 @@ bool SOCK_StringToAdr(const char* s, netadr_t* a, int DefaultPort)
 
 	if (port)
 	{
-		a->port = BigShort((short)QStr::Atoi(port));
+		a->port = BigShort((short)String::Atoi(port));
 	}
 	else
 	{
@@ -156,15 +156,15 @@ const char* SOCK_AdrToString(const netadr_t& a)
 
 	if (a.type == NA_LOOPBACK)
 	{
-		QStr::Sprintf(s, sizeof(s), "loopback");
+		String::Sprintf(s, sizeof(s), "loopback");
 	}
 	else if (a.type == NA_BOT)
 	{
-		QStr::Sprintf(s, sizeof(s), "bot");
+		String::Sprintf(s, sizeof(s), "bot");
 	}
 	else
 	{
-		QStr::Sprintf(s, sizeof(s), "%i.%i.%i.%i:%hu",
+		String::Sprintf(s, sizeof(s), "%i.%i.%i.%i:%hu",
 			a.ip[0], a.ip[1], a.ip[2], a.ip[3], BigShort(a.port));
 	}
 
@@ -183,15 +183,15 @@ const char* SOCK_BaseAdrToString(const netadr_t& a)
 	
 	if (a.type == NA_LOOPBACK)
 	{
-		QStr::Sprintf(s, sizeof(s), "loopback");
+		String::Sprintf(s, sizeof(s), "loopback");
 	}
 	else if (a.type == NA_BOT)
 	{
-		QStr::Sprintf(s, sizeof(s), "bot");
+		String::Sprintf(s, sizeof(s), "bot");
 	}
 	else
 	{
-		QStr::Sprintf(s, sizeof(s), "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
+		String::Sprintf(s, sizeof(s), "%i.%i.%i.%i", a.ip[0], a.ip[1], a.ip[2], a.ip[3]);
 	}
 
 	return s;

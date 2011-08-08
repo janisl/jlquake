@@ -162,7 +162,7 @@ void Draw_ConsoleBackground(int lines)
 	int y = lines - 14;
 	char ver[80];
 	sprintf(ver, "JLHexen II %s", JLQUAKE_VERSION_STRING);
-	int x = viddef.width - (QStr::Length(ver) * 8 + 11);
+	int x = viddef.width - (String::Length(ver) * 8 + 11);
 	Draw_RedString(x, y, ver);
 }
 

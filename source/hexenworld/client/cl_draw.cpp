@@ -197,7 +197,7 @@ void Draw_ConsoleBackground(int lines)
 	{
 		char ver[80];
 		sprintf(ver, "JLHexenWorld %s", JLQUAKE_VERSION_STRING);
-		int x = viddef.width - (QStr::Length(ver) * 8 + 11);
+		int x = viddef.width - (String::Length(ver) * 8 + 11);
 		Draw_RedString(x, y, ver);
 	}
 }
@@ -334,7 +334,7 @@ void R_DrawName(vec3_t origin, char *Name, int Red)
 		return;
 	}
 
-	u -= QStr::Length(Name) * 4;
+	u -= String::Length(Name) * 4;
 
 	if(cl_siege)
 	{

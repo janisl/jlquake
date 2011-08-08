@@ -69,10 +69,10 @@ static void R_ScreenshotFilename(int lastNumber, char* fileName, const char* Ext
 {
 	if (lastNumber < 0 || lastNumber > 9999)
 	{
-		QStr::Sprintf(fileName, MAX_OSPATH, "screenshots/shot9999.%s", Extension);
+		String::Sprintf(fileName, MAX_OSPATH, "screenshots/shot9999.%s", Extension);
 		return;
 	}
-	QStr::Sprintf(fileName, MAX_OSPATH, "screenshots/shot%04i.%s", lastNumber, Extension);
+	String::Sprintf(fileName, MAX_OSPATH, "screenshots/shot%04i.%s", lastNumber, Extension);
 }
 
 //==========================================================================
@@ -122,7 +122,7 @@ static void R_TakeScreenshot(int x, int y, int width, int height, const char* na
 	cmd->y = y;
 	cmd->width = width;
 	cmd->height = height;
-	QStr::NCpyZ(fileName, name, sizeof(fileName));
+	String::NCpyZ(fileName, name, sizeof(fileName));
 	cmd->fileName = fileName;
 	cmd->jpeg = jpeg;
 }
@@ -185,7 +185,7 @@ const void* RB_TakeScreenshotCmd(const void* data)
 static void R_LevelShot()
 {
 	char checkname[MAX_OSPATH];
-	QStr::Sprintf(checkname, MAX_OSPATH, "levelshots/%s.tga", tr.world->baseName);
+	String::Sprintf(checkname, MAX_OSPATH, "levelshots/%s.tga", tr.world->baseName);
 
 	byte* source = new byte[glConfig.vidWidth * glConfig.vidHeight * 3];
 
@@ -254,19 +254,19 @@ void R_ScreenShot_f()
 	// thousands of shots
 	static int lastNumber = 0;
 
-	if (!QStr::Cmp(Cmd_Argv(1), "levelshot"))
+	if (!String::Cmp(Cmd_Argv(1), "levelshot"))
 	{
 		R_LevelShot();
 		return;
 	}
 
-	bool silent = !QStr::Cmp(Cmd_Argv(1), "silent");
+	bool silent = !String::Cmp(Cmd_Argv(1), "silent");
 
 	char checkname[MAX_OSPATH];
 	if (Cmd_Argc() == 2 && !silent)
 	{
 		// explicit filename
-		QStr::Sprintf(checkname, MAX_OSPATH, "screenshots/%s.tga", Cmd_Argv(1));
+		String::Sprintf(checkname, MAX_OSPATH, "screenshots/%s.tga", Cmd_Argv(1));
 	}
 	else
 	{
@@ -305,19 +305,19 @@ void R_ScreenShotJPEG_f()
 	// thousands of shots
 	static int lastNumber = 0;
 
-	if (!QStr::Cmp(Cmd_Argv(1), "levelshot"))
+	if (!String::Cmp(Cmd_Argv(1), "levelshot"))
 	{
 		R_LevelShot();
 		return;
 	}
 
-	bool silent = !QStr::Cmp(Cmd_Argv(1), "silent");
+	bool silent = !String::Cmp(Cmd_Argv(1), "silent");
 
 	char checkname[MAX_OSPATH];
 	if (Cmd_Argc() == 2 && !silent)
 	{
 		// explicit filename
-		QStr::Sprintf(checkname, MAX_OSPATH, "screenshots/%s.jpg", Cmd_Argv(1));
+		String::Sprintf(checkname, MAX_OSPATH, "screenshots/%s.jpg", Cmd_Argv(1));
 	}
 	else
 	{
@@ -497,15 +497,15 @@ void R_CaptureRemoteScreenShot(const char* string1, const char* string2, const c
 
 	char st[80];
 
-	QStr::NCpyZ(st, string1, sizeof(st));
-	st[QStr::Length(st) - 1] = 0;
-	SCR_DrawStringToSnap(st, newbuf, w - QStr::Length(st) * 8, h - 1, w);
+	String::NCpyZ(st, string1, sizeof(st));
+	st[String::Length(st) - 1] = 0;
+	SCR_DrawStringToSnap(st, newbuf, w - String::Length(st) * 8, h - 1, w);
 
-	QStr::NCpyZ(st, string2, sizeof(st));
-	SCR_DrawStringToSnap(st, newbuf, w - QStr::Length(st) * 8, h - 11, w);
+	String::NCpyZ(st, string2, sizeof(st));
+	SCR_DrawStringToSnap(st, newbuf, w - String::Length(st) * 8, h - 11, w);
 
-	QStr::NCpyZ(st, string3, sizeof(st));
-	SCR_DrawStringToSnap(st, newbuf, w - QStr::Length(st) * 8, h - 21, w);
+	String::NCpyZ(st, string3, sizeof(st));
+	SCR_DrawStringToSnap(st, newbuf, w - String::Length(st) * 8, h - 21, w);
 
 	R_SavePCXMem(buffer, newbuf, w, h, host_basepal);
 	delete[] newbuf;

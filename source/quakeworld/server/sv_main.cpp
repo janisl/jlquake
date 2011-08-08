@@ -318,7 +318,7 @@ void SV_FullClientUpdate (client_t *client, QMsg *buf)
 	buf->WriteByte(i);
 	buf->WriteFloat(realtime - client->connection_started);
 
-	QStr::Cpy(info, client->userinfo);
+	String::Cpy(info, client->userinfo);
 	Info_RemovePrefixedKeys (info, '_', MAX_INFO_STRING);	// server passwords, etc
 
 	buf->WriteByte(svc_updateuserinfo);
@@ -336,7 +336,7 @@ Writes all update values to a client's reliable stream
 */
 void SV_FullClientUpdateToClient (client_t *client, client_t *cl)
 {
-	ClientReliableCheckBlock(cl, 24 + QStr::Length(client->userinfo));
+	ClientReliableCheckBlock(cl, 24 + String::Length(client->userinfo));
 	if (cl->num_backbuf) {
 		SV_FullClientUpdate (client, &cl->backbuf);
 		ClientReliable_FinishWrite(cl);
@@ -376,8 +376,8 @@ void SVC_Status (void)
 		cl = &svs.clients[i];
 		if ((cl->state == cs_connected || cl->state == cs_spawned ) && !cl->spectator)
 		{
-			top = QStr::Atoi(Info_ValueForKey (cl->userinfo, "topcolor"));
-			bottom = QStr::Atoi(Info_ValueForKey (cl->userinfo, "bottomcolor"));
+			top = String::Atoi(Info_ValueForKey (cl->userinfo, "topcolor"));
+			bottom = String::Atoi(Info_ValueForKey (cl->userinfo, "bottomcolor"));
 			top = (top < 0) ? 0 : ((top > 13) ? 13 : top);
 			bottom = (bottom < 0) ? 0 : ((bottom > 13) ? 13 : bottom);
 			ping = SV_CalcPing (cl);
@@ -434,7 +434,7 @@ void SVC_Log (void)
 	char	data[MAX_DATAGRAM+64];
 
 	if (Cmd_Argc() == 2)
-		seq = QStr::Atoi(Cmd_Argv(1));
+		seq = String::Atoi(Cmd_Argv(1));
 	else
 		seq = -1;
 
@@ -448,9 +448,9 @@ void SVC_Log (void)
 	Con_DPrintf ("sending log %i to %s\n", svs.logsequence-1, SOCK_AdrToString(net_from));
 
 	sprintf (data, "stdlog %i\n", svs.logsequence-1);
-	QStr::Cat(data, sizeof(data), (char *)svs.log_buf[((svs.logsequence-1)&1)]);
+	String::Cat(data, sizeof(data), (char *)svs.log_buf[((svs.logsequence-1)&1)]);
 
-	NET_SendPacket (QStr::Length(data)+1, data, net_from);
+	NET_SendPacket (String::Length(data)+1, data, net_from);
 }
 
 /*
@@ -539,7 +539,7 @@ void SVC_DirectConnect (void)
 	int			version;
 	int			challenge;
 
-	version = QStr::Atoi(Cmd_Argv(1));
+	version = String::Atoi(Cmd_Argv(1));
 	if (version != PROTOCOL_VERSION)
 	{
 		Netchan_OutOfBandPrint (net_from, "%c\nServer is version %4.2f.\n", A2C_PRINT, VERSION);
@@ -547,12 +547,12 @@ void SVC_DirectConnect (void)
 		return;
 	}
 
-	qport = QStr::Atoi(Cmd_Argv(2));
+	qport = String::Atoi(Cmd_Argv(2));
 
-	challenge = QStr::Atoi(Cmd_Argv(3));
+	challenge = String::Atoi(Cmd_Argv(3));
 
 	// note an extra byte is needed to replace spectator key
-	QStr::NCpy(userinfo, Cmd_Argv(4), sizeof(userinfo)-2);
+	String::NCpy(userinfo, Cmd_Argv(4), sizeof(userinfo)-2);
 	userinfo[sizeof(userinfo) - 2] = 0;
 
 	// see if the challenge is valid
@@ -574,11 +574,11 @@ void SVC_DirectConnect (void)
 
 	// check for password or spectator_password
 	s = Info_ValueForKey (userinfo, "spectator");
-	if (s[0] && QStr::Cmp(s, "0"))
+	if (s[0] && String::Cmp(s, "0"))
 	{
 		if (spectator_password->string[0] && 
-			QStr::ICmp(spectator_password->string, "none") &&
-			QStr::Cmp(spectator_password->string, s) )
+			String::ICmp(spectator_password->string, "none") &&
+			String::Cmp(spectator_password->string, s) )
 		{	// failed
 			Con_Printf ("%s:spectator password failed\n", SOCK_AdrToString (net_from));
 			Netchan_OutOfBandPrint (net_from, "%c\nrequires a spectator password\n\n", A2C_PRINT);
@@ -592,8 +592,8 @@ void SVC_DirectConnect (void)
 	{
 		s = Info_ValueForKey (userinfo, "password");
 		if (password->string[0] && 
-			QStr::ICmp(password->string, "none") &&
-			QStr::Cmp(password->string, s) )
+			String::ICmp(password->string, "none") &&
+			String::Cmp(password->string, s) )
 		{
 			Con_Printf ("%s:password failed\n", SOCK_AdrToString (net_from));
 			Netchan_OutOfBandPrint (net_from, "%c\nserver requires a password\n\n", A2C_PRINT);
@@ -620,7 +620,7 @@ void SVC_DirectConnect (void)
 			if (*q > 31 && *q <= 127)
 				*p++ = *q;
 	} else
-		QStr::NCpy(newcl->userinfo, userinfo, sizeof(newcl->userinfo)-1);
+		String::NCpy(newcl->userinfo, userinfo, sizeof(newcl->userinfo)-1);
 
 	// if there is allready a slot for this ip, drop it
 	for (i=0,cl=svs.clients ; i<MAX_CLIENTS ; i++,cl++)
@@ -733,10 +733,10 @@ void SVC_DirectConnect (void)
 
 int Rcon_Validate (void)
 {
-	if (!QStr::Length(rcon_password->string))
+	if (!String::Length(rcon_password->string))
 		return 0;
 
-	if (QStr::Cmp(Cmd_Argv(1), rcon_password->string) )
+	if (String::Cmp(Cmd_Argv(1), rcon_password->string) )
 		return 0;
 
 	return 1;
@@ -776,8 +776,8 @@ void SVC_RemoteCommand (void)
 
 		for (i=2 ; i<Cmd_Argc() ; i++)
 		{
-			QStr::Cat(remaining, sizeof(remaining), Cmd_Argv(i) );
-			QStr::Cat(remaining, sizeof(remaining), " ");
+			String::Cat(remaining, sizeof(remaining), Cmd_Argv(i) );
+			String::Cat(remaining, sizeof(remaining), " ");
 		}
 
 		Cmd_ExecuteString (remaining);
@@ -812,7 +812,7 @@ void SV_ConnectionlessPacket (void)
 
 	c = Cmd_Argv(0);
 
-	if (!QStr::Cmp(c, "ping") || ( c[0] == A2A_PING && (c[1] == 0 || c[1] == '\n')) )
+	if (!String::Cmp(c, "ping") || ( c[0] == A2A_PING && (c[1] == 0 || c[1] == '\n')) )
 	{
 		SVC_Ping ();
 		return;
@@ -822,27 +822,27 @@ void SV_ConnectionlessPacket (void)
 		Con_Printf ("A2A_ACK from %s\n", SOCK_AdrToString (net_from));
 		return;
 	}
-	else if (!QStr::Cmp(c,"status"))
+	else if (!String::Cmp(c,"status"))
 	{
 		SVC_Status ();
 		return;
 	}
-	else if (!QStr::Cmp(c,"log"))
+	else if (!String::Cmp(c,"log"))
 	{
 		SVC_Log ();
 		return;
 	}
-	else if (!QStr::Cmp(c,"connect"))
+	else if (!String::Cmp(c,"connect"))
 	{
 		SVC_DirectConnect ();
 		return;
 	}
-	else if (!QStr::Cmp(c,"getchallenge"))
+	else if (!String::Cmp(c,"getchallenge"))
 	{
 		SVC_GetChallenge ();
 		return;
 	}
-	else if (!QStr::Cmp(c, "rcon"))
+	else if (!String::Cmp(c, "rcon"))
 		SVC_RemoteCommand ();
 	else
 		Con_Printf ("bad connectionless packet from %s:\n%s\n"
@@ -926,7 +926,7 @@ qboolean StringToFilter (char *s, ipfilter_t *f)
 			num[j++] = *s++;
 		}
 		num[j] = 0;
-		b[i] = QStr::Atoi(num);
+		b[i] = String::Atoi(num);
 		if (b[i] != 0)
 			m[i] = 255;
 
@@ -1054,9 +1054,9 @@ void SV_SendBan (void)
 	data[0] = data[1] = data[2] = data[3] = 0xff;
 	data[4] = A2C_PRINT;
 	data[5] = 0;
-	QStr::Cat(data, sizeof(data), "\nbanned.\n");
+	String::Cat(data, sizeof(data), "\nbanned.\n");
 	
-	NET_SendPacket (QStr::Length(data), data, net_from);
+	NET_SendPacket (String::Length(data), data, net_from);
 }
 
 /*
@@ -1231,9 +1231,9 @@ void SV_CheckVars (void)
 	spw = spectator_password->string;
 
 	v = 0;
-	if (pw && pw[0] && QStr::Cmp(pw, "none"))
+	if (pw && pw[0] && String::Cmp(pw, "none"))
 		v |= 1;
-	if (spw && spw[0] && QStr::Cmp(spw, "none"))
+	if (spw && spw[0] && String::Cmp(spw, "none"))
 		v |= 2;
 
 	Con_Printf ("Updated needpass.\n");
@@ -1467,7 +1467,7 @@ void Master_Heartbeat (void)
 		if (master_adr[i].port)
 		{
 			Con_Printf ("Sending heartbeat to %s\n", SOCK_AdrToString (master_adr[i]));
-			NET_SendPacket (QStr::Length(string), string, master_adr[i]);
+			NET_SendPacket (String::Length(string), string, master_adr[i]);
 		}
 }
 
@@ -1490,7 +1490,7 @@ void Master_Shutdown (void)
 		if (master_adr[i].port)
 		{
 			Con_Printf ("Sending heartbeat to %s\n", SOCK_AdrToString (master_adr[i]));
-			NET_SendPacket (QStr::Length(string), string, master_adr[i]);
+			NET_SendPacket (String::Length(string), string, master_adr[i]);
 		}
 }
 
@@ -1516,7 +1516,7 @@ void SV_ExtractFromUserinfo (client_t *cl)
 	val = Info_ValueForKey (cl->userinfo, "name");
 
 	// trim user name
-	QStr::NCpy(newname, val, sizeof(newname) - 1);
+	String::NCpy(newname, val, sizeof(newname) - 1);
 	newname[sizeof(newname) - 1] = 0;
 
 	for (p = newname; (*p == ' ' || *p == '\r' || *p == '\n') && *p; p++)
@@ -1524,7 +1524,7 @@ void SV_ExtractFromUserinfo (client_t *cl)
 
 	if (p != newname && !*p) {
 		//white space only
-		QStr::Cpy(newname, "unnamed");
+		String::Cpy(newname, "unnamed");
 		p = newname;
 	}
 
@@ -1533,16 +1533,16 @@ void SV_ExtractFromUserinfo (client_t *cl)
 			;
 		*q = 0;
 	}
-	for (p = newname + QStr::Length(newname) - 1; p != newname && (*p == ' ' || *p == '\r' || *p == '\n') ; p--)
+	for (p = newname + String::Length(newname) - 1; p != newname && (*p == ' ' || *p == '\r' || *p == '\n') ; p--)
 		;
 	p[1] = 0;
 
-	if (QStr::Cmp(val, newname)) {
+	if (String::Cmp(val, newname)) {
 		Info_SetValueForKey(cl->userinfo, "name", newname, MAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		val = Info_ValueForKey (cl->userinfo, "name");
 	}
 
-	if (!val[0] || !QStr::ICmp(val, "console")) {
+	if (!val[0] || !String::ICmp(val, "console")) {
 		Info_SetValueForKey(cl->userinfo, "name", "unnamed", MAX_INFO_STRING, 64, 64, !sv_highchars->value);
 		val = Info_ValueForKey (cl->userinfo, "name");
 	}
@@ -1552,15 +1552,15 @@ void SV_ExtractFromUserinfo (client_t *cl)
 		for (i=0, client = svs.clients ; i<MAX_CLIENTS ; i++, client++) {
 			if (client->state != cs_spawned || client == cl)
 				continue;
-			if (!QStr::ICmp(client->name, val))
+			if (!String::ICmp(client->name, val))
 				break;
 		}
 		if (i != MAX_CLIENTS)
 		{
 			// dup name
 			char tmp[80];
-			QStr::Cpy(tmp, val);
-			if (QStr::Length(tmp) > (int)sizeof(cl->name) - 1)
+			String::Cpy(tmp, val);
+			if (String::Length(tmp) > (int)sizeof(cl->name) - 1)
 				tmp[sizeof(cl->name) - 4] = 0;
 			p = tmp;
 
@@ -1579,7 +1579,7 @@ void SV_ExtractFromUserinfo (client_t *cl)
 			break;
 	}
 	
-	if (QStr::NCmp(val, cl->name, QStr::Length(cl->name))) {
+	if (String::NCmp(val, cl->name, String::Length(cl->name))) {
 		if (!sv.paused) {
 			if (!cl->lastnametime || realtime - cl->lastnametime > 5) {
 				cl->lastnamecount = 0;
@@ -1597,13 +1597,13 @@ void SV_ExtractFromUserinfo (client_t *cl)
 	}
 
 
-	QStr::NCpy(cl->name, val, sizeof(cl->name)-1);	
+	String::NCpy(cl->name, val, sizeof(cl->name)-1);	
 
 	// rate command
 	val = Info_ValueForKey (cl->userinfo, "rate");
-	if (QStr::Length(val))
+	if (String::Length(val))
 	{
-		i = QStr::Atoi(val);
+		i = String::Atoi(val);
 		if (i < 500)
 			i = 500;
 		if (i > 10000)
@@ -1613,9 +1613,9 @@ void SV_ExtractFromUserinfo (client_t *cl)
 
 	// msg command
 	val = Info_ValueForKey (cl->userinfo, "msg");
-	if (QStr::Length(val))
+	if (String::Length(val))
 	{
-		cl->messagelevel = QStr::Atoi(val);
+		cl->messagelevel = String::Atoi(val);
 	}
 
 }
@@ -1636,7 +1636,7 @@ void SV_InitNet (void)
 	p = COM_CheckParm ("-port");
 	if (p && p < COM_Argc())
 	{
-		sv_net_port = QStr::Atoi(COM_Argv(p+1));
+		sv_net_port = String::Atoi(COM_Argv(p+1));
 		Con_Printf ("Port: %i\n", sv_net_port);
 	}
 	NET_Init (sv_net_port);

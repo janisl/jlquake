@@ -284,9 +284,9 @@ int AAS_ValueForBSPEpairKey(int ent, const char *key, char *value, int size)
 	if (!AAS_BSPEntityInRange(ent)) return qfalse;
 	for (epair = bspworld.entities[ent].epairs; epair; epair = epair->next)
 	{
-		if (!QStr::Cmp(epair->key, key))
+		if (!String::Cmp(epair->key, key))
 		{
-			QStr::NCpy(value, epair->value, size-1);
+			String::NCpy(value, epair->value, size-1);
 			value[size-1] = '\0';
 			return qtrue;
 		} //end if
@@ -326,7 +326,7 @@ int AAS_FloatForBSPEpairKey(int ent, const char *key, float *value)
 	
 	*value = 0;
 	if (!AAS_ValueForBSPEpairKey(ent, key, buf, MAX_EPAIRKEY)) return qfalse;
-	*value = QStr::Atof(buf);
+	*value = String::Atof(buf);
 	return qtrue;
 } //end of the function AAS_FloatForBSPEpairKey
 //===========================================================================
@@ -341,7 +341,7 @@ int AAS_IntForBSPEpairKey(int ent, const char *key, int *value)
 	
 	*value = 0;
 	if (!AAS_ValueForBSPEpairKey(ent, key, buf, MAX_EPAIRKEY)) return qfalse;
-	*value = QStr::Atoi(buf);
+	*value = String::Atoi(buf);
 	return qtrue;
 } //end of the function AAS_IntForBSPEpairKey
 //===========================================================================
@@ -390,7 +390,7 @@ void AAS_ParseBSPEntities(void)
 
 	while(PS_ReadToken(script, &token))
 	{
-		if (QStr::Cmp(token.string, "{"))
+		if (String::Cmp(token.string, "{"))
 		{
 			ScriptError(script, "invalid %s\n", token.string);
 			AAS_FreeBSPEntities();
@@ -407,7 +407,7 @@ void AAS_ParseBSPEntities(void)
 		ent->epairs = NULL;
 		while(PS_ReadToken(script, &token))
 		{
-			if (!QStr::Cmp(token.string, "}")) break;
+			if (!String::Cmp(token.string, "}")) break;
 			epair = (bsp_epair_t *) GetClearedHunkMemory(sizeof(bsp_epair_t));
 			epair->next = ent->epairs;
 			ent->epairs = epair;
@@ -419,8 +419,8 @@ void AAS_ParseBSPEntities(void)
 				return;
 			} //end if
 			StripDoubleQuotes(token.string);
-			epair->key = (char *) GetHunkMemory(QStr::Length(token.string) + 1);
-			QStr::Cpy(epair->key, token.string);
+			epair->key = (char *) GetHunkMemory(String::Length(token.string) + 1);
+			String::Cpy(epair->key, token.string);
 			if (!PS_ExpectTokenType(script, TT_STRING, 0, &token))
 			{
 				AAS_FreeBSPEntities();
@@ -428,10 +428,10 @@ void AAS_ParseBSPEntities(void)
 				return;
 			} //end if
 			StripDoubleQuotes(token.string);
-			epair->value = (char *) GetHunkMemory(QStr::Length(token.string) + 1);
-			QStr::Cpy(epair->value, token.string);
+			epair->value = (char *) GetHunkMemory(String::Length(token.string) + 1);
+			String::Cpy(epair->value, token.string);
 		} //end while
-		if (QStr::Cmp(token.string, "}"))
+		if (String::Cmp(token.string, "}"))
 		{
 			ScriptError(script, "missing }\n");
 			AAS_FreeBSPEntities();
@@ -478,7 +478,7 @@ void AAS_DumpBSPData(void)
 int AAS_LoadBSPFile(void)
 {
 	AAS_DumpBSPData();
-	bspworld.entdatasize = QStr::Length(botimport.BSPEntityData()) + 1;
+	bspworld.entdatasize = String::Length(botimport.BSPEntityData()) + 1;
 	bspworld.dentdata = (char *) GetClearedHunkMemory(bspworld.entdatasize);
 	Com_Memcpy(bspworld.dentdata, botimport.BSPEntityData(), bspworld.entdatasize);
 	AAS_ParseBSPEntities();

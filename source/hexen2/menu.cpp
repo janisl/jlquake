@@ -515,7 +515,7 @@ void M_DrawBigString(int x, int y, const char *string)
 
 	x += ((viddef.width - 320)>>1);
 
-	length = QStr::Length(string);
+	length = String::Length(string);
 	for(c=0;c<length;c++)
 	{
 		x += M_DrawBigCharacter(x,y,string[c],string[c+1]);
@@ -583,7 +583,7 @@ void ScrollTitle (const char *name)
 		}
 	}
 
-	if (QStr::ICmp(LastName,name) != 0 && TitleTargetPercent != 0) 
+	if (String::ICmp(LastName,name) != 0 && TitleTargetPercent != 0) 
 		TitleTargetPercent = 0;
 
     if (CanSwitch) 
@@ -975,7 +975,7 @@ void M_ScanSaves (void)
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
-		QStr::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
+		String::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
 		loadable[i] = false;
 		sprintf (name, "s%i/info.dat", i);
 		if (!FS_FileExists(name))
@@ -998,7 +998,7 @@ void M_ScanSaves (void)
 		while (*Ptr && *Ptr != '\n')
 			Ptr++;
 		*Ptr = 0;
-		QStr::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i])-1);
+		String::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i])-1);
 
 	// change _ back to space
 		for (j=0 ; j<SAVEGAME_COMMENT_LENGTH ; j++)
@@ -1153,7 +1153,7 @@ void M_ScanMSaves (void)
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
-		QStr::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
+		String::Cpy(m_filenames[i], "--- UNUSED SLOT ---");
 		loadable[i] = false;
 		sprintf (name, "ms%i/info.dat", i);
 		if (!FS_FileExists(name))
@@ -1176,7 +1176,7 @@ void M_ScanMSaves (void)
 		while (*Ptr && *Ptr != '\n')
 			Ptr++;
 		*Ptr = 0;
-		QStr::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i])-1);
+		String::NCpy(m_filenames[i], SaveName, sizeof(m_filenames[i])-1);
 
 	// change _ back to space
 		for (j=0 ; j<SAVEGAME_COMMENT_LENGTH ; j++)
@@ -1405,8 +1405,8 @@ void M_Menu_Setup_f (void)
 	in_keyCatchers |= KEYCATCH_UI;
 	m_state = m_setup;
 	m_entersound = true;
-	QStr::Cpy(setup_myname, cl_name->string);
-	QStr::Cpy(setup_hostname, hostname->string);
+	String::Cpy(setup_myname, cl_name->string);
+	String::Cpy(setup_hostname, hostname->string);
 	setup_top = setup_oldtop = ((int)cl_color->value) >> 4;
 	setup_bottom = setup_oldbottom = ((int)cl_color->value) & 15;
 	setup_class = cl_playerclass->value;
@@ -1446,10 +1446,10 @@ void M_Setup_Draw (void)
 	M_DrawCharacter (56, setup_cursor_table [setup_cursor], 12+((int)(realtime*4)&1));
 
 	if (setup_cursor == 0)
-		M_DrawCharacter (168 + 8*QStr::Length(setup_hostname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (168 + 8*String::Length(setup_hostname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
 
 	if (setup_cursor == 1)
-		M_DrawCharacter (168 + 8*QStr::Length(setup_myname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (168 + 8*String::Length(setup_myname), setup_cursor_table [setup_cursor], 10+((int)(realtime*4)&1));
 }
 
 
@@ -1516,9 +1516,9 @@ forward:
 		if (setup_cursor == 2 || setup_cursor == 3 || setup_cursor == 4)
 			goto forward;
 
-		if (QStr::Cmp(cl_name->string, setup_myname) != 0)
+		if (String::Cmp(cl_name->string, setup_myname) != 0)
 			Cbuf_AddText ( va ("name \"%s\"\n", setup_myname) );
-		if (QStr::Cmp(hostname->string, setup_hostname) != 0)
+		if (String::Cmp(hostname->string, setup_hostname) != 0)
 			Cvar_Set("hostname", setup_hostname);
 		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
 			Cbuf_AddText( va ("color %i %i\n", setup_top, setup_bottom) );
@@ -1530,14 +1530,14 @@ forward:
 	case K_BACKSPACE:
 		if (setup_cursor == 0)
 		{
-			if (QStr::Length(setup_hostname))
-				setup_hostname[QStr::Length(setup_hostname)-1] = 0;
+			if (String::Length(setup_hostname))
+				setup_hostname[String::Length(setup_hostname)-1] = 0;
 		}
 
 		if (setup_cursor == 1)
 		{
-			if (QStr::Length(setup_myname))
-				setup_myname[QStr::Length(setup_myname)-1] = 0;
+			if (String::Length(setup_myname))
+				setup_myname[String::Length(setup_myname)-1] = 0;
 		}
 		break;
 		
@@ -1546,7 +1546,7 @@ forward:
 			break;
 		if (setup_cursor == 0)
 		{
-			l = QStr::Length(setup_hostname);
+			l = String::Length(setup_hostname);
 			if (l < 15)
 			{
 				setup_hostname[l+1] = 0;
@@ -1555,7 +1555,7 @@ forward:
 		}
 		if (setup_cursor == 1)
 		{
-			l = QStr::Length(setup_myname);
+			l = String::Length(setup_myname);
 			if (l < 15)
 			{
 				setup_myname[l+1] = 0;
@@ -1774,14 +1774,14 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("sensitivity", sensitivity->value);
 		break;
 	case OPT_MUSICTYPE: // bgm type
-		if (QStr::ICmp(bgmtype->string,"midi") == 0)
+		if (String::ICmp(bgmtype->string,"midi") == 0)
 		{
 			if (dir < 0)
 				Cvar_Set("bgmtype","none");
 			else
 				Cvar_Set("bgmtype","cd");
 		}
-		else if (QStr::ICmp(bgmtype->string,"cd") == 0)
+		else if (String::ICmp(bgmtype->string,"cd") == 0)
 		{
 			if (dir < 0)
 				Cvar_Set("bgmtype","midi");
@@ -1908,9 +1908,9 @@ void M_Options_Draw (void)
 	M_DrawSlider (220, 60+(5*8), r);
 
 	M_Print (16, 60+(6*8), "            Music Type");
-	if (QStr::ICmp(bgmtype->string,"midi") == 0)
+	if (String::ICmp(bgmtype->string,"midi") == 0)
 		M_Print (220, 60+(6*8), "MIDI");
-	else if (QStr::ICmp(bgmtype->string,"cd") == 0)
+	else if (String::ICmp(bgmtype->string,"cd") == 0)
 		M_Print (220, 60+(6*8), "CD");
 	else
 		M_Print (220, 60+(6*8), "None");
@@ -2077,16 +2077,16 @@ void M_FindKeysForCommand (const char *command, int *twokeys)
 	char	*b;
 
 	twokeys[0] = twokeys[1] = -1; 
-	l = QStr::Length(command); 
+	l = String::Length(command); 
 	count = 0;
 	for (j=0 ; j<256 ; j++)
 	{
 		b = keybindings[j]; 
 		if (!b)
 			continue; 
-		if (!QStr::NCmp(b, command, l))
+		if (!String::NCmp(b, command, l))
 		{
-			l2= QStr::Length(b); 
+			l2= String::Length(b); 
 			if (l == l2)
 			{		
 				twokeys[count] = j; 
@@ -2104,14 +2104,14 @@ void M_UnbindCommand (const char *command)
 	int		l;
 	char	*b;
 
-	l = QStr::Length(command);
+	l = String::Length(command);
 
 	for (j=0 ; j<256 ; j++)
 	{
 		b = keybindings[j];
 		if (!b)
 			continue;
-		if (!QStr::NCmp(b, command, l) )
+		if (!String::NCmp(b, command, l) )
 			Key_SetBinding (j, "");
 	}
 }
@@ -2148,7 +2148,7 @@ void M_Keys_Draw (void)
 
 		M_Print (16, y, bindnames[i+keys_top][1]);
 
-		l = QStr::Length(bindnames[i+keys_top][0]);
+		l = String::Length(bindnames[i+keys_top][0]);
 		
 		M_FindKeysForCommand (bindnames[i+keys_top][0], keys);
 		
@@ -2160,7 +2160,7 @@ void M_Keys_Draw (void)
 		{
 			name = Key_KeynumToString (keys[0]);
 			M_Print (140, y, name);
-			x = QStr::Length(name) * 8;
+			x = String::Length(name) * 8;
 			if (keys[1] != -1)
 			{
 				M_Print (140 + x + 8, y, "or");
@@ -2889,10 +2889,10 @@ void M_LanConfig_Draw (void)
 	M_DrawCharacter (basex-8, lanConfig_cursor_table [lanConfig_cursor], 12+((int)(realtime*4)&1));
 
 	if (lanConfig_cursor == 0)
-		M_DrawCharacter (basex+9*8 + 8*QStr::Length(lanConfig_portname), lanConfig_cursor_table [0], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (basex+9*8 + 8*String::Length(lanConfig_portname), lanConfig_cursor_table [0], 10+((int)(realtime*4)&1));
 
 	if (lanConfig_cursor == 3)
-		M_DrawCharacter (basex+8 + 8*QStr::Length(lanConfig_joinname), lanConfig_cursor_table [3], 10+((int)(realtime*4)&1));
+		M_DrawCharacter (basex+8 + 8*String::Length(lanConfig_joinname), lanConfig_cursor_table [3], 10+((int)(realtime*4)&1));
 
 	if (*m_return_reason)
 		M_PrintWhite (basex, 172, m_return_reason);
@@ -2970,14 +2970,14 @@ void M_LanConfig_Key (int key)
 	case K_BACKSPACE:
 		if (lanConfig_cursor == 0)
 		{
-			if (QStr::Length(lanConfig_portname))
-				lanConfig_portname[QStr::Length(lanConfig_portname)-1] = 0;
+			if (String::Length(lanConfig_portname))
+				lanConfig_portname[String::Length(lanConfig_portname)-1] = 0;
 		}
 
 		if (lanConfig_cursor == 3)
 		{
-			if (QStr::Length(lanConfig_joinname))
-				lanConfig_joinname[QStr::Length(lanConfig_joinname)-1] = 0;
+			if (String::Length(lanConfig_joinname))
+				lanConfig_joinname[String::Length(lanConfig_joinname)-1] = 0;
 		}
 		break;
 		
@@ -3007,7 +3007,7 @@ void M_LanConfig_Key (int key)
 
 		if (lanConfig_cursor == 3)
 		{
-			l = QStr::Length(lanConfig_joinname);
+			l = String::Length(lanConfig_joinname);
 			if (l < 29)
 			{
 				lanConfig_joinname[l+1] = 0;
@@ -3019,7 +3019,7 @@ void M_LanConfig_Key (int key)
 			break;
 		if (lanConfig_cursor == 0)
 		{
-			l = QStr::Length(lanConfig_portname);
+			l = String::Length(lanConfig_portname);
 			if (l < 5)
 			{
 				lanConfig_portname[l+1] = 0;
@@ -3036,7 +3036,7 @@ void M_LanConfig_Key (int key)
 			lanConfig_cursor = 0;
 	}
 
-	l =  QStr::Atoi(lanConfig_portname);
+	l =  String::Atoi(lanConfig_portname);
 	if (l > 65535)
 		l = lanConfig_port;
 	else
@@ -3619,7 +3619,7 @@ void M_ServerList_Draw (void)
 			hostcache_t temp;
 			for (i = 0; i < hostCacheCount; i++)
 				for (j = i+1; j < hostCacheCount; j++)
-					if (QStr::Cmp(hostcache[j].name, hostcache[i].name) < 0)
+					if (String::Cmp(hostcache[j].name, hostcache[i].name) < 0)
 					{
 						Com_Memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
 						Com_Memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));

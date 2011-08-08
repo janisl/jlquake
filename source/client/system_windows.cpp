@@ -60,7 +60,7 @@ char* Sys_GetClipboardData()
 			if (clipText)
 			{
 				data = new char[GlobalSize(hClipboardData) + 1];
-				QStr::NCpyZ(data, clipText, GlobalSize(hClipboardData));
+				String::NCpyZ(data, clipText, GlobalSize(hClipboardData));
 				GlobalUnlock(hClipboardData);
 				
 				strtok(data, "\n\r\b");

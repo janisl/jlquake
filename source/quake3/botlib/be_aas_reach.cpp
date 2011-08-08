@@ -226,7 +226,7 @@ int AAS_GetJumpPadInfo(int ent, vec3_t areastart, vec3_t absmins, vec3_t absmaxs
 	VectorClear(angles);
 	//get the mins, maxs and origin of the model
 	AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY);
-	if (model[0]) modelnum = QStr::Atoi(model+1);
+	if (model[0]) modelnum = String::Atoi(model+1);
 	else modelnum = 0;
 	AAS_BSPModelMinsMaxsOrigin(modelnum, angles, absmins, absmaxs, origin);
 	VectorAdd(origin, absmins, absmins);
@@ -255,7 +255,7 @@ int AAS_GetJumpPadInfo(int ent, vec3_t areastart, vec3_t absmins, vec3_t absmaxs
 	for (ent2 = AAS_NextBSPEntity(0); ent2; ent2 = AAS_NextBSPEntity(ent2))
 	{
 		if (!AAS_ValueForBSPEpairKey(ent2, "targetname", targetname, MAX_EPAIRKEY)) continue;
-		if (!QStr::Cmp(targetname, target)) break;
+		if (!String::Cmp(targetname, target)) break;
 	} //end for
 	if (!ent2)
 	{
@@ -308,7 +308,7 @@ int AAS_BestReachableFromJumpPadArea(vec3_t origin, vec3_t mins, vec3_t maxs)
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
-		if (QStr::Cmp(classname, "trigger_push")) continue;
+		if (String::Cmp(classname, "trigger_push")) continue;
 		//
 		if (!AAS_GetJumpPadInfo(ent, areastart, absmins, absmaxs, velocity)) continue;
 		//get the areas the jump pad brush is in
@@ -2779,14 +2779,14 @@ void AAS_Reachability_Teleport(void)
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
-		if (!QStr::Cmp(classname, "trigger_multiple"))
+		if (!String::Cmp(classname, "trigger_multiple"))
 		{
 			AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY);
 //#ifdef REACH_DEBUG
 			botimport.Print(PRT_MESSAGE, "trigger_multiple model = \"%s\"\n", model);
 //#endif REACH_DEBUG
 			VectorClear(angles);
-			AAS_BSPModelMinsMaxsOrigin(QStr::Atoi(model+1), angles, mins, maxs, origin);
+			AAS_BSPModelMinsMaxsOrigin(String::Atoi(model+1), angles, mins, maxs, origin);
 			//
 			if (!AAS_ValueForBSPEpairKey(ent, "target", target, MAX_EPAIRKEY))
 			{
@@ -2797,10 +2797,10 @@ void AAS_Reachability_Teleport(void)
 			for (dest = AAS_NextBSPEntity(0); dest; dest = AAS_NextBSPEntity(dest))
 			{
 				if (!AAS_ValueForBSPEpairKey(dest, "classname", classname, MAX_EPAIRKEY)) continue;
-				if (!QStr::Cmp(classname, "target_teleporter"))
+				if (!String::Cmp(classname, "target_teleporter"))
 				{
 					if (!AAS_ValueForBSPEpairKey(dest, "targetname", targetname, MAX_EPAIRKEY)) continue;
-					if (!QStr::Cmp(targetname, target))
+					if (!String::Cmp(targetname, target))
 					{
 						break;
 					} //end if
@@ -2816,14 +2816,14 @@ void AAS_Reachability_Teleport(void)
 				continue;
 			} //end if
 		} //end else
-		else if (!QStr::Cmp(classname, "trigger_teleport"))
+		else if (!String::Cmp(classname, "trigger_teleport"))
 		{
 			AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY);
 //#ifdef REACH_DEBUG
 			botimport.Print(PRT_MESSAGE, "trigger_teleport model = \"%s\"\n", model);
 //#endif REACH_DEBUG
 			VectorClear(angles);
-			AAS_BSPModelMinsMaxsOrigin(QStr::Atoi(model+1), angles, mins, maxs, origin);
+			AAS_BSPModelMinsMaxsOrigin(String::Atoi(model+1), angles, mins, maxs, origin);
 			//
 			if (!AAS_ValueForBSPEpairKey(ent, "target", target, MAX_EPAIRKEY))
 			{
@@ -2844,7 +2844,7 @@ void AAS_Reachability_Teleport(void)
 			//entity could be used... burp
 			if (AAS_ValueForBSPEpairKey(dest, "targetname", targetname, MAX_EPAIRKEY))
 			{
-				if (!QStr::Cmp(targetname, target))
+				if (!String::Cmp(targetname, target))
 				{
 					break;
 				} //end if
@@ -2975,7 +2975,7 @@ void AAS_Reachability_Elevator(void)
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
-		if (!QStr::Cmp(classname, "func_plat"))
+		if (!String::Cmp(classname, "func_plat"))
 		{
 #ifdef REACH_DEBUG
 			Log_Write("found func plat\r\n");
@@ -2986,7 +2986,7 @@ void AAS_Reachability_Elevator(void)
 				continue;
 			} //end if
 			//get the model number, and skip the leading *
-			modelnum = QStr::Atoi(model+1);
+			modelnum = String::Atoi(model+1);
 			if (modelnum <= 0)
 			{
 				botimport.Print(PRT_ERROR, "func_plat with invalid model number\n");
@@ -3311,7 +3311,7 @@ void AAS_Reachability_FuncBobbing(void)
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
-		if (QStr::Cmp(classname, "func_bobbing")) continue;
+		if (String::Cmp(classname, "func_bobbing")) continue;
 		AAS_FloatForBSPEpairKey(ent, "height", &height);
 		if (!height) height = 32;
 		//
@@ -3321,7 +3321,7 @@ void AAS_Reachability_FuncBobbing(void)
 			continue;
 		} //end if
 		//get the model number, and skip the leading *
-		modelnum = QStr::Atoi(model+1);
+		modelnum = String::Atoi(model+1);
 		if (modelnum <= 0)
 		{
 			botimport.Print(PRT_ERROR, "func_bobbing with invalid model number\n");
@@ -3534,7 +3534,7 @@ void AAS_Reachability_JumpPad(void)
 	for (ent = AAS_NextBSPEntity(0); ent; ent = AAS_NextBSPEntity(ent))
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
-		if (QStr::Cmp(classname, "trigger_push")) continue;
+		if (String::Cmp(classname, "trigger_push")) continue;
 		//
 		if (!AAS_GetJumpPadInfo(ent, areastart, absmins, absmaxs, velocity)) continue;
 		/*
@@ -3547,7 +3547,7 @@ void AAS_Reachability_JumpPad(void)
 		VectorClear(angles);
 		//get the mins, maxs and origin of the model
 		AAS_ValueForBSPEpairKey(ent, "model", model, MAX_EPAIRKEY);
-		if (model[0]) modelnum = QStr::Atoi(model+1);
+		if (model[0]) modelnum = String::Atoi(model+1);
 		else modelnum = 0;
 		AAS_BSPModelMinsMaxsOrigin(modelnum, angles, absmins, absmaxs, origin);
 		VectorAdd(origin, absmins, absmins);
@@ -3581,7 +3581,7 @@ void AAS_Reachability_JumpPad(void)
 		for (ent2 = AAS_NextBSPEntity(0); ent2; ent2 = AAS_NextBSPEntity(ent2))
 		{
 			if (!AAS_ValueForBSPEpairKey(ent2, "targetname", targetname, MAX_EPAIRKEY)) continue;
-			if (!QStr::Cmp(targetname, target)) break;
+			if (!String::Cmp(targetname, target)) break;
 		} //end for
 		if (!ent2)
 		{
@@ -3956,18 +3956,18 @@ void AAS_SetWeaponJumpAreaFlags(void)
 	{
 		if (!AAS_ValueForBSPEpairKey(ent, "classname", classname, MAX_EPAIRKEY)) continue;
 		if (
-			!QStr::Cmp(classname, "item_armor_body") ||
-			!QStr::Cmp(classname, "item_armor_combat") ||
-			!QStr::Cmp(classname, "item_health_mega") ||
-			!QStr::Cmp(classname, "weapon_grenadelauncher") ||
-			!QStr::Cmp(classname, "weapon_rocketlauncher") ||
-			!QStr::Cmp(classname, "weapon_lightning") ||
-			!QStr::Cmp(classname, "weapon_plasmagun") ||
-			!QStr::Cmp(classname, "weapon_railgun") ||
-			!QStr::Cmp(classname, "weapon_bfg") ||
-			!QStr::Cmp(classname, "item_quad") ||
-			!QStr::Cmp(classname, "item_regen") ||
-			!QStr::Cmp(classname, "item_invulnerability"))
+			!String::Cmp(classname, "item_armor_body") ||
+			!String::Cmp(classname, "item_armor_combat") ||
+			!String::Cmp(classname, "item_health_mega") ||
+			!String::Cmp(classname, "weapon_grenadelauncher") ||
+			!String::Cmp(classname, "weapon_rocketlauncher") ||
+			!String::Cmp(classname, "weapon_lightning") ||
+			!String::Cmp(classname, "weapon_plasmagun") ||
+			!String::Cmp(classname, "weapon_railgun") ||
+			!String::Cmp(classname, "weapon_bfg") ||
+			!String::Cmp(classname, "item_quad") ||
+			!String::Cmp(classname, "item_regen") ||
+			!String::Cmp(classname, "item_invulnerability"))
 		{
 			if (AAS_VectorForBSPEpairKey(ent, "origin", origin))
 			{

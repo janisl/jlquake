@@ -100,11 +100,11 @@ int SV_ReplacePendingServerCommands( client_t *client, const char *cmd ) {
 	for ( i = client->reliableSent+1; i <= client->reliableSequence; i++ ) {
 		index = i & ( MAX_RELIABLE_COMMANDS - 1 );
 		//
-		if ( !QStr::NCmp(cmd, client->reliableCommands[ index ], QStr::Length("cs")) ) {
+		if ( !String::NCmp(cmd, client->reliableCommands[ index ], String::Length("cs")) ) {
 			sscanf(cmd, "cs %i", &csnum1);
 			sscanf(client->reliableCommands[ index ], "cs %i", &csnum2);
 			if ( csnum1 == csnum2 ) {
-				QStr::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
+				String::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
 				/*
 				if ( client->netchan.remoteAddress.type != NA_BOT ) {
 					Com_Printf( "WARNING: client %i removed double pending config string %i: %s\n", client-svs.clients, csnum1, cmd );
@@ -149,7 +149,7 @@ void SV_AddServerCommand( client_t *client, const char *cmd ) {
 		return;
 	}
 	index = client->reliableSequence & ( MAX_RELIABLE_COMMANDS - 1 );
-	QStr::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
+	String::NCpyZ( client->reliableCommands[ index ], cmd, sizeof( client->reliableCommands[ index ] ) );
 }
 
 
@@ -178,7 +178,7 @@ void QDECL SV_SendServerCommand(client_t *cl, const char *fmt, ...) {
 	}
 
 	// hack to echo broadcast prints to console
-	if ( com_dedicated->integer && !QStr::NCmp( (char *)message, "print", 5) ) {
+	if ( com_dedicated->integer && !String::NCmp( (char *)message, "print", 5) ) {
 		Com_Printf ("broadcast: %s\n", SV_ExpandNewlines((char *)message) );
 	}
 
@@ -315,7 +315,7 @@ void SVC_Status( netadr_t from ) {
 		return;
 	}
 
-	QStr::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
+	String::Cpy( infostring, Cvar_InfoString( CVAR_SERVERINFO, MAX_INFO_STRING) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
@@ -325,7 +325,7 @@ void SVC_Status( netadr_t from ) {
 	if ( Cvar_VariableValue( "fs_restrict" ) ) {
 		char	keywords[MAX_INFO_STRING];
 
-		QStr::Sprintf( keywords, sizeof( keywords ), "demo %s",
+		String::Sprintf( keywords, sizeof( keywords ), "demo %s",
 			Info_ValueForKey( infostring, "sv_keywords" ) );
 		Info_SetValueForKey( infostring, "sv_keywords", keywords, MAX_INFO_STRING);
 	}
@@ -337,13 +337,13 @@ void SVC_Status( netadr_t from ) {
 		cl = &svs.clients[i];
 		if ( cl->state >= CS_CONNECTED ) {
 			ps = SV_GameClientNum( i );
-			QStr::Sprintf (player, sizeof(player), "%i %i \"%s\"\n", 
+			String::Sprintf (player, sizeof(player), "%i %i \"%s\"\n", 
 				ps->persistant[PERS_SCORE], cl->ping, cl->name);
-			playerLength = QStr::Length(player);
+			playerLength = String::Length(player);
 			if (statusLength + playerLength >= (int)sizeof(status) ) {
 				break;		// can't hold any more
 			}
-			QStr::Cpy(status + statusLength, player);
+			String::Cpy(status + statusLength, player);
 			statusLength += playerLength;
 		}
 	}
@@ -443,8 +443,8 @@ void SVC_RemoteCommand( netadr_t from, QMsg *msg ) {
 	}
 	lasttime = time;
 
-	if ( !QStr::Length( sv_rconPassword->string ) ||
-		QStr::Cmp(Cmd_Argv(1), sv_rconPassword->string) ) {
+	if ( !String::Length( sv_rconPassword->string ) ||
+		String::Cmp(Cmd_Argv(1), sv_rconPassword->string) ) {
 		valid = qfalse;
 		Com_Printf ("Bad rcon from %s:\n%s\n", SOCK_AdrToString (from), Cmd_Argv(2) );
 	} else {
@@ -456,7 +456,7 @@ void SVC_RemoteCommand( netadr_t from, QMsg *msg ) {
 	svs.redirectAddress = from;
 	Com_BeginRedirect (sv_outputbuf, SV_OUTPUTBUF_LENGTH, SV_FlushRedirect);
 
-	if ( !QStr::Length( sv_rconPassword->string ) ) {
+	if ( !String::Length( sv_rconPassword->string ) ) {
 		Com_Printf ("No rconpassword set on the server.\n");
 	} else if ( !valid ) {
 		Com_Printf ("Bad rconpassword.\n");
@@ -476,7 +476,7 @@ void SVC_RemoteCommand( netadr_t from, QMsg *msg ) {
 		while(cmd_aux[0]==' ')
 			cmd_aux++;
 		
-		QStr::Cat( remaining, sizeof(remaining), cmd_aux);
+		String::Cat( remaining, sizeof(remaining), cmd_aux);
 		
 		Cmd_ExecuteString (remaining);
 
@@ -502,7 +502,7 @@ void SV_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 	msg->BeginReadingOOB();
 	msg->ReadLong();		// skip the -1 marker
 
-	if (!QStr::NCmp("connect", (char*)&msg->_data[4], 7)) {
+	if (!String::NCmp("connect", (char*)&msg->_data[4], 7)) {
 		Huff_Decompress(msg, 12);
 	}
 
@@ -512,19 +512,19 @@ void SV_ConnectionlessPacket( netadr_t from, QMsg *msg ) {
 	c = Cmd_Argv(0);
 	Com_DPrintf ("SV packet %s : %s\n", SOCK_AdrToString(from), c);
 
-	if (!QStr::ICmp(c, "getstatus")) {
+	if (!String::ICmp(c, "getstatus")) {
 		SVC_Status( from  );
-  } else if (!QStr::ICmp(c, "getinfo")) {
+  } else if (!String::ICmp(c, "getinfo")) {
 		SVC_Info( from );
-	} else if (!QStr::ICmp(c, "getchallenge")) {
+	} else if (!String::ICmp(c, "getchallenge")) {
 		SV_GetChallenge( from );
-	} else if (!QStr::ICmp(c, "connect")) {
+	} else if (!String::ICmp(c, "connect")) {
 		SV_DirectConnect( from );
-	} else if (!QStr::ICmp(c, "ipAuthorize")) {
+	} else if (!String::ICmp(c, "ipAuthorize")) {
 		SV_AuthorizeIpPacket( from );
-	} else if (!QStr::ICmp(c, "rcon")) {
+	} else if (!String::ICmp(c, "rcon")) {
 		SVC_RemoteCommand( from, msg );
-	} else if (!QStr::ICmp(c, "disconnect")) {
+	} else if (!String::ICmp(c, "disconnect")) {
 		// if a client starts up a local server, we may see some spurious
 		// server disconnect messages when their new server sees our final
 		// sequenced messages to the old client

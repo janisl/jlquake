@@ -969,7 +969,7 @@ static void IN_StartupJoystick()
 			char name[128];
 			if (ioctl(joy_fd, JSIOCGNAME(sizeof(name)), name) < 0)
 			{
-				QStr::NCpy(name, "Unknown", sizeof(name));
+				String::NCpy(name, "Unknown", sizeof(name));
 			}
 
 			GLog.Write( "Name:    %s\n", name );

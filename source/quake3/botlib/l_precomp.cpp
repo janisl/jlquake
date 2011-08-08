@@ -221,7 +221,7 @@ void PC_PushScript(source_t *source, script_t *script)
 
 	for (s = source->scriptstack; s; s = s->next)
 	{
-		if (!QStr::ICmp(s->filename, script->filename))
+		if (!String::ICmp(s->filename, script->filename))
 		{
 			SourceError(source, "%s recursively included", script->filename);
 			return;
@@ -377,7 +377,7 @@ int PC_ReadDefineParms(source_t *source, define_t *define, token_t **parms, int 
 	//
 	for (i = 0; i < define->numparms; i++) parms[i] = NULL;
 	//if no leading "("
-	if (QStr::Cmp(token.string, "("))
+	if (String::Cmp(token.string, "("))
 	{
 		PC_UnreadSourceToken(source, &token);
 		SourceError(source, "define %s missing parms", define->name);
@@ -408,7 +408,7 @@ int PC_ReadDefineParms(source_t *source, define_t *define, token_t **parms, int 
 				return qfalse;
 			} //end if
 			//
-			if (!QStr::Cmp(token.string, ","))
+			if (!String::Cmp(token.string, ","))
 			{
 				if (indent <= 0)
 				{
@@ -419,12 +419,12 @@ int PC_ReadDefineParms(source_t *source, define_t *define, token_t **parms, int 
 			} //end if
 			lastcomma = 0;
 			//
-			if (!QStr::Cmp(token.string, "("))
+			if (!String::Cmp(token.string, "("))
 			{
 				indent++;
 				continue;
 			} //end if
-			else if (!QStr::Cmp(token.string, ")"))
+			else if (!String::Cmp(token.string, ")"))
 			{
 				if (--indent <= 0)
 				{
@@ -465,12 +465,12 @@ int PC_StringizeTokens(token_t *tokens, token_t *token)
 	token->whitespace_p = NULL;
 	token->endwhitespace_p = NULL;
 	token->string[0] = '\0';
-	QStr::Cat(token->string, MAX_TOKEN, "\"");
+	String::Cat(token->string, MAX_TOKEN, "\"");
 	for (t = tokens; t; t = t->next)
 	{
-		QStr::Cat(token->string, MAX_TOKEN, t->string);
+		String::Cat(token->string, MAX_TOKEN, t->string);
 	} //end for
-	QStr::Cat(token->string, MAX_TOKEN, "\"");
+	String::Cat(token->string, MAX_TOKEN, "\"");
 	return qtrue;
 } //end of the function PC_StringizeTokens
 //============================================================================
@@ -484,16 +484,16 @@ int PC_MergeTokens(token_t *t1, token_t *t2)
 	//merging of a name with a name or number
 	if (t1->type == TT_NAME && (t2->type == TT_NAME || t2->type == TT_NUMBER))
 	{
-		QStr::Cat(t1->string, MAX_TOKEN, t2->string);
+		String::Cat(t1->string, MAX_TOKEN, t2->string);
 		return qtrue;
 	} //end if
 	//merging of two strings
 	if (t1->type == TT_STRING && t2->type == TT_STRING)
 	{
 		//remove trailing double quote
-		t1->string[QStr::Length(t1->string)-1] = '\0';
+		t1->string[String::Length(t1->string)-1] = '\0';
 		//concat without leading double quote
-		QStr::Cat(t1->string, MAX_TOKEN, &t2->string[1]);
+		String::Cat(t1->string, MAX_TOKEN, &t2->string[1]);
 		return qtrue;
 	} //end if
 	//FIXME: merging of two number of the same sub type
@@ -588,7 +588,7 @@ define_t *PC_FindHashedDefine(define_t **definehash, char *name)
 	hash = PC_NameHash(name);
 	for (d = definehash[hash]; d; d = d->hashnext)
 	{
-		if (!QStr::Cmp(d->name, name)) return d;
+		if (!String::Cmp(d->name, name)) return d;
 	} //end for
 	return NULL;
 } //end of the function PC_FindHashedDefine
@@ -605,7 +605,7 @@ define_t *PC_FindDefine(define_t *defines, char *name)
 
 	for (d = defines; d; d = d->next)
 	{
-		if (!QStr::Cmp(d->name, name)) return d;
+		if (!String::Cmp(d->name, name)) return d;
 	} //end for
 	return NULL;
 } //end of the function PC_FindDefine
@@ -624,7 +624,7 @@ int PC_FindDefineParm(define_t *define, char *name)
 	i = 0;
 	for (p = define->parms; p; p = p->next)
 	{
-		if (!QStr::Cmp(p->string, name)) return i;
+		if (!String::Cmp(p->string, name)) return i;
 		i++;
 	} //end for
 	return -1;
@@ -679,10 +679,10 @@ void PC_AddBuiltinDefines(source_t *source)
 
 	for (i = 0; builtin[i].string; i++)
 	{
-		define = (define_t *) GetMemory(sizeof(define_t) + QStr::Length(builtin[i].string) + 1);
+		define = (define_t *) GetMemory(sizeof(define_t) + String::Length(builtin[i].string) + 1);
 		Com_Memset(define, 0, sizeof(define_t));
 		define->name = (char *) define + sizeof(define_t);
-		QStr::Cpy(define->name, builtin[i].string);
+		String::Cpy(define->name, builtin[i].string);
 		define->flags |= DEFINE_FIXED;
 		define->builtin = builtin[i].builtin;
 		//add the define to the source
@@ -725,9 +725,9 @@ int PC_ExpandBuiltinDefine(source_t *source, token_t *deftoken, define_t *define
 		} //end case
 		case BUILTIN_FILE:
 		{
-			QStr::Cpy(token->string, source->scriptstack->filename);
+			String::Cpy(token->string, source->scriptstack->filename);
 			token->type = TT_NAME;
-			token->subtype = QStr::Length(token->string);
+			token->subtype = String::Length(token->string);
 			*firsttoken = token;
 			*lasttoken = token;
 			break;
@@ -736,13 +736,13 @@ int PC_ExpandBuiltinDefine(source_t *source, token_t *deftoken, define_t *define
 		{
 			t = time(NULL);
 			curtime = ctime((time_t*)&t);
-			QStr::Cpy(token->string, "\"");
+			String::Cpy(token->string, "\"");
 			strncat(token->string, curtime+4, 7);
 			strncat(token->string+7, curtime+20, 4);
-			QStr::Cat(token->string, MAX_TOKEN, "\"");
+			String::Cat(token->string, MAX_TOKEN, "\"");
 			free(curtime);
 			token->type = TT_NAME;
-			token->subtype = QStr::Length(token->string);
+			token->subtype = String::Length(token->string);
 			*firsttoken = token;
 			*lasttoken = token;
 			break;
@@ -751,12 +751,12 @@ int PC_ExpandBuiltinDefine(source_t *source, token_t *deftoken, define_t *define
 		{
 			t = time(NULL);
 			curtime = ctime((time_t*)&t);
-			QStr::Cpy(token->string, "\"");
+			String::Cpy(token->string, "\"");
 			strncat(token->string, curtime+11, 8);
-			QStr::Cat(token->string, MAX_TOKEN, "\"");
+			String::Cat(token->string, MAX_TOKEN, "\"");
 			free(curtime);
 			token->type = TT_NAME;
-			token->subtype = QStr::Length(token->string);
+			token->subtype = String::Length(token->string);
 			*firsttoken = token;
 			*lasttoken = token;
 			break;
@@ -945,7 +945,7 @@ void PC_ConvertPath(char *path)
 		if ((*ptr == '\\' || *ptr == '/') &&
 				(*(ptr+1) == '\\' || *(ptr+1) == '/'))
 		{
-			memmove(ptr, ptr + 1, QStr::Length(ptr));
+			memmove(ptr, ptr + 1, String::Length(ptr));
 		} //end if
 		else
 		{
@@ -993,14 +993,14 @@ int PC_Directive_include(source_t *source)
 		script = LoadScriptFile(token.string);
 		if (!script)
 		{
-			QStr::Cpy(path, source->includepath);
-			QStr::Cat(path, sizeof(path), token.string);
+			String::Cpy(path, source->includepath);
+			String::Cat(path, sizeof(path), token.string);
 			script = LoadScriptFile(path);
 		} //end if
 	} //end if
 	else if (token.type == TT_PUNCTUATION && *token.string == '<')
 	{
-		QStr::Cpy(path, source->includepath);
+		String::Cpy(path, source->includepath);
 		while(PC_ReadSourceToken(source, &token))
 		{
 			if (token.linescrossed > 0)
@@ -1009,13 +1009,13 @@ int PC_Directive_include(source_t *source)
 				break;
 			} //end if
 			if (token.type == TT_PUNCTUATION && *token.string == '>') break;
-			QStr::Cat(path, MAX_PATH, token.string);
+			String::Cat(path, MAX_PATH, token.string);
 		} //end while
 		if (*token.string != '>')
 		{
 			SourceWarning(source, "#include missing trailing >");
 		} //end if
-		if (!QStr::Length(path))
+		if (!String::Length(path))
 		{
 			SourceError(source, "#include without file name between < >");
 			return qfalse;
@@ -1033,7 +1033,7 @@ int PC_Directive_include(source_t *source)
 	{
 		Com_Memset(&file, 0, sizeof(foundfile_t));
 		script = LoadScriptFile(path);
-		if (script) QStr::NCpy(script->filename, path, MAX_PATH);
+		if (script) String::NCpy(script->filename, path, MAX_PATH);
 	} //end if
 #endif //QUAKE
 	if (!script)
@@ -1072,7 +1072,7 @@ int PC_ReadLine(source_t *source, token_t *token)
 			return qfalse;
 		} //end if
 		crossline = 1;
-	} while(!QStr::Cmp(token->string, "\\"));
+	} while(!String::Cmp(token->string, "\\"));
 	return qtrue;
 } //end of the function PC_ReadLine
 //============================================================================
@@ -1127,7 +1127,7 @@ int PC_Directive_undef(source_t *source)
 	hash = PC_NameHash(token.string);
 	for (lastdefine = NULL, define = source->definehash[hash]; define; define = define->hashnext)
 	{
-		if (!QStr::Cmp(define->name, token.string))
+		if (!String::Cmp(define->name, token.string))
 		{
 			if (define->flags & DEFINE_FIXED)
 			{
@@ -1146,7 +1146,7 @@ int PC_Directive_undef(source_t *source)
 #else //DEFINEHASHING
 	for (lastdefine = NULL, define = source->defines; define; define = define->next)
 	{
-		if (!QStr::Cmp(define->name, token.string))
+		if (!String::Cmp(define->name, token.string))
 		{
 			if (define->flags & DEFINE_FIXED)
 			{
@@ -1214,10 +1214,10 @@ int PC_Directive_define(source_t *source)
 #endif //DEFINEHASHING
 	} //end if
 	//allocate define
-	define = (define_t *) GetMemory(sizeof(define_t) + QStr::Length(token.string) + 1);
+	define = (define_t *) GetMemory(sizeof(define_t) + String::Length(token.string) + 1);
 	Com_Memset(define, 0, sizeof(define_t));
 	define->name = (char *) define + sizeof(define_t);
-	QStr::Cpy(define->name, token.string);
+	String::Cpy(define->name, token.string);
 	//add the define to the source
 #if DEFINEHASHING
 	PC_AddDefineToHash(define, source->definehash);
@@ -1228,7 +1228,7 @@ int PC_Directive_define(source_t *source)
 	//if nothing is defined, just return
 	if (!PC_ReadLine(source, &token)) return qtrue;
 	//if it is a define with parameters
-	if (!PC_WhiteSpaceBeforeToken(&token) && !QStr::Cmp(token.string, "("))
+	if (!PC_WhiteSpaceBeforeToken(&token) && !String::Cmp(token.string, "("))
 	{
 		//read the define parameters
 		last = NULL;
@@ -1268,9 +1268,9 @@ int PC_Directive_define(source_t *source)
 					return qfalse;
 				} //end if
 				//
-				if (!QStr::Cmp(token.string, ")")) break;
+				if (!String::Cmp(token.string, ")")) break;
 				//then it must be a comma
-				if (QStr::Cmp(token.string, ","))
+				if (String::Cmp(token.string, ","))
 				{
 					SourceError(source, "define not terminated");
 					return qfalse;
@@ -1284,7 +1284,7 @@ int PC_Directive_define(source_t *source)
 	do
 	{
 		t = PC_CopyToken(&token);
-		if (t->type == TT_NAME && !QStr::Cmp(t->string, define->name))
+		if (t->type == TT_NAME && !String::Cmp(t->string, define->name))
 		{
 			SourceError(source, "recursive define (removed recursion)");
 			continue;
@@ -1299,8 +1299,8 @@ int PC_Directive_define(source_t *source)
 	if (last)
 	{
 		//check for merge operators at the beginning or end
-		if (!QStr::Cmp(define->tokens->string, "##") ||
-				!QStr::Cmp(last->string, "##"))
+		if (!String::Cmp(define->tokens->string, "##") ||
+				!String::Cmp(last->string, "##"))
 		{
 			SourceError(source, "define with misplaced ##");
 			return qfalse;
@@ -1324,10 +1324,10 @@ define_t *PC_DefineFromString(char *string)
 
 	PC_InitTokenHeap();
 
-	script = LoadScriptMemory(string, QStr::Length(string), "*extern");
+	script = LoadScriptMemory(string, String::Length(string), "*extern");
 	//create a new source
 	Com_Memset(&src, 0, sizeof(source_t));
-	QStr::NCpy(src.filename, "*extern", MAX_PATH);
+	String::NCpy(src.filename, "*extern", MAX_PATH);
 	src.scriptstack = script;
 #if DEFINEHASHING
 	src.definehash = (define_t**)GetClearedMemory(DEFINEHASHSIZE * sizeof(define_t *));
@@ -1450,10 +1450,10 @@ define_t *PC_CopyDefine(source_t *source, define_t *define)
 	define_t *newdefine;
 	token_t *token, *newtoken, *lasttoken;
 
-	newdefine = (define_t *) GetMemory(sizeof(define_t) + QStr::Length(define->name) + 1);
+	newdefine = (define_t *) GetMemory(sizeof(define_t) + String::Length(define->name) + 1);
 	//copy the define name
 	newdefine->name = (char *) newdefine + sizeof(define_t);
-	QStr::Cpy(newdefine->name, define->name);
+	String::Cpy(newdefine->name, define->name);
 	newdefine->flags = define->flags;
 	newdefine->builtin = define->builtin;
 	newdefine->numparms = define->numparms;
@@ -1718,14 +1718,14 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, signed long int *intval
 					error = 1;
 					break;
 				} //end if
-				if (QStr::Cmp(t->string, "defined"))
+				if (String::Cmp(t->string, "defined"))
 				{
 					SourceError(source, "undefined name %s in #if/#elif", t->string);
 					error = 1;
 					break;
 				} //end if
 				t = t->next;
-				if (!QStr::Cmp(t->string, "("))
+				if (!String::Cmp(t->string, "("))
 				{
 					brace = qtrue;
 					t = t->next;
@@ -1761,7 +1761,7 @@ int PC_EvaluateTokens(source_t *source, token_t *tokens, signed long int *intval
 				if (brace)
 				{
 					t = t->next;
-					if (!t || QStr::Cmp(t->string, ")"))
+					if (!t || String::Cmp(t->string, ")"))
 					{
 						SourceError(source, "defined without ) in #if/#elif");
 						error = 1;
@@ -2167,7 +2167,7 @@ int PC_Evaluate(source_t *source, signed long int *intvalue,
 				else firsttoken = t;
 				lasttoken = t;
 			} //end if
-			else if (!QStr::Cmp(token.string, "defined"))
+			else if (!String::Cmp(token.string, "defined"))
 			{
 				defined = qtrue;
 				t = PC_CopyToken(&token);
@@ -2272,7 +2272,7 @@ int PC_DollarEvaluate(source_t *source, signed long int *intvalue,
 				else firsttoken = t;
 				lasttoken = t;
 			} //end if
-			else if (!QStr::Cmp(token.string, "defined"))
+			else if (!String::Cmp(token.string, "defined"))
 			{
 				defined = qtrue;
 				t = PC_CopyToken(&token);
@@ -2395,7 +2395,7 @@ int PC_Directive_error(source_t *source)
 {
 	token_t token;
 
-	QStr::Cpy(token.string, "");
+	String::Cpy(token.string, "");
 	PC_ReadSourceToken(source, &token);
 	SourceError(source, "#error directive: %s", token.string);
 	return qfalse;
@@ -2428,7 +2428,7 @@ void UnreadSignToken(source_t *source)
 	token.whitespace_p = source->scriptstack->script_p;
 	token.endwhitespace_p = source->scriptstack->script_p;
 	token.linescrossed = 0;
-	QStr::Cpy(token.string, "-");
+	String::Cpy(token.string, "-");
 	token.type = TT_PUNCTUATION;
 	token.subtype = P_SUB;
 	PC_UnreadSourceToken(source, &token);
@@ -2529,7 +2529,7 @@ int PC_ReadDirective(source_t *source)
 		//find the precompiler directive
 		for (i = 0; directives[i].name; i++)
 		{
-			if (!QStr::Cmp(directives[i].name, token.string))
+			if (!String::Cmp(directives[i].name, token.string))
 			{
 				return directives[i].func(source);
 			} //end if
@@ -2630,7 +2630,7 @@ int PC_ReadDollarDirective(source_t *source)
 		//find the precompiler directive
 		for (i = 0; dollardirectives[i].name; i++)
 		{
-			if (!QStr::Cmp(dollardirectives[i].name, token.string))
+			if (!String::Cmp(dollardirectives[i].name, token.string))
 			{
 				return dollardirectives[i].func(source);
 			} //end if
@@ -2684,7 +2684,7 @@ int QuakeCMacro(source_t *source)
 	//find the precompiler directive
 	for (i = 0; dollardirectives[i].name; i++)
 	{
-		if (!QStr::Cmp(dollardirectives[i].name, token.string))
+		if (!String::Cmp(dollardirectives[i].name, token.string))
 		{
 			PC_UnreadSourceToken(source, &token);
 			return qfalse;
@@ -2738,13 +2738,13 @@ int PC_ReadToken(source_t *source, token_t *token)
 			{
 				if (newtoken.type == TT_STRING)
 				{
-					token->string[QStr::Length(token->string)-1] = '\0';
-					if (QStr::Length(token->string) + QStr::Length(newtoken.string+1) + 1 >= MAX_TOKEN)
+					token->string[String::Length(token->string)-1] = '\0';
+					if (String::Length(token->string) + String::Length(newtoken.string+1) + 1 >= MAX_TOKEN)
 					{
 						SourceError(source, "string longer than MAX_TOKEN %d\n", MAX_TOKEN);
 						return qfalse;
 					}
-					QStr::Cat(token->string, MAX_TOKEN, newtoken.string+1);
+					String::Cat(token->string, MAX_TOKEN, newtoken.string+1);
 				}
 				else
 				{
@@ -2793,7 +2793,7 @@ int PC_ExpectTokenString(source_t *source, const char *string)
 		return qfalse;
 	} //end if
 
-	if (QStr::Cmp(token.string, string))
+	if (String::Cmp(token.string, string))
 	{
 		SourceError(source, "expected %s, found %s", string, token.string);
 		return qfalse;
@@ -2818,12 +2818,12 @@ int PC_ExpectTokenType(source_t *source, int type, int subtype, token_t *token)
 
 	if (token->type != type)
 	{
-		QStr::Cpy(str, "");
-		if (type == TT_STRING) QStr::Cpy(str, "string");
-		if (type == TT_LITERAL) QStr::Cpy(str, "literal");
-		if (type == TT_NUMBER) QStr::Cpy(str, "number");
-		if (type == TT_NAME) QStr::Cpy(str, "name");
-		if (type == TT_PUNCTUATION) QStr::Cpy(str, "punctuation");
+		String::Cpy(str, "");
+		if (type == TT_STRING) String::Cpy(str, "string");
+		if (type == TT_LITERAL) String::Cpy(str, "literal");
+		if (type == TT_NUMBER) String::Cpy(str, "number");
+		if (type == TT_NAME) String::Cpy(str, "name");
+		if (type == TT_PUNCTUATION) String::Cpy(str, "punctuation");
 		SourceError(source, "expected a %s, found %s", str, token->string);
 		return qfalse;
 	} //end if
@@ -2831,14 +2831,14 @@ int PC_ExpectTokenType(source_t *source, int type, int subtype, token_t *token)
 	{
 		if ((token->subtype & subtype) != subtype)
 		{
-			if (subtype & TT_DECIMAL) QStr::Cpy(str, "decimal");
-			if (subtype & TT_HEX) QStr::Cpy(str, "hex");
-			if (subtype & TT_OCTAL) QStr::Cpy(str, "octal");
-			if (subtype & TT_BINARY) QStr::Cpy(str, "binary");
-			if (subtype & TT_LONG) QStr::Cat(str, sizeof(str), " long");
-			if (subtype & TT_UNSIGNED) QStr::Cat(str, sizeof(str), " unsigned");
-			if (subtype & TT_FLOAT) QStr::Cat(str, sizeof(str), " float");
-			if (subtype & TT_INTEGER) QStr::Cat(str, sizeof(str), " integer");
+			if (subtype & TT_DECIMAL) String::Cpy(str, "decimal");
+			if (subtype & TT_HEX) String::Cpy(str, "hex");
+			if (subtype & TT_OCTAL) String::Cpy(str, "octal");
+			if (subtype & TT_BINARY) String::Cpy(str, "binary");
+			if (subtype & TT_LONG) String::Cat(str, sizeof(str), " long");
+			if (subtype & TT_UNSIGNED) String::Cat(str, sizeof(str), " unsigned");
+			if (subtype & TT_FLOAT) String::Cat(str, sizeof(str), " float");
+			if (subtype & TT_INTEGER) String::Cat(str, sizeof(str), " integer");
 			SourceError(source, "expected %s, found %s", str, token->string);
 			return qfalse;
 		} //end if
@@ -2883,7 +2883,7 @@ int PC_CheckTokenString(source_t *source, const char *string)
 
 	if (!PC_ReadToken(source, &tok)) return qfalse;
 	//if the token is available
-	if (!QStr::Cmp(tok.string, string)) return qtrue;
+	if (!String::Cmp(tok.string, string)) return qtrue;
 	//
 	PC_UnreadSourceToken(source, &tok);
 	return qfalse;
@@ -2922,7 +2922,7 @@ int PC_SkipUntilString(source_t *source, char *string)
 
 	while(PC_ReadToken(source, &token))
 	{
-		if (!QStr::Cmp(token.string, string)) return qtrue;
+		if (!String::Cmp(token.string, string)) return qtrue;
 	} //end while
 	return qfalse;
 } //end of the function PC_SkipUntilString
@@ -2954,12 +2954,12 @@ void PC_UnreadToken(source_t *source, token_t *token)
 //============================================================================
 void PC_SetIncludePath(source_t *source, char *path)
 {
-	QStr::NCpy(source->includepath, path, MAX_PATH);
+	String::NCpy(source->includepath, path, MAX_PATH);
 	//add trailing path seperator
-	if (source->includepath[QStr::Length(source->includepath)-1] != '\\' &&
-		source->includepath[QStr::Length(source->includepath)-1] != '/')
+	if (source->includepath[String::Length(source->includepath)-1] != '\\' &&
+		source->includepath[String::Length(source->includepath)-1] != '/')
 	{
-		QStr::Cat(source->includepath, MAX_PATH, PATHSEPERATOR_STR);
+		String::Cat(source->includepath, MAX_PATH, PATHSEPERATOR_STR);
 	} //end if
 } //end of the function PC_SetIncludePath
 //============================================================================
@@ -2993,7 +2993,7 @@ source_t *LoadSourceFile(const char *filename)
 	source = (source_t *) GetMemory(sizeof(source_t));
 	Com_Memset(source, 0, sizeof(source_t));
 
-	QStr::NCpy(source->filename, filename, MAX_PATH);
+	String::NCpy(source->filename, filename, MAX_PATH);
 	source->scriptstack = script;
 	source->tokens = NULL;
 	source->defines = NULL;
@@ -3026,7 +3026,7 @@ source_t *LoadSourceMemory(char *ptr, int length, char *name)
 	source = (source_t *) GetMemory(sizeof(source_t));
 	Com_Memset(source, 0, sizeof(source_t));
 
-	QStr::NCpy(source->filename, name, MAX_PATH);
+	String::NCpy(source->filename, name, MAX_PATH);
 	source->scriptstack = script;
 	source->tokens = NULL;
 	source->defines = NULL;
@@ -3165,7 +3165,7 @@ int PC_ReadTokenHandle(int handle, pc_token_t *pc_token)
 		return 0;
 
 	ret = PC_ReadToken(sourceFiles[handle], &token);
-	QStr::Cpy(pc_token->string, token.string);
+	String::Cpy(pc_token->string, token.string);
 	pc_token->type = token.type;
 	pc_token->subtype = token.subtype;
 	pc_token->intvalue = token.intvalue;
@@ -3187,7 +3187,7 @@ int PC_SourceFileAndLine(int handle, char *filename, int *line)
 	if (!sourceFiles[handle])
 		return qfalse;
 
-	QStr::Cpy(filename, sourceFiles[handle]->filename);
+	String::Cpy(filename, sourceFiles[handle]->filename);
 	if (sourceFiles[handle]->scriptstack)
 		*line = sourceFiles[handle]->scriptstack->line;
 	else

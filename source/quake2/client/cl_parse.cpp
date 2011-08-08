@@ -52,10 +52,10 @@ const char *svc_strings[256] =
 
 void CL_DownloadFileName(char *dest, int destlen, char *fn)
 {
-	if (QStr::NCmp(fn, "players", 7) == 0)
-		QStr::Sprintf (dest, destlen, "%s/%s", BASEDIRNAME, fn);
+	if (String::NCmp(fn, "players", 7) == 0)
+		String::Sprintf (dest, destlen, "%s/%s", BASEDIRNAME, fn);
 	else
-		QStr::Sprintf (dest, destlen, "%s/%s", FS_Gamedir(), fn);
+		String::Sprintf (dest, destlen, "%s/%s", FS_Gamedir(), fn);
 }
 
 /*
@@ -79,13 +79,13 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 		return true;
 	}
 
-	QStr::Cpy(cls.downloadname, filename);
+	String::Cpy(cls.downloadname, filename);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	QStr::StripExtension (cls.downloadname, cls.downloadtempname);
-	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
+	String::StripExtension (cls.downloadname, cls.downloadtempname);
+	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 	Com_Printf ("Downloading %s\n", cls.downloadname);
 	cls.netchan.message.WriteByte(clc_stringcmd);
@@ -113,7 +113,7 @@ void	CL_Download_f (void)
 		return;
 	}
 
-	QStr::Sprintf(filename, sizeof(filename), "%s", Cmd_Argv(1));
+	String::Sprintf(filename, sizeof(filename), "%s", Cmd_Argv(1));
 
 	if (strstr (filename, ".."))
 	{
@@ -127,14 +127,14 @@ void	CL_Download_f (void)
 		return;
 	}
 
-	QStr::Cpy(cls.downloadname, filename);
+	String::Cpy(cls.downloadname, filename);
 	Com_Printf ("Downloading %s\n", cls.downloadname);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	QStr::StripExtension (cls.downloadname, cls.downloadtempname);
-	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
+	String::StripExtension (cls.downloadname, cls.downloadtempname);
+	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 	cls.netchan.message.WriteByte(clc_stringcmd);
 	cls.netchan.message.WriteString2(
@@ -298,10 +298,10 @@ void CL_ParseServerData (void)
 
 	// game directory
 	str = const_cast<char*>(net_message.ReadString2());
-	QStr::NCpy(cl.gamedir, str, sizeof(cl.gamedir)-1);
+	String::NCpy(cl.gamedir, str, sizeof(cl.gamedir)-1);
 
 	// set gamedir
-	if ((*str && (!fs_gamedirvar->string || !*fs_gamedirvar->string || QStr::Cmp(fs_gamedirvar->string, str))) || (!*str && (fs_gamedirvar->string || *fs_gamedirvar->string)))
+	if ((*str && (!fs_gamedirvar->string || !*fs_gamedirvar->string || String::Cmp(fs_gamedirvar->string, str))) || (!*str && (fs_gamedirvar->string || *fs_gamedirvar->string)))
 		Cvar_SetLatched("game", str);
 
 	// parse player entity number
@@ -360,11 +360,11 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 	char		skin_filename[MAX_QPATH];
 	char		weapon_filename[MAX_QPATH];
 
-	QStr::NCpy(ci->cinfo, s, sizeof(ci->cinfo));
+	String::NCpy(ci->cinfo, s, sizeof(ci->cinfo));
 	ci->cinfo[sizeof(ci->cinfo)-1] = 0;
 
 	// isolate the player's name
-	QStr::NCpy(ci->name, s, sizeof(ci->name));
+	String::NCpy(ci->name, s, sizeof(ci->name));
 	ci->name[sizeof(ci->name)-1] = 0;
 	const char* t1 = strstr (s, "\\");
 	if (t1)
@@ -375,10 +375,10 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 
 	if (cl_noskins->value || *s == 0)
 	{
-		QStr::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
-		QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/male/weapon.md2");
-		QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/male/grunt.pcx");
-		QStr::Sprintf (ci->iconname, sizeof(ci->iconname), "/players/male/grunt_i.pcx");
+		String::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
+		String::Sprintf (weapon_filename, sizeof(weapon_filename), "players/male/weapon.md2");
+		String::Sprintf (skin_filename, sizeof(skin_filename), "players/male/grunt.pcx");
+		String::Sprintf (ci->iconname, sizeof(ci->iconname), "/players/male/grunt_i.pcx");
 		ci->model = R_RegisterModel(model_filename);
 		Com_Memset(ci->weaponmodel, 0, sizeof(ci->weaponmodel));
 		ci->weaponmodel[0] = R_RegisterModel(weapon_filename);
@@ -388,7 +388,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 	else
 	{
 		// isolate the model name
-		QStr::Cpy(model_name, s);
+		String::Cpy(model_name, s);
 		char* t = strstr(model_name, "/");
 		if (!t)
 			t = strstr(model_name, "\\");
@@ -397,33 +397,33 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 		*t = 0;
 
 		// isolate the skin name
-		QStr::Cpy(skin_name, s + QStr::Length(model_name) + 1);
+		String::Cpy(skin_name, s + String::Length(model_name) + 1);
 
 		// model file
-		QStr::Sprintf (model_filename, sizeof(model_filename), "players/%s/tris.md2", model_name);
+		String::Sprintf (model_filename, sizeof(model_filename), "players/%s/tris.md2", model_name);
 		ci->model = R_RegisterModel(model_filename);
 		if (!ci->model)
 		{
-			QStr::Cpy(model_name, "male");
-			QStr::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
+			String::Cpy(model_name, "male");
+			String::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
 			ci->model = R_RegisterModel(model_filename);
 		}
 
 		// skin file
-		QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
+		String::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
 		ci->skin = R_RegisterSkinQ2 (skin_filename);
 
 		// if we don't have the skin and the model wasn't male,
 		// see if the male has it (this is for CTF's skins)
- 		if (!ci->skin && QStr::ICmp(model_name, "male"))
+ 		if (!ci->skin && String::ICmp(model_name, "male"))
 		{
 			// change model to male
-			QStr::Cpy(model_name, "male");
-			QStr::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
+			String::Cpy(model_name, "male");
+			String::Sprintf (model_filename, sizeof(model_filename), "players/male/tris.md2");
 			ci->model = R_RegisterModel(model_filename);
 
 			// see if the skin exists for the male model
-			QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
+			String::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/%s.pcx", model_name, skin_name);
 			ci->skin = R_RegisterSkinQ2 (skin_filename);
 		}
 
@@ -431,17 +431,17 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 		// it, so default to grunt
 		if (!ci->skin) {
 			// see if the skin exists for the male model
-			QStr::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/grunt.pcx", model_name, skin_name);
+			String::Sprintf (skin_filename, sizeof(skin_filename), "players/%s/grunt.pcx", model_name, skin_name);
 			ci->skin = R_RegisterSkinQ2 (skin_filename);
 		}
 
 		// weapon file
 		for (i = 0; i < num_cl_weaponmodels; i++) {
-			QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/%s/%s", model_name, cl_weaponmodels[i]);
+			String::Sprintf (weapon_filename, sizeof(weapon_filename), "players/%s/%s", model_name, cl_weaponmodels[i]);
 			ci->weaponmodel[i] = R_RegisterModel(weapon_filename);
-			if (!ci->weaponmodel[i] && QStr::Cmp(model_name, "cyborg") == 0) {
+			if (!ci->weaponmodel[i] && String::Cmp(model_name, "cyborg") == 0) {
 				// try male
-				QStr::Sprintf (weapon_filename, sizeof(weapon_filename), "players/male/%s", cl_weaponmodels[i]);
+				String::Sprintf (weapon_filename, sizeof(weapon_filename), "players/male/%s", cl_weaponmodels[i]);
 				ci->weaponmodel[i] = R_RegisterModel(weapon_filename);
 			}
 			if (!cl_vwep->value)
@@ -449,7 +449,7 @@ void CL_LoadClientinfo (clientinfo_t *ci, const char *s)
 		}
 
 		// icon file
-		QStr::Sprintf (ci->iconname, sizeof(ci->iconname), "/players/%s/%s_i.pcx", model_name, skin_name);
+		String::Sprintf (ci->iconname, sizeof(ci->iconname), "/players/%s/%s_i.pcx", model_name, skin_name);
 		ci->icon = R_RegisterPic (ci->iconname);
 	}
 
@@ -498,7 +498,7 @@ void CL_ParseConfigString (void)
 	if (i < 0 || i >= MAX_CONFIGSTRINGS)
 		Com_Error (ERR_DROP, "configstring > MAX_CONFIGSTRINGS");
 	s = const_cast<char*>(net_message.ReadString2());
-	QStr::Cpy(cl.configstrings[i], s);
+	String::Cpy(cl.configstrings[i], s);
 
 	// do something apropriate 
 
@@ -507,7 +507,7 @@ void CL_ParseConfigString (void)
 	else if (i == CS_CDTRACK)
 	{
 		if (cl.refresh_prepped)
-			CDAudio_Play (QStr::Atoi(cl.configstrings[CS_CDTRACK]), true);
+			CDAudio_Play (String::Atoi(cl.configstrings[CS_CDTRACK]), true);
 	}
 	else if (i >= CS_MODELS && i < CS_MODELS+MAX_MODELS)
 	{
@@ -515,7 +515,7 @@ void CL_ParseConfigString (void)
 		{
 			cl.model_draw[i-CS_MODELS] = R_RegisterModel(cl.configstrings[i]);
 			if (cl.configstrings[i][0] == '*')
-				cl.model_clip[i-CS_MODELS] = CM_InlineModel(QStr::Atoi(cl.configstrings[i] + 1));
+				cl.model_clip[i-CS_MODELS] = CM_InlineModel(String::Atoi(cl.configstrings[i] + 1));
 			else
 				cl.model_clip[i-CS_MODELS] = 0;
 		}
@@ -755,7 +755,7 @@ void CL_ParseServerMessage (void)
 
 		case svc_layout:
 			s = const_cast<char*>(net_message.ReadString2());
-			QStr::NCpy(cl.layout, s, sizeof(cl.layout)-1);
+			String::NCpy(cl.layout, s, sizeof(cl.layout)-1);
 			break;
 
 		case svc_playerinfo:

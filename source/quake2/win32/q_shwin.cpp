@@ -70,13 +70,13 @@ char *Sys_FindFirst (char *path, unsigned musthave, unsigned canthave )
 		Sys_Error ("Sys_BeginFind without close");
 	findhandle = 0;
 
-    QStr::FilePath (path, findbase);
+    String::FilePath (path, findbase);
 	findhandle = _findfirst (path, &findinfo);
 	if (findhandle == -1)
 		return NULL;
 	if ( !CompareAttributes( findinfo.attrib, musthave, canthave ) )
 		return NULL;
-	QStr::Sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+	String::Sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
 	return findpath;
 }
 
@@ -91,7 +91,7 @@ char *Sys_FindNext ( unsigned musthave, unsigned canthave )
 	if ( !CompareAttributes( findinfo.attrib, musthave, canthave ) )
 		return NULL;
 
-	QStr::Sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
+	String::Sprintf (findpath, sizeof(findpath), "%s/%s", findbase, findinfo.name);
 	return findpath;
 }
 

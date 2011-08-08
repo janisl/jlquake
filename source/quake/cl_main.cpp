@@ -374,7 +374,7 @@ static void R_HandleRefEntColormap(refEntity_t* Ent, int ColorMap)
 {
 	// we can't dynamically colormap textures, so they are cached
 	// seperately for the players.  Heads are just uncolored.
-	if (ColorMap && !QStr::Cmp(R_ModelName(Ent->hModel), "progs/player.mdl"))
+	if (ColorMap && !String::Cmp(R_ModelName(Ent->hModel), "progs/player.mdl"))
 	{
 	    Ent->customSkin = R_GetImageHandle(playertextures[ColorMap - 1]);
 	}
@@ -720,7 +720,7 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 
 	AnglesToAxis(angles, ent->axis);
 
-	if (!QStr::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl") && cl_doubleeyes->value)
+	if (!String::Cmp(R_ModelName(ent->hModel), "progs/eyes.mdl") && cl_doubleeyes->value)
 	{
 		// double size of eyes, since they are really hard to see in gl
 		ent->renderfx |= RF_LIGHTING_ORIGIN;
@@ -734,8 +734,8 @@ void CL_SetRefEntAxis(refEntity_t* ent, vec3_t ent_angles)
 	}
 
 	// HACK HACK HACK -- no fullbright colors, so make torches full light
-	if (!QStr::Cmp(R_ModelName(ent->hModel), "progs/flame2.mdl") ||
-		!QStr::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
+	if (!String::Cmp(R_ModelName(ent->hModel), "progs/flame2.mdl") ||
+		!String::Cmp(R_ModelName(ent->hModel), "progs/flame.mdl"))
 	{
 		ent->renderfx |= RF_ABSOLUTE_LIGHT;
 		ent->radius = 1.0;

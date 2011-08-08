@@ -111,7 +111,7 @@ static void FindNextChunk(const char *name)
 		}
 		data_p -= 8;
 		last_chunk = data_p + 8 + ( (iff_chunk_len + 1) & ~1 );
-		if (!QStr::NCmp((char*)data_p, name, 4))
+		if (!String::NCmp((char*)data_p, name, 4))
 		{
 			return;
 		}
@@ -152,7 +152,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 
 	// find "RIFF" chunk
 	FindChunk("RIFF");
-	if (!(data_p && !QStr::NCmp((char*)data_p + 8, "WAVE", 4)))
+	if (!(data_p && !String::NCmp((char*)data_p + 8, "WAVE", 4)))
 	{
 		GLog.Write("Missing RIFF/WAVE chunks\n");
 		return info;
@@ -191,7 +191,7 @@ static wavinfo_t GetWavinfo(const char* name, byte* wav, int wavlength)
 		FindNextChunk("LIST");
 		if (data_p)
 		{
-			if (!QStr::NCmp((char*)data_p + 28, "mark", 4))
+			if (!String::NCmp((char*)data_p + 28, "mark", 4))
 			{
 				// this is not a proper parse, but it works with cooledit...
 				data_p += 24;
@@ -292,17 +292,17 @@ bool S_LoadSound(sfx_t* sfx)
 	if (GGameType & GAME_Quake3)
 	{
 		//	Quake 3 uses full names.
-		QStr::Cpy(namebuffer, name);
+		String::Cpy(namebuffer, name);
 	}
 	else if ((GGameType & GAME_Quake2) && name[0] == '#')
 	{
 		//	In Quake 2 sounds prefixed with # are followed by full name.
-		QStr::Cpy(namebuffer, &name[1]);
+		String::Cpy(namebuffer, &name[1]);
 	}
 	else
 	{
 		//	The rest are prefixed with sound/
-		QStr::Sprintf(namebuffer, sizeof(namebuffer), "sound/%s", name);
+		String::Sprintf(namebuffer, sizeof(namebuffer), "sound/%s", name);
 	}
 
 	Array<byte> data;

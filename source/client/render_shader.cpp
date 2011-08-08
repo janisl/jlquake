@@ -160,8 +160,8 @@ static collapse_t collapse[] =
 static bool ParseVector(const char** text, int count, float* v)
 {
 	// FIXME: spaces are currently required after parens, should change parseext...
-	char* token = QStr::ParseExt(text, false);
-	if (QStr::Cmp(token, "("))
+	char* token = String::ParseExt(text, false);
+	if (String::Cmp(token, "("))
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing parenthesis in shader '%s'\n", shader.name);
 		return false;
@@ -169,17 +169,17 @@ static bool ParseVector(const char** text, int count, float* v)
 
 	for (int i = 0; i < count; i++)
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (!token[0])
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing vector element in shader '%s'\n", shader.name);
 			return false;
 		}
-		v[i] = QStr::Atof(token);
+		v[i] = String::Atof(token);
 	}
 
-	token = QStr::ParseExt(text, false);
-	if (QStr::Cmp(token, ")"))
+	token = String::ParseExt(text, false);
+	if (String::Cmp(token, ")"))
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing parenthesis in shader '%s'\n", shader.name);
 		return false;
@@ -196,15 +196,15 @@ static bool ParseVector(const char** text, int count, float* v)
 
 static unsigned NameToAFunc(const char* funcname)
 {	
-	if (!QStr::ICmp(funcname, "GT0"))
+	if (!String::ICmp(funcname, "GT0"))
 	{
 		return GLS_ATEST_GT_0;
 	}
-	else if (!QStr::ICmp(funcname, "LT128"))
+	else if (!String::ICmp(funcname, "LT128"))
 	{
 		return GLS_ATEST_LT_80;
 	}
-	else if (!QStr::ICmp(funcname, "GE128"))
+	else if (!String::ICmp(funcname, "GE128"))
 	{
 		return GLS_ATEST_GE_80;
 	}
@@ -221,39 +221,39 @@ static unsigned NameToAFunc(const char* funcname)
 
 static int NameToSrcBlendMode(const char* name)
 {
-	if (!QStr::ICmp(name, "GL_ONE"))
+	if (!String::ICmp(name, "GL_ONE"))
 	{
 		return GLS_SRCBLEND_ONE;
 	}
-	else if (!QStr::ICmp(name, "GL_ZERO"))
+	else if (!String::ICmp(name, "GL_ZERO"))
 	{
 		return GLS_SRCBLEND_ZERO;
 	}
-	else if (!QStr::ICmp(name, "GL_DST_COLOR"))
+	else if (!String::ICmp(name, "GL_DST_COLOR"))
 	{
 		return GLS_SRCBLEND_DST_COLOR;
 	}
-	else if (!QStr::ICmp(name, "GL_ONE_MINUS_DST_COLOR"))
+	else if (!String::ICmp(name, "GL_ONE_MINUS_DST_COLOR"))
 	{
 		return GLS_SRCBLEND_ONE_MINUS_DST_COLOR;
 	}
-	else if (!QStr::ICmp(name, "GL_SRC_ALPHA"))
+	else if (!String::ICmp(name, "GL_SRC_ALPHA"))
 	{
 		return GLS_SRCBLEND_SRC_ALPHA;
 	}
-	else if (!QStr::ICmp(name, "GL_ONE_MINUS_SRC_ALPHA"))
+	else if (!String::ICmp(name, "GL_ONE_MINUS_SRC_ALPHA"))
 	{
 		return GLS_SRCBLEND_ONE_MINUS_SRC_ALPHA;
 	}
-	else if (!QStr::ICmp(name, "GL_DST_ALPHA"))
+	else if (!String::ICmp(name, "GL_DST_ALPHA"))
 	{
 		return GLS_SRCBLEND_DST_ALPHA;
 	}
-	else if (!QStr::ICmp(name, "GL_ONE_MINUS_DST_ALPHA"))
+	else if (!String::ICmp(name, "GL_ONE_MINUS_DST_ALPHA"))
 	{
 		return GLS_SRCBLEND_ONE_MINUS_DST_ALPHA;
 	}
-	else if (!QStr::ICmp(name, "GL_SRC_ALPHA_SATURATE"))
+	else if (!String::ICmp(name, "GL_SRC_ALPHA_SATURATE"))
 	{
 		return GLS_SRCBLEND_ALPHA_SATURATE;
 	}
@@ -270,35 +270,35 @@ static int NameToSrcBlendMode(const char* name)
 
 static int NameToDstBlendMode(const char* name)
 {
-	if (!QStr::ICmp(name, "GL_ONE"))
+	if (!String::ICmp(name, "GL_ONE"))
 	{
 		return GLS_DSTBLEND_ONE;
 	}
-	else if (!QStr::ICmp(name, "GL_ZERO"))
+	else if (!String::ICmp(name, "GL_ZERO"))
 	{
 		return GLS_DSTBLEND_ZERO;
 	}
-	else if (!QStr::ICmp(name, "GL_SRC_ALPHA"))
+	else if (!String::ICmp(name, "GL_SRC_ALPHA"))
 	{
 		return GLS_DSTBLEND_SRC_ALPHA;
 	}
-	else if (!QStr::ICmp(name, "GL_ONE_MINUS_SRC_ALPHA"))
+	else if (!String::ICmp(name, "GL_ONE_MINUS_SRC_ALPHA"))
 	{
 		return GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	}
-	else if (!QStr::ICmp(name, "GL_DST_ALPHA"))
+	else if (!String::ICmp(name, "GL_DST_ALPHA"))
 	{
 		return GLS_DSTBLEND_DST_ALPHA;
 	}
-	else if (!QStr::ICmp(name, "GL_ONE_MINUS_DST_ALPHA"))
+	else if (!String::ICmp(name, "GL_ONE_MINUS_DST_ALPHA"))
 	{
 		return GLS_DSTBLEND_ONE_MINUS_DST_ALPHA;
 	}
-	else if (!QStr::ICmp(name, "GL_SRC_COLOR"))
+	else if (!String::ICmp(name, "GL_SRC_COLOR"))
 	{
 		return GLS_DSTBLEND_SRC_COLOR;
 	}
-	else if (!QStr::ICmp(name, "GL_ONE_MINUS_SRC_COLOR"))
+	else if (!String::ICmp(name, "GL_ONE_MINUS_SRC_COLOR"))
 	{
 		return GLS_DSTBLEND_ONE_MINUS_SRC_COLOR;
 	}
@@ -315,27 +315,27 @@ static int NameToDstBlendMode(const char* name)
 
 static genFunc_t NameToGenFunc(const char* funcname)
 {
-	if (!QStr::ICmp(funcname, "sin"))
+	if (!String::ICmp(funcname, "sin"))
 	{
 		return GF_SIN;
 	}
-	else if (!QStr::ICmp(funcname, "square"))
+	else if (!String::ICmp(funcname, "square"))
 	{
 		return GF_SQUARE;
 	}
-	else if (!QStr::ICmp(funcname, "triangle"))
+	else if (!String::ICmp(funcname, "triangle"))
 	{
 		return GF_TRIANGLE;
 	}
-	else if (!QStr::ICmp(funcname, "sawtooth"))
+	else if (!String::ICmp(funcname, "sawtooth"))
 	{
 		return GF_SAWTOOTH;
 	}
-	else if (!QStr::ICmp(funcname, "inversesawtooth"))
+	else if (!String::ICmp(funcname, "inversesawtooth"))
 	{
 		return GF_INVERSE_SAWTOOTH;
 	}
-	else if (!QStr::ICmp(funcname, "noise"))
+	else if (!String::ICmp(funcname, "noise"))
 	{
 		return GF_NOISE;
 	}
@@ -352,7 +352,7 @@ static genFunc_t NameToGenFunc(const char* funcname)
 
 static void ParseWaveForm(const char** text, waveForm_t* wave)
 {
-	char* token = QStr::ParseExt(text, false);
+	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
@@ -361,37 +361,37 @@ static void ParseWaveForm(const char** text, waveForm_t* wave)
 	wave->func = NameToGenFunc(token);
 
 	// BASE, AMP, PHASE, FREQ
-	token = QStr::ParseExt(text, false);
+	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
-	wave->base = QStr::Atof(token);
+	wave->base = String::Atof(token);
 
-	token = QStr::ParseExt(text, false);
+	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
-	wave->amplitude = QStr::Atof(token);
+	wave->amplitude = String::Atof(token);
 
-	token = QStr::ParseExt(text, false);
+	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
-	wave->phase = QStr::Atof(token);
+	wave->phase = String::Atof(token);
 
-	token = QStr::ParseExt(text, false);
+	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
-	wave->frequency = QStr::Atof(token);
+	wave->frequency = String::Atof(token);
 }
 
 //==========================================================================
@@ -412,93 +412,93 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 	texModInfo_t* tmi = &stage->bundle[0].texMods[stage->bundle[0].numTexMods];
 	stage->bundle[0].numTexMods++;
 
-	const char* token = QStr::ParseExt(text, false);
+	const char* token = String::ParseExt(text, false);
 
 	//
 	// turb
 	//
-	if (!QStr::ICmp(token, "turb"))
+	if (!String::ICmp(token, "turb"))
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing tcMod turb parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->wave.base = QStr::Atof(token);
-		token = QStr::ParseExt(text, false);
+		tmi->wave.base = String::Atof(token);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->wave.amplitude = QStr::Atof(token);
-		token = QStr::ParseExt(text, false);
+		tmi->wave.amplitude = String::Atof(token);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->wave.phase = QStr::Atof(token);
-		token = QStr::ParseExt(text, false);
+		tmi->wave.phase = String::Atof(token);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->wave.frequency = QStr::Atof(token);
+		tmi->wave.frequency = String::Atof(token);
 
 		tmi->type = TMOD_TURBULENT;
 	}
 	//
 	// scale
 	//
-	else if (!QStr::ICmp(token, "scale"))
+	else if (!String::ICmp(token, "scale"))
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing scale parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->scale[0] = QStr::Atof(token);
+		tmi->scale[0] = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing scale parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->scale[1] = QStr::Atof(token);
+		tmi->scale[1] = String::Atof(token);
 		tmi->type = TMOD_SCALE;
 	}
 	//
 	// scroll
 	//
-	else if (!QStr::ICmp(token, "scroll"))
+	else if (!String::ICmp(token, "scroll"))
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing scale scroll parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->scroll[0] = QStr::Atof(token);
-		token = QStr::ParseExt(text, false);
+		tmi->scroll[0] = String::Atof(token);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing scale scroll parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->scroll[1] = QStr::Atof(token);
+		tmi->scroll[1] = String::Atof(token);
 		tmi->type = TMOD_SCROLL;
 	}
 	//
 	// stretch
 	//
-	else if (!QStr::ICmp( token, "stretch"))
+	else if (!String::ICmp( token, "stretch"))
 	{
-		token = QStr::ParseExt( text, false);
+		token = String::ParseExt( text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
@@ -506,113 +506,113 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		}
 		tmi->wave.func = NameToGenFunc(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->wave.base = QStr::Atof(token);
+		tmi->wave.base = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->wave.amplitude = QStr::Atof(token);
+		tmi->wave.amplitude = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->wave.phase = QStr::Atof(token);
+		tmi->wave.phase = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->wave.frequency = QStr::Atof(token);
+		tmi->wave.frequency = String::Atof(token);
 		
 		tmi->type = TMOD_STRETCH;
 	}
 	//
 	// transform
 	//
-	else if (!QStr::ICmp(token, "transform"))
+	else if (!String::ICmp(token, "transform"))
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->matrix[0][0] = QStr::Atof(token);
+		tmi->matrix[0][0] = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->matrix[0][1] = QStr::Atof(token);
+		tmi->matrix[0][1] = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->matrix[1][0] = QStr::Atof(token);
+		tmi->matrix[1][0] = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->matrix[1][1] = QStr::Atof(token);
+		tmi->matrix[1][1] = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->translate[0] = QStr::Atof(token);
+		tmi->translate[0] = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->translate[1] = QStr::Atof(token);
+		tmi->translate[1] = String::Atof(token);
 
 		tmi->type = TMOD_TRANSFORM;
 	}
 	//
 	// rotate
 	//
-	else if (!QStr::ICmp(token, "rotate"))
+	else if (!String::ICmp(token, "rotate"))
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing tcMod rotate parms in shader '%s'\n", shader.name);
 			return;
 		}
-		tmi->rotateSpeed = QStr::Atof(token);
+		tmi->rotateSpeed = String::Atof(token);
 		tmi->type = TMOD_ROTATE;
 	}
 	//
 	// entityTranslate
 	//
-	else if (!QStr::ICmp(token, "entityTranslate"))
+	else if (!String::ICmp(token, "entityTranslate"))
 	{
 		tmi->type = TMOD_ENTITY_TRANSLATE;
 	}
@@ -637,7 +637,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 
 	while (1)
 	{
-		char* token = QStr::ParseExt(text, true);
+		char* token = String::ParseExt(text, true);
 		if (!token[0])
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: no matching '}' found\n");
@@ -651,21 +651,21 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// map <name>
 		//
-		else if (!QStr::ICmp(token, "map"))
+		else if (!String::ICmp(token, "map"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parameter for 'map' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
 
-			if (!QStr::ICmp( token, "$whiteimage"))
+			if (!String::ICmp( token, "$whiteimage"))
 			{
 				stage->bundle[0].image[0] = tr.whiteImage;
 				continue;
 			}
-			else if (!QStr::ICmp(token, "$lightmap"))
+			else if (!String::ICmp(token, "$lightmap"))
 			{
 				stage->bundle[0].isLightmap = true;
 				if (shader.lightmapIndex < 0)
@@ -691,9 +691,9 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// clampmap <name>
 		//
-		else if (!QStr::ICmp(token, "clampmap"))
+		else if (!String::ICmp(token, "clampmap"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parameter for 'clampmap' keyword in shader '%s'\n", shader.name);
@@ -710,20 +710,20 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// animMap <frequency> <image1> .... <imageN>
 		//
-		else if (!QStr::ICmp(token, "animMap"))
+		else if (!String::ICmp(token, "animMap"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parameter for 'animMmap' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
-			stage->bundle[0].imageAnimationSpeed = QStr::Atof(token);
+			stage->bundle[0].imageAnimationSpeed = String::Atof(token);
 
 			// parse up to MAX_IMAGE_ANIMATIONS animations
 			while (1)
 			{
-				token = QStr::ParseExt(text, false);
+				token = String::ParseExt(text, false);
 				if (!token[0])
 				{
 					break;
@@ -741,9 +741,9 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				}
 			}
 		}
-		else if (!QStr::ICmp(token, "videoMap"))
+		else if (!String::ICmp(token, "videoMap"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parameter for 'videoMmap' keyword in shader '%s'\n", shader.name);
@@ -759,9 +759,9 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// alphafunc <func>
 		//
-		else if (!QStr::ICmp(token, "alphaFunc"))
+		else if (!String::ICmp(token, "alphaFunc"))
 		{
-			token = QStr::ParseExt( text, false);
+			token = String::ParseExt( text, false);
 			if (!token[0])
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parameter for 'alphaFunc' keyword in shader '%s'\n", shader.name);
@@ -773,9 +773,9 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// depthFunc <func>
 		//
-		else if (!QStr::ICmp(token, "depthfunc"))
+		else if (!String::ICmp(token, "depthfunc"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 
 			if (!token[0])
 			{
@@ -783,11 +783,11 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				return false;
 			}
 
-			if (!QStr::ICmp(token, "lequal"))
+			if (!String::ICmp(token, "lequal"))
 			{
 				depthFuncBits = 0;
 			}
-			else if (!QStr::ICmp(token, "equal"))
+			else if (!String::ICmp(token, "equal"))
 			{
 				depthFuncBits = GLS_DEPTHFUNC_EQUAL;
 			}
@@ -800,7 +800,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// detail
 		//
-		else if (!QStr::ICmp(token, "detail"))
+		else if (!String::ICmp(token, "detail"))
 		{
 			stage->isDetail = true;
 		}
@@ -808,26 +808,26 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		// blendfunc <srcFactor> <dstFactor>
 		// or blendfunc <add|filter|blend>
 		//
-		else if (!QStr::ICmp(token, "blendfunc"))
+		else if (!String::ICmp(token, "blendfunc"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parm for blendFunc in shader '%s'\n", shader.name);
 				continue;
 			}
 			// check for "simple" blends first
-			if (!QStr::ICmp( token, "add"))
+			if (!String::ICmp( token, "add"))
 			{
 				blendSrcBits = GLS_SRCBLEND_ONE;
 				blendDstBits = GLS_DSTBLEND_ONE;
 			}
-			else if (!QStr::ICmp( token, "filter"))
+			else if (!String::ICmp( token, "filter"))
 			{
 				blendSrcBits = GLS_SRCBLEND_DST_COLOR;
 				blendDstBits = GLS_DSTBLEND_ZERO;
 			}
-			else if (!QStr::ICmp( token, "blend"))
+			else if (!String::ICmp( token, "blend"))
 			{
 				blendSrcBits = GLS_SRCBLEND_SRC_ALPHA;
 				blendDstBits = GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
@@ -837,7 +837,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				// complex double blends
 				blendSrcBits = NameToSrcBlendMode(token);
 
-				token = QStr::ParseExt(text, false);
+				token = String::ParseExt(text, false);
 				if (token[0] == 0)
 				{
 					GLog.Write(S_COLOR_YELLOW "WARNING: missing parm for blendFunc in shader '%s'\n", shader.name);
@@ -855,21 +855,21 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// rgbGen
 		//
-		else if (!QStr::ICmp(token, "rgbGen"))
+		else if (!String::ICmp(token, "rgbGen"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parameters for rgbGen in shader '%s'\n", shader.name);
 				continue;
 			}
 
-			if (!QStr::ICmp( token, "wave"))
+			if (!String::ICmp( token, "wave"))
 			{
 				ParseWaveForm(text, &stage->rgbWave);
 				stage->rgbGen = CGEN_WAVEFORM;
 			}
-			else if (!QStr::ICmp(token, "const"))
+			else if (!String::ICmp(token, "const"))
 			{
 				vec3_t	color;
 
@@ -880,23 +880,23 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 
 				stage->rgbGen = CGEN_CONST;
 			}
-			else if (!QStr::ICmp(token, "identity"))
+			else if (!String::ICmp(token, "identity"))
 			{
 				stage->rgbGen = CGEN_IDENTITY;
 			}
-			else if (!QStr::ICmp(token, "identityLighting"))
+			else if (!String::ICmp(token, "identityLighting"))
 			{
 				stage->rgbGen = CGEN_IDENTITY_LIGHTING;
 			}
-			else if (!QStr::ICmp(token, "entity"))
+			else if (!String::ICmp(token, "entity"))
 			{
 				stage->rgbGen = CGEN_ENTITY;
 			}
-			else if (!QStr::ICmp(token, "oneMinusEntity"))
+			else if (!String::ICmp(token, "oneMinusEntity"))
 			{
 				stage->rgbGen = CGEN_ONE_MINUS_ENTITY;
 			}
-			else if (!QStr::ICmp(token, "vertex"))
+			else if (!String::ICmp(token, "vertex"))
 			{
 				stage->rgbGen = CGEN_VERTEX;
 				if (stage->alphaGen == 0)
@@ -904,15 +904,15 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 					stage->alphaGen = AGEN_VERTEX;
 				}
 			}
-			else if (!QStr::ICmp(token, "exactVertex"))
+			else if (!String::ICmp(token, "exactVertex"))
 			{
 				stage->rgbGen = CGEN_EXACT_VERTEX;
 			}
-			else if (!QStr::ICmp(token, "lightingDiffuse"))
+			else if (!String::ICmp(token, "lightingDiffuse"))
 			{
 				stage->rgbGen = CGEN_LIGHTING_DIFFUSE;
 			}
-			else if (!QStr::ICmp(token, "oneMinusVertex"))
+			else if (!String::ICmp(token, "oneMinusVertex"))
 			{
 				stage->rgbGen = CGEN_ONE_MINUS_VERTEX;
 			}
@@ -925,54 +925,54 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// alphaGen 
 		//
-		else if (!QStr::ICmp(token, "alphaGen"))
+		else if (!String::ICmp(token, "alphaGen"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parameters for alphaGen in shader '%s'\n", shader.name);
 				continue;
 			}
 
-			if (!QStr::ICmp(token, "wave"))
+			if (!String::ICmp(token, "wave"))
 			{
 				ParseWaveForm(text, &stage->alphaWave);
 				stage->alphaGen = AGEN_WAVEFORM;
 			}
-			else if (!QStr::ICmp(token, "const"))
+			else if (!String::ICmp(token, "const"))
 			{
-				token = QStr::ParseExt(text, false);
-				stage->constantColor[3] = 255 * QStr::Atof(token);
+				token = String::ParseExt(text, false);
+				stage->constantColor[3] = 255 * String::Atof(token);
 				stage->alphaGen = AGEN_CONST;
 			}
-			else if (!QStr::ICmp(token, "identity"))
+			else if (!String::ICmp(token, "identity"))
 			{
 				stage->alphaGen = AGEN_IDENTITY;
 			}
-			else if (!QStr::ICmp(token, "entity"))
+			else if (!String::ICmp(token, "entity"))
 			{
 				stage->alphaGen = AGEN_ENTITY;
 			}
-			else if (!QStr::ICmp(token, "oneMinusEntity"))
+			else if (!String::ICmp(token, "oneMinusEntity"))
 			{
 				stage->alphaGen = AGEN_ONE_MINUS_ENTITY;
 			}
-			else if (!QStr::ICmp(token, "vertex"))
+			else if (!String::ICmp(token, "vertex"))
 			{
 				stage->alphaGen = AGEN_VERTEX;
 			}
-			else if (!QStr::ICmp(token, "lightingSpecular"))
+			else if (!String::ICmp(token, "lightingSpecular"))
 			{
 				stage->alphaGen = AGEN_LIGHTING_SPECULAR;
 			}
-			else if (!QStr::ICmp(token, "oneMinusVertex"))
+			else if (!String::ICmp(token, "oneMinusVertex"))
 			{
 				stage->alphaGen = AGEN_ONE_MINUS_VERTEX;
 			}
-			else if (!QStr::ICmp(token, "portal"))
+			else if (!String::ICmp(token, "portal"))
 			{
 				stage->alphaGen = AGEN_PORTAL;
-				token = QStr::ParseExt(text, false);
+				token = String::ParseExt(text, false);
 				if (token[0] == 0)
 				{
 					shader.portalRange = 256;
@@ -980,7 +980,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				}
 				else
 				{
-					shader.portalRange = QStr::Atof(token);
+					shader.portalRange = String::Atof(token);
 				}
 			}
 			else
@@ -992,28 +992,28 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// tcGen <function>
 		//
-		else if (!QStr::ICmp(token, "texgen") || !QStr::ICmp(token, "tcGen")) 
+		else if (!String::ICmp(token, "texgen") || !String::ICmp(token, "tcGen")) 
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing texgen parm in shader '%s'\n", shader.name);
 				continue;
 			}
 
-			if (!QStr::ICmp( token, "environment"))
+			if (!String::ICmp( token, "environment"))
 			{
 				stage->bundle[0].tcGen = TCGEN_ENVIRONMENT_MAPPED;
 			}
-			else if (!QStr::ICmp( token, "lightmap"))
+			else if (!String::ICmp( token, "lightmap"))
 			{
 				stage->bundle[0].tcGen = TCGEN_LIGHTMAP;
 			}
-			else if (!QStr::ICmp(token, "texture") || !QStr::ICmp(token, "base"))
+			else if (!String::ICmp(token, "texture") || !String::ICmp(token, "base"))
 			{
 				stage->bundle[0].tcGen = TCGEN_TEXTURE;
 			}
-			else if (!QStr::ICmp( token, "vector"))
+			else if (!String::ICmp( token, "vector"))
 			{
 				ParseVector(text, 3, stage->bundle[0].tcGenVectors[0]);
 				ParseVector(text, 3, stage->bundle[0].tcGenVectors[1]);
@@ -1028,19 +1028,19 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// tcMod <type> <...>
 		//
-		else if (!QStr::ICmp(token, "tcMod"))
+		else if (!String::ICmp(token, "tcMod"))
 		{
 			char buffer[1024] = "";
 
 			while (1)
 			{
-				token = QStr::ParseExt(text, false);
+				token = String::ParseExt(text, false);
 				if (token[0] == 0)
 				{
 					break;
 				}
-				QStr::Cat(buffer, sizeof(buffer), token);
-				QStr::Cat(buffer, sizeof(buffer), " ");
+				String::Cat(buffer, sizeof(buffer), token);
+				String::Cat(buffer, sizeof(buffer), " ");
 			}
 
 			ParseTexMod(buffer, stage);
@@ -1050,7 +1050,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		//
 		// depthmask
 		//
-		else if (!QStr::ICmp(token, "depthwrite"))
+		else if (!String::ICmp(token, "depthwrite"))
 		{
 			depthMaskBits = GLS_DEPTHMASK_TRUE;
 			depthMaskExplicit = true;
@@ -1129,7 +1129,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 
 static void ParseDeform(const char** text)
 {
-	char* token = QStr::ParseExt(text, false);
+	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing deform parm in shader '%s'\n", shader.name);
@@ -1145,25 +1145,25 @@ static void ParseDeform(const char** text)
 	deformStage_t* ds = &shader.deforms[shader.numDeforms];
 	shader.numDeforms++;
 
-	if (!QStr::ICmp(token, "projectionShadow"))
+	if (!String::ICmp(token, "projectionShadow"))
 	{
 		ds->deformation = DEFORM_PROJECTION_SHADOW;
 		return;
 	}
 
-	if (!QStr::ICmp(token, "autosprite"))
+	if (!String::ICmp(token, "autosprite"))
 	{
 		ds->deformation = DEFORM_AUTOSPRITE;
 		return;
 	}
 
-	if (!QStr::ICmp(token, "autosprite2"))
+	if (!String::ICmp(token, "autosprite2"))
 	{
 		ds->deformation = DEFORM_AUTOSPRITE2;
 		return;
 	}
 
-	if (!QStr::NICmp(token, "text", 4))
+	if (!String::NICmp(token, "text", 4))
 	{
 		int n = token[4] - '0';
 		if (n < 0 || n > 7)
@@ -1174,48 +1174,48 @@ static void ParseDeform(const char** text)
 		return;
 	}
 
-	if (!QStr::ICmp(token, "bulge"))
+	if (!String::ICmp(token, "bulge"))
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
 			return;
 		}
-		ds->bulgeWidth = QStr::Atof(token);
+		ds->bulgeWidth = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
 			return;
 		}
-		ds->bulgeHeight = QStr::Atof(token);
+		ds->bulgeHeight = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
 			return;
 		}
-		ds->bulgeSpeed = QStr::Atof(token);
+		ds->bulgeSpeed = String::Atof(token);
 
 		ds->deformation = DEFORM_BULGE;
 		return;
 	}
 
-	if (!QStr::ICmp(token, "wave"))
+	if (!String::ICmp(token, "wave"))
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
 			return;
 		}
 
-		if (QStr::Atof( token ) != 0)
+		if (String::Atof( token ) != 0)
 		{
-			ds->deformationSpread = 1.0f / QStr::Atof(token);
+			ds->deformationSpread = 1.0f / String::Atof(token);
 		}
 		else
 		{
@@ -1228,39 +1228,39 @@ static void ParseDeform(const char** text)
 		return;
 	}
 
-	if (!QStr::ICmp(token, "normal"))
+	if (!String::ICmp(token, "normal"))
 	{
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
 			return;
 		}
-		ds->deformationWave.amplitude = QStr::Atof(token);
+		ds->deformationWave.amplitude = String::Atof(token);
 
-		token = QStr::ParseExt(text, false);
+		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
 			return;
 		}
-		ds->deformationWave.frequency = QStr::Atof(token);
+		ds->deformationWave.frequency = String::Atof(token);
 
 		ds->deformation = DEFORM_NORMALS;
 		return;
 	}
 
-	if (!QStr::ICmp(token, "move"))
+	if (!String::ICmp(token, "move"))
 	{
 		for (int i = 0; i < 3; i++)
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
 				return;
 			}
-			ds->moveVector[i] = QStr::Atof(token);
+			ds->moveVector[i] = String::Atof(token);
 		}
 
 		ParseWaveForm(text, &ds->deformationWave);
@@ -1284,18 +1284,18 @@ static void ParseSkyParms(const char** text)
 	static const char* suf[6] = {"rt", "bk", "lf", "ft", "up", "dn"};
 
 	// outerbox
-	char* token = QStr::ParseExt(text, false);
+	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
 		return;
 	}
-	if (QStr::Cmp(token, "-"))
+	if (String::Cmp(token, "-"))
 	{
 		for (int i = 0; i < 6; i++)
 		{
 			char pathname[MAX_QPATH];
-			QStr::Sprintf(pathname, sizeof(pathname), "%s_%s.tga", token, suf[i]);
+			String::Sprintf(pathname, sizeof(pathname), "%s_%s.tga", token, suf[i]);
 			shader.sky.outerbox[i] = R_FindImageFile(pathname, true, true, GL_CLAMP);
 			if (!shader.sky.outerbox[i])
 			{
@@ -1305,13 +1305,13 @@ static void ParseSkyParms(const char** text)
 	}
 
 	// cloudheight
-	token = QStr::ParseExt(text, false);
+	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
 		return;
 	}
-	shader.sky.cloudHeight = QStr::Atof(token);
+	shader.sky.cloudHeight = String::Atof(token);
 	if (!shader.sky.cloudHeight)
 	{
 		shader.sky.cloudHeight = 512;
@@ -1319,18 +1319,18 @@ static void ParseSkyParms(const char** text)
 	R_InitSkyTexCoords(shader.sky.cloudHeight);
 
 	// innerbox
-	token = QStr::ParseExt(text, false);
+	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
 		return;
 	}
-	if (QStr::Cmp(token, "-"))
+	if (String::Cmp(token, "-"))
 	{
 		for (int i = 0; i < 6; i++)
 		{
 			char pathname[MAX_QPATH];
-			QStr::Sprintf(pathname, sizeof(pathname), "%s_%s.tga", token, suf[i]);
+			String::Sprintf(pathname, sizeof(pathname), "%s_%s.tga", token, suf[i]);
 			shader.sky.innerbox[i] = R_FindImageFile(pathname, true, true, GL_REPEAT);
 			if (!shader.sky.innerbox[i])
 			{
@@ -1350,52 +1350,52 @@ static void ParseSkyParms(const char** text)
 
 static void ParseSort(const char** text)
 {
-	char* token = QStr::ParseExt(text, false);
+	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: missing sort parameter in shader '%s'\n", shader.name);
 		return;
 	}
 
-	if (!QStr::ICmp( token, "portal"))
+	if (!String::ICmp( token, "portal"))
 	{
 		shader.sort = SS_PORTAL;
 	}
-	else if (!QStr::ICmp(token, "sky"))
+	else if (!String::ICmp(token, "sky"))
 	{
 		shader.sort = SS_ENVIRONMENT;
 	}
-	else if (!QStr::ICmp(token, "opaque"))
+	else if (!String::ICmp(token, "opaque"))
 	{
 		shader.sort = SS_OPAQUE;
 	}
-	else if (!QStr::ICmp(token, "decal"))
+	else if (!String::ICmp(token, "decal"))
 	{
 		shader.sort = SS_DECAL;
 	}
-	else if (!QStr::ICmp(token, "seeThrough"))
+	else if (!String::ICmp(token, "seeThrough"))
 	{
 		shader.sort = SS_SEE_THROUGH;
 	}
-	else if (!QStr::ICmp(token, "banner"))
+	else if (!String::ICmp(token, "banner"))
 	{
 		shader.sort = SS_BANNER;
 	}
-	else if (!QStr::ICmp(token, "additive"))
+	else if (!String::ICmp(token, "additive"))
 	{
 		shader.sort = SS_BLEND1;
 	}
-	else if (!QStr::ICmp(token, "nearest"))
+	else if (!String::ICmp(token, "nearest"))
 	{
 		shader.sort = SS_NEAREST;
 	}
-	else if (!QStr::ICmp(token, "underwater"))
+	else if (!String::ICmp(token, "underwater"))
 	{
 		shader.sort = SS_UNDERWATER;
 	}
 	else
 	{
-		shader.sort = QStr::Atof(token);
+		shader.sort = String::Atof(token);
 	}
 }
 
@@ -1411,10 +1411,10 @@ static void ParseSurfaceParm(const char** text)
 {
 	int numInfoParms = sizeof(infoParms) / sizeof(infoParms[0]);
 
-	char* token = QStr::ParseExt(text, false);
+	char* token = String::ParseExt(text, false);
 	for (int i = 0; i < numInfoParms; i++)
 	{
-		if (!QStr::ICmp(token, infoParms[i].name))
+		if (!String::ICmp(token, infoParms[i].name))
 		{
 			shader.surfaceFlags |= infoParms[i].surfaceFlags;
 			shader.contentFlags |= infoParms[i].contents;
@@ -1439,7 +1439,7 @@ static bool ParseShader(const char** text)
 
 	s = 0;
 
-	char* token = QStr::ParseExt(text, true);
+	char* token = String::ParseExt(text, true);
 	if (token[0] != '{')
 	{
 		GLog.Write(S_COLOR_YELLOW "WARNING: expecting '{', found '%s' instead in shader '%s'\n", token, shader.name);
@@ -1448,7 +1448,7 @@ static bool ParseShader(const char** text)
 
 	while (1)
 	{
-		token = QStr::ParseExt(text, true);
+		token = String::ParseExt(text, true);
 		if (!token[0])
 		{
 			GLog.Write(S_COLOR_YELLOW "WARNING: no concluding '}' in shader %s\n", shader.name);
@@ -1472,86 +1472,86 @@ static bool ParseShader(const char** text)
 			continue;
 		}
 		// skip stuff that only the QuakeEdRadient needs
-		else if (!QStr::NICmp(token, "qer", 3))
+		else if (!String::NICmp(token, "qer", 3))
 		{
-			QStr::SkipRestOfLine(text);
+			String::SkipRestOfLine(text);
 			continue;
 		}
 		// sun parms
-		else if (!QStr::ICmp(token, "q3map_sun"))
+		else if (!String::ICmp(token, "q3map_sun"))
 		{
 			float	a, b;
 
-			token = QStr::ParseExt(text, false);
-			tr.sunLight[0] = QStr::Atof(token);
-			token = QStr::ParseExt(text, false);
-			tr.sunLight[1] = QStr::Atof(token);
-			token = QStr::ParseExt(text, false);
-			tr.sunLight[2] = QStr::Atof(token);
+			token = String::ParseExt(text, false);
+			tr.sunLight[0] = String::Atof(token);
+			token = String::ParseExt(text, false);
+			tr.sunLight[1] = String::Atof(token);
+			token = String::ParseExt(text, false);
+			tr.sunLight[2] = String::Atof(token);
 			
 			VectorNormalize(tr.sunLight);
 
-			token = QStr::ParseExt(text, false);
-			a = QStr::Atof(token);
+			token = String::ParseExt(text, false);
+			a = String::Atof(token);
 			VectorScale(tr.sunLight, a, tr.sunLight);
 
-			token = QStr::ParseExt(text, false);
-			a = QStr::Atof(token);
+			token = String::ParseExt(text, false);
+			a = String::Atof(token);
 			a = a / 180 * M_PI;
 
-			token = QStr::ParseExt(text, false);
-			b = QStr::Atof(token);
+			token = String::ParseExt(text, false);
+			b = String::Atof(token);
 			b = b / 180 * M_PI;
 
 			tr.sunDirection[0] = cos(a) * cos(b);
 			tr.sunDirection[1] = sin(a) * cos(b);
 			tr.sunDirection[2] = sin(b);
 		}
-		else if (!QStr::ICmp(token, "deformVertexes"))
+		else if (!String::ICmp(token, "deformVertexes"))
 		{
 			ParseDeform(text);
 			continue;
 		}
-		else if (!QStr::ICmp(token, "tesssize"))
+		else if (!String::ICmp(token, "tesssize"))
 		{
-			QStr::SkipRestOfLine(text);
+			String::SkipRestOfLine(text);
 			continue;
 		}
-		else if (!QStr::ICmp(token, "clampTime"))
+		else if (!String::ICmp(token, "clampTime"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (token[0])
 			{
-				shader.clampTime = QStr::Atof(token);
+				shader.clampTime = String::Atof(token);
 			}
 		}
 		// skip stuff that only the q3map needs
-		else if (!QStr::NICmp(token, "q3map", 5))
+		else if (!String::NICmp(token, "q3map", 5))
 		{
-			QStr::SkipRestOfLine(text);
+			String::SkipRestOfLine(text);
 			continue;
 		}
 		// skip stuff that only q3map or the server needs
-		else if (!QStr::ICmp(token, "surfaceParm"))
+		else if (!String::ICmp(token, "surfaceParm"))
 		{
 			ParseSurfaceParm(text);
 			continue;
 		}
 		// no mip maps
-		else if (!QStr::ICmp(token, "nomipmaps"))
+		else if (!String::ICmp(token, "nomipmaps"))
 		{
 			shader.noMipMaps = true;
 			shader.noPicMip = true;
 			continue;
 		}
 		// no picmip adjustment
-		else if (!QStr::ICmp(token, "nopicmip"))
+		else if (!String::ICmp(token, "nopicmip"))
 		{
 			shader.noPicMip = true;
 			continue;
 		}
 		// polygonOffset
-		else if (!QStr::ICmp(token, "polygonOffset"))
+		else if (!String::ICmp(token, "polygonOffset"))
 		{
 			shader.polygonOffset = true;
 			continue;
@@ -1560,64 +1560,64 @@ static bool ParseShader(const char** text)
 		// to be merged into one batch.  This is a savings for smoke
 		// puffs and blood, but can't be used for anything where the
 		// shader calcs (not the surface function) reference the entity color or scroll
-		else if (!QStr::ICmp(token, "entityMergable"))
+		else if (!String::ICmp(token, "entityMergable"))
 		{
 			shader.entityMergable = true;
 			continue;
 		}
 		// fogParms
-		else if (!QStr::ICmp(token, "fogParms")) 
+		else if (!String::ICmp(token, "fogParms")) 
 		{
 			if (!ParseVector(text, 3, shader.fogParms.color))
 			{
 				return false;
 			}
 
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing parm for 'fogParms' keyword in shader '%s'\n", shader.name);
 				continue;
 			}
-			shader.fogParms.depthForOpaque = QStr::Atof(token);
+			shader.fogParms.depthForOpaque = String::Atof(token);
 
 			// skip any old gradient directions
-			QStr::SkipRestOfLine(text);
+			String::SkipRestOfLine(text);
 			continue;
 		}
 		// portal
-		else if (!QStr::ICmp(token, "portal"))
+		else if (!String::ICmp(token, "portal"))
 		{
 			shader.sort = SS_PORTAL;
 			continue;
 		}
 		// skyparms <cloudheight> <outerbox> <innerbox>
-		else if (!QStr::ICmp(token, "skyparms"))
+		else if (!String::ICmp(token, "skyparms"))
 		{
 			ParseSkyParms(text);
 			continue;
 		}
 		// light <value> determines flaring in q3map, not needed here
-		else if (!QStr::ICmp(token, "light"))
+		else if (!String::ICmp(token, "light"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			continue;
 		}
 		// cull <face>
-		else if (!QStr::ICmp(token, "cull"))
+		else if (!String::ICmp(token, "cull"))
 		{
-			token = QStr::ParseExt(text, false);
+			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
 				GLog.Write(S_COLOR_YELLOW "WARNING: missing cull parms in shader '%s'\n", shader.name);
 				continue;
 			}
 
-			if (!QStr::ICmp(token, "none") || !QStr::ICmp(token, "twosided") || !QStr::ICmp(token, "disable"))
+			if (!String::ICmp(token, "none") || !String::ICmp(token, "twosided") || !String::ICmp(token, "disable"))
 			{
 				shader.cullType = CT_TWO_SIDED;
 			}
-			else if (!QStr::ICmp(token, "back") || !QStr::ICmp(token, "backside") || !QStr::ICmp(token, "backsided"))
+			else if (!String::ICmp(token, "back") || !String::ICmp(token, "backside") || !String::ICmp(token, "backsided"))
 			{
 				shader.cullType = CT_BACK_SIDED;
 			}
@@ -1628,7 +1628,7 @@ static bool ParseShader(const char** text)
 			continue;
 		}
 		// sort
-		else if (!QStr::ICmp(token, "sort"))
+		else if (!String::ICmp(token, "sort"))
 		{
 			ParseSort(text);
 			continue;
@@ -2079,7 +2079,7 @@ static int GenerateShaderHashValue(const char* fname, const int size)
 	int i = 0;
 	while (fname[i] != '\0')
 	{
-		char letter = QStr::ToLower(fname[i]);
+		char letter = String::ToLower(fname[i]);
 		if (letter == '.')
 		{
 			break;				// don't include extension
@@ -2380,8 +2380,8 @@ static const char* FindShaderInShaderText(const char* shadername)
 	for (int i = 0; shaderTextHashTable[hash][i]; i++)
 	{
 		const char* p = shaderTextHashTable[hash][i];
-		char* token = QStr::ParseExt(&p, true);
-		if (!QStr::ICmp(token, shadername))
+		char* token = String::ParseExt(&p, true);
+		if (!String::ICmp(token, shadername))
 		{
 			return p;
 		}
@@ -2392,20 +2392,20 @@ static const char* FindShaderInShaderText(const char* shadername)
 	// look for label
 	while (1)
 	{
-		char* token = QStr::ParseExt(&p, true);
+		char* token = String::ParseExt(&p, true);
 		if (token[0] == 0)
 		{
 			break;
 		}
 
-		if (!QStr::ICmp(token, shadername))
+		if (!String::ICmp(token, shadername))
 		{
 			return p;
 		}
 		else
 		{
 			// skip the definition
-			QStr::SkipBracedSection(&p);
+			String::SkipBracedSection(&p);
 		}
 	}
 
@@ -2454,7 +2454,7 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 	}
 
 	char strippedName[MAX_QPATH];
-	QStr::StripExtension(name, strippedName);
+	String::StripExtension(name, strippedName);
 
 	int hash = GenerateShaderHashValue(strippedName, SHADER_HASH_SIZE);
 
@@ -2468,7 +2468,7 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 		// have to check all default shaders otherwise for every call to R_FindShader
 		// with that same strippedName a new default shader is created.
 		if ((sh->lightmapIndex == lightmapIndex || sh->defaultShader) &&
-			!QStr::ICmp(sh->name, strippedName))
+			!String::ICmp(sh->name, strippedName))
 		{
 			// match found
 			return sh;
@@ -2485,7 +2485,7 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 	// clear the global shader
 	Com_Memset(&shader, 0, sizeof(shader));
 	Com_Memset(&stages, 0, sizeof(stages));
-	QStr::NCpyZ(shader.name, strippedName, sizeof(shader.name));
+	String::NCpyZ(shader.name, strippedName, sizeof(shader.name));
 	shader.lightmapIndex = lightmapIndex;
 	for (int i = 0; i < MAX_SHADER_STAGES; i++)
 	{
@@ -2525,8 +2525,8 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 	// look for a single TGA, BMP, or PCX
 	//
 	char fileName[MAX_QPATH];
-	QStr::NCpyZ(fileName, name, sizeof(fileName));
-	QStr::DefaultExtension(fileName, sizeof(fileName), ".tga");
+	String::NCpyZ(fileName, name, sizeof(fileName));
+	String::DefaultExtension(fileName, sizeof(fileName), ".tga");
 	image_t* image = R_FindImageFile(fileName, mipRawImage, mipRawImage, mipRawImage ? GL_REPEAT : GL_CLAMP);
 	if (!image)
 	{
@@ -2619,7 +2619,7 @@ qhandle_t R_RegisterShaderFromImage(const char* name, int lightmapIndex, image_t
 		// with that same strippedName a new default shader is created.
 		if ((sh->lightmapIndex == lightmapIndex || sh->defaultShader) &&
 			// index by name
-			!QStr::ICmp(sh->name, name))
+			!String::ICmp(sh->name, name))
 		{
 			// match found
 			return sh->index;
@@ -2636,7 +2636,7 @@ qhandle_t R_RegisterShaderFromImage(const char* name, int lightmapIndex, image_t
 	// clear the global shader
 	Com_Memset(&shader, 0, sizeof(shader));
 	Com_Memset(&stages, 0, sizeof(stages));
-	QStr::NCpyZ(shader.name, name, sizeof(shader.name));
+	String::NCpyZ(shader.name, name, sizeof(shader.name));
 	shader.lightmapIndex = lightmapIndex;
 	for (int i = 0; i < MAX_SHADER_STAGES; i++)
 	{
@@ -2727,7 +2727,7 @@ qhandle_t R_RegisterShaderFromImage(const char* name, int lightmapIndex, image_t
 
 qhandle_t R_RegisterShader(const char* name)
 {
-	if (QStr::Length(name) >= MAX_QPATH)
+	if (String::Length(name) >= MAX_QPATH)
 	{
 		GLog.Write("Shader name exceeds MAX_QPATH\n");
 		return 0;
@@ -2758,7 +2758,7 @@ qhandle_t R_RegisterShader(const char* name)
 
 qhandle_t R_RegisterShaderNoMip(const char* name)
 {
-	if (QStr::Length(name) >= MAX_QPATH)
+	if (String::Length(name) >= MAX_QPATH)
 	{
 		GLog.Write("Shader name exceeds MAX_QPATH\n");
 		return 0;
@@ -2787,7 +2787,7 @@ qhandle_t R_RegisterShaderNoMip(const char* name)
 
 static shader_t* R_RegisterShaderLightMap(const char* name, int lightmapIndex)
 {
-	if (QStr::Length(name) >= MAX_QPATH)
+	if (String::Length(name) >= MAX_QPATH)
 	{
 		GLog.Write("Shader name exceeds MAX_QPATH\n");
 		return 0;
@@ -2826,7 +2826,7 @@ static shader_t* R_FindShaderByName(const char* name)
 	}
 
 	char strippedName[MAX_QPATH];
-	QStr::StripExtension(name, strippedName);
+	String::StripExtension(name, strippedName);
 
 	int hash = GenerateShaderHashValue(strippedName, SHADER_HASH_SIZE);
 
@@ -2839,7 +2839,7 @@ static shader_t* R_FindShaderByName(const char* name)
 		// then a default shader is created with lightmapIndex == LIGHTMAP_NONE, so we
 		// have to check all default shaders otherwise for every call to R_FindShader
 		// with that same strippedName a new default shader is created.
-		if (QStr::ICmp(sh->name, strippedName) == 0)
+		if (String::ICmp(sh->name, strippedName) == 0)
 		{
 			// match found
 			return sh;
@@ -2882,11 +2882,11 @@ void R_RemapShader(const char* shaderName, const char* newShaderName, const char
 	// remap all the shaders with the given name
 	// even tho they might have different lightmaps
 	char strippedName[MAX_QPATH];
-	QStr::StripExtension(shaderName, strippedName);
+	String::StripExtension(shaderName, strippedName);
 	int hash = GenerateShaderHashValue(strippedName, SHADER_HASH_SIZE);
 	for (sh = ShaderHashTable[hash]; sh; sh = sh->next)
 	{
-		if (QStr::ICmp(sh->name, strippedName) == 0)
+		if (String::ICmp(sh->name, strippedName) == 0)
 		{
 			if (sh != sh2)
 			{
@@ -2900,7 +2900,7 @@ void R_RemapShader(const char* shaderName, const char* newShaderName, const char
 	}
 	if (timeOffset)
 	{
-		sh2->timeOffset = QStr::Atof(timeOffset);
+		sh2->timeOffset = String::Atof(timeOffset);
 	}
 }
 
@@ -2918,7 +2918,7 @@ static void CreateInternalShaders()
 	Com_Memset(&shader, 0, sizeof(shader));
 	Com_Memset(&stages, 0, sizeof(stages));
 
-	QStr::NCpyZ(shader.name, "<default>", sizeof(shader.name));
+	String::NCpyZ(shader.name, "<default>", sizeof(shader.name));
 
 	shader.lightmapIndex = LIGHTMAP_NONE;
 	stages[0].bundle[0].image[0] = tr.defaultImage;
@@ -2927,7 +2927,7 @@ static void CreateInternalShaders()
 	tr.defaultShader = FinishShader();
 
 	// shadow shader is just a marker
-	QStr::NCpyZ(shader.name, "<stencil shadow>", sizeof(shader.name));
+	String::NCpyZ(shader.name, "<stencil shadow>", sizeof(shader.name));
 	shader.sort = SS_STENCIL_SHADOW;
 	tr.shadowShader = FinishShader();
 }
@@ -2968,7 +2968,7 @@ static void ScanAndLoadShaderFiles()
 	for (int i = 0; i < numShaders; i++)
 	{
 		char filename[MAX_QPATH];
-		QStr::Sprintf(filename, sizeof(filename), "scripts/%s", shaderFiles[i]);
+		String::Sprintf(filename, sizeof(filename), "scripts/%s", shaderFiles[i]);
 		GLog.Write("...loading '%s'\n", filename);
 		sum += FS_ReadFile(filename, (void**)&buffers[i]);
 		if (!buffers[i])
@@ -2984,12 +2984,12 @@ static void ScanAndLoadShaderFiles()
 	// free in reverse order, so the temp files are all dumped
 	for (int i = numShaders - 1; i >= 0 ; i--)
 	{
-		QStr::Cat(s_shaderText, sum + numShaders * 2, "\n");
-		char* p = &s_shaderText[QStr::Length(s_shaderText)];
-		QStr::Cat(s_shaderText, sum + numShaders * 2, buffers[i]);
+		String::Cat(s_shaderText, sum + numShaders * 2, "\n");
+		char* p = &s_shaderText[String::Length(s_shaderText)];
+		String::Cat(s_shaderText, sum + numShaders * 2, buffers[i]);
 		FS_FreeFile(buffers[i]);
 		buffers[i] = p;
-		QStr::Compress(p);
+		String::Compress(p);
 	}
 
 	// free up memory
@@ -3006,7 +3006,7 @@ static void ScanAndLoadShaderFiles()
 		// look for label
 		while (1)
 		{
-			char* token = QStr::ParseExt(&p, true);
+			char* token = String::ParseExt(&p, true);
 			if (token[0] == 0)
 			{
 				break;
@@ -3015,7 +3015,7 @@ static void ScanAndLoadShaderFiles()
 			int hash = GenerateShaderHashValue(token, MAX_SHADERTEXT_HASH);
 			shaderTextHashTableSizes[hash]++;
 			size++;
-			QStr::SkipBracedSection(&p);
+			String::SkipBracedSection(&p);
 			// if we passed the pointer to the next shader file
 			if (i < numShaders - 1)
 			{
@@ -3047,7 +3047,7 @@ static void ScanAndLoadShaderFiles()
 		while (1)
 		{
 			const char* oldp = p;
-			char* token = QStr::ParseExt(&p, true);
+			char* token = String::ParseExt(&p, true);
 			if (token[0] == 0)
 			{
 				break;
@@ -3056,7 +3056,7 @@ static void ScanAndLoadShaderFiles()
 			int hash = GenerateShaderHashValue(token, MAX_SHADERTEXT_HASH);
 			shaderTextHashTable[hash][shaderTextHashTableSizes[hash]++] = oldp;
 
-			QStr::SkipBracedSection(&p);
+			String::SkipBracedSection(&p);
 			// if we passed the pointer to the next shader file
 			if (i < numShaders - 1)
 			{

@@ -392,7 +392,7 @@ void Sbar_SortTeams (void)
 // request new ping times every two second
 	scoreboardteams = 0;
 
-	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 	if (!teamplay)
 		return;
 
@@ -410,18 +410,18 @@ void Sbar_SortTeams (void)
 
 		// find his team in the list
 		t[16] = 0;
-		QStr::NCpy(t, Info_ValueForKey(s->userinfo, "team"), 16);
+		String::NCpy(t, Info_ValueForKey(s->userinfo, "team"), 16);
 		if (!t[0])
 			continue; // not on team
 		for (j = 0; j < scoreboardteams; j++)
-			if (!QStr::Cmp(teams[j].team, t)) {
+			if (!String::Cmp(teams[j].team, t)) {
 				teams[j].frags += s->frags;
 				teams[j].players++;
 				goto addpinginfo;
 			}
 		if (j == scoreboardteams) { // must add him
 			j = scoreboardteams++;
-			QStr::Cpy(teams[j].team, t);
+			String::Cpy(teams[j].team, t);
 			teams[j].frags = s->frags;
 			teams[j].players = 1;
 addpinginfo:
@@ -782,7 +782,7 @@ void Sbar_Draw (void)
 // main screen deathmatch rankings
 	// if we're dead show team scores in team games
 	if (cl.stats[STAT_HEALTH] <= 0 && !cl.spectator)
-		if (QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 &&
+		if (String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 &&
 			!sb_showscores)
 			Sbar_TeamOverlay();
 		else
@@ -854,7 +854,7 @@ void Sbar_TeamOverlay (void)
 	int plow, phigh, pavg;
 
 // request new ping times every two second
-	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 
 	if (!teamplay) {
 		Sbar_DeathmatchOverlay(0);
@@ -902,7 +902,7 @@ void Sbar_TeamOverlay (void)
 
 	// draw team
 		team[4] = 0;
-		QStr::NCpy(team, tm->team, 4);
+		String::NCpy(team, tm->team, 4);
 		Draw_String (x + 104, y, team);
 
 	// draw total
@@ -913,7 +913,7 @@ void Sbar_TeamOverlay (void)
 		sprintf (num, "%5i", tm->players);
 		Draw_String (x + 104 + 88, y, num);
 		
-		if (!QStr::NCmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
+		if (!String::NCmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
 			"team"), tm->team, 16)) {
 			Draw_Character ( x + 104 - 8, y, 16);
 			Draw_Character ( x + 104 + 32, y, 17);
@@ -958,7 +958,7 @@ void Sbar_DeathmatchOverlay (int start)
 		cls.netchan.message.WriteString2("pings");
 	}
 
-	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 
 	if (!start) {
 		pic = R_CachePic ("gfx/ranking.lmp");
@@ -1070,7 +1070,7 @@ void Sbar_DeathmatchOverlay (int start)
 		if (teamplay)
 		{
 			team[4] = 0;
-			QStr::NCpy(team, Info_ValueForKey(s->userinfo, "team"), 4);
+			String::NCpy(team, Info_ValueForKey(s->userinfo, "team"), 4);
 			Draw_String (x+152, y, team);
 		}
 
@@ -1112,7 +1112,7 @@ void Sbar_MiniDeathmatchOverlay (void)
 	if (viddef.width < 512 || !sb_lines)
 		return; // not enuff room
 
-	teamplay = QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
+	teamplay = String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay"));
 
 // scores	
 	Sbar_SortFrags (false);
@@ -1179,13 +1179,13 @@ void Sbar_MiniDeathmatchOverlay (void)
 		if (teamplay)
 		{
 			team[4] = 0;
-			QStr::NCpy(team, Info_ValueForKey(s->userinfo, "team"), 4);
+			String::NCpy(team, Info_ValueForKey(s->userinfo, "team"), 4);
 			Draw_String (x+48, y, team);
 		}
 
 	// draw name
 		name[16] = 0;
-		QStr::NCpy(name, s->name, 16);
+		String::NCpy(name, s->name, 16);
 		if (teamplay)
 			Draw_String (x+48+40, y, name);
 		else
@@ -1212,14 +1212,14 @@ void Sbar_MiniDeathmatchOverlay (void)
 
 	// draw pings
 		team[4] = 0;
-		QStr::NCpy(team, tm->team, 4);
+		String::NCpy(team, tm->team, 4);
 		Draw_String (x, y, team);
 
 	// draw total
 		sprintf (num, "%5i", tm->frags);
 		Draw_String (x + 40, y, num);
 		
-		if (!QStr::NCmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
+		if (!String::NCmp(Info_ValueForKey(cl.players[cl.playernum].userinfo,
 			"team"), tm->team, 16)) {
 			Draw_Character ( x - 8, y, 16);
 			Draw_Character ( x + 32, y, 17);
@@ -1239,7 +1239,7 @@ Sbar_IntermissionOverlay
 */
 void Sbar_IntermissionOverlay (void)
 {
-	if (QStr::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 && !sb_showscores)
+	if (String::Atoi(Info_ValueForKey(cl.serverinfo, "teamplay")) > 0 && !sb_showscores)
 		Sbar_TeamOverlay ();
 	else
 		Sbar_DeathmatchOverlay (0);

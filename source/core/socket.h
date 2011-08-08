@@ -38,7 +38,7 @@ struct netadr_t
 	quint16			port;
 };
 
-bool SOCK_StringToAdr(const char* String, netadr_t* Address, int DefaultPort);
+bool SOCK_StringToAdr(const char* string, netadr_t* Address, int DefaultPort);
 const char* SOCK_GetHostByAddr(netadr_t* Address);
 const char* SOCK_AdrToString(const netadr_t& Address);
 const char* SOCK_BaseAdrToString(const netadr_t& Address);

@@ -904,7 +904,7 @@ static void SoloScoreboard(void)
 	Sbar_DrawString (184, 4, str);
 	
 	// draw level name
-	l = QStr::Length(cl.levelname);
+	l = String::Length(cl.levelname);
 	Sbar_DrawString (232 - l*4, 12, cl.levelname);
 }
 
@@ -1249,7 +1249,7 @@ void FindName(char *which, char *name)
 	char *pos,*p2;
 	char test[40];
 
-	QStr::Cpy(name, "Unknown");
+	String::Cpy(name, "Unknown");
 	j = atol(puzzle_strings);
 	pos = strchr(puzzle_strings,13);
 	if (!pos) return;
@@ -1259,7 +1259,7 @@ void FindName(char *which, char *name)
 	if ((*pos) == 10 || (*pos) == 13)
 		pos++;
 
-	length = QStr::Length(which);
+	length = String::Length(which);
 
 	for(;j;j--)
 	{
@@ -1267,10 +1267,10 @@ void FindName(char *which, char *name)
 		if (!p2) 
 			return;
 
-		QStr::NCpy(test,pos,p2-pos);
+		String::NCpy(test,pos,p2-pos);
 		test[p2-pos] = 0;
 
-		if (QStr::ICmp(which,test) == 0)
+		if (String::ICmp(which,test) == 0)
 		{
 			pos = strchr(pos,' ');
 			if (pos)
@@ -1279,7 +1279,7 @@ void FindName(char *which, char *name)
 				p2 = strchr(pos,13);
 				if (p2)
 				{
-					QStr::NCpy(name,pos,p2-pos);
+					String::NCpy(name,pos,p2-pos);
 					name[p2-pos] = 0;
 					return;
 				}
@@ -1329,7 +1329,7 @@ void Sbar_NormalOverlay(void)
 		{
 			M_DrawPic(310-32, y,
 				R_CachePic(va("gfx/puzzle/%s.lmp", cl.puzzle_pieces[i])));
-			M_PrintWhite (310-32-3-(QStr::Length(Name)*8), 18+y, Name);
+			M_PrintWhite (310-32-3-(String::Length(Name)*8), 18+y, Name);
 		}
 
 		y += 32;

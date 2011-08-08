@@ -53,7 +53,7 @@ void SV_SetMaster_f (void)
 
 	for (i=1 ; i<Cmd_Argc() ; i++)
 	{
-		if (!QStr::Cmp(Cmd_Argv(i), "none") || !SOCK_StringToAdr(Cmd_Argv(i), &master_adr[i-1], 27000))
+		if (!String::Cmp(Cmd_Argv(i), "none") || !SOCK_StringToAdr(Cmd_Argv(i), &master_adr[i-1], 27000))
 		{
 			Con_Printf ("Setting nomaster mode.\n");
 			return;
@@ -165,7 +165,7 @@ qboolean SV_SetPlayer (void)
 	int			i;
 	int			idnum;
 
-	idnum = QStr::Atoi(Cmd_Argv(1));
+	idnum = String::Atoi(Cmd_Argv(1));
 
 	for (i=0,cl=svs.clients ; i<MAX_CLIENTS ; i++,cl++)
 	{
@@ -253,7 +253,7 @@ void SV_Give_f (void)
 		return;
 
 	t = Cmd_Argv(2);
-	v = QStr::Atoi(Cmd_Argv(3));
+	v = String::Atoi(Cmd_Argv(3));
 	
 	switch (t[0])
 	{
@@ -307,13 +307,13 @@ void SV_Map_f (void)
 		Con_Printf ("map <levelname> : continue game on a new level\n");
 		return;
 	}
-	QStr::Cpy(level, Cmd_Argv(1));
+	String::Cpy(level, Cmd_Argv(1));
 
 #if 0
-	if (!QStr::Cmp(level, "e1m8"))
+	if (!String::Cmp(level, "e1m8"))
 	{	// QuakeWorld can't go to e1m8
 		SV_BroadcastPrintf (PRINT_HIGH, "can't go to low grav level in QuakeWorld...\n");
-		QStr::Cpy(level, "e1m5");
+		String::Cpy(level, "e1m5");
 	}
 #endif
 
@@ -349,7 +349,7 @@ void SV_Kick_f (void)
 	client_t	*cl;
 	int			uid;
 
-	uid = QStr::Atoi(Cmd_Argv(1));
+	uid = String::Atoi(Cmd_Argv(1));
 	
 	for (i = 0, cl = svs.clients; i < MAX_CLIENTS; i++, cl++)
 	{
@@ -443,12 +443,12 @@ void SV_Status_f (void)
 
 			s = SOCK_BaseAdrToString( cl->netchan.remote_address);
 			Con_Printf ("%s", s);
-			l = 16 - QStr::Length(s);
+			l = 16 - String::Length(s);
 			for (j=0 ; j<l ; j++)
 				Con_Printf (" ");
 			
 			Con_Printf ("%s", cl->name);
-			l = 16 - QStr::Length(cl->name);
+			l = 16 - String::Length(cl->name);
 			for (j=0 ; j<l ; j++)
 				Con_Printf (" ");
 			if (cl->state == cs_connected)
@@ -492,16 +492,16 @@ void SV_ConSay_f(void)
 	if (Cmd_Argc () < 2)
 		return;
 
-	QStr::Cpy(text, "console: ");
+	String::Cpy(text, "console: ");
 	p = Cmd_ArgsUnmodified();
 
 	if (*p == '"')
 	{
 		p++;
-		p[QStr::Length(p)-1] = 0;
+		p[String::Length(p)-1] = 0;
 	}
 
-	QStr::Cat(text, sizeof(text), p);
+	String::Cat(text, sizeof(text), p);
 
 	for (j = 0, client = svs.clients; j < MAX_CLIENTS; j++, client++)
 	{
@@ -686,9 +686,9 @@ void SV_Floodprot_f (void)
 		return;
 	}
 
-	arg1 = QStr::Atoi(Cmd_Argv(1));
-	arg2 = QStr::Atoi(Cmd_Argv(2));
-	arg3 = QStr::Atoi(Cmd_Argv(3));
+	arg1 = String::Atoi(Cmd_Argv(1));
+	arg2 = String::Atoi(Cmd_Argv(2));
+	arg3 = String::Atoi(Cmd_Argv(3));
 
 	if (arg1<=0 || arg2 <= 0 || arg3<=0) {
 		Con_Printf ("All values must be positive numbers\n");
@@ -782,8 +782,8 @@ void SV_Snap (int uid)
 
 	for (i=0 ; i<=99 ; i++) 
 	{ 
-		pcxname[QStr::Length(pcxname) - 6] = i/10 + '0'; 
-		pcxname[QStr::Length(pcxname) - 5] = i%10 + '0'; 
+		pcxname[String::Length(pcxname) - 6] = i/10 + '0'; 
+		pcxname[String::Length(pcxname) - 5] = i%10 + '0'; 
 		sprintf(checkname, "snap/%s", pcxname);
 		if (!FS_FileExists(checkname))
 			break;	// file doesn't exist
@@ -794,7 +794,7 @@ void SV_Snap (int uid)
 		return;
 	}
 	sprintf (checkname, "snap/%s", pcxname);
-	QStr::Cpy(cl->uploadfn, checkname);
+	String::Cpy(cl->uploadfn, checkname);
 
 	Com_Memcpy(&cl->snap_from, &net_from, sizeof(net_from));
 	if (sv_redirected != RD_NONE)
@@ -822,7 +822,7 @@ void SV_Snap_f (void)
 		return;
 	}
 
-	uid = QStr::Atoi(Cmd_Argv(1));
+	uid = String::Atoi(Cmd_Argv(1));
 
 	SV_Snap(uid);
 }

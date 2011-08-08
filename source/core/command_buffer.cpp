@@ -121,7 +121,7 @@ void Cbuf_Init()
 
 void Cbuf_AddText(const char* Text)
 {
-	int L = QStr::Length(Text);
+	int L = String::Length(Text);
 
 	if (cmd_text.cursize + L >= cmd_text.maxsize)
 	{
@@ -143,7 +143,7 @@ void Cbuf_AddText(const char* Text)
 
 void Cbuf_InsertText(const char* Text)
 {
-	int Len = QStr::Length(Text) + 1;
+	int Len = String::Length(Text) + 1;
 	if (Len + cmd_text.cursize > cmd_text.maxsize)
 	{
 		GLog.Write("Cbuf_InsertText overflowed\n");
@@ -176,7 +176,7 @@ void Cbuf_ExecuteText(int ExecWhen, const char* Text)
 	switch (ExecWhen)
 	{
 	case EXEC_NOW:
-		if (Text && QStr::Length(Text) > 0)
+		if (Text && String::Length(Text) > 0)
 		{
 			Cmd_ExecuteString(Text);
 		}
@@ -311,7 +311,7 @@ void Cbuf_AddEarlyCommands(bool Clear)
 	for (int i = 0; i < COM_Argc(); i++)
 	{
 		const char* s = COM_Argv(i);
-		if (QStr::Cmp(s, "+set"))
+		if (String::Cmp(s, "+set"))
 		{
 			continue;
 		}
@@ -346,7 +346,7 @@ bool Cbuf_AddLateCommands(bool Insert)
 	int argc = COM_Argc();
 	for (int i = 1; i < argc; i++)
 	{
-		s += QStr::Length(COM_Argv(i)) + 1;
+		s += String::Length(COM_Argv(i)) + 1;
 	}
 	if (!s)
 	{
@@ -357,10 +357,10 @@ bool Cbuf_AddLateCommands(bool Insert)
 	Text[0] = 0;
 	for (int i = 1; i < argc; i++)
 	{
-		QStr::Cat(Text, s + 1, COM_Argv(i));
+		String::Cat(Text, s + 1, COM_Argv(i));
 		if (i != argc - 1)
 		{
-			QStr::Cat(Text, s + 1, " ");
+			String::Cat(Text, s + 1, " ");
 		}
 	}
 
@@ -381,8 +381,8 @@ bool Cbuf_AddLateCommands(bool Insert)
 			char c = Text[j];
 			Text[j] = 0;
 
-			QStr::Cat(Build, s + 1, Text + i);
-			QStr::Cat(Build, s + 1, "\n");
+			String::Cat(Build, s + 1, Text + i);
+			String::Cat(Build, s + 1, "\n");
 			Text[j] = c;
 			i = j - 1;
 		}
@@ -429,7 +429,7 @@ static void Cmd_Wait_f()
 {
 	if (Cmd_Argc() == 2)
 	{
-		cmd_wait = QStr::Atoi(Cmd_Argv(1));
+		cmd_wait = String::Atoi(Cmd_Argv(1));
 	}
 	else
 	{
@@ -494,7 +494,7 @@ static void Cmd_Alias_f()
 	}
 
 	const char* s = Cmd_Argv(1);
-	if (QStr::Length(s) >= MAX_ALIAS_NAME)
+	if (String::Length(s) >= MAX_ALIAS_NAME)
 	{
 		GLog.Write("Alias name is too long\n");
 		return;
@@ -503,7 +503,7 @@ static void Cmd_Alias_f()
 	// if the alias already exists, reuse it
 	for (a = cmd_alias; a; a = a->next)
 	{
-		if (!QStr::Cmp(s, a->name))
+		if (!String::Cmp(s, a->name))
 		{
 			Mem_Free(a->value);
 			break;
@@ -516,20 +516,20 @@ static void Cmd_Alias_f()
 		a->next = cmd_alias;
 		cmd_alias = a;
 	}
-	QStr::Cpy(a->name, s);
+	String::Cpy(a->name, s);
 
 	// copy the rest of the command line
 	cmd[0] = 0;		// start out with a null string
 	int c = Cmd_Argc();
 	for (int i = 2; i < c; i++)
 	{
-		QStr::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
+		String::Cat(cmd, sizeof(cmd), Cmd_Argv(i));
 		if (i != (c - 1))
 		{
-			QStr::Cat(cmd, sizeof(cmd), " ");
+			String::Cat(cmd, sizeof(cmd), " ");
 		}
 	}
-	QStr::Cat(cmd, sizeof(cmd), "\n");
+	String::Cat(cmd, sizeof(cmd), "\n");
 
 	a->value = __CopyString(cmd);
 }
@@ -569,8 +569,8 @@ static void Cmd_Exec_f()
 	}
 
 	char filename[MAX_QPATH];
-	QStr::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
-	QStr::DefaultExtension(filename, sizeof(filename), ".cfg");
+	String::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
+	String::DefaultExtension(filename, sizeof(filename), ".cfg");
 
 	Array<byte> Buffer;
 	FS_ReadFile(filename, Buffer);
@@ -608,7 +608,7 @@ static void Cmd_List_f()
 	int i = 0;
 	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
-		if (match && !QStr::Filter(match, cmd->name, false))
+		if (match && !String::Filter(match, cmd->name, false))
 		{
 			continue;
 		}
@@ -662,7 +662,7 @@ void Cmd_AddCommand(const char* CmdName, xcommand_t Function)
 	//	Fail if the command already exists.
 	for (cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
-		if (!QStr::Cmp(CmdName, cmd->name))
+		if (!String::Cmp(CmdName, cmd->name))
 		{
 			//	Allow completion-only commands to be silently doubled.
 			if (Function != NULL)
@@ -697,7 +697,7 @@ void Cmd_RemoveCommand(const char* CmdName)
 			// command wasn't active
 			return;
 		}
-		if (!QStr::Cmp(CmdName, cmd->name))
+		if (!String::Cmp(CmdName, cmd->name))
 		{
 			*back = cmd->next;
 			if (cmd->name)
@@ -748,7 +748,7 @@ char* Cmd_Argv(int Arg)
 
 void Cmd_ArgvBuffer(int Arg, char* Buffer, int BufferLength)
 {
-	QStr::NCpyZ(Buffer, Cmd_Argv(Arg), BufferLength);
+	String::NCpyZ(Buffer, Cmd_Argv(Arg), BufferLength);
 }
 
 //==========================================================================
@@ -779,10 +779,10 @@ char* Cmd_Args()
 	cmd_args[0] = 0;
 	for (int i = 1; i < cmd_argc; i++)
 	{
-		QStr::Cat(cmd_args, sizeof(cmd_args), cmd_argv[i]);
+		String::Cat(cmd_args, sizeof(cmd_args), cmd_argv[i]);
 		if (i != cmd_argc - 1)
 		{
-			QStr::Cat(cmd_args, sizeof(cmd_args), " ");
+			String::Cat(cmd_args, sizeof(cmd_args), " ");
 		}
 	}
 
@@ -808,10 +808,10 @@ char* Cmd_ArgsFrom(int Arg)
 	}
 	for (int i = Arg; i < cmd_argc; i++)
 	{
-		QStr::Cat(cmd_args, sizeof(cmd_args), cmd_argv[i]);
+		String::Cat(cmd_args, sizeof(cmd_args), cmd_argv[i]);
 		if (i != cmd_argc - 1)
 		{
-			QStr::Cat(cmd_args, sizeof(cmd_args), " ");
+			String::Cat(cmd_args, sizeof(cmd_args), " ");
 		}
 	}
 
@@ -829,7 +829,7 @@ char* Cmd_ArgsFrom(int Arg)
 
 void Cmd_ArgsBuffer(char* Buffer, int BufferLength)
 {
-	QStr::NCpyZ(Buffer, Cmd_Args(), BufferLength);
+	String::NCpyZ(Buffer, Cmd_Args(), BufferLength);
 }
 
 //==========================================================================
@@ -859,7 +859,7 @@ static const char* Cmd_MacroExpandString(const char* Text)
 	bool InQuote = false;
 	const char* Scan = Text;
 
-	int Len = QStr::Length(Scan);
+	int Len = String::Length(Scan);
 	if (Len >= MAX_STRING_CHARS)
 	{
 		GLog.Write("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
@@ -884,7 +884,7 @@ static const char* Cmd_MacroExpandString(const char* Text)
 		}
 		// scan out the complete macro
 		const char* Start = Scan + i + 1;
-		const char* Token = QStr::Parse2(&Start);
+		const char* Token = String::Parse2(&Start);
 		if (!Start)
 		{
 			continue;
@@ -892,7 +892,7 @@ static const char* Cmd_MacroExpandString(const char* Text)
 
 		Token = Cvar_VariableString(Token);
 
-		int j = QStr::Length(Token);
+		int j = String::Length(Token);
 		Len += j;
 		if (Len >= MAX_STRING_CHARS)
 		{
@@ -901,11 +901,11 @@ static const char* Cmd_MacroExpandString(const char* Text)
 		}
 
 		char Temporary[MAX_STRING_CHARS];
-		QStr::NCpy(Temporary, Scan, i);
-		QStr::Cpy(Temporary + i, Token);
-		QStr::Cpy(Temporary + i + j, Start);
+		String::NCpy(Temporary, Scan, i);
+		String::Cpy(Temporary + i, Token);
+		String::Cpy(Temporary + i + j, Start);
 
-		QStr::Cpy(Expanded, Temporary);
+		String::Cpy(Expanded, Temporary);
 		Scan = Expanded;
 		i--;
 
@@ -952,7 +952,7 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 		return;
 	}
 
-	QStr::NCpyZ(cmd_cmd, TextIn, sizeof(cmd_cmd));
+	String::NCpyZ(cmd_cmd, TextIn, sizeof(cmd_cmd));
 
 	const char* Text = TextIn;
 	char* TextOut = cmd_tokenized;
@@ -1009,12 +1009,12 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 		// set cmd_args to everything after the first arg
 		if (cmd_argc == 1)
 		{
-			QStr::NCpyZ(cmd_args, Text, sizeof(cmd_args));
+			String::NCpyZ(cmd_args, Text, sizeof(cmd_args));
 
 			if (GGameType & GAME_Quake2)
 			{
 				// strip off any trailing whitespace
-				int l = QStr::Length(cmd_args) - 1;
+				int l = String::Length(cmd_args) - 1;
 				for (; l >= 0; l--)
 				{
 					if (cmd_args[l] <= ' ')
@@ -1112,7 +1112,7 @@ void Cmd_TokenizeString(const char* TextIn, bool MacroExpand)
 
 char* Cmd_CompleteCommand(const char* Partial)
 {
-	int Len = QStr::Length(Partial);
+	int Len = String::Length(Partial);
 
 	if (!Len)
 	{
@@ -1122,14 +1122,14 @@ char* Cmd_CompleteCommand(const char* Partial)
 	// check for exact match
 	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
-		if (!QStr::Cmp(Partial, cmd->name))
+		if (!String::Cmp(Partial, cmd->name))
 		{
 			return cmd->name;
 		}
 	}
 	for (cmdalias_t* a = cmd_alias; a; a = a->next)
 	{
-		if (!QStr::Cmp(Partial, a->name))
+		if (!String::Cmp(Partial, a->name))
 		{
 			return a->name;
 		}
@@ -1138,14 +1138,14 @@ char* Cmd_CompleteCommand(const char* Partial)
 	// check for partial match
 	for (cmd_function_t* cmd = cmd_functions; cmd; cmd = cmd->next)
 	{
-		if (!QStr::NCmp(Partial, cmd->name, Len))
+		if (!String::NCmp(Partial, cmd->name, Len))
 		{
 			return cmd->name;
 		}
 	}
 	for (cmdalias_t* a = cmd_alias; a; a = a->next)
 	{
-		if (!QStr::NCmp(Partial, a->name, Len))
+		if (!String::NCmp(Partial, a->name, Len))
 		{
 			return a->name;
 		}
@@ -1195,7 +1195,7 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 	for (cmd_function_t** prev = &cmd_functions; *prev; prev = &cmd->next)
 	{
 		cmd = *prev;
-		if (!QStr::ICmp(cmd_argv[0], cmd->name))
+		if (!String::ICmp(cmd_argv[0], cmd->name))
 		{
 			// rearrange the links so that the command will be
 			// near the head of the list next time it is used
@@ -1222,7 +1222,7 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 	// check alias
 	for (cmdalias_t* a = cmd_alias; a; a = a->next)
 	{
-		if (!QStr::ICmp(cmd_argv[0], a->name))
+		if (!String::ICmp(cmd_argv[0], a->name))
 		{
 			if (++alias_count == ALIAS_LOOP_COUNT)
 			{
@@ -1274,21 +1274,21 @@ void Field_Clear(field_t* edit)
 
 static void FindMatches(const char* s)
 {
-	if (QStr::NICmp(s, completionString, QStr::Length(completionString)))
+	if (String::NICmp(s, completionString, String::Length(completionString)))
 	{
 		return;
 	}
 	matchCount++;
 	if (matchCount == 1)
 	{
-		QStr::NCpyZ(shortestMatch, s, sizeof(shortestMatch));
+		String::NCpyZ(shortestMatch, s, sizeof(shortestMatch));
 		return;
 	}
 
 	// cut shortestMatch to the amount common with s
 	for (int i = 0; s[i]; i++)
 	{
-		if (QStr::ToLower(shortestMatch[i]) != QStr::ToLower(s[i]))
+		if (String::ToLower(shortestMatch[i]) != String::ToLower(s[i]))
 		{
 			shortestMatch[i] = 0;
 			break;
@@ -1304,7 +1304,7 @@ static void FindMatches(const char* s)
 
 static void PrintMatches(const char* s)
 {
-	if (!QStr::NICmp(s, shortestMatch, QStr::Length(shortestMatch)))
+	if (!String::NICmp(s, shortestMatch, String::Length(shortestMatch)))
 	{
 		GLog.Write("    %s\n", s);
 	}
@@ -1320,21 +1320,21 @@ static void keyConcatArgs()
 {
 	for (int i = 1; i < Cmd_Argc(); i++)
 	{
-		QStr::Cat(completionField->buffer, sizeof(completionField->buffer), " ");
+		String::Cat(completionField->buffer, sizeof(completionField->buffer), " ");
 		const char* arg = Cmd_Argv(i);
 		while (*arg)
 		{
 			if (*arg == ' ')
 			{
-				QStr::Cat(completionField->buffer, sizeof(completionField->buffer),  "\"");
+				String::Cat(completionField->buffer, sizeof(completionField->buffer),  "\"");
 				break;
 			}
 			arg++;
 		}
-		QStr::Cat(completionField->buffer, sizeof(completionField->buffer),  Cmd_Argv(i));
+		String::Cat(completionField->buffer, sizeof(completionField->buffer),  Cmd_Argv(i));
 		if (*arg == ' ')
 		{
-			QStr::Cat(completionField->buffer, sizeof(completionField->buffer),  "\"");
+			String::Cat(completionField->buffer, sizeof(completionField->buffer),  "\"");
 		}
 	}
 }
@@ -1354,8 +1354,8 @@ static void ConcatRemaining(const char* src, const char* start)
 		return;
 	}
 
-	str += QStr::Length(start);
-	QStr::Cat(completionField->buffer, sizeof(completionField->buffer), str);
+	str += String::Length(start);
+	String::Cat(completionField->buffer, sizeof(completionField->buffer), str);
 }
 
 //==========================================================================
@@ -1385,7 +1385,7 @@ void Field_CompleteCommand(field_t* field)
 	matchCount = 0;
 	shortestMatch[0] = 0;
 
-	if (QStr::Length(completionString) == 0)
+	if (String::Length(completionString) == 0)
 	{
 		return;
 	}
@@ -1402,22 +1402,22 @@ void Field_CompleteCommand(field_t* field)
 
 	if (matchCount == 1)
 	{
-		QStr::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
+		String::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
 		if (Cmd_Argc() == 1)
 		{
-			QStr::Cat(completionField->buffer, sizeof(completionField->buffer), " ");
+			String::Cat(completionField->buffer, sizeof(completionField->buffer), " ");
 		}
 		else
 		{
 			ConcatRemaining(temp.buffer, completionString);
 		}
-		completionField->cursor = QStr::Length(completionField->buffer);
+		completionField->cursor = String::Length(completionField->buffer);
 		return;
 	}
 
 	// multiple matches, complete to shortest
-	QStr::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
-	completionField->cursor = QStr::Length(completionField->buffer);
+	String::Sprintf(completionField->buffer, sizeof(completionField->buffer), "\\%s", shortestMatch);
+	completionField->cursor = String::Length(completionField->buffer);
 	ConcatRemaining(temp.buffer, completionString);
 
 	GLog.Write("]%s\n", completionField->buffer);

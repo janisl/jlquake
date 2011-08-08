@@ -1184,7 +1184,7 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 		if (!gl_extra_textures[Ent->skinNum - 100])  // Need to load it in
 		{
 			char temp[80];
-			QStr::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
+			String::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
 			gl_extra_textures[Ent->skinNum - 100] = R_CachePic(temp);
 		}
 
@@ -1365,14 +1365,14 @@ void CL_LinkPlayers (void)
 			else
 			{
 				char client_team[16];
-				QStr::NCpy(client_team, Info_ValueForKey(cl.players[cl.playernum].userinfo, "team"), 16);
+				String::NCpy(client_team, Info_ValueForKey(cl.players[cl.playernum].userinfo, "team"), 16);
 				client_team[15] = 0;
 				if (client_team[0])
 				{
 					char this_team[16];
-					QStr::NCpy(this_team, Info_ValueForKey(info->userinfo, "team"), 16);
+					String::NCpy(this_team, Info_ValueForKey(info->userinfo, "team"), 16);
 					this_team[15] = 0;
-					if (QStr::ICmp(client_team, this_team) == 0)
+					if (String::ICmp(client_team, this_team) == 0)
 					{
 						colorshade = cl_teamcolor->value;
 					}
@@ -1542,7 +1542,7 @@ void CL_SetSolidPlayers (int playernum)
 		pent->model = -1;
 		VectorCopy(pplayer->origin, pent->origin);
 /*shitbox
-		if(!QStr::ICmp(cl.model_precache[cl.players[playernum].modelindex]->name,"models/yakman.mdl"))
+		if(!String::ICmp(cl.model_precache[cl.players[playernum].modelindex]->name,"models/yakman.mdl"))
 		{//use golem hull
 			Sys_Error("Using beast model");
 			VectorCopy(beast_mins, pent->mins);

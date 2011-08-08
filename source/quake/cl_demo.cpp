@@ -224,13 +224,13 @@ void CL_Record_f (void)
 // write the forced cd track number, or -1
 	if (c == 4)
 	{
-		track = QStr::Atoi(Cmd_Argv(3));
+		track = String::Atoi(Cmd_Argv(3));
 		Con_Printf ("Forcing CD track to %i\n", cls.forcetrack);
 	}
 	else
 		track = -1;	
 
-	QStr::Cpy(name, Cmd_Argv(1));
+	String::Cpy(name, Cmd_Argv(1));
 	
 //
 // start the map up
@@ -241,7 +241,7 @@ void CL_Record_f (void)
 //
 // open the demo file
 //
-	QStr::DefaultExtension(name, sizeof(name), ".dem");
+	String::DefaultExtension(name, sizeof(name), ".dem");
 
 	Con_Printf ("recording to %s.\n", name);
 	cls.demofile = FS_FOpenFileWrite(name);
@@ -288,8 +288,8 @@ void CL_PlayDemo_f (void)
 //
 // open the demo file
 //
-	QStr::Cpy(name, Cmd_Argv(1));
-	QStr::DefaultExtension(name, sizeof(name), ".dem");
+	String::Cpy(name, Cmd_Argv(1));
+	String::DefaultExtension(name, sizeof(name), ".dem");
 
 	Con_Printf ("Playing demo from %s.\n", name);
 	FS_FOpenFileRead (name, &cls.demofile, true);

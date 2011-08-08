@@ -41,7 +41,7 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 		if (p)
 		{
 			p += 1;
-			QStr::Cpy(model, p);
+			String::Cpy(model, p);
 			p = strchr(model, '/');
 			if (p)
 				*p = 0;
@@ -49,10 +49,10 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 	}
 	// if we can't figure it out, they're male
 	if (!model[0])
-		QStr::Cpy(model, "male");
+		String::Cpy(model, "male");
 
 	// see if we already know of the model specific sound
-	QStr::Sprintf (sexedFilename, sizeof(sexedFilename), "#players/%s/%s", model, base+1);
+	String::Sprintf (sexedFilename, sizeof(sexedFilename), "#players/%s/%s", model, base+1);
 	sfx = S_FindName (sexedFilename, false);
 
 	if (!sfx)
@@ -68,7 +68,7 @@ sfx_t *S_RegisterSexedSound(int entnum, char *base)
 		else
 		{
 			// no, revert to the male sound in the pak0.pak
-			QStr::Sprintf (maleFilename, sizeof(maleFilename), "player/%s/%s", "male", base+1);
+			String::Sprintf (maleFilename, sizeof(maleFilename), "player/%s/%s", "male", base+1);
 			sfx = S_AliasName (sexedFilename, maleFilename);
 		}
 	}

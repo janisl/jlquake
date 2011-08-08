@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 
 	j = COM_CheckParm("-mem");
 	if (j)
-		parms.memsize = (int) (QStr::Atof(COM_Argv(j+1)) * 1024 * 1024);
+		parms.memsize = (int) (String::Atof(COM_Argv(j+1)) * 1024 * 1024);
 	if ((parms.membase = malloc (parms.memsize)) == NULL)
 		Sys_Error("Can't allocate %ld\n", parms.memsize);
 

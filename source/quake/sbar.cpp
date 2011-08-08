@@ -463,7 +463,7 @@ void Sbar_SoloScoreboard (void)
 	Sbar_DrawString (184, 4, str);
 
 // draw level name
-	l = QStr::Length(cl.levelname);
+	l = String::Length(cl.levelname);
 	Sbar_DrawString (232 - l*4, 12, cl.levelname);
 }
 

@@ -236,7 +236,7 @@ void CL_PredictMovement (void)
 	pm.trace = CL_PMTrace;
 	pm.pointcontents = CL_PMpointcontents;
 
-	pm_airaccelerate = QStr::Atof(cl.configstrings[CS_AIRACCEL]);
+	pm_airaccelerate = String::Atof(cl.configstrings[CS_AIRACCEL]);
 
 	pm.s = cl.frame.playerstate.pmove;
 

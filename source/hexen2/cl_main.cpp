@@ -93,7 +93,7 @@ void CL_RemoveGIPFiles(const char *path)
 	else
 	{
 		netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, "");
-		netpath[QStr::Length(netpath) - 1] = 0;
+		netpath[String::Length(netpath) - 1] = 0;
 	}
 	int numSysFiles;
 	char** sysFiles = Sys_ListFiles(netpath, ".gip", NULL, &numSysFiles, false);
@@ -117,7 +117,7 @@ void CL_CopyFiles(const char* source, const char* ext, const char* dest)
 	char* netpath = FS_BuildOSPath(fs_homepath->string, fs_gamedir, source);
 	if (!source[0])
 	{
-		netpath[QStr::Length(netpath) - 1] = 0;
+		netpath[String::Length(netpath) - 1] = 0;
 	}
 	int numSysFiles;
 	char** sysFiles = Sys_ListFiles(netpath, ext, NULL, &numSysFiles, false);
@@ -453,7 +453,7 @@ void R_HandleCustomSkin(refEntity_t* Ent, int PlayerNum)
 		if (!gl_extra_textures[Ent->skinNum - 100])  // Need to load it in
 		{
 			char temp[40];
-			QStr::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
+			String::Sprintf(temp, sizeof(temp), "gfx/skin%d.lmp", Ent->skinNum);
 			gl_extra_textures[Ent->skinNum - 100] = R_CachePic(temp);
 		}
 
@@ -863,9 +863,9 @@ void CL_Sensitivity_save_f (void)
 		return;
 	}
 
-	if (QStr::ICmp(Cmd_Argv(1),"save") == 0)
+	if (String::ICmp(Cmd_Argv(1),"save") == 0)
 		save_sensitivity = sensitivity->value;
-	else if (QStr::ICmp(Cmd_Argv(1),"restore") == 0)
+	else if (String::ICmp(Cmd_Argv(1),"restore") == 0)
 		Cvar_SetValue ("sensitivity", save_sensitivity);
 }
 /*

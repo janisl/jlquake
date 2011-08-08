@@ -143,7 +143,7 @@ void* R_GetWadLumpByName(const char* name)
 	lumpinfo_t* lump_p = wad_lumps;
 	for (int i = 0; i < wad_numlumps; i++, lump_p++)
 	{
-		if (!QStr::Cmp(clean, lump_p->name))
+		if (!String::Cmp(clean, lump_p->name))
 		{
 			return &wad_base[lump_p->filepos];
 		}

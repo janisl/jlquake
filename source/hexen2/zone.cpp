@@ -365,7 +365,7 @@ void Hunk_Print (qboolean all, qboolean write_file)
 	// print the total
 	//
 		if (next == endlow || next == endhigh || 
-		QStr::NCmp(h->name, next->name, 8) )
+		String::NCmp(h->name, next->name, 8) )
 		{
 			if (!all)
 			{
@@ -415,7 +415,7 @@ void *Hunk_AllocName (int size, const char *name)
 	
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	QStr::NCpy(h->name, name, 20);
+	String::NCpy(h->name, name, 20);
 	
 	return (void *)(h+1);
 }
@@ -505,7 +505,7 @@ void *Hunk_HighAllocName (int size, const char *name)
 	Com_Memset(h, 0, size);
 	h->size = size;
 	h->sentinal = HUNK_SENTINAL;
-	QStr::NCpy(h->name, name, 8);
+	String::NCpy(h->name, name, 8);
 
 	return (void *)(h+1);
 }
@@ -552,8 +552,8 @@ void Memory_Display_f(void)
 	NumItems = Cmd_Argc();
 	for(counter=1;counter<NumItems;counter++)
 	{
-		if (QStr::ICmp(Cmd_Argv(counter),"short") == 0) all = false;
-		else if (QStr::ICmp(Cmd_Argv(counter),"save") == 0) write_file = true;
+		if (String::ICmp(Cmd_Argv(counter),"short") == 0) all = false;
+		else if (String::ICmp(Cmd_Argv(counter),"save") == 0) write_file = true;
 	}
 
    Hunk_Print(all,write_file);
@@ -597,7 +597,7 @@ void Memory_Stats_f(void)
 	NumItems = Cmd_Argc();
 	for(counter=1;counter<NumItems;counter++)
 	{
-		if (QStr::ICmp(Cmd_Argv(counter),"save") == 0) write_file = true;
+		if (String::ICmp(Cmd_Argv(counter),"save") == 0) write_file = true;
 	}
 
 	Com_Memset(GroupCount,0,sizeof(GroupCount));
@@ -624,7 +624,7 @@ void Memory_Stats_f(void)
 
 		for(counter=0;counter<NUM_GROUPS;counter++)
 		{
-			if (QStr::ICmp(h->name,MemoryGroups[counter]) == 0)
+			if (String::ICmp(h->name,MemoryGroups[counter]) == 0)
 			{
 				GroupCount[counter]++;
 				GroupSum[counter] += h->size;
@@ -686,7 +686,7 @@ void Memory_Init (void *buf, int size)
 	if (p)
 	{
 		if (p < COM_Argc()-1)
-			zonesize = QStr::Atoi(COM_Argv(p+1)) * 1024;
+			zonesize = String::Atoi(COM_Argv(p+1)) * 1024;
 		else
 			Sys_Error ("Memory_Init: you must specify a size in KB after -zone");
 	}

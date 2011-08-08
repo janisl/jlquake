@@ -54,7 +54,7 @@ void Cmd_ForwardToServer (void)
 		return;		// not really connected
 
 	cls.message.WriteByte(clc_stringcmd);
-	if (QStr::ICmp(Cmd_Argv(0), "cmd") != 0)
+	if (String::ICmp(Cmd_Argv(0), "cmd") != 0)
 	{
 		cls.message.Print(Cmd_Argv(0));
 		cls.message.Print(" ");

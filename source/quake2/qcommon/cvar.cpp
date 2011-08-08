@@ -49,8 +49,8 @@ void Cvar_GetLatchedVars (void)
 		Mem_Free (var->string);
 		var->string = var->latchedString;
 		var->latchedString = NULL;
-		var->value = QStr::Atof(var->string);
-		if (!QStr::Cmp(var->name, "game"))
+		var->value = String::Atof(var->string);
+		if (!String::Cmp(var->name, "game"))
 		{
 			FS_SetGamedir (var->string);
 			FS_ExecAutoexec ();

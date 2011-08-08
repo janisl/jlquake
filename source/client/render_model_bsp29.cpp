@@ -141,7 +141,7 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 		// the pixels immediately follow the structures
 		Com_Memcpy(tx + 1, mt + 1, pixels);
 
-		if (!QStr::NCmp(mt->name,"sky",3))
+		if (!String::NCmp(mt->name,"sky",3))
 		{
 			R_InitSky(tx);
 		}
@@ -214,7 +214,7 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 			{
 				continue;
 			}
-			if (QStr::Cmp(tx2->name + 2, tx->name + 2))
+			if (String::Cmp(tx2->name + 2, tx->name + 2))
 			{
 				continue;
 			}
@@ -728,7 +728,7 @@ static void Mod_LoadFaces(bsp29_lump_t* l)
 
 		// set the drawing flags flag
 
-		if (!QStr::NCmp(out->texinfo->texture->name, "sky", 3))	// sky
+		if (!String::NCmp(out->texinfo->texture->name, "sky", 3))	// sky
 		{
 			out->flags |= (BRUSH29_SURF_DRAWSKY | BRUSH29_SURF_DRAWTILED);
 			GL_SubdivideSurface(out);	// cut up polygon for warps
@@ -746,8 +746,8 @@ static void Mod_LoadFaces(bsp29_lump_t* l)
 			GL_SubdivideSurface(out);	// cut up polygon for warps
 
 			if ((GGameType & GAME_Hexen2) &&
-				(!QStr::NICmp(out->texinfo->texture->name, "*rtex078", 8) ||
-				!QStr::NICmp(out->texinfo->texture->name, "*lowlight", 9)))
+				(!String::NICmp(out->texinfo->texture->name, "*rtex078", 8) ||
+				!String::NICmp(out->texinfo->texture->name, "*lowlight", 9)))
 			{
 				out->flags |= BRUSH29_SURF_TRANSLUCENT;
 			}
@@ -848,7 +848,7 @@ static void Mod_LoadLeafs(bsp29_lump_t* l)
 	//char s[80];
 	//sprintf(s, "maps/%s.bsp", Info_ValueForKey(cl.serverinfo,"map"));
 	bool isnotmap = true;
-	//if (!QStr::Cmp(s, loadmodel->name))
+	//if (!String::Cmp(s, loadmodel->name))
 	{
 		isnotmap = false;
 	}
@@ -1138,7 +1138,7 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 			int saved_index = loadmodel->index;
 			*loadmodel = *mod;
 			loadmodel->index = saved_index;
-			QStr::Sprintf(loadmodel->name, sizeof(loadmodel->name), "*%i", i + 1);
+			String::Sprintf(loadmodel->name, sizeof(loadmodel->name), "*%i", i + 1);
 			mod = loadmodel;
 		}
 	}

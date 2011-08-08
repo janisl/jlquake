@@ -151,14 +151,14 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 	if (cls.demoplayback)
 		return true;
 
-	QStr::Cpy(cls.downloadname, filename);
+	String::Cpy(cls.downloadname, filename);
 	Con_Printf ("Downloading %s...\n", cls.downloadname);
 
 	// download to a temp name, and only rename
 	// to the real name when done, so if interrupted
 	// a runt file wont be left
-	QStr::StripExtension (cls.downloadname, cls.downloadtempname);
-	QStr::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
+	String::StripExtension (cls.downloadname, cls.downloadtempname);
+	String::Cat(cls.downloadtempname, sizeof(cls.downloadtempname), ".tmp");
 
 	cls.netchan.message.WriteByte(clc_stringcmd);
 	cls.netchan.message.WriteString2(
@@ -226,7 +226,7 @@ void Model_NextDownload (void)
 		cl.model_precache[i] = R_RegisterModel(cl.model_name[i]);
 		if (cl.model_name[i][0] == '*')
 		{
-			cl.clip_models[i] = CM_InlineModel(QStr::Atoi(cl.model_name[i] + 1));
+			cl.clip_models[i] = CM_InlineModel(String::Atoi(cl.model_name[i] + 1));
 		}
 		if (!cl.model_precache[i])
 		{
@@ -443,7 +443,7 @@ void CL_ParseServerData (void)
 	// game directory
 	str = const_cast<char*>(net_message.ReadString2());
 
-	if (QStr::ICmp(gamedirfile, str)) {
+	if (String::ICmp(gamedirfile, str)) {
 		// save current config
 		Host_WriteConfiguration ("config.cfg"); 
 		cflag = true;
@@ -474,7 +474,7 @@ void CL_ParseServerData (void)
 
 	// get the full level name
 	str = const_cast<char*>(net_message.ReadString2());
-	QStr::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
+	String::NCpy(cl.levelname, str, sizeof(cl.levelname)-1);
 
 	// get the movevars
 	if (protover == PROTOCOL_VERSION) {
@@ -535,7 +535,7 @@ void CL_ParseSoundlist (void)
 			break;
 		if (numsounds==MAX_SOUNDS)
 			Host_EndGame ("Server sent too many sound_precache");
-		QStr::Cpy(cl.sound_name[numsounds], str);
+		String::Cpy(cl.sound_name[numsounds], str);
 	}
 
 	cls.downloadnumber = 0;
@@ -575,31 +575,31 @@ void CL_ParseModellist (void)
 			break;
 		if (nummodels==MAX_MODELS)
 			Host_EndGame ("Server sent too many model_precache");
-		QStr::Cpy(cl.model_name[nummodels], str);
+		String::Cpy(cl.model_name[nummodels], str);
 
-		if (!QStr::Cmp(cl.model_name[nummodels],"progs/spike.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"progs/spike.mdl"))
 			cl_spikeindex = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/paladin.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/paladin.mdl"))
 			cl_playerindex[0] = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/crusader.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/crusader.mdl"))
 			cl_playerindex[1] = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/necro.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/necro.mdl"))
 			cl_playerindex[2] = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/assassin.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/assassin.mdl"))
 			cl_playerindex[3] = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/succubus.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/succubus.mdl"))
 			cl_playerindex[4] = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/hank.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/hank.mdl"))
 			cl_playerindex[5] = nummodels;//mg-siege
-		if (!QStr::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"progs/flag.mdl"))
 			cl_flagindex = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/ball.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/ball.mdl"))
 			cl_ballindex = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/newmmis.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/newmmis.mdl"))
 			cl_missilestarindex = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/ravproj.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/ravproj.mdl"))
 			cl_ravenindex = nummodels;
-		if (!QStr::Cmp(cl.model_name[nummodels],"models/vindsht1.mdl"))
+		if (!String::Cmp(cl.model_name[nummodels],"models/vindsht1.mdl"))
 			cl_raven2index = nummodels;
 	}
 
@@ -862,17 +862,17 @@ void CL_UpdateUserinfo (void)
 
 	player = &cl.players[slot];
 	player->userid = net_message.ReadLong ();
-	QStr::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo)-1);
+	String::NCpy(player->userinfo, net_message.ReadString2(), sizeof(player->userinfo)-1);
 
-	QStr::NCpy(player->name, Info_ValueForKey (player->userinfo, "name"), sizeof(player->name)-1);
-	player->topcolor = QStr::Atoi(Info_ValueForKey (player->userinfo, "topcolor"));
-	player->bottomcolor = QStr::Atoi(Info_ValueForKey (player->userinfo, "bottomcolor"));
+	String::NCpy(player->name, Info_ValueForKey (player->userinfo, "name"), sizeof(player->name)-1);
+	player->topcolor = String::Atoi(Info_ValueForKey (player->userinfo, "topcolor"));
+	player->bottomcolor = String::Atoi(Info_ValueForKey (player->userinfo, "bottomcolor"));
 	if (Info_ValueForKey (player->userinfo, "*spectator")[0])
 		player->spectator = true;
 	else
 		player->spectator = false;
 
-	player->playerclass = QStr::Atoi(Info_ValueForKey (player->userinfo, "playerclass"));
+	player->playerclass = String::Atoi(Info_ValueForKey (player->userinfo, "playerclass"));
 /*	if (cl.playernum == slot && player->playerclass != playerclass.value)
 	{
 		Cvar_SetValue ("playerclass",player->playerclass);
@@ -1152,8 +1152,8 @@ void CL_ParseServerMessage (void)
 			i = net_message.ReadByte ();
 			if (i >= MAX_LIGHTSTYLES_Q1)
 				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES_Q1");
-			QStr::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
-			cl_lightstyle[i].length = QStr::Length(cl_lightstyle[i].map);
+			String::Cpy(cl_lightstyle[i].map,  net_message.ReadString2());
+			cl_lightstyle[i].length = String::Length(cl_lightstyle[i].map);
 			break;
 			
 		case svc_sound:
@@ -1610,8 +1610,8 @@ void CL_ParseServerMessage (void)
 			break;
 
 		case svc_midi_name:
-			QStr::Cpy(cl.midi_name,net_message.ReadString2 ());
-			if (QStr::ICmp(bgmtype->string,"midi") == 0)
+			String::Cpy(cl.midi_name,net_message.ReadString2 ());
+			if (String::ICmp(bgmtype->string,"midi") == 0)
 				MIDI_Play(cl.midi_name);
 			else 
 				MIDI_Stop();

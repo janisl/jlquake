@@ -45,24 +45,24 @@ void Skin_Find (player_info_t *sc)
 	const char*	s;
 
 	if (allskins[0])
-		QStr::Cpy(name, allskins);
+		String::Cpy(name, allskins);
 	else
 	{
 		s = Info_ValueForKey (sc->userinfo, "skin");
 		if (s && s[0])
-			QStr::Cpy(name, s);
+			String::Cpy(name, s);
 		else
-			QStr::Cpy(name, baseskin->string);
+			String::Cpy(name, baseskin->string);
 	}
 
 	if (strstr (name, "..") || *name == '.')
-		QStr::Cpy(name, "base");
+		String::Cpy(name, "base");
 
-	QStr::StripExtension (name, name);
+	String::StripExtension (name, name);
 
 	for (i=0 ; i<numskins ; i++)
 	{
-		if (!QStr::Cmp(name, skins[i].name))
+		if (!String::Cmp(name, skins[i].name))
 		{
 			sc->skin = &skins[i];
 			Skin_Cache (sc->skin);
@@ -81,7 +81,7 @@ void Skin_Find (player_info_t *sc)
 	numskins++;
 
 	Com_Memset(skin, 0, sizeof(*skin));
-	QStr::NCpy(skin->name, name, sizeof(skin->name) - 1);
+	String::NCpy(skin->name, name, sizeof(skin->name) - 1);
 }
 
 
@@ -223,6 +223,6 @@ Sets all skins to one specific one
 */
 void	Skin_AllSkins_f (void)
 {
-	QStr::Cpy(allskins, Cmd_Argv(1));
+	String::Cpy(allskins, Cmd_Argv(1));
 	Skin_Skins_f ();
 }

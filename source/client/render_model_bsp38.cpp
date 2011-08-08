@@ -178,7 +178,7 @@ static void Mod_LoadTexinfo(bsp38_lump_t* l)
 		    out->next = NULL;
 		}
 		char name[MAX_QPATH];
-		QStr::Sprintf(name, sizeof(name), "textures/%s.wal", in->texture);
+		String::Sprintf(name, sizeof(name), "textures/%s.wal", in->texture);
 
 		out->image = R_FindImageFile(name, true, true, GL_REPEAT);
 		if (!out->image)
@@ -894,7 +894,7 @@ void Mod_LoadBrush38Model(model_t* mod, void* buffer)
 			int saved_index = starmod->index;
 			*starmod = *loadmodel;
 			starmod->index = saved_index;
-			QStr::Sprintf(starmod->name, sizeof(starmod->name), "*%d", i);
+			String::Sprintf(starmod->name, sizeof(starmod->name), "*%d", i);
 	
 			starmod->brush38_numleafs = bm->visleafs;
 		}

@@ -178,7 +178,7 @@ void	Host_FindMaxClients (void)
 		cls.state = ca_dedicated;
 		if (i != (COM_Argc() - 1))
 		{
-			svs.maxclients = QStr::Atoi(COM_Argv(i+1));
+			svs.maxclients = String::Atoi(COM_Argv(i+1));
 		}
 		else
 			svs.maxclients = 8;
@@ -196,7 +196,7 @@ void	Host_FindMaxClients (void)
 		if (cls.state == ca_dedicated)
 			Sys_Error ("Only one of -dedicated or -listen can be specified");
 		if (i != (COM_Argc() - 1))
-			svs.maxclients = QStr::Atoi(COM_Argv(i+1));
+			svs.maxclients = String::Atoi(COM_Argv(i+1));
 		else
 			svs.maxclients = 8;
 	}
