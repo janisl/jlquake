@@ -23,11 +23,6 @@ public:
 
 class Log
 {
-private:
-	enum { MAX_LISTENERS	= 8 };
-
-	static LogListener* listeners[MAX_LISTENERS];
-
 public:
 	static void addListener(LogListener* listener);
 	static void removeListener(LogListener* listener);
@@ -37,4 +32,12 @@ public:
 
 	static void develWrite(const char* format, ...);
 	static void develWriteLine(const char* format, ...);
+
+private:
+	enum { MAX_LISTENERS	= 8 };
+
+	static LogListener* listeners[MAX_LISTENERS];
+
+	static void sendStringToListeners(const char* string);
+	static void sendDevelStringToListeners(const char* string);
 };

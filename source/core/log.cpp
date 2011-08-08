@@ -50,19 +50,7 @@ void Log::write(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	for (int i = 0; i < MAX_LISTENERS; i++)
-	{
-		if (listeners[i])
-		{
-			try
-			{
-				listeners[i]->serialise(string);
-			}
-			catch (...)
-			{
-			}
-		}
-	}
+	sendStringToListeners(string);
 }
 
 void Log::writeLine(const char* format, ...)
@@ -75,6 +63,11 @@ void Log::writeLine(const char* format, ...)
 	va_end(argPtr);
 	strcat(string, "\n");
 
+	sendStringToListeners(string);
+}
+
+void Log::sendStringToListeners(const char* string)
+{
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
 		if (listeners[i])
@@ -99,19 +92,7 @@ void Log::develWrite(const char* format, ...)
 	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
 	va_end(argPtr);
 
-	for (int i = 0; i < MAX_LISTENERS; i++)
-	{
-		if (listeners[i])
-		{
-			try
-			{
-				listeners[i]->develSerialise(string);
-			}
-			catch (...)
-			{
-			}
-		}
-	}
+	sendDevelStringToListeners(string);
 }
 
 void Log::develWriteLine(const char* format, ...)
@@ -124,6 +105,11 @@ void Log::develWriteLine(const char* format, ...)
 	va_end(argPtr);
 	strcat(string, "\n");
 
+	sendDevelStringToListeners(string);
+}
+
+void Log::sendDevelStringToListeners(const char* string)
+{
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
 		if (listeners[i])
