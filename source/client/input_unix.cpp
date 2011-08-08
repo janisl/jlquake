@@ -17,7 +17,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include "client.h"
-#include "render_local.h"
+#include "renderer/local.h"
 #include "unix_shared.h"
 #include <X11/Xutil.h>
 #include <X11/extensions/Xxf86dga.h>

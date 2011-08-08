@@ -16,11 +16,18 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "cinematic_local.h"
-#include "renderer/local.h"
+#include "../client.h"
+#include "local.h"
 
 // MACROS ------------------------------------------------------------------
+
+#define NOISE_SIZE			256
+#define NOISE_MASK			(NOISE_SIZE - 1)
+
+#define VAL(a)				s_noise_perm[(a) & (NOISE_MASK)]
+#define INDEX(x, y, z, t)	VAL(x + VAL(y + VAL(z + VAL(t))))
+
+#define LERP(a, b, w)		(a * (1.0f - w) + b * w)
 
 // TYPES -------------------------------------------------------------------
 
@@ -36,83 +43,80 @@
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
+static float	s_noise_table[NOISE_SIZE];
+static int		s_noise_perm[NOISE_SIZE];
+
 // CODE --------------------------------------------------------------------
 
 //==========================================================================
 //
-//	QCinematicPcx::~QCinematicPcx
+//	GetNoiseValue
 //
 //==========================================================================
 
-QCinematicPcx::~QCinematicPcx()
+static float GetNoiseValue(int x, int y, int z, int t)
 {
-	if (OutputFrame)
+	int index = INDEX(x, y, z, t);
+
+	return s_noise_table[index];
+}
+
+//==========================================================================
+//
+//	R_NoiseInit
+//
+//==========================================================================
+
+void R_NoiseInit()
+{
+	srand(1001);
+
+	for (int i = 0; i < NOISE_SIZE; i++)
 	{
-		delete[] OutputFrame;
-		OutputFrame = NULL;
+		s_noise_table[i] = (float)(((rand() / (float)RAND_MAX) * 2.0 - 1.0));
+		s_noise_perm[i] = (unsigned char)(rand() / (float)RAND_MAX * 255);
 	}
 }
 
 //==========================================================================
 //
-//	QCinematicPcx::Open
+//	R_NoiseGet4f
 //
 //==========================================================================
 
-bool QCinematicPcx::Open(const char* FileName)
+float R_NoiseGet4f(float x, float y, float z, float t)
 {
-	String::Cpy(Name, FileName);
-	byte* pic;
-	byte* palette;
-	R_LoadPCX(FileName, &pic, &palette, &Width, &Height);
-	if (!pic)
+	int ix = (int)floor(x);
+	float fx = x - ix;
+	int iy = (int)floor(y);
+	float fy = y - iy;
+	int iz = (int)floor(z);
+	float fz = z - iz;
+	int it = (int)floor(t);
+	float ft = t - it;
+
+	float value[2];
+	for (int i = 0; i < 2; i++)
 	{
-		Log::write("%s not found.\n", Name);
-		return false;
+		float front[4];
+		front[0] = GetNoiseValue(ix, iy, iz, it + i);
+		front[1] = GetNoiseValue(ix + 1, iy, iz, it + i);
+		front[2] = GetNoiseValue(ix, iy + 1, iz, it + i);
+		front[3] = GetNoiseValue(ix + 1, iy + 1, iz, it + i);
+
+		float back[4];
+		back[0] = GetNoiseValue(ix, iy, iz + 1, it + i);
+		back[1] = GetNoiseValue(ix + 1, iy, iz + 1, it + i);
+		back[2] = GetNoiseValue(ix, iy + 1, iz + 1, it + i);
+		back[3] = GetNoiseValue(ix + 1, iy+1, iz + 1, it + i);
+
+		float fvalue = LERP(LERP(front[0], front[1], fx), LERP(front[2], front[3], fx), fy);
+		float bvalue = LERP(LERP(back[0], back[1], fx), LERP(back[2], back[3], fx), fy);
+
+		value[i] = LERP( fvalue, bvalue, fz );
 	}
 
-	OutputFrame = new byte[Width * Height * 4];
-	for (int i = 0; i < Width * Height; i++)
-	{
-		OutputFrame[i * 4 + 0] = palette[pic[i] * 3 + 0];
-		OutputFrame[i * 4 + 1] = palette[pic[i] * 3 + 1];
-		OutputFrame[i * 4 + 2] = palette[pic[i] * 3 + 2];
-		OutputFrame[i * 4 + 3] = 255;
-	}
+	float finalvalue = LERP(value[0], value[1], ft);
 
-	delete[] pic;
-	delete[] palette;
-	return true;
-}
-
-//==========================================================================
-//
-//	QCinematicPcx::Update
-//
-//==========================================================================
-
-bool QCinematicPcx::Update(int)
-{
-	return true;
-}
-
-//==========================================================================
-//
-//	QCinematicPcx::GetCinematicTime
-//
-//==========================================================================
-
-int QCinematicPcx::GetCinematicTime() const
-{
-	return 0;
-}
-
-//==========================================================================
-//
-//	QCinematicPcx::Reset
-//
-//==========================================================================
-
-void QCinematicPcx::Reset()
-{
+	return finalvalue;
 }

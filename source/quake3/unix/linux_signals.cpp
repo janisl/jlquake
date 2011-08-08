@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/qcommon.h"
 #ifndef DEDICATED
 #include "../../client/client.h"
-#include "../../client/render_local.h"
+#include "../../client/renderer/local.h"
 #endif
 
 static qboolean signalcaught = qfalse;;

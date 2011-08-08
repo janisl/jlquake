@@ -321,23 +321,23 @@
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap29_local.h"
+				RelativePath=".\clip_map\bsp29\local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap38_local.h"
+				RelativePath=".\clip_map\bsp38\local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap46_local.h"
+				RelativePath=".\clip_map\bsp46\local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap_local.h"
+				RelativePath=".\clip_map\local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap_public.h"
+				RelativePath=".\clip_map\public.h"
 				>
 			</File>
 			<File

@@ -191,179 +191,179 @@
 				>
 			</File>
 			<File
-				RelativePath=".\render_backend.cpp"
+				RelativePath=".\renderer\backend.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_commands.cpp"
+				RelativePath=".\renderer\commands.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_curve.cpp"
+				RelativePath=".\renderer\curve.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_driver_wgl.cpp"
+				RelativePath=".\renderer\driver_wgl.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_flares.cpp"
+				RelativePath=".\renderer\flares.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_font.cpp"
+				RelativePath=".\renderer\font.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_image.cpp"
+				RelativePath=".\renderer\images\bmp.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_image_bmp.cpp"
+				RelativePath=".\renderer\images\image.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_image_jpg.cpp"
+				RelativePath=".\renderer\images\jpg.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_image_pcx.cpp"
+				RelativePath=".\renderer\images\pcx.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_image_pic.cpp"
+				RelativePath=".\renderer\images\pic.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_image_tga.cpp"
+				RelativePath=".\renderer\images\tga.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_image_wal.cpp"
+				RelativePath=".\renderer\images\wal.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_init.cpp"
+				RelativePath=".\renderer\init.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_light.cpp"
+				RelativePath=".\renderer\light.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_main.cpp"
+				RelativePath=".\renderer\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_marks.cpp"
+				RelativePath=".\renderer\marks.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model.cpp"
+				RelativePath=".\renderer\models\bsp29.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_bsp29.cpp"
+				RelativePath=".\renderer\models\bsp38.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_bsp38.cpp"
+				RelativePath=".\renderer\models\bsp46.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_bsp46.cpp"
+				RelativePath=".\renderer\models\md2.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_md2.cpp"
+				RelativePath=".\renderer\models\md3.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_md3.cpp"
+				RelativePath=".\renderer\models\md4.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_md4.cpp"
+				RelativePath=".\renderer\models\mdl.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_mdl.cpp"
+				RelativePath=".\renderer\models\model.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_sp2.cpp"
+				RelativePath=".\renderer\models\sp2.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_model_spr.cpp"
+				RelativePath=".\renderer\models\spr.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_noise.cpp"
+				RelativePath=".\renderer\noise.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_particle.cpp"
+				RelativePath=".\renderer\particle.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_qgl.cpp"
+				RelativePath=".\renderer\qgl.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_scene.cpp"
+				RelativePath=".\renderer\scene.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_screenshot.cpp"
+				RelativePath=".\renderer\screenshot.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_shade.cpp"
+				RelativePath=".\renderer\shade.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_shade_calculate.cpp"
+				RelativePath=".\renderer\shade_calculate.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_shader.cpp"
+				RelativePath=".\renderer\shader.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_shadows.cpp"
+				RelativePath=".\renderer\shadows.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_skin.cpp"
+				RelativePath=".\renderer\skin.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_sky.cpp"
+				RelativePath=".\renderer\sky.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_state.cpp"
+				RelativePath=".\renderer\state.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_surface1.cpp"
+				RelativePath=".\renderer\surface1.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_surface2.cpp"
+				RelativePath=".\renderer\surface2.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_surface3.cpp"
+				RelativePath=".\renderer\surface3.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_wad.cpp"
+				RelativePath=".\renderer\wad.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\render_world.cpp"
+				RelativePath=".\renderer\world.cpp"
 				>
 			</File>
 			<File
@@ -421,23 +421,39 @@
 				>
 			</File>
 			<File
-				RelativePath=".\render_image.h"
+				RelativePath=".\renderer\cvars.h"
 				>
 			</File>
 			<File
-				RelativePath=".\render_local.h"
+				RelativePath=".\renderer\images\image.h"
 				>
 			</File>
 			<File
-				RelativePath=".\render_public.h"
+				RelativePath=".\renderer\local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\render_qgl.h"
+				RelativePath=".\renderer\models\model.h"
 				>
 			</File>
 			<File
-				RelativePath=".\render_qgl_functions.h"
+				RelativePath=".\renderer\public.h"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer\qgl.h"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer\qgl_functions.h"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer\shader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\renderer\state.h"
 				>
 			</File>
 			<File

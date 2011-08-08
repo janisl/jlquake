@@ -1,4 +1,48 @@
 set(CLIENT_FILES
+	renderer/images/bmp.cpp
+	renderer/images/image.cpp
+	renderer/images/jpg.cpp
+	renderer/images/pcx.cpp
+	renderer/images/pic.cpp
+	renderer/images/tga.cpp
+	renderer/images/wal.cpp
+	renderer/models/bsp29.cpp
+	renderer/models/bsp38.cpp
+	renderer/models/bsp46.cpp
+	renderer/models/md2.cpp
+	renderer/models/md3.cpp
+	renderer/models/md4.cpp
+	renderer/models/mdl.cpp
+	renderer/models/model.cpp
+	renderer/models/sp2.cpp
+	renderer/models/spr.cpp
+	renderer/backend.cpp
+	renderer/commands.cpp
+	renderer/curve.cpp
+	renderer/driver_glx.cpp
+	renderer/flares.cpp
+	renderer/font.cpp
+	renderer/init.cpp
+	renderer/light.cpp
+	renderer/main.cpp
+	renderer/marks.cpp
+	renderer/noise.cpp
+	renderer/particle.cpp
+	renderer/qgl.cpp
+	renderer/scene.cpp
+	renderer/screenshot.cpp
+	renderer/shade.cpp
+	renderer/shade_calculate.cpp
+	renderer/shader.cpp
+	renderer/shadows.cpp
+	renderer/skin.cpp
+	renderer/sky.cpp
+	renderer/state.cpp
+	renderer/surface1.cpp
+	renderer/surface2.cpp
+	renderer/surface3.cpp
+	renderer/wad.cpp
+	renderer/world.cpp
 	cinematic_cin.cpp
 	cinematic_main.cpp
 	cinematic_pcx.cpp
@@ -7,50 +51,6 @@ set(CLIENT_FILES
 	input_keys.cpp
 	input_main.cpp
 	input_unix.cpp
-	render_backend.cpp
-	render_commands.cpp
-	render_curve.cpp
-	render_driver_glx.cpp
-	render_flares.cpp
-	render_font.cpp
-	render_image.cpp
-	render_image_bmp.cpp
-	render_image_jpg.cpp
-	render_image_pcx.cpp
-	render_image_pic.cpp
-	render_image_tga.cpp
-	render_image_wal.cpp
-	render_init.cpp
-	render_light.cpp
-	render_main.cpp
-	render_marks.cpp
-	render_model.cpp
-	render_model_bsp29.cpp
-	render_model_bsp38.cpp
-	render_model_bsp46.cpp
-	render_model_md2.cpp
-	render_model_md3.cpp
-	render_model_md4.cpp
-	render_model_mdl.cpp
-	render_model_sp2.cpp
-	render_model_spr.cpp
-	render_noise.cpp
-	render_particle.cpp
-	render_qgl.cpp
-	render_scene.cpp
-	render_screenshot.cpp
-	render_shade.cpp
-	render_shade_calculate.cpp
-	render_shader.cpp
-	render_shadows.cpp
-	render_skin.cpp
-	render_sky.cpp
-	render_state.cpp
-	render_surface1.cpp
-	render_surface2.cpp
-	render_surface3.cpp
-	render_wad.cpp
-	render_world.cpp
 	sound_audiocd_linux.cpp
 	sound_driver_alsa.cpp
 	sound_main.cpp

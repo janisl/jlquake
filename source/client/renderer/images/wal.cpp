@@ -16,13 +16,25 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "cinematic_local.h"
-#include "renderer/local.h"
+#include "../../client.h"
+#include "../local.h"
 
 // MACROS ------------------------------------------------------------------
 
+#define	MIPLEVELS	4
+
 // TYPES -------------------------------------------------------------------
+
+struct miptex_t
+{
+	char		name[32];
+	unsigned	width, height;
+	unsigned	offsets[MIPLEVELS];		// four mip maps stored
+	char		animname[32];			// next frame in animation chain
+	int			flags;
+	int			contents;
+	int			value;
+};
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -40,79 +52,34 @@
 
 //==========================================================================
 //
-//	QCinematicPcx::~QCinematicPcx
+//	R_LoadWAL
 //
 //==========================================================================
 
-QCinematicPcx::~QCinematicPcx()
+void R_LoadWAL(const char* FileName, byte** Pic, int* WidthPtr, int* HeightPtr)
 {
-	if (OutputFrame)
-	{
-		delete[] OutputFrame;
-		OutputFrame = NULL;
-	}
-}
+	*Pic = NULL;
 
-//==========================================================================
-//
-//	QCinematicPcx::Open
-//
-//==========================================================================
-
-bool QCinematicPcx::Open(const char* FileName)
-{
-	String::Cpy(Name, FileName);
-	byte* pic;
-	byte* palette;
-	R_LoadPCX(FileName, &pic, &palette, &Width, &Height);
-	if (!pic)
+	miptex_t* mt;
+	FS_ReadFile(FileName, (void**)&mt);
+	if (!mt)
 	{
-		Log::write("%s not found.\n", Name);
-		return false;
+		return;
 	}
 
-	OutputFrame = new byte[Width * Height * 4];
-	for (int i = 0; i < Width * Height; i++)
+	int width = LittleLong (mt->width);
+	int height = LittleLong (mt->height);
+	int ofs = LittleLong (mt->offsets[0]);
+	if (WidthPtr)
 	{
-		OutputFrame[i * 4 + 0] = palette[pic[i] * 3 + 0];
-		OutputFrame[i * 4 + 1] = palette[pic[i] * 3 + 1];
-		OutputFrame[i * 4 + 2] = palette[pic[i] * 3 + 2];
-		OutputFrame[i * 4 + 3] = 255;
+		*WidthPtr = width;
+	}
+	if (HeightPtr)
+	{
+		*HeightPtr = height;
 	}
 
-	delete[] pic;
-	delete[] palette;
-	return true;
-}
+	*Pic = R_ConvertImage8To32((byte*)mt + ofs, width, height, IMG8MODE_Normal);
 
-//==========================================================================
-//
-//	QCinematicPcx::Update
-//
-//==========================================================================
-
-bool QCinematicPcx::Update(int)
-{
-	return true;
-}
-
-//==========================================================================
-//
-//	QCinematicPcx::GetCinematicTime
-//
-//==========================================================================
-
-int QCinematicPcx::GetCinematicTime() const
-{
-	return 0;
-}
-
-//==========================================================================
-//
-//	QCinematicPcx::Reset
-//
-//==========================================================================
-
-void QCinematicPcx::Reset()
-{
+	FS_FreeFile((void*)mt);
 }

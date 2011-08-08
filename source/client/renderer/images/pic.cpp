@@ -16,13 +16,18 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "cinematic_local.h"
-#include "renderer/local.h"
+#include "../../client.h"
+#include "../local.h"
 
 // MACROS ------------------------------------------------------------------
 
 // TYPES -------------------------------------------------------------------
+
+struct qpic_t
+{
+	int			width, height;
+	byte		data[4];			// variably sized
+};
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
@@ -40,79 +45,48 @@
 
 //==========================================================================
 //
-//	QCinematicPcx::~QCinematicPcx
+//	R_LoadPICMem
 //
 //==========================================================================
 
-QCinematicPcx::~QCinematicPcx()
+void R_LoadPICMem(byte* Data, byte** Pic, int* Width, int* Height, byte* TransPixels, int Mode)
 {
-	if (OutputFrame)
+	qpic_t* QPic = (qpic_t*)Data;
+	int w = LittleLong(QPic->width);
+	int h = LittleLong(QPic->height);
+	if (Width)
 	{
-		delete[] OutputFrame;
-		OutputFrame = NULL;
+		*Width = w;
 	}
-}
-
-//==========================================================================
-//
-//	QCinematicPcx::Open
-//
-//==========================================================================
-
-bool QCinematicPcx::Open(const char* FileName)
-{
-	String::Cpy(Name, FileName);
-	byte* pic;
-	byte* palette;
-	R_LoadPCX(FileName, &pic, &palette, &Width, &Height);
-	if (!pic)
+	if (Height)
 	{
-		Log::write("%s not found.\n", Name);
-		return false;
+		*Height = h;
 	}
 
-	OutputFrame = new byte[Width * Height * 4];
-	for (int i = 0; i < Width * Height; i++)
+	// HACK HACK HACK --- we need to keep the bytes for the translatable
+	// player picture just for the menu configuration dialog
+	if (TransPixels)
 	{
-		OutputFrame[i * 4 + 0] = palette[pic[i] * 3 + 0];
-		OutputFrame[i * 4 + 1] = palette[pic[i] * 3 + 1];
-		OutputFrame[i * 4 + 2] = palette[pic[i] * 3 + 2];
-		OutputFrame[i * 4 + 3] = 255;
+		Com_Memcpy(TransPixels, QPic->data, w * h);
 	}
 
-	delete[] pic;
-	delete[] palette;
-	return true;
+	*Pic = R_ConvertImage8To32(QPic->data, w, h, Mode);
 }
 
 //==========================================================================
 //
-//	QCinematicPcx::Update
+//	R_LoadPIC
 //
 //==========================================================================
 
-bool QCinematicPcx::Update(int)
+void R_LoadPIC(const char* FileName, byte** Pic, int* Width, int* Height, byte* TransPixels, int Mode)
 {
-	return true;
-}
+	Array<byte> Buffer;
+	if (FS_ReadFile(FileName, Buffer) <= 0)
+	{
+		*Pic = NULL;
+		return;
+	}
 
-//==========================================================================
-//
-//	QCinematicPcx::GetCinematicTime
-//
-//==========================================================================
-
-int QCinematicPcx::GetCinematicTime() const
-{
-	return 0;
-}
-
-//==========================================================================
-//
-//	QCinematicPcx::Reset
-//
-//==========================================================================
-
-void QCinematicPcx::Reset()
-{
+	R_LoadPICMem(Buffer.Ptr(), Pic, Width, Height, TransPixels, Mode);
 }
