@@ -16,11 +16,11 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "core.h"
-#include "clipmap_local.h"
-#include "bsp29file.h"
-#include "bsp38file.h"
-#include "bsp46file.h"
+#include "../core.h"
+#include "local.h"
+#include "../bsp29file.h"
+#include "../bsp38file.h"
+#include "../bsp46file.h"
 
 // MACROS ------------------------------------------------------------------
 

@@ -41,7 +41,7 @@
 #include "crc.h"
 #include "md4.h"
 #include "system.h"
-#include "clipmap_public.h"
+#include "clip_map/public.h"
 #include "content_types.h"
 #include "event_queue.h"
 #include "socket.h"

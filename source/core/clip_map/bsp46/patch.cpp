@@ -43,8 +43,8 @@ properly.
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "core.h"
-#include "clipmap46_local.h"
+#include "../../core.h"
+#include "local.h"
 
 // MACROS ------------------------------------------------------------------
 

@@ -151,67 +151,67 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\clipmap29_load.cpp"
+				RelativePath=".\clip_map\bsp29\load.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap29_main.cpp"
+				RelativePath=".\clip_map\bsp29\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap29_test.cpp"
+				RelativePath=".\clip_map\bsp29\test.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap29_trace.cpp"
+				RelativePath=".\clip_map\bsp29\trace.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap38_load.cpp"
+				RelativePath=".\clip_map\bsp38\load.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap38_main.cpp"
+				RelativePath=".\clip_map\bsp38\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap38_test.cpp"
+				RelativePath=".\clip_map\bsp38\test.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap38_trace.cpp"
+				RelativePath=".\clip_map\bsp38\trace.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap46_load.cpp"
+				RelativePath=".\clip_map\bsp46\load.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap46_main.cpp"
+				RelativePath=".\clip_map\bsp46\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap46_patch.cpp"
+				RelativePath=".\clip_map\bsp46\patch.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap46_polylib.cpp"
+				RelativePath=".\clip_map\bsp46\polylib.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap46_test.cpp"
+				RelativePath=".\clip_map\bsp46\test.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap46_trace.cpp"
+				RelativePath=".\clip_map\bsp46\trace.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap_main.cpp"
+				RelativePath=".\clip_map\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\clipmap_nonmap.cpp"
+				RelativePath=".\clip_map\non_map.cpp"
 				>
 			</File>
 			<File

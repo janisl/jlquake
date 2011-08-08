@@ -20,11 +20,11 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "core.h"
-#include "clipmap_local.h"
-#include "bsp29file.h"
-#include "mdlfile.h"
-#include "sprfile.h"
+#include "../core.h"
+#include "local.h"
+#include "../bsp29file.h"
+#include "../mdlfile.h"
+#include "../sprfile.h"
 
 // MACROS ------------------------------------------------------------------
 

@@ -16,8 +16,8 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "core.h"
-#include "clipmap38_local.h"
+#include "../../core.h"
+#include "local.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -39,31 +39,31 @@
 
 //==========================================================================
 //
-//	QClipMap38::PointLeafnum
+//	QClipMap46::PointLeafnum
 //
 //==========================================================================
 
-int QClipMap38::PointLeafnum(const vec3_t P) const
+int QClipMap46::PointLeafnum(const vec3_t p) const
 {
-	if (!numplanes)
+	if (!numNodes)
 	{
-		// sound may call this without map loaded
+		// map not loaded
 		return 0;
 	}
-	return PointLeafnum_r(P, 0);
+	return PointLeafnum_r(p, 0);
 }
 
 //==========================================================================
 //
-//	QClipMap38::PointLeafnum_r
+//	QClipMap46::PointLeafnum_r
 //
 //==========================================================================
 
-int QClipMap38::PointLeafnum_r(const vec3_t P, int Num) const
+int QClipMap46::PointLeafnum_r(const vec3_t P, int Num) const
 {
 	while (Num >= 0)
 	{
-		const cnode_t* Node = nodes + Num;
+		const cNode_t* Node = nodes + Num;
 		const cplane_t* Plane = Node->plane;
 
 		float d;
@@ -73,7 +73,7 @@ int QClipMap38::PointLeafnum_r(const vec3_t P, int Num) const
 		}
 		else
 		{
-			d = DotProduct (Plane->normal, P) - Plane->dist;
+			d = DotProduct(Plane->normal, P) - Plane->dist;
 		}
 		if (d < 0)
 		{
@@ -90,80 +90,99 @@ int QClipMap38::PointLeafnum_r(const vec3_t P, int Num) const
 	return -1 - Num;
 }
 
+/*
+======================================================================
+
+LEAF LISTING
+
+======================================================================
+*/
+
 //==========================================================================
 //
-//	QClipMap38::BoxLeafnums_r
+//	QClipMap46::StoreLeafs
 //
 //==========================================================================
 
-void QClipMap38::BoxLeafnums_r(leafList_t* ll, int NodeNum) const
+void QClipMap46::StoreLeafs(leafList_t* ll, int NodeNum) const
+{
+	int LeafNum = -1 - NodeNum;
+
+	// store the lastLeaf even if the list is overflowed
+	if (leafs[LeafNum].cluster != -1)
+	{
+		ll->lastLeaf = LeafNum;
+	}
+
+	if (ll->count >= ll->maxcount)
+	{
+		return;
+	}
+	ll->list[ll->count++] = LeafNum;
+}
+
+//==========================================================================
+//
+//	QClipMap46::BoxLeafnums_r
+//
+//	Fills in a list of all the leafs touched
+//
+//==========================================================================
+
+void QClipMap46::BoxLeafnums_r(leafList_t* ll, int nodenum) const
 {
 	while (1)
 	{
-		if (NodeNum < 0)
+		if (nodenum < 0)
 		{
-			int LeafNum = -1 - NodeNum;
-
-			// store the lastLeaf even if the list is overflowed
-			if (leafs[LeafNum].cluster != -1)
-			{
-				ll->lastLeaf = LeafNum;
-			}
-
-			if (ll->count >= ll->maxcount)
-			{
-				return;
-			}
-			ll->list[ll->count++] = LeafNum;
+			StoreLeafs(ll, nodenum);
 			return;
 		}
 	
-		const cnode_t* node = &nodes[NodeNum];
+		const cNode_t* node = &nodes[nodenum];
 		const cplane_t* plane = node->plane;
-		int s = BOX_ON_PLANE_SIDE(ll->bounds[0], ll->bounds[1], plane);
+		int s = BoxOnPlaneSide(ll->bounds[0], ll->bounds[1], plane);
 		if (s == 1)
 		{
-			NodeNum = node->children[0];
+			nodenum = node->children[0];
 		}
 		else if (s == 2)
 		{
-			NodeNum = node->children[1];
+			nodenum = node->children[1];
 		}
 		else
 		{
 			// go down both
 			if (ll->topnode == -1)
 			{
-				ll->topnode = NodeNum;
+				ll->topnode = nodenum;
 			}
 			BoxLeafnums_r(ll, node->children[0]);
-			NodeNum = node->children[1];
+			nodenum = node->children[1];
 		}
 	}
 }
 
 //==========================================================================
 //
-//	QClipMap38::BoxLeafnums
-//
-//	Fills in a list of all the leafs touched
+//	QClipMap46::BoxLeafnums
 //
 //==========================================================================
 
-int QClipMap38::BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List,
-	int ListSize, int* TopNode, int* LastLeaf) const
+int QClipMap46::BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int *List,
+	int ListSize, int *TopNode, int *LastLeaf) const
 {
-	leafList_t ll;
+	leafList_t	ll;
 
 	VectorCopy(Mins, ll.bounds[0]);
 	VectorCopy(Maxs, ll.bounds[1]);
-	ll.list = List;
 	ll.count = 0;
 	ll.maxcount = ListSize;
+	ll.list = List;
 	ll.topnode = -1;
 	ll.lastLeaf = 0;
 
-	BoxLeafnums_r(&ll, cmodels[0].headnode);
+	BoxLeafnums_r(&ll, 0);
 
 	if (TopNode)
 	{
@@ -178,113 +197,147 @@ int QClipMap38::BoxLeafnums(const vec3_t Mins, const vec3_t Maxs, int* List,
 
 //==========================================================================
 //
-//	QClipMap38::PointContentsQ1
+//	QClipMap46::PointContentsQ1
 //
 //==========================================================================
 
-int QClipMap38::PointContentsQ1(const vec3_t P, clipHandle_t Model)
+int QClipMap46::PointContentsQ1(const vec3_t P, clipHandle_t Model)
 {
-	return ContentsToQ1(PointContentsQ2(P, Model));
+	return ContentsToQ1(PointContentsQ3(P, Model));
 }
 
 //==========================================================================
 //
-//	QClipMap38::PointContentsQ2
+//	QClipMap46::PointContentsQ2
 //
 //==========================================================================
 
-int QClipMap38::PointContentsQ2(const vec3_t p, clipHandle_t Handle)
+int QClipMap46::PointContentsQ2(const vec3_t P, clipHandle_t Model)
 {
-	if (!numnodes)
+	return ContentsToQ2(PointContentsQ3(P, Model));
+}
+
+//==========================================================================
+//
+//	QClipMap46::PointContentsQ3
+//
+//==========================================================================
+
+int QClipMap46::PointContentsQ3(const vec3_t P, clipHandle_t Model)
+{
+	if (!numNodes)
 	{
 		// map not loaded
 		return 0;
 	}
 
-	cmodel_t* model = ClipHandleToModel(Handle);
-	int l = PointLeafnum_r(p, model->headnode);
+	cLeaf_t* leaf;
+	if (Model)
+	{
+		cmodel_t* clipm = ClipHandleToModel(Model);
+		leaf = &clipm->leaf;
+	}
+	else
+	{
+		int leafnum = PointLeafnum_r(P, 0);
+		leaf = &leafs[leafnum];
+	}
 
-	return leafs[l].contents;
+	int contents = 0;
+	for (int k = 0; k < leaf->numLeafBrushes; k++)
+	{
+		int brushnum = leafbrushes[leaf->firstLeafBrush+k];
+		cbrush_t* b = &brushes[brushnum];
+
+		// see if the point is in the brush
+		int i;
+		for (i = 0; i < b->numsides; i++)
+		{
+			float d = DotProduct(P, b->sides[i].plane->normal);
+// FIXME test for Cash
+//			if (d >= b->sides[i].plane->dist ) {
+			if (d > b->sides[i].plane->dist)
+			{
+				break;
+			}
+		}
+
+		if (i == b->numsides)
+		{
+			contents |= b->contents;
+		}
+	}
+
+	return contents;
 }
 
 //==========================================================================
 //
-//	QClipMap38::PointContentsQ3
+//	QClipMap46::TransformedPointContentsQ1
 //
 //==========================================================================
 
-int QClipMap38::PointContentsQ3(const vec3_t P, clipHandle_t Model)
+int QClipMap46::TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
 {
-	return ContentsToQ3(PointContentsQ2(P, Model));
+	return ContentsToQ1(TransformedPointContentsQ3(P, Model, Origin, Angles));
 }
 
 //==========================================================================
 //
-//	QClipMap38::TransformedPointContentsQ1
+//	QClipMap46::TransformedPointContentsQ2
 //
 //==========================================================================
 
-int QClipMap38::TransformedPointContentsQ1(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
+int QClipMap46::TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
 {
-	return ContentsToQ1(TransformedPointContentsQ2(P, Model, Origin, Angles));
+	return ContentsToQ2(TransformedPointContentsQ3(P, Model, Origin, Angles));
 }
 
 //==========================================================================
 //
-//	QClipMap38::TransformedPointContentsQ2
+//	QClipMap46::TransformedPointContentsQ3
 //
 //	Handles offseting and rotation of the end points for moving and
 // rotating entities
 //
 //==========================================================================
 
-int QClipMap38::TransformedPointContentsQ2(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
+int QClipMap46::TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
 {
 	// subtract origin offset
-	vec3_t PointLocal;
-	VectorSubtract(P, Origin, PointLocal);
+	vec3_t p_l;
+	VectorSubtract(P, Origin, p_l);
 
 	// rotate start and end into the models frame of reference
-	if (Model != BOX_HANDLE && (Angles[0] || Angles[1] || Angles[2]))
+	if (Model != BOX_MODEL_HANDLE && (Angles[0] || Angles[1] || Angles[2]))
 	{
 		vec3_t forward, right, up;
 		AngleVectors(Angles, forward, right, up);
 
 		vec3_t temp;
-		VectorCopy(PointLocal, temp);
-		PointLocal[0] = DotProduct(temp, forward);
-		PointLocal[1] = -DotProduct(temp, right);
-		PointLocal[2] = DotProduct(temp, up);
+		VectorCopy(p_l, temp);
+		p_l[0] = DotProduct(temp, forward);
+		p_l[1] = -DotProduct(temp, right);
+		p_l[2] = DotProduct(temp, up);
 	}
 
-	return PointContentsQ2(PointLocal, Model);
+	return PointContentsQ3(p_l, Model);
 }
 
 //==========================================================================
 //
-//	QClipMap38::TransformedPointContentsQ3
-//
-//==========================================================================
-
-int QClipMap38::TransformedPointContentsQ3(const vec3_t P, clipHandle_t Model, const vec3_t Origin, const vec3_t Angles)
-{
-	return ContentsToQ3(TransformedPointContentsQ2(P, Model, Origin, Angles));
-}
-
-//==========================================================================
-//
-//	QClipMap38::HeadnodeVisible
+//	QClipMap46::HeadnodeVisible
 //
 //	Returns true if any leaf under headnode has a cluster that
 // is potentially visible
 //
 //==========================================================================
 
-bool QClipMap38::HeadnodeVisible(int NodeNum, byte* VisBits)
+bool QClipMap46::HeadnodeVisible(int NodeNum, byte* VisBits)
 {
 	if (NodeNum < 0)
 	{
-		int leafnum = -1-NodeNum;
+		int leafnum = -1 - NodeNum;
 		int cluster = leafs[leafnum].cluster;
 		if (cluster == -1)
 		{
@@ -297,7 +350,7 @@ bool QClipMap38::HeadnodeVisible(int NodeNum, byte* VisBits)
 		return false;
 	}
 
-	cnode_t* node = &nodes[NodeNum];
+	cNode_t* node = &nodes[NodeNum];
 	if (HeadnodeVisible(node->children[0], VisBits))
 	{
 		return true;
@@ -308,92 +361,37 @@ bool QClipMap38::HeadnodeVisible(int NodeNum, byte* VisBits)
 /*
 ===============================================================================
 
-PVS / PHS
+PVS
 
 ===============================================================================
 */
 
 //==========================================================================
 //
-//	QClipMap38::DecompressVis
+//	QClipMap46::ClusterPVS
 //
 //==========================================================================
 
-void QClipMap38::DecompressVis(const byte* in, byte* out)
+byte* QClipMap46::ClusterPVS(int Cluster)
 {
-	int row = (numclusters + 7) >> 3;	
-	byte* out_p = out;
-
-	if (!in || !numvisibility)
+	if (Cluster < 0 || Cluster >= numClusters || !vised)
 	{
-		// no vis info, so make all visible
-		while (row)
-		{
-			*out_p++ = 0xff;
-			row--;
-		}
-		return;		
+		return visibility;
 	}
 
-	do
-	{
-		if (*in)
-		{
-			*out_p++ = *in++;
-			continue;
-		}
-	
-		int c = in[1];
-		in += 2;
-		if ((out_p - out) + c > row)
-		{
-			c = row - (out_p - out);
-			Log::develWrite("warning: Vis decompression overrun\n");
-		}
-		while (c)
-		{
-			*out_p++ = 0;
-			c--;
-		}
-	} while (out_p - out < row);
+	return visibility + Cluster * clusterBytes;
 }
 
 //==========================================================================
 //
-//	QClipMap38::ClusterPVS
+//	QClipMap46::ClusterPHS
 //
 //==========================================================================
 
-byte* QClipMap38::ClusterPVS(int Cluster)
+byte* QClipMap46::ClusterPHS(int Cluster)
 {
-	if (Cluster == -1)
-	{
-		Com_Memset(pvsrow, 0, (numclusters + 7) >> 3);
-	}
-	else
-	{
-		DecompressVis(visibility + vis->bitofs[Cluster][BSP38DVIS_PVS], pvsrow);
-	}
-	return pvsrow;
-}
-
-//==========================================================================
-//
-//	QClipMap38::ClusterPVS
-//
-//==========================================================================
-
-byte* QClipMap38::ClusterPHS(int Cluster)
-{
-	if (Cluster == -1)
-	{
-		Com_Memset(phsrow, 0, (numclusters + 7) >> 3);
-	}
-	else
-	{
-		DecompressVis(visibility + vis->bitofs[Cluster][BSP38DVIS_PHS], phsrow);
-	}
-	return phsrow;
+	//	FIXME: Could calculate it like QuakeWorld does.
+	return ClusterPVS(Cluster);
 }
 
 /*
@@ -406,118 +404,99 @@ AREAPORTALS
 
 //==========================================================================
 //
-//	QClipMap38::FloodArea
+//	QClipMap46::FloodAreaConnections
 //
 //==========================================================================
 
-void QClipMap38::FloodArea(carea_t* area, int floodnum)
-{
-	if (area->floodvalid == floodvalid)
-	{
-		if (area->floodnum == floodnum)
-		{
-			return;
-		}
-		throw DropException("QClipMap38.FloodArea: reflooded");
-	}
-
-	area->floodnum = floodnum;
-	area->floodvalid = floodvalid;
-	bsp38_dareaportal_t* p = &areaportals[area->firstareaportal];
-	for (int i = 0; i < area->numareaportals; i++, p++)
-	{
-		if (portalopen[p->portalnum])
-		{
-			FloodArea(&areas[p->otherarea], floodnum);
-		}
-	}
-}
-
-//==========================================================================
-//
-//	QClipMap38::FloodAreaConnections
-//
-//==========================================================================
-
-void QClipMap38::FloodAreaConnections()
+void QClipMap46::FloodAreaConnections()
 {
 	// all current floods are now invalid
 	floodvalid++;
 	int floodnum = 0;
 
-	// area 0 is not used
-	for (int i = 1; i < numareas; i++)
+	for (int i = 0; i < numAreas; i++)
 	{
-		carea_t* area = &areas[i];
+		cArea_t* area = &areas[i];
 		if (area->floodvalid == floodvalid)
 		{
 			continue;		// already flooded into
 		}
 		floodnum++;
-		FloodArea(area, floodnum);
+		FloodArea_r(i, floodnum);
 	}
 }
 
 //==========================================================================
 //
-//	QClipMap38::ClearPortalOpen
+//	QClipMap46::FloodArea_r
 //
 //==========================================================================
 
-void QClipMap38::ClearPortalOpen()
+void QClipMap46::FloodArea_r(int AreaNum, int FloodNum)
 {
-	Com_Memset(portalopen, 0, sizeof(portalopen));
-	FloodAreaConnections();
-}
+	cArea_t* area = &areas[AreaNum];
 
-//==========================================================================
-//
-//	QClipMap38::SetAreaPortalState
-//
-//==========================================================================
-
-void QClipMap38::SetAreaPortalState(int portalnum, qboolean open)
-{
-	if (portalnum > numareaportals)
+	if (area->floodvalid == floodvalid)
 	{
-		throw DropException("areaportal > numareaportals");
+		if (area->floodnum == FloodNum)
+		{
+			return;
+		}
+		throw DropException("FloodArea_r: reflooded");
 	}
 
-	portalopen[portalnum] = open;
-	FloodAreaConnections();
+	area->floodnum = FloodNum;
+	area->floodvalid = floodvalid;
+	int* con = areaPortals + AreaNum * numAreas;
+	for (int i = 0; i < numAreas; i++)
+	{
+		if (con[i] > 0)
+		{
+			FloodArea_r(i, FloodNum);
+		}
+	}
 }
 
 //==========================================================================
 //
-//	QClipMap38::AdjustAreaPortalState
+//	QClipMap46::SetAreaPortalState
 //
 //==========================================================================
 
-void QClipMap38::AdjustAreaPortalState(int Area1, int Area2, bool Open)
+void QClipMap46::SetAreaPortalState(int portalnum, qboolean open)
+{
+}
+
+//==========================================================================
+//
+//	QClipMap46::AdjustAreaPortalState
+//
+//==========================================================================
+
+void QClipMap46::AdjustAreaPortalState(int Area1, int Area2, bool Open)
 {
 	if (Area1 < 0 || Area2 < 0)
 	{
 		return;
 	}
 
-	if (Area1 >= numareas || Area2 >= numareas)
+	if (Area1 >= numAreas || Area2 >= numAreas)
 	{
 		throw DropException("CM_ChangeAreaPortalState: bad area number");
 	}
 
-	bsp38_dareaportal_t* p = &areaportals[areas[Area1].firstareaportal];
-	for (int i = 0; i < areas[Area1].numareaportals; i++, p++)
+	if (Open)
 	{
-		if (p->otherarea == Area2)
+		areaPortals[Area1 * numAreas + Area2]++;
+		areaPortals[Area2 * numAreas + Area1]++;
+	}
+	else
+	{
+		areaPortals[Area1 * numAreas + Area2]--;
+		areaPortals[Area2 * numAreas + Area1]--;
+		if (areaPortals[Area2 * numAreas + Area1] < 0)
 		{
-			if (Open)
-			{
-				portalopen[p->portalnum]++;
-			}
-			else
-			{
-				portalopen[p->portalnum]--;
-			}
+			throw DropException("CM_AdjustAreaPortalState: negative reference count");
 		}
 	}
 
@@ -526,13 +505,13 @@ void QClipMap38::AdjustAreaPortalState(int Area1, int Area2, bool Open)
 
 //==========================================================================
 //
-//	QClipMap38::AreasConnected
+//	QClipMap46::AreasConnected
 //
 //==========================================================================
 
-qboolean QClipMap38::AreasConnected(int Area1, int Area2)
+qboolean QClipMap46::AreasConnected(int Area1, int Area2)
 {
-	if (map_noareas->value)
+	if (cm_noAreas->integer)
 	{
 		return true;
 	}
@@ -542,9 +521,9 @@ qboolean QClipMap38::AreasConnected(int Area1, int Area2)
 		return false;
 	}
 
-	if (Area1 >= numareas || Area2 >= numareas)
+	if (Area1 >= numAreas || Area2 >= numAreas)
 	{
-		throw DropException("area > numareas");
+		throw DropException("area >= numAreas");
 	}
 
 	if (areas[Area1].floodnum == areas[Area2].floodnum)
@@ -556,32 +535,33 @@ qboolean QClipMap38::AreasConnected(int Area1, int Area2)
 
 //==========================================================================
 //
-//	QClipMap38::WriteAreaBits
+//	QClipMap46::WriteAreaBits
 //
-//	Writes a length byte followed by a bit vector of all the areas
-// that area in the same flood as the area parameter
+//	Writes a bit vector of all the areas that are in the same flood as the
+// area parameter. Returns the number of bytes needed to hold all the bits.
 //
-//	This is used by the client refreshes to cull visibility
+//	The bits are OR'd in, so you can CM_WriteAreaBits from multiple
+// viewpoints and get the union of all visible areas.
+//
+//	This is used to cull non-visible entities from snapshots
 //
 //==========================================================================
 
-int QClipMap38::WriteAreaBits(byte* Buffer, int Area)
+int QClipMap46::WriteAreaBits(byte* Buffer, int Area)
 {
-	int bytes = (numareas + 7) >> 3;
+	int bytes = (numAreas + 7) >> 3;
 
-	if (map_noareas->value)
+	if (cm_noAreas->integer || Area == -1)
 	{
 		// for debugging, send everything
 		Com_Memset(Buffer, 255, bytes);
 	}
 	else
 	{
-		Com_Memset(Buffer, 0, bytes);
-
 		int floodnum = areas[Area].floodnum;
-		for (int i = 0; i < numareas; i++)
+		for (int i = 0; i < numAreas; i++)
 		{
-			if (areas[i].floodnum == floodnum || !Area)
+			if (areas[i].floodnum == floodnum || Area == -1)
 			{
 				Buffer[i >> 3] |= 1 << (i & 7);
 			}
@@ -593,28 +573,28 @@ int QClipMap38::WriteAreaBits(byte* Buffer, int Area)
 
 //==========================================================================
 //
-//	QClipMap38::WritePortalState
+//	QClipMap46::WritePortalState
 //
 //	Writes the portal state to a savegame file
 //
 //==========================================================================
 
-void QClipMap38::WritePortalState(fileHandle_t f)
+void QClipMap46::WritePortalState(fileHandle_t f)
 {
-	FS_Write(portalopen, sizeof(portalopen), f);
+	FS_Write(areaPortals, sizeof(areaPortals), f);
 }
 
 //==========================================================================
 //
-//	QClipMap38::ReadPortalState
+//	QClipMap46::ReadPortalState
 //
 //	Reads the portal state from a savegame file and recalculates the area
 // connections
 //
 //==========================================================================
 
-void QClipMap38::ReadPortalState(fileHandle_t f)
+void QClipMap46::ReadPortalState(fileHandle_t f)
 {
-	FS_Read(portalopen, sizeof(portalopen), f);
+	FS_Read(areaPortals, sizeof(areaPortals), f);
 	FloodAreaConnections();
 }

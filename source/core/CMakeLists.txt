@@ -1,20 +1,20 @@
 set(CORE_FILES
-	clipmap_main.cpp
-	clipmap_nonmap.cpp
-	clipmap29_load.cpp
-	clipmap29_main.cpp
-	clipmap29_test.cpp
-	clipmap29_trace.cpp
-	clipmap38_load.cpp
-	clipmap38_main.cpp
-	clipmap38_test.cpp
-	clipmap38_trace.cpp
-	clipmap46_load.cpp
-	clipmap46_main.cpp
-	clipmap46_patch.cpp
-	clipmap46_polylib.cpp
-	clipmap46_test.cpp
-	clipmap46_trace.cpp
+	clip_map/bsp29/load.cpp
+	clip_map/bsp29/main.cpp
+	clip_map/bsp29/test.cpp
+	clip_map/bsp29/trace.cpp
+	clip_map/bsp38/load.cpp
+	clip_map/bsp38/main.cpp
+	clip_map/bsp38/test.cpp
+	clip_map/bsp38/trace.cpp
+	clip_map/bsp46/load.cpp
+	clip_map/bsp46/main.cpp
+	clip_map/bsp46/patch.cpp
+	clip_map/bsp46/polylib.cpp
+	clip_map/bsp46/test.cpp
+	clip_map/bsp46/trace.cpp
+	clip_map/main.cpp
+	clip_map/non_map.cpp
 	command_buffer.cpp
 	common.cpp
 	console_variable.cpp

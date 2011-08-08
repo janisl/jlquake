@@ -14,167 +14,127 @@
 //**
 //**************************************************************************
 
-#ifndef _CM38_LOCAL_H
-#define _CM38_LOCAL_H
+#ifndef _CM29_LOCAL_H
+#define _CM29_LOCAL_H
 
-#include "clipmap_local.h"
-#include "bsp38file.h"
+#include "../local.h"
+#include "../../bsp29file.h"
 
-#define BOX_HANDLE		BSP38MAX_MAP_MODELS
+#define MAX_MAP_HULLS		8
 
-struct mapsurface_t	// used internally due to name len probs //ZOID
+#define	MAX_MAP_MODELS		256
+
+#define HULL_NUMBER_MASK	(MAX_MAP_HULLS - 1)
+#define MODEL_NUMBER_MASK	(~HULL_NUMBER_MASK)
+#define BOX_HULL_HANDLE		(MAX_MAP_MODELS * MAX_MAP_HULLS)
+
+struct cnode_t
 {
-	q2csurface_t	c;
-	char			rname[32];
+	cplane_t*		plane;
+	int				children[2];	
 };
 
 struct cleaf_t
 {
-	int			contents;
-	int			cluster;
-	int			area;
-	quint16		firstleafbrush;
-	quint16		numleafbrushes;
+	int				contents;
+	byte*			compressed_vis;
+	byte			ambient_sound_level[BSP29_NUM_AMBIENTS];
 };
 
-struct cbrush_t
+struct cclipnode_t
 {
-	int			contents;
-	int			numsides;
-	int			firstbrushside;
-	int			checkcount;		// to avoid repeated testings
+	int				planenum;
+	int				children[2];	// negative numbers are contents
 };
 
-struct cbrushside_t
+struct chullshared_t
 {
-	cplane_t*		plane;
-	mapsurface_t*	surface;
+	vec3_t			clip_mins;
+	vec3_t			clip_maxs;
 };
 
-struct cnode_t
+struct chull_t
 {
-	cplane_t*	plane;
-	int			children[2];		// negative numbers are leafs
-};
-
-struct carea_t
-{
-	int			numareaportals;
-	int			firstareaportal;
-	int			floodnum;			// if two areas have equal floodnums, they are connected
-	int			floodvalid;
+	int				firstclipnode;
+	int				lastclipnode;
 };
 
 struct cmodel_t
 {
-	vec3_t		mins;
-	vec3_t		maxs;
-	vec3_t		origin;		// for sounds or lights
-	int			headnode;
+	//
+	// volume occupied by the model graphics
+	//
+	vec3_t			mins;
+	vec3_t			maxs;
+
+	chull_t			hulls[MAX_MAP_HULLS];
 };
 
-class QClipMap38 : public QClipMap
+class QClipMap29 : public QClipMap
 {
 private:
 	//	Main
 	void InitBoxHull();
-	int ContentsToQ1(int Contents) const;
+	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
+	chull_t* ClipHandleToHull(clipHandle_t Handle);
+	int ContentsToQ2(int Contents) const;
 	int ContentsToQ3(int Contents) const;
 
 	//	Load
-	void LoadSurfaces(const quint8* base, const bsp38_lump_t* l);
-	void LoadLeafs(const quint8* base, const bsp38_lump_t* l);
-	void LoadLeafBrushes(const quint8* base, const bsp38_lump_t* l);
-	void LoadPlanes(const quint8* base, const bsp38_lump_t *l);
-	void LoadBrushes(const quint8* base, const bsp38_lump_t *l);
-	void LoadBrushSides(const quint8* base, const bsp38_lump_t *l);
-	void LoadNodes(const quint8* base, const bsp38_lump_t* l);
-	void LoadAreas(const quint8* base, const bsp38_lump_t *l);
-	void LoadAreaPortals(const quint8* base, const bsp38_lump_t* l);
-	void LoadVisibility(const quint8* base, const bsp38_lump_t* l);
-	void LoadEntityString(const quint8* base, const bsp38_lump_t *l);
-	void LoadSubmodels(const quint8* base, const bsp38_lump_t *l);
+	void LoadVisibility(const quint8* base, const bsp29_lump_t* l);
+	void LoadEntities(const quint8* base, const bsp29_lump_t* l);
+	void LoadPlanes(const quint8* base, const bsp29_lump_t* l);
+	void LoadNodes(const quint8* base, const bsp29_lump_t* l);
+	void LoadLeafs(const quint8* base, const bsp29_lump_t* l);
+	void LoadClipnodes(const quint8* base, const bsp29_lump_t* l);
+	void MakeHull0();
+	void MakeHulls();
+	void LoadSubmodelsQ1(const quint8* base, const bsp29_lump_t* l);
+	void LoadSubmodelsH2(const quint8* base, const bsp29_lump_t* l);
 
 	//	Test
-	void DecompressVis(const byte* in, byte* out);
-	void FloodArea(carea_t* area, int floodnum);
+	void BoxLeafnums_r(leafList_t* ll, int NodeNum) const;
+	int HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t P) const;
+	byte* DecompressVis(byte* in);
+	void CalcPHS();
 
 	//	Trace
-	void RecursiveHullCheck(int num, float p1f, float p2f, vec3_t p1, vec3_t p2);
-	void TraceToLeaf(int leafnum);
-	void ClipBoxToBrush(vec3_t mins, vec3_t maxs, vec3_t p1, vec3_t p2, q2trace_t* trace, cbrush_t* brush);
-	void TestInLeaf(int leafnum);
-	void TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, q2trace_t* trace, cbrush_t* brush);
+	bool RecursiveHullCheck(chull_t* hull, int num, float p1f, float p2f,
+		vec3_t p1, vec3_t p2, q1trace_t* trace);
 
 public:
-	int				numtexinfo;
-	mapsurface_t*	surfaces;
+	static byte			mod_novis[BSP29_MAX_MAP_LEAFS / 8];
 
-	int				numleafs;
-	cleaf_t*		leafs;
-	int				emptyleaf;
-	int				solidleaf;
+	int					numplanes;
+	cplane_t*			planes;
 
-	int				numclusters;
+	int					numnodes;
+	cnode_t*			nodes;
 
-	int				numleafbrushes;
-	quint16*		leafbrushes;
+	int					numleafs;
+	cleaf_t*			leafs;
 
-	int				numplanes;
-	cplane_t*		planes;
+	int					numclusters;
 
-	int				numbrushes;
-	cbrush_t*		brushes;
+	int					numclipnodes;
+	cclipnode_t*		clipnodes;
 
-	int				numbrushsides;
-	cbrushside_t*	brushsides;
+	byte*				visdata;
 
-	int				numnodes;
-	cnode_t*		nodes;
+	byte*				phs;
 
-	int				numareas;
-	carea_t*		areas;
+	int					entitychars;
+	char*				entitystring;
 
-	int				numareaportals;
-	bsp38_dareaportal_t*	areaportals;
+	int					numsubmodels;
+	cmodel_t*			map_models;
 
-	int				numvisibility;
-	quint8*			visibility;
-	bsp38_dvis_t*	vis;
+	chullshared_t		hullsshared[MAX_MAP_HULLS];
 
-	int				numentitychars;
-	char*			entitystring;
+	cmodel_t			box_model;
 
-	int				numcmodels;
-	cmodel_t*		cmodels;
-
-	cplane_t*		box_planes;
-	cbrush_t*		box_brush;
-	cleaf_t*		box_leaf;
-	cmodel_t		box_model;
-
-	static mapsurface_t	nullsurface;
-
-	qboolean		portalopen[BSP38MAX_MAP_AREAPORTALS];
-
-	int				floodvalid;
-
-	byte			pvsrow[BSP38MAX_MAP_LEAFS / 8];
-	byte			phsrow[BSP38MAX_MAP_LEAFS / 8];
-
-	int				checkcount;
-
-	vec3_t			trace_start;
-	vec3_t			trace_end;
-	vec3_t			trace_mins;
-	vec3_t			trace_maxs;
-	vec3_t			trace_extents;
-	q2trace_t		trace_trace;
-	int				trace_contents;
-	bool			trace_ispoint;		// optimized case
-
-	QClipMap38();
-	~QClipMap38();
+	QClipMap29();
+	~QClipMap29();
 
 	void LoadMap(const char* name, const Array<quint8>& Buffer);
 	void ReloadMap(bool ClientLoad);
@@ -217,14 +177,6 @@ public:
 	void TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End, vec3_t Mins, vec3_t Maxs,
 		clipHandle_t Model, int BrushMask, const vec3_t Origin, const vec3_t Angles, int Capsule);
 	void DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points));
-
-	cmodel_t* ClipHandleToModel(clipHandle_t Handle);
-	void FloodAreaConnections();
-	void ClearPortalOpen();
-	int PointLeafnum_r(const vec3_t P, int Num) const;
-	void BoxLeafnums_r(leafList_t* ll, int NodeNum) const;
 };
-
-extern Cvar*		map_noareas;
 
 #endif

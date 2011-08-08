@@ -17,8 +17,8 @@
 #ifndef _CM46_LOCAL_H
 #define _CM46_LOCAL_H
 
-#include "clipmap_local.h"
-#include "bsp46file.h"
+#include "../local.h"
+#include "../../bsp46file.h"
 
 #define MAX_FACETS			1024
 #define MAX_PATCH_PLANES	2048
