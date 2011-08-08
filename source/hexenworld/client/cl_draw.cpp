@@ -82,9 +82,9 @@ void Draw_RedString (int x, int y, const char *str)
 
 void Draw_Crosshair(void)
 {
-	extern QCvar* crosshair;
-	extern QCvar* cl_crossx;
-	extern QCvar* cl_crossy;
+	extern Cvar* crosshair;
+	extern Cvar* cl_crossx;
+	extern Cvar* cl_crossy;
 	int x, y;
 	extern vrect_t		scr_vrect;
 

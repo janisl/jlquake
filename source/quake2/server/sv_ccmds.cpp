@@ -286,7 +286,7 @@ SV_WriteServerFile
 void SV_WriteServerFile (qboolean autosave)
 {
 	fileHandle_t	f;
-	QCvar	*var;
+	Cvar	*var;
 	char	name[MAX_OSPATH], string[128];
 	char	comment[32];
 	time_t	aclock;

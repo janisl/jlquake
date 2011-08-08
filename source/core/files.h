@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 
-struct QCvar;
+struct Cvar;
 
 #if defined __MACOS__
 #define PATH_SEP	':'
@@ -80,9 +80,9 @@ extern int			fs_packFiles;
 extern int fs_checksumFeed;
 
 // never load anything from pk3 files that are not present at the server when pure
-extern QCvar		*fs_homepath;
-extern QCvar		*fs_basepath;
-extern QCvar		*fs_cdpath;
+extern Cvar		*fs_homepath;
+extern Cvar		*fs_basepath;
+extern Cvar		*fs_cdpath;
 
 extern bool		fs_ProtectKeyFile;
 extern char		fs_gamedir[MAX_OSPATH];

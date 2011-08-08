@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-void Cvar_Changed(QCvar* var)
+void Cvar_Changed(Cvar* var)
 {
 	if ((var->flags & CVAR_SERVERINFO))
 	{

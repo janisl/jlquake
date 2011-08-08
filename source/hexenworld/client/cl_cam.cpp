@@ -20,9 +20,9 @@ static qboolean locked = false;
 static int oldbuttons;
 
 // track high fragger
-QCvar* cl_hightrack;
-//QCvar* cl_camera_maxpitch;
-//QCvar* cl_camera_maxyaw;
+Cvar* cl_hightrack;
+//Cvar* cl_camera_maxpitch;
+//Cvar* cl_camera_maxyaw;
 
 qboolean cam_forceview;
 vec3_t cam_viewangles;

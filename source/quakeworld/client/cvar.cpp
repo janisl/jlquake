@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 void SV_SendServerInfoChange(char *key, char *value);
 #endif
 
-void Cvar_Changed(QCvar* var)
+void Cvar_Changed(Cvar* var)
 {
 #ifdef SERVERONLY
 	if (var->flags & CVAR_SERVERINFO && var->name[0] != '*')

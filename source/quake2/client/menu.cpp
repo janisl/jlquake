@@ -1012,7 +1012,7 @@ CONTROLS MENU
 
 =======================================================================
 */
-extern QCvar *in_joystick;
+extern Cvar *in_joystick;
 
 static menuframework_s	s_options_menu;
 static menuaction_s		s_options_defaults_action;
@@ -1322,9 +1322,9 @@ VIDEO MENU
 
 #define REF_OPENGL	1
 
-extern QCvar *r_gamma;
-extern QCvar *r_fullscreen;
-extern QCvar *scr_viewsize;
+extern Cvar *r_gamma;
+extern Cvar *r_fullscreen;
+extern Cvar *scr_viewsize;
 
 static menuframework_s	s_opengl_menu;
 
@@ -3430,7 +3430,7 @@ void AddressBook_MenuInit( void )
 
 	for ( i = 0; i < NUM_ADDRESSBOOK_ENTRIES; i++ )
 	{
-		QCvar *adr;
+		Cvar *adr;
 		char buffer[20];
 
 		String::Sprintf( buffer, sizeof( buffer ), "adr%d", i );
@@ -3737,8 +3737,8 @@ static int pmicmpfnc( const void *_a, const void *_b )
 
 qboolean PlayerConfig_MenuInit( void )
 {
-	extern QCvar *name;
-	extern QCvar *skin;
+	extern Cvar *name;
+	extern Cvar *skin;
 	char currentdirectory[1024];
 	char currentskin[1024];
 	int i = 0;
@@ -3746,7 +3746,7 @@ qboolean PlayerConfig_MenuInit( void )
 	int currentdirectoryindex = 0;
 	int currentskinindex = 0;
 
-	QCvar *hand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
+	Cvar *hand = Cvar_Get( "hand", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 
 	static const char *handedness[] = { "right", "left", "center", 0 };
 

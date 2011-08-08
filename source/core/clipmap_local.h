@@ -92,6 +92,6 @@ extern QClipMap*			CMapShared;
 
 extern Array<QClipMap*>	CMNonMapModels;
 
-extern QCvar*				cm_flushmap;
+extern Cvar*				cm_flushmap;
 
 #endif

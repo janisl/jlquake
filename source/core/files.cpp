@@ -335,12 +335,12 @@ static searchpath_t*	fs_searchpaths;
 static searchpath_t*	fs_base_searchpaths;	// without gamedirs
 
 char					fs_gamedir[MAX_OSPATH];	// this will be a single file name with no separators
-QCvar*					fs_homepath;
-QCvar*					fs_basepath;
-static QCvar*			fs_debug;
-static QCvar*			fs_restrict;
-QCvar*					fs_cdpath;
-static QCvar*			fs_copyfiles;
+Cvar*					fs_homepath;
+Cvar*					fs_basepath;
+static Cvar*			fs_debug;
+static Cvar*			fs_restrict;
+Cvar*					fs_cdpath;
+static Cvar*			fs_copyfiles;
 
 static filelink_t*		fs_links;
 

@@ -421,9 +421,9 @@ byte		COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 float	frand(void);	// 0 ti 1
 float	crand(void);	// -1 to 1
 
-extern	QCvar	*developer;
-extern	QCvar	*host_speeds;
-extern	QCvar	*log_stats;
+extern	Cvar	*developer;
+extern	Cvar	*host_speeds;
+extern	Cvar	*log_stats;
 
 extern	fileHandle_t	log_stats_file;
 

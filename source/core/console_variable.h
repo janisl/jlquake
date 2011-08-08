@@ -14,7 +14,7 @@
 //**
 //**************************************************************************
 //**
-//**	QCvar variables are used to hold scalar or string variables that can
+//**	Cvar variables are used to hold scalar or string variables that can
 //**  be changed or displayed at the console or prog code as well as accessed
 //**  directly in C code.
 //**
@@ -55,7 +55,7 @@
 								// changed yet
 
 // nothing outside the Cvar_*() functions should modify these fields!
-struct QCvar
+struct Cvar
 {
 	//	This class is accessible to Quake 2 game, so the following fields
 	// must remain exactly as they are.
@@ -65,12 +65,12 @@ struct QCvar
 	int			flags;
 	qboolean	modified;			// set each time the cvar is changed
 	float		value;				// atof( string )
-	QCvar*		next;
+	Cvar*		next;
 
 	char		*resetString;		// cvar_restart will reset to this value
 	int			modificationCount;	// incremented each time the cvar is changed
 	int			integer;			// atoi( string )
-	QCvar*		hashNext;
+	Cvar*		hashNext;
 	int			Handle;
 };
 
@@ -78,7 +78,7 @@ struct QCvar
 
 typedef int	cvarHandle_t;
 
-// the modules that run in the virtual machine can't access the QCvar directly,
+// the modules that run in the virtual machine can't access the Cvar directly,
 // so they must ask for structured updates
 struct vmCvar_t
 {
@@ -89,13 +89,13 @@ struct vmCvar_t
 	char		string[MAX_CVAR_VALUE_STRING];
 };
 
-QCvar* Cvar_Get(const char* VarName, const char* Value, int Flags);
+Cvar* Cvar_Get(const char* VarName, const char* Value, int Flags);
 // creates the variable if it doesn't exist, or returns the existing one
 // if it exists, the value will not be changed, but flags will be ORed in
 // that allows variables to be unarchived without needing bitflags
 // if value is "", the value will not override a previously set value.
 
-QCvar* Cvar_FindVar(const char* VarName);
+Cvar* Cvar_FindVar(const char* VarName);
 
 float Cvar_VariableValue(const char* VarName);
 int	Cvar_VariableIntegerValue(const char* VarName);
@@ -105,10 +105,10 @@ const char* Cvar_VariableString(const char* VarName);
 void Cvar_VariableStringBuffer(const char* VarName, char* Buffer, int BufSize);
 // returns an empty string if not defined
 
-QCvar* Cvar_Set(const char* VarName, const char* Value);
+Cvar* Cvar_Set(const char* VarName, const char* Value);
 // will create the variable with no flags if it doesn't exist
 
-QCvar* Cvar_SetLatched(const char* VarName, const char* Value);
+Cvar* Cvar_SetLatched(const char* VarName, const char* Value);
 // don't set the cvar immediately
 
 void Cvar_SetValue(const char* VarName, float Value);
@@ -154,7 +154,7 @@ void Cvar_WriteVariables(fileHandle_t F);
 void Cvar_UpdateIfExists(const char* name, const char* value);
 // For QuakeWorld's and HexenWorld's server info changes.
 
-extern QCvar*		cvar_vars;
+extern Cvar*		cvar_vars;
 
 extern int			cvar_modifiedFlags;
 // whenever a cvar is modifed, its flags will be OR'd into this, so

@@ -67,8 +67,8 @@ int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To);
 bool SOCK_Sleep(int Socket, int MiliSeconds);
 bool SOCK_GetAddr(int Socket, netadr_t* Address);
 
-extern QCvar*	net_socksEnabled;
-extern QCvar*	net_socksServer;
-extern QCvar*	net_socksPort;
-extern QCvar*	net_socksUsername;
-extern QCvar*	net_socksPassword;
+extern Cvar*	net_socksEnabled;
+extern Cvar*	net_socksServer;
+extern Cvar*	net_socksPort;
+extern Cvar*	net_socksUsername;
+extern Cvar*	net_socksPassword;

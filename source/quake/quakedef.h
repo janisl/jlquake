@@ -230,8 +230,8 @@ extern qboolean noclip_anglehack;
 //
 extern	quakeparms_t host_parms;
 
-extern	QCvar*		sys_ticrate;
-extern	QCvar*		developer;
+extern	Cvar*		sys_ticrate;
+extern	Cvar*		developer;
 
 extern	qboolean	host_initialized;		// true if into command execution
 extern	double		host_frametime;
@@ -264,7 +264,7 @@ extern int			minimum_memory;
 //
 // chase
 //
-extern	QCvar*	chase_active;
+extern	Cvar*	chase_active;
 
 void Chase_Init (void);
 void Chase_Reset (void);

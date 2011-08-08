@@ -51,7 +51,7 @@
 
 // enable/disabled tty input mode
 // NOTE TTimo this is used during startup, cannot be changed during run
-QCvar*		ttycon = NULL;
+Cvar*		ttycon = NULL;
 // general flag to tell about tty console mode
 bool		ttycon_on = false;
 // when printing general stuff to stdout stderr (Sys_Print)

@@ -271,7 +271,7 @@ CL_ParseServerData
 */
 void CL_ParseServerData (void)
 {
-	extern QCvar	*fs_gamedirvar;
+	extern Cvar	*fs_gamedirvar;
 	char	*str;
 	int		i;
 	

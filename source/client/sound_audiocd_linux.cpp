@@ -64,9 +64,9 @@ byte		maxTrack;
 int cdfile = -1;
 static char cd_dev_old[64] = "/dev/cdrom";
 
-QCvar	*cd_volume;
-QCvar *cd_nocd;
-QCvar *cd_dev;
+Cvar	*cd_volume;
+Cvar *cd_nocd;
+Cvar *cd_dev;
 
 // CODE --------------------------------------------------------------------
 
@@ -567,7 +567,7 @@ int CDAudio_Init()
 	}
 	else
 	{
-		QCvar* cv = Cvar_Get("nocdaudio", "0", CVAR_INIT);
+		Cvar* cv = Cvar_Get("nocdaudio", "0", CVAR_INIT);
 		if (cv->value)
 		{
 			return -1;

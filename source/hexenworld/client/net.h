@@ -3,7 +3,7 @@
 extern	netadr_t	net_from;		// address of who sent the packet
 extern	QMsg		net_message;
 
-extern	QCvar*	hostname;
+extern	Cvar*	hostname;
 
 extern	int		net_socket;
 

@@ -1735,7 +1735,7 @@ Pick a vector for the player to shoot along
 vector aim(entity, missilespeed)
 =============
 */
-QCvar*	sv_aim;
+Cvar*	sv_aim;
 void PF_aim (void)
 {
 	edict_t	*ent, *check, *bestent;

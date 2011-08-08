@@ -14,9 +14,9 @@
 static const char     *safeargvs[NUM_SAFE_ARGVS] =
 	{"-nomidi", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
-QCvar*  registered;
-QCvar*  sv_gamedir;
-QCvar*  cmdline;
+Cvar*  registered;
+Cvar*  sv_gamedir;
+Cvar*  cmdline;
 
 int             static_registered = 1;  // only for startup check, then set
 

@@ -19,65 +19,65 @@ netadr_t	idmaster_adr;				// for global logging
 
 client_t	*host_client;			// current client
 
-QCvar*	sv_mintic;
-QCvar*	sv_maxtic;
+Cvar*	sv_mintic;
+Cvar*	sv_maxtic;
 
-QCvar*	developer;
+Cvar*	developer;
 
-QCvar*	timeout;
-QCvar*	zombietime;
+Cvar*	timeout;
+Cvar*	zombietime;
 
-QCvar*	rcon_password;
-QCvar*	password;
-QCvar*	spectator_password;
+Cvar*	rcon_password;
+Cvar*	password;
+Cvar*	spectator_password;
 
-QCvar*	allow_download;
-QCvar*	allow_download_skins;
-QCvar*	allow_download_models;
-QCvar*	allow_download_sounds;
-QCvar*	allow_download_maps;
+Cvar*	allow_download;
+Cvar*	allow_download_skins;
+Cvar*	allow_download_models;
+Cvar*	allow_download_sounds;
+Cvar*	allow_download_maps;
 
-QCvar* sv_highchars;
+Cvar* sv_highchars;
 
-QCvar* sv_phs;
-QCvar* sv_namedistance;
+Cvar* sv_phs;
+Cvar* sv_namedistance;
 
 
 //
 // game rules mirrored in svs.info
 //
-QCvar*	fraglimit;
-QCvar*	timelimit;
-QCvar*	teamplay;
-QCvar*	samelevel;
-QCvar*	maxclients;
-QCvar*	maxspectators;
-QCvar*	skill;
-QCvar*	deathmatch;
-QCvar*	coop;
-QCvar*	randomclass;
-QCvar*	damageScale;
-QCvar*	shyRespawn;
-QCvar*	spartanPrint;
-QCvar*	meleeDamScale;
-QCvar*	manaScale;
-QCvar*	tomeMode;
-QCvar*	tomeRespawn;
-QCvar*	w2Respawn;
-QCvar*	altRespawn;
-QCvar*	fixedLevel;
-QCvar*	autoItems;
-QCvar*	dmMode;
-QCvar*	easyFourth;
-QCvar*	patternRunner;
-QCvar*	spawn;
+Cvar*	fraglimit;
+Cvar*	timelimit;
+Cvar*	teamplay;
+Cvar*	samelevel;
+Cvar*	maxclients;
+Cvar*	maxspectators;
+Cvar*	skill;
+Cvar*	deathmatch;
+Cvar*	coop;
+Cvar*	randomclass;
+Cvar*	damageScale;
+Cvar*	shyRespawn;
+Cvar*	spartanPrint;
+Cvar*	meleeDamScale;
+Cvar*	manaScale;
+Cvar*	tomeMode;
+Cvar*	tomeRespawn;
+Cvar*	w2Respawn;
+Cvar*	altRespawn;
+Cvar*	fixedLevel;
+Cvar*	autoItems;
+Cvar*	dmMode;
+Cvar*	easyFourth;
+Cvar*	patternRunner;
+Cvar*	spawn;
 
-QCvar*	hostname;
+Cvar*	hostname;
 
-QCvar*	sv_ce_scale;
-QCvar*	sv_ce_max_size;
+Cvar*	sv_ce_scale;
+Cvar*	sv_ce_max_size;
 
-QCvar*	noexit;
+Cvar*	noexit;
 
 fileHandle_t	sv_logfile;
 fileHandle_t	sv_fraglogfile;
@@ -808,7 +808,7 @@ typedef struct
 ipfilter_t	ipfilters[MAX_IPFILTERS];
 int			numipfilters;
 
-QCvar*	filterban;
+Cvar*	filterban;
 
 /*
 =================
@@ -1231,16 +1231,16 @@ SV_InitLocal
 void SV_InitLocal (void)
 {
 	int		i;
-	extern	QCvar*	sv_maxvelocity;
-	extern	QCvar*	sv_gravity;
-	extern	QCvar*	sv_aim;
-	extern	QCvar*	sv_stopspeed;
-	extern	QCvar*	sv_spectatormaxspeed;
-	extern	QCvar*	sv_accelerate;
-	extern	QCvar*	sv_airaccelerate;
-	extern	QCvar*	sv_wateraccelerate;
-	extern	QCvar*	sv_friction;
-	extern	QCvar*	sv_waterfriction;
+	extern	Cvar*	sv_maxvelocity;
+	extern	Cvar*	sv_gravity;
+	extern	Cvar*	sv_aim;
+	extern	Cvar*	sv_stopspeed;
+	extern	Cvar*	sv_spectatormaxspeed;
+	extern	Cvar*	sv_accelerate;
+	extern	Cvar*	sv_airaccelerate;
+	extern	Cvar*	sv_wateraccelerate;
+	extern	Cvar*	sv_friction;
+	extern	Cvar*	sv_waterfriction;
 
 	SV_InitOperatorCommands	();
 	SV_UserInit ();

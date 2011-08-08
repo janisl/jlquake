@@ -942,7 +942,7 @@ Called on a normal map change, not on a map_restart
 ===============
 */
 void SV_InitGameProgs( void ) {
-	QCvar	*var;
+	Cvar	*var;
 	//FIXME these are temp while I make bots run in vm
 	extern int	bot_enable;
 

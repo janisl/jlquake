@@ -79,9 +79,9 @@ extern qboolean noclip_anglehack;
 //
 extern	quakeparms_t host_parms;
 
-extern	QCvar*		developer;
+extern	Cvar*		developer;
 
-extern	QCvar*	password;
+extern	Cvar*	password;
 
 extern	qboolean	host_initialized;		// true if into command execution
 extern	double		host_frametime;

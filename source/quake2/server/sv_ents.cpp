@@ -35,7 +35,7 @@ Encode a client frame onto the network channel
 #define	MAX_PROJECTILES		64
 edict_t	*projectiles[MAX_PROJECTILES];
 int		numprojs;
-QCvar  *sv_projectiles;
+Cvar  *sv_projectiles;
 
 qboolean SV_AddProjectileUpdate (edict_t *ent)
 {

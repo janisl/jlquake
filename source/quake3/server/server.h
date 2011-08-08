@@ -217,32 +217,32 @@ extern	vm_t			*gvm;				// game virtual machine
 
 #define	MAX_MASTER_SERVERS	5
 
-extern	QCvar	*sv_fps;
-extern	QCvar	*sv_timeout;
-extern	QCvar	*sv_zombietime;
-extern	QCvar	*sv_rconPassword;
-extern	QCvar	*sv_privatePassword;
-extern	QCvar	*sv_allowDownload;
-extern	QCvar	*sv_maxclients;
+extern	Cvar	*sv_fps;
+extern	Cvar	*sv_timeout;
+extern	Cvar	*sv_zombietime;
+extern	Cvar	*sv_rconPassword;
+extern	Cvar	*sv_privatePassword;
+extern	Cvar	*sv_allowDownload;
+extern	Cvar	*sv_maxclients;
 
-extern	QCvar	*sv_privateClients;
-extern	QCvar	*sv_hostname;
-extern	QCvar	*sv_master[MAX_MASTER_SERVERS];
-extern	QCvar	*sv_reconnectlimit;
-extern	QCvar	*sv_showloss;
-extern	QCvar	*sv_padPackets;
-extern	QCvar	*sv_killserver;
-extern	QCvar	*sv_mapname;
-extern	QCvar	*sv_mapChecksum;
-extern	QCvar	*sv_serverid;
-extern	QCvar	*sv_maxRate;
-extern	QCvar	*sv_minPing;
-extern	QCvar	*sv_maxPing;
-extern	QCvar	*sv_gametype;
-extern	QCvar	*sv_pure;
-extern	QCvar	*sv_floodProtect;
-extern	QCvar	*sv_lanForceRate;
-extern	QCvar	*sv_strictAuth;
+extern	Cvar	*sv_privateClients;
+extern	Cvar	*sv_hostname;
+extern	Cvar	*sv_master[MAX_MASTER_SERVERS];
+extern	Cvar	*sv_reconnectlimit;
+extern	Cvar	*sv_showloss;
+extern	Cvar	*sv_padPackets;
+extern	Cvar	*sv_killserver;
+extern	Cvar	*sv_mapname;
+extern	Cvar	*sv_mapChecksum;
+extern	Cvar	*sv_serverid;
+extern	Cvar	*sv_maxRate;
+extern	Cvar	*sv_minPing;
+extern	Cvar	*sv_maxPing;
+extern	Cvar	*sv_gametype;
+extern	Cvar	*sv_pure;
+extern	Cvar	*sv_floodProtect;
+extern	Cvar	*sv_lanForceRate;
+extern	Cvar	*sv_strictAuth;
 
 //===========================================================
 

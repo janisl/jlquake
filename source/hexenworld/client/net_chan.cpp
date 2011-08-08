@@ -47,8 +47,8 @@ address spoofing.
 */
 
 int		net_drop;
-QCvar*	showpackets;
-QCvar*	showdrop;
+Cvar*	showpackets;
+Cvar*	showdrop;
 
 /*
 ===============

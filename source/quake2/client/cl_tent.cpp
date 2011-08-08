@@ -1364,7 +1364,7 @@ void CL_AddBeams (void)
 //				Com_Printf ("Time:  %d %d %f\n", cl.time, cls.realtime, cls.frametime);
 */
 
-extern QCvar *hand;
+extern Cvar *hand;
 
 /*
 =================

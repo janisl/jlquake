@@ -22,7 +22,7 @@
 #include "../qcommon/qcommon.h"
 #include "../../core/system_unix.h"
 
-QCvar *nostdout;
+Cvar *nostdout;
 
 void Sys_Quit (void)
 {

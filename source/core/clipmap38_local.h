@@ -225,6 +225,6 @@ public:
 	void BoxLeafnums_r(leafList_t* ll, int NodeNum) const;
 };
 
-extern QCvar*		map_noareas;
+extern Cvar*		map_noareas;
 
 #endif

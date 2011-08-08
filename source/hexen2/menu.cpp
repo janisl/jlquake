@@ -4,11 +4,11 @@
 
 #include "quakedef.h"
 
-extern QCvar*		r_gamma;
+extern Cvar*		r_gamma;
 
 extern	float introTime;
-extern	QCvar*	crosshair;
-QCvar* m_oldmission;
+extern	Cvar*	crosshair;
+Cvar* m_oldmission;
 
 menu_state_t m_state;
 

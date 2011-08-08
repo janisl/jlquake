@@ -41,141 +41,141 @@ struct vidmode_t
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*		r_logFile;
+Cvar*		r_logFile;
 
-QCvar*		r_mode;
-QCvar*		r_fullscreen;
-QCvar*		r_customwidth;
-QCvar*		r_customheight;
-QCvar*		r_customaspect;
+Cvar*		r_mode;
+Cvar*		r_fullscreen;
+Cvar*		r_customwidth;
+Cvar*		r_customheight;
+Cvar*		r_customaspect;
 
-QCvar*		r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
-QCvar*		r_stencilbits;
-QCvar*		r_depthbits;
-QCvar*		r_colorbits;
-QCvar*		r_stereo;
-QCvar*		r_displayRefresh;
-QCvar*		r_swapInterval;
-QCvar*		r_drawBuffer;
+Cvar*		r_allowSoftwareGL;		// don't abort out if the pixelformat claims software
+Cvar*		r_stencilbits;
+Cvar*		r_depthbits;
+Cvar*		r_colorbits;
+Cvar*		r_stereo;
+Cvar*		r_displayRefresh;
+Cvar*		r_swapInterval;
+Cvar*		r_drawBuffer;
 
-QCvar*		r_verbose;
+Cvar*		r_verbose;
 
-QCvar*		r_ext_compressed_textures;
-QCvar*		r_ext_multitexture;
-QCvar*		r_ext_texture_env_add;
-QCvar*		r_ext_gamma_control;
-QCvar*		r_ext_compiled_vertex_array;
-QCvar*		r_ext_point_parameters;
+Cvar*		r_ext_compressed_textures;
+Cvar*		r_ext_multitexture;
+Cvar*		r_ext_texture_env_add;
+Cvar*		r_ext_gamma_control;
+Cvar*		r_ext_compiled_vertex_array;
+Cvar*		r_ext_point_parameters;
 
-QCvar*		r_gamma;
-QCvar*		r_ignorehwgamma;
-QCvar*		r_intensity;
-QCvar*		r_overBrightBits;
+Cvar*		r_gamma;
+Cvar*		r_ignorehwgamma;
+Cvar*		r_intensity;
+Cvar*		r_overBrightBits;
 
-QCvar*		r_wateralpha;
-QCvar*		r_roundImagesDown;
-QCvar*		r_picmip;
-QCvar*		r_texturebits;
-QCvar*		r_colorMipLevels;
-QCvar*		r_simpleMipMaps;
-QCvar*		r_textureMode;
+Cvar*		r_wateralpha;
+Cvar*		r_roundImagesDown;
+Cvar*		r_picmip;
+Cvar*		r_texturebits;
+Cvar*		r_colorMipLevels;
+Cvar*		r_simpleMipMaps;
+Cvar*		r_textureMode;
 
-QCvar*		r_ignoreGLErrors;
+Cvar*		r_ignoreGLErrors;
 
-QCvar*		r_nobind;
+Cvar*		r_nobind;
 
-QCvar*		r_mapOverBrightBits;
-QCvar*		r_vertexLight;
-QCvar*		r_lightmap;
-QCvar*		r_fullbright;
-QCvar*		r_singleShader;
+Cvar*		r_mapOverBrightBits;
+Cvar*		r_vertexLight;
+Cvar*		r_lightmap;
+Cvar*		r_fullbright;
+Cvar*		r_singleShader;
 
-QCvar*		r_subdivisions;
+Cvar*		r_subdivisions;
 
-QCvar*		r_ignoreFastPath;
-QCvar*		r_detailTextures;
-QCvar*		r_uiFullScreen;
-QCvar*		r_printShaders;
+Cvar*		r_ignoreFastPath;
+Cvar*		r_detailTextures;
+Cvar*		r_uiFullScreen;
+Cvar*		r_printShaders;
 
-QCvar*		r_saveFontData;
+Cvar*		r_saveFontData;
 
-QCvar*		r_smp;
-QCvar*		r_maxpolys;
-QCvar*		r_maxpolyverts;
+Cvar*		r_smp;
+Cvar*		r_maxpolys;
+Cvar*		r_maxpolyverts;
 
-QCvar*		r_dynamiclight;
-QCvar*		r_znear;
+Cvar*		r_dynamiclight;
+Cvar*		r_znear;
 
-QCvar*		r_nocull;
+Cvar*		r_nocull;
 
-QCvar*		r_primitives;
-QCvar*		r_vertex_arrays;
-QCvar*		r_lerpmodels;
-QCvar*		r_shadows;
-QCvar*		r_debugSort;
-QCvar*		r_showtris;
-QCvar*		r_shownormals;
-QCvar*		r_offsetFactor;
-QCvar*		r_offsetUnits;
-QCvar*		r_clear;
+Cvar*		r_primitives;
+Cvar*		r_vertex_arrays;
+Cvar*		r_lerpmodels;
+Cvar*		r_shadows;
+Cvar*		r_debugSort;
+Cvar*		r_showtris;
+Cvar*		r_shownormals;
+Cvar*		r_offsetFactor;
+Cvar*		r_offsetUnits;
+Cvar*		r_clear;
 
-QCvar*		r_modulate;
-QCvar*		r_ambientScale;
-QCvar*		r_directedScale;
-QCvar*		r_debugLight;
+Cvar*		r_modulate;
+Cvar*		r_ambientScale;
+Cvar*		r_directedScale;
+Cvar*		r_debugLight;
 
-QCvar*		r_lightlevel;	// FIXME: This is a HACK to get the client's light level
+Cvar*		r_lightlevel;	// FIXME: This is a HACK to get the client's light level
 
-QCvar*		r_lodbias;
-QCvar*		r_lodscale;
+Cvar*		r_lodbias;
+Cvar*		r_lodscale;
 
-QCvar*		r_skymip;
-QCvar*		r_fastsky;
-QCvar*		r_showsky;
-QCvar*		r_drawSun;
+Cvar*		r_skymip;
+Cvar*		r_fastsky;
+Cvar*		r_showsky;
+Cvar*		r_drawSun;
 
-QCvar*		r_lodCurveError;
+Cvar*		r_lodCurveError;
 
-QCvar*		r_ignore;
+Cvar*		r_ignore;
 
-QCvar*		r_keeptjunctions;
-QCvar*		r_texsort;
-QCvar*		r_dynamic;
-QCvar*		r_saturatelighting;
+Cvar*		r_keeptjunctions;
+Cvar*		r_texsort;
+Cvar*		r_dynamic;
+Cvar*		r_saturatelighting;
 
-QCvar*		r_nocurves;
-QCvar*		r_facePlaneCull;
-QCvar*		r_novis;
-QCvar*		r_lockpvs;
-QCvar*		r_showcluster;
-QCvar*		r_drawworld;
-QCvar*		r_measureOverdraw;
-QCvar*		r_finish;
-QCvar*		r_showImages;
-QCvar*		r_speeds;
-QCvar*		r_showSmp;
-QCvar*		r_skipBackEnd;
-QCvar*		r_drawentities;
-QCvar*		r_debugSurface;
-QCvar*		r_norefresh;
+Cvar*		r_nocurves;
+Cvar*		r_facePlaneCull;
+Cvar*		r_novis;
+Cvar*		r_lockpvs;
+Cvar*		r_showcluster;
+Cvar*		r_drawworld;
+Cvar*		r_measureOverdraw;
+Cvar*		r_finish;
+Cvar*		r_showImages;
+Cvar*		r_speeds;
+Cvar*		r_showSmp;
+Cvar*		r_skipBackEnd;
+Cvar*		r_drawentities;
+Cvar*		r_debugSurface;
+Cvar*		r_norefresh;
 
-QCvar*		r_railWidth;
-QCvar*		r_railCoreWidth;
-QCvar*		r_railSegmentLength;
+Cvar*		r_railWidth;
+Cvar*		r_railCoreWidth;
+Cvar*		r_railSegmentLength;
 
-QCvar*		r_flares;
-QCvar*		r_flareSize;
-QCvar*		r_flareFade;
+Cvar*		r_flares;
+Cvar*		r_flareSize;
+Cvar*		r_flareFade;
 
-QCvar*		r_particle_size;
-QCvar*		r_particle_min_size;
-QCvar*		r_particle_max_size;
-QCvar*		r_particle_att_a;
-QCvar*		r_particle_att_b;
-QCvar*		r_particle_att_c;
+Cvar*		r_particle_size;
+Cvar*		r_particle_min_size;
+Cvar*		r_particle_max_size;
+Cvar*		r_particle_att_a;
+Cvar*		r_particle_att_b;
+Cvar*		r_particle_att_c;
 
-QCvar*		r_noportals;
-QCvar*		r_portalOnly;
+Cvar*		r_noportals;
+Cvar*		r_portalOnly;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -254,7 +254,7 @@ static void R_ModeList_f()
 //
 //==========================================================================
 
-static void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
+static void AssertCvarRange(Cvar* cv, float minVal, float maxVal, bool shouldBeIntegral)
 {
 	if (shouldBeIntegral)
 	{

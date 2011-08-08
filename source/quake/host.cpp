@@ -51,28 +51,28 @@ client_t	*host_client;			// current client
 
 jmp_buf 	host_abortserver;
 
-QCvar*	host_framerate;	// set for slow motion
-QCvar*	host_speeds;			// set for running times
+Cvar*	host_framerate;	// set for slow motion
+Cvar*	host_speeds;			// set for running times
 
-QCvar*	sys_ticrate;
-QCvar*	serverprofile;
+Cvar*	sys_ticrate;
+Cvar*	serverprofile;
 
-QCvar*	fraglimit;
-QCvar*	timelimit;
-QCvar*	teamplay;
+Cvar*	fraglimit;
+Cvar*	timelimit;
+Cvar*	teamplay;
 
-QCvar*	samelevel;
-QCvar*	noexit;
+Cvar*	samelevel;
+Cvar*	noexit;
 
-QCvar*	developer;
+Cvar*	developer;
 
-QCvar*	skill;						// 0 - 3
-QCvar*	deathmatch;			// 0, 1, or 2
-QCvar*	coop;			// 0 or 1
+Cvar*	skill;						// 0 - 3
+Cvar*	deathmatch;			// 0, 1, or 2
+Cvar*	coop;			// 0 or 1
 
-QCvar*	pausable;
+Cvar*	pausable;
 
-QCvar*	temp1;
+Cvar*	temp1;
 
 
 class QMainLog : public LogListener

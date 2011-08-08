@@ -57,15 +57,15 @@ console is:
 float		scr_con_current;
 float		scr_conlines;		// lines of console to display
 
-QCvar*		scr_viewsize;
-QCvar*		scr_fov;
-QCvar*		scr_conspeed;
-QCvar*		scr_centertime;
-QCvar*		scr_showturtle;
-QCvar*		scr_showpause;
-QCvar*		scr_printspeed;
-QCvar*		show_fps;
-extern	QCvar*	crosshair;
+Cvar*		scr_viewsize;
+Cvar*		scr_fov;
+Cvar*		scr_conspeed;
+Cvar*		scr_centertime;
+Cvar*		scr_showturtle;
+Cvar*		scr_showpause;
+Cvar*		scr_printspeed;
+Cvar*		show_fps;
+extern	Cvar*	crosshair;
 
 qboolean	scr_initialized;		// ready to draw
 

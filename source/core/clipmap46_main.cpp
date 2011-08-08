@@ -33,9 +33,9 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*		cm_noAreas;
-QCvar*		cm_noCurves;
-QCvar*		cm_playerCurveClip;
+Cvar*		cm_noAreas;
+Cvar*		cm_noCurves;
+Cvar*		cm_playerCurveClip;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

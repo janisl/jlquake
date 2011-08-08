@@ -78,9 +78,9 @@ to the new value before sending out any replies.
 */
 
 int		net_drop;
-QCvar*	showpackets;
-QCvar*	showdrop;
-QCvar*	qport;
+Cvar*	showpackets;
+Cvar*	showdrop;
+Cvar*	qport;
 
 /*
 ===============

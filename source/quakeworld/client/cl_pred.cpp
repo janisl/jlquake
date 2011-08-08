@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "../../client/windows_shared.h"
 #endif
 
-QCvar*	cl_nopred;
-QCvar*	cl_pushlatency;
+Cvar*	cl_nopred;
+Cvar*	cl_pushlatency;
 
 extern	frame_t		*view_frame;
 

@@ -302,11 +302,11 @@ SV_BeginDownload_f
 void SV_BeginDownload_f(void)
 {
 	char	*name;
-	extern	QCvar *allow_download;
-	extern	QCvar *allow_download_players;
-	extern	QCvar *allow_download_models;
-	extern	QCvar *allow_download_sounds;
-	extern	QCvar *allow_download_maps;
+	extern	Cvar *allow_download;
+	extern	Cvar *allow_download_players;
+	extern	Cvar *allow_download_models;
+	extern	Cvar *allow_download_sounds;
+	extern	Cvar *allow_download_maps;
 	int offset = 0;
 
 	name = Cmd_Argv(1);

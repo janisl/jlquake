@@ -26,8 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static const char     *safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
-QCvar*  registered;
-QCvar*  cmdline;
+Cvar*  registered;
+Cvar*  cmdline;
 
 int             static_registered = 1;  // only for startup check, then set
 

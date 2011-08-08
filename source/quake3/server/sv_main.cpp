@@ -26,32 +26,32 @@ serverStatic_t	svs;				// persistant server info
 server_t		sv;					// local server
 vm_t			*gvm = NULL;				// game virtual machine // bk001212 init
 
-QCvar	*sv_fps;				// time rate for running non-clients
-QCvar	*sv_timeout;			// seconds without any message
-QCvar	*sv_zombietime;			// seconds to sink messages after disconnect
-QCvar	*sv_rconPassword;		// password for remote server commands
-QCvar	*sv_privatePassword;	// password for the privateClient slots
-QCvar	*sv_allowDownload;
-QCvar	*sv_maxclients;
+Cvar	*sv_fps;				// time rate for running non-clients
+Cvar	*sv_timeout;			// seconds without any message
+Cvar	*sv_zombietime;			// seconds to sink messages after disconnect
+Cvar	*sv_rconPassword;		// password for remote server commands
+Cvar	*sv_privatePassword;	// password for the privateClient slots
+Cvar	*sv_allowDownload;
+Cvar	*sv_maxclients;
 
-QCvar	*sv_privateClients;		// number of clients reserved for password
-QCvar	*sv_hostname;
-QCvar	*sv_master[MAX_MASTER_SERVERS];		// master server ip address
-QCvar	*sv_reconnectlimit;		// minimum seconds between connect messages
-QCvar	*sv_showloss;			// report when usercmds are lost
-QCvar	*sv_padPackets;			// add nop bytes to messages
-QCvar	*sv_killserver;			// menu system can set to 1 to shut server down
-QCvar	*sv_mapname;
-QCvar	*sv_mapChecksum;
-QCvar	*sv_serverid;
-QCvar	*sv_maxRate;
-QCvar	*sv_minPing;
-QCvar	*sv_maxPing;
-QCvar	*sv_gametype;
-QCvar	*sv_pure;
-QCvar	*sv_floodProtect;
-QCvar	*sv_lanForceRate; // dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
-QCvar	*sv_strictAuth;
+Cvar	*sv_privateClients;		// number of clients reserved for password
+Cvar	*sv_hostname;
+Cvar	*sv_master[MAX_MASTER_SERVERS];		// master server ip address
+Cvar	*sv_reconnectlimit;		// minimum seconds between connect messages
+Cvar	*sv_showloss;			// report when usercmds are lost
+Cvar	*sv_padPackets;			// add nop bytes to messages
+Cvar	*sv_killserver;			// menu system can set to 1 to shut server down
+Cvar	*sv_mapname;
+Cvar	*sv_mapChecksum;
+Cvar	*sv_serverid;
+Cvar	*sv_maxRate;
+Cvar	*sv_minPing;
+Cvar	*sv_maxPing;
+Cvar	*sv_gametype;
+Cvar	*sv_pure;
+Cvar	*sv_floodProtect;
+Cvar	*sv_lanForceRate; // dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
+Cvar	*sv_strictAuth;
 
 /*
 =============================================================================

@@ -32,7 +32,7 @@ int			con_totallines;		// total lines in console scrollback
 float		con_cursorspeed = 4;
 
 
-QCvar*		con_notifytime;
+Cvar*		con_notifytime;
 
 #define	NUM_CON_TIMES 4
 float		con_times[NUM_CON_TIMES];	// realtime time the line was generated

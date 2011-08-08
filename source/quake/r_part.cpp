@@ -578,7 +578,7 @@ void CL_AddParticles()
 R_UpdateParticles
 ===============
 */
-extern	QCvar*	sv_gravity;
+extern	Cvar*	sv_gravity;
 
 void R_UpdateParticles (void)
 {

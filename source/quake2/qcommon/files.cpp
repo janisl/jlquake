@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // OEM
 //#define	PAK0_CHECKSUM	0x78e135c
 
-QCvar	*fs_gamedirvar;
+Cvar	*fs_gamedirvar;
 
 
 /*

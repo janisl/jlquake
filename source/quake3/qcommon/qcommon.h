@@ -322,18 +322,18 @@ void		Com_StartupVariable( const char *match );
 // only a set with the exact name.  Only used during startup.
 
 
-extern	QCvar	*com_developer;
-extern	QCvar	*com_speeds;
-extern	QCvar	*com_sv_running;
-extern	QCvar	*com_cl_running;
-extern	QCvar	*com_version;
-extern	QCvar	*com_blood;
-extern	QCvar	*com_buildScript;		// for building release pak files
-extern	QCvar	*com_cameraMode;
+extern	Cvar	*com_developer;
+extern	Cvar	*com_speeds;
+extern	Cvar	*com_sv_running;
+extern	Cvar	*com_cl_running;
+extern	Cvar	*com_version;
+extern	Cvar	*com_blood;
+extern	Cvar	*com_buildScript;		// for building release pak files
+extern	Cvar	*com_cameraMode;
 
 // both client and server must agree to pause
-extern	QCvar	*cl_paused;
-extern	QCvar	*sv_paused;
+extern	Cvar	*cl_paused;
+extern	Cvar	*sv_paused;
 
 // com_speeds times
 extern	int		time_game;

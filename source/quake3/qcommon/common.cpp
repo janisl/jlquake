@@ -44,25 +44,25 @@ jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 FILE *debuglogfile;
 static fileHandle_t logfile;
 
-QCvar	*com_speeds;
-QCvar	*com_developer;
-QCvar	*com_fixedtime;
-QCvar	*com_dropsim;		// 0.0 to 1.0, simulated packet drops
-QCvar	*com_maxfps;
-QCvar	*com_timedemo;
-QCvar	*com_sv_running;
-QCvar	*com_cl_running;
-QCvar	*com_logfile;		// 1 = buffer log, 2 = flush after each print
-QCvar	*com_showtrace;
-QCvar	*com_version;
-QCvar	*com_blood;
-QCvar	*com_buildScript;	// for automated data building scripts
-QCvar	*com_introPlayed;
-QCvar	*cl_paused;
-QCvar	*sv_paused;
-QCvar	*com_cameraMode;
+Cvar	*com_speeds;
+Cvar	*com_developer;
+Cvar	*com_fixedtime;
+Cvar	*com_dropsim;		// 0.0 to 1.0, simulated packet drops
+Cvar	*com_maxfps;
+Cvar	*com_timedemo;
+Cvar	*com_sv_running;
+Cvar	*com_cl_running;
+Cvar	*com_logfile;		// 1 = buffer log, 2 = flush after each print
+Cvar	*com_showtrace;
+Cvar	*com_version;
+Cvar	*com_blood;
+Cvar	*com_buildScript;	// for automated data building scripts
+Cvar	*com_introPlayed;
+Cvar	*cl_paused;
+Cvar	*sv_paused;
+Cvar	*com_cameraMode;
 #if defined(_WIN32) && defined(_DEBUG)
-QCvar	*com_noErrorInterrupt;
+Cvar	*com_noErrorInterrupt;
 #endif
 
 // com_speeds times
@@ -416,7 +416,7 @@ be after execing the config and default.
 void Com_StartupVariable( const char *match ) {
 	int		i;
 	char	*s;
-	QCvar	*cv;
+	Cvar	*cv;
 
 	for (i=0 ; i < com_numConsoleLines ; i++) {
 		Cmd_TokenizeString( com_consoleLines[i] );
@@ -1196,7 +1196,7 @@ void Com_InitSmallZoneMemory( void ) {
 }
 
 void Com_InitZoneMemory( void ) {
-	QCvar	*cv;
+	Cvar	*cv;
 	// allocate the random block zone
 	cv = Cvar_Get( "com_zoneMegs", DEF_COMZONEMEGS, CVAR_LATCH2 | CVAR_ARCHIVE );
 
@@ -1299,7 +1299,7 @@ Com_InitZoneMemory
 =================
 */
 void Com_InitHunkMemory( void ) {
-	QCvar	*cv;
+	Cvar	*cv;
 	int nMinAlloc;
 	const char *pMsg = NULL;
 
@@ -2354,7 +2354,7 @@ Writes key bindings and archived cvars to config file if modified
 */
 void Com_WriteConfiguration( void ) {
 #ifndef DEDICATED // bk001204
-	QCvar	*fs;
+	Cvar	*fs;
 #endif
 	// if we are quiting without fully initializing, make sure
 	// we don't write out anything

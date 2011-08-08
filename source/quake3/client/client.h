@@ -304,41 +304,41 @@ extern	vm_t			*uivm;	// interface to ui dll or vm
 //
 // cvars
 //
-extern	QCvar	*cl_nodelta;
-extern	QCvar	*cl_debugMove;
-extern	QCvar	*cl_noprint;
-extern	QCvar	*cl_timegraph;
-extern	QCvar	*cl_maxpackets;
-extern	QCvar	*cl_packetdup;
-extern	QCvar	*cl_shownet;
-extern	QCvar	*cl_showSend;
-extern	QCvar	*cl_timeNudge;
-extern	QCvar	*cl_showTimeDelta;
-extern	QCvar	*cl_freezeDemo;
+extern	Cvar	*cl_nodelta;
+extern	Cvar	*cl_debugMove;
+extern	Cvar	*cl_noprint;
+extern	Cvar	*cl_timegraph;
+extern	Cvar	*cl_maxpackets;
+extern	Cvar	*cl_packetdup;
+extern	Cvar	*cl_shownet;
+extern	Cvar	*cl_showSend;
+extern	Cvar	*cl_timeNudge;
+extern	Cvar	*cl_showTimeDelta;
+extern	Cvar	*cl_freezeDemo;
 
-extern	QCvar	*cl_yawspeed;
-extern	QCvar	*cl_pitchspeed;
-extern	QCvar	*cl_run;
-extern	QCvar	*cl_anglespeedkey;
+extern	Cvar	*cl_yawspeed;
+extern	Cvar	*cl_pitchspeed;
+extern	Cvar	*cl_run;
+extern	Cvar	*cl_anglespeedkey;
 
-extern	QCvar	*cl_sensitivity;
-extern	QCvar	*cl_freelook;
+extern	Cvar	*cl_sensitivity;
+extern	Cvar	*cl_freelook;
 
-extern	QCvar	*cl_mouseAccel;
-extern	QCvar	*cl_showMouseRate;
+extern	Cvar	*cl_mouseAccel;
+extern	Cvar	*cl_showMouseRate;
 
-extern	QCvar	*m_pitch;
-extern	QCvar	*m_yaw;
-extern	QCvar	*m_forward;
-extern	QCvar	*m_side;
-extern	QCvar	*m_filter;
+extern	Cvar	*m_pitch;
+extern	Cvar	*m_yaw;
+extern	Cvar	*m_forward;
+extern	Cvar	*m_side;
+extern	Cvar	*m_filter;
 
-extern	QCvar	*cl_timedemo;
+extern	Cvar	*cl_timedemo;
 
-extern	QCvar	*cl_activeAction;
+extern	Cvar	*cl_activeAction;
 
-extern	QCvar	*cl_allowDownload;
-extern	QCvar	*cl_conXOffset;
+extern	Cvar	*cl_allowDownload;
+extern	Cvar	*cl_conXOffset;
 
 //=================================================
 

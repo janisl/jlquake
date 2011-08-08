@@ -11,15 +11,15 @@ server_t		sv;
 server_static_t	svs;
 char	localmodels[MAX_MODELS][5];			// inline model names for precache
 
-QCvar*	sv_sound_distance;
+Cvar*	sv_sound_distance;
 
-QCvar*	sv_update_player;
-QCvar*	sv_update_monsters;
-QCvar*	sv_update_missiles;
-QCvar*	sv_update_misc;
+Cvar*	sv_update_player;
+Cvar*	sv_update_monsters;
+Cvar*	sv_update_missiles;
+Cvar*	sv_update_misc;
 
-QCvar*	sv_ce_scale;
-QCvar*	sv_ce_max_size;
+Cvar*	sv_ce_scale;
+Cvar*	sv_ce_max_size;
 
 extern unsigned int	info_mask, info_mask2;
 int		sv_kingofhill;
@@ -39,19 +39,19 @@ SV_Init
 void SV_Init (void)
 {
 	int		i;
-	extern	QCvar*	sv_maxvelocity;
-	extern	QCvar*	sv_gravity;
-	extern	QCvar*	sv_nostep;
-	extern	QCvar*	sv_friction;
-	extern	QCvar*	sv_edgefriction;
-	extern	QCvar*	sv_stopspeed;
-	extern	QCvar*	sv_maxspeed;
-	extern	QCvar*	sv_accelerate;
-	extern	QCvar*	sv_idealpitchscale;
-	extern	QCvar*	sv_idealrollscale;
-	extern	QCvar*	sv_aim;
-	extern	QCvar*	sv_walkpitch;
-	extern	QCvar*	sv_flypitch;
+	extern	Cvar*	sv_maxvelocity;
+	extern	Cvar*	sv_gravity;
+	extern	Cvar*	sv_nostep;
+	extern	Cvar*	sv_friction;
+	extern	Cvar*	sv_edgefriction;
+	extern	Cvar*	sv_stopspeed;
+	extern	Cvar*	sv_maxspeed;
+	extern	Cvar*	sv_accelerate;
+	extern	Cvar*	sv_idealpitchscale;
+	extern	Cvar*	sv_idealrollscale;
+	extern	Cvar*	sv_aim;
+	extern	Cvar*	sv_walkpitch;
+	extern	Cvar*	sv_flypitch;
 
 	sv_maxvelocity = Cvar_Get("sv_maxvelocity", "2000", 0);
 	sv_gravity = Cvar_Get("sv_gravity", "800", CVAR_SERVERINFO);

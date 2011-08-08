@@ -2,9 +2,9 @@
 
 #include "quakedef.h"
 
-extern	QCvar*	cl_predict_players;
-extern	QCvar*	cl_predict_players2;
-extern	QCvar*	cl_solid_players;
+extern	Cvar*	cl_predict_players;
+extern	Cvar*	cl_predict_players2;
+extern	Cvar*	cl_solid_players;
 
 extern qhandle_t	player_models[MAX_PLAYER_CLASS];
 

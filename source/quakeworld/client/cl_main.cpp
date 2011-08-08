@@ -31,49 +31,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 qboolean	noclip_anglehack;		// remnant from old quake
 
 
-QCvar*	rcon_password;
+Cvar*	rcon_password;
 
-QCvar*	rcon_address;
+Cvar*	rcon_address;
 
-QCvar*	cl_timeout;
+Cvar*	cl_timeout;
 
-QCvar*	cl_shownet;
+Cvar*	cl_shownet;
 
-QCvar*	cl_sbar;
-QCvar*	cl_hudswap;
-QCvar*	cl_maxfps;
+Cvar*	cl_sbar;
+Cvar*	cl_hudswap;
+Cvar*	cl_maxfps;
 
-QCvar*	lookspring;
-QCvar*	lookstrafe;
-QCvar*	sensitivity;
+Cvar*	lookspring;
+Cvar*	lookstrafe;
+Cvar*	sensitivity;
 
-QCvar*	m_pitch;
-QCvar*	m_yaw;
-QCvar*	m_forward;
-QCvar*	m_side;
+Cvar*	m_pitch;
+Cvar*	m_yaw;
+Cvar*	m_forward;
+Cvar*	m_side;
 
-QCvar*	entlatency;
-QCvar*	cl_predict_players;
-QCvar*	cl_predict_players2;
-QCvar*	cl_solid_players;
+Cvar*	entlatency;
+Cvar*	cl_predict_players;
+Cvar*	cl_predict_players2;
+Cvar*	cl_solid_players;
 
-QCvar*  localid;
+Cvar*  localid;
 
 static qboolean allowremotecmd = true;
 
 //
 // info mirrors
 //
-QCvar*	password;
-QCvar*	spectator;
-QCvar*	name;
-QCvar*	team;
-QCvar*	skin;
-QCvar*	topcolor;
-QCvar*	bottomcolor;
-QCvar*	rate;
-QCvar*	noaim;
-QCvar*	msg;
+Cvar*	password;
+Cvar*	spectator;
+Cvar*	name;
+Cvar*	team;
+Cvar*	skin;
+Cvar*	topcolor;
+Cvar*	bottomcolor;
+Cvar*	rate;
+Cvar*	noaim;
+Cvar*	msg;
 
 
 client_static_t	cls;
@@ -101,8 +101,8 @@ int			host_hunklevel;
 
 netadr_t	master_adr;				// address of the master server
 
-QCvar*	host_speeds;
-QCvar*	developer;
+Cvar*	host_speeds;
+Cvar*	developer;
 
 int			fps_count;
 
@@ -1018,8 +1018,8 @@ CL_Init
 */
 void CL_Init (void)
 {
-	extern	QCvar*		baseskin;
-	extern	QCvar*		noskins;
+	extern	Cvar*		baseskin;
+	extern	Cvar*		noskins;
 	char st[80];
 
 	cls_common = &cls;

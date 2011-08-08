@@ -29,10 +29,10 @@
 extern Display*		dpy;
 extern Window		win;
 
-extern QCvar*		in_dgamouse; // user pref for dga mouse
-extern QCvar*		in_nograb; // this is strictly for developers
+extern Cvar*		in_dgamouse; // user pref for dga mouse
+extern Cvar*		in_nograb; // this is strictly for developers
 
-extern QCvar*		in_joystick;
+extern Cvar*		in_joystick;
 
 void IN_ActivateMouse();
 void IN_DeactivateMouse();

@@ -292,33 +292,33 @@ typedef struct
 //
 // cvars
 //
-extern  QCvar*	cl_warncmd;
-extern	QCvar*	cl_upspeed;
-extern	QCvar*	cl_forwardspeed;
-extern	QCvar*	cl_backspeed;
-extern	QCvar*	cl_sidespeed;
+extern  Cvar*	cl_warncmd;
+extern	Cvar*	cl_upspeed;
+extern	Cvar*	cl_forwardspeed;
+extern	Cvar*	cl_backspeed;
+extern	Cvar*	cl_sidespeed;
 
-extern	QCvar*	cl_movespeedkey;
+extern	Cvar*	cl_movespeedkey;
 
-extern	QCvar*	cl_yawspeed;
-extern	QCvar*	cl_pitchspeed;
+extern	Cvar*	cl_yawspeed;
+extern	Cvar*	cl_pitchspeed;
 
-extern	QCvar*	cl_anglespeedkey;
+extern	Cvar*	cl_anglespeedkey;
 
-extern	QCvar*	cl_shownet;
-extern	QCvar*	cl_sbar;
-extern	QCvar*	cl_hudswap;
+extern	Cvar*	cl_shownet;
+extern	Cvar*	cl_sbar;
+extern	Cvar*	cl_hudswap;
 
-extern	QCvar*	lookspring;
-extern	QCvar*	lookstrafe;
-extern	QCvar*	sensitivity;
+extern	Cvar*	lookspring;
+extern	Cvar*	lookstrafe;
+extern	Cvar*	sensitivity;
 
-extern	QCvar*	m_pitch;
-extern	QCvar*	m_yaw;
-extern	QCvar*	m_forward;
-extern	QCvar*	m_side;
+extern	Cvar*	m_pitch;
+extern	Cvar*	m_yaw;
+extern	Cvar*	m_forward;
+extern	Cvar*	m_side;
 
-extern	QCvar*	name;
+extern	Cvar*	name;
 
 
 #define	MAX_STATIC_ENTITIES	128			// torches, etc

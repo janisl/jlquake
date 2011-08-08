@@ -31,17 +31,17 @@ int		type_size[8] = {1,sizeof(string_t)/4,1,3,1,1,sizeof(func_t)/4,sizeof(void *
 ddef_t *ED_FieldAtOfs (int ofs);
 qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s);
 
-QCvar*	nomonsters;
-QCvar*	gamecfg;
-QCvar*	scratch1;
-QCvar*	scratch2;
-QCvar*	scratch3;
-QCvar*	scratch4;
-QCvar*	savedgamecfg;
-QCvar*	saved1;
-QCvar*	saved2;
-QCvar*	saved3;
-QCvar*	saved4;
+Cvar*	nomonsters;
+Cvar*	gamecfg;
+Cvar*	scratch1;
+Cvar*	scratch2;
+Cvar*	scratch3;
+Cvar*	scratch4;
+Cvar*	savedgamecfg;
+Cvar*	saved1;
+Cvar*	saved2;
+Cvar*	saved3;
+Cvar*	saved4;
 
 #define	MAX_FIELD_LEN	64
 #define GEFV_CACHESIZE	2

@@ -43,7 +43,7 @@ int					c_traces;
 int					c_brush_traces;
 int					c_patch_traces;
 
-QCvar*				cm_flushmap;
+Cvar*				cm_flushmap;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

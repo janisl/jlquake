@@ -113,7 +113,7 @@ void SV_GetChallenge( netadr_t from ) {
 
 	// otherwise send their ip to the authorize server
 	if ( svs.authorizeAddress.type != NA_BAD ) {
-		QCvar	*fs;
+		Cvar	*fs;
 		char	game[1024];
 
 		Com_DPrintf( "sending getIpAuthorize for %s\n", SOCK_AdrToString( from ));

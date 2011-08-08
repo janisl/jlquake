@@ -155,7 +155,7 @@ extern int			DEFAULTnet_hostport;
 extern int			net_hostport;
 
 extern int net_driverlevel;
-extern QCvar*		hostname;
+extern Cvar*		hostname;
 extern char			playername[];
 extern int			playercolor;
 

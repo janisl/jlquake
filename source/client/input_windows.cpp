@@ -53,7 +53,7 @@ struct MYDATA
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
-extern QCvar *r_fullscreen;
+extern Cvar *r_fullscreen;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
@@ -81,7 +81,7 @@ static byte s_scantokey[128] =
 	0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0  ,    0         // 7 
 }; 
 
-static QCvar*			in_mouse;
+static Cvar*			in_mouse;
 
 static int				window_center_x;
 static int				window_center_y;
@@ -120,10 +120,10 @@ static DIDATAFORMAT df =
 	rgodf,                      // and here they are
 };
 
-QCvar*				in_joystick;
-static QCvar*		in_debugJoystick;
-static QCvar*		in_joyBallScale;
-static QCvar*		joy_threshold;
+Cvar*				in_joystick;
+static Cvar*		in_debugJoystick;
+static Cvar*		in_joyBallScale;
+static Cvar*		joy_threshold;
 
 static bool			joy_avail;
 static int			joy_id;			// joystick number
@@ -145,10 +145,10 @@ static int joyDirectionKeys[16] =
 	K_JOY26, K_JOY27
 };
 
-static QCvar*		in_midi;
-static QCvar*		in_midiport;
-static QCvar*		in_midichannel;
-static QCvar*		in_mididevice;
+static Cvar*		in_midi;
+static Cvar*		in_midiport;
+static Cvar*		in_midichannel;
+static Cvar*		in_mididevice;
 
 static int			midi_numDevices;
 static MIDIINCAPS	midi_caps[MAX_MIDIIN_DEVICES];

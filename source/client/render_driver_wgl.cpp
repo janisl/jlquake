@@ -58,8 +58,8 @@ static bool		s_classRegistered = false;
 static bool		pixelFormatSet;
 static bool		cdsFullscreen;
 
-static QCvar*	vid_xpos;			// X coordinate of window position
-static QCvar*	vid_ypos;			// Y coordinate of window position
+static Cvar*	vid_xpos;			// X coordinate of window position
+static Cvar*	vid_ypos;			// Y coordinate of window position
 
 static quint16	s_oldHardwareGamma[3][256];
 

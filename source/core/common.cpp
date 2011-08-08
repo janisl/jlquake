@@ -34,11 +34,11 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*			com_dedicated;
-QCvar*			com_viewlog;
-QCvar*			com_timescale;
+Cvar*			com_dedicated;
+Cvar*			com_viewlog;
+Cvar*			com_timescale;
 
-QCvar*			com_journal;
+Cvar*			com_journal;
 
 fileHandle_t	com_journalFile;			// events are written here
 fileHandle_t	com_journalDataFile;		// config files are written here

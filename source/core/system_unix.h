@@ -26,7 +26,7 @@ extern bool				stdin_active;
 
 extern unsigned long	sys_timeBase;
 
-extern QCvar *ttycon;
+extern Cvar *ttycon;
 extern bool		ttycon_on;
 
 #endif

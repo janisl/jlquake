@@ -83,13 +83,13 @@ dma_t				dma;
 int					s_soundtime;	// sample PAIRS
 int   				s_paintedtime; 	// sample PAIRS
 
-QCvar*				s_volume;
-QCvar*				s_testsound;
-QCvar*				s_khz;
-QCvar*				s_bits;
-QCvar*				s_channels_cv;
-QCvar*				bgmvolume;
-QCvar*				bgmtype;
+Cvar*				s_volume;
+Cvar*				s_testsound;
+Cvar*				s_khz;
+Cvar*				s_bits;
+Cvar*				s_channels_cv;
+Cvar*				bgmvolume;
+Cvar*				bgmtype;
 
 channel_t   		s_channels[MAX_CHANNELS];
 channel_t   		loop_channels[MAX_CHANNELS];
@@ -109,14 +109,14 @@ static bool			s_soundMuted;
 
 static bool			s_use_custom_memset = false;
 
-static QCvar*		s_show;
-static QCvar*		s_mixahead;
-static QCvar*		s_mixPreStep;
-static QCvar*		s_musicVolume;
-static QCvar*		s_doppler;
-static QCvar*		s_ambient_level;
-static QCvar*		s_ambient_fade;
-static QCvar*		snd_noextraupdate;
+static Cvar*		s_show;
+static Cvar*		s_mixahead;
+static Cvar*		s_mixPreStep;
+static Cvar*		s_musicVolume;
+static Cvar*		s_doppler;
+static Cvar*		s_ambient_level;
+static Cvar*		s_ambient_fade;
+static Cvar*		snd_noextraupdate;
 
 static int			listener_number;
 static vec3_t		listener_origin;
@@ -2618,7 +2618,7 @@ void S_Init()
 	s_show = Cvar_Get("s_show", "0", CVAR_CHEAT);
 	s_testsound = Cvar_Get("s_testsound", "0", CVAR_CHEAT);
 
-	QCvar* cv = Cvar_Get("s_initsound", "1", 0);
+	Cvar* cv = Cvar_Get("s_initsound", "1", 0);
 	if (!cv->integer)
 	{
 		Log::write("not initializing.\n");

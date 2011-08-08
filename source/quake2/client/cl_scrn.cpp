@@ -44,19 +44,19 @@ int			scr_draw_loading;
 vrect_t		scr_vrect;		// position of render window on screen
 
 
-QCvar		*scr_viewsize;
-QCvar		*scr_conspeed;
-QCvar		*scr_centertime;
-QCvar		*scr_showturtle;
-QCvar		*scr_showpause;
-QCvar		*scr_printspeed;
+Cvar		*scr_viewsize;
+Cvar		*scr_conspeed;
+Cvar		*scr_centertime;
+Cvar		*scr_showturtle;
+Cvar		*scr_showpause;
+Cvar		*scr_printspeed;
 
-QCvar		*scr_netgraph;
-QCvar		*scr_timegraph;
-QCvar		*scr_debuggraph;
-QCvar		*scr_graphheight;
-QCvar		*scr_graphscale;
-QCvar		*scr_graphshift;
+Cvar		*scr_netgraph;
+Cvar		*scr_timegraph;
+Cvar		*scr_debuggraph;
+Cvar		*scr_graphheight;
+Cvar		*scr_graphscale;
+Cvar		*scr_graphshift;
 
 char		crosshair_pic[MAX_QPATH];
 int			crosshair_width, crosshair_height;

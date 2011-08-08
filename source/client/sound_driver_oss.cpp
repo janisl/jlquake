@@ -48,7 +48,7 @@
 static int			audio_fd;
 static int			snd_inited;
 
-static QCvar*		snddevice;
+static Cvar*		snddevice;
 
 //	Some devices may work only with 48000
 static int			tryrates[] = { 44100, 22050, 11025, 48000, 8000 };

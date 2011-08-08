@@ -45,7 +45,7 @@ static snd_pcm_hw_params_t*	hw_params;
 static int					sample_bytes;
 static int					buffer_bytes;
 
-static QCvar*				snddevice;
+static Cvar*				snddevice;
 
 //	The sample rates which will be attempted.
 static int RATES[] =

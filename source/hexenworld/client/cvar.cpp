@@ -6,7 +6,7 @@
 #include "quakedef.h"
 #endif
 
-void Cvar_Changed(QCvar* var)
+void Cvar_Changed(Cvar* var)
 {
 #ifdef SERVERONLY
 	if (var->flags & CVAR_SERVERINFO && var->name[0] != '*')

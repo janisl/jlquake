@@ -32,7 +32,7 @@ usercmd_t nullcmd; // guarenteed to be zero
 static const char	*safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse"};
 
-QCvar*	registered;
+Cvar*	registered;
 
 int		static_registered = 1;	// only for startup check, then set
 

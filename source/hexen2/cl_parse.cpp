@@ -10,8 +10,8 @@
 #include <windows.h>
 #endif
 
-extern	QCvar*	sv_flypitch;
-extern	QCvar*	sv_walkpitch;
+extern	Cvar*	sv_flypitch;
+extern	Cvar*	sv_walkpitch;
 
 qhandle_t	player_models[NUM_CLASSES];
 
@@ -83,7 +83,7 @@ const char *svc_strings[] =
 
 char *puzzle_strings;
 int LastServerMessageSize;
-extern QCvar* precache;
+extern Cvar* precache;
 
 //=============================================================================
 

@@ -11,50 +11,50 @@
 qboolean	noclip_anglehack;		// remnant from old quake
 
 
-QCvar*	rcon_password;
+Cvar*	rcon_password;
 
-QCvar*	rcon_address;
+Cvar*	rcon_address;
 
-QCvar*	cl_timeout;
+Cvar*	cl_timeout;
 
-QCvar*	cl_shownet;
+Cvar*	cl_shownet;
 
-QCvar*	cl_sbar;
-QCvar*	cl_hudswap;
+Cvar*	cl_sbar;
+Cvar*	cl_hudswap;
 
-QCvar*	lookspring;
-QCvar*	lookstrafe;
-QCvar*	sensitivity;
+Cvar*	lookspring;
+Cvar*	lookstrafe;
+Cvar*	sensitivity;
 
-QCvar*	m_pitch;
-QCvar*	m_yaw;
-QCvar*	m_forward;
-QCvar*	m_side;
+Cvar*	m_pitch;
+Cvar*	m_yaw;
+Cvar*	m_forward;
+Cvar*	m_side;
 
-QCvar*	entlatency;
-QCvar*	cl_predict_players;
-QCvar*	cl_predict_players2;
-QCvar*	cl_solid_players;
+Cvar*	entlatency;
+Cvar*	cl_predict_players;
+Cvar*	cl_predict_players2;
+Cvar*	cl_solid_players;
 
 //
 // info mirrors
 //
-QCvar*	password;
-QCvar*	spectator;
-QCvar*	name;
-QCvar*	playerclass;
-QCvar*	team;
-QCvar*	skin;
-QCvar*	topcolor;
-QCvar*	bottomcolor;
-QCvar*	rate;
-QCvar*	noaim;
-QCvar*  talksounds;
-QCvar*	msg;
+Cvar*	password;
+Cvar*	spectator;
+Cvar*	name;
+Cvar*	playerclass;
+Cvar*	team;
+Cvar*	skin;
+Cvar*	topcolor;
+Cvar*	bottomcolor;
+Cvar*	rate;
+Cvar*	noaim;
+Cvar*  talksounds;
+Cvar*	msg;
 
-QCvar	*cl_lightlevel;
+Cvar	*cl_lightlevel;
 
-QCvar*	cl_teamcolor;
+Cvar*	cl_teamcolor;
 
 client_static_t	cls;
 client_state_t	cl;
@@ -81,8 +81,8 @@ int			host_hunklevel;
 
 netadr_t	master_adr;				// address of the master server
 
-QCvar*	host_speeds;
-QCvar*	developer;
+Cvar*	host_speeds;
+Cvar*	developer;
 
 int			fps_count;
 

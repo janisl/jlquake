@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "quakedef.h"
 
-extern QCvar*		r_gamma;
+extern Cvar*		r_gamma;
 
 menu_state_t m_state, m_return_state;
 static menu_state_t m_quit_prevstate;

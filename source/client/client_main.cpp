@@ -32,7 +32,7 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*		cl_inGameVideo;
+Cvar*		cl_inGameVideo;
 
 clientStaticCommon_t* cls_common;
 

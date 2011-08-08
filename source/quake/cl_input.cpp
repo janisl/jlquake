@@ -54,7 +54,7 @@ kbutton_t	in_up, in_down;
 
 int			in_impulse;
 
-static QCvar* m_filter;
+static Cvar* m_filter;
 
 static int	old_mouse_x, old_mouse_y;
 static int	mouse_move_x;
@@ -223,17 +223,17 @@ float CL_KeyState (kbutton_t *key)
 
 //==========================================================================
 
-QCvar*	cl_upspeed;
-QCvar*	cl_forwardspeed;
-QCvar*	cl_backspeed;
-QCvar*	cl_sidespeed;
+Cvar*	cl_upspeed;
+Cvar*	cl_forwardspeed;
+Cvar*	cl_backspeed;
+Cvar*	cl_sidespeed;
 
-QCvar*	cl_movespeedkey;
+Cvar*	cl_movespeedkey;
 
-QCvar*	cl_yawspeed;
-QCvar*	cl_pitchspeed;
+Cvar*	cl_yawspeed;
+Cvar*	cl_pitchspeed;
 
-QCvar*	cl_anglespeedkey;
+Cvar*	cl_anglespeedkey;
 
 
 /*

@@ -8,9 +8,9 @@
 
 edict_t	*sv_player = NULL;
 
-extern	QCvar*	sv_friction;
-QCvar*	sv_edgefriction;
-extern	QCvar*	sv_stopspeed;
+extern	Cvar*	sv_friction;
+Cvar*	sv_edgefriction;
+extern	Cvar*	sv_stopspeed;
 
 static	vec3_t		forward, right, up;
 
@@ -26,8 +26,8 @@ qboolean	onground;
 
 usercmd_t	cmd;
 
-QCvar*	sv_idealpitchscale;
-QCvar*	sv_idealrollscale;
+Cvar*	sv_idealpitchscale;
+Cvar*	sv_idealrollscale;
 
 
 /*
@@ -169,8 +169,8 @@ void SV_UserFriction (void)
 SV_Accelerate
 ==============
 */
-QCvar*	sv_maxspeed;
-QCvar*	sv_accelerate;
+Cvar*	sv_maxspeed;
+Cvar*	sv_accelerate;
 
 #if 0
 void SV_Accelerate (vec3_t wishvel)

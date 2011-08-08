@@ -46,10 +46,10 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*					in_dgamouse;	// user pref for dga mouse
-QCvar*					in_nograb;		// this is strictly for developers
+Cvar*					in_dgamouse;	// user pref for dga mouse
+Cvar*					in_nograb;		// this is strictly for developers
 
-QCvar*					in_joystick;
+Cvar*					in_joystick;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -58,9 +58,9 @@ static bool				mouse_active;
 static int				mwx, mwy;
 static int				mx = 0, my = 0;
 
-static QCvar*			in_mouse;
+static Cvar*			in_mouse;
 
-static QCvar*			in_subframe;
+static Cvar*			in_subframe;
 
 static int				mouse_accel_numerator;
 static int				mouse_accel_denominator;
@@ -69,8 +69,8 @@ static int				mouse_threshold;
 // Time mouse was reset, we ignore the first 50ms of the mouse to allow settling of events
 static int				mouseResetTime = 0;
 
-static QCvar*			in_joystickDebug;
-static QCvar*			joy_threshold;
+static Cvar*			in_joystickDebug;
+static Cvar*			joy_threshold;
 
 #ifdef __linux__
 //	Our file descriptor for the joystick device.

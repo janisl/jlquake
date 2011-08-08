@@ -16,24 +16,24 @@
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-QCvar*	cl_name;
-QCvar*	cl_color;
-QCvar*	cl_playerclass;
+Cvar*	cl_name;
+Cvar*	cl_color;
+Cvar*	cl_playerclass;
 
-QCvar*	cl_shownet;
-QCvar*	cl_nolerp;
+Cvar*	cl_shownet;
+Cvar*	cl_nolerp;
 
-QCvar*	lookspring;
-QCvar*	lookstrafe;
-QCvar*	sensitivity;
+Cvar*	lookspring;
+Cvar*	lookstrafe;
+Cvar*	sensitivity;
 static float save_sensitivity;
 
-QCvar*	m_pitch;
-QCvar*	m_yaw;
-QCvar*	m_forward;
-QCvar*	m_side;
+Cvar*	m_pitch;
+Cvar*	m_yaw;
+Cvar*	m_forward;
+Cvar*	m_side;
 
-QCvar	*cl_lightlevel;
+Cvar	*cl_lightlevel;
 
 
 client_static_t	cls;

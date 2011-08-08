@@ -39,17 +39,17 @@ solid_edge items only clip against bsp models.
 
 */
 
-QCvar*	sv_maxvelocity;
+Cvar*	sv_maxvelocity;
 
-QCvar*	sv_gravity;
-QCvar*	sv_stopspeed;
-QCvar*	sv_maxspeed;
-QCvar*	sv_spectatormaxspeed;
-QCvar*	sv_accelerate;
-QCvar*	sv_airaccelerate;
-QCvar*	sv_wateraccelerate;
-QCvar*	sv_friction;
-QCvar*	sv_waterfriction;
+Cvar*	sv_gravity;
+Cvar*	sv_stopspeed;
+Cvar*	sv_maxspeed;
+Cvar*	sv_spectatormaxspeed;
+Cvar*	sv_accelerate;
+Cvar*	sv_airaccelerate;
+Cvar*	sv_wateraccelerate;
+Cvar*	sv_friction;
+Cvar*	sv_waterfriction;
 
 
 #define	MOVE_EPSILON	0.01

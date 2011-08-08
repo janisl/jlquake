@@ -25,17 +25,17 @@ edict_t	*sv_player;
 
 usercmd_t	cmd;
 
-QCvar*	cl_rollspeed;
-QCvar*	cl_rollangle;
-QCvar*	sv_spectalk;
+Cvar*	cl_rollspeed;
+Cvar*	cl_rollangle;
+Cvar*	sv_spectalk;
 
-QCvar*	sv_mapcheck;
+Cvar*	sv_mapcheck;
 
 extern	vec3_t	player_mins;
 
 extern int fp_messages, fp_persecond, fp_secondsdead;
 extern char fp_msg[];
-extern QCvar* pausable;
+extern Cvar* pausable;
 
 /*
 ============================================================
@@ -644,11 +644,11 @@ SV_BeginDownload_f
 void SV_BeginDownload_f(void)
 {
 	char	*name;
-	extern	QCvar*	allow_download;
-	extern	QCvar*	allow_download_skins;
-	extern	QCvar*	allow_download_models;
-	extern	QCvar*	allow_download_sounds;
-	extern	QCvar*	allow_download_maps;
+	extern	Cvar*	allow_download;
+	extern	Cvar*	allow_download_skins;
+	extern	Cvar*	allow_download_models;
+	extern	Cvar*	allow_download_sounds;
+	extern	Cvar*	allow_download_maps;
 
 	name = Cmd_Argv(1);
 // hacked by zoid to allow more conrol over download

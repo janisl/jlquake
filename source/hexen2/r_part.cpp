@@ -89,10 +89,10 @@ int			cl_numparticles;
 
 static vec3_t		rider_origin;
 
-QCvar*		leak_color;
+Cvar*		leak_color;
 
-QCvar*		snow_flurry;
-QCvar*		snow_active;
+Cvar*		snow_flurry;
+Cvar*		snow_active;
 
 static cparticle_t *AllocParticle(void);
 
@@ -1242,7 +1242,7 @@ void CL_AddParticles()
 	}
 }
 
-extern	QCvar*	sv_gravity;
+extern	Cvar*	sv_gravity;
 
 void R_UpdateParticles (void)
 {

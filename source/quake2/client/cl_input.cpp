@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "client.h"
 
-QCvar	*cl_nodelta;
+Cvar	*cl_nodelta;
 
 unsigned	sys_frame_time;
 unsigned	frame_msec;
@@ -62,7 +62,7 @@ kbutton_t	in_up, in_down;
 
 int			in_impulse;
 
-static QCvar	*m_filter;
+static Cvar	*m_filter;
 
 static int	mouse_move_x;
 static int	mouse_move_y;
@@ -226,16 +226,16 @@ float CL_KeyState (kbutton_t *key)
 
 //==========================================================================
 
-QCvar	*cl_upspeed;
-QCvar	*cl_forwardspeed;
-QCvar	*cl_sidespeed;
+Cvar	*cl_upspeed;
+Cvar	*cl_forwardspeed;
+Cvar	*cl_sidespeed;
 
-QCvar	*cl_yawspeed;
-QCvar	*cl_pitchspeed;
+Cvar	*cl_yawspeed;
+Cvar	*cl_pitchspeed;
 
-QCvar	*cl_run;
+Cvar	*cl_run;
 
-QCvar	*cl_anglespeedkey;
+Cvar	*cl_anglespeedkey;
 
 
 /*

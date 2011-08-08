@@ -74,9 +74,9 @@ then a packet only needs to be delivered if there is something in the
 unacknowledged reliable
 */
 
-QCvar		*showpackets;
-QCvar		*showdrop;
-QCvar		*qport;
+Cvar		*showpackets;
+Cvar		*showdrop;
+Cvar		*qport;
 
 netadr_t	net_from;
 QMsg		net_message;
@@ -527,7 +527,7 @@ void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
 
 //=============================================================================
 
-static QCvar	*noudp;
+static Cvar	*noudp;
 
 /*
 ====================
@@ -536,7 +536,7 @@ NET_OpenIP
 */
 static void NET_OpenIP()
 {
-	QCvar* ip = Cvar_Get("ip", "localhost", CVAR_INIT);
+	Cvar* ip = Cvar_Get("ip", "localhost", CVAR_INIT);
 
 	int dedicated = Cvar_VariableValue("dedicated");
 

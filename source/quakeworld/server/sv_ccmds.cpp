@@ -24,7 +24,7 @@ qboolean	sv_allow_cheats;
 
 int fp_messages=4, fp_persecond=4, fp_secondsdead=10;
 char fp_msg[255] = { 0 };
-extern QCvar* cl_warncmd;
+extern Cvar* cl_warncmd;
 extern		redirect_t	sv_redirected;
 
 
@@ -541,7 +541,7 @@ SV_Serverinfo_f
 */
 void SV_Serverinfo_f (void)
 {
-	QCvar*	var;
+	Cvar*	var;
 
 	if (Cmd_Argc() == 1)
 	{

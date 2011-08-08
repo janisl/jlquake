@@ -25,22 +25,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // references them even when on a unix system.
 
 // these two are not intended to be set directly
-QCvar*	cl_name;
-QCvar*	cl_color;
+Cvar*	cl_name;
+Cvar*	cl_color;
 
-QCvar*	cl_shownet;
-QCvar*	cl_nolerp;
+Cvar*	cl_shownet;
+Cvar*	cl_nolerp;
 
-QCvar*	lookspring;
-QCvar*	lookstrafe;
-QCvar*	sensitivity;
+Cvar*	lookspring;
+Cvar*	lookstrafe;
+Cvar*	sensitivity;
 
-QCvar*	m_pitch;
-QCvar*	m_yaw;
-QCvar*	m_forward;
-QCvar*	m_side;
+Cvar*	m_pitch;
+Cvar*	m_yaw;
+Cvar*	m_forward;
+Cvar*	m_side;
 
-QCvar*	cl_doubleeyes;
+Cvar*	cl_doubleeyes;
 
 client_static_t	cls;
 client_state_t	cl;

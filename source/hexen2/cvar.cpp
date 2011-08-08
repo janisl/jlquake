@@ -2,7 +2,7 @@
 
 #include "quakedef.h"
 
-void Cvar_Changed(QCvar* var)
+void Cvar_Changed(Cvar* var)
 {
 	if ((var->flags & CVAR_SERVERINFO))
 	{

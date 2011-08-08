@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 console_t	con;
 
-QCvar		*con_notifytime;
+Cvar		*con_notifytime;
 
 
 #define		MAXCMDLINE	256

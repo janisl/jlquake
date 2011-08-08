@@ -27,7 +27,7 @@
 #include "ui.h"
 #include "hexen2clientdefs.h"
 
-extern QCvar*		cl_inGameVideo;
+extern Cvar*		cl_inGameVideo;
 
 void CL_SharedInit();
 int CL_ScaledMilliseconds();

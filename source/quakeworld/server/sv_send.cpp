@@ -39,7 +39,7 @@ char	outputbuf[8000];
 
 redirect_t	sv_redirected;
 
-extern QCvar* sv_phs;
+extern Cvar* sv_phs;
 
 /*
 ==================

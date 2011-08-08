@@ -39,7 +39,7 @@ int					cl_numparticles;
 
 static vec3_t		rider_origin;
 
-QCvar*				leak_color;
+Cvar*				leak_color;
 
 
 static cparticle_t *AllocParticle(void);

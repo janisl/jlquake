@@ -19,7 +19,7 @@ qboolean			isDedicated;
 
 static HANDLE	tevent;
 
-QCvar*		sys_delay;
+Cvar*		sys_delay;
 
 volatile int					sys_checksum;
 

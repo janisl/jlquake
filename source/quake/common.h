@@ -50,6 +50,6 @@ byte *COM_LoadStackFile (const char *path, void *buffer, int bufsize);
 byte *COM_LoadHunkFile (const char *path);
 
 
-extern	QCvar*		registered;
+extern	Cvar*		registered;
 
 extern qboolean		standard_quake, rogue, hipnotic;

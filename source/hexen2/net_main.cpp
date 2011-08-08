@@ -34,11 +34,11 @@ int messagesReceived = 0;
 int unreliableMessagesSent = 0;
 int unreliableMessagesReceived = 0;
 
-QCvar*	net_messagetimeout;
-QCvar*	hostname;
+Cvar*	net_messagetimeout;
+Cvar*	hostname;
 
 #ifdef IDGODS
-QCvar*	idgods;
+Cvar*	idgods;
 #endif
 
 // these two macros are to make the code more readable

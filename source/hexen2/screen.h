@@ -23,7 +23,7 @@ extern	int			sb_lines;
 
 extern	qboolean	scr_disabled_for_loading;
 
-extern	QCvar*		scr_viewsize;
+extern	Cvar*		scr_viewsize;
 
 extern int			total_loading_size, current_loading_size, loading_stage;
 

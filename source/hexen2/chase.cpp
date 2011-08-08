@@ -2,10 +2,10 @@
 
 #include "quakedef.h"
 
-QCvar*	chase_back;
-QCvar*	chase_up;
-QCvar*	chase_right;
-QCvar*	chase_active;
+Cvar*	chase_back;
+Cvar*	chase_up;
+Cvar*	chase_right;
+Cvar*	chase_active;
 
 vec3_t	chase_pos;
 vec3_t	chase_angles;

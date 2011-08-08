@@ -79,6 +79,6 @@ void CDAudio_Shutdown();
 void CDAudio_Update();
 void CDAudio_Activate(qboolean active);
 
-extern	QCvar* s_volume;
-extern	QCvar* bgmvolume;
-extern	QCvar* bgmtype;
+extern	Cvar* s_volume;
+extern	Cvar* bgmvolume;
+extern	Cvar* bgmtype;

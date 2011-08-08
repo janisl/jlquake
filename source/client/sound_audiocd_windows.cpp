@@ -53,9 +53,9 @@ static byte		maxTrack;
 static UINT		wDeviceID;
 static int		loopcounter;
 
-static QCvar*	cd_nocd;
-static QCvar*	cd_loopcount;
-static QCvar*	cd_looptrack;
+static Cvar*	cd_nocd;
+static Cvar*	cd_loopcount;
+static Cvar*	cd_looptrack;
 
 // CODE --------------------------------------------------------------------
 

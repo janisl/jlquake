@@ -15,40 +15,40 @@ when crossing a water boudnary.
 
 */
 
-static QCvar*	scr_ofsx;
-static QCvar*	scr_ofsy;
-static QCvar*	scr_ofsz;
+static Cvar*	scr_ofsx;
+static Cvar*	scr_ofsy;
+static Cvar*	scr_ofsz;
 
-static QCvar*	cl_rollspeed;
-static QCvar*	cl_rollangle;
+static Cvar*	cl_rollspeed;
+static Cvar*	cl_rollangle;
 
-static QCvar*	cl_bob;
-static QCvar*	cl_bobcycle;
-static QCvar*	cl_bobup;
+static Cvar*	cl_bob;
+static Cvar*	cl_bobcycle;
+static Cvar*	cl_bobup;
 
-static QCvar*	v_kicktime;
-static QCvar*	v_kickroll;
-static QCvar*	v_kickpitch;
+static Cvar*	v_kicktime;
+static Cvar*	v_kickroll;
+static Cvar*	v_kickpitch;
 
-static QCvar*	v_iyaw_cycle;
-static QCvar*	v_iroll_cycle;
-static QCvar*	v_ipitch_cycle;
-static QCvar*	v_iyaw_level;
-static QCvar*	v_iroll_level;
-static QCvar*	v_ipitch_level;
+static Cvar*	v_iyaw_cycle;
+static Cvar*	v_iroll_cycle;
+static Cvar*	v_ipitch_cycle;
+static Cvar*	v_iyaw_level;
+static Cvar*	v_iroll_level;
+static Cvar*	v_ipitch_level;
 
-static QCvar*	v_idlescale;
+static Cvar*	v_idlescale;
 
-static QCvar*	r_drawviewmodel;
+static Cvar*	r_drawviewmodel;
 
-QCvar*	crosshair;
+Cvar*	crosshair;
 
-static QCvar*	v_centermove;
-static QCvar*	v_centerspeed;
+static Cvar*	v_centermove;
+static Cvar*	v_centerspeed;
 
-static QCvar*	v_centerrollspeed;
+static Cvar*	v_centerrollspeed;
 
-static QCvar*	cl_polyblend;
+static Cvar*	cl_polyblend;
 
 static float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 

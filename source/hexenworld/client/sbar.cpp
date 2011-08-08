@@ -92,10 +92,10 @@ int sb_lines; // scan lines to draw
 
 static float BarHeight;
 static float BarTargetHeight;
-static QCvar* BarSpeed;
-static QCvar* sbtemp;
-static QCvar* DMMode;
-static QCvar* sbtrans;
+static Cvar* BarSpeed;
+static Cvar* sbtemp;
+static Cvar* DMMode;
+static Cvar* sbtrans;
 
 static image_t *sb_nums[11];
 static image_t *sb_colon, *sb_slash;

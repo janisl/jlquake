@@ -15,7 +15,7 @@ line of sight checks trace->crosscontent, but bullets don't
 
 */
 
-QCvar*	sys_quake2;
+Cvar*	sys_quake2;
 
 typedef struct
 {

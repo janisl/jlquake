@@ -21,9 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-extern	QCvar*	cl_predict_players;
-extern	QCvar*	cl_predict_players2;
-extern	QCvar*	cl_solid_players;
+extern	Cvar*	cl_predict_players;
+extern	Cvar*	cl_predict_players2;
+extern	Cvar*	cl_solid_players;
 
 static struct predicted_player {
 	int flags;

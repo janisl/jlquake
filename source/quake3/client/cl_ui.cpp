@@ -687,7 +687,7 @@ CLUI_GetCDKey
 ====================
 */
 static void CLUI_GetCDKey( char *buf, int buflen ) {
-	QCvar	*fs;
+	Cvar	*fs;
 	fs = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
 	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0) {
 		Com_Memcpy( buf, &cl_cdkey[16], 16);
@@ -705,7 +705,7 @@ CLUI_SetCDKey
 ====================
 */
 static void CLUI_SetCDKey( char *buf ) {
-	QCvar	*fs;
+	Cvar	*fs;
 	fs = Cvar_Get ("fs_game", "", CVAR_INIT|CVAR_SYSTEMINFO );
 	if (UI_usesUniqueCDKey() && fs && fs->string[0] != 0) {
 		Com_Memcpy( &cl_cdkey[16], buf, 16 );

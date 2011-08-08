@@ -94,7 +94,7 @@ BotDrawDebugPolygons
 ==================
 */
 void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value) {
-	static QCvar *bot_debug, *bot_groundonly, *bot_reachability, *bot_highlightarea;
+	static Cvar *bot_debug, *bot_groundonly, *bot_reachability, *bot_highlightarea;
 	bot_debugpoly_t *poly;
 	int i, parm0;
 

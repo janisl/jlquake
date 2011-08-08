@@ -93,8 +93,8 @@ static void FreeEffectEntity(int index);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
-extern QCvar* sv_ce_scale;
-extern QCvar* sv_ce_max_size;
+extern Cvar* sv_ce_scale;
+extern Cvar* sv_ce_max_size;
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 

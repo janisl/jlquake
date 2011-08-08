@@ -841,7 +841,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 	if (command == CCREQ_RULE_INFO)
 	{
 		char	*prevCvarName;
-		QCvar	*var;
+		Cvar	*var;
 
 		// find the search start location
 		prevCvarName = const_cast<char*>(net_message.ReadString2());

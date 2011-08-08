@@ -381,8 +381,8 @@ void CM46_ChopWindingInPlace(winding_t** inout, vec3_t normal, vec_t dist, vec_t
 void CM46_WindingBounds(winding_t* w, vec3_t mins, vec3_t maxs);
 winding_t* CM46_CopyWinding(winding_t* w);
 
-extern	QCvar		*cm_noAreas;
-extern	QCvar		*cm_noCurves;
-extern	QCvar		*cm_playerCurveClip;
+extern	Cvar		*cm_noAreas;
+extern	Cvar		*cm_noCurves;
+extern	Cvar		*cm_playerCurveClip;
 
 #endif

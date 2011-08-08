@@ -26,49 +26,49 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 void BotDrawDebugPolygons(void (*drawPoly)(int color, int numPoints, float *points), int value);
 
-QCvar	*cl_nodelta;
-QCvar	*cl_debugMove;
+Cvar	*cl_nodelta;
+Cvar	*cl_debugMove;
 
-QCvar	*cl_noprint;
-QCvar	*cl_motd;
+Cvar	*cl_noprint;
+Cvar	*cl_motd;
 
-QCvar	*rcon_client_password;
-QCvar	*rconAddress;
+Cvar	*rcon_client_password;
+Cvar	*rconAddress;
 
-QCvar	*cl_timeout;
-QCvar	*cl_maxpackets;
-QCvar	*cl_packetdup;
-QCvar	*cl_timeNudge;
-QCvar	*cl_showTimeDelta;
-QCvar	*cl_freezeDemo;
+Cvar	*cl_timeout;
+Cvar	*cl_maxpackets;
+Cvar	*cl_packetdup;
+Cvar	*cl_timeNudge;
+Cvar	*cl_showTimeDelta;
+Cvar	*cl_freezeDemo;
 
-QCvar	*cl_shownet;
-QCvar	*cl_showSend;
-QCvar	*cl_timedemo;
-QCvar	*cl_avidemo;
-QCvar	*cl_forceavidemo;
+Cvar	*cl_shownet;
+Cvar	*cl_showSend;
+Cvar	*cl_timedemo;
+Cvar	*cl_avidemo;
+Cvar	*cl_forceavidemo;
 
-QCvar	*cl_freelook;
-QCvar	*cl_sensitivity;
+Cvar	*cl_freelook;
+Cvar	*cl_sensitivity;
 
-QCvar	*cl_mouseAccel;
-QCvar	*cl_showMouseRate;
+Cvar	*cl_mouseAccel;
+Cvar	*cl_showMouseRate;
 
-QCvar	*m_pitch;
-QCvar	*m_yaw;
-QCvar	*m_forward;
-QCvar	*m_side;
-QCvar	*m_filter;
+Cvar	*m_pitch;
+Cvar	*m_yaw;
+Cvar	*m_forward;
+Cvar	*m_side;
+Cvar	*m_filter;
 
-QCvar	*cl_activeAction;
+Cvar	*cl_activeAction;
 
-QCvar	*cl_motdString;
+Cvar	*cl_motdString;
 
-QCvar	*cl_allowDownload;
-QCvar	*cl_conXOffset;
+Cvar	*cl_allowDownload;
+Cvar	*cl_conXOffset;
 
-QCvar	*cl_serverStatusResendTime;
-QCvar	*cl_trn;
+Cvar	*cl_serverStatusResendTime;
+Cvar	*cl_trn;
 
 clientActive_t		cl;
 clientConnection_t	clc;
@@ -876,7 +876,7 @@ in anyway.
 void CL_RequestAuthorization( void ) {
 	char	nums[64];
 	int		i, j, l;
-	QCvar	*fs;
+	Cvar	*fs;
 
 	if ( !cls.authorizeServer.port ) {
 		Com_Printf( "Resolving %s\n", AUTHORIZE_SERVER_NAME );

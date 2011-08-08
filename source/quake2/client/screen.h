@@ -39,8 +39,8 @@ extern	float		scr_conlines;		// lines of console to display
 
 extern	int			sb_lines;
 
-extern	QCvar		*scr_viewsize;
-extern	QCvar		*crosshair;
+extern	Cvar		*scr_viewsize;
+extern	Cvar		*crosshair;
 
 extern	vrect_t		scr_vrect;		// position of render window
 

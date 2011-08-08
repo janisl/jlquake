@@ -232,13 +232,13 @@ typedef struct client_s
 
 //============================================================================
 
-extern	QCvar*	teamplay;
-extern	QCvar*	skill;
-extern	QCvar*	deathmatch;
-extern	QCvar*	randomclass;
-extern	QCvar*	coop;
-extern	QCvar*	fraglimit;
-extern	QCvar*	timelimit;
+extern	Cvar*	teamplay;
+extern	Cvar*	skill;
+extern	Cvar*	deathmatch;
+extern	Cvar*	randomclass;
+extern	Cvar*	coop;
+extern	Cvar*	fraglimit;
+extern	Cvar*	timelimit;
 
 extern	server_static_t	svs;				// persistant server info
 extern	server_t		sv;					// local server

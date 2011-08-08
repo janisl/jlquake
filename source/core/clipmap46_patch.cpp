@@ -1352,7 +1352,7 @@ TRACE TESTING
 
 void patchCollide_t::TraceThrough(traceWork_t* tw) const
 {
-	static QCvar *cv;
+	static Cvar *cv;
 
 	if (tw->isPoint)
 	{
@@ -1505,7 +1505,7 @@ void patchCollide_t::TraceThrough(traceWork_t* tw) const
 
 void patchCollide_t::TracePointThrough(traceWork_t* tw) const
 {
-	static QCvar *cv;
+	static Cvar *cv;
 
 	if (!cm_playerCurveClip->integer || !tw->isPoint)
 	{
@@ -1797,7 +1797,7 @@ DEBUGGING
 
 void QClipMap46::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, float *points))
 {
-	static QCvar	*cv;
+	static Cvar	*cv;
 	const patchCollide_t	*pc;
 	facet_t			*facet;
 	winding_t		*w;

@@ -226,49 +226,49 @@ extern client_static_t	cls;
 //
 // cvars
 //
-extern	QCvar	*cl_stereo_separation;
+extern	Cvar	*cl_stereo_separation;
 
-extern	QCvar	*cl_gun;
-extern	QCvar	*cl_add_blend;
-extern	QCvar	*cl_add_particles;
-extern	QCvar	*cl_add_entities;
-extern	QCvar	*cl_predict;
-extern	QCvar	*cl_footsteps;
-extern	QCvar	*cl_noskins;
-extern	QCvar	*cl_autoskins;
+extern	Cvar	*cl_gun;
+extern	Cvar	*cl_add_blend;
+extern	Cvar	*cl_add_particles;
+extern	Cvar	*cl_add_entities;
+extern	Cvar	*cl_predict;
+extern	Cvar	*cl_footsteps;
+extern	Cvar	*cl_noskins;
+extern	Cvar	*cl_autoskins;
 
-extern	QCvar	*cl_upspeed;
-extern	QCvar	*cl_forwardspeed;
-extern	QCvar	*cl_sidespeed;
+extern	Cvar	*cl_upspeed;
+extern	Cvar	*cl_forwardspeed;
+extern	Cvar	*cl_sidespeed;
 
-extern	QCvar	*cl_yawspeed;
-extern	QCvar	*cl_pitchspeed;
+extern	Cvar	*cl_yawspeed;
+extern	Cvar	*cl_pitchspeed;
 
-extern	QCvar	*cl_run;
+extern	Cvar	*cl_run;
 
-extern	QCvar	*cl_anglespeedkey;
+extern	Cvar	*cl_anglespeedkey;
 
-extern	QCvar	*cl_shownet;
-extern	QCvar	*cl_showmiss;
-extern	QCvar	*cl_showclamp;
+extern	Cvar	*cl_shownet;
+extern	Cvar	*cl_showmiss;
+extern	Cvar	*cl_showclamp;
 
-extern	QCvar	*lookspring;
-extern	QCvar	*lookstrafe;
-extern	QCvar	*sensitivity;
+extern	Cvar	*lookspring;
+extern	Cvar	*lookstrafe;
+extern	Cvar	*sensitivity;
 
-extern	QCvar	*m_pitch;
-extern	QCvar	*m_yaw;
-extern	QCvar	*m_forward;
-extern	QCvar	*m_side;
+extern	Cvar	*m_pitch;
+extern	Cvar	*m_yaw;
+extern	Cvar	*m_forward;
+extern	Cvar	*m_side;
 
-extern	QCvar	*freelook;
+extern	Cvar	*freelook;
 
-extern	QCvar	*cl_lightlevel;	// FIXME HACK
+extern	Cvar	*cl_lightlevel;	// FIXME HACK
 
-extern	QCvar	*cl_paused;
-extern	QCvar	*cl_timedemo;
+extern	Cvar	*cl_paused;
+extern	Cvar	*cl_timedemo;
 
-extern	QCvar	*cl_vwep;
+extern	Cvar	*cl_vwep;
 
 typedef struct
 {

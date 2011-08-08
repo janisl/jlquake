@@ -33,11 +33,11 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*		net_socksEnabled;
-QCvar*		net_socksServer;
-QCvar*		net_socksPort;
-QCvar*		net_socksUsername;
-QCvar*		net_socksPassword;
+Cvar*		net_socksEnabled;
+Cvar*		net_socksServer;
+Cvar*		net_socksPort;
+Cvar*		net_socksUsername;
+Cvar*		net_socksPassword;
 
 int			numIP;
 byte		localIP[MAX_IPS][4];

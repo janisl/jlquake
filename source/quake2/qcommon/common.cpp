@@ -29,13 +29,13 @@ jmp_buf abortframe;		// an ERR_DROP occured, exit the entire frame
 
 fileHandle_t		log_stats_file;
 
-QCvar	*host_speeds;
-QCvar	*log_stats;
-QCvar	*developer;
-QCvar	*timescale;
-QCvar	*fixedtime;
-QCvar	*logfile_active;	// 1 = buffer log, 2 = flush after each print
-QCvar	*showtrace;
+Cvar	*host_speeds;
+Cvar	*log_stats;
+Cvar	*developer;
+Cvar	*timescale;
+Cvar	*fixedtime;
+Cvar	*logfile_active;	// 1 = buffer log, 2 = flush after each print
+Cvar	*showtrace;
 
 static fileHandle_t		logfile;
 

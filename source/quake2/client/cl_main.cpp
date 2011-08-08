@@ -22,69 +22,69 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "client.h"
 #include "../../core/md2file.h"
 
-QCvar	*freelook;
+Cvar	*freelook;
 
-QCvar	*adr0;
-QCvar	*adr1;
-QCvar	*adr2;
-QCvar	*adr3;
-QCvar	*adr4;
-QCvar	*adr5;
-QCvar	*adr6;
-QCvar	*adr7;
-QCvar	*adr8;
+Cvar	*adr0;
+Cvar	*adr1;
+Cvar	*adr2;
+Cvar	*adr3;
+Cvar	*adr4;
+Cvar	*adr5;
+Cvar	*adr6;
+Cvar	*adr7;
+Cvar	*adr8;
 
-QCvar	*cl_stereo_separation;
+Cvar	*cl_stereo_separation;
 
-QCvar	*rcon_client_password;
-QCvar	*rcon_address;
+Cvar	*rcon_client_password;
+Cvar	*rcon_address;
 
-QCvar	*cl_noskins;
-QCvar	*cl_autoskins;
-QCvar	*cl_footsteps;
-QCvar	*cl_timeout;
-QCvar	*cl_predict;
-//QCvar	*cl_minfps;
-QCvar	*cl_maxfps;
-QCvar	*cl_gun;
+Cvar	*cl_noskins;
+Cvar	*cl_autoskins;
+Cvar	*cl_footsteps;
+Cvar	*cl_timeout;
+Cvar	*cl_predict;
+//Cvar	*cl_minfps;
+Cvar	*cl_maxfps;
+Cvar	*cl_gun;
 
-QCvar	*cl_add_particles;
-QCvar	*cl_add_entities;
-QCvar	*cl_add_blend;
+Cvar	*cl_add_particles;
+Cvar	*cl_add_entities;
+Cvar	*cl_add_blend;
 
-QCvar	*cl_shownet;
-QCvar	*cl_showmiss;
-QCvar	*cl_showclamp;
+Cvar	*cl_shownet;
+Cvar	*cl_showmiss;
+Cvar	*cl_showclamp;
 
-QCvar	*cl_paused;
-QCvar	*cl_timedemo;
+Cvar	*cl_paused;
+Cvar	*cl_timedemo;
 
-QCvar	*lookspring;
-QCvar	*lookstrafe;
-QCvar	*sensitivity;
+Cvar	*lookspring;
+Cvar	*lookstrafe;
+Cvar	*sensitivity;
 
-QCvar	*m_pitch;
-QCvar	*m_yaw;
-QCvar	*m_forward;
-QCvar	*m_side;
+Cvar	*m_pitch;
+Cvar	*m_yaw;
+Cvar	*m_forward;
+Cvar	*m_side;
 
-QCvar	*cl_lightlevel;
+Cvar	*cl_lightlevel;
 
 //
 // userinfo
 //
-QCvar	*info_password;
-QCvar	*info_spectator;
-QCvar	*name;
-QCvar	*skin;
-QCvar	*rate;
-QCvar	*fov;
-QCvar	*msg;
-QCvar	*hand;
-QCvar	*gender;
-QCvar	*gender_auto;
+Cvar	*info_password;
+Cvar	*info_spectator;
+Cvar	*name;
+Cvar	*skin;
+Cvar	*rate;
+Cvar	*fov;
+Cvar	*msg;
+Cvar	*hand;
+Cvar	*gender;
+Cvar	*gender_auto;
 
-QCvar	*cl_vwep;
+Cvar	*cl_vwep;
 
 client_static_t	cls;
 client_state_t	cl;
@@ -93,11 +93,11 @@ centity_t		cl_entities[MAX_EDICTS];
 
 entity_state_t	cl_parse_entities[MAX_PARSE_ENTITIES];
 
-extern	QCvar *allow_download;
-extern	QCvar *allow_download_players;
-extern	QCvar *allow_download_models;
-extern	QCvar *allow_download_sounds;
-extern	QCvar *allow_download_maps;
+extern	Cvar *allow_download;
+extern	Cvar *allow_download_players;
+extern	Cvar *allow_download_models;
+extern	Cvar *allow_download_sounds;
+extern	Cvar *allow_download_maps;
 
 static bool vid_restart_requested;
 
@@ -796,7 +796,7 @@ void CL_PingServers_f (void)
 	netadr_t	adr;
 	char		name[32];
 	const char	*adrstring;
-	QCvar		*noudp;
+	Cvar		*noudp;
 
 	NET_Config (true);		// allow remote
 
@@ -1577,7 +1577,7 @@ typedef struct
 {
 	const char	*name;
 	const char	*value;
-	QCvar	*var;
+	Cvar	*var;
 } cheatvar_t;
 
 cheatvar_t	cheatvars[] = {

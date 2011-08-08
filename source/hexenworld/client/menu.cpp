@@ -4,8 +4,8 @@
 
 #include "quakedef.h"
 
-extern QCvar*		r_gamma;
-extern	QCvar*	crosshair;
+extern Cvar*		r_gamma;
+extern	Cvar*	crosshair;
 
 enum menu_state_t {m_none, m_main, m_singleplayer, m_load, m_save, m_multiplayer, m_setup, m_net, m_options, m_video, 
 		m_keys, m_help, m_quit, m_lanconfig, m_gameoptions, m_search, m_slist, 
@@ -2102,16 +2102,16 @@ void M_MultiPlayer_Key (int key)
 #define MAX_HOST_SIZE 80
 char save_names[MAX_HOST_NAMES][MAX_HOST_SIZE];
 
-QCvar*	hostname1;
-QCvar*	hostname2;
-QCvar*	hostname3;
-QCvar*	hostname4;
-QCvar*	hostname5;
-QCvar*	hostname6;
-QCvar*	hostname7;
-QCvar*	hostname8;
-QCvar*	hostname9;
-QCvar*	hostname10;
+Cvar*	hostname1;
+Cvar*	hostname2;
+Cvar*	hostname3;
+Cvar*	hostname4;
+Cvar*	hostname5;
+Cvar*	hostname6;
+Cvar*	hostname7;
+Cvar*	hostname8;
+Cvar*	hostname9;
+Cvar*	hostname10;
 
 int connect_cursor = 0;
 #define MAX_CONNECT_CMDS 11
@@ -2300,9 +2300,9 @@ int		class_limit;
 
 #define	NUM_SETUP_CMDS	7
 
-extern QCvar*	name;
-extern QCvar*	topcolor;
-extern QCvar*	bottomcolor;
+extern Cvar*	name;
+extern Cvar*	topcolor;
+extern Cvar*	bottomcolor;
 
 void M_Menu_Setup_f (void)
 {

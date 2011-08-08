@@ -30,13 +30,13 @@ qhandle_t	gun_model;
 
 //=============
 
-QCvar*		crosshair;
-QCvar*		cl_testparticles;
-QCvar*		cl_testentities;
-QCvar*		cl_testlights;
-QCvar*		cl_testblend;
+Cvar*		crosshair;
+Cvar*		cl_testparticles;
+Cvar*		cl_testentities;
+Cvar*		cl_testlights;
+Cvar*		cl_testblend;
 
-QCvar*		cl_polyblend;
+Cvar*		cl_polyblend;
 
 char cl_weaponmodels[MAX_CLIENTWEAPONMODELS][MAX_QPATH];
 int num_cl_weaponmodels;

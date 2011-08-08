@@ -9,9 +9,9 @@
 #endif
 #include <time.h>
 
-extern QCvar*	pausable;
-extern QCvar*	sv_flypitch;
-extern QCvar*	sv_walkpitch;
+extern Cvar*	pausable;
+extern Cvar*	sv_flypitch;
+extern Cvar*	sv_walkpitch;
 
 int	current_skill;
 static double		old_time;

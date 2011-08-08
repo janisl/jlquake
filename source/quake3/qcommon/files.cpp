@@ -32,8 +32,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../game/q_shared.h"
 #include "qcommon.h"
 
-static	QCvar		*fs_basegame;
-static	QCvar		*fs_gamedirvar;
+static	Cvar		*fs_basegame;
+static	Cvar		*fs_gamedirvar;
 static	int			fs_loadStack;			// total files in memory
 
 // last valid game folder used
@@ -61,7 +61,7 @@ FS_Startup
 */
 static void FS_Startup( const char *gameName )
 {
-	QCvar	*fs;
+	Cvar	*fs;
 
 	Com_Printf( "----- FS_Startup -----\n" );
 

@@ -29,7 +29,7 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
-void Cvar_Changed(QCvar* var);
+void Cvar_Changed(Cvar* var);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -39,17 +39,17 @@ void Cvar_Changed(QCvar* var);
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QCvar*		cvar_vars;
+Cvar*		cvar_vars;
 int			cvar_modifiedFlags;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static QCvar*		cvar_cheats;
+static Cvar*		cvar_cheats;
 
-static QCvar*		cvar_indexes[MAX_CVARS];
+static Cvar*		cvar_indexes[MAX_CVARS];
 static int			cvar_numIndexes;
 
-static QCvar*		cvar_hashTable[FILE_HASH_SIZE];
+static Cvar*		cvar_hashTable[FILE_HASH_SIZE];
 
 // CODE --------------------------------------------------------------------
 
@@ -92,11 +92,11 @@ char* __CopyString(const char* in)
 //
 //==========================================================================
 
-QCvar* Cvar_FindVar(const char* VarName)
+Cvar* Cvar_FindVar(const char* VarName)
 {
 	long hash = Cvar_GenerateHashValue(VarName);
 
-	for (QCvar* var = cvar_hashTable[hash]; var; var = var->hashNext)
+	for (Cvar* var = cvar_hashTable[hash]; var; var = var->hashNext)
 	{
 		if (!String::ICmp(VarName, var->name))
 		{
@@ -140,7 +140,7 @@ static bool Cvar_ValidateString(const char* S)
 //
 //==========================================================================
 
-static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
+static Cvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 {
 	Log::develWrite("Cvar_Set2: %s %s\n", var_name, value);
 
@@ -150,7 +150,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 		var_name = "BADNAME";
 	}
 
-	QCvar* var = Cvar_FindVar(var_name);
+	Cvar* var = Cvar_FindVar(var_name);
 	if (!var)
 	{
 		if (!value)
@@ -267,7 +267,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 //
 //==========================================================================
 
-QCvar* Cvar_Set(const char *var_name, const char *value)
+Cvar* Cvar_Set(const char *var_name, const char *value)
 {
 	return Cvar_Set2(var_name, value, true);
 }
@@ -278,7 +278,7 @@ QCvar* Cvar_Set(const char *var_name, const char *value)
 //
 //==========================================================================
 
-QCvar* Cvar_SetLatched(const char *var_name, const char *value)
+Cvar* Cvar_SetLatched(const char *var_name, const char *value)
 {
 	return Cvar_Set2(var_name, value, false);
 }
@@ -334,7 +334,7 @@ void Cvar_SetValueLatched(const char* var_name, float value)
 //
 //==========================================================================
 
-QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
+Cvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 {
 	if (!VarName || (!(GGameType & GAME_Quake2) && !VarValue))
 	{
@@ -355,7 +355,7 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 		}
 	}
 
-	QCvar* var = Cvar_FindVar(VarName);
+	Cvar* var = Cvar_FindVar(VarName);
 	if (var)
 	{
 		// if the C code is now specifying a variable that the user already
@@ -424,7 +424,7 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	{
 		throw QException("MAX_CVARS" );
 	}
-	var = new QCvar;
+	var = new Cvar;
 	Com_Memset(var, 0, sizeof(*var));
 	cvar_indexes[cvar_numIndexes] = var;
 	var->Handle = cvar_numIndexes;
@@ -463,7 +463,7 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 
 float Cvar_VariableValue(const char* var_name)
 {
-	QCvar* var = Cvar_FindVar(var_name);
+	Cvar* var = Cvar_FindVar(var_name);
 	if (!var)
 	{
 		return 0;
@@ -479,7 +479,7 @@ float Cvar_VariableValue(const char* var_name)
 
 int Cvar_VariableIntegerValue(const char* var_name)
 {
-	QCvar* var = Cvar_FindVar(var_name);
+	Cvar* var = Cvar_FindVar(var_name);
 	if (!var)
 	{
 		return 0;
@@ -495,7 +495,7 @@ int Cvar_VariableIntegerValue(const char* var_name)
 
 const char* Cvar_VariableString(const char* var_name)
 {
-	QCvar* var = Cvar_FindVar(var_name);
+	Cvar* var = Cvar_FindVar(var_name);
 	if (!var)
 	{
 		return "";
@@ -511,7 +511,7 @@ const char* Cvar_VariableString(const char* var_name)
 
 void Cvar_VariableStringBuffer(const char* var_name, char* buffer, int bufsize)
 {
-	QCvar* var = Cvar_FindVar(var_name);
+	Cvar* var = Cvar_FindVar(var_name);
 	if (!var)
 	{
 		*buffer = 0;
@@ -533,7 +533,7 @@ void Cvar_VariableStringBuffer(const char* var_name, char* buffer, int bufsize)
 bool Cvar_Command()
 {
 	// check variables
-	QCvar* v = Cvar_FindVar(Cmd_Argv(0));
+	Cvar* v = Cvar_FindVar(Cmd_Argv(0));
 	if (!v)
 	{
 		return false;
@@ -579,7 +579,7 @@ char* Cvar_InfoString(int bit, int MaxSize, int MaxKeySize, int MaxValSize,
 
 	info[0] = 0;
 
-	for (QCvar* var = cvar_vars; var; var = var->next)
+	for (Cvar* var = cvar_vars; var; var = var->next)
 	{
 		if (var->flags & bit)
 		{
@@ -628,7 +628,7 @@ void Cvar_Register(vmCvar_t* vmCvar, const char* varName, const char* defaultVal
 		flags |= CVAR_LATCH2;
 	}
 
-	QCvar* cv = Cvar_Get(varName, defaultValue, flags);
+	Cvar* cv = Cvar_Get(varName, defaultValue, flags);
 	if (!vmCvar)
 	{
 		return;
@@ -656,7 +656,7 @@ void Cvar_Update(vmCvar_t* vmCvar)
 		throw QDropException("Cvar_Update: handle out of range" );
 	}
 
-	QCvar* cv = cvar_indexes[vmCvar->handle];
+	Cvar* cv = cvar_indexes[vmCvar->handle];
 	if (!cv)
 	{
 		return;
@@ -704,7 +704,7 @@ const char* Cvar_CompleteVariable(const char* partial)
 	}
 
 	// check exact match
-	for (QCvar* cvar = cvar_vars; cvar; cvar = cvar->next)
+	for (Cvar* cvar = cvar_vars; cvar; cvar = cvar->next)
 	{
 		if (!String::Cmp(partial, cvar->name))
 		{
@@ -713,7 +713,7 @@ const char* Cvar_CompleteVariable(const char* partial)
 	}
 
 	// check partial match
-	for (QCvar* cvar = cvar_vars; cvar; cvar = cvar->next)
+	for (Cvar* cvar = cvar_vars; cvar; cvar = cvar->next)
 	{
 		if (!String::NCmp(partial,cvar->name, len))
 		{
@@ -732,7 +732,7 @@ const char* Cvar_CompleteVariable(const char* partial)
 
 void Cvar_CommandCompletion(void(*callback)(const char* s))
 {
-	for (QCvar* cvar = cvar_vars; cvar; cvar = cvar->next)
+	for (Cvar* cvar = cvar_vars; cvar; cvar = cvar->next)
 	{
 		callback(cvar->name);
 	}
@@ -749,7 +749,7 @@ void Cvar_CommandCompletion(void(*callback)(const char* s))
 void Cvar_SetCheatState()
 {
 	// set all default vars to the safe value
-	for (QCvar* var = cvar_vars; var; var = var->next)
+	for (Cvar* var = cvar_vars; var; var = var->next)
 	{
 		if (var->flags & CVAR_CHEAT)
 		{
@@ -847,7 +847,7 @@ static void Cvar_SetU_f()
 		return;
 	}
 	Cvar_Set_f();
-	QCvar* v = Cvar_FindVar(Cmd_Argv(1));
+	Cvar* v = Cvar_FindVar(Cmd_Argv(1));
 	if (!v)
 	{
 		return;
@@ -871,7 +871,7 @@ static void Cvar_SetS_f()
 		return;
 	}
 	Cvar_Set_f();
-	QCvar* v = Cvar_FindVar(Cmd_Argv(1));
+	Cvar* v = Cvar_FindVar(Cmd_Argv(1));
 	if (!v)
 	{
 		return;
@@ -895,7 +895,7 @@ static void Cvar_SetA_f()
 		return;
 	}
 	Cvar_Set_f();
-	QCvar* v = Cvar_FindVar(Cmd_Argv(1));
+	Cvar* v = Cvar_FindVar(Cmd_Argv(1));
 	if (!v)
 	{
 		return;
@@ -939,7 +939,7 @@ static void Cvar_List_f()
 	}
 
 	int i = 0;
-	for (QCvar* var = cvar_vars; var; var = var->next, i++)
+	for (Cvar* var = cvar_vars; var; var = var->next, i++)
 	{
 		if (match && !String::Filter(match, var->name, false))
 		{
@@ -1020,10 +1020,10 @@ static void Cvar_List_f()
 
 static void Cvar_Restart_f()
 {
-	QCvar** prev = &cvar_vars;
+	Cvar** prev = &cvar_vars;
 	while (1)
 	{
-		QCvar* var = *prev;
+		Cvar* var = *prev;
 		if (!var)
 		{
 			break;
@@ -1104,7 +1104,7 @@ void Cvar_WriteVariables(fileHandle_t f)
 {
 	char	buffer[1024];
 
-	for (QCvar* var = cvar_vars; var; var = var->next)
+	for (Cvar* var = cvar_vars; var; var = var->next)
 	{
 		if (String::ICmp(var->name, "cl_cdkey") == 0)
 		{
@@ -1135,7 +1135,7 @@ void Cvar_WriteVariables(fileHandle_t f)
 void Cvar_UpdateIfExists(const char* name, const char* value)
 {
 	// if this is a cvar, change it too	
-	QCvar* var = Cvar_FindVar(name);
+	Cvar* var = Cvar_FindVar(name);
 	if (var)
 	{
 		var->modified = true;

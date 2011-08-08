@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-QCvar*		baseskin;
-QCvar*		noskins;
+Cvar*		baseskin;
+Cvar*		noskins;
 
 char		allskins[128];
 #define	MAX_CACHED_SKINS		128

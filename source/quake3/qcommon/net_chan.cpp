@@ -54,9 +54,9 @@ to the new value before sending out any replies.
 
 #define	FRAGMENT_BIT	(1<<31)
 
-QCvar		*showpackets;
-QCvar		*showdrop;
-QCvar		*qport;
+Cvar		*showpackets;
+Cvar		*showdrop;
+Cvar		*qport;
 
 static const char *netsrcString[2] = {
 	"client",
@@ -527,7 +527,7 @@ void NET_SendLoopPacket (netsrc_t sock, int length, const void *data, netadr_t t
 
 static qboolean networkingEnabled = qfalse;
 
-static QCvar	*net_noudp;
+static Cvar	*net_noudp;
 
 int			ip_socket;
 
@@ -668,7 +668,7 @@ NET_OpenIP
 */
 static void NET_OpenIP()
 {
-	QCvar* ip = Cvar_Get("net_ip", "localhost", CVAR_LATCH2);
+	Cvar* ip = Cvar_Get("net_ip", "localhost", CVAR_LATCH2);
 	int port = Cvar_Get("net_port", va("%i", PORT_SERVER), CVAR_LATCH2)->integer;
 
 	// automatically scan for a valid port, so multiple
