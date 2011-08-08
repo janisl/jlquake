@@ -129,16 +129,13 @@ char soundlist_name[] =
 class QMainLog : public LogListener
 {
 public:
-	void serialise(const char* text, bool devel)
+	void serialise(const char* text)
 	{
-		if (devel)
-		{
-			Con_DPrintf("%s", text);
-		}
-		else
-		{
-			Con_Printf("%s", text);
-		}
+		Con_Printf("%s", text);
+	}
+	void develSerialise(const char* text)
+	{
+		Con_DPrintf("%s", text);
 	}
 } MainLog;
 

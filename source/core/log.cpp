@@ -56,7 +56,7 @@ void Log::write(const char* format, ...)
 		{
 			try
 			{
-				listeners[i]->serialise(string, false);
+				listeners[i]->serialise(string);
 			}
 			catch (...)
 			{
@@ -81,7 +81,7 @@ void Log::writeLine(const char* format, ...)
 		{
 			try
 			{
-				listeners[i]->serialise(string, false);
+				listeners[i]->serialise(string);
 			}
 			catch (...)
 			{
@@ -105,7 +105,7 @@ void Log::develWrite(const char* format, ...)
 		{
 			try
 			{
-				listeners[i]->serialise(string, true);
+				listeners[i]->develSerialise(string);
 			}
 			catch (...)
 			{
@@ -130,7 +130,7 @@ void Log::develWriteLine(const char* format, ...)
 		{
 			try
 			{
-				listeners[i]->serialise(string, true);
+				listeners[i]->develSerialise(string);
 			}
 			catch (...)
 			{

@@ -17,7 +17,8 @@
 class LogListener : Interface
 {
 public:
-	virtual void serialise(const char* text, bool devel) = 0;
+	virtual void serialise(const char* text) = 0;
+	virtual void develSerialise(const char* text) = 0;
 };
 
 class Log

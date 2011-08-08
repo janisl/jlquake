@@ -50,16 +50,13 @@ int		time_after_ref;
 class QMainLog : public LogListener
 {
 public:
-	void serialise(const char* text, bool devel)
+	void serialise(const char* text)
 	{
-		if (devel)
-		{
-			Com_DPrintf("%s", text);
-		}
-		else
-		{
-			Com_Printf("%s", text);
-		}
+		Com_Printf("%s", text);
+	}
+	void develSerialise(const char* text)
+	{
+		Com_DPrintf("%s", text);
 	}
 } MainLog;
 
