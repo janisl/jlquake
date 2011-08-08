@@ -20,7 +20,7 @@ public:
 	virtual void serialise(const char* text, bool devel) = 0;
 };
 
-class QLog
+class Log
 {
 private:
 	enum { MAX_LISTENERS	= 8 };
@@ -28,7 +28,7 @@ private:
 	LogListener*	Listeners[MAX_LISTENERS];
 
 public:
-	QLog();
+	Log();
 
 	void AddListener(LogListener* Listener);
 	void RemoveListener(LogListener* Listener);
@@ -40,4 +40,4 @@ public:
 	void DWriteLine(const char* Fmt, ...);
 };
 
-extern QLog			GLog;
+extern Log			GLog;

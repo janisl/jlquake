@@ -32,7 +32,7 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QLog			GLog;
+Log			GLog;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -40,22 +40,22 @@ QLog			GLog;
 
 //==========================================================================
 //
-//	QLog::QLog
+//	Log::Log
 //
 //==========================================================================
 
-QLog::QLog()
+Log::Log()
 {
 	Com_Memset(Listeners, 0, sizeof(Listeners));
 }
 
 //==========================================================================
 //
-//	QLog::AddListener
+//	Log::AddListener
 //
 //==========================================================================
 
-void QLog::AddListener(LogListener* Listener)
+void Log::AddListener(LogListener* Listener)
 {
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
@@ -69,11 +69,11 @@ void QLog::AddListener(LogListener* Listener)
 
 //==========================================================================
 //
-//	QLog::RemoveListener
+//	Log::RemoveListener
 //
 //==========================================================================
 
-void QLog::RemoveListener(LogListener* Listener)
+void Log::RemoveListener(LogListener* Listener)
 {
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
@@ -86,11 +86,11 @@ void QLog::RemoveListener(LogListener* Listener)
 
 //==========================================================================
 //
-//	QLog::Write
+//	Log::Write
 //
 //==========================================================================
 
-void QLog::Write(const char* Fmt, ...)
+void Log::Write(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
 	char		string[MAXPRINTMSG];
@@ -116,11 +116,11 @@ void QLog::Write(const char* Fmt, ...)
 
 //==========================================================================
 //
-//	QLog::WriteLine
+//	Log::WriteLine
 //
 //==========================================================================
 
-void QLog::WriteLine(const char* Fmt, ...)
+void Log::WriteLine(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
 	char		string[MAXPRINTMSG];
@@ -147,11 +147,11 @@ void QLog::WriteLine(const char* Fmt, ...)
 
 //==========================================================================
 //
-//	QLog::DWrite
+//	Log::DWrite
 //
 //==========================================================================
 
-void QLog::DWrite(const char* Fmt, ...)
+void Log::DWrite(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
 	char		string[MAXPRINTMSG];
@@ -177,11 +177,11 @@ void QLog::DWrite(const char* Fmt, ...)
 
 //==========================================================================
 //
-//	QLog::DWriteLine
+//	Log::DWriteLine
 //
 //==========================================================================
 
-void QLog::DWriteLine(const char* Fmt, ...)
+void Log::DWriteLine(const char* Fmt, ...)
 {
 	va_list		ArgPtr;
 	char		string[MAXPRINTMSG];
