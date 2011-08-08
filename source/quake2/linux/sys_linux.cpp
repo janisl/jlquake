@@ -134,7 +134,7 @@ void *Sys_GetGameAPI (void *parms)
 			Com_DPrintf ("LoadLibrary (%s)\n",name);
 			break;
 		}
-		GLog.DWriteLine("failed:\n\"%s\"\n", dlerror());
+		GLog.develWriteLine("failed:\n\"%s\"\n", dlerror());
 	}
 
 	GetGameAPI = (void* (*)(void*))dlsym (game_library, "GetGameAPI");

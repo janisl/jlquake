@@ -103,7 +103,7 @@ BOOL ReadFile2(LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBy
 {
    if (MidiOffset+nNumberOfBytesToRead > MidiSize)
 	{
-//		GLog.Write("Bad Read (%d+%d>=%d)\n",MidiOffset,nNumberOfBytesToRead,MidiSize);
+//		GLog.write("Bad Read (%d+%d>=%d)\n",MidiOffset,nNumberOfBytesToRead,MidiSize);
 		return FALSE;
 	}
 
@@ -182,7 +182,7 @@ BOOL ConverterInit( LPSTR szInFile )
         || (( cbHeader = DWORDSWAP( cbHeader )) < sizeof(MIDIFILEHDR))
             || GetInFileData( &Header, cbHeader ) )
         {
-		     GLog.Write("MIDI: %s\n",szInitErrInFile);
+		     GLog.write("MIDI: %s\n",szInitErrInFile);
 	        goto Init_Cleanup;
         }
 
@@ -201,7 +201,7 @@ BOOL ConverterInit( LPSTR szInFile )
                     ifs.dwTrackCount * sizeof(INTRACKSTATE));
     if( ifs.pitsTracks == NULL )
         {
-		     GLog.Write("MIDI: %s\n",szInitErrMem);
+		     GLog.write("MIDI: %s\n",szInitErrMem);
         goto Init_Cleanup;
         }
 
@@ -211,14 +211,14 @@ BOOL ConverterInit( LPSTR szInFile )
     if(( ptsTrack->pTrackStart
             = (LPBYTE)GlobalAllocPtr( GHND, TRACK_BUFFER_SIZE )) == NULL )
         {
-		     GLog.Write("MIDI: %s\n", szNoTrackBuffMem);
+		     GLog.write("MIDI: %s\n", szNoTrackBuffMem);
         goto Init_Cleanup;
         }
 
     if( GetInFileData( &dwTag, sizeof(dwTag)) || ( dwTag != MTrk )
             || GetInFileData( &cbHeader, sizeof(cbHeader)))
         {
-		     GLog.Write("MIDI: %s\n", szInitErrInFile);
+		     GLog.write("MIDI: %s\n", szInitErrInFile);
         goto Init_Cleanup;
         }
 
@@ -250,7 +250,7 @@ BOOL ConverterInit( LPSTR szInFile )
     if( !ReadFile2( ptsTrack->pTrackStart, dwToRead, &cbRead, NULL )
         || ( cbRead != dwToRead ))
         {
-		     GLog.Write("MIDI: %s\n", szInitErrInFile);
+		     GLog.write("MIDI: %s\n", szInitErrInFile);
         goto Init_Cleanup;
         }
     // Save the number of bytes that didn't make it into the buffer
@@ -281,7 +281,7 @@ BOOL ConverterInit( LPSTR szInFile )
         //
         if( GetTrackVDWord( ptsTrack, &ptsTrack->tkNextEventDue ))
             {
-				  GLog.Write("MIDI: %s\n", szInitErrInFile);
+				  GLog.write("MIDI: %s\n", szInitErrInFile);
             goto Init_Cleanup;
             }
     // Step over any unread data, advancing to the beginning of the next
@@ -400,7 +400,7 @@ static BOOL RewindConverter( void )
     if( !ReadFile2( ptsTrack->pTrackStart, dwToRead, &cbRead, NULL )
         || ( cbRead != dwToRead ))
         {
-		     GLog.Write("MIDI: %s\n", szInitErrInFile);
+		     GLog.write("MIDI: %s\n", szInitErrInFile);
         goto Rewind_Cleanup;
         }
     // Save the number of bytes that didn't make it into the buffer
@@ -432,7 +432,7 @@ static BOOL RewindConverter( void )
         //
         if( GetTrackVDWord( ptsTrack, &ptsTrack->tkNextEventDue ))
             {
-					GLog.Write("MIDI: %s\n", szInitErrInFile);
+					GLog.write("MIDI: %s\n", szInitErrInFile);
             goto Rewind_Cleanup;
             }
     // Step over any unread data, advancing to the beginning of the next
@@ -978,7 +978,7 @@ BOOL RefillTrackBuffer( PINTRACKSTATE ptsTrack )
                         (long)ptsTrack->foNextReadStart,
                         0L, FILE_BEGIN )) == 0xFFFFFFFF )
             {
-					GLog.Write("MIDI: Unable to seek to track buffer location in RefillTrackBuffer()!!\n");
+					GLog.write("MIDI: Unable to seek to track buffer location in RefillTrackBuffer()!!\n");
             return( TRUE );
             }
 
@@ -1000,7 +1000,7 @@ BOOL RefillTrackBuffer( PINTRACKSTATE ptsTrack )
         if( !bResult || ( bResult && !dwBytesRead )
             || ( bResult && dwBytesRead != ptsTrack->dwLeftInBuffer ))
             {
-			  GLog.Write("MIDI: Read operation failed prematurely!!\n");
+			  GLog.write("MIDI: Read operation failed prematurely!!\n");
         ptsTrack->dwLeftInBuffer = dwBytesRead;
             return( TRUE );
             }

@@ -240,12 +240,12 @@ bool R_GetModeInfo(int* width, int* height, float* windowAspect, int mode)
 
 static void R_ModeList_f()
 {
-	GLog.Write("\n");
+	GLog.write("\n");
 	for (int i = 0; i < s_numVidModes; i++ )
 	{
-		GLog.Write("%s\n", r_vidModes[i].description);
+		GLog.write("%s\n", r_vidModes[i].description);
 	}
-	GLog.Write("\n");
+	GLog.write("\n");
 }
 
 //==========================================================================
@@ -260,19 +260,19 @@ static void AssertCvarRange(QCvar* cv, float minVal, float maxVal, bool shouldBe
 	{
 		if ((int)cv->value != cv->integer)
 		{
-			GLog.Write(S_COLOR_YELLOW "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value);
+			GLog.write(S_COLOR_YELLOW "WARNING: cvar '%s' must be integral (%f)\n", cv->name, cv->value);
 			Cvar_Set(cv->name, va("%d", cv->integer));
 		}
 	}
 
 	if (cv->value < minVal)
 	{
-		GLog.Write(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal);
+		GLog.write(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f < %f)\n", cv->name, cv->value, minVal);
 		Cvar_Set(cv->name, va("%f", minVal));
 	}
 	else if (cv->value > maxVal)
 	{
-		GLog.Write(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal);
+		GLog.write(S_COLOR_YELLOW "WARNING: cvar '%s' out of range (%f > %f)\n", cv->name, cv->value, maxVal);
 		Cvar_Set(cv->name, va("%f", maxVal));
 	}
 }
@@ -296,42 +296,42 @@ static void GfxInfo_f()
 		"enabled"
 	};
 
-	GLog.Write("\nGL_VENDOR: %s\n", glConfig.vendor_string);
-	GLog.Write("GL_RENDERER: %s\n", glConfig.renderer_string);
-	GLog.Write("GL_VERSION: %s\n", glConfig.version_string);
+	GLog.write("\nGL_VENDOR: %s\n", glConfig.vendor_string);
+	GLog.write("GL_RENDERER: %s\n", glConfig.renderer_string);
+	GLog.write("GL_VERSION: %s\n", glConfig.version_string);
 
-	GLog.WriteLine("GL_EXTENSIONS:");
+	GLog.writeLine("GL_EXTENSIONS:");
 	Array<String> Exts;
 	String(glConfig.extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{
-		GLog.WriteLine(" %s", *Exts[i]);
+		GLog.writeLine(" %s", *Exts[i]);
 	}
 
-	GLog.Write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
-	GLog.Write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures);
-	GLog.Write("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
-	GLog.Write("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[r_fullscreen->integer == 1]);
+	GLog.write("GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize);
+	GLog.write("GL_MAX_ACTIVE_TEXTURES: %d\n", glConfig.maxActiveTextures);
+	GLog.write("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits, glConfig.stencilBits);
+	GLog.write("MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight, fsstrings[r_fullscreen->integer == 1]);
 	if (glConfig.displayFrequency)
 	{
-		GLog.Write("%d\n", glConfig.displayFrequency);
+		GLog.write("%d\n", glConfig.displayFrequency);
 	}
 	else
 	{
-		GLog.Write("N/A\n");
+		GLog.write("N/A\n");
 	}
 	if (glConfig.deviceSupportsGamma)
 	{
-		GLog.Write("GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits);
+		GLog.write("GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits);
 	}
 	else
 	{
-		GLog.Write("GAMMA: software w/ %d overbright bits\n", tr.overbrightBits);
+		GLog.write("GAMMA: software w/ %d overbright bits\n", tr.overbrightBits);
 	}
 
 	// rendering primitives
 	// default is to use triangles if compiled vertex arrays are present
-	GLog.Write("rendering primitives: ");
+	GLog.write("rendering primitives: ");
 	int primitives = r_primitives->integer;
 	if (primitives == 0)
 	{
@@ -346,39 +346,39 @@ static void GfxInfo_f()
 	}
 	if (primitives == -1)
 	{
-		GLog.Write("none\n");
+		GLog.write("none\n");
 	}
 	else if (primitives == 2)
 	{
-		GLog.Write("single glDrawElements\n");
+		GLog.write("single glDrawElements\n");
 	}
 	else if (primitives == 1)
 	{
-		GLog.Write("multiple glArrayElement\n");
+		GLog.write("multiple glArrayElement\n");
 	}
 	else if (primitives == 3)
 	{
-		GLog.Write("multiple glColor4ubv + glTexCoord2fv + glVertex3fv\n");
+		GLog.write("multiple glColor4ubv + glTexCoord2fv + glVertex3fv\n");
 	}
 
-	GLog.Write("texturemode: %s\n", r_textureMode->string);
-	GLog.Write("picmip: %d\n", r_picmip->integer);
-	GLog.Write("texture bits: %d\n", r_texturebits->integer);
-	GLog.Write("multitexture: %s\n", enablestrings[qglActiveTextureARB != 0]);
-	GLog.Write("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ]);
-	GLog.Write("texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0]);
-	GLog.Write("compressed textures: %s\n", enablestrings[glConfig.textureCompression != TC_NONE]);
+	GLog.write("texturemode: %s\n", r_textureMode->string);
+	GLog.write("picmip: %d\n", r_picmip->integer);
+	GLog.write("texture bits: %d\n", r_texturebits->integer);
+	GLog.write("multitexture: %s\n", enablestrings[qglActiveTextureARB != 0]);
+	GLog.write("compiled vertex arrays: %s\n", enablestrings[qglLockArraysEXT != 0 ]);
+	GLog.write("texenv add: %s\n", enablestrings[glConfig.textureEnvAddAvailable != 0]);
+	GLog.write("compressed textures: %s\n", enablestrings[glConfig.textureCompression != TC_NONE]);
 	if (r_vertexLight->integer)
 	{
-		GLog.Write("HACK: using vertex lightmap approximation\n");
+		GLog.write("HACK: using vertex lightmap approximation\n");
 	}
 	if (glConfig.smpActive)
 	{
-		GLog.Write("Using dual processor acceleration\n");
+		GLog.write("Using dual processor acceleration\n");
 	}
 	if (r_finish->integer)
 	{
-		GLog.Write("Forcing glFinish\n");
+		GLog.write("Forcing glFinish\n");
 	}
 }
 
@@ -587,7 +587,7 @@ static void R_SetMode()
 
 	if (err == RSERR_INVALID_FULLSCREEN)
 	{
-		GLog.Write("...WARNING: fullscreen unavailable in this mode\n");
+		GLog.write("...WARNING: fullscreen unavailable in this mode\n");
 
 		Cvar_SetValue("r_fullscreen", 0);
 		r_fullscreen->modified = false;
@@ -599,7 +599,7 @@ static void R_SetMode()
 		}
 	}
 
-	GLog.Write("...WARNING: could not set the given mode (%d)\n", r_mode->integer);
+	GLog.write("...WARNING: could not set the given mode (%d)\n", r_mode->integer);
 
 	// if we're on a 24/32-bit desktop and we're going fullscreen on an ICD,
 	// try it again but with a 16-bit desktop
@@ -610,7 +610,7 @@ static void R_SetMode()
 		{
 			return;
 		}
-		GLog.Write("...WARNING: could not set default 16-bit fullscreen mode\n");
+		GLog.write("...WARNING: could not set default 16-bit fullscreen mode\n");
 	}
 
 	// try setting it back to something safe
@@ -620,7 +620,7 @@ static void R_SetMode()
 		return;
 	}
 
-	GLog.Write("...WARNING: could not revert to safe mode\n");
+	GLog.write("...WARNING: could not revert to safe mode\n");
 	throw QException("R_SetMode() - could not initialise OpenGL subsystem\n" );
 }
 
@@ -638,7 +638,7 @@ static void R_SetMode()
 
 static void InitOpenGLSubsystem()
 {	
-	GLog.Write("Initializing OpenGL subsystem\n");
+	GLog.write("Initializing OpenGL subsystem\n");
 
 	//	Ceate the window and set up the context.
 	R_SetMode();
@@ -822,7 +822,7 @@ static void R_InitFunctionTables()
 
 static void R_Init()
 {
-	GLog.Write("----- R_Init -----\n");
+	GLog.write("----- R_Init -----\n");
 
 	// clear all our internal state
 	Com_Memset(&tr, 0, sizeof(tr));
@@ -831,7 +831,7 @@ static void R_Init()
 
 	if ((qintptr)tess.xyz & 15)
 	{
-		GLog.Write("WARNING: tess.xyz not 16 byte aligned\n");
+		GLog.write("WARNING: tess.xyz not 16 byte aligned\n");
 	}
 	Com_Memset(tess.constantColor255, 255, sizeof(tess.constantColor255));
 
@@ -860,10 +860,10 @@ static void R_Init()
 	int err = qglGetError();
 	if (err != GL_NO_ERROR)
 	{
-		GLog.Write("glGetError() = 0x%x\n", err);
+		GLog.write("glGetError() = 0x%x\n", err);
 	}
 
-	GLog.Write("----- finished R_Init -----\n");
+	GLog.write("----- finished R_Init -----\n");
 }
 
 //==========================================================================
@@ -925,7 +925,7 @@ void R_EndRegistration()
 
 void R_Shutdown(bool destroyWindow)
 {
-	GLog.Write("RE_Shutdown( %i )\n", destroyWindow);
+	GLog.write("RE_Shutdown( %i )\n", destroyWindow);
 
 	Cmd_RemoveCommand("modellist");
 	Cmd_RemoveCommand("imagelist");

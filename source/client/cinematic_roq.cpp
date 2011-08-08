@@ -140,7 +140,7 @@ bool QCinematicRoq::Open(const char* FileName)
 
 	if (ROQSize <= 0)
 	{
-		GLog.DWrite("play(%s), ROQSize<=0\n", FileName);
+		GLog.develWrite("play(%s), ROQSize<=0\n", FileName);
 		return false;
 	}
 
@@ -151,7 +151,7 @@ bool QCinematicRoq::Open(const char* FileName)
 	unsigned short RoQID = (unsigned short)(file[0]) + (unsigned short)(file[1]) * 256;
 	if (RoQID != 0x1084)
 	{
-		GLog.DWrite("trFMV::play(), invalid RoQ ID\n");
+		GLog.develWrite("trFMV::play(), invalid RoQ ID\n");
 		return false;
 	}
 
@@ -837,7 +837,7 @@ redump:
 
 	if (RoQFrameSize > 65536 || roq_id == 0x1084)
 	{
-		GLog.DWrite("roq_size>65536||roq_id==0x1084\n");
+		GLog.develWrite("roq_size>65536||roq_id==0x1084\n");
 		return false;
 	}
 

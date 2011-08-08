@@ -1251,7 +1251,7 @@ static void R_MarkLeavesQ3()
 		r_showcluster->modified = false;
 		if (r_showcluster->integer)
 		{
-			GLog.Write("cluster:%i  area:%i\n", cluster, leaf->area);
+			GLog.write("cluster:%i  area:%i\n", cluster, leaf->area);
 		}
 	}
 

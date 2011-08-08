@@ -107,7 +107,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 		throw QDropException("CM_LoadMap: NULL name");
 	}
 
-	GLog.DWrite("CM_LoadMap(%s, %i)\n", name, clientload);
+	GLog.develWrite("CM_LoadMap(%s, %i)\n", name, clientload);
 
 	if (!cm_flushmap)
 	{

@@ -163,13 +163,13 @@ qhandle_t R_RegisterSkin(const char* name)
 {
 	if (!name || !name[0])
 	{
-		GLog.Write("Empty name passed to R_RegisterSkin\n");
+		GLog.write("Empty name passed to R_RegisterSkin\n");
 		return 0;
 	}
 
 	if (String::Length(name) >= MAX_QPATH)
 	{
-		GLog.Write("Skin name exceeds MAX_QPATH\n");
+		GLog.write("Skin name exceeds MAX_QPATH\n");
 		return 0;
 	}
 
@@ -191,7 +191,7 @@ qhandle_t R_RegisterSkin(const char* name)
 	// allocate a new skin
 	if (tr.numSkins == MAX_SKINS)
 	{
-		GLog.Write(S_COLOR_YELLOW "WARNING: R_RegisterSkin( '%s' ) MAX_SKINS hit\n", name);
+		GLog.write(S_COLOR_YELLOW "WARNING: R_RegisterSkin( '%s' ) MAX_SKINS hit\n", name);
 		return 0;
 	}
 	tr.numSkins++;
@@ -311,19 +311,19 @@ skin_t* R_GetSkinByHandle(qhandle_t hSkin)
 
 void R_SkinList_f()
 {
-	GLog.Write("------------------\n");
+	GLog.write("------------------\n");
 
 	for (int i = 0; i < tr.numSkins; i++)
 	{
 		skin_t* skin = tr.skins[i];
 
-		GLog.Write("%3i:%s\n", i, skin->name);
+		GLog.write("%3i:%s\n", i, skin->name);
 		for (int j = 0; j < skin->numSurfaces; j++)
 		{
-			GLog.Write("       %s = %s\n", skin->surfaces[j]->name, skin->surfaces[j]->shader->name);
+			GLog.write("       %s = %s\n", skin->surfaces[j]->name, skin->surfaces[j]->shader->name);
 		}
 	}
-	GLog.Write("------------------\n");
+	GLog.write("------------------\n");
 }
 
 //==========================================================================

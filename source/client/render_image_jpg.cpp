@@ -99,7 +99,7 @@ static void my_jpeg_output_message(j_common_ptr cinfo)
 	//	Create the message
 	(*cinfo->err->format_message)(cinfo, buffer);
 
-	GLog.Write("%s\n", buffer);
+	GLog.write("%s\n", buffer);
 }
 
 //==========================================================================

@@ -120,7 +120,7 @@ void R_LoadPCX(const char* filename, byte** pic, byte** palette, int* width, int
 		xmax >= MaxWidth ||
 		ymax >= MaxHeight)
 	{
-		GLog.Write("Bad pcx file %s (%i x %i) (%i x %i)\n", filename, xmax + 1, ymax + 1, pcx->xmax, pcx->ymax);
+		GLog.write("Bad pcx file %s (%i x %i) (%i x %i)\n", filename, xmax + 1, ymax + 1, pcx->xmax, pcx->ymax);
 		return;
 	}
 
@@ -170,7 +170,7 @@ void R_LoadPCX(const char* filename, byte** pic, byte** palette, int* width, int
 
 	if (raw - (byte*)pcx > len)
 	{
-		GLog.DWrite("PCX file %s was malformed", filename);
+		GLog.develWrite("PCX file %s was malformed", filename);
 		Mem_Free(*pic);
 		*pic = NULL;
 	}

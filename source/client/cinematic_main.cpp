@@ -144,7 +144,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 		}
 	}
 
-	GLog.DWrite("SCR_PlayCinematic( %s )\n", arg);
+	GLog.develWrite("SCR_PlayCinematic( %s )\n", arg);
 
 	int Handle = CIN_HandleForVideo();
 
@@ -166,7 +166,7 @@ int CIN_PlayCinematic(const char* arg, int x, int y, int w, int h, int systemBit
 		CIN_StartedPlayback();
 	}
 
-	GLog.DWrite("trFMV::play(), playing %s\n", arg);
+	GLog.develWrite("trFMV::play(), playing %s\n", arg);
 
 	return Handle;
 }
@@ -305,7 +305,7 @@ e_status QCinematicPlayer::Run()
 		}
 		else
 		{
-			GLog.DWrite("finished cinematic\n");
+			GLog.develWrite("finished cinematic\n");
 			if (AlterGameState)
 			{
 				CIN_FinishCinematic();

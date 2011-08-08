@@ -97,7 +97,7 @@ static bool R_FindAvailableScreenshotFilename(int& lastNumber, char* fileName, c
 		}
 	}
 
-	GLog.Write("ScreenShot: Couldn't create a file\n");
+	GLog.write("ScreenShot: Couldn't create a file\n");
 	return false;
 }
 
@@ -231,7 +231,7 @@ static void R_LevelShot()
 	delete[] buffer;
 	delete[] source;
 
-	GLog.Write("Wrote %s\n", checkname);
+	GLog.write("Wrote %s\n", checkname);
 }
 
 //==========================================================================
@@ -288,7 +288,7 @@ void R_ScreenShot_f()
 
 	if (!silent)
 	{
-		GLog.Write("Wrote %s\n", checkname);
+		GLog.write("Wrote %s\n", checkname);
 	}
 } 
 
@@ -339,7 +339,7 @@ void R_ScreenShotJPEG_f()
 
 	if (!silent)
 	{
-		GLog.Write("Wrote %s\n", checkname);
+		GLog.write("Wrote %s\n", checkname);
 	}
 } 
 

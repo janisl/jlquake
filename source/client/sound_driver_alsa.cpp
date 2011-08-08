@@ -71,7 +71,7 @@ bool SNDDMA_Init()
 		SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
 	if (err < 0)
 	{
-		GLog.Write("ALSA: cannot open device %s (%s)\n",
+		GLog.write("ALSA: cannot open device %s (%s)\n",
 			snddevice->string, snd_strerror(err));
 		return false;
 	}
@@ -79,14 +79,14 @@ bool SNDDMA_Init()
 	err = snd_pcm_hw_params_malloc(&hw_params);
 	if (err < 0)
 	{
-		GLog.Write("ALSA: cannot allocate hw params (%s)\n", snd_strerror(err));
+		GLog.write("ALSA: cannot allocate hw params (%s)\n", snd_strerror(err));
 		return false;
 	}
 
 	err = snd_pcm_hw_params_any(pcm_handle, hw_params);
 	if (err < 0)
 	{
-		GLog.Write("ALSA: cannot init hw params(%s)\n", snd_strerror(err));
+		GLog.write("ALSA: cannot init hw params(%s)\n", snd_strerror(err));
 		snd_pcm_hw_params_free(hw_params);
 		return false;
 	}
@@ -94,7 +94,7 @@ bool SNDDMA_Init()
 	err = snd_pcm_hw_params_set_access(pcm_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED);
 	if (err < 0)
 	{
-		GLog.Write("ALSA: cannot set access(%s)\n", snd_strerror(err));
+		GLog.write("ALSA: cannot set access(%s)\n", snd_strerror(err));
 		snd_pcm_hw_params_free(hw_params);
 		return false;
 	}
@@ -107,7 +107,7 @@ bool SNDDMA_Init()
 		err = snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_S16);
 		if (err < 0)
 		{
-			GLog.Write("ALSA: 16 bit not supported, trying 8\n");
+			GLog.write("ALSA: 16 bit not supported, trying 8\n");
 			dma.samplebits = 8;
 		}
 	}
@@ -117,7 +117,7 @@ bool SNDDMA_Init()
 		err = snd_pcm_hw_params_set_format(pcm_handle, hw_params, SND_PCM_FORMAT_U8);
 		if (err < 0)
 		{
-			GLog.Write("ALSA: cannot set format(%s)\n", snd_strerror(err));
+			GLog.write("ALSA: cannot set format(%s)\n", snd_strerror(err));
 			snd_pcm_hw_params_free(hw_params);
 			return false;
 		}
@@ -148,7 +148,7 @@ bool SNDDMA_Init()
 		err = snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, &r, &dir);
 		if (err < 0)
 		{
-			GLog.Write("ALSA: cannot set rate %d(%s)\n", r, snd_strerror(err));
+			GLog.write("ALSA: cannot set rate %d(%s)\n", r, snd_strerror(err));
 			dma.speed = 0;
 		}
 		else
@@ -156,7 +156,7 @@ bool SNDDMA_Init()
 			//rate succeeded, but is perhaps slightly different
 			if (dir != 0 && dma.speed != (int)r)
 			{
-				GLog.Write("ALSA: rate %d not supported, using %d\n", dma.speed, r);
+				GLog.write("ALSA: rate %d not supported, using %d\n", dma.speed, r);
 			}
 			dma.speed = r;
 		}
@@ -171,7 +171,7 @@ bool SNDDMA_Init()
 			err = snd_pcm_hw_params_set_rate_near(pcm_handle, hw_params, &r, &dir);
 			if (err < 0)
 			{
-				GLog.Write("ALSA: cannot set rate %d(%s)\n", r, snd_strerror(err));
+				GLog.write("ALSA: cannot set rate %d(%s)\n", r, snd_strerror(err));
 			}
 			else
 			{
@@ -179,7 +179,7 @@ bool SNDDMA_Init()
 				dma.speed = r;
 				if (dir != 0)
 				{
-					GLog.Write("ALSA: rate %d not supported, using %d\n", RATES[i], r);
+					GLog.write("ALSA: rate %d not supported, using %d\n", RATES[i], r);
 				}
 				break;
 			}
@@ -188,7 +188,7 @@ bool SNDDMA_Init()
 	if (!dma.speed)
 	{
 		//failed
-		GLog.Write("ALSA: cannot set rate\n");
+		GLog.write("ALSA: cannot set rate\n");
 		snd_pcm_hw_params_free(hw_params);
 		return false;
 	}
@@ -202,7 +202,7 @@ bool SNDDMA_Init()
 	err = snd_pcm_hw_params_set_channels(pcm_handle, hw_params, dma.channels);
 	if (err < 0)
 	{
-		GLog.Write("ALSA: cannot set channels %d(%s)\n",
+		GLog.write("ALSA: cannot set channels %d(%s)\n",
 			s_channels_cv->integer, snd_strerror(err));
 		snd_pcm_hw_params_free(hw_params);
 		return false;
@@ -212,7 +212,7 @@ bool SNDDMA_Init()
 	err = snd_pcm_hw_params_set_buffer_size_near(pcm_handle, hw_params, &p);
 	if (err < 0)
 	{
-		GLog.Write("ALSA: Unable to set buffer size %li: %s\n", BUFFER_SAMPLES / dma.channels, snd_strerror(err));
+		GLog.write("ALSA: Unable to set buffer size %li: %s\n", BUFFER_SAMPLES / dma.channels, snd_strerror(err));
 		//return false;
 	}
 
@@ -220,7 +220,7 @@ bool SNDDMA_Init()
 	err = snd_pcm_hw_params_set_period_size_near(pcm_handle, hw_params, &p, &dir);
 	if (err < 0)
 	{
-		GLog.Write("ALSA: cannot set period size (%s)\n", snd_strerror(err));
+		GLog.write("ALSA: cannot set period size (%s)\n", snd_strerror(err));
 		snd_pcm_hw_params_free(hw_params);
 		return false;
 	}
@@ -229,7 +229,7 @@ bool SNDDMA_Init()
 		//rate succeeded, but is perhaps slightly different
 		if (dir != 0)
 		{
-			GLog.Write("ALSA: period %d not supported, using %d\n", (BUFFER_SAMPLES / dma.channels), p);
+			GLog.write("ALSA: period %d not supported, using %d\n", (BUFFER_SAMPLES / dma.channels), p);
 		}
 	}
 
@@ -237,7 +237,7 @@ bool SNDDMA_Init()
 	if (err < 0)
 	{
 		//set params
-		GLog.Write("ALSA: cannot set params(%s)\n", snd_strerror(err));
+		GLog.write("ALSA: cannot set params(%s)\n", snd_strerror(err));
 		snd_pcm_hw_params_free(hw_params);
 		return false;
 	}
@@ -289,7 +289,7 @@ int SNDDMA_GetDMAPos()
 {
 	if (!dma.buffer)
 	{
-		GLog.Write("Sound not inizialized\n");
+		GLog.write("Sound not inizialized\n");
 		return 0;
 	}
 

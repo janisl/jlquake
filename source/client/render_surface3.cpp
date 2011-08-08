@@ -167,7 +167,7 @@ void RB_AddQuadStamp(vec3_t origin, vec3_t left, vec3_t up, byte* color)
 
 static void RB_SurfaceBad(surfaceType_t* surfType)
 {
-	GLog.Write("Bad surface tesselated.\n");
+	GLog.write("Bad surface tesselated.\n");
 }
 
 //==========================================================================

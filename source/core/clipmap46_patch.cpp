@@ -854,7 +854,7 @@ int	patchCollide_t::GridPlane(int gridPlanes[MAX_GRID_SIZE][MAX_GRID_SIZE][2], i
 	}
 
 	// should never happen
-	GLog.Write("WARNING: CM_GridPlane unresolvable\n");
+	GLog.write("WARNING: CM_GridPlane unresolvable\n");
 	return -1;
 }
 
@@ -929,7 +929,7 @@ void patchCollide_t::SetBorderInward(facet_t* facet, cGrid_t* grid,
 		else
 		{
 			// bisecting side border
-			GLog.DWrite("WARNING: CM_SetBorderInward: mixed plane sides\n" );
+			GLog.develWrite("WARNING: CM_SetBorderInward: mixed plane sides\n" );
 			facet->borderInward[k] = false;
 			if (!debugBlock)
 			{
@@ -1106,7 +1106,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 			{
 				if (facet->numBorders > 4 + 6 + 16)
 				{
-					GLog.Write("ERROR: too many bevels\n");
+					GLog.write("ERROR: too many bevels\n");
 				}
 				facet->borderPlanes[facet->numBorders] = FindPlane2(plane, &flipped);
 				facet->borderNoAdjust[facet->numBorders] = 0;
@@ -1194,7 +1194,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 				{
 					if (facet->numBorders > 4 + 6 + 16)
 					{
-						GLog.Write("ERROR: too many bevels\n");
+						GLog.write("ERROR: too many bevels\n");
 					}
 					facet->borderPlanes[facet->numBorders] = FindPlane2(plane, &flipped);
 
@@ -1203,7 +1203,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 						if (facet->borderPlanes[facet->numBorders] ==
 							facet->borderPlanes[k])
 						{
-							GLog.Write("WARNING: bevel plane already used\n");
+							GLog.write("WARNING: bevel plane already used\n");
 						}
 					}
 
@@ -1221,7 +1221,7 @@ void patchCollide_t::AddFacetBevels(facet_t* facet)
 					CM46_ChopWindingInPlace(&w2, newplane, newplane[3], 0.1f);
 					if (!w2)
 					{
-						GLog.DWrite("WARNING: CM_AddFacetBevels... invalid bevel\n");
+						GLog.develWrite("WARNING: CM_AddFacetBevels... invalid bevel\n");
 						continue;
 					}
 					else
@@ -1893,7 +1893,7 @@ void QClipMap46::DrawDebugSurface(void (*drawPoly)(int color, int numPoints, flo
 				CM46_FreeWinding( w );
 			}
 			else
-				GLog.Write("winding chopped away by border planes\n");
+				GLog.write("winding chopped away by border planes\n");
 		}
 	}
 

@@ -77,7 +77,7 @@ bool SNDDMA_Init()
 		if (audio_fd < 0)
 		{
 			perror(snddevice->string);
-			GLog.Write("Could not open %s\n", snddevice->string);
+			GLog.write("Could not open %s\n", snddevice->string);
 			return false;
 		}
 	}
@@ -85,7 +85,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_RESET, 0) < 0)//Not in Q3
 	{
 		perror(snddevice->string);
-		GLog.Write("Could not reset %s\n", snddevice->string);
+		GLog.write("Could not reset %s\n", snddevice->string);
 		close(audio_fd);
 		return false;
 	}
@@ -94,14 +94,14 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_GETCAPS, &caps) == -1)
 	{
 		perror(snddevice->string);
-		GLog.Write("Sound driver too old\n");
+		GLog.write("Sound driver too old\n");
 		close(audio_fd);
 		return false;
 	}
 
 	if (!(caps & DSP_CAP_TRIGGER) || !(caps & DSP_CAP_MMAP))
 	{
-		GLog.Write("Sorry but your soundcard can't do this\n");
+		GLog.write("Sorry but your soundcard can't do this\n");
 		close(audio_fd);
 		return 0;
 	}
@@ -170,7 +170,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_STEREO, &tmp) < 0)
 	{
 		perror(snddevice->string);
-		GLog.Write("Could not set %s to stereo=%d", snddevice->string, dma.channels);
+		GLog.write("Could not set %s to stereo=%d", snddevice->string, dma.channels);
 		close(audio_fd);
 		return 0;
 	}
@@ -186,7 +186,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_SPEED, &dma.speed) < 0)
 	{
 		perror(snddevice->string);
-		GLog.Write("Could not set %s speed to %d", snddevice->string, dma.speed);
+		GLog.write("Could not set %s speed to %d", snddevice->string, dma.speed);
 		close(audio_fd);
 		return 0;
 	}
@@ -197,7 +197,7 @@ bool SNDDMA_Init()
 		if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &tmp) < 0)
 		{
 			perror(snddevice->string);
-			GLog.Write("Could not support 16-bit data.  Try 8-bit.\n");
+			GLog.write("Could not support 16-bit data.  Try 8-bit.\n");
 			close(audio_fd);
 			return 0;
 		}
@@ -208,7 +208,7 @@ bool SNDDMA_Init()
 		if (ioctl(audio_fd, SNDCTL_DSP_SETFMT, &tmp) < 0)
 		{
 			perror(snddevice->string);
-			GLog.Write("Could not support 8-bit data.\n");
+			GLog.write("Could not support 8-bit data.\n");
 			close(audio_fd);
 			return 0;
 		}
@@ -216,7 +216,7 @@ bool SNDDMA_Init()
 	else
 	{
 		perror(snddevice->string);
-		GLog.Write("%d-bit sound not supported.", dma.samplebits);
+		GLog.write("%d-bit sound not supported.", dma.samplebits);
 		close(audio_fd);
 		return 0;
 	}
@@ -225,7 +225,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_GETOSPACE, &info)==-1)
 	{   
 		perror("GETOSPACE");
-		GLog.Write("Um, can't do GETOSPACE?\n");
+		GLog.write("Um, can't do GETOSPACE?\n");
 		close(audio_fd);
 		return 0;
 	}
@@ -247,8 +247,8 @@ bool SNDDMA_Init()
 
 	if (dma.buffer == MAP_FAILED)
 	{
-		GLog.Write("Could not mmap dma buffer PROT_WRITE|PROT_READ\n");
-		GLog.Write("trying mmap PROT_WRITE (with associated better compatibility / less performance code)\n");
+		GLog.write("Could not mmap dma buffer PROT_WRITE|PROT_READ\n");
+		GLog.write("trying mmap PROT_WRITE (with associated better compatibility / less performance code)\n");
 		dma.buffer = (byte*)mmap(NULL, info.fragstotal * info.fragsize,
 			PROT_WRITE, MAP_FILE | MAP_SHARED, audio_fd, 0);
 		// NOTE TTimo could add a variable to force using regular memset on systems that are known to be safe
@@ -258,7 +258,7 @@ bool SNDDMA_Init()
 	if (dma.buffer == MAP_FAILED)
 	{
 		perror(snddevice->string);
-		GLog.Write("Could not mmap %s\n", snddevice->string);
+		GLog.write("Could not mmap %s\n", snddevice->string);
 		close(audio_fd);
 		return 0;
 	}
@@ -269,7 +269,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp) < 0)
 	{
 		perror(snddevice->string);
-		GLog.Write("Could not toggle.\n");
+		GLog.write("Could not toggle.\n");
 		close(audio_fd);
 		return 0;
 	}
@@ -277,7 +277,7 @@ bool SNDDMA_Init()
 	if (ioctl(audio_fd, SNDCTL_DSP_SETTRIGGER, &tmp) < 0)
 	{
 		perror(snddevice->string);
-		GLog.Write("Could not toggle.\n");
+		GLog.write("Could not toggle.\n");
 		close(audio_fd);
 		return 0;
 	}
@@ -315,7 +315,7 @@ int SNDDMA_GetDMAPos()
 	if (ioctl(audio_fd, SNDCTL_DSP_GETOPTR, &count) == -1)
 	{
 		perror(snddevice->string);
-		GLog.Write("Uh, sound dead.\n");
+		GLog.write("Uh, sound dead.\n");
 		close(audio_fd);
 		snd_inited = 0;
 		return 0;

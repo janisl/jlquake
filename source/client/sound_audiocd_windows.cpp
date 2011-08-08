@@ -71,7 +71,7 @@ static void CDAudio_Eject()
 
     if (dwReturn = mciSendCommand(wDeviceID, MCI_SET, MCI_SET_DOOR_OPEN, (DWORD)NULL))
 	{
-		GLog.DWrite("MCI_SET_DOOR_OPEN failed (%i)\n", dwReturn);
+		GLog.develWrite("MCI_SET_DOOR_OPEN failed (%i)\n", dwReturn);
 	}
 }
 
@@ -87,7 +87,7 @@ static void CDAudio_CloseDoor()
 
     if (dwReturn = mciSendCommand(wDeviceID, MCI_SET, MCI_SET_DOOR_CLOSED, (DWORD)NULL))
 	{
-		GLog.DWrite("MCI_SET_DOOR_CLOSED failed (%i)\n", dwReturn);
+		GLog.develWrite("MCI_SET_DOOR_CLOSED failed (%i)\n", dwReturn);
 	}
 }
 
@@ -109,12 +109,12 @@ static int CDAudio_GetAudioDiskInfo()
     dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
 	if (dwReturn)
 	{
-		GLog.DWrite("CDAudio: drive ready test - get status failed\n");
+		GLog.develWrite("CDAudio: drive ready test - get status failed\n");
 		return -1;
 	}
 	if (!mciStatusParms.dwReturn)
 	{
-		GLog.DWrite("CDAudio: drive not ready\n");
+		GLog.develWrite("CDAudio: drive not ready\n");
 		return -1;
 	}
 
@@ -122,12 +122,12 @@ static int CDAudio_GetAudioDiskInfo()
     dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
 	if (dwReturn)
 	{
-		GLog.DWrite("CDAudio: get tracks - status failed\n");
+		GLog.develWrite("CDAudio: get tracks - status failed\n");
 		return -1;
 	}
 	if (mciStatusParms.dwReturn < 1)
 	{
-		GLog.DWrite("CDAudio: no music tracks\n");
+		GLog.develWrite("CDAudio: no music tracks\n");
 		return -1;
 	}
 
@@ -169,7 +169,7 @@ static void CDAudio_Play2(int track, qboolean looping)
 	{
 		if (GGameType & GAME_QuakeHexen)
 		{
-			GLog.DWrite("CDAudio: Bad track number %u.\n", track);
+			GLog.develWrite("CDAudio: Bad track number %u.\n", track);
 		}
 		else
 		{
@@ -184,12 +184,12 @@ static void CDAudio_Play2(int track, qboolean looping)
     dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_TRACK | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
 	if (dwReturn)
 	{
-		GLog.DWrite("MCI_STATUS failed (%i)\n", dwReturn);
+		GLog.develWrite("MCI_STATUS failed (%i)\n", dwReturn);
 		return;
 	}
 	if (mciStatusParms.dwReturn != MCI_CDA_TRACK_AUDIO)
 	{
-		GLog.Write("CDAudio: track %i is not audio\n", track);
+		GLog.write("CDAudio: track %i is not audio\n", track);
 		return;
 	}
 
@@ -199,7 +199,7 @@ static void CDAudio_Play2(int track, qboolean looping)
     dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_TRACK | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
 	if (dwReturn)
 	{
-		GLog.DWrite("MCI_STATUS failed (%i)\n", dwReturn);
+		GLog.develWrite("MCI_STATUS failed (%i)\n", dwReturn);
 		return;
 	}
 
@@ -218,7 +218,7 @@ static void CDAudio_Play2(int track, qboolean looping)
     dwReturn = mciSendCommand(wDeviceID, MCI_PLAY, MCI_NOTIFY | MCI_FROM | MCI_TO, (DWORD)(LPVOID) &mciPlayParms);
 	if (dwReturn)
 	{
-		GLog.DWrite("CDAudio: MCI_PLAY failed (%i)\n", dwReturn);
+		GLog.develWrite("CDAudio: MCI_PLAY failed (%i)\n", dwReturn);
 		return;
 	}
 
@@ -278,7 +278,7 @@ void CDAudio_Stop()
 
     if (dwReturn = mciSendCommand(wDeviceID, MCI_STOP, 0, (DWORD)NULL))
 	{
-		GLog.DWrite("MCI_STOP failed (%i)", dwReturn);
+		GLog.develWrite("MCI_STOP failed (%i)", dwReturn);
 	}
 
 	wasPlaying = false;
@@ -309,7 +309,7 @@ void CDAudio_Pause()
 	mciGenericParms.dwCallback = (DWORD)GMainWindow;
     if (dwReturn = mciSendCommand(wDeviceID, MCI_PAUSE, 0, (DWORD)(LPVOID) &mciGenericParms))
 	{
-		GLog.DWrite("MCI_PAUSE failed (%i)", dwReturn);
+		GLog.develWrite("MCI_PAUSE failed (%i)", dwReturn);
 	}
 
 	wasPlaying = playing;
@@ -348,7 +348,7 @@ void CDAudio_Resume()
     dwReturn = mciSendCommand(wDeviceID, MCI_PLAY, MCI_TO | MCI_NOTIFY, (DWORD)(LPVOID) &mciPlayParms);
 	if (dwReturn)
 	{
-		GLog.DWrite("CDAudio: MCI_PLAY failed (%i)\n", dwReturn);
+		GLog.develWrite("CDAudio: MCI_PLAY failed (%i)\n", dwReturn);
 		return;
 	}
 	playing = true;
@@ -368,10 +368,10 @@ static void CD_f()
 
 	if (Cmd_Argc() < 2)
 	{
-		GLog.Write("commands:");
-		GLog.Write("on, off, reset, remap, \n");
-		GLog.Write("play, stop, loop, pause, resume\n");
-		GLog.Write("eject, close, info\n");
+		GLog.write("commands:");
+		GLog.write("on, off, reset, remap, \n");
+		GLog.write("play, stop, loop, pause, resume\n");
+		GLog.write("eject, close, info\n");
 		return;
 	}
 
@@ -417,7 +417,7 @@ static void CD_f()
 			{
 				if (remap[n] != n)
 				{
-					GLog.Write("  %u -> %u\n", n, remap[n]);
+					GLog.write("  %u -> %u\n", n, remap[n]);
 				}
 			}
 			return;
@@ -440,7 +440,7 @@ static void CD_f()
 		CDAudio_GetAudioDiskInfo();
 		if (!cdValid)
 		{
-			GLog.Write("No CD in player.\n");
+			GLog.write("No CD in player.\n");
 			return;
 		}
 	}
@@ -488,16 +488,16 @@ static void CD_f()
 
 	if (String::ICmp(command, "info") == 0)
 	{
-		GLog.Write("%u tracks\n", maxTrack);
+		GLog.write("%u tracks\n", maxTrack);
 		if (playing)
 		{
-			GLog.Write("Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack);
+			GLog.write("Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack);
 		}
 		else if (wasPlaying)
 		{
-			GLog.Write("Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack);
+			GLog.write("Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack);
 		}
-		GLog.Write("Volume is %f\n", cdvolume);
+		GLog.write("Volume is %f\n", cdvolume);
 		return;
 	}
 }
@@ -542,13 +542,13 @@ LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			break;
 
 		case MCI_NOTIFY_FAILURE:
-			GLog.DWrite("MCI_NOTIFY_FAILURE\n");
+			GLog.develWrite("MCI_NOTIFY_FAILURE\n");
 			CDAudio_Stop();
 			cdValid = false;
 			break;
 
 		default:
-			GLog.DWrite("Unexpected MM_MCINOTIFY type (%i)\n", wParam);
+			GLog.develWrite("Unexpected MM_MCINOTIFY type (%i)\n", wParam);
 			return 1;
 	}
 
@@ -638,7 +638,7 @@ int CDAudio_Init()
 	mciOpenParms.lpstrDeviceType = "cdaudio";
 	if (dwReturn = mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE | MCI_OPEN_SHAREABLE, (DWORD) (LPVOID) &mciOpenParms))
 	{
-		GLog.Write("CDAudio_Init: MCI_OPEN failed (%i)\n", dwReturn);
+		GLog.write("CDAudio_Init: MCI_OPEN failed (%i)\n", dwReturn);
 		return -1;
 	}
 	wDeviceID = mciOpenParms.wDeviceID;
@@ -647,7 +647,7 @@ int CDAudio_Init()
     mciSetParms.dwTimeFormat = MCI_FORMAT_TMSF;
     if (dwReturn = mciSendCommand(wDeviceID, MCI_SET, MCI_SET_TIME_FORMAT, (DWORD)(LPVOID) &mciSetParms))
     {
-		GLog.Write("MCI_SET_TIME_FORMAT failed (%i)\n", dwReturn);
+		GLog.write("MCI_SET_TIME_FORMAT failed (%i)\n", dwReturn);
         mciSendCommand(wDeviceID, MCI_CLOSE, 0, (DWORD)NULL);
 		return -1;
     }
@@ -661,14 +661,14 @@ int CDAudio_Init()
 
 	if (CDAudio_GetAudioDiskInfo())
 	{
-		GLog.Write("CDAudio_Init: No CD in player.\n");
+		GLog.write("CDAudio_Init: No CD in player.\n");
 		cdValid = false;
 		enabled = false;
 	}
 
 	Cmd_AddCommand("cd", CD_f);
 
-	GLog.Write("CD Audio Initialized\n");
+	GLog.write("CD Audio Initialized\n");
 
 	return 0;
 }
@@ -688,7 +688,7 @@ void CDAudio_Shutdown()
 	CDAudio_Stop();
 	if (mciSendCommand(wDeviceID, MCI_CLOSE, MCI_WAIT, (DWORD)NULL))
 	{
-		GLog.DWrite("CDAudio_Shutdown: MCI_CLOSE failed\n");
+		GLog.develWrite("CDAudio_Shutdown: MCI_CLOSE failed\n");
 	}
 }
 

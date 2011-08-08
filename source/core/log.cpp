@@ -86,18 +86,18 @@ void Log::removeListener(LogListener* listener)
 
 //==========================================================================
 //
-//	Log::Write
+//	Log::write
 //
 //==========================================================================
 
-void Log::Write(const char* Fmt, ...)
+void Log::write(const char* format, ...)
 {
-	va_list		ArgPtr;
-	char		string[MAXPRINTMSG];
+	va_list argPtr;
+	char string[MAXPRINTMSG];
 	
-	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(string, MAXPRINTMSG, Fmt, ArgPtr);
-	va_end(ArgPtr);
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
@@ -116,18 +116,18 @@ void Log::Write(const char* Fmt, ...)
 
 //==========================================================================
 //
-//	Log::WriteLine
+//	Log::writeLine
 //
 //==========================================================================
 
-void Log::WriteLine(const char* Fmt, ...)
+void Log::writeLine(const char* format, ...)
 {
-	va_list		ArgPtr;
-	char		string[MAXPRINTMSG];
+	va_list argPtr;
+	char string[MAXPRINTMSG];
 	
-	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(string, MAXPRINTMSG, Fmt, ArgPtr);
-	va_end(ArgPtr);
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
 	strcat(string, "\n");
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
@@ -147,18 +147,18 @@ void Log::WriteLine(const char* Fmt, ...)
 
 //==========================================================================
 //
-//	Log::DWrite
+//	Log::develWrite
 //
 //==========================================================================
 
-void Log::DWrite(const char* Fmt, ...)
+void Log::develWrite(const char* format, ...)
 {
-	va_list		ArgPtr;
-	char		string[MAXPRINTMSG];
+	va_list argPtr;
+	char string[MAXPRINTMSG];
 	
-	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(string, MAXPRINTMSG, Fmt, ArgPtr);
-	va_end(ArgPtr);
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
@@ -177,18 +177,18 @@ void Log::DWrite(const char* Fmt, ...)
 
 //==========================================================================
 //
-//	Log::DWriteLine
+//	Log::develWriteLine
 //
 //==========================================================================
 
-void Log::DWriteLine(const char* Fmt, ...)
+void Log::develWriteLine(const char* format, ...)
 {
-	va_list		ArgPtr;
-	char		string[MAXPRINTMSG];
+	va_list argPtr;
+	char string[MAXPRINTMSG];
 	
-	va_start(ArgPtr, Fmt);
-	Q_vsnprintf(string, MAXPRINTMSG, Fmt, ArgPtr);
-	va_end(ArgPtr);
+	va_start(argPtr, format);
+	Q_vsnprintf(string, MAXPRINTMSG, format, argPtr);
+	va_end(argPtr);
 	strcat(string, "\n");
 
 	for (int i = 0; i < MAX_LISTENERS; i++)

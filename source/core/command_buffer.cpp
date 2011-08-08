@@ -125,7 +125,7 @@ void Cbuf_AddText(const char* Text)
 
 	if (cmd_text.cursize + L >= cmd_text.maxsize)
 	{
-		GLog.Write("Cbuf_AddText: overflow\n");
+		GLog.write("Cbuf_AddText: overflow\n");
 		return;
 	}
 	Com_Memcpy(&cmd_text.data[cmd_text.cursize], Text, L);
@@ -146,7 +146,7 @@ void Cbuf_InsertText(const char* Text)
 	int Len = String::Length(Text) + 1;
 	if (Len + cmd_text.cursize > cmd_text.maxsize)
 	{
-		GLog.Write("Cbuf_InsertText overflowed\n");
+		GLog.write("Cbuf_InsertText overflowed\n");
 		return;
 	}
 
@@ -465,9 +465,9 @@ static void Cmd_Echo_f()
 {
 	for (int i = 1; i < Cmd_Argc(); i++)
 	{
-		GLog.Write("%s ",Cmd_Argv(i));
+		GLog.write("%s ",Cmd_Argv(i));
 	}
-	GLog.Write("\n");
+	GLog.write("\n");
 }
 
 //==========================================================================
@@ -485,10 +485,10 @@ static void Cmd_Alias_f()
 
 	if (Cmd_Argc() == 1)
 	{
-		GLog.Write("Current alias commands:\n");
+		GLog.write("Current alias commands:\n");
 		for (a = cmd_alias; a; a = a->next)
 		{
-			GLog.Write("%s : %s\n", a->name, a->value);
+			GLog.write("%s : %s\n", a->name, a->value);
 		}
 		return;
 	}
@@ -496,7 +496,7 @@ static void Cmd_Alias_f()
 	const char* s = Cmd_Argv(1);
 	if (String::Length(s) >= MAX_ALIAS_NAME)
 	{
-		GLog.Write("Alias name is too long\n");
+		GLog.write("Alias name is too long\n");
 		return;
 	}
 
@@ -546,7 +546,7 @@ static void Cmd_Vstr_f()
 {
 	if (Cmd_Argc () != 2)
 	{
-		GLog.Write("vstr <variablename> : execute a variable command\n");
+		GLog.write("vstr <variablename> : execute a variable command\n");
 		return;
 	}
 
@@ -564,7 +564,7 @@ static void Cmd_Exec_f()
 {
 	if (Cmd_Argc() != 2)
 	{
-		GLog.Write("exec <filename> : execute a script file\n");
+		GLog.write("exec <filename> : execute a script file\n");
 		return;
 	}
 
@@ -576,12 +576,12 @@ static void Cmd_Exec_f()
 	FS_ReadFile(filename, Buffer);
 	if (!Buffer.Num())
 	{
-		GLog.Write("couldn't exec %s\n", Cmd_Argv(1));
+		GLog.write("couldn't exec %s\n", Cmd_Argv(1));
 		return;
 	}
 	//	Append trailing 0
 	Buffer.Append(0);
-	GLog.Write("execing %s\n", Cmd_Argv(1));
+	GLog.write("execing %s\n", Cmd_Argv(1));
 
 	Cbuf_InsertText((char*)Buffer.Ptr());
 }
@@ -613,10 +613,10 @@ static void Cmd_List_f()
 			continue;
 		}
 
-		GLog.Write("%s\n", cmd->name);
+		GLog.write("%s\n", cmd->name);
 		i++;
 	}
-	GLog.Write("%i commands\n", i);
+	GLog.write("%i commands\n", i);
 }
 
 /*
@@ -667,7 +667,7 @@ void Cmd_AddCommand(const char* CmdName, xcommand_t Function)
 			//	Allow completion-only commands to be silently doubled.
 			if (Function != NULL)
 			{
-				GLog.Write("Cmd_AddCommand: %s already defined\n", CmdName);
+				GLog.write("Cmd_AddCommand: %s already defined\n", CmdName);
 			}
 			return;
 		}
@@ -862,7 +862,7 @@ static const char* Cmd_MacroExpandString(const char* Text)
 	int Len = String::Length(Scan);
 	if (Len >= MAX_STRING_CHARS)
 	{
-		GLog.Write("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
+		GLog.write("Line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
 		return NULL;
 	}
 
@@ -896,7 +896,7 @@ static const char* Cmd_MacroExpandString(const char* Text)
 		Len += j;
 		if (Len >= MAX_STRING_CHARS)
 		{
-			GLog.Write("Expanded line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
+			GLog.write("Expanded line exceeded %i chars, discarded.\n", MAX_STRING_CHARS);
 			return NULL;
 		}
 
@@ -911,14 +911,14 @@ static const char* Cmd_MacroExpandString(const char* Text)
 
 		if (++Count == 100)
 		{
-			GLog.Write("Macro expansion loop, discarded.\n");
+			GLog.write("Macro expansion loop, discarded.\n");
 			return NULL;
 		}
 	}
 
 	if (InQuote)
 	{
-		GLog.Write("Line has unmatched quote, discarded.\n");
+		GLog.write("Line has unmatched quote, discarded.\n");
 		return NULL;
 	}
 
@@ -1226,7 +1226,7 @@ void Cmd_ExecuteString(const char* Text, cmd_source_t Src)
 		{
 			if (++alias_count == ALIAS_LOOP_COUNT)
 			{
-				GLog.Write("ALIAS_LOOP_COUNT\n");
+				GLog.write("ALIAS_LOOP_COUNT\n");
 				return;
 			}
 			Cbuf_InsertText(a->value);
@@ -1306,7 +1306,7 @@ static void PrintMatches(const char* s)
 {
 	if (!String::NICmp(s, shortestMatch, String::Length(shortestMatch)))
 	{
-		GLog.Write("    %s\n", s);
+		GLog.write("    %s\n", s);
 	}
 }
 
@@ -1420,7 +1420,7 @@ void Field_CompleteCommand(field_t* field)
 	completionField->cursor = String::Length(completionField->buffer);
 	ConcatRemaining(temp.buffer, completionString);
 
-	GLog.Write("]%s\n", completionField->buffer);
+	GLog.write("]%s\n", completionField->buffer);
 
 	// run through again, printing matches
 	Cmd_CommandCompletion(PrintMatches);

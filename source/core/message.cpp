@@ -167,7 +167,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 			throw QException("SZ_GetSpace: overflow without allowoverflow set");
 		}
 		//	Games before Quake 3 does this.
-		//GLog.WriteLine("SZ_GetSpace: overflow");
+		//GLog.writeLine("SZ_GetSpace: overflow");
 		//Clear(); 
 		overflowed = true;
 		return;
@@ -432,7 +432,7 @@ void QMsg::WriteString(const char* S)
 		int L = String::Length(S);
 		if (L >= MAX_STRING_CHARS)
 		{
-			GLog.Write("QMsg::WriteString: MAX_STRING_CHARS");
+			GLog.write("QMsg::WriteString: MAX_STRING_CHARS");
 			WriteData("", 1);
 			return;
 		}
@@ -488,7 +488,7 @@ void QMsg::WriteBigString(const char *S)
 		int L = String::Length(S);
 		if (L >= BIG_INFO_STRING)
 		{
-			GLog.Write("MSG_WriteString: BIG_INFO_STRING");
+			GLog.write("MSG_WriteString: BIG_INFO_STRING");
 			WriteData("", 1);
 			return;
 		}

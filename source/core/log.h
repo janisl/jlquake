@@ -33,11 +33,11 @@ public:
 	void addListener(LogListener* listener);
 	void removeListener(LogListener* listener);
 
-	void Write(const char* Fmt, ...);
-	void WriteLine(const char* Fmt, ...);
+	void write(const char* format, ...);
+	void writeLine(const char* format, ...);
 
-	void DWrite(const char* Fmt, ...);
-	void DWriteLine(const char* Fmt, ...);
+	void develWrite(const char* format, ...);
+	void develWriteLine(const char* format, ...);
 };
 
 extern Log			GLog;

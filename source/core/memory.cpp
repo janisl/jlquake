@@ -431,11 +431,11 @@ static void Mem_MemDebugDump()
 	int NumBlocks = 0;
 	for (MemDebug_t* m = MemDebug; m; m = m->Next)
 	{
-		GLog.WriteLine("block %p size %8d at %s:%d", m + 1, m->Size,
+		GLog.writeLine("block %p size %8d at %s:%d", m + 1, m->Size,
 			m->FileName, m->LineNumber);
 		NumBlocks++;
 	}
-	GLog.WriteLine("%d blocks allocated", NumBlocks);
+	GLog.writeLine("%d blocks allocated", NumBlocks);
 }
 
 #else

@@ -886,12 +886,12 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 	while (start)
 	{
 		char* token = String::Parse1(&start);
-GLog.WriteLine("Token %s", token);
+GLog.writeLine("Token %s", token);
 		if (!start)
 			break;		// end of file
 		entnum = String::Atoi(token);
 		token = String::Parse1(&start);
-GLog.WriteLine("Token %s", token);
+GLog.writeLine("Token %s", token);
 		if (String::Cmp(token, "{"))
 			Sys_Error("First token isn't a brace");
 			

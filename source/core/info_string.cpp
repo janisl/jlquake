@@ -228,25 +228,25 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 
 	if (strchr(key, '\\') || strchr(value, '\\'))
 	{
-		GLog.Write("Can't use keys or values with a \\\n");
+		GLog.write("Can't use keys or values with a \\\n");
 		return;
 	}
 
 	if (strchr(key, ';') || strchr(value, ';'))
 	{
-		GLog.Write("Can't use keys or values with a semicolon\n");
+		GLog.write("Can't use keys or values with a semicolon\n");
 		return;
 	}
 
 	if (strchr(key, '\"') || strchr(value, '\"'))
 	{
-		GLog.Write("Can't use keys or values with a \"\n");
+		GLog.write("Can't use keys or values with a \"\n");
 		return;
 	}
 
 	if (String::Length(key) > MaxKeySize - 1 || String::Length(value) > MaxValSize - 1)
 	{
-		GLog.Write("Keys and values must be < %d characters.\n", MaxKeySize);
+		GLog.write("Keys and values must be < %d characters.\n", MaxKeySize);
 		return;
 	}
 
@@ -258,7 +258,7 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 
 	if (String::Length(newi) + String::Length(s) > MaxSize)
 	{
-		GLog.Write("Info string length exceeded\n");
+		GLog.write("Info string length exceeded\n");
 		return;
 	}
 
@@ -387,11 +387,11 @@ void Info_Print(const char* s)
 		}
 		else
 			*o = 0;
-		GLog.Write("%s", key);
+		GLog.write("%s", key);
 
 		if (!*s)
 		{
-			GLog.Write("MISSING VALUE\n");
+			GLog.write("MISSING VALUE\n");
 			return;
 		}
 
@@ -403,6 +403,6 @@ void Info_Print(const char* s)
 
 		if (*s)
 			s++;
-		GLog.Write("%s\n", value);
+		GLog.write("%s\n", value);
 	}
 }

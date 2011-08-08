@@ -234,7 +234,7 @@ static msprite1frame_t* R_GetSpriteFrame(msprite1_t* psprite, trRefEntity_t* cur
 
 	if (frame >= psprite->numframes || frame < 0)
 	{
-		GLog.Write("R_DrawSprite: no such frame %d\n", frame);
+		GLog.write("R_DrawSprite: no such frame %d\n", frame);
 		frame = 0;
 	}
 
