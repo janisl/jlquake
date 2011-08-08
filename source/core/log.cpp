@@ -46,22 +46,22 @@ Log			GLog;
 
 Log::Log()
 {
-	Com_Memset(Listeners, 0, sizeof(Listeners));
+	Com_Memset(listeners, 0, sizeof(listeners));
 }
 
 //==========================================================================
 //
-//	Log::AddListener
+//	Log::addListener
 //
 //==========================================================================
 
-void Log::AddListener(LogListener* Listener)
+void Log::addListener(LogListener* listener)
 {
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
-		if (!Listeners[i])
+		if (!listeners[i])
 		{
-			Listeners[i] = Listener;
+			listeners[i] = listener;
 			return;
 		}
 	}
@@ -69,17 +69,17 @@ void Log::AddListener(LogListener* Listener)
 
 //==========================================================================
 //
-//	Log::RemoveListener
+//	Log::removeListener
 //
 //==========================================================================
 
-void Log::RemoveListener(LogListener* Listener)
+void Log::removeListener(LogListener* listener)
 {
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
-		if (Listeners[i] == Listener)
+		if (listeners[i] == listener)
 		{
-			Listeners[i] = NULL;
+			listeners[i] = NULL;
 		}
 	}
 }
@@ -101,11 +101,11 @@ void Log::Write(const char* Fmt, ...)
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
-		if (Listeners[i])
+		if (listeners[i])
 		{
 			try
 			{
-				Listeners[i]->serialise(string, false);
+				listeners[i]->serialise(string, false);
 			}
 			catch (...)
 			{
@@ -132,11 +132,11 @@ void Log::WriteLine(const char* Fmt, ...)
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
-		if (Listeners[i])
+		if (listeners[i])
 		{
 			try
 			{
-				Listeners[i]->serialise(string, false);
+				listeners[i]->serialise(string, false);
 			}
 			catch (...)
 			{
@@ -162,11 +162,11 @@ void Log::DWrite(const char* Fmt, ...)
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
-		if (Listeners[i])
+		if (listeners[i])
 		{
 			try
 			{
-				Listeners[i]->serialise(string, true);
+				listeners[i]->serialise(string, true);
 			}
 			catch (...)
 			{
@@ -193,11 +193,11 @@ void Log::DWriteLine(const char* Fmt, ...)
 
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
-		if (Listeners[i])
+		if (listeners[i])
 		{
 			try
 			{
-				Listeners[i]->serialise(string, true);
+				listeners[i]->serialise(string, true);
 			}
 			catch (...)
 			{

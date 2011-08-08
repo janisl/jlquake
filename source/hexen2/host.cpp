@@ -945,7 +945,7 @@ void Host_Init (quakeparms_t *parms)
 	{
 	GGameType = GAME_Hexen2;
 	Sys_SetHomePathSuffix("jlhexen2");
-	GLog.AddListener(&MainLog);
+	GLog.addListener(&MainLog);
 
 //	if (standard_quake)
 		minimum_memory = MINIMUM_MEMORY;

@@ -25,13 +25,13 @@ class Log
 private:
 	enum { MAX_LISTENERS	= 8 };
 
-	LogListener*	Listeners[MAX_LISTENERS];
+	LogListener* listeners[MAX_LISTENERS];
 
 public:
 	Log();
 
-	void AddListener(LogListener* Listener);
-	void RemoveListener(LogListener* Listener);
+	void addListener(LogListener* listener);
+	void removeListener(LogListener* listener);
 
 	void Write(const char* Fmt, ...);
 	void WriteLine(const char* Fmt, ...);

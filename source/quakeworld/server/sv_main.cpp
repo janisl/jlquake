@@ -1660,7 +1660,7 @@ void SV_Init (quakeparms_t *parms)
 	{
 	GGameType = GAME_Quake | GAME_QuakeWorld;
 	Sys_SetHomePathSuffix("jlquake");
-	GLog.AddListener(&MainLog);
+	GLog.addListener(&MainLog);
 
 	COM_InitArgv2(parms->argc, parms->argv);
 	COM_AddParm ("-game");
