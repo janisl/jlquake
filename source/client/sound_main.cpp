@@ -273,16 +273,16 @@ sfx_t* S_FindName(const char* Name, bool Create)
 {
 	if (!Name)
 	{
-		throw QException("S_FindName: NULL\n");
+		throw Exception("S_FindName: NULL\n");
 	}
 	if (!Name[0])
 	{
-		throw QException("S_FindName: empty name\n");
+		throw Exception("S_FindName: empty name\n");
 	}
 
 	if (String::Length(Name) >= MAX_QPATH)
 	{
-		throw QException(va("Sound name too long: %s", Name));
+		throw Exception(va("Sound name too long: %s", Name));
 	}
 
 	int Hash = S_HashSFXName(Name);
@@ -317,7 +317,7 @@ sfx_t* S_FindName(const char* Name, bool Create)
 	{
 		if (s_numSfx == MAX_SFX)
 		{
-			throw QException("S_FindName: out of sfx_t");
+			throw Exception("S_FindName: out of sfx_t");
 		}
 		s_numSfx++;
 	}
@@ -359,7 +359,7 @@ sfx_t* S_AliasName(const char* AliasName, const char* TrueName)
 	{
 		if (s_numSfx == MAX_SFX)
 		{
-			throw QException("S_FindName: out of sfx_t");
+			throw Exception("S_FindName: out of sfx_t");
 		}
 		s_numSfx++;
 	}
@@ -1012,7 +1012,7 @@ void S_UpdateEntityPosition(int EntityNum, const vec3_t Origin)
 {
 	if (EntityNum < 0 || EntityNum > MAX_LOOPSOUNDS)
 	{
-		QDropException(va("S_UpdateEntityPosition: bad entitynum %i", EntityNum));
+		DropException(va("S_UpdateEntityPosition: bad entitynum %i", EntityNum));
 	}
 	VectorCopy(Origin, loopSounds[EntityNum].origin);
 }
@@ -1091,7 +1091,7 @@ void S_AddLoopingSound(int entityNum, const vec3_t origin, const vec3_t velocity
 		{
 			return;
 		}
-		QDropException(va("%s has length 0", sfx->Name));
+		DropException(va("%s has length 0", sfx->Name));
 	}
 
 	VectorCopy(origin, loopSounds[entityNum].origin);
@@ -1168,7 +1168,7 @@ void S_AddRealLoopingSound(int entityNum, const vec3_t origin, const vec3_t velo
 
 	if (!sfx->Length)
 	{
-		QDropException(va("%s has length 0", sfx->Name));
+		DropException(va("%s has length 0", sfx->Name));
 	}
 
 	VectorCopy(origin, loopSounds[entityNum].origin);
@@ -1189,7 +1189,7 @@ static channel_t* S_PickChannel(int EntNum, int EntChannel)
 {
 	if ((GGameType & GAME_Quake2) && EntChannel < 0)
 	{
-		QDropException("S_PickChannel: entchannel<0");
+		DropException("S_PickChannel: entchannel<0");
 	}
 
 	// Check for replacement sound, or find the best one to replace
@@ -1652,7 +1652,7 @@ void S_StartSound(vec3_t origin, int entnum, int entchannel, sfxHandle_t sfxHand
 
 		if (!origin && ( entnum < 0 || entnum > MAX_LOOPSOUNDS))
 		{
-			throw QDropException(va("S_StartSound: bad entitynum %i", entnum));
+			throw DropException(va("S_StartSound: bad entitynum %i", entnum));
 		}
 
 		if (sfx->InMemory == false)

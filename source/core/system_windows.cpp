@@ -381,7 +381,7 @@ double Sys_DoubleTime()
 		unsigned int	lowpart, highpart;
 
 		if (!QueryPerformanceFrequency (&PerformanceFreq))
-			throw QException("No hardware timer available");
+			throw Exception("No hardware timer available");
 
 		// get 32 out of the 64 time bits such that we have around
 		// 1 microsecond resolution

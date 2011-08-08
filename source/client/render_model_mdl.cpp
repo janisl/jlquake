@@ -241,7 +241,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 {
 	if (numskins < 1 || numskins > MAX_MESH1_SKINS)
 	{
-		throw QException(va("Mod_LoadMdlModel: Invalid # of skins: %d\n", numskins));
+		throw Exception(va("Mod_LoadMdlModel: Invalid # of skins: %d\n", numskins));
 	}
 
 	int s = pheader->skinwidth * pheader->skinheight;
@@ -273,7 +273,7 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 			if ((GGameType & GAME_Quake) && !String::Cmp(loadmodel->name,"progs/player.mdl"))
 			{
 				if (s > (int)sizeof(q1_player_8bit_texels))
-					throw QException("Player skin too large");
+					throw Exception("Player skin too large");
 				Com_Memcpy(q1_player_8bit_texels, (byte *)(pskintype + 1), s);
 			}
 			else if (GGameType & GAME_Hexen2)
@@ -281,37 +281,37 @@ static void* Mod_LoadAllSkins(int numskins, dmdl_skintype_t* pskintype, int mdl_
 				if (!String::Cmp(loadmodel->name,"models/paladin.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[0]))
-						throw QException("Player skin too large");
+						throw Exception("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[0], (byte *)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/crusader.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[1]))
-						throw QException("Player skin too large");
+						throw Exception("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[1], (byte *)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/necro.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[2]))
-						throw QException("Player skin too large");
+						throw Exception("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[2], (byte *)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/assassin.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[3]))
-						throw QException("Player skin too large");
+						throw Exception("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[3], (byte *)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/succubus.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[4]))
-						throw QException("Player skin too large");
+						throw Exception("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[4], (byte *)(pskintype + 1), s);
 				}
 				else if (!String::Cmp(loadmodel->name,"models/hank.mdl"))
 				{
 					if (s > (int)sizeof(h2_player_8bit_texels[5]))
-						throw QException("Player skin too large");
+						throw Exception("Player skin too large");
 					Com_Memcpy(h2_player_8bit_texels[5], (byte *)(pskintype + 1), s);
 				}
 			}
@@ -749,7 +749,7 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_VERSION)
 	{
-		throw QException(va("%s has wrong version number (%i should be %i)",
+		throw Exception(va("%s has wrong version number (%i should be %i)",
 			mod->name, version, MESH1_VERSION));
 	}
 
@@ -772,33 +772,33 @@ void Mod_LoadMdlModel(model_t* mod, const void* buffer)
 
 	if (pheader->skinheight > MAX_LBM_HEIGHT)
 	{
-		throw QException(va("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT));
+		throw Exception(va("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT));
 	}
 
 	pheader->numverts = LittleLong(pinmodel->numverts);
 
 	if (pheader->numverts <= 0)
 	{
-		throw QException(va("model %s has no vertices", mod->name));
+		throw Exception(va("model %s has no vertices", mod->name));
 	}
 
 	if (pheader->numverts > MAXALIASVERTS)
 	{
-		throw QException(va("model %s has too many vertices", mod->name));
+		throw Exception(va("model %s has too many vertices", mod->name));
 	}
 
 	pheader->numtris = LittleLong(pinmodel->numtris);
 
 	if (pheader->numtris <= 0)
 	{
-		throw QException(va("model %s has no triangles", mod->name));
+		throw Exception(va("model %s has no triangles", mod->name));
 	}
 
 	pheader->numframes = LittleLong (pinmodel->numframes);
 	int numframes = pheader->numframes;
 	if (numframes < 1)
 	{
-		throw QException(va("Mod_LoadMdlModel: Invalid # of frames: %d\n", numframes));
+		throw Exception(va("Mod_LoadMdlModel: Invalid # of frames: %d\n", numframes));
 	}
 
 	pheader->size = LittleFloat(pinmodel->size) * ALIAS_BASE_SIZE_RATIO;
@@ -910,7 +910,7 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_NEWVERSION)
 	{
-		throw QException(va("%s has wrong version number (%i should be %i)",
+		throw Exception(va("%s has wrong version number (%i should be %i)",
 			mod->name, version, MESH1_NEWVERSION));
 	}
 
@@ -933,7 +933,7 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 
 	if (pheader->skinheight > MAX_LBM_HEIGHT)
 	{
-		throw QException(va("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT));
+		throw Exception(va("model %s has a skin taller than %d", mod->name, MAX_LBM_HEIGHT));
 	}
 
 	pheader->numverts = LittleLong(pinmodel->numverts);
@@ -941,26 +941,26 @@ void Mod_LoadMdlModelNew(model_t* mod, const void* buffer)
 	
 	if (pheader->numverts <= 0)
 	{
-		throw QException(va("model %s has no vertices", mod->name));
+		throw Exception(va("model %s has no vertices", mod->name));
 	}
 
 	if (pheader->numverts > MAXALIASVERTS)
 	{
-		throw QException(va("model %s has too many vertices", mod->name));
+		throw Exception(va("model %s has too many vertices", mod->name));
 	}
 
 	pheader->numtris = LittleLong(pinmodel->numtris);
 
 	if (pheader->numtris <= 0)
 	{
-		throw QException(va("model %s has no triangles", mod->name));
+		throw Exception(va("model %s has no triangles", mod->name));
 	}
 
 	pheader->numframes = LittleLong(pinmodel->numframes);
 	int numframes = pheader->numframes;
 	if (numframes < 1)
 	{
-		throw QException(va("Mod_LoadMdlModel: Invalid # of frames: %d\n", numframes));
+		throw Exception(va("Mod_LoadMdlModel: Invalid # of frames: %d\n", numframes));
 	}
 
 	pheader->size = LittleFloat(pinmodel->size) * ALIAS_BASE_SIZE_RATIO;

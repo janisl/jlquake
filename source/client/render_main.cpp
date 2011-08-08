@@ -1018,13 +1018,13 @@ static void R_AddEntitySurfaces(bool TranslucentPass)
 					break;
 
 				default:
-					throw QDropException("R_AddEntitySurfaces: Bad modeltype");
+					throw DropException("R_AddEntitySurfaces: Bad modeltype");
 				}
 			}
 			break;
 
 		default:
-			throw QDropException("R_AddEntitySurfaces: Bad reType");
+			throw DropException("R_AddEntitySurfaces: Bad reType");
 		}
 
 		if ((GGameType & GAME_Hexen2) && item_trans)
@@ -1926,7 +1926,7 @@ static void R_SortDrawSurfs(drawSurf_t* drawSurfs, int numDrawSurfs)
 		// no shader should ever have this sort type
 		if (shader->sort == SS_BAD)
 		{
-			throw QDropException(va("Shader '%s'with sort == SS_BAD", shader->name));
+			throw DropException(va("Shader '%s'with sort == SS_BAD", shader->name));
 		}
 
 		// if the mirror was completely clipped away, we may need to check another surface

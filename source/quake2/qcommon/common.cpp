@@ -1036,7 +1036,7 @@ void Qcommon_Init (int argc, char **argv)
 
 	Com_Printf ("====== Quake2 Initialized ======\n\n");	
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}
@@ -1135,7 +1135,7 @@ void Qcommon_Frame (int msec)
 			all, sv, gm, cl, rf);
 	}	
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}

@@ -202,7 +202,7 @@ static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
 	Array<byte> Buffer;
 	if (!FS_ReadFile(ModelName, Buffer))
 	{
-		throw QDropException(va("Couldn't load %s", ModelName));
+		throw DropException(va("Couldn't load %s", ModelName));
 	}
 
 	unsigned short crc;

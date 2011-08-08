@@ -282,7 +282,7 @@ byte* QCinematicCin::ReadNextFrame()
 	byte compressed[0x20000];
 	if (size > (int)sizeof(compressed) || size < 1)
 	{
-		throw QDropException("Bad compressed frame size");
+		throw DropException("Bad compressed frame size");
 	}
 	FS_Read (compressed, size, cinematic_file);
 

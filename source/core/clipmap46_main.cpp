@@ -104,7 +104,7 @@ clipHandle_t QClipMap46::InlineModel(int Index) const
 {
 	if (Index < 0 || Index >= numSubModels)
 	{
-		throw QDropException("CM_InlineModel: bad number");
+		throw DropException("CM_InlineModel: bad number");
 	}
 	return Index;
 }
@@ -164,7 +164,7 @@ int QClipMap46::LeafCluster(int LeafNum) const
 {
 	if (LeafNum < 0 || LeafNum >= numLeafs)
 	{
-		throw QDropException("CM_LeafCluster: bad number");
+		throw DropException("CM_LeafCluster: bad number");
 	}
 	return leafs[LeafNum].cluster;
 }
@@ -179,7 +179,7 @@ int QClipMap46::LeafArea(int LeafNum) const
 {
 	if (LeafNum < 0 || LeafNum >= numLeafs)
 	{
-		throw QDropException("CM_LeafArea: bad number");
+		throw DropException("CM_LeafArea: bad number");
 	}
 	return leafs[LeafNum].area;
 }
@@ -253,7 +253,7 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 {
 	if (Handle < 0)
 	{
-		throw QDropException(va("CM_ClipHandleToModel: bad handle %i", Handle));
+		throw DropException(va("CM_ClipHandleToModel: bad handle %i", Handle));
 	}
 	if (Handle < numSubModels)
 	{
@@ -265,10 +265,10 @@ cmodel_t* QClipMap46::ClipHandleToModel(clipHandle_t Handle)
 	}
 	if (Handle < MAX_SUBMODELS)
 	{
-		throw QDropException(va("CM_ClipHandleToModel: bad handle %i < %i < %i", 
+		throw DropException(va("CM_ClipHandleToModel: bad handle %i < %i < %i", 
 			numSubModels, Handle, MAX_SUBMODELS));
 	}
-	throw QDropException(va("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS));
+	throw DropException(va("CM_ClipHandleToModel: bad handle %i", Handle + MAX_SUBMODELS));
 }
 
 //==========================================================================
@@ -368,7 +368,7 @@ clipHandle_t QClipMap46::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 
 int QClipMap46::ContentsToQ1(int Contents) const
 {
-	throw QException("Not implemented");
+	throw Exception("Not implemented");
 }
 
 //==========================================================================
@@ -379,5 +379,5 @@ int QClipMap46::ContentsToQ1(int Contents) const
 
 int QClipMap46::ContentsToQ2(int Contents) const
 {
-	throw QException("Not implemented");
+	throw Exception("Not implemented");
 }

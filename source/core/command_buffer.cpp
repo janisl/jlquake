@@ -192,7 +192,7 @@ void Cbuf_ExecuteText(int ExecWhen, const char* Text)
 		Cbuf_AddText(Text);
 		break;
 	default:
-		throw QException("Cbuf_ExecuteText: bad exec_when");
+		throw Exception("Cbuf_ExecuteText: bad exec_when");
 	}
 }
 

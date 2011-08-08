@@ -30,11 +30,11 @@
 
 // TYPES -------------------------------------------------------------------
 
-class QNonBspModelException : public QException
+class QNonBspModelException : public Exception
 {
 public:
 	QNonBspModelException()
-	: QException("Non bsp model")
+	: Exception("Non bsp model")
 	{}
 };
 
@@ -179,7 +179,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 {
 	if (!Name[0])
 	{
-		throw QDropException("CM_ForName: NULL name");
+		throw DropException("CM_ForName: NULL name");
 	}
 
 	//
@@ -199,7 +199,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	Array<quint8> Buffer;
 	if (FS_ReadFile(Name, Buffer) <= 0)
 	{
-		throw QDropException(va("CM_PrecacheModel: %s not found", Name));
+		throw DropException(va("CM_PrecacheModel: %s not found", Name));
 	}
 
 	// call the apropriate loader
@@ -314,7 +314,7 @@ void QMdlBoundsLoader::LoadAliasModel(QClipMapNonMap* mod, const void* buffer)
 	int version = LittleLong (pinmodel->version);
 	if (version != MESH1_VERSION)
 	{
-		throw QDropException(va("%s has wrong version number (%i should be %i)",
+		throw DropException(va("%s has wrong version number (%i should be %i)",
 			 *mod->Name, version, MESH1_VERSION));
 	}
 
@@ -375,7 +375,7 @@ void QMdlBoundsLoader::LoadAliasModelNew(QClipMapNonMap* mod, const void* buffer
 	int version = LittleLong(pinmodel->version);
 	if (version != MESH1_NEWVERSION)
 	{
-		throw QDropException(va("%s has wrong version number (%i should be %i)",
+		throw DropException(va("%s has wrong version number (%i should be %i)",
 			*mod->Name, version, MESH1_NEWVERSION));
 	}
 
@@ -549,7 +549,7 @@ void QClipMapNonMap::LoadSpriteModel(const void* buffer)
 	int version = LittleLong (pin->version);
 	if (version != SPRITE1_VERSION)
 	{
-		throw QDropException(va("%s has wrong version number (%i should be %i)", *Name, version, SPRITE1_VERSION));
+		throw DropException(va("%s has wrong version number (%i should be %i)", *Name, version, SPRITE1_VERSION));
 	}
 
 	ModelMins[0] = ModelMins[1] = -LittleLong(pin->width) / 2;

@@ -679,7 +679,7 @@ void COM_InitArgv(int argc, const char** argv)
 {
 	if (argc > MAX_NUM_ARGVS)
 	{
-		throw QException("argc > MAX_NUM_ARGVS");
+		throw Exception("argc > MAX_NUM_ARGVS");
 	}
 	com_argc = argc;
 	for (int i = 0; i < argc; i++)
@@ -703,7 +703,7 @@ void COM_AddParm(const char* parm)
 {
 	if (com_argc == MAX_NUM_ARGVS)
 	{
-		throw QException("COM_AddParm: MAX_NUM)ARGS");
+		throw Exception("COM_AddParm: MAX_NUM)ARGS");
 	}
 	com_argv[com_argc++] = parm;
 }

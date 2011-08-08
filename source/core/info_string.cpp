@@ -64,7 +64,7 @@ const char* Info_ValueForKey(const char* s, const char* key)
 
 	if (String::Length( s ) >= BIG_INFO_STRING)
 	{
-		throw QDropException("Info_ValueForKey: oversize infostring");
+		throw DropException("Info_ValueForKey: oversize infostring");
 	}
 
 	valueindex = (valueindex + 1) % 4;
@@ -116,7 +116,7 @@ void Info_RemoveKey(char* s, const char* key, int MaxSize)
 
 	if (String::Length(s) >= MaxSize)
 	{
-		throw QDropException("Info_RemoveKey: oversize infostring");
+		throw DropException("Info_RemoveKey: oversize infostring");
 	}
 
 	if (strchr(key, '\\'))
@@ -223,7 +223,7 @@ void Info_SetValueForKey(char *s, const char* key, const char* value,
 
 	if (String::Length(s) >= MaxSize)
 	{
-		throw QDropException("Info_SetValueForKey: oversize infostring");
+		throw DropException("Info_SetValueForKey: oversize infostring");
 	}
 
 	if (strchr(key, '\\') || strchr(value, '\\'))

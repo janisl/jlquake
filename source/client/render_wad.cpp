@@ -103,7 +103,7 @@ void R_LoadWadFile()
 {
 	if (FS_ReadFile("gfx.wad", wad_base) <= 0)
 	{
-		throw QException("W_LoadWadFile: couldn't load gfx.wad");
+		throw Exception("W_LoadWadFile: couldn't load gfx.wad");
 	}
 
 	wadinfo_t* header = (wadinfo_t*)wad_base.Ptr();
@@ -113,7 +113,7 @@ void R_LoadWadFile()
 		header->identification[2] != 'D' ||
 		header->identification[3] != '2')
 	{
-		throw QException("Wad file gfx.wad doesn't have WAD2 id\n");
+		throw Exception("Wad file gfx.wad doesn't have WAD2 id\n");
 	}
 
 	wad_numlumps = LittleLong(header->numlumps);
@@ -149,7 +149,7 @@ void* R_GetWadLumpByName(const char* name)
 		}
 	}
 
-	throw QDropException(va("R_GetWadLumpByName: %s not found", name));
+	throw DropException(va("R_GetWadLumpByName: %s not found", name));
 }
 
 //==========================================================================

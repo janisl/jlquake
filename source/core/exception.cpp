@@ -38,11 +38,11 @@
 
 //==========================================================================
 //
-//	QException::QException
+//	Exception::Exception
 //
 //==========================================================================
 
-QException::QException(const char *text)
+Exception::Exception(const char *text)
 {
 	String::NCpy(message, text, MAX_ERROR_TEXT_SIZE - 1);
 	message[MAX_ERROR_TEXT_SIZE - 1] = 0;
@@ -50,11 +50,11 @@ QException::QException(const char *text)
 
 //==========================================================================
 //
-//	QException::What
+//	Exception::What
 //
 //==========================================================================
 
-const char* QException::What() const
+const char* Exception::What() const
 {
 	return message;
 }

@@ -937,7 +937,7 @@ char* SV_LoadEffects(char* Data)
 	SV_ClearEffects();
 
 	if (String::NCmp(Data, "Effects: ", 9))
-		throw QDropException("Effects expected");
+		throw DropException("Effects expected");
 	Data += 9;
 	Total = GetInt(Data);
 

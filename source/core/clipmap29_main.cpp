@@ -105,7 +105,7 @@ clipHandle_t QClipMap29::InlineModel(int Index) const
 {
 	if (Index < 1 || Index > numsubmodels)
 	{
-		throw QDropException("Bad submodel index");
+		throw DropException("Bad submodel index");
 	}
 	return Index * MAX_MAP_HULLS;
 }
@@ -234,7 +234,7 @@ clipHandle_t QClipMap29::ModelHull(clipHandle_t Handle, int HullNum, vec3_t Clip
 {
 	if (HullNum < 0 || HullNum >= MAX_MAP_HULLS)
 	{
-		throw QException("Invalid hull number");
+		throw Exception("Invalid hull number");
 	}
 	VectorCopy(hullsshared[HullNum].clip_mins, ClipMins);
 	VectorCopy(hullsshared[HullNum].clip_maxs, ClipMaxs);
@@ -258,7 +258,7 @@ cmodel_t* QClipMap29::ClipHandleToModel(clipHandle_t Handle)
 	{
 		return &box_model;
 	}
-	throw QException("Invalid handle");
+	throw Exception("Invalid handle");
 }
 
 //==========================================================================
@@ -348,7 +348,7 @@ clipHandle_t QClipMap29::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 
 int QClipMap29::ContentsToQ2(int Contents) const
 {
-	throw QException("Not implemented");
+	throw Exception("Not implemented");
 }
 
 //==========================================================================
@@ -359,7 +359,7 @@ int QClipMap29::ContentsToQ2(int Contents) const
 
 int QClipMap29::ContentsToQ3(int Contents) const
 {
-	throw QException("Not implemented");
+	throw Exception("Not implemented");
 }
 
 //==========================================================================

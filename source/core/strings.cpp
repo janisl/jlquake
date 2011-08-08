@@ -668,7 +668,7 @@ int String::GetChar(const char*& S)
 	}
 	else
 	{
-		throw QException("Not a valid UTF-8");
+		throw Exception("Not a valid UTF-8");
 	}
 	S++;
 
@@ -676,7 +676,7 @@ int String::GetChar(const char*& S)
 	{
 		if ((*S & 0xc0) != 0x80)
 		{
-			throw QException("Not a valid UTF-8");
+			throw Exception("Not a valid UTF-8");
 		}
 		Val = (Val << 6) | (*S & 0x3f);
 		S++;
@@ -988,15 +988,15 @@ void String::NCpyZ(char* Dest, const char* Src, int DestSize)
 	// bk001129 - also NULL dest
 	if (!Dest)
 	{
-		throw QException("Q_strncpyz: NULL dest");
+		throw Exception("Q_strncpyz: NULL dest");
 	}
 	if (!Src)
 	{
-		throw QException("Q_strncpyz: NULL src");
+		throw Exception("Q_strncpyz: NULL src");
 	}
 	if (DestSize < 1)
 	{
-		throw QException("Q_strncpyz: destsize < 1"); 
+		throw Exception("Q_strncpyz: destsize < 1"); 
 	}
 
 	NCpy(Dest, Src, DestSize - 1);
@@ -1016,7 +1016,7 @@ void String::Cat(char* Dest, int Size, const char* Src)
 	int L1 = Length(Dest);
 	if (L1 >= Size)
 	{
-		throw QException("Q_strcat: already overflowed");
+		throw Exception("Q_strcat: already overflowed");
 	}
 	NCpyZ(Dest + L1, Src, Size - L1);
 }
@@ -1265,7 +1265,7 @@ void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	va_end(ArgPtr);
 	if (Len >= (int)sizeof(BigBuffer))
 	{
-		throw QException("String::Sprintf: overflowed bigbuffer");
+		throw Exception("String::Sprintf: overflowed bigbuffer");
 	}
 	if (Len >= Size)
 	{

@@ -14,13 +14,7 @@
 //**
 //**************************************************************************
 
-//==========================================================================
-//
-//	Exceptions
-//
-//==========================================================================
-
-class QException : public Interface
+class Exception : public Interface
 {
 private:
 	enum { MAX_ERROR_TEXT_SIZE		= 1024 };
@@ -28,15 +22,15 @@ private:
 	char message[MAX_ERROR_TEXT_SIZE];
 
 public:
-	explicit QException(const char *text);
+	explicit Exception(const char *text);
 	virtual const char* What() const;
 };
 
-class QDropException : public QException
+class DropException : public Exception
 {
 public:
-	QDropException(const char* text) : QException(text)
+	DropException(const char* text) : Exception(text)
 	{}
 };
 
-#define qassert(x)		if (x) {} else throw QException("Assertion failed");
+#define qassert(x)		if (x) {} else throw Exception("Assertion failed");

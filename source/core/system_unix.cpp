@@ -117,7 +117,7 @@ const char* Sys_DefaultHomePath()
 		{
 			if (errno != EEXIST) 
 			{
-				throw QException(va("Unable to create directory \"%s\", error is %s(%d)\n",
+				throw Exception(va("Unable to create directory \"%s\", error is %s(%d)\n",
 					homePath, strerror(errno), errno));
 			}
 		}

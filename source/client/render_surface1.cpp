@@ -119,7 +119,7 @@ static int AllocBlock(int w, int h, int* x, int* y)
 		return texnum;
 	}
 
-	throw QException("AllocBlock: full");
+	throw Exception("AllocBlock: full");
 }
 
 //==========================================================================
@@ -509,11 +509,11 @@ static mbrush29_texture_t* R_TextureAnimationQ1(mbrush29_texture_t* base)
 		base = base->anim_next;
 		if (!base)
 		{
-			throw QException("R_TextureAnimationQ1: broken cycle");
+			throw Exception("R_TextureAnimationQ1: broken cycle");
 		}
 		if (++count > 100)
 		{
-			throw QException("R_TextureAnimationQ1: infinite cycle");
+			throw Exception("R_TextureAnimationQ1: infinite cycle");
 		}
 	}
 

@@ -119,7 +119,7 @@ int CIN_HandleForVideo()
 			return i;
 		}
 	}
-	throw QDropException("CIN_HandleForVideo: none free");
+	throw DropException("CIN_HandleForVideo: none free");
 }
 
 //==========================================================================

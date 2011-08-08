@@ -164,7 +164,7 @@ int QClipMap29::HullPointContents(const chull_t* Hull, int NodeNum, const vec3_t
 	{
 		if (NodeNum < Hull->firstclipnode || NodeNum > Hull->lastclipnode)
 		{
-			throw QException("SV_HullPointContents: bad node number");
+			throw Exception("SV_HullPointContents: bad node number");
 		}
 	
 		cclipnode_t* node = clipnodes + NodeNum;

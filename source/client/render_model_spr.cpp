@@ -107,7 +107,7 @@ static void* Mod_LoadSpriteGroup(void* pin, msprite1frame_t** ppframe, int frame
 		*poutintervals = LittleFloat(pin_intervals->interval);
 		if (*poutintervals <= 0.0)
 		{
-			throw QException("Mod_LoadSpriteGroup: interval<=0");
+			throw Exception("Mod_LoadSpriteGroup: interval<=0");
 		}
 
 		poutintervals++;
@@ -137,7 +137,7 @@ void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 	int version = LittleLong(pin->version);
 	if (version != SPRITE1_VERSION)
 	{
-		throw QException(va("%s has wrong version number "
+		throw Exception(va("%s has wrong version number "
 			"(%i should be %i)", mod->name, version, SPRITE1_VERSION));
 	}
 
@@ -166,7 +166,7 @@ void Mod_LoadSpriteModel(model_t* mod, void* buffer)
 	//
 	if (numframes < 1)
 	{
-		throw QException(va("Mod_LoadSpriteModel: Invalid # of frames: %d\n", numframes));
+		throw Exception(va("Mod_LoadSpriteModel: Invalid # of frames: %d\n", numframes));
 	}
 
 	mod->q1_numframes = numframes;
@@ -385,7 +385,7 @@ void R_DrawSprModel(trRefEntity_t* e)
 	}
 	else
 	{
-		throw QException(va("R_DrawSprite: Bad sprite type %d", psprite->type));
+		throw Exception(va("R_DrawSprite: Bad sprite type %d", psprite->type));
 	}
 
     GL_Bind(frame->gl_texture);

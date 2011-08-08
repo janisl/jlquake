@@ -621,7 +621,7 @@ static void R_SetMode()
 	}
 
 	Log::write("...WARNING: could not revert to safe mode\n");
-	throw QException("R_SetMode() - could not initialise OpenGL subsystem\n" );
+	throw Exception("R_SetMode() - could not initialise OpenGL subsystem\n" );
 }
 
 //==========================================================================

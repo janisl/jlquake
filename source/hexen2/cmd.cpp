@@ -27,7 +27,7 @@ void Cmd_Init (void)
 
 bool Cmd_HandleNullCommand(const char* text)
 {
-    throw QException("NULL command");
+    throw Exception("NULL command");
 }
 
 void Cmd_HandleUnknownCommand()

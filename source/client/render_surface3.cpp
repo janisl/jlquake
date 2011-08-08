@@ -68,11 +68,11 @@ void RB_CheckOverflow(int verts, int indexes)
 
 	if (verts >= SHADER_MAX_VERTEXES)
 	{
-		throw QDropException(va("RB_CheckOverflow: verts > MAX (%d > %d)", verts, SHADER_MAX_VERTEXES));
+		throw DropException(va("RB_CheckOverflow: verts > MAX (%d > %d)", verts, SHADER_MAX_VERTEXES));
 	}
 	if (indexes >= SHADER_MAX_INDEXES)
 	{
-		throw QDropException(va("RB_CheckOverflow: indices > MAX (%d > %d)", indexes, SHADER_MAX_INDEXES));
+		throw DropException(va("RB_CheckOverflow: indices > MAX (%d > %d)", indexes, SHADER_MAX_INDEXES));
 	}
 
 	RB_BeginSurface(tess.shader, tess.fogNum);

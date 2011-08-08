@@ -71,7 +71,7 @@ void QClipMap46::LoadMap(const char* AName, const Array<quint8>& Buffer)
 
 	if (header.version != BSP46_VERSION)
 	{
-		throw QDropException(va("CM_LoadMap: %s has wrong version number (%i should be %i)",
+		throw DropException(va("CM_LoadMap: %s has wrong version number (%i should be %i)",
 			AName, header.version, BSP46_VERSION));
 	}
 
@@ -124,12 +124,12 @@ void QClipMap46::LoadShaders(const quint8* base, const bsp46_lump_t* l)
 	const bsp46_dshader_t* in = (const bsp46_dshader_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("CMod_LoadShaders: funny lump size");
+		throw DropException("CMod_LoadShaders: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no shaders");
+		throw DropException("Map with no shaders");
 	}
 
 	shaders = new bsp46_dshader_t[count];
@@ -156,12 +156,12 @@ void QClipMap46::LoadLeafs(const quint8* base, const bsp46_lump_t* l)
 	const bsp46_dleaf_t* in = (const bsp46_dleaf_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no leafs");
+		throw DropException("Map with no leafs");
 	}
 
 	leafs = new cLeaf_t[BOX_LEAFS + count];
@@ -205,7 +205,7 @@ void QClipMap46::LoadLeafBrushes(const quint8* base, const bsp46_lump_t* l)
 	const int* in = (const int*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -231,7 +231,7 @@ void QClipMap46::LoadLeafSurfaces(const quint8* base, const bsp46_lump_t* l)
 	const int* in = (const int*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -256,12 +256,12 @@ void QClipMap46::LoadPlanes(const quint8* base, const bsp46_lump_t* l)
 	const bsp46_dplane_t* in = (const bsp46_dplane_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no planes");
+		throw DropException("Map with no planes");
 	}
 
 	planes = new cplane_t[BOX_PLANES + count];
@@ -293,7 +293,7 @@ void QClipMap46::LoadBrushSides(const quint8* base, const bsp46_lump_t* l)
 	const bsp46_dbrushside_t* in = (const bsp46_dbrushside_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -309,7 +309,7 @@ void QClipMap46::LoadBrushSides(const quint8* base, const bsp46_lump_t* l)
 		out->shaderNum = LittleLong( in->shaderNum );
 		if (out->shaderNum < 0 || out->shaderNum >= numShaders)
 		{
-			throw QDropException(va("CMod_LoadBrushSides: bad shaderNum: %i", out->shaderNum));
+			throw DropException(va("CMod_LoadBrushSides: bad shaderNum: %i", out->shaderNum));
 		}
 		out->surfaceFlags = shaders[out->shaderNum].surfaceFlags;
 	}
@@ -326,7 +326,7 @@ void QClipMap46::LoadBrushes(const quint8* base, const bsp46_lump_t* l)
 	const bsp46_dbrush_t* in = (const bsp46_dbrush_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -343,7 +343,7 @@ void QClipMap46::LoadBrushes(const quint8* base, const bsp46_lump_t* l)
 		out->shaderNum = LittleLong( in->shaderNum );
 		if (out->shaderNum < 0 || out->shaderNum >= numShaders)
 		{
-			throw QDropException(va("CMod_LoadBrushes: bad shaderNum: %i", out->shaderNum));
+			throw DropException(va("CMod_LoadBrushes: bad shaderNum: %i", out->shaderNum));
 		}
 		out->contents = shaders[out->shaderNum].contentFlags;
 
@@ -369,12 +369,12 @@ void QClipMap46::LoadNodes(const quint8* base, const bsp46_lump_t* l)
 	const bsp46_dnode_t* in = (const bsp46_dnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map has no nodes");
+		throw DropException("Map has no nodes");
 	}
 
 	nodes = new cNode_t[count];
@@ -443,7 +443,7 @@ void QClipMap46::LoadPatches(const quint8* base, const bsp46_lump_t* surfs, cons
 	const bsp46_dsurface_t* in = (const bsp46_dsurface_t*)(base + surfs->fileofs);
 	if (surfs->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = surfs->filelen / sizeof(*in);
 	numSurfaces = count;
@@ -453,7 +453,7 @@ void QClipMap46::LoadPatches(const quint8* base, const bsp46_lump_t* surfs, cons
 	const bsp46_drawVert_t* dv = (const bsp46_drawVert_t*)(base + verts->fileofs);
 	if (verts->filelen % sizeof(*dv))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 
 	// scan through all the surfaces, but only load patches,
@@ -476,7 +476,7 @@ void QClipMap46::LoadPatches(const quint8* base, const bsp46_lump_t* surfs, cons
 		int c = width * height;
 		if (c > MAX_PATCH_VERTS)
 		{
-			throw QDropException("ParseMesh: MAX_PATCH_VERTS");
+			throw DropException("ParseMesh: MAX_PATCH_VERTS");
 		}
 
 		const bsp46_drawVert_t* dv_p = dv + LittleLong(in->firstVert);
@@ -508,12 +508,12 @@ void QClipMap46::LoadSubmodels(const quint8* base, const bsp46_lump_t* l)
 	const bsp46_dmodel_t* in = (const bsp46_dmodel_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("CMod_LoadSubmodels: funny lump size");
+		throw DropException("CMod_LoadSubmodels: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no models");
+		throw DropException("Map with no models");
 	}
 
 	cmodels = new cmodel_t[count];
@@ -522,7 +522,7 @@ void QClipMap46::LoadSubmodels(const quint8* base, const bsp46_lump_t* l)
 
 	if (count > MAX_SUBMODELS)
 	{
-		throw QDropException("MAX_SUBMODELS exceeded");
+		throw DropException("MAX_SUBMODELS exceeded");
 	}
 
 	for (int i = 0; i < count; i++, in++)

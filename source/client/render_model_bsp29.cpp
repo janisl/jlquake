@@ -124,7 +124,7 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 		
 		if ((mt->width & 15) || (mt->height & 15))
 		{
-			throw QException(va("Texture %s is not 16 aligned", mt->name));
+			throw Exception(va("Texture %s is not 16 aligned", mt->name));
 		}
 		int pixels = mt->width * mt->height / 64 * 85;
 		mbrush29_texture_t* tx = (mbrush29_texture_t*)Mem_Alloc(sizeof(mbrush29_texture_t) + pixels);
@@ -204,7 +204,7 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 		}
 		else
 		{
-			throw QException(va("Bad animating texture %s", tx->name));
+			throw Exception(va("Bad animating texture %s", tx->name));
 		}
 
 		for (int j = i + 1; j < m->nummiptex; j++)
@@ -244,7 +244,7 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 			}
 			else
 			{
-				throw QException(va("Bad animating texture %s", tx->name));
+				throw Exception(va("Bad animating texture %s", tx->name));
 			}
 		}
 		
@@ -254,7 +254,7 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 			mbrush29_texture_t* tx2 = anims[j];
 			if (!tx2)
 			{
-				throw QException(va("Missing frame %i of %s", j, tx->name));
+				throw Exception(va("Missing frame %i of %s", j, tx->name));
 			}
 			tx2->anim_total = max * ANIM_CYCLE;
 			tx2->anim_min = j * ANIM_CYCLE;
@@ -270,7 +270,7 @@ static void Mod_LoadTextures(bsp29_lump_t* l)
 			mbrush29_texture_t* tx2 = altanims[j];
 			if (!tx2)
 			{
-				throw QException(va("Missing frame %i of %s", j, tx->name));
+				throw Exception(va("Missing frame %i of %s", j, tx->name));
 			}
 			tx2->anim_total = altmax * ANIM_CYCLE;
 			tx2->anim_min = j * ANIM_CYCLE;
@@ -346,7 +346,7 @@ static void Mod_LoadVertexes(bsp29_lump_t* l)
 	bsp29_dvertex_t* in = (bsp29_dvertex_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_vertex_t* out = new mbrush29_vertex_t[count];
@@ -373,7 +373,7 @@ static void Mod_LoadEdges(bsp29_lump_t* l)
 	bsp29_dedge_t* in = (bsp29_dedge_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s",loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s",loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_edge_t* out = new mbrush29_edge_t[count + 1];
@@ -400,7 +400,7 @@ static void Mod_LoadTexinfo(bsp29_lump_t* l)
 	bsp29_texinfo_t* in = (bsp29_texinfo_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_texinfo_t* out = new mbrush29_texinfo_t[count];
@@ -447,7 +447,7 @@ static void Mod_LoadTexinfo(bsp29_lump_t* l)
 		{
 			if (miptex >= loadmodel->brush29_numtextures)
 			{
-				throw QException("miptex >= loadmodel->numtextures");
+				throw Exception("miptex >= loadmodel->numtextures");
 			}
 			out->texture = loadmodel->brush29_textures[miptex];
 			if (!out->texture)
@@ -515,7 +515,7 @@ static void CalcSurfaceExtents(mbrush29_surface_t* s)
 		s->extents[i] = (bmaxs[i] - bmins[i]) * 16;
 		if (!(tex->flags & BSP29TEX_SPECIAL) && s->extents[i] > 512)
 		{
-			throw QException("Bad surface extents");
+			throw Exception("Bad surface extents");
 		}
 	}
 }
@@ -547,7 +547,7 @@ static void SubdividePolygon(int numverts, float* verts)
 
 	if (numverts > 60)
 	{
-		throw QException(va("numverts = %i", numverts));
+		throw Exception(va("numverts = %i", numverts));
 	}
 
 	vec3_t mins, maxs;
@@ -682,7 +682,7 @@ static void Mod_LoadFaces(bsp29_lump_t* l)
 	bsp29_dface_t* in = (bsp29_dface_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_surface_t* out = new mbrush29_surface_t[count];
@@ -785,7 +785,7 @@ static void Mod_LoadNodes(bsp29_lump_t* l)
 	bsp29_dnode_t* in = (bsp29_dnode_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_node_t* out = new mbrush29_node_t[count];
@@ -836,7 +836,7 @@ static void Mod_LoadLeafs(bsp29_lump_t* l)
 	bsp29_dleaf_t* in = (bsp29_dleaf_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_leaf_t* out = new mbrush29_leaf_t[count];
@@ -912,7 +912,7 @@ static void Mod_LoadMarksurfaces(bsp29_lump_t* l)
 	short* in = (short*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_surface_t** out = new mbrush29_surface_t*[count];
@@ -925,7 +925,7 @@ static void Mod_LoadMarksurfaces(bsp29_lump_t* l)
 		int j = (quint16)LittleShort(in[i]);
 		if (j >= loadmodel->brush29_numsurfaces)
 		{
-			throw QException("Mod_ParseMarksurfaces: bad surface number");
+			throw Exception("Mod_ParseMarksurfaces: bad surface number");
 		}
 		out[i] = loadmodel->brush29_surfaces + j;
 	}
@@ -942,7 +942,7 @@ static void Mod_LoadSurfedges(bsp29_lump_t* l)
 	int* in = (int*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	int* out = new int[count];
@@ -967,7 +967,7 @@ static void Mod_LoadPlanes(bsp29_lump_t* l)
 	bsp29_dplane_t* in = (bsp29_dplane_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	cplane_t* out = new cplane_t[count * 2];
@@ -1000,7 +1000,7 @@ static void Mod_LoadSubmodelsQ1(bsp29_lump_t* l)
 	bsp29_dmodel_q1_t* in = (bsp29_dmodel_q1_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_submodel_t* out = new mbrush29_submodel_t[count];
@@ -1035,7 +1035,7 @@ static void Mod_LoadSubmodelsH2(bsp29_lump_t* l)
 	bsp29_dmodel_h2_t* in = (bsp29_dmodel_h2_t*)(mod_base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QException(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
+		throw Exception(va("MOD_LoadBmodel: funny lump size in %s", loadmodel->name));
 	}
 	int count = l->filelen / sizeof(*in);
 	mbrush29_submodel_t* out = new mbrush29_submodel_t[count];
@@ -1076,7 +1076,7 @@ void Mod_LoadBrush29Model(model_t* mod, void* buffer)
 	int version = LittleLong(header->version);
 	if (version != BSP29_VERSION)
 	{
-		throw QException(va("Mod_LoadBrush29Model: %s has wrong version number (%i should be %i)", mod->name, version, BSP29_VERSION));
+		throw Exception(va("Mod_LoadBrush29Model: %s has wrong version number (%i should be %i)", mod->name, version, BSP29_VERSION));
 	}
 
 	// swap all the lumps
@@ -1271,7 +1271,7 @@ mbrush29_leaf_t* Mod_PointInLeafQ1(vec3_t p, model_t* model)
 {
 	if (!model || !model->brush29_nodes)
 	{
-		throw QException("Mod_PointInLeafQ1: bad model");
+		throw Exception("Mod_PointInLeafQ1: bad model");
 	}
 
 	mbrush29_node_t* node = model->brush29_nodes;

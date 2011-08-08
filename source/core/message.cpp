@@ -112,7 +112,7 @@ void QMsg::Copy(byte* NewData, int Length, QMsg& Src)
 {
 	if (Length < Src.cursize)
 	{
-		throw QDropException("QMsg::Copy: can't copy into a smaller QMsg buffer");
+		throw DropException("QMsg::Copy: can't copy into a smaller QMsg buffer");
 	}
 	Com_Memcpy(this, &Src, sizeof(QMsg));
 	_data = NewData;
@@ -164,7 +164,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 	{
 		if (!allowoverflow)
 		{
-			throw QException("SZ_GetSpace: overflow without allowoverflow set");
+			throw Exception("SZ_GetSpace: overflow without allowoverflow set");
 		}
 		//	Games before Quake 3 does this.
 		//Log::writeLine("SZ_GetSpace: overflow");
@@ -175,7 +175,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 
 	if (NumBits == 0 || NumBits < -31 || NumBits > 32)
 	{
-		throw QDropException(va("QMsg::WriteBits: bad bits %i", NumBits));
+		throw DropException(va("QMsg::WriteBits: bad bits %i", NumBits));
 	}
 
 	// check for overflows
@@ -225,7 +225,7 @@ void QMsg::WriteBits(int Value, int NumBits)
 		}
 		else
 		{
-			throw QDropException(va("can't read %d bits\n", NumBits));
+			throw DropException(va("can't read %d bits\n", NumBits));
 		}
 	}
 	else
@@ -299,7 +299,7 @@ int QMsg::ReadBits(int NumBits)
 		}
 		else
 		{
-			throw QDropException(va("can't read %d bits\n", NumBits));
+			throw DropException(va("can't read %d bits\n", NumBits));
 		}
 	}
 	else
@@ -346,7 +346,7 @@ void QMsg::WriteChar(int C)
 {
 #ifdef PARANOID
 	if (C < MIN_QINT8 || C > MAX_QINT8)
-		throw QException("MSG_WriteChar: range error");
+		throw Exception("MSG_WriteChar: range error");
 #endif
 
 	WriteBits(C, 8);
@@ -362,7 +362,7 @@ void QMsg::WriteByte(int C)
 {
 #ifdef PARANOID
 	if (C < 0 || C > MAX_QUINT8)
-		throw QException("MSG_WriteByte: range error");
+		throw Exception("MSG_WriteByte: range error");
 #endif
 
 	WriteBits(C, 8);
@@ -378,7 +378,7 @@ void QMsg::WriteShort(int C)
 {
 #ifdef PARANOID
 	if (C < MIN_QINT16 || c > MAX_QINT16)
-		throw QException("QMsg::WriteShort: range error");
+		throw Exception("QMsg::WriteShort: range error");
 #endif
 
 	WriteBits(C, 16);

@@ -418,7 +418,7 @@ void QClipMap38::FloodArea(carea_t* area, int floodnum)
 		{
 			return;
 		}
-		throw QDropException("QClipMap38.FloodArea: reflooded");
+		throw DropException("QClipMap38.FloodArea: reflooded");
 	}
 
 	area->floodnum = floodnum;
@@ -480,7 +480,7 @@ void QClipMap38::SetAreaPortalState(int portalnum, qboolean open)
 {
 	if (portalnum > numareaportals)
 	{
-		throw QDropException("areaportal > numareaportals");
+		throw DropException("areaportal > numareaportals");
 	}
 
 	portalopen[portalnum] = open;
@@ -502,7 +502,7 @@ void QClipMap38::AdjustAreaPortalState(int Area1, int Area2, bool Open)
 
 	if (Area1 >= numareas || Area2 >= numareas)
 	{
-		throw QDropException("CM_ChangeAreaPortalState: bad area number");
+		throw DropException("CM_ChangeAreaPortalState: bad area number");
 	}
 
 	bsp38_dareaportal_t* p = &areaportals[areas[Area1].firstareaportal];
@@ -544,7 +544,7 @@ qboolean QClipMap38::AreasConnected(int Area1, int Area2)
 
 	if (Area1 >= numareas || Area2 >= numareas)
 	{
-		throw QDropException("area > numareas");
+		throw DropException("area > numareas");
 	}
 
 	if (areas[Area1].floodnum == areas[Area2].floodnum)

@@ -457,7 +457,7 @@ static void ClipSkyPolygon(int nump, vec3_t vecs, int stage)
 {
 	if (nump > MAX_CLIP_VERTS - 2)
 	{
-		throw QDropException("ClipSkyPolygon: MAX_CLIP_VERTS");
+		throw DropException("ClipSkyPolygon: MAX_CLIP_VERTS");
 	}
 	if (stage == 6)
 	{
@@ -935,7 +935,7 @@ static void FillCloudySkySide(const int mins[2], const int maxs[2], bool addInde
 
 			if (tess.numVertexes >= SHADER_MAX_VERTEXES)
 			{
-				throw QDropException("SHADER_MAX_VERTEXES hit in FillCloudySkySide()\n");
+				throw DropException("SHADER_MAX_VERTEXES hit in FillCloudySkySide()\n");
 			}
 		}
 	}

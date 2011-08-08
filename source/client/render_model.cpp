@@ -184,7 +184,7 @@ void R_LoadWorld(const char* name)
 {
 	if (tr.worldMapLoaded)
 	{
-		throw QDropException("ERROR: attempted to redundantly load world map\n");
+		throw DropException("ERROR: attempted to redundantly load world map\n");
 	}
 
 	// set default sun direction to be used if it isn't
@@ -202,7 +202,7 @@ void R_LoadWorld(const char* name)
 	FS_ReadFile(name, &buffer);
 	if (!buffer)
 	{
-		throw QDropException(va("R_LoadWorld: %s not found", name));
+		throw DropException(va("R_LoadWorld: %s not found", name));
 	}
 
 	model_t* mod = NULL;
@@ -250,7 +250,7 @@ void R_LoadWorld(const char* name)
 			break;
 
 		default:
-			throw QDropException(va("Mod_NumForName: unknown fileid for %s", name));
+			throw DropException(va("Mod_NumForName: unknown fileid for %s", name));
 			break;
 		}
 	}

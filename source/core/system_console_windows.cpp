@@ -470,7 +470,7 @@ void Sys_ShowConsole(int visLevel, bool quitOnClose)
 		ShowWindow(s_wcd.hWnd, SW_MINIMIZE);
 		break;
 	default:
-		throw QException(va("Invalid visLevel %d sent to Sys_ShowConsole\n", visLevel));
+		throw Exception(va("Invalid visLevel %d sent to Sys_ShowConsole\n", visLevel));
 		break;
 	}
 }

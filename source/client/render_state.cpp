@@ -103,7 +103,7 @@ void GL_SelectTexture(int unit)
 	}
 	else
 	{
-		throw QDropException(va("GL_SelectTexture: unit = %i", unit));
+		throw DropException(va("GL_SelectTexture: unit = %i", unit));
 	}
 
 	glState.currenttmu = unit;
@@ -139,7 +139,7 @@ void GL_TexEnv(GLenum env)
 		qglTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
 		break;
 	default:
-		throw QDropException(va("GL_TexEnv: invalid env '%d' passed\n", env));
+		throw DropException(va("GL_TexEnv: invalid env '%d' passed\n", env));
 	}
 }
 
@@ -213,7 +213,7 @@ void GL_State(unsigned long stateBits)
 				srcFactor = GL_SRC_ALPHA_SATURATE;
 				break;
 			default:
-				throw QDropException("GL_State: invalid src blend state bits\n");
+				throw DropException("GL_State: invalid src blend state bits\n");
 			}
 
 			GLenum dstFactor;
@@ -244,7 +244,7 @@ void GL_State(unsigned long stateBits)
 				dstFactor = GL_ONE_MINUS_DST_ALPHA;
 				break;
 			default:
-				throw QDropException("GL_State: invalid dst blend state bits\n");
+				throw DropException("GL_State: invalid dst blend state bits\n");
 			}
 
 			qglEnable(GL_BLEND);

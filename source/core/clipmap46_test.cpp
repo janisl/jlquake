@@ -442,7 +442,7 @@ void QClipMap46::FloodArea_r(int AreaNum, int FloodNum)
 		{
 			return;
 		}
-		throw QDropException("FloodArea_r: reflooded");
+		throw DropException("FloodArea_r: reflooded");
 	}
 
 	area->floodnum = FloodNum;
@@ -482,7 +482,7 @@ void QClipMap46::AdjustAreaPortalState(int Area1, int Area2, bool Open)
 
 	if (Area1 >= numAreas || Area2 >= numAreas)
 	{
-		throw QDropException("CM_ChangeAreaPortalState: bad area number");
+		throw DropException("CM_ChangeAreaPortalState: bad area number");
 	}
 
 	if (Open)
@@ -496,7 +496,7 @@ void QClipMap46::AdjustAreaPortalState(int Area1, int Area2, bool Open)
 		areaPortals[Area2 * numAreas + Area1]--;
 		if (areaPortals[Area2 * numAreas + Area1] < 0)
 		{
-			throw QDropException("CM_AdjustAreaPortalState: negative reference count");
+			throw DropException("CM_AdjustAreaPortalState: negative reference count");
 		}
 	}
 
@@ -523,7 +523,7 @@ qboolean QClipMap46::AreasConnected(int Area1, int Area2)
 
 	if (Area1 >= numAreas || Area2 >= numAreas)
 	{
-		throw QDropException("area >= numAreas");
+		throw DropException("area >= numAreas");
 	}
 
 	if (areas[Area1].floodnum == areas[Area2].floodnum)

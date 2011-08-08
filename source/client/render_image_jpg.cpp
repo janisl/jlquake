@@ -83,7 +83,7 @@ static void my_jpeg_error_exit(j_common_ptr cinfo)
 	//	Let the memory manager delete any temp files before we die.
 	jpeg_destroy(cinfo);
 
-	throw QException(buffer);
+	throw Exception(buffer);
 }
 
 //==========================================================================

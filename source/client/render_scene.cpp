@@ -123,7 +123,7 @@ void R_AddRefEntityToScene(const refEntity_t* ent)
 	}
 	if (ent->reType < 0 || ent->reType >= RT_MAX_REF_ENTITY_TYPE)
 	{
-		throw QDropException(va("R_AddRefEntityToScene: bad reType %i", ent->reType));
+		throw DropException(va("R_AddRefEntityToScene: bad reType %i", ent->reType));
 	}
 
 	backEndData[tr.smpFrame]->entities[r_numentities].e = *ent;
@@ -281,7 +281,7 @@ void R_AddLightStyleToScene(int style, float r, float g, float b)
 {
 	if (style < 0 || style > MAX_LIGHTSTYLES)
 	{
-		throw QDropException(va("Bad light style %i", style));
+		throw DropException(va("Bad light style %i", style));
 	}
 	lightstyle_t* ls = &backEndData[tr.smpFrame]->lightstyles[style];
 	ls->white = r + g + b;
@@ -383,7 +383,7 @@ void R_RenderScene(const refdef_t* fd)
 
 	if (!tr.world && !(fd->rdflags & RDF_NOWORLDMODEL))
 	{
-		throw QDropException("R_RenderScene: NULL worldmodel");
+		throw DropException("R_RenderScene: NULL worldmodel");
 	}
 
 	Com_Memcpy(tr.refdef.text, fd->text, sizeof(tr.refdef.text));

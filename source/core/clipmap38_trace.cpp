@@ -617,7 +617,7 @@ void QClipMap38::TestBoxInBrush(vec3_t mins, vec3_t maxs, vec3_t p1, q2trace_t* 
 
 bool QClipMap38::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_t * trace)
 {
-	throw QDropException("Not implemented");
+	throw DropException("Not implemented");
 }
 
 //==========================================================================
@@ -629,7 +629,7 @@ bool QClipMap38::HullCheckQ1(clipHandle_t Handle, vec3_t p1, vec3_t p2, q1trace_
 void QClipMap38::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End,
 	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
 {
-	throw QDropException("Not implemented");
+	throw DropException("Not implemented");
 }
 
 //==========================================================================
@@ -642,5 +642,5 @@ void QClipMap38::TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start,
 	const vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask,
 	const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
-	throw QDropException("Not implemented");
+	throw DropException("Not implemented");
 }

@@ -576,7 +576,7 @@ void FS_CopyFile(char* fromOSPath, char* toOSPath)
 	void* buf = Mem_Alloc(len);
 	if ((int)fread(buf, 1, len, f) != len)
 	{
-		throw QException("Short read in FS_Copyfiles()\n");
+		throw Exception("Short read in FS_Copyfiles()\n");
 	}
 	fclose(f);
 
@@ -592,7 +592,7 @@ void FS_CopyFile(char* fromOSPath, char* toOSPath)
 	}
 	if ((int)fwrite(buf, 1, len, f) != len)
 	{
-		throw QException("Short write in FS_Copyfiles()\n");
+		throw Exception("Short write in FS_Copyfiles()\n");
 	}
 	fclose(f);
 	Mem_Free(buf);
@@ -646,7 +646,7 @@ static pack_t* FS_LoadPackFile(const char* packfile)
 	fread(&header, 1, sizeof(header), packhandle);
 	if (LittleLong(header.ident) != IDPAKHEADER)
 	{
-		throw QException(va("%s is not a packfile", packfile));
+		throw Exception(va("%s is not a packfile", packfile));
 	}
 	header.dirofs = LittleLong(header.dirofs);
 	header.dirlen = LittleLong(header.dirlen);
@@ -655,7 +655,7 @@ static pack_t* FS_LoadPackFile(const char* packfile)
 
 	if (numpackfiles > MAX_FILES_IN_PACK)
 	{
-		throw QException(va("%s has %i files", packfile, numpackfiles));
+		throw Exception(va("%s has %i files", packfile, numpackfiles));
 	}
 
 	newfiles = new packfile_t[numpackfiles];
@@ -932,7 +932,7 @@ static fileHandle_t FS_HandleForFile()
 			return i;
 		}
 	}
-	throw QDropException("FS_HandleForFile: none free");
+	throw DropException("FS_HandleForFile: none free");
 }
 
 //==========================================================================
@@ -945,15 +945,15 @@ static FILE* FS_FileForHandle(fileHandle_t f)
 {
 	if (f < 0 || f > MAX_FILE_HANDLES)
 	{
-		throw QDropException("FS_FileForHandle: out of reange");
+		throw DropException("FS_FileForHandle: out of reange");
 	}
 	if (fsh[f].zipFile == true)
 	{
-		throw QDropException("FS_FileForHandle: can't get FILE on zip file");
+		throw DropException("FS_FileForHandle: can't get FILE on zip file");
 	}
 	if (!fsh[f].handleFiles.file.o)
 	{
-		throw QDropException("FS_FileForHandle: NULL");
+		throw DropException("FS_FileForHandle: NULL");
 	}
 
 	return fsh[f].handleFiles.file.o;
@@ -1018,7 +1018,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!file)
@@ -1080,7 +1080,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 
 	if (!filename)
 	{
-		throw QException("FS_FOpenFileRead: NULL 'filename' parameter passed\n");
+		throw Exception("FS_FOpenFileRead: NULL 'filename' parameter passed\n");
 	}
 
 	// qpaths are not supposed to have a leading slash
@@ -1200,7 +1200,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 						fsh[*file].handleFiles.file.z = unzReOpen(pak->pakFilename, pak->handle);
 						if (fsh[*file].handleFiles.file.z == NULL)
 						{
-							throw QException(va("Couldn't reopen %s", pak->pakFilename));
+							throw Exception(va("Couldn't reopen %s", pak->pakFilename));
 						}
 					}
 					else
@@ -1249,7 +1249,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 						fsh[*file].handleFiles.file.o = fopen(pak->filename, "rb");
 						if (!fsh[*file].handleFiles.file.o)
 						{
-							throw QException(va("Couldn't reopen %s", pak->filename));
+							throw Exception(va("Couldn't reopen %s", pak->filename));
 						}
 					}
 					else
@@ -1349,7 +1349,7 @@ fileHandle_t FS_FOpenFileWrite(const char* filename)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	fileHandle_t f = FS_HandleForFile();
@@ -1393,7 +1393,7 @@ static fileHandle_t FS_FOpenFileAppend(const char* filename)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	fileHandle_t f = FS_HandleForFile();
@@ -1464,7 +1464,7 @@ int FS_FOpenFileByMode(const char* qpath, fileHandle_t* f, fsMode_t mode)
 		}
 		break;
 	default:
-		throw QException("FSH_FOpenFile: bad mode");
+		throw Exception("FSH_FOpenFile: bad mode");
 	}
 
 	if (!f)
@@ -1502,7 +1502,7 @@ int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	fileHandle_t f = FS_HandleForFile();
@@ -1583,7 +1583,7 @@ fileHandle_t FS_SV_FOpenFileWrite(const char* filename)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	char* ospath = FS_BuildOSPath(fs_homepath->string, filename, "");
@@ -1628,7 +1628,7 @@ void FS_FCloseFile(fileHandle_t f)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (fsh[f].zipFile == true)
@@ -1672,7 +1672,7 @@ int FS_Read(void *buffer, int len, fileHandle_t f)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!f)
@@ -1706,7 +1706,7 @@ int FS_Read(void *buffer, int len, fileHandle_t f)
 
 			if (read == -1)
 			{
-				throw QException("FS_Read: -1 bytes read");
+				throw Exception("FS_Read: -1 bytes read");
 			}
 
 			remaining -= read;
@@ -1732,7 +1732,7 @@ int FS_Write(const void* buffer, int len, fileHandle_t h)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!h)
@@ -1817,7 +1817,7 @@ int FS_Seek(fileHandle_t f, long offset, int origin)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (fsh[f].zipFile == true)
@@ -1838,7 +1838,7 @@ int FS_Seek(fileHandle_t f, long offset, int origin)
 		}
 		else
 		{
-			throw QException("ZIP FILE FSEEK NOT YET IMPLEMENTED\n");
+			throw Exception("ZIP FILE FSEEK NOT YET IMPLEMENTED\n");
 			return -1;
 		}
 	}
@@ -1858,7 +1858,7 @@ int FS_Seek(fileHandle_t f, long offset, int origin)
 			_origin = SEEK_SET;
 			break;
 		default:
-			throw QException("Bad origin in FS_Seek\n");
+			throw Exception("Bad origin in FS_Seek\n");
 		}
 
 		return fseek(file, offset, _origin);
@@ -1913,12 +1913,12 @@ int FS_FileIsInPAK(const char* filename, int* pChecksum)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!filename)
 	{
-		throw QException("FS_FOpenFileRead: NULL 'filename' parameter passed\n");
+		throw Exception("FS_FOpenFileRead: NULL 'filename' parameter passed\n");
 	}
 
 	// qpaths are not supposed to have a leading slash
@@ -2003,12 +2003,12 @@ int FS_ReadFile(const char* qpath, void** buffer)
 
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!qpath || !qpath[0])
 	{
-		throw QException("FS_ReadFile with empty name\n");
+		throw Exception("FS_ReadFile with empty name\n");
 	}
 
 	// if this is a .cfg file and we are playing back a journal, read
@@ -2051,7 +2051,7 @@ int FS_ReadFile(const char* qpath, void** buffer)
 			r = FS_Read(buf, len, com_journalDataFile);
 			if (r != len)
 			{
-				throw QException("Read from journalDataFile failed");
+				throw Exception("Read from journalDataFile failed");
 			}
 
 			// guarantee that it will have a trailing 0 for string operations
@@ -2130,12 +2130,12 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!qpath || !qpath[0])
 	{
-		throw QException("FS_ReadFile with empty name\n");
+		throw Exception("FS_ReadFile with empty name\n");
 	}
 
 	// if this is a .cfg file and we are playing back a journal, read
@@ -2166,7 +2166,7 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 			r = FS_Read(Buffer.Ptr(), len, com_journalDataFile);
 			if (r != len)
 			{
-				throw QException("Read from journalDataFile failed");
+				throw Exception("Read from journalDataFile failed");
 			}
 
 			return len;
@@ -2220,11 +2220,11 @@ void FS_FreeFile(void* buffer)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 	if (!buffer)
 	{
-		throw QException("FS_FreeFile( NULL )");
+		throw Exception("FS_FreeFile( NULL )");
 	}
 
 	Mem_Free(buffer);
@@ -2242,12 +2242,12 @@ void FS_WriteFile(const char* qpath, const void* buffer, int size)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!qpath || !buffer)
 	{
-		throw QException("FS_WriteFile: NULL parameter");
+		throw Exception("FS_WriteFile: NULL parameter");
 	}
 
 	fileHandle_t f = FS_FOpenFileWrite(qpath);
@@ -2272,7 +2272,7 @@ void FS_Rename(const char* from, const char* to)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	// don't let sound stutter
@@ -2304,7 +2304,7 @@ void FS_SV_Rename(const char* from, const char* to)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	// don't let sound stutter
@@ -2460,7 +2460,7 @@ char** FS_ListFilteredFiles(const char* path, const char* extension, char* filte
 
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!path)
@@ -2670,7 +2670,7 @@ void FS_FreeFileList(char** list)
 {
 	if (!fs_searchpaths)
 	{
-		throw QException("Filesystem call made without initialization\n");
+		throw Exception("Filesystem call made without initialization\n");
 	}
 
 	if (!list)

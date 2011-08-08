@@ -1273,7 +1273,7 @@ void Host_Frame (float time)
 	host_framecount++;
 	fps_count++;
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}
@@ -1366,7 +1366,7 @@ void Host_Init (quakeparms_t *parms)
 	
 	Con_Printf ("������� HexenWorld Initialized �������\n");	
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}

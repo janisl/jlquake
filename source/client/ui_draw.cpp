@@ -232,7 +232,7 @@ void UI_FillPal(int x, int y, int w, int h, int c)
 {
 	if ((unsigned)c > 255)
 	{
-		throw QException("UI_FillPal: bad color");
+		throw Exception("UI_FillPal: bad color");
 	}
 	UI_Fill(x, y, w, h, r_palette[c][0] / 255.0, r_palette[c][1] / 255.0, r_palette[c][2] / 255.0, 1);
 }

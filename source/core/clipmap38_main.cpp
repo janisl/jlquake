@@ -131,7 +131,7 @@ clipHandle_t QClipMap38::InlineModel(int Index) const
 {
 	if (Index < 1 || Index >= numcmodels)
 	{
-		throw QDropException("CM_InlineModel: bad number");
+		throw DropException("CM_InlineModel: bad number");
 	}
 	return Index;
 }
@@ -191,7 +191,7 @@ int QClipMap38::LeafCluster(int LeafNum) const
 {
 	if (LeafNum < 0 || LeafNum >= numleafs)
 	{
-		throw QDropException("CM_LeafCluster: bad number");
+		throw DropException("CM_LeafCluster: bad number");
 	}
 	return leafs[LeafNum].cluster;
 }
@@ -206,7 +206,7 @@ int QClipMap38::LeafArea(int LeafNum) const
 {
 	if (LeafNum < 0 || LeafNum >= numleafs)
 	{
-		throw QDropException("CM_LeafArea: bad number");
+		throw DropException("CM_LeafArea: bad number");
 	}
 	return leafs[LeafNum].area;
 }
@@ -385,7 +385,7 @@ clipHandle_t QClipMap38::TempBoxModel(const vec3_t Mins, const vec3_t Maxs, bool
 
 int QClipMap38::ContentsToQ1(int Contents) const
 {
-	throw QException("Not implemented");
+	throw Exception("Not implemented");
 }
 
 //==========================================================================
@@ -396,7 +396,7 @@ int QClipMap38::ContentsToQ1(int Contents) const
 
 int QClipMap38::ContentsToQ3(int Contents) const
 {
-	throw QException("Not implemented");
+	throw Exception("Not implemented");
 }
 
 //==========================================================================

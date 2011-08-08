@@ -796,7 +796,7 @@ void Host_Frame (float time)
 
 	Con_Printf ("serverprofile: %2i clients %2i msec\n",  c,  m);
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}
@@ -876,7 +876,7 @@ void Host_Init (quakeparms_t *parms)
 	
 	Con_Printf ("========Quake Initialized=========\n");	
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}

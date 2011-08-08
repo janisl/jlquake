@@ -76,7 +76,7 @@ static void NetadrToSockadr(netadr_t* a, sockaddr_in* s)
 	}
 	else
 	{
-		throw QException("Invalid address type");
+		throw Exception("Invalid address type");
 	}
 }
 

@@ -2321,7 +2321,7 @@ void Com_Init( char *commandLine )
 	com_fullyInitialized = qtrue;
 	Com_Printf ("--- Common Initialization Complete ---\n");	
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}
@@ -2622,11 +2622,11 @@ void Com_Frame( void )
 
 	com_frameNumber++;
 	}
-	catch (QDropException& e)
+	catch (DropException& e)
 	{
 		Com_Error(ERR_DROP, "%s", e.What());
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}

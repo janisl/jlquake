@@ -1324,7 +1324,7 @@ void SV_Frame (float time)
 		svs.stats.count = 0;
 	}
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}
@@ -1712,7 +1712,7 @@ void SV_Init (quakeparms_t *parms)
 	if (sv.state == ss_dead)
 		SV_Error ("Couldn't spawn a server");
 	}
-	catch (QException& e)
+	catch (Exception& e)
 	{
 		Sys_Error("%s", e.What());
 	}

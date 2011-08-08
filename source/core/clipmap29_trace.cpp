@@ -85,7 +85,7 @@ bool QClipMap29::RecursiveHullCheck(chull_t * hull, int num, float p1f,
 
 	if (num < hull->firstclipnode || num > hull->lastclipnode)
 	{
-		throw QException("SV_RecursiveHullCheck: bad node number");
+		throw Exception("SV_RecursiveHullCheck: bad node number");
 	}
 
 	//
@@ -216,7 +216,7 @@ bool QClipMap29::RecursiveHullCheck(chull_t * hull, int num, float p1f,
 q2trace_t QClipMap29::BoxTraceQ2(vec3_t Start, vec3_t End,
 	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask)
 {
-	throw QDropException("Not implemented");
+	throw DropException("Not implemented");
 }
 
 //==========================================================================
@@ -228,7 +228,7 @@ q2trace_t QClipMap29::BoxTraceQ2(vec3_t Start, vec3_t End,
 q2trace_t QClipMap29::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, vec3_t Origin, vec3_t Angles)
 {
-	throw QDropException("Not implemented");
+	throw DropException("Not implemented");
 }
 
 //==========================================================================
@@ -240,7 +240,7 @@ q2trace_t QClipMap29::TransformedBoxTraceQ2(vec3_t Start, vec3_t End,
 void QClipMap29::BoxTraceQ3(q3trace_t *Results, const vec3_t Start, const vec3_t End,
 	vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask, int Capsule)
 {
-	throw QDropException("Not implemented");
+	throw DropException("Not implemented");
 }
 
 //==========================================================================
@@ -253,5 +253,5 @@ void QClipMap29::TransformedBoxTraceQ3(q3trace_t *Results, const vec3_t Start,
 	const vec3_t End, vec3_t Mins, vec3_t Maxs, clipHandle_t Model, int BrushMask,
 	const vec3_t Origin, const vec3_t Angles, int Capsule)
 {
-	throw QDropException("Not implemented");
+	throw DropException("Not implemented");
 }

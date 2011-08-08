@@ -152,7 +152,7 @@ static void LM_UploadBlock(bool dynamic)
 		R_ReUploadImage(tr.lightmaps[texture], gl_lms.lightmap_buffer);
 		if (++gl_lms.current_lightmap_texture == MAX_LIGHTMAPS)
 		{
-			throw QDropException("LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n");
+			throw DropException("LM_UploadBlock() - MAX_LIGHTMAPS exceeded\n");
 		}
 	}
 }
@@ -273,7 +273,7 @@ static void R_BuildLightMapQ2(mbrush38_surface_t* surf, byte* dest, int stride)
 {
 	if (surf->texinfo->flags & (BSP38SURF_SKY | BSP38SURF_TRANS33 | BSP38SURF_TRANS66 | BSP38SURF_WARP))
 	{
-		throw QDropException("R_BuildLightMapQ2 called for non-lit surface");
+		throw DropException("R_BuildLightMapQ2 called for non-lit surface");
 	}
 
 	int smax = (surf->extents[0] >> 4) + 1;
@@ -281,7 +281,7 @@ static void R_BuildLightMapQ2(mbrush38_surface_t* surf, byte* dest, int stride)
 	int size = smax * tmax;
 	if (size > ((int)sizeof(s_blocklights_q2) >> 4))
 	{
-		throw QDropException("Bad s_blocklights_q2 size");
+		throw DropException("Bad s_blocklights_q2 size");
 	}
 
 	// set to full bright if no light data
@@ -511,7 +511,7 @@ void GL_CreateSurfaceLightmapQ2(mbrush38_surface_t* surf)
 		LM_InitBlock();
 		if (!LM_AllocBlock(smax, tmax, &surf->light_s, &surf->light_t))
 		{
-			throw QException(va("Consecutive calls to LM_AllocBlock(%d,%d) failed\n", smax, tmax));
+			throw Exception(va("Consecutive calls to LM_AllocBlock(%d,%d) failed\n", smax, tmax));
 		}
 	}
 
@@ -981,7 +981,7 @@ void R_BlendLightmapsQ2()
 				// try uploading the block now
 				if (!LM_AllocBlock(smax, tmax, &surf->dlight_s, &surf->dlight_t))
 				{
-					throw QException(va("Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax));
+					throw Exception(va("Consecutive calls to LM_AllocBlock(%d,%d) failed (dynamic)\n", smax, tmax));
 				}
 
 				byte* base = gl_lms.lightmap_buffer;

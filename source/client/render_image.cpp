@@ -155,7 +155,7 @@ void R_InitQ1Palette()
 	Array<byte> Pal;
 	if (FS_ReadFile("gfx/palette.lmp", Pal) <= 0)
 	{
-		throw QException("Couldn't load gfx/palette.lmp");
+		throw Exception("Couldn't load gfx/palette.lmp");
 	}
 	R_SetPalette(Pal.Ptr());
 	Com_Memcpy(host_basepal, Pal.Ptr(), 768);
@@ -178,7 +178,7 @@ void R_InitQ2Palette()
 	R_LoadPCX("pics/colormap.pcx", &pic, &pal, &width, &height);
 	if (!pal)
 	{
-		throw QException("Couldn't load pics/colormap.pcx");
+		throw Exception("Couldn't load pics/colormap.pcx");
 	}
 
 	R_SetPalette(pal);
@@ -497,11 +497,11 @@ static void R_ResampleTexture(const byte* in, int inwidth, int inheight, byte* o
 {
 	if (outwidth > 2048)
 	{
-		throw QDropException("ResampleTexture: max width");
+		throw DropException("ResampleTexture: max width");
 	}
 	if (outheight > 2048)
 	{
-		throw QDropException("ResampleTexture: max height");
+		throw DropException("ResampleTexture: max height");
 	}
 
 	unsigned fracstep = inwidth * 0x10000 / outwidth;
@@ -762,7 +762,7 @@ static void GL_CheckErrors()
 			break;
 	}
 
-	throw QException(va("GL_CheckErrors: %s", s));
+	throw Exception(va("GL_CheckErrors: %s", s));
 }
 
 //==========================================================================
@@ -1099,11 +1099,11 @@ image_t* R_CreateImage(const char* name, byte* data, int width, int height, bool
 {
 	if (String::Length(name) >= MAX_QPATH)
 	{
-		throw QDropException(va("R_CreateImage: \"%s\" is too long\n", name));
+		throw DropException(va("R_CreateImage: \"%s\" is too long\n", name));
 	}
 	if (tr.numImages == MAX_DRAWIMAGES)
 	{
-		throw QDropException("R_CreateImage: MAX_DRAWIMAGES hit\n");
+		throw DropException("R_CreateImage: MAX_DRAWIMAGES hit\n");
 	}
 
 	bool isLightmap = !String::NCmp(name, "*lightmap", 9);
@@ -2018,7 +2018,7 @@ image_t* R_CachePic(const char* path)
 	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP);
 	if (!pic)
 	{
-		throw QException(va("R_CachePic: failed to load %s", path));
+		throw Exception(va("R_CachePic: failed to load %s", path));
 	}
 	return pic;
 }
@@ -2034,7 +2034,7 @@ image_t* R_CachePicRepeat(const char* path)
 	image_t* pic = R_FindImageFile(path, false, false, GL_REPEAT);
 	if (!pic)
 	{
-		throw QException(va("R_CachePic: failed to load %s", path));
+		throw Exception(va("R_CachePic: failed to load %s", path));
 	}
 	return pic;
 }
@@ -2050,7 +2050,7 @@ image_t* R_CachePicWithTransPixels(const char *path, byte* TransPixels)
 	image_t* pic = R_FindImageFile(path, false, false, GL_CLAMP, false, IMG8MODE_Normal, TransPixels);
 	if (!pic)
 	{
-		throw QException(va("R_CachePic: failed to load %s", path));
+		throw Exception(va("R_CachePic: failed to load %s", path));
 	}
 	return pic;
 }

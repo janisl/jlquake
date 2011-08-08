@@ -425,18 +425,18 @@ patchCollide_t* QClipMap46::GeneratePatchCollide(int width, int height, vec3_t* 
 {
 	if (width <= 2 || height <= 2 || !points)
 	{
-		throw QDropException(va("CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)",
+		throw DropException(va("CM_GeneratePatchFacets: bad parameters: (%i, %i, %p)",
 			width, height, points));
 	}
 
 	if (!(width & 1) || !(height & 1))
 	{
-		throw QDropException("CM_GeneratePatchFacets: even sizes are invalid for quadratic meshes");
+		throw DropException("CM_GeneratePatchFacets: even sizes are invalid for quadratic meshes");
 	}
 
 	if (width > MAX_GRID_SIZE || height > MAX_GRID_SIZE)
 	{
-		throw QDropException("CM_GeneratePatchFacets: source is > MAX_GRID_SIZE");
+		throw DropException("CM_GeneratePatchFacets: source is > MAX_GRID_SIZE");
 	}
 
 	// build a grid
@@ -600,7 +600,7 @@ void patchCollide_t::FromGrid(cGrid_t* grid)
 
 			if (cm_patch_numFacets == MAX_FACETS)
 			{
-				throw QDropException("MAX_FACETS");
+				throw DropException("MAX_FACETS");
 			}
 			facet_t* facet = &cm_patch_facets[cm_patch_numFacets];
 			Com_Memset(facet, 0, sizeof(*facet));
@@ -655,7 +655,7 @@ void patchCollide_t::FromGrid(cGrid_t* grid)
 
 				if (cm_patch_numFacets == MAX_FACETS)
 				{
-					throw QDropException("MAX_FACETS");
+					throw DropException("MAX_FACETS");
 				}
 				facet = &cm_patch_facets[cm_patch_numFacets];
 				Com_Memset(facet, 0, sizeof(*facet));
@@ -742,7 +742,7 @@ int patchCollide_t::FindPlane(float* p1, float* p2, float* p3)
 	// add a new plane
 	if (cm_patch_numPlanes == MAX_PATCH_PLANES)
 	{
-		throw QDropException("MAX_PATCH_PLANES");
+		throw DropException("MAX_PATCH_PLANES");
 	}
 
 	Vector4Copy(plane, cm_patch_planes[cm_patch_numPlanes].plane);
@@ -830,7 +830,7 @@ int patchCollide_t::EdgePlaneNum(cGrid_t* grid, int gridPlanes[MAX_GRID_SIZE][MA
 
 	}
 
-	throw QDropException("CM_EdgePlaneNum: bad k");
+	throw DropException("CM_EdgePlaneNum: bad k");
 	return -1;
 }
 
@@ -892,7 +892,7 @@ void patchCollide_t::SetBorderInward(facet_t* facet, cGrid_t* grid,
 		numPoints = 3;
 		break;
 	default:
-		throw QException("CM_SetBorderInward: bad parameter");
+		throw Exception("CM_SetBorderInward: bad parameter");
 	}
 
 	for (int k = 0; k < facet->numBorders; k++)
@@ -1298,7 +1298,7 @@ int patchCollide_t::FindPlane2(float plane[4], int* flipped)
 	// add a new plane
 	if (cm_patch_numPlanes == MAX_PATCH_PLANES)
 	{
-		throw QDropException("MAX_PATCH_PLANES");
+		throw DropException("MAX_PATCH_PLANES");
 	}
 
 	Vector4Copy(plane, cm_patch_planes[cm_patch_numPlanes].plane);

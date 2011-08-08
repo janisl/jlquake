@@ -780,7 +780,7 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 
 		if (!RegisterClass(&wc))
 		{
-			throw QException("GLW_CreateWindow: could not register window class");
+			throw Exception("GLW_CreateWindow: could not register window class");
 		}
 		s_classRegistered = true;
 		Log::write("...registered window class\n");
@@ -857,7 +857,7 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 
 		if (!GMainWindow)
 		{
-			throw QException("GLW_CreateWindow() - Couldn't create window");
+			throw Exception("GLW_CreateWindow() - Couldn't create window");
 		}
 
 		ShowWindow(GMainWindow, SW_SHOW);

@@ -74,7 +74,7 @@ void QClipMap38::LoadMap(const char* AName, const Array<quint8>& Buffer)
 
 	if (header.version != BSP38_VERSION)
 	{
-		throw QDropException(va("CMod_LoadBrushModel: %s has wrong version number (%i should be %i)",
+		throw DropException(va("CMod_LoadBrushModel: %s has wrong version number (%i should be %i)",
 			AName, header.version, BSP38_VERSION));
 	}
 
@@ -126,12 +126,12 @@ void QClipMap38::LoadSurfaces(const quint8* base, const bsp38_lump_t* l)
 	const bsp38_texinfo_t* in = (const bsp38_texinfo_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no surfaces");
+		throw DropException("Map with no surfaces");
 	}
 
 	numtexinfo = count;
@@ -158,12 +158,12 @@ void QClipMap38::LoadLeafs(const quint8* base, const bsp38_lump_t* l)
 	const bsp38_dleaf_t* in = (const bsp38_dleaf_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no leafs");
+		throw DropException("Map with no leafs");
 	}
 
 	// need to save space for box planes
@@ -188,7 +188,7 @@ void QClipMap38::LoadLeafs(const quint8* base, const bsp38_lump_t* l)
 
 	if (leafs[0].contents != BSP38CONTENTS_SOLID)
 	{
-		throw QDropException("Map leaf 0 is not CONTENTS_SOLID");
+		throw DropException("Map leaf 0 is not CONTENTS_SOLID");
 	}
 	solidleaf = 0;
 	emptyleaf = -1;
@@ -202,7 +202,7 @@ void QClipMap38::LoadLeafs(const quint8* base, const bsp38_lump_t* l)
 	}
 	if (emptyleaf == -1)
 	{
-		throw QDropException("Map does not have an empty leaf");
+		throw DropException("Map does not have an empty leaf");
 	}
 }
 
@@ -217,12 +217,12 @@ void QClipMap38::LoadLeafBrushes(const quint8* base, const bsp38_lump_t* l)
 	const quint16* in = (const quint16*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no leaf brushes");
+		throw DropException("Map with no leaf brushes");
 	}
 
 	// need to save space for box planes
@@ -247,12 +247,12 @@ void QClipMap38::LoadPlanes(const quint8* base, const bsp38_lump_t *l)
 	const bsp38_dplane_t* in = (const bsp38_dplane_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no planes");
+		throw DropException("Map with no planes");
 	}
 
 	// need to save space for box planes
@@ -285,7 +285,7 @@ void QClipMap38::LoadBrushes(const quint8* base, const bsp38_lump_t *l)
 	const bsp38_dbrush_t* in = (const bsp38_dbrush_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -313,7 +313,7 @@ void QClipMap38::LoadBrushSides(const quint8* base, const bsp38_lump_t *l)
 	const bsp38_dbrushside_t* in = (const bsp38_dbrushside_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -329,7 +329,7 @@ void QClipMap38::LoadBrushSides(const quint8* base, const bsp38_lump_t *l)
 		int j = LittleShort(in->texinfo);
 		if (j >= numtexinfo)
 		{
-			throw QDropException("Bad brushside texinfo");
+			throw DropException("Bad brushside texinfo");
 		}
 		out->surface = &surfaces[j];
 	}
@@ -346,12 +346,12 @@ void QClipMap38::LoadNodes(const quint8* base, const bsp38_lump_t* l)
 	const bsp38_dnode_t* in = (const bsp38_dnode_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map has no nodes");
+		throw DropException("Map has no nodes");
 	}
 
 	nodes = new cnode_t[count + 6];
@@ -380,7 +380,7 @@ void QClipMap38::LoadAreas(const quint8* base, const bsp38_lump_t *l)
 	const bsp38_darea_t* in = (const bsp38_darea_t *)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -408,7 +408,7 @@ void QClipMap38::LoadAreaPortals(const quint8* base, const bsp38_lump_t* l)
 	const bsp38_dareaportal_t* in = (bsp38_dareaportal_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 
@@ -468,12 +468,12 @@ void QClipMap38::LoadSubmodels(const quint8* base, const bsp38_lump_t *l)
 	const bsp38_dmodel_t* in = (const bsp38_dmodel_t*)(base + l->fileofs);
 	if (l->filelen % sizeof(*in))
 	{
-		throw QDropException("MOD_LoadBmodel: funny lump size");
+		throw DropException("MOD_LoadBmodel: funny lump size");
 	}
 	int count = l->filelen / sizeof(*in);
 	if (count < 1)
 	{
-		throw QDropException("Map with no models");
+		throw DropException("Map with no models");
 	}
 
 	cmodels = new cmodel_t[count];

@@ -499,7 +499,7 @@ void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
 	if (Q_fabs(inv_denom) == 0.0f)
 	{
 		// bk010122 - zero vectors get here
-		throw QException("Zero vector");
+		throw Exception("Zero vector");
 	}
 	inv_denom = 1.0f / inv_denom;
 
@@ -1462,7 +1462,7 @@ void ByteToDir(int b, vec3_t dir)
 	{
 		if (GGameType & GAME_Quake2)
 		{
-			throw QDropException("MSF_ReadDir: out of range");
+			throw DropException("MSF_ReadDir: out of range");
 		}
 		VectorCopy(vec3_origin, dir);
 		return;

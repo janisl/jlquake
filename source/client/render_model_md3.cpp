@@ -124,12 +124,12 @@ static bool R_LoadMd3Lod(model_t* mod, int lod, const void* buffer, const char* 
 		
 		if (surf->numVerts > SHADER_MAX_VERTEXES)
 		{
-			throw QDropException(va("R_LoadMD3: %s has more than %i verts on a surface (%i)",
+			throw DropException(va("R_LoadMD3: %s has more than %i verts on a surface (%i)",
 				mod_name, SHADER_MAX_VERTEXES, surf->numVerts));
 		}
 		if (surf->numTriangles * 3 > SHADER_MAX_INDEXES)
 		{
-			throw QDropException(va("R_LoadMD3: %s has more than %i triangles on a surface (%i)",
+			throw DropException(va("R_LoadMD3: %s has more than %i triangles on a surface (%i)",
 				mod_name, SHADER_MAX_INDEXES / 3, surf->numTriangles));
 		}
 

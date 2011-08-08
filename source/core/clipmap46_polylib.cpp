@@ -63,7 +63,7 @@ void CM46_FreeWinding(winding_t* w)
 {
 	if (*(unsigned *)w == 0xdeaddead)
 	{
-		throw QException("FreeWinding: freed a freed winding");
+		throw Exception("FreeWinding: freed a freed winding");
 	}
 	*(unsigned *)w = 0xdeaddead;
 
@@ -107,7 +107,7 @@ winding_t* CM46_BaseWindingForPlane(vec3_t normal, vec_t dist)
 	}
 	if (x==-1)
 	{
-		throw QDropException("BaseWindingForPlane: no axis found");
+		throw DropException("BaseWindingForPlane: no axis found");
 	}
 
 	vec3_t vup;
@@ -259,11 +259,11 @@ void CM46_ChopWindingInPlace(winding_t** inout, vec3_t normal, vec_t dist, vec_t
 	
 	if (f->numpoints > maxpts)
 	{
-		throw QDropException("ClipWinding: points exceeded estimate");
+		throw DropException("ClipWinding: points exceeded estimate");
 	}
 	if (f->numpoints > MAX_POINTS_ON_WINDING)
 	{
-		throw QDropException("ClipWinding: MAX_POINTS_ON_WINDING");
+		throw DropException("ClipWinding: MAX_POINTS_ON_WINDING");
 	}
 
 	CM46_FreeWinding(in);
