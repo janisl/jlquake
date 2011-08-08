@@ -14,36 +14,24 @@
 //**
 //**************************************************************************
 
-//==========================================================================
-//
-//	QLogListener
-//
-//==========================================================================
-
-class QLogListener : Interface
+class LogListener : Interface
 {
 public:
-	virtual void Serialise(const char* Text, bool Devel) = 0;
+	virtual void serialise(const char* text, bool devel) = 0;
 };
-
-//==========================================================================
-//
-//	QLog
-//
-//==========================================================================
 
 class QLog
 {
 private:
 	enum { MAX_LISTENERS	= 8 };
 
-	QLogListener*	Listeners[MAX_LISTENERS];
+	LogListener*	Listeners[MAX_LISTENERS];
 
 public:
 	QLog();
 
-	void AddListener(QLogListener* Listener);
-	void RemoveListener(QLogListener* Listener);
+	void AddListener(LogListener* Listener);
+	void RemoveListener(LogListener* Listener);
 
 	void Write(const char* Fmt, ...);
 	void WriteLine(const char* Fmt, ...);

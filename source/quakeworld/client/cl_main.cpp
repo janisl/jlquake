@@ -126,18 +126,18 @@ char soundlist_name[] =
 	{ 's'^0xff, 'o'^0xff, 'u'^0xff, 'n'^0xff, 'd'^0xff, 'l'^0xff, 'i'^0xff, 's'^0xff, 't'^0xff, 
 		' '^0xff, '%'^0xff, 'i'^0xff, ' '^0xff, '%'^0xff, 'i'^0xff, 0 };
 
-class QMainLog : public QLogListener
+class QMainLog : public LogListener
 {
 public:
-	void Serialise(const char* Text, bool Devel)
+	void serialise(const char* text, bool devel)
 	{
-		if (Devel)
+		if (devel)
 		{
-			Con_DPrintf("%s", Text);
+			Con_DPrintf("%s", text);
 		}
 		else
 		{
-			Con_Printf("%s", Text);
+			Con_Printf("%s", text);
 		}
 	}
 } MainLog;

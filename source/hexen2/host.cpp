@@ -65,18 +65,18 @@ QCvar*	sys_adaptive;
 
 QCvar*	temp1;
 
-class QMainLog : public QLogListener
+class QMainLog : public LogListener
 {
 public:
-	void Serialise(const char* Text, bool Devel)
+	void serialise(const char* text, bool devel)
 	{
-		if (Devel)
+		if (devel)
 		{
-			Con_DPrintf("%s", Text);
+			Con_DPrintf("%s", text);
 		}
 		else
 		{
-			Con_Printf("%s", Text);
+			Con_Printf("%s", text);
 		}
 	}
 } MainLog;

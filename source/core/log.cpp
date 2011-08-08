@@ -55,7 +55,7 @@ QLog::QLog()
 //
 //==========================================================================
 
-void QLog::AddListener(QLogListener* Listener)
+void QLog::AddListener(LogListener* Listener)
 {
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
@@ -73,7 +73,7 @@ void QLog::AddListener(QLogListener* Listener)
 //
 //==========================================================================
 
-void QLog::RemoveListener(QLogListener* Listener)
+void QLog::RemoveListener(LogListener* Listener)
 {
 	for (int i = 0; i < MAX_LISTENERS; i++)
 	{
@@ -105,7 +105,7 @@ void QLog::Write(const char* Fmt, ...)
 		{
 			try
 			{
-				Listeners[i]->Serialise(string, false);
+				Listeners[i]->serialise(string, false);
 			}
 			catch (...)
 			{
@@ -136,7 +136,7 @@ void QLog::WriteLine(const char* Fmt, ...)
 		{
 			try
 			{
-				Listeners[i]->Serialise(string, false);
+				Listeners[i]->serialise(string, false);
 			}
 			catch (...)
 			{
@@ -166,7 +166,7 @@ void QLog::DWrite(const char* Fmt, ...)
 		{
 			try
 			{
-				Listeners[i]->Serialise(string, true);
+				Listeners[i]->serialise(string, true);
 			}
 			catch (...)
 			{
@@ -197,7 +197,7 @@ void QLog::DWriteLine(const char* Fmt, ...)
 		{
 			try
 			{
-				Listeners[i]->Serialise(string, true);
+				Listeners[i]->serialise(string, true);
 			}
 			catch (...)
 			{

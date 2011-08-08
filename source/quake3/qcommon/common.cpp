@@ -79,18 +79,18 @@ qboolean	com_fullyInitialized;
 
 char	com_errorMessage[MAXPRINTMSG];
 
-class QMainLog : public QLogListener
+class QMainLog : public LogListener
 {
 public:
-	void Serialise(const char* Text, bool Devel)
+	void serialise(const char* text, bool devel)
 	{
-		if (Devel)
+		if (devel)
 		{
-			Com_DPrintf("%s", Text);
+			Com_DPrintf("%s", text);
 		}
 		else
 		{
-			Com_Printf("%s", Text);
+			Com_Printf("%s", text);
 		}
 	}
 } MainLog;
