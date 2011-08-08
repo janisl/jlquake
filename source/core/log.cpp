@@ -18,12 +18,6 @@
 
 LogListener* Log::listeners[Log::MAX_LISTENERS];
 
-//==========================================================================
-//
-//	Log::addListener
-//
-//==========================================================================
-
 void Log::addListener(LogListener* listener)
 {
 	for (int i = 0; i < MAX_LISTENERS; i++)
@@ -36,12 +30,6 @@ void Log::addListener(LogListener* listener)
 	}
 }
 
-//==========================================================================
-//
-//	Log::removeListener
-//
-//==========================================================================
-
 void Log::removeListener(LogListener* listener)
 {
 	for (int i = 0; i < MAX_LISTENERS; i++)
@@ -52,12 +40,6 @@ void Log::removeListener(LogListener* listener)
 		}
 	}
 }
-
-//==========================================================================
-//
-//	Log::write
-//
-//==========================================================================
 
 void Log::write(const char* format, ...)
 {
@@ -82,12 +64,6 @@ void Log::write(const char* format, ...)
 		}
 	}
 }
-
-//==========================================================================
-//
-//	Log::writeLine
-//
-//==========================================================================
 
 void Log::writeLine(const char* format, ...)
 {
@@ -114,12 +90,6 @@ void Log::writeLine(const char* format, ...)
 	}
 }
 
-//==========================================================================
-//
-//	Log::develWrite
-//
-//==========================================================================
-
 void Log::develWrite(const char* format, ...)
 {
 	va_list argPtr;
@@ -143,12 +113,6 @@ void Log::develWrite(const char* format, ...)
 		}
 	}
 }
-
-//==========================================================================
-//
-//	Log::develWriteLine
-//
-//==========================================================================
 
 void Log::develWriteLine(const char* format, ...)
 {
