@@ -18,7 +18,7 @@
 #define _CM29_LOCAL_H
 
 #include "../local.h"
-#include "../../bsp29file.h"
+#include "../../file_formats/bsp29.h"
 
 #define MAX_MAP_HULLS		8
 

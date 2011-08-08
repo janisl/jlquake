@@ -18,7 +18,7 @@
 #define _CM46_LOCAL_H
 
 #include "../local.h"
-#include "../../bsp46file.h"
+#include "../../file_formats/bsp46.h"
 
 #define MAX_FACETS			1024
 #define MAX_PATCH_PLANES	2048

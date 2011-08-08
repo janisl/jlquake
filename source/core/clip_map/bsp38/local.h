@@ -18,7 +18,7 @@
 #define _CM38_LOCAL_H
 
 #include "../local.h"
-#include "../../bsp38file.h"
+#include "../../file_formats/bsp38.h"
 
 #define BOX_HANDLE		BSP38MAX_MAP_MODELS
 

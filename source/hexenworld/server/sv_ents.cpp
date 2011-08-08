@@ -1,6 +1,6 @@
 
 #include "qwsvdef.h"
-#include "../../core/bsp29file.h"
+#include "../../core/file_formats/bsp29.h"
 
 /*
 =============================================================================

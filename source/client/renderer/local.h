@@ -31,15 +31,15 @@
 // parallel on a dual cpu machine
 #define	SMP_FRAMES		2
 
-#include "../../core/bsp29file.h"
-#include "../../core/bsp38file.h"
-#include "../../core/bsp46file.h"
-#include "../../core/mdlfile.h"
-#include "../../core/md2file.h"
-#include "../../core/md3file.h"
-#include "../../core/md4file.h"
-#include "../../core/sprfile.h"
-#include "../../core/sp2file.h"
+#include "../../core/file_formats/bsp29.h"
+#include "../../core/file_formats/bsp38.h"
+#include "../../core/file_formats/bsp46.h"
+#include "../../core/file_formats/mdl.h"
+#include "../../core/file_formats/md2.h"
+#include "../../core/file_formats/md3.h"
+#include "../../core/file_formats/md4.h"
+#include "../../core/file_formats/spr.h"
+#include "../../core/file_formats/sp2.h"
 
 #include "qgl.h"
 #include "images/image.h"

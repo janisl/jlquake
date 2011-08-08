@@ -18,9 +18,9 @@
 
 #include "../core.h"
 #include "local.h"
-#include "../bsp29file.h"
-#include "../bsp38file.h"
-#include "../bsp46file.h"
+#include "../file_formats/bsp29.h"
+#include "../file_formats/bsp38.h"
+#include "../file_formats/bsp46.h"
 
 // MACROS ------------------------------------------------------------------
 

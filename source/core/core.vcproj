@@ -309,15 +309,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\bsp29file.h"
+				RelativePath=".\file_formats\bsp29.h"
 				>
 			</File>
 			<File
-				RelativePath=".\bsp38file.h"
+				RelativePath=".\file_formats\bsp38.h"
 				>
 			</File>
 			<File
-				RelativePath=".\bsp46file.h"
+				RelativePath=".\file_formats\bsp46.h"
 				>
 			</File>
 			<File

@@ -22,9 +22,9 @@
 
 #include "../core.h"
 #include "local.h"
-#include "../bsp29file.h"
-#include "../mdlfile.h"
-#include "../sprfile.h"
+#include "../file_formats/bsp29.h"
+#include "../file_formats/mdl.h"
+#include "../file_formats/spr.h"
 
 // MACROS ------------------------------------------------------------------
 
