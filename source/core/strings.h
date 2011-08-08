@@ -311,8 +311,8 @@ public:
 
 	QStr Utf8Substring(int, int) const;
 
-	void Split(char, QArray<QStr>&) const;
-	void Split(const char*, QArray<QStr>&) const;
+	void Split(char, Array<QStr>&) const;
+	void Split(const char*, Array<QStr>&) const;
 
 	bool IsValidUtf8() const;
 	QStr Latin1ToUtf8() const;

@@ -52,7 +52,7 @@ public:
 	vec3_t			ModelMins;
 	vec3_t			ModelMaxs;
 
-	void LoadMap(const char* name, const QArray<quint8>& Buffer);
+	void LoadMap(const char* name, const Array<quint8>& Buffer);
 	void ReloadMap(bool ClientLoad)
 	{}
 	clipHandle_t InlineModel(int Index) const
@@ -163,7 +163,7 @@ public:
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-QArray<QClipMap*>		CMNonMapModels;
+Array<QClipMap*>		CMNonMapModels;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -196,7 +196,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 	//
 	// load the file
 	//
-	QArray<quint8> Buffer;
+	Array<quint8> Buffer;
 	if (FS_ReadFile(Name, Buffer) <= 0)
 	{
 		throw QDropException(va("CM_PrecacheModel: %s not found", Name));
@@ -235,7 +235,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 //
 //==========================================================================
 
-void QClipMapNonMap::LoadMap(const char* name, const QArray<quint8>& Buffer)
+void QClipMapNonMap::LoadMap(const char* name, const Array<quint8>& Buffer)
 {
 	this->Name = name;
 

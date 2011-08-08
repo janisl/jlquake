@@ -55,7 +55,7 @@ struct lumpinfo_t
 
 static int			wad_numlumps;
 static lumpinfo_t*	wad_lumps;
-static QArray<byte>	wad_base;
+static Array<byte>	wad_base;
 
 // CODE --------------------------------------------------------------------
 

@@ -41,7 +41,7 @@ public:
 
 	QClipMap();
 	virtual ~QClipMap();
-	virtual void LoadMap(const char* name, const QArray<quint8>& Buffer) = 0;
+	virtual void LoadMap(const char* name, const Array<quint8>& Buffer) = 0;
 	virtual void ReloadMap(bool ClientLoad) = 0;
 	virtual clipHandle_t InlineModel(int Index) const = 0;
 	virtual int GetNumClusters() const = 0;
@@ -90,7 +90,7 @@ QClipMap* CM_CreateQClipMap46();
 
 extern QClipMap*			CMapShared;
 
-extern QArray<QClipMap*>	CMNonMapModels;
+extern Array<QClipMap*>	CMNonMapModels;
 
 extern QCvar*				cm_flushmap;
 

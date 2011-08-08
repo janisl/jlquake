@@ -42,7 +42,7 @@ float			*pr_globals;			// same as pr_global_struct
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static QArray<const char*>	pr_strtbl;
+static Array<const char*>	pr_strtbl;
 
 // CODE --------------------------------------------------------------------
 

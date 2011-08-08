@@ -246,7 +246,7 @@ void R_LoadJPG(const char* filename, unsigned char** pic, int* width, int* heigh
 	*width = cinfo.output_width;
 	*height = cinfo.output_height;
 
-	QArray<JSAMPLE> ScanLine;
+	Array<JSAMPLE> ScanLine;
 	ScanLine.SetNum(cinfo.output_width * cinfo.output_components);
 	JSAMPROW RowPtr = ScanLine.Ptr();
 	JSAMPARRAY buffer = &RowPtr;

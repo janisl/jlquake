@@ -475,7 +475,7 @@ QStr QStr::Utf8Substring(int Start, int Len) const
 //
 //==========================================================================
 
-void QStr::Split(char C, QArray<QStr>& A) const
+void QStr::Split(char C, Array<QStr>& A) const
 {
 	A.Clear();
 	if (!Str)
@@ -503,7 +503,7 @@ void QStr::Split(char C, QArray<QStr>& A) const
 //
 //==========================================================================
 
-void QStr::Split(const char* Chars, QArray<QStr>& A) const
+void QStr::Split(const char* Chars, Array<QStr>& A) const
 {
 	A.Clear();
 	if (!Str)

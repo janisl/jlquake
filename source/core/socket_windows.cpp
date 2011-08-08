@@ -556,7 +556,7 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 	sockaddr_in addr;
 	int addrlen = sizeof(addr);
 	int ret;
-	QArray<quint8> SocksBuf;
+	Array<quint8> SocksBuf;
 	if (usingSocks)
 	{
 		SocksBuf.SetNum(len + 10);
@@ -636,7 +636,7 @@ int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To)
 	int ret;
 	if (usingSocks && To->type == NA_IP)
 	{
-		QArray<char> socksBuf;
+		Array<char> socksBuf;
 		socksBuf.SetNum(Length + 10);
 		socksBuf[0] = 0;	// reserved
 		socksBuf[1] = 0;

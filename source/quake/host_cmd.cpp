@@ -562,7 +562,7 @@ void Host_Loadgame_f (void)
 // been used.  The menu calls it before stuffing loadgame command
 //	SCR_BeginLoadingPlaque ();
 
-	QArray<byte> Buffer;
+	Array<byte> Buffer;
 	Con_Printf ("Loading game from %s...\n", name);
 	int FileLen = FS_ReadFile(name, Buffer);
 	if (FileLen <= 0)

@@ -2124,7 +2124,7 @@ int FS_ReadFile(const char* qpath, void** buffer)
 //
 //==========================================================================
 
-int FS_ReadFile(const char* qpath, QArray<byte>& Buffer)
+int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 {
 	fileHandle_t	h;
 

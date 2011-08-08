@@ -199,7 +199,7 @@ qboolean	CL_CheckOrDownloadFile (char *filename)
 
 static void CL_CalcModelChecksum(const char* ModelName, const char* CVarName)
 {
-	QArray<byte> Buffer;
+	Array<byte> Buffer;
 	if (!FS_ReadFile(ModelName, Buffer))
 	{
 		throw QDropException(va("Couldn't load %s", ModelName));

@@ -130,7 +130,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 
 	if (!name[0])
 	{
-		QArray<quint8> Buffer;
+		Array<quint8> Buffer;
 		CMapShared = CM_CreateQClipMap38();
 		CMapShared->LoadMap(name, Buffer);
 		if (checksum)
@@ -143,7 +143,7 @@ void CM_LoadMap(const char* name, bool clientload, int* checksum)
 	//
 	// load the file
 	//
-	QArray<quint8> Buffer;
+	Array<quint8> Buffer;
 	if (FS_ReadFile(name, Buffer) <= 0)
 	{
 		throw QDropException(va("Couldn't load %s", name));

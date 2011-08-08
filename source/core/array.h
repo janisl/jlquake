@@ -29,20 +29,20 @@ inline void* operator new(size_t, void* Ptr, EArrayNew, EArrayNew)
 	return Ptr;
 }
 
-template<class T> class QArray
+template<class T> class Array
 {
 public:
-	QArray()
+	Array()
 	: ArrData(0)
 	{
 		Clear();
 	}
-	QArray(const QArray<T>& Other)
+	Array(const Array<T>& Other)
 	: ArrData(0)
 	{
 		*this = Other;
 	}
-	~QArray()
+	~Array()
 	{
 		Clear();
 	}
@@ -142,7 +142,7 @@ public:
 		Resize(ArrNum);
 	}
 
-	QArray<T>& operator=(const QArray<T>& Other)
+	Array<T>& operator=(const Array<T>& Other)
 	{
 		Clear();
 

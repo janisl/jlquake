@@ -572,7 +572,7 @@ static void Cmd_Exec_f()
 	QStr::NCpyZ(filename, Cmd_Argv(1), sizeof(filename));
 	QStr::DefaultExtension(filename, sizeof(filename), ".cfg");
 
-	QArray<byte> Buffer;
+	Array<byte> Buffer;
 	FS_ReadFile(filename, Buffer);
 	if (!Buffer.Num())
 	{

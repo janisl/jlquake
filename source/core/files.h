@@ -141,7 +141,7 @@ int FS_FileIsInPAK(const char* filename, int* pChecksum);
 // returns 1 if a file is in the PAK file, otherwise -1
 
 int FS_ReadFile(const char* qpath, void** buffer);
-int FS_ReadFile(const char* qpath, QArray<byte>& Buffer);
+int FS_ReadFile(const char* qpath, Array<byte>& Buffer);
 // returns the length of the file
 // a null buffer will just return the file length without loading
 // as a quick check for existance. -1 length == not present

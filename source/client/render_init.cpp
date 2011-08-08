@@ -301,7 +301,7 @@ static void GfxInfo_f()
 	GLog.Write("GL_VERSION: %s\n", glConfig.version_string);
 
 	GLog.WriteLine("GL_EXTENSIONS:");
-	QArray<QStr> Exts;
+	Array<QStr> Exts;
 	QStr(glConfig.extensions_string).Split(' ', Exts);
 	for (int i = 0; i < Exts.Num(); i++)
 	{

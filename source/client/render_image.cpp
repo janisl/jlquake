@@ -152,7 +152,7 @@ static void R_SetPalette(byte* pal)
 
 void R_InitQ1Palette()
 {
-	QArray<byte> Pal;
+	Array<byte> Pal;
 	if (FS_ReadFile("gfx/palette.lmp", Pal) <= 0)
 	{
 		throw QException("Couldn't load gfx/palette.lmp");
@@ -552,7 +552,7 @@ static void R_MipMap2(byte* in, int inWidth, int inHeight)
 {
 	int outWidth = inWidth >> 1;
 	int outHeight = inHeight >> 1;
-	QArray<byte> temp;
+	Array<byte> temp;
 	temp.SetNum(outWidth * outHeight * 4);
 
 	int inWidthMask = inWidth - 1;
@@ -1947,7 +1947,7 @@ static image_t* R_LoadRawFontImage(const char* name, byte* data8, int width, int
 
 image_t* R_LoadRawFontImageFromFile(const char* name, int width, int height)
 {
-	QArray<byte> data;
+	Array<byte> data;
 	FS_ReadFile(name, data);
 	return R_LoadRawFontImage(name, data.Ptr(), width, height);
 }

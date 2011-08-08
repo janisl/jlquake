@@ -54,7 +54,7 @@
 //
 //==========================================================================
 
-void QClipMap46::LoadMap(const char* AName, const QArray<quint8>& Buffer)
+void QClipMap46::LoadMap(const char* AName, const Array<quint8>& Buffer)
 {
 	cm_noAreas = Cvar_Get("cm_noAreas", "0", CVAR_CHEAT);
 	cm_noCurves = Cvar_Get("cm_noCurves", "0", CVAR_CHEAT);

@@ -612,7 +612,7 @@ static void APIENTRY logViewport(GLint x, GLint y, GLsizei width, GLsizei height
 
 static bool CheckExtension(const char* Extension)
 {
-	QArray<QStr> Extensions;
+	Array<QStr> Extensions;
 	QStr((char*)qglGetString(GL_EXTENSIONS)).Split(' ', Extensions);
 	for (int i = 0; i < Extensions.Num(); i++)
 	{

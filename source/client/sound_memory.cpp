@@ -305,7 +305,7 @@ bool S_LoadSound(sfx_t* sfx)
 		QStr::Sprintf(namebuffer, sizeof(namebuffer), "sound/%s", name);
 	}
 
-	QArray<byte> data;
+	Array<byte> data;
 	int size = FS_ReadFile(namebuffer, data);
 	if (size <= 0)
 	{

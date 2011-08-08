@@ -596,7 +596,7 @@ void Host_Loadgame_f (void)
 
 	sprintf(dest, "%s/info.dat", Cmd_Argv(1));
 
-	QArray<byte> Buffer;
+	Array<byte> Buffer;
 	int Len = FS_ReadFile(dest, Buffer);
 	if (Len <= 0)
 	{
@@ -833,7 +833,7 @@ int LoadGamestate(char *level, char *startspot, int ClientsMode)
 			Con_Printf ("Loading game from %s...\n", name);
 	}
 
-	QArray<byte> Buffer;
+	Array<byte> Buffer;
 	int len = FS_ReadFile(name, Buffer);
 	if (len <= 0)
 	{
