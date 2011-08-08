@@ -367,31 +367,31 @@
 				>
 			</File>
 			<File
-				RelativePath=".\sound_audiocd_windows.cpp"
+				RelativePath=".\sound\audiocd\windows.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_driver_directsound.cpp"
+				RelativePath=".\sound\driver_directsound.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_main.cpp"
+				RelativePath=".\sound\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_memory.cpp"
+				RelativePath=".\sound\memory.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_midi_windows.cpp"
+				RelativePath=".\sound\midi\windows.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_midi_windows_stream_converter.cpp"
+				RelativePath=".\sound\midi\windows_stream_converter.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_mix.cpp"
+				RelativePath=".\sound\mix.cpp"
 				>
 			</File>
 			<File

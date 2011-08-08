@@ -16,9 +16,9 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "sound_local.h"
-#include "windows_shared.h"
+#include "../client.h"
+#include "local.h"
+#include "../windows_shared.h"
 #include <dsound.h>
 
 // MACROS ------------------------------------------------------------------

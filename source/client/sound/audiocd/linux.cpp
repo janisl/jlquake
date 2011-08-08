@@ -16,8 +16,20 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "windows_shared.h"
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/ioctl.h>
+#include <sys/file.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <string.h>
+#include <time.h>
+#include <errno.h>
+
+#include <linux/cdrom.h>
+
+#include "../../client.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -25,10 +37,10 @@
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
+// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
+
 void CDAudio_Stop();
 void CDAudio_Pause();
-
-// PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
 // PRIVATE FUNCTION PROTOTYPES ---------------------------------------------
 
@@ -38,24 +50,23 @@ void CDAudio_Pause();
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static qboolean cdValid = false;
-static qboolean	playing = false;
-static qboolean	wasPlaying = false;
-static qboolean	initialized = false;
-static qboolean	enabled = false;
-static qboolean playLooping = false;
-static float	cdvolume;
-static byte 	remap[100];
-static byte		cdrom;
-static byte		playTrack;
-static byte		maxTrack;
+qboolean cdValid = false;
+qboolean	playing = false;
+qboolean	wasPlaying = false;
+qboolean	initialized = false;
+qboolean	enabled = true;
+qboolean playLooping = false;
+float	cdvolume;
+byte 	remap[100];
+byte		playTrack;
+byte		maxTrack;
 
-static UINT		wDeviceID;
-static int		loopcounter;
+int cdfile = -1;
+static char cd_dev_old[64] = "/dev/cdrom";
 
-static Cvar*	cd_nocd;
-static Cvar*	cd_loopcount;
-static Cvar*	cd_looptrack;
+Cvar	*cd_volume;
+Cvar *cd_nocd;
+Cvar *cd_dev;
 
 // CODE --------------------------------------------------------------------
 
@@ -65,15 +76,19 @@ static Cvar*	cd_looptrack;
 //
 //==========================================================================
 
-static void CDAudio_Eject()
+void CDAudio_Eject()
 {
-	DWORD	dwReturn;
-
-    if (dwReturn = mciSendCommand(wDeviceID, MCI_SET, MCI_SET_DOOR_OPEN, (DWORD)NULL))
+	if (cdfile == -1 || !enabled)
 	{
-		Log::develWrite("MCI_SET_DOOR_OPEN failed (%i)\n", dwReturn);
+		return; // no cd init'd
+	}
+
+	if (ioctl(cdfile, CDROMEJECT) == -1)
+	{
+		Log::develWrite("ioctl cdromeject failed\n");
 	}
 }
+
 
 //==========================================================================
 //
@@ -81,13 +96,16 @@ static void CDAudio_Eject()
 //
 //==========================================================================
 
-static void CDAudio_CloseDoor()
+void CDAudio_CloseDoor()
 {
-	DWORD	dwReturn;
-
-    if (dwReturn = mciSendCommand(wDeviceID, MCI_SET, MCI_SET_DOOR_CLOSED, (DWORD)NULL))
+	if (cdfile == -1 || !enabled)
 	{
-		Log::develWrite("MCI_SET_DOOR_CLOSED failed (%i)\n", dwReturn);
+		return; // no cd init'd
+	}
+
+	if (ioctl(cdfile, CDROMCLOSETRAY) == -1)
+	{
+		Log::develWrite("ioctl cdromclosetray failed\n");
 	}
 }
 
@@ -97,63 +115,46 @@ static void CDAudio_CloseDoor()
 //
 //==========================================================================
 
-static int CDAudio_GetAudioDiskInfo()
+int CDAudio_GetAudioDiskInfo()
 {
-	DWORD				dwReturn;
-	MCI_STATUS_PARMS	mciStatusParms;
-
+	struct cdrom_tochdr tochdr;
 
 	cdValid = false;
 
-	mciStatusParms.dwItem = MCI_STATUS_READY;
-    dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
-	if (dwReturn)
+	if (ioctl(cdfile, CDROMREADTOCHDR, &tochdr) == -1)
 	{
-		Log::develWrite("CDAudio: drive ready test - get status failed\n");
-		return -1;
-	}
-	if (!mciStatusParms.dwReturn)
-	{
-		Log::develWrite("CDAudio: drive not ready\n");
+		Log::develWrite("ioctl cdromreadtochdr failed\n");
 		return -1;
 	}
 
-	mciStatusParms.dwItem = MCI_STATUS_NUMBER_OF_TRACKS;
-    dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
-	if (dwReturn)
-	{
-		Log::develWrite("CDAudio: get tracks - status failed\n");
-		return -1;
-	}
-	if (mciStatusParms.dwReturn < 1)
+	if (tochdr.cdth_trk0 < 1)
 	{
 		Log::develWrite("CDAudio: no music tracks\n");
 		return -1;
 	}
 
 	cdValid = true;
-	maxTrack = mciStatusParms.dwReturn;
+	maxTrack = tochdr.cdth_trk1;
 
 	return 0;
 }
 
 //==========================================================================
 //
-//	CDAudio_Play2
+//	CDAudio_Play
 //
 //==========================================================================
 
-static void CDAudio_Play2(int track, qboolean looping)
+void CDAudio_Play(int track, qboolean looping)
 {
-	DWORD				dwReturn;
-    MCI_PLAY_PARMS		mciPlayParms;
-	MCI_STATUS_PARMS	mciStatusParms;
+	struct cdrom_tocentry entry;
+	struct cdrom_ti ti;
 
-	if (!enabled)
+	if (cdfile == -1 || !enabled)
 	{
 		return;
 	}
-	
+
 	if (!cdValid)
 	{
 		CDAudio_GetAudioDiskInfo();
@@ -167,39 +168,21 @@ static void CDAudio_Play2(int track, qboolean looping)
 
 	if (track < 1 || track > maxTrack)
 	{
-		if (GGameType & GAME_QuakeHexen)
-		{
-			Log::develWrite("CDAudio: Bad track number %u.\n", track);
-		}
-		else
-		{
-			CDAudio_Stop();
-		}
+		Log::develWrite("CDAudio: Bad track number %u.\n", track);
 		return;
 	}
 
 	// don't try to play a non-audio track
-	mciStatusParms.dwItem = MCI_CDA_STATUS_TYPE_TRACK;
-	mciStatusParms.dwTrack = track;
-    dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_TRACK | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
-	if (dwReturn)
+	entry.cdte_track = track;
+	entry.cdte_format = CDROM_MSF;
+    if (ioctl(cdfile, CDROMREADTOCENTRY, &entry) == -1)
 	{
-		Log::develWrite("MCI_STATUS failed (%i)\n", dwReturn);
+		Log::develWrite("ioctl cdromreadtocentry failed\n");
 		return;
 	}
-	if (mciStatusParms.dwReturn != MCI_CDA_TRACK_AUDIO)
+	if (entry.cdte_ctrl == CDROM_DATA_TRACK)
 	{
 		Log::write("CDAudio: track %i is not audio\n", track);
-		return;
-	}
-
-	// get the length of the track to be played
-	mciStatusParms.dwItem = MCI_STATUS_LENGTH;
-	mciStatusParms.dwTrack = track;
-    dwReturn = mciSendCommand(wDeviceID, MCI_STATUS, MCI_STATUS_ITEM | MCI_TRACK | MCI_WAIT, (DWORD) (LPVOID) &mciStatusParms);
-	if (dwReturn)
-	{
-		Log::develWrite("MCI_STATUS failed (%i)\n", dwReturn);
 		return;
 	}
 
@@ -212,14 +195,20 @@ static void CDAudio_Play2(int track, qboolean looping)
 		CDAudio_Stop();
 	}
 
-    mciPlayParms.dwFrom = MCI_MAKE_TMSF(track, 0, 0, 0);
-	mciPlayParms.dwTo = (mciStatusParms.dwReturn << 8) | track;
-    mciPlayParms.dwCallback = (DWORD)GMainWindow;
-    dwReturn = mciSendCommand(wDeviceID, MCI_PLAY, MCI_NOTIFY | MCI_FROM | MCI_TO, (DWORD)(LPVOID) &mciPlayParms);
-	if (dwReturn)
-	{
-		Log::develWrite("CDAudio: MCI_PLAY failed (%i)\n", dwReturn);
+	ti.cdti_trk0 = track;
+	ti.cdti_trk1 = track;
+	ti.cdti_ind0 = 1;
+	ti.cdti_ind1 = 99;
+
+	if (ioctl(cdfile, CDROMPLAYTRKIND, &ti) == -1)
+    {
+		Log::develWrite("ioctl cdromplaytrkind failed\n");
 		return;
+    }
+
+	if (ioctl(cdfile, CDROMRESUME) == -1)
+	{
+		Log::develWrite("ioctl cdromresume failed\n");
 	}
 
 	playLooping = looping;
@@ -235,25 +224,11 @@ static void CDAudio_Play2(int track, qboolean looping)
 	}
 	else
 	{
-		if (Cvar_VariableValue("cd_nocd"))
+		if (cd_volume->value == 0.0)
 		{
 			CDAudio_Pause();
 		}
 	}
-}
-
-//==========================================================================
-//
-//	CDAudio_Play
-//
-//==========================================================================
-
-void CDAudio_Play(int track, qboolean looping)
-{
-	// set a loop counter so that this track will change to the
-	// looptrack later
-	loopcounter = 0;
-	CDAudio_Play2(track, looping);
 }
 
 //==========================================================================
@@ -264,21 +239,19 @@ void CDAudio_Play(int track, qboolean looping)
 
 void CDAudio_Stop()
 {
-	DWORD	dwReturn;
-
-	if (!enabled)
+	if (cdfile == -1 || !enabled)
 	{
 		return;
 	}
-	
+
 	if (!playing)
 	{
 		return;
 	}
 
-    if (dwReturn = mciSendCommand(wDeviceID, MCI_STOP, 0, (DWORD)NULL))
+	if (ioctl(cdfile, CDROMSTOP) == -1)
 	{
-		Log::develWrite("MCI_STOP failed (%i)", dwReturn);
+		Log::develWrite("ioctl cdromstop failed (%d)\n", errno);
 	}
 
 	wasPlaying = false;
@@ -293,10 +266,7 @@ void CDAudio_Stop()
 
 void CDAudio_Pause()
 {
-	DWORD				dwReturn;
-	MCI_GENERIC_PARMS	mciGenericParms;
-
-	if (!enabled)
+	if (cdfile == -1 || !enabled)
 	{
 		return;
 	}
@@ -306,10 +276,9 @@ void CDAudio_Pause()
 		return;
 	}
 
-	mciGenericParms.dwCallback = (DWORD)GMainWindow;
-    if (dwReturn = mciSendCommand(wDeviceID, MCI_PAUSE, 0, (DWORD)(LPVOID) &mciGenericParms))
+	if (ioctl(cdfile, CDROMPAUSE) == -1)
 	{
-		Log::develWrite("MCI_PAUSE failed (%i)", dwReturn);
+		Log::develWrite("ioctl cdrompause failed\n");
 	}
 
 	wasPlaying = playing;
@@ -324,14 +293,11 @@ void CDAudio_Pause()
 
 void CDAudio_Resume()
 {
-	DWORD			dwReturn;
-    MCI_PLAY_PARMS	mciPlayParms;
-
-	if (!enabled)
+	if (cdfile == -1 || !enabled)
 	{
 		return;
 	}
-	
+
 	if (!cdValid)
 	{
 		return;
@@ -341,15 +307,10 @@ void CDAudio_Resume()
 	{
 		return;
 	}
-	
-    mciPlayParms.dwFrom = MCI_MAKE_TMSF(playTrack, 0, 0, 0);
-    mciPlayParms.dwTo = MCI_MAKE_TMSF(playTrack + 1, 0, 0, 0);
-    mciPlayParms.dwCallback = (DWORD)GMainWindow;
-    dwReturn = mciSendCommand(wDeviceID, MCI_PLAY, MCI_TO | MCI_NOTIFY, (DWORD)(LPVOID) &mciPlayParms);
-	if (dwReturn)
+
+	if (ioctl(cdfile, CDROMRESUME) == -1)
 	{
-		Log::develWrite("CDAudio: MCI_PLAY failed (%i)\n", dwReturn);
-		return;
+		Log::develWrite("ioctl cdromresume failed\n");
 	}
 	playing = true;
 }
@@ -360,7 +321,7 @@ void CDAudio_Resume()
 //
 //==========================================================================
 
-static void CD_f()
+void CD_f()
 {
 	char	*command;
 	int		ret;
@@ -368,14 +329,10 @@ static void CD_f()
 
 	if (Cmd_Argc() < 2)
 	{
-		Log::write("commands:");
-		Log::write("on, off, reset, remap, \n");
-		Log::write("play, stop, loop, pause, resume\n");
-		Log::write("eject, close, info\n");
 		return;
 	}
 
-	command = Cmd_Argv (1);
+	command = Cmd_Argv(1);
 
 	if (String::ICmp(command, "on") == 0)
 	{
@@ -504,72 +461,22 @@ static void CD_f()
 
 //==========================================================================
 //
-//	CDAudio_MessageHandler
-//
-//==========================================================================
-
-LONG CDAudio_MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
-	if (lParam != wDeviceID)
-	{
-		return 1;
-	}
-
-	switch (wParam)
-	{
-		case MCI_NOTIFY_SUCCESSFUL:
-			if (playing)
-			{
-				playing = false;
-				if (playLooping)
-				{
-					// if the track has played the given number of times,
-					// go to the ambient track
-					if ((GGameType & GAME_Quake2) && ++loopcounter >= cd_loopcount->value)
-					{
-						CDAudio_Play2(cd_looptrack->value, true);
-					}
-					else
-					{
-						CDAudio_Play2(playTrack, true);
-					}
-				}
-			}
-			break;
-
-		case MCI_NOTIFY_ABORTED:
-		case MCI_NOTIFY_SUPERSEDED:
-			break;
-
-		case MCI_NOTIFY_FAILURE:
-			Log::develWrite("MCI_NOTIFY_FAILURE\n");
-			CDAudio_Stop();
-			cdValid = false;
-			break;
-
-		default:
-			Log::develWrite("Unexpected MM_MCINOTIFY type (%i)\n", wParam);
-			return 1;
-	}
-
-	return 0;
-}
-
-//==========================================================================
-//
 //	CDAudio_Update
 //
 //==========================================================================
 
 void CDAudio_Update()
 {
+	struct cdrom_subchnl subchnl;
+	static time_t lastchk;
+
+	if (cdfile == -1 || !enabled)
+	{
+		return;
+	}
+
 	if (GGameType & GAME_QuakeHexen)
 	{
-		if (!enabled)
-		{
-			return;
-		}
-
 		if (bgmvolume->value != cdvolume)
 		{
 			if (cdvolume)
@@ -588,17 +495,40 @@ void CDAudio_Update()
 	}
 	else
 	{
-		if (!!cd_nocd->value != !enabled)
+		if (cd_volume && cd_volume->value != cdvolume)
 		{
-			if (cd_nocd->value)
+			if (cdvolume)
 			{
-				CDAudio_Stop();
-				enabled = false;
+				Cvar_SetValueLatched("cd_volume", 0.0);
+				cdvolume = cd_volume->value;
+				CDAudio_Pause();
 			}
 			else
 			{
-				enabled = true;
+				Cvar_SetValueLatched("cd_volume", 1.0);
+				cdvolume = cd_volume->value;
 				CDAudio_Resume();
+			}
+		}
+	}
+
+	if (playing && lastchk < time(NULL))
+	{
+		lastchk = time(NULL) + 2; //two seconds between chks
+		subchnl.cdsc_format = CDROM_MSF;
+		if (ioctl(cdfile, CDROMSUBCHNL, &subchnl) == -1 )
+		{
+			Log::develWrite("ioctl cdromsubchnl failed\n");
+			playing = false;
+			return;
+		}
+		if (subchnl.cdsc_audiostatus != CDROM_AUDIO_PLAY &&
+			subchnl.cdsc_audiostatus != CDROM_AUDIO_PAUSED)
+		{
+			playing = false;
+			if (playLooping)
+			{
+				CDAudio_Play(playTrack, true);
 			}
 		}
 	}
@@ -612,10 +542,7 @@ void CDAudio_Update()
 
 int CDAudio_Init()
 {
-	DWORD	dwReturn;
-	MCI_OPEN_PARMS	mciOpenParms;
-    MCI_SET_PARMS	mciSetParms;
-	int				n;
+	int i;
 
 	if (GGameType & GAME_QuakeHexen)
 	{
@@ -623,38 +550,52 @@ int CDAudio_Init()
 		{
 			return -1;
 		}
+
+		if ((i = COM_CheckParm("-cddev")) != 0 && i < COM_Argc() - 1)
+		{
+			String::NCpy(cd_dev_old, COM_Argv(i + 1), sizeof(cd_dev_old));
+			cd_dev_old[sizeof(cd_dev_old) - 1] = 0;
+		}
+
+		cdfile = open(cd_dev_old, O_RDONLY);
+		if (cdfile == -1)
+		{
+			Log::write("CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev_old, errno);
+			cdfile = -1;
+			return -1;
+		}
 	}
 	else
 	{
-		cd_nocd = Cvar_Get ("cd_nocd", "0", CVAR_ARCHIVE );
-		cd_loopcount = Cvar_Get ("cd_loopcount", "4", 0);
-		cd_looptrack = Cvar_Get ("cd_looptrack", "11", 0);
+		Cvar* cv = Cvar_Get("nocdaudio", "0", CVAR_INIT);
+		if (cv->value)
+		{
+			return -1;
+		}
+
+		cd_nocd = Cvar_Get("cd_nocd", "0", CVAR_ARCHIVE);
 		if (cd_nocd->value)
 		{
 			return -1;
 		}
+
+		cd_volume = Cvar_Get("cd_volume", "1", CVAR_ARCHIVE);
+
+		cd_dev = Cvar_Get("cd_dev", "/dev/cdrom", CVAR_ARCHIVE);
+
+		cdfile = open(cd_dev->string, O_RDONLY);
+
+		if (cdfile == -1)
+		{
+			Log::write("CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev->string, errno);
+			cdfile = -1;
+			return -1;
+		}
 	}
 
-	mciOpenParms.lpstrDeviceType = "cdaudio";
-	if (dwReturn = mciSendCommand(0, MCI_OPEN, MCI_OPEN_TYPE | MCI_OPEN_SHAREABLE, (DWORD) (LPVOID) &mciOpenParms))
+	for (i = 0; i < 100; i++)
 	{
-		Log::write("CDAudio_Init: MCI_OPEN failed (%i)\n", dwReturn);
-		return -1;
-	}
-	wDeviceID = mciOpenParms.wDeviceID;
-
-    // Set the time format to track/minute/second/frame (TMSF).
-    mciSetParms.dwTimeFormat = MCI_FORMAT_TMSF;
-    if (dwReturn = mciSendCommand(wDeviceID, MCI_SET, MCI_SET_TIME_FORMAT, (DWORD)(LPVOID) &mciSetParms))
-    {
-		Log::write("MCI_SET_TIME_FORMAT failed (%i)\n", dwReturn);
-        mciSendCommand(wDeviceID, MCI_CLOSE, 0, (DWORD)NULL);
-		return -1;
-    }
-
-	for (n = 0; n < 100; n++)
-	{
-		remap[n] = n;
+		remap[i] = i;
 	}
 	initialized = true;
 	enabled = true;
@@ -663,7 +604,6 @@ int CDAudio_Init()
 	{
 		Log::write("CDAudio_Init: No CD in player.\n");
 		cdValid = false;
-		enabled = false;
 	}
 
 	Cmd_AddCommand("cd", CD_f);
@@ -686,18 +626,13 @@ void CDAudio_Shutdown()
 		return;
 	}
 	CDAudio_Stop();
-	if (mciSendCommand(wDeviceID, MCI_CLOSE, MCI_WAIT, (DWORD)NULL))
-	{
-		Log::develWrite("CDAudio_Shutdown: MCI_CLOSE failed\n");
-	}
+	close(cdfile);
+	cdfile = -1;
 }
 
 //==========================================================================
 //
 //	CDAudio_Activate
-//
-//	Called when the main window gains or loses focus. The window have been
-// destroyed and recreated between a deactivate and an activate.
 //
 //==========================================================================
 

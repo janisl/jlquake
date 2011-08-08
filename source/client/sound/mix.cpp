@@ -20,8 +20,8 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "sound_local.h"
+#include "../client.h"
+#include "local.h"
 
 // MACROS ------------------------------------------------------------------
 

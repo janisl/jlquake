@@ -20,9 +20,9 @@
 #include <memory.h>
 #include <mmreg.h>
 
-#include "sound_midstuff.h"
-#include "sound_midi.h"
-#include "client.h"
+#include "midstuff.h"
+#include "midi.h"
+#include "../../client.h"
 
 
 BOOL bMidiInited,bFileOpen, bPlaying, bBuffersPrepared;

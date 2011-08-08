@@ -18,7 +18,7 @@
 // x86 assembly-language sound code
 //
 
-#include "qasm.h"
+#include "../qasm.h"
 
 #if	id386
 

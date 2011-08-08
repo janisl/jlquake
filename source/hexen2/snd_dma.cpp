@@ -1,5 +1,5 @@
 #include "quakedef.h"
-#include "../client/sound_local.h"
+#include "../client/sound/local.h"
 
 int S_GetClientFrameCount()
 {

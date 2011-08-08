@@ -20,9 +20,9 @@
  
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "sound_local.h"
-#include "../core/bsp29file.h"
+#include "../client.h"
+#include "local.h"
+#include "../../core/bsp29file.h"
 
 // MACROS ------------------------------------------------------------------
 

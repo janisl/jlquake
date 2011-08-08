@@ -21,9 +21,9 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "sound_midi.h"
-#include "sound_midstuff.h"
-#include "client.h"
+#include "midi.h"
+#include "midstuff.h"
+#include "../../client.h"
 
 // Global stuff which is defined in the main module
 //

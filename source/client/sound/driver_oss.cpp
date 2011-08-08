@@ -16,8 +16,8 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "sound_local.h"
+#include "../client.h"
+#include "local.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>

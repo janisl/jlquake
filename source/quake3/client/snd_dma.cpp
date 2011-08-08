@@ -21,7 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "client.h"
-#include "../../client/sound_local.h"
+#include "../../client/sound/local.h"
 
 int S_GetClientFrameCount()
 {

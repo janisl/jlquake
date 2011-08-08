@@ -18,7 +18,7 @@
 
 #include "client.h"
 #include "cinematic_local.h"
-#include "sound_local.h"
+#include "sound/local.h"
 
 // MACROS ------------------------------------------------------------------
 

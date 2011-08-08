@@ -51,19 +51,19 @@ set(CLIENT_FILES
 	input_keys.cpp
 	input_main.cpp
 	input_unix.cpp
-	sound_audiocd_linux.cpp
-	sound_driver_alsa.cpp
-	sound_main.cpp
-	sound_memory.cpp
-	sound_midi_null.cpp
-	sound_mix.cpp
-	#sound_driver_oss.cpp
+	sound/audiocd/linux.cpp
+	sound/midi/null.cpp
+	sound/driver_alsa.cpp
+	#sound/driver_oss.cpp
+	sound/main.cpp
+	sound/memory.cpp
+	sound/mix.cpp
 	system_unix.cpp
 	ui_draw.cpp
 )
 
 set(CLIENT_ASM_FILES
-	sound_mix_x86.s
+	sound/mix_x86.s
 )
 
 foreach(SRC ${CLIENT_ASM_FILES})

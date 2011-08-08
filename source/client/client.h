@@ -19,7 +19,7 @@
 
 #include "../core/core.h"
 
-#include "sound_public.h"
+#include "sound/public.h"
 #include "renderer/public.h"
 #include "input_keycodes.h"
 #include "input_public.h"
