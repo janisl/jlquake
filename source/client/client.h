@@ -21,8 +21,8 @@
 
 #include "sound/public.h"
 #include "renderer/public.h"
-#include "input_keycodes.h"
-#include "input_public.h"
+#include "input/keycodes.h"
+#include "input/public.h"
 #include "cinematic_public.h"
 #include "ui.h"
 #include "hexen2clientdefs.h"

@@ -1,4 +1,7 @@
 set(CLIENT_FILES
+	input/keys.cpp
+	input/main.cpp
+	input/unix.cpp
 	renderer/images/bmp.cpp
 	renderer/images/image.cpp
 	renderer/images/jpg.cpp
@@ -43,14 +46,6 @@ set(CLIENT_FILES
 	renderer/surface3.cpp
 	renderer/wad.cpp
 	renderer/world.cpp
-	cinematic_cin.cpp
-	cinematic_main.cpp
-	cinematic_pcx.cpp
-	cinematic_roq.cpp
-	client_main.cpp
-	input_keys.cpp
-	input_main.cpp
-	input_unix.cpp
 	sound/audiocd/linux.cpp
 	sound/midi/null.cpp
 	sound/driver_alsa.cpp
@@ -58,6 +53,11 @@ set(CLIENT_FILES
 	sound/main.cpp
 	sound/memory.cpp
 	sound/mix.cpp
+	cinematic_cin.cpp
+	cinematic_main.cpp
+	cinematic_pcx.cpp
+	cinematic_roq.cpp
+	client_main.cpp
 	system_unix.cpp
 	ui_draw.cpp
 )

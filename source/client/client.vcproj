@@ -179,15 +179,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\input_keys.cpp"
+				RelativePath=".\input\keys.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\input_main.cpp"
+				RelativePath=".\input\main.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\input_windows.cpp"
+				RelativePath=".\input\windows.cpp"
 				>
 			</File>
 			<File
@@ -409,15 +409,23 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\cinematic_local.h"
+				>
+			</File>
+			<File
+				RelativePath=".\cinematic_public.h"
+				>
+			</File>
+			<File
 				RelativePath=".\client.h"
 				>
 			</File>
 			<File
-				RelativePath=".\input_keycodes.h"
+				RelativePath=".\input\keycodes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\input_public.h"
+				RelativePath=".\input\public.h"
 				>
 			</File>
 			<File
@@ -457,19 +465,19 @@
 				>
 			</File>
 			<File
-				RelativePath=".\sound_local.h"
+				RelativePath=".\sound\local.h"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_midi.h"
+				RelativePath=".\sound\midi\midi.h"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_midstuff.h"
+				RelativePath=".\sound\midi\midstuff.h"
 				>
 			</File>
 			<File
-				RelativePath=".\sound_public.h"
+				RelativePath=".\sound\public.h"
 				>
 			</File>
 			<File
