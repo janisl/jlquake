@@ -24,7 +24,7 @@
 #include "input/keycodes.h"
 #include "input/public.h"
 #include "cinematic/public.h"
-#include "ui.h"
+#include "ui/ui.h"
 #include "hexen2clientdefs.h"
 
 extern Cvar*		cl_inGameVideo;

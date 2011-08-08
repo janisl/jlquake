@@ -399,7 +399,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ui_draw.cpp"
+				RelativePath=".\ui\draw.cpp"
 				>
 			</File>
 		</Filter>
@@ -480,6 +480,9 @@
 				RelativePath=".\sound\public.h"
 				>
 			</File>
+			<File
+				RelativePath=".\ui\ui.h"
+				>
 			<File
 				RelativePath=".\windows_shared.h"
 				>

@@ -57,9 +57,9 @@ set(CLIENT_FILES
 	sound/main.cpp
 	sound/memory.cpp
 	sound/mix.cpp
+	ui/draw.cpp
 	client_main.cpp
 	system_unix.cpp
-	ui_draw.cpp
 )
 
 set(CLIENT_ASM_FILES
