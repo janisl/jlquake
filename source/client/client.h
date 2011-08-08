@@ -23,7 +23,7 @@
 #include "renderer/public.h"
 #include "input/keycodes.h"
 #include "input/public.h"
-#include "cinematic_public.h"
+#include "cinematic/public.h"
 #include "ui.h"
 #include "hexen2clientdefs.h"
 

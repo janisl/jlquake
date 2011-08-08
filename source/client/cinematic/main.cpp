@@ -16,8 +16,8 @@
 
 // HEADER FILES ------------------------------------------------------------
 
-#include "client.h"
-#include "cinematic_local.h"
+#include "../client.h"
+#include "local.h"
 
 // MACROS ------------------------------------------------------------------
 

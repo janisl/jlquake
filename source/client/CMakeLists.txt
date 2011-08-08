@@ -1,4 +1,8 @@
 set(CLIENT_FILES
+	cinematic/cin.cpp
+	cinematic/main.cpp
+	cinematic/pcx.cpp
+	cinematic/roq.cpp
 	input/keys.cpp
 	input/main.cpp
 	input/unix.cpp
@@ -53,10 +57,6 @@ set(CLIENT_FILES
 	sound/main.cpp
 	sound/memory.cpp
 	sound/mix.cpp
-	cinematic_cin.cpp
-	cinematic_main.cpp
-	cinematic_pcx.cpp
-	cinematic_roq.cpp
 	client_main.cpp
 	system_unix.cpp
 	ui_draw.cpp
