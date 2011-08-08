@@ -432,7 +432,7 @@ static void IN_Win32Mouse(int* mx, int* my)
 
 static bool IN_InitDIMouse()
 {
-	GLog.write("Initializing DirectInput...\n");
+	gLog.write("Initializing DirectInput...\n");
 
 	if (!hInstDI)
 	{
@@ -440,7 +440,7 @@ static bool IN_InitDIMouse()
 
 		if (hInstDI == NULL)
 		{
-			GLog.write("Couldn't load dinput.dll\n");
+			gLog.write("Couldn't load dinput.dll\n");
 			return false;
 		}
 	}
@@ -452,7 +452,7 @@ static bool IN_InitDIMouse()
 
 		if (!pDirectInputCreate)
 		{
-			GLog.write("Couldn't get DI proc addr\n");
+			gLog.write("Couldn't get DI proc addr\n");
 			return false;
 		}
 	}
@@ -462,7 +462,7 @@ static bool IN_InitDIMouse()
 
 	if (FAILED(hr))
 	{
-		GLog.write("iDirectInputCreate failed\n");
+		gLog.write("iDirectInputCreate failed\n");
 		return false;
 	}
 
@@ -471,7 +471,7 @@ static bool IN_InitDIMouse()
 
 	if (FAILED(hr))
 	{
-		GLog.write("Couldn't open DI mouse device\n");
+		gLog.write("Couldn't open DI mouse device\n");
 		return false;
 	}
 
@@ -480,7 +480,7 @@ static bool IN_InitDIMouse()
 
 	if (FAILED(hr))
 	{
-		GLog.write("Couldn't set DI mouse format\n");
+		gLog.write("Couldn't set DI mouse format\n");
 		return false;
 	}
 
@@ -489,7 +489,7 @@ static bool IN_InitDIMouse()
 
 	if (FAILED(hr))
 	{
-		GLog.write("Couldn't set DI coop level\n");
+		gLog.write("Couldn't set DI coop level\n");
 		return false;
 	}
 
@@ -510,7 +510,7 @@ static bool IN_InitDIMouse()
 
 	if (FAILED(hr))
 	{
-		GLog.write("Couldn't set DI buffersize\n");
+		gLog.write("Couldn't set DI buffersize\n");
 		return false;
 	}
 
@@ -532,7 +532,7 @@ static bool IN_InitDIMouse()
 	DIMOUSESTATE state;
 	g_pMouse->GetDeviceState(sizeof(DIDEVICEOBJECTDATA), &state);
 
-	GLog.write("DirectInput initialized.\n");
+	gLog.write("DirectInput initialized.\n");
 	return true;
 }
 
@@ -576,7 +576,7 @@ static void IN_ActivateDIMouse()
 	{
 		if (!IN_InitDIMouse())
 		{
-			GLog.write("Falling back to Win32 mouse support...\n");
+			gLog.write("Falling back to Win32 mouse support...\n");
 			Cvar_Set("in_mouse", "-1");
 		}
 	}
@@ -729,19 +729,19 @@ static void IN_StartupMouse()
 
 	if (in_mouse->integer == 0)
 	{
-		GLog.write("Mouse control not active.\n");
+		gLog.write("Mouse control not active.\n");
 		return;
 	}
 
 	if (in_mouse->integer == -1)
 	{
-		GLog.write("Skipping check for DirectInput\n");
+		gLog.write("Skipping check for DirectInput\n");
 	}
 	else
 	{
 		if (!GMainWindow)
 		{
-			GLog.write("No window for DirectInput mouse init, delaying\n");
+			gLog.write("No window for DirectInput mouse init, delaying\n");
 			mouse_startupDelayed = true;
 			return;
 		}
@@ -750,7 +750,7 @@ static void IN_StartupMouse()
 			mouse_initialized = true;
 			return;
 		}
-		GLog.write("Falling back to Win32 mouse support...\n");
+		gLog.write("Falling back to Win32 mouse support...\n");
 	}
 	mouse_initialized = true;
 }
@@ -857,7 +857,7 @@ static void IN_StartupJoystick()
 
 	if (!in_joystick->integer)
 	{
-		GLog.write("Joystick is not active.\n");
+		gLog.write("Joystick is not active.\n");
 		return;
 	}
 
@@ -865,7 +865,7 @@ static void IN_StartupJoystick()
 	int numdevs = joyGetNumDevs();
 	if (numdevs == 0)
 	{
-		GLog.write("joystick not found -- driver not present\n");
+		gLog.write("joystick not found -- driver not present\n");
 		return;
 	}
 
@@ -887,7 +887,7 @@ static void IN_StartupJoystick()
 	// abort startup if we didn't find a valid joystick
 	if (mmr != JOYERR_NOERROR)
 	{
-		GLog.write("joystick not found -- no valid joysticks (%x)\n", mmr);
+		gLog.write("joystick not found -- no valid joysticks (%x)\n", mmr);
 		return;
 	}
 
@@ -897,25 +897,25 @@ static void IN_StartupJoystick()
 	mmr = joyGetDevCaps(joy_id, &joy_jc, sizeof(joy_jc));
 	if (mmr != JOYERR_NOERROR)
 	{
-		GLog.write("joystick not found -- invalid joystick capabilities (%x)\n", mmr); 
+		gLog.write("joystick not found -- invalid joystick capabilities (%x)\n", mmr); 
 		return;
 	}
 
-	GLog.write("Joystick found.\n");
-	GLog.write("Pname: %s\n", joy_jc.szPname);
-	GLog.write("OemVxD: %s\n", joy_jc.szOEMVxD);
-	GLog.write("RegKey: %s\n", joy_jc.szRegKey);
+	gLog.write("Joystick found.\n");
+	gLog.write("Pname: %s\n", joy_jc.szPname);
+	gLog.write("OemVxD: %s\n", joy_jc.szOEMVxD);
+	gLog.write("RegKey: %s\n", joy_jc.szRegKey);
 
-	GLog.write("Numbuttons: %i / %i\n", joy_jc.wNumButtons, joy_jc.wMaxButtons);
-	GLog.write("Axis: %i / %i\n", joy_jc.wNumAxes, joy_jc.wMaxAxes);
-	GLog.write("Caps: 0x%x\n", joy_jc.wCaps);
+	gLog.write("Numbuttons: %i / %i\n", joy_jc.wNumButtons, joy_jc.wMaxButtons);
+	gLog.write("Axis: %i / %i\n", joy_jc.wNumAxes, joy_jc.wMaxAxes);
+	gLog.write("Caps: 0x%x\n", joy_jc.wCaps);
 	if (joy_jc.wCaps & JOYCAPS_HASPOV)
 	{
-		GLog.write("HASPOV\n");
+		gLog.write("HASPOV\n");
 	}
 	else
 	{
-		GLog.write("no POV\n");
+		gLog.write("no POV\n");
 	}
 
 	// old button and POV states default to no buttons pressed
@@ -998,7 +998,7 @@ static void IN_JoyMove()
 
 	if (in_debugJoystick->integer)
 	{
-		GLog.write("%8x %5i %5.2f %5.2f %5.2f %5.2f %6i %6i\n", 
+		gLog.write("%8x %5i %5.2f %5.2f %5.2f %5.2f %6i %6i\n", 
 			joy_ji.dwButtons,
 			joy_ji.dwPOV,
 			JoyToF(joy_ji.dwXpos), JoyToF(joy_ji.dwYpos),
@@ -1193,26 +1193,26 @@ static void MidiInfo_f()
 {
 	const char* enableStrings[] = { "disabled", "enabled" };
 
-	GLog.write("\nMIDI control:       %s\n", enableStrings[in_midi->integer != 0]);
-	GLog.write("port:               %d\n", in_midiport->integer);
-	GLog.write("channel:            %d\n", in_midichannel->integer);
-	GLog.write("current device:     %d\n", in_mididevice->integer);
-	GLog.write("number of devices:  %d\n", midi_numDevices);
+	gLog.write("\nMIDI control:       %s\n", enableStrings[in_midi->integer != 0]);
+	gLog.write("port:               %d\n", in_midiport->integer);
+	gLog.write("channel:            %d\n", in_midichannel->integer);
+	gLog.write("current device:     %d\n", in_mididevice->integer);
+	gLog.write("number of devices:  %d\n", midi_numDevices);
 	for (int i = 0; i < midi_numDevices; i++)
 	{
 		if (i == Cvar_VariableValue("in_mididevice"))
 		{
-			GLog.write("***");
+			gLog.write("***");
 		}
 		else
 		{
-			GLog.write("...");
+			gLog.write("...");
 		}
-		GLog.write("device %2d:       %s\n", i, midi_caps[i].szPname);
-		GLog.write("...manufacturer ID: 0x%hx\n", midi_caps[i].wMid);
-		GLog.write("...product ID:      0x%hx\n", midi_caps[i].wPid);
+		gLog.write("device %2d:       %s\n", i, midi_caps[i].szPname);
+		gLog.write("...manufacturer ID: 0x%hx\n", midi_caps[i].wMid);
+		gLog.write("...product ID:      0x%hx\n", midi_caps[i].wPid);
 
-		GLog.write("\n");
+		gLog.write("\n");
 	}
 }
 
@@ -1245,7 +1245,7 @@ static void IN_StartupMIDI()
 	if (midiInOpen(&midi_hMidiIn, in_mididevice->integer,
 		(DWORD_PTR)MidiInProc, (DWORD_PTR)NULL, CALLBACK_FUNCTION) != MMSYSERR_NOERROR)
 	{
-		GLog.write("WARNING: could not open MIDI device %d: '%s'\n", in_mididevice->integer , midi_caps[(int)in_mididevice->value]);
+		gLog.write("WARNING: could not open MIDI device %d: '%s'\n", in_mididevice->integer , midi_caps[(int)in_mididevice->value]);
 		return;
 	}
 
@@ -1283,11 +1283,11 @@ static void IN_ShutdownMIDI()
 
 static void IN_Startup()
 {
-	GLog.write("\n------- Input Initialization -------\n");
+	gLog.write("\n------- Input Initialization -------\n");
 	IN_StartupMouse();
 	IN_StartupJoystick();
 	IN_StartupMIDI();
-	GLog.write("------------------------------------\n");
+	gLog.write("------------------------------------\n");
 
 	in_mouse->modified = false;
 	in_joystick->modified = false;
@@ -1371,7 +1371,7 @@ void IN_Frame()
 	{
 		if (mouse_startupDelayed && GMainWindow)
 		{
-			GLog.write("Proceeding with delayed mouse init\n");
+			gLog.write("Proceeding with delayed mouse init\n");
 			IN_StartupMouse();
 			mouse_startupDelayed = false;
 		}

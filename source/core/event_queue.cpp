@@ -57,7 +57,7 @@ void Sys_QueEvent(int time, sysEventType_t type, int value, int value2, int ptrL
 	ev = &eventQue[eventHead & MASK_QUED_EVENTS];
 	if (eventHead - eventTail >= MAX_QUED_EVENTS)
 	{
-		GLog.write("Sys_QueEvent: overflow\n");
+		gLog.write("Sys_QueEvent: overflow\n");
 		// we are discarding an event, but don't leak memory
 		if (ev->evPtr)
 		{

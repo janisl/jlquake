@@ -653,7 +653,7 @@ static void BuildTris()
 
 	commands[numcommands++] = 0;		// end of list marker
 
-	GLog.develWrite("%3i tri %3i vert %3i cmd\n", pheader->numtris, numorder, numcommands);
+	gLog.develWrite("%3i tri %3i vert %3i cmd\n", pheader->numtris, numorder, numcommands);
 }
 
 //==========================================================================
@@ -698,7 +698,7 @@ static void GL_MakeAliasModelDisplayLists(model_t* m, mesh1hdr_t* hdr)
 		//
 		// build it from scratch
 		//
-		GLog.write("meshing %s...\n",m->name);
+		gLog.write("meshing %s...\n",m->name);
 
 		BuildTris();		// trifans or lists
 
@@ -1199,7 +1199,7 @@ static void R_SetupAliasFrame(int frame, mesh1hdr_t* paliashdr)
 {
 	if (frame >= paliashdr->numframes || frame < 0)
 	{
-		GLog.develWrite("R_AliasSetupFrame: no such frame %d\n", frame);
+		gLog.develWrite("R_AliasSetupFrame: no such frame %d\n", frame);
 		frame = 0;
 	}
 

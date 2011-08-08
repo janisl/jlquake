@@ -955,7 +955,7 @@ void Qcommon_Init (int argc, char **argv)
 
 	GGameType = GAME_Quake2;
 	Sys_SetHomePathSuffix("jlquake2");
-	GLog.addListener(&MainLog);
+	gLog.addListener(&MainLog);
 
 	z_chain.next = z_chain.prev = &z_chain;
 

@@ -503,7 +503,7 @@ static void LogLight(trRefEntity_t* ent)
 		max2 = ent->directedLight[2];
 	}
 
-	GLog.write("amb:%i  dir:%i\n", max1, max2);
+	gLog.write("amb:%i  dir:%i\n", max1, max2);
 }
 
 //==========================================================================

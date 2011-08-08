@@ -320,7 +320,7 @@ void R_LoadTGA(const char* name, byte** pic, int* width, int* height)
 	// instead we just print a warning
 	if (targa_header.attributes & 0x20)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: '%s' TGA file header declares top-down image, ignoring\n", name);
+		gLog.write(S_COLOR_YELLOW "WARNING: '%s' TGA file header declares top-down image, ignoring\n", name);
 	}
 
 	FS_FreeFile(buffer);

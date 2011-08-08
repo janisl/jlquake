@@ -163,7 +163,7 @@ static bool ParseVector(const char** text, int count, float* v)
 	char* token = String::ParseExt(text, false);
 	if (String::Cmp(token, "("))
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing parenthesis in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing parenthesis in shader '%s'\n", shader.name);
 		return false;
 	}
 
@@ -172,7 +172,7 @@ static bool ParseVector(const char** text, int count, float* v)
 		token = String::ParseExt(text, false);
 		if (!token[0])
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing vector element in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing vector element in shader '%s'\n", shader.name);
 			return false;
 		}
 		v[i] = String::Atof(token);
@@ -181,7 +181,7 @@ static bool ParseVector(const char** text, int count, float* v)
 	token = String::ParseExt(text, false);
 	if (String::Cmp(token, ")"))
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing parenthesis in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing parenthesis in shader '%s'\n", shader.name);
 		return false;
 	}
 
@@ -209,7 +209,7 @@ static unsigned NameToAFunc(const char* funcname)
 		return GLS_ATEST_GE_80;
 	}
 
-	GLog.write(S_COLOR_YELLOW "WARNING: invalid alphaFunc name '%s' in shader '%s'\n", funcname, shader.name);
+	gLog.write(S_COLOR_YELLOW "WARNING: invalid alphaFunc name '%s' in shader '%s'\n", funcname, shader.name);
 	return 0;
 }
 
@@ -258,7 +258,7 @@ static int NameToSrcBlendMode(const char* name)
 		return GLS_SRCBLEND_ALPHA_SATURATE;
 	}
 
-	GLog.write(S_COLOR_YELLOW "WARNING: unknown blend mode '%s' in shader '%s', substituting GL_ONE\n", name, shader.name);
+	gLog.write(S_COLOR_YELLOW "WARNING: unknown blend mode '%s' in shader '%s', substituting GL_ONE\n", name, shader.name);
 	return GLS_SRCBLEND_ONE;
 }
 
@@ -303,7 +303,7 @@ static int NameToDstBlendMode(const char* name)
 		return GLS_DSTBLEND_ONE_MINUS_SRC_COLOR;
 	}
 
-	GLog.write(S_COLOR_YELLOW "WARNING: unknown blend mode '%s' in shader '%s', substituting GL_ONE\n", name, shader.name);
+	gLog.write(S_COLOR_YELLOW "WARNING: unknown blend mode '%s' in shader '%s', substituting GL_ONE\n", name, shader.name);
 	return GLS_DSTBLEND_ONE;
 }
 
@@ -340,7 +340,7 @@ static genFunc_t NameToGenFunc(const char* funcname)
 		return GF_NOISE;
 	}
 
-	GLog.write(S_COLOR_YELLOW "WARNING: invalid genfunc name '%s' in shader '%s'\n", funcname, shader.name);
+	gLog.write(S_COLOR_YELLOW "WARNING: invalid genfunc name '%s' in shader '%s'\n", funcname, shader.name);
 	return GF_SIN;
 }
 
@@ -355,7 +355,7 @@ static void ParseWaveForm(const char** text, waveForm_t* wave)
 	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
 	wave->func = NameToGenFunc(token);
@@ -364,7 +364,7 @@ static void ParseWaveForm(const char** text, waveForm_t* wave)
 	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
 	wave->base = String::Atof(token);
@@ -372,7 +372,7 @@ static void ParseWaveForm(const char** text, waveForm_t* wave)
 	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
 	wave->amplitude = String::Atof(token);
@@ -380,7 +380,7 @@ static void ParseWaveForm(const char** text, waveForm_t* wave)
 	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
 	wave->phase = String::Atof(token);
@@ -388,7 +388,7 @@ static void ParseWaveForm(const char** text, waveForm_t* wave)
 	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing waveform parm in shader '%s'\n", shader.name);
 		return;
 	}
 	wave->frequency = String::Atof(token);
@@ -422,28 +422,28 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing tcMod turb parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing tcMod turb parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.base = String::Atof(token);
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.amplitude = String::Atof(token);
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.phase = String::Atof(token);
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing tcMod turb in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.frequency = String::Atof(token);
@@ -458,7 +458,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing scale parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing scale parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->scale[0] = String::Atof(token);
@@ -466,7 +466,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing scale parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing scale parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->scale[1] = String::Atof(token);
@@ -480,14 +480,14 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing scale scroll parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing scale scroll parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->scroll[0] = String::Atof(token);
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing scale scroll parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing scale scroll parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->scroll[1] = String::Atof(token);
@@ -501,7 +501,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt( text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.func = NameToGenFunc(token);
@@ -509,7 +509,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.base = String::Atof(token);
@@ -517,7 +517,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.amplitude = String::Atof(token);
@@ -525,7 +525,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.phase = String::Atof(token);
@@ -533,7 +533,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing stretch parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->wave.frequency = String::Atof(token);
@@ -548,7 +548,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->matrix[0][0] = String::Atof(token);
@@ -556,7 +556,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->matrix[0][1] = String::Atof(token);
@@ -564,7 +564,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->matrix[1][0] = String::Atof(token);
@@ -572,7 +572,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->matrix[1][1] = String::Atof(token);
@@ -580,7 +580,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->translate[0] = String::Atof(token);
@@ -588,7 +588,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing transform parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->translate[1] = String::Atof(token);
@@ -603,7 +603,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing tcMod rotate parms in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing tcMod rotate parms in shader '%s'\n", shader.name);
 			return;
 		}
 		tmi->rotateSpeed = String::Atof(token);
@@ -618,7 +618,7 @@ static void ParseTexMod(const char* _text, shaderStage_t* stage)
 	}
 	else
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: unknown tcMod '%s' in shader '%s'\n", token, shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: unknown tcMod '%s' in shader '%s'\n", token, shader.name);
 	}
 }
 
@@ -640,7 +640,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		char* token = String::ParseExt(text, true);
 		if (!token[0])
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: no matching '}' found\n");
+			gLog.write(S_COLOR_YELLOW "WARNING: no matching '}' found\n");
 			return false;
 		}
 
@@ -656,7 +656,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'map' keyword in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'map' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
 
@@ -683,7 +683,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				stage->bundle[0].image[0] = R_FindImageFile(token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT);
 				if (!stage->bundle[0].image[0])
 				{
-					GLog.write(S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name);
+					gLog.write(S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name);
 					return false;
 				}
 			}
@@ -696,14 +696,14 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'clampmap' keyword in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'clampmap' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
 
 			stage->bundle[0].image[0] = R_FindImageFile(token, !shader.noMipMaps, !shader.noPicMip, GL_CLAMP);
 			if (!stage->bundle[0].image[0])
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name);
 				return false;
 			}
 		}
@@ -715,7 +715,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'animMmap' keyword in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'animMmap' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
 			stage->bundle[0].imageAnimationSpeed = String::Atof(token);
@@ -734,7 +734,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 					stage->bundle[0].image[num] = R_FindImageFile(token, !shader.noMipMaps, !shader.noPicMip, GL_REPEAT);
 					if (!stage->bundle[0].image[num])
 					{
-						GLog.write(S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name);
+						gLog.write(S_COLOR_YELLOW "WARNING: R_FindImageFile could not find '%s' in shader '%s'\n", token, shader.name);
 						return false;
 					}
 					stage->bundle[0].numImageAnimations++;
@@ -746,7 +746,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'videoMmap' keyword in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'videoMmap' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
 			stage->bundle[0].videoMapHandle = CIN_PlayCinematic(token, 0, 0, 256, 256, (CIN_loop | CIN_silent | CIN_shader));
@@ -764,7 +764,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt( text, false);
 			if (!token[0])
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'alphaFunc' keyword in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'alphaFunc' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
 
@@ -779,7 +779,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 
 			if (!token[0])
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'depthfunc' keyword in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parameter for 'depthfunc' keyword in shader '%s'\n", shader.name);
 				return false;
 			}
 
@@ -793,7 +793,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			}
 			else
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: unknown depthfunc '%s' in shader '%s'\n", token, shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: unknown depthfunc '%s' in shader '%s'\n", token, shader.name);
 				continue;
 			}
 		}
@@ -813,7 +813,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parm for blendFunc in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parm for blendFunc in shader '%s'\n", shader.name);
 				continue;
 			}
 			// check for "simple" blends first
@@ -840,7 +840,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				token = String::ParseExt(text, false);
 				if (token[0] == 0)
 				{
-					GLog.write(S_COLOR_YELLOW "WARNING: missing parm for blendFunc in shader '%s'\n", shader.name);
+					gLog.write(S_COLOR_YELLOW "WARNING: missing parm for blendFunc in shader '%s'\n", shader.name);
 					continue;
 				}
 				blendDstBits = NameToDstBlendMode(token);
@@ -860,7 +860,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parameters for rgbGen in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parameters for rgbGen in shader '%s'\n", shader.name);
 				continue;
 			}
 
@@ -918,7 +918,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			}
 			else
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: unknown rgbGen parameter '%s' in shader '%s'\n", token, shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: unknown rgbGen parameter '%s' in shader '%s'\n", token, shader.name);
 				continue;
 			}
 		}
@@ -930,7 +930,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parameters for alphaGen in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parameters for alphaGen in shader '%s'\n", shader.name);
 				continue;
 			}
 
@@ -976,7 +976,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 				if (token[0] == 0)
 				{
 					shader.portalRange = 256;
-					GLog.write(S_COLOR_YELLOW "WARNING: missing range parameter for alphaGen portal in shader '%s', defaulting to 256\n", shader.name);
+					gLog.write(S_COLOR_YELLOW "WARNING: missing range parameter for alphaGen portal in shader '%s', defaulting to 256\n", shader.name);
 				}
 				else
 				{
@@ -985,7 +985,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			}
 			else
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: unknown alphaGen parameter '%s' in shader '%s'\n", token, shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: unknown alphaGen parameter '%s' in shader '%s'\n", token, shader.name);
 				continue;
 			}
 		}
@@ -997,7 +997,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing texgen parm in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing texgen parm in shader '%s'\n", shader.name);
 				continue;
 			}
 
@@ -1022,7 +1022,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 			}
 			else 
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: unknown texgen parm in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: unknown texgen parm in shader '%s'\n", shader.name);
 			}
 		}
 		//
@@ -1059,7 +1059,7 @@ static bool ParseStage(shaderStage_t* stage, const char** text)
 		}
 		else
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: unknown parameter '%s' in shader '%s'\n", token, shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: unknown parameter '%s' in shader '%s'\n", token, shader.name);
 			return false;
 		}
 	}
@@ -1132,13 +1132,13 @@ static void ParseDeform(const char** text)
 	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing deform parm in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing deform parm in shader '%s'\n", shader.name);
 		return;
 	}
 
 	if (shader.numDeforms == MAX_SHADER_DEFORMS)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: MAX_SHADER_DEFORMS in '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: MAX_SHADER_DEFORMS in '%s'\n", shader.name);
 		return;
 	}
 
@@ -1179,7 +1179,7 @@ static void ParseDeform(const char** text)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
 			return;
 		}
 		ds->bulgeWidth = String::Atof(token);
@@ -1187,7 +1187,7 @@ static void ParseDeform(const char** text)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
 			return;
 		}
 		ds->bulgeHeight = String::Atof(token);
@@ -1195,7 +1195,7 @@ static void ParseDeform(const char** text)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes bulge parm in shader '%s'\n", shader.name);
 			return;
 		}
 		ds->bulgeSpeed = String::Atof(token);
@@ -1209,7 +1209,7 @@ static void ParseDeform(const char** text)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
 			return;
 		}
 
@@ -1220,7 +1220,7 @@ static void ParseDeform(const char** text)
 		else
 		{
 			ds->deformationSpread = 100.0f;
-			GLog.write(S_COLOR_YELLOW "WARNING: illegal div value of 0 in deformVertexes command for shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: illegal div value of 0 in deformVertexes command for shader '%s'\n", shader.name);
 		}
 
 		ParseWaveForm(text, &ds->deformationWave);
@@ -1233,7 +1233,7 @@ static void ParseDeform(const char** text)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
 			return;
 		}
 		ds->deformationWave.amplitude = String::Atof(token);
@@ -1241,7 +1241,7 @@ static void ParseDeform(const char** text)
 		token = String::ParseExt(text, false);
 		if (token[0] == 0)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
 			return;
 		}
 		ds->deformationWave.frequency = String::Atof(token);
@@ -1257,7 +1257,7 @@ static void ParseDeform(const char** text)
 			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing deformVertexes parm in shader '%s'\n", shader.name);
 				return;
 			}
 			ds->moveVector[i] = String::Atof(token);
@@ -1268,7 +1268,7 @@ static void ParseDeform(const char** text)
 		return;
 	}
 
-	GLog.write(S_COLOR_YELLOW "WARNING: unknown deformVertexes subtype '%s' found in shader '%s'\n", token, shader.name);
+	gLog.write(S_COLOR_YELLOW "WARNING: unknown deformVertexes subtype '%s' found in shader '%s'\n", token, shader.name);
 }
 
 //==========================================================================
@@ -1287,7 +1287,7 @@ static void ParseSkyParms(const char** text)
 	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
+		gLog.write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name );
 		return;
 	}
 	if (String::Cmp(token, "-"))
@@ -1308,7 +1308,7 @@ static void ParseSkyParms(const char** text)
 	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
 		return;
 	}
 	shader.sky.cloudHeight = String::Atof(token);
@@ -1322,7 +1322,7 @@ static void ParseSkyParms(const char** text)
 	token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: 'skyParms' missing parameter in shader '%s'\n", shader.name);
 		return;
 	}
 	if (String::Cmp(token, "-"))
@@ -1353,7 +1353,7 @@ static void ParseSort(const char** text)
 	char* token = String::ParseExt(text, false);
 	if (token[0] == 0)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: missing sort parameter in shader '%s'\n", shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: missing sort parameter in shader '%s'\n", shader.name);
 		return;
 	}
 
@@ -1442,7 +1442,7 @@ static bool ParseShader(const char** text)
 	char* token = String::ParseExt(text, true);
 	if (token[0] != '{')
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: expecting '{', found '%s' instead in shader '%s'\n", token, shader.name);
+		gLog.write(S_COLOR_YELLOW "WARNING: expecting '{', found '%s' instead in shader '%s'\n", token, shader.name);
 		return false;
 	}
 
@@ -1451,7 +1451,7 @@ static bool ParseShader(const char** text)
 		token = String::ParseExt(text, true);
 		if (!token[0])
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: no concluding '}' in shader %s\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: no concluding '}' in shader %s\n", shader.name);
 			return false;
 		}
 
@@ -1576,7 +1576,7 @@ static bool ParseShader(const char** text)
 			token = String::ParseExt(text, false);
 			if (!token[0])
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing parm for 'fogParms' keyword in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing parm for 'fogParms' keyword in shader '%s'\n", shader.name);
 				continue;
 			}
 			shader.fogParms.depthForOpaque = String::Atof(token);
@@ -1609,7 +1609,7 @@ static bool ParseShader(const char** text)
 			token = String::ParseExt(text, false);
 			if (token[0] == 0)
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: missing cull parms in shader '%s'\n", shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: missing cull parms in shader '%s'\n", shader.name);
 				continue;
 			}
 
@@ -1623,7 +1623,7 @@ static bool ParseShader(const char** text)
 			}
 			else
 			{
-				GLog.write(S_COLOR_YELLOW "WARNING: invalid cull parm '%s' in shader '%s'\n", token, shader.name);
+				gLog.write(S_COLOR_YELLOW "WARNING: invalid cull parm '%s' in shader '%s'\n", token, shader.name);
 			}
 			continue;
 		}
@@ -1635,7 +1635,7 @@ static bool ParseShader(const char** text)
 		}
 		else
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: unknown general shader parameter '%s' in '%s'\n", token, shader.name);
+			gLog.write(S_COLOR_YELLOW "WARNING: unknown general shader parameter '%s' in '%s'\n", token, shader.name);
 			return false;
 		}
 	}
@@ -2110,7 +2110,7 @@ static shader_t* GeneratePermanentShader()
 {
 	if (tr.numShaders == MAX_SHADERS)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: GeneratePermanentShader - MAX_SHADERS hit\n");
+		gLog.write(S_COLOR_YELLOW "WARNING: GeneratePermanentShader - MAX_SHADERS hit\n");
 		return tr.defaultShader;
 	}
 
@@ -2210,7 +2210,7 @@ static shader_t* FinishShader()
 		// check for a missing texture
 		if (!pStage->bundle[0].image[0])
 		{
-			GLog.write(S_COLOR_YELLOW "Shader %s has a stage with no image\n", shader.name);
+			gLog.write(S_COLOR_YELLOW "Shader %s has a stage with no image\n", shader.name);
 			pStage->active = false;
 			continue;
 		}
@@ -2329,11 +2329,11 @@ static shader_t* FinishShader()
 	{
 		if (vertexLightmap)
 		{
-			GLog.develWrite(S_COLOR_RED "WARNING: shader '%s' has VERTEX forced lightmap!\n", shader.name);
+			gLog.develWrite(S_COLOR_RED "WARNING: shader '%s' has VERTEX forced lightmap!\n", shader.name);
 		}
 		else
 		{
-			GLog.develWrite(S_COLOR_RED "WARNING: shader '%s' has lightmap but no lightmap stage!\n", shader.name);
+			gLog.develWrite(S_COLOR_RED "WARNING: shader '%s' has lightmap but no lightmap stage!\n", shader.name);
   			shader.lightmapIndex = LIGHTMAP_NONE;
 		}
 	}
@@ -2508,7 +2508,7 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 		// of all explicit shaders
 		if (r_printShaders->integer)
 		{
-			GLog.write("*SHADER* %s\n", name);
+			gLog.write("*SHADER* %s\n", name);
 		}
 
 		if (!ParseShader(&shaderText))
@@ -2530,7 +2530,7 @@ shader_t* R_FindShader(const char* name, int lightmapIndex, bool mipRawImage)
 	image_t* image = R_FindImageFile(fileName, mipRawImage, mipRawImage, mipRawImage ? GL_REPEAT : GL_CLAMP);
 	if (!image)
 	{
-		GLog.develWrite(S_COLOR_RED "Couldn't find image for shader %s\n", name);
+		gLog.develWrite(S_COLOR_RED "Couldn't find image for shader %s\n", name);
 		shader.defaultShader = true;
 		return FinishShader();
 	}
@@ -2729,7 +2729,7 @@ qhandle_t R_RegisterShader(const char* name)
 {
 	if (String::Length(name) >= MAX_QPATH)
 	{
-		GLog.write("Shader name exceeds MAX_QPATH\n");
+		gLog.write("Shader name exceeds MAX_QPATH\n");
 		return 0;
 	}
 
@@ -2760,7 +2760,7 @@ qhandle_t R_RegisterShaderNoMip(const char* name)
 {
 	if (String::Length(name) >= MAX_QPATH)
 	{
-		GLog.write("Shader name exceeds MAX_QPATH\n");
+		gLog.write("Shader name exceeds MAX_QPATH\n");
 		return 0;
 	}
 
@@ -2789,7 +2789,7 @@ static shader_t* R_RegisterShaderLightMap(const char* name, int lightmapIndex)
 {
 	if (String::Length(name) >= MAX_QPATH)
 	{
-		GLog.write("Shader name exceeds MAX_QPATH\n");
+		gLog.write("Shader name exceeds MAX_QPATH\n");
 		return 0;
 	}
 
@@ -2864,7 +2864,7 @@ void R_RemapShader(const char* shaderName, const char* newShaderName, const char
 	}
 	if (sh == NULL || sh == tr.defaultShader)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: R_RemapShader: shader %s not found\n", shaderName);
+		gLog.write(S_COLOR_YELLOW "WARNING: R_RemapShader: shader %s not found\n", shaderName);
 		return;
 	}
 
@@ -2875,7 +2875,7 @@ void R_RemapShader(const char* shaderName, const char* newShaderName, const char
 	}
 	if (sh2 == NULL || sh2 == tr.defaultShader)
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: R_RemapShader: new shader %s not found\n", newShaderName);
+		gLog.write(S_COLOR_YELLOW "WARNING: R_RemapShader: new shader %s not found\n", newShaderName);
 		return;
 	}
 
@@ -2953,7 +2953,7 @@ static void ScanAndLoadShaderFiles()
 	{
 		if (GGameType & GAME_Quake3)
 		{
-			GLog.write(S_COLOR_YELLOW "WARNING: no shader files found\n");
+			gLog.write(S_COLOR_YELLOW "WARNING: no shader files found\n");
 		}
 		return;
 	}
@@ -2969,7 +2969,7 @@ static void ScanAndLoadShaderFiles()
 	{
 		char filename[MAX_QPATH];
 		String::Sprintf(filename, sizeof(filename), "scripts/%s", shaderFiles[i]);
-		GLog.write("...loading '%s'\n", filename);
+		gLog.write("...loading '%s'\n", filename);
 		sum += FS_ReadFile(filename, (void**)&buffers[i]);
 		if (!buffers[i])
 		{
@@ -3099,7 +3099,7 @@ static void CreateExternalShaders()
 
 void R_InitShaders()
 {
-	GLog.write("Initializing Shaders\n");
+	gLog.write("Initializing Shaders\n");
 
 	Com_Memset(ShaderHashTable, 0, sizeof(ShaderHashTable));
 
@@ -3156,12 +3156,12 @@ shader_t* R_GetShaderByHandle(qhandle_t hShader)
 {
 	if (hShader < 0)
 	{
-		GLog.write(S_COLOR_YELLOW "R_GetShaderByHandle: out of range hShader '%d'\n", hShader);
+		gLog.write(S_COLOR_YELLOW "R_GetShaderByHandle: out of range hShader '%d'\n", hShader);
 		return tr.defaultShader;
 	}
 	if (hShader >= tr.numShaders)
 	{
-		GLog.write(S_COLOR_YELLOW "R_GetShaderByHandle: out of range hShader '%d'\n", hShader);
+		gLog.write(S_COLOR_YELLOW "R_GetShaderByHandle: out of range hShader '%d'\n", hShader);
 		return tr.defaultShader;
 	}
 	return tr.shaders[hShader];
@@ -3180,7 +3180,7 @@ void R_ShaderList_f()
 {
 	shader_t	*shader;
 
-	GLog.write("-----------------------\n");
+	gLog.write("-----------------------\n");
 
 	int count = 0;
 	for (int i = 0; i < tr.numShaders; i++)
@@ -3194,72 +3194,72 @@ void R_ShaderList_f()
 			shader = tr.shaders[i];
 		}
 
-		GLog.write("%i ", shader->numUnfoggedPasses);
+		gLog.write("%i ", shader->numUnfoggedPasses);
 
 		if (shader->lightmapIndex >= 0)
 		{
-			GLog.write("L ");
+			gLog.write("L ");
 		}
 		else
 		{
-			GLog.write("  ");
+			gLog.write("  ");
 		}
 		if (shader->multitextureEnv == GL_ADD)
 		{
-			GLog.write("MT(a) ");
+			gLog.write("MT(a) ");
 		}
 		else if (shader->multitextureEnv == GL_MODULATE)
 		{
-			GLog.write("MT(m) ");
+			gLog.write("MT(m) ");
 		}
 		else if (shader->multitextureEnv == GL_DECAL)
 		{
-			GLog.write("MT(d) ");
+			gLog.write("MT(d) ");
 		}
 		else
 		{
-			GLog.write("      ");
+			gLog.write("      ");
 		}
 		if (shader->explicitlyDefined)
 		{
-			GLog.write("E ");
+			gLog.write("E ");
 		}
 		else
 		{
-			GLog.write("  ");
+			gLog.write("  ");
 		}
 
 		if (shader->optimalStageIteratorFunc == RB_StageIteratorGeneric)
 		{
-			GLog.write("gen ");
+			gLog.write("gen ");
 		}
 		else if (shader->optimalStageIteratorFunc == RB_StageIteratorSky)
 		{
-			GLog.write("sky ");
+			gLog.write("sky ");
 		}
 		else if (shader->optimalStageIteratorFunc == RB_StageIteratorLightmappedMultitexture)
 		{
-			GLog.write("lmmt");
+			gLog.write("lmmt");
 		}
 		else if (shader->optimalStageIteratorFunc == RB_StageIteratorVertexLitTexture)
 		{
-			GLog.write("vlt ");
+			gLog.write("vlt ");
 		}
 		else
 		{
-			GLog.write("    ");
+			gLog.write("    ");
 		}
 
 		if (shader->defaultShader)
 		{
-			GLog.write(": %s (DEFAULTED)\n", shader->name);
+			gLog.write(": %s (DEFAULTED)\n", shader->name);
 		}
 		else
 		{
-			GLog.write(": %s\n", shader->name);
+			gLog.write(": %s\n", shader->name);
 		}
 		count++;
 	}
-	GLog.write("%i total shaders\n", count);
-	GLog.write("------------------\n");
+	gLog.write("%i total shaders\n", count);
+	gLog.write("------------------\n");
 }

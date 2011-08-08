@@ -212,7 +212,7 @@ clipHandle_t CM_PrecacheModel(const char* Name)
 			LoadCMap->LoadMap(Name, Buffer);
 			if (LoadCMap->GetNumInlineModels() > 1)
 			{
-				GLog.writeLine("Non-map BSP models are not supposed to have submodels");
+				gLog.writeLine("Non-map BSP models are not supposed to have submodels");
 			}
 			break;
 		}

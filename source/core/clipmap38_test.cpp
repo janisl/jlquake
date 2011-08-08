@@ -348,7 +348,7 @@ void QClipMap38::DecompressVis(const byte* in, byte* out)
 		if ((out_p - out) + c > row)
 		{
 			c = row - (out_p - out);
-			GLog.develWrite("warning: Vis decompression overrun\n");
+			gLog.develWrite("warning: Vis decompression overrun\n");
 		}
 		while (c)
 		{

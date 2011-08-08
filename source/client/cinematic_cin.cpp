@@ -443,7 +443,7 @@ QCinematicCin::cblock_t QCinematicCin::Huff1Decompress(QCinematicCin::cblock_t i
 
 	if (input - in.data != in.count && input - in.data != in.count + 1)
 	{
-		GLog.writeLine("Decompression overread by %i", (input - in.data) - in.count);
+		gLog.writeLine("Decompression overread by %i", (input - in.data) - in.count);
 	}
 	out.count = out_p - out.data;
 

@@ -48,15 +48,15 @@ void R_InitCommandBuffers()
 	glConfig.smpActive = false;
 	if ((GGameType & GAME_Quake3) && r_smp->integer)
 	{
-		GLog.write("Trying SMP acceleration...\n");
+		gLog.write("Trying SMP acceleration...\n");
 		if (GLimp_SpawnRenderThread(RB_RenderThread))
 		{
-			GLog.write("...succeeded.\n");
+			gLog.write("...succeeded.\n");
 			glConfig.smpActive = true;
 		}
 		else
 		{
-			GLog.write("...failed.\n");
+			gLog.write("...failed.\n");
 		}
 	}
 }
@@ -97,14 +97,14 @@ static void R_PerformanceCounters()
 
 	if (GGameType & GAME_Quake)
 	{
-		GLog.write("%4i wpoly %4i epoly\n", c_brush_polys, c_alias_polys); 
+		gLog.write("%4i wpoly %4i epoly\n", c_brush_polys, c_alias_polys); 
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 		return;
 	}
 	if (GGameType & GAME_Hexen2)
 	{
-		GLog.write("%4i wpoly  %4i epoly  %4i(%i) edicts\n",
+		gLog.write("%4i wpoly  %4i epoly  %4i(%i) edicts\n",
 			c_brush_polys, c_alias_polys, r_numentities, cl_numtransvisedicts + cl_numtranswateredicts);
 		c_brush_polys = 0;
 		c_alias_polys = 0;
@@ -112,7 +112,7 @@ static void R_PerformanceCounters()
 	}
 	if (GGameType & GAME_Quake2)
 	{
-		GLog.write("%4i wpoly %4i epoly %i tex %i lmaps\n",
+		gLog.write("%4i wpoly %4i epoly %i tex %i lmaps\n",
 			c_brush_polys, c_alias_polys, c_visible_textures, c_visible_lightmaps);
 		c_brush_polys = 0;
 		c_alias_polys = 0;
@@ -121,40 +121,40 @@ static void R_PerformanceCounters()
 
 	if (r_speeds->integer == 1)
 	{
-		GLog.write("%i/%i shaders/surfs %i leafs %i verts %i/%i tris %.2f mtex %.2f dc\n",
+		gLog.write("%i/%i shaders/surfs %i leafs %i verts %i/%i tris %.2f mtex %.2f dc\n",
 			backEnd.pc.c_shaders, backEnd.pc.c_surfaces, tr.pc.c_leafs, backEnd.pc.c_vertexes,
 			backEnd.pc.c_indexes/3, backEnd.pc.c_totalIndexes/3,
 			R_SumOfUsedImages() / 1000000.0f, backEnd.pc.c_overDraw / (float)(glConfig.vidWidth * glConfig.vidHeight));
 	}
 	else if (r_speeds->integer == 2)
 	{
-		GLog.write("(patch) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
+		gLog.write("(patch) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
 			tr.pc.c_sphere_cull_patch_in, tr.pc.c_sphere_cull_patch_clip, tr.pc.c_sphere_cull_patch_out,
 			tr.pc.c_box_cull_patch_in, tr.pc.c_box_cull_patch_clip, tr.pc.c_box_cull_patch_out);
-		GLog.write("(md3) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
+		gLog.write("(md3) %i sin %i sclip  %i sout %i bin %i bclip %i bout\n",
 			tr.pc.c_sphere_cull_md3_in, tr.pc.c_sphere_cull_md3_clip, tr.pc.c_sphere_cull_md3_out,
 			tr.pc.c_box_cull_md3_in, tr.pc.c_box_cull_md3_clip, tr.pc.c_box_cull_md3_out);
 	}
 	else if (r_speeds->integer == 3)
 	{
-		GLog.write("viewcluster: %i\n", tr.viewCluster);
+		gLog.write("viewcluster: %i\n", tr.viewCluster);
 	}
 	else if (r_speeds->integer == 4)
 	{
 		if (backEnd.pc.c_dlightVertexes)
 		{
-			GLog.write("dlight srf:%i  culled:%i  verts:%i  tris:%i\n", 
+			gLog.write("dlight srf:%i  culled:%i  verts:%i  tris:%i\n", 
 				tr.pc.c_dlightSurfaces, tr.pc.c_dlightSurfacesCulled,
 				backEnd.pc.c_dlightVertexes, backEnd.pc.c_dlightIndexes / 3);
 		}
 	} 
 	else if (r_speeds->integer == 5)
 	{
-		GLog.write("zFar: %.0f\n", tr.viewParms.zFar);
+		gLog.write("zFar: %.0f\n", tr.viewParms.zFar);
 	}
 	else if (r_speeds->integer == 6)
 	{
-		GLog.write("flare adds:%i tests:%i renders:%i\n", 
+		gLog.write("flare adds:%i tests:%i renders:%i\n", 
 			backEnd.pc.c_flareAdds, backEnd.pc.c_flareTests, backEnd.pc.c_flareRenders);
 	}
 
@@ -186,14 +186,14 @@ void R_IssueRenderCommands(bool runPerformanceCounters)
 		{
 			if (r_showSmp->integer)
 			{
-				GLog.write("R");
+				gLog.write("R");
 			}
 		}
 		else
 		{
 			if (r_showSmp->integer)
 			{
-				GLog.write(".");
+				gLog.write(".");
 			}
 		}
 
@@ -389,13 +389,13 @@ void R_BeginFrame(stereoFrame_t stereoFrame)
 	{
 		if (glConfig.stencilBits < 4)
 		{
-			GLog.write("Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits);
+			gLog.write("Warning: not enough stencil bits to measure overdraw: %d\n", glConfig.stencilBits);
 			Cvar_Set("r_measureOverdraw", "0");
 			r_measureOverdraw->modified = false;
 		}
 		else if (r_shadows->integer == 2)
 		{
-			GLog.write("Warning: stencil shadows and overdraw measurement are mutually exclusive\n");
+			gLog.write("Warning: stencil shadows and overdraw measurement are mutually exclusive\n");
 			Cvar_Set("r_measureOverdraw", "0");
 			r_measureOverdraw->modified = false;
 		}

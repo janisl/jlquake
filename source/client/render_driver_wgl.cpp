@@ -123,7 +123,7 @@ static void AppActivate(bool fActive, bool minimize)
 {
 	Minimized = minimize;
 
-	GLog.develWrite("AppActivate: %i\n", fActive);
+	gLog.develWrite("AppActivate: %i\n", fActive);
 
 	Key_ClearStates();	// FIXME!!!
 
@@ -251,18 +251,18 @@ static LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 {
-	GLog.write("...GLW_ChoosePFD( %d, %d, %d )\n", (int)pPFD->cColorBits, (int)pPFD->cDepthBits, (int)pPFD->cStencilBits);
+	gLog.write("...GLW_ChoosePFD( %d, %d, %d )\n", (int)pPFD->cColorBits, (int)pPFD->cDepthBits, (int)pPFD->cStencilBits);
 
 	// count number of PFDs
 	PIXELFORMATDESCRIPTOR pfds[MAX_PFDS + 1];
 	int maxPFD = DescribePixelFormat(hDC, 1, sizeof(PIXELFORMATDESCRIPTOR), &pfds[0]);
 	if (maxPFD > MAX_PFDS)
 	{
-		GLog.write(S_COLOR_YELLOW "...numPFDs > MAX_PFDS (%d > %d)\n", maxPFD, MAX_PFDS);
+		gLog.write(S_COLOR_YELLOW "...numPFDs > MAX_PFDS (%d > %d)\n", maxPFD, MAX_PFDS);
 		maxPFD = MAX_PFDS;
 	}
 
-	GLog.write("...%d PFDs found\n", maxPFD - 1);
+	gLog.write("...%d PFDs found\n", maxPFD - 1);
 
 	// grab information
 	for (int i = 1; i <= maxPFD; i++)
@@ -283,7 +283,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 			{
 				if (r_verbose->integer)
 				{
-					GLog.write("...PFD %d rejected, software acceleration\n", i);
+					gLog.write("...PFD %d rejected, software acceleration\n", i);
 				}
 				continue;
 			}
@@ -294,7 +294,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 		{
 			if (r_verbose->integer)
 			{
-				GLog.write("...PFD %d rejected, not RGBA\n", i);
+				gLog.write("...PFD %d rejected, not RGBA\n", i);
 			}
 			continue;
 		}
@@ -304,7 +304,7 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 		{
 			if (r_verbose->integer)
 			{
-				GLog.write("...PFD %d rejected, improper flags (%x instead of %x)\n", i, pfds[i].dwFlags, pPFD->dwFlags);
+				gLog.write("...PFD %d rejected, improper flags (%x instead of %x)\n", i, pfds[i].dwFlags, pPFD->dwFlags);
 			}
 			continue;
 		}
@@ -409,21 +409,21 @@ static int GLW_ChoosePFD(HDC hDC, PIXELFORMATDESCRIPTOR* pPFD)
 	{
 		if (!r_allowSoftwareGL->integer)
 		{
-			GLog.write("...no hardware acceleration found\n");
+			gLog.write("...no hardware acceleration found\n");
 			return 0;
 		}
 		else
 		{
-			GLog.write("...using software emulation\n");
+			gLog.write("...using software emulation\n");
 		}
 	}
 	else if (pfds[bestMatch].dwFlags & PFD_GENERIC_ACCELERATED)
 	{
-		GLog.write("...MCD acceleration found\n");
+		gLog.write("...MCD acceleration found\n");
 	}
 	else
 	{
-		GLog.write("...hardware acceleration found\n");
+		gLog.write("...hardware acceleration found\n");
 	}
 
 	*pPFD = pfds[bestMatch];
@@ -469,7 +469,7 @@ static void GLW_CreatePFD(PIXELFORMATDESCRIPTOR* pPFD, int colorbits, int depthb
 
 	if (stereo)
 	{
-		GLog.write( "...attempting to use stereo\n");
+		gLog.write( "...attempting to use stereo\n");
 		src.dwFlags |= PFD_STEREO;
 		glConfig.stereoEnabled = true;
 	}
@@ -501,16 +501,16 @@ static int GLW_MakeContext(PIXELFORMATDESCRIPTOR* pPFD)
 		int pixelformat = GLW_ChoosePFD(maindc, pPFD);
 		if (pixelformat == 0)
 		{
-			GLog.write("...GLW_ChoosePFD failed\n");
+			gLog.write("...GLW_ChoosePFD failed\n");
 			return TRY_PFD_FAIL_SOFT;
 		}
-		GLog.write("...PIXELFORMAT %d selected\n", pixelformat);
+		gLog.write("...PIXELFORMAT %d selected\n", pixelformat);
 
 		DescribePixelFormat(maindc, pixelformat, sizeof(*pPFD), pPFD);
 
 		if (SetPixelFormat(maindc, pixelformat, pPFD) == FALSE)
 		{
-			GLog.write("...SetPixelFormat failed\n");
+			gLog.write("...SetPixelFormat failed\n");
 			return TRY_PFD_FAIL_SOFT;
 		}
 
@@ -522,23 +522,23 @@ static int GLW_MakeContext(PIXELFORMATDESCRIPTOR* pPFD)
 	//
 	if (!baseRC)
 	{
-		GLog.write("...creating GL context: ");
+		gLog.write("...creating GL context: ");
 		if ((baseRC = wglCreateContext(maindc)) == 0)
 		{
-			GLog.write("failed\n");
+			gLog.write("failed\n");
 			return TRY_PFD_FAIL_HARD;
 		}
-		GLog.write("succeeded\n");
+		gLog.write("succeeded\n");
 
-		GLog.write("...making context current: ");
+		gLog.write("...making context current: ");
 		if (!wglMakeCurrent(maindc, baseRC))
 		{
 			wglDeleteContext(baseRC);
 			baseRC = NULL;
-			GLog.write("failed\n");
+			gLog.write("failed\n");
 			return TRY_PFD_FAIL_HARD;
 		}
-		GLog.write("succeeded\n");
+		gLog.write("succeeded\n");
 	}
 
 	return TRY_PFD_SUCCESS;
@@ -557,21 +557,21 @@ static bool GLW_InitDriver(int colorbits)
 {
 	static PIXELFORMATDESCRIPTOR pfd;		// save between frames since 'tr' gets cleared
 
-	GLog.write("Initializing OpenGL driver\n");
+	gLog.write("Initializing OpenGL driver\n");
 
 	//
 	// get a DC for our window if we don't already have one allocated
 	//
 	if (maindc == NULL)
 	{
-		GLog.write("...getting DC: ");
+		gLog.write("...getting DC: ");
 
 		if ((maindc = GetDC(GMainWindow)) == NULL)
 		{
-			GLog.write("failed\n");
+			gLog.write("failed\n");
 			return false;
 		}
-		GLog.write("succeeded\n");
+		gLog.write("succeeded\n");
 	}
 
 	if (colorbits == 0)
@@ -629,7 +629,7 @@ static bool GLW_InitDriver(int colorbits)
 					maindc = NULL;
 				}
 
-				GLog.write(S_COLOR_YELLOW "...failed hard\n");
+				gLog.write(S_COLOR_YELLOW "...failed hard\n");
 				return false;
 			}
 
@@ -644,7 +644,7 @@ static bool GLW_InitDriver(int colorbits)
 					maindc = NULL;
 				}
 
-				GLog.write("...failed to find an appropriate PIXELFORMAT\n");
+				gLog.write("...failed to find an appropriate PIXELFORMAT\n");
 
 				return false;
 			}
@@ -665,7 +665,7 @@ static bool GLW_InitDriver(int colorbits)
 					maindc = NULL;
 				}
 
-				GLog.write("...failed to find an appropriate PIXELFORMAT\n");
+				gLog.write("...failed to find an appropriate PIXELFORMAT\n");
 
 				return false;
 			}
@@ -676,7 +676,7 @@ static bool GLW_InitDriver(int colorbits)
 		//
 		if (!(pfd.dwFlags & PFD_STEREO) && (r_stereo->integer != 0)) 
 		{
-			GLog.write("...failed to select stereo pixel format\n");
+			gLog.write("...failed to select stereo pixel format\n");
 			glConfig.stereoEnabled = false;
 		}
 	}
@@ -725,7 +725,7 @@ static void WG_CheckHardwareGamma()
 		(HIBYTE(s_oldHardwareGamma[2][255]) <= HIBYTE(s_oldHardwareGamma[2][0])))
 	{
 		glConfig.deviceSupportsGamma = false;
-		GLog.write(S_COLOR_YELLOW "WARNING: device has broken gamma support\n");
+		gLog.write(S_COLOR_YELLOW "WARNING: device has broken gamma support\n");
 	}
 
 	//
@@ -734,7 +734,7 @@ static void WG_CheckHardwareGamma()
 	//
 	if ((HIBYTE(s_oldHardwareGamma[0][181]) == 255))
 	{
-		GLog.write(S_COLOR_YELLOW "WARNING: suspicious gamma tables, using linear ramp for restoration\n");
+		gLog.write(S_COLOR_YELLOW "WARNING: suspicious gamma tables, using linear ramp for restoration\n");
 
 		for (int g = 0; g < 255; g++)
 		{
@@ -783,7 +783,7 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 			throw QException("GLW_CreateWindow: could not register window class");
 		}
 		s_classRegistered = true;
-		GLog.write("...registered window class\n");
+		gLog.write("...registered window class\n");
 	}
 
 	//
@@ -862,11 +862,11 @@ static bool GLW_CreateWindow(int width, int height, int colorbits, bool fullscre
 
 		ShowWindow(GMainWindow, SW_SHOW);
 		UpdateWindow(GMainWindow);
-		GLog.write("...created window@%d,%d (%dx%d)\n", x, y, w, h);
+		gLog.write("...created window@%d,%d (%dx%d)\n", x, y, w, h);
 	}
 	else
 	{
-		GLog.write("...window already present, CreateWindowEx skipped\n");
+		gLog.write("...window already present, CreateWindowEx skipped\n");
 	}
 
 	if (!GLW_InitDriver(colorbits))
@@ -897,25 +897,25 @@ static void PrintCDSError(int value)
 	switch (value)
 	{
 	case DISP_CHANGE_RESTART:
-		GLog.write("restart required\n");
+		gLog.write("restart required\n");
 		break;
 	case DISP_CHANGE_BADPARAM:
-		GLog.write("bad param\n");
+		gLog.write("bad param\n");
 		break;
 	case DISP_CHANGE_BADFLAGS:
-		GLog.write("bad flags\n");
+		gLog.write("bad flags\n");
 		break;
 	case DISP_CHANGE_FAILED:
-		GLog.write("DISP_CHANGE_FAILED\n");
+		gLog.write("DISP_CHANGE_FAILED\n");
 		break;
 	case DISP_CHANGE_BADMODE:
-		GLog.write("bad mode\n");
+		gLog.write("bad mode\n");
 		break;
 	case DISP_CHANGE_NOTUPDATED:
-		GLog.write("not updated\n");
+		gLog.write("not updated\n");
 		break;
 	default:
-		GLog.write("unknown error %d\n", value);
+		gLog.write("unknown error %d\n", value);
 		break;
 	}
 }
@@ -933,13 +933,13 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 	//
 	// print out informational messages
 	//
-	GLog.write("...setting mode %d:", mode);
+	gLog.write("...setting mode %d:", mode);
 	if (!R_GetModeInfo(&glConfig.vidWidth, &glConfig.vidHeight, &glConfig.windowAspect, mode))
 	{
-		GLog.write(" invalid mode\n");
+		gLog.write(" invalid mode\n");
 		return RSERR_INVALID_MODE;
 	}
-	GLog.write(" %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[fullscreen]);
+	gLog.write(" %d %d %s\n", glConfig.vidWidth, glConfig.vidHeight, win_fs[fullscreen]);
 
 	//
 	// check our desktop attributes
@@ -995,11 +995,11 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		{
 			dm.dmBitsPerPel = colorbits;
 			dm.dmFields |= DM_BITSPERPEL;
-			GLog.write("...using colorsbits of %d\n", colorbits);
+			gLog.write("...using colorsbits of %d\n", colorbits);
 		}
 		else
 		{
-			GLog.write("...using desktop display depth of %d\n", desktopBitsPixel);
+			gLog.write("...using desktop display depth of %d\n", desktopBitsPixel);
 		}
 
 		//
@@ -1007,11 +1007,11 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		//
 		if (cdsFullscreen)
 		{
-			GLog.write("...already fullscreen, avoiding redundant CDS\n");
+			gLog.write("...already fullscreen, avoiding redundant CDS\n");
 
 			if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, true))
 			{
-				GLog.write("...restoring display settings\n");
+				gLog.write("...restoring display settings\n");
 				ChangeDisplaySettings(0, 0);
 				cdsFullscreen = false;
 				return RSERR_INVALID_MODE;
@@ -1022,18 +1022,18 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 		//
 		else
 		{
-			GLog.write("...calling CDS: ");
+			gLog.write("...calling CDS: ");
 
 			// try setting the exact mode requested, because some drivers don't report
 			// the low res modes in EnumDisplaySettings, but still work
 			int cdsRet = ChangeDisplaySettings(&dm, CDS_FULLSCREEN);
 			if (cdsRet == DISP_CHANGE_SUCCESSFUL)
 			{
-				GLog.write("ok\n");
+				gLog.write("ok\n");
 
 				if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, true))
 				{
-					GLog.write("...restoring display settings\n");
+					gLog.write("...restoring display settings\n");
 					ChangeDisplaySettings(0, 0);
 					return RSERR_INVALID_MODE;
 				}
@@ -1042,14 +1042,14 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 			}
 			else
 			{
-				GLog.write("failed, ");
+				gLog.write("failed, ");
 
 				PrintCDSError(cdsRet);
 
 				//
 				// the exact mode failed, so scan EnumDisplaySettings for the next largest mode
 				//
-				GLog.write("...trying next higher resolution:");
+				gLog.write("...trying next higher resolution:");
 				
 				// we could do a better matching job here...
 				DEVMODE devmode;
@@ -1075,10 +1075,10 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 				}
 				if (modeNum != -1 && cdsRet == DISP_CHANGE_SUCCESSFUL)
 				{
-					GLog.write(" ok\n");
+					gLog.write(" ok\n");
 					if (!GLW_CreateWindow(glConfig.vidWidth, glConfig.vidHeight, colorbits, true))
 					{
-						GLog.write("...restoring display settings\n");
+						gLog.write("...restoring display settings\n");
 						ChangeDisplaySettings(0, 0);
 						return RSERR_INVALID_MODE;
 					}
@@ -1087,11 +1087,11 @@ rserr_t GLimp_SetMode(int mode, int colorbits, bool fullscreen)
 				}
 				else
 				{
-					GLog.write(" failed, ");
+					gLog.write(" failed, ");
 					
 					PrintCDSError(cdsRet);
 					
-					GLog.write("...restoring display settings\n");
+					gLog.write("...restoring display settings\n");
 					ChangeDisplaySettings(0, 0);
 					
 					cdsFullscreen = false;
@@ -1147,7 +1147,7 @@ void GLimp_Shutdown()
 {
 	const char *success[] = { "failed", "success" };
 
-	GLog.write("Shutting down OpenGL subsystem\n");
+	gLog.write("Shutting down OpenGL subsystem\n");
 
 	// restore gamma.
 	if (glConfig.deviceSupportsGamma)
@@ -1161,13 +1161,13 @@ void GLimp_Shutdown()
 	// set current context to NULL
 	int retVal = wglMakeCurrent(NULL, NULL) != 0;
 
-	GLog.write("...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal]);
+	gLog.write("...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal]);
 
 	// delete HGLRC
 	if (baseRC)
 	{
 		retVal = wglDeleteContext(baseRC) != 0;
-		GLog.write("...deleting GL context: %s\n", success[retVal]);
+		gLog.write("...deleting GL context: %s\n", success[retVal]);
 		baseRC = NULL;
 	}
 
@@ -1175,14 +1175,14 @@ void GLimp_Shutdown()
 	if (maindc)
 	{
 		retVal = ReleaseDC(GMainWindow, maindc) != 0;
-		GLog.write("...releasing DC: %s\n", success[retVal]);
+		gLog.write("...releasing DC: %s\n", success[retVal]);
 		maindc = NULL;
 	}
 
 	// destroy window
 	if (GMainWindow)
 	{
-		GLog.write("...destroying window\n");
+		gLog.write("...destroying window\n");
 		ShowWindow(GMainWindow, SW_HIDE);
 		DestroyWindow(GMainWindow);
 		GMainWindow = NULL;
@@ -1192,7 +1192,7 @@ void GLimp_Shutdown()
 	// reset display settings
 	if (cdsFullscreen)
 	{
-		GLog.write("...resetting display\n");
+		gLog.write("...resetting display\n");
 		ChangeDisplaySettings(0, 0);
 		cdsFullscreen = false;
 	}
@@ -1266,7 +1266,7 @@ void GLimp_SetGamma(unsigned char red[256], unsigned char green[256], unsigned c
 	int ret = SetDeviceGammaRamp(maindc, table);
 	if (!ret)
 	{
-		GLog.write("SetDeviceGammaRamp failed.\n");
+		gLog.write("SetDeviceGammaRamp failed.\n");
 	}
 }
 

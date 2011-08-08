@@ -107,13 +107,13 @@ void Sys_ConsoleInputInit()
 	
 	if (isatty(STDIN_FILENO) != 1)
 	{
-		GLog.write("stdin is not a tty, tty console mode failed\n");
+		gLog.write("stdin is not a tty, tty console mode failed\n");
 		Cvar_Set("ttycon", "0");
 		ttycon_on = false;
 		return;
 	}
 
-	GLog.write("Started tty console (use +set ttycon 0 to disable)\n");
+	gLog.write("Started tty console (use +set ttycon 0 to disable)\n");
 	Field_Clear(&tty_con);
 	tcgetattr(0, &tty_tc);
 	tty_erase = tty_tc.c_cc[VERASE];
@@ -152,7 +152,7 @@ void Sys_ConsoleInputShutdown()
 {
 	if (ttycon_on)
 	{
-		GLog.write("Shutdown tty console\n");
+		gLog.write("Shutdown tty console\n");
 		tcsetattr(0, TCSADRAIN, &tty_tc);
 		ttycon_on = false;
 	}
@@ -430,7 +430,7 @@ char* Sys_ConsoleInput()
 					}
 				}
 			}
-			GLog.develWrite("droping ISCTL sequence: %d, tty_erase: %d\n", key, tty_erase);
+			gLog.develWrite("droping ISCTL sequence: %d, tty_erase: %d\n", key, tty_erase);
 			tty_FlushIn();
 			return NULL;
 		}

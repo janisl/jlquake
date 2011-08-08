@@ -635,7 +635,7 @@ static bool CheckExtension(const char* Extension)
 
 void QGL_Init()
 {
-	GLog.write("...initializing QGL\n");
+	gLog.write("...initializing QGL\n");
 
 #define GLF_0(r, n)				qgl##n = gl##n;
 #define GLF_V0(n)				qgl##n = gl##n;
@@ -681,7 +681,7 @@ void QGL_Init()
 	qwglSwapIntervalEXT = NULL;
 #endif
 
-	GLog.write("Initializing OpenGL extensions\n");
+	gLog.write("Initializing OpenGL extensions\n");
 
 	// GL_S3_s3tc
 	glConfig.textureCompression = TC_NONE;
@@ -690,17 +690,17 @@ void QGL_Init()
 		if (r_ext_compressed_textures->integer)
 		{
 			glConfig.textureCompression = TC_S3TC;
-			GLog.write("...using GL_S3_s3tc\n");
+			gLog.write("...using GL_S3_s3tc\n");
 		}
 		else
 		{
 			glConfig.textureCompression = TC_NONE;
-			GLog.write("...ignoring GL_S3_s3tc\n");
+			gLog.write("...ignoring GL_S3_s3tc\n");
 		}
 	}
 	else
 	{
-		GLog.write("...GL_S3_s3tc not found\n");
+		gLog.write("...GL_S3_s3tc not found\n");
 	}
 
 	// GL_ARB_multitexture
@@ -718,25 +718,25 @@ void QGL_Init()
 
 				if (glConfig.maxActiveTextures > 1)
 				{
-					GLog.write("...using GL_ARB_multitexture\n");
+					gLog.write("...using GL_ARB_multitexture\n");
 				}
 				else
 				{
 					qglMultiTexCoord2fARB = NULL;
 					qglActiveTextureARB = NULL;
 					qglClientActiveTextureARB = NULL;
-					GLog.write("...not using GL_ARB_multitexture, < 2 texture units\n");
+					gLog.write("...not using GL_ARB_multitexture, < 2 texture units\n");
 				}
 			}
 		}
 		else
 		{
-			GLog.write("...ignoring GL_ARB_multitexture\n");
+			gLog.write("...ignoring GL_ARB_multitexture\n");
 		}
 	}
 	else
 	{
-		GLog.write("...GL_ARB_multitexture not found\n");
+		gLog.write("...GL_ARB_multitexture not found\n");
 	}
 
 	// GL_EXT_texture_env_add
@@ -746,17 +746,17 @@ void QGL_Init()
 		if (r_ext_texture_env_add->integer)
 		{
 			glConfig.textureEnvAddAvailable = true;
-			GLog.write("...using GL_EXT_texture_env_add\n");
+			gLog.write("...using GL_EXT_texture_env_add\n");
 		}
 		else
 		{
 			glConfig.textureEnvAddAvailable = false;
-			GLog.write("...ignoring GL_EXT_texture_env_add\n");
+			gLog.write("...ignoring GL_EXT_texture_env_add\n");
 		}
 	}
 	else
 	{
-		GLog.write("...GL_EXT_texture_env_add not found\n");
+		gLog.write("...GL_EXT_texture_env_add not found\n");
 	}
 
 #ifdef _WIN32
@@ -768,22 +768,22 @@ void QGL_Init()
 			qwglSwapIntervalEXT = (BOOL (WINAPI*)(int))GLimp_GetProcAddress("wglSwapIntervalEXT");
 			if (qwglSwapIntervalEXT)
 			{
-				GLog.write("...using WGL_EXT_swap_control\n");
+				gLog.write("...using WGL_EXT_swap_control\n");
 				r_swapInterval->modified = true;	// force a set next frame
 			}
 			else
 			{
-				GLog.write("...WGL_EXT_swap_control not found\n");
+				gLog.write("...WGL_EXT_swap_control not found\n");
 			}
 		}
 		else
 		{
-			GLog.write("...ignoring WGL_EXT_swap_control\n");
+			gLog.write("...ignoring WGL_EXT_swap_control\n");
 		}
 	}
 	else
 	{
-		GLog.write("...WGL_EXT_swap_control not found\n");
+		gLog.write("...WGL_EXT_swap_control not found\n");
 	}
 #endif
 
@@ -792,7 +792,7 @@ void QGL_Init()
 	{
 		if (r_ext_compiled_vertex_array->integer)
 		{
-			GLog.write("...using GL_EXT_compiled_vertex_array\n");
+			gLog.write("...using GL_EXT_compiled_vertex_array\n");
 			qglLockArraysEXT = (void (APIENTRY*)(int, int))GLimp_GetProcAddress("glLockArraysEXT");
 			qglUnlockArraysEXT = (void (APIENTRY*)())GLimp_GetProcAddress("glUnlockArraysEXT");
 			if (!qglLockArraysEXT || !qglUnlockArraysEXT)
@@ -802,19 +802,19 @@ void QGL_Init()
 		}
 		else
 		{
-			GLog.write("...ignoring GL_EXT_compiled_vertex_array\n");
+			gLog.write("...ignoring GL_EXT_compiled_vertex_array\n");
 		}
 	}
 	else
 	{
-		GLog.write("...GL_EXT_compiled_vertex_array not found\n");
+		gLog.write("...GL_EXT_compiled_vertex_array not found\n");
 	}
 
 	if (CheckExtension("GL_EXT_point_parameters"))
 	{
 		if (r_ext_point_parameters->integer)
 		{
-			GLog.write("...using GL_EXT_point_parameters\n");
+			gLog.write("...using GL_EXT_point_parameters\n");
 			qglPointParameterfEXT = (void (APIENTRY*)(GLenum, GLfloat))GLimp_GetProcAddress("glPointParameterfEXT");
 			qglPointParameterfvEXT = (void (APIENTRY*)(GLenum, const GLfloat*))GLimp_GetProcAddress("glPointParameterfvEXT");
 			if (!qglPointParameterfEXT || !qglPointParameterfvEXT)
@@ -824,12 +824,12 @@ void QGL_Init()
 		}
 		else
 		{
-			GLog.write("...ignoring GL_EXT_point_parameters\n");
+			gLog.write("...ignoring GL_EXT_point_parameters\n");
 		}
 	}
 	else
 	{
-		GLog.write("...GL_EXT_point_parameters not found\n");
+		gLog.write("...GL_EXT_point_parameters not found\n");
 	}
 
 	// check logging
@@ -847,7 +847,7 @@ void QGL_Init()
 
 void QGL_Shutdown()
 {
-	GLog.write("...shutting down QGL\n");
+	gLog.write("...shutting down QGL\n");
 
 	// close the r_logFile
 	if (log_fp)

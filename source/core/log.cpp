@@ -32,7 +32,7 @@
 
 // PUBLIC DATA DEFINITIONS -------------------------------------------------
 
-Log			GLog;
+Log			gLog;
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 

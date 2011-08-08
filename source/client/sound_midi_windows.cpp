@@ -49,7 +49,7 @@ void MidiErrorMessageBox(MMRESULT mmr)
    char temp[1024];
 
    midiOutGetErrorText(mmr,temp,sizeof(temp));
-	GLog.write("%s\n",temp);
+	gLog.write("%s\n",temp);
 }
 
 
@@ -86,8 +86,8 @@ void MIDI_Loop_f (void)
 			MIDI_Loop(2);
 	}
 
-	if (bLooped) GLog.write("MIDI music will be looped\n");
-	else GLog.write("MIDI music will not be looped\n");
+	if (bLooped) gLog.write("MIDI music will be looped\n");
+	else gLog.write("MIDI music will not be looped\n");
 }
 
 void MIDI_Volume_f (void)
@@ -102,7 +102,7 @@ void MIDI_Volume_f (void)
 	}
 	else
 	{
-		GLog.write("MIDI volume is %d\n", dwVolumePercent/(65535/100));
+		gLog.write("MIDI volume is %d\n", dwVolumePercent/(65535/100));
 	}
 }
 
@@ -158,13 +158,13 @@ void MIDI_Play(char *Name)
 
 	if (StreamBufferSetup(Temp))
 	{
-		GLog.write("Couldn't load midi file %s\n",Temp);
+		gLog.write("Couldn't load midi file %s\n",Temp);
 	}
 	else
 	{
 		bFileOpen = TRUE;
 
-		GLog.write("Playing midi file %s\n",Temp);
+		gLog.write("Playing midi file %s\n",Temp);
 
 		uCallbackStatus = 0;
                         
@@ -241,7 +241,7 @@ void MIDI_Stop(void)
 
 		if(WaitForSingleObject(hBufferReturnEvent,DEBUG_CALLBACK_TIMEOUT) == WAIT_TIMEOUT)
       {
-         //GLog.write("Timed out waiting for MIDI callback\n");
+         //gLog.write("Timed out waiting for MIDI callback\n");
          uCallbackStatus = STATUS_CALLBACKDEAD;
       }
    }
@@ -519,7 +519,7 @@ void CALLBACK MidiProc(HMIDIIN hMidi,UINT uMsg,DWORD dwInstance,DWORD dwParam1,D
 					}
 					else
 					{
-						GLog.write( "MidiProc() conversion pass failed!" );
+						gLog.write( "MidiProc() conversion pass failed!" );
 						ConverterCleanup();
 						return;
 					}

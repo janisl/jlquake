@@ -187,7 +187,7 @@ void SOCK_GetLocalAddress()
 	ifaddrs* IfAddrs = NULL;
 	if (getifaddrs(&IfAddrs) == -1)
 	{
-		GLog.write("SOCK_GetLocalAddress: getifaddrs: %s", SOCK_ErrorString());
+		gLog.write("SOCK_GetLocalAddress: getifaddrs: %s", SOCK_ErrorString());
 		return;
 	}
 
@@ -202,7 +202,7 @@ void SOCK_GetLocalAddress()
 		localIP[numIP][1] = Addr->ifa_addr->sa_data[3];
 		localIP[numIP][2] = Addr->ifa_addr->sa_data[4];
 		localIP[numIP][3] = Addr->ifa_addr->sa_data[5];
-		GLog.write("IP: %i.%i.%i.%i\n", localIP[numIP][0], localIP[numIP][1], localIP[numIP][2], localIP[numIP][3]);
+		gLog.write("IP: %i.%i.%i.%i\n", localIP[numIP][0], localIP[numIP][1], localIP[numIP][2], localIP[numIP][3]);
 		numIP++;
 	}
 
@@ -222,24 +222,24 @@ void SOCK_OpenSocks(int port)
 {
 	usingSocks = false;
 
-	GLog.write("Opening connection to SOCKS server.\n");
+	gLog.write("Opening connection to SOCKS server.\n");
 
 	socks_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (socks_socket == -1)
 	{
-		GLog.write("WARNING: SOCK_OpenSocks: socket: %s\n", SOCK_ErrorString());
+		gLog.write("WARNING: SOCK_OpenSocks: socket: %s\n", SOCK_ErrorString());
 		return;
 	}
 
 	hostent* h = gethostbyname(net_socksServer->string);
 	if (h == NULL)
 	{
-		GLog.write("WARNING: SOCK_OpenSocks: gethostbyname: %s\n", SOCK_ErrorString());
+		gLog.write("WARNING: SOCK_OpenSocks: gethostbyname: %s\n", SOCK_ErrorString());
 		return;
 	}
 	if (h->h_addrtype != AF_INET)
 	{
-		GLog.write("WARNING: SOCK_OpenSocks: gethostbyname: address type was not AF_INET\n");
+		gLog.write("WARNING: SOCK_OpenSocks: gethostbyname: address type was not AF_INET\n");
 		return;
 	}
 	sockaddr_in address;
@@ -249,7 +249,7 @@ void SOCK_OpenSocks(int port)
 
 	if (connect(socks_socket, (sockaddr*)&address, sizeof(address)) == -1)
 	{
-		GLog.write("SOCK_OpenSocks: connect: %s\n", SOCK_ErrorString());
+		gLog.write("SOCK_OpenSocks: connect: %s\n", SOCK_ErrorString());
 		return;
 	}
 
@@ -277,7 +277,7 @@ void SOCK_OpenSocks(int port)
 	}
 	if (send(socks_socket, buf, len, 0) == -1)
 	{
-		GLog.write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
+		gLog.write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 		return;
 	}
 
@@ -285,12 +285,12 @@ void SOCK_OpenSocks(int port)
 	len = recv(socks_socket, buf, 64, 0);
 	if (len == -1)
 	{
-		GLog.write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
+		gLog.write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 		return;
 	}
 	if (len != 2 || buf[0] != 5)
 	{
-		GLog.write("SOCK_OpenSocks: bad response\n");
+		gLog.write("SOCK_OpenSocks: bad response\n");
 		return;
 	}
 	switch (buf[1])
@@ -300,7 +300,7 @@ void SOCK_OpenSocks(int port)
 	case 2: // username/password authentication
 		break;
 	default:
-		GLog.write("SOCK_OpenSocks: request denied\n");
+		gLog.write("SOCK_OpenSocks: request denied\n");
 		return;
 	}
 
@@ -326,7 +326,7 @@ void SOCK_OpenSocks(int port)
 		// send it
 		if (send(socks_socket, buf, 3 + ulen + plen, 0) == -1)
 		{
-			GLog.write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
+			gLog.write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 			return;
 		}
 
@@ -334,17 +334,17 @@ void SOCK_OpenSocks(int port)
 		len = recv(socks_socket, buf, 64, 0);
 		if (len == -1)
 		{
-			GLog.write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
+			gLog.write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 			return;
 		}
 		if (len != 2 || buf[0] != 1)
 		{
-			GLog.write("SOCK_OpenSocks: bad response\n");
+			gLog.write("SOCK_OpenSocks: bad response\n");
 			return;
 		}
 		if (buf[1] != 0)
 		{
-			GLog.write("SOCK_OpenSocks: authentication failed\n");
+			gLog.write("SOCK_OpenSocks: authentication failed\n");
 			return;
 		}
 	}
@@ -358,7 +358,7 @@ void SOCK_OpenSocks(int port)
 	*(short*)&buf[8] = htons((short)port);		// port
 	if (send(socks_socket, buf, 10, 0) == -1)
 	{
-		GLog.write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
+		gLog.write("SOCK_OpenSocks: send: %s\n", SOCK_ErrorString());
 		return;
 	}
 
@@ -366,23 +366,23 @@ void SOCK_OpenSocks(int port)
 	len = recv(socks_socket, buf, 64, 0);
 	if (len == -1)
 	{
-		GLog.write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
+		gLog.write("SOCK_OpenSocks: recv: %s\n", SOCK_ErrorString());
 		return;
 	}
 	if (len < 2 || buf[0] != 5)
 	{
-		GLog.write("SOCK_OpenSocks: bad response\n");
+		gLog.write("SOCK_OpenSocks: bad response\n");
 		return;
 	}
 	// check completion code
 	if (buf[1] != 0)
 	{
-		GLog.write("SOCK_OpenSocks: request denied: %i\n", buf[1]);
+		gLog.write("SOCK_OpenSocks: request denied: %i\n", buf[1]);
 		return;
 	}
 	if (buf[3] != 1)
 	{
-		GLog.write("SOCK_OpenSocks: relay address is not IPV4: %i\n", buf[3]);
+		gLog.write("SOCK_OpenSocks: relay address is not IPV4: %i\n", buf[3]);
 		return;
 	}
 	((sockaddr_in*)&socksRelayAddr)->sin_family = AF_INET;
@@ -419,17 +419,17 @@ int SOCK_Open(const char* net_interface, int port)
 {
 	if (net_interface)
 	{
-		GLog.write("Opening IP socket: %s:%i\n", net_interface, port);
+		gLog.write("Opening IP socket: %s:%i\n", net_interface, port);
 	}
 	else
 	{
-		GLog.write("Opening IP socket: localhost:%i\n", port);
+		gLog.write("Opening IP socket: localhost:%i\n", port);
 	}
 
 	int newsocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	if (newsocket == -1)
 	{
-		GLog.write("ERROR: UDP_OpenSocket: socket: %s\n", SOCK_ErrorString());
+		gLog.write("ERROR: UDP_OpenSocket: socket: %s\n", SOCK_ErrorString());
 		return 0;
 	}
 
@@ -437,7 +437,7 @@ int SOCK_Open(const char* net_interface, int port)
 	int _true = 1;
 	if (ioctl(newsocket, FIONBIO, &_true) == -1)
 	{
-		GLog.write("ERROR: UDP_OpenSocket: ioctl FIONBIO:%s\n", SOCK_ErrorString());
+		gLog.write("ERROR: UDP_OpenSocket: ioctl FIONBIO:%s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}
@@ -446,7 +446,7 @@ int SOCK_Open(const char* net_interface, int port)
 	int i = 1;
 	if (setsockopt(newsocket, SOL_SOCKET, SO_BROADCAST, (char*)&i, sizeof(i)) == -1)
 	{
-		GLog.write("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
+		gLog.write("ERROR: UDP_OpenSocket: setsockopt SO_BROADCAST:%s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}
@@ -474,7 +474,7 @@ int SOCK_Open(const char* net_interface, int port)
 
 	if (bind(newsocket, (sockaddr*)&address, sizeof(address)) == -1)
 	{
-		GLog.write("ERROR: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
+		gLog.write("ERROR: UDP_OpenSocket: bind: %s\n", SOCK_ErrorString());
 		close(newsocket);
 		return 0;
 	}
@@ -523,8 +523,8 @@ int SOCK_Recv(int socket, void* buf, int len, netadr_t* From)
 			return SOCKRECV_NO_DATA;
 		}
 
-		GLog.write("NET_GetPacket: %s", SOCK_ErrorString());
-		//GLog.write("NET_GetPacket: %s from %s\n", SOCK_ErrorString(), SOCK_AdrToString(*net_from));
+		gLog.write("NET_GetPacket: %s", SOCK_ErrorString());
+		//gLog.write("NET_GetPacket: %s from %s\n", SOCK_ErrorString(), SOCK_AdrToString(*net_from));
 		return SOCKRECV_ERROR;
 	}
 
@@ -617,8 +617,8 @@ int SOCK_Send(int Socket, const void* Data, int Length, netadr_t* To)
 			return SOCKSEND_WOULDBLOCK;
 		}
 
-		GLog.write("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
-		//GLog.write("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(), SOCK_AdrToString(to));
+		gLog.write("NET_SendPacket ERROR: %i\n", SOCK_ErrorString());
+		//gLog.write("NET_SendPacket ERROR: %s to %s\n", SOCK_ErrorString(), SOCK_AdrToString(to));
 		return SOCKSEND_ERROR;
 	}
 
@@ -669,7 +669,7 @@ bool SOCK_GetAddr(int socket, netadr_t* addr)
 	Com_Memset(&sadr, 0, sizeof(sadr));
 	if (getsockname(socket, (sockaddr*)&sadr, &addrlen) == -1)
 	{
-		GLog.write("getsockname: ", SOCK_ErrorString());
+		gLog.write("getsockname: ", SOCK_ErrorString());
 		return false;
 	}
 

@@ -121,7 +121,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 	KeySym keysym;
 	int XLookupRet = XLookupString(ev, buf, sizeof(buf), &keysym, 0);
 #ifdef KBD_DBG
-	GLog.write("XLookupString ret: %d buf: %s keysym: %x\n", XLookupRet, buf, keysym);
+	gLog.write("XLookupString ret: %d buf: %s keysym: %x\n", XLookupRet, buf, keysym);
 #endif
   
 	switch (keysym)
@@ -361,7 +361,7 @@ static char* XLateKey(XKeyEvent* ev, int& key)
 	default:
 		if (XLookupRet == 0)
 		{
-			GLog.develWrite("Warning: XLookupString failed on KeySym %d\n", keysym);
+			gLog.develWrite("Warning: XLookupString failed on KeySym %d\n", keysym);
 			return NULL;
 		}
 		// XK_* tests failed, but XLookupString got a buffer, so let's try it
@@ -525,7 +525,7 @@ static void install_grabs()
 		if (!XF86DGAQueryVersion(dpy, &MajorVersion, &MinorVersion))
 		{
 			// unable to query, probalby not supported, force the setting to 0
-			GLog.write("Failed to detect XF86DGA Mouse\n");
+			gLog.write("Failed to detect XF86DGA Mouse\n");
 			Cvar_Set("in_dgamouse", "0");
 		}
 		else
@@ -557,7 +557,7 @@ static void uninstall_grabs()
 {
 	if (in_dgamouse->value)
 	{
-		GLog.develWrite("DGA Mouse - Disabling DGA DirectVideo\n");
+		gLog.develWrite("DGA Mouse - Disabling DGA DirectVideo\n");
 		XF86DGADirectVideo(dpy, DefaultScreen(dpy), 0);
 	}
 
@@ -932,7 +932,7 @@ static void IN_StartupJoystick()
 
 	if (!in_joystick->integer)
 	{
-		GLog.write("Joystick is not active.\n");
+		gLog.write("Joystick is not active.\n");
 		return;
 	}
 
@@ -946,7 +946,7 @@ static void IN_StartupJoystick()
 
 		if (joy_fd != -1)
 		{
-			GLog.write("Joystick %s found\n", filename);
+			gLog.write("Joystick %s found\n", filename);
 
 			//	Get rid of initialization messages.
 			js_event event;
@@ -972,9 +972,9 @@ static void IN_StartupJoystick()
 				String::NCpy(name, "Unknown", sizeof(name));
 			}
 
-			GLog.write( "Name:    %s\n", name );
-			GLog.write( "Axes:    %d\n", axes );
-			GLog.write( "Buttons: %d\n", buttons );
+			gLog.write( "Name:    %s\n", name );
+			gLog.write( "Axes:    %d\n", axes );
+			gLog.write( "Buttons: %d\n", buttons );
 
 			//	Our work here is done.
 			return;
@@ -984,7 +984,7 @@ static void IN_StartupJoystick()
 	//	No soup for you.
 	if (joy_fd == -1)
 	{
-		GLog.write("No joystick found.\n");
+		gLog.write("No joystick found.\n");
 		return;
 	}
 }
@@ -1035,7 +1035,7 @@ static void IN_JoyMove()
 		}
 		else
 		{
-			GLog.write("Unknown joystick event type\n");
+			gLog.write("Unknown joystick event type\n");
 		}
 
 	} while (1);
@@ -1118,7 +1118,7 @@ static void IN_JoyMove()
 
 void IN_Init()
 {
-	GLog.write("\n------- Input Initialization -------\n");
+	gLog.write("\n------- Input Initialization -------\n");
 
 	// mouse variables
 	in_mouse = Cvar_Get("in_mouse", "1", CVAR_ARCHIVE);
@@ -1147,7 +1147,7 @@ void IN_Init()
 
 	IN_StartupJoystick();
 
-	GLog.write("------------------------------------\n");
+	gLog.write("------------------------------------\n");
 }
 
 //==========================================================================

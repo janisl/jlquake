@@ -40,4 +40,4 @@ public:
 	void develWriteLine(const char* format, ...);
 };
 
-extern Log			GLog;
+extern Log gLog;
