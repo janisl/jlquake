@@ -103,7 +103,7 @@ void UI_DrawNamedPic(int x, int y, const char* pic)
 	image_t* gl = R_RegisterPic(pic);
 	if (!gl)
 	{
-		gLog.write("Can't find pic: %s\n", pic);
+		Log::write("Can't find pic: %s\n", pic);
 		return;
 	}
 	UI_DrawPic(x, y, gl);
@@ -146,7 +146,7 @@ void UI_DrawStretchNamedPic(int x, int y, int w, int h, const char* pic)
 	image_t* gl = R_RegisterPic(pic);
 	if (!gl)
 	{
-		gLog.write("Can't find pic: %s\n", pic);
+		Log::write("Can't find pic: %s\n", pic);
 		return;
 	}
 	UI_DrawStretchPic(x, y, w, h, gl);
@@ -205,7 +205,7 @@ void UI_NamedTileClear(int x, int y, int w, int h, const char* pic)
 	image_t* image = R_RegisterPicRepeat(pic);
 	if (!image)
 	{
-		gLog.write("Can't find pic: %s\n", pic);
+		Log::write("Can't find pic: %s\n", pic);
 		return;
 	}
 	UI_TileClear(x, y, w, h, image);

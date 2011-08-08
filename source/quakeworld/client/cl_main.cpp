@@ -1392,7 +1392,7 @@ void Host_Init (quakeparms_t *parms)
 	{
 	GGameType = GAME_Quake | GAME_QuakeWorld;
 	Sys_SetHomePathSuffix("jlquake");
-	gLog.addListener(&MainLog);
+	Log::addListener(&MainLog);
 	COM_InitArgv2(parms->argc, parms->argv);
 	COM_AddParm ("-game");
 	COM_AddParm ("qw");

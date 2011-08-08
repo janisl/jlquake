@@ -85,7 +85,7 @@ void CDAudio_Eject()
 
 	if (ioctl(cdfile, CDROMEJECT) == -1)
 	{
-		gLog.develWrite("ioctl cdromeject failed\n");
+		Log::develWrite("ioctl cdromeject failed\n");
 	}
 }
 
@@ -105,7 +105,7 @@ void CDAudio_CloseDoor()
 
 	if (ioctl(cdfile, CDROMCLOSETRAY) == -1)
 	{
-		gLog.develWrite("ioctl cdromclosetray failed\n");
+		Log::develWrite("ioctl cdromclosetray failed\n");
 	}
 }
 
@@ -123,13 +123,13 @@ int CDAudio_GetAudioDiskInfo()
 
 	if (ioctl(cdfile, CDROMREADTOCHDR, &tochdr) == -1)
 	{
-		gLog.develWrite("ioctl cdromreadtochdr failed\n");
+		Log::develWrite("ioctl cdromreadtochdr failed\n");
 		return -1;
 	}
 
 	if (tochdr.cdth_trk0 < 1)
 	{
-		gLog.develWrite("CDAudio: no music tracks\n");
+		Log::develWrite("CDAudio: no music tracks\n");
 		return -1;
 	}
 
@@ -168,7 +168,7 @@ void CDAudio_Play(int track, qboolean looping)
 
 	if (track < 1 || track > maxTrack)
 	{
-		gLog.develWrite("CDAudio: Bad track number %u.\n", track);
+		Log::develWrite("CDAudio: Bad track number %u.\n", track);
 		return;
 	}
 
@@ -177,12 +177,12 @@ void CDAudio_Play(int track, qboolean looping)
 	entry.cdte_format = CDROM_MSF;
     if (ioctl(cdfile, CDROMREADTOCENTRY, &entry) == -1)
 	{
-		gLog.develWrite("ioctl cdromreadtocentry failed\n");
+		Log::develWrite("ioctl cdromreadtocentry failed\n");
 		return;
 	}
 	if (entry.cdte_ctrl == CDROM_DATA_TRACK)
 	{
-		gLog.write("CDAudio: track %i is not audio\n", track);
+		Log::write("CDAudio: track %i is not audio\n", track);
 		return;
 	}
 
@@ -202,13 +202,13 @@ void CDAudio_Play(int track, qboolean looping)
 
 	if (ioctl(cdfile, CDROMPLAYTRKIND, &ti) == -1)
     {
-		gLog.develWrite("ioctl cdromplaytrkind failed\n");
+		Log::develWrite("ioctl cdromplaytrkind failed\n");
 		return;
     }
 
 	if (ioctl(cdfile, CDROMRESUME) == -1)
 	{
-		gLog.develWrite("ioctl cdromresume failed\n");
+		Log::develWrite("ioctl cdromresume failed\n");
 	}
 
 	playLooping = looping;
@@ -251,7 +251,7 @@ void CDAudio_Stop()
 
 	if (ioctl(cdfile, CDROMSTOP) == -1)
 	{
-		gLog.develWrite("ioctl cdromstop failed (%d)\n", errno);
+		Log::develWrite("ioctl cdromstop failed (%d)\n", errno);
 	}
 
 	wasPlaying = false;
@@ -278,7 +278,7 @@ void CDAudio_Pause()
 
 	if (ioctl(cdfile, CDROMPAUSE) == -1)
 	{
-		gLog.develWrite("ioctl cdrompause failed\n");
+		Log::develWrite("ioctl cdrompause failed\n");
 	}
 
 	wasPlaying = playing;
@@ -310,7 +310,7 @@ void CDAudio_Resume()
 
 	if (ioctl(cdfile, CDROMRESUME) == -1)
 	{
-		gLog.develWrite("ioctl cdromresume failed\n");
+		Log::develWrite("ioctl cdromresume failed\n");
 	}
 	playing = true;
 }
@@ -374,7 +374,7 @@ void CD_f()
 			{
 				if (remap[n] != n)
 				{
-					gLog.write("  %u -> %u\n", n, remap[n]);
+					Log::write("  %u -> %u\n", n, remap[n]);
 				}
 			}
 			return;
@@ -397,7 +397,7 @@ void CD_f()
 		CDAudio_GetAudioDiskInfo();
 		if (!cdValid)
 		{
-			gLog.write("No CD in player.\n");
+			Log::write("No CD in player.\n");
 			return;
 		}
 	}
@@ -445,16 +445,16 @@ void CD_f()
 
 	if (String::ICmp(command, "info") == 0)
 	{
-		gLog.write("%u tracks\n", maxTrack);
+		Log::write("%u tracks\n", maxTrack);
 		if (playing)
 		{
-			gLog.write("Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack);
+			Log::write("Currently %s track %u\n", playLooping ? "looping" : "playing", playTrack);
 		}
 		else if (wasPlaying)
 		{
-			gLog.write("Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack);
+			Log::write("Paused %s track %u\n", playLooping ? "looping" : "playing", playTrack);
 		}
-		gLog.write("Volume is %f\n", cdvolume);
+		Log::write("Volume is %f\n", cdvolume);
 		return;
 	}
 }
@@ -518,7 +518,7 @@ void CDAudio_Update()
 		subchnl.cdsc_format = CDROM_MSF;
 		if (ioctl(cdfile, CDROMSUBCHNL, &subchnl) == -1 )
 		{
-			gLog.develWrite("ioctl cdromsubchnl failed\n");
+			Log::develWrite("ioctl cdromsubchnl failed\n");
 			playing = false;
 			return;
 		}
@@ -560,7 +560,7 @@ int CDAudio_Init()
 		cdfile = open(cd_dev_old, O_RDONLY);
 		if (cdfile == -1)
 		{
-			gLog.write("CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev_old, errno);
+			Log::write("CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev_old, errno);
 			cdfile = -1;
 			return -1;
 		}
@@ -587,7 +587,7 @@ int CDAudio_Init()
 
 		if (cdfile == -1)
 		{
-			gLog.write("CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev->string, errno);
+			Log::write("CDAudio_Init: open of \"%s\" failed (%i)\n", cd_dev->string, errno);
 			cdfile = -1;
 			return -1;
 		}
@@ -602,13 +602,13 @@ int CDAudio_Init()
 
 	if (CDAudio_GetAudioDiskInfo())
 	{
-		gLog.write("CDAudio_Init: No CD in player.\n");
+		Log::write("CDAudio_Init: No CD in player.\n");
 		cdValid = false;
 	}
 
 	Cmd_AddCommand("cd", CD_f);
 
-	gLog.write("CD Audio Initialized\n");
+	Log::write("CD Audio Initialized\n");
 
 	return 0;
 }

@@ -1269,7 +1269,7 @@ void String::Sprintf(char* Dest, int Size, const char* Fmt, ...)
 	}
 	if (Len >= Size)
 	{
-		gLog.writeLine("String::Sprintf: overflow of %i in %i", Len, Size);
+		Log::writeLine("String::Sprintf: overflow of %i in %i", Len, Size);
 #if defined _DEBUG && defined _MSC_VER
 		__asm
 		{

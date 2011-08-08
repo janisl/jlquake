@@ -90,7 +90,7 @@ public:
 		}
 	}
 } MainLog;
-//	gLog.addListener(&MainLog);
+//	Log::addListener(&MainLog);
 
 /*
 ================
@@ -818,7 +818,7 @@ void Host_Init (quakeparms_t *parms)
 	{
 	GGameType = GAME_Quake;
 	Sys_SetHomePathSuffix("jlquake");
-	gLog.addListener(&MainLog);
+	Log::addListener(&MainLog);
 
 	if (standard_quake)
 		minimum_memory = MINIMUM_MEMORY;

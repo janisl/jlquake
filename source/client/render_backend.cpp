@@ -616,7 +616,7 @@ void RB_ShowImages()
 	qglFinish();
 
 	int end = CL_ScaledMilliseconds();
-	gLog.write("%i msec to draw all images\n", end - start);
+	Log::write("%i msec to draw all images\n", end - start);
 }
 
 //==========================================================================
@@ -821,7 +821,7 @@ void R_StretchRaw(int x, int y, int w, int h, int cols, int rows, const byte* da
 	if (r_speeds->integer)
 	{
 		int end = CL_ScaledMilliseconds();
-		gLog.write("qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start);
+		Log::write("qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start);
 	}
 
 	RB_SetGL2D();

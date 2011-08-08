@@ -142,11 +142,11 @@ static bool Cvar_ValidateString(const char* S)
 
 static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 {
-	gLog.develWrite("Cvar_Set2: %s %s\n", var_name, value);
+	Log::develWrite("Cvar_Set2: %s %s\n", var_name, value);
 
 	if (!Cvar_ValidateString(var_name))
 	{
-		gLog.write("invalid cvar name string: %s\n", var_name);
+		Log::write("invalid cvar name string: %s\n", var_name);
 		var_name = "BADNAME";
 	}
 
@@ -172,7 +172,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 	{
 		if (!Cvar_ValidateString(value))
 		{
-			gLog.write("invalid info cvar value\n");
+			Log::write("invalid info cvar value\n");
 			return var;
 		}
 	}
@@ -193,13 +193,13 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 	{
 		if (var->flags & CVAR_ROM)
 		{
-			gLog.write("%s is read only.\n", var_name);
+			Log::write("%s is read only.\n", var_name);
 			return var;
 		}
 
 		if (var->flags & CVAR_INIT)
 		{
-			gLog.write("%s is write protected.\n", var_name);
+			Log::write("%s is write protected.\n", var_name);
 			return var;
 		}
 
@@ -221,7 +221,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 				}
 			}
 
-			gLog.write("%s will be changed upon restarting.\n", var_name);
+			Log::write("%s will be changed upon restarting.\n", var_name);
 			var->latchedString = __CopyString(value);
 			var->modified = true;
 			var->modificationCount++;
@@ -230,7 +230,7 @@ static QCvar* Cvar_Set2(const char *var_name, const char *value, bool force)
 
 		if ((var->flags & CVAR_CHEAT) && !cvar_cheats->integer)
 		{
-			gLog.write("%s is cheat protected.\n", var_name);
+			Log::write("%s is cheat protected.\n", var_name);
 			return var;
 		}
 	}
@@ -347,10 +347,10 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 		{
 			if (GGameType & GAME_Quake2)
 			{
-				gLog.write("invalid info cvar name\n");
+				Log::write("invalid info cvar name\n");
 				return NULL;
 			}
-			gLog.write("invalid cvar name string: %s\n", VarName);
+			Log::write("invalid cvar name string: %s\n", VarName);
 			VarName = "BADNAME";
 		}
 	}
@@ -382,7 +382,7 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 		}
 		else if (VarValue[0] && String::Cmp(var->resetString, VarValue))
 		{
-			gLog.develWrite("Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
+			Log::develWrite("Warning: cvar \"%s\" given initial values: \"%s\" and \"%s\"\n",
 				VarName, var->resetString, VarValue);
 		}
 		// if we have a latched string, take that value now
@@ -412,7 +412,7 @@ QCvar* Cvar_Get(const char* VarName, const char* VarValue, int Flags)
 	{
 		if (!Cvar_ValidateString(VarValue))
 		{
-			gLog.write("invalid info cvar value\n");
+			Log::write("invalid info cvar value\n");
 			return NULL;
 		}
 	}
@@ -544,17 +544,17 @@ bool Cvar_Command()
 	{
 		if (GGameType & GAME_Quake3)
 		{
-			gLog.write("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
+			Log::write("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n",
 				v->name, v->string, v->resetString);
 		}
 		else
 		{
-			gLog.write("\"%s\" is:\"%s\" default:\"%s\"\n",
+			Log::write("\"%s\" is:\"%s\" default:\"%s\"\n",
 				v->name, v->string, v->resetString);
 		}
 		if (v->latchedString)
 		{
-			gLog.write("latched: \"%s\"\n", v->latchedString);
+			Log::write("latched: \"%s\"\n", v->latchedString);
 		}
 		return true;
 	}
@@ -791,7 +791,7 @@ static void Cvar_Toggle_f()
 {
 	if (Cmd_Argc() != 2)
 	{
-		gLog.write("usage: toggle <variable>\n");
+		Log::write("usage: toggle <variable>\n");
 		return;
 	}
 
@@ -815,7 +815,7 @@ static void Cvar_Set_f()
 	int c = Cmd_Argc();
 	if (c < 3)
 	{
-		gLog.write("usage: set <variable> <value>\n");
+		Log::write("usage: set <variable> <value>\n");
 		return;
 	}
 
@@ -843,7 +843,7 @@ static void Cvar_SetU_f()
 {
 	if (Cmd_Argc() != 3)
 	{
-		gLog.write("usage: setu <variable> <value>\n");
+		Log::write("usage: setu <variable> <value>\n");
 		return;
 	}
 	Cvar_Set_f();
@@ -867,7 +867,7 @@ static void Cvar_SetS_f()
 {
 	if (Cmd_Argc() != 3)
 	{
-		gLog.write("usage: sets <variable> <value>\n");
+		Log::write("usage: sets <variable> <value>\n");
 		return;
 	}
 	Cvar_Set_f();
@@ -891,7 +891,7 @@ static void Cvar_SetA_f()
 {
 	if (Cmd_Argc() != 3)
 	{
-		gLog.write("usage: seta <variable> <value>\n");
+		Log::write("usage: seta <variable> <value>\n");
 		return;
 	}
 	Cvar_Set_f();
@@ -913,7 +913,7 @@ static void Cvar_Reset_f()
 {
 	if (Cmd_Argc() != 2)
 	{
-		gLog.write("usage: reset <variable>\n");
+		Log::write("usage: reset <variable>\n");
 		return;
 	}
 	Cvar_Reset(Cmd_Argv(1));
@@ -948,66 +948,66 @@ static void Cvar_List_f()
 
 		if (var->flags & CVAR_SERVERINFO)
 		{
-			gLog.write("S");
+			Log::write("S");
 		}
 		else
 		{
-			gLog.write(" ");
+			Log::write(" ");
 		}
 		if (var->flags & CVAR_USERINFO)
 		{
-			gLog.write("U");
+			Log::write("U");
 		}
 		else
 		{
-			gLog.write(" ");
+			Log::write(" ");
 		}
 		if (var->flags & CVAR_ROM)
 		{
-			gLog.write("R");
+			Log::write("R");
 		}
 		else
 		{
-			gLog.write(" ");
+			Log::write(" ");
 		}
 		if (var->flags & CVAR_INIT)
 		{
-			gLog.write("I");
+			Log::write("I");
 		}
 		else
 		{
-			gLog.write(" ");
+			Log::write(" ");
 		}
 		if (var->flags & CVAR_ARCHIVE)
 		{
-			gLog.write("A");
+			Log::write("A");
 		}
 		else
 		{
-			gLog.write(" ");
+			Log::write(" ");
 		}
 		if (var->flags & (CVAR_LATCH | CVAR_LATCH2))
 		{
-			gLog.write("L");
+			Log::write("L");
 		}
 		else
 		{
-			gLog.write(" ");
+			Log::write(" ");
 		}
 		if (var->flags & CVAR_CHEAT)
 		{
-			gLog.write("C");
+			Log::write("C");
 		}
 		else
 		{
-			gLog.write(" ");
+			Log::write(" ");
 		}
 
-		gLog.write(" %s \"%s\"\n", var->name, var->string);
+		Log::write(" %s \"%s\"\n", var->name, var->string);
 	}
 
-	gLog.write("\n%i total cvars\n", i);
-	gLog.write("%i cvar indexes\n", cvar_numIndexes);
+	Log::write("\n%i total cvars\n", i);
+	Log::write("%i cvar indexes\n", cvar_numIndexes);
 }
 
 //==========================================================================

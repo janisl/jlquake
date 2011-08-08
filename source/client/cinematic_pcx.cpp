@@ -67,7 +67,7 @@ bool QCinematicPcx::Open(const char* FileName)
 	R_LoadPCX(FileName, &pic, &palette, &Width, &Height);
 	if (!pic)
 	{
-		gLog.write("%s not found.\n", Name);
+		Log::write("%s not found.\n", Name);
 		return false;
 	}
 

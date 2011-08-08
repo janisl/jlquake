@@ -526,7 +526,7 @@ static bool FS_CreatePath(char* OSPath)
 	// FIXME: is c: allowed???
 	if (strstr(OSPath, "..") || strstr(OSPath, "::"))
 	{
-		gLog.write("WARNING: refusing to create relative path \"%s\"\n", OSPath);
+		Log::write("WARNING: refusing to create relative path \"%s\"\n", OSPath);
 		return true;
 	}
 
@@ -555,12 +555,12 @@ void FS_CopyFile(char* fromOSPath, char* toOSPath)
 {
 	if (fs_debug->integer)
 	{
-		gLog.write("copy %s to %s\n", fromOSPath, toOSPath);
+		Log::write("copy %s to %s\n", fromOSPath, toOSPath);
 	}
 
 	if (strstr(fromOSPath, "journal.dat") || strstr(fromOSPath, "journaldata.dat"))
 	{
-		gLog.write("Ignoring journal files\n");
+		Log::write("Ignoring journal files\n");
 		return;
 	}
 
@@ -689,7 +689,7 @@ static pack_t* FS_LoadPackFile(const char* packfile)
 	pack->numfiles = numpackfiles;
 	pack->files = newfiles;
 
-	gLog.write("Added packfile %s (%i files)\n", packfile, numpackfiles);
+	Log::write("Added packfile %s (%i files)\n", packfile, numpackfiles);
 	return pack;
 }
 
@@ -1123,7 +1123,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 				{
 					if (fs_debug->integer)
 					{
-						gLog.write("link file: %s\n", netpath);
+						Log::write("link file: %s\n", netpath);
 					}
 					return FS_filelength(*file);
 				}
@@ -1225,7 +1225,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 
 					if (fs_debug->integer)
 					{
-						gLog.write("FS_FOpenFileRead: %s (found in '%s')\n", 
+						Log::write("FS_FOpenFileRead: %s (found in '%s')\n", 
 							filename, pak->pakFilename);
 					}
 					return zfi->cur_file_info.uncompressed_size;
@@ -1264,7 +1264,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 					fseek(fsh[*file].handleFiles.file.o, pak->files[i].filepos, SEEK_SET);
 					if (fs_debug->integer)
 					{
-						gLog.write("FS_FOpenFileRead: %s (found in '%s')\n", 
+						Log::write("FS_FOpenFileRead: %s (found in '%s')\n", 
 							filename, pak->filename);
 					}
 					return pak->files[i].filelen;
@@ -1317,7 +1317,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 			fsh[*file].pakFile = false;
 			if (fs_debug->integer)
 			{
-				gLog.write("FS_FOpenFileRead: %s (found in '%s/%s')\n", filename,
+				Log::write("FS_FOpenFileRead: %s (found in '%s/%s')\n", filename,
 					dir->path, dir->gamedir);
 			}
 
@@ -1333,7 +1333,7 @@ int FS_FOpenFileRead(const char *filename, fileHandle_t *file, bool uniqueFILE)
 		}
 	}
 
-	gLog.develWrite("Can't find %s\n", filename);
+	Log::develWrite("Can't find %s\n", filename);
 
 	*file = 0;
 	return -1;
@@ -1360,7 +1360,7 @@ fileHandle_t FS_FOpenFileWrite(const char* filename)
 
 	if (fs_debug->integer)
 	{
-		gLog.write("FS_FOpenFileWrite: %s\n", ospath);
+		Log::write("FS_FOpenFileWrite: %s\n", ospath);
 	}
 
 	if (FS_CreatePath(ospath))
@@ -1370,7 +1370,7 @@ fileHandle_t FS_FOpenFileWrite(const char* filename)
 
 	// enabling the following line causes a recursive function call loop
 	// when running with +set logfile 1 +set developer 1
-	//gLog.develWrite("writing to: %s\n", ospath);
+	//Log::develWrite("writing to: %s\n", ospath);
 	fsh[f].handleFiles.file.o = fopen(ospath, "wb");
 
 	String::NCpyZ(fsh[f].name, filename, sizeof(fsh[f].name));
@@ -1409,7 +1409,7 @@ static fileHandle_t FS_FOpenFileAppend(const char* filename)
 
 	if (fs_debug->integer)
 	{
-		gLog.write("FS_FOpenFileAppend: %s\n", ospath);
+		Log::write("FS_FOpenFileAppend: %s\n", ospath);
 	}
 
 	if (FS_CreatePath(ospath))
@@ -1521,7 +1521,7 @@ int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp)
 
 	if (fs_debug->integer)
 	{
-		gLog.write("FS_SV_FOpenFileRead (fs_homepath): %s\n", ospath);
+		Log::write("FS_SV_FOpenFileRead (fs_homepath): %s\n", ospath);
 	}
 
 	fsh[f].handleFiles.file.o = fopen(ospath, "rb");
@@ -1537,7 +1537,7 @@ int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp)
 
 			if (fs_debug->integer)
 			{
-				gLog.write("FS_SV_FOpenFileRead (fs_basepath): %s\n", ospath);
+				Log::write("FS_SV_FOpenFileRead (fs_basepath): %s\n", ospath);
 			}
 
 			fsh[f].handleFiles.file.o = fopen(ospath, "rb");
@@ -1553,7 +1553,7 @@ int FS_SV_FOpenFileRead(const char* filename, fileHandle_t* fp)
 
 		if (fs_debug->integer)
 		{
-			gLog.write("FS_SV_FOpenFileRead (fs_cdpath) : %s\n", ospath);
+			Log::write("FS_SV_FOpenFileRead (fs_cdpath) : %s\n", ospath);
 		}
 
 		fsh[f].handleFiles.file.o = fopen(ospath, "rb");
@@ -1595,7 +1595,7 @@ fileHandle_t FS_SV_FOpenFileWrite(const char* filename)
 
 	if (fs_debug->integer)
 	{
-		gLog.write("FS_SV_FOpenFileWrite: %s\n", ospath);
+		Log::write("FS_SV_FOpenFileWrite: %s\n", ospath);
 	}
 
 	if (FS_CreatePath(ospath))
@@ -1603,7 +1603,7 @@ fileHandle_t FS_SV_FOpenFileWrite(const char* filename)
 		return 0;
 	}
 
-	gLog.develWrite("writing to: %s\n", ospath);
+	Log::develWrite("writing to: %s\n", ospath);
 	fsh[f].handleFiles.file.o = fopen(ospath, "wb");
 
 	String::NCpyZ(fsh[f].name, filename, sizeof(fsh[f].name));
@@ -1757,14 +1757,14 @@ int FS_Write(const void* buffer, int len, fileHandle_t h)
 			}
 			else
 			{
-				gLog.write("FS_Write: 0 bytes written\n");
+				Log::write("FS_Write: 0 bytes written\n");
 				return 0;
 			}
 		}
 
 		if (written == -1)
 		{
-			gLog.write("FS_Write: -1 bytes written\n");
+			Log::write("FS_Write: -1 bytes written\n");
 			return 0;
 		}
 
@@ -2019,7 +2019,7 @@ int FS_ReadFile(const char* qpath, void** buffer)
 		isConfig = true;
 		if (com_journal && com_journal->integer == 2)
 		{
-			gLog.develWrite("Loading %s from journal file.\n", qpath);
+			Log::develWrite("Loading %s from journal file.\n", qpath);
 			int len;
 			int r = FS_Read(&len, sizeof(len), com_journalDataFile);
 			if (r != sizeof(len))
@@ -2076,7 +2076,7 @@ int FS_ReadFile(const char* qpath, void** buffer)
 		// if we are journalling and it is a config file, write a zero to the journal file
 		if (isConfig && com_journal && com_journal->integer == 1)
 		{
-			gLog.develWrite("Writing zero for %s to journal file.\n", qpath);
+			Log::develWrite("Writing zero for %s to journal file.\n", qpath);
 			len = 0;
 			FS_Write(&len, sizeof(len), com_journalDataFile);
 			FS_Flush(com_journalDataFile);
@@ -2088,7 +2088,7 @@ int FS_ReadFile(const char* qpath, void** buffer)
 	{
 		if (isConfig && com_journal && com_journal->integer == 1)
 		{
-			gLog.develWrite("Writing len for %s to journal file.\n", qpath);
+			Log::develWrite("Writing len for %s to journal file.\n", qpath);
 			FS_Write(&len, sizeof(len), com_journalDataFile);
 			FS_Flush(com_journalDataFile);
 		}
@@ -2108,7 +2108,7 @@ int FS_ReadFile(const char* qpath, void** buffer)
 	// if we are journalling and it is a config file, write it to the journal file
 	if (isConfig && com_journal && com_journal->integer == 1)
 	{
-		gLog.develWrite("Writing %s to journal file.\n", qpath);
+		Log::develWrite("Writing %s to journal file.\n", qpath);
 		FS_Write(&len, sizeof(len), com_journalDataFile);
 		FS_Write(buf, len, com_journalDataFile);
 		FS_Flush(com_journalDataFile);
@@ -2146,7 +2146,7 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 		isConfig = true;
 		if (com_journal && com_journal->integer == 2)
 		{
-			gLog.develWrite("Loading %s from journal file.\n", qpath);
+			Log::develWrite("Loading %s from journal file.\n", qpath);
 			int len;
 			int r = FS_Read(&len, sizeof(len), com_journalDataFile);
 			if (r != sizeof(len))
@@ -2185,7 +2185,7 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 		// if we are journalling and it is a config file, write a zero to the journal file
 		if (isConfig && com_journal && com_journal->integer == 1)
 		{
-			gLog.develWrite("Writing zero for %s to journal file.\n", qpath);
+			Log::develWrite("Writing zero for %s to journal file.\n", qpath);
 			len = 0;
 			FS_Write(&len, sizeof(len), com_journalDataFile);
 			FS_Flush(com_journalDataFile);
@@ -2202,7 +2202,7 @@ int FS_ReadFile(const char* qpath, Array<byte>& Buffer)
 	// if we are journalling and it is a config file, write it to the journal file
 	if (isConfig && com_journal && com_journal->integer == 1)
 	{
-		gLog.develWrite("Writing %s to journal file.\n", qpath);
+		Log::develWrite("Writing %s to journal file.\n", qpath);
 		FS_Write(&len, sizeof(len), com_journalDataFile);
 		FS_Write(Buffer.Ptr(), len, com_journalDataFile);
 		FS_Flush(com_journalDataFile);
@@ -2253,7 +2253,7 @@ void FS_WriteFile(const char* qpath, const void* buffer, int size)
 	fileHandle_t f = FS_FOpenFileWrite(qpath);
 	if (!f)
 	{
-		gLog.write("Failed to open %s\n", qpath);
+		Log::write("Failed to open %s\n", qpath);
 		return;
 	}
 
@@ -2283,7 +2283,7 @@ void FS_Rename(const char* from, const char* to)
 
 	if (fs_debug->integer)
 	{
-		gLog.write("FS_Rename: %s --> %s\n", from_ospath, to_ospath);
+		Log::write("FS_Rename: %s --> %s\n", from_ospath, to_ospath);
 	}
 
 	if (rename(from_ospath, to_ospath))
@@ -2317,7 +2317,7 @@ void FS_SV_Rename(const char* from, const char* to)
 
 	if (fs_debug->integer)
 	{
-		gLog.write("FS_SV_Rename: %s --> %s\n", from_ospath, to_ospath);
+		Log::write("FS_SV_Rename: %s --> %s\n", from_ospath, to_ospath);
 	}
 
 	if (rename(from_ospath, to_ospath))
@@ -3229,7 +3229,7 @@ void FS_PureServerSetLoadedPaks(const char* pakSums, const char* pakNames)
 
 	if (fs_numServerPaks)
 	{
-		gLog.develWrite("Connected to a pure server.\n");
+		Log::develWrite("Connected to a pure server.\n");
 	}
 	else
 	{
@@ -3237,7 +3237,7 @@ void FS_PureServerSetLoadedPaks(const char* pakSums, const char* pakNames)
 		{
 			// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=540
 			// force a restart to make sure the search order will be correct
-			gLog.develWrite("FS search reorder is required\n");
+			Log::develWrite("FS search reorder is required\n");
 			FS_Restart(fs_checksumFeed);
 			return;
 		}
@@ -3517,53 +3517,53 @@ void FS_ReorderPurePaks()
 
 void FS_Path_f()
 {
-	gLog.write("Current search path:\n");
+	Log::write("Current search path:\n");
 	for (searchpath_t* s = fs_searchpaths; s; s = s->next)
 	{
 		if (s == fs_base_searchpaths)
 		{
-			gLog.write("----------\n");
+			Log::write("----------\n");
 		}
 		if (s->pack3)
 		{
-			gLog.write("%s (%i files)\n", s->pack3->pakFilename, s->pack3->numfiles);
+			Log::write("%s (%i files)\n", s->pack3->pakFilename, s->pack3->numfiles);
 			if (fs_numServerPaks)
 			{
 				if (!FS_PakIsPure(s->pack3))
 				{
-					gLog.write("    not on the pure list\n");
+					Log::write("    not on the pure list\n");
 				}
 				else
 				{
-					gLog.write("    on the pure list\n");
+					Log::write("    on the pure list\n");
 				}
 			}
 		}
 		else if (s->pack)
 		{
-			gLog.write("%s (%i files)\n", s->pack->filename, s->pack->numfiles);
+			Log::write("%s (%i files)\n", s->pack->filename, s->pack->numfiles);
 		}
 		else
 		{
-			gLog.write("%s/%s\n", s->dir->path, s->dir->gamedir);
+			Log::write("%s/%s\n", s->dir->path, s->dir->gamedir);
 		}
 	}
 
 	if (fs_links)
 	{
-		gLog.write("\nLinks:\n");
+		Log::write("\nLinks:\n");
 		for (filelink_t* l = fs_links; l; l = l->next)
 		{
-			gLog.write("%s : %s\n", l->from, l->to);
+			Log::write("%s : %s\n", l->from, l->to);
 		}
 	}
 
-	gLog.write("\n");
+	Log::write("\n");
 	for (int i = 1; i < MAX_FILE_HANDLES; i++)
 	{
 		if (fsh[i].handleFiles.file.o)
 		{
-			gLog.write("handle %i: %s\n", i, fsh[i].name);
+			Log::write("handle %i: %s\n", i, fsh[i].name);
 		}
 	}
 }
@@ -3578,22 +3578,22 @@ static void FS_Dir_f()
 {
 	if (Cmd_Argc() < 2 || Cmd_Argc() > 3)
 	{
-		gLog.write("usage: dir <directory> [extension]\n");
+		Log::write("usage: dir <directory> [extension]\n");
 		return;
 	}
 
 	const char* path = Cmd_Argv(1);
 	const char* extension = Cmd_Argc() == 2 ? "" : Cmd_Argv(2);
 
-	gLog.write("Directory of %s %s\n", path, extension);
-	gLog.write("---------------\n");
+	Log::write("Directory of %s %s\n", path, extension);
+	Log::write("---------------\n");
 
 	int ndirs;
 	char** dirnames = FS_ListFiles(path, extension, &ndirs);
 
 	for (int i = 0; i < ndirs; i++)
 	{
-		gLog.write("%s\n", dirnames[i]);
+		Log::write("%s\n", dirnames[i]);
 	}
 	FS_FreeFileList(dirnames);
 }
@@ -3665,14 +3665,14 @@ static void FS_NewDir_f()
 
 	if (Cmd_Argc() < 2)
 	{
-		gLog.write("usage: fdir <filter>\n");
-		gLog.write("example: fdir *q3dm*.bsp\n");
+		Log::write("usage: fdir <filter>\n");
+		Log::write("example: fdir *q3dm*.bsp\n");
 		return;
 	}
 
 	filter = Cmd_Argv(1);
 
-	gLog.write("---------------\n");
+	Log::write("---------------\n");
 
 	dirnames = FS_ListFilteredFiles("", "", filter, &ndirs);
 
@@ -3681,9 +3681,9 @@ static void FS_NewDir_f()
 	for (i = 0; i < ndirs; i++)
 	{
 		FS_ConvertPath(dirnames[i]);
-		gLog.write("%s\n", dirnames[i]);
+		Log::write("%s\n", dirnames[i]);
 	}
-	gLog.write("%d files listed\n", ndirs);
+	Log::write("%d files listed\n", ndirs);
 	FS_FreeFileList(dirnames);
 }
 
@@ -3702,7 +3702,7 @@ static void FS_TouchFile_f()
 
 	if (Cmd_Argc() != 2)
 	{
-		gLog.write("Usage: touchFile <file>\n");
+		Log::write("Usage: touchFile <file>\n");
 		return;
 	}
 
@@ -3725,7 +3725,7 @@ static void FS_Link_f()
 {
 	if (Cmd_Argc() != 3)
 	{
-		gLog.write("USAGE: link <from> <to>\n");
+		Log::write("USAGE: link <from> <to>\n");
 		return;
 	}
 

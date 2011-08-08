@@ -485,13 +485,13 @@ static bool R_CullMd2Model(trRefEntity_t* e)
 
 	if ((e->e.frame >= paliashdr->num_frames) || (e->e.frame < 0))
 	{
-		gLog.write("R_CullMd2Model %s: no such frame %d\n", 
+		Log::write("R_CullMd2Model %s: no such frame %d\n", 
 			tr.currentModel->name, e->e.frame);
 		e->e.frame = 0;
 	}
 	if ((e->e.oldframe >= paliashdr->num_frames) || (e->e.oldframe < 0))
 	{
-		gLog.write("R_CullMd2Model %s: no such oldframe %d\n", 
+		Log::write("R_CullMd2Model %s: no such oldframe %d\n", 
 			tr.currentModel->name, e->e.oldframe);
 		e->e.oldframe = 0;
 	}
@@ -747,7 +747,7 @@ void R_DrawMd2Model(trRefEntity_t* e)
 
 	if ((tr.currentEntity->e.frame >= paliashdr->num_frames) || (tr.currentEntity->e.frame < 0))
 	{
-		gLog.write("R_DrawMd2Model %s: no such frame %d\n",
+		Log::write("R_DrawMd2Model %s: no such frame %d\n",
 			tr.currentModel->name, tr.currentEntity->e.frame);
 		tr.currentEntity->e.frame = 0;
 		tr.currentEntity->e.oldframe = 0;
@@ -755,7 +755,7 @@ void R_DrawMd2Model(trRefEntity_t* e)
 
 	if ((tr.currentEntity->e.oldframe >= paliashdr->num_frames) || (tr.currentEntity->e.oldframe < 0))
 	{
-		gLog.write("R_DrawMd2Model %s: no such oldframe %d\n",
+		Log::write("R_DrawMd2Model %s: no such oldframe %d\n",
 			tr.currentModel->name, tr.currentEntity->e.oldframe);
 		tr.currentEntity->e.frame = 0;
 		tr.currentEntity->e.oldframe = 0;

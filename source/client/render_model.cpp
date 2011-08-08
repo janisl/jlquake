@@ -319,13 +319,13 @@ int R_RegisterModel(const char* name)
 {
 	if (!name || !name[0])
 	{
-		gLog.write("R_RegisterModel: NULL name\n");
+		Log::write("R_RegisterModel: NULL name\n");
 		return 0;
 	}
 
 	if (String::Length(name) >= MAX_QPATH)
 	{
-		gLog.write("Model name exceeds MAX_QPATH\n");
+		Log::write("Model name exceeds MAX_QPATH\n");
 		return 0;
 	}
 
@@ -349,7 +349,7 @@ int R_RegisterModel(const char* name)
 	model_t* mod = R_AllocModel();
 	if (mod == NULL)
 	{
-		gLog.write(S_COLOR_YELLOW "R_RegisterModel: R_AllocModel() failed for '%s'\n", name);
+		Log::write(S_COLOR_YELLOW "R_RegisterModel: R_AllocModel() failed for '%s'\n", name);
 		return 0;
 	}
 
@@ -363,7 +363,7 @@ int R_RegisterModel(const char* name)
 	int modfilelen = FS_ReadFile(name, &buf);
 	if (!buf)
 	{
-		gLog.write(S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name);
+		Log::write(S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name);
 		// we still keep the model_t around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
 		mod->type = MOD_BAD;
@@ -415,7 +415,7 @@ int R_RegisterModel(const char* name)
 		break;
 
 	default:
-		gLog.write(S_COLOR_YELLOW "R_RegisterModel: unknown fileid for %s\n", name);
+		Log::write(S_COLOR_YELLOW "R_RegisterModel: unknown fileid for %s\n", name);
 		loaded = false;
 	}
 
@@ -423,7 +423,7 @@ int R_RegisterModel(const char* name)
 
 	if (!loaded)
 	{
-		gLog.write(S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name);
+		Log::write(S_COLOR_YELLOW "R_RegisterModel: couldn't load %s\n", name);
 		// we still keep the model_t around, so if the model name is asked for
 		// again, we won't bother scanning the filesystem
 		mod->type = MOD_BAD;
@@ -594,7 +594,7 @@ void R_PrintModelFrameName(qhandle_t Handle, int Frame)
 
 	mesh1hdr_t* hdr = (mesh1hdr_t*)Model->q1_cache;
 	mmesh1framedesc_t* pframedesc = &hdr->frames[Frame];
-	gLog.write("frame %i: %s\n", Frame, pframedesc->name);
+	Log::write("frame %i: %s\n", Frame, pframedesc->name);
 }
 
 //==========================================================================
@@ -731,8 +731,8 @@ void R_Modellist_f()
 		default:
 			break;
 		}
-		gLog.write("%8i : (%i) %s\n", DataSize, lods, mod->name);
+		Log::write("%8i : (%i) %s\n", DataSize, lods, mod->name);
 		total += DataSize;
 	}
-	gLog.write("%8i : Total models\n", total);
+	Log::write("%8i : Total models\n", total);
 }

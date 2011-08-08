@@ -183,7 +183,7 @@ static void Mod_LoadTexinfo(bsp38_lump_t* l)
 		out->image = R_FindImageFile(name, true, true, GL_REPEAT);
 		if (!out->image)
 		{
-			gLog.write("Couldn't load %s\n", name);
+			Log::write("Couldn't load %s\n", name);
 			out->image = tr.defaultImage;
 		}
 	}

@@ -1243,15 +1243,15 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 		{
 			if (image->mipmap != mipmap)
 			{
-				gLog.develWrite(S_COLOR_RED "WARNING: reused image %s with mixed mipmap parm\n", name);
+				Log::develWrite(S_COLOR_RED "WARNING: reused image %s with mixed mipmap parm\n", name);
 			}
 			if (image->allowPicmip != allowPicmip)
 			{
-				gLog.develWrite(S_COLOR_RED "WARNING: reused image %s with mixed allowPicmip parm\n", name);
+				Log::develWrite(S_COLOR_RED "WARNING: reused image %s with mixed allowPicmip parm\n", name);
 			}
 			if (image->wrapClampMode != glWrapClampMode)
 			{
-				gLog.write("WARNING: reused image %s with mixed glWrapClampMode parm\n", name);
+				Log::write("WARNING: reused image %s with mixed glWrapClampMode parm\n", name);
 			}
 		}
 		return image;
@@ -1274,7 +1274,7 @@ image_t* R_FindImageFile(const char* name, bool mipmap, bool allowPicmip,
 		altname[len - 3] = String::ToUpper(altname[len - 3]);
 		altname[len - 2] = String::ToUpper(altname[len - 2]);
 		altname[len - 1] = String::ToUpper(altname[len - 1]);
-		gLog.write("trying %s...\n", altname);
+		Log::write("trying %s...\n", altname);
 		R_LoadImage(altname, &pic, &width, &height);
 		if (pic == NULL)
 		{
@@ -1674,7 +1674,7 @@ void GL_TextureMode(const char* string)
 
 	if (i == 6)
 	{
-		gLog.write("bad filter name\n");
+		Log::write("bad filter name\n");
 		return;
 	}
 
@@ -1707,7 +1707,7 @@ void R_ImageList_f()
 		"no ", "yes"
 	};
 
-	gLog.write("\n      -w-- -h-- -mm- -if-- wrap --name-------\n");
+	Log::write("\n      -w-- -h-- -mm- -if-- wrap --name-------\n");
 	int texels = 0;
 
 	for (int i = 0; i < tr.numImages; i++)
@@ -1715,52 +1715,52 @@ void R_ImageList_f()
 		image_t* image = tr.images[i];
 
 		texels += image->uploadWidth*image->uploadHeight;
-		gLog.write("%4i: %4i %4i  %s ", i, image->uploadWidth, image->uploadHeight, yesno[image->mipmap]);
+		Log::write("%4i: %4i %4i  %s ", i, image->uploadWidth, image->uploadHeight, yesno[image->mipmap]);
 		switch (image->internalFormat)
 		{
 		case GL_RGB:
-			gLog.write("RGB  ");
+			Log::write("RGB  ");
 			break;
 		case GL_RGBA:
-			gLog.write("RGBA ");
+			Log::write("RGBA ");
 			break;
 		case GL_RGBA8:
-			gLog.write("RGBA8");
+			Log::write("RGBA8");
 			break;
 		case GL_RGB8:
-			gLog.write("RGB8 ");
+			Log::write("RGB8 ");
 			break;
 		case GL_RGB4_S3TC:
-			gLog.write("S3TC ");
+			Log::write("S3TC ");
 			break;
 		case GL_RGBA4:
-			gLog.write("RGBA4");
+			Log::write("RGBA4");
 			break;
 		case GL_RGB5:
-			gLog.write("RGB5 ");
+			Log::write("RGB5 ");
 			break;
 		default:
-			gLog.write("???? ");
+			Log::write("???? ");
 		}
 
 		switch (image->wrapClampMode)
 		{
 		case GL_REPEAT:
-			gLog.write("rept ");
+			Log::write("rept ");
 			break;
 		case GL_CLAMP:
-			gLog.write("clmp ");
+			Log::write("clmp ");
 			break;
 		default:
-			gLog.write("%4i ", image->wrapClampMode);
+			Log::write("%4i ", image->wrapClampMode);
 			break;
 		}
 		
-		gLog.write(" %s\n", image->imgName);
+		Log::write(" %s\n", image->imgName);
 	}
-	gLog.write(" ---------\n");
-	gLog.write(" %i total texels (not including mipmaps)\n", texels);
-	gLog.write(" %i total images\n\n", tr.numImages);
+	Log::write(" ---------\n");
+	Log::write(" %i total texels (not including mipmaps)\n", texels);
+	Log::write(" %i total images\n\n", tr.numImages);
 }
 
 //==========================================================================

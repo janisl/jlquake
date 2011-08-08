@@ -25,19 +25,15 @@ class Log
 private:
 	enum { MAX_LISTENERS	= 8 };
 
-	LogListener* listeners[MAX_LISTENERS];
+	static LogListener* listeners[MAX_LISTENERS];
 
 public:
-	Log();
+	static void addListener(LogListener* listener);
+	static void removeListener(LogListener* listener);
 
-	void addListener(LogListener* listener);
-	void removeListener(LogListener* listener);
+	static void write(const char* format, ...);
+	static void writeLine(const char* format, ...);
 
-	void write(const char* format, ...);
-	void writeLine(const char* format, ...);
-
-	void develWrite(const char* format, ...);
-	void develWriteLine(const char* format, ...);
+	static void develWrite(const char* format, ...);
+	static void develWriteLine(const char* format, ...);
 };
-
-extern Log gLog;

@@ -377,7 +377,7 @@ byte* QClipMap29::ClusterPVS(int Cluster)
 
 void QClipMap29::CalcPHS()
 {
-	gLog.write("Building PHS...\n");
+	Log::write("Building PHS...\n");
 
 	int num = numclusters;
 	int rowwords = (num + 31) >> 5;
@@ -452,7 +452,7 @@ void QClipMap29::CalcPHS()
 
 	delete[] pvs;
 
-	gLog.write("Average leafs visible / hearable / total: %i / %i / %i\n",
+	Log::write("Average leafs visible / hearable / total: %i / %i / %i\n",
 		vcount / num, count / num, num);
 }
 

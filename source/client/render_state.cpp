@@ -50,7 +50,7 @@ void GL_Bind(image_t* image)
 	int texnum;
 	if (!image)
 	{
-		gLog.write(S_COLOR_YELLOW "GL_Bind: NULL image\n");
+		Log::write(S_COLOR_YELLOW "GL_Bind: NULL image\n");
 		texnum = tr.defaultImage->texnum;
 	}
 	else

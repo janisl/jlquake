@@ -63,7 +63,7 @@ bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name)
 	int version = LittleLong(pinmodel->version);
 	if (version != MD4_VERSION)
 	{
-		gLog.write(S_COLOR_YELLOW "R_LoadMD4: %s has wrong version (%i should be %i)\n",
+		Log::write(S_COLOR_YELLOW "R_LoadMD4: %s has wrong version (%i should be %i)\n",
 			mod_name, version, MD4_VERSION);
 		return false;
 	}
@@ -86,7 +86,7 @@ bool R_LoadMD4(model_t* mod, void* buffer, const char* mod_name)
 
 	if (md4->numFrames < 1)
 	{
-		gLog.write(S_COLOR_YELLOW "R_LoadMD4: %s has no frames\n", mod_name);
+		Log::write(S_COLOR_YELLOW "R_LoadMD4: %s has no frames\n", mod_name);
 		return false;
 	}
 

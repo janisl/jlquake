@@ -221,7 +221,7 @@ static void R_LoadLightmaps(bsp46_lump_t* l)
 
 	if (r_lightmap->integer == 2)
 	{
-		gLog.write("Brightest lightmap value: %d\n", (int)(maxIntensity * 255));
+		Log::write("Brightest lightmap value: %d\n", (int)(maxIntensity * 255));
 	}
 }
 
@@ -311,7 +311,7 @@ static void ParseFace(bsp46_dsurface_t* ds, bsp46_drawVert_t* verts, mbrush46_su
 	int numPoints = LittleLong(ds->numVerts);
 	if (numPoints > MAX_FACE_POINTS)
 	{
-		gLog.write(S_COLOR_YELLOW "WARNING: MAX_FACE_POINTS exceeded: %i\n", numPoints);
+		Log::write(S_COLOR_YELLOW "WARNING: MAX_FACE_POINTS exceeded: %i\n", numPoints);
 		numPoints = MAX_FACE_POINTS;
 		surf->shader = tr.defaultShader;
 	}
@@ -1612,7 +1612,7 @@ static void R_StitchAllPatches()
 		}
 	}
 	while (stitched);
-	gLog.write("stitched %d LoD cracks\n", numstitches);
+	Log::write("stitched %d LoD cracks\n", numstitches);
 }
 
 //==========================================================================
@@ -1682,7 +1682,7 @@ static void R_LoadSurfaces(bsp46_lump_t* surfs, bsp46_lump_t* verts, bsp46_lump_
 
 	R_FixSharedVertexLodError();
 
-	gLog.write("...loaded %d faces, %i meshes, %i trisurfs, %i flares\n", 
+	Log::write("...loaded %d faces, %i meshes, %i trisurfs, %i flares\n", 
 		numFaces, numMeshes, numTriSurfs, numFlares);
 }
 
@@ -2027,7 +2027,7 @@ static void R_LoadLightGrid(bsp46_lump_t* l)
 
 	if (l->filelen != numGridPoints * 8)
 	{
-		gLog.write(S_COLOR_YELLOW "WARNING: light grid mismatch\n");
+		Log::write(S_COLOR_YELLOW "WARNING: light grid mismatch\n");
 		w->lightGridData = NULL;
 		return;
 	}
@@ -2100,7 +2100,7 @@ static void R_LoadEntities(bsp46_lump_t* l)
 			char* s = strchr(value, ';');
 			if (!s)
 			{
-				gLog.write(S_COLOR_YELLOW "WARNING: no semi colon in vertexshaderremap '%s'\n", value);
+				Log::write(S_COLOR_YELLOW "WARNING: no semi colon in vertexshaderremap '%s'\n", value);
 				break;
 			}
 			*s++ = 0;
@@ -2118,7 +2118,7 @@ static void R_LoadEntities(bsp46_lump_t* l)
 			char* s = strchr(value, ';');
 			if (!s)
 			{
-				gLog.write(S_COLOR_YELLOW "WARNING: no semi colon in shaderremap '%s'\n", value);
+				Log::write(S_COLOR_YELLOW "WARNING: no semi colon in shaderremap '%s'\n", value);
 				break;
 			}
 			*s++ = 0;
