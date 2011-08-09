@@ -415,14 +415,6 @@
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="Renderer"
-			>
-			<File
-				RelativePath=".\ref_gl\gl_local.h"
-				>
-			</File>
-		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
