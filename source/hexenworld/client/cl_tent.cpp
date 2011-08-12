@@ -1497,7 +1497,7 @@ void CL_ParseTEnt (void)
 			movedir[0] = net_message.ReadCoord ();
 			movedir[1] = net_message.ReadCoord ();
 			movedir[2] = net_message.ReadCoord ();
-			R_RunParticleEffect4 (pos, 50, 368 + rand() % 16, pt_grav, 10);
+			R_RunParticleEffect4 (pos, 50, 368 + rand() % 16, pt_h2grav, 10);
 
 			// particle4 (50, rand(368-384), grav, 10);
 			ex = CL_AllocExplosion ();
@@ -1580,7 +1580,7 @@ void CL_ParseTEnt (void)
 				S_StartSound(pos, TempSoundChannel(), 1, cl_sfx_bonewal, 1, 1);
 			}
 
-			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_grav, 7);
+			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, 7);
 //			particle4(self.origin,3,random(368,384),PARTICLETYPE_GRAV,self.dmg/2);
 			break;
 		case TE_HWRAVENDIE:
@@ -1703,7 +1703,7 @@ void CL_ParseTEnt (void)
 				vec3_t dmin = {-10, -10, -10};
 				vec3_t dmax = {10, 10, 10};
 				R_ColoredParticleExplosion(pos,14,10,10);
-				R_RunParticleEffect2 (pos, dmin, dmax, 145, 5, 14);
+				R_RunParticleEffect2 (pos, dmin, dmax, 145, pt_h2explode, 14);
 			}
 			// make the actual explosion
 			ex = CL_AllocExplosion();
@@ -2818,7 +2818,7 @@ void CL_ParseTEnt (void)
 			pos[1] = net_message.ReadCoord();
 			pos[2] = net_message.ReadCoord();
 			cnt = net_message.ReadByte ();
-			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_grav, cnt);
+			R_RunParticleEffect4 (pos, 3, 368 + rand() % 16, pt_h2grav, cnt);
 			rnd = rand() % 100;
 			if (rnd > 95)
 				S_StartSound(pos, TempSoundChannel(), 0, cl_sfx_ric1, 1, 1);
@@ -4230,9 +4230,7 @@ void ChunkThink(explosion_t *ex)
 			{	// hit, now make a splash of blood
 				vec3_t	dmin = {-40, -40, 10};
 				vec3_t	dmax = {40, 40, 40};
-				//R_RunParticleEffect4 (ex->origin, 300.0, 136 + (rand()%5), pt_darken, 25);
-				//R_RunParticleEffect2 (ex->origin, dmin, dmax, 136 + (rand()%5), pt_fastgrav, 12);
-				R_RunParticleEffect2 (ex->origin, dmin, dmax, 136 + (rand()%5), pt_darken, 20);
+				R_RunParticleEffect2 (ex->origin, dmin, dmax, 136 + (rand()%5), pt_h2darken, 20);
 			}
 		}
 		else if((int)ex->data == THINGTYPE_ACID)
@@ -4242,7 +4240,6 @@ void ChunkThink(explosion_t *ex)
 				//vec3_t	dmin = {-40, -40, 10};
 				//vec3_t	dmax = {40, 40, 40};
 
-				//R_RunParticleEffect2 (ex->origin, dmin, dmax, 136 + (rand()%5), pt_darken, 20);	// FIXME - These should be green
 				if(!(rand()%3))
 				{
 					S_StartSound(ex->origin, TempSoundChannel(), 0, cl_sfx_dropfizzle, 1, 1);

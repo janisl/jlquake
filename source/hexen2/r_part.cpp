@@ -10,62 +10,12 @@
 #define	SFL_NO_MELT			8	// Flakes don't melt when his surface, just go away
 #define	SFL_IN_BOUNDS		16	// Flakes cannot leave the bounds of their box
 #define	SFL_NO_TRANS		32	// All flakes start non-translucent
-#define SFL_64	64
-#define SFL_128	128
 
 
 #define MAX_PARTICLES			7000	// default max # of particles at one
 										//  time
 #define ABSOLUTE_MIN_PARTICLES	512		// no fewer than this no matter what's
 										//  on the command line
-
-enum ptype_t
-{
-	pt_static,
-	pt_grav,
-	pt_fastgrav,
-	pt_slowgrav,
-	pt_fire,
-	pt_explode,
-	pt_explode2,
-	pt_blob,
-	pt_blob2,
-	pt_rain,
-	pt_c_explode,
-	pt_c_explode2,
-	pt_spit,
-	pt_fireball,
-	pt_ice,
-	pt_spell,
-	pt_test,
-	pt_quake,
-	pt_rd,			// rider's death
-	pt_vorpal,
-	pt_setstaff,
-	pt_magicmissile,
-	pt_boneshard,
-	pt_scarab,
-	pt_acidball,
-	pt_darken,
-	pt_snow,
-	pt_gravwell,
-	pt_redfire
-};
-
-struct cparticle_t
-{
-	vec3_t			org;
-	int				color;
-	cparticle_t*	next;
-	vec3_t			vel;
-	vec3_t			min_org;
-	vec3_t			max_org;
-	float			ramp;
-	float			die;
-	byte			type;
-	byte			flags;
-	byte			count;
-};
 
 int		ramp1[8] = { 416,416+2,416+4,416+6,416+8,416+10,416+12,416+14};
 int		ramp2[8] = { 384+4,384+6,384+8,384+10,384+12,384+13,384+14,384+15};
@@ -82,6 +32,39 @@ int		ramp11[8] = { 424,424+1,424+2,424+3,424+4,424+5,424+6,424+7};
 int		ramp12[8] = { 136,137,138,139,140,141,142,143};
 byte MyTable[256];
 
+ptype_t hexen2ParticleTypeTable[] =
+{
+	pt_h2static,
+	pt_h2grav,
+	pt_h2fastgrav,
+	pt_h2slowgrav,
+	pt_h2fire,
+	pt_h2explode,
+	pt_h2explode2,
+	pt_h2blob,
+	pt_h2blob2,
+	pt_h2rain,
+	pt_h2c_explode,
+	pt_h2c_explode2,
+	pt_h2spit,
+	pt_h2fireball,
+	pt_h2ice,
+	pt_h2spell,
+	pt_h2test,
+	pt_h2quake,
+	pt_h2rd,
+	pt_h2vorpal,
+	pt_h2setstaff,
+	pt_h2magicmissile,
+	pt_h2boneshard,
+	pt_h2scarab,
+	pt_h2acidball,
+	pt_h2darken,
+	pt_h2snow,
+	pt_h2gravwell,
+	pt_h2redfire,
+};
+
 cparticle_t	*active_particles, *free_particles;
 
 cparticle_t	*particles;
@@ -96,8 +79,8 @@ Cvar*		snow_active;
 
 static cparticle_t *AllocParticle(void);
 
-void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, int effect, int count);
-void R_RunParticleEffect4 (vec3_t org, float radius, int color, int effect, int count);
+void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, ptype_t effect, int count);
+void R_RunParticleEffect4 (vec3_t org, float radius, int color, ptype_t effect, int count);
 
 /*
 void R_LeakColor_f(void)
@@ -171,7 +154,7 @@ void R_DarkFieldParticles (entity_t *ent)
 		
 				p->die = cl.time + 0.2 + (rand()&7) * 0.02;
 				p->color = 150 + rand()%6;
-				p->type = pt_slowgrav;
+				p->type = pt_h2slowgrav;
 				
 				dir[0] = j*8;
 				dir[1] = i*8;
@@ -277,7 +260,7 @@ void R_ParseParticleEffect2 (void)
 	msgcount = net_message.ReadByte ();
 	effect = net_message.ReadByte ();
 
-	R_RunParticleEffect2 (org, dmin, dmax, color, effect, msgcount);
+	R_RunParticleEffect2 (org, dmin, dmax, color, hexen2ParticleTypeTable[effect], msgcount);
 }
 
 /*
@@ -300,7 +283,7 @@ void R_ParseParticleEffect3 (void)
 	msgcount = net_message.ReadByte ();
 	effect = net_message.ReadByte ();
 
-	R_RunParticleEffect3 (org, box, color, effect, msgcount);
+	R_RunParticleEffect3 (org, box, color, hexen2ParticleTypeTable[effect], msgcount);
 }
 
 /*
@@ -323,7 +306,7 @@ void R_ParseParticleEffect4 (void)
 	msgcount = net_message.ReadByte ();
 	effect = net_message.ReadByte ();
 
-	R_RunParticleEffect4 (org, radius, color, effect, msgcount);
+	R_RunParticleEffect4 (org, radius, color, hexen2ParticleTypeTable[effect], msgcount);
 }
 
 /*
@@ -348,7 +331,7 @@ void R_ParticleExplosion (vec3_t org)
 		p->ramp = rand()&3;
 		if (i & 1)
 		{
-			p->type = pt_explode;
+			p->type = pt_h2explode;
 			for (j=0 ; j<3 ; j++)
 			{
 				p->org[j] = org[j] + ((rand()&31)-16);
@@ -357,7 +340,7 @@ void R_ParticleExplosion (vec3_t org)
 		}
 		else
 		{
-			p->type = pt_explode2;
+			p->type = pt_h2explode2;
 			for (j=0 ; j<3 ; j++)
 			{
 				p->org[j] = org[j] + ((rand()&31)-16);
@@ -391,7 +374,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 			p->ramp = rand()&3;
 			if (i & 1)
 			{
-				p->type = pt_explode;
+				p->type = pt_h2explode;
 				for (j=0 ; j<3 ; j++)
 				{
 					p->org[j] = org[j] + ((rand()&31)-16);
@@ -400,7 +383,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 			}
 			else
 			{
-				p->type = pt_explode2;
+				p->type = pt_h2explode2;
 				for (j=0 ; j<3 ; j++)
 				{
 					p->org[j] = org[j] + ((rand()&31)-16);
@@ -414,7 +397,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 //			p->color = (color&~7) + (rand()&7);
 //			p->color = 265 + (rand() % 9);
 			p->color = 256 + 16 + 12 + (rand() & 3);
-			p->type = pt_slowgrav;
+			p->type = pt_h2slowgrav;
 			for (j=0 ; j<3 ; j++)
 			{
 				p->org[j] = org[j] + ((rand()&15)-8);
@@ -432,7 +415,7 @@ R_RunParticleEffect2
 
 ===============
 */
-void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count)
+void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, ptype_t effect, int count)
 {
 	int			i, j;
 	cparticle_t	*p;
@@ -465,7 +448,7 @@ R_RunParticleEffect3
 
 ===============
 */
-void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, int effect, int count)
+void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, ptype_t effect, int count)
 {
 	int			i, j;
 	cparticle_t	*p;
@@ -497,7 +480,7 @@ R_RunParticleEffect4
 
 ===============
 */
-void R_RunParticleEffect4 (vec3_t org, float radius, int color, int effect, int count)
+void R_RunParticleEffect4 (vec3_t org, float radius, int color, ptype_t effect, int count)
 {
 	int			i, j;
 	cparticle_t	*p;
@@ -549,7 +532,7 @@ void R_LavaSplash (vec3_t org)
 		
 				p->die = cl.time + 2 + (rand()&31) * 0.02;
 				p->color = 224 + (rand()&7);
-				p->type = pt_slowgrav;
+				p->type = pt_h2slowgrav;
 				
 				dir[0] = j*8 + (rand()&7);
 				dir[1] = i*8 + (rand()&7);
@@ -588,7 +571,7 @@ void R_TeleportSplash (vec3_t org)
 		
 				p->die = cl.time + 0.2 + (rand()&7) * 0.02;
 				p->color = 7 + (rand()&7);
-				p->type = pt_slowgrav;
+				p->type = pt_h2slowgrav;
 				
 				dir[0] = j*8;
 				dir[1] = i*8;
@@ -624,7 +607,7 @@ void R_RunQuakeEffect (vec3_t org, float distance)
 
 		p->die = cl.time + 0.3*(rand()%5);
 		p->color = (rand() &3) + ((rand() % 3)*16) + (13 * 16) + 256 + 11;
-		p->type = pt_quake;
+		p->type = pt_h2quake;
 		p->ramp = 0;
 
 		num = rand()*(1.0/RAND_MAX);//(rand ()&0x7fff) / ((float)0x7fff);
@@ -680,7 +663,7 @@ void R_SunStaffTrail(vec3_t source, vec3_t dest)
 		p->ramp = rand()&3;
 		p->color = ramp6[(int)(p->ramp)];
 
-		p->type = pt_spit;
+		p->type = pt_h2spit;
 
 		for(i = 0; i < 3; i++)
 		{
@@ -711,7 +694,7 @@ void RiderParticle(int count, vec3_t origin)
 
 		p->die = cl.time + 4;
 		p->color = 256+16+15;
-		p->type = pt_rd;
+		p->type = pt_h2rd;
 		p->ramp = 0;
 
 		VectorCopy(origin,p->org);
@@ -746,7 +729,7 @@ void GravityWellParticle(int count, vec3_t origin, int color)
 
 		p->die = cl.time + 4;
 		p->color = color + (rand() & 15);
-		p->type = pt_gravwell;
+		p->type = pt_h2gravwell;
 		p->ramp = 0;
 
 		VectorCopy(origin,p->org);
@@ -826,7 +809,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_rocket_trail: // rocket trail
 				p->ramp = (rand()&3);
 				p->color = ramp3[(int)p->ramp];
-				p->type = pt_fire;
+				p->type = pt_h2fire;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()%6)-3);
 				break;
@@ -834,13 +817,13 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_smoke: // smoke smoke
 				p->ramp = (rand()&3) + 2;
 				p->color = ramp3[(int)p->ramp];
-				p->type = pt_fire;
+				p->type = pt_h2fire;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()%6)-3);
 				break;
 
 			case rt_blood: // blood
-				p->type = pt_slowgrav;
+				p->type = pt_h2slowgrav;
 				p->color = 134 + (rand()&7);
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()%6)-3);
@@ -850,7 +833,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_tracer:;
 			case rt_tracer2:;// tracer
 				p->die = cl.time + 0.5;
-				p->type = pt_static;
+				p->type = pt_h2static;
 				if (type == 3)
 					p->color = 130 + (rand() & 6);
 //			p->color = 243 + (rand() & 3);
@@ -873,7 +856,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				break;
 			
 			case rt_slight_blood:// slight blood
-				p->type = pt_slowgrav;
+				p->type = pt_h2slowgrav;
 				p->color = 134 + (rand()&7);
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()%6)-3);
@@ -881,7 +864,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				break;
 
 			case rt_bloodshot:// bloodshot trail
-				p->type = pt_darken;
+				p->type = pt_h2darken;
 				p->color = 136 + (rand()&5);
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&3)-2);
@@ -890,7 +873,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 
 			case rt_voor_trail:// voor trail
 				p->color = 9*16 + 8 + (rand()&3);
-				p->type = pt_static;
+				p->type = pt_h2static;
 				p->die = cl.time + 0.3;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&15)-8);
@@ -899,7 +882,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_fireball: // Fireball
 				p->ramp = rand()&3;
 				p->color = ramp4[(int)(p->ramp)];
-				p->type = pt_fireball;
+				p->type = pt_h2fireball;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&3)-2);		
 				p->org[2] += 2; // compensate for model
@@ -911,7 +894,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_acidball: // Acid ball
 				p->ramp = rand()&3;
 				p->color = ramp10[(int)(p->ramp)];
-				p->type = pt_acidball;
+				p->type = pt_h2acidball;
 				p->die = cl.time + 0.5;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&3)-2);
@@ -924,7 +907,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_ice: // Ice
 				p->ramp = rand()&3;
 				p->color = ramp5[(int)(p->ramp)];
-				p->type = pt_ice;
+				p->type = pt_h2ice;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&3)-2);
 				p->org[2] += 2; // compensate for model
@@ -936,7 +919,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_spit: // Spit
 				p->ramp = rand()&3;
 				p->color = ramp6[(int)(p->ramp)];
-				p->type = pt_spit;
+				p->type = pt_h2spit;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&3)-2);
 				p->org[2] += 2; // compensate for model
@@ -948,7 +931,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			case rt_spell: // Spell
 				p->ramp = rand()&3;
 				p->color = ramp6[(int)(p->ramp)];
-				p->type = pt_spell;
+				p->type = pt_h2spell;
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + ((rand()&3)-2);
 				p->vel[0] = (rand() % 10) - 5;
@@ -960,7 +943,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				break;
 
 			case rt_vorpal: // vorpal missile
-				p->type = pt_vorpal;
+				p->type = pt_h2vorpal;
 				p->color = 44 + (rand()&3) + 256;
 				for (j=0 ; j<2 ; j++)
 					p->org[j] = start[j] + ((rand()%48)-24);
@@ -970,7 +953,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				break;
 
 			case rt_setstaff: // set staff
-				p->type = pt_setstaff;
+				p->type = pt_h2setstaff;
 				p->color = ramp9[0];
 				p->ramp = rand()&3;
 
@@ -984,7 +967,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				break;
 
 			case rt_magicmissile: // magic missile
-				p->type = pt_magicmissile;
+				p->type = pt_h2magicmissile;
 				p->color = 148 + (rand()&11);
 				p->ramp = rand()&3;
 				for (j=0 ; j<2 ; j++)
@@ -996,7 +979,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				break;
 
 			case rt_boneshard: // bone shard
-				p->type = pt_boneshard;
+				p->type = pt_h2boneshard;
 				p->color = 368 + (rand()&16);
 				for (j=0 ; j<2 ; j++)
 					p->org[j] = start[j] + ((rand()%48)-24);
@@ -1007,7 +990,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 				break;
 
 			case rt_scarab: // scarab staff
-				p->type = pt_scarab;
+				p->type = pt_h2scarab;
 				p->color = 250 + (rand()&3);
 				for (j=0 ; j<3 ; j++)
 					p->org[j] = start[j] + (rand()&7);
@@ -1052,7 +1035,7 @@ void R_RainEffect (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int c
 		p->ramp = (rand()&3);
 		//p->veer = veer;
 		
-		p->type = pt_rain;
+		p->type = pt_h2rain;
 		
 		holdint=e_size[0];
 		p->org[0] = org[0] + (rand() % holdint);
@@ -1107,7 +1090,7 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 		p->die = cl.time + 7;
 		p->ramp = (rand()&3);
 		//p->veer = veer;
-		p->type = pt_snow;
+		p->type = pt_h2snow;
 		
 		holdint=org2[0] - org1[0];
 		p->org[0] = org1[0] + (rand() % holdint);
@@ -1157,7 +1140,7 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 
 		if (i & 1)
 		{
-			p->type = pt_c_explode;
+			p->type = pt_h2c_explode;
 			for (j=0 ; j<3 ; j++)
 			{
 				p->org[j] = org[j] + ((rand()%(radius*2))-radius);
@@ -1166,7 +1149,7 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 		}
 		else
 		{
-			p->type = pt_c_explode2;
+			p->type = pt_h2c_explode2;
 			for (j=0 ; j<3 ; j++)
 			{
 				p->org[j] = org[j] + ((rand()%(radius*2))-radius);
@@ -1203,7 +1186,7 @@ void CL_AddParticles()
 			alpha = c[3];
 		}
 
-		if (p->type == pt_rain)
+		if (p->type == pt_h2rain)
 		{
 			vec3_t origin;
 			VectorCopy(p->org, origin);
@@ -1219,19 +1202,19 @@ void CL_AddParticles()
 				origin[2] += vel2;
  			}
 		}
-		else if (p->type==pt_snow && p->count>=69)
+		else if (p->type==pt_h2snow && p->count>=69)
 		{
 			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, p->count / 10, PARTTEX_Snow1);
 		}
-		else if (p->type==pt_snow && p->count>=40)
+		else if (p->type==pt_h2snow && p->count>=40)
 		{
 			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, p->count / 10, PARTTEX_Snow2);
 		}
-		else if (p->type==pt_snow && p->count>=30)
+		else if (p->type==pt_h2snow && p->count>=30)
 		{
 			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, p->count / 10, PARTTEX_Snow3);
 		}
-		else if (p->type==pt_snow)
+		else if (p->type==pt_h2snow)
 		{
 			R_AddParticleToScene(p->org, c[0], c[1], c[2], alpha, p->count / 10, PARTTEX_Snow4);
 		}
@@ -1299,7 +1282,7 @@ void R_UpdateParticles (void)
 			break;
 		}
 
-		if (p->type==pt_rain)
+		if (p->type==pt_h2rain)
 		{
 			vel0 = p->vel[0]*.001;
 			vel1 = p->vel[1]*.001;
@@ -1314,7 +1297,7 @@ void R_UpdateParticles (void)
 			p->org[1] += p->vel[1]*(frametime-.004);
 			p->org[2] += p->vel[2]*(frametime-.004);
 		}
-		else if (p->type==pt_snow)
+		else if (p->type==pt_h2snow)
 		{
 			if(p->vel[0]==0&&p->vel[1]==0&&p->vel[2]==0)
 			{//Stopped moving
@@ -1410,10 +1393,10 @@ void R_UpdateParticles (void)
 
 		switch (p->type)
 		{
-		case pt_static:
+		case pt_h2static:
 			break;
 
-		case pt_fire:
+		case pt_h2fire:
 			p->ramp += time1;
 			if ((int)p->ramp >= 6)
 			{
@@ -1426,7 +1409,7 @@ void R_UpdateParticles (void)
 			p->vel[2] += grav;
 			break;
 
-		case pt_explode:
+		case pt_h2explode:
 			p->ramp += time2;
 			if ((int)p->ramp >=8)
 			{
@@ -1443,7 +1426,7 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-		case pt_explode2:
+		case pt_h2explode2:
 			p->ramp += time3;
 			if ((int)p->ramp >=8)
 			{
@@ -1460,7 +1443,7 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-      case pt_c_explode:
+      case pt_h2c_explode:
 			p->ramp += time2;
 			if ((int)p->ramp >=8)
 			{
@@ -1477,7 +1460,7 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-      case pt_c_explode2:
+      case pt_h2c_explode2:
 			p->ramp += time3;
 			if ((int)p->ramp >=8)
 			{
@@ -1495,7 +1478,7 @@ void R_UpdateParticles (void)
 			break;
 
 /*	//jfm:not used
-		case pt_blob:
+		case pt_h2blob:
 			for (i=0 ; i<3 ; i++)
 			{
 				p->vel[i] += p->vel[i]*dvel;
@@ -1503,7 +1486,7 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-		case pt_blob2:
+		case pt_h2blob2:
 			for (i=0 ; i<2 ; i++)
 			{
 				p->vel[i] -= p->vel[i]*dvel;
@@ -1511,22 +1494,22 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 */
-		case pt_grav:
-		case pt_slowgrav:
+		case pt_h2grav:
+		case pt_h2slowgrav:
 			p->vel[2] -= grav;
 			break;
 
-		case pt_fastgrav:
+		case pt_h2fastgrav:
 			p->vel[2] -= grav*4;
 			break;
 
-      case pt_rain:
+      case pt_h2rain:
 			break;
 
-      case pt_snow:
+      case pt_h2snow:
 			break;
 
-	  case pt_fireball:
+	  case pt_h2fireball:
 			p->ramp += time3;
 			if ((int)p->ramp >= 16)
 			{
@@ -1538,7 +1521,7 @@ void R_UpdateParticles (void)
 			}
 			break;
 
-		case pt_acidball:
+		case pt_h2acidball:
 			p->ramp += time4*1.4;
 			if ((int)p->ramp >= 23)
 			{
@@ -1555,7 +1538,7 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-		case pt_spit:
+		case pt_h2spit:
 			p->ramp += time3;
 			if ((int)p->ramp >= 16)
 			{
@@ -1568,7 +1551,7 @@ void R_UpdateParticles (void)
 //			p->vel[2] += grav*2;
 			break;
 
-		case pt_ice:
+		case pt_h2ice:
 			p->ramp += time4;
 			if ((int)p->ramp >= 16)
 			{
@@ -1581,7 +1564,7 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-		case pt_spell:
+		case pt_h2spell:
 			p->ramp += time2;
 			if ((int)p->ramp >= 16)
 			{
@@ -1594,7 +1577,7 @@ void R_UpdateParticles (void)
 //			p->vel[2] += grav*2;
 			break;
 
-		case pt_test:
+		case pt_h2test:
 			p->vel[2] += 1.3;
 			p->ramp += time3;
 			if ((int)p->ramp >= 13 || ((int)p->ramp > 10 && (int)p->vel[2] < 20) )
@@ -1607,13 +1590,13 @@ void R_UpdateParticles (void)
 			}
 			break;
 
-		case pt_quake:
+		case pt_h2quake:
 			p->vel[0] *= 1.05;
 			p->vel[1] *= 1.05;
 			p->vel[2] -= grav*4;
 			break;
 
-		case pt_rd:
+		case pt_h2rd:
 			if (!frametime)
 			{
 				break;
@@ -1641,7 +1624,7 @@ void R_UpdateParticles (void)
 			
 			break;
 
-		case pt_gravwell:
+		case pt_h2gravwell:
 			if (!frametime)
 			{
 				break;
@@ -1668,7 +1651,7 @@ void R_UpdateParticles (void)
 			
 			break;
 
-		case pt_vorpal:
+		case pt_h2vorpal:
 			--p->color; 
 			if ((int)p->color <= 37 + 256)
 			{
@@ -1676,7 +1659,7 @@ void R_UpdateParticles (void)
 			}
 			break;
 
-		case pt_setstaff:
+		case pt_h2setstaff:
 			p->ramp += time1;
 			if ((int)p->ramp >= 16)
 			{
@@ -1692,7 +1675,7 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav2;
 			break;
 
-		case pt_redfire:
+		case pt_h2redfire:
 			p->ramp += frametime*3;
 			if ((int)p->ramp >= 8)
 			{
@@ -1708,7 +1691,7 @@ void R_UpdateParticles (void)
 			p->vel[2] += grav/2;
 			break;
 
-		case pt_magicmissile:
+		case pt_h2magicmissile:
 			--p->color; 
 			if ((int)p->color < 149)
 			{
@@ -1721,7 +1704,7 @@ void R_UpdateParticles (void)
 			}
 			break;
 
-		case pt_boneshard:
+		case pt_h2boneshard:
 			--p->color; 
 			if ((int)p->color < 368)
 			{
@@ -1729,7 +1712,7 @@ void R_UpdateParticles (void)
 			}
 			break;
 
-		case pt_scarab:
+		case pt_h2scarab:
 			--p->color; 
 			if ((int)p->color < 250)
 			{
@@ -1737,7 +1720,7 @@ void R_UpdateParticles (void)
 			}
 			break;
 
-		case pt_darken:
+		case pt_h2darken:
 			p->vel[2] -= grav;	//Also gravity
 			--p->color; 
 			colindex=0;

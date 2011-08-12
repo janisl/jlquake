@@ -2138,7 +2138,7 @@ void CL_UpdateEffects(void)
 				mymax[2] *= 15;
 
 				R_RunParticleEffect2 (cl.Effects[index].Fountain.pos,mymin,mymax,
-					                  cl.Effects[index].Fountain.color,2,cl.Effects[index].Fountain.cnt);
+					                  cl.Effects[index].Fountain.color,pt_h2fastgrav,cl.Effects[index].Fountain.cnt);
 
 /*				Com_Memset(&test,0,sizeof(test));
 				trace = SV_Move (cl.Effects[index].Fountain.pos, mymin, mymax, mymin, false, &test);

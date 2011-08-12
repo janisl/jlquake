@@ -1,39 +1,6 @@
 
 // refresh.h -- public interface to refresh functions
 
-// Changes to ptype_t must also be made in d_iface.h
-typedef enum {
-	pt_static,
-	pt_grav,
-	pt_fastgrav,
-	pt_slowgrav,
-	pt_fire,
-	pt_explode,
-	pt_explode2,
-	pt_blob,
-	pt_blob2,
-	pt_rain,
-	pt_c_explode,
-	pt_c_explode2,
-	pt_spit,
-	pt_fireball,
-	pt_ice,
-	pt_spell,
-	pt_test,
-	pt_quake,
-	pt_rd,			// rider's death
-	pt_vorpal,
-	pt_setstaff,
-	pt_magicmissile,
-	pt_boneshard,
-	pt_scarab,
-	pt_darken,
-	pt_grensmoke,
-	pt_redfire,
-	pt_acidball,
-	pt_bluestep
-} ptype_t;
-
 typedef enum
 {
    rt_rocket_trail = 0,
@@ -97,9 +64,9 @@ void R_ParticleExplosion (vec3_t org);
 void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength);
 void R_BlobExplosion (vec3_t org);
 void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count);
-void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
-void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, int effect, int count);
-void R_RunParticleEffect4 (vec3_t org, float radius, int color, int effect, int count);
+void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, ptype_t effect, int count);
+void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, ptype_t effect, int count);
+void R_RunParticleEffect4 (vec3_t org, float radius, int color, ptype_t effect, int count);
 void R_LavaSplash (vec3_t org);
 void R_TeleportSplash (vec3_t org);
 void R_RunQuakeEffect (vec3_t org, float distance);

@@ -769,7 +769,7 @@ void CL_LinkPacketEntities (void)
 		}
 		else if (ModelFlags & H2MDLEF_GRENADE)
 		{
-//			R_RunParticleEffect4(old_origin,3,284,pt_slowgrav,3);
+//			R_RunParticleEffect4(old_origin,3,284,pt_h2slowgrav,3);
 			R_RocketTrail (old_origin, ent.origin, rt_grensmoke);
 		}
 		else if (ModelFlags & H2MDLEF_TRACER3)
@@ -1010,7 +1010,7 @@ void CL_LinkMissiles (void)
 		}
 		if(rand() % 10 < 3)		
 		{
-			R_RunParticleEffect4 (ent.origin, 7, 148 + rand() % 11, pt_grav, 10 + rand() % 10);
+			R_RunParticleEffect4 (ent.origin, 7, 148 + rand() % 11, pt_h2grav, 10 + rand() % 10);
 		}
 		R_AddRefEntityToScene(&ent);
 	}

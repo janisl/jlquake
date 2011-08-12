@@ -330,24 +330,6 @@ void CL_ParticleEffect3 (vec3_t org, vec3_t dir, int color, int count);
 
 //=================================================
 
-// ========
-// PGM
-typedef struct particle_s
-{
-	struct particle_s	*next;
-
-	float		time;
-
-	vec3_t		org;
-	vec3_t		vel;
-	vec3_t		accel;
-	float		color;
-	float		colorvel;
-	float		alpha;
-	float		alphavel;
-} cparticle_t;
-
-
 #define	PARTICLE_GRAVITY	40
 #define BLASTER_PARTICLE_COLOR		0xe0
 // PMM
@@ -381,7 +363,7 @@ void CL_Heatbeam (vec3_t start, vec3_t end);
 void CL_ParticleSteamEffect (vec3_t org, vec3_t dir, int color, int count, int magnitude);
 void CL_TrackerTrail (vec3_t start, vec3_t end, int particleColor);
 void CL_Tracker_Explode(vec3_t origin);
-void CL_TagTrail (vec3_t start, vec3_t end, float color);
+void CL_TagTrail (vec3_t start, vec3_t end, int color);
 void CL_ColorFlash (vec3_t pos, int ent, int intensity, float r, float g, float b);
 void CL_Tracker_Shell(vec3_t origin);
 void CL_MonsterPlasma_Shell(vec3_t origin);

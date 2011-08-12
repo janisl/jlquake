@@ -83,7 +83,7 @@ void R_ParticleExplosion2 (vec3_t org, int colorStart, int colorLength);
 void R_LavaSplash (vec3_t org);
 void R_TeleportSplash (vec3_t org);
 
-void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, int effect, int count);
+void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, ptype_t effect, int count);
 void R_InitParticles (void);
 void R_ClearParticles (void);
 

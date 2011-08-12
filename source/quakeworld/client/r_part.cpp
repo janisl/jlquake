@@ -25,22 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ABSOLUTE_MIN_PARTICLES	512		// no fewer than this no matter what's
 										//  on the command line
 
-enum ptype_t
-{
-	pt_static, pt_grav, pt_slowgrav, pt_fire, pt_explode, pt_explode2, pt_blob, pt_blob2
-};
-
-struct cparticle_t
-{
-	vec3_t			org;
-	int				color;
-	cparticle_t*	next;
-	vec3_t			vel;
-	float			ramp;
-	float			die;
-	ptype_t			type;
-};
-
 int		ramp1[8] = {0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61};
 int		ramp2[8] = {0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66};
 int		ramp3[8] = {0x6d, 0x6b, 6, 5, 4, 3};
@@ -119,7 +103,7 @@ void R_ParticleExplosion (vec3_t org)
 		p->ramp = rand()&3;
 		if (i & 1)
 		{
-			p->type = pt_explode;
+			p->type = pt_q1explode;
 			for (j=0 ; j<3 ; j++)
 			{
 				p->org[j] = org[j] + ((rand()%32)-16);
@@ -128,7 +112,7 @@ void R_ParticleExplosion (vec3_t org)
 		}
 		else
 		{
-			p->type = pt_explode2;
+			p->type = pt_q1explode2;
 			for (j=0 ; j<3 ; j++)
 			{
 				p->org[j] = org[j] + ((rand()%32)-16);
@@ -162,7 +146,7 @@ void R_BlobExplosion (vec3_t org)
 
 		if (i & 1)
 		{
-			p->type = pt_blob;
+			p->type = pt_q1blob;
 			p->color = 66 + rand()%6;
 			for (j=0 ; j<3 ; j++)
 			{
@@ -172,7 +156,7 @@ void R_BlobExplosion (vec3_t org)
 		}
 		else
 		{
-			p->type = pt_blob2;
+			p->type = pt_q1blob2;
 			p->color = 150 + rand()%6;
 			for (j=0 ; j<3 ; j++)
 			{
@@ -213,7 +197,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 
 		p->die = cl.time + 0.1*(rand()%5);
 		p->color = (color&~7) + (rand()&7);
-		p->type = pt_grav;
+		p->type = pt_q1grav;
 		for (j=0 ; j<3 ; j++)
 		{
 			p->org[j] = org[j] + scale*((rand()&15)-8);
@@ -249,7 +233,7 @@ void R_LavaSplash (vec3_t org)
 		
 				p->die = cl.time + 2 + (rand()&31) * 0.02;
 				p->color = 224 + (rand()&7);
-				p->type = pt_grav;
+				p->type = pt_q1grav;
 				
 				dir[0] = j*8 + (rand()&7);
 				dir[1] = i*8 + (rand()&7);
@@ -291,7 +275,7 @@ void R_TeleportSplash (vec3_t org)
 		
 				p->die = cl.time + 0.2 + (rand()&7) * 0.02;
 				p->color = 7 + (rand()&7);
-				p->type = pt_grav;
+				p->type = pt_q1grav;
 				
 				dir[0] = j*8;
 				dir[1] = i*8;
@@ -332,7 +316,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 
 		if (type == 4)
 		{	// slight blood
-			p->type = pt_slowgrav;
+			p->type = pt_q1slowgrav;
 			p->color = 67 + (rand()&3);
 			for (j=0 ; j<3 ; j++)
 				p->org[j] = start[j] + ((rand()%6)-3);
@@ -340,7 +324,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 		}
 		else if (type == 2)
 		{	// blood
-			p->type = pt_slowgrav;
+			p->type = pt_q1slowgrav;
 			p->color = 67 + (rand()&3);
 			for (j=0 ; j<3 ; j++)
 				p->org[j] = start[j] + ((rand()%6)-3);
@@ -348,7 +332,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 		else if (type == 6)
 		{	// voor trail
 			p->color = 9*16 + 8 + (rand()&3);
-			p->type = pt_static;
+			p->type = pt_q1static;
 			p->die = cl.time + 0.3;
 			for (j=0 ; j<3 ; j++)
 				p->org[j] = start[j] + ((rand()&15)-8);
@@ -357,7 +341,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 		{	// smoke smoke
 			p->ramp = (rand()&3) + 2;
 			p->color = ramp3[(int)p->ramp];
-			p->type = pt_fire;
+			p->type = pt_q1fire;
 			for (j=0 ; j<3 ; j++)
 				p->org[j] = start[j] + ((rand()%6)-3);
 		}
@@ -365,7 +349,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 		{	// rocket trail
 			p->ramp = (rand()&3);
 			p->color = ramp3[(int)p->ramp];
-			p->type = pt_fire;
+			p->type = pt_q1fire;
 			for (j=0 ; j<3 ; j++)
 				p->org[j] = start[j] + ((rand()%6)-3);
 		}
@@ -374,7 +358,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 			static int tracercount;
 
 			p->die = cl.time + 0.5;
-			p->type = pt_static;
+			p->type = pt_q1static;
 			if (type == 3)
 				p->color = 52 + ((tracercount&4)<<1);
 			else
@@ -417,7 +401,7 @@ void CL_AddParticles()
 
 		byte* at = r_palette[p->color];
 		byte theAlpha;
-		if (p->type == pt_fire)
+		if (p->type == pt_q1fire)
 		{
 			theAlpha = 255 * (6 - p->ramp) / 6;
 		}
@@ -485,9 +469,9 @@ void R_UpdateParticles (void)
 		
 		switch (p->type)
 		{
-		case pt_static:
+		case pt_q1static:
 			break;
-		case pt_fire:
+		case pt_q1fire:
 			p->ramp += time1;
 			if (p->ramp >= 6)
 				p->die = -1;
@@ -496,7 +480,7 @@ void R_UpdateParticles (void)
 			p->vel[2] += grav;
 			break;
 
-		case pt_explode:
+		case pt_q1explode:
 			p->ramp += time2;
 			if (p->ramp >=8)
 				p->die = -1;
@@ -507,7 +491,7 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-		case pt_explode2:
+		case pt_q1explode2:
 			p->ramp += time3;
 			if (p->ramp >=8)
 				p->die = -1;
@@ -518,20 +502,20 @@ void R_UpdateParticles (void)
 			p->vel[2] -= grav;
 			break;
 
-		case pt_blob:
+		case pt_q1blob:
 			for (i=0 ; i<3 ; i++)
 				p->vel[i] += p->vel[i]*dvel;
 			p->vel[2] -= grav;
 			break;
 
-		case pt_blob2:
+		case pt_q1blob2:
 			for (i=0 ; i<2 ; i++)
 				p->vel[i] -= p->vel[i]*dvel;
 			p->vel[2] -= grav;
 			break;
 
-		case pt_slowgrav:
-		case pt_grav:
+		case pt_q1slowgrav:
+		case pt_q1grav:
 			p->vel[2] -= grav;
 			break;
 		}

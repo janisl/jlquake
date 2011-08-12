@@ -26,6 +26,7 @@
 #include "cinematic/public.h"
 #include "ui/ui.h"
 #include "hexen2clientdefs.h"
+#include "game/particles.h"
 
 extern Cvar*		cl_inGameVideo;
 
