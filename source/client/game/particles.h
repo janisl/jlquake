@@ -16,6 +16,8 @@
 
 enum ptype_t
 {
+	pt_q2static,
+
 	pt_q1static,
 	pt_q1grav,
 	pt_q1slowgrav,

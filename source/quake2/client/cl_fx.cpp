@@ -877,6 +877,7 @@ void CL_ParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 		p->color = color + (rand()&7);
@@ -916,6 +917,7 @@ void CL_ParticleEffect2 (vec3_t org, vec3_t dir, int color, int count)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 		p->color = color;
@@ -956,6 +958,7 @@ void CL_ParticleEffect3 (vec3_t org, vec3_t dir, int color, int count)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 		p->color = color;
@@ -993,6 +996,7 @@ void CL_TeleporterParticles (entity_state_t *ent)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 		p->color = 0xdb;
@@ -1034,6 +1038,7 @@ void CL_LogoutEffect (vec3_t org, int type)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 
@@ -1079,6 +1084,7 @@ void CL_ItemRespawnParticles (vec3_t org)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 
@@ -1118,6 +1124,7 @@ void CL_ExplosionParticles (vec3_t org)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 		p->color = 0xe0 + (rand()&7);
@@ -1157,6 +1164,7 @@ void CL_BigTeleportParticles (vec3_t org)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 
@@ -1205,6 +1213,7 @@ void CL_BlasterParticles (vec3_t org, vec3_t dir)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 		p->color = 0xe0 + (rand()&7);
@@ -1258,6 +1267,7 @@ void CL_BlasterTrail (vec3_t start, vec3_t end)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
 		p->time = cl.time;
@@ -1308,6 +1318,7 @@ void CL_QuadTrail (vec3_t start, vec3_t end)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
 		p->time = cl.time;
@@ -1358,6 +1369,7 @@ void CL_FlagTrail (vec3_t start, vec3_t end, float color)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
 		p->time = cl.time;
@@ -1430,6 +1442,7 @@ void CL_DiminishingTrail (vec3_t start, vec3_t end, centity_t *old, int flags)
 			free_particles = p->next;
 			p->next = active_particles;
 			active_particles = p;
+			p->type = pt_q2static;
 			VectorClear (p->accel);
 		
 			p->time = cl.time;
@@ -1536,6 +1549,7 @@ void CL_RocketTrail (vec3_t start, vec3_t end, centity_t *old)
 			free_particles = p->next;
 			p->next = active_particles;
 			active_particles = p;
+			p->type = pt_q2static;
 			
 			VectorClear (p->accel);
 			p->time = cl.time;
@@ -1589,6 +1603,7 @@ void CL_RailTrail (vec3_t start, vec3_t end)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 		
 		p->time = cl.time;
 		VectorClear (p->accel);
@@ -1626,6 +1641,7 @@ void CL_RailTrail (vec3_t start, vec3_t end)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 		VectorClear (p->accel);
@@ -1678,6 +1694,7 @@ void CL_IonripperTrail (vec3_t start, vec3_t ent)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 		VectorClear (p->accel);
 
 		p->time = cl.time;
@@ -1740,6 +1757,7 @@ void CL_BubbleTrail (vec3_t start, vec3_t end)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		VectorClear (p->accel);
 		p->time = cl.time;
@@ -1810,6 +1828,7 @@ void CL_FlyParticles (vec3_t origin, int count)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 
@@ -1908,6 +1927,7 @@ void CL_BfgParticles (refEntity_t *ent)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 
@@ -1968,6 +1988,7 @@ void CL_TrapParticles (refEntity_t *ent)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
 		p->time = cl.time;
@@ -2010,6 +2031,7 @@ void CL_TrapParticles (refEntity_t *ent)
 				free_particles = p->next;
 				p->next = active_particles;
 				active_particles = p;
+				p->type = pt_q2static;
 
 				p->time = cl.time;
 				p->color = 0xe0 + (rand()&3);
@@ -2055,6 +2077,7 @@ void CL_BFGExplosionParticles (vec3_t org)
 		free_particles = p->next;
 		p->next = active_particles;
 		active_particles = p;
+		p->type = pt_q2static;
 
 		p->time = cl.time;
 		p->color = 0xd0 + (rand()&7);
@@ -2097,6 +2120,7 @@ void CL_TeleportParticles (vec3_t org)
 				free_particles = p->next;
 				p->next = active_particles;
 				active_particles = p;
+				p->type = pt_q2static;
 
 				p->time = cl.time;
 				p->color = 7 + (rand()&7);
