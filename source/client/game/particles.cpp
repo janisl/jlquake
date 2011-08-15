@@ -40,3 +40,16 @@ void CL_ClearParticles()
 	}
 	particles[cl_numparticles - 1].next = NULL;
 }
+
+cparticle_t* CL_AllocParticle()
+{
+	if (!free_particles)
+	{
+		return NULL;
+	}
+	cparticle_t* p = free_particles;
+	free_particles = p->next;
+	p->next = active_particles;
+	active_particles = p;
+	return p;
+}

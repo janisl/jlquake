@@ -60,8 +60,6 @@ ptype_t hexen2ParticleTypeTable[] =
 
 static vec3_t		rider_origin;
 
-static cparticle_t *AllocParticle(void);
-
 void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, ptype_t effect, int count);
 void R_RunParticleEffect4 (vec3_t org, float radius, int color, ptype_t effect, int count);
 
@@ -80,7 +78,7 @@ void R_DarkFieldParticles (entity_t *ent)
 		for (j=-16 ; j<16 ; j+=8)
 			for (k=0 ; k<32 ; k+=8)
 			{
-				p = AllocParticle();
+				p = CL_AllocParticle();
 				if (!p)
 					return;
 		
@@ -100,27 +98,6 @@ void R_DarkFieldParticles (entity_t *ent)
 				vel = 50 + (rand()&63);
 				VectorScale (dir, vel, p->vel);
 			}
-}
-
-//==========================================================================
-//
-// AllocParticle
-//
-//==========================================================================
-
-static cparticle_t *AllocParticle(void)
-{
-	cparticle_t *p;
-
-	if(!free_particles)
-	{
-		return NULL;
-	}
-	p = free_particles;
-	free_particles = p->next;
-	p->next = active_particles;
-	active_particles = p;
-	return p;
 }
 
 /*
@@ -234,7 +211,7 @@ void R_ParticleExplosion (vec3_t org)
 	
 	for (i=0 ; i<1024 ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 
@@ -275,7 +252,7 @@ void R_RunParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 	
 	for (i=0 ; i<count ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 
@@ -335,7 +312,7 @@ void R_RunParticleEffect2 (vec3_t org, vec3_t dmin, vec3_t dmax, int color, ptyp
 
 	for (i=0 ; i<count ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 
@@ -368,7 +345,7 @@ void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, ptype_t effect, in
 
 	for (i=0 ; i<count ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 
@@ -400,7 +377,7 @@ void R_RunParticleEffect4 (vec3_t org, float radius, int color, ptype_t effect, 
 
 	for (i=0 ; i<count ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 		{
 			return;
@@ -438,7 +415,7 @@ void R_LavaSplash (vec3_t org)
 		for (j=-16 ; j<16 ; j++)
 			for (k=0 ; k<1 ; k++)
 			{
-				p = AllocParticle();
+				p = CL_AllocParticle();
 				if (!p)
 					return;
 		
@@ -477,7 +454,7 @@ void R_TeleportSplash (vec3_t org)
 		for (j=-16 ; j<16 ; j+=4)
 			for (k=-24 ; k<32 ; k+=4)
 			{
-				p = AllocParticle();
+				p = CL_AllocParticle();
 				if (!p)
 					return;
 		
@@ -513,7 +490,7 @@ void R_RunQuakeEffect (vec3_t org, float distance)
 
 	for (i=0 ; i<100 ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 
@@ -565,7 +542,7 @@ void R_SunStaffTrail(vec3_t source, vec3_t dest)
 	{
 		length -= size;
 
-		if((p = AllocParticle()) == NULL)
+		if((p = CL_AllocParticle()) == NULL)
 		{
 			return;
 		}
@@ -600,7 +577,7 @@ void RiderParticle(int count, vec3_t origin)
 
 	for (i=0 ; i<count ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 
@@ -635,7 +612,7 @@ void GravityWellParticle(int count, vec3_t origin, int color)
 
 	for (i=0 ; i<count ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 
@@ -709,7 +686,7 @@ void R_RocketTrail (vec3_t start, vec3_t end, int type)
 	{
 		len -= size;
 
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 		
@@ -929,7 +906,7 @@ void R_RainEffect (vec3_t org,vec3_t e_size,int x_dir, int y_dir,int color,int c
 	
 	for (i=0 ; i<count ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 		
@@ -973,7 +950,7 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 	count *= Cvar_VariableValue("snow_active");
 	for (i=0 ; i<count ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 		
@@ -1042,7 +1019,7 @@ void R_ColoredParticleExplosion (vec3_t org,int color,int radius,int counter)
 
 	for (i=0 ; i<counter ; i++)
 	{
-		p = AllocParticle();
+		p = CL_AllocParticle();
 		if (!p)
 			return;
 

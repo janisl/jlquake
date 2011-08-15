@@ -138,12 +138,9 @@ void CL_DebugTrail (vec3_t start, vec3_t end)
 	{
 		len -= dec;
 
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		p->time = cl.time;
@@ -191,12 +188,9 @@ void CL_SmokeTrail (vec3_t start, vec3_t end, int colorStart, int colorRun, int 
 	{
 		len -= spacing;
 
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -235,15 +229,11 @@ void CL_ForceWall (vec3_t start, vec3_t end, int color)
 	{
 		len -= 4;
 
-		if (!free_particles)
-			return;
-		
 		if (frand() > 0.3)
 		{
-			p = free_particles;
-			free_particles = p->next;
-			p->next = active_particles;
-			active_particles = p;
+			p = CL_AllocParticle();
+			if (!p)
+				return;
 			p->type = pt_q2static;
 			VectorClear (p->accel);
 			
@@ -276,13 +266,10 @@ void CL_FlameEffects (centity_t *ent, vec3_t origin)
 
 	for(n=0;n<count;n++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
 			
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		
 		VectorClear (p->accel);
@@ -304,12 +291,9 @@ void CL_FlameEffects (centity_t *ent, vec3_t origin)
 
 	for(n=0;n<count;n++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -341,12 +325,9 @@ void CL_GenericParticleEffect (vec3_t org, vec3_t dir, int color, int count, int
 
 	for (i=0 ; i<count ; i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		p->time = cl.time;
@@ -396,13 +377,10 @@ void CL_BubbleTrail2 (vec3_t start, vec3_t end, int dist)
 
 	for (i=0 ; i<len ; i+=dec)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
 
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		VectorClear (p->accel);
@@ -469,13 +447,10 @@ void CL_Heatbeam (vec3_t start, vec3_t end)
 #else
 		k=1;
 #endif
-			if (!free_particles)
+			p = CL_AllocParticle();
+			if (!p)
 				return;
 
-			p = free_particles;
-			free_particles = p->next;
-			p->next = active_particles;
-			active_particles = p;
 			p->type = pt_q2static;
 			
 			p->time = cl.time;
@@ -564,13 +539,10 @@ void CL_Heatbeam (vec3_t start, vec3_t forward)
 		for (rot = 0; rot < M_PI*2; rot += rstep)
 		{
 
-			if (!free_particles)
+			p = CL_AllocParticle();
+			if (!p)
 				return;
 
-			p = free_particles;
-			free_particles = p->next;
-			p->next = active_particles;
-			active_particles = p;
 			p->type = pt_q2static;
 			
 			p->time = cl.time;
@@ -641,13 +613,10 @@ void CL_Heatbeam (vec3_t start, vec3_t end)
 
 	for (i=0; i<8; i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
 
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		
 		p->time = cl.time;
@@ -693,12 +662,9 @@ void CL_ParticleSteamEffect (vec3_t org, vec3_t dir, int color, int count, int m
 
 	for (i=0 ; i<count ; i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		p->time = cl.time;
@@ -740,12 +706,9 @@ void CL_ParticleSteamEffect2 (cl_sustain_t *self)
 
 	for (i=0 ; i<self->count ; i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		p->time = cl.time;
@@ -803,12 +766,9 @@ void CL_TrackerTrail (vec3_t start, vec3_t end, int particleColor)
 	{
 		len -= dec;
 
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -839,12 +799,9 @@ void CL_Tracker_Shell(vec3_t origin)
 
 	for(i=0;i<300;i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -871,12 +828,9 @@ void CL_MonsterPlasma_Shell(vec3_t origin)
 
 	for(i=0;i<40;i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -908,12 +862,9 @@ void CL_Widowbeamout (cl_sustain_t *self)
 
 	for(i=0;i<300;i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -945,12 +896,9 @@ void CL_Nukeblast (cl_sustain_t *self)
 
 	for(i=0;i<700;i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -979,12 +927,9 @@ void CL_WidowSplash (vec3_t org)
 
 	for (i=0 ; i<256 ; i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		p->time = cl.time;
@@ -1013,12 +958,9 @@ void CL_Tracker_Explode(vec3_t	origin)
 
 	for(i=0;i<300;i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -1066,12 +1008,9 @@ void CL_TagTrail (vec3_t start, vec3_t end, int color)
 	{
 		len -= dec;
 
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		
@@ -1103,12 +1042,9 @@ void CL_ColorExplosionParticles (vec3_t org, int color, int run)
 
 	for (i=0 ; i<128 ; i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		p->time = cl.time;
@@ -1144,12 +1080,9 @@ void CL_ParticleSmokeEffect (vec3_t org, vec3_t dir, int color, int count, int m
 
 	for (i=0 ; i<count ; i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		p->time = cl.time;
@@ -1190,12 +1123,9 @@ void CL_BlasterParticles2 (vec3_t org, vec3_t dir, unsigned int color)
 	count = 40;
 	for (i=0 ; i<count ; i++)
 	{
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 
 		p->time = cl.time;
@@ -1244,12 +1174,9 @@ void CL_BlasterTrail2 (vec3_t start, vec3_t end)
 	{
 		len -= dec;
 
-		if (!free_particles)
+		p = CL_AllocParticle();
+		if (!p)
 			return;
-		p = free_particles;
-		free_particles = p->next;
-		p->next = active_particles;
-		active_particles = p;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 		

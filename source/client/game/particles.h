@@ -92,3 +92,4 @@ extern Cvar* snow_flurry;
 extern Cvar* snow_active;
 
 void CL_ClearParticles();
+cparticle_t* CL_AllocParticle();
