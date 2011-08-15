@@ -852,7 +852,6 @@ void CL_ParticleEffect (vec3_t org, vec3_t dir, int color, int count)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
 		p->color = color + (rand()&7);
 
 		d = rand()&31;
@@ -889,7 +888,6 @@ void CL_ParticleEffect2 (vec3_t org, vec3_t dir, int color, int count)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
 		p->color = color;
 
 		d = rand()&7;
@@ -927,7 +925,6 @@ void CL_ParticleEffect3 (vec3_t org, vec3_t dir, int color, int count)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
 		p->color = color;
 
 		d = rand()&7;
@@ -962,7 +959,6 @@ void CL_TeleporterParticles (entity_state_t *ent)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
 		p->color = 0xdb;
 
 		for (j=0 ; j<2 ; j++)
@@ -1000,8 +996,6 @@ void CL_LogoutEffect (vec3_t org, int type)
 		if (!p)
 			return;
 		p->type = pt_q2static;
-
-		p->time = cl.serverTime;
 
 		if (type == MZ_LOGIN)
 			p->color = 0xd0 + (rand()&7);	// green
@@ -1044,8 +1038,6 @@ void CL_ItemRespawnParticles (vec3_t org)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
-
 		p->color = 0xd4 + (rand()&3);	// green
 
 		p->org[0] = org[0] + crand()*8;
@@ -1081,7 +1073,6 @@ void CL_ExplosionParticles (vec3_t org)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
 		p->color = 0xe0 + (rand()&7);
 
 		for (j=0 ; j<3 ; j++)
@@ -1117,8 +1108,6 @@ void CL_BigTeleportParticles (vec3_t org)
 		if (!p)
 			return;
 		p->type = pt_q2static;
-
-		p->time = cl.serverTime;
 
 		p->color = colortable[rand()&3];
 
@@ -1164,7 +1153,6 @@ void CL_BlasterParticles (vec3_t org, vec3_t dir)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
 		p->color = 0xe0 + (rand()&7);
 
 		d = rand()&15;
@@ -1215,8 +1203,6 @@ void CL_BlasterTrail (vec3_t start, vec3_t end)
 			return;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
-		
-		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (0.3+frand()*0.2);
@@ -1263,8 +1249,6 @@ void CL_QuadTrail (vec3_t start, vec3_t end)
 			return;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
-		
-		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (0.8+frand()*0.2);
@@ -1311,8 +1295,6 @@ void CL_FlagTrail (vec3_t start, vec3_t end, float color)
 			return;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
-		
-		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (0.8+frand()*0.2);
@@ -1380,8 +1362,6 @@ void CL_DiminishingTrail (vec3_t start, vec3_t end, centity_t *old, int flags)
 				return;
 			p->type = pt_q2static;
 			VectorClear (p->accel);
-		
-			p->time = cl.serverTime;
 
 			if (flags & EF_GIB)
 			{
@@ -1484,7 +1464,6 @@ void CL_RocketTrail (vec3_t start, vec3_t end, centity_t *old)
 			p->type = pt_q2static;
 			
 			VectorClear (p->accel);
-			p->time = cl.serverTime;
 
 			p->alpha = 1.0;
 			p->alphavel = -1.0 / (1+frand()*0.2);
@@ -1534,7 +1513,6 @@ void CL_RailTrail (vec3_t start, vec3_t end)
 
 		p->type = pt_q2static;
 		
-		p->time = cl.serverTime;
 		VectorClear (p->accel);
 
 		d = i * 0.1;
@@ -1569,7 +1547,6 @@ void CL_RailTrail (vec3_t start, vec3_t end)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
 		VectorClear (p->accel);
 
 		p->alpha = 1.0;
@@ -1620,7 +1597,6 @@ void CL_IonripperTrail (vec3_t start, vec3_t ent)
 		p->type = pt_q2static;
 		VectorClear (p->accel);
 
-		p->time = cl.serverTime;
 		p->alpha = 0.5;
 		p->alphavel = -1.0 / (0.3 + frand() * 0.2);
 		p->color = 0xe4 + (rand()&3);
@@ -1680,7 +1656,6 @@ void CL_BubbleTrail (vec3_t start, vec3_t end)
 		p->type = pt_q2static;
 
 		VectorClear (p->accel);
-		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (1+frand()*0.2);
@@ -1746,8 +1721,6 @@ void CL_FlyParticles (vec3_t origin, int count)
 		if (!p)
 			return;
 		p->type = pt_q2static;
-
-		p->time = cl.serverTime;
 
 		dist = sin(ltime + i)*64;
 		p->org[0] = origin[0] + bytedirs[i][0]*dist + forward[0]*BEAMLENGTH;
@@ -1843,8 +1816,6 @@ void CL_BfgParticles (refEntity_t *ent)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
-
 		dist = sin(ltime + i)*64;
 		p->org[0] = ent->origin[0] + bytedirs[i][0]*dist + forward[0]*BEAMLENGTH;
 		p->org[1] = ent->origin[1] + bytedirs[i][1]*dist + forward[1]*BEAMLENGTH;
@@ -1901,8 +1872,6 @@ void CL_TrapParticles (refEntity_t *ent)
 			return;
 		p->type = pt_q2static;
 		VectorClear (p->accel);
-		
-		p->time = cl.serverTime;
 
 		p->alpha = 1.0;
 		p->alphavel = -1.0 / (0.3+frand()*0.2);
@@ -1941,7 +1910,6 @@ void CL_TrapParticles (refEntity_t *ent)
 					return;
 				p->type = pt_q2static;
 
-				p->time = cl.serverTime;
 				p->color = 0xe0 + (rand()&3);
 
 				p->alpha = 1.0;
@@ -1984,7 +1952,6 @@ void CL_BFGExplosionParticles (vec3_t org)
 			return;
 		p->type = pt_q2static;
 
-		p->time = cl.serverTime;
 		p->color = 0xd0 + (rand()&7);
 
 		for (j=0 ; j<3 ; j++)
@@ -2024,7 +1991,6 @@ void CL_TeleportParticles (vec3_t org)
 					return;
 				p->type = pt_q2static;
 
-				p->time = cl.serverTime;
 				p->color = 7 + (rand()&7);
 
 				p->alpha = 1.0;

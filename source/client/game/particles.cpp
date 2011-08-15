@@ -51,5 +51,6 @@ cparticle_t* CL_AllocParticle()
 	free_particles = p->next;
 	p->next = active_particles;
 	active_particles = p;
+	p->time = cl_common->serverTime;
 	return p;
 }
