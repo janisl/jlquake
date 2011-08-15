@@ -999,8 +999,8 @@ void R_SnowEffect (vec3_t org1,vec3_t org2,int flags,vec3_t alldir,int count)
 		if (contents!=BSP29CONTENTS_EMPTY)
 			Sys_Error ("Snow entity top plane is not in an empty area (sorry!)");
 
-		VectorCopy(org1,p->min_org);
-		VectorCopy(org2,p->max_org);
+		VectorCopy(org1,p->minOrg);
+		VectorCopy(org2,p->maxOrg);
 	}
 }
 /*
@@ -1229,9 +1229,9 @@ void R_UpdateParticles (void)
 				
 				if(p->flags&SFL_IN_BOUNDS)
 				{//Always stay inside the boundry!
-					if(p->org[0]<p->min_org[0]||p->org[0]>p->max_org[0]||
-						p->org[1]<p->min_org[1]||p->org[1]>p->max_org[1]||
-						p->org[2]<p->min_org[2]||p->org[2]>p->max_org[2])
+					if(p->org[0]<p->minOrg[0]||p->org[0]>p->maxOrg[0]||
+						p->org[1]<p->minOrg[1]||p->org[1]>p->maxOrg[1]||
+						p->org[2]<p->minOrg[2]||p->org[2]>p->maxOrg[2])
 					{
 						p->die=-1;
 					}

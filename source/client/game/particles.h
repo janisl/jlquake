@@ -64,24 +64,24 @@ enum ptype_t
 
 struct cparticle_t
 {
-	cparticle_t*	next;
-	vec3_t			org;
-	vec3_t			vel;
-	int				color;
+	cparticle_t* next;
+	vec3_t org;
+	vec3_t vel;
+	int color;
 
-	ptype_t			type;
-	float			ramp;
-	float			die;
+	ptype_t type;
+	float ramp;
+	float die;
 
-	vec3_t			min_org;
-	vec3_t			max_org;
-	byte			flags;
-	byte			count;
+	vec3_t minOrg;
+	vec3_t maxOrg;
+	byte flags;
+	byte count;
 
-	int				time;
-	vec3_t			accel;
-	float			alpha;
-	float			alphavel;
+	int time;
+	vec3_t accel;
+	float alpha;
+	float alphavel;
 };
 
 extern cparticle_t particles[MAX_PARTICLES];
