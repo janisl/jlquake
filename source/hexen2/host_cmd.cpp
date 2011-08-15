@@ -366,7 +366,7 @@ This is sent just before a server changes levels
 */
 void Host_Reconnect_f (void)
 {
-	R_ClearParticles ();	//jfm: for restarts which didn't use to clear parts.
+	CL_ClearParticles ();	//jfm: for restarts which didn't use to clear parts.
 
 	//updatePlaqueMessage();
 

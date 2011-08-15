@@ -832,30 +832,6 @@ PARTICLE MANAGEMENT
 ==============================================================
 */
 
-cparticle_t	*active_particles, *free_particles;
-
-cparticle_t	particles[MAX_PARTICLES];
-int			cl_numparticles = MAX_PARTICLES;
-
-
-/*
-===============
-CL_ClearParticles
-===============
-*/
-void CL_ClearParticles (void)
-{
-	int		i;
-	
-	free_particles = &particles[0];
-	active_particles = NULL;
-
-	for (i=0 ;i<cl_numparticles ; i++)
-		particles[i].next = &particles[i+1];
-	particles[cl_numparticles-1].next = NULL;
-}
-
-
 /*
 ===============
 CL_ParticleEffect

@@ -225,7 +225,7 @@ static void R_NewMap (void)
 	for (i=0 ; i<256 ; i++)
 		cl_lightstylevalue[i] = 264;		// normal light value
 
-	R_ClearParticles ();
+	CL_ClearParticles ();
 
 	R_EndRegistration();
 }

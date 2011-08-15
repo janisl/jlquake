@@ -20,45 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
-#define MAX_PARTICLES			2048	// default max # of particles at one
-										//  time
-#define ABSOLUTE_MIN_PARTICLES	512		// no fewer than this no matter what's
-										//  on the command line
-
 int		ramp1[8] = {0x6f, 0x6d, 0x6b, 0x69, 0x67, 0x65, 0x63, 0x61};
 int		ramp2[8] = {0x6f, 0x6e, 0x6d, 0x6c, 0x6b, 0x6a, 0x68, 0x66};
 int		ramp3[8] = {0x6d, 0x6b, 6, 5, 4, 3};
-
-cparticle_t	*active_particles, *free_particles;
-
-cparticle_t	*particles;
-int			cl_numparticles;
-
-/*
-===============
-R_InitParticles
-===============
-*/
-void R_InitParticles (void)
-{
-	int		i;
-
-	i = COM_CheckParm ("-particles");
-
-	if (i)
-	{
-		cl_numparticles = (int)(String::Atoi(COM_Argv(i+1)));
-		if (cl_numparticles < ABSOLUTE_MIN_PARTICLES)
-			cl_numparticles = ABSOLUTE_MIN_PARTICLES;
-	}
-	else
-	{
-		cl_numparticles = MAX_PARTICLES;
-	}
-
-	particles = (cparticle_t *)
-			Hunk_AllocName (cl_numparticles * sizeof(cparticle_t), "particles");
-}
 
 /*
 ===============
@@ -123,24 +87,6 @@ avelocities[0][i] = (rand()&255) * 0.01;
 		p->org[1] = ent->origin[1] + bytedirs[i][1]*dist + forward[1]*beamlength;			
 		p->org[2] = ent->origin[2] + bytedirs[i][2]*dist + forward[2]*beamlength;			
 	}
-}
-
-
-/*
-===============
-R_ClearParticles
-===============
-*/
-void R_ClearParticles (void)
-{
-	int		i;
-	
-	free_particles = &particles[0];
-	active_particles = NULL;
-
-	for (i=0 ;i<cl_numparticles ; i++)
-		particles[i].next = &particles[i+1];
-	particles[cl_numparticles-1].next = NULL;
 }
 
 /*

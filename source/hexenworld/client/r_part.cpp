@@ -1,11 +1,6 @@
 
 #include "quakedef.h"
 
-#define MAX_PARTICLES			2048	// default max # of particles at one
-										//  time
-#define ABSOLUTE_MIN_PARTICLES	512		// no fewer than this no matter what's
-										//  on the command line
-
 int		ramp1[8] = { 416,416+2,416+4,416+6,416+8,416+10,416+12,416+14};
 int		ramp2[8] = { 384+4,384+6,384+8,384+10,384+12,384+13,384+14,384+15};
 int		ramp3[8] = {0x6d, 0x6b, 6, 5, 4, 3};
@@ -15,20 +10,12 @@ int		ramp6[16] = { 256,256+1,256+2,256+3,256+4,256+5,256+6,256+7,256+8,256+9,256
 int		ramp7[16] = { 384,384+1,384+2,384+3,384+4,384+5,384+6,384+7,384+8,384+9,384+10,384+11,384+12,384+13,384+14,384+15};
 int     ramp8[16] = {175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 13, 14, 15, 16, 17, 18};
 int		ramp9[16] = { 416,416+1,416+2,416+3,416+4,416+5,416+6,416+7,416+8,416+9,416+10,416+11,416+12,416+13,416+14,416+15};
-//MISSIONPACK
 int		ramp10[16] = { 432,432+1,432+2,432+3,432+4,432+5,432+6,432+7,432+8,432+9,432+10,432+11,432+12,432+13,432+14,432+15};
 int		ramp11[8] = { 424,424+1,424+2,424+3,424+4,424+5,424+6,424+7};
 int		ramp12[8] = { 136,137,138,139,140,141,142,143};
 int		ramp13[16] = { 144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159};
 
-cparticle_t			*active_particles, *free_particles;
-
-cparticle_t			*particles;
-int					cl_numparticles;
-
 static vec3_t		rider_origin;
-
-Cvar*				leak_color;
 
 ptype_t hexenWorldParticleTypeTable[] =
 {
@@ -64,35 +51,6 @@ ptype_t hexenWorldParticleTypeTable[] =
 };
 
 static cparticle_t *AllocParticle(void);
-
-/*
-===============
-R_InitParticles
-===============
-*/
-void R_InitParticles (void)
-{
-	int		i;
-
-	i = COM_CheckParm ("-particles");
-
-	if (i)
-	{
-		cl_numparticles = (int)(String::Atoi(COM_Argv(i+1)));
-		if (cl_numparticles < ABSOLUTE_MIN_PARTICLES)
-			cl_numparticles = ABSOLUTE_MIN_PARTICLES;
-	}
-	else
-	{
-		cl_numparticles = MAX_PARTICLES;
-	}
-
-	particles = (cparticle_t *)
-			Hunk_AllocName (cl_numparticles * sizeof(cparticle_t), "particles");
-
-	leak_color = Cvar_Get("leak_color","251", CVAR_ARCHIVE);
-}
-
 
 void R_DarkFieldParticles (refEntity_t *ent)
 {
@@ -273,24 +231,6 @@ void R_SuccubusInvincibleParticles (refEntity_t *ent)
 		p->vel[2] = 0;
 		count--;
 	}
-}
-
-
-/*
-===============
-R_ClearParticles
-===============
-*/
-void R_ClearParticles (void)
-{
-	int		i;
-	
-	free_particles = &particles[0];
-	active_particles = NULL;
-
-	for (i=0 ;i<cl_numparticles ; i++)
-		particles[i].next = &particles[i+1];
-	particles[cl_numparticles-1].next = NULL;
 }
 
 /*

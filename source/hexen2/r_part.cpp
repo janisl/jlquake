@@ -12,11 +12,6 @@
 #define	SFL_NO_TRANS		32	// All flakes start non-translucent
 
 
-#define MAX_PARTICLES			7000	// default max # of particles at one
-										//  time
-#define ABSOLUTE_MIN_PARTICLES	512		// no fewer than this no matter what's
-										//  on the command line
-
 int		ramp1[8] = { 416,416+2,416+4,416+6,416+8,416+10,416+12,416+14};
 int		ramp2[8] = { 384+4,384+6,384+8,384+10,384+12,384+13,384+14,384+15};
 int		ramp3[8] = {0x6d, 0x6b, 6, 5, 4, 3};
@@ -25,12 +20,10 @@ int		ramp5[16] = { 400,400+1,400+2,400+3,400+4,400+5,400+6,400+7,400+8,400+9,400
 int		ramp6[16] = { 256,256+1,256+2,256+3,256+4,256+5,256+6,256+7,256+8,256+9,256+10,256+11,256+12,256+13,256+14,256+15};
 int		ramp7[16] = { 384,384+1,384+2,384+3,384+4,384+5,384+6,384+7,384+8,384+9,384+10,384+11,384+12,384+13,384+14,384+15};
 int     ramp8[16] = {175, 174, 173, 172, 171, 170, 169, 168, 167, 166, 13, 14, 15, 16, 17, 18};
-//int		ramp9[16] = { 272,272+1,272+2,272+3,272+4,272+5,272+6,272+7,272+8,272+9,272+10,272+11,272+12,272+13,272+14,272+15};
 int		ramp9[16] = { 416,416+1,416+2,416+3,416+4,416+5,416+6,416+7,416+8,416+9,416+10,416+11,416+12,416+13,416+14,416+15};
 int		ramp10[16] = { 432,432+1,432+2,432+3,432+4,432+5,432+6,432+7,432+8,432+9,432+10,432+11,432+12,432+13,432+14,432+15};
 int		ramp11[8] = { 424,424+1,424+2,424+3,424+4,424+5,424+6,424+7};
 int		ramp12[8] = { 136,137,138,139,140,141,142,143};
-byte MyTable[256];
 
 ptype_t hexen2ParticleTypeTable[] =
 {
@@ -65,73 +58,12 @@ ptype_t hexen2ParticleTypeTable[] =
 	pt_h2redfire,
 };
 
-cparticle_t	*active_particles, *free_particles;
-
-cparticle_t	*particles;
-int			cl_numparticles;
-
 static vec3_t		rider_origin;
-
-Cvar*		leak_color;
-
-Cvar*		snow_flurry;
-Cvar*		snow_active;
 
 static cparticle_t *AllocParticle(void);
 
 void R_RunParticleEffect3 (vec3_t org, vec3_t box, int color, ptype_t effect, int count);
 void R_RunParticleEffect4 (vec3_t org, float radius, int color, ptype_t effect, int count);
-
-/*
-void R_LeakColor_f(void)
-{
-	int		newLeakColor;
-	
-	newLeakColor = String::Atoi (Cmd_Argv(1));
-	if (newLeakColor < 0 || newLeakColor > 255)
-	{
-	   Con_Printf ("Leak color is out of range!\n");
-	   return;
-	}
-
-	Cvar_SetValue ("leak_color", (float)newLeakColor);
-	Con_Printf ("Leak color is %d\n", newLeakColor);
-}
-*/
-
-/*
-===============
-R_InitParticles
-===============
-*/
-void R_InitParticles (void)
-{
-	int		i;
-
-	i = COM_CheckParm ("-particles");
-
-	MyTable[0] = 254;
-
-	if (i)
-	{
-		cl_numparticles = (int)(String::Atoi(COM_Argv(i+1)));
-		if (cl_numparticles < ABSOLUTE_MIN_PARTICLES)
-			cl_numparticles = ABSOLUTE_MIN_PARTICLES;
-	}
-	else
-	{
-		cl_numparticles = MAX_PARTICLES;
-	}
-
-	particles = (cparticle_t *)
-			Hunk_AllocName (cl_numparticles * sizeof(cparticle_t), "particles");
-
-	leak_color = Cvar_Get("leak_color", "251", CVAR_ARCHIVE);
-
-	//JFM: snow test
-	snow_flurry = Cvar_Get("snow_flurry", "1", CVAR_ARCHIVE);
-	snow_active = Cvar_Get("snow_active", "1", CVAR_ARCHIVE);
-}	
 
 void R_DarkFieldParticles (entity_t *ent)
 {
@@ -190,26 +122,6 @@ static cparticle_t *AllocParticle(void)
 	active_particles = p;
 	return p;
 }
-
-/*
-===============
-R_ClearParticles
-===============
-*/
-void R_ClearParticles (void)
-{
-	int		i;
-	
-	free_particles = &particles[0];
-	active_particles = NULL;
-
-	if (!cl_numparticles)
-		return;
-	for (i=0 ;i<cl_numparticles ; i++)
-		particles[i].next = &particles[i+1];
-	particles[cl_numparticles-1].next = NULL;
-}
-
 
 /*
 ===============

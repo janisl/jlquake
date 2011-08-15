@@ -14,6 +14,8 @@
 //**
 //**************************************************************************
 
+enum { MAX_PARTICLES = 7000 };
+
 enum ptype_t
 {
 	pt_q2static,
@@ -81,3 +83,12 @@ struct cparticle_t
 	float			alpha;
 	float			alphavel;
 };
+
+extern cparticle_t particles[MAX_PARTICLES];
+extern int cl_numparticles;
+extern cparticle_t* active_particles;
+extern cparticle_t* free_particles;
+extern Cvar* snow_flurry;
+extern Cvar* snow_active;
+
+void CL_ClearParticles();

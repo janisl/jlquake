@@ -8,7 +8,6 @@
 -minmemory
 -nocdaudio
 -nomidi
--particles
 -port
 -safe
 -zone
@@ -154,3 +153,6 @@ Parameter                Console command                      Saved
 
 -force
   Not supported anymore.
+
+-particles
+  Number of particles is fixed now.

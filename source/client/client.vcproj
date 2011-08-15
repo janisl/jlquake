@@ -1441,6 +1441,34 @@
 				</FileConfiguration>
 			</File>
 		</Filter>
+		<Filter
+			Name="game"
+			>
+			<File
+				RelativePath=".\game\particles.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\game\"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\game\"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\game\particles.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\client.h"
 			>
