@@ -71,7 +71,7 @@ struct cparticle_t
 
 	ptype_t type;
 	float ramp;
-	float die;
+	int die;
 
 	vec3_t minOrg;
 	vec3_t maxOrg;
