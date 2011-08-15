@@ -227,7 +227,7 @@ struct client_entvars_t
 // the client_state_t structure is wiped completely at every
 // server signon
 //
-typedef struct
+struct client_state_t : clientActiveCommon_t
 {
 	int			servercount;	// server identification for prespawns
 
@@ -326,7 +326,7 @@ typedef struct
 
 // all player information
 	player_info_t	players[MAX_CLIENTS];
-} client_state_t;
+};
 
 
 // edict->flags

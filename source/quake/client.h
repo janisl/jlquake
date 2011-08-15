@@ -138,7 +138,7 @@ extern client_static_t	cls;
 // the client_state_t structure is wiped completely at every
 // server signon
 //
-typedef struct
+struct client_state_t : clientActiveCommon_t
 {
 	int			movemessages;	// since connecting to this server
 								// throw out the first couple, so the player
@@ -216,7 +216,7 @@ typedef struct
 
 // frag scoreboard
 	scoreboard_t	*scores;		// [cl.maxclients]
-} client_state_t;
+};
 
 
 //

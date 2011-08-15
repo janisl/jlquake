@@ -47,7 +47,12 @@ struct clientStaticCommon_t
 	qhandle_t	consoleShader;
 };
 
+struct clientActiveCommon_t
+{
+};
+
 extern clientStaticCommon_t* cls_common;
+extern clientActiveCommon_t* cl_common;
 
 char* Sys_GetClipboardData();	// note that this isn't journaled...
 

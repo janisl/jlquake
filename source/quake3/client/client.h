@@ -78,7 +78,8 @@ typedef struct {
 
 extern int g_console_field_width;
 
-typedef struct {
+struct clientActive_t : clientActiveCommon_t
+{
 	int			timeoutcount;		// it requres several frames in a timeout condition
 									// to disconnect, preventing debugging breaks from
 									// causing immediate disconnects on continue
@@ -129,7 +130,7 @@ typedef struct {
 	entityState_t	entityBaselines[MAX_GENTITIES];	// for delta compression when not in previous frame
 
 	entityState_t	parseEntities[MAX_PARSE_ENTITIES];
-} clientActive_t;
+};
 
 extern	clientActive_t		cl;
 

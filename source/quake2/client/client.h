@@ -82,7 +82,7 @@ extern int num_cl_weaponmodels;
 // the client_state_t structure is wiped completely at every
 // server map change
 //
-typedef struct
+struct client_state_t : clientActiveCommon_t
 {
 	int			timeoutcount;
 
@@ -150,7 +150,7 @@ typedef struct
 
 	clientinfo_t	clientinfo[MAX_CLIENTS];
 	clientinfo_t	baseclientinfo;
-} client_state_t;
+};
 
 extern	client_state_t	cl;
 

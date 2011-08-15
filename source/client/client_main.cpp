@@ -35,6 +35,7 @@
 Cvar*		cl_inGameVideo;
 
 clientStaticCommon_t* cls_common;
+clientActiveCommon_t* cl_common;
 
 byte* playerTranslation;
 

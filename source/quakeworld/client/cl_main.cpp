@@ -1023,6 +1023,7 @@ void CL_Init (void)
 	char st[80];
 
 	cls_common = &cls;
+	cl_common = &cl;
 	CL_SharedInit();
 
 	cls.state = ca_disconnected;

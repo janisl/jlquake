@@ -117,7 +117,7 @@ extern client_static_t	cls;
 // the client_state_t structure is wiped completely at every
 // server signon
 //
-typedef struct
+struct client_state_t : clientActiveCommon_t
 {
 	int			movemessages;	// since connecting to this server
 								// throw out the first couple, so the player
@@ -215,7 +215,7 @@ typedef struct
 	short RemoveList[MAX_CLIENT_STATES],NumToRemove;
 
 	long	info_mask, info_mask2;
-} client_state_t;
+};
 
 
 //
